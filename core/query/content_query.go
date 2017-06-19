@@ -29,12 +29,12 @@ func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where str
 	}
 
 	cq.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM
-		con_article WHERE cat_id=? %s`, where), &total, catId)
+		article_list WHERE cat_id=? %s`, where), &total, catId)
 
 	rows = []*content.Article{}
 	if total > 0 {
 		cq.Connector.GetOrm().SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM
-		con_article WHERE cat_id=? %s ORDER BY update_time DESC LIMIT ?,?`, where),
+		article_list WHERE cat_id=? %s ORDER BY update_time DESC LIMIT ?,?`, where),
 			catId, begin, size)
 	}
 

@@ -83,7 +83,7 @@ QQ群：**338164725**
 ### 2.Complied ###
 	git clone https://github.com/jsix/go2o.git /home/usr/go/src/go2o
 	export GOPATH=$GOPATH:/home/usr/go/
-	cd /home/usr/go
+	cd /home/usr/go/src/go2o
 	go build go2o-serve.go
 	go build go2o-daemon.go
 	go build go2o-tcpserve.go
@@ -117,7 +117,7 @@ QQ群：**338164725**
       -port int
         	 (default 14197)
 
-### 3.Add http proxy by nginx ###
+### 3.Add http proxy pass for Nginx ###
 	server {
             listen          80;
             server_name     static.ts.com;
@@ -148,10 +148,9 @@ QQ群：**338164725**
 
 
 
-
 ### 4.Add test hosts ###
 > echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com hapi.ts.com 
-u.ts.com u.m.ts.com passport.ts.com passport.m.ts.com
+u.ts.com mu.ts.com passport.ts.com mpp.ts.com
  master.ts.com zy.ts.com whs.ts.com >> /etc/hosts
 
 ## Access Entry ##

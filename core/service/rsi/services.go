@@ -95,6 +95,8 @@ func Init(ctx gof.App, appFlag int) {
 
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 
+	rds := sto.(storage.IRedisStorage)
+
 	/** Repository **/
 	proMRepo := repository.NewProModelRepo(db, orm)
 	valueRepo = repository.NewValueRepo(db, sto)
@@ -150,7 +152,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
-	ItemService = NewSaleService(catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
+	ItemService = NewSaleService(rds, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
@@ -191,17 +193,16 @@ func initRpcServe(ctx gof.App) {
 	mp[variable.DPassport] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
 	mp[variable.DHApi] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_HAPI, domain}, "")
+		variable.DOMAIN_PREFIX_HApi, domain}, "")
 
 	mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MOBILE,
-		variable.DOMAIN_PREFIX_PORTAL, domain}, "")
+		variable.DOMAIN_PREFIX_MOBILE, domain}, "")
 	mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MOBILE,
-		variable.DOMAIN_PREFIX_WHOLESALE, domain}, "")
+		variable.DOMAIN_PREFIX_M_WHOLESALE, domain}, "")
 	mp[variable.DMobilePassport] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MOBILE,
-		variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
+		variable.DOMAIN_PREFIX_M_PASSPORT, domain}, "")
+	mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
 
 	valueRepo.SavesRegistry(mp)
 }

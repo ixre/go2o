@@ -61,7 +61,7 @@ type normalOrderImpl struct {
 	vendorExpressMap map[int32]float32
 	// 是否为内部挂起
 	internalSuspend bool
-	subList         []order.ISubOrder
+	_list           []order.ISubOrder
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
@@ -786,14 +786,14 @@ func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
 	if orderId <= 0 {
 		panic(order.ErrNoYetCreated)
 	}
-	if o.subList == nil {
-		subList := o.orderRepo.GetNormalSubOrders(orderId)
-		for _, v := range subList {
+	if o._list == nil {
+		_list := o.orderRepo.GetNormalSubOrders(orderId)
+		for _, v := range _list {
 			sub := o.repo.CreateNormalSubOrder(v)
-			o.subList = append(o.subList, sub)
+			o._list = append(o._list, sub)
 		}
 	}
-	return o.subList
+	return o._list
 }
 
 // 在线支付交易完成

@@ -88,7 +88,7 @@ type (
 		Name string `db:"name"`
 
 		// 别名
-		Alias string `db:"alias"`
+		Alias string `db:"cat_alias"`
 
 		// 页面标题
 		Title string `db:"title"`
@@ -111,7 +111,7 @@ type (
 	//文章
 	Article struct {
 		//编号
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		ID int32 `db:"id" auto:"yes" pk:"yes"`
 
 		// 栏目编号
 		CategoryId int32 `db:"cat_id"`
