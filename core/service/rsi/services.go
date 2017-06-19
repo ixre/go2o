@@ -196,17 +196,13 @@ func initRpcServe(ctx gof.App) {
 		variable.DOMAIN_PREFIX_HApi, domain}, "")
 
 	mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_PORTAL,
 		variable.DOMAIN_PREFIX_MOBILE, domain}, "")
 	mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_WHOLESALE,
-		variable.DOMAIN_PREFIX_MOBILE, domain}, "")
+		variable.DOMAIN_PREFIX_M_WHOLESALE, domain}, "")
 	mp[variable.DMobilePassport] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_PASSPORT,
-		variable.DOMAIN_PREFIX_MOBILE, domain}, "")
+		variable.DOMAIN_PREFIX_M_PASSPORT, domain}, "")
 	mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MEMBER,
-		variable.DOMAIN_PREFIX_MOBILE, domain}, "")
+		variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
 
 	valueRepo.SavesRegistry(mp)
 }

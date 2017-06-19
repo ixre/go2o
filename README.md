@@ -150,7 +150,7 @@ QQ群：**338164725**
 
 ### 4.Add test hosts ###
 > echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com hapi.ts.com 
-u.ts.com u.m.ts.com passport.ts.com passport.m.ts.com
+u.ts.com mu.ts.com passport.ts.com mpp.ts.com
  master.ts.com zy.ts.com whs.ts.com >> /etc/hosts
 
 ## Access Entry ##
