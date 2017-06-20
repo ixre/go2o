@@ -10,7 +10,9 @@ package testing
 
 import (
 	"github.com/jsix/gof/log"
+	"strconv"
 	"testing"
+	"time"
 )
 
 type (
@@ -40,4 +42,9 @@ func TestOverride(t *testing.T) {
 	a := &A{}
 	b := &B{a}
 	b.Call2()
+}
+
+func TestI64ToStr(t *testing.T) {
+	s := strconv.Itoa(int(time.Now().UnixNano()))
+	t.Log(s)
 }
