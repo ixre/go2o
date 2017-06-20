@@ -10,6 +10,7 @@ package core
 
 import (
 	"encoding/gob"
+	"github.com/jsix/goex/report"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
@@ -67,6 +68,9 @@ func Init(a *AppImpl, debug, trace bool) bool {
 	a._debugMode = debug
 	if trace {
 		a.Db().GetOrm().SetTrace(a._debugMode)
+	}
+	if debug {
+		report.WATCH_CONF_FILE = true
 	}
 	OrmMapping(a.Db())
 	variable.Domain = a._config.GetString(variable.ServerDomain)
