@@ -2,6 +2,7 @@ package kit
 
 import (
 	"github.com/jsix/goex/report"
+	"go2o/core/domain/interface/enum"
 	"strconv"
 	"strings"
 	"time"
@@ -33,6 +34,25 @@ func (e *exportFormatter) Format(field, name string, data interface{}) interface
 		}
 		return data
 	}
-
+	// 审核状态
+	if name == "review_state" || strings.HasPrefix(name, "审核") ||
+		strings.HasPrefix(name, "review_") {
+		i, err := strconv.Atoi(data.(string))
+		if err == nil {
+			return enum.ReviewString(int32(i))
+		}
+		return "-"
+	}
+	if field == "shelve_state" || strings.HasPrefix(name, "上架") {
+		switch data.(string) {
+		case "1":
+			return "已下架"
+		case "2":
+			return "已上架"
+		case "3":
+			return "已违规下架"
+		}
+		return "待上架"
+	}
 	return data
 }

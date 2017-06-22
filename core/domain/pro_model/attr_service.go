@@ -3,6 +3,7 @@ package promodel
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 	"go2o/core/domain/interface/pro_model"
 	"strconv"
 )
@@ -131,7 +132,7 @@ func (a *attrServiceImpl) GetModelAttrs(proModel int32) []*promodel.Attr {
 func (a *attrServiceImpl) AttrsHtml(arr []*promodel.Attr) string {
 	buf := bytes.NewBuffer(nil)
 	if len(arr) == 0 {
-		buf.WriteString("<div class=\"no-attr\">该分类下商品无产品属性</div>")
+		buf.WriteString("<div class=\"no-attr\">该分类下未包含属性</div>")
 	} else {
 		for _, v := range arr {
 			a.builder.Append(buf, v)
@@ -148,7 +149,7 @@ func (a *attrHtmlBuilder) Append(buf *bytes.Buffer, attr *promodel.Attr) {
 	buf.WriteString(strconv.Itoa(int(attr.Id)))
 	buf.WriteString("\">")
 	a.buildLabel(buf, attr.Name)
-	buf.WriteString("<div class=\"t attr\">")
+	buf.WriteString("<div class=\"attr-list attr\">")
 	if attr.MultiChk == 1 {
 		a.buildCheckBox(buf, attr)
 	} else {
@@ -171,7 +172,7 @@ func (a *attrHtmlBuilder) buildDropDown(buf *bytes.Buffer,
 func (a *attrHtmlBuilder) buildCheckBox(buf *bytes.Buffer,
 	attr *promodel.Attr) {
 	for i, v := range attr.Items {
-		str := strconv.Itoa(i)
+		str := fmt.Sprintf("%d-%d", v.AttrId, i)
 		buf.WriteString("<input type=\"checkbox\" class=\"attr-val\" _field=\"_AttrData[")
 		buf.WriteString(str)
 		buf.WriteString("]\" value=\"")
