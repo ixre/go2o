@@ -113,3 +113,14 @@ func GetResUrl(image string) string {
 	}
 	return imageServe + "/" + image
 }
+
+// 获取URL/路径的名称
+func GetName(url string) string {
+	if url != "" {
+		arr := strings.Split(url, "/")
+		if l := len(arr); l > 0 {
+			return arr[l-1]
+		}
+	}
+	return ""
+}
