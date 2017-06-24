@@ -10,12 +10,14 @@
 package shop
 
 import (
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/lbs"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -253,15 +255,6 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
 	s._shopVal.Tel = v.Tel
 	s._shopVal.Address = v.Address
-	if len(s._shopVal.Alias) == 0 { //未设置域名情况下可更新
-		if len(v.Alias) == 0 {
-			return shop.ErrNotSetAlias
-		}
-		if err := s.checkShopAlias(v.Alias); err != nil {
-			return err
-		}
-		s._shopVal.Alias = strings.ToLower(v.Alias)
-	}
 	if len(v.Host) > 0 {
 		s._shopVal.Host = v.Host
 	}
@@ -287,6 +280,7 @@ func (s *onlineShopImpl) Save() (int32, error) {
 		if s.manager.GetOnlineShop() != nil {
 			return 0, shop.ErrSupportSingleOnlineShop
 		}
+		s._shopVal.Alias = s.generateShopAlias()
 	}
 	id, err := s.shopImpl.Save()
 	if err == nil {
@@ -294,6 +288,17 @@ func (s *onlineShopImpl) Save() (int32, error) {
 		err = s.shopRepo.SaveOnlineShop(s._shopVal, create)
 	}
 	return id, err
+}
+func (s *onlineShopImpl) generateShopAlias() string {
+	return "shop" + strconv.Itoa(util.RandInt(8))
+	//todo: ???
+	for {
+		id := "shop" + strconv.Itoa(util.RandInt(8))
+		if err := s.checkShopAlias(id); err == nil {
+			return id
+		}
+	}
+	return ""
 }
 
 // 数据

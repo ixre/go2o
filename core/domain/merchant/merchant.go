@@ -570,7 +570,7 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 // 企业资料管理器
 func (m *merchantImpl) ProfileManager() merchant.IProfileManager {
 	if m._profileManager == nil {
-		m._profileManager = newProfileManager(m)
+		m._profileManager = newProfileManager(m, m._valRepo)
 	}
 	return m._profileManager
 }
