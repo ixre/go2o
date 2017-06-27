@@ -56,7 +56,7 @@ func (w *pngWriter) encode(c *Code) []byte {
 	// Comment
 	w.writeChunk("tEXt", comment)
 
-	// Data
+	// Complex
 	w.zlib.writeCode(c)
 	w.writeChunk("IDAT", w.zlib.bytes.Bytes())
 

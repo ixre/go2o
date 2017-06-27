@@ -135,16 +135,16 @@ func (p *SaleServiceClient) recvWholesaleCartV1() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error220 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error221 error
-		error221, err = error220.Read(iprot)
+		error205 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error206 error
+		error206, err = error205.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error221
+		err = error206
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -216,16 +216,16 @@ func (p *SaleServiceClient) recvSubmitOrderV1() (value map[string]string, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error222 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error223 error
-		error223, err = error222.Read(iprot)
+		error207 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error208 error
+		error208, err = error207.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error223
+		err = error208
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -295,16 +295,16 @@ func (p *SaleServiceClient) recvGetOrder() (value *ComplexOrder, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error224 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error225 error
-		error225, err = error224.Read(iprot)
+		error209 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error210 error
+		error210, err = error209.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error225
+		err = error210
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -374,16 +374,16 @@ func (p *SaleServiceClient) recvGetOrderAndItems() (value *ComplexOrder, err err
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error226 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error227 error
-		error227, err = error226.Read(iprot)
+		error211 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error212 error
+		error212, err = error211.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error227
+		err = error212
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -451,16 +451,16 @@ func (p *SaleServiceClient) recvGetSubOrder() (value *ComplexOrder, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error228 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error229 error
-		error229, err = error228.Read(iprot)
+		error213 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error214 error
+		error214, err = error213.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error229
+		err = error214
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -528,16 +528,16 @@ func (p *SaleServiceClient) recvGetSubOrderByNo() (value *ComplexOrder, err erro
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error230 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error231 error
-		error231, err = error230.Read(iprot)
+		error215 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error216 error
+		error216, err = error215.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error231
+		err = error216
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -605,16 +605,16 @@ func (p *SaleServiceClient) recvGetSubOrderItems() (value []*ComplexItem, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error232 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error233 error
-		error233, err = error232.Read(iprot)
+		error217 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error218 error
+		error218, err = error217.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error233
+		err = error218
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -684,16 +684,16 @@ func (p *SaleServiceClient) recvSubmitTradeOrder() (value *Result64, err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error234 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error235 error
-		error235, err = error234.Read(iprot)
+		error219 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error220 error
+		error220, err = error219.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error235
+		err = error220
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -761,16 +761,16 @@ func (p *SaleServiceClient) recvTradeOrderCashPay() (value *Result64, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error236 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error237 error
-		error237, err = error236.Read(iprot)
+		error221 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error222 error
+		error222, err = error221.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error237
+		err = error222
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -840,16 +840,16 @@ func (p *SaleServiceClient) recvTradeOrderUpdateTicket() (value *Result64, err e
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error238 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error239 error
-		error239, err = error238.Read(iprot)
+		error223 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error224 error
+		error224, err = error223.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error239
+		err = error224
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -887,18 +887,18 @@ func (p *SaleServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFuncti
 
 func NewSaleServiceProcessor(handler SaleService) *SaleServiceProcessor {
 
-	self240 := &SaleServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self240.processorMap["WholesaleCartV1"] = &saleServiceProcessorWholesaleCartV1{handler: handler}
-	self240.processorMap["SubmitOrderV1"] = &saleServiceProcessorSubmitOrderV1{handler: handler}
-	self240.processorMap["GetOrder"] = &saleServiceProcessorGetOrder{handler: handler}
-	self240.processorMap["GetOrderAndItems"] = &saleServiceProcessorGetOrderAndItems{handler: handler}
-	self240.processorMap["GetSubOrder"] = &saleServiceProcessorGetSubOrder{handler: handler}
-	self240.processorMap["GetSubOrderByNo"] = &saleServiceProcessorGetSubOrderByNo{handler: handler}
-	self240.processorMap["GetSubOrderItems"] = &saleServiceProcessorGetSubOrderItems{handler: handler}
-	self240.processorMap["SubmitTradeOrder"] = &saleServiceProcessorSubmitTradeOrder{handler: handler}
-	self240.processorMap["TradeOrderCashPay"] = &saleServiceProcessorTradeOrderCashPay{handler: handler}
-	self240.processorMap["TradeOrderUpdateTicket"] = &saleServiceProcessorTradeOrderUpdateTicket{handler: handler}
-	return self240
+	self225 := &SaleServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self225.processorMap["WholesaleCartV1"] = &saleServiceProcessorWholesaleCartV1{handler: handler}
+	self225.processorMap["SubmitOrderV1"] = &saleServiceProcessorSubmitOrderV1{handler: handler}
+	self225.processorMap["GetOrder"] = &saleServiceProcessorGetOrder{handler: handler}
+	self225.processorMap["GetOrderAndItems"] = &saleServiceProcessorGetOrderAndItems{handler: handler}
+	self225.processorMap["GetSubOrder"] = &saleServiceProcessorGetSubOrder{handler: handler}
+	self225.processorMap["GetSubOrderByNo"] = &saleServiceProcessorGetSubOrderByNo{handler: handler}
+	self225.processorMap["GetSubOrderItems"] = &saleServiceProcessorGetSubOrderItems{handler: handler}
+	self225.processorMap["SubmitTradeOrder"] = &saleServiceProcessorSubmitTradeOrder{handler: handler}
+	self225.processorMap["TradeOrderCashPay"] = &saleServiceProcessorTradeOrderCashPay{handler: handler}
+	self225.processorMap["TradeOrderUpdateTicket"] = &saleServiceProcessorTradeOrderUpdateTicket{handler: handler}
+	return self225
 }
 
 func (p *SaleServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -911,12 +911,12 @@ func (p *SaleServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success b
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x241 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x226 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x241.Write(oprot)
+	x226.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x241
+	return false, x226
 
 }
 
@@ -1494,19 +1494,19 @@ func (p *SaleServiceWholesaleCartV1Args) readField3(iprot thrift.TProtocol) erro
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key242 string
+		var _key227 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key242 = v
+			_key227 = v
 		}
-		var _val243 string
+		var _val228 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val243 = v
+			_val228 = v
 		}
-		p.Data[_key242] = _val243
+		p.Data[_key227] = _val228
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -1786,19 +1786,19 @@ func (p *SaleServiceSubmitOrderV1Args) readField3(iprot thrift.TProtocol) error 
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key244 string
+		var _key229 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key244 = v
+			_key229 = v
 		}
-		var _val245 string
+		var _val230 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val245 = v
+			_val230 = v
 		}
-		p.Data[_key244] = _val245
+		p.Data[_key229] = _val230
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -1945,19 +1945,19 @@ func (p *SaleServiceSubmitOrderV1Result) readField0(iprot thrift.TProtocol) erro
 	tMap := make(map[string]string, size)
 	p.Success = tMap
 	for i := 0; i < size; i++ {
-		var _key246 string
+		var _key231 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key246 = v
+			_key231 = v
 		}
-		var _val247 string
+		var _val232 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val247 = v
+			_val232 = v
 		}
-		p.Success[_key246] = _val247
+		p.Success[_key231] = _val232
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -3003,11 +3003,11 @@ func (p *SaleServiceGetSubOrderItemsResult) readField0(iprot thrift.TProtocol) e
 	tSlice := make([]*ComplexItem, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem248 := &ComplexItem{}
-		if err := _elem248.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem248), err)
+		_elem233 := &ComplexItem{}
+		if err := _elem233.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem233), err)
 		}
-		p.Success = append(p.Success, _elem248)
+		p.Success = append(p.Success, _elem233)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

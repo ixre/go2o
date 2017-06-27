@@ -21,7 +21,6 @@ import (
 	"strings"
 )
 
-var _ shop.IShop = new(shopImpl)
 var _ shop.IOfflineShop = new(offlineShopImpl)
 var _ shop.IOnlineShop = new(onlineShopImpl)
 var (
@@ -55,7 +54,7 @@ func (s *shopImpl) GetDomainId() int32 {
 }
 
 // 商店类型
-func (s *shopImpl) Type() int {
+func (s *shopImpl) Type() int32 {
 	return s.value.ShopType
 }
 
@@ -72,7 +71,7 @@ func (s *shopImpl) SetValue(v *shop.Shop) error {
 	//		}
 	//		s.value.Location = fmt.Sprintf("%f,%f", lng, lat)
 	//}
-	//s.value.DeliverRadius = v.DeliverRadius
+	//s.value.CoverRadius = v.CoverRadius
 	if err := s.check(v); err != nil {
 		return err
 	}
@@ -99,19 +98,6 @@ func (s *shopImpl) checkNameExists(v *shop.Shop) bool {
 
 func (s *shopImpl) Save() (int32, error) {
 	return s.shopRepo.SaveShop(s.value)
-}
-
-// 数据
-func (s *shopImpl) Data() *shop.ShopDto {
-	return &shop.ShopDto{
-		Id:         s.GetDomainId(),
-		MerchantId: s.value.MerchantId,
-		ShopType:   s.Type(),
-		Name:       s.value.Name,
-		State:      s.value.State,
-		CreateTime: s.value.CreateTime,
-		Data:       nil,
-	}
 }
 
 type offlineShopImpl struct {
@@ -143,7 +129,7 @@ func newOfflineShopImpl(s *shopImpl) shop.IShop {
 func (s *offlineShopImpl) SetShopValue(v *shop.OfflineShop) error {
 	s._shopVal.Address = v.Address
 	s._shopVal.Tel = v.Tel
-	s._shopVal.DeliverRadius = v.DeliverRadius
+	s._shopVal.CoverRadius = v.CoverRadius
 	s._shopVal.Province = v.Province
 	s._shopVal.City = v.City
 	s._shopVal.District = v.District
@@ -178,7 +164,7 @@ func (s *offlineShopImpl) CanDeliver(lng, lat float64) (bool, int) {
 	shopLng, shopLat := s.GetLngLat()
 	distance := lbs.GetLocDistance(shopLng, shopLat, lng, lat)
 	i := int(distance)
-	return i <= s._shopVal.DeliverRadius*1000, i
+	return i <= s._shopVal.CoverRadius*1000, i
 }
 
 // 是否可以配送
@@ -201,13 +187,6 @@ func (s *offlineShopImpl) Save() (int32, error) {
 		err = s.shopRepo.SaveOfflineShop(s._shopVal, create)
 	}
 	return id, err
-}
-
-// 数据
-func (s *offlineShopImpl) Data() *shop.ShopDto {
-	v := s.shopImpl.Data()
-	v.Data = s.GetShopValue()
-	return v
 }
 
 type onlineShopImpl struct {
@@ -253,7 +232,7 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 
 // 设置值
 func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
-	s._shopVal.Tel = v.Tel
+	s._shopVal.ServiceTel = v.ServiceTel
 	s._shopVal.Address = v.Address
 	if len(v.Host) > 0 {
 		s._shopVal.Host = v.Host
@@ -262,9 +241,8 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
 		s._shopVal.Logo = v.Logo
 	}
 
-	s._shopVal.IndexTitle = v.IndexTitle
-	s._shopVal.SubTitle = v.SubTitle
-	s._shopVal.Notice = v.Notice
+	s._shopVal.ShopTitle = v.ShopTitle
+	s._shopVal.ShopNotice = v.ShopNotice
 	return nil
 }
 
@@ -299,11 +277,4 @@ func (s *onlineShopImpl) generateShopAlias() string {
 		}
 	}
 	return ""
-}
-
-// 数据
-func (s *onlineShopImpl) Data() *shop.ShopDto {
-	v := s.shopImpl.Data()
-	v.Data = s.GetShopValue()
-	return v
 }

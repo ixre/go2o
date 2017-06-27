@@ -99,7 +99,7 @@ func (s *shopRepo) GetApiInfo(mchId int32) *merchant.ApiInfo {
 func (s *shopRepo) SaveShop(v *shop.Shop) (int32, error) {
 	id, err := orm.I32(orm.Save(s.GetOrm(), v, int(v.Id)))
 	if err == nil {
-		s.delCache(v.MerchantId)
+		s.delCache(v.VendorId)
 	}
 	return id, err
 }
@@ -108,7 +108,7 @@ func (s *shopRepo) GetValueShop(mchId, shopId int32) *shop.Shop {
 	var v *shop.Shop = new(shop.Shop)
 	err := s.Connector.GetOrm().Get(shopId, v)
 	if err == nil &&
-		v.MerchantId == mchId {
+		v.VendorId == mchId {
 		return v
 	} else {
 		handleError(err)

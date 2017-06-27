@@ -106,16 +106,16 @@ func (p *MerchantServiceClient) recvComplex() (value *ComplexMerchant, err error
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error203 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error204 error
-		error204, err = error203.Read(iprot)
+		error280 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error281 error
+		error281, err = error280.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error204
+		err = error281
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -185,16 +185,16 @@ func (p *MerchantServiceClient) recvCheckLogin() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error205 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error206 error
-		error206, err = error205.Read(iprot)
+		error282 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error283 error
+		error283, err = error282.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error206
+		err = error283
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -262,16 +262,16 @@ func (p *MerchantServiceClient) recvStat() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error207 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error208 error
-		error208, err = error207.Read(iprot)
+		error284 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error285 error
+		error285, err = error284.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error208
+		err = error285
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -339,16 +339,16 @@ func (p *MerchantServiceClient) recvSyncWholesaleItem() (value map[string]int32,
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error209 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error210 error
-		error210, err = error209.Read(iprot)
+		error286 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error287 error
+		error287, err = error286.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error210
+		err = error287
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -386,12 +386,12 @@ func (p *MerchantServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFu
 
 func NewMerchantServiceProcessor(handler MerchantService) *MerchantServiceProcessor {
 
-	self211 := &MerchantServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self211.processorMap["Complex"] = &merchantServiceProcessorComplex{handler: handler}
-	self211.processorMap["CheckLogin"] = &merchantServiceProcessorCheckLogin{handler: handler}
-	self211.processorMap["Stat"] = &merchantServiceProcessorStat{handler: handler}
-	self211.processorMap["SyncWholesaleItem"] = &merchantServiceProcessorSyncWholesaleItem{handler: handler}
-	return self211
+	self288 := &MerchantServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self288.processorMap["Complex"] = &merchantServiceProcessorComplex{handler: handler}
+	self288.processorMap["CheckLogin"] = &merchantServiceProcessorCheckLogin{handler: handler}
+	self288.processorMap["Stat"] = &merchantServiceProcessorStat{handler: handler}
+	self288.processorMap["SyncWholesaleItem"] = &merchantServiceProcessorSyncWholesaleItem{handler: handler}
+	return self288
 }
 
 func (p *MerchantServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -404,12 +404,12 @@ func (p *MerchantServiceProcessor) Process(iprot, oprot thrift.TProtocol) (succe
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x212 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x289 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x212.Write(oprot)
+	x289.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x212
+	return false, x289
 
 }
 
@@ -1369,19 +1369,19 @@ func (p *MerchantServiceSyncWholesaleItemResult) readField0(iprot thrift.TProtoc
 	tMap := make(map[string]int32, size)
 	p.Success = tMap
 	for i := 0; i < size; i++ {
-		var _key213 string
+		var _key290 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key213 = v
+			_key290 = v
 		}
-		var _val214 int32
+		var _val291 int32
 		if v, err := iprot.ReadI32(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val214 = v
+			_val291 = v
 		}
-		p.Success[_key213] = _val214
+		p.Success[_key290] = _val291
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)

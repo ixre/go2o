@@ -50,6 +50,16 @@ struct ComplexMerchant {
     18: i64 LastLoginTime
 }
 
+// 商店
+struct Shop{
+    1:i32 ID
+    2:i32 VendorId
+    3:i32 ShopType
+    4:string Name
+    5:i32 State
+    6:map<string,string> Data
+}
+
 struct Level {
     1: i32 Id
     2: string Name
@@ -506,17 +516,6 @@ service PaymentService{
 }
 
 
-//商家服务
-service MerchantService{
-   // 获取商家符合的信息
-   ComplexMerchant Complex(1:i32 mchId)
-   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-   Result CheckLogin(1:string usr,2:string oriPwd)
-   // 验证商户状态
-   Result Stat(1:i32 mchId)
-   // 同步批发商品
-   map<string,i32> SyncWholesaleItem(1:i32 mchId)
-}
 
 // 销售服务
 service SaleService {
@@ -551,4 +550,24 @@ service ItemService{
     string GetItemSkuJson(1:i32 itemId)
     // 获取商品详细数据
     string GetItemDetailData(1:i32 itemId,2:i32 iType)
+}
+
+//商家服务
+service MerchantService{
+   // 获取商家符合的信息
+   ComplexMerchant Complex(1:i32 mchId)
+   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
+   Result CheckLogin(1:string usr,2:string oriPwd)
+   // 验证商户状态
+   Result Stat(1:i32 mchId)
+   // 同步批发商品
+   map<string,i32> SyncWholesaleItem(1:i32 mchId)
+}
+
+// 商店服务
+service ShopService{
+    // 获取店铺
+    Shop GetStore(1:i32 venderId)
+    // 获取店铺
+    Shop GetStoreById(1:i32 shopId)
 }

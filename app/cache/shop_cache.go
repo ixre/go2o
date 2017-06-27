@@ -12,8 +12,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/util"
-	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/infrastructure/format"
 	"go2o/core/service/rsi"
 )
 
@@ -69,40 +67,4 @@ func GetMchIdByShopId(shopId int32) int32 {
 		}
 	}
 	return mchId
-}
-
-func getRdShopData(shopId int32) *shop.ShopDto {
-	mchId := GetMchIdByShopId(shopId)
-	v2 := rsi.ShopService.GetShopData(mchId, shopId)
-	if v2 != nil {
-		v3 := v2.Data.(shop.OnlineShop)
-		v3.Logo = format.GetResUrl(v3.Logo)
-		v2.Data = &v3
-		if v2 != nil {
-			//sto.SetExpire(key, *v2, DefaultMaxSeconds)
-		}
-		return v2
-	}
-	return v2
-}
-
-// 获取商城的数据
-func GetOnlineShopData(shopId int32) *shop.ShopDto {
-	//return getRdShopData(shopId)
-	var v shop.ShopDto
-	sto := GetKVS()
-	key := GetShopDataKey(shopId)
-	if err := sto.Get(key, &v); err != nil {
-		mchId := GetMchIdByShopId(shopId)
-		if v2 := rsi.ShopService.GetShopData(mchId, shopId); v2 != nil {
-			v3 := v2.Data.(shop.OnlineShop)
-			v3.Logo = format.GetResUrl(v3.Logo)
-			v2.Data = &v3
-			if v2 != nil {
-				sto.SetExpire(key, *v2, DefaultMaxSeconds)
-			}
-			return v2
-		}
-	}
-	return &v
 }

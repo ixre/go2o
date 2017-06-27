@@ -482,7 +482,7 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	//	StateHtml:  "",
 	//}
 	//err = m._rep.SaveSiteConf(id, m._siteConf)
-	//m._siteConf.MerchantId = id
+	//m._siteConf.VendorId = id
 
 	// SaleConf
 	//m._saleConf = &merchant.SaleConf{
@@ -490,7 +490,7 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	//	IntegralBackNum: 0,
 	//}
 	//err = m._rep.SaveSaleConf(id, m._saleConf)
-	//m._saleConf.MerchantId = id
+	//m._saleConf.VendorId = id
 
 	// 创建API
 	api := &merchant.ApiInfo{
