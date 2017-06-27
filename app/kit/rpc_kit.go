@@ -79,3 +79,25 @@ func (r *rpcToolkit) GetOrderAndItems(orderNo string, sub bool) *define.ComplexO
 	}
 	return nil
 }
+
+// 获取店铺
+func (r *rpcToolkit) GetStore(vendorId int32) *define.Shop {
+	cli, err := thrift.ShopServeClient()
+	if err == nil {
+		defer cli.Transport.Close()
+		o, _ := cli.GetStore(vendorId)
+		return o
+	}
+	return nil
+}
+
+// 获取店铺
+func (r *rpcToolkit) GetStoreById(shopId int32) *define.Shop {
+	cli, err := thrift.ShopServeClient()
+	if err == nil {
+		defer cli.Transport.Close()
+		o, _ := cli.GetStoreById(shopId)
+		return o
+	}
+	return nil
+}

@@ -20,9 +20,8 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  Sku GetSku(i32 itemId, i32 skuId)")
-	fmt.Fprintln(os.Stderr, "  string GetItemSkuJson(i32 itemId)")
-	fmt.Fprintln(os.Stderr, "  string GetItemDetailData(i32 itemId, i32 iType)")
+	fmt.Fprintln(os.Stderr, "  Shop GetStore(i32 venderId)")
+	fmt.Fprintln(os.Stderr, "  Shop GetStoreById(i32 shopId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -110,70 +109,41 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := define.NewItemServiceClientFactory(trans, protocolFactory)
+	client := define.NewShopServiceClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "GetSku":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetSku requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err275 := (strconv.Atoi(flag.Arg(1)))
-		if err275 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		tmp1, err276 := (strconv.Atoi(flag.Arg(2)))
-		if err276 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.GetSku(value0, value1))
-		fmt.Print("\n")
-		break
-	case "GetItemSkuJson":
+	case "GetStore":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetItemSkuJson requires 1 args")
+			fmt.Fprintln(os.Stderr, "GetStore requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err277 := (strconv.Atoi(flag.Arg(1)))
-		if err277 != nil {
+		tmp0, err303 := (strconv.Atoi(flag.Arg(1)))
+		if err303 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		fmt.Print(client.GetItemSkuJson(value0))
+		fmt.Print(client.GetStore(value0))
 		fmt.Print("\n")
 		break
-	case "GetItemDetailData":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetItemDetailData requires 2 args")
+	case "GetStoreById":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetStoreById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err278 := (strconv.Atoi(flag.Arg(1)))
-		if err278 != nil {
+		tmp0, err304 := (strconv.Atoi(flag.Arg(1)))
+		if err304 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err279 := (strconv.Atoi(flag.Arg(2)))
-		if err279 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.GetItemDetailData(value0, value1))
+		fmt.Print(client.GetStoreById(value0))
 		fmt.Print("\n")
 		break
 	case "":

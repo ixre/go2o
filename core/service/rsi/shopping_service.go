@@ -146,7 +146,7 @@ func (s *shoppingService) wsGetSimpleCart(c cart.ICart, data map[string]string) 
 func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
-	skuData := data["Data"]
+	skuData := data["Complex"]
 	arr := []*cart.ItemPair{}
 	splitArr := strings.Split(skuData, ";")
 	for _, str := range splitArr {
@@ -178,7 +178,7 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 func (s *shoppingService) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
-	skuData := data["Data"]
+	skuData := data["Complex"]
 	arr := []*cart.ItemPair{}
 	splitArr := strings.Split(skuData, ";")
 	for _, str := range splitArr {
@@ -366,7 +366,7 @@ func (s *shoppingService) GetCartSettle(memberId int64,
 		st.Shop = &dto.SettleShopMeta{
 			Id:   v.Id,
 			Name: v.Name,
-			Tel:  ols.GetShopValue().Tel,
+			Tel:  ols.GetShopValue().ServiceTel,
 		}
 	}
 

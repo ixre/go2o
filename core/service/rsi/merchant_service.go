@@ -262,7 +262,7 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 	// m._mchRepo.GetMerchant(mchId)
 
 	//conf := merchant.DefaultSaleConf
-	//conf.MerchantId = mch.GetAggregateRootId()
+	//conf.VendorId = mch.GetAggregateRootId()
 	// 保存销售设置
 	//mch.ConfManager().SaveSaleConf(&conf)
 
@@ -330,15 +330,6 @@ func (m *merchantService) GetShopsOfMerchant(mchId int32) []*shop.Shop {
 		sv[i] = &vv
 	}
 	return sv
-}
-
-// 获取线上店铺
-func (m *merchantService) GetOnlineShopOfVendor(mchId int32) *shop.ShopDto {
-	mch := m._mchRepo.GetMerchant(mchId)
-	if mch != nil {
-		return mch.ShopManager().GetOnlineShop().Data()
-	}
-	return nil
 }
 
 // 修改密码

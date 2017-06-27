@@ -54,7 +54,7 @@ func registerTypes() {
 	gob.Register(&merchant.ApiInfo{})
 	gob.Register(&shop.OnlineShop{})
 	gob.Register(&shop.OfflineShop{})
-	gob.Register(&shop.ShopDto{})
+	gob.Register(&shop.ComplexShop{})
 	gob.Register(&member.Account{})
 	gob.Register(&payment.PaymentOrder{})
 	gob.Register(&member.Relation{})
