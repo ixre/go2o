@@ -31,7 +31,10 @@ type FoundationService interface {
 	DeleteValue(key string) (r *Result_, err error)
 	// Parameters:
 	//  - Keys
-	GetRegistryV1(keys []string) (r map[string]string, err error)
+	GetRegistryV1(keys []string) (r []string, err error)
+	// Parameters:
+	//  - Keys
+	GetRegistryMapV1(keys []string) (r map[string]string, err error)
 	// Parameters:
 	//  - Prefix
 	GetValuesByPrefix(prefix string) (r map[string]string, err error)
@@ -466,7 +469,7 @@ func (p *FoundationServiceClient) recvDeleteValue() (value *Result_, err error) 
 
 // Parameters:
 //  - Keys
-func (p *FoundationServiceClient) GetRegistryV1(keys []string) (r map[string]string, err error) {
+func (p *FoundationServiceClient) GetRegistryV1(keys []string) (r []string, err error) {
 	if err = p.sendGetRegistryV1(keys); err != nil {
 		return
 	}
@@ -495,7 +498,7 @@ func (p *FoundationServiceClient) sendGetRegistryV1(keys []string) (err error) {
 	return oprot.Flush()
 }
 
-func (p *FoundationServiceClient) recvGetRegistryV1() (value map[string]string, err error) {
+func (p *FoundationServiceClient) recvGetRegistryV1() (value []string, err error) {
 	iprot := p.InputProtocol
 	if iprot == nil {
 		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -531,6 +534,83 @@ func (p *FoundationServiceClient) recvGetRegistryV1() (value map[string]string, 
 		return
 	}
 	result := FoundationServiceGetRegistryV1Result{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Keys
+func (p *FoundationServiceClient) GetRegistryMapV1(keys []string) (r map[string]string, err error) {
+	if err = p.sendGetRegistryMapV1(keys); err != nil {
+		return
+	}
+	return p.recvGetRegistryMapV1()
+}
+
+func (p *FoundationServiceClient) sendGetRegistryMapV1(keys []string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("GetRegistryMapV1", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := FoundationServiceGetRegistryMapV1Args{
+		Keys: keys,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *FoundationServiceClient) recvGetRegistryMapV1() (value map[string]string, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "GetRegistryMapV1" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "GetRegistryMapV1 failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "GetRegistryMapV1 failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error25 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error26 error
+		error26, err = error25.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error26
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "GetRegistryMapV1 failed: invalid message type")
+		return
+	}
+	result := FoundationServiceGetRegistryMapV1Result{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -591,16 +671,16 @@ func (p *FoundationServiceClient) recvGetValuesByPrefix() (value map[string]stri
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error25 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error26 error
-		error26, err = error25.Read(iprot)
+		error27 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error28 error
+		error28, err = error27.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error26
+		err = error28
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -668,16 +748,16 @@ func (p *FoundationServiceClient) recvRegisterApp() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error27 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error28 error
-		error28, err = error27.Read(iprot)
+		error29 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error30 error
+		error30, err = error29.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error28
+		err = error30
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -745,16 +825,16 @@ func (p *FoundationServiceClient) recvGetApp() (value *SsoApp, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error29 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error30 error
-		error30, err = error29.Read(iprot)
+		error31 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error32 error
+		error32, err = error31.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error30
+		err = error32
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -818,16 +898,16 @@ func (p *FoundationServiceClient) recvGetAllSsoApp() (value []string, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error31 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error32 error
-		error32, err = error31.Read(iprot)
+		error33 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error34 error
+		error34, err = error33.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error32
+		err = error34
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -897,16 +977,16 @@ func (p *FoundationServiceClient) recvSuperValidate() (value bool, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error33 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error34 error
-		error34, err = error33.Read(iprot)
+		error35 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error36 error
+		error36, err = error35.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error34
+		err = error36
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -976,16 +1056,16 @@ func (p *FoundationServiceClient) recvFlushSuperPwd() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error35 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error36 error
-		error36, err = error35.Read(iprot)
+		error37 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error38 error
+		error38, err = error37.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error36
+		err = error38
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1052,16 +1132,16 @@ func (p *FoundationServiceClient) recvGetSyncLoginUrl() (value string, err error
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error37 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error38 error
-		error38, err = error37.Read(iprot)
+		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error40 error
+		error40, err = error39.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error38
+		err = error40
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1099,21 +1179,22 @@ func (p *FoundationServiceProcessor) ProcessorMap() map[string]thrift.TProcessor
 
 func NewFoundationServiceProcessor(handler FoundationService) *FoundationServiceProcessor {
 
-	self39 := &FoundationServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self39.processorMap["ResourceUrl"] = &foundationServiceProcessorResourceUrl{handler: handler}
-	self39.processorMap["GetPlatformConf"] = &foundationServiceProcessorGetPlatformConf{handler: handler}
-	self39.processorMap["GetValue"] = &foundationServiceProcessorGetValue{handler: handler}
-	self39.processorMap["SetValue"] = &foundationServiceProcessorSetValue{handler: handler}
-	self39.processorMap["DeleteValue"] = &foundationServiceProcessorDeleteValue{handler: handler}
-	self39.processorMap["GetRegistryV1"] = &foundationServiceProcessorGetRegistryV1{handler: handler}
-	self39.processorMap["GetValuesByPrefix"] = &foundationServiceProcessorGetValuesByPrefix{handler: handler}
-	self39.processorMap["RegisterApp"] = &foundationServiceProcessorRegisterApp{handler: handler}
-	self39.processorMap["GetApp"] = &foundationServiceProcessorGetApp{handler: handler}
-	self39.processorMap["GetAllSsoApp"] = &foundationServiceProcessorGetAllSsoApp{handler: handler}
-	self39.processorMap["SuperValidate"] = &foundationServiceProcessorSuperValidate{handler: handler}
-	self39.processorMap["FlushSuperPwd"] = &foundationServiceProcessorFlushSuperPwd{handler: handler}
-	self39.processorMap["GetSyncLoginUrl"] = &foundationServiceProcessorGetSyncLoginUrl{handler: handler}
-	return self39
+	self41 := &FoundationServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self41.processorMap["ResourceUrl"] = &foundationServiceProcessorResourceUrl{handler: handler}
+	self41.processorMap["GetPlatformConf"] = &foundationServiceProcessorGetPlatformConf{handler: handler}
+	self41.processorMap["GetValue"] = &foundationServiceProcessorGetValue{handler: handler}
+	self41.processorMap["SetValue"] = &foundationServiceProcessorSetValue{handler: handler}
+	self41.processorMap["DeleteValue"] = &foundationServiceProcessorDeleteValue{handler: handler}
+	self41.processorMap["GetRegistryV1"] = &foundationServiceProcessorGetRegistryV1{handler: handler}
+	self41.processorMap["GetRegistryMapV1"] = &foundationServiceProcessorGetRegistryMapV1{handler: handler}
+	self41.processorMap["GetValuesByPrefix"] = &foundationServiceProcessorGetValuesByPrefix{handler: handler}
+	self41.processorMap["RegisterApp"] = &foundationServiceProcessorRegisterApp{handler: handler}
+	self41.processorMap["GetApp"] = &foundationServiceProcessorGetApp{handler: handler}
+	self41.processorMap["GetAllSsoApp"] = &foundationServiceProcessorGetAllSsoApp{handler: handler}
+	self41.processorMap["SuperValidate"] = &foundationServiceProcessorSuperValidate{handler: handler}
+	self41.processorMap["FlushSuperPwd"] = &foundationServiceProcessorFlushSuperPwd{handler: handler}
+	self41.processorMap["GetSyncLoginUrl"] = &foundationServiceProcessorGetSyncLoginUrl{handler: handler}
+	return self41
 }
 
 func (p *FoundationServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1126,12 +1207,12 @@ func (p *FoundationServiceProcessor) Process(iprot, oprot thrift.TProtocol) (suc
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x40 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x42 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x40.Write(oprot)
+	x42.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x40
+	return false, x42
 
 }
 
@@ -1393,7 +1474,7 @@ func (p *foundationServiceProcessorGetRegistryV1) Process(seqId int32, iprot, op
 
 	iprot.ReadMessageEnd()
 	result := FoundationServiceGetRegistryV1Result{}
-	var retval map[string]string
+	var retval []string
 	var err2 error
 	if retval, err2 = p.handler.GetRegistryV1(args.Keys); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetRegistryV1: "+err2.Error())
@@ -1406,6 +1487,54 @@ func (p *foundationServiceProcessorGetRegistryV1) Process(seqId int32, iprot, op
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("GetRegistryV1", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type foundationServiceProcessorGetRegistryMapV1 struct {
+	handler FoundationService
+}
+
+func (p *foundationServiceProcessorGetRegistryMapV1) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := FoundationServiceGetRegistryMapV1Args{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("GetRegistryMapV1", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := FoundationServiceGetRegistryMapV1Result{}
+	var retval map[string]string
+	var err2 error
+	if retval, err2 = p.handler.GetRegistryMapV1(args.Keys); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetRegistryMapV1: "+err2.Error())
+		oprot.WriteMessageBegin("GetRegistryMapV1", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("GetRegistryMapV1", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -2771,13 +2900,13 @@ func (p *FoundationServiceGetRegistryV1Args) readField1(iprot thrift.TProtocol) 
 	tSlice := make([]string, 0, size)
 	p.Keys = tSlice
 	for i := 0; i < size; i++ {
-		var _elem41 string
+		var _elem43 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem41 = v
+			_elem43 = v
 		}
-		p.Keys = append(p.Keys, _elem41)
+		p.Keys = append(p.Keys, _elem43)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2832,16 +2961,16 @@ func (p *FoundationServiceGetRegistryV1Args) String() string {
 // Attributes:
 //  - Success
 type FoundationServiceGetRegistryV1Result struct {
-	Success map[string]string `thrift:"success,0" json:"success,omitempty"`
+	Success []string `thrift:"success,0" json:"success,omitempty"`
 }
 
 func NewFoundationServiceGetRegistryV1Result() *FoundationServiceGetRegistryV1Result {
 	return &FoundationServiceGetRegistryV1Result{}
 }
 
-var FoundationServiceGetRegistryV1Result_Success_DEFAULT map[string]string
+var FoundationServiceGetRegistryV1Result_Success_DEFAULT []string
 
-func (p *FoundationServiceGetRegistryV1Result) GetSuccess() map[string]string {
+func (p *FoundationServiceGetRegistryV1Result) GetSuccess() []string {
 	return p.Success
 }
 func (p *FoundationServiceGetRegistryV1Result) IsSetSuccess() bool {
@@ -2882,29 +3011,23 @@ func (p *FoundationServiceGetRegistryV1Result) Read(iprot thrift.TProtocol) erro
 }
 
 func (p *FoundationServiceGetRegistryV1Result) readField0(iprot thrift.TProtocol) error {
-	_, _, size, err := iprot.ReadMapBegin()
+	_, size, err := iprot.ReadListBegin()
 	if err != nil {
-		return thrift.PrependError("error reading map begin: ", err)
+		return thrift.PrependError("error reading list begin: ", err)
 	}
-	tMap := make(map[string]string, size)
-	p.Success = tMap
+	tSlice := make([]string, 0, size)
+	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _key42 string
+		var _elem44 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key42 = v
+			_elem44 = v
 		}
-		var _val43 string
-		if v, err := iprot.ReadString(); err != nil {
-			return thrift.PrependError("error reading field 0: ", err)
-		} else {
-			_val43 = v
-		}
-		p.Success[_key42] = _val43
+		p.Success = append(p.Success, _elem44)
 	}
-	if err := iprot.ReadMapEnd(); err != nil {
-		return thrift.PrependError("error reading map end: ", err)
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
 	}
 	return nil
 }
@@ -2926,6 +3049,244 @@ func (p *FoundationServiceGetRegistryV1Result) Write(oprot thrift.TProtocol) err
 }
 
 func (p *FoundationServiceGetRegistryV1Result) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.LIST, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRING, len(p.Success)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Success {
+			if err := oprot.WriteString(string(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *FoundationServiceGetRegistryV1Result) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("FoundationServiceGetRegistryV1Result(%+v)", *p)
+}
+
+// Attributes:
+//  - Keys
+type FoundationServiceGetRegistryMapV1Args struct {
+	Keys []string `thrift:"keys,1" json:"keys"`
+}
+
+func NewFoundationServiceGetRegistryMapV1Args() *FoundationServiceGetRegistryMapV1Args {
+	return &FoundationServiceGetRegistryMapV1Args{}
+}
+
+func (p *FoundationServiceGetRegistryMapV1Args) GetKeys() []string {
+	return p.Keys
+}
+func (p *FoundationServiceGetRegistryMapV1Args) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceGetRegistryMapV1Args) readField1(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]string, 0, size)
+	p.Keys = tSlice
+	for i := 0; i < size; i++ {
+		var _elem45 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_elem45 = v
+		}
+		p.Keys = append(p.Keys, _elem45)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceGetRegistryMapV1Args) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GetRegistryMapV1_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceGetRegistryMapV1Args) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("keys", thrift.LIST, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:keys: ", p), err)
+	}
+	if err := oprot.WriteListBegin(thrift.STRING, len(p.Keys)); err != nil {
+		return thrift.PrependError("error writing list begin: ", err)
+	}
+	for _, v := range p.Keys {
+		if err := oprot.WriteString(string(v)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+	}
+	if err := oprot.WriteListEnd(); err != nil {
+		return thrift.PrependError("error writing list end: ", err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:keys: ", p), err)
+	}
+	return err
+}
+
+func (p *FoundationServiceGetRegistryMapV1Args) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("FoundationServiceGetRegistryMapV1Args(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type FoundationServiceGetRegistryMapV1Result struct {
+	Success map[string]string `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewFoundationServiceGetRegistryMapV1Result() *FoundationServiceGetRegistryMapV1Result {
+	return &FoundationServiceGetRegistryMapV1Result{}
+}
+
+var FoundationServiceGetRegistryMapV1Result_Success_DEFAULT map[string]string
+
+func (p *FoundationServiceGetRegistryMapV1Result) GetSuccess() map[string]string {
+	return p.Success
+}
+func (p *FoundationServiceGetRegistryMapV1Result) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *FoundationServiceGetRegistryMapV1Result) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceGetRegistryMapV1Result) readField0(iprot thrift.TProtocol) error {
+	_, _, size, err := iprot.ReadMapBegin()
+	if err != nil {
+		return thrift.PrependError("error reading map begin: ", err)
+	}
+	tMap := make(map[string]string, size)
+	p.Success = tMap
+	for i := 0; i < size; i++ {
+		var _key46 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_key46 = v
+		}
+		var _val47 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_val47 = v
+		}
+		p.Success[_key46] = _val47
+	}
+	if err := iprot.ReadMapEnd(); err != nil {
+		return thrift.PrependError("error reading map end: ", err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceGetRegistryMapV1Result) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GetRegistryMapV1_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceGetRegistryMapV1Result) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err := oprot.WriteFieldBegin("success", thrift.MAP, 0); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
@@ -2951,11 +3312,11 @@ func (p *FoundationServiceGetRegistryV1Result) writeField0(oprot thrift.TProtoco
 	return err
 }
 
-func (p *FoundationServiceGetRegistryV1Result) String() string {
+func (p *FoundationServiceGetRegistryMapV1Result) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("FoundationServiceGetRegistryV1Result(%+v)", *p)
+	return fmt.Sprintf("FoundationServiceGetRegistryMapV1Result(%+v)", *p)
 }
 
 // Attributes:
@@ -3109,19 +3470,19 @@ func (p *FoundationServiceGetValuesByPrefixResult) readField0(iprot thrift.TProt
 	tMap := make(map[string]string, size)
 	p.Success = tMap
 	for i := 0; i < size; i++ {
-		var _key44 string
+		var _key48 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key44 = v
+			_key48 = v
 		}
-		var _val45 string
+		var _val49 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val45 = v
+			_val49 = v
 		}
-		p.Success[_key44] = _val45
+		p.Success[_key48] = _val49
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -3684,13 +4045,13 @@ func (p *FoundationServiceGetAllSsoAppResult) readField0(iprot thrift.TProtocol)
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem46 string
+		var _elem50 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem46 = v
+			_elem50 = v
 		}
-		p.Success = append(p.Success, _elem46)
+		p.Success = append(p.Success, _elem50)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

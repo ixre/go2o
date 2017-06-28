@@ -915,9 +915,11 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount fl
 	csnFee := amount * csnRate
 
 	// 检测是否开启转账
-	conf := a.valueRepo.GetRegistry()
-	if !conf.MemberTransferAccountsOn {
-		return errors.New(conf.MemberTransferAccountsMessage)
+	keys := []string{valueobject.RKMemberTransferAccountsOn,
+		valueobject.RKMemberTransferAccountsMessage}
+	registry := a.valueRepo.GetsRegistryMap(keys)
+	if b := registry[keys[0]]; b != "true" && b != "1" {
+		return errors.New(registry[keys[1]])
 	}
 
 	switch accountKind {

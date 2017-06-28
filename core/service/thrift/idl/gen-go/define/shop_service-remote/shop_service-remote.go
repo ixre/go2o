@@ -121,8 +121,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetStore requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err303 := (strconv.Atoi(flag.Arg(1)))
-		if err303 != nil {
+		tmp0, err313 := (strconv.Atoi(flag.Arg(1)))
+		if err313 != nil {
 			Usage()
 			return
 		}
@@ -136,8 +136,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetStoreById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err304 := (strconv.Atoi(flag.Arg(1)))
-		if err304 != nil {
+		tmp0, err314 := (strconv.Atoi(flag.Arg(1)))
+		if err314 != nil {
 			Usage()
 			return
 		}

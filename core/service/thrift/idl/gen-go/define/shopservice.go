@@ -99,16 +99,16 @@ func (p *ShopServiceClient) recvGetStore() (value *Shop, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error297 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error298 error
-		error298, err = error297.Read(iprot)
+		error307 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error308 error
+		error308, err = error307.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error298
+		err = error308
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -176,16 +176,16 @@ func (p *ShopServiceClient) recvGetStoreById() (value *Shop, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error299 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error300 error
-		error300, err = error299.Read(iprot)
+		error309 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error310 error
+		error310, err = error309.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error300
+		err = error310
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -223,10 +223,10 @@ func (p *ShopServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFuncti
 
 func NewShopServiceProcessor(handler ShopService) *ShopServiceProcessor {
 
-	self301 := &ShopServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self301.processorMap["GetStore"] = &shopServiceProcessorGetStore{handler: handler}
-	self301.processorMap["GetStoreById"] = &shopServiceProcessorGetStoreById{handler: handler}
-	return self301
+	self311 := &ShopServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self311.processorMap["GetStore"] = &shopServiceProcessorGetStore{handler: handler}
+	self311.processorMap["GetStoreById"] = &shopServiceProcessorGetStoreById{handler: handler}
+	return self311
 }
 
 func (p *ShopServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -239,12 +239,12 @@ func (p *ShopServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success b
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x302 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x312 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x302.Write(oprot)
+	x312.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x302
+	return false, x312
 
 }
 

@@ -423,7 +423,9 @@ service FoundationService{
    // 删除值
    Result DeleteValue(1:string key)
    // 获取键值存储数据
-   map<string,string> GetRegistryV1(1:list<string> keys)
+   list<string> GetRegistryV1(1:list<string> keys)
+   // 获取键值存储数据字典
+   map<string,string> GetRegistryMapV1(1:list<string> keys)
    // 根据前缀获取值
    map<string,string> GetValuesByPrefix(1:string prefix)
    // 注册单点登录应用,返回值：

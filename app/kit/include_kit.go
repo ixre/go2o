@@ -246,7 +246,7 @@ func (t *templateIncludeToolkit) pageTitle(tit string) string {
 		cli, err := thrift.FoundationServeClient()
 		if err == nil {
 			defer cli.Transport.Close()
-			r, _ := cli.GetRegistryV1([]string{"PlatformName"})
+			r, _ := cli.GetRegistryMapV1([]string{"PlatformName"})
 			_TitleSuffix = r["PlatformName"]
 		}
 	}
@@ -437,7 +437,7 @@ func (t *templateIncludeToolkit) registry(keys ...string) map[string]string {
 	cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
-		r, _ := cli.GetRegistryV1(keys)
+		r, _ := cli.GetRegistryMapV1(keys)
 		return r
 	}
 	return map[string]string{}
