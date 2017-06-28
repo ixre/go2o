@@ -12,7 +12,7 @@ func (r *rpcToolkit) Registry(keys ...string) map[string]string {
 	cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
-		r, _ := cli.GetRegistryV1(keys)
+		r, _ := cli.GetRegistryMapV1(keys)
 		return r
 	}
 	return map[string]string{}

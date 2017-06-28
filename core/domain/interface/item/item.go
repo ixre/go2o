@@ -16,22 +16,26 @@ import (
 	"go2o/core/infrastructure/domain"
 )
 
+type itemType = int32
+
 const (
 	// 普通商品
-	ItemNormal int32 = 1
+	ItemNormal itemType = 1
 	// 批发商品
-	ItemWholesale int32 = 2
+	ItemWholesale itemType = 2
 )
+
+type shelvesState = int32
 
 const (
 	// 仓库中的商品
-	ShelvesInWarehouse int32 = 0
+	ShelvesInWarehouse shelvesState = 0
 	// 已下架
-	ShelvesDown int32 = 1
+	ShelvesDown shelvesState = 1
 	// 已上架
-	ShelvesOn int32 = 2
+	ShelvesOn shelvesState = 2
 	// 已拒绝上架 (不允许上架)
-	ShelvesIncorrect int32 = 3
+	ShelvesIncorrect shelvesState = 3
 )
 
 var (
