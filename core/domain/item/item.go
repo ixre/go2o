@@ -295,7 +295,7 @@ func (i *itemImpl) resetReview() {
 func (g *itemImpl) checkItemValue(v *item.GoodsItem) error {
 	registry := g.valRepo.GetRegistry()
 	// 检测是否上传图片
-	if v.Image == registry.GoodsDefaultImage {
+	if v.Image == "" || v.Image == registry.GoodsDefaultImage {
 		return product.ErrNotUploadImage
 	}
 	if v.ShopId <= 0 {
@@ -360,6 +360,7 @@ func (g *itemImpl) Save() (_ int32, err error) {
 			return g.value.Id, err
 		}
 	}
+
 	// 保存商品
 	g.value.Id, err = g.repo.SaveValueGoods(g.value)
 	if err == nil {
