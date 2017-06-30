@@ -241,18 +241,11 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 	if len(l.GetLevelSet()) == 0 {
 		levels := []*member.Level{
 			{
-				Name:          "待激活会员",
+				Name:          "普通会员",
 				RequireExp:    0,
 				Enabled:       1,
-				ProgramSignal: "M_DJH",
-				IsOfficial:    0,
-			},
-			{
-				Name:          "普通会员",
-				RequireExp:    1,
-				Enabled:       1,
 				ProgramSignal: "M_PT",
-				IsOfficial:    1,
+				IsOfficial:    0,
 			},
 			{
 				Name:          "铜牌会员",
@@ -273,13 +266,6 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 				RequireExp:    1200,
 				Enabled:       1,
 				ProgramSignal: "M_JP",
-				IsOfficial:    1,
-			},
-			{
-				Name:          "白金会员",
-				RequireExp:    1500,
-				Enabled:       1,
-				ProgramSignal: "M_BJ",
 				IsOfficial:    1,
 			},
 		}

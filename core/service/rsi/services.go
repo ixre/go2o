@@ -192,6 +192,8 @@ func initRpcServe(ctx gof.App) {
 		variable.DOMAIN_PREFIX_MEMBER, domain}, "")
 	mp[variable.DPassport] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
+	mp[variable.DMerchant] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_MERCHANT, domain}, "")
 	mp[variable.DHApi] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_HApi, domain}, "")
 

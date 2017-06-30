@@ -72,7 +72,7 @@ func (g *goodsRepo) SnapshotService() item.ISnapshotService {
 
 // 创建商品
 func (g *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
-	return itemImpl.NewSaleItem(g.proRepo, nil, v, g.valRepo, g,
+	return itemImpl.NewItem(g.proRepo, nil, v, g.valRepo, g,
 		g.proMRepo, g.itemWsRepo, g.expressRepo, nil)
 }
 

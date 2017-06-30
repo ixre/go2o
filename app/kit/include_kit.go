@@ -110,7 +110,7 @@ func (t *templateIncludeToolkit) alias(s string) string {
 
 // CSS标签
 func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
-	registry := RPC.Registry(variable.DStaticServer, variable.DUrlHash)
+	registry := RPC.RegistryMap(variable.DStaticServer, variable.DUrlHash)
 	staticServe := registry[variable.DStaticServer]
 	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
@@ -132,7 +132,7 @@ func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
 
 // 脚本标签
 func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
-	registry := RPC.Registry(variable.DStaticServer, variable.DUrlHash)
+	registry := RPC.RegistryMap(variable.DStaticServer, variable.DUrlHash)
 	staticServe := registry[variable.DStaticServer]
 	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
@@ -178,7 +178,7 @@ func (t *templateIncludeToolkit) entryUrl(k string) string {
 	if t.entryUrlMap == nil {
 		t.entryUrlMap = make(map[string]string)
 	}
-	v := RPC.Registry(key)[key]
+	v := RPC.RegistryMap(key)[key]
 	t.entryUrlMap[key] = v
 	t.rwMut.Unlock()
 	return v
