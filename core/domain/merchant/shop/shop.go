@@ -232,10 +232,16 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 
 // 设置值
 func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
+	v.Logo = strings.TrimSpace(v.Logo)
 	s._shopVal.ServiceTel = v.ServiceTel
 	s._shopVal.Address = v.Address
 	if len(v.Host) > 0 {
 		s._shopVal.Host = v.Host
+	}
+	if s.GetDomainId() == 0 {
+		if v.Logo == "" {
+			return shop.ErrShopNoLogo
+		}
 	}
 	if len(v.Logo) > 0 {
 		s._shopVal.Logo = v.Logo
