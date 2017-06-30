@@ -48,6 +48,7 @@ const (
 	DWholesalePortal       = "D_WholesalePortal"
 	DUCenter               = "D_UCenter"
 	DPassport              = "D_Passport"
+	DMerchant              = "D_Merchant"
 	DHApi                  = "D_HApi"
 	DRetailMobilePortal    = "D_RetailMobilePortal"
 	DWholesaleMobilePortal = "D_WholesaleMobilePortal"

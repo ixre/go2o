@@ -48,7 +48,7 @@ type itemImpl struct {
 
 //todo:??? 去掉依赖promotion.IPromotionRepo
 
-func NewSaleItem(
+func NewItem(
 	itemRepo product.IProductRepo, pro product.IProduct,
 	value *item.GoodsItem, valRepo valueobject.IValueRepo,
 	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProModelRepo,

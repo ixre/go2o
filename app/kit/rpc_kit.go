@@ -8,7 +8,17 @@ import (
 type rpcToolkit struct {
 }
 
-func (r *rpcToolkit) Registry(keys ...string) map[string]string {
+func (r *rpcToolkit) Registry(keys ...string) []string {
+	cli, err := thrift.FoundationServeClient()
+	if err == nil {
+		defer cli.Transport.Close()
+		r, _ := cli.GetRegistryV1(keys)
+		return r
+	}
+	return []string{}
+}
+
+func (r *rpcToolkit) RegistryMap(keys ...string) map[string]string {
 	cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
