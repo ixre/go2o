@@ -95,6 +95,9 @@ func (m *merchantManagerImpl) checkSignUpInfo(v *merchant.MchSignUp) error {
 	if util.CheckChineseCardID(v.PersonId) != nil {
 		return merchant.ErrPersonCardId
 	}
+	if v.Phone == "" {
+		return merchant.ErrMissingPhone
+	}
 	if v.CompanyImage == "" {
 		return merchant.ErrMissingCompanyImage
 	}

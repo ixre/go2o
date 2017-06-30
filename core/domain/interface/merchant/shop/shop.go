@@ -21,6 +21,9 @@ var (
 	ErrNotSetAlias *domain.DomainError = domain.NewDomainError(
 		"err_not_set_alias", "请设置商城域名")
 
+	ErrShopNoLogo *domain.DomainError = domain.NewDomainError(
+		"err_shop_no_logo", "请上传店铺Logo")
+
 	ErrShopAliasFormat *domain.DomainError = domain.NewDomainError(
 		"err_shop_alias_format", "域名前缀为3-11位的字母数字的组合")
 
