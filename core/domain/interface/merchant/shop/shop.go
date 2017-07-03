@@ -18,9 +18,6 @@ var (
 	ErrNoSuchShop *domain.DomainError = domain.NewDomainError(
 		"err_shop_no_such_shop", "未指定店铺")
 
-	ErrNotSetAlias *domain.DomainError = domain.NewDomainError(
-		"err_not_set_alias", "请设置商城域名")
-
 	ErrShopNoLogo *domain.DomainError = domain.NewDomainError(
 		"err_shop_no_logo", "请上传店铺Logo")
 
@@ -45,16 +42,12 @@ const (
 )
 
 const (
-	// 停用状态
-	StateStopped = 0
-	// 待审核状态
-	StateAwaitingReview = 1
 	// 正常状态
-	StateNormal = 2
-	// 暂停状态
-	StateSuspend = 3
-	// 暂停状态
-	StatePause = 4
+	StateNormal int32 = 1
+	// 停用状态
+	StateStopped int32 = 2
+	// 暂停状态  todo: 移动到opening_state
+	StatePause int32 = 3
 )
 
 var (
@@ -62,21 +55,16 @@ var (
 		"err_same_name_shop_exists", "商店已经存在")
 
 	// 商店状态字典
-	StateTextMap = map[int]string{
-		StateStopped:        "已停用",
-		StateAwaitingReview: "待审核",
-		StateNormal:         "正常",
-		StateSuspend:        "系统挂起",
-		StatePause:          "商户暂停",
+	StateTextMap = map[int32]string{
+		StateNormal:  "正常",
+		StateStopped: "已关闭",
+		StatePause:   "已停用",
 	}
 
 	// 状态顺序
-	StateIndex = []int{
-		StateStopped,
-		StateAwaitingReview,
+	StateIndex = []int32{
 		StateNormal,
-		StateSuspend,
-		StatePause,
+		StateStopped,
 	}
 
 	// 商店类型字电
@@ -86,11 +74,8 @@ var (
 	}
 
 	StateTextStrMap = map[string]string{
-		strconv.Itoa(StateStopped):        StateTextMap[StateStopped],
-		strconv.Itoa(StateAwaitingReview): StateTextMap[StateAwaitingReview],
-		strconv.Itoa(StateNormal):         StateTextMap[StateNormal],
-		strconv.Itoa(StateSuspend):        StateTextMap[StateSuspend],
-		strconv.Itoa(StatePause):          StateTextMap[StatePause],
+		strconv.Itoa(int(StateNormal)):  StateTextMap[StateNormal],
+		strconv.Itoa(int(StateStopped)): StateTextMap[StateStopped],
 	}
 
 	TypeTextStrMap = map[string]string{
@@ -177,13 +162,16 @@ type (
 
 	// 商店
 	Shop struct {
-		Id         int32  `db:"id" pk:"yes" auto:"yes"`
-		VendorId   int32  `db:"mch_id"`
-		ShopType   int32  `db:"shop_type"`
-		Name       string `db:"name"`
-		State      int32  `db:"state"`
-		SortNum    int32  `db:"sort_number"`
-		CreateTime int64  `db:"create_time"`
+		Id       int32  `db:"id" pk:"yes" auto:"yes"`
+		VendorId int32  `db:"mch_id"`
+		ShopType int32  `db:"shop_type"`
+		Name     string `db:"name"`
+		//商店状态
+		State int32 `db:"state"`
+		//营业状态
+		OpeningState int32 `db:"-"`
+		SortNum      int32 `db:"sort_number"`
+		CreateTime   int64 `db:"create_time"`
 	}
 
 	// 商店数据传输对象
