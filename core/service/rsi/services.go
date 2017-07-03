@@ -174,12 +174,11 @@ func initRpcServe(ctx gof.App) {
 	if hash == "" {
 		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
 	}
-	ssl, _ := strconv.ParseBool(gf("ssl_enabled"))
+	ssl := gf("ssl_enabled")
 	prefix := "http://"
-	if ssl {
+	if ssl == "true" || ssl == "1" {
 		prefix = "https://"
 	}
-
 	mp[variable.DEnabledSSL] = gf("ssl_enabled")
 	mp[variable.DStaticServer] = gf("static_server")
 	mp[variable.DImageServer] = gf("image_server")
