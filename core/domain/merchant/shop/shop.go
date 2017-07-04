@@ -28,15 +28,13 @@ var (
 )
 
 type shopImpl struct {
-	manager  *shopManagerImpl
 	shopRepo shop.IShopRepo
 	value    *shop.Shop
 }
 
-func newShop(manager *shopManagerImpl, v *shop.Shop,
-	shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo) shop.IShop {
+func NewShop(v *shop.Shop, shopRepo shop.IShopRepo,
+	valRepo valueobject.IValueRepo) shop.IShop {
 	s := &shopImpl{
-		manager:  manager,
 		shopRepo: shopRepo,
 		value:    v,
 	}
@@ -63,21 +61,15 @@ func (s *shopImpl) GetValue() shop.Shop {
 }
 
 func (s *shopImpl) SetValue(v *shop.Shop) error {
-	//	if s.value.Address != v.Address ||
-	//		len(s.value.Location) == 0 {
-	//		lng, lat, err := lbs.GetLocation(v.Address)
-	//		if err != nil {
-	//			return err
-	//		}
-	//		s.value.Location = fmt.Sprintf("%f,%f", lng, lat)
-	//}
-	//s.value.CoverRadius = v.CoverRadius
 	if err := s.check(v); err != nil {
 		return err
 	}
 	s.value.Name = v.Name
 	s.value.SortNum = v.SortNum
-	s.value.State = v.State
+	if s.GetDomainId() <= 0 {
+		s.value.State = shop.StateNormal
+		s.value.OpeningState = shop.OStateNormal
+	}
 	return nil
 }
 
@@ -98,6 +90,34 @@ func (s *shopImpl) checkNameExists(v *shop.Shop) bool {
 
 func (s *shopImpl) Save() (int32, error) {
 	return s.shopRepo.SaveShop(s.value)
+}
+
+// 开启店铺
+func (s *shopImpl) TurnOn() error {
+	s.value.State = shop.StateNormal
+	_, err := s.Save()
+	return err
+}
+
+// 停用店铺
+func (s *shopImpl) TurnOff(reason string) error {
+	s.value.State = shop.StateStopped
+	_, err := s.Save()
+	return err
+}
+
+// 商店营业
+func (s *shopImpl) Opening() error {
+	s.value.OpeningState = shop.OStateNormal
+	_, err := s.Save()
+	return err
+}
+
+// 商店暂停营业
+func (s *shopImpl) Pause() error {
+	s.value.OpeningState = shop.OStatePause
+	_, err := s.Save()
+	return err
 }
 
 type offlineShopImpl struct {
@@ -127,6 +147,16 @@ func newOfflineShopImpl(s *shopImpl) shop.IShop {
 
 // 设置值
 func (s *offlineShopImpl) SetShopValue(v *shop.OfflineShop) error {
+	//	if s.value.Address != v.Address ||
+	//		len(s.value.Location) == 0 {
+	//		lng, lat, err := lbs.GetLocation(v.Address)
+	//		if err != nil {
+	//			return err
+	//		}
+	//		s.value.Location = fmt.Sprintf("%f,%f", lng, lat)
+	//}
+	//s.value.CoverRadius = v.CoverRadius
+
 	s._shopVal.Address = v.Address
 	s._shopVal.Tel = v.Tel
 	s._shopVal.CoverRadius = v.CoverRadius
@@ -231,7 +261,7 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 }
 
 // 设置值
-func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
+func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	v.Logo = strings.TrimSpace(v.Logo)
 	s._shopVal.ServiceTel = v.ServiceTel
 	s._shopVal.Address = v.Address
@@ -246,10 +276,15 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
 	if len(v.Logo) > 0 {
 		s._shopVal.Logo = v.Logo
 	}
-
+	if len(v.Alias) > 0 {
+		err = s.checkShopAlias(v.Alias)
+		if err == nil {
+			s._shopVal.Alias = v.Alias
+		}
+	}
 	s._shopVal.ShopTitle = v.ShopTitle
 	s._shopVal.ShopNotice = v.ShopNotice
-	return nil
+	return err
 }
 
 // 获取值
@@ -261,7 +296,7 @@ func (s *onlineShopImpl) GetShopValue() shop.OnlineShop {
 func (s *onlineShopImpl) Save() (int32, error) {
 	create := s.GetDomainId() <= 0
 	if create {
-		if s.manager.GetOnlineShop() != nil {
+		if s.shopRepo.ShopCount(s.value.VendorId, shop.TypeOnlineShop) > 0 {
 			return 0, shop.ErrSupportSingleOnlineShop
 		}
 		s._shopVal.Alias = s.generateShopAlias()
@@ -273,6 +308,7 @@ func (s *onlineShopImpl) Save() (int32, error) {
 	}
 	return id, err
 }
+
 func (s *onlineShopImpl) generateShopAlias() string {
 	return "shop" + strconv.Itoa(util.RandInt(8))
 	//todo: ???

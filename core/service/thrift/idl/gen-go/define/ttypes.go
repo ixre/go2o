@@ -22,7 +22,7 @@ var GoUnusedProtection__ int
 //  - Code
 //  - Message
 type Result_ struct {
-	ID      int32  `thrift:"Id,1" json:"Id"`
+	ID      int32  `thrift:"ID,1" json:"ID"`
 	Result_ bool   `thrift:"Result,2" json:"Result"`
 	Code    string `thrift:"Code,3" json:"Code"`
 	Message string `thrift:"Message,4" json:"Message"`
@@ -154,14 +154,14 @@ func (p *Result_) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *Result_) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I32, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
+	if err := oprot.WriteFieldBegin("ID", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
 	}
 	if err := oprot.WriteI32(int32(p.ID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
 	}
 	return err
 }
@@ -218,7 +218,7 @@ func (p *Result_) String() string {
 //  - Code
 //  - Message
 type Result64 struct {
-	ID      int64  `thrift:"Id,1" json:"Id"`
+	ID      int64  `thrift:"ID,1" json:"ID"`
 	Result_ bool   `thrift:"Result,2" json:"Result"`
 	Code    string `thrift:"Code,3" json:"Code"`
 	Message string `thrift:"Message,4" json:"Message"`
@@ -350,14 +350,14 @@ func (p *Result64) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *Result64) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I64, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
+	if err := oprot.WriteFieldBegin("ID", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
 	}
 	if err := oprot.WriteI64(int64(p.ID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
 	}
 	return err
 }
@@ -750,7 +750,7 @@ func (p *Pair) String() string {
 //  - LoginTime
 //  - LastLoginTime
 type ComplexMerchant struct {
-	ID            int32  `thrift:"Id,1" json:"Id"`
+	ID            int32  `thrift:"ID,1" json:"ID"`
 	MemberId      int64  `thrift:"MemberId,2" json:"MemberId"`
 	Usr           string `thrift:"Usr,3" json:"Usr"`
 	Pwd           string `thrift:"Pwd,4" json:"Pwd"`
@@ -1176,14 +1176,14 @@ func (p *ComplexMerchant) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *ComplexMerchant) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I32, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
+	if err := oprot.WriteFieldBegin("ID", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
 	}
 	if err := oprot.WriteI32(int32(p.ID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
 	}
 	return err
 }
@@ -1422,14 +1422,16 @@ func (p *ComplexMerchant) String() string {
 //  - ShopType
 //  - Name
 //  - State
+//  - OpeningState
 //  - Data
 type Shop struct {
-	ID       int32             `thrift:"ID,1" json:"ID"`
-	VendorId int32             `thrift:"VendorId,2" json:"VendorId"`
-	ShopType int32             `thrift:"ShopType,3" json:"ShopType"`
-	Name     string            `thrift:"Name,4" json:"Name"`
-	State    int32             `thrift:"State,5" json:"State"`
-	Data     map[string]string `thrift:"Data,6" json:"Data"`
+	ID           int32             `thrift:"ID,1" json:"ID"`
+	VendorId     int32             `thrift:"VendorId,2" json:"VendorId"`
+	ShopType     int32             `thrift:"ShopType,3" json:"ShopType"`
+	Name         string            `thrift:"Name,4" json:"Name"`
+	State        int32             `thrift:"State,5" json:"State"`
+	OpeningState int32             `thrift:"OpeningState,6" json:"OpeningState"`
+	Data         map[string]string `thrift:"Data,7" json:"Data"`
 }
 
 func NewShop() *Shop {
@@ -1454,6 +1456,10 @@ func (p *Shop) GetName() string {
 
 func (p *Shop) GetState() int32 {
 	return p.State
+}
+
+func (p *Shop) GetOpeningState() int32 {
+	return p.OpeningState
 }
 
 func (p *Shop) GetData() map[string]string {
@@ -1495,6 +1501,10 @@ func (p *Shop) Read(iprot thrift.TProtocol) error {
 			}
 		case 6:
 			if err := p.readField6(iprot); err != nil {
+				return err
+			}
+		case 7:
+			if err := p.readField7(iprot); err != nil {
 				return err
 			}
 		default:
@@ -1558,6 +1568,15 @@ func (p *Shop) readField5(iprot thrift.TProtocol) error {
 }
 
 func (p *Shop) readField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 6: ", err)
+	} else {
+		p.OpeningState = v
+	}
+	return nil
+}
+
+func (p *Shop) readField7(iprot thrift.TProtocol) error {
 	_, _, size, err := iprot.ReadMapBegin()
 	if err != nil {
 		return thrift.PrependError("error reading map begin: ", err)
@@ -1605,6 +1624,9 @@ func (p *Shop) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField6(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField7(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -1682,8 +1704,21 @@ func (p *Shop) writeField5(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *Shop) writeField6(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Data", thrift.MAP, 6); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:Data: ", p), err)
+	if err := oprot.WriteFieldBegin("OpeningState", thrift.I32, 6); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:OpeningState: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.OpeningState)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.OpeningState (6) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:OpeningState: ", p), err)
+	}
+	return err
+}
+
+func (p *Shop) writeField7(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Data", thrift.MAP, 7); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:Data: ", p), err)
 	}
 	if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Data)); err != nil {
 		return thrift.PrependError("error writing map begin: ", err)
@@ -1700,7 +1735,7 @@ func (p *Shop) writeField6(oprot thrift.TProtocol) (err error) {
 		return thrift.PrependError("error writing map end: ", err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:Data: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:Data: ", p), err)
 	}
 	return err
 }
@@ -1714,13 +1749,454 @@ func (p *Shop) String() string {
 
 // Attributes:
 //  - ID
+//  - VendorId
+//  - Name
+//  - Alias
+//  - Host
+//  - Logo
+//  - State
+//  - OpeningState
+//  - StorePhone
+//  - StoreTitle
+//  - StoreNotice
+type Store struct {
+	ID           int32  `thrift:"ID,1" json:"ID"`
+	VendorId     int32  `thrift:"VendorId,2" json:"VendorId"`
+	Name         string `thrift:"Name,3" json:"Name"`
+	Alias        string `thrift:"Alias,4" json:"Alias"`
+	Host         string `thrift:"Host,5" json:"Host"`
+	Logo         string `thrift:"Logo,6" json:"Logo"`
+	State        int32  `thrift:"State,7" json:"State"`
+	OpeningState int32  `thrift:"OpeningState,8" json:"OpeningState"`
+	StorePhone   string `thrift:"StorePhone,9" json:"StorePhone"`
+	StoreTitle   string `thrift:"StoreTitle,10" json:"StoreTitle"`
+	StoreNotice  string `thrift:"StoreNotice,11" json:"StoreNotice"`
+}
+
+func NewStore() *Store {
+	return &Store{}
+}
+
+func (p *Store) GetID() int32 {
+	return p.ID
+}
+
+func (p *Store) GetVendorId() int32 {
+	return p.VendorId
+}
+
+func (p *Store) GetName() string {
+	return p.Name
+}
+
+func (p *Store) GetAlias() string {
+	return p.Alias
+}
+
+func (p *Store) GetHost() string {
+	return p.Host
+}
+
+func (p *Store) GetLogo() string {
+	return p.Logo
+}
+
+func (p *Store) GetState() int32 {
+	return p.State
+}
+
+func (p *Store) GetOpeningState() int32 {
+	return p.OpeningState
+}
+
+func (p *Store) GetStorePhone() string {
+	return p.StorePhone
+}
+
+func (p *Store) GetStoreTitle() string {
+	return p.StoreTitle
+}
+
+func (p *Store) GetStoreNotice() string {
+	return p.StoreNotice
+}
+func (p *Store) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.readField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.readField3(iprot); err != nil {
+				return err
+			}
+		case 4:
+			if err := p.readField4(iprot); err != nil {
+				return err
+			}
+		case 5:
+			if err := p.readField5(iprot); err != nil {
+				return err
+			}
+		case 6:
+			if err := p.readField6(iprot); err != nil {
+				return err
+			}
+		case 7:
+			if err := p.readField7(iprot); err != nil {
+				return err
+			}
+		case 8:
+			if err := p.readField8(iprot); err != nil {
+				return err
+			}
+		case 9:
+			if err := p.readField9(iprot); err != nil {
+				return err
+			}
+		case 10:
+			if err := p.readField10(iprot); err != nil {
+				return err
+			}
+		case 11:
+			if err := p.readField11(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *Store) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.ID = v
+	}
+	return nil
+}
+
+func (p *Store) readField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.VendorId = v
+	}
+	return nil
+}
+
+func (p *Store) readField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Name = v
+	}
+	return nil
+}
+
+func (p *Store) readField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
+		p.Alias = v
+	}
+	return nil
+}
+
+func (p *Store) readField5(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 5: ", err)
+	} else {
+		p.Host = v
+	}
+	return nil
+}
+
+func (p *Store) readField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 6: ", err)
+	} else {
+		p.Logo = v
+	}
+	return nil
+}
+
+func (p *Store) readField7(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 7: ", err)
+	} else {
+		p.State = v
+	}
+	return nil
+}
+
+func (p *Store) readField8(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 8: ", err)
+	} else {
+		p.OpeningState = v
+	}
+	return nil
+}
+
+func (p *Store) readField9(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 9: ", err)
+	} else {
+		p.StorePhone = v
+	}
+	return nil
+}
+
+func (p *Store) readField10(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 10: ", err)
+	} else {
+		p.StoreTitle = v
+	}
+	return nil
+}
+
+func (p *Store) readField11(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 11: ", err)
+	} else {
+		p.StoreNotice = v
+	}
+	return nil
+}
+
+func (p *Store) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Store"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField4(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField5(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField6(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField7(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField8(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField9(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField10(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField11(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *Store) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("ID", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.ID)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("VendorId", thrift.I32, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:VendorId: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.VendorId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.VendorId (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:VendorId: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Name", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Name: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Name)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Name (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Name: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField4(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Alias", thrift.STRING, 4); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Alias: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Alias)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Alias (4) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Alias: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField5(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Host", thrift.STRING, 5); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:Host: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Host)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Host (5) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:Host: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField6(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Logo", thrift.STRING, 6); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:Logo: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Logo)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Logo (6) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:Logo: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField7(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("State", thrift.I32, 7); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:State: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.State)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.State (7) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:State: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField8(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("OpeningState", thrift.I32, 8); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:OpeningState: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.OpeningState)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.OpeningState (8) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:OpeningState: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField9(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("StorePhone", thrift.STRING, 9); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:StorePhone: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.StorePhone)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.StorePhone (9) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:StorePhone: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField10(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("StoreTitle", thrift.STRING, 10); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:StoreTitle: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.StoreTitle)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.StoreTitle (10) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 10:StoreTitle: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) writeField11(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("StoreNotice", thrift.STRING, 11); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 11:StoreNotice: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.StoreNotice)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.StoreNotice (11) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 11:StoreNotice: ", p), err)
+	}
+	return err
+}
+
+func (p *Store) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Store(%+v)", *p)
+}
+
+// Attributes:
+//  - ID
 //  - Name
 //  - RequireExp
 //  - ProgramSignal
 //  - IsOfficial
 //  - Enabled
 type Level struct {
-	ID            int32  `thrift:"Id,1" json:"Id"`
+	ID            int32  `thrift:"ID,1" json:"ID"`
 	Name          string `thrift:"Name,2" json:"Name"`
 	RequireExp    int32  `thrift:"RequireExp,3" json:"RequireExp"`
 	ProgramSignal string `thrift:"ProgramSignal,4" json:"ProgramSignal"`
@@ -1894,14 +2370,14 @@ func (p *Level) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *Level) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I32, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
+	if err := oprot.WriteFieldBegin("ID", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
 	}
 	if err := oprot.WriteI32(int32(p.ID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
 	}
 	return err
 }
@@ -2000,7 +2476,7 @@ func (p *Level) String() string {
 //  - DynamicToken
 //  - TimeoutTime
 type Member struct {
-	ID             int64  `thrift:"Id,1" json:"Id"`
+	ID             int64  `thrift:"ID,1" json:"ID"`
 	Usr            string `thrift:"Usr,2" json:"Usr"`
 	Pwd            string `thrift:"Pwd,3" json:"Pwd"`
 	TradePwd       string `thrift:"TradePwd,4" json:"TradePwd"`
@@ -2468,14 +2944,14 @@ func (p *Member) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *Member) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I64, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
+	if err := oprot.WriteFieldBegin("ID", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
 	}
 	if err := oprot.WriteI64(int64(p.ID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
 	}
 	return err
 }
@@ -5651,7 +6127,7 @@ func (p *TrustedInfo) String() string {
 //  - Address
 //  - IsDefault
 type Address struct {
-	ID        int64  `thrift:"Id,1" json:"Id"`
+	ID        int64  `thrift:"ID,1" json:"ID"`
 	MemberId  int64  `thrift:"MemberId,2" json:"MemberId"`
 	RealName  string `thrift:"RealName,3" json:"RealName"`
 	Phone     string `thrift:"Phone,4" json:"Phone"`
@@ -5909,14 +6385,14 @@ func (p *Address) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *Address) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I64, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
+	if err := oprot.WriteFieldBegin("ID", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
 	}
 	if err := oprot.WriteI64(int64(p.ID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
 	}
 	return err
 }
@@ -9311,7 +9787,7 @@ func (p *ShoppingCartItem) String() string {
 //  - PaidTime
 //  - State
 type PaymentOrder struct {
-	ID               int32   `thrift:"Id,1" json:"Id"`
+	ID               int32   `thrift:"ID,1" json:"ID"`
 	TradeNo          string  `thrift:"TradeNo,2" json:"TradeNo"`
 	VendorId         int32   `thrift:"VendorId,3" json:"VendorId"`
 	Type             int32   `thrift:"Type,4" json:"Type"`
@@ -9821,14 +10297,14 @@ func (p *PaymentOrder) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *PaymentOrder) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I32, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
+	if err := oprot.WriteFieldBegin("ID", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
 	}
 	if err := oprot.WriteI32(int32(p.ID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
 	}
 	return err
 }
@@ -11696,7 +12172,7 @@ func (p *PlatformConf) String() string {
 //  - ApiUrl
 //  - Token
 type SsoApp struct {
-	ID     int32  `thrift:"Id,1" json:"Id"`
+	ID     int32  `thrift:"ID,1" json:"ID"`
 	Name   string `thrift:"Name,2" json:"Name"`
 	ApiUrl string `thrift:"ApiUrl,3" json:"ApiUrl"`
 	Token  string `thrift:"Token,4" json:"Token"`
@@ -11828,14 +12304,14 @@ func (p *SsoApp) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *SsoApp) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I32, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
+	if err := oprot.WriteFieldBegin("ID", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ID: ", p), err)
 	}
 	if err := oprot.WriteI32(int32(p.ID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.ID (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ID: ", p), err)
 	}
 	return err
 }

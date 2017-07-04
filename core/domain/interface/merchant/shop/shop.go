@@ -46,8 +46,10 @@ const (
 	StateNormal int32 = 1
 	// 停用状态
 	StateStopped int32 = 2
-	// 暂停状态  todo: 移动到opening_state
-	StatePause int32 = 3
+	// 营业状态-正常
+	OStateNormal int32 = 1
+	// 营业状态-暂停营业
+	OStatePause int32 = 2
 )
 
 var (
@@ -58,7 +60,6 @@ var (
 	StateTextMap = map[int32]string{
 		StateNormal:  "正常",
 		StateStopped: "已关闭",
-		StatePause:   "已停用",
 	}
 
 	// 状态顺序
@@ -117,16 +118,20 @@ var (
 type (
 	IShop interface {
 		GetDomainId() int32
-
 		// 商店类型
 		Type() int32
-
 		// 获取值
 		GetValue() Shop
-
 		// 设置值
 		SetValue(*Shop) error
-
+		// 开启店铺
+		TurnOn() error
+		// 停用店铺
+		TurnOff(reason string) error
+		// 商店营业
+		Opening() error
+		// 商店暂停营业
+		Pause() error
 		// 保存
 		Save() (int32, error)
 	}
@@ -162,16 +167,22 @@ type (
 
 	// 商店
 	Shop struct {
-		Id       int32  `db:"id" pk:"yes" auto:"yes"`
-		VendorId int32  `db:"mch_id"`
-		ShopType int32  `db:"shop_type"`
-		Name     string `db:"name"`
+		//商店编号
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		//运营商编号
+		VendorId int32 `db:"vendor_id"`
+		//商店类型
+		ShopType int32 `db:"shop_type"`
+		//商店名称
+		Name string `db:"name"`
 		//商店状态
 		State int32 `db:"state"`
 		//营业状态
-		OpeningState int32 `db:"-"`
-		SortNum      int32 `db:"sort_number"`
-		CreateTime   int64 `db:"create_time"`
+		OpeningState int32 `db:"opening_state"`
+		//排序
+		SortNum int32 `db:"sort_number"`
+		//创建时间
+		CreateTime int64 `db:"create_time"`
 	}
 
 	// 商店数据传输对象

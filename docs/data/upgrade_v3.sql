@@ -756,3 +756,14 @@ ALTER TABLE `con_article`
 ALTER TABLE `con_page`
   RENAME TO  `content_page` ;
 
+/* 2017-07-04 */
+
+
+ALTER TABLE `mch_shop`
+  CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '商店编号' ,
+  CHANGE COLUMN `mch_id` `vendor_id` INT(11) NULL DEFAULT NULL COMMENT '商户编号' ,
+  CHANGE COLUMN `shop_type` `shop_type` TINYINT(1) NULL DEFAULT NULL COMMENT '商店类型' ,
+  CHANGE COLUMN `name` `name` VARCHAR(50) NULL DEFAULT NULL COMMENT '商店名称' ,
+  CHANGE COLUMN `sort_number` `sort_number` INT(11) NULL DEFAULT '0' COMMENT '排序序号' ,
+  CHANGE COLUMN `state` `state` INT(2) NULL DEFAULT NULL COMMENT '状态 1:表示正常,2:表示关闭 ' ,
+  ADD COLUMN `opening_state` INT(2) NULL COMMENT '商店营业状态,1:正常,2:暂停营业' AFTER `create_time`;

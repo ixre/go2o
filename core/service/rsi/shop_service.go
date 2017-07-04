@@ -36,7 +36,7 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 }
 
 // 获取商铺
-func (s *shopService) GetStore(vendorId int32) (*define.Shop, error) {
+func (s *shopService) GetStore(vendorId int32) (*define.Store, error) {
 	mch := s._mchRepo.GetMerchant(vendorId)
 	if mch != nil {
 		shop := mch.ShopManager().GetOnlineShop()
@@ -47,9 +47,41 @@ func (s *shopService) GetStore(vendorId int32) (*define.Shop, error) {
 	return nil, nil
 }
 
-func (s *shopService) GetStoreById(shopId int32) (*define.Shop, error) {
+func (s *shopService) GetStoreById(shopId int32) (*define.Store, error) {
 	vendorId := s._query.GetMerchantId(shopId)
 	return s.GetStore(vendorId)
+}
+
+// 打开或关闭商店
+func (s *shopService) TurnShop(shopId int32, on bool, reason string) (*define.Result_, error) {
+	var err error
+	sp := s._rep.GetShop(shopId)
+	if sp == nil {
+		err = shop.ErrNoSuchShop
+	} else {
+		if on {
+			err = sp.TurnOn()
+		} else {
+			err = sp.TurnOff(reason)
+		}
+	}
+	return parser.Result(shopId, err), nil
+}
+
+// 设置商店是否营业
+func (s *shopService) OpenShop(shopId int32, on bool, reason string) (*define.Result_, error) {
+	var err error
+	sp := s._rep.GetShop(shopId)
+	if sp == nil {
+		err = shop.ErrNoSuchShop
+	} else {
+		if on {
+			err = sp.Opening()
+		} else {
+			err = sp.Pause()
+		}
+	}
+	return parser.Result(shopId, err), nil
 }
 
 func (ss *shopService) getMerchantId(shopId int32) int32 {
@@ -86,19 +118,14 @@ func (ss *shopService) GetShopValueById(mchId, shopId int32) *shop.Shop {
 }
 
 // 保存线上商店
-func (ss *shopService) SaveOnlineShop(s *define.Shop) error {
+func (ss *shopService) SaveStore(s *define.Store) error {
 	mch := ss._mchRepo.GetMerchant(s.VendorId)
 	if mch != nil {
 		v, v1 := parser.Parse2OnlineShop(s)
-
 		mgr := mch.ShopManager()
 		sp := mgr.GetOnlineShop()
+		// 创建商店
 		if sp == nil {
-			//检测店名是否重复
-			//if err = ss.checkShopName(mgr, s.ID, s.Name); err != nil {
-			//	return err
-			//}
-			// 创建商店
 			sp = mgr.CreateShop(v)
 		}
 		err := sp.SetValue(v)

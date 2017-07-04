@@ -11,26 +11,44 @@ import (
 func getShopDto(s shop.IShop) *define.Shop {
 	b := s.GetValue()
 	dto := &define.Shop{
-		ID:       s.GetDomainId(),
-		VendorId: b.VendorId,
-		ShopType: b.ShopType,
-		State:    b.State,
-		Name:     b.Name,
-		Data:     make(map[string]string),
+		ID:           s.GetDomainId(),
+		VendorId:     b.VendorId,
+		ShopType:     b.ShopType,
+		State:        b.State,
+		OpeningState: b.OpeningState,
+		Name:         b.Name,
+		Data:         make(map[string]string),
 	}
 	return dto
 }
 
-func ParseOnlineShop(s shop.IShop) *define.Shop {
-	dto := getShopDto(s)
+func parse2Shop(s *define.Shop) *shop.Shop {
+	return &shop.Shop{
+		Id:           s.ID,
+		Name:         s.Name,
+		VendorId:     s.VendorId,
+		ShopType:     s.ShopType,
+		State:        s.State,
+		OpeningState: s.OpeningState,
+	}
+}
+
+func ParseOnlineShop(s shop.IShop) *define.Store {
+	b := s.GetValue()
 	o := s.(shop.IOnlineShop).GetShopValue()
-	dto.Data["ShopId"] = strconv.Itoa(int(o.ShopId))
-	dto.Data["ServiceTel"] = o.ServiceTel
-	dto.Data["Alias"] = o.Alias
-	dto.Data["Host"] = o.Host
-	dto.Data["Logo"] = o.Logo
-	dto.Data["ShopTitle"] = o.ShopTitle
-	dto.Data["ShopNotice"] = o.ShopNotice
+	dto := &define.Store{
+		ID:           s.GetDomainId(),
+		VendorId:     b.VendorId,
+		State:        b.State,
+		OpeningState: b.OpeningState,
+		Name:         b.Name,
+		Alias:        o.Alias,
+		StorePhone:   o.ServiceTel,
+		Host:         o.Host,
+		Logo:         o.Logo,
+		StoreTitle:   o.ShopTitle,
+		StoreNotice:  o.ShopNotice,
+	}
 	return dto
 }
 
@@ -51,24 +69,21 @@ func ParseOfflineShop(s shop.IShop, valRepo valueobject.IValueRepo) *define.Shop
 	return dto
 }
 
-func Parse2OnlineShop(s *define.Shop) (*shop.Shop, *shop.OnlineShop) {
-	sv := parse2Shop(s)
-	ov := &shop.OnlineShop{}
-	id, _ := strconv.Atoi(s.Data["ShopId"])
-	ov.ShopId = int32(id)
-	ov.Address = s.Data["Address"]
-	ov.ServiceTel = s.Data["ServiceTel"]
-	ov.Logo = s.Data["Logo"]
-	ov.ShopNotice = s.Data["ShopNotice"]
-	ov.ShopTitle = s.Data["ShopTitle"]
-	return sv, ov
-}
-func parse2Shop(s *define.Shop) *shop.Shop {
-	return &shop.Shop{
-		Id:       s.ID,
-		Name:     s.Name,
-		VendorId: s.VendorId,
-		ShopType: s.ShopType,
-		State:    s.ShopType,
+func Parse2OnlineShop(s *define.Store) (*shop.Shop, *shop.OnlineShop) {
+	sv := &shop.Shop{
+		Id:           s.ID,
+		Name:         s.Name,
+		VendorId:     s.VendorId,
+		ShopType:     shop.TypeOnlineShop,
+		State:        s.State,
+		OpeningState: s.OpeningState,
 	}
+	ov := &shop.OnlineShop{}
+	ov.ShopId = s.ID
+	ov.Address = "" //todo:???
+	ov.ServiceTel = s.StorePhone
+	ov.Logo = s.Logo
+	ov.ShopNotice = s.StoreNotice
+	ov.ShopTitle = s.StoreTitle
+	return sv, ov
 }
