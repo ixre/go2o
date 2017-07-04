@@ -20,8 +20,10 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  Shop GetStore(i32 venderId)")
-	fmt.Fprintln(os.Stderr, "  Shop GetStoreById(i32 shopId)")
+	fmt.Fprintln(os.Stderr, "  Store GetStore(i32 venderId)")
+	fmt.Fprintln(os.Stderr, "  Store GetStoreById(i32 shopId)")
+	fmt.Fprintln(os.Stderr, "  Result TurnShop(i32 shopId, bool on, string reason)")
+	fmt.Fprintln(os.Stderr, "  Result OpenShop(i32 shopId, bool opening, string reason)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -121,8 +123,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetStore requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err313 := (strconv.Atoi(flag.Arg(1)))
-		if err313 != nil {
+		tmp0, err317 := (strconv.Atoi(flag.Arg(1)))
+		if err317 != nil {
 			Usage()
 			return
 		}
@@ -136,14 +138,52 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetStoreById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err314 := (strconv.Atoi(flag.Arg(1)))
-		if err314 != nil {
+		tmp0, err318 := (strconv.Atoi(flag.Arg(1)))
+		if err318 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.GetStoreById(value0))
+		fmt.Print("\n")
+		break
+	case "TurnShop":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "TurnShop requires 3 args")
+			flag.Usage()
+		}
+		tmp0, err319 := (strconv.Atoi(flag.Arg(1)))
+		if err319 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2) == "true"
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		fmt.Print(client.TurnShop(value0, value1, value2))
+		fmt.Print("\n")
+		break
+	case "OpenShop":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "OpenShop requires 3 args")
+			flag.Usage()
+		}
+		tmp0, err322 := (strconv.Atoi(flag.Arg(1)))
+		if err322 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2) == "true"
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		fmt.Print(client.OpenShop(value0, value1, value2))
 		fmt.Print("\n")
 		break
 	case "":

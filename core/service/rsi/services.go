@@ -115,7 +115,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 
-	shopRepo := repository.NewShopRepo(db, sto)
+	shopRepo := repository.NewShopRepo(db, sto, valueRepo)
 	wholesaleRepo := repository.NewWholesaleRepo(db)
 	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
 	cartRepo := repository.NewCartRepo(db, memberRepo, mchRepo, itemRepo)
