@@ -24,7 +24,7 @@ fi
 
 # clean cache
 if [ ${action} = "clean" ];then
-    ./master-serve -conf=app.conf -cc
+    ./master-serve -conf=app.conf -clean
 fi
 
 # stop service
