@@ -767,3 +767,18 @@ ALTER TABLE `mch_shop`
   CHANGE COLUMN `sort_number` `sort_number` INT(11) NULL DEFAULT '0' COMMENT '排序序号' ,
   CHANGE COLUMN `state` `state` INT(2) NULL DEFAULT NULL COMMENT '状态 1:表示正常,2:表示关闭 ' ,
   ADD COLUMN `opening_state` INT(2) NULL COMMENT '商店营业状态,1:正常,2:暂停营业' AFTER `create_time`;
+
+
+ALTER TABLE `article_category`
+  ADD COLUMN `perm_flag` INT(2) NULL COMMENT '访问权限' AFTER `parent_id`;
+
+
+ALTER TABLE `article_list`
+  CHANGE COLUMN `publisher_id` `publisher_id` INT(11) NULL DEFAULT NULL AFTER `thumbnail`,
+  ADD COLUMN `priority` INT(2) NULL COMMENT '优先级' AFTER `location`,
+  ADD COLUMN `access_key` VARCHAR(45) NULL COMMENT '访问钥匙' AFTER `priority`;
+
+ALTER TABLE `content_page`
+  CHANGE COLUMN `title` `title` VARCHAR(100) NULL DEFAULT NULL COMMENT '标题' ,
+  ADD COLUMN `perm_flag` INT(2) NULL COMMENT '访问权限' AFTER `title`,
+  ADD COLUMN `access_key` VARCHAR(45) NULL COMMENT '访问钥匙' AFTER `perm_flag`, RENAME TO  `ex_page` ;
