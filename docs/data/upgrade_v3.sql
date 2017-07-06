@@ -782,3 +782,20 @@ ALTER TABLE `content_page`
   CHANGE COLUMN `title` `title` VARCHAR(100) NULL DEFAULT NULL COMMENT '标题' ,
   ADD COLUMN `perm_flag` INT(2) NULL COMMENT '访问权限' AFTER `title`,
   ADD COLUMN `access_key` VARCHAR(45) NULL COMMENT '访问钥匙' AFTER `perm_flag`, RENAME TO  `ex_page` ;
+
+ALTER TABLE `cat_category`
+  ADD COLUMN `priority` INT(2) NULL COMMENT '优先级' AFTER `pro_model`;
+
+ALTER TABLE `cat_category`
+  RENAME TO  `pro_category` ;
+
+UPDATE pro_category SET priority = 0 WHERE id>0 AND priority IS NULL;
+
+ALTER TABLE `ws_item`
+  CHANGE COLUMN `price` `price` DECIMAL(10,2) NULL DEFAULT 0 COMMENT '价格' ,
+  CHANGE COLUMN `price_range` `price_range` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT 0 COMMENT '价格区间' ;
+
+ALTER TABLE `ws_item`
+  CHANGE COLUMN `price` `price` DECIMAL(10,2) NOT NULL DEFAULT '0.00' COMMENT '价格' ,
+  CHANGE COLUMN `review_remark` `review_remark` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL COMMENT '审核备注' ;
+

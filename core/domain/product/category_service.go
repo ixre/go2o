@@ -95,6 +95,7 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 	val := c.value
 	if val.ID == v.ID {
 		val.Enabled = v.Enabled
+		val.Priority = v.Priority
 		val.Name = v.Name
 		val.SortNum = v.SortNum
 		val.Icon = v.Icon

@@ -176,13 +176,13 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 
 	list := []*valueobject.Goods{}
 	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
-	  INNER JOIN cat_category cat ON it.cat_id=cat.id
+	  INNER JOIN pro_category cat ON it.cat_id=cat.id
 		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=?
 		  AND it.shelve_state=? %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN cat_category cat ON it.cat_id=cat.id
+		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN pro_category cat ON it.cat_id=cat.id
 		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=? AND it.shelve_state=?
 		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
 		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
