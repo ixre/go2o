@@ -220,15 +220,16 @@ struct Category {
     1: i32 ID
     2: i32 ParentId
     3: i32 ProModel
-    4: string Name
-    5: i32 Level
-    6: string Icon
-    7: string CatUrl
-    8: i32 SortNum
-    9: i32 FloorShow
-    10: i32 Enabled
-    11: i64 CreateTime
-    12: list<Category> Children
+    4: i32 Priority
+    5: string Name
+    6: i32 Level
+    7: string Icon
+    8: string CatUrl
+    9: i32 SortNum
+    10: i32 FloorShow
+    11: i32 Enabled
+    12: i64 CreateTime
+    13: list<Category> Children
 }
 
 struct Item {

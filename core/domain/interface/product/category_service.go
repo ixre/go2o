@@ -40,20 +40,15 @@ type (
 	ICategory interface {
 		// 获取领域编号
 		GetDomainId() int32
-
 		// 获取值
 		GetValue() *Category
-
 		// 设置值
 		SetValue(*Category) error
-
 		//todo: 做成界面,同时可后台管理项
 		// 获取扩展数据
 		GetOption() domain.IOptionStore
-
 		// 保存
 		Save() (int32, error)
-
 		// 获取子栏目的编号
 		GetChildes() []int32
 	}
@@ -64,10 +59,10 @@ type (
 		ParentId int32 `db:"parent_id"`
 		// 商品规格模型
 		ProModel int32 `db:"pro_model"`
+		// 优先级
+		Priority int32 `db:"priority"`
 		//名称
 		Name string `db:"name"`
-		//层级,用于判断2个分类是否为同一级
-		Level int32 `db:"level"`
 		// 图标
 		Icon string `db:"icon"`
 		// 地址
@@ -76,6 +71,8 @@ type (
 		SortNum int32 `db:"sort_num"`
 		// 是否启用,默认为不启用
 		Enabled int32 `db:"enabled"`
+		//层级,用于判断2个分类是否为同一级
+		Level int32 `db:"level"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 楼层显示
