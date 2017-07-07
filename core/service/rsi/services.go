@@ -108,11 +108,12 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valueRepo)
 	productRepo := repository.NewProductRepo(db, proMRepo, valueRepo)
 	itemWsRepo := repository.NewItemWholesaleRepo(db)
-	itemRepo := repository.NewGoodsItemRepo(db, productRepo,
+	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
+	itemRepo := repository.NewGoodsItemRepo(db, catRepo, productRepo,
 		proMRepo, itemWsRepo, expressRepo, valueRepo)
 	tagSaleRepo := repository.NewTagSaleRepo(db, valueRepo)
 	promRepo := repository.NewPromotionRepo(db, itemRepo, memberRepo)
-	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
+
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 
 	shopRepo := repository.NewShopRepo(db, sto, valueRepo)

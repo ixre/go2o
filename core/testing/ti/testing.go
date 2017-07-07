@@ -178,13 +178,13 @@ func init() {
 	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valueRepo)
 	productRepo := repository.NewProductRepo(db, proMRepo, valueRepo)
 	itemWsRepo := repository.NewItemWholesaleRepo(db)
-	itemRepo := repository.NewGoodsItemRepo(db, productRepo,
+	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
+	itemRepo := repository.NewGoodsItemRepo(db, catRepo, productRepo,
 		proMRepo, itemWsRepo, expressRepo, valueRepo)
 	//tagSaleRepo := repository.NewTagSaleRepo(db, valRepo)
 	promRepo := repository.NewPromotionRepo(db, itemRepo, memberRepo)
-	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
-	shopRepo := repository.NewShopRepo(db, sto)
+	shopRepo := repository.NewShopRepo(db, sto, valueRepo)
 	wholesaleRepo := repository.NewWholesaleRepo(db)
 	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
 	cartRepo := repository.NewCartRepo(db, memberRepo, mchRepo, itemRepo)

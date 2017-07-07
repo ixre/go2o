@@ -35,6 +35,7 @@ type itemImpl struct {
 	wholesale     item.IWholesaleItem
 	snapshot      *item.Snapshot
 	repo          item.IGoodsItemRepo
+	catRepo       product.ICategoryRepo
 	productRepo   product.IProductRepo
 	itemWsRepo    item.IItemWholesaleRepo
 	proMRepo      promodel.IProModelRepo
@@ -49,14 +50,15 @@ type itemImpl struct {
 //todo:??? 去掉依赖promotion.IPromotionRepo
 
 func NewItem(
-	itemRepo product.IProductRepo, pro product.IProduct,
-	value *item.GoodsItem, valRepo valueobject.IValueRepo,
+	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
+	pro product.IProduct, value *item.GoodsItem, valRepo valueobject.IValueRepo,
 	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
 	v := &itemImpl{
 		pro:         pro,
 		value:       value,
+		catRepo:     catRepo,
 		productRepo: itemRepo,
 		repo:        goodsRepo,
 		proMRepo:    proMRepo,
@@ -144,8 +146,16 @@ func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 			// 创建商品时，设为已下架
 			if g.GetAggregateRootId() <= 0 {
 				g.value.ShelveState = item.ShelvesDown
-				// 分类在创建后，不允许再进行修改。
+				// 分类在创建后，不允许再进行修改。并且分类不能为虚拟分类
 				// 如果修改，则所有SKU和属性应删除。
+				c := g.catRepo.GlobCatService().GetCategory(v.CatId)
+				if c == nil {
+					return item.ErrIncorrectProductCategory
+				}
+				cv := c.GetValue()
+				if cv.VirtualCat == 1 {
+					return item.ErrIncorrectProductCategory
+				}
 				g.value.CatId = v.CatId
 			}
 			g.value.ShopId = v.ShopId
