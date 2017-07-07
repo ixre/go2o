@@ -184,10 +184,23 @@ func (t *templateIncludeToolkit) entryUrl(k string) string {
 	return v
 }
 
+// 去掉虚拟未启用的分类
+func (t *templateIncludeToolkit) fixCatTree(cat *product.Category) {
+	catArr := []*product.Category{}
+	for _, v := range cat.Children {
+		if v.Enabled == 1 {
+			catArr = append(catArr, v)
+			t.fixCatTree(v)
+		}
+	}
+	cat.Children = catArr
+}
+
 // 分类树形
 func (t *templateIncludeToolkit) CatTree(parentId int32) product.Category {
 	c := rsi.ProductService.CategoryTree(parentId)
 	if c != nil {
+		t.fixCatTree(c)
 		return *c
 	}
 	return product.Category{}

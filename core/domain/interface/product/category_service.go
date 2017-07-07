@@ -32,6 +32,13 @@ var (
 	ErrCategoryContainGoods *domain.DomainError = domain.NewDomainError(
 		"err_category_contain_goods", "分类包含商品,无法删除",
 	)
+
+	ErrIncorrectCategoryType *domain.DomainError = domain.NewDomainError(
+		"err_category_incorrect_type", "分类类型不允许修改")
+
+	ErrVirtualCatNoUrl *domain.DomainError = domain.NewDomainError(
+		"err_category_virtual_no_url", "虚拟分类必须设置跳转链接")
+
 	ErrCategoryFloorShow *domain.DomainError = domain.NewDomainError(
 		"err_category_floor_show", "非一级分类不能设置首页显示")
 )
@@ -61,18 +68,20 @@ type (
 		ProModel int32 `db:"pro_model"`
 		// 优先级
 		Priority int32 `db:"priority"`
-		//名称
+		// 名称
 		Name string `db:"name"`
+		// 虚拟分类，虚拟分类直接跳到分类URL
+		VirtualCat int32 `db:"virtual_cat"`
+		// 地址
+		CatUrl string `db:"cat_url"`
 		// 图标
 		Icon string `db:"icon"`
-		// 地址
-		CatUrl string `db:"url"`
+		//层级,用于判断2个分类是否为同一级
+		Level int32 `db:"level"`
 		// 排序序号
 		SortNum int32 `db:"sort_num"`
 		// 是否启用,默认为不启用
 		Enabled int32 `db:"enabled"`
-		//层级,用于判断2个分类是否为同一级
-		Level int32 `db:"level"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 楼层显示

@@ -19,6 +19,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -99,7 +100,23 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 		val.Name = v.Name
 		val.SortNum = v.SortNum
 		val.Icon = v.Icon
+		// 设置产品模型
 		val.ProModel = v.ProModel
+		// 设置链接类型
+		if c.GetDomainId() > 0 && val.VirtualCat != v.VirtualCat {
+			return product.ErrIncorrectCategoryType
+		}
+		// 检测虚拟分类是否设置URL
+		if val.VirtualCat == 1 {
+			u := strings.TrimSpace(v.CatUrl)
+			if u == "" {
+				return product.ErrVirtualCatNoUrl
+			} else {
+				val.CatUrl = u
+			}
+		}
+		val.VirtualCat = v.VirtualCat
+
 		val.FloorShow = v.FloorShow
 
 		if v.FloorShow == 1 && v.ParentId != 0 {
@@ -166,10 +183,15 @@ func (c *categoryImpl) Save() (int32, error) {
 	id, err := c.rep.SaveCategory(c.value)
 	if err == nil {
 		c.value.ID = id
-		if len(c.value.CatUrl) == 0 || c.parentIdChanged {
-			c.value.CatUrl = c.getAutomaticUrl(id)
-			c.parentIdChanged = false
-			return c.Save()
+		// 非虚拟分类，自动设置链接地址
+		if c.value.VirtualCat == 0 {
+			//todo: ??? await refactor
+			c.parentIdChanged = true
+			if c.parentIdChanged {
+				c.value.CatUrl = c.getAutomaticUrl(id)
+				c.parentIdChanged = false
+				return c.Save()
+			}
 		}
 	}
 	return id, err

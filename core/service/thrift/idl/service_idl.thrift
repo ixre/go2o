@@ -220,16 +220,21 @@ struct Category {
     1: i32 ID
     2: i32 ParentId
     3: i32 ProModel
+    // 分类优先级
     4: i32 Priority
+    // 分类名称
     5: string Name
-    6: i32 Level
-    7: string Icon
-    8: string CatUrl
+    // 虚拟分类
+    6: i32 VirtualCat
+    // 分类目标地址
+    7: string CatUrl
+    8: string Icon
     9: i32 SortNum
     10: i32 FloorShow
     11: i32 Enabled
-    12: i64 CreateTime
-    13: list<Category> Children
+    12: i32 Level
+    13: i64 CreateTime
+    14: list<Category> Children
 }
 
 struct Item {
