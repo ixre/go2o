@@ -45,13 +45,17 @@ func GetNoPicPath() string {
 	return _noPicUrl
 }
 
+func containProto(s string) bool {
+	return strings.HasPrefix(s, "//") ||
+		strings.HasPrefix(s, "http://") ||
+		strings.HasPrefix(s, "https://")
+}
+
 func getImageServe() string {
 	app := gof.CurrentApp
 	cfg := app.Config()
 	s := cfg.GetString(variable.ImageServer)
-	if strings.HasPrefix(s, "//:") ||
-		strings.HasPrefix(s, "http://") ||
-		strings.HasPrefix(s, "https://") {
+	if containProto(s) {
 		return s
 	}
 	return fmt.Sprintf("//www.%s%s",
@@ -84,7 +88,7 @@ func GetGoodsImageUrl(image string) string {
 		return noPicUrl
 	}
 
-	if strings.HasPrefix(image, "http://") || strings.HasPrefix(image, "https://") {
+	if containProto(image) {
 		return image
 	}
 	return imageServe + "/" + image
@@ -108,7 +112,7 @@ func GetResUrl(image string) string {
 		return noPicUrl
 	}
 
-	if strings.HasPrefix(image, "http://") || strings.HasPrefix(image, "https://") {
+	if containProto(image) {
 		return image
 	}
 	return imageServe + "/" + image

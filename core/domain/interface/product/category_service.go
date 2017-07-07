@@ -76,6 +76,8 @@ type (
 		CatUrl string `db:"cat_url"`
 		// 图标
 		Icon string `db:"icon"`
+		// 图标背景坐标
+		IconXY string `db:"icon_xy"`
 		//层级,用于判断2个分类是否为同一级
 		Level int32 `db:"level"`
 		// 排序序号

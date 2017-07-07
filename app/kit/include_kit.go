@@ -47,6 +47,7 @@ func (t *templateIncludeToolkit) getFuncMap() ht.FuncMap {
 	fm["alias"] = t.alias
 	fm["script"] = t.scriptTag
 	fm["css"] = t.cssTag
+	fm["cssXY"] = t.cssXY
 	fm["entry"] = t.entryUrl
 	fm["catTree"] = t.CatTree
 	fm["catParent"] = t.catParent
@@ -149,6 +150,16 @@ func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
 		buf.WriteString("\"></script>")
 	}
 	return template.HTML(buf.String())
+}
+
+// 将坐标(x,y)转换为CSS背景坐标
+func (t *templateIncludeToolkit) cssXY(xy string) string {
+	arr := strings.Split(xy, ",")
+	if len(arr) == 2 {
+		sa := []string{arr[0], "px ", arr[1], "px"}
+		return strings.Join(sa, "")
+	}
+	return "0px 0px"
 }
 
 // 入口URL

@@ -229,12 +229,14 @@ struct Category {
     // 分类目标地址
     7: string CatUrl
     8: string Icon
-    9: i32 SortNum
-    10: i32 FloorShow
-    11: i32 Enabled
-    12: i32 Level
-    13: i64 CreateTime
-    14: list<Category> Children
+    // 图标（雪碧图）坐标
+    9: string IconXY
+    10: i32 SortNum
+    11: i32 FloorShow
+    12: i32 Enabled
+    13: i32 Level
+    14: i64 CreateTime
+    15: list<Category> Children
 }
 
 struct Item {

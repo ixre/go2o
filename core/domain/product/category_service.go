@@ -100,6 +100,7 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 		val.Name = v.Name
 		val.SortNum = v.SortNum
 		val.Icon = v.Icon
+		val.IconXY = v.IconXY
 		// 设置产品模型
 		val.ProModel = v.ProModel
 		// 设置链接类型
@@ -126,6 +127,11 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 			c.parentIdChanged = true
 		} else {
 			c.parentIdChanged = false
+		}
+
+		//todo: 默认都更改了，每次保存都重新设置URL. 这是一个bug需要修复
+		if val.VirtualCat == 0 {
+			c.parentIdChanged = true
 		}
 
 		if c.parentIdChanged {
@@ -186,7 +192,6 @@ func (c *categoryImpl) Save() (int32, error) {
 		// 非虚拟分类，自动设置链接地址
 		if c.value.VirtualCat == 0 {
 			//todo: ??? await refactor
-			c.parentIdChanged = true
 			if c.parentIdChanged {
 				c.value.CatUrl = c.getAutomaticUrl(id)
 				c.parentIdChanged = false

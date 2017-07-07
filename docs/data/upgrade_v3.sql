@@ -811,3 +811,8 @@ ALTER TABLE `mch_shop`
   CHANGE COLUMN `shop_type` `shop_type` TINYINT(1) NOT NULL ,
   CHANGE COLUMN `state` `state` TINYINT(1) NOT NULL ,
   CHANGE COLUMN `opening_state` `opening_state` TINYINT(1) NOT NULL ;
+
+ALTER TABLE `pro_category`
+  ADD COLUMN `icon_xy` VARCHAR(45) NOT NULL AFTER `icon`;
+
+update pro_category set icon_xy='0,0' WHERE id> 0 && icon_xy IS NULL;
