@@ -799,3 +799,6 @@ ALTER TABLE `ws_item`
   CHANGE COLUMN `price` `price` DECIMAL(10,2) NOT NULL DEFAULT '0.00' COMMENT '价格' ,
   CHANGE COLUMN `review_remark` `review_remark` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL COMMENT '审核备注' ;
 
+/* 2017-07-07 */
+
+
