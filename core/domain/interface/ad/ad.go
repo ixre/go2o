@@ -25,25 +25,18 @@ type (
 	IAdManager interface {
 		// 获取广告分组
 		GetAdGroups() []IAdGroup
-
 		// 获取单个广告分组
 		GetAdGroup(id int32) IAdGroup
-
 		// 删除广告组
 		DelAdGroup(id int32) error
-
 		// 创建广告组
 		CreateAdGroup(name string) IAdGroup
-
 		// 根据编号获取广告位
 		GetAdPositionById(id int32) *AdPosition
-
 		// 根据KEY获取广告位
 		GetAdPositionByKey(key string) *AdPosition
-
 		// 根据广告位KEY获取默认广告
 		GetAdByPositionKey(key string) IAd
-
 		// 获取用户的广告管理
 		GetUserAd(adUserId int32) IUserAd
 	}
@@ -82,22 +75,16 @@ type (
 	IUserAd interface {
 		// 获取聚合根标识
 		GetAggregateRootId() int32
-
 		// 删除广告
 		DeleteAd(adId int32) error
-
 		//获取广告关联的广告位
 		GetAdPositionsByAdId(adId int32) []*AdPosition
-
 		// 根据编号获取广告
 		GetById(id int32) IAd
-
 		// 根据KEY获取广告
 		GetByPositionKey(key string) IAd
-
 		// 创建广告对象
 		CreateAd(*Ad) IAd
-
 		// 设置广告
 		SetAd(posId, adId int32) error
 	}
@@ -106,41 +93,31 @@ type (
 	IAd interface {
 		// 获取领域对象编号
 		GetDomainId() int32
-
 		// 是否为系统发布的广告
 		System() bool
-
 		// 广告类型
 		Type() int
-
 		// 广告名称
 		Name() string
-
 		// 设置值
 		SetValue(*Ad) error
-
 		// 获取值
 		GetValue() *Ad
-
 		// 保存广告
 		Save() (int32, error)
-
 		// 增加展现次数
 		AddShowTimes(times int) error
-
 		// 增加展现次数
 		AddClickTimes(times int) error
-
 		// 增加展现次数
 		AddShowDays(times int) error
-
 		// 转换为数据传输对象
 		Dto() *AdDto
 	}
 
 	// 广告分组
 	AdGroup struct {
-		Id      int32  `db:"id" auto:"yes" pk:"yes"`
+		ID      int32  `db:"id" auto:"yes" pk:"yes"`
 		Name    string `db:"name"`
 		Opened  int    `db:"opened"`
 		Enabled int    `db:"enabled"`
@@ -149,7 +126,7 @@ type (
 	// 广告位
 	AdPosition struct {
 		// 编号
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		ID int32 `db:"id" auto:"yes" pk:"yes"`
 		// 分组编号
 		GroupId int32 `db:"group_id"`
 		// 引用键

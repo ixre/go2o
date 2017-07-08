@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/service/rsi"
+	"strings"
 )
 
 func readToCategoryDropList(mchId int32) []byte {
@@ -25,9 +26,10 @@ func readToCategoryDropList(mchId int32) []byte {
 		c := v1.(*product.Category)
 		if c.ID != 0 {
 			buf.WriteString(fmt.Sprintf(
-				`<option class="opt%d" value="%d">%s</option>`,
+				`<option class="opt%d" value="%d">%s┊%s</option>`,
 				level,
 				c.ID,
+				strings.Repeat("┈", level-1),
 				c.Name,
 			))
 		}

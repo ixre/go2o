@@ -485,7 +485,7 @@ func (ms *memberService) ModifyTradePassword(memberId int64,
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 }
 
-// 登录，返回结果(Result)和会员编号(Id);
+// 登录，返回结果(Result)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
@@ -509,7 +509,7 @@ func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error)
 	return val.Id, nil
 }
 
-// 登录，返回结果(Result)和会员编号(Id);
+// 登录，返回结果(Result)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *memberService) CheckLogin(usr string, pwd string, update bool) (r *define.Result64, err error) {
 	id, err := ms.testLogin(usr, pwd)

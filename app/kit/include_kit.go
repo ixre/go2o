@@ -218,8 +218,8 @@ func (t *templateIncludeToolkit) CatTree(parentId int32) product.Category {
 }
 
 // 获取分类的品牌
-func (t *templateIncludeToolkit) CatBrand(catId int32) []*promodel.ProBrand {
-	key := fmt.Sprintf("go2o:portal:cache:cat-brands-%d", catId)
+func (t *templateIncludeToolkit) CatBrand(catId int32, num int32) []*promodel.ProBrand {
+	key := fmt.Sprintf("go2o:portal:cache:cat-brands-%d-%d", catId, num)
 	_, err := t.getRds().GetInt(key)
 	if err == nil {
 		r, err := hashSet.GetRaw(key)
@@ -228,6 +228,9 @@ func (t *templateIncludeToolkit) CatBrand(catId int32) []*promodel.ProBrand {
 		}
 	}
 	arr := rsi.ProductService.GetCatBrands(catId)
+	if num > 0 && int(num) < len(arr) {
+		arr = arr[:num]
+	}
 	hashSet.Set(key, arr)
 	t.getRds().SetExpire(key, 1, cacheSeconds)
 	return arr

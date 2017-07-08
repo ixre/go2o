@@ -45,8 +45,8 @@ func (a *adService) DelAdGroup(id int32) error {
 func (a *adService) SaveAdGroup(d *ad.AdGroup) (int32, error) {
 	m := a._rep.GetAdManager()
 	var e ad.IAdGroup
-	if d.Id > 0 {
-		e = m.GetAdGroup(d.Id)
+	if d.ID > 0 {
+		e = m.GetAdGroup(d.ID)
 	} else {
 		e = m.CreateAdGroup(d.Name)
 	}
