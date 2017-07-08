@@ -802,10 +802,10 @@ ALTER TABLE `ws_item`
 /* 2017-07-07 */
 
 update pro_category set icon='' WHERE id>0 AND icon IS NULL;
-ALTER TABLE `txmall`.`pro_category`
+ALTER TABLE `pro_category`
+  ADD COLUMN `virtual_cat` INT(2) NOT NULL DEFAULT 0 AFTER `name`,
   CHANGE COLUMN `url` `cat_url` VARCHAR(120) NOT NULL COMMENT '品牌链接地址' AFTER `virtual_cat`,
-  CHANGE COLUMN `icon` `icon` VARCHAR(150) NOT NULL COMMENT '分类图片' ,
-  ADD COLUMN `virtual_cat` INT(2) NOT NULL DEFAULT 0 AFTER `name`;
+  CHANGE COLUMN `icon` `icon` VARCHAR(150) NOT NULL COMMENT '分类图片' ;
 
 ALTER TABLE `mch_shop`
   CHANGE COLUMN `shop_type` `shop_type` TINYINT(1) NOT NULL ,

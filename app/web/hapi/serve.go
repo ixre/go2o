@@ -30,11 +30,13 @@ func registerRoutes(s *echox.Echo) {
 	mc := &mainC{app}
 	us := &shared.UserSync{}
 	sc := &serviceC{app}
+	pc := &presentC{}
 	s.GET("/api_info", mc.Info)
 	s.GET("/test", mc.Test)
 	s.GET("/request_login", mc.RequestLogin)
 	s.GET("/r/uc", mc.RedirectUc)
-	s.GET("/user/sync_m.p", us.Sync)   //同步登录登出
+	s.GET("/user/sync_m.p", us.Sync) //同步登录登出
+	s.GET("/gad_api", pc.AdApi)
 	s.AutoGET("/service", sc)          //服务
 	s.AutoGET("/!s", sc)               //服务
 	s.AutoGET("/!sp", &shoppingC{app}) //购物

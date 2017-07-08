@@ -70,7 +70,7 @@ func (c *categoryRepo) CheckGoodsContain(mchId, id int32) bool {
 	num := 0
 	//清理项
 	c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id IN
-		(SELECT Id FROM pro_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
+		(SELECT ID FROM pro_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
 	return num > 0
 }
 
