@@ -853,7 +853,11 @@ func (ms *memberService) ChargeAccount(memberId int64, account int32,
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
+		if account == member.AccountIntegral {
+			err = acc.AddIntegral(int(kind), outerNo, int64(amount), title)
+		} else {
+			err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
+		}
 	}
 	return parser.Result(0, err), nil
 }
