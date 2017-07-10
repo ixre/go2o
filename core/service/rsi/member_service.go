@@ -268,9 +268,9 @@ func (ms *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
-func (ms *memberService) GetPresentLog(memberId int64, logId int32) *member.PresentLog {
+func (ms *memberService) GetWalletLog(memberId int64, logId int32) *member.WalletLog {
 	m := ms._repo.GetMember(memberId)
-	return m.GetAccount().GetPresentLog(logId)
+	return m.GetAccount().GetWalletLog(logId)
 }
 
 func (ms *memberService) getMember(memberId int64) (

@@ -147,7 +147,7 @@ type (
 		SaveBalanceInfo(*BalanceInfo) (int32, error)
 
 		// 获取钱包账户日志
-		GetPresentLog(id int32) *PresentLog
+		GetWalletLog(id int32) *WalletLog
 
 		// 充值,客服操作时,需提供操作人(relateUser)
 		//ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int64) error
@@ -349,8 +349,8 @@ type (
 	}
 
 	// 钱包账户日志
-	PresentLog struct {
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+	WalletLog struct {
+		ID int64 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 外部单号

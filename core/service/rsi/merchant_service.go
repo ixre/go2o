@@ -530,7 +530,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //	}
 //	m._mchRepo.SaveMachBlanceLog(o)
 //
-//	v := &member.PresentLog{
+//	v := &member.WalletLog{
 //		MemberId:     memberId,
 //		BusinessKind: merchant.KindＭachTakeOutToBankCard,
 //		OuterNo:      "00000000",
@@ -558,7 +558,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //		return member.ErrIncorrectAmount
 //	}
 //	unix := time.Now().Unix()
-//	v := &member.PresentLog{
+//	v := &member.WalletLog{
 //		MemberId:     memberId,
 //		BusinessKind: kind,
 //		Title:        title,
@@ -599,7 +599,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //	if m == nil {
 //		return member.ErrNoSuchMember
 //	}
-//	v := a._memberRepo.GetPresentLog(infoId)
+//	v := a._memberRepo.GetWalletLog(infoId)
 //	if v.BusinessKind != merchant.KindＭachTakeOutToBankCard {
 //		return errors.New("非商户提现")
 //	}

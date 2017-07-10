@@ -89,14 +89,14 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
 		order = "  ORDER BY " + order
 	}
 	s.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mch_shop sp INNER JOIN mch_online_shop ol
-    ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.mch_id
+    ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
     WHERE sp.state=2 AND mch.enabled = 1 %s`, where), &total)
 
 	e := []*dto.ListOnlineShop{}
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT sp.id,sp.name,alias,host,ol.logo,sp.create_time
         FROM mch_shop sp INNER JOIN mch_online_shop ol
-        ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.mch_id
+        ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
         WHERE sp.state=2 AND mch.enabled = 1 %s %s LIMIT ?,?`,
 			where, order)
 		s.GetOrm().SelectByQuery(&e, sql, begin, (end - begin))

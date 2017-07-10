@@ -139,7 +139,7 @@ func (a *afterSalesOrderImpl) Cancel() error {
 		return afterSales.ErrAfterSalesOrderCompleted
 	}
 	if a.value.State == afterSales.StatCancelled {
-		return afterSales.ErrHasCancelled
+		return afterSales.ErrHasCanceled
 	}
 	a.value.State = afterSales.StatCancelled
 	return a.saveAfterSalesOrder()
