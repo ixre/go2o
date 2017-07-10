@@ -38,6 +38,9 @@ var (
 	ErrNoSuchItem *domain.DomainError = domain.NewDomainError(
 		"no_such_goods", "商品不存在")
 
+	ErrIncorrectProductCategory *domain.DomainError = domain.NewDomainError(
+		"err_item_incorrect_product_category", "非法的商品分类")
+
 	ErrItemWholesaleOff *domain.DomainError = domain.NewDomainError(
 		"err_item_wholesale_off", "商品已下架或待审核!")
 

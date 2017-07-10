@@ -13,6 +13,9 @@ import (
 )
 
 var (
+	ErrIncorrectInfo *domain.DomainError = domain.NewDomainError(
+		"err_incorrect_info", "非法数据")
+
 	ErrRegOff *domain.DomainError = domain.NewDomainError(
 		"err_reg_off", "CODE:1010,系统暂停注册")
 

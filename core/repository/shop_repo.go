@@ -10,6 +10,7 @@
 package repository
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/jsix/gof/db"
@@ -17,20 +18,39 @@ import (
 	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/valueobject"
+	shopImpl "go2o/core/domain/merchant/shop"
+	"log"
 )
 
 var _ shop.IShopRepo = new(shopRepo)
 
 type shopRepo struct {
 	db.Connector
-	storage storage.Interface
+	valueRepo valueobject.IValueRepo
+	storage   storage.Interface
 }
 
-func NewShopRepo(c db.Connector, storage storage.Interface) shop.IShopRepo {
+func (s *shopRepo) ShopCount(vendorId int32, shopType int32) int {
+	num := 0
+	s.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_shop WHERE
+	    vendor_id=? AND shop_type = ?`, &num, vendorId, shopType)
+	return num
+}
+
+func NewShopRepo(c db.Connector, storage storage.Interface,
+	valueRepo valueobject.IValueRepo) shop.IShopRepo {
 	return &shopRepo{
 		Connector: c,
+		valueRepo: valueRepo,
 		storage:   storage,
 	}
+}
+
+// 获取商店
+func (s *shopRepo) GetShop(shopId int32) shop.IShop {
+	v := s.GetValueShop(shopId)
+	return shopImpl.NewShop(v, s, s.valueRepo)
 }
 
 // 商店别名是否存在
@@ -99,19 +119,19 @@ func (s *shopRepo) GetApiInfo(mchId int32) *merchant.ApiInfo {
 func (s *shopRepo) SaveShop(v *shop.Shop) (int32, error) {
 	id, err := orm.I32(orm.Save(s.GetOrm(), v, int(v.Id)))
 	if err == nil {
-		s.delCache(v.MerchantId)
+		s.delCache(v.VendorId)
 	}
 	return id, err
 }
 
-func (s *shopRepo) GetValueShop(mchId, shopId int32) *shop.Shop {
-	var v *shop.Shop = new(shop.Shop)
+func (s *shopRepo) GetValueShop(shopId int32) *shop.Shop {
+	v := &shop.Shop{}
 	err := s.Connector.GetOrm().Get(shopId, v)
-	if err == nil &&
-		v.MerchantId == mchId {
+	if err == nil {
 		return v
-	} else {
-		handleError(err)
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchShop")
 	}
 	return nil
 }
@@ -133,7 +153,7 @@ func (s *shopRepo) GetShopsOfMerchant(mchId int32) []shop.Shop {
 	}
 	if err != nil {
 		err = s.Connector.GetOrm().SelectByQuery(&shops,
-			"SELECT * FROM mch_shop WHERE mch_id=?", mchId)
+			"SELECT * FROM mch_shop WHERE vendor_id=?", mchId)
 		if err != nil {
 			handleError(err)
 			return nil
@@ -147,7 +167,7 @@ func (s *shopRepo) GetShopsOfMerchant(mchId int32) []shop.Shop {
 
 func (s *shopRepo) deleteShop(mchId, shopId int32) error {
 	_, err := s.Connector.GetOrm().Delete(shop.Shop{},
-		"mch_id=? AND id=?", mchId, shopId)
+		"vendor_id=? AND id=?", mchId, shopId)
 	s.delCache(mchId)
 	return err
 }

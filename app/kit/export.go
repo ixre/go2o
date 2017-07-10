@@ -13,7 +13,7 @@ var DefaultExportFormatter report.IExportFormatter = &exportFormatter{}
 type exportFormatter struct {
 }
 
-func (e *exportFormatter) Format(field, name string, data interface{}) interface{} {
+func (e *exportFormatter) Format(field, name string, rowNum int, data interface{}) interface{} {
 
 	// 格式化时间
 	if strings.Index(field, "_time") != -1 || strings.Index(name, "时间") != -1 {

@@ -47,6 +47,7 @@ func (t *templateIncludeToolkit) getFuncMap() ht.FuncMap {
 	fm["alias"] = t.alias
 	fm["script"] = t.scriptTag
 	fm["css"] = t.cssTag
+	fm["cssXY"] = t.cssXY
 	fm["entry"] = t.entryUrl
 	fm["catTree"] = t.CatTree
 	fm["catParent"] = t.catParent
@@ -110,7 +111,7 @@ func (t *templateIncludeToolkit) alias(s string) string {
 
 // CSS标签
 func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
-	registry := RPC.Registry(variable.DStaticServer, variable.DUrlHash)
+	registry := RPC.RegistryMap(variable.DStaticServer, variable.DUrlHash)
 	staticServe := registry[variable.DStaticServer]
 	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
@@ -132,7 +133,7 @@ func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
 
 // 脚本标签
 func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
-	registry := RPC.Registry(variable.DStaticServer, variable.DUrlHash)
+	registry := RPC.RegistryMap(variable.DStaticServer, variable.DUrlHash)
 	staticServe := registry[variable.DStaticServer]
 	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
@@ -149,6 +150,16 @@ func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
 		buf.WriteString("\"></script>")
 	}
 	return template.HTML(buf.String())
+}
+
+// 将坐标(x,y)转换为CSS背景坐标
+func (t *templateIncludeToolkit) cssXY(xy string) string {
+	arr := strings.Split(xy, ",")
+	if len(arr) == 2 {
+		sa := []string{arr[0], "px ", arr[1], "px"}
+		return strings.Join(sa, "")
+	}
+	return "0px 0px"
 }
 
 // 入口URL
@@ -178,24 +189,37 @@ func (t *templateIncludeToolkit) entryUrl(k string) string {
 	if t.entryUrlMap == nil {
 		t.entryUrlMap = make(map[string]string)
 	}
-	v := RPC.Registry(key)[key]
+	v := RPC.RegistryMap(key)[key]
 	t.entryUrlMap[key] = v
 	t.rwMut.Unlock()
 	return v
+}
+
+// 去掉虚拟未启用的分类
+func (t *templateIncludeToolkit) fixCatTree(cat *product.Category) {
+	catArr := []*product.Category{}
+	for _, v := range cat.Children {
+		if v.Enabled == 1 {
+			catArr = append(catArr, v)
+			t.fixCatTree(v)
+		}
+	}
+	cat.Children = catArr
 }
 
 // 分类树形
 func (t *templateIncludeToolkit) CatTree(parentId int32) product.Category {
 	c := rsi.ProductService.CategoryTree(parentId)
 	if c != nil {
+		t.fixCatTree(c)
 		return *c
 	}
 	return product.Category{}
 }
 
 // 获取分类的品牌
-func (t *templateIncludeToolkit) CatBrand(catId int32) []*promodel.ProBrand {
-	key := fmt.Sprintf("go2o:portal:cache:cat-brands-%d", catId)
+func (t *templateIncludeToolkit) CatBrand(catId int32, num int32) []*promodel.ProBrand {
+	key := fmt.Sprintf("go2o:portal:cache:cat-brands-%d-%d", catId, num)
 	_, err := t.getRds().GetInt(key)
 	if err == nil {
 		r, err := hashSet.GetRaw(key)
@@ -204,6 +228,9 @@ func (t *templateIncludeToolkit) CatBrand(catId int32) []*promodel.ProBrand {
 		}
 	}
 	arr := rsi.ProductService.GetCatBrands(catId)
+	if num > 0 && int(num) < len(arr) {
+		arr = arr[:num]
+	}
 	hashSet.Set(key, arr)
 	t.getRds().SetExpire(key, 1, cacheSeconds)
 	return arr
@@ -246,7 +273,7 @@ func (t *templateIncludeToolkit) pageTitle(tit string) string {
 		cli, err := thrift.FoundationServeClient()
 		if err == nil {
 			defer cli.Transport.Close()
-			r, _ := cli.GetRegistryV1([]string{"PlatformName"})
+			r, _ := cli.GetRegistryMapV1([]string{"PlatformName"})
 			_TitleSuffix = r["PlatformName"]
 		}
 	}
@@ -437,7 +464,7 @@ func (t *templateIncludeToolkit) registry(keys ...string) map[string]string {
 	cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
-		r, _ := cli.GetRegistryV1(keys)
+		r, _ := cli.GetRegistryMapV1(keys)
 		return r
 	}
 	return map[string]string{}

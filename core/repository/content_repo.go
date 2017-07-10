@@ -87,7 +87,7 @@ func (c *contentRepo) CategoryExists(alias string, id int32) bool {
 
 // 保存栏目
 func (c *contentRepo) SaveCategory(v *content.ArticleCategory) (int32, error) {
-	return orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(c.GetOrm(), v, int(v.ID)))
 }
 
 // 删除栏目

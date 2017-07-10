@@ -59,8 +59,13 @@ func (s *foundationService) GetValuesByPrefix(prefix string) (r map[string]strin
 }
 
 // 获取键值存储数据
-func (f *foundationService) GetRegistryV1(keys []string) (map[string]string, error) {
+func (f *foundationService) GetRegistryV1(keys []string) ([]string, error) {
 	return f._rep.GetsRegistry(keys), nil
+}
+
+// 获取键值存储数据
+func (f *foundationService) GetRegistryMapV1(keys []string) (map[string]string, error) {
+	return f._rep.GetsRegistryMap(keys), nil
 }
 
 // 保存键值存储数据

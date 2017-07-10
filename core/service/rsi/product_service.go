@@ -183,12 +183,12 @@ func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, 
 func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	rootNode := &tree.TreeNode{
-		Text:   "根节点",
-		Value:  "",
-		Url:    "",
-		Icon:   "",
-		Open:   true,
-		Childs: nil}
+		Text:     "根节点",
+		Value:    "",
+		Url:      "",
+		Icon:     "",
+		Open:     true,
+		Children: nil}
 	p.walkCategoryTree(rootNode, 0, cats)
 	return rootNode
 }
@@ -208,18 +208,18 @@ func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
 }
 
 func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, categories []product.ICategory) {
-	node.Childs = []*tree.TreeNode{}
+	node.Children = []*tree.TreeNode{}
 	for _, v := range categories {
 		cate := v.GetValue()
 		if cate.ParentId == parentId {
 			cNode := &tree.TreeNode{
-				Text:   cate.Name,
-				Value:  strconv.Itoa(int(cate.ID)),
-				Url:    "",
-				Icon:   "",
-				Open:   true,
-				Childs: nil}
-			node.Childs = append(node.Childs, cNode)
+				Text:     cate.Name,
+				Value:    strconv.Itoa(int(cate.ID)),
+				Url:      "",
+				Icon:     "",
+				Open:     false,
+				Children: nil}
+			node.Children = append(node.Children, cNode)
 			p.walkCategoryTree(cNode, cate.ID, categories)
 		}
 	}
@@ -281,7 +281,7 @@ func (p *productService) GetChildCategories(mchId, parentId int32) []*define.Cat
 
 //
 //func CopyCategory(src *product.Category, dst *dto.Category) {
-//	dst.Id = src.ID
+//	dst.ID = src.ID
 //	dst.Name = src.Name
 //	dst.Level = src.Level
 //	dst.Icon = src.Icon

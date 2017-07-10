@@ -54,7 +54,7 @@ func registerTypes() {
 	gob.Register(&merchant.ApiInfo{})
 	gob.Register(&shop.OnlineShop{})
 	gob.Register(&shop.OfflineShop{})
-	gob.Register(&shop.ShopDto{})
+	gob.Register(&shop.ComplexShop{})
 	gob.Register(&member.Account{})
 	gob.Register(&payment.PaymentOrder{})
 	gob.Register(&member.Relation{})
@@ -97,7 +97,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(mss.Replay{}, "msg_replay")
 
 	/* 内容 */
-	orm.Mapping(content.Page{}, "content_page")
+	orm.Mapping(content.Page{}, "ex_page")
 	orm.Mapping(content.Article{}, "article_list")
 	orm.Mapping(content.ArticleCategory{}, "article_category")
 
@@ -107,7 +107,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.Profile{}, "mm_profile")
 	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
 	orm.Mapping(member.BalanceLog{}, "mm_balance_log")
-	orm.Mapping(member.PresentLog{}, "mm_wallet_log")
+	orm.Mapping(member.WalletLog{}, "mm_wallet_log")
 	orm.Mapping(member.Account{}, "mm_account")
 	orm.Mapping(member.Address{}, "mm_deliver_addr")
 	orm.Mapping(member.Relation{}, "mm_relation")
@@ -153,7 +153,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(product.Product{}, "pro_product")
 	orm.Mapping(item.GoodsItem{}, "item_info")
 	orm.Mapping(item.Sku{}, "item_sku")
-	orm.Mapping(product.Category{}, "cat_category")
+	orm.Mapping(product.Category{}, "pro_category")
 	orm.Mapping(promodel.ProModel{}, "pro_model")
 	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")
 	orm.Mapping(promodel.ProBrand{}, "pro_brand")

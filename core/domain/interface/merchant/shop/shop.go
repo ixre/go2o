@@ -18,8 +18,8 @@ var (
 	ErrNoSuchShop *domain.DomainError = domain.NewDomainError(
 		"err_shop_no_such_shop", "未指定店铺")
 
-	ErrNotSetAlias *domain.DomainError = domain.NewDomainError(
-		"err_not_set_alias", "请设置商城域名")
+	ErrShopNoLogo *domain.DomainError = domain.NewDomainError(
+		"err_shop_no_logo", "请上传店铺Logo")
 
 	ErrShopAliasFormat *domain.DomainError = domain.NewDomainError(
 		"err_shop_alias_format", "域名前缀为3-11位的字母数字的组合")
@@ -36,22 +36,20 @@ var (
 
 const (
 	// 线上商店
-	TypeOnlineShop = 1
+	TypeOnlineShop int32 = 1
 	// 线下实体店
-	TypeOfflineShop = 2
+	TypeOfflineShop int32 = 2
 )
 
 const (
-	// 停用状态
-	StateStopped = 0
-	// 待审核状态
-	StateAwaitingReview = 1
 	// 正常状态
-	StateNormal = 2
-	// 暂停状态
-	StateSuspend = 3
-	// 暂停状态
-	StatePause = 4
+	StateNormal int32 = 1
+	// 停用状态
+	StateStopped int32 = 2
+	// 营业状态-正常
+	OStateNormal int32 = 1
+	// 营业状态-暂停营业
+	OStatePause int32 = 2
 )
 
 var (
@@ -59,53 +57,38 @@ var (
 		"err_same_name_shop_exists", "商店已经存在")
 
 	// 商店状态字典
-	StateTextMap = map[int]string{
-		StateStopped:        "已停用",
-		StateAwaitingReview: "待审核",
-		StateNormal:         "正常",
-		StateSuspend:        "系统挂起",
-		StatePause:          "商户暂停",
+	StateTextMap = map[int32]string{
+		StateNormal:  "正常",
+		StateStopped: "已关闭",
 	}
 
 	// 状态顺序
-	StateIndex = []int{
-		StateStopped,
-		StateAwaitingReview,
+	StateIndex = []int32{
 		StateNormal,
-		StateSuspend,
-		StatePause,
+		StateStopped,
 	}
 
 	// 商店类型字电
-	TypeTextMap = map[int]string{
+	TypeTextMap = map[int32]string{
 		TypeOnlineShop:  "商店",
 		TypeOfflineShop: "门店",
 	}
 
-	// 类型顺序
-	TypeIndex = []int{
-		TypeOnlineShop,
-		TypeOfflineShop,
-	}
-
 	StateTextStrMap = map[string]string{
-		strconv.Itoa(StateStopped):        StateTextMap[StateStopped],
-		strconv.Itoa(StateAwaitingReview): StateTextMap[StateAwaitingReview],
-		strconv.Itoa(StateNormal):         StateTextMap[StateNormal],
-		strconv.Itoa(StateSuspend):        StateTextMap[StateSuspend],
-		strconv.Itoa(StatePause):          StateTextMap[StatePause],
+		strconv.Itoa(int(StateNormal)):  StateTextMap[StateNormal],
+		strconv.Itoa(int(StateStopped)): StateTextMap[StateStopped],
 	}
 
 	TypeTextStrMap = map[string]string{
-		strconv.Itoa(TypeOnlineShop):  TypeTextMap[TypeOnlineShop],
-		strconv.Itoa(TypeOfflineShop): TypeTextMap[TypeOfflineShop],
+		strconv.Itoa(int(TypeOnlineShop)):  TypeTextMap[TypeOnlineShop],
+		strconv.Itoa(int(TypeOfflineShop)): TypeTextMap[TypeOfflineShop],
 	}
 
 	DefaultOnlineShop = OnlineShop{
 		// 通讯地址
 		Address: "",
 		// 联系电话
-		Tel: "",
+		ServiceTel: "",
 		//别名,用于在商店域名
 		Alias: "",
 		//域名
@@ -113,11 +96,9 @@ var (
 		//前台Logo
 		Logo: "res/shop_logo.png",
 		//首页标题
-		IndexTitle: "",
-		//子页面标题
-		SubTitle: "",
-		// Notice
-		Notice: "",
+		ShopTitle: "",
+		// ShopNotice
+		ShopNotice: "",
 	}
 
 	DefaultOfflineShop = OfflineShop{
@@ -130,28 +111,29 @@ var (
 		// 纬度
 		Lat: 0,
 		// 配送最大半径(公里)
-		DeliverRadius: 0,
+		CoverRadius: 0,
 	}
 )
 
 type (
 	IShop interface {
 		GetDomainId() int32
-
 		// 商店类型
-		Type() int
-
+		Type() int32
 		// 获取值
 		GetValue() Shop
-
 		// 设置值
 		SetValue(*Shop) error
-
+		// 开启店铺
+		TurnOn() error
+		// 停用店铺
+		TurnOff(reason string) error
+		// 商店营业
+		Opening() error
+		// 商店暂停营业
+		Pause() error
 		// 保存
 		Save() (int32, error)
-
-		// 数据
-		Data() *ShopDto
 	}
 
 	// 线上商城
@@ -185,23 +167,31 @@ type (
 
 	// 商店
 	Shop struct {
-		Id         int32  `db:"id" pk:"yes" auto:"yes"`
-		MerchantId int32  `db:"mch_id"`
-		ShopType   int    `db:"shop_type"`
-		Name       string `db:"name"`
-		State      int    `db:"state"`
-		SortNum    int    `db:"sort_number"`
-		CreateTime int64  `db:"create_time"`
+		//商店编号
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		//运营商编号
+		VendorId int32 `db:"vendor_id"`
+		//商店类型
+		ShopType int32 `db:"shop_type"`
+		//商店名称
+		Name string `db:"name"`
+		//商店状态
+		State int32 `db:"state"`
+		//营业状态
+		OpeningState int32 `db:"opening_state"`
+		//排序
+		SortNum int32 `db:"sort_number"`
+		//创建时间
+		CreateTime int64 `db:"create_time"`
 	}
 
 	// 商店数据传输对象
-	ShopDto struct {
-		Id         int32
-		MerchantId int32
-		ShopType   int
-		Name       string
-		State      int
-		CreateTime int64
+	ComplexShop struct {
+		ID       int32
+		VendorId int32
+		ShopType int32
+		Name     string
+		State    int32
 		// 线上/线下商店的数据
 		Data interface{}
 	}
@@ -213,55 +203,39 @@ type (
 		// 通讯地址
 		Address string `db:"addr"`
 		// 联系电话
-		Tel string `db:"tel"`
-
+		ServiceTel string `db:"tel"`
 		//别名,用于在商店域名
 		Alias string `db:"alias"`
-
 		//域名
 		Host string `db:"host"`
-
 		//前台Logo
 		Logo string `db:"logo"`
-
 		//首页标题
-		IndexTitle string `db:"index_tit"`
-
-		//子页面标题
-		SubTitle string `db:"sub_tit"`
-
-		// Notice
-		Notice string `db:"notice_html"`
+		ShopTitle string `db:"index_tit"`
+		// ShopNotice
+		ShopNotice string `db:"notice_html"`
 	}
 
 	// 门店
 	OfflineShop struct {
 		// 商店编号
 		ShopId int32 `db:"shop_id" pk:"yes" auto:"no"`
-
 		// 联系电话
 		Tel string `db:"tel"`
-
 		// 省
-		Province int `db:"province"`
-
+		Province int32 `db:"province"`
 		// 市
-		City int `db:"city"`
-
+		City int32 `db:"city"`
 		// 区
-		District int `db:"district"`
-
+		District int32 `db:"district"`
 		// 通讯地址
 		Address string `db:"addr"`
-
 		// 经度
 		Lng float32 `db:"lng"`
-
 		// 纬度
 		Lat float32 `db:"lat"`
-
 		// 配送最大半径(公里)
-		DeliverRadius int `db:"deliver_radius"`
+		CoverRadius int `db:"deliver_radius"`
 	}
 )
 
