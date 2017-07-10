@@ -15,6 +15,8 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
 )
 
@@ -33,6 +35,55 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 	}
 }
 
+// 获取商铺
+func (s *shopService) GetStore(vendorId int32) (*define.Store, error) {
+	mch := s._mchRepo.GetMerchant(vendorId)
+	if mch != nil {
+		shop := mch.ShopManager().GetOnlineShop()
+		if shop != nil {
+			return parser.ParseOnlineShop(shop), nil
+		}
+	}
+	return nil, nil
+}
+
+func (s *shopService) GetStoreById(shopId int32) (*define.Store, error) {
+	vendorId := s._query.GetMerchantId(shopId)
+	return s.GetStore(vendorId)
+}
+
+// 打开或关闭商店
+func (s *shopService) TurnShop(shopId int32, on bool, reason string) (*define.Result_, error) {
+	var err error
+	sp := s._rep.GetShop(shopId)
+	if sp == nil {
+		err = shop.ErrNoSuchShop
+	} else {
+		if on {
+			err = sp.TurnOn()
+		} else {
+			err = sp.TurnOff(reason)
+		}
+	}
+	return parser.Result(shopId, err), nil
+}
+
+// 设置商店是否营业
+func (s *shopService) OpenShop(shopId int32, on bool, reason string) (*define.Result_, error) {
+	var err error
+	sp := s._rep.GetShop(shopId)
+	if sp == nil {
+		err = shop.ErrNoSuchShop
+	} else {
+		if on {
+			err = sp.Opening()
+		} else {
+			err = sp.Pause()
+		}
+	}
+	return parser.Result(shopId, err), nil
+}
+
 func (ss *shopService) getMerchantId(shopId int32) int32 {
 	return ss._query.GetMerchantId(shopId)
 }
@@ -41,29 +92,18 @@ func (ss *shopService) GetMerchantId(shopId int32) int32 {
 	return ss._query.GetMerchantId(shopId)
 }
 
-// 获取商铺
-func (s *shopService) GetOnlineShop(mchId int32) *shop.ShopDto {
-	mch := s._mchRepo.GetMerchant(mchId)
-	if mch != nil {
-		shop := mch.ShopManager().GetOnlineShop()
-		if shop != nil {
-			return shop.Data()
-		}
-	}
-	return nil
-}
-
 // 根据主机查询商户编号
 func (ss *shopService) GetShopIdByHost(host string) (mchId int32, shopId int32) {
 	return ss._query.QueryShopIdByHost(host)
 }
 
 // 获取商店的数据
-func (ss *shopService) GetShopData(mchId, shopId int32) *shop.ShopDto {
+func (ss *shopService) GetShopData(mchId, shopId int32) *shop.ComplexShop {
 	mch := ss._mchRepo.GetMerchant(mchId)
 	sp := mch.ShopManager().GetShop(shopId)
 	if sp != nil {
-		return sp.Data()
+		// return sp.Complex()
+		return nil
 	}
 	return nil
 }
@@ -78,26 +118,20 @@ func (ss *shopService) GetShopValueById(mchId, shopId int32) *shop.Shop {
 }
 
 // 保存线上商店
-func (ss *shopService) SaveOnlineShop(s *shop.Shop, v *shop.OnlineShop) error {
-	mch := ss._mchRepo.GetMerchant(s.MerchantId)
+func (ss *shopService) SaveStore(s *define.Store) error {
+	mch := ss._mchRepo.GetMerchant(s.VendorId)
 	if mch != nil {
+		v, v1 := parser.Parse2OnlineShop(s)
 		mgr := mch.ShopManager()
-		var sp shop.IShop
-		if s.Id > 0 {
-			// 保存商店
-			sp = mgr.GetShop(s.Id)
-		} else {
-			//检测店名是否重复
-			//if err = ss.checkShopName(mgr, s.Id, s.Name); err != nil {
-			//	return err
-			//}
-			// 创建商店
-			sp = mgr.CreateShop(s)
+		sp := mgr.GetOnlineShop()
+		// 创建商店
+		if sp == nil {
+			sp = mgr.CreateShop(v)
 		}
-		err := sp.SetValue(s)
+		err := sp.SetValue(v)
 		if err == nil {
 			ofs := sp.(shop.IOnlineShop)
-			err = ofs.SetShopValue(v)
+			err = ofs.SetShopValue(v1)
 			if err == nil {
 				_, err = sp.Save()
 			}
@@ -109,7 +143,7 @@ func (ss *shopService) SaveOnlineShop(s *shop.Shop, v *shop.OnlineShop) error {
 
 // 保存门店
 func (ss *shopService) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) error {
-	mch := ss._mchRepo.GetMerchant(s.MerchantId)
+	mch := ss._mchRepo.GetMerchant(s.VendorId)
 	if mch != nil {
 		mgr := mch.ShopManager()
 		var sp shop.IShop
@@ -176,8 +210,8 @@ func (ss *shopService) GetOnlineShopConf(shopId int32) *shop.OnlineShop {
 }
 
 // 获取商城
-func (m *shopService) GetOnlineShops(vendorId int32) []*shop.Shop {
-	mch := m._mchRepo.GetMerchant(vendorId)
+func (ss *shopService) GetOnlineShops(vendorId int32) []*shop.Shop {
+	mch := ss._mchRepo.GetMerchant(vendorId)
 	shops := mch.ShopManager().GetShops()
 	sv := []*shop.Shop{}
 	for _, v := range shops {

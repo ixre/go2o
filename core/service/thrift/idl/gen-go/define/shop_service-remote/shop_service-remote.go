@@ -20,9 +20,10 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  Sku GetSku(i32 itemId, i32 skuId)")
-	fmt.Fprintln(os.Stderr, "  string GetItemSkuJson(i32 itemId)")
-	fmt.Fprintln(os.Stderr, "  string GetItemDetailData(i32 itemId, i32 iType)")
+	fmt.Fprintln(os.Stderr, "  Store GetStore(i32 venderId)")
+	fmt.Fprintln(os.Stderr, "  Store GetStoreById(i32 shopId)")
+	fmt.Fprintln(os.Stderr, "  Result TurnShop(i32 shopId, bool on, string reason)")
+	fmt.Fprintln(os.Stderr, "  Result OpenShop(i32 shopId, bool opening, string reason)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -110,70 +111,79 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := define.NewItemServiceClientFactory(trans, protocolFactory)
+	client := define.NewShopServiceClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "GetSku":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetSku requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err285 := (strconv.Atoi(flag.Arg(1)))
-		if err285 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		tmp1, err286 := (strconv.Atoi(flag.Arg(2)))
-		if err286 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.GetSku(value0, value1))
-		fmt.Print("\n")
-		break
-	case "GetItemSkuJson":
+	case "GetStore":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetItemSkuJson requires 1 args")
+			fmt.Fprintln(os.Stderr, "GetStore requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err287 := (strconv.Atoi(flag.Arg(1)))
-		if err287 != nil {
+		tmp0, err317 := (strconv.Atoi(flag.Arg(1)))
+		if err317 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		fmt.Print(client.GetItemSkuJson(value0))
+		fmt.Print(client.GetStore(value0))
 		fmt.Print("\n")
 		break
-	case "GetItemDetailData":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetItemDetailData requires 2 args")
+	case "GetStoreById":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetStoreById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err288 := (strconv.Atoi(flag.Arg(1)))
-		if err288 != nil {
+		tmp0, err318 := (strconv.Atoi(flag.Arg(1)))
+		if err318 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err289 := (strconv.Atoi(flag.Arg(2)))
-		if err289 != nil {
+		fmt.Print(client.GetStoreById(value0))
+		fmt.Print("\n")
+		break
+	case "TurnShop":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "TurnShop requires 3 args")
+			flag.Usage()
+		}
+		tmp0, err319 := (strconv.Atoi(flag.Arg(1)))
+		if err319 != nil {
 			Usage()
 			return
 		}
-		argvalue1 := int32(tmp1)
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2) == "true"
 		value1 := argvalue1
-		fmt.Print(client.GetItemDetailData(value0, value1))
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		fmt.Print(client.TurnShop(value0, value1, value2))
+		fmt.Print("\n")
+		break
+	case "OpenShop":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "OpenShop requires 3 args")
+			flag.Usage()
+		}
+		tmp0, err322 := (strconv.Atoi(flag.Arg(1)))
+		if err322 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2) == "true"
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		fmt.Print(client.OpenShop(value0, value1, value2))
 		fmt.Print("\n")
 		break
 	case "":

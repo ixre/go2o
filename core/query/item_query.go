@@ -258,7 +258,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
-         AND (?=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
+         AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn, shopId, shopId, keyword)
 
@@ -267,7 +267,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
-         AND (?=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
+         AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,

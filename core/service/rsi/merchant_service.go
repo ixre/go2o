@@ -130,7 +130,7 @@ func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 	return m._mchRepo.GetManager().RemoveSignUp(memberId)
 }
 
-// 登录，返回结果(Result)和会员编号(Id);
+// 登录，返回结果(Result)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
@@ -262,7 +262,7 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 	// m._mchRepo.GetMerchant(mchId)
 
 	//conf := merchant.DefaultSaleConf
-	//conf.MerchantId = mch.GetAggregateRootId()
+	//conf.VendorId = mch.GetAggregateRootId()
 	// 保存销售设置
 	//mch.ConfManager().SaveSaleConf(&conf)
 
@@ -330,15 +330,6 @@ func (m *merchantService) GetShopsOfMerchant(mchId int32) []*shop.Shop {
 		sv[i] = &vv
 	}
 	return sv
-}
-
-// 获取线上店铺
-func (m *merchantService) GetOnlineShopOfVendor(mchId int32) *shop.ShopDto {
-	mch := m._mchRepo.GetMerchant(mchId)
-	if mch != nil {
-		return mch.ShopManager().GetOnlineShop().Data()
-	}
-	return nil
 }
 
 // 修改密码
@@ -539,7 +530,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //	}
 //	m._mchRepo.SaveMachBlanceLog(o)
 //
-//	v := &member.PresentLog{
+//	v := &member.WalletLog{
 //		MemberId:     memberId,
 //		BusinessKind: merchant.KindＭachTakeOutToBankCard,
 //		OuterNo:      "00000000",
@@ -567,7 +558,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //		return member.ErrIncorrectAmount
 //	}
 //	unix := time.Now().Unix()
-//	v := &member.PresentLog{
+//	v := &member.WalletLog{
 //		MemberId:     memberId,
 //		BusinessKind: kind,
 //		Title:        title,
@@ -608,7 +599,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //	if m == nil {
 //		return member.ErrNoSuchMember
 //	}
-//	v := a._memberRepo.GetPresentLog(infoId)
+//	v := a._memberRepo.GetWalletLog(infoId)
 //	if v.BusinessKind != merchant.KindＭachTakeOutToBankCard {
 //		return errors.New("非商户提现")
 //	}
@@ -621,7 +612,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //		v.Remark += "失败:" + remark
 //		v.State = enum.ReviewReject
 //		mach := a.GetMerchantByMemberId(v.MemberId)
-//		err := a.ChargeMachAccountByKind(memberId, mach.Id,
+//		err := a.ChargeMachAccountByKind(memberId, mach.ID,
 //			merchant.KindＭachTakOutRefund,
 //			"商户提现退回", v.OuterNo, (-v.Amount),
 //			member.DefaultRelateUser)
@@ -669,7 +660,7 @@ func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGr
 	return parser.Result(v.ID, err), nil
 }
 
-// 获取顾客分组
+// 获取买家分组
 func (m *merchantService) GetBuyerGroups(mchId int32) []*merchant.BuyerGroup {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {

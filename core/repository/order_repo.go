@@ -319,7 +319,7 @@ func (o *orderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 		rc.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
 	}
 	rc.Close()
-	//log.Println("-----order ",v.Id,v.Status,statusIsChanged,err)
+	//log.Println("-----order ",v.ID,v.Status,statusIsChanged,err)
 }
 
 // Save OrderList

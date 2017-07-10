@@ -2,14 +2,14 @@ namespace go define
 
 //传输结果对象
 struct Result{
-   1:i32 Id
+   1:i32 ID
    2:bool Result
    3:string Code
    4:string Message
 }
 //传输结果对象
 struct Result64{
-   1:i64 Id
+   1:i64 ID
    2:bool Result
    3:string Code
    4:string Message
@@ -30,7 +30,7 @@ struct Pair{
 
 // 商家
 struct ComplexMerchant {
-    1: i32 Id
+    1: i32 ID
     2: i64 MemberId
     3: string Usr
     4: string Pwd
@@ -50,8 +50,35 @@ struct ComplexMerchant {
     18: i64 LastLoginTime
 }
 
+
+// 商店,需重构
+struct Shop{
+    1:i32 ID
+    2:i32 VendorId
+    3:i32 ShopType
+    4:string Name
+    5:i32 State
+    6:i32 OpeningState
+    7:map<string,string> Data
+}
+
+// 商铺
+struct Store{
+    1:i32 ID
+    2:i32 VendorId
+    3:string Name
+    4:string Alias
+    5:string Host
+    6:string Logo
+    7:i32 State
+    8:i32 OpeningState
+    9:string StorePhone
+    10:string StoreTitle
+    11:string StoreNotice
+}
+
 struct Level {
-    1: i32 Id
+    1: i32 ID
     2: string Name
     3: i32 RequireExp
     4: string ProgramSignal
@@ -60,7 +87,7 @@ struct Level {
 }
 
 struct Member {
-    1: i64 Id
+    1: i64 ID
     2: string Usr
     3: string Pwd
     4: string TradePwd
@@ -176,7 +203,7 @@ struct TrustedInfo {
 
 
 struct Address {
-    1: i64 Id
+    1: i64 ID
     2: i64 MemberId
     3: string RealName
     4: string Phone
@@ -193,15 +220,23 @@ struct Category {
     1: i32 ID
     2: i32 ParentId
     3: i32 ProModel
-    4: string Name
-    5: i32 Level
-    6: string Icon
+    // 分类优先级
+    4: i32 Priority
+    // 分类名称
+    5: string Name
+    // 虚拟分类
+    6: i32 VirtualCat
+    // 分类目标地址
     7: string CatUrl
-    8: i32 SortNum
-    9: i32 FloorShow
-    10: i32 Enabled
-    11: i64 CreateTime
-    12: list<Category> Children
+    8: string Icon
+    // 图标（雪碧图）坐标
+    9: string IconXY
+    10: i32 SortNum
+    11: i32 FloorShow
+    12: i32 Enabled
+    13: i32 Level
+    14: i64 CreateTime
+    15: list<Category> Children
 }
 
 struct Item {
@@ -310,7 +345,7 @@ struct ShoppingCartItem {
 
 //支付单
 struct PaymentOrder {
-    1: i32 Id
+    1: i32 ID
     2: string TradeNo
     3: i32 VendorId
     4: i32 Type
@@ -391,7 +426,7 @@ struct PlatformConf {
 // 单点登录应用
 struct SsoApp{
     // 编号
-    1: i32 Id
+    1: i32 ID
     // 应用名称
     2: string Name
     // API地址
@@ -413,7 +448,9 @@ service FoundationService{
    // 删除值
    Result DeleteValue(1:string key)
    // 获取键值存储数据
-   map<string,string> GetRegistryV1(1:list<string> keys)
+   list<string> GetRegistryV1(1:list<string> keys)
+   // 获取键值存储数据字典
+   map<string,string> GetRegistryMapV1(1:list<string> keys)
    // 根据前缀获取值
    map<string,string> GetValuesByPrefix(1:string prefix)
    // 注册单点登录应用,返回值：
@@ -506,17 +543,6 @@ service PaymentService{
 }
 
 
-//商家服务
-service MerchantService{
-   // 获取商家符合的信息
-   ComplexMerchant Complex(1:i32 mchId)
-   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-   Result CheckLogin(1:string usr,2:string oriPwd)
-   // 验证商户状态
-   Result Stat(1:i32 mchId)
-   // 同步批发商品
-   map<string,i32> SyncWholesaleItem(1:i32 mchId)
-}
 
 // 销售服务
 service SaleService {
@@ -551,4 +577,30 @@ service ItemService{
     string GetItemSkuJson(1:i32 itemId)
     // 获取商品详细数据
     string GetItemDetailData(1:i32 itemId,2:i32 iType)
+}
+
+//商家服务
+service MerchantService{
+   // 获取商家符合的信息
+   ComplexMerchant Complex(1:i32 mchId)
+   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
+   Result CheckLogin(1:string usr,2:string oriPwd)
+   // 验证商户状态
+   Result Stat(1:i32 mchId)
+   // 同步批发商品
+   map<string,i32> SyncWholesaleItem(1:i32 mchId)
+}
+
+// 商店服务
+service ShopService{
+    // 获取店铺
+    Store GetStore(1:i32 venderId)
+    // 获取店铺
+    Store GetStoreById(1:i32 shopId)
+    // 获取门店
+    //Shop GetOfflineShop(1:i32 shopId)
+    // 打开或关闭商店
+    Result TurnShop(1:i32 shopId,2:bool on,3:string reason)
+    // 设置商店是否营业
+    Result OpenShop(1:i32 shopId,2:bool opening,3:string reason)
 }

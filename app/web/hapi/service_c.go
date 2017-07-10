@@ -49,7 +49,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	pstUrl := fmt.Sprintf("//%s%s", mPrefix, variable.Domain)
 	memberId := getMemberId(c)
 	if memberId <= 0 {
-		registry, _ := rsi.FoundationService.GetRegistryV1([]string{
+		registry, _ := rsi.FoundationService.GetRegistryMapV1([]string{
 			"PlatformName",
 		})
 		mp["PtName"] = registry["PlatformName"]

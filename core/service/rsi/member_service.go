@@ -268,9 +268,9 @@ func (ms *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
-func (ms *memberService) GetPresentLog(memberId int64, logId int32) *member.PresentLog {
+func (ms *memberService) GetWalletLog(memberId int64, logId int32) *member.WalletLog {
 	m := ms._repo.GetMember(memberId)
-	return m.GetAccount().GetPresentLog(logId)
+	return m.GetAccount().GetWalletLog(logId)
 }
 
 func (ms *memberService) getMember(memberId int64) (
@@ -485,7 +485,7 @@ func (ms *memberService) ModifyTradePassword(memberId int64,
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 }
 
-// 登录，返回结果(Result)和会员编号(Id);
+// 登录，返回结果(Result)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
@@ -509,7 +509,7 @@ func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error)
 	return val.Id, nil
 }
 
-// 登录，返回结果(Result)和会员编号(Id);
+// 登录，返回结果(Result)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *memberService) CheckLogin(usr string, pwd string, update bool) (r *define.Result64, err error) {
 	id, err := ms.testLogin(usr, pwd)
@@ -853,7 +853,11 @@ func (ms *memberService) ChargeAccount(memberId int64, account int32,
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
+		if account == member.AccountIntegral {
+			err = acc.AddIntegral(int(kind), outerNo, int64(amount), title)
+		} else {
+			err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
+		}
 	}
 	return parser.Result(0, err), nil
 }

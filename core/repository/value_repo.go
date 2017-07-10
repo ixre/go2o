@@ -362,8 +362,22 @@ func (v *valueRepo) getRegistry() *valueobject.Registry {
 	return v._globRegistry
 }
 
+func (vp *valueRepo) GetsRegistry(keys []string) []string {
+	r := vp.getRegistry()
+	mp := make([]string, len(keys))
+	for i, key := range keys {
+		v, ok := r.RegistryData[key]
+		if ok {
+			mp[i] = v
+		} else {
+			mp[i] = "no value in registry"
+		}
+	}
+	return mp
+}
+
 // 根据键获取数据值
-func (v *valueRepo) GetsRegistry(keys []string) map[string]string {
+func (v *valueRepo) GetsRegistryMap(keys []string) map[string]string {
 	r := v.getRegistry()
 	mp := map[string]string{}
 	for _, key := range keys {
