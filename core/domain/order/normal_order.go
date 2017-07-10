@@ -1565,7 +1565,7 @@ func (o *subOrderImpl) CancelRefund() error {
 //    ov := o._value
 //    unix := time.Now().Unix()
 //    rv := &afterSales.RefundOrder{
-//        Id: 0,
+//        ID: 0,
 //        // 订单编号
 //        OrderId: o.GetDomainId(),
 //        // 金额

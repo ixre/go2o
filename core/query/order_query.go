@@ -88,7 +88,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
 
 	// 查询分页的订单
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
-        vendor_id,o.shop_id,s.name as shop_name,
+        o.vendor_id,o.shop_id,s.name as shop_name,
         o.item_amount,o.discount_amount,o.express_fee,
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
          FROM sale_sub_order o INNER JOIN order_list po ON o.order_id = po.id

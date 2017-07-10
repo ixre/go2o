@@ -223,7 +223,7 @@ func (a *accountImpl) chargePresentNoLimit(kind int32, title string,
 		}
 	}
 	unix := time.Now().Unix()
-	v := &member.PresentLog{
+	v := &member.WalletLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: kind,
 		Title:        title,
@@ -249,8 +249,8 @@ func (a *accountImpl) chargePresentNoLimit(kind int32, title string,
 }
 
 // 根据编号获取余额变动信息
-func (a *accountImpl) GetPresentLog(id int32) *member.PresentLog {
-	e := member.PresentLog{}
+func (a *accountImpl) GetWalletLog(id int32) *member.WalletLog {
+	e := member.WalletLog{}
 	if tmp.Db().GetOrm().Get(id, &e) == nil {
 		return &e
 	}
@@ -376,7 +376,7 @@ func (a *accountImpl) DiscountWallet(title string, outerNo string, amount float3
 	}
 
 	unix := time.Now().Unix()
-	v := &member.PresentLog{
+	v := &member.WalletLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: kind,
 		Title:        title,
@@ -408,7 +408,7 @@ func (a *accountImpl) FreezeWallet(title string, outerNo string,
 		title = "(赠送)资金冻结"
 	}
 	unix := time.Now().Unix()
-	v := &member.PresentLog{
+	v := &member.WalletLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: member.KindWalletFreeze,
 		Title:        title,
@@ -441,7 +441,7 @@ func (a *accountImpl) UnfreezeWallet(title string, outerNo string,
 		title = "(赠送)资金解冻"
 	}
 	unix := time.Now().Unix()
-	v := &member.PresentLog{
+	v := &member.WalletLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: member.KindWalletUnfreeze,
 		Title:        title,
@@ -649,6 +649,9 @@ func (a *accountImpl) RequestBackBalance(backType int, title string,
 // 完成退款
 func (a *accountImpl) FinishBackBalance(id int32, tradeNo string) error {
 	v := a.GetBalanceInfo(id)
+	if v == nil || v.MemberId != a.value.MemberId {
+		return member.ErrIncorrectInfo
+	}
 	if v.Kind == member.KindBalanceRefund {
 		v.TradeNo = tradeNo
 		v.State = 1
@@ -718,7 +721,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 		finalAmount = -finalAmount
 	}
 	unix := time.Now().Unix()
-	v := &member.PresentLog{
+	v := &member.WalletLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: takeKind,
 		Title:        title,
@@ -749,7 +752,10 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 
 // 确认提现
 func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
-	v := a.GetPresentLog(id)
+	v := a.GetWalletLog(id)
+	if v == nil || v.MemberId != a.value.MemberId {
+		return member.ErrIncorrectInfo
+	}
 	if v.State != enum.ReviewAwaiting {
 		return member.ErrTakeOutState
 	}
@@ -800,7 +806,10 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 
 // 完成提现
 func (a *accountImpl) FinishTakeOut(id int32, tradeNo string) error {
-	v := a.GetPresentLog(id)
+	v := a.GetWalletLog(id)
+	if v == nil || v.MemberId != a.value.MemberId {
+		return member.ErrIncorrectInfo
+	}
 	if v.State != enum.ReviewPass {
 		return member.ErrTakeOutState
 	}
@@ -870,7 +879,7 @@ func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error 
 	a.value.FreezeWallet -= amount
 	a.value.ExpiredPresent += amount
 	a.value.UpdateTime = unix
-	l := &member.PresentLog{
+	l := &member.WalletLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: member.KindWalletExpired,
 		Title:        "过期失效",
@@ -979,7 +988,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 	unix := time.Now().Unix()
 	// 扣款
 	toName := a.getMemberName(tm)
-	l := &member.PresentLog{
+	l := &member.WalletLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: member.KindWalletTransferOut,
 		Title:        "转账给" + toName,
@@ -1025,7 +1034,7 @@ func (a *accountImpl) receivePresentTransfer(fromMember int64, tradeNo string,
 	}
 	fromName := a.getMemberName(fm)
 	unix := time.Now().Unix()
-	tl := &member.PresentLog{
+	tl := &member.WalletLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: member.KindWalletTransferIn,
 		Title:        "转账收款（" + fromName + "）",

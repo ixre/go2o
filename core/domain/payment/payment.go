@@ -414,7 +414,7 @@ func (p *paymentOrderImpl) Cancel() error {
 			//todo : 退换积分,暂时积分抵扣的不退款
 		}
 		// 如果已经支付，则将支付的款项退回到账户
-		if oriState == payment.StateFinishPayment {
+		if p.value.FinalAmount > 0 && oriState == payment.StateFinishPayment {
 			//退到钱包账户
 			if pv.PaymentSign == payment.SignWalletAccount {
 				return acc.Refund(member.AccountWallet,
