@@ -118,7 +118,8 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 
 	shopRepo := repository.NewShopRepo(db, sto, valueRepo)
 	wholesaleRepo := repository.NewWholesaleRepo(db)
-	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
+	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo,
+		itemRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
 	cartRepo := repository.NewCartRepo(db, memberRepo, mchRepo, itemRepo)
 	personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
 	deliveryRepo := repository.NewDeliverRepo(db)

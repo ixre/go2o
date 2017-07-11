@@ -143,7 +143,7 @@ type (
 	// 商品,临时改方便辨别
 	GoodsItem struct {
 		// 商品编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
 		ProductId int32 `db:"product_id"`
 		// 促销标志

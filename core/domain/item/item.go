@@ -79,7 +79,7 @@ func (g *itemImpl) init() item.IGoodsItem {
 
 //获取聚合根编号
 func (g *itemImpl) GetAggregateRootId() int32 {
-	return g.value.Id
+	return g.value.ID
 }
 
 // 商品快照
@@ -354,7 +354,7 @@ func (g *itemImpl) Save() (_ int32, err error) {
 		if err == nil {
 			// 创建商品
 			if g.GetAggregateRootId() <= 0 {
-				g.value.Id, err = g.repo.SaveValueGoods(g.value)
+				g.value.ID, err = g.repo.SaveValueGoods(g.value)
 			}
 			// 保存商品SKU
 			if err == nil {
@@ -367,18 +367,18 @@ func (g *itemImpl) Save() (_ int32, err error) {
 			}
 		}
 		if err != nil {
-			return g.value.Id, err
+			return g.value.ID, err
 		}
 	}
 
 	// 保存商品
-	g.value.Id, err = g.repo.SaveValueGoods(g.value)
+	g.value.ID, err = g.repo.SaveValueGoods(g.value)
 	if err == nil {
 		g.snapshot = nil
 		// 保存商品快照
 		_, err = g.repo.SnapshotService().GenerateSnapshot(g.value)
 	}
-	return g.value.Id, err
+	return g.value.ID, err
 }
 
 // 获取促销信息
@@ -517,7 +517,7 @@ func (g *itemImpl) AddSalesNum(skuId, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
-	//log.Println("--商品：",g.value.Id,"; 库存：",
+	//log.Println("--商品：",g.value.ID,"; 库存：",
 	// g.value.StockNum,"; 数量:",quantity)
 	if quantity > g.value.StockNum {
 		return item.ErrOutOfStock

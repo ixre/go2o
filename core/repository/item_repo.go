@@ -155,7 +155,7 @@ func (g *goodsRepo) RemoveGoodsLevelPrice(id int32) error {
 
 // 保存商品
 func (g *goodsRepo) SaveValueGoods(v *item.GoodsItem) (int32, error) {
-	return orm.I32(orm.Save(g.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(g.GetOrm(), v, int(v.ID)))
 }
 
 // 获取已上架的商品

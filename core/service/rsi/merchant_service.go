@@ -634,7 +634,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 func (m *merchantService) SyncWholesaleItem(vendorId int32) (map[string]int32, error) {
 	mch := m._mchRepo.GetMerchant(vendorId)
 	if mch != nil {
-		return mch.Wholesaler().SyncItems(), nil
+		return mch.Wholesaler().SyncItems(true), nil
 	}
 	return map[string]int32{
 		"add": 0, "del": 0,
