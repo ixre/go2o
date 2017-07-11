@@ -22,8 +22,7 @@ type wholesaleItemImpl struct {
 }
 
 func newWholesaleItem(itemId int32, it item.IGoodsItem,
-	itemRepo item.IGoodsItemRepo,
-	repo item.IItemWholesaleRepo) item.IWholesaleItem {
+	itemRepo item.IGoodsItemRepo, repo item.IItemWholesaleRepo) item.IWholesaleItem {
 	return (&wholesaleItemImpl{
 		itemId:   itemId,
 		it:       it,
@@ -39,9 +38,10 @@ func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 		v = &item.WsItem{
 			ItemId:      w.itemId,
 			VendorId:    iv.VendorId,
+			Price:       float64(iv.Price),
+			PriceRange:  iv.PriceRange,
 			ShelveState: item.ShelvesInWarehouse,
-			//todo: test
-			ReviewState: enum.ReviewPass,
+			ReviewState: iv.ReviewState,
 		}
 		w.repo.SaveWsItem(v, true)
 	}
@@ -65,46 +65,46 @@ func (w *wholesaleItemImpl) Save() (int32, error) {
 }
 
 // 是否上架
-func (g *wholesaleItemImpl) IsOnShelves() bool {
-	return g.value.ShelveState == item.ShelvesOn
+func (w *wholesaleItemImpl) IsOnShelves() bool {
+	return w.value.ShelveState == item.ShelvesOn
 }
 
 // 设置上架
-func (g *wholesaleItemImpl) SetShelve(state int32, remark string) error {
+func (w *wholesaleItemImpl) SetShelve(state int32, remark string) error {
 	if state == item.ShelvesIncorrect && len(remark) == 0 {
 		return product.ErrNilRejectRemark
 	}
-	if state == item.ShelvesOn && g.value.Price <= 0 {
+	if state == item.ShelvesOn && w.value.Price <= 0 {
 		return item.ErrNotSetWholesalePrice
 	}
-	g.value.ShelveState = state
-	g.value.ReviewRemark = remark
-	_, err := g.Save()
+	w.value.ShelveState = state
+	w.value.ReviewRemark = remark
+	_, err := w.Save()
 	return err
 }
 
 // 标记为违规
-func (g *wholesaleItemImpl) Incorrect(remark string) error {
-	g.value.ShelveState = item.ShelvesIncorrect
-	g.value.ReviewRemark = remark
-	_, err := g.Save()
+func (w *wholesaleItemImpl) Incorrect(remark string) error {
+	w.value.ShelveState = item.ShelvesIncorrect
+	w.value.ReviewRemark = remark
+	_, err := w.Save()
 	return err
 }
 
 // 审核
-func (g *wholesaleItemImpl) Review(pass bool, remark string) error {
+func (w *wholesaleItemImpl) Review(pass bool, remark string) error {
 	if pass {
-		g.value.ReviewState = enum.ReviewPass
+		w.value.ReviewState = enum.ReviewPass
 
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
-		g.value.ReviewState = enum.ReviewReject
+		w.value.ReviewState = enum.ReviewReject
 	}
-	g.value.ReviewRemark = remark
-	_, err := g.Save()
+	w.value.ReviewRemark = remark
+	_, err := w.Save()
 	return err
 }
 

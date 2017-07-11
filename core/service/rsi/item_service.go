@@ -87,14 +87,14 @@ func (s *itemService) GetSkuArray(itemId int32) []*item.Sku {
 
 // 获取商品规格HTML信息
 func (s *itemService) GetSkuHtmOfItem(itemId int32) (specHtm string) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	specArr := it.SpecArray()
 	return s.itemRepo.SkuService().GetSpecHtml(specArr)
 }
 
 // 获取商品详细数据
 func (s *itemService) GetItemDetailData(itemId int32, iType int32) (r string, err error) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	switch iType {
 	case item.ItemWholesale:
 		data := it.Wholesale().GetJsonDetailData()
@@ -105,7 +105,7 @@ func (s *itemService) GetItemDetailData(itemId int32, iType int32) (r string, er
 
 // 获取商品的Sku-JSON格式
 func (s *itemService) GetItemSkuJson(itemId int32) (r string, err error) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	skuBytes := s.itemRepo.SkuService().GetSkuJson(it.SkuArray())
 	return string(skuBytes), nil
 }
@@ -114,8 +114,8 @@ func (s *itemService) GetItemSkuJson(itemId int32) (r string, err error) {
 func (s *itemService) SaveItem(di *define.Item, vendorId int32) (_ *define.Result_, err error) {
 	var gi item.IGoodsItem
 	it := parser.Item(di)
-	if it.Id > 0 {
-		gi = s.itemRepo.GetItem(it.Id)
+	if it.ID > 0 {
+		gi = s.itemRepo.GetItem(it.ID)
 		if gi == nil || gi.GetValue().VendorId != vendorId {
 			err = item.ErrNoSuchItem
 			goto R
@@ -127,11 +127,11 @@ func (s *itemService) SaveItem(di *define.Item, vendorId int32) (_ *define.Resul
 	if err == nil {
 		err = gi.SetSku(it.SkuArray)
 		if err == nil {
-			it.Id, err = gi.Save()
+			it.ID, err = gi.Save()
 		}
 	}
 R:
-	return parser.Result(it.Id, err), nil
+	return parser.Result(it.ID, err), nil
 }
 
 // 获取上架商品数据（分页）
@@ -496,7 +496,7 @@ func (s *itemService) GetGoodsDetails(itemId, mLevel int32) (
 
 // 获取货品描述
 func (s *itemService) GetItemDescriptionByGoodsId(itemId int32) string {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	pro := it.Product()
 	if pro != nil {
 		return pro.GetValue().Description

@@ -6,6 +6,14 @@ import (
 	"testing"
 )
 
+// 测试同步批发商品
+func TestSyncWholesaleItem(t *testing.T) {
+	venRepo := ti.MchRepo
+	vd := venRepo.GetMerchant(1)
+	mp := vd.Wholesaler().SyncItems(true)
+	t.Logf("sync finished, add:%d,del:%d", mp["add"], mp["del"])
+}
+
 // 测试批发折扣
 func TestItemWholesaleDiscount(t *testing.T) {
 	repo := ti.ItemRepo

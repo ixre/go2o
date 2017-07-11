@@ -363,7 +363,7 @@ func TrustedInfoDto(src *member.TrustedInfo) *define.TrustedInfo {
 
 func ItemDto(src *item.GoodsItem) *define.Item {
 	it := &define.Item{
-		ItemId:       src.Id,
+		ItemId:       src.ID,
 		ProductId:    src.ProductId,
 		PromFlag:     src.PromFlag,
 		CatId:        src.CatId,
@@ -406,7 +406,7 @@ func ItemDto(src *item.GoodsItem) *define.Item {
 
 func Item(src *define.Item) *item.GoodsItem {
 	it := &item.GoodsItem{
-		Id:           src.ItemId,
+		ID:           src.ItemId,
 		ProductId:    src.ProductId,
 		PromFlag:     src.PromFlag,
 		CatId:        src.CatId,

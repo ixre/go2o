@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -250,6 +251,7 @@ type merchantImpl struct {
 	_host            string
 	_rep             merchant.IMerchantRepo
 	_wsRepo          wholesaler.IWholesaleRepo
+	_itemRepo        item.IGoodsItemRepo
 	_shopRepo        shop.IShopRepo
 	_userRepo        user.IUserRepo
 	_valRepo         valueobject.IValueRepo
@@ -267,13 +269,14 @@ type merchantImpl struct {
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
-	wsRepo wholesaler.IWholesaleRepo, shopRepo shop.IShopRepo,
-	userRepo user.IUserRepo, memberRepo member.IMemberRepo,
+	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
+	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo,
 	valRepo valueobject.IValueRepo) merchant.IMerchant {
 	mch := &merchantImpl{
 		_value:      v,
 		_rep:        rep,
 		_wsRepo:     wsRepo,
+		_itemRepo:   itemRepo,
 		_shopRepo:   shopRepo,
 		_userRepo:   userRepo,
 		_valRepo:    valRepo,
@@ -428,7 +431,7 @@ func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
 		if v == nil {
 			v, _ = m.createWholesaler()
 		}
-		m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo)
+		m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo, m._itemRepo)
 	}
 	return m._wholesaler
 }

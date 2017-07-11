@@ -6,22 +6,25 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant/wholesaler"
+	"log"
 )
 
 var _ wholesaler.IWholesaler = new(wholesalerImpl)
 
 type wholesalerImpl struct {
-	mchId int32
-	value *wholesaler.WsWholesaler
-	repo  wholesaler.IWholesaleRepo
+	mchId    int32
+	value    *wholesaler.WsWholesaler
+	repo     wholesaler.IWholesaleRepo
+	itemRepo item.IGoodsItemRepo
 }
 
 func NewWholesaler(mchId int32, v *wholesaler.WsWholesaler,
-	repo wholesaler.IWholesaleRepo) wholesaler.IWholesaler {
+	repo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo) wholesaler.IWholesaler {
 	return &wholesalerImpl{
-		mchId: mchId,
-		value: v,
-		repo:  repo,
+		mchId:    mchId,
+		value:    v,
+		repo:     repo,
+		itemRepo: itemRepo,
 	}
 }
 
@@ -62,12 +65,53 @@ func (w *wholesalerImpl) Save() (int32, error) {
 }
 
 // 同步商品
-func (w *wholesalerImpl) SyncItems() map[string]int32 {
-	add, del := w.repo.SyncItems(w.mchId, item.ShelvesInWarehouse, enum.ReviewPass)
-	return map[string]int32{
-		"add": int32(add),
-		"del": int32(del),
+func (w *wholesalerImpl) SyncItems(syncPrice bool) map[string]int32 {
+	add := []int{}
+	failed := []int{}
+	newest := w.repo.GetAwaitSyncItems(w.mchId)
+	for _, itemId := range newest {
+		err := w.syncSingleItem(int32(itemId), syncPrice)
+		if err == nil {
+			add = append(add, itemId)
+		} else {
+			failed = append(failed, itemId)
+		}
 	}
+	_, del := w.repo.SyncItems(w.mchId, item.ShelvesInWarehouse, enum.ReviewPass)
+	return map[string]int32{
+		"add":    int32(len(add)),
+		"del":    int32(del),
+		"failed": int32(len(failed)),
+	}
+}
+
+func (w *wholesalerImpl) syncSingleItem(itemId int32, syncPrice bool) error {
+	it := w.itemRepo.GetItem(itemId)
+	if it != nil {
+		ws := it.Wholesale()
+		_, err := ws.Save()
+		if err != nil {
+			return err
+		}
+		for _, v := range it.SkuArray() {
+			if v.ID <= 0 {
+				continue
+			}
+			err = ws.SaveSkuPrice(v.ID, []*item.WsSkuPrice{
+				{
+					ItemId:          itemId,
+					SkuId:           v.ID,
+					RequireQuantity: 2,
+					WholesalePrice:  float64(v.Price),
+				},
+			})
+			if err != nil {
+				log.Println("[ Go2o][ Wholesale][ Sync]:", err.Error(),
+					"ID:", itemId, "; SkuId:", v.ID)
+			}
+		}
+	}
+	return nil
 }
 
 // 保存客户分组的批发返点率
