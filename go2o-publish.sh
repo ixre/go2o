@@ -11,7 +11,7 @@
 
 package_name="go2o_deploy_tmp.tar.gz"
 
-goods=linux
+goos=linux
 arch=amd64
 server="127.0.0.1"
 user=root
@@ -45,7 +45,7 @@ done
 # 开发环境
 if [ ${env} = "1" ];then
     arch=arm
-    server="www.flm-dev.redvp.com"
+    server="dev.go2o.to2.net"
     user=pi
     root_user=pi
     ssh_port=22
@@ -64,7 +64,7 @@ fi
 
 # 发布版
 if [ ${env} = "3" ];then
-     server="official.ns.fanleme.net"
+     server="official.go2o.to2.net"
      user=flm
      app_dir="/home/${user}/www/flm/"
      echo "Selected : Release"
@@ -79,12 +79,12 @@ echo "Please confirm compile : [Y/N]"
 read compile
 if [ ${compile} = "Y" ]||[ ${compile} = "y" ];then
     echo "compiling ..."
-    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build go2o-serve.go
-    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build go2o-tcpserve.go
-    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build master-serve.go
-    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build go2o-rpc.go
-    #CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build merchant-serve.go
-    #CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build pub-serve.go
+    CGO_ENABLED=0 GOOS=${goos} GOARCH=${arch} go build -ldflags "-w" go2o-serve.go
+    CGO_ENABLED=0 GOOS=${goos} GOARCH=${arch} go build -ldflags "-w" go2o-tcpserve.go
+    CGO_ENABLED=0 GOOS=${goos} GOARCH=${arch} go build -ldflags "-w" master-serve.go
+    CGO_ENABLED=0 GOOS=${goos} GOARCH=${arch} go build -ldflags "-w" go2o-rpc.go
+    #CGO_ENABLED=0 GOOS=${goos} GOARCH=${arch} go build -ldflags "-w" merchant-serve.go
+    #CGO_ENABLED=0 GOOS=${goos} GOARCH=${arch} go build -ldflags "-w" pub-serve.go
 else
     echo "  skipping compile"
 fi
