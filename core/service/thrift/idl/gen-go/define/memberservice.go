@@ -174,16 +174,16 @@ func (p *MemberServiceClient) recvCheckLogin() (value *Result64, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error81 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error82 error
-		error82, err = error81.Read(iprot)
+		error84 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error85 error
+		error85, err = error84.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error82
+		err = error85
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -253,16 +253,16 @@ func (p *MemberServiceClient) recvCheckTradePwd() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error83 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error84 error
-		error84, err = error83.Read(iprot)
+		error86 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error87 error
+		error87, err = error86.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error84
+		err = error87
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -326,16 +326,16 @@ func (p *MemberServiceClient) recvLevelList() (value []*Level, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error85 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error86 error
-		error86, err = error85.Read(iprot)
+		error88 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error89 error
+		error89, err = error88.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error86
+		err = error89
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -403,16 +403,16 @@ func (p *MemberServiceClient) recvGetTrustInfo() (value *TrustedInfo, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error87 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error88 error
-		error88, err = error87.Read(iprot)
+		error90 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error91 error
+		error91, err = error90.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error88
+		err = error91
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -480,16 +480,16 @@ func (p *MemberServiceClient) recvGetLevel() (value *Level, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error89 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error90 error
-		error90, err = error89.Read(iprot)
+		error92 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error93 error
+		error93, err = error92.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error90
+		err = error93
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -557,16 +557,16 @@ func (p *MemberServiceClient) recvGetMember() (value *Member, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error91 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error92 error
-		error92, err = error91.Read(iprot)
+		error94 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error95 error
+		error95, err = error94.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error92
+		err = error95
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -634,16 +634,16 @@ func (p *MemberServiceClient) recvGetMemberByUser() (value *Member, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error93 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error94 error
-		error94, err = error93.Read(iprot)
+		error96 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error97 error
+		error97, err = error96.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error94
+		err = error97
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -711,16 +711,16 @@ func (p *MemberServiceClient) recvGetProfile() (value *Profile, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error95 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error96 error
-		error96, err = error95.Read(iprot)
+		error98 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error99 error
+		error99, err = error98.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error96
+		err = error99
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -788,16 +788,16 @@ func (p *MemberServiceClient) recvComplex() (value *ComplexMember, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error97 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error98 error
-		error98, err = error97.Read(iprot)
+		error100 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error101 error
+		error101, err = error100.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error98
+		err = error101
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -869,16 +869,16 @@ func (p *MemberServiceClient) recvPremium() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error99 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error100 error
-		error100, err = error99.Read(iprot)
+		error102 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error103 error
+		error103, err = error102.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error100
+		err = error103
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -948,16 +948,16 @@ func (p *MemberServiceClient) recvGetToken() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error101 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error102 error
-		error102, err = error101.Read(iprot)
+		error104 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error105 error
+		error105, err = error104.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error102
+		err = error105
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1027,16 +1027,16 @@ func (p *MemberServiceClient) recvCheckToken() (value bool, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error103 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error104 error
-		error104, err = error103.Read(iprot)
+		error106 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error107 error
+		error107, err = error106.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error104
+		err = error107
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1104,16 +1104,16 @@ func (p *MemberServiceClient) recvRemoveToken() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error105 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error106 error
-		error106, err = error105.Read(iprot)
+		error108 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error109 error
+		error109, err = error108.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error106
+		err = error109
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1182,16 +1182,16 @@ func (p *MemberServiceClient) recvGetAddress() (value *Address, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error107 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error108 error
-		error108, err = error107.Read(iprot)
+		error110 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error111 error
+		error111, err = error110.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error108
+		err = error111
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1259,16 +1259,16 @@ func (p *MemberServiceClient) recvGetAccount() (value *Account, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error109 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error110 error
-		error110, err = error109.Read(iprot)
+		error112 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error113 error
+		error113, err = error112.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error110
+		err = error113
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1338,16 +1338,16 @@ func (p *MemberServiceClient) recvInviterArray() (value []int64, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error111 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error112 error
-		error112, err = error111.Read(iprot)
+		error114 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error115 error
+		error115, err = error114.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error112
+		err = error115
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1417,16 +1417,16 @@ func (p *MemberServiceClient) recvGetInviterQuantity() (value int32, err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error113 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error114 error
-		error114, err = error113.Read(iprot)
+		error116 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error117 error
+		error117, err = error116.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error114
+		err = error117
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1506,16 +1506,16 @@ func (p *MemberServiceClient) recvChargeAccount() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error115 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error116 error
-		error116, err = error115.Read(iprot)
+		error118 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error119 error
+		error119, err = error118.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error116
+		err = error119
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1595,16 +1595,16 @@ func (p *MemberServiceClient) recvDiscountAccount() (value *Result_, err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error117 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error118 error
-		error118, err = error117.Read(iprot)
+		error120 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error121 error
+		error121, err = error120.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error118
+		err = error121
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1642,27 +1642,27 @@ func (p *MemberServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunc
 
 func NewMemberServiceProcessor(handler MemberService) *MemberServiceProcessor {
 
-	self119 := &MemberServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self119.processorMap["CheckLogin"] = &memberServiceProcessorCheckLogin{handler: handler}
-	self119.processorMap["CheckTradePwd"] = &memberServiceProcessorCheckTradePwd{handler: handler}
-	self119.processorMap["LevelList"] = &memberServiceProcessorLevelList{handler: handler}
-	self119.processorMap["GetTrustInfo"] = &memberServiceProcessorGetTrustInfo{handler: handler}
-	self119.processorMap["GetLevel"] = &memberServiceProcessorGetLevel{handler: handler}
-	self119.processorMap["GetMember"] = &memberServiceProcessorGetMember{handler: handler}
-	self119.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler: handler}
-	self119.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler: handler}
-	self119.processorMap["Complex"] = &memberServiceProcessorComplex{handler: handler}
-	self119.processorMap["Premium"] = &memberServiceProcessorPremium{handler: handler}
-	self119.processorMap["GetToken"] = &memberServiceProcessorGetToken{handler: handler}
-	self119.processorMap["CheckToken"] = &memberServiceProcessorCheckToken{handler: handler}
-	self119.processorMap["RemoveToken"] = &memberServiceProcessorRemoveToken{handler: handler}
-	self119.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
-	self119.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
-	self119.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
-	self119.processorMap["GetInviterQuantity"] = &memberServiceProcessorGetInviterQuantity{handler: handler}
-	self119.processorMap["ChargeAccount"] = &memberServiceProcessorChargeAccount{handler: handler}
-	self119.processorMap["DiscountAccount"] = &memberServiceProcessorDiscountAccount{handler: handler}
-	return self119
+	self122 := &MemberServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self122.processorMap["CheckLogin"] = &memberServiceProcessorCheckLogin{handler: handler}
+	self122.processorMap["CheckTradePwd"] = &memberServiceProcessorCheckTradePwd{handler: handler}
+	self122.processorMap["LevelList"] = &memberServiceProcessorLevelList{handler: handler}
+	self122.processorMap["GetTrustInfo"] = &memberServiceProcessorGetTrustInfo{handler: handler}
+	self122.processorMap["GetLevel"] = &memberServiceProcessorGetLevel{handler: handler}
+	self122.processorMap["GetMember"] = &memberServiceProcessorGetMember{handler: handler}
+	self122.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler: handler}
+	self122.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler: handler}
+	self122.processorMap["Complex"] = &memberServiceProcessorComplex{handler: handler}
+	self122.processorMap["Premium"] = &memberServiceProcessorPremium{handler: handler}
+	self122.processorMap["GetToken"] = &memberServiceProcessorGetToken{handler: handler}
+	self122.processorMap["CheckToken"] = &memberServiceProcessorCheckToken{handler: handler}
+	self122.processorMap["RemoveToken"] = &memberServiceProcessorRemoveToken{handler: handler}
+	self122.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
+	self122.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
+	self122.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
+	self122.processorMap["GetInviterQuantity"] = &memberServiceProcessorGetInviterQuantity{handler: handler}
+	self122.processorMap["ChargeAccount"] = &memberServiceProcessorChargeAccount{handler: handler}
+	self122.processorMap["DiscountAccount"] = &memberServiceProcessorDiscountAccount{handler: handler}
+	return self122
 }
 
 func (p *MemberServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1675,12 +1675,12 @@ func (p *MemberServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x120 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x123 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x120.Write(oprot)
+	x123.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x120
+	return false, x123
 
 }
 
@@ -3197,11 +3197,11 @@ func (p *MemberServiceLevelListResult) readField0(iprot thrift.TProtocol) error 
 	tSlice := make([]*Level, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem121 := &Level{}
-		if err := _elem121.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem121), err)
+		_elem124 := &Level{}
+		if err := _elem124.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem124), err)
 		}
-		p.Success = append(p.Success, _elem121)
+		p.Success = append(p.Success, _elem124)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -5874,13 +5874,13 @@ func (p *MemberServiceInviterArrayResult) readField0(iprot thrift.TProtocol) err
 	tSlice := make([]int64, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem122 int64
+		var _elem125 int64
 		if v, err := iprot.ReadI64(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem122 = v
+			_elem125 = v
 		}
-		p.Success = append(p.Success, _elem122)
+		p.Success = append(p.Success, _elem125)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -6007,19 +6007,19 @@ func (p *MemberServiceGetInviterQuantityArgs) readField2(iprot thrift.TProtocol)
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key123 string
+		var _key126 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key123 = v
+			_key126 = v
 		}
-		var _val124 string
+		var _val127 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val124 = v
+			_val127 = v
 		}
-		p.Data[_key123] = _val124
+		p.Data[_key126] = _val127
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)

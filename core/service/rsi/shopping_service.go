@@ -78,7 +78,7 @@ func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data ma
 	}
 	return &define.Result_{
 		Result_: false,
-		Message: "unknow action",
+		Message: "unknown action",
 	}, nil
 }
 
@@ -146,7 +146,7 @@ func (s *shoppingService) wsGetSimpleCart(c cart.ICart, data map[string]string) 
 func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
-	skuData := data["Complex"]
+	skuData := data["Data"]
 	arr := []*cart.ItemPair{}
 	splitArr := strings.Split(skuData, ";")
 	for _, str := range splitArr {
@@ -178,7 +178,7 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 func (s *shoppingService) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
-	skuData := data["Complex"]
+	skuData := data["Data"]
 	arr := []*cart.ItemPair{}
 	splitArr := strings.Split(skuData, ";")
 	for _, str := range splitArr {
