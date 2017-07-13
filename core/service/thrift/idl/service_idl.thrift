@@ -239,7 +239,7 @@ struct Category {
     15: list<Category> Children
 }
 
-struct Item {
+struct OldItem{
     1: i32 ItemId
     2: i32 ProductId
     3: i32 PromFlag
@@ -273,6 +273,43 @@ struct Item {
     31: double PromPrice
     32: list<Sku> SkuArray
     33: map<string,string> Data;
+}
+
+// 统一的商品对象
+struct UnifiedItem{
+    1: i32 ItemId
+    2: i32 ProductId
+    3: i32 CatId
+    4: i32 VendorId
+    5: i32 BrandId
+    6: string Title
+    7: string Code
+    8: string Image
+    9: double Price
+    10: string PriceRange
+    11: i32 StockNum
+    12: i32 ShelveState
+    13: i32 ReviewState
+    14: i64 UpdateTime
+    15: list<Sku> SkuArray
+    16: map<string,string> Data
+    // 3: i32 PromFlag
+    // 7: i32 ShopId
+    // 8: i32 ShopCatId
+    // 9: i32 ExpressTid
+    // 11: string ShortTitle
+    // 14: i32 IsPresent
+    // 23: i32 Weight
+    // 24: i32 Bulk
+    // 18: i32 SkuNum
+    // 28: i32 SortNum
+    // 29: i64 CreateTime
+    // 31: double PromPrice
+    // 22: double RetailPrice
+    // 19: i32 SkuId
+    // 20: double Cost
+    // 17: i32 SaleNum
+
 }
 
 struct Sku {

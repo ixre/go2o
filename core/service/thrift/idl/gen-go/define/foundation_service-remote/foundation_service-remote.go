@@ -183,19 +183,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetRegistryV1 requires 1 args")
 			flag.Usage()
 		}
-		arg56 := flag.Arg(1)
-		mbTrans57 := thrift.NewTMemoryBufferLen(len(arg56))
-		defer mbTrans57.Close()
-		_, err58 := mbTrans57.WriteString(arg56)
-		if err58 != nil {
+		arg59 := flag.Arg(1)
+		mbTrans60 := thrift.NewTMemoryBufferLen(len(arg59))
+		defer mbTrans60.Close()
+		_, err61 := mbTrans60.WriteString(arg59)
+		if err61 != nil {
 			Usage()
 			return
 		}
-		factory59 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt60 := factory59.GetProtocol(mbTrans57)
+		factory62 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt63 := factory62.GetProtocol(mbTrans60)
 		containerStruct0 := define.NewFoundationServiceGetRegistryV1Args()
-		err61 := containerStruct0.ReadField1(jsProt60)
-		if err61 != nil {
+		err64 := containerStruct0.ReadField1(jsProt63)
+		if err64 != nil {
 			Usage()
 			return
 		}
@@ -209,19 +209,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetRegistryMapV1 requires 1 args")
 			flag.Usage()
 		}
-		arg62 := flag.Arg(1)
-		mbTrans63 := thrift.NewTMemoryBufferLen(len(arg62))
-		defer mbTrans63.Close()
-		_, err64 := mbTrans63.WriteString(arg62)
-		if err64 != nil {
+		arg65 := flag.Arg(1)
+		mbTrans66 := thrift.NewTMemoryBufferLen(len(arg65))
+		defer mbTrans66.Close()
+		_, err67 := mbTrans66.WriteString(arg65)
+		if err67 != nil {
 			Usage()
 			return
 		}
-		factory65 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt66 := factory65.GetProtocol(mbTrans63)
+		factory68 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt69 := factory68.GetProtocol(mbTrans66)
 		containerStruct0 := define.NewFoundationServiceGetRegistryMapV1Args()
-		err67 := containerStruct0.ReadField1(jsProt66)
-		if err67 != nil {
+		err70 := containerStruct0.ReadField1(jsProt69)
+		if err70 != nil {
 			Usage()
 			return
 		}
@@ -245,19 +245,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RegisterApp requires 1 args")
 			flag.Usage()
 		}
-		arg69 := flag.Arg(1)
-		mbTrans70 := thrift.NewTMemoryBufferLen(len(arg69))
-		defer mbTrans70.Close()
-		_, err71 := mbTrans70.WriteString(arg69)
-		if err71 != nil {
+		arg72 := flag.Arg(1)
+		mbTrans73 := thrift.NewTMemoryBufferLen(len(arg72))
+		defer mbTrans73.Close()
+		_, err74 := mbTrans73.WriteString(arg72)
+		if err74 != nil {
 			Usage()
 			return
 		}
-		factory72 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt73 := factory72.GetProtocol(mbTrans70)
+		factory75 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt76 := factory75.GetProtocol(mbTrans73)
 		argvalue0 := define.NewSsoApp()
-		err74 := argvalue0.Read(jsProt73)
-		if err74 != nil {
+		err77 := argvalue0.Read(jsProt76)
+		if err77 != nil {
 			Usage()
 			return
 		}

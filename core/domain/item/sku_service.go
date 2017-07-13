@@ -333,14 +333,14 @@ func (s *skuServiceUtil) init() *skuServiceUtil {
 	s.skuTemp = &template.Template{}
 	htm := `{{range $i,$v := .Spec}}
         <div class="mod-sku-spec">
-            <span class="spec-label">{{$v.Name}}</span>
-            <p class="spec-option">
+            <div class="spec-label">{{$v.Name}}</div>
+            <div class="spec-option">
                 {{range $i2,$vi := $v.Items}}
                 <a class="spec-option-check spec-option-item" href="javascript:void(0)" sid="{{$v.ID}}:{{$vi.ID}}">
                     {{$vi.Value}}
                 </a>
                 {{end}}
-            </p>
+            </div>
         </div>
        {{end}}
     `
