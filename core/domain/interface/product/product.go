@@ -140,7 +140,7 @@ type (
 	// 产品属性
 	Attr struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
 		ProductId int32 `db:"product_id"`
 		// 属性编号

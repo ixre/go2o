@@ -29,7 +29,7 @@ func NewModel(v *promodel.ProModel, rep promodel.IProModelRepo,
 
 // 获取聚合根编号
 func (m *modelImpl) GetAggregateRootId() int32 {
-	return m.value.Id
+	return m.value.ID
 }
 
 // 获取值
@@ -92,7 +92,7 @@ func (m *modelImpl) Save() (id int32, err error) {
 	if m.GetAggregateRootId() <= 0 {
 		i, err = m.rep.SaveProModel(m.value)
 		if err == nil {
-			m.value.Id = int32(i)
+			m.value.ID = int32(i)
 		} else {
 			return 0, err
 		}
@@ -127,7 +127,7 @@ func (m *modelImpl) Save() (id int32, err error) {
 	if err == nil {
 		i, err = m.rep.SaveProModel(m.value)
 		if err == nil {
-			m.value.Id = int32(i)
+			m.value.ID = int32(i)
 		}
 	}
 	return m.GetAggregateRootId(), err
@@ -142,12 +142,12 @@ func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 	delList := []int32{}
 	currMap := make(map[int32]*promodel.Spec, len(specs))
 	for _, v := range specs {
-		currMap[v.Id] = v
+		currMap[v.ID] = v
 	}
 	// 筛选出要删除的项
 	for _, v := range old {
-		if currMap[v.Id] == nil {
-			delList = append(delList, v.Id)
+		if currMap[v.ID] == nil {
+			delList = append(delList, v.ID)
 		}
 	}
 
@@ -161,7 +161,7 @@ func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 			v.ProModel = pk
 		}
 		if v.ProModel == pk {
-			v.Id, err = m.specService.SaveSpec(v)
+			v.ID, err = m.specService.SaveSpec(v)
 		}
 	}
 	return err
@@ -176,12 +176,12 @@ func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 	delList := []int32{}
 	currMap := make(map[int32]*promodel.Attr, len(attrs))
 	for _, v := range attrs {
-		currMap[v.Id] = v
+		currMap[v.ID] = v
 	}
 	// 筛选出要删除的项
 	for _, v := range old {
-		if currMap[v.Id] == nil {
-			delList = append(delList, v.Id)
+		if currMap[v.ID] == nil {
+			delList = append(delList, v.ID)
 		}
 	}
 	// 删除项
@@ -194,7 +194,7 @@ func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 			v.ProModel = pk
 		}
 		if v.ProModel == pk {
-			v.Id, err = m.attrService.SaveAttr(v)
+			v.ID, err = m.attrService.SaveAttr(v)
 		}
 	}
 	return err

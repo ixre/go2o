@@ -66,7 +66,7 @@ func (s *itemJsonUtil) getSpecJdo(spec promodel.SpecList) []specJdo {
 		for j, v2 := range v.Items {
 			arr[i].Value[j] = specItemJdo{
 				Name:     v2.Value,
-				Code:     fmt.Sprintf("%d:%d", v.Id, v2.Id),
+				Code:     fmt.Sprintf("%d:%d", v.ID, v2.ID),
 				ImageUrl: v2.Color,
 			}
 		}

@@ -166,7 +166,7 @@ func (p *productRepo) SelectAttr(where string, v ...interface{}) []*product.Attr
 
 // Save ProAttrInfo
 func (p *productRepo) SaveAttr(v *product.Attr) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.Id))
+	id, err := orm.Save(p._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")
 	}

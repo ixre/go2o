@@ -4,7 +4,7 @@ type (
 	// 属性
 	Attr struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品模型
 		ProModel int32 `db:"pro_model"`
 		// 属性名称
@@ -23,7 +23,7 @@ type (
 	// 属性项
 	AttrItem struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 属性编号
 		AttrId int32 `db:"attr_id"`
 		// 产品模型

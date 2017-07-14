@@ -21,7 +21,7 @@ type (
 
 	// 产品模型与品牌关联
 	ProModelBrand struct {
-		ID       int32 `db:"Id" pk:"yes" auto:"yes"`
+		ID       int32 `db:"id" pk:"yes" auto:"yes"`
 		BrandId  int32 `db:"brand_id"`
 		ProModel int32 `db:"pro_model"`
 	}
