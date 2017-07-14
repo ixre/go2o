@@ -65,7 +65,7 @@ func (c *contentRepo) SavePage(userId int32, v *content.Page) (int32, error) {
 // 获取文章数量
 func (c *contentRepo) GetArticleNumByCategory(categoryId int32) int {
 	num := 0
-	c.Connector.ExecScalar("SELECT COUNT(0) FROM con_article WHERE cat_id=?",
+	c.Connector.ExecScalar("SELECT COUNT(0) FROM article_list WHERE cat_id=?",
 		&num, categoryId)
 	return num
 }
@@ -78,16 +78,16 @@ func (c *contentRepo) GetAllArticleCategory() []*content.ArticleCategory {
 }
 
 // 判断栏目是否存在
-func (c *contentRepo) CategoryExists(indent string, id int32) bool {
+func (c *contentRepo) CategoryExists(alias string, id int32) bool {
 	num := 0
-	c.Connector.ExecScalar("SELECT COUNT(0) FROM con_article_category WHERE indent=? and id<>id",
-		&num, indent, id)
+	c.Connector.ExecScalar("SELECT COUNT(0) FROM article_category WHERE cat_alias=? and id<>id",
+		&num, alias, id)
 	return num > 0
 }
 
 // 保存栏目
 func (c *contentRepo) SaveCategory(v *content.ArticleCategory) (int32, error) {
-	return orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(c.GetOrm(), v, int(v.ID)))
 }
 
 // 删除栏目
@@ -114,7 +114,7 @@ func (c *contentRepo) GetArticleList(categoryId int32, begin int, end int) []*co
 
 // 保存文章
 func (c *contentRepo) SaveArticle(v *content.Article) (int32, error) {
-	return orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(c.GetOrm(), v, int(v.ID)))
 }
 
 // 删除文章

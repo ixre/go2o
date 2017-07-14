@@ -12,6 +12,7 @@ import (
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/query"
+	"strconv"
 )
 
 type contentService struct {
@@ -88,29 +89,26 @@ func (cs *contentService) GetArticleCategories() []*content.ArticleCategory {
 	return arr
 }
 
-// 获取文章栏目
-func (cs *contentService) GetArticleCategory(id int32) content.ArticleCategory {
-	m := cs._sysContent.ArticleManager().GetCategory(id)
-	if m != nil {
-		return m.GetValue()
+// 获取文章栏目,可传入ID或者别名
+func (cs *contentService) GetArticleCategory(cat string) content.ArticleCategory {
+	mgr := cs._sysContent.ArticleManager()
+	catId, err := strconv.Atoi(cat)
+	var c content.ICategory
+	if err == nil {
+		c = mgr.GetCategory(int32(catId))
+	} else {
+		c = mgr.GetCategoryByAlias(cat)
+	}
+	if c != nil {
+		return c.GetValue()
 	}
 	return content.ArticleCategory{}
-}
-
-// 根据别名获取文章分类
-func (cs *contentService) GetArticleCatByAlias(cat string) *content.ArticleCategory {
-	m := cs._sysContent.ArticleManager().GetCategoryByAlias(cat)
-	if m != nil {
-		v := m.GetValue()
-		return &v
-	}
-	return nil
 }
 
 // 保存文章栏目
 func (cs *contentService) SaveArticleCategory(v *content.ArticleCategory) (int32, error) {
 	m := cs._sysContent.ArticleManager()
-	c := m.GetCategory(v.Id)
+	c := m.GetCategory(v.ID)
 	if c == nil {
 		c = m.CreateCategory(v)
 	}
@@ -144,7 +142,7 @@ func (cs *contentService) DeleteArticle(id int32) error {
 // 保存文章
 func (cs *contentService) SaveArticle(e *content.Article) (int32, error) {
 	m := cs._sysContent.ArticleManager()
-	a := m.GetArticle(e.Id)
+	a := m.GetArticle(e.ID)
 	if a == nil {
 		a = m.CreateArticle(e)
 	}
@@ -155,7 +153,11 @@ func (cs *contentService) SaveArticle(e *content.Article) (int32, error) {
 	return -1, err
 }
 
-func (cs *contentService) PagedArticleList(catId int32, begin, size int,
+func (cs *contentService) PagedArticleList(catAlias string, begin, size int,
 	where string) (int, []*content.Article) {
-	return cs._query.PagedArticleList(catId, begin, size, where)
+	cat := cs._sysContent.ArticleManager().GetCategoryByAlias(catAlias)
+	if cat == nil || cat.GetDomainId() <= 0 {
+		return 0, []*content.Article{}
+	}
+	return cs._query.PagedArticleList(cat.GetDomainId(), begin, size, where)
 }

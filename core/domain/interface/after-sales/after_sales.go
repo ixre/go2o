@@ -81,8 +81,8 @@ var (
 	ErrNotConfirm *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_not_confirm", "售后单尚未确认")
 
-	ErrHasCancelled *domain.DomainError = domain.NewDomainError(
-		"err_after_sales_order_has_cancelled", "售后单已取消")
+	ErrHasCanceled *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_order_has_canceled", "售后单已取消")
 
 	ErrOrderAmount *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_amount", "售后单金额不能为零")

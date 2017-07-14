@@ -10,9 +10,11 @@
 package rsi
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
@@ -25,6 +27,7 @@ import (
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -39,17 +42,17 @@ type memberService struct {
 	valRepo         valueobject.IValueRepo
 }
 
-func NewMemberService(mchService *merchantService, rep member.IMemberRepo,
+func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
 	ms := &memberService{
-		_repo:           rep,
+		_repo:           repo,
 		_query:          q,
 		_partnerService: mchService,
 		_orderQuery:     oq,
 		valRepo:         valRepo,
 	}
 	return ms
-	//return ms.init()
+	//return m.init()
 }
 
 func (ms *memberService) init() *memberService {
@@ -265,9 +268,9 @@ func (ms *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
-func (ms *memberService) GetPresentLog(memberId int64, logId int32) *member.PresentLog {
+func (ms *memberService) GetWalletLog(memberId int64, logId int32) *member.WalletLog {
 	m := ms._repo.GetMember(memberId)
-	return m.GetAccount().GetPresentLog(logId)
+	return m.GetAccount().GetWalletLog(logId)
 }
 
 func (ms *memberService) getMember(memberId int64) (
@@ -482,14 +485,14 @@ func (ms *memberService) ModifyTradePassword(memberId int64,
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 }
 
-// 登录，返回结果(Result)和会员编号(Id);
+// 登录，返回结果(Result)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	val := ms._repo.GetMemberByUsr(usr)
 	if val == nil {
 		//todo: 界面加上使用手机号码登陆
-		//val = ms._repo.GetMemberValueByPhone(usr)
+		//val = m._repo.GetMemberValueByPhone(usr)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
@@ -506,7 +509,7 @@ func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error)
 	return val.Id, nil
 }
 
-// 登录，返回结果(Result)和会员编号(Id);
+// 登录，返回结果(Result)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *memberService) CheckLogin(usr string, pwd string, update bool) (r *define.Result64, err error) {
 	id, err := ms.testLogin(usr, pwd)
@@ -569,14 +572,55 @@ func (ms *memberService) InviterArray(memberId int64, depth int32) (r []int64, e
 }
 
 // 获取从指定时间到现在推荐指定等级会员的数量
-func (ms *memberService) GetInviterQuantity(memberId int64, level int32, begin int64) (int32, error) {
-	if level < 0 {
-		level = 0
+func (m *memberService) GetInviterQuantity(memberId int64, data map[string]string) (int32, error) {
+	where := ""
+	if data != nil && len(data) > 0 {
+		where = m.parseGetInviterDataParams(data)
 	}
-	if begin < 0 {
-		begin = 0
+	return m._query.GetInviterQuantity(memberId, where), nil
+}
+
+func (m *memberService) parseGetInviterDataParams(data map[string]string) string {
+	buf := bytes.NewBufferString("")
+	begin := data["begin"]
+	end := data["end"]
+	level := data["level"]
+	operate := data["operate"]
+	trust := data["trust"]
+
+	if begin != "" && end != "" {
+		buf.WriteString(" AND reg_time BETWEEN ")
+		buf.WriteString(begin)
+		buf.WriteString(" AND ")
+		buf.WriteString(end)
+	} else if begin != "" {
+		buf.WriteString(" AND reg_time >= ")
+		buf.WriteString(begin)
+	} else if end != "" {
+		buf.WriteString(" AND reg_time <= ")
+		buf.WriteString(end)
 	}
-	return ms._query.GetInviterQuantity(memberId, level, begin), nil
+
+	if level != "" {
+		if operate == "" {
+			operate = ">="
+		}
+		buf.WriteString(" AND level ")
+		buf.WriteString(operate)
+		buf.WriteString(level)
+	}
+
+	if trust != "" {
+		buf.WriteString(" AND reviewed ")
+		if trust == "true" {
+			buf.WriteString(" = ")
+		} else {
+			buf.WriteString(" <> ")
+		}
+		trustOk := strconv.Itoa(int(enum.ReviewPass))
+		buf.WriteString(trustOk)
+	}
+	return buf.String()
 }
 
 func (ms *memberService) GetBank(memberId int64) *member.BankInfo {
@@ -809,7 +853,11 @@ func (ms *memberService) ChargeAccount(memberId int64, account int32,
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
+		if account == member.AccountIntegral {
+			err = acc.AddIntegral(int(kind), outerNo, int64(amount), title)
+		} else {
+			err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
+		}
 	}
 	return parser.Result(0, err), nil
 }

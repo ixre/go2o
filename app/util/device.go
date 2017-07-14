@@ -97,6 +97,7 @@ func SetDeviceByUrlQuery(w http.ResponseWriter, r *http.Request) bool {
 func MobileRequest(r *http.Request) bool {
 	//判断是否来自移动请求
 	referrer := r.Referer()
+	//todo: 判断是否为手机
 	i := strings.Index(referrer, variable.DOMAIN_PREFIX_MOBILE)
 	if i != -1 {
 		preChar := referrer[i-1]

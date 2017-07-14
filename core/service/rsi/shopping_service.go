@@ -78,7 +78,7 @@ func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data ma
 	}
 	return &define.Result_{
 		Result_: false,
-		Message: "unknow action",
+		Message: "unknown action",
 	}, nil
 }
 
@@ -366,7 +366,7 @@ func (s *shoppingService) GetCartSettle(memberId int64,
 		st.Shop = &dto.SettleShopMeta{
 			Id:   v.Id,
 			Name: v.Name,
-			Tel:  ols.GetShopValue().Tel,
+			Tel:  ols.GetShopValue().ServiceTel,
 		}
 	}
 

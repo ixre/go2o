@@ -13,6 +13,9 @@ import (
 )
 
 var (
+	ErrIncorrectInfo *domain.DomainError = domain.NewDomainError(
+		"err_incorrect_info", "非法数据")
+
 	ErrRegOff *domain.DomainError = domain.NewDomainError(
 		"err_reg_off", "CODE:1010,系统暂停注册")
 
@@ -236,7 +239,7 @@ var (
 		"err_member_not_trusted", "尚未实名认证")
 
 	ErrNoChangedTrustInfo *domain.DomainError = domain.NewDomainError(
-		"err_member_no_changed_trust_info", "请更改实名信息后再进行提交")
+		"err_member_no_changed_trust_info", "请修改实名信息后再进行提交")
 
 	ErrRealName *domain.DomainError = domain.NewDomainError(
 		"err_real_name", "请输入真实姓名")

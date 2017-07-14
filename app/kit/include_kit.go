@@ -20,6 +20,7 @@ import (
 	"html/template"
 	ht "html/template"
 	"strings"
+	"sync"
 )
 
 var (
@@ -34,6 +35,10 @@ type templateIncludeKitWrapper struct {
 }
 
 type templateIncludeToolkit struct {
+	// 入口链接字点
+	entryUrlMap map[string]string
+	mutex       sync.Mutex
+	rwMut       sync.RWMutex
 }
 
 // 返回模板函数
@@ -42,6 +47,7 @@ func (t *templateIncludeToolkit) getFuncMap() ht.FuncMap {
 	fm["alias"] = t.alias
 	fm["script"] = t.scriptTag
 	fm["css"] = t.cssTag
+	fm["cssXY"] = t.cssXY
 	fm["entry"] = t.entryUrl
 	fm["catTree"] = t.CatTree
 	fm["catParent"] = t.catParent
@@ -105,7 +111,7 @@ func (t *templateIncludeToolkit) alias(s string) string {
 
 // CSS标签
 func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
-	registry := RPC.Registry(variable.DStaticServer, variable.DUrlHash)
+	registry := RPC.RegistryMap(variable.DStaticServer, variable.DUrlHash)
 	staticServe := registry[variable.DStaticServer]
 	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
@@ -127,7 +133,7 @@ func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
 
 // 脚本标签
 func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
-	registry := RPC.Registry(variable.DStaticServer, variable.DUrlHash)
+	registry := RPC.RegistryMap(variable.DStaticServer, variable.DUrlHash)
 	staticServe := registry[variable.DStaticServer]
 	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
@@ -146,36 +152,74 @@ func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
 	return template.HTML(buf.String())
 }
 
+// 将坐标(x,y)转换为CSS背景坐标
+func (t *templateIncludeToolkit) cssXY(xy string) string {
+	arr := strings.Split(xy, ",")
+	if len(arr) == 2 {
+		sa := []string{arr[0], "px ", arr[1], "px"}
+		return strings.Join(sa, "")
+	}
+	return "0px 0px"
+}
+
 // 入口URL
 func (t *templateIncludeToolkit) entryUrl(k string) string {
-	f := RPC.Registry
+	key := k
 	switch strings.TrimSpace(k) {
 	case "retail", "retail_portal", "retailPortal":
-		return f(variable.DRetailPortal)[variable.DRetailPortal]
+		key = variable.DRetailPortal
 	case "retail_m", "retail_portal_m":
-		return f(variable.DRetailMobilePortal)[variable.DRetailMobilePortal]
+		key = variable.DRetailMobilePortal
 	case "wholesale", "wholesale_portal", "wholesalePortal":
-		return f(variable.DWholesalePortal)[variable.DWholesalePortal]
+		key = variable.DWholesalePortal
 	case "image_serve", "img_serve", "img":
-		return f(variable.DImageServer)[variable.DImageServer]
-	case "static", "static_serve":
-		return f(variable.DStaticServer)[variable.DStaticServer]
+		key = variable.DImageServer
+	case "static_serve", "static":
+		key = variable.DStaticServer
 	}
-	return ""
+	t.rwMut.RLock()
+	if t.entryUrlMap != nil {
+		if v, ok := t.entryUrlMap[k]; ok {
+			t.rwMut.RUnlock()
+			return v
+		}
+	}
+	t.rwMut.RUnlock()
+	t.rwMut.Lock()
+	if t.entryUrlMap == nil {
+		t.entryUrlMap = make(map[string]string)
+	}
+	v := RPC.RegistryMap(key)[key]
+	t.entryUrlMap[key] = v
+	t.rwMut.Unlock()
+	return v
+}
+
+// 去掉虚拟未启用的分类
+func (t *templateIncludeToolkit) fixCatTree(cat *product.Category) {
+	catArr := []*product.Category{}
+	for _, v := range cat.Children {
+		if v.Enabled == 1 {
+			catArr = append(catArr, v)
+			t.fixCatTree(v)
+		}
+	}
+	cat.Children = catArr
 }
 
 // 分类树形
 func (t *templateIncludeToolkit) CatTree(parentId int32) product.Category {
 	c := rsi.ProductService.CategoryTree(parentId)
 	if c != nil {
+		t.fixCatTree(c)
 		return *c
 	}
 	return product.Category{}
 }
 
 // 获取分类的品牌
-func (t *templateIncludeToolkit) CatBrand(catId int32) []*promodel.ProBrand {
-	key := fmt.Sprintf("go2o:portal:cache:cat-brands-%d", catId)
+func (t *templateIncludeToolkit) CatBrand(catId int32, num int32) []*promodel.ProBrand {
+	key := fmt.Sprintf("go2o:portal:cache:cat-brands-%d-%d", catId, num)
 	_, err := t.getRds().GetInt(key)
 	if err == nil {
 		r, err := hashSet.GetRaw(key)
@@ -184,6 +228,9 @@ func (t *templateIncludeToolkit) CatBrand(catId int32) []*promodel.ProBrand {
 		}
 	}
 	arr := rsi.ProductService.GetCatBrands(catId)
+	if num > 0 && int(num) < len(arr) {
+		arr = arr[:num]
+	}
 	hashSet.Set(key, arr)
 	t.getRds().SetExpire(key, 1, cacheSeconds)
 	return arr
@@ -221,19 +268,19 @@ func (t *templateIncludeToolkit) portalNav(navType int32) []*model.PortalNav {
 }
 
 // 页面标题
-func (_t *templateIncludeToolkit) pageTitle(t string) string {
+func (t *templateIncludeToolkit) pageTitle(tit string) string {
 	if _TitleSuffix == "" {
 		cli, err := thrift.FoundationServeClient()
 		if err == nil {
 			defer cli.Transport.Close()
-			r, _ := cli.GetRegistryV1([]string{"PlatformName"})
+			r, _ := cli.GetRegistryMapV1([]string{"PlatformName"})
 			_TitleSuffix = r["PlatformName"]
 		}
 	}
-	if t == "" {
+	if tit == "" {
 		return _TitleSuffix
 	}
-	return t + "-" + _TitleSuffix
+	return tit + "-" + _TitleSuffix
 }
 
 // 拼接属性URL-Query
@@ -355,25 +402,28 @@ func (t *templateIncludeToolkit) rawHtml(v interface{}) ht.HTML {
 }
 
 // 获取销售排行商品
-func (t *templateIncludeToolkit) hotSaleItems(catId int32, quantity int32) []*define.Item {
+func (t *templateIncludeToolkit) hotSaleItems(catId int32, quantity int32) []*define.OldItem {
 	_, arr := rsi.ItemService.GetPagedOnShelvesItem(item.ItemNormal,
 		catId, 0, quantity, "", "item_info.sale_num DESC")
 	return arr
 }
 
 // 获取随机商品
-func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*define.Item {
+func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*define.OldItem {
+	if catId <= 0 {
+		catId = 0
+	}
 	return rsi.ItemService.GetRandomItem(catId, quantity, "")
 }
 
 // 获取大分类商品的
-func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*define.Item {
+func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*define.OldItem {
 	key := fmt.Sprintf("go2o:portal:cache:cat-items-%d-%d", catId, quantity)
 	_, err := t.getRds().GetInt(key)
 	if err == nil {
 		r, err := hashSet.GetRaw(key)
 		if err == nil {
-			return r.([]*define.Item)
+			return r.([]*define.OldItem)
 		}
 	}
 	arr := rsi.ItemService.GetBigCatItems(catId, quantity, "")
@@ -395,12 +445,8 @@ func (t *templateIncludeToolkit) productAttrs(productId int32) []define.Pair {
 
 // 获取文章列表
 func (t *templateIncludeToolkit) articles(cat string, quantity int32) []*content.Article {
-	c := rsi.ContentService.GetArticleCatByAlias(cat)
-	if c != nil {
-		_, arr := rsi.ContentService.PagedArticleList(c.Id, 0, int(quantity), "")
-		return arr
-	}
-	return []*content.Article{}
+	_, arr := rsi.ContentService.PagedArticleList(cat, 0, int(quantity), "")
+	return arr
 }
 
 //求余
@@ -418,7 +464,7 @@ func (t *templateIncludeToolkit) registry(keys ...string) map[string]string {
 	cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
-		r, _ := cli.GetRegistryV1(keys)
+		r, _ := cli.GetRegistryMapV1(keys)
 		return r
 	}
 	return map[string]string{}

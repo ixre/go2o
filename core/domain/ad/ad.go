@@ -74,7 +74,7 @@ func (a *adManagerImpl) DelAdGroup(id int32) error {
 // 创建广告组
 func (a *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
 	return newAdGroup(a, a.rep, &ad.AdGroup{
-		Id:      0,
+		ID:      0,
 		Name:    name,
 		Opened:  1,
 		Enabled: 1,
@@ -141,7 +141,7 @@ func newAdGroup(m *adManagerImpl, rep ad.IAdRepo, v *ad.AdGroup) ad.IAdGroup {
 
 // 获取领域编号
 func (a *AdGroupImpl) GetDomainId() int32 {
-	return a._value.Id
+	return a._value.ID
 }
 
 // 获取值
@@ -170,7 +170,7 @@ func (a *AdGroupImpl) GetPositions() []*ad.AdPosition {
 // 根据Id获取广告位
 func (a *AdGroupImpl) GetPosition(id int32) *ad.AdPosition {
 	for _, v := range a.GetPositions() {
-		if v.Id == id {
+		if v.ID == id {
 			return v
 		}
 	}
@@ -190,7 +190,7 @@ func (a *AdGroupImpl) DelPosition(id int32) error {
 
 // 保存广告位
 func (ag *AdGroupImpl) SavePosition(a *ad.AdPosition) (int32, error) {
-	if pos := ag._manager.GetAdPositionByKey(a.Key); pos != nil && pos.Id != a.Id {
+	if pos := ag._manager.GetAdPositionByKey(a.Key); pos != nil && pos.ID != a.ID {
 		return 0, ad.ErrKeyExists
 	}
 	a.GroupId = ag.GetDomainId()

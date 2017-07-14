@@ -742,3 +742,77 @@ CREATE TABLE ws_cart_item (
   quantity  int(8) comment '数量',
   checked   int(2) comment '是否勾选结算',
   PRIMARY KEY (id)) comment='批发购物车商品项';
+
+
+/* 2017-06-09 */
+
+ALTER TABLE `con_article_category`
+  CHANGE COLUMN `alias` `cat_alias` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
+  RENAME TO  `article_category` ;
+
+ALTER TABLE `con_article`
+  RENAME TO  `article_list` ;
+
+ALTER TABLE `con_page`
+  RENAME TO  `content_page` ;
+
+/* 2017-07-04 */
+
+
+ALTER TABLE `mch_shop`
+  CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '商店编号' ,
+  CHANGE COLUMN `mch_id` `vendor_id` INT(11) NULL DEFAULT NULL COMMENT '商户编号' ,
+  CHANGE COLUMN `shop_type` `shop_type` TINYINT(1) NULL DEFAULT NULL COMMENT '商店类型' ,
+  CHANGE COLUMN `name` `name` VARCHAR(50) NULL DEFAULT NULL COMMENT '商店名称' ,
+  CHANGE COLUMN `sort_number` `sort_number` INT(11) NULL DEFAULT '0' COMMENT '排序序号' ,
+  CHANGE COLUMN `state` `state` INT(2) NULL DEFAULT NULL COMMENT '状态 1:表示正常,2:表示关闭 ' ,
+  ADD COLUMN `opening_state` INT(2) NULL COMMENT '商店营业状态,1:正常,2:暂停营业' AFTER `create_time`;
+
+
+ALTER TABLE `article_category`
+  ADD COLUMN `perm_flag` INT(2) NULL COMMENT '访问权限' AFTER `parent_id`;
+
+
+ALTER TABLE `article_list`
+  CHANGE COLUMN `publisher_id` `publisher_id` INT(11) NULL DEFAULT NULL AFTER `thumbnail`,
+  ADD COLUMN `priority` INT(2) NULL COMMENT '优先级' AFTER `location`,
+  ADD COLUMN `access_key` VARCHAR(45) NULL COMMENT '访问钥匙' AFTER `priority`;
+
+ALTER TABLE `content_page`
+  CHANGE COLUMN `title` `title` VARCHAR(100) NULL DEFAULT NULL COMMENT '标题' ,
+  ADD COLUMN `perm_flag` INT(2) NULL COMMENT '访问权限' AFTER `title`,
+  ADD COLUMN `access_key` VARCHAR(45) NULL COMMENT '访问钥匙' AFTER `perm_flag`, RENAME TO  `ex_page` ;
+
+ALTER TABLE `cat_category`
+  ADD COLUMN `priority` INT(2) NULL COMMENT '优先级' AFTER `pro_model`;
+
+ALTER TABLE `cat_category`
+  RENAME TO  `pro_category` ;
+
+UPDATE pro_category SET priority = 0 WHERE id>0 AND priority IS NULL;
+
+ALTER TABLE `ws_item`
+  CHANGE COLUMN `price` `price` DECIMAL(10,2) NULL DEFAULT 0 COMMENT '价格' ,
+  CHANGE COLUMN `price_range` `price_range` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT 0 COMMENT '价格区间' ;
+
+ALTER TABLE `ws_item`
+  CHANGE COLUMN `price` `price` DECIMAL(10,2) NOT NULL DEFAULT '0.00' COMMENT '价格' ,
+  CHANGE COLUMN `review_remark` `review_remark` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL COMMENT '审核备注' ;
+
+/* 2017-07-07 */
+
+update pro_category set icon='' WHERE id>0 AND icon IS NULL;
+ALTER TABLE `pro_category`
+  ADD COLUMN `virtual_cat` INT(2) NOT NULL DEFAULT 0 AFTER `name`,
+  CHANGE COLUMN `url` `cat_url` VARCHAR(120) NOT NULL COMMENT '品牌链接地址' AFTER `virtual_cat`,
+  CHANGE COLUMN `icon` `icon` VARCHAR(150) NOT NULL COMMENT '分类图片' ;
+
+ALTER TABLE `mch_shop`
+  CHANGE COLUMN `shop_type` `shop_type` TINYINT(1) NOT NULL ,
+  CHANGE COLUMN `state` `state` TINYINT(1) NOT NULL ,
+  CHANGE COLUMN `opening_state` `opening_state` TINYINT(1) NOT NULL ;
+
+ALTER TABLE `pro_category`
+  ADD COLUMN `icon_xy` VARCHAR(45) NOT NULL AFTER `icon`;
+
+update pro_category set icon_xy='0,0' WHERE id> 0 && icon_xy IS NULL;

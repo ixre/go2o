@@ -53,7 +53,7 @@ func WalkArticleCategory(cs []*content.ArticleCategory, v *content.ArticleCatego
 	start iterator.WalkFunc, over iterator.WalkFunc) {
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
 		return v1.(*content.ArticleCategory).ParentId ==
-			v.(*content.ArticleCategory).Id
+			v.(*content.ArticleCategory).ID
 	}
 	var arr []interface{} = make([]interface{}, len(cs))
 	for i, v := range cs {

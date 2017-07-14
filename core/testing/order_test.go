@@ -129,7 +129,7 @@ func TestCancelOrder(t *testing.T) {
 	o = manager.GetOrderById(o.GetAggregateRootId())
 
 	py := o.(order.INormalOrder).GetPaymentOrder()
-	//err = py.PaymentByWallet("支付订单")
+	err = py.PaymentByWallet("支付订单")
 	pv := py.GetValue()
 	payState := pv.State
 	if payState == payment.StateFinishPayment {
@@ -138,8 +138,17 @@ func TestCancelOrder(t *testing.T) {
 		t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.GetTradeNo())
 	}
 	t.Logf("支付单信息：%#v", pv)
-	//t.Log("调价：",py.Adjust(-pv.FinalAmount))
+	//t.Log("调价：",py.Adjust(-0.1))
 	//t.Log(py.Cancel())
+
+	no := o.(order.INormalOrder)
+	for _, v := range no.GetSubOrders() {
+		err = v.Cancel("取消")
+		if err != nil {
+			t.Log("取消失败：", err.Error())
+			t.FailNow()
+		}
+	}
 	//return
 	time.Sleep(time.Second * 2)
 
@@ -258,7 +267,7 @@ func TestTradeOrder(t *testing.T) {
 	if requireTicket {
 		t.Log("上传发票")
 		io = o.(order.ITradeOrder)
-		err := io.UpdateTicket("http://img.ts.com/res/nopic.gif")
+		err := io.UpdateTicket("//img.ts.com/res/nopic.gif")
 		if err != nil {
 			t.Errorf("上传发票出错：%s", err.Error())
 			t.FailNow()

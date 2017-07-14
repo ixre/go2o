@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
+	"strings"
 )
 
 type ItemQuery struct {
@@ -215,20 +216,28 @@ func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.Go
 
 	*/
 
+	s := []string{where}
+	if catId > 0 {
+		if where != "" {
+			s = append(s, " AND")
+		}
+		s = append(s, fmt.Sprintf("item_info.cat_id=%d)", catId))
+	}
+	search := strings.Join(s, "")
+
 	list := []*item.GoodsItem{}
 	sql := fmt.Sprintf(`SELECT * FROM item_info
-
     JOIN (SELECT ROUND(RAND() * (
-      SELECT MAX(id)-? FROM item_info WHERE item_info.cat_id=?
-        AND item_info.review_state=? AND item_info.shelve_state=? %s
+      SELECT MAX(id)-? FROM item_info WHERE  item_info.review_state=?
+         AND item_info.shelve_state=? %s
          )) AS id) AS r2
-		 WHERE item_info.Id > r2.id AND item_info.cat_id=?
+		 WHERE item_info.Id > r2.id
 		  AND item_info.review_state=?
 		 AND item_info.shelve_state=? %s LIMIT ?`,
-		where, where)
+		search, search)
 	i.Connector.GetOrm().SelectByQuery(&list, sql,
-		quantity, catId, enum.ReviewPass, item.ShelvesOn,
-		catId, enum.ReviewPass, item.ShelvesOn, quantity)
+		quantity, enum.ReviewPass, item.ShelvesOn,
+		enum.ReviewPass, item.ShelvesOn, quantity)
 	return list
 }
 
@@ -249,7 +258,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
-         AND (?=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
+         AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn, shopId, shopId, keyword)
 
@@ -258,7 +267,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
-         AND (?=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
+         AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,

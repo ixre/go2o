@@ -70,17 +70,17 @@ func (c *categoryRepo) CheckGoodsContain(mchId, id int32) bool {
 	num := 0
 	//清理项
 	c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id IN
-		(SELECT Id FROM cat_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
+		(SELECT ID FROM pro_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
 	return num > 0
 }
 
 func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	//删除子类
-	_, _, err := c.Connector.Exec("DELETE FROM cat_category WHERE parent_id=?",
+	_, _, err := c.Connector.Exec("DELETE FROM pro_category WHERE parent_id=?",
 		id)
 
 	//删除分类
-	_, _, err = c.Connector.Exec("DELETE FROM cat_category WHERE id=?",
+	_, _, err = c.Connector.Exec("DELETE FROM pro_category WHERE id=?",
 		id)
 
 	// 清理缓存
@@ -146,7 +146,7 @@ func (c *categoryRepo) GetRelationBrands(idArr []int32) []*promodel.ProBrand {
 	list := []*promodel.ProBrand{}
 	if len(idArr) > 0 {
 		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM pro_model_brand
-        WHERE pro_model IN (SELECT distinct pro_model FROM cat_category WHERE id IN(`+
+        WHERE pro_model IN (SELECT distinct pro_model FROM pro_category WHERE id IN(`+
 			format.IdArrJoinStr32(idArr)+`)))`)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")

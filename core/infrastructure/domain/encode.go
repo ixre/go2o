@@ -16,8 +16,10 @@ import (
 )
 
 var (
+	// Sha1算法的基础字符
+	sha1OffsetBaseString = []byte("go2o-by-jarrysix")
 	// Sha1算法的随机字符
-	Sha1OffSet string = "go2o-by-jarrysix"
+	Sha1OffSet string = crypto.Md5(sha1OffsetBaseString)[8:24]
 )
 
 func ChkPwdRight(pwd string) (bool, error) {

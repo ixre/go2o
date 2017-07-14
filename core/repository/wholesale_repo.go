@@ -51,13 +51,13 @@ func (w *wholesaleRepo) SaveWsWholesaler(v *wholesaler.WsWholesaler, create bool
 
 // 同步商品
 func (w *wholesaleRepo) SyncItems(vendorId int32, shelve, review int32) (add int, del int) {
-	add, _, err1 := w._conn.Exec(`INSERT INTO ws_item (vendor_id,item_id,shelve_state,review_state)
-    SELECT ?,item_info.id,?,? FROM item_info WHERE item_info.vendor_id=?
-    AND item_info.id NOT IN (SELECT item_id FROM ws_item WHERE vendor_id=?)`,
-		vendorId, shelve, review, vendorId, vendorId)
-	if err1 != nil {
-		log.Println("wholesale item sync fail:", err1.Error())
-	}
+	//add, _, err1 := w._conn.Exec(`INSERT INTO ws_item (vendor_id,item_id,shelve_state,review_state)
+	//SELECT ?,item_info.id,?,? FROM item_info WHERE item_info.vendor_id=?
+	//AND item_info.id NOT IN (SELECT item_id FROM ws_item WHERE vendor_id=?)`,
+	//	vendorId, shelve, review, vendorId, vendorId)
+	//if err1 != nil {
+	//	log.Println("wholesale item sync fail:", err1.Error())
+	//}
 	del, _, err2 := w._conn.Exec(`DELETE FROM ws_item WHERE
     vendor_id=? AND item_id NOT IN (SELECT id FROM item_info
     WHERE vendor_id=?)`, vendorId, vendorId)
@@ -65,6 +65,24 @@ func (w *wholesaleRepo) SyncItems(vendorId int32, shelve, review int32) (add int
 		log.Println("wholesale item sync fail:", err2.Error())
 	}
 	return add, del
+}
+
+// 获取待同步商品
+func (w *wholesaleRepo) GetAwaitSyncItems(vendorId int32) []int {
+	add := []int{}
+	i := 0
+	err := w._conn.Query(`SELECT id FROM item_info WHERE
+		vendor_id = ? AND id NOT IN (SELECT item_id FROM
+		 ws_item WHERE vendor_id=?)`, func(rows *sql.Rows) {
+		for rows.Next() {
+			rows.Scan(&i)
+			add = append(add, i)
+		}
+	}, vendorId, vendorId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("wholesale get awit item fail:", err.Error())
+	}
+	return add
 }
 
 // Select WsRebateRate

@@ -95,6 +95,8 @@ func Init(ctx gof.App, appFlag int) {
 
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 
+	rds := sto.(storage.IRedisStorage)
+
 	/** Repository **/
 	proMRepo := repository.NewProModelRepo(db, orm)
 	valueRepo = repository.NewValueRepo(db, sto)
@@ -106,16 +108,18 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valueRepo)
 	productRepo := repository.NewProductRepo(db, proMRepo, valueRepo)
 	itemWsRepo := repository.NewItemWholesaleRepo(db)
-	itemRepo := repository.NewGoodsItemRepo(db, productRepo,
+	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
+	itemRepo := repository.NewGoodsItemRepo(db, catRepo, productRepo,
 		proMRepo, itemWsRepo, expressRepo, valueRepo)
 	tagSaleRepo := repository.NewTagSaleRepo(db, valueRepo)
 	promRepo := repository.NewPromotionRepo(db, itemRepo, memberRepo)
-	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
+
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 
-	shopRepo := repository.NewShopRepo(db, sto)
+	shopRepo := repository.NewShopRepo(db, sto, valueRepo)
 	wholesaleRepo := repository.NewWholesaleRepo(db)
-	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
+	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo,
+		itemRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
 	cartRepo := repository.NewCartRepo(db, memberRepo, mchRepo, itemRepo)
 	personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
 	deliveryRepo := repository.NewDeliverRepo(db)
@@ -150,7 +154,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
-	ItemService = NewSaleService(catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
+	ItemService = NewSaleService(rds, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
@@ -172,12 +176,11 @@ func initRpcServe(ctx gof.App) {
 	if hash == "" {
 		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
 	}
-	ssl, _ := strconv.ParseBool(gf("ssl_enabled"))
+	ssl := gf("ssl_enabled")
 	prefix := "http://"
-	if ssl {
+	if ssl == "true" || ssl == "1" {
 		prefix = "https://"
 	}
-
 	mp[variable.DEnabledSSL] = gf("ssl_enabled")
 	mp[variable.DStaticServer] = gf("static_server")
 	mp[variable.DImageServer] = gf("image_server")
@@ -190,18 +193,19 @@ func initRpcServe(ctx gof.App) {
 		variable.DOMAIN_PREFIX_MEMBER, domain}, "")
 	mp[variable.DPassport] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
+	mp[variable.DMerchant] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_MERCHANT, domain}, "")
 	mp[variable.DHApi] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_HAPI, domain}, "")
+		variable.DOMAIN_PREFIX_HApi, domain}, "")
 
 	mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MOBILE,
-		variable.DOMAIN_PREFIX_PORTAL, domain}, "")
+		variable.DOMAIN_PREFIX_MOBILE, domain}, "")
 	mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MOBILE,
-		variable.DOMAIN_PREFIX_WHOLESALE, domain}, "")
+		variable.DOMAIN_PREFIX_M_WHOLESALE, domain}, "")
 	mp[variable.DMobilePassport] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MOBILE,
-		variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
+		variable.DOMAIN_PREFIX_M_PASSPORT, domain}, "")
+	mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
 
 	valueRepo.SavesRegistry(mp)
 }
