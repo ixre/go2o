@@ -33,7 +33,7 @@ func NewCategory(v *content.ArticleCategory, m *articleManagerImpl,
 
 // 获取领域编号
 func (c *categoryImpl) GetDomainId() int32 {
-	return c.value.Id
+	return c.value.ID
 }
 
 // 获取文章数量
@@ -51,8 +51,23 @@ func (c *categoryImpl) SetValue(v *content.ArticleCategory) error {
 	if c.contentRepo.CategoryExists(c.value.Alias, c.GetDomainId()) {
 		return content.ErrCategoryAliasExists
 	}
-	v.Id = c.GetDomainId()
-	c.value = v
+	v.ID = c.GetDomainId()
+	c.value.Name = v.Name
+	c.value.Alias = v.Alias
+	c.value.Location = v.Location
+	c.value.Title = v.Title
+	c.value.SortNum = v.SortNum
+	c.value.ParentId = v.ParentId
+	c.value.Title = v.Title
+	c.value.Keywords = v.Keywords
+	c.value.Description = v.Description
+	// 设置访问权限
+	if v.PermFlag > 0 {
+		c.value.PermFlag = v.PermFlag
+	}
+	if c.value.PermFlag <= 0 {
+		c.value.PermFlag = content.PermAll
+	}
 	return nil
 }
 
@@ -61,7 +76,7 @@ func (c *categoryImpl) Save() (int32, error) {
 	c.value.UpdateTime = time.Now().Unix()
 	id, err := c.contentRepo.SaveCategory(c.value)
 	if err == nil {
-		c.value.Id = id
+		c.value.ID = id
 	}
 	return id, err
 }
@@ -86,7 +101,7 @@ func NewArticle(v *content.Article, m content.IArticleManager,
 
 // 获取领域编号
 func (a *articleImpl) GetDomainId() int32 {
-	return a._value.Id
+	return a._value.ID
 }
 
 // 获取值
@@ -96,15 +111,30 @@ func (a *articleImpl) GetValue() content.Article {
 
 // 设置值
 func (a *articleImpl) SetValue(v *content.Article) error {
-	v.Id = a.GetDomainId()
-	a._value = v
+	a._value.Title = v.Title
+	a._value.SmallTitle = v.SmallTitle
+	a._value.SortNum = v.SortNum
+	a._value.Location = v.Location
+	a._value.Content = v.Content
+	a._value.Thumbnail = v.Thumbnail
+	a._value.CatId = v.CatId
+	a._value.AccessKey = v.AccessKey
+	a._value.Priority = v.Priority
+	a._value.UpdateTime = time.Now().Unix()
+
+	if a._value.CreateTime == 0 {
+		a._value.CreateTime = a._value.UpdateTime
+	}
+	if a._value.PublisherId <= 0 {
+		a._value.PublisherId = v.PublisherId
+	}
 	return nil
 }
 
 // 栏目
 func (a *articleImpl) Category() content.ICategory {
 	if a._category == nil {
-		a._category = a._manager.GetCategory(a._value.CategoryId)
+		a._category = a._manager.GetCategory(a._value.CatId)
 	}
 	return a._category
 }
@@ -114,13 +144,8 @@ func (a *articleImpl) Save() (int32, error) {
 	if a.Category() == nil {
 		return a.GetDomainId(), content.NotSetCategory
 	}
-	unix := time.Now().Unix()
-	a._value.UpdateTime = unix
-	if a._value.CreateTime == 0 {
-		a._value.CreateTime = unix
-	}
 	id, err := a._rep.SaveArticle(a._value)
-	a._value.Id = id
+	a._value.ID = id
 	return id, err
 }
 
@@ -146,6 +171,7 @@ func (a *articleManagerImpl) GetAllCategory() []content.ICategory {
 	if l == 0 && a._userId <= 0 {
 		a.initSystemCategory()
 		list = a._rep.GetAllArticleCategory()
+		l = len(list)
 	}
 	catList := make([]content.ICategory, l)
 	for i, v := range list {
@@ -158,34 +184,46 @@ func (a *articleManagerImpl) GetAllCategory() []content.ICategory {
 func (a *articleManagerImpl) initSystemCategory() {
 	list := []*content.ArticleCategory{
 		{
-			Id:    0,
-			Alias: "mch-news",
-			Name:  "商户公告",
+			ID:       0,
+			Alias:    "news",
+			Name:     "商城公告",
+			PermFlag: content.PermAll,
 		},
 		{
-			Id:    0,
-			Alias: "news",
-			Name:  "商城公告",
+			ID:       0,
+			Alias:    "wholesale",
+			Name:     "批发中心公告",
+			PermFlag: content.PermAll,
 		},
 		{
-			Id:    0,
-			Alias: "mm-news",
-			Name:  "会员公告",
+			ID:       0,
+			Alias:    "member",
+			Name:     "会员公告",
+			PermFlag: content.PermMember,
 		},
 		{
-			Id:    0,
-			Alias: "service",
-			Name:  "客户服务",
+			ID:       0,
+			Alias:    "merchant",
+			Name:     "商户公告",
+			PermFlag: content.PermVendor,
 		},
 		{
-			Id:    0,
-			Alias: "help",
-			Name:  "帮助中心",
+			ID:       0,
+			Alias:    "service",
+			Name:     "客户服务",
+			PermFlag: content.PermAll,
 		},
 		{
-			Id:    0,
-			Alias: "about",
-			Name:  "关于商城",
+			ID:       0,
+			Alias:    "help",
+			Name:     "帮助中心",
+			PermFlag: content.PermAll,
+		},
+		{
+			ID:       0,
+			Alias:    "about",
+			Name:     "关于商城",
+			PermFlag: content.PermAll,
 		},
 	}
 	for _, v := range list {
@@ -217,7 +255,7 @@ func (a *articleManagerImpl) GetCategoryByAlias(alias string) content.ICategory 
 	list := a.GetAllCategory()
 	for _, v := range list {
 		if v2 := v.GetValue(); v2.Alias == alias ||
-			strconv.Itoa(int(v2.Id)) == alias {
+			strconv.Itoa(int(v2.ID)) == alias {
 			return v
 		}
 	}

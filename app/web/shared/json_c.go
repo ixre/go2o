@@ -58,33 +58,6 @@ func getMd5(s string) string {
 	return crypto.Md5([]byte(s))[8:16]
 }
 
-// 广告
-func (j *JsonC) Ad(c *echox.Context) error {
-	namesParams := strings.TrimSpace(c.QueryParam("keys"))
-	names := strings.Split(namesParams, "|")
-	userId, _ := util.I32Err(strconv.Atoi(c.QueryParam("ad_user")))
-	as := rsi.AdService
-	result := make(map[string]*ad.AdDto, len(names))
-	key := fmt.Sprintf("go2o:rep:ad:%d:front:%s", userId, getMd5(namesParams))
-	sto := c.App.Storage()
-	if err := sto.Get(key, &result); err != nil {
-		//从缓存中读取
-		for _, n := range names {
-			//分别绑定广告
-			dto := as.GetAdAndDataByKey(userId, n)
-			if dto == nil {
-				result[n] = nil
-				continue
-			}
-			result[n] = dto
-		}
-		seconds := rsi.FoundationService.GetRegistry().CacheAdMaxAge
-		sto.SetExpire(key, result, seconds)
-		//log.Println("---- 更新广告缓存 ",err)
-	}
-	return c.JSON(http.StatusOK, result)
-}
-
 func (j *JsonC) getMultiParams(s string) (p string, size, begin int) {
 	arr := strings.Split(s, "*")
 	l := len(arr)

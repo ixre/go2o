@@ -1,7 +1,7 @@
 package kit
 
 // RPC服务
-var RPC = &rpcToolkit{}
+var RPC = NewRpcToolkit()
 
 // 模板包含函数
 var TInc = &templateIncludeToolkit{}

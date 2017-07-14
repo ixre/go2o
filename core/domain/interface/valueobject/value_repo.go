@@ -33,7 +33,57 @@ var (
 	}
 )
 
+const (
+	// 商户提现是否免费
+	RKMerchantTakeOutCashFee = "MerchantTakeOutCashFee"
+	// 会员转账开关
+	RKMemberTransferAccountsOn = "MemberTransferAccountsOn"
+	// 会员转账提示信息
+	RKMemberTransferAccountsMessage = "MemberTransferAccountsMessage"
+)
+
 type (
+	Registry struct {
+		MerchantTakeOutCashFree bool
+		// 收货时的提示信息
+		OrderReceiveAlertMessage string
+		// 是否启用会员经验值功能
+		MemberExperienceEnabled bool
+		// 会员资料不完善提醒信息
+		MemberProfileNotCompletedMessage string
+		// 会员实名提醒信息
+		MemberNotTrustedMessage string
+		// 注册后赠送积分数量
+		PresentIntegralNumOfRegister int64
+		// 会员邀请关系级数
+		MemberReferLayer int
+		// 会员即时通讯是否必须
+		MemberImRequired bool
+		// 会员是否验证手机号码格式
+		MemberCheckPhoneFormat bool
+		// 会员默认个人签名
+		MemberDefaultPersonRemark string
+
+		// 会员提现开关
+		MemberTakeOutOn bool
+		// 会员提现提示
+		MemberTakeOutMessage string
+		// 提现是否必须实名制认证
+		TakeOutMustTrust bool
+
+		// 商品默认图片
+		GoodsDefaultImage string
+		// 商品最低利润率,既(销售价-供货价)/销售价的比例
+		GoodsMinProfitRate float32
+
+		// 广告缓存时间（秒）
+		CacheAdMaxAge int64
+		// 敏感词,以|分割
+		ShopIncorrectAliasWords string
+		// 键值数据
+		RegistryData map[string]string
+	}
+
 	// 系统键值
 	SysKeyValue struct {
 		// 编号
@@ -85,52 +135,6 @@ type (
 		WpVersion string
 		// 微软APP版发布地址
 		WpReleaseUrl string
-	}
-
-	Registry struct {
-		// 商户提现是否免费
-		MerchantTakeOutCashFree bool
-		// 收货时的提示信息
-		OrderReceiveAlertMessage string
-		// 是否启用会员经验值功能
-		MemberExperienceEnabled bool
-		// 会员资料不完善提醒信息
-		MemberProfileNotCompletedMessage string
-		// 会员转账开关
-		MemberTransferAccountsOn bool
-		// 会员转账提示信息
-		MemberTransferAccountsMessage string
-		// 会员实名提醒信息
-		MemberNotTrustedMessage string
-		// 注册后赠送积分数量
-		PresentIntegralNumOfRegister int64
-		// 会员邀请关系级数
-		MemberReferLayer int
-		// 会员即时通讯是否必须
-		MemberImRequired bool
-		// 会员是否验证手机号码格式
-		MemberCheckPhoneFormat bool
-		// 会员默认个人签名
-		MemberDefaultPersonRemark string
-
-		// 会员提现开关
-		MemberTakeOutOn bool
-		// 会员提现提示
-		MemberTakeOutMessage string
-		// 提现是否必须实名制认证
-		TakeOutMustTrust bool
-
-		// 商品默认图片
-		GoodsDefaultImage string
-		// 商品最低利润率,既(销售价-供货价)/销售价的比例
-		GoodsMinProfitRate float32
-
-		// 广告缓存时间（秒）
-		CacheAdMaxAge int64
-		// 敏感词,以|分割
-		ShopIncorrectAliasWords string
-		// 键值数据
-		RegistryData map[string]string
 	}
 
 	// 模板配置
@@ -304,11 +308,13 @@ type (
 
 		// 获取数据存储
 		GetRegistry() Registry
-
 		// 保存数据存储
 		SaveRegistry(v *Registry) error
+
 		// 根据键获取数据值
-		GetsRegistry(keys []string) map[string]string
+		GetsRegistry(keys []string) []string
+		// 根据键获取数据值字典
+		GetsRegistryMap(keys []string) map[string]string
 		// 保存数据值
 		SavesRegistry(values map[string]string) error
 

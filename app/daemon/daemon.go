@@ -163,9 +163,6 @@ func AddCron(spec string, cmd func()) {
 	cronTab.AddFunc(spec, cmd)
 }
 
-func recoverDaemon() {
-}
-
 type defaultService struct {
 	app     gof.App
 	sOrder  bool

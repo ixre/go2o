@@ -45,14 +45,21 @@ func GetNoPicPath() string {
 	return _noPicUrl
 }
 
+func containProto(s string) bool {
+	return strings.HasPrefix(s, "//") ||
+		strings.HasPrefix(s, "http://") ||
+		strings.HasPrefix(s, "https://")
+}
+
 func getImageServe() string {
 	app := gof.CurrentApp
 	cfg := app.Config()
 	s := cfg.GetString(variable.ImageServer)
-	if s[0] == '/' {
-		s = fmt.Sprintf("http://www.%s%s", cfg.GetString(variable.ServerDomain), s)
+	if containProto(s) {
+		return s
 	}
-	return s
+	return fmt.Sprintf("//www.%s%s",
+		cfg.GetString(variable.ServerDomain), s)
 }
 
 // 获取资源前缀
@@ -81,7 +88,7 @@ func GetGoodsImageUrl(image string) string {
 		return noPicUrl
 	}
 
-	if strings.HasPrefix(image, "http://") || strings.HasPrefix(image, "https://") {
+	if containProto(image) {
 		return image
 	}
 	return imageServe + "/" + image
@@ -105,8 +112,19 @@ func GetResUrl(image string) string {
 		return noPicUrl
 	}
 
-	if strings.HasPrefix(image, "http://") || strings.HasPrefix(image, "https://") {
+	if containProto(image) {
 		return image
 	}
 	return imageServe + "/" + image
+}
+
+// 获取URL/路径的名称
+func GetName(url string) string {
+	if url != "" {
+		arr := strings.Split(url, "/")
+		if l := len(arr); l > 0 {
+			return arr[l-1]
+		}
+	}
+	return ""
 }

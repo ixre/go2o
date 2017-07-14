@@ -31,6 +31,7 @@ type goodsRepo struct {
 	_orm         orm.Orm
 	_skuService  item.ISkuService
 	_snapService item.ISnapshotService
+	catRepo      product.ICategoryRepo
 	proRepo      product.IProductRepo
 	itemWsRepo   item.IItemWholesaleRepo
 	expressRepo  express.IExpressRepo
@@ -39,13 +40,14 @@ type goodsRepo struct {
 }
 
 // 商品仓储
-func NewGoodsItemRepo(c db.Connector, proRepo product.IProductRepo,
-	proMRepo promodel.IProModelRepo, itemWsRepo item.IItemWholesaleRepo,
-	expressRepo express.IExpressRepo,
+func NewGoodsItemRepo(c db.Connector, catRepo product.ICategoryRepo,
+	proRepo product.IProductRepo, proMRepo promodel.IProModelRepo,
+	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	valRepo valueobject.IValueRepo) *goodsRepo {
 	return &goodsRepo{
 		Connector:   c,
 		_orm:        c.GetOrm(),
+		catRepo:     catRepo,
 		proRepo:     proRepo,
 		proMRepo:    proMRepo,
 		itemWsRepo:  itemWsRepo,
@@ -72,7 +74,7 @@ func (g *goodsRepo) SnapshotService() item.ISnapshotService {
 
 // 创建商品
 func (g *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
-	return itemImpl.NewSaleItem(g.proRepo, nil, v, g.valRepo, g,
+	return itemImpl.NewItem(g.proRepo, g.catRepo, nil, v, g.valRepo, g,
 		g.proMRepo, g.itemWsRepo, g.expressRepo, nil)
 }
 
@@ -153,7 +155,7 @@ func (g *goodsRepo) RemoveGoodsLevelPrice(id int32) error {
 
 // 保存商品
 func (g *goodsRepo) SaveValueGoods(v *item.GoodsItem) (int32, error) {
-	return orm.I32(orm.Save(g.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(g.GetOrm(), v, int(v.ID)))
 }
 
 // 获取已上架的商品
@@ -176,13 +178,13 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 
 	list := []*valueobject.Goods{}
 	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
-	  INNER JOIN cat_category cat ON it.cat_id=cat.id
+	  INNER JOIN pro_category cat ON it.cat_id=cat.id
 		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=?
 		  AND it.shelve_state=? %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN cat_category cat ON it.cat_id=cat.id
+		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN pro_category cat ON it.cat_id=cat.id
 		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=? AND it.shelve_state=?
 		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
 		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,

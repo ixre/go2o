@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -94,6 +95,9 @@ func (m *merchantManagerImpl) checkSignUpInfo(v *merchant.MchSignUp) error {
 	}
 	if util.CheckChineseCardID(v.PersonId) != nil {
 		return merchant.ErrPersonCardId
+	}
+	if v.Phone == "" {
+		return merchant.ErrMissingPhone
 	}
 	if v.CompanyImage == "" {
 		return merchant.ErrMissingCompanyImage
@@ -247,6 +251,7 @@ type merchantImpl struct {
 	_host            string
 	_rep             merchant.IMerchantRepo
 	_wsRepo          wholesaler.IWholesaleRepo
+	_itemRepo        item.IGoodsItemRepo
 	_shopRepo        shop.IShopRepo
 	_userRepo        user.IUserRepo
 	_valRepo         valueobject.IValueRepo
@@ -264,13 +269,14 @@ type merchantImpl struct {
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
-	wsRepo wholesaler.IWholesaleRepo, shopRepo shop.IShopRepo,
-	userRepo user.IUserRepo, memberRepo member.IMemberRepo,
+	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
+	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo,
 	valRepo valueobject.IValueRepo) merchant.IMerchant {
 	mch := &merchantImpl{
 		_value:      v,
 		_rep:        rep,
 		_wsRepo:     wsRepo,
+		_itemRepo:   itemRepo,
 		_shopRepo:   shopRepo,
 		_userRepo:   userRepo,
 		_valRepo:    valRepo,
@@ -425,7 +431,7 @@ func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
 		if v == nil {
 			v, _ = m.createWholesaler()
 		}
-		m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo)
+		m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo, m._itemRepo)
 	}
 	return m._wholesaler
 }
@@ -482,7 +488,7 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	//	StateHtml:  "",
 	//}
 	//err = m._rep.SaveSiteConf(id, m._siteConf)
-	//m._siteConf.MerchantId = id
+	//m._siteConf.VendorId = id
 
 	// SaleConf
 	//m._saleConf = &merchant.SaleConf{
@@ -490,7 +496,7 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	//	IntegralBackNum: 0,
 	//}
 	//err = m._rep.SaveSaleConf(id, m._saleConf)
-	//m._saleConf.MerchantId = id
+	//m._saleConf.VendorId = id
 
 	// 创建API
 	api := &merchant.ApiInfo{
@@ -570,7 +576,7 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 // 企业资料管理器
 func (m *merchantImpl) ProfileManager() merchant.IProfileManager {
 	if m._profileManager == nil {
-		m._profileManager = newProfileManager(m)
+		m._profileManager = newProfileManager(m, m._valRepo)
 	}
 	return m._profileManager
 }

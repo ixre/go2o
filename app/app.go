@@ -12,12 +12,13 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/log"
-	"github.com/jsix/gof/util"
+	"github.com/jsix/gof/shell"
 	"go2o/core/variable"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
+	"time"
 )
 
 const (
@@ -46,8 +47,8 @@ const (
 )
 
 const (
-	FsMain = iota
-	FsMainMobile
+	FsPortal = iota
+	FsPortalMobile
 	FsPassport
 	FsPassportMobile
 	FsUCenter
@@ -86,10 +87,8 @@ func flushJsGlob() {
 		defer fi.Close()
 		data, err := ioutil.ReadAll(fi)
 		if err == nil {
-			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='%s://%s'+domain;",
-				variable.Domain,
-				util.BoolExt.TString(variable.DOMAIN_PREFIX_SSL, "https", "http"),
-				variable.DOMAIN_PREFIX_HAPI,
+			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='//%s'+domain;",
+				variable.Domain, variable.DOMAIN_PREFIX_HApi,
 			))
 			txt := string(data)
 			delimer := "/*~*/"
@@ -120,19 +119,44 @@ func FsInit(debug bool) {
 
 // 重设MAC OX下的文件监视更改
 func resetFsOnDarwin() {
-	webFs[FsMain] = false
-	webFs[FsMainMobile] = false
+	webFs[FsPortal] = false
+	webFs[FsPortalMobile] = false
 	webFs[FsPassport] = false
 	webFs[FsPassportMobile] = false
-	webFs[FsUCenter] = !false
+	webFs[FsUCenter] = false
 	webFs[FsUCenterMobile] = false
 	webFs[FsShop] = false
 	webFs[FsShopMobile] = false
 	webFs[FsMch] = !false
-	webFs[FsWholesale] = false
+	webFs[FsWholesale] = !false
 }
 
 // 获取模板是否监视更改
 func GetFs(i int) bool {
 	return webFs[i]
+}
+
+// 自动安装包
+func AutoInstall() {
+	execInstall()
+	d := time.Second * 15
+	t := time.NewTimer(d)
+	for {
+		select {
+		case <-t.C:
+			if err := execInstall(); err == nil {
+				t.Reset(d)
+			} else {
+				break
+			}
+		}
+	}
+}
+
+func execInstall() error {
+	_, _, err := shell.Run("go install .")
+	if err != nil {
+		log.Println("[ Go2o][ Install]:", err)
+	}
+	return err
 }

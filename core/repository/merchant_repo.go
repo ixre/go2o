@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -38,6 +39,7 @@ type merchantRepo struct {
 	storage     storage.Interface
 	manager     merchant.IMerchantManager
 	_wsRepo     wholesaler.IWholesaleRepo
+	_itemRepo   item.IGoodsItemRepo
 	_userRepo   user.IUserRepo
 	_mssRepo    mss.IMssRepo
 	_shopRepo   shop.IShopRepo
@@ -47,14 +49,15 @@ type merchantRepo struct {
 }
 
 func NewMerchantRepo(c db.Connector, storage storage.Interface,
-	wsRepo wholesaler.IWholesaleRepo, shopRepo shop.IShopRepo,
-	userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
+	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
+	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo) merchant.IMerchantRepo {
 	return &merchantRepo{
 		Connector:   c,
 		_orm:        c.GetOrm(),
 		storage:     storage,
 		_wsRepo:     wsRepo,
+		_itemRepo:   itemRepo,
 		_userRepo:   userRepo,
 		_mssRepo:    mssRepo,
 		_shopRepo:   shopRepo,
@@ -102,7 +105,7 @@ func (m *merchantRepo) GetMemberFromSignUpToken(token string) int64 {
 }
 
 func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
-	return merchantImpl.NewMerchant(v, m, m._wsRepo,
+	return merchantImpl.NewMerchant(v, m, m._wsRepo, m._itemRepo,
 		m._shopRepo, m._userRepo, m._memberRepo, m._valRepo)
 }
 

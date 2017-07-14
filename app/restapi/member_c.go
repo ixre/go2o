@@ -9,6 +9,7 @@
 package restapi
 
 import (
+	"errors"
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
@@ -62,8 +63,11 @@ func (mc *MemberC) Login(c echo.Context) error {
 
 // 注册
 func (mc *MemberC) Register(c echo.Context) error {
-	r := c.Request()
 	result := gof.Message{}
+	return c.JSON(http.StatusOK,
+		result.Error(errors.New("注册暂停，请通过微信或其他方式注册!")))
+
+	r := c.Request()
 	mchId := getMerchantId(c)
 	usr := r.FormValue("usr")
 	pwd := r.FormValue("pwd")

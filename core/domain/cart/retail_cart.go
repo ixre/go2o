@@ -257,7 +257,7 @@ func (c *cartImpl) put(itemId, skuId int32, num int32) (*cart.RetailCartItem, er
 		CartId:   c.GetAggregateRootId(),
 		VendorId: iv.VendorId,
 		ShopId:   iv.ShopId,
-		ItemId:   iv.Id,
+		ItemId:   iv.ID,
 		SkuId:    skuId,
 		Quantity: num,
 		Sku:      item.ParseSkuMedia(iv, sku),

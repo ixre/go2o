@@ -24,8 +24,6 @@ var (
 		MemberExperienceEnabled: true,
 		//会员资料不完善提醒信息
 		MemberProfileNotCompletedMessage: "您的个人资料未完善,是否立即完善?",
-		// 会员转账提示信息
-		MemberTransferAccountsMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
 		// 会员未实名认证提示信息
 		MemberNotTrustedMessage: "您尚未实名认证!",
 		// 会员是否验证手机号码格式
@@ -39,8 +37,7 @@ var (
 		MemberTakeOutOn: true,
 		// 提现是否必须实名制认证
 		TakeOutMustTrust: true,
-		// 会员转账开关
-		MemberTransferAccountsOn: true,
+
 		// 会员默认个人签名
 		MemberDefaultPersonRemark: "什么也没留下",
 
@@ -59,6 +56,10 @@ var (
 			"RetailSiteLogo":    "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
 			"WholesaleSiteLogo": "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
 			"Telephone":         "021-88888888",
+			// 会员转账开关
+			valueobject.RKMemberTransferAccountsOn: "true",
+			// 会员转账提示信息
+			valueobject.RKMemberTransferAccountsMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
 		},
 	}
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`

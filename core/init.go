@@ -10,6 +10,7 @@ package core
 
 import (
 	"encoding/gob"
+	"github.com/jsix/goex/report"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
@@ -53,7 +54,7 @@ func registerTypes() {
 	gob.Register(&merchant.ApiInfo{})
 	gob.Register(&shop.OnlineShop{})
 	gob.Register(&shop.OfflineShop{})
-	gob.Register(&shop.ShopDto{})
+	gob.Register(&shop.ComplexShop{})
 	gob.Register(&member.Account{})
 	gob.Register(&payment.PaymentOrder{})
 	gob.Register(&member.Relation{})
@@ -67,6 +68,9 @@ func Init(a *AppImpl, debug, trace bool) bool {
 	a._debugMode = debug
 	if trace {
 		a.Db().GetOrm().SetTrace(a._debugMode)
+	}
+	if debug {
+		report.WATCH_CONF_FILE = true
 	}
 	OrmMapping(a.Db())
 	variable.Domain = a._config.GetString(variable.ServerDomain)
@@ -93,9 +97,9 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(mss.Replay{}, "msg_replay")
 
 	/* 内容 */
-	orm.Mapping(content.Page{}, "con_page")
-	orm.Mapping(content.Article{}, "con_article")
-	orm.Mapping(content.ArticleCategory{}, "con_article_category")
+	orm.Mapping(content.Page{}, "ex_page")
+	orm.Mapping(content.Article{}, "article_list")
+	orm.Mapping(content.ArticleCategory{}, "article_category")
 
 	/** new **/
 	orm.Mapping(member.Level{}, "mm_level")
@@ -103,7 +107,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.Profile{}, "mm_profile")
 	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
 	orm.Mapping(member.BalanceLog{}, "mm_balance_log")
-	orm.Mapping(member.PresentLog{}, "mm_wallet_log")
+	orm.Mapping(member.WalletLog{}, "mm_wallet_log")
 	orm.Mapping(member.Account{}, "mm_account")
 	orm.Mapping(member.Address{}, "mm_deliver_addr")
 	orm.Mapping(member.Relation{}, "mm_relation")
@@ -149,7 +153,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(product.Product{}, "pro_product")
 	orm.Mapping(item.GoodsItem{}, "item_info")
 	orm.Mapping(item.Sku{}, "item_sku")
-	orm.Mapping(product.Category{}, "cat_category")
+	orm.Mapping(product.Category{}, "pro_category")
 	orm.Mapping(promodel.ProModel{}, "pro_model")
 	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")
 	orm.Mapping(promodel.ProBrand{}, "pro_brand")

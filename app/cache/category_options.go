@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/service/rsi"
+	"strings"
 )
 
 func readToCategoryDropList(mchId int32) []byte {
@@ -25,9 +26,10 @@ func readToCategoryDropList(mchId int32) []byte {
 		c := v1.(*product.Category)
 		if c.ID != 0 {
 			buf.WriteString(fmt.Sprintf(
-				`<option class="opt%d" value="%d">%s</option>`,
+				`<option class="opt%d" value="%d">%s┊%s</option>`,
 				level,
 				c.ID,
+				strings.Repeat("┈", level-1),
 				c.Name,
 			))
 		}
@@ -60,16 +62,16 @@ func readToArticleCategoryDropList() []byte {
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*content.ArticleCategory)
-		if c.Id != 0 {
+		if c.ID != 0 {
 			buf.WriteString(fmt.Sprintf(
 				`<option class="opt%d" value="%d">%s</option>`,
 				level,
-				c.Id,
+				c.ID,
 				c.Name,
 			))
 		}
 	}
-	util.WalkArticleCategory(categories, &content.ArticleCategory{Id: 0},
+	util.WalkArticleCategory(categories, &content.ArticleCategory{ID: 0},
 		f, nil)
 	return buf.Bytes()
 }

@@ -159,7 +159,7 @@ func TestItemSaveSku(t *testing.T) {
 		arr = append(arr, &item.Sku{
 			ProductId: iv.ProductId,
 			// 商品编号
-			ItemId: iv.Id,
+			ItemId: iv.ID,
 			// 图片
 			Image: "",
 			// 规格数据

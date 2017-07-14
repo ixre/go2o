@@ -43,14 +43,13 @@ func (m *serviceC) Device(c *echox.Context) error {
 // 登陆状态
 func (s *serviceC) LoginState(c *echox.Context) error {
 	mp := make(map[string]interface{})
-	proto := util.BoolExt.TString(variable.DOMAIN_PREFIX_SSL, "https", "http")
 	mobileReq := ut.MobileRequest(c.Request())
-	mPrefix := util.BoolExt.TString(mobileReq, variable.DOMAIN_PREFIX_MOBILE, "")
-	pstUrl := fmt.Sprintf("%s://%s%s%s", proto,
-		variable.DOMAIN_PREFIX_PASSPORT, mPrefix, variable.Domain)
+	mPrefix := util.BoolExt.TString(mobileReq, variable.DOMAIN_PREFIX_M_PASSPORT,
+		variable.DOMAIN_PREFIX_PASSPORT)
+	pstUrl := fmt.Sprintf("//%s%s", mPrefix, variable.Domain)
 	memberId := getMemberId(c)
 	if memberId <= 0 {
-		registry, _ := rsi.FoundationService.GetRegistryV1([]string{
+		registry, _ := rsi.FoundationService.GetRegistryMapV1([]string{
 			"PlatformName",
 		})
 		mp["PtName"] = registry["PlatformName"]
@@ -58,8 +57,8 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 		mp["RegisterUrl"] = pstUrl + "/register"
 		mp["Login"] = 0
 	} else {
-		mmUrl := fmt.Sprintf("%s://%s%s", proto,
-			variable.DOMAIN_PREFIX_MEMBER, mPrefix, variable.Domain)
+		mmUrl := fmt.Sprintf("//%s%s",
+			variable.DOMAIN_PREFIX_MEMBER, variable.Domain)
 		m, _ := rsi.MemberService.GetProfile(memberId)
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"

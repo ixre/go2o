@@ -275,7 +275,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCa
 		CartId:   c.GetAggregateRootId(),
 		SellerId: iv.VendorId,
 		ShopId:   iv.ShopId,
-		ItemId:   iv.Id,
+		ItemId:   iv.ID,
 		SkuId:    skuId,
 		Quantity: quantity,
 		Sku:      item.ParseSkuMedia(iv, sku),

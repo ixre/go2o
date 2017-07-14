@@ -26,6 +26,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Result SetValue(string key, string value)")
 	fmt.Fprintln(os.Stderr, "  Result DeleteValue(string key)")
 	fmt.Fprintln(os.Stderr, "   GetRegistryV1( keys)")
+	fmt.Fprintln(os.Stderr, "   GetRegistryMapV1( keys)")
 	fmt.Fprintln(os.Stderr, "   GetValuesByPrefix(string prefix)")
 	fmt.Fprintln(os.Stderr, "  string RegisterApp(SsoApp app)")
 	fmt.Fprintln(os.Stderr, "  SsoApp GetApp(string name)")
@@ -182,25 +183,51 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetRegistryV1 requires 1 args")
 			flag.Usage()
 		}
-		arg50 := flag.Arg(1)
-		mbTrans51 := thrift.NewTMemoryBufferLen(len(arg50))
-		defer mbTrans51.Close()
-		_, err52 := mbTrans51.WriteString(arg50)
-		if err52 != nil {
+		arg59 := flag.Arg(1)
+		mbTrans60 := thrift.NewTMemoryBufferLen(len(arg59))
+		defer mbTrans60.Close()
+		_, err61 := mbTrans60.WriteString(arg59)
+		if err61 != nil {
 			Usage()
 			return
 		}
-		factory53 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt54 := factory53.GetProtocol(mbTrans51)
+		factory62 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt63 := factory62.GetProtocol(mbTrans60)
 		containerStruct0 := define.NewFoundationServiceGetRegistryV1Args()
-		err55 := containerStruct0.ReadField1(jsProt54)
-		if err55 != nil {
+		err64 := containerStruct0.ReadField1(jsProt63)
+		if err64 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := containerStruct0.Keys
 		value0 := argvalue0
 		fmt.Print(client.GetRegistryV1(value0))
+		fmt.Print("\n")
+		break
+	case "GetRegistryMapV1":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetRegistryMapV1 requires 1 args")
+			flag.Usage()
+		}
+		arg65 := flag.Arg(1)
+		mbTrans66 := thrift.NewTMemoryBufferLen(len(arg65))
+		defer mbTrans66.Close()
+		_, err67 := mbTrans66.WriteString(arg65)
+		if err67 != nil {
+			Usage()
+			return
+		}
+		factory68 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt69 := factory68.GetProtocol(mbTrans66)
+		containerStruct0 := define.NewFoundationServiceGetRegistryMapV1Args()
+		err70 := containerStruct0.ReadField1(jsProt69)
+		if err70 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := containerStruct0.Keys
+		value0 := argvalue0
+		fmt.Print(client.GetRegistryMapV1(value0))
 		fmt.Print("\n")
 		break
 	case "GetValuesByPrefix":
@@ -218,19 +245,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RegisterApp requires 1 args")
 			flag.Usage()
 		}
-		arg57 := flag.Arg(1)
-		mbTrans58 := thrift.NewTMemoryBufferLen(len(arg57))
-		defer mbTrans58.Close()
-		_, err59 := mbTrans58.WriteString(arg57)
-		if err59 != nil {
+		arg72 := flag.Arg(1)
+		mbTrans73 := thrift.NewTMemoryBufferLen(len(arg72))
+		defer mbTrans73.Close()
+		_, err74 := mbTrans73.WriteString(arg72)
+		if err74 != nil {
 			Usage()
 			return
 		}
-		factory60 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt61 := factory60.GetProtocol(mbTrans58)
+		factory75 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt76 := factory75.GetProtocol(mbTrans73)
 		argvalue0 := define.NewSsoApp()
-		err62 := argvalue0.Read(jsProt61)
-		if err62 != nil {
+		err77 := argvalue0.Read(jsProt76)
+		if err77 != nil {
 			Usage()
 			return
 		}

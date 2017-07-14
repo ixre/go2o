@@ -9,8 +9,9 @@
 package enum
 
 const (
-	TRUE  int = 1
-	FALSE int = 0
+	Unknown int32 = -1
+	False   int32 = 0
+	True    int32 = 1
 )
 
 const (

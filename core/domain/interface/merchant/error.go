@@ -62,6 +62,9 @@ var (
 	ErrMissingPersonName *domain.DomainError = domain.NewDomainError(
 		"err_mch_missing_person_name", "请填写法人姓名")
 
+	ErrMissingPhone *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_phone", "请填写联系电话")
+
 	ErrMissingPersonId *domain.DomainError = domain.NewDomainError(
 		"err_mch_missing_person_id", "请填写法人身份证")
 

@@ -15,8 +15,10 @@ import (
 	"go2o/core/domain"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
+	"strings"
 	"time"
 )
 
@@ -24,13 +26,15 @@ var _ merchant.IProfileManager = new(profileManagerImpl)
 
 type profileManagerImpl struct {
 	*merchantImpl
+	valRepo valueobject.IValueRepo
 	//企业信息列表
 	ent *merchant.EnterpriseInfo
 }
 
-func newProfileManager(m *merchantImpl) merchant.IProfileManager {
+func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo) merchant.IProfileManager {
 	return &profileManagerImpl{
 		merchantImpl: m,
+		valRepo:      valRepo,
 	}
 }
 
@@ -46,7 +50,6 @@ func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 	dst *merchant.EnterpriseInfo) {
 	// 商户编号
 	dst.MchId = p.GetAggregateRootId()
-
 	// 公司名称
 	dst.CompanyName = src.CompanyName
 	// 公司营业执照编号
@@ -63,8 +66,6 @@ func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 	dst.City = src.City
 
 	dst.District = src.District
-
-	dst.Location = src.Location
 	// 法人身份证
 	dst.PersonIdNo = src.PersonIdNo
 	// 身份证验证图片(人捧身份证照相)
@@ -84,10 +85,12 @@ func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int
 	p.copy(v, e)
 	dt := time.Now().Unix()
 	e.Reviewed = enum.ReviewAwaiting
+	aName := p.valRepo.GetAreaNames([]int32{e.Province, e.City, e.District})
+	e.Location = strings.Join(aName, "")
 	e.ReviewTime = dt
 	e.UpdateTime = dt
 	p.ent = nil //clean cache
-	return util.I32Err(p._rep.SaveMchEnterpriseInfo(v))
+	return util.I32Err(p._rep.SaveMchEnterpriseInfo(e))
 }
 
 // 标记企业为审核通过

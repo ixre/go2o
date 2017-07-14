@@ -94,7 +94,7 @@ func (a *advertisementRepo) DelAdPosition(id int32) error {
 
 // 保存广告位
 func (a *advertisementRepo) SaveAdPosition(v *ad.AdPosition) (int32, error) {
-	id, err := orm.I32(orm.Save(a.GetOrm(), v, int(v.Id)))
+	id, err := orm.I32(orm.Save(a.GetOrm(), v, int(v.ID)))
 	if err == nil {
 		//更新用户的广告缓存
 		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", 0))
@@ -104,7 +104,7 @@ func (a *advertisementRepo) SaveAdPosition(v *ad.AdPosition) (int32, error) {
 
 // 保存
 func (a *advertisementRepo) SaveAdGroup(v *ad.AdGroup) (int32, error) {
-	return orm.I32(orm.Save(a.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(a.GetOrm(), v, int(v.ID)))
 }
 
 // 设置用户的广告

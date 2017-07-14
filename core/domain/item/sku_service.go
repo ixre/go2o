@@ -130,7 +130,7 @@ func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 	}
 	for _, v := range dst {
 		if fs, ok := fromMap[v.SpecData]; ok {
-			//log.Println("SKU MERGE > dst: ",v.Id,"; src:",fs.Id)
+			//log.Println("SKU MERGE > dst: ",v.ID,"; src:",fs.ID)
 			if v.ID == 0 {
 				v.ID = fs.ID
 			}
@@ -333,14 +333,14 @@ func (s *skuServiceUtil) init() *skuServiceUtil {
 	s.skuTemp = &template.Template{}
 	htm := `{{range $i,$v := .Spec}}
         <div class="mod-sku-spec">
-            <span class="spec-label">{{$v.Name}}</span>
-            <p class="spec-option">
+            <div class="spec-label">{{$v.Name}}</div>
+            <div class="spec-option">
                 {{range $i2,$vi := $v.Items}}
-                <a class="spec-option-check spec-option-item" href="javascript:void(0)" sid="{{$v.Id}}:{{$vi.Id}}">
+                <a class="spec-option-check spec-option-item" href="javascript:void(0)" sid="{{$v.ID}}:{{$vi.ID}}">
                     {{$vi.Value}}
                 </a>
                 {{end}}
-            </p>
+            </div>
         </div>
        {{end}}
     `
