@@ -52,20 +52,20 @@ func (p *productService) GetAttrItem(id int32) *promodel.AttrItem {
 
 // 获取模型属性
 func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
 	return m.Attrs()
 }
 
 // 获取模型属性Html
 func (p *productService) GetModelAttrsHtml(proModel int32) string {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
 	attrs := m.Attrs()
 	return p.pmRepo.AttrService().AttrsHtml(attrs)
 }
 
 // 获取模型规格
 func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
 	return m.Specs()
 }
 
@@ -73,8 +73,8 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error) {
 	var pm promodel.IModel
 	var err error
-	if v.Id > 0 {
-		ev := p.GetModel(v.Id)
+	if v.ID > 0 {
+		ev := p.GetModel(v.ID)
 		if ev == nil {
 			err = errors.New("模型不存在")
 			goto R
@@ -99,10 +99,10 @@ func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error
 	}
 	// 保存模型
 	if err == nil {
-		v.Id, err = pm.Save()
+		v.ID, err = pm.Save()
 	}
 R:
-	return parser.Result(v.Id, err), nil
+	return parser.Result(v.ID, err), nil
 }
 
 // 删除产品模型
@@ -137,7 +137,7 @@ func (p *productService) GetBrands() []*promodel.ProBrand {
 
 // 获取模型关联的产品品牌
 func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
-	pm := p.pmRepo.CreateModel(&promodel.ProModel{Id: id})
+	pm := p.pmRepo.CreateModel(&promodel.ProModel{ID: id})
 	return pm.Brands()
 }
 

@@ -184,11 +184,11 @@ func (p *productImpl) mergeAttr(src []*product.Attr, dst *[]*product.Attr) {
 	to := *dst
 	sMap := make(map[int32]int32, len(src))
 	for _, v := range src {
-		sMap[v.AttrId] = v.Id
+		sMap[v.AttrId] = v.ID
 	}
 	for _, v := range to {
 		if id, ok := sMap[v.AttrId]; ok {
-			v.Id = id
+			v.ID = id
 		}
 	}
 }
@@ -225,12 +225,12 @@ func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 	delList := []int32{}
 	currMap := make(map[int32]*product.Attr, len(arr))
 	for _, v := range arr {
-		currMap[v.Id] = v
+		currMap[v.ID] = v
 	}
 	// 筛选出要删除的项
 	for _, v := range old {
-		if currMap[v.Id] == nil {
-			delList = append(delList, v.Id)
+		if currMap[v.ID] == nil {
+			delList = append(delList, v.ID)
 		}
 	}
 	// 删除项
@@ -243,7 +243,7 @@ func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 			v.ProductId = pk
 		}
 		if v.ProductId == pk && v.AttrData != "" {
-			v.Id, err = util.I32Err(p.repo.SaveAttr(v))
+			v.ID, err = util.I32Err(p.repo.SaveAttr(v))
 		}
 	}
 	return err
