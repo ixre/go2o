@@ -56,8 +56,9 @@ func NewShoppingService(r order.IOrderRepo,
 
 /*------------------ 购物车  ------------------*/
 
-/* 批发购物车 */
+/*---------------- 批发购物车 ----------------*/
 
+// 批发购物车接口
 func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
 	//todo: check member
 	c := s._cartRepo.GetMyCart(memberId, cart.KWholesale)
@@ -143,11 +144,9 @@ func (s *shoppingService) wsGetSimpleCart(c cart.ICart, data map[string]string) 
 	return r, nil
 }
 
-func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
-	aId := c.GetAggregateRootId()
-	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
-	skuData := data["Data"]
-	arr := []*cart.ItemPair{}
+// 转换提交到购物车的数据(PUT和UPDATE), 数据如：91:1;92:1
+func (s *shoppingService) wsParseCartPostedData(skuData string) (arr []*cart.ItemPair) {
+	arr = []*cart.ItemPair{}
 	splitArr := strings.Split(skuData, ";")
 	for _, str := range splitArr {
 		i := strings.Index(str, ":")
@@ -163,6 +162,31 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 			})
 		}
 	}
+	return arr
+}
+
+// 生成结算提交的数据(立即购买),skuData参考数据：skuId:num;skuId2;num2
+func (s *shoppingService) createCheckedData(itemId int32, arr []*cart.ItemPair) string {
+	buf := bytes.NewBufferString("{\"")
+	buf.WriteString(strconv.Itoa(int(itemId)))
+	buf.WriteString("\":[")
+	for i, v := range arr {
+		if i != 0 {
+			buf.WriteString(",")
+		}
+		buf.WriteString("\"")
+		buf.WriteString(strconv.Itoa(int(v.SkuId)))
+		buf.WriteString("\"")
+	}
+	buf.WriteString("]}")
+	return buf.String()
+}
+
+// 放入商品，data["Data"]
+func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
+	aId := c.GetAggregateRootId()
+	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
+	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
 		err = c.Put(itemId, v.SkuId, v.Quantity)
 		if err != nil {
@@ -172,29 +196,21 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 	if err == nil {
 		_, err = c.Save()
 	}
-	return parser.Result(aId, err), nil
+	r := parser.Result(aId, err)
+	if r.Result_ {
+		mp := make(map[string]interface{})
+		mp["cartId"] = aId
+		mp["checked"] = s.createCheckedData(itemId, arr)
+		b, _ := json.Marshal(mp)
+		r.Message = string(b)
+	}
+	return r, nil
 }
 
 func (s *shoppingService) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
-	skuData := data["Data"]
-	arr := []*cart.ItemPair{}
-	splitArr := strings.Split(skuData, ";")
-	for _, str := range splitArr {
-		i := strings.Index(str, ":")
-		if i == -1 {
-			continue
-		}
-		skuId, err := util.I32Err(strconv.Atoi(str[:i]))
-		quantity, err1 := util.I32Err(strconv.Atoi(str[i+1:]))
-		if err == nil && err1 == nil {
-			arr = append(arr, &cart.ItemPair{
-				SkuId:    skuId,
-				Quantity: quantity,
-			})
-		}
-	}
+	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
 		err = c.Update(itemId, v.SkuId, v.Quantity)
 		if err != nil {
