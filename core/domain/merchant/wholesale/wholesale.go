@@ -101,7 +101,7 @@ func (w *wholesalerImpl) syncSingleItem(itemId int32, syncPrice bool) error {
 				{
 					ItemId:          itemId,
 					SkuId:           v.ID,
-					RequireQuantity: 2,
+					RequireQuantity: 1,
 					WholesalePrice:  float64(v.Price),
 				},
 			})

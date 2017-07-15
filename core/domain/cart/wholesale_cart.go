@@ -246,6 +246,9 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCa
 		if sku == nil {
 			return nil, item.ErrNoSuchItemSku
 		}
+		//todo: 如果SKU没有启用批发,或没有达到最低的数量
+		//arr := wsIt.GetSkuPrice(skuId)
+
 		stock = sku.Stock
 	} else if iv.SkuNum > 0 {
 		return nil, cart.ErrItemNoSku
@@ -254,7 +257,6 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCa
 	if stock == 0 {
 		return nil, item.ErrFullOfStock
 	}
-
 	// 添加数量
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
