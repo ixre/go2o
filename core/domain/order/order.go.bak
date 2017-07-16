@@ -660,7 +660,7 @@ func (o *orderImpl) createSubOrderByVendor(parentOrderId int32, buyerId int32,
 		FinalAmount:    0,
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 		IsSuspend:   0,
-		BuyerRemark: "",
+		BuyerComment: "",
 		Remark:      "",
 		State:       order.StatAwaitingPayment,
 		UpdateTime:  o.value.UpdateTime,

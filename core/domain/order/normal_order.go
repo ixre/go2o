@@ -710,12 +710,12 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		ExpressFee:     0,
 		FinalAmount:    0,
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend:   0,
-		BuyerRemark: "",
-		Remark:      "",
-		State:       order.StatAwaitingPayment,
-		UpdateTime:  o.value.UpdateTime,
-		Items:       items,
+		IsSuspend:    0,
+		BuyerComment: "",
+		Remark:       "",
+		State:        order.StatAwaitingPayment,
+		UpdateTime:   o.value.UpdateTime,
+		Items:        items,
 	}
 	// 计算订单金额
 	for _, item := range items {

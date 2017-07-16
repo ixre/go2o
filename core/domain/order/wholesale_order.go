@@ -56,9 +56,24 @@ func newWholesaleOrder(base *baseOrderImpl,
 	return o.init()
 }
 
-func (o *wholesaleOrderImpl) init() order.IOrder {
-	o.getValue()
-	return o
+func (w *wholesaleOrderImpl) init() order.IOrder {
+	if w.GetAggregateRootId() <= 0 {
+		w.value = &order.WholesaleOrder{
+			ID:          0,
+			OrderNo:     "",
+			OrderId:     0,
+			BuyerId:     w.baseValue.BuyerId,
+			VendorId:    0,
+			ShopId:      0,
+			ItemAmount:  0,
+			ExpressFee:  0,
+			PackageFee:  0,
+			FinalAmount: 0,
+			State:       w.baseValue.State,
+		}
+	}
+	w.getValue()
+	return w
 }
 
 func (o *wholesaleOrderImpl) getValue() *order.WholesaleOrder {
@@ -85,18 +100,8 @@ func (o *wholesaleOrderImpl) SetItems(items []*order.MinifyItem) {
 
 // 转换为订单相关对象
 func (w *wholesaleOrderImpl) parseOrder(items []*order.MinifyItem) {
-	w.value = &order.WholesaleOrder{
-		ID:          0,
-		OrderNo:     "",
-		OrderId:     0,
-		BuyerId:     w.baseValue.BuyerId,
-		VendorId:    0,
-		ShopId:      0,
-		ItemAmount:  0,
-		ExpressFee:  0,
-		PackageFee:  0,
-		FinalAmount: 0,
-		State:       w.baseValue.State,
+	if w.GetAggregateRootId() > 0 {
+		panic("订单已经生成，无法解析")
 	}
 	w.items = []*orderItem{}
 	for _, v := range items {
@@ -216,7 +221,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	co.ExpressFee = float64(v.ExpressFee)
 	co.PackageFee = float64(v.PackageFee)
 	co.FinalAmount = float64(v.FinalAmount)
-	co.BuyerRemark = v.BuyerRemark
+	co.BuyerComment = v.BuyerComment
 	co.IsBreak = 0
 	co.UpdateTime = v.UpdateTime
 	co.Items = []*order.ComplexItem{}
@@ -407,6 +412,15 @@ func (o *wholesaleOrderImpl) SetAddress(addressId int64) error {
 	return nil
 }
 
+// 设置或添加买家留言，如已经提交订单，将在原留言后附加
+func (w *wholesaleOrderImpl) SetComment(comment string) {
+	if w.GetAggregateRootId() > 0 {
+		w.value.BuyerComment += "$break$" + comment
+	} else {
+		w.value.BuyerComment = comment
+	}
+}
+
 // 生成支付单
 func (o *wholesaleOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
@@ -474,7 +488,7 @@ func (o *wholesaleOrderImpl) AppendLog(logType order.LogType,
 
 // 添加备注
 func (o *wholesaleOrderImpl) AddRemark(remark string) {
-	o.value.BuyerRemark = remark
+	o.value.BuyerComment = remark
 }
 
 // 保存订单

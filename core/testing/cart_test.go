@@ -42,7 +42,7 @@ func TestCombineCart(t *testing.T) {
 
 func joinItemsToCart(c cart.ICart, t *testing.T) {
 	itemRepo := ti.ItemRepo
-	gs := itemRepo.GetItem(3)
+	gs := itemRepo.GetItem(66)
 	arr := gs.SkuArray()
 	itemId := gs.GetAggregateRootId()
 	skuId := arr[0].ID

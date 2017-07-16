@@ -516,7 +516,7 @@ func (c *wholesaleCartImpl) getItemJdoData(list []*cart.WsCartItem,
 	itJdo := cart.WCartItemJdo{
 		ItemId:    int64(itemId),
 		ItemName:  v.Title,
-		ItemImage: v.Image,
+		ItemImage: format.GetResUrl(v.Image),
 		Sku:       []cart.WCartSkuJdo{},
 		Data:      map[string]string{},
 	}
@@ -529,7 +529,7 @@ func (c *wholesaleCartImpl) getItemJdoData(list []*cart.WsCartItem,
 		skuJdo := cart.WCartSkuJdo{
 			SkuId:            int64(v.SkuId),
 			SkuCode:          skuV.Code,
-			SkuImage:         skuV.Image,
+			SkuImage:         format.GetResUrl(skuV.Image),
 			SpecWord:         skuV.SpecWord,
 			Quantity:         v.Quantity,
 			Price:            0,

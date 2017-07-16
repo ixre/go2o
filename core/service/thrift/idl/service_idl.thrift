@@ -439,7 +439,7 @@ struct ComplexOrder {
     14: string ConsigneePerson
     15: string ConsigneePhone
     16: string ShippingAddress
-    17: string BuyerRemark
+    17: string BuyerComment
     18: i32 IsBreak
     19: i32 State
     20: i64 CreateTime

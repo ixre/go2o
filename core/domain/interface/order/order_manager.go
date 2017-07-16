@@ -24,7 +24,7 @@ type (
 		// 预创建批发订单
 		PrepareWholesaleOrder(c cart.ICart) ([]IOrder, error)
 		// 提交批发订单
-		SubmitWholesaleOrder(c cart.ICart, data map[string]string) (map[string]string, error)
+		SubmitWholesaleOrder(c cart.ICart, data IPostedData) (map[string]string, error)
 		// 提交交易类订单
 		SubmitTradeOrder(o *ComplexOrder, tradeRate float64) (IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
@@ -41,6 +41,16 @@ type (
 
 		// 获取子订单
 		GetSubOrder(id int64) ISubOrder
+	}
+
+	// 订单提交附带的数据
+	IPostedData interface {
+		// 获取勾选的商品和SKU数据
+		CheckedData() map[int64][]int64
+		// 获取收货地址编号
+		AddressId() int64
+		// 获取订单留言
+		GetComment(sellerId int32) string
 	}
 
 	// 统一订单适配器

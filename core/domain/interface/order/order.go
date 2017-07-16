@@ -326,6 +326,8 @@ type (
 		SetItems(items []*MinifyItem)
 		// 设置配送地址
 		SetAddress(addressId int64) error
+		// 设置或添加买家留言，如已经提交订单，将在原留言后附加
+		SetComment(comment string)
 		// 获取商品项
 		Items() []*WholesaleItem
 		// 获取支付单
@@ -365,14 +367,6 @@ type (
 		TradePaymentFinish() error
 		// 更新发票数据
 		UpdateTicket(img string) error
-	}
-
-	// 订单提交数据
-	PostedData struct {
-		//收货地址
-		AddressId int64
-		//订单留言
-		Comment string
 	}
 
 	// 订单
@@ -423,7 +417,7 @@ type (
 		// 收货人联系电话
 		ConsigneePhone string
 		// 买家留言
-		BuyerRemark string
+		BuyerComment string
 		// 收货地址
 		ShippingAddress string
 		// 订单是否拆分
@@ -533,7 +527,7 @@ type (
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 		IsSuspend int `db:"is_suspend" json:"is_suspend"`
 		// 顾客备注
-		BuyerRemark string `db:"buyer_remark" json:"note"`
+		BuyerComment string `db:"buyer_comment"`
 		// 系统备注
 		Remark string `db:"remark" json:"remark"`
 		// 订单状态
@@ -617,7 +611,7 @@ type (
 		// 订单备注
 		Remark string `db:"remark"`
 		// 订单买家备注
-		BuyerRemark string `db:"buyer_remark"`
+		BuyerComment string `db:"buyer_comment"`
 		// 订单状态
 		State int32 `db:"state"`
 		// 订单创建时间

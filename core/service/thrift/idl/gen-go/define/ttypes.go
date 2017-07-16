@@ -11847,7 +11847,7 @@ func (p *ComplexItem) String() string {
 //  - ConsigneePerson
 //  - ConsigneePhone
 //  - ShippingAddress
-//  - BuyerRemark
+//  - BuyerComment
 //  - IsBreak
 //  - State
 //  - CreateTime
@@ -11871,7 +11871,7 @@ type ComplexOrder struct {
 	ConsigneePerson string            `thrift:"ConsigneePerson,14" json:"ConsigneePerson"`
 	ConsigneePhone  string            `thrift:"ConsigneePhone,15" json:"ConsigneePhone"`
 	ShippingAddress string            `thrift:"ShippingAddress,16" json:"ShippingAddress"`
-	BuyerRemark     string            `thrift:"BuyerRemark,17" json:"BuyerRemark"`
+	BuyerComment    string            `thrift:"BuyerComment,17" json:"BuyerComment"`
 	IsBreak         int32             `thrift:"IsBreak,18" json:"IsBreak"`
 	State           int32             `thrift:"State,19" json:"State"`
 	CreateTime      int64             `thrift:"CreateTime,20" json:"CreateTime"`
@@ -11948,8 +11948,8 @@ func (p *ComplexOrder) GetShippingAddress() string {
 	return p.ShippingAddress
 }
 
-func (p *ComplexOrder) GetBuyerRemark() string {
-	return p.BuyerRemark
+func (p *ComplexOrder) GetBuyerComment() string {
+	return p.BuyerComment
 }
 
 func (p *ComplexOrder) GetIsBreak() int32 {
@@ -12244,7 +12244,7 @@ func (p *ComplexOrder) readField17(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 17: ", err)
 	} else {
-		p.BuyerRemark = v
+		p.BuyerComment = v
 	}
 	return nil
 }
@@ -12624,14 +12624,14 @@ func (p *ComplexOrder) writeField16(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *ComplexOrder) writeField17(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("BuyerRemark", thrift.STRING, 17); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 17:BuyerRemark: ", p), err)
+	if err := oprot.WriteFieldBegin("BuyerComment", thrift.STRING, 17); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 17:BuyerComment: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.BuyerRemark)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.BuyerRemark (17) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.BuyerComment)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.BuyerComment (17) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 17:BuyerRemark: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 17:BuyerComment: ", p), err)
 	}
 	return err
 }

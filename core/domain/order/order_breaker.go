@@ -18,17 +18,17 @@ func newWholesaleOrderBreaker(repo order.IOrderRepo) *wholesaleOrderBreaker {
 }
 
 func (w *wholesaleOrderBreaker) BreakUp(c cart.ICart,
-	data map[string]string) ([]order.IOrder, error) {
-	checked := cart.ParseCheckedMap(data["checked"])
+	data order.IPostedData) ([]order.IOrder, error) {
 	switch c.Kind() {
 	case cart.KWholesale:
-		return w.breakupWholesaleOrder(c, checked)
+		return w.breakupWholesaleOrder(c, data)
 	}
 	return []order.IOrder{}, errors.New("not support cart kind")
 }
 
 func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
-	checked map[int64][]int64) ([]order.IOrder, error) {
+	data order.IPostedData) ([]order.IOrder, error) {
+	checked := data.CheckedData()
 	wc := c.(cart.IWholesaleCart)
 	items := wc.CheckedItems(checked)
 	if len(items) == 0 {
@@ -42,15 +42,16 @@ func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
 	list := []order.IOrder{}
 	cc := c.(cart.ICart)
 	buyerId := cc.BuyerId()
-	for _, items := range vendorItemsMap {
-		o := w.createWholesaleOrder(buyerId, items)
+	for sellerId, items := range vendorItemsMap {
+		o := w.createWholesaleOrder(sellerId, buyerId, items, data)
 		list = append(list, o)
 	}
 	return list, nil
 }
 
 // 创建批发订单
-func (w *wholesaleOrderBreaker) createWholesaleOrder(buyerId int64, items []*cart.WsCartItem) order.IOrder {
+func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int32,
+	buyerId int64, items []*cart.WsCartItem, data order.IPostedData) order.IOrder {
 	v := &order.Order{
 		BuyerId:   buyerId,
 		OrderType: int32(order.TWholesale),
@@ -58,6 +59,8 @@ func (w *wholesaleOrderBreaker) createWholesaleOrder(buyerId int64, items []*car
 	}
 	o := w.repo.CreateOrder(v)
 	wo := o.(order.IWholesaleOrder)
+	wo.SetComment(data.GetComment(sellerId))
+	wo.SetAddress(data.AddressId())
 	list := make([]*order.MinifyItem, len(items))
 	for i, v := range items {
 		list[i] = &order.MinifyItem{

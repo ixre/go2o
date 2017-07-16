@@ -198,7 +198,6 @@ func TestWholesaleOrder(t *testing.T) {
 	data := map[string]string{
 		"address_id": strconv.Itoa(int(addressId)),
 	}
-
 	rd, err := manager.SubmitWholesaleOrder(c, data)
 
 	if err != nil {
@@ -209,12 +208,14 @@ func TestWholesaleOrder(t *testing.T) {
 	arr := strings.Split(rd["order_no"], ",")
 	t.Logf("批发单拆分数量：%d , 订单号：%s", len(arr), rd["order_no"])
 
-	time.Sleep(time.Second * 2)
 	for _, orderNo := range arr {
 		if orderNo != "" {
 			// 重新获取订单
 			o := manager.GetOrderByNo(orderNo)
 			io := o.(order.IWholesaleOrder)
+			// 付款操作
+			io.OnlinePaymentTradeFinish()
+			time.Sleep(time.Second)
 			// 可能会自动完成
 			//logState(t, io.Confirm(), o)
 			logState(t, io.PickUp(), o)
