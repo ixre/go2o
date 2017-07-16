@@ -19,6 +19,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/product"
+	orderImpl "go2o/core/domain/order"
 	"go2o/core/dto"
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
@@ -250,7 +251,8 @@ func (s *shoppingService) wsCheckCart(c cart.ICart, data map[string]string) (*de
 func (s *shoppingService) SubmitOrderV1(buyerId int64, cartType int32,
 	data map[string]string) (map[string]string, error) {
 	c := s._cartRepo.GetMyCart(buyerId, cart.KWholesale)
-	rd, err := s._repo.Manager().SubmitWholesaleOrder(c, data)
+	iData := orderImpl.NewPostedData(data)
+	rd, err := s._repo.Manager().SubmitWholesaleOrder(c, iData)
 	if err != nil {
 		return map[string]string{
 			"error": err.Error(),

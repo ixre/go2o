@@ -114,7 +114,7 @@ func ParseSubOrder(v *order.SubOrder) *SubOrder {
         FinalAmount:v.FinalAmount,
         IsPaid:v.IsPaid,
         IsSuspend:v.IsSuspend,
-        Note:v.BuyerRemark,
+        Note:v.BuyerComment,
         Remark:v.Remark,
         UpdateTime:v.UpdateTime,
         State:v.State,
