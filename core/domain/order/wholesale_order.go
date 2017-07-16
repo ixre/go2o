@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/jsix/gof/util"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
@@ -87,7 +88,7 @@ func (o *wholesaleOrderImpl) getValue() *order.WholesaleOrder {
 }
 
 // 设置商品项
-func (o *wholesaleOrderImpl) SetItems(items []*order.MinifyItem) {
+func (o *wholesaleOrderImpl) SetItems(items []*cart.ItemPair) {
 	if o.GetAggregateRootId() > 0 {
 		panic("wholesale has created. can't use SetItems!")
 	}
@@ -99,7 +100,7 @@ func (o *wholesaleOrderImpl) SetItems(items []*order.MinifyItem) {
 }
 
 // 转换为订单相关对象
-func (w *wholesaleOrderImpl) parseOrder(items []*order.MinifyItem) {
+func (w *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 	if w.GetAggregateRootId() > 0 {
 		panic("订单已经生成，无法解析")
 	}
@@ -127,7 +128,7 @@ func (w *wholesaleOrderImpl) parseOrder(items []*order.MinifyItem) {
 }
 
 // 创建商品信息,并读取价格及运费信息
-func (w *wholesaleOrderImpl) createItem(i *order.MinifyItem) *orderItem {
+func (w *wholesaleOrderImpl) createItem(i *cart.ItemPair) *orderItem {
 	// 获取商品信息
 	it := w.itemRepo.GetItem(i.ItemId)
 	sku := it.GetSku(i.SkuId)
@@ -533,8 +534,8 @@ func (o *wholesaleOrderImpl) Confirm() error {
 // 增加商品的销售数量
 func (o *wholesaleOrderImpl) addItemSalesNum() {
 	for _, v := range o.Items() {
-		it := o.itemRepo.GetItem(int32(v.ItemId))
-		err := it.AddSalesNum(int32(v.SkuId), v.Quantity)
+		it := o.itemRepo.GetItem(v.ItemId)
+		err := it.AddSalesNum(v.SkuId, v.Quantity)
 		if err != nil {
 			log.Println("---增加销售数量：", v.ItemId,
 				" sku:", v.SkuId, " error:", err.Error())
@@ -678,7 +679,7 @@ func (s *wholesaleOrderImpl) getOrderCost() float32 {
 	var cost float32
 	items := s.Items()
 	for _, item := range items {
-		snap := s.itemRepo.GetSalesSnapshot(int32(item.SnapshotId))
+		snap := s.itemRepo.GetSalesSnapshot(item.SnapshotId)
 		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
@@ -850,17 +851,17 @@ func (o *wholesaleOrderImpl) Cancel(reason string) error {
 // 取消商品
 func (o *wholesaleOrderImpl) cancelGoods() error {
 	for _, v := range o.Items() {
-		snapshot := o.itemRepo.GetSalesSnapshot(int32(v.SnapshotId))
+		snapshot := o.itemRepo.GetSalesSnapshot(v.SnapshotId)
 		if snapshot == nil {
 			return item.ErrNoSuchSnapshot
 		}
 		gds := o.itemRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
-			gds.FreeStock(int32(v.SkuId), v.Quantity)
+			gds.FreeStock(v.SkuId, v.Quantity)
 			// 如果订单已付款，则取消销售数量
 			if o.value.IsPaid == 1 {
-				gds.CancelSale(int32(v.SkuId), v.Quantity, o.value.OrderNo)
+				gds.CancelSale(v.SkuId, v.Quantity, o.value.OrderNo)
 			}
 		}
 	}

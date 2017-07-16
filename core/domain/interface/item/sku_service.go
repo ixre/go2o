@@ -29,11 +29,11 @@ type (
 	// 商品SKU
 	Sku struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
-		ProductId int32 `db:"product_id"`
+		ProductId int64 `db:"product_id"`
 		// 商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		// 标题
 		Title string `db:"title"`
 		// 图片

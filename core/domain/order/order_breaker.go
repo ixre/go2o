@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/order"
+	"log"
 )
 
 // 订单拆单
@@ -29,8 +30,8 @@ func (w *wholesaleOrderBreaker) BreakUp(c cart.ICart,
 func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
 	data order.IPostedData) ([]order.IOrder, error) {
 	checked := data.CheckedData()
-	wc := c.(cart.IWholesaleCart)
-	items := wc.CheckedItems(checked)
+	items := c.CheckedItems(checked)
+	log.Println("---", checked, items)
 	if len(items) == 0 {
 		return []order.IOrder{}, order.ErrNoCheckedItem
 	}
@@ -51,7 +52,7 @@ func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
 
 // 创建批发订单
 func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int32,
-	buyerId int64, items []*cart.WsCartItem, data order.IPostedData) order.IOrder {
+	buyerId int64, items []*cart.ItemPair, data order.IPostedData) order.IOrder {
 	v := &order.Order{
 		BuyerId:   buyerId,
 		OrderType: int32(order.TWholesale),
@@ -59,27 +60,20 @@ func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int32,
 	}
 	o := w.repo.CreateOrder(v)
 	wo := o.(order.IWholesaleOrder)
+	wo.SetItems(items)
 	wo.SetComment(data.GetComment(sellerId))
 	wo.SetAddress(data.AddressId())
-	list := make([]*order.MinifyItem, len(items))
-	for i, v := range items {
-		list[i] = &order.MinifyItem{
-			ItemId:   v.ItemId,
-			SkuId:    v.SkuId,
-			Quantity: v.Quantity,
-		}
-	}
-	wo.SetItems(list)
+
 	return o
 }
 
 // 生成运营商与订单商品的映射
-func (w *wholesaleOrderBreaker) breakSellerItemMap(items []*cart.WsCartItem) map[int32][]*cart.WsCartItem {
-	mp := make(map[int32][]*cart.WsCartItem)
+func (w *wholesaleOrderBreaker) breakSellerItemMap(items []*cart.ItemPair) map[int32][]*cart.ItemPair {
+	mp := make(map[int32][]*cart.ItemPair)
 	for _, v := range items {
 		list, ok := mp[v.SellerId]
 		if !ok {
-			list = []*cart.WsCartItem{}
+			list = []*cart.ItemPair{}
 		}
 		mp[v.SellerId] = append(list, v)
 	}

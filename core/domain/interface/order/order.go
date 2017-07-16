@@ -311,9 +311,9 @@ type (
 		// 取消订单/退款
 		Cancel(reason string) error
 		// 退回商品
-		Return(snapshotId int32, quantity int32) error
+		Return(snapshotId int64, quantity int32) error
 		// 撤销退回商品
-		RevertReturn(snapshotId int32, quantity int32) error
+		RevertReturn(snapshotId int64, quantity int32) error
 		// 谢绝订单
 		Decline(reason string) error
 		// 提交子订单
@@ -323,7 +323,7 @@ type (
 	// 批发订单
 	IWholesaleOrder interface {
 		// 设置商品项
-		SetItems(items []*MinifyItem)
+		SetItems(items []*cart.ItemPair)
 		// 设置配送地址
 		SetAddress(addressId int64) error
 		// 设置或添加买家留言，如已经提交订单，将在原留言后附加
@@ -547,11 +547,11 @@ type (
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		// 商品SKU编号
-		SkuId int32 `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		// 快照编号
-		SnapshotId int32 `db:"snap_id"`
+		SnapshotId int64 `db:"snap_id"`
 		// 数量
 		Quantity int32 `db:"quantity"`
 		// 退回数量(退货)

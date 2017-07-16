@@ -42,7 +42,7 @@ func NewProductImpl(v *product.Product,
 }
 
 // 获取聚合根编号
-func (p *productImpl) GetAggregateRootId() int32 {
+func (p *productImpl) GetAggregateRootId() int64 {
 	return p.value.Id
 }
 
@@ -151,10 +151,10 @@ func (p *productImpl) SetDescribe(describe string) error {
 //}
 
 // 保存
-func (p *productImpl) Save() (i int32, err error) {
+func (p *productImpl) Save() (i int64, err error) {
 	if p.value.Attr != nil {
 		if p.GetAggregateRootId() <= 0 {
-			p.value.Id, err = util.I32Err(p.repo.SaveProduct(p.value))
+			p.value.Id, err = util.I64Err(p.repo.SaveProduct(p.value))
 			if err != nil {
 				goto R
 			}
@@ -171,7 +171,7 @@ func (p *productImpl) Save() (i int32, err error) {
 		l := len(cs)
 		p.value.Code = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
-	p.value.Id, err = util.I32Err(p.repo.SaveProduct(p.value))
+	p.value.Id, err = util.I64Err(p.repo.SaveProduct(p.value))
 R:
 	return p.value.Id, err
 }

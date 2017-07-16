@@ -3,8 +3,8 @@ package order
 import (
 	"fmt"
 	"github.com/jsix/gof/util"
-	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/order"
+	id "go2o/core/infrastructure/domain"
 	"strconv"
 )
 
@@ -20,9 +20,10 @@ func NewPostedData(data map[string]string) order.IPostedData {
 	return &postedDataImpl{data: data}
 }
 
+// 转换勾选字典,数据如：{"1":["10","11"],"2":["20","21"]}
 func (p *postedDataImpl) CheckedData() map[int64][]int64 {
 	if p._checked == nil {
-		p._checked = cart.ParseCheckedMap(p.data["checked"])
+		p._checked = id.ParseCartCheckedMap(p.data["checked"])
 	}
 	return p._checked
 }
