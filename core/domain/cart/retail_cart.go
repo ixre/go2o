@@ -184,13 +184,9 @@ func (c *cartImpl) GetValue() cart.RetailCart {
 	return *c.value
 }
 
-// 获取商品编号与购物车项的集合
-func (c *cartImpl) Items() map[int64]*cart.RetailCartItem {
-	list := make(map[int64]*cart.RetailCartItem)
-	for _, v := range c.value.Items {
-		list[v.SkuId] = v
-	}
-	return list
+// 获取商品集合
+func (c *cartImpl) Items() []*cart.RetailCartItem {
+	return c.getItems()
 }
 
 func (c *cartImpl) getItems() []*cart.RetailCartItem {
@@ -226,7 +222,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32) (*cart.RetailCartItem, er
 	if skuId > 0 {
 		sku = it.GetSku(skuId)
 		if sku == nil {
-			return nil, item.ErrNoSuchItemSku
+			return nil, item.ErrNoSuchSku
 		}
 		stock = sku.Stock
 	} else if iv.SkuNum > 0 {

@@ -225,7 +225,7 @@ func TestWholesaleOrder(t *testing.T) {
 			io := o.(order.IWholesaleOrder)
 			// 付款操作
 			io.OnlinePaymentTradeFinish()
-			time.Sleep(time.Second)
+			time.Sleep(time.Second * 5)
 			// 可能会自动完成
 			//logState(t, io.Confirm(), o)
 			logState(t, io.PickUp(), o)

@@ -94,8 +94,8 @@ type (
 	IRetailCart interface {
 		// 获取购物车值
 		GetValue() RetailCart
-		// 获取商品编号与购物车项的集合
-		Items() map[int64]*RetailCartItem
+		// 获取商品集合
+		Items() []*RetailCartItem
 		// 合并购物车，并返回新的购物车
 		Combine(ICart) ICart
 		// 获取项
@@ -105,8 +105,8 @@ type (
 	IWholesaleCart interface {
 		// 获取购物车值
 		GetValue() WsCart
-		// 获取商品编号与购物车项的集合
-		Items() map[int64]*WsCartItem
+		// 获取商品集合
+		Items() []*WsCartItem
 		// Jdo数据
 		JdoData(checkout bool, checked map[int64][]int64) *WCartJdo
 		// 简单Jdo数据,max为最多数量

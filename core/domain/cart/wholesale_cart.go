@@ -2,6 +2,7 @@ package cart
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
@@ -9,6 +10,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/format"
+	"log"
 	"strconv"
 	"time"
 )
@@ -194,13 +196,9 @@ func (c *wholesaleCartImpl) GetValue() cart.WsCart {
 	return *c.value
 }
 
-// 获取商品编号与购物车项的集合
-func (c *wholesaleCartImpl) Items() map[int64]*cart.WsCartItem {
-	list := make(map[int64]*cart.WsCartItem)
-	for _, v := range c.value.Items {
-		list[v.SkuId] = v
-	}
-	return list
+// 获取商品集合
+func (c *wholesaleCartImpl) Items() []*cart.WsCartItem {
+	return c.getItems()
 }
 
 func (c *wholesaleCartImpl) getItems() []*cart.WsCartItem {
@@ -244,7 +242,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32) (*cart.WsCa
 	if skuId > 0 {
 		sku = it.GetSku(skuId)
 		if sku == nil {
-			return nil, item.ErrNoSuchItemSku
+			return nil, item.ErrNoSuchSku
 		}
 		//todo: 如果SKU没有启用批发,或没有达到最低的数量
 		//arr := wsIt.GetSkuPrice(skuId)
@@ -310,7 +308,7 @@ func (c *wholesaleCartImpl) update(itemId, skuId int64, quantity int32) error {
 		var sku *item.Sku
 		sku = it.GetSku(skuId)
 		if sku == nil {
-			return item.ErrNoSuchItemSku
+			return item.ErrNoSuchSku
 		}
 		stock = sku.Stock
 	}
@@ -473,6 +471,7 @@ func (c *wholesaleCartImpl) CheckedItems(checked map[int64][]int64) []*cart.Item
 	if checked != nil {
 		for _, v := range c.value.Items {
 			arr, ok := checked[int64(v.ItemId)]
+			log.Println("---xxxx ", ok, fmt.Sprintf("%#v", v))
 			if !ok {
 				continue
 			}

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/order"
-	"log"
 )
 
 // 订单拆单
@@ -31,7 +30,6 @@ func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
 	data order.IPostedData) ([]order.IOrder, error) {
 	checked := data.CheckedData()
 	items := c.CheckedItems(checked)
-	log.Println("---", checked, items)
 	if len(items) == 0 {
 		return []order.IOrder{}, order.ErrNoCheckedItem
 	}

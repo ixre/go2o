@@ -2,6 +2,7 @@ package testing
 
 import (
 	"encoding/json"
+	"fmt"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/testing/ti"
 	"log"
@@ -61,8 +62,9 @@ func GetCartCheckedData(c cart.ICart) string {
 	mp := make(map[string][]string)
 	if c.Kind() == cart.KWholesale {
 		wc := c.(cart.IWholesaleCart)
-		for itemId, v := range wc.Items() {
-			id := strconv.Itoa(int(itemId))
+		for _, v := range wc.Items() {
+			log.Println("----", itemId, fmt.Sprintf("%#v", v))
+			id := strconv.Itoa(int(v.ItemId))
 			if _, ok := mp[id]; !ok {
 				mp[id] = []string{}
 			}
@@ -70,8 +72,8 @@ func GetCartCheckedData(c cart.ICart) string {
 		}
 	} else {
 		rc := c.(cart.IRetailCart)
-		for itemId, v := range rc.Items() {
-			id := strconv.Itoa(int(itemId))
+		for _, v := range rc.Items() {
+			id := strconv.Itoa(int(v.ItemId))
 			if _, ok := mp[id]; !ok {
 				mp[id] = []string{}
 			}
