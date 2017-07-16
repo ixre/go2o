@@ -10,7 +10,6 @@
 package cart
 
 import (
-	"encoding/json"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -18,7 +17,6 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/thrift/idl/gen-go/define"
-	"strconv"
 )
 
 var (
@@ -65,15 +63,17 @@ type (
 		Check() error
 		// 标记商品结算
 		SignItemChecked(items []*ItemPair) error
+		// 获取勾选的商品,checked:为商品与商品SKU数据
+		CheckedItems(checked map[int64][]int64) []*ItemPair
 
 		// 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
 		// 暂时以店铺区分,2017-02-28考虑单独的购物车或子系统
-		Put(itemId, skuId, quantity int32) error
+		Put(itemId, skuId int64, quantity int32) error
 		// 更新商品数量，如数量为0，则删除
-		Update(itemId, skuId, quantity int32) error
+		Update(itemId, skuId int64, quantity int32) error
 		// 移出项
-		Remove(itemId, skuId, quantity int32) error
+		Remove(itemId, skuId int64, quantity int32) error
 		// 保存购物车
 		Save() (int32, error)
 		// 释放购物车,如果购物车的商品全部结算,则返回true
@@ -95,20 +95,18 @@ type (
 		// 获取购物车值
 		GetValue() RetailCart
 		// 获取商品编号与购物车项的集合
-		Items() map[int32]*RetailCartItem
+		Items() map[int64]*RetailCartItem
 		// 合并购物车，并返回新的购物车
 		Combine(ICart) ICart
 		// 获取项
-		GetItem(itemId, skuId int32) *RetailCartItem
+		GetItem(itemId, skuId int64) *RetailCartItem
 	}
 	//商品批发购物车
 	IWholesaleCart interface {
 		// 获取购物车值
 		GetValue() WsCart
 		// 获取商品编号与购物车项的集合
-		Items() map[int32]*WsCartItem
-		// 获取勾选的商品
-		CheckedItems(checked map[int64][]int64) []*WsCartItem
+		Items() map[int64]*WsCartItem
 		// Jdo数据
 		JdoData(checkout bool, checked map[int64][]int64) *WCartJdo
 		// 简单Jdo数据,max为最多数量
@@ -166,9 +164,11 @@ type (
 	// 购物车商品
 	ItemPair struct {
 		// 商品编号
-		ItemId int32
+		ItemId int64
 		// SKU编号
-		SkuId int32
+		SkuId int64
+		// 卖家编号
+		SellerId int32
 		// 数量
 		Quantity int32
 		// 是否勾选结算
@@ -199,9 +199,9 @@ type (
 		// 店铺编号
 		ShopId int32 `db:"shop_id"`
 		// 商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		// SKU编号
-		SkuId int32 `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		// 数量
 		Quantity int32 `db:"quantity"`
 		// 是否勾选结算
@@ -239,9 +239,9 @@ type (
 		// 店铺编号
 		ShopId int32 `db:"shop_id"`
 		// 商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		// SKU编号
-		SkuId int32 `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		// 数量
 		Quantity int32 `db:"quantity"`
 		// 订单依赖的SKU媒介
@@ -359,26 +359,4 @@ func ParseToDtoCart(c ICart) *define.ShoppingCart {
 	}
 
 	return cart
-}
-
-// 转换勾选字典,数据如：{"1":["10","11"],"2":["20","21"]}
-func ParseCheckedMap(data string) (m map[int64][]int64) {
-	if data != "" || data != "{}" {
-		src := map[string][]string{}
-		err := json.Unmarshal([]byte(data), &src)
-		if err == nil {
-			m = map[int64][]int64{}
-			for k, v := range src {
-				itemId, _ := strconv.Atoi(k)
-				skuList := []int64{}
-				for _, v2 := range v {
-					skuId, _ := strconv.Atoi(v2)
-					skuList = append(skuList, int64(skuId))
-				}
-				m[int64(itemId)] = skuList
-			}
-			return m
-		}
-	}
-	return nil
 }

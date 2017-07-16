@@ -20,7 +20,7 @@ type cartImpl struct {
 	summary    string
 	shop       shop.IShop
 	deliver    member.IDeliverAddress
-	snapMap    map[int32]*item.Snapshot
+	snapMap    map[int64]*item.Snapshot
 }
 
 func CreateCart(val *cart.RetailCart, rep cart.ICartRepo,
@@ -108,12 +108,12 @@ func (c *cartImpl) Check() error {
 }
 
 // 获取商品的快照列表
-func (c *cartImpl) getSnapshotsMap(items []*cart.RetailCartItem) map[int32]*item.Snapshot {
+func (c *cartImpl) getSnapshotsMap(items []*cart.RetailCartItem) map[int64]*item.Snapshot {
 	if c.snapMap == nil && items != nil {
 		l := len(items)
-		c.snapMap = make(map[int32]*item.Snapshot, l)
+		c.snapMap = make(map[int64]*item.Snapshot, l)
 		if l > 0 {
-			var ids []int32 = make([]int32, l)
+			var ids []int64 = make([]int64, l)
 			for i, v := range items {
 				ids[i] = v.ItemId
 			}
@@ -185,8 +185,8 @@ func (c *cartImpl) GetValue() cart.RetailCart {
 }
 
 // 获取商品编号与购物车项的集合
-func (c *cartImpl) Items() map[int32]*cart.RetailCartItem {
-	list := make(map[int32]*cart.RetailCartItem)
+func (c *cartImpl) Items() map[int64]*cart.RetailCartItem {
+	list := make(map[int64]*cart.RetailCartItem)
 	for _, v := range c.value.Items {
 		list[v.SkuId] = v
 	}
@@ -198,13 +198,13 @@ func (c *cartImpl) getItems() []*cart.RetailCartItem {
 }
 
 // 添加项
-func (c *cartImpl) Put(itemId, skuId int32, num int32) error {
+func (c *cartImpl) Put(itemId, skuId int64, num int32) error {
 	_, err := c.put(itemId, skuId, num)
 	return err
 }
 
 // 添加项
-func (c *cartImpl) put(itemId, skuId int32, num int32) (*cart.RetailCartItem, error) {
+func (c *cartImpl) put(itemId, skuId int64, num int32) (*cart.RetailCartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.RetailCartItem{}
@@ -268,12 +268,12 @@ func (c *cartImpl) put(itemId, skuId int32, num int32) (*cart.RetailCartItem, er
 }
 
 // 更新商品数量，如数量为0，则删除
-func (c *cartImpl) Update(itemId, skuId, quantity int32) error {
+func (c *cartImpl) Update(itemId, skuId int64, quantity int32) error {
 	return errors.New("not implement")
 }
 
 // 移出项
-func (c *cartImpl) Remove(itemId, skuId, quantity int32) error {
+func (c *cartImpl) Remove(itemId, skuId int64, quantity int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -294,7 +294,7 @@ func (c *cartImpl) Remove(itemId, skuId, quantity int32) error {
 }
 
 // 获取项
-func (c *cartImpl) GetItem(itemId, skuId int32) *cart.RetailCartItem {
+func (c *cartImpl) GetItem(itemId, skuId int64) *cart.RetailCartItem {
 	if c.value != nil && c.value.Items != nil {
 		for _, v := range c.value.Items {
 			if v.ItemId == itemId && v.SkuId == skuId {
@@ -444,6 +444,30 @@ func (c *cartImpl) Save() (int32, error) {
 		}
 	}
 	return id, err
+}
+
+// 获取勾选的商品
+func (c *cartImpl) CheckedItems(checked map[int64][]int64) []*cart.ItemPair {
+	items := []*cart.ItemPair{}
+	if checked != nil {
+		for _, v := range c.value.Items {
+			arr, ok := checked[int64(v.ItemId)]
+			if !ok {
+				continue
+			}
+			for _, skuId := range arr {
+				if skuId == int64(v.SkuId) {
+					items = append(items, &cart.ItemPair{
+						ItemId:   int64(v.ItemId),
+						SkuId:    skuId,
+						SellerId: v.VendorId,
+						Quantity: v.Quantity,
+					})
+				}
+			}
+		}
+	}
+	return items
 }
 
 // 释放购物车,如果购物车的商品全部结算,则返回true

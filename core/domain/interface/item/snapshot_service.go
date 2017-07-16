@@ -12,27 +12,27 @@ type (
 	// 快照服务
 	ISnapshotService interface {
 		// 生成商品快照
-		GenerateSnapshot(it *GoodsItem) (int32, error)
+		GenerateSnapshot(it *GoodsItem) (int64, error)
 
 		// 获取最新的快照
-		GetLatestSnapshot(itemId int32) *Snapshot
+		GetLatestSnapshot(itemId int64) *Snapshot
 
 		// 获取最新的商品销售快照,如果商品有更新,则更新销售快照
-		GetLatestSalesSnapshot(itemId, skuId int32) *TradeSnapshot
+		GetLatestSalesSnapshot(itemId, skuId int64) *TradeSnapshot
 
 		// 根据KEY获取已销售商品的快照
 		GetSaleSnapshotByKey(key string) *TradeSnapshot
 
 		// 根据ID获取已销售商品的快照
-		GetSalesSnapshot(id int32) *TradeSnapshot
+		GetSalesSnapshot(id int64) *TradeSnapshot
 	}
 
 	// 商品快照(针对商品)
 	Snapshot struct {
 		// 商品编号
-		ItemId int32 `db:"item_id" pk:"yes"`
+		ItemId int64 `db:"item_id" pk:"yes"`
 		// 产品编号
-		ProductId int32 `db:"product_id"`
+		ProductId int64 `db:"product_id"`
 		// 快照编码
 		Key string `db:"snapshot_key"`
 		// 分类编号
@@ -60,7 +60,7 @@ type (
 		// 价格区间
 		PriceRange string `db:"price_range"`
 		// 默认SKU
-		SkuId int32 `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		// 成本
 		Cost float32 `db:"cost"`
 		// 售价
@@ -82,11 +82,11 @@ type (
 	// 已销售(交易)商品快照(针对SKU)
 	TradeSnapshot struct {
 		//快照编号
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		//商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		//商品SKU编号
-		SkuId int32 `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		//快照编码: 商户编号+g商品编号+快照时间戳
 		SnapshotKey string `db:"snap_key"`
 		// 卖家编号

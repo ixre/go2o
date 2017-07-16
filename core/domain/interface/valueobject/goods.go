@@ -13,8 +13,8 @@ package valueobject
 
 // 完整的商品信息
 type Goods struct {
-	ItemId     int32 `db:"id"`
-	ProductId  int32 `db:"product_id"`
+	ItemId     int64 `db:"id"`
+	ProductId  int64 `db:"product_id"`
 	VendorId   int32 `db:"-"`
 	ShopId     int32 `db:"-"`
 	CategoryId int32 `db:"cat_id"`
@@ -38,8 +38,8 @@ type Goods struct {
 	// 价格区间
 	PriceRange string `db:"price_range"`
 
-	GoodsId   int32 `db:"it.id"`
-	SkuId     int32 `db:"sku_id"`
+	GoodsId   int64 `db:"it.id"`
+	SkuId     int64 `db:"sku_id"`
 	IsPresent int32 `db:"is_present"`
 
 	// 促销标志

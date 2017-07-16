@@ -9,13 +9,16 @@
 package testing
 
 import (
+	"fmt"
 	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	oi "go2o/core/domain/order"
 	"go2o/core/repository"
 	"go2o/core/testing/ti"
 	"go2o/core/variable"
+	"log"
 	"strconv"
 	"strings"
 	"testing"
@@ -195,10 +198,17 @@ func TestWholesaleOrder(t *testing.T) {
 
 	buyer := ti.MemberRepo.GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
+
 	data := map[string]string{
-		"address_id": strconv.Itoa(int(addressId)),
+		"address_id":       strconv.Itoa(int(addressId)),
+		"seller_comment_1": "测试留言",
+		"checked":          GetCartCheckedData(c),
 	}
-	rd, err := manager.SubmitWholesaleOrder(c, data)
+
+	log.Println("----", fmt.Sprintf("%#v", data))
+
+	iData := oi.NewPostedData(data)
+	rd, err := manager.SubmitWholesaleOrder(c, iData)
 
 	if err != nil {
 		t.Error(err)

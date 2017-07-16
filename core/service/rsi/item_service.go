@@ -56,7 +56,7 @@ func NewSaleService(sto storage.IRedisStorage, cateRepo product.ICategoryRepo,
 }
 
 // 获取商品值
-func (s *itemService) GetItemValue(itemId int32) *define.OldItem {
+func (s *itemService) GetItemValue(itemId int64) *define.OldItem {
 	item := s.itemRepo.GetItem(itemId)
 	if item != nil {
 		return parser.ItemDto(item.GetValue())
@@ -65,7 +65,7 @@ func (s *itemService) GetItemValue(itemId int32) *define.OldItem {
 }
 
 // 获取SKU
-func (s *itemService) GetSku(itemId int32, skuId int32) (r *define.Sku, err error) {
+func (s *itemService) GetSku(itemId, skuId int64) (r *define.Sku, err error) {
 	item := s.itemRepo.GetItem(itemId)
 	if item != nil {
 		sku := item.GetSku(skuId)
@@ -77,7 +77,7 @@ func (s *itemService) GetSku(itemId int32, skuId int32) (r *define.Sku, err erro
 }
 
 // 获取SKU数组
-func (s *itemService) GetSkuArray(itemId int32) []*item.Sku {
+func (s *itemService) GetSkuArray(itemId int64) []*item.Sku {
 	it := s.itemRepo.GetItem(itemId)
 	if it != nil {
 		return it.SkuArray()
@@ -86,14 +86,14 @@ func (s *itemService) GetSkuArray(itemId int32) []*item.Sku {
 }
 
 // 获取商品规格HTML信息
-func (s *itemService) GetSkuHtmOfItem(itemId int32) (specHtm string) {
+func (s *itemService) GetSkuHtmOfItem(itemId int64) (specHtm string) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	specArr := it.SpecArray()
 	return s.itemRepo.SkuService().GetSpecHtml(specArr)
 }
 
 // 获取商品详细数据
-func (s *itemService) GetItemDetailData(itemId int32, iType int32) (r string, err error) {
+func (s *itemService) GetItemDetailData(itemId int64, iType int32) (r string, err error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	switch iType {
 	case item.ItemWholesale:
@@ -104,14 +104,14 @@ func (s *itemService) GetItemDetailData(itemId int32, iType int32) (r string, er
 }
 
 // 获取商品的Sku-JSON格式
-func (s *itemService) GetItemSkuJson(itemId int32) (r string, err error) {
+func (s *itemService) GetItemSkuJson(itemId int64) (r string, err error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	skuBytes := s.itemRepo.SkuService().GetSkuJson(it.SkuArray())
 	return string(skuBytes), nil
 }
 
 // 保存商品
-func (s *itemService) SaveItem(di *define.OldItem, vendorId int32) (_ *define.Result_, err error) {
+func (s *itemService) SaveItem(di *define.OldItem, vendorId int32) (_ *define.Result64, err error) {
 	var gi item.IGoodsItem
 	it := parser.Item(di)
 	if it.ID > 0 {
@@ -131,7 +131,7 @@ func (s *itemService) SaveItem(di *define.OldItem, vendorId int32) (_ *define.Re
 		}
 	}
 R:
-	return parser.Result(it.ID, err), nil
+	return parser.Result64(it.ID, err), nil
 }
 
 // 获取上架商品数据（分页）
@@ -276,7 +276,7 @@ func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*def
 }
 
 // 根据SKU获取商品
-func (s *itemService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *valueobject.Goods {
+func (s *itemService) GetGoodsBySku(mchId int32, itemId, sku int64) *valueobject.Goods {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
 	if v != nil {
 		return s.itemRepo.CreateItem(v).GetPackedValue()
@@ -285,7 +285,7 @@ func (s *itemService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *value
 }
 
 // 根据SKU获取商品
-func (s *itemService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *item.GoodsItem {
+func (s *itemService) GetValueGoodsBySku(mchId int32, itemId, sku int64) *item.GoodsItem {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
 	if v != nil {
 		return s.itemRepo.CreateItem(v).GetValue()
@@ -294,7 +294,7 @@ func (s *itemService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *
 }
 
 // 根据快照编号获取商品
-func (s *itemService) GetGoodsBySnapshotId(snapshotId int32) *item.GoodsItem {
+func (s *itemService) GetGoodsBySnapshotId(snapshotId int64) *item.GoodsItem {
 	snap := s.itemRepo.GetSalesSnapshot(snapshotId)
 	if snap != nil {
 		return s.itemRepo.GetValueGoodsById(snap.SkuId)
@@ -303,7 +303,7 @@ func (s *itemService) GetGoodsBySnapshotId(snapshotId int32) *item.GoodsItem {
 }
 
 // 根据快照编号获取商品
-func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.TradeSnapshot {
+func (s *itemService) GetSaleSnapshotById(snapshotId int64) *item.TradeSnapshot {
 	return s.itemRepo.GetSalesSnapshot(snapshotId)
 }
 
@@ -371,8 +371,8 @@ func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end i
 }
 
 // 删除产品
-func (s *itemService) DeleteGoods(mchId, goodsId int32) error {
-	gi := s.itemRepo.GetItem(goodsId)
+func (s *itemService) DeleteGoods(mchId int32, itemId int64) error {
+	gi := s.itemRepo.GetItem(itemId)
 	if gi == nil || gi.GetValue().VendorId != mchId {
 		return item.ErrNoSuchItem
 	}
@@ -454,7 +454,7 @@ func (s *itemService) DeleteSaleLabel(id int32) error {
 }
 
 // 获取商品的会员价
-func (s *itemService) GetGoodsLevelPrices(itemId int32) []*item.MemberPrice {
+func (s *itemService) GetGoodsLevelPrices(itemId int64) []*item.MemberPrice {
 	gi := s.itemRepo.GetItem(itemId)
 	if gi != nil {
 		return gi.GetLevelPrices()
@@ -463,7 +463,7 @@ func (s *itemService) GetGoodsLevelPrices(itemId int32) []*item.MemberPrice {
 }
 
 // 保存商品的会员价
-func (s *itemService) SaveMemberPrices(mchId int32, itemId int32,
+func (s *itemService) SaveMemberPrices(mchId int32, itemId int64,
 	priceSet []*item.MemberPrice) (err error) {
 	gi := s.itemRepo.GetItem(itemId)
 	if gi != nil {
@@ -481,7 +481,7 @@ func (s *itemService) SaveMemberPrices(mchId int32, itemId int32,
 //}
 
 // 获取商品详情
-func (s *itemService) GetGoodsDetails(itemId, mLevel int32) (
+func (s *itemService) GetGoodsDetails(itemId int64, mLevel int32) (
 	*valueobject.Goods, map[string]string) {
 	goods := s.itemRepo.GetItem(itemId)
 	gv := goods.GetPackedValue()
@@ -495,7 +495,7 @@ func (s *itemService) GetGoodsDetails(itemId, mLevel int32) (
 }
 
 // 获取货品描述
-func (s *itemService) GetItemDescriptionByGoodsId(itemId int32) string {
+func (s *itemService) GetItemDescriptionByGoodsId(itemId int64) string {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	pro := it.Product()
 	if pro != nil {
@@ -505,12 +505,12 @@ func (s *itemService) GetItemDescriptionByGoodsId(itemId int32) string {
 }
 
 // 获取商品快照
-func (s *itemService) GetSnapshot(skuId int32) *item.Snapshot {
+func (s *itemService) GetSnapshot(skuId int64) *item.Snapshot {
 	return s.itemRepo.GetLatestSnapshot(skuId)
 }
 
 // 设置商品货架状态
-func (s *itemService) SetShelveState(vendorId int32, itemId int32,
+func (s *itemService) SetShelveState(vendorId int32, itemId int64,
 	itemType int32, state int32, remark string) (_ *define.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
@@ -527,7 +527,7 @@ func (s *itemService) SetShelveState(vendorId int32, itemId int32,
 }
 
 // 设置商品货架状态
-func (s *itemService) ReviewItem(vendorId int32, itemId int32,
+func (s *itemService) ReviewItem(vendorId int32, itemId int64,
 	pass bool, remark string) (_ *define.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
@@ -539,7 +539,7 @@ func (s *itemService) ReviewItem(vendorId int32, itemId int32,
 }
 
 // 标记为违规
-func (s *itemService) SignIncorrect(vendorId int32, itemId int32,
+func (s *itemService) SignIncorrect(vendorId int32, itemId int64,
 	remark string) (_ *define.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
@@ -551,25 +551,25 @@ func (s *itemService) SignIncorrect(vendorId int32, itemId int32,
 }
 
 // 获取批发价格数组
-func (s *itemService) GetWholesalePriceArray(itemId int32, skuId int32) []*item.WsSkuPrice {
+func (s *itemService) GetWholesalePriceArray(itemId, skuId int64) []*item.WsSkuPrice {
 	it := s.itemRepo.GetItem(itemId)
 	return it.Wholesale().GetSkuPrice(skuId)
 }
 
 // 保存批发价格
-func (s *itemService) SaveWholesalePrice(itemId, skuId int32, arr []*item.WsSkuPrice) error {
+func (s *itemService) SaveWholesalePrice(itemId, skuId int64, arr []*item.WsSkuPrice) error {
 	it := s.itemRepo.GetItem(itemId)
 	return it.Wholesale().SaveSkuPrice(skuId, arr)
 }
 
 // 获取批发折扣数组
-func (s *itemService) GetWholesaleDiscountArray(itemId int32, groupId int32) []*item.WsItemDiscount {
+func (s *itemService) GetWholesaleDiscountArray(itemId int64, groupId int32) []*item.WsItemDiscount {
 	it := s.itemRepo.GetItem(itemId)
 	return it.Wholesale().GetItemDiscount(groupId)
 }
 
 // 保存批发折扣
-func (s *itemService) SaveWholesaleDiscount(itemId, groupId int32, arr []*item.WsItemDiscount) error {
+func (s *itemService) SaveWholesaleDiscount(itemId int64, groupId int32, arr []*item.WsItemDiscount) error {
 	it := s.itemRepo.GetItem(itemId)
 	return it.Wholesale().SaveItemDiscount(groupId, arr)
 }

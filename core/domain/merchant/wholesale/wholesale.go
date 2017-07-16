@@ -70,7 +70,7 @@ func (w *wholesalerImpl) SyncItems(syncPrice bool) map[string]int32 {
 	failed := []int{}
 	newest := w.repo.GetAwaitSyncItems(w.mchId)
 	for _, itemId := range newest {
-		err := w.syncSingleItem(int32(itemId), syncPrice)
+		err := w.syncSingleItem(int64(itemId), syncPrice)
 		if err == nil {
 			add = append(add, itemId)
 		} else {
@@ -85,7 +85,7 @@ func (w *wholesalerImpl) SyncItems(syncPrice bool) map[string]int32 {
 	}
 }
 
-func (w *wholesalerImpl) syncSingleItem(itemId int32, syncPrice bool) error {
+func (w *wholesalerImpl) syncSingleItem(itemId int64, syncPrice bool) error {
 	it := w.itemRepo.GetItem(itemId)
 	if it != nil {
 		ws := it.Wholesale()

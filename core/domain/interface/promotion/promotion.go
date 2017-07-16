@@ -80,7 +80,7 @@ type PromotionInfo struct {
 	TypeFlag int `db:"type_flag"`
 
 	// 商品编号(为0则应用订单)
-	GoodsId int32 `db:"goods_id"`
+	GoodsId int64 `db:"goods_id"`
 
 	// 是否启用
 	Enabled int `db:"enabled"`

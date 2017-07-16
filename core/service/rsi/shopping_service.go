@@ -154,7 +154,7 @@ func (s *shoppingService) wsParseCartPostedData(skuData string) (arr []*cart.Ite
 		if i == -1 {
 			continue
 		}
-		skuId, err := util.I32Err(strconv.Atoi(str[:i]))
+		skuId, err := util.I64Err(strconv.Atoi(str[:i]))
 		quantity, err1 := util.I32Err(strconv.Atoi(str[i+1:]))
 		if err == nil && err1 == nil {
 			arr = append(arr, &cart.ItemPair{
@@ -167,7 +167,7 @@ func (s *shoppingService) wsParseCartPostedData(skuData string) (arr []*cart.Ite
 }
 
 // 生成结算提交的数据(立即购买),skuData参考数据：skuId:num;skuId2;num2
-func (s *shoppingService) createCheckedData(itemId int32, arr []*cart.ItemPair) string {
+func (s *shoppingService) createCheckedData(itemId int64, arr []*cart.ItemPair) string {
 	buf := bytes.NewBufferString("{\"")
 	buf.WriteString(strconv.Itoa(int(itemId)))
 	buf.WriteString("\":[")
@@ -186,7 +186,7 @@ func (s *shoppingService) createCheckedData(itemId int32, arr []*cart.ItemPair) 
 // 放入商品，data["Data"]
 func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
-	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
+	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
 		err = c.Put(itemId, v.SkuId, v.Quantity)
@@ -210,7 +210,7 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 
 func (s *shoppingService) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
-	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
+	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
 		err = c.Update(itemId, v.SkuId, v.Quantity)
@@ -234,8 +234,8 @@ func (s *shoppingService) wsCheckCart(c cart.ICart, data map[string]string) (*de
 		if i == -1 {
 			continue
 		}
-		itemId, err := util.I32Err(strconv.Atoi(str[:i]))
-		skuId, err1 := util.I32Err(strconv.Atoi(str[i+1:]))
+		itemId, err := util.I64Err(strconv.Atoi(str[:i]))
+		skuId, err1 := util.I64Err(strconv.Atoi(str[i+1:]))
 		if err == nil && err1 == nil {
 			arr = append(arr, &cart.ItemPair{
 				ItemId: itemId,
@@ -313,8 +313,8 @@ func (s *shoppingService) parseCart(c cart.ICart) *define.ShoppingCart {
 }
 
 // 放入购物车
-func (s *shoppingService) PutInCart(memberId int64, code string, itemId, skuId,
-	quantity int32) (*define.ShoppingCartItem, error) {
+func (s *shoppingService) PutInCart(memberId int64, code string,
+	itemId, skuId int64, quantity int32) (*define.ShoppingCartItem, error) {
 	c := s.getShoppingCart(memberId, code)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
@@ -329,8 +329,8 @@ func (s *shoppingService) PutInCart(memberId int64, code string, itemId, skuId,
 	}
 	return nil, err
 }
-func (s *shoppingService) SubCartItem(memberId int64, code string, itemId, skuId,
-	quantity int32) error {
+func (s *shoppingService) SubCartItem(memberId int64, code string,
+	itemId, skuId int64, quantity int32) error {
 	c := s.getShoppingCart(memberId, code)
 	if c == nil {
 		return cart.ErrNoSuchCart

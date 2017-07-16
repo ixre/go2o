@@ -28,7 +28,7 @@ func NewSnapshotServiceImpl(repo item.IGoodsItemRepo) item.ISnapshotService {
 }
 
 // 获取最新的快照
-func (s *snapshotServiceImpl) GetLatestSnapshot(itemId int32) *item.Snapshot {
+func (s *snapshotServiceImpl) GetLatestSnapshot(itemId int64) *item.Snapshot {
 	return s.itemRepo.GetLatestSnapshot(itemId)
 }
 
@@ -68,7 +68,7 @@ func (s *snapshotServiceImpl) checkSnapshot(snap *item.Snapshot, it *item.GoodsI
 }
 
 // 更新快照, 通过审核后,才会更新快照
-func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int32, error) {
+func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int64, error) {
 	if it.ID <= 0 || it == nil {
 		return -1, item.ErrNoSuchItem
 	}
@@ -84,7 +84,7 @@ func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int32, error
 
 // 更新快照
 func (s *snapshotServiceImpl) updateSnapshot(ls *item.Snapshot,
-	it *item.GoodsItem) (int32, error) {
+	it *item.GoodsItem) (int64, error) {
 	//todo: ???  SKU的会员价
 	levelSales := 0
 	if len(s.itemRepo.GetGoodsLevelPrice(it.ID)) > 0 {
@@ -130,12 +130,12 @@ func (s *snapshotServiceImpl) GetSaleSnapshotByKey(key string) *item.TradeSnapsh
 }
 
 // 根据ID获取已销售商品的快照
-func (s *snapshotServiceImpl) GetSalesSnapshot(id int32) *item.TradeSnapshot {
+func (s *snapshotServiceImpl) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 	return s.itemRepo.GetSalesSnapshot(id)
 }
 
 // 获取最新的商品销售快照,如果商品有更新,则更新销售快照
-func (s *snapshotServiceImpl) GetLatestSalesSnapshot(itemId int32, skuId int32) *item.TradeSnapshot {
+func (s *snapshotServiceImpl) GetLatestSalesSnapshot(itemId, skuId int64) *item.TradeSnapshot {
 	snap := s.itemRepo.GetLatestSalesSnapshot(skuId)
 	snapBasis := s.GetLatestSnapshot(itemId)
 	if snap == nil || snap.CreateTime != snapBasis.UpdateTime {
@@ -147,7 +147,7 @@ func (s *snapshotServiceImpl) GetLatestSalesSnapshot(itemId int32, skuId int32) 
 }
 
 // 通过商品快照创建新的商品销售快照
-func (s *snapshotServiceImpl) createNewSaleSnap(skuId int32, snap *item.Snapshot) *item.TradeSnapshot {
+func (s *snapshotServiceImpl) createNewSaleSnap(skuId int64, snap *item.Snapshot) *item.TradeSnapshot {
 	sn := &item.TradeSnapshot{
 		//快照编号
 		Id: 0,
