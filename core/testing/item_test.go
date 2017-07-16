@@ -6,6 +6,23 @@ import (
 	"testing"
 )
 
+// 检查商品库存
+func TestItemSkuStock(t *testing.T) {
+	var itemId int64 = 66
+	var skuId int64 = 454
+	repo := ti.ItemRepo
+	it := repo.GetItem(itemId)
+	if it == nil {
+		t.Error(item.ErrNoSuchItem)
+	}
+	sku := it.GetSku(skuId)
+	if sku == nil {
+		t.Error(item.ErrNoSuchSku)
+	}
+	t.Log("ItemId:", itemId, " SkuId:", skuId,
+		" stock is ", sku.Stock)
+}
+
 // 测试同步批发商品
 func TestSyncWholesaleItem(t *testing.T) {
 	venRepo := ti.MchRepo
@@ -18,7 +35,7 @@ func TestSyncWholesaleItem(t *testing.T) {
 func TestItemWholesaleDiscount(t *testing.T) {
 	repo := ti.ItemRepo
 	mmRepo := ti.MemberRepo
-	var itemId int32 = 6      //商品编号
+	var itemId int64 = 6      //商品编号
 	var disRate float64 = 0.9 //折扣率
 	var disAmount int32 = 50  //折扣金额下限
 	it := repo.GetItem(itemId)
@@ -54,7 +71,7 @@ func TestItemWholesaleDiscount(t *testing.T) {
 // 测试批发SKU价格
 func TestItemWholesaleSkuPrice(t *testing.T) {
 	repo := ti.ItemRepo
-	var itemId int32 = 6 //商品编号
+	var itemId int64 = 6 //商品编号
 	it := repo.GetItem(itemId)
 	wsIt := it.Wholesale()
 	// 保存SKU价格

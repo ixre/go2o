@@ -13,7 +13,7 @@ import (
 
 var (
 	modelId int32 = 5
-	itemId  int32 = 1
+	itemId  int64 = 1
 )
 
 // 测试商品模型设置品牌
