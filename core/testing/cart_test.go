@@ -45,10 +45,11 @@ func TestCombineCart(t *testing.T) {
 }
 
 func joinItemsToCart(c cart.ICart, t *testing.T) {
+	var itemId int64 = 66
+	itemId = 113
 	itemRepo := ti.ItemRepo
-	gs := itemRepo.GetItem(66)
+	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
-	itemId := gs.GetAggregateRootId()
 	skuId := arr[0].ID
 	err := c.Put(itemId, skuId, 1)
 	if err != nil {
