@@ -543,7 +543,7 @@ type (
 	// 订单商品项
 	SubOrderItem struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
+		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 商品编号
@@ -561,7 +561,7 @@ type (
 		// 最终金额, 可能会有优惠均摊抵扣的金额
 		FinalAmount float32 `db:"final_amount"`
 		// 是否发货
-		IsShipped int `db:"is_shipped"`
+		IsShipped int32 `db:"is_shipped"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 运营商编号

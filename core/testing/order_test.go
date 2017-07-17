@@ -170,23 +170,57 @@ func TestCancelOrder(t *testing.T) {
 	t.Log("退货成功")
 }
 
-// 测试批发订单
-func TestWholesaleOrder(t *testing.T) {
-	repo := ti.CartRepo
+// 测试提交普通订单,并完成付款
+func TestSubmitNormalOrder(t *testing.T) {
 	var buyerId int64 = 1
-	c := repo.GetMyCart(buyerId, cart.KWholesale)
+	cartRepo := ti.CartRepo
+	c := cartRepo.GetMyCart(buyerId, cart.KRetail)
 	joinItemsToCart(c, t)
-	rc := c.(cart.IWholesaleCart)
-
-	t.Log("购物车如下:")
-	for _, v := range rc.Items() {
-		t.Logf("商品：%d-%d 数量：%d\n", v.ItemId, v.SkuId, v.Quantity)
-	}
+	rc := c.(cart.IRetailCart)
 	if len(rc.GetValue().Items) == 0 {
 		t.Log("购物车是空的")
 		t.FailNow()
 	}
+	t.Log("购物车如下:")
+	for _, v := range rc.Items() {
+		t.Logf("商品：%d-%d 数量：%d\n", v.ItemId, v.SkuId, v.Quantity)
+	}
+	_, err := c.Save()
+	if err != nil {
+		t.Error("保存购物车失败:", err.Error())
+		t.Fail()
+	}
+	orderRepo := ti.OrderRepo
+	manager := orderRepo.Manager()
+	buyer := ti.MemberRepo.GetMember(buyerId)
+	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
 
+	o, err := manager.SubmitOrder(c, addressId, "", !true)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	ro := o.(order.INormalOrder)
+	ro.OnlinePaymentTradeFinish()
+	time.Sleep(time.Second * 2)
+	t.Log("提交成功，订单号：", o.OrderNo())
+}
+
+// 测试批发订单,并完成付款
+func TestWholesaleOrder(t *testing.T) {
+	var buyerId int64 = 1
+	cartRepo := ti.CartRepo
+	c := cartRepo.GetMyCart(buyerId, cart.KWholesale)
+	joinItemsToCart(c, t)
+	rc := c.(cart.IWholesaleCart)
+	if len(rc.GetValue().Items) == 0 {
+		t.Log("购物车是空的")
+		t.FailNow()
+	}
+	t.Log("购物车如下:")
+	for _, v := range rc.Items() {
+		t.Logf("商品：%d-%d 数量：%d\n", v.ItemId, v.SkuId, v.Quantity)
+	}
 	_, err := c.Save()
 	if err != nil {
 		t.Error("保存购物车失败:", err.Error())

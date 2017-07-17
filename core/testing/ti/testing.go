@@ -33,12 +33,16 @@ import (
 var (
 	app *testingApp
 )
+var (
+	REDIS_DB    string = "6"
+	DBS_DB_NAME string = "gcy_v3"
+)
 
 func GetApp() gof.App {
 	if app == nil {
 		app = new(testingApp)
 		app.Config().Set("redis_host", "dbs.ts.com")
-		app.Config().Set("redis_db", "10")
+		app.Config().Set("redis_db", REDIS_DB)
 		app.Config().Set("redis_port", "6379")
 		app.Config().Set("redis_auth", "123456")
 		gof.CurrentApp = app
@@ -76,7 +80,7 @@ func (t *testingApp) Db() db.Connector {
 			"",
 			"dbs.ts.com",
 			"3306",
-			"txmall",
+			DBS_DB_NAME,
 			"utf8",
 		)
 		connector := db.NewSimpleConnector("mysql", connStr, t.Log(), 5000, false)
