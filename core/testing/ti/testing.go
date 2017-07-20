@@ -97,10 +97,6 @@ func (t *testingApp) Storage() storage.Interface {
 	return t._storage
 }
 
-func (t *testingApp) Template() *gof.Template {
-	return t._template
-}
-
 func (t *testingApp) Config() *gof.Config {
 	if t._config == nil {
 		if t._confFilePath == "" {

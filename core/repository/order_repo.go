@@ -321,7 +321,7 @@ func (o *orderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 	}
 	rc.Close()
 
-	log.Println("----- order notify ! orderNo:", orderNo, " sub:", sub)
+	//log.Println("----- order notify ! orderNo:", orderNo, " sub:", sub)
 }
 
 // Save OrderList
