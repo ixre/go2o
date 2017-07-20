@@ -51,7 +51,6 @@ type AppImpl struct {
 	_redis       *redis.Pool
 	_dbConnector db.Connector
 	_debugMode   bool
-	_template    *gof.Template
 	_logger      log.ILogger
 	_storage     storage.Interface
 }
@@ -75,13 +74,6 @@ func (a *AppImpl) Storage() storage.Interface {
 		a._storage = storage.NewRedisStorage(a.Redis())
 	}
 	return a._storage
-}
-
-func (a *AppImpl) Template() *gof.Template {
-	if a._template == nil {
-		a._template = initTemplate(a.Config())
-	}
-	return a._template
 }
 
 func (a *AppImpl) Config() *gof.Config {
