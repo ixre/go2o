@@ -1,8 +1,12 @@
 package testing
 
 import (
+	"encoding/json"
+	"fmt"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/testing/ti"
+	"log"
+	"strconv"
 	"testing"
 )
 
@@ -41,16 +45,47 @@ func TestCombineCart(t *testing.T) {
 }
 
 func joinItemsToCart(c cart.ICart, t *testing.T) {
+	var itemId int64 = 66
+	itemId = 113
 	itemRepo := ti.ItemRepo
-	gs := itemRepo.GetItem(3)
+	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
-	itemId := gs.GetAggregateRootId()
 	skuId := arr[0].ID
 	err := c.Put(itemId, skuId, 1)
 	if err != nil {
 		t.Error("购物车加入失败:", err.Error())
 		t.Fail()
 	}
+}
+
+// 生成购物车全部结算的数据
+func GetCartCheckedData(c cart.ICart) string {
+	mp := make(map[string][]string)
+	if c.Kind() == cart.KWholesale {
+		wc := c.(cart.IWholesaleCart)
+		for _, v := range wc.Items() {
+			log.Println("----", itemId, fmt.Sprintf("%#v", v))
+			id := strconv.Itoa(int(v.ItemId))
+			if _, ok := mp[id]; !ok {
+				mp[id] = []string{}
+			}
+			mp[id] = append(mp[id], strconv.Itoa(int(v.SkuId)))
+		}
+	} else {
+		rc := c.(cart.IRetailCart)
+		for _, v := range rc.Items() {
+			id := strconv.Itoa(int(v.ItemId))
+			if _, ok := mp[id]; !ok {
+				mp[id] = []string{}
+			}
+			mp[id] = append(mp[id], strconv.Itoa(int(v.SkuId)))
+		}
+	}
+	b, err := json.Marshal(mp)
+	if err != nil {
+		log.Println("--- parse cart checked data error :", err)
+	}
+	return string(b)
 }
 
 // 测试批发购物车

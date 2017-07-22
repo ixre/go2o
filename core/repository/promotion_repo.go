@@ -92,14 +92,14 @@ func (this *promotionRepo) DeleteValueCashBack(id int32) error {
 }
 
 // 获取商品的促销编号
-func (this *promotionRepo) GetGoodsPromotionId(goodsId int32, promFlag int) int {
+func (this *promotionRepo) GetGoodsPromotionId(goodsId int64, promFlag int) int {
 	var id int
 	this.Connector.ExecScalar("SELECT id FROM pm_info WHERE goods_id=? AND type_flag=? AND enabled=1", &id, goodsId, promFlag)
 	return id
 }
 
 // 获取商品的促销
-func (this *promotionRepo) GetPromotionOfGoods(goodsId int32) []*promotion.PromotionInfo {
+func (this *promotionRepo) GetPromotionOfGoods(goodsId int64) []*promotion.PromotionInfo {
 	var arr []*promotion.PromotionInfo = []*promotion.PromotionInfo{}
 	err := this.Connector.GetOrm().Select(&arr, "goods_id=? AND enabled=1 ORDER BY id", goodsId)
 	if err == nil {

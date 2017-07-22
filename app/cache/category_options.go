@@ -50,7 +50,7 @@ func GetDropOptionsOfProModel() string {
 	for _, v := range list {
 		buf.WriteString(fmt.Sprintf(
 			`<option value="%d">%s</option>`,
-			v.Id,
+			v.ID,
 			v.Name,
 		))
 	}

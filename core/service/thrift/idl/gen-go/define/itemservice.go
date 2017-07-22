@@ -18,14 +18,14 @@ type ItemService interface {
 	// Parameters:
 	//  - ItemId
 	//  - SkuId
-	GetSku(itemId int32, skuId int32) (r *Sku, err error)
+	GetSku(itemId int64, skuId int64) (r *Sku, err error)
 	// Parameters:
 	//  - ItemId
-	GetItemSkuJson(itemId int32) (r string, err error)
+	GetItemSkuJson(itemId int64) (r string, err error)
 	// Parameters:
 	//  - ItemId
 	//  - IType
-	GetItemDetailData(itemId int32, iType int32) (r string, err error)
+	GetItemDetailData(itemId int64, iType int32) (r string, err error)
 }
 
 type ItemServiceClient struct {
@@ -57,14 +57,14 @@ func NewItemServiceClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, o
 // Parameters:
 //  - ItemId
 //  - SkuId
-func (p *ItemServiceClient) GetSku(itemId int32, skuId int32) (r *Sku, err error) {
+func (p *ItemServiceClient) GetSku(itemId int64, skuId int64) (r *Sku, err error) {
 	if err = p.sendGetSku(itemId, skuId); err != nil {
 		return
 	}
 	return p.recvGetSku()
 }
 
-func (p *ItemServiceClient) sendGetSku(itemId int32, skuId int32) (err error) {
+func (p *ItemServiceClient) sendGetSku(itemId int64, skuId int64) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -135,14 +135,14 @@ func (p *ItemServiceClient) recvGetSku() (value *Sku, err error) {
 
 // Parameters:
 //  - ItemId
-func (p *ItemServiceClient) GetItemSkuJson(itemId int32) (r string, err error) {
+func (p *ItemServiceClient) GetItemSkuJson(itemId int64) (r string, err error) {
 	if err = p.sendGetItemSkuJson(itemId); err != nil {
 		return
 	}
 	return p.recvGetItemSkuJson()
 }
 
-func (p *ItemServiceClient) sendGetItemSkuJson(itemId int32) (err error) {
+func (p *ItemServiceClient) sendGetItemSkuJson(itemId int64) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -213,14 +213,14 @@ func (p *ItemServiceClient) recvGetItemSkuJson() (value string, err error) {
 // Parameters:
 //  - ItemId
 //  - IType
-func (p *ItemServiceClient) GetItemDetailData(itemId int32, iType int32) (r string, err error) {
+func (p *ItemServiceClient) GetItemDetailData(itemId int64, iType int32) (r string, err error) {
 	if err = p.sendGetItemDetailData(itemId, iType); err != nil {
 		return
 	}
 	return p.recvGetItemDetailData()
 }
 
-func (p *ItemServiceClient) sendGetItemDetailData(itemId int32, iType int32) (err error) {
+func (p *ItemServiceClient) sendGetItemDetailData(itemId int64, iType int32) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -485,19 +485,19 @@ func (p *itemServiceProcessorGetItemDetailData) Process(seqId int32, iprot, opro
 //  - ItemId
 //  - SkuId
 type ItemServiceGetSkuArgs struct {
-	ItemId int32 `thrift:"itemId,1" json:"itemId"`
-	SkuId  int32 `thrift:"skuId,2" json:"skuId"`
+	ItemId int64 `thrift:"itemId,1" json:"itemId"`
+	SkuId  int64 `thrift:"skuId,2" json:"skuId"`
 }
 
 func NewItemServiceGetSkuArgs() *ItemServiceGetSkuArgs {
 	return &ItemServiceGetSkuArgs{}
 }
 
-func (p *ItemServiceGetSkuArgs) GetItemId() int32 {
+func (p *ItemServiceGetSkuArgs) GetItemId() int64 {
 	return p.ItemId
 }
 
-func (p *ItemServiceGetSkuArgs) GetSkuId() int32 {
+func (p *ItemServiceGetSkuArgs) GetSkuId() int64 {
 	return p.SkuId
 }
 func (p *ItemServiceGetSkuArgs) Read(iprot thrift.TProtocol) error {
@@ -538,7 +538,7 @@ func (p *ItemServiceGetSkuArgs) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *ItemServiceGetSkuArgs) readField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
 		p.ItemId = v
@@ -547,7 +547,7 @@ func (p *ItemServiceGetSkuArgs) readField1(iprot thrift.TProtocol) error {
 }
 
 func (p *ItemServiceGetSkuArgs) readField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
 		p.SkuId = v
@@ -575,10 +575,10 @@ func (p *ItemServiceGetSkuArgs) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *ItemServiceGetSkuArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("itemId", thrift.I32, 1); err != nil {
+	if err := oprot.WriteFieldBegin("itemId", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:itemId: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.ItemId)); err != nil {
+	if err := oprot.WriteI64(int64(p.ItemId)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.itemId (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -588,10 +588,10 @@ func (p *ItemServiceGetSkuArgs) writeField1(oprot thrift.TProtocol) (err error) 
 }
 
 func (p *ItemServiceGetSkuArgs) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("skuId", thrift.I32, 2); err != nil {
+	if err := oprot.WriteFieldBegin("skuId", thrift.I64, 2); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:skuId: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.SkuId)); err != nil {
+	if err := oprot.WriteI64(int64(p.SkuId)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.skuId (2) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -711,14 +711,14 @@ func (p *ItemServiceGetSkuResult) String() string {
 // Attributes:
 //  - ItemId
 type ItemServiceGetItemSkuJsonArgs struct {
-	ItemId int32 `thrift:"itemId,1" json:"itemId"`
+	ItemId int64 `thrift:"itemId,1" json:"itemId"`
 }
 
 func NewItemServiceGetItemSkuJsonArgs() *ItemServiceGetItemSkuJsonArgs {
 	return &ItemServiceGetItemSkuJsonArgs{}
 }
 
-func (p *ItemServiceGetItemSkuJsonArgs) GetItemId() int32 {
+func (p *ItemServiceGetItemSkuJsonArgs) GetItemId() int64 {
 	return p.ItemId
 }
 func (p *ItemServiceGetItemSkuJsonArgs) Read(iprot thrift.TProtocol) error {
@@ -755,7 +755,7 @@ func (p *ItemServiceGetItemSkuJsonArgs) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *ItemServiceGetItemSkuJsonArgs) readField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
 		p.ItemId = v
@@ -780,10 +780,10 @@ func (p *ItemServiceGetItemSkuJsonArgs) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *ItemServiceGetItemSkuJsonArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("itemId", thrift.I32, 1); err != nil {
+	if err := oprot.WriteFieldBegin("itemId", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:itemId: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.ItemId)); err != nil {
+	if err := oprot.WriteI64(int64(p.ItemId)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.itemId (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -905,7 +905,7 @@ func (p *ItemServiceGetItemSkuJsonResult) String() string {
 //  - ItemId
 //  - IType
 type ItemServiceGetItemDetailDataArgs struct {
-	ItemId int32 `thrift:"itemId,1" json:"itemId"`
+	ItemId int64 `thrift:"itemId,1" json:"itemId"`
 	IType  int32 `thrift:"iType,2" json:"iType"`
 }
 
@@ -913,7 +913,7 @@ func NewItemServiceGetItemDetailDataArgs() *ItemServiceGetItemDetailDataArgs {
 	return &ItemServiceGetItemDetailDataArgs{}
 }
 
-func (p *ItemServiceGetItemDetailDataArgs) GetItemId() int32 {
+func (p *ItemServiceGetItemDetailDataArgs) GetItemId() int64 {
 	return p.ItemId
 }
 
@@ -958,7 +958,7 @@ func (p *ItemServiceGetItemDetailDataArgs) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *ItemServiceGetItemDetailDataArgs) readField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
 		p.ItemId = v
@@ -995,10 +995,10 @@ func (p *ItemServiceGetItemDetailDataArgs) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *ItemServiceGetItemDetailDataArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("itemId", thrift.I32, 1); err != nil {
+	if err := oprot.WriteFieldBegin("itemId", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:itemId: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.ItemId)); err != nil {
+	if err := oprot.WriteI64(int64(p.ItemId)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.itemId (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {

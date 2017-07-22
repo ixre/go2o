@@ -14,14 +14,14 @@ import (
 var _ item.IWholesaleItem = new(wholesaleItemImpl)
 
 type wholesaleItemImpl struct {
-	itemId   int32
+	itemId   int64
 	value    *item.WsItem
 	it       item.IGoodsItem
 	itemRepo item.IGoodsItemRepo
 	repo     item.IItemWholesaleRepo
 }
 
-func newWholesaleItem(itemId int32, it item.IGoodsItem,
+func newWholesaleItem(itemId int64, it item.IGoodsItem,
 	itemRepo item.IGoodsItemRepo, repo item.IItemWholesaleRepo) item.IWholesaleItem {
 	return (&wholesaleItemImpl{
 		itemId:   itemId,
@@ -50,7 +50,7 @@ func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 }
 
 // 获取领域编号
-func (w *wholesaleItemImpl) GetDomainId() int32 {
+func (w *wholesaleItemImpl) GetDomainId() int64 {
 	return w.itemId
 }
 
@@ -166,7 +166,7 @@ func (w *wholesaleItemImpl) SaveItemDiscount(groupId int32, arr []*item.WsItemDi
 }
 
 // 获取批发价格
-func (w *wholesaleItemImpl) GetWholesalePrice(skuId, quantity int32) float64 {
+func (w *wholesaleItemImpl) GetWholesalePrice(skuId int64, quantity int32) float64 {
 	var price float64 = 0
 	arr := w.GetSkuPrice(skuId)
 	if len(arr) > 0 {
@@ -185,13 +185,13 @@ func (w *wholesaleItemImpl) GetWholesalePrice(skuId, quantity int32) float64 {
 }
 
 // 根据SKU获取价格设置
-func (w *wholesaleItemImpl) GetSkuPrice(skuId int32) []*item.WsSkuPrice {
+func (w *wholesaleItemImpl) GetSkuPrice(skuId int64) []*item.WsSkuPrice {
 	return w.repo.SelectWsSkuPrice("item_id=? AND sku_id=?",
 		w.value.ItemId, skuId)
 }
 
 // 保存批发SKU价格设置
-func (w *wholesaleItemImpl) SaveSkuPrice(skuId int32, arr []*item.WsSkuPrice) error {
+func (w *wholesaleItemImpl) SaveSkuPrice(skuId int64, arr []*item.WsSkuPrice) error {
 	// 获取存在的项
 	old := w.GetSkuPrice(skuId)
 	// 分析当前数据并加入到MAP中

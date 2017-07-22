@@ -69,23 +69,23 @@ type (
 		CreateItem(v *GoodsItem) IGoodsItem
 
 		// 获取商品
-		GetItem(itemId int32) IGoodsItem
+		GetItem(itemId int64) IGoodsItem
 
 		// 获取商品
-		GetValueGoods(itemId int32, skuId int32) *GoodsItem
+		GetValueGoods(itemId, skuId int64) *GoodsItem
 
 		// 根据SKU-ID获取商品,SKU-ID为商品ID
 		//todo: 循环引有,故为interface{}
-		GetGoodsBySkuId(skuId int32) interface{}
+		GetGoodsBySkuId(skuId int64) interface{}
 
 		// 获取商品
-		GetValueGoodsById(goodsId int32) *GoodsItem
+		GetValueGoodsById(goodsId int64) *GoodsItem
 
 		// 根据SKU获取商品
-		GetValueGoodsBySku(itemId, sku int32) *GoodsItem
+		GetValueGoodsBySku(itemId, sku int64) *GoodsItem
 
 		// 保存商品
-		SaveValueGoods(*GoodsItem) (int32, error)
+		SaveValueGoods(*GoodsItem) (int64, error)
 
 		// 获取在货架上的商品
 		GetOnShelvesGoods(mchId int32, start, end int,
@@ -96,10 +96,10 @@ type (
 			where, orderBy string) (total int, goods []*valueobject.Goods)
 
 		// 根据编号获取商品
-		GetGoodsByIds(ids ...int32) ([]*valueobject.Goods, error)
+		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
 
 		// 获取会员价
-		GetGoodsLevelPrice(goodsId int32) []*MemberPrice
+		GetGoodsLevelPrice(goodsId int64) []*MemberPrice
 
 		// 保存会员价
 		SaveGoodsLevelPrice(*MemberPrice) (int32, error)
@@ -108,25 +108,25 @@ type (
 		RemoveGoodsLevelPrice(id int32) error
 
 		// 保存快照
-		SaveSnapshot(*Snapshot) (int32, error)
+		SaveSnapshot(*Snapshot) (int64, error)
 
 		// 根据指定商品快照
-		GetSnapshots(skuIdArr []int32) []Snapshot
+		GetSnapshots(skuIdArr []int64) []Snapshot
 
 		// 获取最新的商品快照
-		GetLatestSnapshot(itemId int32) *Snapshot
+		GetLatestSnapshot(itemId int64) *Snapshot
 
 		// 获取指定的商品快照
-		GetSalesSnapshot(id int32) *TradeSnapshot
+		GetSalesSnapshot(id int64) *TradeSnapshot
 
 		// 根据Key获取商品快照
 		GetSaleSnapshotByKey(key string) *TradeSnapshot
 
 		// 获取最新的商品销售快照
-		GetLatestSalesSnapshot(skuId int32) *TradeSnapshot
+		GetLatestSalesSnapshot(skuId int64) *TradeSnapshot
 
 		// 保存商品销售快照
-		SaveSalesSnapshot(*TradeSnapshot) (int32, error)
+		SaveSalesSnapshot(*TradeSnapshot) (int64, error)
 
 		// Get ItemSku
 		GetItemSku(primary interface{}) *Sku
@@ -143,9 +143,9 @@ type (
 	// 商品,临时改方便辨别
 	GoodsItem struct {
 		// 商品编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
-		ProductId int32 `db:"product_id"`
+		ProductId int64 `db:"product_id"`
 		// 促销标志
 		PromFlag int32 `db:"prom_flag"`
 		// 分类编号
@@ -179,7 +179,7 @@ type (
 		// SKU数量
 		SkuNum int32 `db:"sku_num"`
 		// 默认SKU编号
-		SkuId int32 `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		// 成本价
 		Cost float32 `db:"cost"`
 		// 销售价
@@ -211,7 +211,7 @@ type (
 	// 会员价
 	MemberPrice struct {
 		Id      int32   `db:"id" pk:"yes" auto:"yes"`
-		GoodsId int32   `db:"goods_id"`
+		GoodsId int64   `db:"goods_id"`
 		Level   int32   `db:"level"`
 		Price   float32 `db:"price"`
 		// 限购数量
@@ -224,7 +224,7 @@ type (
 	// 商品
 	IGoodsItem interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int32
+		GetAggregateRootId() int64
 		// 设置值
 		GetValue() *GoodsItem
 		// 获取包装过的商品信息
@@ -234,7 +234,7 @@ type (
 		// 设置SKU
 		SetSku(arr []*Sku) error
 		// 保存
-		Save() (int32, error)
+		Save() (int64, error)
 		// 获取产品
 		Product() product.IProduct
 		// 商品快照
@@ -246,7 +246,7 @@ type (
 		// 获取商品的规格
 		SpecArray() promodel.SpecList
 		// 获取SKU
-		GetSku(skuId int32) *Sku
+		GetSku(skuId int64) *Sku
 		// 获取促销信息
 		GetPromotions() []promotion.IPromotion
 		// 获取促销价
@@ -268,13 +268,13 @@ type (
 		// 标记为违规
 		Incorrect(remark string) error
 		// 更新销售数量,扣减库存
-		AddSalesNum(skuId, quantity int32) error
+		AddSalesNum(skuId int64, quantity int32) error
 		// 取消销售
-		CancelSale(skuId, quantity int32, orderNo string) error
+		CancelSale(skuId int64, quantity int32, orderNo string) error
 		// 占用库存
-		TakeStock(skuId, quantity int32) error
+		TakeStock(skuId int64, quantity int32) error
 		// 释放库存
-		FreeStock(skuId, quantity int32) error
+		FreeStock(skuId int64, quantity int32) error
 		//// 生成快照
 		//GenerateSnapshot() (int64, error)
 		//
@@ -288,7 +288,7 @@ type (
 	// 商品批发
 	IWholesaleItem interface {
 		// 获取领域编号
-		GetDomainId() int32
+		GetDomainId() int64
 		// 是否允许批发
 		CanWholesale() bool
 		// 保存
@@ -314,11 +314,11 @@ type (
 		SaveItemDiscount(groupId int32, arr []*WsItemDiscount) error
 
 		// 获取批发价格
-		GetWholesalePrice(skuId, quantity int32) float64
+		GetWholesalePrice(skuId int64, quantity int32) float64
 		// 根据SKU获取价格设置
-		GetSkuPrice(skuId int32) []*WsSkuPrice
+		GetSkuPrice(skuId int64) []*WsSkuPrice
 		// 保存批发SKU价格设置
-		SaveSkuPrice(skuId int32, arr []*WsSkuPrice) error
+		SaveSkuPrice(skuId int64, arr []*WsSkuPrice) error
 	}
 
 	IItemWholesaleRepo interface {
@@ -363,7 +363,7 @@ type (
 		// 运营商编号
 		VendorId int32 `db:"vendor_id"`
 		// 商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		// 价格
 		Price float64 `db:"price"`
 		// 价格区间
@@ -381,9 +381,9 @@ type (
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		// SKU编号
-		SkuId int32 `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		// 需要数量以上
 		RequireQuantity int32 `db:"require_quantity"`
 		// 批发价
@@ -395,7 +395,7 @@ type (
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		// 客户分组
 		BuyerGid int32 `db:"buyer_gid"`
 		// 要求金额，默认为0

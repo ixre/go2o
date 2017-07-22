@@ -314,12 +314,14 @@ func (o *orderRepImpl) GetOrder(where string, arg ...interface{}) *order.Order {
 func (o *orderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 	rc := core.GetRedisConn()
 	if sub {
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, fmt.Sprintf("sub!%d", orderNo))
+		content := fmt.Sprintf("sub!%s", orderNo)
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, content)
 	} else {
 		rc.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
 	}
 	rc.Close()
-	//log.Println("-----order ",v.ID,v.Status,statusIsChanged,err)
+
+	//log.Println("----- order notify ! orderNo:", orderNo, " sub:", sub)
 }
 
 // Save OrderList

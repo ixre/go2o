@@ -52,20 +52,20 @@ func (p *productService) GetAttrItem(id int32) *promodel.AttrItem {
 
 // 获取模型属性
 func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
 	return m.Attrs()
 }
 
 // 获取模型属性Html
 func (p *productService) GetModelAttrsHtml(proModel int32) string {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
 	attrs := m.Attrs()
 	return p.pmRepo.AttrService().AttrsHtml(attrs)
 }
 
 // 获取模型规格
 func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
 	return m.Specs()
 }
 
@@ -73,8 +73,8 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error) {
 	var pm promodel.IModel
 	var err error
-	if v.Id > 0 {
-		ev := p.GetModel(v.Id)
+	if v.ID > 0 {
+		ev := p.GetModel(v.ID)
 		if ev == nil {
 			err = errors.New("模型不存在")
 			goto R
@@ -99,10 +99,10 @@ func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error
 	}
 	// 保存模型
 	if err == nil {
-		v.Id, err = pm.Save()
+		v.ID, err = pm.Save()
 	}
 R:
-	return parser.Result(v.Id, err), nil
+	return parser.Result(v.ID, err), nil
 }
 
 // 删除产品模型
@@ -137,7 +137,7 @@ func (p *productService) GetBrands() []*promodel.ProBrand {
 
 // 获取模型关联的产品品牌
 func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
-	pm := p.pmRepo.CreateModel(&promodel.ProModel{Id: id})
+	pm := p.pmRepo.CreateModel(&promodel.ProModel{ID: id})
 	return pm.Brands()
 }
 
@@ -303,7 +303,7 @@ func (p *productService) setChild(list []product.ICategory, dst *product.Categor
 /***** 产品 *****/
 
 // 获取产品值
-func (p *productService) GetProductValue(productId int32) *product.Product {
+func (p *productService) GetProductValue(productId int64) *product.Product {
 	pro := p.proRepo.GetProduct(productId)
 	if pro != nil {
 		v := pro.GetValue()
@@ -313,7 +313,7 @@ func (p *productService) GetProductValue(productId int32) *product.Product {
 }
 
 // 保存产品
-func (p *productService) SaveProduct(v *product.Product) (r *define.Result_, err error) {
+func (p *productService) SaveProduct(v *product.Product) (r *define.Result64, err error) {
 	var pro product.IProduct
 	if v.Id > 0 {
 		pro = p.proRepo.GetProduct(v.Id)
@@ -339,12 +339,12 @@ func (p *productService) SaveProduct(v *product.Product) (r *define.Result_, err
 		v.Id, err = pro.Save()
 	}
 R:
-	return parser.Result(v.Id, err), nil
+	return parser.Result64(v.Id, err), nil
 }
 
 // 保存货品描述
 func (p *productService) SaveProductInfo(supplierId int32,
-	productId int32, info string) error {
+	productId int64, info string) error {
 	pro := p.proRepo.GetProduct(productId)
 	if pro == nil || pro.GetValue().VendorId != supplierId {
 		return product.ErrNoSuchProduct
@@ -353,7 +353,7 @@ func (p *productService) SaveProductInfo(supplierId int32,
 }
 
 // 删除货品
-func (p *productService) DeleteItem(supplierId int32, productId int32) error {
+func (p *productService) DeleteItem(supplierId int32, productId int64) error {
 	pro := p.proRepo.GetProduct(productId)
 	if pro == nil || pro.GetValue().VendorId != supplierId {
 		return product.ErrNoSuchProduct
@@ -362,13 +362,13 @@ func (p *productService) DeleteItem(supplierId int32, productId int32) error {
 }
 
 // 获取产品属性
-func (p *productService) GetAttrArray(productId int32) []*product.Attr {
+func (p *productService) GetAttrArray(productId int64) []*product.Attr {
 	pro := p.proRepo.CreateProduct(&product.Product{Id: productId})
 	return pro.Attr()
 }
 
 // 获取商品的销售标签
-func (p *productService) GetItemSaleLabels(mchId, itemId int32) []*item.Label {
+func (p *productService) GetItemSaleLabels(mchId int32, itemId int64) []*item.Label {
 	var list = make([]*item.Label, 0)
 	//todo: refactor
 
@@ -380,7 +380,7 @@ func (p *productService) GetItemSaleLabels(mchId, itemId int32) []*item.Label {
 }
 
 // 保存商品的销售标签
-func (p *productService) SaveItemSaleLabels(mchId, itemId int32, tagIds []int) error {
+func (p *productService) SaveItemSaleLabels(mchId int32, itemId int64, tagIds []int) error {
 	var err error
 
 	//todo: refactor

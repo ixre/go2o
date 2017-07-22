@@ -710,12 +710,12 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		ExpressFee:     0,
 		FinalAmount:    0,
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend:   0,
-		BuyerRemark: "",
-		Remark:      "",
-		State:       order.StatAwaitingPayment,
-		UpdateTime:  o.value.UpdateTime,
-		Items:       items,
+		IsSuspend:    0,
+		BuyerComment: "",
+		Remark:       "",
+		State:        order.StatAwaitingPayment,
+		UpdateTime:   o.value.UpdateTime,
+		Items:        items,
 	}
 	// 计算订单金额
 	for _, item := range items {
@@ -807,7 +807,7 @@ func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 }
 
 // 扣减商品库存
-func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
+func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int64, quantity int32) error {
 	gds := o.goodsRepo.GetItem(itemId)
 	if gds == nil {
 		return item.ErrNoSuchItem
@@ -957,7 +957,31 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	co.FinalAmount = float64(v.FinalAmount)
 	co.UpdateTime = v.UpdateTime
 	co.State = v.State
+	co.Items = []*order.ComplexItem{}
+	for _, v := range o.Items() {
+		co.Items = append(co.Items, o.parseComplexItem(v))
+	}
 	return co
+}
+
+// 转换订单商品
+func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexItem {
+	it := &order.ComplexItem{
+		ID:             i.ID,
+		OrderId:        i.OrderId,
+		ItemId:         int64(i.ItemId),
+		SkuId:          int64(i.SkuId),
+		SnapshotId:     int64(i.SnapshotId),
+		Quantity:       i.Quantity,
+		ReturnQuantity: i.ReturnQuantity,
+		Amount:         float64(i.Amount),
+		FinalAmount:    float64(i.FinalAmount),
+		IsShipped:      i.IsShipped,
+		Data:           make(map[string]string),
+	}
+	base := o.baseOrder().(*normalOrderImpl)
+	base.baseOrderImpl.BindItemInfo(it)
+	return it
 }
 
 // 获取商品项
@@ -1471,7 +1495,7 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 }
 
 // 退回商品
-func (o *subOrderImpl) Return(snapshotId int32, quantity int32) error {
+func (o *subOrderImpl) Return(snapshotId int64, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.Quantity-v.ReturnQuantity < quantity {
@@ -1486,7 +1510,7 @@ func (o *subOrderImpl) Return(snapshotId int32, quantity int32) error {
 }
 
 // 撤销退回商品
-func (o *subOrderImpl) RevertReturn(snapshotId int32, quantity int32) error {
+func (o *subOrderImpl) RevertReturn(snapshotId int64, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.ReturnQuantity < quantity {

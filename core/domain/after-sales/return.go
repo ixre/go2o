@@ -69,7 +69,7 @@ func (r *returnOrderImpl) saveReturnOrder() error {
 }
 
 // 设置要退回货物信息
-func (r *returnOrderImpl) SetItem(snapshotId int32, quantity int32) error {
+func (r *returnOrderImpl) SetItem(snapshotId int64, quantity int32) error {
 	o := r.GetOrder()
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
