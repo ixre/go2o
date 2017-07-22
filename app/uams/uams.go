@@ -33,7 +33,7 @@ var (
 )
 
 // 请求接口
-func Post(api string, data map[string]string) (string, error) {
+func Post(api string, data map[string]string) ([]byte, error) {
 	cli := &http.Client{}
 	form := url.Values{}
 	if data != nil {
@@ -52,9 +52,9 @@ func Post(api string, data map[string]string) (string, error) {
 		if err == nil {
 			err = checkApiRespErr(result)
 		}
-		return string(result), err
+		return result, err
 	}
-	return "", err
+	return []byte{}, err
 }
 
 // 如果返回接口请求错误, 响应状态码以-10开头
