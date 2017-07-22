@@ -660,7 +660,7 @@ func (o *orderImpl) createSubOrderByVendor(parentOrderId int32, buyerId int32,
 		FinalAmount:    0,
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 		IsSuspend:   0,
-		BuyerRemark: "",
+		BuyerComment: "",
 		Remark:      "",
 		State:       order.StatAwaitingPayment,
 		UpdateTime:  o.value.UpdateTime,
@@ -751,7 +751,7 @@ func (o *orderImpl) OnlinePaymentTradeFinish() (err error) {
 }
 
 // 扣减商品库存
-func (o *orderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
+func (o *orderImpl) takeGoodsStock(itemId, skuId int64, quantity int32) error {
 	gds := o.goodsRepo.GetItem(itemId)
 	if gds == nil {
 		return item.ErrNoSuchGoods
@@ -1386,7 +1386,7 @@ func (o *subOrderImpl) Cancel(reason string) error {
 }
 
 // 退回商品
-func (o *subOrderImpl) Return(snapshotId int32, quantity int32) error {
+func (o *subOrderImpl) Return(snapshotId int64, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.Quantity-v.ReturnQuantity < quantity {
@@ -1401,7 +1401,7 @@ func (o *subOrderImpl) Return(snapshotId int32, quantity int32) error {
 }
 
 // 撤销退回商品
-func (o *subOrderImpl) RevertReturn(snapshotId int32, quantity int32) error {
+func (o *subOrderImpl) RevertReturn(snapshotId int64, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.ReturnQuantity < quantity {

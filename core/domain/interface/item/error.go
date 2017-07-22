@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	ErrNoSuchItemSku *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchSku *domain.DomainError = domain.NewDomainError(
 		"err_item_no_such_item_sku", "商品SKU不存在")
 
 	ErrNotBindShop *domain.DomainError = domain.NewDomainError(

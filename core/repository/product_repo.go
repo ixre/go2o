@@ -47,8 +47,8 @@ func (p *productRepo) CreateProduct(v *product.Product) product.IProduct {
 }
 
 // 根据产品编号获取货品
-func (p *productRepo) GetProduct(id int32) product.IProduct {
-	v := p.GetProductValue(id)
+func (p *productRepo) GetProduct(itemId int64) product.IProduct {
+	v := p.GetProductValue(itemId)
 	if v != nil {
 		return p.CreateProduct(v)
 	}
@@ -84,17 +84,17 @@ func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
 }
 
 // 获取货品销售总数
-func (p *productRepo) GetProductSaleNum(id int32) int {
+func (p *productRepo) GetProductSaleNum(itemId int64) int {
 	var num int
 	p.Connector.ExecScalar(`SELECT SUM(sale_num) FROM item_info WHERE product_id=?`,
-		&num, id)
+		&num, itemId)
 	return num
 }
 
 // Get Product
-func (p *productRepo) GetProductValue(id int32) *product.Product {
+func (p *productRepo) GetProductValue(itemId int64) *product.Product {
 	e := product.Product{}
-	err := p._orm.Get(id, &e)
+	err := p._orm.Get(itemId, &e)
 	if err == nil {
 		return &e
 	}
@@ -124,8 +124,8 @@ func (p *productRepo) SaveProduct(v *product.Product) (int, error) {
 }
 
 // Delete Product
-func (p *productRepo) DeleteProduct(id int32) error {
-	err := p._orm.DeleteByPk(product.Product{}, id)
+func (p *productRepo) DeleteProduct(itemId int64) error {
+	err := p._orm.DeleteByPk(product.Product{}, itemId)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Product")
 	}
@@ -166,7 +166,7 @@ func (p *productRepo) SelectAttr(where string, v ...interface{}) []*product.Attr
 
 // Save ProAttrInfo
 func (p *productRepo) SaveAttr(v *product.Attr) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.Id))
+	id, err := orm.Save(p._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")
 	}

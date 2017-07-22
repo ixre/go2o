@@ -35,10 +35,10 @@ type IPromotionRepo interface {
 	DeleteValueCashBack(id int32) error
 
 	// 获取商品的促销编号
-	GetGoodsPromotionId(goodsId int32, promFlag int) int
+	GetGoodsPromotionId(goodsId int64, promFlag int) int
 
 	// 获取商品可用的促销
-	GetPromotionOfGoods(goodsId int32) []*PromotionInfo
+	GetPromotionOfGoods(goodsId int64) []*PromotionInfo
 
 	// 获取商户订单可用的促销
 	GetPromotionOfMerchantOrder(mchId int32) []*PromotionInfo

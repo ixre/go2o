@@ -816,3 +816,22 @@ ALTER TABLE `pro_category`
   ADD COLUMN `icon_xy` VARCHAR(45) NOT NULL AFTER `icon`;
 
 update pro_category set icon_xy='0,0' WHERE id> 0 && icon_xy IS NULL;
+
+
+/* 2017-07-15 */
+
+ALTER TABLE `mch_buyer_group`
+  CHANGE COLUMN `alias` `alias` VARCHAR(45) NOT NULL ,
+  CHANGE COLUMN `enable_retail` `enable_retail` TINYINT(1) NOT NULL COMMENT '是否启用零售' ,
+  CHANGE COLUMN `enable_wholesale` `enable_wholesale` TINYINT(1) NOT NULL COMMENT '是否启用批发' ;
+
+ALTER TABLE `mch_online_shop`
+  DROP COLUMN `sub_tit`,
+  CHANGE COLUMN `index_tit` `shop_title` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL ,
+  CHANGE COLUMN `notice_html` `shop_notice` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL ;
+
+ALTER TABLE `order_wholesale_order`
+  CHANGE COLUMN `buyer_remark` `buyer_comment` VARCHAR(120) NOT NULL COMMENT '订单买家备注' AFTER `is_paid`;
+
+ALTER TABLE `sale_sub_order`
+  CHANGE COLUMN `buyer_remark` `buyer_comment` VARCHAR(120) NOT NULL COMMENT '订单买家备注' AFTER `is_suspend`;

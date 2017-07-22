@@ -24,11 +24,11 @@ type orderItem struct {
 	// 订单编号
 	OrderId int64
 	// 商品编号
-	ItemId int32
+	ItemId int64
 	// 商品SKU编号
-	SkuId int32
+	SkuId int64
 	// 快照编号
-	SnapshotId int32
+	SnapshotId int64
 	// 数量
 	Quantity int32
 	// 退回数量(退货)
@@ -131,7 +131,7 @@ func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
 func (o *baseOrderImpl) BindItemInfo(i *order.ComplexItem) {
 	unitPrice := i.FinalAmount / float64(i.Quantity)
 	i.Data["UnitPrice"] = format.DecimalToString(unitPrice)
-	it := o.itemRepo.GetSalesSnapshot(int32(i.SnapshotId))
+	it := o.itemRepo.GetSalesSnapshot(i.SnapshotId)
 	i.Data["ItemImage"] = it.Image
 	i.Data["ItemName"] = it.GoodsTitle
 	i.Data["SpecWord"] = it.Sku
