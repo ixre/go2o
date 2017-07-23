@@ -23,12 +23,17 @@ var (
 		Result:  -102,
 		Message: "调用的API名称不正确",
 	}
+	RNoSuchApp = &Response{
+		Result:  -103,
+		Message: "no such app",
+	}
 )
 
 var (
 	API_SERVER    = "http://localhost:1419/uams_api_v1"
 	API_USER      = "< replace your api user >"
 	API_TOKEN     = "< replace your api token >"
+	API_APP       = "< replace your app code >"
 	API_SIGN_TYPE = "sha1" // [sha1|md5]
 )
 
@@ -44,6 +49,7 @@ func Post(api string, data map[string]string) ([]byte, error) {
 	form["api"] = []string{api}
 	form["api_user"] = []string{API_USER}
 	form["sign_type"] = []string{API_SIGN_TYPE}
+	form["app"] = []string{API_APP}
 	sign := Sign(API_SIGN_TYPE, form, API_TOKEN)
 	form["sign"] = []string{sign}
 	rsp, err := cli.PostForm(API_SERVER, form)
@@ -69,6 +75,8 @@ func checkApiRespErr(result []byte) error {
 			msg = *RMissingApiParams
 		case -102:
 			msg = *RErrApiName
+		case -103:
+			msg = *RNoSuchApp
 		}
 		return errors.New(fmt.Sprintf(
 			"Error code %d : %s", msg.Result, msg.Message))
