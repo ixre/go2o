@@ -28,9 +28,9 @@ fi
 
 # start service
 if [[ ${action} = "start" ]];then
-   nohup  ./go2o-serve -conf=app.conf -d -r>logs/go2o.log 1>&2 &
-   nohup ./master-serve -conf=app.conf>logs/master.log 1>&2 &
-   nohup ./go2o-tcpserve -conf=app.conf>logs/tcp.log 1>&2 &
+   nohup  ./go2o-serve -conf=app.conf -d -r>logs/go2o.log 2>&1 &
+   nohup ./master-serve -conf=app.conf>logs/master.log 2>&1 &
+   nohup ./go2o-tcpserve -conf=app.conf>logs/tcp.log 2>&1 &
    # 暂停2s等待服务启动成功
    sleep 2
    echo "success"
@@ -45,8 +45,8 @@ if [[ ${action} = "restart" ]];then
     # 修改权限
     chmod o+x go2o-serve master-serve go2o-tcpserve go2o.sh
     # 启动服务
-    nohup  ./go2o-serve -conf=app.conf -d -r>logs/go2o.log 1>&2 &
-    nohup ./master-serve -conf=app.conf>logs/master.log 1>&2 &
+    nohup  ./go2o-serve -conf=app.conf -d -r>logs/go2o.log 2>&1 &
+    nohup ./master-serve -conf=app.conf>logs/master.log 2>&1 &
     nohup ./go2o-tcpserve -conf=app.conf>logs/tcp.log 1>&1 &
     # 暂停2s等待服务启动成功
     sleep 2
