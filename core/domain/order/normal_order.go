@@ -1189,7 +1189,10 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 		return order.ErrOrderShipped
 	}
 
-	if list := o.shipRepo.GetShipOrders(o.GetDomainId()); len(list) > 0 {
+	if list := o.shipRepo.GetShipOrders(o.GetDomainId(), true); len(list) > 0 {
+		log.Println(fmt.Sprintf("- %d--%#v",
+			o.GetDomainId(),
+			list[0].Value()))
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
@@ -1624,7 +1627,7 @@ func (o *subOrderImpl) CancelRefund() error {
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {
 	// 更新发货单
-	soList := o.shipRepo.GetShipOrders(o.GetDomainId())
+	soList := o.shipRepo.GetShipOrders(o.GetDomainId(), true)
 	for _, v := range soList {
 		domain.HandleError(v.Completed(), "domain")
 	}
