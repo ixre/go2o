@@ -59,8 +59,8 @@ func logState(t *testing.T, err error, o order.IOrder) {
 func TestOrderSetup(t *testing.T) {
 	orderNo := "100000735578"
 	orderRepo := ti.OrderRepo
-	v := orderRepo.GetSubOrderByNo(orderNo)
-	o := orderRepo.Manager().GetSubOrder(v.ID)
+	orderId := orderRepo.GetOrderId(orderNo, true)
+	o := orderRepo.Manager().GetSubOrder(orderId)
 
 	t.Log("-[ 订单状态为:" + order.OrderState(o.GetValue().State).String())
 
