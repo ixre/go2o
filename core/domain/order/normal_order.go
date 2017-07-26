@@ -71,14 +71,13 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	return &normalOrderImpl{
 		baseOrderImpl: base,
 		manager:       shopping,
-		//value:       value,
-		promRepo:    promRepo,
-		orderRepo:   shoppingRepo,
-		goodsRepo:   goodsRepo,
-		productRepo: productRepo,
-		valRepo:     valRepo,
-		expressRepo: expressRepo,
-		payRepo:     payRepo,
+		promRepo:      promRepo,
+		orderRepo:     shoppingRepo,
+		goodsRepo:     goodsRepo,
+		productRepo:   productRepo,
+		valRepo:       valRepo,
+		expressRepo:   expressRepo,
+		payRepo:       payRepo,
 	}
 }
 
@@ -86,6 +85,7 @@ func (o *normalOrderImpl) getValue() *order.NormalOrder {
 	if o.value == nil {
 		id := o.GetAggregateRootId()
 		if id > 0 {
+			//传入的是order_id
 			o.value = o.repo.GetNormalOrderById(id)
 		}
 	}
@@ -673,15 +673,6 @@ func (o *normalOrderImpl) saveNewOrderOnSubmit() (int64, error) {
 		}
 	}
 	return int64(id), err
-}
-
-// 保存订单
-func (o *normalOrderImpl) save() (int, error) {
-	if o.value.ID > 0 {
-		return o.orderRepo.SaveNormalOrder(o.value)
-	}
-	o.internalSuspend = false
-	return 0, errors.New("please use Order.Submit() save new order.")
 }
 
 // 根据运营商生成子订单

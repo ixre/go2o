@@ -147,15 +147,6 @@ func (o *orderRepImpl) GetNormalOrderById(orderId int64) *order.NormalOrder {
 	return e
 }
 
-// 根据订单号获取订单
-func (o *orderRepImpl) GetNormalOrderByNo(orderNo string) *order.NormalOrder {
-	id := o.GetOrderId(orderNo, false)
-	if id > 0 {
-		return o.GetNormalOrderById(id)
-	}
-	return nil
-}
-
 // 保存订单日志
 func (o *orderRepImpl) SaveNormalSubOrderLog(v *order.OrderLog) error {
 	_, _, err := o.Connector.GetOrm().Save(nil, v)
@@ -246,15 +237,6 @@ func (o *orderRepImpl) GetSubOrder(id int64) *order.NormalSubOrder {
 		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
 	}
 	return e
-}
-
-// 根据订单号获取子订单
-func (o *orderRepImpl) GetSubOrderByNo(orderNo string) *order.NormalSubOrder {
-	id := o.GetOrderId(orderNo, true)
-	if id > 0 {
-		return o.GetSubOrder(id)
-	}
-	return nil
 }
 
 // 保存子订单的商品项,并返回编号和错误

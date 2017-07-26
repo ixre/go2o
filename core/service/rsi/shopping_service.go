@@ -528,11 +528,6 @@ func (s *shoppingService) PayForOrderByManager(orderNo string) error {
 	//return o.CmPaymentWithBalance()
 }
 
-// 根据订单号获取订单
-func (s *shoppingService) GetNormalOrderByNo(orderNo string) *order.NormalOrder {
-	return s._repo.GetNormalOrderByNo(orderNo)
-}
-
 // 获取子订单
 func (s *shoppingService) GetSubOrder(id int64) (r *define.ComplexOrder, err error) {
 	o := s._repo.GetSubOrder(id)
@@ -544,7 +539,8 @@ func (s *shoppingService) GetSubOrder(id int64) (r *define.ComplexOrder, err err
 
 // 根据订单号获取子订单
 func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.ComplexOrder, err error) {
-	o := s._repo.GetSubOrderByNo(orderNo)
+	orderId := s._repo.GetOrderId(orderNo, true)
+	o := s._repo.GetSubOrder(orderId)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
 	}
@@ -572,11 +568,12 @@ func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.NormalSubOrder, 
 
 // 获取子订单及商品项
 func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.NormalSubOrder, []*dto.OrderItem) {
-	o := s._repo.GetSubOrderByNo(orderNo)
+	orderId := s._repo.GetOrderId(orderNo, true)
+	o := s._repo.GetSubOrder(orderId)
 	if o == nil {
 		return o, []*dto.OrderItem{}
 	}
-	return o, s._orderQuery.QueryOrderItems(o.ID)
+	return o, s._orderQuery.QueryOrderItems(orderId)
 }
 
 // 获取订单日志
