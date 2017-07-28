@@ -81,11 +81,15 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	}
 }
 
+func (o *normalOrderImpl) getBaseOrder() *baseOrderImpl {
+	return o.baseOrderImpl
+}
+
 func (o *normalOrderImpl) getValue() *order.NormalOrder {
 	if o.value == nil {
-		id := o.GetAggregateRootId()
+		//传入的是order_id
+		id := o.getBaseOrder().GetAggregateRootId()
 		if id > 0 {
-			//传入的是order_id
 			o.value = o.repo.GetNormalOrderById(id)
 		}
 	}
@@ -1181,9 +1185,6 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 	}
 
 	if list := o.shipRepo.GetShipOrders(o.GetDomainId(), true); len(list) > 0 {
-		log.Println(fmt.Sprintf("- %d--%#v",
-			o.GetDomainId(),
-			list[0].Value()))
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
