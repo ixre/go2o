@@ -251,7 +251,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
+		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
          AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s`, where), &total,
@@ -260,7 +260,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 	e := []*valueobject.Goods{}
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
+		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
          AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
@@ -275,8 +275,8 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 //func (g GoodsQuery) GetGoodsComplex(goodsId int) *dto.GoodsComplex {
 //	e := dto.GoodsComplex{}
 //	sql := `SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-//		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
-//		 WHERE cat_category.mch_id=? AND pro_product.review_state=? AND
+//		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
+//		 WHERE pro_category.mch_id=? AND pro_product.review_state=? AND
 //		 pro_product.shelve_state=? AND pro_product.name LIKE ? %s
 //		 ORDER BY %s update_time DESC LIMIT ?,?`
 //

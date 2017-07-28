@@ -14,9 +14,11 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/storage"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/dto"
 	"go2o/core/infrastructure"
 	"go2o/core/variable"
+	"log"
 	"regexp"
 )
 
@@ -88,18 +90,22 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
 	if len(order) != 0 {
 		order = "  ORDER BY " + order
 	}
-	s.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mch_shop sp INNER JOIN mch_online_shop ol
+
+	err := s.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mch_shop sp INNER JOIN mch_online_shop ol
     ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
-    WHERE sp.state=2 AND mch.enabled = 1 %s`, where), &total)
+    WHERE sp.state=%d AND mch.enabled = 1 %s`, shop.StateNormal, where), &total)
 
 	e := []*dto.ListOnlineShop{}
-	if total > 0 {
+	if total > 0 && err == nil {
 		sql = fmt.Sprintf(`SELECT sp.id,sp.name,alias,host,ol.logo,sp.create_time
         FROM mch_shop sp INNER JOIN mch_online_shop ol
         ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
-        WHERE sp.state=2 AND mch.enabled = 1 %s %s LIMIT ?,?`,
-			where, order)
-		s.GetOrm().SelectByQuery(&e, sql, begin, (end - begin))
+        WHERE sp.state=%d AND mch.enabled = 1 %s %s LIMIT ?,?`,
+			shop.StateNormal, where, order)
+		err = s.GetOrm().SelectByQuery(&e, sql, begin, (end - begin))
+	}
+	if err != nil {
+		log.Println("[ Go2o][ Query][ Error]:", err.Error())
 	}
 	return total, e
 }
