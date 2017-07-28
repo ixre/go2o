@@ -180,7 +180,7 @@ func (o *orderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 	if err == nil {
 		v.ID = int64(id)
 		// 缓存
-		o.Storage.SetExpire(o.getOrderCk(v.ID, false), *v, DefaultCacheSeconds*10)
+		o.Storage.SetExpire(o.getOrderCk(v.OrderId, false), *v, DefaultCacheSeconds*10)
 		//o.Storage.Set(o.getOrderCkByNo(v.OrderNo, false), v.ID)
 	}
 	return id, err
