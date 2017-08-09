@@ -247,6 +247,33 @@ func (s *shoppingService) wsCheckCart(c cart.ICart, data map[string]string) (*de
 	return parser.Result(c.GetAggregateRootId(), err), nil
 }
 
+/*---------------- 零售购物车 ----------------*/
+
+// 零售购物车接口
+func (s *shoppingService) RetailCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
+	//todo: check member
+	c := s._cartRepo.GetMyCart(memberId, cart.KWholesale)
+	if data == nil {
+		data = map[string]string{}
+	}
+	switch action {
+	case "GET":
+		return s.wsGetCart(c, data)
+	case "MINI":
+		return s.wsGetSimpleCart(c, data)
+	case "PUT":
+		return s.wsPutItem(c, data)
+	case "UPDATE":
+		return s.wsUpdateItem(c, data)
+	case "CHECK":
+		return s.wsCheckCart(c, data)
+	}
+	return &define.Result_{
+		Result_: false,
+		Message: "unknown action",
+	}, nil
+}
+
 // 提交订单
 func (s *shoppingService) SubmitOrderV1(buyerId int64, cartType int32,
 	data map[string]string) (map[string]string, error) {
