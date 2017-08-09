@@ -183,11 +183,11 @@ func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, 
 func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	rootNode := &tree.TreeNode{
-		Text:     "根节点",
+		Title:    "根节点",
 		Value:    "",
 		Url:      "",
 		Icon:     "",
-		Open:     true,
+		Expand:   true,
 		Children: nil}
 	p.walkCategoryTree(rootNode, 0, cats)
 	return rootNode
@@ -213,11 +213,11 @@ func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, c
 		cate := v.GetValue()
 		if cate.ParentId == parentId {
 			cNode := &tree.TreeNode{
-				Text:     cate.Name,
+				Title:    cate.Name,
 				Value:    strconv.Itoa(int(cate.ID)),
 				Url:      "",
 				Icon:     "",
-				Open:     false,
+				Expand:   false,
 				Children: nil}
 			node.Children = append(node.Children, cNode)
 			p.walkCategoryTree(cNode, cate.ID, categories)

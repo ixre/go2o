@@ -585,6 +585,8 @@ service PaymentService{
 service SaleService {
   // 批发购物车接口
   Result WholesaleCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
+  // 零售购物车接口
+  Result RetailCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
   // 提交订单
   map<string,string> SubmitOrderV1(1:i64 buyerId,2:i32 cartType,3:map<string,string> data)
   // 获取订单信息
