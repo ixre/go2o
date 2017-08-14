@@ -530,6 +530,8 @@ service MemberService{
     Profile GetProfile(1:i64 id)
     // 获取会员汇总信息
     ComplexMember Complex(1:i64 memberId)
+    // 更改会员等级
+    Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
      // 升级为高级会员
     Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
