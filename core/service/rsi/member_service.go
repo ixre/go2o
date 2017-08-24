@@ -329,13 +329,15 @@ func (ms *memberService) ChangeUsr(memberId int64, usr string) error {
 }
 
 // 更改会员等级
-func (ms *memberService) ChangeLevel(memberId int64, levelId int32,
-	review bool, paymentId int32) error {
+func (ms *memberService) UpdateLevel(memberId int64, level int32,
+	review bool, paymentOrderId int64) (r *define.Result_, err error) {
 	m := ms._repo.GetMember(memberId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		err = member.ErrNoSuchMember
+	} else {
+		err = m.ChangeLevel(level, int32(paymentOrderId), review)
 	}
-	return m.ChangeLevel(levelId, paymentId, review)
+	return parser.Result(0, err), nil
 }
 
 // 上传会员头像

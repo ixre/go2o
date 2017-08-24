@@ -12,7 +12,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
@@ -158,11 +157,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		 AND ws_item.shelve_state=?  %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
 	list := []*item.GoodsItem{}
-	log.Println("---", fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
-         INNER JOIN item_info ON item_info.id=ws_item.item_id
-         INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE ws_item.review_state=?
-		 AND ws_item.shelve_state=?  %s`, where))
+
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT item_info.id,item_info.product_id,item_info.prom_flag,
 		item_info.cat_id,item_info.vendor_id,item_info.brand_id,item_info.shop_id,
@@ -256,7 +251,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
+		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
          AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s`, where), &total,
@@ -265,7 +260,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 	e := []*valueobject.Goods{}
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
+		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
          AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
@@ -280,8 +275,8 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 //func (g GoodsQuery) GetGoodsComplex(goodsId int) *dto.GoodsComplex {
 //	e := dto.GoodsComplex{}
 //	sql := `SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-//		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
-//		 WHERE cat_category.mch_id=? AND pro_product.review_state=? AND
+//		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
+//		 WHERE pro_category.mch_id=? AND pro_product.review_state=? AND
 //		 pro_product.shelve_state=? AND pro_product.name LIKE ? %s
 //		 ORDER BY %s update_time DESC LIMIT ?,?`
 //

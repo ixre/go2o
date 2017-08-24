@@ -147,15 +147,6 @@ func (o *orderRepImpl) GetNormalOrderById(orderId int64) *order.NormalOrder {
 	return e
 }
 
-// 根据订单号获取订单
-func (o *orderRepImpl) GetNormalOrderByNo(orderNo string) *order.NormalOrder {
-	id := o.GetOrderId(orderNo, false)
-	if id > 0 {
-		return o.GetNormalOrderById(id)
-	}
-	return nil
-}
-
 // 保存订单日志
 func (o *orderRepImpl) SaveNormalSubOrderLog(v *order.OrderLog) error {
 	_, _, err := o.Connector.GetOrm().Save(nil, v)
@@ -189,7 +180,7 @@ func (o *orderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 	if err == nil {
 		v.ID = int64(id)
 		// 缓存
-		o.Storage.SetExpire(o.getOrderCk(v.ID, false), *v, DefaultCacheSeconds*10)
+		o.Storage.SetExpire(o.getOrderCk(v.OrderId, false), *v, DefaultCacheSeconds*10)
 		//o.Storage.Set(o.getOrderCkByNo(v.OrderNo, false), v.ID)
 	}
 	return id, err
@@ -246,15 +237,6 @@ func (o *orderRepImpl) GetSubOrder(id int64) *order.NormalSubOrder {
 		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
 	}
 	return e
-}
-
-// 根据订单号获取子订单
-func (o *orderRepImpl) GetSubOrderByNo(orderNo string) *order.NormalSubOrder {
-	id := o.GetOrderId(orderNo, true)
-	if id > 0 {
-		return o.GetSubOrder(id)
-	}
-	return nil
 }
 
 // 保存子订单的商品项,并返回编号和错误
@@ -314,12 +296,14 @@ func (o *orderRepImpl) GetOrder(where string, arg ...interface{}) *order.Order {
 func (o *orderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 	rc := core.GetRedisConn()
 	if sub {
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, fmt.Sprintf("sub!%d", orderNo))
+		content := fmt.Sprintf("sub!%s", orderNo)
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, content)
 	} else {
 		rc.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
 	}
 	rc.Close()
-	//log.Println("-----order ",v.ID,v.Status,statusIsChanged,err)
+
+	//log.Println("----- order notify ! orderNo:", orderNo, " sub:", sub)
 }
 
 // Save OrderList

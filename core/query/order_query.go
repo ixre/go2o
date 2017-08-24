@@ -209,6 +209,7 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, p
 			e := &dto.OrderItem{}
 			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.GoodsTitle,
 				&e.Image, &e.Price, &e.Quantity, &e.Amount, &e.FinalAmount)
+			e.Image = format.GetResUrl(e.Image)
 			e.FinalPrice = e.FinalAmount / float32(e.Quantity)
 			orderList[orderMap[e.OrderId]].Items = append(
 				orderList[orderMap[e.OrderId]].Items, e)
@@ -375,6 +376,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int
 				&e.GoodsTitle, &e.Image, &e.Quantity,
 				&e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 			e.FinalPrice = e.FinalAmount / float32(e.Quantity)
+			e.Image = format.GetResUrl(e.Image)
 			orderList[orderMap[e.OrderId]].Items = append(
 				orderList[orderMap[e.OrderId]].Items, e)
 		}

@@ -45,7 +45,7 @@ var (
 type (
 	IProduct interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int32
+		GetAggregateRootId() int64
 		// 获取商品的值
 		GetValue() Product
 		// 设置产品的值
@@ -63,7 +63,7 @@ type (
 		// 设置商品描述
 		SetDescribe(describe string) error
 		// 保存
-		Save() (int32, error)
+		Save() (int64, error)
 
 		// 销毁产品
 		Destroy() error
@@ -73,9 +73,9 @@ type (
 		// 创建产品
 		CreateProduct(*Product) IProduct
 		// 根据产品编号获取货品
-		GetProduct(id int32) IProduct
+		GetProduct(id int64) IProduct
 		// 获取货品
-		GetProductValue(itemId int32) *Product
+		GetProductValue(itemId int64) *Product
 		// 根据id获取货品
 		GetProductsById(ids ...int32) ([]*Product, error)
 		SaveProduct(*Product) (int, error)
@@ -84,9 +84,9 @@ type (
 		GetPagedOnShelvesProduct(supplierId int32, catIds []int32, start, end int) (total int, goods []*Product)
 		//todo:  到商品
 		// 获取货品销售总数
-		GetProductSaleNum(productId int32) int
+		GetProductSaleNum(productId int64) int
 		// 删除货品
-		DeleteProduct(productId int32) error
+		DeleteProduct(productId int64) error
 		// Get Attr
 		GetAttr(primary interface{}) *Attr
 		// Select Attr
@@ -104,7 +104,7 @@ type (
 	// 产品
 	Product struct {
 		// 编号
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 分类
 		CatId int32 `db:"cat_id"`
 		// 名称
@@ -140,9 +140,9 @@ type (
 	// 产品属性
 	Attr struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
-		ProductId int32 `db:"product_id"`
+		ProductId int64 `db:"product_id"`
 		// 属性编号
 		AttrId int32 `db:"attr_id"`
 		// 属性值

@@ -20,12 +20,12 @@ func TestOrderRefund(t *testing.T) {
 	subOrderNo := "100000160304"
 	orderRepo := ti.OrderRepo
 	rep := ti.AfterSalesRepo
-	v := orderRepo.GetSubOrderByNo(subOrderNo)
-	od := orderRepo.Manager().GetSubOrder(v.ID)
+	orderId := orderRepo.GetOrderId(subOrderNo, true)
+	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		Id: 0,
 		// 订单编号
-		OrderId: v.ID,
+		OrderId: od.GetDomainId(),
 		// 类型，退货、换货、维修
 		Type: afterSales.TypeRefund,
 		// 售后原因
@@ -78,12 +78,12 @@ func TestOrderReturn(t *testing.T) {
 	subOrderNo := "100000160304"
 	orderRepo := ti.OrderRepo
 	rep := ti.AfterSalesRepo
-	v := orderRepo.GetSubOrderByNo(subOrderNo)
-	od := orderRepo.Manager().GetSubOrder(v.ID)
+	orderId := orderRepo.GetOrderId(subOrderNo, true)
+	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		Id: 0,
 		// 订单编号
-		OrderId: v.ID,
+		OrderId: od.GetDomainId(),
 		// 类型，退货、换货、维修
 		Type: afterSales.TypeReturn,
 		// 售后原因
@@ -135,11 +135,11 @@ func TestOrderExchange(t *testing.T) {
 	subOrderNo := "100000160304"
 	orderRepo := ti.OrderRepo
 	rep := ti.AfterSalesRepo
-	v := orderRepo.GetSubOrderByNo(subOrderNo)
-	od := orderRepo.Manager().GetSubOrder(v.ID)
+	orderId := orderRepo.GetOrderId(subOrderNo, true)
+	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		// 订单编号
-		OrderId: v.ID,
+		OrderId: orderId,
 		// 类型，退货、换货、维修
 		Type: afterSales.TypeExchange,
 		// 售后原因

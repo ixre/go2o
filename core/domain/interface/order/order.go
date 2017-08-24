@@ -311,9 +311,9 @@ type (
 		// 取消订单/退款
 		Cancel(reason string) error
 		// 退回商品
-		Return(snapshotId int32, quantity int32) error
+		Return(snapshotId int64, quantity int32) error
 		// 撤销退回商品
-		RevertReturn(snapshotId int32, quantity int32) error
+		RevertReturn(snapshotId int64, quantity int32) error
 		// 谢绝订单
 		Decline(reason string) error
 		// 提交子订单
@@ -323,9 +323,11 @@ type (
 	// 批发订单
 	IWholesaleOrder interface {
 		// 设置商品项
-		SetItems(items []*MinifyItem)
+		SetItems(items []*cart.ItemPair)
 		// 设置配送地址
 		SetAddress(addressId int64) error
+		// 设置或添加买家留言，如已经提交订单，将在原留言后附加
+		SetComment(comment string)
 		// 获取商品项
 		Items() []*WholesaleItem
 		// 获取支付单
@@ -365,14 +367,6 @@ type (
 		TradePaymentFinish() error
 		// 更新发票数据
 		UpdateTicket(img string) error
-	}
-
-	// 订单提交数据
-	PostedData struct {
-		//收货地址
-		AddressId int64
-		//订单留言
-		Comment string
 	}
 
 	// 订单
@@ -423,7 +417,7 @@ type (
 		// 收货人联系电话
 		ConsigneePhone string
 		// 买家留言
-		BuyerRemark string
+		BuyerComment string
 		// 收货地址
 		ShippingAddress string
 		// 订单是否拆分
@@ -533,7 +527,7 @@ type (
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 		IsSuspend int `db:"is_suspend" json:"is_suspend"`
 		// 顾客备注
-		BuyerRemark string `db:"buyer_remark" json:"note"`
+		BuyerComment string `db:"buyer_comment"`
 		// 系统备注
 		Remark string `db:"remark" json:"remark"`
 		// 订单状态
@@ -549,15 +543,15 @@ type (
 	// 订单商品项
 	SubOrderItem struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
+		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 商品编号
-		ItemId int32 `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		// 商品SKU编号
-		SkuId int32 `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		// 快照编号
-		SnapshotId int32 `db:"snap_id"`
+		SnapshotId int64 `db:"snap_id"`
 		// 数量
 		Quantity int32 `db:"quantity"`
 		// 退回数量(退货)
@@ -567,7 +561,7 @@ type (
 		// 最终金额, 可能会有优惠均摊抵扣的金额
 		FinalAmount float32 `db:"final_amount"`
 		// 是否发货
-		IsShipped int `db:"is_shipped"`
+		IsShipped int32 `db:"is_shipped"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 运营商编号
@@ -617,7 +611,7 @@ type (
 		// 订单备注
 		Remark string `db:"remark"`
 		// 订单买家备注
-		BuyerRemark string `db:"buyer_remark"`
+		BuyerComment string `db:"buyer_comment"`
 		// 订单状态
 		State int32 `db:"state"`
 		// 订单创建时间

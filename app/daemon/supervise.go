@@ -128,11 +128,10 @@ func supervisePaymentOrderFinish(ss []Service) {
 	}
 }
 
-// 从RDS键中找到订单编号，如：go2o:queue:sub!1 , go2o:queue:2
-func testIdFromRdsKey2(key string) (orderNo string, sub bool, err error) {
+// 从RDS键中找到订单号，如：go2o:queue:sub!1234345435 , go2o:queue:2
+func testIdFromRdsKey(key string) (orderNo string, sub bool, err error) {
 	arr := strings.Split(key, ":")
 	orderNo = arr[len(arr)-1]
-	//orderNo = arr[len(arr) - 2]
 	sub = strings.HasPrefix(orderNo, "sub!")
 	if sub {
 		orderNo = orderNo[4:]
@@ -141,7 +140,7 @@ func testIdFromRdsKey2(key string) (orderNo string, sub bool, err error) {
 }
 
 // 从RDS键中找到订单编号，如：go2o:queue:sub!1 , go2o:queue:2
-func testIdFromRdsKey(key string) (orderId int64, sub bool, err error) {
+func testIdFromRdsKey2(key string) (orderId int64, sub bool, err error) {
 	arr := strings.Split(key, ":")
 	oidKey := arr[len(arr)-2]
 	isSub := strings.HasPrefix(oidKey, "sub!")
@@ -167,7 +166,7 @@ func detectOrderExpires() {
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
 		for _, oKey := range list {
-			orderNo, isSub, err := testIdFromRdsKey2(oKey)
+			orderNo, isSub, err := testIdFromRdsKey(oKey)
 			if err == nil && orderNo != "" {
 				err = ss.CancelOrder(orderNo, isSub, "订单超时,自动取消")
 				//清除待取消记录
@@ -197,7 +196,7 @@ func orderAutoReceive() {
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
 		for _, oKey := range list {
-			orderNo, isSub, err := testIdFromRdsKey2(oKey)
+			orderNo, isSub, err := testIdFromRdsKey(oKey)
 			//log.Println("----",oKey,orderId,isSub,err)
 			if err == nil && orderNo != "" {
 				err = ss.BuyerReceived(orderNo, isSub)

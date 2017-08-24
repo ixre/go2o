@@ -122,7 +122,7 @@ type (
 		GetOrder() order.ISubOrder
 
 		// 设置要退回货物信息
-		SetItem(snapshotId int32, quantity int32) error
+		SetItem(snapshotId int64, quantity int32) error
 
 		// 提交售后申请
 		Submit() (int32, error)
@@ -179,7 +179,7 @@ type (
 		// 类型，退货、换货、维修
 		Type int `db:"type"`
 		// 退货的商品项编号
-		SnapshotId int32 `db:"snap_id"`
+		SnapshotId int64 `db:"snap_id"`
 		// 商品数量
 		Quantity int32 `db:"quantity"`
 		// 售后原因

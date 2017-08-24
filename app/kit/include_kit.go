@@ -433,7 +433,7 @@ func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*define
 }
 
 // 获取产品属性
-func (t *templateIncludeToolkit) productAttrs(productId int32) []define.Pair {
+func (t *templateIncludeToolkit) productAttrs(productId int64) []define.Pair {
 	arr := []define.Pair{}
 	attrs := rsi.ProductService.GetAttrArray(productId)
 	for _, v := range attrs {

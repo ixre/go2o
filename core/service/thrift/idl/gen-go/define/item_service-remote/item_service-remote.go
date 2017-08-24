@@ -20,9 +20,9 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  Sku GetSku(i32 itemId, i32 skuId)")
-	fmt.Fprintln(os.Stderr, "  string GetItemSkuJson(i32 itemId)")
-	fmt.Fprintln(os.Stderr, "  string GetItemDetailData(i32 itemId, i32 iType)")
+	fmt.Fprintln(os.Stderr, "  Sku GetSku(i64 itemId, i64 skuId)")
+	fmt.Fprintln(os.Stderr, "  string GetItemSkuJson(i64 itemId)")
+	fmt.Fprintln(os.Stderr, "  string GetItemDetailData(i64 itemId, i32 iType)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -122,19 +122,17 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSku requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err288 := (strconv.Atoi(flag.Arg(1)))
-		if err288 != nil {
+		argvalue0, err306 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err306 != nil {
 			Usage()
 			return
 		}
-		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err289 := (strconv.Atoi(flag.Arg(2)))
-		if err289 != nil {
+		argvalue1, err307 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err307 != nil {
 			Usage()
 			return
 		}
-		argvalue1 := int32(tmp1)
 		value1 := argvalue1
 		fmt.Print(client.GetSku(value0, value1))
 		fmt.Print("\n")
@@ -144,12 +142,11 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetItemSkuJson requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err290 := (strconv.Atoi(flag.Arg(1)))
-		if err290 != nil {
+		argvalue0, err308 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err308 != nil {
 			Usage()
 			return
 		}
-		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.GetItemSkuJson(value0))
 		fmt.Print("\n")
@@ -159,15 +156,14 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetItemDetailData requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err291 := (strconv.Atoi(flag.Arg(1)))
-		if err291 != nil {
+		argvalue0, err309 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err309 != nil {
 			Usage()
 			return
 		}
-		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err292 := (strconv.Atoi(flag.Arg(2)))
-		if err292 != nil {
+		tmp1, err310 := (strconv.Atoi(flag.Arg(2)))
+		if err310 != nil {
 			Usage()
 			return
 		}
