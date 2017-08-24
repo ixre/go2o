@@ -261,7 +261,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
 	INNER JOIN  mch_shop s ON f.refer_id =s.id
     INNER JOIN mch_online_shop o ON s.id = o.shop_id
-    INNER JOIN mch_merchant mch ON mch.id = s.mch_id
+    INNER JOIN mch_merchant mch ON mch.id = s.vendor_id
     WHERE f.member_id=? AND f.fav_type=? %s`, where), &num,
 		memberId, member.FavTypeShop)
 
@@ -270,7 +270,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
     s.name as shop_name,o.logo,f.update_time FROM mm_favorite f
     INNER JOIN  mch_shop s ON f.refer_id =s.id
     INNER JOIN mch_online_shop o ON s.id = o.shop_id
-    INNER JOIN mch_merchant mch ON mch.id = s.mch_id
+    INNER JOIN mch_merchant mch ON mch.id = s.vendor_id
     WHERE f.member_id=? AND f.fav_type=? %s ORDER BY f.update_time DESC LIMIT ?,?`,
 			where)
 		d.Query(sqlLine, func(rs *sql.Rows) {

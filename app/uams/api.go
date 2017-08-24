@@ -11,9 +11,9 @@ import (
 
 // 接口响应
 type Response struct {
-	Result  int    `json:"result"`
-	Data    string `json:"data"`
-	Message string `json:"message"`
+	Result  int               `json:"result"`
+	Data    map[string]string `json:"data"`
+	Message string            `json:"message"`
 }
 
 // 参数排序后，转换为字节,排除sign和sign_type
