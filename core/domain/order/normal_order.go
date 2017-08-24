@@ -71,20 +71,24 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	return &normalOrderImpl{
 		baseOrderImpl: base,
 		manager:       shopping,
-		//value:       value,
-		promRepo:    promRepo,
-		orderRepo:   shoppingRepo,
-		goodsRepo:   goodsRepo,
-		productRepo: productRepo,
-		valRepo:     valRepo,
-		expressRepo: expressRepo,
-		payRepo:     payRepo,
+		promRepo:      promRepo,
+		orderRepo:     shoppingRepo,
+		goodsRepo:     goodsRepo,
+		productRepo:   productRepo,
+		valRepo:       valRepo,
+		expressRepo:   expressRepo,
+		payRepo:       payRepo,
 	}
+}
+
+func (o *normalOrderImpl) getBaseOrder() *baseOrderImpl {
+	return o.baseOrderImpl
 }
 
 func (o *normalOrderImpl) getValue() *order.NormalOrder {
 	if o.value == nil {
-		id := o.GetAggregateRootId()
+		//传入的是order_id
+		id := o.getBaseOrder().GetAggregateRootId()
 		if id > 0 {
 			o.value = o.repo.GetNormalOrderById(id)
 		}
@@ -675,15 +679,6 @@ func (o *normalOrderImpl) saveNewOrderOnSubmit() (int64, error) {
 	return int64(id), err
 }
 
-// 保存订单
-func (o *normalOrderImpl) save() (int, error) {
-	if o.value.ID > 0 {
-		return o.orderRepo.SaveNormalOrder(o.value)
-	}
-	o.internalSuspend = false
-	return 0, errors.New("please use Order.Submit() save new order.")
-}
-
 // 根据运营商生成子订单
 func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId int64,
 	vendorId int32, newOrderNo bool, items []*order.SubOrderItem) order.ISubOrder {
@@ -710,12 +705,12 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		ExpressFee:     0,
 		FinalAmount:    0,
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend:   0,
-		BuyerRemark: "",
-		Remark:      "",
-		State:       order.StatAwaitingPayment,
-		UpdateTime:  o.value.UpdateTime,
-		Items:       items,
+		IsSuspend:    0,
+		BuyerComment: "",
+		Remark:       "",
+		State:        order.StatAwaitingPayment,
+		UpdateTime:   o.value.UpdateTime,
+		Items:        items,
 	}
 	// 计算订单金额
 	for _, item := range items {
@@ -807,7 +802,7 @@ func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 }
 
 // 扣减商品库存
-func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
+func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int64, quantity int32) error {
 	gds := o.goodsRepo.GetItem(itemId)
 	if gds == nil {
 		return item.ErrNoSuchItem
@@ -957,7 +952,31 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	co.FinalAmount = float64(v.FinalAmount)
 	co.UpdateTime = v.UpdateTime
 	co.State = v.State
+	co.Items = []*order.ComplexItem{}
+	for _, v := range o.Items() {
+		co.Items = append(co.Items, o.parseComplexItem(v))
+	}
 	return co
+}
+
+// 转换订单商品
+func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexItem {
+	it := &order.ComplexItem{
+		ID:             i.ID,
+		OrderId:        i.OrderId,
+		ItemId:         int64(i.ItemId),
+		SkuId:          int64(i.SkuId),
+		SnapshotId:     int64(i.SnapshotId),
+		Quantity:       i.Quantity,
+		ReturnQuantity: i.ReturnQuantity,
+		Amount:         float64(i.Amount),
+		FinalAmount:    float64(i.FinalAmount),
+		IsShipped:      i.IsShipped,
+		Data:           make(map[string]string),
+	}
+	base := o.baseOrder().(*normalOrderImpl)
+	base.baseOrderImpl.BindItemInfo(it)
+	return it
 }
 
 // 获取商品项
@@ -1165,7 +1184,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 		return order.ErrOrderShipped
 	}
 
-	if list := o.shipRepo.GetShipOrders(o.GetDomainId()); len(list) > 0 {
+	if list := o.shipRepo.GetShipOrders(o.GetDomainId(), true); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
@@ -1471,7 +1490,7 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 }
 
 // 退回商品
-func (o *subOrderImpl) Return(snapshotId int32, quantity int32) error {
+func (o *subOrderImpl) Return(snapshotId int64, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.Quantity-v.ReturnQuantity < quantity {
@@ -1486,7 +1505,7 @@ func (o *subOrderImpl) Return(snapshotId int32, quantity int32) error {
 }
 
 // 撤销退回商品
-func (o *subOrderImpl) RevertReturn(snapshotId int32, quantity int32) error {
+func (o *subOrderImpl) RevertReturn(snapshotId int64, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.ReturnQuantity < quantity {
@@ -1600,7 +1619,7 @@ func (o *subOrderImpl) CancelRefund() error {
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {
 	// 更新发货单
-	soList := o.shipRepo.GetShipOrders(o.GetDomainId())
+	soList := o.shipRepo.GetShipOrders(o.GetDomainId(), true)
 	for _, v := range soList {
 		domain.HandleError(v.Completed(), "domain")
 	}

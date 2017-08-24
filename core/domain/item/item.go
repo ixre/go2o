@@ -78,7 +78,7 @@ func (g *itemImpl) init() item.IGoodsItem {
 }
 
 //获取聚合根编号
-func (g *itemImpl) GetAggregateRootId() int32 {
+func (g *itemImpl) GetAggregateRootId() int64 {
 	return g.value.ID
 }
 
@@ -214,8 +214,8 @@ func (g *itemImpl) saveItemSku(arrPtr *[]*item.Sku) (err error) {
 		// 合并SKU
 		ss.Merge(old, &arr)
 		// 分析当前项目并加入到MAP中
-		delList := []int32{}
-		currMap := make(map[int32]*item.Sku, len(arr))
+		delList := []int64{}
+		currMap := make(map[int64]*item.Sku, len(arr))
 		for _, v := range arr {
 			currMap[v.ID] = v
 		}
@@ -238,7 +238,7 @@ func (g *itemImpl) saveItemSku(arrPtr *[]*item.Sku) (err error) {
 				v.ProductId = proId
 			}
 			if v.ItemId == pk {
-				v.ID, err = util.I32Err(g.repo.SaveItemSku(v))
+				v.ID, err = util.I64Err(g.repo.SaveItemSku(v))
 			}
 		}
 	}
@@ -260,7 +260,7 @@ func (g *itemImpl) SpecArray() promodel.SpecList {
 }
 
 // 获取SKU
-func (g *itemImpl) GetSku(skuId int32) *item.Sku {
+func (g *itemImpl) GetSku(skuId int64) *item.Sku {
 	if g.value.SkuArray != nil {
 		for _, v := range g.value.SkuArray {
 			if v.ID == skuId {
@@ -346,7 +346,7 @@ func (i *itemImpl) checkPrice(v *item.GoodsItem) error {
 }
 
 // 保存
-func (g *itemImpl) Save() (_ int32, err error) {
+func (g *itemImpl) Save() (_ int64, err error) {
 	ss := g.repo.SkuService()
 	// 保存SKU
 	if g.value.SkuArray != nil {
@@ -513,7 +513,7 @@ func (g *itemImpl) Review(pass bool, remark string) error {
 }
 
 // 更新销售数量
-func (g *itemImpl) AddSalesNum(skuId, quantity int32) error {
+func (g *itemImpl) AddSalesNum(skuId int64, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -534,7 +534,7 @@ func (g *itemImpl) AddSalesNum(skuId, quantity int32) error {
 }
 
 // 取消销售
-func (g *itemImpl) CancelSale(skuId, quantity int32, orderNo string) error {
+func (g *itemImpl) CancelSale(skuId int64, quantity int32, orderNo string) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -550,7 +550,7 @@ func (g *itemImpl) CancelSale(skuId, quantity int32, orderNo string) error {
 }
 
 // 占用库存
-func (g *itemImpl) TakeStock(skuId, quantity int32) error {
+func (g *itemImpl) TakeStock(skuId int64, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -568,13 +568,13 @@ func (g *itemImpl) TakeStock(skuId, quantity int32) error {
 	return err
 }
 
-func (g *itemImpl) saveSku(sku *item.Sku) (_ int32, err error) {
-	sku.ID, err = util.I32Err(g.repo.SaveItemSku(sku))
+func (g *itemImpl) saveSku(sku *item.Sku) (_ int64, err error) {
+	sku.ID, err = util.I64Err(g.repo.SaveItemSku(sku))
 	return sku.ID, err
 }
 
 // 释放库存
-func (g *itemImpl) FreeStock(skuId, quantity int32) error {
+func (g *itemImpl) FreeStock(skuId int64, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}

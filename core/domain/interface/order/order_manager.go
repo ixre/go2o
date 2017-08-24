@@ -24,7 +24,7 @@ type (
 		// 预创建批发订单
 		PrepareWholesaleOrder(c cart.ICart) ([]IOrder, error)
 		// 提交批发订单
-		SubmitWholesaleOrder(c cart.ICart, data map[string]string) (map[string]string, error)
+		SubmitWholesaleOrder(c cart.ICart, data IPostedData) (map[string]string, error)
 		// 提交交易类订单
 		SubmitTradeOrder(o *ComplexOrder, tradeRate float64) (IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
@@ -41,6 +41,16 @@ type (
 
 		// 获取子订单
 		GetSubOrder(id int64) ISubOrder
+	}
+
+	// 订单提交附带的数据
+	IPostedData interface {
+		// 获取勾选的商品和SKU数据
+		CheckedData() map[int64][]int64
+		// 获取收货地址编号
+		AddressId() int64
+		// 获取订单留言
+		GetComment(sellerId int32) string
 	}
 
 	// 统一订单适配器
@@ -66,13 +76,10 @@ type (
 		Manager() IOrderManager
 		// 创建订单
 		CreateOrder(*Order) IOrder
-		// 生成空白订单,并保存返回对象
-		CreateNormalSubOrder(*NormalSubOrder) ISubOrder
 		// 获取可用的订单号, 系统直营传入vendor为0
 		GetFreeOrderNo(vendorId int32) string
 		// 获取订单编号
 		GetOrderId(orderNo string, subOrder bool) int64
-
 		// Get OrderList
 		GetOrder(where string, arg ...interface{}) *Order
 		// Save OrderList
@@ -85,39 +92,29 @@ type (
 		// 保存订单的促销绑定
 		SavePromotionBindForOrder(*OrderPromotionBind) (int32, error)
 
+		// 生成空白订单,并保存返回对象
+		CreateNormalSubOrder(*NormalSubOrder) ISubOrder
 		// 根据编号获取订单
 		GetNormalOrderById(orderId int64) *NormalOrder
-		// 根据订单号获取订单
-		GetNormalOrderByNo(orderNo string) *NormalOrder
 		// 保存订单,返回订单编号
 		SaveNormalOrder(v *NormalOrder) (int, error)
-
 		// 获取订单的所有子订单
 		GetNormalSubOrders(orderId int64) []*NormalSubOrder
 		// 保存订单日志
 		SaveNormalSubOrderLog(*OrderLog) error
-
 		// 获取子订单
 		GetSubOrder(id int64) *NormalSubOrder
-
-		// 根据订单号获取子订单
-		GetSubOrderByNo(orderNo string) *NormalSubOrder
-
 		// 保存子订单
 		SaveSubOrder(value *NormalSubOrder) (int, error)
-
 		// 保存子订单的商品项,并返回编号和错误
 		SaveOrderItem(subOrderId int64, value *SubOrderItem) (int32, error)
 
 		// 获取订单项
 		GetSubOrderItems(orderId int64) []*SubOrderItem
-
 		// 获取订单的操作记录
 		GetSubOrderLogs(orderId int64) []*OrderLog
-
 		// 根据商品快照获取订单项
 		GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *SubOrderItem
-
 		// 根据商品快照获取订单项数据传输对象
 		GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem
 

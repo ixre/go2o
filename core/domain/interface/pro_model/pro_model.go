@@ -13,7 +13,7 @@ var (
 
 type ProModel struct {
 	// 编号
-	Id int32 `db:"id" pk:"yes" auto:"yes"`
+	ID int32 `db:"id" pk:"yes" auto:"yes"`
 	// 名称
 	Name string `db:"name"`
 	// 是否启用

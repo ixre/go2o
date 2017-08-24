@@ -2,6 +2,7 @@ package cart
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
@@ -9,6 +10,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/format"
+	"log"
 	"strconv"
 	"time"
 )
@@ -44,7 +46,7 @@ type wholesaleCartImpl struct {
 	summary    string
 	shop       shop.IShop
 	deliver    member.IDeliverAddress
-	snapMap    map[int32]*item.Snapshot
+	snapMap    map[int64]*item.Snapshot
 }
 
 func CreateWholesaleCart(val *cart.WsCart, rep cart.ICartRepo,
@@ -118,12 +120,12 @@ func (c *wholesaleCartImpl) Check() error {
 }
 
 // 获取商品的快照列表
-func (c *wholesaleCartImpl) getSnapshotsMap(items []*cart.WsCartItem) map[int32]*item.Snapshot {
+func (c *wholesaleCartImpl) getSnapshotsMap(items []*cart.WsCartItem) map[int64]*item.Snapshot {
 	if c.snapMap == nil && items != nil {
 		l := len(items)
-		c.snapMap = make(map[int32]*item.Snapshot, l)
+		c.snapMap = make(map[int64]*item.Snapshot, l)
 		if l > 0 {
-			var ids []int32 = make([]int32, l)
+			ids := make([]int64, l)
 			for i, v := range items {
 				ids[i] = v.ItemId
 			}
@@ -169,6 +171,24 @@ func (c *wholesaleCartImpl) setAttachGoodsInfo(items []*cart.WsCartItem) {
 		}
 		if v.SkuId > 0 {
 			sku = it.GetSku(v.SkuId)
+		} else {
+			iv := it.GetValue()
+			sku = &item.Sku{
+				ProductId:   iv.ProductId,
+				ItemId:      iv.ID,
+				Title:       iv.Title,
+				Image:       iv.Image,
+				SpecData:    "",
+				SpecWord:    "",
+				Code:        iv.Code,
+				RetailPrice: iv.RetailPrice,
+				Price:       iv.Price,
+				Cost:        iv.Cost,
+				Weight:      iv.Weight,
+				Bulk:        iv.Bulk,
+				Stock:       iv.StockNum,
+				SaleNum:     iv.SaleNum,
+			}
 		}
 		v.Sku = item.ParseSkuMedia(it.GetValue(), sku)
 
@@ -194,13 +214,9 @@ func (c *wholesaleCartImpl) GetValue() cart.WsCart {
 	return *c.value
 }
 
-// 获取商品编号与购物车项的集合
-func (c *wholesaleCartImpl) Items() map[int32]*cart.WsCartItem {
-	list := make(map[int32]*cart.WsCartItem)
-	for _, v := range c.value.Items {
-		list[v.SkuId] = v
-	}
-	return list
+// 获取商品集合
+func (c *wholesaleCartImpl) Items() []*cart.WsCartItem {
+	return c.getItems()
 }
 
 func (c *wholesaleCartImpl) getItems() []*cart.WsCartItem {
@@ -208,7 +224,7 @@ func (c *wholesaleCartImpl) getItems() []*cart.WsCartItem {
 }
 
 // 根据SKU获取项
-func (c *wholesaleCartImpl) getSkuItem(itemId, skuId int32) *cart.WsCartItem {
+func (c *wholesaleCartImpl) getSkuItem(itemId, skuId int64) *cart.WsCartItem {
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
 			return v
@@ -218,7 +234,7 @@ func (c *wholesaleCartImpl) getSkuItem(itemId, skuId int32) *cart.WsCartItem {
 }
 
 // 添加项
-func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCartItem, error) {
+func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32) (*cart.WsCartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.WsCartItem{}
@@ -244,8 +260,11 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCa
 	if skuId > 0 {
 		sku = it.GetSku(skuId)
 		if sku == nil {
-			return nil, item.ErrNoSuchItemSku
+			return nil, item.ErrNoSuchSku
 		}
+		//todo: 如果SKU没有启用批发,或没有达到最低的数量
+		//arr := wsIt.GetSkuPrice(skuId)
+
 		stock = sku.Stock
 	} else if iv.SkuNum > 0 {
 		return nil, cart.ErrItemNoSku
@@ -254,7 +273,6 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCa
 	if stock == 0 {
 		return nil, item.ErrFullOfStock
 	}
-
 	// 添加数量
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
@@ -285,7 +303,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCa
 }
 
 // 更新项
-func (c *wholesaleCartImpl) update(itemId, skuId int32, quantity int32) error {
+func (c *wholesaleCartImpl) update(itemId, skuId int64, quantity int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -308,7 +326,7 @@ func (c *wholesaleCartImpl) update(itemId, skuId int32, quantity int32) error {
 		var sku *item.Sku
 		sku = it.GetSku(skuId)
 		if sku == nil {
-			return item.ErrNoSuchItemSku
+			return item.ErrNoSuchSku
 		}
 		stock = sku.Stock
 	}
@@ -325,18 +343,18 @@ func (c *wholesaleCartImpl) update(itemId, skuId int32, quantity int32) error {
 }
 
 // 添加项
-func (c *wholesaleCartImpl) Put(itemId, skuId int32, num int32) error {
+func (c *wholesaleCartImpl) Put(itemId, skuId int64, num int32) error {
 	_, err := c.put(itemId, skuId, num)
 	return err
 }
 
 // 更新商品数量，如数量为0，则删除
-func (c *wholesaleCartImpl) Update(itemId, skuId, quantity int32) error {
+func (c *wholesaleCartImpl) Update(itemId, skuId int64, quantity int32) error {
 	return c.update(itemId, skuId, quantity)
 }
 
 // 移出项
-func (c *wholesaleCartImpl) Remove(itemId, skuId, quantity int32) error {
+func (c *wholesaleCartImpl) Remove(itemId, skuId int64, quantity int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -465,6 +483,31 @@ func (c *wholesaleCartImpl) Save() (int32, error) {
 	return id, err
 }
 
+// 获取勾选的商品
+func (c *wholesaleCartImpl) CheckedItems(checked map[int64][]int64) []*cart.ItemPair {
+	items := []*cart.ItemPair{}
+	if checked != nil {
+		for _, v := range c.value.Items {
+			arr, ok := checked[int64(v.ItemId)]
+			log.Println("---xxxx ", ok, fmt.Sprintf("%#v", v))
+			if !ok {
+				continue
+			}
+			for _, skuId := range arr {
+				if skuId == int64(v.SkuId) {
+					items = append(items, &cart.ItemPair{
+						ItemId:   int64(v.ItemId),
+						SkuId:    skuId,
+						SellerId: v.SellerId,
+						Quantity: v.Quantity,
+					})
+				}
+			}
+		}
+	}
+	return items
+}
+
 // 释放购物车,如果购物车的商品全部结算,则返回true
 func (c *wholesaleCartImpl) Release(checked map[int64][]int64) bool {
 	if checked == nil {
@@ -506,15 +549,15 @@ func (c *wholesaleCartImpl) Destroy() (err error) {
 }
 
 // 获取购物车商品Jdo数据
-func (c *wholesaleCartImpl) getItemJdoData(list []*cart.WsCartItem,
-	itemId int32) cart.WCartItemJdo {
+func (c *wholesaleCartImpl) getItemJdoData(list []*cart.ItemPair,
+	itemId int64) cart.WCartItemJdo {
 	it := c.itemRepo.GetItem(itemId)
 	v := it.GetValue()
 	itw := it.Wholesale()
 	itJdo := cart.WCartItemJdo{
 		ItemId:    int64(itemId),
 		ItemName:  v.Title,
-		ItemImage: v.Image,
+		ItemImage: format.GetResUrl(v.Image),
 		Sku:       []cart.WCartSkuJdo{},
 		Data:      map[string]string{},
 	}
@@ -527,7 +570,7 @@ func (c *wholesaleCartImpl) getItemJdoData(list []*cart.WsCartItem,
 		skuJdo := cart.WCartSkuJdo{
 			SkuId:            int64(v.SkuId),
 			SkuCode:          skuV.Code,
-			SkuImage:         skuV.Image,
+			SkuImage:         format.GetResUrl(skuV.Image),
 			SpecWord:         skuV.SpecWord,
 			Quantity:         v.Quantity,
 			Price:            0,
@@ -547,8 +590,8 @@ func (c *wholesaleCartImpl) getItemJdoData(list []*cart.WsCartItem,
 
 func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 	sku *cart.WCartSkuJdo, mp map[string]interface{}) {
-	prArr := itw.GetSkuPrice(int32(sku.SkuId))
-	price := itw.GetWholesalePrice(int32(sku.SkuId), sku.Quantity)
+	prArr := itw.GetSkuPrice(sku.SkuId)
+	price := itw.GetWholesalePrice(sku.SkuId, sku.Quantity)
 	priceRange := [][]string{}
 	for _, v := range prArr {
 		priceRange = append(priceRange, []string{
@@ -564,30 +607,20 @@ func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 
 }
 
-// 获取勾选的商品
-func (c *wholesaleCartImpl) CheckedItems(checked map[int64][]int64) []*cart.WsCartItem {
-	items := []*cart.WsCartItem{}
-	if checked != nil {
-		for _, v := range c.value.Items {
-			arr, ok := checked[int64(v.ItemId)]
-			if !ok {
-				continue
-			}
-			for _, skuId := range arr {
-				if skuId == int64(v.SkuId) {
-					items = append(items, v)
-				}
-			}
-		}
-	}
-	return items
-}
-
 // Jdo数据
 func (c *wholesaleCartImpl) JdoData(checkout bool, checked map[int64][]int64) *cart.WCartJdo {
-	items := c.value.Items
+	items := []*cart.ItemPair{}
 	if checked != nil {
 		items = c.CheckedItems(checked)
+	} else {
+		for _, v := range c.value.Items {
+			items = append(items, &cart.ItemPair{
+				ItemId:   v.ItemId,
+				SkuId:    v.SkuId,
+				SellerId: v.SellerId,
+				Quantity: v.Quantity,
+			})
+		}
 	}
 	jdo := &cart.WCartJdo{
 		Seller: []cart.WCartSellerJdo{},

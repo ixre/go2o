@@ -13,7 +13,7 @@ import (
 
 var (
 	modelId int32 = 5
-	itemId  int32 = 1
+	itemId  int64 = 1
 )
 
 // 测试商品模型设置品牌
@@ -154,7 +154,7 @@ func TestItemSaveSku(t *testing.T) {
 			ov := k.(*promodel.SpecItem)
 			buf.WriteString(strconv.Itoa(int(ov.SpecId)))
 			buf.WriteString(":")
-			buf.WriteString(strconv.Itoa(int(ov.Id)))
+			buf.WriteString(strconv.Itoa(int(ov.ID)))
 		}
 		arr = append(arr, &item.Sku{
 			ProductId: iv.ProductId,

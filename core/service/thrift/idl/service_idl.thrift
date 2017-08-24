@@ -240,8 +240,8 @@ struct Category {
 }
 
 struct OldItem{
-    1: i32 ItemId
-    2: i32 ProductId
+    1: i64 ItemId
+    2: i64 ProductId
     3: i32 PromFlag
     4: i32 CatId
     5: i32 VendorId
@@ -258,7 +258,7 @@ struct OldItem{
     16: i32 StockNum
     17: i32 SaleNum
     18: i32 SkuNum
-    19: i32 SkuId
+    19: i64 SkuId
     20: double Cost
     21: double Price
     22: double RetailPrice
@@ -277,7 +277,7 @@ struct OldItem{
 
 // 统一的商品对象
 struct UnifiedItem{
-    1: i32 ItemId
+    1: i64 ItemId
     2: i32 ProductId
     3: i32 CatId
     4: i32 VendorId
@@ -313,9 +313,9 @@ struct UnifiedItem{
 }
 
 struct Sku {
-    1: i32 SkuId
-    2: i32 ItemId
-    3: i32 ProductId
+    1: i64 SkuId
+    2: i64 ItemId
+    3: i64 ProductId
     4: string Title
     5: string Image
     6: string SpecData
@@ -355,9 +355,9 @@ struct ShoppingCartGroup {
 // 购物车商品
 struct ShoppingCartItem {
     //商品编号
-    1: i32 ItemId
+    1: i64 ItemId
     //SKU编号
-    2: i32 SkuId
+    2: i64 SkuId
     //商品标题
     3: string Title
     //商品图片
@@ -439,7 +439,7 @@ struct ComplexOrder {
     14: string ConsigneePerson
     15: string ConsigneePhone
     16: string ShippingAddress
-    17: string BuyerRemark
+    17: string BuyerComment
     18: i32 IsBreak
     19: i32 State
     20: i64 CreateTime
@@ -530,6 +530,8 @@ service MemberService{
     Profile GetProfile(1:i64 id)
     // 获取会员汇总信息
     ComplexMember Complex(1:i64 memberId)
+    // 更改会员等级
+    Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
      // 升级为高级会员
     Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
@@ -585,6 +587,8 @@ service PaymentService{
 service SaleService {
   // 批发购物车接口
   Result WholesaleCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
+  // 零售购物车接口
+  Result RetailCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
   // 提交订单
   map<string,string> SubmitOrderV1(1:i64 buyerId,2:i32 cartType,3:map<string,string> data)
   // 获取订单信息
@@ -609,11 +613,11 @@ service SaleService {
 // 商品服务
 service ItemService{
     // 获取SKU
-    Sku GetSku(1:i32 itemId,2:i32 skuId)
+    Sku GetSku(1:i64 itemId,2:i64 skuId)
     // 获取商品的Sku-JSON格式
-    string GetItemSkuJson(1:i32 itemId)
+    string GetItemSkuJson(1:i64 itemId)
     // 获取商品详细数据
-    string GetItemDetailData(1:i32 itemId,2:i32 iType)
+    string GetItemDetailData(1:i64 itemId,2:i32 iType)
 }
 
 //商家服务

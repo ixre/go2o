@@ -11,7 +11,6 @@ package order
 
 import (
 	"errors"
-	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
@@ -26,7 +25,6 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
-	"strconv"
 )
 
 var _ order.IOrderManager = new(orderManagerImpl)
@@ -123,31 +121,27 @@ func (o *orderManagerImpl) PrepareWholesaleOrder(c cart.ICart) ([]order.IOrder, 
 	if c.Kind() != cart.KWholesale {
 		return nil, cart.ErrKindNotMatch
 	}
-	return o.breaker.BreakUp(c, map[string]string{})
+	return o.breaker.BreakUp(c, nil)
 }
 
 // 提交批发订单
 func (o *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
-	data map[string]string) (map[string]string, error) {
+	data order.IPostedData) (map[string]string, error) {
 	if c.Kind() != cart.KWholesale {
 		return nil, cart.ErrKindNotMatch
 	}
-	addressId, err := util.I64Err(strconv.Atoi(data["address_id"]))
-	if err != nil {
+	addressId := data.AddressId()
+	if addressId <= 0 {
 		return nil, order.ErrNoSuchAddress
 	}
-	checked := cart.ParseCheckedMap(data["checked"])
+	checked := data.CheckedData()
 	rd := map[string]string{
 		"error": "",
 	}
 
 	list, err := o.breaker.BreakUp(c, data)
 	for i, v := range list {
-		pd := &order.PostedData{
-			AddressId: addressId,
-			//Comment:data["seller_comment_"+strconv.Itoa()]
-		}
-		err = o.submitSellerWholesaleOrder(v, pd)
+		err = o.submitSellerWholesaleOrder(v)
 		if err != nil {
 			return map[string]string{}, err
 		}
@@ -167,17 +161,10 @@ func (o *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
 	return rd, err
 }
 
-func (o *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder,
-	data *order.PostedData) error {
-	io := v.(order.IWholesaleOrder)
-	err := io.SetAddress(data.AddressId)
+func (o *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
+	err := v.Submit()
 	if err == nil {
-		if err = v.Submit(); err != nil {
-			return err
-		}
-
 		//todo:???
-
 		// 余额支付
 		//py := io.GetPaymentOrder()
 		//if useBalanceDiscount {

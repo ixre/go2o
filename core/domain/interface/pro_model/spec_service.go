@@ -8,7 +8,7 @@ type (
 	// 规格
 	Spec struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品模型
 		ProModel int32 `db:"pro_model"`
 		// 规格名称
@@ -24,7 +24,7 @@ type (
 	// 规格项
 	SpecItem struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 规格编号
 		SpecId int32 `db:"spec_id"`
 		// 产品模型（冗余)
@@ -70,7 +70,7 @@ func (s SpecList) Len() int {
 // index i should sort before the element with index j.
 func (s SpecList) Less(i, j int) bool {
 	b := s[i].SortNum < s[j].SortNum
-	return b || !b && s[i].Id < s[j].Id
+	return b || !b && s[i].ID < s[j].ID
 }
 
 // Swap swaps the elements with indexes i and j.
@@ -90,7 +90,7 @@ func (s SpecItemList) Len() int {
 // index i should sort before the element with index j.
 func (s SpecItemList) Less(i, j int) bool {
 	b := s[i].SortNum < s[j].SortNum
-	return b || !b && s[i].Id < s[j].Id
+	return b || !b && s[i].ID < s[j].ID
 }
 
 // Swap swaps the elements with indexes i and j.
