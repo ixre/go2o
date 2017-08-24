@@ -159,19 +159,26 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.RetailCartItem) {
 		}
 		if v.SkuId > 0 {
 			sku = it.GetSku(v.SkuId)
+		} else {
+			iv := it.GetValue()
+			sku = &item.Sku{
+				ProductId:   iv.ProductId,
+				ItemId:      iv.ID,
+				Title:       iv.Title,
+				Image:       iv.Image,
+				SpecData:    "",
+				SpecWord:    "",
+				Code:        iv.Code,
+				RetailPrice: iv.RetailPrice,
+				Price:       iv.Price,
+				Cost:        iv.Cost,
+				Weight:      iv.Weight,
+				Bulk:        iv.Bulk,
+				Stock:       iv.StockNum,
+				SaleNum:     iv.SaleNum,
+			}
 		}
 		v.Sku = item.ParseSkuMedia(it.GetValue(), sku)
-
-		//  会员价
-		//var level int32
-		//if gv.LevelSales == 1 && level != -1 {
-		//    if level == 0 {
-		//        level = c.getBuyerLevelId()
-		//    }
-		//    //todo: ???
-		//    //c.setGoodsInfo(gv, level)
-		//}
-		//
 	}
 }
 

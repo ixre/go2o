@@ -331,30 +331,30 @@ func ParseToDtoCart(c ICart) *define.ShoppingCart {
 	}
 	rc := c.(IRetailCart)
 	v := rc.GetValue()
+
 	cart.CartId = c.GetAggregateRootId()
 	cart.Code = v.CartCode
 	cart.Shops = []*define.ShoppingCartGroup{}
 
-	if v.Items != nil {
-		if l := len(v.Items); l > 0 {
-			mp := make(map[int32]*define.ShoppingCartGroup, 0) //保存运营商到map
-			for _, v := range v.Items {
-				vendor, ok := mp[v.ShopId]
-				if !ok {
-					vendor = &define.ShoppingCartGroup{
-						VendorId: v.VendorId,
-						ShopId:   v.ShopId,
-						Items:    []*define.ShoppingCartItem{},
-					}
-					mp[v.ShopId] = vendor
-					cart.Shops = append(cart.Shops, vendor)
+	items := rc.Items()
+	if items != nil && len(items) > 0 {
+		mp := make(map[int32]*define.ShoppingCartGroup, 0) //保存运营商到map
+		for _, v := range items {
+			vendor, ok := mp[v.ShopId]
+			if !ok {
+				vendor = &define.ShoppingCartGroup{
+					VendorId: v.VendorId,
+					ShopId:   v.ShopId,
+					Items:    []*define.ShoppingCartItem{},
 				}
-				if v.Checked == 1 {
-					vendor.Checked = true
-				}
-				vendor.Items = append(vendor.Items, ParseCartItem(v))
-				//cart.TotalNum += v.Quantity
+				mp[v.ShopId] = vendor
+				cart.Shops = append(cart.Shops, vendor)
 			}
+			if v.Checked == 1 {
+				vendor.Checked = true
+			}
+			vendor.Items = append(vendor.Items, ParseCartItem(v))
+			//cart.TotalNum += v.Quantity
 		}
 	}
 

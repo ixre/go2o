@@ -177,20 +177,22 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 	}
 
 	list := []*valueobject.Goods{}
-	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
+	err := g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
 	  INNER JOIN pro_category cat ON it.cat_id=cat.id
-		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=?
-		  AND it.shelve_state=? %s`,
+		 WHERE (?<=0 OR it.shop_id =?) AND it.review_state=?
+		  AND it.shelve_state=?  %s %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN pro_category cat ON it.cat_id=cat.id
 		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=? AND it.shelve_state=?
 		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
-		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
-			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+		err = g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
+			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
-
+	if err != nil {
+		log.Println("[ Go2o][ Rep][ Error]:", err.Error())
+	}
 	return total, list
 }
 
@@ -198,7 +200,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string) []*valueobject.Goods {
 	e := []*valueobject.Goods{}
 	sql := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
+		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
 		 WHERE supplier_id=? AND pro_product.review_state=? AND pro_product.shelve_state=?
 		 ORDER BY %s,update_time DESC LIMIT ?,?`,
 		sortBy)

@@ -603,7 +603,7 @@ func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
 		return order.ErrOrderShipped
 	}
 	id := o.GetAggregateRootId()
-	if list := o.shipRepo.GetShipOrders(id); len(list) > 0 {
+	if list := o.shipRepo.GetShipOrders(id, false); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
@@ -731,7 +731,7 @@ func (s *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate 
 func (o *wholesaleOrderImpl) onOrderComplete() error {
 	id := o.GetAggregateRootId()
 	// 更新发货单
-	soList := o.shipRepo.GetShipOrders(id)
+	soList := o.shipRepo.GetShipOrders(id, false)
 	for _, v := range soList {
 		domain.HandleError(v.Completed(), "domain")
 	}

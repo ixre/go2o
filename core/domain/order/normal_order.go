@@ -71,20 +71,24 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	return &normalOrderImpl{
 		baseOrderImpl: base,
 		manager:       shopping,
-		//value:       value,
-		promRepo:    promRepo,
-		orderRepo:   shoppingRepo,
-		goodsRepo:   goodsRepo,
-		productRepo: productRepo,
-		valRepo:     valRepo,
-		expressRepo: expressRepo,
-		payRepo:     payRepo,
+		promRepo:      promRepo,
+		orderRepo:     shoppingRepo,
+		goodsRepo:     goodsRepo,
+		productRepo:   productRepo,
+		valRepo:       valRepo,
+		expressRepo:   expressRepo,
+		payRepo:       payRepo,
 	}
+}
+
+func (o *normalOrderImpl) getBaseOrder() *baseOrderImpl {
+	return o.baseOrderImpl
 }
 
 func (o *normalOrderImpl) getValue() *order.NormalOrder {
 	if o.value == nil {
-		id := o.GetAggregateRootId()
+		//传入的是order_id
+		id := o.getBaseOrder().GetAggregateRootId()
 		if id > 0 {
 			o.value = o.repo.GetNormalOrderById(id)
 		}
@@ -675,15 +679,6 @@ func (o *normalOrderImpl) saveNewOrderOnSubmit() (int64, error) {
 	return int64(id), err
 }
 
-// 保存订单
-func (o *normalOrderImpl) save() (int, error) {
-	if o.value.ID > 0 {
-		return o.orderRepo.SaveNormalOrder(o.value)
-	}
-	o.internalSuspend = false
-	return 0, errors.New("please use Order.Submit() save new order.")
-}
-
 // 根据运营商生成子订单
 func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId int64,
 	vendorId int32, newOrderNo bool, items []*order.SubOrderItem) order.ISubOrder {
@@ -1189,7 +1184,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 		return order.ErrOrderShipped
 	}
 
-	if list := o.shipRepo.GetShipOrders(o.GetDomainId()); len(list) > 0 {
+	if list := o.shipRepo.GetShipOrders(o.GetDomainId(), true); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
@@ -1624,7 +1619,7 @@ func (o *subOrderImpl) CancelRefund() error {
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {
 	// 更新发货单
-	soList := o.shipRepo.GetShipOrders(o.GetDomainId())
+	soList := o.shipRepo.GetShipOrders(o.GetDomainId(), true)
 	for _, v := range soList {
 		domain.HandleError(v.Completed(), "domain")
 	}

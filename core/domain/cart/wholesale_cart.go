@@ -171,6 +171,24 @@ func (c *wholesaleCartImpl) setAttachGoodsInfo(items []*cart.WsCartItem) {
 		}
 		if v.SkuId > 0 {
 			sku = it.GetSku(v.SkuId)
+		} else {
+			iv := it.GetValue()
+			sku = &item.Sku{
+				ProductId:   iv.ProductId,
+				ItemId:      iv.ID,
+				Title:       iv.Title,
+				Image:       iv.Image,
+				SpecData:    "",
+				SpecWord:    "",
+				Code:        iv.Code,
+				RetailPrice: iv.RetailPrice,
+				Price:       iv.Price,
+				Cost:        iv.Cost,
+				Weight:      iv.Weight,
+				Bulk:        iv.Bulk,
+				Stock:       iv.StockNum,
+				SaleNum:     iv.SaleNum,
+			}
 		}
 		v.Sku = item.ParseSkuMedia(it.GetValue(), sku)
 
