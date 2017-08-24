@@ -48,16 +48,19 @@ var (
 	//todo: 选择一些主流的快递
 	// 系统支持的快递服务商
 	SupportedExpressProvider = []*ExpressProvider{
-		NewExpressProvider("大田物流", "A-E", "DTWL", "DTWL"),
+		NewExpressProvider("安能快递", "A-E", "ANE66", "ANE66"),
+		NewExpressProvider("百世汇通", "常用,A-E", "HTKY", "HTKY"),
 		NewExpressProvider("CCES", "A-E", "CCES", "CCES"),
+		NewExpressProvider("大田物流", "A-E", "DTWL", "DTWL"),
 		NewExpressProvider("德邦物流", "常用,A-E", "DBL", "DBL"),
 		NewExpressProvider("EMS", "常用,A-E", "EMS", "EMS"),
 
+		NewExpressProvider("飞远配送", "F-J", "GZLT", "GZLT"),
 		NewExpressProvider("港中能达", "F-J", "NEDA", "NEDA"),
 		NewExpressProvider("龙邦物流", "F-J", "LB", "LB"),
 		NewExpressProvider("联邦快递", "F-J", "FEDEX", "FEDEX"),
 		NewExpressProvider("联昊通物流", "F-J", "LHT", "LHT"),
-		NewExpressProvider("汇通快运", "F-J", "HTKY", "HTKY"),
+		NewExpressProvider("国通快递", "F-J", "GTO", "GTO"),
 		NewExpressProvider("海航天天快递", "F-J", "HHTT", "HHTT"),
 
 		NewExpressProvider("全峰快递", "常用,P-T", "QFKD", "QFKD"),

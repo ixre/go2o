@@ -211,9 +211,9 @@ type (
 		//前台Logo
 		Logo string `db:"logo"`
 		//首页标题
-		ShopTitle string `db:"index_tit"`
+		ShopTitle string `db:"shop_title"`
 		// ShopNotice
-		ShopNotice string `db:"notice_html"`
+		ShopNotice string `db:"shop_notice"`
 	}
 
 	// 门店

@@ -52,7 +52,7 @@ type (
 		// 获取发货单
 		GetShipmentOrder(id int64) IShipmentOrder
 		// 获取订单对应的发货单
-		GetShipOrders(orderId int64) []IShipmentOrder
+		GetShipOrders(orderId int64, sub bool) []IShipmentOrder
 		// 保存发货单
 		SaveShipmentOrder(o *ShipmentOrder) (int, error)
 		// 保存发货商品项
