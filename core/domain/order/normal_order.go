@@ -1475,6 +1475,7 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	io := od.(order.INormalOrder)
 	po := io.GetPaymentOrder()
 	if po != nil {
+		return po.Refund(float64(o.value.FinalAmount))
 		v := po.GetValue()
 		//if true {
 		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalAmount,
