@@ -226,7 +226,7 @@ func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.Go
       SELECT MAX(id)-? FROM item_info WHERE  item_info.review_state=?
          AND item_info.shelve_state=? %s
          )) AS id) AS r2
-		 WHERE item_info.Id > r2.id
+		 WHERE item_info.ID > r2.id
 		  AND item_info.review_state=?
 		 AND item_info.shelve_state=? %s LIMIT ?`,
 		search, search)

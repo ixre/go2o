@@ -101,7 +101,8 @@ func (s *serviceC) QrCode(c *echox.Context) error {
 		return c.StringOK("not service")
 	}
 	data := gen.BuildQrCodeForUrl(qurl, 20)
+	c.Response().Header().Set("Content-Type", "Image/Jpeg")
+	c.Response().Header().Add("Content-Disposition", "attachment;filename=qr.jpg")
 	c.Response().Write(data)
-	c.Response().Header().Add("Content-Type", "attachment;filename=qr.jpg")
 	return nil
 }

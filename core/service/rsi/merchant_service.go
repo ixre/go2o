@@ -172,7 +172,7 @@ func (m *merchantService) CheckLogin(usr, oriPwd string) (r *define.Result_, err
 		if err == nil {
 			mch := m.GetMerchantByMemberId(id)
 			if mch != nil {
-				mchId = mch.Id
+				mchId = mch.ID
 			}
 		}
 	}
@@ -235,7 +235,7 @@ func (m *merchantService) SaveMerchant(mchId int32, v *merchant.Merchant) (int32
 	var mch merchant.IMerchant
 	var err error
 	var isCreate bool
-	v.Id = mchId
+	v.ID = mchId
 
 	if mchId > 0 {
 		mch = m._mchRepo.GetMerchant(mchId)
