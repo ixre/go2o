@@ -244,7 +244,7 @@ type (
 
 	// 商户
 	Merchant struct {
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 关联的会员编号,作为结算账户
 		MemberId int64 `db:"member_id"`
 		// 用户

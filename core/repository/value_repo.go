@@ -519,14 +519,35 @@ func (vp *valueRepo) GetAreaNames(id []int32) []string {
 	for i, v := range id {
 		strArr[i] = vp.GetAreaName(v)
 	}
+	if len(id) >= 3 {
+		if strArr[1] == "市辖区" || strArr[1] == "市辖县" || strArr[1] == "县" {
+			return []string{strArr[0], strArr[2]}
+		}
+	}
 	return strArr
 }
 
 // 获取省市区字符串
 func (vp *valueRepo) GetAreaString(province, city, district int32) string {
 	names := vp.GetAreaNames([]int32{province, city, district})
-	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
-		return strings.Join([]string{names[0], names[2]}, " ")
-	}
 	return strings.Join(names, " ")
+}
+
+// 获取省市区字符串
+func (vp *valueRepo) AreaString(province, city, district int32, detail string) string {
+	names := vp.GetAreaNames([]int32{province, city, district})
+	prefix := []byte(strings.Join(names, ""))
+	if len(prefix) != 0 && len(detail) != 0 {
+		i := strings.IndexFunc(detail, func(r rune) bool {
+			return r == '县' || r == '区'
+		})
+		if i == -1 {
+			i = strings.IndexRune(detail, '市')
+			if i == -1 {
+				i = strings.IndexRune(detail, '省')
+			}
+		}
+		prefix = append(prefix, detail[i+1:]...)
+	}
+	return string(prefix)
 }

@@ -153,7 +153,7 @@ type (
 		Adjust(amount float32) error
 
 		// 退款
-		Refund(amount float64)error
+		Refund(amount float64) error
 	}
 
 	IPaymentRepo interface {

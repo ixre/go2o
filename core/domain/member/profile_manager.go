@@ -382,7 +382,7 @@ func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
 		return member.ErrBankAccount
 	}
 	if v.Network == "" {
-		return member.ErrBankNetwork
+		//return member.ErrBankNetwork
 	}
 	return nil
 }
