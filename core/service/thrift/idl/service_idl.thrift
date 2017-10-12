@@ -579,6 +579,8 @@ service PaymentService{
     Result HybridPayment(1:i32 orderId,2:string remark)
     // 完成支付单支付，并传入支付方式及外部订单号
     Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
+    // 支付网关
+    Result GatewayV1(1:string action,2:i64 userId,3:map<string,string> data)
 }
 
 

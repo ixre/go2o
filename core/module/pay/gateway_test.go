@@ -17,9 +17,14 @@ func TestGateway_Submit(t *testing.T) {
 	token := gw.CreatePostToken(userId)
 	tradeNo := strconv.Itoa(int(time.Now().UnixNano()))
 	data := map[string]string{
-		"token":      token,
-		"trade_no":   tradeNo,
-		"notify_url": "http://m.ts.com/trade/epay_notify",
+		"token":         token,
+		"trade_no":      tradeNo,
+		"subject":       "线下支付",
+		"amount":        "100",
+		"procedure_fee": "0",
+		"vendor_id":     "1",
+		"shop_id":       "16",
+		"notify_url":    "http://m.ts.com/trade/epay_notify",
 	}
 	err := gw.Submit(userId, data)
 	if err != nil {
