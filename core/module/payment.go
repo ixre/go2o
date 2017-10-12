@@ -10,6 +10,7 @@ type PaymentModule struct {
 	app     gof.App
 	storage storage.Interface
 	ptArr   []*bank.PaymentPlatform
+
 }
 
 // 模块数据

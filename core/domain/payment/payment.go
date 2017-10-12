@@ -387,6 +387,7 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	_, err := p.save()
 	return err
 }
+
 func (p *paymentOrderImpl) GetValue() payment.PaymentOrder {
 	return *p.value
 }
