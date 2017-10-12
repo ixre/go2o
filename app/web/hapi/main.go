@@ -43,13 +43,13 @@ func (m *mainC) Test(c *echox.Context) error {
 // 请求登录
 func (m *mainC) RequestLogin(c *echox.Context) error {
 	referrer := c.QueryParam("return_url")
-	if referrer == ""{
+	if referrer == "" {
 		referrer = c.Request().Referer()
 	}
 	target := fmt.Sprintf("%s://%s%s/auth?return_url=%s",
 		variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_PASSPORT,
-		variable.Domain,url.QueryEscape(referrer))
-	return c.Redirect(http.StatusFound,target )
+		variable.Domain, url.QueryEscape(referrer))
+	return c.Redirect(http.StatusFound, target)
 }
 
 // 跳转到用户中心

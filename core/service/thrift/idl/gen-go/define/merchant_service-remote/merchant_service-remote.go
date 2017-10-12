@@ -123,8 +123,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err323 := (strconv.Atoi(flag.Arg(1)))
-		if err323 != nil {
+		tmp0, err335 := (strconv.Atoi(flag.Arg(1)))
+		if err335 != nil {
 			Usage()
 			return
 		}
@@ -150,8 +150,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Stat requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err326 := (strconv.Atoi(flag.Arg(1)))
-		if err326 != nil {
+		tmp0, err338 := (strconv.Atoi(flag.Arg(1)))
+		if err338 != nil {
 			Usage()
 			return
 		}
@@ -165,8 +165,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "SyncWholesaleItem requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err327 := (strconv.Atoi(flag.Arg(1)))
-		if err327 != nil {
+		tmp0, err339 := (strconv.Atoi(flag.Arg(1)))
+		if err339 != nil {
 			Usage()
 			return
 		}

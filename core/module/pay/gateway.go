@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/storage"
-	"go2o/core/infrastructure/domain"
-	"go2o/core/service/thrift"
+	"go2o/core/domain/interface/member"
+	"go2o/core/factory"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -29,6 +29,8 @@ type wrapperData struct {
 	TradeNo string
 	// 支付标志
 	PayFlag int
+	// 商品地址
+	ItemUrl string
 	// 通知URL
 	NotifyUrl string
 	// 返回URL
@@ -37,25 +39,27 @@ type wrapperData struct {
 	Data map[string]string
 }
 
-const(
-    // 仅验证密码
-    FlagOnlyCheck = 1 << iota
-    // 余额抵扣
-    FlagBalanceDiscount
-    // 积分抵扣
-    FlagIntegralDiscount
-    // 钱包支付
-    FlagWalletPayment
+const (
+	// 仅验证密码
+	FlagOnlyCheck = 1 << iota
+	// 余额抵扣
+	FlagBalanceDiscount
+	// 积分抵扣
+	FlagIntegralDiscount
+	// 钱包支付
+	FlagWalletPayment
 )
 
 // 支付网关
 type Gateway struct {
-	s storage.Interface
+	s          storage.Interface
+	memberRepo member.IMemberRepo
 }
 
 func NewGateway(s storage.Interface) *Gateway {
 	return &Gateway{
-		s: s,
+		s:          s,
+		memberRepo: factory.Repo.GetMemberRepo(),
 	}
 }
 
@@ -76,30 +80,6 @@ func (g *Gateway) verifyPostToken(userId int64, token string) bool {
 	return token == src
 }
 
-// WEB提交支付网关
-func (g *Gateway) HttpSubmit(userId int64, w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	form := r.Form
-	tradeNo := form.Get("trade_no")
-	returnUrl := form.Get("return_url")
-	if returnUrl == "" {
-		returnUrl = "trade_result"
-	}
-	data := map[string]string{}
-	for k, v := range form {
-		data[k] = v[0]
-	}
-	err := g.Submit(userId, data)
-	location := ""
-	if err != nil {
-		location = g.urlJoin(returnUrl, "success=false&message="+err.Error())
-	} else {
-		location = g.urlJoin("check_pwd", "trade_no="+tradeNo)
-	}
-	w.Header().Set("Location", location)
-	w.WriteHeader(http.StatusFound)
-}
-
 // 连接URL
 func (g *Gateway) urlJoin(url string, query string) string {
 	i := strings.Index(url, "?")
@@ -115,29 +95,43 @@ func (g *Gateway) getTradeKey(tradeNo string) string {
 
 // 提交到网关
 func (g *Gateway) Submit(userId int64, data map[string]string) error {
-	amount, err := strconv.ParseFloat(data["amount"], 64)
+	amount, err := strconv.Atoi(data["amount"])
 	if err != nil {
 		amount = 0
 	}
-	prFee, err1 := strconv.ParseFloat(data["procedure_fee"], 64)
+	prFee, err1 := strconv.Atoi(data["procedure_fee"])
 	if err1 != nil {
 		prFee = 0
 	}
-	flag,err2:= strconv.Atoi(data["pay_flag"])
-	if err2 != nil{
-        flag = FlagOnlyCheck
-    }
+	flag, err2 := strconv.Atoi(data["pay_flag"])
+	if err2 != nil {
+		flag = FlagOnlyCheck
+	}
+
 	d := &wrapperData{
 		TradeNo:      data["trade_no"],
-		Amount:       int(amount * 100),
-		ProcedureFee: int(prFee * 100),
+		Amount:       amount,
+		ProcedureFee: prFee,
 		PayFlag:      flag,
 		Subject:      data["subject"],
+		ItemUrl:      data["item_url"],
 		NotifyUrl:    data["notify_url"],
 		ReturnUrl:    data["return_url"],
 		Data: map[string]string{
 			"token": data["token"],
 		},
+	}
+	delete(data, "trade_no")
+	delete(data, "amount")
+	delete(data, "procedure_fee")
+	delete(data, "pay_flag")
+	delete(data, "subject")
+	delete(data, "item_url")
+	delete(data, "notify_url")
+	delete(data, "return_url")
+	delete(data, "token")
+	for k, v := range data {
+		d.Data[k] = v
 	}
 	return g.realSubmit(userId, d)
 }
@@ -154,6 +148,9 @@ func (g *Gateway) realSubmit(userId int64, data *wrapperData) error {
 	if data.TradeNo == "" {
 		return errors.New("参数不完整:trade_no")
 	}
+	if data.Amount+data.ProcedureFee <= 0 {
+		return errors.New("支付金额错误")
+	}
 	if data.NotifyUrl == "" {
 		return errors.New("参数不完整:notify_url")
 	}
@@ -165,46 +162,49 @@ func (g *Gateway) realSubmit(userId int64, data *wrapperData) error {
 
 // 模拟支付
 func (g *Gateway) CheckAndPayment(userId int64, tradeNo string, tradePwd string) error {
-	cli, err := thrift.MemberServeClient()
+	m := g.memberRepo.GetMember(userId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	mv := m.GetValue()
+	if mv.TradePwd == "" {
+		return errors.New("您还未设置交易密码")
+	}
+	if mv.TradePwd != tradePwd {
+		return errors.New("交易密码不正确")
+	}
+	rk := g.getTradeKey(tradeNo)
+	data := wrapperData{}
+	g.s.Get(rk, &data)
+	// 处理付款
+	err := g.handlePayment(userId, tradeNo, data)
 	if err == nil {
-		defer cli.Transport.Close()
-		r, _ := cli.GetMember(userId)
-		if r == nil {
-			return errors.New("账户不存在")
+		// 处理通知
+		err = g.notify(userId, &data)
+		if err == nil {
+			data.State = "success"
+			g.s.SetExpire(rk, &data, 3600*12)
 		}
-		if r.TradePwd != domain.TradePwd(tradePwd) {
-			return errors.New("交易密码不正确")
-		}
-		rk := g.getTradeKey(tradeNo)
-		data := wrapperData{}
-		g.s.Get(rk, &data)
-        err = g.handlePayment(userId,tradeNo,data)
-        if err == nil {
-            data.State = "success"
-            g.s.SetExpire(rk, &data, 3600*12)
-            g.notify(&data)
-        }
-	} else {
-		return errors.New("远程连接失败")
 	}
 	return err
 }
 func (g *Gateway) handlePayment(userId int64, tradeNo string, data wrapperData) error {
-    // 仅验证交易密码
-    if data.PayFlag & FlagOnlyCheck != 0{
-        return nil
-    }
-    // 余额抵扣
-    if data.PayFlag & FlagBalanceDiscount != 0{
-        //todo:
-    }
-    return nil
+	// 仅验证交易密码
+	if data.PayFlag&FlagOnlyCheck != 0 {
+		return nil
+	}
+	// 余额抵扣
+	if data.PayFlag&FlagBalanceDiscount != 0 {
+		//todo:
+	}
+	return nil
 }
 
 //通知支付结果,响应端返回success表示处理完成
-func (g *Gateway) notify(data *wrapperData) bool {
+func (g *Gateway) notify(userId int64, data *wrapperData) error {
 	cli := http.Client{}
 	values := url.Values{
+		"user_id":       []string{strconv.Itoa(int(userId))},
 		"trade_no":      []string{data.TradeNo},
 		"state":         []string{"success"},
 		"amount":        []string{strconv.Itoa(data.Amount)},
@@ -220,21 +220,24 @@ func (g *Gateway) notify(data *wrapperData) bool {
 	rsp, err := cli.PostForm(data.NotifyUrl, values)
 	// 未通知成功
 	if err != nil {
-		log.Println("[ Go2o][ Pay][ Gateway]: notify failed :", err.Error())
-		return false
+		log.Println("[ Go2o][ Pay][ Gateway]: notify failed :",
+			err.Error(), " [URL]:", data.NotifyUrl)
+		return errors.New("通知支付结果失败")
 	}
 	body, _ := ioutil.ReadAll(rsp.Body)
 	rspTxt := string(body)
 	// 响应状态不正确
 	if rsp.StatusCode != 200 {
-		log.Println("[ Go2o][ Pay][ Gateway]: notify failed : ", rspTxt)
-		return false
+		log.Println("[ Go2o][ Pay][ Gateway]: notify failed :",
+			rspTxt, " [URL]:", data.NotifyUrl)
+		return errors.New("通知支付结果失败")
 	}
 	// 判断响应内容
-	if rspTxt == "success" {
-		return true
+	if rspTxt != "success" {
+		log.Println("[ Go2o][ Pay][ Gateway]: notify response :", rspTxt)
+		return errors.New("通知支付结果异常：" + rspTxt)
 	}
-	return false
+	return nil
 }
 
 func (g *Gateway) GetData() *wrapperData {

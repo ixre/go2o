@@ -109,16 +109,16 @@ func (p *ShopServiceClient) recvGetStore() (value *Store, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error328 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error329 error
-		error329, err = error328.Read(iprot)
+		error340 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error341 error
+		error341, err = error340.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error329
+		err = error341
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -186,16 +186,16 @@ func (p *ShopServiceClient) recvGetStoreById() (value *Store, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error330 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error331 error
-		error331, err = error330.Read(iprot)
+		error342 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error343 error
+		error343, err = error342.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error331
+		err = error343
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -267,16 +267,16 @@ func (p *ShopServiceClient) recvTurnShop() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error332 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error333 error
-		error333, err = error332.Read(iprot)
+		error344 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error345 error
+		error345, err = error344.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error333
+		err = error345
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -348,16 +348,16 @@ func (p *ShopServiceClient) recvOpenShop() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error334 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error335 error
-		error335, err = error334.Read(iprot)
+		error346 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error347 error
+		error347, err = error346.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error335
+		err = error347
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -395,12 +395,12 @@ func (p *ShopServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFuncti
 
 func NewShopServiceProcessor(handler ShopService) *ShopServiceProcessor {
 
-	self336 := &ShopServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self336.processorMap["GetStore"] = &shopServiceProcessorGetStore{handler: handler}
-	self336.processorMap["GetStoreById"] = &shopServiceProcessorGetStoreById{handler: handler}
-	self336.processorMap["TurnShop"] = &shopServiceProcessorTurnShop{handler: handler}
-	self336.processorMap["OpenShop"] = &shopServiceProcessorOpenShop{handler: handler}
-	return self336
+	self348 := &ShopServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self348.processorMap["GetStore"] = &shopServiceProcessorGetStore{handler: handler}
+	self348.processorMap["GetStoreById"] = &shopServiceProcessorGetStoreById{handler: handler}
+	self348.processorMap["TurnShop"] = &shopServiceProcessorTurnShop{handler: handler}
+	self348.processorMap["OpenShop"] = &shopServiceProcessorOpenShop{handler: handler}
+	return self348
 }
 
 func (p *ShopServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -413,12 +413,12 @@ func (p *ShopServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success b
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x337 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x349 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x337.Write(oprot)
+	x349.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x337
+	return false, x349
 
 }
 
