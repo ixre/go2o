@@ -22,6 +22,7 @@ var (
 	M_SSO     string = "sso"
 	M_MM      string = "member"
 	M_PAY     string = "payment"
+	M_B4E     string = "bank4e"
 )
 
 // 模块实现
@@ -63,6 +64,7 @@ func registerInternal() {
 	Register(M_SSO, &SSOModule{})
 	Register(M_MM, &MemberModule{})
 	Register(M_PAY, &PaymentModule{})
+	Register(M_B4E, &Bank4E{})
 }
 
 // 获取模块

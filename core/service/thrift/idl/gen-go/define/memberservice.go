@@ -98,6 +98,11 @@ type MemberService interface {
 	//  - RelateUser
 	//  - MustLargeZero
 	DiscountAccount(memberId int64, account int32, title string, outerNo string, amount float64, relateUser int64, mustLargeZero bool) (r *Result_, err error)
+	// Parameters:
+	//  - MemberId
+	//  - Action
+	//  - Data
+	B4EAuth(memberId int64, action string, data map[string]string) (r *Result_, err error)
 }
 
 type MemberServiceClient struct {
@@ -1711,6 +1716,87 @@ func (p *MemberServiceClient) recvDiscountAccount() (value *Result_, err error) 
 	return
 }
 
+// Parameters:
+//  - MemberId
+//  - Action
+//  - Data
+func (p *MemberServiceClient) B4EAuth(memberId int64, action string, data map[string]string) (r *Result_, err error) {
+	if err = p.sendB4EAuth(memberId, action, data); err != nil {
+		return
+	}
+	return p.recvB4EAuth()
+}
+
+func (p *MemberServiceClient) sendB4EAuth(memberId int64, action string, data map[string]string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("B4EAuth", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := MemberServiceB4EAuthArgs{
+		MemberId: memberId,
+		Action:   action,
+		Data:     data,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *MemberServiceClient) recvB4EAuth() (value *Result_, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "B4EAuth" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "B4EAuth failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "B4EAuth failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error124 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error125 error
+		error125, err = error124.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error125
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "B4EAuth failed: invalid message type")
+		return
+	}
+	result := MemberServiceB4EAuthResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
 type MemberServiceProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
 	handler      MemberService
@@ -1731,28 +1817,29 @@ func (p *MemberServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunc
 
 func NewMemberServiceProcessor(handler MemberService) *MemberServiceProcessor {
 
-	self124 := &MemberServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self124.processorMap["CheckLogin"] = &memberServiceProcessorCheckLogin{handler: handler}
-	self124.processorMap["CheckTradePwd"] = &memberServiceProcessorCheckTradePwd{handler: handler}
-	self124.processorMap["LevelList"] = &memberServiceProcessorLevelList{handler: handler}
-	self124.processorMap["GetTrustInfo"] = &memberServiceProcessorGetTrustInfo{handler: handler}
-	self124.processorMap["GetLevel"] = &memberServiceProcessorGetLevel{handler: handler}
-	self124.processorMap["GetMember"] = &memberServiceProcessorGetMember{handler: handler}
-	self124.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler: handler}
-	self124.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler: handler}
-	self124.processorMap["Complex"] = &memberServiceProcessorComplex{handler: handler}
-	self124.processorMap["UpdateLevel"] = &memberServiceProcessorUpdateLevel{handler: handler}
-	self124.processorMap["Premium"] = &memberServiceProcessorPremium{handler: handler}
-	self124.processorMap["GetToken"] = &memberServiceProcessorGetToken{handler: handler}
-	self124.processorMap["CheckToken"] = &memberServiceProcessorCheckToken{handler: handler}
-	self124.processorMap["RemoveToken"] = &memberServiceProcessorRemoveToken{handler: handler}
-	self124.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
-	self124.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
-	self124.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
-	self124.processorMap["GetInviterQuantity"] = &memberServiceProcessorGetInviterQuantity{handler: handler}
-	self124.processorMap["ChargeAccount"] = &memberServiceProcessorChargeAccount{handler: handler}
-	self124.processorMap["DiscountAccount"] = &memberServiceProcessorDiscountAccount{handler: handler}
-	return self124
+	self126 := &MemberServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self126.processorMap["CheckLogin"] = &memberServiceProcessorCheckLogin{handler: handler}
+	self126.processorMap["CheckTradePwd"] = &memberServiceProcessorCheckTradePwd{handler: handler}
+	self126.processorMap["LevelList"] = &memberServiceProcessorLevelList{handler: handler}
+	self126.processorMap["GetTrustInfo"] = &memberServiceProcessorGetTrustInfo{handler: handler}
+	self126.processorMap["GetLevel"] = &memberServiceProcessorGetLevel{handler: handler}
+	self126.processorMap["GetMember"] = &memberServiceProcessorGetMember{handler: handler}
+	self126.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler: handler}
+	self126.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler: handler}
+	self126.processorMap["Complex"] = &memberServiceProcessorComplex{handler: handler}
+	self126.processorMap["UpdateLevel"] = &memberServiceProcessorUpdateLevel{handler: handler}
+	self126.processorMap["Premium"] = &memberServiceProcessorPremium{handler: handler}
+	self126.processorMap["GetToken"] = &memberServiceProcessorGetToken{handler: handler}
+	self126.processorMap["CheckToken"] = &memberServiceProcessorCheckToken{handler: handler}
+	self126.processorMap["RemoveToken"] = &memberServiceProcessorRemoveToken{handler: handler}
+	self126.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
+	self126.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
+	self126.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
+	self126.processorMap["GetInviterQuantity"] = &memberServiceProcessorGetInviterQuantity{handler: handler}
+	self126.processorMap["ChargeAccount"] = &memberServiceProcessorChargeAccount{handler: handler}
+	self126.processorMap["DiscountAccount"] = &memberServiceProcessorDiscountAccount{handler: handler}
+	self126.processorMap["B4EAuth"] = &memberServiceProcessorB4EAuth{handler: handler}
+	return self126
 }
 
 func (p *MemberServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1765,12 +1852,12 @@ func (p *MemberServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x125 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x127 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x125.Write(oprot)
+	x127.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x125
+	return false, x127
 
 }
 
@@ -2731,6 +2818,54 @@ func (p *memberServiceProcessorDiscountAccount) Process(seqId int32, iprot, opro
 	return true, err
 }
 
+type memberServiceProcessorB4EAuth struct {
+	handler MemberService
+}
+
+func (p *memberServiceProcessorB4EAuth) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceB4EAuthArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("B4EAuth", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MemberServiceB4EAuthResult{}
+	var retval *Result_
+	var err2 error
+	if retval, err2 = p.handler.B4EAuth(args.MemberId, args.Action, args.Data); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing B4EAuth: "+err2.Error())
+		oprot.WriteMessageBegin("B4EAuth", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("B4EAuth", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
 // HELPER FUNCTIONS AND STRUCTURES
 
 // Attributes:
@@ -3335,11 +3470,11 @@ func (p *MemberServiceLevelListResult) readField0(iprot thrift.TProtocol) error 
 	tSlice := make([]*Level, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem126 := &Level{}
-		if err := _elem126.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem126), err)
+		_elem128 := &Level{}
+		if err := _elem128.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem128), err)
 		}
-		p.Success = append(p.Success, _elem126)
+		p.Success = append(p.Success, _elem128)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -6309,13 +6444,13 @@ func (p *MemberServiceInviterArrayResult) readField0(iprot thrift.TProtocol) err
 	tSlice := make([]int64, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem127 int64
+		var _elem129 int64
 		if v, err := iprot.ReadI64(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem127 = v
+			_elem129 = v
 		}
-		p.Success = append(p.Success, _elem127)
+		p.Success = append(p.Success, _elem129)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -6442,19 +6577,19 @@ func (p *MemberServiceGetInviterQuantityArgs) readField2(iprot thrift.TProtocol)
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key128 string
+		var _key130 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key128 = v
+			_key130 = v
 		}
-		var _val129 string
+		var _val131 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val129 = v
+			_val131 = v
 		}
-		p.Data[_key128] = _val129
+		p.Data[_key130] = _val131
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -7429,4 +7564,296 @@ func (p *MemberServiceDiscountAccountResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("MemberServiceDiscountAccountResult(%+v)", *p)
+}
+
+// Attributes:
+//  - MemberId
+//  - Action
+//  - Data
+type MemberServiceB4EAuthArgs struct {
+	MemberId int64             `thrift:"memberId,1" json:"memberId"`
+	Action   string            `thrift:"action,2" json:"action"`
+	Data     map[string]string `thrift:"data,3" json:"data"`
+}
+
+func NewMemberServiceB4EAuthArgs() *MemberServiceB4EAuthArgs {
+	return &MemberServiceB4EAuthArgs{}
+}
+
+func (p *MemberServiceB4EAuthArgs) GetMemberId() int64 {
+	return p.MemberId
+}
+
+func (p *MemberServiceB4EAuthArgs) GetAction() string {
+	return p.Action
+}
+
+func (p *MemberServiceB4EAuthArgs) GetData() map[string]string {
+	return p.Data
+}
+func (p *MemberServiceB4EAuthArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.readField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.readField3(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceB4EAuthArgs) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MemberId = v
+	}
+	return nil
+}
+
+func (p *MemberServiceB4EAuthArgs) readField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Action = v
+	}
+	return nil
+}
+
+func (p *MemberServiceB4EAuthArgs) readField3(iprot thrift.TProtocol) error {
+	_, _, size, err := iprot.ReadMapBegin()
+	if err != nil {
+		return thrift.PrependError("error reading map begin: ", err)
+	}
+	tMap := make(map[string]string, size)
+	p.Data = tMap
+	for i := 0; i < size; i++ {
+		var _key132 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_key132 = v
+		}
+		var _val133 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_val133 = v
+		}
+		p.Data[_key132] = _val133
+	}
+	if err := iprot.ReadMapEnd(); err != nil {
+		return thrift.PrependError("error reading map end: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceB4EAuthArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("B4EAuth_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceB4EAuthArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.memberId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:memberId: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceB4EAuthArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("action", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:action: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Action)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.action (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:action: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceB4EAuthArgs) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("data", thrift.MAP, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:data: ", p), err)
+	}
+	if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Data)); err != nil {
+		return thrift.PrependError("error writing map begin: ", err)
+	}
+	for k, v := range p.Data {
+		if err := oprot.WriteString(string(k)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+		if err := oprot.WriteString(string(v)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+	}
+	if err := oprot.WriteMapEnd(); err != nil {
+		return thrift.PrependError("error writing map end: ", err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:data: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceB4EAuthArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceB4EAuthArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type MemberServiceB4EAuthResult struct {
+	Success *Result_ `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewMemberServiceB4EAuthResult() *MemberServiceB4EAuthResult {
+	return &MemberServiceB4EAuthResult{}
+}
+
+var MemberServiceB4EAuthResult_Success_DEFAULT *Result_
+
+func (p *MemberServiceB4EAuthResult) GetSuccess() *Result_ {
+	if !p.IsSetSuccess() {
+		return MemberServiceB4EAuthResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *MemberServiceB4EAuthResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MemberServiceB4EAuthResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceB4EAuthResult) readField0(iprot thrift.TProtocol) error {
+	p.Success = &Result_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceB4EAuthResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("B4EAuth_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceB4EAuthResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MemberServiceB4EAuthResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceB4EAuthResult(%+v)", *p)
 }
