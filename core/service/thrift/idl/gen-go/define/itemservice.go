@@ -106,16 +106,16 @@ func (p *ItemServiceClient) recvGetSku() (value *Sku, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error310 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error311 error
-		error311, err = error310.Read(iprot)
+		error322 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error323 error
+		error323, err = error322.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error311
+		err = error323
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -183,16 +183,16 @@ func (p *ItemServiceClient) recvGetItemSkuJson() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error312 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error313 error
-		error313, err = error312.Read(iprot)
+		error324 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error325 error
+		error325, err = error324.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error313
+		err = error325
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -262,16 +262,16 @@ func (p *ItemServiceClient) recvGetItemDetailData() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error314 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error315 error
-		error315, err = error314.Read(iprot)
+		error326 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error327 error
+		error327, err = error326.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error315
+		err = error327
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -309,11 +309,11 @@ func (p *ItemServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFuncti
 
 func NewItemServiceProcessor(handler ItemService) *ItemServiceProcessor {
 
-	self316 := &ItemServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self316.processorMap["GetSku"] = &itemServiceProcessorGetSku{handler: handler}
-	self316.processorMap["GetItemSkuJson"] = &itemServiceProcessorGetItemSkuJson{handler: handler}
-	self316.processorMap["GetItemDetailData"] = &itemServiceProcessorGetItemDetailData{handler: handler}
-	return self316
+	self328 := &ItemServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self328.processorMap["GetSku"] = &itemServiceProcessorGetSku{handler: handler}
+	self328.processorMap["GetItemSkuJson"] = &itemServiceProcessorGetItemSkuJson{handler: handler}
+	self328.processorMap["GetItemDetailData"] = &itemServiceProcessorGetItemDetailData{handler: handler}
+	return self328
 }
 
 func (p *ItemServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -326,12 +326,12 @@ func (p *ItemServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success b
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x317 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x329 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x317.Write(oprot)
+	x329.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x317
+	return false, x329
 
 }
 

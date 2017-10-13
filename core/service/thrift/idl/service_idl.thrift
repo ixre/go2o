@@ -555,6 +555,8 @@ service MemberService{
     // 抵扣账户
     Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
       4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
+    // !银行四要素认证
+    Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)
 }
 
 // 支付服务

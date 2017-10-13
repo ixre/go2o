@@ -123,8 +123,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetStore requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err350 := (strconv.Atoi(flag.Arg(1)))
-		if err350 != nil {
+		tmp0, err362 := (strconv.Atoi(flag.Arg(1)))
+		if err362 != nil {
 			Usage()
 			return
 		}
@@ -138,8 +138,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetStoreById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err351 := (strconv.Atoi(flag.Arg(1)))
-		if err351 != nil {
+		tmp0, err363 := (strconv.Atoi(flag.Arg(1)))
+		if err363 != nil {
 			Usage()
 			return
 		}
@@ -153,8 +153,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "TurnShop requires 3 args")
 			flag.Usage()
 		}
-		tmp0, err352 := (strconv.Atoi(flag.Arg(1)))
-		if err352 != nil {
+		tmp0, err364 := (strconv.Atoi(flag.Arg(1)))
+		if err364 != nil {
 			Usage()
 			return
 		}
@@ -172,8 +172,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "OpenShop requires 3 args")
 			flag.Usage()
 		}
-		tmp0, err355 := (strconv.Atoi(flag.Arg(1)))
-		if err355 != nil {
+		tmp0, err367 := (strconv.Atoi(flag.Arg(1)))
+		if err367 != nil {
 			Usage()
 			return
 		}

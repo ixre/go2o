@@ -136,16 +136,16 @@ func (p *PaymentServiceClient) recvSubmitPaymentOrder() (value *Result_, err err
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error179 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error180 error
-		error180, err = error179.Read(iprot)
+		error191 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error192 error
+		error192, err = error191.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error180
+		err = error192
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -213,16 +213,16 @@ func (p *PaymentServiceClient) recvGetPaymentOrder() (value *PaymentOrder, err e
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error181 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error182 error
-		error182, err = error181.Read(iprot)
+		error193 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error194 error
+		error194, err = error193.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error182
+		err = error194
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -290,16 +290,16 @@ func (p *PaymentServiceClient) recvGetPaymentOrderId() (value int32, err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error183 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error184 error
-		error184, err = error183.Read(iprot)
+		error195 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error196 error
+		error196, err = error195.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error184
+		err = error196
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -367,16 +367,16 @@ func (p *PaymentServiceClient) recvGetPaymentOrderById() (value *PaymentOrder, e
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error185 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error186 error
-		error186, err = error185.Read(iprot)
+		error197 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error198 error
+		error198, err = error197.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error186
+		err = error198
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -446,16 +446,16 @@ func (p *PaymentServiceClient) recvAdjustOrder() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error187 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error188 error
-		error188, err = error187.Read(iprot)
+		error199 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error200 error
+		error200, err = error199.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error188
+		err = error200
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -525,16 +525,16 @@ func (p *PaymentServiceClient) recvDiscountByBalance() (value *Result_, err erro
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error189 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error190 error
-		error190, err = error189.Read(iprot)
+		error201 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error202 error
+		error202, err = error201.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error190
+		err = error202
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -606,16 +606,16 @@ func (p *PaymentServiceClient) recvDiscountByIntegral() (value *DResult_, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error191 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error192 error
-		error192, err = error191.Read(iprot)
+		error203 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error204 error
+		error204, err = error203.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error192
+		err = error204
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -685,16 +685,16 @@ func (p *PaymentServiceClient) recvPaymentByWallet() (value *Result_, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error193 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error194 error
-		error194, err = error193.Read(iprot)
+		error205 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error206 error
+		error206, err = error205.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error194
+		err = error206
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -764,16 +764,16 @@ func (p *PaymentServiceClient) recvHybridPayment() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error195 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error196 error
-		error196, err = error195.Read(iprot)
+		error207 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error208 error
+		error208, err = error207.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error196
+		err = error208
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -845,16 +845,16 @@ func (p *PaymentServiceClient) recvFinishPayment() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error197 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error198 error
-		error198, err = error197.Read(iprot)
+		error209 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error210 error
+		error210, err = error209.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error198
+		err = error210
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -926,16 +926,16 @@ func (p *PaymentServiceClient) recvGatewayV1() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error199 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error200 error
-		error200, err = error199.Read(iprot)
+		error211 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error212 error
+		error212, err = error211.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error200
+		err = error212
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -973,19 +973,19 @@ func (p *PaymentServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFun
 
 func NewPaymentServiceProcessor(handler PaymentService) *PaymentServiceProcessor {
 
-	self201 := &PaymentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self201.processorMap["SubmitPaymentOrder"] = &paymentServiceProcessorSubmitPaymentOrder{handler: handler}
-	self201.processorMap["GetPaymentOrder"] = &paymentServiceProcessorGetPaymentOrder{handler: handler}
-	self201.processorMap["GetPaymentOrderId"] = &paymentServiceProcessorGetPaymentOrderId{handler: handler}
-	self201.processorMap["GetPaymentOrderById"] = &paymentServiceProcessorGetPaymentOrderById{handler: handler}
-	self201.processorMap["AdjustOrder"] = &paymentServiceProcessorAdjustOrder{handler: handler}
-	self201.processorMap["DiscountByBalance"] = &paymentServiceProcessorDiscountByBalance{handler: handler}
-	self201.processorMap["DiscountByIntegral"] = &paymentServiceProcessorDiscountByIntegral{handler: handler}
-	self201.processorMap["PaymentByWallet"] = &paymentServiceProcessorPaymentByWallet{handler: handler}
-	self201.processorMap["HybridPayment"] = &paymentServiceProcessorHybridPayment{handler: handler}
-	self201.processorMap["FinishPayment"] = &paymentServiceProcessorFinishPayment{handler: handler}
-	self201.processorMap["GatewayV1"] = &paymentServiceProcessorGatewayV1{handler: handler}
-	return self201
+	self213 := &PaymentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self213.processorMap["SubmitPaymentOrder"] = &paymentServiceProcessorSubmitPaymentOrder{handler: handler}
+	self213.processorMap["GetPaymentOrder"] = &paymentServiceProcessorGetPaymentOrder{handler: handler}
+	self213.processorMap["GetPaymentOrderId"] = &paymentServiceProcessorGetPaymentOrderId{handler: handler}
+	self213.processorMap["GetPaymentOrderById"] = &paymentServiceProcessorGetPaymentOrderById{handler: handler}
+	self213.processorMap["AdjustOrder"] = &paymentServiceProcessorAdjustOrder{handler: handler}
+	self213.processorMap["DiscountByBalance"] = &paymentServiceProcessorDiscountByBalance{handler: handler}
+	self213.processorMap["DiscountByIntegral"] = &paymentServiceProcessorDiscountByIntegral{handler: handler}
+	self213.processorMap["PaymentByWallet"] = &paymentServiceProcessorPaymentByWallet{handler: handler}
+	self213.processorMap["HybridPayment"] = &paymentServiceProcessorHybridPayment{handler: handler}
+	self213.processorMap["FinishPayment"] = &paymentServiceProcessorFinishPayment{handler: handler}
+	self213.processorMap["GatewayV1"] = &paymentServiceProcessorGatewayV1{handler: handler}
+	return self213
 }
 
 func (p *PaymentServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -998,12 +998,12 @@ func (p *PaymentServiceProcessor) Process(iprot, oprot thrift.TProtocol) (succes
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x202 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x214 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x202.Write(oprot)
+	x214.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x202
+	return false, x214
 
 }
 
@@ -3838,19 +3838,19 @@ func (p *PaymentServiceGatewayV1Args) readField3(iprot thrift.TProtocol) error {
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key203 string
+		var _key215 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key203 = v
+			_key215 = v
 		}
-		var _val204 string
+		var _val216 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val204 = v
+			_val216 = v
 		}
-		p.Data[_key203] = _val204
+		p.Data[_key215] = _val216
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
