@@ -11,6 +11,7 @@ package rsi
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
@@ -900,6 +901,31 @@ func (ms *memberService) DiscountAccount(memberId int64, account int32, title st
 		}
 	}
 	return parser.I64Result(memberId, err), nil
+}
+
+// !银行四要素认证
+func (ms *memberService) B4EAuth(memberId int64, action string, data map[string]string) (r *define.Result_, err error) {
+	mod := module.Get(module.M_B4E).(*module.Bank4E)
+	if action == "get" {
+		data := mod.GetBasicInfo(memberId)
+		d, _ := json.Marshal(data)
+		return &define.Result_{
+			Result_: true,
+			Message: string(d),
+		}, nil
+	}
+	if action == "update" {
+		err := mod.UpdateInfo(memberId,
+			data["real_name"],
+			data["id_card"],
+			data["phone"],
+			data["bank_account"])
+		return parser.Result(0, err), nil
+	}
+	return &define.Result_{
+		Result_: false,
+		Message: "未知操作",
+	}, nil
 }
 
 // 验证交易密码

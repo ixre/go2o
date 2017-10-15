@@ -151,6 +151,9 @@ type (
 
 		// 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
 		Adjust(amount float32) error
+
+		// 退款
+		Refund(amount float64) error
 	}
 
 	IPaymentRepo interface {

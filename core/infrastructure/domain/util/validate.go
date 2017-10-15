@@ -61,7 +61,7 @@ func CheckChineseCardID(sId string) error {
 	}
 	birthDate := strings.Join([]string{sId[6:10],
 		sId[10:12], sId[12:14]}, "-")
-	if _, err := time.Parse("2006-01-02", birthDate); err != nil {
+	if _, err := time.ParseInLocation("2006-01-02", birthDate, time.Local); err != nil {
 		return errors.New("身份证出生日期错误")
 	}
 	//for (var i = 17; i>=0; i --) iSum += (Math.pow(2, i) % 11) * parseInt(sId.charAt(17 - i), 11);

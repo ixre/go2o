@@ -337,8 +337,8 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 	v.Account = strings.TrimSpace(v.Account)
 	v.AccountName = strings.TrimSpace(v.AccountName)
 	v.Network = strings.TrimSpace(v.Network)
-	v.Name = strings.TrimSpace(v.Name)
-	if v.Account == "" || v.Name == "" {
+	v.BankName = strings.TrimSpace(v.BankName)
+	if v.Account == "" || v.BankName == "" {
 		return member.ErrBankInfo
 	}
 	trustInfo := p.GetTrustedInfo()
@@ -355,7 +355,7 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 		p.bank.Account = v.Account
 		p.bank.AccountName = v.AccountName
 		p.bank.Network = v.Network
-		p.bank.Name = v.Name
+		p.bank.BankName = v.BankName
 		p.bank.State = member.StateOk       //todo:???
 		p.bank.IsLocked = member.BankLocked //锁定
 		p.bank.UpdateTime = time.Now().Unix()
@@ -370,9 +370,9 @@ func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
 	v.Account = strings.TrimSpace(v.Account)
 	v.AccountName = strings.TrimSpace(v.AccountName)
 	v.Network = strings.TrimSpace(v.Network)
-	v.Name = strings.TrimSpace(v.Name)
+	v.BankName = strings.TrimSpace(v.BankName)
 
-	if v.Name == "" {
+	if v.BankName == "" {
 		return member.ErrBankName
 	}
 	if v.AccountName == "" {
@@ -382,7 +382,7 @@ func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
 		return member.ErrBankAccount
 	}
 	if v.Network == "" {
-		return member.ErrBankNetwork
+		//return member.ErrBankNetwork
 	}
 	return nil
 }

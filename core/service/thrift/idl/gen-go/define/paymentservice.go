@@ -53,6 +53,11 @@ type PaymentService interface {
 	//  - SpName
 	//  - OuterNo
 	FinishPayment(tradeNo string, spName string, outerNo string) (r *Result_, err error)
+	// Parameters:
+	//  - Action
+	//  - UserId
+	//  - Data
+	GatewayV1(action string, userId int64, data map[string]string) (r *Result_, err error)
 }
 
 type PaymentServiceClient struct {
@@ -131,16 +136,16 @@ func (p *PaymentServiceClient) recvSubmitPaymentOrder() (value *Result_, err err
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error179 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error180 error
-		error180, err = error179.Read(iprot)
+		error191 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error192 error
+		error192, err = error191.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error180
+		err = error192
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -208,16 +213,16 @@ func (p *PaymentServiceClient) recvGetPaymentOrder() (value *PaymentOrder, err e
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error181 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error182 error
-		error182, err = error181.Read(iprot)
+		error193 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error194 error
+		error194, err = error193.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error182
+		err = error194
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -285,16 +290,16 @@ func (p *PaymentServiceClient) recvGetPaymentOrderId() (value int32, err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error183 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error184 error
-		error184, err = error183.Read(iprot)
+		error195 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error196 error
+		error196, err = error195.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error184
+		err = error196
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -362,16 +367,16 @@ func (p *PaymentServiceClient) recvGetPaymentOrderById() (value *PaymentOrder, e
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error185 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error186 error
-		error186, err = error185.Read(iprot)
+		error197 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error198 error
+		error198, err = error197.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error186
+		err = error198
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -441,16 +446,16 @@ func (p *PaymentServiceClient) recvAdjustOrder() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error187 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error188 error
-		error188, err = error187.Read(iprot)
+		error199 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error200 error
+		error200, err = error199.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error188
+		err = error200
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -520,16 +525,16 @@ func (p *PaymentServiceClient) recvDiscountByBalance() (value *Result_, err erro
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error189 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error190 error
-		error190, err = error189.Read(iprot)
+		error201 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error202 error
+		error202, err = error201.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error190
+		err = error202
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -601,16 +606,16 @@ func (p *PaymentServiceClient) recvDiscountByIntegral() (value *DResult_, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error191 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error192 error
-		error192, err = error191.Read(iprot)
+		error203 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error204 error
+		error204, err = error203.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error192
+		err = error204
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -680,16 +685,16 @@ func (p *PaymentServiceClient) recvPaymentByWallet() (value *Result_, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error193 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error194 error
-		error194, err = error193.Read(iprot)
+		error205 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error206 error
+		error206, err = error205.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error194
+		err = error206
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -759,16 +764,16 @@ func (p *PaymentServiceClient) recvHybridPayment() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error195 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error196 error
-		error196, err = error195.Read(iprot)
+		error207 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error208 error
+		error208, err = error207.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error196
+		err = error208
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -840,16 +845,16 @@ func (p *PaymentServiceClient) recvFinishPayment() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error197 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error198 error
-		error198, err = error197.Read(iprot)
+		error209 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error210 error
+		error210, err = error209.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error198
+		err = error210
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -857,6 +862,87 @@ func (p *PaymentServiceClient) recvFinishPayment() (value *Result_, err error) {
 		return
 	}
 	result := PaymentServiceFinishPaymentResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Action
+//  - UserId
+//  - Data
+func (p *PaymentServiceClient) GatewayV1(action string, userId int64, data map[string]string) (r *Result_, err error) {
+	if err = p.sendGatewayV1(action, userId, data); err != nil {
+		return
+	}
+	return p.recvGatewayV1()
+}
+
+func (p *PaymentServiceClient) sendGatewayV1(action string, userId int64, data map[string]string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("GatewayV1", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := PaymentServiceGatewayV1Args{
+		Action: action,
+		UserId: userId,
+		Data:   data,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *PaymentServiceClient) recvGatewayV1() (value *Result_, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "GatewayV1" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "GatewayV1 failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "GatewayV1 failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error211 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error212 error
+		error212, err = error211.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error212
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "GatewayV1 failed: invalid message type")
+		return
+	}
+	result := PaymentServiceGatewayV1Result{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -887,18 +973,19 @@ func (p *PaymentServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFun
 
 func NewPaymentServiceProcessor(handler PaymentService) *PaymentServiceProcessor {
 
-	self199 := &PaymentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self199.processorMap["SubmitPaymentOrder"] = &paymentServiceProcessorSubmitPaymentOrder{handler: handler}
-	self199.processorMap["GetPaymentOrder"] = &paymentServiceProcessorGetPaymentOrder{handler: handler}
-	self199.processorMap["GetPaymentOrderId"] = &paymentServiceProcessorGetPaymentOrderId{handler: handler}
-	self199.processorMap["GetPaymentOrderById"] = &paymentServiceProcessorGetPaymentOrderById{handler: handler}
-	self199.processorMap["AdjustOrder"] = &paymentServiceProcessorAdjustOrder{handler: handler}
-	self199.processorMap["DiscountByBalance"] = &paymentServiceProcessorDiscountByBalance{handler: handler}
-	self199.processorMap["DiscountByIntegral"] = &paymentServiceProcessorDiscountByIntegral{handler: handler}
-	self199.processorMap["PaymentByWallet"] = &paymentServiceProcessorPaymentByWallet{handler: handler}
-	self199.processorMap["HybridPayment"] = &paymentServiceProcessorHybridPayment{handler: handler}
-	self199.processorMap["FinishPayment"] = &paymentServiceProcessorFinishPayment{handler: handler}
-	return self199
+	self213 := &PaymentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self213.processorMap["SubmitPaymentOrder"] = &paymentServiceProcessorSubmitPaymentOrder{handler: handler}
+	self213.processorMap["GetPaymentOrder"] = &paymentServiceProcessorGetPaymentOrder{handler: handler}
+	self213.processorMap["GetPaymentOrderId"] = &paymentServiceProcessorGetPaymentOrderId{handler: handler}
+	self213.processorMap["GetPaymentOrderById"] = &paymentServiceProcessorGetPaymentOrderById{handler: handler}
+	self213.processorMap["AdjustOrder"] = &paymentServiceProcessorAdjustOrder{handler: handler}
+	self213.processorMap["DiscountByBalance"] = &paymentServiceProcessorDiscountByBalance{handler: handler}
+	self213.processorMap["DiscountByIntegral"] = &paymentServiceProcessorDiscountByIntegral{handler: handler}
+	self213.processorMap["PaymentByWallet"] = &paymentServiceProcessorPaymentByWallet{handler: handler}
+	self213.processorMap["HybridPayment"] = &paymentServiceProcessorHybridPayment{handler: handler}
+	self213.processorMap["FinishPayment"] = &paymentServiceProcessorFinishPayment{handler: handler}
+	self213.processorMap["GatewayV1"] = &paymentServiceProcessorGatewayV1{handler: handler}
+	return self213
 }
 
 func (p *PaymentServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -911,12 +998,12 @@ func (p *PaymentServiceProcessor) Process(iprot, oprot thrift.TProtocol) (succes
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x200 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x214 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x200.Write(oprot)
+	x214.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x200
+	return false, x214
 
 }
 
@@ -1383,6 +1470,54 @@ func (p *paymentServiceProcessorFinishPayment) Process(seqId int32, iprot, oprot
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("FinishPayment", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type paymentServiceProcessorGatewayV1 struct {
+	handler PaymentService
+}
+
+func (p *paymentServiceProcessorGatewayV1) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := PaymentServiceGatewayV1Args{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("GatewayV1", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := PaymentServiceGatewayV1Result{}
+	var retval *Result_
+	var err2 error
+	if retval, err2 = p.handler.GatewayV1(args.Action, args.UserId, args.Data); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GatewayV1: "+err2.Error())
+		oprot.WriteMessageBegin("GatewayV1", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("GatewayV1", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -3609,4 +3744,296 @@ func (p *PaymentServiceFinishPaymentResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("PaymentServiceFinishPaymentResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Action
+//  - UserId
+//  - Data
+type PaymentServiceGatewayV1Args struct {
+	Action string            `thrift:"action,1" json:"action"`
+	UserId int64             `thrift:"userId,2" json:"userId"`
+	Data   map[string]string `thrift:"data,3" json:"data"`
+}
+
+func NewPaymentServiceGatewayV1Args() *PaymentServiceGatewayV1Args {
+	return &PaymentServiceGatewayV1Args{}
+}
+
+func (p *PaymentServiceGatewayV1Args) GetAction() string {
+	return p.Action
+}
+
+func (p *PaymentServiceGatewayV1Args) GetUserId() int64 {
+	return p.UserId
+}
+
+func (p *PaymentServiceGatewayV1Args) GetData() map[string]string {
+	return p.Data
+}
+func (p *PaymentServiceGatewayV1Args) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.readField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.readField3(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGatewayV1Args) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Action = v
+	}
+	return nil
+}
+
+func (p *PaymentServiceGatewayV1Args) readField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.UserId = v
+	}
+	return nil
+}
+
+func (p *PaymentServiceGatewayV1Args) readField3(iprot thrift.TProtocol) error {
+	_, _, size, err := iprot.ReadMapBegin()
+	if err != nil {
+		return thrift.PrependError("error reading map begin: ", err)
+	}
+	tMap := make(map[string]string, size)
+	p.Data = tMap
+	for i := 0; i < size; i++ {
+		var _key215 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_key215 = v
+		}
+		var _val216 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_val216 = v
+		}
+		p.Data[_key215] = _val216
+	}
+	if err := iprot.ReadMapEnd(); err != nil {
+		return thrift.PrependError("error reading map end: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGatewayV1Args) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GatewayV1_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGatewayV1Args) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("action", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:action: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Action)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.action (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:action: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceGatewayV1Args) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("userId", thrift.I64, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:userId: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.UserId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.userId (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:userId: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceGatewayV1Args) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("data", thrift.MAP, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:data: ", p), err)
+	}
+	if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Data)); err != nil {
+		return thrift.PrependError("error writing map begin: ", err)
+	}
+	for k, v := range p.Data {
+		if err := oprot.WriteString(string(k)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+		if err := oprot.WriteString(string(v)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+	}
+	if err := oprot.WriteMapEnd(); err != nil {
+		return thrift.PrependError("error writing map end: ", err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:data: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceGatewayV1Args) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PaymentServiceGatewayV1Args(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type PaymentServiceGatewayV1Result struct {
+	Success *Result_ `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewPaymentServiceGatewayV1Result() *PaymentServiceGatewayV1Result {
+	return &PaymentServiceGatewayV1Result{}
+}
+
+var PaymentServiceGatewayV1Result_Success_DEFAULT *Result_
+
+func (p *PaymentServiceGatewayV1Result) GetSuccess() *Result_ {
+	if !p.IsSetSuccess() {
+		return PaymentServiceGatewayV1Result_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *PaymentServiceGatewayV1Result) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *PaymentServiceGatewayV1Result) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGatewayV1Result) readField0(iprot thrift.TProtocol) error {
+	p.Success = &Result_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGatewayV1Result) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GatewayV1_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGatewayV1Result) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *PaymentServiceGatewayV1Result) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PaymentServiceGatewayV1Result(%+v)", *p)
 }

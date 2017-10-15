@@ -30,6 +30,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Result PaymentByWallet(i32 orderId, string remark)")
 	fmt.Fprintln(os.Stderr, "  Result HybridPayment(i32 orderId, string remark)")
 	fmt.Fprintln(os.Stderr, "  Result FinishPayment(string tradeNo, string spName, string outerNo)")
+	fmt.Fprintln(os.Stderr, "  Result GatewayV1(string action, i64 userId,  data)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -129,19 +130,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "SubmitPaymentOrder requires 1 args")
 			flag.Usage()
 		}
-		arg201 := flag.Arg(1)
-		mbTrans202 := thrift.NewTMemoryBufferLen(len(arg201))
-		defer mbTrans202.Close()
-		_, err203 := mbTrans202.WriteString(arg201)
-		if err203 != nil {
+		arg217 := flag.Arg(1)
+		mbTrans218 := thrift.NewTMemoryBufferLen(len(arg217))
+		defer mbTrans218.Close()
+		_, err219 := mbTrans218.WriteString(arg217)
+		if err219 != nil {
 			Usage()
 			return
 		}
-		factory204 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt205 := factory204.GetProtocol(mbTrans202)
+		factory220 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt221 := factory220.GetProtocol(mbTrans218)
 		argvalue0 := define.NewPaymentOrder()
-		err206 := argvalue0.Read(jsProt205)
-		if err206 != nil {
+		err222 := argvalue0.Read(jsProt221)
+		if err222 != nil {
 			Usage()
 			return
 		}
@@ -174,8 +175,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err209 := (strconv.Atoi(flag.Arg(1)))
-		if err209 != nil {
+		tmp0, err225 := (strconv.Atoi(flag.Arg(1)))
+		if err225 != nil {
 			Usage()
 			return
 		}
@@ -191,8 +192,8 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		argvalue1, err211 := (strconv.ParseFloat(flag.Arg(2), 64))
-		if err211 != nil {
+		argvalue1, err227 := (strconv.ParseFloat(flag.Arg(2), 64))
+		if err227 != nil {
 			Usage()
 			return
 		}
@@ -205,8 +206,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "DiscountByBalance requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err212 := (strconv.Atoi(flag.Arg(1)))
-		if err212 != nil {
+		tmp0, err228 := (strconv.Atoi(flag.Arg(1)))
+		if err228 != nil {
 			Usage()
 			return
 		}
@@ -222,15 +223,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "DiscountByIntegral requires 3 args")
 			flag.Usage()
 		}
-		tmp0, err214 := (strconv.Atoi(flag.Arg(1)))
-		if err214 != nil {
+		tmp0, err230 := (strconv.Atoi(flag.Arg(1)))
+		if err230 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		argvalue1, err215 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-		if err215 != nil {
+		argvalue1, err231 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err231 != nil {
 			Usage()
 			return
 		}
@@ -245,8 +246,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "PaymentByWallet requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err217 := (strconv.Atoi(flag.Arg(1)))
-		if err217 != nil {
+		tmp0, err233 := (strconv.Atoi(flag.Arg(1)))
+		if err233 != nil {
 			Usage()
 			return
 		}
@@ -262,8 +263,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "HybridPayment requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err219 := (strconv.Atoi(flag.Arg(1)))
-		if err219 != nil {
+		tmp0, err235 := (strconv.Atoi(flag.Arg(1)))
+		if err235 != nil {
 			Usage()
 			return
 		}
@@ -286,6 +287,40 @@ func main() {
 		argvalue2 := flag.Arg(3)
 		value2 := argvalue2
 		fmt.Print(client.FinishPayment(value0, value1, value2))
+		fmt.Print("\n")
+		break
+	case "GatewayV1":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "GatewayV1 requires 3 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1, err241 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err241 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		arg242 := flag.Arg(3)
+		mbTrans243 := thrift.NewTMemoryBufferLen(len(arg242))
+		defer mbTrans243.Close()
+		_, err244 := mbTrans243.WriteString(arg242)
+		if err244 != nil {
+			Usage()
+			return
+		}
+		factory245 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt246 := factory245.GetProtocol(mbTrans243)
+		containerStruct2 := define.NewPaymentServiceGatewayV1Args()
+		err247 := containerStruct2.ReadField3(jsProt246)
+		if err247 != nil {
+			Usage()
+			return
+		}
+		argvalue2 := containerStruct2.Data
+		value2 := argvalue2
+		fmt.Print(client.GatewayV1(value0, value1, value2))
 		fmt.Print("\n")
 		break
 	case "":
