@@ -35,7 +35,7 @@ func (m *MemberModule) SetApp(app gof.App) {
 // 初始化模块
 func (m *MemberModule) Init() {
 	m.tokenHours = 24 * 30 //默认保存1个月
-	m.tokenOffset = "%$^&@at3.net"
+	m.tokenOffset = "%$^&@to2.net"
 }
 
 // 获取会员Token-Key

@@ -40,6 +40,7 @@ import (
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -73,7 +74,12 @@ func Init(a *AppImpl, debug, trace bool) bool {
 		report.WATCH_CONF_FILE = true
 	}
 	OrmMapping(a.Db())
+	// 初始化变量
 	variable.Domain = a._config.GetString(variable.ServerDomain)
+	confPath := strings.TrimSpace(a._config.GetString("conf_path"))
+	if len(confPath) > 0 {
+		variable.ConfPath = confPath
+	}
 	a.Loaded = true
 	return true
 }

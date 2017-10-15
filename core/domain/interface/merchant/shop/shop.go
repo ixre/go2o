@@ -134,6 +134,8 @@ type (
 		Pause() error
 		// 保存
 		Save() (int32, error)
+		// 获取商店信息
+		Data() *ComplexShop
 	}
 
 	// 线上商城
@@ -193,7 +195,7 @@ type (
 		Name     string
 		State    int32
 		// 线上/线下商店的数据
-		Data interface{}
+		Data map[string]string
 	}
 
 	// 商城

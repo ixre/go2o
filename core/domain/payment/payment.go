@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"math"
 	"regexp"
 	"strings"
 	"time"
@@ -386,6 +387,7 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	_, err := p.save()
 	return err
 }
+
 func (p *paymentOrderImpl) GetValue() payment.PaymentOrder {
 	return *p.value
 }
@@ -404,7 +406,7 @@ func (p *paymentOrderImpl) Cancel() error {
 		pv := p.GetValue()
 		acc := mm.GetAccount()
 		//退回到余额
-		if p.value.BalanceDiscount > 0 {
+		if pv.BalanceDiscount > 0 {
 			err = acc.Refund(member.AccountBalance,
 				member.KindBalanceRefund, "订单退款", pv.TradeNo,
 				pv.BalanceDiscount, member.DefaultRelateUser)
@@ -425,6 +427,49 @@ func (p *paymentOrderImpl) Cancel() error {
 		}
 	}
 	return err
+}
+
+// 退款
+func (p *paymentOrderImpl) Refund(amount float64) (err error) {
+	mm := p.getBuyer()
+	if mm == nil {
+		return member.ErrNoSuchMember
+	}
+	pv := p.GetValue()
+	originState := pv.State
+	acc := mm.GetAccount()
+
+	//先通过退回到余额
+	if pv.BalanceDiscount > 0 {
+		final := math.Min(float64(pv.BalanceDiscount), amount)
+		if amount > float64(pv.BalanceDiscount) {
+			amount = amount - final
+		}
+		err = acc.Refund(member.AccountBalance,
+			member.KindBalanceRefund, "订单退款", pv.TradeNo,
+			float32(final), member.DefaultRelateUser)
+		if err == nil {
+			p.value.BalanceDiscount -= float32(final)
+		}
+	}
+	if amount > 0 && p.value.FinalAmount > 0 &&
+		originState == payment.StateFinishPayment {
+		//退到钱包账户
+		if pv.PaymentSign == payment.SignWalletAccount {
+			err = acc.Refund(member.AccountWallet,
+				member.KindWalletPaymentRefund,
+				"订单退款", pv.TradeNo, float32(amount),
+				member.DefaultRelateUser)
+			if err == nil {
+				p.value.FinalAmount -= float32(amount)
+			}
+		}
+	}
+	if err == nil {
+		_, err = p.save()
+	}
+	return err
+
 }
 
 // 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
