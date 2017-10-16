@@ -459,10 +459,10 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 
 // 拷贝认证信息
 func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error {
-	if dst.RealName == src.RealName && dst.CardId == src.CardId &&
-		dst.TrustImage == src.TrustImage {
-		return member.ErrNoChangedTrustInfo
-	}
+	//if dst.RealName == src.RealName && dst.CardId == src.CardId &&
+	//	dst.TrustImage == src.TrustImage {
+	//	return member.ErrNoChangedTrustInfo
+	//}
 	dst.RealName = src.RealName
 	dst.CardId = src.CardId
 	dst.TrustImage = src.TrustImage
