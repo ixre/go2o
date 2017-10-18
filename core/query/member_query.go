@@ -66,7 +66,6 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 
 	d.Query(sqlLine, func(_rows *sql.Rows) {
 		rows = db.RowsToMarshalMap(_rows)
-		_rows.Close()
 	}, memberId, begin, end-begin)
 
 	return num, rows
@@ -90,7 +89,6 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 			where, orderBy)
 		d.Query(sqlLine, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
-			_rows.Close()
 		}, memberId, begin, end-begin)
 	} else {
 		rows = []map[string]interface{}{}
@@ -119,7 +117,6 @@ func (m *MemberQuery) QueryBalanceLog(memberId int64, begin, end int,
 
 	d.Query(sqlLine, func(_rows *sql.Rows) {
 		rows = db.RowsToMarshalMap(_rows)
-		_rows.Close()
 	}, memberId, begin, end-begin)
 
 	return num, rows

@@ -66,7 +66,6 @@ func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where str
 //
 //	d.Query(sqlLine, func(_rows *sql.Rows) {
 //		rows = db.RowsToMarshalMap(_rows)
-//		_rows.Close()
 //	}, memberId, (page-1)*size, size)
 //
 //	return num, rows

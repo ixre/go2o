@@ -38,6 +38,10 @@ func TestSimpleJson(t *testing.T) {
 func TestGetNameByAccountNo(t *testing.T) {
 	accountNo := "6226220284294245"
 	accountNo1 := "6222021001042791910"
+	accountNo2 := "6229332000010155164"
+	accountNo3 := "5229640795589453"
 	t.Log(GetNameByAccountNo(accountNo))
 	t.Log(GetNameByAccountNo(accountNo1))
+	t.Log(GetNameByAccountNo(accountNo2))
+	t.Log(GetNameByAccountNo(accountNo3))
 }
