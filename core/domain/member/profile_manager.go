@@ -30,7 +30,7 @@ var _ member.IProfileManager = new(profileManagerImpl)
 var (
 	exampleTrustImageUrl = "res/tru-example.jpg"
 	// qqRegex = regexp.MustCompile("^\\d{5,12}$")
-	zhNameRegexp = regexp.MustCompile("^[\u4e00-\u9fa5]{2,4}$")
+	zhNameRegexp = regexp.MustCompile("^[\u4e00-\u9fa5]{2,6}$")
 )
 
 type profileManagerImpl struct {

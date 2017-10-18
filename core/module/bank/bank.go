@@ -2,7 +2,6 @@ package bank
 
 import (
 	"sort"
-	"strconv"
 )
 
 var (
@@ -2136,16 +2135,24 @@ var (
 	}
 )
 
-// 根据银行账号获取银行名称
-func GetNameByAccountNo(accountNo string) string {
-	prefix := accountNo[:6]
-	bin, err := strconv.Atoi(prefix)
-	if err == nil {
-		i := sort.SearchInts(bankBin, bin)
+// https://ccdcapi.alipay.com/validateAndCacheCardInfo.json?cardNo=6229332000010155164&cardBinCheck=true
+func getNameByAccountNo(accountNo string, offset int) string {
+	if accountNo != "" {
+		var longBin int = 0
+		ru := []byte(accountNo)
+		for i := 0; i < 6; i++ {
+			longBin = (longBin * 10) + (int(ru[i+offset]) - 48)
+		}
+		i := sort.SearchInts(bankBin, longBin)
 		if i != -1 {
 			return bankName[i]
 		}
 	}
-
 	return "未知银行"
+}
+
+// 根据银行账号获取银行名称
+// http://www.chakahao.com/cardbin/chakahao_other.html
+func GetNameByAccountNo(accountNo string) string {
+	return getNameByAccountNo(accountNo, 0)
 }
