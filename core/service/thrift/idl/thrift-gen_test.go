@@ -11,37 +11,19 @@ package idl
 import (
 	"fmt"
 	"github.com/jsix/gof/shell"
-	"os"
-	"path/filepath"
-	"strings"
 	"testing"
 )
 
+const entryFile = "service_idl.thrift"
+
 // 生成Golang的Thrift代码
 func TestGo(t *testing.T) {
-	for _, v := range getFiles() {
-		genCode(t, "go", v)
-	}
+	genCode(t, "go", entryFile)
 }
 
 // 生成Golang的Thrift代码
 func TestJava(t *testing.T) {
-	for _, v := range getFiles() {
-		genCode(t, "java", v)
-	}
-}
-
-func getFiles() []string {
-	list := []string{}
-	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-		if err == nil && !info.IsDir() {
-			if strings.HasSuffix(path, ".thrift") {
-				list = append(list, path)
-			}
-		}
-		return err
-	})
-	return list
+	genCode(t, "java", entryFile)
 }
 
 func genCode(t *testing.T, lang string, file string) {
