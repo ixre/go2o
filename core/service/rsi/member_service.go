@@ -241,7 +241,7 @@ func (ms *memberService) GetLevel(id int32) (*define.Level, error) {
 }
 
 // 根据SIGN获取等级
-func (ms *memberService) GetLevelBySign(sign string)(*define.Level,error){
+func (ms *memberService) GetLevelBySign(sign string) (*define.Level, error) {
 	lv := ms._repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
 	if lv != nil {
 		return parser.LevelDto(lv), nil

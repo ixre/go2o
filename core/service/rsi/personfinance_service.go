@@ -14,9 +14,9 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/variable"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"go2o/core/variable"
 )
 
 var _ define.FinanceService = new(personFinanceService)
@@ -93,7 +93,7 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		//转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountBalance,
-				member.KindBalanceSystemCharge, variable.AliasGrowAccount+"转出",
+				member.KindBalanceSystemCharge, variable.AliasGrowthAccount+"转出",
 				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
@@ -107,7 +107,7 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		//转入钱包
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountWallet,
-				member.KindWalletAdd, variable.AliasGrowAccount+"转出",
+				member.KindWalletAdd, variable.AliasGrowthAccount+"转出",
 				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
