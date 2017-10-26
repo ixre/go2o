@@ -1,6 +1,6 @@
 namespace go define
 
-include "type.thrift"
+include "ttype.thrift"
 
 struct PlatformConf {
    // 1: string Name
@@ -34,9 +34,9 @@ service FoundationService{
    // 根据键获取值
    string GetValue(1:string key)
    // 设置键值
-   type.Result SetValue(1:string key,2:string value)
+   ttype.Result SetValue(1:string key,2:string value)
    // 删除值
-   type.Result DeleteValue(1:string key)
+   ttype.Result DeleteValue(1:string key)
    // 获取键值存储数据
    list<string> GetRegistryV1(1:list<string> keys)
    // 获取键值存储数据字典

@@ -1,6 +1,6 @@
 namespace go define
 
-include "type.thrift"
+include "ttype.thrift"
 
 
 //支付单
@@ -33,7 +33,7 @@ struct PaymentOrder {
 // 支付服务
 service PaymentService{
     // 创建支付单并提交
-    type.Result SubmitPaymentOrder(1:PaymentOrder o)
+    ttype.Result SubmitPaymentOrder(1:PaymentOrder o)
     // 根据支付单号获取支付单
     PaymentOrder GetPaymentOrder(1:string paymentNo)
     // 根据交易号获取支付单编号
@@ -41,18 +41,18 @@ service PaymentService{
     // 根据编号获取支付单
     PaymentOrder GetPaymentOrderById(1:i32 id)
     // 调整支付单金额
-    type.Result AdjustOrder(1:string paymentNo, 2:double amount)
+    ttype.Result AdjustOrder(1:string paymentNo, 2:double amount)
     // 余额抵扣
-    type.Result DiscountByBalance(1:i32 orderId,2:string remark )
+    ttype.Result DiscountByBalance(1:i32 orderId,2:string remark )
    // 积分抵扣支付单
-    type.DResult DiscountByIntegral(1:i32 orderId,2:i64 integral,3:bool ignoreOut)
+    ttype.DResult DiscountByIntegral(1:i32 orderId,2:i64 integral,3:bool ignoreOut)
     // 钱包账户支付
-    type.Result PaymentByWallet(1:i32 orderId,2:string remark)
+    ttype.Result PaymentByWallet(1:i32 orderId,2:string remark)
     // 余额钱包混合支付，优先扣除余额。
-    type.Result HybridPayment(1:i32 orderId,2:string remark)
+    ttype.Result HybridPayment(1:i32 orderId,2:string remark)
     // 完成支付单支付，并传入支付方式及外部订单号
-    type.Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
+    ttype.Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
     // 支付网关
-    type.Result GatewayV1(1:string action,2:i64 userId,3:map<string,string> data)
+    ttype.Result GatewayV1(1:string action,2:i64 userId,3:map<string,string> data)
 }
 

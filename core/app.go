@@ -53,6 +53,7 @@ type AppImpl struct {
 	_debugMode   bool
 	_logger      log.ILogger
 	_storage     storage.Interface
+	_registry    *gof.Registry
 }
 
 func NewApp(confPath string) *AppImpl {
@@ -86,7 +87,12 @@ func (a *AppImpl) Config() *gof.Config {
 	}
 	return a._config
 }
-
+func (a *AppImpl) Registry() *gof.Registry {
+	if a._registry == nil {
+		a._registry, _ = gof.NewRegistry("./conf", ":")
+	}
+	return a._registry
+}
 func (a *AppImpl) Source() interface{} {
 	return a
 }

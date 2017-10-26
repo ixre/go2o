@@ -1,6 +1,6 @@
 namespace go define
 
-include "type.thrift"
+include "ttype.thrift"
 
 
 struct Level {
@@ -147,15 +147,17 @@ struct Address {
 service MemberService{
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    type.Result64 CheckLogin(1:string user,2:string pwd,3:bool update)
+    ttype.Result64 CheckLogin(1:string user,2:string pwd,3:bool update)
     // 检查交易密码
-    type.Result CheckTradePwd(1:i64 id,2:string tradePwd)
+    ttype.Result CheckTradePwd(1:i64 id,2:string tradePwd)
     // 等级列表
     list<Level> LevelList()
     // 获取实名信息
     TrustedInfo GetTrustInfo(1:i64 id)
     // 获取等级信息
     Level GetLevel(1:i32 id)
+    // 根据SIGN获取等级
+    Level GetLevelBySign(1:string sign)
     // 根据会员编号获取会员信息
     Member GetMember(1:i64 id)
     // 根据用户名获取会员信息
@@ -165,9 +167,9 @@ service MemberService{
     // 获取会员汇总信息
     ComplexMember Complex(1:i64 memberId)
     // 更改会员等级
-    type.Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
+    ttype.Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
      // 升级为高级会员
-    type.Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
+    ttype.Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
     string GetToken(1:i64 memberId,2:bool reset)
     // 检查会员的会话Token是否正确，如正确返回: 1
@@ -184,11 +186,11 @@ service MemberService{
     i32 GetInviterQuantity(1:i64 memberId,2:map<string,string> data)
 
     // 账户充值
-    type.Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
+    ttype.Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
       4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
     // 抵扣账户
-    type.Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
+    ttype.Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
       4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
     // !银行四要素认证
-    type.Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)
+    ttype.Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)
 }
