@@ -43,6 +43,7 @@ func ListenAndServe(addr string, secure bool) error {
 		processor.RegisterProcessor("sale", define.NewSaleServiceProcessor(rsi.ShoppingService))
 		processor.RegisterProcessor("item", define.NewItemServiceProcessor(rsi.ItemService))
 		processor.RegisterProcessor("shop", define.NewShopServiceProcessor(rsi.ShopService))
+		processor.RegisterProcessor("finance", define.NewFinanceServiceProcessor(rsi.PersonFinanceService))
 		server := thrift.NewTSimpleServer4(processor, transport,
 			transportFactory, protocolFactory)
 		fmt.Println("Starting the thrift server... on ", addr)

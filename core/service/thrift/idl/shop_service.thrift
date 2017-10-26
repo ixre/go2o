@@ -1,6 +1,6 @@
 namespace go define
 
-include "type.thrift"
+include "ttype.thrift"
 
 // 商店,需重构
 struct Shop{
@@ -37,7 +37,7 @@ service ShopService{
     // 获取门店
     //Shop GetOfflineShop(1:i32 shopId)
     // 打开或关闭商店
-    type.Result TurnShop(1:i32 shopId,2:bool on,3:string reason)
+    ttype.Result TurnShop(1:i32 shopId,2:bool on,3:string reason)
     // 设置商店是否营业
-    type.Result OpenShop(1:i32 shopId,2:bool opening,3:string reason)
+    ttype.Result OpenShop(1:i32 shopId,2:bool opening,3:string reason)
 }

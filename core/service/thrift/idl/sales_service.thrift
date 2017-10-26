@@ -1,6 +1,6 @@
 namespace go define
 
-include "type.thrift"
+include "ttype.thrift"
 
 
 // 订单项
@@ -49,9 +49,9 @@ struct ComplexOrder {
 // 销售服务
 service SaleService {
   // 批发购物车接口
-  type.Result WholesaleCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
+  ttype.Result WholesaleCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
   // 零售购物车接口
-  type.Result RetailCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
+  ttype.Result RetailCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
   // 提交订单
   map<string,string> SubmitOrderV1(1:i64 buyerId,2:i32 cartType,3:map<string,string> data)
   // 获取订单信息
@@ -66,10 +66,10 @@ service SaleService {
   // 获取订单商品项
   list<ComplexItem> GetSubOrderItems(1:i64 subOrderId)
   // 提交交易订单
-  type.Result64 SubmitTradeOrder(1:ComplexOrder o,2:double rate)
+  ttype.Result64 SubmitTradeOrder(1:ComplexOrder o,2:double rate)
   // 交易单现金支付
-  type.Result64 TradeOrderCashPay(1:i64 orderId)
+  ttype.Result64 TradeOrderCashPay(1:i64 orderId)
   // 上传交易单发票
-  type.Result64 TradeOrderUpdateTicket(1:i64 orderId,2:string img)
+  ttype.Result64 TradeOrderUpdateTicket(1:i64 orderId,2:string img)
 }
 
