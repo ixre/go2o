@@ -331,3 +331,20 @@ func (m *MemberQuery) GetInviterQuantity(memberId int64, where string) int32 {
         WHERE inviter_id = ? `+where, &total, memberId)
 	return total
 }
+
+// 获取从指定时间到现在推荐指定等级会员的数量
+func (m *MemberQuery) GetInviterArray(memberId int64, where string) []int64 {
+	arr := []int64{}
+	m.Connector.Query(`SELECT mm_relation.member_id FROM mm_relation
+        INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
+        LEFT JOIN mm_trusted_info mt ON mt.member_id=mm_member.id
+        WHERE inviter_id = ? `+where, func(rows *sql.Rows) {
+		var i int64
+		for rows.Next() {
+			if err := rows.Scan(&i); err == nil && i > 0 {
+				arr = append(arr, i)
+			}
+		}
+	}, memberId)
+	return arr
+}

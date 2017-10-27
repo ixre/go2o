@@ -574,7 +574,7 @@ func (ms *memberService) GetAccount(memberId int64) (*define.Account, error) {
 	return nil, nil
 }
 
-// 获取邀请人会员编号数组
+// 获取上级邀请人会员编号数组
 func (ms *memberService) InviterArray(memberId int64, depth int32) (r []int64, err error) {
 	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	if m != nil {
@@ -583,13 +583,22 @@ func (ms *memberService) InviterArray(memberId int64, depth int32) (r []int64, e
 	return []int64{}, nil
 }
 
-// 获取从指定时间到现在推荐指定等级会员的数量
+// 按条件获取荐指定等级会员的数量
 func (m *memberService) GetInviterQuantity(memberId int64, data map[string]string) (int32, error) {
 	where := ""
 	if data != nil && len(data) > 0 {
 		where = m.parseGetInviterDataParams(data)
 	}
 	return m._query.GetInviterQuantity(memberId, where), nil
+}
+
+// 按条件获取荐指定等级会员的列表
+func (m *memberService) GetInviterArray(memberId int64, data map[string]string) ([]int64, error) {
+	where := ""
+	if data != nil && len(data) > 0 {
+		where = m.parseGetInviterDataParams(data)
+	}
+	return m._query.GetInviterArray(memberId, where), nil
 }
 
 func (m *memberService) parseGetInviterDataParams(data map[string]string) string {
