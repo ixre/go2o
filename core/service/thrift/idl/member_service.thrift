@@ -180,11 +180,12 @@ service MemberService{
     Address GetAddress(1:i64 memberId,2:i64 addrId)
     // 获取会员账户信息
     Account GetAccount(1:i64 memberId)
-    // 获取邀请人会员编号数组
+    // 获取自己的邀请人会员编号数组
     list<i64> InviterArray(1:i64 memberId,2:i32 depth)
-    // 获取从指定时间到现在推荐指定等级会员的数量
+    // 按条件获取荐指定等级会员的数量
     i32 GetInviterQuantity(1:i64 memberId,2:map<string,string> data)
-
+    // 按条件获取荐指定等级会员的列表
+    list<i64> GetInviterArray(1:i64 memberId,2:map<string,string> data)
     // 账户充值
     ttype.Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
       4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
