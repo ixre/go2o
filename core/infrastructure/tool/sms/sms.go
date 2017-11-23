@@ -10,7 +10,7 @@ package sms
 
 import (
 	"errors"
-	"github.com/jsix/gof/util"
+	"github.com/jsix/goex/util"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/iface/aliyu"

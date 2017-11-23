@@ -17,10 +17,9 @@ import (
 	"github.com/jsix/gof/storage"
 	"go2o/app"
 	"go2o/core/dao"
-	"go2o/core/domain/interface/valueobject"
+	"go2o/core/factory"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
-	"go2o/core/repository"
 	"go2o/core/variable"
 	"strconv"
 	"strings"
@@ -66,10 +65,6 @@ var (
 	CommonDao *dao.CommonDao
 )
 
-var (
-	valueRepo valueobject.IValueRepo
-)
-
 // 处理错误
 func handleError(err error) error {
 	return domain.HandleError(err, "service")
@@ -96,44 +91,31 @@ func Init(ctx gof.App, appFlag int) {
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 
 	rds := sto.(storage.IRedisStorage)
+	factory.Repo.Init(db, sto)
 
-	/** Repository **/
-	proMRepo := repository.NewProModelRepo(db, orm)
-	valueRepo = repository.NewValueRepo(db, sto)
-	userRepo := repository.NewUserRepo(db)
-	notifyRepo := repository.NewNotifyRepo(db)
-	mssRepo := repository.NewMssRepo(db, notifyRepo, valueRepo)
-	expressRepo := repository.NewExpressRepo(db, valueRepo)
-	shipRepo := repository.NewShipmentRepo(db, expressRepo)
-	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valueRepo)
-	productRepo := repository.NewProductRepo(db, proMRepo, valueRepo)
-	itemWsRepo := repository.NewItemWholesaleRepo(db)
-	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
-	itemRepo := repository.NewGoodsItemRepo(db, catRepo, productRepo,
-		proMRepo, itemWsRepo, expressRepo, valueRepo)
-	tagSaleRepo := repository.NewTagSaleRepo(db, valueRepo)
-	promRepo := repository.NewPromotionRepo(db, itemRepo, memberRepo)
+	proMRepo := factory.Repo.GetIProModelRepo()
+	valueRepo := factory.Repo.GetValueRepo()
+	mssRepo := factory.Repo.GetMssRepo()
 
-	//afterSalesRepo := repository.NewAfterSalesRepo(db)
+	expressRepo := factory.Repo.GetExpressRepo()
+	shipRepo := factory.Repo.GetShipmentRepo()
+	memberRepo := factory.Repo.GetMemberRepo()
+	productRepo := factory.Repo.GetProductRepo()
+	catRepo := factory.Repo.GetCategoryRepo()
+	itemRepo := factory.Repo.GetGoodsItemRepo()
+	tagSaleRepo := factory.Repo.GetSaleLabelRepo()
+	promRepo := factory.Repo.GetPromotionRepo()
 
-	shopRepo := repository.NewShopRepo(db, sto, valueRepo)
-	wholesaleRepo := repository.NewWholesaleRepo(db)
-	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo,
-		itemRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
-	cartRepo := repository.NewCartRepo(db, memberRepo, mchRepo, itemRepo)
-	personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
-	deliveryRepo := repository.NewDeliverRepo(db)
-	contentRepo := repository.NewContentRepo(db)
-	adRepo := repository.NewAdvertisementRepo(db, sto)
-	orderRepo := repository.NewOrderRepo(sto, db, mchRepo, nil, productRepo, cartRepo, itemRepo,
-		promRepo, memberRepo, deliveryRepo, expressRepo, shipRepo, valueRepo)
-	paymentRepo := repository.NewPaymentRepo(sto, db, memberRepo, orderRepo, valueRepo)
-	asRepo := repository.NewAfterSalesRepo(db, orderRepo, memberRepo, paymentRepo)
-
-	orderRepo.SetPaymentRepo(paymentRepo)
-
-	/* 初始化数据 */
-	memberRepo.GetManager().GetAllBuyerGroups()
+	shopRepo := factory.Repo.GetShopRepo()
+	mchRepo := factory.Repo.GetMerchantRepo()
+	cartRepo := factory.Repo.GetCartRepo()
+	personFinanceRepo := factory.Repo.GetPersonFinanceRepository()
+	deliveryRepo := factory.Repo.GetDeliveryRepo()
+	contentRepo := factory.Repo.GetContentRepo()
+	adRepo := factory.Repo.GetAdRepo()
+	orderRepo := factory.Repo.GetOrderRepo()
+	paymentRepo := factory.Repo.GetPaymentRepo()
+	asRepo := factory.Repo.GetAfterSalesRepo()
 
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
@@ -207,5 +189,5 @@ func initRpcServe(ctx gof.App) {
 	mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
 
-	valueRepo.SavesRegistry(mp)
+	factory.Repo.GetValueRepo().SavesRegistry(mp)
 }

@@ -493,6 +493,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
 					"CashPay":     strconv.Itoa(cashPay),
 					"TicketImage": ticket,
 					"Usr":         usr,
+					"CreateTime":  format.UnixTimeStr(e.CreateTime),
 				}
 				orderList = append(orderList, e)
 			}

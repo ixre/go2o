@@ -602,7 +602,6 @@ func (m *MemberRepo) GetSubInvitationNum(memberId int64, memberIdArr []int32) ma
 				rows.Scan(&id, &num)
 				d[id] = num
 			}
-			rows.Close()
 		})
 	handleError(err)
 	return d

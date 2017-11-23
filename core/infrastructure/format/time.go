@@ -19,3 +19,7 @@ func HanDateTime(t time.Time) string {
 func HanUnixDateTime(unix int64) string {
 	return HanDateTime(time.Unix(unix, 0))
 }
+
+func UnixTimeStr(unix int64) string {
+	return time.Unix(unix, 0).Format("2006-01-02 15:04")
+}

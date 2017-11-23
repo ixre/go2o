@@ -353,7 +353,8 @@ type (
 
 		// 获取地区名称
 		GetAreaNames(id []int32) []string
-
+		// 获取省市区字符串
+		AreaString(province, city, district int32, detail string) string
 		// 获取省市区字符串
 		GetAreaString(province, city, district int32) string
 	}

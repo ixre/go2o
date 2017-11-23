@@ -30,7 +30,7 @@ var _ member.IProfileManager = new(profileManagerImpl)
 var (
 	exampleTrustImageUrl = "res/tru-example.jpg"
 	// qqRegex = regexp.MustCompile("^\\d{5,12}$")
-	zhNameRegexp = regexp.MustCompile("^[\u4e00-\u9fa5]{2,4}$")
+	zhNameRegexp = regexp.MustCompile("^[\u4e00-\u9fa5]{2,6}$")
 )
 
 type profileManagerImpl struct {
@@ -337,8 +337,8 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 	v.Account = strings.TrimSpace(v.Account)
 	v.AccountName = strings.TrimSpace(v.AccountName)
 	v.Network = strings.TrimSpace(v.Network)
-	v.Name = strings.TrimSpace(v.Name)
-	if v.Account == "" || v.Name == "" {
+	v.BankName = strings.TrimSpace(v.BankName)
+	if v.Account == "" || v.BankName == "" {
 		return member.ErrBankInfo
 	}
 	trustInfo := p.GetTrustedInfo()
@@ -355,7 +355,7 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 		p.bank.Account = v.Account
 		p.bank.AccountName = v.AccountName
 		p.bank.Network = v.Network
-		p.bank.Name = v.Name
+		p.bank.BankName = v.BankName
 		p.bank.State = member.StateOk       //todo:???
 		p.bank.IsLocked = member.BankLocked //锁定
 		p.bank.UpdateTime = time.Now().Unix()
@@ -370,9 +370,9 @@ func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
 	v.Account = strings.TrimSpace(v.Account)
 	v.AccountName = strings.TrimSpace(v.AccountName)
 	v.Network = strings.TrimSpace(v.Network)
-	v.Name = strings.TrimSpace(v.Name)
+	v.BankName = strings.TrimSpace(v.BankName)
 
-	if v.Name == "" {
+	if v.BankName == "" {
 		return member.ErrBankName
 	}
 	if v.AccountName == "" {
@@ -382,7 +382,7 @@ func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
 		return member.ErrBankAccount
 	}
 	if v.Network == "" {
-		return member.ErrBankNetwork
+		//return member.ErrBankNetwork
 	}
 	return nil
 }
@@ -459,10 +459,10 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 
 // 拷贝认证信息
 func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error {
-	if dst.RealName == src.RealName && dst.CardId == src.CardId &&
-		dst.TrustImage == src.TrustImage {
-		return member.ErrNoChangedTrustInfo
-	}
+	//if dst.RealName == src.RealName && dst.CardId == src.CardId &&
+	//	dst.TrustImage == src.TrustImage {
+	//	return member.ErrNoChangedTrustInfo
+	//}
 	dst.RealName = src.RealName
 	dst.CardId = src.CardId
 	dst.TrustImage = src.TrustImage

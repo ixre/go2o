@@ -14,8 +14,12 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
 )
+
+var _ define.FinanceService = new(personFinanceService)
 
 type personFinanceService struct {
 	_rep     personfinance.IPersonFinanceRepository
@@ -60,50 +64,15 @@ func (p *personFinanceService) CommitTransfer(personId int64, logId int32) error
 }
 
 // 转入(业务放在service,是为person_finance解耦)
-func (p *personFinanceService) RiseTransferIn(personId int64,
-	transferWith personfinance.TransferWith, amount float32) (err error) {
+// Parameters:
+//  - PersonId
+//  - TransferWith
+//  - Amount
+func (p *personFinanceService) RiseTransferIn(personId int64, transferWith int32, amount float64) (r *define.DResult_, err error) {
 	//return errors.New("服务暂时不可用")
 	pf := p._rep.GetPersonFinance(personId)
-	r := pf.GetRiseInfo()
-	return r.TransferIn(amount, transferWith)
-
-	//if amount < personfinance.RiseMinTransferInAmount {
-	//	//金额不足最低转入金额
-	//	return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
-	//		format.FormatFloat(personfinance.RiseMinTransferInAmount)))
-	//}
-	//m := p._accRepo.GetMember(personId)
-	//if m == nil {
-	//	return member.ErrNoSuchMember
-	//}
-	//acc := m.GetAccount()
-	//if transferWith == personfinance.TransferFromWithBalance {
-	//	//从余额转入
-	//	if err = acc.DiscountBalance("理财转入",
-	//		domain.NewTradeNo(10000), amount, member.DefaultRelateUser); err != nil {
-	//		return err
-	//	}
-	//	if err = r.TransferIn(amount, transferWith); err != nil {
-	//		//转入
-	//		return err
-	//	}
-	//	return pf.SyncToAccount() //同步到会员账户
-	//}
-	//
-	//if transferWith == personfinance.TransferFromWithWallet {
-	//	//从奖金转入
-	//	if err := acc.DiscountWallet("理财转入", domain.NewTradeNo(10000),
-	//		amount, member.DefaultRelateUser, true); err != nil {
-	//		return err
-	//	}
-	//	if err = r.TransferIn(amount, transferWith); err != nil {
-	//		//转入
-	//		return err
-	//	}
-	//	return pf.SyncToAccount() //同步到会员账户
-	//}
-	//
-	//return errors.New("暂时无法提供服务")
+	err = pf.GetRiseInfo().TransferIn(float32(amount), personfinance.TransferWith(transferWith))
+	return parser.DResult(0, err), nil
 }
 
 // 转出
@@ -124,7 +93,7 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		//转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountBalance,
-				member.KindBalanceSystemCharge, variable.AliasGrowAccount+"转出",
+				member.KindBalanceSystemCharge, variable.AliasGrowthAccount+"转出",
 				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
@@ -138,7 +107,7 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		//转入钱包
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountWallet,
-				member.KindWalletAdd, variable.AliasGrowAccount+"转出",
+				member.KindWalletAdd, variable.AliasGrowthAccount+"转出",
 				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
