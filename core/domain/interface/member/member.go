@@ -349,7 +349,7 @@ type (
 		//会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
 		//名称
-		Name string `db:"name"`
+		BankName string `db:"name"`
 		//账号
 		Account string `db:"account"`
 		//账户名
@@ -431,7 +431,7 @@ type (
 )
 
 func (b BankInfo) Right() bool {
-	return len(b.Name) > 0 && len(b.Account) > 0 &&
+	return len(b.BankName) > 0 && len(b.Account) > 0 &&
 		len(b.AccountName) > 0
 }
 

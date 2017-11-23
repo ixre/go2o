@@ -740,14 +740,14 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 		a.value.Balance += amount
 		v.State = enum.ReviewPass
 	}
-
-	id, err := a.rep.SavePresentLog(v)
+	a.value.WalletBalance -= amount
+	_, err := a.Save()
 	if err == nil {
-		a.rep.AddTodayTakeOutTimes(a.GetDomainId())
-		a.value.WalletBalance -= amount
-		_, err = a.Save()
+		go a.rep.AddTodayTakeOutTimes(a.GetDomainId())
+		id, err := a.rep.SavePresentLog(v)
+		return id, tradeNo, err
 	}
-	return id, tradeNo, err
+	return 0, tradeNo, err
 }
 
 // 确认提现

@@ -28,21 +28,23 @@ var (
 )
 
 type shopImpl struct {
-	shopRepo shop.IShopRepo
-	value    *shop.Shop
+	shopRepo  shop.IShopRepo
+	value     *shop.Shop
+	valueRepo valueobject.IValueRepo
 }
 
 func NewShop(v *shop.Shop, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo) shop.IShop {
 	s := &shopImpl{
-		shopRepo: shopRepo,
-		value:    v,
+		shopRepo:  shopRepo,
+		value:     v,
+		valueRepo: valRepo,
 	}
 	switch s.Type() {
 	case shop.TypeOnlineShop:
 		return newOnlineShopImpl(s, valRepo)
 	case shop.TypeOfflineShop:
-		return newOfflineShopImpl(s)
+		return newOfflineShopImpl(s, valRepo)
 	}
 	panic("未知的商店类型")
 }
@@ -128,7 +130,7 @@ type offlineShopImpl struct {
 	_shopVal *shop.OfflineShop
 }
 
-func newOfflineShopImpl(s *shopImpl) shop.IShop {
+func newOfflineShopImpl(s *shopImpl, valueRepo valueobject.IValueRepo) shop.IShop {
 	var v *shop.OfflineShop
 	if s.GetDomainId() > 0 {
 		v = s.shopRepo.GetOfflineShop(s.GetDomainId())
@@ -217,6 +219,27 @@ func (s *offlineShopImpl) Save() (int32, error) {
 		err = s.shopRepo.SaveOfflineShop(s._shopVal, create)
 	}
 	return id, err
+}
+
+// 获取商店信息
+func (s *offlineShopImpl) Data() *shop.ComplexShop {
+	sv := s.value
+	ov := s._shopVal
+	v := &shop.ComplexShop{
+		ID:       s.GetDomainId(),
+		VendorId: sv.VendorId,
+		ShopType: sv.ShopType,
+		Name:     sv.Name,
+		State:    sv.ShopType,
+		Data:     make(map[string]string),
+	}
+	address := s.valueRepo.AreaString(ov.Province, ov.City, ov.District, ov.Address)
+	v.Data["Address"] = address
+	v.Data["Tel"] = ov.Tel
+	v.Data["CoverRadius"] = strconv.Itoa(int(ov.CoverRadius))
+	v.Data["Lat"] = strconv.FormatFloat(float64(ov.Lat), 'g', 2, 32)
+	v.Data["Lng"] = strconv.FormatFloat(float64(ov.Lng), 'g', 2, 32)
+	return v
 }
 
 type onlineShopImpl struct {
@@ -319,4 +342,22 @@ func (s *onlineShopImpl) generateShopAlias() string {
 		}
 	}
 	return ""
+}
+
+// 获取商店信息
+func (s *onlineShopImpl) Data() *shop.ComplexShop {
+	sv := s.value
+	ov := s._shopVal
+	v := &shop.ComplexShop{
+		ID:       s.GetDomainId(),
+		VendorId: sv.VendorId,
+		ShopType: sv.ShopType,
+		Name:     sv.Name,
+		State:    sv.ShopType,
+		Data:     make(map[string]string),
+	}
+	v.Data["Host"] = ov.Host
+	v.Data["Logo"] = ov.Logo
+	v.Data["ServiceTel"] = ov.ServiceTel
+	return v
 }

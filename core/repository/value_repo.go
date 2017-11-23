@@ -13,12 +13,14 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/tool/sms"
+	"go2o/core/variable"
 	"log"
 	"strconv"
 	"strings"
@@ -58,23 +60,31 @@ type valueRepo struct {
 	_tplGob          *util.GobFile
 	_areaCache       map[int32][]*valueobject.Area
 	_areaMux         sync.Mutex
+
+	_confRegistry *gof.Registry
 }
 
 func NewValueRepo(conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
+	confRegistry, err := gof.NewRegistry(variable.ConfPath, ":")
+	if err != nil {
+		log.Println("[ Go2o][ Crash]: can't load config,details ", err.Error())
+		//os.Exit(1)
+	}
 	return &valueRepo{
-		Connector: conn,
-		_orm:      conn.GetOrm(),
-		storage:   storage,
-		_kvMux:    &sync.RWMutex{},
-		_rstGob:   util.NewGobFile("conf/core/registry"),
-		_wxGob:    util.NewGobFile("conf/core/wx_api"),
-		_rpGob:    util.NewGobFile("conf/core/register_perm"),
-		_numGob:   util.NewGobFile("conf/core/number_conf"),
-		_mchGob:   util.NewGobFile("conf/core/pm_conf"),
-		_mscGob:   util.NewGobFile("conf/core/mch_sale_conf"),
-		_smsGob:   util.NewGobFile("conf/core/sms_conf"),
-		_tplGob:   util.NewGobFile("conf/core/tpl_conf"),
-		_moAppGob: util.NewGobFile("conf/core/mo_app"),
+		Connector:     conn,
+		_orm:          conn.GetOrm(),
+		storage:       storage,
+		_kvMux:        &sync.RWMutex{},
+		_rstGob:       util.NewGobFile("conf/core/registry"),
+		_wxGob:        util.NewGobFile("conf/core/wx_api"),
+		_rpGob:        util.NewGobFile("conf/core/register_perm"),
+		_numGob:       util.NewGobFile("conf/core/number_conf"),
+		_mchGob:       util.NewGobFile("conf/core/pm_conf"),
+		_mscGob:       util.NewGobFile("conf/core/mch_sale_conf"),
+		_smsGob:       util.NewGobFile("conf/core/sms_conf"),
+		_tplGob:       util.NewGobFile("conf/core/tpl_conf"),
+		_moAppGob:     util.NewGobFile("conf/core/mo_app"),
+		_confRegistry: confRegistry,
 	}
 }
 
@@ -362,8 +372,11 @@ func (v *valueRepo) getRegistry() *valueobject.Registry {
 	return v._globRegistry
 }
 
-func (vp *valueRepo) GetsRegistry(keys []string) []string {
-	r := vp.getRegistry()
+func (v *valueRepo) GetsRegistry(keys []string) []string {
+	if strings.Index(keys[0], ":") != -1 {
+		return v.getsRegistryNew(keys)
+	}
+	r := v.getRegistry()
 	mp := make([]string, len(keys))
 	for i, key := range keys {
 		v, ok := r.RegistryData[key]
@@ -375,9 +388,28 @@ func (vp *valueRepo) GetsRegistry(keys []string) []string {
 	}
 	return mp
 }
+func (v *valueRepo) getsRegistryNew(keys []string) []string {
+	mp := make([]string, len(keys))
+	for i, k := range keys {
+		v := v._confRegistry.Get(k)
+		mp[i] = util.Str(v)
+	}
+	return mp
+}
+func (v *valueRepo) getsRegistryMapNew(keys []string) map[string]string {
+	mp := map[string]string{}
+	for _, k := range keys {
+		v := v._confRegistry.Get(k)
+		mp[k] = util.Str(v)
+	}
+	return mp
+}
 
 // 根据键获取数据值
 func (v *valueRepo) GetsRegistryMap(keys []string) map[string]string {
+	if strings.Index(keys[0], ":") != -1 {
+		return v.getsRegistryMapNew(keys)
+	}
 	r := v.getRegistry()
 	mp := map[string]string{}
 	for _, key := range keys {
@@ -519,14 +551,35 @@ func (vp *valueRepo) GetAreaNames(id []int32) []string {
 	for i, v := range id {
 		strArr[i] = vp.GetAreaName(v)
 	}
+	if len(id) >= 3 {
+		if strArr[1] == "市辖区" || strArr[1] == "市辖县" || strArr[1] == "县" {
+			return []string{strArr[0], strArr[2]}
+		}
+	}
 	return strArr
 }
 
 // 获取省市区字符串
 func (vp *valueRepo) GetAreaString(province, city, district int32) string {
 	names := vp.GetAreaNames([]int32{province, city, district})
-	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
-		return strings.Join([]string{names[0], names[2]}, " ")
-	}
 	return strings.Join(names, " ")
+}
+
+// 获取省市区字符串
+func (vp *valueRepo) AreaString(province, city, district int32, detail string) string {
+	names := vp.GetAreaNames([]int32{province, city, district})
+	prefix := []byte(strings.Join(names, ""))
+	if len(prefix) != 0 && len(detail) != 0 {
+		i := strings.IndexFunc(detail, func(r rune) bool {
+			return r == '县' || r == '区'
+		})
+		if i == -1 {
+			i = strings.IndexRune(detail, '市')
+			if i == -1 {
+				i = strings.IndexRune(detail, '省')
+			}
+		}
+		prefix = append(prefix, detail[i+1:]...)
+	}
+	return string(prefix)
 }

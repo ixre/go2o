@@ -102,8 +102,7 @@ func (ss *shopService) GetShopData(mchId, shopId int32) *shop.ComplexShop {
 	mch := ss._mchRepo.GetMerchant(mchId)
 	sp := mch.ShopManager().GetShop(shopId)
 	if sp != nil {
-		// return sp.Complex()
-		return nil
+		return sp.Data()
 	}
 	return nil
 }
@@ -162,6 +161,7 @@ func (ss *shopService) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) error 
 				_, err = sp.Save()
 			}
 		}
+		return err
 	}
 	return merchant.ErrNoSuchMerchant
 }

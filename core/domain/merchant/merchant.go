@@ -290,14 +290,14 @@ func (m *merchantImpl) GetRepo() merchant.IMerchantRepo {
 }
 
 func (m *merchantImpl) GetAggregateRootId() int32 {
-	return m._value.Id
+	return m._value.ID
 }
 
 // 获取符合的商家信息
 func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 	src := m.GetValue()
 	return &merchant.ComplexMerchant{
-		Id:            src.Id,
+		Id:            src.ID,
 		MemberId:      src.MemberId,
 		Usr:           src.Usr,
 		Pwd:           src.Pwd,
@@ -324,7 +324,7 @@ func (m *merchantImpl) GetValue() merchant.Merchant {
 
 func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 	tv := m._value
-	if v.Id == tv.Id {
+	if v.ID == tv.ID {
 		tv.Name = v.Name
 		tv.Province = v.Province
 		tv.City = v.City
@@ -470,7 +470,7 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	//todo:事务
 
 	// 初始化商户信息
-	m._value.Id = id
+	m._value.ID = id
 
 	// 检测自营并保存
 	if m.checkSelfSales() {
