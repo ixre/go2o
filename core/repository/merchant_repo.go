@@ -178,7 +178,6 @@ func (m *merchantRepo) GetMerchantsId() []int32 {
 			rows.Scan(&i)
 			dst = append(dst, i)
 		}
-		rows.Close()
 	})
 	return dst
 }
