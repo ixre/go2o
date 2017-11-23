@@ -19,3 +19,5 @@ test*
 *.psd
 *.vpp~*
 vpp
+gen-*
+vendor
