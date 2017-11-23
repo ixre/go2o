@@ -65,7 +65,11 @@ type valueRepo struct {
 }
 
 func NewValueRepo(conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
-	confRegistry := gof.NewRegistry(variable.ConfPath, ":")
+	confRegistry, err := gof.NewRegistry(variable.ConfPath, ":")
+	if err != nil {
+		log.Println("[ Go2o][ Crash]: can't load config,details ", err.Error())
+		//os.Exit(1)
+	}
 	return &valueRepo{
 		Connector:     conn,
 		_orm:          conn.GetOrm(),

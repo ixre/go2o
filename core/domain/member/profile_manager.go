@@ -30,7 +30,7 @@ var _ member.IProfileManager = new(profileManagerImpl)
 var (
 	exampleTrustImageUrl = "res/tru-example.jpg"
 	// qqRegex = regexp.MustCompile("^\\d{5,12}$")
-	zhNameRegexp = regexp.MustCompile("^[\u4e00-\u9fa5]{2,4}$")
+	zhNameRegexp = regexp.MustCompile("^[\u4e00-\u9fa5]{2,6}$")
 )
 
 type profileManagerImpl struct {
@@ -459,10 +459,10 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 
 // 拷贝认证信息
 func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error {
-	if dst.RealName == src.RealName && dst.CardId == src.CardId &&
-		dst.TrustImage == src.TrustImage {
-		return member.ErrNoChangedTrustInfo
-	}
+	//if dst.RealName == src.RealName && dst.CardId == src.CardId &&
+	//	dst.TrustImage == src.TrustImage {
+	//	return member.ErrNoChangedTrustInfo
+	//}
 	dst.RealName = src.RealName
 	dst.CardId = src.CardId
 	dst.TrustImage = src.TrustImage
