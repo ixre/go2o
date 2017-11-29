@@ -38,6 +38,22 @@ const (
 	// 已封停
 	StatClosed = 3
 )
+
+const (
+	// 未设置
+	ReviewNotSet = 0
+	// 等待审核
+	ReviewAwaiting = 1
+	// 审核失败
+	ReviewReject = 2
+	// 审核成功
+	ReviewPass = 3
+	// 已确认
+	ReviewConfirm = 4
+	// 审核终止
+	ReviewAbort = 5
+)
+
 const (
 	// 用户充值
 	CUserCharge = 1
@@ -105,8 +121,10 @@ var (
 	ErrWalletClosed                  = domain.NewDomainError("err_wallet_closed", "账户已被关闭")
 	ErrNotSupportTakeOutBusinessKind = domain.NewDomainError("err_not_support_take_out_business_kind", "不支持的提现业务类型")
 	ErrTakeOutPause                  = domain.NewDomainError("err_wallet_take_out_pause", "当前"+Alias+"暂停提现")
-	ErrLessThanMinTakeAmount         = domain.NewDomainError("err_less_than_min_take_amount", "低于最低提现金额")
-	ErrMoreThanMinTakeAmount         = domain.NewDomainError("err_more_than_min_take_amount", "超过最大提现金额")
+	ErrLessThanMinTakeAmount         = domain.NewDomainError("err_wallet_less_than_min_take_amount", "低于最低提现金额")
+	ErrMoreThanMinTakeAmount         = domain.NewDomainError("err_wallet_more_than_min_take_amount", "超过最大提现金额")
+	ErrNoSuchTakeOutLog              = domain.NewDomainError("err_wallet_no_such_take_out_log", "提现记录不存在")
+	ErrTakeOutState                  = domain.NewDomainError("err_wallet_member_take_out_state", "提现申请状态错误")
 )
 
 type (
@@ -156,14 +174,14 @@ type (
 		// 接收转账
 		ReceiveTransfer(fromWalletId int64, value int, tradeNo string, title string) error
 
-		// 申请提现,kind：提现方式,返回info_id,交易号 及错误
+		// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
 		RequestTakeOut(value int, kind int, title string, tradeFee int) (int64, string, error)
 
 		// 确认提现
-		ReviewTakeOut(takeId int32, pass bool, remark string) error
+		ReviewTakeOut(takeId int64, pass bool, remark string) error
 
 		// 完成提现
-		FinishTakeOut(takeId int32, outerNo string) error
+		FinishTakeOut(takeId int64, outerNo string) error
 
 		// 将冻结金额标记为失效
 		FreezeExpired(value int, remark string) error
