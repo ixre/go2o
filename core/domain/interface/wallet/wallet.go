@@ -58,55 +58,47 @@ const (
 	// 用户充值
 	CUserCharge = 1
 	// 系统自动充值
-	CSystemCharge int32 = 2
+	CSystemCharge = 2
 	// 客服充值
 	CServiceAgentCharge = 3
 	// 退款充值
-	CRefundCharge int32 = 4
-
-	// 抵扣退款
-	RDiscountRefund int = 1
-	// 提现退款
-	RTakeOutRefund int = 2
+	CRefundCharge = 4
 )
 
 const (
-	// 客服调整
-	KAdjust = 1
-	// 扣除
-	KDiscount = 2
 	// 赠送金额
-	KindCharge = 1
-	// 冻结
-	KFreeze = 8
-	// 解冻
-	KUnfreeze = 9
-
+	KCharge = 1
 	// 客服赠送
-	KindServiceAgentCharge = 21
+	KServiceAgentCharge = 2
 	// 系统赠送
-	KindSystemCharge = 22
-
-	// 转入
-	KTransferIn = 5
-	// 转出
-	KTransferOut = 6
+	KSystemCharge = 3
 	// 失效
-	KindWalletExpired = 7
+	KExpired = 4
+	// 客服调整
+	KAdjust = 5
+	// 扣除
+	KDiscount = 6
+	// 转入
+	KTransferIn = 7
+	// 转出
+	KTransferOut = 8
+
+	// 冻结
+	KFreeze = 9
+	// 解冻
+	KUnfreeze = 10
+
+	// 转账退款
+	KTransferRefund = 11
+	// 提现退还到银行卡
+	KTakeOutRefund = 12
+	// 支付单退款
+	KPaymentOrderRefund = 13
 
 	// 提现到银行卡(人工提现)
-	KTakeOutToBankCard = 12
+	KTakeOutToBankCard = 16
 	// 提现到第三方
-	KTakeOutToThirdPart = 13
-
-	KindTransferRefund = 14
-	// 提现退还到银行卡
-	KindTakeOutRefund = 15
-	// 支付单退款
-	KindPaymentOrderRefund = 16
-
-	// 客服扣减
-	KindWalletServiceDiscount int32 = 22
+	KTakeOutToThirdPart = 17
 )
 
 var (
@@ -128,6 +120,7 @@ var (
 )
 
 type (
+	// 钱包
 	IWallet interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int64

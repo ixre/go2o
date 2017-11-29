@@ -36,6 +36,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
@@ -213,7 +214,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(delivery.CoverageValue{}, "dlv_coverage")
 	orm.Mapping(delivery.MerchantDeliverBind{}, "dlv_merchant_bind")
 
-	/** 用户 **/
+	// 用户
 	orm.Mapping(user.RoleValue{}, "usr_role")
 	orm.Mapping(user.PersonValue{}, "usr_person")
 	orm.Mapping(user.CredentialValue{}, "usr_credential")
@@ -222,7 +223,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(personfinance.RiseDayInfo{}, "pf_riseday")
 	orm.Mapping(personfinance.RiseLog{}, "pf_riselog")
 
-	/* 通用模块 */
+	// 通用模块
 	orm.Mapping(model.CommQrTemplate{}, "comm_qr_template")
 	orm.Mapping(model.PortalNav{}, "portal_nav")
 	orm.Mapping(model.PortalNavType{}, "portal_nav_type")
@@ -230,6 +231,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(model.PortalFloorLink{}, "portal_floor_link")
 	orm.Mapping(valueobject.Goods{}, "")
 
+	// 钱包
+	orm.Mapping(wallet.Wallet{}, "wal_wallet")
+	orm.Mapping(wallet.WalletLog{}, "wal_wallet_log")
+	// KV
 	orm.Mapping(valueobject.SysKeyValue{}, "sys_kv")
 }
 

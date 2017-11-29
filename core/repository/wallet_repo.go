@@ -5,6 +5,7 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/wallet"
+	wi "go2o/core/domain/wallet"
 	"log"
 )
 
@@ -18,6 +19,22 @@ func NewWalletRepo(conn db.Connector) wallet.IWalletRepo {
 
 type WalletRepoImpl struct {
 	_orm orm.Orm
+}
+
+func (w *WalletRepoImpl) CreateWallet(v *wallet.Wallet) wallet.IWallet {
+	if v != nil {
+		return wi.NewWallet(v, w)
+	}
+	return nil
+}
+
+func (w *WalletRepoImpl) GetWallet(walletId int64) wallet.IWallet {
+	return w.CreateWallet(w.GetWallet_(walletId))
+}
+
+func (w *WalletRepoImpl) GetWalletByUserId(userId int64, walletType int) wallet.IWallet {
+	l := w.GetWalletBy_("user_id=? AND wallet_type=? LIMIT 1", userId, walletType)
+	return w.CreateWallet(l)
 }
 
 func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletKind int, walletId int64) bool {
