@@ -11,8 +11,6 @@ package core
 import (
 	"encoding/gob"
 	"github.com/jsix/goex/report"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
 	"go2o/core/dao/model"
 	"go2o/core/domain/interface/ad"
@@ -40,9 +38,7 @@ import (
 	"go2o/core/dto"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
-	"strconv"
 	"strings"
-	"time"
 )
 
 func init() {
@@ -236,18 +232,4 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(wallet.WalletLog{}, "wal_wallet_log")
 	// KV
 	orm.Mapping(valueobject.SysKeyValue{}, "sys_kv")
-}
-
-func initTemplate(c *gof.Config) *gof.Template {
-	spam := crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
-	return &gof.Template{
-		Init: func(m *gof.TemplateDataMap) {
-			v := *m
-			v["static_serve"] = c.GetString(variable.StaticServer)
-			v["img_serve"] = c.GetString(variable.ImageServer)
-			v["domain"] = c.GetString(variable.ServerDomain)
-			v["version"] = c.GetString(variable.Version)
-			v["spam"] = spam
-		},
-	}
 }

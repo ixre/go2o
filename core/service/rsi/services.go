@@ -27,6 +27,7 @@ import (
 )
 
 var (
+	fact        *factory.RepoFactory
 	PromService *promotionService
 	// 基础服务
 	FoundationService *foundationService
@@ -89,33 +90,30 @@ func Init(ctx gof.App, appFlag int) {
 }
 
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
-
 	rds := sto.(storage.IRedisStorage)
-	factory.Repo.Init(db, sto)
+	fact = (&factory.RepoFactory{}).Init(db, sto)
+	proMRepo := fact.GetProModelRepo()
+	valueRepo := fact.GetValueRepo()
+	mssRepo := fact.GetMssRepo()
+	expressRepo := fact.GetExpressRepo()
+	shipRepo := fact.GetShipmentRepo()
+	memberRepo := fact.GetMemberRepo()
+	productRepo := fact.GetProductRepo()
+	catRepo := fact.GetCategoryRepo()
+	itemRepo := fact.GetItemRepo()
+	tagSaleRepo := fact.GetSaleLabelRepo()
+	promRepo := fact.GetPromotionRepo()
 
-	proMRepo := factory.Repo.GetIProModelRepo()
-	valueRepo := factory.Repo.GetValueRepo()
-	mssRepo := factory.Repo.GetMssRepo()
-
-	expressRepo := factory.Repo.GetExpressRepo()
-	shipRepo := factory.Repo.GetShipmentRepo()
-	memberRepo := factory.Repo.GetMemberRepo()
-	productRepo := factory.Repo.GetProductRepo()
-	catRepo := factory.Repo.GetCategoryRepo()
-	itemRepo := factory.Repo.GetGoodsItemRepo()
-	tagSaleRepo := factory.Repo.GetSaleLabelRepo()
-	promRepo := factory.Repo.GetPromotionRepo()
-
-	shopRepo := factory.Repo.GetShopRepo()
-	mchRepo := factory.Repo.GetMerchantRepo()
-	cartRepo := factory.Repo.GetCartRepo()
-	personFinanceRepo := factory.Repo.GetPersonFinanceRepository()
-	deliveryRepo := factory.Repo.GetDeliveryRepo()
-	contentRepo := factory.Repo.GetContentRepo()
-	adRepo := factory.Repo.GetAdRepo()
-	orderRepo := factory.Repo.GetOrderRepo()
-	paymentRepo := factory.Repo.GetPaymentRepo()
-	asRepo := factory.Repo.GetAfterSalesRepo()
+	shopRepo := fact.GetShopRepo()
+	mchRepo := fact.GetMerchantRepo()
+	cartRepo := fact.GetCartRepo()
+	personFinanceRepo := fact.GetPersonFinanceRepository()
+	deliveryRepo := fact.GetDeliveryRepo()
+	contentRepo := fact.GetContentRepo()
+	adRepo := fact.GetAdRepo()
+	orderRepo := fact.GetOrderRepo()
+	paymentRepo := fact.GetPaymentRepo()
+	asRepo := fact.GetAfterSalesRepo()
 
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
@@ -189,5 +187,5 @@ func initRpcServe(ctx gof.App) {
 	mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
 
-	factory.Repo.GetValueRepo().SavesRegistry(mp)
+	fact.GetValueRepo().SavesRegistry(mp)
 }
