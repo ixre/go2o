@@ -25,7 +25,7 @@ var (
 )
 var (
 	REDIS_DB    string = "6"
-	DBS_DB_NAME string = "gcy_v3"
+	DBS_DB_NAME string = "txmall"
 )
 
 func GetApp() gof.App {
