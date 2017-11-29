@@ -9,7 +9,7 @@ import (
 )
 
 func TestSaveMemberGroups(t *testing.T) {
-	repo := ti.MemberRepo
+	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetManager()
 	groups := m.GetAllBuyerGroups()
 	oriName := groups[0].Name
@@ -32,7 +32,7 @@ func TestSaveMemberGroups(t *testing.T) {
 }
 
 func TestToBePremium(t *testing.T) {
-	repo := ti.MemberRepo
+	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(1)
 	err := m.Premium(member.PremiumWhiteGold,
 		time.Now().Add(time.Hour*24*365).Unix())
@@ -47,7 +47,7 @@ func TestToBePremium(t *testing.T) {
 }
 
 func TestModifyPwd(t *testing.T) {
-	repo := ti.MemberRepo
+	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(2)
 	newPwd := domain.MemberSha1Pwd("13268240456")
 	err := m.Profile().ModifyPassword(newPwd, "")

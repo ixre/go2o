@@ -10,7 +10,7 @@ import (
 func TestItemSkuStock(t *testing.T) {
 	var itemId int64 = 66
 	var skuId int64 = 454
-	repo := ti.ItemRepo
+	repo := ti.Factory.GetItemRepo()
 	it := repo.GetItem(itemId)
 	if it == nil {
 		t.Error(item.ErrNoSuchItem)
@@ -25,7 +25,7 @@ func TestItemSkuStock(t *testing.T) {
 
 // 测试同步批发商品
 func TestSyncWholesaleItem(t *testing.T) {
-	venRepo := ti.MchRepo
+	venRepo := ti.Factory.GetMerchantRepo()
 	vd := venRepo.GetMerchant(1)
 	mp := vd.Wholesaler().SyncItems(true)
 	t.Logf("sync finished, add:%d,del:%d", mp["add"], mp["del"])
@@ -33,8 +33,8 @@ func TestSyncWholesaleItem(t *testing.T) {
 
 // 测试批发折扣
 func TestItemWholesaleDiscount(t *testing.T) {
-	repo := ti.ItemRepo
-	mmRepo := ti.MemberRepo
+	repo := ti.Factory.GetItemRepo()
+	mmRepo := ti.Factory.GetMemberRepo()
 	var itemId int64 = 6      //商品编号
 	var disRate float64 = 0.9 //折扣率
 	var disAmount int32 = 50  //折扣金额下限
@@ -70,7 +70,7 @@ func TestItemWholesaleDiscount(t *testing.T) {
 
 // 测试批发SKU价格
 func TestItemWholesaleSkuPrice(t *testing.T) {
-	repo := ti.ItemRepo
+	repo := ti.Factory.GetItemRepo()
 	var itemId int64 = 6 //商品编号
 	it := repo.GetItem(itemId)
 	wsIt := it.Wholesale()
