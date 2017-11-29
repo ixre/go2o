@@ -165,7 +165,7 @@ type (
 		Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error
 
 		// 接收转账
-		ReceiveTransfer(fromWalletId int64, value int, tradeNo string, title string) error
+		ReceiveTransfer(fromWalletId int64, value int, tradeNo, title, remark string) error
 
 		// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
 		RequestTakeOut(value int, kind int, title string, tradeFee int) (int64, string, error)
@@ -191,7 +191,7 @@ type (
 		// 获取日志
 		GetLog(walletId int64, logId int64) *WalletLog
 		// 检查钱包是否匹配/是否存在
-		CheckWalletUserMatch(userId int64, walletKind int, walletId int64) bool
+		CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool
 
 		// auto generate by gof
 		// Get WalletLog

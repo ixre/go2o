@@ -86,12 +86,18 @@ func (w *WalletImpl) Save() (int64, error) {
 func (w *WalletImpl) initWallet(unix int64) {
 	w._value.CreateTime = unix
 	w._value.State = wallet.StatNormal
-	w._value.WalletFlag = wallet.FlagCharge & wallet.FlagDiscount
+	w._value.WalletFlag = wallet.FlagCharge | wallet.FlagDiscount
 	if w._value.WalletType <= 0 {
 		w._value.WalletType = wallet.TPerson
 	} else if w._value.WalletType != wallet.TPartner &&
 		w._value.WalletType != wallet.TPerson {
 		panic("not support wallet type" + strconv.Itoa(w._value.WalletType))
+	}
+	if w._value.HashCode == "" {
+		w.Hash()
+	}
+	if w._value.NodeId <= 0 {
+		w.NodeId()
 	}
 }
 
@@ -103,7 +109,7 @@ func (w *WalletImpl) checkWallet() error {
 	// 判断是否存在
 	match := w._repo.CheckWalletUserMatch(w._value.UserId,
 		w._value.WalletType, w.GetAggregateRootId())
-	if match {
+	if !match {
 		return wallet.ErrSingletonWallet
 	}
 	return nil
@@ -205,7 +211,7 @@ func (w *WalletImpl) Freeze(value int, title, outerNo string, opuId int, opuName
 		if value > 0 {
 			value = -value
 		}
-		if w._value.FreezeAmount < -value {
+		if w._value.Balance < -value {
 			return wallet.ErrOutOfAmount
 		}
 		w._value.Balance += value
@@ -242,7 +248,8 @@ func (w *WalletImpl) Unfreeze(value int, title, outerNo string, opuId int, opuNa
 }
 
 func (w *WalletImpl) Charge(value int, by int, title, outerNo string, opuId int, opuName string) error {
-	err := w.checkValueOpu(value, false, opuId, opuName)
+	needOpuId := by == wallet.CServiceAgentCharge
+	err := w.checkValueOpu(value, needOpuId, opuId, opuName)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -346,25 +353,25 @@ func (w *WalletImpl) Transfer(toWalletId int64, value int, tradeFee int, title, 
 		return err
 	}
 	// 验证金额
-	wv := tw.Get()
-	if wv.Balance < value+tradeFee {
+	if w._value.Balance < value+tradeFee {
 		return wallet.ErrOutOfAmount
 	}
 	w._value.Balance -= value + tradeFee
 	tradeNo := domain.NewTradeNo(000)
-	l := w.createWalletLog(wallet.KTransferOut, value, title, 0, "")
+	l := w.createWalletLog(wallet.KTransferOut, -value, title, 0, "")
+	l.TradeFee = -tradeFee
 	l.OuterNo = tradeNo
 	l.Remark = remark
 	err = w.saveWalletLog(l)
 	if err == nil {
 		if _, err = w.Save(); err == nil {
-			err = tw.ReceiveTransfer(w.GetAggregateRootId(), value, tradeNo, toTitle)
+			err = tw.ReceiveTransfer(w.GetAggregateRootId(), value, tradeNo, toTitle, remark)
 		}
 	}
 	return err
 }
 
-func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo string, title string) error {
+func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, title, remark string) error {
 	if value == 0 {
 		return wallet.ErrAmountZero
 	}
@@ -374,6 +381,7 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo stri
 	w._value.Balance += value
 	l := w.createWalletLog(wallet.KTransferIn, value, title, 0, "")
 	l.OuterNo = tradeNo
+	l.Remark = remark
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()

@@ -37,9 +37,9 @@ func (w *WalletRepoImpl) GetWalletByUserId(userId int64, walletType int) wallet.
 	return w.CreateWallet(l)
 }
 
-func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletKind int, walletId int64) bool {
-	l := w.GetWalletBy_("user_id=? AND wallet_kind=? AND id<>? LIMIT 1",
-		userId, walletKind, walletId)
+func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool {
+	l := w.GetWalletBy_("user_id=? AND wallet_type=? AND id<>? LIMIT 1",
+		userId, walletType, walletId)
 	return l == nil
 }
 
