@@ -25,6 +25,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/repository"
 )
 
@@ -65,6 +66,8 @@ type repoFactory struct {
 	orderRepo         order.IOrderRepo
 	paymentRepo       payment.IPaymentRepo
 	asRepo            afterSales.IAfterSalesRepo
+
+	walletRepo wallet.IWalletRepo
 }
 
 func (r *repoFactory) Init(db db.Connector, sto storage.Interface) {
@@ -104,8 +107,11 @@ func (r *repoFactory) Init(db db.Connector, sto storage.Interface) {
 	r.paymentRepo = repository.NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.valueRepo)
 	r.asRepo = repository.NewAfterSalesRepo(db, r.orderRepo, r.memberRepo, r.paymentRepo)
 
+	r.walletRepo = repository.NewWalletRepo(db)
+
+	// 解决依赖
 	r.orderRepo.(*repository.OrderRepImpl).SetPaymentRepo(r.paymentRepo)
-	/* 初始化数据 */
+	// 初始化数据
 	r.memberRepo.GetManager().GetAllBuyerGroups()
 }
 
