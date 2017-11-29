@@ -415,14 +415,48 @@ func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string) error
 	if pass {
 		l.ReviewState = wallet.ReviewPass
 	} else {
-		err := w.Refund(l.TradeFee - l.Value, )
+		l.ReviewRemark = remark
+		l.ReviewState = wallet.ReviewReject
+		err := w.Refund(-(l.TradeFee + l.Value), wallet.KindTakeOutRefund, "提现退回",
+			l.OuterNo, 0, "")
+		if err != nil {
+			return err
+		}
 	}
+	l.UpdateTime = time.Now().Unix()
+	return w.saveWalletLog(l)
 }
 
-func (w *WalletImpl) FinishTakeOut(takeId int32, outerNo string) error {
-	panic("implement me")
+func (w *WalletImpl) FinishTakeOut(takeId int64, outerNo string) error {
+	l := w.getLog(takeId)
+	if l == nil {
+		return wallet.ErrNoSuchTakeOutLog
+	}
+	if l.ReviewState != wallet.ReviewPass {
+		return wallet.ErrTakeOutState
+	}
+	l.OuterNo = outerNo
+	l.ReviewState = wallet.ReviewConfirm
+	l.Remark = "转款凭证:" + outerNo
+	return w.saveWalletLog(l)
 }
 
 func (w *WalletImpl) FreezeExpired(value int, remark string) error {
-	panic("implement me")
+	if value == 0 {
+		return wallet.ErrAmountZero
+	}
+	if value < 0 {
+		value = -value
+	}
+	if w._value.FreezeAmount < value {
+		return wallet.ErrOutOfAmount
+	}
+	w._value.FreezeAmount -= value
+	w._value.ExpiredAmount += value
+	l := w.createWalletLog(wallet.KindWalletExpired, -value, "过期失效", 0, "")
+	err := w.saveWalletLog(l)
+	if err == nil {
+		_, err = w.Save()
+	}
+	return err
 }

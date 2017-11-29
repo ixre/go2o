@@ -92,7 +92,7 @@ const (
 	// 转出
 	KTransferOut = 6
 	// 失效
-	KindWalletExpired int32 = 7
+	KindWalletExpired = 7
 
 	// 提现到银行卡(人工提现)
 	KTakeOutToBankCard = 12
@@ -187,7 +187,14 @@ type (
 		FreezeExpired(value int, remark string) error
 	}
 
+	// 钱包仓储
 	IWalletRepo interface {
+		// 创建钱包
+		CreateWallet(v *Wallet) IWallet
+		// 获取钱包账户
+		GetWallet(walletId int64) IWallet
+		// 根据用户编号获取钱包账户
+		GetWalletByUserId(userId int64, walletType int) IWallet
 		// 获取日志
 		GetLog(walletId int64, logId int64) *WalletLog
 		// 检查钱包是否匹配/是否存在
