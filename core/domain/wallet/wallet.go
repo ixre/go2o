@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof/algorithm"
 	"github.com/jsix/gof/util"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/infrastructure/domain"
 	"strconv"
@@ -13,6 +12,13 @@ import (
 )
 
 var _ wallet.IWallet = new(WalletImpl)
+
+func NewWallet(v *wallet.Wallet, repo wallet.IWalletRepo) wallet.IWallet {
+	return &WalletImpl{
+		_value: v,
+		_repo:  repo,
+	}
+}
 
 type WalletImpl struct {
 	_value *wallet.Wallet
@@ -66,8 +72,7 @@ func (w *WalletImpl) Save() (int64, error) {
 		w._value.UpdateTime = unix
 		// 初始化
 		if w.GetAggregateRootId() <= 0 {
-			w._value.CreateTime = unix
-			w._value.State = wallet.StatNormal
+			w.initWallet(unix)
 		}
 		// 保存
 		id, err2 := util.I64Err(w._repo.SaveWallet_(w._value))
@@ -77,6 +82,17 @@ func (w *WalletImpl) Save() (int64, error) {
 		w._value.ID = id
 	}
 	return w.GetAggregateRootId(), err
+}
+func (w *WalletImpl) initWallet(unix int64) {
+	w._value.CreateTime = unix
+	w._value.State = wallet.StatNormal
+	w._value.WalletFlag = wallet.FlagCharge & wallet.FlagDiscount
+	if w._value.WalletType <= 0 {
+		w._value.WalletType = wallet.TPerson
+	} else if w._value.WalletType != wallet.TPartner &&
+		w._value.WalletType != wallet.TPerson {
+		panic("not support wallet type" + strconv.Itoa(w._value.WalletType))
+	}
 }
 
 // 检查钱包
@@ -118,7 +134,7 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, opuId in
 		OpUid:        opuId,
 		OpName:       strings.TrimSpace(opuName),
 		Remark:       "",
-		ReviewState:  int(enum.ReviewPass),
+		ReviewState:  wallet.ReviewPass,
 		ReviewRemark: "",
 		ReviewTime:   0,
 		CreateTime:   unix,
@@ -235,17 +251,19 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, opuId int,
 		// 用户或客服充值、才会计入累计充值记录
 		switch by {
 		case wallet.CUserCharge:
-			kind = wallet.KindCharge
+			kind = wallet.KCharge
 			w._value.TotalCharge += value
 		case wallet.CServiceAgentCharge:
-			kind = wallet.KindServiceAgentCharge
+			kind = wallet.KServiceAgentCharge
 			w._value.TotalCharge += value
 		case wallet.CSystemCharge:
-			kind = wallet.KindSystemCharge
+			kind = wallet.KSystemCharge
 		case wallet.CRefundCharge:
-			kind = wallet.KindPaymentOrderRefund
-		case by < 10:
-			panic("wallet can't charge by internal defined kind")
+			kind = wallet.KPaymentOrderRefund
+		default:
+			if by < 20 {
+				panic("wallet can't charge by internal defined kind")
+			}
 		}
 		w._value.Balance += value
 		// 保存日志
@@ -265,14 +283,14 @@ func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, opuId in
 		if value < 0 {
 			value = -value
 		}
-		if !(kind == wallet.KindPaymentOrderRefund ||
-			kind == wallet.KindTransferRefund ||
-			kind == wallet.KindTakeOutRefund) {
+		if !(kind == wallet.KPaymentOrderRefund ||
+			kind == wallet.KTransferRefund ||
+			kind == wallet.KTakeOutRefund) {
 			panic("not support refund kind")
 		}
 		switch kind {
 		// 扣减总支付金额
-		case wallet.KindPaymentOrderRefund:
+		case wallet.KPaymentOrderRefund:
 			w._value.TotalPay -= value
 		}
 		w._value.Balance += value
@@ -354,7 +372,7 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo stri
 		value = -value
 	}
 	w._value.Balance += value
-	l := w.createWalletLog(wallet.KTransferOut, value, title, 0, "")
+	l := w.createWalletLog(wallet.KTransferIn, value, title, 0, "")
 	l.OuterNo = tradeNo
 	err := w.saveWalletLog(l)
 	if err == nil {
@@ -417,7 +435,7 @@ func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string) error
 	} else {
 		l.ReviewRemark = remark
 		l.ReviewState = wallet.ReviewReject
-		err := w.Refund(-(l.TradeFee + l.Value), wallet.KindTakeOutRefund, "提现退回",
+		err := w.Refund(-(l.TradeFee + l.Value), wallet.KTakeOutRefund, "提现退回",
 			l.OuterNo, 0, "")
 		if err != nil {
 			return err
@@ -453,7 +471,7 @@ func (w *WalletImpl) FreezeExpired(value int, remark string) error {
 	}
 	w._value.FreezeAmount -= value
 	w._value.ExpiredAmount += value
-	l := w.createWalletLog(wallet.KindWalletExpired, -value, "过期失效", 0, "")
+	l := w.createWalletLog(wallet.KExpired, -value, "过期失效", 0, "")
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()
