@@ -363,6 +363,7 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo stri
 	return err
 }
 
+// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
 func (w *WalletImpl) RequestTakeOut(value int, kind int, title string, tradeFee int) (int64, string, error) {
 	if value == 0 {
 		return 0, "", wallet.ErrAmountZero
@@ -389,10 +390,33 @@ func (w *WalletImpl) RequestTakeOut(value int, kind int, title string, tradeFee 
 	if w._value.Balance < value+tradeFee {
 		return 0, "", wallet.ErrOutOfAmount
 	}
+	tradeNo := domain.NewTradeNo(000)
+	w._value.Balance -= value
+	l := w.createWalletLog(kind, -(value - tradeFee), title, 0, "")
+	l.TradeFee = -tradeFee
+	l.OuterNo = tradeNo
+	l.ReviewState = wallet.ReviewAwaiting
+	l.ReviewRemark = ""
+	err := w.saveWalletLog(l)
+	if err == nil {
+		_, err = w.Save()
+	}
+	return l.ID, l.OuterNo, err
 }
 
-func (w *WalletImpl) ReviewTakeOut(takeId int32, pass bool, remark string) error {
-	panic("implement me")
+func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string) error {
+	l := w.getLog(takeId)
+	if l == nil {
+		return wallet.ErrNoSuchTakeOutLog
+	}
+	if l.ReviewState != wallet.ReviewAwaiting {
+		return wallet.ErrTakeOutState
+	}
+	if pass {
+		l.ReviewState = wallet.ReviewPass
+	} else {
+		err := w.Refund(l.TradeFee - l.Value, )
+	}
 }
 
 func (w *WalletImpl) FinishTakeOut(takeId int32, outerNo string) error {
