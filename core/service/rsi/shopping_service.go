@@ -22,7 +22,7 @@ import (
 	orderImpl "go2o/core/domain/order"
 	"go2o/core/dto"
 	"go2o/core/query"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 	"go2o/core/service/thrift/parser"
 	"strconv"
 	"strings"

@@ -126,6 +126,31 @@ func (w *WalletImpl) checkValueOpu(value int, checkOpu bool, opuId int, opuName 
 	return w.checkWalletState(w, false)
 }
 
+// 检查钱包状态
+func (w *WalletImpl) checkWalletState(iw wallet.IWallet, target bool) error {
+	if iw == nil {
+		if target {
+			return wallet.ErrNoSuchTargetWalletAccount
+		}
+		return wallet.ErrNoSuchWalletAccount
+	}
+	switch iw.State() {
+	case wallet.StatNormal:
+		return nil
+	case wallet.StatDisabled:
+		if target {
+			return wallet.ErrTargetWalletAccountNotService
+		}
+		return wallet.ErrWalletDisabled
+	case wallet.StatClosed:
+		if target {
+			return wallet.ErrTargetWalletAccountNotService
+		}
+		return wallet.ErrWalletClosed
+	}
+	panic("unknown wallet state")
+}
+
 // 创建钱包日志
 func (w *WalletImpl) createWalletLog(kind int, value int, title string, opuId int,
 	opuName string) *wallet.WalletLog {
@@ -175,7 +200,7 @@ func (w *WalletImpl) Adjust(value int, title, outerNo string, opuId int, opuName
 		w._value.Balance += value
 		l := w.createWalletLog(wallet.KAdjust, value, title, opuId, opuName)
 		l.OuterNo = outerNo
-		err := w.saveWalletLog(l)
+		err = w.saveWalletLog(l)
 		if err == nil {
 			_, err = w.Save()
 		}
@@ -310,31 +335,6 @@ func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, opuId in
 		}
 	}
 	return err
-}
-
-// 检查钱包状态
-func (w *WalletImpl) checkWalletState(iw wallet.IWallet, target bool) error {
-	if iw == nil {
-		if target {
-			return wallet.ErrNoSuchTargetWalletAccount
-		}
-		return wallet.ErrNoSuchWalletAccount
-	}
-	switch iw.State() {
-	case wallet.StatNormal:
-		return nil
-	case wallet.StatDisabled:
-		if target {
-			return wallet.ErrTargetWalletAccountNotService
-		}
-		return wallet.ErrWalletDisabled
-	case wallet.StatClosed:
-		if target {
-			return wallet.ErrTargetWalletAccountNotService
-		}
-		return wallet.ErrWalletClosed
-	}
-	panic("unknown wallet state")
 }
 
 func (w *WalletImpl) Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error {

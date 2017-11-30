@@ -17,7 +17,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 	"go2o/core/variable"
 	"net/http"
 	"net/url"
