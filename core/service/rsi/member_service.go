@@ -24,7 +24,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
 	"go2o/core/query"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
 	"log"

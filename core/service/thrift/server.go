@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
 	"go2o/core/service/rsi"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 )
 
 func ListenAndServe(addr string, secure bool) error {

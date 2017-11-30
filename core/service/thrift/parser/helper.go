@@ -8,7 +8,7 @@
  */
 package parser
 
-import "go2o/core/service/thrift/idl/gen-go/define"
+import "go2o/gen-code/thrift/define"
 
 func Result(id int32, err error) *define.Result_ {
 	r := &define.Result_{}

@@ -14,7 +14,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
 )

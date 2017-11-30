@@ -11,7 +11,7 @@ package thrift
 import (
 	"crypto/tls"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 )
 
 var (

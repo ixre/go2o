@@ -2,7 +2,7 @@ package kit
 
 import (
 	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 )
 
 type RpcToolkit struct {
