@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"api/gen-code/thrift/wallet_service"
 )
 
 var (
@@ -57,7 +58,8 @@ var (
 	ContentService *contentService
 	// 广告服务
 	AdService *adService
-
+	// 钱包服务
+	WalletService wallet_service.WalletService
 	// 个人金融服务
 	PersonFinanceService *personFinanceService
 	// 门户数据服务
@@ -142,6 +144,8 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	ContentService = NewContentService(contentRepo, contentQue)
 	AdService = NewAdvertisementService(adRepo, sto)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
+
+	WalletService = NewWalletService(fact.GetWalletRepo())
 
 	CommonDao = dao.NewCommDao(orm, sto, adRepo, catRepo)
 	PortalService = NewPortalService(CommonDao)
