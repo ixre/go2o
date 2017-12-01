@@ -4,7 +4,6 @@ import (
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/service/thrift/parser"
 	"go2o/gen-code/thrift/define"
-	"bytes"
 )
 
 var _ define.WalletService = new(walletServiceImpl)
@@ -134,4 +133,17 @@ func (w *walletServiceImpl) FinishTakeOut(walletId int64, takeId int64, outerNo 
 		err = iw.FinishTakeOut(takeId, outerNo)
 	}
 	return parser.Result(nil, err), nil
+}
+
+func (w *walletServiceImpl) PagingWalletLog(walletId int64, params *define.PagingParams) (r *define.PagingResult_, err error) {
+	iw := w._repo.GetWallet(walletId)
+	if iw == nil {
+		return parser.PagingResult(0, nil, wallet.ErrNoSuchWalletAccount), nil
+	}
+	sortBy := params.OrderField
+	if params.OrderDesc {
+		sortBy += " DESC"
+	}
+	total, list := iw.PagingLog(int(params.Begin), int(params.Over),params.Opt, sortBy)
+	return parser.PagingResult(total, list, err), nil
 }

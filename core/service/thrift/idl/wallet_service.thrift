@@ -36,6 +36,9 @@ service WalletService{
 
     // 完成提现
     ttype.Result FinishTakeOut(1:i64 walletId,2:i64 takeId,3:string outerNo)
+
+    // 获取分页钱包日志
+    ttype.PagingResult PagingWalletLog(1:i64 walletId,2:ttype.PagingParams params)
 }
 
 // 钱包类型

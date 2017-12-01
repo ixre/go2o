@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"bytes"
 )
 
 var _ wallet.IWallet = new(WalletImpl)
@@ -168,8 +169,8 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, opuId in
 		OuterChan:    "",
 		OuterNo:      "",
 		Value:        value,
-		OpUid:        opuId,
-		OpName:       strings.TrimSpace(opuName),
+		OpuId:        opuId,
+		OpuName:      strings.TrimSpace(opuName),
 		Remark:       "",
 		ReviewState:  wallet.ReviewPass,
 		ReviewRemark: "",
@@ -478,8 +479,8 @@ func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string, opuId
 			return err
 		}
 	}
-	l.OpUid = opuId
-	l.OpName = opuName
+	l.OpuId = opuId
+	l.OpuName = opuName
 	l.UpdateTime = time.Now().Unix()
 	return w.saveWalletLog(l)
 }
@@ -496,4 +497,65 @@ func (w *WalletImpl) FinishTakeOut(takeId int64, outerNo string) error {
 	l.ReviewState = wallet.ReviewConfirm
 	l.Remark = "转款凭证:" + outerNo
 	return w.saveWalletLog(l)
+}
+
+func (w *WalletImpl) PagingLog(begin int, over int, opt map[string]string, sort string) (int, []*wallet.WalletLog) {
+	where := bytes.NewBuffer(nil)
+	// 添加业务类型筛选
+	if kind, ok := opt["kind"]; ok {
+		where.WriteString(" AND kind IN (")
+		where.WriteString(kind)
+		where.WriteString(")")
+	}
+	// 添加审核状态条件
+	if reviewState, ok := opt["review_state"]; ok {
+		where.WriteString(" AND review_state=")
+		where.WriteString(reviewState)
+	}
+	// 添加金额
+	minAmount, ok1 := opt["min_amount"]
+	maxAmount, ok2 := opt["max_amount"]
+	if ok1 && ok2 {
+		where.WriteString(" AND value BETWEEN ")
+		where.WriteString(minAmount)
+		where.WriteString(" AND ")
+		where.WriteString(maxAmount)
+	} else {
+		if ok1 {
+			where.WriteString(" AND value >= ")
+			where.WriteString(minAmount)
+		} else {
+			where.WriteString(" AND value <= ")
+			where.WriteString(minAmount)
+		}
+	}
+	// 添加时间
+	beginTime, ok1 := opt["begin_time"]
+	overTime, ok2 := opt["over_time"]
+	if ok1 && ok2 {
+		where.WriteString(" AND create_time BETWEEN ")
+		where.WriteString(minAmount)
+		where.WriteString(" AND ")
+		where.WriteString(maxAmount)
+	} else {
+		if ok1 {
+			where.WriteString(" AND create_time >= ")
+			where.WriteString(beginTime)
+		} else {
+			where.WriteString(" AND create_time <= ")
+			where.WriteString(overTime)
+		}
+	}
+	// 添加操作人员筛选
+	if opuName, ok := opt["opu_name"]; ok {
+		where.WriteString(" AND opu_name='")
+		where.WriteString(opuName)
+		where.WriteString("'")
+	}
+	if opuId, ok := opt["opu_id"]; ok {
+		where.WriteString(" AND opu_id='")
+		where.WriteString(opuId)
+	}
+	return w._repo.PagingWalletLog(w.GetAggregateRootId(), w.NodeId(),
+		begin, over, where.String(), sort)
 }

@@ -175,10 +175,13 @@ type (
 		RequestTakeOut(value int, tradeFee int, kind int, title string) (int64, string, error)
 
 		// 确认提现
-		ReviewTakeOut(takeId int64, pass bool, remark string,opuId int, opuName string) error
+		ReviewTakeOut(takeId int64, pass bool, remark string, opuId int, opuName string) error
 
 		// 完成提现
 		FinishTakeOut(takeId int64, outerNo string) error
+
+		// 分页钱包日志
+		PagingLog(begin int, over int, opt map[string]string, sort string) (int, []*WalletLog)
 	}
 
 	// 钱包仓储
@@ -193,6 +196,8 @@ type (
 		GetLog(walletId int64, logId int64) *WalletLog
 		// 检查钱包是否匹配/是否存在
 		CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool
+		// 获取分页钱包日志
+		PagingWalletLog(walletId int64,nodeId int, begin int, over int, where string, sort string) (int, []*WalletLog)
 
 		// auto generate by gof
 		// Get WalletLog
@@ -286,9 +291,9 @@ type (
 		// 交易手续费
 		TradeFee int `db:"trade_fee"`
 		// 操作人员用户编号
-		OpUid int `db:"op_uid"`
+		OpuId int `db:"opu_id"`
 		// 操作人员名称
-		OpName string `db:"op_name"`
+		OpuName string `db:"opu_name"`
 		// 备注
 		Remark string `db:"remark"`
 		// 审核状态
