@@ -175,7 +175,7 @@ type (
 		RequestTakeOut(value int, tradeFee int, kind int, title string) (int64, string, error)
 
 		// 确认提现
-		ReviewTakeOut(takeId int64, pass bool, remark string) error
+		ReviewTakeOut(takeId int64, pass bool, remark string,opuId int, opuName string) error
 
 		// 完成提现
 		FinishTakeOut(takeId int64, outerNo string) error
@@ -222,6 +222,7 @@ type (
 		// Batch Delete Wallet
 		BatchDeleteWallet_(where string, v ...interface{}) (int64, error)
 	}
+
 
 	Wallet struct {
 		// 钱包编号
