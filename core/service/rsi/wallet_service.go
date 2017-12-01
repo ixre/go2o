@@ -47,12 +47,12 @@ func (w *walletServiceImpl) Adjust(walletId int64, value int32, title string, ou
 	return parser.Result(nil, err), nil
 }
 
-func (w *walletServiceImpl) Discount(walletId int64, value int32, title string, outerNo string, opuId int32, opuName string, must bool) (r *define.Result_, err error) {
+func (w *walletServiceImpl) Discount(walletId int64, value int32, title string, outerNo string, must bool) (r *define.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Discount(int(value), title, outerNo, int(opuId), opuName, must)
+		err = iw.Discount(int(value), title, outerNo, must)
 	}
 	return parser.Result(nil, err), nil
 }
@@ -144,6 +144,6 @@ func (w *walletServiceImpl) PagingWalletLog(walletId int64, params *define.Pagin
 	if params.OrderDesc {
 		sortBy += " DESC"
 	}
-	total, list := iw.PagingLog(int(params.Begin), int(params.Over),params.Opt, sortBy)
+	total, list := iw.PagingLog(int(params.Begin), int(params.Over), params.Opt, sortBy)
 	return parser.PagingResult(total, list, err), nil
 }

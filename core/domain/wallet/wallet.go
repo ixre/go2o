@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/jsix/gof/algorithm"
 	"github.com/jsix/gof/util"
@@ -9,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"bytes"
 )
 
 var _ wallet.IWallet = new(WalletImpl)
@@ -216,8 +216,8 @@ func (w *WalletImpl) Adjust(value int, title, outerNo string, opuId int, opuName
 }
 
 // 支付抵扣,must是否必须大于0
-func (w *WalletImpl) Discount(value int, title, outerNo string, opuId int, opuName string, must bool) error {
-	err := w.checkValueOpu(value, false, opuId, opuName)
+func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error {
+	err := w.checkValueOpu(value, false, 0, "")
 	if err == nil {
 		if value > 0 {
 			value = -value
@@ -227,7 +227,7 @@ func (w *WalletImpl) Discount(value int, title, outerNo string, opuId int, opuNa
 		}
 		w._value.Balance += value
 		w._value.TotalPay += -value
-		l := w.createWalletLog(wallet.KDiscount, value, title, opuId, opuName)
+		l := w.createWalletLog(wallet.KDiscount, value, title, 0, "")
 		l.OuterNo = outerNo
 		err := w.saveWalletLog(l)
 		if err == nil {
@@ -534,9 +534,9 @@ func (w *WalletImpl) PagingLog(begin int, over int, opt map[string]string, sort 
 	overTime, ok2 := opt["over_time"]
 	if ok1 && ok2 {
 		where.WriteString(" AND create_time BETWEEN ")
-		where.WriteString(minAmount)
+		where.WriteString(beginTime)
 		where.WriteString(" AND ")
-		where.WriteString(maxAmount)
+		where.WriteString(overTime)
 	} else {
 		if ok1 {
 			where.WriteString(" AND create_time >= ")

@@ -14,7 +14,7 @@ service WalletService{
 	ttype.Result Adjust(1:i64 walletId,2:i32 value, 3:string title,4:string outerNo,  5:i32 opuId, 6:string opuName)
 
     // 支付抵扣,must是否必须大于0
-    ttype.Result Discount(1:i64 walletId,2:i32 value, 3:string title,4:string outerNo,5:i32 opuId, 6:string opuName,7:bool must)
+    ttype.Result Discount(1:i64 walletId,2:i32 value, 3:string title,4:string outerNo,5:bool must)
 
     // 冻结余额
     ttype.Result Freeze(1:i64 walletId,2:i32 value, 3:string title,4:string outerNo,  5:i32 opuId, 6:string opuName)
