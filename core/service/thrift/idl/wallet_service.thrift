@@ -32,7 +32,7 @@ service WalletService{
     ttype.Result RequestTakeOut(1:i64 walletId,2:i32 value,3:i32 tradeFee,4:i32 kind,5:string title)
 
     // 确认提现
-    ttype.Result ReviewTakeOut(1:i64 walletId,2:i64 takeId,3:bool reviewPass,4:string remark)
+    ttype.Result ReviewTakeOut(1:i64 walletId,2:i64 takeId,3:bool reviewPass,4:string remark, 5:i32 opuId, 6:string opuName)
 
     // 完成提现
     ttype.Result FinishTakeOut(1:i64 walletId,2:i64 takeId,3:string outerNo)

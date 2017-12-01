@@ -15,7 +15,7 @@ func TestCreateWallet(t *testing.T) {
 	wlt := repo.GetWallet(walletId)
 	if wlt == nil {
 		wl := &wallet.Wallet{
-			UserId:     2,
+			UserId:     1,
 			WalletType: wallet.TPerson,
 		}
 		wlt = repo.CreateWallet(wl)
@@ -138,7 +138,7 @@ func TestTakeOutWalletFail(t *testing.T) {
 		t.Error("提现扣款不正确", balance, v)
 		t.FailNow()
 	}
-	err = wlt.ReviewTakeOut(id, false, "银行卡号不正确")
+	err = wlt.ReviewTakeOut(id, false, "银行卡号不正确",1,"管理员")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -164,7 +164,7 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 		t.Error("提现扣款不正确", balance, v)
 		t.FailNow()
 	}
-	err = wlt.ReviewTakeOut(id, true, "")
+	err = wlt.ReviewTakeOut(id, true, "",1,"管理员")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

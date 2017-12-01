@@ -456,7 +456,10 @@ func (w *WalletImpl) RequestTakeOut(value int, tradeFee int, kind int, title str
 	return l.ID, l.OuterNo, err
 }
 
-func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string) error {
+func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string, opuId int, opuName string) error {
+	if err := w.checkValueOpu(1, true, opuId, opuName); err != nil {
+		return err
+	}
 	l := w.getLog(takeId)
 	if l == nil {
 		return wallet.ErrNoSuchTakeOutLog
@@ -475,6 +478,8 @@ func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string) error
 			return err
 		}
 	}
+	l.OpUid = opuId
+	l.OpName = opuName
 	l.UpdateTime = time.Now().Unix()
 	return w.saveWalletLog(l)
 }
