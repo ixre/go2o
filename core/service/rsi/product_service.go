@@ -8,8 +8,8 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/gen-code/thrift/define"
 	"go2o/core/service/thrift/parser"
+	"go2o/gen-code/thrift/define"
 	"strconv"
 )
 
@@ -108,7 +108,8 @@ R:
 // 删除产品模型
 func (p *productService) DeleteProModel_(id int32) (*define.Result_, error) {
 	//err := p.pmRepo.DeleteProModel(id)
-	return &define.Result_{Result_: !true, Message: "暂时不允许删除模型"}, nil
+	//todo: 暂时不允许删除模型
+	return parser.Result(nil, errors.New("暂时不允许删除模型")), nil
 }
 
 /***** 品牌  *****/

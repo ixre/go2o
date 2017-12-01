@@ -2,11 +2,23 @@ namespace go define
 
 //传输结果对象
 struct Result{
+   /* 状态码,如为0表示成功 */
+   1:i32 Code
+   /* 消息 */
+   2:string Message
+   /* 数据, 可以用来存放JSON字符串 */
+   3:string Data
+}
+
+//传输结果对象
+struct XResult{
    1:i32 ID
    2:bool Result
    3:string Code
    4:string Message
 }
+
+
 //传输结果对象
 struct Result64{
    1:i64 ID
@@ -14,6 +26,7 @@ struct Result64{
    3:string Code
    4:string Message
 }
+
 //传输结果对象(Double)
 struct DResult{
    1:double Data

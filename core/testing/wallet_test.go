@@ -57,7 +57,7 @@ func TestDiscountRefundWallet(t *testing.T) {
 	var value int = 10000
 	var tradeNo = "02af1208xa209sl2"
 	var balance = wlt.Get().Balance
-	err := wlt.Discount(value, "支付订单"+tradeNo, tradeNo, true, 0, "")
+	err := wlt.Discount(value, "支付订单"+tradeNo, tradeNo, 0, "", true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -129,7 +129,7 @@ func TestTakeOutWalletFail(t *testing.T) {
 	wlt := repo.GetWallet(walletId)
 	var amount int = 10000
 	balance := wlt.Get().Balance
-	id, _, err := wlt.RequestTakeOut(-amount, wallet.KTakeOutToBankCard, "提现到银行卡", 800)
+	id, _, err := wlt.RequestTakeOut(-amount, 200, wallet.KTakeOutToBankCard, "提现到银行卡")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -155,7 +155,7 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 	wlt := repo.GetWallet(walletId)
 	var amount int = 10000
 	balance := wlt.Get().Balance
-	id, _, err := wlt.RequestTakeOut(-amount, wallet.KTakeOutToBankCard, "提现到银行卡", 800)
+	id, _, err := wlt.RequestTakeOut(-amount, 200, wallet.KTakeOutToBankCard, "提现到银行卡")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

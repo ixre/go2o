@@ -89,7 +89,7 @@ func (w *WalletImpl) initWallet(unix int64) {
 	w._value.WalletFlag = wallet.FlagCharge | wallet.FlagDiscount
 	if w._value.WalletType <= 0 {
 		w._value.WalletType = wallet.TPerson
-	} else if w._value.WalletType != wallet.TPartner &&
+	} else if w._value.WalletType != wallet.TMerchant &&
 		w._value.WalletType != wallet.TPerson {
 		panic("not support wallet type" + strconv.Itoa(w._value.WalletType))
 	}
@@ -105,6 +105,12 @@ func (w *WalletImpl) initWallet(unix int64) {
 func (w *WalletImpl) checkWallet() error {
 	if w._value.UserId <= 0 {
 		panic("incorrect wallet user id")
+	}
+	if flag := w._value.WalletFlag; flag != 1 && flag&(flag-1) != 0 {
+		panic("incorrect wallet flag")
+	}
+	if len(w._value.Remark) > 40 {
+		return wallet.ErrRemarkLength
 	}
 	// 判断是否存在
 	match := w._repo.CheckWalletUserMatch(w._value.UserId,
@@ -209,7 +215,7 @@ func (w *WalletImpl) Adjust(value int, title, outerNo string, opuId int, opuName
 }
 
 // 支付抵扣,must是否必须大于0
-func (w *WalletImpl) Discount(value int, title, outerNo string, must bool, opuId int, opuName string) error {
+func (w *WalletImpl) Discount(value int, title, outerNo string, opuId int, opuName string, must bool) error {
 	err := w.checkValueOpu(value, false, opuId, opuName)
 	if err == nil {
 		if value > 0 {
@@ -268,6 +274,26 @@ func (w *WalletImpl) Unfreeze(value int, title, outerNo string, opuId int, opuNa
 		if err == nil {
 			_, err = w.Save()
 		}
+	}
+	return err
+}
+
+func (w *WalletImpl) FreezeExpired(value int, remark string) error {
+	if value == 0 {
+		return wallet.ErrAmountZero
+	}
+	if value < 0 {
+		value = -value
+	}
+	if w._value.FreezeAmount < value {
+		return wallet.ErrOutOfAmount
+	}
+	w._value.FreezeAmount -= value
+	w._value.ExpiredAmount += value
+	l := w.createWalletLog(wallet.KExpired, -value, "过期失效", 0, "")
+	err := w.saveWalletLog(l)
+	if err == nil {
+		_, err = w.Save()
 	}
 	return err
 }
@@ -390,7 +416,7 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 }
 
 // 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
-func (w *WalletImpl) RequestTakeOut(value int, kind int, title string, tradeFee int) (int64, string, error) {
+func (w *WalletImpl) RequestTakeOut(value int, tradeFee int, kind int, title string) (int64, string, error) {
 	if value == 0 {
 		return 0, "", wallet.ErrAmountZero
 	}
@@ -465,24 +491,4 @@ func (w *WalletImpl) FinishTakeOut(takeId int64, outerNo string) error {
 	l.ReviewState = wallet.ReviewConfirm
 	l.Remark = "转款凭证:" + outerNo
 	return w.saveWalletLog(l)
-}
-
-func (w *WalletImpl) FreezeExpired(value int, remark string) error {
-	if value == 0 {
-		return wallet.ErrAmountZero
-	}
-	if value < 0 {
-		value = -value
-	}
-	if w._value.FreezeAmount < value {
-		return wallet.ErrOutOfAmount
-	}
-	w._value.FreezeAmount -= value
-	w._value.ExpiredAmount += value
-	l := w.createWalletLog(wallet.KExpired, -value, "过期失效", 0, "")
-	err := w.saveWalletLog(l)
-	if err == nil {
-		_, err = w.Save()
-	}
-	return err
 }

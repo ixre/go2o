@@ -12,6 +12,7 @@ package rsi
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	proItem "go2o/core/domain/interface/item"
@@ -22,8 +23,8 @@ import (
 	orderImpl "go2o/core/domain/order"
 	"go2o/core/dto"
 	"go2o/core/query"
-	"go2o/gen-code/thrift/define"
 	"go2o/core/service/thrift/parser"
+	"go2o/gen-code/thrift/define"
 	"strconv"
 	"strings"
 )
@@ -78,15 +79,12 @@ func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data ma
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
-	return &define.Result_{
-		Result_: false,
-		Message: "unknown action",
-	}, nil
+	return parser.Result(nil, errors.New("unknown action")), nil
 }
 
 // 转换勾选字典,数据如：{"1":["10","11"],"2":["20","21"]}
 func (s *shoppingService) parseCheckedMap(data string) (m map[int64][]int64) {
-	if data != "" || data != "{}" {
+	if data != "" && data != "{}" {
 		src := map[string][]string{}
 		err := json.Unmarshal([]byte(data), &src)
 		if err == nil {
@@ -120,15 +118,7 @@ func (s *shoppingService) wsGetCart(c cart.ICart, data map[string]string) (*defi
 			}
 		}
 	}
-	d, err := json.Marshal(v)
-	if err == nil {
-		r := &define.Result_{
-			Result_: true,
-			Message: string(d),
-		}
-		return r, nil
-	}
-	return parser.Result(0, err), nil
+	return parser.Result(v, nil), nil
 }
 
 // 获取简易的购物车
@@ -138,11 +128,7 @@ func (s *shoppingService) wsGetSimpleCart(c cart.ICart, data map[string]string) 
 		size = 5
 	}
 	qd := c.(cart.IWholesaleCart).QuickJdoData(size)
-	r := &define.Result_{
-		Result_: qd != "",
-		Message: qd,
-	}
-	return r, nil
+	return parser.Result(qd, nil), nil
 }
 
 // 转换提交到购物车的数据(PUT和UPDATE), 数据如：91:1;92:1
@@ -196,16 +182,14 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 	}
 	if err == nil {
 		_, err = c.Save()
+		if err == nil {
+			mp := make(map[string]interface{})
+			mp["cartId"] = aId
+			mp["checked"] = s.createCheckedData(itemId, arr)
+			return parser.Result(mp, nil), nil
+		}
 	}
-	r := parser.Result(aId, err)
-	if r.Result_ {
-		mp := make(map[string]interface{})
-		mp["cartId"] = aId
-		mp["checked"] = s.createCheckedData(itemId, arr)
-		b, _ := json.Marshal(mp)
-		r.Message = string(b)
-	}
-	return r, nil
+	return parser.Result(aId, err), nil
 }
 
 func (s *shoppingService) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
@@ -268,10 +252,7 @@ func (s *shoppingService) RetailCartV1(memberId int64, action string, data map[s
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
-	return &define.Result_{
-		Result_: false,
-		Message: "unknown action",
-	}, nil
+	return parser.Result(nil, errors.New("unknown action")), nil
 }
 
 // 提交订单

@@ -274,4 +274,3 @@ func (a *accountImpl) Charge(kind int32, amount float64,
 	}
 	return err
 }
-
