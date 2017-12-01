@@ -859,7 +859,6 @@ CREATE TABLE wal_wallet (
   update_time     int(11) DEFAULT 0 NOT NULL comment '更新时间',
   PRIMARY KEY (id)) comment='钱包';
 
-
 CREATE TABLE wal_wallet_log (
   id            int(11) NOT NULL AUTO_INCREMENT comment '编号',
   wallet_id     int(11) NOT NULL comment '钱包编号',
@@ -870,8 +869,8 @@ CREATE TABLE wal_wallet_log (
   value         int(11) NOT NULL comment '变动金额',
   balance       int(11) NOT NULL comment '余额',
   trade_fee     int(8) NOT NULL comment '交易手续费',
-  op_uid        int(10) NOT NULL comment '操作人员用户编号',
-  op_name       varchar(20) NOT NULL comment '操作人员名称',
+  opu_id        int(10) NOT NULL comment '操作人员用户编号',
+  opu_name      varchar(20) NOT NULL comment '操作人员名称',
   remark        varchar(45) NOT NULL comment '备注',
   review_state  int(1) NOT NULL comment '审核状态',
   review_remark varchar(120) NOT NULL comment '审核备注',
@@ -879,5 +878,4 @@ CREATE TABLE wal_wallet_log (
   create_time   int(11) NOT NULL comment '创建时间',
   update_time   int(11) NOT NULL comment '更新时间',
   PRIMARY KEY (id)) comment='钱包日志';
-
 

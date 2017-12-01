@@ -58,3 +58,23 @@ func DResult(data float64, err error) *define.DResult_ {
 	}
 	return r
 }
+
+func PagingResult(total int, data interface{}, err error) *define.PagingResult_ {
+	r := &define.PagingResult_{}
+	if err == nil {
+		r.Count = int32(total)
+		if data == nil || data == "" {
+			r.Data = "[]"
+		} else {
+			d, err := json.Marshal(data)
+			if err != nil {
+				panic(err)
+			}
+			r.Data = string(d)
+		}
+	} else {
+		r.Code = 1
+		r.Message = err.Error()
+	}
+	return r
+}

@@ -11,15 +11,6 @@ struct Result{
 }
 
 //传输结果对象
-struct XResult{
-   1:i32 ID
-   2:bool Result
-   3:string Code
-   4:string Message
-}
-
-
-//传输结果对象
 struct Result64{
    1:i64 ID
    2:bool Result
@@ -215,3 +206,29 @@ struct ShoppingCartItem {
 }
 
 
+
+/** 分页参数 */
+struct PagingParams{
+    /** 参数 */
+    1:map<string,string> Opt
+    /** 排序字段 */
+    2:string OrderField
+    /** 是否倒序排列 */
+    3:bool OrderDesc
+    /** 开始记录数 */
+    4:i32 Begin
+    /** 结束记录数 */
+    5:i32 Over
+}
+
+/** 分页结果 */
+struct PagingResult{
+    /** 代码 */
+    1:i32 Code
+    /** 消息 */
+    2:string Message
+    /** 总数 */
+    3:i32 Count
+    /** 数据 */
+    4:string Data
+}

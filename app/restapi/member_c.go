@@ -49,7 +49,7 @@ func (mc *MemberC) Login(c echo.Context) error {
 		r, _ := cli.CheckLogin(usr, encPwd, true)
 		result.Message = r.Message
 		result.Result = r.Result_
-		if r.Result_{
+		if r.Result_ {
 			token, _ := cli.GetToken(r.ID, false)
 			result.Member = &dto.LoginMember{
 				Id:         int(r.ID),
