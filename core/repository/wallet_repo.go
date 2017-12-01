@@ -60,7 +60,10 @@ func (w *WalletRepoImpl) PagingWalletLog(walletId int64, nodeId int, begin int, 
 	err := w._conn.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM %s WHERE wallet_id=? %s`,
 		table, where), &total, walletId)
 	if total > 0 {
-		s := fmt.Sprintf(`SELECT * FROM %s WHERE wallet_id=? %s ORDER BY %s,create_time DESC LIMIT ?,?`,
+		if len(sort) > 0 {
+			sort += ","
+		}
+		s := fmt.Sprintf(`SELECT * FROM %s WHERE wallet_id=? %s ORDER BY %s create_time DESC LIMIT ?,?`,
 			table, where, sort)
 		err = w._orm.SelectByQuery(&list, s, walletId, begin, over-begin)
 	}

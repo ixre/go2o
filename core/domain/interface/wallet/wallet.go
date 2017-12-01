@@ -148,7 +148,7 @@ type (
 		Adjust(value int, title, outerNo string, opuId int, opuName string) error
 
 		// 支付抵扣,must是否必须大于0
-		Discount(value int, title, outerNo string, opuId int, opuName string, must bool) error
+		Discount(value int, title, outerNo string, must bool) error
 
 		// 冻结余额
 		Freeze(value int, title, outerNo string, opuId int, opuName string) error
@@ -197,7 +197,7 @@ type (
 		// 检查钱包是否匹配/是否存在
 		CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool
 		// 获取分页钱包日志
-		PagingWalletLog(walletId int64,nodeId int, begin int, over int, where string, sort string) (int, []*WalletLog)
+		PagingWalletLog(walletId int64, nodeId int, begin int, over int, where string, sort string) (int, []*WalletLog)
 
 		// auto generate by gof
 		// Get WalletLog
@@ -227,7 +227,6 @@ type (
 		// Batch Delete Wallet
 		BatchDeleteWallet_(where string, v ...interface{}) (int64, error)
 	}
-
 
 	Wallet struct {
 		// 钱包编号
