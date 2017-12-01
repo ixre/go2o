@@ -21,8 +21,8 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
-	"go2o/gen-code/thrift/define"
 	"go2o/core/service/thrift/parser"
+	"go2o/gen-code/thrift/define"
 	"strconv"
 )
 

@@ -835,3 +835,49 @@ ALTER TABLE `order_wholesale_order`
 
 ALTER TABLE `sale_sub_order`
   CHANGE COLUMN `buyer_remark` `buyer_comment` VARCHAR(120) NOT NULL COMMENT '订单买家备注' AFTER `is_suspend`;
+
+
+CREATE TABLE wal_wallet (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '钱包编号',
+  hash_code       varchar(40) NOT NULL comment '哈希值',
+  node_id         int(2) NOT NULL comment '节点编号',
+  user_id         int(11) NOT NULL comment '用户编号',
+  wallet_type     int(1) NOT NULL comment '钱包类型',
+  wallet_flag     int(4) NOT NULL comment '钱包标志',
+  balance         int(11) DEFAULT 0.00 NOT NULL comment '余额',
+  present_balance int(11) NOT NULL comment '赠送余额',
+  adjust_amount   int(11) NOT NULL comment '调整金额',
+  freeze_amount   int(11) NOT NULL comment '冻结余额',
+  latest_amount   int(11) NOT NULL comment '结余金额',
+  expired_amount  int(11) NOT NULL comment '失效账户余额',
+  total_charge    int(11) DEFAULT 0.00 NOT NULL comment '总充值金额',
+  total_present   int(11) NOT NULL comment '累计赠送金额',
+  total_pay       int(11) DEFAULT 0.00 NOT NULL comment '总支付额',
+  remark          varchar(40) NOT NULL comment '备注',
+  state           int(1) NOT NULL comment '状态,1:正常 2:锁定 3:关停',
+  create_time     int(11) NOT NULL comment '创建时间',
+  update_time     int(11) DEFAULT 0 NOT NULL comment '更新时间',
+  PRIMARY KEY (id)) comment='钱包';
+
+
+CREATE TABLE wal_wallet_log (
+  id            int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  wallet_id     int(11) NOT NULL comment '钱包编号',
+  kind          int(1) NOT NULL comment '业务类型',
+  title         varchar(45) NOT NULL comment '标题',
+  outer_chan    varchar(20) NOT NULL comment '外部通道',
+  outer_no      varchar(45) NOT NULL comment '外部订单号',
+  value         int(11) NOT NULL comment '变动金额',
+  balance       int(11) NOT NULL comment '余额',
+  trade_fee     int(8) NOT NULL comment '交易手续费',
+  op_uid        int(10) NOT NULL comment '操作人员用户编号',
+  op_name       varchar(20) NOT NULL comment '操作人员名称',
+  remark        varchar(45) NOT NULL comment '备注',
+  review_state  int(1) NOT NULL comment '审核状态',
+  review_remark varchar(120) NOT NULL comment '审核备注',
+  review_time   int(11) NOT NULL comment '审核时间',
+  create_time   int(11) NOT NULL comment '创建时间',
+  update_time   int(11) NOT NULL comment '更新时间',
+  PRIMARY KEY (id)) comment='钱包日志';
+
+

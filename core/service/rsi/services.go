@@ -10,6 +10,7 @@
 package rsi
 
 import (
+	"api/gen-code/thrift/wallet_service"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
@@ -24,7 +25,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"api/gen-code/thrift/wallet_service"
 )
 
 var (
