@@ -191,7 +191,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	if err != nil {
-		log.Println("[ Go2o][ Rep][ Error]:", err.Error())
+		log.Println("[ Go2o][ Repo][ Error]:", err.Error())
 	}
 	return total, list
 }

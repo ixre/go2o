@@ -68,7 +68,7 @@ func (w *WalletRepoImpl) PagingWalletLog(walletId int64, nodeId int, begin int, 
 		err = w._orm.SelectByQuery(&list, s, walletId, begin, over-begin)
 	}
 	if err != nil {
-		log.Println("[ Go2o][ Rep][ Error]:", err.Error())
+		log.Println("[ Go2o][ Repo][ Error]:", err.Error())
 	}
 	return total, list
 }
