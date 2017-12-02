@@ -37,6 +37,14 @@ func (w *walletServiceImpl) GetWalletId(userId int64, walletType int32) (r int32
 	return 0, nil
 }
 
+func (w *walletServiceImpl) GetWallet(walletId int64) (r *define.Wallet, err error) {
+	iw := w._repo.GetWallet(walletId)
+	if iw != nil {
+		return w.parseWallet(iw.Get()), nil
+	}
+	return nil, nil
+}
+
 func (w *walletServiceImpl) Adjust(walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
@@ -146,4 +154,28 @@ func (w *walletServiceImpl) PagingWalletLog(walletId int64, params *define.Pagin
 	}
 	total, list := iw.PagingLog(int(params.Begin), int(params.Over), params.Opt, sortBy)
 	return parser.PagingResult(total, list, err), nil
+}
+
+func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *define.Wallet {
+	return &define.Wallet{
+		ID:             v.ID,
+		HashCode:       v.HashCode,
+		NodeId:         int32(v.NodeId),
+		UserId:         v.UserId,
+		WalletType:     int32(v.WalletType),
+		WalletFlag:     int32(v.WalletFlag),
+		Balance:        int32(v.Balance),
+		PresentBalance: int32(v.PresentBalance),
+		AdjustAmount:   int32(v.AdjustAmount),
+		FreezeAmount:   int32(v.FreezeAmount),
+		LatestAmount:   int32(v.LatestAmount),
+		ExpiredAmount:  int32(v.ExpiredAmount),
+		TotalCharge:    int32(v.TotalCharge),
+		TotalPresent:   int32(v.TotalPresent),
+		TotalPay:       int32(v.TotalPay),
+		State:          int32(v.State),
+		Remark:         v.Remark,
+		CreateTime:     v.CreateTime,
+		UpdateTime:     v.UpdateTime,
+	}
 }

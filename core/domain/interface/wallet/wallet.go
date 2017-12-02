@@ -96,9 +96,9 @@ const (
 	KPaymentOrderRefund = 13
 
 	// 提现到银行卡(人工提现)
-	KTakeOutToBankCard = 16
+	KTakeOutToBankCard = 14
 	// 提现到第三方
-	KTakeOutToThirdPart = 17
+	KTakeOutToThirdPart = 15
 )
 
 var (
