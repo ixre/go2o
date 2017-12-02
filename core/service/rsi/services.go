@@ -10,7 +10,6 @@
 package rsi
 
 import (
-	"api/gen-code/thrift/wallet_service"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
@@ -22,6 +21,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/variable"
+	"go2o/gen-code/thrift/define"
 	"strconv"
 	"strings"
 	"time"
@@ -59,7 +59,7 @@ var (
 	// 广告服务
 	AdService *adService
 	// 钱包服务
-	WalletService wallet_service.WalletService
+	WalletService define.WalletService
 	// 个人金融服务
 	PersonFinanceService *personFinanceService
 	// 门户数据服务
@@ -72,7 +72,7 @@ var (
 func handleError(err error) error {
 	return domain.HandleError(err, "service")
 	//if err != nil && gof.CurrentApp.Debug() {
-	//	gof.CurrentApp.Log().Println("[ Go2o][ Rep][ Error] -", err.Error())
+	//	gof.CurrentApp.Log().Println("[ Go2o][ Repo][ Error] -", err.Error())
 	//}
 	//return err
 }
