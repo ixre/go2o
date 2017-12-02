@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/merchant/user"
 	"go2o/core/domain/interface/merchant/wholesaler"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	si "go2o/core/domain/merchant/shop"
 	userImpl "go2o/core/domain/merchant/user"
 	wsImpl "go2o/core/domain/merchant/wholesale"
@@ -265,12 +266,13 @@ type merchantImpl struct {
 	_profileManager merchant.IProfileManager
 	_apiManager     merchant.IApiManager
 	_shopManager    shop.IShopManager
+	_walletRepo     wallet.IWalletRepo
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo,
-	valRepo valueobject.IValueRepo) merchant.IMerchant {
+	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo) merchant.IMerchant {
 	mch := &merchantImpl{
 		_value:      v,
 		_rep:        rep,
@@ -280,6 +282,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 		_userRepo:   userRepo,
 		_valRepo:    valRepo,
 		_memberRepo: memberRepo,
+		_walletRepo: walletRepo,
 	}
 	return mch
 }
@@ -417,7 +420,7 @@ func (m *merchantImpl) Member() int64 {
 func (m *merchantImpl) Account() merchant.IAccount {
 	if m._account == nil {
 		v := m._rep.GetAccount(m.GetAggregateRootId())
-		m._account = newAccountImpl(m, v, m._memberRepo)
+		m._account = newAccountImpl(m, v, m._memberRepo, m._walletRepo)
 	}
 	return m._account
 }

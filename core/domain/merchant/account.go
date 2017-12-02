@@ -5,6 +5,7 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/domain/tmp"
 	"go2o/core/variable"
 	"math"
@@ -14,17 +15,19 @@ import (
 var _ merchant.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	mchImpl    *merchantImpl
-	value      *merchant.Account
-	memberRepo member.IMemberRepo
+	mchImpl     *merchantImpl
+	value       *merchant.Account
+	memberRepo  member.IMemberRepo
+	_walletRepo wallet.IWalletRepo
 }
 
 func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
-	memberRepo member.IMemberRepo) merchant.IAccount {
+	memberRepo member.IMemberRepo, walletRepo wallet.IWalletRepo) merchant.IAccount {
 	return &accountImpl{
-		mchImpl:    mchImpl,
-		value:      a,
-		memberRepo: memberRepo,
+		mchImpl:     mchImpl,
+		value:       a,
+		memberRepo:  memberRepo,
+		_walletRepo: walletRepo,
 	}
 }
 
@@ -112,7 +115,11 @@ func (a *accountImpl) TakePayment(outerNo string, amount float64, csn float64, r
 	if err == nil {
 		a.value.Balance -= float32(amount)
 		a.value.UpdateTime = time.Now().Unix()
-		return a.Save()
+		err = a.Save()
+		if err == nil {
+			iw := a.getWallet()
+			err = iw.Discount(int(amount*float64(wallet.AmountRateSize)), remark, outerNo, true)
+		}
 	}
 	return err
 }
@@ -132,8 +139,25 @@ func (a *accountImpl) SettleOrder(orderNo string, amount float32,
 		a.value.RefundAmount += refundAmount
 		a.value.UpdateTime = time.Now().Unix()
 		err = a.Save()
+		if err == nil {
+			iw := a.getWallet()
+			err = iw.Charge(int(amount*float32(wallet.AmountRateSize)), wallet.CSystemCharge, remark, orderNo, 0, "")
+		}
 	}
 	return err
+}
+
+func (a *accountImpl) getWallet() wallet.IWallet {
+	iw := a._walletRepo.GetWalletByUserId(int64(a.GetValue().MchId), wallet.TMerchant)
+	if iw == nil {
+		iw = a._walletRepo.CreateWallet(&wallet.Wallet{
+			UserId:     int64(a.GetValue().MchId),
+			WalletType: wallet.TMerchant,
+			WalletFlag: wallet.FlagCharge | wallet.FlagDiscount,
+		})
+		iw.Save()
+	}
+	return iw
 }
 
 //todo: 转入到奖金，手续费又被用于消费。这是一个bug
