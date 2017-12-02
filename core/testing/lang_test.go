@@ -51,6 +51,6 @@ func TestI64ToStr(t *testing.T) {
 
 // 求幂
 func TestPow(t *testing.T) {
-	i := 9
-	t.Log(i & (i - 1))
+	i := 7
+	t.Log(i & 2)
 }

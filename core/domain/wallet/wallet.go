@@ -67,15 +67,15 @@ func (w *WalletImpl) GetLog(logId int64) wallet.WalletLog {
 }
 
 func (w *WalletImpl) Save() (int64, error) {
+	unix := time.Now().Unix()
+	// 初始化
+	if w.GetAggregateRootId() <= 0 {
+		w.initWallet(unix)
+	}
 	err := w.checkWallet()
+	// 保存
 	if err == nil {
-		unix := time.Now().Unix()
 		w._value.UpdateTime = unix
-		// 初始化
-		if w.GetAggregateRootId() <= 0 {
-			w.initWallet(unix)
-		}
-		// 保存
 		id, err2 := util.I64Err(w._repo.SaveWallet_(w._value))
 		if err2 != nil {
 			return id, err
@@ -107,8 +107,8 @@ func (w *WalletImpl) checkWallet() error {
 	if w._value.UserId <= 0 {
 		panic("incorrect wallet user id")
 	}
-	if flag := w._value.WalletFlag; flag != 1 && flag&(flag-1) != 0 {
-		panic("incorrect wallet flag")
+	if flag := w._value.WalletFlag; flag <= 0 {
+		panic("incorrect wallet flag:" + strconv.Itoa(flag))
 	}
 	if len(w._value.Remark) > 40 {
 		return wallet.ErrRemarkLength

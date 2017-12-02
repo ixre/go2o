@@ -8,10 +8,13 @@ service WalletService{
     ttype.Result CreateWallet(1:i64 userId,2:i32 walletType,3:i32 flag,4:string remark)
 
     // 获取钱包编号，如果钱包不存在，则返回0
-    i32 GetWalletId(1:i64 userId,2:i32 walletType)
+    i64 GetWalletId(1:i64 userId,2:i32 walletType)
 
     // 获取钱包账户
-    Wallet GetWallet(1:i64 walletId)
+    RWallet GetWallet(1:i64 walletId)
+
+    // 获取钱包日志
+    RWalletLog GetWalletLog(1:i64 walletId,2:i64 id)
 
     // 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
 	ttype.Result Adjust(1:i64 walletId,2:i32 value, 3:string title,4:string outerNo,  5:i32 opuId, 6:string opuName)
@@ -118,7 +121,7 @@ enum WalletLogKind{
 }
 
 // 钱包
-struct	Wallet {
+struct	RWallet {
     // 钱包编号
     1:i64 ID
     // 哈希值
@@ -160,7 +163,7 @@ struct	Wallet {
 }
 
 // 钱包日志
-struct WalletLog {
+struct RWalletLog {
     // 编号
     1:i64 ID
     // 钱包编号
