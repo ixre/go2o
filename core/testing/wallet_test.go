@@ -16,7 +16,7 @@ func TestCreateWallet(t *testing.T) {
 	if wlt == nil {
 		wl := &wallet.Wallet{
 			UserId:     1,
-			WalletType: wallet.TPerson,
+			WalletType: wallet.TMerchant,
 		}
 		wlt = repo.CreateWallet(wl)
 	}
@@ -57,7 +57,7 @@ func TestDiscountRefundWallet(t *testing.T) {
 	var value int = 10000
 	var tradeNo = "02af1208xa209sl2"
 	var balance = wlt.Get().Balance
-	err := wlt.Discount(value, "支付订单"+tradeNo, tradeNo, 0, "", true)
+	err := wlt.Discount(value, "支付订单"+tradeNo, tradeNo, true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -78,9 +78,9 @@ func TestDiscountRefundWallet(t *testing.T) {
 func TestFreezeWallet(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
-	var value int = 10000
-	var freeze int = wlt.Get().FreezeAmount
-	var balance int = wlt.Get().Balance
+	var value = 10000
+	var freeze = wlt.Get().FreezeAmount
+	var balance = wlt.Get().Balance
 	err := wlt.Freeze(value, "冻结金额", "", 0, "")
 	if err != nil {
 		t.Error(err)
@@ -153,7 +153,7 @@ func TestTakeOutWalletFail(t *testing.T) {
 func TestTakeOutWalletSuccess(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
-	var amount int = 10000
+	var amount = 10000
 	balance := wlt.Get().Balance
 	id, _, err := wlt.RequestTakeOut(-amount, 200, wallet.KTakeOutToBankCard, "提现到银行卡")
 	if err != nil {

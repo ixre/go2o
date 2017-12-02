@@ -29,15 +29,15 @@ func (w *walletServiceImpl) CreateWallet(userId int64, walletType int32, flag in
 	return parser.Result(iw.Save()), nil
 }
 
-func (w *walletServiceImpl) GetWalletId(userId int64, walletType int32) (r int32, err error) {
+func (w *walletServiceImpl) GetWalletId(userId int64, walletType int32) (r int64, err error) {
 	iw := w._repo.GetWalletByUserId(userId, int(walletType))
 	if iw != nil {
-		return int32(iw.GetAggregateRootId()), nil
+		return iw.GetAggregateRootId(), nil
 	}
 	return 0, nil
 }
 
-func (w *walletServiceImpl) GetWallet(walletId int64) (r *define.Wallet, err error) {
+func (w *walletServiceImpl) GetWallet(walletId int64) (r *define.RWallet, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw != nil {
 		return w.parseWallet(iw.Get()), nil
@@ -45,6 +45,15 @@ func (w *walletServiceImpl) GetWallet(walletId int64) (r *define.Wallet, err err
 	return nil, nil
 }
 
+func (w *walletServiceImpl) GetWalletLog(walletId int64, id int64) (r *define.RWalletLog, err error) {
+	iw := w._repo.GetWallet(walletId)
+	if iw != nil {
+		if l := iw.GetLog(id); l.ID > 0 {
+			return w.parseWalletLog(l), nil
+		}
+	}
+	return nil, nil
+}
 func (w *walletServiceImpl) Adjust(walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
@@ -156,8 +165,8 @@ func (w *walletServiceImpl) PagingWalletLog(walletId int64, params *define.Pagin
 	return parser.PagingResult(total, list, err), nil
 }
 
-func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *define.Wallet {
-	return &define.Wallet{
+func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *define.RWallet {
+	return &define.RWallet{
 		ID:             v.ID,
 		HashCode:       v.HashCode,
 		NodeId:         int32(v.NodeId),
@@ -177,5 +186,26 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *define.Wallet {
 		Remark:         v.Remark,
 		CreateTime:     v.CreateTime,
 		UpdateTime:     v.UpdateTime,
+	}
+}
+func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *define.RWalletLog {
+	return &define.RWalletLog{
+		ID:           l.ID,
+		WalletId:     l.WalletId,
+		Kind:         int32(l.Kind),
+		Title:        l.Title,
+		OuterChan:    l.OuterChan,
+		OuterNo:      l.OuterNo,
+		Value:        int32(l.Value),
+		Balance:      int32(l.Balance),
+		TradeFee:     int32(l.TradeFee),
+		OpuId:        int32(l.OpuId),
+		OpuName:      l.OpuName,
+		Remark:       l.Remark,
+		ReviewState:  int32(l.ReviewState),
+		ReviewRemark: l.ReviewRemark,
+		ReviewTime:   l.ReviewTime,
+		CreateTime:   l.CreateTime,
+		UpdateTime:   l.UpdateTime,
 	}
 }

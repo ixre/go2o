@@ -24,8 +24,8 @@ var (
 	Factory *factory.RepoFactory
 )
 var (
-	REDIS_DB    string = "6"
-	DBS_DB_NAME string = "txmall"
+	REDIS_DB    = "6"
+	DBS_DB_NAME = "gcy_v3"
 )
 
 func GetApp() gof.App {

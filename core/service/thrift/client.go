@@ -108,6 +108,20 @@ func PaymentServeClient() (*define.PaymentServiceClient, error) {
 }
 
 // 基础服务
+func WalletClient() (*define.WalletServiceClient, error) {
+	transport, protocol, err := getTransportAndProtocol()
+	if err == nil {
+		err = transport.Open()
+		if err == nil {
+			proto := protocol.GetProtocol(transport)
+			opProto := thrift.NewTMultiplexedProtocol(proto, "wallet")
+			return define.NewWalletServiceClientProtocol(transport, proto, opProto), err
+		}
+	}
+	return nil, err
+}
+
+// 基础服务
 func SaleServeClient() (*define.SaleServiceClient, error) {
 	transport, protocol, err := getTransportAndProtocol()
 	if err == nil {

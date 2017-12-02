@@ -32,7 +32,11 @@ struct Pair{
    2:string Value
 }
 
+/** 百分比比例放大倍数  */
+const i32 RATE_PercentRate = 100
 
+/** 金额比例放大倍数  */
+const i32 RATE_Amount = 100
 
 //商品分类
 struct Category {
