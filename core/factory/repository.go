@@ -86,11 +86,11 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 	r.promRepo = repository.NewPromotionRepo(db, r.itemRepo, r.memberRepo)
 
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
-
+	r.walletRepo = repository.NewWalletRepo(db)
 	r.shopRepo = repository.NewShopRepo(db, sto, r.valueRepo)
 	r.wholesaleRepo = repository.NewWholesaleRepo(db)
 	r.mchRepo = repository.NewMerchantRepo(db, sto, r.wholesaleRepo,
-		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.valueRepo)
+		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo)
 	r.cartRepo = repository.NewCartRepo(db, r.memberRepo, r.mchRepo, r.itemRepo)
 	r.personFinanceRepo = repository.NewPersonFinanceRepository(db, r.memberRepo)
 	r.deliveryRepo = repository.NewDeliverRepo(db)
@@ -101,8 +101,6 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 		r.deliveryRepo, r.expressRepo, r.shipRepo, r.valueRepo)
 	r.paymentRepo = repository.NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.valueRepo)
 	r.asRepo = repository.NewAfterSalesRepo(db, r.orderRepo, r.memberRepo, r.paymentRepo)
-
-	r.walletRepo = repository.NewWalletRepo(db)
 
 	// 解决依赖
 	r.orderRepo.(*repository.OrderRepImpl).SetPaymentRepo(r.paymentRepo)
