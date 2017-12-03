@@ -482,7 +482,7 @@ func (s *shoppingService) SubmitOrder_V1(buyerId int64, cartCode string,
 	addressId int64, subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
 	//todo: 临时取消余额支付
-	balanceDiscount = false
+	//balanceDiscount = false
 	c := s.getShoppingCart(buyerId, cartCode)
 	od, err := s._manager.SubmitOrder(c, addressId, couponCode, balanceDiscount)
 	if err != nil {
