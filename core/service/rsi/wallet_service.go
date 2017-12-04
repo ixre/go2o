@@ -37,7 +37,7 @@ func (w *walletServiceImpl) GetWalletId(userId int64, walletType int32) (r int64
 	return 0, nil
 }
 
-func (w *walletServiceImpl) GetWallet(walletId int64) (r *define.RWallet, err error) {
+func (w *walletServiceImpl) GetWallet(walletId int64) (r *define.SWallet, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw != nil {
 		return w.parseWallet(iw.Get()), nil
@@ -45,7 +45,7 @@ func (w *walletServiceImpl) GetWallet(walletId int64) (r *define.RWallet, err er
 	return nil, nil
 }
 
-func (w *walletServiceImpl) GetWalletLog(walletId int64, id int64) (r *define.RWalletLog, err error) {
+func (w *walletServiceImpl) GetWalletLog(walletId int64, id int64) (r *define.SWalletLog, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw != nil {
 		if l := iw.GetLog(id); l.ID > 0 {
@@ -165,8 +165,8 @@ func (w *walletServiceImpl) PagingWalletLog(walletId int64, params *define.Pagin
 	return parser.PagingResult(total, list, err), nil
 }
 
-func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *define.RWallet {
-	return &define.RWallet{
+func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *define.SWallet {
+	return &define.SWallet{
 		ID:             v.ID,
 		HashCode:       v.HashCode,
 		NodeId:         int32(v.NodeId),
@@ -188,8 +188,8 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *define.RWallet {
 		UpdateTime:     v.UpdateTime,
 	}
 }
-func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *define.RWalletLog {
-	return &define.RWalletLog{
+func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *define.SWalletLog {
+	return &define.SWalletLog{
 		ID:           l.ID,
 		WalletId:     l.WalletId,
 		Kind:         int32(l.Kind),
@@ -199,8 +199,8 @@ func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *define.RWalletLo
 		Value:        int32(l.Value),
 		Balance:      int32(l.Balance),
 		TradeFee:     int32(l.TradeFee),
-		OpuId:        int32(l.OpuId),
-		OpuName:      l.OpuName,
+		OperatorId:   int32(l.OperatorId),
+		OperatorName: l.OperatorName,
 		Remark:       l.Remark,
 		ReviewState:  int32(l.ReviewState),
 		ReviewRemark: l.ReviewRemark,
