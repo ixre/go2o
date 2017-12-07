@@ -18,7 +18,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 )
 
 func MerchantDto(src *merchant.ComplexMerchant) *define.ComplexMerchant {

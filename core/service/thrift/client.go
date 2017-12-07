@@ -11,7 +11,7 @@ package thrift
 import (
 	"crypto/tls"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 )
 
 var (
@@ -102,6 +102,20 @@ func PaymentServeClient() (*define.PaymentServiceClient, error) {
 			proto := protocol.GetProtocol(transport)
 			opProto := thrift.NewTMultiplexedProtocol(proto, "payment")
 			return define.NewPaymentServiceClientProtocol(transport, proto, opProto), err
+		}
+	}
+	return nil, err
+}
+
+// 基础服务
+func WalletClient() (*define.WalletServiceClient, error) {
+	transport, protocol, err := getTransportAndProtocol()
+	if err == nil {
+		err = transport.Open()
+		if err == nil {
+			proto := protocol.GetProtocol(transport)
+			opProto := thrift.NewTMultiplexedProtocol(proto, "wallet")
+			return define.NewWalletServiceClientProtocol(transport, proto, opProto), err
 		}
 	}
 	return nil, err

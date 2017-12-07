@@ -18,9 +18,9 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
 	"go2o/core/module/bank"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
+	"go2o/gen-code/thrift/define"
 )
 
 var _ define.FoundationService = new(foundationService)

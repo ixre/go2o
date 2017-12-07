@@ -11,8 +11,6 @@ package core
 import (
 	"encoding/gob"
 	"github.com/jsix/goex/report"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
 	"go2o/core/dao/model"
 	"go2o/core/domain/interface/ad"
@@ -36,12 +34,11 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
-	"strconv"
+	"go2o/gen-code/thrift/define"
 	"strings"
-	"time"
 )
 
 func init() {
@@ -113,7 +110,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.Profile{}, "mm_profile")
 	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
 	orm.Mapping(member.BalanceLog{}, "mm_balance_log")
-	orm.Mapping(member.WalletLog{}, "mm_wallet_log")
+	orm.Mapping(member.MWalletLog{}, "mm_wallet_log")
 	orm.Mapping(member.Account{}, "mm_account")
 	orm.Mapping(member.Address{}, "mm_deliver_addr")
 	orm.Mapping(member.Relation{}, "mm_relation")
@@ -213,7 +210,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(delivery.CoverageValue{}, "dlv_coverage")
 	orm.Mapping(delivery.MerchantDeliverBind{}, "dlv_merchant_bind")
 
-	/** 用户 **/
+	// 用户
 	orm.Mapping(user.RoleValue{}, "usr_role")
 	orm.Mapping(user.PersonValue{}, "usr_person")
 	orm.Mapping(user.CredentialValue{}, "usr_credential")
@@ -222,7 +219,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(personfinance.RiseDayInfo{}, "pf_riseday")
 	orm.Mapping(personfinance.RiseLog{}, "pf_riselog")
 
-	/* 通用模块 */
+	// 通用模块
 	orm.Mapping(model.CommQrTemplate{}, "comm_qr_template")
 	orm.Mapping(model.PortalNav{}, "portal_nav")
 	orm.Mapping(model.PortalNavType{}, "portal_nav_type")
@@ -230,19 +227,9 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(model.PortalFloorLink{}, "portal_floor_link")
 	orm.Mapping(valueobject.Goods{}, "")
 
+	// 钱包
+	orm.Mapping(wallet.Wallet{}, "wal_wallet")
+	orm.Mapping(wallet.WalletLog{}, "wal_wallet_log")
+	// KV
 	orm.Mapping(valueobject.SysKeyValue{}, "sys_kv")
-}
-
-func initTemplate(c *gof.Config) *gof.Template {
-	spam := crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
-	return &gof.Template{
-		Init: func(m *gof.TemplateDataMap) {
-			v := *m
-			v["static_serve"] = c.GetString(variable.StaticServer)
-			v["img_serve"] = c.GetString(variable.ImageServer)
-			v["domain"] = c.GetString(variable.ServerDomain)
-			v["version"] = c.GetString(variable.Version)
-			v["spam"] = spam
-		},
-	}
 }

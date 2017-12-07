@@ -11,7 +11,6 @@ package rsi
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
@@ -24,9 +23,9 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
 	"go2o/core/query"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
+	"go2o/gen-code/thrift/define"
 	"log"
 	"strconv"
 	"strings"
@@ -123,10 +122,10 @@ func (ms *memberService) SaveProfile(v *define.Profile) error {
 func (ms *memberService) Premium(memberId int64, v int32, expires int64) (*define.Result_, error) {
 	m := ms._repo.GetMember(memberId)
 	if m == nil {
-		return parser.I64Result(memberId, member.ErrNoSuchMember), nil
+		return parser.Result(memberId, member.ErrNoSuchMember), nil
 	}
 	err := m.Premium(v, expires)
-	return parser.I64Result(memberId, err), nil
+	return parser.Result(memberId, err), nil
 }
 
 // 检查会员的会话Token是否正确
@@ -278,7 +277,7 @@ func (ms *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
-func (ms *memberService) GetWalletLog(memberId int64, logId int32) *member.WalletLog {
+func (ms *memberService) GetWalletLog(memberId int64, logId int32) *member.MWalletLog {
 	m := ms._repo.GetMember(memberId)
 	return m.GetAccount().GetWalletLog(logId)
 }
@@ -540,12 +539,12 @@ func (ms *memberService) CheckTradePwd(id int64, tradePwd string) (r *define.Res
 	}
 	mv := m.GetValue()
 	if mv.TradePwd == "" {
-		return parser.Result(0, member.ErrNotSetTradePwd), nil
+		return parser.Result(nil, member.ErrNotSetTradePwd), nil
 	}
 	if mv.TradePwd != tradePwd {
-		return parser.Result(0, member.ErrIncorrectTradePwd), nil
+		return parser.Result(nil, member.ErrIncorrectTradePwd), nil
 	}
-	return &define.Result_{Result_: true}, nil
+	return parser.Result(nil, nil), nil
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
@@ -918,7 +917,7 @@ func (ms *memberService) DiscountAccount(memberId int64, account int32, title st
 				member.DefaultRelateUser, mustLargeZero)
 		}
 	}
-	return parser.I64Result(memberId, err), nil
+	return parser.Result(memberId, err), nil
 }
 
 // !银行四要素认证
@@ -926,11 +925,7 @@ func (ms *memberService) B4EAuth(memberId int64, action string, data map[string]
 	mod := module.Get(module.M_B4E).(*module.Bank4E)
 	if action == "get" {
 		data := mod.GetBasicInfo(memberId)
-		d, _ := json.Marshal(data)
-		return &define.Result_{
-			Result_: true,
-			Message: string(d),
-		}, nil
+		return parser.Result(data, nil), nil
 	}
 	if action == "update" {
 		err := mod.UpdateInfo(memberId,
@@ -940,10 +935,7 @@ func (ms *memberService) B4EAuth(memberId int64, action string, data map[string]
 			data["bank_account"])
 		return parser.Result(0, err), nil
 	}
-	return &define.Result_{
-		Result_: false,
-		Message: "未知操作",
-	}, nil
+	return parser.Result(nil, errors.New("未知操作")), nil
 }
 
 // 验证交易密码

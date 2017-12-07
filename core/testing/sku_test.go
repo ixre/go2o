@@ -18,7 +18,7 @@ var (
 
 // 测试商品模型设置品牌
 func TestSetBrand(t *testing.T) {
-	rep := ti.ProMRepo
+	rep := ti.Factory.GetProModelRepo()
 	brands := rep.SelectProBrand("")
 	list := []int32{}
 	for i, v := range brands {
@@ -48,7 +48,7 @@ func TestSetBrand(t *testing.T) {
 
 // 测试商品模型添加属性
 func TestModelSaveAttrs(t *testing.T) {
-	rep := ti.ProMRepo
+	rep := ti.Factory.GetProModelRepo()
 	m := rep.GetModel(modelId)
 	attrs := []*promodel.Attr{
 		{
@@ -84,7 +84,7 @@ func TestModelSaveAttrs(t *testing.T) {
 
 // 测试商品模型添加规格
 func TestModelSaveSpecs(t *testing.T) {
-	rep := ti.ProMRepo
+	rep := ti.Factory.GetProModelRepo()
 	m := rep.GetModel(modelId)
 	specs := []*promodel.Spec{
 		{
@@ -115,9 +115,9 @@ func TestModelSaveSpecs(t *testing.T) {
 
 // 测试商品保存SKU
 func TestItemSaveSku(t *testing.T) {
-	itemRepo := ti.ItemRepo
-	catRepo := ti.CatRepo
-	proMRepo := ti.ProMRepo
+	itemRepo := ti.Factory.GetItemRepo()
+	catRepo := ti.Factory.GetCategoryRepo()
+	proMRepo := ti.Factory.GetProModelRepo()
 	it := itemRepo.GetItem(itemId)
 	if it == nil {
 		t.Errorf("编号为%d的商品不存在", itemId)

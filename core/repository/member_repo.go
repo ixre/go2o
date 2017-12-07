@@ -420,12 +420,12 @@ func (m *MemberRepo) SaveBalanceLog(v *member.BalanceLog) (int32, error) {
 }
 
 // 保存钱包账户日志
-func (m *MemberRepo) SavePresentLog(v *member.WalletLog) (int32, error) {
+func (m *MemberRepo) SavePresentLog(v *member.MWalletLog) (int32, error) {
 	return orm.I32(orm.Save(m.GetOrm(), v, int(v.ID)))
 }
 
-func (m *MemberRepo) GetWalletLog(id int32) *member.WalletLog {
-	e := member.WalletLog{}
+func (m *MemberRepo) GetWalletLog(id int32) *member.MWalletLog {
+	e := member.MWalletLog{}
 	if err := m.Connector.GetOrm().Get(id, &e); err != nil {
 		return nil
 	}
