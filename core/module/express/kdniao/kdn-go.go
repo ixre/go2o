@@ -6,9 +6,11 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 //物流状态：2-在途中,3-签收,4-问题件
@@ -64,34 +66,28 @@ func KdnTraces(shipperCode string, logisticCode string) (traceResult *TraceResul
 		md5Ctx := md5.New()
 		md5Ctx.Write([]byte(string(requestDataJson) + AppKey))
 		b64 := base64.StdEncoding.EncodeToString([]byte(hex.EncodeToString(md5Ctx.Sum(nil))))
-
-		resp, err := http.PostForm(ReqUrl,
-			url.Values{
-				"RequestData": {url.QueryEscape(string(requestDataJson))},
-				"EBusinessID": {EBusinessID},
-				"RequestType": {"1002"},
-				"DataSign":    {url.QueryEscape(b64)},
-				"DataType":    {"2"},
-			})
+		form := url.Values{
+			"RequestData": {url.QueryEscape(string(requestDataJson))},
+			"EBusinessID": {EBusinessID},
+			"RequestType": {"1002"},
+			"DataSign":    {url.QueryEscape(b64)},
+			"DataType":    {"2"},
+		}
+		resp, err := http.PostForm(ReqUrl, form)
 		defer resp.Body.Close()
-
 		if err != nil {
-			fmt.Printf("KdnTraces post error:%v\n", err)
+			//fmt.Printf("KdnTraces post error:%v\n", err)
 			return nil, err
 		} else {
 			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
+			if err != nil && err != io.EOF && strings.Index(err.Error(), "EOF") == -1 {
 				fmt.Printf("KdnTraces read body error:%v\n", err)
 				return nil, err
 			}
-
-			fmt.Println(string(body))
 			// Parser body
 			traceResult := TraceResult{}
 			json.Unmarshal(body, &traceResult)
-
-			fmt.Printf("Trace result:%v\n", traceResult)
-
+			//fmt.Printf("Trace result:%v\n", traceResult)
 			return &traceResult, nil
 		}
 	}
