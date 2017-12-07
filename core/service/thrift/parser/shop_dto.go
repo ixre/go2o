@@ -3,7 +3,7 @@ package parser
 import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 	"strconv"
 	"strings"
 )

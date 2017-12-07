@@ -16,8 +16,8 @@ import (
 )
 
 func TestExpressTemplateImpl_Save(t *testing.T) {
-	valRepo := ti.ValueRepo
-	rep := ti.ExpressRepo
+	valRepo := ti.Factory.GetValueRepo()
+	rep := ti.Factory.GetExpressRepo()
 
 	list := rep.GetExpressProviders()
 	for _, v := range list {

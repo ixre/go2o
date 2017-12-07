@@ -9,7 +9,7 @@ import (
 
 // 测试商家分组设置
 func TestMchBuyerGroupSet(t *testing.T) {
-	repo := ti.MchRepo
+	repo := ti.Factory.GetMerchantRepo()
 	conf := repo.GetMerchant(1).ConfManager()
 	g := conf.GetGroupByGroupId(2)
 	g.Alias = "VIP1"
@@ -32,7 +32,7 @@ func TestMchBuyerGroupSet(t *testing.T) {
 
 // 测试成为批发商
 func TestStartMchWholesale(t *testing.T) {
-	mch := ti.MchRepo.GetMerchant(1)
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
 	err := mch.EnableWholesale()
 	if err == nil {
 		ws := mch.Wholesaler()
@@ -49,9 +49,9 @@ func TestStartMchWholesale(t *testing.T) {
 
 // 测试设置返点比例
 func TestGroupRebateRate(t *testing.T) {
-	mmRepo := ti.MemberRepo
+	mmRepo := ti.Factory.GetMemberRepo()
 	groups := mmRepo.GetManager().GetAllBuyerGroups()
-	mch := ti.MchRepo.GetMerchant(1)
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
 	ws := mch.Wholesaler()
 	if ws == nil {
 		t.Error("merchant is not a wholesaler!")

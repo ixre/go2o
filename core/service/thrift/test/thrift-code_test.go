@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package idl
+package test
 
 import (
 	"github.com/jsix/gof/generator"

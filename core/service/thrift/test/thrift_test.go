@@ -6,13 +6,13 @@
  * description :
  * history :
  */
-package thrift
+package test
 
 import (
 	"errors"
 	"github.com/jsix/gof/log"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 	"strings"
 	"testing"
 )
