@@ -11,33 +11,40 @@ package rsi
 import (
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/shipment"
+	"go2o/gen-code/thrift/define"
 )
-
-type shipmentService struct {
+var _ define.ShipmentService = new(shipmentServiceImpl)
+type shipmentServiceImpl struct {
 	_rep          shipment.IShipmentRepo
 	_deliveryRepo delivery.IDeliveryRepo
+	_shipRepo   shipment.IShipmentRepo
 }
+
 
 // 获取快递服务
 func NewShipmentService(rep shipment.IShipmentRepo,
-	deliveryRepo delivery.IDeliveryRepo) *shipmentService {
-	return &shipmentService{
+	deliveryRepo delivery.IDeliveryRepo) *shipmentServiceImpl {
+	return &shipmentServiceImpl{
 		_rep:          rep,
 		_deliveryRepo: deliveryRepo,
 	}
 }
 
 // 创建一个配送覆盖的区域
-func (s *shipmentService) CreateCoverageArea(c *delivery.CoverageValue) (int32, error) {
+func (s *shipmentServiceImpl) CreateCoverageArea(c *delivery.CoverageValue) (int32, error) {
 	return s._deliveryRepo.SaveCoverageArea(c)
 }
 
 // 获取订单的发货单信息
-func (s *shipmentService) GetShipOrderOfOrder(orderId int64, sub bool) *shipment.ShipmentOrder {
+func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *shipment.ShipmentOrder {
 	arr := s._rep.GetShipOrders(orderId, sub)
 	if arr != nil && len(arr) > 0 {
 		v := arr[0].Value()
 		return &v
 	}
 	return nil
+}
+
+func (s *shipmentServiceImpl) GetLogisticFlowTrace(shipperCode string, logisticCode string) (r *define.SShipOrderTrace, err error) {
+	panic("implement me")
 }

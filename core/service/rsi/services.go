@@ -43,7 +43,7 @@ var (
 	// 商品服务
 	ItemService *itemService
 	// 购物服务
-	ShoppingService *shoppingService
+	ShoppingService *orderServiceImpl
 	// 售后服务
 	AfterSalesService *afterSalesService
 	// 支付服务
@@ -53,7 +53,7 @@ var (
 	// 快递服务
 	ExpressService *expressService
 	// 配送服务
-	ShipmentService *shipmentService
+	ShipmentService *shipmentServiceImpl
 	// 内容服务
 	ContentService *contentService
 	// 广告服务
