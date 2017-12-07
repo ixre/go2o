@@ -135,7 +135,6 @@ func OrderServeClient() (*define.OrderServiceClient, error) {
 	return nil, err
 }
 
-
 // 基础服务
 func ShipmentServeClient() (*define.ShipmentServiceClient, error) {
 	transport, protocol, err := getTransportAndProtocol()

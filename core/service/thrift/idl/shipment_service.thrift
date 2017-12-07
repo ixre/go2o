@@ -18,7 +18,7 @@ struct SShipOrderTrace {
     // 承运商代码
     4:string ShipperCode
     // 发货状态
-    5:i32 ShipState
+    5:string ShipState
     // 更新时间
     6:i64 UpdateTime
     // 包含发货单流
@@ -29,7 +29,7 @@ struct SShipFlow  {
     // 记录标题
     1:string Subject
     // 记录时间
-    2:i64 CreateTime
+    2:string CreateTime
     // 备注
     3:string Remark
 }

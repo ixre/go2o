@@ -11,15 +11,17 @@ package rsi
 import (
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/shipment"
+	"go2o/core/module"
 	"go2o/gen-code/thrift/define"
 )
+
 var _ define.ShipmentService = new(shipmentServiceImpl)
+
 type shipmentServiceImpl struct {
 	_rep          shipment.IShipmentRepo
 	_deliveryRepo delivery.IDeliveryRepo
-	_shipRepo   shipment.IShipmentRepo
+	_shipRepo     shipment.IShipmentRepo
 }
-
 
 // 获取快递服务
 func NewShipmentService(rep shipment.IShipmentRepo,
@@ -46,5 +48,36 @@ func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *ship
 }
 
 func (s *shipmentServiceImpl) GetLogisticFlowTrace(shipperCode string, logisticCode string) (r *define.SShipOrderTrace, err error) {
-	panic("implement me")
+	em := module.Get(module.M_EXPRESS).(*module.ExpressModule)
+	flow, err := em.GetLogisticFlowTrace(shipperCode, logisticCode)
+	if err == nil {
+		return s.logisticFlowTraceDto(flow), nil
+	}
+	return &define.SShipOrderTrace{
+		Code:    1,
+		Message: err.Error(),
+	}, nil
+}
+func (s *shipmentServiceImpl) logisticFlowTraceDto(o *shipment.ShipOrderTrace) *define.SShipOrderTrace {
+	if o == nil {
+		return &define.SShipOrderTrace{
+			Code:    1,
+			Message: "无法获取物流信息",
+		}
+	}
+	r := &define.SShipOrderTrace{
+		LogisticCode: o.LogisticCode,
+		ShipperCode:  o.ShipperCode,
+		ShipState:    o.ShipState,
+		UpdateTime:   o.UpdateTime,
+		Flows:        make([]*define.SShipFlow, 0),
+	}
+	for _, v := range o.Flows {
+		r.Flows = append(r.Flows, &define.SShipFlow{
+			Subject:    v.Subject,
+			CreateTime: v.CreateTime,
+			Remark:     v.Remark,
+		})
+	}
+	return r
 }

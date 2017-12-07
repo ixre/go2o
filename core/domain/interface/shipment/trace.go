@@ -8,7 +8,7 @@ type (
 		// 承运商代码
 		ShipperCode string
 		// 发货状态
-		ShipState int
+		ShipState string
 		// 更新时间
 		UpdateTime int64
 		// 包含发货单流
@@ -19,7 +19,7 @@ type (
 		// 记录标题
 		Subject string
 		// 记录时间
-		CreateTime int64
+		CreateTime string
 		// 备注
 		Remark string
 	}
@@ -74,4 +74,4 @@ type (
         ]
         }
 
- */
+*/

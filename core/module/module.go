@@ -23,6 +23,7 @@ var (
 	M_MM      string = "member"
 	M_PAY     string = "payment"
 	M_B4E     string = "bank4e"
+	M_EXPRESS string = "express"
 )
 
 // 模块实现
@@ -65,6 +66,7 @@ func registerInternal() {
 	Register(M_MM, &MemberModule{})
 	Register(M_PAY, &PaymentModule{})
 	Register(M_B4E, &Bank4E{})
+	Register(M_EXPRESS, &ExpressModule{})
 }
 
 // 获取模块
