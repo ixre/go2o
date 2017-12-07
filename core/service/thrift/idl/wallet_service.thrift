@@ -114,7 +114,7 @@ enum EWalletLogKind{
 	/** 支付单退款 */
 	KPaymentOrderRefund = 13
 
-	/** 提现到银行卡(人工提现)
+	/** 提现到银行卡(人工提现) */
 	KTakeOutToBankCard = 14
 	/** 提现到第三方 */
 	KTakeOutToThirdPart = 15
