@@ -2,8 +2,8 @@ package kdniao
 
 import "go2o/core/domain/interface/shipment"
 
-func Parse(shipperCode, logisticCode string, v *TraceResult) *shipment.ShipOrderTrace {
-	r := &shipment.ShipOrderTrace{
+func Parse(shipperCode, logisticCode string, v *TraceResult) *shipment.ShipOrderTrack {
+	r := &shipment.ShipOrderTrack{
 		LogisticCode: logisticCode,
 		ShipperCode:  shipperCode,
 		ShipState:    v.State,
