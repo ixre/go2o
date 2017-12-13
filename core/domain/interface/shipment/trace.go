@@ -5,6 +5,8 @@ type (
 	ShipOrderTrace struct {
 		// 物流单号
 		LogisticCode string
+		// 承运商名称
+		ShipperName string
 		// 承运商代码
 		ShipperCode string
 		// 发货状态
