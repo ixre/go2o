@@ -3,8 +3,10 @@ include "ttype.thrift"
 
 // 发货服务
 service ShipmentService{
-    // 物流追踪
+    /** 物流追踪 */
     SShipOrderTrace GetLogisticFlowTrace(1:string shipperCode,2:string logisticCode)
+    /** 获取发货单的物流追踪信息,$shipOrderId:发货单编号 */
+    SShipOrderTrace ShipOrderLogisticTrace(1:i64 shipOrderId)
 }
 
 // 发货单追踪
@@ -17,12 +19,14 @@ struct SShipOrderTrace {
     3:string LogisticCode
     // 承运商代码
     4:string ShipperCode
+    /** 承运商名称 */
+    5:string ShipperName
     // 发货状态
-    5:string ShipState
+    6:string ShipState
     // 更新时间
-    6:i64 UpdateTime
+    7:i64 UpdateTime
     // 包含发货单流
-    7:list<SShipFlow> Flows
+    8:list<SShipFlow> Flows
 }
 // 发货流
 struct SShipFlow  {

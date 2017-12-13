@@ -2,7 +2,6 @@ package module
 
 import (
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/module/express/kdniao"
 )
@@ -22,7 +21,6 @@ func (e *ExpressModule) Init() {
 	appKey := e._app.Registry().GetString("express:kdn:api_key")
 	kdniao.EBusinessID = userId
 	kdniao.AppKey = appKey
-	log.Println("--- KDN :", userId, appKey)
 }
 func (e *ExpressModule) GetLogisticFlowTrace(shipperCode string, logisticCode string) (*shipment.ShipOrderTrace, error) {
 	r, err := kdniao.KdnTraces(shipperCode, logisticCode)

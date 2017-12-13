@@ -9,7 +9,9 @@
 package rsi
 
 import (
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/delivery"
+	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/module"
 	"go2o/gen-code/thrift/define"
@@ -18,17 +20,18 @@ import (
 var _ define.ShipmentService = new(shipmentServiceImpl)
 
 type shipmentServiceImpl struct {
-	_rep          shipment.IShipmentRepo
+	_repo         shipment.IShipmentRepo
 	_deliveryRepo delivery.IDeliveryRepo
-	_shipRepo     shipment.IShipmentRepo
+	_expressRepo  express.IExpressRepo
 }
 
 // 获取快递服务
 func NewShipmentService(rep shipment.IShipmentRepo,
-	deliveryRepo delivery.IDeliveryRepo) *shipmentServiceImpl {
+	deliveryRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo) *shipmentServiceImpl {
 	return &shipmentServiceImpl{
-		_rep:          rep,
+		_repo:         rep,
 		_deliveryRepo: deliveryRepo,
+		_expressRepo:  expressRepo,
 	}
 }
 
@@ -39,7 +42,7 @@ func (s *shipmentServiceImpl) CreateCoverageArea(c *delivery.CoverageValue) (int
 
 // 获取订单的发货单信息
 func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *shipment.ShipmentOrder {
-	arr := s._rep.GetShipOrders(orderId, sub)
+	arr := s._repo.GetShipOrders(orderId, sub)
 	if arr != nil && len(arr) > 0 {
 		v := arr[0].Value()
 		return &v
@@ -67,6 +70,7 @@ func (s *shipmentServiceImpl) logisticFlowTraceDto(o *shipment.ShipOrderTrace) *
 	}
 	r := &define.SShipOrderTrace{
 		LogisticCode: o.LogisticCode,
+		ShipperName:  o.ShipperName,
 		ShipperCode:  o.ShipperCode,
 		ShipState:    o.ShipState,
 		UpdateTime:   o.UpdateTime,
@@ -80,4 +84,21 @@ func (s *shipmentServiceImpl) logisticFlowTraceDto(o *shipment.ShipOrderTrace) *
 		})
 	}
 	return r
+}
+
+// 获取发货单的物流追踪信息,
+// - shipOrderId:发货单编号
+func (s *shipmentServiceImpl) ShipOrderLogisticTrace(shipOrderId int64) (r *define.SShipOrderTrace, err error) {
+	so := s._repo.GetShipmentOrder(shipOrderId)
+	if so != nil {
+		sp := s._expressRepo.GetExpressProvider(so.Value().SpId)
+		if sp == nil {
+			log.Println("[ Go2o][ Service][ Warning]: no such express provider id ", so.Value().SpId)
+		} else {
+			r, err := s.GetLogisticFlowTrace(sp.ApiCode, so.Value().SpOrder)
+			r.ShipperName = sp.Name
+			return r, err
+		}
+	}
+	return nil, nil
 }

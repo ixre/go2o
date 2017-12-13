@@ -140,7 +140,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	PaymentService = NewPaymentService(paymentRepo, orderRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
-	ShipmentService = NewShipmentService(shipRepo, deliveryRepo)
+	ShipmentService = NewShipmentService(shipRepo, deliveryRepo, expressRepo)
 	ContentService = NewContentService(contentRepo, contentQue)
 	AdService = NewAdvertisementService(adRepo, sto)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
