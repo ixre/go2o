@@ -2,7 +2,7 @@ package shipment
 
 type (
 	// 发货单追踪
-	ShipOrderTrace struct {
+	ShipOrderTrack struct {
 		// 物流单号
 		LogisticCode string
 		// 承运商名称

@@ -22,7 +22,7 @@ func (e *ExpressModule) Init() {
 	kdniao.EBusinessID = userId
 	kdniao.AppKey = appKey
 }
-func (e *ExpressModule) GetLogisticFlowTrace(shipperCode string, logisticCode string) (*shipment.ShipOrderTrace, error) {
+func (e *ExpressModule) GetLogisticFlowTrace(shipperCode string, logisticCode string) (*shipment.ShipOrderTrack, error) {
 	r, err := kdniao.KdnTraces(shipperCode, logisticCode)
 	if err == nil {
 		return kdniao.Parse(shipperCode, logisticCode, r), nil
