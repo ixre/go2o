@@ -16,26 +16,16 @@ import (
 	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
 	"go2o/core"
-	"go2o/core/domain/interface/after-sales"
-	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/express"
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/pro_model"
-	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/shipment"
-	"go2o/core/domain/interface/valueobject"
-	"go2o/core/repository"
+	"go2o/core/factory"
 )
 
 var (
-	app *testingApp
+	app     *testingApp
+	Factory *factory.RepoFactory
 )
 var (
-	REDIS_DB    string = "6"
-	DBS_DB_NAME string = "gcy_v3"
+	REDIS_DB    = "6"
+	DBS_DB_NAME = "gcy_v3"
 )
 
 func GetApp() gof.App {
@@ -65,12 +55,20 @@ type testingApp struct {
 	_template     *gof.Template
 	_logger       log.ILogger
 	_storage      storage.Interface
+	_registry     *gof.Registry
 }
 
 func newMainApp(confPath string) *testingApp {
 	return &testingApp{
 		_confFilePath: confPath,
 	}
+}
+
+func (t *testingApp) Registry() *gof.Registry {
+	if t._registry == nil {
+		t._registry, _ = gof.NewRegistry("../conf", ":")
+	}
+	return t._registry
 }
 
 func (t *testingApp) Db() db.Connector {
@@ -148,68 +146,9 @@ func (t *testingApp) Init(debug, trace bool) bool {
 	return true
 }
 
-var (
-	ProMRepo       promodel.IProModelRepo
-	AfterSalesRepo afterSales.IAfterSalesRepo
-	OrderRepo      order.IOrderRepo
-	ExpressRepo    express.IExpressRepo
-	ValueRepo      valueobject.IValueRepo
-	ItemRepo       item.IGoodsItemRepo
-	ProductRepo    product.IProductRepo
-	CatRepo        product.ICategoryRepo
-	MemberRepo     member.IMemberRepo
-	MchRepo        merchant.IMerchantRepo
-	CartRepo       cart.ICartRepo
-	ShipmentRepo   shipment.IShipmentRepo
-)
-
 func init() {
 	app := GetApp()
-	db := app.Db()
-	orm := db.GetOrm()
+	conn := app.Db()
 	sto := app.Storage()
-	proMRepo := repository.NewProModelRepo(db, orm)
-	valueRepo := repository.NewValueRepo(db, sto)
-	userRepo := repository.NewUserRepo(db)
-	notifyRepo := repository.NewNotifyRepo(db)
-	mssRepo := repository.NewMssRepo(db, notifyRepo, valueRepo)
-	expressRepo := repository.NewExpressRepo(db, valueRepo)
-	shipRepo := repository.NewShipmentRepo(db, expressRepo)
-	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valueRepo)
-	productRepo := repository.NewProductRepo(db, proMRepo, valueRepo)
-	itemWsRepo := repository.NewItemWholesaleRepo(db)
-	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
-	itemRepo := repository.NewGoodsItemRepo(db, catRepo, productRepo,
-		proMRepo, itemWsRepo, expressRepo, valueRepo)
-	//tagSaleRepo := repository.NewTagSaleRepo(db, valRepo)
-	promRepo := repository.NewPromotionRepo(db, itemRepo, memberRepo)
-	//afterSalesRepo := repository.NewAfterSalesRepo(db)
-	shopRepo := repository.NewShopRepo(db, sto, valueRepo)
-	wholesaleRepo := repository.NewWholesaleRepo(db)
-	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo,
-		itemRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
-	cartRepo := repository.NewCartRepo(db, memberRepo, mchRepo, itemRepo)
-	//personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
-	deliveryRepo := repository.NewDeliverRepo(db)
-	//contentRepo := repository.NewContentRepo(db)
-	//adRepo := repository.NewAdvertisementRepo(db, sto)
-	orderRepo := repository.NewOrderRepo(sto, db, mchRepo, nil, productRepo, cartRepo, itemRepo,
-		promRepo, memberRepo, deliveryRepo, expressRepo, shipRepo, valueRepo)
-	paymentRepo := repository.NewPaymentRepo(sto, db, memberRepo, orderRepo, valueRepo)
-	asRepo := repository.NewAfterSalesRepo(db, orderRepo, memberRepo, paymentRepo)
-
-	orderRepo.SetPaymentRepo(paymentRepo)
-
-	ProMRepo = proMRepo
-	AfterSalesRepo = asRepo
-	OrderRepo = orderRepo
-	ExpressRepo = expressRepo
-	ValueRepo = valueRepo
-	ItemRepo = itemRepo
-	ProductRepo = productRepo
-	CatRepo = catRepo
-	MemberRepo = memberRepo
-	MchRepo = mchRepo
-	CartRepo = cartRepo
-	ShipmentRepo = shipRepo
+	Factory = (&factory.RepoFactory{}).Init(conn, sto)
 }

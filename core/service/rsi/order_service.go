@@ -12,6 +12,7 @@ package rsi
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	proItem "go2o/core/domain/interface/item"
@@ -22,15 +23,15 @@ import (
 	orderImpl "go2o/core/domain/order"
 	"go2o/core/dto"
 	"go2o/core/query"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"go2o/gen-code/thrift/define"
 	"strconv"
 	"strings"
 )
 
-var _ define.SaleService = new(shoppingService)
+var _ define.OrderService = new(orderServiceImpl)
 
-type shoppingService struct {
+type orderServiceImpl struct {
 	_repo       order.IOrderRepo
 	_itemRepo   product.IProductRepo
 	_goodsRepo  proItem.IGoodsItemRepo
@@ -43,8 +44,9 @@ type shoppingService struct {
 func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo,
 	itemRepo product.IProductRepo, goodsRepo proItem.IGoodsItemRepo,
-	mchRepo merchant.IMerchantRepo, orderQuery *query.OrderQuery) *shoppingService {
-	return &shoppingService{
+	mchRepo merchant.IMerchantRepo,
+	orderQuery *query.OrderQuery) *orderServiceImpl {
+	return &orderServiceImpl{
 		_repo:       r,
 		_itemRepo:   itemRepo,
 		_cartRepo:   cartRepo,
@@ -60,7 +62,7 @@ func NewShoppingService(r order.IOrderRepo,
 /*---------------- 批发购物车 ----------------*/
 
 // 批发购物车接口
-func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
+func (s *orderServiceImpl) WholesaleCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
 	//todo: check member
 	c := s._cartRepo.GetMyCart(memberId, cart.KWholesale)
 	if data == nil {
@@ -78,15 +80,12 @@ func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data ma
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
-	return &define.Result_{
-		Result_: false,
-		Message: "unknown action",
-	}, nil
+	return parser.Result(nil, errors.New("unknown action")), nil
 }
 
 // 转换勾选字典,数据如：{"1":["10","11"],"2":["20","21"]}
-func (s *shoppingService) parseCheckedMap(data string) (m map[int64][]int64) {
-	if data != "" || data != "{}" {
+func (s *orderServiceImpl) parseCheckedMap(data string) (m map[int64][]int64) {
+	if data != "" && data != "{}" {
 		src := map[string][]string{}
 		err := json.Unmarshal([]byte(data), &src)
 		if err == nil {
@@ -107,7 +106,7 @@ func (s *shoppingService) parseCheckedMap(data string) (m map[int64][]int64) {
 }
 
 // 获取可结算的购物车
-func (s *shoppingService) wsGetCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
+func (s *orderServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	//统计checked
 	checked := s.parseCheckedMap(data["checked"])
 	checkout := data["checkout"] == "true"
@@ -120,33 +119,21 @@ func (s *shoppingService) wsGetCart(c cart.ICart, data map[string]string) (*defi
 			}
 		}
 	}
-	d, err := json.Marshal(v)
-	if err == nil {
-		r := &define.Result_{
-			Result_: true,
-			Message: string(d),
-		}
-		return r, nil
-	}
-	return parser.Result(0, err), nil
+	return parser.Result(v, nil), nil
 }
 
 // 获取简易的购物车
-func (s *shoppingService) wsGetSimpleCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
+func (s *orderServiceImpl) wsGetSimpleCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	size, err := strconv.Atoi(data["size"])
 	if err != nil {
 		size = 5
 	}
 	qd := c.(cart.IWholesaleCart).QuickJdoData(size)
-	r := &define.Result_{
-		Result_: qd != "",
-		Message: qd,
-	}
-	return r, nil
+	return parser.Result(qd, nil), nil
 }
 
 // 转换提交到购物车的数据(PUT和UPDATE), 数据如：91:1;92:1
-func (s *shoppingService) wsParseCartPostedData(skuData string) (arr []*cart.ItemPair) {
+func (s *orderServiceImpl) wsParseCartPostedData(skuData string) (arr []*cart.ItemPair) {
 	arr = []*cart.ItemPair{}
 	splitArr := strings.Split(skuData, ";")
 	for _, str := range splitArr {
@@ -167,7 +154,7 @@ func (s *shoppingService) wsParseCartPostedData(skuData string) (arr []*cart.Ite
 }
 
 // 生成结算提交的数据(立即购买),skuData参考数据：skuId:num;skuId2;num2
-func (s *shoppingService) createCheckedData(itemId int64, arr []*cart.ItemPair) string {
+func (s *orderServiceImpl) createCheckedData(itemId int64, arr []*cart.ItemPair) string {
 	buf := bytes.NewBufferString("{\"")
 	buf.WriteString(strconv.Itoa(int(itemId)))
 	buf.WriteString("\":[")
@@ -184,7 +171,7 @@ func (s *shoppingService) createCheckedData(itemId int64, arr []*cart.ItemPair) 
 }
 
 // 放入商品，data["Data"]
-func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
+func (s *orderServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
@@ -196,19 +183,17 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 	}
 	if err == nil {
 		_, err = c.Save()
+		if err == nil {
+			mp := make(map[string]interface{})
+			mp["cartId"] = aId
+			mp["checked"] = s.createCheckedData(itemId, arr)
+			return parser.Result(mp, nil), nil
+		}
 	}
-	r := parser.Result(aId, err)
-	if r.Result_ {
-		mp := make(map[string]interface{})
-		mp["cartId"] = aId
-		mp["checked"] = s.createCheckedData(itemId, arr)
-		b, _ := json.Marshal(mp)
-		r.Message = string(b)
-	}
-	return r, nil
+	return parser.Result(aId, err), nil
 }
 
-func (s *shoppingService) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
+func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
@@ -225,7 +210,7 @@ func (s *shoppingService) wsUpdateItem(c cart.ICart, data map[string]string) (*d
 }
 
 // 勾选购物车，格式如：1:2;1:5
-func (s *shoppingService) wsCheckCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
+func (s *orderServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	checked := data["Checked"]
 	arr := []*cart.ItemPair{}
 	splitArr := strings.Split(checked, ";")
@@ -250,7 +235,7 @@ func (s *shoppingService) wsCheckCart(c cart.ICart, data map[string]string) (*de
 /*---------------- 零售购物车 ----------------*/
 
 // 零售购物车接口
-func (s *shoppingService) RetailCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
+func (s *orderServiceImpl) RetailCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
 	//todo: check member
 	c := s._cartRepo.GetMyCart(memberId, cart.KWholesale)
 	if data == nil {
@@ -268,14 +253,11 @@ func (s *shoppingService) RetailCartV1(memberId int64, action string, data map[s
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
-	return &define.Result_{
-		Result_: false,
-		Message: "unknown action",
-	}, nil
+	return parser.Result(nil, errors.New("unknown action")), nil
 }
 
 // 提交订单
-func (s *shoppingService) SubmitOrderV1(buyerId int64, cartType int32,
+func (s *orderServiceImpl) SubmitOrderV1(buyerId int64, cartType int32,
 	data map[string]string) (map[string]string, error) {
 	c := s._cartRepo.GetMyCart(buyerId, cart.KWholesale)
 	iData := orderImpl.NewPostedData(data)
@@ -289,7 +271,7 @@ func (s *shoppingService) SubmitOrderV1(buyerId int64, cartType int32,
 }
 
 //  获取购物车
-func (s *shoppingService) getShoppingCart(buyerId int64, code string) cart.ICart {
+func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICart {
 	var c cart.ICart
 	var cc cart.ICart
 	if len(code) > 0 {
@@ -317,14 +299,14 @@ func (s *shoppingService) getShoppingCart(buyerId int64, code string) cart.ICart
 }
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-func (s *shoppingService) GetShoppingCart(memberId int64,
+func (s *orderServiceImpl) GetShoppingCart(memberId int64,
 	cartCode string) *define.ShoppingCart {
 	c := s.getShoppingCart(memberId, cartCode)
 	return s.parseCart(c)
 }
 
 // 转换购物车数据
-func (s *shoppingService) parseCart(c cart.ICart) *define.ShoppingCart {
+func (s *orderServiceImpl) parseCart(c cart.ICart) *define.ShoppingCart {
 	dto := cart.ParseToDtoCart(c)
 	for _, v := range dto.Shops {
 
@@ -340,7 +322,7 @@ func (s *shoppingService) parseCart(c cart.ICart) *define.ShoppingCart {
 }
 
 // 放入购物车
-func (s *shoppingService) PutInCart(memberId int64, code string,
+func (s *orderServiceImpl) PutInCart(memberId int64, code string,
 	itemId, skuId int64, quantity int32) (*define.ShoppingCartItem, error) {
 	c := s.getShoppingCart(memberId, code)
 	if c == nil {
@@ -356,7 +338,7 @@ func (s *shoppingService) PutInCart(memberId int64, code string,
 	}
 	return nil, err
 }
-func (s *shoppingService) SubCartItem(memberId int64, code string,
+func (s *orderServiceImpl) SubCartItem(memberId int64, code string,
 	itemId, skuId int64, quantity int32) error {
 	c := s.getShoppingCart(memberId, code)
 	if c == nil {
@@ -370,7 +352,7 @@ func (s *shoppingService) SubCartItem(memberId int64, code string,
 }
 
 // 勾选商品结算
-func (s *shoppingService) CartCheckSign(memberId int64,
+func (s *orderServiceImpl) CartCheckSign(memberId int64,
 	cartCode string, arr []*define.ShoppingCartItem) error {
 	c := s.getShoppingCart(memberId, cartCode)
 	items := make([]*cart.ItemPair, len(arr))
@@ -389,7 +371,7 @@ func (s *shoppingService) CartCheckSign(memberId int64,
 }
 
 // 更新购物车结算
-func (s *shoppingService) PrepareSettlePersist(memberId int64, shopId int32,
+func (s *orderServiceImpl) PrepareSettlePersist(memberId int64, shopId int32,
 	paymentOpt, deliverOpt int32, deliverId int64) error {
 	var cart = s.getShoppingCart(memberId, "")
 	err := cart.SettlePersist(shopId, paymentOpt, deliverOpt, deliverId)
@@ -399,7 +381,7 @@ func (s *shoppingService) PrepareSettlePersist(memberId int64, shopId int32,
 	return err
 }
 
-func (s *shoppingService) GetCartSettle(memberId int64,
+func (s *orderServiceImpl) GetCartSettle(memberId int64,
 	cartCode string) *dto.SettleMeta {
 	cart := s.getShoppingCart(memberId, cartCode)
 	sp, deliver, payOpt := cart.GetSettleData()
@@ -428,14 +410,14 @@ func (s *shoppingService) GetCartSettle(memberId int64,
 	return st
 }
 
-func (s *shoppingService) SetBuyerAddress(buyerId int64, cartCode string, addressId int64) error {
+func (s *orderServiceImpl) SetBuyerAddress(buyerId int64, cartCode string, addressId int64) error {
 	cart := s.getShoppingCart(buyerId, cartCode)
 	return cart.SetBuyerAddress(addressId)
 }
 
 /*================ 订单  ================*/
 
-func (s *shoppingService) PrepareOrder(buyerId int64, addressId int64,
+func (s *orderServiceImpl) PrepareOrder(buyerId int64, addressId int64,
 	cartCode string) *order.ComplexOrder {
 	cart := s.getShoppingCart(buyerId, cartCode)
 
@@ -449,7 +431,7 @@ func (s *shoppingService) PrepareOrder(buyerId int64, addressId int64,
 }
 
 // 预生成订单，使用优惠券
-func (s *shoppingService) PrepareOrderWithCoupon(buyerId int64, cartCode string,
+func (s *orderServiceImpl) PrepareOrderWithCoupon(buyerId int64, cartCode string,
 	addressId int64, subject string, couponCode string) (map[string]interface{}, error) {
 	cart := s.getShoppingCart(buyerId, cartCode)
 	o, err := s._manager.PrepareNormalOrder(cart)
@@ -497,11 +479,11 @@ func (s *shoppingService) PrepareOrderWithCoupon(buyerId int64, cartCode string,
 	return data, err
 }
 
-func (s *shoppingService) SubmitOrder_V1(buyerId int64, cartCode string,
+func (s *orderServiceImpl) SubmitOrder_V1(buyerId int64, cartCode string,
 	addressId int64, subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
 	//todo: 临时取消余额支付
-	balanceDiscount = false
+	//balanceDiscount = false
 	c := s.getShoppingCart(buyerId, cartCode)
 	od, err := s._manager.SubmitOrder(c, addressId, couponCode, balanceDiscount)
 	if err != nil {
@@ -512,7 +494,7 @@ func (s *shoppingService) SubmitOrder_V1(buyerId int64, cartCode string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrder(orderNo string, sub bool) (*define.ComplexOrder, error) {
+func (s *orderServiceImpl) GetOrder(orderNo string, sub bool) (*define.ComplexOrder, error) {
 	c := s._manager.Unified(orderNo, sub).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
@@ -521,7 +503,7 @@ func (s *shoppingService) GetOrder(orderNo string, sub bool) (*define.ComplexOrd
 }
 
 // 获取订单和商品项信息
-func (s *shoppingService) GetOrderAndItems(orderNo string, sub bool) (*define.ComplexOrder, error) {
+func (s *orderServiceImpl) GetOrderAndItems(orderNo string, sub bool) (*define.ComplexOrder, error) {
 	c := s._manager.Unified(orderNo, sub).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
@@ -530,7 +512,7 @@ func (s *shoppingService) GetOrderAndItems(orderNo string, sub bool) (*define.Co
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrderById(id int64) *order.ComplexOrder {
+func (s *orderServiceImpl) GetOrderById(id int64) *order.ComplexOrder {
 	o := s._manager.GetOrderById(id)
 	if o != nil {
 		return o.Complex()
@@ -538,7 +520,7 @@ func (s *shoppingService) GetOrderById(id int64) *order.ComplexOrder {
 	return nil
 }
 
-func (s *shoppingService) GetOrderByNo(orderNo string) *order.ComplexOrder {
+func (s *orderServiceImpl) GetOrderByNo(orderNo string) *order.ComplexOrder {
 	o := s._manager.GetOrderByNo(orderNo)
 	if o != nil {
 		return o.Complex()
@@ -547,7 +529,7 @@ func (s *shoppingService) GetOrderByNo(orderNo string) *order.ComplexOrder {
 }
 
 // 人工付款
-func (s *shoppingService) PayForOrderByManager(orderNo string) error {
+func (s *orderServiceImpl) PayForOrderByManager(orderNo string) error {
 	//todo: 对支付单进行人工付款
 	panic("应使用支付单进行人工付款")
 	//o := s._manager.GetOrderByNo(orderNo)
@@ -558,7 +540,7 @@ func (s *shoppingService) PayForOrderByManager(orderNo string) error {
 }
 
 // 获取子订单
-func (s *shoppingService) GetSubOrder(id int64) (r *define.ComplexOrder, err error) {
+func (s *orderServiceImpl) GetSubOrder(id int64) (r *define.ComplexOrder, err error) {
 	o := s._repo.GetSubOrder(id)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
@@ -567,7 +549,7 @@ func (s *shoppingService) GetSubOrder(id int64) (r *define.ComplexOrder, err err
 }
 
 // 根据订单号获取子订单
-func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.ComplexOrder, err error) {
+func (s *orderServiceImpl) GetSubOrderByNo(orderNo string) (r *define.ComplexOrder, err error) {
 	orderId := s._repo.GetOrderId(orderNo, true)
 	o := s._repo.GetSubOrder(orderId)
 	if o != nil {
@@ -577,7 +559,7 @@ func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.ComplexOrde
 }
 
 // 获取订单商品项
-func (s *shoppingService) GetSubOrderItems(subOrderId int64) ([]*define.ComplexItem, error) {
+func (s *orderServiceImpl) GetSubOrderItems(subOrderId int64) ([]*define.ComplexItem, error) {
 	list := s._repo.GetSubOrderItems(subOrderId)
 	arr := make([]*define.ComplexItem, len(list))
 	for i, v := range list {
@@ -587,7 +569,7 @@ func (s *shoppingService) GetSubOrderItems(subOrderId int64) ([]*define.ComplexI
 }
 
 // 获取子订单及商品项
-func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.NormalSubOrder, []*dto.OrderItem) {
+func (s *orderServiceImpl) GetSubOrderAndItems(id int64) (*order.NormalSubOrder, []*dto.OrderItem) {
 	o := s._repo.GetSubOrder(id)
 	if o == nil {
 		return o, []*dto.OrderItem{}
@@ -596,7 +578,7 @@ func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.NormalSubOrder, 
 }
 
 // 获取子订单及商品项
-func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.NormalSubOrder, []*dto.OrderItem) {
+func (s *orderServiceImpl) GetSubOrderAndItemsByNo(orderNo string) (*order.NormalSubOrder, []*dto.OrderItem) {
 	orderId := s._repo.GetOrderId(orderNo, true)
 	o := s._repo.GetSubOrder(orderId)
 	if o == nil {
@@ -606,13 +588,13 @@ func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.Normal
 }
 
 // 获取订单日志
-func (s *shoppingService) LogBytes(orderNo string, sub bool) []byte {
+func (s *orderServiceImpl) LogBytes(orderNo string, sub bool) []byte {
 	c := s._manager.Unified(orderNo, sub)
 	return c.LogBytes()
 }
 
 // 提交订单
-func (s *shoppingService) SubmitTradeOrder(o *define.ComplexOrder, rate float64) (r *define.Result64, err error) {
+func (s *orderServiceImpl) SubmitTradeOrder(o *define.ComplexOrder, rate float64) (r *define.Result64, err error) {
 	if o.ShopId <= 0 {
 		mch := s._mchRepo.GetMerchant(o.VendorId)
 		if mch != nil {
@@ -636,7 +618,7 @@ func (s *shoppingService) SubmitTradeOrder(o *define.ComplexOrder, rate float64)
 }
 
 // 交易单现金支付
-func (s *shoppingService) TradeOrderCashPay(orderId int64) (r *define.Result64, err error) {
+func (s *orderServiceImpl) TradeOrderCashPay(orderId int64) (r *define.Result64, err error) {
 	o := s._manager.GetOrderById(orderId)
 	if o == nil || o.Type() != order.TTrade {
 		err = order.ErrNoSuchOrder
@@ -648,7 +630,7 @@ func (s *shoppingService) TradeOrderCashPay(orderId int64) (r *define.Result64, 
 }
 
 // 上传交易单发票
-func (s *shoppingService) TradeOrderUpdateTicket(orderId int64, img string) (r *define.Result64, err error) {
+func (s *orderServiceImpl) TradeOrderUpdateTicket(orderId int64, img string) (r *define.Result64, err error) {
 	o := s._manager.GetOrderById(orderId)
 	if o == nil || o.Type() != order.TTrade {
 		err = order.ErrNoSuchOrder
@@ -660,41 +642,41 @@ func (s *shoppingService) TradeOrderUpdateTicket(orderId int64, img string) (r *
 }
 
 // 取消订单
-func (s *shoppingService) CancelOrder(orderNo string, sub bool, reason string) error {
+func (s *orderServiceImpl) CancelOrder(orderNo string, sub bool, reason string) error {
 	c := s._manager.Unified(orderNo, sub)
 	return c.Cancel(reason)
 }
 
 // 确定订单
-func (s *shoppingService) ConfirmOrder(orderNo string, sub bool) error {
+func (s *orderServiceImpl) ConfirmOrder(orderNo string, sub bool) error {
 	c := s._manager.Unified(orderNo, sub)
 	return c.Confirm()
 }
 
 // 备货完成
-func (s *shoppingService) PickUp(orderNo string, sub bool) error {
+func (s *orderServiceImpl) PickUp(orderNo string, sub bool) error {
 	c := s._manager.Unified(orderNo, sub)
 	return c.PickUp()
 }
 
 // 订单发货,并记录配送服务商编号及单号
-func (s *shoppingService) Ship(orderNo string, sub bool, spId int32, spOrder string) error {
+func (s *orderServiceImpl) Ship(orderNo string, sub bool, spId int32, spOrder string) error {
 	c := s._manager.Unified(orderNo, sub)
 	return c.Ship(spId, spOrder)
 }
 
 // 消费者收货
-func (s *shoppingService) BuyerReceived(orderNo string, sub bool) error {
+func (s *orderServiceImpl) BuyerReceived(orderNo string, sub bool) error {
 	c := s._manager.Unified(orderNo, sub)
 	return c.BuyerReceived()
 }
 
 // 根据商品快照获取订单项
-func (s *shoppingService) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
+func (s *orderServiceImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
 	return s._repo.GetOrderItemBySnapshotId(orderId, snapshotId)
 }
 
 // 根据商品快照获取订单项数据传输对象
-func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
+func (s *orderServiceImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
 	return s._repo.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 }

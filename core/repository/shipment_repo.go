@@ -37,7 +37,7 @@ func (s *shipmentRepo) CreateShipmentOrder(o *shipment.ShipmentOrder) shipment.I
 
 func (s *shipmentRepo) getShipOrderById(id int64) *shipment.ShipmentOrder {
 	e := &shipment.ShipmentOrder{}
-	if s.GetOrm().Get(id, &e) == nil {
+	if s.GetOrm().Get(id, e) == nil {
 		return e
 	}
 	return nil

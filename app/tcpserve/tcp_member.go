@@ -13,7 +13,7 @@ import (
 	"errors"
 	"github.com/jsix/gof/net/nc"
 	"go2o/core/service/rsi"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 	"strconv"
 	"strings"
 )

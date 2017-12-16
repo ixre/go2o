@@ -18,8 +18,8 @@ import (
 // 测试退款
 func TestOrderRefund(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRepo := ti.OrderRepo
-	rep := ti.AfterSalesRepo
+	orderRepo := ti.Factory.GetOrderRepo()
+	rep := ti.Factory.GetAfterSalesRepo()
 	orderId := orderRepo.GetOrderId(subOrderNo, true)
 	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
@@ -76,8 +76,8 @@ func TestOrderRefund(t *testing.T) {
 // 测试退货
 func TestOrderReturn(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRepo := ti.OrderRepo
-	rep := ti.AfterSalesRepo
+	orderRepo := ti.Factory.GetOrderRepo()
+	rep := ti.Factory.GetAfterSalesRepo()
 	orderId := orderRepo.GetOrderId(subOrderNo, true)
 	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
@@ -133,8 +133,8 @@ func TestOrderReturn(t *testing.T) {
 // 测试换货
 func TestOrderExchange(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRepo := ti.OrderRepo
-	rep := ti.AfterSalesRepo
+	orderRepo := ti.Factory.GetOrderRepo()
+	rep := ti.Factory.GetAfterSalesRepo()
 	orderId := orderRepo.GetOrderId(subOrderNo, true)
 	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{

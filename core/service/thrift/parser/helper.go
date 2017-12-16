@@ -8,15 +8,31 @@
  */
 package parser
 
-import "go2o/core/service/thrift/idl/gen-go/define"
+import (
+	"encoding/json"
+	"github.com/jsix/gof/util"
+	"go2o/gen-code/thrift/define"
+)
 
-func Result(id int32, err error) *define.Result_ {
+func Result(data interface{}, err error) *define.Result_ {
 	r := &define.Result_{}
 	if err != nil {
+		r.Code = 1
 		r.Message = err.Error()
 	} else {
-		r.Result_ = true
-		r.ID = id
+		r.Code = 0
+		if data != nil {
+			switch data.(type) {
+			case string, int, int32, int64, bool, float32, float64:
+				r.Data = util.Str(data)
+			default:
+				d, err := json.Marshal(data)
+				if err != nil {
+					panic(err)
+				}
+				r.Data = string(d)
+			}
+		}
 	}
 	return r
 }
@@ -32,17 +48,6 @@ func Result64(id int64, err error) *define.Result64 {
 	return r
 }
 
-func I64Result(id int64, err error) *define.Result_ {
-	r := &define.Result_{}
-	if err != nil {
-		r.Message = err.Error()
-	} else {
-		r.Result_ = true
-		r.ID = int32(id)
-	}
-	return r
-}
-
 func DResult(data float64, err error) *define.DResult_ {
 	r := &define.DResult_{}
 	if err != nil {
@@ -50,6 +55,26 @@ func DResult(data float64, err error) *define.DResult_ {
 	} else {
 		r.Result_ = true
 		r.Data = data
+	}
+	return r
+}
+
+func PagingResult(total int, data interface{}, err error) *define.PagingResult_ {
+	r := &define.PagingResult_{}
+	if err == nil {
+		r.Count = int32(total)
+		if data == nil || data == "" {
+			r.Data = "[]"
+		} else {
+			d, err := json.Marshal(data)
+			if err != nil {
+				panic(err)
+			}
+			r.Data = string(d)
+		}
+	} else {
+		r.Code = 1
+		r.Message = err.Error()
 	}
 	return r
 }
