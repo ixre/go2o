@@ -89,7 +89,11 @@ func (a *AppImpl) Config() *gof.Config {
 }
 func (a *AppImpl) Registry() *gof.Registry {
 	if a._registry == nil {
-		a._registry, _ = gof.NewRegistry("./conf", ":")
+		conf := a.Config().GetString("conf_path")
+		if conf == "" {
+			conf = "./conf"
+		}
+		a._registry, _ = gof.NewRegistry(conf, ":")
 	}
 	return a._registry
 }

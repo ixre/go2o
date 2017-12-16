@@ -74,7 +74,7 @@ func (r *RpcToolkit) GetLevel(levelId int32) *define.Level {
 
 // 获取订单
 func (r *RpcToolkit) GetOrder(orderNo string, sub bool) *define.ComplexOrder {
-	cli, err := thrift.SaleServeClient()
+	cli, err := thrift.OrderServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
 		o, _ := cli.GetOrder(orderNo, sub)
@@ -85,7 +85,7 @@ func (r *RpcToolkit) GetOrder(orderNo string, sub bool) *define.ComplexOrder {
 
 // 获取订单和商品项信息
 func (r *RpcToolkit) GetOrderAndItems(orderNo string, sub bool) *define.ComplexOrder {
-	cli, err := thrift.SaleServeClient()
+	cli, err := thrift.OrderServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
 		o, _ := cli.GetOrderAndItems(orderNo, sub)
