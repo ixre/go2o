@@ -4,9 +4,9 @@ include "ttype.thrift"
 // 发货服务
 service ShipmentService{
     /** 物流追踪 */
-    SShipOrderTrack GetLogisticFlowTrace(1:string shipperCode,2:string logisticCode)
-    /** 获取发货单的物流追踪信息,$shipOrderId:发货单编号 */
-    SShipOrderTrack ShipOrderLogisticTrack(1:i64 shipOrderId)
+    SShipOrderTrack GetLogisticFlowTrack(1:string shipperCode,2:string logisticCode,3:bool invert)
+    /** 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列 */
+    SShipOrderTrack ShipOrderLogisticTrack(1:i64 shipOrderId,2:bool invert)
 }
 
 // 发货单追踪
