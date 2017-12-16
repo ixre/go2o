@@ -50,18 +50,19 @@ func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *ship
 	return nil
 }
 
-func (s *shipmentServiceImpl) GetLogisticFlowTrace(shipperCode string, logisticCode string) (r *define.SShipOrderTrack, err error) {
+func (s *shipmentServiceImpl) GetLogisticFlowTrack(shipperCode string,
+	logisticCode string, invert bool) (r *define.SShipOrderTrack, err error) {
 	em := module.Get(module.M_EXPRESS).(*module.ExpressModule)
-	flow, err := em.GetLogisticFlowTrace(shipperCode, logisticCode)
+	flow, err := em.GetLogisticFlowTrack(shipperCode, logisticCode, invert)
 	if err == nil {
-		return s.logisticFlowTraceDto(flow), nil
+		return s.logisticFlowTrackDto(flow), nil
 	}
 	return &define.SShipOrderTrack{
 		Code:    1,
 		Message: err.Error(),
 	}, nil
 }
-func (s *shipmentServiceImpl) logisticFlowTraceDto(o *shipment.ShipOrderTrack) *define.SShipOrderTrack {
+func (s *shipmentServiceImpl) logisticFlowTrackDto(o *shipment.ShipOrderTrack) *define.SShipOrderTrack {
 	if o == nil {
 		return &define.SShipOrderTrack{
 			Code:    1,
@@ -88,17 +89,17 @@ func (s *shipmentServiceImpl) logisticFlowTraceDto(o *shipment.ShipOrderTrack) *
 
 // 获取发货单的物流追踪信息,
 // - shipOrderId:发货单编号
-func (s *shipmentServiceImpl) ShipOrderLogisticTrack(shipOrderId int64) (r *define.SShipOrderTrack, err error) {
+func (s *shipmentServiceImpl) ShipOrderLogisticTrack(shipOrderId int64, invert bool) (r *define.SShipOrderTrack, err error) {
 	so := s._repo.GetShipmentOrder(shipOrderId)
 	if so != nil {
 		sp := s._expressRepo.GetExpressProvider(so.Value().SpId)
 		if sp == nil {
 			log.Println("[ Go2o][ Service][ Warning]: no such express provider id ", so.Value().SpId)
 		} else {
+			//spOrder = "462681586678"
+			//sp.ApiCode = "ZTO"
 			spOrder := so.Value().SpOrder
-			spOrder = ""
-			sp.ApiCode = ""
-			r, err := s.GetLogisticFlowTrace(sp.ApiCode, spOrder)
+			r, err := s.GetLogisticFlowTrack(sp.ApiCode, spOrder, invert)
 			r.ShipperName = sp.Name
 			return r, err
 		}
