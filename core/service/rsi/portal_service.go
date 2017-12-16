@@ -4,8 +4,8 @@ import (
 	"github.com/jsix/gof/util"
 	"go2o/core/dao"
 	"go2o/core/dao/model"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"go2o/gen-code/thrift/define"
 )
 
 type portalService struct {

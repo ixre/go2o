@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/wallet"
@@ -13,12 +14,14 @@ var _ wallet.IWalletRepo = new(WalletRepoImpl)
 
 func NewWalletRepo(conn db.Connector) wallet.IWalletRepo {
 	return &WalletRepoImpl{
-		_orm: conn.GetOrm(),
+		_orm:  conn.GetOrm(),
+		_conn: conn,
 	}
 }
 
 type WalletRepoImpl struct {
-	_orm orm.Orm
+	_orm  orm.Orm
+	_conn db.Connector
 }
 
 func (w *WalletRepoImpl) CreateWallet(v *wallet.Wallet) wallet.IWallet {
@@ -37,9 +40,9 @@ func (w *WalletRepoImpl) GetWalletByUserId(userId int64, walletType int) wallet.
 	return w.CreateWallet(l)
 }
 
-func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletKind int, walletId int64) bool {
-	l := w.GetWalletBy_("user_id=? AND wallet_kind=? AND id<>? LIMIT 1",
-		userId, walletKind, walletId)
+func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool {
+	l := w.GetWalletBy_("user_id=? AND wallet_type=? AND id<>? LIMIT 1",
+		userId, walletType, walletId)
 	return l == nil
 }
 
@@ -49,6 +52,25 @@ func (w *WalletRepoImpl) GetLog(walletId int64, logId int64) *wallet.WalletLog {
 		return l
 	}
 	return nil
+}
+
+func (w *WalletRepoImpl) PagingWalletLog(walletId int64, nodeId int, begin int, over int, where string, sort string) (total int, list []*wallet.WalletLog) {
+	list = []*wallet.WalletLog{}
+	table := "wal_wallet_log"
+	err := w._conn.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM %s WHERE wallet_id=? %s`,
+		table, where), &total, walletId)
+	if total > 0 {
+		if len(sort) > 0 {
+			sort += ","
+		}
+		s := fmt.Sprintf(`SELECT * FROM %s WHERE wallet_id=? %s ORDER BY %s create_time DESC LIMIT ?,?`,
+			table, where, sort)
+		err = w._orm.SelectByQuery(&list, s, walletId, begin, over-begin)
+	}
+	if err != nil {
+		log.Println("[ Go2o][ Repo][ Error]:", err.Error())
+	}
+	return total, list
 }
 
 // Get WalletLog

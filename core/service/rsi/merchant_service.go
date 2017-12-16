@@ -17,8 +17,8 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"go2o/gen-code/thrift/define"
 	"strings"
 	"time"
 )

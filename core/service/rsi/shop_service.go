@@ -15,9 +15,9 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
+	"go2o/gen-code/thrift/define"
 )
 
 type shopService struct {

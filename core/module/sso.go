@@ -13,8 +13,8 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
+	"go2o/gen-code/thrift/define"
 	"strings"
 )
 

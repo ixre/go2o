@@ -20,7 +20,7 @@ const (
 	// 个人钱包
 	TPerson = 1
 	// 企业钱包
-	TPartner = 2
+	TMerchant = 2
 )
 
 const (
@@ -96,13 +96,14 @@ const (
 	KPaymentOrderRefund = 13
 
 	// 提现到银行卡(人工提现)
-	KTakeOutToBankCard = 16
+	KTakeOutToBankCard = 14
 	// 提现到第三方
-	KTakeOutToThirdPart = 17
+	KTakeOutToThirdPart = 15
 )
 
 var (
 	ErrSingletonWallet               = domain.NewDomainError("err_wallet_singleton_wallet", "用户已存在相同类型的"+Alias)
+	ErrRemarkLength                  = domain.NewDomainError("err_wallet_remark_length", "备注不能超过40字")
 	ErrMissingOperator               = domain.NewDomainError("err_wallet_missing_operator", "缺少操作人员")
 	ErrAmountZero                    = domain.NewDomainError("err_wallet_amount_zero", "金额不能为零")
 	ErrOutOfAmount                   = domain.NewDomainError("err_wallet_not_enough_amount", Alias+"余额不足")
@@ -147,13 +148,16 @@ type (
 		Adjust(value int, title, outerNo string, opuId int, opuName string) error
 
 		// 支付抵扣,must是否必须大于0
-		Discount(value int, title, outerNo string, must bool, opuId int, opuName string) error
+		Discount(value int, title, outerNo string, must bool) error
 
 		// 冻结余额
 		Freeze(value int, title, outerNo string, opuId int, opuName string) error
 
 		// 解冻金额
 		Unfreeze(value int, title, outerNo string, opuId int, opuName string) error
+
+		// 将冻结金额标记为失效
+		FreezeExpired(value int, remark string) error
 
 		// 充值,kind: 业务类型
 		Charge(value int, by int, title, outerNo string, opuId int, opuName string) error
@@ -165,19 +169,19 @@ type (
 		Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error
 
 		// 接收转账
-		ReceiveTransfer(fromWalletId int64, value int, tradeNo string, title string) error
+		ReceiveTransfer(fromWalletId int64, value int, tradeNo, title, remark string) error
 
 		// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
-		RequestTakeOut(value int, kind int, title string, tradeFee int) (int64, string, error)
+		RequestTakeOut(value int, tradeFee int, kind int, title string) (int64, string, error)
 
 		// 确认提现
-		ReviewTakeOut(takeId int64, pass bool, remark string) error
+		ReviewTakeOut(takeId int64, pass bool, remark string, opuId int, opuName string) error
 
 		// 完成提现
 		FinishTakeOut(takeId int64, outerNo string) error
 
-		// 将冻结金额标记为失效
-		FreezeExpired(value int, remark string) error
+		// 分页钱包日志
+		PagingLog(begin int, over int, opt map[string]string, sort string) (int, []*WalletLog)
 	}
 
 	// 钱包仓储
@@ -191,7 +195,9 @@ type (
 		// 获取日志
 		GetLog(walletId int64, logId int64) *WalletLog
 		// 检查钱包是否匹配/是否存在
-		CheckWalletUserMatch(userId int64, walletKind int, walletId int64) bool
+		CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool
+		// 获取分页钱包日志
+		PagingWalletLog(walletId int64, nodeId int, begin int, over int, where string, sort string) (int, []*WalletLog)
 
 		// auto generate by gof
 		// Get WalletLog
@@ -255,6 +261,8 @@ type (
 		TotalPay int `db:"total_pay"`
 		// 状态
 		State int `db:"state"`
+		// 备注
+		Remark string `db:"remark"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -282,9 +290,9 @@ type (
 		// 交易手续费
 		TradeFee int `db:"trade_fee"`
 		// 操作人员用户编号
-		OpUid int `db:"op_uid"`
+		OperatorId int `db:"opu_id"`
 		// 操作人员名称
-		OpName string `db:"op_name"`
+		OperatorName string `db:"opu_name"`
 		// 备注
 		Remark string `db:"remark"`
 		// 审核状态
