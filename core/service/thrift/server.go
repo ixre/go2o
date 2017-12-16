@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
 	"go2o/core/service/rsi"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 )
 
 func ListenAndServe(addr string, secure bool) error {
@@ -40,12 +40,13 @@ func ListenAndServe(addr string, secure bool) error {
 		processor.RegisterProcessor("member", define.NewMemberServiceProcessor(rsi.MemberService))
 		processor.RegisterProcessor("foundation", define.NewFoundationServiceProcessor(rsi.FoundationService))
 		processor.RegisterProcessor("payment", define.NewPaymentServiceProcessor(rsi.PaymentService))
-		processor.RegisterProcessor("sale", define.NewSaleServiceProcessor(rsi.ShoppingService))
+		processor.RegisterProcessor("order", define.NewOrderServiceProcessor(rsi.ShoppingService))
+		processor.RegisterProcessor("shipment", define.NewShipmentServiceProcessor(rsi.ShipmentService))
 		processor.RegisterProcessor("item", define.NewItemServiceProcessor(rsi.ItemService))
 		processor.RegisterProcessor("shop", define.NewShopServiceProcessor(rsi.ShopService))
 		processor.RegisterProcessor("finance", define.NewFinanceServiceProcessor(rsi.PersonFinanceService))
-		server := thrift.NewTSimpleServer4(processor, transport,
-			transportFactory, protocolFactory)
+		processor.RegisterProcessor("wallet", define.NewWalletServiceProcessor(rsi.WalletService))
+		server := thrift.NewTSimpleServer4(processor, transport, transportFactory, protocolFactory)
 		fmt.Println("Starting the thrift server... on ", addr)
 		err = server.Serve()
 	}

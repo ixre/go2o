@@ -2,11 +2,14 @@ namespace go define
 
 //传输结果对象
 struct Result{
-   1:i32 ID
-   2:bool Result
-   3:string Code
-   4:string Message
+   /* 状态码,如为0表示成功 */
+   1:i32 Code
+   /* 消息 */
+   2:string Message
+   /* 数据, 可以用来存放JSON字符串 */
+   3:string Data
 }
+
 //传输结果对象
 struct Result64{
    1:i64 ID
@@ -14,6 +17,7 @@ struct Result64{
    3:string Code
    4:string Message
 }
+
 //传输结果对象(Double)
 struct DResult{
    1:double Data
@@ -28,7 +32,11 @@ struct Pair{
    2:string Value
 }
 
+/** 百分比比例放大倍数  */
+const i32 RATE_PercentRate = 100
 
+/** 金额比例放大倍数  */
+const i32 RATE_Amount = 100
 
 //商品分类
 struct Category {
@@ -202,3 +210,29 @@ struct ShoppingCartItem {
 }
 
 
+
+/** 分页参数 */
+struct PagingParams{
+    /** 参数 */
+    1:map<string,string> Opt
+    /** 排序字段 */
+    2:string OrderField
+    /** 是否倒序排列 */
+    3:bool OrderDesc
+    /** 开始记录数 */
+    4:i32 Begin
+    /** 结束记录数 */
+    5:i32 Over
+}
+
+/** 分页结果 */
+struct PagingResult{
+    /** 代码 */
+    1:i32 Code
+    /** 消息 */
+    2:string Message
+    /** 总数 */
+    3:i32 Count
+    /** 数据 */
+    4:string Data
+}

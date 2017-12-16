@@ -1,3 +1,5 @@
+package rsi
+
 /**
  * Copyright 2015 @ z3q.net.
  * name : payment_service.go
@@ -6,14 +8,12 @@
  * description :
  * history :
  */
-package rsi
-
 import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/module"
-	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"go2o/gen-code/thrift/define"
 )
 
 type paymentService struct {
@@ -139,30 +139,24 @@ func (p *paymentService) FinishPayment(tradeNo string, spName string,
 	} else {
 		err = o.PaymentFinish(spName, outerNo)
 	}
-	return parser.Result(0, err), nil
+	return parser.Result(nil, err), nil
 }
 
 // 支付网关
 func (p *paymentService) GatewayV1(action string, userId int64, data map[string]string) (r *define.Result_, err error) {
 	mod := module.Get(module.M_PAY).(*module.PaymentModule)
-	rlt := &define.Result_{}
+	// 获取令牌
+	if action == "get_token" {
+		token := mod.CreateToken(userId)
+		return parser.Result(token, nil), nil
+	}
 	// 提交支付请求
 	if action == "submit" {
 		err = mod.Submit(userId, data)
-	}
-	// 获取令牌
-	if action == "get_token" {
-		rlt.Message = mod.CreateToken(userId)
 	}
 	// 验证支付
 	if action == "payment" {
 		err = mod.CheckAndPayment(userId, data)
 	}
-	if err != nil {
-		rlt.Result_ = false
-		rlt.Message = err.Error()
-	} else {
-		rlt.Result_ = true
-	}
-	return rlt, nil
+	return parser.Result(nil, err), nil
 }

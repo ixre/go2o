@@ -30,15 +30,10 @@ import (
 )
 
 var (
-	Repo *repoFactory = &repoFactory{}
+	Repo *RepoFactory = &RepoFactory{}
 )
 
-// 初始化仓储工厂
-func InitRepoFactory(db db.Connector, sto storage.Interface) {
-	Repo.Init(db, sto)
-}
-
-type repoFactory struct {
+type RepoFactory struct {
 	proMRepo   promodel.IProModelRepo
 	valueRepo  valueobject.IValueRepo
 	userRepo   user.IUserRepo
@@ -70,9 +65,9 @@ type repoFactory struct {
 	walletRepo wallet.IWalletRepo
 }
 
-func (r *repoFactory) Init(db db.Connector, sto storage.Interface) {
+func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory {
+	Repo = r
 	orm := db.GetOrm()
-
 	/** Repository **/
 	r.proMRepo = repository.NewProModelRepo(db, orm)
 	r.valueRepo = repository.NewValueRepo(db, sto)
@@ -91,11 +86,11 @@ func (r *repoFactory) Init(db db.Connector, sto storage.Interface) {
 	r.promRepo = repository.NewPromotionRepo(db, r.itemRepo, r.memberRepo)
 
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
-
+	r.walletRepo = repository.NewWalletRepo(db)
 	r.shopRepo = repository.NewShopRepo(db, sto, r.valueRepo)
 	r.wholesaleRepo = repository.NewWholesaleRepo(db)
 	r.mchRepo = repository.NewMerchantRepo(db, sto, r.wholesaleRepo,
-		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.valueRepo)
+		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo)
 	r.cartRepo = repository.NewCartRepo(db, r.memberRepo, r.mchRepo, r.itemRepo)
 	r.personFinanceRepo = repository.NewPersonFinanceRepository(db, r.memberRepo)
 	r.deliveryRepo = repository.NewDeliverRepo(db)
@@ -107,87 +102,89 @@ func (r *repoFactory) Init(db db.Connector, sto storage.Interface) {
 	r.paymentRepo = repository.NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.valueRepo)
 	r.asRepo = repository.NewAfterSalesRepo(db, r.orderRepo, r.memberRepo, r.paymentRepo)
 
-	r.walletRepo = repository.NewWalletRepo(db)
-
 	// 解决依赖
 	r.orderRepo.(*repository.OrderRepImpl).SetPaymentRepo(r.paymentRepo)
 	// 初始化数据
 	r.memberRepo.GetManager().GetAllBuyerGroups()
+	return r
 }
 
-func (r *repoFactory) GetIProModelRepo() promodel.IProModelRepo {
+func (r *RepoFactory) GetProModelRepo() promodel.IProModelRepo {
 	return r.proMRepo
 }
 
-func (r *repoFactory) GetValueRepo() valueobject.IValueRepo {
+func (r *RepoFactory) GetValueRepo() valueobject.IValueRepo {
 	return r.valueRepo
 }
-func (r *repoFactory) GetUserRepo() user.IUserRepo {
+func (r *RepoFactory) GetUserRepo() user.IUserRepo {
 	return r.userRepo
 }
-func (r *repoFactory) GetNotifyRepo() notify.INotifyRepo {
+func (r *RepoFactory) GetNotifyRepo() notify.INotifyRepo {
 	return r.notifyRepo
 }
-func (r *repoFactory) GetMssRepo() mss.IMssRepo {
+func (r *RepoFactory) GetMssRepo() mss.IMssRepo {
 	return r.mssRepo
 }
-func (r *repoFactory) GetExpressRepo() express.IExpressRepo {
+func (r *RepoFactory) GetExpressRepo() express.IExpressRepo {
 	return r.expressRepo
 }
-func (r *repoFactory) GetShipmentRepo() shipment.IShipmentRepo {
+func (r *RepoFactory) GetShipmentRepo() shipment.IShipmentRepo {
 	return r.shipRepo
 }
-func (r *repoFactory) GetMemberRepo() member.IMemberRepo {
+func (r *RepoFactory) GetMemberRepo() member.IMemberRepo {
 	return r.memberRepo
 }
-func (r *repoFactory) GetProductRepo() product.IProductRepo {
+func (r *RepoFactory) GetProductRepo() product.IProductRepo {
 	return r.productRepo
 }
-func (r *repoFactory) GetItemWholesaleRepo() item.IItemWholesaleRepo {
+func (r *RepoFactory) GetItemWholesaleRepo() item.IItemWholesaleRepo {
 	return r.itemWsRepo
 }
-func (r *repoFactory) GetCategoryRepo() product.ICategoryRepo {
+func (r *RepoFactory) GetCategoryRepo() product.ICategoryRepo {
 	return r.catRepo
 }
-func (r *repoFactory) GetGoodsItemRepo() item.IGoodsItemRepo {
+func (r *RepoFactory) GetItemRepo() item.IGoodsItemRepo {
 	return r.itemRepo
 }
-func (r *repoFactory) GetSaleLabelRepo() item.ISaleLabelRepo {
+func (r *RepoFactory) GetSaleLabelRepo() item.ISaleLabelRepo {
 	return r.tagSaleRepo
 }
-func (r *repoFactory) GetPromotionRepo() promotion.IPromotionRepo {
+func (r *RepoFactory) GetPromotionRepo() promotion.IPromotionRepo {
 	return r.promRepo
 }
-func (r *repoFactory) GetShopRepo() shop.IShopRepo {
+func (r *RepoFactory) GetShopRepo() shop.IShopRepo {
 	return r.shopRepo
 }
-func (r *repoFactory) GetWholesaleRepo() wholesaler.IWholesaleRepo {
+func (r *RepoFactory) GetWholesaleRepo() wholesaler.IWholesaleRepo {
 	return r.wholesaleRepo
 }
-func (r *repoFactory) GetMerchantRepo() merchant.IMerchantRepo {
+func (r *RepoFactory) GetMerchantRepo() merchant.IMerchantRepo {
 	return r.mchRepo
 }
-func (r *repoFactory) GetCartRepo() cart.ICartRepo {
+func (r *RepoFactory) GetCartRepo() cart.ICartRepo {
 	return r.cartRepo
 }
-func (r *repoFactory) GetPersonFinanceRepository() personfinance.IPersonFinanceRepository {
+func (r *RepoFactory) GetPersonFinanceRepository() personfinance.IPersonFinanceRepository {
 	return r.personFinanceRepo
 }
-func (r *repoFactory) GetDeliveryRepo() delivery.IDeliveryRepo {
+func (r *RepoFactory) GetDeliveryRepo() delivery.IDeliveryRepo {
 	return r.deliveryRepo
 }
-func (r *repoFactory) GetContentRepo() content.IContentRepo {
+func (r *RepoFactory) GetContentRepo() content.IContentRepo {
 	return r.contentRepo
 }
-func (r *repoFactory) GetAdRepo() ad.IAdRepo {
+func (r *RepoFactory) GetAdRepo() ad.IAdRepo {
 	return r.adRepo
 }
-func (r *repoFactory) GetOrderRepo() order.IOrderRepo {
+func (r *RepoFactory) GetOrderRepo() order.IOrderRepo {
 	return r.orderRepo
 }
-func (r *repoFactory) GetPaymentRepo() payment.IPaymentRepo {
+func (r *RepoFactory) GetPaymentRepo() payment.IPaymentRepo {
 	return r.paymentRepo
 }
-func (r *repoFactory) GetAfterSalesRepo() afterSales.IAfterSalesRepo {
+func (r *RepoFactory) GetAfterSalesRepo() afterSales.IAfterSalesRepo {
 	return r.asRepo
+}
+func (r *RepoFactory) GetWalletRepo() wallet.IWalletRepo {
+	return r.walletRepo
 }

@@ -12,7 +12,7 @@ import (
 
 // 测试零售购物车
 func TestRetailCart(t *testing.T) {
-	repo := ti.CartRepo
+	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KRetail)
 	joinItemsToCart(c, t)
 	if c.Kind() == cart.KRetail {
@@ -31,7 +31,7 @@ func TestRetailCart(t *testing.T) {
 
 // 测试合并购物车
 func TestCombineCart(t *testing.T) {
-	repo := ti.CartRepo
+	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KRetail)
 	//c2 := repo.NewRetailCart()
 
@@ -47,7 +47,7 @@ func TestCombineCart(t *testing.T) {
 func joinItemsToCart(c cart.ICart, t *testing.T) {
 	var itemId int64 = 66
 	itemId = 113
-	itemRepo := ti.ItemRepo
+	itemRepo := ti.Factory.GetItemRepo()
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
 	skuId := arr[0].ID
@@ -90,7 +90,7 @@ func GetCartCheckedData(c cart.ICart) string {
 
 // 测试批发购物车
 func TestWholesaleCart(t *testing.T) {
-	repo := ti.CartRepo
+	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KWholesale)
 	joinItemsToCart(c, t)
 	if c.Kind() == cart.KWholesale {

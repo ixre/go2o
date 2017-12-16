@@ -48,3 +48,9 @@ func TestI64ToStr(t *testing.T) {
 	s := strconv.Itoa(int(time.Now().UnixNano()))
 	t.Log(s)
 }
+
+// 求幂
+func TestPow(t *testing.T) {
+	i := 7
+	t.Log(i & 2)
+}

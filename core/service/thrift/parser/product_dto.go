@@ -2,7 +2,7 @@ package parser
 
 import (
 	"go2o/core/domain/interface/product"
-	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/gen-code/thrift/define"
 )
 
 func Category(src *define.Category) *product.Category {

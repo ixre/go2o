@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package idl
+package test
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-const entryFile = "service_idl.thrift"
+const entryFile = "../idl/service.thrift"
 
 // 生成Golang的Thrift代码
 func TestGo(t *testing.T) {

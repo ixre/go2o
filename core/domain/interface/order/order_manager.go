@@ -69,6 +69,7 @@ type (
 		BuyerReceived() error
 		// 获取订单日志
 		LogBytes() []byte
+		// 物流日志
 	}
 
 	IOrderRepo interface {

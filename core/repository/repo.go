@@ -24,7 +24,7 @@ var (
 func handleError(err error) error {
 	return domain.HandleError(err, "rep")
 	//if err != nil && gof.CurrentApp.Debug() {
-	//	gof.CurrentApp.Log().Println("[ Go2o][ Rep][ Error] -", err.Error())
+	//	gof.CurrentApp.Log().Println("[ Go2o][ Repo][ Error] -", err.Error())
 	//}
 	//return err
 }

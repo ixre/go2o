@@ -15,7 +15,6 @@ go2o_publish_*.conf
 uploads
 uploads/102
 uploads/103
-test*
 *.psd
 *.vpp*
 vpp

@@ -58,7 +58,7 @@ func logState(t *testing.T, err error, o order.IOrder) {
 
 func TestOrderSetup(t *testing.T) {
 	orderNo := "100000735578"
-	orderRepo := ti.OrderRepo
+	orderRepo := ti.Factory.GetOrderRepo()
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
 
@@ -102,7 +102,7 @@ func TestOrderSetup(t *testing.T) {
 }
 
 func TestCancelOrder(t *testing.T) {
-	repo := ti.CartRepo
+	repo := ti.Factory.GetCartRepo()
 	var buyerId int64 = 1
 	c := repo.GetMyCart(buyerId, cart.KRetail)
 	joinItemsToCart(c, t)
@@ -119,8 +119,8 @@ func TestCancelOrder(t *testing.T) {
 		t.FailNow()
 	}
 
-	orderRepo := ti.OrderRepo
-	mmRepo := ti.MemberRepo
+	orderRepo := ti.Factory.GetOrderRepo()
+	mmRepo := ti.Factory.GetMemberRepo()
 	manager := orderRepo.Manager()
 	m := mmRepo.GetMember(buyerId)
 	addressId := m.Profile().GetDefaultAddress().GetDomainId()
@@ -173,7 +173,7 @@ func TestCancelOrder(t *testing.T) {
 // 测试提交普通订单,并完成付款
 func TestSubmitNormalOrder(t *testing.T) {
 	var buyerId int64 = 1
-	cartRepo := ti.CartRepo
+	cartRepo := ti.Factory.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KRetail)
 	joinItemsToCart(c, t)
 	rc := c.(cart.IRetailCart)
@@ -190,9 +190,9 @@ func TestSubmitNormalOrder(t *testing.T) {
 		t.Error("保存购物车失败:", err.Error())
 		t.Fail()
 	}
-	orderRepo := ti.OrderRepo
+	orderRepo := ti.Factory.GetOrderRepo()
 	manager := orderRepo.Manager()
-	buyer := ti.MemberRepo.GetMember(buyerId)
+	buyer := ti.Factory.GetMemberRepo().GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
 
 	o, err := manager.SubmitOrder(c, addressId, "", !true)
@@ -209,7 +209,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 // 测试批发订单,并完成付款
 func TestWholesaleOrder(t *testing.T) {
 	var buyerId int64 = 1
-	cartRepo := ti.CartRepo
+	cartRepo := ti.Factory.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KWholesale)
 	joinItemsToCart(c, t)
 	rc := c.(cart.IWholesaleCart)
@@ -227,10 +227,10 @@ func TestWholesaleOrder(t *testing.T) {
 		t.Fail()
 	}
 
-	orderRepo := ti.OrderRepo
+	orderRepo := ti.Factory.GetOrderRepo()
 	manager := orderRepo.Manager()
 
-	buyer := ti.MemberRepo.GetMember(buyerId)
+	buyer := ti.Factory.GetMemberRepo().GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
 
 	data := map[string]string{
@@ -270,7 +270,7 @@ func TestWholesaleOrder(t *testing.T) {
 }
 
 func TestTradeOrder(t *testing.T) {
-	repo := ti.OrderRepo
+	repo := ti.Factory.GetOrderRepo()
 	manager := repo.Manager()
 	cashPay := true
 	requireTicket := true
