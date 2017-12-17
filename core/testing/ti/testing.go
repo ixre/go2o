@@ -81,7 +81,7 @@ func (t *testingApp) Db() db.Connector {
 			DBS_DB_NAME,
 			"utf8",
 		)
-		connector := db.NewSimpleConnector("mysql", connStr, t.Log(), 5000, false)
+		connector := db.NewSimpleConnector("mysql", connStr, t.Log(), 100, 20, false)
 		core.OrmMapping(connector)
 		t._dbConnector = connector
 	}

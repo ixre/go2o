@@ -290,9 +290,9 @@ type (
 		// 交易手续费
 		TradeFee int `db:"trade_fee"`
 		// 操作人员用户编号
-		OperatorId int `db:"opu_id"`
+		OperatorId int `db:"op_uid"`
 		// 操作人员名称
-		OperatorName string `db:"opu_name"`
+		OperatorName string `db:"op_name"`
 		// 备注
 		Remark string `db:"remark"`
 		// 审核状态
