@@ -140,7 +140,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		c.GetString(DbName),
 		dbCharset,
 	)
-	return db.NewSimpleConnector(driver, connStr, l, 5000, debug)
+	return db.NewSimpleConnector(driver, connStr, l, 5000, 1000, debug)
 }
 
 func CreateRedisPool(c *gof.Config) *redis.Pool {

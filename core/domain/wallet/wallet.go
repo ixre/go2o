@@ -547,13 +547,13 @@ func (w *WalletImpl) PagingLog(begin int, over int, opt map[string]string, sort 
 		}
 	}
 	// 添加操作人员筛选
-	if opuName, ok := opt["opu_name"]; ok {
-		where.WriteString(" AND opu_name='")
+	if opuName, ok := opt["op_name"]; ok {
+		where.WriteString(" AND op_name='")
 		where.WriteString(opuName)
 		where.WriteString("'")
 	}
-	if opuId, ok := opt["opu_id"]; ok {
-		where.WriteString(" AND opu_id='")
+	if opuId, ok := opt["op_uid"]; ok {
+		where.WriteString(" AND op_uid='")
 		where.WriteString(opuId)
 	}
 	return w._repo.PagingWalletLog(w.GetAggregateRootId(), w.NodeId(),
