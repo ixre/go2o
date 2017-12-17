@@ -230,11 +230,19 @@ func (b *Bank4E) b4eApi(realName, idCard, phone, bankAccount string) error {
 			}
 			// 打开重复信息验证
 			b.turnCheckInfo(true)
-			r1 := mp["result"].(map[string]interface{})
-			r2 := r1["result"].(map[string]interface{})
+			r1 := mp["result"]
+			if r1 == nil {
+				return errors.New("认证服务异常")
+			}
+			rm1 := r1.(map[string]interface{})
+			r2 := rm1["result"]
+			if r2 == nil {
+				return errors.New("认证服务异常")
+			}
+			rm2 := r2.(map[string]interface{})
 			//authResult := r2["result"].(string)
 			//authMsg := r2["message"].(string)
-			authResult := r2["result"].(string)
+			authResult := rm2["result"].(string)
 			if authResult == "F" {
 				return errors.New("信息不正确，认证未通过")
 			}
