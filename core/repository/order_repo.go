@@ -120,7 +120,7 @@ func (o *OrderRepImpl) GetFreeOrderNo(vendorId int32) string {
 	for {
 		order_no = domain.NewOrderNo(int(vendorId), "")
 		var rec int
-		if d.ExecScalar(`SELECT COUNT(0) FROM order_list where order_no=?`,
+		if d.ExecScalar(`SELECT id FROM order_list WHEre order_no=? LIMIT 1`,
 			&rec, order_no); rec == 0 {
 			break
 		}

@@ -496,7 +496,7 @@ func (m *MemberRepo) GetLevelValueByExp(mchId int32, exp int64) int {
 // 用户名是否存在
 func (m *MemberRepo) CheckUsrExist(usr string, memberId int64) bool {
 	var c int
-	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE usr=? AND id<>?",
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr=? AND id<>? LIMIT 1",
 		&c, usr, memberId)
 	return c != 0
 }
