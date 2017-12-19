@@ -836,7 +836,6 @@ ALTER TABLE `order_wholesale_order`
 ALTER TABLE `sale_sub_order`
   CHANGE COLUMN `buyer_remark` `buyer_comment` VARCHAR(120) NOT NULL COMMENT '订单买家备注' AFTER `is_suspend`;
 
-
 CREATE TABLE wal_wallet (
   id              int(11) NOT NULL AUTO_INCREMENT comment '钱包编号',
   hash_code       varchar(40) NOT NULL comment '哈希值',
@@ -878,4 +877,5 @@ CREATE TABLE wal_wallet_log (
   create_time   int(11) NOT NULL comment '创建时间',
   update_time   int(11) NOT NULL comment '更新时间',
   PRIMARY KEY (id)) comment='钱包日志';
+
 
