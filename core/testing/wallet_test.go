@@ -127,7 +127,7 @@ func TestAdjustWallet(t *testing.T) {
 func TestTakeOutWalletFail(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
-	var amount int = 10000
+	var amount = 10000
 	balance := wlt.Get().Balance
 	id, _, err := wlt.RequestTakeOut(-amount, 200, wallet.KTakeOutToBankCard, "提现到银行卡")
 	if err != nil {

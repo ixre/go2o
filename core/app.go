@@ -17,6 +17,7 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
+	"time"
 )
 
 var (
@@ -140,7 +141,11 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		c.GetString(DbName),
 		dbCharset,
 	)
-	return db.NewSimpleConnector(driver, connStr, l, 5000, 1000, debug)
+	conn := db.NewConnector(driver, connStr, l, debug)
+	conn.SetMaxIdleConns(10000)
+	conn.SetMaxIdleConns(5000)
+	conn.SetConnMaxLifetime(time.Second * 10)
+	return conn
 }
 
 func CreateRedisPool(c *gof.Config) *redis.Pool {
