@@ -55,6 +55,7 @@ type normalOrderImpl struct {
 	productRepo     product.IProductRepo
 	promRepo        promotion.IPromotionRepo
 	valRepo         valueobject.IValueRepo
+	cartRepo        cart.ICartRepo
 	// 运营商商品映射,用于整理购物车
 	vendorItemsMap map[int32][]*order.SubOrderItem
 	// 运营商与邮费的MAP
@@ -67,7 +68,7 @@ type normalOrderImpl struct {
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
-	valRepo valueobject.IValueRepo) order.IOrder {
+	cartRepo cart.ICartRepo, valRepo valueobject.IValueRepo) order.IOrder {
 	return &normalOrderImpl{
 		baseOrderImpl: base,
 		manager:       shopping,
@@ -78,6 +79,7 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 		valRepo:       valRepo,
 		expressRepo:   expressRepo,
 		payRepo:       payRepo,
+		cartRepo:      cartRepo,
 	}
 }
 
@@ -182,8 +184,8 @@ func (o *normalOrderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 
 		//todo: 将购物车中的vendor均获取出来
 		var mchId int32 = -1
-		var vp []*promotion.PromotionInfo = o.promRepo.GetPromotionOfMerchantOrder(mchId)
-		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
+		var vp = o.promRepo.GetPromotionOfMerchantOrder(mchId)
+		var proms = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {
 			proms[i] = o.promRepo.CreatePromotion(v)
 		}
@@ -485,6 +487,22 @@ func (o *normalOrderImpl) Submit() error {
 	return err
 }
 
+// 通过订单创建购物车
+func (o *normalOrderImpl) BuildCart() cart.ICart {
+	bv := o.baseOrderImpl.baseValue
+	//v := o.value
+	unix := time.Now().Unix()
+	vc := &cart.RetailCart{
+		BuyerId:    bv.BuyerId,
+		PaymentOpt: 1,
+		DeliverId:  0,
+		CreateTime: unix,
+		UpdateTime: unix,
+		Items:      []*cart.RetailCartItem{},
+	}
+	return o.cartRepo.CreateRetailCart(vc)
+}
+
 // 平均优惠抵扣金额到商品
 func (o *normalOrderImpl) avgDiscountToItem() {
 	if o.vendorItemsMap == nil {
@@ -545,7 +563,7 @@ func (o *normalOrderImpl) bindPromotionOnSubmit(orderNo string,
 func (o *normalOrderImpl) applyCartPromotionOnSubmit(vo *order.NormalOrder,
 	cart cart.ICart) ([]promotion.IPromotion, int) {
 	//todo: 促销
-	var proms []promotion.IPromotion = make([]promotion.IPromotion, 0)
+	var proms = make([]promotion.IPromotion, 0)
 	//var prom promotion.IPromotion
 	//var saveFee int
 	var totalSaveFee int
@@ -600,7 +618,7 @@ func (o *normalOrderImpl) cloneCoupon(src *order.OrderCoupon, coupon promotion.I
 
 // 绑定订单与优惠券
 func (o *normalOrderImpl) bindCouponOnSubmit(orderNo string) {
-	var oc *order.OrderCoupon = new(order.OrderCoupon)
+	var oc = new(order.OrderCoupon)
 	for _, c := range o.GetCoupons() {
 		o.cloneCoupon(oc, c, int32(o.GetAggregateRootId()),
 			o.value.FinalAmount)
@@ -650,7 +668,7 @@ func (o *normalOrderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
 }
 
 // 获取Json格式的商品数据
-func (c *normalOrderImpl) getJsonItems() []byte {
+func (o *normalOrderImpl) getJsonItems() []byte {
 	//todo:??? 订单商品JSON表示
 	return []byte("{}")
 	//var goods []*order.OrderGoods = make([]*order.OrderGoods, len(c.value.Items))
@@ -975,7 +993,7 @@ func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexIte
 		Data:           make(map[string]string),
 	}
 	base := o.baseOrder().(*normalOrderImpl)
-	base.baseOrderImpl.BindItemInfo(it)
+	base.baseOrderImpl.bindItemInfo(it)
 	return it
 }
 
@@ -1271,8 +1289,8 @@ func (o *subOrderImpl) BuyerReceived() error {
 	return err
 }
 
-func (s *subOrderImpl) getOrderAmount() (amount float32, refund float32) {
-	items := s.Items()
+func (o *subOrderImpl) getOrderAmount() (amount float32, refund float32) {
+	items := o.Items()
 	for _, item := range items {
 		if item.ReturnQuantity > 0 {
 			a := item.Amount / float32(item.Quantity) * float32(item.ReturnQuantity)
@@ -1286,36 +1304,36 @@ func (s *subOrderImpl) getOrderAmount() (amount float32, refund float32) {
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if amount > 0 {
-		amount += s.value.ExpressFee + s.value.PackageFee
+		amount += o.value.ExpressFee + o.value.PackageFee
 	}
 	return amount, refund
 }
 
 // 获取订单的成本
-func (s *subOrderImpl) getOrderCost() float32 {
+func (o *subOrderImpl) getOrderCost() float32 {
 	var cost float32
-	items := s.Items()
+	items := o.Items()
 	for _, item := range items {
-		snap := s.itemRepo.GetSalesSnapshot(item.SnapshotId)
+		snap := o.itemRepo.GetSalesSnapshot(item.SnapshotId)
 		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if cost > 0 {
-		cost += s.value.ExpressFee + s.value.PackageFee
+		cost += o.value.ExpressFee + o.value.PackageFee
 	}
 	return cost
 }
 
 // 商户结算
-func (s *subOrderImpl) vendorSettle() error {
-	vendor := s.mchRepo.GetMerchant(s.value.VendorId)
+func (o *subOrderImpl) vendorSettle() error {
+	vendor := o.mchRepo.GetMerchant(o.value.VendorId)
 	if vendor != nil {
-		conf := s.valRepo.GetGlobMchSaleConf()
+		conf := o.valRepo.GetGlobMchSaleConf()
 		switch conf.MchOrderSettleMode {
 		case enum.MchModeSettleByCost:
-			return s.vendorSettleByCost(vendor)
+			return o.vendorSettleByCost(vendor)
 		case enum.MchModeSettleByRate:
-			return s.vendorSettleByRate(vendor, conf.MchOrderSettleRate)
+			return o.vendorSettleByRate(vendor, conf.MchOrderSettleRate)
 		}
 
 	}
@@ -1323,22 +1341,22 @@ func (s *subOrderImpl) vendorSettle() error {
 }
 
 // 根据供货价进行商户结算
-func (s *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
-	_, refund := s.getOrderAmount()
-	sAmount := s.getOrderCost()
+func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
+	_, refund := o.getOrderAmount()
+	sAmount := o.getOrderCost()
 	if sAmount > 0 {
-		return vendor.Account().SettleOrder(s.value.OrderNo,
+		return vendor.Account().SettleOrder(o.value.OrderNo,
 			sAmount, 0, refund, "订单结算")
 	}
 	return nil
 }
 
 // 根据比例进行商户结算
-func (s *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float32) error {
-	amount, refund := s.getOrderAmount()
+func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float32) error {
+	amount, refund := o.getOrderAmount()
 	sAmount := amount * rate
 	if sAmount > 0 {
-		return vendor.Account().SettleOrder(s.value.OrderNo,
+		return vendor.Account().SettleOrder(o.value.OrderNo,
 			sAmount, 0, refund, "订单结算")
 	}
 	return nil

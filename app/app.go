@@ -65,7 +65,7 @@ var (
 		FlagPassportServe | FlagShopServe
 
 	// 网站模板文件监视
-	webFs map[int]bool = make(map[int]bool)
+	webFs = make(map[int]bool)
 )
 
 type CustomConfig func(gof.App, int) error
@@ -117,20 +117,6 @@ func FsInit(debug bool) {
 	}
 }
 
-// 重设MAC OX下的文件监视更改
-func resetFsOnDarwin() {
-	webFs[FsPortal] = false
-	webFs[FsPortalMobile] = false
-	webFs[FsPassport] = false
-	webFs[FsPassportMobile] = false
-	webFs[FsUCenter] = false
-	webFs[FsUCenterMobile] = !false
-	webFs[FsShop] = false
-	webFs[FsShopMobile] = false
-	webFs[FsMch] = false
-	webFs[FsWholesale] = false
-}
-
 // 获取模板是否监视更改
 func GetFs(i int) bool {
 	return webFs[i]
@@ -159,4 +145,18 @@ func execInstall() error {
 		log.Println("[ Go2o][ Install]:", err)
 	}
 	return err
+}
+
+// 重设MAC OX下的文件监视更改
+func resetFsOnDarwin() {
+	webFs[FsPortal] = false
+	webFs[FsPortalMobile] = false
+	webFs[FsPassport] = false
+	webFs[FsPassportMobile] = false
+	webFs[FsUCenter] = false
+	webFs[FsUCenterMobile] = !false
+	webFs[FsShop] = false
+	webFs[FsShopMobile] = false
+	webFs[FsMch] = false
+	webFs[FsWholesale] = false
 }

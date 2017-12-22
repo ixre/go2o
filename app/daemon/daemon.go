@@ -57,14 +57,14 @@ type Service interface {
 
 var (
 	appCtx           *core.AppImpl
-	_db              db.Connector
+	conn             db.Connector
 	_orm             orm.Orm
-	services         []Service      = make([]Service, 0)
-	serviceNames     map[string]int = make(map[string]int)
-	tickerDuration   time.Duration  = 20 * time.Second // 间隔20秒执行
-	tickerInvokeFunc []Func         = []Func{}
-	cronTab          *cron.Cron     = cron.New()
-	ticker           *time.Ticker   = time.NewTicker(tickerDuration)
+	services         []Service
+	serviceNames     = make(map[string]int)
+	tickerDuration   = 20 * time.Second // 间隔20秒执行
+	tickerInvokeFunc []Func
+	cronTab          = cron.New()
+	ticker           = time.NewTicker(tickerDuration)
 	mux              sync.Mutex
 )
 
@@ -218,13 +218,13 @@ func (d *defaultService) OrderObs(o *define.ComplexOrder) bool {
 		//订单未支付，则超时自动取消
 		case order.StatAwaitingPayment:
 			d.updateOrderExpires(conn, o)
-		//自动确认订单
+			//自动确认订单
 		case order.StatAwaitingConfirm:
 			d.orderAutoConfirm(conn, o)
-		//订单自动收货
+			//订单自动收货
 		case order.StatShipped:
 			d.orderAutoReceive(conn, o)
-		//订单已经收货
+			//订单已经收货
 		case order.StatCompleted:
 			d.orderReceived(conn, o)
 		}
@@ -343,8 +343,8 @@ func Run(ctx gof.App) {
 	} else {
 		appCtx = core.NewApp("app.conf")
 	}
-	_db = appCtx.Db()
-	_orm = _db.GetOrm()
+	conn = appCtx.Db()
+	_orm = conn.GetOrm()
 	sMail := appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
 	//sMail := cnf.GetString(variable.)
 
@@ -363,8 +363,8 @@ func FlagRun() {
 	var debug bool
 	var trace bool
 	var service string
-	var serviceArr []string = []string{"mail", "order"}
-	var ch chan bool = make(chan bool)
+	var serviceArr = []string{"mail", "order"}
+	var ch = make(chan bool)
 	flag.StringVar(&conf, "conf", "app.conf", "")
 	flag.BoolVar(&debug, "debug", true, "")
 	flag.BoolVar(&trace, "trace", true, "")
@@ -376,8 +376,8 @@ func FlagRun() {
 	core.Init(appCtx, debug, trace)
 	gof.CurrentApp = appCtx
 
-	_db = appCtx.Db()
-	_orm = _db.GetOrm()
+	conn = appCtx.Db()
+	_orm = conn.GetOrm()
 
 	rsi.Init(appCtx, app.FlagDaemon)
 

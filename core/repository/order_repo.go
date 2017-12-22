@@ -100,9 +100,9 @@ func (o *OrderRepImpl) Manager() order.IOrderManager {
 
 // 生成订单
 func (o *OrderRepImpl) CreateOrder(val *order.Order) order.IOrder {
-	return orderImpl.FactoryNew(val, o.Manager(), o, o._mchRepo, o._goodsRepo,
+	return orderImpl.FactoryOrder(val, o.Manager(), o, o._mchRepo, o._goodsRepo,
 		o._productRepo, o._promRepo, o._memberRepo, o._expressRepo,
-		o._shipRepo, o._payRepo, o._valRepo)
+		o._shipRepo, o._payRepo, o._cartRepo, o._valRepo)
 }
 
 // 生成空白订单,并保存返回对象

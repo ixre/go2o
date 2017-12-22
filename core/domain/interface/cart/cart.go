@@ -122,6 +122,8 @@ type (
 		GetMyCart(buyerId int64, k CartKind) ICart
 		// 创建一个购物车
 		NewRetailCart(code string) ICart
+		// 创建一个零售购物车
+		CreateRetailCart(r *RetailCart) ICart
 		// 获取购物车
 		GetRetailCart(id int32) ICart
 
