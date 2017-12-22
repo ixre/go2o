@@ -109,7 +109,7 @@ func (w *cartRepo) getWholesaleCart(buyerId int64) *cart.WsCart {
 }
 
 // 创建购物车对象
-func (c *cartRepo) createRetailCart(v *cart.RetailCart) cart.ICart {
+func (c *cartRepo) CreateRetailCart(v *cart.RetailCart) cart.ICart {
 	return cartImpl.CreateCart(v, c, c._memberRepo, c._itemRepo)
 }
 
@@ -122,7 +122,7 @@ func (c *cartRepo) NewRetailCart(code string) cart.ICart {
 func (c *cartRepo) GetRetailCart(id int32) cart.ICart {
 	v := c.getSaleCart(id)
 	if v != nil {
-		return c.createRetailCart(v)
+		return c.CreateRetailCart(v)
 	}
 	return nil
 }
@@ -212,7 +212,7 @@ func (s *cartRepo) BatchDeleteRetailCartItem(where string, v ...interface{}) (in
 func (c *cartRepo) GetShoppingCartByKey(key string) cart.ICart {
 	ca := c.GetShoppingCart(key)
 	if ca != nil {
-		return c.createRetailCart(ca)
+		return c.CreateRetailCart(ca)
 	}
 	return nil
 }

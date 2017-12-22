@@ -56,7 +56,7 @@ func confirmTransferIn(t time.Time) {
 	size := 20
 	for {
 		idArr := []int32{}
-		err := _db.Query(`SELECT id FROM pf_riselog WHERE
+		err := conn.Query(`SELECT id FROM pf_riselog WHERE
 		unix_date<=? AND type=? AND state=? LIMIT ?,?`,
 			func(rows *sql.Rows) {
 				var i int32
@@ -118,7 +118,7 @@ func settleRiseData(settleDate time.Time) {
 	size := 20
 	for {
 		idArr := []int64{}
-		err := _db.Query(`SELECT person_id FROM pf_riseinfo WHERE
+		err := conn.Query(`SELECT person_id FROM pf_riseinfo WHERE
             settlement_amount > 0 AND settled_date < ? LIMIT ?,?`,
 			func(rows *sql.Rows) {
 				var i int64
