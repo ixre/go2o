@@ -13,7 +13,6 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/payment"
-	"go2o/core/domain/interface/promotion"
 	"go2o/core/infrastructure/domain"
 )
 
@@ -136,95 +135,95 @@ func (o LogType) String() string {
 }
 
 var (
-	ErrNoCheckedItem *domain.DomainError = domain.NewDomainError(
+	ErrNoCheckedItem = domain.NewDomainError(
 		"err_order_no_checked_item", "没有可结算的商品")
 
-	ErrRequireCart *domain.DomainError = domain.NewDomainError(
+	ErrRequireCart = domain.NewDomainError(
 		"err_require_cart", "订单已生成,无法引入购物车")
 
-	ErrNoSuchOrder *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchOrder = domain.NewDomainError(
 		"err_no_such_order", "订单不存在")
 
-	ErrOrderPayed *domain.DomainError = domain.NewDomainError(
+	ErrOrderPayed = domain.NewDomainError(
 		"err_order_payed ", "订单已支付")
 
-	ErrNoYetCreated *domain.DomainError = domain.NewDomainError(
+	ErrNoYetCreated = domain.NewDomainError(
 		"err_order_not_yet_created ", "订单尚未生成")
 
-	ErrUnusualOrder *domain.DomainError = domain.NewDomainError(
+	ErrUnusualOrder = domain.NewDomainError(
 		"err_unusual_order", "订单异常")
 
-	ErrMissingShipAddress *domain.DomainError = domain.NewDomainError(
+	ErrMissingShipAddress = domain.NewDomainError(
 		"err_missing_ship_address", "未设置收货地址")
 
-	ErrUnusualOrderStat *domain.DomainError = domain.NewDomainError(
+	ErrUnusualOrderStat = domain.NewDomainError(
 		"err_except_order_stat", "订单状态不匹配、无法执行此操作!")
 
-	ErrPartialShipment *domain.DomainError = domain.NewDomainError(
+	ErrPartialShipment = domain.NewDomainError(
 		"err_order_partial_shipment", "订单部分商品已经发货")
 
-	ErrOrderNotPayed *domain.DomainError = domain.NewDomainError(
+	ErrOrderNotPayed = domain.NewDomainError(
 		"err_order_not_payed ", "订单未支付")
 
-	ErrOutOfQuantity *domain.DomainError = domain.NewDomainError(
+	ErrOutOfQuantity = domain.NewDomainError(
 		"err_order_out_of_quantity", "超出数量")
-	ErrNoSuchGoodsOfOrder *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchGoodsOfOrder = domain.NewDomainError(
 		"err_order_no_such_goods_of_order", "订单中不包括该商品")
-	ErrOrderHasConfirm *domain.DomainError = domain.NewDomainError(
+	ErrOrderHasConfirm = domain.NewDomainError(
 		"err_order_has_confirm", "订单已经确认")
 
-	ErrOrderNotConfirm *domain.DomainError = domain.NewDomainError(
+	ErrOrderNotConfirm = domain.NewDomainError(
 		"err_order_not_confirm", "请等待系统确认")
 
-	ErrOrderHasPickUp *domain.DomainError = domain.NewDomainError(
+	ErrOrderHasPickUp = domain.NewDomainError(
 		"err_order_has_pick_up", "订单已经备货")
 
-	ErrOrderNotPickUp *domain.DomainError = domain.NewDomainError(
+	ErrOrderNotPickUp = domain.NewDomainError(
 		"err_order_not_pick_up", "请等待商品备货")
 
-	ErrNoSuchAddress *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchAddress = domain.NewDomainError(
 		"err_order_no_address", "请选择收货地址")
 
-	ErrOrderShipped *domain.DomainError = domain.NewDomainError(
+	ErrOrderShipped = domain.NewDomainError(
 		"err_order_shipped", "订单已经发货")
 
-	ErrOrderNotShipped *domain.DomainError = domain.NewDomainError(
+	ErrOrderNotShipped = domain.NewDomainError(
 		"err_order_not_shipped", "订单尚未发货")
 
-	ErrIsCompleted *domain.DomainError = domain.NewDomainError(
+	ErrIsCompleted = domain.NewDomainError(
 		"err_order_is_completed", "订单已经完成")
 
-	ErrOrderBreakUpFail *domain.DomainError = domain.NewDomainError(
+	ErrOrderBreakUpFail = domain.NewDomainError(
 		"err_order_break_up_fail", "拆分订单操作失败")
 
-	ErrPromotionApplied *domain.DomainError = domain.NewDomainError(
+	ErrPromotionApplied = domain.NewDomainError(
 		"err_promotion_applied", "已经使用相同的促销")
 
-	ErrEmptyReason *domain.DomainError = domain.NewDomainError(
+	ErrEmptyReason = domain.NewDomainError(
 		"err_order_empty_reason", "原因不能为空")
 
-	ErrOrderCancelled *domain.DomainError = domain.NewDomainError(
+	ErrOrderCancelled = domain.NewDomainError(
 		"err_order_can_not_cancel", "订单已经取消")
 
-	ErrOrderShippedCancel *domain.DomainError = domain.NewDomainError(
+	ErrOrderShippedCancel = domain.NewDomainError(
 		"err_order_shipped_cancel", "订单已发货，无法取消")
 
-	ErrHasRefund *domain.DomainError = domain.NewDomainError(
+	ErrHasRefund = domain.NewDomainError(
 		"err_order_has_refund", "订单已经退款")
 
-	ErrDisallowRefund *domain.DomainError = domain.NewDomainError(
+	ErrDisallowRefund = domain.NewDomainError(
 		"err_order_disallow_refund", "订单不允许退款")
 
-	ErrTradeRateLessZero *domain.DomainError = domain.NewDomainError(
+	ErrTradeRateLessZero = domain.NewDomainError(
 		"err_order_trade_rate_less_zero", "交易类订单结算比例不能小于零")
 
-	ErrTradeRateMoreThan100 *domain.DomainError = domain.NewDomainError(
+	ErrTradeRateMoreThan100 = domain.NewDomainError(
 		"err_order_trade_rate_more_than_100", "交易类订单结算比例必须小于或等于100%")
 
-	ErrMissingSubject *domain.DomainError = domain.NewDomainError(
+	ErrMissingSubject = domain.NewDomainError(
 		"err_order_missing_subject", "缺少订单标题")
 
-	ErrTicketImage *domain.DomainError = domain.NewDomainError(
+	ErrTicketImage = domain.NewDomainError(
 		"err_order_ticket_image", "请上传正确的发票凭证")
 )
 
@@ -244,80 +243,8 @@ type (
 		Complex() *ComplexOrder
 		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
-	}
-
-	// 普通订单
-	INormalOrder interface {
-		// 读取购物车数据,用于预生成订单
-		RequireCart(c cart.ICart) error
-		// 根据运营商获取商品和运费信息,限未生成的订单
-		GetByVendor() (items map[int32][]*SubOrderItem, expressFee map[int32]float32)
-		// 获取支付单
-		GetPaymentOrder() payment.IPaymentOrder
-		// 在线支付交易完成
-		OnlinePaymentTradeFinish() error
-		// 设置配送地址
-		SetAddress(addressId int64) error
-		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
-		Submit() error
-
-		//根据运营商拆单,返回拆单结果,及拆分的订单数组
-		//BreakUpByVendor() ([]IOrder, error)
-
-		// 获取子订单列表
-		GetSubOrders() []ISubOrder
-		// 应用优惠券
-		ApplyCoupon(coupon promotion.ICouponPromotion) error
-		// 获取应用的优惠券
-		GetCoupons() []promotion.ICouponPromotion
-		// 获取可用的促销,不包含优惠券
-		GetAvailableOrderPromotions() []promotion.IPromotion
-		// 获取最省的促销
-		GetBestSavePromotion() (p promotion.IPromotion,
-			saveFee float32, integral int)
-		// 获取促销绑定
-		GetPromotionBinds() []*OrderPromotionBind
-	}
-
-	// 子订单(普通订单拆分)
-	ISubOrder interface {
-		// 获取领域对象编号
-		GetDomainId() int64
-		// 获取值对象
-		GetValue() *NormalSubOrder
-		// 复合的订单信息
-		Complex() *ComplexOrder
-
-		// 获取商品项
-		Items() []*SubOrderItem
-		// 在线支付交易完成
-		PaymentFinishByOnlineTrade() error
-		// 记录订单日志
-		AppendLog(logType LogType, system bool, message string) error
-		// 添加备注
-		AddRemark(string)
-		// 确认订单
-		Confirm() error
-		// 捡货(备货)
-		PickUp() error
-		// 发货
-		Ship(spId int32, spOrder string) error
-		// 已收货
-		BuyerReceived() error
-		// 获取订单的日志
-		LogBytes() []byte
-		// 挂起
-		Suspend(reason string) error
-		// 取消订单/退款
-		Cancel(reason string) error
-		// 退回商品
-		Return(snapshotId int64, quantity int32) error
-		// 撤销退回商品
-		RevertReturn(snapshotId int64, quantity int32) error
-		// 谢绝订单
-		Decline(reason string) error
-		// 提交子订单
-		Submit() (int64, error)
+		// 通过订单创建购物车 */
+		BuildCart() cart.ICart
 	}
 
 	// 批发订单
@@ -466,114 +393,6 @@ type (
 		ItemId   int32
 		SkuId    int32
 		Quantity int32
-	}
-
-	// 普通订单
-	NormalOrder struct {
-		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
-		// 订单编号
-		OrderId int64 `db:"order_id"`
-		// 商品金额
-		ItemAmount float32 `db:"item_amount"`
-		// 优惠减免金额
-		DiscountAmount float32 `db:"discount_amount" json:"discountFee"`
-		// 运费
-		ExpressFee float32 `db:"express_fee"`
-		// 包装费用
-		PackageFee float32 `db:"package_fee"`
-		// 实际金额
-		FinalAmount float32 `db:"final_amount" json:"fee"`
-		// 收货人
-		ConsigneePerson string `db:"consignee_person" json:"deliverName"`
-		// 收货人联系电话
-		ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
-		// 收货地址
-		ShippingAddress string `db:"shipping_address" json:"deliverAddress"`
-		// 订单是否拆分
-		IsBreak int32 `db:"is_break"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
-	}
-
-	// 子订单
-	NormalSubOrder struct {
-		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
-		// 订单号
-		OrderNo string `db:"order_no"`
-		// 订单编号
-		OrderId int64 `db:"order_id"`
-		// 购买人编号(冗余,便于商户处理数据)
-		BuyerId int64 `db:"buyer_id"`
-		// 运营商编号
-		VendorId int32 `db:"vendor_id" json:"vendorId"`
-		// 店铺编号
-		ShopId int32 `db:"shop_id" json:"shopId"`
-		// 订单标题
-		Subject string `db:"subject" json:"subject"`
-		// 商品金额
-		ItemAmount float32 `db:"item_amount"`
-		// 优惠减免金额
-		DiscountAmount float32 `db:"discount_amount" json:"discountFee"`
-		// 运费
-		ExpressFee float32 `db:"express_fee"`
-		// 包装费用
-		PackageFee float32 `db:"package_fee"`
-		// 实际金额
-		FinalAmount float32 `db:"final_amount" json:"fee"`
-		// 是否支付
-		IsPaid int `db:"is_paid"`
-		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend int `db:"is_suspend" json:"is_suspend"`
-		// 顾客备注
-		BuyerComment string `db:"buyer_comment"`
-		// 系统备注
-		Remark string `db:"remark" json:"remark"`
-		// 订单状态
-		State int32 `db:"state" json:"state"`
-		// 下单时间
-		CreateTime int64 `db:"create_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
-		// 订单项
-		Items []*SubOrderItem `db:"-"`
-	}
-
-	// 订单商品项
-	SubOrderItem struct {
-		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
-		// 订单编号
-		OrderId int64 `db:"order_id"`
-		// 商品编号
-		ItemId int64 `db:"item_id"`
-		// 商品SKU编号
-		SkuId int64 `db:"sku_id"`
-		// 快照编号
-		SnapshotId int64 `db:"snap_id"`
-		// 数量
-		Quantity int32 `db:"quantity"`
-		// 退回数量(退货)
-		ReturnQuantity int32 `db:"return_quantity"`
-		// 金额
-		Amount float32 `db:"amount"`
-		// 最终金额, 可能会有优惠均摊抵扣的金额
-		FinalAmount float32 `db:"final_amount"`
-		// 是否发货
-		IsShipped int32 `db:"is_shipped"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-		// 运营商编号
-		VendorId int32 `db:"-"`
-		// 商店编号
-		ShopId int32 `db:"-"`
-		// 重量,用于生成订单时存储数据
-		Weight int32 `db:"-"`
-		// 体积:毫升(ml)
-		Bulk int32 `db:"-"`
-		// 快递模板编号
-		ExpressTplId int32 `db:"-"`
 	}
 
 	// 批发订单

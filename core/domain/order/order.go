@@ -2,6 +2,7 @@ package order
 
 import (
 	"errors"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
@@ -105,6 +106,11 @@ func (o *baseOrderImpl) Submit() error {
 	return o.saveOrder()
 }
 
+// 通过订单创建购物车
+func (o *baseOrderImpl) BuildCart() cart.ICart {
+	panic("implement in sub class")
+}
+
 // 获取订单号
 func (o *baseOrderImpl) OrderNo() string {
 	return o.baseValue.OrderNo
@@ -128,7 +134,7 @@ func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
 }
 
 // 绑定商品信息
-func (o *baseOrderImpl) BindItemInfo(i *order.ComplexItem) {
+func (o *baseOrderImpl) bindItemInfo(i *order.ComplexItem) {
 	unitPrice := i.FinalAmount / float64(i.Quantity)
 	i.Data["UnitPrice"] = format.DecimalToString(unitPrice)
 	it := o.itemRepo.GetSalesSnapshot(i.SnapshotId)
@@ -179,12 +185,13 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.PaymentOrder {
 }
 
 // 工厂方法生成订单
-func FactoryNew(v *order.Order, manager order.IOrderManager,
+func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	repo order.IOrderRepo, mchRepo merchant.IMerchantRepo,
 	itemRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
-	payRepo payment.IPaymentRepo, valRepo valueobject.IValueRepo) order.IOrder {
+	payRepo payment.IPaymentRepo, cartRepo cart.ICartRepo,
+	valRepo valueobject.IValueRepo) order.IOrder {
 	b := &baseOrderImpl{
 		baseValue:  v,
 		repo:       repo,
@@ -197,7 +204,7 @@ func FactoryNew(v *order.Order, manager order.IOrderManager,
 	case order.TRetail:
 		return newNormalOrder(manager, b, repo, itemRepo,
 			productRepo, promRepo, expressRepo,
-			payRepo, valRepo)
+			payRepo, cartRepo, valRepo)
 	case order.TWholesale:
 		return newWholesaleOrder(b, repo, itemRepo,
 			expressRepo, payRepo, shipRepo, mchRepo, valRepo)

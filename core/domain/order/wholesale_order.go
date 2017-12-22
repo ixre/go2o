@@ -202,7 +202,7 @@ func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.Com
 		IsShipped:      i.IsShipped,
 		Data:           make(map[string]string),
 	}
-	o.baseOrderImpl.BindItemInfo(it)
+	o.baseOrderImpl.bindItemInfo(it)
 	return it
 }
 
