@@ -65,12 +65,12 @@ type RepoFactory struct {
 	walletRepo wallet.IWalletRepo
 }
 
-func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory {
+func (r *RepoFactory) Init(db db.Connector, sto storage.Interface,confPath string) *RepoFactory {
 	Repo = r
 	orm := db.GetOrm()
 	/** Repository **/
 	r.proMRepo = repository.NewProModelRepo(db, orm)
-	r.valueRepo = repository.NewValueRepo(db, sto)
+	r.valueRepo = repository.NewValueRepo(confPath,db, sto)
 	r.userRepo = repository.NewUserRepo(db)
 	r.notifyRepo = repository.NewNotifyRepo(db)
 	r.mssRepo = repository.NewMssRepo(db, r.notifyRepo, r.valueRepo)

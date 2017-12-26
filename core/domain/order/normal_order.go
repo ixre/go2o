@@ -495,10 +495,21 @@ func (o *normalOrderImpl) BuildCart() cart.ICart {
 	vc := &cart.RetailCart{
 		BuyerId:    bv.BuyerId,
 		PaymentOpt: 1,
-		DeliverId:  0,
 		CreateTime: unix,
 		UpdateTime: unix,
 		Items:      []*cart.RetailCartItem{},
+	}
+	for _, s := range o.GetSubOrders() {
+		for _, v := range s.Items() {
+			vc.Items = append(vc.Items, &cart.RetailCartItem{
+				VendorId: s.GetValue().VendorId,
+				ShopId:   s.GetValue().ShopId,
+				ItemId:   v.ItemId,
+				SkuId:    v.SkuId,
+				Quantity: v.Quantity,
+				Checked:  1,
+			})
+		}
 	}
 	return o.cartRepo.CreateRetailCart(vc)
 }

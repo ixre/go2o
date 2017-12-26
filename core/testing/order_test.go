@@ -206,6 +206,27 @@ func TestSubmitNormalOrder(t *testing.T) {
 	t.Log("提交成功，订单号：", o.OrderNo())
 }
 
+// 测试从订单重新创建订单并提交付款
+func TestRebuildSubmitNormalOrder(t *testing.T) {
+	repo := ti.Factory.GetOrderRepo()
+	memRepo := ti.Factory.GetMemberRepo()
+	payRepo := ti.Factory.GetPaymentRepo()
+	io := repo.Manager().GetOrderByNo("100000796792")
+	ic := io.BuildCart()
+	memberId := io.Buyer().GetAggregateRootId()
+	shipId := memRepo.GetDeliverAddress(memberId)[0].ID
+	nio,err := repo.Manager().SubmitOrder(ic, shipId, "", false)
+	if err != nil{
+		t.Log("提交订单",err.Error())
+		t.FailNow()
+	}
+	t.Logf("提交的订单号为：%s",io.OrderNo())
+	orderId := nio.GetAggregateRootId()
+	ipo := payRepo.GetPaymentBySalesOrderId(orderId)
+	ipo.PaymentFinish("alipay","1233535")
+	t.Logf("支付的交易号为：%s,最终金额:%.2f",io.OrderNo(),ipo.GetValue().FinalAmount)
+}
+
 // 测试批发订单,并完成付款
 func TestWholesaleOrder(t *testing.T) {
 	var buyerId int64 = 1
