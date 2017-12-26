@@ -31,6 +31,7 @@ var (
 func GetApp() gof.App {
 	if app == nil {
 		app = new(testingApp)
+		app.Config().Set("conf_path","../../conf")
 		app.Config().Set("redis_host", "dbs.ts.com")
 		app.Config().Set("redis_db", REDIS_DB)
 		app.Config().Set("redis_port", "6379")
@@ -66,7 +67,7 @@ func newMainApp(confPath string) *testingApp {
 
 func (t *testingApp) Registry() *gof.Registry {
 	if t._registry == nil {
-		t._registry, _ = gof.NewRegistry("../conf", ":")
+		t._registry, _ = gof.NewRegistry("../../conf", ":")
 	}
 	return t._registry
 }
@@ -150,5 +151,6 @@ func init() {
 	app := GetApp()
 	conn := app.Db()
 	sto := app.Storage()
-	Factory = (&factory.RepoFactory{}).Init(conn, sto)
+	confPath := app.Config().GetString("conf_path")
+	Factory = (&factory.RepoFactory{}).Init(conn, sto,confPath)
 }

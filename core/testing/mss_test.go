@@ -21,7 +21,7 @@ func TestMssSendSms(t *testing.T) {
 	db := app.Db()
 	sto := app.Storage()
 	nRepo := repository.NewNotifyRepo(db)
-	vRepo := repository.NewValueRepo(db, sto)
+	vRepo := repository.NewValueRepo("",db, sto)
 	rep := repository.NewMssRepo(db, nRepo, vRepo)
 
 	data := map[string]interface{}{}

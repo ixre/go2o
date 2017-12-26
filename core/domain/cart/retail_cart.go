@@ -59,7 +59,8 @@ func (c *cartImpl) init() cart.ICart {
 			c.value.Items = c.rep.SelectRetailCartItem("cart_id=?",
 				c.GetAggregateRootId())
 		}
-	} else {
+	}
+	if c.value.Items == nil{
 		c.value.Items = []*cart.RetailCartItem{}
 	}
 	// 初始化购物车的信息
