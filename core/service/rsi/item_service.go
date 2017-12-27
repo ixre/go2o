@@ -10,6 +10,7 @@
 package rsi
 
 import (
+	"context"
 	"fmt"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/storage"
@@ -31,7 +32,7 @@ var _ define.ItemService = new(itemService)
 type itemService struct {
 	itemRepo  item.IGoodsItemRepo
 	itemQuery *query.ItemQuery
-	_cateRepo product.ICategoryRepo
+	cateRepo  product.ICategoryRepo
 	labelRepo item.ISaleLabelRepo
 	promRepo  promodel.IProModelRepo
 	mchRepo   merchant.IMerchantRepo
@@ -47,7 +48,7 @@ func NewSaleService(sto storage.IRedisStorage, cateRepo product.ICategoryRepo,
 		sto:       sto,
 		itemRepo:  goodsRepo,
 		itemQuery: goodsQuery,
-		_cateRepo: cateRepo,
+		cateRepo:  cateRepo,
 		labelRepo: labelRepo,
 		promRepo:  promRepo,
 		mchRepo:   mchRepo,
@@ -65,7 +66,7 @@ func (s *itemService) GetItemValue(itemId int64) *define.OldItem {
 }
 
 // 获取SKU
-func (s *itemService) GetSku(itemId, skuId int64) (r *define.Sku, err error) {
+func (s *itemService) GetSku(ctx context.Context, itemId, skuId int64) (r *define.Sku, err error) {
 	item := s.itemRepo.GetItem(itemId)
 	if item != nil {
 		sku := item.GetSku(skuId)
@@ -93,7 +94,7 @@ func (s *itemService) GetSkuHtmOfItem(itemId int64) (specHtm string) {
 }
 
 // 获取商品详细数据
-func (s *itemService) GetItemDetailData(itemId int64, iType int32) (r string, err error) {
+func (s *itemService) GetItemDetailData(ctx context.Context, itemId int64, iType int32) (r string, err error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	switch iType {
 	case item.ItemWholesale:
@@ -104,7 +105,7 @@ func (s *itemService) GetItemDetailData(itemId int64, iType int32) (r string, er
 }
 
 // 获取商品的Sku-JSON格式
-func (s *itemService) GetItemSkuJson(itemId int64) (r string, err error) {
+func (s *itemService) GetItemSkuJson(ctx context.Context, itemId int64) (r string, err error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	skuBytes := s.itemRepo.SkuService().GetSkuJson(it.SkuArray())
 	return string(skuBytes), nil
@@ -261,7 +262,7 @@ func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) [
 
 // 获取上架商品数据（分页）
 func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*define.OldItem {
-	c := s._cateRepo.GlobCatService().GetCategory(catId)
+	c := s.cateRepo.GlobCatService().GetCategory(catId)
 	if c != nil {
 		ids := c.GetChildes()
 		list := s.itemQuery.GetOnShelvesItem(ids, 0, quantity, where)
@@ -311,7 +312,7 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int64) *item.TradeSnapshot 
 func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
-		cat := s._cateRepo.GlobCatService().GetCategory(categoryId)
+		cat := s.cateRepo.GlobCatService().GetCategory(categoryId)
 		ids := cat.GetChildes()
 		ids = append(ids, categoryId)
 		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId, ids, start, end, "", sortBy)
@@ -328,7 +329,7 @@ func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start
 func (s *itemService) GetPagedOnShelvesGoods__(shopId int32, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
-		cate := s._cateRepo.GlobCatService().GetCategory(categoryId)
+		cate := s.cateRepo.GlobCatService().GetCategory(categoryId)
 		var ids []int32 = cate.GetChildes()
 		ids = append(ids, categoryId)
 		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId,

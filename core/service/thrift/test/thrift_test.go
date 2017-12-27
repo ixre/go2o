@@ -41,7 +41,7 @@ func TestLogin(t *testing.T) {
 func TestSSORegister(t *testing.T) {
 	cli, err := FoundationServeClient()
 	if err == nil {
-		defer cli.Transport.Close()
+		defer trans.Close()
 		sa := &define.SsoApp{
 			ID:     1,
 			Name:   "gp",

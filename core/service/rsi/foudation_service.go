@@ -9,6 +9,7 @@
 package rsi
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
@@ -37,34 +38,34 @@ func NewFoundationService(rep valueobject.IValueRepo) *foundationService {
 }
 
 // 根据键获取值
-func (s *foundationService) GetValue(key string) (r string, err error) {
+func (s *foundationService) GetValue(ctx context.Context, key string) (r string, err error) {
 	return s._rep.GetValue(key), nil
 }
 
 // 设置键值
-func (s *foundationService) SetValue(key string, value string) (r *define.Result_, err error) {
+func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *define.Result_, err error) {
 	err = s._rep.SetValue(key, value)
 	return parser.Result(0, err), nil
 }
 
 // 删除值
-func (s *foundationService) DeleteValue(key string) (r *define.Result_, err error) {
+func (s *foundationService) DeleteValue(ctx context.Context, key string) (r *define.Result_, err error) {
 	err = s._rep.DeleteValue(key)
 	return parser.Result(0, err), nil
 }
 
 // 根据前缀获取值
-func (s *foundationService) GetValuesByPrefix(prefix string) (r map[string]string, err error) {
+func (s *foundationService) GetValuesByPrefix(ctx context.Context, prefix string) (r map[string]string, err error) {
 	return s._rep.GetValues(prefix), nil
 }
 
 // 获取键值存储数据
-func (f *foundationService) GetRegistryV1(keys []string) ([]string, error) {
+func (f *foundationService) GetRegistryV1(ctx context.Context, keys []string) ([]string, error) {
 	return f._rep.GetsRegistry(keys), nil
 }
 
 // 获取键值存储数据
-func (f *foundationService) GetRegistryMapV1(keys []string) (map[string]string, error) {
+func (f *foundationService) GetRegistryMapV1(ctx context.Context, keys []string) (map[string]string, error) {
 	return f._rep.GetsRegistryMap(keys), nil
 }
 
@@ -74,14 +75,14 @@ func (f *foundationService) SavesRegistry(values map[string]string) error {
 }
 
 // 验证超级用户账号和密码
-func (s *foundationService) SuperValidate(user string, pwd string) (r bool, err error) {
+func (s *foundationService) SuperValidate(ctx context.Context, user string, pwd string) (r bool, err error) {
 	superPwd := gof.CurrentApp.Config().Get("super_login_md5")
 	encPwd := domain.Md5Pwd(pwd, user)
 	return superPwd == encPwd, nil
 }
 
 // 保存超级用户账号和密码
-func (s *foundationService) FlushSuperPwd(user string, pwd string) (err error) {
+func (s *foundationService) FlushSuperPwd(ctx context.Context, user string, pwd string) (err error) {
 	conf := gof.CurrentApp.Config()
 	sha1 := crypto.Sha1([]byte(pwd + domain.Sha1OffSet))
 	encPwd := domain.Md5Pwd(sha1, user)
@@ -94,7 +95,7 @@ func (s *foundationService) FlushSuperPwd(user string, pwd string) (err error) {
 //   -  1. 成功，并返回token
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
-func (s *foundationService) RegisterApp(app *define.SsoApp) (r string, err error) {
+func (s *foundationService) RegisterApp(ctx context.Context, app *define.SsoApp) (r string, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	token, err := sso.Register(app)
 	if err == nil {
@@ -104,19 +105,19 @@ func (s *foundationService) RegisterApp(app *define.SsoApp) (r string, err error
 }
 
 // 获取应用信息
-func (s *foundationService) GetApp(name string) (r *define.SsoApp, err error) {
+func (s *foundationService) GetApp(ctx context.Context, name string) (r *define.SsoApp, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	return sso.Get(name), nil
 }
 
 // 获取单点登录应用
-func (s *foundationService) GetAllSsoApp() (r []string, err error) {
+func (s *foundationService) GetAllSsoApp(ctx context.Context) (r []string, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	return sso.Array(), nil
 }
 
 // 创建同步登录的地址
-func (s *foundationService) GetSyncLoginUrl(returnUrl string) (r string, err error) {
+func (s *foundationService) GetSyncLoginUrl(ctx context.Context, returnUrl string) (r string, err error) {
 	return fmt.Sprintf("%s://%s%s/auth?return_url=%s",
 		variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_PASSPORT,
 		variable.Domain, returnUrl), nil
@@ -183,12 +184,12 @@ func (p *foundationService) SaveGlobNumberConf(v *valueobject.GlobNumberConf) er
 }
 
 // 获取资源地址
-func (p *foundationService) ResourceUrl(url string) (r string, err error) {
+func (p *foundationService) ResourceUrl(ctx context.Context, url string) (r string, err error) {
 	return format.GetResUrl(url), nil
 }
 
 // 获取平台设置
-func (p *foundationService) GetPlatformConf() (r *define.PlatformConf, err error) {
+func (p *foundationService) GetPlatformConf(ctx context.Context) (r *define.PlatformConf, err error) {
 	v := p._rep.GetPlatformConf()
 	return parser.PlatformConfDto(&v), nil
 }

@@ -233,5 +233,5 @@ func (a *adService) DelAdImage(adUserId, adId, imgId int32) error {
 }
 
 func (a *adService) cleanCache(adUserId int32) error {
-	return repository.PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", adUserId))
+	return repository.PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", adUserId))
 }

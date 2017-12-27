@@ -16,6 +16,7 @@ import (
 	ut "go2o/app/util"
 	"go2o/core/infrastructure/gen"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"go2o/core/variable"
 	"net/http"
 	"net/url"
@@ -49,9 +50,8 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	pstUrl := fmt.Sprintf("//%s%s", mPrefix, variable.Domain)
 	memberId := getMemberId(c)
 	if memberId <= 0 {
-		registry, _ := rsi.FoundationService.GetRegistryMapV1([]string{
-			"PlatformName",
-		})
+		registry, _ := rsi.FoundationService.GetRegistryMapV1(thrift.Context,
+			[]string{"PlatformName"})
 		mp["PtName"] = registry["PlatformName"]
 		mp["LoginUrl"] = pstUrl + "/auth/login"
 		mp["RegisterUrl"] = pstUrl + "/register"
@@ -59,7 +59,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	} else {
 		mmUrl := fmt.Sprintf("//%s%s",
 			variable.DOMAIN_PREFIX_MEMBER, variable.Domain)
-		m, _ := rsi.MemberService.GetProfile(memberId)
+		m, _ := rsi.MemberService.GetProfile(thrift.Context,memberId)
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"
 		mp["MMUrl"] = mmUrl
