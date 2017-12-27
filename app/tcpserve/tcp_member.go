@@ -13,6 +13,7 @@ import (
 	"errors"
 	"github.com/jsix/gof/net/nc"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"go2o/gen-code/thrift/define"
 	"strconv"
 	"strings"
@@ -20,7 +21,7 @@ import (
 
 // get summary of member,if dbGet will get summary from database.
 func GetMemberSummary(memberId int64, updateTime int) *define.ComplexMember {
-	v, _ := rsi.MemberService.Complex(memberId)
+	v, _ := rsi.MemberService.Complex(thrift.Context,memberId)
 	if v != nil {
 		return v
 	}
@@ -28,7 +29,7 @@ func GetMemberSummary(memberId int64, updateTime int) *define.ComplexMember {
 }
 
 func getMemberAccount(memberId int64, updateTime int) *define.Account {
-	v, _ := rsi.MemberService.GetAccount(memberId)
+	v, _ := rsi.MemberService.GetAccount(thrift.Context,memberId)
 	return v
 }
 

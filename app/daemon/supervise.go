@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/util"
 	"go2o/core"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"go2o/core/variable"
 	"log"
 	"strconv"
@@ -26,7 +27,7 @@ import (
 func superviseOrder(ss []Service) {
 	sv := rsi.ShoppingService
 	notify := func(orderNo string, sub bool, ss []Service) {
-		o, _ := sv.GetOrder(orderNo, sub)
+		o, _ := sv.GetOrder(thrift.Context,orderNo, sub)
 		if o != nil {
 			for _, v := range ss {
 				if !v.OrderObs(o) {
@@ -63,7 +64,7 @@ func superviseOrder(ss []Service) {
 func superviseMemberUpdate(ss []Service) {
 	sv := rsi.MemberService
 	notify := func(id int64, action string, ss []Service) {
-		m, _ := sv.GetMember(id)
+		m, _ := sv.GetMember(thrift.Context,id)
 		if m != nil {
 			for _, v := range ss {
 				if !v.MemberObs(m, action == "create") {
@@ -98,7 +99,7 @@ func superviseMemberUpdate(ss []Service) {
 func supervisePaymentOrderFinish(ss []Service) {
 	sv := rsi.PaymentService
 	notify := func(id int, ss []Service) {
-		order, _ := sv.GetPaymentOrderById(int32(id))
+		order, _ := sv.GetPaymentOrderById(thrift.Context,int32(id))
 		if order != nil {
 			for _, v := range ss {
 				if !v.PaymentOrderObs(order) {

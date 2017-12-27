@@ -169,7 +169,7 @@ func (ms *merchantService) testMemberLogin(usr string, pwd string) (id int64, er
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(usr, oriPwd string) (r *define.Result_, err error) {
+func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r *define.Result_, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	oriPwd = strings.TrimSpace(oriPwd)
 	var mchId int32
@@ -224,7 +224,7 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) Complex(mchId int32) (*define.ComplexMerchant, error) {
+func (m *merchantService) Complex(ctx context.Context, mchId int32) (*define.ComplexMerchant, error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		c := mch.Complex()
@@ -286,7 +286,7 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(mchId int32) (r *define.Result_, err error) {
+func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *define.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
@@ -646,7 +646,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 // 获取
 
 // 同步批发商品
-func (m *merchantService) SyncWholesaleItem(vendorId int32) (map[string]int32, error) {
+func (m *merchantService) SyncWholesaleItem(ctx context.Context, vendorId int32) (map[string]int32, error) {
 	mch := m._mchRepo.GetMerchant(vendorId)
 	if mch != nil {
 		return mch.Wholesaler().SyncItems(true), nil
