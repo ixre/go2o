@@ -63,7 +63,7 @@ type valueRepo struct {
 	_confRegistry *gof.Registry
 }
 
-func NewValueRepo(confPath string,conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
+func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
 	confRegistry, err := gof.NewRegistry(confPath, ":")
 	if err != nil {
 		log.Println("[ Go2o][ Crash]: can't load config,details ", err.Error())

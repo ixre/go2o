@@ -35,4 +35,28 @@ service MerchantService{
    ttype.Result Stat(1:i32 mchId)
    // 同步批发商品
    map<string,i32> SyncWholesaleItem(1:i32 mchId)
+   // 获取所有的交易设置
+   list<TradeConf> GetAllTradeConf(1:i64 mchId)
+   // 根据交易类型获取交易设置
+   TradeConf GetTradeConf(1:i64 mchId,2:i32 tradeType)
+   // 保存交易设置
+   ttype.Result SaveTradeConf(1:i64 mchId,2:list<TradeConf> arr)
+}
+
+// 商户交易设置
+struct TradeConf  {
+	// 商户编号
+	1:i64 MchId
+	// 交易类型
+	2:i32 TradeType
+	// 交易方案，根据方案来自动调整比例
+	3:i64 PlanId
+	// 交易标志
+	4:i32 Flag
+	// 交易手续费依据,1:按金额 2:按比例
+	5:i32 AmountBasis
+	// 交易费，按单笔收取
+	6:i32 TradeFee
+	// 交易手续费比例
+	7:i32 TradeRate
 }

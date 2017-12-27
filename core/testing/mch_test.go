@@ -94,12 +94,12 @@ func TestGroupRebateRate(t *testing.T) {
 }
 
 // 测试结算订单到账户中
-func TestMchSettleOrder(t *testing.T){
+func TestMchSettleOrder(t *testing.T) {
 	repo := ti.Factory.GetMerchantRepo()
 	mch := repo.GetMerchant(111)
-	err := mch.Account().SettleOrder("123",1000,20,0,"零售订单结算")
-	if err != nil{
-		t.Log("结算订单出错：",err)
+	err := mch.Account().SettleOrder("123", 1000, 20, 0, "零售订单结算")
+	if err != nil {
+		t.Log("结算订单出错：", err)
 		t.FailNow()
 	}
 	t.Log("结算成功")

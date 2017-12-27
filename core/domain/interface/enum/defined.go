@@ -53,3 +53,13 @@ const (
 	// 按比例结算
 	MchModeSettleByRate MchSettleMode = 2
 )
+
+// 金额依据
+const (
+	/** 未设置 */
+	BAmountNotSet = 1
+	/** 按金额 */
+	BAmountAmount = 2
+	/** 按百分比 */
+	BAmountPercent = 3
+)
