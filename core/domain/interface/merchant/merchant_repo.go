@@ -96,7 +96,18 @@ type IMerchantRepo interface {
 	// Save MchBuyerGroup
 	SaveMchBuyerGroup(v *MchBuyerGroup) (int, error)
 
-	//
+	// auto generate by gof
+	// Get MchTradeConf
+	GetMchTradeConf(primary interface{}) *TradeConf
+	// GetBy MchTradeConf
+	GetMchTradeConfBy(where string, v ...interface{}) *TradeConf
+	// Select MchTradeConf
+	SelectMchTradeConf(where string, v ...interface{}) []*TradeConf
+	// Save MchTradeConf
+	SaveMchTradeConf(v *TradeConf) (int, error)
+	// Delete MchTradeConf
+	DeleteMchTradeConf(primary interface{}) error
+
 	//  //修改线下支付利润
 	//UpdateMechOfflineRate(id int, rate float32, return_rate float32) error
 	////商户提现日志

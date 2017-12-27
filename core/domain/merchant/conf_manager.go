@@ -9,20 +9,23 @@
 package merchant
 
 import (
+	"errors"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/valueobject"
+	"time"
 )
 
 var _ merchant.IConfManager = new(confManagerImpl)
 
 type confManagerImpl struct {
-	mchId      int32
-	repo       merchant.IMerchantRepo
-	saleConf   *merchant.SaleConf
-	valRepo    valueobject.IValueRepo
-	memberRepo member.IMemberRepo
+	mchId         int32
+	repo          merchant.IMerchantRepo
+	saleConf      *merchant.SaleConf
+	valRepo       valueobject.IValueRepo
+	memberRepo    member.IMemberRepo
+	tradeConfList []*merchant.TradeConf
 }
 
 func newConfigManagerImpl(mchId int32,
@@ -176,5 +179,52 @@ func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGro
 			RebatePeriod:    1,
 		}
 	}
+	return nil
+}
+
+// 获取所有的交易设置
+func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
+	if c.tradeConfList == nil {
+		c.tradeConfList = c.repo.SelectMchTradeConf("mch_id=?", c.mchId)
+	}
+	return c.tradeConfList
+}
+
+// 根据交易类型获取交易设置
+func (c *confManagerImpl) GetTradeConf(tradeType int) *merchant.TradeConf {
+	for _, v := range c.GetAllTradeConf() {
+		if v.TradeType == tradeType {
+			return v
+		}
+	}
+	return nil
+}
+
+// 保存交易设置
+func (c *confManagerImpl) SaveTradeConf(arr []*merchant.TradeConf) error {
+	if arr == nil || len(arr) == 0 {
+		return errors.New("trade config array is nil")
+	}
+	unix := time.Now().Unix()
+	for _, v := range arr {
+		if v.Flag <= 0 {
+			v.Flag = merchant.TFlagNormal
+		}
+		v.UpdateTime = unix
+		origin := c.GetTradeConf(v.TradeType)
+		if origin != nil {
+			origin.TradeFee = v.TradeFee
+			origin.MchId = int64(c.mchId)
+			origin.AmountBasis = v.AmountBasis
+			origin.Flag = v.Flag
+			origin.PlanId = v.PlanId
+			origin.TradeRate = v.TradeRate
+			origin.UpdateTime = v.UpdateTime
+			c.repo.SaveMchTradeConf(origin)
+		} else {
+			c.repo.SaveMchTradeConf(v)
+		}
+	}
+	c.tradeConfList = nil
 	return nil
 }

@@ -40,7 +40,7 @@ func getTransportAndProtocol() (thrift.TTransport, thrift.TProtocolFactory, erro
 	} else {
 		serveTransport, err = thrift.NewTSocket(cliHostPort)
 	}
-	transport := transportFactory.GetTransport(serveTransport)
+	transport, err := transportFactory.GetTransport(serveTransport)
 	return transport, protocolFactory, err
 }
 

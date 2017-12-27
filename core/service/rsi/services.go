@@ -84,7 +84,7 @@ func Init(ctx gof.App, appFlag int) {
 	sto := Context.Storage()
 
 	// 初始化服务
-	initService(ctx, db, orm, sto,ctx.Config().GetString("conf_path"))
+	initService(ctx, db, orm, sto, ctx.Config().GetString("conf_path"))
 	// RPC
 	if appFlag&app.FlagRpcServe == app.FlagRpcServe {
 		initRpcServe(ctx)
@@ -92,9 +92,9 @@ func Init(ctx gof.App, appFlag int) {
 }
 
 func initService(ctx gof.App, db db.Connector, orm orm.Orm,
-	sto storage.Interface,confPath string) {
+	sto storage.Interface, confPath string) {
 	rds := sto.(storage.IRedisStorage)
-	fact = (&factory.RepoFactory{}).Init(db, sto,confPath)
+	fact = (&factory.RepoFactory{}).Init(db, sto, confPath)
 	proMRepo := fact.GetProModelRepo()
 	valueRepo := fact.GetValueRepo()
 	mssRepo := fact.GetMssRepo()

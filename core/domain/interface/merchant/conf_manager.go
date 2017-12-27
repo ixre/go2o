@@ -22,6 +22,12 @@ type (
 		SelectBuyerGroup() []*BuyerGroup
 		// 根据分组编号获取分组设置
 		GetGroupByGroupId(groupId int32) *MchBuyerGroup
+		// 获取所有的交易设置
+		GetAllTradeConf() []*TradeConf
+		// 根据交易类型获取交易设置
+		GetTradeConf(tradeType int) *TradeConf
+		// 保存交易设置
+		SaveTradeConf([]*TradeConf) error
 	}
 
 	// 商户客户分组设置

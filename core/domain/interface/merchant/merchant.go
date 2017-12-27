@@ -32,33 +32,26 @@ type (
 	// 商户接口
 	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
+		// 获取编号
 		GetAggregateRootId() int32
-
 		GetValue() Merchant
 		// 获取符合的商家信息
 		Complex() *ComplexMerchant
-
+		// 设置值
 		SetValue(*Merchant) error
-
 		// 获取商户的状态,判断 过期时间、判断是否停用。
 		// 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
 		Stat() error
-
 		// 设置商户启用或停用
 		SetEnabled(enabled bool) error
-
 		// 是否自营
 		SelfSales() bool
-
 		// 返回对应的会员编号
 		Member() int64
-
 		// 保存
 		Save() (int32, error)
-
 		// 获取商户的域名
 		GetMajorHost() string
-
 		// 获取商户账户
 		Account() IAccount
 		// 启用批发
@@ -67,25 +60,18 @@ type (
 		Wholesaler() wholesaler.IWholesaler
 		// 返回用户服务
 		UserManager() user.IUserManager
-
 		// 返回设置服务
 		ConfManager() IConfManager
-
 		// 获取会员等级服务
 		LevelManager() ILevelManager
-
 		// 获取键值管理器
 		KvManager() IKvManager
-
 		// 企业资料服务
 		ProfileManager() IProfileManager
-
 		// API服务
 		ApiManager() IApiManager
-
 		// 商店服务
 		ShopManager() shop.IShopManager
-
 		// 获取会员键值管理器
 		MemberKvManager() IKvManager
 

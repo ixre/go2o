@@ -32,9 +32,40 @@ struct Pair{
    2:string Value
 }
 
+/** 设置依据 */
+enum  SettingBasis {
+    /** 未设置 */
+    None = 1,
+    /** 使用全局 */
+    Global = 2,
+    /** 自定义 */
+    Custom = 3
+}
+
+/** 价格计算方式 */
+enum  PriceBasis{
+    /** 原价 */
+    Original = 1,
+    /** 会员折扣价 */
+    Discount = 2,
+    /** 自定义价格 */
+    Custom = 3,
+}
+
+/** 金额/提成依据 */
+enum AmountBasis{
+    /** 未设置 */
+    NotSet = 1,
+    /** 按金额 */
+    Amount = 2,
+    /** 按百分比 */
+    Percent =3
+}
+
 /** 百分比比例放大倍数  */
 const i32 RATE_PercentRate = 100
-
+/**  折扣比例放大倍数: 0.9 * 1000 = 900 */
+const i32 RATE_DISCOUNT = 1000
 /** 金额比例放大倍数  */
 const i32 RATE_Amount = 100
 
