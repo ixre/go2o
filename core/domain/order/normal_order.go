@@ -1356,6 +1356,7 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 	_, refund := o.getOrderAmount()
 	sAmount := o.getOrderCost()
 	if sAmount > 0 {
+		//todo: 扣取手续费
 		return vendor.Account().SettleOrder(o.value.OrderNo,
 			sAmount, 0, refund, "订单结算")
 	}

@@ -215,26 +215,35 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	ic := io.BuildCart()
 	memberId := io.Buyer().GetAggregateRootId()
 	shipId := memRepo.GetDeliverAddress(memberId)[0].ID
-	nio,err := repo.Manager().SubmitOrder(ic, shipId, "", false)
-	if err != nil{
-		t.Log("提交订单",err.Error())
+	nio, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
+	if err != nil {
+		t.Log("提交订单", err.Error())
 		t.FailNow()
 	}
-	t.Logf("提交的订单号为：%s",io.OrderNo())
+	t.Logf("提交的订单号为：%s", io.OrderNo())
 	orderId := nio.GetAggregateRootId()
 	ipo := payRepo.GetPaymentBySalesOrderId(orderId)
-	ipo.PaymentFinish("alipay","1233535")
-	t.Logf("支付的交易号为：%s,最终金额:%.2f",io.OrderNo(),ipo.GetValue().FinalAmount)
-	time.Sleep(time.Second*2)
+	err = ipo.PaymentFinish("alipay", "1233535080808wr")
+	if err == nil {
+		t.Logf("支付的交易号为：%s,最终金额:%.2f", nio.OrderNo(), ipo.GetValue().FinalAmount)
+	} else {
+		t.Log("支付订单", err.Error())
+		t.FailNow()
+	}
+	time.Sleep(time.Second * 2)
 	// 开始完成发货流程并收货
-	ino := io.(order.INormalOrder)
-	for _,v :=range ino.GetSubOrders(){
+	ino := nio.(order.INormalOrder)
+	for _, v := range ino.GetSubOrders() {
 		v.Confirm()
-		v.PickUp()
-		v.Ship(1,"12345345")
-		err := v.BuyerReceived()
-		if err != nil{
-			t.Log("收货不成功：",err)
+		err = v.PickUp()
+		if err == nil {
+			err = v.Ship(1, "12345345")
+			if err == nil {
+				err = v.BuyerReceived()
+			}
+		}
+		if err != nil {
+			t.Log("收货不成功：", err)
 			t.FailNow()
 		}
 	}
