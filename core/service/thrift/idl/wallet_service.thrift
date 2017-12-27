@@ -89,8 +89,8 @@ enum EWalletLogKind{
 	KCharge = 1
 	/** 客服赠送 */
 	KServiceAgentCharge = 2
-	/** 系统赠送 */
-	KSystemCharge = 3
+	/** 钱包收入 */
+	KIncome = 3
 	/** 失效 */
 	KExpired = 4
 	/** 客服调整 */

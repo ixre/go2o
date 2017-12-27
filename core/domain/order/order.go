@@ -108,6 +108,7 @@ func (o *baseOrderImpl) Submit() error {
 
 // 通过订单创建购物车
 func (o *baseOrderImpl) BuildCart() cart.ICart {
+	//todo: 实现批发等订单的构造购物车
 	panic("implement in sub class")
 }
 
