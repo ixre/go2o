@@ -115,6 +115,7 @@ type (
 		// 提现
 		//todo:???
 
+		//todo: 以下需要重构或移除
 		// 转到会员账户
 		TransferToMember(amount float32) error
 

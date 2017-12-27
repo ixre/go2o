@@ -169,6 +169,7 @@ func (a *accountImpl) getWallet() wallet.IWallet {
 
 // 转到会员账户
 func (a *accountImpl) TransferToMember(amount float32) error {
+	panic("TransferToMember需重构或移除")
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
@@ -218,6 +219,7 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 }
 
 func (a *accountImpl) TransferToMember1(amount float32) error {
+	panic("TransferToMember2需重构或移除")
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
