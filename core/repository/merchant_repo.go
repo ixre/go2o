@@ -409,3 +409,66 @@ func (m *merchantRepo) SaveMchBuyerGroup(v *merchant.MchBuyerGroup) (int, error)
 	}
 	return id, err
 }
+
+// Get MchTradeConf
+func (m *merchantRepo) GetMchTradeConf(primary interface{}) *merchant.TradeConf {
+	e := merchant.TradeConf{}
+	err := m._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
+	}
+	return nil
+}
+
+// GetBy MchTradeConf
+func (m *merchantRepo) GetMchTradeConfBy(where string, v ...interface{}) *merchant.TradeConf {
+	e := merchant.TradeConf{}
+	err := m._orm.GetBy(&e, where, v...)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
+	}
+	return nil
+}
+
+// Select MchTradeConf
+func (m *merchantRepo) SelectMchTradeConf(where string, v ...interface{}) []*merchant.TradeConf {
+	list := []*merchant.TradeConf{}
+	err := m._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
+	}
+	return list
+}
+
+// Save MchTradeConf
+func (m *merchantRepo) SaveMchTradeConf(v *merchant.TradeConf) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
+	}
+	return id, err
+}
+
+// Delete MchTradeConf
+func (m *merchantRepo) DeleteMchTradeConf(primary interface{}) error {
+	err := m._orm.DeleteByPk(merchant.TradeConf{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
+	}
+	return err
+}
+
+// Batch Delete MchTradeConf
+func (m *merchantRepo) BatchDeleteMchTradeConf(where string, v ...interface{}) (int64, error) {
+	r, err := m._orm.Delete(merchant.TradeConf{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
+	}
+	return r, err
+}

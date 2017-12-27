@@ -10,6 +10,7 @@
 package rsi
 
 import (
+	"context"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -23,11 +24,25 @@ import (
 	"time"
 )
 
+var _ define.MerchantService = new(merchantService)
+
 type merchantService struct {
 	_mchRepo    merchant.IMerchantRepo
 	_memberRepo member.IMemberRepo
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
+}
+
+func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int64) (r []*define.TradeConf, err error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetTradeConf(ctx context.Context, mchId int64, tradeType int32) (r *define.TradeConf, err error) {
+	panic("implement me")
+}
+
+func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int64, arr []*define.TradeConf) (r *define.Result_, err error) {
+	panic("implement me")
 }
 
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,

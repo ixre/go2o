@@ -160,7 +160,7 @@ type (
 		FreezeExpired(value int, remark string) error
 
 		// 收入
-		Income(value int,tradeFee int,title,outerNo string)error
+		Income(value int, tradeFee int, title, outerNo string) error
 
 		// 充值,kind: 业务类型
 		Charge(value int, by int, title, outerNo string, opuId int, opuName string) error
