@@ -24,7 +24,7 @@ func TestLogin(t *testing.T) {
 		return
 	}
 
-	defer cli.Transport.Close()
+	defer trans.Close()
 	t.Logf("连接开启：%v", cli.Transport.IsOpen())
 	pwd := domain.MemberSha1Pwd("123456")
 	r, _ := cli.CheckLogin("jarry6", pwd, false)

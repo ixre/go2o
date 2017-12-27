@@ -62,10 +62,10 @@ func checkMemberToken(c echo.Context) bool {
 	r := c.Request()
 	memberId, _ := util.I64Err(strconv.Atoi(r.FormValue("member_id")))
 	token := r.FormValue("member_token")
-	trans,cli, err := thrift.MemberServeClient()
+	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		if b, _ := cli.CheckToken(thrift.Context,memberId, token); b {
+		if b, _ := cli.CheckToken(thrift.Context, memberId, token); b {
 			c.Set("member_id", memberId)
 			return true
 		}

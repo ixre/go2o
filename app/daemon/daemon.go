@@ -196,7 +196,7 @@ func (d *defaultService) Start(a gof.App) {
 
 	//go func() {
 	//    time.Sleep(time.Second * 6)
-	//    o, _ := rsi.ShoppingService.GetSubOrderByNo("100000021289")
+	//    o, _ := rsi.ShoppingService.GetSubOrderByNo(thrift.Context,"100000021289")
 	//    d.OrderObs(o)
 	//    detectOrderExpires()
 	//   orderAutoRecive()
