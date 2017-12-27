@@ -225,6 +225,19 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	ipo := payRepo.GetPaymentBySalesOrderId(orderId)
 	ipo.PaymentFinish("alipay","1233535")
 	t.Logf("支付的交易号为：%s,最终金额:%.2f",io.OrderNo(),ipo.GetValue().FinalAmount)
+	time.Sleep(time.Second*2)
+	// 开始完成发货流程并收货
+	ino := io.(order.INormalOrder)
+	for _,v :=range ino.GetSubOrders(){
+		v.Confirm()
+		v.PickUp()
+		v.Ship(1,"12345345")
+		err := v.BuyerReceived()
+		if err != nil{
+			t.Log("收货不成功：",err)
+			t.FailNow()
+		}
+	}
 }
 
 // 测试批发订单,并完成付款
