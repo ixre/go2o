@@ -70,8 +70,8 @@ const (
 	KCharge = 1
 	// 客服赠送
 	KServiceAgentCharge = 2
-	// 系统赠送
-	KSystemCharge = 3
+	// 钱包收入
+	KIncome = 3
 	// 失效
 	KExpired = 4
 	// 客服调整
@@ -158,6 +158,9 @@ type (
 
 		// 将冻结金额标记为失效
 		FreezeExpired(value int, remark string) error
+
+		// 收入
+		Income(value int,tradeFee int,title,outerNo string)error
 
 		// 充值,kind: 业务类型
 		Charge(value int, by int, title, outerNo string, opuId int, opuName string) error

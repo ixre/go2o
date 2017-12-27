@@ -141,7 +141,9 @@ func (a *accountImpl) SettleOrder(orderNo string, amount float32,
 		err = a.Save()
 		if err == nil {
 			iw := a.getWallet()
-			err = iw.Charge(int(amount*float32(wallet.AmountRateSize)), wallet.CSystemCharge, remark, orderNo, 0, "")
+			finalFee := amount * float32(wallet.AmountRateSize)
+			tradeFee := csn * float32(wallet.AmountRateSize)
+			err = iw.Income(int(finalFee), int(tradeFee), remark, orderNo)
 		}
 	}
 	return err

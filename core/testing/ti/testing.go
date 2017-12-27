@@ -24,18 +24,18 @@ var (
 	Factory *factory.RepoFactory
 )
 var (
-	REDIS_DB    = "6"
-	DBS_DB_NAME = "gcy_v3"
+	REDIS_DB = "6"
 )
 
 func GetApp() gof.App {
 	if app == nil {
 		app = new(testingApp)
-		app.Config().Set("conf_path","../../conf")
+		app.Config().Set("conf_path", "../../conf")
 		app.Config().Set("redis_host", "dbs.ts.com")
 		app.Config().Set("redis_db", REDIS_DB)
 		app.Config().Set("redis_port", "6379")
 		app.Config().Set("redis_auth", "123456")
+		app.Config().Set("db_name", "gcy_v3")
 		gof.CurrentApp = app
 		app.Init(true, true)
 	}
@@ -79,7 +79,7 @@ func (t *testingApp) Db() db.Connector {
 			"",
 			"dbs.ts.com",
 			"3306",
-			DBS_DB_NAME,
+			t.Config().GetString("db_name"),
 			"utf8",
 		)
 		connector := db.NewConnector("mysql", connStr, t.Log(), false)
@@ -152,5 +152,5 @@ func init() {
 	conn := app.Db()
 	sto := app.Storage()
 	confPath := app.Config().GetString("conf_path")
-	Factory = (&factory.RepoFactory{}).Init(conn, sto,confPath)
+	Factory = (&factory.RepoFactory{}).Init(conn, sto, confPath)
 }
