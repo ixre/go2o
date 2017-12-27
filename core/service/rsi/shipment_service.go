@@ -9,6 +9,7 @@
 package rsi
 
 import (
+	"context"
 	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/express"
@@ -20,29 +21,29 @@ import (
 var _ define.ShipmentService = new(shipmentServiceImpl)
 
 type shipmentServiceImpl struct {
-	_repo         shipment.IShipmentRepo
-	_deliveryRepo delivery.IDeliveryRepo
-	_expressRepo  express.IExpressRepo
+	repo         shipment.IShipmentRepo
+	deliveryRepo delivery.IDeliveryRepo
+	expressRepo  express.IExpressRepo
 }
 
 // 获取快递服务
 func NewShipmentService(rep shipment.IShipmentRepo,
 	deliveryRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo) *shipmentServiceImpl {
 	return &shipmentServiceImpl{
-		_repo:         rep,
-		_deliveryRepo: deliveryRepo,
-		_expressRepo:  expressRepo,
+		repo:         rep,
+		deliveryRepo: deliveryRepo,
+		expressRepo:  expressRepo,
 	}
 }
 
 // 创建一个配送覆盖的区域
 func (s *shipmentServiceImpl) CreateCoverageArea(c *delivery.CoverageValue) (int32, error) {
-	return s._deliveryRepo.SaveCoverageArea(c)
+	return s.deliveryRepo.SaveCoverageArea(c)
 }
 
 // 获取订单的发货单信息
 func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *shipment.ShipmentOrder {
-	arr := s._repo.GetShipOrders(orderId, sub)
+	arr := s.repo.GetShipOrders(orderId, sub)
 	if arr != nil && len(arr) > 0 {
 		v := arr[0].Value()
 		return &v
@@ -50,7 +51,7 @@ func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *ship
 	return nil
 }
 
-func (s *shipmentServiceImpl) GetLogisticFlowTrack(shipperCode string,
+func (s *shipmentServiceImpl) GetLogisticFlowTrack(ctx context.Context, shipperCode string,
 	logisticCode string, invert bool) (r *define.SShipOrderTrack, err error) {
 	em := module.Get(module.M_EXPRESS).(*module.ExpressModule)
 	flow, err := em.GetLogisticFlowTrack(shipperCode, logisticCode, invert)
@@ -89,17 +90,17 @@ func (s *shipmentServiceImpl) logisticFlowTrackDto(o *shipment.ShipOrderTrack) *
 
 // 获取发货单的物流追踪信息,
 // - shipOrderId:发货单编号
-func (s *shipmentServiceImpl) ShipOrderLogisticTrack(shipOrderId int64, invert bool) (r *define.SShipOrderTrack, err error) {
-	so := s._repo.GetShipmentOrder(shipOrderId)
+func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, shipOrderId int64, invert bool) (r *define.SShipOrderTrack, err error) {
+	so := s.repo.GetShipmentOrder(shipOrderId)
 	if so != nil {
-		sp := s._expressRepo.GetExpressProvider(so.Value().SpId)
+		sp := s.expressRepo.GetExpressProvider(so.Value().SpId)
 		if sp == nil {
 			log.Println("[ Go2o][ Service][ Warning]: no such express provider id ", so.Value().SpId)
 		} else {
 			//spOrder = "462681586678"
 			//sp.ApiCode = "ZTO"
 			spOrder := so.Value().SpOrder
-			r, err := s.GetLogisticFlowTrack(sp.ApiCode, spOrder, invert)
+			r, err := s.GetLogisticFlowTrack(ctx, sp.ApiCode, spOrder, invert)
 			r.ShipperName = sp.Name
 			return r, err
 		}

@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof/web"
 	"github.com/labstack/echo"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"go2o/core/variable"
 	"html/template"
 	"regexp"
@@ -57,7 +58,7 @@ var (
 // 系统状态检测
 func SystemCheck(h echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		conf, _ := rsi.FoundationService.GetPlatformConf()
+		conf, _ := rsi.FoundationService.GetPlatformConf(thrift.Context)
 		if conf.Suspend {
 			rsp := c.Response()
 			path := c.Request().URL.Path

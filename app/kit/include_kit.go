@@ -24,9 +24,9 @@ import (
 )
 
 var (
-	_TitleSuffix string
-	cacheSeconds int64             = 300
-	hashSet      storage.Interface = storage.NewHashStorage()
+	titleSuffix  string
+	cacheSeconds int64 = 300
+	hashSet                  = storage.NewHashStorage()
 )
 
 type templateIncludeKitWrapper struct {
@@ -269,18 +269,18 @@ func (t *templateIncludeToolkit) portalNav(navType int32) []*model.PortalNav {
 
 // 页面标题
 func (t *templateIncludeToolkit) pageTitle(tit string) string {
-	if _TitleSuffix == "" {
-		cli, err := thrift.FoundationServeClient()
+	if titleSuffix == "" {
+		trans,cli, err := thrift.FoundationServeClient()
 		if err == nil {
-			defer cli.Transport.Close()
-			r, _ := cli.GetRegistryMapV1([]string{"PlatformName"})
-			_TitleSuffix = r["PlatformName"]
+			defer trans.Close()
+			r, _ := cli.GetRegistryMapV1(thrift.Context,[]string{"PlatformName"})
+			titleSuffix = r["PlatformName"]
 		}
 	}
 	if tit == "" {
-		return _TitleSuffix
+		return titleSuffix
 	}
-	return tit + "-" + _TitleSuffix
+	return tit + "-" + titleSuffix
 }
 
 // 拼接属性URL-Query
@@ -456,15 +456,15 @@ func (t *templateIncludeToolkit) mathRemain(i int, j int) int {
 
 // 根据键获取值
 func (t *templateIncludeToolkit) kv(key string) string {
-	r, _ := rsi.FoundationService.GetValue(key)
+	r, _ := rsi.FoundationService.GetValue(thrift.Context,key)
 	return r
 }
 
 func (t *templateIncludeToolkit) registry(keys ...string) map[string]string {
-	cli, err := thrift.FoundationServeClient()
+	trans,cli, err := thrift.FoundationServeClient()
 	if err == nil {
-		defer cli.Transport.Close()
-		r, _ := cli.GetRegistryMapV1(keys)
+		defer trans.Close()
+		r, _ := cli.GetRegistryMapV1(thrift.Context,keys)
 		return r
 	}
 	return map[string]string{}

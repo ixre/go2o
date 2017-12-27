@@ -16,6 +16,7 @@ import (
 	autil "go2o/app/util"
 	"go2o/core/infrastructure/gen"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"io"
 	"strconv"
 )
@@ -34,7 +35,7 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	if len(targetUrl) == 0 {
 		targetUrl = rsi.FoundationService.GetRegisterPerm().CallBackUrl
 	}
-	m, _ := rsi.MemberService.GetMember(memberId)
+	m, _ := rsi.MemberService.GetMember(thrift.Context,memberId)
 	if m != nil {
 		query := "return_url=" + targetUrl
 		c.Response().Header().Add("Content-Type", "Image/Jpeg")

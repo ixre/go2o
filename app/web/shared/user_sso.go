@@ -38,7 +38,7 @@ func GetMemberId(c *echox.Context) int64 {
 func GetMember(c *echox.Context) *define.Member {
 	memberId := GetMemberId(c)
 	if memberId > 0 {
-		m, _ := rsi.MemberService.GetMember(memberId)
+		m, _ := rsi.MemberService.GetMember(thrift.Context,memberId)
 		return m
 	}
 	return nil
@@ -83,10 +83,10 @@ func (u *UserSync) ssoConnect(c *echox.Context, callback string) error {
 	mId, err := gu.I64Err(strconv.Atoi(mStr))
 	// 鉴权，如成功，则存储会话
 	token := c.QueryParam("token")
-	cli, err := thrift.MemberServeClient()
+	trans,cli, err := thrift.MemberServeClient()
 	if err == nil {
-		defer cli.Transport.Close()
-		b, _ := cli.CheckToken(mId, token)
+		defer trans.Close()
+		b, _ := cli.CheckToken(thrift.Context,mId, token)
 		if b {
 			c.Session.Set("member_id", mId)
 			c.Session.Save()

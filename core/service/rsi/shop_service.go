@@ -9,6 +9,7 @@
 package rsi
 
 import (
+	"context"
 	"errors"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -19,6 +20,8 @@ import (
 	"go2o/core/variable"
 	"go2o/gen-code/thrift/define"
 )
+
+var _ define.ShopService = new(shopService)
 
 type shopService struct {
 	_rep     shop.IShopRepo
@@ -36,7 +39,7 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 }
 
 // 获取商铺
-func (s *shopService) GetStore(vendorId int32) (*define.Store, error) {
+func (s *shopService) GetStore(ctx context.Context, vendorId int32) (*define.Store, error) {
 	mch := s._mchRepo.GetMerchant(vendorId)
 	if mch != nil {
 		shop := mch.ShopManager().GetOnlineShop()
@@ -47,13 +50,13 @@ func (s *shopService) GetStore(vendorId int32) (*define.Store, error) {
 	return nil, nil
 }
 
-func (s *shopService) GetStoreById(shopId int32) (*define.Store, error) {
+func (s *shopService) GetStoreById(ctx context.Context, shopId int32) (*define.Store, error) {
 	vendorId := s._query.GetMerchantId(shopId)
-	return s.GetStore(vendorId)
+	return s.GetStore(ctx, vendorId)
 }
 
 // 打开或关闭商店
-func (s *shopService) TurnShop(shopId int32, on bool, reason string) (*define.Result_, error) {
+func (s *shopService) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (*define.Result_, error) {
 	var err error
 	sp := s._rep.GetShop(shopId)
 	if sp == nil {
@@ -69,7 +72,7 @@ func (s *shopService) TurnShop(shopId int32, on bool, reason string) (*define.Re
 }
 
 // 设置商店是否营业
-func (s *shopService) OpenShop(shopId int32, on bool, reason string) (*define.Result_, error) {
+func (s *shopService) OpenShop(ctx context.Context, shopId int32, on bool, reason string) (*define.Result_, error) {
 	var err error
 	sp := s._rep.GetShop(shopId)
 	if sp == nil {
