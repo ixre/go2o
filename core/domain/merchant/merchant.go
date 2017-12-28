@@ -258,6 +258,7 @@ type merchantImpl struct {
 	_memberRepo      member.IMemberRepo
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
+	_saleManager     merchant.ISaleManager
 	_levelManager    merchant.ILevelManager
 	_kvManager       merchant.IKvManager
 	_memberKvManager merchant.IKvManager
@@ -573,6 +574,13 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 			m._rep, m._memberRepo, m._valRepo)
 	}
 	return m._confManager
+}
+// 销售服务
+func (m *merchantImpl) SaleManager()merchant.ISaleManager{
+	if m._saleManager == nil{
+		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()),m)
+	}
+	return m._saleManager
 }
 
 // 企业资料管理器

@@ -8,6 +8,15 @@ const (
 	TFlagNoPerm
 )
 
+const(
+	// 普通订单
+	TKNormalOrder = 1
+	// 批发订单
+	TKWholesaleOrder = 2
+	// 交易订单
+	TKTradeOrder = 3
+)
+
 // 商户交易设置
 type TradeConf struct {
 	// 编号
