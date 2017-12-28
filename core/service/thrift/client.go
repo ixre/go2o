@@ -7,8 +7,11 @@ import (
 )
 
 var (
-	cliHostPort                              = "localhost:14288"
+	thriftServer                             = "localhost:14288"
+	secureTransport                          = false
 	rpcDebug                                 = false
+	tlsCertFile                              = "./cert/server.crt"
+	tlsKeyFile                               = "./cert/server.key"
 	transportFactory                         = thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
 	protocolFactory  thrift.TProtocolFactory = thrift.NewTCompactProtocolFactory()
 	Context                                  = context.Background()
@@ -16,8 +19,7 @@ var (
 
 // 客户端初始化
 func CliInit(hostPort string) {
-	cliHostPort = hostPort
-	rpcDebug = true
+	thriftServer = hostPort
 	if rpcDebug {
 		protocolFactory = thrift.NewTDebugProtocolFactory(protocolFactory, "[ Go2o][ Rpc]:")
 	}
@@ -25,20 +27,21 @@ func CliInit(hostPort string) {
 
 func getTransportAndProtocol() (thrift.TTransport, thrift.TProtocolFactory, error) {
 	var err error
-	var serveTransport thrift.TTransport
-	secure := false
-	if secure {
+	var transport thrift.TTransport
+	if secureTransport {
 		cfg := new(tls.Config)
-		if cert, err := tls.LoadX509KeyPair("server.crt", "server.key"); err == nil {
+		if cert, err := tls.LoadX509KeyPair(tlsCertFile, tlsKeyFile); err == nil {
 			cfg.Certificates = append(cfg.Certificates, cert)
 		} else {
 			return nil, protocolFactory, err
 		}
-		serveTransport, err = thrift.NewTSSLSocket(cliHostPort, cfg)
+		transport, err = thrift.NewTSSLSocket(thriftServer, cfg)
 	} else {
-		serveTransport, err = thrift.NewTSocket(cliHostPort)
+		transport, err = thrift.NewTSocket(thriftServer)
 	}
-	transport, err := transportFactory.GetTransport(serveTransport)
+	if err == nil {
+		transport, err = transportFactory.GetTransport(transport)
+	}
 	return transport, protocolFactory, err
 }
 
