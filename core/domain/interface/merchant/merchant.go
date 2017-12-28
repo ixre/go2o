@@ -62,6 +62,8 @@ type (
 		UserManager() user.IUserManager
 		// 返回设置服务
 		ConfManager() IConfManager
+		// 销售服务
+		SaleManager()ISaleManager
 		// 获取会员等级服务
 		LevelManager() ILevelManager
 		// 获取键值管理器
