@@ -11,6 +11,7 @@ package merchant
 import (
 	"errors"
 	"github.com/jsix/gof/util"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/valueobject"
@@ -186,6 +187,33 @@ func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGro
 func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
 	if c.tradeConfList == nil {
 		c.tradeConfList = c.repo.SelectMchTradeConf("mch_id=?", c.mchId)
+		if len(c.tradeConfList) == 0 {
+			// 零售订单费率
+			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
+				TradeType:   merchant.TKNormalOrder,
+				Flag:        merchant.TFlagNormal,
+				AmountBasis: enum.AmountBasisByPercent,
+				TradeFee:    0,
+				TradeRate:   int(0.2 * enum.RATE_Percent),
+			})
+			// 线下支付费率
+			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
+				TradeType:   merchant.TKTradeOrder,
+				Flag:        merchant.TFlagNormal,
+				AmountBasis: enum.AmountBasisByPercent,
+				TradeFee:    0,
+				TradeRate:   int(0.2 * enum.RATE_Percent),
+			})
+			// 批发订单费率
+			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
+				TradeType:   merchant.TKWholesaleOrder,
+				Flag:        merchant.TFlagNormal,
+				AmountBasis: enum.AmountBasisByPercent,
+				TradeFee:    0,
+				TradeRate:   int(0.1 * enum.RATE_Percent),
+			})
+
+		}
 	}
 	return c.tradeConfList
 }

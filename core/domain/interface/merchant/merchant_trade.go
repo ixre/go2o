@@ -8,7 +8,7 @@ const (
 	TFlagNoPerm
 )
 
-const(
+const (
 	// 普通订单
 	TKNormalOrder = 1
 	// 批发订单

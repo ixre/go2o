@@ -178,6 +178,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shop.OnlineShop{}, "mch_online_shop")
 	orm.Mapping(shop.OfflineShop{}, "mch_offline_shop")
 	orm.Mapping(merchant.SaleConf{}, "mch_sale_conf")
+	orm.Mapping(merchant.TradeConf{}, "mch_trade_conf")
 	orm.Mapping(merchant.MemberLevel{}, "pt_member_level")
 	orm.Mapping(merchant.Account{}, "mch_account")
 	orm.Mapping(merchant.BalanceLog{}, "mch_balance_log")
