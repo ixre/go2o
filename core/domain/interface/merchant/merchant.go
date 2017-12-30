@@ -96,7 +96,7 @@ type (
 		// 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int32, error)
 		// 订单结账
-		SettleOrder(orderNo string, amount float32, csn float32, refundAmount float32, remark string) error
+		SettleOrder(orderNo string, amount int, tradeFee int, refundAmount int, remark string) error
 		// 支出
 		TakePayment(outerNo string, amount float64, csn float64, remark string) error
 

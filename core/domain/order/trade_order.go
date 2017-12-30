@@ -3,6 +3,7 @@ package order
 import (
 	"errors"
 	"github.com/jsix/gof/util"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -327,8 +328,11 @@ func (s *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate floa
 	v := s.getValue()
 	sAmount := float32(v.FinalAmount * rate)
 	if sAmount > 0 {
+		totalAmount := int(sAmount * float32(enum.RATE_Amount))
+		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+			merchant.TKWholesaleOrder, totalAmount)
 		return vendor.Account().SettleOrder(s.OrderNo(),
-			sAmount, 0, 0, "交易单结算-"+v.Subject)
+			totalAmount, tradeFee, 0, "交易单结算-"+v.Subject)
 	}
 	return nil
 }

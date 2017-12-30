@@ -15,19 +15,19 @@ import (
 var _ merchant.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	mchImpl     *merchantImpl
-	value       *merchant.Account
-	memberRepo  member.IMemberRepo
-	_walletRepo wallet.IWalletRepo
+	mchImpl    *merchantImpl
+	value      *merchant.Account
+	memberRepo member.IMemberRepo
+	walletRepo wallet.IWalletRepo
 }
 
 func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
 	memberRepo member.IMemberRepo, walletRepo wallet.IWalletRepo) merchant.IAccount {
 	return &accountImpl{
-		mchImpl:     mchImpl,
-		value:       a,
-		memberRepo:  memberRepo,
-		_walletRepo: walletRepo,
+		mchImpl:    mchImpl,
+		value:      a,
+		memberRepo: memberRepo,
+		walletRepo: walletRepo,
 	}
 }
 
@@ -125,34 +125,34 @@ func (a *accountImpl) TakePayment(outerNo string, amount float64, csn float64, r
 }
 
 // 订单结账
-func (a *accountImpl) SettleOrder(orderNo string, amount float32,
-	csn float32, refundAmount float32, remark string) error {
+func (a *accountImpl) SettleOrder(orderNo string, amount int, tradeFee int,
+	refundAmount int, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
-	l := a.createBalanceLog(merchant.KindAccountSettleOrder,
-		remark, orderNo, amount, csn, 1)
-	_, err := a.SaveBalanceLog(l)
+	fAmount := float32(amount / 100)
+	fTradeFee := float32(tradeFee / 100)
+	fRefund := float32(refundAmount / 100)
+	a.value.Balance += fAmount
+	a.value.SalesAmount += fTradeFee
+	a.value.RefundAmount += fRefund
+	a.value.UpdateTime = time.Now().Unix()
+	err := a.Save()
 	if err == nil {
-		a.value.Balance += amount
-		a.value.SalesAmount += amount
-		a.value.RefundAmount += refundAmount
-		a.value.UpdateTime = time.Now().Unix()
-		err = a.Save()
-		if err == nil {
-			iw := a.getWallet()
-			finalFee := amount * float32(wallet.AmountRateSize)
-			tradeFee := csn * float32(wallet.AmountRateSize)
-			err = iw.Income(int(finalFee), int(tradeFee), remark, orderNo)
-		}
+		iw := a.getWallet()
+		err = iw.Income(amount-tradeFee, tradeFee, remark, orderNo)
+		// 记录旧日志,todo:可能去掉
+		l := a.createBalanceLog(merchant.KindAccountSettleOrder,
+			remark, orderNo, fAmount, fTradeFee, 1)
+		a.SaveBalanceLog(l)
 	}
 	return err
 }
 
 func (a *accountImpl) getWallet() wallet.IWallet {
-	iw := a._walletRepo.GetWalletByUserId(int64(a.GetValue().MchId), wallet.TMerchant)
+	iw := a.walletRepo.GetWalletByUserId(int64(a.GetValue().MchId), wallet.TMerchant)
 	if iw == nil {
-		iw = a._walletRepo.CreateWallet(&wallet.Wallet{
+		iw = a.walletRepo.CreateWallet(&wallet.Wallet{
 			UserId:     int64(a.GetValue().MchId),
 			WalletType: wallet.TMerchant,
 			WalletFlag: wallet.FlagCharge | wallet.FlagDiscount,
