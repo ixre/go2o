@@ -62,10 +62,8 @@ enum AmountBasis{
     Percent =3
 }
 
-/** 百分比比例放大倍数  */
-const i32 RATE_PercentRate = 100
-/**  折扣比例放大倍数: 0.9 * 1000 = 900 */
-const i32 RATE_DISCOUNT = 1000
+/** 百分比比例放大倍数，保留3位小数  */
+const i32 RATE_Percent = 10000
 /** 金额比例放大倍数  */
 const i32 RATE_Amount = 100
 
