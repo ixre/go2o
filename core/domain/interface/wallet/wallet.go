@@ -7,13 +7,13 @@ var (
 	// 别名
 	Alias = "钱包"
 	// 金额放大比例
-	AmountRateSize int = 100
+	AmountRateSize = 100
 	// 提现暂停
-	TakeOutPause bool = false
+	TakeOutPause = false
 	// 最低提现金额
-	MinTakeOutAmount int = 100
+	MinTakeOutAmount = 100
 	// 最高提现金额
-	MaxTakeOutAmount int = 10000000
+	MaxTakeOutAmount = 10000000
 )
 
 const (

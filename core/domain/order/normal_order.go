@@ -1356,9 +1356,12 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 	_, refund := o.getOrderAmount()
 	sAmount := o.getOrderCost()
 	if sAmount > 0 {
-		//todo: 扣取手续费
+		totalAmount := int(sAmount * float32(enum.RATE_Amount))
+		refundAmount := int(refund * float32(enum.RATE_Amount))
+		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
-			sAmount, 0, refund, "订单结算")
+			totalAmount, tradeFee, refundAmount, "零售订单结算")
 	}
 	return nil
 }
@@ -1368,8 +1371,13 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float3
 	amount, refund := o.getOrderAmount()
 	sAmount := amount * rate
 	if sAmount > 0 {
+		totalAmount := int(sAmount * float32(enum.RATE_Amount))
+		refundAmount := int(refund * float32(enum.RATE_Amount))
+		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
-			sAmount, 0, refund, "订单结算")
+			totalAmount, tradeFee, refundAmount, "零售订单结算")
+
 	}
 	return nil
 }
