@@ -57,9 +57,16 @@ const (
 // 金额依据
 const (
 	/** 未设置 */
-	BAmountNotSet = 1
+	AmountBasisNotSet = 1
 	/** 按金额 */
-	BAmountAmount = 2
+	AmountBasisByAmount = 2
 	/** 按百分比 */
-	BAmountPercent = 3
+	AmountBasisByPercent = 3
+)
+
+const (
+	// 百分比比例放大倍数，保留3位小数
+	RATE_Percent float64 = 10000
+	// 金额比例放大倍数
+	RATE_Amount float64 = 100
 )

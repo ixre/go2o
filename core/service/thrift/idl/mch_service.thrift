@@ -36,11 +36,11 @@ service MerchantService{
    // 同步批发商品
    map<string,i32> SyncWholesaleItem(1:i32 mchId)
    // 获取所有的交易设置
-   list<STradeConf> GetAllTradeConf(1:i64 mchId)
+   list<STradeConf> GetAllTradeConf(1:i32 mchId)
    // 根据交易类型获取交易设置
-   STradeConf GetTradeConf(1:i64 mchId,2:i32 tradeType)
+   STradeConf GetTradeConf(1:i32 mchId,2:i32 tradeType)
    // 保存交易设置
-   ttype.Result SaveTradeConf(1:i64 mchId,2:list<STradeConf> arr)
+   ttype.Result SaveTradeConf(1:i32 mchId,2:list<STradeConf> arr)
 }
 
 // 商户交易设置

@@ -575,10 +575,11 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	}
 	return m._confManager
 }
+
 // 销售服务
-func (m *merchantImpl) SaleManager()merchant.ISaleManager{
-	if m._saleManager == nil{
-		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()),m)
+func (m *merchantImpl) SaleManager() merchant.ISaleManager {
+	if m._saleManager == nil {
+		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()), m)
 	}
 	return m._saleManager
 }

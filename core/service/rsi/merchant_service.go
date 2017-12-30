@@ -33,40 +33,40 @@ type merchantService struct {
 	_orderQuery *query.OrderQuery
 }
 
-func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int64) (r []*define.STradeConf, err error) {
-	mch := m._mchRepo.GetMerchant(int32(mchId))
+func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r []*define.STradeConf, err error) {
+	mch := m._mchRepo.GetMerchant(mchId)
 	var arr []*define.STradeConf
-	if mch != nil{
-		for _,v := range mch.ConfManager().GetAllTradeConf(){
-			arr = append(arr,parser.TradeConfDto(v))
+	if mch != nil {
+		for _, v := range mch.ConfManager().GetAllTradeConf() {
+			arr = append(arr, parser.TradeConfDto(v))
 		}
 	}
-	return arr,nil
+	return arr, nil
 }
 
-func (m *merchantService) GetTradeConf(ctx context.Context, mchId int64, tradeType int32) (r *define.STradeConf, err error) {
-	mch := m._mchRepo.GetMerchant(int32(mchId))
-	if mch != nil{
+func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeType int32) (r *define.STradeConf, err error) {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
 		v := mch.ConfManager().GetTradeConf(int(tradeType))
-		if v != nil{
-			return parser.TradeConfDto(v),nil
+		if v != nil {
+			return parser.TradeConfDto(v), nil
 		}
 	}
-	return nil,nil
+	return nil, nil
 }
 
-func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int64, arr []*define.STradeConf) (r *define.Result_, err error) {
-	mch := m._mchRepo.GetMerchant(int32(mchId))
+func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []*define.STradeConf) (r *define.Result_, err error) {
+	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
-	}else{
+	} else {
 		var dst []*merchant.TradeConf
-		for _,v := range arr{
-			dst = append(dst,parser.TradeConf(v))
+		for _, v := range arr {
+			dst = append(dst, parser.TradeConf(v))
 		}
 		err = mch.ConfManager().SaveTradeConf(dst)
 	}
-	return parser.Result(nil,err),nil
+	return parser.Result(nil, err), nil
 }
 
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
