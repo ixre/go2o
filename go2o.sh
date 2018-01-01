@@ -8,7 +8,6 @@
  ###   ###   ###   ###
 
 prod="go2o"
-version="0.8.0"
 conf="conf"
 debug=0
 log_dir="./logs"
@@ -18,7 +17,7 @@ cmd=""
 while getopts "s:c:dev" args
 do
     case ${args} in
-        v) echo "version ${version}" && exit 1;;
+        v) ./go2o-serve -v && exit 1;;
         e) echo "extra update files ..." && \
            tar xvzf ${prod}-update.tar.gz;;
         d) debug=1;;
@@ -38,11 +37,11 @@ if [[ ${cmd} = "clean" ]];then
     ./master-serve -conf=app.conf -clean
 fi
 # stop service
-if [[ ${cmd} = "stop" ]] || [[ ${cmd}} = "restart" ]];then
-   pgrep go2o-serve|xargs kill -15
-   pgrep master-serve|xargs kill -15
-   pgrep go2o-tcpserve|xargs kill -15
-   pgrep go2o-rpc|xargs kill -15
+if [[ ${cmd} = "stop" ]] || [[ ${cmd} = "restart" ]];then
+   pgrep go2o-serve|xargs kill -15 > /dev/null
+   pgrep master-serve|xargs kill -15 > /dev/null
+   pgrep go2o-tcpserve|xargs kill -15 > /dev/null
+   #pgrep go2o-rpc|xargs kill -15 > /dev/null
 fi
 # start service
 if [[ ${cmd} = "start" ]] || [[ ${cmd} = "restart" ]];then

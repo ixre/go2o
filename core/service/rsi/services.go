@@ -131,7 +131,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valueRepo)
 	PromService = NewPromotionService(promRepo)
-	ShoppingService = NewShoppingService(orderRepo, cartRepo,
+	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
 		productRepo, itemRepo, mchRepo, orderQuery)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
