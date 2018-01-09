@@ -1,31 +1,31 @@
 package uams
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
-	"fmt"
+	"github.com/jsix/gof/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 var (
-	RPermissionDenied = &Response{
-		Result:  -100,
-		Message: "没有权限访问该接口",
+	RPermissionDenied = &api.Response{
+		ErrorCode: api.RPermissionDenied.ErrorCode,
+		Message:   "没有权限访问该接口",
 	}
-	RMissingApiParams = &Response{
-		Result:  -101,
-		Message: "缺少接口参数，请联系技术人员解决",
+	RMissingApiParams = &api.Response{
+		ErrorCode: api.RMissingApiParams.ErrorCode,
+		Message:   "缺少接口参数，请联系技术人员解决",
 	}
-	RErrApiName = &Response{
-		Result:  -102,
-		Message: "调用的API名称不正确",
+	RErrApiName = &api.Response{
+		ErrorCode: api.RErrUndefinedApi.ErrorCode,
+		Message:   "调用的API名称不正确",
 	}
-	RNoSuchApp = &Response{
-		Result:  -103,
-		Message: "no such serve",
+	RNoSuchApp = &api.Response{
+		ErrorCode: 10096,
+		Message:   "no such serve",
 	}
 )
 
@@ -38,7 +38,7 @@ var (
 )
 
 // 请求接口
-func Post(api string, data map[string]string) ([]byte, error) {
+func Post(apiName string, data map[string]string) ([]byte, error) {
 	cli := &http.Client{}
 	form := url.Values{}
 	if data != nil {
@@ -46,40 +46,40 @@ func Post(api string, data map[string]string) ([]byte, error) {
 			form[k] = []string{v}
 		}
 	}
-	form["api"] = []string{api}
-	form["api_user"] = []string{API_USER}
+	form["api"] = []string{apiName}
+	form["key"] = []string{API_USER}
 	form["sign_type"] = []string{API_SIGN_TYPE}
-	form["serve"] = []string{API_APP}
-	sign := Sign(API_SIGN_TYPE, form, API_TOKEN)
+	form["app"] = []string{API_APP}
+	form["version"] = []string{"1.2.0.100"}
+	sign := api.Sign(API_SIGN_TYPE, form, API_TOKEN)
 	form["sign"] = []string{sign}
 	rsp, err := cli.PostForm(API_SERVER, form)
 	if err == nil {
-		result, err := ioutil.ReadAll(rsp.Body)
+		data, err := ioutil.ReadAll(rsp.Body)
 		if err == nil {
-			err = checkApiRespErr(result)
+			content := string(data)
+			if strings.HasPrefix(content, "!") {
+				arr := strings.Split(content[1:], ":")
+				code, _ := strconv.Atoi(arr[0])
+				return data, checkApiRespErr(code, arr[1])
+			}
+			return data, nil
 		}
-		return result, err
 	}
 	return []byte{}, err
 }
 
 // 如果返回接口请求错误, 响应状态码以-10开头
-func checkApiRespErr(result []byte) error {
-	if bytes.Index(result, []byte{'-', '1', '0'}) != -1 {
-		msg := Response{}
-		json.Unmarshal(result, &msg)
-		switch msg.Result {
-		case -100:
-			msg = *RPermissionDenied
-		case -101:
-			msg = *RMissingApiParams
-		case -102:
-			msg = *RErrApiName
-		case -103:
-			msg = *RNoSuchApp
-		}
-		return errors.New(fmt.Sprintf(
-			"Error code %d : %s", msg.Result, msg.Message))
+func checkApiRespErr(code int, text string) error {
+	switch int64(code) {
+	case api.RPermissionDenied.ErrorCode:
+		text = RPermissionDenied.Message
+	case api.RMissingApiParams.ErrorCode:
+		text = RMissingApiParams.Message
+	case api.RErrUndefinedApi.ErrorCode:
+		text = RErrApiName.Message
+	case RNoSuchApp.ErrorCode:
+		text = RNoSuchApp.Message
 	}
-	return nil
+	return errors.New(text)
 }
