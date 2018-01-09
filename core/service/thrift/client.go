@@ -6,51 +6,60 @@ import (
 	"git.apache.org/thrift.git/lib/go/thrift"
 )
 
-var (
-	thriftServer                             = "localhost:14288"
-	secureTransport                          = false
-	rpcDebug                                 = false
-	tlsCertFile                              = "./cert/server.crt"
-	tlsKeyFile                               = "./cert/server.key"
-	transportFactory                         = thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
-	protocolFactory  thrift.TProtocolFactory = thrift.NewTCompactProtocolFactory()
-	Context                                  = context.Background()
-)
+var Context context.Context = nil
 
-// 客户端初始化
-func CliInit(hostPort string) {
-	thriftServer = hostPort
-	if rpcDebug {
-		protocolFactory = thrift.NewTDebugProtocolFactory(protocolFactory, "[ Go2o][ Rpc]:")
+type ClientFactory struct {
+	thriftServer     string // "localhost:7019"
+	secureTransport  bool   // false
+	tlsCertFile      string // "./cert/server.crt"
+	tlsKeyFile       string // "./cert/server.key"
+	transportFactory thrift.TTransportFactory
+	protocolFactory  thrift.TProtocolFactory
+}
+
+func NewClientFactory(server string, secure bool, tslKeyFile string,
+	tslCertFile string) *ClientFactory {
+	return &ClientFactory{
+		thriftServer:     server,
+		secureTransport:  secure,
+		tlsKeyFile:       tslKeyFile,
+		tlsCertFile:      tslCertFile,
+		transportFactory: thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory()),
+		protocolFactory:  thrift.NewTBinaryProtocolFactoryDefault(),
 	}
 }
 
-func getTransportAndProtocol() (thrift.TTransport, thrift.TProtocolFactory, error) {
+// enable debug mode
+func (c *ClientFactory) Debug(prefix string) {
+	c.protocolFactory = thrift.NewTDebugProtocolFactory(c.protocolFactory, prefix)
+}
+
+func (c *ClientFactory) prepare() (thrift.TTransport, thrift.TProtocolFactory, error) {
 	var err error
 	var transport thrift.TTransport
-	if secureTransport {
+	if c.secureTransport {
 		cfg := new(tls.Config)
-		if cert, err := tls.LoadX509KeyPair(tlsCertFile, tlsKeyFile); err == nil {
+		if cert, err := tls.LoadX509KeyPair(c.tlsCertFile, c.tlsKeyFile); err == nil {
 			cfg.Certificates = append(cfg.Certificates, cert)
 		} else {
-			return nil, protocolFactory, err
+			return nil, c.protocolFactory, err
 		}
-		transport, err = thrift.NewTSSLSocket(thriftServer, cfg)
+		transport, err = thrift.NewTSSLSocket(c.thriftServer, cfg)
 	} else {
-		transport, err = thrift.NewTSocket(thriftServer)
+		transport, err = thrift.NewTSocket(c.thriftServer)
 	}
 	if err == nil {
-		transport, err = transportFactory.GetTransport(transport)
+		transport, err = c.transportFactory.GetTransport(transport)
 	}
-	return transport, protocolFactory, err
+	return transport, c.protocolFactory, err
 }
 
-func getClient(service string) (thrift.TTransport, thrift.TClient, error) {
-	transport, protocol, err := getTransportAndProtocol()
+// get thrift client
+func (c *ClientFactory) GetClient(service string) (thrift.TTransport, thrift.TClient, error) {
+	transport, protocol, err := c.prepare()
 	if err == nil {
 		err = transport.Open()
 		if err == nil {
-			//多个服务
 			proto := protocol.GetProtocol(transport)
 			opProto := thrift.NewTMultiplexedProtocol(proto, service)
 			return transport, thrift.NewTStandardClient(proto, opProto), nil

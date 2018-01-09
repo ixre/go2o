@@ -76,7 +76,7 @@ func (s *SSOModule) Init() {
 
 func (s *SSOModule) Register(app *define.SsoApp) (token string, err error) {
 	if app.Name == "" {
-		return "", errors.New("-1:app name is null")
+		return "", errors.New("-1:serve name is null")
 	}
 	if app.ApiUrl == "" {
 		return "", errors.New("-2:api url is null")
@@ -87,7 +87,7 @@ func (s *SSOModule) Register(app *define.SsoApp) (token string, err error) {
 		return "", errors.New("-3:api url error")
 	}
 	if _, ok := s.appMap[app.Name]; ok {
-		return "", errors.New("-4:app has be resisted")
+		return "", errors.New("-4:serve has be resisted")
 	}
 	// 生成TOKEN
 	app.Token = crypto.Md5([]byte(app.Name + "#" + app.ApiUrl))
