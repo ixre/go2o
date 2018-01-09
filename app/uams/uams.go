@@ -25,7 +25,7 @@ var (
 	}
 	RNoSuchApp = &Response{
 		Result:  -103,
-		Message: "no such app",
+		Message: "no such serve",
 	}
 )
 
@@ -33,7 +33,7 @@ var (
 	API_SERVER    = "http://localhost:1419/uams_api_v1"
 	API_USER      = "< replace your api user >"
 	API_TOKEN     = "< replace your api token >"
-	API_APP       = "< replace your app code >"
+	API_APP       = "< replace your serve code >"
 	API_SIGN_TYPE = "sha1" // [sha1|md5]
 )
 
@@ -49,7 +49,7 @@ func Post(api string, data map[string]string) ([]byte, error) {
 	form["api"] = []string{api}
 	form["api_user"] = []string{API_USER}
 	form["sign_type"] = []string{API_SIGN_TYPE}
-	form["app"] = []string{API_APP}
+	form["serve"] = []string{API_APP}
 	sign := Sign(API_SIGN_TYPE, form, API_TOKEN)
 	form["sign"] = []string{sign}
 	rsp, err := cli.PostForm(API_SERVER, form)
