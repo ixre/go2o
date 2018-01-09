@@ -25,7 +25,7 @@ func NewClientFactory(server string, secure bool, tslKeyFile string,
 		tlsKeyFile:       tslKeyFile,
 		tlsCertFile:      tslCertFile,
 		transportFactory: thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory()),
-		protocolFactory:  thrift.NewTBinaryProtocolFactoryDefault(),
+		protocolFactory:  thrift.NewTCompactProtocolFactory(),
 	}
 }
 

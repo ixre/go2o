@@ -60,18 +60,18 @@ func (s *foundationService) GetValuesByPrefix(ctx context.Context, prefix string
 }
 
 // 获取键值存储数据
-func (f *foundationService) GetRegistryV1(ctx context.Context, keys []string) ([]string, error) {
-	return f._rep.GetsRegistry(keys), nil
+func (s *foundationService) GetRegistryV1(ctx context.Context, keys []string) ([]string, error) {
+	return s._rep.GetsRegistry(keys), nil
 }
 
 // 获取键值存储数据
-func (f *foundationService) GetRegistryMapV1(ctx context.Context, keys []string) (map[string]string, error) {
-	return f._rep.GetsRegistryMap(keys), nil
+func (s *foundationService) GetRegistryMapV1(ctx context.Context, keys []string) (map[string]string, error) {
+	return s._rep.GetsRegistryMap(keys), nil
 }
 
 // 保存键值存储数据
-func (f *foundationService) SavesRegistry(values map[string]string) error {
-	return f._rep.SavesRegistry(values)
+func (s *foundationService) SavesRegistry(values map[string]string) error {
+	return s._rep.SavesRegistry(values)
 }
 
 // 验证超级用户账号和密码
@@ -144,106 +144,106 @@ func (s *foundationService) SaveTemplateConf(v *valueobject.TemplateConf) error 
 }
 
 // 获取移动应用设置
-func (p *foundationService) GetMoAppConf() valueobject.MoAppConf {
-	return p._rep.GetMoAppConf()
+func (s *foundationService) GetMoAppConf() valueobject.MoAppConf {
+	return s._rep.GetMoAppConf()
 }
 
 // 保存移动应用设置
-func (p *foundationService) SaveMoAppConf(r *valueobject.MoAppConf) error {
-	return p._rep.SaveMoAppConf(r)
+func (s *foundationService) SaveMoAppConf(r *valueobject.MoAppConf) error {
+	return s._rep.SaveMoAppConf(r)
 }
 
 // 获取微信接口配置
-func (p *foundationService) GetWxApiConfig() valueobject.WxApiConfig {
-	return p._rep.GetWxApiConfig()
+func (s *foundationService) GetWxApiConfig() valueobject.WxApiConfig {
+	return s._rep.GetWxApiConfig()
 }
 
 // 保存微信接口配置
-func (p *foundationService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
-	return p._rep.SaveWxApiConfig(v)
+func (s *foundationService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
+	return s._rep.SaveWxApiConfig(v)
 }
 
 // 获取注册配置
-func (p *foundationService) GetRegisterPerm() valueobject.RegisterPerm {
-	return p._rep.GetRegisterPerm()
+func (s *foundationService) GetRegisterPerm() valueobject.RegisterPerm {
+	return s._rep.GetRegisterPerm()
 }
 
 // 保存注册配置
-func (p *foundationService) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
-	return p._rep.SaveRegisterPerm(v)
+func (s *foundationService) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
+	return s._rep.SaveRegisterPerm(v)
 }
 
 // 获取全局系统数值设置
-func (p *foundationService) GetGlobNumberConf() valueobject.GlobNumberConf {
-	return p._rep.GetGlobNumberConf()
+func (s *foundationService) GetGlobNumberConf() valueobject.GlobNumberConf {
+	return s._rep.GetGlobNumberConf()
 }
 
 // 保存全局系统数值设置
-func (p *foundationService) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
-	return p._rep.SaveGlobNumberConf(v)
+func (s *foundationService) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
+	return s._rep.SaveGlobNumberConf(v)
 }
 
 // 获取资源地址
-func (p *foundationService) ResourceUrl(ctx context.Context, url string) (r string, err error) {
+func (s *foundationService) ResourceUrl(ctx context.Context, url string) (r string, err error) {
 	return format.GetResUrl(url), nil
 }
 
 // 获取平台设置
-func (p *foundationService) GetPlatformConf(ctx context.Context) (r *define.PlatformConf, err error) {
-	v := p._rep.GetPlatformConf()
+func (s *foundationService) GetPlatformConf(ctx context.Context) (r *define.PlatformConf, err error) {
+	v := s._rep.GetPlatformConf()
 	return parser.PlatformConfDto(&v), nil
 }
 
 // 保存平台设置
-func (p *foundationService) SavePlatformConf(v *valueobject.PlatformConf) error {
-	return p._rep.SavePlatformConf(v)
+func (s *foundationService) SavePlatformConf(v *valueobject.PlatformConf) error {
+	return s._rep.SavePlatformConf(v)
 }
 
 // 获取全局商户销售设置
-func (p *foundationService) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
-	return p._rep.GetGlobMchSaleConf()
+func (s *foundationService) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
+	return s._rep.GetGlobMchSaleConf()
 }
 
 // 保存全局商户销售设置
-func (p *foundationService) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
-	return p._rep.SaveGlobMchSaleConf(v)
+func (s *foundationService) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
+	return s._rep.SaveGlobMchSaleConf(v)
 }
 
 // 获取短信设置
-func (p *foundationService) GetSmsApiSet() valueobject.SmsApiSet {
-	return p._rep.GetSmsApiSet()
+func (s *foundationService) GetSmsApiSet() valueobject.SmsApiSet {
+	return s._rep.GetSmsApiSet()
 }
 
 // 保存短信API
-func (p *foundationService) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
-	return p._rep.SaveSmsApiPerm(provider, s)
+func (s *foundationService) SaveSmsApiPerm(provider int, perm *valueobject.SmsApiPerm) error {
+	return s._rep.SaveSmsApiPerm(provider, perm)
 }
 
 // 获取默认的短信API
-func (p *foundationService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
-	return p._rep.GetDefaultSmsApiPerm()
+func (s *foundationService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
+	return s._rep.GetDefaultSmsApiPerm()
 }
 
 // 获取下级区域
-func (p *foundationService) GetChildAreas(id int32) []*valueobject.Area {
-	return p._rep.GetChildAreas(id)
+func (s *foundationService) GetChildAreas(id int32) []*valueobject.Area {
+	return s._rep.GetChildAreas(id)
 }
 
 // 获取地区名称
-func (p *foundationService) GetAreaNames(id []int32) []string {
-	return p._rep.GetAreaNames(id)
+func (s *foundationService) GetAreaNames(id []int32) []string {
+	return s._rep.GetAreaNames(id)
 }
 
 // 获取省市区字符串
-func (p *foundationService) GetAreaString(province, city, district int32) string {
+func (s *foundationService) GetAreaString(province, city, district int32) string {
 	if province == 0 || city == 0 || district == 0 {
 		return ""
 	}
-	return p._rep.GetAreaString(province, city, district)
+	return s._rep.GetAreaString(province, city, district)
 }
 
 // 获取支付平台
-func (p *foundationService) GetPayPlatform() []*bank.PaymentPlatform {
+func (s *foundationService) GetPayPlatform() []*bank.PaymentPlatform {
 	m := module.Get(module.M_PAY).(*module.PaymentModule)
 	return m.GetPayPlatform()
 }
