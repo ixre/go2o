@@ -30,7 +30,7 @@ func main() {
 
 	flag.IntVar(&httpPort, "port", 14280, "web server port")
 	flag.BoolVar(&help, "help", false, "command usage")
-	flag.StringVar(&confFile, "conf", "serve.conf", "")
+	flag.StringVar(&confFile, "conf", "app.conf", "")
 	flag.Parse()
 
 	if help {

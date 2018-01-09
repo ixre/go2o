@@ -341,7 +341,7 @@ func Run(ctx gof.App) {
 	if ctx != nil {
 		appCtx = ctx.(*core.AppImpl)
 	} else {
-		appCtx = core.NewApp("serve.conf")
+		appCtx = core.NewApp("app.conf")
 	}
 	conn = appCtx.Db()
 	_orm = conn.GetOrm()
@@ -365,7 +365,7 @@ func FlagRun() {
 	var service string
 	var serviceArr = []string{"mail", "order"}
 	var ch = make(chan bool)
-	flag.StringVar(&conf, "conf", "serve.conf", "")
+	flag.StringVar(&conf, "conf", "app.conf", "")
 	flag.BoolVar(&debug, "debug", true, "")
 	flag.BoolVar(&trace, "trace", true, "")
 	flag.StringVar(&service, "service", strings.Join(serviceArr, ","), "")

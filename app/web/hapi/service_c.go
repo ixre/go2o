@@ -31,7 +31,7 @@ type serviceC struct {
 // 切换设备
 func (m *serviceC) Device(c *echox.Context) error {
 	device := c.QueryParam("device")
-	app := c.QueryParam("serve")
+	app := c.QueryParam("app")
 	if device != "" {
 		ut.SetBrownerDevice(c.Response(), c.Request(), device)
 	}
