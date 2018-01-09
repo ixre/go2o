@@ -32,7 +32,6 @@ func ListenAndServe(addr string, secure bool) error {
 	} else {
 		transport, err = thrift.NewTServerSocket(addr)
 	}
-
 	transport, err = thrift.NewTServerSocket(addr)
 	if err == nil {
 		processor := thrift.NewTMultiplexedProcessor()

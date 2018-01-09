@@ -17,8 +17,8 @@ func (e *ExpressModule) SetApp(app gof.App) {
 }
 
 func (e *ExpressModule) Init() {
-	userId := e._app.Registry().GetString("express:kdn:user_id")
-	appKey := e._app.Registry().GetString("express:kdn:api_key")
+	userId := e._app.Registry().GetString("express.kdn.user_id")
+	appKey := e._app.Registry().GetString("express.kdn.api_key")
 	kdniao.EBusinessID = userId
 	kdniao.AppKey = appKey
 }
