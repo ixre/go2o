@@ -163,7 +163,7 @@ func GetRedisPool() *redis.Pool {
 	if redisPool == nil {
 		app := gof.CurrentApp
 		if app == nil {
-			panic(errors.New("gobal app not initialize!"))
+			panic(errors.New("gobal serve not initialize!"))
 		}
 		var ok bool
 		redisPool, ok = app.Storage().Source().(*redis.Pool)

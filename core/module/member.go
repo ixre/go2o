@@ -71,8 +71,8 @@ func (m *MemberModule) CheckToken(memberId int64, token string) bool {
 		return false
 	}
 	// return pubToken == token
-	//if m.app.Debug() {
-	//    m.app.Log().Println("[ Module][ Member]: check token for ",
+	//if m.serve.Debug() {
+	//    m.serve.Log().Println("[ Module][ Member]: check token for ",
 	//        memberId, "; ", pubToken, " IN:", token, " equals:",
 	//        pubToken == token, "; Len:", len(pubToken), len(token))
 	//}
