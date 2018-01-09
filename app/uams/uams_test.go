@@ -11,7 +11,7 @@ func init() {
 }
 
 func TestGetAppInfo(t *testing.T) {
-	rsp, err := Post("serve.info", nil)
+	rsp, err := Post("app.info", nil)
 	t.Log("Response:", string(rsp))
 	if err != nil {
 		t.Error(err)

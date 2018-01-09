@@ -27,7 +27,7 @@ func main() {
 	)
 
 	flag.StringVar(&addr, "addr", "localhost:14288", "Address to listen to")
-	flag.StringVar(&conf, "conf", "serve.conf", "Config file path")
+	flag.StringVar(&conf, "conf", "app.conf", "Config file path")
 	flag.BoolVar(&debug, "debug", false, "Enable debug")
 	flag.BoolVar(&trace, "trace", false, "Enable trace")
 	flag.Parse()
