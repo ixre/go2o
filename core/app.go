@@ -94,7 +94,7 @@ func (a *AppImpl) Registry() *gof.Registry {
 		if conf == "" {
 			conf = "./conf"
 		}
-		a._registry, _ = gof.NewRegistry(conf, ":")
+		a._registry, _ = gof.NewRegistry(conf, ".")
 	}
 	return a._registry
 }
