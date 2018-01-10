@@ -2153,6 +2153,25 @@ func getNameByAccountNo(accountNo string, offset int) string {
 
 // 根据银行账号获取银行名称
 // http://www.chakahao.com/cardbin/chakahao_other.html
-func GetNameByAccountNo(accountNo string) string {
-	return getNameByAccountNo(accountNo, 0)
+func GetNameByAccountNo(accountNo string) (bank string, cardType int, err error) {
+	//arr = strings.Split(getNameByAccountNo(accountNo, 0), ".")
+	//strings.Index(, "信用") != -1 ||
+	//strings.Index(arr[1], "贷记") != -1
+	return getNameByAlipay(accountNo)
+}
+
+func getNameByAlipay(accountNo string) (string, int, error) {
+	intCardType := 0
+	bank, cardType, err := GetBankNameByAlipay(accountNo)
+	switch cardType {
+	case "DC": //借记卡
+		intCardType = 1
+	case "CC": //信用卡
+		intCardType = 2
+	case "SCC": //准贷记卡
+		intCardType = 3
+	case "PC": // 预付费卡
+		intCardType = 4
+	}
+	return bank, intCardType, err
 }

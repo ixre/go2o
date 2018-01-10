@@ -70,7 +70,7 @@ func (b *Bank4E) Check(realName, idCard, phone, bankAccount string) map[string]s
 	data := map[string]string{}
 	err := b.b4eApi(realName, idCard, phone, bankAccount)
 	if err == nil {
-		bankName := bank.GetNameByAccountNo(bankAccount)
+		bankName, _, _ := bank.GetNameByAccountNo(bankAccount)
 		bankArr := strings.Split(bankName, ".")
 		data["Result"] = "true"
 		data["BankName"] = bankArr[0]
@@ -98,12 +98,14 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	if err != nil {
 		return err
 	}
-	arr := strings.Split(bank.GetNameByAccountNo(bankAccount), ".")
-	if len(arr) != 2 {
+	bankName, cardType, err := bank.GetNameByAccountNo(bankAccount)
+	if err != nil {
+		return err
+	}
+	if bankName == "" || cardType == 0 {
 		return errors.New("银行卡号无法识别")
 	}
-	if strings.Index(arr[1], "信用") != -1 ||
-		strings.Index(arr[1], "贷记") != -1 {
+	if cardType != 1 {
 		return errors.New("您填写的卡号不是有效的储蓄卡")
 	}
 
