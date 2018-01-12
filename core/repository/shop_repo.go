@@ -55,10 +55,10 @@ func (s *shopRepo) GetShop(shopId int32) shop.IShop {
 
 // 商店别名是否存在
 func (s *shopRepo) ShopAliasExists(alias string, shopId int32) bool {
-	num := 0
-	s.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_online_shop WHERE
-		alias=? AND shop_id<>?`, &num, alias, shopId)
-	return num > 0
+	id := 0
+	s.Connector.ExecScalar(`SELECT id FROM mch_online_shop WHERE
+		alias=? AND shop_id<>? LIMIT 1`, &id, alias, shopId)
+	return id > 0
 }
 
 // 获取线上商店
