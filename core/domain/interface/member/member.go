@@ -83,7 +83,7 @@ type (
 		// 获取等级
 		GetLevel() *Level
 
-		// 更改会员等级,@paymentId:支付单编号,@reivew:是否需要审核
+		// 更改会员等级,@paymentId:支付单编号,@review:是否需要审核
 		ChangeLevel(level int32, paymentId int32, review bool) error
 
 		// 审核升级请求

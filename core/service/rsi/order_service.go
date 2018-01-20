@@ -422,7 +422,7 @@ func (s *orderServiceImpl) SetBuyerAddress(buyerId int64, cartCode string, addre
 /*================ 订单  ================*/
 
 func (s *orderServiceImpl) PrepareOrder(buyerId int64, addressId int64,
-	cartCode string) *order.ComplexOrder {
+	cartCode string) (*order.ComplexOrder, error) {
 	ic := s.getShoppingCart(buyerId, cartCode)
 	o, err := s.manager.PrepareNormalOrder(ic)
 	if err == nil {
@@ -436,8 +436,11 @@ func (s *orderServiceImpl) PrepareOrder(buyerId int64, addressId int64,
 			}
 		}
 	}
-	//log.Println("-------",o == nil,err)
-	return o.Complex()
+	if err == nil {
+		//log.Println("-------",o == nil,err)
+		return o.Complex(), err
+	}
+	return nil, err
 }
 
 // 预生成订单，使用优惠券
