@@ -17,10 +17,10 @@ import (
 func Result(data interface{}, err error) *define.Result_ {
 	r := &define.Result_{}
 	if err != nil {
-		r.Code = 1
+		r.ErrCode = 1
 		r.Message = err.Error()
 	} else {
-		r.Code = 0
+		r.ErrCode = 0
 		if data != nil {
 			switch data.(type) {
 			case string, int, int32, int64, bool, float32, float64:

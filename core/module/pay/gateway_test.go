@@ -9,7 +9,7 @@ import (
 
 // 测试提交支付请求到网关
 func TestGateway_Submit(t *testing.T) {
-	pool := storage.NewRedisPool("dbs.ts.com",
+	pool := storage.NewRedisPool("127.0.0.1",
 		6379, 10, "123456", 10000, 200)
 	st := storage.NewRedisStorage(pool)
 	gw := NewGateway(st)
