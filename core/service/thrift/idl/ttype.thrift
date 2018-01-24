@@ -3,7 +3,7 @@ namespace go define
 //传输结果对象
 struct Result{
    /* 状态码,如为0表示成功 */
-   1:i32 Code
+   1:i32 ErrCode
    /* 消息 */
    2:string Message
    /* 数据, 可以用来存放JSON字符串 */

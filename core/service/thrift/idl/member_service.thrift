@@ -3,6 +3,64 @@ namespace go define
 include "ttype.thrift"
 
 
+//会员服务
+service MemberService{
+    // 登录，返回结果(Result)和会员编号(Id);
+    // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
+    ttype.Result64 CheckLogin(1:string user,2:string pwd,3:bool update)
+    // 检查交易密码
+    ttype.Result CheckTradePwd(1:i64 id,2:string tradePwd)
+    // 等级列表
+    list<Level> LevelList()
+    // 获取实名信息
+    TrustedInfo GetTrustInfo(1:i64 id)
+    // 获取等级信息
+    Level GetLevel(1:i32 id)
+    // 根据SIGN获取等级
+    Level GetLevelBySign(1:string sign)
+    // 根据会员编号获取会员信息
+    Member GetMember(1:i64 id)
+    // 根据用户名获取会员信息
+    Member GetMemberByUser(1:string user)
+    // 根据会员编号获取会员资料
+    Profile GetProfile(1:i64 id)
+    // 获取会员汇总信息
+    ComplexMember Complex(1:i64 memberId)
+    // 更改会员等级
+    ttype.Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
+    /* 更改手机号码，不验证手机格式 */
+    ttype.Result ChangePhone(1:i64 memberId,2:string phone)
+     /* 更改用户名 */
+    ttype.Result ChangeUsr(1:i64 memberId,2:string usr)
+    // 升级为高级会员
+    ttype.Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
+    // 获取会员的会员Token,reset表示是否重置token
+    string GetToken(1:i64 memberId,2:bool reset)
+    // 检查会员的会话Token是否正确，如正确返回: 1
+    bool CheckToken(1:i64 memberId,2:string token)
+    // 移除会员的Token
+    void RemoveToken(1:i64 memberId)
+    // 获取地址，如果addrId为0，则返回默认地址
+    Address GetAddress(1:i64 memberId,2:i64 addrId)
+    // 获取会员账户信息
+    Account GetAccount(1:i64 memberId)
+    // 获取自己的邀请人会员编号数组
+    list<i64> InviterArray(1:i64 memberId,2:i32 depth)
+    // 按条件获取荐指定等级会员的数量
+    i32 GetInviterQuantity(1:i64 memberId,2:map<string,string> data)
+    // 按条件获取荐指定等级会员的列表
+    list<i64> GetInviterArray(1:i64 memberId,2:map<string,string> data)
+    // 账户充值
+    ttype.Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
+      4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
+    // 抵扣账户
+    ttype.Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
+      4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
+    // !银行四要素认证
+    ttype.Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)
+}
+
+
 struct Level {
     1: i32 ID
     2: string Name
@@ -141,57 +199,4 @@ struct Address {
     8: string Area
     9: string Address
     10: i32 IsDefault
-}
-
-//会员服务
-service MemberService{
-    // 登录，返回结果(Result)和会员编号(Id);
-    // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    ttype.Result64 CheckLogin(1:string user,2:string pwd,3:bool update)
-    // 检查交易密码
-    ttype.Result CheckTradePwd(1:i64 id,2:string tradePwd)
-    // 等级列表
-    list<Level> LevelList()
-    // 获取实名信息
-    TrustedInfo GetTrustInfo(1:i64 id)
-    // 获取等级信息
-    Level GetLevel(1:i32 id)
-    // 根据SIGN获取等级
-    Level GetLevelBySign(1:string sign)
-    // 根据会员编号获取会员信息
-    Member GetMember(1:i64 id)
-    // 根据用户名获取会员信息
-    Member GetMemberByUser(1:string user)
-    // 根据会员编号获取会员资料
-    Profile GetProfile(1:i64 id)
-    // 获取会员汇总信息
-    ComplexMember Complex(1:i64 memberId)
-    // 更改会员等级
-    ttype.Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
-     // 升级为高级会员
-    ttype.Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
-    // 获取会员的会员Token,reset表示是否重置token
-    string GetToken(1:i64 memberId,2:bool reset)
-    // 检查会员的会话Token是否正确，如正确返回: 1
-    bool CheckToken(1:i64 memberId,2:string token)
-    // 移除会员的Token
-    void RemoveToken(1:i64 memberId)
-    // 获取地址，如果addrId为0，则返回默认地址
-    Address GetAddress(1:i64 memberId,2:i64 addrId)
-    // 获取会员账户信息
-    Account GetAccount(1:i64 memberId)
-    // 获取自己的邀请人会员编号数组
-    list<i64> InviterArray(1:i64 memberId,2:i32 depth)
-    // 按条件获取荐指定等级会员的数量
-    i32 GetInviterQuantity(1:i64 memberId,2:map<string,string> data)
-    // 按条件获取荐指定等级会员的列表
-    list<i64> GetInviterArray(1:i64 memberId,2:map<string,string> data)
-    // 账户充值
-    ttype.Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
-      4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
-    // 抵扣账户
-    ttype.Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
-      4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
-    // !银行四要素认证
-    ttype.Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)
 }
