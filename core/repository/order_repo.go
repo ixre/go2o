@@ -196,17 +196,17 @@ func (o *OrderRepImpl) GetNormalSubOrders(orderId int64) []*order.NormalSubOrder
 // 获取缓存订单的Key
 func (o *OrderRepImpl) getOrderCk(id int64, subOrder bool) string {
 	if subOrder {
-		return fmt.Sprintf("go2o:rep:order:s_%d", id)
+		return fmt.Sprintf("go2o:repo:order:s_%d", id)
 	}
-	return fmt.Sprintf("go2o:rep:order:%d", id)
+	return fmt.Sprintf("go2o:repo:order:%d", id)
 }
 
 // 获取缓存订单编号的Key
 func (o *OrderRepImpl) getOrderCkByNo(orderNo string, subOrder bool) string {
 	if subOrder {
-		return fmt.Sprintf("go2o:rep:order:s_%s", orderNo)
+		return fmt.Sprintf("go2o:repo:order:s_%s", orderNo)
 	}
-	return fmt.Sprintf("go2o:rep:order:%s", orderNo)
+	return fmt.Sprintf("go2o:repo:order:%s", orderNo)
 }
 
 // 获取订单编号

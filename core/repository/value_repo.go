@@ -29,98 +29,98 @@ import (
 
 var _ valueobject.IValueRepo = new(valueRepo)
 var (
-	valueRepCacheKey = "go2o:rep:value-rep:cache"
+	valueRepCacheKey = "go2o:repo:value-rep:cache"
 )
 
 type valueRepo struct {
 	db.Connector
-	_orm   orm.Orm
-	_kvMap map[string]int32
-	_kvMux *sync.RWMutex
+	o     orm.Orm
+	kvMap map[string]int32
+	kvMux *sync.RWMutex
 
-	storage          storage.Interface
-	_wxConf          *valueobject.WxApiConfig
-	_wxGob           *util.GobFile
-	_rpConf          *valueobject.RegisterPerm
-	_rpGob           *util.GobFile
-	_numConf         *valueobject.GlobNumberConf
-	_numGob          *util.GobFile
-	_globMchConf     *valueobject.PlatformConf
-	_mchGob          *util.GobFile
-	_globRegistry    *valueobject.Registry
-	_rstGob          *util.GobFile
-	_globMchSaleConf *valueobject.GlobMchSaleConf
-	_mscGob          *util.GobFile
-	_smsConf         valueobject.SmsApiSet
-	_smsGob          *util.GobFile
-	_moAppConf       *valueobject.MoAppConf
-	_moAppGob        *util.GobFile
-	_tplConf         *valueobject.TemplateConf
-	_tplGob          *util.GobFile
-	_areaCache       map[int32][]*valueobject.Area
-	_areaMux         sync.Mutex
+	storage         storage.Interface
+	wxConf          *valueobject.WxApiConfig
+	wxGob           *util.GobFile
+	rpConf          *valueobject.RegisterPerm
+	rpGob           *util.GobFile
+	numConf         *valueobject.GlobNumberConf
+	numGob          *util.GobFile
+	globMchConf     *valueobject.PlatformConf
+	mchGob          *util.GobFile
+	globRegistry    *valueobject.Registry
+	rstGob          *util.GobFile
+	globMchSaleConf *valueobject.GlobMchSaleConf
+	mscGob          *util.GobFile
+	smsConf         valueobject.SmsApiSet
+	smsGob          *util.GobFile
+	moAppConf       *valueobject.MoAppConf
+	moAppGob        *util.GobFile
+	tplConf         *valueobject.TemplateConf
+	tplGob          *util.GobFile
+	areaCache       map[int32][]*valueobject.Area
+	areaMux         sync.Mutex
 
-	_confRegistry *gof.Registry
+	confRegistry *gof.Registry
 }
 
 func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
 	confRegistry, err := gof.NewRegistry(confPath, ":")
 	if err != nil {
 		log.Println("[ Go2o][ Crash]: can't load config,details ", err.Error())
-		//os.Exit(1)
+		//or.Exit(1)
 	}
 	return &valueRepo{
-		Connector:     conn,
-		_orm:          conn.GetOrm(),
-		storage:       storage,
-		_kvMux:        &sync.RWMutex{},
-		_rstGob:       util.NewGobFile("conf/core/registry"),
-		_wxGob:        util.NewGobFile("conf/core/wx_api"),
-		_rpGob:        util.NewGobFile("conf/core/register_perm"),
-		_numGob:       util.NewGobFile("conf/core/number_conf"),
-		_mchGob:       util.NewGobFile("conf/core/pm_conf"),
-		_mscGob:       util.NewGobFile("conf/core/mch_sale_conf"),
-		_smsGob:       util.NewGobFile("conf/core/sms_conf"),
-		_tplGob:       util.NewGobFile("conf/core/tpl_conf"),
-		_moAppGob:     util.NewGobFile("conf/core/mo_app"),
-		_confRegistry: confRegistry,
+		Connector:    conn,
+		o:            conn.GetOrm(),
+		storage:      storage,
+		kvMux:        &sync.RWMutex{},
+		rstGob:       util.NewGobFile("conf/core/registry"),
+		wxGob:        util.NewGobFile("conf/core/wx_api"),
+		rpGob:        util.NewGobFile("conf/core/register_perm"),
+		numGob:       util.NewGobFile("conf/core/number_conf"),
+		mchGob:       util.NewGobFile("conf/core/pm_conf"),
+		mscGob:       util.NewGobFile("conf/core/mch_sale_conf"),
+		smsGob:       util.NewGobFile("conf/core/sms_conf"),
+		tplGob:       util.NewGobFile("conf/core/tpl_conf"),
+		moAppGob:     util.NewGobFile("conf/core/mo_app"),
+		confRegistry: confRegistry,
 	}
 }
 
-func (vp *valueRepo) checkReload() error {
-	i, err := vp.storage.GetInt(valueRepCacheKey)
+func (r *valueRepo) checkReload() error {
+	i, err := r.storage.GetInt(valueRepCacheKey)
 	if i == 0 || err != nil {
-		vp._wxConf = nil
-		vp._numConf = nil
-		vp._rpConf = nil
-		vp._smsConf = nil
-		vp._globMchConf = nil
-		vp._globMchSaleConf = nil
-		vp._globRegistry = nil
+		r.wxConf = nil
+		r.numConf = nil
+		r.rpConf = nil
+		r.smsConf = nil
+		r.globMchConf = nil
+		r.globMchSaleConf = nil
+		r.globRegistry = nil
 	}
-	return vp.storage.Set(valueRepCacheKey, 1)
+	return r.storage.Set(valueRepCacheKey, 1)
 }
 
-func (vp *valueRepo) signReload() {
-	vp.storage.Set(valueRepCacheKey, 0)
+func (r *valueRepo) signReload() {
+	r.storage.Set(valueRepCacheKey, 0)
 }
 
 // 加载所有的键
-func (s *valueRepo) loadAllKeys() {
-	s._kvMux.Lock()
-	s._kvMap = make(map[string]int32)
-	list := s.selectSysKv("")
+func (r *valueRepo) loadAllKeys() {
+	r.kvMux.Lock()
+	r.kvMap = make(map[string]int32)
+	list := r.selectSysKv("")
 	for _, v := range list {
-		s._kvMap[v.Key] = v.ID
-		s.storage.Set("go2o:rep:kv:"+v.Key, v.Value)
+		r.kvMap[v.Key] = v.ID
+		r.storage.Set("go2o:repo:kv:"+v.Key, v.Value)
 	}
-	s._kvMux.Unlock()
+	r.kvMux.Unlock()
 }
 
 // 根据条件获取键值
-func (s *valueRepo) selectSysKv(where string, v ...interface{}) []*valueobject.SysKeyValue {
-	list := []*valueobject.SysKeyValue{}
-	err := s._orm.Select(&list, where, v...)
+func (r *valueRepo) selectSysKv(where string, v ...interface{}) []*valueobject.SysKeyValue {
+	var list []*valueobject.SysKeyValue
+	err := r.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
 	}
@@ -128,293 +128,293 @@ func (s *valueRepo) selectSysKv(where string, v ...interface{}) []*valueobject.S
 }
 
 // 检查KEY与编号MAP
-func (s *valueRepo) checkKvMap() {
-	if s._kvMap == nil {
-		s.loadAllKeys()
+func (r *valueRepo) checkKvMap() {
+	if r.kvMap == nil {
+		r.loadAllKeys()
 	}
 }
 
 // 根据键获取值
-func (s *valueRepo) GetValue(key string) string {
-	s.checkKvMap()
-	s._kvMux.RLock()
-	id, ok := s._kvMap[key]
-	s._kvMux.RUnlock()
+func (r *valueRepo) GetValue(key string) string {
+	r.checkKvMap()
+	r.kvMux.RLock()
+	id, ok := r.kvMap[key]
+	r.kvMux.RUnlock()
 	if ok {
-		rdsKey := "go2o:rep:kv:" + key
-		r, err := s.storage.GetString(rdsKey)
+		rdsKey := "go2o:repo:kv:" + key
+		val, err := r.storage.GetString(rdsKey)
 		if err != nil {
 			e := valueobject.SysKeyValue{}
-			err := s._orm.Get(id, &e)
+			err := r.o.Get(id, &e)
 			if err != nil && err != sql.ErrNoRows {
 				log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
 			}
-			r = e.Value
+			val = e.Value
 			if err == nil {
-				s.storage.Set(rdsKey, r)
+				r.storage.Set(rdsKey, val)
 			}
 		}
-		return r
+		return val
 	}
 	return ""
 }
 
 // 根据前缀获取值
-func (s *valueRepo) GetValues(prefix string) map[string]string {
-	s.checkKvMap()
+func (r *valueRepo) GetValues(prefix string) map[string]string {
+	r.checkKvMap()
 	result := make(map[string]string)
-	for k, _ := range s._kvMap {
+	for k := range r.kvMap {
 		if strings.HasPrefix(k, prefix) {
-			result[k] = s.GetValue(k)
+			result[k] = r.GetValue(k)
 		}
 	}
 	return result
 }
 
 // Save SysKv
-func (s *valueRepo) SetValue(key string, v interface{}) error {
-	s.checkKvMap()
-	s._kvMux.RLock()
-	id, ok := s._kvMap[key]
-	s._kvMux.RUnlock()
+func (r *valueRepo) SetValue(key string, v interface{}) error {
+	r.checkKvMap()
+	r.kvMux.RLock()
+	id, ok := r.kvMap[key]
+	r.kvMux.RUnlock()
 	kv := &valueobject.SysKeyValue{
 		ID:         id,
 		Key:        key,
 		Value:      util.Str(v),
 		UpdateTime: time.Now().Unix(),
 	}
-	id2, err := orm.Save(s._orm, kv, int(kv.ID))
+	id2, err := orm.Save(r.o, kv, int(kv.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
 	}
 	if err == nil {
 		id = int32(id2)
-		s.storage.Set("go2o:rep:kv:"+kv.Key, kv.Value)
+		r.storage.Set("go2o:repo:kv:"+kv.Key, kv.Value)
 		if !ok {
-			s._kvMux.Lock()
-			s._kvMap[key] = id
-			s._kvMux.Unlock()
+			r.kvMux.Lock()
+			r.kvMap[key] = id
+			r.kvMux.Unlock()
 		}
 	}
 	return err
 }
 
 // Delete SysKv
-func (s *valueRepo) DeleteValue(key string) error {
-	err := s._orm.DeleteByPk(valueobject.SysKeyValue{}, key)
+func (r *valueRepo) DeleteValue(key string) error {
+	err := r.o.DeleteByPk(valueobject.SysKeyValue{}, key)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
 	}
 	if err == nil {
-		s._kvMux.Lock()
-		delete(s._kvMap, key)
-		s._kvMux.Unlock()
-		s.storage.Del("go2o:rep:kv:" + key)
+		r.kvMux.Lock()
+		delete(r.kvMap, key)
+		r.kvMux.Unlock()
+		r.storage.Del("go2o:repo:kv:" + key)
 	}
 	return err
 }
 
 // 获取微信接口配置
-func (vp *valueRepo) GetWxApiConfig() valueobject.WxApiConfig {
-	vp.checkReload()
-	if vp._wxConf == nil {
-		vp._wxConf = &valueobject.WxApiConfig{}
-		vp._wxGob.Unmarshal(vp._wxConf)
+func (r *valueRepo) GetWxApiConfig() valueobject.WxApiConfig {
+	r.checkReload()
+	if r.wxConf == nil {
+		r.wxConf = &valueobject.WxApiConfig{}
+		r.wxGob.Unmarshal(r.wxConf)
 	}
-	return *vp._wxConf
+	return *r.wxConf
 }
 
 // 保存微信接口配置
-func (vp *valueRepo) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
+func (r *valueRepo) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	if v != nil {
-		defer vp.signReload()
+		defer r.signReload()
 		//todo: 检查证书文件是否存在
-		vp._wxConf = v
-		return vp._wxGob.Save(vp._wxConf)
+		r.wxConf = v
+		return r.wxGob.Save(r.wxConf)
 	}
 	return errors.New("nil value")
 }
 
 // 获取注册权限
-func (vp *valueRepo) GetRegisterPerm() valueobject.RegisterPerm {
-	vp.checkReload()
-	if vp._rpConf == nil {
+func (r *valueRepo) GetRegisterPerm() valueobject.RegisterPerm {
+	r.checkReload()
+	if r.rpConf == nil {
 		v := defaultRegisterPerm
-		vp._rpConf = &v
-		vp._rpGob.Unmarshal(vp._rpConf)
+		r.rpConf = &v
+		r.rpGob.Unmarshal(r.rpConf)
 	}
-	return *vp._rpConf
+	return *r.rpConf
 }
 
 // 保存注册权限
-func (vp *valueRepo) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
+func (r *valueRepo) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	if v != nil {
-		defer vp.signReload()
+		defer r.signReload()
 		// 如果要验证手机，则必须开启填写手机
 		if v.MustBindPhone {
 			v.NeedPhone = true
 		}
-		vp._rpConf = v
-		return vp._rpGob.Save(vp._rpConf)
+		r.rpConf = v
+		return r.rpGob.Save(r.rpConf)
 	}
 	return nil
 }
 
 // 获取全局系统销售设置
-func (vp *valueRepo) GetGlobNumberConf() valueobject.GlobNumberConf {
-	vp.checkReload()
-	if vp._numConf == nil {
+func (r *valueRepo) GetGlobNumberConf() valueobject.GlobNumberConf {
+	r.checkReload()
+	if r.numConf == nil {
 		v := DefaultGlobNumberConf
-		vp._numConf = &v
-		vp._numGob.Unmarshal(vp._numConf)
+		r.numConf = &v
+		r.numGob.Unmarshal(r.numConf)
 	}
-	return *vp._numConf
+	return *r.numConf
 }
 
 // 保存全局系统销售设置
-func (vp *valueRepo) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
+func (r *valueRepo) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 	if v != nil {
-		defer vp.signReload()
-		vp._numConf = v
-		return vp._numGob.Save(vp._numConf)
+		defer r.signReload()
+		r.numConf = v
+		return r.numGob.Save(r.numConf)
 	}
 	return nil
 }
 
 // 获取平台设置
-func (vp *valueRepo) GetPlatformConf() valueobject.PlatformConf {
-	vp.checkReload()
-	if vp._globMchConf == nil {
+func (r *valueRepo) GetPlatformConf() valueobject.PlatformConf {
+	r.checkReload()
+	if r.globMchConf == nil {
 		v := DefaultPlatformConf
-		vp._globMchConf = &v
-		vp._mchGob.Unmarshal(vp._globMchConf)
+		r.globMchConf = &v
+		r.mchGob.Unmarshal(r.globMchConf)
 	}
-	return *vp._globMchConf
+	return *r.globMchConf
 }
 
 // 保存平台设置
-func (vp *valueRepo) SavePlatformConf(v *valueobject.PlatformConf) error {
+func (r *valueRepo) SavePlatformConf(v *valueobject.PlatformConf) error {
 	if v != nil {
-		defer vp.signReload()
-		vp._globMchConf = v
-		return vp._mchGob.Save(vp._globMchConf)
+		defer r.signReload()
+		r.globMchConf = v
+		return r.mchGob.Save(r.globMchConf)
 	}
 	return nil
 }
 
 // 获取模板配置
-func (v *valueRepo) GetTemplateConf() valueobject.TemplateConf {
-	v.checkReload()
-	if v._tplConf == nil {
+func (r *valueRepo) GetTemplateConf() valueobject.TemplateConf {
+	r.checkReload()
+	if r.tplConf == nil {
 		v2 := DefaultTemplateConf
-		v._tplConf = &v2
-		v._tplGob.Unmarshal(v._tplConf)
+		r.tplConf = &v2
+		r.tplGob.Unmarshal(r.tplConf)
 	}
-	return *v._tplConf
+	return *r.tplConf
 }
 
 // 保存模板配置
-func (v *valueRepo) SaveTemplateConf(t *valueobject.TemplateConf) error {
+func (r *valueRepo) SaveTemplateConf(t *valueobject.TemplateConf) error {
 	if t != nil {
-		defer v.signReload()
-		v._tplConf = t
-		return v._tplGob.Save(v._tplConf)
+		defer r.signReload()
+		r.tplConf = t
+		return r.tplGob.Save(r.tplConf)
 	}
 	return nil
 }
 
 // 获取移动应用设置
-func (v *valueRepo) GetMoAppConf() valueobject.MoAppConf {
-	v.checkReload()
-	if v._moAppConf == nil {
+func (r *valueRepo) GetMoAppConf() valueobject.MoAppConf {
+	r.checkReload()
+	if r.moAppConf == nil {
 		v2 := DefaultMoAppConf
-		v._moAppConf = &v2
-		v._moAppGob.Unmarshal(v._moAppConf)
+		r.moAppConf = &v2
+		r.moAppGob.Unmarshal(r.moAppConf)
 	}
-	return *v._moAppConf
+	return *r.moAppConf
 }
 
 // 保存移动应用设置
-func (v *valueRepo) SaveMoAppConf(r *valueobject.MoAppConf) error {
+func (r *valueRepo) SaveMoAppConf(v *valueobject.MoAppConf) error {
 	if r != nil {
-		defer v.signReload()
-		v._moAppConf = r
-		return v._moAppGob.Save(v._moAppConf)
+		defer r.signReload()
+		r.moAppConf = v
+		return r.moAppGob.Save(r.moAppConf)
 	}
 	return nil
 }
 
 // 获取数据存储
-func (v *valueRepo) GetRegistry() valueobject.Registry {
-	r := v.getRegistry()
-	return *r
+func (r *valueRepo) GetRegistry() valueobject.Registry {
+	v := r.getRegistry()
+	return *v
 }
 
 // 保存数据存储
-func (v *valueRepo) SaveRegistry(r *valueobject.Registry) error {
+func (r *valueRepo) SaveRegistry(v *valueobject.Registry) error {
 	if r != nil {
-		defer v.signReload()
-		v._globRegistry = r
-		return v._rstGob.Save(v._globRegistry)
+		defer r.signReload()
+		r.globRegistry = v
+		return r.rstGob.Save(r.globRegistry)
 	}
 	return nil
 }
 
 // 获取数据存储
-func (v *valueRepo) getRegistry() *valueobject.Registry {
-	v.checkReload()
-	if v._globRegistry == nil {
+func (r *valueRepo) getRegistry() *valueobject.Registry {
+	r.checkReload()
+	if r.globRegistry == nil {
 		v2 := DefaultRegistry
-		v._globRegistry = &v2
-		v._rstGob.Unmarshal(v._globRegistry)
+		r.globRegistry = &v2
+		r.rstGob.Unmarshal(r.globRegistry)
 	}
-	return v._globRegistry
+	return r.globRegistry
 }
 
-func (v *valueRepo) GetsRegistry(keys []string) []string {
+func (r *valueRepo) GetsRegistry(keys []string) []string {
 	if strings.Index(keys[0], ":") != -1 {
-		return v.getsRegistryNew(keys)
+		return r.getsRegistryNew(keys)
 	}
-	r := v.getRegistry()
+	v := r.getRegistry()
 	mp := make([]string, len(keys))
 	for i, key := range keys {
-		v, ok := r.RegistryData[key]
+		d, ok := v.RegistryData[key]
 		if ok {
-			mp[i] = v
+			mp[i] = d
 		} else {
 			mp[i] = "no value in registry"
 		}
 	}
 	return mp
 }
-func (v *valueRepo) getsRegistryNew(keys []string) []string {
+func (r *valueRepo) getsRegistryNew(keys []string) []string {
 	mp := make([]string, len(keys))
 	for i, k := range keys {
-		v := v._confRegistry.Get(k)
+		v := r.confRegistry.Get(k)
 		mp[i] = util.Str(v)
 	}
 	return mp
 }
-func (v *valueRepo) getsRegistryMapNew(keys []string) map[string]string {
+func (r *valueRepo) getsRegistryMapNew(keys []string) map[string]string {
 	mp := map[string]string{}
 	for _, k := range keys {
-		v := v._confRegistry.Get(k)
+		v := r.confRegistry.Get(k)
 		mp[k] = util.Str(v)
 	}
 	return mp
 }
 
 // 根据键获取数据值
-func (v *valueRepo) GetsRegistryMap(keys []string) map[string]string {
+func (r *valueRepo) GetsRegistryMap(keys []string) map[string]string {
 	if strings.Index(keys[0], ":") != -1 {
-		return v.getsRegistryMapNew(keys)
+		return r.getsRegistryMapNew(keys)
 	}
-	r := v.getRegistry()
+	v := r.getRegistry()
 	mp := map[string]string{}
 	for _, key := range keys {
-		v, ok := r.RegistryData[key]
+		d, ok := v.RegistryData[key]
 		if ok {
-			mp[key] = v
+			mp[key] = d
 		} else {
 			mp[key] = "no value in registry"
 		}
@@ -423,82 +423,82 @@ func (v *valueRepo) GetsRegistryMap(keys []string) map[string]string {
 }
 
 // 保存数据值
-func (v *valueRepo) SavesRegistry(values map[string]string) error {
-	r := v.getRegistry()
-	if r != nil {
-		defer v.signReload()
-		for k, v := range values {
-			r.RegistryData[k] = v
+func (r *valueRepo) SavesRegistry(values map[string]string) error {
+	v := r.getRegistry()
+	if v != nil {
+		defer r.signReload()
+		for k, val := range values {
+			v.RegistryData[k] = val
 		}
-		v._globRegistry = r
-		return v._rstGob.Save(v._globRegistry)
+		r.globRegistry = v
+		return r.rstGob.Save(r.globRegistry)
 	}
 	return nil
 }
 
 // 获取全局商户销售设置
-func (vp *valueRepo) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
-	vp.checkReload()
-	if vp._globMchSaleConf == nil {
+func (r *valueRepo) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
+	r.checkReload()
+	if r.globMchSaleConf == nil {
 		v := DefaultGlobMchSaleConf
-		vp._globMchSaleConf = &v
-		vp._mscGob.Unmarshal(vp._globMchSaleConf)
+		r.globMchSaleConf = &v
+		r.mscGob.Unmarshal(r.globMchSaleConf)
 	}
-	return *vp._globMchSaleConf
+	return *r.globMchSaleConf
 }
 
 // 保存全局商户销售设置
-func (vp *valueRepo) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
+func (r *valueRepo) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 	if v != nil {
-		defer vp.signReload()
-		vp._globMchSaleConf = v
-		return vp._mscGob.Save(vp._globMchSaleConf)
+		defer r.signReload()
+		r.globMchSaleConf = v
+		return r.mscGob.Save(r.globMchSaleConf)
 	}
 	return nil
 }
 
 // 获取短信设置
-func (vp *valueRepo) GetSmsApiSet() valueobject.SmsApiSet {
-	vp.checkReload()
-	if vp._smsConf == nil {
-		vp._smsConf = defaultSmsConf
-		vp._smsGob.Unmarshal(&vp._smsConf)
+func (r *valueRepo) GetSmsApiSet() valueobject.SmsApiSet {
+	r.checkReload()
+	if r.smsConf == nil {
+		r.smsConf = defaultSmsConf
+		r.smsGob.Unmarshal(&r.smsConf)
 	}
-	return vp._smsConf
+	return r.smsConf
 }
 
 // 保存短信API
-func (vp *valueRepo) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
-	if _, ok := vp.GetSmsApiSet()[provider]; !ok {
+func (r *valueRepo) SaveSmsApiPerm(provider int, v *valueobject.SmsApiPerm) error {
+	if _, ok := r.GetSmsApiSet()[provider]; !ok {
 		return errors.New("系统不支持的短信接口")
 	}
-	err := sms.CheckSmsApiPerm(provider, s)
+	err := sms.CheckSmsApiPerm(provider, v)
 	if err == nil {
-		if s.Default {
+		if v.Default {
 			// 取消其他接口的默认选项
-			for p, v := range vp._smsConf {
+			for p, c := range r.smsConf {
 				if p == provider {
-					v.Default = true
+					c.Default = true
 				} else {
-					v.Default = false
+					c.Default = false
 				}
 			}
 		} else {
 			//检验是否取消了正在使用的短信接口
-			if i, _ := vp.GetDefaultSmsApiPerm(); i == provider {
+			if i, _ := r.GetDefaultSmsApiPerm(); i == provider {
 				return errors.New("系统应启用一个短信接口")
 			}
 		}
-		defer vp.signReload()
-		vp._smsConf[provider] = s
-		err = vp._smsGob.Save(vp._smsConf)
+		defer r.signReload()
+		r.smsConf[provider] = v
+		err = r.smsGob.Save(r.smsConf)
 	}
 	return err
 }
 
 // 获取默认的短信API
-func (vp *valueRepo) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
-	for i, v := range vp.GetSmsApiSet() {
+func (r *valueRepo) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
+	for i, v := range r.GetSmsApiSet() {
 		if v.Default {
 			return i, v
 		}
@@ -507,50 +507,50 @@ func (vp *valueRepo) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 }
 
 // 获取下级区域
-func (vp *valueRepo) GetChildAreas(id int32) []*valueobject.Area {
-	vp._areaMux.Lock()
-	defer vp._areaMux.Unlock()
-	if vp._areaCache == nil {
-		vp._areaCache = make(map[int32][]*valueobject.Area)
+func (r *valueRepo) GetChildAreas(code int32) []*valueobject.Area {
+	r.areaMux.Lock()
+	defer r.areaMux.Unlock()
+	if r.areaCache == nil {
+		r.areaCache = make(map[int32][]*valueobject.Area)
 	}
-	if v, ok := vp._areaCache[id]; ok {
+	if v, ok := r.areaCache[code]; ok {
 		return v
 	}
-	v := []*valueobject.Area{}
-	err := vp.Connector.GetOrm().Select(&v, "code <> 0 AND parent=?", id)
+	var v []*valueobject.Area
+	err := r.Connector.GetOrm().Select(&v, "code <> 0 AND parent=?", code)
 	if err == nil {
-		vp._areaCache[id] = v
+		r.areaCache[code] = v
 	}
 	return v
 }
 
 // 获取区域名称
-func (v *valueRepo) GetAreaName(id int32) string {
-	if id <= 0 {
+func (r *valueRepo) GetAreaName(code int32) string {
+	if code <= 0 {
 		return ""
 	}
-	strId := strconv.Itoa(int(id))
-	key := "go2o:rep:area:name-" + strId
-	name, err := v.storage.GetString(key)
+	strId := strconv.Itoa(int(code))
+	key := "go2o:repo:area:name-" + strId
+	name, err := r.storage.GetString(key)
 	if err != nil {
-		err = v.Connector.ExecScalar("SELECT name FROM china_area WHERE code=?", &name, strId)
+		err = r.Connector.ExecScalar("SELECT name FROM china_area WHERE code=?", &name, strId)
 		if err == nil {
 			if name == "市辖区" || name == "市辖县" || name == "县" {
 				name = ""
 			}
-			v.storage.Set(key, strings.TrimSpace(name))
+			r.storage.Set(key, strings.TrimSpace(name))
 		}
 	}
 	return name
 }
 
 // 获取地区名称
-func (vp *valueRepo) GetAreaNames(id []int32) []string {
-	strArr := make([]string, len(id))
-	for i, v := range id {
-		strArr[i] = vp.GetAreaName(v)
+func (r *valueRepo) GetAreaNames(codeArr []int32) []string {
+	strArr := make([]string, len(codeArr))
+	for i, v := range codeArr {
+		strArr[i] = r.GetAreaName(v)
 	}
-	if len(id) >= 3 {
+	if len(codeArr) >= 3 {
 		if strArr[1] == "市辖区" || strArr[1] == "市辖县" || strArr[1] == "县" {
 			return []string{strArr[0], strArr[2]}
 		}
@@ -559,14 +559,14 @@ func (vp *valueRepo) GetAreaNames(id []int32) []string {
 }
 
 // 获取省市区字符串
-func (vp *valueRepo) GetAreaString(province, city, district int32) string {
-	names := vp.GetAreaNames([]int32{province, city, district})
+func (r *valueRepo) GetAreaString(province, city, district int32) string {
+	names := r.GetAreaNames([]int32{province, city, district})
 	return strings.Join(names, " ")
 }
 
 // 获取省市区字符串
-func (vp *valueRepo) AreaString(province, city, district int32, detail string) string {
-	names := vp.GetAreaNames([]int32{province, city, district})
+func (r *valueRepo) AreaString(province, city, district int32, detail string) string {
+	names := r.GetAreaNames([]int32{province, city, district})
 	prefix := []byte(strings.Join(names, ""))
 	if len(prefix) != 0 && len(detail) != 0 {
 		i := strings.IndexFunc(detail, func(r rune) bool {

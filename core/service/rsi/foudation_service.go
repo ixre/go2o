@@ -225,13 +225,13 @@ func (s *foundationService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm
 }
 
 // 获取下级区域
-func (s *foundationService) GetChildAreas(id int32) []*valueobject.Area {
-	return s._rep.GetChildAreas(id)
+func (s *foundationService) GetChildAreas(code int32) []*valueobject.Area {
+	return s._rep.GetChildAreas(code)
 }
 
 // 获取地区名称
-func (s *foundationService) GetAreaNames(id []int32) []string {
-	return s._rep.GetAreaNames(id)
+func (s *foundationService) GetAreaNames(codeArr []int32) []string {
+	return s._rep.GetAreaNames(codeArr)
 }
 
 // 获取省市区字符串

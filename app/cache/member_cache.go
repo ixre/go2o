@@ -17,7 +17,7 @@ import (
 
 // 获取最高等级
 func GetHighestLevel() *member.Level {
-	key := "go2o:rep:level:glob:max"
+	key := "go2o:repo:level:glob:max"
 	sto := GetKVS()
 	lv := member.Level{}
 	if sto.Get(key, &lv) != nil {
@@ -31,7 +31,7 @@ func GetHighestLevel() *member.Level {
 
 // 获取等级JSON
 func GetLevelMapJson() string {
-	key := "go2o:rep:level:mp-json"
+	key := "go2o:repo:level:mp-json"
 	sto := GetKVS()
 	str, err := sto.GetString(key)
 	if err != nil {

@@ -80,13 +80,13 @@ func (m *merchantRepo) GetManager() merchant.IMerchantManager {
 
 // 创建会员申请商户密钥
 func (m *merchantRepo) CreateSignUpToken(memberId int64) string {
-	mKey := fmt.Sprintf("go2o:rep:mch:signup:mm-%d", memberId)
+	mKey := fmt.Sprintf("go2o:repo:mch:signup:mm-%d", memberId)
 	if token, err := m.storage.GetString(mKey); err == nil {
 		return token
 	}
 	for {
 		token := domain.NewSecret(0)[8:14]
-		key := "go2o:rep:mch:signup:tk-" + token
+		key := "go2o:repo:mch:signup:tk-" + token
 		if _, err := m.storage.GetInt(key); err != nil {
 			seconds := int64(time.Hour * 12)
 			m.storage.SetExpire(key, memberId, seconds)
@@ -99,7 +99,7 @@ func (m *merchantRepo) CreateSignUpToken(memberId int64) string {
 
 // 根据商户申请密钥获取会员编号
 func (m *merchantRepo) GetMemberFromSignUpToken(token string) int64 {
-	key := "go2o:rep:mch:signup:tk-" + token
+	key := "go2o:repo:mch:signup:tk-" + token
 	id, err := m.storage.GetInt64(key)
 	if err == nil {
 		return id
@@ -119,7 +119,7 @@ func (m *merchantRepo) cleanCache(mchId int32) {
 }
 
 func (m *merchantRepo) getMchCacheKey(mchId int32) string {
-	return fmt.Sprintf("go2o:rep:mch:%d", mchId)
+	return fmt.Sprintf("go2o:repo:mch:%d", mchId)
 }
 
 func (m *merchantRepo) GetMerchant(id int32) merchant.IMerchant {
