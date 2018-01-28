@@ -87,7 +87,7 @@ func (a *advertisementRepo) DelAdPosition(id int32) error {
 	err := a.Connector.GetOrm().DeleteByPk(&ad.AdPosition{}, id)
 	if err == nil {
 		//更新用户的广告缓存
-		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", 0))
+		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", 0))
 	}
 	return err
 }
@@ -97,7 +97,7 @@ func (a *advertisementRepo) SaveAdPosition(v *ad.AdPosition) (int32, error) {
 	id, err := orm.I32(orm.Save(a.GetOrm(), v, int(v.ID)))
 	if err == nil {
 		//更新用户的广告缓存
-		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", 0))
+		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", 0))
 	}
 	return id, err
 }
@@ -119,7 +119,7 @@ func (a *advertisementRepo) SetUserAd(adUserId, posId, adId int32) error {
 	_, err := orm.Save(a.GetOrm(), v, int(v.Id))
 	if err == nil {
 		//更新用户的广告缓存
-		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", adUserId))
+		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", adUserId))
 	}
 	return err
 }
@@ -137,7 +137,7 @@ func (a *advertisementRepo) SaveAdValue(v *ad.Ad) (int32, error) {
 	id, err := orm.I32(orm.Save(a.GetOrm(), v, int(v.Id)))
 	if err == nil {
 		//更新用户的广告缓存
-		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", v.UserId))
+		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", v.UserId))
 	}
 	return id, err
 }
@@ -213,7 +213,7 @@ func (a *advertisementRepo) DelAd(userId, adId int32) error {
 	_, err := a.Connector.GetOrm().Delete(ad.Ad{}, "user_id=? AND id=?", userId, adId)
 	if err == nil {
 		//更新用户的广告缓存
-		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", userId))
+		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", userId))
 	}
 	return err
 }

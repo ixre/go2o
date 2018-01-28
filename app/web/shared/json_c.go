@@ -88,7 +88,7 @@ func (j *JsonC) ShopCat(c *echox.Context) error {
 	parentId, _ := util.I32Err(strconv.Atoi(c.FormValue("parent_id")))
 	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
 	list := []*define.Category{}
-	key := fmt.Sprintf("go2o:rep:cat:%d:json:%d", shopId, parentId)
+	key := fmt.Sprintf("go2o:repo:cat:%d:json:%d", shopId, parentId)
 	sto := c.App.Storage()
 	if err := j.unmarshal(sto, key, &list); err != nil {
 		//if err := sto.Get(key,*list);err != nil{
@@ -110,7 +110,7 @@ func (j *JsonC) Get_shop(c *echox.Context) error {
 	typeParams := strings.TrimSpace(c.FormValue("params"))
 	types := strings.Split(typeParams, "|")
 	result := make(map[string]interface{}, len(types))
-	key := fmt.Sprint("go2o:rep:shop:front:glob_%s", typeParams)
+	key := fmt.Sprint("go2o:repo:shop:front:glob_%s", typeParams)
 	sto := c.App.Storage()
 	//从缓存中读取
 	if err := sto.Get(key, &result); err != nil {
@@ -137,7 +137,7 @@ func (j *JsonC) Get_goods(c *echox.Context) error {
 	typeParams := strings.TrimSpace(c.FormValue("params"))
 	types := strings.Split(typeParams, "|")
 	result := make(map[string]interface{}, len(types))
-	key := fmt.Sprint("go2o:rep:item:fc:%d_%s", shopId, typeParams)
+	key := fmt.Sprint("go2o:repo:item:fc:%d_%s", shopId, typeParams)
 	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
@@ -197,7 +197,7 @@ func (j *JsonC) Mch_goods(c *echox.Context) error {
 	types := strings.Split(typeParams, "|")
 	mchId, _ := util.I32Err(strconv.Atoi(c.FormValue("mch_id")))
 	result := make(map[string]interface{}, len(types))
-	key := fmt.Sprint("go2o:rep:sg:front:%d_%s", mchId, typeParams)
+	key := fmt.Sprint("go2o:repo:sg:front:%d_%s", mchId, typeParams)
 	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
@@ -225,7 +225,7 @@ func (j *JsonC) SaleLabelGoods(c *echox.Context) error {
 	mchId, _ := util.I32Err(strconv.Atoi(c.FormValue("mch_id")))
 	result := make(map[string]interface{}, len(codes))
 
-	key := fmt.Sprint("go2o:rep:stg:front:%d--%s", mchId, getMd5(codeParams))
+	key := fmt.Sprint("go2o:repo:stg:front:%d--%s", mchId, getMd5(codeParams))
 	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取

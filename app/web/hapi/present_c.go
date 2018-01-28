@@ -29,7 +29,7 @@ func (p *presentC) AdApi(c *echox.Context) error {
 	userId, _ := util.I32Err(strconv.Atoi(c.QueryParam("user_id")))
 	as := rsi.AdService
 	result := make(map[string]*ad.AdDto, len(names))
-	key := fmt.Sprintf("go2o:rep:ad:%d:front:%s", userId,
+	key := fmt.Sprintf("go2o:repo:ad:%d:front:%s", userId,
 		p.getMd5(namesParams))
 	rds := c.App.Storage().(storage.IRedisStorage)
 	if rds == nil {
