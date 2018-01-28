@@ -55,10 +55,10 @@ func (p *paymentRepo) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOr
 }
 
 func (p *paymentRepo) getPaymentOrderCk(id int32) string {
-	return fmt.Sprintf("go2o:rep:pay:order:%d", id)
+	return fmt.Sprintf("go2o:repo:pay:order:%d", id)
 }
 func (p *paymentRepo) getPaymentOrderCkByNo(orderNO string) string {
-	return fmt.Sprintf("go2o:rep:pay:order:%s", orderNO)
+	return fmt.Sprintf("go2o:repo:pay:order:%s", orderNO)
 }
 
 // 根据编号获取支付单

@@ -126,7 +126,7 @@ var (
 
 // 获取会员等级
 func (m *MemberRepo) GetMemberLevels_New() []*member.Level {
-	const key = "go2o:rep:level:glob:cache"
+	const key = "go2o:repo:level:glob:cache"
 	i, err := m.Storage.GetInt(key)
 	load := err != nil || i != 1 || globLevels == nil
 	if load {
@@ -149,7 +149,7 @@ func (m *MemberRepo) GetMemberNumByLevel_New(id int32) int {
 func (m *MemberRepo) DeleteMemberLevel_New(id int32) error {
 	err := m.Connector.GetOrm().DeleteByPk(&member.Level{}, id)
 	if err == nil {
-		PrefixDel(m.Storage, "go2o:rep:level:*")
+		PrefixDel(m.Storage, "go2o:repo:level:*")
 	}
 	return err
 }
@@ -158,7 +158,7 @@ func (m *MemberRepo) DeleteMemberLevel_New(id int32) error {
 func (m *MemberRepo) SaveMemberLevel_New(v *member.Level) (int32, error) {
 	id, err := orm.I32(orm.Save(m.GetOrm(), v, int(v.ID)))
 	if err == nil {
-		PrefixDel(m.Storage, "go2o:rep:level:*")
+		PrefixDel(m.Storage, "go2o:repo:level:*")
 	}
 	return id, err
 }
@@ -200,19 +200,19 @@ func (m *MemberRepo) GetMemberIdByEmail(email string) int64 {
 }
 
 func (m *MemberRepo) getMemberCk(memberId int64) string {
-	return fmt.Sprintf("go2o:rep:mm:inf:%d", memberId)
+	return fmt.Sprintf("go2o:repo:mm:inf:%d", memberId)
 }
 func (m *MemberRepo) getAccountCk(memberId int64) string {
-	return fmt.Sprintf("go2o:rep:mm:%d:acc", memberId)
+	return fmt.Sprintf("go2o:repo:mm:%d:acc", memberId)
 }
 func (m *MemberRepo) getProfileCk(memberId int64) string {
-	return fmt.Sprintf("go2o:rep:mm:pro:%d", memberId)
+	return fmt.Sprintf("go2o:repo:mm:pro:%d", memberId)
 }
 func (m *MemberRepo) getTrustCk(memberId int64) string {
-	return fmt.Sprintf("go2o:rep:mm:trust:%d", memberId)
+	return fmt.Sprintf("go2o:repo:mm:trust:%d", memberId)
 }
 func (m *MemberRepo) getGlobLevelsCk() string {
-	return "go2o:rep:mm-lv"
+	return "go2o:repo:mm-lv"
 }
 
 // 获取会员
@@ -434,7 +434,7 @@ func (m *MemberRepo) GetWalletLog(id int32) *member.MWalletLog {
 
 // 获取会员提现次数键
 func (m *MemberRepo) getMemberTakeOutTimesKey(memberId int64) string {
-	return fmt.Sprintf("sys:go2o:rep:mm:take-out-times:%d", memberId)
+	return fmt.Sprintf("sys:go2o:repo:mm:take-out-times:%d", memberId)
 }
 
 // 增加会员当天提现次数
@@ -466,7 +466,7 @@ func (m *MemberRepo) GetTodayTakeOutTimes(memberId int64) int {
 }
 
 func (m *MemberRepo) getRelationCk(memberId int64) string {
-	return fmt.Sprintf("go2o:rep:mm:%d:rel", memberId)
+	return fmt.Sprintf("go2o:repo:mm:%d:rel", memberId)
 }
 
 // 获取会员关联

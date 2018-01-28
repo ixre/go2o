@@ -52,7 +52,7 @@ func (c *categoryRepo) GlobCatService() product.IGlobCatService {
 }
 
 func (c *categoryRepo) getCategoryCacheKey(id int32) string {
-	return fmt.Sprintf("go2o:rep:cat:c%d", id)
+	return fmt.Sprintf("go2o:repo:cat:c%d", id)
 }
 
 func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
@@ -60,7 +60,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))
-		PrefixDel(c.storage, "go2o:rep:cat:list")
+		PrefixDel(c.storage, "go2o:repo:cat:list")
 	}
 	return id, err
 }
@@ -86,7 +86,7 @@ func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))
-		PrefixDel(c.storage, "go2o:rep:cat:list")
+		PrefixDel(c.storage, "go2o:repo:cat:list")
 	}
 
 	return err
@@ -124,7 +124,7 @@ func (c *categoryRepo) redirectGetCats() []*product.Category {
 }
 
 func (c *categoryRepo) GetCategories(mchId int32) []*product.Category {
-	key := "go2o:rep:cat:list"
+	key := "go2o:repo:cat:list"
 	list := []*product.Category{}
 	jsonStr, err := c.storage.GetBytes(key)
 	if err == nil {

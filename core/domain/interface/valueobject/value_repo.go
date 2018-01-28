@@ -346,13 +346,13 @@ type (
 		GetDefaultSmsApiPerm() (int, *SmsApiPerm)
 
 		// 获取下级区域
-		GetChildAreas(id int32) []*Area
+		GetChildAreas(code int32) []*Area
 
 		// 获取区域名称
-		GetAreaName(id int32) string
+		GetAreaName(code int32) string
 
 		// 获取地区名称
-		GetAreaNames(id []int32) []string
+		GetAreaNames(codeArr []int32) []string
 		// 获取省市区字符串
 		AreaString(province, city, district int32, detail string) string
 		// 获取省市区字符串

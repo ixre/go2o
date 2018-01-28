@@ -97,7 +97,7 @@ func GetMerchantApiInfo(mchId int32) *merchant.ApiInfo {
 }
 
 var (
-	expressCacheKey = "go2o:rep:express:ship-tab"
+	expressCacheKey = "go2o:repo:express:ship-tab"
 )
 
 // 获取发货的快递选项卡
