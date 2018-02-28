@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.22, for osx10.8 (x86_64)
 --
--- Host: db.flm-dev.redvp.com    Database: flm
+-- Host: db.go2o-dev.to2.net    Database:go2o
 -- ------------------------------------------------------
 -- Server version	5.5.5-10.0.23-MariaDB-0+deb8u1
 

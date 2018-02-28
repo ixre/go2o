@@ -26,6 +26,8 @@ service MemberService{
     Profile GetProfile(1:i64 id)
     // 获取会员汇总信息
     ComplexMember Complex(1:i64 memberId)
+    // 检查资料是否完成
+    ttype.Result CheckProfileComplete(1:i64 memberId)
     // 更改会员等级
     ttype.Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
     /* 更改手机号码，不验证手机格式 */

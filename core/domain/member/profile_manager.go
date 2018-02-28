@@ -156,6 +156,24 @@ func (p *profileManagerImpl) ProfileCompleted() bool {
 	return r
 }
 
+func (p *profileManagerImpl) CheckProfileComplete() error {
+	v := p.GetProfile()
+	if v.Phone == "" {
+		return errors.New("phone")
+	}
+	if v.BirthDay == "" {
+		return errors.New("birthday")
+	}
+	if v.Province <= 0 || v.City <= 0 || v.District <= 0 || v.Address == "" {
+		return errors.New("address")
+	}
+	conf := p.valRepo.GetRegistry()
+	if conf.MemberImRequired && len(v.Im) == 0 {
+		return errors.New("im")
+	}
+	return nil
+}
+
 //todo: 上传头像方法
 
 // 获取资料
