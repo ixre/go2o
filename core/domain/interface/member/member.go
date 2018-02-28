@@ -106,58 +106,42 @@ type (
 	IProfileManager interface {
 		// 获取资料
 		GetProfile() Profile
-
 		// 保存资料
 		SaveProfile(v *Profile) error
-
 		// 更改手机号码,不验证手机格式
 		ChangePhone(string) error
-
 		// 设置头像
 		SetAvatar(string) error
-
 		// 资料是否完善
 		ProfileCompleted() bool
-
+		// 检查资料是否完善
+		CheckProfileComplete() error
 		// 修改密码,旧密码可为空; 传入原始密码。密码均为密文
 		ModifyPassword(newPwd, oldPwd string) error
-
 		// 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
 		ModifyTradePassword(newPwd, oldPwd string) error
-
 		// 获取提现银行信息
 		GetBank() BankInfo
-
 		// 保存提现银行信息,保存后将锁定
 		SaveBank(*BankInfo) error
-
 		// 解锁提现银行卡信息
 		UnlockBank() error
-
 		// 实名认证信息
 		GetTrustedInfo() TrustedInfo
-
 		// 保存实名认证信息
 		SaveTrustedInfo(v *TrustedInfo) error
-
 		// 审核实名认证,若重复审核将返回错误
 		ReviewTrustedInfo(pass bool, remark string) error
-
 		// 创建配送地址
 		CreateDeliver(*Address) IDeliverAddress
-
 		// 获取配送地址
 		GetDeliverAddress() []IDeliverAddress
-
 		// 获取配送地址
 		GetAddress(addressId int64) IDeliverAddress
-
 		// 设置默认地址
 		SetDefaultAddress(addressId int64) error
-
 		// 获取默认收货地址
 		GetDefaultAddress() IDeliverAddress
-
 		// 删除配送地址
 		DeleteAddress(addressId int64) error
 	}
@@ -166,10 +150,8 @@ type (
 	IFavoriteManager interface {
 		// 收藏
 		Favorite(favType int, referId int32) error
-
 		// 是否已收藏
 		Favored(favType int, referId int32) bool
-
 		// 取消收藏
 		Cancel(favType int, referId int32) error
 	}

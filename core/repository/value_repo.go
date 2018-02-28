@@ -535,10 +535,11 @@ func (r *valueRepo) GetAreaName(code int32) string {
 	if err != nil {
 		err = r.Connector.ExecScalar("SELECT name FROM china_area WHERE code=?", &name, strId)
 		if err == nil {
+			name = strings.TrimSpace(name)
 			if name == "市辖区" || name == "市辖县" || name == "县" {
 				name = ""
 			}
-			r.storage.Set(key, strings.TrimSpace(name))
+			r.storage.Set(key, name)
 		}
 	}
 	return name
@@ -546,16 +547,16 @@ func (r *valueRepo) GetAreaName(code int32) string {
 
 // 获取地区名称
 func (r *valueRepo) GetAreaNames(codeArr []int32) []string {
-	strArr := make([]string, len(codeArr))
+	arr := make([]string, len(codeArr))
 	for i, v := range codeArr {
-		strArr[i] = r.GetAreaName(v)
+		arr[i] = r.GetAreaName(v)
 	}
 	if len(codeArr) >= 3 {
-		if strArr[1] == "市辖区" || strArr[1] == "市辖县" || strArr[1] == "县" {
-			return []string{strArr[0], strArr[2]}
+		if arr[1] == "市辖区" || arr[1] == "市辖县" || arr[1] == "县" {
+			return []string{arr[0], arr[2]}
 		}
 	}
-	return strArr
+	return arr
 }
 
 // 获取省市区字符串
