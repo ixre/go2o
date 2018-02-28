@@ -1,3 +1,5 @@
+package rsi
+
 /**
  * Copyright 2014 @ z3q.net.
  * name :
@@ -6,9 +8,6 @@
  * description :
  * history :
  */
-
-package rsi
-
 import (
 	"bytes"
 	"context"
@@ -159,7 +158,7 @@ func (s *memberService) RemoveToken(ctx context.Context, memberId int64) (err er
 }
 
 // 更改手机号码，不验证手机格式
-func (s *memberService) ChangePhone(ctx context.Context,memberId int64, phone string) (result_ *define.Result_, err error) {
+func (s *memberService) ChangePhone(ctx context.Context, memberId int64, phone string) (result_ *define.Result_, err error) {
 	return parser.Result(nil, s.changePhone(memberId, phone)), nil
 }
 
@@ -326,7 +325,7 @@ func (s *memberService) CompareCode(memberId int64, code string) error {
 }
 
 // 更改会员用户名
-func (s *memberService) ChangeUsr(ctx context.Context,memberId int64, usr string) (result_ *define.Result_, err error) {
+func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) (result_ *define.Result_, err error) {
 	return parser.Result(nil, s.changeUsr(memberId, usr)), nil
 }
 
@@ -438,6 +437,30 @@ func (s *memberService) ProfileCompleted(memberId int64) bool {
 		return m.Profile().ProfileCompleted()
 	}
 	return false
+}
+
+// 判断资料是否完善
+func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64) (r *define.Result_, e error) {
+	m := s.repo.GetMember(memberId)
+	var err error
+	if m == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		err = m.Profile().CheckProfileComplete()
+		if err != nil {
+			switch err.Error() {
+			case "phone":
+				err = errors.New("未完善手机")
+			case "birthday":
+				err = errors.New("未完善生日")
+			case "address":
+				err = errors.New("未完善地址")
+			case "im":
+				err = errors.New("未完善" + variable.AliasMemberIM)
+			}
+		}
+	}
+	return parser.Result(nil, err), nil
 }
 
 // 重置密码
@@ -1002,9 +1025,9 @@ func (s *memberService) GetLatestApplyCashText(memberId int64) string {
 }
 
 // 确认提现
-func (a *memberService) ConfirmTakeOutRequest(memberId int64,
+func (s *memberService) ConfirmTakeOutRequest(memberId int64,
 	infoId int32, pass bool, remark string) error {
-	m, err := a.getMember(memberId)
+	m, err := s.getMember(memberId)
 	if err == nil {
 		err = m.GetAccount().ConfirmTakeOut(infoId, pass, remark)
 	}
