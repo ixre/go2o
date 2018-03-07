@@ -24,6 +24,13 @@ struct SsoApp{
     4: string Token
 }
 
+/** 行政区域 */
+struct SArea  {
+    1:i32 Code
+    2:i32 Parent
+    3:string Name
+}
+
 
 // 基础服务
 service FoundationService{
@@ -58,6 +65,10 @@ service FoundationService{
    void FlushSuperPwd(1:string user,2:string pwd)
    // 创建同步登录的地址
    string GetSyncLoginUrl(1:string returnUrl)
+   // 获取地区名称
+   list<string> GetAreaNames(1:list<i32> codes)
+   // 获取下级区域
+   list<SArea> GetChildAreas(1:i32 code)
 }
 
 
