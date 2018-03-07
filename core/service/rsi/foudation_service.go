@@ -225,13 +225,21 @@ func (s *foundationService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm
 }
 
 // 获取下级区域
-func (s *foundationService) GetChildAreas(code int32) []*valueobject.Area {
-	return s._rep.GetChildAreas(code)
+func (s *foundationService) GetChildAreas(ctx context.Context, code int32) ([]*define.SArea, error) {
+	var arr []*define.SArea
+	for _, v := range s._rep.GetChildAreas(code) {
+		arr = append(arr, &define.SArea{
+			Code:   int32(v.Code),
+			Parent: int32(v.Parent),
+			Name:   v.Name,
+		})
+	}
+	return arr, nil
 }
 
 // 获取地区名称
-func (s *foundationService) GetAreaNames(codeArr []int32) []string {
-	return s._rep.GetAreaNames(codeArr)
+func (s *foundationService) GetAreaNames(ctx context.Context, codes []int32) ([]string, error) {
+	return s._rep.GetAreaNames(codes), nil
 }
 
 // 获取省市区字符串
