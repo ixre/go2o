@@ -34,8 +34,9 @@ func (m *mainC) Test(c *echox.Context) error {
 		return requestLogin(c)
 	}
 	d := gof.Message{
-		Result: true,
-		Data:   memberId,
+		ErrCode: 0,
+		Result:  true,
+		Data:    memberId,
 	}
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), d)
 }
