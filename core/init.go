@@ -10,7 +10,6 @@ package core
 
 import (
 	"encoding/gob"
-	"github.com/jsix/goex/report"
 	"github.com/jsix/gof/db"
 	"go2o/core/dao/model"
 	"go2o/core/domain/interface/ad"
@@ -66,9 +65,6 @@ func Init(a *AppImpl, debug, trace bool) bool {
 	a._debugMode = debug
 	if trace {
 		a.Db().GetOrm().SetTrace(a._debugMode)
-	}
-	if debug {
-		report.WATCH_CONF_FILE = true
 	}
 	OrmMapping(a.Db())
 	// 初始化变量
