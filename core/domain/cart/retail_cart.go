@@ -114,7 +114,7 @@ func (c *cartImpl) getSnapshotsMap(items []*cart.RetailCartItem) map[int64]*item
 		l := len(items)
 		c.snapMap = make(map[int64]*item.Snapshot, l)
 		if l > 0 {
-			var ids []int64 = make([]int64, l)
+			var ids = make([]int64, l)
 			for i, v := range items {
 				ids[i] = v.ItemId
 			}
