@@ -42,6 +42,8 @@ service MemberService{
     bool CheckToken(1:i64 memberId,2:string token)
     // 移除会员的Token
     void RemoveToken(1:i64 memberId)
+    // 获取会员的收货地址
+    list<Address> GetAddressList(1:i64 memberId)
     // 获取地址，如果addrId为0，则返回默认地址
     Address GetAddress(1:i64 memberId,2:i64 addrId)
     // 获取会员账户信息

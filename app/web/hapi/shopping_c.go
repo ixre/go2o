@@ -1,6 +1,7 @@
 package hapi
 
 import (
+	"api/serve/thrift"
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
 	"go2o/core/service/rsi"
@@ -22,6 +23,6 @@ func (s *shoppingC) AddressList(c *echox.Context) error {
 	if memberId <= 0 {
 		return requestLogin(c)
 	}
-	address := rsi.MemberService.GetAddressList(memberId)
+	address, _ := rsi.MemberService.GetAddressList(thrift.Context, memberId)
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), address)
 }
