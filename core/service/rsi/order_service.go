@@ -96,7 +96,7 @@ func (s *orderServiceImpl) parseCheckedMap(data string) (m map[int64][]int64) {
 			m = map[int64][]int64{}
 			for k, v := range src {
 				itemId, _ := strconv.Atoi(k)
-				skuList := []int64{}
+				var skuList []int64
 				for _, v2 := range v {
 					skuId, _ := strconv.Atoi(v2)
 					skuList = append(skuList, int64(skuId))
@@ -216,7 +216,7 @@ func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*
 // 勾选购物车，格式如：1:2;1:5
 func (s *orderServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	checked := data["Checked"]
-	arr := []*cart.ItemPair{}
+	var arr []*cart.ItemPair
 	splitArr := strings.Split(checked, ";")
 	for _, str := range splitArr {
 		i := strings.Index(str, ":")
