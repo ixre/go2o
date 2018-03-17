@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
+	"math"
 	"strconv"
 )
 
@@ -82,8 +83,8 @@ func (s *itemJsonUtil) getSkuJdo(skuArr []*item.Sku) []skuJdo {
 			SkuId:         strconv.Itoa(int(v.ID)),
 			SpecData:      v.SpecData,
 			SpecWord:      v.SpecWord,
-			Price:         float64(v.Price),
-			DiscountPrice: float64(v.Price),
+			Price:         math.Round(float64(v.Price)),
+			DiscountPrice: math.Round(float64(v.Price)),
 			PriceArray:    []skuPriceJdo{},
 		}
 	}

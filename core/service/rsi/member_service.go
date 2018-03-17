@@ -750,8 +750,15 @@ func (s *memberService) PagedTradeOrder(buyerId int64, begin, size int, paginati
 }
 
 /*********** 收货地址 ***********/
-func (s *memberService) GetAddressList(memberId int64) []*member.Address {
-	return s.repo.GetDeliverAddress(memberId)
+
+// 获取会员的收货地址
+func (s *memberService) GetAddressList(ctx context.Context, memberId int64) ([]*define.Address, error) {
+	src := s.repo.GetDeliverAddress(memberId)
+	var arr []*define.Address
+	for _, v := range src {
+		arr = append(arr, parser.AddressDto(v))
+	}
+	return arr, nil
 }
 
 //获取配送地址
