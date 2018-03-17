@@ -10,6 +10,7 @@
 package cart
 
 import (
+	"github.com/jsix/gof/math"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -313,8 +314,8 @@ func ParseCartItem(item *RetailCartItem) *define.ShoppingCartItem {
 	}
 	if item.Sku != nil {
 		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
-		i.RetailPrice = float64(item.Sku.RetailPrice)
-		i.Price = float64(item.Sku.Price)
+		i.RetailPrice = math.Round(float64(item.Sku.RetailPrice),2)
+		i.Price =  math.Round(float64(item.Sku.Price),2)
 		i.SpecWord = item.Sku.SpecWord
 		if i.Title == "" {
 			i.Title = item.Sku.Title

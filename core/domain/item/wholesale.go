@@ -2,6 +2,7 @@ package item
 
 import (
 	"encoding/json"
+	"github.com/jsix/gof/math"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
@@ -269,8 +270,8 @@ func (w *wholesaleItemImpl) GetJsonDetailData() []byte {
 			SkuId:            strconv.Itoa(int(v.ID)),
 			SpecData:         v.SpecData,
 			SpecWord:         v.SpecWord,
-			Price:            float64(v.Price),
-			DiscountPrice:    float64(v.Price),
+			Price:           math.Round(float64(v.Price),2),
+			DiscountPrice:    math.Round(float64(v.Price),2),
 			CanSalesQuantity: v.Stock,
 			SalesCount:       v.SaleNum,
 			PriceArray:       []skuPriceJdo{},
