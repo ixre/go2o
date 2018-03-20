@@ -11,7 +11,7 @@ package testing
 import (
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/infrastructure/tool/sms"
-	"go2o/core/repository"
+	"go2o/core/repos"
 	"go2o/core/testing/ti"
 	"testing"
 )
@@ -20,9 +20,9 @@ func TestMssSendSms(t *testing.T) {
 	app := ti.GetApp()
 	db := app.Db()
 	sto := app.Storage()
-	nRepo := repository.NewNotifyRepo(db)
-	vRepo := repository.NewValueRepo("", db, sto)
-	rep := repository.NewMssRepo(db, nRepo, vRepo)
+	nRepo := repos.NewNotifyRepo(db)
+	vRepo := repos.NewValueRepo("", db, sto)
+	rep := repos.NewMssRepo(db, nRepo, vRepo)
 
 	data := map[string]interface{}{}
 	data = sms.AppendCheckPhoneParams(1, data)

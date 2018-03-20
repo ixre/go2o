@@ -6,11 +6,12 @@
  * description :
  * history :
  */
-package repository
+package repos
 
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
@@ -66,11 +67,13 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
 }
 
 // 检查分类是否关联商品
-func (c *categoryRepo) CheckGoodsContain(mchId, id int32) bool {
+func (c *categoryRepo) CheckContainGoods(vendorId, catId int32) bool {
 	num := 0
-	//清理项
-	c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id IN
-		(SELECT ID FROM pro_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
+	if vendorId <= 0 {
+		c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id=?`, &num, catId)
+	} else {
+		panic(errors.New("暂时不支持商户绑定分类"))
+	}
 	return num > 0
 }
 

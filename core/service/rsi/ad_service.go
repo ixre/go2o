@@ -14,7 +14,7 @@ import (
 	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/infrastructure/format"
-	"go2o/core/repository"
+	"go2o/core/repos"
 )
 
 type adService struct {
@@ -233,5 +233,5 @@ func (a *adService) DelAdImage(adUserId, adId, imgId int32) error {
 }
 
 func (a *adService) cleanCache(adUserId int32) error {
-	return repository.PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", adUserId))
+	return repos.PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", adUserId))
 }
