@@ -7,7 +7,7 @@
  * history :
  */
 
-package repository
+package repos
 
 import (
 	"database/sql"

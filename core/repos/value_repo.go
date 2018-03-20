@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package repository
+package repos
 
 //todo: 因配置缓存与本地存储问题,子系统不能分布式部署。
 

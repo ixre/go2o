@@ -83,8 +83,8 @@ func (s *itemJsonUtil) getSkuJdo(skuArr []*item.Sku) []skuJdo {
 			SkuId:         strconv.Itoa(int(v.ID)),
 			SpecData:      v.SpecData,
 			SpecWord:      v.SpecWord,
-			Price:         math.Round(float64(v.Price),2),
-			DiscountPrice: math.Round(float64(v.Price),2),
+			Price:         math.Round(float64(v.Price), 2),
+			DiscountPrice: math.Round(float64(v.Price), 2),
 			PriceArray:    []skuPriceJdo{},
 		}
 	}

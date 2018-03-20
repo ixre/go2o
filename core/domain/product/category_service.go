@@ -117,9 +117,7 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 			}
 		}
 		val.VirtualCat = v.VirtualCat
-
 		val.FloorShow = v.FloorShow
-
 		if v.FloorShow == 1 && v.ParentId != 0 {
 			return product.ErrCategoryFloorShow
 		}
@@ -204,8 +202,8 @@ func (c *categoryImpl) Save() (int32, error) {
 
 // 获取子栏目
 func (c *categoryImpl) getChildCategories(catId int32) []*product.Category {
-	var all []*product.Category = c.rep.GetCategories(0)
-	var newArr []*product.Category = []*product.Category{}
+	var all = c.rep.GetCategories(0)
+	var newArr []*product.Category
 
 	var cdt iterator.Condition = func(v, v1 interface{}) bool {
 		return v1.(*product.Category).ParentId == v.(*product.Category).ID
@@ -217,7 +215,7 @@ func (c *categoryImpl) getChildCategories(catId int32) []*product.Category {
 		}
 	}
 
-	var arr []interface{} = make([]interface{}, len(all))
+	var arr = make([]interface{}, len(all))
 	for i := range arr {
 		arr[i] = all[i]
 	}
@@ -229,11 +227,11 @@ func (c *categoryImpl) getChildCategories(catId int32) []*product.Category {
 
 // 获取与栏目相关的栏目
 func (c *categoryImpl) getRelationCategories(catId int32) []*product.Category {
-	var all []*product.Category = c.rep.GetCategories(0)
-	var newArr []*product.Category = []*product.Category{}
+	var all = c.rep.GetCategories(0)
+	var newArr []*product.Category
 	var isMatch bool
 	var pid int32
-	var l int = len(all)
+	var l = len(all)
 
 	for i := 0; i < l; i++ {
 		if !isMatch && all[i].ID == catId {
@@ -257,8 +255,8 @@ func (c *categoryImpl) getRelationCategories(catId int32) []*product.Category {
 
 func (c *categoryImpl) getAutomaticUrl(id int32) string {
 	relCats := c.getRelationCategories(id)
-	var buf *bytes.Buffer = bytes.NewBufferString("/list")
-	var l int = len(relCats)
+	var buf = bytes.NewBufferString("/list")
+	var l = len(relCats)
 	for i := l; i > 0; i-- {
 		buf.WriteString("-")
 		buf.WriteString(strconv.Itoa(int(relCats[i-1].ID)))
@@ -272,13 +270,13 @@ var _ domain.IOptionStore = new(categoryOption)
 // 分类数据选项
 type categoryOption struct {
 	domain.IOptionStore
-	_c *categoryImpl
+	cat *categoryImpl
 }
 
 func newCategoryOption(c *categoryImpl) domain.IOptionStore {
 	file := fmt.Sprintf("conf/core/sale/cate_opt_%d", c.GetDomainId())
 	return &categoryOption{
-		_c:           c,
+		cat:          c,
 		IOptionStore: domain.NewOptionStoreWrapper(file),
 	}
 }
@@ -287,47 +285,47 @@ var _ product.IGlobCatService = new(categoryManagerImpl)
 
 //当商户共享系统的分类时,没有修改的权限,既只读!
 type categoryManagerImpl struct {
-	_readonly      bool
-	_repo          product.ICategoryRepo
-	_valRepo       valueobject.IValueRepo
-	_mchId         int32
+	readonly       bool
+	repo           product.ICategoryRepo
+	valRepo        valueobject.IValueRepo
+	vendorId       int32
 	lastUpdateTime int64
-	_categories    []product.ICategory
+	categories     []product.ICategory
 }
 
 func NewCategoryManager(mchId int32, rep product.ICategoryRepo,
 	valRepo valueobject.IValueRepo) product.IGlobCatService {
 	c := &categoryManagerImpl{
-		_repo:    rep,
-		_mchId:   mchId,
-		_valRepo: valRepo,
+		repo:     rep,
+		vendorId: mchId,
+		valRepo:  valRepo,
 	}
 	return c.init()
 }
 
 func (c *categoryManagerImpl) init() product.IGlobCatService {
-	mchConf := c._valRepo.GetPlatformConf()
-	if !mchConf.MchGoodsCategory && c._mchId > 0 {
-		c._readonly = true
-		c._mchId = 0
+	mchConf := c.valRepo.GetPlatformConf()
+	if !mchConf.MchGoodsCategory && c.vendorId > 0 {
+		c.readonly = true
+		c.vendorId = 0
 	}
 	return c
 }
 
 // 获取栏目关联的编号,系统用0表示
 func (c *categoryManagerImpl) getRelationId() int32 {
-	return c._mchId
+	return c.vendorId
 }
 
 // 清理缓存
 func (c *categoryManagerImpl) clean() {
-	c._categories = nil
+	c.categories = nil
 }
 
 // 是否只读,当商户共享系统的分类时,
 // 没有修改的权限,即只读!
 func (c *categoryManagerImpl) ReadOnly() bool {
-	return c._readonly
+	return c.readonly
 }
 
 // 创建分类
@@ -335,12 +333,12 @@ func (c *categoryManagerImpl) CreateCategory(v *product.Category) product.ICateg
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
-	return newCategory(c._repo, v)
+	return newCategory(c.repo, v)
 }
 
 // 获取分类
 func (c *categoryManagerImpl) GetCategory(id int32) product.ICategory {
-	v := c._repo.GetCategory(c.getRelationId(), id)
+	v := c.repo.GetCategory(c.getRelationId(), id)
 	if v != nil {
 		return c.CreateCategory(v)
 	}
@@ -349,7 +347,7 @@ func (c *categoryManagerImpl) GetCategory(id int32) product.ICategory {
 
 // 获取所有分类
 func (c *categoryManagerImpl) GetCategories() []product.ICategory {
-	var list product.CategoryList = c._repo.GetCategories(c.getRelationId())
+	var list product.CategoryList = c.repo.GetCategories(c.getRelationId())
 	sort.Sort(list)
 	slice := make([]product.ICategory, len(list))
 	for i, v := range list {
@@ -367,10 +365,10 @@ func (c *categoryManagerImpl) DeleteCategory(id int32) error {
 	if len(cat.GetChildes()) > 0 {
 		return product.ErrHasChildCategories
 	}
-	if c._repo.CheckGoodsContain(c.getRelationId(), id) {
+	if c.repo.CheckContainGoods(c.getRelationId(), id) {
 		return product.ErrCategoryContainGoods
 	}
-	err := c._repo.DeleteCategory(c.getRelationId(), id)
+	err := c.repo.DeleteCategory(c.getRelationId(), id)
 	if err == nil {
 		err = cat.GetOption().Destroy()
 		cat = nil
@@ -380,7 +378,7 @@ func (c *categoryManagerImpl) DeleteCategory(id int32) error {
 
 // 递归获取下级分类
 func (c *categoryManagerImpl) CategoryTree(parentId int32) *product.Category {
-	list := c._repo.GetCategories(0)
+	list := c.repo.GetCategories(0)
 	var cat *product.Category
 	if parentId == 0 {
 		cat = &product.Category{ID: parentId}
@@ -414,9 +412,9 @@ func (c *categoryManagerImpl) walkCategoryTree(node *product.Category,
 func (c *categoryManagerImpl) RelationBrands(catId int32) []*promodel.ProBrand {
 	p := c.GetCategory(catId)
 	if p != nil {
-		idArr := []int32{}
+		var idArr []int32
 		c.childWalk(p, &idArr)
-		return c._repo.GetRelationBrands(idArr)
+		return c.repo.GetRelationBrands(idArr)
 	}
 	return []*promodel.ProBrand{}
 }

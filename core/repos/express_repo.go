@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package repository
+package repos
 
 import (
 	"github.com/jsix/gof/db"

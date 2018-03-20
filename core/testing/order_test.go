@@ -15,7 +15,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	oi "go2o/core/domain/order"
-	"go2o/core/repository"
+	"go2o/core/repos"
 	"go2o/core/testing/ti"
 	"go2o/core/variable"
 	"log"
@@ -318,7 +318,7 @@ func TestTradeOrder(t *testing.T) {
 	cashPay := true
 	requireTicket := true
 	if requireTicket {
-		repository.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
+		repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
 	}
 	c := &order.ComplexOrder{
 		VendorId:   104, //1,

@@ -314,8 +314,8 @@ func ParseCartItem(item *RetailCartItem) *define.ShoppingCartItem {
 	}
 	if item.Sku != nil {
 		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
-		i.RetailPrice = math.Round(float64(item.Sku.RetailPrice),2)
-		i.Price =  math.Round(float64(item.Sku.Price),2)
+		i.RetailPrice = math.Round(float64(item.Sku.RetailPrice), 2)
+		i.Price = math.Round(float64(item.Sku.Price), 2)
 		i.SpecWord = item.Sku.SpecWord
 		if i.Title == "" {
 			i.Title = item.Sku.Title
