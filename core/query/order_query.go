@@ -31,7 +31,7 @@ func NewOrderQuery(conn db.Connector) *OrderQuery {
 
 func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
 	var list []*dto.OrderItem
-	if idArr != "" {
+	if idArr != "" && len(idArr) > 0 {
 		// 查询分页订单的Item
 		o.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
@@ -118,7 +118,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
 
 	// 查询分页订单的Item
 	idArr := idBuf.String()
-	if idArr != "" {
+	if len(idArr) > 0 {
 		d.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,
             si.amount,si.final_amount,
@@ -144,7 +144,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
 func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedVendorOrder) {
 	d := o.Connector
-	orderList := []*dto.PagedVendorOrder{}
+	var orderList []*dto.PagedVendorOrder
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -166,10 +166,8 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, p
 			return num, orderList
 		}
 	}
-
 	orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	idBuf := bytes.NewBufferString("")
-
 	// 查询分页的订单
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
 		o.buyer_id,mp.name as buyer_name,o.item_amount,o.discount_amount,o.express_fee,
@@ -215,7 +213,6 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, p
 				orderList[orderMap[e.OrderId]].Items, e)
 		}
 	})
-
 	return num, orderList
 }
 
@@ -223,7 +220,7 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, p
 func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
-	orderList := []*dto.PagedMemberSubOrder{}
+	var orderList []*dto.PagedMemberSubOrder
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -308,7 +305,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int,
 func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedVendorOrder) {
 	d := o.Connector
-	orderList := []*dto.PagedVendorOrder{}
+	var orderList []*dto.PagedVendorOrder
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList

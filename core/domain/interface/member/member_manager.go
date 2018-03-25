@@ -68,7 +68,7 @@ type (
 		// 获取最高已启用的等级
 		GetHighestLevel() *Level
 
-		// 获取等级
+		// 获取等级,todo:返回error
 		GetLevelById(id int32) *Level
 
 		// 根据可编程字符获取会员等级
