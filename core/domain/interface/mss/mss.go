@@ -68,7 +68,7 @@ type (
 		CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (Message, error)
 	}
 
-	// Message manager,主要用于管理用户的模板
+	// ErrMsg manager,主要用于管理用户的模板
 	IUserMessageManager interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32

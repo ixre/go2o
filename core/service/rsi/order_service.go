@@ -625,7 +625,7 @@ func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *define.Compl
 		// 返回支付单号
 		ro := io.(order.ITradeOrder)
 		r.Code = io.OrderNo()
-		r.Message = ro.GetPaymentOrder().GetTradeNo()
+		r.ErrMsg = ro.GetPaymentOrder().GetTradeNo()
 	}
 	return r, nil
 }
