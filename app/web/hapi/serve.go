@@ -56,7 +56,7 @@ func getMemberId(c *echox.Context) int64 {
 
 func requestLogin(c *echox.Context) error {
 	msg := gof.Message{
-		Message: "not login",
+		ErrMsg: "not login",
 	}
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), msg)
 }

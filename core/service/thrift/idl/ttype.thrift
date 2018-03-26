@@ -5,7 +5,7 @@ struct Result{
    /* 状态码,如为0表示成功 */
    1:i32 ErrCode
    /* 消息 */
-   2:string Message
+   2:string ErrMsg
    /* 数据, 可以用来存放JSON字符串 */
    3:string Data
 }
@@ -15,7 +15,7 @@ struct Result64{
    1:i64 ID
    2:bool Result
    3:string Code
-   4:string Message
+   4:string ErrMsg
 }
 
 //传输结果对象(Double)
@@ -23,7 +23,7 @@ struct DResult{
    1:double Data
    2:bool Result
    3:string Code
-   4:string Message
+   4:string ErrMsg
 }
 
 // 键值对
@@ -257,9 +257,9 @@ struct PagingParams{
 /** 分页结果 */
 struct PagingResult{
     /** 代码 */
-    1:i32 Code
+    1:i32 ErrCode
     /** 消息 */
-    2:string Message
+    2:string ErrMsg
     /** 总数 */
     3:i32 Count
     /** 数据 */

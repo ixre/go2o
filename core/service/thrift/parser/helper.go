@@ -18,7 +18,7 @@ func Result(data interface{}, err error) *define.Result_ {
 	r := &define.Result_{}
 	if err != nil {
 		r.ErrCode = 1
-		r.Message = err.Error()
+		r.ErrMsg = err.Error()
 	} else {
 		r.ErrCode = 0
 		if data != nil {
@@ -40,7 +40,7 @@ func Result(data interface{}, err error) *define.Result_ {
 func Result64(id int64, err error) *define.Result64 {
 	r := &define.Result64{}
 	if err != nil {
-		r.Message = err.Error()
+		r.ErrMsg = err.Error()
 	} else {
 		r.Result_ = true
 		r.ID = id
@@ -51,7 +51,7 @@ func Result64(id int64, err error) *define.Result64 {
 func DResult(data float64, err error) *define.DResult_ {
 	r := &define.DResult_{}
 	if err != nil {
-		r.Message = err.Error()
+		r.ErrMsg = err.Error()
 	} else {
 		r.Result_ = true
 		r.Data = data
@@ -73,8 +73,8 @@ func PagingResult(total int, data interface{}, err error) *define.PagingResult_ 
 			r.Data = string(d)
 		}
 	} else {
-		r.Code = 1
-		r.Message = err.Error()
+		r.ErrCode = 1
+		r.ErrMsg = err.Error()
 	}
 	return r
 }
