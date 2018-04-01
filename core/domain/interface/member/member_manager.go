@@ -47,18 +47,20 @@ type (
 
 	//会员等级
 	Level struct {
-		//编号
+		// 编号
 		ID int32 `db:"id" auto:"yes" pk:"yes"`
-		//等级名称
+		// 等级名称
 		Name string `db:"name"`
-		//需要经验值
+		// 需要经验值
 		RequireExp int32 `db:"require_exp"`
 		// 可编程等级签名,可根据此签名来进行编程
 		ProgramSignal string `db:"program_signal"`
-		//是否启用
+		// 是否启用
 		Enabled int32 `db:"enabled"`
-		//是否为正式会员/非正式
+		// 是否为正式会员/非正式
 		IsOfficial int32 `db:"is_official"`
+		// 是否允许自动升级
+		AllowUpgrade int32 `db:"allow_upgrade"`
 	}
 
 	ILevelManager interface {
