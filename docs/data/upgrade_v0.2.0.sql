@@ -80,7 +80,7 @@ ALTER TABLE mm_level
 ALTER TABLE mm_level 
   modify column enabled int(1) NOT NULL;
 ALTER TABLE mm_levelup 
-  ADD COLUMN upgrade_mode int(1) NOT NULL comment '升级方式1:自动升级 2:客服更改 3:系统升级';
+  ADD COLUMN upgrade_type int(1) NOT NULL comment '升级方式1:自动升级 2:客服更改 3:系统升级';
 ALTER TABLE mm_relation 
   modify column card_no varchar(20) NOT NULL;
 ALTER TABLE mm_relation 

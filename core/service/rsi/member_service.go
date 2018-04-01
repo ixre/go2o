@@ -1220,22 +1220,7 @@ func (s *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTyp
 	}
 
 	if accountType == member.AccountBalance {
-		outerNo = domain.NewTradeNo(int(mchId))
-		if amount > 0 {
-			tit2 = "[KF]客服充值"
-			if len(tit) > 0 {
-				tit2 = tit2 + "(" + tit + ")"
-			}
-			err = acc.Charge(member.AccountBalance,
-				member.KindBalanceServiceCharge,
-				tit2, outerNo, amount, relateUser)
-		} else {
-			tit2 = "[KF]客服扣减"
-			if len(tit) > 0 {
-				tit2 = tit2 + "(" + tit + ")"
-			}
-			err = acc.DiscountBalance(tit2, outerNo, -amount, relateUser)
-		}
+		err = acc.Adjust(member.AccountBalance, "[KF]客服调整", amount, tit, relateUser)
 		return outerNo, err
 	}
 
