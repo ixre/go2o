@@ -12,20 +12,20 @@ import (
 
 var (
 	RPermissionDenied = &api.Response{
-		ErrorCode: api.RPermissionDenied.ErrorCode,
-		Message:   "没有权限访问该接口",
+		ErrCode: api.RPermissionDenied.ErrCode,
+		ErrMsg:  "没有权限访问该接口",
 	}
 	RMissingApiParams = &api.Response{
-		ErrorCode: api.RMissingApiParams.ErrorCode,
-		Message:   "缺少接口参数，请联系技术人员解决",
+		ErrCode: api.RMissingApiParams.ErrCode,
+		ErrMsg:  "缺少接口参数，请联系技术人员解决",
 	}
 	RErrApiName = &api.Response{
-		ErrorCode: api.RErrUndefinedApi.ErrorCode,
-		Message:   "调用的API名称不正确",
+		ErrCode: api.RErrUndefinedApi.ErrCode,
+		ErrMsg:  "调用的API名称不正确",
 	}
 	RNoSuchApp = &api.Response{
-		ErrorCode: 10096,
-		Message:   "no such app",
+		ErrCode: 10096,
+		ErrMsg:  "no such app",
 	}
 )
 
@@ -72,14 +72,14 @@ func Post(apiName string, data map[string]string) ([]byte, error) {
 // 如果返回接口请求错误, 响应状态码以-10开头
 func checkApiRespErr(code int, text string) error {
 	switch int64(code) {
-	case api.RPermissionDenied.ErrorCode:
-		text = RPermissionDenied.Message
-	case api.RMissingApiParams.ErrorCode:
-		text = RMissingApiParams.Message
-	case api.RErrUndefinedApi.ErrorCode:
-		text = RErrApiName.Message
-	case RNoSuchApp.ErrorCode:
-		text = RNoSuchApp.Message
+	case api.RPermissionDenied.ErrCode:
+		text = RPermissionDenied.ErrMsg
+	case api.RMissingApiParams.ErrCode:
+		text = RMissingApiParams.ErrMsg
+	case api.RErrUndefinedApi.ErrCode:
+		text = RErrApiName.ErrMsg
+	case RNoSuchApp.ErrCode:
+		text = RNoSuchApp.ErrMsg
 	}
 	return errors.New(text)
 }
