@@ -943,6 +943,21 @@ func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, acc
 	return parser.Result(memberId, err), nil
 }
 
+// 调整账户
+func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, account int32, title string,
+	amount float64, relateUser int64) (r *define.Result_, err error) {
+	m, err := s.getMember(memberId)
+	if err == nil {
+		acc := m.GetAccount()
+		switch int(account) {
+		case member.AccountBalance:
+			err = acc.Adjust(member.AccountBalance, "[KF]客服调整", float32(amount), title, relateUser)
+		case member.AccountWallet:
+		}
+	}
+	return parser.Result(memberId, err), nil
+}
+
 // !银行四要素认证
 func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *define.Result_, err error) {
 	mod := module.Get(module.M_B4E).(*module.Bank4E)
