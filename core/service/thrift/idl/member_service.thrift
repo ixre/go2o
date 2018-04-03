@@ -60,6 +60,10 @@ service MemberService{
     // 抵扣账户
     ttype.Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
       4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
+    // 调整账户
+    ttype.Result AdjustAccount(1:i64 memberId,2:i32 account,3:string title,
+      4:double amount,5:i64 relateUser)
+
     // !银行四要素认证
     ttype.Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)
 }
