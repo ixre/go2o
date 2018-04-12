@@ -327,7 +327,7 @@ func (m *memberImpl) ChangeLevel(level int32, paymentId int32, review bool) erro
 		TargetLevel: level,
 		PaymentId:   paymentId,
 		Reviewed:    enum.ReviewNotSet,
-		UpgradeType:member.LServiceAgentUpgrade,
+		UpgradeType: member.LServiceAgentUpgrade,
 		CreateTime:  unix,
 	}
 	if paymentId == 0 {

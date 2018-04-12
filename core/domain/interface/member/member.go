@@ -40,11 +40,11 @@ const (
 
 const (
 	// 自动升级
-	LAutoUpgrade         = 1
+	LAutoUpgrade = 1
 	// 客服更改
 	LServiceAgentUpgrade = 2
 	// 程序升级，todo: 暂时未对其进行区分
-	LProgramUpgrade      = 3
+	LProgramUpgrade = 3
 )
 
 type (

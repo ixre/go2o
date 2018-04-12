@@ -130,7 +130,7 @@ func (a *accountImpl) Adjust(account int, title string, amount float32, remark s
 	switch account {
 	case member.AccountBalance:
 		return a.adjustBalanceAccount(title, amount, remark, relateUser)
-	//todo: 支持其他账户的调整
+		//todo: 支持其他账户的调整
 	}
 	panic("not support other account adjust")
 }
