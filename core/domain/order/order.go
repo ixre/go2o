@@ -169,18 +169,18 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.PaymentOrder {
 	}
 	buyerId := o.Buyer().GetAggregateRootId()
 	v := &payment.PaymentOrder{
-		BuyUser:        buyerId,
-		PaymentUser:    buyerId,
-		VendorId:       0,
-		OrderId:        int32(orderId),
-		Type:           payment.TypeShopping,
-		PaymentOptFlag: payment.OptPerm,
-		PaymentSign:    enum.PaymentOnlinePay,
-		CreateTime:     o.baseValue.CreateTime,
-		TradeNo:        o.OrderNo(),
-		State:          payment.StateAwaitingPayment,
+		BuyUser:     buyerId,
+		PaymentUser: buyerId,
+		VendorId:    0,
+		OrderId:     int32(orderId),
+		Type:        payment.TypeShopping,
+		PayFlag:     payment.OptPerm,
+		PaymentSign: enum.PaymentOnlinePay,
+		CreateTime:  o.baseValue.CreateTime,
+		TradeNo:     o.OrderNo(),
+		State:       payment.StateAwaitingPayment,
 	}
-	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
+	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	return v
 }
