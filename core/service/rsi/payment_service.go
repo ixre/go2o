@@ -32,7 +32,7 @@ func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo) *pa
 }
 
 // 根据编号获取支付单
-func (p *paymentService) GetPaymentOrderById(ctx context.Context, id int32) (*define.PaymentOrder, error) {
+func (p *paymentService) GetPaymentOrderById(ctx context.Context, id int32) (*define.SPaymentOrder, error) {
 	po := p._repo.GetPaymentOrderById(id)
 	if po != nil {
 		v := po.GetValue()
@@ -51,7 +51,7 @@ func (p *paymentService) GetPaymentOrderId(ctx context.Context, tradeNo string) 
 }
 
 // 根据支付单号获取支付单
-func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) (*define.PaymentOrder, error) {
+func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) (*define.SPaymentOrder, error) {
 	if po := p._repo.GetPaymentOrder(paymentNo); po != nil {
 		v := po.GetValue()
 		return parser.PaymentOrderDto(&v), nil
@@ -60,7 +60,7 @@ func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) 
 }
 
 // 创建支付单
-func (p *paymentService) SubmitPaymentOrder(ctx context.Context, s *define.PaymentOrder) (*define.Result_, error) {
+func (p *paymentService) SubmitPaymentOrder(ctx context.Context, s *define.SPaymentOrder) (*define.Result_, error) {
 	v := parser.PaymentOrder(s)
 	o := p._repo.CreatePaymentOrder(v)
 	return parser.Result(o.Commit()), nil

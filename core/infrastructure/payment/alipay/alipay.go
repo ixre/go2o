@@ -61,14 +61,14 @@ func getUniqueID() string {
 
 //支付宝请求-------------------
 //创建一个交易请求，得到交易token，输入订单好，订单标题，总金额
-func getToken(sTrade_no string, sSubject string, sTotalFee string) string {
+func getToken(sTrade_no string, sSubject string, sTotalAmount string) string {
 	sReq_id := getUniqueID()
 	sReq_dataToken := "<direct_trade_create_req><notify_url>" + s_sWapNotifyUrl
 	sReq_dataToken += "</notify_url><call_back_url>" + s_sWapCallbackUrl
 	sReq_dataToken += "</call_back_url><seller_account_name>" + s_sSellerEmail
 	sReq_dataToken += "</seller_account_name><out_trade_no>" + sTrade_no
 	sReq_dataToken += "</out_trade_no><subject>" + sSubject
-	sReq_dataToken += "</subject><total_fee>" + sTotalFee
+	sReq_dataToken += "</subject><total_fee>" + sTotalAmount
 	sReq_dataToken += "</total_fee><merchant_url>" + s_sWapMerchantUrl
 	sReq_dataToken += "</merchant_url></direct_trade_create_req>"
 
@@ -121,8 +121,8 @@ func getTokenFromXml(sXml string) string {
 }
 
 //发起Wap支付请求，需要两步
-func alipayRequest_Wap(sTrade_no string, sSubject string, sTotalFee string) string {
-	sToken := getToken(sTrade_no, sSubject, sTotalFee)
+func alipayRequest_Wap(sTrade_no string, sSubject string, sTotalAmount string) string {
+	sToken := getToken(sTrade_no, sSubject, sTotalAmount)
 	if sToken == "" {
 		return ""
 	}
