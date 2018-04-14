@@ -211,7 +211,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 	}
 	// 获取优惠券
 	coupon := cp.(promotion.ICouponPromotion)
-	result, err := coupon.CanUse(m, po.TotalFee)
+	result, err := coupon.CanUse(m, po.TotalAmount)
 	if result {
 		if coupon.CanTake() {
 			_, err = coupon.GetTake(m.GetAggregateRootId())

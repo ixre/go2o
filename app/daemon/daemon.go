@@ -49,7 +49,7 @@ type Service interface {
 	MemberObs(m *define.Member, create bool) bool
 
 	// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
-	PaymentOrderObs(order *define.PaymentOrder) bool
+	PaymentOrderObs(order *define.SPaymentOrder) bool
 
 	// 处理邮件队列,返回布尔值,如果返回false,则不继续执行
 	HandleMailQueue([]*mss.MailTask) bool
@@ -243,7 +243,7 @@ func (d *defaultService) MemberObs(m *define.Member, create bool) bool {
 }
 
 // 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) PaymentOrderObs(order *define.PaymentOrder) bool {
+func (d *defaultService) PaymentOrderObs(order *define.SPaymentOrder) bool {
 	if order == nil {
 		return false
 	}
