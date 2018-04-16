@@ -78,6 +78,7 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 	return parser.Result(0, err), nil
 }
 
+// 设置交易单号前缀
 func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
 	o := p._repo.GetPaymentOrderById(id)
 	if o == nil {

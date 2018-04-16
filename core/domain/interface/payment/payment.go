@@ -57,7 +57,7 @@ var (
 		"err_no_such_payment_order", "支付单不存在")
 
 	ErrPaymentNotSave = domain.NewDomainError(
-		"err_payment_not_save", "支付单需保存后才能执行操作")
+		"err_payment_not_save", "支付单需存后才能执行操作")
 
 	ErrFinalFee = domain.NewDomainError(
 		"err_final_fee", "支付单金额有误")
@@ -71,9 +71,11 @@ var (
 	ErrTradeNoExistsPrefix = domain.NewDomainError(
 		"err_payment_trade_no_exists_prefix", "支付单号已存在前缀")
 
-	ErrOrderCommitted = domain.NewDomainError("err_payment_order_committed", "请勿重复提交支付订单")
+	ErrOrderCommitted = domain.NewDomainError(
+		"err_payment_order_committed", "支付单已提交")
 
-	ErrOrderPayed = domain.NewDomainError("err_payment_order_payed", "订单已支付")
+	ErrOrderPayed = domain.NewDomainError(
+		"err_payment_order_payed", "订单已支付")
 
 	ErrOrderHasCancel = domain.NewDomainError("err_payment_order_has_cancel", "订单已经取消")
 
@@ -93,7 +95,6 @@ var (
 )
 
 type (
-
 	// 支付单接口
 	IPaymentOrder interface {
 		// 获取聚合根编号
