@@ -14,6 +14,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -108,7 +109,6 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 
 	client := &http.Client{Timeout: 20 * time.Second}
 	Debug(cWapGateway + urls.Encode())
-
 	req, err := http.NewRequest("GET", cWapGateway+urls.Encode(), nil)
 	if err != nil {
 		return ""
@@ -123,9 +123,9 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 		return ""
 	}
 	Debug(url.QueryUnescape(string(reply)))
-
 	urlV, err := url.ParseQuery(string(reply))
 	if err != nil {
+		log.Println("---alipay get token error :", err.Error())
 		return ""
 	}
 	sStr := urlV.Get("res_data")
@@ -137,7 +137,7 @@ func (this *AliPayWap) getTokenFromXml(sXml string) string {
 	v := callbackResult{}
 	err := xml.Unmarshal([]byte(sXml), &v)
 	if err != nil {
-		return ""
+		return "<!--" + sXml + "->"
 	}
 	return v.Request_token
 }

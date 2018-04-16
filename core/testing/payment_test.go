@@ -36,10 +36,10 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		PaidTime:         0,
 		State:            0,
 	})
-	ip.TradeNoPrefix("CZ")
 	if _, err := ip.Commit(); err != nil {
 		t.Error(err)
 		t.Failed()
 	}
+	ip.TradeNoPrefix("CZ")
 	t.Log("订单号：", ip.GetTradeNo())
 }

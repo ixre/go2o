@@ -31,7 +31,6 @@ struct SPaymentOrder {
     23:string TradeType
 }
 
-
 // 支付服务
 service PaymentService{
     // 创建支付单并提交
