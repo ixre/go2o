@@ -17,6 +17,9 @@ import (
 // 交易成功
 const StatusTradeSuccess = 1
 
+// 交易失败
+const StatusTradeFail = 2
+
 var (
 	logF log.ILogger
 )

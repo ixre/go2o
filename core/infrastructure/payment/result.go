@@ -11,6 +11,8 @@ package payment
 type Result struct {
 	// 状态
 	Status int
+	// 错误消息
+	ErrMsg string
 	// 订单号
 	OrderNo string
 	// 交易号

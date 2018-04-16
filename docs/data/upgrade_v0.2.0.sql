@@ -93,3 +93,12 @@ ALTER TABLE wal_wallet
   alter column total_charge set default 0.00;
 ALTER TABLE wal_wallet 
   alter column total_pay set default 0.00;
+
+
+ALTER TABLE `pay_order`
+CHANGE COLUMN `total_fee` `total_amount` DECIMAL(8,2) NULL DEFAULT NULL ,
+CHANGE COLUMN `payment_opt` `payment_opt` INT(2) NULL DEFAULT NULL ,
+CHANGE COLUMN `payment_sign` `payment_sign` INT(2) NULL DEFAULT NULL ,
+CHANGE COLUMN `state` `state` INT(1) NULL DEFAULT NULL ,
+ADD COLUMN `trade_type` VARCHAR(20) NULL AFTER `order_type`;
+
