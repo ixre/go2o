@@ -29,7 +29,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		SubAmount:        0,
 		AdjustmentAmount: 0,
 		FinalFee:         0.01,
-		PayFlag:          payment.SignOnlinePay,
+		PayFlag:          payment.SignOnlinePay | payment.SignWalletAccount,
 		PaymentSign:      0,
 		OuterNo:          "",
 		CreateTime:       unix,

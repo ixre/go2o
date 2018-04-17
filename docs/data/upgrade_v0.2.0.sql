@@ -102,3 +102,5 @@ CHANGE COLUMN `payment_sign` `payment_sign` INT(2) NULL DEFAULT NULL ,
 CHANGE COLUMN `state` `state` INT(1) NULL DEFAULT NULL ,
 ADD COLUMN `trade_type` VARCHAR(20) NULL AFTER `order_type`;
 
+ALTER TABLE `mch_online_shop`
+CHANGE COLUMN `host` `host` VARCHAR(40) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '主机头' ;
