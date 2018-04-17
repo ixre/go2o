@@ -288,6 +288,7 @@ func PaymentOrder(src *define.SPaymentOrder) *payment.PaymentOrder {
 	return &payment.PaymentOrder{
 		Id:               src.ID,
 		TradeNo:          src.TradeNo,
+		TradeType:        src.TradeType,
 		VendorId:         src.VendorId,
 		Type:             src.Type,
 		OrderId:          src.OrderId,
@@ -315,6 +316,7 @@ func PaymentOrderDto(src *payment.PaymentOrder) *define.SPaymentOrder {
 	return &define.SPaymentOrder{
 		ID:               src.Id,
 		TradeNo:          src.TradeNo,
+		TradeType:        src.TradeType,
 		VendorId:         src.VendorId,
 		Type:             src.Type,
 		OrderId:          src.OrderId,

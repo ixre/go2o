@@ -114,6 +114,7 @@ func supervisePaymentOrderFinish(ss []Service) {
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
 			variable.KvPaymentOrderFinishQueue, 0))
+		println("supervise payment order", arr)
 		if err == nil {
 			//通知服务
 			s := string(arr[1])
