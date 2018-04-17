@@ -24,7 +24,7 @@ var (
 	Factory *factory.RepoFactory
 )
 var (
-	REDIS_DB = "6"
+	REDIS_DB = "1"
 )
 
 func GetApp() gof.App {

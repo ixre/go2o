@@ -19,7 +19,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		Type:             0,
 		OrderId:          0,
 		Subject:          "充值",
-		BuyUser:          1,
+		BuyUser:          22149,
 		PaymentUser:      1,
 		TotalAmount:      0.01,
 		BalanceDiscount:  0,
@@ -28,7 +28,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		CouponDiscount:   0,
 		SubAmount:        0,
 		AdjustmentAmount: 0,
-		FinalFee:         0.01,
+		FinalFee:         1.01,
 		PayFlag:          payment.SignOnlinePay | payment.SignWalletAccount,
 		PaymentSign:      0,
 		OuterNo:          "",
@@ -41,5 +41,6 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		t.Failed()
 	}
 	ip.TradeNoPrefix("CZ")
+	ip.PaymentFinish("alipay", "1234567890")
 	t.Log("订单号：", ip.GetTradeNo())
 }

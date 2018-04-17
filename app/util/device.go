@@ -17,15 +17,15 @@ import (
 )
 
 const (
-	clientDeviceTypeCookieId string = "client_device_type"
+	clientDeviceTypeCookieId = "client_device_type"
 	// PC设备
-	DevicePC string = "1"
+	DevicePC = "1"
 	// 手持设备
-	DeviceMobile string = "2"
+	DeviceMobile = "2"
 	// 触摸设备
-	DeviceTouchPad string = "3"
+	DeviceTouchPad = "3"
 	// APP内嵌网页
-	DeviceAppEmbed string = "4"
+	DeviceAppEmbed = "4"
 )
 
 // 获取浏览设备
@@ -65,7 +65,6 @@ func SetBrownerDevice(w http.ResponseWriter, r *http.Request, deviceType string)
 	if domain == "" {
 		domain = variable.Domain
 	}
-	println("-----", domain)
 	if err == nil && ck != nil {
 		if isDefaultDevice {
 			ck.Value = deviceType
@@ -91,10 +90,16 @@ func SetBrownerDevice(w http.ResponseWriter, r *http.Request, deviceType string)
 
 // 根据host获取cookie域名
 func getCookieDomain(host string) string {
-	i := strings.LastIndex(host, ".")
-	j := strings.LastIndex(host[:i], ".")
-	if j >= 0 {
-		return host[j+1:]
+	i := strings.LastIndex(host, ":")
+	if i > 0 {
+		host = host[:i]
+	}
+	i = strings.LastIndex(host, ".")
+	if i > 0 {
+		j := strings.LastIndex(host[:i], ".")
+		if j >= 0 {
+			return host[j+1:]
+		}
 	}
 	return host
 }
