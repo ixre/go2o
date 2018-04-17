@@ -124,6 +124,6 @@ func (p *paymentRepo) notifyPaymentFinish(paymentOrderId int32) error {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)
-	//log.Println("--  推送支付单成功", paymentOrderId)
+	//log.Println("--  推送支付单成功", paymentOrderId,err)
 	return err
 }
