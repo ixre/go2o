@@ -150,11 +150,11 @@ func execInstall() error {
 // 重设MAC OX下的文件监视更改
 func resetFsOnDarwin() {
 	webFs[FsPortal] = false
-	webFs[FsPortalMobile] = false
+	webFs[FsPortalMobile] = !false
 	webFs[FsPassport] = false
 	webFs[FsPassportMobile] = false
 	webFs[FsUCenter] = false
-	webFs[FsUCenterMobile] = !false
+	webFs[FsUCenterMobile] = false
 	webFs[FsShop] = false
 	webFs[FsShopMobile] = false
 	webFs[FsMch] = false
