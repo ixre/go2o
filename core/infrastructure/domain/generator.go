@@ -9,7 +9,6 @@
 package domain
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/util"
@@ -18,29 +17,6 @@ import (
 	"strings"
 	"time"
 )
-
-//新订单号
-func NewOrderNo(vendorId int, prefix string) string {
-	rdLen := 6 - len(prefix)
-	//MerchantId的首位和末尾再加7位随机数
-	unix := time.Now().UnixNano()
-	rand.Seed(unix)
-	buf := bytes.NewBufferString(prefix)
-	vendorStr := strconv.Itoa(vendorId)
-	if l := len(vendorStr); l < 6 {
-		buf.WriteString("1")
-		buf.WriteString(strings.Repeat("0", 5-l))
-	}
-	buf.WriteString(vendorStr)
-	rd := strconv.Itoa(rand.Intn(999999 - 100000))
-	if l := len(rd); l > rdLen {
-		buf.WriteString(rd[:rdLen])
-	} else {
-		buf.WriteString(strings.Repeat("0", rdLen-l))
-		buf.WriteString(rd)
-	}
-	return buf.String()
-}
 
 // 创建交易号(16位)，business为零时，交易号为15位
 func NewTradeNo(business int, userId int) string {
