@@ -190,8 +190,7 @@ func (o *tradeOrderImpl) createPaymentForOrder() error {
 	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	_, err := o.paymentOrder.Commit()
-	return err
+	return o.paymentOrder.Commit()
 }
 
 // 获取支付单

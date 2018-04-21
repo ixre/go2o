@@ -340,14 +340,17 @@ func (p *paymentOrderImpl) BindOrder(orderId int64, tradeNo string) error {
 }
 
 // 提交支付订单
-func (p *paymentOrderImpl) Commit() (int32, error) {
+func (p *paymentOrderImpl) Commit() error {
 	if id := p.GetAggregateRootId(); id > 0 {
-		return id, payment.ErrOrderCommitted
+		return payment.ErrOrderCommitted
 	}
-	if p.GetTradeNo() == "" {
-
+	// 检查支付单单号是否匹配
+	if b := p.rep.CheckTradeNoMatch(p.value.TradeNo,
+		p.GetAggregateRootId()); !b {
+		return payment.ErrExistsTradeNo
 	}
-	return p.save()
+	_, err := p.save()
+	return err
 }
 
 func (p *paymentOrderImpl) save() (int32, error) {

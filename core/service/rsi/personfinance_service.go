@@ -89,13 +89,13 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		return member.ErrNoSuchMember
 	}
 	acc := m.GetAccount()
-
+	tradeNo := domain.NewTradeNo(8, int(personId))
 	if transferWith == personfinance.TransferOutWithBalance {
 		//转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountBalance,
 				member.KindBalanceSystemCharge, variable.AliasGrowthAccount+"转出",
-				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
+				tradeNo, amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
 			}
@@ -109,7 +109,7 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountWallet,
 				member.KindWalletAdd, variable.AliasGrowthAccount+"转出",
-				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
+				tradeNo, amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
 			}
@@ -128,7 +128,6 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		}
 		return err
 	}
-
 	return errors.New("暂时无法提供服务")
 }
 

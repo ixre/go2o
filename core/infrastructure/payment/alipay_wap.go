@@ -8,6 +8,7 @@
  */
 package payment
 
+// wiki: https://docs.open.alipay.com/203/107090
 import (
 	"crypto/md5"
 	"encoding/hex"

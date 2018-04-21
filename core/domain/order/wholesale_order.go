@@ -432,8 +432,7 @@ func (s *wholesaleOrderImpl) createPaymentForOrder() error {
 	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	s.paymentOrder = s.payRepo.CreatePaymentOrder(v)
-	_, err := s.paymentOrder.Commit()
-	return err
+	return s.paymentOrder.Commit()
 }
 
 // 获取商品项
