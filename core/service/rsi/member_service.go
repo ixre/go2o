@@ -1202,7 +1202,6 @@ func (s *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTyp
 		relateUser = 1
 	}
 	var err error
-	var outerNo string
 	if amount == 0 {
 		return "", member.ErrIncorrectAmount
 	}
@@ -1211,9 +1210,9 @@ func (s *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTyp
 		return "", member.ErrNoSuchMember
 	}
 	acc := m.GetAccount()
+	outerNo := domain.NewTradeNo(8, int(mchId))
 	var tit2 string
 	if accountType == member.AccountWallet {
-		outerNo = domain.NewTradeNo(int(mchId))
 		if amount > 0 {
 			//增加奖金
 			tit2 = "[KF]" + variable.AliasWalletAccount

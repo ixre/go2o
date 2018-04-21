@@ -756,7 +756,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 		}
 	}
 
-	tradeNo := domain.NewTradeNo(00000)
+	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
 	csnAmount := amount * commission
 	finalAmount := amount - csnAmount
 	if finalAmount > 0 {
@@ -962,7 +962,7 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount fl
 		return member.ErrNoSuchMember
 	}
 
-	tradeNo := domain.NewTradeNo(00000)
+	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
 	csnFee := amount * csnRate
 
 	// 检测是否开启转账

@@ -127,3 +127,10 @@ func (p *paymentRepo) notifyPaymentFinish(paymentOrderId int32) error {
 	//log.Println("--  推送支付单成功", paymentOrderId,err)
 	return err
 }
+
+// 检查交易单号是否匹配
+func (p *paymentRepo) CheckTradeNoMatch(tradeNo string, id int32) bool {
+	i := 0
+	p.Connector.ExecScalar("SELECT id FROM pay_order WHERE trade_no=? AND id<>?", &i, tradeNo, id)
+	return i == 0
+}
