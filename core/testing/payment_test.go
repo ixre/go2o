@@ -8,12 +8,19 @@ import (
 	"time"
 )
 
+func TestCreateTradeNo(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		println(domain.NewTradeNo(0, i))
+	}
+}
+
 // 测试充值订单
 func TestCreateChargePaymentOrder(t *testing.T) {
 	repo := ti.Factory.GetPaymentRepo()
 	unix := time.Now().Unix()
+	tradeNo := domain.NewTradeNo(0, 0)
 	ip := repo.CreatePaymentOrder(&payment.PaymentOrder{
-		TradeNo:          domain.NewTradeNo(0),
+		TradeNo:          tradeNo,
 		TradeType:        "ppi-charge",
 		VendorId:         0,
 		Type:             0,
@@ -36,11 +43,11 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		PaidTime:         0,
 		State:            0,
 	})
-	if _, err := ip.Commit(); err != nil {
+	if err := ip.Commit(); err != nil {
 		t.Error(err)
 		t.Failed()
 	}
-	ip.TradeNoPrefix("CZ")
+	//ip.TradeNoPrefix("CZ")
 	ip.PaymentFinish("alipay", "1234567890")
 	t.Log("订单号：", ip.GetTradeNo())
 }

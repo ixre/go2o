@@ -415,7 +415,7 @@ func (w *WalletImpl) Transfer(toWalletId int64, value int, tradeFee int, title, 
 		return wallet.ErrOutOfAmount
 	}
 	w._value.Balance -= value + tradeFee
-	tradeNo := domain.NewTradeNo(000)
+	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
 	l := w.createWalletLog(wallet.KTransferOut, -value, title, 0, "")
 	l.TradeFee = -tradeFee
 	l.OuterNo = tradeNo
@@ -476,7 +476,7 @@ func (w *WalletImpl) RequestTakeOut(value int, tradeFee int, kind int, title str
 	if w._value.Balance < value+tradeFee {
 		return 0, "", wallet.ErrOutOfAmount
 	}
-	tradeNo := domain.NewTradeNo(000)
+	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
 	w._value.Balance -= value
 	l := w.createWalletLog(kind, -(value - tradeFee), title, 0, "")
 	l.TradeFee = -tradeFee

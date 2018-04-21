@@ -56,6 +56,9 @@ var (
 	ErrNoSuchPaymentOrder = domain.NewDomainError(
 		"err_no_such_payment_order", "支付单不存在")
 
+	ErrExistsTradeNo = domain.NewDomainError(
+		"err_payment_exists_trade_no", "支付单号重复")
+
 	ErrPaymentNotSave = domain.NewDomainError(
 		"err_payment_not_save", "支付单需存后才能执行操作")
 
@@ -120,8 +123,8 @@ type (
 		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号,
 		// 支付单的交易号,可能是与订单号一样的
 		BindOrder(orderId int64, tradeNo string) error
-		// 保存
-		Commit() (int32, error)
+		// 提交支付单
+		Commit() error
 		// 支付完成并保存,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outerNo string) error
 		// 获取支付单的值
@@ -146,6 +149,8 @@ type (
 		CreatePaymentOrder(p *PaymentOrder) IPaymentOrder
 		// 保存支付单
 		SavePaymentOrder(v *PaymentOrder) (int32, error)
+		// 检查支付单号是否匹配
+		CheckTradeNoMatch(tradeNo string, id int32) bool
 		// 通知支付单完成
 		//NotifyPaymentFinish(paymentOrderId int32) error
 	}

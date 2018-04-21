@@ -63,7 +63,8 @@ func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) 
 func (p *paymentService) SubmitPaymentOrder(ctx context.Context, s *define.SPaymentOrder) (*define.Result_, error) {
 	v := parser.PaymentOrder(s)
 	o := p._repo.CreatePaymentOrder(v)
-	return parser.Result(o.Commit()), nil
+	err := o.Commit()
+	return parser.Result(nil, err), nil
 }
 
 // 调整支付单金额
