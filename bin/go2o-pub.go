@@ -21,14 +21,14 @@ import (
 
 func main() {
 	var (
-		ch       chan bool = make(chan bool)
+		ch       = make(chan bool)
 		confFile string
 		httpPort int
 		help     bool
 		newApp   *core.AppImpl
 	)
 
-	flag.IntVar(&httpPort, "port", 14280, "web server port")
+	flag.IntVar(&httpPort, "port", 14281, "web server port")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.StringVar(&confFile, "conf", "app.conf", "")
 	flag.Parse()
@@ -43,6 +43,5 @@ func main() {
 	newApp = core.NewApp(confFile)
 	go core.SignalNotify(ch)
 	go pub.Listen(ch, newApp, fmt.Sprintf(":%d", httpPort))
-
 	<-ch
 }
