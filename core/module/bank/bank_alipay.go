@@ -203,7 +203,15 @@ func getCardInfo(cardNo string) (bankSign, cardType string, err error) {
 				if !mp["validated"].(bool) {
 					return "", "", errors.New("无法识别银行卡号")
 				}
-				return mp["bank"].(string), mp["cardType"].(string), nil
+				bankName := ""
+				cardTypeTxt := ""
+				if mp["bank"] != nil {
+					bankName = mp["bank"].(string)
+				}
+				if mp["cardType"] != nil {
+					cardTypeTxt = mp["cardType"].(string)
+				}
+				return bankName, cardTypeTxt, nil
 			}
 		}
 	}
