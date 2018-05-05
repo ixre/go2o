@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	factory = Configure("localhost:14288")
+	factory = Configure("localhost:14280")
 }
 
 // 设置Thrift地址
