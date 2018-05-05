@@ -18,7 +18,6 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/util"
 	"github.com/robfig/cron"
-	"go2o/app"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
@@ -374,7 +373,8 @@ func FlagRun() {
 	conn = appCtx.Db()
 	_orm = conn.GetOrm()
 
-	rsi.Init(appCtx, app.FlagDaemon)
+	//todo: daemon 应不依赖于service
+	//rsi.Init(appCtx, app.FlagDaemon)
 
 	//todo:???
 	//	if service != "all" {

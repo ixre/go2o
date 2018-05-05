@@ -77,14 +77,14 @@ func handleError(err error) error {
 	//return err
 }
 
-func Init(ctx gof.App, appFlag int) {
+func Init(ctx gof.App, appFlag int, confDir string) {
 	Context := ctx
 	db := Context.Db()
 	orm := db.GetOrm()
 	sto := Context.Storage()
 
 	// 初始化服务
-	initService(ctx, db, orm, sto, ctx.Config().GetString("conf_path"))
+	initService(ctx, db, orm, sto, confDir)
 	// RPC
 	if appFlag&app.FlagRpcServe == app.FlagRpcServe {
 		initRpcServe(ctx)
