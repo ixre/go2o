@@ -11,6 +11,7 @@ package payment
 import (
 	"github.com/jsix/gof/log"
 	"net/http"
+	"os"
 	_ "os"
 )
 
@@ -25,18 +26,18 @@ var (
 )
 
 func init() {
-	//fi, _ := os.OpenFile("pay.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
-	//logF = log.NewLogger(fi, "payment", log.LOpen)
+	fi, _ := os.OpenFile("pay.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
+	logF = log.NewLogger(fi, "payment", log.LOpen)
 }
 
 func Debug(format string, data ...interface{}) {
-	//logF.Printf(format+"\n\n", data...)
+	//fmt.Printf("[ Pay][ Gateway]:"+format+"\n",data...)
+	logF.Printf("[ Pay][ Gateway]:"+format+"\n\n", data...)
 }
 
 type IPayment interface {
 	// 创建网关
-	CreateGateway(orderNo string, fee float32, subject,
-		body, notifyUrl, returnUrl string) string
+	CreateGateway(orderNo string, fee float32, subject, body, notifyUrl, returnUrl string) string
 	// 返回
 	Return(r *http.Request) Result
 	// 通知
