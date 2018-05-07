@@ -179,7 +179,7 @@ func (this *AliPay) Return(r *http.Request) Result {
 		param[k] = form.Get(k)
 	}
 
-	result.OrderNo = param["out_trade_no"]
+	result.OutTradeNo = param["out_trade_no"]
 	result.TradeNo = param["trade_no"]
 	fee, err := strconv.ParseFloat(param["total_fee"], 32)
 	if err != nil {
@@ -188,7 +188,7 @@ func (this *AliPay) Return(r *http.Request) Result {
 	result.Fee = float32(fee)
 
 	//如果最基本的网站交易号为空，返回错误代码-1
-	if result.OrderNo == "" { //不存在交易号
+	if result.OutTradeNo == "" { //不存在交易号
 		result.Status = -1
 		return result
 	}
@@ -212,7 +212,7 @@ func (this *AliPay) Return(r *http.Request) Result {
 		result.Status = -5
 	}
 
-	Debug(" [ Return]- OrderNo: %s, Status:%d , sign:%s/%s", result.OrderNo, result.Status, sign, param["sign"])
+	Debug(" [ Return]- OrderNo: %s, Status:%d , sign:%s/%s", result.OutTradeNo, result.Status, sign, param["sign"])
 	return result
 }
 
@@ -320,14 +320,13 @@ func (this *AliPay) Notify(r *http.Request) Result {
 	m.Write([]byte(sign))
 	sign = hex.EncodeToString(m.Sum(nil))
 
-	result.OrderNo = urls.Get("out_trade_no")
+	result.OutTradeNo = urls.Get("out_trade_no")
 	result.TradeNo = urls.Get("trade_no")
 	//fee ,err := strconv.ParseFloat(urls.Get("total_fee"),32)
 	//if err != nil{
 	//	fee = 0
 	//}
 	//payResult.Fee = float32(fee)
-
 	if paramSign == sign { //传进的签名等于计算出的签名，说明请求合法
 		//判断订单是否已完成
 		if urls.Get("trade_status") == "TRADE_FINISHED" || urls.Get("trade_status") == "TRADE_SUCCESS" { //交易成功
@@ -338,7 +337,7 @@ func (this *AliPay) Notify(r *http.Request) Result {
 		result.Status = -1
 	}
 
-	Debug(" [ Notify]- OrderNo: %s, Status:%d , sign:%s %s", result.OrderNo, result.Status, sign, paramSign)
+	Debug(" [ Notify]- OrderNo: %s, Status:%d , sign:%s %s", result.OutTradeNo, result.Status, sign, paramSign)
 
 	return result
 }
