@@ -12,7 +12,6 @@ package daemon
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/jsix/gof/util"
 	"go2o/core"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
@@ -138,18 +137,6 @@ func testIdFromRdsKey(key string) (orderNo string, sub bool, err error) {
 		orderNo = orderNo[4:]
 	}
 	return orderNo, sub, err
-}
-
-// 从RDS键中找到订单编号，如：go2o:queue:sub!1 , go2o:queue:2
-func testIdFromRdsKey2(key string) (orderId int64, sub bool, err error) {
-	arr := strings.Split(key, ":")
-	oidKey := arr[len(arr)-2]
-	isSub := strings.HasPrefix(oidKey, "sub!")
-	if isSub {
-		oidKey = oidKey[4:]
-	}
-	orderId, err = util.I64Err(strconv.Atoi(oidKey))
-	return orderId, isSub, err
 }
 
 // 检测已过期的订单并标记

@@ -116,16 +116,16 @@ func (o *OrderRepImpl) CreateNormalSubOrder(v *order.NormalSubOrder) order.ISubO
 func (o *OrderRepImpl) GetFreeOrderNo(vendorId int32) string {
 	//todo:实际应用需要预先生成订单号
 	d := o.Connector
-	var order_no string
+	var orderNo string
 	for {
-		order_no = domain.NewOrderNo(int(vendorId), "")
+		orderNo = domain.NewTradeNo(1, int(vendorId))
 		var rec int
 		if d.ExecScalar(`SELECT id FROM order_list WHEre order_no=? LIMIT 1`,
-			&rec, order_no); rec == 0 {
+			&rec, orderNo); rec == 0 {
 			break
 		}
 	}
-	return order_no
+	return orderNo
 }
 
 //　保存订单优惠券绑定

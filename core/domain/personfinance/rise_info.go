@@ -89,17 +89,18 @@ func (r *riseInfo) transferInPayment(amount float32,
 		return member.ErrNoSuchMember
 	}
 	acc := m.GetAccount()
+	tradeNo := domain.NewTradeNo(8, int(r.value.PersonId))
 	switch transferWith {
 	//从余额转入
 	case personfinance.TransferFromWithBalance:
-		err = acc.DiscountBalance("理财转入", domain.NewTradeNo(10000),
+		err = acc.DiscountBalance("理财转入", tradeNo,
 			amount, member.DefaultRelateUser)
 		if err != nil {
 			return err
 		}
 	//从钱包转入
 	case personfinance.TransferFromWithWallet:
-		err = acc.DiscountWallet("理财转入", domain.NewTradeNo(10000),
+		err = acc.DiscountWallet("理财转入", tradeNo,
 			amount, member.DefaultRelateUser, true)
 		if err != nil {
 			return err

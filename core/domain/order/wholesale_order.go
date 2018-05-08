@@ -426,14 +426,13 @@ func (s *wholesaleOrderImpl) SetComment(comment string) {
 func (s *wholesaleOrderImpl) createPaymentForOrder() error {
 	v := s.baseOrderImpl.createPaymentOrder()
 	v.VendorId = s.value.VendorId
-	v.TotalFee = s.value.FinalAmount
+	v.TotalAmount = s.value.FinalAmount
 	v.CouponDiscount = 0
 	v.IntegralDiscount = 0
-	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
+	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	s.paymentOrder = s.payRepo.CreatePaymentOrder(v)
-	_, err := s.paymentOrder.Commit()
-	return err
+	return s.paymentOrder.Commit()
 }
 
 // 获取商品项
@@ -894,11 +893,11 @@ func (s *wholesaleOrderImpl) cancelPaymentOrder() error {
 	if po != nil {
 		v := po.GetValue()
 		//if true {
-		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalAmount,
-		//		"; 订单金额:", o.value.FinalAmount)
+		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalFee,
+		//		"; 订单金额:", o.value.FinalFee)
 		//}
 		// 订单金额为0,则取消订单
-		if v.FinalAmount-s.value.FinalAmount <= 0 {
+		if v.FinalFee-s.value.FinalAmount <= 0 {
 			return po.Cancel()
 		}
 		return po.Adjust(-s.value.FinalAmount)

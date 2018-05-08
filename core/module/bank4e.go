@@ -74,10 +74,10 @@ func (b *Bank4E) Check(realName, idCard, phone, bankAccount string) map[string]s
 		bankArr := strings.Split(bankName, ".")
 		data["Result"] = "true"
 		data["BankName"] = bankArr[0]
-		data["Message"] = "PASS"
+		data["ErrMsg"] = "PASS"
 	} else {
 		data["Result"] = "false"
-		data["Message"] = err.Error()
+		data["ErrMsg"] = err.Error()
 	}
 	return data
 }
@@ -129,7 +129,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	result := b.Check(realName, idCard, phone, bankAccount)
 	// 验证不通过，则返回错误
 	if result["Result"] == "false" {
-		return errors.New(result["Message"])
+		return errors.New(result["ErrMsg"])
 	}
 
 	// 移除四要素验证记录

@@ -244,6 +244,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 				Name:          "普通会员",
 				RequireExp:    0,
 				Enabled:       1,
+				AllowUpgrade:  1,
 				ProgramSignal: "M_PT",
 				IsOfficial:    0,
 			},
@@ -251,6 +252,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 				Name:          "铜牌会员",
 				RequireExp:    100,
 				Enabled:       1,
+				AllowUpgrade:  1,
 				ProgramSignal: "M_TP",
 				IsOfficial:    1,
 			},
@@ -258,6 +260,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 				Name:          "银牌会员",
 				RequireExp:    500,
 				Enabled:       1,
+				AllowUpgrade:  1,
 				ProgramSignal: "M_YP",
 				IsOfficial:    1,
 			},
@@ -266,6 +269,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 				RequireExp:    1200,
 				Enabled:       1,
 				ProgramSignal: "M_JP",
+				AllowUpgrade:  1,
 				IsOfficial:    1,
 			},
 		}
@@ -296,6 +300,7 @@ func (l *levelManagerImpl) GetLevelById(id int32) *member.Level {
 			return arr[i]
 		}
 	}
+	println(fmt.Sprintf("level = %#v", arr))
 	panic(errors.New(fmt.Sprintf("no such member level id as %d", id)))
 }
 

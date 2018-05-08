@@ -158,7 +158,7 @@ func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	//v := o._value
 	//v.CouponCode = val.Code
 	//v.CouponDescribe = coupon.GetDescribe()
-	//v.CouponFee = coupon.GetCouponFee(v.TotalFee)
+	//v.CouponFee = coupon.GetCouponFee(v.TotalAmount)
 	//v.PayFee = o.GetPaymentFee()
 	//v.DiscountFee = v.DiscountFee + v.CouponFee
 	return nil
@@ -534,14 +534,13 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 func (o *normalOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	//v.VendorId = o.value.VendorId
-	v.TotalFee = o.value.FinalAmount
+	v.TotalAmount = o.value.FinalAmount
 	v.CouponDiscount = 0
 	v.IntegralDiscount = 0
-	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
+	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	_, err := o.paymentOrder.Commit()
-	return err
+	return o.paymentOrder.Commit()
 }
 
 // 绑定促销优惠
@@ -578,7 +577,7 @@ func (o *normalOrderImpl) applyCartPromotionOnSubmit(vo *order.NormalOrder,
 	//var prom promotion.IPromotion
 	//var saveFee int
 	var totalSaveFee int
-	//var intOrderFee = int(vo.FinalAmount)
+	//var intOrderFee = int(vo.FinalFee)
 	//var rightBack bool
 	//
 	//for _, v := range cart.GetCartGoods() {
@@ -850,7 +849,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
-	//acc.TotalFee += o._value.Fee
+	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
 	acv.WalletBalance += fee // 更新赠送余额
 	acv.TotalPresentFee += fee
@@ -1516,11 +1515,11 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 		return po.Refund(float64(o.value.FinalAmount))
 		v := po.GetValue()
 		//if true {
-		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalAmount,
-		//		"; 订单金额:", o.value.FinalAmount)
+		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalFee,
+		//		"; 订单金额:", o.value.FinalFee)
 		//}
 		// 订单金额为0,则取消订单
-		if v.FinalAmount-o.value.FinalAmount <= 0 {
+		if v.FinalFee-o.value.FinalAmount <= 0 {
 			return po.Cancel()
 		}
 		return po.Adjust(-o.value.FinalAmount)
@@ -1627,7 +1626,7 @@ func (o *subOrderImpl) CancelRefund() error {
 //        // 订单编号
 //        OrderId: o.GetDomainId(),
 //        // 金额
-//        Amount: ov.FinalAmount,
+//        Amount: ov.FinalFee,
 //        // 退款方式：1.退回余额  2: 原路退回
 //        RefundType: 1,
 //        // 是否为全部退款
@@ -1692,7 +1691,7 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
-	//acc.TotalFee += o._value.Fee
+	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
 	acv.WalletBalance += fee // 更新赠送余额
 	acv.TotalPresentFee += fee

@@ -79,7 +79,8 @@ func (m *serviceC) Favorite(c *echox.Context) error {
 	favType := c.QueryParam("type")
 	id, _ := util.I32Err(strconv.Atoi(c.QueryParam("id")))
 	if id <= 0 || favType == "" {
-		result.Message = "收藏失败"
+		result.ErrCode = 1
+		result.ErrMsg = "收藏失败"
 	} else {
 		var err error
 		ms := rsi.MemberService

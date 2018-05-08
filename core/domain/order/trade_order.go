@@ -184,14 +184,13 @@ func (o *tradeOrderImpl) fixFinalAmount() {
 func (o *tradeOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.VendorId = o.value.VendorId
-	v.TotalFee = float32(o.value.FinalAmount)
+	v.TotalAmount = float32(o.value.FinalAmount)
 	v.CouponDiscount = 0
 	v.IntegralDiscount = 0
-	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
+	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	_, err := o.paymentOrder.Commit()
-	return err
+	return o.paymentOrder.Commit()
 }
 
 // 获取支付单
@@ -218,7 +217,7 @@ func (o *tradeOrderImpl) CashPay() error {
 	}
 	v := o.getValue()
 	// 商家收取现金，从商家账户扣除交易费
-	vp := (1 - v.TradeRate) * float64(pv.TotalFee)
+	vp := (1 - v.TradeRate) * float64(pv.TotalAmount)
 	if vp > 0 {
 		va := o.mchRepo.GetMerchant(v.VendorId)
 		err := va.Account().TakePayment(o.OrderNo(), vp, 0,

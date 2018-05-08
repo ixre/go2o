@@ -6,12 +6,14 @@
  * description :
  * history :
  */
-package main
+package go2o
 
 import (
 	"flag"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/log"
+	"go2o-web/src/hook"
+	"go2o/app"
 	"go2o/core"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
@@ -20,14 +22,16 @@ import (
 
 func main() {
 	var (
-		addr  string
-		conf  string
-		debug bool
-		trace bool
+		addr    string
+		conf    string
+		confDir string
+		debug   bool
+		trace   bool
 	)
 
-	flag.StringVar(&addr, "addr", "localhost:14288", "Address to listen to")
+	flag.StringVar(&addr, "addr", ":14280", "Address to listen to")
 	flag.StringVar(&conf, "conf", "app.conf", "Config file path")
+	flag.StringVar(&confDir, "conf-dir", "./conf", "config file directory")
 	flag.BoolVar(&debug, "debug", false, "Enable debug")
 	flag.BoolVar(&trace, "trace", false, "Enable trace")
 	flag.Parse()
@@ -37,7 +41,8 @@ func main() {
 		os.Exit(1)
 	}
 	gof.CurrentApp = newApp
-	rsi.Init(newApp)
+	rsi.Init(newApp, app.FlagRpcServe, confDir)
+	app.Configure(hook.HookUp, newApp, app.FlagRpcServe)
 
 	err := thrift.ListenAndServe(addr, false)
 	if err != nil {

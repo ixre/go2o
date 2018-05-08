@@ -284,25 +284,26 @@ func Address(src *define.Address) *member.Address {
 	}
 }
 
-func PaymentOrder(src *define.PaymentOrder) *payment.PaymentOrder {
+func PaymentOrder(src *define.SPaymentOrder) *payment.PaymentOrder {
 	return &payment.PaymentOrder{
 		Id:               src.ID,
 		TradeNo:          src.TradeNo,
+		TradeType:        src.TradeType,
 		VendorId:         src.VendorId,
 		Type:             src.Type,
 		OrderId:          src.OrderId,
 		Subject:          src.Subject,
 		BuyUser:          src.BuyUser,
 		PaymentUser:      src.PaymentUser,
-		TotalFee:         float32(src.TotalFee),
+		TotalAmount:      float32(src.TotalAmount),
 		BalanceDiscount:  float32(src.BalanceDiscount),
 		IntegralDiscount: float32(src.IntegralDiscount),
 		SystemDiscount:   float32(src.SystemDiscount),
 		CouponDiscount:   float32(src.CouponDiscount),
 		SubAmount:        float32(src.SubAmount),
 		AdjustmentAmount: float32(src.AdjustmentAmount),
-		FinalAmount:      float32(src.FinalAmount),
-		PaymentOptFlag:   src.PaymentOptFlag,
+		FinalFee:         float32(src.FinalFee),
+		PayFlag:          src.PaymentOptFlag,
 		PaymentSign:      src.PaymentSign,
 		OuterNo:          src.OuterNo,
 		CreateTime:       src.CreateTime,
@@ -311,25 +312,26 @@ func PaymentOrder(src *define.PaymentOrder) *payment.PaymentOrder {
 	}
 }
 
-func PaymentOrderDto(src *payment.PaymentOrder) *define.PaymentOrder {
-	return &define.PaymentOrder{
+func PaymentOrderDto(src *payment.PaymentOrder) *define.SPaymentOrder {
+	return &define.SPaymentOrder{
 		ID:               src.Id,
 		TradeNo:          src.TradeNo,
+		TradeType:        src.TradeType,
 		VendorId:         src.VendorId,
 		Type:             src.Type,
 		OrderId:          src.OrderId,
 		Subject:          src.Subject,
 		BuyUser:          src.BuyUser,
 		PaymentUser:      src.PaymentUser,
-		TotalFee:         round(src.TotalFee, 2),
+		TotalAmount:      round(src.TotalAmount, 2),
 		BalanceDiscount:  round(src.BalanceDiscount, 2),
 		IntegralDiscount: round(src.IntegralDiscount, 2),
 		SystemDiscount:   round(src.SystemDiscount, 2),
 		CouponDiscount:   round(src.CouponDiscount, 2),
 		SubAmount:        round(src.SubAmount, 2),
 		AdjustmentAmount: round(src.AdjustmentAmount, 2),
-		FinalAmount:      round(src.FinalAmount, 2),
-		PaymentOptFlag:   src.PaymentOptFlag,
+		FinalFee:         round(src.FinalFee, 2),
+		PaymentOptFlag:   src.PayFlag,
 		PaymentSign:      src.PaymentSign,
 		OuterNo:          src.OuterNo,
 		CreateTime:       src.CreateTime,

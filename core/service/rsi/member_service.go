@@ -943,6 +943,21 @@ func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, acc
 	return parser.Result(memberId, err), nil
 }
 
+// 调整账户
+func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, account int32, title string,
+	amount float64, relateUser int64) (r *define.Result_, err error) {
+	m, err := s.getMember(memberId)
+	if err == nil {
+		acc := m.GetAccount()
+		switch int(account) {
+		case member.AccountBalance:
+			err = acc.Adjust(member.AccountBalance, "[KF]客服调整", float32(amount), title, relateUser)
+		case member.AccountWallet:
+		}
+	}
+	return parser.Result(memberId, err), nil
+}
+
 // !银行四要素认证
 func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *define.Result_, err error) {
 	mod := module.Get(module.M_B4E).(*module.Bank4E)
@@ -1187,7 +1202,6 @@ func (s *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTyp
 		relateUser = 1
 	}
 	var err error
-	var outerNo string
 	if amount == 0 {
 		return "", member.ErrIncorrectAmount
 	}
@@ -1196,9 +1210,9 @@ func (s *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTyp
 		return "", member.ErrNoSuchMember
 	}
 	acc := m.GetAccount()
+	outerNo := domain.NewTradeNo(8, int(mchId))
 	var tit2 string
 	if accountType == member.AccountWallet {
-		outerNo = domain.NewTradeNo(int(mchId))
 		if amount > 0 {
 			//增加奖金
 			tit2 = "[KF]" + variable.AliasWalletAccount
@@ -1220,22 +1234,7 @@ func (s *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTyp
 	}
 
 	if accountType == member.AccountBalance {
-		outerNo = domain.NewTradeNo(int(mchId))
-		if amount > 0 {
-			tit2 = "[KF]客服充值"
-			if len(tit) > 0 {
-				tit2 = tit2 + "(" + tit + ")"
-			}
-			err = acc.Charge(member.AccountBalance,
-				member.KindBalanceServiceCharge,
-				tit2, outerNo, amount, relateUser)
-		} else {
-			tit2 = "[KF]客服扣减"
-			if len(tit) > 0 {
-				tit2 = tit2 + "(" + tit + ")"
-			}
-			err = acc.DiscountBalance(tit2, outerNo, -amount, relateUser)
-		}
+		err = acc.Adjust(member.AccountBalance, "[KF]客服调整", amount, tit, relateUser)
 		return outerNo, err
 	}
 

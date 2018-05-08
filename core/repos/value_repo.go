@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/tool/sms"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -66,8 +67,8 @@ type valueRepo struct {
 func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
 	confRegistry, err := gof.NewRegistry(confPath, ":")
 	if err != nil {
-		log.Println("[ Go2o][ Crash]: can't load config,details ", err.Error())
-		//or.Exit(1)
+		log.Println("[ Go2o][ Crash]: can't load registry,", err.Error())
+		os.Exit(1)
 	}
 	return &valueRepo{
 		Connector:    conn,

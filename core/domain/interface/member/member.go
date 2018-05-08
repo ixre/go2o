@@ -38,6 +38,15 @@ const (
 	PremiumSuper int32 = 3
 )
 
+const (
+	// 自动升级
+	LAutoUpgrade = 1
+	// 客服更改
+	LServiceAgentUpgrade = 2
+	// 程序升级，todo: 暂时未对其进行区分
+	LProgramUpgrade = 3
+)
+
 type (
 	IMember interface {
 		// 获取聚合根编号
@@ -407,6 +416,8 @@ type (
 		PaymentId int32 `db:"payment_id"`
 		// 是否审核及处理
 		Reviewed int32 `db:"reviewed"`
+		// 升级方式,1:自动升级 2:客服更改 3:系统升级
+		UpgradeType int32 `db:"upgrade_type"`
 		// 升级时间
 		CreateTime int64 `db:"create_time"`
 	}

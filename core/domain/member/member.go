@@ -167,9 +167,6 @@ func (m *memberImpl) SetValue(v *member.Member) error {
 	if len(m.value.InvitationCode) == 0 {
 		m.value.InvitationCode = v.InvitationCode
 	}
-	if v.Exp != 0 {
-		m.value.Exp = v.Exp
-	}
 	if v.Level > 0 {
 		m.value.Level = v.Level
 	}
@@ -246,8 +243,7 @@ func (m *memberImpl) GetAccount() member.IAccount {
 func (m *memberImpl) AddExp(exp int32) error {
 	m.value.Exp += exp
 	_, err := m.Save()
-	//判断是否升级
-	m.checkLevelUp()
+	m.checkLevelUp() //判断是否升级
 	return err
 }
 
@@ -290,7 +286,7 @@ func (m *memberImpl) checkLevelUp() bool {
 	}
 	// 判断等级是否启用
 	lv := lg.GetLevelById(levelId)
-	if lv.Enabled == 0 {
+	if lv.Enabled == 0 || lv.AllowUpgrade == 0 {
 		return false
 	}
 	origin := m.value.Level
@@ -307,6 +303,7 @@ func (m *memberImpl) checkLevelUp() bool {
 			IsFree:      1,
 			PaymentId:   0,
 			Reviewed:    enum.ReviewConfirm,
+			UpgradeType: member.LAutoUpgrade,
 			CreateTime:  unix,
 		}
 		_, err = m.rep.SaveLevelUpLog(lvLog)
@@ -330,6 +327,7 @@ func (m *memberImpl) ChangeLevel(level int32, paymentId int32, review bool) erro
 		TargetLevel: level,
 		PaymentId:   paymentId,
 		Reviewed:    enum.ReviewNotSet,
+		UpgradeType: member.LServiceAgentUpgrade,
 		CreateTime:  unix,
 	}
 	if paymentId == 0 {

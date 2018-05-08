@@ -202,8 +202,8 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 		//todo : 退换积分,暂时积分抵扣的不退款
 	}
 	//多退少补
-	if pv.FinalAmount > amount {
-		amount = pv.FinalAmount
+	if pv.FinalFee > amount {
+		amount = pv.FinalFee
 	}
 	//退到钱包账户
 	if pv.PaymentSign == payment.SignWalletAccount {

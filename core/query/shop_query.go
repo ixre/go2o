@@ -51,7 +51,6 @@ func (s *ShopQuery) QueryShopIdByHost(host string) (vendorId int32, shopId int32
 	// www.dc1.com  顶级域名
 
 	var err error
-
 	reg := s.getHostRegexp()
 	if reg.MatchString(host) {
 		matches := reg.FindAllStringSubmatch(host, 1)
@@ -61,10 +60,8 @@ func (s *ShopQuery) QueryShopIdByHost(host string) (vendorId int32, shopId int32
 			return row.Scan(&vendorId, &shopId)
 		}, usr)
 	} else {
-		err = s.Connector.ExecScalar(
-			`SELECT id FROM mch_merchant INNER JOIN pt_siteconf
-                     ON pt_siteconf.merchant_id = mch_merchant.id
-                     WHERE host=?`, &shopId, host)
+		err = s.Connector.ExecScalar(`SELECT shop_id FROM mch_online_shop WHERE host=?`,
+			&shopId, host)
 	}
 	if err != nil {
 		gof.CurrentApp.Log().Error(err)

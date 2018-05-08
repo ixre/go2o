@@ -8,12 +8,15 @@
  */
 package payment
 
+// wiki: https://docs.open.alipay.com/203/107090
 import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -97,6 +100,7 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 
 	urls := &url.Values{}
 	urls.Set("service", "alipay.wap.trade.create.direct")
+	urls.Set("enable_paymethod", "balance,debitCardExpress")
 	urls.Set("partner", this.Merchant)
 	urls.Set("_input_charset", cCharset)
 	urls.Set("sec_id", "MD5")
@@ -108,7 +112,6 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 
 	client := &http.Client{Timeout: 20 * time.Second}
 	Debug(cWapGateway + urls.Encode())
-
 	req, err := http.NewRequest("GET", cWapGateway+urls.Encode(), nil)
 	if err != nil {
 		return ""
@@ -123,9 +126,9 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 		return ""
 	}
 	Debug(url.QueryUnescape(string(reply)))
-
 	urlV, err := url.ParseQuery(string(reply))
 	if err != nil {
+		log.Println("---alipay get token error :", err.Error())
 		return ""
 	}
 	sStr := urlV.Get("res_data")
@@ -137,7 +140,7 @@ func (this *AliPayWap) getTokenFromXml(sXml string) string {
 	v := callbackResult{}
 	err := xml.Unmarshal([]byte(sXml), &v)
 	if err != nil {
-		return ""
+		return "<!--" + sXml + "->"
 	}
 	return v.Request_token
 }
@@ -208,7 +211,7 @@ func (this *AliPayWap) Return(r *http.Request) Result {
 	urlValues.Del("sign")
 	urlValues.Del("sign_type")
 
-	result.OrderNo = r.FormValue("out_trade_no")
+	result.OutTradeNo = r.FormValue("out_trade_no")
 	result.TradeNo = r.FormValue("trade_no")
 	//result.Status = r.FormValue("result")
 	sign := this.sign(urlValues.Encode())
@@ -220,14 +223,13 @@ func (this *AliPayWap) Return(r *http.Request) Result {
 	result.Status = 1
 	return result
 
-	Debug(" [ Return]- OrderNo: %s, Status:%d , sign:%s/%s", result.OrderNo, result.Status, sign, formSign)
+	Debug(" [ Return]- OrderNo: %s, Status:%d , sign:%s/%s", result.OutTradeNo, result.Status, sign, formSign)
 	return result
 }
 
 /* 被动接收支付宝异步通知 */
 func (this *AliPayWap) Notify(r *http.Request) Result {
-
-	// /pay/notify/104_alipay?discount=0.00&payment_type=1&subject=%E5%9C%A8%E7%BA%BF%E6%94%AF%E4%BB%98%E8%AE%A2%E5%8D%95&trade_no=2015072800001000810060741985&buyer_email=***&gmt_create=2015-07-28%2001:24:19%C2%ACify_type=trade_status_sync&quantity=1&out_trade_no=146842585&seller_id=2088021187655650%C2%ACify_time=2015-07-28%2001:24:29&body=%E8%AE%A2%E5%8D%95%E5%8F%B7%EF%BC%9A146842585&trade_status=TRADE_SUCCESS&is_total_fee_adjust=N&total_fee=0.01&gmt_payment=2015-07-28%2001:24:29&seller_email=***&price=0.01&buyer_id=2088302384317810%C2%ACify_id=75e570fcc802c637d8cf1fdaa8677d046i&use_coupon=N&sign_type=MD5&sign=***
+	// /pay/notify/alipay?discount=0.00&payment_type=1&subject=%E5%9C%A8%E7%BA%BF%E6%94%AF%E4%BB%98%E8%AE%A2%E5%8D%95&trade_no=2015072800001000810060741985&buyer_email=***&gmt_create=2015-07-28%2001:24:19%C2%ACify_type=trade_status_sync&quantity=1&out_trade_no=146842585&seller_id=2088021187655650%C2%ACify_time=2015-07-28%2001:24:29&body=%E8%AE%A2%E5%8D%95%E5%8F%B7%EF%BC%9A146842585&trade_status=TRADE_SUCCESS&is_total_fee_adjust=N&total_fee=0.01&gmt_payment=2015-07-28%2001:24:29&seller_email=***&price=0.01&buyer_id=2088302384317810%C2%ACify_id=75e570fcc802c637d8cf1fdaa8677d046i&use_coupon=N&sign_type=MD5&sign=***
 	var result Result
 	sBody, _ := ioutil.ReadAll(r.Body)
 	vals, _ := url.ParseQuery(string(sBody))
@@ -238,7 +240,8 @@ func (this *AliPayWap) Notify(r *http.Request) Result {
 	sData := vals.Get("notify_data")
 	sStr := "service=" + sService + "&v=" + sFormat + "&sec_id=" + sSignType + "&notify_data=" + sData
 	sign := this.sign(sStr)
-	if formSign != this.sign(sStr) {
+	if formSign != sign {
+		Debug("[ Alipay][ Notify]: sign not match. notify_date=" + sData)
 		result.Status = -2
 		return result
 	}
@@ -249,20 +252,18 @@ func (this *AliPayWap) Notify(r *http.Request) Result {
 	//	notify.Is_total_fee_adjust, notify.Total_fee, notify.Gmt_payment, notify.Seller_email,
 	//	notify.Price, notify.Buyer_id, notify.Notify_id, notify.Use_coupon, notify.Trade_status)
 
-	result.OrderNo = notify.Out_trade_no
 	fee, err := strconv.ParseFloat(notify.Total_fee, 32)
-	if err != nil {
+	if err != nil || math.IsNaN(fee) {
 		fee = 0
 	}
 	result.Fee = float32(fee)
+	result.OutTradeNo = notify.Out_trade_no
 	result.TradeNo = notify.Trade_no
 	if notify.Trade_status == "TRADE_FINISHED" || notify.Trade_status == "TRADE_SUCCESS" { //交易成功
 		result.Status = StatusTradeSuccess
 	} else {
 		result.Status = -1
 	}
-
-	Debug(" [ Notify]- OrderNo: %s, Status:%d , sign:%s %s", result.OrderNo, result.Status, sign, formSign)
-
+	Debug(" [ Notify]- OrderNo: %s, Status:%d , sign:%s %s", result.OutTradeNo, result.Status, sign, formSign)
 	return result
 }
