@@ -65,8 +65,10 @@ const (
 )
 
 const (
-	// 百分比比例放大倍数，保留3位小数
-	RATE_Percent float64 = 10000
-	// 金额比例放大倍数
-	RATE_Amount float64 = 100
+	// 百分比比例放大倍数，保留3位小数;0.56 * 10000 = 560
+	RATE_PERCENT float64 = 10000
+	// 金额比例放大倍数;0.95 * 100 = 95
+	RATE_AMOUNT float64 = 100
+	// 折扣比例放大倍数; 0.9 * 1000 = 900
+	RATE_DISCOUNT float64 = 1000
 )

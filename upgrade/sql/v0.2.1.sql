@@ -1,0 +1,1 @@
+update pro_product set sort_num=0 WHERE sort_num IS NULL;
