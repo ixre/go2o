@@ -190,7 +190,7 @@ func (o *tradeOrderImpl) createPaymentForOrder() error {
 	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	return o.paymentOrder.Commit()
+	return o.paymentOrder.Submit()
 }
 
 // 获取支付单
@@ -210,9 +210,9 @@ func (o *tradeOrderImpl) CashPay() error {
 	py := o.GetPaymentOrder()
 	pv := py.GetValue()
 	switch int(pv.State) {
-	case payment.StateHasCancel:
+	case payment.StateCancelled:
 		return payment.ErrOrderHasCancel
-	case payment.StateFinishPayment:
+	case payment.StateFinished:
 		return payment.ErrOrderPayed
 	}
 	v := o.getValue()
@@ -327,7 +327,7 @@ func (s *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate floa
 	v := s.getValue()
 	sAmount := float32(v.FinalAmount * rate)
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_Amount))
+		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKWholesaleOrder, totalAmount)
 		return vendor.Account().SettleOrder(s.OrderNo(),

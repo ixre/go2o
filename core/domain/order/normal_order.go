@@ -540,7 +540,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	return o.paymentOrder.Commit()
+	return o.paymentOrder.Submit()
 }
 
 // 绑定促销优惠
@@ -1355,8 +1355,8 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 	_, refund := o.getOrderAmount()
 	sAmount := o.getOrderCost()
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_Amount))
-		refundAmount := int(refund * float32(enum.RATE_Amount))
+		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
+		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
@@ -1370,8 +1370,8 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float3
 	amount, refund := o.getOrderAmount()
 	sAmount := amount * rate
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_Amount))
-		refundAmount := int(refund * float32(enum.RATE_Amount))
+		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
+		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,

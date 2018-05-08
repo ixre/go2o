@@ -63,7 +63,7 @@ func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) 
 func (p *paymentService) SubmitPaymentOrder(ctx context.Context, s *define.SPaymentOrder) (*define.Result_, error) {
 	v := parser.PaymentOrder(s)
 	o := p._repo.CreatePaymentOrder(v)
-	err := o.Commit()
+	err := o.Submit()
 	return parser.Result(nil, err), nil
 }
 
@@ -79,14 +79,6 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 	return parser.Result(0, err), nil
 }
 
-// 设置交易单号前缀
-func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
-	o := p._repo.GetPaymentOrderById(id)
-	if o == nil {
-		return payment.ErrNoSuchPaymentOrder
-	}
-	return o.TradeNoPrefix(prefix)
-}
 
 // 积分抵扣支付单
 func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
