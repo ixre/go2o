@@ -37,7 +37,7 @@ func (s *SaleManagerImpl) MathTradeFee(tradeType int, amount int) (int, error) {
 	case enum.AmountBasisByAmount: // 按订单单数，收取金额
 		return conf.TradeFee, nil
 	case enum.AmountBasisByPercent: // 按订单金额，收取百分比
-		return int(float64(amount*conf.TradeRate) / enum.RATE_Percent), nil
+		return int(float64(amount*conf.TradeRate) / enum.RATE_PERCENT), nil
 	default:
 		panic("not support amount basis")
 	}

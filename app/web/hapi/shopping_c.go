@@ -1,10 +1,10 @@
 package hapi
 
 import (
-	"api/serve/thrift"
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"net/http"
 )
 

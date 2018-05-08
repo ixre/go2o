@@ -503,7 +503,7 @@ func (s *orderServiceImpl) SubmitOrder_V1(buyerId int64, cartCode string,
 		return "", "", err
 	}
 	py := od.(order.INormalOrder).GetPaymentOrder()
-	return od.OrderNo(), py.GetTradeNo(), err
+	return od.OrderNo(), py.TradeNo(), err
 }
 
 // 根据编号获取订单
@@ -625,7 +625,7 @@ func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *define.Compl
 		// 返回支付单号
 		ro := io.(order.ITradeOrder)
 		r.Code = io.OrderNo()
-		r.ErrMsg = ro.GetPaymentOrder().GetTradeNo()
+		r.ErrMsg = ro.GetPaymentOrder().TradeNo()
 	}
 	return r, nil
 }
