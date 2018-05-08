@@ -51,6 +51,8 @@ const (
 	KindBalanceFreeze int32 = 8
 	// 解冻
 	KindBalanceUnfreeze int32 = 9
+	// 客服调整
+	KindAdjust int32 = 10
 
 	// 客服充值
 	KindBalanceServiceCharge int32 = 15
@@ -73,6 +75,8 @@ const (
 	KindWalletFreeze int32 = 8
 	// 解冻
 	KindWalletUnfreeze int32 = 9
+	// 客服调整
+	KindWalletAdjust int32 = 10
 	// 提现到余额
 	KindWalletTakeOutToBalance int32 = 11
 	// 提现到银行卡(人工提现)
@@ -161,12 +165,6 @@ type (
 		// 解冻金额
 		Unfreeze(title string, outerNo string, amount float32, relateUser int64) error
 
-		// 赠送金额,客服操作时,需提供操作人(relateUser)
-		//ChargeForPresent(title string, outerNo string, amount float32, relateUser int64) error
-
-		// 赠送金额(指定业务类型)
-		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int64) error
-
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountWallet(title string, outerNo string, amount float32,
 			relateUser int64, mustLargeZero bool) error
@@ -223,6 +221,15 @@ type (
 
 		// 充值
 		Charge(account int32, kind int32, title, outerNo string, amount float32, relateUser int64) error
+
+		// 客服调整
+		Adjust(account int, title string, amount float32, remark string, relateUser int64) error
+
+		// 赠送金额,客服操作时,需提供操作人(relateUser)
+		//ChargeForPresent(title string, outerNo string, amount float32, relateUser int64) error
+
+		// 赠送金额(指定业务类型)
+		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int64) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int32, amount float32, tradeNo string, toTitle, fromTitle string) error

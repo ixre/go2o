@@ -45,7 +45,7 @@ func (s *SSOModule) Init() {
 		ID:   2,
 		Name: "WholesalePortal",
 		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_WHOLESALE, domain),
+			variable.DOMAIN_PREFIX_WHOLESALE_PORTAL, domain),
 	})
 	s.Register(&define.SsoApp{
 		ID:   3,
@@ -70,7 +70,7 @@ func (s *SSOModule) Init() {
 		ID:   6,
 		Name: "RetailPortalMobile",
 		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_MOBILE, domain),
+			variable.DOMAIN_PREFIX_PORTAL_MOBILE, domain),
 	})
 }
 

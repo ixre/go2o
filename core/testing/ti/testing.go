@@ -24,7 +24,7 @@ var (
 	Factory *factory.RepoFactory
 )
 var (
-	REDIS_DB = "6"
+	REDIS_DB = "1"
 )
 
 func GetApp() gof.App {
@@ -34,7 +34,8 @@ func GetApp() gof.App {
 		app.Config().Set("redis_host", "127.0.0.1")
 		app.Config().Set("redis_db", REDIS_DB)
 		app.Config().Set("redis_port", "6379")
-		app.Config().Set("redis_auth", "123456")
+		//app.Config().Set("redis_auth", "123456")
+		app.Config().Set("redis_auth", "")
 		app.Config().Set("db_name", "gcy_v3")
 		gof.CurrentApp = app
 		app.Init(true, true)
@@ -76,7 +77,7 @@ func (t *testingApp) Db() db.Connector {
 	if t._dbConnector == nil {
 		connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local",
 			"root",
-			"",
+			"123456",
 			"127.0.0.1",
 			"3306",
 			t.Config().GetString("db_name"),

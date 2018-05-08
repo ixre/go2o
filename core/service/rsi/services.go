@@ -37,7 +37,7 @@ var (
 	// 商户服务
 	MerchantService *merchantService
 	// 商店服务
-	ShopService *shopService
+	ShopService *shopServiceImpl
 	// 产品服务
 	ProductService *productService
 	// 商品服务
@@ -77,14 +77,14 @@ func handleError(err error) error {
 	//return err
 }
 
-func Init(ctx gof.App, appFlag int) {
+func Init(ctx gof.App, appFlag int, confDir string) {
 	Context := ctx
 	db := Context.Db()
 	orm := db.GetOrm()
 	sto := Context.Storage()
 
 	// 初始化服务
-	initService(ctx, db, orm, sto, ctx.Config().GetString("conf_path"))
+	initService(ctx, db, orm, sto, confDir)
 	// RPC
 	if appFlag&app.FlagRpcServe == app.FlagRpcServe {
 		initRpcServe(ctx)
@@ -173,7 +173,7 @@ func initRpcServe(ctx gof.App) {
 	mp[variable.DRetailPortal] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_PORTAL, domain}, "")
 	mp[variable.DWholesalePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_WHOLESALE, domain}, "")
+		variable.DOMAIN_PREFIX_WHOLESALE_PORTAL, domain}, "")
 	mp[variable.DUCenter] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_MEMBER, domain}, "")
 	mp[variable.DPassport] = strings.Join([]string{prefix,
@@ -184,7 +184,7 @@ func initRpcServe(ctx gof.App) {
 		variable.DOMAIN_PREFIX_HApi, domain}, "")
 
 	mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MOBILE, domain}, "")
+		variable.DOMAIN_PREFIX_PORTAL_MOBILE, domain}, "")
 	mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_M_WHOLESALE, domain}, "")
 	mp[variable.DMobilePassport] = strings.Join([]string{prefix,

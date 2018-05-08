@@ -117,6 +117,47 @@ func (a *accountImpl) Charge(account int32, kind int32, title, outerNo string,
 	panic(errors.New("不支持的账户类型操作"))
 }
 
+func (a *accountImpl) Adjust(account int, title string, amount float32, remark string, relateUser int64) error {
+	if amount == 0 || math.IsNaN(float64(amount)) {
+		return member.ErrIncorrectAmount
+	}
+	if title == "" || remark == "" {
+		return member.ErrNoSuchLogTitleOrRemark
+	}
+	if relateUser <= 0 {
+		return member.ErrNoSuchRelateUser
+	}
+	switch account {
+	case member.AccountBalance:
+		return a.adjustBalanceAccount(title, amount, remark, relateUser)
+		//todo: 支持其他账户的调整
+	}
+	panic("not support other account adjust")
+}
+
+// 调整账户余额
+func (a *accountImpl) adjustBalanceAccount(title string, amount float32, remark string, relateUser int64) error {
+	unix := time.Now().Unix()
+	v := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindAdjust,
+		Title:        title,
+		OuterNo:      "",
+		Amount:       amount,
+		Remark:       remark,
+		RelateUser:   relateUser,
+		State:        1,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.rep.SaveBalanceLog(v)
+	if err == nil {
+		a.value.Balance += amount
+		_, err = a.Save()
+	}
+	return err
+}
+
 // 退款
 func (a *accountImpl) Refund(account int, kind int32, title string,
 	outerNo string, amount float32, relateUser int64) error {
@@ -136,6 +177,7 @@ func (a *accountImpl) Refund(account int, kind int32, title string,
 	panic(errors.New("不支持的账户类型操作"))
 }
 
+// 充值余额
 func (a *accountImpl) chargeBalance(kind int32, title string, outerNo string,
 	amount float32, relateUser int64) error {
 	switch kind {
@@ -714,7 +756,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 		}
 	}
 
-	tradeNo := domain.NewTradeNo(00000)
+	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
 	csnAmount := amount * commission
 	finalAmount := amount - csnAmount
 	if finalAmount > 0 {
@@ -920,7 +962,7 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount fl
 		return member.ErrNoSuchMember
 	}
 
-	tradeNo := domain.NewTradeNo(00000)
+	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
 	csnFee := amount * csnRate
 
 	// 检测是否开启转账

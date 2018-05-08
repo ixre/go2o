@@ -138,7 +138,7 @@ func (o *orderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	//v := o._value
 	//v.CouponCode = val.Code
 	//v.CouponDescribe = coupon.GetDescribe()
-	//v.CouponFee = coupon.GetCouponFee(v.TotalFee)
+	//v.CouponFee = coupon.GetCouponFee(v.TotalAmount)
 	//v.PayFee = o.GetPaymentFee()
 	//v.DiscountFee = v.DiscountFee + v.CouponFee
 	return nil
@@ -776,7 +776,7 @@ func (o *orderImpl) updateShoppingMemberBackFee(pt merchant.IMerchant,
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
-	//acc.TotalFee += o._value.Fee
+	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
 	acv.PresentBalance += fee // 更新赠送余额
 	acv.TotalPresentFee += fee
@@ -1552,7 +1552,7 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
-	//acc.TotalFee += o._value.Fee
+	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
 	acv.PresentBalance += fee // 更新赠送余额
 	acv.TotalPresentFee += fee

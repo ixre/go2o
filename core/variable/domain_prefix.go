@@ -10,14 +10,14 @@
 package variable
 
 var (
-	// 主站域名前缀
+	// 零售门户前缀
 	DOMAIN_PREFIX_PORTAL = "www."
-	// 手机端域名前缀
-	DOMAIN_PREFIX_MOBILE = "m."
+	// 批发门户域名前缀
+	DOMAIN_PREFIX_WHOLESALE_PORTAL = "whs."
+	// 零售门户手机端域名前缀
+	DOMAIN_PREFIX_PORTAL_MOBILE = "m."
 	// 会员中心域名前缀
 	DOMAIN_PREFIX_MEMBER = "u."
-	// 批发系统域名前缀
-	DOMAIN_PREFIX_WHOLESALE = "whs."
 	// 商户系统域名前缀
 	DOMAIN_PREFIX_MERCHANT = "mch."
 	// 通行证域名前缀

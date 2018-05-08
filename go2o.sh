@@ -38,10 +38,11 @@ if [[ ${cmd} = "clean" ]];then
 fi
 # stop service
 if [[ ${cmd} = "stop" ]] || [[ ${cmd} = "restart" ]];then
-   pgrep go2o-serve|xargs kill -15 > /dev/null
-   pgrep master-serve|xargs kill -15 > /dev/null
-   pgrep go2o-tcpserve|xargs kill -15 > /dev/null
-   #pgrep go2o-rpc|xargs kill -15 > /dev/null
+   proc_arr=("go2o-serve" "master-serve" "go2o-tcp" "go2o-rpc")
+    for proc in ${proc_arr[@]}
+    do
+       ps -ef| grep ${proc}| awk '{print $2}'| xargs kill -15
+    done
 fi
 # start service
 if [[ ${cmd} = "start" ]] || [[ ${cmd} = "restart" ]];then
