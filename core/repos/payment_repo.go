@@ -9,6 +9,7 @@
 package repos
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
@@ -20,13 +21,14 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	payImpl "go2o/core/domain/payment"
 	"go2o/core/variable"
+	"log"
 )
 
 var _ payment.IPaymentRepo = new(paymentRepoImpl)
 
 type paymentRepoImpl struct {
 	db.Connector
-	Storage    storage.Interface
+	Storage storage.Interface
 	*payImpl.PaymentRepBase
 	memberRepo member.IMemberRepo
 	valueRepo  valueobject.IValueRepo
@@ -46,7 +48,7 @@ func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMem
 
 // 根据订单号获取支付单
 func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOrder {
-	e := &payment.PaymentOrder{}
+	e := &payment.Order{}
 	if p.Connector.GetOrm().GetBy(e, "order_id=?", orderId) == nil {
 		return p.CreatePaymentOrder(e)
 	}
@@ -65,7 +67,7 @@ func (p *paymentRepoImpl) GetPaymentOrderById(id int) payment.IPaymentOrder {
 	if id <= 0 {
 		return nil
 	}
-	e := &payment.PaymentOrder{}
+	e := &payment.Order{}
 	k := p.getPaymentOrderCk(id)
 	if err := p.Storage.Get(k, &e); err != nil {
 		if p.Connector.GetOrm().Get(id, e) != nil {
@@ -92,13 +94,13 @@ func (p *paymentRepoImpl) GetPaymentOrder(paymentNo string) payment.IPaymentOrde
 
 // 创建支付单
 func (p *paymentRepoImpl) CreatePaymentOrder(
-	o *payment.PaymentOrder) payment.IPaymentOrder {
+	o *payment.Order) payment.IPaymentOrder {
 	return p.PaymentRepBase.CreatePaymentOrder(o, p,
 		p.memberRepo, p.orderRepo.Manager(), p.valueRepo)
 }
 
 // 保存支付单
-func (p *paymentRepoImpl) SavePaymentOrder(v *payment.PaymentOrder) (int, error) {
+func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 	stat := v.State
 	if v.ID > 0 {
 		stat = p.GetPaymentOrderById(v.ID).Get().State
@@ -132,4 +134,13 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 	i := 0
 	p.Connector.ExecScalar("SELECT id FROM pay_order WHERE trade_no=? AND id<>?", &i, tradeNo, id)
 	return i == 0
+}
+
+func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeChan {
+	var list []*payment.TradeChan
+	err := p.GetOrm().Select(&list, "trade_no=?", tradeNo)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
+	}
+	return list
 }

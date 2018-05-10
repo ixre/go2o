@@ -284,8 +284,8 @@ func Address(src *define.Address) *member.Address {
 	}
 }
 
-func PaymentOrder(src *define.SPaymentOrder) *payment.PaymentOrder {
-	return &payment.PaymentOrder{
+func PaymentOrder(src *define.SPaymentOrder) *payment.Order {
+	return &payment.Order{
 		ID:        int(src.ID),
 		TradeNo:   src.TradeNo,
 		TradeType: src.TradeType,
@@ -312,7 +312,7 @@ func PaymentOrder(src *define.SPaymentOrder) *payment.PaymentOrder {
 	}
 }
 
-func PaymentOrderDto(src *payment.PaymentOrder) *define.SPaymentOrder {
+func PaymentOrderDto(src *payment.Order) *define.SPaymentOrder {
 	return &define.SPaymentOrder{
 		ID:        int32(src.ID),
 		TradeNo:   src.TradeNo,

@@ -162,13 +162,13 @@ func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 }
 
 // 生成支付单
-func (o *baseOrderImpl) createPaymentOrder() *payment.PaymentOrder {
+func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 	orderId := o.GetAggregateRootId()
 	if orderId <= 0 {
 		panic("payment order must create after order submit!")
 	}
 	buyerId := o.Buyer().GetAggregateRootId()
-	v := &payment.PaymentOrder{
+	v := &payment.Order{
 		BuyUser:     buyerId,
 		PaymentUser: buyerId,
 		VendorId:    0,
