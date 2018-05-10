@@ -53,7 +53,7 @@ func registerTypes() {
 	gob.Register(&shop.OfflineShop{})
 	gob.Register(&shop.ComplexShop{})
 	gob.Register(&member.Account{})
-	gob.Register(&payment.PaymentOrder{})
+	gob.Register(&payment.Order{})
 	gob.Register(&member.Relation{})
 	gob.Register(&dto.ListOnlineShop{})
 	gob.Register([]*dto.ListOnlineShop{})
@@ -193,10 +193,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(cart.WsCartItem{}, "ws_cart_item")
 
 	// 支付
-	orm.Mapping(payment.PaymentOrder{}, "pay_order")
+	orm.Mapping(payment.Order{}, "pay_order")
 	orm.Mapping(payment.PayChannel{}, "pay_channel")
-	orm.Mapping(payment.PayMixedOrder{}, "pay_mixed_order")
-	orm.Mapping(payment.PayTradeChan{}, "pay_trade_chan")
+	orm.Mapping(payment.MixedOrder{}, "pay_mixed_order")
+	orm.Mapping(payment.TradeChan{}, "pay_trade_chan")
 
 	// 促销
 	orm.Mapping(promotion.ValueCoupon{}, "pm_coupon")

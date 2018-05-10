@@ -19,7 +19,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 	repo := ti.Factory.GetPaymentRepo()
 	unix := time.Now().Unix()
 	tradeNo := domain.NewTradeNo(0, 0)
-	ip := repo.CreatePaymentOrder(&payment.PaymentOrder{
+	ip := repo.CreatePaymentOrder(&payment.Order{
 		TradeNo:          tradeNo,
 		TradeType:        "ppi-charge",
 		VendorId:         0,

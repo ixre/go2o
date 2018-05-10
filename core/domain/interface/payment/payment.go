@@ -43,13 +43,13 @@ const (
 	// 现金支付通道
 	CHAN_CASH = 4
 	// 银行卡支付通道
-	CHAN_BANK = 5
+	CHAN_BANK_CARD = 5
 	// 卖家支付通道
 	CHAN_SELLER_PAY = 6
 	// 系统支付通道
 	CHAN_SYSTEM_PAY = 7
 	// 优惠券抵扣通道
-	CHAN_COUPON = 8
+	//CHAN_COUPON = 8
 )
 
 // 支付标志
@@ -57,19 +57,19 @@ const (
 	// 余额抵扣
 	PBalance = 1 << iota
 	// 钱包支付
-	PWallet = 1 << 1
+	PWallet
 	// 积分兑换
-	PIntegral = 1 << 2
+	PIntegral
 	// 现金支付
-	PCash = 1 << 3
+	PCash
 	// 银行卡支付
-	PBankCard = 1 << 4
+	PBankCard
 	// 第三方支付,如支付宝等
-	POutSP = 1 << 5
+	POutSP
 	// 卖家支付通道
-	PSellerPay = 1 << 6
+	PSellerPay
 	// 系统支付通道
-	PSystemPay = 1 << 7
+	PSystemPay
 )
 
 // 所有支付方式
@@ -149,11 +149,13 @@ type (
 		// 获取聚合根编号
 		GetAggregateRootId() int
 		// 获取支付单的值
-		Get() PaymentOrder
+		Get() Order
 		// 获取交易号
 		TradeNo() string
 		// 支付单状态
 		State() int
+		// 支付途径支付信息
+		Channels() []*TradeChan
 		// 提交支付单
 		Submit() error
 		// 取消支付
@@ -164,7 +166,6 @@ type (
 		TradeFinish() error
 		// 支付完成并保存,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outTradeNo string) error
-
 		// 优惠券抵扣
 		CouponDiscount(coupon promotion.ICouponPromotion) (float32, error)
 		// 使用会员的余额抵扣
@@ -198,11 +199,13 @@ type (
 		// 根据订单号获取支付单
 		GetPaymentBySalesOrderId(orderId int64) IPaymentOrder
 		// 创建支付单
-		CreatePaymentOrder(p *PaymentOrder) IPaymentOrder
+		CreatePaymentOrder(p *Order) IPaymentOrder
 		// 保存支付单
-		SavePaymentOrder(v *PaymentOrder) (int, error)
+		SavePaymentOrder(v *Order) (int, error)
 		// 检查支付单号是否匹配
 		CheckTradeNoMatch(tradeNo string, id int) bool
+		// 获取交易途径支付信息
+		GetTradeChannelItems(tradeNo string) []*TradeChan
 		// 通知支付单完成
 		//NotifyPaymentFinish(paymentOrderId int32) error
 	}
@@ -219,22 +222,8 @@ type (
 		PortalUrl string `db:"portal_url"`
 	}
 
-	// 合并支付的订单
-	PayMixedOrder struct {
-		// 编号
-		ID int `db:"id" pk:"yes" auto:"yes"`
-		// 交易单号
-		TradeNo string `db:"trade_no"`
-		// 订单号
-		OrderId int `db:"order_id"`
-		// 支付单的类型，如购物或其他
-		OrderType int `db:"order_type"`
-		// 外部订单号
-		OutOrderNo string `db:"out_order_no"`
-	}
-
 	// 支付单
-	PaymentOrder struct {
+	Order struct {
 		// 编号
 		ID int `db:"id" pk:"yes" auto:"yes"`
 		// 卖家编号
@@ -243,6 +232,14 @@ type (
 		TradeType string `db:"trade_type"`
 		// 交易号
 		TradeNo string `db:"trade_no"`
+		// 合并支付交易号
+		MergeTradeNo string `db:"merge_trade_no"`
+		// 订单号
+		OrderId int `db:"order_id"`
+		// 支付单的类型，如购物或其他
+		OrderType int `db:"order_type"`
+		// 外部订单号
+		OutOrderNo string `db:"out_order_no"`
 		// 支付单详情
 		Subject string `db:"subject"`
 		// 买家编号
@@ -261,11 +258,13 @@ type (
 		FinalFee int `db:"final_fee"`
 		// 可⽤支付方式
 		PayFlag int `db:"pay_flag"`
-		// 支付渠道
-		PayChannel int `db:"pay_channel"`
 		// 其他支付信息
 		ExtraData string `db:"extra_data"`
-		// 外部订单号
+		// 交易支付渠道
+		TradeChannel int `db:"trade_channel"`
+		// 外部交易提供商
+		OutTradeSp string `db:"out_trade_sp"`
+		// 外部交易订单号
 		OutTradeNo string `db:"out_trade_no"`
 		// 可作废
 		PaymentSign int `db:"payment_sign"`
@@ -279,10 +278,12 @@ type (
 		PaidTime int64 `db:"paid_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
+		// 交易途径支付信息
+		TradeChannels []*TradeChan `db:"-"`
 	}
 
 	// 支付单项
-	PayTradeChan struct {
+	TradeChan struct {
 		// 编号
 		ID int `db:"id" pk:"yes" auto:"yes"`
 		// 交易单号

@@ -79,7 +79,6 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 	return parser.Result(0, err), nil
 }
 
-
 // 积分抵扣支付单
 func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
 	integral int64, ignoreOut bool) (r *define.DResult_, err error) {
