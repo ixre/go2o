@@ -531,16 +531,53 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 }
 
 // 生成支付单
-func (o *normalOrderImpl) createPaymentForOrder() error {
-	v := o.baseOrderImpl.createPaymentOrder()
-	//v.VendorId = o.value.VendorId
-	v.TotalAmount = o.value.FinalAmount
-	v.CouponDiscount = 0
-	v.IntegralDiscount = 0
-	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
-		v.IntegralDiscount - v.BalanceDiscount
-	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	return o.paymentOrder.Submit()
+func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
+	orders := o.GetSubOrders()
+	var mergeTradeNo string
+	if len(orders) > 1 {
+		mergeTradeNo = "MG" + domain.NewTradeNo(0, 0)
+	}
+	for _, iso := range orders {
+		v := iso.GetValue()
+		itemAmount := int(v.ItemAmount * 100)
+		finalAmount := int(v.FinalAmount * 100)
+		disAmount := int(v.DiscountAmount * 100)
+		po := &payment.Order{
+			SellerId:       int(v.VendorId),
+			TradeNo:        v.OrderNo,
+			MergeTradeNo:   mergeTradeNo,
+			OrderId:        int(v.OrderId),
+			OrderType:      int(order.TRetailSubOrder),
+			OutOrderNo:     v.OrderNo,
+			Subject:        v.Subject,
+			BuyerId:        v.BuyerId,
+			PayUid:         v.BuyerId,
+			TotalAmount:    itemAmount,
+			DiscountAmount: disAmount,
+			DeductAmount:   0,
+			AdjustAmount:   0,
+			FinalFee:       finalAmount,
+			PayFlag:        0,
+			TradeChannel:   0,
+			ExtraData:      "",
+			OutTradeSp:     "",
+			OutTradeNo:     "",
+			State:          payment.StateAwaitingPayment,
+			SubmitTime:     v.CreateTime,
+			ExpiresTime:    0,
+			PaidTime:       0,
+			UpdateTime:     v.CreateTime,
+			TradeChannels:  []*payment.TradeChan{},
+		}
+		ip := o.payRepo.CreatePaymentOrder(po)
+		if err := ip.Submit(); err != nil {
+			return mergeTradeNo, err
+		}
+	}
+	if mergeTradeNo == "" { //如果未合并付款，返回默认的订单号
+		return orders[0].GetValue().OrderNo, nil
+	}
+	return mergeTradeNo, nil
 }
 
 // 绑定促销优惠
@@ -1509,20 +1546,11 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
+	// 获取支付单并取消
 	io := od.(order.INormalOrder)
 	po := io.GetPaymentOrder()
 	if po != nil {
-		return po.Refund(float64(o.value.FinalAmount))
-		v := po.GetValue()
-		//if true {
-		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalFee,
-		//		"; 订单金额:", o.value.FinalFee)
-		//}
-		// 订单金额为0,则取消订单
-		if v.FinalFee-o.value.FinalAmount <= 0 {
-			return po.Cancel()
-		}
-		return po.Adjust(-o.value.FinalAmount)
+		return po.Cancel()
 	}
 	return nil
 }

@@ -28,7 +28,7 @@ var (
 
 type paymentOrderImpl struct {
 	rep                payment.IPaymentRepo
-	value              *payment.PaymentOrder
+	value              *payment.Order
 	mmRepo             member.IMemberRepo
 	valRepo            valueobject.IValueRepo
 	coupons            []promotion.ICouponPromotion
@@ -42,7 +42,7 @@ func (p *paymentOrderImpl) GetAggregateRootId() int {
 	return p.value.ID
 }
 
-func (p *paymentOrderImpl) Get() payment.PaymentOrder {
+func (p *paymentOrderImpl) Get() payment.Order {
 	return *p.value
 }
 
@@ -54,6 +54,17 @@ func (p *paymentOrderImpl) TradeNo() string {
 // 支付单状态
 func (p *paymentOrderImpl) State() int {
 	return int(p.value.State)
+}
+
+// 支付途径支付信息
+func (p *paymentOrderImpl) Channels() []*payment.TradeChan {
+	if p.value.TradeChannels == nil {
+		if p.GetAggregateRootId() <= 0 {
+			return make([]*payment.TradeChan, 0)
+		}
+		p.value.TradeChannels = p.rep.GetTradeChannelItems(p.TradeNo())
+	}
+	return p.value.TradeChannels
 }
 
 // 提交支付订单
@@ -69,7 +80,7 @@ func (p *paymentOrderImpl) Submit() error {
 	return err
 }
 
-// 取消支付
+// 取消支付,并退款
 func (p *paymentOrderImpl) Cancel() error {
 	oriState := p.value.State //支付单原始状态
 	p.value.State = payment.StateCancelled
@@ -189,22 +200,22 @@ func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 	float32, error) {
 	return 0, nil
 	/** todo:!!!
-if p.value.PaymentSign&payment.OptUseCoupon == 0 {
-	return 0, payment.ErrCanNotUseCoupon
-}
-//todo: 如可以使用多张优惠券,那么初始化应该获取支付单的所有优惠券
-if p.coupons == nil {
-	p.coupons = []promotion.ICouponPromotion{}
-}
-p.coupons = append(p.coupons, coupon)
-// 支付金额应减去立减和系统支付的部分
-fee := p.value.TotalAmount - p.value.SubAmount -
-	p.value.SystemDiscount
-for _, v := range p.coupons {
-	p.value.CouponDiscount += v.GetCouponFee(fee)
-}
-p.fixFee()
-return p.value.CouponDiscount, nil
+	if p.value.PaymentSign&payment.OptUseCoupon == 0 {
+		return 0, payment.ErrCanNotUseCoupon
+	}
+	//todo: 如可以使用多张优惠券,那么初始化应该获取支付单的所有优惠券
+	if p.coupons == nil {
+		p.coupons = []promotion.ICouponPromotion{}
+	}
+	p.coupons = append(p.coupons, coupon)
+	// 支付金额应减去立减和系统支付的部分
+	fee := p.value.TotalAmount - p.value.SubAmount -
+		p.value.SystemDiscount
+	for _, v := range p.coupons {
+		p.value.CouponDiscount += v.GetCouponFee(fee)
+	}
+	p.fixFee()
+	return p.value.CouponDiscount, nil
 	*/
 }
 
@@ -535,7 +546,7 @@ type PaymentRepBase struct {
 }
 
 func (p *PaymentRepBase) CreatePaymentOrder(v *payment.
-PaymentOrder, rep payment.IPaymentRepo, mmRepo member.IMemberRepo,
+	Order, rep payment.IPaymentRepo, mmRepo member.IMemberRepo,
 	orderManager order.IOrderManager, valRepo valueobject.IValueRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		rep:          rep,

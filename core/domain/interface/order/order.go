@@ -30,6 +30,8 @@ type OrderType int32
 const (
 	// 零售订单(线上/线下)
 	TRetail OrderType = 1
+	// 零售子订单
+	TRetailSubOrder OrderType = 9
 	// 批发订单
 	TWholesale OrderType = 2
 	// 虚拟订单,如：手机充值
