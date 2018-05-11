@@ -557,7 +557,7 @@ func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
 			DeductAmount:   0,
 			AdjustAmount:   0,
 			FinalFee:       finalAmount,
-			PayFlag:        0,
+			PayFlag:        payment.PAllFlag,
 			TradeChannel:   0,
 			ExtraData:      "",
 			OutTradeSp:     "",
