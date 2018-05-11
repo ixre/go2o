@@ -201,7 +201,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 		return errors.New("不支持优惠券")
 	}
 	io := o.(order.INormalOrder)
-	po := py.GetValue()
+	po := py.Get()
 	//todo: ?? 重构
 	cp := t.promRepo.GetCouponByCode(
 		int32(m.GetAggregateRootId()), couponCode)
@@ -211,7 +211,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 	}
 	// 获取优惠券
 	coupon := cp.(promotion.ICouponPromotion)
-	result, err := coupon.CanUse(m, po.TotalAmount)
+	result, err := coupon.CanUse(m, float32(po.TotalAmount/100))
 	if result {
 		if coupon.CanTake() {
 			_, err = coupon.GetTake(m.GetAggregateRootId())
