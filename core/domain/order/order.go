@@ -3,7 +3,6 @@ package order
 import (
 	"errors"
 	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -168,21 +167,37 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		panic("payment order must create after order submit!")
 	}
 	buyerId := o.Buyer().GetAggregateRootId()
-	v := &payment.Order{
-		BuyUser:     buyerId,
-		PaymentUser: buyerId,
-		VendorId:    0,
-		OrderId:     int32(orderId),
-		Type:        payment.TypeShopping,
-		PayFlag:     payment.OptPerm,
-		PaymentSign: enum.PaymentOnlinePay,
-		CreateTime:  o.baseValue.CreateTime,
-		TradeNo:     o.OrderNo(),
-		State:       payment.StateAwaitingPayment,
+	unix := time.Now().Unix()
+	v2 := &payment.Order{
+		ID:             0,
+		SellerId:       0,
+		TradeType:      "",
+		TradeNo:        o.OrderNo(),
+		MergeTradeNo:   "",
+		OrderId:        int(o.GetAggregateRootId()),
+		OrderType:      int(order.TRetail),
+		OutOrderNo:     o.OrderNo(),
+		Subject:        "支付订单",
+		BuyerId:        buyerId,
+		PayUid:         buyerId,
+		TotalAmount:    0,
+		DiscountAmount: 0,
+		DeductAmount:   0,
+		AdjustAmount:   0,
+		FinalFee:       0,
+		PayFlag:        payment.PAllFlag,
+		ExtraData:      "",
+		TradeChannel:   0,
+		OutTradeSp:     "",
+		OutTradeNo:     "",
+		State:          payment.StateAwaitingPayment,
+		SubmitTime:     unix,
+		ExpiresTime:    0,
+		PaidTime:       0,
+		UpdateTime:     unix,
+		TradeChannels:  make([]*payment.TradeChan, 0),
 	}
-	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
-		v.IntegralDiscount - v.BalanceDiscount
-	return v
+	return v2
 }
 
 // 工厂方法生成订单
