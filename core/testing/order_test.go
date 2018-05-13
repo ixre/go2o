@@ -133,7 +133,7 @@ func TestCancelOrder(t *testing.T) {
 
 	py := o.(order.INormalOrder).GetPaymentOrder()
 	err = py.PaymentByWallet("支付订单")
-	pv := py.GetValue()
+	pv := py.Get()
 	payState := pv.State
 	if payState == payment.StateFinished {
 		t.Logf("订单支付完成,金额：%.2f", pv.FinalFee)
@@ -225,7 +225,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	ipo := payRepo.GetPaymentBySalesOrderId(orderId)
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
-		t.Logf("支付的交易号为：%s,最终金额:%.2f", nio.OrderNo(), ipo.GetValue().FinalFee)
+		t.Logf("支付的交易号为：%s,最终金额:%.2f", nio.OrderNo(), ipo.Get().FinalFee)
 	} else {
 		t.Log("支付订单", err.Error())
 		t.FailNow()

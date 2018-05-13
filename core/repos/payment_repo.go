@@ -29,7 +29,7 @@ var _ payment.IPaymentRepo = new(paymentRepoImpl)
 type paymentRepoImpl struct {
 	db.Connector
 	Storage storage.Interface
-	*payImpl.PaymentRepBase
+	*payImpl.PaymentRepoBase
 	memberRepo member.IMemberRepo
 	valueRepo  valueobject.IValueRepo
 	orderRepo  order.IOrderRepo
@@ -95,7 +95,7 @@ func (p *paymentRepoImpl) GetPaymentOrder(paymentNo string) payment.IPaymentOrde
 // 创建支付单
 func (p *paymentRepoImpl) CreatePaymentOrder(
 	o *payment.Order) payment.IPaymentOrder {
-	return p.PaymentRepBase.CreatePaymentOrder(o, p,
+	return p.PaymentRepoBase.CreatePaymentOrder(o, p,
 		p.memberRepo, p.orderRepo.Manager(), p.valueRepo)
 }
 
