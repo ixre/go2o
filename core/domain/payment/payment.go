@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/domain"
 	"regexp"
 	"strings"
 	"time"
@@ -77,12 +78,7 @@ func (p *paymentOrderImpl) Submit() error {
 	if b := p.repo.CheckTradeNoMatch(p.value.TradeNo, p.GetAggregateRootId()); !b {
 		return payment.ErrExistsTradeNo
 	}
-	// 检查订单金额
-	err := p.checkOrderFinalFee()
-	if err == nil {
-		err = p.save()
-	}
-	return err
+	return p.saveOrder()
 }
 
 // 准备提交支付单
@@ -90,14 +86,19 @@ func (p *paymentOrderImpl) prepareSubmit() {
 	unix := time.Now().Unix()
 	p.value.SubmitTime = unix
 	p.value.UpdateTime = unix
+	// 初始化状态
 	p.value.State = payment.StateAwaitingPayment
+	// 初始化支付用户编号
+	if p.value.PayUid <= 0 {
+		p.value.PayUid = p.value.BuyerId
+	}
 }
 
 // 取消支付,并退款
 func (p *paymentOrderImpl) Cancel() error {
 	oriState := p.value.State //支付单原始状态
 	p.value.State = payment.StateCancelled
-	err := p.save()
+	err := p.saveOrder()
 	if err == nil {
 		// log.Println(fmt.Sprintf("-- 支付单详情：%#v",p.value))
 		mm := p.getBuyer()
@@ -143,17 +144,14 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 
 // 交易完成
 func (p *paymentOrderImpl) TradeFinish() error {
-	if p.value.State == payment.StateFinished {
-		return payment.ErrOrderPayed
-	}
-	if p.value.State == payment.StateCancelled {
-		return payment.ErrOrderHasCancel
+	if err := p.checkPaymentState(); err != nil {
+		return err
 	}
 	p.value.State = payment.StateFinished
 	p.value.OutTradeNo = ""
 	p.value.PaidTime = time.Now().Unix()
 	p.firstFinishPayment = true
-	return p.save()
+	return p.saveOrder()
 }
 
 // 支付完成,传入第三名支付名称,以及外部的交易号
@@ -172,7 +170,7 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	p.value.OutTradeNo = outerNo
 	p.value.PaidTime = time.Now().Unix()
 	p.firstFinishPayment = true
-	return p.save()
+	return p.saveOrder()
 }
 
 // 重新修正金额
@@ -186,29 +184,21 @@ func (p *paymentOrderImpl) notifyPaymentFinish() {
 	if p.GetAggregateRootId() <= 0 {
 		panic(payment.ErrNoSuchPaymentOrder)
 	}
-
-	//err := p._rep.NotifyPaymentFinish(p.GetAggregateRootId())
-	//if err != nil {
-	//	err = errors.New("Notify payment finish error :" + err.Error())
-	//	domain.HandleError(err, "domain")
-	//}
-
-	/** todo:!!!
 	// 通知订单支付完成
 	if p.value.OrderId > 0 {
 		err := p.orderManager.NotifyOrderTradeSuccess(int64(p.value.OrderId))
 		domain.HandleError(err, "domain")
 	}
-	*/
+
 }
 
 // 优惠券抵扣
 
 func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 	float32, error) {
-	return 0, nil
-	/** todo:!!!
-	if p.value.PaymentSign&payment.OptUseCoupon == 0 {
+
+	/** todo:!!! 应该在订单除使用优惠券
+	if p.value.PaymentFlag&payment.OptUseCoupon == 0 {
 		return 0, payment.ErrCanNotUseCoupon
 	}
 	//todo: 如可以使用多张优惠券,那么初始化应该获取支付单的所有优惠券
@@ -225,6 +215,7 @@ func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 	p.fixFee()
 	return p.value.CouponDiscount, nil
 	*/
+	return 0, nil
 }
 
 // 在支付之前检查订单状态
@@ -266,32 +257,41 @@ func (p *paymentOrderImpl) getPaymentUser() member.IMember {
 	return p.paymentUser
 }
 
+// 验证是否支持支付方式
+func (p *paymentOrderImpl) checkPaymentFlag(payFlag int) bool {
+	return p.value.PaymentFlag&payFlag == payFlag
+}
+
 // 使用余额支付
 func (p *paymentOrderImpl) paymentWithBalance(buyerType int, remark string) error {
-	if p.value.PaymentSign&payment.OptBalanceDiscount == 0 {
-		return payment.ErrCanNotUseBalance
+	if b := p.checkPaymentFlag(payment.PBalance); !b { // 检查支付方式
+		return payment.ErrNotSupportPaymentOpt
 	}
-	err := p.checkPaymentState()
+	if err := p.checkPaymentState(); err != nil { // 检查支付单状态
+		return err
+	}
+	pu := p.getPaymentUser()
+	if pu == nil {
+		return member.ErrNoSuchMember
+	}
+	acc := pu.GetAccount()
+	amount := p.getBalanceDiscountAmount(acc)
+	if amount == 0 {
+		return member.ErrAccountBalanceNotEnough
+	}
+	err := acc.PaymentDiscount(p.value.TradeNo, float32(amount/100), remark)
 	if err == nil {
-		// 判断扣减金额,是否大于0
-		pu := p.getPaymentUser()
-		if pu == nil {
-			return member.ErrNoSuchMember
+		p.value.DeductAmount += amount // 修改抵扣金额
+		err = p.saveOrder()
+		if err == nil { // 保存支付记录
+			c := &payment.TradeChan{
+				TradeNo:      p.TradeNo(),
+				PayChan:      payment.CHAN_BALANCE,
+				InternalChan: 1,
+				PayAmount:    amount,
+			}
+			_, err = p.repo.SavePaymentTradeChan(p.TradeNo(), c)
 		}
-		acc := pu.GetAccount()
-		amount := p.getBalanceDiscountAmount(acc)
-		if amount == 0 {
-			return member.ErrAccountBalanceNotEnough
-		}
-		/** todo: !!!
-		// 从会员账户扣减,并更新支付单
-		err = acc.PaymentDiscount(p.value.TradeNo, amount, remark)
-		if err == nil {
-			p.value.BalanceDiscount = amount
-			p.fixFee()
-			_, err = p.save()
-		}
-		*/
 	}
 	return err
 }
@@ -355,7 +355,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int64, ignoreAmount bool) (
 		if err == nil {
 			p.value.IntegralDiscount = amount
 			p.fixFee()
-			_, err = p.save()
+			_, err = p.saveOrder()
 		}
 	}
 	return amount, err
@@ -398,7 +398,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 	}
 	v := p.Get()
 	acc := buyer.GetAccount().GetValue()
-	optFlag := int(v.PayFlag)
+	optFlag := int(v.PaymentFlag)
 	// 判断是否能余额支付
 	if p := payment.OptBalanceDiscount; optFlag&p != p {
 		return payment.ErrNotSupportPaymentOpt
@@ -452,7 +452,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 		p.firstFinishPayment = true
 		p.value.State = payment.StateFinished
 		p.value.PaidTime = time.Now().Unix()
-		return p.save()
+		return p.saveOrder()
 	}
 	return err
 }
@@ -478,7 +478,7 @@ func (p *paymentOrderImpl) BindOrder(orderId int64, tradeNo string) error {
 	return nil
 }
 
-func (p *paymentOrderImpl) save() error {
+func (p *paymentOrderImpl) saveOrder() error {
 	// 检查支付单
 	err := p.checkOrderFinalFee()
 	if err == nil {
@@ -531,7 +531,7 @@ func (p *paymentOrderImpl) Refund(amount float64) (err error) {
 		}
 	}
 	if err == nil {
-		_, err = p.save()
+		_, err = p.saveOrder()
 	}
 	return err
 	*/
@@ -544,7 +544,7 @@ func (p *paymentOrderImpl) Adjust(amount int) error {
 	if p.value.FinalFee <= 0 {
 		return p.checkOrderFinalFee()
 	}
-	return p.save()
+	return p.saveOrder()
 }
 
 type PaymentRepoBase struct {

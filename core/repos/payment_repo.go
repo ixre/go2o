@@ -144,3 +144,12 @@ func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeC
 	}
 	return list
 }
+
+func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeChan) (int, error) {
+	tradeChan.TradeNo = tradeNo
+	id, err := orm.Save(p.GetOrm(), tradeChan, tradeChan.ID)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
+	}
+	return id, err
+}
