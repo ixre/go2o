@@ -465,8 +465,6 @@ func (o *normalOrderImpl) Submit() error {
 	v.ID = norOrderId
 	orderNo := o.OrderNo()
 	if err == nil {
-		// 生成支付单
-		o.createPaymentForOrder()
 		// 绑定优惠券促销
 		o.bindCouponOnSubmit(orderNo)
 		// 绑定购物车商品的促销
@@ -477,7 +475,8 @@ func (o *normalOrderImpl) Submit() error {
 		o.applyItemStock()
 		// 拆单
 		o.breakUpByVendor()
-
+		// 生成支付单
+		o.createPaymentForOrder()
 		// 记录余额支付记录
 		//todo: 扣减余额
 		//if v.BalanceDiscount > 0 {
@@ -537,6 +536,7 @@ func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
 	if len(orders) > 1 {
 		mergeTradeNo = "MG" + domain.NewTradeNo(0, 0)
 	}
+	log.Println("===", len(orders))
 	for _, iso := range orders {
 		v := iso.GetValue()
 		itemAmount := int(v.ItemAmount * 100)

@@ -4,7 +4,7 @@ include "ttype.thrift"
 
 
 //支付单
-struct SPaymentOrder {
+struct SPaymentOrder1 {
     1: i32 ID
     2: string TradeNo
     3: i32 VendorId
@@ -57,3 +57,76 @@ service PaymentService{
     ttype.Result GatewayV1(1:string action,2:i64 userId,3:map<string,string> data)
 }
 
+/** 支付单 */
+struct SPaymentOrder{
+    /** 编号 */
+    1:i32 ID
+    /** 卖家编号 */
+    2:i32 SellerId
+    /** 交易类型 */
+    3:string TradeType
+    /** 交易号 */
+    4:string TradeNo
+    /** 合并支付交单单号 */
+    5:string MergeTradeNo
+    /** 支付单详情 */
+    6:string Subject
+    /** 订单号 */
+    7:i32 OrderId
+    /** 支付单的类型，如购物或其他 */
+    8:i32 OrderType
+    /** 外部订单号 */
+    9:string OutOrderNo
+    /** 买家编号 */
+    10:i32 BuyerId
+    /** 支付用户编号 */
+    11:i32 PayUid
+    /** 共计金额 */
+    12:i32 TotalAmount
+    /** 优惠金额  */
+    13:i32 DiscountAmount
+    /** 抵扣金额  */
+    14:i32 DeductAmount
+    /** 调整金额 */
+    15:i32 AdjustAmount
+    /** 最终支付金额 */
+    16:i32 FinalFee
+    /** 可⽤支付方式  */
+    17:i32 PayFlag
+    /** 其他支付信息 */
+    18:string ExtraData
+    /** 交易支付渠道 */
+    19:i32 TradeChannel
+    /** 外部交易提供商 */
+    20:string OutTradeSp
+    /** 外部交易订单号 */
+    21:string OutTradeNo
+    /** 订单状态 */
+    22:i32 State
+    /** 提交时间 */
+    23:i64 SubmitTime
+    /** 过期时间 */
+    24:i64 ExpiresTime
+    /** 支付时间 */
+    25:i64 PaidTime
+    /** 更新时间 */
+    26:i64 UpdateTime
+    /** 交易途径交易信息 */
+    27:list<SPayTradeChan> TradeChannels
+    /** 可作废 */
+    28:i32 PaymentSign
+}
+
+/** 支付单项 */
+struct SPayTradeChan{
+    /** 编号 */
+    1:i32 ID
+    /** 交易单号 */
+    2:i32 TradeNo
+    /** 支付途径 */
+    3:i32 PayChan
+    /** 是否为内置支付途径 */
+    4:i32 InternalChan
+    /** 支付金额 */
+    5:i32 PayAmount
+}

@@ -325,7 +325,7 @@ type (
 		//认证图片、身份证、人与身份证的图像等
 		TrustImage string `db:"trust_image"`
 		//是否审核通过
-		Reviewed int32 `db:"reviewed"`
+		Reviewed int32 `db:"review_state"`
 		//审核时间
 		ReviewTime int64 `db:"review_time"`
 		//审核备注
