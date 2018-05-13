@@ -33,9 +33,9 @@ func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo) *pa
 
 // 根据编号获取支付单
 func (p *paymentService) GetPaymentOrderById(ctx context.Context, id int32) (*define.SPaymentOrder, error) {
-	po := p._repo.GetPaymentOrderById(id)
+	po := p._repo.GetPaymentOrderById(int(id))
 	if po != nil {
-		v := po.GetValue()
+		v := po.Get()
 		return parser.PaymentOrderDto(&v), nil
 	}
 	return nil, nil
@@ -45,7 +45,7 @@ func (p *paymentService) GetPaymentOrderById(ctx context.Context, id int32) (*de
 func (p *paymentService) GetPaymentOrderId(ctx context.Context, tradeNo string) (int32, error) {
 	po := p._repo.GetPaymentOrder(tradeNo)
 	if po != nil {
-		return po.GetAggregateRootId(), nil
+		return int32(po.GetAggregateRootId()), nil
 	}
 	return 0, nil
 }
@@ -53,7 +53,7 @@ func (p *paymentService) GetPaymentOrderId(ctx context.Context, tradeNo string) 
 // 根据支付单号获取支付单
 func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) (*define.SPaymentOrder, error) {
 	if po := p._repo.GetPaymentOrder(paymentNo); po != nil {
-		v := po.GetValue()
+		v := po.Get()
 		return parser.PaymentOrderDto(&v), nil
 	}
 	return nil, nil
@@ -74,7 +74,7 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
-		err = o.Adjust(float32(amount))
+		err = o.Adjust(int(amount * 100))
 	}
 	return parser.Result(0, err), nil
 }
@@ -83,7 +83,7 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
 	integral int64, ignoreOut bool) (r *define.DResult_, err error) {
 	var amount float32
-	o := p._repo.GetPaymentOrderById(orderId)
+	o := p._repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
@@ -95,7 +95,7 @@ func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
 // 余额抵扣
 func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, remark string) (*define.Result_, error) {
 	var err error
-	o := p._repo.GetPaymentOrderById(orderId)
+	o := p._repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
@@ -106,7 +106,7 @@ func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, r
 
 // 钱包账户支付
 func (p *paymentService) PaymentByWallet(ctx context.Context, orderId int32, remark string) (r *define.Result_, err error) {
-	o := p._repo.GetPaymentOrderById(orderId)
+	o := p._repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
@@ -117,7 +117,7 @@ func (p *paymentService) PaymentByWallet(ctx context.Context, orderId int32, rem
 
 // 余额钱包混合支付，优先扣除余额。
 func (p *paymentService) HybridPayment(ctx context.Context, orderId int32, remark string) (r *define.Result_, err error) {
-	o := p._repo.GetPaymentOrderById(orderId)
+	o := p._repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
