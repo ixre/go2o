@@ -20,27 +20,31 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 	unix := time.Now().Unix()
 	tradeNo := domain.NewTradeNo(0, 0)
 	ip := repo.CreatePaymentOrder(&payment.Order{
-		TradeNo:     tradeNo,
-		TradeType:   "ppi-charge",
-		SellerId:    0,
-		OrderType:   0,
-		OrderId:     0,
-		Subject:     "充值",
-		BuyerId:     22149,
-		PayUid:      1,
+		TradeNo:   tradeNo,
+		TradeType: "ppi-charge",
+		SellerId:  0,
+		OrderType: 0,
+		OrderId:   0,
+		Subject:   "充值",
+		BuyerId:   22149,
+		//PayUid:      1,
 		TotalAmount: 1,
-		//FinalFee:    1,
-		PayFlag:    payment.PBankCard | payment.POutSP,
-		OutTradeNo: "",
-		SubmitTime: unix,
-		PaidTime:   0,
-		State:      0,
+		PaymentFlag: payment.PBankCard | payment.POutSP | payment.PBalance,
+		OutTradeNo:  "",
+		SubmitTime:  unix,
+		PaidTime:    0,
+		State:       0,
 	})
 	if err := ip.Submit(); err != nil {
 		t.Error(err)
 		t.Failed()
 	}
+	//err := ip.BalanceDiscount("支付订单")
+	//if err != nil{
+	//	t.Error(err)
+	//}
+
 	//ip.TradeNoPrefix("CZ")
-	ip.PaymentFinish("alipay", "1234567890")
-	t.Log("订单号：", ip.TradeNo())
+	//ip.PaymentFinish("alipay", "1234567890")
+	t.Log("订单号：", ip.TradeNo(), "; 订单状态:", ip.State())
 }

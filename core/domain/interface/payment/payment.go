@@ -206,8 +206,8 @@ type (
 		CheckTradeNoMatch(tradeNo string, id int) bool
 		// 获取交易途径支付信息
 		GetTradeChannelItems(tradeNo string) []*TradeChan
-		// 通知支付单完成
-		//NotifyPaymentFinish(paymentOrderId int32) error
+		// 保存支付途径支付信息
+		SavePaymentTradeChan(tradeNo string, tradeChan *TradeChan) (int, error)
 	}
 
 	// 支付通道
@@ -257,7 +257,7 @@ type (
 		// 最终支付金额
 		FinalFee int `db:"final_fee"`
 		// 可⽤支付方式
-		PayFlag int `db:"pay_flag"`
+		PaymentFlag int `db:"pay_flag"`
 		// 其他支付信息
 		ExtraData string `db:"extra_data"`
 		// 交易支付渠道
@@ -287,7 +287,7 @@ type (
 		// 编号
 		ID int `db:"id" pk:"yes" auto:"yes"`
 		// 交易单号
-		TradeNo int `db:"trade_no"`
+		TradeNo string `db:"trade_no"`
 		// 支付途径
 		PayChan int `db:"pay_chan"`
 		// 是否为内置支付途径
