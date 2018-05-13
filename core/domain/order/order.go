@@ -185,7 +185,7 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		DeductAmount:   0,
 		AdjustAmount:   0,
 		FinalFee:       0,
-		PayFlag:        payment.PAllFlag,
+		PaymentFlag:    payment.PAllFlag,
 		ExtraData:      "",
 		TradeChannel:   0,
 		OutTradeSp:     "",
