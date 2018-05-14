@@ -2,8 +2,6 @@ package order
 
 import (
 	"errors"
-	"fmt"
-	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
@@ -186,10 +184,8 @@ func (o *tradeOrderImpl) fixFinalAmount() {
 func (o *tradeOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.SellerId = int(o.value.VendorId)
-	v.TotalAmount = int(o.value.FinalAmount * 100)
-	v.FinalFee = v.TotalAmount
+	v.ItemAmount = int(o.value.FinalAmount * 100)
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	log.Println(fmt.Sprintf("%#v", v))
 	return o.paymentOrder.Submit()
 }
 
