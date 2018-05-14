@@ -171,9 +171,9 @@ type (
 		// 使用会员的余额抵扣
 		BalanceDiscount(remark string) error
 		// 使用会员积分抵扣,返回抵扣的金额及错误,ignoreOut:是否忽略超出订单金额的积分
-		IntegralDiscount(integral int64, ignoreOut bool) (float32, error)
+		IntegralDiscount(integral int, ignoreOut bool) (amount int, err error)
 		// 系统支付金额
-		SystemPayment(fee float32) error
+		SystemPayment(amount int) error
 		// 钱包账户支付
 		PaymentByWallet(remark string) error
 		// 余额钱包混合支付，优先扣除余额。
