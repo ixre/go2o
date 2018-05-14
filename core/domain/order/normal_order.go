@@ -535,7 +535,6 @@ func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
 	if len(orders) > 1 {
 		mergeTradeNo = "MG" + domain.NewTradeNo(0, 0)
 	}
-	log.Println("===", len(orders))
 	for _, iso := range orders {
 		v := iso.GetValue()
 		itemAmount := int(v.ItemAmount * 100)
@@ -551,7 +550,7 @@ func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
 			Subject:        v.Subject,
 			BuyerId:        v.BuyerId,
 			PayUid:         v.BuyerId,
-			TotalAmount:    itemAmount,
+			ItemAmount:     itemAmount,
 			DiscountAmount: disAmount,
 			DeductAmount:   0,
 			AdjustAmount:   0,
