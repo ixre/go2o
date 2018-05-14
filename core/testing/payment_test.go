@@ -28,7 +28,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		Subject:   "充值",
 		BuyerId:   22149,
 		//PayUid:      1,
-		TotalAmount: 1,
+		ItemAmount: 1,
 		PaymentFlag: payment.PBankCard | payment.POutSP | payment.PBalance |
 			payment.PIntegral | payment.PWallet,
 		OutTradeNo: "",

@@ -96,6 +96,45 @@ func (p *paymentOrderImpl) prepareSubmit() {
 	}
 }
 
+// 在支付之前检查订单状态
+func (p *paymentOrderImpl) checkPaymentState() error {
+	if p.GetAggregateRootId() <= 0 {
+		return payment.ErrPaymentNotSave
+	}
+	switch p.value.State {
+	case payment.StateAwaitingPayment:
+		if p.value.FinalFee == 0 {
+			return payment.ErrFinalFee
+		}
+	case payment.StateFinished:
+		return payment.ErrOrderPayed
+	case payment.StateCancelled, payment.StateAborted:
+		return payment.ErrOrderCancelled
+	}
+	return nil
+}
+
+// 检查是否支付完成, 且返回是否为第一次支付成功,
+func (p *paymentOrderImpl) checkOrderFinalFee() error {
+	if p.value.State == payment.StateAwaitingPayment {
+		if p.value.ItemAmount <= 0 {
+			return payment.ErrItemAmount
+		}
+		// 修正支付单共计金额
+		p.value.TotalAmount = p.value.ItemAmount - p.value.DiscountAmount + p.value.AdjustAmount
+		// 修正支付单金额
+		p.value.FinalFee = p.value.ItemAmount - p.value.DeductAmount + p.value.ProcedureFee
+		unix := time.Now().Unix()
+		// 如果支付完成,则更新订单状态
+		if p.value.FinalFee == 0 {
+			p.value.State = payment.StateFinished
+			p.firstFinishPayment = true
+		}
+		p.value.PaidTime = unix
+	}
+	return nil
+}
+
 // 取消支付,并退款
 func (p *paymentOrderImpl) Cancel() (err error) {
 	if p.value.State == payment.StateCancelled {
@@ -221,41 +260,6 @@ func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 		p.value.DiscountAmount += int(v.GetCouponFee(float32(fee/100)) * 100)
 	}
 	return p.value.DiscountAmount, nil
-}
-
-// 在支付之前检查订单状态
-func (p *paymentOrderImpl) checkPaymentState() error {
-	if p.GetAggregateRootId() <= 0 {
-		return payment.ErrPaymentNotSave
-	}
-	switch p.value.State {
-	case payment.StateAwaitingPayment:
-		if p.value.FinalFee == 0 {
-			return payment.ErrFinalFee
-		}
-	case payment.StateFinished:
-		return payment.ErrOrderPayed
-	case payment.StateCancelled, payment.StateAborted:
-		return payment.ErrOrderCancelled
-	}
-	return nil
-}
-
-// 检查是否支付完成, 且返回是否为第一次支付成功,
-func (p *paymentOrderImpl) checkOrderFinalFee() error {
-	if p.value.State == payment.StateAwaitingPayment {
-		// 修正支付单金额
-		p.value.FinalFee = p.value.TotalAmount - p.value.DiscountAmount -
-			p.value.DeductAmount + p.value.AdjustAmount + p.value.ProcedureFee
-		unix := time.Now().Unix()
-		// 如果支付完成,则更新订单状态
-		if p.value.FinalFee == 0 {
-			p.value.State = payment.StateFinished
-			p.firstFinishPayment = true
-		}
-		p.value.PaidTime = unix
-	}
-	return nil
 }
 
 // 应用余额支付

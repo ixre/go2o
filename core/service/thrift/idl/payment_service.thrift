@@ -2,35 +2,6 @@ namespace go define
 
 include "ttype.thrift"
 
-
-//支付单
-struct SPaymentOrder1 {
-    1: i32 ID
-    2: string TradeNo
-    3: i32 VendorId
-    4: i32 Type
-    5: i32 OrderId
-    6: string Subject
-    7: i64 BuyUser
-    8: i64 PaymentUser
-    9: double TotalAmount
-    10: double BalanceDiscount
-    11: double  IntegralDiscount
-    12: double SystemDiscount
-    13: double CouponDiscount
-    14: double SubAmount
-    15: double AdjustmentAmount
-    16: double FinalFee
-    17: i32 PaymentOptFlag
-    18: i32 PaymentSign
-    19: string OuterNo
-    20: i64 CreateTime
-    21: i64 PaidTime
-    22: i32 State
-    /** 交易类型 */
-    23:string TradeType
-}
-
 // 支付服务
 service PaymentService{
     // 创建支付单并提交
@@ -81,40 +52,42 @@ struct SPaymentOrder{
     10:i32 BuyerId
     /** 支付用户编号 */
     11:i32 PayUid
-    /** 共计金额 */
-    12:i32 TotalAmount
+    /** 商品金额 */
+    12:i32 ItemAmount
     /** 优惠金额  */
     13:i32 DiscountAmount
-    /** 抵扣金额  */
-    14:i32 DeductAmount
     /** 调整金额 */
-    15:i32 AdjustAmount
+    14:i32 AdjustAmount
+    /** 抵扣金额  */
+    15:i32 DeductAmount
+    /** 共计金额 */
+    16:i32 TotalAmount
+    // 手续费
+    17:i32 ProcedureFee
     /** 最终支付金额 */
-    16:i32 FinalFee
+    18:i32 FinalFee
     /** 可⽤支付方式  */
-    17:i32 PayFlag
+    19:i32 PayFlag
     /** 其他支付信息 */
-    18:string ExtraData
+    20:string ExtraData
     /** 交易支付渠道 */
-    19:i32 TradeChannel
+    21:i32 TradeChannel
     /** 外部交易提供商 */
-    20:string OutTradeSp
+    22:string OutTradeSp
     /** 外部交易订单号 */
-    21:string OutTradeNo
+    23:string OutTradeNo
     /** 订单状态 */
-    22:i32 State
+    24:i32 State
     /** 提交时间 */
-    23:i64 SubmitTime
+    25:i64 SubmitTime
     /** 过期时间 */
-    24:i64 ExpiresTime
+    26:i64 ExpiresTime
     /** 支付时间 */
-    25:i64 PaidTime
+    27:i64 PaidTime
     /** 更新时间 */
-    26:i64 UpdateTime
+    28:i64 UpdateTime
     /** 交易途径交易信息 */
-    27:list<SPayTradeChan> TradeChannels
-    /** 可作废 */
-    28:i32 PaymentSign
+    29:list<SPayTradeChan> TradeChannels
 }
 
 /** 支付单项 */

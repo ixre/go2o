@@ -71,14 +71,6 @@ const (
 	StateAborted = 4
 )
 
-//todo: 待重构
-const (
-	// 线上支付
-	SignOnlinePay int32 = 1
-	// 钱包账户支付
-	SignWalletAccount int32 = 3
-)
-
 var (
 	ErrNoSuchPaymentOrder = domain.NewDomainError(
 		"err_no_such_payment_order", "支付单不存在")
@@ -94,14 +86,13 @@ var (
 
 	ErrNotSupportPaymentChannel = domain.NewDomainError(
 		"err_payment_not_support_channel", "不支持此支付方式,无法完成付款")
-
+	ErrItemAmount    = domain.NewDomainError("err_payment_item_amount", "支付单金额不能为零")
 	ErrOutOfFinalFee = domain.NewDomainError("err_out_of_final_fee",
 		"超出支付单金额")
 	ErrNotMatchFinalFee = domain.NewDomainError("err_not_match_final_fee",
 		"金额与实际金额不符，无法完成付款")
 	ErrTradeNoPrefix = domain.NewDomainError(
 		"err_payment_trade_no_prefix", "支付单号前缀不正确")
-
 	ErrTradeNoExistsPrefix = domain.NewDomainError(
 		"err_payment_trade_no_exists_prefix", "支付单号已存在前缀")
 
@@ -228,17 +219,19 @@ type (
 		BuyerId int64 `db:"buyer_id"`
 		// 支付用户编号
 		PayUid int64 `db:"pay_uid"`
-		// 共计金额
-		TotalAmount int `db:"total_amount"`
+		// 商品金额
+		ItemAmount int `db:"item_amount"`
 		// 优惠金额
 		DiscountAmount int `db:"discount_amount"`
-		// 抵扣金额
-		DeductAmount int `db:"deduct_amount"`
 		// 调整金额
 		AdjustAmount int `db:"adjust_amount"`
+		// 共计金额，包含抵扣金额
+		TotalAmount int `db:"total_amount"`
+		// 抵扣金额
+		DeductAmount int `db:"deduct_amount"`
 		// 手续费
 		ProcedureFee int `db:"procedure_fee"`
-		// 最终支付金额
+		// 最终支付金额，包含手续费，不包含抵扣金额
 		FinalFee int `db:"final_fee"`
 		// 可⽤支付方式
 		PaymentFlag int `db:"pay_flag"`
