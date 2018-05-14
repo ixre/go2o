@@ -46,7 +46,7 @@ service PaymentService{
     // 余额抵扣
     ttype.Result DiscountByBalance(1:i32 orderId,2:string remark )
    // 积分抵扣支付单
-    ttype.DResult DiscountByIntegral(1:i32 orderId,2:i64 integral,3:bool ignoreOut)
+    ttype.Result DiscountByIntegral(1:i32 orderId,2:i64 integral,3:bool ignoreOut)
     // 钱包账户支付
     ttype.Result PaymentByWallet(1:i32 orderId,2:string remark)
     // 余额钱包混合支付，优先扣除余额。

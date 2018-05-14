@@ -81,15 +81,15 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 
 // 积分抵扣支付单
 func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
-	integral int64, ignoreOut bool) (r *define.DResult_, err error) {
-	var amount float32
+	integral int64, ignoreOut bool) (r *define.Result_, err error) {
+	var amount int
 	o := p._repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		amount, err = o.IntegralDiscount(integral, ignoreOut)
 	}
-	return parser.DResult(float64(amount), err), nil
+	return parser.Result(amount, err), nil
 }
 
 // 余额抵扣
