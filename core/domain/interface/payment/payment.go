@@ -15,23 +15,6 @@ import (
 	"go2o/core/infrastructure/domain"
 )
 
-const (
-	// 允许余额抵扣
-	OptBalanceDiscount = 1 << iota
-	// 允许积分抵扣
-	OptIntegralDiscount
-	// 允许钱包支付
-	OptWalletPayment
-	// 允许系统支付
-	OptSystemPayment
-	// 允许使用优惠券
-	OptUseCoupon
-
-	// 全部支付权限
-	OptPerm = OptBalanceDiscount | OptWalletPayment | OptIntegralDiscount |
-		OptSystemPayment | OptUseCoupon
-)
-
 // 支付通道
 const (
 	// 余额抵扣通道
@@ -90,8 +73,6 @@ const (
 
 //todo: 待重构
 const (
-	PaymentByBuyer = 1 // 购买者支付
-	TypeShopping   = 1 //购物
 	// 线上支付
 	SignOnlinePay int32 = 1
 	// 钱包账户支付
@@ -111,9 +92,13 @@ var (
 	ErrFinalFee = domain.NewDomainError(
 		"err_final_fee", "支付单金额有误")
 
-	ErrNotSupportPaymentOpt = domain.NewDomainError(
-		"err_payment_not_support_opt", "不支持此支付方式,无法完成付款")
+	ErrNotSupportPaymentChannel = domain.NewDomainError(
+		"err_payment_not_support_channel", "不支持此支付方式,无法完成付款")
 
+	ErrOutOfFinalFee = domain.NewDomainError("err_out_of_final_fee",
+		"超出支付单金额")
+	ErrNotMatchFinalFee = domain.NewDomainError("err_not_match_final_fee",
+		"金额与实际金额不符，无法完成付款")
 	ErrTradeNoPrefix = domain.NewDomainError(
 		"err_payment_trade_no_prefix", "支付单号前缀不正确")
 
@@ -126,7 +111,7 @@ var (
 	ErrOrderPayed = domain.NewDomainError(
 		"err_payment_order_payed", "订单已支付")
 
-	ErrOrderHasCancel = domain.NewDomainError("err_payment_order_has_cancel", "订单已经取消")
+	ErrOrderCancelled = domain.NewDomainError("err_payment_order_has_cancel", "订单已经取消")
 
 	ErrOrderNotPayed = domain.NewDomainError("err_payment_order_not_payed", "订单未支付")
 
@@ -167,7 +152,7 @@ type (
 		// 支付完成并保存,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outTradeNo string) error
 		// 优惠券抵扣
-		CouponDiscount(coupon promotion.ICouponPromotion) (float32, error)
+		CouponDiscount(coupon promotion.ICouponPromotion) (int, error)
 		// 使用会员的余额抵扣
 		BalanceDiscount(remark string) error
 		// 使用会员积分抵扣,返回抵扣的金额及错误,ignoreOut:是否忽略超出订单金额的积分
@@ -179,15 +164,12 @@ type (
 		// 余额钱包混合支付，优先扣除余额。
 		HybridPayment(remark string) error
 		// 设置支付方式
-		SetPaymentSign(paymentSign int32) error
-		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号,
-		// 支付单的交易号,可能是与订单号一样的
-		BindOrder(orderId int64, tradeNo string) error
+		SetTradeSP(spName string) error
 
 		// 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
 		Adjust(amount int) error
 		// 退款
-		Refund(amount float64) error
+		Refund(amount int) error
 	}
 
 	// 支付仓储
@@ -254,6 +236,8 @@ type (
 		DeductAmount int `db:"deduct_amount"`
 		// 调整金额
 		AdjustAmount int `db:"adjust_amount"`
+		// 手续费
+		ProcedureFee int `db:"procedure_fee"`
 		// 最终支付金额
 		FinalFee int `db:"final_fee"`
 		// 可⽤支付方式
