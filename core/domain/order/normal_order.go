@@ -431,7 +431,6 @@ func (o *normalOrderImpl) Submit() error {
 	if err != nil {
 		return err
 	}
-
 	v := o.value
 	//todo: best promotion , 优惠券和返现这里需要重构,直接影响到订单金额
 	//prom,fee,integral := o.GetBestSavePromotion()

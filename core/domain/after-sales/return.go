@@ -179,9 +179,14 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 	if mm == nil {
 		return member.ErrNoSuchMember
 	}
-	acc := mm.GetAccount()
 	//支付单与父订单关联。多个子订单合并付款
 	po := r.paymentRepo.GetPaymentBySalesOrderId(o.OrderId)
+	return po.Cancel()
+
+	/**
+	 *  重构支付单后调整，下面代码可能无用
+
+	acc := mm.GetAccount()
 	//如果支付单已清理数据，则全部退回到余额
 	if po == nil {
 		return acc.Refund(member.AccountBalance,
@@ -189,8 +194,6 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 			o.OrderNo, amount,
 			member.DefaultRelateUser)
 	}
-	return nil
-	/**todo:!!!
 	//原路退回
 	pv := po.GetValue()
 	if pv.BalanceDiscount > 0 {
@@ -201,7 +204,6 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 	}
 	//退积分
 	if pv.IntegralDiscount > 0 {
-		//todo : 退换积分,暂时积分抵扣的不退款
 	}
 	//多退少补
 	if pv.FinalFee > amount {
