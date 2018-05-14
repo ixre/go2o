@@ -29,11 +29,11 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		BuyerId:   22149,
 		//PayUid:      1,
 		TotalAmount: 1,
-		PaymentFlag: payment.PBankCard | payment.POutSP | payment.PBalance,
-		OutTradeNo:  "",
-		SubmitTime:  unix,
-		PaidTime:    0,
-		State:       0,
+		PaymentFlag: payment.PBankCard | payment.POutSP | payment.PBalance |
+			payment.PIntegral | payment.PWallet,
+		OutTradeNo: "",
+		SubmitTime: unix,
+		PaidTime:   0,
 	})
 	if err := ip.Submit(); err != nil {
 		t.Error(err)
@@ -43,6 +43,17 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 	//if err != nil{
 	//	t.Error(err)
 	//}
+
+	//amount, err := ip.IntegralDiscount(100, false)
+	//if err != nil {
+	//	t.Error(err)
+	//}
+	//println("---amount=", amount)
+
+	err := ip.PaymentByWallet("")
+	if err != nil {
+		t.Error(err)
+	}
 
 	//ip.TradeNoPrefix("CZ")
 	//ip.PaymentFinish("alipay", "1234567890")

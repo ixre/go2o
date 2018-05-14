@@ -30,7 +30,7 @@ var (
 type paymentOrderImpl struct {
 	repo               payment.IPaymentRepo
 	value              *payment.Order
-	mmRepo             member.IMemberRepo
+	memberRepo         member.IMemberRepo
 	valueRepo          valueobject.IValueRepo
 	coupons            []promotion.ICouponPromotion
 	orderManager       order.IOrderManager
@@ -252,7 +252,7 @@ func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) int {
 
 func (p *paymentOrderImpl) getPaymentUser() member.IMember {
 	if p.paymentUser == nil && p.value.PayUid > 0 {
-		p.paymentUser = p.mmRepo.GetMember(p.value.PayUid)
+		p.paymentUser = p.memberRepo.GetMember(p.value.PayUid)
 	}
 	return p.paymentUser
 }
@@ -284,13 +284,7 @@ func (p *paymentOrderImpl) paymentWithBalance(buyerType int, remark string) erro
 		p.value.DeductAmount += amount // 修改抵扣金额
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			c := &payment.TradeChan{
-				TradeNo:      p.TradeNo(),
-				PayChan:      payment.CHAN_BALANCE,
-				InternalChan: 1,
-				PayAmount:    amount,
-			}
-			_, err = p.repo.SavePaymentTradeChan(p.TradeNo(), c)
+			err = p.saveTradeChan(amount, payment.CHAN_BALANCE)
 		}
 	}
 	return err
@@ -314,74 +308,82 @@ func (p *paymentOrderImpl) checkOrderFinalFee() error {
 }
 
 // 计算积分折算后的金额
-func (p *paymentOrderImpl) mathIntegralFee(integral int64) int {
+func (p *paymentOrderImpl) getIntegralExchangeAmount(integral int) int {
 	if integral > 0 {
 		conf := p.valueRepo.GetGlobNumberConf()
 		if conf.IntegralDiscountRate > 0 {
-			return int(float32(float64(integral)*enum.RATE_AMOUNT) / conf.IntegralDiscountRate)
+			return int(float32(integral)/conf.IntegralDiscountRate) * 100
 		}
 	}
 	return 0
 }
 
 // 积分抵扣,返回抵扣的金额及错误,ignoreAmount:是否忽略超出订单金额的积分
-func (p *paymentOrderImpl) IntegralDiscount(integral int64, ignoreAmount bool) (float32, error) {
-	if p.value.PaymentSign&payment.OptIntegralDiscount != payment.OptIntegralDiscount {
-		return 0, payment.ErrCanNotUseIntegral
+func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (amount int, err error) {
+	if !p.checkPaymentFlag(payment.PIntegral) {
+		return 0, payment.ErrNotSupportPaymentOpt
 	}
-	err := p.checkPaymentState()
-	if err != nil {
+	if err = p.checkPaymentState(); err != nil {
 		return 0, err
 	}
-	return 0, err
-	/* todo:!!! 积分兑换
 	// 判断扣减金额是否大于0
-	amount := p.mathIntegralFee(integral)
+	amount = p.getIntegralExchangeAmount(integral)
 	// 如果不忽略超出订单支付金额的积分,那么按实际来抵扣
 	if !ignoreAmount && amount > p.value.FinalFee {
-		conf := p.valueRepo.GetGlobNumberConf()
 		amount = p.value.FinalFee
-		integral = int64(amount * conf.IntegralDiscountRate)
+		conf := p.valueRepo.GetGlobNumberConf()
+		integral = int(float32(amount) * conf.IntegralDiscountRate)
 	}
-
-	if amount > 0 {
-		acc := p.mmRepo.GetMember(p.value.BuyUser).GetAccount()
-		// 抵扣积分
-
-		//log.Println("----", p._value.BuyUser, acc.GetValue().Integral, "discount:", integral)
-		//log.Printf("-----%#v\n", acc.GetValue())
-		err = acc.IntegralDiscount(member.TypeIntegralPaymentDiscount,
-			p.Get().TradeNo, integral, "")
-		if err == nil {
-			p.value.IntegralDiscount = amount
-			p.fixFee()
-			_, err = p.saveOrder()
+	if amount <= 0 {
+		return 0, nil
+	}
+	acc := p.memberRepo.GetMember(p.value.BuyerId).GetAccount()
+	//log.Println("----", p.value.BuyerId, acc.GetValue().Integral, "discount:", integral)
+	//log.Printf("-----%#v\n", acc.GetValue())
+	err = acc.IntegralDiscount(member.TypeIntegralPaymentDiscount,
+		p.Get().TradeNo, int64(integral), "")
+	// 抵扣积分
+	if err == nil {
+		p.value.DeductAmount += amount
+		err = p.saveOrder()
+		if err == nil { // 保存支付记录
+			err = p.saveTradeChan(amount, payment.CHAN_INTEGRAL)
 		}
 	}
 	return amount, err
-
-	*/
 }
 
 // 系统支付金额
-func (p *paymentOrderImpl) SystemPayment(fee float32) error {
-	return nil
-	/* todo:!!!
-	if p.value.PaymentSign&payment.OptSystemPayment == 0 {
-		return payment.ErrCanNotSystemDiscount
+func (p *paymentOrderImpl) SystemPayment(fee int) error {
+	if !p.checkPaymentFlag(payment.PSystemPay) {
+		return payment.ErrNotSupportPaymentOpt
 	}
 	err := p.checkPaymentState()
 	if err == nil {
-		p.value.SystemDiscount += fee
-		p.fixFee()
+		p.value.DeductAmount += fee
+		err = p.saveOrder()
+		if err == nil { // 保存支付记录
+			err = p.saveTradeChan(fee, payment.CHAN_SYSTEM_PAY)
+		}
 	}
 	return err
-	*/
+}
+
+// 保存支付信息
+func (p *paymentOrderImpl) saveTradeChan(amount int, payChan int) error {
+	c := &payment.TradeChan{
+		TradeNo:      p.TradeNo(),
+		PayChan:      payChan,
+		InternalChan: 1,
+		PayAmount:    amount,
+	}
+	_, err := p.repo.SavePaymentTradeChan(p.TradeNo(), c)
+	return err
 }
 
 func (p *paymentOrderImpl) getBuyer() member.IMember {
 	if p.buyer == nil {
-		p.buyer = p.mmRepo.GetMember(p.value.BuyerId)
+		p.buyer = p.memberRepo.GetMember(p.value.BuyerId)
 	}
 	return p.buyer
 }
@@ -429,30 +431,27 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 
 // 钱包账户支付
 func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
-	amount := p.value.FinalFee
+	if !p.checkPaymentFlag(payment.PWallet) {
+		return payment.ErrNotSupportPaymentOpt
+	}
 	buyer := p.getBuyer()
 	if buyer == nil {
 		return member.ErrNoSuchMember
 	}
+	amount := p.value.FinalFee
+	// 判断并从钱包里扣款
 	acc := buyer.GetAccount()
-	av := acc.GetValue()
-	if p.intAmount(av.WalletBalance) < amount {
+	if p.intAmount(acc.GetValue().WalletBalance) < amount {
 		return payment.ErrNotEnoughAmount
 	}
-	if remark == "" {
-		remark = "支付订单"
-	}
-	err := acc.DiscountWallet(remark, p.TradeNo(), float32(float64(amount)/enum.RATE_AMOUNT),
+	err := acc.DiscountWallet(remark, p.TradeNo(), float32(float32(amount)/100),
 		member.DefaultRelateUser, true)
 	if err == nil {
-		/** todo:!!!
-		p.value.PaymentSign = payment.SignWalletAccount
-		*/
-		// 标记为第一次支付
-		p.firstFinishPayment = true
-		p.value.State = payment.StateFinished
-		p.value.PaidTime = time.Now().Unix()
-		return p.saveOrder()
+		p.value.DeductAmount += amount
+		err = p.saveOrder()
+		if err == nil { // 保存支付记录
+			err = p.saveTradeChan(amount, payment.CHAN_WALLET)
+		}
 	}
 	return err
 }
@@ -556,7 +555,7 @@ func (p *PaymentRepoBase) CreatePaymentOrder(v *payment.
 	return &paymentOrderImpl{
 		repo:         repo,
 		value:        v,
-		mmRepo:       mmRepo,
+		memberRepo:   mmRepo,
 		valueRepo:    valRepo,
 		orderManager: orderManager,
 	}
