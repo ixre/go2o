@@ -117,7 +117,7 @@ func (p *paymentOrderImpl) checkPaymentState() error {
 // 检查是否支付完成, 且返回是否为第一次支付成功,
 func (p *paymentOrderImpl) checkOrderFinalFee() error {
 	if p.value.State == payment.StateAwaitingPayment {
-		if p.value.ItemAmount <= 0 {
+		if p.value.ItemAmount <= 0 { // 检查支付金额
 			return payment.ErrItemAmount
 		}
 		// 修正支付单共计金额
@@ -268,10 +268,10 @@ func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) int {
 		return 0
 	}
 	acv := acc.GetValue()
-	if int(acv.Balance) >= p.value.FinalFee {
+	if int(acv.Balance*100) >= p.value.FinalFee {
 		return p.value.FinalFee
 	} else {
-		return int(float64(acv.Balance) * enum.RATE_AMOUNT)
+		return int(float64(acv.Balance * 100))
 	}
 	return 0
 }
@@ -564,7 +564,7 @@ type RepoBase struct {
 }
 
 func (p *RepoBase) CreatePaymentOrder(v *payment.
-	Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
+Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
 	orderManager order.IOrderManager, valRepo valueobject.IValueRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		repo:         repo,
