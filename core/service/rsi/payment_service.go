@@ -87,7 +87,7 @@ func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
-		amount, err = o.IntegralDiscount(integral, ignoreOut)
+		amount, err = o.IntegralDiscount(int(integral), ignoreOut)
 	}
 	return parser.Result(amount, err), nil
 }

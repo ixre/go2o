@@ -262,9 +262,13 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 			py := io.GetPaymentOrder()
 			// 设置支付方式
 			cv.PaymentOpt = enum.PaymentOnlinePay
-			if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
-				return o, err
-			}
+
+			//todo:!!! 应传入outSp
+			//if err = py.SetTradeSP(cv.PaymentOpt); err != nil {
+			//	return o, err
+			//}
+			//
+
 			// 使用优惠码
 			if len(couponCode) != 0 {
 				err = t.applyCoupon(buyer, o, py, couponCode)
