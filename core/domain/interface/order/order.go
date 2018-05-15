@@ -301,11 +301,11 @@ type (
 	// 订单提交返回数据
 	SubmitReturnData struct {
 		// 订单号，多个订单号，用","分割
-		OrderNo     string
+		OrderNo string
 		// 合并支付
-		MergePay    bool
+		MergePay bool
 		// 交易号
-		TradeNo     string
+		TradeNo string
 		// 交易金额
 		TradeAmount int
 	}

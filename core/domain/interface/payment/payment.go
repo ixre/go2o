@@ -186,7 +186,7 @@ type (
 		// 保存支付途径支付信息
 		SavePaymentTradeChan(tradeNo string, tradeChan *TradeChan) (int, error)
 		// 获取合并支付的订单
-		GetMergePayOrders(mergeTradeNo string)[]IPaymentOrder
+		GetMergePayOrders(mergeTradeNo string) []IPaymentOrder
 	}
 
 	// 支付通道
