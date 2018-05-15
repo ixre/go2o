@@ -28,7 +28,7 @@ var _ payment.IPaymentRepo = new(paymentRepoImpl)
 
 type paymentRepoImpl struct {
 	db.Connector
-	Storage    storage.Interface
+	Storage storage.Interface
 	*payImpl.RepoBase
 	memberRepo member.IMemberRepo
 	valueRepo  valueobject.IValueRepo

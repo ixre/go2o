@@ -647,7 +647,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 	}
 
 	if trust != "" {
-		buf.WriteString(" AND reviewed ")
+		buf.WriteString(" AND review_state ")
 		if trust == "true" {
 			buf.WriteString(" = ")
 		} else {

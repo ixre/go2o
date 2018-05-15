@@ -42,7 +42,7 @@ type (
 		// 授权书
 		AuthDoc string `db:"auth_doc"`
 		//是否已审核
-		Reviewed int32 `db:"reviewed"`
+		Reviewed int32 `db:"review_state"`
 		// 审核时间
 		ReviewTime int64 `db:"review_time"`
 		// 审核备注
