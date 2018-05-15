@@ -15,6 +15,7 @@ import (
 	"go2o/core/module"
 	"go2o/core/service/thrift/parser"
 	"go2o/gen-code/thrift/define"
+	"strconv"
 )
 
 var _ define.PaymentService = new(paymentService)
@@ -155,4 +156,34 @@ func (p *paymentService) GatewayV1(ctx context.Context, action string, userId in
 		err = mod.CheckAndPayment(userId, data)
 	}
 	return parser.Result(nil, err), nil
+}
+
+func (p *paymentService) GetPaymentOrderInfo(ctx context.Context, tradeNo string, mergeTrade bool) (r map[string]string, err error) {
+	if mergeTrade { // 合并订单
+		ipList := p._repo.GetMergePayOrders(tradeNo)
+		if len(ipList) == 0 {
+			//todo:
+		}
+	}
+	return p.getPaymentOrderInfo(tradeNo)
+}
+
+func (p *paymentService) getPaymentOrderInfo(tradeNo string) (map[string]string, error) {
+	mp := map[string]string{}
+	ip := p._repo.GetPaymentOrder(tradeNo)
+	if ip == nil {
+		mp["error"] = "支付订单不存在"
+		return mp, nil
+	}
+	if err := ip.CheckPaymentState(); err != nil {
+		mp["error"] = err.Error()
+		return mp, nil
+	}
+	iv := ip.Get()
+	mp["state"] = strconv.Itoa(iv.State)               // 状态
+	mp["finalFee"] = strconv.Itoa(iv.FinalFee)         // 最终金额
+	mp["procedureFee"] = strconv.Itoa(iv.ProcedureFee) // 手续费
+	mp["tradeNo"] = iv.TradeNo
+	mp["tradeType"] = iv.TradeType
+	return mp, nil
 }

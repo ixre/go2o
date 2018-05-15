@@ -44,7 +44,6 @@ type normalOrderImpl struct {
 	manager         order.IOrderManager
 	value           *order.NormalOrder
 	cart            cart.ICart //购物车,仅在订单生成时设置
-	paymentOrder    payment.IPaymentOrder
 	coupons         []promotion.ICouponPromotion
 	availPromotions []promotion.IPromotion
 	orderPbs        []*order.OrderPromotionBind
@@ -227,18 +226,6 @@ func (o *normalOrderImpl) SetAddress(addressId int64) error {
 	o.value.ConsigneePerson = d.RealName
 	o.value.ConsigneePhone = d.Phone
 	return nil
-}
-
-// 获取支付单
-func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
-	if o.paymentOrder == nil {
-		id := o.GetAggregateRootId()
-		if id <= 0 {
-			panic(" Get payment order error ; because of order no yet created!")
-		}
-		o.paymentOrder = o.payRepo.GetPaymentBySalesOrderId(id)
-	}
-	return o.paymentOrder
 }
 
 //************* 订单提交 ***************//
@@ -545,7 +532,7 @@ func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
 			TradeNo:        v.OrderNo,
 			MergeTradeNo:   mergeTradeNo,
 			OrderId:        int(v.OrderId),
-			OrderType:      int(order.TRetailSubOrder),
+			OrderType:      int(order.TRetail),
 			OutOrderNo:     v.OrderNo,
 			Subject:        v.Subject,
 			BuyerId:        v.BuyerId,
@@ -961,6 +948,8 @@ type subOrderImpl struct {
 	parent          order.IOrder
 	buyer           member.IMember
 	internalSuspend bool //内部挂起
+	paymentOrder    payment.IPaymentOrder
+	paymentRepo     payment.IPaymentRepo
 	rep             order.IOrderRepo
 	memberRepo      member.IMemberRepo
 	itemRepo        item.IGoodsItemRepo
@@ -975,7 +964,7 @@ func NewSubNormalOrder(v *order.NormalSubOrder,
 	manager order.IOrderManager, rep order.IOrderRepo,
 	mmRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo,
 	shipRepo shipment.IShipmentRepo, productRepo product.IProductRepo,
-	valRepo valueobject.IValueRepo,
+	paymentRepo payment.IPaymentRepo, valRepo valueobject.IValueRepo,
 	mchRepo merchant.IMerchantRepo) order.ISubOrder {
 	return &subOrderImpl{
 		value:       v,
@@ -985,6 +974,7 @@ func NewSubNormalOrder(v *order.NormalSubOrder,
 		itemRepo:    goodsRepo,
 		productRepo: productRepo,
 		shipRepo:    shipRepo,
+		paymentRepo: paymentRepo,
 		valRepo:     valRepo,
 		mchRepo:     mchRepo,
 	}
@@ -1114,6 +1104,17 @@ func (o *subOrderImpl) saveSubOrder() error {
 		o.syncOrderState()
 	}
 	return err
+}
+
+func (o *subOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	if o.paymentOrder == nil {
+		if o.GetDomainId() <= 0 {
+			panic(" Get payment order error ; because of order no yet created!")
+		}
+		o.paymentOrder = o.paymentRepo.GetPaymentOrderByOrderNo(
+			int(order.TRetail), o.value.OrderNo)
+	}
+	return o.paymentOrder
 }
 
 // 同步订单状态
@@ -1544,13 +1545,7 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
-	// 获取支付单并取消
-	io := od.(order.INormalOrder)
-	po := io.GetPaymentOrder()
-	if po != nil {
-		return po.Cancel()
-	}
-	return nil
+	return o.GetPaymentOrder().Cancel()
 }
 
 // 退回商品
@@ -1641,44 +1636,6 @@ func (o *subOrderImpl) CancelRefund() error {
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }
-
-// 退款申请
-//func (o *subOrderImpl) refund(reason string) error {
-//    //todo: 商户谢绝订单,现仅处理用户提交的退款
-//    ov := o._value
-//    unix := time.Now().Unix()
-//    rv := &afterSales.RefundOrder{
-//        ID: 0,
-//        // 订单编号
-//        OrderId: o.GetDomainId(),
-//        // 金额
-//        Amount: ov.FinalFee,
-//        // 退款方式：1.退回余额  2: 原路退回
-//        RefundType: 1,
-//        // 是否为全部退款
-//        AllRefund: 1,
-//        // 退款的商品项编号
-//        ItemId: 0,
-//        // 联系人
-//        PersonName: "",
-//        // 联系电话
-//        PersonPhone: "",
-//        // 退款原因
-//        Reason: reason,
-//        // 退款单备注(系统)
-//        Remark: "",
-//        // 运营商备注
-//        VendorRemark: "",
-//        // 退款状态
-//        State: afterSales.RefundStatAwaitingVendor,
-//        // 提交时间
-//        CreateTime: unix,
-//        // 更新时间
-//        UpdateTime: unix,
-//    }
-//    ro := o._afterSalesRepo.CreateRefundOrder(rv)
-//    return ro.Submit()
-//}
 
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {
