@@ -3,6 +3,33 @@ namespace go define
 include "ttype.thrift"
 
 
+// 销售服务
+service OrderService {
+    // 批发购物车接口
+    ttype.Result WholesaleCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
+    // 零售购物车接口
+    ttype.Result RetailCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
+    // 提交订单
+    map<string,string> SubmitOrderV1(1:i64 buyerId,2:i32 cartType,3:map<string,string> data)
+    // 获取订单信息
+    ComplexOrder GetOrder(1:string order_no,2:bool sub_order)
+    // 获取订单和商品项信息
+    ComplexOrder GetOrderAndItems(1:string order_no,2:bool sub_order)
+    // 获取子订单
+    ComplexOrder GetSubOrder(1:i64 id)
+    // 根据订单号获取子订单
+    ComplexOrder GetSubOrderByNo(1:string orderNo)
+    // 获取订单商品项
+    list<ComplexItem> GetSubOrderItems(1:i64 subOrderId)
+
+    // 提交交易订单
+    ttype.Result64 SubmitTradeOrder(1:ComplexOrder o,2:double rate)
+    // 交易单现金支付
+    ttype.Result64 TradeOrderCashPay(1:i64 orderId)
+    // 上传交易单发票
+    ttype.Result64 TradeOrderUpdateTicket(1:i64 orderId,2:string img)
+}
+
 // 订单项
 struct ComplexItem {
     1: i64 ID
@@ -44,31 +71,4 @@ struct ComplexOrder {
     22: list<ComplexItem> Items
     // 扩展信息
     23: map<string,string> Data
-}
-
-// 销售服务
-service OrderService {
-    // 批发购物车接口
-    ttype.Result WholesaleCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
-    // 零售购物车接口
-    ttype.Result RetailCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
-    // 提交订单
-    map<string,string> SubmitOrderV1(1:i64 buyerId,2:i32 cartType,3:map<string,string> data)
-    // 获取订单信息
-    ComplexOrder GetOrder(1:string order_no,2:bool sub_order)
-    // 获取订单和商品项信息
-    ComplexOrder GetOrderAndItems(1:string order_no,2:bool sub_order)
-
-    // 获取子订单
-    ComplexOrder GetSubOrder(1:i64 id)
-    // 根据订单号获取子订单
-    ComplexOrder GetSubOrderByNo(1:string orderNo)
-    // 获取订单商品项
-    list<ComplexItem> GetSubOrderItems(1:i64 subOrderId)
-    // 提交交易订单
-    ttype.Result64 SubmitTradeOrder(1:ComplexOrder o,2:double rate)
-    // 交易单现金支付
-    ttype.Result64 TradeOrderCashPay(1:i64 orderId)
-    // 上传交易单发票
-    ttype.Result64 TradeOrderUpdateTicket(1:i64 orderId,2:string img)
 }

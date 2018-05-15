@@ -22,8 +22,6 @@ import (
 //http://www.pmcaff.com/discuss?id=1000000000138488
 //http://www.zhihu.com/question/31640837
 
-// 拆分为子订单单暂时不拆分支付单
-
 type OrderState int
 type OrderType int32
 
@@ -296,6 +294,20 @@ type (
 		TradePaymentFinish() error
 		// 更新发票数据
 		UpdateTicket(img string) error
+	}
+)
+
+type (
+	// 订单提交返回数据
+	SubmitReturnData struct {
+		// 订单号，多个订单号，用","分割
+		OrderNo     string
+		// 合并支付
+		MergePay    bool
+		// 交易号
+		TradeNo     string
+		// 交易金额
+		TradeAmount int
 	}
 
 	// 订单

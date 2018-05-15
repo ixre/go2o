@@ -132,6 +132,8 @@ type (
 		State() int
 		// 支付途径支付信息
 		Channels() []*TradeChan
+		// 在支付之前检查订单状态
+		CheckPaymentState() error
 		// 提交支付单
 		Submit() error
 		// 取消支付
@@ -168,9 +170,11 @@ type (
 		// 根据编号获取支付单
 		GetPaymentOrderById(id int) IPaymentOrder
 		// 根据支付单号获取支付单
-		GetPaymentOrder(paymentNo string) IPaymentOrder
+		GetPaymentOrder(tradeNo string) IPaymentOrder
 		// 根据订单号获取支付单
 		GetPaymentBySalesOrderId(orderId int64) IPaymentOrder
+		// 根据支付单号获取支付单
+		GetPaymentOrderByOrderNo(orderType int, orderNo string) IPaymentOrder
 		// 创建支付单
 		CreatePaymentOrder(p *Order) IPaymentOrder
 		// 保存支付单
@@ -181,6 +185,8 @@ type (
 		GetTradeChannelItems(tradeNo string) []*TradeChan
 		// 保存支付途径支付信息
 		SavePaymentTradeChan(tradeNo string, tradeChan *TradeChan) (int, error)
+		// 获取合并支付的订单
+		GetMergePayOrders(mergeTradeNo string)[]IPaymentOrder
 	}
 
 	// 支付通道

@@ -2,6 +2,7 @@ package testing
 
 import (
 	"go2o/core/domain/interface/payment"
+	"go2o/core/factory"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/testing/ti"
 	"testing"
@@ -58,4 +59,19 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 	//ip.TradeNoPrefix("CZ")
 	//ip.PaymentFinish("alipay", "1234567890")
 	t.Log("订单号：", ip.TradeNo(), "; 订单状态:", ip.State())
+}
+
+// 测试支付单交易完成
+func TestPaymentOrderTradeFinish(t *testing.T) {
+	tradeNo := "IC6180515221155668"
+	ic := factory.Repo.GetPaymentRepo().GetPaymentOrder(tradeNo)
+	if ic == nil {
+		t.Errorf("支付单:%s不存在", tradeNo)
+		t.Failed()
+	}
+	err := ic.TradeFinish()
+	if err != nil {
+		t.Errorf("支付单%s支付失败：%s", tradeNo, err.Error())
+		t.Failed()
+	}
 }

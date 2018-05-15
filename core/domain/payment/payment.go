@@ -97,7 +97,7 @@ func (p *paymentOrderImpl) prepareSubmit() {
 }
 
 // 在支付之前检查订单状态
-func (p *paymentOrderImpl) checkPaymentState() error {
+func (p *paymentOrderImpl) CheckPaymentState() error {
 	if p.GetAggregateRootId() <= 0 {
 		return payment.ErrPaymentNotSave
 	}
@@ -173,7 +173,7 @@ func (p *paymentOrderImpl) Cancel() (err error) {
 
 // 线下现金/刷卡支付,cash:现金,bank:刷卡金额,finalZero:是否金额必须为零
 func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) error {
-	if err := p.checkPaymentState(); err != nil {
+	if err := p.CheckPaymentState(); err != nil {
 		return err
 	}
 	if !p.checkPaymentFlag(payment.PCash) {
@@ -203,7 +203,7 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 
 // 交易完成
 func (p *paymentOrderImpl) TradeFinish() error {
-	if err := p.checkPaymentState(); err != nil {
+	if err := p.CheckPaymentState(); err != nil {
 		return err
 	}
 	p.value.State = payment.StateFinished
@@ -293,7 +293,7 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 	if b := p.checkPaymentFlag(payment.PBalance); !b { // 检查支付方式
 		return payment.ErrNotSupportPaymentChannel
 	}
-	if err := p.checkPaymentState(); err != nil { // 检查支付单状态
+	if err := p.CheckPaymentState(); err != nil { // 检查支付单状态
 		return err
 	}
 	pu := p.getPaymentUser()
@@ -333,7 +333,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	if !p.checkPaymentFlag(payment.PIntegral) {
 		return 0, payment.ErrNotSupportPaymentChannel
 	}
-	if err = p.checkPaymentState(); err != nil {
+	if err = p.CheckPaymentState(); err != nil {
 		return 0, err
 	}
 	// 判断扣减金额是否大于0
@@ -368,7 +368,7 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 	if !p.checkPaymentFlag(payment.PSystemPay) {
 		return payment.ErrNotSupportPaymentChannel
 	}
-	err := p.checkPaymentState()
+	err := p.CheckPaymentState()
 	if err == nil {
 		p.value.DeductAmount += fee
 		err = p.saveOrder()
@@ -462,7 +462,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 
 // 设置支付方式
 func (p *paymentOrderImpl) SetTradeSP(spName string) error {
-	err := p.checkPaymentState()
+	err := p.CheckPaymentState()
 	if err == nil {
 		p.value.OutTradeSp = spName
 	}
@@ -564,7 +564,7 @@ type RepoBase struct {
 }
 
 func (p *RepoBase) CreatePaymentOrder(v *payment.
-Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
+	Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
 	orderManager order.IOrderManager, valRepo valueobject.IValueRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		repo:         repo,

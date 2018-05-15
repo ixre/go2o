@@ -493,17 +493,11 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon(buyerId int64, cartCode string
 }
 
 func (s *orderServiceImpl) SubmitOrder_V1(buyerId int64, cartCode string,
-	addressId int64, subject string, couponCode string, balanceDiscount bool) (
-	orderNo string, paymentTradeNo string, err error) {
+	addressId int64, subject string, couponCode string, balanceDiscount bool) (error, *order.SubmitReturnData) {
 	//todo: 临时取消余额支付
 	//balanceDiscount = false
 	c := s.getShoppingCart(buyerId, cartCode)
-	od, err := s.manager.SubmitOrder(c, addressId, couponCode, balanceDiscount)
-	if err != nil {
-		return "", "", err
-	}
-	py := od.(order.INormalOrder).GetPaymentOrder()
-	return od.OrderNo(), py.TradeNo(), err
+	return s.manager.SubmitOrder(c, addressId, couponCode, balanceDiscount)
 }
 
 // 根据编号获取订单
