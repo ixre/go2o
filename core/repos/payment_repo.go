@@ -28,7 +28,7 @@ var _ payment.IPaymentRepo = new(paymentRepoImpl)
 
 type paymentRepoImpl struct {
 	db.Connector
-	Storage storage.Interface
+	Storage    storage.Interface
 	*payImpl.RepoBase
 	memberRepo member.IMemberRepo
 	valueRepo  valueobject.IValueRepo
@@ -53,6 +53,27 @@ func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPayme
 		return p.CreatePaymentOrder(e)
 	}
 	return nil
+}
+
+// 根据订单号获取支付单
+func (p *paymentRepoImpl) GetPaymentOrderByOrderNo(orderType int, orderNo string) payment.IPaymentOrder {
+	e := &payment.Order{}
+	if p.Connector.GetOrm().GetBy(e, "out_order_no=? AND order_type=?",
+		orderNo, orderType) == nil {
+		return p.CreatePaymentOrder(e)
+	}
+	return nil
+}
+
+func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaymentOrder {
+	var list []*payment.Order
+	p.Connector.GetOrm().Select(&list, "merge_trade_no=? AND state=? LIMIT 10",
+		mergeTradeNo, payment.StateAwaitingPayment)
+	var arr = make([]payment.IPaymentOrder, len(list))
+	for i, v := range list {
+		arr[i] = p.CreatePaymentOrder(v)
+	}
+	return arr
 }
 
 func (p *paymentRepoImpl) getPaymentOrderCk(id int) string {

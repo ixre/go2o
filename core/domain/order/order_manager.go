@@ -13,7 +13,6 @@ import (
 	"errors"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -236,53 +235,52 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 }
 
 func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
-	couponCode string, useBalanceDiscount bool) (order.IOrder, error) {
+	couponCode string, useBalanceDiscount bool) (error, *order.SubmitReturnData) {
+	rd := &order.SubmitReturnData{}
 	o, err := t.PrepareNormalOrder(c)
 	if err == nil {
 		if o.Type() != order.TRetail {
 			panic("only support retail cart!")
 		}
 		io := o.(order.INormalOrder)
-		err = io.SetAddress(addressId)
-		if err != nil {
-			return o, err
-		}
-		// 更新默认收货地址为本地使用地址
-		o.Buyer().Profile().SetDefaultAddress(addressId)
-
-		err = o.Submit()
 		buyer := o.Buyer()
-		if err == nil {
-			if c.Kind() != cart.KRetail {
-				panic("购物车非零售")
+		// 设置收货地址
+		if err = io.SetAddress(addressId); err != nil {
+			return err, rd
+		} else {
+			buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
+		}
+		if err = o.Submit(); err != nil {
+			return err, rd
+		}
+		iss := io.GetSubOrders()
+		rd.MergePay = len(iss) > 1 // 是否合并付款
+		for i, v := range iss {
+			// 拼接订单号
+			if i > 0 {
+				rd.OrderNo += ","
 			}
-			rc := c.(cart.IRetailCart)
-			cv := rc.GetValue()
-
-			py := io.GetPaymentOrder()
-			// 设置支付方式
-			cv.PaymentOpt = enum.PaymentOnlinePay
-
-			//todo:!!! 应传入outSp
-			//if err = py.SetTradeSP(cv.PaymentOpt); err != nil {
-			//	return o, err
-			//}
-			//
-
+			rd.OrderNo += v.GetValue().OrderNo
 			// 使用优惠码
 			if len(couponCode) != 0 {
-				err = t.applyCoupon(buyer, o, py, couponCode)
+				err = t.applyCoupon(buyer, o, v.GetPaymentOrder(), couponCode)
 				if err != nil {
-					return o, err
+					return err, rd
 				}
 			}
 			// 使用余额抵扣
 			if useBalanceDiscount {
-				err = py.BalanceDiscount("")
+				err = v.GetPaymentOrder().BalanceDiscount("")
 			}
 		}
+		if rd.MergePay {
+			rd.TradeNo = iss[0].GetPaymentOrder().Get().MergeTradeNo
+		} else {
+			rd.TradeNo = iss[0].GetPaymentOrder().TradeNo()
+		}
+		return err, rd
 	}
-	return o, err
+	return err, rd
 }
 
 // 根据订单编号获取订单
