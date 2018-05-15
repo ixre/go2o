@@ -108,7 +108,7 @@ func (o *OrderRepImpl) CreateOrder(val *order.Order) order.IOrder {
 // 生成空白订单,并保存返回对象
 func (o *OrderRepImpl) CreateNormalSubOrder(v *order.NormalSubOrder) order.ISubOrder {
 	return orderImpl.NewSubNormalOrder(v, o.Manager(), o, o._memberRepo,
-		o._goodsRepo, o._shipRepo, o._productRepo,o._payRepo,
+		o._goodsRepo, o._shipRepo, o._productRepo, o._payRepo,
 		o._valRepo, o._mchRepo)
 }
 
