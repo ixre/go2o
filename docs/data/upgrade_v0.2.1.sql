@@ -29,7 +29,7 @@ CREATE TABLE pay_order (
   deduct_amount   int(10) NOT NULL comment '抵扣金额 ',
   procedure_fee   int(10) NOT NULL comment '手续费',
   final_fee       int(10) NOT NULL comment '最终支付金额',
-  pay_flag        int(4) NOT NULL comment '可⽤支付方式 ',
+  pay_flag        int(6) NOT NULL comment '可⽤支付方式 ',
   extra_data      varchar(120) NOT NULL comment '其他支付信息',
   trade_channel   int(2) NOT NULL comment '交易支付渠道',
   out_trade_sp    varchar(10) NOT NULL comment '外部交易提供商',

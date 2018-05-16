@@ -31,6 +31,53 @@ service PaymentService{
     map<string,string> GetPaymentOrderInfo(1:string tradeNo,2:bool mergeTrade)
 }
 
+
+/** 支付标志 */
+enum EPaymentFlag{
+    // 余额抵扣
+    Balance = 1
+    // 钱包支付
+    Wallet = 2
+    // 积分兑换
+    Integral = 4
+    // 用户卡
+    UserCard = 8
+    // 用户券
+    UserCoupon = 16
+    // 现金支付
+    Cash = 32
+    // 银行卡支付
+    BankCard = 64
+    // 第三方支付,如支付宝等
+    OutSP = 128
+    // 卖家支付通道
+    SellerPay = 256
+    // 系统支付通道
+    SystemPay = 512
+}
+
+// 支付通道
+enum EPaymentChannel{
+    // 余额抵扣通道
+    Balance = 1
+    // 钱包支付通道
+    Wallet = 2
+    // 积分兑换通道
+    Integral = 3
+    // 用户卡通道
+    UserCard = 4
+    // 用户券通道
+    UserCoupon = 5
+    // 现金支付通道
+    Cash = 6
+    // 银行卡支付通道
+    BankCard = 7
+    // 卖家支付通道
+    SellerPay = 8
+    // 系统支付通道
+    SystemPay = 9
+}
+
 /** 支付单 */
 struct SPaymentOrder{
     /** 编号 */
