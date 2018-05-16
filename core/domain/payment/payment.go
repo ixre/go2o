@@ -59,6 +59,11 @@ func (p *paymentOrderImpl) State() int {
 	return int(p.value.State)
 }
 
+// 支付标志
+func (p *paymentOrderImpl) Flag() int {
+	return p.value.PaymentFlag
+}
+
 // 支付途径支付信息
 func (p *paymentOrderImpl) Channels() []*payment.TradeChan {
 	if p.value.TradeChannels == nil {
@@ -152,17 +157,17 @@ func (p *paymentOrderImpl) Cancel() (err error) {
 	acc := mm.GetAccount()
 	chanMap := p.getPaymentChannelMap()
 	//退回到余额
-	if v := chanMap[payment.CHAN_BALANCE]; v > 0 {
+	if v := chanMap[payment.ChanBalance]; v > 0 {
 		err = acc.Refund(member.AccountBalance,
 			member.KindBalanceRefund, "订单退款", pv.TradeNo,
 			float32(v/100), member.DefaultRelateUser)
 	}
 	//退积分
-	if v := chanMap[payment.CHAN_INTEGRAL]; v > 0 {
+	if v := chanMap[payment.ChanIntegral]; v > 0 {
 		//todo : 退换积分,暂时积分抵扣的不退款
 	}
 	// 如果已经支付，则将支付的款项退回到账户
-	if v := chanMap[payment.CHAN_WALLET]; v > 0 {
+	if v := chanMap[payment.ChanWallet]; v > 0 {
 		return acc.Refund(member.AccountWallet,
 			member.KindWalletPaymentRefund,
 			"订单退款", pv.TradeNo, float32(v/100),
@@ -176,10 +181,10 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 	if err := p.CheckPaymentState(); err != nil {
 		return err
 	}
-	if !p.checkPaymentFlag(payment.PCash) {
+	if !p.checkPaymentFlag(payment.FlagCash) {
 		return payment.ErrNotSupportPaymentChannel
 	}
-	if !p.checkPaymentFlag(payment.PBankCard) {
+	if !p.checkPaymentFlag(payment.FlagBankCard) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	if cash+bank > p.value.FinalFee {
@@ -192,10 +197,10 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 	err := p.saveOrder()
 	if err == nil {
 		if cash > 0 {
-			err = p.saveTradeChan(cash, payment.CHAN_CASH)
+			err = p.saveTradeChan(cash, payment.ChanCash)
 		}
 		if bank > 0 {
-			err = p.saveTradeChan(bank, payment.CHAN_BANK_CARD)
+			err = p.saveTradeChan(bank, payment.ChanBankCard)
 		}
 	}
 	return err
@@ -290,7 +295,7 @@ func (p *paymentOrderImpl) checkPaymentFlag(payFlag int) bool {
 
 // 使用余额抵扣
 func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
-	if b := p.checkPaymentFlag(payment.PBalance); !b { // 检查支付方式
+	if b := p.checkPaymentFlag(payment.FlagBalance); !b { // 检查支付方式
 		return payment.ErrNotSupportPaymentChannel
 	}
 	if err := p.CheckPaymentState(); err != nil { // 检查支付单状态
@@ -310,7 +315,7 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 		p.value.DeductAmount += amount // 修改抵扣金额
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.CHAN_BALANCE)
+			err = p.saveTradeChan(amount, payment.ChanBalance)
 		}
 	}
 	return err
@@ -330,7 +335,7 @@ func (p *paymentOrderImpl) getIntegralExchangeAmount(integral int) int {
 // 积分抵扣,返回抵扣的金额及错误,ignoreAmount:是否忽略超出订单金额的积分
 func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	ignoreAmount bool) (amount int, err error) {
-	if !p.checkPaymentFlag(payment.PIntegral) {
+	if !p.checkPaymentFlag(payment.FlagIntegral) {
 		return 0, payment.ErrNotSupportPaymentChannel
 	}
 	if err = p.CheckPaymentState(); err != nil {
@@ -357,7 +362,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 		p.value.DeductAmount += amount
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.CHAN_INTEGRAL)
+			err = p.saveTradeChan(amount, payment.ChanIntegral)
 		}
 	}
 	return amount, err
@@ -365,7 +370,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 
 // 系统支付金额
 func (p *paymentOrderImpl) SystemPayment(fee int) error {
-	if !p.checkPaymentFlag(payment.PSystemPay) {
+	if !p.checkPaymentFlag(payment.FlagSystemPay) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	err := p.CheckPaymentState()
@@ -373,7 +378,7 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 		p.value.DeductAmount += fee
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(fee, payment.CHAN_SYSTEM_PAY)
+			err = p.saveTradeChan(fee, payment.ChanSystemPay)
 		}
 	}
 	return err
@@ -411,7 +416,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 	v := p.Get()
 	acc := buyer.GetAccount().GetValue()
 	// 判断是否能余额支付
-	if !p.checkPaymentFlag(payment.PBalance) {
+	if !p.checkPaymentFlag(payment.FlagBalance) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	// 如果余额够支付，则优先余额支付
@@ -419,7 +424,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 		return p.BalanceDiscount(remark)
 	}
 	// 判断是否能钱包支付
-	if !p.checkPaymentFlag(payment.PWallet) {
+	if !p.checkPaymentFlag(payment.FlagWallet) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	// 判断是否余额不足
@@ -435,7 +440,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 
 // 钱包账户支付
 func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
-	if !p.checkPaymentFlag(payment.PWallet) {
+	if !p.checkPaymentFlag(payment.FlagWallet) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	buyer := p.getBuyer()
@@ -454,7 +459,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 		p.value.DeductAmount += amount
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.CHAN_WALLET)
+			err = p.saveTradeChan(amount, payment.ChanWallet)
 		}
 	}
 	return err
@@ -494,7 +499,7 @@ func (p *paymentOrderImpl) Refund(amount int) (err error) {
 	acc := mm.GetAccount()
 	chanMap := p.getPaymentChannelMap()
 	// 先退回到余额
-	if v := chanMap[payment.CHAN_BALANCE]; v > 0 {
+	if v := chanMap[payment.ChanBalance]; v > 0 {
 		final := int(math.Min(float64(v), float64(amount)))
 		if amount > v {
 			amount = amount - final
@@ -507,7 +512,7 @@ func (p *paymentOrderImpl) Refund(amount int) (err error) {
 		}
 	}
 	// 如果已经支付，则将支付的款项退回到账户
-	if v := chanMap[payment.CHAN_WALLET]; v > 0 {
+	if v := chanMap[payment.ChanWallet]; v > 0 {
 		final := int(math.Min(float64(v), float64(amount)))
 		if amount > v {
 			amount = amount - final
