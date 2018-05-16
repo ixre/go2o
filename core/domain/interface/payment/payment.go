@@ -18,46 +18,52 @@ import (
 // 支付通道
 const (
 	// 余额抵扣通道
-	CHAN_BALANCE = 1
+	ChanBalance = 1
 	// 钱包支付通道
-	CHAN_WALLET = 2
+	ChanWallet = 2
 	// 积分兑换通道
-	CHAN_INTEGRAL = 3
+	ChanIntegral = 3
+	// 用户卡通道
+	ChanUserCard = 4
+	// 用户券通道
+	ChanUserCoupon = 5
 	// 现金支付通道
-	CHAN_CASH = 4
+	ChanCash = 6
 	// 银行卡支付通道
-	CHAN_BANK_CARD = 5
+	ChanBankCard = 7
 	// 卖家支付通道
-	CHAN_SELLER_PAY = 6
+	ChanSellerPay = 8
 	// 系统支付通道
-	CHAN_SYSTEM_PAY = 7
-	// 优惠券抵扣通道
-	//CHAN_COUPON = 8
+	ChanSystemPay = 9
 )
 
 // 支付标志
 const (
 	// 余额抵扣
-	PBalance = 1 << iota
+	FlagBalance = 1 << iota
 	// 钱包支付
-	PWallet
+	FlagWallet
 	// 积分兑换
-	PIntegral
+	FlagIntegral
+	// 用户卡
+	FlagUserCard
+	// 用户券
+	FlagUserCoupon
 	// 现金支付
-	PCash
+	FlagCash
 	// 银行卡支付
-	PBankCard
+	FlagBankCard
 	// 第三方支付,如支付宝等
-	POutSP
+	FlagOutSp
 	// 卖家支付通道
-	PSellerPay
+	FlagSellerPay
 	// 系统支付通道
-	PSystemPay
+	FlagSystemPay
 )
 
 // 所有支付方式
-const PAllFlag = PBalance | PWallet | PIntegral |
-	PCash | PBankCard | POutSP | PSellerPay | PSystemPay
+const PAllFlag = FlagBalance | FlagWallet | FlagIntegral |
+	FlagCash | FlagBankCard | FlagOutSp | FlagSellerPay | FlagSystemPay
 
 // 支付单状态
 const (
@@ -130,6 +136,8 @@ type (
 		TradeNo() string
 		// 支付单状态
 		State() int
+		/** 支付方式 */
+		Flag() int
 		// 支付途径支付信息
 		Channels() []*TradeChan
 		// 在支付之前检查订单状态
@@ -277,55 +285,5 @@ type (
 		InternalChan int `db:"internal_chan"`
 		// 支付金额
 		PayAmount int `db:"pay_amount"`
-	}
-
-	// 支付单实体
-	PaymentOrder2 struct {
-		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
-		// 支付单号
-		TradeNo string `db:"trade_no"`
-		// 交易类型
-		TradeType string `db:"trade_type"`
-		// 运营商编号，0表示无
-		VendorId int32 `db:"vendor_id"`
-		// 支付单类型,如果购物或其他
-		Type int32 `db:"order_type"`
-		// 订单编号,0表示无
-		OrderId int32 `db:"order_id"`
-		// 支付单主题
-		Subject string `db:"subject"`
-		// 购买用户
-		BuyUser int64 `db:"buy_user"`
-		// 支付用户
-		PaymentUser int64 `db:"payment_user"`
-		// 支付单金额
-		TotalAmount float32 `db:"total_amount"`
-		// 余额抵扣
-		BalanceDiscount float32 `db:"balance_discount"`
-		// 积分抵扣
-		IntegralDiscount float32 `db:"integral_discount"`
-		// 系统支付抵扣金额
-		SystemDiscount float32 `db:"system_discount"`
-		// 优惠券金额
-		CouponDiscount float32 `db:"coupon_discount"`
-		// 立减金额
-		SubAmount float32 `db:"sub_amount"`
-		// 调整的金额
-		AdjustmentAmount float32 `db:"adjustment_amount"`
-		// 最终支付金额
-		FinalFee float32 `db:"final_fee"`
-		// 支付选项，位运算。可用优惠券，积分抵扣等运算
-		PayFlag int32 `db:"payment_opt"`
-		// 支付方式
-		PaymentSign int32 `db:"payment_sign"`
-		// 在线支付的交易单号
-		OuterNo string `db:"outer_no"`
-		//创建时间
-		CreateTime int64 `db:"create_time"`
-		//支付时间
-		PaidTime int64 `db:"paid_time"`
-		// 状态:  0为未付款，1为已付款，2为已取消
-		State int32 `db:"state"`
 	}
 )
