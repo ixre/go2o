@@ -369,6 +369,21 @@ func TestTradeOrder(t *testing.T) {
 	}
 }
 
+func TestMergePaymentOrder(t *testing.T) {
+	repo := ti.Factory.GetOrderRepo()
+	memRepo := ti.Factory.GetMemberRepo()
+	io := repo.Manager().GetOrderByNo("1180517000262166")
+	ic := io.BuildCart()
+	memberId := io.Buyer().GetAggregateRootId()
+	shipId := memRepo.GetDeliverAddress(memberId)[0].ID
+	_, rd, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	print(fmt.Sprintf("%#v", rd))
+}
+
 // 通知交易单
 func TestNotifyTradeOrder(t *testing.T) {
 	rds := ti.GetApp().Storage().(storage.IRedisStorage)

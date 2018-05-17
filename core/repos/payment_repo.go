@@ -23,6 +23,7 @@ import (
 	payImpl "go2o/core/domain/payment"
 	"go2o/core/variable"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -167,12 +168,26 @@ func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *paymen
 }
 
 func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaymentOrder {
-	var list []*payment.Order
-	p.Connector.GetOrm().Select(&list, "merge_trade_no=? AND state=? LIMIT 10",
-		mergeTradeNo, payment.StateAwaitingPayment)
-	var arr = make([]payment.IPaymentOrder, len(list))
-	for i, v := range list {
-		arr[i] = p.CreatePaymentOrder(v)
+	var tradeNo = ""
+	var tradeNoArr []string
+	// 查询支付单号
+	p.Connector.Query("SELECT order_trade_no FROM pay_merge_order WHERE merge_trade_no=? LIMIT ?",
+		func(rows *sql.Rows) {
+			for rows.Next() {
+				rows.Scan(&tradeNo)
+				tradeNoArr = append(tradeNoArr, "'"+tradeNo+"'")
+			}
+		}, mergeTradeNo, 10)
+
+	var arr = make([]payment.IPaymentOrder, 0)
+	// 查询支付单
+	if l := len(tradeNoArr); l > 0 {
+		var list []*payment.Order
+		p.Connector.GetOrm().Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
+			")AND state=? LIMIT ?", payment.StateAwaitingPayment, len(tradeNoArr))
+		for _, v := range list {
+			arr = append(arr, p.CreatePaymentOrder(v))
+		}
 	}
 	return arr
 }

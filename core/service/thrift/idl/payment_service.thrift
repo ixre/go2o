@@ -27,8 +27,8 @@ service PaymentService{
 
     // 支付网关
     ttype.Result GatewayV1(1:string action,2:i64 userId,3:map<string,string> data)
-    // 获取支付所需数据
-    map<string,string> GetPaymentOrderInfo(1:string tradeNo,2:bool mergeTrade)
+    // 获取支付预交易数据
+    SPrepareTradeData GetPaymentOrderInfo(1:string tradeNo,2:bool mergeTrade)
 }
 
 
@@ -138,6 +138,42 @@ struct SPaymentOrder{
     28:i64 UpdateTime
     /** 交易途径交易信息 */
     29:list<SPayTradeChan> TradeChannels
+}
+
+/** 支付单预交易数据 */
+struct SPrepareTradeData{
+    /** 错误码 */
+    1:i32 ErrCode
+    /** 错误消息 */
+    2:string ErrMsg
+    /** 交易号 */
+    3:string TradeNo
+    /** 支付标志 */
+    4:i32 PayFlag
+    /** 交易状态 */
+    5:i32 TradeState
+    /** 交易订单 */
+    6:list<SPaymentOrderData> TradeOrders
+    /** 手续费 */
+    7:i32 ProcedureFee
+    /** 最终支付金额 */
+    8:i32 FinalFee
+}
+
+/** 支付单数据 */
+struct SPaymentOrderData{
+    /** 交易订单号 */
+    1:string OrderNo
+    /** 标题 */
+    2:string Subject
+    /** 交易类型 */
+    3:string TradeType
+    /** 状态 */
+    4:i32 State
+    /** 手续费 */
+    5:i32 ProcedureFee
+    /** 最终支付金额 */
+    6:i32 FinalFee
 }
 
 /** 支付单项 */
