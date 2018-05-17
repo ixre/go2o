@@ -144,6 +144,8 @@ type (
 		CheckPaymentState() error
 		// 提交支付单
 		Submit() error
+		// 合并支付
+		MergePay(tradeNos []string) (mergeTradeNo string, finalFee int, err error)
 		// 取消支付
 		Cancel() error
 		// 线下现金/刷卡支付,cash:现金,bank:刷卡金额,finalZero:是否金额必须为零
@@ -195,6 +197,10 @@ type (
 		SavePaymentTradeChan(tradeNo string, tradeChan *TradeChan) (int, error)
 		// 获取合并支付的订单
 		GetMergePayOrders(mergeTradeNo string) []IPaymentOrder
+		// 清除欲合并的支付单
+		ResetMergePaymentOrders(tradeNos []string) error
+		//  保存合并的支付单
+		SaveMergePaymentOrders(s string, tradeNos []string) error
 	}
 
 	// 支付通道
@@ -219,8 +225,6 @@ type (
 		TradeType string `db:"trade_type"`
 		// 交易号
 		TradeNo string `db:"trade_no"`
-		// 合并支付交易号
-		MergeTradeNo string `db:"merge_trade_no"`
 		// 订单号
 		OrderId int `db:"order_id"`
 		// 支付单的类型，如购物或其他
@@ -257,8 +261,6 @@ type (
 		OutTradeSp string `db:"out_trade_sp"`
 		// 外部交易订单号
 		OutTradeNo string `db:"out_trade_no"`
-		// 可作废
-		PaymentSign int `db:"payment_sign"`
 		// 订单状态
 		State int `db:"state"`
 		// 提交时间
@@ -285,5 +287,37 @@ type (
 		InternalChan int `db:"internal_chan"`
 		// 支付金额
 		PayAmount int `db:"pay_amount"`
+	}
+
+	// 合并的支付单
+	MergeOrder struct {
+		// 编号
+		ID int `db:"id"`
+		// 合并交易单号
+		MergeTradeNo string `db:"merge_trade_no"`
+		// 交易号
+		OrderTradeNo string `db:"order_trade_no"`
+		// 提交时间
+		SubmitTime int64 `db:"submit_time"`
+	}
+
+	// SP支付交易
+	SpTrade struct {
+		// 编号
+		ID int `db:"id"`
+		// 交易SP
+		TradeSp string `db:"trade_sp"`
+		// 交易号
+		TradeNo string `db:"trade_no"`
+		// 合并的订单号,交易号用"|"分割
+		TradeOrders string `db:"trade_orders"`
+		// 交易状态
+		TradeState int `db:"trade_state"`
+		// 交易结果
+		TradeResult int `db:"trade_result"`
+		// 交易备注
+		TradeRemark string `db:"trade_remark"`
+		// 交易时间
+		TradeTime int `db:"trade_time"`
 	}
 )

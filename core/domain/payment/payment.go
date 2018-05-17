@@ -10,6 +10,7 @@ package payment
  */
 
 import (
+	"errors"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
@@ -86,6 +87,40 @@ func (p *paymentOrderImpl) Submit() error {
 		return payment.ErrExistsTradeNo
 	}
 	return p.saveOrder()
+}
+
+// 合并支付
+func (p *paymentOrderImpl) MergePay(tradeNos []string) (mergeTradeNo string, finalFee int, err error) {
+	if err := p.CheckPaymentState(); err != nil { // 验证支付单是否可以支付
+		return "", 0, err
+	}
+	if len(tradeNos) == 0 {
+		panic(errors.New("will be merge trade orders is nil"))
+	}
+	arr := make([]payment.IPaymentOrder, len(tradeNos))
+	finalFee = p.value.FinalFee
+	for i, v := range tradeNos {
+		arr[i] = p.repo.GetPaymentOrder(v)
+		// 检查支付单是否存在
+		if arr[i] == nil {
+			return "", 0, payment.ErrNoSuchPaymentOrder
+		}
+		// 检查支付单状态
+		if err := arr[i].CheckPaymentState(); err != nil {
+			return "", 0, err
+		}
+		// 统计支付总金额
+		finalFee += arr[i].Get().FinalFee
+	}
+	tradeNos = append(tradeNos, p.TradeNo())
+	// 清除欲合并的支付单
+	err = p.repo.ResetMergePaymentOrders(tradeNos)
+	// 合并支付
+	if err == nil {
+		mergeTradeNo = "MG" + p.TradeNo()
+		err = p.repo.SaveMergePaymentOrders(mergeTradeNo, tradeNos)
+	}
+	return mergeTradeNo, finalFee, err
 }
 
 // 准备提交支付单

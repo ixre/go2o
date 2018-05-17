@@ -9,6 +9,7 @@
 package repos
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"github.com/jsix/gof/db"
@@ -22,6 +23,7 @@ import (
 	payImpl "go2o/core/domain/payment"
 	"go2o/core/variable"
 	"log"
+	"time"
 )
 
 var _ payment.IPaymentRepo = new(paymentRepoImpl)
@@ -63,17 +65,6 @@ func (p *paymentRepoImpl) GetPaymentOrderByOrderNo(orderType int, orderNo string
 		return p.CreatePaymentOrder(e)
 	}
 	return nil
-}
-
-func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaymentOrder {
-	var list []*payment.Order
-	p.Connector.GetOrm().Select(&list, "merge_trade_no=? AND state=? LIMIT 10",
-		mergeTradeNo, payment.StateAwaitingPayment)
-	var arr = make([]payment.IPaymentOrder, len(list))
-	for i, v := range list {
-		arr[i] = p.CreatePaymentOrder(v)
-	}
-	return arr
 }
 
 func (p *paymentRepoImpl) getPaymentOrderCk(id int) string {
@@ -159,7 +150,7 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 
 func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeChan {
 	var list []*payment.TradeChan
-	err := p.GetOrm().Select(&list, "trade_no=?", tradeNo)
+	err := p.GetOrm().Select(&list, "trade_no=? LIMIT ?", tradeNo, 10)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
 	}
@@ -173,4 +164,46 @@ func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *paymen
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
 	}
 	return id, err
+}
+
+func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaymentOrder {
+	var list []*payment.Order
+	p.Connector.GetOrm().Select(&list, "merge_trade_no=? AND state=? LIMIT 10",
+		mergeTradeNo, payment.StateAwaitingPayment)
+	var arr = make([]payment.IPaymentOrder, len(list))
+	for i, v := range list {
+		arr[i] = p.CreatePaymentOrder(v)
+	}
+	return arr
+}
+
+func (p *paymentRepoImpl) ResetMergePaymentOrders(tradeNos []string) error {
+	buf := bytes.NewBuffer([]byte("("))
+	for i, v := range tradeNos {
+		if i > 0 {
+			buf.WriteString(",")
+		}
+		buf.WriteString("'")
+		buf.WriteString(v)
+		buf.WriteString("'")
+	}
+	buf.WriteString(")")
+	_, err := p.Connector.GetOrm().Delete(&payment.MergeOrder{}, "order_trade_no in "+buf.String())
+	return err
+}
+
+func (p *paymentRepoImpl) SaveMergePaymentOrders(mergeTradeNo string, tradeNos []string) error {
+	unix := time.Now().Unix()
+	orm := p.Connector.GetOrm()
+	for _, v := range tradeNos {
+		order := &payment.MergeOrder{
+			MergeTradeNo: mergeTradeNo,
+			OrderTradeNo: v,
+			SubmitTime:   unix,
+		}
+		if _, _, err := orm.Save(nil, order); err != nil {
+			return err
+		}
+	}
+	return nil
 }
