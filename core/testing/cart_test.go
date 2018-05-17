@@ -44,18 +44,14 @@ func TestCombineCart(t *testing.T) {
 	}
 }
 
-func joinItemsToCart(c cart.ICart, t *testing.T) {
+func joinItemsToCart(c cart.ICart, t *testing.T) error {
 	var itemId int64 = 66
 	itemId = 113
 	itemRepo := ti.Factory.GetItemRepo()
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
 	skuId := arr[0].ID
-	err := c.Put(itemId, skuId, 1)
-	if err != nil {
-		t.Error("购物车加入失败:", err.Error())
-		t.Fail()
-	}
+	return c.Put(itemId, skuId, 1)
 }
 
 // 生成购物车全部结算的数据

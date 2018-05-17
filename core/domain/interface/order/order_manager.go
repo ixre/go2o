@@ -31,7 +31,7 @@ type (
 		NotifyOrderTradeSuccess(orderId int64) error
 		// 提交订单
 		SubmitOrder(c cart.ICart, addressId int64, couponCode string,
-			balanceDiscount bool) (error, *SubmitReturnData)
+			balanceDiscount bool) (IOrder, *SubmitReturnData, error)
 		// 获取可用的订单号, 系统直营传入vendor为0
 		GetFreeOrderNo(vendor int32) string
 		// 根据订单编号获取订单
