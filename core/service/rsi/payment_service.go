@@ -15,7 +15,6 @@ import (
 	"go2o/core/module"
 	"go2o/core/service/thrift/parser"
 	"go2o/gen-code/thrift/define"
-	"strconv"
 )
 
 var _ define.PaymentService = new(paymentService)
@@ -158,32 +157,58 @@ func (p *paymentService) GatewayV1(ctx context.Context, action string, userId in
 	return parser.Result(nil, err), nil
 }
 
-func (p *paymentService) GetPaymentOrderInfo(ctx context.Context, tradeNo string, mergeTrade bool) (r map[string]string, err error) {
-	if mergeTrade { // 合并订单
-		ipList := p._repo.GetMergePayOrders(tradeNo)
-		if len(ipList) == 0 {
-			//todo:
+func (p *paymentService) GetPaymentOrderInfo(ctx context.Context, tradeNo string, mergeTrade bool) (*define.SPrepareTradeData, error) {
+	var arr []payment.IPaymentOrder
+	if mergeTrade {
+		arr = p._repo.GetMergePayOrders(tradeNo)
+	} else {
+		arr = []payment.IPaymentOrder{
+			p._repo.GetPaymentOrder(tradeNo),
 		}
 	}
-	return p.getPaymentOrderInfo(tradeNo)
+	return p.getMergePaymentOrdersInfo(tradeNo, arr, true)
 }
 
-func (p *paymentService) getPaymentOrderInfo(tradeNo string) (map[string]string, error) {
-	mp := map[string]string{}
-	ip := p._repo.GetPaymentOrder(tradeNo)
-	if ip == nil {
-		mp["error"] = "支付订单不存在"
-		return mp, nil
+// 获取合并支付的支付单的支付数据
+func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
+	tradeOrders []payment.IPaymentOrder, checkPay bool) (*define.SPrepareTradeData, error) {
+	d := &define.SPrepareTradeData{ErrCode: 1, TradeOrders: []*define.SPaymentOrderData{}}
+	if len(tradeOrders) == 0 {
+		d.ErrMsg = "无效的支付订单"
+		return d, nil
 	}
-	if err := ip.CheckPaymentState(); err != nil {
-		mp["error"] = err.Error()
-		return mp, nil
+	d.TradeState = payment.StateAwaitingPayment // 待支付
+	for _, ip := range tradeOrders {
+		// 检查支付状态
+		if checkPay {
+			if err := ip.CheckPaymentState(); err != nil {
+				d.ErrMsg = err.Error()
+				return d, nil
+			}
+		}
+		iv := ip.Get()
+		so := &define.SPaymentOrderData{
+			OrderNo:      iv.OutOrderNo,
+			Subject:      iv.Subject,
+			TradeType:    iv.TradeType,
+			State:        int32(iv.State),
+			ProcedureFee: int32(iv.ProcedureFee),
+			FinalFee:     int32(iv.FinalFee),
+		}
+		// 更新支付状态
+		if so.State != payment.StateAwaitingPayment {
+			d.TradeState = so.State
+		}
+		// 更新支付标志
+		if i := int32(iv.PaymentFlag); d.PayFlag != i {
+			d.PayFlag = i
+		}
+		// 更新支付金额
+		d.TradeOrders = append(d.TradeOrders, so)
+		d.ProcedureFee += int32(so.ProcedureFee) // 手续费
+		d.FinalFee += int32(so.FinalFee)         // 最终金额
 	}
-	iv := ip.Get()
-	mp["state"] = strconv.Itoa(iv.State)               // 状态
-	mp["finalFee"] = strconv.Itoa(iv.FinalFee)         // 最终金额
-	mp["procedureFee"] = strconv.Itoa(iv.ProcedureFee) // 手续费
-	mp["tradeNo"] = iv.TradeNo
-	mp["tradeType"] = iv.TradeType
-	return mp, nil
+	d.ErrCode = 0
+	d.TradeNo = tradeNo // 交易单号
+	return d, nil
 }
