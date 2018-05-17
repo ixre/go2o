@@ -19,7 +19,7 @@ service PaymentService{
    // 积分抵扣支付单
     ttype.Result DiscountByIntegral(1:i32 orderId,2:i64 integral,3:bool ignoreOut)
     // 钱包账户支付
-    ttype.Result PaymentByWallet(1:i32 orderId,2:string remark)
+    ttype.Result PaymentByWallet(1:string tradeNo,2:bool mergePay,3:string remark)
     // 余额钱包混合支付，优先扣除余额。
     ttype.Result HybridPayment(1:i32 orderId,2:string remark)
     // 完成支付单支付，并传入支付方式及外部订单号
@@ -28,7 +28,7 @@ service PaymentService{
     // 支付网关
     ttype.Result GatewayV1(1:string action,2:i64 userId,3:map<string,string> data)
     // 获取支付预交易数据
-    SPrepareTradeData GetPaymentOrderInfo(1:string tradeNo,2:bool mergeTrade)
+    SPrepareTradeData GetPaymentOrderInfo(1:string tradeNo,2:bool mergePay)
 }
 
 

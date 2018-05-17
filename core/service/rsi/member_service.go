@@ -519,7 +519,7 @@ func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) 
 	val := s.repo.GetMemberByUsr(usr)
 	if val == nil {
 		//todo: 界面加上使用手机号码登陆
-		//val = m._repo.GetMemberValueByPhone(usr)
+		//val = m.repo.GetMemberValueByPhone(usr)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
