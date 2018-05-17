@@ -90,35 +90,30 @@ func (p *paymentOrderImpl) Submit() error {
 }
 
 // 合并支付
-func (p *paymentOrderImpl) MergePay(tradeNos []string) (mergeTradeNo string, finalFee int, err error) {
+func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeNo string, finalFee int, err error) {
 	if err := p.CheckPaymentState(); err != nil { // 验证支付单是否可以支付
 		return "", 0, err
 	}
-	if len(tradeNos) == 0 {
+	if len(orders) == 0 {
 		panic(errors.New("will be merge trade orders is nil"))
 	}
-	arr := make([]payment.IPaymentOrder, len(tradeNos))
 	finalFee = p.value.FinalFee
-	for i, v := range tradeNos {
-		arr[i] = p.repo.GetPaymentOrder(v)
-		// 检查支付单是否存在
-		if arr[i] == nil {
-			return "", 0, payment.ErrNoSuchPaymentOrder
-		}
+	tradeOrders := []string{p.TradeNo()}
+	for _, v := range orders {
 		// 检查支付单状态
-		if err := arr[i].CheckPaymentState(); err != nil {
+		if err := v.CheckPaymentState(); err != nil {
 			return "", 0, err
 		}
 		// 统计支付总金额
-		finalFee += arr[i].Get().FinalFee
+		finalFee += v.Get().FinalFee
+		tradeOrders = append(tradeOrders, v.TradeNo())
 	}
-	tradeNos = append(tradeNos, p.TradeNo())
 	// 清除欲合并的支付单
-	err = p.repo.ResetMergePaymentOrders(tradeNos)
+	err = p.repo.ResetMergePaymentOrders(tradeOrders)
 	// 合并支付
 	if err == nil {
 		mergeTradeNo = "MG" + p.TradeNo()
-		err = p.repo.SaveMergePaymentOrders(mergeTradeNo, tradeNos)
+		err = p.repo.SaveMergePaymentOrders(mergeTradeNo, tradeOrders)
 	}
 	return mergeTradeNo, finalFee, err
 }

@@ -515,13 +515,9 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 	}
 }
 
-// 生成支付单
-func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
+// 为所有子订单生成支付单
+func (o *normalOrderImpl) createPaymentForOrder() error {
 	orders := o.GetSubOrders()
-	var mergeTradeNo string
-	if len(orders) > 1 {
-		mergeTradeNo = "MG" + domain.NewTradeNo(0, 0)
-	}
 	for _, iso := range orders {
 		v := iso.GetValue()
 		itemAmount := int(v.ItemAmount * 100)
@@ -530,7 +526,6 @@ func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
 		po := &payment.Order{
 			SellerId:       int(v.VendorId),
 			TradeNo:        v.OrderNo,
-			MergeTradeNo:   mergeTradeNo,
 			OrderId:        int(v.OrderId),
 			OrderType:      int(order.TRetail),
 			OutOrderNo:     v.OrderNo,
@@ -556,13 +551,11 @@ func (o *normalOrderImpl) createPaymentForOrder() (string, error) {
 		}
 		ip := o.payRepo.CreatePaymentOrder(po)
 		if err := ip.Submit(); err != nil {
-			return mergeTradeNo, err
+			iso.Cancel("")
+			return err
 		}
 	}
-	if mergeTradeNo == "" { //如果未合并付款，返回默认的订单号
-		return orders[0].GetValue().OrderNo, nil
-	}
-	return mergeTradeNo, nil
+	return nil
 }
 
 // 绑定促销优惠

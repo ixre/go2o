@@ -235,57 +235,82 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 }
 
 func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
-	couponCode string, useBalanceDiscount bool) (error, *order.SubmitReturnData) {
+	couponCode string, useBalanceDiscount bool) (order.IOrder, *order.SubmitReturnData, error) {
 	rd := &order.SubmitReturnData{}
 	o, err := t.PrepareNormalOrder(c)
-	if err == nil {
-		if o.Type() != order.TRetail {
-			panic("only support retail cart!")
-		}
-		io := o.(order.INormalOrder)
-		buyer := o.Buyer()
-		// 设置收货地址
-		if err = io.SetAddress(addressId); err != nil {
-			return err, rd
-		} else {
-			buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
-		}
-		if err = o.Submit(); err != nil {
-			return err, rd
-		}
-		iss := io.GetSubOrders()
-		rd.MergePay = len(iss) > 1 // 是否合并付款
-		for i, v := range iss {
-			// 拼接订单号
-			if i > 0 {
-				rd.OrderNo += ","
-			}
-			rd.OrderNo += v.GetValue().OrderNo
-			// 使用优惠码
-			if len(couponCode) != 0 {
-				err = t.applyCoupon(buyer, o, v.GetPaymentOrder(), couponCode)
-				if err != nil {
-					return err, rd
-				}
-			}
-			// 使用余额抵扣
-			if useBalanceDiscount {
-				err = v.GetPaymentOrder().BalanceDiscount("")
-			}
-		}
-		if rd.MergePay {
-			rd.TradeNo = iss[0].GetPaymentOrder().Get().MergeTradeNo
-		} else {
-			rd.TradeNo = iss[0].GetPaymentOrder().TradeNo()
-		}
-		return err, rd
+	if err != nil {
+		return nil, rd, err
 	}
-	return err, rd
+	if o.Type() != order.TRetail {
+		panic("only support retail cart!")
+	}
+	io := o.(order.INormalOrder)
+	buyer := o.Buyer()
+	// 设置收货地址
+	if err = io.SetAddress(addressId); err != nil {
+		return o, rd, err
+	} else {
+		buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
+	}
+	if err = o.Submit(); err != nil {
+		return o, rd, err
+	}
+	// 合并支付
+	iss := io.GetSubOrders()
+	arr := make([]payment.IPaymentOrder, 0)
+	for _, v := range iss {
+		ip := v.GetPaymentOrder()
+		if len(couponCode) != 0 { // 使用优惠码
+			if err = t.applyCoupon(buyer, o, ip, couponCode); err != nil {
+				return o, rd, err
+			}
+		}
+		if useBalanceDiscount { // 使用余额抵扣
+			if err = ip.BalanceDiscount(""); err != nil {
+				return o, rd, err
+			}
+		}
+		if ip.State() == payment.StateAwaitingPayment {
+			arr = append(arr, ip)
+		}
+	}
+	l := len(arr)
+	// 如果全部支付成功
+	if l == 0 {
+		ip := iss[0].GetPaymentOrder().Get()
+		rd.TradeNo = ip.TradeNo
+		rd.TradeAmount = ip.FinalFee
+		rd.OrderNo = ip.OutOrderNo
+		return o, rd, err
+	}
+	// 剩下单个订单未支付
+	if l == 1 {
+		ip := arr[0].Get()
+		rd.TradeNo = ip.TradeNo
+		rd.TradeAmount = ip.FinalFee
+		rd.OrderNo = ip.OutOrderNo
+		return o, rd, err
+	}
+	// 合并支付
+	mergeTradeNo, fee, err := arr[0].MergePay(arr[1:])
+	if err != nil {
+		return o, rd, err
+	}
+	rd.MergePay = true
+	rd.TradeAmount = fee
+	rd.TradeNo = mergeTradeNo
+	for i, v := range arr {
+		if i > 0 { // 拼接订单号
+			rd.OrderNo += ","
+		}
+		rd.OrderNo += v.Get().OutOrderNo
+	}
+	return o, rd, err
 }
 
 // 根据订单编号获取订单
 func (t *orderManagerImpl) GetOrderById(orderId int64) order.IOrder {
-	val := t.repo.GetOrder("id=?", orderId)
+	val := t.repo.GetOrder("id=? LIMIT 1", orderId)
 	if val != nil {
 		return t.repo.CreateOrder(val)
 	}
