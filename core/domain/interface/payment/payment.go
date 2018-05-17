@@ -145,7 +145,7 @@ type (
 		// 提交支付单
 		Submit() error
 		// 合并支付
-		MergePay(tradeNos []string) (mergeTradeNo string, finalFee int, err error)
+		MergePay(orders []IPaymentOrder) (mergeTradeNo string, finalFee int, err error)
 		// 取消支付
 		Cancel() error
 		// 线下现金/刷卡支付,cash:现金,bank:刷卡金额,finalZero:是否金额必须为零
