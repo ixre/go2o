@@ -25,17 +25,17 @@ import (
 )
 
 const (
-	s_sAlipayGatewayWap = "http://wappaygw.alipay.com/service/rest.htm?" //alipay支付网关(WAP)
-	s_sAlipayGatewayWeb = "https://mapi.alipay.com/gateway.do?"          //alipay支付网关(WEB)
-	s_sAlipayPartner    = "xxxx"                                         //合作者ID
-	s_sAlipayKey        = "xxxx"                                         //合作者key(md5)
-	s_sWebNotifyUrl     = "http://xxxx/alipay_web_notify"                //网站异步返回地址
-	s_sWebCallbackUrl   = "http://xxxx/alipay_web_callback"              //网站同步返回地址
-	s_sWapNotifyUrl     = "http://xxxx/alipay_wap_notify"                //WAP异步返回地址
-	s_sWapCallbackUrl   = "http://xxxx/alipay_wap_callback"              //WAP同步返回地址
-	s_sWapMerchantUrl   = "http://xxxx/alipay_wap"                       //WAP商户购物网址
-	s_sRefundNotifyUrl  = "http://xxxx/alipay_refund_notify"             //退款通知地址
-	s_sSellerEmail      = "xxxx@xxxx.com"                                //网站卖家邮箱地址
+	s_sAlipayGatewayWap = "https://wappaygw.alipay.com/service/rest.htm?" //alipay支付网关(WAP)
+	s_sAlipayGatewayWeb = "https://mapi.alipay.com/gateway.do?"           //alipay支付网关(WEB)
+	s_sAlipayPartner    = "xxxx"                                          //合作者ID
+	s_sAlipayKey        = "xxxx"                                          //合作者key(md5)
+	s_sWebNotifyUrl     = "http://xxxx/alipay_web_notify"                 //网站异步返回地址
+	s_sWebCallbackUrl   = "http://xxxx/alipay_web_callback"               //网站同步返回地址
+	s_sWapNotifyUrl     = "http://xxxx/alipay_wap_notify"                 //WAP异步返回地址
+	s_sWapCallbackUrl   = "http://xxxx/alipay_wap_callback"               //WAP同步返回地址
+	s_sWapMerchantUrl   = "http://xxxx/alipay_wap"                        //WAP商户购物网址
+	s_sRefundNotifyUrl  = "http://xxxx/alipay_refund_notify"              //退款通知地址
+	s_sSellerEmail      = "xxxx@xxxx.com"                                 //网站卖家邮箱地址
 	s_sVersion          = "2.0"
 	s_sFormat           = "xml"
 	s_sCharset          = "utf-8"

@@ -190,11 +190,12 @@ func (p *paymentService) GetPaymentOrderInfo(ctx context.Context,
 	if mergePay {
 		arr = p.repo.GetMergePayOrders(tradeNo)
 	} else {
-		arr = []payment.IPaymentOrder{
-			p.repo.GetPaymentOrder(tradeNo),
+		ip := p.repo.GetPaymentOrder(tradeNo)
+		if ip != nil {
+			arr = []payment.IPaymentOrder{ip}
 		}
 	}
-	return p.getMergePaymentOrdersInfo(tradeNo, arr, true)
+	return p.getMergePaymentOrdersInfo(tradeNo, arr, !true)
 }
 
 // 获取合并支付的支付单的支付数据
@@ -235,6 +236,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		d.TradeOrders = append(d.TradeOrders, so)
 		d.ProcedureFee += int32(so.ProcedureFee) // 手续费
 		d.FinalFee += int32(so.FinalFee)         // 最终金额
+		d.TotalAmount += int32(iv.TotalAmount)   // 累计金额
 	}
 	d.ErrCode = 0
 	d.TradeNo = tradeNo // 交易单号
