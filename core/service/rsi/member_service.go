@@ -745,7 +745,7 @@ func (s *memberService) QueryWholesaleOrder(memberId int64, begin, size int, pag
 
 // 查询分页订单
 func (s *memberService) PagedTradeOrder(buyerId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*define.ComplexOrder) {
+	where, orderBy string) (int, []*define.SComplexOrder) {
 	return s.orderQuery.PagedTradeOrderOfBuyer(buyerId, begin, size, pagination, where, orderBy)
 }
 

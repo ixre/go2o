@@ -513,8 +513,8 @@ func ShoppingCartItem(src *define.ShoppingCartItem) *cart.RetailCartItem {
 	return i
 }
 
-func SubOrderItemDto(src *order.SubOrderItem) *define.ComplexItem {
-	return &define.ComplexItem{
+func SubOrderItemDto(src *order.SubOrderItem) *define.SComplexItem {
+	return &define.SComplexItem{
 		ID:             int64(src.ID),
 		OrderId:        src.OrderId,
 		ItemId:         int64(src.ItemId),
@@ -528,8 +528,8 @@ func SubOrderItemDto(src *order.SubOrderItem) *define.ComplexItem {
 	}
 }
 
-func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
-	o := &define.ComplexOrder{
+func SubOrderDto(src *order.NormalSubOrder) *define.SComplexOrder {
+	o := &define.SComplexOrder{
 		OrderId:        src.OrderId,
 		SubOrderId:     src.OrderId,
 		OrderNo:        src.OrderNo,
@@ -545,7 +545,7 @@ func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
 		CreateTime:     src.CreateTime,
 		UpdateTime:     src.UpdateTime,
 		State:          int32(src.State),
-		Items:          make([]*define.ComplexItem, len(src.Items)),
+		Items:          make([]*define.SComplexItem, len(src.Items)),
 	}
 	for i, v := range src.Items {
 		o.Items[i] = SubOrderItemDto(v)
@@ -553,8 +553,8 @@ func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
 	return o
 }
 
-func OrderItemDto(src *order.ComplexItem) *define.ComplexItem {
-	return &define.ComplexItem{
+func OrderItemDto(src *order.ComplexItem) *define.SComplexItem {
+	return &define.SComplexItem{
 		ID:             src.ID,
 		OrderId:        src.OrderId,
 		ItemId:         src.ItemId,
@@ -569,8 +569,8 @@ func OrderItemDto(src *order.ComplexItem) *define.ComplexItem {
 	}
 }
 
-func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
-	o := &define.ComplexOrder{
+func OrderDto(src *order.ComplexOrder) *define.SComplexOrder {
+	o := &define.SComplexOrder{
 		OrderId:         src.OrderId,
 		SubOrderId:      src.SubOrderId,
 		OrderType:       src.OrderType,
@@ -591,7 +591,7 @@ func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
 		CreateTime:      src.CreateTime,
 		UpdateTime:      src.UpdateTime,
 		State:           src.State,
-		Items:           make([]*define.ComplexItem, len(src.Items)),
+		Items:           make([]*define.SComplexItem, len(src.Items)),
 		Data:            src.Data,
 	}
 	if src.Items != nil {
@@ -602,7 +602,7 @@ func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
 	return o
 }
 
-func Order(src *define.ComplexOrder) *order.ComplexOrder {
+func Order(src *define.SComplexOrder) *order.ComplexOrder {
 	o := &order.ComplexOrder{
 		OrderId:         src.OrderId,
 		SubOrderId:      src.SubOrderId,
@@ -635,7 +635,7 @@ func Order(src *define.ComplexOrder) *order.ComplexOrder {
 	return o
 }
 
-func OrderItem(src *define.ComplexItem) *order.ComplexItem {
+func OrderItem(src *define.SComplexItem) *order.ComplexItem {
 	return &order.ComplexItem{
 		ID:             src.ID,
 		OrderId:        src.OrderId,

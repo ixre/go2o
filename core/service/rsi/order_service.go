@@ -502,7 +502,7 @@ func (s *orderServiceImpl) SubmitOrder_V1(buyerId int64, cartCode string,
 }
 
 // 根据编号获取订单
-func (s *orderServiceImpl) GetOrder(ctx context.Context, orderNo string, sub bool) (*define.ComplexOrder, error) {
+func (s *orderServiceImpl) GetOrder(ctx context.Context, orderNo string, sub bool) (*define.SComplexOrder, error) {
 	c := s.manager.Unified(orderNo, sub).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
@@ -511,7 +511,7 @@ func (s *orderServiceImpl) GetOrder(ctx context.Context, orderNo string, sub boo
 }
 
 // 获取订单和商品项信息
-func (s *orderServiceImpl) GetOrderAndItems(ctx context.Context, orderNo string, sub bool) (*define.ComplexOrder, error) {
+func (s *orderServiceImpl) GetOrderAndItems(ctx context.Context, orderNo string, sub bool) (*define.SComplexOrder, error) {
 	c := s.manager.Unified(orderNo, sub).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
@@ -548,7 +548,7 @@ func (s *orderServiceImpl) PayForOrderByManager(orderNo string) error {
 }
 
 // 获取子订单
-func (s *orderServiceImpl) GetSubOrder(ctx context.Context, id int64) (r *define.ComplexOrder, err error) {
+func (s *orderServiceImpl) GetSubOrder(ctx context.Context, id int64) (r *define.SComplexOrder, err error) {
 	o := s.repo.GetSubOrder(id)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
@@ -557,7 +557,7 @@ func (s *orderServiceImpl) GetSubOrder(ctx context.Context, id int64) (r *define
 }
 
 // 根据订单号获取子订单
-func (s *orderServiceImpl) GetSubOrderByNo(ctx context.Context, orderNo string) (r *define.ComplexOrder, err error) {
+func (s *orderServiceImpl) GetSubOrderByNo(ctx context.Context, orderNo string) (r *define.SComplexOrder, err error) {
 	orderId := s.repo.GetOrderId(orderNo, true)
 	o := s.repo.GetSubOrder(orderId)
 	if o != nil {
@@ -567,9 +567,9 @@ func (s *orderServiceImpl) GetSubOrderByNo(ctx context.Context, orderNo string) 
 }
 
 // 获取订单商品项
-func (s *orderServiceImpl) GetSubOrderItems(ctx context.Context, subOrderId int64) ([]*define.ComplexItem, error) {
+func (s *orderServiceImpl) GetSubOrderItems(ctx context.Context, subOrderId int64) ([]*define.SComplexItem, error) {
 	list := s.repo.GetSubOrderItems(subOrderId)
-	arr := make([]*define.ComplexItem, len(list))
+	arr := make([]*define.SComplexItem, len(list))
 	for i, v := range list {
 		arr[i] = parser.SubOrderItemDto(v)
 	}
@@ -602,7 +602,7 @@ func (s *orderServiceImpl) LogBytes(orderNo string, sub bool) []byte {
 }
 
 // 提交订单
-func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *define.ComplexOrder, rate float64) (r *define.Result64, err error) {
+func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *define.SComplexOrder, rate float64) (r *define.Result64, err error) {
 	if o.ShopId <= 0 {
 		mch := s.mchRepo.GetMerchant(o.VendorId)
 		if mch != nil {
