@@ -374,10 +374,10 @@ type unifiedOrderAdapterImpl struct {
 
 func (u *unifiedOrderAdapterImpl) adapter(orderNo string, sub bool) order.IUnifiedOrderAdapter {
 	u.sub = sub
-	orderId := u.repo.GetOrderId(orderNo, sub)
 	if u.sub {
-		u.subOrder = u.manager.GetSubOrder(orderId)
+		u.subOrder = u.repo.GetSubOrderByOrderNo(orderNo)
 	} else {
+		orderId := u.repo.GetOrderId(orderNo, sub)
 		u.bigOrder = u.manager.GetOrderById(orderId)
 	}
 	return u
@@ -395,8 +395,7 @@ func (u *unifiedOrderAdapterImpl) check() error {
 
 // 复合的订单信息
 func (u *unifiedOrderAdapterImpl) Complex() *order.ComplexOrder {
-	err := u.check()
-	if err == nil {
+	if err := u.check(); err == nil {
 		if u.sub {
 			return u.subOrder.Complex()
 		}

@@ -12,18 +12,18 @@ service OrderService {
     // 提交订单
     map<string,string> SubmitOrderV1(1:i64 buyerId,2:i32 cartType,3:map<string,string> data)
     // 获取订单信息
-    ComplexOrder GetOrder(1:string order_no,2:bool sub_order)
+    SComplexOrder GetOrder(1:string order_no,2:bool sub_order)
     // 获取订单和商品项信息
-    ComplexOrder GetOrderAndItems(1:string order_no,2:bool sub_order)
+    SComplexOrder GetOrderAndItems(1:string order_no,2:bool sub_order)
     // 获取子订单
-    ComplexOrder GetSubOrder(1:i64 id)
+    SComplexOrder GetSubOrder(1:i64 id)
     // 根据订单号获取子订单
-    ComplexOrder GetSubOrderByNo(1:string orderNo)
+    SComplexOrder GetSubOrderByNo(1:string orderNo)
     // 获取订单商品项
-    list<ComplexItem> GetSubOrderItems(1:i64 subOrderId)
+    list<SComplexItem> GetSubOrderItems(1:i64 subOrderId)
 
     // 提交交易订单
-    ttype.Result64 SubmitTradeOrder(1:ComplexOrder o,2:double rate)
+    ttype.Result64 SubmitTradeOrder(1:SComplexOrder o,2:double rate)
     // 交易单现金支付
     ttype.Result64 TradeOrderCashPay(1:i64 orderId)
     // 上传交易单发票
@@ -31,7 +31,7 @@ service OrderService {
 }
 
 // 订单项
-struct ComplexItem {
+struct SComplexItem {
     1: i64 ID
     2: i64 OrderId
     3: i64 ItemId
@@ -46,7 +46,7 @@ struct ComplexItem {
 }
 
 // 子订单
-struct ComplexOrder {
+struct SComplexOrder {
     1: i64 OrderId
     2: i64 SubOrderId
     3: i32 OrderType
@@ -68,7 +68,9 @@ struct ComplexOrder {
     19: i32 State
     20: i64 CreateTime
     21: i64 UpdateTime
-    22: list<ComplexItem> Items
+    22: list<SComplexItem> Items
     // 扩展信息
     23: map<string,string> Data
+    // 是否为子订单
+    24:bool SubOrder
 }

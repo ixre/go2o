@@ -943,7 +943,7 @@ type subOrderImpl struct {
 	internalSuspend bool //内部挂起
 	paymentOrder    payment.IPaymentOrder
 	paymentRepo     payment.IPaymentRepo
-	rep             order.IOrderRepo
+	repo            order.IOrderRepo
 	memberRepo      member.IMemberRepo
 	itemRepo        item.IGoodsItemRepo
 	productRepo     product.IProductRepo
@@ -962,7 +962,7 @@ func NewSubNormalOrder(v *order.NormalSubOrder,
 	return &subOrderImpl{
 		value:       v,
 		manager:     manager,
-		rep:         rep,
+		repo:        rep,
 		memberRepo:  mmRepo,
 		itemRepo:    goodsRepo,
 		productRepo: productRepo,
@@ -989,6 +989,8 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	co := o.baseOrder().Complex()
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
+	co.SubOrder = true
+	co.OrderNo = o.value.OrderNo
 	co.Subject = v.Subject
 	co.SubOrderId = o.GetDomainId()
 	co.DiscountAmount = float64(v.DiscountAmount)
@@ -1029,7 +1031,7 @@ func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexIte
 func (o *subOrderImpl) Items() []*order.SubOrderItem {
 	if (o.value.Items == nil || len(o.value.Items) == 0) &&
 		o.GetDomainId() > 0 {
-		o.value.Items = o.rep.GetSubOrderItems(o.GetDomainId())
+		o.value.Items = o.repo.GetSubOrderItems(o.GetDomainId())
 	}
 	return o.value.Items
 }
@@ -1058,7 +1060,7 @@ func (o *subOrderImpl) saveOrderItems() error {
 	for _, v := range o.Items() {
 		v.OrderId = id
 		v.UpdateTime = unix
-		_, err := o.rep.SaveOrderItem(id, v)
+		_, err := o.repo.SaveOrderItem(id, v)
 		if err != nil {
 			return err
 		}
@@ -1076,7 +1078,7 @@ func (o *subOrderImpl) Submit() (int64, error) {
 		o.value.CreateTime = unix
 		o.value.UpdateTime = unix
 	}
-	id, err := util.I64Err(o.rep.SaveSubOrder(o.value))
+	id, err := util.I64Err(o.repo.SaveSubOrder(o.value))
 	if err == nil {
 		o.value.ID = id
 		err = o.saveOrderItems()
@@ -1092,7 +1094,7 @@ func (o *subOrderImpl) saveSubOrder() error {
 	if o.GetDomainId() <= 0 {
 		panic("please use Submit() to create new suborder!")
 	}
-	_, err := o.rep.SaveSubOrder(o.value)
+	_, err := o.repo.SaveSubOrder(o.value)
 	if err == nil {
 		o.syncOrderState()
 	}
@@ -1174,7 +1176,7 @@ func (o *subOrderImpl) AppendLog(logType order.LogType, system bool, message str
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
-	return o.rep.SaveNormalSubOrderLog(l)
+	return o.repo.SaveNormalSubOrderLog(l)
 }
 
 // 确认订单
@@ -1413,7 +1415,7 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float3
 // 获取订单的日志
 func (o *subOrderImpl) LogBytes() []byte {
 	buf := bytes.NewBufferString("")
-	list := o.rep.GetSubOrderLogs(o.GetDomainId())
+	list := o.repo.GetSubOrderLogs(o.GetDomainId())
 	for _, v := range list {
 		buf.WriteString(time.Unix(v.RecordTime, 0).Format("2006-01-02 15:04:05"))
 		buf.WriteString("  ")
@@ -1549,7 +1551,7 @@ func (o *subOrderImpl) Return(snapshotId int64, quantity int32) error {
 				return order.ErrOutOfQuantity
 			}
 			v.ReturnQuantity += quantity
-			_, err := o.rep.SaveOrderItem(o.GetDomainId(), v)
+			_, err := o.repo.SaveOrderItem(o.GetDomainId(), v)
 			return err
 		}
 	}
@@ -1564,7 +1566,7 @@ func (o *subOrderImpl) RevertReturn(snapshotId int64, quantity int32) error {
 				return order.ErrOutOfQuantity
 			}
 			v.ReturnQuantity -= quantity
-			_, err := o.rep.SaveOrderItem(o.GetDomainId(), v)
+			_, err := o.repo.SaveOrderItem(o.GetDomainId(), v)
 			return err
 		}
 	}

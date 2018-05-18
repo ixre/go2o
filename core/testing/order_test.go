@@ -386,9 +386,14 @@ func TestMergePaymentOrder(t *testing.T) {
 
 // 通知交易单
 func TestNotifyTradeOrder(t *testing.T) {
+	orderNo := "1180518115439092"
+	sub := true
 	rds := ti.GetApp().Storage().(storage.IRedisStorage)
 	conn := rds.GetConn()
 	defer conn.Close()
-	orderNo := "100000582254"
-	conn.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
+	value := orderNo
+	if sub {
+		value = "sub!" + orderNo
+	}
+	conn.Do("RPUSH", variable.KvOrderBusinessQueue, value)
 }
