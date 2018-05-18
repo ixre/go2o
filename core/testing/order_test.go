@@ -118,29 +118,31 @@ func TestCancelOrder(t *testing.T) {
 		t.Error("保存购物车失败:", err.Error())
 		t.FailNow()
 	}
-
 	orderRepo := ti.Factory.GetOrderRepo()
 	mmRepo := ti.Factory.GetMemberRepo()
 	manager := orderRepo.Manager()
 	m := mmRepo.GetMember(buyerId)
 	addressId := m.Profile().GetDefaultAddress().GetDomainId()
-	o, err := manager.SubmitOrder(c, addressId, "", !true)
+	o, rd, err := manager.SubmitOrder(c, addressId, "", !true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	t.Logf("订单金额为:%d", rd.TradeAmount)
 	o = manager.GetOrderById(o.GetAggregateRootId())
-
-	py := o.(order.INormalOrder).GetPaymentOrder()
-	err = py.PaymentByWallet("支付订单")
-	pv := py.GetValue()
-	payState := pv.State
-	if payState == payment.StateFinishPayment {
-		t.Logf("订单支付完成,金额：%.2f", pv.FinalFee)
-	} else {
-		t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.GetTradeNo())
+	subOrders := o.(order.INormalOrder).GetSubOrders()
+	for _, so := range subOrders {
+		py := so.GetPaymentOrder()
+		err = py.PaymentByWallet("支付订单")
+		pv := py.Get()
+		payState := pv.State
+		if payState == payment.StateFinished {
+			t.Logf("订单支付完成,金额：%d", pv.FinalFee)
+		} else {
+			t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.TradeNo())
+		}
+		t.Logf("支付单信息：%#v", pv)
 	}
-	t.Logf("支付单信息：%#v", pv)
 	//t.Log("调价：",py.Adjust(-0.1))
 	//t.Log(py.Cancel())
 
@@ -175,7 +177,11 @@ func TestSubmitNormalOrder(t *testing.T) {
 	var buyerId int64 = 1
 	cartRepo := ti.Factory.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KRetail)
-	joinItemsToCart(c, t)
+	err := joinItemsToCart(c, t)
+	if err != nil {
+		t.Error("购物车加入失败:", err.Error())
+		t.FailNow()
+	}
 	rc := c.(cart.IRetailCart)
 	if len(rc.GetValue().Items) == 0 {
 		t.Log("购物车是空的")
@@ -185,7 +191,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 	for _, v := range rc.Items() {
 		t.Logf("商品：%d-%d 数量：%d\n", v.ItemId, v.SkuId, v.Quantity)
 	}
-	_, err := c.Save()
+	_, err = c.Save()
 	if err != nil {
 		t.Error("保存购物车失败:", err.Error())
 		t.Fail()
@@ -194,8 +200,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 	manager := orderRepo.Manager()
 	buyer := ti.Factory.GetMemberRepo().GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
-
-	o, err := manager.SubmitOrder(c, addressId, "", !true)
+	o, _, err := manager.SubmitOrder(c, addressId, "", !true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -215,7 +220,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	ic := io.BuildCart()
 	memberId := io.Buyer().GetAggregateRootId()
 	shipId := memRepo.GetDeliverAddress(memberId)[0].ID
-	nio, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
+	nio, _, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
 	if err != nil {
 		t.Log("提交订单", err.Error())
 		t.FailNow()
@@ -225,7 +230,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	ipo := payRepo.GetPaymentBySalesOrderId(orderId)
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
-		t.Logf("支付的交易号为：%s,最终金额:%.2f", nio.OrderNo(), ipo.GetValue().FinalFee)
+		t.Logf("支付的交易号为：%s,最终金额:%d", nio.OrderNo(), ipo.Get().FinalFee)
 	} else {
 		t.Log("支付订单", err.Error())
 		t.FailNow()
@@ -327,7 +332,7 @@ func TestTradeOrder(t *testing.T) {
 		ItemAmount: 100,
 		Subject:    "万宁佛山祖庙店",
 	}
-	var rate float64 = 0.8 // 结算给商家80%
+	var rate = 0.8 // 结算给商家80%
 	o, err := manager.SubmitTradeOrder(c, rate)
 	if err != nil {
 		t.Errorf("提交订单错误：%s", err.Error())
@@ -364,11 +369,31 @@ func TestTradeOrder(t *testing.T) {
 	}
 }
 
+func TestMergePaymentOrder(t *testing.T) {
+	repo := ti.Factory.GetOrderRepo()
+	memRepo := ti.Factory.GetMemberRepo()
+	io := repo.Manager().GetOrderByNo("1180517000262166")
+	ic := io.BuildCart()
+	memberId := io.Buyer().GetAggregateRootId()
+	shipId := memRepo.GetDeliverAddress(memberId)[0].ID
+	_, rd, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	print(fmt.Sprintf("%#v", rd))
+}
+
 // 通知交易单
 func TestNotifyTradeOrder(t *testing.T) {
+	orderNo := "1180518115439092"
+	sub := true
 	rds := ti.GetApp().Storage().(storage.IRedisStorage)
 	conn := rds.GetConn()
 	defer conn.Close()
-	orderNo := "100000582254"
-	conn.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
+	value := orderNo
+	if sub {
+		value = "sub!" + orderNo
+	}
+	conn.Do("RPUSH", variable.KvOrderBusinessQueue, value)
 }

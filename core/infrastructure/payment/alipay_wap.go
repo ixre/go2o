@@ -31,7 +31,7 @@ const (
 	cFormat     = "xml"
 	cCharset    = "utf-8"
 	cSignType   = "MD5"
-	cWapGateway = "http://wappaygw.alipay.com/service/rest.htm?"
+	cWapGateway = "https://wappaygw.alipay.com/service/rest.htm?"
 )
 
 type callbackResult struct {

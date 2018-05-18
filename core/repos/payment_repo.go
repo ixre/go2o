@@ -9,11 +9,12 @@
 package repos
 
 import (
+	"bytes"
+	"database/sql"
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
-	"github.com/jsix/gof/util"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
@@ -21,52 +22,65 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	payImpl "go2o/core/domain/payment"
 	"go2o/core/variable"
+	"log"
+	"strings"
+	"time"
 )
 
-var _ payment.IPaymentRepo = new(paymentRepo)
+var _ payment.IPaymentRepo = new(paymentRepoImpl)
 
-type paymentRepo struct {
+type paymentRepoImpl struct {
 	db.Connector
 	Storage storage.Interface
-	*payImpl.PaymentRepBase
-	_memberRepo member.IMemberRepo
-	_valRepo    valueobject.IValueRepo
-	_orderRepo  order.IOrderRepo
+	*payImpl.RepoBase
+	memberRepo member.IMemberRepo
+	valueRepo  valueobject.IValueRepo
+	orderRepo  order.IOrderRepo
 }
 
 func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMemberRepo,
 	orderRepo order.IOrderRepo, valRepo valueobject.IValueRepo) payment.IPaymentRepo {
-	return &paymentRepo{
-		Storage:     sto,
-		Connector:   conn,
-		_memberRepo: mmRepo,
-		_valRepo:    valRepo,
-		_orderRepo:  orderRepo,
+	return &paymentRepoImpl{
+		Storage:    sto,
+		Connector:  conn,
+		memberRepo: mmRepo,
+		valueRepo:  valRepo,
+		orderRepo:  orderRepo,
 	}
 }
 
 // 根据订单号获取支付单
-func (p *paymentRepo) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOrder {
-	e := &payment.PaymentOrder{}
+func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOrder {
+	e := &payment.Order{}
 	if p.Connector.GetOrm().GetBy(e, "order_id=?", orderId) == nil {
 		return p.CreatePaymentOrder(e)
 	}
 	return nil
 }
 
-func (p *paymentRepo) getPaymentOrderCk(id int32) string {
+// 根据订单号获取支付单
+func (p *paymentRepoImpl) GetPaymentOrderByOrderNo(orderType int, orderNo string) payment.IPaymentOrder {
+	e := &payment.Order{}
+	if p.Connector.GetOrm().GetBy(e, "out_order_no=? AND order_type=?",
+		orderNo, orderType) == nil {
+		return p.CreatePaymentOrder(e)
+	}
+	return nil
+}
+
+func (p *paymentRepoImpl) getPaymentOrderCk(id int) string {
 	return fmt.Sprintf("go2o:repo:pay:order:%d", id)
 }
-func (p *paymentRepo) getPaymentOrderCkByNo(orderNO string) string {
+func (p *paymentRepoImpl) getPaymentOrderCkByNo(orderNO string) string {
 	return fmt.Sprintf("go2o:repo:pay:order:%s", orderNO)
 }
 
 // 根据编号获取支付单
-func (p *paymentRepo) GetPaymentOrderById(id int32) payment.IPaymentOrder {
+func (p *paymentRepoImpl) GetPaymentOrderById(id int) payment.IPaymentOrder {
 	if id <= 0 {
 		return nil
 	}
-	e := &payment.PaymentOrder{}
+	e := &payment.Order{}
 	k := p.getPaymentOrderCk(id)
 	if err := p.Storage.Get(k, &e); err != nil {
 		if p.Connector.GetOrm().Get(id, e) != nil {
@@ -78,9 +92,9 @@ func (p *paymentRepo) GetPaymentOrderById(id int32) payment.IPaymentOrder {
 }
 
 // 根据支付单号获取支付单
-func (p *paymentRepo) GetPaymentOrder(paymentNo string) payment.IPaymentOrder {
+func (p *paymentRepoImpl) GetPaymentOrder(paymentNo string) payment.IPaymentOrder {
 	k := p.getPaymentOrderCkByNo(paymentNo)
-	id, err := util.I32Err(p.Storage.GetInt(k))
+	id, err := p.Storage.GetInt(k)
 	if err != nil {
 		p.ExecScalar("SELECT id FROM pay_order where trade_no=?", &id, paymentNo)
 		if id == 0 {
@@ -92,35 +106,35 @@ func (p *paymentRepo) GetPaymentOrder(paymentNo string) payment.IPaymentOrder {
 }
 
 // 创建支付单
-func (p *paymentRepo) CreatePaymentOrder(
-	o *payment.PaymentOrder) payment.IPaymentOrder {
-	return p.PaymentRepBase.CreatePaymentOrder(o, p,
-		p._memberRepo, p._orderRepo.Manager(), p._valRepo)
+func (p *paymentRepoImpl) CreatePaymentOrder(
+	o *payment.Order) payment.IPaymentOrder {
+	return p.RepoBase.CreatePaymentOrder(o, p,
+		p.memberRepo, p.orderRepo.Manager(), p.valueRepo)
 }
 
 // 保存支付单
-func (p *paymentRepo) SavePaymentOrder(v *payment.PaymentOrder) (int32, error) {
+func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 	stat := v.State
-	if v.Id > 0 {
-		stat = p.GetPaymentOrderById(v.Id).GetValue().State
+	if v.ID > 0 {
+		stat = p.GetPaymentOrderById(v.ID).Get().State
 	}
-	id, err := orm.I32(orm.Save(p.GetOrm(), v, int(v.Id)))
+	id, err := orm.Save(p.GetOrm(), v, v.ID)
 	if err == nil {
-		v.Id = id
+		v.ID = id
 		// 缓存订单
 		p.Storage.SetExpire(p.getPaymentOrderCk(id), *v, DefaultCacheSeconds)
 		// 缓存订单号与订单的关系
-		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
+		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.ID, DefaultCacheSeconds*10)
 		// 已经更改过状态,且为已成功,则推送到队列中
-		if stat != v.State && v.State == payment.StateFinishPayment {
-			p.notifyPaymentFinish(v.Id)
+		if stat != v.State && v.State == payment.StateFinished {
+			p.notifyPaymentFinish(v.ID)
 		}
 	}
 	return id, err
 }
 
 // 通知支付单完成
-func (p *paymentRepo) notifyPaymentFinish(paymentOrderId int32) error {
+func (p *paymentRepoImpl) notifyPaymentFinish(paymentOrderId int) error {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)
@@ -129,8 +143,83 @@ func (p *paymentRepo) notifyPaymentFinish(paymentOrderId int32) error {
 }
 
 // 检查交易单号是否匹配
-func (p *paymentRepo) CheckTradeNoMatch(tradeNo string, id int32) bool {
+func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 	i := 0
 	p.Connector.ExecScalar("SELECT id FROM pay_order WHERE trade_no=? AND id<>?", &i, tradeNo, id)
 	return i == 0
+}
+
+func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeChan {
+	var list []*payment.TradeChan
+	err := p.GetOrm().Select(&list, "trade_no=? LIMIT ?", tradeNo, 10)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
+	}
+	return list
+}
+
+func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeChan) (int, error) {
+	tradeChan.TradeNo = tradeNo
+	id, err := orm.Save(p.GetOrm(), tradeChan, tradeChan.ID)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
+	}
+	return id, err
+}
+
+func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaymentOrder {
+	var tradeNo = ""
+	var tradeNoArr []string
+	// 查询支付单号
+	p.Connector.Query("SELECT order_trade_no FROM pay_merge_order WHERE merge_trade_no=? LIMIT ?",
+		func(rows *sql.Rows) {
+			for rows.Next() {
+				rows.Scan(&tradeNo)
+				tradeNoArr = append(tradeNoArr, "'"+tradeNo+"'")
+			}
+		}, mergeTradeNo, 10)
+
+	var arr = make([]payment.IPaymentOrder, 0)
+	// 查询支付单
+	if l := len(tradeNoArr); l > 0 {
+		var list []*payment.Order
+		p.Connector.GetOrm().Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
+			") LIMIT ?", len(tradeNoArr))
+		for _, v := range list {
+			arr = append(arr, p.CreatePaymentOrder(v))
+		}
+	}
+	return arr
+}
+
+func (p *paymentRepoImpl) ResetMergePaymentOrders(tradeNos []string) error {
+	buf := bytes.NewBuffer([]byte("("))
+	for i, v := range tradeNos {
+		if i > 0 {
+			buf.WriteString(",")
+		}
+		buf.WriteString("'")
+		buf.WriteString(v)
+		buf.WriteString("'")
+	}
+	buf.WriteString(")")
+	_, err := p.Connector.GetOrm().Delete(&payment.MergeOrder{},
+		"order_trade_no in "+buf.String())
+	return err
+}
+
+func (p *paymentRepoImpl) SaveMergePaymentOrders(mergeTradeNo string, tradeNos []string) error {
+	unix := time.Now().Unix()
+	orm := p.Connector.GetOrm()
+	for _, v := range tradeNos {
+		order := &payment.MergeOrder{
+			MergeTradeNo: mergeTradeNo,
+			OrderTradeNo: v,
+			SubmitTime:   unix,
+		}
+		if _, _, err := orm.Save(nil, order); err != nil {
+			return err
+		}
+	}
+	return nil
 }

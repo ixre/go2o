@@ -44,7 +44,6 @@ type normalOrderImpl struct {
 	manager         order.IOrderManager
 	value           *order.NormalOrder
 	cart            cart.ICart //购物车,仅在订单生成时设置
-	paymentOrder    payment.IPaymentOrder
 	coupons         []promotion.ICouponPromotion
 	availPromotions []promotion.IPromotion
 	orderPbs        []*order.OrderPromotionBind
@@ -227,18 +226,6 @@ func (o *normalOrderImpl) SetAddress(addressId int64) error {
 	o.value.ConsigneePerson = d.RealName
 	o.value.ConsigneePhone = d.Phone
 	return nil
-}
-
-// 获取支付单
-func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
-	if o.paymentOrder == nil {
-		id := o.GetAggregateRootId()
-		if id <= 0 {
-			panic(" Get payment order error ; because of order no yet created!")
-		}
-		o.paymentOrder = o.payRepo.GetPaymentBySalesOrderId(id)
-	}
-	return o.paymentOrder
 }
 
 //************* 订单提交 ***************//
@@ -431,7 +418,6 @@ func (o *normalOrderImpl) Submit() error {
 	if err != nil {
 		return err
 	}
-
 	v := o.value
 	//todo: best promotion , 优惠券和返现这里需要重构,直接影响到订单金额
 	//prom,fee,integral := o.GetBestSavePromotion()
@@ -465,8 +451,6 @@ func (o *normalOrderImpl) Submit() error {
 	v.ID = norOrderId
 	orderNo := o.OrderNo()
 	if err == nil {
-		// 生成支付单
-		o.createPaymentForOrder()
 		// 绑定优惠券促销
 		o.bindCouponOnSubmit(orderNo)
 		// 绑定购物车商品的促销
@@ -477,7 +461,8 @@ func (o *normalOrderImpl) Submit() error {
 		o.applyItemStock()
 		// 拆单
 		o.breakUpByVendor()
-
+		// 生成支付单
+		o.createPaymentForOrder()
 		// 记录余额支付记录
 		//todo: 扣减余额
 		//if v.BalanceDiscount > 0 {
@@ -530,17 +515,47 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 	}
 }
 
-// 生成支付单
+// 为所有子订单生成支付单
 func (o *normalOrderImpl) createPaymentForOrder() error {
-	v := o.baseOrderImpl.createPaymentOrder()
-	//v.VendorId = o.value.VendorId
-	v.TotalAmount = o.value.FinalAmount
-	v.CouponDiscount = 0
-	v.IntegralDiscount = 0
-	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
-		v.IntegralDiscount - v.BalanceDiscount
-	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	return o.paymentOrder.Commit()
+	orders := o.GetSubOrders()
+	for _, iso := range orders {
+		v := iso.GetValue()
+		itemAmount := int(v.ItemAmount * 100)
+		finalAmount := int(v.FinalAmount * 100)
+		disAmount := int(v.DiscountAmount * 100)
+		po := &payment.Order{
+			SellerId:       int(v.VendorId),
+			TradeNo:        v.OrderNo,
+			SubOrder:       1,
+			OrderType:      int(order.TRetail),
+			OutOrderNo:     v.OrderNo,
+			Subject:        v.Subject,
+			BuyerId:        v.BuyerId,
+			PayUid:         v.BuyerId,
+			ItemAmount:     itemAmount,
+			DiscountAmount: disAmount,
+			DeductAmount:   0,
+			AdjustAmount:   0,
+			FinalFee:       finalAmount,
+			PaymentFlag:    payment.PAllFlag,
+			TradeChannel:   0,
+			ExtraData:      "",
+			OutTradeSp:     "",
+			OutTradeNo:     "",
+			State:          payment.StateAwaitingPayment,
+			SubmitTime:     v.CreateTime,
+			ExpiresTime:    0,
+			PaidTime:       0,
+			UpdateTime:     v.CreateTime,
+			TradeChannels:  []*payment.TradeChan{},
+		}
+		ip := o.payRepo.CreatePaymentOrder(po)
+		if err := ip.Submit(); err != nil {
+			iso.Cancel("")
+			return err
+		}
+	}
+	return nil
 }
 
 // 绑定促销优惠
@@ -926,7 +941,9 @@ type subOrderImpl struct {
 	parent          order.IOrder
 	buyer           member.IMember
 	internalSuspend bool //内部挂起
-	rep             order.IOrderRepo
+	paymentOrder    payment.IPaymentOrder
+	paymentRepo     payment.IPaymentRepo
+	repo            order.IOrderRepo
 	memberRepo      member.IMemberRepo
 	itemRepo        item.IGoodsItemRepo
 	productRepo     product.IProductRepo
@@ -940,16 +957,17 @@ func NewSubNormalOrder(v *order.NormalSubOrder,
 	manager order.IOrderManager, rep order.IOrderRepo,
 	mmRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo,
 	shipRepo shipment.IShipmentRepo, productRepo product.IProductRepo,
-	valRepo valueobject.IValueRepo,
+	paymentRepo payment.IPaymentRepo, valRepo valueobject.IValueRepo,
 	mchRepo merchant.IMerchantRepo) order.ISubOrder {
 	return &subOrderImpl{
 		value:       v,
 		manager:     manager,
-		rep:         rep,
+		repo:        rep,
 		memberRepo:  mmRepo,
 		itemRepo:    goodsRepo,
 		productRepo: productRepo,
 		shipRepo:    shipRepo,
+		paymentRepo: paymentRepo,
 		valRepo:     valRepo,
 		mchRepo:     mchRepo,
 	}
@@ -971,6 +989,8 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	co := o.baseOrder().Complex()
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
+	co.SubOrder = true
+	co.OrderNo = o.value.OrderNo
 	co.Subject = v.Subject
 	co.SubOrderId = o.GetDomainId()
 	co.DiscountAmount = float64(v.DiscountAmount)
@@ -1011,7 +1031,7 @@ func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexIte
 func (o *subOrderImpl) Items() []*order.SubOrderItem {
 	if (o.value.Items == nil || len(o.value.Items) == 0) &&
 		o.GetDomainId() > 0 {
-		o.value.Items = o.rep.GetSubOrderItems(o.GetDomainId())
+		o.value.Items = o.repo.GetSubOrderItems(o.GetDomainId())
 	}
 	return o.value.Items
 }
@@ -1040,7 +1060,7 @@ func (o *subOrderImpl) saveOrderItems() error {
 	for _, v := range o.Items() {
 		v.OrderId = id
 		v.UpdateTime = unix
-		_, err := o.rep.SaveOrderItem(id, v)
+		_, err := o.repo.SaveOrderItem(id, v)
 		if err != nil {
 			return err
 		}
@@ -1058,7 +1078,7 @@ func (o *subOrderImpl) Submit() (int64, error) {
 		o.value.CreateTime = unix
 		o.value.UpdateTime = unix
 	}
-	id, err := util.I64Err(o.rep.SaveSubOrder(o.value))
+	id, err := util.I64Err(o.repo.SaveSubOrder(o.value))
 	if err == nil {
 		o.value.ID = id
 		err = o.saveOrderItems()
@@ -1074,11 +1094,22 @@ func (o *subOrderImpl) saveSubOrder() error {
 	if o.GetDomainId() <= 0 {
 		panic("please use Submit() to create new suborder!")
 	}
-	_, err := o.rep.SaveSubOrder(o.value)
+	_, err := o.repo.SaveSubOrder(o.value)
 	if err == nil {
 		o.syncOrderState()
 	}
 	return err
+}
+
+func (o *subOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	if o.paymentOrder == nil {
+		if o.GetDomainId() <= 0 {
+			panic(" Get payment order error ; because of order no yet created!")
+		}
+		o.paymentOrder = o.paymentRepo.GetPaymentOrderByOrderNo(
+			int(order.TRetail), o.value.OrderNo)
+	}
+	return o.paymentOrder
 }
 
 // 同步订单状态
@@ -1145,7 +1176,7 @@ func (o *subOrderImpl) AppendLog(logType order.LogType, system bool, message str
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
-	return o.rep.SaveNormalSubOrderLog(l)
+	return o.repo.SaveNormalSubOrderLog(l)
 }
 
 // 确认订单
@@ -1355,8 +1386,8 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 	_, refund := o.getOrderAmount()
 	sAmount := o.getOrderCost()
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_Amount))
-		refundAmount := int(refund * float32(enum.RATE_Amount))
+		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
+		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
@@ -1370,8 +1401,8 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float3
 	amount, refund := o.getOrderAmount()
 	sAmount := amount * rate
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_Amount))
-		refundAmount := int(refund * float32(enum.RATE_Amount))
+		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
+		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
@@ -1384,7 +1415,7 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float3
 // 获取订单的日志
 func (o *subOrderImpl) LogBytes() []byte {
 	buf := bytes.NewBufferString("")
-	list := o.rep.GetSubOrderLogs(o.GetDomainId())
+	list := o.repo.GetSubOrderLogs(o.GetDomainId())
 	for _, v := range list {
 		buf.WriteString(time.Unix(v.RecordTime, 0).Format("2006-01-02 15:04:05"))
 		buf.WriteString("  ")
@@ -1509,22 +1540,7 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
-	io := od.(order.INormalOrder)
-	po := io.GetPaymentOrder()
-	if po != nil {
-		return po.Refund(float64(o.value.FinalAmount))
-		v := po.GetValue()
-		//if true {
-		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalFee,
-		//		"; 订单金额:", o.value.FinalFee)
-		//}
-		// 订单金额为0,则取消订单
-		if v.FinalFee-o.value.FinalAmount <= 0 {
-			return po.Cancel()
-		}
-		return po.Adjust(-o.value.FinalAmount)
-	}
-	return nil
+	return o.GetPaymentOrder().Cancel()
 }
 
 // 退回商品
@@ -1535,7 +1551,7 @@ func (o *subOrderImpl) Return(snapshotId int64, quantity int32) error {
 				return order.ErrOutOfQuantity
 			}
 			v.ReturnQuantity += quantity
-			_, err := o.rep.SaveOrderItem(o.GetDomainId(), v)
+			_, err := o.repo.SaveOrderItem(o.GetDomainId(), v)
 			return err
 		}
 	}
@@ -1550,7 +1566,7 @@ func (o *subOrderImpl) RevertReturn(snapshotId int64, quantity int32) error {
 				return order.ErrOutOfQuantity
 			}
 			v.ReturnQuantity -= quantity
-			_, err := o.rep.SaveOrderItem(o.GetDomainId(), v)
+			_, err := o.repo.SaveOrderItem(o.GetDomainId(), v)
 			return err
 		}
 	}
@@ -1615,44 +1631,6 @@ func (o *subOrderImpl) CancelRefund() error {
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }
-
-// 退款申请
-//func (o *subOrderImpl) refund(reason string) error {
-//    //todo: 商户谢绝订单,现仅处理用户提交的退款
-//    ov := o._value
-//    unix := time.Now().Unix()
-//    rv := &afterSales.RefundOrder{
-//        ID: 0,
-//        // 订单编号
-//        OrderId: o.GetDomainId(),
-//        // 金额
-//        Amount: ov.FinalFee,
-//        // 退款方式：1.退回余额  2: 原路退回
-//        RefundType: 1,
-//        // 是否为全部退款
-//        AllRefund: 1,
-//        // 退款的商品项编号
-//        ItemId: 0,
-//        // 联系人
-//        PersonName: "",
-//        // 联系电话
-//        PersonPhone: "",
-//        // 退款原因
-//        Reason: reason,
-//        // 退款单备注(系统)
-//        Remark: "",
-//        // 运营商备注
-//        VendorRemark: "",
-//        // 退款状态
-//        State: afterSales.RefundStatAwaitingVendor,
-//        // 提交时间
-//        CreateTime: unix,
-//        // 更新时间
-//        UpdateTime: unix,
-//    }
-//    ro := o._afterSalesRepo.CreateRefundOrder(rv)
-//    return ro.Submit()
-//}
 
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {

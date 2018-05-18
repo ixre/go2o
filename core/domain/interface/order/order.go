@@ -22,14 +22,14 @@ import (
 //http://www.pmcaff.com/discuss?id=1000000000138488
 //http://www.zhihu.com/question/31640837
 
-// 拆分为子订单单暂时不拆分支付单
-
 type OrderState int
 type OrderType int32
 
 const (
 	// 零售订单(线上/线下)
 	TRetail OrderType = 1
+	// 零售子订单
+	TRetailSubOrder OrderType = 9
 	// 批发订单
 	TWholesale OrderType = 2
 	// 虚拟订单,如：手机充值
@@ -295,6 +295,20 @@ type (
 		// 更新发票数据
 		UpdateTicket(img string) error
 	}
+)
+
+type (
+	// 订单提交返回数据
+	SubmitReturnData struct {
+		// 订单号，多个订单号，用","分割
+		OrderNo string
+		// 合并支付
+		MergePay bool
+		// 交易号
+		TradeNo string
+		// 交易金额
+		TradeAmount int
+	}
 
 	// 订单
 	Order struct {
@@ -319,6 +333,8 @@ type (
 		SubOrderId int64
 		// 订单类型
 		OrderType int32
+		// 是否为子订单
+		SubOrder bool
 		// 订单号
 		OrderNo string
 		// 购买人编号

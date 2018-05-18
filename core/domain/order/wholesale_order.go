@@ -57,84 +57,84 @@ func newWholesaleOrder(base *baseOrderImpl,
 	return o.init()
 }
 
-func (s *wholesaleOrderImpl) init() order.IOrder {
-	if s.GetAggregateRootId() <= 0 {
-		s.value = &order.WholesaleOrder{
+func (o *wholesaleOrderImpl) init() order.IOrder {
+	if o.GetAggregateRootId() <= 0 {
+		o.value = &order.WholesaleOrder{
 			ID:          0,
 			OrderNo:     "",
 			OrderId:     0,
-			BuyerId:     s.baseValue.BuyerId,
+			BuyerId:     o.baseValue.BuyerId,
 			VendorId:    0,
 			ShopId:      0,
 			ItemAmount:  0,
 			ExpressFee:  0,
 			PackageFee:  0,
 			FinalAmount: 0,
-			State:       s.baseValue.State,
+			State:       o.baseValue.State,
 		}
 	}
-	s.getValue()
-	return s
+	o.getValue()
+	return o
 }
 
-func (s *wholesaleOrderImpl) getValue() *order.WholesaleOrder {
-	if s.value == nil {
-		id := s.GetAggregateRootId()
+func (o *wholesaleOrderImpl) getValue() *order.WholesaleOrder {
+	if o.value == nil {
+		id := o.GetAggregateRootId()
 		if id > 0 {
-			s.value = s.repo.GetWholesaleOrder("order_id=?", id)
+			o.value = o.repo.GetWholesaleOrder("order_id=?", id)
 		}
 	}
-	return s.value
+	return o.value
 }
 
 // 设置商品项
-func (s *wholesaleOrderImpl) SetItems(items []*cart.ItemPair) {
-	if s.GetAggregateRootId() > 0 {
+func (o *wholesaleOrderImpl) SetItems(items []*cart.ItemPair) {
+	if o.GetAggregateRootId() > 0 {
 		panic("wholesale has created. can't use SetItems!")
 	}
-	s.parseOrder(items)
+	o.parseOrder(items)
 	// 计算折扣
-	s.applyGroupDiscount()
+	o.applyGroupDiscount()
 	// 均摊优惠折扣到商品
-	s.avgDiscountForItem()
+	o.avgDiscountForItem()
 }
 
 // 转换为订单相关对象
-func (s *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
-	if s.GetAggregateRootId() > 0 {
+func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
+	if o.GetAggregateRootId() > 0 {
 		panic("订单已经生成，无法解析")
 	}
-	s.items = []*orderItem{}
+	o.items = []*orderItem{}
 	for _, v := range items {
-		s.items = append(s.items, s.createItem(v))
+		o.items = append(o.items, o.createItem(v))
 	}
 	// 获取运营商和商铺编号
-	s.value.VendorId = s.items[0].VendorId
-	s.value.ShopId = s.items[0].ShopId
+	o.value.VendorId = o.items[0].VendorId
+	o.value.ShopId = o.items[0].ShopId
 	// 运费计算器
-	ue := s.expressRepo.GetUserExpress(s.value.VendorId)
+	ue := o.expressRepo.GetUserExpress(o.value.VendorId)
 	ec := ue.CreateCalculator()
 	// 计算订单金额及运费
-	for _, item := range s.items {
-		s.value.ItemAmount += item.Amount
-		s.value.DiscountAmount += item.Amount - item.FinalAmount
-		s.appendToExpressCalculator(ue, item, ec)
+	for _, it := range o.items {
+		o.value.ItemAmount += it.Amount
+		o.value.DiscountAmount += it.Amount - it.FinalAmount
+		o.appendToExpressCalculator(ue, it, ec)
 	}
 	ec.Calculate("") //todo:??暂不支持区域
-	s.value.ExpressFee = ec.Total()
-	s.value.PackageFee = 0
+	o.value.ExpressFee = ec.Total()
+	o.value.PackageFee = 0
 	//计算最终金额
-	s.fixFinalAmount()
+	o.fixFinalAmount()
 }
 
 // 创建商品信息,并读取价格及运费信息
-func (s *wholesaleOrderImpl) createItem(i *cart.ItemPair) *orderItem {
+func (o *wholesaleOrderImpl) createItem(i *cart.ItemPair) *orderItem {
 	// 获取商品信息
-	it := s.itemRepo.GetItem(i.ItemId)
+	it := o.itemRepo.GetItem(i.ItemId)
 	sku := it.GetSku(i.SkuId)
 	iv := it.GetValue()
 	// 获取商品已销售快照
-	snap := s.itemRepo.SnapshotService().GetLatestSalesSnapshot(
+	snap := o.itemRepo.SnapshotService().GetLatestSalesSnapshot(
 		i.ItemId, i.SkuId)
 	if snap == nil {
 		domain.HandleError(errors.New("商品快照生成失败："+
@@ -167,7 +167,7 @@ func (s *wholesaleOrderImpl) createItem(i *cart.ItemPair) *orderItem {
 }
 
 // 加入运费计算器
-func (s *wholesaleOrderImpl) appendToExpressCalculator(ue express.IUserExpress,
+func (o *wholesaleOrderImpl) appendToExpressCalculator(ue express.IUserExpress,
 	item *orderItem, cul express.IExpressCalculator) {
 	tpl := ue.GetTemplate(item.ExpressTplId)
 	if tpl != nil {
@@ -188,7 +188,7 @@ func (s *wholesaleOrderImpl) appendToExpressCalculator(ue express.IUserExpress,
 }
 
 // 转换订单商品
-func (s *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.ComplexItem {
+func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.ComplexItem {
 	it := &order.ComplexItem{
 		ID:             i.ID,
 		OrderId:        i.OrderId,
@@ -202,14 +202,14 @@ func (s *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.Com
 		IsShipped:      i.IsShipped,
 		Data:           make(map[string]string),
 	}
-	s.baseOrderImpl.bindItemInfo(it)
+	o.baseOrderImpl.bindItemInfo(it)
 	return it
 }
 
 // 复合的订单信息
-func (s *wholesaleOrderImpl) Complex() *order.ComplexOrder {
-	v := s.getValue()
-	co := s.baseOrderImpl.Complex()
+func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
+	v := o.getValue()
+	co := o.baseOrderImpl.Complex()
 	co.SubOrderId = 0
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
@@ -226,40 +226,40 @@ func (s *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	co.IsBreak = 0
 	co.UpdateTime = v.UpdateTime
 	co.Items = []*order.ComplexItem{}
-	for _, v := range s.Items() {
-		co.Items = append(co.Items, s.parseComplexItem(v))
+	for _, v := range o.Items() {
+		co.Items = append(co.Items, o.parseComplexItem(v))
 	}
 	return co
 }
 
 // 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
-func (s *wholesaleOrderImpl) Submit() error {
-	if s.GetAggregateRootId() > 0 {
+func (o *wholesaleOrderImpl) Submit() error {
+	if o.GetAggregateRootId() > 0 {
 		return errors.New("订单不允许重复提交")
 	}
-	err := s.checkBuyer()
+	err := o.checkBuyer()
 	if err == nil {
-		err = s.takeItemStock(s.items)
+		err = o.takeItemStock(o.items)
 	}
 	if err != nil {
 		return err
 	}
 	// 提交订单
-	err = s.baseOrderImpl.Submit()
+	err = o.baseOrderImpl.Submit()
 	if err == nil {
 		// 保存订单信息到常规订单
-		s.value.OrderId = s.GetAggregateRootId()
-		s.value.OrderNo = s.OrderNo()
-		s.value.State = int32(order.StatAwaitingPayment)
-		s.value.CreateTime = s.baseValue.CreateTime
-		s.value.UpdateTime = s.baseValue.CreateTime
+		o.value.OrderId = o.GetAggregateRootId()
+		o.value.OrderNo = o.OrderNo()
+		o.value.State = int32(order.StatAwaitingPayment)
+		o.value.CreateTime = o.baseValue.CreateTime
+		o.value.UpdateTime = o.baseValue.CreateTime
 		// 保存订单
-		s.value.ID, err = util.I64Err(s.repo.SaveWholesaleOrder(s.value))
+		o.value.ID, err = util.I64Err(o.repo.SaveWholesaleOrder(o.value))
 		if err == nil {
 			// 存储Items
-			err = s.saveOrderItemsOnSubmit()
+			err = o.saveOrderItemsOnSubmit()
 			// 生成支付单
-			err = s.createPaymentForOrder()
+			err = o.createPaymentForOrder()
 		}
 	}
 
@@ -267,28 +267,28 @@ func (s *wholesaleOrderImpl) Submit() error {
 }
 
 // 检查买家及收货地址
-func (s *wholesaleOrderImpl) checkBuyer() error {
-	buyer := s.Buyer()
+func (o *wholesaleOrderImpl) checkBuyer() error {
+	buyer := o.Buyer()
 	if buyer == nil {
 		return member.ErrNoSuchMember
 	}
 	if buyer.GetValue().State == 0 {
 		return member.ErrMemberDisabled
 	}
-	if s.value.ShippingAddress == "" ||
-		s.value.ConsigneePhone == "" ||
-		s.value.ConsigneePerson == "" {
+	if o.value.ShippingAddress == "" ||
+		o.value.ConsigneePhone == "" ||
+		o.value.ConsigneePerson == "" {
 		return order.ErrMissingShipAddress
 	}
 	return nil
 }
 
 // 扣除库存
-func (s *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
+func (o *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
 	okIndex := 0
 	// 占用库存，并记录库存占用成功索引
 	for _, v := range items {
-		it := s.itemRepo.GetItem(v.ItemId)
+		it := o.itemRepo.GetItem(v.ItemId)
 		if it == nil {
 			err = item.ErrNoSuchItem
 		} else {
@@ -303,7 +303,7 @@ func (s *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
 	if err != nil {
 		for i := 0; i < okIndex; i++ {
 			v := items[i]
-			it := s.itemRepo.GetItem(v.ItemId)
+			it := o.itemRepo.GetItem(v.ItemId)
 			it.FreeStock(v.SkuId, v.Quantity)
 		}
 	}
@@ -311,30 +311,30 @@ func (s *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
 }
 
 // 计算折扣
-func (s *wholesaleOrderImpl) applyGroupDiscount() {
+func (o *wholesaleOrderImpl) applyGroupDiscount() {
 	var groupId int32 = 1
-	mch := s.mchRepo.GetMerchant(s.value.VendorId)
+	mch := o.mchRepo.GetMerchant(o.value.VendorId)
 	if mch != nil {
-		basisAmount := int32(s.value.ItemAmount)
+		basisAmount := int32(o.value.ItemAmount)
 		ws := mch.Wholesaler()
 		rate := ws.GetRebateRate(groupId, basisAmount)
 		disAmount := rate * float64(basisAmount)
 		if disAmount > 0 {
-			s.value.DiscountAmount += float32(disAmount)
-			s.fixFinalAmount()
+			o.value.DiscountAmount += float32(disAmount)
+			o.fixFinalAmount()
 		}
 	}
 }
 
 // 平均优惠抵扣金额到商品
-func (s *wholesaleOrderImpl) avgDiscountForItem() {
-	if s.items == nil {
+func (o *wholesaleOrderImpl) avgDiscountForItem() {
+	if o.items == nil {
 		panic(errors.New("仅能在下单时进行商品抵扣平均"))
 	}
-	if s.value.DiscountAmount > 0 {
-		totalFee := s.value.ItemAmount
-		disFee := s.value.DiscountAmount
-		for _, v := range s.items {
+	if o.value.DiscountAmount > 0 {
+		totalFee := o.value.ItemAmount
+		disFee := o.value.DiscountAmount
+		for _, v := range o.items {
 			b := v.Amount / totalFee
 			v.FinalAmount = v.Amount - b*disFee
 		}
@@ -342,18 +342,18 @@ func (s *wholesaleOrderImpl) avgDiscountForItem() {
 }
 
 // 修正订单实际金额
-func (s *wholesaleOrderImpl) fixFinalAmount() {
-	s.value.FinalAmount = s.value.ItemAmount - s.value.DiscountAmount +
-		s.value.ExpressFee + s.value.PackageFee
+func (o *wholesaleOrderImpl) fixFinalAmount() {
+	o.value.FinalAmount = o.value.ItemAmount - o.value.DiscountAmount +
+		o.value.ExpressFee + o.value.PackageFee
 }
 
 // 保存商品项
-func (s *wholesaleOrderImpl) saveOrderItemsOnSubmit() (err error) {
-	orderId := s.GetAggregateRootId()
-	for _, v := range s.items {
+func (o *wholesaleOrderImpl) saveOrderItemsOnSubmit() (err error) {
+	orderId := o.GetAggregateRootId()
+	for _, v := range o.items {
 		v.OrderId = orderId
-		item := s.parseOrderItem(v)
-		_, err = s.repo.SaveWholesaleItem(item)
+		it := o.parseOrderItem(v)
+		_, err = o.repo.SaveWholesaleItem(it)
 		if err != nil {
 			break
 		}
@@ -362,12 +362,12 @@ func (s *wholesaleOrderImpl) saveOrderItemsOnSubmit() (err error) {
 }
 
 // 保存商品项
-func (s *wholesaleOrderImpl) saveOrderItems() (err error) {
-	orderId := s.GetAggregateRootId()
-	if s.realItems != nil {
-		for _, v := range s.realItems {
+func (o *wholesaleOrderImpl) saveOrderItems() (err error) {
+	orderId := o.GetAggregateRootId()
+	if o.realItems != nil {
+		for _, v := range o.realItems {
 			v.OrderId = orderId
-			_, err = s.repo.SaveWholesaleItem(v)
+			_, err = o.repo.SaveWholesaleItem(v)
 			if err != nil {
 				break
 			}
@@ -377,7 +377,7 @@ func (s *wholesaleOrderImpl) saveOrderItems() (err error) {
 }
 
 // 转换订单商品
-func (s *wholesaleOrderImpl) parseOrderItem(i *orderItem) *order.WholesaleItem {
+func (o *wholesaleOrderImpl) parseOrderItem(i *orderItem) *order.WholesaleItem {
 	return &order.WholesaleItem{
 		ID:             0,
 		OrderId:        i.OrderId,
@@ -394,11 +394,11 @@ func (s *wholesaleOrderImpl) parseOrderItem(i *orderItem) *order.WholesaleItem {
 }
 
 // 设置配送地址
-func (s *wholesaleOrderImpl) SetAddress(addressId int64) error {
+func (o *wholesaleOrderImpl) SetAddress(addressId int64) error {
 	if addressId <= 0 {
 		return order.ErrNoSuchAddress
 	}
-	buyer := s.Buyer()
+	buyer := o.Buyer()
 	if buyer == nil {
 		return member.ErrNoSuchMember
 	}
@@ -407,54 +407,50 @@ func (s *wholesaleOrderImpl) SetAddress(addressId int64) error {
 		return order.ErrNoSuchAddress
 	}
 	d := addr.GetValue()
-	s.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.Address
-	s.value.ConsigneePerson = d.RealName
-	s.value.ConsigneePhone = d.Phone
+	o.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.Address
+	o.value.ConsigneePerson = d.RealName
+	o.value.ConsigneePhone = d.Phone
 	return nil
 }
 
 // 设置或添加买家留言，如已经提交订单，将在原留言后附加
-func (s *wholesaleOrderImpl) SetComment(comment string) {
-	if s.GetAggregateRootId() > 0 {
-		s.value.BuyerComment += "$break$" + comment
+func (o *wholesaleOrderImpl) SetComment(comment string) {
+	if o.GetAggregateRootId() > 0 {
+		o.value.BuyerComment += "$break$" + comment
 	} else {
-		s.value.BuyerComment = comment
+		o.value.BuyerComment = comment
 	}
 }
 
 // 生成支付单
-func (s *wholesaleOrderImpl) createPaymentForOrder() error {
-	v := s.baseOrderImpl.createPaymentOrder()
-	v.VendorId = s.value.VendorId
-	v.TotalAmount = s.value.FinalAmount
-	v.CouponDiscount = 0
-	v.IntegralDiscount = 0
-	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
-		v.IntegralDiscount - v.BalanceDiscount
-	s.paymentOrder = s.payRepo.CreatePaymentOrder(v)
-	return s.paymentOrder.Commit()
+func (o *wholesaleOrderImpl) createPaymentForOrder() error {
+	v := o.baseOrderImpl.createPaymentOrder()
+	v.SellerId = int(o.value.VendorId)
+	v.ItemAmount = int(o.value.FinalAmount * 100)
+	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
+	return o.paymentOrder.Submit()
 }
 
 // 获取商品项
-func (s *wholesaleOrderImpl) Items() []*order.WholesaleItem {
-	if s.realItems == nil {
-		id := s.GetAggregateRootId()
-		s.realItems = s.repo.SelectWholesaleItem("order_id=?", id)
+func (o *wholesaleOrderImpl) Items() []*order.WholesaleItem {
+	if o.realItems == nil {
+		id := o.GetAggregateRootId()
+		o.realItems = o.repo.SelectWholesaleItem("order_id=?", id)
 	}
-	return s.realItems
+	return o.realItems
 }
 
 // 在线支付交易完成
-func (s *wholesaleOrderImpl) OnlinePaymentTradeFinish() error {
-	if s.value.IsPaid == 1 {
+func (o *wholesaleOrderImpl) OnlinePaymentTradeFinish() error {
+	if o.value.IsPaid == 1 {
 		return order.ErrOrderPayed
 	}
-	if s.value.State == order.StatAwaitingPayment {
-		s.value.IsPaid = 1
-		s.value.State = order.StatAwaitingConfirm
-		err := s.AppendLog(order.LogSetup, true, "{finish_pay}")
+	if o.value.State == order.StatAwaitingPayment {
+		o.value.IsPaid = 1
+		o.value.State = order.StatAwaitingConfirm
+		err := o.AppendLog(order.LogSetup, true, "{finish_pay}")
 		if err == nil {
-			err = s.saveWholesaleOrder()
+			err = o.saveWholesaleOrder()
 		}
 		return err
 	}
@@ -462,12 +458,12 @@ func (s *wholesaleOrderImpl) OnlinePaymentTradeFinish() error {
 }
 
 // 记录订单日志
-func (s *wholesaleOrderImpl) AppendLog(logType order.LogType,
+func (o *wholesaleOrderImpl) AppendLog(logType order.LogType,
 	system bool, message string) error {
 	return nil
 	//todo: ???
-	if s.GetAggregateRootId() <= 0 {
-		return errors.New("order not created.")
+	if o.GetAggregateRootId() <= 0 {
+		panic("order not created.")
 	}
 	var systemInt int
 	if system {
@@ -476,64 +472,64 @@ func (s *wholesaleOrderImpl) AppendLog(logType order.LogType,
 		systemInt = 0
 	}
 	l := &order.OrderLog{
-		OrderId:    s.GetAggregateRootId(),
+		OrderId:    o.GetAggregateRootId(),
 		Type:       int(logType),
 		IsSystem:   systemInt,
-		OrderState: int(s.value.State),
+		OrderState: int(o.value.State),
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
-	return s.repo.SaveNormalSubOrderLog(l)
+	return o.repo.SaveNormalSubOrderLog(l)
 }
 
 // 添加备注
-func (s *wholesaleOrderImpl) AddRemark(remark string) {
-	s.value.BuyerComment = remark
+func (o *wholesaleOrderImpl) AddRemark(remark string) {
+	o.value.BuyerComment = remark
 }
 
 // 保存订单
-func (s *wholesaleOrderImpl) saveWholesaleOrder() error {
+func (o *wholesaleOrderImpl) saveWholesaleOrder() error {
 	unix := time.Now().Unix()
-	s.value.UpdateTime = unix
-	if s.getValue().ID <= 0 {
+	o.value.UpdateTime = unix
+	if o.getValue().ID <= 0 {
 		panic("please use Submit() to create new wholesale order!")
 	}
-	_, err := s.repo.SaveWholesaleOrder(s.value)
+	_, err := o.repo.SaveWholesaleOrder(o.value)
 	if err == nil {
-		s.syncOrderState()
+		o.syncOrderState()
 	}
 	return err
 }
 
 // 同步订单状态
-func (s *wholesaleOrderImpl) syncOrderState() {
-	if s.State() != order.StatBreak {
-		s.saveOrderState(order.OrderState(s.value.State))
+func (o *wholesaleOrderImpl) syncOrderState() {
+	if o.State() != order.StatBreak {
+		o.saveOrderState(order.OrderState(o.value.State))
 	}
 }
 
 // 确认订单
-func (s *wholesaleOrderImpl) Confirm() error {
-	if s.value.State < order.StatAwaitingConfirm {
+func (o *wholesaleOrderImpl) Confirm() error {
+	if o.value.State < order.StatAwaitingConfirm {
 		return order.ErrOrderNotPayed
 	}
-	if s.value.State >= order.StatAwaitingPickup {
+	if o.value.State >= order.StatAwaitingPickup {
 		return order.ErrOrderHasConfirm
 	}
-	s.value.State = order.StatAwaitingPickup
-	s.value.UpdateTime = time.Now().Unix()
-	err := s.saveWholesaleOrder()
+	o.value.State = order.StatAwaitingPickup
+	o.value.UpdateTime = time.Now().Unix()
+	err := o.saveWholesaleOrder()
 	if err == nil {
-		go s.addItemSalesNum()
-		err = s.AppendLog(order.LogSetup, false, "{confirm}")
+		go o.addItemSalesNum()
+		err = o.AppendLog(order.LogSetup, false, "{confirm}")
 	}
 	return err
 }
 
 // 增加商品的销售数量
-func (s *wholesaleOrderImpl) addItemSalesNum() {
-	for _, v := range s.Items() {
-		it := s.itemRepo.GetItem(v.ItemId)
+func (o *wholesaleOrderImpl) addItemSalesNum() {
+	for _, v := range o.Items() {
+		it := o.itemRepo.GetItem(v.ItemId)
 		err := it.AddSalesNum(v.SkuId, v.Quantity)
 		if err != nil {
 			log.Println("---增加销售数量：", v.ItemId,
@@ -543,31 +539,31 @@ func (s *wholesaleOrderImpl) addItemSalesNum() {
 }
 
 // 捡货(备货)
-func (s *wholesaleOrderImpl) PickUp() error {
-	if s.value.State < order.StatAwaitingPickup {
+func (o *wholesaleOrderImpl) PickUp() error {
+	if o.value.State < order.StatAwaitingPickup {
 		return order.ErrOrderNotConfirm
 	}
-	if s.value.State >= order.StatAwaitingShipment {
+	if o.value.State >= order.StatAwaitingShipment {
 		return order.ErrOrderHasPickUp
 	}
-	s.value.State = order.StatAwaitingShipment
-	s.value.UpdateTime = time.Now().Unix()
-	err := s.saveWholesaleOrder()
+	o.value.State = order.StatAwaitingShipment
+	o.value.UpdateTime = time.Now().Unix()
+	err := o.saveWholesaleOrder()
 	if err == nil {
-		err = s.AppendLog(order.LogSetup, true, "{pickup}")
+		err = o.AppendLog(order.LogSetup, true, "{pickup}")
 	}
 	return err
 }
 
 // 创建发货单
-func (s *wholesaleOrderImpl) createShipmentOrder(items []*order.WholesaleItem) shipment.IShipmentOrder {
+func (o *wholesaleOrderImpl) createShipmentOrder(items []*order.WholesaleItem) shipment.IShipmentOrder {
 	if items == nil || len(items) == 0 {
 		return nil
 	}
 	unix := time.Now().Unix()
 	so := &shipment.ShipmentOrder{
 		ID:          0,
-		OrderId:     s.GetAggregateRootId(),
+		OrderId:     o.GetAggregateRootId(),
 		SubOrderId:  0,
 		ShipmentLog: "",
 		ShipTime:    unix,
@@ -590,62 +586,62 @@ func (s *wholesaleOrderImpl) createShipmentOrder(items []*order.WholesaleItem) s
 		})
 		v.IsShipped = 1
 	}
-	return s.shipRepo.CreateShipmentOrder(so)
+	return o.shipRepo.CreateShipmentOrder(so)
 }
 
 // 发货
-func (s *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
-	if s.value.State < order.StatAwaitingShipment {
+func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
+	if o.value.State < order.StatAwaitingShipment {
 		return order.ErrOrderNotPickUp
 	}
-	if s.value.State >= order.StatShipped {
+	if o.value.State >= order.StatShipped {
 		return order.ErrOrderShipped
 	}
-	id := s.GetAggregateRootId()
-	if list := s.shipRepo.GetShipOrders(id, false); len(list) > 0 {
+	id := o.GetAggregateRootId()
+	if list := o.shipRepo.GetShipOrders(id, false); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
 		return shipment.ErrMissingSpInfo
 	}
 
-	so := s.createShipmentOrder(s.Items())
+	so := o.createShipmentOrder(o.Items())
 	if so == nil {
 		return order.ErrUnusualOrder
 	}
 	// 生成发货单并发货
 	err := so.Ship(spId, spOrder)
 	if err == nil {
-		s.value.State = order.StatShipped
-		s.value.UpdateTime = time.Now().Unix()
-		err = s.saveWholesaleOrder()
+		o.value.State = order.StatShipped
+		o.value.UpdateTime = time.Now().Unix()
+		err = o.saveWholesaleOrder()
 		if err == nil {
 			// 保存商品的发货状态
-			err = s.saveOrderItems()
-			s.AppendLog(order.LogSetup, true, "{shipped}")
+			err = o.saveOrderItems()
+			o.AppendLog(order.LogSetup, true, "{shipped}")
 		}
 	}
 	return err
 }
 
 // 已收货
-func (s *wholesaleOrderImpl) BuyerReceived() error {
-	if s.value.State < order.StatShipped {
+func (o *wholesaleOrderImpl) BuyerReceived() error {
+	if o.value.State < order.StatShipped {
 		return order.ErrOrderNotShipped
 	}
-	if s.value.State >= order.StatCompleted {
+	if o.value.State >= order.StatCompleted {
 		return order.ErrIsCompleted
 	}
 	dt := time.Now()
-	s.value.State = order.StatCompleted
-	s.value.UpdateTime = dt.Unix()
-	err := s.saveWholesaleOrder()
+	o.value.State = order.StatCompleted
+	o.value.UpdateTime = dt.Unix()
+	err := o.saveWholesaleOrder()
 	if err == nil {
-		err = s.AppendLog(order.LogSetup, true, "{completed}")
+		err = o.AppendLog(order.LogSetup, true, "{completed}")
 		if err == nil {
-			go s.vendorSettle()
+			go o.vendorSettle()
 			// 执行其他的操作
-			if err2 := s.onOrderComplete(); err != nil {
+			if err2 := o.onOrderComplete(); err != nil {
 				domain.HandleError(err2, "domain")
 			}
 		}
@@ -653,51 +649,51 @@ func (s *wholesaleOrderImpl) BuyerReceived() error {
 	return err
 }
 
-func (s *wholesaleOrderImpl) getOrderAmount() (amount float32, refund float32) {
-	items := s.Items()
-	for _, item := range items {
-		if item.ReturnQuantity > 0 {
-			a := item.Amount / float32(item.Quantity) * float32(item.ReturnQuantity)
-			if item.ReturnQuantity != item.Quantity {
-				amount += item.Amount - a
+func (o *wholesaleOrderImpl) getOrderAmount() (amount float32, refund float32) {
+	items := o.Items()
+	for _, it := range items {
+		if it.ReturnQuantity > 0 {
+			a := it.Amount / float32(it.Quantity) * float32(it.ReturnQuantity)
+			if it.ReturnQuantity != it.Quantity {
+				amount += it.Amount - a
 			}
 			refund += a
 		} else {
-			amount += item.Amount
+			amount += it.Amount
 		}
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if amount > 0 {
-		amount += s.value.ExpressFee + s.value.PackageFee
+		amount += o.value.ExpressFee + o.value.PackageFee
 	}
 	return amount, refund
 }
 
 // 获取订单的成本
-func (s *wholesaleOrderImpl) getOrderCost() float32 {
+func (o *wholesaleOrderImpl) getOrderCost() float32 {
 	var cost float32
-	items := s.Items()
-	for _, item := range items {
-		snap := s.itemRepo.GetSalesSnapshot(item.SnapshotId)
-		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
+	items := o.Items()
+	for _, it := range items {
+		snap := o.itemRepo.GetSalesSnapshot(it.SnapshotId)
+		cost += snap.Cost * float32(it.Quantity-it.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if cost > 0 {
-		cost += s.value.ExpressFee + s.value.PackageFee
+		cost += o.value.ExpressFee + o.value.PackageFee
 	}
 	return cost
 }
 
 // 商户结算
-func (s *wholesaleOrderImpl) vendorSettle() error {
-	vendor := s.mchRepo.GetMerchant(s.value.VendorId)
+func (o *wholesaleOrderImpl) vendorSettle() error {
+	vendor := o.mchRepo.GetMerchant(o.value.VendorId)
 	if vendor != nil {
-		conf := s.valueRepo.GetGlobMchSaleConf()
+		conf := o.valueRepo.GetGlobMchSaleConf()
 		switch conf.MchOrderSettleMode {
 		case enum.MchModeSettleByCost:
-			return s.vendorSettleByCost(vendor)
+			return o.vendorSettleByCost(vendor)
 		case enum.MchModeSettleByRate:
-			return s.vendorSettleByRate(vendor, conf.MchOrderSettleRate)
+			return o.vendorSettleByRate(vendor, conf.MchOrderSettleRate)
 		}
 
 	}
@@ -705,45 +701,45 @@ func (s *wholesaleOrderImpl) vendorSettle() error {
 }
 
 // 根据供货价进行商户结算
-func (s *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
-	_, refund := s.getOrderAmount()
-	sAmount := s.getOrderCost()
+func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
+	_, refund := o.getOrderAmount()
+	sAmount := o.getOrderCost()
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_Amount))
-		refundAmount := int(refund * float32(enum.RATE_Amount))
+		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
+		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		return vendor.Account().SettleOrder(s.OrderNo(),
+		return vendor.Account().SettleOrder(o.OrderNo(),
 			totalAmount, tradeFee, refundAmount, "批发订单结算")
 	}
 	return nil
 }
 
 // 根据比例进行商户结算
-func (s *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float32) error {
-	amount, refund := s.getOrderAmount()
+func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float32) error {
+	amount, refund := o.getOrderAmount()
 	sAmount := amount * rate
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_Amount))
-		refundAmount := int(refund * float32(enum.RATE_Amount))
+		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
+		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		return vendor.Account().SettleOrder(s.OrderNo(),
+		return vendor.Account().SettleOrder(o.OrderNo(),
 			totalAmount, tradeFee, refundAmount, "批发订单结算")
 	}
 	return nil
 }
 
 // 完成订单
-func (s *wholesaleOrderImpl) onOrderComplete() error {
-	id := s.GetAggregateRootId()
+func (o *wholesaleOrderImpl) onOrderComplete() error {
+	id := o.GetAggregateRootId()
 	// 更新发货单
-	soList := s.shipRepo.GetShipOrders(id, false)
+	soList := o.shipRepo.GetShipOrders(id, false)
 	for _, v := range soList {
 		domain.HandleError(v.Completed(), "domain")
 	}
 	// 更新会员账户
-	err := s.updateAccountForOrder()
+	err := o.updateAccountForOrder()
 	if err == nil {
 		// 处理返现
 		//err = o.handleCashBack()
@@ -753,15 +749,15 @@ func (s *wholesaleOrderImpl) onOrderComplete() error {
 }
 
 // 更新账户
-func (s *wholesaleOrderImpl) updateAccountForOrder() error {
-	if s.value.State != order.StatCompleted {
+func (o *wholesaleOrderImpl) updateAccountForOrder() error {
+	if o.value.State != order.StatCompleted {
 		return order.ErrUnusualOrderStat
 	}
-	m := s.Buyer()
+	m := o.Buyer()
 	var err error
-	ov := s.value
-	conf := s.valueRepo.GetGlobNumberConf()
-	registry := s.valueRepo.GetRegistry()
+	ov := o.value
+	conf := o.valueRepo.GetGlobNumberConf()
+	registry := o.valueRepo.GetRegistry()
 	amount := ov.FinalAmount
 	acc := m.GetAccount()
 
@@ -781,7 +777,7 @@ func (s *wholesaleOrderImpl) updateAccountForOrder() error {
 	// 赠送积分
 	if integral > 0 {
 		err = m.GetAccount().AddIntegral(member.TypeIntegralShoppingPresent,
-			s.value.OrderNo, integral, "")
+			o.value.OrderNo, integral, "")
 		if err != nil {
 			return err
 		}
@@ -795,15 +791,15 @@ func (s *wholesaleOrderImpl) updateAccountForOrder() error {
 }
 
 // 获取订单的日志
-func (s *wholesaleOrderImpl) LogBytes() []byte {
+func (o *wholesaleOrderImpl) LogBytes() []byte {
 	buf := bytes.NewBufferString("")
-	orderId := s.GetAggregateRootId()
-	list := s.repo.GetSubOrderLogs(orderId)
+	orderId := o.GetAggregateRootId()
+	list := o.repo.GetSubOrderLogs(orderId)
 	for _, v := range list {
 		buf.WriteString(time.Unix(v.RecordTime, 0).Format("2006-01-02 15:04:05"))
 		buf.WriteString("  ")
 		if v.Message[:1] == "{" {
-			if msg := s.getLogStringByStat(v.OrderState); len(msg) > 0 {
+			if msg := o.getLogStringByStat(v.OrderState); len(msg) > 0 {
 				v.Message = msg
 			}
 		}
@@ -813,7 +809,7 @@ func (s *wholesaleOrderImpl) LogBytes() []byte {
 	return buf.Bytes()
 }
 
-func (s *wholesaleOrderImpl) getLogStringByStat(stat int) string {
+func (o *wholesaleOrderImpl) getLogStringByStat(stat int) string {
 	switch stat {
 	case order.StatAwaitingPayment:
 		return "订单已提交..."
@@ -832,43 +828,43 @@ func (s *wholesaleOrderImpl) getLogStringByStat(stat int) string {
 }
 
 // 取消订单/退款
-func (s *wholesaleOrderImpl) Cancel(reason string) error {
-	if s.value.State == order.StatCancelled {
+func (o *wholesaleOrderImpl) Cancel(reason string) error {
+	if o.value.State == order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
 	// 已发货订单无法取消
-	if s.value.State >= order.StatShipped {
+	if o.value.State >= order.StatShipped {
 		return order.ErrOrderShippedCancel
 	}
-	s.value.State = order.StatCancelled
-	s.value.UpdateTime = time.Now().Unix()
-	err := s.saveWholesaleOrder()
+	o.value.State = order.StatCancelled
+	o.value.UpdateTime = time.Now().Unix()
+	err := o.saveWholesaleOrder()
 	if err == nil {
-		domain.HandleError(s.AppendLog(order.LogSetup, true, reason), "domain")
+		domain.HandleError(o.AppendLog(order.LogSetup, true, reason), "domain")
 		// 取消支付单
-		err = s.cancelPaymentOrder()
+		err = o.cancelPaymentOrder()
 		if err == nil {
 			// 取消商品
-			err = s.cancelGoods()
+			err = o.cancelGoods()
 		}
 	}
 	return err
 }
 
 // 取消商品
-func (s *wholesaleOrderImpl) cancelGoods() error {
-	for _, v := range s.Items() {
-		snapshot := s.itemRepo.GetSalesSnapshot(v.SnapshotId)
+func (o *wholesaleOrderImpl) cancelGoods() error {
+	for _, v := range o.Items() {
+		snapshot := o.itemRepo.GetSalesSnapshot(v.SnapshotId)
 		if snapshot == nil {
 			return item.ErrNoSuchSnapshot
 		}
-		gds := s.itemRepo.GetItem(snapshot.SkuId)
+		gds := o.itemRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
 			gds.FreeStock(v.SkuId, v.Quantity)
 			// 如果订单已付款，则取消销售数量
-			if s.value.IsPaid == 1 {
-				gds.CancelSale(v.SkuId, v.Quantity, s.value.OrderNo)
+			if o.value.IsPaid == 1 {
+				gds.CancelSale(v.SkuId, v.Quantity, o.value.OrderNo)
 			}
 		}
 	}
@@ -876,45 +872,36 @@ func (s *wholesaleOrderImpl) cancelGoods() error {
 }
 
 // 获取支付单
-func (s *wholesaleOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
-	if s.paymentOrder == nil {
-		id := s.GetAggregateRootId()
+func (o *wholesaleOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	if o.paymentOrder == nil {
+		id := o.GetAggregateRootId()
 		if id <= 0 {
 			panic(" Get payment order error ; because of order no yet created!")
 		}
-		s.paymentOrder = s.payRepo.GetPaymentBySalesOrderId(id)
+		o.paymentOrder = o.payRepo.GetPaymentBySalesOrderId(id)
 	}
-	return s.paymentOrder
+	return o.paymentOrder
 }
 
 // 取消支付单
-func (s *wholesaleOrderImpl) cancelPaymentOrder() error {
-	po := s.GetPaymentOrder()
+func (o *wholesaleOrderImpl) cancelPaymentOrder() error {
+	po := o.GetPaymentOrder()
 	if po != nil {
-		v := po.GetValue()
-		//if true {
-		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalFee,
-		//		"; 订单金额:", o.value.FinalFee)
-		//}
-		// 订单金额为0,则取消订单
-		if v.FinalFee-s.value.FinalAmount <= 0 {
-			return po.Cancel()
-		}
-		return po.Adjust(-s.value.FinalAmount)
+		return po.Cancel()
 	}
 	return nil
 }
 
 // 谢绝订单
-func (s *wholesaleOrderImpl) Decline(reason string) error {
-	if s.value.State == order.StatAwaitingPayment {
-		return s.Cancel("商户取消,原因:" + reason)
+func (o *wholesaleOrderImpl) Decline(reason string) error {
+	if o.value.State == order.StatAwaitingPayment {
+		return o.Cancel("商户取消,原因:" + reason)
 	}
-	if s.value.State >= order.StatShipped ||
-		s.value.State >= order.StatCancelled {
+	if o.value.State >= order.StatShipped ||
+		o.value.State >= order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
-	s.value.State = order.StatDeclined
-	s.value.UpdateTime = time.Now().Unix()
-	return s.saveWholesaleOrder()
+	o.value.State = order.StatDeclined
+	o.value.UpdateTime = time.Now().Unix()
+	return o.saveWholesaleOrder()
 }

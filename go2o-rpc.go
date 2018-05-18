@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package go2o
+package main
 
 import (
 	"flag"

@@ -519,7 +519,7 @@ func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) 
 	val := s.repo.GetMemberByUsr(usr)
 	if val == nil {
 		//todo: 界面加上使用手机号码登陆
-		//val = m._repo.GetMemberValueByPhone(usr)
+		//val = m.repo.GetMemberValueByPhone(usr)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
@@ -647,7 +647,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 	}
 
 	if trust != "" {
-		buf.WriteString(" AND reviewed ")
+		buf.WriteString(" AND review_state ")
 		if trust == "true" {
 			buf.WriteString(" = ")
 		} else {
@@ -745,7 +745,7 @@ func (s *memberService) QueryWholesaleOrder(memberId int64, begin, size int, pag
 
 // 查询分页订单
 func (s *memberService) PagedTradeOrder(buyerId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*define.ComplexOrder) {
+	where, orderBy string) (int, []*define.SComplexOrder) {
 	return s.orderQuery.PagedTradeOrderOfBuyer(buyerId, begin, size, pagination, where, orderBy)
 }
 

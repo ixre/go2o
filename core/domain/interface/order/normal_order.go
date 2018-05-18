@@ -13,8 +13,6 @@ type (
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
 		GetByVendor() (items map[int32][]*SubOrderItem, expressFee map[int32]float32)
-		// 获取支付单
-		GetPaymentOrder() payment.IPaymentOrder
 		// 在线支付交易完成
 		OnlinePaymentTradeFinish() error
 		// 设置配送地址
@@ -79,6 +77,8 @@ type (
 		Decline(reason string) error
 		// 提交子订单
 		Submit() (int64, error)
+		// 获取支付单
+		GetPaymentOrder() payment.IPaymentOrder
 	}
 
 	// 普通订单

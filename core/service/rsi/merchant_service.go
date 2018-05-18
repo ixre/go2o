@@ -501,7 +501,7 @@ func (m *merchantService) PagedWholesaleOrderOfVendor(vendorId int32, begin, siz
 
 // 查询分页订单
 func (m *merchantService) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
-	where, orderBy string) (int32, []*define.ComplexOrder) {
+	where, orderBy string) (int32, []*define.SComplexOrder) {
 	return m._orderQuery.PagedTradeOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 

@@ -62,10 +62,12 @@ enum AmountBasis{
     Percent =3
 }
 
-/** 百分比比例放大倍数，保留3位小数  */
-const i32 RATE_Percent = 10000
-/** 金额比例放大倍数  */
-const i32 RATE_Amount = 100
+/** 百分比比例放大倍数，保留3位小数;0.56 * 10000 = 560 */
+const i32 RATE_PERCENT = 10000
+/** 金额比例放大倍数;0.95 * 100 = 95  */
+const i32 RATE_AMOUNT = 100
+/** 折扣比例放大倍数; 0.9 * 1000 = 900 */
+const i32 RATE_DISCOUNT = 1000
 
 //商品分类
 struct Category {

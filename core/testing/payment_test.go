@@ -2,6 +2,7 @@ package testing
 
 import (
 	"go2o/core/domain/interface/payment"
+	"go2o/core/factory"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/testing/ti"
 	"testing"
@@ -19,35 +20,57 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 	repo := ti.Factory.GetPaymentRepo()
 	unix := time.Now().Unix()
 	tradeNo := domain.NewTradeNo(0, 0)
-	ip := repo.CreatePaymentOrder(&payment.PaymentOrder{
-		TradeNo:          tradeNo,
-		TradeType:        "ppi-charge",
-		VendorId:         0,
-		Type:             0,
-		OrderId:          0,
-		Subject:          "充值",
-		BuyUser:          22149,
-		PaymentUser:      1,
-		TotalAmount:      0.01,
-		BalanceDiscount:  0,
-		IntegralDiscount: 0,
-		SystemDiscount:   0,
-		CouponDiscount:   0,
-		SubAmount:        0,
-		AdjustmentAmount: 0,
-		FinalFee:         1.01,
-		PayFlag:          0,
-		PaymentSign:      payment.SignOnlinePay | payment.SignWalletAccount,
-		OuterNo:          "",
-		CreateTime:       unix,
-		PaidTime:         0,
-		State:            0,
+	ip := repo.CreatePaymentOrder(&payment.Order{
+		TradeNo:   tradeNo,
+		TradeType: "ppi-charge",
+		SellerId:  0,
+		OrderType: 0,
+		Subject:   "充值",
+		BuyerId:   22149,
+		//PayUid:      1,
+		ItemAmount: 1,
+		PaymentFlag: payment.FlagBankCard | payment.FlagOutSp | payment.FlagBalance |
+			payment.FlagIntegral | payment.FlagWallet,
+		OutTradeNo: "",
+		SubmitTime: unix,
+		PaidTime:   0,
 	})
-	if err := ip.Commit(); err != nil {
+	if err := ip.Submit(); err != nil {
 		t.Error(err)
 		t.Failed()
 	}
+	//err := ip.BalanceDiscount("支付订单")
+	//if err != nil{
+	//	t.Error(err)
+	//}
+
+	//amount, err := ip.IntegralDiscount(100, false)
+	//if err != nil {
+	//	t.Error(err)
+	//}
+	//println("---amount=", amount)
+
+	err := ip.PaymentByWallet("")
+	if err != nil {
+		t.Error(err)
+	}
+
 	//ip.TradeNoPrefix("CZ")
-	ip.PaymentFinish("alipay", "1234567890")
-	t.Log("订单号：", ip.GetTradeNo())
+	//ip.PaymentFinish("alipay", "1234567890")
+	t.Log("订单号：", ip.TradeNo(), "; 订单状态:", ip.State())
+}
+
+// 测试支付单交易完成
+func TestPaymentOrderTradeFinish(t *testing.T) {
+	tradeNo := "IC6180515221155668"
+	ic := factory.Repo.GetPaymentRepo().GetPaymentOrder(tradeNo)
+	if ic == nil {
+		t.Errorf("支付单:%s不存在", tradeNo)
+		t.Failed()
+	}
+	err := ic.TradeFinish()
+	if err != nil {
+		t.Errorf("支付单%s支付失败：%s", tradeNo, err.Error())
+		t.Failed()
+	}
 }

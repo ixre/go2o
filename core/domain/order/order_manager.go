@@ -13,7 +13,6 @@ import (
 	"errors"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -201,7 +200,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 		return errors.New("不支持优惠券")
 	}
 	io := o.(order.INormalOrder)
-	po := py.GetValue()
+	po := py.Get()
 	//todo: ?? 重构
 	cp := t.promRepo.GetCouponByCode(
 		int32(m.GetAggregateRootId()), couponCode)
@@ -211,7 +210,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 	}
 	// 获取优惠券
 	coupon := cp.(promotion.ICouponPromotion)
-	result, err := coupon.CanUse(m, po.TotalAmount)
+	result, err := coupon.CanUse(m, float32(po.TotalAmount/100))
 	if result {
 		if coupon.CanTake() {
 			_, err = coupon.GetTake(m.GetAggregateRootId())
@@ -236,54 +235,83 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 }
 
 func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
-	couponCode string, useBalanceDiscount bool) (order.IOrder, error) {
+	couponCode string, useBalanceDiscount bool) (order.IOrder, *order.SubmitReturnData, error) {
+	rd := &order.SubmitReturnData{}
 	o, err := t.PrepareNormalOrder(c)
-	if err == nil {
-		if o.Type() != order.TRetail {
-			panic("only support retail cart!")
+	if err != nil {
+		return nil, rd, err
+	}
+	if o.Type() != order.TRetail {
+		panic("only support retail cart!")
+	}
+	io := o.(order.INormalOrder)
+	buyer := o.Buyer()
+	// 设置收货地址
+	if err = io.SetAddress(addressId); err != nil {
+		return o, rd, err
+	} else {
+		buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
+	}
+	if err = o.Submit(); err != nil {
+		return o, rd, err
+	}
+	// 合并支付
+	iss := io.GetSubOrders()
+	arr := make([]payment.IPaymentOrder, 0)
+	for _, v := range iss {
+		ip := v.GetPaymentOrder()
+		if len(couponCode) != 0 { // 使用优惠码
+			if err = t.applyCoupon(buyer, o, ip, couponCode); err != nil {
+				return o, rd, err
+			}
 		}
-		io := o.(order.INormalOrder)
-		err = io.SetAddress(addressId)
-		if err != nil {
-			return o, err
+		if useBalanceDiscount { // 使用余额抵扣
+			if err = ip.BalanceDiscount(""); err != nil {
+				return o, rd, err
+			}
 		}
-		// 更新默认收货地址为本地使用地址
-		o.Buyer().Profile().SetDefaultAddress(addressId)
-
-		err = o.Submit()
-		buyer := o.Buyer()
-		if err == nil {
-			if c.Kind() != cart.KRetail {
-				panic("购物车非零售")
-			}
-			rc := c.(cart.IRetailCart)
-			cv := rc.GetValue()
-
-			py := io.GetPaymentOrder()
-			// 设置支付方式
-			cv.PaymentOpt = enum.PaymentOnlinePay
-			if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
-				return o, err
-			}
-			// 使用优惠码
-			if len(couponCode) != 0 {
-				err = t.applyCoupon(buyer, o, py, couponCode)
-				if err != nil {
-					return o, err
-				}
-			}
-			// 使用余额抵扣
-			if useBalanceDiscount {
-				err = py.BalanceDiscount("")
-			}
+		if ip.State() == payment.StateAwaitingPayment {
+			arr = append(arr, ip)
 		}
 	}
-	return o, err
+	l := len(arr)
+	// 如果全部支付成功
+	if l == 0 {
+		ip := iss[0].GetPaymentOrder().Get()
+		rd.TradeNo = ip.TradeNo
+		rd.TradeAmount = ip.FinalFee
+		rd.OrderNo = ip.OutOrderNo
+		return o, rd, err
+	}
+	// 剩下单个订单未支付
+	if l == 1 {
+		ip := arr[0].Get()
+		rd.TradeNo = ip.TradeNo
+		rd.TradeAmount = ip.FinalFee
+		rd.OrderNo = ip.OutOrderNo
+		return o, rd, err
+	}
+	// 合并支付
+	mergeTradeNo, fee, err := arr[0].MergePay(arr[1:])
+	if err != nil {
+		return o, rd, err
+	}
+	//println("----", len(arr), "个订单已合并", fee, mergeTradeNo)
+	rd.MergePay = true
+	rd.TradeAmount = fee
+	rd.TradeNo = mergeTradeNo
+	for i, v := range arr {
+		if i > 0 { // 拼接订单号
+			rd.OrderNo += ","
+		}
+		rd.OrderNo += v.Get().OutOrderNo
+	}
+	return o, rd, err
 }
 
 // 根据订单编号获取订单
 func (t *orderManagerImpl) GetOrderById(orderId int64) order.IOrder {
-	val := t.repo.GetOrder("id=?", orderId)
+	val := t.repo.GetOrder("id=? LIMIT 1", orderId)
 	if val != nil {
 		return t.repo.CreateOrder(val)
 	}
@@ -300,12 +328,15 @@ func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
 }
 
 // 接收在线交易支付的通知，不主动调用
-func (t *orderManagerImpl) NotifyOrderTradeSuccess(orderId int64) error {
-	o := t.GetOrderById(orderId)
+func (t *orderManagerImpl) NotifyOrderTradeSuccess(orderNo string, subOrder bool) error {
+	if subOrder { // 处理子订单
+		iso := t.repo.GetSubOrderByOrderNo(orderNo)
+		return iso.PaymentFinishByOnlineTrade()
+	}
+	o := t.GetOrderByNo(orderNo)
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-
 	switch o.Type() {
 	case order.TRetail:
 		io := o.(order.INormalOrder)
@@ -340,10 +371,10 @@ type unifiedOrderAdapterImpl struct {
 
 func (u *unifiedOrderAdapterImpl) adapter(orderNo string, sub bool) order.IUnifiedOrderAdapter {
 	u.sub = sub
-	orderId := u.repo.GetOrderId(orderNo, sub)
 	if u.sub {
-		u.subOrder = u.manager.GetSubOrder(orderId)
+		u.subOrder = u.repo.GetSubOrderByOrderNo(orderNo)
 	} else {
+		orderId := u.repo.GetOrderId(orderNo, sub)
 		u.bigOrder = u.manager.GetOrderById(orderId)
 	}
 	return u
@@ -361,8 +392,7 @@ func (u *unifiedOrderAdapterImpl) check() error {
 
 // 复合的订单信息
 func (u *unifiedOrderAdapterImpl) Complex() *order.ComplexOrder {
-	err := u.check()
-	if err == nil {
+	if err := u.check(); err == nil {
 		if u.sub {
 			return u.subOrder.Complex()
 		}

@@ -177,43 +177,51 @@ func (r *refundOrderImpl) backAmount(amount float32) error {
 	if mm == nil {
 		return member.ErrNoSuchMember
 	}
-	acc := mm.GetAccount()
+
 	//支付单与父订单关联。多个子订单合并付款
 	po := r.paymentRepo.GetPaymentBySalesOrderId(o.OrderId)
-	//如果支付单已清理数据，则全部退回到余额
-	if po == nil {
-		return acc.Refund(member.AccountBalance,
-			member.KindBalanceRefund, "订单退款",
-			o.OrderNo, amount, member.DefaultRelateUser)
-	}
-	//原路退回
-	pv := po.GetValue()
-	if pv.BalanceDiscount > 0 {
-		if err := acc.Refund(member.AccountBalance,
-			member.KindBalanceRefund,
-			"订单退款", o.OrderNo, pv.BalanceDiscount,
-			member.DefaultRelateUser); err == nil {
-			amount -= pv.BalanceDiscount
+	return po.Refund(int(amount * 100))
+
+	/*
+		 *  重构支付单时已经更改
+		 *
+		acc := mm.GetAccount()
+		//如果支付单已清理数据，则全部退回到余额
+		if po == nil {
+			return acc.Refund(member.AccountBalance,
+				member.KindBalanceRefund, "订单退款",
+				o.OrderNo, amount, member.DefaultRelateUser)
 		}
-	}
-	//退积分
-	if pv.IntegralDiscount > 0 {
-		//todo : 退换积分,暂时积分抵扣的不退款
-	}
-	//多退少补
-	if pv.FinalFee > amount {
-		amount = pv.FinalFee
-	}
-	//退到钱包账户
-	if pv.PaymentSign == payment.SignWalletAccount {
+		return nil
+
+		//原路退回
+		pv := po.Get()
+		if pv.BalanceDiscount > 0 {
+			if err := acc.Refund(member.AccountBalance,
+				member.KindBalanceRefund,
+				"订单退款", o.OrderNo, pv.BalanceDiscount,
+				member.DefaultRelateUser); err == nil {
+				amount -= pv.BalanceDiscount
+			}
+		}
+		//退积分
+		if pv.IntegralDiscount > 0 {
+		}
+		//多退少补
+		if pv.FinalFee > amount {
+			amount = pv.FinalFee
+		}
+		//退到钱包账户
+		if pv.PaymentSign == payment.SignWalletAccount {
+			return acc.Refund(member.AccountWallet,
+				member.KindWalletPaymentRefund,
+				"订单退款", o.OrderNo, amount,
+				member.DefaultRelateUser)
+		}
+		//原路退回，暂时不实现。直接退到钱包账户
 		return acc.Refund(member.AccountWallet,
 			member.KindWalletPaymentRefund,
 			"订单退款", o.OrderNo, amount,
 			member.DefaultRelateUser)
-	}
-	//原路退回，暂时不实现。直接退到钱包账户
-	return acc.Refund(member.AccountWallet,
-		member.KindWalletPaymentRefund,
-		"订单退款", o.OrderNo, amount,
-		member.DefaultRelateUser)
+	*/
 }
