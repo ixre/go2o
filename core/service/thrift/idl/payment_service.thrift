@@ -154,10 +154,12 @@ struct SPrepareTradeData{
     5:i32 TradeState
     /** 交易订单 */
     6:list<SPaymentOrderData> TradeOrders
+    /** 累计金额 */
+    7:i32 TotalAmount
     /** 手续费 */
-    7:i32 ProcedureFee
+    8:i32 ProcedureFee
     /** 最终支付金额 */
-    8:i32 FinalFee
+    9:i32 FinalFee
 }
 
 /** 支付单数据 */
