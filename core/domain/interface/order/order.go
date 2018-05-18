@@ -333,6 +333,8 @@ type (
 		SubOrderId int64
 		// 订单类型
 		OrderType int32
+		// 是否为子订单
+		SubOrder bool
 		// 订单号
 		OrderNo string
 		// 购买人编号

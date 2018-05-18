@@ -413,7 +413,7 @@ func (o *OrderRepImpl) SaveWholesaleOrder(v *order.WholesaleOrder) (int, error) 
 
 // Select WholesaleItem
 func (o *OrderRepImpl) SelectWholesaleItem(where string, v ...interface{}) []*order.WholesaleItem {
-	list := []*order.WholesaleItem{}
+	var list []*order.WholesaleItem
 	err := o._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleItem")
