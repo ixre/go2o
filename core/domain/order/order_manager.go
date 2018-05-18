@@ -291,15 +291,12 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 		rd.OrderNo = ip.OutOrderNo
 		return o, rd, err
 	}
-
-	println("----", len(arr), "个订单需合并")
-
 	// 合并支付
 	mergeTradeNo, fee, err := arr[0].MergePay(arr[1:])
 	if err != nil {
 		return o, rd, err
 	}
-	println("----", len(arr), "个订单已合并", fee, mergeTradeNo)
+	//println("----", len(arr), "个订单已合并", fee, mergeTradeNo)
 	rd.MergePay = true
 	rd.TradeAmount = fee
 	rd.TradeNo = mergeTradeNo

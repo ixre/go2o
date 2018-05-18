@@ -184,7 +184,7 @@ func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaym
 	if l := len(tradeNoArr); l > 0 {
 		var list []*payment.Order
 		p.Connector.GetOrm().Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
-			")AND state=? LIMIT ?", payment.StateAwaitingPayment, len(tradeNoArr))
+			") LIMIT ?", len(tradeNoArr))
 		for _, v := range list {
 			arr = append(arr, p.CreatePaymentOrder(v))
 		}
@@ -203,7 +203,8 @@ func (p *paymentRepoImpl) ResetMergePaymentOrders(tradeNos []string) error {
 		buf.WriteString("'")
 	}
 	buf.WriteString(")")
-	_, err := p.Connector.GetOrm().Delete(&payment.MergeOrder{}, "order_trade_no in "+buf.String())
+	_, err := p.Connector.GetOrm().Delete(&payment.MergeOrder{},
+		"order_trade_no in "+buf.String())
 	return err
 }
 
