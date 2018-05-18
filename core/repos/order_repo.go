@@ -186,9 +186,19 @@ func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 	return id, err
 }
 
+func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
+	var e = order.NormalSubOrder{}
+	err := o.Connector.GetOrm().GetBy(&e, "order_no=?", orderNo)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:order_sub_order")
+		return nil
+	}
+	return o.CreateNormalSubOrder(&e)
+}
+
 // 获取订单的所有子订单
 func (o *OrderRepImpl) GetNormalSubOrders(orderId int64) []*order.NormalSubOrder {
-	list := []*order.NormalSubOrder{}
+	var list []*order.NormalSubOrder
 	o.GetOrm().Select(&list, "order_id=?", orderId)
 	return list
 }

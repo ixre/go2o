@@ -331,12 +331,15 @@ func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
 }
 
 // 接收在线交易支付的通知，不主动调用
-func (t *orderManagerImpl) NotifyOrderTradeSuccess(orderId int64) error {
-	o := t.GetOrderById(orderId)
+func (t *orderManagerImpl) NotifyOrderTradeSuccess(orderNo string, subOrder bool) error {
+	if subOrder { // 处理子订单
+		iso := t.repo.GetSubOrderByOrderNo(orderNo)
+		return iso.PaymentFinishByOnlineTrade()
+	}
+	o := t.GetOrderByNo(orderNo)
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-
 	switch o.Type() {
 	case order.TRetail:
 		io := o.(order.INormalOrder)

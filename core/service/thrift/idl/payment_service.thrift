@@ -92,8 +92,8 @@ struct SPaymentOrder{
     5:string MergeTradeNo
     /** 支付单详情 */
     6:string Subject
-    /** 订单号 */
-    7:i32 OrderId
+    /** 是否为子订单 */
+	7:bool SubOrder
     /** 支付单的类型，如购物或其他 */
     8:i32 OrderType
     /** 外部订单号 */

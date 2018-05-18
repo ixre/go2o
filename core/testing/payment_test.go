@@ -25,7 +25,6 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		TradeType: "ppi-charge",
 		SellerId:  0,
 		OrderType: 0,
-		OrderId:   0,
 		Subject:   "充值",
 		BuyerId:   22149,
 		//PayUid:      1,
