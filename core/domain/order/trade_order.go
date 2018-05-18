@@ -84,9 +84,9 @@ func (o *tradeOrderImpl) Set(v *order.ComplexOrder, rate float64) error {
 }
 
 // 转换为订单相关对象
-func (w *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
-	if w.GetAggregateRootId() > 0 {
-		panic(errors.New("trade order must copy before creating!"))
+func (o *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
+	if o.GetAggregateRootId() > 0 {
+		panic("trade order must copy before creating!")
 	}
 	if v.VendorId <= 0 {
 		return merchant.ErrNoSuchMerchant
@@ -100,7 +100,7 @@ func (w *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
 	if v.ItemAmount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	w.value = &order.TradeOrder{
+	o.value = &order.TradeOrder{
 		ID:             0,
 		OrderId:        v.OrderId,
 		VendorId:       v.VendorId,
@@ -110,19 +110,19 @@ func (w *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
 		DiscountAmount: v.DiscountAmount,
 		FinalAmount:    0,
 		TradeRate:      rate,
-		State:          w.baseValue.State,
+		State:          o.baseValue.State,
 	}
 	//计算最终金额
-	w.fixFinalAmount()
+	o.fixFinalAmount()
 	return nil
 }
 
 // 检查结算比例
-func (w *tradeOrderImpl) checkRate() error {
-	if w.value.TradeRate < 0 {
+func (o *tradeOrderImpl) checkRate() error {
+	if o.value.TradeRate < 0 {
 		return order.ErrTradeRateLessZero
 	}
-	if w.value.TradeRate > 1 {
+	if o.value.TradeRate > 1 {
 		return order.ErrTradeRateMoreThan100
 	}
 	return nil
@@ -183,14 +183,10 @@ func (o *tradeOrderImpl) fixFinalAmount() {
 // 生成支付单
 func (o *tradeOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
-	v.VendorId = o.value.VendorId
-	v.TotalAmount = float32(o.value.FinalAmount)
-	v.CouponDiscount = 0
-	v.IntegralDiscount = 0
-	v.FinalFee = v.TotalAmount - v.SubAmount - v.SystemDiscount -
-		v.IntegralDiscount - v.BalanceDiscount
+	v.SellerId = int(o.value.VendorId)
+	v.ItemAmount = int(o.value.FinalAmount * 100)
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
-	return o.paymentOrder.Commit()
+	return o.paymentOrder.Submit()
 }
 
 // 获取支付单
@@ -208,11 +204,11 @@ func (o *tradeOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
 // 现金支付
 func (o *tradeOrderImpl) CashPay() error {
 	py := o.GetPaymentOrder()
-	pv := py.GetValue()
+	pv := py.Get()
 	switch int(pv.State) {
-	case payment.StateHasCancel:
-		return payment.ErrOrderHasCancel
-	case payment.StateFinishPayment:
+	case payment.StateCancelled:
+		return payment.ErrOrderCancelled
+	case payment.StateFinished:
 		return payment.ErrOrderPayed
 	}
 	v := o.getValue()
@@ -323,14 +319,14 @@ func (o *tradeOrderImpl) vendorSettle() error {
 }
 
 // 根据比例进行商户结算
-func (s *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float64) error {
-	v := s.getValue()
+func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float64) error {
+	v := o.getValue()
 	sAmount := float32(v.FinalAmount * rate)
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_Amount))
+		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		return vendor.Account().SettleOrder(s.OrderNo(),
+		return vendor.Account().SettleOrder(o.OrderNo(),
 			totalAmount, tradeFee, 0, "交易单结算-"+v.Subject)
 	}
 	return nil

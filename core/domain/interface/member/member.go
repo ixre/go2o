@@ -325,7 +325,7 @@ type (
 		//认证图片、身份证、人与身份证的图像等
 		TrustImage string `db:"trust_image"`
 		//是否审核通过
-		Reviewed int32 `db:"reviewed"`
+		Reviewed int32 `db:"review_state"`
 		//审核时间
 		ReviewTime int64 `db:"review_time"`
 		//审核备注
@@ -415,7 +415,7 @@ type (
 		// 支付单编号
 		PaymentId int32 `db:"payment_id"`
 		// 是否审核及处理
-		Reviewed int32 `db:"reviewed"`
+		Reviewed int32 `db:"review_state"`
 		// 升级方式,1:自动升级 2:客服更改 3:系统升级
 		UpgradeType int32 `db:"upgrade_type"`
 		// 升级时间

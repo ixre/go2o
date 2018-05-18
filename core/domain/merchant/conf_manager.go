@@ -194,7 +194,7 @@ func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
 				Flag:        merchant.TFlagNormal,
 				AmountBasis: enum.AmountBasisByPercent,
 				TradeFee:    0,
-				TradeRate:   int(0.2 * enum.RATE_Percent),
+				TradeRate:   int(0.2 * enum.RATE_PERCENT),
 			})
 			// 线下支付费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
@@ -202,7 +202,7 @@ func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
 				Flag:        merchant.TFlagNormal,
 				AmountBasis: enum.AmountBasisByPercent,
 				TradeFee:    0,
-				TradeRate:   int(0.2 * enum.RATE_Percent),
+				TradeRate:   int(0.2 * enum.RATE_PERCENT),
 			})
 			// 批发订单费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
@@ -210,7 +210,7 @@ func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
 				Flag:        merchant.TFlagNormal,
 				AmountBasis: enum.AmountBasisByPercent,
 				TradeFee:    0,
-				TradeRate:   int(0.1 * enum.RATE_Percent),
+				TradeRate:   int(0.1 * enum.RATE_PERCENT),
 			})
 
 		}

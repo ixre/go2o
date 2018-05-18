@@ -108,7 +108,7 @@ func (o *OrderRepImpl) CreateOrder(val *order.Order) order.IOrder {
 // 生成空白订单,并保存返回对象
 func (o *OrderRepImpl) CreateNormalSubOrder(v *order.NormalSubOrder) order.ISubOrder {
 	return orderImpl.NewSubNormalOrder(v, o.Manager(), o, o._memberRepo,
-		o._goodsRepo, o._shipRepo, o._productRepo,
+		o._goodsRepo, o._shipRepo, o._productRepo, o._payRepo,
 		o._valRepo, o._mchRepo)
 }
 
@@ -186,9 +186,19 @@ func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 	return id, err
 }
 
+func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
+	var e = order.NormalSubOrder{}
+	err := o.Connector.GetOrm().GetBy(&e, "order_no=?", orderNo)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:order_sub_order")
+		return nil
+	}
+	return o.CreateNormalSubOrder(&e)
+}
+
 // 获取订单的所有子订单
 func (o *OrderRepImpl) GetNormalSubOrders(orderId int64) []*order.NormalSubOrder {
-	list := []*order.NormalSubOrder{}
+	var list []*order.NormalSubOrder
 	o.GetOrm().Select(&list, "order_id=?", orderId)
 	return list
 }
@@ -403,7 +413,7 @@ func (o *OrderRepImpl) SaveWholesaleOrder(v *order.WholesaleOrder) (int, error) 
 
 // Select WholesaleItem
 func (o *OrderRepImpl) SelectWholesaleItem(where string, v ...interface{}) []*order.WholesaleItem {
-	list := []*order.WholesaleItem{}
+	var list []*order.WholesaleItem
 	err := o._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleItem")

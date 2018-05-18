@@ -53,7 +53,7 @@ func registerTypes() {
 	gob.Register(&shop.OfflineShop{})
 	gob.Register(&shop.ComplexShop{})
 	gob.Register(&member.Account{})
-	gob.Register(&payment.PaymentOrder{})
+	gob.Register(&payment.Order{})
 	gob.Register(&member.Relation{})
 	gob.Register(&dto.ListOnlineShop{})
 	gob.Register([]*dto.ListOnlineShop{})
@@ -81,7 +81,8 @@ func OrmMapping(conn db.Connector) {
 	//table mapping
 	orm := conn.GetOrm()
 	orm.Mapping(valueobject.Area{}, "china_area")
-	/* ad */
+
+	// ad
 	orm.Mapping(ad.Ad{}, "ad_list")
 	orm.Mapping(ad.Image{}, "ad_image")
 	orm.Mapping(ad.HyperLink{}, "ad_hyperlink")
@@ -89,18 +90,18 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(ad.AdPosition{}, "ad_position")
 	orm.Mapping(ad.AdUserSet{}, "ad_userset")
 
-	/* MSS */
+	// MSS
 	orm.Mapping(mss.Message{}, "msg_list")
 	orm.Mapping(mss.To{}, "msg_to")
 	orm.Mapping(mss.Content{}, "msg_content")
 	orm.Mapping(mss.Replay{}, "msg_replay")
 
-	/* 内容 */
+	// 内容
 	orm.Mapping(content.Page{}, "ex_page")
 	orm.Mapping(content.Article{}, "article_list")
 	orm.Mapping(content.ArticleCategory{}, "article_category")
 
-	/** new **/
+	// new
 	orm.Mapping(member.Level{}, "mm_level")
 	orm.Mapping(member.Member{}, "mm_member")
 	orm.Mapping(member.Profile{}, "mm_profile")
@@ -117,11 +118,9 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.LevelUpLog{}, "mm_levelup")
 	orm.Mapping(member.BuyerGroup{}, "mm_buyer_group")
 
-	//** ORDER **//
-
+	// ORDER
 	orm.Mapping(order.NormalOrder{}, "sale_order")
 	orm.Mapping(order.NormalSubOrder{}, "sale_sub_order")
-
 	orm.Mapping(order.SubOrderItem{}, "sale_order_item")
 	orm.Mapping(order.OrderCoupon{}, "pt_order_coupon")
 	orm.Mapping(order.OrderPromotionBind{}, "pt_order_pb")
@@ -133,22 +132,22 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(order.WholesaleItem{}, "order_wholesale_item")
 	orm.Mapping(order.TradeOrder{}, "order_trade_order")
 
-	//** After Sales **/
+	// After Sales
 	orm.Mapping(afterSales.AfterSalesOrder{}, "sale_after_order")
 	orm.Mapping(afterSales.ReturnOrder{}, "sale_return")
 	orm.Mapping(afterSales.ExchangeOrder{}, "sale_exchange")
 	orm.Mapping(afterSales.RefundOrder{}, "sale_refund")
 
-	//** Express **//
+	// Express
 	orm.Mapping(express.ExpressProvider{}, "express_provider")
 	orm.Mapping(express.ExpressTemplate{}, "express_template")
 	orm.Mapping(express.ExpressAreaTemplate{}, "express_area_set")
 
-	//** Shipment **/
+	// Shipment
 	orm.Mapping(shipment.ShipmentOrder{}, "ship_order")
 	orm.Mapping(shipment.Item{}, "ship_item")
 
-	/** 产品 **/
+	// 产品
 	orm.Mapping(product.Product{}, "pro_product")
 	orm.Mapping(item.GoodsItem{}, "item_info")
 	orm.Mapping(item.Sku{}, "item_sku")
@@ -166,7 +165,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(item.Label{}, "gs_sale_label")
 	orm.Mapping(item.MemberPrice{}, "gs_member_price")
 
-	/** 商户 **/
+	// 商户
 	orm.Mapping(merchant.Merchant{}, "mch_merchant")
 	orm.Mapping(merchant.EnterpriseInfo{}, "mch_enterprise_info")
 	orm.Mapping(merchant.ApiInfo{}, "mch_api_info")
@@ -184,7 +183,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
 
-	/* 批发 */
+	// 批发
 	orm.Mapping(wholesaler.WsWholesaler{}, "ws_wholesaler")
 	orm.Mapping(wholesaler.WsRebateRate{}, "ws_rebate_rate")
 	orm.Mapping(item.WsItem{}, "ws_item")
@@ -193,16 +192,21 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(cart.WsCart{}, "ws_cart")
 	orm.Mapping(cart.WsCartItem{}, "ws_cart_item")
 
-	orm.Mapping(payment.PaymentOrder{}, "pay_order")
+	// 支付
+	orm.Mapping(payment.Order{}, "pay_order")
+	orm.Mapping(payment.PayChannel{}, "pay_channel")
+	orm.Mapping(payment.TradeChan{}, "pay_trade_chan")
+	orm.Mapping(payment.MergeOrder{}, "pay_merge_order")
+	orm.Mapping(payment.SpTrade{}, "pay_sp_trade")
 
-	/** 促销 **/
+	// 促销
 	orm.Mapping(promotion.ValueCoupon{}, "pm_coupon")
 	orm.Mapping(promotion.ValueCouponBind{}, "pm_coupon_bind")
 	orm.Mapping(promotion.ValueCouponTake{}, "pm_coupon_take")
 	orm.Mapping(promotion.PromotionInfo{}, "pm_info")
 	orm.Mapping(promotion.ValueCashBack{}, "pm_cash_back")
 
-	/** 配送 **/
+	// 配送
 	orm.Mapping(delivery.AreaValue{}, "dlv_area")
 	orm.Mapping(delivery.CoverageValue{}, "dlv_coverage")
 	orm.Mapping(delivery.MerchantDeliverBind{}, "dlv_merchant_bind")

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/util"
 	"go2o/core/variable"
 	"net/http"
 	"net/url"
@@ -47,9 +48,17 @@ func (m *mainC) RequestLogin(c *echox.Context) error {
 	if referrer == "" {
 		referrer = c.Request().Referer()
 	}
-	target := fmt.Sprintf("%s://%s%s/auth?return_url=%s",
-		variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_PASSPORT,
-		variable.Domain, url.QueryEscape(referrer))
+	isMobile := util.IsMobileAgent(c.Request().UserAgent())
+	var target string
+	if isMobile {
+		target = fmt.Sprintf("%s://%s%s/auth?return_url=%s",
+			variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_M_PASSPORT,
+			variable.Domain, url.QueryEscape(referrer))
+	} else {
+		target = fmt.Sprintf("%s://%s%s/auth?return_url=%s",
+			variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_PASSPORT,
+			variable.Domain, url.QueryEscape(referrer))
+	}
 	return c.Redirect(http.StatusFound, target)
 }
 

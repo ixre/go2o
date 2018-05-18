@@ -284,59 +284,72 @@ func Address(src *define.Address) *member.Address {
 	}
 }
 
-func PaymentOrder(src *define.SPaymentOrder) *payment.PaymentOrder {
-	return &payment.PaymentOrder{
-		Id:               src.ID,
-		TradeNo:          src.TradeNo,
-		TradeType:        src.TradeType,
-		VendorId:         src.VendorId,
-		Type:             src.Type,
-		OrderId:          src.OrderId,
-		Subject:          src.Subject,
-		BuyUser:          src.BuyUser,
-		PaymentUser:      src.PaymentUser,
-		TotalAmount:      float32(src.TotalAmount),
-		BalanceDiscount:  float32(src.BalanceDiscount),
-		IntegralDiscount: float32(src.IntegralDiscount),
-		SystemDiscount:   float32(src.SystemDiscount),
-		CouponDiscount:   float32(src.CouponDiscount),
-		SubAmount:        float32(src.SubAmount),
-		AdjustmentAmount: float32(src.AdjustmentAmount),
-		FinalFee:         float32(src.FinalFee),
-		PayFlag:          src.PaymentOptFlag,
-		PaymentSign:      src.PaymentSign,
-		OuterNo:          src.OuterNo,
-		CreateTime:       src.CreateTime,
-		PaidTime:         src.PaidTime,
-		State:            src.State,
+func PaymentOrder(src *define.SPaymentOrder) *payment.Order {
+	dst := &payment.Order{
+		ID:             int(src.ID),
+		SellerId:       int(src.SellerId),
+		TradeType:      src.TradeType,
+		TradeNo:        src.TradeNo,
+		OrderType:      int(src.OrderType),
+		OutOrderNo:     src.OutOrderNo,
+		Subject:        src.Subject,
+		BuyerId:        int64(src.BuyerId),
+		PayUid:         int64(src.PayUid),
+		TotalAmount:    int(src.TotalAmount),
+		DiscountAmount: int(src.DiscountAmount),
+		DeductAmount:   int(src.DeductAmount),
+		AdjustAmount:   int(src.AdjustAmount),
+		ItemAmount:     int(src.ItemAmount),
+		ProcedureFee:   int(src.ProcedureFee),
+		FinalFee:       int(src.FinalFee),
+		PaymentFlag:    int(src.PayFlag),
+		ExtraData:      src.ExtraData,
+		TradeChannel:   int(src.TradeChannel),
+		OutTradeSp:     src.OutTradeSp,
+		OutTradeNo:     src.OutTradeNo,
+		State:          int(src.State),
+		SubmitTime:     src.SubmitTime,
+		ExpiresTime:    src.ExpiresTime,
+		PaidTime:       src.PaidTime,
+		UpdateTime:     src.UpdateTime,
+		TradeChannels:  make([]*payment.TradeChan, 0),
 	}
+	if src.SubOrder {
+		dst.SubOrder = 1
+	}
+	return dst
 }
 
-func PaymentOrderDto(src *payment.PaymentOrder) *define.SPaymentOrder {
+func PaymentOrderDto(src *payment.Order) *define.SPaymentOrder {
 	return &define.SPaymentOrder{
-		ID:               src.Id,
-		TradeNo:          src.TradeNo,
-		TradeType:        src.TradeType,
-		VendorId:         src.VendorId,
-		Type:             src.Type,
-		OrderId:          src.OrderId,
-		Subject:          src.Subject,
-		BuyUser:          src.BuyUser,
-		PaymentUser:      src.PaymentUser,
-		TotalAmount:      round(src.TotalAmount, 2),
-		BalanceDiscount:  round(src.BalanceDiscount, 2),
-		IntegralDiscount: round(src.IntegralDiscount, 2),
-		SystemDiscount:   round(src.SystemDiscount, 2),
-		CouponDiscount:   round(src.CouponDiscount, 2),
-		SubAmount:        round(src.SubAmount, 2),
-		AdjustmentAmount: round(src.AdjustmentAmount, 2),
-		FinalFee:         round(src.FinalFee, 2),
-		PaymentOptFlag:   src.PayFlag,
-		PaymentSign:      src.PaymentSign,
-		OuterNo:          src.OuterNo,
-		CreateTime:       src.CreateTime,
-		PaidTime:         src.PaidTime,
-		State:            src.State,
+		ID:             int32(src.ID),
+		SellerId:       int32(src.SellerId),
+		TradeType:      src.TradeType,
+		TradeNo:        src.TradeNo,
+		Subject:        src.Subject,
+		BuyerId:        int32(src.BuyerId),
+		PayUid:         int32(src.PayUid),
+		TotalAmount:    int32(src.TotalAmount),
+		DiscountAmount: int32(src.DiscountAmount),
+		DeductAmount:   int32(src.DeductAmount),
+		AdjustAmount:   int32(src.AdjustAmount),
+		ItemAmount:     int32(src.ItemAmount),
+		ProcedureFee:   int32(src.ProcedureFee),
+		FinalFee:       int32(src.FinalFee),
+		PayFlag:        int32(src.PaymentFlag),
+		ExtraData:      src.ExtraData,
+		OutTradeSp:     src.OutTradeSp,
+		OutTradeNo:     src.OutTradeNo,
+		State:          int32(src.State),
+		SubmitTime:     int64(src.SubmitTime),
+		ExpiresTime:    int64(src.ExpiresTime),
+		PaidTime:       int64(src.PaidTime),
+		UpdateTime:     int64(src.UpdateTime),
+		SubOrder:       src.SubOrder == 1,
+		OrderType:      int32(src.OrderType),
+		OutOrderNo:     src.OutOrderNo,
+		TradeChannel:   int32(src.TradeChannel),
+		TradeChannels:  make([]*define.SPayTradeChan, 0),
 	}
 }
 
@@ -500,8 +513,8 @@ func ShoppingCartItem(src *define.ShoppingCartItem) *cart.RetailCartItem {
 	return i
 }
 
-func SubOrderItemDto(src *order.SubOrderItem) *define.ComplexItem {
-	return &define.ComplexItem{
+func SubOrderItemDto(src *order.SubOrderItem) *define.SComplexItem {
+	return &define.SComplexItem{
 		ID:             int64(src.ID),
 		OrderId:        src.OrderId,
 		ItemId:         int64(src.ItemId),
@@ -515,8 +528,8 @@ func SubOrderItemDto(src *order.SubOrderItem) *define.ComplexItem {
 	}
 }
 
-func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
-	o := &define.ComplexOrder{
+func SubOrderDto(src *order.NormalSubOrder) *define.SComplexOrder {
+	o := &define.SComplexOrder{
 		OrderId:        src.OrderId,
 		SubOrderId:     src.OrderId,
 		OrderNo:        src.OrderNo,
@@ -532,7 +545,7 @@ func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
 		CreateTime:     src.CreateTime,
 		UpdateTime:     src.UpdateTime,
 		State:          int32(src.State),
-		Items:          make([]*define.ComplexItem, len(src.Items)),
+		Items:          make([]*define.SComplexItem, len(src.Items)),
 	}
 	for i, v := range src.Items {
 		o.Items[i] = SubOrderItemDto(v)
@@ -540,8 +553,8 @@ func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
 	return o
 }
 
-func OrderItemDto(src *order.ComplexItem) *define.ComplexItem {
-	return &define.ComplexItem{
+func OrderItemDto(src *order.ComplexItem) *define.SComplexItem {
+	return &define.SComplexItem{
 		ID:             src.ID,
 		OrderId:        src.OrderId,
 		ItemId:         src.ItemId,
@@ -556,8 +569,8 @@ func OrderItemDto(src *order.ComplexItem) *define.ComplexItem {
 	}
 }
 
-func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
-	o := &define.ComplexOrder{
+func OrderDto(src *order.ComplexOrder) *define.SComplexOrder {
+	o := &define.SComplexOrder{
 		OrderId:         src.OrderId,
 		SubOrderId:      src.SubOrderId,
 		OrderType:       src.OrderType,
@@ -578,7 +591,7 @@ func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
 		CreateTime:      src.CreateTime,
 		UpdateTime:      src.UpdateTime,
 		State:           src.State,
-		Items:           make([]*define.ComplexItem, len(src.Items)),
+		Items:           make([]*define.SComplexItem, len(src.Items)),
 		Data:            src.Data,
 	}
 	if src.Items != nil {
@@ -589,7 +602,7 @@ func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
 	return o
 }
 
-func Order(src *define.ComplexOrder) *order.ComplexOrder {
+func Order(src *define.SComplexOrder) *order.ComplexOrder {
 	o := &order.ComplexOrder{
 		OrderId:         src.OrderId,
 		SubOrderId:      src.SubOrderId,
@@ -622,7 +635,7 @@ func Order(src *define.ComplexOrder) *order.ComplexOrder {
 	return o
 }
 
-func OrderItem(src *define.ComplexItem) *order.ComplexItem {
+func OrderItem(src *define.SComplexItem) *order.ComplexItem {
 	return &order.ComplexItem{
 		ID:             src.ID,
 		OrderId:        src.OrderId,

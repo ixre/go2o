@@ -35,6 +35,10 @@ func FormatFloat(f float32) string {
 	return FormatFloat64(float64(f))
 }
 
+func IntToFloatAmount(i int) string {
+	return DecimalToString(float64(i) / 100)
+}
+
 func DecimalToString(f float64) string {
 	return fmt.Sprintf("%.2f", f)
 }

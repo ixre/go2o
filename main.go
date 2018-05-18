@@ -1,4 +1,4 @@
-package go2o
+package main
 
 var _ = `
 
