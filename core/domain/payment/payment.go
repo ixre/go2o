@@ -273,8 +273,9 @@ func (p *paymentOrderImpl) notifyPaymentFinish() {
 		panic(payment.ErrNoSuchPaymentOrder)
 	}
 	// 通知订单支付完成
-	if p.value.OrderId > 0 {
-		err := p.orderManager.NotifyOrderTradeSuccess(int64(p.value.OrderId))
+	if p.value.OutOrderNo != "" {
+		subOrder := p.value.SubOrder == 1
+		err := p.orderManager.NotifyOrderTradeSuccess(p.value.OutOrderNo, subOrder)
 		domain.HandleError(err, "domain")
 	}
 }

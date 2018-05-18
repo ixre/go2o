@@ -28,7 +28,7 @@ type (
 		// 提交交易类订单
 		SubmitTradeOrder(o *ComplexOrder, tradeRate float64) (IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
-		NotifyOrderTradeSuccess(orderId int64) error
+		NotifyOrderTradeSuccess(orderNo string, subOrder bool) error
 		// 提交订单
 		SubmitOrder(c cart.ICart, addressId int64, couponCode string,
 			balanceDiscount bool) (IOrder, *SubmitReturnData, error)
@@ -103,8 +103,10 @@ type (
 		GetNormalSubOrders(orderId int64) []*NormalSubOrder
 		// 保存订单日志
 		SaveNormalSubOrderLog(*OrderLog) error
-		// 获取子订单
+		// 获取子订单,todo: 删除
 		GetSubOrder(id int64) *NormalSubOrder
+		// 根据子订单
+		GetSubOrderByOrderNo(s string) ISubOrder
 		// 保存子订单
 		SaveSubOrder(value *NormalSubOrder) (int, error)
 		// 保存子订单的商品项,并返回编号和错误
