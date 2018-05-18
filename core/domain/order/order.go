@@ -173,7 +173,7 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		SellerId:       0,
 		TradeType:      "",
 		TradeNo:        o.OrderNo(),
-		OrderId:        int(o.GetAggregateRootId()),
+		SubOrder:       0,
 		OrderType:      int(order.TRetail),
 		OutOrderNo:     o.OrderNo(),
 		Subject:        "支付订单",

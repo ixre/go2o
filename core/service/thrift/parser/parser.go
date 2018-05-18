@@ -285,12 +285,11 @@ func Address(src *define.Address) *member.Address {
 }
 
 func PaymentOrder(src *define.SPaymentOrder) *payment.Order {
-	return &payment.Order{
+	dst := &payment.Order{
 		ID:             int(src.ID),
 		SellerId:       int(src.SellerId),
 		TradeType:      src.TradeType,
 		TradeNo:        src.TradeNo,
-		OrderId:        int(src.OrderId),
 		OrderType:      int(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,
 		Subject:        src.Subject,
@@ -315,6 +314,10 @@ func PaymentOrder(src *define.SPaymentOrder) *payment.Order {
 		UpdateTime:     src.UpdateTime,
 		TradeChannels:  make([]*payment.TradeChan, 0),
 	}
+	if src.SubOrder {
+		dst.SubOrder = 1
+	}
+	return dst
 }
 
 func PaymentOrderDto(src *payment.Order) *define.SPaymentOrder {
@@ -342,7 +345,7 @@ func PaymentOrderDto(src *payment.Order) *define.SPaymentOrder {
 		ExpiresTime:    int64(src.ExpiresTime),
 		PaidTime:       int64(src.PaidTime),
 		UpdateTime:     int64(src.UpdateTime),
-		OrderId:        int32(src.OrderId),
+		SubOrder:       src.SubOrder == 1,
 		OrderType:      int32(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,
 		TradeChannel:   int32(src.TradeChannel),

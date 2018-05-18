@@ -111,28 +111,34 @@ func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, r
 // 钱包账户支付
 func (p *paymentService) PaymentByWallet(ctx context.Context,
 	tradeNo string, mergePay bool, remark string) (r *define.Result_, err error) {
-	if mergePay {
-		arr := p.repo.GetMergePayOrders(tradeNo)
-		payUid := arr[0].Get().PayUid
-		finalFee := 0
-		for _, v := range arr {
-			finalFee += v.Get().FinalFee
-		}
-		acc := p.memberRepo.GetAccount(payUid)
-		if int(acc.Balance*100) < finalFee {
-			err = member.ErrAccountBalanceNotEnough
-		} else {
-
-		}
-	} else {
+	// 单个支付订单支付
+	if !mergePay {
 		ip := p.repo.GetPaymentOrder(tradeNo)
 		if ip == nil {
 			err = payment.ErrNoSuchPaymentOrder
 		} else {
 			err = ip.PaymentByWallet(remark)
 		}
+		return parser.Result(0, err), nil
 	}
-	return parser.Result(0, err), nil
+	// 合并支付单
+	arr := p.repo.GetMergePayOrders(tradeNo)
+	payUid := arr[0].Get().PayUid
+	finalFee := 0
+	for _, v := range arr {
+		finalFee += v.Get().FinalFee
+	}
+	acc := p.memberRepo.GetAccount(payUid)
+	if int(acc.Balance*100) < finalFee {
+		err = member.ErrAccountBalanceNotEnough
+	} else {
+		for _, v := range arr {
+			if err = v.PaymentByWallet(remark); err != nil {
+				break
+			}
+		}
+	}
+	return parser.Result(nil, err), nil
 }
 
 // 余额钱包混合支付，优先扣除余额。

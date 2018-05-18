@@ -56,3 +56,8 @@ CREATE TABLE pay_order (
   paid_time       int(11) NOT NULL comment '支付时间',
   update_time     int(11) NOT NULL comment '更新时间',
   PRIMARY KEY (id)) comment='支付单';
+
+ALTER TABLE pay_order
+  DROP COLUMN order_id;
+ALTER TABLE pay_order
+  ADD COLUMN sub_order int(1) NOT NULL comment '是否为子订单';

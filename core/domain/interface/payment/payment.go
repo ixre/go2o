@@ -225,10 +225,10 @@ type (
 		TradeType string `db:"trade_type"`
 		// 交易号
 		TradeNo string `db:"trade_no"`
-		// 订单号
-		OrderId int `db:"order_id"`
 		// 支付单的类型，如购物或其他
 		OrderType int `db:"order_type"`
+		// 是否为子订单
+		SubOrder int `db:"sub_order"`
 		// 外部订单号
 		OutOrderNo string `db:"out_order_no"`
 		// 支付单详情
