@@ -164,6 +164,8 @@ type (
 		SystemPayment(amount int) error
 		// 钱包账户支付
 		PaymentByWallet(remark string) error
+		// 使用会员卡支付,cardCode:会员卡编码,amount:支付金额
+		PaymentWithCard(cardCode string, amount int) error
 		// 余额钱包混合支付，优先扣除余额。
 		HybridPayment(remark string) error
 		// 设置支付方式

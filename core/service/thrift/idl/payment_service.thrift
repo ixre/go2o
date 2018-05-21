@@ -112,7 +112,7 @@ struct SPaymentOrder{
     15:i32 DeductAmount
     /** 共计金额 */
     16:i32 TotalAmount
-    // 手续费
+    /** 手续费 */
     17:i32 ProcedureFee
     /** 最终支付金额 */
     18:i32 FinalFee
