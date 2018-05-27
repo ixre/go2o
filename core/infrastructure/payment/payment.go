@@ -11,8 +11,6 @@ package payment
 import (
 	"github.com/jsix/gof/log"
 	"net/http"
-	"os"
-	_ "os"
 )
 
 // 交易成功
@@ -26,13 +24,13 @@ var (
 )
 
 func init() {
-	fi, _ := os.OpenFile("pay.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
-	logF = log.NewLogger(fi, "payment", log.LOpen)
+	//fi, _ := os.OpenFile("pay.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
+	//logF = log.NewLogger(fi, "payment", log.LOpen)
 }
 
 func Debug(format string, data ...interface{}) {
 	//fmt.Printf("[ Pay][ Gateway]:"+format+"\n",data...)
-	logF.Printf("[ Pay][ Gateway]:"+format+"\n\n", data...)
+	//logF.Printf("[ Pay][ Gateway]:"+format+"\n\n", data...)
 }
 
 type IPayment interface {

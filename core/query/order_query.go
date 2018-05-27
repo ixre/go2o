@@ -30,7 +30,7 @@ func NewOrderQuery(conn db.Connector) *OrderQuery {
 }
 
 func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
-	var list []*dto.OrderItem
+	list := make([]*dto.OrderItem, 0)
 	if idArr != "" && len(idArr) > 0 {
 		// 查询分页订单的Item
 		o.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,

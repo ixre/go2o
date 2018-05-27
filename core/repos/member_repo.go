@@ -130,7 +130,7 @@ func (m *MemberRepoImpl) GetMemberLevels_New() []*member.Level {
 	i, err := m.Storage.GetInt(key)
 	load := err != nil || i != 1 || globLevels == nil
 	if load {
-		var list []*member.Level
+		list := make([]*member.Level, 0)
 		m.Connector.GetOrm().Select(&list, "1=1 ORDER BY id ASC")
 		globLevels = list
 		m.Storage.Set(key, 1)

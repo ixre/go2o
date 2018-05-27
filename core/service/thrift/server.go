@@ -16,6 +16,7 @@ import (
 	"go2o/gen-code/thrift/define"
 )
 
+// 运行Thrift服务
 func ListenAndServe(addr string, secure bool) error {
 	var err error
 	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
@@ -46,7 +47,7 @@ func ListenAndServe(addr string, secure bool) error {
 		processor.RegisterProcessor("finance", define.NewFinanceServiceProcessor(rsi.PersonFinanceService))
 		processor.RegisterProcessor("wallet", define.NewWalletServiceProcessor(rsi.WalletService))
 		server := thrift.NewTSimpleServer4(processor, transport, transportFactory, protocolFactory)
-		fmt.Println("Starting the thrift server... on ", addr)
+		fmt.Println("[ Go2o][ RPC]: Starting the thrift server... on ", addr)
 		err = server.Serve()
 	}
 	return err

@@ -198,7 +198,7 @@ func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
 
 // 获取订单的所有子订单
 func (o *OrderRepImpl) GetNormalSubOrders(orderId int64) []*order.NormalSubOrder {
-	var list []*order.NormalSubOrder
+	list := make([]*order.NormalSubOrder, 0)
 	o.GetOrm().Select(&list, "order_id=?", orderId)
 	return list
 }
@@ -413,7 +413,7 @@ func (o *OrderRepImpl) SaveWholesaleOrder(v *order.WholesaleOrder) (int, error) 
 
 // Select WholesaleItem
 func (o *OrderRepImpl) SelectWholesaleItem(where string, v ...interface{}) []*order.WholesaleItem {
-	var list []*order.WholesaleItem
+	list := make([]*order.WholesaleItem, 0)
 	err := o._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleItem")
