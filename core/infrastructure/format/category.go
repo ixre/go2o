@@ -14,7 +14,7 @@ import (
 )
 
 // 获取栏目编号字符串
-func IdArrJoinStr(ids []int) string {
+func IntArrStrJoin(ids []int) string {
 	var strIds []string = make([]string, len(ids))
 	for i, v := range ids {
 		strIds[i] = strconv.Itoa(v)
@@ -22,7 +22,7 @@ func IdArrJoinStr(ids []int) string {
 	return strings.Join(strIds, ",")
 }
 
-func IdArrJoinStr32(ids []int32) string {
+func I32ArrStrJoin(ids []int32) string {
 	var strIds []string = make([]string, len(ids))
 	for i, v := range ids {
 		strIds[i] = strconv.Itoa(int(v))
@@ -30,7 +30,7 @@ func IdArrJoinStr32(ids []int32) string {
 	return strings.Join(strIds, ",")
 }
 
-func IdArrJoinStr64(ids []int64) string {
+func I64ArrStrJoin(ids []int64) string {
 	var strIds []string = make([]string, len(ids))
 	for i, v := range ids {
 		strIds[i] = strconv.Itoa(int(v))

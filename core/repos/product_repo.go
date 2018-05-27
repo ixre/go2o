@@ -61,7 +61,7 @@ func (p *productRepo) GetProductsById(ids ...int32) ([]*product.Product, error) 
 
 	//todo:改成database/sql方式，不使用orm
 	err := p.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM pro_product WHERE id IN (`+format.IdArrJoinStr32(ids)+`)`)
+		`SELECT * FROM pro_product WHERE id IN (`+format.I32ArrStrJoin(ids)+`)`)
 
 	return items, err
 }
@@ -70,7 +70,7 @@ func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
 	start, end int) (total int, e []*product.Product) {
 	var sql string
 
-	var catIdStr string = format.IdArrJoinStr32(catIds)
+	var catIdStr string = format.I32ArrStrJoin(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM pro_product INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
 		WHERE merchant_id=%d AND pro_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
 
