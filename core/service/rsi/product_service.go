@@ -228,7 +228,7 @@ func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, c
 
 func (p *productService) GetCategories(mchId int32) []*product.Category {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	var list []*product.Category = make([]*product.Category, len(cats))
+	list := make([]*product.Category, len(cats))
 	for i, v := range cats {
 		vv := v.GetValue()
 		vv.Icon = format.GetResUrl(vv.Icon)
