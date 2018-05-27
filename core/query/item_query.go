@@ -185,7 +185,7 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int32, start, end int32,
 	where string) []*item.GoodsItem {
 	list := []*item.GoodsItem{}
 	if len(catIdArr) > 0 {
-		catIdStr := format.IdArrJoinStr32(catIdArr)
+		catIdStr := format.I32ArrStrJoin(catIdArr)
 		sql := fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 WHERE item_info.cat_id IN(%s) AND item_info.review_state=?

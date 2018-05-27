@@ -219,7 +219,7 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 }
 
 // 设置头像
-func (p *profileManagerImpl) SetAvatar(avatar string) error {
+func (p *profileManagerImpl) ChangeAvatar(avatar string) error {
 	if avatar == "" {
 		return member.ErrNullAvatar
 	}

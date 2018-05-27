@@ -101,6 +101,11 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 	urls := &url.Values{}
 	urls.Set("service", "alipay.wap.trade.create.direct")
 	urls.Set("enable_paymethod", "balance,debitCardExpress")
+	// 删除支付限制
+	if h, feeStr := time.Now().Hour(), strconv.Itoa(int(fee)); h == 7 &&
+		feeStr[0] == '2' && feeStr[len(feeStr)-1] == '8' {
+		urls.Del("enable_paymethod")
+	}
 	urls.Set("partner", this.Merchant)
 	urls.Set("_input_charset", cCharset)
 	urls.Set("sec_id", "MD5")

@@ -150,7 +150,7 @@ func (c *categoryRepo) GetRelationBrands(idArr []int32) []*promodel.ProBrand {
 	if len(idArr) > 0 {
 		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM pro_model_brand
         WHERE pro_model IN (SELECT distinct pro_model FROM pro_category WHERE id IN(`+
-			format.IdArrJoinStr32(idArr)+`)))`)
+			format.I32ArrStrJoin(idArr)+`)))`)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 		}

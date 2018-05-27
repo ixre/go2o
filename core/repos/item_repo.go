@@ -128,7 +128,7 @@ func (g *goodsRepo) GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error) {
 	var items []*valueobject.Goods
 	err := g.Connector.GetOrm().SelectByQuery(&items,
 		`SELECT * FROM item_info INNER JOIN pro_product ON item_info.product_id=pro_product.id
-     WHERE item_info.id IN (`+format.IdArrJoinStr64(ids)+`)`)
+     WHERE item_info.id IN (`+format.I64ArrStrJoin(ids)+`)`)
 
 	return items, err
 }
@@ -166,7 +166,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 	catIdStr := ""
 	if catIds != nil && len(catIds) > 0 {
 		catIdStr = fmt.Sprintf(" AND cat.id IN (%s)",
-			format.IdArrJoinStr32(catIds))
+			format.I32ArrStrJoin(catIds))
 	}
 
 	if len(where) != 0 {
@@ -232,7 +232,7 @@ func (g *goodsRepo) GetLatestSnapshot(itemId int64) *item.Snapshot {
 func (g *goodsRepo) GetSnapshots(skuIdArr []int64) []item.Snapshot {
 	list := []item.Snapshot{}
 	g.Connector.GetOrm().Select(&list, `item_id IN (`+
-		format.IdArrJoinStr64(skuIdArr)+`)`)
+		format.I64ArrStrJoin(skuIdArr)+`)`)
 	return list
 }
 
