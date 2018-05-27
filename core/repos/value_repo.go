@@ -120,7 +120,7 @@ func (r *valueRepo) loadAllKeys() {
 
 // 根据条件获取键值
 func (r *valueRepo) selectSysKv(where string, v ...interface{}) []*valueobject.SysKeyValue {
-	var list []*valueobject.SysKeyValue
+	list := make([]*valueobject.SysKeyValue, 0)
 	err := r.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")

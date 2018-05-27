@@ -150,7 +150,7 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 }
 
 func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeChan {
-	var list []*payment.TradeChan
+	list := make([]*payment.TradeChan, 0)
 	err := p.GetOrm().Select(&list, "trade_no=? LIMIT ?", tradeNo, 10)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
@@ -182,7 +182,7 @@ func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaym
 	var arr = make([]payment.IPaymentOrder, 0)
 	// 查询支付单
 	if l := len(tradeNoArr); l > 0 {
-		var list []*payment.Order
+		list := make([]*payment.Order, 0)
 		p.Connector.GetOrm().Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
 			") LIMIT ?", len(tradeNoArr))
 		for _, v := range list {

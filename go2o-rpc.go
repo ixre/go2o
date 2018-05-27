@@ -1,3 +1,5 @@
+package main
+
 /**
  * Copyright 2015 @ at3.net.
  * name : go2o-rpc.go
@@ -6,7 +8,6 @@
  * description :
  * history :
  */
-package main
 
 import (
 	"flag"
