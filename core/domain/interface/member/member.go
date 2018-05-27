@@ -120,7 +120,7 @@ type (
 		// 更改手机号码,不验证手机格式
 		ChangePhone(string) error
 		// 设置头像
-		SetAvatar(string) error
+		ChangeAvatar(string) error
 		// 资料是否完善
 		ProfileCompleted() bool
 		// 检查资料是否完善

@@ -592,7 +592,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 	if len(memberIdArr) == 0 {
 		return map[int32]int{}
 	}
-	memberIds := format.IdArrJoinStr32(memberIdArr)
+	memberIds := format.I32ArrStrJoin(memberIdArr)
 	var d map[int32]int = make(map[int32]int)
 	err := m.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
 		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.inviter_id=r1.member_id)"+

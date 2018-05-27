@@ -342,12 +342,12 @@ func (s *memberService) UpdateLevel(ctx context.Context, memberId int64, level i
 }
 
 // 上传会员头像
-func (s *memberService) SetAvatar(memberId int64, avatar string) error {
+func (s *memberService) ChangeAvatar(memberId int64, avatar string) error {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.Profile().SetAvatar(avatar)
+	return m.Profile().ChangeAvatar(avatar)
 }
 
 // 保存用户

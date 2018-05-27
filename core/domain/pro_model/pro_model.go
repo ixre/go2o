@@ -206,7 +206,7 @@ func (m *modelImpl) saveModelBrand(brandIds []int32) (err error) {
 	//获取存在的品牌
 	old := m.rep.SelectProModelBrand("pro_model = ?", pk)
 	//删除不包括的品牌
-	idArrStr := format.IdArrJoinStr32(brandIds)
+	idArrStr := format.I32ArrStrJoin(brandIds)
 	if len(old) > 0 {
 		m.rep.BatchDeleteProModelBrand("pro_model = ?"+
 			" AND brand_id NOT IN("+idArrStr+")", pk)
