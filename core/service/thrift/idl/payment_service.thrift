@@ -190,4 +190,6 @@ struct SPayTradeChan{
     4:i32 InternalChan
     /** 支付金额 */
     5:i32 PayAmount
+    /** 通道数据 */
+    6:string ChanData
 }

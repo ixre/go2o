@@ -136,7 +136,7 @@ type (
 		TradeNo() string
 		// 支付单状态
 		State() int
-		/** 支付方式 */
+		// 支付方式
 		Flag() int
 		// 支付途径支付信息
 		Channels() []*TradeChan
@@ -289,6 +289,8 @@ type (
 		InternalChan int `db:"internal_chan"`
 		// 支付金额
 		PayAmount int `db:"pay_amount"`
+		// 通道数据
+		ChanData string `db:"chan_data"`
 	}
 
 	// 合并的支付单
