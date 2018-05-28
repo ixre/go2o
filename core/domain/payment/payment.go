@@ -227,10 +227,10 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 	err := p.saveOrder()
 	if err == nil {
 		if cash > 0 {
-			err = p.saveTradeChan(cash, payment.ChanCash)
+			err = p.saveTradeChan(cash, payment.ChanCash, "")
 		}
 		if bank > 0 {
-			err = p.saveTradeChan(bank, payment.ChanBankCard)
+			err = p.saveTradeChan(bank, payment.ChanBankCard, "")
 		}
 	}
 	return err
@@ -346,7 +346,7 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 		p.value.DeductAmount += amount // 修改抵扣金额
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.ChanBalance)
+			err = p.saveTradeChan(amount, payment.ChanBalance, "")
 		}
 	}
 	return err
@@ -393,7 +393,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 		p.value.DeductAmount += amount
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.ChanIntegral)
+			err = p.saveTradeChan(amount, payment.ChanIntegral, "")
 		}
 	}
 	return amount, err
@@ -409,19 +409,20 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 		p.value.DeductAmount += fee
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(fee, payment.ChanSystemPay)
+			err = p.saveTradeChan(fee, payment.ChanSystemPay, "")
 		}
 	}
 	return err
 }
 
 // 保存支付信息
-func (p *paymentOrderImpl) saveTradeChan(amount int, payChan int) error {
+func (p *paymentOrderImpl) saveTradeChan(amount int, payChan int, chanData string) error {
 	c := &payment.TradeChan{
 		TradeNo:      p.TradeNo(),
 		PayChan:      payChan,
 		InternalChan: 1,
 		PayAmount:    amount,
+		ChanData:     chanData,
 	}
 	_, err := p.repo.SavePaymentTradeChan(p.TradeNo(), c)
 	return err
@@ -490,7 +491,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 		p.value.DeductAmount += amount
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.ChanWallet)
+			err = p.saveTradeChan(amount, payment.ChanWallet, "")
 		}
 	}
 	return err
