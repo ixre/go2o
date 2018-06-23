@@ -1,3 +1,6 @@
+
+
+
 CREATE TABLE pay_sp_trade (
   id           int(10) NOT NULL AUTO_INCREMENT,
   trade_sp     varchar(20) NOT NULL comment '交易SP',
