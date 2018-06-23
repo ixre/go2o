@@ -19,8 +19,6 @@ import (
 // 运行Thrift服务
 func ListenAndServe(addr string, secure bool) error {
 	var err error
-	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
-	protocolFactory := thrift.NewTCompactProtocolFactory()
 	var transport thrift.TServerTransport
 	if secure {
 		cfg := new(tls.Config)
@@ -33,7 +31,8 @@ func ListenAndServe(addr string, secure bool) error {
 	} else {
 		transport, err = thrift.NewTServerSocket(addr)
 	}
-	transport, err = thrift.NewTServerSocket(addr)
+	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
+	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
 	if err == nil {
 		processor := thrift.NewTMultiplexedProcessor()
 		processor.RegisterProcessor("merchant", define.NewMerchantServiceProcessor(rsi.MerchantService))
