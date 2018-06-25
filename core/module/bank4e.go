@@ -58,9 +58,9 @@ func (b *Bank4E) GetBasicInfo(memberId int64) map[string]string {
 	data["BankAccount"] = bank.Account
 	data["Remark"] = info.Remark
 	if info.Reviewed == enum.ReviewPass {
-		data["ReviewState"] = "true"
+		data["Reviewed"] = "true"
 	} else {
-		data["ReviewState"] = "false"
+		data["Reviewed"] = "false"
 	}
 	return data
 }
