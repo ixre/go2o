@@ -2,6 +2,7 @@ package uams
 
 import (
 	"errors"
+	"fmt"
 	"github.com/jsix/gof/api"
 	"io/ioutil"
 	"net/http"
@@ -55,6 +56,9 @@ func Post(apiName string, data map[string]string) ([]byte, error) {
 	form["sign"] = []string{sign}
 	rsp, err := cli.PostForm(API_SERVER, form)
 	if err == nil {
+		if rsp.StatusCode != http.StatusOK {
+			return []byte{}, errors.New(fmt.Sprintf("Http %d", rsp.StatusCode))
+		}
 		data, err := ioutil.ReadAll(rsp.Body)
 		if err == nil {
 			content := string(data)
