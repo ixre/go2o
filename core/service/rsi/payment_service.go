@@ -24,6 +24,7 @@ type paymentService struct {
 	repo       payment.IPaymentRepo
 	orderRepo  order.IOrderRepo
 	memberRepo member.IMemberRepo
+	serviceUtil
 }
 
 func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
@@ -68,7 +69,7 @@ func (p *paymentService) SubmitPaymentOrder(ctx context.Context, s *define.SPaym
 	v := parser.PaymentOrder(s)
 	o := p.repo.CreatePaymentOrder(v)
 	err := o.Submit()
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 // 调整支付单金额
@@ -80,7 +81,7 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 	} else {
 		err = o.Adjust(int(amount * 100))
 	}
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 积分抵扣支付单
@@ -93,7 +94,7 @@ func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
 	} else {
 		amount, err = o.IntegralDiscount(int(integral), ignoreOut)
 	}
-	return parser.Result(amount, err), nil
+	return parser.Result_(amount, err), nil
 }
 
 // 余额抵扣
@@ -105,7 +106,7 @@ func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, r
 	} else {
 		err = o.BalanceDiscount(remark)
 	}
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 钱包账户支付
@@ -119,7 +120,7 @@ func (p *paymentService) PaymentByWallet(ctx context.Context,
 		} else {
 			err = ip.PaymentByWallet(remark)
 		}
-		return parser.Result(0, err), nil
+		return parser.Result_(0, err), nil
 	}
 	// 合并支付单
 	arr := p.repo.GetMergePayOrders(tradeNo)
@@ -138,7 +139,7 @@ func (p *paymentService) PaymentByWallet(ctx context.Context,
 			}
 		}
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 // 余额钱包混合支付，优先扣除余额。
@@ -149,7 +150,7 @@ func (p *paymentService) HybridPayment(ctx context.Context, orderId int32, remar
 	} else {
 		err = o.HybridPayment(remark)
 	}
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 完成支付单支付，并传入支付方式及外部订单号
@@ -161,7 +162,7 @@ func (p *paymentService) FinishPayment(ctx context.Context, tradeNo string, spNa
 	} else {
 		err = o.PaymentFinish(spName, outerNo)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 // 支付网关
@@ -170,7 +171,7 @@ func (p *paymentService) GatewayV1(ctx context.Context, action string, userId in
 	// 获取令牌
 	if action == "get_token" {
 		token := mod.CreateToken(userId)
-		return parser.Result(token, nil), nil
+		return p.success(map[string]string{"token": token}), nil
 	}
 	// 提交支付请求
 	if action == "submit" {
@@ -180,7 +181,7 @@ func (p *paymentService) GatewayV1(ctx context.Context, action string, userId in
 	if action == "payment" {
 		err = mod.CheckAndPayment(userId, data)
 	}
-	return parser.Result(nil, err), nil
+	return p.result(err), nil
 }
 
 // 获取支付预交易数据

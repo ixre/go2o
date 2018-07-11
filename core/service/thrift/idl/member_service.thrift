@@ -5,6 +5,16 @@ include "ttype.thrift"
 
 //会员服务
 service MemberService{
+    /**
+     * 注册会员
+     * @param member 会员信息
+     * @param profile 资料
+     * @param mchId 商户编号
+     * @param cardId 会员卡号
+     * @param inviteCode 邀请码
+     **/
+    ttype.Result RegisterMemberV1(1:Member member,2:Profile profile,3:i32 mchId,4:string cardId,5:string inviteCode)
+
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
     ttype.Result64 CheckLogin(1:string user,2:string pwd,3:bool update)

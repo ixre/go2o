@@ -194,3 +194,51 @@ func initRpcServe(ctx gof.App) {
 
 	fact.GetValueRepo().SavesRegistry(mp)
 }
+
+// 服务工具类，实现的服务组合此类,可直接调用其方法
+type serviceUtil struct{}
+
+// 返回失败的结果
+func (s serviceUtil) failResult(msg string) *define.Result_ {
+	return s.failCodeResult(1, msg)
+}
+
+// 返回错误的结果
+func (s serviceUtil) error(err error) *define.Result_ {
+	return s.failResult(err.Error())
+}
+
+// 返回结果
+func (s serviceUtil) result(err error) *define.Result_ {
+	if err == nil {
+		return s.success(nil)
+	}
+	return s.error(err)
+}
+
+// 返回失败的结果
+func (s serviceUtil) errorCodeResult(code int, err error) *define.Result_ {
+	return &define.Result_{ErrCode: int32(code), ErrMsg: err.Error(), Data: map[string]string{}}
+}
+
+// 返回失败的结果
+func (s serviceUtil) failCodeResult(code int, msg string) *define.Result_ {
+	return &define.Result_{ErrCode: int32(code), ErrMsg: msg, Data: map[string]string{}}
+}
+
+// 返回成功的结果
+func (s serviceUtil) success(data map[string]string) *define.Result_ {
+	if data == nil {
+		data = map[string]string{}
+	}
+	return &define.Result_{ErrMsg: "", Data: data}
+}
+
+// 将int32数组装换为int数组
+func (s serviceUtil) intArray(values []int32) []int {
+	arr := make([]int, len(values))
+	for i, v := range values {
+		arr[i] = int(v)
+	}
+	return arr
+}
