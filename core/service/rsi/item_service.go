@@ -524,7 +524,7 @@ func (s *itemService) SetShelveState(vendorId int32, itemId int64,
 			err = it.SetShelve(state, remark)
 		}
 	}
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 设置商品货架状态
@@ -536,7 +536,7 @@ func (s *itemService) ReviewItem(vendorId int32, itemId int64,
 	} else {
 		err = it.Review(pass, remark)
 	}
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 标记为违规
@@ -548,7 +548,7 @@ func (s *itemService) SignIncorrect(vendorId int32, itemId int64,
 	} else {
 		err = it.Incorrect(remark)
 	}
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 获取批发价格数组

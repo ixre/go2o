@@ -13,11 +13,11 @@ import (
 
 var (
 	RPermissionDenied = &api.Response{
-		ErrCode: api.RPermissionDenied.ErrCode,
+		ErrCode: api.RAccessDenied.ErrCode,
 		ErrMsg:  "没有权限访问该接口",
 	}
 	RMissingApiParams = &api.Response{
-		ErrCode: api.RMissingApiParams.ErrCode,
+		ErrCode: api.RIncorrectApiParams.ErrCode,
 		ErrMsg:  "缺少接口参数，请联系技术人员解决",
 	}
 	RErrApiName = &api.Response{
@@ -76,9 +76,9 @@ func Post(apiName string, data map[string]string) ([]byte, error) {
 // 如果返回接口请求错误, 响应状态码以-10开头
 func checkApiRespErr(code int, text string) error {
 	switch int64(code) {
-	case api.RPermissionDenied.ErrCode:
+	case api.RAccessDenied.ErrCode:
 		text = RPermissionDenied.ErrMsg
-	case api.RMissingApiParams.ErrCode:
+	case api.RIncorrectApiParams.ErrCode:
 		text = RMissingApiParams.ErrMsg
 	case api.RErrUndefinedApi.ErrCode:
 		text = RErrApiName.ErrMsg

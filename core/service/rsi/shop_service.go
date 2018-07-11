@@ -68,7 +68,7 @@ func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, 
 			err = sp.TurnOff(reason)
 		}
 	}
-	return parser.Result(shopId, err), nil
+	return parser.Result_(shopId, err), nil
 }
 
 // 设置商店是否营业
@@ -84,7 +84,7 @@ func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, 
 			err = sp.Pause()
 		}
 	}
-	return parser.Result(shopId, err), nil
+	return parser.Result_(shopId, err), nil
 }
 
 func (si *shopServiceImpl) getMerchantId(shopId int32) int32 {

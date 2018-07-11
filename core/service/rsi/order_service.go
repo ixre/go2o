@@ -84,7 +84,7 @@ func (s *orderServiceImpl) WholesaleCartV1(ctx context.Context, memberId int64, 
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
-	return parser.Result(nil, errors.New("unknown action")), nil
+	return parser.Result_(nil, errors.New("unknown action")), nil
 }
 
 // 转换勾选字典,数据如：{"1":["10","11"],"2":["20","21"]}
@@ -123,7 +123,7 @@ func (s *orderServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*def
 			}
 		}
 	}
-	return parser.Result(v, nil), nil
+	return parser.Result_(v, nil), nil
 }
 
 // 获取简易的购物车
@@ -133,7 +133,7 @@ func (s *orderServiceImpl) wsGetSimpleCart(c cart.ICart, data map[string]string)
 		size = 5
 	}
 	qd := c.(cart.IWholesaleCart).QuickJdoData(size)
-	return parser.Result(qd, nil), nil
+	return parser.Result_(qd, nil), nil
 }
 
 // 转换提交到购物车的数据(PUT和UPDATE), 数据如：91:1;92:1
@@ -191,10 +191,10 @@ func (s *orderServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*def
 			mp := make(map[string]interface{})
 			mp["cartId"] = aId
 			mp["checked"] = s.createCheckedData(itemId, arr)
-			return parser.Result(mp, nil), nil
+			return parser.Result_(mp, nil), nil
 		}
 	}
-	return parser.Result(aId, err), nil
+	return parser.Result_(aId, err), nil
 }
 
 func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
@@ -210,7 +210,7 @@ func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*
 	if err == nil {
 		_, err = c.Save()
 	}
-	return parser.Result(aId, err), nil
+	return parser.Result_(aId, err), nil
 }
 
 // 勾选购物车，格式如：1:2;1:5
@@ -233,7 +233,7 @@ func (s *orderServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*d
 		}
 	}
 	err := c.SignItemChecked(arr)
-	return parser.Result(c.GetAggregateRootId(), err), nil
+	return parser.Result_(c.GetAggregateRootId(), err), nil
 }
 
 /*---------------- 零售购物车 ----------------*/
@@ -257,7 +257,7 @@ func (s *orderServiceImpl) RetailCartV1(ctx context.Context, memberId int64, act
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
-	return parser.Result(nil, errors.New("unknown action")), nil
+	return parser.Result_(nil, errors.New("unknown action")), nil
 }
 
 // 提交订单

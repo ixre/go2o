@@ -11,6 +11,7 @@ package rsi
 
 import (
 	"context"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -31,6 +32,7 @@ type merchantService struct {
 	_memberRepo member.IMemberRepo
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
+	serviceUtil
 }
 
 func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r []*define.STradeConf, err error) {
@@ -66,7 +68,7 @@ func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []
 		}
 		err = mch.ConfManager().SaveTradeConf(dst)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
@@ -169,13 +171,13 @@ func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 	return m._mchRepo.GetManager().RemoveSignUp(memberId)
 }
 
-// 登录，返回结果(Result)和会员编号(ID);
+// 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (ms *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
+func (m *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
-	val := ms._memberRepo.GetMemberByUsr(usr)
+	val := m._memberRepo.GetMemberByUsr(usr)
 	if val == nil {
-		val = ms._memberRepo.GetMemberValueByPhone(usr)
+		val = m._memberRepo.GetMemberValueByPhone(usr)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
@@ -198,7 +200,7 @@ func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r
 	oriPwd = strings.TrimSpace(oriPwd)
 	var mchId int32
 	if usr == "" || oriPwd == "" {
-		return parser.Result(mchId, member.ErrCredential), nil
+		return m.error(member.ErrCredential), nil
 	}
 	//尝试作为独立的商户账号登陆
 	encPwd := domain.MerchantSha1Pwd(usr, oriPwd)
@@ -218,7 +220,10 @@ func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r
 	if mchId < 0 && err == nil {
 		err = merchant.ErrNoSuchMerchant
 	}
-	return parser.Result(mchId, err), nil
+	if err != nil {
+		return m.error(err), nil
+	}
+	return m.success(map[string]string{"mch_id": util.Str(mchId)}), nil
 }
 
 // 获取企业信息,并返回是否为提交的信息
@@ -317,7 +322,7 @@ func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *define.Resu
 	} else {
 		err = mch.Stat()
 	}
-	return parser.Result(mchId, err), nil
+	return parser.Result_(mchId, err), nil
 }
 
 // 设置商户启用或停用
@@ -696,7 +701,7 @@ func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGr
 	} else {
 		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
 	}
-	return parser.Result(v.ID, err), nil
+	return parser.Result_(v.ID, err), nil
 }
 
 // 获取买家分组
