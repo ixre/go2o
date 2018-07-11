@@ -14,7 +14,7 @@ import (
 	"go2o/gen-code/thrift/define"
 )
 
-func Result(data interface{}, err error) *define.Result_ {
+func Result_(data interface{}, err error) *define.Result_ {
 	r := &define.Result_{}
 	if err != nil {
 		r.ErrCode = 1
@@ -24,13 +24,13 @@ func Result(data interface{}, err error) *define.Result_ {
 		if data != nil {
 			switch data.(type) {
 			case string, int, int32, int64, bool, float32, float64:
-				r.Data = util.Str(data)
+				r.Data1 = util.Str(data)
 			default:
 				d, err := json.Marshal(data)
 				if err != nil {
 					panic(err)
 				}
-				r.Data = string(d)
+				r.Data1 = string(d)
 			}
 		}
 	}

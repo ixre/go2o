@@ -27,7 +27,7 @@ func (w *walletServiceImpl) CreateWallet(ctx context.Context, userId int64, wall
 		Remark:     remark,
 	}
 	iw := w._repo.CreateWallet(v)
-	return parser.Result(iw.Save()), nil
+	return parser.Result_(iw.Save()), nil
 }
 
 func (w *walletServiceImpl) GetWalletId(ctx context.Context, userId int64, walletType int32) (r int64, err error) {
@@ -62,7 +62,7 @@ func (w *walletServiceImpl) Adjust(ctx context.Context, walletId int64, value in
 	} else {
 		err = iw.Adjust(int(value), title, outerNo, int(opuId), opuName)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) Discount(ctx context.Context, walletId int64, value int32, title string, outerNo string, must bool) (r *define.Result_, err error) {
@@ -72,7 +72,7 @@ func (w *walletServiceImpl) Discount(ctx context.Context, walletId int64, value 
 	} else {
 		err = iw.Discount(int(value), title, outerNo, must)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) Freeze(ctx context.Context, walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
@@ -82,7 +82,7 @@ func (w *walletServiceImpl) Freeze(ctx context.Context, walletId int64, value in
 	} else {
 		err = iw.Freeze(int(value), title, outerNo, int(opuId), opuName)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) Unfreeze(ctx context.Context, walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
@@ -92,7 +92,7 @@ func (w *walletServiceImpl) Unfreeze(ctx context.Context, walletId int64, value 
 	} else {
 		err = iw.Unfreeze(int(value), title, outerNo, int(opuId), opuName)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) Charge(ctx context.Context, walletId int64, value int32, by int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
@@ -102,7 +102,7 @@ func (w *walletServiceImpl) Charge(ctx context.Context, walletId int64, value in
 	} else {
 		err = iw.Charge(int(value), int(by), title, outerNo, int(opuId), opuName)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) Transfer(ctx context.Context, walletId int64, toWalletId int64, value int32, tradeFee int32, remark string) (r *define.Result_, err error) {
@@ -115,7 +115,7 @@ func (w *walletServiceImpl) Transfer(ctx context.Context, walletId int64, toWall
 		//todo: title
 		err = iw.Transfer(toWalletId, int(value), int(tradeFee), title, toTitle, remark)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) RequestTakeOut(ctx context.Context, walletId int64, value int32, tradeFee int32, kind int32, title string) (r *define.Result_, err error) {
@@ -127,10 +127,10 @@ func (w *walletServiceImpl) RequestTakeOut(ctx context.Context, walletId int64, 
 		if err1 != nil {
 			err = err1
 		} else {
-			return parser.Result(tradeNo, nil), nil
+			return parser.Result_(tradeNo, nil), nil
 		}
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) ReviewTakeOut(ctx context.Context, walletId int64, takeId int64, reviewPass bool, remark string, opuId int32, opuName string) (r *define.Result_, err error) {
@@ -140,7 +140,7 @@ func (w *walletServiceImpl) ReviewTakeOut(ctx context.Context, walletId int64, t
 	} else {
 		err = iw.ReviewTakeOut(takeId, reviewPass, remark, int(opuId), opuName)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) FinishTakeOut(ctx context.Context, walletId int64, takeId int64, outerNo string) (r *define.Result_, err error) {
@@ -150,7 +150,7 @@ func (w *walletServiceImpl) FinishTakeOut(ctx context.Context, walletId int64, t
 	} else {
 		err = iw.FinishTakeOut(takeId, outerNo)
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 func (w *walletServiceImpl) PagingWalletLog(ctx context.Context, walletId int64, params *define.PagingParams) (r *define.PagingResult_, err error) {

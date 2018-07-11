@@ -22,7 +22,7 @@ func (e *exportFormatter) Format(field, name string, rowNum int, data interface{
 			i64, err := strconv.ParseInt(s, 0, 64)
 			if err == nil {
 				dt := time.Unix(i64, 0)
-				return dt.Format("2006-01-02 15:03:04")
+				return dt.Format("2006-01-02 15:04:05")
 			}
 		}
 		return data

@@ -11,9 +11,11 @@ package rsi
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
@@ -40,6 +42,7 @@ type memberService struct {
 	query      *query.MemberQuery
 	orderQuery *query.OrderQuery
 	valRepo    valueobject.IValueRepo
+	serviceUtil
 }
 
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
@@ -122,10 +125,10 @@ func (s *memberService) SaveProfile(v *define.Profile) error {
 func (s *memberService) Premium(ctx context.Context, memberId int64, v int32, expires int64) (*define.Result_, error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return parser.Result(memberId, member.ErrNoSuchMember), nil
+		return parser.Result_(memberId, member.ErrNoSuchMember), nil
 	}
 	err := m.Premium(v, expires)
-	return parser.Result(memberId, err), nil
+	return parser.Result_(memberId, err), nil
 }
 
 // 检查会员的会话Token是否正确
@@ -159,7 +162,7 @@ func (s *memberService) RemoveToken(ctx context.Context, memberId int64) (err er
 
 // 更改手机号码，不验证手机格式
 func (s *memberService) ChangePhone(ctx context.Context, memberId int64, phone string) (result_ *define.Result_, err error) {
-	return parser.Result(nil, s.changePhone(memberId, phone)), nil
+	return parser.Result_(nil, s.changePhone(memberId, phone)), nil
 }
 
 // 是否已收藏
@@ -326,7 +329,7 @@ func (s *memberService) CompareCode(memberId int64, code string) error {
 
 // 更改会员用户名
 func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) (result_ *define.Result_, err error) {
-	return parser.Result(nil, s.changeUsr(memberId, usr)), nil
+	return parser.Result_(nil, s.changeUsr(memberId, usr)), nil
 }
 
 // 更改会员等级
@@ -338,7 +341,7 @@ func (s *memberService) UpdateLevel(ctx context.Context, memberId int64, level i
 	} else {
 		err = m.ChangeLevel(level, int32(paymentOrderId), review)
 	}
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 上传会员头像
@@ -368,6 +371,40 @@ func (s *memberService) updateMember(v *define.Member) (int64, error) {
 		return m.GetAggregateRootId(), err
 	}
 	return m.Save()
+}
+
+// 注册会员
+func (s *memberService) RegisterMemberV1(ctx context.Context, member *define.Member, profile *define.Profile, mchId int32, cardId string, inviteCode string) (r *define.Result_, err error) {
+	if member == nil || profile == nil {
+		return s.error(errors.New("缺少参数:member/profile")), nil
+	}
+	v := parser.Member(member)
+	pro := parser.MemberProfile2(profile)
+	invitationId, err := s.repo.GetManager().PrepareRegister(
+		v, pro, inviteCode)
+	if err == nil {
+		m := s.repo.CreateMember(v) //创建会员
+		id, err := m.Save()
+		if err == nil {
+			pro.Sex = 1
+			pro.MemberId = id
+			//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
+			if err = m.Profile().SaveProfile(pro); err != nil {
+				s.repo.DeleteMember(id)
+			} else {
+				// 保存关联信息
+				rl := m.GetRelation()
+				rl.InviterId = invitationId
+				rl.RegMchId = mchId
+				rl.CardCard = cardId
+				err = m.SaveRelation(rl)
+			}
+		}
+		return s.success(map[string]string{
+			"member_id": util.Str(id),
+		}), nil
+	}
+	return s.error(err), nil
 }
 
 // 注册会员
@@ -460,7 +497,7 @@ func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64
 			}
 		}
 	}
-	return parser.Result(nil, err), nil
+	return parser.Result_(nil, err), nil
 }
 
 // 重置密码
@@ -512,7 +549,7 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 }
 
-// 登录，返回结果(Result)和会员编号(ID);
+// 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
@@ -536,7 +573,7 @@ func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) 
 	return val.Id, nil
 }
 
-// 登录，返回结果(Result)和会员编号(ID);
+// 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(ctx context.Context, usr string, pwd string, update bool) (r *define.Result64, err error) {
 	id, err := s.testLogin(usr, pwd)
@@ -551,16 +588,16 @@ func (s *memberService) CheckLogin(ctx context.Context, usr string, pwd string, 
 func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd string) (r *define.Result_, err error) {
 	m := s.repo.GetMember(id)
 	if m == nil {
-		return parser.Result(0, member.ErrNoSuchMember), nil
+		return parser.Result_(0, member.ErrNoSuchMember), nil
 	}
 	mv := m.GetValue()
 	if mv.TradePwd == "" {
-		return parser.Result(nil, member.ErrNotSetTradePwd), nil
+		return parser.Result_(nil, member.ErrNotSetTradePwd), nil
 	}
 	if mv.TradePwd != tradePwd {
-		return parser.Result(nil, member.ErrIncorrectTradePwd), nil
+		return parser.Result_(nil, member.ErrIncorrectTradePwd), nil
 	}
-	return parser.Result(nil, nil), nil
+	return parser.Result_(nil, nil), nil
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
@@ -902,7 +939,7 @@ func (s *memberService) ChargeAccount(ctx context.Context, memberId int64, accou
 			err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
 		}
 	}
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
@@ -940,7 +977,7 @@ func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, acc
 				member.DefaultRelateUser, mustLargeZero)
 		}
 	}
-	return parser.Result(memberId, err), nil
+	return parser.Result_(memberId, err), nil
 }
 
 // 调整账户
@@ -955,7 +992,7 @@ func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, accou
 		case member.AccountWallet:
 		}
 	}
-	return parser.Result(memberId, err), nil
+	return parser.Result_(memberId, err), nil
 }
 
 // !银行四要素认证
@@ -963,7 +1000,11 @@ func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action stri
 	mod := module.Get(module.M_B4E).(*module.Bank4E)
 	if action == "get" {
 		data := mod.GetBasicInfo(memberId)
-		return parser.Result(data, nil), nil
+		d, err := json.Marshal(data)
+		if err != nil {
+			return s.error(err), nil
+		}
+		return s.success(map[string]string{"data": string(d)}), nil
 	}
 	if action == "update" {
 		err := mod.UpdateInfo(memberId,
@@ -971,9 +1012,9 @@ func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action stri
 			data["id_card"],
 			data["phone"],
 			data["bank_account"])
-		return parser.Result(0, err), nil
+		return s.result(err), nil
 	}
-	return parser.Result(nil, errors.New("未知操作")), nil
+	return s.error(errors.New("未知操作")), nil
 }
 
 // 验证交易密码

@@ -102,14 +102,14 @@ func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error
 		v.ID, err = pm.Save()
 	}
 R:
-	return parser.Result(v.ID, err), nil
+	return parser.Result_(v.ID, err), nil
 }
 
 // 删除产品模型
 func (p *productService) DeleteProModel_(id int32) (*define.Result_, error) {
 	//err := p.pmRepo.DeleteProModel(id)
 	//todo: 暂时不允许删除模型
-	return parser.Result(nil, errors.New("暂时不允许删除模型")), nil
+	return parser.Result_(nil, errors.New("暂时不允许删除模型")), nil
 }
 
 /***** 品牌  *****/
@@ -122,13 +122,13 @@ func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
 // Save 产品品牌
 func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*define.Result_, error) {
 	id, err := p.pmRepo.BrandService().SaveBrand(v)
-	return parser.Result(id, err), nil
+	return parser.Result_(id, err), nil
 }
 
 // Delete 产品品牌
 func (p *productService) DeleteProBrand_(id int32) (*define.Result_, error) {
 	err := p.pmRepo.BrandService().DeleteBrand(id)
-	return parser.Result(0, err), nil
+	return parser.Result_(0, err), nil
 }
 
 // 获取所有产品品牌
