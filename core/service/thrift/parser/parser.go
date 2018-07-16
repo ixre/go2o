@@ -369,7 +369,7 @@ func TrustedInfoDto(src *member.TrustedInfo) *define.TrustedInfo {
 		RealName:   src.RealName,
 		CardId:     src.CardId,
 		TrustImage: src.TrustImage,
-		Reviewed:   src.Reviewed,
+		Reviewed:   src.ReviewState,
 		ReviewTime: src.ReviewTime,
 		Remark:     src.Remark,
 		UpdateTime: src.UpdateTime,

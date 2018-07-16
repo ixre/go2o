@@ -73,7 +73,7 @@ type (
 		// 别名
 		Alias string `db:"cat_alias"`
 		// 排序编号
-		SortNum int `db:"sort_number"`
+		SortNum int `db:"sort_num"`
 		// 定位路径（打开栏目页定位到的路径）
 		Location string `db:"location"`
 		// 页面标题
@@ -113,7 +113,7 @@ type (
 		// 显示次数
 		ViewCount int `db:"view_count"`
 		// 排序序号
-		SortNum int `db:"sort_number"`
+		SortNum int `db:"sort_num"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 最后修改时间

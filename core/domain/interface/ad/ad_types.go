@@ -48,7 +48,7 @@ type (
 		ImageUrl string `db:"image_url"`
 
 		// 排列序号
-		SortNum int `db:"sort_number"`
+		SortNum int `db:"sort_num"`
 
 		// 是否启用
 		Enabled int `db:"enabled"`

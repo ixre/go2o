@@ -360,7 +360,7 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 		return member.ErrBankInfo
 	}
 	trustInfo := p.GetTrustedInfo()
-	if trustInfo.Reviewed == 0 {
+	if trustInfo.ReviewState == 0 {
 		return member.ErrNotTrusted
 	}
 	p.GetBank()
@@ -482,7 +482,10 @@ func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error
 	//	return member.ErrNoChangedTrustInfo
 	//}
 	dst.RealName = src.RealName
+	dst.CountryCode = src.CountryCode
 	dst.CardId = src.CardId
+	dst.CardType = src.CardType
+	dst.CardImage = src.CardImage
 	dst.TrustImage = src.TrustImage
 	return nil
 }
@@ -491,8 +494,8 @@ func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error
 func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	if p.trustedInfo == nil {
 		p.trustedInfo = &member.TrustedInfo{
-			MemberId: p.memberId,
-			Reviewed: enum.ReviewNotSet,
+			MemberId:    p.memberId,
+			ReviewState: enum.ReviewNotSet,
 		}
 		//如果还没有实名信息,则新建
 		orm := tmp.Db().GetOrm()
@@ -550,7 +553,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	err = p.copyTrustedInfo(v, p.trustedInfo)
 	if err == nil {
 		p.trustedInfo.Remark = ""
-		p.trustedInfo.Reviewed = enum.ReviewAwaiting //标记为待处理
+		p.trustedInfo.ReviewState = enum.ReviewAwaiting //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
 		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
 			int(p.trustedInfo.MemberId))
@@ -562,13 +565,13 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.GetTrustedInfo()
 	if pass {
-		p.trustedInfo.Reviewed = enum.ReviewPass
+		p.trustedInfo.ReviewState = enum.ReviewPass
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return member.ErrEmptyReviewRemark
 		}
-		p.trustedInfo.Reviewed = enum.ReviewReject
+		p.trustedInfo.ReviewState = enum.ReviewReject
 	}
 	p.trustedInfo.Remark = remark
 	p.trustedInfo.ReviewTime = time.Now().Unix()
