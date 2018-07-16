@@ -304,33 +304,41 @@ type (
 	Relation struct {
 		// 会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
-		//会员卡号
+		// 会员卡号
 		CardCard string `db:"card_no"`
-		//推荐人（会员）
+		// 推荐人（会员）
 		InviterId int64 `db:"inviter_id"`
 		// 会员关系字符串
 		InviterStr string `db:"inviter_str"`
-		//注册关联商户编号
+		// 注册关联商户编号
 		RegMchId int32 `db:"reg_mchid"`
 	}
 
 	// 实名认证信息
 	TrustedInfo struct {
-		//会员编号
+		// 会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
-		//真实姓名
+		// 真实姓名
 		RealName string `db:"real_name"`
-		//身份证号码
+		// 国家代码
+		CountryCode string `db:"country_code"`
+		// 证件类型
+		CardType int `db:"card_type"`
+		// 证件号码
 		CardId string `db:"card_id"`
-		//认证图片、身份证、人与身份证的图像等
+		// 证件图片
+		CardImage string `db:"card_image"`
+		// 认证图片,人与身份证的图像等
 		TrustImage string `db:"trust_image"`
-		//是否审核通过
-		Reviewed int32 `db:"review_state"`
-		//审核时间
+		// 是否人工审核认证
+		ManualReview int `db:"manual_review"`
+		// 是否审核通过
+		ReviewState int32 `db:"review_state"`
+		// 审核时间
 		ReviewTime int64 `db:"review_time"`
-		//审核备注
+		// 审核备注
 		Remark string `db:"remark"`
-		//更新时间
+		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
 
@@ -415,9 +423,9 @@ type (
 		// 支付单编号
 		PaymentId int32 `db:"payment_id"`
 		// 是否审核及处理
-		Reviewed int32 `db:"review_state"`
+		ReviewState int32 `db:"review_state"`
 		// 升级方式,1:自动升级 2:客服更改 3:系统升级
-		UpgradeType int32 `db:"upgrade_type"`
+		UpgradeMode int32 `db:"upgrade_mode"`
 		// 升级时间
 		CreateTime int64 `db:"create_time"`
 	}
