@@ -182,7 +182,7 @@ type (
 		//营业状态
 		OpeningState int32 `db:"opening_state"`
 		//排序
-		SortNum int32 `db:"sort_number"`
+		SortNum int32 `db:"sort_num"`
 		//创建时间
 		CreateTime int64 `db:"create_time"`
 	}
