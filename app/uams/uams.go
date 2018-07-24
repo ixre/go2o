@@ -49,16 +49,13 @@ func (c *Client) Post(apiName string, data map[string]string) ([]byte, error) {
 
 // 用户登陆，返回user_id和user_code,real_name,user_state
 func (c *Client) UserLogin(user string, pwd string) (map[string]string, error) {
-	data, err := c.Post("user.login", map[string]string{
+	data, err := c.Post("user.check_credential", map[string]string{
 		"user": user,
 		"pwd":  pwd,
 	})
 	if err == nil {
 		var r Result
-		json.Unmarshal(data, &r)
-		if r.ErrCode != 0 {
-			err = errors.New(r.ErrMsg)
-		}
+		err = c.parseResult(data, &r)
 		return r.Data, err
 	}
 	return nil, err
@@ -134,12 +131,23 @@ func (c *Client) MatchRole(app string, outerUid string, role int64) error {
 
 // 插件是否能权限访问资源
 func (c *Client) CheckPrivilege(app string, userCode string, resCode string, resUri string) error {
-	_, err := c.Post("user.privilege", map[string]string{
-		"app":      app,
-		"user_code":  userCode,
-		"res_code": resCode,
-		"res_uri":  resUri,
+	bytes, err := c.Post("user.privilege", map[string]string{
+		"app":       app,
+		"user_code": userCode,
+		"res_code":  resCode,
+		"res_uri":   resUri,
 	})
+	if err == nil {
+		var r Result
+		err =  c.parseResult(bytes, &r)
+	}
+	return err
+}
+func (c *Client) parseResult(bytes []byte, r *Result) error {
+	err := json.Unmarshal(bytes, r)
+	if err == nil && r.ErrCode != 0 {
+		err = errors.New(r.ErrMsg)
+	}
 	return err
 }
 
@@ -160,7 +168,7 @@ func checkApiRespErr(code int, text string) error {
 
 type (
 	Result struct {
-		ErrCode int32             `thrift:"RspCode,1" db:"RspCode" json:"RspCode"`
+		ErrCode int               `thrift:"RspCode,1" db:"RspCode" json:"ErrCode"`
 		ErrMsg  string            `thrift:"ErrMsg,2" db:"ErrMsg" json:"ErrMsg"`
 		Data    map[string]string `thrift:"Data,3" db:"Data" json:"Data"`
 	}
