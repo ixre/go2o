@@ -37,10 +37,10 @@ type itemService struct {
 	promRepo  promodel.IProModelRepo
 	mchRepo   merchant.IMerchantRepo
 	valueRepo valueobject.IValueRepo
-	sto       storage.IRedisStorage
+	sto       storage.Interface
 }
 
-func NewSaleService(sto storage.IRedisStorage, cateRepo product.ICategoryRepo,
+func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
 	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) *itemService {
@@ -246,7 +246,7 @@ func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) [
 	hash := fmt.Sprintf("%d-%d-%s", catId, quantity, where)
 	hash = crypto.Md5([]byte(hash))
 	key := "go2o:query:cache:rd-item:" + hash
-	arr := []*define.OldItem{}
+	var arr []*define.OldItem
 
 	fn := func() interface{} {
 		list := s.itemQuery.GetRandomItem(catId, quantity, where)
@@ -256,7 +256,7 @@ func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) [
 		}
 		return arr
 	}
-	s.sto.(storage.IRedisStorage).RWJson(key, &arr, fn, 600)
+	s.sto.RWJson(key, &arr, fn, 600)
 	return arr
 }
 
