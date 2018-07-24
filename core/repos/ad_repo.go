@@ -187,7 +187,7 @@ func (a *advertisementRepo) GetAdByKey(userId int32, key string) *ad.Ad {
 // 获取轮播广告
 func (a *advertisementRepo) GetValueGallery(adId int32) ad.ValueGallery {
 	var list = []*ad.Image{}
-	if err := a.Connector.GetOrm().Select(&list, "ad_id=? ORDER BY sort_number ASC", adId); err == nil {
+	if err := a.Connector.GetOrm().Select(&list, "ad_id=? ORDER BY sort_num ASC LIMIT 10", adId); err == nil {
 		return list
 	}
 	return nil

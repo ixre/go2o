@@ -93,7 +93,6 @@ func Init(ctx gof.App, appFlag int, confDir string) {
 
 func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	sto storage.Interface, confPath string) {
-	rds := sto.(storage.IRedisStorage)
 	fact = (&factory.RepoFactory{}).Init(db, sto, confPath)
 	proMRepo := fact.GetProModelRepo()
 	valueRepo := fact.GetValueRepo()
@@ -137,7 +136,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
-	ItemService = NewSaleService(rds, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
+	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
