@@ -20,7 +20,6 @@ const (
 )
 
 type (
-
 	// 广告管理
 	IAdManager interface {
 		// 获取广告分组

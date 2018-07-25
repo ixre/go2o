@@ -97,7 +97,7 @@ func (this *AliPay) Sign(param interface{}) string {
 }
 
 func (this *AliPay) CreateGateway(orderNo string, fee float32, subject,
-	body, notifyUrl, returnUrl string) string {
+body, notifyUrl, returnUrl string) string {
 
 	if strings.Index(returnUrl, "?") != -1 || strings.Index(notifyUrl, "?") != -1 {
 		panic("return_url and notify_url can not contains '?'")

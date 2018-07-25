@@ -139,7 +139,7 @@ func (c *Client) CheckPrivilege(app string, userCode string, resCode string, res
 	})
 	if err == nil {
 		var r Result
-		err =  c.parseResult(bytes, &r)
+		err = c.parseResult(bytes, &r)
 	}
 	return err
 }
