@@ -7,4 +7,3 @@ func init() {
 	//API_APP = "4297e4cf-2a68-46cb-b88a-de2e62d0f06c"
 	//API_SIGN_TYPE = "md5"
 }
-

@@ -35,7 +35,7 @@ func TestToBePremium(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(1)
 	err := m.Premium(member.PremiumWhiteGold,
-		time.Now().Add(time.Hour*24*365).Unix())
+		time.Now().Add(time.Hour * 24 * 365).Unix())
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

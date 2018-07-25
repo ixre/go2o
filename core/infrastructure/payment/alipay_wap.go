@@ -160,7 +160,7 @@ func (this *AliPayWap) getNotifyFromXml(sXml string) *notifyResult {
 }
 
 func (this *AliPayWap) CreateGateway(orderNo string, fee float32, subject,
-	body, notifyUrl, returnUrl string) string {
+body, notifyUrl, returnUrl string) string {
 
 	this.MerchantUrl = returnUrl
 
