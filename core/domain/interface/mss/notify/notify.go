@@ -84,7 +84,6 @@ func RegisterNotifyItem(key string, item *NotifyItem) {
 }
 
 type (
-
 	// 简讯
 	PhoneMessage string
 

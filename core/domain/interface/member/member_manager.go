@@ -17,7 +17,6 @@ const (
 )
 
 type (
-
 	// 会员服务
 	IMemberManager interface {
 		// 等级服务

@@ -11,15 +11,12 @@ package alipay
 //作者yeyongchang yycmail@163.com
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 )

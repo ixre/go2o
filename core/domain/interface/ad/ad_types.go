@@ -11,7 +11,6 @@ package ad
 import "sort"
 
 type (
-
 	// 文本广告
 	IHyperLinkAd interface {
 		SetData(v *HyperLink) error
