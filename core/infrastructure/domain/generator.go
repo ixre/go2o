@@ -28,12 +28,12 @@ func NewTradeNo(business int, userId int) string {
 		arr[0] = strconv.Itoa(business) // 业务：长度1
 	}
 	arr[1] = dt.Format("060102")              // 年月日：长度6
-	arr[2] = strconv.Itoa(userId)             // 用户编号:3位
+	arr[2] = strconv.Itoa(userId)             // 用户编号:后3位
 	arr[3] = strconv.Itoa(second)             // 秒:4位
 	arr[4] = strconv.Itoa(10 + rand.Intn(88)) // 随机数:2位
 	// 将用户编号调整为3位
 	if l := len(arr[2]); l > 3 {
-		arr[2] = arr[2][:3]
+		arr[2] = arr[2][l-3:]
 	} else if l < 3 {
 		arr[2] = strings.Repeat("0", 3-l) + arr[2]
 	}

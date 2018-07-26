@@ -63,7 +63,7 @@ func (mc *MemberC) Login(c echo.Context) error {
 
 // 注册
 func (mc *MemberC) Register(c echo.Context) error {
-	result := &gof.Message{}
+	result := &gof.Result{}
 	return c.JSON(http.StatusOK,
 		result.Error(errors.New("注册暂停，请通过微信或其他方式注册!")))
 
@@ -154,7 +154,7 @@ func (mc *MemberC) Account(c echo.Context) error {
 // 断开
 // todo: token不允许删除，只能自动过期
 func (mc *MemberC) Disconnect(c echo.Context) error {
-	result := &gof.Message{}
+	result := &gof.Result{}
 	return c.JSON(http.StatusOK, result)
 	//mStr := c.QueryParam("member_id")
 	//memberId, err := util.I32Err(strconv.Atoi(mStr))

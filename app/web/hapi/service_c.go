@@ -74,7 +74,7 @@ func (m *serviceC) Favorite(c *echox.Context) error {
 	if memberId <= 0 {
 		return requestLogin(c)
 	}
-	result := &gof.Message{}
+	result := &gof.Result{}
 
 	favType := c.QueryParam("type")
 	id, _ := util.I32Err(strconv.Atoi(c.QueryParam("id")))
