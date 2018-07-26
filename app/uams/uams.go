@@ -10,24 +10,24 @@ import (
 
 var (
 	RInternalError = &api.Response{
-		RspCode: api.RInternalError.RspCode,
-		ErrMsg:  "内部服务器出错",
+		Code:    api.RInternalError.Code,
+		Message: "内部服务器出错",
 	}
 	RAccessDenied = &api.Response{
-		RspCode: api.RAccessDenied.RspCode,
-		ErrMsg:  "没有权限访问该接口",
+		Code:    api.RAccessDenied.Code,
+		Message: "没有权限访问该接口",
 	}
 	RIncorrectApiParams = &api.Response{
-		RspCode: api.RIncorrectApiParams.RspCode,
-		ErrMsg:  "缺少接口参数，请联系技术人员解决",
+		Code:    api.RIncorrectApiParams.Code,
+		Message: "缺少接口参数，请联系技术人员解决",
 	}
 	RUndefinedApi = &api.Response{
-		RspCode: api.RUndefinedApi.RspCode,
-		ErrMsg:  "调用的API名称不正确",
+		Code:    api.RUndefinedApi.Code,
+		Message: "调用的API名称不正确",
 	}
 	RNoSuchApp = &api.Response{
-		RspCode: 10096,
-		ErrMsg:  "no such app",
+		Code:    10096,
+		Message: "no such app",
 	}
 )
 
@@ -154,22 +154,22 @@ func (c *Client) parseResult(bytes []byte, r *Result) error {
 // 如果返回接口请求错误, 响应状态码以-10开头
 func checkApiRespErr(code int, text string) error {
 	switch code {
-	case api.RAccessDenied.RspCode:
-		text = RAccessDenied.ErrMsg
-	case api.RIncorrectApiParams.RspCode:
-		text = RIncorrectApiParams.ErrMsg
-	case api.RUndefinedApi.RspCode:
-		text = RUndefinedApi.ErrMsg
-	case RNoSuchApp.RspCode:
-		text = RNoSuchApp.ErrMsg
+	case api.RAccessDenied.Code:
+		text = RAccessDenied.Message
+	case api.RIncorrectApiParams.Code:
+		text = RIncorrectApiParams.Message
+	case api.RUndefinedApi.Code:
+		text = RUndefinedApi.Message
+	case RNoSuchApp.Code:
+		text = RNoSuchApp.Message
 	}
 	return errors.New(text)
 }
 
 type (
 	Result struct {
-		ErrCode int               `thrift:"RspCode,1" db:"RspCode" json:"ErrCode"`
-		ErrMsg  string            `thrift:"ErrMsg,2" db:"ErrMsg" json:"ErrMsg"`
+		ErrCode int               `thrift:"Code,1" db:"Code" json:"ErrCode"`
+		ErrMsg  string            `thrift:"Message,2" db:"Message" json:"Message"`
 		Data    map[string]string `thrift:"Data,3" db:"Data" json:"Data"`
 	}
 
