@@ -154,7 +154,7 @@ type IMemberRepo interface {
 
 	// 保存理财账户信息
 	SaveGrowAccount(memberId int64, balance, totalAmount,
-	growEarnings, totalGrowEarnings float32, updateTime int64) error
+		growEarnings, totalGrowEarnings float32, updateTime int64) error
 
 	//收藏,favType 为收藏类型, referId为关联的ID
 	Favorite(memberId int64, favType int, referId int32) error

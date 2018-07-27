@@ -55,7 +55,7 @@ func getMemberId(c *echox.Context) int64 {
 }
 
 func requestLogin(c *echox.Context) error {
-	msg := gof.Message{
+	msg := gof.Result{
 		ErrCode: 1,
 		ErrMsg:  "not login",
 	}

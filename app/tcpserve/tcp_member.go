@@ -14,7 +14,7 @@ import (
 	"github.com/jsix/gof/net/nc"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 	"strconv"
 	"strings"
 )

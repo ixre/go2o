@@ -17,7 +17,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 )
 
 var _ define.FinanceService = new(personFinanceService)

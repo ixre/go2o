@@ -28,7 +28,7 @@ func NewAfterSalesQuery(db db.Connector) *AfterSalesQuery {
 
 // 获取分页售后单
 func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId int64, begin,
-size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
+	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
 	list := []*dto.PagedMemberAfterSalesOrder{}
 	total := 0
 	if len(where) > 0 {
@@ -63,7 +63,7 @@ WHERE ao.buyer_id=? ORDER BY ao.create_time DESC LIMIT ?,?`, func(rs *sql.Rows) 
 
 // 获取分页售后单
 func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId int32, begin,
-size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
+	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
 	list := []*dto.PagedVendorAfterSalesOrder{}
 	total := 0
 	if len(where) > 0 {

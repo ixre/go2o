@@ -647,7 +647,7 @@ func (m *MemberRepoImpl) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
 
 // 保存理财账户信息
 func (m *MemberRepoImpl) SaveGrowAccount(memberId int64, balance, totalAmount,
-growEarnings, totalGrowEarnings float32, updateTime int64) error {
+	growEarnings, totalGrowEarnings float32, updateTime int64) error {
 	_, err := m.Connector.ExecNonQuery(`UPDATE mm_account SET grow_balance=?,
 		grow_amount=?,grow_earnings=?,grow_total_earnings=?,update_time=? where member_id=?`,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)

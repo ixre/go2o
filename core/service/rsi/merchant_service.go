@@ -20,7 +20,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/service/thrift/parser"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 	"strings"
 	"time"
 )
@@ -532,7 +532,7 @@ func (m *merchantService) TakeToMemberAccount1(mchId int32, amount float32) erro
 
 // 账户充值
 func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
-outerNo string, amount float64, relateUser int64) error {
+	outerNo string, amount float64, relateUser int64) error {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		return merchant.ErrNoSuchMerchant
