@@ -16,7 +16,7 @@ import (
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"go2o/core/variable"
-	"go2o/core/service/thrift/auto-gen/define"
+	"go2o/core/service/auto-gen/thrift/define"
 	"html/template"
 	ht "html/template"
 	"strings"

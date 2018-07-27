@@ -10,7 +10,7 @@ package thrift
 
 import (
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto-gen/thrift/define"
 )
 
 var (

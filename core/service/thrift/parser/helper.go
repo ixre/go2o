@@ -11,7 +11,7 @@ package parser
 import (
 	"encoding/json"
 	"github.com/jsix/gof/util"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto-gen/thrift/define"
 )
 
 func Result_(data interface{}, err error) *define.Result_ {
