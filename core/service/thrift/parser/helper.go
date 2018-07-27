@@ -14,8 +14,8 @@ import (
 	"go2o/core/service/auto-gen/thrift/define"
 )
 
-func Result_(data interface{}, err error) *define.Result_ {
-	r := &define.Result_{}
+func Result_(data interface{}, err error) *ttype.Result_ {
+	r := &ttype.Result_{}
 	if err != nil {
 		r.ErrCode = 1
 		r.ErrMsg = err.Error()
@@ -37,8 +37,8 @@ func Result_(data interface{}, err error) *define.Result_ {
 	return r
 }
 
-func Result64(id int64, err error) *define.Result64 {
-	r := &define.Result64{}
+func Result64(id int64, err error) *ttype.Result64 {
+	r := &ttype.Result64{}
 	if err != nil {
 		r.ErrMsg = err.Error()
 	} else {
@@ -48,8 +48,8 @@ func Result64(id int64, err error) *define.Result64 {
 	return r
 }
 
-func DResult(data float64, err error) *define.DResult_ {
-	r := &define.DResult_{}
+func DResult(data float64, err error) *ttype.DResult_ {
+	r := &ttype.DResult_{}
 	if err != nil {
 		r.ErrMsg = err.Error()
 	} else {

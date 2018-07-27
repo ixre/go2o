@@ -57,8 +57,8 @@ func registerTypes() {
 	gob.Register(&member.Relation{})
 	gob.Register(&dto.ListOnlineShop{})
 	gob.Register([]*dto.ListOnlineShop{})
-	gob.Register(&define.Member{})
-	gob.Register(&define.Profile{})
+	gob.Register(&member_service.Member{})
+	gob.Register(&member_service.Profile{})
 }
 
 func Init(a *AppImpl, debug, trace bool) bool {

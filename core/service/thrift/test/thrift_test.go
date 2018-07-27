@@ -42,7 +42,7 @@ func TestSSORegister(t *testing.T) {
 	cli, err := FoundationServeClient()
 	if err == nil {
 		defer trans.Close()
-		sa := &define.SsoApp{
+		sa := &foundation_service.SsoApp{
 			ID:     1,
 			Name:   "gp",
 			ApiUrl: "http://localhost:14281/member/sync_m.p",
