@@ -20,7 +20,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/service/thrift/parser"
-	"go2o/core/service/thrift/auto-gen/define"
+	"go2o/core/service/auto-gen/thrift/define"
 	"strings"
 	"time"
 )
