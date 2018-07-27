@@ -1,4 +1,5 @@
-namespace go define
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
 
 //传输结果对象
 struct Result{
