@@ -32,7 +32,7 @@ func (r *RpcToolkit) RegistryMap(keys ...string) map[string]string {
 	return map[string]string{}
 }
 
-func (r *RpcToolkit) GetComplexMember(memberId int64) *define.ComplexMember {
+func (r *RpcToolkit) GetComplexMember(memberId int64) *member_service.ComplexMember {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -52,7 +52,7 @@ func (r *RpcToolkit) InviterArray(memberId int64, depth int32) []int64 {
 	return nil
 }
 
-func (r *RpcToolkit) GetMerchant(mchId int32) *define.ComplexMerchant {
+func (r *RpcToolkit) GetMerchant(mchId int32) *mch_service.ComplexMerchant {
 	trans, cli, err := thrift.MerchantServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -62,7 +62,7 @@ func (r *RpcToolkit) GetMerchant(mchId int32) *define.ComplexMerchant {
 	return nil
 }
 
-func (r *RpcToolkit) GetLevel(levelId int32) *define.Level {
+func (r *RpcToolkit) GetLevel(levelId int32) *member_service.Level {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -73,7 +73,7 @@ func (r *RpcToolkit) GetLevel(levelId int32) *define.Level {
 }
 
 // 获取订单
-func (r *RpcToolkit) GetOrder(orderNo string, sub bool) *define.SComplexOrder {
+func (r *RpcToolkit) GetOrder(orderNo string, sub bool) *order_service.SComplexOrder {
 	trans, cli, err := thrift.OrderServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -84,7 +84,7 @@ func (r *RpcToolkit) GetOrder(orderNo string, sub bool) *define.SComplexOrder {
 }
 
 // 获取订单和商品项信息
-func (r *RpcToolkit) GetOrderAndItems(orderNo string, sub bool) *define.SComplexOrder {
+func (r *RpcToolkit) GetOrderAndItems(orderNo string, sub bool) *order_service.SComplexOrder {
 	trans, cli, err := thrift.OrderServeClient()
 	if err == nil {
 		defer trans.Close()

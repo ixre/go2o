@@ -3,8 +3,8 @@ package rsi
 import (
 	"context"
 	"go2o/core/domain/interface/wallet"
-	"go2o/core/service/thrift/parser"
 	"go2o/core/service/auto-gen/thrift/define"
+	"go2o/core/service/thrift/parser"
 )
 
 var _ define.WalletService = new(walletServiceImpl)
@@ -19,7 +19,7 @@ type walletServiceImpl struct {
 	_repo wallet.IWalletRepo
 }
 
-func (w *walletServiceImpl) CreateWallet(ctx context.Context, userId int64, walletType int32, flag int32, remark string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) CreateWallet(ctx context.Context, userId int64, walletType int32, flag int32, remark string) (r *ttype.Result_, err error) {
 	v := &wallet.Wallet{
 		UserId:     userId,
 		WalletType: int(walletType),
@@ -55,7 +55,7 @@ func (w *walletServiceImpl) GetWalletLog(ctx context.Context, walletId int64, id
 	}
 	return nil, nil
 }
-func (w *walletServiceImpl) Adjust(ctx context.Context, walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) Adjust(ctx context.Context, walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
@@ -65,7 +65,7 @@ func (w *walletServiceImpl) Adjust(ctx context.Context, walletId int64, value in
 	return parser.Result_(nil, err), nil
 }
 
-func (w *walletServiceImpl) Discount(ctx context.Context, walletId int64, value int32, title string, outerNo string, must bool) (r *define.Result_, err error) {
+func (w *walletServiceImpl) Discount(ctx context.Context, walletId int64, value int32, title string, outerNo string, must bool) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
@@ -75,7 +75,7 @@ func (w *walletServiceImpl) Discount(ctx context.Context, walletId int64, value 
 	return parser.Result_(nil, err), nil
 }
 
-func (w *walletServiceImpl) Freeze(ctx context.Context, walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) Freeze(ctx context.Context, walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
@@ -85,7 +85,7 @@ func (w *walletServiceImpl) Freeze(ctx context.Context, walletId int64, value in
 	return parser.Result_(nil, err), nil
 }
 
-func (w *walletServiceImpl) Unfreeze(ctx context.Context, walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) Unfreeze(ctx context.Context, walletId int64, value int32, title string, outerNo string, opuId int32, opuName string) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
@@ -95,7 +95,7 @@ func (w *walletServiceImpl) Unfreeze(ctx context.Context, walletId int64, value 
 	return parser.Result_(nil, err), nil
 }
 
-func (w *walletServiceImpl) Charge(ctx context.Context, walletId int64, value int32, by int32, title string, outerNo string, opuId int32, opuName string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) Charge(ctx context.Context, walletId int64, value int32, by int32, title string, outerNo string, opuId int32, opuName string) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
@@ -105,7 +105,7 @@ func (w *walletServiceImpl) Charge(ctx context.Context, walletId int64, value in
 	return parser.Result_(nil, err), nil
 }
 
-func (w *walletServiceImpl) Transfer(ctx context.Context, walletId int64, toWalletId int64, value int32, tradeFee int32, remark string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) Transfer(ctx context.Context, walletId int64, toWalletId int64, value int32, tradeFee int32, remark string) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
@@ -118,7 +118,7 @@ func (w *walletServiceImpl) Transfer(ctx context.Context, walletId int64, toWall
 	return parser.Result_(nil, err), nil
 }
 
-func (w *walletServiceImpl) RequestTakeOut(ctx context.Context, walletId int64, value int32, tradeFee int32, kind int32, title string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) RequestTakeOut(ctx context.Context, walletId int64, value int32, tradeFee int32, kind int32, title string) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
@@ -133,7 +133,7 @@ func (w *walletServiceImpl) RequestTakeOut(ctx context.Context, walletId int64, 
 	return parser.Result_(nil, err), nil
 }
 
-func (w *walletServiceImpl) ReviewTakeOut(ctx context.Context, walletId int64, takeId int64, reviewPass bool, remark string, opuId int32, opuName string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) ReviewTakeOut(ctx context.Context, walletId int64, takeId int64, reviewPass bool, remark string, opuId int32, opuName string) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
@@ -143,7 +143,7 @@ func (w *walletServiceImpl) ReviewTakeOut(ctx context.Context, walletId int64, t
 	return parser.Result_(nil, err), nil
 }
 
-func (w *walletServiceImpl) FinishTakeOut(ctx context.Context, walletId int64, takeId int64, outerNo string) (r *define.Result_, err error) {
+func (w *walletServiceImpl) FinishTakeOut(ctx context.Context, walletId int64, takeId int64, outerNo string) (r *ttype.Result_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount

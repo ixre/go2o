@@ -8,8 +8,8 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/thrift/parser"
 	"go2o/core/service/auto-gen/thrift/define"
+	"go2o/core/service/thrift/parser"
 	"strconv"
 )
 
@@ -70,7 +70,7 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 }
 
 // 保存产品模型
-func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error) {
+func (p *productService) SaveModel(v *promodel.ProModel) (*ttype.Result_, error) {
 	var pm promodel.IModel
 	var err error
 	if v.ID > 0 {
@@ -106,7 +106,7 @@ R:
 }
 
 // 删除产品模型
-func (p *productService) DeleteProModel_(id int32) (*define.Result_, error) {
+func (p *productService) DeleteProModel_(id int32) (*ttype.Result_, error) {
 	//err := p.pmRepo.DeleteProModel(id)
 	//todo: 暂时不允许删除模型
 	return parser.Result_(nil, errors.New("暂时不允许删除模型")), nil
@@ -120,13 +120,13 @@ func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
 }
 
 // Save 产品品牌
-func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*define.Result_, error) {
+func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*ttype.Result_, error) {
 	id, err := p.pmRepo.BrandService().SaveBrand(v)
 	return parser.Result_(id, err), nil
 }
 
 // Delete 产品品牌
-func (p *productService) DeleteProBrand_(id int32) (*define.Result_, error) {
+func (p *productService) DeleteProBrand_(id int32) (*ttype.Result_, error) {
 	err := p.pmRepo.BrandService().DeleteBrand(id)
 	return parser.Result_(0, err), nil
 }
@@ -314,7 +314,7 @@ func (p *productService) GetProductValue(productId int64) *product.Product {
 }
 
 // 保存产品
-func (p *productService) SaveProduct(v *product.Product) (r *define.Result64, err error) {
+func (p *productService) SaveProduct(v *product.Product) (r *ttype.Result64, err error) {
 	var pro product.IProduct
 	if v.Id > 0 {
 		pro = p.proRepo.GetProduct(v.Id)

@@ -35,7 +35,7 @@ func GetMemberId(c *echox.Context) int64 {
 }
 
 // 获取会员
-func GetMember(c *echox.Context) *define.Member {
+func GetMember(c *echox.Context) *member_service.Member {
 	memberId := GetMemberId(c)
 	if memberId > 0 {
 		m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)

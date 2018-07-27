@@ -19,13 +19,15 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
+	"go2o/core/service/auto_gen/rpc/mch_service"
+	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
-	"go2o/core/service/auto-gen/thrift/define"
 	"strings"
 	"time"
 )
 
-var _ define.MerchantService = new(merchantService)
+var _ mch_service.MerchantService = new(merchantService)
 
 type merchantService struct {
 	_mchRepo    merchant.IMerchantRepo
@@ -35,9 +37,9 @@ type merchantService struct {
 	serviceUtil
 }
 
-func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r []*define.STradeConf, err error) {
+func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r []*mch_service.STradeConf, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
-	var arr []*define.STradeConf
+	var arr []*mch_service.STradeConf
 	if mch != nil {
 		for _, v := range mch.ConfManager().GetAllTradeConf() {
 			arr = append(arr, parser.TradeConfDto(v))
@@ -46,7 +48,7 @@ func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r [
 	return arr, nil
 }
 
-func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeType int32) (r *define.STradeConf, err error) {
+func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeType int32) (r *mch_service.STradeConf, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		v := mch.ConfManager().GetTradeConf(int(tradeType))
@@ -57,7 +59,7 @@ func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeTy
 	return nil, nil
 }
 
-func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []*define.STradeConf) (r *define.Result_, err error) {
+func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []*mch_service.STradeConf) (r *ttype.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
@@ -195,7 +197,7 @@ func (m *merchantService) testMemberLogin(usr string, pwd string) (id int64, err
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r *define.Result_, err error) {
+func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r *ttype.Result_, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	oriPwd = strings.TrimSpace(oriPwd)
 	var mchId int32
@@ -253,7 +255,7 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) Complex(ctx context.Context, mchId int32) (*define.ComplexMerchant, error) {
+func (m *merchantService) Complex(ctx context.Context, mchId int32) (*mch_service.ComplexMerchant, error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		c := mch.Complex()
@@ -315,7 +317,7 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *define.Result_, err error) {
+func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *ttype.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
@@ -506,7 +508,7 @@ func (m *merchantService) PagedWholesaleOrderOfVendor(vendorId int32, begin, siz
 
 // 查询分页订单
 func (m *merchantService) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
-	where, orderBy string) (int32, []*define.SComplexOrder) {
+	where, orderBy string) (int32, []*order_service.SComplexOrder) {
 	return m._orderQuery.PagedTradeOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
@@ -694,7 +696,7 @@ func (m *merchantService) GetMchBuyerGroup_(mchId, id int32) *merchant.MchBuyerG
 }
 
 // 保存
-func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *define.Result_, err error) {
+func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *ttype.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant

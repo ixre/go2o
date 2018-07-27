@@ -20,8 +20,8 @@ import (
 	"go2o/core/factory"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
-	"go2o/core/variable"
 	"go2o/core/service/auto-gen/thrift/define"
+	"go2o/core/variable"
 	"strconv"
 	"strings"
 	"time"
@@ -198,17 +198,17 @@ func initRpcServe(ctx gof.App) {
 type serviceUtil struct{}
 
 // 返回失败的结果
-func (s serviceUtil) failResult(msg string) *define.Result_ {
+func (s serviceUtil) failResult(msg string) *ttype.Result_ {
 	return s.failCodeResult(1, msg)
 }
 
 // 返回错误的结果
-func (s serviceUtil) error(err error) *define.Result_ {
+func (s serviceUtil) error(err error) *ttype.Result_ {
 	return s.failResult(err.Error())
 }
 
 // 返回结果
-func (s serviceUtil) result(err error) *define.Result_ {
+func (s serviceUtil) result(err error) *ttype.Result_ {
 	if err == nil {
 		return s.success(nil)
 	}
@@ -216,21 +216,21 @@ func (s serviceUtil) result(err error) *define.Result_ {
 }
 
 // 返回失败的结果
-func (s serviceUtil) errorCodeResult(code int, err error) *define.Result_ {
-	return &define.Result_{ErrCode: int32(code), ErrMsg: err.Error(), Data: map[string]string{}}
+func (s serviceUtil) errorCodeResult(code int, err error) *ttype.Result_ {
+	return &ttype.Result_{ErrCode: int32(code), ErrMsg: err.Error(), Data: map[string]string{}}
 }
 
 // 返回失败的结果
-func (s serviceUtil) failCodeResult(code int, msg string) *define.Result_ {
-	return &define.Result_{ErrCode: int32(code), ErrMsg: msg, Data: map[string]string{}}
+func (s serviceUtil) failCodeResult(code int, msg string) *ttype.Result_ {
+	return &ttype.Result_{ErrCode: int32(code), ErrMsg: msg, Data: map[string]string{}}
 }
 
 // 返回成功的结果
-func (s serviceUtil) success(data map[string]string) *define.Result_ {
+func (s serviceUtil) success(data map[string]string) *ttype.Result_ {
 	if data == nil {
 		data = map[string]string{}
 	}
-	return &define.Result_{ErrMsg: "", Data: data}
+	return &ttype.Result_{ErrMsg: "", Data: data}
 }
 
 // 将int32数组装换为int数组

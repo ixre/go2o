@@ -22,7 +22,7 @@ var _ Module = new(SSOModule)
 
 type SSOModule struct {
 	app         gof.App
-	appMap      map[string]*define.SsoApp
+	appMap      map[string]*foundation_service.SsoApp
 	apiUrlArray []string
 }
 
@@ -33,40 +33,40 @@ func (s *SSOModule) SetApp(app gof.App) {
 
 // 初始化模块
 func (s *SSOModule) Init() {
-	s.appMap = make(map[string]*define.SsoApp)
+	s.appMap = make(map[string]*foundation_service.SsoApp)
 	domain := variable.Domain
-	s.Register(&define.SsoApp{
+	s.Register(&foundation_service.SsoApp{
 		ID:   1,
 		Name: "RetailPortal",
 		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 			variable.DOMAIN_PREFIX_PORTAL, domain),
 	})
-	s.Register(&define.SsoApp{
+	s.Register(&foundation_service.SsoApp{
 		ID:   2,
 		Name: "WholesalePortal",
 		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 			variable.DOMAIN_PREFIX_WHOLESALE_PORTAL, domain),
 	})
-	s.Register(&define.SsoApp{
+	s.Register(&foundation_service.SsoApp{
 		ID:   3,
 		Name: "HApi",
 		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 			variable.DOMAIN_PREFIX_HApi, domain),
 	})
-	s.Register(&define.SsoApp{
+	s.Register(&foundation_service.SsoApp{
 		ID:   4,
 		Name: "Member",
 		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 			variable.DOMAIN_PREFIX_MEMBER, domain),
 	})
-	s.Register(&define.SsoApp{
+	s.Register(&foundation_service.SsoApp{
 		ID:   5,
 		Name: "MemberMobile",
 		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 			variable.DOMAIN_PREFIX_M_MEMBER,
 			domain),
 	})
-	s.Register(&define.SsoApp{
+	s.Register(&foundation_service.SsoApp{
 		ID:   6,
 		Name: "RetailPortalMobile",
 		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
@@ -74,7 +74,7 @@ func (s *SSOModule) Init() {
 	})
 }
 
-func (s *SSOModule) Register(app *define.SsoApp) (token string, err error) {
+func (s *SSOModule) Register(app *foundation_service.SsoApp) (token string, err error) {
 	if app.Name == "" {
 		return "", errors.New("-1:serve name is null")
 	}
@@ -101,7 +101,7 @@ func (s *SSOModule) Register(app *define.SsoApp) (token string, err error) {
 }
 
 // 获取APP的配置
-func (s *SSOModule) Get(name string) *define.SsoApp {
+func (s *SSOModule) Get(name string) *foundation_service.SsoApp {
 	if s.appMap != nil {
 		return s.appMap[name]
 	}
