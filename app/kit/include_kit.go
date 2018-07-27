@@ -402,14 +402,14 @@ func (t *templateIncludeToolkit) rawHtml(v interface{}) ht.HTML {
 }
 
 // 获取销售排行商品
-func (t *templateIncludeToolkit) hotSaleItems(catId int32, quantity int32) []*define.OldItem {
+func (t *templateIncludeToolkit) hotSaleItems(catId int32, quantity int32) []*ttype.OldItem {
 	_, arr := rsi.ItemService.GetPagedOnShelvesItem(item.ItemNormal,
 		catId, 0, quantity, "", "item_info.sale_num DESC")
 	return arr
 }
 
 // 获取随机商品
-func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*define.OldItem {
+func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*ttype.OldItem {
 	if catId <= 0 {
 		catId = 0
 	}
@@ -417,13 +417,13 @@ func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*defin
 }
 
 // 获取大分类商品的
-func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*define.OldItem {
+func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*ttype.OldItem {
 	key := fmt.Sprintf("go2o:portal:cache:cat-items-%d-%d", catId, quantity)
 	_, err := t.getRds().GetInt(key)
 	if err == nil {
 		r, err := hashSet.GetRaw(key)
 		if err == nil {
-			return r.([]*define.OldItem)
+			return r.([]*ttype.OldItem)
 		}
 	}
 	arr := rsi.ItemService.GetBigCatItems(catId, quantity, "")

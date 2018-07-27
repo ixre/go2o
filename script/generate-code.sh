@@ -21,23 +21,17 @@ if [[ ${cmd} == "java" || ${cmd} = "all" ]];then
 fi
 
 #if [[ ${cmd} = "go" || ${cmd} = "all" ]];then
-    mkdir -p ${go_target_path}
 	rm -rf ./go2o/core/service/auto_gen/rpc
-	thrift -r -gen go -out . ${thrift_path}
+	thrift -r -gen go -out ../ ${thrift_path}
 #fi
 
 if [[ ${cmd} = "all" ]] || [[ ${cmd} = "format" ]];then
-
-	if [ ! -f "${go_target_path}" ];then
-   	  mkdir -p ${go_target_path}
-	fi
-
 	cd ${go_target_path}
-	find ./ -name *.go |xargs sed -i \
-		 's/"ttype"/"go2o\/core\/service\/auto-gen\/thrift\/ttype"/g'
-	find ./ -name *.go |xargs sed -i \
-		 's/"\(.\{3,\}\)_service"/"go2o\/core\/service\/auto-gen\/thrift\/\1_service"/g'
+	#find ./ -name *.go |xargs sed -i \
+	#	 's/"ttype"/"go2o\/core\/service\/auto-gen\/thrift\/ttype"/g'
+	#find ./ -name *.go |xargs sed -i \
+	#	 's/"\(.\{3,\}\)_service"/"go2o\/core\/service\/auto-gen\/thrift\/\1_service"/g'
 
-	cd - >/dev/null
+	#cd - >/dev/null
 
 fi

@@ -16,9 +16,9 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/service/auto-gen/thrift/define"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"go2o/core/service/auto-gen/thrift/define"
 )
 
 var _ define.ShopService = new(shopServiceImpl)
@@ -56,7 +56,7 @@ func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId int32) (*def
 }
 
 // 打开或关闭商店
-func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (*define.Result_, error) {
+func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (*ttype.Result_, error) {
 	var err error
 	sp := si.repo.GetShop(shopId)
 	if sp == nil {
@@ -72,7 +72,7 @@ func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, 
 }
 
 // 设置商店是否营业
-func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, reason string) (*define.Result_, error) {
+func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, reason string) (*ttype.Result_, error) {
 	var err error
 	sp := si.repo.GetShop(shopId)
 	if sp == nil {

@@ -34,13 +34,13 @@ func MerchantServeClient() (thrift.TTransport, *define.MerchantServiceClient, er
 }
 
 // 会员客户端
-func MemberServeClient() (thrift.TTransport, *define.MemberServiceClient, error) {
+func MemberServeClient() (thrift.TTransport, *member_service.MemberServiceClient, error) {
 	trans, cli, err := factory.GetClient("member")
 	return trans, define.NewMemberServiceClient(cli), err
 }
 
 // 基础服务
-func FoundationServeClient() (thrift.TTransport, *define.FoundationServiceClient, error) {
+func FoundationServeClient() (thrift.TTransport, *foundation_service.FoundationServiceClient, error) {
 	trans, cli, err := factory.GetClient("foundation")
 	return trans, define.NewFoundationServiceClient(cli), err
 }

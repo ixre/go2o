@@ -5,7 +5,6 @@ import (
 	"go2o/core/dao"
 	"go2o/core/dao/model"
 	"go2o/core/service/thrift/parser"
-	"go2o/core/service/auto-gen/thrift/define"
 )
 
 type portalService struct {
@@ -24,12 +23,12 @@ func (p *portalService) GetPortalNav_(id int32) *model.PortalNav {
 }
 
 // 保存门户导航
-func (p *portalService) SavePortalNav_(v *model.PortalNav) (*define.Result_, error) {
+func (p *portalService) SavePortalNav_(v *model.PortalNav) (*ttype.Result_, error) {
 	return parser.Result_(util.I32Err(p.repo.SavePortalNav(v))), nil
 }
 
 // 删除门户导航
-func (p *portalService) DeletePortalNav_(id int32) (*define.Result_, error) {
+func (p *portalService) DeletePortalNav_(id int32) (*ttype.Result_, error) {
 	err := p.repo.DeletePortalNav(id)
 	return parser.Result_(0, err), nil
 }
@@ -45,12 +44,12 @@ func (p *portalService) GetPortalNavType_(id int32) *model.PortalNavType {
 }
 
 // 保存导航类型
-func (p *portalService) SavePortalNavType_(v *model.PortalNavType) (*define.Result_, error) {
+func (p *portalService) SavePortalNavType_(v *model.PortalNavType) (*ttype.Result_, error) {
 	return parser.Result_(util.I32Err(p.repo.SavePortalNavType(v))), nil
 }
 
 // 删除导航类型
-func (p *portalService) DeletePortalNavType_(id int32) (*define.Result_, error) {
+func (p *portalService) DeletePortalNavType_(id int32) (*ttype.Result_, error) {
 	err := p.repo.DeletePortalNavType(id)
 	return parser.Result_(0, err), nil
 }

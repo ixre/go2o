@@ -78,8 +78,8 @@ func (mc *MemberC) Register(c echo.Context) error {
 	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 		regIp = r.RemoteAddr[:i]
 	}
-	m := &define.Member{}
-	pro := &define.Profile{}
+	m := &member_service.Member{}
+	pro := &member_service.Profile{}
 	m.Usr = usr
 	m.Pwd = domain.MemberSha1Pwd(pwd)
 	m.RegIp = regIp

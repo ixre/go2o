@@ -25,16 +25,18 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
 	"go2o/core/query"
+	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"go2o/core/service/auto-gen/thrift/define"
 	"log"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var _ define.MemberService = new(memberService)
+var _ member_service.MemberService = new(memberService)
 
 type memberService struct {
 	repo       member.IMemberRepo
@@ -81,7 +83,7 @@ func (s *memberService) getValueMember(memberId int64) *member.Member {
 }
 
 // 根据会员编号获取会员
-func (s *memberService) GetMember(ctx context.Context, id int64) (*define.Member, error) {
+func (s *memberService) GetMember(ctx context.Context, id int64) (*member_service.Member, error) {
 	v := s.getValueMember(id)
 	if v != nil {
 		return parser.MemberDto(v), nil
@@ -90,7 +92,7 @@ func (s *memberService) GetMember(ctx context.Context, id int64) (*define.Member
 }
 
 // 根据用户名获取会员
-func (s *memberService) GetMemberByUser(ctx context.Context, usr string) (*define.Member, error) {
+func (s *memberService) GetMemberByUser(ctx context.Context, usr string) (*member_service.Member, error) {
 	v := s.repo.GetMemberByUsr(usr)
 	if v != nil {
 		return parser.MemberDto(v), nil
@@ -99,7 +101,7 @@ func (s *memberService) GetMemberByUser(ctx context.Context, usr string) (*defin
 }
 
 // 获取资料
-func (s *memberService) GetProfile(ctx context.Context, memberId int64) (*define.Profile, error) {
+func (s *memberService) GetProfile(ctx context.Context, memberId int64) (*member_service.Profile, error) {
 	m := s.repo.GetMember(memberId)
 	if m != nil {
 		v := m.Profile().GetProfile()
@@ -109,7 +111,7 @@ func (s *memberService) GetProfile(ctx context.Context, memberId int64) (*define
 }
 
 // 保存资料
-func (s *memberService) SaveProfile(v *define.Profile) error {
+func (s *memberService) SaveProfile(v *member_service.Profile) error {
 	if v.MemberId > 0 {
 		v2 := parser.MemberProfile2(v)
 		m := s.repo.GetMember(v.MemberId)
@@ -122,7 +124,7 @@ func (s *memberService) SaveProfile(v *define.Profile) error {
 }
 
 // 升级为高级会员
-func (s *memberService) Premium(ctx context.Context, memberId int64, v int32, expires int64) (*define.Result_, error) {
+func (s *memberService) Premium(ctx context.Context, memberId int64, v int32, expires int64) (*ttype.Result_, error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return parser.Result_(memberId, member.ErrNoSuchMember), nil
@@ -161,7 +163,7 @@ func (s *memberService) RemoveToken(ctx context.Context, memberId int64) (err er
 }
 
 // 更改手机号码，不验证手机格式
-func (s *memberService) ChangePhone(ctx context.Context, memberId int64, phone string) (result_ *define.Result_, err error) {
+func (s *memberService) ChangePhone(ctx context.Context, memberId int64, phone string) (result_ *ttype.Result_, err error) {
 	return parser.Result_(nil, s.changePhone(memberId, phone)), nil
 }
 
@@ -220,8 +222,8 @@ func (s *memberService) GetMemberLevels() []*member.Level {
 }
 
 // 等级列表
-func (s *memberService) LevelList(ctx context.Context) ([]*define.Level, error) {
-	arr := []*define.Level{}
+func (s *memberService) LevelList(ctx context.Context) ([]*member_service.Level, error) {
+	var arr []*member_service.Level
 	list := s.repo.GetManager().LevelManager().GetLevelSet()
 	for _, v := range list {
 		arr = append(arr, parser.LevelDto(v))
@@ -230,7 +232,7 @@ func (s *memberService) LevelList(ctx context.Context) ([]*define.Level, error) 
 }
 
 // 根据编号获取会员等级信息
-func (s *memberService) GetLevel(ctx context.Context, id int32) (*define.Level, error) {
+func (s *memberService) GetLevel(ctx context.Context, id int32) (*member_service.Level, error) {
 	lv := s.repo.GetManager().LevelManager().GetLevelById(id)
 	if lv != nil {
 		return parser.LevelDto(lv), nil
@@ -239,7 +241,7 @@ func (s *memberService) GetLevel(ctx context.Context, id int32) (*define.Level, 
 }
 
 // 根据SIGN获取等级
-func (s *memberService) GetLevelBySign(ctx context.Context, sign string) (*define.Level, error) {
+func (s *memberService) GetLevelBySign(ctx context.Context, sign string) (*member_service.Level, error) {
 	lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
 	if lv != nil {
 		return parser.LevelDto(lv), nil
@@ -328,13 +330,13 @@ func (s *memberService) CompareCode(memberId int64, code string) error {
 }
 
 // 更改会员用户名
-func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) (result_ *define.Result_, err error) {
+func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) (result_ *ttype.Result_, err error) {
 	return parser.Result_(nil, s.changeUsr(memberId, usr)), nil
 }
 
 // 更改会员等级
 func (s *memberService) UpdateLevel(ctx context.Context, memberId int64, level int32,
-	review bool, paymentOrderId int64) (r *define.Result_, err error) {
+	review bool, paymentOrderId int64) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		err = member.ErrNoSuchMember
@@ -354,14 +356,14 @@ func (s *memberService) ChangeAvatar(memberId int64, avatar string) error {
 }
 
 // 保存用户
-func (s *memberService) SaveMember(v *define.Member) (int64, error) {
+func (s *memberService) SaveMember(v *member_service.Member) (int64, error) {
 	if v.ID > 0 {
 		return s.updateMember(v)
 	}
 	return -1, errors.New("Create member use \"RegisterMember\" method.")
 }
 
-func (s *memberService) updateMember(v *define.Member) (int64, error) {
+func (s *memberService) updateMember(v *member_service.Member) (int64, error) {
 	m := s.repo.GetMember(v.ID)
 	if m == nil {
 		return -1, member.ErrNoSuchMember
@@ -374,7 +376,7 @@ func (s *memberService) updateMember(v *define.Member) (int64, error) {
 }
 
 // 注册会员
-func (s *memberService) RegisterMemberV1(ctx context.Context, member *define.Member, profile *define.Profile, mchId int32, cardId string, inviteCode string) (r *define.Result_, err error) {
+func (s *memberService) RegisterMemberV1(ctx context.Context, member *member_service.Member, profile *member_service.Profile, mchId int32, cardId string, inviteCode string) (r *ttype.Result_, err error) {
 	if member == nil || profile == nil {
 		return s.error(errors.New("缺少参数:member/profile")), nil
 	}
@@ -408,8 +410,8 @@ func (s *memberService) RegisterMemberV1(ctx context.Context, member *define.Mem
 }
 
 // 注册会员
-func (s *memberService) RegisterMember(mchId int32, v1 *define.Member,
-	pro1 *define.Profile, cardId string, invitationCode string) (int64, error) {
+func (s *memberService) RegisterMember(mchId int32, v1 *member_service.Member,
+	pro1 *member_service.Profile, cardId string, invitationCode string) (int64, error) {
 	if v1 == nil || pro1 == nil {
 		return 0, errors.New("missing data")
 	}
@@ -477,7 +479,7 @@ func (s *memberService) ProfileCompleted(memberId int64) bool {
 }
 
 // 判断资料是否完善
-func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64) (r *define.Result_, e error) {
+func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64) (r *ttype.Result_, e error) {
 	m := s.repo.GetMember(memberId)
 	var err error
 	if m == nil {
@@ -575,7 +577,7 @@ func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) 
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) CheckLogin(ctx context.Context, usr string, pwd string, update bool) (r *define.Result64, err error) {
+func (s *memberService) CheckLogin(ctx context.Context, usr string, pwd string, update bool) (r *ttype.Result64, err error) {
 	id, err := s.testLogin(usr, pwd)
 	if update && err == nil {
 		m := s.repo.GetMember(id)
@@ -585,7 +587,7 @@ func (s *memberService) CheckLogin(ctx context.Context, usr string, pwd string, 
 }
 
 // 检查交易密码
-func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd string) (r *define.Result_, err error) {
+func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(id)
 	if m == nil {
 		return parser.Result_(0, member.ErrNoSuchMember), nil
@@ -617,7 +619,7 @@ func (s *memberService) CheckPhone(phone string, memberId int64) error {
 }
 
 // 获取会员账户
-func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*define.Account, error) {
+func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*member_service.Account, error) {
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	acc := m.GetAccount()
 	if acc != nil {
@@ -714,7 +716,7 @@ func (s *memberService) UnlockBankInfo(memberId int64) error {
 }
 
 // 实名认证信息
-func (s *memberService) GetTrustInfo(ctx context.Context, memberId int64) (*define.TrustedInfo, error) {
+func (s *memberService) GetTrustInfo(ctx context.Context, memberId int64) (*member_service.TrustedInfo, error) {
 	t := member.TrustedInfo{}
 	m := s.repo.GetMember(memberId)
 	if m != nil {
@@ -782,16 +784,16 @@ func (s *memberService) QueryWholesaleOrder(memberId int64, begin, size int, pag
 
 // 查询分页订单
 func (s *memberService) PagedTradeOrder(buyerId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*define.SComplexOrder) {
+	where, orderBy string) (int, []*order_service.SComplexOrder) {
 	return s.orderQuery.PagedTradeOrderOfBuyer(buyerId, begin, size, pagination, where, orderBy)
 }
 
 /*********** 收货地址 ***********/
 
 // 获取会员的收货地址
-func (s *memberService) GetAddressList(ctx context.Context, memberId int64) ([]*define.Address, error) {
+func (s *memberService) GetAddressList(ctx context.Context, memberId int64) ([]*member_service.Address, error) {
 	src := s.repo.GetDeliverAddress(memberId)
-	var arr []*define.Address
+	var arr []*member_service.Address
 	for _, v := range src {
 		arr = append(arr, parser.AddressDto(v))
 	}
@@ -800,7 +802,7 @@ func (s *memberService) GetAddressList(ctx context.Context, memberId int64) ([]*
 
 //获取配送地址
 func (s *memberService) GetAddress(ctx context.Context, memberId int64, addrId int64) (
-	*define.Address, error) {
+	*member_service.Address, error) {
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	pro := m.Profile()
 	var addr member.IDeliverAddress
@@ -820,7 +822,7 @@ func (s *memberService) GetAddress(ctx context.Context, memberId int64, addrId i
 }
 
 //保存配送地址
-func (s *memberService) SaveAddress(memberId int64, src *define.Address) (int64, error) {
+func (s *memberService) SaveAddress(memberId int64, src *member_service.Address) (int64, error) {
 	e := parser.Address(src)
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	var v member.IDeliverAddress
@@ -896,7 +898,7 @@ func (s *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
 }
 
 // 获取会员汇总信息
-func (s *memberService) Complex(ctx context.Context, memberId int64) (*define.ComplexMember, error) {
+func (s *memberService) Complex(ctx context.Context, memberId int64) (*member_service.ComplexMember, error) {
 	m := s.repo.GetMember(memberId)
 	if m != nil {
 		s := m.Complex()
@@ -926,7 +928,7 @@ func (s *memberService) AddIntegral(memberId int64, iType int,
 
 // 充值,account为账户类型,kind为业务类型
 func (s *memberService) ChargeAccount(ctx context.Context, memberId int64, account int32,
-	kind int32, title, outerNo string, amount float64, relateUser int64) (*define.Result_, error) {
+	kind int32, title, outerNo string, amount float64, relateUser int64) (*ttype.Result_, error) {
 	var err error
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	acc := m.GetAccount()
@@ -964,7 +966,7 @@ func (s *memberService) UnfreezesIntegral(memberId int64,
 
 // 抵扣账户
 func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, account int32, title string,
-	outerNo string, amount float64, relateUser int64, mustLargeZero bool) (r *define.Result_, err error) {
+	outerNo string, amount float64, relateUser int64, mustLargeZero bool) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {
 		acc := m.GetAccount()
@@ -982,7 +984,7 @@ func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, acc
 
 // 调整账户
 func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, account int32, title string,
-	amount float64, relateUser int64) (r *define.Result_, err error) {
+	amount float64, relateUser int64) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {
 		acc := m.GetAccount()
@@ -996,7 +998,7 @@ func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, accou
 }
 
 // !银行四要素认证
-func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *define.Result_, err error) {
+func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *ttype.Result_, err error) {
 	mod := module.Get(module.M_B4E).(*module.Bank4E)
 	if action == "get" {
 		data := mod.GetBasicInfo(memberId)
