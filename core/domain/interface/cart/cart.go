@@ -17,7 +17,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 )
 
 var (

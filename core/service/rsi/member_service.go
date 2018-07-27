@@ -27,7 +27,7 @@ import (
 	"go2o/core/query"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 	"log"
 	"strconv"
 	"strings"

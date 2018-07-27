@@ -23,7 +23,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/service/thrift/parser"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 	"strconv"
 )
 
@@ -137,7 +137,7 @@ R:
 
 // 获取上架商品数据（分页）
 func (s *itemService) GetPagedOnShelvesItem(itemType int32, catId int32, start,
-end int32, where, sortBy string) (int32, []*define.OldItem) {
+	end int32, where, sortBy string) (int32, []*define.OldItem) {
 	switch itemType {
 	case item.ItemNormal:
 		return s.getPagedOnShelvesItem(catId, start, end, where, sortBy)
@@ -147,7 +147,7 @@ end int32, where, sortBy string) (int32, []*define.OldItem) {
 	return 0, []*define.OldItem{}
 }
 func (s *itemService) getPagedOnShelvesItem(catId int32, start,
-end int32, where, sortBy string) (int32, []*define.OldItem) {
+	end int32, where, sortBy string) (int32, []*define.OldItem) {
 
 	total, list := s.itemQuery.GetPagedOnShelvesItem(catId,
 		start, end, where, sortBy)
@@ -160,7 +160,7 @@ end int32, where, sortBy string) (int32, []*define.OldItem) {
 }
 
 func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
-end int32, where, sortBy string) (int32, []*define.OldItem) {
+	end int32, where, sortBy string) (int32, []*define.OldItem) {
 
 	total, list := s.itemQuery.GetPagedOnShelvesItemForWholesale(catId,
 		start, end, where, sortBy)
@@ -176,7 +176,7 @@ end int32, where, sortBy string) (int32, []*define.OldItem) {
 
 // 获取上架商品数据（分页）
 func (s *itemService) SearchOnShelvesItem(itemType int32, word string, start,
-end int32, where, sortBy string) (int32, []*define.OldItem) {
+	end int32, where, sortBy string) (int32, []*define.OldItem) {
 
 	switch itemType {
 	case item.ItemNormal:
@@ -188,7 +188,7 @@ end int32, where, sortBy string) (int32, []*define.OldItem) {
 }
 
 func (s itemService) searchOnShelveItem(word string, start,
-end int32, where, sortBy string) (int32, []*define.OldItem) {
+	end int32, where, sortBy string) (int32, []*define.OldItem) {
 	total, list := s.itemQuery.SearchOnShelvesItem(word,
 		start, end, where, sortBy)
 	arr := make([]*define.OldItem, len(list))
@@ -200,7 +200,7 @@ end int32, where, sortBy string) (int32, []*define.OldItem) {
 }
 
 func (s itemService) searchOnShelveItemForWholesale(word string, start,
-end int32, where, sortBy string) (int32, []*define.OldItem) {
+	end int32, where, sortBy string) (int32, []*define.OldItem) {
 	total, list := s.itemQuery.SearchOnShelvesItemForWholesale(word,
 		start, end, where, sortBy)
 	arr := make([]*define.OldItem, len(list))

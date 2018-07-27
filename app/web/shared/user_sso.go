@@ -15,7 +15,7 @@ import (
 	"go2o/app/util"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 	"net/http"
 	"strconv"
 	"time"

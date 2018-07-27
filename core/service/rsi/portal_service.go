@@ -5,7 +5,7 @@ import (
 	"go2o/core/dao"
 	"go2o/core/dao/model"
 	"go2o/core/service/thrift/parser"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 )
 
 type portalService struct {

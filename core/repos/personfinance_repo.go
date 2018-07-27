@@ -37,7 +37,7 @@ func (p *personFinanceRepository) GetPersonFinance(personId int64) personfinance
 }
 
 func (p *personFinanceRepository) GetRiseByTime(personId int64, begin,
-end int64) []*personfinance.RiseDayInfo {
+	end int64) []*personfinance.RiseDayInfo {
 	list := []*personfinance.RiseDayInfo{}
 	p._orm.Select(&list, "person_id=? AND unix_date BETWEEN ? AND ?", personId, begin, end)
 	return list

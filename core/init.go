@@ -36,7 +36,7 @@ import (
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 	"strings"
 )
 

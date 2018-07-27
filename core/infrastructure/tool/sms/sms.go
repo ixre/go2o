@@ -102,7 +102,7 @@ func CheckSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
 
 // 通过HTTP-API发送短信,successChar为发送成功包含的字符,enc：编码
 func sendPhoneMsgByHttpApi(apiUrl, key, secret, phone, msg,
-enc, successChar string) error {
+	enc, successChar string) error {
 	//如果指定了编码，则先编码内容
 	if enc != "" {
 		dst, err := util.EncodingTransform([]byte(msg), enc)
