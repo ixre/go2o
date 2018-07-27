@@ -4,7 +4,7 @@
 # author : liuming
 # data   : 2017-11-26 11:00
 
-go_target_path="./core/service/thrift/auto-gen"
+go_target_path="./core/service/auto-gen/thrift"
 java_target_path="./tmp/java"
 cs_target_path="./tmp/csharp"
 
@@ -33,11 +33,11 @@ if [[ ${cmd} = "all" ]] || [[ ${cmd} = "format" ]];then
    	  mkdir -p ${go_target_path}
 	fi
 
-	cd ${go_target_path}
-	find ./ -name *.go |xargs sed -i \
-		 's/"ttype"/"api\/gen-code\/thrift\/ttype"/g'
-	find ./ -name *.go |xargs sed -i \
-		 's/"\(.\{3,\}\)_service"/"api\/gen-code\/thrift\/\1_service"/g'
+	#cd ${go_target_path}
+	#find ./ -name *.go |xargs sed -i \
+	#	 's/"ttype"/"api\/gen-code\/thrift\/ttype"/g'
+	#find ./ -name *.go |xargs sed -i \
+	#	 's/"\(.\{3,\}\)_service"/"api\/gen-code\/thrift\/\1_service"/g'
 
 	cd - >/dev/null
 

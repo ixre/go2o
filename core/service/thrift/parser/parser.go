@@ -18,7 +18,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto-gen/thrift/define"
 )
 
 func MerchantDto(src *merchant.ComplexMerchant) *define.ComplexMerchant {
@@ -369,7 +369,7 @@ func TrustedInfoDto(src *member.TrustedInfo) *define.TrustedInfo {
 		RealName:   src.RealName,
 		CardId:     src.CardId,
 		TrustImage: src.TrustImage,
-		Reviewed:   src.ReviewState,
+		ReviewState:   src.ReviewState,
 		ReviewTime: src.ReviewTime,
 		Remark:     src.Remark,
 		UpdateTime: src.UpdateTime,

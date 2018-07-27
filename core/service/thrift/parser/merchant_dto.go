@@ -2,7 +2,7 @@ package parser
 
 import (
 	"go2o/core/domain/interface/merchant"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto-gen/thrift/define"
 )
 
 func TradeConfDto(conf *merchant.TradeConf) *define.STradeConf {

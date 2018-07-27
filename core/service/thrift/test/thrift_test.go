@@ -12,7 +12,7 @@ import (
 	"errors"
 	"github.com/jsix/gof/log"
 	"go2o/core/infrastructure/domain"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto-gen/thrift/define"
 	"strings"
 	"testing"
 )

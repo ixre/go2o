@@ -20,7 +20,7 @@ import (
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/service/rsi"
-	"go2o/core/service/thrift/auto-gen/define"
+	"go2o/core/service/auto-gen/thrift/define"
 	"net/http"
 	"strconv"
 	"strings"

@@ -21,7 +21,7 @@ import (
 	"go2o/core/module/bank"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"go2o/core/service/thrift/auto-gen/define"
+	"go2o/core/service/auto-gen/thrift/define"
 )
 
 var _ define.FoundationService = new(foundationService)
