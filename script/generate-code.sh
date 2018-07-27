@@ -4,7 +4,6 @@
 # author : liuming
 # data   : 2017-11-26 11:00
 
-go_target_path="./core/service/auto-gen/thrift"
 java_target_path="./tmp/java"
 cs_target_path="./tmp/csharp"
 
@@ -23,8 +22,8 @@ fi
 
 #if [[ ${cmd} = "go" || ${cmd} = "all" ]];then
     mkdir -p ${go_target_path}
-	rm -rf ${go_target_path}/*
-	thrift -r -gen go -out ${go_target_path} ${thrift_path}
+	rm -rf ./go2o/core/service/auto_gen/rpc
+	thrift -r -gen go -out . ${thrift_path}
 #fi
 
 if [[ ${cmd} = "all" ]] || [[ ${cmd} = "format" ]];then

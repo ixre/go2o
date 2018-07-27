@@ -1,5 +1,6 @@
 namespace java com.github.jsix.go2o.rpc
 namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.ttype
 
 //传输结果对象
 struct Result{
