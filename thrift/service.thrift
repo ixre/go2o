@@ -1,5 +1,6 @@
 namespace java com.github.jsix.go2o.rpc
 namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc
 
 include "foundation_service.thrift"
 include "item_service.thrift"

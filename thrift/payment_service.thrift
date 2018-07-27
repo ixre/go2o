@@ -1,6 +1,6 @@
 namespace java com.github.jsix.go2o.rpc
 namespace csharp com.github.jsix.go2o.rpc
-
+namespace go go2o.core.service.auto_gen.rpc.payment_service
 include "ttype.thrift"
 
 // 支付服务
