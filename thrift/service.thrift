@@ -1,4 +1,5 @@
-namespace go define
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
 
 include "foundation_service.thrift"
 include "item_service.thrift"
