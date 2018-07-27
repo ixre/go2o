@@ -56,8 +56,8 @@ func (r *riseInfo) CommitTransfer(logId int32) (err error) {
 	}
 	l := r.rep.GetRiseLog(r.GetDomainId(), logId)
 	if l == nil || l.State != personfinance.RiseStateDefault || ( // 状态应用未确认
-		l.Type != personfinance.RiseTypeTransferIn && // 类型应为转入或转出
-			l.Type != personfinance.RiseTypeTransferOut) {
+	l.Type != personfinance.RiseTypeTransferIn &&                 // 类型应为转入或转出
+		l.Type != personfinance.RiseTypeTransferOut) {
 		return personfinance.ErrIncorrectTransfer
 	}
 	if r.value.TransferIn < l.Amount {

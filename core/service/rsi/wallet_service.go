@@ -4,7 +4,7 @@ import (
 	"context"
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/service/thrift/parser"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 )
 
 var _ define.WalletService = new(walletServiceImpl)

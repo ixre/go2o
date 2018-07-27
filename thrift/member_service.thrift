@@ -199,7 +199,7 @@ struct TrustedInfo {
     2: string RealName
     3: string CardId
     4: string TrustImage
-    5: i32 Reviewed
+    5: i32 ReviewState
     6: i64 ReviewTime
     7: string Remark
     8: i64 UpdateTime

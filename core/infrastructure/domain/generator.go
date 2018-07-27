@@ -63,7 +63,7 @@ func NewApiId(id int) string {
 
 //创建密钥(16位)
 func NewSecret(hex int) string {
-	str := fmt.Sprintf("%d$%d", hex, time.Now().Add(time.Hour * 24 * 365).Unix())
+	str := fmt.Sprintf("%d$%d", hex, time.Now().Add(time.Hour*24*365).Unix())
 	return crypto.Md5([]byte(str))[8:24]
 }
 

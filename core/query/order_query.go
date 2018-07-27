@@ -16,7 +16,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 	"log"
 	"strconv"
 )

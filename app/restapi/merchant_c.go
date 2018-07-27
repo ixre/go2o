@@ -27,5 +27,5 @@ func (m *merchantC) Get_ad(c echo.Context) error {
 		return c.JSON(http.StatusOK, dto)
 	}
 	return c.JSON(http.StatusOK,
-		gof.Message{ErrCode: 1, ErrMsg: "没有广告数据"})
+		gof.Result{ErrCode: 1, ErrMsg: "没有广告数据"})
 }

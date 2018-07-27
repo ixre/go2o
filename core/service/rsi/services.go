@@ -21,7 +21,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 	"strconv"
 	"strings"
 	"time"

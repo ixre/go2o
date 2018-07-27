@@ -15,7 +15,7 @@ import (
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/module"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/thrift/auto-gen/define"
 )
 
 var _ define.ShipmentService = new(shipmentServiceImpl)

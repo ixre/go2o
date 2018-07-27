@@ -4,13 +4,13 @@
 # author : liuming
 # data   : 2017-11-26 11:00
 
-thrift_path="./core/service/thrift/idl/service.thrift"
-go_target_path="./gen-code/thrift"
+go_target_path="./core/service/thrift/auto-gen"
 java_target_path="./tmp/java"
 cs_target_path="./tmp/csharp"
 
-cmd=$1
+thrift_path=$(find . -name "service.thrift" -print -quit)
 
+cmd=$1
 if [[ ${cmd} = "csharp" || ${cmd} = "all" ]];then
 	rm -rf ${cs_target_path}/*
 	thrift -r -gen csharp -out ${cs_target_path} ${thrift_path}
