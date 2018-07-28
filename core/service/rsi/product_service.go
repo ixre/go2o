@@ -8,7 +8,7 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/auto-gen/thrift/define"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
 	"strconv"
 )
@@ -255,9 +255,9 @@ func (p *productService) getCategoryManager(mchId int32) product.IGlobCatService
 	return p.catRepo.GlobCatService()
 }
 
-func (p *productService) GetBigCategories(mchId int32) []*define.Category {
+func (p *productService) GetBigCategories(mchId int32) []*ttype.Category {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := []*define.Category{}
+	list := []*ttype.Category{}
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
 			v2.Icon = format.GetResUrl(v2.Icon)
@@ -267,9 +267,9 @@ func (p *productService) GetBigCategories(mchId int32) []*define.Category {
 	return list
 }
 
-func (p *productService) GetChildCategories(mchId, parentId int32) []*define.Category {
+func (p *productService) GetChildCategories(mchId, parentId int32) []*ttype.Category {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := []*define.Category{}
+	list := []*ttype.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)

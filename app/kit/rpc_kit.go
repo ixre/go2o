@@ -1,8 +1,11 @@
 package kit
 
 import (
+	"go2o/core/service/auto_gen/rpc/mch_service"
+	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/auto_gen/rpc/shop_service"
 	"go2o/core/service/thrift"
-	"go2o/core/service/auto-gen/thrift/define"
 )
 
 type RpcToolkit struct {
@@ -95,7 +98,7 @@ func (r *RpcToolkit) GetOrderAndItems(orderNo string, sub bool) *order_service.S
 }
 
 // 获取店铺
-func (r *RpcToolkit) GetStore(vendorId int32) *define.Store {
+func (r *RpcToolkit) GetStore(vendorId int32) *shop_service.Store {
 	trans, cli, err := thrift.ShopServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -106,7 +109,7 @@ func (r *RpcToolkit) GetStore(vendorId int32) *define.Store {
 }
 
 // 获取店铺
-func (r *RpcToolkit) GetStoreById(shopId int32) *define.Store {
+func (r *RpcToolkit) GetStoreById(shopId int32) *shop_service.Store {
 	trans, cli, err := thrift.ShopServeClient()
 	if err == nil {
 		defer trans.Close()
