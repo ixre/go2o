@@ -16,7 +16,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/auto-gen/thrift/define"
+	"go2o/core/service/auto_gen/rpc/order_service"
 	"log"
 	"strconv"
 )
@@ -386,7 +386,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int
 func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*order_service.SComplexOrder) {
 	d := o.Connector
-	orderList := []*order_service.SComplexOrder{}
+	var orderList []*order_service.SComplexOrder
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList

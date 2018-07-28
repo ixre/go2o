@@ -4,6 +4,7 @@ import (
 	"github.com/jsix/gof/util"
 	"go2o/core/dao"
 	"go2o/core/dao/model"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
 )
 

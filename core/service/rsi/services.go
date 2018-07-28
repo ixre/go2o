@@ -20,7 +20,8 @@ import (
 	"go2o/core/factory"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
-	"go2o/core/service/auto-gen/thrift/define"
+	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/auto_gen/rpc/wallet_service"
 	"go2o/core/variable"
 	"strconv"
 	"strings"
@@ -59,7 +60,7 @@ var (
 	// 广告服务
 	AdService *adService
 	// 钱包服务
-	WalletService define.WalletService
+	WalletService wallet_service.WalletService
 	// 个人金融服务
 	PersonFinanceService *personFinanceService
 	// 门户数据服务
