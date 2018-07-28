@@ -17,6 +17,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
+	"strconv"
 )
 
 var _ payment_service.PaymentService = new(paymentService)
@@ -70,7 +71,7 @@ func (p *paymentService) SubmitPaymentOrder(ctx context.Context, s *payment_serv
 	v := parser.PaymentOrder(s)
 	o := p.repo.CreatePaymentOrder(v)
 	err := o.Submit()
-	return parser.Result_(nil, err), nil
+	return p.result(err), nil
 }
 
 // 调整支付单金额
@@ -82,20 +83,23 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 	} else {
 		err = o.Adjust(int(amount * 100))
 	}
-	return parser.Result_(0, err), nil
+	return p.result(err), nil
 }
 
 // 积分抵扣支付单
 func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
-	integral int64, ignoreOut bool) (r *ttype.Result_, err error) {
+	integral int64, ignoreOut bool) (*ttype.Result_, error) {
 	var amount int
+	var err error
 	o := p.repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		amount, err = o.IntegralDiscount(int(integral), ignoreOut)
 	}
-	return parser.Result_(amount, err), nil
+	r := p.result(err)
+	r.Data = map[string]string{"Amount": strconv.Itoa(amount)}
+	return r, nil
 }
 
 // 余额抵扣
@@ -107,7 +111,7 @@ func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, r
 	} else {
 		err = o.BalanceDiscount(remark)
 	}
-	return parser.Result_(0, err), nil
+	return p.result(err),nil
 }
 
 // 钱包账户支付
@@ -121,7 +125,7 @@ func (p *paymentService) PaymentByWallet(ctx context.Context,
 		} else {
 			err = ip.PaymentByWallet(remark)
 		}
-		return parser.Result_(0, err), nil
+		return p.result(err),nil
 	}
 	// 合并支付单
 	arr := p.repo.GetMergePayOrders(tradeNo)
@@ -140,7 +144,7 @@ func (p *paymentService) PaymentByWallet(ctx context.Context,
 			}
 		}
 	}
-	return parser.Result_(nil, err), nil
+	return p.result(err),nil
 }
 
 // 余额钱包混合支付，优先扣除余额。
@@ -151,7 +155,7 @@ func (p *paymentService) HybridPayment(ctx context.Context, orderId int32, remar
 	} else {
 		err = o.HybridPayment(remark)
 	}
-	return parser.Result_(0, err), nil
+	return p.result(err),nil
 }
 
 // 完成支付单支付，并传入支付方式及外部订单号
@@ -163,7 +167,7 @@ func (p *paymentService) FinishPayment(ctx context.Context, tradeNo string, spNa
 	} else {
 		err = o.PaymentFinish(spName, outerNo)
 	}
-	return parser.Result_(nil, err), nil
+	return p.result(err),nil
 }
 
 // 支付网关

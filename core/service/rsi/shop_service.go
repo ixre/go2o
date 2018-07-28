@@ -28,6 +28,7 @@ type shopServiceImpl struct {
 	repo    shop.IShopRepo
 	mchRepo merchant.IMerchantRepo
 	query   *query.ShopQuery
+	serviceUtil
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
@@ -69,7 +70,7 @@ func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, 
 			err = sp.TurnOff(reason)
 		}
 	}
-	return parser.Result_(shopId, err), nil
+	return si.result(err),nil
 }
 
 // 设置商店是否营业
@@ -85,7 +86,7 @@ func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, 
 			err = sp.Pause()
 		}
 	}
-	return parser.Result_(shopId, err), nil
+	return si.result(err),nil
 }
 
 func (si *shopServiceImpl) getMerchantId(shopId int32) int32 {

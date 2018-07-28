@@ -22,6 +22,7 @@ func HandleError(err error, src string) error {
 	return err
 }
 
+var _ error = &DomainError{}
 type DomainError struct {
 	Key          string
 	DefaultError string
