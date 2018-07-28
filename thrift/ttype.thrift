@@ -8,10 +8,8 @@ struct Result{
    1:i32 ErrCode
    /* 消息 */
    2:string ErrMsg
-   /* 数据, 可以用来存放JSON字符串 */
-   3:string Data1
    /** 数据字典 */
-   4:map<string,string> Data
+   3:map<string,string> Data
 }
 
 //传输结果对象

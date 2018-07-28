@@ -127,10 +127,10 @@ func (s *memberService) SaveProfile(v *member_service.Profile) error {
 func (s *memberService) Premium(ctx context.Context, memberId int64, v int32, expires int64) (*ttype.Result_, error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return parser.Result_(memberId, member.ErrNoSuchMember), nil
+		return s.result(member.ErrNoSuchMember), nil
 	}
 	err := m.Premium(v, expires)
-	return parser.Result_(memberId, err), nil
+	return s.result(err), nil
 }
 
 // 检查会员的会话Token是否正确
@@ -163,8 +163,9 @@ func (s *memberService) RemoveToken(ctx context.Context, memberId int64) (err er
 }
 
 // 更改手机号码，不验证手机格式
-func (s *memberService) ChangePhone(ctx context.Context, memberId int64, phone string) (result_ *ttype.Result_, err error) {
-	return parser.Result_(nil, s.changePhone(memberId, phone)), nil
+func (s *memberService) ChangePhone(ctx context.Context, memberId int64, phone string) ( *ttype.Result_,  error) {
+	err := s.changePhone(memberId, phone)
+	return s.result(err), nil
 }
 
 // 是否已收藏
@@ -330,8 +331,9 @@ func (s *memberService) CompareCode(memberId int64, code string) error {
 }
 
 // 更改会员用户名
-func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) (result_ *ttype.Result_, err error) {
-	return parser.Result_(nil, s.changeUsr(memberId, usr)), nil
+func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) ( *ttype.Result_,  error) {
+	err := s.changeUsr(memberId, usr)
+	return s.result(err), nil
 }
 
 // 更改会员等级
@@ -343,7 +345,7 @@ func (s *memberService) UpdateLevel(ctx context.Context, memberId int64, level i
 	} else {
 		err = m.ChangeLevel(level, int32(paymentOrderId), review)
 	}
-	return parser.Result_(0, err), nil
+	return s.result(err), nil
 }
 
 // 上传会员头像
@@ -499,7 +501,7 @@ func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64
 			}
 		}
 	}
-	return parser.Result_(nil, err), nil
+	return s.result(err), nil
 }
 
 // 重置密码
@@ -590,16 +592,16 @@ func (s *memberService) CheckLogin(ctx context.Context, usr string, pwd string, 
 func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(id)
 	if m == nil {
-		return parser.Result_(0, member.ErrNoSuchMember), nil
+		return s.result(member.ErrNoSuchMember), nil
 	}
 	mv := m.GetValue()
 	if mv.TradePwd == "" {
-		return parser.Result_(nil, member.ErrNotSetTradePwd), nil
+		return s.result(member.ErrNotSetTradePwd),nil
 	}
 	if mv.TradePwd != tradePwd {
-		return parser.Result_(nil, member.ErrIncorrectTradePwd), nil
+		return s.result(member.ErrIncorrectTradePwd), nil
 	}
-	return parser.Result_(nil, nil), nil
+	return s.success(nil),nil
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
@@ -941,7 +943,7 @@ func (s *memberService) ChargeAccount(ctx context.Context, memberId int64, accou
 			err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
 		}
 	}
-	return parser.Result_(0, err), nil
+	return s.result(err), nil
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
@@ -979,7 +981,7 @@ func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, acc
 				member.DefaultRelateUser, mustLargeZero)
 		}
 	}
-	return parser.Result_(memberId, err), nil
+	return s.result(err), nil
 }
 
 // 调整账户
@@ -994,7 +996,7 @@ func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, accou
 		case member.AccountWallet:
 		}
 	}
-	return parser.Result_(memberId, err), nil
+	return s.result(err), nil
 }
 
 // !银行四要素认证

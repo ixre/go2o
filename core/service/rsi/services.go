@@ -228,10 +228,7 @@ func (s serviceUtil) failCodeResult(code int, msg string) *ttype.Result_ {
 
 // 返回成功的结果
 func (s serviceUtil) success(data map[string]string) *ttype.Result_ {
-	if data == nil {
-		data = map[string]string{}
-	}
-	return &ttype.Result_{ErrMsg: "", Data: data}
+	return &ttype.Result_{ErrCode: 0, ErrMsg: "", Data: data}
 }
 
 // 将int32数组装换为int数组
