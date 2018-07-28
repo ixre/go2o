@@ -43,6 +43,7 @@ type orderServiceImpl struct {
 	manager    order.IOrderManager
 	memberRepo member.IMemberRepo
 	orderQuery *query.OrderQuery
+	serviceUtil
 }
 
 func NewShoppingService(r order.IOrderRepo,
@@ -85,7 +86,7 @@ func (s *orderServiceImpl) WholesaleCartV1(ctx context.Context, memberId int64, 
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
-	return parser.Result_(nil, errors.New("unknown action")), nil
+	return s.result(errors.New("unknown action")), nil
 }
 
 // 转换勾选字典,数据如：{"1":["10","11"],"2":["20","21"]}
@@ -124,7 +125,7 @@ func (s *orderServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*tty
 			}
 		}
 	}
-	return parser.Result_(v, nil), nil
+	return s.success(nil), nil
 }
 
 // 获取简易的购物车
@@ -134,7 +135,7 @@ func (s *orderServiceImpl) wsGetSimpleCart(c cart.ICart, data map[string]string)
 		size = 5
 	}
 	qd := c.(cart.IWholesaleCart).QuickJdoData(size)
-	return parser.Result_(qd, nil), nil
+	return s.success(map[string]string{"JsonData": qd}), nil
 }
 
 // 转换提交到购物车的数据(PUT和UPDATE), 数据如：91:1;92:1
@@ -189,17 +190,16 @@ func (s *orderServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*tty
 	if err == nil {
 		_, err = c.Save()
 		if err == nil {
-			mp := make(map[string]interface{})
-			mp["cartId"] = aId
+			mp := make(map[string]string)
+			mp["cartId"] = strconv.Itoa(int(aId))
 			mp["checked"] = s.createCheckedData(itemId, arr)
-			return parser.Result_(mp, nil), nil
+			return s.success(mp), nil
 		}
 	}
-	return parser.Result_(aId, err), nil
+	return s.result(err), nil
 }
 
 func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*ttype.Result_, error) {
-	aId := c.GetAggregateRootId()
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
@@ -211,7 +211,7 @@ func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*
 	if err == nil {
 		_, err = c.Save()
 	}
-	return parser.Result_(aId, err), nil
+	return s.result(err), nil
 }
 
 // 勾选购物车，格式如：1:2;1:5
@@ -234,7 +234,7 @@ func (s *orderServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*t
 		}
 	}
 	err := c.SignItemChecked(arr)
-	return parser.Result_(c.GetAggregateRootId(), err), nil
+	return s.result(err), nil
 }
 
 /*---------------- 零售购物车 ----------------*/
@@ -258,7 +258,7 @@ func (s *orderServiceImpl) RetailCartV1(ctx context.Context, memberId int64, act
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
-	return parser.Result_(nil, errors.New("unknown action")), nil
+	return s.result(errors.New("unknown action")), nil
 }
 
 // 提交订单

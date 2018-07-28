@@ -10,32 +10,10 @@ package parser
 
 import (
 	"encoding/json"
-	"github.com/jsix/gof/util"
 	"go2o/core/service/auto_gen/rpc/ttype"
 )
 
-func Result_(data interface{}, err error) *ttype.Result_ {
-	r := &ttype.Result_{}
-	if err != nil {
-		r.ErrCode = 1
-		r.ErrMsg = err.Error()
-	} else {
-		r.ErrCode = 0
-		if data != nil {
-			switch data.(type) {
-			case string, int, int32, int64, bool, float32, float64:
-				r.Data1 = util.Str(data)
-			default:
-				d, err := json.Marshal(data)
-				if err != nil {
-					panic(err)
-				}
-				r.Data1 = string(d)
-			}
-		}
-	}
-	return r
-}
+
 
 func Result64(id int64, err error) *ttype.Result64 {
 	r := &ttype.Result64{}

@@ -30,6 +30,7 @@ var _ foundation_service.FoundationService = new(foundationService)
 // 基础服务
 type foundationService struct {
 	_rep valueobject.IValueRepo
+	*serviceUtil
 }
 
 func NewFoundationService(rep valueobject.IValueRepo) *foundationService {
@@ -46,13 +47,13 @@ func (s *foundationService) GetValue(ctx context.Context, key string) (r string,
 // 设置键值
 func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
 	err = s._rep.SetValue(key, value)
-	return parser.Result_(0, err), nil
+	return s.result(err),nil
 }
 
 // 删除值
 func (s *foundationService) DeleteValue(ctx context.Context, key string) (r *ttype.Result_, err error) {
 	err = s._rep.DeleteValue(key)
-	return parser.Result_(0, err), nil
+	return s.result(err),nil
 }
 
 // 根据前缀获取值

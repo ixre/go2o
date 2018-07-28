@@ -70,7 +70,7 @@ func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []
 		}
 		err = mch.ConfManager().SaveTradeConf(dst)
 	}
-	return parser.Result_(nil, err), nil
+	return m.result(err), nil
 }
 
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
@@ -324,7 +324,7 @@ func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *ttype.Resul
 	} else {
 		err = mch.Stat()
 	}
-	return parser.Result_(mchId, err), nil
+	return m.result(err), nil
 }
 
 // 设置商户启用或停用
@@ -703,7 +703,7 @@ func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGr
 	} else {
 		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
 	}
-	return parser.Result_(v.ID, err), nil
+	return m.result(err), nil
 }
 
 // 获取买家分组
