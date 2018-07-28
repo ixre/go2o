@@ -11,7 +11,7 @@ package parser
 import (
 	"encoding/json"
 	"github.com/jsix/gof/util"
-	"go2o/core/service/auto-gen/thrift/define"
+	"go2o/core/service/auto_gen/rpc/ttype"
 )
 
 func Result_(data interface{}, err error) *ttype.Result_ {
@@ -59,8 +59,8 @@ func DResult(data float64, err error) *ttype.DResult_ {
 	return r
 }
 
-func PagingResult(total int, data interface{}, err error) *define.PagingResult_ {
-	r := &define.PagingResult_{}
+func PagingResult(total int, data interface{}, err error) *ttype.PagingResult_ {
+	r := &ttype.PagingResult_{}
 	if err == nil {
 		r.Count = int32(total)
 		if data == nil || data == "" {

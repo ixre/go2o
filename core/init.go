@@ -35,8 +35,8 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
+	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/variable"
-	"go2o/core/service/auto-gen/thrift/define"
 	"strings"
 )
 

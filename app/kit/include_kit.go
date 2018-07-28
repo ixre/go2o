@@ -13,10 +13,10 @@ import (
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"go2o/core/variable"
-	"go2o/core/service/auto-gen/thrift/define"
 	"html/template"
 	ht "html/template"
 	"strings"
@@ -258,7 +258,7 @@ func (t *templateIncludeToolkit) catParent(catId int32) []*product.Category {
 }
 
 // 获取栏目下级分类
-func (t *templateIncludeToolkit) catChild(catId int32) []*define.Category {
+func (t *templateIncludeToolkit) catChild(catId int32) []*ttype.Category {
 	return rsi.ProductService.GetChildCategories(0, catId)
 }
 
@@ -433,12 +433,12 @@ func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*ttype.
 }
 
 // 获取产品属性
-func (t *templateIncludeToolkit) productAttrs(productId int64) []define.Pair {
-	arr := []define.Pair{}
+func (t *templateIncludeToolkit) productAttrs(productId int64) []ttype.Pair {
+	var arr []ttype.Pair
 	attrs := rsi.ProductService.GetAttrArray(productId)
 	for _, v := range attrs {
 		attr := rsi.ProductService.GetAttr(v.AttrId)
-		arr = append(arr, define.Pair{Key: attr.Name, Value: v.AttrWord})
+		arr = append(arr, ttype.Pair{Key: attr.Name, Value: v.AttrWord})
 	}
 	return arr
 }
