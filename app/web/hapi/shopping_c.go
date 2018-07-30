@@ -23,6 +23,6 @@ func (s *shoppingC) AddressList(c *echox.Context) error {
 	if memberId <= 0 {
 		return requestLogin(c)
 	}
-	address, _ := rsi.MemberService.GetAddressList(thrift.Context, memberId)
+	address, _ := rsi.MemberService.GetAddressList(thrift.Context, int64(memberId))
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), address)
 }
