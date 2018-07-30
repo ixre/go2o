@@ -111,7 +111,7 @@ func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, r
 	} else {
 		err = o.BalanceDiscount(remark)
 	}
-	return p.result(err),nil
+	return p.result(err), nil
 }
 
 // 钱包账户支付
@@ -125,7 +125,7 @@ func (p *paymentService) PaymentByWallet(ctx context.Context,
 		} else {
 			err = ip.PaymentByWallet(remark)
 		}
-		return p.result(err),nil
+		return p.result(err), nil
 	}
 	// 合并支付单
 	arr := p.repo.GetMergePayOrders(tradeNo)
@@ -144,7 +144,7 @@ func (p *paymentService) PaymentByWallet(ctx context.Context,
 			}
 		}
 	}
-	return p.result(err),nil
+	return p.result(err), nil
 }
 
 // 余额钱包混合支付，优先扣除余额。
@@ -155,7 +155,7 @@ func (p *paymentService) HybridPayment(ctx context.Context, orderId int32, remar
 	} else {
 		err = o.HybridPayment(remark)
 	}
-	return p.result(err),nil
+	return p.result(err), nil
 }
 
 // 完成支付单支付，并传入支付方式及外部订单号
@@ -167,7 +167,7 @@ func (p *paymentService) FinishPayment(ctx context.Context, tradeNo string, spNa
 	} else {
 		err = o.PaymentFinish(spName, outerNo)
 	}
-	return p.result(err),nil
+	return p.result(err), nil
 }
 
 // 支付网关
