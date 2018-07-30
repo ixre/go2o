@@ -332,7 +332,7 @@ func (s *memberService) CompareCode(memberId int64, code string) error {
 
 // 更改会员用户名
 func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) (*ttype.Result_, error) {
-	err := s.changeUsr(memberId, usr)
+	err := s.changeUsr(int(memberId), usr)
 	return s.result(err), nil
 }
 
@@ -1293,26 +1293,26 @@ func (s *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTyp
 //********* 促销  **********//
 
 // 可用的优惠券分页数据
-func (s *memberService) PagedAvailableCoupon(memberId int64, start, end int) (int, []*dto.SimpleCoupon) {
-	return s.repo.CreateMemberById(memberId).
+func (s *memberService) PagedAvailableCoupon(memberId int, start, end int) (int, []*dto.SimpleCoupon) {
+	return s.repo.CreateMemberById(int64(memberId)).
 		GiftCard().PagedAvailableCoupon(start, end)
 }
 
 // 已使用的优惠券
-func (s *memberService) PagedAllCoupon(memberId int64, start, end int) (int, []*dto.SimpleCoupon) {
-	return s.repo.CreateMemberById(memberId).
+func (s *memberService) PagedAllCoupon(memberId int, start, end int) (int, []*dto.SimpleCoupon) {
+	return s.repo.CreateMemberById(int64(memberId)).
 		GiftCard().PagedAllCoupon(start, end)
 }
 
 // 过期的优惠券
-func (s *memberService) PagedExpiresCoupon(memberId int64, start, end int) (int, []*dto.SimpleCoupon) {
-	return s.repo.CreateMemberById(memberId).
+func (s *memberService) PagedExpiresCoupon(memberId int, start, end int) (int, []*dto.SimpleCoupon) {
+	return s.repo.CreateMemberById(int64(memberId)).
 		GiftCard().PagedExpiresCoupon(start, end)
 }
 
 // 更改用户名
-func (s *memberService) changeUsr(memberId int64, usr string) error {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) changeUsr(memberId int, usr string) error {
+	m := s.repo.GetMember(int64(memberId))
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
