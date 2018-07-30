@@ -41,7 +41,7 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 }
 
 // 获取商铺
-func (si *shopServiceImpl) GetStore(ctx context.Context, vendorId int32) (*shop_service.Store, error) {
+func (si *shopServiceImpl) GetStore(ctx context.Context, vendorId int32) (*shop_service.SStore, error) {
 	mch := si.mchRepo.GetMerchant(vendorId)
 	if mch != nil {
 		shop := mch.ShopManager().GetOnlineShop()
@@ -52,7 +52,7 @@ func (si *shopServiceImpl) GetStore(ctx context.Context, vendorId int32) (*shop_
 	return nil, nil
 }
 
-func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId int32) (*shop_service.Store, error) {
+func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId int32) (*shop_service.SStore, error) {
 	vendorId := si.query.GetMerchantId(shopId)
 	return si.GetStore(ctx, vendorId)
 }
@@ -70,7 +70,7 @@ func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, 
 			err = sp.TurnOff(reason)
 		}
 	}
-	return si.result(err),nil
+	return si.result(err), nil
 }
 
 // 设置商店是否营业
@@ -86,7 +86,7 @@ func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, 
 			err = sp.Pause()
 		}
 	}
-	return si.result(err),nil
+	return si.result(err), nil
 }
 
 func (si *shopServiceImpl) getMerchantId(shopId int32) int32 {
@@ -122,7 +122,7 @@ func (si *shopServiceImpl) GetShopValueById(mchId, shopId int32) *shop.Shop {
 }
 
 // 保存线上商店
-func (si *shopServiceImpl) SaveStore(s *shop_service.Store) error {
+func (si *shopServiceImpl) SaveStore(s *shop_service.SStore) error {
 	mch := si.mchRepo.GetMerchant(s.VendorId)
 	if mch != nil {
 		v, v1 := parser.Parse2OnlineShop(s)

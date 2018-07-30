@@ -87,7 +87,7 @@ func (j *JsonC) unmarshal(sto storage.Interface, key string, dst interface{}) er
 func (j *JsonC) ShopCat(c *echox.Context) error {
 	parentId, _ := util.I32Err(strconv.Atoi(c.FormValue("parent_id")))
 	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
-	var list []*ttype.Category
+	var list []*ttype.SCategory
 	key := fmt.Sprintf("go2o:repo:cat:%d:json:%d", shopId, parentId)
 	sto := c.App.Storage()
 	if err := j.unmarshal(sto, key, &list); err != nil {

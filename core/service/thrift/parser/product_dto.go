@@ -5,7 +5,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/ttype"
 )
 
-func Category(src *ttype.Category) *product.Category {
+func Category(src *ttype.SCategory) *product.Category {
 	s := &product.Category{
 		ID:         src.ID,
 		ParentId:   src.ParentId,
@@ -31,8 +31,8 @@ func Category(src *ttype.Category) *product.Category {
 	return s
 }
 
-func CategoryDto(src *product.Category) *ttype.Category {
-	s := &ttype.Category{
+func CategoryDto(src *product.Category) *ttype.SCategory {
+	s := &ttype.SCategory{
 		ID:         src.ID,
 		ParentId:   src.ParentId,
 		ProModel:   src.ProModel,
@@ -49,7 +49,7 @@ func CategoryDto(src *product.Category) *ttype.Category {
 		CreateTime: src.CreateTime,
 	}
 	if src.Children != nil {
-		s.Children = make([]*ttype.Category, len(src.Children))
+		s.Children = make([]*ttype.SCategory, len(src.Children))
 		for i, v := range src.Children {
 			s.Children[i] = CategoryDto(v)
 		}

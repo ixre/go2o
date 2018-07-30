@@ -47,13 +47,13 @@ func (s *foundationService) GetValue(ctx context.Context, key string) (r string,
 // 设置键值
 func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
 	err = s._rep.SetValue(key, value)
-	return s.result(err),nil
+	return s.result(err), nil
 }
 
 // 删除值
 func (s *foundationService) DeleteValue(ctx context.Context, key string) (r *ttype.Result_, err error) {
 	err = s._rep.DeleteValue(key)
-	return s.result(err),nil
+	return s.result(err), nil
 }
 
 // 根据前缀获取值
@@ -97,7 +97,7 @@ func (s *foundationService) FlushSuperPwd(ctx context.Context, user string, pwd 
 //   -  1. 成功，并返回token
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
-func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_service.SsoApp) (r string, err error) {
+func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_service.SSsoApp) (r string, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	token, err := sso.Register(app)
 	if err == nil {
@@ -107,7 +107,7 @@ func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_ser
 }
 
 // 获取应用信息
-func (s *foundationService) GetApp(ctx context.Context, name string) (r *foundation_service.SsoApp, err error) {
+func (s *foundationService) GetApp(ctx context.Context, name string) (r *foundation_service.SSsoApp, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	return sso.Get(name), nil
 }

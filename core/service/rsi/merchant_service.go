@@ -255,7 +255,7 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) Complex(ctx context.Context, mchId int32) (*mch_service.ComplexMerchant, error) {
+func (m *merchantService) Complex(ctx context.Context, mchId int32) (*mch_service.SComplexMerchant, error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		c := mch.Complex()
