@@ -20,7 +20,7 @@ import (
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int64, updateTime int) *member_service.ComplexMember {
+func GetMemberSummary(memberId int64, updateTime int) *member_service.SComplexMember {
 	v, _ := rsi.MemberService.Complex(thrift.Context, memberId)
 	if v != nil {
 		return v
@@ -28,7 +28,7 @@ func GetMemberSummary(memberId int64, updateTime int) *member_service.ComplexMem
 	return nil
 }
 
-func getMemberAccount(memberId int64, updateTime int) *member_service.Account {
+func getMemberAccount(memberId int64, updateTime int) *member_service.SAccount {
 	v, _ := rsi.MemberService.GetAccount(thrift.Context, memberId)
 	return v
 }

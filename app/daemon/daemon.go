@@ -44,7 +44,7 @@ type Service interface {
 	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
 	OrderObs(*order_service.SComplexOrder) bool
 	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
-	MemberObs(m *member_service.Member, create bool) bool
+	MemberObs(m *member_service.SMember, create bool) bool
 	// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
 	PaymentOrderObs(order *payment_service.SPaymentOrder) bool
 	// 处理邮件队列,返回布尔值,如果返回false,则不继续执行
@@ -230,7 +230,7 @@ func (d *defaultService) OrderObs(o *order_service.SComplexOrder) bool {
 
 // 监视会员修改,@create:是否为新注册会员
 // 返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) MemberObs(m *member_service.Member, create bool) bool {
+func (d *defaultService) MemberObs(m *member_service.SMember, create bool) bool {
 	defer Recover()
 	if d.sMember {
 		//todo: 执行会员逻辑

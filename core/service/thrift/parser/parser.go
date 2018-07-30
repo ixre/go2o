@@ -26,8 +26,8 @@ import (
 	"go2o/core/service/auto_gen/rpc/ttype"
 )
 
-func MerchantDto(src *merchant.ComplexMerchant) *mch_service.ComplexMerchant {
-	return &mch_service.ComplexMerchant{
+func MerchantDto(src *merchant.ComplexMerchant) *mch_service.SComplexMerchant {
+	return &mch_service.SComplexMerchant{
 		ID:            src.Id,
 		MemberId:      src.MemberId,
 		Usr:           src.Usr,
@@ -49,8 +49,8 @@ func MerchantDto(src *merchant.ComplexMerchant) *mch_service.ComplexMerchant {
 	}
 }
 
-func LevelDto(src *member.Level) *member_service.Level {
-	return &member_service.Level{
+func LevelDto(src *member.Level) *member_service.SLevel {
+	return &member_service.SLevel{
 		ID:            src.ID,
 		Name:          src.Name,
 		RequireExp:    src.RequireExp,
@@ -60,8 +60,8 @@ func LevelDto(src *member.Level) *member_service.Level {
 	}
 }
 
-func MemberDto(src *member.Member) *member_service.Member {
-	return &member_service.Member{
+func MemberDto(src *member.Member) *member_service.SMember {
+	return &member_service.SMember{
 		ID:             src.Id,
 		Usr:            src.Usr,
 		Pwd:            src.Pwd,
@@ -85,7 +85,7 @@ func MemberDto(src *member.Member) *member_service.Member {
 	}
 }
 
-func Member(src *member_service.Member) *member.Member {
+func Member(src *member_service.SMember) *member.Member {
 	return &member.Member{
 		Id:             src.ID,
 		Usr:            src.Usr,
@@ -110,8 +110,8 @@ func Member(src *member_service.Member) *member.Member {
 	}
 }
 
-func MemberProfile(src *member.Profile) *member_service.Profile {
-	return &member_service.Profile{
+func MemberProfile(src *member.Profile) *member_service.SProfile {
+	return &member_service.SProfile{
 		MemberId:   src.MemberId,
 		Name:       src.Name,
 		Avatar:     src.Avatar,
@@ -135,7 +135,7 @@ func MemberProfile(src *member.Profile) *member_service.Profile {
 	}
 }
 
-func MemberProfile2(src *member_service.Profile) *member.Profile {
+func MemberProfile2(src *member_service.SProfile) *member.Profile {
 	return &member.Profile{
 		MemberId:   src.MemberId,
 		Name:       src.Name,
@@ -160,8 +160,8 @@ func MemberProfile2(src *member_service.Profile) *member.Profile {
 	}
 }
 
-func ComplexMemberDto(src *member.ComplexMember) *member_service.ComplexMember {
-	return &member_service.ComplexMember{
+func ComplexMemberDto(src *member.ComplexMember) *member_service.SComplexMember {
+	return &member_service.SComplexMember{
 		MemberId:          src.MemberId,
 		Usr:               src.Usr,
 		Name:              src.Name,
@@ -191,8 +191,8 @@ func round(f float32, n int) float64 {
 	return math.Round(float64(f), n)
 }
 
-func AccountDto(src *member.Account) *member_service.Account {
-	return &member_service.Account{
+func AccountDto(src *member.Account) *member_service.SAccount {
+	return &member_service.SAccount{
 		MemberId:          src.MemberId,
 		Integral:          src.Integral,
 		FreezeIntegral:    src.FreezeIntegral,
@@ -216,7 +216,7 @@ func AccountDto(src *member.Account) *member_service.Account {
 	}
 }
 
-func Account(src *member_service.Account) *member.Account {
+func Account(src *member_service.SAccount) *member.Account {
 	return &member.Account{
 		MemberId:          src.MemberId,
 		Integral:          src.Integral,
@@ -259,8 +259,8 @@ func PlatFromConf(src *foundation_service.PlatformConf) *valueobject.PlatformCon
 	}
 }
 
-func AddressDto(src *member.Address) *member_service.Address {
-	return &member_service.Address{
+func AddressDto(src *member.Address) *member_service.SAddress {
+	return &member_service.SAddress{
 		ID:        src.ID,
 		MemberId:  src.MemberId,
 		RealName:  src.RealName,
@@ -274,7 +274,7 @@ func AddressDto(src *member.Address) *member_service.Address {
 	}
 }
 
-func Address(src *member_service.Address) *member.Address {
+func Address(src *member_service.SAddress) *member.Address {
 	return &member.Address{
 		ID:        src.ID,
 		MemberId:  src.MemberId,
@@ -358,8 +358,8 @@ func PaymentOrderDto(src *payment.Order) *payment_service.SPaymentOrder {
 	}
 }
 
-func MemberRelationDto(src *member.Relation) *member_service.MemberRelation {
-	return &member_service.MemberRelation{
+func MemberRelationDto(src *member.Relation) *member_service.SMemberRelation {
+	return &member_service.SMemberRelation{
 		MemberId:      src.MemberId,
 		CardId:        src.CardCard,
 		InviterId:     src.InviterId,
@@ -368,21 +368,21 @@ func MemberRelationDto(src *member.Relation) *member_service.MemberRelation {
 	}
 }
 
-func TrustedInfoDto(src *member.TrustedInfo) *member_service.TrustedInfo {
-	return &member_service.TrustedInfo{
-		MemberId:   src.MemberId,
-		RealName:   src.RealName,
-		CardId:     src.CardId,
-		TrustImage: src.TrustImage,
-		ReviewState:   src.ReviewState,
-		ReviewTime: src.ReviewTime,
-		Remark:     src.Remark,
-		UpdateTime: src.UpdateTime,
+func TrustedInfoDto(src *member.TrustedInfo) *member_service.STrustedInfo {
+	return &member_service.STrustedInfo{
+		MemberId:    src.MemberId,
+		RealName:    src.RealName,
+		CardId:      src.CardId,
+		TrustImage:  src.TrustImage,
+		ReviewState: src.ReviewState,
+		ReviewTime:  src.ReviewTime,
+		Remark:      src.Remark,
+		UpdateTime:  src.UpdateTime,
 	}
 }
 
-func ItemDto(src *item.GoodsItem) *ttype.OldItem {
-	it := &ttype.OldItem{
+func ItemDto(src *item.GoodsItem) *ttype.SOldItem {
+	it := &ttype.SOldItem{
 		ItemId:       src.ID,
 		ProductId:    src.ProductId,
 		PromFlag:     src.PromFlag,
@@ -416,7 +416,7 @@ func ItemDto(src *item.GoodsItem) *ttype.OldItem {
 		PromPrice:    float64(src.PromPrice),
 	}
 	if src.SkuArray != nil {
-		it.SkuArray = make([]*ttype.Sku, len(src.SkuArray))
+		it.SkuArray = make([]*ttype.SSku, len(src.SkuArray))
 		for i, v := range src.SkuArray {
 			it.SkuArray[i] = SkuDto(v)
 		}
@@ -424,7 +424,7 @@ func ItemDto(src *item.GoodsItem) *ttype.OldItem {
 	return it
 }
 
-func Item(src *ttype.OldItem) *item.GoodsItem {
+func Item(src *ttype.SOldItem) *item.GoodsItem {
 	it := &item.GoodsItem{
 		ID:           src.ItemId,
 		ProductId:    src.ProductId,
@@ -467,8 +467,8 @@ func Item(src *ttype.OldItem) *item.GoodsItem {
 	return it
 }
 
-func SkuDto(src *item.Sku) *ttype.Sku {
-	return &ttype.Sku{
+func SkuDto(src *item.Sku) *ttype.SSku {
+	return &ttype.SSku{
 		SkuId:       src.ID,
 		ProductId:   src.ProductId,
 		ItemId:      src.ItemId,
@@ -487,7 +487,7 @@ func SkuDto(src *item.Sku) *ttype.Sku {
 	}
 }
 
-func Sku(src *ttype.Sku) *item.Sku {
+func Sku(src *ttype.SSku) *item.Sku {
 	return &item.Sku{
 		ID:          src.SkuId,
 		ProductId:   src.ProductId,
@@ -507,7 +507,7 @@ func Sku(src *ttype.Sku) *item.Sku {
 	}
 }
 
-func ShoppingCartItem(src *ttype.ShoppingCartItem) *cart.RetailCartItem {
+func ShoppingCartItem(src *ttype.SShoppingCartItem) *cart.RetailCartItem {
 	i := &cart.RetailCartItem{
 		ItemId:   src.ItemId,
 		SkuId:    src.SkuId,

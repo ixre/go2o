@@ -35,7 +35,7 @@ func (r *RpcToolkit) RegistryMap(keys ...string) map[string]string {
 	return map[string]string{}
 }
 
-func (r *RpcToolkit) GetComplexMember(memberId int64) *member_service.ComplexMember {
+func (r *RpcToolkit) GetComplexMember(memberId int64) *member_service.SComplexMember {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -55,7 +55,7 @@ func (r *RpcToolkit) InviterArray(memberId int64, depth int32) []int64 {
 	return nil
 }
 
-func (r *RpcToolkit) GetMerchant(mchId int32) *mch_service.ComplexMerchant {
+func (r *RpcToolkit) GetMerchant(mchId int32) *mch_service.SComplexMerchant {
 	trans, cli, err := thrift.MerchantServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -65,7 +65,7 @@ func (r *RpcToolkit) GetMerchant(mchId int32) *mch_service.ComplexMerchant {
 	return nil
 }
 
-func (r *RpcToolkit) GetLevel(levelId int32) *member_service.Level {
+func (r *RpcToolkit) GetLevel(levelId int32) *member_service.SLevel {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -98,7 +98,7 @@ func (r *RpcToolkit) GetOrderAndItems(orderNo string, sub bool) *order_service.S
 }
 
 // 获取店铺
-func (r *RpcToolkit) GetStore(vendorId int32) *shop_service.Store {
+func (r *RpcToolkit) GetStore(vendorId int32) *shop_service.SStore {
 	trans, cli, err := thrift.ShopServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -109,7 +109,7 @@ func (r *RpcToolkit) GetStore(vendorId int32) *shop_service.Store {
 }
 
 // 获取店铺
-func (r *RpcToolkit) GetStoreById(shopId int32) *shop_service.Store {
+func (r *RpcToolkit) GetStoreById(shopId int32) *shop_service.SStore {
 	trans, cli, err := thrift.ShopServeClient()
 	if err == nil {
 		defer trans.Close()

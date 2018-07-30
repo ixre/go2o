@@ -48,11 +48,12 @@ func (mc *MemberC) Login(c echo.Context) error {
 		encPwd := domain.MemberSha1Pwd(pwd)
 		r, _ := cli.CheckLogin(thrift.Context, usr, encPwd, true)
 		result.Message = r.ErrMsg
-		result.Result = r.Result_
-		if r.Result_ {
-			token, _ := cli.GetToken(thrift.Context, r.ID, false)
+		result.Result = r.ErrCode == 0
+		if r.ErrCode == 0 {
+			memberId, _ := strconv.Atoi(r.Data["MemberId"])
+			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
 			result.Member = &dto.LoginMember{
-				Id:         int(r.ID),
+				Id:         memberId,
 				Token:      token,
 				UpdateTime: time.Now().Unix(),
 			}
@@ -78,8 +79,8 @@ func (mc *MemberC) Register(c echo.Context) error {
 	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 		regIp = r.RemoteAddr[:i]
 	}
-	m := &member_service.Member{}
-	pro := &member_service.Profile{}
+	m := &member_service.SMember{}
+	pro := &member_service.SProfile{}
 	m.Usr = usr
 	m.Pwd = domain.MemberSha1Pwd(pwd)
 	m.RegIp = regIp
