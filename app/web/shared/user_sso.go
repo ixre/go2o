@@ -26,10 +26,13 @@ var (
 )
 
 // 获取会员编号
-func GetMemberId(c *echox.Context) int64 {
+func GetMemberId(c *echox.Context) int {
 	v := c.Session.Get("member_id")
-	if v != nil {
-		return v.(int64)
+	switch v.(type) {
+	case int64:
+		return int(v.(int64))
+	case int:
+		return v.(int)
 	}
 	return 0
 }
@@ -38,7 +41,7 @@ func GetMemberId(c *echox.Context) int64 {
 func GetMember(c *echox.Context) *member_service.SMember {
 	memberId := GetMemberId(c)
 	if memberId > 0 {
-		m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
+		m, _ := rsi.MemberService.GetMember(thrift.Context, int64(memberId))
 		return m
 	}
 	return nil

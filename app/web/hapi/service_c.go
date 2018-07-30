@@ -59,7 +59,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	} else {
 		mmUrl := fmt.Sprintf("//%s%s",
 			variable.DOMAIN_PREFIX_MEMBER, variable.Domain)
-		m, _ := rsi.MemberService.GetProfile(thrift.Context, memberId)
+		m, _ := rsi.MemberService.GetProfile(thrift.Context,  int64(memberId))
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"
 		mp["MMUrl"] = mmUrl
@@ -85,9 +85,9 @@ func (m *serviceC) Favorite(c *echox.Context) error {
 		var err error
 		ms := rsi.MemberService
 		if favType == "shop" {
-			err = ms.FavoriteShop(memberId, id)
+			err = ms.FavoriteShop(int64(memberId), id)
 		} else {
-			err = ms.FavoriteGoods(memberId, id)
+			err = ms.FavoriteGoods(int64(memberId), id)
 		}
 		result.Error(err)
 	}
