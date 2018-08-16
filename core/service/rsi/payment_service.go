@@ -248,3 +248,8 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 	d.TradeNo = tradeNo // 交易单号
 	return d, nil
 }
+
+// 混合支付
+func (p *paymentService) MixedPayment(ctx context.Context, tradeNo string, data []*payment_service.SRequestPayData) (r *ttype.Result_, err error) {
+	return nil, nil
+}

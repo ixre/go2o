@@ -37,16 +37,16 @@ service PaymentService{
     *
     * @param storeCode 店铺编号
     * @param tradeNo   交易号
-    * @param channels  通道
+    * @param data  支付数据
     * @return 支付结果,返回:order_state
     */
-   ttype.Result MixedPayment(1:string tradeNo,3:list<SChanData> channels)
+   ttype.Result MixedPayment(1:string tradeNo,3:list<SRequestPayData> data)
 
 }
 
 
-/** 支付标志 */
-enum EPaymentFlag{
+/** 支付方式的位值 */
+enum EMethodFlag{
     /** 余额抵扣 */
     Balance = 1
     /** 钱包支付 */
@@ -62,15 +62,15 @@ enum EPaymentFlag{
     /** 银行卡支付 */
     BankCard = 64
     /** 第三方支付,如支付宝等 */
-    OutSP = 128
+    PaySP = 128
     /** 卖家支付通道 */
     SellerPay = 256
     /** 系统支付通道 */
     SystemPay = 512
 }
 
-// 支付通道
-enum EPaymentChannel{
+// 支付方式
+enum EPaymentMethod{
     /** 余额抵扣通道 */
     Balance = 1
     /** 钱包支付通道 */
@@ -86,7 +86,7 @@ enum EPaymentChannel{
     /** 银行卡支付通道 */
     BankCard = 7
     /** 第三方支付 */
-    OutSp = 8
+    PaySP = 8
     /** 卖家支付通道 */
     SellerPay = 9
     /** 系统支付通道 */
@@ -198,13 +198,13 @@ struct SPaymentOrderData{
 }
 
 /** 请求支付数据 */
-struct SChanData{
+struct SRequestPayData{
     /** 支付通道标志 */
-    1:i32 Flag
+    1:i32 Method
     /** 通道标签 */
     2:string Tag
     /** 支付金额 */
-    3:i32 amount
+    3:i32 Amount
 }
 
 /** 支付单项 */
