@@ -12,15 +12,15 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/jsix/gof/net/nc"
+	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
-	"go2o/gen-code/thrift/define"
 	"strconv"
 	"strings"
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int64, updateTime int) *define.ComplexMember {
+func GetMemberSummary(memberId int64, updateTime int) *member_service.SComplexMember {
 	v, _ := rsi.MemberService.Complex(thrift.Context, memberId)
 	if v != nil {
 		return v
@@ -28,7 +28,7 @@ func GetMemberSummary(memberId int64, updateTime int) *define.ComplexMember {
 	return nil
 }
 
-func getMemberAccount(memberId int64, updateTime int) *define.Account {
+func getMemberAccount(memberId int64, updateTime int) *member_service.SAccount {
 	v, _ := rsi.MemberService.GetAccount(thrift.Context, memberId)
 	return v
 }

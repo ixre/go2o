@@ -69,7 +69,7 @@ func (r *riseInfo) CommitTransfer(logId int32) (err error) {
 		r.value.SettlementAmount += l.Amount // 计入结算金额
 		r.value.TransferIn -= l.Amount
 		err = r.Save()
-	//todo: 记录开使计算收益的日志
+		//todo: 记录开使计算收益的日志
 	case personfinance.RiseTypeTransferOut:
 		//todo: 处理打款, 转出成功日志
 	}
@@ -98,14 +98,14 @@ func (r *riseInfo) transferInPayment(amount float32,
 		if err != nil {
 			return err
 		}
-	//从钱包转入
+		//从钱包转入
 	case personfinance.TransferFromWithWallet:
 		err = acc.DiscountWallet("理财转入", tradeNo,
 			amount, member.DefaultRelateUser, true)
 		if err != nil {
 			return err
 		}
-	//其他方式转入
+		//其他方式转入
 	default:
 		return errors.New("暂时无法提供服务")
 	}

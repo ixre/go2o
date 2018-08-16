@@ -16,6 +16,7 @@ import (
 	"go2o/core/variable"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 type mainC struct {
@@ -34,10 +35,9 @@ func (m *mainC) Test(c *echox.Context) error {
 	if memberId <= 0 {
 		return requestLogin(c)
 	}
-	d := gof.Message{
+	d := gof.Result{
 		ErrCode: 0,
-		Result:  true,
-		Data:    memberId,
+		Data:    map[string]string{"MemberId": strconv.Itoa(int(memberId))},
 	}
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), d)
 }

@@ -15,10 +15,10 @@ import (
 	"github.com/labstack/echo"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -48,11 +48,12 @@ func (mc *MemberC) Login(c echo.Context) error {
 		encPwd := domain.MemberSha1Pwd(pwd)
 		r, _ := cli.CheckLogin(thrift.Context, usr, encPwd, true)
 		result.Message = r.ErrMsg
-		result.Result = r.Result_
-		if r.Result_ {
-			token, _ := cli.GetToken(thrift.Context, r.ID, false)
+		result.Result = r.ErrCode == 0
+		if r.ErrCode == 0 {
+			memberId, _ := strconv.Atoi(r.Data["MemberId"])
+			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
 			result.Member = &dto.LoginMember{
-				Id:         int(r.ID),
+				Id:         memberId,
 				Token:      token,
 				UpdateTime: time.Now().Unix(),
 			}
@@ -63,7 +64,7 @@ func (mc *MemberC) Login(c echo.Context) error {
 
 // 注册
 func (mc *MemberC) Register(c echo.Context) error {
-	result := &gof.Message{}
+	result := &gof.Result{}
 	return c.JSON(http.StatusOK,
 		result.Error(errors.New("注册暂停，请通过微信或其他方式注册!")))
 
@@ -78,8 +79,8 @@ func (mc *MemberC) Register(c echo.Context) error {
 	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 		regIp = r.RemoteAddr[:i]
 	}
-	m := &define.Member{}
-	pro := &define.Profile{}
+	m := &member_service.SMember{}
+	pro := &member_service.SProfile{}
 	m.Usr = usr
 	m.Pwd = domain.MemberSha1Pwd(pwd)
 	m.RegIp = regIp
@@ -154,7 +155,7 @@ func (mc *MemberC) Account(c echo.Context) error {
 // 断开
 // todo: token不允许删除，只能自动过期
 func (mc *MemberC) Disconnect(c echo.Context) error {
-	result := &gof.Message{}
+	result := &gof.Result{}
 	return c.JSON(http.StatusOK, result)
 	//mStr := c.QueryParam("member_id")
 	//memberId, err := util.I32Err(strconv.Atoi(mStr))

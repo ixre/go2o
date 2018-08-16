@@ -8,8 +8,8 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
-	"go2o/gen-code/thrift/define"
 	"strconv"
 )
 
@@ -18,6 +18,7 @@ type productService struct {
 	pmRepo  promodel.IProModelRepo
 	catRepo product.ICategoryRepo
 	proRepo product.IProductRepo
+	serviceUtil
 }
 
 func NewProService(pmRepo promodel.IProModelRepo,
@@ -70,7 +71,7 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 }
 
 // 保存产品模型
-func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error) {
+func (p *productService) SaveModel(v *promodel.ProModel) (*ttype.Result_, error) {
 	var pm promodel.IModel
 	var err error
 	if v.ID > 0 {
@@ -102,14 +103,14 @@ func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error
 		v.ID, err = pm.Save()
 	}
 R:
-	return parser.Result(v.ID, err), nil
+	return p.result(err), nil
 }
 
 // 删除产品模型
-func (p *productService) DeleteProModel_(id int32) (*define.Result_, error) {
+func (p *productService) DeleteProModel_(id int32) (*ttype.Result_, error) {
 	//err := p.pmRepo.DeleteProModel(id)
 	//todo: 暂时不允许删除模型
-	return parser.Result(nil, errors.New("暂时不允许删除模型")), nil
+	return p.result(errors.New("暂时不允许删除模型")), nil
 }
 
 /***** 品牌  *****/
@@ -120,15 +121,15 @@ func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
 }
 
 // Save 产品品牌
-func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*define.Result_, error) {
-	id, err := p.pmRepo.BrandService().SaveBrand(v)
-	return parser.Result(id, err), nil
+func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*ttype.Result_, error) {
+	_, err := p.pmRepo.BrandService().SaveBrand(v)
+	return p.result(err), nil
 }
 
 // Delete 产品品牌
-func (p *productService) DeleteProBrand_(id int32) (*define.Result_, error) {
+func (p *productService) DeleteProBrand_(id int32) (*ttype.Result_, error) {
 	err := p.pmRepo.BrandService().DeleteBrand(id)
-	return parser.Result(0, err), nil
+	return p.result(err), nil
 }
 
 // 获取所有产品品牌
@@ -255,9 +256,9 @@ func (p *productService) getCategoryManager(mchId int32) product.IGlobCatService
 	return p.catRepo.GlobCatService()
 }
 
-func (p *productService) GetBigCategories(mchId int32) []*define.Category {
+func (p *productService) GetBigCategories(mchId int32) []*ttype.SCategory {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := []*define.Category{}
+	list := []*ttype.SCategory{}
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
 			v2.Icon = format.GetResUrl(v2.Icon)
@@ -267,9 +268,9 @@ func (p *productService) GetBigCategories(mchId int32) []*define.Category {
 	return list
 }
 
-func (p *productService) GetChildCategories(mchId, parentId int32) []*define.Category {
+func (p *productService) GetChildCategories(mchId, parentId int32) []*ttype.SCategory {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := []*define.Category{}
+	list := []*ttype.SCategory{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
@@ -314,7 +315,7 @@ func (p *productService) GetProductValue(productId int64) *product.Product {
 }
 
 // 保存产品
-func (p *productService) SaveProduct(v *product.Product) (r *define.Result64, err error) {
+func (p *productService) SaveProduct(v *product.Product) (r *ttype.Result_, err error) {
 	var pro product.IProduct
 	if v.Id > 0 {
 		pro = p.proRepo.GetProduct(v.Id)
@@ -340,7 +341,11 @@ func (p *productService) SaveProduct(v *product.Product) (r *define.Result64, er
 		v.Id, err = pro.Save()
 	}
 R:
-	return parser.Result64(v.Id, err), nil
+	r = p.result(err)
+	r.Data = map[string]string{
+		"ProductId": strconv.Itoa(int(v.Id)),
+	}
+	return r, nil
 }
 
 // 保存货品描述

@@ -1,5 +1,6 @@
-namespace go define
-
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.payment_service
 include "ttype.thrift"
 
 // 支付服务
@@ -25,57 +26,71 @@ service PaymentService{
     // 完成支付单支付，并传入支付方式及外部订单号
     ttype.Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
 
+
     // 支付网关
     ttype.Result GatewayV1(1:string action,2:i64 userId,3:map<string,string> data)
     // 获取支付预交易数据
     SPrepareTradeData GetPaymentOrderInfo(1:string tradeNo,2:bool mergePay)
+
+   /**
+    * 支付单混合支付
+    *
+    * @param storeCode 店铺编号
+    * @param tradeNo   交易号
+    * @param data  支付数据
+    * @return 支付结果,返回:order_state
+    */
+   ttype.Result MixedPayment(1:string tradeNo,3:list<SRequestPayData> data)
+
 }
 
 
-/** 支付标志 */
-enum EPaymentFlag{
-    // 余额抵扣
+/** 支付方式的位值 */
+enum EMethodFlag{
+    /** 余额抵扣 */
     Balance = 1
-    // 钱包支付
+    /** 钱包支付 */
     Wallet = 2
-    // 积分兑换
+    /** 积分兑换 */
     Integral = 4
-    // 用户卡
+    /** 用户卡 */
     UserCard = 8
-    // 用户券
+    /** 用户券 */
     UserCoupon = 16
-    // 现金支付
+    /** 现金支付 */
     Cash = 32
-    // 银行卡支付
+    /** 银行卡支付 */
     BankCard = 64
-    // 第三方支付,如支付宝等
-    OutSP = 128
-    // 卖家支付通道
+    /** 第三方支付,如支付宝等 */
+    PaySP = 128
+    /** 卖家支付通道 */
     SellerPay = 256
-    // 系统支付通道
+    /** 系统支付通道 */
     SystemPay = 512
 }
 
-// 支付通道
-enum EPaymentChannel{
-    // 余额抵扣通道
+// 支付方式
+enum EPaymentMethod{
+    /** 余额抵扣通道 */
     Balance = 1
-    // 钱包支付通道
+    /** 钱包支付通道 */
     Wallet = 2
-    // 积分兑换通道
+    /** 积分兑换通道 */
     Integral = 3
-    // 用户卡通道
+    /** 用户卡通道 */
     UserCard = 4
-    // 用户券通道
+    /** 用户券通道 */
     UserCoupon = 5
-    // 现金支付通道
+    /** 现金支付通道 */
     Cash = 6
-    // 银行卡支付通道
+    /** 银行卡支付通道 */
     BankCard = 7
-    // 卖家支付通道
-    SellerPay = 8
-    // 系统支付通道
-    SystemPay = 9
+    /** 第三方支付 */
+    PaySP = 8
+    /** 卖家支付通道 */
+    SellerPay = 9
+    /** 系统支付通道 */
+    SystemPay = 10
 }
 
 /** 支付单 */
@@ -114,30 +129,34 @@ struct SPaymentOrder{
     16:i32 TotalAmount
     /** 手续费 */
     17:i32 ProcedureFee
-    /** 最终支付金额 */
-    18:i32 FinalFee
+    /** 实付金额 */
+    18:i32 PaidFee
+    /** 最终应付金额 */
+    19:i32 FinalFee
     /** 可⽤支付方式  */
-    19:i32 PayFlag
+    20:i32 PayFlag
+    /** 实际使用支付方式 */
+    21:i32 FinalFlag
     /** 其他支付信息 */
-    20:string ExtraData
+    22:string ExtraData
     /** 交易支付渠道 */
-    21:i32 TradeChannel
+    23:i32 TradeChannel
     /** 外部交易提供商 */
-    22:string OutTradeSp
+    24:string OutTradeSp
     /** 外部交易订单号 */
-    23:string OutTradeNo
+    25:string OutTradeNo
     /** 订单状态 */
-    24:i32 State
+    26:i32 State
     /** 提交时间 */
-    25:i64 SubmitTime
+    27:i64 SubmitTime
     /** 过期时间 */
-    26:i64 ExpiresTime
+    28:i64 ExpiresTime
     /** 支付时间 */
-    27:i64 PaidTime
+    29:i64 PaidTime
     /** 更新时间 */
-    28:i64 UpdateTime
+    30:i64 UpdateTime
     /** 交易途径交易信息 */
-    29:list<SPayTradeChan> TradeChannels
+    31:list<SPayTradeChan> TradeChannels
 }
 
 /** 支付单预交易数据 */
@@ -178,6 +197,16 @@ struct SPaymentOrderData{
     6:i32 FinalFee
 }
 
+/** 请求支付数据 */
+struct SRequestPayData{
+    /** 支付通道标志 */
+    1:i32 Method
+    /** 通道标签 */
+    2:string Tag
+    /** 支付金额 */
+    3:i32 Amount
+}
+
 /** 支付单项 */
 struct SPayTradeChan{
     /** 编号 */
@@ -190,4 +219,6 @@ struct SPayTradeChan{
     4:i32 InternalChan
     /** 支付金额 */
     5:i32 PayAmount
+    /** 通道数据 */
+    6:string ChanData
 }

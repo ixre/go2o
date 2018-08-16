@@ -1,31 +1,42 @@
-namespace go define
-
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.member_service
 include "ttype.thrift"
 
 
 //会员服务
 service MemberService{
+    /**
+     * 注册会员
+     * @param member 会员信息
+     * @param profile 资料
+     * @param mchId 商户编号
+     * @param cardId 会员卡号
+     * @param inviteCode 邀请码
+     **/
+    ttype.Result RegisterMemberV1(1:SMember member,2:SProfile profile,3:i32 mchId,4:string cardId,5:string inviteCode)
+
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    ttype.Result64 CheckLogin(1:string user,2:string pwd,3:bool update)
+    ttype.Result CheckLogin(1:string user,2:string pwd,3:bool update)
     // 检查交易密码
     ttype.Result CheckTradePwd(1:i64 id,2:string tradePwd)
     // 等级列表
-    list<Level> LevelList()
+    list<SLevel> LevelList()
     // 获取实名信息
-    TrustedInfo GetTrustInfo(1:i64 id)
+    STrustedInfo GetTrustInfo(1:i64 id)
     // 获取等级信息
-    Level GetLevel(1:i32 id)
+    SLevel GetLevel(1:i32 id)
     // 根据SIGN获取等级
-    Level GetLevelBySign(1:string sign)
+    SLevel GetLevelBySign(1:string sign)
     // 根据会员编号获取会员信息
-    Member GetMember(1:i64 id)
+    SMember GetMember(1:i64 id)
     // 根据用户名获取会员信息
-    Member GetMemberByUser(1:string user)
+    SMember GetMemberByUser(1:string user)
     // 根据会员编号获取会员资料
-    Profile GetProfile(1:i64 id)
+    SProfile GetProfile(1:i64 id)
     // 获取会员汇总信息
-    ComplexMember Complex(1:i64 memberId)
+    SComplexMember Complex(1:i64 memberId)
     // 检查资料是否完成
     ttype.Result CheckProfileComplete(1:i64 memberId)
     // 更改会员等级
@@ -43,11 +54,11 @@ service MemberService{
     // 移除会员的Token
     void RemoveToken(1:i64 memberId)
     // 获取会员的收货地址
-    list<Address> GetAddressList(1:i64 memberId)
+    list<SAddress> GetAddressList(1:i64 memberId)
     // 获取地址，如果addrId为0，则返回默认地址
-    Address GetAddress(1:i64 memberId,2:i64 addrId)
+    SAddress GetAddress(1:i64 memberId,2:i64 addrId)
     // 获取会员账户信息
-    Account GetAccount(1:i64 memberId)
+    SAccount GetAccount(1:i64 memberId)
     // 获取自己的邀请人会员编号数组
     list<i64> InviterArray(1:i64 memberId,2:i32 depth)
     // 按条件获取荐指定等级会员的数量
@@ -69,7 +80,8 @@ service MemberService{
 }
 
 
-struct Level {
+/** 等级 */
+struct SLevel {
     1: i32 ID
     2: string Name
     3: i32 RequireExp
@@ -78,7 +90,8 @@ struct Level {
     6: i32 Enabled
 }
 
-struct Member {
+/** 会员 */
+struct SMember {
     1: i64 ID
     2: string Usr
     3: string Pwd
@@ -103,8 +116,8 @@ struct Member {
     20: i64 TimeoutTime
 }
 
-
-struct Profile {
+/** 资料 */
+struct SProfile {
     1: i64 MemberId
     2: string Name
     3: string Avatar
@@ -127,7 +140,8 @@ struct Profile {
     20: i64 UpdateTime
 }
 
-struct Account {
+/** 账户 */
+struct SAccount {
     1: i64 MemberId
     2: i64 Integral
     3: i64 FreezeIntegral
@@ -150,7 +164,7 @@ struct Account {
     20: i64 UpdateTime
 }
 
-struct ComplexMember {
+struct SComplexMember {
     1: i64 MemberId
     2: string Usr
     3: string Name
@@ -175,7 +189,7 @@ struct ComplexMember {
     22: i64 UpdateTime
 }
 
-struct MemberRelation {
+struct SMemberRelation {
     1: i64 MemberId
     2: string CardId
     3: i64 InviterId
@@ -184,19 +198,19 @@ struct MemberRelation {
 }
 
 
-struct TrustedInfo {
+struct STrustedInfo {
     1: i64 MemberId
     2: string RealName
     3: string CardId
     4: string TrustImage
-    5: i32 Reviewed
+    5: i32 ReviewState
     6: i64 ReviewTime
     7: string Remark
     8: i64 UpdateTime
 }
 
 
-struct Address {
+struct SAddress {
     1: i64 ID
     2: i64 MemberId
     3: string RealName

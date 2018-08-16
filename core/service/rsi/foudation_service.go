@@ -19,16 +19,18 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
 	"go2o/core/module/bank"
+	"go2o/core/service/auto_gen/rpc/foundation_service"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
 )
 
-var _ define.FoundationService = new(foundationService)
+var _ foundation_service.FoundationService = new(foundationService)
 
 // 基础服务
 type foundationService struct {
 	_rep valueobject.IValueRepo
+	*serviceUtil
 }
 
 func NewFoundationService(rep valueobject.IValueRepo) *foundationService {
@@ -43,15 +45,15 @@ func (s *foundationService) GetValue(ctx context.Context, key string) (r string,
 }
 
 // 设置键值
-func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *define.Result_, err error) {
+func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
 	err = s._rep.SetValue(key, value)
-	return parser.Result(0, err), nil
+	return s.result(err), nil
 }
 
 // 删除值
-func (s *foundationService) DeleteValue(ctx context.Context, key string) (r *define.Result_, err error) {
+func (s *foundationService) DeleteValue(ctx context.Context, key string) (r *ttype.Result_, err error) {
 	err = s._rep.DeleteValue(key)
-	return parser.Result(0, err), nil
+	return s.result(err), nil
 }
 
 // 根据前缀获取值
@@ -95,7 +97,7 @@ func (s *foundationService) FlushSuperPwd(ctx context.Context, user string, pwd 
 //   -  1. 成功，并返回token
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
-func (s *foundationService) RegisterApp(ctx context.Context, app *define.SsoApp) (r string, err error) {
+func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_service.SSsoApp) (r string, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	token, err := sso.Register(app)
 	if err == nil {
@@ -105,7 +107,7 @@ func (s *foundationService) RegisterApp(ctx context.Context, app *define.SsoApp)
 }
 
 // 获取应用信息
-func (s *foundationService) GetApp(ctx context.Context, name string) (r *define.SsoApp, err error) {
+func (s *foundationService) GetApp(ctx context.Context, name string) (r *foundation_service.SSsoApp, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	return sso.Get(name), nil
 }
@@ -189,7 +191,7 @@ func (s *foundationService) ResourceUrl(ctx context.Context, url string) (r stri
 }
 
 // 获取平台设置
-func (s *foundationService) GetPlatformConf(ctx context.Context) (r *define.PlatformConf, err error) {
+func (s *foundationService) GetPlatformConf(ctx context.Context) (r *foundation_service.PlatformConf, err error) {
 	v := s._rep.GetPlatformConf()
 	return parser.PlatformConfDto(&v), nil
 }
@@ -225,10 +227,10 @@ func (s *foundationService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm
 }
 
 // 获取下级区域
-func (s *foundationService) GetChildAreas(ctx context.Context, code int32) ([]*define.SArea, error) {
-	var arr []*define.SArea
+func (s *foundationService) GetChildAreas(ctx context.Context, code int32) ([]*foundation_service.SArea, error) {
+	var arr []*foundation_service.SArea
 	for _, v := range s._rep.GetChildAreas(code) {
-		arr = append(arr, &define.SArea{
+		arr = append(arr, &foundation_service.SArea{
 			Code:   int32(v.Code),
 			Parent: int32(v.Parent),
 			Name:   v.Name,

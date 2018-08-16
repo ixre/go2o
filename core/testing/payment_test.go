@@ -29,8 +29,9 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		BuyerId:   22149,
 		//PayUid:      1,
 		ItemAmount: 1,
-		PaymentFlag: payment.FlagBankCard | payment.FlagOutSp | payment.FlagBalance |
-			payment.FlagIntegral | payment.FlagWallet,
+		PayFlag: domain.MathPaymentMethodFlag([]int{
+			payment.MBankCard, payment.MPaySP, payment.MBalance,
+			payment.MIntegral, payment.MWallet}),
 		OutTradeNo: "",
 		SubmitTime: unix,
 		PaidTime:   0,

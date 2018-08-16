@@ -12,15 +12,22 @@ import (
 	"crypto/tls"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
+	"go2o/core/service/auto_gen/rpc/finance_service"
+	"go2o/core/service/auto_gen/rpc/foundation_service"
+	"go2o/core/service/auto_gen/rpc/item_service"
+	"go2o/core/service/auto_gen/rpc/mch_service"
+	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/auto_gen/rpc/payment_service"
+	"go2o/core/service/auto_gen/rpc/shipment_service"
+	"go2o/core/service/auto_gen/rpc/shop_service"
+	"go2o/core/service/auto_gen/rpc/wallet_service"
 	"go2o/core/service/rsi"
-	"go2o/gen-code/thrift/define"
 )
 
 // 运行Thrift服务
 func ListenAndServe(addr string, secure bool) error {
 	var err error
-	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
-	protocolFactory := thrift.NewTCompactProtocolFactory()
 	var transport thrift.TServerTransport
 	if secure {
 		cfg := new(tls.Config)
@@ -33,19 +40,20 @@ func ListenAndServe(addr string, secure bool) error {
 	} else {
 		transport, err = thrift.NewTServerSocket(addr)
 	}
-	transport, err = thrift.NewTServerSocket(addr)
+	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
+	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
 	if err == nil {
 		processor := thrift.NewTMultiplexedProcessor()
-		processor.RegisterProcessor("merchant", define.NewMerchantServiceProcessor(rsi.MerchantService))
-		processor.RegisterProcessor("member", define.NewMemberServiceProcessor(rsi.MemberService))
-		processor.RegisterProcessor("foundation", define.NewFoundationServiceProcessor(rsi.FoundationService))
-		processor.RegisterProcessor("payment", define.NewPaymentServiceProcessor(rsi.PaymentService))
-		processor.RegisterProcessor("order", define.NewOrderServiceProcessor(rsi.ShoppingService))
-		processor.RegisterProcessor("shipment", define.NewShipmentServiceProcessor(rsi.ShipmentService))
-		processor.RegisterProcessor("item", define.NewItemServiceProcessor(rsi.ItemService))
-		processor.RegisterProcessor("shop", define.NewShopServiceProcessor(rsi.ShopService))
-		processor.RegisterProcessor("finance", define.NewFinanceServiceProcessor(rsi.PersonFinanceService))
-		processor.RegisterProcessor("wallet", define.NewWalletServiceProcessor(rsi.WalletService))
+		processor.RegisterProcessor("merchant", mch_service.NewMerchantServiceProcessor(rsi.MerchantService))
+		processor.RegisterProcessor("member", member_service.NewMemberServiceProcessor(rsi.MemberService))
+		processor.RegisterProcessor("foundation", foundation_service.NewFoundationServiceProcessor(rsi.FoundationService))
+		processor.RegisterProcessor("payment", payment_service.NewPaymentServiceProcessor(rsi.PaymentService))
+		processor.RegisterProcessor("order", order_service.NewOrderServiceProcessor(rsi.ShoppingService))
+		processor.RegisterProcessor("shipment", shipment_service.NewShipmentServiceProcessor(rsi.ShipmentService))
+		processor.RegisterProcessor("item", item_service.NewItemServiceProcessor(rsi.ItemService))
+		processor.RegisterProcessor("shop", shop_service.NewShopServiceProcessor(rsi.ShopService))
+		processor.RegisterProcessor("finance", finance_service.NewFinanceServiceProcessor(rsi.PersonFinanceService))
+		processor.RegisterProcessor("wallet", wallet_service.NewWalletServiceProcessor(rsi.WalletService))
 		server := thrift.NewTSimpleServer4(processor, transport, transportFactory, protocolFactory)
 		fmt.Println("[ Go2o][ RPC]: Starting the thrift server... on ", addr)
 		err = server.Serve()

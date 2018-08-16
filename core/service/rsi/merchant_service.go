@@ -11,6 +11,7 @@ package rsi
 
 import (
 	"context"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -18,24 +19,27 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
+	"go2o/core/service/auto_gen/rpc/mch_service"
+	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
-	"go2o/gen-code/thrift/define"
 	"strings"
 	"time"
 )
 
-var _ define.MerchantService = new(merchantService)
+var _ mch_service.MerchantService = new(merchantService)
 
 type merchantService struct {
 	_mchRepo    merchant.IMerchantRepo
 	_memberRepo member.IMemberRepo
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
+	serviceUtil
 }
 
-func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r []*define.STradeConf, err error) {
+func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r []*mch_service.STradeConf, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
-	var arr []*define.STradeConf
+	var arr []*mch_service.STradeConf
 	if mch != nil {
 		for _, v := range mch.ConfManager().GetAllTradeConf() {
 			arr = append(arr, parser.TradeConfDto(v))
@@ -44,7 +48,7 @@ func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r [
 	return arr, nil
 }
 
-func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeType int32) (r *define.STradeConf, err error) {
+func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeType int32) (r *mch_service.STradeConf, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		v := mch.ConfManager().GetTradeConf(int(tradeType))
@@ -55,7 +59,7 @@ func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeTy
 	return nil, nil
 }
 
-func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []*define.STradeConf) (r *define.Result_, err error) {
+func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []*mch_service.STradeConf) (r *ttype.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
@@ -66,7 +70,7 @@ func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []
 		}
 		err = mch.ConfManager().SaveTradeConf(dst)
 	}
-	return parser.Result(nil, err), nil
+	return m.result(err), nil
 }
 
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
@@ -169,13 +173,13 @@ func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 	return m._mchRepo.GetManager().RemoveSignUp(memberId)
 }
 
-// 登录，返回结果(Result)和会员编号(ID);
+// 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (ms *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
+func (m *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
-	val := ms._memberRepo.GetMemberByUsr(usr)
+	val := m._memberRepo.GetMemberByUsr(usr)
 	if val == nil {
-		val = ms._memberRepo.GetMemberValueByPhone(usr)
+		val = m._memberRepo.GetMemberValueByPhone(usr)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
@@ -193,12 +197,12 @@ func (ms *merchantService) testMemberLogin(usr string, pwd string) (id int64, er
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r *define.Result_, err error) {
+func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r *ttype.Result_, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	oriPwd = strings.TrimSpace(oriPwd)
 	var mchId int32
 	if usr == "" || oriPwd == "" {
-		return parser.Result(mchId, member.ErrCredential), nil
+		return m.error(member.ErrCredential), nil
 	}
 	//尝试作为独立的商户账号登陆
 	encPwd := domain.MerchantSha1Pwd(usr, oriPwd)
@@ -218,7 +222,10 @@ func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r
 	if mchId < 0 && err == nil {
 		err = merchant.ErrNoSuchMerchant
 	}
-	return parser.Result(mchId, err), nil
+	if err != nil {
+		return m.error(err), nil
+	}
+	return m.success(map[string]string{"mch_id": util.Str(mchId)}), nil
 }
 
 // 获取企业信息,并返回是否为提交的信息
@@ -248,7 +255,7 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) Complex(ctx context.Context, mchId int32) (*define.ComplexMerchant, error) {
+func (m *merchantService) Complex(ctx context.Context, mchId int32) (*mch_service.SComplexMerchant, error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		c := mch.Complex()
@@ -310,14 +317,14 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *define.Result_, err error) {
+func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *ttype.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
 		err = mch.Stat()
 	}
-	return parser.Result(mchId, err), nil
+	return m.result(err), nil
 }
 
 // 设置商户启用或停用
@@ -501,7 +508,7 @@ func (m *merchantService) PagedWholesaleOrderOfVendor(vendorId int32, begin, siz
 
 // 查询分页订单
 func (m *merchantService) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
-	where, orderBy string) (int32, []*define.SComplexOrder) {
+	where, orderBy string) (int32, []*order_service.SComplexOrder) {
 	return m._orderQuery.PagedTradeOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
@@ -689,14 +696,14 @@ func (m *merchantService) GetMchBuyerGroup_(mchId, id int32) *merchant.MchBuyerG
 }
 
 // 保存
-func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *define.Result_, err error) {
+func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *ttype.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
 		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
 	}
-	return parser.Result(v.ID, err), nil
+	return m.result(err), nil
 }
 
 // 获取买家分组

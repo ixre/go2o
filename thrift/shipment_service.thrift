@@ -1,4 +1,6 @@
-namespace go define
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.shipment_service
 include "ttype.thrift"
 
 // 发货服务

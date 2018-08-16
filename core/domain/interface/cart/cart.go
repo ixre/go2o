@@ -17,7 +17,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto_gen/rpc/ttype"
 )
 
 var (
@@ -304,8 +304,8 @@ type (
 	}
 )
 
-func ParseCartItem(item *RetailCartItem) *define.ShoppingCartItem {
-	i := &define.ShoppingCartItem{
+func ParseCartItem(item *RetailCartItem) *ttype.SShoppingCartItem {
+	i := &ttype.SShoppingCartItem{
 		ItemId:   item.ItemId,
 		SkuId:    item.SkuId,
 		Quantity: item.Quantity,
@@ -327,8 +327,8 @@ func ParseCartItem(item *RetailCartItem) *define.ShoppingCartItem {
 	return i
 }
 
-func ParseToDtoCart(c ICart) *define.ShoppingCart {
-	cart := &define.ShoppingCart{}
+func ParseToDtoCart(c ICart) *ttype.SShoppingCart {
+	cart := &ttype.SShoppingCart{}
 	if c.Kind() != KRetail {
 		panic("购物车类型非零售")
 	}
@@ -337,18 +337,18 @@ func ParseToDtoCart(c ICart) *define.ShoppingCart {
 
 	cart.CartId = c.GetAggregateRootId()
 	cart.Code = v.CartCode
-	cart.Shops = []*define.ShoppingCartGroup{}
+	cart.Shops = []*ttype.SShoppingCartGroup{}
 
 	items := rc.Items()
 	if items != nil && len(items) > 0 {
-		mp := make(map[int32]*define.ShoppingCartGroup, 0) //保存运营商到map
+		mp := make(map[int32]*ttype.SShoppingCartGroup, 0) //保存运营商到map
 		for _, v := range items {
 			vendor, ok := mp[v.ShopId]
 			if !ok {
-				vendor = &define.ShoppingCartGroup{
+				vendor = &ttype.SShoppingCartGroup{
 					VendorId: v.VendorId,
 					ShopId:   v.ShopId,
-					Items:    []*define.ShoppingCartItem{},
+					Items:    []*ttype.SShoppingCartItem{},
 				}
 				mp[v.ShopId] = vendor
 				cart.Shops = append(cart.Shops, vendor)

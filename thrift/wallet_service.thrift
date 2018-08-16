@@ -1,4 +1,6 @@
-namespace go define
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.wallet_service
 
 include "ttype.thrift"
 
@@ -44,7 +46,7 @@ service WalletService{
     ttype.Result FinishTakeOut(1:i64 walletId,2:i64 takeId,3:string outerNo)
 
     /** 获取分页钱包日志 */
-    ttype.PagingResult PagingWalletLog(1:i64 walletId,2:ttype.PagingParams params)
+    ttype.SPagingResult PagingWalletLog(1:i64 walletId,2:ttype.SPagingParams params)
 }
 
 /** 钱包类型 */

@@ -723,7 +723,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 	// 检测是否实名
 	if conf.TakeOutMustTrust {
 		trust := a.member.Profile().GetTrustedInfo()
-		if trust.Reviewed != enum.ReviewPass {
+		if trust.ReviewState != enum.ReviewPass {
 			return 0, "", member.ErrTakeOutNotTrust
 		}
 	}
@@ -944,7 +944,7 @@ func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error 
 // 获取会员名称
 func (a *accountImpl) getMemberName(m member.IMember) string {
 	if tr := m.Profile().GetTrustedInfo(); tr.RealName != "" &&
-		tr.Reviewed == enum.ReviewPass {
+		tr.ReviewState == enum.ReviewPass {
 		return tr.RealName
 	} else {
 		return m.GetValue().Usr

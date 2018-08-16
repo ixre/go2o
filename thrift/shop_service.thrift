@@ -1,9 +1,10 @@
-namespace go define
-
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.shop_service
 include "ttype.thrift"
 
 // 商店,需重构
-struct Shop{
+struct SShop{
     1:i32 ID
     2:i32 VendorId
     3:i32 ShopType
@@ -14,7 +15,7 @@ struct Shop{
 }
 
 // 商铺
-struct Store{
+struct SStore{
     1:i32 ID
     2:i32 VendorId
     3:string Name
@@ -31,9 +32,9 @@ struct Store{
 // 商店服务
 service ShopService{
     // 获取店铺
-    Store GetStore(1:i32 venderId)
+    SStore GetStore(1:i32 venderId)
     // 获取店铺
-    Store GetStoreById(1:i32 shopId)
+    SStore GetStoreById(1:i32 shopId)
     // 获取门店
     //Shop GetOfflineShop(1:i32 shopId)
     // 打开或关闭商店

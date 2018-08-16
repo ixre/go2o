@@ -21,9 +21,11 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
+	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/rsi"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
 	"log"
 	"strings"
 	"sync"
@@ -40,11 +42,11 @@ type Service interface {
 	// 启动服务,并传入APP上下文对象
 	Start(gof.App)
 	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
-	OrderObs(*define.SComplexOrder) bool
+	OrderObs(*order_service.SComplexOrder) bool
 	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
-	MemberObs(m *define.Member, create bool) bool
+	MemberObs(m *member_service.SMember, create bool) bool
 	// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
-	PaymentOrderObs(order *define.SPaymentOrder) bool
+	PaymentOrderObs(order *payment_service.SPaymentOrder) bool
 	// 处理邮件队列,返回布尔值,如果返回false,则不继续执行
 	HandleMailQueue([]*mss.MailTask) bool
 }
@@ -199,7 +201,7 @@ func (d *defaultService) Start(a gof.App) {
 
 // 处理订单,需根据订单不同的状态,作不同的业务
 // 返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) OrderObs(o *define.SComplexOrder) bool {
+func (d *defaultService) OrderObs(o *order_service.SComplexOrder) bool {
 	if d.app.Debug() {
 		d.app.Log().Println("-- 订单", o.OrderNo, "状态:", o.State)
 	}
@@ -228,7 +230,7 @@ func (d *defaultService) OrderObs(o *define.SComplexOrder) bool {
 
 // 监视会员修改,@create:是否为新注册会员
 // 返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) MemberObs(m *define.Member, create bool) bool {
+func (d *defaultService) MemberObs(m *member_service.SMember, create bool) bool {
 	defer Recover()
 	if d.sMember {
 		//todo: 执行会员逻辑
@@ -237,7 +239,7 @@ func (d *defaultService) MemberObs(m *define.Member, create bool) bool {
 }
 
 // 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) PaymentOrderObs(order *define.SPaymentOrder) bool {
+func (d *defaultService) PaymentOrderObs(order *payment_service.SPaymentOrder) bool {
 	if order == nil {
 		return false
 	}
@@ -248,7 +250,7 @@ func (d *defaultService) PaymentOrderObs(order *define.SPaymentOrder) bool {
 }
 
 // 测试是否为子订单,并返回编号
-func (d *defaultService) testSubId(o *define.SComplexOrder) (string, bool) {
+func (d *defaultService) testSubId(o *order_service.SComplexOrder) (string, bool) {
 	if o.SubOrderId > 0 {
 		return o.OrderNo, true
 	}
@@ -266,7 +268,7 @@ func (d *defaultService) batchDelKeys(conn redis.Conn, key string) {
 }
 
 //设置订单过期时间
-func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.SComplexOrder) {
+func (d *defaultService) updateOrderExpires(conn redis.Conn, o *order_service.SComplexOrder) {
 	//订单刚创建时,设置过期时间
 	if o.State == order.StatAwaitingPayment {
 		ss := rsi.FoundationService.GetGlobMchSaleConf()
@@ -282,7 +284,7 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.SComplexO
 }
 
 //取消订单过期时间
-func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *define.SComplexOrder) {
+func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *order_service.SComplexOrder) {
 	orderNo, sub := d.testSubId(o)
 	prefix := util.BoolExt.TString(sub, "sub!", "")
 	key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderExpiresTime, prefix, orderNo)
@@ -290,13 +292,13 @@ func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *define.SComplexO
 }
 
 // 确认订单
-func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *define.SComplexOrder) {
+func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *order_service.SComplexOrder) {
 	rsi.ShoppingService.ConfirmOrder(d.testSubId(o))
 	d.cancelOrderExpires(conn, o) //付款后取消自动取消
 }
 
 // 订单自动收货
-func (d *defaultService) orderAutoReceive(conn redis.Conn, o *define.SComplexOrder) {
+func (d *defaultService) orderAutoReceive(conn redis.Conn, o *order_service.SComplexOrder) {
 	if o.State == order.StatShipped {
 		ss := rsi.FoundationService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutReceiveHour)*60*60
@@ -311,7 +313,7 @@ func (d *defaultService) orderAutoReceive(conn redis.Conn, o *define.SComplexOrd
 }
 
 // 完成订单自动收货
-func (d *defaultService) orderReceived(conn redis.Conn, o *define.SComplexOrder) {
+func (d *defaultService) orderReceived(conn redis.Conn, o *order_service.SComplexOrder) {
 	if o.State == order.StatCompleted {
 		orderNo, sub := d.testSubId(o)
 		prefix := util.BoolExt.TString(sub, "sub!", "")

@@ -20,8 +20,9 @@ import (
 	"go2o/core/factory"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
+	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/auto_gen/rpc/wallet_service"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
 	"strconv"
 	"strings"
 	"time"
@@ -59,7 +60,7 @@ var (
 	// 广告服务
 	AdService *adService
 	// 钱包服务
-	WalletService define.WalletService
+	WalletService wallet_service.WalletService
 	// 个人金融服务
 	PersonFinanceService *personFinanceService
 	// 门户数据服务
@@ -93,7 +94,6 @@ func Init(ctx gof.App, appFlag int, confDir string) {
 
 func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	sto storage.Interface, confPath string) {
-	rds := sto.(storage.IRedisStorage)
 	fact = (&factory.RepoFactory{}).Init(db, sto, confPath)
 	proMRepo := fact.GetProModelRepo()
 	valueRepo := fact.GetValueRepo()
@@ -137,7 +137,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
-	ItemService = NewSaleService(rds, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
+	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
@@ -193,4 +193,49 @@ func initRpcServe(ctx gof.App) {
 		variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
 
 	fact.GetValueRepo().SavesRegistry(mp)
+}
+
+// 服务工具类，实现的服务组合此类,可直接调用其方法
+type serviceUtil struct{}
+
+// 返回失败的结果
+func (s serviceUtil) failResult(msg string) *ttype.Result_ {
+	return s.failCodeResult(1, msg)
+}
+
+// 返回错误的结果
+func (s serviceUtil) error(err error) *ttype.Result_ {
+	return s.failResult(err.Error())
+}
+
+// 返回结果
+func (s serviceUtil) result(err error) *ttype.Result_ {
+	if err == nil {
+		return s.success(nil)
+	}
+	return s.error(err)
+}
+
+// 返回失败的结果
+func (s serviceUtil) errorCodeResult(code int, err error) *ttype.Result_ {
+	return &ttype.Result_{ErrCode: int32(code), ErrMsg: err.Error(), Data: map[string]string{}}
+}
+
+// 返回失败的结果
+func (s serviceUtil) failCodeResult(code int, msg string) *ttype.Result_ {
+	return &ttype.Result_{ErrCode: int32(code), ErrMsg: msg, Data: map[string]string{}}
+}
+
+// 返回成功的结果
+func (s serviceUtil) success(data map[string]string) *ttype.Result_ {
+	return &ttype.Result_{ErrCode: 0, ErrMsg: "", Data: data}
+}
+
+// 将int32数组装换为int数组
+func (s serviceUtil) intArray(values []int32) []int {
+	arr := make([]int, len(values))
+	for i, v := range values {
+		arr[i] = int(v)
+	}
+	return arr
 }

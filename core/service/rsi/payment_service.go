@@ -14,16 +14,19 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/module"
+	"go2o/core/service/auto_gen/rpc/payment_service"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
-	"go2o/gen-code/thrift/define"
+	"strconv"
 )
 
-var _ define.PaymentService = new(paymentService)
+var _ payment_service.PaymentService = new(paymentService)
 
 type paymentService struct {
 	repo       payment.IPaymentRepo
 	orderRepo  order.IOrderRepo
 	memberRepo member.IMemberRepo
+	serviceUtil
 }
 
 func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
@@ -36,7 +39,7 @@ func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
 }
 
 // 根据编号获取支付单
-func (p *paymentService) GetPaymentOrderById(ctx context.Context, id int32) (*define.SPaymentOrder, error) {
+func (p *paymentService) GetPaymentOrderById(ctx context.Context, id int32) (*payment_service.SPaymentOrder, error) {
 	po := p.repo.GetPaymentOrderById(int(id))
 	if po != nil {
 		v := po.Get()
@@ -55,7 +58,7 @@ func (p *paymentService) GetPaymentOrderId(ctx context.Context, tradeNo string) 
 }
 
 // 根据支付单号获取支付单
-func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) (*define.SPaymentOrder, error) {
+func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) (*payment_service.SPaymentOrder, error) {
 	if po := p.repo.GetPaymentOrder(paymentNo); po != nil {
 		v := po.Get()
 		return parser.PaymentOrderDto(&v), nil
@@ -64,15 +67,15 @@ func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) 
 }
 
 // 创建支付单
-func (p *paymentService) SubmitPaymentOrder(ctx context.Context, s *define.SPaymentOrder) (*define.Result_, error) {
+func (p *paymentService) SubmitPaymentOrder(ctx context.Context, s *payment_service.SPaymentOrder) (*ttype.Result_, error) {
 	v := parser.PaymentOrder(s)
 	o := p.repo.CreatePaymentOrder(v)
 	err := o.Submit()
-	return parser.Result(nil, err), nil
+	return p.result(err), nil
 }
 
 // 调整支付单金额
-func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amount float64) (*define.Result_, error) {
+func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amount float64) (*ttype.Result_, error) {
 	var err error
 	o := p.repo.GetPaymentOrder(paymentNo)
 	if o == nil {
@@ -80,24 +83,27 @@ func (p *paymentService) AdjustOrder(ctx context.Context, paymentNo string, amou
 	} else {
 		err = o.Adjust(int(amount * 100))
 	}
-	return parser.Result(0, err), nil
+	return p.result(err), nil
 }
 
 // 积分抵扣支付单
 func (p *paymentService) DiscountByIntegral(ctx context.Context, orderId int32,
-	integral int64, ignoreOut bool) (r *define.Result_, err error) {
+	integral int64, ignoreOut bool) (*ttype.Result_, error) {
 	var amount int
+	var err error
 	o := p.repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		amount, err = o.IntegralDiscount(int(integral), ignoreOut)
 	}
-	return parser.Result(amount, err), nil
+	r := p.result(err)
+	r.Data = map[string]string{"Amount": strconv.Itoa(amount)}
+	return r, nil
 }
 
 // 余额抵扣
-func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, remark string) (*define.Result_, error) {
+func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, remark string) (*ttype.Result_, error) {
 	var err error
 	o := p.repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
@@ -105,12 +111,12 @@ func (p *paymentService) DiscountByBalance(ctx context.Context, orderId int32, r
 	} else {
 		err = o.BalanceDiscount(remark)
 	}
-	return parser.Result(0, err), nil
+	return p.result(err), nil
 }
 
 // 钱包账户支付
 func (p *paymentService) PaymentByWallet(ctx context.Context,
-	tradeNo string, mergePay bool, remark string) (r *define.Result_, err error) {
+	tradeNo string, mergePay bool, remark string) (r *ttype.Result_, err error) {
 	// 单个支付订单支付
 	if !mergePay {
 		ip := p.repo.GetPaymentOrder(tradeNo)
@@ -119,7 +125,7 @@ func (p *paymentService) PaymentByWallet(ctx context.Context,
 		} else {
 			err = ip.PaymentByWallet(remark)
 		}
-		return parser.Result(0, err), nil
+		return p.result(err), nil
 	}
 	// 合并支付单
 	arr := p.repo.GetMergePayOrders(tradeNo)
@@ -138,39 +144,39 @@ func (p *paymentService) PaymentByWallet(ctx context.Context,
 			}
 		}
 	}
-	return parser.Result(nil, err), nil
+	return p.result(err), nil
 }
 
 // 余额钱包混合支付，优先扣除余额。
-func (p *paymentService) HybridPayment(ctx context.Context, orderId int32, remark string) (r *define.Result_, err error) {
+func (p *paymentService) HybridPayment(ctx context.Context, orderId int32, remark string) (r *ttype.Result_, err error) {
 	o := p.repo.GetPaymentOrderById(int(orderId))
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		err = o.HybridPayment(remark)
 	}
-	return parser.Result(0, err), nil
+	return p.result(err), nil
 }
 
 // 完成支付单支付，并传入支付方式及外部订单号
 func (p *paymentService) FinishPayment(ctx context.Context, tradeNo string, spName string,
-	outerNo string) (r *define.Result_, err error) {
+	outerNo string) (r *ttype.Result_, err error) {
 	o := p.repo.GetPaymentOrder(tradeNo)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		err = o.PaymentFinish(spName, outerNo)
 	}
-	return parser.Result(nil, err), nil
+	return p.result(err), nil
 }
 
 // 支付网关
-func (p *paymentService) GatewayV1(ctx context.Context, action string, userId int64, data map[string]string) (r *define.Result_, err error) {
+func (p *paymentService) GatewayV1(ctx context.Context, action string, userId int64, data map[string]string) (r *ttype.Result_, err error) {
 	mod := module.Get(module.M_PAY).(*module.PaymentModule)
 	// 获取令牌
 	if action == "get_token" {
 		token := mod.CreateToken(userId)
-		return parser.Result(token, nil), nil
+		return p.success(map[string]string{"token": token}), nil
 	}
 	// 提交支付请求
 	if action == "submit" {
@@ -180,12 +186,12 @@ func (p *paymentService) GatewayV1(ctx context.Context, action string, userId in
 	if action == "payment" {
 		err = mod.CheckAndPayment(userId, data)
 	}
-	return parser.Result(nil, err), nil
+	return p.result(err), nil
 }
 
 // 获取支付预交易数据
 func (p *paymentService) GetPaymentOrderInfo(ctx context.Context,
-	tradeNo string, mergePay bool) (*define.SPrepareTradeData, error) {
+	tradeNo string, mergePay bool) (*payment_service.SPrepareTradeData, error) {
 	var arr []payment.IPaymentOrder
 	if mergePay {
 		arr = p.repo.GetMergePayOrders(tradeNo)
@@ -200,8 +206,8 @@ func (p *paymentService) GetPaymentOrderInfo(ctx context.Context,
 
 // 获取合并支付的支付单的支付数据
 func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
-	tradeOrders []payment.IPaymentOrder, checkPay bool) (*define.SPrepareTradeData, error) {
-	d := &define.SPrepareTradeData{ErrCode: 1, TradeOrders: []*define.SPaymentOrderData{}}
+	tradeOrders []payment.IPaymentOrder, checkPay bool) (*payment_service.SPrepareTradeData, error) {
+	d := &payment_service.SPrepareTradeData{ErrCode: 1, TradeOrders: []*payment_service.SPaymentOrderData{}}
 	if len(tradeOrders) == 0 {
 		d.ErrMsg = "无效的支付订单"
 		return d, nil
@@ -216,7 +222,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			}
 		}
 		iv := ip.Get()
-		so := &define.SPaymentOrderData{
+		so := &payment_service.SPaymentOrderData{
 			OrderNo:      iv.OutOrderNo,
 			Subject:      iv.Subject,
 			TradeType:    iv.TradeType,
@@ -229,7 +235,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			d.TradeState = so.State
 		}
 		// 更新支付标志
-		if i := int32(iv.PaymentFlag); d.PayFlag != i {
+		if i := int32(iv.PayFlag); d.PayFlag != i {
 			d.PayFlag = i
 		}
 		// 更新支付金额
@@ -241,4 +247,9 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 	d.ErrCode = 0
 	d.TradeNo = tradeNo // 交易单号
 	return d, nil
+}
+
+// 混合支付
+func (p *paymentService) MixedPayment(ctx context.Context, tradeNo string, data []*payment_service.SRequestPayData) (r *ttype.Result_, err error) {
+	return nil, nil
 }

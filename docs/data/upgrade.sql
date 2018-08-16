@@ -1,10 +1,10 @@
 ALTER TABLE `pt_merchant`
-  RENAME TO `pt_merchant`;
+RENAME TO `pt_merchant`;
 ALTER TABLE `pt_page`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
 ALTER TABLE `dlv_partner_bind`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL,
-  RENAME TO `dlv_merchant_bind`;
+RENAME TO `dlv_merchant_bind`;
 ALTER TABLE `gs_category`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL
 COMMENT '商户ID(pattern ID);如果为空，则表示模式分类';
@@ -14,7 +14,8 @@ ALTER TABLE `mm_relation`
   CHANGE COLUMN `reg_partner_id` `reg_merchant_id` INT(11) NULL DEFAULT NULL
 COMMENT '注册商户编号';
 ALTER TABLE `mm_relation`
-  ADD COLUMN `refer_str` VARCHAR(250) NULL AFTER `invi_member_id`;
+  ADD COLUMN `refer_str` VARCHAR(250) NULL
+  AFTER `invi_member_id`;
 
 ALTER TABLE `pm_info`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
@@ -45,10 +46,10 @@ ALTER TABLE `pt_siteconf`
 
 
 ALTER TABLE `pt_ad`
-  RENAME TO `ad_list`;
+RENAME TO `ad_list`;
 
 ALTER TABLE `pt_ad_image`
-  RENAME TO `ad_image`;
+RENAME TO `ad_image`;
 
 CREATE TABLE `ad_group` (
   `id`      INT(11) NOT NULL AUTO_INCREMENT,
@@ -110,8 +111,6 @@ CREATE TABLE `ad_hyperlink` (
 );
 
 
-
-
 CREATE TABLE `mm_level` (
   `id`             INT         NOT NULL AUTO_INCREMENT,
   `name`           VARCHAR(45) NULL,
@@ -124,7 +123,7 @@ CREATE TABLE `mm_level` (
 
 ALTER TABLE `pt_api`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NOT NULL,
-  RENAME TO `mch_api`;
+RENAME TO `mch_api`;
 
 
 CREATE TABLE `mch_enterpriseinfo` (
@@ -164,7 +163,7 @@ ALTER TABLE `pt_merchant`
   AFTER `join_time`,
   ADD COLUMN `member_id` INT UNSIGNED NULL
   AFTER `id`,
-  RENAME TO `mch_merchant`;
+RENAME TO `mch_merchant`;
 
 
 ALTER TABLE `pt_saleconf`
@@ -181,7 +180,7 @@ COMMENT '是否启用分销'
   AFTER `mch_id`,
   DROP PRIMARY KEY,
   ADD PRIMARY KEY (`mch_id`),
-  RENAME TO `mch_saleconf`;
+RENAME TO `mch_saleconf`;
 
 
 CREATE TABLE `mch_offline_shop` (
@@ -207,7 +206,7 @@ ALTER TABLE `pt_shop`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL,
   ADD COLUMN `shop_type` TINYINT(1) NULL
   AFTER `mch_id`,
-  RENAME TO `mch_shop`;
+RENAME TO `mch_shop`;
 
 
 CREATE TABLE `mch_online_shop` (
@@ -247,12 +246,12 @@ ALTER TABLE `gs_sale_label`
   DROP COLUMN `is_internal`,
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL,
   CHANGE COLUMN `goods_image` `label_image` VARCHAR(100) NULL DEFAULT NULL,
-  RENAME TO `gs_sale_label`;
+RENAME TO `gs_sale_label`;
 
 
 ALTER TABLE `pt_page`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL,
-  RENAME TO `mch_page`;
+RENAME TO `mch_page`;
 
 ALTER TABLE `gs_item`
   ADD COLUMN `supplier_id` INT NULL
@@ -358,26 +357,26 @@ CREATE TABLE `mm_profile` (
 
 # copy profile info to mm_profile
 
-INSERT INTO mm_profile SELECT
-                         `id`,
-                         `name`,
-                         `sex`,
-                         `avatar`,
-                         `birthday`,
-                         `phone`,
-                         `address`,
-                         `qq`,
-                         `im`,
-                         `ext_1`,
-                         `ext_2`,
-                         `ext_3`,
-                         `ext_4`,
-                         `ext_5`,
-                         `ext_6`,
-                         `email`,
-                         `remark`,
-                         `update_time`
-                       FROM mm_member;
+INSERT INTO mm_profile
+SELECT `id`,
+       `name`,
+       `sex`,
+       `avatar`,
+       `birthday`,
+       `phone`,
+       `address`,
+       `qq`,
+       `im`,
+       `ext_1`,
+       `ext_2`,
+       `ext_3`,
+       `ext_4`,
+       `ext_5`,
+       `ext_6`,
+       `email`,
+       `remark`,
+       `update_time`
+FROM mm_member;
 
 ALTER TABLE `mm_profile`
   ADD COLUMN `province` INT NULL
@@ -431,7 +430,7 @@ COMMENT '省市区'
   AFTER `district`;
 
 ALTER TABLE `mch_page`
-  RENAME TO `con_page`;
+RENAME TO `con_page`;
 
 CREATE TABLE `con_article_category` (
   `id`          INT          NOT NULL AUTO_INCREMENT,
@@ -467,7 +466,7 @@ CREATE TABLE `con_article` (
 
 
 ALTER TABLE `gs_snapshot`
-  RENAME TO `gs_sale_snapshot`;
+RENAME TO `gs_sale_snapshot`;
 
 
 CREATE TABLE `gs_snapshot` (
@@ -615,7 +614,7 @@ ALTER TABLE `pt_order_item`
   AFTER `order_id`,
   ADD COLUMN `final_fee` DECIMAL(8, 2) NULL
   AFTER `fee`,
-  RENAME TO `sale_order_item`;
+RENAME TO `sale_order_item`;
 
 ALTER TABLE `sale_order_item`
   CHANGE COLUMN `snapshot_id` `snap_id` INT(11) NULL DEFAULT NULL;
@@ -726,7 +725,7 @@ ALTER TABLE `sale_sub_order`
 ALTER TABLE `pt_order_log`
   ADD COLUMN `order_state` TINYINT(2) NULL
   AFTER `type`,
-  RENAME TO `sale_order_log`;
+RENAME TO `sale_order_log`;
 
 ALTER TABLE `sale_sub_order`
   ADD COLUMN `is_paid` TINYINT(1) NULL
@@ -1210,17 +1209,21 @@ COMMENT '备注'
   CHANGE COLUMN `has_review` `review_state` TINYINT(1) NULL DEFAULT NULL;
 
 ALTER TABLE `gs_snapshot`
-  CHANGE COLUMN `on_shelves` `shelve_state` TINYINT(1) NULL DEFAULT '1' AFTER `stock_num`;
+  CHANGE COLUMN `on_shelves` `shelve_state` TINYINT(1) NULL DEFAULT '1'
+  AFTER `stock_num`;
 
 ALTER TABLE `mm_present_log`
-CHANGE COLUMN `amount` `amount` FLOAT(12,2) NOT NULL COMMENT '金额' ;
+  CHANGE COLUMN `amount` `amount` FLOAT(12, 2) NOT NULL
+COMMENT '金额';
 
 ALTER TABLE `mm_balance_log`
-CHANGE COLUMN `amount` `amount` FLOAT(12,2) NOT NULL COMMENT '金额' ;
+  CHANGE COLUMN `amount` `amount` FLOAT(12, 2) NOT NULL
+COMMENT '金额';
 
 
 ALTER TABLE mm_member
-  ADD COLUMN `login_time` INT(11) NULL AFTER `check_expires`;
+  ADD COLUMN `login_time` INT(11) NULL
+  AFTER `check_expires`;
 
 
 
