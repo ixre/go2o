@@ -321,8 +321,7 @@ func (p *paymentOrderImpl) getPaymentUser() member.IMember {
 
 // 验证是否支持支付方式
 func (p *paymentOrderImpl) andMethod(flag, method int) bool {
-	v := 1 << uint(method-1)
-	return flag&v == v
+	return flag&method == method
 }
 
 // 使用余额抵扣
@@ -486,7 +485,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	if p.intAmount(acc.GetValue().WalletBalance) < amount {
 		return payment.ErrNotEnoughAmount
 	}
-	err := acc.DiscountWallet(remark, p.TradeNo(), float32(float32(amount)/100),
+	err := acc.DiscountWallet("支付订单"+remark, p.TradeNo(), float32(float32(amount)/100),
 		member.DefaultRelateUser, true)
 	if err == nil {
 		p.value.DeductAmount += amount
@@ -607,7 +606,7 @@ type RepoBase struct {
 }
 
 func (p *RepoBase) CreatePaymentOrder(v *payment.
-	Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
+Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
 	orderManager order.IOrderManager, valRepo valueobject.IValueRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		repo:         repo,
