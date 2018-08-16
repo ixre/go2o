@@ -41,12 +41,10 @@ service PaymentService{
     * @return 支付结果,返回:order_state
     */
    ttype.Result MixedPayment(1:string tradeNo,3:list<SRequestPayData> data)
-
 }
 
-
 /** 支付方式的位值 */
-enum EMethodFlag{
+enum EPayMethod{
     /** 余额抵扣 */
     Balance = 1
     /** 钱包支付 */
@@ -67,30 +65,6 @@ enum EMethodFlag{
     SellerPay = 256
     /** 系统支付通道 */
     SystemPay = 512
-}
-
-// 支付方式
-enum EPaymentMethod{
-    /** 余额抵扣通道 */
-    Balance = 1
-    /** 钱包支付通道 */
-    Wallet = 2
-    /** 积分兑换通道 */
-    Integral = 3
-    /** 用户卡通道 */
-    UserCard = 4
-    /** 用户券通道 */
-    UserCoupon = 5
-    /** 现金支付通道 */
-    Cash = 6
-    /** 银行卡支付通道 */
-    BankCard = 7
-    /** 第三方支付 */
-    PaySP = 8
-    /** 卖家支付通道 */
-    SellerPay = 9
-    /** 系统支付通道 */
-    SystemPay = 10
 }
 
 /** 支付单 */
@@ -199,10 +173,10 @@ struct SPaymentOrderData{
 
 /** 请求支付数据 */
 struct SRequestPayData{
-    /** 支付通道标志 */
+    /** 支付方式 */
     1:i32 Method
-    /** 通道标签 */
-    2:string Tag
+    /** 支付方式代码 */
+    2:string Code
     /** 支付金额 */
     3:i32 Amount
 }
