@@ -57,7 +57,7 @@ func (b *Bank4E) GetBasicInfo(memberId int64) map[string]string {
 	data["Phone"] = pr.Phone
 	data["BankAccount"] = bank.Account
 	data["Remark"] = info.Remark
-	if info.Reviewed == enum.ReviewPass {
+	if info.ReviewState == enum.ReviewPass {
 		data["Reviewed"] = "true"
 	} else {
 		data["Reviewed"] = "false"
@@ -74,10 +74,10 @@ func (b *Bank4E) Check(realName, idCard, phone, bankAccount string) map[string]s
 		bankArr := strings.Split(bankName, ".")
 		data["Result"] = "true"
 		data["BankName"] = bankArr[0]
-		data["ErrMsg"] = "PASS"
+		data["Message"] = "PASS"
 	} else {
 		data["Result"] = "false"
-		data["ErrMsg"] = err.Error()
+		data["Message"] = err.Error()
 	}
 	return data
 }
@@ -114,7 +114,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 		return errors.New("手机号码非法`")
 	}
 	info := m.Profile().GetTrustedInfo()
-	if info.Reviewed == enum.ReviewPass {
+	if info.ReviewState == enum.ReviewPass {
 		return errors.New("您已通过实名认证")
 	}
 
@@ -129,7 +129,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	result := b.Check(realName, idCard, phone, bankAccount)
 	// 验证不通过，则返回错误
 	if result["Result"] == "false" {
-		return errors.New(result["ErrMsg"])
+		return errors.New(result["Message"])
 	}
 
 	// 移除四要素验证记录

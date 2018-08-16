@@ -1,8 +1,11 @@
 package kit
 
 import (
+	"go2o/core/service/auto_gen/rpc/mch_service"
+	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/auto_gen/rpc/shop_service"
 	"go2o/core/service/thrift"
-	"go2o/gen-code/thrift/define"
 )
 
 type RpcToolkit struct {
@@ -32,7 +35,7 @@ func (r *RpcToolkit) RegistryMap(keys ...string) map[string]string {
 	return map[string]string{}
 }
 
-func (r *RpcToolkit) GetComplexMember(memberId int64) *define.ComplexMember {
+func (r *RpcToolkit) GetComplexMember(memberId int64) *member_service.SComplexMember {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -52,7 +55,7 @@ func (r *RpcToolkit) InviterArray(memberId int64, depth int32) []int64 {
 	return nil
 }
 
-func (r *RpcToolkit) GetMerchant(mchId int32) *define.ComplexMerchant {
+func (r *RpcToolkit) GetMerchant(mchId int32) *mch_service.SComplexMerchant {
 	trans, cli, err := thrift.MerchantServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -62,7 +65,7 @@ func (r *RpcToolkit) GetMerchant(mchId int32) *define.ComplexMerchant {
 	return nil
 }
 
-func (r *RpcToolkit) GetLevel(levelId int32) *define.Level {
+func (r *RpcToolkit) GetLevel(levelId int32) *member_service.SLevel {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -73,7 +76,7 @@ func (r *RpcToolkit) GetLevel(levelId int32) *define.Level {
 }
 
 // 获取订单
-func (r *RpcToolkit) GetOrder(orderNo string, sub bool) *define.SComplexOrder {
+func (r *RpcToolkit) GetOrder(orderNo string, sub bool) *order_service.SComplexOrder {
 	trans, cli, err := thrift.OrderServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -84,7 +87,7 @@ func (r *RpcToolkit) GetOrder(orderNo string, sub bool) *define.SComplexOrder {
 }
 
 // 获取订单和商品项信息
-func (r *RpcToolkit) GetOrderAndItems(orderNo string, sub bool) *define.SComplexOrder {
+func (r *RpcToolkit) GetOrderAndItems(orderNo string, sub bool) *order_service.SComplexOrder {
 	trans, cli, err := thrift.OrderServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -95,7 +98,7 @@ func (r *RpcToolkit) GetOrderAndItems(orderNo string, sub bool) *define.SComplex
 }
 
 // 获取店铺
-func (r *RpcToolkit) GetStore(vendorId int32) *define.Store {
+func (r *RpcToolkit) GetStore(vendorId int32) *shop_service.SStore {
 	trans, cli, err := thrift.ShopServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -106,7 +109,7 @@ func (r *RpcToolkit) GetStore(vendorId int32) *define.Store {
 }
 
 // 获取店铺
-func (r *RpcToolkit) GetStoreById(shopId int32) *define.Store {
+func (r *RpcToolkit) GetStoreById(shopId int32) *shop_service.SStore {
 	trans, cli, err := thrift.ShopServeClient()
 	if err == nil {
 		defer trans.Close()

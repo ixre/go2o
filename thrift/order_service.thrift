@@ -1,5 +1,6 @@
-namespace go define
-
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.order_service
 include "ttype.thrift"
 
 
@@ -23,11 +24,11 @@ service OrderService {
     list<SComplexItem> GetSubOrderItems(1:i64 subOrderId)
 
     // 提交交易订单
-    ttype.Result64 SubmitTradeOrder(1:SComplexOrder o,2:double rate)
+    ttype.Result SubmitTradeOrder(1:SComplexOrder o,2:double rate)
     // 交易单现金支付
-    ttype.Result64 TradeOrderCashPay(1:i64 orderId)
+    ttype.Result TradeOrderCashPay(1:i64 orderId)
     // 上传交易单发票
-    ttype.Result64 TradeOrderUpdateTicket(1:i64 orderId,2:string img)
+    ttype.Result TradeOrderUpdateTicket(1:i64 orderId,2:string img)
 }
 
 // 订单项

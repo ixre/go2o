@@ -16,17 +16,19 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/service/auto_gen/rpc/shop_service"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
 )
 
-var _ define.ShopService = new(shopServiceImpl)
+var _ shop_service.ShopService = new(shopServiceImpl)
 
 type shopServiceImpl struct {
 	repo    shop.IShopRepo
 	mchRepo merchant.IMerchantRepo
 	query   *query.ShopQuery
+	serviceUtil
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
@@ -39,7 +41,7 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 }
 
 // 获取商铺
-func (si *shopServiceImpl) GetStore(ctx context.Context, vendorId int32) (*define.Store, error) {
+func (si *shopServiceImpl) GetStore(ctx context.Context, vendorId int32) (*shop_service.SStore, error) {
 	mch := si.mchRepo.GetMerchant(vendorId)
 	if mch != nil {
 		shop := mch.ShopManager().GetOnlineShop()
@@ -50,13 +52,13 @@ func (si *shopServiceImpl) GetStore(ctx context.Context, vendorId int32) (*defin
 	return nil, nil
 }
 
-func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId int32) (*define.Store, error) {
+func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId int32) (*shop_service.SStore, error) {
 	vendorId := si.query.GetMerchantId(shopId)
 	return si.GetStore(ctx, vendorId)
 }
 
 // 打开或关闭商店
-func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (*define.Result_, error) {
+func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (*ttype.Result_, error) {
 	var err error
 	sp := si.repo.GetShop(shopId)
 	if sp == nil {
@@ -68,11 +70,11 @@ func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, 
 			err = sp.TurnOff(reason)
 		}
 	}
-	return parser.Result(shopId, err), nil
+	return si.result(err), nil
 }
 
 // 设置商店是否营业
-func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, reason string) (*define.Result_, error) {
+func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, reason string) (*ttype.Result_, error) {
 	var err error
 	sp := si.repo.GetShop(shopId)
 	if sp == nil {
@@ -84,7 +86,7 @@ func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, 
 			err = sp.Pause()
 		}
 	}
-	return parser.Result(shopId, err), nil
+	return si.result(err), nil
 }
 
 func (si *shopServiceImpl) getMerchantId(shopId int32) int32 {
@@ -120,7 +122,7 @@ func (si *shopServiceImpl) GetShopValueById(mchId, shopId int32) *shop.Shop {
 }
 
 // 保存线上商店
-func (si *shopServiceImpl) SaveStore(s *define.Store) error {
+func (si *shopServiceImpl) SaveStore(s *shop_service.SStore) error {
 	mch := si.mchRepo.GetMerchant(s.VendorId)
 	if mch != nil {
 		v, v1 := parser.Parse2OnlineShop(s)

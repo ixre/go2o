@@ -1,4 +1,6 @@
-namespace go define
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.ttype
 
 //传输结果对象
 struct Result{
@@ -6,24 +8,8 @@ struct Result{
    1:i32 ErrCode
    /* 消息 */
    2:string ErrMsg
-   /* 数据, 可以用来存放JSON字符串 */
-   3:string Data
-}
-
-//传输结果对象
-struct Result64{
-   1:i64 ID
-   2:bool Result
-   3:string Code
-   4:string ErrMsg
-}
-
-//传输结果对象(Double)
-struct DResult{
-   1:double Data
-   2:bool Result
-   3:string Code
-   4:string ErrMsg
+   /** 数据字典 */
+   3:map<string,string> Data
 }
 
 // 键值对
@@ -33,7 +19,7 @@ struct Pair{
 }
 
 /** 设置依据 */
-enum  SettingBasis {
+enum ESettingBasis {
     /** 未设置 */
     None = 1,
     /** 使用全局 */
@@ -43,7 +29,7 @@ enum  SettingBasis {
 }
 
 /** 价格计算方式 */
-enum  PriceBasis{
+enum EPriceBasis{
     /** 原价 */
     Original = 1,
     /** 会员折扣价 */
@@ -53,7 +39,7 @@ enum  PriceBasis{
 }
 
 /** 金额/提成依据 */
-enum AmountBasis{
+enum EAmountBasis{
     /** 未设置 */
     NotSet = 1,
     /** 按金额 */
@@ -70,7 +56,7 @@ const i32 RATE_AMOUNT = 100
 const i32 RATE_DISCOUNT = 1000
 
 //商品分类
-struct Category {
+struct SCategory {
     1: i32 ID
     2: i32 ParentId
     3: i32 ProModel
@@ -90,11 +76,11 @@ struct Category {
     12: i32 Enabled
     13: i32 Level
     14: i64 CreateTime
-    15: list<Category> Children
+    15: list<SCategory> Children
 }
 
-
-struct Sku {
+/** SKU */
+struct SSku {
     1: i64 SkuId
     2: i64 ItemId
     3: i64 ProductId
@@ -113,7 +99,7 @@ struct Sku {
 }
 
 
-struct OldItem{
+struct SOldItem{
     1: i64 ItemId
     2: i64 ProductId
     3: i32 PromFlag
@@ -145,12 +131,12 @@ struct OldItem{
     29: i64 CreateTime
     30: i64 UpdateTime
     31: double PromPrice
-    32: list<Sku> SkuArray
+    32: list<SSku> SkuArray
     33: map<string,string> Data;
 }
 
 // 统一的商品对象
-struct UnifiedItem{
+struct SUnifiedItem{
     1: i64 ItemId
     2: i32 ProductId
     3: i32 CatId
@@ -165,7 +151,7 @@ struct UnifiedItem{
     12: i32 ShelveState
     13: i32 ReviewState
     14: i64 UpdateTime
-    15: list<Sku> SkuArray
+    15: list<SSku> SkuArray
     16: map<string,string> Data
     // 3: i32 PromFlag
     // 7: i32 ShopId
@@ -189,16 +175,16 @@ struct UnifiedItem{
 
 
 // 购物车
-struct ShoppingCart {
+struct SShoppingCart {
     //编号
     1: i32 CartId
     //购物车KEY
     2: string Code
     //店铺分组
-    3: list<ShoppingCartGroup> Shops
+    3: list<SShoppingCartGroup> Shops
 }
 // 购物车商铺分组
-struct ShoppingCartGroup {
+struct SShoppingCartGroup {
     //商铺编号
     1: i32 ShopId
     //供货商编号
@@ -208,12 +194,12 @@ struct ShoppingCartGroup {
     //是否结算
     4: bool Checked
     //商品
-    5: list<ShoppingCartItem> Items
+    5: list<SShoppingCartItem> Items
 }
 
 
 // 购物车商品
-struct ShoppingCartItem {
+struct SShoppingCartItem {
     //商品编号
     1: i64 ItemId
     //SKU编号
@@ -243,7 +229,7 @@ struct ShoppingCartItem {
 
 
 /** 分页参数 */
-struct PagingParams{
+struct SPagingParams{
     /** 参数 */
     1:map<string,string> Opt
     /** 排序字段 */
@@ -257,7 +243,7 @@ struct PagingParams{
 }
 
 /** 分页结果 */
-struct PagingResult{
+struct SPagingResult{
     /** 代码 */
     1:i32 ErrCode
     /** 消息 */

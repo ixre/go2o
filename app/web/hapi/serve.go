@@ -50,12 +50,12 @@ func beforeHanding(h echo.HandlerFunc) echo.HandlerFunc {
 }
 
 //检查会员编号
-func getMemberId(c *echox.Context) int64 {
+func getMemberId(c *echox.Context) int {
 	return shared.GetMemberId(c)
 }
 
 func requestLogin(c *echox.Context) error {
-	msg := gof.Message{
+	msg := gof.Result{
 		ErrCode: 1,
 		ErrMsg:  "not login",
 	}

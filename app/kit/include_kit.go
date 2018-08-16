@@ -13,10 +13,10 @@ import (
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
 	"html/template"
 	ht "html/template"
 	"strings"
@@ -258,7 +258,7 @@ func (t *templateIncludeToolkit) catParent(catId int32) []*product.Category {
 }
 
 // 获取栏目下级分类
-func (t *templateIncludeToolkit) catChild(catId int32) []*define.Category {
+func (t *templateIncludeToolkit) catChild(catId int32) []*ttype.SCategory {
 	return rsi.ProductService.GetChildCategories(0, catId)
 }
 
@@ -402,14 +402,14 @@ func (t *templateIncludeToolkit) rawHtml(v interface{}) ht.HTML {
 }
 
 // 获取销售排行商品
-func (t *templateIncludeToolkit) hotSaleItems(catId int32, quantity int32) []*define.OldItem {
+func (t *templateIncludeToolkit) hotSaleItems(catId int32, quantity int32) []*ttype.SOldItem {
 	_, arr := rsi.ItemService.GetPagedOnShelvesItem(item.ItemNormal,
 		catId, 0, quantity, "", "item_info.sale_num DESC")
 	return arr
 }
 
 // 获取随机商品
-func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*define.OldItem {
+func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*ttype.SOldItem {
 	if catId <= 0 {
 		catId = 0
 	}
@@ -417,13 +417,13 @@ func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*defin
 }
 
 // 获取大分类商品的
-func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*define.OldItem {
+func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*ttype.SOldItem {
 	key := fmt.Sprintf("go2o:portal:cache:cat-items-%d-%d", catId, quantity)
 	_, err := t.getRds().GetInt(key)
 	if err == nil {
 		r, err := hashSet.GetRaw(key)
 		if err == nil {
-			return r.([]*define.OldItem)
+			return r.([]*ttype.SOldItem)
 		}
 	}
 	arr := rsi.ItemService.GetBigCatItems(catId, quantity, "")
@@ -433,12 +433,12 @@ func (t *templateIncludeToolkit) catItems(catId int32, quantity int32) []*define
 }
 
 // 获取产品属性
-func (t *templateIncludeToolkit) productAttrs(productId int64) []define.Pair {
-	arr := []define.Pair{}
+func (t *templateIncludeToolkit) productAttrs(productId int64) []ttype.Pair {
+	var arr []ttype.Pair
 	attrs := rsi.ProductService.GetAttrArray(productId)
 	for _, v := range attrs {
 		attr := rsi.ProductService.GetAttr(v.AttrId)
-		arr = append(arr, define.Pair{Key: attr.Name, Value: v.AttrWord})
+		arr = append(arr, ttype.Pair{Key: attr.Name, Value: v.AttrWord})
 	}
 	return arr
 }

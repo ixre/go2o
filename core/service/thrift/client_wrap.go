@@ -10,7 +10,16 @@ package thrift
 
 import (
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto_gen/rpc/finance_service"
+	"go2o/core/service/auto_gen/rpc/foundation_service"
+	"go2o/core/service/auto_gen/rpc/item_service"
+	"go2o/core/service/auto_gen/rpc/mch_service"
+	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/auto_gen/rpc/payment_service"
+	"go2o/core/service/auto_gen/rpc/shipment_service"
+	"go2o/core/service/auto_gen/rpc/shop_service"
+	"go2o/core/service/auto_gen/rpc/wallet_service"
 )
 
 var (
@@ -28,61 +37,61 @@ func Configure(server string) *ClientFactory {
 }
 
 // 商户客户端
-func MerchantServeClient() (thrift.TTransport, *define.MerchantServiceClient, error) {
+func MerchantServeClient() (thrift.TTransport, *mch_service.MerchantServiceClient, error) {
 	trans, cli, err := factory.GetClient("merchant")
-	return trans, define.NewMerchantServiceClient(cli), err
+	return trans, mch_service.NewMerchantServiceClient(cli), err
 }
 
 // 会员客户端
-func MemberServeClient() (thrift.TTransport, *define.MemberServiceClient, error) {
+func MemberServeClient() (thrift.TTransport, *member_service.MemberServiceClient, error) {
 	trans, cli, err := factory.GetClient("member")
-	return trans, define.NewMemberServiceClient(cli), err
+	return trans, member_service.NewMemberServiceClient(cli), err
 }
 
 // 基础服务
-func FoundationServeClient() (thrift.TTransport, *define.FoundationServiceClient, error) {
+func FoundationServeClient() (thrift.TTransport, *foundation_service.FoundationServiceClient, error) {
 	trans, cli, err := factory.GetClient("foundation")
-	return trans, define.NewFoundationServiceClient(cli), err
+	return trans, foundation_service.NewFoundationServiceClient(cli), err
 }
 
 // 基础服务
-func PaymentServeClient() (thrift.TTransport, *define.PaymentServiceClient, error) {
+func PaymentServeClient() (thrift.TTransport, *payment_service.PaymentServiceClient, error) {
 	trans, cli, err := factory.GetClient("payment")
-	return trans, define.NewPaymentServiceClient(cli), err
+	return trans, payment_service.NewPaymentServiceClient(cli), err
 }
 
 // 基础服务
-func WalletClient() (thrift.TTransport, *define.WalletServiceClient, error) {
+func WalletClient() (thrift.TTransport, *wallet_service.WalletServiceClient, error) {
 	trans, cli, err := factory.GetClient("wallet")
-	return trans, define.NewWalletServiceClient(cli), err
+	return trans, wallet_service.NewWalletServiceClient(cli), err
 }
 
 // 订单服务
-func OrderServeClient() (thrift.TTransport, *define.OrderServiceClient, error) {
+func OrderServeClient() (thrift.TTransport, *order_service.OrderServiceClient, error) {
 	trans, cli, err := factory.GetClient("order")
-	return trans, define.NewOrderServiceClient(cli), err
+	return trans, order_service.NewOrderServiceClient(cli), err
 }
 
 // 基础服务
-func ShipmentServeClient() (thrift.TTransport, *define.ShipmentServiceClient, error) {
+func ShipmentServeClient() (thrift.TTransport, *shipment_service.ShipmentServiceClient, error) {
 	trans, cli, err := factory.GetClient("shipment")
-	return trans, define.NewShipmentServiceClient(cli), err
+	return trans, shipment_service.NewShipmentServiceClient(cli), err
 }
 
 // 商品服务
-func ItemServeClient() (thrift.TTransport, *define.ItemServiceClient, error) {
+func ItemServeClient() (thrift.TTransport, *item_service.ItemServiceClient, error) {
 	trans, cli, err := factory.GetClient("item")
-	return trans, define.NewItemServiceClient(cli), err
+	return trans, item_service.NewItemServiceClient(cli), err
 }
 
 // 商店服务
-func ShopServeClient() (thrift.TTransport, *define.ShopServiceClient, error) {
+func ShopServeClient() (thrift.TTransport, *shop_service.ShopServiceClient, error) {
 	trans, cli, err := factory.GetClient("shop")
-	return trans, define.NewShopServiceClient(cli), err
+	return trans, shop_service.NewShopServiceClient(cli), err
 }
 
 // 商店服务
-func FinanceServeClient() (thrift.TTransport, *define.FinanceServiceClient, error) {
+func FinanceServeClient() (thrift.TTransport, *finance_service.FinanceServiceClient, error) {
 	trans, cli, err := factory.GetClient("finance")
-	return trans, define.NewFinanceServiceClient(cli), err
+	return trans, finance_service.NewFinanceServiceClient(cli), err
 }

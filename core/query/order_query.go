@@ -16,7 +16,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto_gen/rpc/order_service"
 	"log"
 	"strconv"
 )
@@ -384,9 +384,9 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int
 
 // 查询分页订单
 func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*define.SComplexOrder) {
+	where, orderBy string) (int, []*order_service.SComplexOrder) {
 	d := o.Connector
-	orderList := []*define.SComplexOrder{}
+	var orderList []*order_service.SComplexOrder
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -420,7 +420,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
 			var cashPay int
 			var ticket string
 			for rs.Next() {
-				e := &define.SComplexOrder{}
+				e := &order_service.SComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime)
@@ -443,9 +443,9 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
 
 // 查询分页订单
 func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
-	where, orderBy string) (int32, []*define.SComplexOrder) {
+	where, orderBy string) (int32, []*order_service.SComplexOrder) {
 	d := o.Connector
-	orderList := []*define.SComplexOrder{}
+	orderList := []*order_service.SComplexOrder{}
 	var num int32
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -481,7 +481,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
 			var ticket string
 			var usr string
 			for rs.Next() {
-				e := &define.SComplexOrder{}
+				e := &order_service.SComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime, &usr)

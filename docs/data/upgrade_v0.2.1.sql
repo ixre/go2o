@@ -1,3 +1,6 @@
+
+
+
 CREATE TABLE pay_sp_trade (
   id           int(10) NOT NULL AUTO_INCREMENT,
   trade_sp     varchar(20) NOT NULL comment '交易SP',
@@ -61,3 +64,21 @@ ALTER TABLE pay_order
   DROP COLUMN order_id;
 ALTER TABLE pay_order
   ADD COLUMN sub_order int(1) NOT NULL comment '是否为子订单';
+
+
+ALTER TABLE pay_order
+  modify column trade_no varchar(40) NOT NULL;
+ALTER TABLE pay_order
+  modify column out_trade_no varchar(40) NOT NULL;
+ ALTER TABLE pay_trade_chan
+  modify column trade_no varchar(40) NOT NULL;
+ ALTER TABLE pay_trade_chan
+  ADD COLUMN chan_data varchar(40) NOT NULL comment '通道数据';
+ALTER TABLE pay_merge_order
+  modify column merge_trade_no varchar(40) NOT NULL;
+ ALTER TABLE pay_merge_order
+  modify column order_trade_no varchar(40) NOT NULL;
+ ALTER TABLE pay_sp_trade
+  modify column trade_no varchar(40) NOT NULL;
+ALTER TABLE pay_sp_trade
+  modify column sp_trade_no varchar(40) NOT NULL;

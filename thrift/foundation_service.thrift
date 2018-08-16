@@ -1,5 +1,6 @@
-namespace go define
-
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.foundation_service
 include "ttype.thrift"
 
 struct PlatformConf {
@@ -13,7 +14,7 @@ struct PlatformConf {
 }
 
 // 单点登录应用
-struct SsoApp{
+struct SSsoApp{
     // 编号
     1: i32 ID
     // 应用名称
@@ -54,9 +55,9 @@ service FoundationService{
    //   -  1. 成功，并返回token
    //   - -1. 接口地址不正确
    //   - -2. 已经注册
-   string RegisterApp(1:SsoApp app)
+   string RegisterApp(1:SSsoApp app)
    // 获取应用信息
-   SsoApp GetApp(1:string name)
+   SSsoApp GetApp(1:string name)
    // 获取单点登录应用
    list<string> GetAllSsoApp()
    // 验证超级用户账号和密码

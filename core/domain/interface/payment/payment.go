@@ -18,52 +18,31 @@ import (
 // 支付通道
 const (
 	// 余额抵扣通道
-	ChanBalance = 1
+	MBalance = 1
 	// 钱包支付通道
-	ChanWallet = 2
+	MWallet = 2
 	// 积分兑换通道
-	ChanIntegral = 3
+	MIntegral = 3
 	// 用户卡通道
-	ChanUserCard = 4
+	MUserCard = 4
 	// 用户券通道
-	ChanUserCoupon = 5
+	MUserCoupon = 5
 	// 现金支付通道
-	ChanCash = 6
+	MCash = 6
 	// 银行卡支付通道
-	ChanBankCard = 7
+	MBankCard = 7
+	// 第三方支付
+	MPaySP = 8
 	// 卖家支付通道
-	ChanSellerPay = 8
+	MSellerPay = 9
 	// 系统支付通道
-	ChanSystemPay = 9
-)
-
-// 支付标志
-const (
-	// 余额抵扣
-	FlagBalance = 1 << iota
-	// 钱包支付
-	FlagWallet
-	// 积分兑换
-	FlagIntegral
-	// 用户卡
-	FlagUserCard
-	// 用户券
-	FlagUserCoupon
-	// 现金支付
-	FlagCash
-	// 银行卡支付
-	FlagBankCard
-	// 第三方支付,如支付宝等
-	FlagOutSp
-	// 卖家支付通道
-	FlagSellerPay
-	// 系统支付通道
-	FlagSystemPay
+	MSystemPay = 10
 )
 
 // 所有支付方式
-const PAllFlag = FlagBalance | FlagWallet | FlagIntegral |
-	FlagCash | FlagBankCard | FlagOutSp | FlagSellerPay | FlagSystemPay
+const PAllFlag = 1<<(MBalance-1) | 1<<(MWallet-1) | 1<<(MIntegral-1) |
+	1<<(MUserCard-1) | 1<<(MUserCoupon-1) | 1<<(MCash-1) | 1<<(MBankCard-1) |
+	1<<(MPaySP-1) | (1<<MSellerPay - 1) | 1<<(MSystemPay-1)
 
 // 支付单状态
 const (
@@ -136,7 +115,7 @@ type (
 		TradeNo() string
 		// 支付单状态
 		State() int
-		/** 支付方式 */
+		// 支付方式
 		Flag() int
 		// 支付途径支付信息
 		Channels() []*TradeChan
@@ -253,8 +232,12 @@ type (
 		ProcedureFee int `db:"procedure_fee"`
 		// 最终支付金额，包含手续费，不包含抵扣金额
 		FinalFee int `db:"final_fee"`
+		// 实付金额
+		PaidFee int `db:"paid_fee"`
 		// 可⽤支付方式
-		PaymentFlag int `db:"pay_flag"`
+		PayFlag int `db:"pay_flag"`
+		// 实际支付方式
+		FinalFlag int `db:"final_flag"`
 		// 其他支付信息
 		ExtraData string `db:"extra_data"`
 		// 交易支付渠道
@@ -289,6 +272,8 @@ type (
 		InternalChan int `db:"internal_chan"`
 		// 支付金额
 		PayAmount int `db:"pay_amount"`
+		// 通道数据
+		ChanData string `db:"chan_data"`
 	}
 
 	// 合并的支付单

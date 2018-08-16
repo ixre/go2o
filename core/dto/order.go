@@ -9,7 +9,6 @@
 package dto
 
 type (
-
 	/*
 	   o.order_no,po.order_no as parent_no,
 	       o.vendor_id,o.shop_id,s.name as shop_name,

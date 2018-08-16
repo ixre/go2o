@@ -6,5 +6,6 @@
  * description :
  * history :
  */
+
 // Domain Service Proxy
 package rsi

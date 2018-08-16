@@ -1,9 +1,10 @@
-namespace go define
-
+namespace java com.github.jsix.go2o.rpc
+namespace csharp com.github.jsix.go2o.rpc
+namespace go go2o.core.service.auto_gen.rpc.mch_service
 include "ttype.thrift"
 
 // 商家
-struct ComplexMerchant {
+struct SComplexMerchant {
     1: i32 ID
     2: i64 MemberId
     3: string Usr
@@ -28,7 +29,7 @@ struct ComplexMerchant {
 //商家服务
 service MerchantService{
    // 获取商家符合的信息
-   ComplexMerchant Complex(1:i32 mchId)
+   SComplexMerchant Complex(1:i32 mchId)
    // 验证用户密码,并返回编号。可传入商户或会员的账号密码
    ttype.Result CheckLogin(1:string usr,2:string oriPwd)
    // 验证商户状态

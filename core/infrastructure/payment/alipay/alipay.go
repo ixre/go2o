@@ -11,15 +11,12 @@ package alipay
 //作者yeyongchang yycmail@163.com
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 )
@@ -406,7 +403,7 @@ type AlipayLogResult struct {
 	Logs    []AlipayLog `json:"logs,omitempty"`
 }
 
-//func GetAlipayTracklog_Handler(w http.ResponseWriter, r *http.Request){
+//func GetAlipayTracklog_Handler(w http.ResponseWriter, r *http.Process){
 //	result		:=AlipayLogResult{}
 //	sCount		:=r.FormValue("count")
 //	sSort		:=r.FormValue("sort")
@@ -433,7 +430,7 @@ type AlipayLogResult struct {
 //		result.Errcode	=0
 //    }else{
 //		result.Errcode	=global.ERRCODE_SERVER
-//		result.ErrMsg	=err.Error()
+//		result.Message	=err.Error()
 //	}
 //	w.Header().Set("Content-Type", "application/json")
 //	w.Header().Set("Access-Control-Allow-Origin", "*")

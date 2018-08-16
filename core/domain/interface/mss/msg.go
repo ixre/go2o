@@ -36,7 +36,6 @@ var (
 )
 
 type (
-
 	// 消息数据
 	Data map[string]string
 

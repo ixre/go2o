@@ -35,8 +35,8 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
+	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/variable"
-	"go2o/gen-code/thrift/define"
 	"strings"
 )
 
@@ -57,8 +57,8 @@ func registerTypes() {
 	gob.Register(&member.Relation{})
 	gob.Register(&dto.ListOnlineShop{})
 	gob.Register([]*dto.ListOnlineShop{})
-	gob.Register(&define.Member{})
-	gob.Register(&define.Profile{})
+	gob.Register(&member_service.SMember{})
+	gob.Register(&member_service.SProfile{})
 }
 
 func Init(a *AppImpl, debug, trace bool) bool {

@@ -8,4 +8,4 @@
  */
 package mss
 
-// ErrMsg Send Service
+// Message Send Service

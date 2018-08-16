@@ -3,14 +3,14 @@ package parser
 import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/gen-code/thrift/define"
+	"go2o/core/service/auto_gen/rpc/shop_service"
 	"strconv"
 	"strings"
 )
 
-func getShopDto(s shop.IShop) *define.Shop {
+func getShopDto(s shop.IShop) *shop_service.SShop {
 	b := s.GetValue()
-	dto := &define.Shop{
+	dto := &shop_service.SShop{
 		ID:           s.GetDomainId(),
 		VendorId:     b.VendorId,
 		ShopType:     b.ShopType,
@@ -22,7 +22,7 @@ func getShopDto(s shop.IShop) *define.Shop {
 	return dto
 }
 
-func parse2Shop(s *define.Shop) *shop.Shop {
+func parse2Shop(s *shop_service.SShop) *shop.Shop {
 	return &shop.Shop{
 		Id:           s.ID,
 		Name:         s.Name,
@@ -33,10 +33,10 @@ func parse2Shop(s *define.Shop) *shop.Shop {
 	}
 }
 
-func ParseOnlineShop(s shop.IShop) *define.Store {
+func ParseOnlineShop(s shop.IShop) *shop_service.SStore {
 	b := s.GetValue()
 	o := s.(shop.IOnlineShop).GetShopValue()
-	dto := &define.Store{
+	dto := &shop_service.SStore{
 		ID:           s.GetDomainId(),
 		VendorId:     b.VendorId,
 		State:        b.State,
@@ -52,7 +52,7 @@ func ParseOnlineShop(s shop.IShop) *define.Store {
 	return dto
 }
 
-func ParseOfflineShop(s shop.IShop, valRepo valueobject.IValueRepo) *define.Shop {
+func ParseOfflineShop(s shop.IShop, valRepo valueobject.IValueRepo) *shop_service.SShop {
 	dto := getShopDto(s)
 	o := s.(shop.IOfflineShop).GetShopValue()
 	areaNames := valRepo.GetAreaNames([]int32{o.Province, o.City, o.District})
@@ -69,7 +69,7 @@ func ParseOfflineShop(s shop.IShop, valRepo valueobject.IValueRepo) *define.Shop
 	return dto
 }
 
-func Parse2OnlineShop(s *define.Store) (*shop.Shop, *shop.OnlineShop) {
+func Parse2OnlineShop(s *shop_service.SStore) (*shop.Shop, *shop.OnlineShop) {
 	sv := &shop.Shop{
 		Id:           s.ID,
 		Name:         s.Name,
