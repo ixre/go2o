@@ -59,7 +59,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	} else {
 		mmUrl := fmt.Sprintf("//%s%s",
 			variable.DOMAIN_PREFIX_MEMBER, variable.Domain)
-		m, _ := rsi.MemberService.GetProfile(thrift.Context,  int64(memberId))
+		m, _ := rsi.MemberService.GetProfile(thrift.Context, int64(memberId))
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"
 		mp["MMUrl"] = mmUrl

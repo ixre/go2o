@@ -403,7 +403,7 @@ type AlipayLogResult struct {
 	Logs    []AlipayLog `json:"logs,omitempty"`
 }
 
-//func GetAlipayTracklog_Handler(w http.ResponseWriter, r *http.Request){
+//func GetAlipayTracklog_Handler(w http.ResponseWriter, r *http.Process){
 //	result		:=AlipayLogResult{}
 //	sCount		:=r.FormValue("count")
 //	sSort		:=r.FormValue("sort")
