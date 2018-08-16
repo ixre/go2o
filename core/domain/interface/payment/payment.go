@@ -18,31 +18,30 @@ import (
 // 支付通道
 const (
 	// 余额抵扣通道
-	MBalance = 1
+	MBalance = 1 << 0
 	// 钱包支付通道
-	MWallet = 2
+	MWallet = 1 << 1
 	// 积分兑换通道
-	MIntegral = 3
+	MIntegral = 1 << 2
 	// 用户卡通道
-	MUserCard = 4
+	MUserCard = 1 << 3
 	// 用户券通道
-	MUserCoupon = 5
+	MUserCoupon = 1 << 4
 	// 现金支付通道
-	MCash = 6
+	MCash = 1 << 5
 	// 银行卡支付通道
-	MBankCard = 7
+	MBankCard = 1 << 6
 	// 第三方支付
-	MPaySP = 8
+	MPaySP = 1 << 7
 	// 卖家支付通道
-	MSellerPay = 9
+	MSellerPay = 1 << 8
 	// 系统支付通道
-	MSystemPay = 10
+	MSystemPay = 1 << 9
 )
 
 // 所有支付方式
-const PAllFlag = 1<<(MBalance-1) | 1<<(MWallet-1) | 1<<(MIntegral-1) |
-	1<<(MUserCard-1) | 1<<(MUserCoupon-1) | 1<<(MCash-1) | 1<<(MBankCard-1) |
-	1<<(MPaySP-1) | (1<<MSellerPay - 1) | 1<<(MSystemPay-1)
+const PAllFlag = MBalance | MWallet | MIntegral | MUserCard |
+	MUserCoupon | MCash | MBankCard | MPaySP | MSellerPay | MSystemPay
 
 // 支付单状态
 const (
