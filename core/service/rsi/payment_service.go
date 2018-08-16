@@ -235,7 +235,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			d.TradeState = so.State
 		}
 		// 更新支付标志
-		if i := int32(iv.PaymentFlag); d.PayFlag != i {
+		if i := int32(iv.PayFlag); d.PayFlag != i {
 			d.PayFlag = i
 		}
 		// 更新支付金额

@@ -62,7 +62,7 @@ func (p *paymentOrderImpl) State() int {
 
 // 支付标志
 func (p *paymentOrderImpl) Flag() int {
-	return p.value.PaymentFlag
+	return p.value.PayFlag
 }
 
 // 支付途径支付信息
@@ -211,10 +211,10 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 	if err := p.CheckPaymentState(); err != nil {
 		return err
 	}
-	if !p.flagAnd(p.value.PaymentFlag, payment.FlagCash) {
+	if !p.flagAnd(p.value.PayFlag, payment.FlagCash) {
 		return payment.ErrNotSupportPaymentChannel
 	}
-	if !p.flagAnd(p.value.PaymentFlag, payment.FlagBankCard) {
+	if !p.flagAnd(p.value.PayFlag, payment.FlagBankCard) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	if cash+bank > p.value.FinalFee {
@@ -326,7 +326,7 @@ func (p *paymentOrderImpl) flagAnd(flag, value int) bool {
 
 // 使用余额抵扣
 func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
-	if b := p.flagAnd(p.value.PaymentFlag, payment.FlagBalance); !b { // 检查支付方式
+	if b := p.flagAnd(p.value.PayFlag, payment.FlagBalance); !b { // 检查支付方式
 		return payment.ErrNotSupportPaymentChannel
 	}
 	if err := p.CheckPaymentState(); err != nil { // 检查支付单状态
@@ -366,7 +366,7 @@ func (p *paymentOrderImpl) getIntegralExchangeAmount(integral int) int {
 // 积分抵扣,返回抵扣的金额及错误,ignoreAmount:是否忽略超出订单金额的积分
 func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	ignoreAmount bool) (amount int, err error) {
-	if !p.flagAnd(p.value.PaymentFlag, payment.FlagIntegral) {
+	if !p.flagAnd(p.value.PayFlag, payment.FlagIntegral) {
 		return 0, payment.ErrNotSupportPaymentChannel
 	}
 	if err = p.CheckPaymentState(); err != nil {
@@ -401,7 +401,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 
 // 系统支付金额
 func (p *paymentOrderImpl) SystemPayment(fee int) error {
-	if !p.flagAnd(p.value.PaymentFlag, payment.FlagSystemPay) {
+	if !p.flagAnd(p.value.PayFlag, payment.FlagSystemPay) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	err := p.CheckPaymentState()
@@ -448,7 +448,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 	v := p.Get()
 	acc := buyer.GetAccount().GetValue()
 	// 判断是否能余额支付
-	if !p.flagAnd(p.value.PaymentFlag, payment.FlagBalance) {
+	if !p.flagAnd(p.value.PayFlag, payment.FlagBalance) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	// 如果余额够支付，则优先余额支付
@@ -456,7 +456,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 		return p.BalanceDiscount(remark)
 	}
 	// 判断是否能钱包支付
-	if !p.flagAnd(p.value.PaymentFlag, payment.FlagWallet) {
+	if !p.flagAnd(p.value.PayFlag, payment.FlagWallet) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	// 判断是否余额不足
@@ -472,7 +472,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 
 // 钱包账户支付
 func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
-	if !p.flagAnd(p.value.PaymentFlag, payment.FlagWallet) {
+	if !p.flagAnd(p.value.PayFlag, payment.FlagWallet) {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	buyer := p.getBuyer()

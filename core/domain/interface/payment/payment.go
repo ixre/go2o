@@ -253,8 +253,12 @@ type (
 		ProcedureFee int `db:"procedure_fee"`
 		// 最终支付金额，包含手续费，不包含抵扣金额
 		FinalFee int `db:"final_fee"`
+		// 实付金额
+		PaidFee int `db:"paid_fee"`
 		// 可⽤支付方式
-		PaymentFlag int `db:"pay_flag"`
+		PayFlag int `db:"pay_flag"`
+		// 实际支付方式
+		FinalFlag int `db:"final_flag"`
 		// 其他支付信息
 		ExtraData string `db:"extra_data"`
 		// 交易支付渠道

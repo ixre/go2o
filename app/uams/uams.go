@@ -52,6 +52,7 @@ func (c *Client) UserLogin(user string, pwd string) (map[string]string, error) {
 	data, err := c.Post("user.check_credential", map[string]string{
 		"user": user,
 		"pwd":  pwd,
+		"cred": "user",
 	})
 	if err == nil {
 		var r Result
