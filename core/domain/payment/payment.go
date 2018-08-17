@@ -224,14 +224,17 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 		return payment.ErrNotMatchFinalFee
 	}
 	p.value.DeductAmount += cash + bank
-	err := p.saveOrder()
+	var err error
+	if cash > 0 {
+		p.value.FinalFlag |= payment.MCash
+		err = p.saveTradeChan(cash, payment.MCash, "")
+	}
+	if bank > 0 {
+		p.value.FinalFlag |= payment.MBankCard
+		err = p.saveTradeChan(bank, payment.MBankCard, "")
+	}
 	if err == nil {
-		if cash > 0 {
-			err = p.saveTradeChan(cash, payment.MCash, "")
-		}
-		if bank > 0 {
-			err = p.saveTradeChan(bank, payment.MBankCard, "")
-		}
+		err = p.saveOrder()
 	}
 	return err
 }
@@ -295,6 +298,7 @@ func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 	for _, v := range p.coupons {
 		p.value.DiscountAmount += int(v.GetCouponFee(float32(fee/100)) * 100)
 	}
+	p.value.FinalFlag |= payment.MUserCoupon
 	return p.value.DiscountAmount, nil
 }
 
@@ -344,6 +348,7 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 	err := acc.PaymentDiscount(p.value.TradeNo, float32(amount/100), remark)
 	if err == nil {
 		p.value.DeductAmount += amount // 修改抵扣金额
+		p.value.FinalFlag |= payment.MBalance
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
 			err = p.saveTradeChan(amount, payment.MBalance, "")
@@ -391,6 +396,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	// 抵扣积分
 	if err == nil {
 		p.value.DeductAmount += amount
+		p.value.FinalFlag |= payment.MIntegral
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
 			err = p.saveTradeChan(amount, payment.MIntegral, "")
@@ -407,6 +413,7 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 	err := p.CheckPaymentState()
 	if err == nil {
 		p.value.DeductAmount += fee
+		p.value.FinalFlag |= payment.MSystemPay
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
 			err = p.saveTradeChan(fee, payment.MSystemPay, "")
@@ -489,6 +496,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 		member.DefaultRelateUser, true)
 	if err == nil {
 		p.value.DeductAmount += amount
+		p.value.FinalFlag |= payment.MWallet
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
 			err = p.saveTradeChan(amount, payment.MWallet, "")
