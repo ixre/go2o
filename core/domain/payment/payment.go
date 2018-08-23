@@ -228,11 +228,11 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 	var err error
 	if cash > 0 {
 		p.value.FinalFlag |= payment.MCash
-		err = p.saveTradeChan(cash, payment.MCash, "","")
+		err = p.saveTradeChan(cash, payment.MCash, "", "")
 	}
 	if bank > 0 {
 		p.value.FinalFlag |= payment.MBankCard
-		err = p.saveTradeChan(bank, payment.MBankCard, "","")
+		err = p.saveTradeChan(bank, payment.MBankCard, "", "")
 	}
 	if err == nil {
 		err = p.saveOrder()
@@ -352,7 +352,7 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 		p.value.FinalFlag |= payment.MBalance
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.MBalance, "","")
+			err = p.saveTradeChan(amount, payment.MBalance, "", "")
 		}
 	}
 	return err
@@ -400,7 +400,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 		p.value.FinalFlag |= payment.MIntegral
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.MIntegral, "","")
+			err = p.saveTradeChan(amount, payment.MIntegral, "", "")
 		}
 	}
 	return amount, err
@@ -417,7 +417,7 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 		p.value.FinalFlag |= payment.MSystemPay
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(fee, payment.MSystemPay, "","")
+			err = p.saveTradeChan(fee, payment.MSystemPay, "", "")
 		}
 	}
 	return err
@@ -432,6 +432,7 @@ func (p *paymentOrderImpl) saveTradeChan(amount int, method int, code string, ou
 		Amount:     amount,
 		Code:       code,
 		OutTradeNo: outTradeNo,
+		PayTime:    time.Now().Unix(),
 	}
 	_, err := p.repo.SavePaymentTradeChan(p.TradeNo(), c)
 	return err
@@ -501,7 +502,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 		p.value.FinalFlag |= payment.MWallet
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.MWallet, "","")
+			err = p.saveTradeChan(amount, payment.MWallet, "", "")
 		}
 	}
 	return err
@@ -643,7 +644,7 @@ type RepoBase struct {
 }
 
 func (p *RepoBase) CreatePaymentOrder(v *payment.
-Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
+	Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
 	orderManager order.IOrderManager, valRepo valueobject.IValueRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		repo:         repo,

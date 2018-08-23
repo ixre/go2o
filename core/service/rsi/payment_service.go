@@ -62,10 +62,10 @@ func (p *paymentService) GetPaymentOrder(ctx context.Context, paymentNo string) 
 	if po := p.repo.GetPaymentOrder(paymentNo); po != nil {
 		v := po.Get()
 		sp := parser.PaymentOrderDto(&v)
-		for _,t :=range po.TradeMethods(){
-			sp.TradeData = append(sp.TradeData,parser.TradeMethodDataDto(t))
+		for _, t := range po.TradeMethods() {
+			sp.TradeData = append(sp.TradeData, parser.TradeMethodDataDto(t))
 		}
-		return sp,nil
+		return sp, nil
 	}
 	return nil, nil
 }
