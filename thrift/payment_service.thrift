@@ -41,12 +41,10 @@ service PaymentService{
     * @return 支付结果,返回:order_state
     */
    ttype.Result MixedPayment(1:string tradeNo,3:list<SRequestPayData> data)
-
 }
 
-
 /** 支付方式的位值 */
-enum EMethodFlag{
+enum EPayMethod{
     /** 余额抵扣 */
     Balance = 1
     /** 钱包支付 */
@@ -69,94 +67,88 @@ enum EMethodFlag{
     SystemPay = 512
 }
 
-// 支付方式
-enum EPaymentMethod{
-    /** 余额抵扣通道 */
-    Balance = 1
-    /** 钱包支付通道 */
-    Wallet = 2
-    /** 积分兑换通道 */
-    Integral = 3
-    /** 用户卡通道 */
-    UserCard = 4
-    /** 用户券通道 */
-    UserCoupon = 5
-    /** 现金支付通道 */
-    Cash = 6
-    /** 银行卡支付通道 */
-    BankCard = 7
-    /** 第三方支付 */
-    PaySP = 8
-    /** 卖家支付通道 */
-    SellerPay = 9
-    /** 系统支付通道 */
-    SystemPay = 10
-}
-
 /** 支付单 */
 struct SPaymentOrder{
-    /** 编号 */
-    1:i32 ID
+    /** 交易号 */
+    1:string TradeNo
     /** 卖家编号 */
     2:i32 SellerId
     /** 交易类型 */
     3:string TradeType
-    /** 交易号 */
-    4:string TradeNo
     /** 合并支付交单单号 */
-    5:string MergeTradeNo
+    4:string MergeTradeNo
     /** 支付单详情 */
-    6:string Subject
+    5:string Subject
     /** 是否为子订单 */
-	7:bool SubOrder
+	6:bool SubOrder
     /** 支付单的类型，如购物或其他 */
-    8:i32 OrderType
+    7:i32 OrderType
     /** 外部订单号 */
-    9:string OutOrderNo
+    8:string OutOrderNo
     /** 买家编号 */
-    10:i32 BuyerId
+    9:i32 BuyerId
     /** 支付用户编号 */
-    11:i32 PayUid
+    10:i32 PayUid
     /** 商品金额 */
-    12:i32 ItemAmount
+    11:i32 ItemAmount
     /** 优惠金额  */
-    13:i32 DiscountAmount
+    12:i32 DiscountAmount
     /** 调整金额 */
-    14:i32 AdjustAmount
+    13:i32 AdjustAmount
     /** 抵扣金额  */
-    15:i32 DeductAmount
+    14:i32 DeductAmount
     /** 共计金额 */
-    16:i32 TotalAmount
+    15:i32 TotalAmount
     /** 手续费 */
-    17:i32 ProcedureFee
+    16:i32 ProcedureFee
     /** 实付金额 */
-    18:i32 PaidFee
+    17:i32 PaidFee
     /** 最终应付金额 */
-    19:i32 FinalFee
+    18:i32 FinalFee
     /** 可⽤支付方式  */
-    20:i32 PayFlag
+    19:i32 PayFlag
     /** 实际使用支付方式 */
-    21:i32 FinalFlag
+    20:i32 FinalFlag
     /** 其他支付信息 */
-    22:string ExtraData
-    /** 交易支付渠道 */
-    23:i32 TradeChannel
-    /** 外部交易提供商 */
-    24:string OutTradeSp
-    /** 外部交易订单号 */
-    25:string OutTradeNo
+    21:string ExtraData
     /** 订单状态 */
-    26:i32 State
+    22:i32 State
     /** 提交时间 */
-    27:i64 SubmitTime
+    23:i64 SubmitTime
     /** 过期时间 */
-    28:i64 ExpiresTime
+    24:i64 ExpiresTime
     /** 支付时间 */
-    29:i64 PaidTime
-    /** 更新时间 */
-    30:i64 UpdateTime
-    /** 交易途径交易信息 */
-    31:list<SPayTradeChan> TradeChannels
+    25:i64 PaidTime
+    /** 交易数据 */
+    26:list<STradeMethodData> TradeData
+    /** 编号 */
+    27:i32 ID
+}
+
+/** 请求支付数据 */
+struct SRequestPayData{
+    /** 支付方式 */
+    1:i32 Method
+    /** 支付方式代码 */
+    2:string Code
+    /** 支付金额 */
+    3:i32 Amount
+}
+
+/** 交易方式数据 */
+struct STradeMethodData{
+    /** 支付途径 */
+    1:i32 Method
+    /** 交易代码 */
+    2:string Code
+    /** 支付金额 */
+    3:i32 Amount
+    /** 是否为内置支付途径 */
+    4:i32 Internal
+    /** 外部交易单号 */
+    5:string OutTradeNo
+    /** 支付时间 */
+    6:i64 PayTime
 }
 
 /** 支付单预交易数据 */
@@ -195,30 +187,4 @@ struct SPaymentOrderData{
     5:i32 ProcedureFee
     /** 最终支付金额 */
     6:i32 FinalFee
-}
-
-/** 请求支付数据 */
-struct SRequestPayData{
-    /** 支付通道标志 */
-    1:i32 Method
-    /** 通道标签 */
-    2:string Tag
-    /** 支付金额 */
-    3:i32 Amount
-}
-
-/** 支付单项 */
-struct SPayTradeChan{
-    /** 编号 */
-    1:i32 ID
-    /** 交易单号 */
-    2:i32 TradeNo
-    /** 支付途径 */
-    3:i32 PayChan
-    /** 是否为内置支付途径 */
-    4:i32 InternalChan
-    /** 支付金额 */
-    5:i32 PayAmount
-    /** 通道数据 */
-    6:string ChanData
 }

@@ -311,15 +311,11 @@ func PaymentOrder(src *payment_service.SPaymentOrder) *payment.Order {
 		PayFlag:        int(src.PayFlag),
 		FinalFlag:      int(src.FinalFlag),
 		ExtraData:      src.ExtraData,
-		TradeChannel:   int(src.TradeChannel),
-		OutTradeSp:     src.OutTradeSp,
-		OutTradeNo:     src.OutTradeNo,
 		State:          int(src.State),
 		SubmitTime:     src.SubmitTime,
 		ExpiresTime:    src.ExpiresTime,
 		PaidTime:       src.PaidTime,
-		UpdateTime:     src.UpdateTime,
-		TradeChannels:  make([]*payment.TradeChan, 0),
+		TradeMethods:   make([]*payment.TradeMethodData, 0),
 	}
 	if src.SubOrder {
 		dst.SubOrder = 1
@@ -347,18 +343,25 @@ func PaymentOrderDto(src *payment.Order) *payment_service.SPaymentOrder {
 		PayFlag:        int32(src.PayFlag),
 		FinalFlag:      int32(src.FinalFlag),
 		ExtraData:      src.ExtraData,
-		OutTradeSp:     src.OutTradeSp,
-		OutTradeNo:     src.OutTradeNo,
 		State:          int32(src.State),
 		SubmitTime:     int64(src.SubmitTime),
 		ExpiresTime:    int64(src.ExpiresTime),
 		PaidTime:       int64(src.PaidTime),
-		UpdateTime:     int64(src.UpdateTime),
 		SubOrder:       src.SubOrder == 1,
 		OrderType:      int32(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,
-		TradeChannel:   int32(src.TradeChannel),
-		TradeChannels:  make([]*payment_service.SPayTradeChan, 0),
+		TradeData:      make([]*payment_service.STradeMethodData, 0),
+	}
+}
+
+func TradeMethodDataDto(src *payment.TradeMethodData) *payment_service.STradeMethodData {
+	return &payment_service.STradeMethodData{
+		Method:     int32(src.Method),
+		Code:       src.Code,
+		Amount:     int32(src.Amount),
+		Internal:   int32(src.Internal),
+		OutTradeNo: src.OutTradeNo,
+		PayTime:    src.PayTime,
 	}
 }
 
