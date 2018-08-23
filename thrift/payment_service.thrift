@@ -147,6 +147,8 @@ struct STradeMethodData{
     4:i32 Internal
     /** 外部交易单号 */
     5:string OutTradeNo
+    /** 支付时间 */
+    6:i64 PayTime
 }
 
 /** 支付单预交易数据 */
