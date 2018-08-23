@@ -194,7 +194,7 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		ExpiresTime:    0,
 		PaidTime:       0,
 		UpdateTime:     unix,
-		TradeChannels:  make([]*payment.TradeChan, 0),
+		TradeMethods:   make([]*payment.TradeMethodData, 0),
 	}
 	return v2
 }
