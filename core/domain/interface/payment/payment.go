@@ -266,15 +266,17 @@ type (
 		// 交易单号
 		TradeNo string `db:"trade_no"`
 		// 支付途径
-		Method int `db:"pay_chan"`
+		Method int `db:"pay_method"`
 		// 支付代码
-		Code string `db:"chan_data"`
+		Code string `db:"pay_code"`
 		// 是否为内置支付途径
-		Internal int `db:"internal_chan"`
+		Internal int `db:"internal"`
 		// 支付金额
 		Amount int `db:"pay_amount"`
 		// 外部交易单号
 		OutTradeNo string `db:"out_trade_no"`
+		// 支付时间
+		PayTime int64 `db:"pay_time"`
 	}
 
 	// 合并的支付单

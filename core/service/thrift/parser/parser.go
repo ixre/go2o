@@ -361,6 +361,7 @@ func TradeMethodDataDto(src *payment.TradeMethodData) *payment_service.STradeMet
 		Amount:     int32(src.Amount),
 		Internal:   int32(src.Internal),
 		OutTradeNo: src.OutTradeNo,
+		PayTime:    src.PayTime,
 	}
 }
 
