@@ -547,7 +547,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 			ExpiresTime:    0,
 			PaidTime:       0,
 			UpdateTime:     v.CreateTime,
-			TradeChannels:  []*payment.TradeChan{},
+			TradeMethods:   []*payment.TradeMethodData{},
 		}
 		ip := o.payRepo.CreatePaymentOrder(po)
 		if err := ip.Submit(); err != nil {

@@ -149,8 +149,8 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 	return i == 0
 }
 
-func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeChan {
-	list := make([]*payment.TradeChan, 0)
+func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeMethodData {
+	list := make([]*payment.TradeMethodData, 0)
 	err := p.GetOrm().Select(&list, "trade_no=? LIMIT ?", tradeNo, 10)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
@@ -158,7 +158,7 @@ func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeC
 	return list
 }
 
-func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeChan) (int, error) {
+func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeMethodData) (int, error) {
 	tradeChan.TradeNo = tradeNo
 	id, err := orm.Save(p.GetOrm(), tradeChan, tradeChan.ID)
 	if err != nil && err != sql.ErrNoRows {
