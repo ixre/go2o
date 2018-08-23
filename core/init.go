@@ -194,10 +194,9 @@ func OrmMapping(conn db.Connector) {
 
 	// 支付
 	orm.Mapping(payment.Order{}, "pay_order")
-	orm.Mapping(payment.PayChannel{}, "pay_channel")
-	orm.Mapping(payment.TradeChan{}, "pay_trade_chan")
+	orm.Mapping(payment.TradeMethodData{}, "pay_trade_data")
 	orm.Mapping(payment.MergeOrder{}, "pay_merge_order")
-	orm.Mapping(payment.SpTrade{}, "pay_sp_trade")
+	orm.Mapping(payment.PaySpTrade{}, "pay_sp_trade")
 
 	// 促销
 	orm.Mapping(promotion.ValueCoupon{}, "pm_coupon")

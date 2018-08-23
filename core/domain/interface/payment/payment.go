@@ -18,31 +18,30 @@ import (
 // 支付通道
 const (
 	// 余额抵扣通道
-	MBalance = 1
+	MBalance = 1 << 0
 	// 钱包支付通道
-	MWallet = 2
+	MWallet = 1 << 1
 	// 积分兑换通道
-	MIntegral = 3
+	MIntegral = 1 << 2
 	// 用户卡通道
-	MUserCard = 4
+	MUserCard = 1 << 3
 	// 用户券通道
-	MUserCoupon = 5
+	MUserCoupon = 1 << 4
 	// 现金支付通道
-	MCash = 6
+	MCash = 1 << 5
 	// 银行卡支付通道
-	MBankCard = 7
+	MBankCard = 1 << 6
 	// 第三方支付
-	MPaySP = 8
+	MPaySP = 1 << 7
 	// 卖家支付通道
-	MSellerPay = 9
+	MSellerPay = 1 << 8
 	// 系统支付通道
-	MSystemPay = 10
+	MSystemPay = 1 << 9
 )
 
 // 所有支付方式
-const PAllFlag = 1<<(MBalance-1) | 1<<(MWallet-1) | 1<<(MIntegral-1) |
-	1<<(MUserCard-1) | 1<<(MUserCoupon-1) | 1<<(MCash-1) | 1<<(MBankCard-1) |
-	1<<(MPaySP-1) | (1<<MSellerPay - 1) | 1<<(MSystemPay-1)
+const PAllFlag = MBalance | MWallet | MIntegral | MUserCard |
+	MUserCoupon | MCash | MBankCard | MPaySP | MSellerPay | MSystemPay
 
 // 支付单状态
 const (
@@ -118,7 +117,7 @@ type (
 		// 支付方式
 		Flag() int
 		// 支付途径支付信息
-		Channels() []*TradeChan
+		TradeMethods() []*TradeMethodData
 		// 在支付之前检查订单状态
 		CheckPaymentState() error
 		// 提交支付单
@@ -154,6 +153,8 @@ type (
 		Adjust(amount int) error
 		// 退款
 		Refund(amount int) error
+		// 获取支付通道字符串
+		ChanName(method int) string
 	}
 
 	// 支付仓储
@@ -173,9 +174,9 @@ type (
 		// 检查支付单号是否匹配
 		CheckTradeNoMatch(tradeNo string, id int) bool
 		// 获取交易途径支付信息
-		GetTradeChannelItems(tradeNo string) []*TradeChan
+		GetTradeChannelItems(tradeNo string) []*TradeMethodData
 		// 保存支付途径支付信息
-		SavePaymentTradeChan(tradeNo string, tradeChan *TradeChan) (int, error)
+		SavePaymentTradeChan(tradeNo string, tradeChan *TradeMethodData) (int, error)
 		// 获取合并支付的订单
 		GetMergePayOrders(mergeTradeNo string) []IPaymentOrder
 		// 清除欲合并的支付单
@@ -184,16 +185,14 @@ type (
 		SaveMergePaymentOrders(s string, tradeNos []string) error
 	}
 
-	// 支付通道
-	PayChannel struct {
-		// 编号
-		ID int `db:"id" pk:"yes" auto:"yes"`
-		// 支付渠道编码
-		Code string `db:"code"`
-		// 支付渠道名称
-		Name int `db:"name"`
-		// 支付渠道门户地址
-		PortalUrl string `db:"portal_url"`
+	// 请求支付数据
+	RequestPayData struct {
+		// 支付方式
+		method int
+		// 支付方式代码
+		code string
+		// 支付金额
+		amount int
 	}
 
 	// 支付单
@@ -257,23 +256,27 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 交易途径支付信息
-		TradeChannels []*TradeChan `db:"-"`
+		TradeMethods []*TradeMethodData `db:"-"`
 	}
 
 	// 支付单项
-	TradeChan struct {
+	TradeMethodData struct {
 		// 编号
 		ID int `db:"id" pk:"yes" auto:"yes"`
 		// 交易单号
 		TradeNo string `db:"trade_no"`
 		// 支付途径
-		PayChan int `db:"pay_chan"`
+		Method int `db:"pay_method"`
+		// 支付代码
+		Code string `db:"pay_code"`
 		// 是否为内置支付途径
-		InternalChan int `db:"internal_chan"`
+		Internal int `db:"internal"`
 		// 支付金额
-		PayAmount int `db:"pay_amount"`
-		// 通道数据
-		ChanData string `db:"chan_data"`
+		Amount int `db:"pay_amount"`
+		// 外部交易单号
+		OutTradeNo string `db:"out_trade_no"`
+		// 支付时间
+		PayTime int64 `db:"pay_time"`
 	}
 
 	// 合并的支付单
@@ -289,7 +292,7 @@ type (
 	}
 
 	// SP支付交易
-	SpTrade struct {
+	PaySpTrade struct {
 		// 编号
 		ID int `db:"id"`
 		// 交易SP
