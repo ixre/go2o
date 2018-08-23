@@ -11,6 +11,7 @@ package payment
 
 import (
 	"errors"
+	"fmt"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
@@ -66,14 +67,14 @@ func (p *paymentOrderImpl) Flag() int {
 }
 
 // 支付途径支付信息
-func (p *paymentOrderImpl) Channels() []*payment.TradeChan {
-	if p.value.TradeChannels == nil {
+func (p *paymentOrderImpl) TradeMethods() []*payment.TradeMethodData {
+	if p.value.TradeMethods == nil {
 		if p.GetAggregateRootId() <= 0 {
-			return make([]*payment.TradeChan, 0)
+			return make([]*payment.TradeMethodData, 0)
 		}
-		p.value.TradeChannels = p.repo.GetTradeChannelItems(p.TradeNo())
+		p.value.TradeMethods = p.repo.GetTradeChannelItems(p.TradeNo())
 	}
-	return p.value.TradeChannels
+	return p.value.TradeMethods
 }
 
 // 提交支付订单
@@ -227,11 +228,11 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 	var err error
 	if cash > 0 {
 		p.value.FinalFlag |= payment.MCash
-		err = p.saveTradeChan(cash, payment.MCash, "")
+		err = p.saveTradeChan(cash, payment.MCash, "","")
 	}
 	if bank > 0 {
 		p.value.FinalFlag |= payment.MBankCard
-		err = p.saveTradeChan(bank, payment.MBankCard, "")
+		err = p.saveTradeChan(bank, payment.MBankCard, "","")
 	}
 	if err == nil {
 		err = p.saveOrder()
@@ -351,7 +352,7 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 		p.value.FinalFlag |= payment.MBalance
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.MBalance, "")
+			err = p.saveTradeChan(amount, payment.MBalance, "","")
 		}
 	}
 	return err
@@ -399,7 +400,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 		p.value.FinalFlag |= payment.MIntegral
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.MIntegral, "")
+			err = p.saveTradeChan(amount, payment.MIntegral, "","")
 		}
 	}
 	return amount, err
@@ -416,20 +417,21 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 		p.value.FinalFlag |= payment.MSystemPay
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(fee, payment.MSystemPay, "")
+			err = p.saveTradeChan(fee, payment.MSystemPay, "","")
 		}
 	}
 	return err
 }
 
 // 保存支付信息
-func (p *paymentOrderImpl) saveTradeChan(amount int, payChan int, chanData string) error {
-	c := &payment.TradeChan{
-		TradeNo:      p.TradeNo(),
-		PayChan:      payChan,
-		InternalChan: 1,
-		PayAmount:    amount,
-		ChanData:     chanData,
+func (p *paymentOrderImpl) saveTradeChan(amount int, method int, code string, outTradeNo string) error {
+	c := &payment.TradeMethodData{
+		TradeNo:    p.TradeNo(),
+		Method:     method,
+		Internal:   1,
+		Amount:     amount,
+		Code:       code,
+		OutTradeNo: outTradeNo,
 	}
 	_, err := p.repo.SavePaymentTradeChan(p.TradeNo(), c)
 	return err
@@ -499,7 +501,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 		p.value.FinalFlag |= payment.MWallet
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(amount, payment.MWallet, "")
+			err = p.saveTradeChan(amount, payment.MWallet, "","")
 		}
 	}
 	return err
@@ -596,18 +598,45 @@ func (p *paymentOrderImpl) Adjust(amount int) error {
 // 获取支付途径支付信息字典
 func (p *paymentOrderImpl) getPaymentChannelMap() map[int]int {
 	mp := make(map[int]int, 0)
-	arr := p.Channels()
+	arr := p.TradeMethods()
 	for _, v := range arr {
-		if v.PayAmount > 0 {
-			c, ok := mp[v.PayChan]
+		if v.Amount > 0 {
+			c, ok := mp[v.Method]
 			if ok {
-				mp[v.PayChan] = c + v.PayAmount
+				mp[v.Method] = c + v.Amount
 			} else {
-				mp[v.PayChan] = v.PayAmount
+				mp[v.Method] = v.Amount
 			}
 		}
 	}
 	return mp
+}
+
+func (p *paymentOrderImpl) ChanName(method int) string {
+	switch method {
+	case payment.MBalance:
+		return "余额"
+	case payment.MWallet:
+		return "钱包"
+	case payment.MIntegral:
+		return "积分"
+	case payment.MUserCard:
+		return "会员卡"
+	case payment.MUserCoupon:
+		return "券"
+	case payment.MCash:
+		return "现金"
+	case payment.MBankCard:
+		return "刷卡"
+	case payment.MPaySP:
+		return "第三方"
+	case payment.MSellerPay:
+		return "卖家"
+	case payment.MSystemPay:
+		return "系统"
+	default:
+		panic(fmt.Sprintf("未知的支付方式%d", method))
+	}
 }
 
 type RepoBase struct {
