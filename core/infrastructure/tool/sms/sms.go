@@ -10,11 +10,13 @@ package sms
 
 import (
 	"errors"
-	"github.com/jsix/goex/util"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/iface/aliyu"
 	"go2o/core/infrastructure/iface/cl253"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/encoding/traditionalchinese"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -105,7 +107,7 @@ func sendPhoneMsgByHttpApi(apiUrl, key, secret, phone, msg,
 	enc, successChar string) error {
 	//如果指定了编码，则先编码内容
 	if enc != "" {
-		dst, err := util.EncodingTransform([]byte(msg), enc)
+		dst, err := EncodingTransform([]byte(msg), enc)
 		if err != nil {
 			return err
 		}
@@ -133,4 +135,22 @@ func sendPhoneMsgByHttpApi(apiUrl, key, secret, phone, msg,
 		}
 	}
 	return err
+}
+
+//编码
+func EncodingTransform(src []byte, enc string) ([]byte, error) {
+	var ec encoding.Encoding
+	switch enc {
+	default:
+		return src, nil
+	case "GBK":
+		ec = simplifiedchinese.GBK
+	case "GB2312":
+		ec = simplifiedchinese.HZGB2312
+	case "BIG5":
+		ec = traditionalchinese.Big5
+	}
+	dst := make([]byte, len(src)*2)
+	n, _, err := ec.NewEncoder().Transform(dst, src, true)
+	return dst[:n], err
 }
