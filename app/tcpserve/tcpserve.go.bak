@@ -11,7 +11,7 @@ package tcpserve
 import (
 	"bufio"
 	"errors"
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 	"github.com/jsix/gof"
 	"go2o/app/util"
 	"go2o/core"

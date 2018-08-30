@@ -12,7 +12,6 @@ package tool
 //todo: 新浪ip接口，http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip=110.110.110.110
 
 import (
-	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -28,10 +27,11 @@ func GetLocation(ip string) string {
 		return "未知地区"
 	}
 	data, _ := ioutil.ReadAll(rsp.Body)
-	out := make([]byte, len(data)*2)
-	trans := simplifiedchinese.GB18030.NewDecoder()
-	n, _, _ := trans.Transform(out, data, true)
-	m := ip138Regex.FindAllSubmatch(out[:n], 1)
+	//out := make([]byte, len(data)*2)
+	//trans := simplifiedchinese.GB18030.NewDecoder()
+	//n, _, _ := trans.Transform(out, data, true)
+	//m := ip138Regex.FindAllSubmatch(out[:n], 1)
+	m := ip138Regex.FindAllSubmatch(data, 1)
 	if len(m) != 0 {
 		addr := string(m[0][1])
 		if addr != "保留地址" {
