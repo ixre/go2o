@@ -10,7 +10,6 @@ package rsi
 
 import (
 	"github.com/jsix/gof/db"
-	"github.com/labstack/gommon/log"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
@@ -130,7 +129,6 @@ func (a *afterSalesService) ProcessAfterSalesOrder(id int32) error {
 		return afterSales.ErrNoSuchOrder
 	}
 	v := as.Value()
-	log.Print("========================================%d", v.State)
 	switch v.Type {
 	case afterSales.TypeRefund:
 		return as.Process()
