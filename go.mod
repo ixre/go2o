@@ -1,4 +1,4 @@
-module go2o
+module github.com/jsix/go2o
 
 require (
 	git.apache.org/thrift.git v0.11.0
