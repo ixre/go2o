@@ -1,12 +1,5 @@
 module go2o
 
-replace (
-	git.apache.org/thrift.git v0.11.0 => github.com/apache/thrift v0.11.0
-	golang.org/x/net v0.3.0 => github.com/golang/net v0.3.0 // 解决翻墙问题
-	golang.org/x/text v0.3.0 => github.com/golang/text v0.3.0
-// github.com/jsix/go2o v0.0.0 => ../go2o // 替换为本地包
-)
-
 require (
 	git.apache.org/thrift.git v0.11.0
 	github.com/afocus/captcha v0.0.0-20170421134744-6d694b359d1a
@@ -26,5 +19,11 @@ require (
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/valyala/bytebufferpool v0.0.0-20160817181652-e746df99fe4a // indirect
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
+	golang.org/x/text v0.3.0
 	gopkg.in/square/go-jose.v1 v1.1.2
+)
+
+replace (
+	git.apache.org/thrift.git v0.11.0 => github.com/TriangleGo/thrift v0.11.0
+	golang.org/x/text v0.3.0 => github.com/golang/text v0.3.0
 )
