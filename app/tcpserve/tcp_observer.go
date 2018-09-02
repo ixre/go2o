@@ -10,7 +10,7 @@ package tcpserve
 
 import (
 	"encoding/json"
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 	"github.com/jsix/gof/net/nc"
 	"go2o/core"
 	"go2o/core/variable"

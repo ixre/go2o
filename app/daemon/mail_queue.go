@@ -9,7 +9,7 @@
 package daemon
 
 import (
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	mssIns "go2o/core/infrastructure/mss"
