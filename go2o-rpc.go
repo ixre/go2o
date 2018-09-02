@@ -13,7 +13,6 @@ import (
 	"flag"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/log"
-	"go2o-web/src/hook"
 	"go2o/app"
 	"go2o/core"
 	"go2o/core/service/rsi"
@@ -43,7 +42,7 @@ func main() {
 	}
 	gof.CurrentApp = newApp
 	rsi.Init(newApp, app.FlagRpcServe, confDir)
-	app.Configure(hook.HookUp, newApp, app.FlagRpcServe)
+	//app.Configure(hook.HookUp, newApp, app.FlagRpcServe)
 
 	err := thrift.ListenAndServe(addr, false)
 	if err != nil {

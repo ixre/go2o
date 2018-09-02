@@ -11,7 +11,7 @@ package daemon
 
 import (
 	"fmt"
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 	"go2o/core"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
