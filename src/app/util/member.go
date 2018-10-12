@@ -11,7 +11,7 @@ package util
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof"
+	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/crypto"
 	"go2o/src/x/echox"
 	"strconv"
@@ -19,7 +19,7 @@ import (
 
 const offset string = "%$^&@#"
 
-func chkStorage(sto gof.Storage) {
+func chkStorage(sto storage.Interface) {
 	if sto == nil {
 		panic(errors.New("[ Api] - api token storage is null !"))
 	}
@@ -31,7 +31,7 @@ func GetMemberApiTokenKey(memberId int) string {
 }
 
 // 设置令牌，并返回
-func SetMemberApiToken(sto gof.Storage, memberId int, pwd string) string {
+func SetMemberApiToken(sto storage.Interface, memberId int, pwd string) string {
 	chkStorage(sto)
 	cyp := crypto.NewUnixCrypto(pwd+offset, offset)
 	var token string = string(cyp.Encode())
@@ -44,7 +44,7 @@ func SetMemberApiToken(sto gof.Storage, memberId int, pwd string) string {
 }
 
 // 获取会员的API令牌
-func GetMemberApiToken(sto gof.Storage, memberId int) (string, string) {
+func GetMemberApiToken(sto storage.Interface, memberId int) (string, string) {
 	chkStorage(sto)
 
 	var key = GetMemberApiTokenKey(memberId)
@@ -56,7 +56,7 @@ func GetMemberApiToken(sto gof.Storage, memberId int) (string, string) {
 }
 
 // 移除会员令牌
-func RemoveMemberApiToken(sto gof.Storage, memberId int, token string) bool {
+func RemoveMemberApiToken(sto storage.Interface, memberId int, token string) bool {
 	srcToken, _ := GetMemberApiToken(sto, memberId)
 	if len(srcToken) == 0 && srcToken == token {
 		var key string = GetMemberApiTokenKey(memberId)
@@ -68,7 +68,7 @@ func RemoveMemberApiToken(sto gof.Storage, memberId int, token string) bool {
 }
 
 // 校验令牌
-func CompareMemberApiToken(sto gof.Storage, memberId int, token string) bool {
+func CompareMemberApiToken(sto storage.Interface, memberId int, token string) bool {
 
 	if len(token) == 0 {
 		return false

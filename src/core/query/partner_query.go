@@ -10,6 +10,7 @@ package query
 
 import (
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/db"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/variable"
@@ -18,7 +19,7 @@ import (
 
 type PartnerQuery struct {
 	db.Connector
-	gof.Storage
+	Storage storage.Interface
 }
 
 func NewPartnerQuery(c gof.App) *PartnerQuery {
