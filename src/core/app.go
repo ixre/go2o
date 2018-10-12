@@ -29,7 +29,7 @@ type MainApp struct {
 	_debugMode    bool
 	_template     *gof.Template
 	_logger       log.ILogger
-	_storage      gof.Storage
+	_storage      storage.Interface
 }
 
 func NewMainApp(confPath string) *MainApp {
@@ -45,7 +45,7 @@ func (this *MainApp) Db() db.Connector {
 	return this._dbConnector
 }
 
-func (this *MainApp) Storage() gof.Storage {
+func (this *MainApp) Storage() storage.Interface {
 	if this._storage == nil {
 		this._storage = storage.NewRedisStorage(this.Redis())
 	}
