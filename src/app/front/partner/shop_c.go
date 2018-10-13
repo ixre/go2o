@@ -55,18 +55,18 @@ func (this *shopC) SaveShop(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 
 		shop := partner.ValueShop{}
-		web.ParseFormToEntity(r.Form, &shop)
+		form.ParseEntity(r.Form, &shop)
 
 		id, err := dps.PartnerService.SaveShop(partnerId, &shop)
 
 		if err != nil {
-			result = gof.Message{Result: true, Message: err.Error()}
+			result = gof.Result{Result: true, Message: err.Error()}
 		} else {
-			result = gof.Message{Result: true, Message: "", Data: id}
+			result = gof.Result{Result: true, Message: "", Data: id}
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -75,7 +75,7 @@ func (this *shopC) SaveShop(ctx *echox.Context) error {
 
 // 删除商店(POST)
 func (this *shopC) Del(ctx *echox.Context) error {
-	var result gof.Message
+	var result gof.Result
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
@@ -86,7 +86,7 @@ func (this *shopC) Del(ctx *echox.Context) error {
 		}
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}

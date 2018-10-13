@@ -23,10 +23,10 @@ import (
 type PartnerDbGetter struct{}
 
 func (dbGetter *PartnerDbGetter) GetDB() *sql.DB {
-	return gof.CurrentApp.Db().GetDb()
+	return gof.CurrentApp.Db().Raw()
 }
 
-var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: &PartnerDbGetter{}}
+var EXP_Manager = report.NewItemManager(&PartnerDbGetter{},"./conf/query",true)
 
 //================== 导出控制器 ==============//
 
@@ -34,20 +34,20 @@ var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: 
 func GetExportData(r *http.Request) []byte {
 	query := r.URL.Query()
 	r.ParseForm()
-	var exportItm report.IDataExportPortal = EXP_Manager.GetExportItem(query.Get("portal"))
+	var exportItm report.IDataExportPortal = EXP_Manager.GetItem(query.Get("portal"))
 
 	if exportItm != nil {
 		page, rows := r.Form.Get("page"), r.Form.Get("rows")
-		var parameter *report.ExportParams = report.GetExportParams(query.Get("params"), nil)
+		var parameter report.Params = report.ParseParams(query.Get("params"))
 
 		if page != "" {
-			parameter.Parameters["pageIndex"] = page
+			parameter["pageIndex"] = page
 		}
 		if rows != "" {
-			parameter.Parameters["pageSize"] = rows
+			parameter["pageSize"] = rows
 		}
 
-		_rows, total, err := exportItm.GetSchemaAndData(parameter.Parameters)
+		_rows, total, err := exportItm.GetSchemaAndData(parameter)
 		if err == nil {
 			var arr []string = []string{"{\"total\":", strconv.Itoa(total), ",\"rows\":", "", "}"}
 			json, _ := json.Marshal(_rows)

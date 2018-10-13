@@ -10,7 +10,7 @@ package cache
 
 import (
 	"fmt"
-	"github.com/jsix/gof"
+	"github.com/jsix/gof/storage"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
@@ -19,7 +19,7 @@ import (
 // 获取商户信息缓存
 func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
 	var v partner.ValuePartner
-	var sto gof.Storage = GetKVS()
+	var sto storage.Interface = GetKVS()
 	var key string = GetValuePartnerCacheCK(partnerId)
 	if sto.Get(key, &v) != nil {
 		v2, err := dps.PartnerService.GetPartner(partnerId)
@@ -51,7 +51,7 @@ func DelPartnerCache(partnerId int) {
 // 获取商户站点配置
 func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	var v partner.SiteConf
-	var sto gof.Storage = GetKVS()
+	var sto storage.Interface = GetKVS()
 	var key string = GetPartnerSiteConfCK(partnerId)
 	if sto.Get(key, &v) != nil {
 		v2 := dps.PartnerService.GetSiteConf(partnerId)

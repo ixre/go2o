@@ -45,16 +45,16 @@ func (this *personFinanceRiseC) OpenService(c *echox.Context) error {
 }
 
 func (this *personFinanceRiseC) openService_post(c *echox.Context) error {
-	msg := gof.Message{}
+	msg := gof.Result{}
 	memberId := GetSessionMemberId(c)
 	if err := dps.PersonFinanceService.OpenRiseService(memberId); err != nil {
 		if strings.Index(err.Error(), "exists") != -1 {
-			msg.Message = "您已经开通服务!"
+			msg.ErrMsg = "您已经开通服务!"
 		} else {
-			msg.Message = err.Error()
+			msg.ErrMsg = err.Error()
 		}
 	} else {
-		msg.Result = true
+msg.ErrCode = 0
 	}
 	return c.JSON(http.StatusOK, msg)
 }
@@ -77,7 +77,7 @@ func (this *personFinanceRiseC) TransferIn(c *echox.Context) error {
 }
 
 func (this *personFinanceRiseC) transferIn_post(c *echox.Context) error {
-	msg := gof.Message{}
+	msg := gof.Result{}
 	memberId := GetSessionMemberId(c)
 	amount, err := strconv.ParseFloat(c.Form("Amount"), 32)
 	transferFrom, _ := strconv.Atoi(c.Form("TransferWith"))
@@ -86,9 +86,9 @@ func (this *personFinanceRiseC) transferIn_post(c *echox.Context) error {
 			personfinance.TransferWith(transferFrom), float32(amount))
 	}
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 	} else {
-		msg.Result = true
+msg.ErrCode = 0
 	}
 	return c.JSON(http.StatusOK, msg)
 }
@@ -110,7 +110,7 @@ func (this *personFinanceRiseC) TransferOut(c *echox.Context) error {
 }
 
 func (this *personFinanceRiseC) transferOut_post(c *echox.Context) error {
-	msg := gof.Message{}
+	msg := gof.Result{}
 	memberId := GetSessionMemberId(c)
 	amount, err := strconv.ParseFloat(c.Form("Amount"), 32)
 	transferTo, _ := strconv.Atoi(c.Form("TransferWith"))
@@ -119,9 +119,9 @@ func (this *personFinanceRiseC) transferOut_post(c *echox.Context) error {
 			personfinance.TransferWith(transferTo), float32(amount))
 	}
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 	} else {
-		msg.Result = true
+msg.ErrCode = 0
 	}
 	return c.JSON(http.StatusOK, msg)
 }

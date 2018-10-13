@@ -11,7 +11,8 @@ package master
 import (
 	"encoding/json"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/util"
+	"github.com/jsix/gof/web/form"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
@@ -38,12 +39,12 @@ func (c *partnerC) CreatePartner(ctx *echox.Context) error {
 func (c *partnerC) SavePartner(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		var isCreate bool
 		r.ParseForm()
 
 		partner := partner.ValuePartner{}
-		web.ParseFormToEntity(r.Form, &partner)
+		form.ParseEntity(r.Form, &partner)
 
 		dt := time.Now()
 		anousPwd := strings.Repeat("*", 10) //匿名密码
@@ -70,10 +71,9 @@ func (c *partnerC) SavePartner(ctx *echox.Context) error {
 
 		id, err := dps.PartnerService.SavePartner(partner.Id, &partner)
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
-			result.Data = id
-			result.Result = true
+			result.Data = map[string]string{"id":util.Str(id)}
 			if isCreate {
 				// 初始化商户信息
 			}
@@ -112,15 +112,15 @@ func (c *partnerC) List(ctx *echox.Context) error {
 }
 
 func (c *partnerC) DelPartner(w http.ResponseWriter, r *http.Request) {
-	//	var result gof.Message
+	//	var result gof.Result
 	//	r.ParseForm()
 	//	ptid, err := strconv.Atoi(r.Form.Get("id"))
 	//	if err != nil {
-	//		result.Message = err.Error()
+	//		result.ErrMsg = err.Error()
 	//	} else {
 	////		err := dps.PartnerService.DeletePartner(ptid)
 	////		if err != nil {
-	////			result.Message = err.Error()
+	////			result.ErrMsg = err.Error()
 	////		} else {
 	////			result.Result = true
 	////		}

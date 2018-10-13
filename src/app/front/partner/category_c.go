@@ -95,17 +95,17 @@ func (this *categoryC) SaveCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 
 		e := sale.ValueCategory{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 
 		id, err := dps.SaleService.SaveCategory(partnerId, &e)
 		if err != nil {
-			result = gof.Message{Result: false, Message: err.Error()}
+			result = gof.Result{Result: false, Message: err.Error()}
 		} else {
-			result = gof.Message{Result: true, Message: "", Data: id}
+			result = gof.Result{Result: true, Message: "", Data: id}
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -116,16 +116,16 @@ func (this *categoryC) DelCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 		categoryId, _ := strconv.Atoi(r.FormValue("id"))
 
 		//删除分类
 		err := dps.SaleService.DeleteCategory(partnerId, categoryId)
 		if err != nil {
-			result = gof.Message{Result: false, Message: err.Error()}
+			result = gof.Result{Result: false, Message: err.Error()}
 		} else {
-			result = gof.Message{Result: true, Message: ""}
+			result = gof.Result{Result: true, Message: ""}
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}

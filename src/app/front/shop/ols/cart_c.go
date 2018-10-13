@@ -93,15 +93,14 @@ func (this *CartC) cart_AddItem(ctx *echox.Context,
 
 func (this *CartC) cart_RemoveItem(ctx *echox.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) error {
-	var result gof.Message
+	var result gof.Result
 	r := ctx.HttpRequest()
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	err := dps.ShoppingService.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
 	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+		result.ErrMsg = err.Error()
+		result.ErrCode = 1
 	}
 	return ctx.JSON(http.StatusOK, result)
 }

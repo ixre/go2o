@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/form"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
@@ -110,7 +110,7 @@ func (this *ShoppingC) BuyingPersist(ctx *echox.Context) error {
 	if r.Method == "POST" {
 		p := getPartner(ctx)
 		m := GetMember(ctx)
-		msg := gof.Message{}
+		msg := gof.Result{}
 		var err error
 		r.ParseForm()
 
@@ -140,9 +140,9 @@ func (this *ShoppingC) BuyingPersist(ctx *echox.Context) error {
 
 	rsp:
 		if err != nil {
-			msg.Message = err.Error()
+			msg.ErrMsg = err.Error()
 		} else {
-			msg.Result = true
+	msg.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, msg)
 	}
@@ -175,16 +175,16 @@ func (this *ShoppingC) GetDeliverAddress(ctx *echox.Context) error {
 func (this *ShoppingC) SaveDeliverAddress(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if this.prepare(ctx) && r.Method == "POST" {
-		msg := gof.Message{Result: true}
+		msg := gof.Result{}
 		m := GetMember(ctx)
 		r.ParseForm()
 		var e member.DeliverAddress
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 		e.MemberId = m.Id
 		_, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
 		if err != nil {
-			msg.Result = false
-			msg.Message = err.Error()
+			msg.ErrCode = 1
+			msg.ErrMsg = err.Error()
 		}
 		return ctx.JSON(http.StatusOK, msg)
 	}
@@ -205,7 +205,7 @@ func (this *ShoppingC) Apply(ctx *echox.Context) error {
 }
 
 func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
-	msg := gof.Message{}
+	msg := gof.Result{}
 	p := getPartner(ctx)
 	m := GetMember(ctx)
 	r := ctx.HttpRequest()
@@ -214,7 +214,7 @@ func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
 	subject := r.FormValue("subject") // not necessary
 	data, err := dps.ShoppingService.BuildOrder(p.Id, subject, m.Id, "", code)
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 	} else {
 		return ctx.JSON(http.StatusOK, data)
 	}
@@ -239,7 +239,7 @@ func (this *ShoppingC) Submit_0(ctx *echox.Context) error {
 		// 锁定订单提交
 		if !this.lockOrder(ctx) {
 			//fmt.Println("--- IS LOCKED")
-			return ctx.JSON(http.StatusOK, gof.Message{Message: "请勿重复提交订单"})
+			return ctx.JSON(http.StatusOK, gof.Result{ErrMsg: "请勿重复提交订单"})
 		}
 
 		// 是否余额支付

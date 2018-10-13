@@ -10,7 +10,6 @@ package cache
 
 import (
 	"errors"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/storage"
 )
 
@@ -18,19 +17,19 @@ import (
 
 var (
 	DefaultMaxSeconds int64 = 300 //默认存储300秒
-	kvCacheStorage    gof.Storage
+	kvCacheStorage    storage.Interface
 )
 
 // Get Key-value storage
-func GetKVS() gof.Storage {
+func GetKVS() storage.Interface {
 	if kvCacheStorage == nil {
 		panic(errors.New("Can't find storage medium."))
 	}
 	return kvCacheStorage
 }
 
-func Initialize(kvStorage gof.Storage) {
-	if kvStorage.DriverName() == storage.DriveRedisStorage {
+func Initialize(kvStorage storage.Interface) {
+	if kvStorage.Driver() == storage.DriveRedisStorage {
 		kvCacheStorage = kvStorage
 	} else {
 		panic(errors.New("only support redis storage now."))

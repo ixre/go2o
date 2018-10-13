@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	fmt2 "github.com/jsix/gof/util/fmt"
-	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/form"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
@@ -98,17 +98,17 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 func (this *basicC) profile_post(ctx *echox.Context) error {
 	mm := getMember(ctx)
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	r.ParseForm()
 	m := new(member.ValueMember)
-	web.ParseFormToEntity(r.Form, m)
+	form.ParseEntity(r.Form, m)
 	m.Id = mm.Id
 	_, err := dps.MemberService.SaveMember(m)
 
 	if err != nil {
-		result.Message = err.Error()
+		result.ErrMsg = err.Error()
+		result.ErrCode = 1
 	} else {
-		result.Result = true
 		reCacheMember(ctx, m.Id)
 	}
 	return ctx.JSON(http.StatusOK, result)
@@ -133,7 +133,7 @@ func (this *basicC) Pwd(ctx *echox.Context) error {
 
 func (this *basicC) pwd_post(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	r.ParseForm()
 	m := getMember(ctx)
 	var oldPwd, newPwd, rePwd string
@@ -147,9 +147,9 @@ func (this *basicC) pwd_post(ctx *echox.Context) error {
 		err = dps.MemberService.ModifyPassword(m.Id, oldPwd, newPwd)
 	}
 	if err != nil {
-		result.Message = err.Error()
+		result.ErrMsg = err.Error()
+		result.ErrCode = 1
 	} else {
-		result.Result = true
 		reCacheMember(ctx, m.Id)
 	}
 	return ctx.JSON(http.StatusOK, result)
@@ -175,7 +175,7 @@ func (this *basicC) Trade_pwd(ctx *echox.Context) error {
 }
 func (this *basicC) trade_pwd_post(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	r.ParseForm()
 	m := getMember(ctx)
 	var oldPwd, newPwd, rePwd string
@@ -189,9 +189,9 @@ func (this *basicC) trade_pwd_post(ctx *echox.Context) error {
 		err = dps.MemberService.ModifyTradePassword(m.Id, oldPwd, newPwd)
 	}
 	if err != nil {
-		result.Message = err.Error()
+		result.ErrMsg = err.Error()
+		result.ErrCode = 1
 	} else {
-		result.Result = true
 		reCacheMember(ctx, m.Id)
 	}
 	return ctx.JSON(http.StatusOK, result)
@@ -226,16 +226,15 @@ func (this *basicC) SaveDeliver(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		m := getMember(ctx)
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 		var e member.DeliverAddress
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 		e.MemberId = m.Id
 		_, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
 		if err != nil {
-			result.Message = err.Error()
-		} else {
-			result.Result = true
+			result.ErrMsg = err.Error()
+			result.ErrCode = 1
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -245,16 +244,15 @@ func (this *basicC) SaveDeliver(ctx *echox.Context) error {
 func (this *basicC) DeleteDeliver(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		m := getMember(ctx)
 		r.ParseForm()
 		id, _ := strconv.Atoi(r.FormValue("id"))
 
 		err := dps.MemberService.DeleteDeliverAddress(m.Id, id)
 		if err != nil {
-			result.Message = err.Error()
-		} else {
-			result.Result = true
+			result.ErrMsg = err.Error()
+			result.ErrCode = 1
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -264,8 +262,8 @@ func (this *basicC) DeleteDeliver(ctx *echox.Context) error {
 func (this *basicC) Member_cln_filter(ctx *echox.Context) error {
 	key := ctx.Query("key")
 	if len(key) < 3 {
-		return ctx.JSON(http.StatusOK, gof.Message{
-			Message: "length less more",
+		return ctx.JSON(http.StatusOK, gof.Result{
+			ErrMsg: "length less more",
 		})
 	}
 	var list []*dto.SimpleMember

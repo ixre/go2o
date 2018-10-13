@@ -123,11 +123,11 @@ func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 		id, _ := strconv.Atoi(r.FormValue("ItemId"))
 		info := r.FormValue("Info")
 
-		var result gof.Message
+		var result gof.Result
 		err := dps.SaleService.SaveItemInfo(partnerId, id, info)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -143,14 +143,14 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		ss := dps.SaleService
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 		e := sale.ValueItem{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 		e.State = 1 //todo: 暂时使用
 		id, err := ss.SaveItem(partnerId, &e)
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			gs := ss.GetValueGoodsBySku(partnerId, id, 0) //todo: ??? SKU
 			gs.StockNum, _ = strconv.Atoi(r.FormValue("StockNum"))
@@ -170,14 +170,14 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 func (this *goodsC) Del_goods(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	if r.Method == "POST" {
 		r.ParseForm()
 		id, _ := strconv.Atoi(r.FormValue("id"))
 		err := dps.SaleService.DeleteGoods(partnerId, id)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -191,14 +191,14 @@ func (this *goodsC) Del_item(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 
 		r.ParseForm()
 		id, _ := strconv.Atoi(r.FormValue("id"))
 		err := dps.SaleService.DeleteItem(partnerId, id)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -237,7 +237,7 @@ func (this *goodsC) SaveGoodsSTag(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
-		var result gof.Message
+		var result gof.Result
 		goodsId, err := strconv.Atoi(r.FormValue("GoodsId"))
 		if err == nil {
 			tags := strings.Split(r.FormValue("SaleTags"), ",")
@@ -253,7 +253,7 @@ func (this *goodsC) SaveGoodsSTag(ctx *echox.Context) error {
 		}
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -324,7 +324,7 @@ func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
 	req.ParseForm()
 	goodsId, err := strconv.Atoi(req.FormValue("goodsId"))
 	if err != nil {
-		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
+		return ctx.JSON(http.StatusOK, gof.Result{Message: err.Error()})
 	}
 
 	var priceSet []*sale.MemberPrice = []*sale.MemberPrice{}
@@ -352,7 +352,7 @@ func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
 					Enabled: enabled,
 				})
 			} else {
-				return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
+				return ctx.JSON(http.StatusOK, gof.Result{Message: err.Error()})
 			}
 		}
 	}
@@ -360,8 +360,8 @@ func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	err = dps.SaleService.SaveMemberPrices(partnerId, goodsId, priceSet)
 	if err != nil {
-		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
+		return ctx.JSON(http.StatusOK, gof.Result{Message: err.Error()})
 	} else {
-		return ctx.JSON(http.StatusOK, gof.Message{Result: true})
+		return ctx.JSON(http.StatusOK, gof.Result{Result: true})
 	}
 }

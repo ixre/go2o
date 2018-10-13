@@ -60,13 +60,13 @@ func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
 	if req.Method == "POST" {
 
 		req.ParseForm()
-		var result gof.Message
+		var result gof.Result
 		partnerId := getPartnerId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("id"))
 		err := dps.PartnerService.DeleteMailTemplate(partnerId, adId)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -83,10 +83,10 @@ func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		var result gof.Message
+		var result gof.Result
 
 		e := mss.MailTemplate{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 
 		//更新
 		e.PartnerId = partnerId
@@ -94,7 +94,7 @@ func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
 		id, err := dps.PartnerService.SaveMailTemplate(partnerId, &e)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 			result.Data = id
@@ -126,7 +126,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 
 // 保存设置
 func (this *mssC) mss_setting_post(ctx *echox.Context) error {
-	var result gof.Message
+	var result gof.Result
 	partnerId := getPartnerId(ctx)
 	req := ctx.HttpRequest()
 	req.ParseForm()
@@ -140,7 +140,7 @@ func (this *mssC) mss_setting_post(ctx *echox.Context) error {
 	err := dps.PartnerService.SaveKeyMaps(partnerId, data)
 
 	if err != nil {
-		result.Message = err.Error()
+		result.ErrMsg = err.Error()
 	} else {
 		result.Result = true
 	}

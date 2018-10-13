@@ -13,7 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/form"
 	"github.com/jsix/gof/web/pager"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/member"
@@ -70,9 +70,9 @@ func (this *accountC) income_log_post(ctx *echox.Context) error {
 
 	n, rows := dps.MemberService.QueryIncomeLog(m.Id, page, size,
 		" AND kind IN ("+bonusKindStr+")", "create_time DESC")
-	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.GetterJavaScriptPager)
+	p := pager.NewUrlPager(pager.MathPages(n, size), page, "")
 
-	p.RecordCount = n
+	p.Total = n
 	pager := &front.Pager{Total: n, Rows: rows, Text: p.PagerString()}
 	return ctx.JSON(http.StatusOK, pager)
 }
@@ -126,20 +126,20 @@ func (this *accountC) Apply_cash(ctx *echox.Context) error {
 }
 
 func (this *accountC) apply_cash_post(ctx *echox.Context) error {
-	var msg gof.Message
+	var msg gof.Result
 	var err error
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	partnerId := getPartner(ctx).Id
 	strAmount := strings.TrimSpace(r.FormValue("Amount"))
 	if len(strAmount) == 0 || strAmount == "NaN" {
-		msg.Message = "提现金额错误"
+		msg.ErrMsg = "提现金额错误"
 		return ctx.JSON(http.StatusOK, msg)
 	}
 
 	amount, err := strconv.ParseFloat(r.FormValue("Amount"), 32)
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 		return ctx.JSON(http.StatusOK, msg)
 	}
 
@@ -169,9 +169,9 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 
 toErr:
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 	} else {
-		msg.Result = true
+msg.ErrCode = 0
 	}
 
 	return ctx.JSON(http.StatusOK, msg)
@@ -212,7 +212,7 @@ func (this *accountC) Convert_f2p(ctx *echox.Context) error {
 }
 
 func (this *accountC) convert_f2p_post(ctx *echox.Context) error {
-	var msg gof.Message
+	var msg gof.Result
 	var err error
 	r := ctx.HttpRequest()
 	r.ParseForm()
@@ -231,9 +231,9 @@ func (this *accountC) convert_f2p_post(ctx *echox.Context) error {
 	}
 
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 	} else {
-		msg.Result = true
+msg.ErrCode = 0
 	}
 	return ctx.JSON(http.StatusOK, msg)
 }
@@ -273,7 +273,7 @@ func (this *accountC) Transfer_f2m(ctx *echox.Context) error {
 }
 
 func (this *accountC) transfer_f2m_post(ctx *echox.Context) error {
-	var msg gof.Message
+	var msg gof.Result
 	var err error
 	r := ctx.HttpRequest()
 	r.ParseForm()
@@ -294,9 +294,9 @@ func (this *accountC) transfer_f2m_post(ctx *echox.Context) error {
 		}
 	}
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 	} else {
-		msg.Result = true
+msg.ErrCode = 0
 	}
 	return ctx.JSON(http.StatusOK, msg)
 }
@@ -358,10 +358,10 @@ func (this *accountC) Bank_info(ctx *echox.Context) error {
 func (this *accountC) bank_info_post(ctx *echox.Context) error {
 	m := getMember(ctx)
 	r := ctx.HttpRequest()
-	msg := new(gof.Message)
+	msg := new(gof.Result)
 	r.ParseForm()
 	e := new(member.BankInfo)
-	web.ParseFormToEntity(r.Form, e)
+	form.ParseEntity(r.Form, e)
 	e.MemberId = m.Id
 	err := dps.MemberService.SaveBankInfo(e)
 	return ctx.JSON(http.StatusOK, msg.Error(err))
