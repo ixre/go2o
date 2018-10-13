@@ -223,29 +223,29 @@ func (this *saleService) GetCategoryTreeNode(partnerId int) *tree.TreeNode {
 	sl := this._rep.GetSale(partnerId)
 	cats := sl.GetCategories()
 	rootNode := &tree.TreeNode{
-		Text:   "根节点",
+		Title:   "根节点",
 		Value:  "",
 		Url:    "",
 		Icon:   "",
-		Open:   true,
-		Childs: nil}
+		Expand:   true,
+		Children: nil}
 	this.walkCategoryTree(rootNode, 0, cats)
 	return rootNode
 }
 
 func (this *saleService) walkCategoryTree(node *tree.TreeNode, parentId int, categories []sale.ICategory) {
-	node.Childs = []*tree.TreeNode{}
+	node.Children = []*tree.TreeNode{}
 	for _, v := range categories {
 		cate := v.GetValue()
 		if cate.ParentId == parentId {
 			cNode := &tree.TreeNode{
-				Text:   cate.Name,
+				Title:   cate.Name,
 				Value:  strconv.Itoa(cate.Id),
 				Url:    "",
 				Icon:   "",
-				Open:   true,
-				Childs: nil}
-			node.Childs = append(node.Childs, cNode)
+				Expand:   true,
+				Children: nil}
+			node.Children = append(node.Children, cNode)
 			this.walkCategoryTree(cNode, cate.Id, categories)
 		}
 	}

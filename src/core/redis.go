@@ -11,7 +11,7 @@ package core
 import (
 	"errors"
 	"fmt"
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 	"github.com/jsix/gof"
 	"log"
 	"time"
@@ -84,7 +84,7 @@ func GetRedisPool() *redis.Pool {
 			panic(errors.New("gobal app not initialize!"))
 		}
 		var ok bool
-		globPool, ok = app.Storage().Driver().(*redis.Pool)
+		globPool, ok = app.Storage().Source().(*redis.Pool)
 		if !ok {
 			panic(errors.New("storage drive not base redis"))
 		}

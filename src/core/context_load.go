@@ -48,71 +48,71 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		c.GetString(variable.DbName),
 		dbCharset,
 	)
-	connector := db.NewSimpleConnector(driver, connStr, l, 5000, debug)
+	connector := db.NewConnector(driver, connStr, l, debug)
 
 	//table mapping
 	orm := connector.GetOrm()
 
 	/** new **/
-	orm.TableMapping(member.ValueMember{}, "mm_member")
-	orm.TableMapping(member.IntegralLog{}, "mm_integral_log")
-	orm.TableMapping(member.AccountValue{}, "mm_account")
-	orm.TableMapping(member.DeliverAddress{}, "mm_deliver_addr")
-	orm.TableMapping(member.MemberRelation{}, "mm_relation")
-	orm.TableMapping(member.BalanceInfoValue{}, "mm_balance_info")
+	orm.Mapping(member.ValueMember{}, "mm_member")
+	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
+	orm.Mapping(member.AccountValue{}, "mm_account")
+	orm.Mapping(member.DeliverAddress{}, "mm_deliver_addr")
+	orm.Mapping(member.MemberRelation{}, "mm_relation")
+	orm.Mapping(member.BalanceInfoValue{}, "mm_balance_info")
 
-	orm.TableMapping(member.BankInfo{}, "mm_bank")
-	orm.TableMapping(shopping.ValueOrder{}, "pt_order")
-	orm.TableMapping(shopping.OrderItem{}, "pt_order_item")
-	orm.TableMapping(shopping.OrderCoupon{}, "pt_order_coupon")
-	orm.TableMapping(shopping.OrderPromotionBind{}, "pt_order_pb")
-	orm.TableMapping(shopping.OrderLog{}, "pt_order_log")
-	orm.TableMapping(shopping.ValueCart{}, "sale_cart")
-	orm.TableMapping(shopping.ValueCartItem{}, "sale_cart_item")
+	orm.Mapping(member.BankInfo{}, "mm_bank")
+	orm.Mapping(shopping.ValueOrder{}, "pt_order")
+	orm.Mapping(shopping.OrderItem{}, "pt_order_item")
+	orm.Mapping(shopping.OrderCoupon{}, "pt_order_coupon")
+	orm.Mapping(shopping.OrderPromotionBind{}, "pt_order_pb")
+	orm.Mapping(shopping.OrderLog{}, "pt_order_log")
+	orm.Mapping(shopping.ValueCart{}, "sale_cart")
+	orm.Mapping(shopping.ValueCartItem{}, "sale_cart_item")
 
 	/** 销售 **/
-	orm.TableMapping(sale.ValueItem{}, "gs_item")
-	orm.TableMapping(sale.ValueGoods{}, "gs_goods")
-	orm.TableMapping(sale.ValueCategory{}, "gs_category")
-	orm.TableMapping(sale.GoodsSnapshot{}, "gs_snapshot")
-	orm.TableMapping(sale.ValueSaleTag{}, "gs_sale_tag")
-	orm.TableMapping(sale.MemberPrice{}, "gs_member_price")
+	orm.Mapping(sale.ValueItem{}, "gs_item")
+	orm.Mapping(sale.ValueGoods{}, "gs_goods")
+	orm.Mapping(sale.ValueCategory{}, "gs_category")
+	orm.Mapping(sale.GoodsSnapshot{}, "gs_snapshot")
+	orm.Mapping(sale.ValueSaleTag{}, "gs_sale_tag")
+	orm.Mapping(sale.MemberPrice{}, "gs_member_price")
 
 	/** 商户 **/
-	orm.TableMapping(partner.ValuePartner{}, "pt_partner")
-	orm.TableMapping(partner.ApiInfo{}, "pt_api")
-	orm.TableMapping(partner.SiteConf{}, "pt_siteconf")
-	orm.TableMapping(partner.ValueShop{}, "pt_shop")
-	orm.TableMapping(partner.SaleConf{}, "pt_saleconf")
-	orm.TableMapping(valueobject.MemberLevel{}, "pt_member_level")
-	orm.TableMapping(content.ValuePage{}, "pt_page")
-	orm.TableMapping(ad.ValueAdvertisement{}, "pt_ad")
-	orm.TableMapping(ad.ValueImage{}, "pt_ad_image")
-	orm.TableMapping(mss.MailTemplate{}, "pt_mail_template")
-	orm.TableMapping(mss.MailTask{}, "pt_mail_queue")
+	orm.Mapping(partner.ValuePartner{}, "pt_partner")
+	orm.Mapping(partner.ApiInfo{}, "pt_api")
+	orm.Mapping(partner.SiteConf{}, "pt_siteconf")
+	orm.Mapping(partner.ValueShop{}, "pt_shop")
+	orm.Mapping(partner.SaleConf{}, "pt_saleconf")
+	orm.Mapping(valueobject.MemberLevel{}, "pt_member_level")
+	orm.Mapping(content.ValuePage{}, "pt_page")
+	orm.Mapping(ad.ValueAdvertisement{}, "pt_ad")
+	orm.Mapping(ad.ValueImage{}, "pt_ad_image")
+	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
+	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
 
 	/** 促销 **/
-	orm.TableMapping(promotion.ValueCoupon{}, "pm_coupon")
-	orm.TableMapping(promotion.ValueCouponBind{}, "pm_coupon_bind")
-	orm.TableMapping(promotion.ValueCouponTake{}, "pm_coupon_take")
-	orm.TableMapping(promotion.ValuePromotion{}, "pm_info")
-	orm.TableMapping(promotion.ValueCashBack{}, "pm_cash_back")
+	orm.Mapping(promotion.ValueCoupon{}, "pm_coupon")
+	orm.Mapping(promotion.ValueCouponBind{}, "pm_coupon_bind")
+	orm.Mapping(promotion.ValueCouponTake{}, "pm_coupon_take")
+	orm.Mapping(promotion.ValuePromotion{}, "pm_info")
+	orm.Mapping(promotion.ValueCashBack{}, "pm_cash_back")
 
 	/** 配送 **/
-	orm.TableMapping(delivery.AreaValue{}, "dlv_area")
-	orm.TableMapping(delivery.CoverageValue{}, "dlv_coverage")
-	orm.TableMapping(delivery.PartnerDeliverBind{}, "dlv_partner_bind")
+	orm.Mapping(delivery.AreaValue{}, "dlv_area")
+	orm.Mapping(delivery.CoverageValue{}, "dlv_coverage")
+	orm.Mapping(delivery.PartnerDeliverBind{}, "dlv_partner_bind")
 
 	/** 用户 **/
-	orm.TableMapping(user.RoleValue{}, "usr_role")
-	orm.TableMapping(user.PersonValue{}, "usr_person")
-	orm.TableMapping(user.CredentialValue{}, "usr_credential")
+	orm.Mapping(user.RoleValue{}, "usr_role")
+	orm.Mapping(user.PersonValue{}, "usr_person")
+	orm.Mapping(user.CredentialValue{}, "usr_credential")
 
-	orm.TableMapping(personfinance.RiseInfoValue{}, "pf_riseinfo")
-	orm.TableMapping(personfinance.RiseDayInfo{}, "pf_riseday")
-	orm.TableMapping(personfinance.RiseLog{}, "pf_riselog")
+	orm.Mapping(personfinance.RiseInfoValue{}, "pf_riseinfo")
+	orm.Mapping(personfinance.RiseDayInfo{}, "pf_riseday")
+	orm.Mapping(personfinance.RiseLog{}, "pf_riselog")
 
-	orm.TableMapping(valueobject.Goods{}, "")
+	orm.Mapping(valueobject.Goods{}, "")
 
 	return connector
 }

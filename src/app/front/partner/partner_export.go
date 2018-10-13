@@ -26,7 +26,7 @@ func (dbGetter *PartnerDbGetter) GetDB() *sql.DB {
 	return gof.CurrentApp.Db().GetDb()
 }
 
-var ExpManager *report.ExportItemManager = &report.ExportItemManager{DbGetter: &PartnerDbGetter{}}
+var ExpManager *report.ItemManager = &report.ItemManager{DbGetter: &PartnerDbGetter{}}
 
 //================== 导出控制器 ==============//
 

@@ -59,17 +59,17 @@ func (this *saleC) Save_stag(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 
 		e := sale.ValueSaleTag{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 		e.PartnerId = getPartnerId(ctx)
 
 		id, err := dps.SaleService.SaveSaleTag(partnerId, &e)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 			result.Data = id
@@ -82,7 +82,7 @@ func (this *saleC) Save_stag(ctx *echox.Context) error {
 // 删除销售标签(POST)
 func (this *saleC) Del_stag(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	if r.Method == "POST" {
 		r.ParseForm()
 		partnerId := getPartnerId(ctx)
@@ -92,7 +92,7 @@ func (this *saleC) Del_stag(ctx *echox.Context) error {
 		}
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}

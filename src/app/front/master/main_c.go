@@ -72,7 +72,7 @@ func (this *mainC) Login(ctx *echox.Context) error {
 	return ctx.RenderOK("login.html", ctx.NewData())
 }
 func (this *mainC) login_post(ctx *echox.Context) error {
-	var msg gof.Message
+	var msg gof.Result
 	ctx.HttpRequest().ParseForm()
 	usr, pwd := ctx.HttpRequest().FormValue("uid"), ctx.HttpRequest().FormValue("pwd")
 	var err error

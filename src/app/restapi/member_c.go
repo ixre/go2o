@@ -155,11 +155,10 @@ func (this *MemberC) Account(ctx *echo.Context) error {
 
 // 断开
 func (this *MemberC) Disconnect(ctx *echox.Context) error {
-	var result gof.Message
-	if util.MemberHttpSessionDisconnect(ctx) {
-		result.Result = true
-	} else {
-		result.Message = "disconnect fail"
+	var result gof.Result
+	if !util.MemberHttpSessionDisconnect(ctx) {
+		result.ErrCode = 1
+		result.ErrMsg = "disconnect fail"
 	}
 	return ctx.JSON(http.StatusOK, result)
 }

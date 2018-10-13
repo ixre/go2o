@@ -9,7 +9,7 @@
 package core
 
 import (
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/log"
@@ -32,12 +32,16 @@ type MainApp struct {
 	_storage      storage.Interface
 }
 
+
+
 func NewMainApp(confPath string) *MainApp {
 	return &MainApp{
 		_confFilePath: confPath,
 	}
 }
-
+func (this *MainApp) Registry() *gof.Registry {
+	panic("implement me")
+}
 func (this *MainApp) Db() db.Connector {
 	if this._dbConnector == nil {
 		this._dbConnector = getDb(this.Config(), this._debugMode, this.Log())

@@ -15,21 +15,20 @@ import (
 	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/service/dps"
-	"html/template"
 	"net/http"
-	"runtime/debug"
-	"strings"
 )
 
 // 处理自定义错误
 func HandleCustomError(w http.ResponseWriter, ctx *web.Context, err error) {
 	if err != nil {
 		w.WriteHeader(500)
+		/*
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"error": err.Error(),
 			"stack": template.HTML(debug.Stack()),
 		},
 			strings.Replace("views/shop/ols/{device}/error.html", "{device}", ctx.Items["device_view_dir"].(string), -1))
+		*/
 	}
 }
 

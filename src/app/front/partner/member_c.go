@@ -14,8 +14,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/util"
 	gfmt "github.com/jsix/gof/util/fmt"
-	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/form"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
@@ -59,20 +60,20 @@ func (this *memberC) SaveMLevel(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 
 		e := valueobject.MemberLevel{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 		e.PartnerId = getPartnerId(ctx)
 
 		id, err := dps.PartnerService.SaveMemberLevel(partnerId, &e)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
+			result.ErrCode = 1
 		} else {
-			result.Result = true
-			result.Data = id
+			result.Data = map[string]string{"id":util.Str(id)}
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -82,7 +83,7 @@ func (this *memberC) SaveMLevel(ctx *echox.Context) error {
 func (this *memberC) DelMLevel(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 		partnerId := getPartnerId(ctx)
 		id, err := strconv.Atoi(r.FormValue("id"))
@@ -91,7 +92,7 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 		}
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -115,9 +116,9 @@ func (this *memberC) Lock_member(ctx *echox.Context) error {
 		req.ParseForm()
 		id, _ := strconv.Atoi(req.FormValue("id"))
 		partnerId := getPartnerId(ctx)
-		var result gof.Message
+		var result gof.Result
 		if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -202,7 +203,7 @@ func (this *memberC) Member_bankinfo(ctx *echox.Context) error {
 func (this *memberC) Unlock_bankinfo(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		memberId, _ := strconv.Atoi(ctx.Query("member_id"))
-		msg := new(gof.Message)
+		msg := new(gof.Result)
 		err := dps.MemberService.UnlockBankInfo(memberId)
 		return ctx.JSON(http.StatusOK, msg.Error(err))
 	}
@@ -211,7 +212,7 @@ func (this *memberC) Unlock_bankinfo(ctx *echox.Context) error {
 
 // 重置密码(POST)
 func (this *memberC) Reset_pwd(ctx *echox.Context) error {
-	var result gof.Message
+	var result gof.Result
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
@@ -219,11 +220,11 @@ func (this *memberC) Reset_pwd(ctx *echox.Context) error {
 		rl := dps.MemberService.GetRelation(memberId)
 		partnerId := getPartnerId(ctx)
 		if rl == nil || rl.RegisterPartnerId != partnerId {
-			result.Message = "无权进行当前操作"
+			result.ErrMsg = "无权进行当前操作"
 		} else {
 			newPwd := dps.MemberService.ResetPassword(memberId)
 			result.Result = true
-			result.Message = fmt.Sprintf("重置成功,新密码为: %s", newPwd)
+			result.ErrMsg = fmt.Sprintf("重置成功,新密码为: %s", newPwd)
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -245,7 +246,7 @@ func (this *memberC) Charge(ctx *echox.Context) error {
 	return ctx.RenderOK("member.charge.html", d)
 }
 func (this *memberC) charge_post(ctx *echox.Context) error {
-	var msg gof.Message
+	var msg gof.Result
 	var err error
 	req := ctx.HttpRequest()
 	req.ParseForm()
@@ -253,7 +254,7 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
 	amount, _ := strconv.ParseFloat(req.FormValue("Amount"), 32)
 	if amount < 0 {
-		msg.Message = "error amount"
+		msg.ErrMsg = "error amount"
 	} else {
 		rel := dps.MemberService.GetRelation(memberId)
 
@@ -265,9 +266,9 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 				member.TypeBalanceServiceCharge, title, "-", float32(amount))
 		}
 		if err != nil {
-			msg.Message = err.Error()
+			msg.ErrMsg = err.Error()
 		} else {
-			msg.Result = true
+	msg.ErrCode = 0
 		}
 	}
 	return ctx.JSON(http.StatusOK, msg)
@@ -285,7 +286,7 @@ func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 
 // 审核提现请求
 func (this *memberC) Pass_apply_req(ctx *echox.Context) error {
-	var msg gof.Message
+	var msg gof.Result
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
@@ -297,9 +298,9 @@ func (this *memberC) Pass_apply_req(ctx *echox.Context) error {
 		err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, passed, "")
 
 		if err != nil {
-			msg.Message = err.Error()
+			msg.ErrMsg = err.Error()
 		} else {
-			msg.Result = true
+	msg.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, msg)
 	}
@@ -327,7 +328,7 @@ func (this *memberC) Back_apply_req(ctx *echox.Context) error {
 }
 
 func (this *memberC) back_apply_req_post(ctx *echox.Context) error {
-	var msg gof.Message
+	var msg gof.Result
 	req := ctx.HttpRequest()
 	req.ParseForm()
 	partnerId := getPartnerId(ctx)
@@ -336,9 +337,9 @@ func (this *memberC) back_apply_req_post(ctx *echox.Context) error {
 
 	err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, false, "")
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 	} else {
-		msg.Result = true
+msg.ErrCode = 0
 	}
 	return ctx.JSON(http.StatusOK, msg)
 }
@@ -371,7 +372,7 @@ func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
 }
 
 func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
-	var msg gof.Message
+	var msg gof.Result
 	var err error
 	req := ctx.HttpRequest()
 	req.ParseForm()
@@ -387,9 +388,9 @@ func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
 		err = dps.MemberService.FinishApplyCash(partnerId, memberId, id, tradeNo)
 	}
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 	} else {
-		msg.Result = true
+msg.ErrCode = 0
 	}
 	return ctx.JSON(http.StatusOK, msg)
 }

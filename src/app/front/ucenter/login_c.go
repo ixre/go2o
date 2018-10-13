@@ -32,7 +32,7 @@ func (this *loginC) Index(ctx *echox.Context) error {
 func (this *loginC) index_post(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	r.ParseForm()
-	var result gof.Message
+	var result gof.Result
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)
@@ -41,12 +41,14 @@ func (this *loginC) index_post(ctx *echox.Context) error {
 	if err == nil {
 		ctx.Session.Set("member", m)
 		ctx.Session.Save()
-		result.Result = true
+		result.ErrCode = 0
 	} else {
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
+			result.ErrCode = 1
 		} else {
-			result.Message = "登陆失败"
+			result.ErrMsg = "登陆失败"
+			result.ErrCode = 1
 		}
 	}
 	return ctx.JSON(http.StatusOK, result)

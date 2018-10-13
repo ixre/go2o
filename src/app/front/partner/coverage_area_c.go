@@ -28,18 +28,18 @@ func (this *coverageAreaC) Create(ctx *echox.Context) error {
 func (this *coverageAreaC) SaveArea(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var result gof.Message
+		var result gof.Result
 		r.ParseForm()
 
 		coverageArea := delivery.CoverageValue{}
-		web.ParseFormToEntity(r.Form, &coverageArea)
+		form.ParseEntity(r.Form, &coverageArea)
 
 		id, err := dps.DeliverService.CreateCoverageArea(&coverageArea)
 
 		if err != nil {
-			result = gof.Message{Message: err.Error()}
+			result = gof.Result{Message: err.Error()}
 		} else {
-			result = gof.Message{Result: true, Message: "", Data: id}
+			result = gof.Result{Result: true, Message: "", Data: id}
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}

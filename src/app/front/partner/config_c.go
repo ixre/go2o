@@ -44,11 +44,11 @@ func (this *configC) Profile(ctx *echox.Context) error {
 func (this *configC) profile_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	r.ParseForm()
 
 	e := partner.ValuePartner{}
-	web.ParseFormToEntity(r.Form, &e)
+	form.ParseEntity(r.Form, &e)
 
 	//更新
 	origin, _ := dps.PartnerService.GetPartner(partnerId)
@@ -86,11 +86,11 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 func (this *configC) siteConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	r.ParseForm()
 
 	e := partner.SiteConf{}
-	web.ParseFormToEntity(r.Form, &e)
+	form.ParseEntity(r.Form, &e)
 
 	//更新
 	origin := dps.PartnerService.GetSiteConf(partnerId)
@@ -121,11 +121,11 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 func (this *configC) saleConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	r.ParseForm()
 
 	e := partner.SaleConf{}
-	web.ParseFormToEntity(r.Form, &e)
+	form.ParseEntity(r.Form, &e)
 
 	e.PartnerId = partnerId
 

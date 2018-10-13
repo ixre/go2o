@@ -41,5 +41,5 @@ func (this *partnerC) Get_ad(ctx *echo.Context) error {
 		}
 		return ctx.JSON(http.StatusOK, data)
 	}
-	return ctx.JSON(http.StatusOK, gof.Message{Message: "没有广告数据"})
+	return ctx.JSON(http.StatusOK, gof.Result{ErrMsg: "没有广告数据"})
 }

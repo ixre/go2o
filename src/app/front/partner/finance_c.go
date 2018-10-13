@@ -50,12 +50,12 @@ func (t *financeC) New_balance_ticket(c *echox.Context) error {
 }
 
 func (t *financeC) new_balance_ticket_post(c *echox.Context) error {
-	var msg = gof.Message{Result: true}
+	var msg = gof.Result{Result: true}
 	partnerId := getPartnerId(c)
 	memberId, _ := strconv.Atoi(c.Form("member_id"))
 	//kt := strings.Split(c.Form("kt"), "-")
 	//if len(kt) < 2 {
-	//	return c.JSON(http.StatusOK, gof.Message{Message: "参数错误"})
+	//	return c.JSON(http.StatusOK, gof.Result{Message: "参数错误"})
 	//}
 	//kind, _ := strconv.Atoi(kt[0])
 	//ktype, _ := strconv.Atoi(kt[1])
@@ -69,7 +69,7 @@ func (t *financeC) new_balance_ticket_post(c *echox.Context) error {
 		_, err = dps.MemberService.NewBalanceTicket(partnerId, memberId, kind, remark, float32(amount))
 	}
 	if err != nil {
-		msg.Message = err.Error()
+		msg.ErrMsg = err.Error()
 		msg.Result = false
 	}
 	return c.JSON(http.StatusOK, msg)

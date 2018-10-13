@@ -11,8 +11,9 @@ package ols
 import (
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/form"
 	"go2o/src/app/util"
+	utils "github.com/jsix/gof/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
@@ -53,21 +54,22 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	//return ctx.String(http.StatusNotFound,r.FormValue("usr"))
 	//r.ParseForm()
-	var result gof.Message
+	var result gof.Result
 	partnerId := GetPartnerId(ctx)
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)
 	m, err := dps.MemberService.TryLogin(partnerId, usr, pwd, true)
 	if err == nil {
-		result.Result = true
 		ctx.Session.Set("member", m)
 		err = ctx.Session.Save()
 	} else {
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrCode = 1
+			result.ErrMsg = err.Error()
 		} else {
-			result.Message = "登陆失败"
+			result.ErrCode = 1
+			result.ErrMsg = "登陆失败"
 		}
 	}
 	return ctx.JSON(http.StatusOK, result)
@@ -90,14 +92,14 @@ func (this *UserC) Register(ctx *echox.Context) error {
 func (this *UserC) ValidUsr(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		var msg gof.Message
+		var msg gof.Result
 		r.ParseForm()
 		usr := r.FormValue("usr")
 		err := dps.MemberService.CheckUsr(usr, 0)
 		if err == nil {
-			msg.Result = true
+	msg.ErrCode = 0
 		} else {
-			msg.Message = err.Error()
+			msg.ErrMsg = err.Error()
 		}
 		return ctx.JSON(http.StatusOK, msg)
 	}
@@ -109,13 +111,13 @@ func (this *UserC) Valid_invitation(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
-		msg := gof.Message{Result: true}
+		msg := gof.Result{}
 		code := r.FormValue("invi_code")
 		if len(code) > 0 {
 			memberId := dps.MemberService.GetMemberIdByInvitationCode(code)
 			if memberId <= 0 {
-				msg.Result = false
-				msg.Message = "推荐人无效"
+				msg.ErrMsg = "推荐人无效"
+				msg.ErrCode = 1
 			}
 		}
 		return ctx.JSON(http.StatusOK, msg)
@@ -128,10 +130,10 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
-		var result gof.Message
+		var result gof.Result
 		var member member.ValueMember
 
-		web.ParseFormToEntity(r.Form, &member)
+		form.ParseEntity(r.Form, &member)
 		code := r.FormValue("invi_code")
 
 		if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
@@ -144,17 +146,17 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 
 		partnerId = GetSessionPartnerId(ctx)
 		if len(member.Usr) == 0 || len(member.Pwd) == 0 {
-			result.Message = "1000:注册信息不完整"
+			result.ErrMsg = "1000:注册信息不完整"
 			return ctx.JSON(http.StatusOK, result)
 		}
 
 		member.Pwd = domain.MemberSha1Pwd(member.Pwd)
 		memberId, err = dps.MemberService.RegisterMember(partnerId, &member, "", code)
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
+			result.ErrCode = 1
 		} else {
-			result.Result = true
-			result.Data = memberId
+			result.Data = map[string]string{"memberId":utils.Str(memberId)}
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}

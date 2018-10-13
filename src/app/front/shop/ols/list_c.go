@@ -179,8 +179,8 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 
 	var pagerHtml string
 	if total > size {
-		pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
-		pager.RecordCount = total
+		pager := pager.NewUrlPager(pager.MathPages(total, size), page,"")
+		pager.Total = total
 		pagerHtml = pager.PagerString()
 	}
 
@@ -284,8 +284,8 @@ func (this *ListC) SearchList(ctx *echox.Context) error {
 
 	var pagerHtml string
 	if total > size {
-		pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
-		pager.RecordCount = total
+		pager := pager.NewUrlPager(pager.MathPages(total, size), page, "")
+		pager.Total = total
 		pagerHtml = pager.PagerString()
 	}
 
@@ -405,8 +405,8 @@ func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 		saleTag.Id, sortBy, (page-1)*size, page*size)
 	var pagerHtml string
 	if total > size {
-		pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
-		pager.RecordCount = total
+		pager := pager.NewUrlPager(pager.MathPages(total, size), page, "")
+		pager.Total = total
 		pagerHtml = pager.PagerString()
 	}
 

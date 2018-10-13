@@ -62,10 +62,10 @@ func (this *contentC) SavePage(ctx *echox.Context) error {
 
 		r.ParseForm()
 
-		var result gof.Message
+		var result gof.Result
 
 		e := content.ValuePage{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 
 		//更新
 		e.UpdateTime = time.Now().Unix()
@@ -74,7 +74,7 @@ func (this *contentC) SavePage(ctx *echox.Context) error {
 		id, err := dps.ContentService.SavePage(partnerId, &e)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 			result.Data = id
@@ -90,12 +90,12 @@ func (this *contentC) Page_del(ctx *echox.Context) error {
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		var result gof.Message
+		var result gof.Result
 		id, _ := strconv.Atoi(r.FormValue("id"))
 		err := dps.ContentService.DeletePage(partnerId, id)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}

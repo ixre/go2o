@@ -58,9 +58,9 @@ func (this *orderC) responseList(ctx *echox.Context, where string) error {
 
 	n, rows := dps.MemberService.QueryPagerOrder(m.Id, page, size, where, "")
 
-	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.GetterJavaScriptPager)
+	p := pager.NewUrlPager(pager.MathPages(n, size), page, "")
 
-	p.RecordCount = n
+	p.Total = n
 	pager := &front.Pager{Total: n, Rows: rows, Text: p.PagerString()}
 
 	return ctx.JSON(http.StatusOK, pager)

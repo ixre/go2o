@@ -39,14 +39,14 @@ func (this *promC) Del(ctx *echox.Context) error {
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
-		var result gof.Message
+		var result gof.Result
 		partnerId := getPartnerId(ctx)
 		promId, _ := strconv.Atoi(req.FormValue("id"))
 
 		err := dps.PromService.DelPromotion(partnerId, promId)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -106,12 +106,12 @@ func (this *promC) Save_cb(ctx *echox.Context) error {
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		var result gof.Message
+		var result gof.Result
 
 		e := promotion.ValuePromotion{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 		e2 := promotion.ValueCashBack{}
-		web.ParseFormToEntity(r.Form, &e2)
+		form.ParseEntity(r.Form, &e2)
 
 		e.PartnerId = partnerId
 		e.TypeFlag = promotion.TypeFlagCashBack
@@ -119,7 +119,7 @@ func (this *promC) Save_cb(ctx *echox.Context) error {
 		id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e, &e2)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 			result.Data = id
@@ -185,12 +185,12 @@ func (this *promC) Save_coupon(ctx *echox.Context) error {
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		var result gof.Message
+		var result gof.Result
 
 		e := promotion.ValuePromotion{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 		e2 := promotion.ValueCoupon{}
-		web.ParseFormToEntity(r.Form, &e2)
+		form.ParseEntity(r.Form, &e2)
 
 		e.PartnerId = partnerId
 		e.TypeFlag = promotion.TypeFlagCoupon
@@ -204,7 +204,7 @@ func (this *promC) Save_coupon(ctx *echox.Context) error {
 		id, err := dps.PromService.SaveCoupon(partnerId, &e, &e2)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 			result.Data = id
@@ -238,20 +238,20 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 func (this *promC) bind_coupon_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
-	var result gof.Message
+	var result gof.Result
 	r.ParseForm()
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
 		memberIds := strings.TrimSpace(r.FormValue("member_ids"))
 		if memberIds == "" {
-			result.Message = "请选择会员"
+			result.ErrMsg = "请选择会员"
 		} else {
 			idArr := strings.Split(memberIds, ",")
 			err = dps.PromService.BindCoupons(partnerId, id, idArr)
 		}
 	}
 	if err != nil {
-		result.Message = err.Error()
+		result.ErrMsg = err.Error()
 	} else {
 		result.Result = true
 	}

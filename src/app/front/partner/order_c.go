@@ -51,7 +51,7 @@ func (this *orderC) Cancel(ctx *echox.Context) error {
 }
 
 func (this *orderC) cancel_post(ctx *echox.Context) error {
-	result := gof.Message{}
+	result := gof.Result{}
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
@@ -62,7 +62,7 @@ func (this *orderC) cancel_post(ctx *echox.Context) error {
 	if err == nil {
 		result.Result = true
 	} else {
-		result.Message = err.Error()
+		result.ErrMsg = err.Error()
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
@@ -145,7 +145,7 @@ func (this *orderC) OrderSetup(ctx *echox.Context) error {
 	if !this.lockOrder(ctx) {
 		return ctx.String(http.StatusOK, "请勿频繁操作")
 	}
-	var msg gof.Message
+	var msg gof.Result
 	partnerId := getPartnerId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
@@ -153,9 +153,9 @@ func (this *orderC) OrderSetup(ctx *echox.Context) error {
 		err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
 		this.releaseOrder(ctx)
 		if err != nil {
-			msg.Message = err.Error()
+			msg.ErrMsg = err.Error()
 		} else {
-			msg.Result = true
+	msg.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, msg)
 	}

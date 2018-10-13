@@ -58,13 +58,13 @@ func (this *adC) Delete_ad(ctx *echox.Context) error {
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
-		var result gof.Message
+		var result gof.Result
 		partnerId := getPartnerId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("id"))
 		err := dps.AdvertisementService.DelAdvertisement(partnerId, adId)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
@@ -81,10 +81,10 @@ func (this *adC) SaveAd(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 
-		var result gof.Message
+		var result gof.Result
 
 		e := ad.ValueAdvertisement{}
-		web.ParseFormToEntity(req.Form, &e)
+		form.ParseEntity(req.Form, &e)
 
 		//更新
 		e.PartnerId = partnerId
@@ -92,7 +92,7 @@ func (this *adC) SaveAd(ctx *echox.Context) error {
 		id, err := dps.AdvertisementService.SaveAdvertisement(partnerId, &e)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 			result.Data = id
@@ -154,15 +154,15 @@ func (this *adC) SaveImage(ctx *echox.Context) error {
 	if r.Method == "POST" {
 		r.ParseForm()
 
-		var result gof.Message
+		var result gof.Result
 
 		e := ad.ValueImage{}
-		web.ParseFormToEntity(r.Form, &e)
+		form.ParseEntity(r.Form, &e)
 
 		id, err := dps.AdvertisementService.SaveImage(partnerId, e.AdvertisementId, &e)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 			result.Data = id
@@ -177,14 +177,14 @@ func (this *adC) Delete_image(ctx *echox.Context) error {
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
-		var result gof.Message
+		var result gof.Result
 		partnerId := getPartnerId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("ad_id"))
 		imgId, _ := strconv.Atoi(req.FormValue("id"))
 		err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)
 
 		if err != nil {
-			result.Message = err.Error()
+			result.ErrMsg = err.Error()
 		} else {
 			result.Result = true
 		}
