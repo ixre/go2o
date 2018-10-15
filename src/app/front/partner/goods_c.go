@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"github.com/jsix/gof/web/form"
 )
 
 type goodsC struct {
@@ -129,7 +130,7 @@ func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 
 		return ctx.JSON(http.StatusOK, result)
@@ -158,8 +159,10 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 			price, _ := strconv.ParseFloat(r.FormValue("SalePrice"), 32)
 			gs.SalePrice = float32(price)
 			ss.SaveGoods(partnerId, gs)
-			result.Result = true
-			result.Data = id
+			result.ErrCode = 0
+			var data = make(map[string]string)
+			data["id"] = fmt.Sprintf("%d", id)
+			result.Data = data
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -179,7 +182,7 @@ func (this *goodsC) Del_goods(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -200,7 +203,7 @@ func (this *goodsC) Del_item(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -255,7 +258,7 @@ func (this *goodsC) SaveGoodsSTag(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -324,7 +327,7 @@ func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
 	req.ParseForm()
 	goodsId, err := strconv.Atoi(req.FormValue("goodsId"))
 	if err != nil {
-		return ctx.JSON(http.StatusOK, gof.Result{Message: err.Error()})
+		return ctx.JSON(http.StatusOK, gof.Result{ErrMsg: err.Error()})
 	}
 
 	var priceSet []*sale.MemberPrice = []*sale.MemberPrice{}
@@ -352,7 +355,7 @@ func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
 					Enabled: enabled,
 				})
 			} else {
-				return ctx.JSON(http.StatusOK, gof.Result{Message: err.Error()})
+				return ctx.JSON(http.StatusOK, gof.Result{ErrMsg: err.Error()})
 			}
 		}
 	}
@@ -360,8 +363,8 @@ func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	err = dps.SaleService.SaveMemberPrices(partnerId, goodsId, priceSet)
 	if err != nil {
-		return ctx.JSON(http.StatusOK, gof.Result{Message: err.Error()})
+		return ctx.JSON(http.StatusOK, gof.Result{ErrMsg: err.Error()})
 	} else {
-		return ctx.JSON(http.StatusOK, gof.Result{Result: true})
+		return ctx.JSON(http.StatusOK, gof.Result{ErrCode: 0})
 	}
 }

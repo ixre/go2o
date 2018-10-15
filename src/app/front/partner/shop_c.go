@@ -21,6 +21,8 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"github.com/jsix/gof/web/form"
+	"fmt"
 )
 
 type shopC struct {
@@ -64,9 +66,11 @@ func (this *shopC) SaveShop(ctx *echox.Context) error {
 		id, err := dps.PartnerService.SaveShop(partnerId, &shop)
 
 		if err != nil {
-			result = gof.Result{Result: true, Message: err.Error()}
+			result = gof.Result{ErrCode: 1, ErrMsg: err.Error()}
 		} else {
-			result = gof.Result{Result: true, Message: "", Data: id}
+			var data = make(map[string]string)
+			data["id"] = fmt.Sprintf("%d", id)
+			result = gof.Result{ErrCode: 0, ErrMsg: "", Data: data}
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -88,7 +92,7 @@ func (this *shopC) Del(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}

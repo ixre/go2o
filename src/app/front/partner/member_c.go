@@ -94,7 +94,7 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -120,7 +120,7 @@ func (this *memberC) Lock_member(ctx *echox.Context) error {
 		if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -223,7 +223,7 @@ func (this *memberC) Reset_pwd(ctx *echox.Context) error {
 			result.ErrMsg = "无权进行当前操作"
 		} else {
 			newPwd := dps.MemberService.ResetPassword(memberId)
-			result.Result = true
+			result.ErrCode = 0
 			result.ErrMsg = fmt.Sprintf("重置成功,新密码为: %s", newPwd)
 		}
 		return ctx.JSON(http.StatusOK, result)

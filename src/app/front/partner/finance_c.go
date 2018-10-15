@@ -50,7 +50,7 @@ func (t *financeC) New_balance_ticket(c *echox.Context) error {
 }
 
 func (t *financeC) new_balance_ticket_post(c *echox.Context) error {
-	var msg = gof.Result{Result: true}
+	var msg = gof.Result{ErrCode: 0}
 	partnerId := getPartnerId(c)
 	memberId, _ := strconv.Atoi(c.Form("member_id"))
 	//kt := strings.Split(c.Form("kt"), "-")
@@ -70,7 +70,7 @@ func (t *financeC) new_balance_ticket_post(c *echox.Context) error {
 	}
 	if err != nil {
 		msg.ErrMsg = err.Error()
-		msg.Result = false
+		msg.ErrCode = 1
 	}
 	return c.JSON(http.StatusOK, msg)
 }

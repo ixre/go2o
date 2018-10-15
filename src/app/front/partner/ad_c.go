@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"strconv"
 	"github.com/jsix/gof/web/form"
+	"fmt"
 )
 
 // 广告控制器
@@ -67,7 +68,7 @@ func (this *adC) Delete_ad(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 
 		return ctx.JSON(http.StatusOK, result)
@@ -95,8 +96,10 @@ func (this *adC) SaveAd(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
-			result.Data = id
+			result.ErrCode = 0
+			var data = make(map[string]string)
+			data["id"] = fmt.Sprintf("%d", id)
+			result.Data = data
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -165,8 +168,10 @@ func (this *adC) SaveImage(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
-			result.Data = id
+			result.ErrCode = 0
+			var data = make(map[string]string)
+			data["id"] = fmt.Sprintf("%d", id)
+			result.Data = data
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -187,7 +192,7 @@ func (this *adC) Delete_image(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 
 		return ctx.JSON(http.StatusOK, result)

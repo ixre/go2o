@@ -60,7 +60,7 @@ func (this *orderC) cancel_post(ctx *echox.Context) error {
 		r.FormValue("order_no"), reason)
 
 	if err == nil {
-		result.Result = true
+		result.ErrCode = 0
 	} else {
 		result.ErrMsg = err.Error()
 	}

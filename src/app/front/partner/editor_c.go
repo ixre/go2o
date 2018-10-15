@@ -300,7 +300,7 @@ func (this *editorC) File_manager(ctx *echox.Context) error {
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
 	if err != nil {
-		return ctx.JSON(http.StatusOK, gof.Result{Message: err.Error()})
+		return ctx.JSON(http.StatusOK, gof.Result{ErrMsg: err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, d)
 }

@@ -19,6 +19,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"github.com/jsix/gof/web/form"
+	"fmt"
 )
 
 // 消息发送控制器
@@ -68,7 +70,7 @@ func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
+			result.ErrCode = 0
 		}
 
 		return ctx.JSON(http.StatusOK, result)
@@ -96,8 +98,10 @@ func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
 		if err != nil {
 			result.ErrMsg = err.Error()
 		} else {
-			result.Result = true
-			result.Data = id
+			result.ErrCode = 0
+			var data = make(map[string]string)
+			data["id"] = fmt.Sprintf("%d", id)
+			result.Data = data
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
@@ -142,7 +146,7 @@ func (this *mssC) mss_setting_post(ctx *echox.Context) error {
 	if err != nil {
 		result.ErrMsg = err.Error()
 	} else {
-		result.Result = true
+		result.ErrCode = 0
 	}
 	return ctx.JSON(http.StatusOK, result)
 }

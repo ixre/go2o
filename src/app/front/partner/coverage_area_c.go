@@ -8,6 +8,8 @@ import (
 	"go2o/src/x/echox"
 	"html/template"
 	"net/http"
+	"github.com/jsix/gof/web/form"
+	"fmt"
 )
 
 type coverageAreaC struct {
@@ -37,9 +39,11 @@ func (this *coverageAreaC) SaveArea(ctx *echox.Context) error {
 		id, err := dps.DeliverService.CreateCoverageArea(&coverageArea)
 
 		if err != nil {
-			result = gof.Result{Message: err.Error()}
+			result = gof.Result{ErrMsg: err.Error()}
 		} else {
-			result = gof.Result{Result: true, Message: "", Data: id}
+			var data = make(map[string]string)
+			data["id"] = fmt.Sprintf("%d", id)
+			result = gof.Result{ErrCode: 0, ErrMsg: "", Data: data}
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}

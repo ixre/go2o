@@ -20,6 +20,8 @@ import (
 	"html/template"
 	"net/http"
 	"time"
+	"github.com/jsix/gof/web/form"
+	"fmt"
 )
 
 type configC struct {
@@ -64,7 +66,9 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 	result.Error(err)
 	if err == nil {
 		cache.DelPartnerCache(partnerId)
-		result.Data = id
+		var data = make(map[string]string)
+		data["id"] = fmt.Sprintf("%d", id)
+		result.Data = data
 	}
 	return ctx.JSON(http.StatusOK, result)
 }

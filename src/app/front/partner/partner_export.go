@@ -23,7 +23,7 @@ import (
 type PartnerDbGetter struct{}
 
 func (dbGetter *PartnerDbGetter) GetDB() *sql.DB {
-	return gof.CurrentApp.Db().GetDb()
+	return gof.CurrentApp.Db().Raw()
 }
 
 var ExpManager *report.ItemManager = &report.ItemManager{DbGetter: &PartnerDbGetter{}}
