@@ -2,7 +2,7 @@ package partner
 
 import (
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
+	//"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"

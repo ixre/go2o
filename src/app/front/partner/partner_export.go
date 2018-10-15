@@ -12,7 +12,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/data/report"
+	"github.com/jsix/goex/report"
 	"net/http"
 	"strconv"
 	"strings"

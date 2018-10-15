@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
+	//"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/ui/tree"
 	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/sale"
@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"github.com/jsix/gof/web/form"
 )
 
 type categoryC struct {
