@@ -71,15 +71,12 @@ func main() {
 	if v := newApp.Config().GetInt("api_service_port"); v != 0 {
 		restPort = v
 	}
-
 	gof.CurrentApp = newApp
 	dps.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
 	session.Initialize(newApp.Storage(), "",false)
-
-	var booted bool
-
+	
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
@@ -88,9 +85,7 @@ func main() {
 
 	go restapi.Run(newApp, restPort) // 运行REST API
 
-	if booted {
-		<-ch
-	}
+	<-ch
 
 	os.Exit(1) // 退出
 }
