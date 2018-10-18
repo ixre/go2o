@@ -57,7 +57,8 @@ func GetExportData(r *http.Request, partnerId int) []byte {
 			parameter["pageSize"] = rows
 		}
 
-		_rows, total, err := exportItem.GetSchemaAndData(parameter.Parameters)
+		//_rows, total, err := exportItem.GetSchemaAndData(parameter.Parameters)
+		_rows, total, err := exportItem.GetSchemaAndData(parameter)
 		if err == nil {
 			var arr []string = []string{"{\"total\":", strconv.Itoa(total), ",\"rows\":", "", "}"}
 			json, _ := json.Marshal(_rows)
