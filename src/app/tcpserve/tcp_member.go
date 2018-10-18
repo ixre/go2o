@@ -76,13 +76,12 @@ func cliMGet(ci *nc.Client, plan string) ([]byte, error) {
 
 	i := strings.Index(plan, ":")
 	ut, _ := strconv.Atoi(plan[i+1:])
-
 	switch plan[0:i] {
 	case "SUMMARY":
-		obj = GetMemberSummary(ci.User, ut)
+		obj = GetMemberSummary(int(ci.User), ut)
 		d = []byte("MSUM:")
 	case "ACCOUNT":
-		obj = getMemberAccount(ci.User, ut)
+		obj = getMemberAccount(int(ci.User), ut)
 		d = []byte("MACC:")
 	}
 	if obj != nil {

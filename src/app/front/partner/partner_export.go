@@ -26,7 +26,8 @@ func (dbGetter *PartnerDbGetter) GetDB() *sql.DB {
 	return gof.CurrentApp.Db().Raw()
 }
 
-var ExpManager *report.ItemManager = &report.ItemManager{DbGetter: &PartnerDbGetter{}}
+//var ExpManager *report.ItemManager = &report.ItemManager{DbGetter: &PartnerDbGetter{}}
+var EXP_Manager = report.NewItemManager(&PartnerDbGetter{},"./conf/query",true)
 
 //================== 导出控制器 ==============//
 
@@ -34,22 +35,26 @@ var ExpManager *report.ItemManager = &report.ItemManager{DbGetter: &PartnerDbGet
 func GetExportData(r *http.Request, partnerId int) []byte {
 	query := r.URL.Query()
 	r.ParseForm()
-	var exportItem report.IDataExportPortal = ExpManager.GetExportItem(query.Get("portal"))
+	var exportItem report.IDataExportPortal = EXP_Manager.GetItem(query.Get("portal"))
 	//var exportItm *ExportItem = GetExportItem(query.Get("portal"))
 
 	//fmt.Println(">>>"+strconv.FormatBool(exportItm != nil))
 
 	if exportItem != nil {
 		page, rows := r.Form.Get("page"), r.Form.Get("rows")
-		var parameter *report.ExportParams = report.GetExportParams(query.Get("params"), nil)
+		//var parameter *report.Params = report.ParseParams(query.Get("params"))
+		var parameter report.Params = report.ParseParams(query.Get("params"))
 
-		parameter.Parameters["partner_id"] = strconv.Itoa(partnerId)
+		//parameter.Parameters["partner_id"] = strconv.Itoa(partnerId)
+		parameter["partner_id"] = strconv.Itoa(partnerId)
 
 		if page != "" {
-			parameter.Parameters["pageIndex"] = page
+			//parameter.Parameters["pageIndex"] = page
+			parameter["pageIndex"] = page
 		}
 		if rows != "" {
-			parameter.Parameters["pageSize"] = rows
+			//parameter.Parameters["pageSize"] = rows
+			parameter["pageSize"] = rows
 		}
 
 		_rows, total, err := exportItem.GetSchemaAndData(parameter.Parameters)

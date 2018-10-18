@@ -28,7 +28,7 @@ func AccountNotifyJob(s *nc.SocketServer) {
 		if err == nil {
 			id, err := strconv.Atoi(string(values[1].([]byte)))
 			if err == nil {
-				connList := s.GetConnections(id)
+				connList := s.GetConnections(int64(id))
 				if len(connList) > 0 {
 					go pushMemberAccount(s, connList, id)
 				}
@@ -60,7 +60,7 @@ func MemberSummaryNotifyJob(s *nc.SocketServer) {
 		if err == nil {
 			id, err := strconv.Atoi(string(values[1].([]byte)))
 			if err == nil {
-				connList := s.GetConnections(id)
+				connList := s.GetConnections(int64(id))
 				if len(connList) > 0 {
 					go pushMemberSummary(s, connList, id)
 				}

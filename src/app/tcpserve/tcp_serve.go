@@ -70,15 +70,15 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 	if strings.HasPrefix(line, "AUTH:") {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
-			var af nc.AuthFunc = func() (int, error) {
+			var af nc.AuthFunc = func() (int64, error) {
 				partnerId := dps.PartnerService.GetPartnerIdByApiId(arr[0])
 				apiInfo := dps.PartnerService.GetApiInfo(partnerId)
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled == 0 {
-						return partnerId, errors.New("api has exipres")
+						return int64(partnerId), errors.New("api has exipres")
 					}
 				}
-				return partnerId, nil
+				return int64(partnerId), nil
 			}
 
 			if err := s.Auth(conn, af); err != nil {
@@ -98,14 +98,14 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 	arr := strings.Split(param, "#")
 	if len(arr) == 2 {
 
-		f := func() (int, error) {
+		f := func() (int64, error) {
 			memberId, _ := strconv.Atoi(arr[0])
 			authOk := util.CompareMemberApiToken(gof.CurrentApp.Storage(),
 				memberId, arr[1])
 			if !authOk {
-				return memberId, errors.New("auth fail")
+				return int64(memberId), errors.New("auth fail")
 			}
-			return memberId, nil
+			return int64(memberId), nil
 		}
 
 		if err = s.UAuth(id.Conn, f); err == nil { //验证成功

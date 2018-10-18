@@ -22,7 +22,7 @@ import (
     "runtime"
     "go2o/src/fix"
     "go2o/src/app/front/partner"
-    "github.com/jsix/gof/web/session"
+    //"github.com/jsix/gof/web/session"
 )
 
 func main() {
@@ -63,7 +63,7 @@ func main() {
     dps.Init(newApp)
     core.RegisterTypes()
     cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
-    session.Set(newApp.Storage(),"")
+    //session.Set(newApp.Storage(),"")
     go partner.Listen(ch, newApp, fmt.Sprintf(":%d", httpPort))
 
     <-ch
