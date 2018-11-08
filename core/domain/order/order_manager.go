@@ -94,7 +94,7 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	}
 	orderType := order.TRetail
 	switch c.Kind() {
-	case cart.KRetail:
+	case cart.KNormal:
 		orderType = order.TRetail
 	case cart.KWholesale:
 		orderType = order.TWholesale
