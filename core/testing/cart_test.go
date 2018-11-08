@@ -10,13 +10,13 @@ import (
 	"testing"
 )
 
-// 测试零售购物车
-func TestRetailCart(t *testing.T) {
+// 测试普通购物车
+func TestNormalCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
-	c := repo.GetMyCart(1, cart.KRetail)
+	c := repo.GetMyCart(1, cart.KNormal)
 	joinItemsToCart(c, t)
-	if c.Kind() == cart.KRetail {
-		rc := c.(cart.IRetailCart)
+	if c.Kind() == cart.KNormal {
+		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
 		for _, v := range rc.Items() {
 			t.Logf("商品：%d-%d 数量：%d\n", v.ItemId, v.SkuId, v.Quantity)
@@ -32,11 +32,11 @@ func TestRetailCart(t *testing.T) {
 // 测试合并购物车
 func TestCombineCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
-	c := repo.GetMyCart(1, cart.KRetail)
-	//c2 := repo.NewRetailCart()
+	c := repo.GetMyCart(1, cart.KNormal)
+	//c2 := repo.NewNormalCart()
 
-	if c.Kind() == cart.KRetail {
-		rc := c.(cart.IRetailCart)
+	if c.Kind() == cart.KNormal {
+		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
 		for _, v := range rc.Items() {
 			t.Logf("商品：%d-%d 数量：%d\n", v.ItemId, v.SkuId, v.Quantity)
@@ -68,7 +68,7 @@ func GetCartCheckedData(c cart.ICart) string {
 			mp[id] = append(mp[id], strconv.Itoa(int(v.SkuId)))
 		}
 	} else {
-		rc := c.(cart.IRetailCart)
+		rc := c.(cart.INormalCart)
 		for _, v := range rc.Items() {
 			id := strconv.Itoa(int(v.ItemId))
 			if _, ok := mp[id]; !ok {

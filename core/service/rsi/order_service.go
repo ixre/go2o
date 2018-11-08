@@ -237,10 +237,10 @@ func (s *orderServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*t
 	return s.result(err), nil
 }
 
-/*---------------- 零售购物车 ----------------*/
+/*---------------- 普通购物车 ----------------*/
 
-// 零售购物车接口
-func (s *orderServiceImpl) RetailCartV1(ctx context.Context, memberId int64, action string, data map[string]string) (*ttype.Result_, error) {
+// 普通购物车接口
+func (s *orderServiceImpl) NormalCartV1(ctx context.Context, memberId int64, action string, data map[string]string) (*ttype.Result_, error) {
 	//todo: check member
 	c := s.cartRepo.GetMyCart(memberId, cart.KWholesale)
 	if data == nil {
@@ -284,9 +284,9 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 	}
 	// 如果传入会员编号，则合并购物车
 	if buyerId > 0 {
-		c = s.cartRepo.GetMyCart(buyerId, cart.KRetail)
+		c = s.cartRepo.GetMyCart(buyerId, cart.KNormal)
 		if cc != nil {
-			rc := c.(cart.IRetailCart)
+			rc := c.(cart.INormalCart)
 			rc.Combine(cc)
 			c.Save()
 		}
@@ -297,7 +297,7 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 		return cc
 	}
 	// 不存在，则新建购物车
-	c = s.cartRepo.NewRetailCart(code)
+	c = s.cartRepo.NewNormalCart(code)
 	//_, err := c.Save()
 	//domain.HandleError(err, "service")
 	return c
@@ -336,7 +336,7 @@ func (s *orderServiceImpl) PutInCart(memberId int64, code string,
 	err := c.Put(itemId, skuId, quantity)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
-			rc := c.(cart.IRetailCart)
+			rc := c.(cart.INormalCart)
 			item := rc.GetItem(itemId, skuId)
 			return cart.ParseCartItem(item), err
 		}

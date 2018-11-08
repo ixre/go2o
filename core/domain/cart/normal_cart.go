@@ -13,7 +13,7 @@ import (
 var _ cart.ICart = new(cartImpl)
 
 type cartImpl struct {
-	value      *cart.RetailCart
+	value      *cart.NormalCart
 	rep        cart.ICartRepo
 	goodsRepo  item.IGoodsItemRepo
 	memberRepo member.IMemberRepo
@@ -23,7 +23,7 @@ type cartImpl struct {
 	snapMap    map[int64]*item.Snapshot
 }
 
-func CreateCart(val *cart.RetailCart, rep cart.ICartRepo,
+func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
 	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
 	c := &cartImpl{
 		value:      val,
@@ -35,19 +35,19 @@ func CreateCart(val *cart.RetailCart, rep cart.ICartRepo,
 }
 
 // 创建新的购物车
-func NewRetailCart(code string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
+func NewNormalCart(code string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
 	goodsRepo item.IGoodsItemRepo) cart.ICart {
 	unix := time.Now().Unix()
 	if code == "" {
 		code = domain.GenerateCartCode(unix, time.Now().Nanosecond())
 	}
-	value := &cart.RetailCart{
+	value := &cart.NormalCart{
 		CartCode:   code,
 		DeliverId:  0,
 		PaymentOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
-		Items:      []*cart.RetailCartItem{},
+		Items:      []*cart.NormalCartItem{},
 	}
 	return CreateCart(value, rep, memberRepo, goodsRepo)
 }
@@ -56,12 +56,12 @@ func (c *cartImpl) init() cart.ICart {
 	// 获取购物车项
 	if c.GetAggregateRootId() > 0 {
 		if c.value.Items == nil {
-			c.value.Items = c.rep.SelectRetailCartItem("cart_id=?",
+			c.value.Items = c.rep.SelectNormalCartItem("cart_id=?",
 				c.GetAggregateRootId())
 		}
 	}
 	if c.value.Items == nil {
-		c.value.Items = []*cart.RetailCartItem{}
+		c.value.Items = []*cart.NormalCartItem{}
 	}
 	// 初始化购物车的信息
 	if c.value != nil && c.value.Items != nil {
@@ -72,7 +72,7 @@ func (c *cartImpl) init() cart.ICart {
 
 // 购物车种类
 func (c *cartImpl) Kind() cart.CartKind {
-	return cart.KRetail
+	return cart.KNormal
 }
 
 // 获取买家编号
@@ -109,7 +109,7 @@ func (c *cartImpl) Check() error {
 }
 
 // 获取商品的快照列表
-func (c *cartImpl) getSnapshotsMap(items []*cart.RetailCartItem) map[int64]*item.Snapshot {
+func (c *cartImpl) getSnapshotsMap(items []*cart.NormalCartItem) map[int64]*item.Snapshot {
 	if c.snapMap == nil && items != nil {
 		l := len(items)
 		c.snapMap = make(map[int64]*item.Snapshot, l)
@@ -147,7 +147,7 @@ func (c *cartImpl) setItemInfo(snap *item.GoodsItem, level int32) {
 }
 
 // 设置附加的商品信息
-func (c *cartImpl) setAttachGoodsInfo(items []*cart.RetailCartItem) {
+func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 	list := c.getSnapshotsMap(items)
 	if list == nil {
 		return
@@ -188,16 +188,16 @@ func (c *cartImpl) GetAggregateRootId() int32 {
 	return c.value.Id
 }
 
-func (c *cartImpl) GetValue() cart.RetailCart {
+func (c *cartImpl) GetValue() cart.NormalCart {
 	return *c.value
 }
 
 // 获取商品集合
-func (c *cartImpl) Items() []*cart.RetailCartItem {
+func (c *cartImpl) Items() []*cart.NormalCartItem {
 	return c.getItems()
 }
 
-func (c *cartImpl) getItems() []*cart.RetailCartItem {
+func (c *cartImpl) getItems() []*cart.NormalCartItem {
 	return c.value.Items
 }
 
@@ -208,10 +208,10 @@ func (c *cartImpl) Put(itemId, skuId int64, num int32) error {
 }
 
 // 添加项
-func (c *cartImpl) put(itemId, skuId int64, num int32) (*cart.RetailCartItem, error) {
+func (c *cartImpl) put(itemId, skuId int64, num int32) (*cart.NormalCartItem, error) {
 	var err error
 	if c.value.Items == nil {
-		c.value.Items = []*cart.RetailCartItem{}
+		c.value.Items = []*cart.NormalCartItem{}
 	}
 	var sku *item.Sku
 	it := c.goodsRepo.GetItem(itemId)
@@ -257,7 +257,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32) (*cart.RetailCartItem, er
 	// 设置商品的相关信息
 	c.setItemInfo(iv, c.getBuyerLevelId())
 
-	v := &cart.RetailCartItem{
+	v := &cart.NormalCartItem{
 		CartId:   c.GetAggregateRootId(),
 		VendorId: iv.VendorId,
 		ShopId:   iv.ShopId,
@@ -298,7 +298,7 @@ func (c *cartImpl) Remove(itemId, skuId int64, quantity int32) error {
 }
 
 // 获取项
-func (c *cartImpl) GetItem(itemId, skuId int64) *cart.RetailCartItem {
+func (c *cartImpl) GetItem(itemId, skuId int64) *cart.NormalCartItem {
 	if c.value != nil && c.value.Items != nil {
 		for _, v := range c.value.Items {
 			if v.ItemId == itemId && v.SkuId == skuId {
@@ -316,11 +316,11 @@ func (c *cartImpl) Code() string {
 
 // 合并购物车，并返回新的购物车
 func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
-	if ic.Kind() != cart.KRetail {
+	if ic.Kind() != cart.KNormal {
 		panic("only retail cart can be combine!")
 	}
 	if id := ic.GetAggregateRootId(); id != c.GetAggregateRootId() {
-		rc := ic.(cart.IRetailCart)
+		rc := ic.(cart.INormalCart)
 		for _, v := range rc.Items() {
 			if item, err := c.put(v.ItemId,
 				v.SkuId, v.Quantity); err == nil {
@@ -476,7 +476,7 @@ func (c *cartImpl) CheckedItems(checked map[int64][]int64) []*cart.ItemPair {
 
 // 释放购物车,如果购物车的商品全部结算,则返回true
 func (c *cartImpl) Release(_checked map[int64][]int64) bool {
-	checked := []int{}
+	var checked []int
 	for i, v := range c.value.Items {
 		if v.Checked == 1 {
 			checked = append(checked, i)
