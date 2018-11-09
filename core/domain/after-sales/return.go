@@ -89,7 +89,7 @@ func (r *returnOrderImpl) SetItem(snapshotId int64, quantity int32) error {
 // 提交售后申请
 func (r *returnOrderImpl) Submit() (int32, error) {
 	//o := r.GetOrder()
-	//if o.GetValue().State == order.StatCompleted {
+	//if o.Value().State == order.StatCompleted {
 	//    return 0, afterSales.ErrReturnAfterReceived
 	//}
 	id, err := r.afterSalesOrderImpl.Submit()
@@ -195,7 +195,7 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 			member.DefaultRelateUser)
 	}
 	//原路退回
-	pv := po.GetValue()
+	pv := po.Value()
 	if pv.BalanceDiscount > 0 {
 		if err := acc.Refund(member.AccountBalance, member.ChargeByRefund, "订单退款",
 			o.OrderNo, pv.BalanceDiscount, member.DefaultRelateUser); err == nil {

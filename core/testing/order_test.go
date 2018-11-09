@@ -183,7 +183,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 		t.FailNow()
 	}
 	rc := c.(cart.INormalCart)
-	if len(rc.GetValue().Items) == 0 {
+	if len(rc.Value().Items) == 0 {
 		t.Log("购物车是空的")
 		t.FailNow()
 	}

@@ -30,7 +30,7 @@ type (
 		//GetDomainId() int32
 		//
 		//// 获取值
-		//GetValue() RefundOrder
+		//Value() RefundOrder
 		//
 		//// 提交退款申请
 		//Submit() error

@@ -241,7 +241,7 @@ func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
 		panic("购物车非零售")
 	}
 	rc := c.(cart.INormalCart)
-	items := rc.GetValue().Items
+	items := rc.Value().Items
 	if len(items) == 0 {
 		return cart.ErrEmptyShoppingCart
 	}
