@@ -43,10 +43,10 @@ var (
 const (
 	// 普通(B2C)购物车
 	KNormal CartKind = 1
-	// 批发(B2B)购物车
-	KWholesale CartKind = 2
 	// 零售(B2C-线下)购物车
-	KRetail CartKind = 3
+	KRetail CartKind = 2
+	// 批发(B2B)购物车
+	KWholesale CartKind = 3
 )
 
 type (
@@ -96,7 +96,7 @@ type (
 	//商品普通购物车,未登陆时以code标识，登陆后以买家编号标识
 	INormalCart interface {
 		// 获取购物车值
-		GetValue() NormalCart
+		Value() NormalCart
 		// 获取商品集合
 		Items() []*NormalCartItem
 		// 合并购物车，并返回新的购物车
@@ -340,7 +340,7 @@ func ParseToDtoCart(c ICart) *ttype.SShoppingCart {
 		panic("购物车类型非零售")
 	}
 	rc := c.(INormalCart)
-	v := rc.GetValue()
+	v := rc.Value()
 
 	cart.CartId = c.GetAggregateRootId()
 	cart.Code = v.CartCode
