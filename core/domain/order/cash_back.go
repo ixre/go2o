@@ -161,7 +161,7 @@ func cashBack3R(level int, m member.IMember, o order.IOrder,
 	// fmt.Println("------ START BACK ------")
 
 	var backFunc = func(m member.IMember, parentM member.IMember, fee int) {
-		// fmt.Println("---------[ back ]",parentM.GetValue().Name,fee)
+		// fmt.Println("---------[ back ]",parentM.Value().Name,fee)
 		backCashForMember(m, o, fee, parentM.Profile().GetProfile().Name)
 	}
 	var i int = 0

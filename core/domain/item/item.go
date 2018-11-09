@@ -115,7 +115,7 @@ func (g *itemImpl) GetValue() *item.GoodsItem {
 
 // 获取包装过的商品信息
 func (g *itemImpl) GetPackedValue() *valueobject.Goods {
-	//item := g.GetItem().GetValue()
+	//item := g.GetItem().Value()
 	gv := g.GetValue()
 	goods := &valueobject.Goods{
 		ProductId:     gv.ProductId,
@@ -430,15 +430,15 @@ func (g *itemImpl) GetPromotionDescribe() map[string]string {
 
 			//			if v.Type() == promotion.TypeFlagCashBack {
 			//				if txt, ok := g._promDescribes[key]; !ok {
-			//					g._promDescribes[key] = v.GetValue().ShortName
+			//					g._promDescribes[key] = v.Value().ShortName
 			//				} else {
-			//					g._promDescribes[key] = txt + ";" + v.GetValue().ShortName
+			//					g._promDescribes[key] = txt + ";" + v.Value().ShortName
 			//				}
 			//			} else if v.Type() == promotion.TypeFlagCoupon {
 			//				if txt, ok := g._promDescribes[key]; !ok {
-			//					g._promDescribes[key] = v.GetValue().ShortName
+			//					g._promDescribes[key] = v.Value().ShortName
 			//				} else {
-			//					g._promDescribes[key] = txt + ";" + v.GetValue().ShortName
+			//					g._promDescribes[key] = txt + ";" + v.Value().ShortName
 			//				}
 			//			}
 
