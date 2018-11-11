@@ -104,10 +104,10 @@ func TestOrderSetup(t *testing.T) {
 func TestCancelOrder(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	var buyerId int64 = 1
-	c := repo.GetMyCart(buyerId, cart.KRetail)
+	c := repo.GetMyCart(buyerId, cart.KNormal)
 	joinItemsToCart(c, t)
-	if c.Kind() == cart.KRetail {
-		rc := c.(cart.IRetailCart)
+	if c.Kind() == cart.KNormal {
+		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
 		for _, v := range rc.Items() {
 			t.Logf("商品：%d-%d 数量：%d\n", v.ItemId, v.SkuId, v.Quantity)
@@ -176,14 +176,14 @@ func TestCancelOrder(t *testing.T) {
 func TestSubmitNormalOrder(t *testing.T) {
 	var buyerId int64 = 1
 	cartRepo := ti.Factory.GetCartRepo()
-	c := cartRepo.GetMyCart(buyerId, cart.KRetail)
+	c := cartRepo.GetMyCart(buyerId, cart.KNormal)
 	err := joinItemsToCart(c, t)
 	if err != nil {
 		t.Error("购物车加入失败:", err.Error())
 		t.FailNow()
 	}
-	rc := c.(cart.IRetailCart)
-	if len(rc.GetValue().Items) == 0 {
+	rc := c.(cart.INormalCart)
+	if len(rc.Value().Items) == 0 {
 		t.Log("购物车是空的")
 		t.FailNow()
 	}

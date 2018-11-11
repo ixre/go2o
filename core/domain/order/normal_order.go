@@ -237,11 +237,11 @@ func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
 	}
 	o.value = &order.NormalOrder{}
 
-	if c.Kind() != cart.KRetail {
+	if c.Kind() != cart.KNormal {
 		panic("购物车非零售")
 	}
-	rc := c.(cart.IRetailCart)
-	items := rc.GetValue().Items
+	rc := c.(cart.INormalCart)
+	items := rc.Value().Items
 	if len(items) == 0 {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -324,8 +324,8 @@ func (o *normalOrderImpl) checkCart() error {
 		return cart.ErrEmptyShoppingCart
 	}
 	switch o.cart.Kind() {
-	case cart.KRetail:
-		rc := o.cart.(cart.IRetailCart)
+	case cart.KNormal:
+		rc := o.cart.(cart.INormalCart)
 		if l := len(rc.Items()); l == 0 {
 			return cart.ErrEmptyShoppingCart
 		}
@@ -336,7 +336,7 @@ func (o *normalOrderImpl) checkCart() error {
 }
 
 // 生成运营商与订单商品的映射
-func (o *normalOrderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[int32][]*order.SubOrderItem {
+func (o *normalOrderImpl) buildVendorItemMap(items []*cart.NormalCartItem) map[int32][]*order.SubOrderItem {
 	mp := make(map[int32][]*order.SubOrderItem)
 	for _, v := range items {
 		//必须勾选为结算
@@ -359,7 +359,7 @@ func (o *normalOrderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[i
 }
 
 // 转换购物车的商品项为订单项目
-func (o *normalOrderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.SubOrderItem {
+func (o *normalOrderImpl) parseCartToOrderItem(c *cart.NormalCartItem) *order.SubOrderItem {
 	// 获取商品已销售快照
 	snap := o.goodsRepo.SnapshotService().GetLatestSalesSnapshot(c.ItemId, c.SkuId)
 	if snap == nil {
@@ -477,16 +477,16 @@ func (o *normalOrderImpl) BuildCart() cart.ICart {
 	bv := o.baseOrderImpl.baseValue
 	//v := o.value
 	unix := time.Now().Unix()
-	vc := &cart.RetailCart{
+	vc := &cart.NormalCart{
 		BuyerId:    bv.BuyerId,
 		PaymentOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
-		Items:      []*cart.RetailCartItem{},
+		Items:      []*cart.NormalCartItem{},
 	}
 	for _, s := range o.GetSubOrders() {
 		for _, v := range s.Items() {
-			vc.Items = append(vc.Items, &cart.RetailCartItem{
+			vc.Items = append(vc.Items, &cart.NormalCartItem{
 				VendorId: s.GetValue().VendorId,
 				ShopId:   s.GetValue().ShopId,
 				ItemId:   v.ItemId,
@@ -496,7 +496,7 @@ func (o *normalOrderImpl) BuildCart() cart.ICart {
 			})
 		}
 	}
-	return o.cartRepo.CreateRetailCart(vc)
+	return o.cartRepo.CreateNormalCart(vc)
 }
 
 // 平均优惠抵扣金额到商品

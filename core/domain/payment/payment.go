@@ -390,8 +390,8 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 		return 0, nil
 	}
 	acc := p.memberRepo.GetMember(p.value.BuyerId).GetAccount()
-	//log.Println("----", p.value.BuyerId, acc.GetValue().Integral, "discount:", integral)
-	//log.Printf("-----%#v\n", acc.GetValue())
+	//log.Println("----", p.value.BuyerId, acc.Value().Integral, "discount:", integral)
+	//log.Printf("-----%#v\n", acc.Value())
 	err = acc.IntegralDiscount(member.TypeIntegralPaymentDiscount,
 		p.Get().TradeNo, int64(integral), "")
 	// 抵扣积分
