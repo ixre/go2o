@@ -514,8 +514,8 @@ func Sku(src *ttype.SSku) *item.Sku {
 	}
 }
 
-func ShoppingCartItem(src *ttype.SShoppingCartItem) *cart.RetailCartItem {
-	i := &cart.RetailCartItem{
+func ShoppingCartItem(src *ttype.SShoppingCartItem) *cart.NormalCartItem {
+	i := &cart.NormalCartItem{
 		ItemId:   src.ItemId,
 		SkuId:    src.SkuId,
 		Quantity: src.Quantity,

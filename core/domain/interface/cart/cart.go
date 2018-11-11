@@ -41,10 +41,12 @@ var (
 )
 
 const (
-	// 零售购物车
-	KRetail CartKind = 1
-	// 批发购物车
-	KWholesale CartKind = 2
+	// 普通(B2C)购物车
+	KNormal CartKind = 1
+	// 零售(B2C-线下)购物车
+	KRetail CartKind = 2
+	// 批发(B2B)购物车
+	KWholesale CartKind = 3
 )
 
 type (
@@ -91,17 +93,22 @@ type (
 		SetBuyerAddress(addressId int64) error
 	}
 
-	//商品零售购物车,未登陆时以code标识，登陆后以买家编号标识
-	IRetailCart interface {
+	//商品普通购物车,未登陆时以code标识，登陆后以买家编号标识
+	INormalCart interface {
 		// 获取购物车值
-		GetValue() RetailCart
+		Value() NormalCart
 		// 获取商品集合
-		Items() []*RetailCartItem
+		Items() []*NormalCartItem
 		// 合并购物车，并返回新的购物车
 		Combine(ICart) ICart
 		// 获取项
-		GetItem(itemId, skuId int64) *RetailCartItem
+		GetItem(itemId, skuId int64) *NormalCartItem
 	}
+
+	// 零售购物车
+	IRetailCart interface {
+	}
+
 	//商品批发购物车
 	IWholesaleCart interface {
 		// 获取购物车值
@@ -122,35 +129,35 @@ type (
 		// 获取买家的购物车
 		GetMyCart(buyerId int64, k CartKind) ICart
 		// 创建一个购物车
-		NewRetailCart(code string) ICart
-		// 创建一个零售购物车
-		CreateRetailCart(r *RetailCart) ICart
+		NewNormalCart(code string) ICart
+		// 创建一个普通购物车
+		CreateNormalCart(r *NormalCart) ICart
 		// 获取购物车
-		GetRetailCart(id int32) ICart
+		GetNormalCart(id int32) ICart
 
 		// 获取购物车
 		GetShoppingCartByKey(key string) ICart
 		// 获取购物车
-		GetShoppingCart(key string) *RetailCart
+		GetShoppingCart(key string) *NormalCart
 		// 获取最新的购物车
-		GetLatestCart(buyerId int64) *RetailCart
+		GetLatestCart(buyerId int64) *NormalCart
 		// 保存购物车
-		SaveShoppingCart(*RetailCart) (int32, error)
+		SaveShoppingCart(*NormalCart) (int32, error)
 		// 移出购物车项
 		RemoveCartItem(id int32) error
 		// 保存购物车项
-		SaveCartItem(*RetailCartItem) (int32, error)
+		SaveCartItem(*NormalCartItem) (int32, error)
 		// 清空购物车项
 		EmptyCartItems(cartId int32) error
 		// 删除购物车
 		DeleteCart(cartId int32) error
 
 		// Select SaleCartItem
-		SelectRetailCartItem(where string, v ...interface{}) []*RetailCartItem
+		SelectNormalCartItem(where string, v ...interface{}) []*NormalCartItem
 		// Save SaleCart
-		SaveRetailCart(v *RetailCart) (int, error)
+		SaveNormalCart(v *NormalCart) (int, error)
 		// Delete SaleCart
-		DeleteRetailCart(primary interface{}) error
+		DeleteNormalCart(primary interface{}) error
 
 		// Save WsCart
 		SaveWsCart(v *WsCart) (int, error)
@@ -179,7 +186,7 @@ type (
 	}
 
 	// 购物车
-	RetailCart struct {
+	NormalCart struct {
 		Id         int32  `db:"id" pk:"yes" auto:"yes"`
 		CartCode   string `db:"code"`
 		BuyerId    int64  `db:"buyer_id"`
@@ -188,11 +195,11 @@ type (
 		DeliverId  int64             `db:"deliver_id"`
 		CreateTime int64             `db:"create_time"`
 		UpdateTime int64             `db:"update_time"`
-		Items      []*RetailCartItem `db:"-"`
+		Items      []*NormalCartItem `db:"-"`
 	}
 
 	// 购物车项
-	RetailCartItem struct {
+	NormalCartItem struct {
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 购物车编号
@@ -304,7 +311,7 @@ type (
 	}
 )
 
-func ParseCartItem(item *RetailCartItem) *ttype.SShoppingCartItem {
+func ParseCartItem(item *NormalCartItem) *ttype.SShoppingCartItem {
 	i := &ttype.SShoppingCartItem{
 		ItemId:   item.ItemId,
 		SkuId:    item.SkuId,
@@ -329,11 +336,11 @@ func ParseCartItem(item *RetailCartItem) *ttype.SShoppingCartItem {
 
 func ParseToDtoCart(c ICart) *ttype.SShoppingCart {
 	cart := &ttype.SShoppingCart{}
-	if c.Kind() != KRetail {
+	if c.Kind() != KNormal {
 		panic("购物车类型非零售")
 	}
-	rc := c.(IRetailCart)
-	v := rc.GetValue()
+	rc := c.(INormalCart)
+	v := rc.Value()
 
 	cart.CartId = c.GetAggregateRootId()
 	cart.Code = v.CartCode
