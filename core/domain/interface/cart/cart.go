@@ -49,6 +49,11 @@ const (
 	KWholesale CartKind = 3
 )
 
+const(
+	// 手工创建
+	FlagManualCreate = 1
+)
+
 type (
 	// 购物车类型
 	CartKind int
@@ -105,9 +110,6 @@ type (
 		GetItem(itemId, skuId int64) *NormalCartItem
 	}
 
-	// 零售购物车
-	IRetailCart interface {
-	}
 
 	//商品批发购物车
 	IWholesaleCart interface {
