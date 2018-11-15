@@ -332,7 +332,7 @@ func (o *normalOrderImpl) checkCart() error {
 	default:
 		panic("购物车非零售")
 	}
-	return o.cart.Check()
+	return o.cart.Prepare()
 }
 
 // 生成运营商与订单商品的映射
