@@ -88,8 +88,17 @@ func (c *wholesaleCartImpl) BuyerId() int64 {
 	return c.value.BuyerId
 }
 
+
+func (c *wholesaleCartImpl) Clone() cart.ICart {
+	panic("implement me")
+}
+
+func (c *wholesaleCartImpl) Prepare() error {
+	return c.check()
+}
+
 // 检查购物车(仅结算商品)
-func (c *wholesaleCartImpl) Check() error {
+func (c *wholesaleCartImpl) check() error {
 	if c.value == nil || len(c.value.Items) == 0 {
 		return cart.ErrEmptyShoppingCart
 	}

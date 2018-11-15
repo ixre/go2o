@@ -83,7 +83,7 @@ func (t *orderManagerImpl) checkCartForOrder(c cart.ICart) error {
 	if c == nil {
 		return cart.ErrEmptyShoppingCart
 	}
-	return c.Check()
+	return c.Prepare()
 }
 
 // 预创建普通订单
