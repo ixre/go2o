@@ -49,9 +49,11 @@ const (
 	KWholesale CartKind = 3
 )
 
-const(
+const (
 	// 手工创建
 	FlagManualCreate = 1
+	// 是否可改价
+	FlagPriceEditable = 2
 )
 
 type (
@@ -63,12 +65,14 @@ type (
 		GetAggregateRootId() int32
 		// 购物车种类
 		Kind() CartKind
+		// 克隆
+		Clone()ICart
 		// 获取购物车编码
 		Code() string
 		// 获取买家编号
 		BuyerId() int64
-		// 检查购物车(仅结算商品)
-		Check() error
+		// 预先准备购物车
+		Prepare()error
 		// 标记商品结算
 		SignItemChecked(items []*ItemPair) error
 		// 获取勾选的商品,checked:为商品与商品SKU数据
@@ -109,7 +113,6 @@ type (
 		// 获取项
 		GetItem(itemId, skuId int64) *NormalCartItem
 	}
-
 
 	//商品批发购物车
 	IWholesaleCart interface {

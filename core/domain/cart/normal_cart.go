@@ -23,6 +23,7 @@ type cartImpl struct {
 	snapMap    map[int64]*item.Snapshot
 }
 
+
 func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
 	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
 	c := &cartImpl{
@@ -80,8 +81,17 @@ func (c *cartImpl) BuyerId() int64 {
 	return c.value.BuyerId
 }
 
+
+func (c *cartImpl) Clone() cart.ICart {
+	panic("implement me")
+}
+
+func (c *cartImpl) Prepare() error {
+	return c.check()
+}
+
 // 检查购物车(仅结算商品)
-func (c *cartImpl) Check() error {
+func (c *cartImpl) check() error {
 	if c.value == nil || len(c.value.Items) == 0 {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -371,7 +381,7 @@ func (c *cartImpl) SignItemChecked(items []*cart.ItemPair) error {
 			}
 		}
 	}
-	return c.Check()
+	return c.check()
 }
 
 // 结算数据持久化
