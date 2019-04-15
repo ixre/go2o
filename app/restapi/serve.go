@@ -9,8 +9,8 @@
 package restapi
 
 import (
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/storage"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
 	"go2o/core/variable"

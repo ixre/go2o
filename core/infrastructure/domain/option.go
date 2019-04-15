@@ -11,7 +11,7 @@ package domain
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jsix/gof"
+	"github.com/ixre/gof"
 	"io/ioutil"
 	"os"
 	"path/filepath"

@@ -11,7 +11,7 @@ package restapi
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof"
+	"github.com/ixre/gof"
 	"github.com/labstack/echo"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"

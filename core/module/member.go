@@ -10,9 +10,9 @@ package module
 
 import (
 	"fmt"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/crypto"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/crypto"
+	"github.com/ixre/gof/storage"
 	"strings"
 	"time"
 )

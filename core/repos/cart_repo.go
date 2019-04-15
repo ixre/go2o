@@ -10,8 +10,8 @@ package repos
 
 import (
 	"database/sql"
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/db/orm"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	cartImpl "go2o/core/domain/cart"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"

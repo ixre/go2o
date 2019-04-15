@@ -10,8 +10,8 @@ package cache
 
 import (
 	"fmt"
-	"github.com/jsix/gof/log"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/log"
+	"github.com/ixre/gof/util"
 	"go2o/core/service/rsi"
 )
 

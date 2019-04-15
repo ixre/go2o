@@ -10,7 +10,7 @@ package member
 
 import (
 	"errors"
-	"github.com/jsix/gof/db/orm"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"

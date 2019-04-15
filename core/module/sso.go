@@ -11,8 +11,8 @@ package module
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/crypto"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/crypto"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/variable"
 	"strings"

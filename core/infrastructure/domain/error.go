@@ -10,7 +10,7 @@
 package domain
 
 import (
-	"github.com/jsix/gof"
+	"github.com/ixre/gof"
 )
 
 //todo: 可以做通过后台设置错误信息

@@ -2,7 +2,7 @@ package item
 
 import (
 	"fmt"
-	"github.com/jsix/gof/math"
+	"github.com/ixre/gof/math"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"strconv"

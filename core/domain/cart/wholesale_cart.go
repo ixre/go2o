@@ -3,7 +3,7 @@ package cart
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -87,7 +87,6 @@ func (c *wholesaleCartImpl) Kind() cart.CartKind {
 func (c *wholesaleCartImpl) BuyerId() int64 {
 	return c.value.BuyerId
 }
-
 
 func (c *wholesaleCartImpl) Clone() cart.ICart {
 	panic("implement me")

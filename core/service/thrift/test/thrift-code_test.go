@@ -9,7 +9,7 @@
 package test
 
 import (
-	"github.com/jsix/goex/generator"
+	"github.com/ixre/goex/generator"
 	//"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/member"
 	"testing"

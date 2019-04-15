@@ -23,7 +23,6 @@ type cartImpl struct {
 	snapMap    map[int64]*item.Snapshot
 }
 
-
 func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
 	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
 	c := &cartImpl{
@@ -80,7 +79,6 @@ func (c *cartImpl) Kind() cart.CartKind {
 func (c *cartImpl) BuyerId() int64 {
 	return c.value.BuyerId
 }
-
 
 func (c *cartImpl) Clone() cart.ICart {
 	panic("implement me")

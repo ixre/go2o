@@ -10,7 +10,7 @@
 package shop
 
 import (
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"

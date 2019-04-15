@@ -1,8 +1,8 @@
 package hapi
 
 import (
-	"github.com/jsix/goex/echox"
-	"github.com/jsix/gof"
+	"github.com/ixre/goex/echox"
+	"github.com/ixre/gof"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"net/http"
