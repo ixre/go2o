@@ -10,8 +10,8 @@
 package cart
 
 import (
-	"github.com/jsix/gof/math"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/math"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
@@ -66,13 +66,13 @@ type (
 		// 购物车种类
 		Kind() CartKind
 		// 克隆
-		Clone()ICart
+		Clone() ICart
 		// 获取购物车编码
 		Code() string
 		// 获取买家编号
 		BuyerId() int64
 		// 预先准备购物车
-		Prepare()error
+		Prepare() error
 		// 标记商品结算
 		SignItemChecked(items []*ItemPair) error
 		// 获取勾选的商品,checked:为商品与商品SKU数据

@@ -11,7 +11,7 @@ package query
 import (
 	"bytes"
 	"fmt"
-	"github.com/jsix/gof/db"
+	"github.com/ixre/gof/db"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"

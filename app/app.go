@@ -10,9 +10,9 @@ package app
 
 import (
 	"fmt"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
-	"github.com/jsix/gof/shell"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/log"
+	"github.com/ixre/gof/shell"
 	"go2o/core/variable"
 	"io/ioutil"
 	"os"

@@ -9,8 +9,8 @@
 package parser
 
 import (
-	"github.com/jsix/gof/math"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/math"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"

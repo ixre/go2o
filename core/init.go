@@ -10,7 +10,7 @@ package core
 
 import (
 	"encoding/gob"
-	"github.com/jsix/gof/db"
+	"github.com/ixre/gof/db"
 	"go2o/core/dao/model"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/after-sales"

@@ -1,7 +1,7 @@
 package module
 
 import (
-	"github.com/jsix/gof"
+	"github.com/ixre/gof"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/module/express/kdniao"
 )

@@ -12,7 +12,7 @@ import (
 	"bufio"
 	"errors"
 	"github.com/gomodule/redigo/redis"
-	"github.com/jsix/gof"
+	"github.com/ixre/gof"
 	"go2o/app/util"
 	"go2o/core"
 	"go2o/core/service/rsi"

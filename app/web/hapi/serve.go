@@ -9,8 +9,8 @@
 package hapi
 
 import (
-	"github.com/jsix/goex/echox"
-	"github.com/jsix/gof"
+	"github.com/ixre/goex/echox"
+	"github.com/ixre/gof"
 	"github.com/labstack/echo"
 	"go2o/app/web/shared"
 	"net/http"

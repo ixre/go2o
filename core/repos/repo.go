@@ -9,8 +9,8 @@
 package repos
 
 import (
-	"github.com/jsix/gof/log"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof/log"
+	"github.com/ixre/gof/storage"
 	"go2o/core/infrastructure/domain"
 	"sync"
 )

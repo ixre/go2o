@@ -11,7 +11,7 @@ package ui
 
 import (
 	"fmt"
-	"github.com/jsix/gof/web/pager"
+	"github.com/ixre/gof/web/pager"
 	"strconv"
 )
 

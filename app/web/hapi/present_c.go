@@ -2,9 +2,9 @@ package hapi
 
 import (
 	"fmt"
-	"github.com/jsix/goex/echox"
-	"github.com/jsix/gof/crypto"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/goex/echox"
+	"github.com/ixre/gof/crypto"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/service/rsi"
 	"net/http"
