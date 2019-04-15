@@ -10,8 +10,8 @@ package tcpserve
 
 import (
 	"errors"
-	"github.com/jsix/gof/net/nc"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/net/nc"
+	"github.com/ixre/gof/util"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"net"

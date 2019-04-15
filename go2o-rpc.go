@@ -11,8 +11,8 @@ package main
 
 import (
 	"flag"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/log"
 	"go2o/app"
 	"go2o/core"
 	"go2o/core/service/rsi"

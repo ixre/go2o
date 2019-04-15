@@ -10,8 +10,8 @@ package module
 
 import (
 	"errors"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/log"
 	"sync"
 )
 

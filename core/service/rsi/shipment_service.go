@@ -10,7 +10,7 @@ package rsi
 
 import (
 	"context"
-	"github.com/jsix/gof/log"
+	"github.com/ixre/gof/log"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/shipment"

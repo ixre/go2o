@@ -11,7 +11,7 @@ package restapi
 import (
 	"crypto/sha1"
 	"fmt"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/util"
 	"github.com/labstack/echo"
 	autil "go2o/app/util"
 	"go2o/core/infrastructure/gen"

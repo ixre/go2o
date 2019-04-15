@@ -9,8 +9,8 @@
 package restapi
 
 import (
-	"github.com/jsix/gof/storage"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/util"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
 	"go2o/core/domain/interface/merchant"

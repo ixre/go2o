@@ -3,8 +3,8 @@ package pay
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/crypto"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof/crypto"
+	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/member"
 	"go2o/core/factory"
 	"io/ioutil"

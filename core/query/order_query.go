@@ -12,7 +12,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
-	"github.com/jsix/gof/db"
+	"github.com/ixre/gof/db"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"

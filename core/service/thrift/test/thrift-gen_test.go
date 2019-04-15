@@ -10,7 +10,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/jsix/gof/shell"
+	"github.com/ixre/gof/shell"
 	"testing"
 )
 

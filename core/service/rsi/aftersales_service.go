@@ -9,7 +9,7 @@
 package rsi
 
 import (
-	"github.com/jsix/gof/db"
+	"github.com/ixre/gof/db"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"

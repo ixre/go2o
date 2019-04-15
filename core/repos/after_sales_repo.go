@@ -9,7 +9,7 @@
 package repos
 
 import (
-	"github.com/jsix/gof/db"
+	"github.com/ixre/gof/db"
 	asImpl "go2o/core/domain/after-sales"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/member"

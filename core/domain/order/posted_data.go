@@ -2,7 +2,7 @@ package order
 
 import (
 	"fmt"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/order"
 	id "go2o/core/infrastructure/domain"
 	"strconv"

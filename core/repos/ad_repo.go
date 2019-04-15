@@ -10,9 +10,9 @@ package repos
 
 import (
 	"fmt"
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/db/orm"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/storage"
 	adImpl "go2o/core/domain/ad"
 	"go2o/core/domain/interface/ad"
 	"sync"

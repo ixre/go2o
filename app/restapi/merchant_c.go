@@ -9,7 +9,7 @@
 package restapi
 
 import (
-	"github.com/jsix/gof"
+	"github.com/ixre/gof"
 	"github.com/labstack/echo"
 	"go2o/core/service/rsi"
 	"net/http"

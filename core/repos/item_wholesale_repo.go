@@ -2,9 +2,9 @@ package repos
 
 import (
 	"database/sql"
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/db/orm"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/item"
 	"log"
 )

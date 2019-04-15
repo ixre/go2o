@@ -11,7 +11,7 @@ package rsi
 import (
 	"context"
 	"errors"
-	"github.com/jsix/gof/log"
+	"github.com/ixre/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/domain"

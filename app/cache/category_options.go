@@ -11,7 +11,7 @@ package cache
 import (
 	"bytes"
 	"fmt"
-	"github.com/jsix/gof/algorithm/iterator"
+	"github.com/ixre/gof/algorithm/iterator"
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain/util"

@@ -1,8 +1,8 @@
 package factory
 
 import (
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/cart"

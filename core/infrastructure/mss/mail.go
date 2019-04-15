@@ -11,7 +11,7 @@ package mss
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/jsix/gof"
+	"github.com/ixre/gof"
 	"go2o/core/variable"
 	"net/smtp"
 	"strings"

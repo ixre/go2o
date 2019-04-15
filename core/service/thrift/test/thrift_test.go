@@ -10,7 +10,7 @@ package test
 
 import (
 	"errors"
-	"github.com/jsix/gof/log"
+	"github.com/ixre/gof/log"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/thrift"
