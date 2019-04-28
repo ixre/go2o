@@ -22,3 +22,4 @@ gen-*
 vendor
 auto-gen
 auto_gen
+go.sum

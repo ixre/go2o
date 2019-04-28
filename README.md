@@ -50,7 +50,7 @@ __代码已重构完毕,见develop分支, 新的代码库不在包含UI, UI见�
 
 
 ------------------------
-贡献代码请看： [todo list](https://github.com/jsix/go2o/tree/master/docs/dev/todo.md) |
+贡献代码请看： [todo list](https://github.com/ixre/go2o/tree/master/docs/dev/todo.md) |
 [bug list](https://github.com/atnet/go2o/tree/master/docs/dev/bug.md)
 
 
@@ -78,10 +78,10 @@ QQ群：**338164725**
 ### 1. Import database ###
 > Create new mysql db instance named "go2o"
  and import data use mysql utility.
- Database backup file is here : [go2o.sql](https://github.com/jsix/go2o/blob/master/docs/data/go2o.sql)
+ Database backup file is here : [go2o.sql](https://github.com/ixre/go2o/blob/master/docs/data/go2o.sql)
 
 ### 2.Complied ###
-	git clone https://github.com/jsix/go2o.git /home/usr/go/src/go2o
+	git clone https://github.com/ixre/go2o.git /home/usr/go/src/go2o
 	export GOPATH=$GOPATH:/home/usr/go/
 	cd /home/usr/go/src/go2o
 	go build go2o-serve.go
