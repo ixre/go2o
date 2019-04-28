@@ -6,7 +6,7 @@
 FROM alpine
 
 MAINTAINER jarrysix
-LABEL vendor="github.com/jsix/go2o"
+LABEL vendor="github.com/ixre/go2o"
 LABEL version="1.0.0"
 
 WORKDIR /app

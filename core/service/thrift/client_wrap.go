@@ -9,7 +9,7 @@
 package thrift
 
 import (
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/finance_service"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/item_service"
