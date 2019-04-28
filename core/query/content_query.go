@@ -10,7 +10,7 @@ package query
 
 import (
 	"fmt"
-	"github.com/jsix/gof/db"
+	"github.com/ixre/gof/db"
 	"go2o/core/domain/interface/content"
 )
 

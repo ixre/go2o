@@ -9,7 +9,7 @@
 package util
 
 import (
-	gutil "github.com/jsix/gof/util"
+	gutil "github.com/ixre/gof/util"
 	"go2o/core/variable"
 	"net/http"
 	"strings"

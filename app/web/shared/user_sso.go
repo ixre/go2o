@@ -10,8 +10,8 @@ package shared
 
 import (
 	"errors"
-	"github.com/jsix/goex/echox"
-	gu "github.com/jsix/gof/util"
+	"github.com/ixre/goex/echox"
+	gu "github.com/ixre/gof/util"
 	"go2o/app/util"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/rsi"

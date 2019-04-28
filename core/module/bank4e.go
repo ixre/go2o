@@ -3,8 +3,8 @@ package module
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"

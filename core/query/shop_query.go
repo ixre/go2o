@@ -11,9 +11,9 @@ package query
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/dto"
 	"go2o/core/infrastructure"

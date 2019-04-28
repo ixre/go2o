@@ -3,7 +3,7 @@ package order
 import (
 	"bytes"
 	"errors"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"

@@ -10,9 +10,9 @@ package module
 
 import (
 	"fmt"
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/crypto"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/crypto"
+	"github.com/ixre/gof/storage"
 	"strings"
 	"time"
 )
@@ -87,7 +87,7 @@ func (m *MemberModule) CheckToken(memberId int64, token string) bool {
 		return false
 	}
 	// token已过期
-	if unix < time.Now().Add(time.Hour*time.Duration(-m.tokenHours)).Unix() {
+	if unix < time.Now().Add(time.Hour * time.Duration(-m.tokenHours)).Unix() {
 		m.RemoveToken(memberId)
 		return false
 	}

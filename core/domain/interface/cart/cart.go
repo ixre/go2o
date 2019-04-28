@@ -10,8 +10,8 @@
 package cart
 
 import (
-	"github.com/jsix/gof/math"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/math"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
@@ -49,6 +49,13 @@ const (
 	KWholesale CartKind = 3
 )
 
+const (
+	// 手工创建
+	FlagManualCreate = 1
+	// 是否可改价
+	FlagPriceEditable = 2
+)
+
 type (
 	// 购物车类型
 	CartKind int
@@ -58,12 +65,14 @@ type (
 		GetAggregateRootId() int32
 		// 购物车种类
 		Kind() CartKind
+		// 克隆
+		Clone() ICart
 		// 获取购物车编码
 		Code() string
 		// 获取买家编号
 		BuyerId() int64
-		// 检查购物车(仅结算商品)
-		Check() error
+		// 预先准备购物车
+		Prepare() error
 		// 标记商品结算
 		SignItemChecked(items []*ItemPair) error
 		// 获取勾选的商品,checked:为商品与商品SKU数据
@@ -103,10 +112,6 @@ type (
 		Combine(ICart) ICart
 		// 获取项
 		GetItem(itemId, skuId int64) *NormalCartItem
-	}
-
-	// 零售购物车
-	IRetailCart interface {
 	}
 
 	//商品批发购物车

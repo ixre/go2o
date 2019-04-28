@@ -10,8 +10,8 @@ package shared
 
 import (
 	"fmt"
-	"github.com/jsix/goex/echox"
-	"github.com/jsix/gof/web"
+	"github.com/ixre/goex/echox"
+	"github.com/ixre/gof/web"
 	"github.com/labstack/echo"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"

@@ -9,9 +9,9 @@
 package query
 
 import (
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/storage"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/storage"
 	"go2o/core/infrastructure"
 	"go2o/core/variable"
 	"regexp"

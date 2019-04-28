@@ -10,7 +10,7 @@ package merchant
 
 import (
 	"errors"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -92,8 +92,8 @@ func (c *confManagerImpl) UseGlobSaleConf() error {
 
 // 保存销售配置
 func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
-	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent+
-		v.CashBackTg2Percent+v.CashBackMemberPercent) > 1 {
+	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent +
+		v.CashBackTg2Percent + v.CashBackMemberPercent) > 1 {
 		return merchant.ErrSalesPercent
 	}
 	c.GetSaleConf()
@@ -120,8 +120,8 @@ func (c *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
 	if v.OrderTimeOutReceiveHour <= 0 {
 		v.OrderTimeOutReceiveHour = cfg.OrderTimeOutReceiveHour
 	}
-	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent+
-		v.CashBackTg2Percent+v.CashBackMemberPercent) > 1 {
+	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent +
+		v.CashBackTg2Percent + v.CashBackMemberPercent) > 1 {
 		v.FxSalesEnabled = 0 //自动关闭分销
 	}
 	return nil

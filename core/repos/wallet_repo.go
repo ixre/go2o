@@ -3,8 +3,8 @@ package repos
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/db/orm"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/wallet"
 	wi "go2o/core/domain/wallet"
 	"log"
