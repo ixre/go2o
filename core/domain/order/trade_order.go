@@ -2,7 +2,7 @@ package order
 
 import (
 	"errors"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"

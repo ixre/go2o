@@ -9,9 +9,9 @@
 package mss
 
 import (
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/db/orm"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
 	_ "go2o/core/testing"

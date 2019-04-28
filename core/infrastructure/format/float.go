@@ -11,7 +11,7 @@ package format
 
 import (
 	"fmt"
-	m "github.com/jsix/gof/math"
+	m "github.com/ixre/gof/math"
 	"log"
 	"strconv"
 	"strings"

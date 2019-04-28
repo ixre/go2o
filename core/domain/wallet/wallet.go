@@ -3,8 +3,8 @@ package wallet
 import (
 	"bytes"
 	"fmt"
-	"github.com/jsix/gof/algorithm"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/algorithm"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/infrastructure/domain"
 	"strconv"

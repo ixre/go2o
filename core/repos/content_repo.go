@@ -9,8 +9,8 @@
 package repos
 
 import (
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/db/orm"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	contentImpl "go2o/core/domain/content"
 	"go2o/core/domain/interface/content"
 )

@@ -10,7 +10,7 @@ package afterSales
 
 import (
 	"errors"
-	"github.com/jsix/gof/db/orm"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/tmp"

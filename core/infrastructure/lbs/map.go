@@ -60,7 +60,7 @@ func GetLocDistance(lng1, lat1, lng2, lat2 float64) float64 {
 	var radLat2 float64 = rad(lat2)
 	a := radLat1 - radLat2
 	b := rad(lng1) - rad(lng2)
-	s := 2 * math.Asin(math.Sqrt(math.Pow(math.Sin(a/2), 2)+
+	s := 2 * math.Asin(math.Sqrt(math.Pow(math.Sin(a/2), 2) +
 		math.Cos(radLat1)*math.Cos(radLat2)*math.Pow(math.Sin(b/2), 2)))
 	s = s * EARTH_RADIUS
 	s = math.Floor(s*10000*1000+0.5) / 10000 //米

@@ -3,7 +3,7 @@ package thrift
 import (
 	"context"
 	"crypto/tls"
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/apache/thrift/lib/go/thrift"
 )
 
 var Context context.Context = nil

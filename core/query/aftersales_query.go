@@ -10,7 +10,7 @@ package query
 
 import (
 	"database/sql"
-	"github.com/jsix/gof/db"
+	"github.com/ixre/gof/db"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"

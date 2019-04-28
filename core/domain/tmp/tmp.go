@@ -9,8 +9,8 @@
 package tmp
 
 import (
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/db"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/db"
 )
 
 /**  此包用于临时代码

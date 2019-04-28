@@ -11,7 +11,7 @@ package domain
 
 import (
 	"errors"
-	"github.com/jsix/gof/crypto"
+	"github.com/ixre/gof/crypto"
 	"strings"
 )
 

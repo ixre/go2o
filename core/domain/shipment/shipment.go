@@ -10,7 +10,7 @@ package shipment
 
 import (
 	"errors"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/shipment"

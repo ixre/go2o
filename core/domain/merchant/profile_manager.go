@@ -10,8 +10,8 @@ package merchant
 
 import (
 	"errors"
-	"github.com/jsix/gof/db/orm"
-	"github.com/jsix/gof/util"
+	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"

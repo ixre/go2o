@@ -3,8 +3,8 @@ package uams
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jsix/gof/api"
-	"github.com/jsix/gof/web/ui/tree"
+	"github.com/ixre/gof/api"
+	"github.com/ixre/gof/web/ui/tree"
 	"strconv"
 )
 
@@ -57,6 +57,9 @@ func (c *Client) UserLogin(user string, pwd string) (map[string]string, error) {
 	if err == nil {
 		var r Result
 		err = c.parseResult(data, &r)
+		if err == nil && r.ErrCode != 0 {
+			err = errors.New(r.ErrMsg)
+		}
 		return r.Data, err
 	}
 	return nil, err
@@ -170,7 +173,7 @@ func checkApiRespErr(code int, text string) error {
 type (
 	Result struct {
 		ErrCode int               `thrift:"Code,1" db:"Code" json:"ErrCode"`
-		ErrMsg  string            `thrift:"Message,2" db:"Message" json:"Message"`
+		ErrMsg  string            `thrift:"Message,2" db:"Message" json:"ErrMsg"`
 		Data    map[string]string `thrift:"Data,3" db:"Data" json:"Data"`
 	}
 

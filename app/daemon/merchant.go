@@ -11,7 +11,7 @@ package daemon
 
 import (
 	"database/sql"
-	"github.com/jsix/gof/db/orm"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/infrastructure/tool"

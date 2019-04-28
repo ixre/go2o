@@ -148,7 +148,7 @@ func (c CategoryList) Len() int {
 
 func (c CategoryList) Less(i, j int) bool {
 	return c[i].SortNum < c[j].SortNum ||
-		// 如果序号相同,则判断ID
+	// 如果序号相同,则判断ID
 		(c[i].SortNum == c[j].SortNum && c[i].ID < c[j].ID)
 }
 
