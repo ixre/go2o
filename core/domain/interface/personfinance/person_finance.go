@@ -140,7 +140,7 @@ type (
 
 	// 收益总记录
 	RiseInfoValue struct {
-		//Id  int `db:"id" pk:"yes" auto:"no"`
+		//ID  int `db:"id" pk:"yes" auto:"no"`
 		PersonId         int64   `db:"person_id" pk:"yes" auto:"no"` //人员编号
 		Balance          float32 `db:"balance"`                      //本金及收益的余额
 		SettlementAmount float32 `db:"settlement_amount"`            //结算金额,日日计息, 月月分红

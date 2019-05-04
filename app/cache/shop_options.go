@@ -23,7 +23,7 @@ import (
 //			buf.WriteString(fmt.Sprintf(
 //				`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]" checked="checked"/>
 //			 	<label for="shop%d">%s</label>`,
-//				k.Id,
+//				k.ID,
 //				i,
 //				i,
 //				i,
@@ -33,11 +33,11 @@ import (
 //	} else {
 //		chks = fmt.Sprintf(",%s,", chks)
 //		for i, k := range shops {
-//			if strings.Index(chks, fmt.Sprintf(",%d,", k.Id)) == -1 {
+//			if strings.Index(chks, fmt.Sprintf(",%d,", k.ID)) == -1 {
 //				buf.WriteString(fmt.Sprintf(
 //					`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]"/>
 //			 	<label for="shop%d">%s</label>`,
-//					k.Id,
+//					k.ID,
 //					i,
 //					i,
 //					i,
@@ -47,7 +47,7 @@ import (
 //				buf.WriteString(fmt.Sprintf(
 //					`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]" checked="checked"/>
 //			 	<label for="shop%d">%s</label>`,
-//					k.Id,
+//					k.ID,
 //					i,
 //					i,
 //					i,
