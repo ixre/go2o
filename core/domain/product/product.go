@@ -113,7 +113,7 @@ func (p *productImpl) SetAttr(attrs []*product.Attr) error {
 // 获取属性
 func (p *productImpl) Attr() []*product.Attr {
 	if p.value.Attr == nil {
-		p.value.Attr = p.repo.SelectAttr("product_id=?",
+		p.value.Attr = p.repo.SelectAttr("product_id= $1",
 			p.GetAggregateRootId())
 	}
 	return p.value.Attr
@@ -214,7 +214,7 @@ func (p *productImpl) RebuildAttrArray(arr *[]*product.Attr) error {
 func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 	pk := p.GetAggregateRootId()
 	// 获取之前的SKU设置
-	old := p.repo.SelectAttr("product_id=?", pk)
+	old := p.repo.SelectAttr("product_id= $1", pk)
 	// 合并属性
 	p.mergeAttr(old, &p.value.Attr)
 	// 设置属性值

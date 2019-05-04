@@ -518,7 +518,7 @@ func (r *valueRepo) GetChildAreas(code int32) []*valueobject.Area {
 		return v
 	}
 	var v []*valueobject.Area
-	err := r.Connector.GetOrm().Select(&v, "code <> 0 AND parent=?", code)
+	err := r.Connector.GetOrm().Select(&v, "code <> 0 AND parent= $1", code)
 	if err == nil {
 		r.areaCache[code] = v
 	}
@@ -534,7 +534,7 @@ func (r *valueRepo) GetAreaName(code int32) string {
 	key := "go2o:repo:area:name-" + strId
 	name, err := r.storage.GetString(key)
 	if err != nil {
-		err = r.Connector.ExecScalar("SELECT name FROM china_area WHERE code=?", &name, strId)
+		err = r.Connector.ExecScalar("SELECT name FROM china_area WHERE code= $1", &name, strId)
 		if err == nil {
 			name = strings.TrimSpace(name)
 			if name == "市辖区" || name == "市辖县" || name == "县" {

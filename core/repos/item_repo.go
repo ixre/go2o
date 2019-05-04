@@ -99,7 +99,7 @@ func (g *goodsRepo) GetGoodsBySkuId(skuId int64) interface{} {
 // 获取商品
 func (g *goodsRepo) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
 	var e *item.GoodsItem = new(item.GoodsItem)
-	if g.Connector.GetOrm().GetBy(e, "product_id=? AND sku_id=?", itemId, skuId) == nil {
+	if g.Connector.GetOrm().GetBy(e, "product_id= $1 AND sku_id= $2", itemId, skuId) == nil {
 		return e
 	}
 	return nil
@@ -117,7 +117,7 @@ func (g *goodsRepo) GetValueGoodsById(goodsId int64) *item.GoodsItem {
 // 根据SKU获取商品
 func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int64) *item.GoodsItem {
 	var e *item.GoodsItem = new(item.GoodsItem)
-	if g.Connector.GetOrm().GetBy(e, "product_id=? AND sku_id=?", itemId, sku) == nil {
+	if g.Connector.GetOrm().GetBy(e, "product_id= $1 AND sku_id= $2", itemId, sku) == nil {
 		return e
 	}
 	return nil
@@ -137,7 +137,7 @@ func (g *goodsRepo) GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error) {
 func (g *goodsRepo) GetGoodsLevelPrice(goodsId int64) []*item.MemberPrice {
 	var items []*item.MemberPrice
 	if g.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM gs_member_price WHERE goods_id = ?`, goodsId) == nil {
+		`SELECT * FROM gs_member_price WHERE goods_id = $1`, goodsId) == nil {
 		return items
 	}
 	return nil
@@ -176,17 +176,17 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 		orderBy += ","
 	}
 
-	list := []*valueobject.Goods{}
+	var list []*valueobject.Goods
 	err := g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
 	  INNER JOIN pro_category cat ON it.cat_id=cat.id
-		 WHERE (?<=0 OR it.shop_id =?) AND it.review_state=?
-		  AND it.shelve_state=?  %s %s`,
+		 WHERE ($1 <=0 OR it.shop_id = $2) AND it.review_state= $3
+		  AND it.shelve_state= $4  %s %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN pro_category cat ON it.cat_id=cat.id
-		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=? AND it.shelve_state=?
-		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
+		 WHERE ($1 <=0 OR it.shop_id = $2) %s AND it.review_state= $3 AND it.shelve_state= $4
+		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
 		err = g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
 			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
@@ -198,11 +198,11 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 
 // 获取指定数量已上架的商品
 func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string) []*valueobject.Goods {
-	e := []*valueobject.Goods{}
+	var e []*valueobject.Goods
 	sql := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
-		 WHERE supplier_id=? AND pro_product.review_state=? AND pro_product.shelve_state=?
-		 ORDER BY %s,update_time DESC LIMIT ?,?`,
+		 WHERE supplier_id= $1 AND pro_product.review_state= $2 AND pro_product.shelve_state= $3
+		 ORDER BY %s,update_time DESC LIMIT $5 OFFSET $4`,
 		sortBy)
 
 	g.Connector.GetOrm().SelectByQuery(&e, sql, mchId, enum.ReviewPass,
@@ -239,7 +239,7 @@ func (g *goodsRepo) GetSnapshots(skuIdArr []int64) []item.Snapshot {
 // 获取最新的商品销售快照
 func (g *goodsRepo) GetLatestSalesSnapshot(skuId int64) *item.TradeSnapshot {
 	e := new(item.TradeSnapshot)
-	if g.Connector.GetOrm().GetBy(e, "sku_id=? ORDER BY id DESC", skuId) == nil {
+	if g.Connector.GetOrm().GetBy(e, "sku_id= $1 ORDER BY id DESC", skuId) == nil {
 		return e
 	}
 	return nil
@@ -257,7 +257,7 @@ func (g *goodsRepo) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 // 根据Key获取商品销售快照
 func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
 	var e *item.TradeSnapshot = new(item.TradeSnapshot)
-	if g.Connector.GetOrm().GetBy(e, "key=?", key) == nil {
+	if g.Connector.GetOrm().GetBy(e, "key= $1", key) == nil {
 		return e
 	}
 	return nil

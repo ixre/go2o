@@ -56,11 +56,11 @@ func (s *ShopQuery) QueryShopIdByHost(host string) (vendorId int32, shopId int32
 		matches := reg.FindAllStringSubmatch(host, 1)
 		usr := matches[0][1]
 		err = s.Connector.QueryRow(`SELECT s.vendor_id,o.shop_id FROM mch_online_shop o
-		    INNER JOIN mch_shop s ON s.id=o.shop_id WHERE o.alias=?`, func(row *sql.Row) error {
+		    INNER JOIN mch_shop s ON s.id=o.shop_id WHERE o.alias= $1`, func(row *sql.Row) error {
 			return row.Scan(&vendorId, &shopId)
 		}, usr)
 	} else {
-		err = s.Connector.ExecScalar(`SELECT shop_id FROM mch_online_shop WHERE host=?`,
+		err = s.Connector.ExecScalar(`SELECT shop_id FROM mch_online_shop WHERE host= $1`,
 			&shopId, host)
 	}
 	if err != nil {
@@ -72,7 +72,7 @@ func (s *ShopQuery) QueryShopIdByHost(host string) (vendorId int32, shopId int32
 // 获取商户编号
 func (s *ShopQuery) GetMerchantId(shopId int32) int32 {
 	var vendorId int32
-	s.Connector.ExecScalar(`SELECT vendor_id FROM mch_shop WHERE id=?`, &vendorId, shopId)
+	s.Connector.ExecScalar(`SELECT vendor_id FROM mch_shop WHERE id= $1`, &vendorId, shopId)
 	return vendorId
 }
 
@@ -92,12 +92,12 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
     ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
     WHERE sp.state=%d AND mch.enabled = 1 %s`, shop.StateNormal, where), &total)
 
-	e := []*dto.ListOnlineShop{}
+	var e []*dto.ListOnlineShop
 	if total > 0 && err == nil {
 		sql = fmt.Sprintf(`SELECT sp.id,sp.name,alias,host,ol.logo,sp.create_time
         FROM mch_shop sp INNER JOIN mch_online_shop ol
         ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
-        WHERE sp.state=%d AND mch.enabled = 1 %s %s LIMIT ?,?`,
+        WHERE sp.state=%d AND mch.enabled = 1 %s %s LIMIT $2 OFFSET $1`,
 			shop.StateNormal, where, order)
 		err = s.GetOrm().SelectByQuery(&e, sql, begin, (end - begin))
 	}

@@ -63,7 +63,7 @@ func (a *attrServiceImpl) saveAttrItems(attrId int32, items []*promodel.AttrItem
 	var i int
 	pk := attrId
 	// 获取存在的项
-	old := a.repo.SelectAttrItem("attr_id = ?", pk)
+	old := a.repo.SelectAttrItem("attr_id = $1", pk)
 	// 分析当前项目并加入到MAP中
 	delList := []int32{}
 	currMap := make(map[int32]*promodel.AttrItem, len(items))
@@ -102,7 +102,7 @@ func (a *attrServiceImpl) SaveItem(v *promodel.AttrItem) (int32, error) {
 
 // 删除属性
 func (a *attrServiceImpl) DeleteAttr(attrId int32) error {
-	_, err := a.repo.BatchDeleteAttrItem("attr_id=?", attrId)
+	_, err := a.repo.BatchDeleteAttrItem("attr_id= $1", attrId)
 	if err == nil || err == sql.ErrNoRows {
 		err = a.repo.DeleteAttr(attrId)
 	}
@@ -116,12 +116,12 @@ func (a *attrServiceImpl) DeleteItem(itemId int32) error {
 
 // 获取属性的属性项
 func (a *attrServiceImpl) GetItems(attrId int32) []*promodel.AttrItem {
-	return a.repo.SelectAttrItem("attr_id=?", attrId)
+	return a.repo.SelectAttrItem("attr_id= $1", attrId)
 }
 
 // 获取产品模型的属性
 func (a *attrServiceImpl) GetModelAttrs(proModel int32) []*promodel.Attr {
-	arr := a.repo.SelectAttr("pro_model=?", proModel)
+	arr := a.repo.SelectAttr("pro_model= $1", proModel)
 	for _, v := range arr {
 		v.Items = a.GetItems(v.ID)
 	}

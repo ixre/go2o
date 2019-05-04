@@ -311,7 +311,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 
 // 根据订单编号获取订单
 func (t *orderManagerImpl) GetOrderById(orderId int64) order.IOrder {
-	val := t.repo.GetOrder("id=? LIMIT 1", orderId)
+	val := t.repo.GetOrder("id= $1 LIMIT 1", orderId)
 	if val != nil {
 		return t.repo.CreateOrder(val)
 	}
@@ -320,7 +320,7 @@ func (t *orderManagerImpl) GetOrderById(orderId int64) order.IOrder {
 
 // 根据订单号获取订单
 func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
-	val := t.repo.GetOrder("order_no=?", orderNo)
+	val := t.repo.GetOrder("order_no= $1", orderNo)
 	if val != nil {
 		return t.repo.CreateOrder(val)
 	}

@@ -44,7 +44,7 @@ func (p *pageImpl) GetValue() *content.Page {
 // 检测别名是否可用
 func (a *pageImpl) checkAliasExists(alias string) bool {
 	total := 0
-	tmp.Db().ExecScalar("SELECT COUNT(0) FROM ex_page WHERE user_id=? AND str_indent=? AND id<>?",
+	tmp.Db().ExecScalar("SELECT COUNT(0) FROM ex_page WHERE user_id= $1 AND str_indent= $2 AND id <> $3",
 		&total, a.userId, alias, a.GetDomainId())
 	return total == 0
 }

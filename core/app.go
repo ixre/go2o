@@ -127,20 +127,27 @@ func (a *AppImpl) Redis() *redis.Pool {
 func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	//数据库连接字符串
 	//root@tcp(127.0.0.1:3306)/db_name?charset=utf8
-	var connStr string
 	driver := c.GetString(DbDriver)
 	dbCharset := c.GetString(DbCharset)
 	if dbCharset == "" {
 		dbCharset = "utf8"
 	}
-	connStr = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local",
+	//connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local",
+	//	c.GetString(DbUsr),
+	//	c.GetString(DbPwd),
+	//	c.GetString(DbServer),
+	//	c.GetString(DbPort),
+	//	c.GetString(DbName),
+	//	dbCharset,
+	//)
+
+	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
 		c.GetString(DbUsr),
 		c.GetString(DbPwd),
 		c.GetString(DbServer),
 		c.GetString(DbPort),
-		c.GetString(DbName),
-		dbCharset,
-	)
+		c.GetString(DbName))
+	//todo: charset for connection string?
 	conn := db.NewConnector(driver, connStr, l, debug)
 	conn.SetMaxIdleConns(10000)
 	conn.SetMaxIdleConns(5000)

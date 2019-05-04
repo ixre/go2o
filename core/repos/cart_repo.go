@@ -86,7 +86,7 @@ func (c *cartRepo) getMyWholesaleCart(buyerId int64) cart.ICart {
 
 func (c *cartRepo) getNormalCart(buyerId int64) *cart.NormalCart {
 	e := cart.NormalCart{}
-	err := c._orm.GetBy(&e, "buyer_id=?", buyerId)
+	err := c._orm.GetBy(&e, "buyer_id= $1", buyerId)
 	if err == nil {
 		return &e
 	}
@@ -98,7 +98,7 @@ func (c *cartRepo) getNormalCart(buyerId int64) *cart.NormalCart {
 
 func (w *cartRepo) getWholesaleCart(buyerId int64) *cart.WsCart {
 	e := cart.WsCart{}
-	err := w._orm.GetBy(&e, "buyer_id=?", buyerId)
+	err := w._orm.GetBy(&e, "buyer_id= $1", buyerId)
 	if err == nil {
 		return &e
 	}
@@ -220,9 +220,9 @@ func (c *cartRepo) GetShoppingCartByKey(key string) cart.ICart {
 // 获取购物车
 func (c *cartRepo) GetShoppingCart(key string) *cart.NormalCart {
 	var v = &cart.NormalCart{}
-	if c.Connector.GetOrm().GetBy(v, "code=?", key) == nil {
-		items := []*cart.NormalCartItem{}
-		c.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
+	if c.Connector.GetOrm().GetBy(v, "code= $1", key) == nil {
+		var items []*cart.NormalCartItem
+		c.Connector.GetOrm().Select(&items, "cart_id= $1", v.Id)
 		v.Items = items
 		return v
 	}
@@ -232,9 +232,9 @@ func (c *cartRepo) GetShoppingCart(key string) *cart.NormalCart {
 // 获取最新的购物车
 func (c *cartRepo) GetLatestCart(buyerId int64) *cart.NormalCart {
 	var v = &cart.NormalCart{}
-	if c.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId) == nil {
-		var items = []*cart.NormalCartItem{}
-		c.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
+	if c.Connector.GetOrm().GetBy(v, "buyer_id= $1 ORDER BY id DESC", buyerId) == nil {
+		var items []*cart.NormalCartItem
+		c.Connector.GetOrm().Select(&items, "cart_id= $1", v.Id)
 		v.Items = items
 		return v
 	}
@@ -258,7 +258,7 @@ func (c *cartRepo) SaveCartItem(v *cart.NormalCartItem) (int32, error) {
 
 // 清空购物车项
 func (c *cartRepo) EmptyCartItems(cartId int32) error {
-	_, err := c.Connector.GetOrm().Delete(cart.NormalCartItem{}, "cart_id=?", cartId)
+	_, err := c.Connector.GetOrm().Delete(cart.NormalCartItem{}, "cart_id= $1", cartId)
 	return err
 }
 
@@ -287,7 +287,7 @@ func (w *cartRepo) DeleteWsCart(primary interface{}) error {
 
 // Select WsCartItem
 func (w *cartRepo) SelectWsCartItem(where string, v ...interface{}) []*cart.WsCartItem {
-	list := []*cart.WsCartItem{}
+	var list []*cart.WsCartItem
 	err := w._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsCartItem")

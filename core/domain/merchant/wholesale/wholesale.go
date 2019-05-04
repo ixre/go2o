@@ -135,7 +135,7 @@ func (w *wholesalerImpl) SaveGroupRebateRate(groupId int32, arr []*wholesaler.Ws
 	}
 	// 删除项
 	for _, v := range delList {
-		w.repo.BatchDeleteWsRebateRate("id=?", v)
+		w.repo.BatchDeleteWsRebateRate("id= $1", v)
 	}
 	// 保存项
 	for _, v := range arr {
@@ -151,7 +151,7 @@ func (w *wholesalerImpl) SaveGroupRebateRate(groupId int32, arr []*wholesaler.Ws
 
 // 获取客户分组的批发返点率
 func (w *wholesalerImpl) GetGroupRebateRate(groupId int32) []*wholesaler.WsRebateRate {
-	return w.repo.SelectWsRebateRate("ws_id=? AND buyer_gid=?", w.mchId, groupId)
+	return w.repo.SelectWsRebateRate("ws_id= $1 AND buyer_gid= $2", w.mchId, groupId)
 }
 
 // 获取批发返点率

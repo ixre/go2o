@@ -94,14 +94,14 @@ func (this *promotionRepo) DeleteValueCashBack(id int32) error {
 // 获取商品的促销编号
 func (this *promotionRepo) GetGoodsPromotionId(goodsId int64, promFlag int) int {
 	var id int
-	this.Connector.ExecScalar("SELECT id FROM pm_info WHERE goods_id=? AND type_flag=? AND enabled=1", &id, goodsId, promFlag)
+	this.Connector.ExecScalar("SELECT id FROM pm_info WHERE goods_id= $1 AND type_flag= $2 AND enabled=1", &id, goodsId, promFlag)
 	return id
 }
 
 // 获取商品的促销
 func (this *promotionRepo) GetPromotionOfGoods(goodsId int64) []*promotion.PromotionInfo {
-	var arr []*promotion.PromotionInfo = []*promotion.PromotionInfo{}
-	err := this.Connector.GetOrm().Select(&arr, "goods_id=? AND enabled=1 ORDER BY id", goodsId)
+	var arr []*promotion.PromotionInfo
+	err := this.Connector.GetOrm().Select(&arr, "goods_id= $1 AND enabled=1 ORDER BY id", goodsId)
 	if err == nil {
 		return arr
 	}
@@ -111,8 +111,8 @@ func (this *promotionRepo) GetPromotionOfGoods(goodsId int64) []*promotion.Promo
 
 // 获取商户订单可用的促销
 func (this *promotionRepo) GetPromotionOfMerchantOrder(mchId int32) []*promotion.PromotionInfo {
-	var arr []*promotion.PromotionInfo = []*promotion.PromotionInfo{}
-	err := this.Connector.GetOrm().Select(&arr, "mch_id=? AND goods_id=0 AND enabled=1 ORDER BY id", mchId)
+	var arr []*promotion.PromotionInfo
+	err := this.Connector.GetOrm().Select(&arr, "mch_id= $1 AND goods_id=0 AND enabled=1 ORDER BY id", mchId)
 	if err == nil {
 		return arr
 	}
@@ -159,10 +159,9 @@ func (this *promotionRepo) SaveCouponTake(v *promotion.ValueCouponTake) error {
 }
 
 func (this *promotionRepo) GetCouponTakes(couponId int32) []promotion.ValueCouponTake {
-	var arr []promotion.ValueCouponTake = []promotion.ValueCouponTake{}
-
+	var arr []promotion.ValueCouponTake
 	err := this.Connector.GetOrm().SelectByQuery(&arr,
-		"SELECT * FROM pm_coupon_take WHERE coupon_id =?", couponId)
+		"SELECT * FROM pm_coupon_take WHERE coupon_id = $1", couponId)
 	if err != nil {
 		log.Error(err)
 	}
@@ -180,9 +179,9 @@ func (this *promotionRepo) GetCouponBind(couponId, bindId int32) *promotion.Valu
 }
 
 func (this *promotionRepo) GetCouponBinds(couponId int32) []promotion.ValueCouponBind {
-	var arr []promotion.ValueCouponBind = []promotion.ValueCouponBind{}
+	var arr []promotion.ValueCouponBind
 	err := this.Connector.GetOrm().SelectByQuery(arr,
-		"SELECT * FROM pm_coupon_bind WHERE coupon_id = ?", couponId)
+		"SELECT * FROM pm_coupon_bind WHERE coupon_id = $1", couponId)
 	if err != nil {
 		log.Error(err)
 	}

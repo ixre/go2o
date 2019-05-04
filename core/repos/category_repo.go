@@ -70,7 +70,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
 func (c *categoryRepo) CheckContainGoods(vendorId, catId int32) bool {
 	num := 0
 	if vendorId <= 0 {
-		c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id=?`, &num, catId)
+		c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id= $1`, &num, catId)
 	} else {
 		panic(errors.New("暂时不支持商户绑定分类"))
 	}
@@ -79,11 +79,11 @@ func (c *categoryRepo) CheckContainGoods(vendorId, catId int32) bool {
 
 func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	//删除子类
-	_, _, err := c.Connector.Exec("DELETE FROM pro_category WHERE parent_id=?",
+	_, _, err := c.Connector.Exec("DELETE FROM pro_category WHERE parent_id= $1",
 		id)
 
 	//删除分类
-	_, _, err = c.Connector.Exec("DELETE FROM pro_category WHERE id=?",
+	_, _, err = c.Connector.Exec("DELETE FROM pro_category WHERE id= $1",
 		id)
 
 	// 清理缓存
