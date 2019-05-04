@@ -12,6 +12,7 @@ import (
 
 var _ cart.ICart = new(cartImpl)
 var _ cart.INormalCart = new(cartImpl)
+
 type cartImpl struct {
 	value      *cart.NormalCart
 	rep        cart.ICartRepo

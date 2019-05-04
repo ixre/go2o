@@ -10,7 +10,7 @@ import (
 func TestMasterPwd(t *testing.T) {
 	usr := "master"
 	pwd := "123456"
-	sha1 := domain.Sha1(domain.Md5(pwd)+usr+domain.Sha1OffSet)
+	sha1 := domain.Sha1(domain.Md5(pwd) + usr + domain.Sha1OffSet)
 	t.Log(sha1)
 }
 
@@ -23,6 +23,13 @@ func TestMasterPwd2(t *testing.T) {
 	t.Log(sha1)
 	t.Log(domain.Sha1OffSet)
 	t.Log(encPwd)
+}
+
+func TestMemberPwd(t *testing.T) {
+	pwd := domain.Md5("594488")
+	t.Log("--pwd=", pwd, "\n")
+	pwd = domain.Sha1(pwd)
+	t.Log("--pwd=", pwd, "\n")
 }
 
 // 商户密码
