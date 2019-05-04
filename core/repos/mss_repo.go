@@ -113,7 +113,7 @@ func (m *mssRepo) GetMailTemplates(mchId int32) []*mss.MailTemplate {
 // 删除邮件模板
 func (m *mssRepo) DeleteMailTemplate(mchId, id int32) error {
 	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{},
-	"merchant_id= $1 AND id= $2", mchId, id)
+		"merchant_id= $1 AND id= $2", mchId, id)
 	return err
 }
 

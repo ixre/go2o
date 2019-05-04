@@ -35,7 +35,8 @@ func (this *deliveryRepo) GetDelivery(id int32) delivery.IDelivery {
 // 根据区名获取区域
 func (this *deliveryRepo) GetAreaByArea(name string) []*delivery.AreaValue {
 	arr := make([]*delivery.AreaValue, 0)
-	if err := this.Connector.GetOrm().Select(&arr, "name LIKE '%?%'", name); err == nil {
+	if err := this.Connector.GetOrm().Select(&arr, "name LIKE $1",
+		"%"+name+"%"); err == nil {
 		return arr
 	}
 	return nil

@@ -72,7 +72,7 @@ func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
 
 	var catIdStr string = format.I32ArrStrJoin(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM pro_product INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
-		WHERE merchant_id=%d AND pro_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
+		WHERE merchant_id=%d AND pro_category.id IN (%s) AND on_shelves=1 LIMIT %d OFFSET %d`, mchId, catIdStr, start, (end - start))
 
 	p.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pro_product INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
 		WHERE merchant_id=%d AND pro_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)

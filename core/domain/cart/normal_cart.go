@@ -11,7 +11,7 @@ import (
 )
 
 var _ cart.ICart = new(cartImpl)
-
+var _ cart.INormalCart = new(cartImpl)
 type cartImpl struct {
 	value      *cart.NormalCart
 	rep        cart.ICartRepo
@@ -196,7 +196,8 @@ func (c *cartImpl) GetAggregateRootId() int32 {
 	return c.value.Id
 }
 
-func (c *cartImpl) GetValue() cart.NormalCart {
+// 获取购物车数据
+func (c *cartImpl) Value() cart.NormalCart {
 	return *c.value
 }
 
