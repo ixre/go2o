@@ -256,14 +256,14 @@ type PixelRole uint32
 
 const (
 	_         PixelRole = iota
-	Position   // position squares (large)
-	Alignment  // alignment squares (small)
-	Timing     // timing strip between position squares
-	Format     // format metadata
-	PVersion   // version pattern
-	Unused     // unused pixel
-	Data       // data bit
-	Check      // error correction check bit
+	Position            // position squares (large)
+	Alignment           // alignment squares (small)
+	Timing              // timing strip between position squares
+	Format              // format metadata
+	PVersion            // version pattern
+	Unused              // unused pixel
+	Data                // data bit
+	Check               // error correction check bit
 	Extra
 )
 
@@ -682,8 +682,8 @@ func lplan(v Version, l Level, p *Plan) error {
 		if i >= nblock-extra {
 			nd++
 		}
-		dataList[i], data = data[0 : nd*8], data[nd*8:]
-		checkList[i], check = check[0 : ne*8], check[ne*8:]
+		dataList[i], data = data[0:nd*8], data[nd*8:]
+		checkList[i], check = check[0:ne*8], check[ne*8:]
 	}
 	if len(data) != 0 || len(check) != 0 {
 		panic("data/check math")

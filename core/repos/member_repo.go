@@ -542,7 +542,7 @@ func (m *MemberRepoImpl) SaveDeliver(v *member.Address) (int64, error) {
 // 获取全部配送地址
 func (m *MemberRepoImpl) GetDeliverAddress(memberId int64) []*member.Address {
 	addresses := []*member.Address{}
-	m.Connector.GetOrm().Select(&addresses, "member_id= ?", memberId)
+	m.Connector.GetOrm().Select(&addresses, "member_id= $1", memberId)
 	return addresses
 }
 
@@ -560,7 +560,7 @@ func (m *MemberRepoImpl) GetSingleDeliverAddress(memberId, deliverId int64) *mem
 // 删除配送地址
 func (m *MemberRepoImpl) DeleteAddress(memberId, deliverId int64) error {
 	_, err := m.Connector.ExecNonQuery(
-		"DELETE FROM mm_deliver_addr WHERE member_id= ? AND id= ?",
+		"DELETE FROM mm_deliver_addr WHERE member_id= $1 AND id= $2",
 		memberId, deliverId)
 	return err
 }
@@ -570,11 +570,11 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
 	total int, rows []*dto.InvitationMember) {
 	arr := []*dto.InvitationMember{}
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
-	 (SELECT member_id FROM mm_relation WHERE inviter_id= ?)`, &total, memberId)
+	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
 		m.Connector.Query(`SELECT m.id,m.usr,m.level,p.avatar,p.name,p.phone,p.im FROM
             (SELECT id,usr,level FROM mm_member WHERE id IN (SELECT member_id FROM
-             mm_relation WHERE inviter_id= ?) ORDER BY level DESC,id LIMIT ?,?) m
+             mm_relation WHERE inviter_id= $1) ORDER BY level DESC,id LIMIT $3 OFFSET $2) m
              INNER JOIN mm_profile p ON p.member_id = m.id ORDER BY level DESC,id`,
 			func(rs *sql.Rows) {
 				for rs.Next() {
@@ -613,7 +613,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 func (m *MemberRepoImpl) GetInvitationMeMember(memberId int64) *member.Member {
 	var d *member.Member = new(member.Member)
 	err := m.Connector.GetOrm().GetByQuery(d,
-		"SELECT * FROM mm_member WHERE id =(SELECT inviter_id FROM mm_relation  WHERE id= ?)",
+		"SELECT * FROM mm_member WHERE id =(SELECT inviter_id FROM mm_relation  WHERE id= $1)",
 		memberId)
 
 	if err != nil {
@@ -634,7 +634,7 @@ func (m *MemberRepoImpl) GetBalanceInfo(id int32) *member.BalanceInfo {
 // 根据号码获取余额变动信息
 func (m *MemberRepoImpl) GetBalanceInfoByNo(tradeNo string) *member.BalanceInfo {
 	var e member.BalanceInfo
-	if err := m.Connector.GetOrm().GetBy(&e, "trade_no= ?", tradeNo); err == nil {
+	if err := m.Connector.GetOrm().GetBy(&e, "trade_no= $1", tradeNo); err == nil {
 		return &e
 	}
 	return nil
@@ -648,8 +648,8 @@ func (m *MemberRepoImpl) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
 // 保存理财账户信息
 func (m *MemberRepoImpl) SaveGrowAccount(memberId int64, balance, totalAmount,
 	growEarnings, totalGrowEarnings float32, updateTime int64) error {
-	_, err := m.Connector.ExecNonQuery(`UPDATE mm_account SET grow_balance= ?,
-		grow_amount= ?,grow_earnings= ?,grow_total_earnings= ?,update_time= ? where member_id= ?`,
+	_, err := m.Connector.ExecNonQuery(`UPDATE mm_account SET grow_balance= $1,
+		grow_amount= $2,grow_earnings= $3,grow_total_earnings= $4,update_time= $5 where member_id= $6`,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
 	//清除缓存
 	m.Storage.Del(m.getAccountCk(memberId))
@@ -664,14 +664,14 @@ func (m *MemberRepoImpl) GetMemberPagedCoupon(memberId int64, start, end int, wh
 	m.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(distinct pi.id)
         FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id
 	    INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
-	    WHERE member_id= ? AND %s`, where), &total, memberId)
+	    WHERE member_id= $1 AND %s`, where), &total, memberId)
 	if total > 0 {
 		m.Connector.GetOrm().SelectByQuery(&list,
 			fmt.Sprintf(`SELECT pi.id,SUM(1) as num,pi.short_name as title,
             code,fee,c.discount,is_used,over_time FROM pm_info pi
              INNER JOIN pm_coupon c ON c.id = pi.id
 	        INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
-	        WHERE member_id= ? AND %s GROUP BY pi.id order by bind_time DESC LIMIT ?,?`, where),
+	        WHERE member_id= $1 AND %s GROUP BY pi.id order by bind_time DESC LIMIT $3 OFFSET $2`, where),
 			memberId, start, end-start)
 	}
 	return total, list
@@ -679,7 +679,7 @@ func (m *MemberRepoImpl) GetMemberPagedCoupon(memberId int64, start, end int, wh
 
 // Select MmBuyerGroup
 func (m *MemberRepoImpl) SelectMmBuyerGroup(where string, v ...interface{}) []*member.BuyerGroup {
-	list := []*member.BuyerGroup{}
+	var list []*member.BuyerGroup
 	err := m._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmBuyerGroup")

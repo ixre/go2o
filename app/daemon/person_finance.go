@@ -119,7 +119,7 @@ func settleRiseData(settleDate time.Time) {
 	for {
 		idArr := []int64{}
 		err := conn.Query(`SELECT person_id FROM pf_riseinfo WHERE
-            settlement_amount > 0 AND settled_date < ? LIMIT ?,?`,
+            settlement_amount > 0 AND settled_date < $1 LIMIT $3 OFFSET $2`,
 			func(rows *sql.Rows) {
 				var i int64
 				for rows.Next() {

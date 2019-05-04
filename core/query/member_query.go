@@ -61,7 +61,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 
 	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE member_id= $1 %s %s LIMIT $3,$2`,
+			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
 
 	d.Query(sqlLine, func(_rows *sql.Rows) {
@@ -85,7 +85,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 	if num > 0 {
 		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_wallet_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE member_id= $1 %s %s LIMIT $3,$2`,
+			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
 		d.Query(sqlLine, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
@@ -112,7 +112,7 @@ func (m *MemberQuery) QueryBalanceLog(memberId int64, begin, end int,
 
 	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_info bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE member_id= $1 %s %s LIMIT $3,$2`,
+			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
 
 	d.Query(sqlLine, func(_rows *sql.Rows) {
@@ -268,7 +268,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
     INNER JOIN  mch_shop s ON f.refer_id =s.id
     INNER JOIN mch_online_shop o ON s.id = o.shop_id
     INNER JOIN mch_merchant mch ON mch.id = s.vendor_id
-    WHERE f.member_id= $1 AND f.fav_type= $2 %s ORDER BY f.update_time DESC LIMIT $4,$3`,
+    WHERE f.member_id= $1 AND f.fav_type= $2 %s ORDER BY f.update_time DESC LIMIT $4 OFFSET $3`,
 			where)
 		d.Query(sqlLine, func(rs *sql.Rows) {
 			for rs.Next() {
@@ -304,7 +304,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
             FROM mm_favorite f INNER JOIN item_info gs ON gs.id = f.refer_id
             INNER JOIN pro_product product ON gs.product_id=product.id
             WHERE f.member_id= $1 AND f.fav_type= $2 %s ORDER BY f.update_time DESC
-            LIMIT $4,$3`,
+            LIMIT $4 OFFSET $3`,
 			where)
 		d.Query(sqlLine, func(rs *sql.Rows) {
 			for rs.Next() {

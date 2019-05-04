@@ -184,7 +184,7 @@ func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaym
 	if l := len(tradeNoArr); l > 0 {
 		list := make([]*payment.Order, 0)
 		p.Connector.GetOrm().Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
-			") LIMIT ?", len(tradeNoArr))
+			") LIMIT $1", len(tradeNoArr))
 		for _, v := range list {
 			arr = append(arr, p.CreatePaymentOrder(v))
 		}

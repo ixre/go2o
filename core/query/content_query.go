@@ -40,4 +40,3 @@ func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where str
 
 	return total, rows
 }
-
