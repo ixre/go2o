@@ -210,7 +210,7 @@ func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r
 	if mchId <= 0 {
 		// 使用会员身份登录
 		var id int64
-		mEncPwd := domain.MemberSha1Pwd(oriPwd)
+		mEncPwd := domain.MemberSha1Pwd(domain.Md5(oriPwd))
 		id, err = m.testMemberLogin(usr, mEncPwd)
 		if err == nil {
 			mch := m.GetMerchantByMemberId(id)
