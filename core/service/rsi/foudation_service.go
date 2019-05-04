@@ -78,14 +78,14 @@ func (s *foundationService) SavesRegistry(values map[string]string) error {
 // 验证超级用户账号和密码
 func (s *foundationService) SuperValidate(ctx context.Context, user string, pwd string) (r bool, err error) {
 	superPwd := gof.CurrentApp.Config().Get("super_login_md5")
-	encPwd := domain.Sha1Pwd(pwd+user)
+	encPwd := domain.Sha1Pwd(pwd + user)
 	return superPwd == encPwd, nil
 }
 
 // 保存超级用户账号和密码
 func (s *foundationService) FlushSuperPwd(ctx context.Context, user string, pwd string) (err error) {
 	conf := gof.CurrentApp.Config()
-	encPwd := domain.Sha1Pwd(pwd+user)
+	encPwd := domain.Sha1Pwd(pwd + user)
 	conf.Set("super_login_md5", encPwd)
 	//conf.Flush()
 	return errors.New("暂不支持保存")

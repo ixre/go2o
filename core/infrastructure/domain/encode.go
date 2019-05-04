@@ -29,7 +29,6 @@ func Md5(pwd string) string {
 	return crypto.Md5([]byte(pwd))
 }
 
-
 func ChkPwdRight(pwd string) (bool, error) {
 	if len(pwd) < 6 {
 		return false, errors.New("密码必须大于6位")
