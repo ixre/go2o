@@ -112,7 +112,7 @@ func (p *CommonDao) GetPortalNavType(primary interface{}) *model.PortalNavType {
 
 // Select PortalNavType
 func (p *CommonDao) SelectPortalNavType(where string, v ...interface{}) []*model.PortalNavType {
-	list := []*model.PortalNavType{}
+	var list []*model.PortalNavType
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalNavType")
@@ -162,7 +162,7 @@ func (p *CommonDao) GetPortalNav(primary interface{}) *model.PortalNav {
 
 // Select PortalNav
 func (p *CommonDao) SelectPortalNav(where string, v ...interface{}) []*model.PortalNav {
-	list := []*model.PortalNav{}
+	var list []*model.PortalNav
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalNav")
@@ -202,7 +202,7 @@ func (p *CommonDao) GetFloorAdPos(catId int32) string {
 	r, err := p.storage.GetString(key)
 	if err != nil {
 		e := model.PortalFloorAd{}
-		err := p._orm.GetBy(&e, "cat_id=?", catId)
+		err := p._orm.GetBy(&e, "cat_id= $1", catId)
 		if err == nil {
 			pos := p.adRepo.GetAdPositionById(e.PosId)
 			if pos != nil {
@@ -222,7 +222,7 @@ func (p *CommonDao) SetFloorAd(catId int32, posId int32) (err error) {
 		err = errors.New("商品分类设置楼层显示")
 	}
 	e := model.PortalFloorAd{}
-	p._orm.GetBy(&e, "cat_id=?", catId)
+	p._orm.GetBy(&e, "cat_id= $1", catId)
 	e.CatId = catId
 	e.PosId = posId
 	e.AdIndex = 0

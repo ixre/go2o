@@ -157,7 +157,7 @@ func (m *merchantRepo) GetAccount(mchId int32) *merchant.Account {
 func (m *merchantRepo) GetMerchantMajorHost(mchId int32) string {
 	//todo:
 	var host string
-	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE mch_id=? LIMIT 0,1`,
+	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE mch_id= $1 LIMIT 1`,
 		&host, mchId)
 	return host
 }
@@ -226,7 +226,7 @@ func (m *merchantRepo) GetApiInfo(mchId int32) *merchant.ApiInfo {
 // 根据API编号获取商户编号
 func (m *merchantRepo) GetMerchantIdByApiId(apiId string) int32 {
 	var mchId int32
-	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id=?", &mchId, apiId)
+	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id= $1", &mchId, apiId)
 	return mchId
 }
 
@@ -234,7 +234,7 @@ func (m *merchantRepo) GetMerchantIdByApiId(apiId string) int32 {
 func (m *merchantRepo) GetKeyValue(mchId int32, indent string, k string) string {
 	var v string
 	m.Connector.ExecScalar(
-		fmt.Sprintf("SELECT value FROM pt_%s WHERE merchant_id=? AND `key`=?", indent),
+		fmt.Sprintf("SELECT value FROM pt_%s WHERE merchant_id= $1 AND `key`= $2", indent),
 		&v, mchId, k)
 	return v
 }
@@ -242,11 +242,11 @@ func (m *merchantRepo) GetKeyValue(mchId int32, indent string, k string) string 
 // 设置键值
 func (m *merchantRepo) SaveKeyValue(mchId int32, indent string, k, v string, updateTime int64) error {
 	i, err := m.Connector.ExecNonQuery(
-		fmt.Sprintf("UPDATE pt_%s SET value=?,update_time=? WHERE merchant_id=? AND `key`=?", indent),
+		fmt.Sprintf("UPDATE pt_%s SET value= $1,update_time= $2 WHERE merchant_id= $3 AND `key`= $4", indent),
 		v, updateTime, mchId, k)
 	if i == 0 {
 		_, err = m.Connector.ExecNonQuery(
-			fmt.Sprintf("INSERT INTO pt_%s(merchant_id,`key`,value,update_time)VALUES(?,?,?,?)", indent),
+			fmt.Sprintf("INSERT INTO pt_%s(merchant_id,`key`,value,update_time)VALUES($1,$2,$3,$4)", indent),
 			mchId, k, v, updateTime)
 	}
 	return err
@@ -256,7 +256,7 @@ func (m *merchantRepo) SaveKeyValue(mchId int32, indent string, k, v string, upd
 func (m *merchantRepo) GetKeyMap(mchId int32, indent string, k []string) map[string]string {
 	mp := make(map[string]string)
 	var k1, v1 string
-	m.Connector.Query(fmt.Sprintf("SELECT `key`,value FROM pt_%s WHERE merchant_id=? AND `key` IN (?)", indent),
+	m.Connector.Query(fmt.Sprintf("SELECT `key`,value FROM pt_%s WHERE merchant_id= $1 AND `key` IN ($2)", indent),
 		func(rows *sql.Rows) {
 			for rows.Next() {
 				rows.Scan(&k1, &v1)
@@ -270,7 +270,7 @@ func (m *merchantRepo) GetKeyMap(mchId int32, indent string, k []string) map[str
 func (m *merchantRepo) CheckKvContainValue(mchId int32, indent string, value string, keyStr string) int {
 	var i int
 	err := m.Connector.ExecScalar("SELECT COUNT(0) FROM pt_"+indent+
-		" WHERE merchant_id=? AND value=? AND `key` LIKE '%"+
+		" WHERE merchant_id= $1 AND value= $2 AND `key` LIKE '%"+
 		keyStr+"%'", &i, mchId, value)
 	if err != nil {
 		return 999
@@ -283,7 +283,7 @@ func (m *merchantRepo) GetKeyMapByChar(mchId int32, indent string, keyword strin
 	mp := make(map[string]string)
 	var k1, v1 string
 	m.Connector.Query("SELECT `key`,value FROM pt_"+indent+
-		" WHERE merchant_id=? AND `key` LIKE '%"+keyword+"%'",
+		" WHERE merchant_id= $1 AND `key` LIKE '%"+keyword+"%'",
 		func(rows *sql.Rows) {
 			for rows.Next() {
 				rows.Scan(&k1, &v1)
@@ -295,7 +295,7 @@ func (m *merchantRepo) GetKeyMapByChar(mchId int32, indent string, keyword strin
 
 func (m *merchantRepo) GetLevel(mchId, levelValue int32) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
-	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value = ?", mchId, levelValue)
+	err := m.Connector.GetOrm().GetBy(&e, "merchant_id= $1 AND value = $2", mchId, levelValue)
 	if err != nil {
 		return nil
 	}
@@ -305,7 +305,7 @@ func (m *merchantRepo) GetLevel(mchId, levelValue int32) *merchant.MemberLevel {
 // 获取下一个等级
 func (m *merchantRepo) GetNextLevel(mchId, levelVal int32) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
-	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value>? LIMIT 0,1", mchId, levelVal)
+	err := m.Connector.GetOrm().GetBy(&e, "merchant_id= $1 AND value> $2 LIMIT 1", mchId, levelVal)
 	if err != nil {
 		return nil
 	}
@@ -314,16 +314,16 @@ func (m *merchantRepo) GetNextLevel(mchId, levelVal int32) *merchant.MemberLevel
 
 // 获取会员等级
 func (m *merchantRepo) GetMemberLevels(mchId int32) []*merchant.MemberLevel {
-	list := []*merchant.MemberLevel{}
+	var list []*merchant.MemberLevel
 	m.Connector.GetOrm().Select(&list,
-		"merchant_id=?", mchId)
+		"merchant_id= $1", mchId)
 	return list
 }
 
 // 删除会员等级
 func (m *merchantRepo) DeleteMemberLevel(mchId, id int32) error {
 	_, err := m.Connector.GetOrm().Delete(&merchant.MemberLevel{},
-		"id=? AND merchant_id=?", id, mchId)
+		"id= $1 AND merchant_id= $2", id, mchId)
 	return err
 }
 
@@ -334,15 +334,15 @@ func (m *merchantRepo) SaveMemberLevel(mchId int32, v *merchant.MemberLevel) (in
 
 //
 //func (m *merchantRepo) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
-//	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate=? ,return_rate=? WHERE  id=?", rate, return_rate, id)
+//	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate= ? ,return_rate= ? WHERE  id= ?", rate, return_rate, id)
 //	return err
 //}
 //
 //func (m *merchantRepo) GetOfflineRate(id int32) (float32, float32, error) {
 //	var rate float32
 //	var return_rate float32
-//	err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id=?", &rate, id)
-//	m.Connector.ExecScalar("SELECT  return_rate  FROM mch_merchant WHERE id=?", &return_rate, id)
+//	err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id= ?", &rate, id)
+//	m.Connector.ExecScalar("SELECT  return_rate  FROM mch_merchant WHERE id= ?", &return_rate, id)
 //	return rate, return_rate, err
 //}
 //
@@ -359,7 +359,7 @@ func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
 // Get MchEnterpriseInfo
 func (m *merchantRepo) GetMchEnterpriseInfo(mchId int32) *merchant.EnterpriseInfo {
 	e := merchant.EnterpriseInfo{}
-	err := m._orm.GetBy(&e, "mch_id=?", mchId)
+	err := m._orm.GetBy(&e, "mch_id= $1", mchId)
 	if err == nil {
 		return &e
 	}
@@ -381,7 +381,7 @@ func (m *merchantRepo) SaveMchEnterpriseInfo(v *merchant.EnterpriseInfo) (int, e
 // Get MchBuyerGroup
 func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant.MchBuyerGroup {
 	e := merchant.MchBuyerGroup{}
-	err := m._orm.GetBy(&e, "mch_id=? AND group_id=?", mchId, groupId)
+	err := m._orm.GetBy(&e, "mch_id= $1 AND group_id= $2", mchId, groupId)
 	if err == nil {
 		return &e
 	}
@@ -393,8 +393,8 @@ func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant
 
 // Select MchBuyerGroup
 func (m *merchantRepo) SelectMchBuyerGroup(mchId int32) []*merchant.MchBuyerGroup {
-	list := []*merchant.MchBuyerGroup{}
-	err := m._orm.Select(&list, "mch_id=?", mchId)
+	var list []*merchant.MchBuyerGroup
+	err := m._orm.Select(&list, "mch_id= $1", mchId)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroup")
 	}
@@ -438,7 +438,7 @@ func (m *merchantRepo) GetMchTradeConfBy(where string, v ...interface{}) *mercha
 
 // Select MchTradeConf
 func (m *merchantRepo) SelectMchTradeConf(where string, v ...interface{}) []*merchant.TradeConf {
-	list := []*merchant.TradeConf{}
+	var list []*merchant.TradeConf
 	err := m._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")

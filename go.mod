@@ -18,5 +18,10 @@ require (
 	golang.org/x/image v0.0.0-20190424155947-59b11bec70c7 // indirect
 	golang.org/x/sys v0.0.0-20190426135247-a129542de9ae // indirect
 	golang.org/x/text v0.3.2
+	google.golang.org/appengine v1.5.0 // indirect
 	gopkg.in/square/go-jose.v1 v1.1.2
 )
+
+replace github.com/ixre/gof => ../github.com/ixre/gof
+
+replace github.com/ixre/goex => ../github.com/ixre/goex

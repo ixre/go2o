@@ -127,7 +127,7 @@ func (w *wholesaleItemImpl) GetWholesaleDiscount(groupId int32, amount int32) fl
 
 // 获取全部批发折扣
 func (w *wholesaleItemImpl) GetItemDiscount(groupId int32) []*item.WsItemDiscount {
-	return w.repo.SelectWsItemDiscount("item_id=? AND buyer_gid=?",
+	return w.repo.SelectWsItemDiscount("item_id= $1 AND buyer_gid= $2",
 		w.value.ItemId, groupId)
 }
 
@@ -152,7 +152,7 @@ func (w *wholesaleItemImpl) SaveItemDiscount(groupId int32, arr []*item.WsItemDi
 	}
 	// 删除项
 	for _, v := range delList {
-		w.repo.BatchDeleteWsItemDiscount("id=?", v)
+		w.repo.BatchDeleteWsItemDiscount("id= $1", v)
 	}
 	// 保存项
 	for _, v := range arr {
@@ -187,7 +187,7 @@ func (w *wholesaleItemImpl) GetWholesalePrice(skuId int64, quantity int32) float
 
 // 根据SKU获取价格设置
 func (w *wholesaleItemImpl) GetSkuPrice(skuId int64) []*item.WsSkuPrice {
-	return w.repo.SelectWsSkuPrice("item_id=? AND sku_id=?",
+	return w.repo.SelectWsSkuPrice("item_id= $1 AND sku_id= $2",
 		w.value.ItemId, skuId)
 }
 
@@ -212,7 +212,7 @@ func (w *wholesaleItemImpl) SaveSkuPrice(skuId int64, arr []*item.WsSkuPrice) er
 	}
 	// 删除项
 	for _, v := range delList {
-		w.repo.BatchDeleteWsSkuPrice("id=?", v)
+		w.repo.BatchDeleteWsSkuPrice("id= $1", v)
 	}
 	// 保存项
 	var min, max float64

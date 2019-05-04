@@ -76,7 +76,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
 
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order o
-		  INNER JOIN order_list po ON o.order_id = po.id WHERE o.buyer_id=? %s`,
+		  INNER JOIN order_list po ON o.order_id = po.id WHERE o.buyer_id= $1 %s`,
 			where), &num, memberId)
 		if num == 0 {
 			return num, orderList
@@ -93,7 +93,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
          FROM sale_sub_order o INNER JOIN order_list po ON o.order_id = po.id
             INNER JOIN mch_shop s ON o.shop_id=s.id
-         WHERE o.buyer_id=? %s %s LIMIT ?,?`,
+         WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			i := 0
@@ -160,7 +160,7 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, p
 
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order o
-		  INNER JOIN order_list po ON po.id=o.order_id WHERE o.vendor_id=? %s`,
+		  INNER JOIN order_list po ON po.id=o.order_id WHERE o.vendor_id= $1 %s`,
 			where), &num, vendorId)
 		if num == 0 {
 			return num, orderList
@@ -174,7 +174,7 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, p
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
          FROM sale_sub_order o INNER JOIN order_list po ON po.id=o.order_id
          INNER JOIN mm_profile mp ON mp.member_id=o.buyer_id
-         WHERE o.vendor_id=? %s %s LIMIT ?,?`,
+         WHERE o.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			i := 0
@@ -237,7 +237,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int,
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
 		 INNER JOIN order_wholesale_order wo ON wo.order_id = o.id
-		 WHERE o.buyer_id=? %s`,
+		 WHERE o.buyer_id= $1 %s`,
 			where), &num, memberId)
 		if num == 0 {
 			return num, orderList
@@ -254,7 +254,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int,
         wo.package_fee,wo.final_amount,wo.is_paid,wo.state,wo.create_time
          FROM order_list o INNER JOIN order_wholesale_order wo ON wo.order_id = o.id
 		INNER JOIN mch_merchant mch ON mch.id= wo.vendor_id
-         WHERE o.buyer_id=? %s %s LIMIT ?,?`,
+         WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			i := 0
@@ -322,7 +322,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
 		 INNER JOIN order_wholesale_order wo ON wo.order_id = o.id
-		 WHERE wo.vendor_id=? %s`, where), &num, vendorId)
+		 WHERE wo.vendor_id= $1 %s`, where), &num, vendorId)
 		if num == 0 {
 			return num, orderList
 		}
@@ -338,7 +338,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int
 			wo.package_fee,wo.final_amount,wo.is_paid,wo.state,wo.create_time
 	    FROM order_list o INNER JOIN order_wholesale_order wo ON wo.order_id = o.id
         INNER JOIN mm_profile mp ON mp.member_id=o.buyer_id
-	    WHERE wo.vendor_id=? %s %s LIMIT ?,?`,
+	    WHERE wo.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			i := 0
@@ -402,7 +402,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
 
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
-		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE o.buyer_id=? %s`,
+		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE o.buyer_id= $1 %s`,
 			where), &num, memberId)
 		if num == 0 {
 			return num, orderList
@@ -414,7 +414,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
         ot.order_amount,ot.discount_amount,
         ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time
         FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
-         WHERE o.buyer_id=? %s %s LIMIT ?,?`,
+         WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			var cashPay int
@@ -445,7 +445,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
 func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
 	where, orderBy string) (int32, []*order_service.SComplexOrder) {
 	d := o.Connector
-	orderList := []*order_service.SComplexOrder{}
+	var orderList []*order_service.SComplexOrder
 	var num int32
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -461,7 +461,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
 
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
-		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE ot.vendor_id=? %s`,
+		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE ot.vendor_id= $1 %s`,
 			where), &num, vendorId)
 		if num == 0 {
 			return num, orderList
@@ -474,7 +474,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
         ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time,
         m.usr FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
         LEFT JOIN mm_member m ON m.id = o.buyer_id
-         WHERE ot.vendor_id=? %s %s LIMIT ?,?`,
+         WHERE ot.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			var cashPay int

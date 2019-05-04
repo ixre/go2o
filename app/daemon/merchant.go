@@ -49,11 +49,11 @@ func generateMchDayChart(start, end int64) {
 	var tmp int32
 	dateStr := time.Unix(start, 0).Format("2006-01-02")
 	// 清理数据
-	appCtx.Db().ExecNonQuery(`DELETE FROM mch_day_chart WHERE date_str=?`, dateStr)
+	appCtx.Db().ExecNonQuery(`DELETE FROM mch_day_chart WHERE date_str= $1`, dateStr)
 	// 开始统计数据
 	for {
 		mchList = []int32{}
-		appCtx.Db().Query("SELECT id FROM mch_merchant LIMIT ?,?", func(rs *sql.Rows) {
+		appCtx.Db().Query("SELECT id FROM mch_merchant LIMIT $2 OFFSET $1", func(rs *sql.Rows) {
 			for rs.Next() {
 				rs.Scan(&tmp)
 				mchList = append(mchList, tmp)
@@ -84,20 +84,20 @@ func genDayChartForMch(wg *sync.WaitGroup, mchId int32, dateStr string, start in
 	db := appCtx.Db()
 	// 统计订单
 	db.QueryRow(`SELECT COUNT(0),SUM(final_amount),COUNT(distinct buyer_id)
- FROM sale_sub_order where vendor_id=? AND create_time BETWEEN ? AND ?`, func(r *sql.Row) error {
+ FROM sale_sub_order where vendor_id= $1 AND create_time BETWEEN $2 AND $3`, func(r *sql.Row) error {
 		return r.Scan(&c.OrderNumber, &c.OrderAmount, &c.BuyerNumber)
 	}, mchId, start, end)
 	// 支付单汇总
 	db.QueryRow(`SELECT COUNT(0),SUM(sale_sub_order.final_amount) FROM sale_sub_order
 INNER JOIN pay_order ON pay_order.order_id = sale_sub_order.order_id
-where sale_sub_order.vendor_id=? AND pay_order.state = 1 AND pay_order.paid_time
- BETWEEN ? AND ?`, func(r *sql.Row) error {
+where sale_sub_order.vendor_id= $1 AND pay_order.state = 1 AND pay_order.paid_time
+ BETWEEN $2 AND $3`, func(r *sql.Row) error {
 		return r.Scan(&c.PaidNumber, &c.PaidAmount)
 	}, mchId, start, end)
 	// 今日已完成订单,应进账数量
 	db.QueryRow(`SELECT COUNT(0),SUM(final_amount)
- FROM sale_sub_order where vendor_id=? AND state=?
- AND update_time BETWEEN ? AND ?`, func(r *sql.Row) error {
+ FROM sale_sub_order where vendor_id= $1 AND state= $2
+ AND update_time BETWEEN $3 AND $4`, func(r *sql.Row) error {
 		return r.Scan(&c.CompleteOrders, &c.InAmount)
 	}, mchId, order.StatCompleted, start, end)
 	// 保存

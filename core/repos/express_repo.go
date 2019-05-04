@@ -72,15 +72,15 @@ func (er *expressRepo) GetUserExpress(userId int32) express.IUserExpress {
 
 // 获取用户的快递模板
 func (er *expressRepo) GetUserAllTemplate(userId int32) []*express.ExpressTemplate {
-	list := []*express.ExpressTemplate{}
-	er.GetOrm().Select(&list, "user_id=?", userId)
+	var list []*express.ExpressTemplate
+	er.GetOrm().Select(&list, "user_id= $1", userId)
 	return list
 }
 
 // 删除快递模板
 func (er *expressRepo) DeleteExpressTemplate(userId int32, templateId int32) error {
 	_, err := er.GetOrm().Delete(express.ExpressTemplate{},
-		"id=? AND user_id=?", templateId, userId)
+		"id= $1 AND user_id= $2", templateId, userId)
 	return err
 }
 
@@ -91,8 +91,8 @@ func (er *expressRepo) SaveExpressTemplate(v *express.ExpressTemplate) (int32, e
 
 // 获取模板的所有地区设置
 func (er *expressRepo) GetExpressTemplateAllAreaSet(templateId int32) []express.ExpressAreaTemplate {
-	list := []express.ExpressAreaTemplate{}
-	er.GetOrm().Select(&list, "template_id=?", templateId)
+	var list []express.ExpressAreaTemplate
+	er.GetOrm().Select(&list, "template_id= $1", templateId)
 	return list
 }
 
@@ -104,6 +104,6 @@ func (er *expressRepo) SaveExpressTemplateAreaSet(v *express.ExpressAreaTemplate
 // 删除模板的地区设置
 func (er *expressRepo) DeleteAreaExpressTemplate(templateId int32, areaSetId int32) error {
 	_, err := er.Connector.GetOrm().Delete(express.ExpressAreaTemplate{},
-		"id= ? AND template_id=?", areaSetId, templateId)
+		"id= $1 AND template_id = $2", areaSetId, templateId)
 	return err
 }

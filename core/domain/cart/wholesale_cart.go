@@ -64,7 +64,7 @@ func (c *wholesaleCartImpl) init() cart.ICart {
 	// 获取购物车项
 	if c.GetAggregateRootId() > 0 {
 		if c.value.Items == nil {
-			c.value.Items = c.rep.SelectWsCartItem("cart_id=?",
+			c.value.Items = c.rep.SelectWsCartItem("cart_id= $1",
 				c.GetAggregateRootId())
 		}
 	}
@@ -482,7 +482,7 @@ func (c *wholesaleCartImpl) Save() (int32, error) {
 		for _, v := range c.value.Items {
 			if v.Quantity <= 0 {
 				//c.rep.RemoveCartItem(v.ID)
-				c.rep.BatchDeleteWsCartItem("id=?", v.ID)
+				c.rep.BatchDeleteWsCartItem("id= $1", v.ID)
 			} else {
 				v.CartId = c.GetAggregateRootId()
 				v.ID, err = util.I32Err(c.rep.SaveWsCartItem(v))

@@ -61,7 +61,7 @@ func (a *accountImpl) GetBalanceLog(id int32) *merchant.BalanceLog {
 // 根据号码获取余额变动信息
 func (a *accountImpl) GetBalanceLogByOuterNo(outerNo string) *merchant.BalanceLog {
 	e := merchant.BalanceLog{}
-	if tmp.Db().GetOrm().GetBy(&e, "outer_no=?", outerNo) == nil {
+	if tmp.Db().GetOrm().GetBy(&e, "outer_no= $1", outerNo) == nil {
 		return &e
 	}
 	return nil

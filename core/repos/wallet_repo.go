@@ -36,12 +36,12 @@ func (w *WalletRepoImpl) GetWallet(walletId int64) wallet.IWallet {
 }
 
 func (w *WalletRepoImpl) GetWalletByUserId(userId int64, walletType int) wallet.IWallet {
-	l := w.GetWalletBy_("user_id=? AND wallet_type=? LIMIT 1", userId, walletType)
+	l := w.GetWalletBy_("user_id= $1 AND wallet_type= $2 LIMIT 1", userId, walletType)
 	return w.CreateWallet(l)
 }
 
 func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool {
-	l := w.GetWalletBy_("user_id=? AND wallet_type=? AND id<>? LIMIT 1",
+	l := w.GetWalletBy_("user_id= $1 AND wallet_type= $2 AND id<> $3 LIMIT 1",
 		userId, walletType, walletId)
 	return l == nil
 }
@@ -57,13 +57,13 @@ func (w *WalletRepoImpl) GetLog(walletId int64, logId int64) *wallet.WalletLog {
 func (w *WalletRepoImpl) PagingWalletLog(walletId int64, nodeId int, begin int, over int, where string, sort string) (total int, list []*wallet.WalletLog) {
 	list = []*wallet.WalletLog{}
 	table := "wal_wallet_log"
-	err := w._conn.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM %s WHERE wallet_id=? %s`,
+	err := w._conn.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM %s WHERE wallet_id= $1 %s`,
 		table, where), &total, walletId)
 	if total > 0 {
 		if len(sort) > 0 {
 			sort += ","
 		}
-		s := fmt.Sprintf(`SELECT * FROM %s WHERE wallet_id=? %s ORDER BY %s create_time DESC LIMIT ?,?`,
+		s := fmt.Sprintf(`SELECT * FROM %s WHERE wallet_id= $1 %s ORDER BY %s create_time DESC LIMIT $3 OFFSET $2`,
 			table, where, sort)
 		err = w._orm.SelectByQuery(&list, s, walletId, begin, over-begin)
 	}

@@ -47,7 +47,7 @@ func (o *tradeOrderImpl) getValue() *order.TradeOrder {
 	if o.value == nil {
 		id := o.GetAggregateRootId()
 		if id > 0 {
-			o.value = o.repo.GetTradeOrder("order_id=?", id)
+			o.value = o.repo.GetTradeOrder("order_id= $1", id)
 		}
 	}
 	return o.value

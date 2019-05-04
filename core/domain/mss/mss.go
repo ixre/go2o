@@ -97,9 +97,9 @@ func (m *messageManagerImpl) CreateMemberNotifyMessage(memberId int64, msgType i
 func (m *messageManagerImpl) GetChatSessionId(senderRole int,
 	senderId int32, toRole int, toId int32) int32 {
 	var msgId int32 = 0
-	tmp.Db().ExecScalar(`SELECT msg_list.id FROM zxdb.msg_list INNER JOIN msg_to
-        ON msg_to.msg_id = msg_list.id WHERE use_for=? AND msg_type=? AND sender_role=?
-        AND sender_id= ? AND to_role=? AND to_id=?`, &msgId, mss.UseForChat,
+	tmp.Db().ExecScalar(`SELECT msg_list.id FROM msg_list INNER JOIN msg_to
+        ON msg_to.msg_id = msg_list.id WHERE use_for= $1 AND msg_type= $2 AND sender_role= $3
+        AND sender_id= $4 AND to_role= $5 AND to_id= $6`, &msgId, mss.UseForChat,
 		notify.TypeSiteMessage, senderRole, senderId, toRole, toId)
 	return msgId
 }

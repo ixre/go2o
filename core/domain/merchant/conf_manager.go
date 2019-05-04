@@ -186,7 +186,7 @@ func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGro
 // 获取所有的交易设置
 func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
 	if c.tradeConfList == nil {
-		c.tradeConfList = c.repo.SelectMchTradeConf("mch_id=?", c.mchId)
+		c.tradeConfList = c.repo.SelectMchTradeConf("mch_id= $1", c.mchId)
 		if len(c.tradeConfList) == 0 {
 			// 零售订单费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
