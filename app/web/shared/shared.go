@@ -38,7 +38,7 @@ var (
 func RenderMessagePage(c *echox.Context, msg string, btn string, url string) error {
 	d := c.NewData()
 	d.Map = map[string]interface{}{
-		"Message":    template.HTML(msg),
+		"ErrMsg":    template.HTML(msg),
 		"ButtonText": btn,
 		"HasButton":  btn != "",
 		"Url":        url,

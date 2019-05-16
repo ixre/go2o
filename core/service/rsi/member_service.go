@@ -565,12 +565,8 @@ func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) 
 	if val == nil {
 		return 0, member.ErrNoSuchMember
 	}
-	println("---", val.Pwd, pwd)
 	if val.Pwd != pwd {
-		//todo: 兼容旧密码
-		if val.Pwd != domain.Sha1(pwd) {
-			return 0, member.ErrCredential
-		}
+		return 0, member.ErrCredential
 	}
 	if val.State == member.StateStopped {
 		return 0, member.ErrMemberDisabled
