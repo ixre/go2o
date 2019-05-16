@@ -34,26 +34,26 @@ type MemberC struct {
 func (mc *MemberC) Login(c echo.Context) error {
 	var result dto.MemberLoginResult
 	r := c.Request()
-	usr := strings.TrimSpace(r.FormValue("usr"))
+	user := strings.TrimSpace(r.FormValue("user"))
 	pwd := strings.TrimSpace(r.FormValue("pwd"))
-	if len(usr) == 0 || len(pwd) == 0 {
-		result.Message = "会员不存在"
+	if len(user) == 0 || len(pwd) == 0 {
+		result.ErrMsg = "会员不存在"
 		return c.JSON(http.StatusOK, result)
 	}
 	trans, cli, err := thrift.MemberServeClient()
 	if err != nil {
-		result.Message = "网络连接失败"
+		result.ErrMsg = "网络连接失败"
 	} else {
 		defer trans.Close()
 		encPwd := domain.MemberSha1Pwd(pwd)
-		r, _ := cli.CheckLogin(thrift.Context, usr, encPwd, true)
-		result.Message = r.ErrMsg
-		result.Result = r.ErrCode == 0
+		r, _ := cli.CheckLogin(thrift.Context, user, encPwd, true)
+		result.ErrMsg = r.ErrMsg
+		result.ErrCode = int(r.ErrCode)
 		if r.ErrCode == 0 {
 			memberId, _ := strconv.Atoi(r.Data["MemberId"])
 			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
 			result.Member = &dto.LoginMember{
-				Id:         memberId,
+				ID:         memberId,
 				Token:      token,
 				UpdateTime: time.Now().Unix(),
 			}

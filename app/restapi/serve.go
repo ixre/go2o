@@ -13,6 +13,7 @@ import (
 	"github.com/ixre/gof/storage"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
+	"go2o/app/api"
 	"go2o/core/variable"
 	"log"
 	"net/http"
@@ -40,7 +41,20 @@ func newServe() *echo.Echo {
 	//todo:  echo
 	//serve.Hook(splitPath) // 获取新的路径,在请求之前发生
 	registerRoutes(serve)
+	registerNewApi(serve)
 	return serve
+}
+
+// 注册新的服务接口
+func registerNewApi(s *echo.Echo) {
+	mux := api.NewServe(false, "1.0.0")
+	s.GET("/api",func(ctx echo.Context)error{
+		return ctx.String(200,"go2o api server")
+	})
+	s.POST("/api",func(ctx echo.Context)error{
+		mux.ServeHTTP(ctx.Response(),ctx.Request())
+		return nil
+	})
 }
 
 // 获取服务实例
@@ -60,7 +74,6 @@ func registerRoutes(s *echo.Echo) {
 	pc := &merchantC{}
 	mc := &MemberC{}
 	gc := &getC{}
-
 	s.GET("/", ApiTest)
 	s.GET(PathPrefix+"/get/invite_qr", gc.Invite_qr) // 获取二维码
 	s.GET(PathPrefix+"/get/gen_qr", gc.GenQr)        //生成二维码
@@ -76,6 +89,9 @@ func beforeRequest() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			host := c.Request().URL.Host
 			path := c.Request().URL.Path
+			if path == "/api"{
+				return h(c)
+			}
 			// todo: path compare
 			if API_HOST_CHK && host != API_DOMAIN {
 				return c.String(http.StatusNotFound, "no such file")

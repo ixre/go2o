@@ -27,11 +27,11 @@ func TestLogin(t *testing.T) {
 	defer trans.Close()
 	pwd := domain.MemberSha1Pwd(domain.Md5("123456"))
 	r, _ := cli.CheckLogin(thrift.Context, "jarry6", pwd, false)
-	t.Logf("登录(1)结果：\n MemberId:%s\n Result:%v", r.Data["ID"], r.ErrCode)
+	t.Logf("登录(1)结果：\n MemberId:%s\n ErrCode:%v", r.Data["ID"], r.ErrCode)
 
 	pwd = domain.MemberSha1Pwd(domain.Md5("329651"))
 	r, _ = cli.CheckLogin(thrift.Context, "jarry6", pwd, false)
-	t.Logf("登录(2)结果：\n MemberId:%s\n Result:%v", r.Data["ID"], r.ErrCode)
+	t.Logf("登录(2)结果：\n MemberId:%s\n ErrCode:%v", r.Data["ID"], r.ErrCode)
 
 	arr, _ := cli.InviterArray(thrift.Context, 16893, 5)
 	t.Log("邀请人：", arr)

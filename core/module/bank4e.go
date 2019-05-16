@@ -72,12 +72,12 @@ func (b *Bank4E) Check(realName, idCard, phone, bankAccount string) map[string]s
 	if err == nil {
 		bankName, _, _ := bank.GetNameByAccountNo(bankAccount)
 		bankArr := strings.Split(bankName, ".")
-		data["Result"] = "true"
+		data["ErrCode"] = "true"
 		data["BankName"] = bankArr[0]
-		data["Message"] = "PASS"
+		data["ErrMsg"] = "PASS"
 	} else {
-		data["Result"] = "false"
-		data["Message"] = err.Error()
+		data["ErrCode"] = "false"
+		data["ErrMsg"] = err.Error()
 	}
 	return data
 }
@@ -128,8 +128,8 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	// 验证四要素
 	result := b.Check(realName, idCard, phone, bankAccount)
 	// 验证不通过，则返回错误
-	if result["Result"] == "false" {
-		return errors.New(result["Message"])
+	if result["ErrCode"] == "false" {
+		return errors.New(result["ErrMsg"])
 	}
 
 	// 移除四要素验证记录
