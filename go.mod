@@ -3,6 +3,7 @@ module go2o
 go 1.12
 
 require (
+	github.com/Shopify/sarama v1.22.1
 	github.com/afocus/captcha v0.0.0-20190403092343-1e99620393ea
 	github.com/apache/thrift v0.12.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect

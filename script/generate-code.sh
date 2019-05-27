@@ -7,6 +7,8 @@
 java_target_path="./tmp/java"
 cs_target_path="./tmp/csharp"
 
+if [[ $GO2O_JAVA_HOME != "" ]];then java_target_path=$GO2O_JAVA_HOME;fi;
+
 thrift_path=$(find . -name "service.thrift" -print -quit)
 
 cmd=$1
@@ -16,6 +18,7 @@ if [[ ${cmd} = "csharp" || ${cmd} = "all" ]];then
 fi
 
 if [[ ${cmd} == "java" || ${cmd} = "all" ]];then
+    mkdir -p ${java_target_path}
 	rm -rf ${java_target_path}/proto/*
 	thrift -r -gen java -out ${java_target_path} ${thrift_path}
 fi

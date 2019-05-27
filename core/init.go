@@ -35,6 +35,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
+	"go2o/core/msq"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/variable"
 	"strings"
@@ -73,6 +74,9 @@ func Init(a *AppImpl, debug, trace bool) bool {
 	if len(confPath) > 0 {
 		variable.ConfPath = confPath
 	}
+	// 初始化producer
+	kafkaAddress := strings.Split(a._config.GetString("kafka_address"),",")
+	msq.Configure(msq.KAFKA,kafkaAddress)
 	a.Loaded = true
 	return true
 }
