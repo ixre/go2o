@@ -34,7 +34,7 @@ type shopRepo struct {
 func (s *shopRepo) ShopCount(vendorId int32, shopType int32) int {
 	num := 0
 	s.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_shop WHERE
-	    vendor_id=? AND shop_type = ?`, &num, vendorId, shopType)
+	    vendor_id= $1 AND shop_type = $2`, &num, vendorId, shopType)
 	return num
 }
 
@@ -57,7 +57,7 @@ func (s *shopRepo) GetShop(shopId int32) shop.IShop {
 func (s *shopRepo) ShopAliasExists(alias string, shopId int32) bool {
 	id := 0
 	s.Connector.ExecScalar(`SELECT id FROM mch_online_shop WHERE
-		alias=? AND shop_id<>? LIMIT 1`, &id, alias, shopId)
+		alias= $1 AND shop_id<> $2 LIMIT 1`, &id, alias, shopId)
 	return id > 0
 }
 
@@ -153,7 +153,7 @@ func (s *shopRepo) GetShopsOfMerchant(mchId int32) []shop.Shop {
 	}
 	if err != nil {
 		err = s.Connector.GetOrm().SelectByQuery(&shops,
-			"SELECT * FROM mch_shop WHERE vendor_id=?", mchId)
+			"SELECT * FROM mch_shop WHERE vendor_id= $1", mchId)
 		if err != nil {
 			handleError(err)
 			return nil
@@ -167,7 +167,7 @@ func (s *shopRepo) GetShopsOfMerchant(mchId int32) []shop.Shop {
 
 func (s *shopRepo) deleteShop(mchId, shopId int32) error {
 	_, err := s.Connector.GetOrm().Delete(shop.Shop{},
-		"vendor_id=? AND id=?", mchId, shopId)
+		"vendor_id= $1 AND id= $2", mchId, shopId)
 	s.delCache(mchId)
 	return err
 }

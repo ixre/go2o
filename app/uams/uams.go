@@ -173,7 +173,7 @@ func checkApiRespErr(code int, text string) error {
 type (
 	Result struct {
 		ErrCode int               `thrift:"Code,1" db:"Code" json:"ErrCode"`
-		ErrMsg  string            `thrift:"Message,2" db:"Message" json:"ErrMsg"`
+		ErrMsg  string            `thrift:"ErrMsg,2" db:"ErrMsg" json:"ErrMsg"`
 		Data    map[string]string `thrift:"Data,3" db:"Data" json:"Data"`
 	}
 

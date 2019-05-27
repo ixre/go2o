@@ -72,7 +72,7 @@ func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
 
 	var catIdStr string = format.I32ArrStrJoin(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM pro_product INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
-		WHERE merchant_id=%d AND pro_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
+		WHERE merchant_id=%d AND pro_category.id IN (%s) AND on_shelves=1 LIMIT %d OFFSET %d`, mchId, catIdStr, start, (end - start))
 
 	p.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pro_product INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
 		WHERE merchant_id=%d AND pro_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)
@@ -86,7 +86,7 @@ func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
 // 获取货品销售总数
 func (p *productRepo) GetProductSaleNum(itemId int64) int {
 	var num int
-	p.Connector.ExecScalar(`SELECT SUM(sale_num) FROM item_info WHERE product_id=?`,
+	p.Connector.ExecScalar(`SELECT SUM(sale_num) FROM item_info WHERE product_id= $1`,
 		&num, itemId)
 	return num
 }
@@ -106,7 +106,7 @@ func (p *productRepo) GetProductValue(itemId int64) *product.Product {
 
 // Select Product
 func (p *productRepo) SelectProduct(where string, v ...interface{}) []*product.Product {
-	list := []*product.Product{}
+	var list []*product.Product
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Product")
@@ -156,7 +156,7 @@ func (p *productRepo) GetAttr(primary interface{}) *product.Attr {
 
 // Select ProAttrInfo
 func (p *productRepo) SelectAttr(where string, v ...interface{}) []*product.Attr {
-	list := []*product.Attr{}
+	var list []*product.Attr
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")

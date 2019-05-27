@@ -57,11 +57,11 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE bi.member_id=? %s`, where), &num, memberId)
+			WHERE bi.member_id= $1 %s`, where), &num, memberId)
 
 	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE member_id=? %s %s LIMIT ?,?`,
+			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
 
 	d.Query(sqlLine, func(_rows *sql.Rows) {
@@ -80,12 +80,12 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_wallet_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE bi.member_id=? %s`, where), &num, memberId)
+			WHERE bi.member_id= $1 %s`, where), &num, memberId)
 
 	if num > 0 {
 		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_wallet_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE member_id=? %s %s LIMIT ?,?`,
+			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
 		d.Query(sqlLine, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
@@ -108,11 +108,11 @@ func (m *MemberQuery) QueryBalanceLog(memberId int64, begin, end int,
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_info bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE bi.member_id=? %s`, where), &num, memberId)
+			WHERE bi.member_id= $1 %s`, where), &num, memberId)
 
 	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_info bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE member_id=? %s %s LIMIT ?,?`,
+			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
 
 	d.Query(sqlLine, func(_rows *sql.Rows) {
@@ -125,7 +125,7 @@ func (m *MemberQuery) QueryBalanceLog(memberId int64, begin, end int,
 // 获取最近的余额变动信息
 func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int64, kind int32) *member.BalanceInfo {
 	var info = new(member.BalanceInfo)
-	if err := m.GetOrm().GetBy(info, "member_id=? AND kind=? ORDER BY create_time DESC",
+	if err := m.GetOrm().GetBy(info, "member_id= $1 AND kind= $2 ORDER BY create_time DESC",
 		memberId, kind); err == nil {
 		return info
 	}
@@ -141,8 +141,8 @@ func (m *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
 	m.Query(`SELECT id,usr,mm_profile.name,mm_profile.phone,
         mm_profile.avatar FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
-        WHERE usr LIKE ? OR mm_profile.name LIKE ? OR
-        mm_profile.phone LIKE ?`, func(rows *sql.Rows) {
+        WHERE usr LIKE $1 OR mm_profile.name LIKE $2 OR
+        mm_profile.phone LIKE $3`, func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &phone, &avatar)
 			list = append(list, &dto.SimpleMember{
@@ -162,7 +162,7 @@ func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
 	err := m.QueryRow(`SELECT id,usr,mm_profile.name,mm_profile.phone,
         mm_profile.avatar FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
-        WHERE usr = ? OR mm_profile.phone = ?`, func(rows *sql.Row) error {
+        WHERE usr = $1 OR mm_profile.phone = $2`, func(rows *sql.Row) error {
 		er := rows.Scan(&e.Id, &e.User, &e.Name, &e.Phone, &e.Avatar)
 		e.Avatar = format.GetResUrl(e.Avatar)
 		return er
@@ -178,7 +178,7 @@ func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
 	var id int64
 	m.ExecScalar(`SELECT id FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
-        WHERE mm_profile.phone = ? LIMIT 0,1`, &id, phone)
+        WHERE mm_profile.phone = $1 LIMIT 1`, &id, phone)
 	return id
 }
 
@@ -203,20 +203,20 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
 	AND r.reg_mchid=rl.reg_mchid  AND m1.reg_time BETWEEN
-  ? AND ? ) as invi_num,
+  $1 AND $2 ) as invi_num,
 	((SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
 	AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
-  ? AND ? )+
+  $3 AND $4 )+
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1
   ON m1.id = r.member_id WHERE (m1.level%s) AND inviter_id IN
 	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id =
     m.id AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
-  ? AND ? ))) as all_num
+  $5 AND $6 ))) as all_num
  FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
- WHERE rl.reg_mchid = ? AND state= ?) t ORDER BY %s,t.reg_time asc
- LIMIT 0,?`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
+ WHERE rl.reg_mchid = $7 AND state= $8) t ORDER BY %s,t.reg_time asc
+ LIMIT $9`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &inviNum, &totalNum, &regTime)
 			rank++
@@ -259,7 +259,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 	INNER JOIN  mch_shop s ON f.refer_id =s.id
     INNER JOIN mch_online_shop o ON s.id = o.shop_id
     INNER JOIN mch_merchant mch ON mch.id = s.vendor_id
-    WHERE f.member_id=? AND f.fav_type=? %s`, where), &num,
+    WHERE f.member_id= $1 AND f.fav_type= $2 %s`, where), &num,
 		memberId, member.FavTypeShop)
 
 	if num > 0 {
@@ -268,7 +268,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
     INNER JOIN  mch_shop s ON f.refer_id =s.id
     INNER JOIN mch_online_shop o ON s.id = o.shop_id
     INNER JOIN mch_merchant mch ON mch.id = s.vendor_id
-    WHERE f.member_id=? AND f.fav_type=? %s ORDER BY f.update_time DESC LIMIT ?,?`,
+    WHERE f.member_id= $1 AND f.fav_type= $2 %s ORDER BY f.update_time DESC LIMIT $4 OFFSET $3`,
 			where)
 		d.Query(sqlLine, func(rs *sql.Rows) {
 			for rs.Next() {
@@ -295,7 +295,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
     INNER JOIN item_info gs ON gs.id = f.refer_id
     INNER JOIN pro_product product ON gs.product_id=product.id
-    WHERE f.member_id=? AND f.fav_type=? %s`, where), &num,
+    WHERE f.member_id= $1 AND f.fav_type= $2 %s`, where), &num,
 		memberId, member.FavTypeGoods)
 
 	if num > 0 {
@@ -303,8 +303,8 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
             img,sale_price,gs.stock_num,product.update_time
             FROM mm_favorite f INNER JOIN item_info gs ON gs.id = f.refer_id
             INNER JOIN pro_product product ON gs.product_id=product.id
-            WHERE f.member_id=? AND f.fav_type=? %s ORDER BY f.update_time DESC
-            LIMIT ?,?`,
+            WHERE f.member_id= $1 AND f.fav_type= $2 %s ORDER BY f.update_time DESC
+            LIMIT $4 OFFSET $3`,
 			where)
 		d.Query(sqlLine, func(rs *sql.Rows) {
 			for rs.Next() {
@@ -328,7 +328,7 @@ func (m *MemberQuery) GetInviterQuantity(memberId int64, where string) int32 {
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_relation
         INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
         LEFT JOIN mm_trusted_info mt ON mt.member_id=mm_member.id
-        WHERE inviter_id = ? `+where, &total, memberId)
+        WHERE inviter_id = $1 `+where, &total, memberId)
 	return total
 }
 
@@ -338,7 +338,7 @@ func (m *MemberQuery) GetInviterArray(memberId int64, where string) []int64 {
 	m.Connector.Query(`SELECT mm_relation.member_id FROM mm_relation
         INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
         LEFT JOIN mm_trusted_info mt ON mt.member_id=mm_member.id
-        WHERE inviter_id = ? `+where, func(rows *sql.Rows) {
+        WHERE inviter_id = $1 `+where, func(rows *sql.Rows) {
 		var i int64
 		for rows.Next() {
 			if err := rows.Scan(&i); err == nil && i > 0 {

@@ -92,8 +92,8 @@ func (c *confManagerImpl) UseGlobSaleConf() error {
 
 // 保存销售配置
 func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
-	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent +
-		v.CashBackTg2Percent + v.CashBackMemberPercent) > 1 {
+	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent+
+		v.CashBackTg2Percent+v.CashBackMemberPercent) > 1 {
 		return merchant.ErrSalesPercent
 	}
 	c.GetSaleConf()
@@ -120,8 +120,8 @@ func (c *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
 	if v.OrderTimeOutReceiveHour <= 0 {
 		v.OrderTimeOutReceiveHour = cfg.OrderTimeOutReceiveHour
 	}
-	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent +
-		v.CashBackTg2Percent + v.CashBackMemberPercent) > 1 {
+	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent+
+		v.CashBackTg2Percent+v.CashBackMemberPercent) > 1 {
 		v.FxSalesEnabled = 0 //自动关闭分销
 	}
 	return nil
@@ -186,7 +186,7 @@ func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGro
 // 获取所有的交易设置
 func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
 	if c.tradeConfList == nil {
-		c.tradeConfList = c.repo.SelectMchTradeConf("mch_id=?", c.mchId)
+		c.tradeConfList = c.repo.SelectMchTradeConf("mch_id= $1", c.mchId)
 		if len(c.tradeConfList) == 0 {
 			// 零售订单费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{

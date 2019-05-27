@@ -120,7 +120,7 @@ func (o *OrderRepImpl) GetFreeOrderNo(vendorId int32) string {
 	for {
 		orderNo = domain.NewTradeNo(1, int(vendorId))
 		var rec int
-		if d.ExecScalar(`SELECT id FROM order_list WHEre order_no=? LIMIT 1`,
+		if d.ExecScalar(`SELECT id FROM order_list WHERE order_no= $1 LIMIT 1`,
 			&rec, orderNo); rec == 0 {
 			break
 		}
@@ -139,7 +139,7 @@ func (o *OrderRepImpl) GetNormalOrderById(orderId int64) *order.NormalOrder {
 	e := &order.NormalOrder{}
 	k := o.getOrderCk(orderId, false)
 	if o.Storage.Get(k, e) != nil {
-		if o.Connector.GetOrm().GetBy(e, "order_id=?", orderId) != nil {
+		if o.Connector.GetOrm().GetBy(e, "order_id= $1", orderId) != nil {
 			return nil
 		}
 		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
@@ -155,8 +155,8 @@ func (o *OrderRepImpl) SaveNormalSubOrderLog(v *order.OrderLog) error {
 
 // 获取订单的促销绑定
 func (o *OrderRepImpl) GetOrderPromotionBinds(orderNo string) []*order.OrderPromotionBind {
-	var arr []*order.OrderPromotionBind = []*order.OrderPromotionBind{}
-	err := o.Connector.GetOrm().Select(&arr, "order_no=?", orderNo)
+	var arr []*order.OrderPromotionBind
+	err := o.Connector.GetOrm().Select(&arr, "order_no= $1", orderNo)
 	if err == nil {
 		return arr
 	}
@@ -171,7 +171,7 @@ func (o *OrderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (i
 // 获取订单项
 func (o *OrderRepImpl) GetSubOrderItems(orderId int64) []*order.SubOrderItem {
 	var items = []*order.SubOrderItem{}
-	o.Connector.GetOrm().Select(&items, "order_id=?", orderId)
+	o.Connector.GetOrm().Select(&items, "order_id= $1", orderId)
 	return items
 }
 
@@ -188,7 +188,7 @@ func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 
 func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
 	var e = order.NormalSubOrder{}
-	err := o.Connector.GetOrm().GetBy(&e, "order_no=?", orderNo)
+	err := o.Connector.GetOrm().GetBy(&e, "order_no= $1", orderNo)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:order_sub_order")
 		return nil
@@ -199,7 +199,7 @@ func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
 // 获取订单的所有子订单
 func (o *OrderRepImpl) GetNormalSubOrders(orderId int64) []*order.NormalSubOrder {
 	list := make([]*order.NormalSubOrder, 0)
-	o.GetOrm().Select(&list, "order_id=?", orderId)
+	o.GetOrm().Select(&list, "order_id= $1", orderId)
 	return list
 }
 
@@ -225,9 +225,9 @@ func (o *OrderRepImpl) GetOrderId(orderNo string, subOrder bool) int64 {
 	id, err := o.Storage.GetInt64(k)
 	if err != nil {
 		if subOrder {
-			o.Connector.ExecScalar("SELECT id FROM sale_sub_order where order_no=?", &id, orderNo)
+			o.Connector.ExecScalar("SELECT id FROM sale_sub_order where order_no= $1", &id, orderNo)
 		} else {
-			o.Connector.ExecScalar("SELECT id FROM order_list where order_no=?", &id, orderNo)
+			o.Connector.ExecScalar("SELECT id FROM order_list where order_no= $1", &id, orderNo)
 		}
 		if id > 0 {
 			o.Storage.Set(k, id)
@@ -258,14 +258,14 @@ func (o *OrderRepImpl) SaveOrderItem(subOrderId int64, v *order.SubOrderItem) (i
 // 获取订单的操作记录
 func (o *OrderRepImpl) GetSubOrderLogs(orderId int64) []*order.OrderLog {
 	list := []*order.OrderLog{}
-	o.GetOrm().Select(&list, "order_id=?", orderId)
+	o.GetOrm().Select(&list, "order_id= $1", orderId)
 	return list
 }
 
 // 根据商品快照获取订单项
 func (o *OrderRepImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
 	e := &order.SubOrderItem{}
-	if o.GetOrm().GetBy(e, "order_id=? AND snap_id=?", orderId, snapshotId) == nil {
+	if o.GetOrm().GetBy(e, "order_id= $1 AND snap_id= $2", orderId, snapshotId) == nil {
 		return e
 	}
 	return nil
@@ -277,7 +277,7 @@ func (o *OrderRepImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int
 	err := o.QueryRow(`SELECT si.id,si.order_id,si.snap_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
             si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
-            ON sn.id=si.snap_id WHERE si.order_id = ? AND si.snap_id=?`, func(rs *sql.Row) error {
+            ON sn.id=si.snap_id WHERE si.order_id = $1 AND si.snap_id= $2`, func(rs *sql.Row) error {
 		err := rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.SkuId, &e.GoodsTitle,
 			&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 		e.FinalPrice = e.FinalAmount / float32(e.Quantity)
@@ -337,7 +337,7 @@ func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 	if v.ID <= 0 {
 		statusIsChanged = true
 	} else {
-		origin := o.GetOrder("id=?", v.ID)
+		origin := o.GetOrder("id= $1", v.ID)
 		statusIsChanged = origin.State != v.State
 	}
 	// log.Println("--- save order:", v.ID, "; state:",

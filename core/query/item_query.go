@@ -41,16 +41,16 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE item_info.cat_id=? AND item_info.review_state=?
-		 AND item_info.shelve_state=? %s`, where), &total,
+		 WHERE item_info.cat_id= $1 AND item_info.review_state= $2
+		 AND item_info.shelve_state= $3 %s`, where), &total,
 		catId, enum.ReviewPass, item.ShelvesOn)
-	list := []*item.GoodsItem{}
+	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE item_info.cat_id=? AND item_info.review_state=?
-		 AND item_info.shelve_state=? %s
-		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
+		 WHERE item_info.cat_id= $1 AND item_info.review_state= $2
+		 AND item_info.shelve_state= $3 %s
+		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
 			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
@@ -71,17 +71,17 @@ func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE item_info.cat_id=? AND ws_item.review_state=?
-		 AND ws_item.shelve_state=? %s`, where), &total,
+		 WHERE item_info.cat_id= $1 AND ws_item.review_state= $2
+		 AND ws_item.shelve_state= $3 %s`, where), &total,
 		catId, enum.ReviewPass, item.ShelvesOn)
-	list := []*item.GoodsItem{}
+	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM  ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE item_info.cat_id=? AND ws_item.review_state=?
-		 AND ws_item.shelve_state=? %s
-		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
+		 WHERE item_info.cat_id= $1 AND ws_item.review_state= $2
+		 AND ws_item.shelve_state= $3 %s
+		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
 			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
@@ -112,16 +112,16 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE  item_info.review_state=?
-		 AND item_info.shelve_state=? %s`, where), &total,
+		 WHERE  item_info.review_state= $1
+		 AND item_info.shelve_state= $2 %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
-	list := []*item.GoodsItem{}
+	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE item_info.review_state=?
-		 AND item_info.shelve_state=? %s
-		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
+		 WHERE item_info.review_state= $1
+		 AND item_info.shelve_state= $2 %s
+		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
 			enum.ReviewPass, item.ShelvesOn, start, (end - start))
@@ -153,10 +153,10 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE ws_item.review_state=?
-		 AND ws_item.shelve_state=?  %s`, where), &total,
+		 WHERE ws_item.review_state= $1
+		 AND ws_item.shelve_state= $2  %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
-	list := []*item.GoodsItem{}
+	var list []*item.GoodsItem
 
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT item_info.id,item_info.product_id,item_info.prom_flag,
@@ -170,9 +170,9 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		item_info.sort_num,item_info.create_time,item_info.update_time
 		 FROM ws_item INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE ws_item.review_state=?
-		 AND ws_item.shelve_state=? %s
-		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
+		 WHERE ws_item.review_state= $1
+		 AND ws_item.shelve_state= $2 %s
+		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
 			enum.ReviewPass, item.ShelvesOn, start, (end - start))
@@ -183,14 +183,14 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 //根据分类获取上架的商品
 func (i ItemQuery) GetOnShelvesItem(catIdArr []int32, start, end int32,
 	where string) []*item.GoodsItem {
-	list := []*item.GoodsItem{}
+	var list []*item.GoodsItem
 	if len(catIdArr) > 0 {
 		catIdStr := format.I32ArrStrJoin(catIdArr)
 		sql := fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE item_info.cat_id IN(%s) AND item_info.review_state=?
-		 AND item_info.shelve_state=? %s
-		 ORDER BY item_info.update_time DESC LIMIT ?,?`, catIdStr, where)
+		 WHERE item_info.cat_id IN(%s) AND item_info.review_state= $1
+		 AND item_info.shelve_state= $2 %s
+		 ORDER BY item_info.update_time DESC LIMIT $4 OFFSET $3`, catIdStr, where)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
 			enum.ReviewPass, item.ShelvesOn, start, (end - start))
 	}
@@ -220,15 +220,15 @@ func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.Go
 	}
 	search := strings.Join(s, "")
 
-	list := []*item.GoodsItem{}
+	var list []*item.GoodsItem
 	sql := fmt.Sprintf(`SELECT * FROM item_info
     JOIN (SELECT ROUND(RAND() * (
-      SELECT MAX(id)-? FROM item_info WHERE  item_info.review_state=?
-         AND item_info.shelve_state=? %s
+      SELECT MAX(id)-? FROM item_info WHERE  item_info.review_state= $1
+         AND item_info.shelve_state= ? %s
          )) AS id) AS r2
 		 WHERE item_info.ID > r2.id
-		  AND item_info.review_state=?
-		 AND item_info.shelve_state=? %s LIMIT ?`,
+		  AND item_info.review_state= ?
+		 AND item_info.shelve_state= ? %s LIMIT ?`,
 		search, search)
 	i.Connector.GetOrm().SelectByQuery(&list, sql,
 		quantity, enum.ReviewPass, item.ShelvesOn,
@@ -252,18 +252,18 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
-		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
-         AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
-         AND pro_product.name LIKE ? %s`, where), &total,
+		 WHERE pro_product.review_state= $1 AND pro_product.shelve_state= $2
+         AND ($3=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id= $4))
+         AND pro_product.name LIKE $5 %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn, shopId, shopId, keyword)
 
-	e := []*valueobject.Goods{}
+	var e []*valueobject.Goods
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
-		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
-         AND (?=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id=?))
-         AND pro_product.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
+		 WHERE pro_product.review_state= $1 AND pro_product.shelve_state= $2
+         AND ($3=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id= $4))
+         AND pro_product.name LIKE $5 %s ORDER BY %s update_time DESC LIMIT $7 OFFSET $6`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,
 			item.ShelvesOn, shopId, shopId, keyword, start, (end - start))
@@ -271,15 +271,3 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 
 	return total, e
 }
-
-//func (g GoodsQuery) GetGoodsComplex(goodsId int) *dto.GoodsComplex {
-//	e := dto.GoodsComplex{}
-//	sql := `SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-//		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
-//		 WHERE pro_category.mch_id=? AND pro_product.review_state=? AND
-//		 pro_product.shelve_state=? AND pro_product.name LIKE ? %s
-//		 ORDER BY %s update_time DESC LIMIT ?,?`
-//
-//	g.Connector.GetOrm().GetByQuery(&e, sql,item.ShelvesOn, goodsId)
-//	return &e
-//}

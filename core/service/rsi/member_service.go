@@ -62,7 +62,7 @@ func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 
 func (s *memberService) init() *memberService {
 	db := gof.CurrentApp.Db()
-	list := []*member.Relation{}
+	var list []*member.Relation
 	db.GetOrm().Select(&list, "")
 	for _, v := range list {
 		s.repo.GetMember(v.MemberId).SaveRelation(v)
@@ -509,7 +509,7 @@ func (s *memberService) ResetPassword(memberId int64) string {
 	m := s.repo.GetMember(memberId)
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
-		newEncPwd := domain.MemberSha1Pwd(newPwd)
+		newEncPwd := domain.MemberSha1Pwd(domain.Md5(newPwd))
 		if err := m.Profile().ModifyPassword(newEncPwd, ""); err == nil {
 			return newPwd
 		} else {
@@ -524,7 +524,7 @@ func (s *memberService) ResetTradePwd(memberId int64) string {
 	m := s.repo.GetMember(memberId)
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
-		newEncPwd := domain.TradePwd(newPwd)
+		newEncPwd := domain.TradePwd(domain.Md5(newPwd))
 		if err := m.Profile().ModifyTradePassword(newEncPwd, ""); err == nil {
 			return newPwd
 		} else {
@@ -566,10 +566,7 @@ func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) 
 		return 0, member.ErrNoSuchMember
 	}
 	if val.Pwd != pwd {
-		//todo: 兼容旧密码
-		if val.Pwd != domain.Sha1(pwd) {
-			return 0, member.ErrCredential
-		}
+		return 0, member.ErrCredential
 	}
 	if val.State == member.StateStopped {
 		return 0, member.ErrMemberDisabled

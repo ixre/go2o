@@ -38,8 +38,8 @@ func (p *personFinanceRepository) GetPersonFinance(personId int64) personfinance
 
 func (p *personFinanceRepository) GetRiseByTime(personId int64, begin,
 	end int64) []*personfinance.RiseDayInfo {
-	list := []*personfinance.RiseDayInfo{}
-	p._orm.Select(&list, "person_id=? AND unix_date BETWEEN ? AND ?", personId, begin, end)
+	var list []*personfinance.RiseDayInfo
+	p._orm.Select(&list, "person_id= $1 AND unix_date BETWEEN $2 AND $3", personId, begin, end)
 	return list
 }
 
@@ -63,7 +63,7 @@ func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (
 // 获取日志
 func (p *personFinanceRepository) GetRiseLog(personId int64, logId int32) *personfinance.RiseLog {
 	e := &personfinance.RiseLog{}
-	if p._orm.GetBy(e, "person_id=? AND id=?", personId, logId) == nil {
+	if p._orm.GetBy(e, "person_id= $1 AND id= $2", personId, logId) == nil {
 		return e
 	}
 	return nil
@@ -77,7 +77,7 @@ func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (int32, 
 // 获取日志
 func (p *personFinanceRepository) GetRiseLogs(personId int64, date int64, riseType int) []*personfinance.RiseLog {
 	list := []*personfinance.RiseLog{}
-	p._orm.Select(&list, "person_id=? AND unix_date=? AND type=?", personId, date, riseType)
+	p._orm.Select(&list, "person_id= $1 AND unix_date= $2 AND type= $3", personId, date, riseType)
 	return list
 }
 

@@ -52,7 +52,7 @@ func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMem
 // 根据订单号获取支付单
 func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOrder {
 	e := &payment.Order{}
-	if p.Connector.GetOrm().GetBy(e, "order_id=?", orderId) == nil {
+	if p.Connector.GetOrm().GetBy(e, "order_id= $1", orderId) == nil {
 		return p.CreatePaymentOrder(e)
 	}
 	return nil
@@ -61,7 +61,7 @@ func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPayme
 // 根据订单号获取支付单
 func (p *paymentRepoImpl) GetPaymentOrderByOrderNo(orderType int, orderNo string) payment.IPaymentOrder {
 	e := &payment.Order{}
-	if p.Connector.GetOrm().GetBy(e, "out_order_no=? AND order_type=?",
+	if p.Connector.GetOrm().GetBy(e, "out_order_no= $1 AND order_type= $2",
 		orderNo, orderType) == nil {
 		return p.CreatePaymentOrder(e)
 	}
@@ -96,7 +96,7 @@ func (p *paymentRepoImpl) GetPaymentOrder(paymentNo string) payment.IPaymentOrde
 	k := p.getPaymentOrderCkByNo(paymentNo)
 	id, err := p.Storage.GetInt(k)
 	if err != nil {
-		p.ExecScalar("SELECT id FROM pay_order where trade_no=?", &id, paymentNo)
+		p.ExecScalar("SELECT id FROM pay_order where trade_no= $1", &id, paymentNo)
 		if id == 0 {
 			return nil
 		}
@@ -145,13 +145,13 @@ func (p *paymentRepoImpl) notifyPaymentFinish(paymentOrderId int) error {
 // 检查交易单号是否匹配
 func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 	i := 0
-	p.Connector.ExecScalar("SELECT id FROM pay_order WHERE trade_no=? AND id<>?", &i, tradeNo, id)
+	p.Connector.ExecScalar("SELECT id FROM pay_order WHERE trade_no= $1 AND id<> $2", &i, tradeNo, id)
 	return i == 0
 }
 
 func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeMethodData {
 	list := make([]*payment.TradeMethodData, 0)
-	err := p.GetOrm().Select(&list, "trade_no=? LIMIT ?", tradeNo, 10)
+	err := p.GetOrm().Select(&list, "trade_no= $1 LIMIT $2", tradeNo, 10)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
 	}
@@ -171,7 +171,7 @@ func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaym
 	var tradeNo = ""
 	var tradeNoArr []string
 	// 查询支付单号
-	p.Connector.Query("SELECT order_trade_no FROM pay_merge_order WHERE merge_trade_no=? LIMIT ?",
+	p.Connector.Query("SELECT order_trade_no FROM pay_merge_order WHERE merge_trade_no= $1 LIMIT $2",
 		func(rows *sql.Rows) {
 			for rows.Next() {
 				rows.Scan(&tradeNo)
@@ -184,7 +184,7 @@ func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaym
 	if l := len(tradeNoArr); l > 0 {
 		list := make([]*payment.Order, 0)
 		p.Connector.GetOrm().Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
-			") LIMIT ?", len(tradeNoArr))
+			") LIMIT $1", len(tradeNoArr))
 		for _, v := range list {
 			arr = append(arr, p.CreatePaymentOrder(v))
 		}

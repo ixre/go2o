@@ -430,7 +430,7 @@ type AlipayLogResult struct {
 //		result.Errcode	=0
 //    }else{
 //		result.Errcode	=global.ERRCODE_SERVER
-//		result.Message	=err.Error()
+//		result.ErrMsg	=err.Error()
 //	}
 //	w.Header().Set("Content-Type", "application/json")
 //	w.Header().Set("Access-Control-Allow-Origin", "*")

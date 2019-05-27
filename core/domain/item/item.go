@@ -210,7 +210,7 @@ func (g *itemImpl) saveItemSku(arrPtr *[]*item.Sku) (err error) {
 	err = ss.RebuildSkuArray(&arr, g.value)
 	if err == nil {
 		// 获取之前的SKU设置
-		old := g.repo.SelectItemSku("item_id=?", pk)
+		old := g.repo.SelectItemSku("item_id= $1", pk)
 		// 合并SKU
 		ss.Merge(old, &arr)
 		// 分析当前项目并加入到MAP中
@@ -248,7 +248,7 @@ func (g *itemImpl) saveItemSku(arrPtr *[]*item.Sku) (err error) {
 // 获取SKU数组
 func (g *itemImpl) SkuArray() []*item.Sku {
 	if g.value.SkuArray == nil {
-		g.value.SkuArray = g.repo.SelectItemSku("item_id=?",
+		g.value.SkuArray = g.repo.SelectItemSku("item_id= $1",
 			g.GetAggregateRootId())
 	}
 	return g.value.SkuArray

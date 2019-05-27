@@ -52,14 +52,14 @@ func (t *saleLabelRepo) CreateSaleLabel(v *item.Label) item.ISaleLabel {
 // 获取所有的销售标签
 func (t *saleLabelRepo) GetAllValueSaleLabels(mchId int32) []*item.Label {
 	arr := []*item.Label{}
-	t.Connector.GetOrm().Select(&arr, "mch_id=?", mchId)
+	t.Connector.GetOrm().Select(&arr, "mch_id= $1", mchId)
 	return arr
 }
 
 // 获取销售标签值
 func (t *saleLabelRepo) GetValueSaleLabel(mchId int32, tagId int32) *item.Label {
 	var v *item.Label = new(item.Label)
-	err := t.Connector.GetOrm().GetBy(v, "mch_id=? AND id=?", mchId, tagId)
+	err := t.Connector.GetOrm().GetBy(v, "mch_id= $1 AND id= $2", mchId, tagId)
 	if err == nil {
 		return v
 	}
@@ -80,7 +80,7 @@ func (t *saleLabelRepo) SaveSaleLabel(mchId int32, v *item.Label) (int32, error)
 // 根据Code获取销售标签
 func (t *saleLabelRepo) GetSaleLabelByCode(mchId int32, code string) *item.Label {
 	var v *item.Label = new(item.Label)
-	if t.GetOrm().GetBy(v, "mch_id=? AND tag_code=?", mchId, code) == nil {
+	if t.GetOrm().GetBy(v, "mch_id= $1 AND tag_code= $2", mchId, code) == nil {
 		return v
 	}
 	return nil
@@ -88,7 +88,7 @@ func (t *saleLabelRepo) GetSaleLabelByCode(mchId int32, code string) *item.Label
 
 // 删除销售标签
 func (t *saleLabelRepo) DeleteSaleLabel(mchId int32, id int32) error {
-	_, err := t.GetOrm().Delete(&item.Label{}, "mch_id=? AND id=?", mchId, id)
+	_, err := t.GetOrm().Delete(&item.Label{}, "mch_id= $1 AND id= $2", mchId, id)
 	return err
 }
 
@@ -101,10 +101,10 @@ func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId, tagId int32,
 	arr := []*valueobject.Goods{}
 	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM item_info INNER JOIN
 	       pro_product ON pro_product.id = item_info.product_id
-		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
+		 WHERE pro_product.review_state= $1 AND pro_product.shelve_state= $2 AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t
-			 ON t.id = g.sale_tag_id WHERE t.mch_id=? AND t.id=?) `+sortBy+`
-			LIMIT ?,?`, enum.ReviewPass, item.ShelvesOn, mchId, tagId, begin, end)
+			 ON t.id = g.sale_tag_id WHERE t.mch_id= $3 AND t.id= $4) `+sortBy+`
+			LIMIT $6 OFFSET $5`, enum.ReviewPass, item.ShelvesOn, mchId, tagId, begin, end)
 	return arr
 }
 
@@ -117,17 +117,17 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 	}
 	t.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
 	    INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
+		 WHERE pro_product.review_state= $1 AND pro_product.shelve_state= $2 AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
-			WHERE t.mch_id=? AND t.id=?)`), &total, enum.ReviewPass,
+			WHERE t.mch_id= $3 AND t.id= $4)`), &total, enum.ReviewPass,
 		item.ShelvesOn, mchId, tagId)
-	arr := []*valueobject.Goods{}
+	var arr []*valueobject.Goods
 	if total > 0 {
 		t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
+		 WHERE pro_product.review_state= $1 AND pro_product.shelve_state= $2 AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
-			WHERE t.mch_id=? AND t.id=?) `+sortBy+` LIMIT ?,?`,
+			WHERE t.mch_id= $3 AND t.id= $4) `+sortBy+` LIMIT $6 OFFSET $5`,
 			enum.ReviewPass, item.ShelvesOn,
 			mchId, tagId, begin, end)
 	}
@@ -138,13 +138,13 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 func (t *saleLabelRepo) GetItemSaleLabels(itemId int32) []*item.Label {
 	arr := []*item.Label{}
 	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_label WHERE id IN
-	(SELECT sale_tag_id FROM pro_product_tag WHERE item_id=?) AND enabled=1`, itemId)
+	(SELECT sale_tag_id FROM pro_product_tag WHERE item_id= $1) AND enabled=1`, itemId)
 	return arr
 }
 
 // 清理商品的销售标签
 func (t *saleLabelRepo) CleanItemSaleLabels(itemId int32) error {
-	_, err := t.ExecNonQuery("DELETE FROM pro_product_tag WHERE item_id=?", itemId)
+	_, err := t.ExecNonQuery("DELETE FROM pro_product_tag WHERE item_id= $1", itemId)
 	return err
 }
 
@@ -156,7 +156,7 @@ func (t *saleLabelRepo) SaveItemSaleLabels(itemId int32, tagIds []int) error {
 	}
 
 	for _, v := range tagIds {
-		_, err = t.ExecNonQuery("INSERT INTO pro_product_tag (item_id,sale_tag_id) VALUES(?,?)",
+		_, err = t.ExecNonQuery("INSERT INTO pro_product_tag (item_id,sale_tag_id) VALUES($1,$2)",
 			itemId, v)
 	}
 

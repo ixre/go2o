@@ -16,11 +16,18 @@ import (
 )
 
 var (
-	// Sha1算法的基础字符
-	sha1OffsetBaseString = []byte("go2o-by-jarrysix")
-	// Sha1算法的随机字符
-	Sha1OffSet string = crypto.Md5(sha1OffsetBaseString)[8:24]
+	Sha1OffSet = ""
 )
+
+// 密码SHA1加密
+func Sha1Pwd(pwd string) string {
+	return crypto.Sha1([]byte(strings.Join([]string{pwd, Sha1OffSet}, "")))
+}
+
+// MD5加密
+func Md5(pwd string) string {
+	return crypto.Md5([]byte(pwd))
+}
 
 func ChkPwdRight(pwd string) (bool, error) {
 	if len(pwd) < 6 {
@@ -39,7 +46,7 @@ func MemberSha1Pwd(pwd string) string {
 	if pwd == "" {
 		return ""
 	}
-	return ShaPwd(pwd, "")
+	return Sha1Pwd(pwd)
 }
 
 // 交易密码
@@ -47,7 +54,7 @@ func TradePwd(pwd string) string {
 	if pwd == "" {
 		return ""
 	}
-	return ShaPwd(pwd, "")
+	return Sha1Pwd(pwd)
 }
 
 //加密合作商密码
@@ -55,7 +62,7 @@ func MerchantSha1Pwd(usr, pwd string) string {
 	if pwd == "" {
 		return ""
 	}
-	return crypto.Sha1([]byte(ShaPwd(pwd, usr+":")))
+	return Sha1Pwd(pwd)
 }
 
 // 密码Md5加密

@@ -137,7 +137,7 @@ func (m *modelImpl) Save() (id int32, err error) {
 func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 	pk := m.GetAggregateRootId()
 	// 获取存在的项
-	old := m.rep.SelectSpec("pro_model = ?", pk)
+	old := m.rep.SelectSpec("pro_model = $1", pk)
 	// 分析当前项目并加入到MAP中
 	delList := []int32{}
 	currMap := make(map[int32]*promodel.Spec, len(specs))
@@ -171,7 +171,7 @@ func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 	pk := m.GetAggregateRootId()
 	// 获取存在的项
-	old := m.rep.SelectAttr("pro_model = ?", pk)
+	old := m.rep.SelectAttr("pro_model = $1", pk)
 	// 分析当前项目并加入到MAP中
 	delList := []int32{}
 	currMap := make(map[int32]*promodel.Attr, len(attrs))
@@ -204,11 +204,11 @@ func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 func (m *modelImpl) saveModelBrand(brandIds []int32) (err error) {
 	pk := m.GetAggregateRootId()
 	//获取存在的品牌
-	old := m.rep.SelectProModelBrand("pro_model = ?", pk)
+	old := m.rep.SelectProModelBrand("pro_model = $1", pk)
 	//删除不包括的品牌
 	idArrStr := format.I32ArrStrJoin(brandIds)
 	if len(old) > 0 {
-		m.rep.BatchDeleteProModelBrand("pro_model = ?"+
+		m.rep.BatchDeleteProModelBrand("pro_model = $1"+
 			" AND brand_id NOT IN("+idArrStr+")", pk)
 	}
 	//写入品牌

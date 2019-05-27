@@ -41,7 +41,7 @@ func (a *advertisementRepo) GetAdManager() ad.IAdManager {
 
 // 获取广告分组
 func (a *advertisementRepo) GetAdGroups() []*ad.AdGroup {
-	var list = []*ad.AdGroup{}
+	var list []*ad.AdGroup
 	if err := a.Connector.GetOrm().Select(&list, ""); err != nil {
 		handleError(err)
 	}
@@ -56,7 +56,7 @@ func (a *advertisementRepo) DelAdGroup(id int32) error {
 // 根据KEY获取广告位
 func (a *advertisementRepo) GetAdPositionByKey(key string) *ad.AdPosition {
 	e := ad.AdPosition{}
-	if err := a.GetOrm().GetBy(&e, "ad_position.key=?", key); err != nil {
+	if err := a.GetOrm().GetBy(&e, "ad_position.key=$1", key); err != nil {
 		handleError(err)
 		return nil
 	}
@@ -75,8 +75,8 @@ func (a *advertisementRepo) GetAdPositionById(adPosId int32) *ad.AdPosition {
 
 // 获取广告位
 func (a *advertisementRepo) GetAdPositionsByGroupId(adGroupId int32) []*ad.AdPosition {
-	var list = []*ad.AdPosition{}
-	if err := a.Connector.GetOrm().Select(&list, "group_id=?", adGroupId); err != nil {
+	var list []*ad.AdPosition
+	if err := a.Connector.GetOrm().Select(&list, "group_id=$1", adGroupId); err != nil {
 		handleError(err)
 	}
 	return list
@@ -114,7 +114,7 @@ func (a *advertisementRepo) SetUserAd(adUserId, posId, adId int32) error {
 		PosId:    posId,
 		AdId:     adId,
 	}
-	a.ExecScalar("SELECT id FROM ad_userset WHERE user_id=? AND ad_id=?", &v.Id, adUserId, adId)
+	a.ExecScalar("SELECT id FROM ad_userset WHERE user_id=$1 AND ad_id=$2", &v.Id, adUserId, adId)
 	v.PosId = posId
 	_, err := orm.Save(a.GetOrm(), v, int(v.Id))
 	if err == nil {
@@ -127,7 +127,7 @@ func (a *advertisementRepo) SetUserAd(adUserId, posId, adId int32) error {
 // 根据名称获取广告编号
 func (a *advertisementRepo) GetIdByName(userId int32, name string) int {
 	var id int
-	a.Connector.ExecScalar("SELECT id FROM ad_list WHERE user_id=? AND name=?",
+	a.Connector.ExecScalar("SELECT id FROM ad_list WHERE user_id=$1 AND name=$1",
 		&id, userId, name)
 	return id
 }
@@ -145,7 +145,7 @@ func (a *advertisementRepo) SaveAdValue(v *ad.Ad) (int32, error) {
 // 获取超链接广告数据
 func (a *advertisementRepo) GetHyperLinkData(adId int32) *ad.HyperLink {
 	e := ad.HyperLink{}
-	if err := a.GetOrm().GetBy(&e, "ad_id=?", adId); err != nil {
+	if err := a.GetOrm().GetBy(&e, "ad_id=$1", adId); err != nil {
 		handleError(err)
 		return nil
 	}
@@ -177,7 +177,7 @@ func (a *advertisementRepo) GetAdByKey(userId int32, key string) *ad.Ad {
 	const sql string = `select * FROM ad_list
         INNER JOIN ad_userset ON ad_userset.user_id = ad_list.user_id
         INNER JOIN ad_position ON ad_userset.pos_id=ad_position.id
-        WHERE ad_list.user_id = ? AND ad_position.key=?`
+        WHERE ad_list.user_id = $1 AND ad_position.key=$2`
 	if err := a.Connector.GetOrm().GetByQuery(&e, sql, userId, key); err == nil {
 		return &e
 	}
@@ -187,7 +187,7 @@ func (a *advertisementRepo) GetAdByKey(userId int32, key string) *ad.Ad {
 // 获取轮播广告
 func (a *advertisementRepo) GetValueGallery(adId int32) ad.ValueGallery {
 	var list = []*ad.Image{}
-	if err := a.Connector.GetOrm().Select(&list, "ad_id=? ORDER BY sort_num ASC LIMIT 10", adId); err == nil {
+	if err := a.Connector.GetOrm().Select(&list, "ad_id=$1 ORDER BY sort_num ASC LIMIT 20", adId); err == nil {
 		return list
 	}
 	return nil
@@ -196,7 +196,7 @@ func (a *advertisementRepo) GetValueGallery(adId int32) ad.ValueGallery {
 // 获取图片项
 func (a *advertisementRepo) GetValueAdImage(adId, id int32) *ad.Image {
 	var e ad.Image
-	if err := a.Connector.GetOrm().GetBy(&e, "ad_id=? and id=?", adId, id); err == nil {
+	if err := a.Connector.GetOrm().GetBy(&e, "ad_id=$1 and id=$2", adId, id); err == nil {
 		return &e
 	}
 	return nil
@@ -204,13 +204,13 @@ func (a *advertisementRepo) GetValueAdImage(adId, id int32) *ad.Image {
 
 // 删除图片项
 func (a *advertisementRepo) DelAdImage(adId, imgId int32) error {
-	_, err := a.Connector.GetOrm().Delete(ad.Image{}, "ad_id=? and id=?", adId, imgId)
+	_, err := a.Connector.GetOrm().Delete(ad.Image{}, "ad_id=$1 and id=$2", adId, imgId)
 	return err
 }
 
 // 删除广告
 func (a *advertisementRepo) DelAd(userId, adId int32) error {
-	_, err := a.Connector.GetOrm().Delete(ad.Ad{}, "user_id=? AND id=?", userId, adId)
+	_, err := a.Connector.GetOrm().Delete(ad.Ad{}, "user_id=$1 AND id=$1", userId, adId)
 	if err == nil {
 		//更新用户的广告缓存
 		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", userId))
@@ -220,12 +220,12 @@ func (a *advertisementRepo) DelAd(userId, adId int32) error {
 
 // 删除广告的图片数据
 func (a *advertisementRepo) DelImageDataForAdvertisement(adId int32) error {
-	_, err := a.Connector.GetOrm().Delete(ad.Image{}, "ad_id=?", adId)
+	_, err := a.Connector.GetOrm().Delete(ad.Image{}, "ad_id=$1", adId)
 	return err
 }
 
 // 删除广告的文字数据
 func (a *advertisementRepo) DelTextDataForAdvertisement(adId int32) error {
-	_, err := a.Connector.GetOrm().Delete(ad.HyperLink{}, "ad_id=?", adId)
+	_, err := a.Connector.GetOrm().Delete(ad.HyperLink{}, "ad_id=$1", adId)
 	return err
 }

@@ -45,7 +45,7 @@ func (c *contentRepo) GetPageById(mchId, id int32) *content.Page {
 // 根据标识获取页面
 func (c *contentRepo) GetPageByStringIndent(userId int32, indent string) *content.Page {
 	var e content.Page
-	if err := c.Connector.GetOrm().GetBy(&e, "user_id=? and str_indent=?", userId, indent); err == nil {
+	if err := c.Connector.GetOrm().GetBy(&e, "user_id= $1 and str_indent= $2", userId, indent); err == nil {
 		return &e
 	}
 	return nil
@@ -53,7 +53,7 @@ func (c *contentRepo) GetPageByStringIndent(userId int32, indent string) *conten
 
 // 删除页面
 func (c *contentRepo) DeletePage(userId, id int32) error {
-	_, err := c.Connector.GetOrm().Delete(content.Page{}, "user_id=? AND id=?", userId, id)
+	_, err := c.Connector.GetOrm().Delete(content.Page{}, "user_id= $1 AND id= $2", userId, id)
 	return err
 }
 
@@ -65,14 +65,14 @@ func (c *contentRepo) SavePage(userId int32, v *content.Page) (int32, error) {
 // 获取文章数量
 func (c *contentRepo) GetArticleNumByCategory(categoryId int32) int {
 	num := 0
-	c.Connector.ExecScalar("SELECT COUNT(0) FROM article_list WHERE cat_id=?",
+	c.Connector.ExecScalar("SELECT COUNT(0) FROM article_list WHERE cat_id= $1",
 		&num, categoryId)
 	return num
 }
 
 // 获取栏目
 func (c *contentRepo) GetAllArticleCategory() []*content.ArticleCategory {
-	list := []*content.ArticleCategory{}
+	var list []*content.ArticleCategory
 	c.Connector.GetOrm().Select(&list, "")
 	return list
 }
@@ -80,7 +80,7 @@ func (c *contentRepo) GetAllArticleCategory() []*content.ArticleCategory {
 // 判断栏目是否存在
 func (c *contentRepo) CategoryExists(alias string, id int32) bool {
 	num := 0
-	c.Connector.ExecScalar("SELECT COUNT(0) FROM article_category WHERE cat_alias=? and id<>id",
+	c.Connector.ExecScalar("SELECT COUNT(0) FROM article_category WHERE cat_alias= $1 and id <> $2",
 		&num, alias, id)
 	return num > 0
 }
@@ -108,7 +108,7 @@ func (c *contentRepo) GetArticleById(id int32) *content.Article {
 func (c *contentRepo) GetArticleList(categoryId int32, begin int, end int) []*content.Article {
 	list := []*content.Article{}
 	c.Connector.GetOrm().SelectByQuery(&content.Article{},
-		"cat_id=? LIMIT ?,?", categoryId, begin, end-begin)
+		"cat_id= $1 LIMIT $3 OFFSET $2", categoryId, begin, end-begin)
 	return list
 }
 

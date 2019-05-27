@@ -57,7 +57,7 @@ func confirmTransferIn(t time.Time) {
 	for {
 		idArr := []int32{}
 		err := conn.Query(`SELECT id FROM pf_riselog WHERE
-		unix_date<=? AND type=? AND state=? LIMIT ?,?`,
+		unix_date<= $1 AND type= $2 AND state= $3 LIMIT $5 OFFSET $4`,
 			func(rows *sql.Rows) {
 				var i int32
 				for rows.Next() {
@@ -96,7 +96,7 @@ func confirmTransferInByCursor(unixDate int64, logId int32) {
 	//	personfinance.RiseStateDefault))
 	//time.Sleep(time.Second * 1)
 	v := personfinance.RiseLog{}
-	err := _orm.GetBy(&v, "id =? AND unix_date<=? AND type=? AND state=? ORDER BY id",
+	err := _orm.GetBy(&v, "id = $1 AND unix_date<= $2 AND type= $3 AND state= $4 ORDER BY id",
 		logId, unixDate, personfinance.RiseTypeTransferIn,
 		personfinance.RiseStateDefault)
 	if err == nil {
@@ -119,7 +119,7 @@ func settleRiseData(settleDate time.Time) {
 	for {
 		idArr := []int64{}
 		err := conn.Query(`SELECT person_id FROM pf_riseinfo WHERE
-            settlement_amount > 0 AND settled_date < ? LIMIT ?,?`,
+            settlement_amount > 0 AND settled_date < $1 LIMIT $3 OFFSET $2`,
 			func(rows *sql.Rows) {
 				var i int64
 				for rows.Next() {

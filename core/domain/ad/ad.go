@@ -358,7 +358,7 @@ func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAd {
 // 检测广告位是否可以被绑定
 func (a *userAdImpl) checkPositionBind(posId int32, adId int32) bool {
 	total := 0
-	tmp.Db().ExecScalar("SELECT COUNT(0) FROM ad_userset WHERE user_id=? AND pos_id=? AND ad_id<>?",
+	tmp.Db().ExecScalar("SELECT COUNT(0) FROM ad_userset WHERE user_id= $1 AND pos_id= $2 AND ad_id <> $3",
 		&total, a._adUserId, posId, adId)
 	return total == 0
 }

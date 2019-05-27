@@ -106,13 +106,14 @@ func (m *mssRepo) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 // 获取所有的邮箱模版
 func (m *mssRepo) GetMailTemplates(mchId int32) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
-	m._conn.GetOrm().Select(&list, "merchant_id=?", mchId)
+	m._conn.GetOrm().Select(&list, "merchant_id= $1", mchId)
 	return list
 }
 
 // 删除邮件模板
 func (m *mssRepo) DeleteMailTemplate(mchId, id int32) error {
-	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", mchId, id)
+	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{},
+		"merchant_id= $1 AND id= $2", mchId, id)
 	return err
 }
 
@@ -146,7 +147,7 @@ func (m *mssRepo) GetMessage(id int32) *mss.Message {
 	e := mss.Message{}
 	if m._conn.GetOrm().Get(id, &e) == nil {
 		e.To = []mss.User{}
-		m._conn.Query(`SELECT to_id,to_role FROM msg_to WHERE msg_id=?`, func(rs *sql.Rows) {
+		m._conn.Query(`SELECT to_id,to_role FROM msg_to WHERE msg_id= $1`, func(rs *sql.Rows) {
 			for rs.Next() {
 				u := mss.User{}
 				rs.Scan(&u.Id, &u.Role)
@@ -171,7 +172,7 @@ func (m *mssRepo) SaveMsgContent(v *mss.Content) (int32, error) {
 // 获取消息内容
 func (m *mssRepo) GetMessageContent(msgId int32) *mss.Content {
 	e := mss.Content{}
-	if m._conn.GetOrm().GetBy(&e, "msg_id=?", msgId) == nil {
+	if m._conn.GetOrm().GetBy(&e, "msg_id= $1", msgId) == nil {
 		return &e
 	}
 	return nil
@@ -181,7 +182,8 @@ func (m *mssRepo) GetMessageContent(msgId int32) *mss.Content {
 func (m *mssRepo) GetMessageTo(msgId int32, toUserId int32, toRole int) *mss.To {
 	e := mss.To{}
 	if m._conn.GetOrm().GetByQuery(&e, `SELECT * FROM msg_to
-		WHERE msg_id=? AND to_id =? AND to_role=?`, msgId, toUserId, toRole) == nil {
+		WHERE msg_id= $1 AND to_id = $2 AND to_role= $3`,
+		msgId, toUserId, toRole) == nil {
 		return &e
 	}
 	return nil

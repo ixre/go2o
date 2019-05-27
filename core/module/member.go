@@ -87,7 +87,7 @@ func (m *MemberModule) CheckToken(memberId int64, token string) bool {
 		return false
 	}
 	// token已过期
-	if unix < time.Now().Add(time.Hour * time.Duration(-m.tokenHours)).Unix() {
+	if unix < time.Now().Add(time.Hour*time.Duration(-m.tokenHours)).Unix() {
 		m.RemoveToken(memberId)
 		return false
 	}

@@ -27,46 +27,17 @@ func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where str
 	if len(where) != 0 {
 		where = " AND " + where
 	}
-
 	cq.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM
-		article_list WHERE cat_id=? %s`, where), &total, catId)
-
+		article_list WHERE cat_id= $1 %s`, where), &total, catId)
 	rows = []*content.Article{}
 	if total > 0 {
 		cq.Connector.GetOrm().SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM
-		article_list WHERE cat_id=? %s ORDER BY update_time DESC LIMIT ?,?`, where),
+		article_list WHERE cat_id= $1 %s ORDER BY update_time DESC LIMIT $3 OFFSET $2`, where),
 			catId, begin, size)
+		for i := 0; i < len(rows); i++ {
+			rows[i].Content = ""
+		}
 	}
 
 	return total, rows
 }
-
-// 获取页面列表
-//func (cq *MemberQuery) QueryPageList(memberId, page, size int,
-//	where, orderBy string) (num int, rows []map[string]interface{}) {
-//
-//	d := cq.Connector
-//
-//	if where != "" {
-//		where = "WHERE " + where
-//	}
-//	if orderBy != "" {
-//		orderBy = "ORDER BY " + orderBy
-//	}
-//	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0)
-//			FROM mm_income_log l INNER JOIN mm_member m ON m.id=l.member_id
-//			WHERE member_id=? %s`, where), &num, memberId)
-//
-//	sqlLine := fmt.Sprintf(`SELECT l.*,
-//			record_time,
-//			convert(l.fee,CHAR(10)) as fee
-//			FROM mm_income_log l INNER JOIN mm_member m ON m.id=l.member_id
-//			WHERE member_id=? %s %s LIMIT ?,?`,
-//		where, orderBy)
-//
-//	d.Query(sqlLine, func(_rows *sql.Rows) {
-//		rows = db.RowsToMarshalMap(_rows)
-//	}, memberId, (page-1)*size, size)
-//
-//	return num, rows
-//}

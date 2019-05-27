@@ -81,7 +81,7 @@ func (o *wholesaleOrderImpl) getValue() *order.WholesaleOrder {
 	if o.value == nil {
 		id := o.GetAggregateRootId()
 		if id > 0 {
-			o.value = o.repo.GetWholesaleOrder("order_id=?", id)
+			o.value = o.repo.GetWholesaleOrder("order_id= $1", id)
 		}
 	}
 	return o.value
@@ -435,7 +435,7 @@ func (o *wholesaleOrderImpl) createPaymentForOrder() error {
 func (o *wholesaleOrderImpl) Items() []*order.WholesaleItem {
 	if o.realItems == nil {
 		id := o.GetAggregateRootId()
-		o.realItems = o.repo.SelectWholesaleItem("order_id=?", id)
+		o.realItems = o.repo.SelectWholesaleItem("order_id= $1", id)
 	}
 	return o.realItems
 }

@@ -55,7 +55,7 @@ func (a *afterSalesRepo) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrde
 func (a *afterSalesRepo) GetAllOfSaleOrder(orderId int64) []afterSales.IAfterSalesOrder {
 	list := []*afterSales.AfterSalesOrder{}
 	orders := []afterSales.IAfterSalesOrder{}
-	if a.GetOrm().Select(&list, "order_id=?", orderId) == nil {
+	if a.GetOrm().Select(&list, "order_id= $1", orderId) == nil {
 		for _, v := range list {
 			orders = append(orders, a.CreateAfterSalesOrder(v))
 		}
