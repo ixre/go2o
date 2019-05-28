@@ -149,7 +149,7 @@ func (g *goodsRepo) SaveGoodsLevelPrice(v *item.MemberPrice) (int32, error) {
 }
 
 // 移除会员价
-func (g *goodsRepo) RemoveGoodsLevelPrice(id int32) error {
+func (g *goodsRepo) RemoveGoodsLevelPrice(id int) error {
 	return g.Connector.GetOrm().DeleteByPk(item.MemberPrice{}, id)
 }
 

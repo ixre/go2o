@@ -47,19 +47,19 @@ type (
 	//会员等级
 	Level struct {
 		// 编号
-		ID int32 `db:"id" auto:"yes" pk:"yes"`
+		ID int `db:"id" auto:"yes" pk:"yes"`
 		// 等级名称
 		Name string `db:"name"`
 		// 需要经验值
-		RequireExp int32 `db:"require_exp"`
+		RequireExp int `db:"require_exp"`
 		// 可编程等级签名,可根据此签名来进行编程
 		ProgramSignal string `db:"program_signal"`
 		// 是否启用
-		Enabled int32 `db:"enabled"`
+		Enabled int `db:"enabled"`
 		// 是否为正式会员/非正式
-		IsOfficial int32 `db:"is_official"`
+		IsOfficial int `db:"is_official"`
 		// 是否允许自动升级
-		AllowUpgrade int32 `db:"allow_upgrade"`
+		AllowUpgrade int `db:"allow_upgrade"`
 	}
 
 	ILevelManager interface {
@@ -70,21 +70,21 @@ type (
 		GetHighestLevel() *Level
 
 		// 获取等级,todo:返回error
-		GetLevelById(id int32) *Level
+		GetLevelById(id int) *Level
 
 		// 根据可编程字符获取会员等级
 		GetLevelByProgramSign(sign string) *Level
 
 		// 获取下一个等级
-		GetNextLevelById(id int32) *Level
+		GetNextLevelById(id int) *Level
 
 		// 删除等级
-		DeleteLevel(id int32) error
+		DeleteLevel(id int) error
 
 		// 保存等级
-		SaveLevel(*Level) (int32, error)
+		SaveLevel(*Level) (int, error)
 
 		// 根据经验值获取等级值
-		GetLevelIdByExp(exp int32) int32
+		GetLevelIdByExp(exp int) int
 	}
 )

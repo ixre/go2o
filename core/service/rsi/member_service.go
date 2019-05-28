@@ -129,7 +129,7 @@ func (s *memberService) Premium(ctx context.Context, memberId int64, v int32, ex
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	err := m.Premium(v, expires)
+	err := m.Premium(int(v), expires)
 	return s.result(err), nil
 }
 
@@ -234,7 +234,7 @@ func (s *memberService) LevelList(ctx context.Context) ([]*member_service.SLevel
 
 // 根据编号获取会员等级信息
 func (s *memberService) GetLevel(ctx context.Context, id int32) (*member_service.SLevel, error) {
-	lv := s.repo.GetManager().LevelManager().GetLevelById(id)
+	lv := s.repo.GetManager().LevelManager().GetLevelById(int(id))
 	if lv != nil {
 		return parser.LevelDto(lv), nil
 	}
@@ -257,17 +257,18 @@ func (s *memberService) GetLevelByProgramSign(sign string) *member.Level {
 
 // 保存会员等级信息
 func (s *memberService) SaveMemberLevel(v *member.Level) (int32, error) {
-	return s.repo.GetManager().LevelManager().SaveLevel(v)
+	n,err := s.repo.GetManager().LevelManager().SaveLevel(v)
+	return int32(n),err
 }
 
 // 删除会员等级
 func (s *memberService) DelMemberLevel(levelId int32) error {
-	return s.repo.GetManager().LevelManager().DeleteLevel(levelId)
+	return s.repo.GetManager().LevelManager().DeleteLevel(int(levelId))
 }
 
 // 获取下一个等级
 func (s *memberService) GetNextLevel(levelId int32) *member.Level {
-	return s.repo.GetManager().LevelManager().GetNextLevelById(levelId)
+	return s.repo.GetManager().LevelManager().GetNextLevelById(int(levelId))
 }
 
 // 获取启用中的最大等级,用于判断是否可以升级
@@ -343,7 +344,7 @@ func (s *memberService) UpdateLevel(ctx context.Context, memberId int64, level i
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = m.ChangeLevel(level, int32(paymentOrderId), review)
+		err = m.ChangeLevel(int(level), int(paymentOrderId), review)
 	}
 	return s.result(err), nil
 }

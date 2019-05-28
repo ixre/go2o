@@ -48,7 +48,7 @@ func createKafkaProducer(address []string) sarama.AsyncProducer {
 			select {
 			case suc := <-p.Successes():
 				if suc != nil {
-					fmt.Println("offset: ", suc.Offset, "timestamp: ", suc.Timestamp.String(), "partitions: ", suc.Partition)
+					//fmt.Println("offset: ", suc.Offset, "timestamp: ", suc.Timestamp.String(), "partitions: ", suc.Partition)
 				}
 			case fail := <-p.Errors():
 				if fail != nil {
@@ -60,10 +60,13 @@ func createKafkaProducer(address []string) sarama.AsyncProducer {
 	return producer
 }
 
-func (k *KafkaProducer) Push(topic string, message string) error {
+func (k *KafkaProducer) Push(topic string, key string, message string) error {
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
 		Value: sarama.ByteEncoder(message),
+	}
+	if len(key) > 0 {
+		msg.Key = sarama.ByteEncoder(key)
 	}
 	//使用通道发送
 	k.pro.Input() <- msg

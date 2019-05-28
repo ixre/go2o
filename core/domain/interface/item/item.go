@@ -105,7 +105,7 @@ type (
 		SaveGoodsLevelPrice(*MemberPrice) (int32, error)
 
 		// 移除会员价
-		RemoveGoodsLevelPrice(id int32) error
+		RemoveGoodsLevelPrice(id int) error
 
 		// 保存快照
 		SaveSnapshot(*Snapshot) (int64, error)
@@ -210,9 +210,9 @@ type (
 
 	// 会员价
 	MemberPrice struct {
-		Id      int32   `db:"id" pk:"yes" auto:"yes"`
+		Id      int   `db:"id" pk:"yes" auto:"yes"`
 		GoodsId int64   `db:"goods_id"`
-		Level   int32   `db:"level"`
+		Level   int   `db:"level"`
 		Price   float32 `db:"price"`
 		// 限购数量
 		MaxQuota int `db:"max_quota"`
@@ -250,9 +250,9 @@ type (
 		// 获取促销信息
 		GetPromotions() []promotion.IPromotion
 		// 获取促销价
-		GetPromotionPrice(level int32) float32
+		GetPromotionPrice(level int) float32
 		// 获取会员价销价,返回是否有会原价及价格
-		GetLevelPrice(level int32) (bool, float32)
+		GetLevelPrice(level int) (bool, float32)
 		// 获取促销描述
 		GetPromotionDescribe() map[string]string
 		// 获取会员价

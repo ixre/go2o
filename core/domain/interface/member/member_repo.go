@@ -27,13 +27,13 @@ type IMemberRepo interface {
 	GetMemberLevels_New() []*Level
 
 	// 获取等级对应的会员数
-	GetMemberNumByLevel_New(id int32) int
+	GetMemberNumByLevel_New(id int) int
 
 	// 删除会员等级
-	DeleteMemberLevel_New(id int32) error
+	DeleteMemberLevel_New(id int) error
 
 	// 保存会员等级
-	SaveMemberLevel_New(v *Level) (int32, error)
+	SaveMemberLevel_New(v *Level) (int, error)
 
 	// 根据用户名获取会员
 	GetMemberByUsr(usr string) *Member
