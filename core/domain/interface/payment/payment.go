@@ -56,51 +56,51 @@ const (
 )
 
 var (
-	ErrNoSuchPaymentOrder = domain.NewDomainError(
+	ErrNoSuchPaymentOrder = domain.NewError(
 		"err_no_such_payment_order", "支付单不存在")
 
-	ErrExistsTradeNo = domain.NewDomainError(
+	ErrExistsTradeNo = domain.NewError(
 		"err_payment_exists_trade_no", "支付单号重复")
 
-	ErrPaymentNotSave = domain.NewDomainError(
+	ErrPaymentNotSave = domain.NewError(
 		"err_payment_not_save", "支付单需存后才能执行操作")
 
-	ErrFinalFee = domain.NewDomainError(
+	ErrFinalFee = domain.NewError(
 		"err_final_fee", "支付单金额有误")
 
-	ErrNotSupportPaymentChannel = domain.NewDomainError(
+	ErrNotSupportPaymentChannel = domain.NewError(
 		"err_payment_not_support_channel", "不支持此支付方式,无法完成付款")
-	ErrItemAmount    = domain.NewDomainError("err_payment_item_amount", "支付单金额不能为零")
-	ErrOutOfFinalFee = domain.NewDomainError("err_out_of_final_fee",
+	ErrItemAmount    = domain.NewError("err_payment_item_amount", "支付单金额不能为零")
+	ErrOutOfFinalFee = domain.NewError("err_out_of_final_fee",
 		"超出支付单金额")
-	ErrNotMatchFinalFee = domain.NewDomainError("err_not_match_final_fee",
+	ErrNotMatchFinalFee = domain.NewError("err_not_match_final_fee",
 		"金额与实际金额不符，无法完成付款")
-	ErrTradeNoPrefix = domain.NewDomainError(
+	ErrTradeNoPrefix = domain.NewError(
 		"err_payment_trade_no_prefix", "支付单号前缀不正确")
-	ErrTradeNoExistsPrefix = domain.NewDomainError(
+	ErrTradeNoExistsPrefix = domain.NewError(
 		"err_payment_trade_no_exists_prefix", "支付单号已存在前缀")
 
-	ErrOrderCommitted = domain.NewDomainError(
+	ErrOrderCommitted = domain.NewError(
 		"err_payment_order_committed", "支付单已提交")
 
-	ErrOrderPayed = domain.NewDomainError(
+	ErrOrderPayed = domain.NewError(
 		"err_payment_order_payed", "订单已支付")
 
-	ErrOrderCancelled = domain.NewDomainError("err_payment_order_has_cancel", "订单已经取消")
+	ErrOrderCancelled = domain.NewError("err_payment_order_has_cancel", "订单已经取消")
 
-	ErrOrderNotPayed = domain.NewDomainError("err_payment_order_not_payed", "订单未支付")
+	ErrOrderNotPayed = domain.NewError("err_payment_order_not_payed", "订单未支付")
 
-	ErrCanNotUseBalance = domain.NewDomainError("err_can_not_use_balance", "不能使用余额支付")
+	ErrCanNotUseBalance = domain.NewError("err_can_not_use_balance", "不能使用余额支付")
 
-	ErrNotEnoughAmount = domain.NewDomainError("err_payment_not_enough_amount", "余额不足,无法完成支付")
+	ErrNotEnoughAmount = domain.NewError("err_payment_not_enough_amount", "余额不足,无法完成支付")
 
-	ErrCanNotUseIntegral = domain.NewDomainError("err_can_not_use_integral", "不能使用积分抵扣")
+	ErrCanNotUseIntegral = domain.NewError("err_can_not_use_integral", "不能使用积分抵扣")
 
-	ErrCanNotUseCoupon = domain.NewDomainError("err_can_not_use_coupon", "不能使用优惠券")
+	ErrCanNotUseCoupon = domain.NewError("err_can_not_use_coupon", "不能使用优惠券")
 
-	ErrCanNotSystemDiscount = domain.NewDomainError("err_can_not_system_discount", "不允许系统支付")
+	ErrCanNotSystemDiscount = domain.NewError("err_can_not_system_discount", "不允许系统支付")
 
-	ErrOuterNo = domain.NewDomainError("err_outer_no", "第三方交易号错误")
+	ErrOuterNo = domain.NewError("err_outer_no", "第三方交易号错误")
 )
 
 type (

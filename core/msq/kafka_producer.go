@@ -5,22 +5,24 @@ import (
 	"github.com/Shopify/sarama"
 	"log"
 )
+
 var _ Producer = new(KafkaProducer)
+
 type KafkaProducer struct {
-	pro sarama.AsyncProducer
+	pro     sarama.AsyncProducer
 	address []string
 }
 
-func newKafkaProducer(address []string)*KafkaProducer {
+func newKafkaProducer(address []string) *KafkaProducer {
 	k := &KafkaProducer{
 		address: address,
-		pro:createKafkaProducer(address),
+		pro:     createKafkaProducer(address),
 	}
 	return k
 }
 
 // 创建异步producer
-func createKafkaProducer(address []string)sarama.AsyncProducer{
+func createKafkaProducer(address []string) sarama.AsyncProducer {
 	config := sarama.NewConfig()
 	//等待服务器所有副本都保存成功后的响应
 	config.Producer.RequiredAcks = sarama.WaitForAll
@@ -42,7 +44,7 @@ func createKafkaProducer(address []string)sarama.AsyncProducer{
 	defer producer.AsyncClose()
 	// 判断哪个通道发送过来数据.
 	go func(p sarama.AsyncProducer) {
-		for{
+		for {
 			select {
 			case suc := <-p.Successes():
 				if suc != nil {

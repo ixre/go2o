@@ -72,25 +72,25 @@ const (
 )
 
 var (
-	ErrIncorrectAmount *domain.DomainError = domain.NewDomainError(
+	ErrIncorrectAmount *domain.DomainError = domain.NewError(
 		"err_balance_amount", "金额错误")
-	ErrIncorrectTransfer *domain.DomainError = domain.NewDomainError(
+	ErrIncorrectTransfer *domain.DomainError = domain.NewError(
 		"err_incorrent_transfer", "已确认或非转入(转出)操作")
-	ErrNoSuchRiseInfo *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchRiseInfo *domain.DomainError = domain.NewError(
 		"err_no_such_rise_info", "未开通该功能")
-	ErrHasSettled *domain.DomainError = domain.NewDomainError(
+	ErrHasSettled *domain.DomainError = domain.NewError(
 		"err_has_settled", "已经结算")
-	ErrUnixDate *domain.DomainError = domain.NewDomainError(
+	ErrUnixDate *domain.DomainError = domain.NewError(
 		"err_unix_date", "错误的日期时间戳")
-	ErrRatio *domain.DomainError = domain.NewDomainError(
+	ErrRatio *domain.DomainError = domain.NewError(
 		"err_ratio", "利率不正确")
-	ErrLessThanMinTransferIn *domain.DomainError = domain.NewDomainError(
+	ErrLessThanMinTransferIn *domain.DomainError = domain.NewError(
 		"err_less_than_min_transfer_in", "转入金额最低%s")
-	ErrLessThanMinTransferOut *domain.DomainError = domain.NewDomainError(
+	ErrLessThanMinTransferOut *domain.DomainError = domain.NewError(
 		"err_less_than_min_transfer_out", "转出金额最低%s")
-	ErrMustAllTransferOut *domain.DomainError = domain.NewDomainError(
+	ErrMustAllTransferOut *domain.DomainError = domain.NewError(
 		"err_must_all_transfer_out", "金额最低%s或全部转出")
-	ErrOutOfBalance *domain.DomainError = domain.NewDomainError(
+	ErrOutOfBalance *domain.DomainError = domain.NewError(
 		"err_out_of_balance", "超出帐户最大金额")
 )
 

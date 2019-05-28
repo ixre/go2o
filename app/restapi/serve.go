@@ -48,11 +48,11 @@ func newServe() *echo.Echo {
 // 注册新的服务接口
 func registerNewApi(s *echo.Echo) {
 	mux := api.NewServe(false, "1.0.0")
-	s.GET("/api",func(ctx echo.Context)error{
-		return ctx.String(200,"go2o api server")
+	s.GET("/api", func(ctx echo.Context) error {
+		return ctx.String(200, "go2o api server")
 	})
-	s.POST("/api",func(ctx echo.Context)error{
-		mux.ServeHTTP(ctx.Response(),ctx.Request())
+	s.POST("/api", func(ctx echo.Context) error {
+		mux.ServeHTTP(ctx.Response(), ctx.Request())
 		return nil
 	})
 }
@@ -89,7 +89,7 @@ func beforeRequest() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			host := c.Request().URL.Host
 			path := c.Request().URL.Path
-			if path == "/api"{
+			if path == "/api" {
 				return h(c)
 			}
 			// todo: path compare

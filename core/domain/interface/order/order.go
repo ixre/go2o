@@ -135,95 +135,95 @@ func (o LogType) String() string {
 }
 
 var (
-	ErrNoCheckedItem = domain.NewDomainError(
+	ErrNoCheckedItem = domain.NewError(
 		"err_order_no_checked_item", "没有可结算的商品")
 
-	ErrRequireCart = domain.NewDomainError(
+	ErrRequireCart = domain.NewError(
 		"err_require_cart", "订单已生成,无法引入购物车")
 
-	ErrNoSuchOrder = domain.NewDomainError(
+	ErrNoSuchOrder = domain.NewError(
 		"err_no_such_order", "订单不存在")
 
-	ErrOrderPayed = domain.NewDomainError(
+	ErrOrderPayed = domain.NewError(
 		"err_order_payed ", "订单已支付")
 
-	ErrNoYetCreated = domain.NewDomainError(
+	ErrNoYetCreated = domain.NewError(
 		"err_order_not_yet_created ", "订单尚未生成")
 
-	ErrUnusualOrder = domain.NewDomainError(
+	ErrUnusualOrder = domain.NewError(
 		"err_unusual_order", "订单异常")
 
-	ErrMissingShipAddress = domain.NewDomainError(
+	ErrMissingShipAddress = domain.NewError(
 		"err_missing_ship_address", "未设置收货地址")
 
-	ErrUnusualOrderStat = domain.NewDomainError(
+	ErrUnusualOrderStat = domain.NewError(
 		"err_except_order_stat", "订单状态不匹配、无法执行此操作!")
 
-	ErrPartialShipment = domain.NewDomainError(
+	ErrPartialShipment = domain.NewError(
 		"err_order_partial_shipment", "订单部分商品已经发货")
 
-	ErrOrderNotPayed = domain.NewDomainError(
+	ErrOrderNotPayed = domain.NewError(
 		"err_order_not_payed ", "订单未支付")
 
-	ErrOutOfQuantity = domain.NewDomainError(
+	ErrOutOfQuantity = domain.NewError(
 		"err_order_out_of_quantity", "超出数量")
-	ErrNoSuchGoodsOfOrder = domain.NewDomainError(
+	ErrNoSuchGoodsOfOrder = domain.NewError(
 		"err_order_no_such_goods_of_order", "订单中不包括该商品")
-	ErrOrderHasConfirm = domain.NewDomainError(
+	ErrOrderHasConfirm = domain.NewError(
 		"err_order_has_confirm", "订单已经确认")
 
-	ErrOrderNotConfirm = domain.NewDomainError(
+	ErrOrderNotConfirm = domain.NewError(
 		"err_order_not_confirm", "请等待系统确认")
 
-	ErrOrderHasPickUp = domain.NewDomainError(
+	ErrOrderHasPickUp = domain.NewError(
 		"err_order_has_pick_up", "订单已经备货")
 
-	ErrOrderNotPickUp = domain.NewDomainError(
+	ErrOrderNotPickUp = domain.NewError(
 		"err_order_not_pick_up", "请等待商品备货")
 
-	ErrNoSuchAddress = domain.NewDomainError(
+	ErrNoSuchAddress = domain.NewError(
 		"err_order_no_address", "请选择收货地址")
 
-	ErrOrderShipped = domain.NewDomainError(
+	ErrOrderShipped = domain.NewError(
 		"err_order_shipped", "订单已经发货")
 
-	ErrOrderNotShipped = domain.NewDomainError(
+	ErrOrderNotShipped = domain.NewError(
 		"err_order_not_shipped", "订单尚未发货")
 
-	ErrIsCompleted = domain.NewDomainError(
+	ErrIsCompleted = domain.NewError(
 		"err_order_is_completed", "订单已经完成")
 
-	ErrOrderBreakUpFail = domain.NewDomainError(
+	ErrOrderBreakUpFail = domain.NewError(
 		"err_order_break_up_fail", "拆分订单操作失败")
 
-	ErrPromotionApplied = domain.NewDomainError(
+	ErrPromotionApplied = domain.NewError(
 		"err_promotion_applied", "已经使用相同的促销")
 
-	ErrEmptyReason = domain.NewDomainError(
+	ErrEmptyReason = domain.NewError(
 		"err_order_empty_reason", "原因不能为空")
 
-	ErrOrderCancelled = domain.NewDomainError(
+	ErrOrderCancelled = domain.NewError(
 		"err_order_can_not_cancel", "订单已经取消")
 
-	ErrOrderShippedCancel = domain.NewDomainError(
+	ErrOrderShippedCancel = domain.NewError(
 		"err_order_shipped_cancel", "订单已发货，无法取消")
 
-	ErrHasRefund = domain.NewDomainError(
+	ErrHasRefund = domain.NewError(
 		"err_order_has_refund", "订单已经退款")
 
-	ErrDisallowRefund = domain.NewDomainError(
+	ErrDisallowRefund = domain.NewError(
 		"err_order_disallow_refund", "订单不允许退款")
 
-	ErrTradeRateLessZero = domain.NewDomainError(
+	ErrTradeRateLessZero = domain.NewError(
 		"err_order_trade_rate_less_zero", "交易类订单结算比例不能小于零")
 
-	ErrTradeRateMoreThan100 = domain.NewDomainError(
+	ErrTradeRateMoreThan100 = domain.NewError(
 		"err_order_trade_rate_more_than_100", "交易类订单结算比例必须小于或等于100%")
 
-	ErrMissingSubject = domain.NewDomainError(
+	ErrMissingSubject = domain.NewError(
 		"err_order_missing_subject", "缺少订单标题")
 
-	ErrTicketImage = domain.NewDomainError(
+	ErrTicketImage = domain.NewError(
 		"err_order_ticket_image", "请上传正确的发票凭证")
 )
 

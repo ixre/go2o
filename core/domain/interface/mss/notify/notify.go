@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	ErrNoSuchNotifyItem *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchNotifyItem *domain.DomainError = domain.NewError(
 		"err_no_such_notify_item", "通知项不存在")
 
 	// 类型字典

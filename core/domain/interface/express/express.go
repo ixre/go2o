@@ -11,27 +11,27 @@ package express
 import "go2o/core/infrastructure/domain"
 
 var (
-	ErrExpressTemplateName *domain.DomainError = domain.NewDomainError(
+	ErrExpressTemplateName *domain.DomainError = domain.NewError(
 		"err_express_template_name", "运费模板名称不能为空")
-	ErrUserNotMatch *domain.DomainError = domain.NewDomainError(
+	ErrUserNotMatch *domain.DomainError = domain.NewError(
 		"err_express_user_not_match", "运费模板用户不匹配")
-	ErrExpressBasis *domain.DomainError = domain.NewDomainError(
+	ErrExpressBasis *domain.DomainError = domain.NewError(
 		"err_express_basis", "运费计价方式不正确")
-	ErrAddFee *domain.DomainError = domain.NewDomainError(
+	ErrAddFee *domain.DomainError = domain.NewError(
 		"err_express_add_fee", "续重(件)费用必须大于零")
-	ErrFirstUnitNotSet *domain.DomainError = domain.NewDomainError(
+	ErrFirstUnitNotSet *domain.DomainError = domain.NewError(
 		"err_express_first_unit_not_set", "首重(件)单位数量未填写")
-	ErrAddUnitNotSet *domain.DomainError = domain.NewDomainError(
+	ErrAddUnitNotSet *domain.DomainError = domain.NewError(
 		"err_express_add_unit_not_set", "续重(件)单位数量未填写")
-	ErrExpressTemplateMissingAreaCode *domain.DomainError = domain.NewDomainError(
+	ErrExpressTemplateMissingAreaCode *domain.DomainError = domain.NewError(
 		"err_express_template_missing_area_code", "运费模板未指定地区")
-	ErrExistsAreaTemplateSet *domain.DomainError = domain.NewDomainError(
+	ErrExistsAreaTemplateSet *domain.DomainError = domain.NewError(
 		"err_express_exists_area_template_set", "地区已存在运费模板设置")
-	ErrNoSuchTemplate *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchTemplate *domain.DomainError = domain.NewError(
 		"err_express_no_such_template", "运费模板不存在")
-	ErrTemplateNotEnabled *domain.DomainError = domain.NewDomainError(
+	ErrTemplateNotEnabled *domain.DomainError = domain.NewError(
 		"err_express_template_not_enabled", "运费模板未启用")
-	ErrNotSupportProvider *domain.DomainError = domain.NewDomainError(
+	ErrNotSupportProvider *domain.DomainError = domain.NewError(
 		"err_express_no_support_provider", "不支持该物流服务商")
 )
 

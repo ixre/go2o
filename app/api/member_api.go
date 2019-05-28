@@ -17,9 +17,9 @@ type MemberApi struct {
 
 func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
-		"login": m.login,
-		"account":m.account,
-		"profile":m.profile,
+		"login":   m.login,
+		"account": m.account,
+		"profile": m.profile,
 	})
 }
 
@@ -67,31 +67,30 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 
 // 账号信息
 func (m MemberApi) account(ctx api.Context) interface{} {
-	memberId := ctx.Form().GetInt("memberId");
-	trans,cli,err := thrift.MemberServeClient()
-	if err  == nil{
+	memberId := ctx.Form().GetInt("memberId")
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
 		defer trans.Close()
-		r,err1 := cli.GetAccount(thrift.Context,int64(memberId))
-		if err1 == nil{
+		r, err1 := cli.GetAccount(thrift.Context, int64(memberId))
+		if err1 == nil {
 			return r
 		}
-		err =err1
+		err = err1
 	}
 	return api.NewErrorResponse(err.Error())
 }
 
-
 // 账号信息
 func (m MemberApi) profile(ctx api.Context) interface{} {
-	memberId := ctx.Form().GetInt("memberId");
-	trans,cli,err := thrift.MemberServeClient()
-	if err  == nil{
+	memberId := ctx.Form().GetInt("memberId")
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
 		defer trans.Close()
-		r,err1 := cli.GetProfile(thrift.Context,int64(memberId))
-		if err1 == nil{
+		r, err1 := cli.GetProfile(thrift.Context, int64(memberId))
+		if err1 == nil {
 			return r
 		}
-		err =err1
+		err = err1
 	}
 	return api.NewErrorResponse(err.Error())
 }
