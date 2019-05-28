@@ -47,11 +47,14 @@ const (
 	LProgramUpgrade = 3
 )
 
-const(
-	FlagLocked = 1<<iota
-	FlagTrusted
+const (
+	FlagDefault = 1 << iota
+	FlagLocked  = 2
+	// 已完善的资料
+	FlagProfileCompleted = 4
+	// 已认证
+	FlagTrusted = 8
 )
-
 
 type (
 	IMember interface {
@@ -82,7 +85,7 @@ type (
 		// 解锁会员
 		Unlock() error
 		// 判断是否包含标志
-		ContainFlag(f int)bool
+		ContainFlag(f int) bool
 		// 获取关联的会员
 		GetRelation() *Relation
 		// 更新会员绑定
@@ -97,7 +100,7 @@ type (
 		GetLevel() *Level
 
 		// 更改会员等级,@paymentId:支付单编号,@review:是否需要审核
-		ChangeLevel(level int, paymentId int ,review bool) error
+		ChangeLevel(level int, paymentId int, review bool) error
 
 		// 审核升级请求
 		ReviewLevelUp(id int, pass bool) error

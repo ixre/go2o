@@ -110,12 +110,13 @@ struct SMember {
     12: i64 RegTime
     13: string CheckCode
     14: i64 CheckExpires
-    15: i32 State
-    16: i64 LoginTime
-    17: i64 LastLoginTime
-    18: i64 UpdateTime
-    19: string DynamicToken
-    20: i64 TimeoutTime
+    15: i32 Flag
+    16: i32 State
+    17: i64 LoginTime
+    18: i64 LastLoginTime
+    19: i64 UpdateTime
+    20: string DynamicToken
+    21: i64 TimeoutTime
 }
 
 /** 资料 */

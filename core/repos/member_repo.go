@@ -255,7 +255,7 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 			rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
 
 			// 推送消息
-			go msq.Push(msq.MemberUpdate, "update", strconv.Itoa(int(v.Id)))
+			go msq.Push(msq.MemberUpdated, strconv.Itoa(int(v.Id)), "update")
 		}
 		return v.Id, err
 	}
@@ -272,7 +272,7 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	v.Id = id
 	m.initMember(v)
 	// 推送消息
-	go msq.Push(msq.MemberUpdate, "create", strconv.Itoa(int(v.Id)))
+	go msq.Push(msq.MemberUpdated, strconv.Itoa(int(v.Id)), "create")
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	rc.Do("RPUSH", variable.KvMemberUpdateQueue,

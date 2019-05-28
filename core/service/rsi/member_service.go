@@ -257,8 +257,8 @@ func (s *memberService) GetLevelByProgramSign(sign string) *member.Level {
 
 // 保存会员等级信息
 func (s *memberService) SaveMemberLevel(v *member.Level) (int32, error) {
-	n,err := s.repo.GetManager().LevelManager().SaveLevel(v)
-	return int32(n),err
+	n, err := s.repo.GetManager().LevelManager().SaveLevel(v)
+	return int32(n), err
 }
 
 // 删除会员等级
@@ -640,7 +640,7 @@ func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*member
 func (s *memberService) InviterArray(ctx context.Context, memberId int64, depth int32) (r []int64, err error) {
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	if m != nil {
-		return m.Invitation().InviterArray(memberId, depth), nil
+		return m.Invitation().InviterArray(memberId,int(depth)), nil
 	}
 	return []int64{}, nil
 }

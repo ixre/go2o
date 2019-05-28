@@ -10,6 +10,7 @@ package member
 
 import (
 	"errors"
+	"fmt"
 	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain"
 	"go2o/core/domain/interface/enum"
@@ -21,7 +22,9 @@ import (
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/domain/util"
+	"go2o/core/msq"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -191,14 +194,22 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 	if err == nil {
 		ptr.MemberId = p.memberId
 		err = p.rep.SaveProfile(&ptr)
-		// 更新会员资料更新时间
 		if err == nil {
-			p.member.Save()
+			// 推送资料更新消息
+			go msq.Push(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), "")
+			// 完善资料通知
+			if p.ProfileCompleted() {
+				// 标记会员已完善资料
+				if !p.member.ContainFlag(member.FlagProfileCompleted) {
+					p.member.value.Flag |= member.FlagProfileCompleted
+					if err == nil {
+						p.member.Save()
+					}
+				}
+				p.notifyOnProfileComplete()
+			}
 		}
-		// 完善资料通知
-		if p.ProfileCompleted() {
-			p.notifyOnProfileComplete()
-		}
+
 	}
 	return err
 }
@@ -581,8 +592,15 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.trustedInfo.ReviewTime = time.Now().Unix()
 	_, err := orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
 		int(p.trustedInfo.MemberId))
-	if err == nil{
-		_,err = p.member.Save()
+	if err == nil {
+		if _, err = p.member.Save(); err == nil && pass {
+			// 通知实名通过
+			msq.Push(msq.MemberTrustInfoPassed, strconv.Itoa(int(p.memberId)),
+				fmt.Sprintf("%d|%s|%s",
+					p.trustedInfo.CardType,
+					p.trustedInfo.CardId,
+					p.trustedInfo.RealName))
+		}
 	}
 	return err
 }
