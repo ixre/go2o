@@ -41,7 +41,7 @@ func createKafkaProducer(address []string) sarama.AsyncProducer {
 		fmt.Println(e)
 		return nil
 	}
-	defer producer.AsyncClose()
+	//defer producer.AsyncClose()
 	// 判断哪个通道发送过来数据.
 	go func(p sarama.AsyncProducer) {
 		for {
@@ -68,4 +68,8 @@ func (k *KafkaProducer) Push(topic string, message string) error {
 	//使用通道发送
 	k.pro.Input() <- msg
 	return nil
+}
+
+func (k *KafkaProducer) Close() {
+	k.pro.AsyncClose()
 }

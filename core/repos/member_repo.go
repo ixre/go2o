@@ -24,6 +24,7 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool"
+	"go2o/core/msq"
 	"go2o/core/variable"
 	"log"
 	"strings"
@@ -251,6 +252,9 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 			err = m.Storage.Set(m.getMemberCk(v.Id), *v)
 			// 存储到队列
 			rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
+
+			// 推送消息
+			go msq.Push(msq.MemberUpdate, fmt.Sprintf("update|%d", v.Id))
 		}
 		return v.Id, err
 	}
@@ -266,7 +270,8 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	}
 	v.Id = id
 	m.initMember(v)
-
+	// 推送消息
+	go msq.Push(msq.MemberUpdate, fmt.Sprintf("create|%d", v.Id))
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	rc.Do("RPUSH", variable.KvMemberUpdateQueue,
