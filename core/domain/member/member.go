@@ -23,6 +23,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool/sms"
+	"go2o/core/msq"
 	"regexp"
 	"strconv"
 	"strings"
@@ -49,7 +50,7 @@ type memberImpl struct {
 }
 
 func (m *memberImpl) ContainFlag(f int) bool {
-	return m.value.Flag & f == f
+	return m.value.Flag&f == f
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRepo,
@@ -92,7 +93,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		TrustAuthState:    tr.ReviewState,
 		PremiumUser:       mv.PremiumUser,
 		PremiumExpires:    mv.PremiumExpires,
-		Flag:mv.Flag,
+		Flag:              mv.Flag,
 		State:             mv.State,
 		Integral:          acv.Integral,
 		Balance:           float64(acv.Balance),
@@ -361,10 +362,10 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 		if l.ReviewState == int(enum.ReviewPass) {
 			return member.ErrLevelUpPass
 		}
-		if l.ReviewState == int(enum.ReviewReject ){
+		if l.ReviewState == int(enum.ReviewReject) {
 			return member.ErrLevelUpReject
 		}
-		if l.ReviewState == int(enum.ReviewConfirm ){
+		if l.ReviewState == int(enum.ReviewConfirm) {
 			return member.ErrLevelUpConfirm
 		}
 		if time.Now().Unix()-l.CreateTime < 120 {
@@ -416,12 +417,17 @@ func (m *memberImpl) GetRelation() *member.Relation {
 	return m.relation
 }
 
-// 保存关系
+// 保存推荐关系
 func (m *memberImpl) SaveRelation(r *member.Relation) error {
 	m.relation = r
 	m.relation.MemberId = m.value.Id
 	m.updateInviterStr(m.relation)
-	return m.rep.SaveRelation(m.relation)
+	err := m.rep.SaveRelation(m.relation)
+	if err == nil {
+		// 推送关系更新消息
+		go msq.Push(msq.MemberRelationUpdated, strconv.Itoa(int(m.GetAggregateRootId())), "")
+	}
+	return err
 }
 
 // 更换用户名
@@ -465,6 +471,7 @@ func (m *memberImpl) Save() (int64, error) {
 // 锁定会员
 func (m *memberImpl) Lock() error {
 	m.value.State = 0
+	m.value.Flag |= member.FlagLocked
 	_, err := m.Save()
 	return err
 }
@@ -472,6 +479,9 @@ func (m *memberImpl) Lock() error {
 // 解锁会员
 func (m *memberImpl) Unlock() error {
 	m.value.State = 1
+	if m.ContainFlag(member.FlagLocked) {
+		m.value.Flag ^= member.FlagLocked
+	}
 	_, err := m.Save()
 	return err
 }
@@ -540,7 +550,7 @@ func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
 		return
 	}
 	level := m.valRepo.GetRegistry().MemberReferLayer - 1
-	arr := m.Invitation().InviterArray(r.InviterId, int32(level))
+	arr := m.Invitation().InviterArray(r.InviterId, level)
 	arr = append([]int64{r.InviterId}, arr...)
 
 	if len(arr) > 0 {

@@ -17,7 +17,9 @@ import (
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"go2o/core/msq"
 	"math"
+	"strconv"
 	"time"
 )
 
@@ -56,7 +58,11 @@ func (a *accountImpl) GetValue() *member.Account {
 // 保存
 func (a *accountImpl) Save() (int64, error) {
 	a.value.UpdateTime = time.Now().Unix()
-	return a.rep.SaveAccount(a.value)
+	n, err := a.rep.SaveAccount(a.value)
+	if err == nil {
+		msq.Push(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), "")
+	}
+	return n, err
 }
 
 // 设置优先(默认)支付方式, account 为账户类型
