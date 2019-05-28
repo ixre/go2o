@@ -148,7 +148,7 @@ func (c *wholesaleCartImpl) getSnapshotsMap(items []*cart.WsCartItem) map[int64]
 	return c.snapMap
 }
 
-func (c *wholesaleCartImpl) getBuyerLevelId() int32 {
+func (c *wholesaleCartImpl) getBuyerLevelId() int {
 	if c.value.BuyerId > 0 {
 		m := c.memberRepo.GetMember(c.value.BuyerId)
 		if m != nil {
@@ -158,7 +158,7 @@ func (c *wholesaleCartImpl) getBuyerLevelId() int32 {
 	return 0
 }
 
-func (c *wholesaleCartImpl) setItemInfo(snap *item.GoodsItem, level int32) {
+func (c *wholesaleCartImpl) setItemInfo(snap *item.GoodsItem, level int) {
 	// 设置会员价
 	if level > 0 {
 		gds := c.itemRepo.CreateItem(snap)

@@ -48,7 +48,7 @@ func (p *personFinanceService) OpenRiseService(personId int64) error {
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	if m.GetValue().Level < int32(variable.PersonFinanceMinLevelLimit) {
+	if m.GetValue().Level < int(variable.PersonFinanceMinLevelLimit) {
 		return errors.New("会员等级不够,请升级后再开通理财账户！")
 	}
 	pf := p.repo.GetPersonFinance(personId)

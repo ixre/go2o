@@ -14,7 +14,7 @@ const REDIS = 2
 
 type Producer interface {
 	// 推送消息
-	Push(topic string, message string) error
+	Push(topic string, key string, message string) error
 	// 关闭生产者
 	Close()
 }
@@ -29,8 +29,8 @@ func Configure(mqType int, address []string) error {
 }
 
 // 推送消息
-func Push(topic string, message string) error {
-	return producer.Push(topic, message)
+func Push(topic string, key string, message string) error {
+	return producer.Push(topic, key, message)
 }
 
 // 关闭生产者

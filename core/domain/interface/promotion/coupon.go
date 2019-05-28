@@ -91,7 +91,7 @@ type (
 		Discount int `db:"discount"`
 
 		//等级限制
-		MinLevel int32 `db:"min_level"`
+		MinLevel int `db:"min_level"`
 
 		//订单金额限制
 		MinFee int `db:"min_fee"`

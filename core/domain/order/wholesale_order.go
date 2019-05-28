@@ -764,7 +764,7 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	// 增加经验
 	if registry.MemberExperienceEnabled {
 		rate := conf.ExperienceRateByOrder
-		if exp := int32(amount * rate); exp > 0 {
+		if exp := int(amount * rate); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}

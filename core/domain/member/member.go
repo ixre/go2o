@@ -48,6 +48,10 @@ type memberImpl struct {
 	giftCardManager member.IGiftCardManager
 }
 
+func (m *memberImpl) ContainFlag(f int) bool {
+	return m.value.Flag & f == f
+}
+
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRepo,
 	mp mss.IMssRepo, valRepo valueobject.IValueRepo) member.IMember {
 	return &memberImpl{
@@ -88,6 +92,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		TrustAuthState:    tr.ReviewState,
 		PremiumUser:       mv.PremiumUser,
 		PremiumExpires:    mv.PremiumExpires,
+		Flag:mv.Flag,
 		State:             mv.State,
 		Integral:          acv.Integral,
 		Balance:           float64(acv.Balance),
@@ -240,7 +245,7 @@ func (m *memberImpl) GetAccount() member.IAccount {
 }
 
 // 增加经验值
-func (m *memberImpl) AddExp(exp int32) error {
+func (m *memberImpl) AddExp(exp int) error {
 	m.value.Exp += exp
 	_, err := m.Save()
 	m.checkLevelUp() //判断是否升级
@@ -249,7 +254,7 @@ func (m *memberImpl) AddExp(exp int32) error {
 
 // 升级为高级会员
 
-func (m *memberImpl) Premium(v int32, expires int64) error {
+func (m *memberImpl) Premium(v int, expires int64) error {
 	switch v {
 	case member.PremiumNormal:
 		m.value.PremiumUser = v
@@ -302,7 +307,7 @@ func (m *memberImpl) checkLevelUp() bool {
 			TargetLevel: levelId,
 			IsFree:      1,
 			PaymentId:   0,
-			ReviewState: enum.ReviewConfirm,
+			ReviewState: int(enum.ReviewConfirm),
 			UpgradeMode: member.LAutoUpgrade,
 			CreateTime:  unix,
 		}
@@ -312,7 +317,7 @@ func (m *memberImpl) checkLevelUp() bool {
 }
 
 // 更改会员等级
-func (m *memberImpl) ChangeLevel(level int32, paymentId int32, review bool) error {
+func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	lg := m.manager.LevelManager()
 	lv := lg.GetLevelById(level)
 	// 判断等级是否启用
@@ -326,7 +331,7 @@ func (m *memberImpl) ChangeLevel(level int32, paymentId int32, review bool) erro
 		OriginLevel: origin,
 		TargetLevel: level,
 		PaymentId:   paymentId,
-		ReviewState: enum.ReviewNotSet,
+		ReviewState: int(enum.ReviewNotSet),
 		UpgradeMode: member.LServiceAgentUpgrade,
 		CreateTime:  unix,
 	}
@@ -334,7 +339,7 @@ func (m *memberImpl) ChangeLevel(level int32, paymentId int32, review bool) erro
 		lvLog.IsFree = 1
 	}
 	if !review {
-		lvLog.ReviewState = enum.ReviewConfirm
+		lvLog.ReviewState = int(enum.ReviewConfirm)
 	}
 	_, err := m.rep.SaveLevelUpLog(lvLog)
 	if err == nil && !review {
@@ -350,23 +355,23 @@ func (m *memberImpl) ChangeLevel(level int32, paymentId int32, review bool) erro
 }
 
 // 审核升级请求
-func (m *memberImpl) ReviewLevelUp(id int32, pass bool) error {
-	l := m.rep.GetLevelUpLog(id)
+func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
+	l := m.rep.GetLevelUpLog(int32(id))
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
-		if l.ReviewState == enum.ReviewPass {
+		if l.ReviewState == int(enum.ReviewPass) {
 			return member.ErrLevelUpPass
 		}
-		if l.ReviewState == enum.ReviewReject {
+		if l.ReviewState == int(enum.ReviewReject ){
 			return member.ErrLevelUpReject
 		}
-		if l.ReviewState == enum.ReviewConfirm {
+		if l.ReviewState == int(enum.ReviewConfirm ){
 			return member.ErrLevelUpConfirm
 		}
 		if time.Now().Unix()-l.CreateTime < 120 {
 			return member.ErrLevelUpLaterConfirm
 		}
 		if pass {
-			l.ReviewState = enum.ReviewPass
+			l.ReviewState = int(enum.ReviewPass)
 			_, err := m.rep.SaveLevelUpLog(l)
 			if err == nil {
 				lv := m.manager.LevelManager().GetLevelById(l.TargetLevel)
@@ -377,7 +382,7 @@ func (m *memberImpl) ReviewLevelUp(id int32, pass bool) error {
 			}
 			return err
 		} else {
-			l.ReviewState = enum.ReviewReject
+			l.ReviewState = int(enum.ReviewReject)
 			_, err := m.rep.SaveLevelUpLog(l)
 			return err
 		}
@@ -390,13 +395,13 @@ func (m *memberImpl) ReviewLevelUp(id int32, pass bool) error {
 func (m *memberImpl) ConfirmLevelUp(id int32) error {
 	l := m.rep.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
-		if l.ReviewState == enum.ReviewConfirm {
+		if l.ReviewState == int(enum.ReviewConfirm) {
 			return member.ErrLevelUpConfirm
 		}
-		if l.ReviewState != enum.ReviewPass {
+		if l.ReviewState != int(enum.ReviewPass) {
 			return member.ErrLevelUpReject
 		}
-		l.ReviewState = enum.ReviewConfirm
+		l.ReviewState = int(enum.ReviewConfirm)
 		_, err := m.rep.SaveLevelUpLog(l)
 		return err
 	}

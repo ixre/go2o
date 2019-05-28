@@ -495,7 +495,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	if p.trustedInfo == nil {
 		p.trustedInfo = &member.TrustedInfo{
 			MemberId:    p.memberId,
-			ReviewState: enum.ReviewNotSet,
+			ReviewState: int(enum.ReviewNotSet),
 		}
 		//如果还没有实名信息,则新建
 		orm := tmp.Db().GetOrm()
@@ -553,7 +553,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	err = p.copyTrustedInfo(v, p.trustedInfo)
 	if err == nil {
 		p.trustedInfo.Remark = ""
-		p.trustedInfo.ReviewState = enum.ReviewAwaiting //标记为待处理
+		p.trustedInfo.ReviewState = int(enum.ReviewAwaiting) //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
 		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
 			int(p.trustedInfo.MemberId))
@@ -565,18 +565,25 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.GetTrustedInfo()
 	if pass {
-		p.trustedInfo.ReviewState = enum.ReviewPass
+		p.trustedInfo.ReviewState = int(enum.ReviewPass)
+		p.member.value.Flag |= member.FlagTrusted
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return member.ErrEmptyReviewRemark
 		}
-		p.trustedInfo.ReviewState = enum.ReviewReject
+		p.trustedInfo.ReviewState = int(enum.ReviewReject)
+		if p.member.ContainFlag(member.FlagTrusted) {
+			p.member.value.Flag ^= member.FlagTrusted
+		}
 	}
 	p.trustedInfo.Remark = remark
 	p.trustedInfo.ReviewTime = time.Now().Unix()
 	_, err := orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
 		int(p.trustedInfo.MemberId))
+	if err == nil{
+		_,err = p.member.Save()
+	}
 	return err
 }
 

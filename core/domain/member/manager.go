@@ -287,7 +287,7 @@ func (l *levelManagerImpl) GetLevelSet() []*member.Level {
 }
 
 // 获取等级
-func (l *levelManagerImpl) GetLevelById(id int32) *member.Level {
+func (l *levelManagerImpl) GetLevelById(id int) *member.Level {
 	if id == 0 {
 		return nil
 	}
@@ -315,7 +315,7 @@ func (l *levelManagerImpl) GetLevelByProgramSign(sign string) *member.Level {
 }
 
 // 获取下一个等级
-func (l *levelManagerImpl) GetNextLevelById(id int32) *member.Level {
+func (l *levelManagerImpl) GetNextLevelById(id int) *member.Level {
 	arr := l.GetLevelSet()
 	if la := len(arr); la > 0 {
 		i := sort.Search(la, func(i int) bool {
@@ -333,7 +333,7 @@ func (l *levelManagerImpl) GetNextLevelById(id int32) *member.Level {
 }
 
 // 删除等级
-func (l *levelManagerImpl) DeleteLevel(id int32) error {
+func (l *levelManagerImpl) DeleteLevel(id int) error {
 	lv := l.GetLevelById(id)
 	if lv != nil {
 		// 获取等级对应的会员数, 如果 > 0不允许删除
@@ -347,7 +347,7 @@ func (l *levelManagerImpl) DeleteLevel(id int32) error {
 }
 
 // 保存等级
-func (l *levelManagerImpl) SaveLevel(v *member.Level) (int32, error) {
+func (l *levelManagerImpl) SaveLevel(v *member.Level) (int, error) {
 	v.ProgramSignal = strings.TrimSpace(v.ProgramSignal)
 	if !l.checkProgramSignal(v.ProgramSignal, v.ID) {
 		return -1, member.ErrExistsSameProgramSignalLevel
@@ -360,7 +360,7 @@ func (l *levelManagerImpl) SaveLevel(v *member.Level) (int32, error) {
 }
 
 // 判断等级与等级可编程签名是否一致
-func (l *levelManagerImpl) checkProgramSignal(sign string, id int32) bool {
+func (l *levelManagerImpl) checkProgramSignal(sign string, id int) bool {
 	if sign != "" {
 		for _, v := range l.GetLevelSet() {
 			if v.ProgramSignal == sign {
@@ -402,7 +402,7 @@ func (m *levelManagerImpl) checkLevelExp(lv *member.Level) error {
 
 // 检查保存等级区间经验值
 func (l *levelManagerImpl) checkBetweenRequireExp(arr []*member.Level,
-	i int, la int, exp int32) error {
+	i int, la int, exp int) error {
 	// 如果小于前一个等级
 	if i > 0 && arr[i-1].RequireExp > exp {
 		return member.ErrLessThanLevelRequireExp
@@ -431,8 +431,8 @@ func (l *levelManagerImpl) GetHighestLevel() *member.Level {
 }
 
 // 获取最大的等级值
-func (l *levelManagerImpl) getMaxLevelId() int32 {
-	var k int32
+func (l *levelManagerImpl) getMaxLevelId() int {
+	var k int
 	for _, v := range l.GetLevelSet() {
 		if v.ID > k {
 			k = v.ID
@@ -442,9 +442,9 @@ func (l *levelManagerImpl) getMaxLevelId() int32 {
 }
 
 // 根据经验值获取等级
-func (l *levelManagerImpl) GetLevelIdByExp(exp int32) int32 {
+func (l *levelManagerImpl) GetLevelIdByExp(exp int) int {
 	var lv *member.Level
-	var levelVal int32
+	var levelVal int
 	arr := l.GetLevelSet()
 	for i := len(arr); i > 0; i-- {
 		lv = arr[i-1]

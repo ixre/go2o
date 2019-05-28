@@ -396,7 +396,7 @@ func (g *itemImpl) GetPromotions() []promotion.IPromotion {
 }
 
 // 获取会员价销价
-func (g *itemImpl) GetLevelPrice(level int32) (bool, float32) {
+func (g *itemImpl) GetLevelPrice(level int) (bool, float32) {
 	lvp := g.GetLevelPrices()
 	for _, v := range lvp {
 		if level == v.Level && v.Price < g.value.Price {
@@ -407,7 +407,7 @@ func (g *itemImpl) GetLevelPrice(level int32) (bool, float32) {
 }
 
 // 获取促销价
-func (g *itemImpl) GetPromotionPrice(level int32) float32 {
+func (g *itemImpl) GetPromotionPrice(level int) float32 {
 	b, price := g.GetLevelPrice(level)
 	if b {
 		return price

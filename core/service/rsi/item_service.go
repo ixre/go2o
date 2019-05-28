@@ -493,7 +493,7 @@ func (s *itemService) GetGoodsDetails(itemId int64, mLevel int32) (
 	goods := s.itemRepo.GetItem(itemId)
 	gv := goods.GetPackedValue()
 	proMap := goods.GetPromotionDescribe()
-	if b, price := goods.GetLevelPrice(mLevel); b {
+	if b, price := goods.GetLevelPrice(int(mLevel)); b {
 		gv.PromPrice = price
 		proMap["会员专享"] = fmt.Sprintf("会员优惠,仅需<b>￥%s</b>",
 			format.FormatFloat(price))
