@@ -9,6 +9,7 @@
 package core
 
 import (
+	"go2o/core/msq"
 	"log"
 	"os"
 	"os/signal"
@@ -32,4 +33,5 @@ func SignalNotify(c chan bool) {
 
 func dispose() {
 	GetRedisPool().Close()
+	msq.Close()
 }
