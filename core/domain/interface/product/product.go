@@ -13,32 +13,32 @@ import (
 )
 
 var (
-	ErrNoSuchProduct *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchProduct *domain.DomainError = domain.NewError(
 		"err_product_no_such_product", "产品不存在")
-	ErrNoSuchAttr *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchAttr *domain.DomainError = domain.NewError(
 		"err_product_no_such_attr", "产品属性不存在")
-	ErrNoBrand *domain.DomainError = domain.NewDomainError(
+	ErrNoBrand *domain.DomainError = domain.NewError(
 		"err_product_no_brand", "未设置商品品牌")
 
-	ErrVendor *domain.DomainError = domain.NewDomainError(
+	ErrVendor *domain.DomainError = domain.NewError(
 		"err_not_be_review", "商品供应商不正确")
 
-	ErrNotBeReview *domain.DomainError = domain.NewDomainError(
+	ErrNotBeReview *domain.DomainError = domain.NewError(
 		"err_not_be_review", "商品还未通过审核")
 
-	ErrItemNameLength *domain.DomainError = domain.NewDomainError(
+	ErrItemNameLength *domain.DomainError = domain.NewError(
 		"err_item_name_length", "商品标题至少10个字")
 
-	ErrItemIncorrect *domain.DomainError = domain.NewDomainError(
+	ErrItemIncorrect *domain.DomainError = domain.NewError(
 		"err_item_incorrect", "商品已被违规下架")
 
-	ErrNotUploadImage *domain.DomainError = domain.NewDomainError(
+	ErrNotUploadImage *domain.DomainError = domain.NewError(
 		"err_goods_not_upload_image", "请上传商品图片")
 
-	ErrDescribeLength *domain.DomainError = domain.NewDomainError(
+	ErrDescribeLength *domain.DomainError = domain.NewError(
 		"err_item_describe_length", "商品描述至少20个字符")
 
-	ErrNilRejectRemark *domain.DomainError = domain.NewDomainError(
+	ErrNilRejectRemark *domain.DomainError = domain.NewError(
 		"err_item_nil_reject_remark", "原因不能为空")
 )
 

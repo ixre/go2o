@@ -29,7 +29,7 @@ type DomainError struct {
 	DefaultError string
 }
 
-func NewDomainError(key string, msg string) *DomainError {
+func NewError(key string, msg string) *DomainError {
 	return &DomainError{
 		Key:          key,
 		DefaultError: msg,

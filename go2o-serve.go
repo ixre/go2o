@@ -99,6 +99,6 @@ func main() {
 		go daemon.Run(newApp)
 	}
 	//go serve.Run(newApp, fmt.Sprintf(":%d", httpPort)) //运行HTTP
-	go restapi.Run(newApp, restPort)                   // 运行REST API
+	go restapi.Run(newApp, restPort) // 运行REST API
 	<-ch
 }

@@ -23,9 +23,9 @@ const (
 )
 
 var (
-	ErrNotSetExpressTemplate *domain.DomainError = domain.NewDomainError(
+	ErrNotSetExpressTemplate *domain.DomainError = domain.NewError(
 		"err_not_set_express_tpl", "请设置运费模板")
-	ErrMissingSpInfo *domain.DomainError = domain.NewDomainError(
+	ErrMissingSpInfo *domain.DomainError = domain.NewError(
 		"err_shipment_missing_spinfo", "物流信息不完整、无法进行发货!",
 	)
 )

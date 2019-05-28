@@ -458,17 +458,21 @@ func (s *memberService) GetRelation(memberId int64) *member.Relation {
 }
 
 // 锁定/解锁会员
-func (s *memberService) LockMember(memberId int64) (bool, error) {
+func (s *memberService) ToggleLock(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return false, member.ErrNoSuchMember
+		return s.error(member.ErrNoSuchMember), nil
 	}
-
 	state := m.GetValue().State
 	if state == 1 {
-		return false, m.Lock()
+		err = m.Lock()
+	} else {
+		err = m.Unlock()
 	}
-	return true, m.Unlock()
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // 判断资料是否完善

@@ -35,6 +35,8 @@ service MemberService{
     SMember GetMemberByUser(1:string user)
     // 根据会员编号获取会员资料
     SProfile GetProfile(1:i64 id)
+    /** 锁定/解锁会员 */
+    ttype.Result ToggleLock(1:i64 memberId)
     // 获取会员汇总信息
     SComplexMember Complex(1:i64 memberId)
     // 检查资料是否完成

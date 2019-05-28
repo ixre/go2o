@@ -21,7 +21,7 @@ import (
 )
 
 // 服务
-func NewServe(debug bool,version string) http.Handler {
+func NewServe(debug bool, version string) http.Handler {
 	// 初始化变量
 	registry := map[string]interface{}{}
 	// 创建上下文工厂
@@ -32,7 +32,6 @@ func NewServe(debug bool,version string) http.Handler {
 	hs.Handle("/api", serve)
 	return hs
 }
-
 
 // 服务
 func NewService(factory api.ContextFactory, ver string, debug bool) *api.ServeMux {
@@ -111,8 +110,8 @@ func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool) {
 
 // 交换接口用户凭据
 func swapApiKeyFunc(ctx api.Context, key string) (userId int, userSecret string) {
-	if key == "go2o"{
-		return 1,"131409"
+	if key == "go2o" {
+		return 1, "131409"
 	}
 	//log.Println(fmt.Sprintf("[ UAMS][ API]: 接口用户[%s]交换凭据失败： %s", key, r.ErrMsg))
 	return 0, ""

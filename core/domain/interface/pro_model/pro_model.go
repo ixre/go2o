@@ -3,11 +3,11 @@ package promodel
 import "go2o/core/infrastructure/domain"
 
 var (
-	ErrEmptyAttrArray *domain.DomainError = domain.NewDomainError(
+	ErrEmptyAttrArray *domain.DomainError = domain.NewError(
 		"err_empty_attr_array", "请至少包含一个属性")
-	ErrEmptySpecArray *domain.DomainError = domain.NewDomainError(
+	ErrEmptySpecArray *domain.DomainError = domain.NewError(
 		"err_empty_spec_array", "请至少包含一个规格")
-	ErrEmptyBrandArray *domain.DomainError = domain.NewDomainError(
+	ErrEmptyBrandArray *domain.DomainError = domain.NewError(
 		"err_empty_brand_array", "请至少包含一个品牌")
 )
 

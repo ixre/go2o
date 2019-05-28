@@ -75,8 +75,8 @@ func Init(a *AppImpl, debug, trace bool) bool {
 		variable.ConfPath = confPath
 	}
 	// 初始化producer
-	kafkaAddress := strings.Split(a._config.GetString("kafka_address"),",")
-	msq.Configure(msq.KAFKA,kafkaAddress)
+	kafkaAddress := strings.Split(a._config.GetString("kafka_address"), ",")
+	msq.Configure(msq.KAFKA, kafkaAddress)
 	a.Loaded = true
 	return true
 }

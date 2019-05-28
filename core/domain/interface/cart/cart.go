@@ -21,22 +21,22 @@ import (
 )
 
 var (
-	ErrNoSuchCart *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchCart *domain.DomainError = domain.NewError(
 		"empty_shopping_no_such_cart", "购物车无法使用")
 
-	ErrKindNotMatch *domain.DomainError = domain.NewDomainError(
+	ErrKindNotMatch *domain.DomainError = domain.NewError(
 		"err_cart_kind_not_match", "购物车类型不匹配")
 
-	ErrEmptyShoppingCart *domain.DomainError = domain.NewDomainError(
+	ErrEmptyShoppingCart *domain.DomainError = domain.NewError(
 		"empty_shopping_cart", "购物车没有商品")
 
-	ErrNoChecked *domain.DomainError = domain.NewDomainError(
+	ErrNoChecked *domain.DomainError = domain.NewError(
 		"empty_shopping_cart_no_checked", "购物车没有结算的商品")
 
-	ErrCartNoBuyer *domain.DomainError = domain.NewDomainError(
+	ErrCartNoBuyer *domain.DomainError = domain.NewError(
 		"err_cart_no_buyer", "购物车未绑定")
 
-	ErrItemNoSku *domain.DomainError = domain.NewDomainError(
+	ErrItemNoSku *domain.DomainError = domain.NewError(
 		"err_cart_item_no_sku", "请选择商品规格")
 )
 
