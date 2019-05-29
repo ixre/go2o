@@ -520,8 +520,8 @@ func (m *memberImpl) memberInit() {
 	conf := m.valRepo.GetRegistry()
 	// 注册后赠送积分
 	if conf.PresentIntegralNumOfRegister > 0 {
-		m.GetAccount().AddIntegral(member.TypeIntegralPresent, "",
-			conf.PresentIntegralNumOfRegister, "新会员注册赠送积分")
+		m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
+			"", float32(conf.PresentIntegralNumOfRegister), 0)
 	}
 }
 

@@ -204,7 +204,7 @@ type (
 		// 是否启用
 		State int
 		// 积分
-		Integral int64
+		Integral int
 		// 账户余额
 		Balance float64
 		// 钱包余额

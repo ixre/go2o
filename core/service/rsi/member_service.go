@@ -924,16 +924,6 @@ func (s *memberService) GetBalanceInfoById(memberId int64, infoId int32) *member
 	return m.GetAccount().GetBalanceInfo(infoId)
 }
 
-// 增加积分
-func (s *memberService) AddIntegral(memberId int64, iType int,
-	orderNo string, value int64, remark string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().AddIntegral(iType, orderNo, value, remark)
-}
-
 // 充值,account为账户类型,kind为业务类型
 func (s *memberService) ChargeAccount(ctx context.Context, memberId int64, account int32,
 	kind int32, title, outerNo string, amount float64, relateUser int64) (*ttype.Result_, error) {
@@ -943,33 +933,28 @@ func (s *memberService) ChargeAccount(ctx context.Context, memberId int64, accou
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		if account == member.AccountIntegral {
-			err = acc.AddIntegral(int(kind), outerNo, int64(amount), title)
-		} else {
-			err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
-		}
+		err = acc.Charge(account, int(kind), title, outerNo, float32(amount), relateUser)
 	}
 	return s.result(err), nil
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
-func (s *memberService) FreezesIntegral(memberId int64, value int64,
-	new bool, remark string) error {
+func (s *memberService) FreezesIntegral(memberId int64, title string, value int64,
+	new bool) error {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().FreezesIntegral(value, new, remark)
+	return m.GetAccount().FreezesIntegral(title, int(value), new, 0)
 }
 
 // 解冻积分
-func (s *memberService) UnfreezesIntegral(memberId int64,
-	value int64, remark string) error {
+func (s *memberService) UnfreezesIntegral(memberId int64, title string, value int64) error {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().UnfreezesIntegral(value, remark)
+	return m.GetAccount().UnfreezesIntegral(title, int(value))
 }
 
 // 抵扣账户
@@ -991,16 +976,16 @@ func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, acc
 }
 
 // 调整账户
-func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, account int32, title string,
-	amount float64, relateUser int64) (r *ttype.Result_, err error) {
+func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, account int32,
+	amount float64, relateUser int64, remark string) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {
-		acc := m.GetAccount()
-		switch int(account) {
-		case member.AccountBalance:
-			err = acc.Adjust(member.AccountBalance, "[KF]客服调整", float32(amount), title, relateUser)
-		case member.AccountWallet:
+		tit := "[KF]系统冲正"
+		if amount > 0 {
+			tit = "[KF]系统充值"
 		}
+		acc := m.GetAccount()
+		err = acc.Adjust(int(account), tit, float32(amount), remark, relateUser)
 	}
 	return s.result(err), nil
 }
@@ -1053,7 +1038,7 @@ func (s *memberService) SubmitTakeOutRequest(memberId int64, takeKind int32,
 
 	acc := m.GetAccount()
 	var title string
-	switch takeKind {
+	switch int(takeKind) {
 	case member.KindWalletTakeOutToBankCard:
 		title = "提现到银行卡"
 	case member.KindWalletTakeOutToBalance:
@@ -1061,7 +1046,7 @@ func (s *memberService) SubmitTakeOutRequest(memberId int64, takeKind int32,
 	case member.KindWalletTakeOutToThirdPart:
 		title = "充值到第三方账户"
 	}
-	return acc.RequestTakeOut(takeKind, title, applyAmount, commission)
+	return acc.RequestTakeOut(int(takeKind), title, applyAmount, commission)
 }
 
 // 获取最近的提现
@@ -1184,7 +1169,7 @@ func (s *memberService) TransferBalance(memberId int64, kind int32, amount float
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferBalance(kind, amount, tradeNo, toTitle, fromTitle)
+	return m.GetAccount().TransferBalance(int(kind), amount, tradeNo, toTitle, fromTitle)
 }
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
@@ -1195,7 +1180,7 @@ func (s *memberService) TransferWallet(memberId int64, kind int32, amount float3
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferWallet(kind, amount, commission,
+	return m.GetAccount().TransferWallet(int(kind), amount, commission,
 		tradeNo, toTitle, fromTitle)
 }
 
@@ -1207,7 +1192,7 @@ func (s *memberService) TransferFlow(memberId int64, kind int32, amount float32,
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferFlow(kind, amount, commission, tradeNo,
+	return m.GetAccount().TransferFlow(int(kind), amount, commission, tradeNo,
 		toTitle, fromTitle)
 }
 
@@ -1219,7 +1204,7 @@ func (s *memberService) TransferFlowTo(memberId int64, toMemberId int64, kind in
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferFlowTo(toMemberId, kind, amount,
+	return m.GetAccount().TransferFlowTo(toMemberId, int(kind), amount,
 		commission, tradeNo, toTitle, fromTitle)
 }
 

@@ -776,8 +776,8 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	integral := int64(amount*conf.IntegralRateByConsumption) + conf.IntegralBackExtra
 	// 赠送积分
 	if integral > 0 {
-		err = m.GetAccount().AddIntegral(member.TypeIntegralShoppingPresent,
-			o.value.OrderNo, integral, "")
+		err = m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralShoppingPresent,
+			"购物消费赠送积分", o.OrderNo(), float32(integral), 0)
 		if err != nil {
 			return err
 		}
