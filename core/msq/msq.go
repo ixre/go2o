@@ -3,6 +3,7 @@ package msq
 import (
 	"errors"
 	"fmt"
+	"time"
 )
 
 var (
@@ -31,6 +32,14 @@ func Configure(mqType int, address []string) error {
 // 推送消息
 func Push(topic string, key string, message string) error {
 	return producer.Push(topic, key, message)
+}
+
+// 延迟推送消息
+func PushDelay(topic string, key string, message string, delay int) error {
+	if delay > 0 {
+		time.Sleep(time.Millisecond * time.Duration(delay))
+	}
+	return Push(topic, key, message)
 }
 
 // 关闭生产者
