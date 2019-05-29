@@ -9,8 +9,9 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/ixre/goex v1.1.0
-	github.com/ixre/gof v1.2.0
+	github.com/ixre/goex v1.5.1
+	github.com/ixre/gof v1.3.2
+	github.com/ixre/tto v0.0.0-00010101000000-000000000000
 	github.com/jsix/alidayu v0.0.0-20160128071321-7eadea36c79c
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
@@ -21,5 +22,7 @@ require (
 )
 
 replace github.com/ixre/gof => ../github.com/ixre/gof
+
+replace github.com/ixre/tto => ../github.com/ixre/tto
 
 replace github.com/ixre/goex => ../github.com/ixre/goex

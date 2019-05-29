@@ -145,7 +145,7 @@ var (
 		"err_account_take_out_not_trust", "必须通过实名认证后才可提现")
 
 	ErrIncorrectQuota = domain.NewError(
-		"err_member_incorrent_quote", "数量错误")
+		"err_member_incorrent_quote", "金额/数量错误")
 
 	ErrOutOfBalance = domain.NewError(
 		"err_out_of_balance", "超出金额")

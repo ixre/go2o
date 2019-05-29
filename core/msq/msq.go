@@ -31,11 +31,17 @@ func Configure(mqType int, address []string) error {
 
 // 推送消息
 func Push(topic string, key string, message string) error {
-	return producer.Push(topic, key, message)
+	if producer != nil {
+		return producer.Push(topic, key, message)
+	}
+	return nil
 }
 
 // 延迟推送消息
 func PushDelay(topic string, key string, message string, delay int) error {
+	if producer == nil {
+		return nil
+	}
 	if delay > 0 {
 		time.Sleep(time.Millisecond * time.Duration(delay))
 	}
@@ -44,5 +50,7 @@ func PushDelay(topic string, key string, message string, delay int) error {
 
 // 关闭生产者
 func Close() {
-	producer.Close()
+	if producer != nil {
+		producer.Close()
+	}
 }
