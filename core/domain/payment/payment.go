@@ -393,7 +393,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	//log.Println("----", p.value.BuyerId, acc.Value().Integral, "discount:", integral)
 	//log.Printf("-----%#v\n", acc.Value())
 	err = acc.IntegralDiscount(member.TypeIntegralPaymentDiscount,
-		p.Get().TradeNo, int64(integral), "")
+		"积分支付抵扣", p.Get().TradeNo, integral)
 	// 抵扣积分
 	if err == nil {
 		p.value.DeductAmount += amount

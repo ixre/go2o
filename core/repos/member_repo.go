@@ -24,8 +24,10 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool"
+	"go2o/core/msq"
 	"go2o/core/variable"
 	"log"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -139,14 +141,14 @@ func (m *MemberRepoImpl) GetMemberLevels_New() []*member.Level {
 }
 
 // 获取等级对应的会员数
-func (m *MemberRepoImpl) GetMemberNumByLevel_New(id int32) int {
+func (m *MemberRepoImpl) GetMemberNumByLevel_New(id int) int {
 	total := 0
 	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE level= $1", &total, id)
 	return total
 }
 
 // 删除会员等级
-func (m *MemberRepoImpl) DeleteMemberLevel_New(id int32) error {
+func (m *MemberRepoImpl) DeleteMemberLevel_New(id int) error {
 	err := m.Connector.GetOrm().DeleteByPk(&member.Level{}, id)
 	if err == nil {
 		globLevels = nil
@@ -156,13 +158,13 @@ func (m *MemberRepoImpl) DeleteMemberLevel_New(id int32) error {
 }
 
 // 保存会员等级
-func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int32, error) {
+func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 	id, err := orm.I32(orm.Save(m.GetOrm(), v, int(v.ID)))
 	if err == nil {
 		globLevels = nil
 		PrefixDel(m.Storage, "go2o:repo:level:*")
 	}
-	return id, err
+	return int(id), err
 }
 
 // 根据用户名获取会员
@@ -251,6 +253,9 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 			err = m.Storage.Set(m.getMemberCk(v.Id), *v)
 			// 存储到队列
 			rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
+
+			// 推送消息
+			go msq.Push(msq.MemberUpdated, strconv.Itoa(int(v.Id)), "update")
 		}
 		return v.Id, err
 	}
@@ -266,7 +271,8 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	}
 	v.Id = id
 	m.initMember(v)
-
+	// 推送消息
+	go msq.Push(msq.MemberUpdated, strconv.Itoa(int(v.Id)), "create")
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	rc.Do("RPUSH", variable.KvMemberUpdateQueue,

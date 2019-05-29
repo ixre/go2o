@@ -17,7 +17,9 @@ import (
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"go2o/core/msq"
 	"math"
+	"strconv"
 	"time"
 )
 
@@ -56,7 +58,11 @@ func (a *accountImpl) GetValue() *member.Account {
 // 保存
 func (a *accountImpl) Save() (int64, error) {
 	a.value.UpdateTime = time.Now().Unix()
-	return a.rep.SaveAccount(a.value)
+	n, err := a.rep.SaveAccount(a.value)
+	if err == nil {
+		go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), "", 500)
+	}
+	return n, err
 }
 
 // 设置优先(默认)支付方式, account 为账户类型
@@ -104,9 +110,14 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
 }
 
 // 充值
-func (a *accountImpl) Charge(account int32, kind int32, title, outerNo string,
+func (a *accountImpl) Charge(account int32, kind int, title, outerNo string,
 	amount float32, relateUser int64) error {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
+		return member.ErrIncorrectQuota
+	}
 	switch account {
+	case member.AccountIntegral:
+		return a.chargeIntegral(kind, title, outerNo, int(amount), relateUser)
 	case member.AccountBalance:
 		return a.chargeBalance(kind, title, outerNo, amount, relateUser)
 	case member.AccountWallet:
@@ -130,7 +141,10 @@ func (a *accountImpl) Adjust(account int, title string, amount float32, remark s
 	switch account {
 	case member.AccountBalance:
 		return a.adjustBalanceAccount(title, amount, remark, relateUser)
-		//todo: 支持其他账户的调整
+	case member.AccountWallet:
+		return a.adjustWalletAccount(title, amount, remark, relateUser)
+	case member.AccountIntegral:
+		return a.adjustIntegralAccount(title, amount, remark, relateUser)
 	}
 	panic("not support other account adjust")
 }
@@ -146,7 +160,53 @@ func (a *accountImpl) adjustBalanceAccount(title string, amount float32, remark 
 		Amount:       amount,
 		Remark:       remark,
 		RelateUser:   relateUser,
-		State:        1,
+		ReviewState:  enum.ReviewPass,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.rep.SaveBalanceLog(v)
+	if err == nil {
+		a.value.Balance += amount
+		_, err = a.Save()
+	}
+	return err
+}
+
+// 调整钱包余额
+func (a *accountImpl) adjustWalletAccount(title string, amount float32, remark string, relateUser int64) error {
+	unix := time.Now().Unix()
+	v := &member.MWalletLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindAdjust,
+		Title:        title,
+		OuterNo:      "",
+		Amount:       amount,
+		Remark:       remark,
+		RelateUser:   relateUser,
+		ReviewState:  enum.ReviewPass,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.rep.SavePresentLog(v)
+	if err == nil {
+		a.value.WalletBalance += amount
+		_, err = a.Save()
+	}
+	return err
+}
+
+// 调整积分余额
+func (a *accountImpl) adjustIntegralAccount(title string, amount float32, remark string, relateUser int64) error {
+	unix := time.Now().Unix()
+	v := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindAdjust,
+		Title:        title,
+		OuterNo:      "",
+		Amount:       amount,
+		Remark:       remark,
+		RelateUser:   relateUser,
+		ReviewState:  enum.ReviewPass,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -159,7 +219,7 @@ func (a *accountImpl) adjustBalanceAccount(title string, amount float32, remark 
 }
 
 // 退款
-func (a *accountImpl) Refund(account int, kind int32, title string,
+func (a *accountImpl) Refund(account int, kind int, title string,
 	outerNo string, amount float32, relateUser int64) error {
 	switch account {
 	case member.AccountBalance:
@@ -178,7 +238,7 @@ func (a *accountImpl) Refund(account int, kind int32, title string,
 }
 
 // 充值余额
-func (a *accountImpl) chargeBalance(kind int32, title string, outerNo string,
+func (a *accountImpl) chargeBalance(kind int, title string, outerNo string,
 	amount float32, relateUser int64) error {
 	switch kind {
 	case member.ChargeByUser:
@@ -201,7 +261,7 @@ func (a *accountImpl) chargeBalance(kind int32, title string, outerNo string,
 }
 
 // 充值,客服充值时,需提供操作人(relateUser)
-func (a *accountImpl) chargeBalanceNoLimit(kind int32, title string, outerNo string,
+func (a *accountImpl) chargeBalanceNoLimit(kind int, title string, outerNo string,
 	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -216,7 +276,7 @@ func (a *accountImpl) chargeBalanceNoLimit(kind int32, title string, outerNo str
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       amount,
-		State:        1,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   relateUser,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -229,7 +289,7 @@ func (a *accountImpl) chargeBalanceNoLimit(kind int32, title string, outerNo str
 	return err
 }
 
-func (a *accountImpl) chargeWallet(kind int32, title string,
+func (a *accountImpl) chargeWallet(kind int, title string,
 	outerNo string, amount float32, relateUser int64) error {
 	switch kind {
 	case member.ChargeBySystem:
@@ -247,7 +307,7 @@ func (a *accountImpl) chargeWallet(kind int32, title string,
 }
 
 // 赠送金额(指定业务类型)
-func (a *accountImpl) chargePresentNoLimit(kind int32, title string,
+func (a *accountImpl) chargePresentNoLimit(kind int, title string,
 	outerNo string, amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -271,7 +331,7 @@ func (a *accountImpl) chargePresentNoLimit(kind int32, title string,
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       amount,
-		State:        1,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   relateUser,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -319,7 +379,7 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       -amount,
-		State:        1,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   relateUser,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -352,7 +412,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 		Amount:       -amount,
 		OuterNo:      outerNo,
 		RelateUser:   relateUser,
-		State:        member.StatusOK,
+		ReviewState:  enum.ReviewPass,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -385,7 +445,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 		RelateUser:   relateUser,
 		Amount:       amount,
 		OuterNo:      outerNo,
-		State:        member.StatusOK,
+		ReviewState:  enum.ReviewPass,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -424,7 +484,7 @@ func (a *accountImpl) DiscountWallet(title string, outerNo string, amount float3
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       -amount,
-		State:        1,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   relateUser,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -457,7 +517,7 @@ func (a *accountImpl) FreezeWallet(title string, outerNo string,
 		RelateUser:   relateUser,
 		Amount:       -amount,
 		OuterNo:      outerNo,
-		State:        member.StatusOK,
+		ReviewState:  enum.ReviewPass,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -490,7 +550,7 @@ func (a *accountImpl) UnfreezeWallet(title string, outerNo string,
 		RelateUser:   relateUser,
 		Amount:       amount,
 		OuterNo:      outerNo,
-		State:        member.StatusOK,
+		ReviewState:  enum.ReviewPass,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -548,7 +608,7 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 		Title:        remark,
 		OuterNo:      tradeNo,
 		Amount:       -amount,
-		State:        1,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   member.DefaultRelateUser,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -561,11 +621,11 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 	return err
 }
 
-//　增加积分
-func (a *accountImpl) AddIntegral(logType int, outerNo string,
-	value int64, remark string) error {
-	if value <= 0 || math.IsNaN(float64(value)) {
-		return member.ErrIncorrectQuota
+//　充值积分
+func (a *accountImpl) chargeIntegral(logType int, title string, outerNo string,
+	value int, relateUser int64) error {
+	if len(title) == 0 {
+		return member.ErrNoSuchLogTitleOrRemark
 	}
 	if logType <= 0 {
 		logType = member.TypeIntegralPresent
@@ -573,13 +633,19 @@ func (a *accountImpl) AddIntegral(logType int, outerNo string,
 	if logType == member.TypeIntegralShoppingPresent && outerNo == "" {
 		return member.ErrMissingOuterNo
 	}
+	unix := time.Now().Unix()
 	l := &member.IntegralLog{
-		MemberId:   a.value.MemberId,
-		Type:       logType,
-		OuterNo:    outerNo,
-		Value:      value,
-		Remark:     remark,
-		CreateTime: time.Now().Unix(),
+		Id:          0,
+		MemberId:    int(a.value.MemberId),
+		Kind:        logType,
+		Title:       title,
+		OuterNo:     outerNo,
+		Value:       value,
+		Remark:      "",
+		RelUser:     int(relateUser),
+		ReviewState: int16(enum.ReviewPass),
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	err := a.rep.SaveIntegralLog(l)
 	if err == nil {
@@ -590,8 +656,8 @@ func (a *accountImpl) AddIntegral(logType int, outerNo string,
 }
 
 // 积分抵扣
-func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
-	value int64, remark string) error {
+func (a *accountImpl) IntegralDiscount(logType int, title string, outerNo string,
+	value int) error {
 	if value <= 0 {
 		return member.ErrIncorrectQuota
 	}
@@ -606,14 +672,19 @@ func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
 	if logType <= 0 {
 		logType = member.TypeIntegralDiscount
 	}
-
+	unix := time.Now().Unix()
 	l := &member.IntegralLog{
-		MemberId:   a.value.MemberId,
-		Type:       logType,
-		Value:      -value,
-		OuterNo:    outerNo,
-		Remark:     remark,
-		CreateTime: time.Now().Unix(),
+		Id:          0,
+		MemberId:    int(a.value.MemberId),
+		Kind:        logType,
+		Title:       title,
+		OuterNo:     outerNo,
+		Value:       -value,
+		Remark:      "",
+		RelUser:     0,
+		ReviewState: int16(enum.ReviewPass),
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	err := a.rep.SaveIntegralLog(l)
 	if err == nil {
@@ -624,7 +695,7 @@ func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
-func (a *accountImpl) FreezesIntegral(value int64, new bool, remark string) error {
+func (a *accountImpl) FreezesIntegral(title string, value int, new bool, relateUser int64) error {
 	if !new {
 		if a.value.Integral < value {
 			return member.ErrNoSuchIntegral
@@ -634,12 +705,19 @@ func (a *accountImpl) FreezesIntegral(value int64, new bool, remark string) erro
 	a.value.FreezeIntegral += value
 	_, err := a.Save()
 	if err == nil {
+		unix := time.Now().Unix()
 		l := &member.IntegralLog{
-			MemberId:   a.value.MemberId,
-			Type:       member.TypeIntegralFreeze,
-			Value:      -value,
-			Remark:     remark,
-			CreateTime: time.Now().Unix(),
+			Id:          0,
+			MemberId:    int(a.value.MemberId),
+			Kind:        member.TypeIntegralFreeze,
+			Title:       title,
+			OuterNo:     "",
+			Value:       -value,
+			Remark:      "",
+			RelUser:     int(relateUser),
+			ReviewState: int16(enum.ReviewPass),
+			CreateTime:  unix,
+			UpdateTime:  unix,
 		}
 		err = a.rep.SaveIntegralLog(l)
 	}
@@ -647,7 +725,7 @@ func (a *accountImpl) FreezesIntegral(value int64, new bool, remark string) erro
 }
 
 // 解冻积分
-func (a *accountImpl) UnfreezesIntegral(value int64, remark string) error {
+func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 	if a.value.FreezeIntegral < value {
 		return member.ErrNoSuchIntegral
 	}
@@ -655,12 +733,19 @@ func (a *accountImpl) UnfreezesIntegral(value int64, remark string) error {
 	a.value.Integral += value
 	_, err := a.Save()
 	if err == nil {
-		l := &member.IntegralLog{
-			MemberId:   a.value.MemberId,
-			Type:       member.TypeIntegralUnfreeze,
-			Value:      value,
-			Remark:     remark,
-			CreateTime: time.Now().Unix(),
+		unix := time.Now().Unix()
+		var l = &member.IntegralLog{
+			Id:          0,
+			MemberId:    int(a.value.MemberId),
+			Kind:        member.TypeIntegralUnfreeze,
+			Title:       title,
+			OuterNo:     "",
+			Value:       value,
+			Remark:      "",
+			RelUser:     0,
+			ReviewState: int16(enum.ReviewPass),
+			CreateTime:  unix,
+			UpdateTime:  unix,
 		}
 		err = a.rep.SaveIntegralLog(l)
 	}
@@ -696,7 +781,7 @@ func (a *accountImpl) FinishBackBalance(id int32, tradeNo string) error {
 	}
 	if v.Kind == member.KindBalanceRefund {
 		v.TradeNo = tradeNo
-		v.State = 1
+		v.State = int(enum.ReviewPass)
 		_, err := a.SaveBalanceInfo(v)
 		return err
 	}
@@ -704,7 +789,7 @@ func (a *accountImpl) FinishBackBalance(id int32, tradeNo string) error {
 }
 
 // 请求提现,返回info_id,交易号及错误
-func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
+func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 	amount float32, commission float32) (int32, string, error) {
 	if takeKind != member.KindWalletTakeOutToBalance &&
 		takeKind != member.KindWalletTakeOutToBankCard &&
@@ -723,7 +808,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 	// 检测是否实名
 	if conf.TakeOutMustTrust {
 		trust := a.member.Profile().GetTrustedInfo()
-		if trust.ReviewState != enum.ReviewPass {
+		if trust.ReviewState != int(enum.ReviewPass) {
 			return 0, "", member.ErrTakeOutNotTrust
 		}
 	}
@@ -770,7 +855,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 		OuterNo:      tradeNo,
 		Amount:       finalAmount,
 		CsnFee:       csnAmount,
-		State:        enum.ReviewAwaiting,
+		ReviewState:  enum.ReviewAwaiting,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       "",
 		CreateTime:   unix,
@@ -780,7 +865,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 	// 提现至余额
 	if takeKind == member.KindWalletTakeOutToBalance {
 		a.value.Balance += amount
-		v.State = enum.ReviewPass
+		v.ReviewState = enum.ReviewPass
 	}
 	a.value.WalletBalance -= amount
 	_, err := a.Save()
@@ -798,14 +883,14 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
 	}
-	if v.State != enum.ReviewAwaiting {
+	if v.ReviewState != enum.ReviewAwaiting {
 		return member.ErrTakeOutState
 	}
 	if pass {
-		v.State = enum.ReviewPass
+		v.ReviewState = enum.ReviewPass
 	} else {
 		v.Remark += "失败:" + remark
-		v.State = enum.ReviewReject
+		v.ReviewState = enum.ReviewReject
 		err := a.Refund(member.AccountWallet,
 			member.KindWalletTakeOutRefund,
 			"提现退回", v.OuterNo, v.CsnFee+(-v.Amount),
@@ -852,11 +937,11 @@ func (a *accountImpl) FinishTakeOut(id int32, tradeNo string) error {
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
 	}
-	if v.State != enum.ReviewPass {
+	if v.ReviewState != enum.ReviewPass {
 		return member.ErrTakeOutState
 	}
 	v.OuterNo = tradeNo
-	v.State = enum.ReviewConfirm
+	v.ReviewState = enum.ReviewConfirm
 	v.Remark = "转款凭证:" + tradeNo
 	_, err := a.rep.SavePresentLog(v)
 	return err
@@ -900,7 +985,7 @@ func (a *accountImpl) balanceFreezeExpired(amount float32, remark string) error 
 		OuterNo:      "",
 		Amount:       amount,
 		CsnFee:       0,
-		State:        enum.ReviewPass,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -928,7 +1013,7 @@ func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error 
 		OuterNo:      "",
 		Amount:       amount,
 		CsnFee:       0,
-		State:        enum.ReviewPass,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -944,7 +1029,7 @@ func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error 
 // 获取会员名称
 func (a *accountImpl) getMemberName(m member.IMember) string {
 	if tr := m.Profile().GetTrustedInfo(); tr.RealName != "" &&
-		tr.ReviewState == enum.ReviewPass {
+		tr.ReviewState == int(enum.ReviewPass) {
 		return tr.RealName
 	} else {
 		return m.GetValue().Usr
@@ -997,7 +1082,7 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 		OuterNo:      tradeNo,
 		Amount:       -amount,
 		CsnFee:       csnFee,
-		State:        enum.ReviewPass,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1037,7 +1122,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 		OuterNo:      tradeNo,
 		Amount:       -amount,
 		CsnFee:       csnFee,
-		State:        enum.ReviewPass,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1083,7 +1168,7 @@ func (a *accountImpl) receivePresentTransfer(fromMember int64, tradeNo string,
 		OuterNo:      tradeNo,
 		Amount:       amount,
 		CsnFee:       0,
-		State:        enum.ReviewPass,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1109,7 +1194,7 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int64, tradeNo string,
 		OuterNo:      tradeNo,
 		Amount:       amount,
 		CsnFee:       0,
-		State:        enum.ReviewPass,
+		ReviewState:  enum.ReviewPass,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1125,7 +1210,7 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int64, tradeNo string,
 }
 
 // 转账余额到其他账户
-func (a *accountImpl) TransferBalance(kind int32, amount float32,
+func (a *accountImpl) TransferBalance(kind int, amount float32,
 	tradeNo string, toTitle, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
@@ -1158,7 +1243,7 @@ func (a *accountImpl) TransferBalance(kind int32, amount float32,
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (a *accountImpl) TransferWallet(kind int32, amount float32, commission float32,
+func (a *accountImpl) TransferWallet(kind int, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
@@ -1191,7 +1276,7 @@ func (a *accountImpl) TransferWallet(kind int32, amount float32, commission floa
 
 // 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (a *accountImpl) TransferFlow(kind int32, amount float32, commission float32,
+func (a *accountImpl) TransferFlow(kind int, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 
@@ -1232,7 +1317,7 @@ func (a *accountImpl) TransferFlow(kind int32, amount float32, commission float3
 }
 
 // 将活动金转给其他人
-func (a *accountImpl) TransferFlowTo(memberId int64, kind int32,
+func (a *accountImpl) TransferFlowTo(memberId int64, kind int,
 	amount float32, commission float32, tradeNo string,
 	toTitle string, fromTitle string) error {
 

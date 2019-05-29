@@ -21,6 +21,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/auto_gen/rpc/shipment_service"
 	"go2o/core/service/auto_gen/rpc/shop_service"
+	"go2o/core/service/auto_gen/rpc/status_service"
 	"go2o/core/service/auto_gen/rpc/wallet_service"
 	"go2o/core/service/rsi"
 )
@@ -44,6 +45,7 @@ func ListenAndServe(addr string, secure bool) error {
 	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
 	if err == nil {
 		processor := thrift.NewTMultiplexedProcessor()
+		processor.RegisterProcessor("status", status_service.NewStatusServiceProcessor(rsi.StatusService))
 		processor.RegisterProcessor("merchant", mch_service.NewMerchantServiceProcessor(rsi.MerchantService))
 		processor.RegisterProcessor("member", member_service.NewMemberServiceProcessor(rsi.MemberService))
 		processor.RegisterProcessor("foundation", foundation_service.NewFoundationServiceProcessor(rsi.FoundationService))

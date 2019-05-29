@@ -764,7 +764,7 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	// 增加经验
 	if registry.MemberExperienceEnabled {
 		rate := conf.ExperienceRateByOrder
-		if exp := int32(amount * rate); exp > 0 {
+		if exp := int(amount * rate); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}
@@ -776,8 +776,8 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	integral := int64(amount*conf.IntegralRateByConsumption) + conf.IntegralBackExtra
 	// 赠送积分
 	if integral > 0 {
-		err = m.GetAccount().AddIntegral(member.TypeIntegralShoppingPresent,
-			o.value.OrderNo, integral, "")
+		err = m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralShoppingPresent,
+			"购物消费赠送积分", o.OrderNo(), float32(integral), 0)
 		if err != nil {
 			return err
 		}

@@ -16,36 +16,36 @@ import (
 //todo: waiting refactor
 
 var (
-	ErrNotSupportMessageType *domain.DomainError = domain.NewDomainError(
+	ErrNotSupportMessageType *domain.DomainError = domain.NewError(
 		"err_not_support_message_type", "不支持的消息类型")
 
-	ErrNotEnabled *domain.DomainError = domain.NewDomainError(
+	ErrNotEnabled *domain.DomainError = domain.NewError(
 		"err_template_not_enabled", "模板未启用")
 
-	ErrTemplateUsed *domain.DomainError = domain.NewDomainError(
+	ErrTemplateUsed *domain.DomainError = domain.NewError(
 		"err_template_used", "模板被使用，无法删除")
 
-	ErrMessageUpdate *domain.DomainError = domain.NewDomainError(
+	ErrMessageUpdate *domain.DomainError = domain.NewError(
 		"err_message_update", "消息不需要更新")
 
-	ErrMessageNotSave *domain.DomainError = domain.NewDomainError(
+	ErrMessageNotSave *domain.DomainError = domain.NewError(
 		"err_message_not_save", "请在消息发送前保存")
 
-	ErrUnknownMessageUseFor *domain.DomainError = domain.NewDomainError(
+	ErrUnknownMessageUseFor *domain.DomainError = domain.NewError(
 		"err_unknown_message_use_for", "未知的消息用途")
 
-	ErrMessageAllUser *domain.DomainError = domain.NewDomainError(
+	ErrMessageAllUser *domain.DomainError = domain.NewError(
 		"err_message_all_user", "消息为全员消息,指定了多余的参数",
 	)
 
-	ErrMessageToRole *domain.DomainError = domain.NewDomainError(
+	ErrMessageToRole *domain.DomainError = domain.NewError(
 		"err_message_to_role", "消息为用户类型消息,指定了多余的用户",
 	)
 
-	ErrUnknownRole *domain.DomainError = domain.NewDomainError(
+	ErrUnknownRole *domain.DomainError = domain.NewError(
 		"err_unknown_role", "未知的用户类型")
 
-	ErrNoSuchReceiveUser *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchReceiveUser *domain.DomainError = domain.NewError(
 		"err_no_such_receive_user", "消息没有指定接收用户")
 )
 

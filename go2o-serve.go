@@ -20,11 +20,13 @@ import (
 	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
+	"go2o/core/msq"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"log"
 	"os"
 	"runtime"
+	"strings"
 )
 
 func main() {
@@ -92,6 +94,10 @@ func main() {
 	rsi.Init(newApp, appFlag, confDir)
 	//app.Configure(hook.HookUp, newApp, appFlag)
 
+	// 初始化producer
+	kafkaAddress := strings.Split(newApp.Config().GetString("kafka_address"), ",")
+	msq.Configure(msq.KAFKA, kafkaAddress)
+
 	if runRpc {
 		go thrift.ListenAndServe("localhost:14280", false)
 	}
@@ -99,6 +105,6 @@ func main() {
 		go daemon.Run(newApp)
 	}
 	//go serve.Run(newApp, fmt.Sprintf(":%d", httpPort)) //运行HTTP
-	go restapi.Run(newApp, restPort)                   // 运行REST API
+	go restapi.Run(newApp, restPort) // 运行REST API
 	<-ch
 }

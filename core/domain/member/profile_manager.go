@@ -10,6 +10,7 @@ package member
 
 import (
 	"errors"
+	"fmt"
 	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain"
 	"go2o/core/domain/interface/enum"
@@ -21,7 +22,9 @@ import (
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/domain/util"
+	"go2o/core/msq"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -191,14 +194,22 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 	if err == nil {
 		ptr.MemberId = p.memberId
 		err = p.rep.SaveProfile(&ptr)
-		// 更新会员资料更新时间
 		if err == nil {
-			p.member.Save()
+			// 推送资料更新消息
+			go msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), "", 500)
+			// 完善资料通知
+			if p.ProfileCompleted() {
+				// 标记会员已完善资料
+				if !p.member.ContainFlag(member.FlagProfileCompleted) {
+					p.member.value.Flag |= member.FlagProfileCompleted
+					if err == nil {
+						p.member.Save()
+					}
+				}
+				p.notifyOnProfileComplete()
+			}
 		}
-		// 完善资料通知
-		if p.ProfileCompleted() {
-			p.notifyOnProfileComplete()
-		}
+
 	}
 	return err
 }
@@ -495,7 +506,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	if p.trustedInfo == nil {
 		p.trustedInfo = &member.TrustedInfo{
 			MemberId:    p.memberId,
-			ReviewState: enum.ReviewNotSet,
+			ReviewState: int(enum.ReviewNotSet),
 		}
 		//如果还没有实名信息,则新建
 		orm := tmp.Db().GetOrm()
@@ -553,7 +564,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	err = p.copyTrustedInfo(v, p.trustedInfo)
 	if err == nil {
 		p.trustedInfo.Remark = ""
-		p.trustedInfo.ReviewState = enum.ReviewAwaiting //标记为待处理
+		p.trustedInfo.ReviewState = int(enum.ReviewAwaiting) //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
 		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
 			int(p.trustedInfo.MemberId))
@@ -565,18 +576,32 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.GetTrustedInfo()
 	if pass {
-		p.trustedInfo.ReviewState = enum.ReviewPass
+		p.trustedInfo.ReviewState = int(enum.ReviewPass)
+		p.member.value.Flag |= member.FlagTrusted
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return member.ErrEmptyReviewRemark
 		}
-		p.trustedInfo.ReviewState = enum.ReviewReject
+		p.trustedInfo.ReviewState = int(enum.ReviewReject)
+		if p.member.ContainFlag(member.FlagTrusted) {
+			p.member.value.Flag ^= member.FlagTrusted
+		}
 	}
 	p.trustedInfo.Remark = remark
 	p.trustedInfo.ReviewTime = time.Now().Unix()
 	_, err := orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
 		int(p.trustedInfo.MemberId))
+	if err == nil {
+		if _, err = p.member.Save(); err == nil && pass {
+			// 通知实名通过
+			msq.Push(msq.MemberTrustInfoPassed, strconv.Itoa(int(p.memberId)),
+				fmt.Sprintf("%d|%s|%s",
+					p.trustedInfo.CardType,
+					p.trustedInfo.CardId,
+					p.trustedInfo.RealName))
+		}
+	}
 	return err
 }
 

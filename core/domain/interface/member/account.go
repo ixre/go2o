@@ -21,77 +21,77 @@ const (
 
 const (
 	// 用户充值
-	ChargeByUser int32 = 1
+	ChargeByUser int = 1
 	// 系统自动充值
-	ChargeBySystem int32 = 2
+	ChargeBySystem int = 2
 	// 客服充值
-	ChargeByService int32 = 3
+	ChargeByService int = 3
 	// 退款充值
-	ChargeByRefund int32 = 4
+	ChargeByRefund int = 4
 )
 
 const (
 	// 自定义的业务类型
-	KindMine int32 = 30
+	KindMine int = 30
 	// 会员充值
-	KindBalanceCharge int32 = 1
+	KindBalanceCharge int = 1
 	// 系统充值
-	KindBalanceSystemCharge int32 = 2
+	KindBalanceSystemCharge int = 2
 	// 支付抵扣
-	KindBalanceDiscount int32 = 3
+	KindBalanceDiscount int = 3
 	// 退款
-	KindBalanceRefund int32 = 4
+	KindBalanceRefund int = 4
 	// 转入
-	KindBalanceTransferIn int32 = 5
+	KindBalanceTransferIn int = 5
 	// 转出
-	KindBalanceTransferOut int32 = 6
+	KindBalanceTransferOut int = 6
 	// 失效
-	KindBalanceExpired int32 = 7
+	KindBalanceExpired int = 7
 	// 冻结
-	KindBalanceFreeze int32 = 8
+	KindBalanceFreeze int = 8
 	// 解冻
-	KindBalanceUnfreeze int32 = 9
+	KindBalanceUnfreeze int = 9
 	// 客服调整
-	KindAdjust int32 = 10
+	KindAdjust int = 10
 
 	// 客服充值
-	KindBalanceServiceCharge int32 = 15
+	KindBalanceServiceCharge int = 15
 	// 客服扣减
-	KindBalanceServiceDiscount int32 = 16
+	KindBalanceServiceDiscount int = 16
 )
 
 const (
 	// 赠送金额
-	KindWalletAdd int32 = 1
+	KindWalletAdd int = 1
 	// 抵扣奖金
-	KindWalletDiscount int32 = 2
+	KindWalletDiscount int = 2
 	// 转入
-	KindWalletTransferIn int32 = 5
+	KindWalletTransferIn int = 5
 	// 转出
-	KindWalletTransferOut int32 = 6
+	KindWalletTransferOut int = 6
 	// 失效
-	KindWalletExpired int32 = 7
+	KindWalletExpired int = 7
 	// 冻结
-	KindWalletFreeze int32 = 8
+	KindWalletFreeze int = 8
 	// 解冻
-	KindWalletUnfreeze int32 = 9
+	KindWalletUnfreeze int = 9
 	// 客服调整
-	KindWalletAdjust int32 = 10
+	KindWalletAdjust int = 10
 	// 提现到余额
-	KindWalletTakeOutToBalance int32 = 11
+	KindWalletTakeOutToBalance int = 11
 	// 提现到银行卡(人工提现)
-	KindWalletTakeOutToBankCard int32 = 12
+	KindWalletTakeOutToBankCard int = 12
 	// 提现到第三方
-	KindWalletTakeOutToThirdPart int32 = 13
+	KindWalletTakeOutToThirdPart int = 13
 	// 提现退还到银行卡
-	KindWalletTakeOutRefund int32 = 14
+	KindWalletTakeOutRefund int = 14
 	// 支付单退款
-	KindWalletPaymentRefund int32 = 15
+	KindWalletPaymentRefund int = 15
 
 	// 客服赠送
-	KindWalletServiceAdd int32 = 21
+	KindWalletServiceAdd int = 21
 	// 客服扣减
-	KindWalletServiceDiscount int32 = 22
+	KindWalletServiceDiscount int = 22
 )
 
 const (
@@ -103,13 +103,13 @@ const (
 	//KindBalancePresent = 3
 
 	// 流通账户
-	KindBalanceFlow int32 = 4 // 账户流通
+	KindBalanceFlow int = 4 // 账户流通
 
 	// 提现
 	//KindBalanceApplyCash = 11
 	// 转账
-	KindBalanceTransfer int32 = 12
-	StatusOK                  = 1
+	KindBalanceTransfer int = 12
+	StatusOK                = 1
 )
 
 const (
@@ -179,16 +179,16 @@ type (
 		PaymentDiscount(tradeNo string, amount float32, remark string) error
 
 		//　增加积分
-		AddIntegral(iType int, outerNo string, value int64, remark string) error
+		//AddIntegral(iType int, outerNo string, value int64, remark string) error
 
 		// 积分抵扣
-		IntegralDiscount(logType int, outerNo string, value int64, remark string) error
+		IntegralDiscount(logType int, title string, outerNo string, value int) error
 
 		// 冻结积分,当new为true不扣除积分,反之扣除积分
-		FreezesIntegral(value int64, new bool, remark string) error
+		FreezesIntegral(title string, value int, new bool, relateUser int64) error
 
 		// 解冻积分
-		UnfreezesIntegral(value int64, remark string) error
+		UnfreezesIntegral(title string, value int) error
 
 		// 退款
 		RequestBackBalance(backType int, title string, amount float32) error
@@ -197,7 +197,7 @@ type (
 		FinishBackBalance(id int32, tradeNo string) error
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
-		RequestTakeOut(takeKind int32, title string, amount float32, commission float32) (int32, string, error)
+		RequestTakeOut(takeKind int, title string, amount float32, commission float32) (int32, string, error)
 
 		// 确认提现
 		ConfirmTakeOut(id int32, pass bool, remark string) error
@@ -217,10 +217,10 @@ type (
 			amount float32, remark string) error
 
 		// 退款
-		Refund(accountKind int, kind int32, title string, outerNo string, amount float32, relateUser int64) error
+		Refund(accountKind int, kind int, title string, outerNo string, amount float32, relateUser int64) error
 
 		// 充值
-		Charge(account int32, kind int32, title, outerNo string, amount float32, relateUser int64) error
+		Charge(account int32, kind int, title, outerNo string, amount float32, relateUser int64) error
 
 		// 客服调整
 		Adjust(account int, title string, amount float32, remark string, relateUser int64) error
@@ -232,20 +232,20 @@ type (
 		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int64) error
 
 		// 转账余额到其他账户
-		TransferBalance(kind int32, amount float32, tradeNo string, toTitle, fromTitle string) error
+		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
 
 		// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
-		TransferWallet(kind int32, amount float32, commission float32, tradeNo string,
+		TransferWallet(kind int, amount float32, commission float32, tradeNo string,
 			toTitle string, fromTitle string) error
 
 		// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
-		TransferFlow(kind int32, amount float32, commission float32, tradeNo string,
+		TransferFlow(kind int, amount float32, commission float32, tradeNo string,
 			toTitle string, fromTitle string) error
 
 		// 将活动金转给其他人
-		TransferFlowTo(memberId int64, kind int32, amount float32, commission float32,
+		TransferFlowTo(memberId int64, kind int, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 
@@ -254,7 +254,7 @@ type (
 		Id       int64  `db:"id" auto:"yes" pk:"yes"`
 		MemberId int64  `db:"member_id"`
 		TradeNo  string `db:"trade_no"`
-		Kind     int32  `db:"kind"`
+		Kind     int    `db:"kind"`
 		Type     int    `db:"type"`
 		Title    string `db:"title"`
 		// 金额
@@ -273,9 +273,9 @@ type (
 		// 会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
 		// 积分
-		Integral int64 `db:"integral"`
+		Integral int `db:"integral"`
 		// 不可用积分
-		FreezeIntegral int64 `db:"freeze_integral"`
+		FreezeIntegral int `db:"freeze_integral"`
 		// 余额
 		Balance float32 `db:"balance"`
 		// 不可用余额
@@ -315,19 +315,27 @@ type (
 	// 积分记录
 	IntegralLog struct {
 		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int `db:"member_id"`
 		// 类型
-		Type int `db:"type"`
+		Kind int `db:"kind"`
+		// 标题
+		Title string `db:"title"`
 		// 关联的编号
 		OuterNo string `db:"outer_no"`
 		// 积分值
-		Value int64 `db:"value"`
+		Value int `db:"value"`
 		// 备注
 		Remark string `db:"remark"`
+		// 关联用户
+		RelUser int `db:"rel_user"`
+		// 审核状态
+		ReviewState int16 `db:"review_state"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
 	}
 
 	// 余额日志
@@ -336,7 +344,7 @@ type (
 		MemberId int64  `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int32 `db:"kind"`
+		BusinessKind int `db:"kind"`
 
 		Title string `db:"title"`
 		// 金额
@@ -346,7 +354,7 @@ type (
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态
-		State int32 `db:"state"`
+		ReviewState int32 `db:"review_state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间
@@ -363,7 +371,7 @@ type (
 		// 外部单号
 		OuterNo string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int32 `db:"kind"`
+		BusinessKind int `db:"kind"`
 		// 标题
 		Title string `db:"title"`
 		// 金额
@@ -373,7 +381,7 @@ type (
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态
-		State int32 `db:"state"`
+		ReviewState int32 `db:"review_state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间

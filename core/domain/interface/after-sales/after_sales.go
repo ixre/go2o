@@ -54,52 +54,52 @@ var (
 		TypeService,
 	}
 
-	ErrNoSuchOrder *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchOrder *domain.DomainError = domain.NewError(
 		"err_after_sales_no_such_order", "售后单不存在")
 
-	ErrAutoProcess *domain.DomainError = domain.NewDomainError(
+	ErrAutoProcess *domain.DomainError = domain.NewError(
 		"err_after_sales_auto_process", "售后单不能人工处理")
 
-	ErrAfterSalesOrderCompleted *domain.DomainError = domain.NewDomainError(
+	ErrAfterSalesOrderCompleted *domain.DomainError = domain.NewError(
 		"err_after_sales_order_completed", "售后单已完成,无法进行操作!")
 
-	ErrAfterSalesRejected *domain.DomainError = domain.NewDomainError(
+	ErrAfterSalesRejected *domain.DomainError = domain.NewError(
 		"err_after_sales_rejected", "售后单已被系统退回")
 
-	ErrUnusualStat *domain.DomainError = domain.NewDomainError(
+	ErrUnusualStat *domain.DomainError = domain.NewError(
 		"err_after_sales_order_unusual_stat", "不合法的售后单状态")
 
-	ErrNoSuchOrderItem *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchOrderItem *domain.DomainError = domain.NewError(
 		"err_after_sales_order_no_such_order_item", "订单中不包括该商品")
 
-	ErrOutOfQuantity *domain.DomainError = domain.NewDomainError(
+	ErrOutOfQuantity *domain.DomainError = domain.NewError(
 		"err_after_sales_order_out_of_quantity", "超出数量")
 
-	ErrReasonLength *domain.DomainError = domain.NewDomainError(
+	ErrReasonLength *domain.DomainError = domain.NewError(
 		"err_after_sales_order_reason_length", "原因不能少于10字")
 
-	ErrNotConfirm *domain.DomainError = domain.NewDomainError(
+	ErrNotConfirm *domain.DomainError = domain.NewError(
 		"err_after_sales_order_not_confirm", "售后单尚未确认")
 
-	ErrHasCanceled *domain.DomainError = domain.NewDomainError(
+	ErrHasCanceled *domain.DomainError = domain.NewError(
 		"err_after_sales_order_has_canceled", "售后单已取消")
 
-	ErrOrderAmount *domain.DomainError = domain.NewDomainError(
+	ErrOrderAmount *domain.DomainError = domain.NewError(
 		"err_after_sales_order_amount", "售后单金额不能为零")
 
-	ErrExchangeNotReceiveItems *domain.DomainError = domain.NewDomainError(
+	ErrExchangeNotReceiveItems *domain.DomainError = domain.NewError(
 		"err_exhange_order_no_shipping", "订单尚未收货，无法进行换货")
 
-	ErrExchangeOrderNoShipping *domain.DomainError = domain.NewDomainError(
+	ErrExchangeOrderNoShipping *domain.DomainError = domain.NewError(
 		"err_exhange_order_no_shipping", "换货单尚未发货给顾客")
 
-	ErrNotReceive *domain.DomainError = domain.NewDomainError(
+	ErrNotReceive *domain.DomainError = domain.NewError(
 		"err_after_sales_order_not_receive", "尚未收货")
 
-	ErrRefundAfterShipped *domain.DomainError = domain.NewDomainError(
+	ErrRefundAfterShipped *domain.DomainError = domain.NewError(
 		"err_after_sales_refund_after_shipped", "订单已经发货,只能进行退货或换货操作")
 
-	ErrReturnAfterReceived *domain.DomainError = domain.NewDomainError(
+	ErrReturnAfterReceived *domain.DomainError = domain.NewError(
 		"err_after_sales_return_after_received", "订单已确认收货,只能进行换货操作")
 )
 

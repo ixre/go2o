@@ -16,30 +16,30 @@ import (
 )
 
 var (
-	ErrReadonlyCategory *domain.DomainError = domain.NewDomainError(
+	ErrReadonlyCategory *domain.DomainError = domain.NewError(
 		"err_readonly_category", "无权修改系统分类",
 	)
-	ErrNoSuchCategory *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchCategory *domain.DomainError = domain.NewError(
 		"err_category_not_exist", "分类不存在",
 	)
 
-	ErrCategoryCycleReference *domain.DomainError = domain.NewDomainError(
+	ErrCategoryCycleReference *domain.DomainError = domain.NewError(
 		"err_category_cycle_reference", "分类上级循环引用")
 
-	ErrHasChildCategories *domain.DomainError = domain.NewDomainError(
+	ErrHasChildCategories *domain.DomainError = domain.NewError(
 		"err_has_child_categories", "分类包含子分类,无法删除",
 	)
-	ErrCategoryContainGoods *domain.DomainError = domain.NewDomainError(
+	ErrCategoryContainGoods *domain.DomainError = domain.NewError(
 		"err_category_contain_goods", "分类包含商品,无法删除",
 	)
 
-	ErrIncorrectCategoryType *domain.DomainError = domain.NewDomainError(
+	ErrIncorrectCategoryType *domain.DomainError = domain.NewError(
 		"err_category_incorrect_type", "分类类型不允许修改")
 
-	ErrVirtualCatNoUrl *domain.DomainError = domain.NewDomainError(
+	ErrVirtualCatNoUrl *domain.DomainError = domain.NewError(
 		"err_category_virtual_no_url", "虚拟分类必须设置跳转链接")
 
-	ErrCategoryFloorShow *domain.DomainError = domain.NewDomainError(
+	ErrCategoryFloorShow *domain.DomainError = domain.NewError(
 		"err_category_floor_show", "非一级分类不能设置首页显示")
 )
 

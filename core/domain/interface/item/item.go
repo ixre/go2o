@@ -35,25 +35,25 @@ const (
 )
 
 var (
-	ErrNoSuchItem *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchItem *domain.DomainError = domain.NewError(
 		"no_such_goods", "商品不存在")
 
-	ErrIncorrectProductCategory *domain.DomainError = domain.NewDomainError(
+	ErrIncorrectProductCategory *domain.DomainError = domain.NewError(
 		"err_item_incorrect_product_category", "非法的商品分类")
 
-	ErrItemWholesaleOff *domain.DomainError = domain.NewDomainError(
+	ErrItemWholesaleOff *domain.DomainError = domain.NewError(
 		"err_item_wholesale_off", "商品已下架或待审核!")
 
-	ErrLatestSnapshot *domain.DomainError = domain.NewDomainError(
+	ErrLatestSnapshot *domain.DomainError = domain.NewError(
 		"latest_snapshot", "已经是最新的快照")
 
-	ErrNoSuchSnapshot *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchSnapshot *domain.DomainError = domain.NewError(
 		"no_such_snapshot", "商品快照不存在")
 
-	ErrNotOnShelves *domain.DomainError = domain.NewDomainError(
+	ErrNotOnShelves *domain.DomainError = domain.NewError(
 		"not_on_shelves", "商品已下架")
 
-	ErrGoodsMinProfitRate *domain.DomainError = domain.NewDomainError(
+	ErrGoodsMinProfitRate *domain.DomainError = domain.NewError(
 		"err_goods_min_profit_rate", "商品利润率不能低于%s")
 )
 
@@ -105,7 +105,7 @@ type (
 		SaveGoodsLevelPrice(*MemberPrice) (int32, error)
 
 		// 移除会员价
-		RemoveGoodsLevelPrice(id int32) error
+		RemoveGoodsLevelPrice(id int) error
 
 		// 保存快照
 		SaveSnapshot(*Snapshot) (int64, error)
@@ -210,9 +210,9 @@ type (
 
 	// 会员价
 	MemberPrice struct {
-		Id      int32   `db:"id" pk:"yes" auto:"yes"`
+		Id      int     `db:"id" pk:"yes" auto:"yes"`
 		GoodsId int64   `db:"goods_id"`
-		Level   int32   `db:"level"`
+		Level   int     `db:"level"`
 		Price   float32 `db:"price"`
 		// 限购数量
 		MaxQuota int `db:"max_quota"`
@@ -250,9 +250,9 @@ type (
 		// 获取促销信息
 		GetPromotions() []promotion.IPromotion
 		// 获取促销价
-		GetPromotionPrice(level int32) float32
+		GetPromotionPrice(level int) float32
 		// 获取会员价销价,返回是否有会原价及价格
-		GetLevelPrice(level int32) (bool, float32)
+		GetLevelPrice(level int) (bool, float32)
 		// 获取促销描述
 		GetPromotionDescribe() map[string]string
 		// 获取会员价

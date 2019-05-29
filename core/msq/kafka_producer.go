@@ -5,22 +5,24 @@ import (
 	"github.com/Shopify/sarama"
 	"log"
 )
+
 var _ Producer = new(KafkaProducer)
+
 type KafkaProducer struct {
-	pro sarama.AsyncProducer
+	pro     sarama.AsyncProducer
 	address []string
 }
 
-func newKafkaProducer(address []string)*KafkaProducer {
+func newKafkaProducer(address []string) *KafkaProducer {
 	k := &KafkaProducer{
 		address: address,
-		pro:createKafkaProducer(address),
+		pro:     createKafkaProducer(address),
 	}
 	return k
 }
 
 // 创建异步producer
-func createKafkaProducer(address []string)sarama.AsyncProducer{
+func createKafkaProducer(address []string) sarama.AsyncProducer {
 	config := sarama.NewConfig()
 	//等待服务器所有副本都保存成功后的响应
 	config.Producer.RequiredAcks = sarama.WaitForAll
@@ -39,14 +41,14 @@ func createKafkaProducer(address []string)sarama.AsyncProducer{
 		fmt.Println(e)
 		return nil
 	}
-	defer producer.AsyncClose()
+	//defer producer.AsyncClose()
 	// 判断哪个通道发送过来数据.
 	go func(p sarama.AsyncProducer) {
-		for{
+		for {
 			select {
 			case suc := <-p.Successes():
 				if suc != nil {
-					fmt.Println("offset: ", suc.Offset, "timestamp: ", suc.Timestamp.String(), "partitions: ", suc.Partition)
+					//fmt.Println("offset: ", suc.Offset, "timestamp: ", suc.Timestamp.String(), "partitions: ", suc.Partition)
 				}
 			case fail := <-p.Errors():
 				if fail != nil {
@@ -58,12 +60,19 @@ func createKafkaProducer(address []string)sarama.AsyncProducer{
 	return producer
 }
 
-func (k *KafkaProducer) Push(topic string, message string) error {
+func (k *KafkaProducer) Push(topic string, key string, message string) error {
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
 		Value: sarama.ByteEncoder(message),
 	}
+	if len(key) > 0 {
+		msg.Key = sarama.ByteEncoder(key)
+	}
 	//使用通道发送
 	k.pro.Input() <- msg
 	return nil
+}
+
+func (k *KafkaProducer) Close() {
+	k.pro.AsyncClose()
 }

@@ -29,8 +29,11 @@ import (
 )
 
 var (
-	fact        *factory.RepoFactory
-	PromService *promotionService
+	fact *factory.RepoFactory
+
+	// 状态服务
+	StatusService *statusServiceImpl
+	PromService   *promotionService
 	// 基础服务
 	FoundationService *foundationService
 	// 会员服务
@@ -128,6 +131,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
+	StatusService = NewStatusService()
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valueRepo)
 	PromService = NewPromotionService(promRepo)

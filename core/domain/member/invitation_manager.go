@@ -21,18 +21,18 @@ type invitationManager struct {
 }
 
 // 获取推荐数组
-func (im *invitationManager) InviterArray(memberId int64, depth int32) []int64 {
+func (i *invitationManager) InviterArray(memberId int64, depth int) []int64 {
 	arr := make([]int64, depth)
-	var i int32
+	var di int
 	inviterId := memberId
-	for i <= depth-1 {
-		rl := im.member.rep.GetRelation(inviterId)
+	for di <= depth-1 {
+		rl := i.member.rep.GetRelation(inviterId)
 		if rl == nil || rl.InviterId <= 0 {
 			break
 		}
-		arr[i] = rl.InviterId
-		inviterId = arr[i]
-		i++
+		arr[di] = rl.InviterId
+		inviterId = arr[di]
+		di++
 	}
 	return arr
 }

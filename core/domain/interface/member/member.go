@@ -29,13 +29,13 @@ const (
 
 const (
 	// 普通会员
-	PremiumNormal int32 = 0
+	PremiumNormal int = 0
 	// 金会员
-	PremiumGold int32 = 1
+	PremiumGold int = 1
 	// 白金会员
-	PremiumWhiteGold int32 = 2
+	PremiumWhiteGold int = 2
 	// 黑钻会员
-	PremiumSuper int32 = 3
+	PremiumSuper int = 3
 )
 
 const (
@@ -45,6 +45,15 @@ const (
 	LServiceAgentUpgrade = 2
 	// 程序升级，todo: 暂时未对其进行区分
 	LProgramUpgrade = 3
+)
+
+const (
+	FlagDefault = 1 << iota
+	FlagLocked  = 2
+	// 已完善的资料
+	FlagProfileCompleted = 4
+	// 已认证
+	FlagTrusted = 8
 )
 
 type (
@@ -75,28 +84,26 @@ type (
 		Lock() error
 		// 解锁会员
 		Unlock() error
-
+		// 判断是否包含标志
+		ContainFlag(f int) bool
 		// 获取关联的会员
 		GetRelation() *Relation
-
 		// 更新会员绑定
 		SaveRelation(r *Relation) error
-
 		// 更改邀请人
 		ChangeReferees(memberId int64) error
-
 		// 增加经验值
-		AddExp(exp int32) error
+		AddExp(exp int) error
 		// 升级为高级会员
-		Premium(v int32, expires int64) error
+		Premium(v int, expires int64) error
 		// 获取等级
 		GetLevel() *Level
 
 		// 更改会员等级,@paymentId:支付单编号,@review:是否需要审核
-		ChangeLevel(level int32, paymentId int32, review bool) error
+		ChangeLevel(level int, paymentId int, review bool) error
 
 		// 审核升级请求
-		ReviewLevelUp(id int32, pass bool) error
+		ReviewLevelUp(id int, pass bool) error
 
 		// 标记已经处理升级
 		ConfirmLevelUp(id int32) error
@@ -175,27 +182,29 @@ type (
 		// 头像
 		Avatar string
 		// 经验值
-		Exp int32
+		Exp int
 		// 等级
-		Level int32
+		Level int
 		// 等级名称
 		LevelName string
 		// 等级标识
 		LevelSign string
 		// 等级是否为正式会员
-		LevelOfficial int32
+		LevelOfficial int
 		// 邀请码
 		InvitationCode string
 		// 实名认证状态
-		TrustAuthState int32
+		TrustAuthState int
 		// 高级会员类型
-		PremiumUser int32
+		PremiumUser int
 		// 高级会员是否过期
 		PremiumExpires int64
+		// 会员标志
+		Flag int
 		// 是否启用
-		State int32
+		State int
 		// 积分
-		Integral int64
+		Integral int
 		// 账户余额
 		Balance float64
 		// 钱包余额
@@ -222,13 +231,13 @@ type (
 		// 交易密码
 		TradePwd string `db:"trade_pwd"`
 		// 经验值
-		Exp int32 `db:"exp"`
+		Exp int `db:"exp"`
 		// 等级
-		Level int32 `db:"level"`
+		Level int `db:"level"`
 		// 邀请码
 		InvitationCode string `db:"invitation_code"`
 		// 高级用户类型
-		PremiumUser int32 `db:"premium_user"`
+		PremiumUser int `db:"premium_user"`
 		// 高级用户过期时间
 		PremiumExpires int64 `db:"premium_expires"`
 		// 注册来源
@@ -241,8 +250,10 @@ type (
 		CheckCode string `db:"check_code"`
 		// 校验码过期时间
 		CheckExpires int64 `db:"check_expires"`
+		// 会员标志
+		Flag int `db:"flag"`
 		// 状态
-		State int32 `db:"state"`
+		State int `db:"state"`
 		// 登录时间
 		LoginTime int64 `db:"login_time"`
 		// 最后登录时间
@@ -333,7 +344,7 @@ type (
 		// 是否人工审核认证
 		ManualReview int `db:"manual_review"`
 		// 是否审核通过
-		ReviewState int32 `db:"review_state"`
+		ReviewState int `db:"review_state"`
 		// 审核时间
 		ReviewTime int64 `db:"review_time"`
 		// 审核备注
@@ -411,21 +422,21 @@ type (
 
 	// 会员升级日志
 	LevelUpLog struct {
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 原来等级
-		OriginLevel int32 `db:"origin_level"`
+		OriginLevel int `db:"origin_level"`
 		// 现在等级
-		TargetLevel int32 `db:"target_level"`
+		TargetLevel int `db:"target_level"`
 		// 是否为免费升级的会员
 		IsFree int `db:"is_free"`
 		// 支付单编号
-		PaymentId int32 `db:"payment_id"`
+		PaymentId int `db:"payment_id"`
 		// 是否审核及处理
-		ReviewState int32 `db:"review_state"`
+		ReviewState int `db:"review_state"`
 		// 升级方式,1:自动升级 2:客服更改 3:系统升级
-		UpgradeMode int32 `db:"upgrade_mode"`
+		UpgradeMode int `db:"upgrade_mode"`
 		// 升级时间
 		CreateTime int64 `db:"create_time"`
 	}

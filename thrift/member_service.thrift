@@ -35,6 +35,8 @@ service MemberService{
     SMember GetMemberByUser(1:string user)
     // 根据会员编号获取会员资料
     SProfile GetProfile(1:i64 id)
+    /** 锁定/解锁会员 */
+    ttype.Result ToggleLock(1:i64 memberId)
     // 获取会员汇总信息
     SComplexMember Complex(1:i64 memberId)
     // 检查资料是否完成
@@ -72,8 +74,7 @@ service MemberService{
     ttype.Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
       4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
     // 调整账户
-    ttype.Result AdjustAccount(1:i64 memberId,2:i32 account,3:string title,
-      4:double amount,5:i64 relateUser)
+    ttype.Result AdjustAccount(1:i64 memberId,2:i32 account,3:double value,4:i64 relateUser,5:string remark,)
 
     // !银行四要素认证
     ttype.Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)
@@ -108,12 +109,13 @@ struct SMember {
     12: i64 RegTime
     13: string CheckCode
     14: i64 CheckExpires
-    15: i32 State
-    16: i64 LoginTime
-    17: i64 LastLoginTime
-    18: i64 UpdateTime
-    19: string DynamicToken
-    20: i64 TimeoutTime
+    15: i32 Flag
+    16: i32 State
+    17: i64 LoginTime
+    18: i64 LastLoginTime
+    19: i64 UpdateTime
+    20: string DynamicToken
+    21: i64 TimeoutTime
 }
 
 /** 资料 */

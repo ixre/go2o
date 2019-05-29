@@ -1463,7 +1463,7 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	// 增加经验
 	if registry.MemberExperienceEnabled {
 		rate := conf.ExperienceRateByOrder
-		if exp := int32(amount * rate); exp > 0 {
+		if exp := int(amount * rate); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}
@@ -1471,12 +1471,12 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	}
 
 	// 增加积分
-	//todo: 增加阶梯的返积分,比如订单满30送100积分
+	//todo: 增加阶梯的返积分,比如订单满30送100积分, 购物送积分开关
 	integral := int64(amount*conf.IntegralRateByConsumption) + conf.IntegralBackExtra
 	// 赠送积分
 	if integral > 0 {
-		err = m.GetAccount().AddIntegral(member.TypeIntegralShoppingPresent,
-			o.value.OrderNo, integral, "")
+		err = m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralShoppingPresent,
+			"购物消费赠送积分", o.value.OrderNo, float32(integral), 0)
 		if err != nil {
 			return err
 		}
