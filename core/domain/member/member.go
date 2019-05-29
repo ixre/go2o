@@ -425,7 +425,7 @@ func (m *memberImpl) SaveRelation(r *member.Relation) error {
 	err := m.rep.SaveRelation(m.relation)
 	if err == nil {
 		// 推送关系更新消息
-		go msq.Push(msq.MemberRelationUpdated, strconv.Itoa(int(m.GetAggregateRootId())), "")
+		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(m.GetAggregateRootId())), "", 1000)
 	}
 	return err
 }

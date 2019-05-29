@@ -60,7 +60,7 @@ func (a *accountImpl) Save() (int64, error) {
 	a.value.UpdateTime = time.Now().Unix()
 	n, err := a.rep.SaveAccount(a.value)
 	if err == nil {
-		msq.Push(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), "")
+		go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), "", 500)
 	}
 	return n, err
 }

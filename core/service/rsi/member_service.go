@@ -640,7 +640,7 @@ func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*member
 func (s *memberService) InviterArray(ctx context.Context, memberId int64, depth int32) (r []int64, err error) {
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	if m != nil {
-		return m.Invitation().InviterArray(memberId,int(depth)), nil
+		return m.Invitation().InviterArray(memberId, int(depth)), nil
 	}
 	return []int64{}, nil
 }
