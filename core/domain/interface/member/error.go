@@ -164,10 +164,10 @@ var (
 		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
 
 	ErrSameUsr = domain.NewError(
-		"err_same_usr", "用户名与原来相同")
+		"err_same_user", "用户名与原来相同")
 
 	ErrUsrExist = domain.NewError(
-		"err_member_usr_exist", "用户名已存在")
+		"err_member_user_exist", "用户名已存在")
 
 	ErrNilNickName = domain.NewError(
 		"err_member_nil_nick_name", "昵称不能为空")

@@ -8,10 +8,10 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/factory"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/infrastructure/format"
 	"go2o/core/module/bank"
+	"go2o/core/repos"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -37,8 +37,8 @@ func (b *Bank4E) SetApp(app gof.App) {
 }
 
 func (b *Bank4E) Init() {
-	b.memberRepo = factory.Repo.GetMemberRepo()
-	b.valueRepo = factory.Repo.GetValueRepo()
+	b.memberRepo = repos.Repo.GetMemberRepo()
+	b.valueRepo = repos.Repo.GetValueRepo()
 }
 
 // 获取基础信息

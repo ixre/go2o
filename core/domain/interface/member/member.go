@@ -48,12 +48,14 @@ const (
 )
 
 const (
-	FlagDefault = 1 << iota
-	FlagLocked  = 2
+	// 已激活
+	FlagActive = 1 << iota
+	// 已锁定的
+	FlagLocked = 2
+	// 已认证的
+	FlagTrusted = 4
 	// 已完善的资料
-	FlagProfileCompleted = 4
-	// 已认证
-	FlagTrusted = 8
+	FlagProfileCompleted = 8
 )
 
 type (
@@ -224,10 +226,16 @@ type (
 	Member struct {
 		// 编号
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		// 用户编码
+		Code string `db:"code"`
+		// 昵称
+		Name string `db:"name"`
 		// 用户名
-		Usr string `db:"usr"`
+		User string `db:"user"`
 		// 密码
 		Pwd string `db:"Pwd"`
+		// 头像
+		Avatar string `db:"avatar"`
 		// 交易密码
 		TradePwd string `db:"trade_pwd"`
 		// 经验值
@@ -240,6 +248,10 @@ type (
 		PremiumUser int `db:"premium_user"`
 		// 高级用户过期时间
 		PremiumExpires int64 `db:"premium_expires"`
+		// 手机号码
+		Phone string `db:"phone"`
+		// 电子邮箱
+		Email string `db:"email"`
 		// 注册来源
 		RegFrom string `db:"reg_from"`
 		// 注册IP

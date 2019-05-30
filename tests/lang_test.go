@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package testing
+package tests
 
 import (
 	"github.com/ixre/gof/log"

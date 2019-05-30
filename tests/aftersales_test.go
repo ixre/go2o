@@ -6,12 +6,12 @@
  * description :
  * history :
  */
-package testing
+package tests
 
 import (
 	"github.com/ixre/gof/log"
 	"go2o/core/domain/interface/after-sales"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"testing"
 )
 

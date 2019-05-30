@@ -36,7 +36,7 @@ type IMemberRepo interface {
 	SaveMemberLevel_New(v *Level) (int, error)
 
 	// 根据用户名获取会员
-	GetMemberByUsr(usr string) *Member
+	GetMemberByUsr(user string) *Member
 
 	// 根据手机号码获取会员
 	GetMemberValueByPhone(phone string) *Member
@@ -71,8 +71,11 @@ type IMemberRepo interface {
 	// 获取会员编号
 	GetMemberIdByUser(user string) int64
 
+	// 根据编码获取会员
+	GetMemberIdByCode(code string) int
+
 	// 用户名是否存在
-	CheckUsrExist(usr string, memberId int64) bool
+	CheckUsrExist(user string, memberId int64) bool
 
 	// 手机号码是否使用
 	CheckPhoneBind(phone string, memberId int64) bool

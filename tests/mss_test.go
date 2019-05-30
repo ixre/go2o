@@ -6,13 +6,13 @@
  * description :
  * history :
  */
-package testing
+package tests
 
 import (
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/infrastructure/tool/sms"
 	"go2o/core/repos"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"testing"
 )
 

@@ -54,7 +54,7 @@ func (this *userRepo) GetPersonValue(id int32) *user.PersonValue {
 // 获取配送人员
 func (this *userRepo) GetDeliveryStaffPersons(mchId int32) []*user.PersonValue {
 	e := make([]*user.PersonValue, 0)
-	err := this.Connector.GetOrm().Select(e, "select * from usr_person")
+	err := this.Connector.GetOrm().Select(e, "select * from user_person")
 	if err != nil {
 		return nil
 	}

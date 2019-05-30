@@ -16,12 +16,12 @@ import (
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"go2o/core"
-	"go2o/core/factory"
+	"go2o/core/repos"
 )
 
 var (
 	app     *testingApp
-	Factory *factory.RepoFactory
+	Factory *repos.RepoFactory
 )
 var (
 	REDIS_DB = "1"
@@ -30,7 +30,7 @@ var (
 func GetApp() gof.App {
 	if app == nil {
 		app = new(testingApp)
-		app.Config().Set("conf_path", "../../conf")
+		app.Config().Set("conf_path", "../conf")
 		app.Config().Set("redis_host", "127.0.0.1")
 		app.Config().Set("redis_db", REDIS_DB)
 		app.Config().Set("redis_port", "6379")
@@ -68,7 +68,7 @@ func newMainApp(confPath string) *testingApp {
 
 func (t *testingApp) Registry() *gof.Registry {
 	if t._registry == nil {
-		t._registry, _ = gof.NewRegistry("../../conf", ":")
+		t._registry, _ = gof.NewRegistry("../conf", ":")
 	}
 	return t._registry
 }
@@ -153,5 +153,5 @@ func init() {
 	conn := app.Db()
 	sto := app.Storage()
 	confPath := app.Config().GetString("conf_path")
-	Factory = (&factory.RepoFactory{}).Init(conn, sto, confPath)
+	Factory = (&repos.RepoFactory{}).Init(conn, sto, confPath)
 }

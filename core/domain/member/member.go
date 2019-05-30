@@ -15,6 +15,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
@@ -81,7 +82,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 
 	s := &member.ComplexMember{
 		MemberId:          m.GetAggregateRootId(),
-		Usr:               mv.Usr,
+		Usr:               mv.User,
 		Name:              pro.Name,
 		Avatar:            format.GetResUrl(pro.Avatar),
 		Exp:               mv.Exp,
@@ -155,21 +156,9 @@ var (
 	phoneRegex = regexp.MustCompile("^(13[0-9]|14[5|6|7]|15[0-9]|16[6|8]|18[0-9]|17[0|1|2|3|4|5|6|7|8]|19[9|8])(\\d{8})$")
 )
 
-// 验证用户名
-func validUsr(usr string) error {
-	usr = strings.ToLower(strings.TrimSpace(usr)) // 小写并删除空格
-	if len([]rune(usr)) < 6 {
-		return member.ErrUsrLength
-	}
-	if !userRegex.MatchString(usr) {
-		return member.ErrUsrValidErr
-	}
-	return nil
-}
-
 // 设置值
 func (m *memberImpl) SetValue(v *member.Member) error {
-	v.Usr = m.value.Usr
+	v.User = m.value.User
 	if len(m.value.InvitationCode) == 0 {
 		m.value.InvitationCode = v.InvitationCode
 	}
@@ -431,21 +420,15 @@ func (m *memberImpl) SaveRelation(r *member.Relation) error {
 }
 
 // 更换用户名
-func (m *memberImpl) ChangeUsr(usr string) error {
-	if usr == m.value.Usr {
+func (m *memberImpl) ChangeUsr(user string) error {
+	if user == m.value.User {
 		return member.ErrSameUsr
 	}
-	if len([]rune(usr)) < 6 {
-		return member.ErrUsrLength
+	err := m.checkUser(m.value.User)
+	if err == nil {
+		m.value.User = user
+		_, err = m.Save()
 	}
-	if !userRegex.MatchString(usr) {
-		return member.ErrUsrValidErr
-	}
-	if m.usrIsExist(usr) {
-		return member.ErrUsrExist
-	}
-	m.value.Usr = usr
-	_, err := m.Save()
 	return err
 }
 
@@ -488,31 +471,113 @@ func (m *memberImpl) Unlock() error {
 
 // 创建会员
 func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int64, error) {
-	if err := validUsr(m.value.Usr); err != nil {
-		return 0, err
-	}
-	if m.usrIsExist(v.Usr) {
-		return 0, member.ErrUsrExist
-	}
-	t := time.Now().Unix()
-	v.State = 1
-	v.RegTime = t
-	v.LastLoginTime = t
-	v.Level = 1
-	v.Exp = 0
-	v.DynamicToken = v.Pwd
-	if len(v.RegFrom) == 0 {
-		v.RegFrom = "API-INTERNAL"
-	}
-	v.PremiumUser = member.PremiumNormal
-	v.PremiumExpires = 0
-	v.InvitationCode = m.generateInvitationCode() // 创建一个邀请码
-	id, err := m.rep.SaveMember(v)
+	err := m.prepare()
 	if err == nil {
-		m.value.Id = id
-		go m.memberInit()
+		unix := time.Now().Unix()
+		v.State = 1
+		v.RegTime = unix
+		v.LastLoginTime = unix
+		v.Level = 1
+		v.Exp = 0
+		v.DynamicToken = ""
+		if len(v.RegFrom) == 0 {
+			v.RegFrom = "API-INTERNAL"
+		}
+		v.PremiumUser = member.PremiumNormal
+		v.PremiumExpires = 0
+		// 创建一个用户编码
+		v.Code = m.generateMemberCode()
+		// 创建一个邀请码
+		v.InvitationCode = m.generateInvitationCode()
+		id, err := m.rep.SaveMember(v)
+		if err == nil {
+			m.value.Id = id
+			go m.memberInit()
+		}
 	}
-	return id, err
+	return m.GetAggregateRootId(), err
+}
+
+// 验证用户名
+func (m *memberImpl) checkUser(user string) error {
+	if len([]rune(user)) < 6 {
+		return member.ErrUsrLength
+	}
+	if !userRegex.MatchString(user) {
+		return member.ErrUsrValidErr
+	}
+	if m.rep.CheckUsrExist(user, m.GetAggregateRootId()) {
+		return member.ErrUsrExist
+	}
+	return nil
+}
+
+// 检查注册信息是否正确
+func (m *memberImpl) prepare() (err error) {
+	perm := m.valRepo.GetRegisterPerm()
+	conf := m.valRepo.GetRegistry()
+	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
+	m.value.User = strings.TrimSpace(m.value.User)
+	if m.value.User != "" || !perm.PhoneAsUser {
+		if err = m.checkUser(m.value.User); err != nil {
+			return err
+		}
+	}
+	// 验证密码
+	m.value.Pwd = strings.TrimSpace(m.value.Pwd)
+	if len(m.value.Pwd) < 6 {
+		return member.ErrPwdLength
+	}
+	// 验证手机
+	m.value.Phone = strings.TrimSpace(m.value.Phone)
+	lp := len(m.value.Phone)
+	if perm.MustBindPhone && lp == 0 {
+		return member.ErrMissingPhone
+	}
+	if lp > 0 {
+		if conf.MemberCheckPhoneFormat && !phoneRegex.MatchString(m.value.Phone) {
+			return member.ErrBadPhoneFormat
+		}
+		if m.checkPhoneBind(m.value.Phone, m.GetAggregateRootId()) != nil {
+			return member.ErrPhoneHasBind
+		}
+	}
+	// 使用手机号作为用户名
+	if perm.PhoneAsUser {
+		if m.rep.CheckUsrExist(m.value.Phone, 0) {
+			return member.ErrPhoneHasBind
+		}
+		m.value.User = m.value.Phone
+	}
+
+	// 验证IM
+	//pro.Im = strings.TrimSpace(pro.Im)
+	//if perm.NeedIm && len(pro.Im) == 0 {
+	//	return 0, errors.New(strings.Replace(member.ErrMissingIM.Error(),
+	//		"IM", variable.AliasMemberIM, -1))
+	//}
+	m.value.Name = strings.TrimSpace(m.value.Name)
+
+	//如果未设置昵称,则默认为用户名
+	if len(m.value.Name) == 0 {
+		m.value.Name = "User" + m.value.User
+	}
+	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
+	if len(m.value.Avatar) == 0 {
+		m.value.Avatar = "res/no_avatar.gif"
+	}
+	return err
+}
+
+// 检查手机绑定,同时检查手机格式
+func (m *memberImpl) checkPhoneBind(phone string, memberId int64) error {
+	if len(phone) <= 0 {
+		return member.ErrMissingPhone
+	}
+	if m.rep.CheckPhoneBind(phone, memberId) {
+		return member.ErrPhoneHasBind
+	}
+	return nil
 }
 
 // 会员初始化
@@ -535,11 +600,6 @@ func (m *memberImpl) generateInvitationCode() string {
 		}
 	}
 	return code
-}
-
-// 用户是否已经存在
-func (m *memberImpl) usrIsExist(usr string) bool {
-	return m.rep.CheckUsrExist(usr, m.GetAggregateRootId())
 }
 
 // 强制更新邀请关系
@@ -598,6 +658,17 @@ func (m *memberImpl) ChangeReferees(memberId int64) error {
 		return m.SaveRelation(rl)
 	}
 	return nil
+}
+
+func (m *memberImpl) generateMemberCode() string {
+	var code string
+	for {
+		code = util.RandString(5)
+		if memberId := m.rep.GetMemberIdByCode(code); memberId == 0 {
+			break
+		}
+	}
+	return code
 }
 
 var _ member.IFavoriteManager = new(favoriteManagerImpl)

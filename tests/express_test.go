@@ -6,12 +6,12 @@
  * description :
  * history :
  */
-package testing
+package tests
 
 import (
 	expressImpl "go2o/core/domain/express"
 	"go2o/core/domain/interface/express"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"testing"
 )
 

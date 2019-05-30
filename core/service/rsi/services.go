@@ -17,9 +17,9 @@ import (
 	"github.com/ixre/gof/storage"
 	"go2o/app"
 	"go2o/core/dao"
-	"go2o/core/factory"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
+	"go2o/core/repos"
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/auto_gen/rpc/wallet_service"
 	"go2o/core/variable"
@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	fact *factory.RepoFactory
+	fact *repos.RepoFactory
 
 	// 状态服务
 	StatusService *statusServiceImpl
@@ -97,7 +97,7 @@ func Init(ctx gof.App, appFlag int, confDir string) {
 
 func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	sto storage.Interface, confPath string) {
-	fact = (&factory.RepoFactory{}).Init(db, sto, confPath)
+	fact = (&repos.RepoFactory{}).Init(db, sto, confPath)
 	proMRepo := fact.GetProModelRepo()
 	valueRepo := fact.GetValueRepo()
 	mssRepo := fact.GetMssRepo()

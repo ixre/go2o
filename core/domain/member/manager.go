@@ -52,8 +52,6 @@ func (m *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitat
 	}
 	if perm.RegisterMode == member.RegisterModeMustRedirect && invitation {
 		return member.ErrRegOffInvitation
-	} else if perm.RegisterMode == member.RegisterModeNormal {
-
 	}
 	return nil
 }
@@ -81,6 +79,23 @@ func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
 	return nil
 }
 
+// 检查邀请注册
+func (m *MemberManagerImpl) CheckInviteRegister(code string) (inviterId int64, err error) {
+	perm := m.valRepo.GetRegisterPerm()
+	isInvite := len(code) > 0
+	// 检查注册模式及邀请码
+	err = m.registerPerm(&perm, isInvite)
+	if err == nil && isInvite {
+		//判断邀请码是否正确
+		inviterId = m.rep.GetMemberIdByInvitationCode(code)
+		if inviterId <= 0 {
+			return 0, member.ErrInvitationCode
+		}
+		return inviterId, nil
+	}
+	return 0, err
+}
+
 // 检查注册信息是否正确
 func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 	pro *member.Profile, invitationCode string) (invitationId int64, err error) {
@@ -88,15 +103,15 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 	conf := m.valRepo.GetRegistry()
 
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
-	v.Usr = strings.TrimSpace(v.Usr)
-	if v.Usr != "" || !perm.PhoneAsUser {
-		if len(v.Usr) < 6 {
+	v.User = strings.TrimSpace(v.User)
+	if v.User != "" || !perm.PhoneAsUser {
+		if len(v.User) < 6 {
 			return 0, member.ErrUsrLength
 		}
-		if !userRegex.MatchString(v.Usr) {
+		if !userRegex.MatchString(v.User) {
 			return 0, member.ErrUsrValidErr
 		}
-		if m.rep.CheckUsrExist(v.Usr, 0) {
+		if m.rep.CheckUsrExist(v.User, 0) {
 			return 0, member.ErrUsrExist
 		}
 	}
@@ -128,7 +143,7 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 		if m.rep.CheckUsrExist(pro.Phone, 0) {
 			return 0, member.ErrPhoneHasBind
 		}
-		v.Usr = pro.Phone
+		v.User = pro.Phone
 	}
 
 	// 验证IM
@@ -138,20 +153,11 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 			"IM", variable.AliasMemberIM, -1))
 	}
 
-	// 检查注册模式及邀请码
-	err = m.registerPerm(&perm, len(invitationCode) > 0)
-	if err == nil {
-		invitationId, err = m.checkInvitationCode(invitationCode)
-	}
-	if err != nil {
-		return 0, err
-	}
-
 	pro.Name = strings.TrimSpace(pro.Name)
 	pro.Avatar = strings.TrimSpace(pro.Avatar)
 	if len(pro.Name) == 0 {
 		//如果未设置昵称,则默认为用户名
-		pro.Name = v.Usr
+		pro.Name = v.User
 	}
 	if len(pro.Avatar) == 0 {
 		pro.Avatar = "res/no_avatar.gif"
