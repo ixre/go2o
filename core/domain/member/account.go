@@ -925,7 +925,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	//		v.CsnFee = 0
 	//	}
 	//	v.UpdateTime = time.Now().Unix()
-	//	_, err := a.rep.SavePresentLog(v)
+	//	_, err := a.repo.SavePresentLog(v)
 	//	return err
 	//}
 	//return member.ErrNotSupportTakeOutBusinessKind
@@ -950,7 +950,7 @@ func (a *accountImpl) FinishTakeOut(id int32, tradeNo string) error {
 	//    v.OuterNo = tradeNo
 	//    v.State = enum.ReviewConfirm
 	//    v.Remark = "银行凭证:" + tradeNo
-	//    _, err := a.rep.SavePresentLog(v)
+	//    _, err := a.repo.SavePresentLog(v)
 	//    return err
 	//}
 	//return member.ErrNotSupportTakeOutBusinessKind

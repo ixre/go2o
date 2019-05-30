@@ -36,7 +36,7 @@ type IMemberRepo interface {
 	SaveMemberLevel_New(v *Level) (int, error)
 
 	// 根据用户名获取会员
-	GetMemberByUsr(user string) *Member
+	GetMemberByUser(user string) *Member
 
 	// 根据手机号码获取会员
 	GetMemberValueByPhone(phone string) *Member

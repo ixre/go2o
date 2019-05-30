@@ -93,7 +93,7 @@ func (s *memberService) GetMember(ctx context.Context, id int64) (*member_servic
 
 // 根据用户名获取会员
 func (s *memberService) GetMemberByUser(ctx context.Context, user string) (*member_service.SMember, error) {
-	v := s.repo.GetMemberByUsr(user)
+	v := s.repo.GetMemberByUser(user)
 	if v != nil {
 		return parser.MemberDto(v), nil
 	}
@@ -586,7 +586,7 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) testLogin(user string, pwd string) (id int64, err error) {
 	user = strings.ToLower(strings.TrimSpace(user))
-	val := s.repo.GetMemberByUsr(user)
+	val := s.repo.GetMemberByUser(user)
 	if val == nil {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
@@ -597,8 +597,8 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, err error)
 	if val.Pwd != pwd {
 		return 0, member.ErrCredential
 	}
-	if val.State == member.StateStopped {
-		return 0, member.ErrMemberDisabled
+	if val.Flag&member.FlagLocked == member.FlagLocked {
+		return 0, member.ErrMemberLocked
 	}
 	return val.Id, nil
 }
@@ -613,7 +613,7 @@ func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string,
 	}
 	r := s.result(err)
 	r.Data = map[string]string{
-		"MemberId": strconv.Itoa(int(id)),
+		"member_id": strconv.Itoa(int(id)),
 	}
 	return r, nil
 }
@@ -1239,7 +1239,7 @@ func (s *memberService) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember
 
 // 根据用户名货手机获取会员
 func (s *memberService) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
-	return s.query.GetMemberByUsrOrPhone(key)
+	return s.query.GetMemberByUserOrPhone(key)
 }
 
 // 根据手机获取会员编号

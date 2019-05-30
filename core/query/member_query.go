@@ -157,7 +157,7 @@ func (m *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
 	return list
 }
 
-func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
+func (m *MemberQuery) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 	e := dto.SimpleMember{}
 	err := m.QueryRow(`SELECT id,user,mm_profile.name,mm_profile.phone,
         mm_profile.avatar FROM mm_member

@@ -48,7 +48,7 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)
 		if r.ErrCode == 0 {
-			memberId, _ := strconv.Atoi(r.Data["MemberId"])
+			memberId, _ := strconv.Atoi(r.Data["member_id"])
 			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
 			result.Member = &dto.LoginMember{
 				ID:         memberId,
