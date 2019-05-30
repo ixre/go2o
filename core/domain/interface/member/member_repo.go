@@ -81,7 +81,7 @@ type IMemberRepo interface {
 	CheckPhoneBind(phone string, memberId int64) bool
 
 	// 保存绑定
-	SaveRelation(*Relation) error
+	SaveRelation(*InviteRelation) error
 
 	// 获取账户
 	GetAccount(memberId int64) *Account
@@ -114,7 +114,7 @@ type IMemberRepo interface {
 	GetTodayTakeOutTimes(memberId int64) int
 
 	// 获取会员关联
-	GetRelation(memberId int64) *Relation
+	GetRelation(memberId int64) *InviteRelation
 
 	// 获取经验值对应的等级
 	GetLevelValueByExp(mchId int32, exp int64) int

@@ -170,7 +170,7 @@ func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 // 根据用户名获取会员
 func (m *MemberRepoImpl) GetMemberByUsr(user string) *member.Member {
 	e := &member.Member{}
-	err := m.Connector.GetOrm().GetBy(e, "user= $1", user)
+	err := m.Connector.GetOrm().GetBy(e, "'user'= $1", user)
 	if err == nil {
 		return e
 	}
@@ -264,7 +264,6 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 		}
 		return v.Id, err
 	}
-
 	return m.createMember(v)
 }
 
@@ -293,26 +292,12 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 
 func (m *MemberRepoImpl) initMember(v *member.Member) {
 	orm := m.Connector.GetOrm()
-	orm.Save(nil, &member.Account{
-		MemberId:     v.Id,
-		Balance:      0,
-		TotalExpense: 0,
-		TotalCharge:  0,
-		TotalPay:     0,
-		UpdateTime:   v.RegTime,
-	})
 
 	orm.Save(nil, &member.BankInfo{
 		MemberId: v.Id,
 		State:    1,
 	})
 
-	orm.Save(nil, &member.Relation{
-		MemberId:  v.Id,
-		CardCard:  "",
-		InviterId: 0,
-		RegMchId:  0,
-	})
 }
 
 // 删除会员
@@ -483,8 +468,8 @@ func (m *MemberRepoImpl) getRelationCk(memberId int64) string {
 }
 
 // 获取会员关联
-func (m *MemberRepoImpl) GetRelation(memberId int64) *member.Relation {
-	e := member.Relation{}
+func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
+	e := member.InviteRelation{}
 	key := m.getRelationCk(memberId)
 	if m.Storage.Get(key, &e) != nil {
 		if err := m.Connector.GetOrm().Get(memberId, &e); err != nil {
@@ -517,14 +502,19 @@ func (m *MemberRepoImpl) CheckUsrExist(user string, memberId int64) bool {
 // 手机号码是否使用
 func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int64) bool {
 	var c int
-	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_profile WHERE phone= $1 AND member_id <> $2",
+	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE phone= $1 AND id <> $2",
 		&c, phone, memberId)
 	return c != 0
 }
 
 // 保存绑定
-func (m *MemberRepoImpl) SaveRelation(v *member.Relation) error {
-	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
+func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
+	rel := m.GetRelation(v.MemberId)
+	if rel == nil {
+		_, _, err = m.Connector.GetOrm().Save(nil, v)
+	} else {
+		_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
+	}
 	if err == nil {
 		err = m.Storage.Set(m.getRelationCk(v.MemberId), *v)
 	}

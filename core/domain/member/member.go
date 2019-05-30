@@ -41,7 +41,7 @@ type memberImpl struct {
 	account         member.IAccount
 	level           *member.Level
 	rep             member.IMemberRepo
-	relation        *member.Relation
+	relation        *member.InviteRelation
 	invitation      member.IInvitationManager
 	mssRepo         mss.IMssRepo
 	valRepo         valueobject.IValueRepo
@@ -399,24 +399,21 @@ func (m *memberImpl) ConfirmLevelUp(id int32) error {
 }
 
 // 获取会员关联
-func (m *memberImpl) GetRelation() *member.Relation {
+func (m *memberImpl) GetRelation() *member.InviteRelation {
 	if m.relation == nil {
-		m.relation = m.rep.GetRelation(m.GetAggregateRootId())
+		rel := m.rep.GetRelation(m.GetAggregateRootId())
+		if rel == nil {
+			rel = &member.InviteRelation{
+				MemberId:   m.GetAggregateRootId(),
+				CardCard:   "",
+				InviterId:  0,
+				InviterStr: "",
+				RegMchId:   0,
+			}
+		}
+		m.relation = rel
 	}
 	return m.relation
-}
-
-// 保存推荐关系
-func (m *memberImpl) SaveRelation(r *member.Relation) error {
-	m.relation = r
-	m.relation.MemberId = m.value.Id
-	m.updateInviterStr(m.relation)
-	err := m.rep.SaveRelation(m.relation)
-	if err == nil {
-		// 推送关系更新消息
-		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(m.GetAggregateRootId())), "", 1000)
-	}
-	return err
 }
 
 // 更换用户名
@@ -448,7 +445,17 @@ func (m *memberImpl) Save() (int64, error) {
 	if m.value.Id > 0 {
 		return m.rep.SaveMember(m.value)
 	}
-	return m.create(m.value, nil)
+	return m.create(m.value)
+}
+
+// 激活
+func (m *memberImpl) Active() error {
+	if m.ContainFlag(member.FlagActive) {
+		return member.ErrMemberHasActive
+	}
+	m.value.Flag |= member.FlagActive
+	_, err := m.Save()
+	return err
 }
 
 // 锁定会员
@@ -470,7 +477,7 @@ func (m *memberImpl) Unlock() error {
 }
 
 // 创建会员
-func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int64, error) {
+func (m *memberImpl) create(v *member.Member) (int64, error) {
 	err := m.prepare()
 	if err == nil {
 		unix := time.Now().Unix()
@@ -481,18 +488,21 @@ func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int64, error
 		v.Exp = 0
 		v.DynamicToken = ""
 		if len(v.RegFrom) == 0 {
-			v.RegFrom = "API-INTERNAL"
+			v.RegFrom = ""
 		}
+		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
 		v.PremiumExpires = 0
 		// 创建一个用户编码
 		v.Code = m.generateMemberCode()
 		// 创建一个邀请码
 		v.InvitationCode = m.generateInvitationCode()
-		id, err := m.rep.SaveMember(v)
-		if err == nil {
+		id, err1 := m.rep.SaveMember(v)
+		if err1 == nil {
 			m.value.Id = id
 			go m.memberInit()
+		} else {
+			err = err1
 		}
 	}
 	return m.GetAggregateRootId(), err
@@ -510,6 +520,47 @@ func (m *memberImpl) checkUser(user string) error {
 		return member.ErrUsrExist
 	}
 	return nil
+}
+
+// 会员初始化
+func (m *memberImpl) memberInit() {
+	// 创建账户
+	m.initAccount()
+	// 其他操作
+	conf := m.valRepo.GetRegistry()
+	// 注册后赠送积分
+	if conf.PresentIntegralNumOfRegister > 0 {
+		m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
+			"", float32(conf.PresentIntegralNumOfRegister), 0)
+	}
+}
+
+// 初始化账户
+func (m *memberImpl) initAccount() error {
+	m.account = NewAccount(m, &member.Account{
+		MemberId:          m.GetAggregateRootId(),
+		Integral:          0,
+		FreezeIntegral:    0,
+		Balance:           0,
+		FreezeBalance:     0,
+		ExpiredBalance:    0,
+		WalletBalance:     0,
+		FreezeWallet:      0,
+		ExpiredPresent:    0,
+		TotalPresentFee:   0,
+		FlowBalance:       0,
+		GrowBalance:       0,
+		GrowAmount:        0,
+		GrowEarnings:      0,
+		GrowTotalEarnings: 0,
+		TotalExpense:      0,
+		TotalCharge:       0,
+		TotalPay:          0,
+		PriorityPay:       0,
+		UpdateTime:        m.value.RegTime,
+	}, m.rep, m.manager, m.valRepo)
+	_, err := m.account.Save()
+	return err
 }
 
 // 检查注册信息是否正确
@@ -580,14 +631,15 @@ func (m *memberImpl) checkPhoneBind(phone string, memberId int64) error {
 	return nil
 }
 
-// 会员初始化
-func (m *memberImpl) memberInit() {
-	conf := m.valRepo.GetRegistry()
-	// 注册后赠送积分
-	if conf.PresentIntegralNumOfRegister > 0 {
-		m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
-			"", float32(conf.PresentIntegralNumOfRegister), 0)
+func (m *memberImpl) generateMemberCode() string {
+	var code string
+	for {
+		code = util.RandString(5)
+		if memberId := m.rep.GetMemberIdByCode(code); memberId == 0 {
+			break
+		}
 	}
+	return code
 }
 
 // 创建邀请码
@@ -603,7 +655,7 @@ func (m *memberImpl) generateInvitationCode() string {
 }
 
 // 强制更新邀请关系
-func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
+func (m *memberImpl) forceUpdateInviterStr(r *member.InviteRelation) {
 	// 无邀请关系
 	if r.InviterId == 0 {
 		r.InviterStr = ""
@@ -634,19 +686,32 @@ func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
 }
 
 // 更新邀请关系
-func (m *memberImpl) updateInviterStr(r *member.Relation) {
+func (m *memberImpl) updateInviterStr(r *member.InviteRelation) {
 	prefix := fmt.Sprintf("{'r0':%d,", r.InviterId)
 	if !strings.HasPrefix(r.InviterStr, prefix) {
 		m.forceUpdateInviterStr(r)
 	}
 }
 
-// 更改邀请人
-func (m *memberImpl) ChangeReferees(memberId int64) error {
+// 保存推荐关系
+func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
+	m.relation = r
+	m.relation.MemberId = m.value.Id
+	m.updateInviterStr(m.relation)
+	err := m.rep.SaveRelation(m.relation)
+	if err == nil {
+		// 推送关系更新消息
+		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(m.GetAggregateRootId())), "", 1000)
+	}
+	return err
+}
+
+// 绑定邀请人,如果已邀请,force为true时更新
+func (m *memberImpl) BindInviter(memberId int64, force bool) error {
 	if memberId > 0 {
 		rm := m.rep.GetMember(memberId)
 		if rm == nil {
-			return member.ErrNoSuchMember
+			return member.ErrNoValidInviter
 		}
 	}
 	rl := m.GetRelation()
@@ -655,20 +720,9 @@ func (m *memberImpl) ChangeReferees(memberId int64) error {
 		if memberId == 0 {
 			rl.InviterStr = ""
 		}
-		return m.SaveRelation(rl)
+		return m.saveRelation(rl)
 	}
 	return nil
-}
-
-func (m *memberImpl) generateMemberCode() string {
-	var code string
-	for {
-		code = util.RandString(5)
-		if memberId := m.rep.GetMemberIdByCode(code); memberId == 0 {
-			break
-		}
-	}
-	return code
 }
 
 var _ member.IFavoriteManager = new(favoriteManagerImpl)
