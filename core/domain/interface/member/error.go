@@ -34,6 +34,9 @@ var (
 	ErrMemberDisabled = domain.NewError(
 		"err_member_stopped", "会员已被停用")
 
+	ErrMemberHasActive = domain.NewError(
+		"err_member_has_active", "会员已激活")
+
 	ErrPremiumValue = domain.NewError(
 		"err_member_premium_value", "premium not match")
 
@@ -93,6 +96,8 @@ var (
 	ErrNoSuchMember = domain.NewError(
 		"member_no_such_member", "会员不存在")
 
+	ErrNoValidInviter = domain.NewError(
+		"member_no_valid_inviter", "邀请人不正确")
 	ErrDeliverAddressLen = domain.NewError(
 		"err_deliver_address_len", "请填写详细的配送地址")
 

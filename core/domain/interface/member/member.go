@@ -82,6 +82,8 @@ type (
 		SendCheckCode(operation string, mssType int) (string, error)
 		// 对比验证码
 		CompareCode(code string) error
+		// 激活
+		Active() error
 		// 锁定会员
 		Lock() error
 		// 解锁会员
@@ -89,11 +91,9 @@ type (
 		// 判断是否包含标志
 		ContainFlag(f int) bool
 		// 获取关联的会员
-		GetRelation() *Relation
-		// 更新会员绑定
-		SaveRelation(r *Relation) error
-		// 更改邀请人
-		ChangeReferees(memberId int64) error
+		GetRelation() *InviteRelation
+		// 绑定邀请人,如果已邀请,force为true时更新
+		BindInviter(memberId int64, force bool) error
 		// 增加经验值
 		AddExp(exp int) error
 		// 升级为高级会员
@@ -231,9 +231,9 @@ type (
 		// 昵称
 		Name string `db:"name"`
 		// 用户名
-		User string `db:"user"`
+		User string `db:"\"user\""`
 		// 密码
-		Pwd string `db:"Pwd"`
+		Pwd string `db:"pwd"`
 		// 头像
 		Avatar string `db:"avatar"`
 		// 交易密码
@@ -323,8 +323,8 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	//会员关联表
-	Relation struct {
+	// 会员邀请关联表
+	InviteRelation struct {
 		// 会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
 		// 会员卡号

@@ -3,6 +3,7 @@ package tests
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/msq"
 	"go2o/tests/ti"
 	"testing"
 	"time"
@@ -10,7 +11,10 @@ import (
 
 func TestCreateNewMember(t *testing.T) {
 	inviteCode := ""
-	phone := "13162222801"
+	phone := "13162222807"
+	inviterId := 22149
+	ti.InitMsq()
+	defer msq.Close()
 	repo := ti.Factory.GetMemberRepo()
 	_, err := repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
@@ -27,10 +31,14 @@ func TestCreateNewMember(t *testing.T) {
 	}
 	m := repo.CreateMember(v) //创建会员
 	id, err := m.Save()
+	if err == nil {
+		err = m.BindInviter(int64(inviterId), true)
+	}
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	time.Sleep(5 * time.Second)
 	t.Logf("注册成功,ID:%d", id)
 }
 

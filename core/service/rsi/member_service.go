@@ -62,11 +62,11 @@ func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 
 func (s *memberService) init() *memberService {
 	db := gof.CurrentApp.Db()
-	var list []*member.Relation
+	var list []*member.InviteRelation
 	db.GetOrm().Select(&list, "")
-	for _, v := range list {
-		s.repo.GetMember(v.MemberId).SaveRelation(v)
-	}
+	//for _, v := range list {
+	//	s.repo.GetMember(v.MemberId).saveRelation(v)
+	//}
 	return s
 }
 
@@ -367,7 +367,7 @@ func (s *memberService) SaveMember(v *member_service.SMember) (int64, error) {
 }
 
 func (s *memberService) updateMember(v *member_service.SMember) (int64, error) {
-	m := s.repo.GetMember(v.ID)
+	m := s.repo.GetMember(int64(v.ID))
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
@@ -379,60 +379,31 @@ func (s *memberService) updateMember(v *member_service.SMember) (int64, error) {
 }
 
 // 注册会员
-func (s *memberService) RegisterMemberV1(ctx context.Context, member *member_service.SMember, profile *member_service.SProfile, mchId int32, cardId string, inviteCode string) (r *ttype.Result_, err error) {
-	if member == nil || profile == nil {
-		return s.error(errors.New("缺少参数:member/profile")), nil
-	}
-	v := parser.Member(member)
-	pro := parser.MemberProfile2(profile)
-	invitationId, err := s.repo.GetManager().PrepareRegister(
-		v, pro, inviteCode)
-	if err == nil {
-		m := s.repo.CreateMember(v) //创建会员
-		id, err := m.Save()
-		if err == nil {
-			pro.Sex = 1
-			pro.MemberId = id
-			//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
-			if err = m.Profile().SaveProfile(pro); err != nil {
-				s.repo.DeleteMember(id)
-			} else {
-				// 保存关联信息
-				rl := m.GetRelation()
-				rl.InviterId = invitationId
-				rl.RegMchId = mchId
-				rl.CardCard = cardId
-				err = m.SaveRelation(rl)
-			}
-		}
-		return s.success(map[string]string{
-			"member_id": util.Str(id),
-		}), nil
-	}
-	return s.error(err), nil
-}
-
-// 注册会员
 func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd string,
 	flag int32, name string, phone string, email string, avatar string,
-	inviteCode string) (r *ttype.Result_, err error) {
-	_, err = s.repo.GetManager().CheckInviteRegister(inviteCode)
+	extend map[string]string) (r *ttype.Result_, err error) {
+	inviteCode := extend["invite_code"]
+	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
 		return s.error(err), nil
 	}
 	v := &member.Member{
-		User:   user,
-		Pwd:    pwd,
-		Name:   name,
-		Avatar: avatar,
-		Phone:  phone,
-		Email:  email,
-		Flag:   int(flag),
+		User:    user,
+		Pwd:     domain.Sha1Pwd(pwd),
+		Name:    name,
+		Avatar:  avatar,
+		Phone:   phone,
+		Email:   email,
+		RegFrom: extend["reg_from"],
+		RegIp:   extend["reg_ip"],
+		Flag:    int(flag),
 	}
 	m := s.repo.CreateMember(v) //创建会员
 	id, err := m.Save()
 
 	if err == nil {
+		// 保存关联信息
+		err = m.BindInviter(inviterId, true)
 		//m := s.repo.CreateMember(v) //创建会员
 		//id, err := m.Save()
 		//if err == nil {
@@ -447,7 +418,7 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		//		rl.InviterId = invitationId
 		//		rl.RegMchId = mchId
 		//		rl.CardCard = cardId
-		//		err = m.SaveRelation(rl)
+		//		err = m.saveRelation(rl)
 		//	}
 		//}
 		return s.success(map[string]string{
@@ -458,7 +429,7 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 }
 
 // 注册会员
-func (s *memberService) RegisterMember(mchId int32, v1 *member_service.SMember,
+func (s *memberService) RegisterMember1(mchId int32, v1 *member_service.SMember,
 	pro1 *member_service.SProfile, cardId string, invitationCode string) (int64, error) {
 	if v1 == nil || pro1 == nil {
 		return 0, errors.New("missing data")
@@ -478,11 +449,7 @@ func (s *memberService) RegisterMember(mchId int32, v1 *member_service.SMember,
 				s.repo.DeleteMember(id)
 			} else {
 				// 保存关联信息
-				rl := m.GetRelation()
-				rl.InviterId = invitationId
-				rl.RegMchId = mchId
-				rl.CardCard = cardId
-				err = m.SaveRelation(rl)
+				err = m.BindInviter(invitationId, true)
 			}
 		}
 		return id, err
@@ -499,8 +466,20 @@ func (s *memberService) GetMemberLevel(memberId int64) *member.Level {
 	return m.GetLevel()
 }
 
-func (s *memberService) GetRelation(memberId int64) *member.Relation {
+func (s *memberService) GetRelation(memberId int64) *member.InviteRelation {
 	return s.repo.GetRelation(memberId)
+}
+
+// 激活会员
+func (s *memberService) Active(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	if err := m.Active(); err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // 锁定/解锁会员
