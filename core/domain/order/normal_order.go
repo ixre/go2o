@@ -396,7 +396,7 @@ func (o *normalOrderImpl) checkBuyer() error {
 		return member.ErrNoSuchMember
 	}
 	if buyer.GetValue().State == 0 {
-		return member.ErrMemberDisabled
+		return member.ErrMemberLocked
 	}
 	if o.value.ShippingAddress == "" ||
 		o.value.ConsigneePhone == "" ||

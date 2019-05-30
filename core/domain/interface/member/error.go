@@ -31,8 +31,8 @@ var (
 	ErrSessionTimeout = domain.NewError(
 		"member_session_time_out", "会员会话超时")
 
-	ErrMemberDisabled = domain.NewError(
-		"err_member_stopped", "会员已被停用")
+	ErrMemberLocked = domain.NewError(
+		"err_member_locked", "会员已被停用")
 
 	ErrMemberHasActive = domain.NewError(
 		"err_member_has_active", "会员已激活")

@@ -165,7 +165,7 @@ func (o *tradeOrderImpl) checkBuyer() error {
 		return member.ErrNoSuchMember
 	}
 	if buyer.GetValue().State == 0 {
-		return member.ErrMemberDisabled
+		return member.ErrMemberLocked
 	}
 	return nil
 }

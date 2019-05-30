@@ -177,7 +177,7 @@ func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, err error) {
 	user = strings.ToLower(strings.TrimSpace(user))
-	val := m._memberRepo.GetMemberByUsr(user)
+	val := m._memberRepo.GetMemberByUser(user)
 	if val == nil {
 		val = m._memberRepo.GetMemberValueByPhone(user)
 	}
@@ -191,7 +191,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 		}
 	}
 	if val.State == member.StateStopped {
-		return 0, member.ErrMemberDisabled
+		return 0, member.ErrMemberLocked
 	}
 	return val.Id, nil
 }
