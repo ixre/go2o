@@ -152,7 +152,7 @@ type (
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 用户名
-		Usr string `db:"usr"`
+		Usr string `db:"user"`
 		// 密码
 		Pwd string `db:"pwd"`
 		// 商户名称号
@@ -237,7 +237,7 @@ type (
 		// 关联的会员编号,作为结算账户
 		MemberId int64 `db:"member_id"`
 		// 用户
-		Usr string `db:"usr"`
+		Usr string `db:"user"`
 		// 密码
 		Pwd string `db:"pwd"`
 		// 商户名称

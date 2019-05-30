@@ -211,9 +211,9 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(delivery.MerchantDeliverBind{}, "dlv_merchant_bind")
 
 	// 用户
-	orm.Mapping(user.RoleValue{}, "usr_role")
-	orm.Mapping(user.PersonValue{}, "usr_person")
-	orm.Mapping(user.CredentialValue{}, "usr_credential")
+	orm.Mapping(user.RoleValue{}, "user_role")
+	orm.Mapping(user.PersonValue{}, "user_person")
+	orm.Mapping(user.CredentialValue{}, "user_credential")
 
 	orm.Mapping(personfinance.RiseInfoValue{}, "pf_riseinfo")
 	orm.Mapping(personfinance.RiseDayInfo{}, "pf_riseday")

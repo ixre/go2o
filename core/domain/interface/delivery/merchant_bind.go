@@ -13,6 +13,6 @@ type MerchantDeliverBind struct {
 	MerchantId   int32 `db:"merchant_id"`
 	CoverageId   int32 `db:"coverage_id"`
 	ShopId       int32 `db:"shop_id"`
-	DeliverUsrId int32 `db:"delivery_usr_id"`
+	DeliverUsrId int32 `db:"delivery_user_id"`
 	Enabled      int   `db:"enabled"`
 }

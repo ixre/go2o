@@ -63,7 +63,7 @@ func LevelDto(src *member.Level) *member_service.SLevel {
 func MemberDto(src *member.Member) *member_service.SMember {
 	return &member_service.SMember{
 		ID:             src.Id,
-		Usr:            src.Usr,
+		Usr:            src.User,
 		Pwd:            src.Pwd,
 		TradePwd:       src.TradePwd,
 		Exp:            int32(src.Exp),
@@ -89,7 +89,7 @@ func MemberDto(src *member.Member) *member_service.SMember {
 func Member(src *member_service.SMember) *member.Member {
 	return &member.Member{
 		Id:             src.ID,
-		Usr:            src.Usr,
+		User:           src.Usr,
 		Pwd:            src.Pwd,
 		TradePwd:       src.TradePwd,
 		Exp:            int(src.Exp),

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package testing
+package tests
 
 import (
 	"fmt"
@@ -16,8 +16,8 @@ import (
 	"go2o/core/domain/interface/payment"
 	oi "go2o/core/domain/order"
 	"go2o/core/repos"
-	"go2o/core/testing/ti"
 	"go2o/core/variable"
+	"go2o/tests/ti"
 	"log"
 	"strconv"
 	"strings"

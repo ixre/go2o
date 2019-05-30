@@ -16,3 +16,14 @@ COMMENT ON COLUMN "public".mm_integral_log.review_state IS '审核状态';
 COMMENT ON COLUMN "public".mm_integral_log.create_time IS '创建时间';
 COMMENT ON COLUMN "public".mm_integral_log.update_time IS '更新时间';
 
+CREATE INDEX mm_member_code ON "public".mm_member (code);
+CREATE INDEX mm_member_user ON "public".mm_member ("user");
+
+ALTER TABLE "public".mm_member ADD COLUMN avatar varchar(80) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mm_member ADD COLUMN phone varchar(15) DEFAULT '' NOT NULL;
+ ALTER TABLE "public".mm_member ADD COLUMN email varchar(50) DEFAULT '' NOT NULL;
+COMMENT ON COLUMN "public".mm_member.flag IS '会员标志';
+
+
+ALTER TABLE "public".mm_member ADD COLUMN name varchar(20) DEFAULT '' NOT NULL;
+  COMMENT ON COLUMN "public".mm_member.name IS '昵称';

@@ -1,9 +1,9 @@
-package testing
+package tests
 
 import (
 	"errors"
 	"go2o/core/domain/interface/merchant/wholesaler"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"testing"
 )
 

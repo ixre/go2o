@@ -32,7 +32,7 @@ const (
 	DbServer  = "db_server"
 	DbPort    = "db_port"
 	DbName    = "db_name"
-	DbUsr     = "db_usr"
+	DbUsr     = "db_user"
 	DbPwd     = "db_pwd"
 	DbCharset = "db_charset"
 	//REDIS配置

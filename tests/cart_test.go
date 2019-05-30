@@ -1,10 +1,10 @@
-package testing
+package tests
 
 import (
 	"encoding/json"
 	"fmt"
 	"go2o/core/domain/interface/cart"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"log"
 	"strconv"
 	"testing"

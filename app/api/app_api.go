@@ -16,7 +16,7 @@ func (a AppApi) Process(fn string, ctx api.Context) *api.Response {
 // 检测版本
 func (a AppApi) check(ctx api.Context) interface{} {
 	form := ctx.Form()
-	version := "1.0.1"
+	version := "1.0.0"
 	prodVersion := form.GetString("prod_version")
 	prodType := form.GetString("prod_type")
 	info := "修复已知BUG\n界面更新修复\n主要业务逻辑调整"

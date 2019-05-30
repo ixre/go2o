@@ -6,7 +6,7 @@ import (
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/member"
-	"go2o/core/factory"
+	"go2o/core/repos"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -59,7 +59,7 @@ type Gateway struct {
 func NewGateway(s storage.Interface) *Gateway {
 	return &Gateway{
 		s:          s,
-		memberRepo: factory.Repo.GetMemberRepo(),
+		memberRepo: repos.Repo.GetMemberRepo(),
 	}
 }
 

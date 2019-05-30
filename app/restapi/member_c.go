@@ -70,7 +70,7 @@ func (mc *MemberC) Register(c echo.Context) error {
 
 	r := c.Request()
 	mchId := getMerchantId(c)
-	usr := r.FormValue("usr")
+	user := r.FormValue("user")
 	pwd := r.FormValue("pwd")
 	phone := r.FormValue("phone")
 	registerFrom := r.FormValue("reg_from")          // 注册来源
@@ -81,7 +81,7 @@ func (mc *MemberC) Register(c echo.Context) error {
 	}
 	m := &member_service.SMember{}
 	pro := &member_service.SProfile{}
-	m.Usr = usr
+	m.Usr = user
 	m.Pwd = domain.MemberSha1Pwd(pwd)
 	m.RegIp = regIp
 	m.RegFrom = registerFrom

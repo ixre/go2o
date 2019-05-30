@@ -92,8 +92,8 @@ func (s *memberService) GetMember(ctx context.Context, id int64) (*member_servic
 }
 
 // 根据用户名获取会员
-func (s *memberService) GetMemberByUser(ctx context.Context, usr string) (*member_service.SMember, error) {
-	v := s.repo.GetMemberByUsr(usr)
+func (s *memberService) GetMemberByUser(ctx context.Context, user string) (*member_service.SMember, error) {
+	v := s.repo.GetMemberByUsr(user)
 	if v != nil {
 		return parser.MemberDto(v), nil
 	}
@@ -332,8 +332,8 @@ func (s *memberService) CompareCode(memberId int64, code string) error {
 }
 
 // 更改会员用户名
-func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) (*ttype.Result_, error) {
-	err := s.changeUsr(int(memberId), usr)
+func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, user string) (*ttype.Result_, error) {
+	err := s.changeUsr(int(memberId), user)
 	return s.result(err), nil
 }
 
@@ -405,6 +405,51 @@ func (s *memberService) RegisterMemberV1(ctx context.Context, member *member_ser
 				err = m.SaveRelation(rl)
 			}
 		}
+		return s.success(map[string]string{
+			"member_id": util.Str(id),
+		}), nil
+	}
+	return s.error(err), nil
+}
+
+// 注册会员
+func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd string,
+	flag int32, name string, phone string, email string, avatar string,
+	inviteCode string) (r *ttype.Result_, err error) {
+	_, err = s.repo.GetManager().CheckInviteRegister(inviteCode)
+	if err != nil {
+		return s.error(err), nil
+	}
+	v := &member.Member{
+		User:   user,
+		Pwd:    pwd,
+		Name:   name,
+		Avatar: avatar,
+		Phone:  phone,
+		Email:  email,
+		Flag:   int(flag),
+	}
+	m := s.repo.CreateMember(v) //创建会员
+	id, err := m.Save()
+
+	if err == nil {
+		//m := s.repo.CreateMember(v) //创建会员
+		//id, err := m.Save()
+		//if err == nil {
+		//	pro.Sex = 1
+		//	pro.MemberId = id
+		//	//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
+		//	if err = m.Profile().SaveProfile(pro); err != nil {
+		//		s.repo.DeleteMember(id)
+		//	} else {
+		//		// 保存关联信息
+		//		rl := m.GetRelation()
+		//		rl.InviterId = invitationId
+		//		rl.RegMchId = mchId
+		//		rl.CardCard = cardId
+		//		err = m.SaveRelation(rl)
+		//	}
+		//}
 		return s.success(map[string]string{
 			"member_id": util.Str(id),
 		}), nil
@@ -560,12 +605,12 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) {
-	usr = strings.ToLower(strings.TrimSpace(usr))
-	val := s.repo.GetMemberByUsr(usr)
+func (s *memberService) testLogin(user string, pwd string) (id int64, err error) {
+	user = strings.ToLower(strings.TrimSpace(user))
+	val := s.repo.GetMemberByUsr(user)
 	if val == nil {
 		//todo: 界面加上使用手机号码登陆
-		//val = m.repo.GetMemberValueByPhone(usr)
+		//val = m.repo.GetMemberValueByPhone(user)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
@@ -581,8 +626,8 @@ func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) 
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) CheckLogin(ctx context.Context, usr string, pwd string, update bool) (*ttype.Result_, error) {
-	id, err := s.testLogin(usr, pwd)
+func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*ttype.Result_, error) {
+	id, err := s.testLogin(user, pwd)
 	if update && err == nil {
 		m := s.repo.GetMember(id)
 		err = m.UpdateLoginTime()
@@ -611,11 +656,11 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
-func (s *memberService) CheckUsr(usr string, memberId int64) error {
-	if len(usr) < 6 {
+func (s *memberService) CheckUsr(user string, memberId int64) error {
+	if len(user) < 6 {
 		return member.ErrUsrLength
 	}
-	if s.repo.CheckUsrExist(usr, memberId) {
+	if s.repo.CheckUsrExist(user, memberId) {
 		return member.ErrUsrExist
 	}
 	return nil
@@ -1298,12 +1343,12 @@ func (s *memberService) PagedExpiresCoupon(memberId int, start, end int) (int, [
 }
 
 // 更改用户名
-func (s *memberService) changeUsr(memberId int, usr string) error {
+func (s *memberService) changeUsr(memberId int, user string) error {
 	m := s.repo.GetMember(int64(memberId))
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.ChangeUsr(usr)
+	return m.ChangeUsr(user)
 }
 
 // 更改手机号

@@ -168,38 +168,43 @@ func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 }
 
 // 根据用户名获取会员
-func (m *MemberRepoImpl) GetMemberByUsr(usr string) *member.Member {
+func (m *MemberRepoImpl) GetMemberByUsr(user string) *member.Member {
 	e := &member.Member{}
-	err := m.Connector.GetOrm().GetBy(e, "usr= $1", usr)
+	err := m.Connector.GetOrm().GetBy(e, "user= $1", user)
 	if err == nil {
 		return e
 	}
 	return nil
 }
 
+// 根据编码获取会员
+func (m *MemberRepoImpl) GetMemberIdByCode(code string) int {
+	var id int
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE code= $1", &id, code)
+	return id
+}
+
 // 根据手机号码获取会员
 func (m *MemberRepoImpl) GetMemberValueByPhone(phone string) *member.Member {
 	e := &member.Member{}
-	err := m.GetOrm().GetByQuery(e, `SELECT * FROM mm_member
-		INNER JOIN mm_profile ON mm_profile.member_id = mm_member.id
-		 WHERE phone= $1`, phone)
-	if err != nil {
-		return nil
+	err := m.Connector.GetOrm().GetBy(e, "phone = $1", phone)
+	if err == nil {
+		return e
 	}
-	return e
+	return nil
 }
 
 // 根据手机号获取会员编号
 func (m *MemberRepoImpl) GetMemberIdByPhone(phone string) int64 {
 	var id int64
-	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone= $1", &id, phone)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE phone= $1", &id, phone)
 	return id
 }
 
 // 根据邮箱地址获取会员编号
 func (m *MemberRepoImpl) GetMemberIdByEmail(email string) int64 {
 	var id int64
-	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email= $1", &id, email)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE email= $1", &id, email)
 	return id
 }
 
@@ -337,7 +342,7 @@ func (m *MemberRepoImpl) DeleteMember(id int64) error {
 
 func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 	var id int64
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = $1", &id, user)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE user = $1", &id, user)
 	return id
 }
 
@@ -502,10 +507,10 @@ func (m *MemberRepoImpl) GetLevelValueByExp(mchId int32, exp int64) int {
 }
 
 // 用户名是否存在
-func (m *MemberRepoImpl) CheckUsrExist(usr string, memberId int64) bool {
+func (m *MemberRepoImpl) CheckUsrExist(user string, memberId int64) bool {
 	var c int
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr= $1 AND id <> $2 LIMIT 1",
-		&c, usr, memberId)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE user= $1 AND id <> $2 LIMIT 1",
+		&c, user, memberId)
 	return c != 0
 }
 
@@ -578,8 +583,8 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
-		m.Connector.Query(`SELECT m.id,m.usr,m.level,p.avatar,p.name,p.phone,p.im FROM
-            (SELECT id,usr,level FROM mm_member WHERE id IN (SELECT member_id FROM
+		m.Connector.Query(`SELECT m.id,m.user,m.level,p.avatar,p.name,p.phone,p.im FROM
+            (SELECT id,user,level FROM mm_member WHERE id IN (SELECT member_id FROM
              mm_relation WHERE inviter_id= $1) ORDER BY level DESC,id LIMIT $3 OFFSET $2) m
              INNER JOIN mm_profile p ON p.member_id = m.id ORDER BY level DESC,id`,
 			func(rs *sql.Rows) {

@@ -16,6 +16,20 @@ service MemberService{
      **/
     ttype.Result RegisterMemberV1(1:SMember member,2:SProfile profile,3:i32 mchId,4:string cardId,5:string inviteCode)
 
+    /**
+     * 注册会员
+     * @param user 登陆用户名
+     * @param pwd 登陆密码,md5运算后的字符串
+     * @param flag 用户自定义标志
+     * @param phone 手机号码
+     * @param email 邮箱
+     * @param avatar 头像
+     * @param inviteCode 邀请码
+     * @return 注册结果，返回user_code
+     */
+    ttype.Result RegisterMemberV2(1:string user,2:string pwd,3:i32 flag,4:string name,
+        5:string phone,6:string email,7:string avatar,8:string inviteCode)
+
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
     ttype.Result CheckLogin(1:string user,2:string pwd,3:bool update)

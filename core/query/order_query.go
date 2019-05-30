@@ -472,24 +472,24 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
 	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
         ot.order_amount,ot.discount_amount,
         ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time,
-        m.usr FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
+        m.user FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
         LEFT JOIN mm_member m ON m.id = o.buyer_id
          WHERE ot.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			var cashPay int
 			var ticket string
-			var usr string
+			var user string
 			for rs.Next() {
 				e := &order_service.SComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
-					&cashPay, &ticket, &e.State, &e.CreateTime, &usr)
+					&cashPay, &ticket, &e.State, &e.CreateTime, &user)
 				e.Data = map[string]string{
 					"StateText":   order.OrderState(e.State).String(),
 					"CashPay":     strconv.Itoa(cashPay),
 					"TicketImage": ticket,
-					"Usr":         usr,
+					"User":        user,
 					"CreateTime":  format.UnixTimeStr(e.CreateTime),
 				}
 				orderList = append(orderList, e)

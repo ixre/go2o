@@ -1,12 +1,38 @@
-package testing
+package tests
 
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"testing"
 	"time"
 )
+
+func TestCreateNewMember(t *testing.T) {
+	inviteCode := ""
+	phone := "13162222801"
+	repo := ti.Factory.GetMemberRepo()
+	_, err := repo.GetManager().CheckInviteRegister(inviteCode)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	v := &member.Member{
+		User:   phone,
+		Pwd:    domain.Md5("123456"),
+		Avatar: "",
+		Phone:  phone,
+		Email:  "",
+		Flag:   member.FlagActive,
+	}
+	m := repo.CreateMember(v) //创建会员
+	id, err := m.Save()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Logf("注册成功,ID:%d", id)
+}
 
 func TestSaveMemberGroups(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
