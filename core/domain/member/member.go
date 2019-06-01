@@ -453,7 +453,7 @@ func (m *memberImpl) Active() error {
 	if m.ContainFlag(member.FlagActive) {
 		return member.ErrMemberHasActive
 	}
-	if m.ContainFlag(member.FlagLocked){
+	if m.ContainFlag(member.FlagLocked) {
 		return member.ErrMemberLocked
 	}
 	m.value.Flag |= member.FlagActive
@@ -526,10 +526,10 @@ func (m *memberImpl) checkUser(user string) error {
 }
 
 // 会员初始化
-func (m *memberImpl) memberInit()error {
+func (m *memberImpl) memberInit() error {
 	// 创建账户
 	m.account = NewAccount(m, &member.Account{}, m.repo, m.manager, m.valRepo)
-	if _, err := m.account.Save();err != nil{
+	if _, err := m.account.Save(); err != nil {
 		return err
 	}
 	// 其他操作
@@ -541,7 +541,6 @@ func (m *memberImpl) memberInit()error {
 	}
 	return nil
 }
-
 
 // 检查注册信息是否正确
 func (m *memberImpl) prepare() (err error) {

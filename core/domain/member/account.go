@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
@@ -30,18 +31,18 @@ type accountImpl struct {
 	mm        member.IMemberManager
 	value     *member.Account
 	rep       member.IMemberRepo
-	valueRepo valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func NewAccount(m *memberImpl, value *member.Account,
 	rep member.IMemberRepo, mm member.IMemberManager,
-	valueRepo valueobject.IValueRepo) member.IAccount {
+	registryRepo registry.IRegistryRepo) member.IAccount {
 	return &accountImpl{
 		member:    m,
 		value:     value,
 		rep:       rep,
 		mm:        mm,
-		valueRepo: valueRepo,
+		registryRepo:registryRepo,
 	}
 }
 
@@ -802,13 +803,15 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 		return 0, "", member.ErrIncorrectAmount
 	}
 	// 检测是否开启提现
-	conf := a.valueRepo.GetRegistry()
-	if !conf.MemberTakeOutOn {
-		return 0, "", errors.New(conf.MemberTakeOutMessage)
+	takOutOn := a.registryRepo.Get(registry.MemberTakeOutOn).BoolValue()
+	if !takOutOn {
+		msg := a.registryRepo.Get(registry.MemberTakeOutMessage).StringValue()
+		return 0, "", errors.New(msg)
 	}
 
 	// 检测是否实名
-	if conf.TakeOutMustTrust {
+	mustTrust := a.registryRepo.Get(registry.MemberTakeOutMustTrust).BoolValue()
+	if mustTrust {
 		trust := a.member.Profile().GetTrustedInfo()
 		if trust.ReviewState != int(enum.ReviewPass) {
 			return 0, "", member.ErrTakeOutNotTrust
@@ -826,17 +829,19 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制
-	conf2 := a.valueRepo.GetGlobNumberConf()
-	if amount < conf2.MinTakeOutAmount {
+	minAmount := float32(a.registryRepo.Get(registry.MemberMinTakeOutAmount).FloatValue())
+	if amount < minAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
-			format.FormatFloat(conf2.MinTakeOutAmount)))
+			format.FormatFloat(minAmount)))
 	}
-	if amount > conf2.MaxTakeOutAmount {
+	maxAmount := float32(a.registryRepo.Get(registry.MemberMaxTakeOutAmount).FloatValue())
+	if maxAmount > 0 && amount > maxAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
-			format.FormatFloat(conf2.MaxTakeOutAmount)))
+			format.FormatFloat(maxAmount)))
 	}
 	// 检测是否超过限制
-	if maxTimes := conf2.MaxTakeOutTimesOfDay; maxTimes > 0 {
+	maxTimes := a.registryRepo.Get(registry.MemberMaxTakeOutTimesOfDay).IntValue()
+	if  maxTimes > 0 {
 		takeTimes := a.rep.GetTodayTakeOutTimes(a.GetDomainId())
 		if takeTimes >= maxTimes {
 			return 0, "", member.ErrAccountOutOfTakeOutTimes
@@ -1053,11 +1058,10 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount fl
 	csnFee := amount * csnRate
 
 	// 检测是否开启转账
-	keys := []string{valueobject.RKMemberTransferAccountsOn,
-		valueobject.RKMemberTransferAccountsMessage}
-	registry := a.valueRepo.GetsRegistryMap(keys)
-	if b := registry[keys[0]]; b != "true" && b != "1" {
-		return errors.New(registry[keys[1]])
+	transferOn := a.registryRepo.Get(registry.MemberTransferAccountsOn).BoolValue()
+	if  !transferOn {
+		msg := a.registryRepo.Get(registry.MemberTransferAccountsMessage).StringValue()
+		return errors.New(msg)
 	}
 
 	switch accountKind {

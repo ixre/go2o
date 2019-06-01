@@ -23,6 +23,7 @@ import (
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
@@ -33,6 +34,7 @@ var (
 )
 
 type RepoFactory struct {
+	registryRepo  registry.IRegistryRepo
 	proMRepo   promodel.IProModelRepo
 	valueRepo  valueobject.IValueRepo
 	userRepo   user.IUserRepo
@@ -68,6 +70,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface, confPath stri
 	Repo = r
 	orm := db.GetOrm()
 	/** Repository **/
+	r.registryRepo = NewRegistryRepo(db)
 	r.proMRepo = NewProModelRepo(db, orm)
 	r.valueRepo = NewValueRepo(confPath, db, sto)
 	r.userRepo = NewUserRepo(db)
@@ -80,7 +83,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface, confPath stri
 	r.itemWsRepo = NewItemWholesaleRepo(db)
 	r.catRepo = NewCategoryRepo(db, r.valueRepo, sto)
 	r.itemRepo = NewGoodsItemRepo(db, r.catRepo, r.productRepo,
-		r.proMRepo, r.itemWsRepo, r.expressRepo, r.valueRepo)
+		r.proMRepo, r.itemWsRepo, r.expressRepo, r.registryRepo)
 	r.tagSaleRepo = NewTagSaleRepo(db, r.valueRepo)
 	r.promRepo = NewPromotionRepo(db, r.itemRepo, r.memberRepo)
 

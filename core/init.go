@@ -31,6 +31,7 @@ import (
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
@@ -81,7 +82,7 @@ func OrmMapping(conn db.Connector) {
 	//table mapping
 	orm := conn.GetOrm()
 	orm.Mapping(valueobject.Area{}, "china_area")
-
+	orm.Mapping(registry.Registry{}, "registry")
 	// ad
 	orm.Mapping(ad.Ad{}, "ad_list")
 	orm.Mapping(ad.Image{}, "ad_image")

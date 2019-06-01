@@ -375,9 +375,9 @@ func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
 	var err error
 	if m.GetAccount(v.MemberId) == nil {
 		_, _, err = m.Connector.GetOrm().Save(nil, v)
-	}else{
+	} else {
 		_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
-		if err == nil{
+		if err == nil {
 			go m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
 		}
 	}

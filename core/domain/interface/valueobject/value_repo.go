@@ -43,7 +43,7 @@ const (
 )
 
 type (
-	Registry struct {
+	Registry_ struct {
 		MerchantTakeOutCashFree bool
 		// 收货时的提示信息
 		OrderReceiveAlertMessage string
@@ -221,9 +221,9 @@ type (
 		IntegralRateByConsumption float32
 		// 每单额外赠送
 		IntegralBackExtra int64
-		// 提现手续费费率
+		// !提现手续费费率
 		TakeOutCsn float32
-		// 转账手续费费率
+		// !转账手续费费率
 		TransferCsn float32
 		// 活动账户转为赠送可提现奖金手续费费率
 		FlowConvertCsn float32
@@ -235,11 +235,11 @@ type (
 		TradeCsnFeeByOrder float32
 		// 按交易金额收取手续费的百分百
 		TradeCsnPercentByFee float32
-		// 最低提现金额
+		// !最低提现金额
 		MinTakeOutAmount float32
-		// 单笔最高提现金额
+		// !单笔最高提现金额
 		MaxTakeOutAmount float32
-		// 每日提现上限
+		// !每日提现上限
 		MaxTakeOutTimesOfDay int
 	}
 
@@ -305,11 +305,6 @@ type (
 
 		// 保存平台设置
 		SavePlatformConf(v *PlatformConf) error
-
-		// 获取数据存储
-		GetRegistry() Registry
-		// 保存数据存储
-		SaveRegistry(v *Registry) error
 
 		// 根据键获取数据值
 		GetsRegistry(keys []string) []string
