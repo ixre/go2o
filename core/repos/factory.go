@@ -190,3 +190,7 @@ func (r *RepoFactory) GetAfterSalesRepo() afterSales.IAfterSalesRepo {
 func (r *RepoFactory) GetWalletRepo() wallet.IWalletRepo {
 	return r.walletRepo
 }
+
+func (r *RepoFactory) GetRegistryRepo() registry.IRegistryRepo {
+	return r.registryRepo
+}
