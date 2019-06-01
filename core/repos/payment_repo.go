@@ -19,7 +19,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
-	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/registry"
 	payImpl "go2o/core/domain/payment"
 	"go2o/core/variable"
 	"log"
@@ -33,19 +33,19 @@ type paymentRepoImpl struct {
 	db.Connector
 	Storage storage.Interface
 	*payImpl.RepoBase
-	memberRepo member.IMemberRepo
-	valueRepo  valueobject.IValueRepo
-	orderRepo  order.IOrderRepo
+	memberRepo   member.IMemberRepo
+	orderRepo    order.IOrderRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMemberRepo,
-	orderRepo order.IOrderRepo, valRepo valueobject.IValueRepo) payment.IPaymentRepo {
+	orderRepo order.IOrderRepo, registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
 	return &paymentRepoImpl{
-		Storage:    sto,
-		Connector:  conn,
-		memberRepo: mmRepo,
-		valueRepo:  valRepo,
-		orderRepo:  orderRepo,
+		Storage:      sto,
+		Connector:    conn,
+		memberRepo:   mmRepo,
+		orderRepo:    orderRepo,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -109,7 +109,7 @@ func (p *paymentRepoImpl) GetPaymentOrder(paymentNo string) payment.IPaymentOrde
 func (p *paymentRepoImpl) CreatePaymentOrder(
 	o *payment.Order) payment.IPaymentOrder {
 	return p.RepoBase.CreatePaymentOrder(o, p,
-		p.memberRepo, p.orderRepo.Manager(), p.valueRepo)
+		p.memberRepo, p.orderRepo.Manager(), p.registryRepo)
 }
 
 // 保存支付单

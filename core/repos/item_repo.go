@@ -18,6 +18,7 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	itemImpl "go2o/core/domain/item"
 	"go2o/core/infrastructure/format"
@@ -35,24 +36,24 @@ type goodsRepo struct {
 	proRepo      product.IProductRepo
 	itemWsRepo   item.IItemWholesaleRepo
 	expressRepo  express.IExpressRepo
-	valRepo      valueobject.IValueRepo
 	proMRepo     promodel.IProModelRepo
+	registryRepo registry.IRegistryRepo
 }
 
 // 商品仓储
 func NewGoodsItemRepo(c db.Connector, catRepo product.ICategoryRepo,
 	proRepo product.IProductRepo, proMRepo promodel.IProModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
-	valRepo valueobject.IValueRepo) *goodsRepo {
+	registryRepo registry.IRegistryRepo) *goodsRepo {
 	return &goodsRepo{
-		Connector:   c,
-		_orm:        c.GetOrm(),
-		catRepo:     catRepo,
-		proRepo:     proRepo,
-		proMRepo:    proMRepo,
-		itemWsRepo:  itemWsRepo,
-		expressRepo: expressRepo,
-		valRepo:     valRepo,
+		Connector:    c,
+		_orm:         c.GetOrm(),
+		catRepo:      catRepo,
+		proRepo:      proRepo,
+		proMRepo:     proMRepo,
+		itemWsRepo:   itemWsRepo,
+		expressRepo:  expressRepo,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -74,7 +75,7 @@ func (g *goodsRepo) SnapshotService() item.ISnapshotService {
 
 // 创建商品
 func (g *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
-	return itemImpl.NewItem(g.proRepo, g.catRepo, nil, v, g.valRepo, g,
+	return itemImpl.NewItem(g.proRepo, g.catRepo, nil, v, g.registryRepo, g,
 		g.proMRepo, g.itemWsRepo, g.expressRepo, nil)
 }
 

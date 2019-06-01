@@ -52,7 +52,7 @@ func (w *wholesaleRepo) SaveWsWholesaler(v *wholesaler.WsWholesaler, create bool
 // 同步商品
 func (w *wholesaleRepo) SyncItems(vendorId int32, shelve, review int32) (add int, del int) {
 
-	del, _, err2 := w._conn.Exec(`DELETE FROM ws_item WHERE
+	del, err2 := w._conn.ExecNonQuery(`DELETE FROM ws_item WHERE
     vendor_id= $1 AND item_id NOT IN (SELECT id FROM item_info
     WHERE vendor_id= $2)`, vendorId, vendorId)
 	if err2 != nil {

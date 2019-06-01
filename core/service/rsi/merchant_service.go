@@ -109,13 +109,13 @@ func (m *merchantService) ReviewSignUp(id int32, pass bool, remark string) error
 }
 
 // 商户注册
-func (m *merchantService) SignUp(usr, pwd, companyName string,
+func (m *merchantService) SignUp(user, pwd, companyName string,
 	province int32, city int32, district int32) (int32, error) {
 	unix := time.Now().Unix()
 	v := &merchant.Merchant{
 		MemberId: 0,
 		// 用户
-		Usr: usr,
+		Usr: user,
 		// 密码
 		Pwd: pwd,
 		// 商户名称
@@ -175,11 +175,11 @@ func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (m *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
-	usr = strings.ToLower(strings.TrimSpace(usr))
-	val := m._memberRepo.GetMemberByUsr(usr)
+func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, err error) {
+	user = strings.ToLower(strings.TrimSpace(user))
+	val := m._memberRepo.GetMemberByUser(user)
 	if val == nil {
-		val = m._memberRepo.GetMemberValueByPhone(usr)
+		val = m._memberRepo.GetMemberValueByPhone(user)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
@@ -191,27 +191,27 @@ func (m *merchantService) testMemberLogin(usr string, pwd string) (id int64, err
 		}
 	}
 	if val.State == member.StateStopped {
-		return 0, member.ErrMemberDisabled
+		return 0, member.ErrMemberLocked
 	}
 	return val.Id, nil
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(ctx context.Context, usr, oriPwd string) (r *ttype.Result_, err error) {
-	usr = strings.ToLower(strings.TrimSpace(usr))
+func (m *merchantService) CheckLogin(ctx context.Context, user, oriPwd string) (r *ttype.Result_, err error) {
+	user = strings.ToLower(strings.TrimSpace(user))
 	oriPwd = strings.TrimSpace(oriPwd)
 	var mchId int32
-	if usr == "" || oriPwd == "" {
+	if user == "" || oriPwd == "" {
 		return m.error(member.ErrCredential), nil
 	}
 	//尝试作为独立的商户账号登陆
-	encPwd := domain.MerchantSha1Pwd(usr, oriPwd)
-	mchId = m._query.Verify(usr, encPwd)
+	encPwd := domain.MerchantSha1Pwd(user, oriPwd)
+	mchId = m._query.Verify(user, encPwd)
 	if mchId <= 0 {
 		// 使用会员身份登录
 		var id int64
 		mEncPwd := domain.MemberSha1Pwd(domain.Md5(oriPwd))
-		id, err = m.testMemberLogin(usr, mEncPwd)
+		id, err = m.testMemberLogin(user, mEncPwd)
 		if err == nil {
 			mch := m.GetMerchantByMemberId(id)
 			if mch != nil {
@@ -578,7 +578,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //
 //	v := &member.MWalletLog{
 //		MemberId:     memberId,
-//		BusinessKind: merchant.KindＭachTakeOutToBankCard,
+//		Kind: merchant.KindＭachTakeOutToBankCard,
 //		OuterNo:      "00000000",
 //		Title:        "商户提现到银行卡",
 //		Amount:       amount * (-1),
@@ -606,7 +606,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //	unix := time.Now().Unix()
 //	v := &member.MWalletLog{
 //		MemberId:     memberId,
-//		BusinessKind: kind,
+//		Kind: kind,
 //		Title:        title,
 //		OuterNo:      outerNo,
 //		Amount:       amount,
@@ -646,7 +646,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //		return member.ErrNoSuchMember
 //	}
 //	v := a._memberRepo.GetWalletLog(infoId)
-//	if v.BusinessKind != merchant.KindＭachTakeOutToBankCard {
+//	if v.Kind != merchant.KindＭachTakeOutToBankCard {
 //		return errors.New("非商户提现")
 //	}
 //	if pass {

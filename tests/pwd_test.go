@@ -1,4 +1,4 @@
-package tool
+package tests
 
 import (
 	"github.com/ixre/gof/crypto"
@@ -8,18 +8,18 @@ import (
 
 // 管理员密码
 func TestMasterPwd(t *testing.T) {
-	usr := "master"
+	user := "master"
 	pwd := "123456"
-	sha1 := domain.Sha1(domain.Md5(pwd) + usr + domain.Sha1OffSet)
+	sha1 := domain.Sha1(domain.Md5(pwd) + user + domain.Sha1OffSet)
 	t.Log(sha1)
 }
 
 func TestMasterPwd2(t *testing.T) {
-	usr := "master"
+	user := "master"
 	pwd := "fs888888@txxfmall"
 	sha1 := crypto.Sha1([]byte(
 		pwd + domain.Sha1OffSet))
-	encPwd := domain.Md5Pwd(sha1, usr)
+	encPwd := domain.Md5Pwd(sha1, user)
 	t.Log(sha1)
 	t.Log(domain.Sha1OffSet)
 	t.Log(encPwd)
@@ -34,8 +34,8 @@ func TestMemberPwd(t *testing.T) {
 
 // 商户密码
 func TestMerchantPwd(t *testing.T) {
-	usr := "zy"
+	user := "zy"
 	pwd := "123456"
-	encPwd := domain.MerchantSha1Pwd(usr, pwd)
+	encPwd := domain.MerchantSha1Pwd(user, pwd)
 	t.Log(encPwd)
 }

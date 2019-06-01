@@ -63,52 +63,50 @@ func LevelDto(src *member.Level) *member_service.SLevel {
 func MemberDto(src *member.Member) *member_service.SMember {
 	return &member_service.SMember{
 		ID:             src.Id,
-		Usr:            src.Usr,
+		User:           src.User,
 		Pwd:            src.Pwd,
 		TradePwd:       src.TradePwd,
-		Exp:            int32(src.Exp),
+		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
-		InvitationCode: src.InvitationCode,
 		PremiumUser:    int32(src.PremiumUser),
-		PremiumExpires: src.PremiumExpires,
-		RegFrom:        src.RegFrom,
+		PremiumExpires: int64(src.PremiumExpires),
+		InvitationCode: src.InvitationCode,
 		RegIp:          src.RegIp,
-		RegTime:        src.RegTime,
-		CheckCode:      src.CheckCode,
-		CheckExpires:   src.CheckExpires,
-		Flag:           int32(src.Flag),
+		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
-		LoginTime:      src.LoginTime,
-		LastLoginTime:  src.LastLoginTime,
-		UpdateTime:     src.UpdateTime,
+		Flag:           int32(src.Flag),
+		Code:           src.Code,
+		Avatar:         src.Avatar,
+		Phone:          src.Phone,
+		Email:          src.Email,
+		Name:           src.Name,
 		DynamicToken:   src.DynamicToken,
-		TimeoutTime:    src.TimeoutTime,
+		RegTime:        src.RegTime,
+		LastLoginTime:  src.LastLoginTime,
 	}
 }
 
 func Member(src *member_service.SMember) *member.Member {
 	return &member.Member{
-		Id:             src.ID,
-		Usr:            src.Usr,
+		Id:             int64(src.ID),
+		Code:           src.Code,
+		Name:           src.Name,
+		User:           src.User,
 		Pwd:            src.Pwd,
+		Avatar:         src.Avatar,
 		TradePwd:       src.TradePwd,
 		Exp:            int(src.Exp),
 		Level:          int(src.Level),
 		InvitationCode: src.InvitationCode,
 		PremiumUser:    int(src.PremiumUser),
 		PremiumExpires: src.PremiumExpires,
+		Phone:          src.Phone,
+		Email:          src.Email,
 		RegFrom:        src.RegFrom,
 		RegIp:          src.RegIp,
-		RegTime:        src.RegTime,
-		CheckCode:      src.CheckCode,
-		CheckExpires:   src.CheckExpires,
 		Flag:           int(src.Flag),
 		State:          int(src.State),
-		LoginTime:      src.LoginTime,
-		LastLoginTime:  src.LastLoginTime,
-		UpdateTime:     src.UpdateTime,
 		DynamicToken:   src.DynamicToken,
-		TimeoutTime:    src.TimeoutTime,
 	}
 }
 
@@ -367,7 +365,7 @@ func TradeMethodDataDto(src *payment.TradeMethodData) *payment_service.STradeMet
 	}
 }
 
-func MemberRelationDto(src *member.Relation) *member_service.SMemberRelation {
+func MemberRelationDto(src *member.InviteRelation) *member_service.SMemberRelation {
 	return &member_service.SMemberRelation{
 		MemberId:      src.MemberId,
 		CardId:        src.CardCard,

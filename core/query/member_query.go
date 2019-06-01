@@ -37,7 +37,7 @@ func (m *MemberQuery) GetMemberList(ids []int64) []*dto.MemberSummary {
 	}
 	if len(ids) > 0 {
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
-		query := fmt.Sprintf(`SELECT m.id,m.usr,m.name,m.avatar,m.exp,m.level,
+		query := fmt.Sprintf(`SELECT m.id,m.user,m.name,m.avatar,m.exp,m.level,
 				lv.name as level_name,a.integral,a.balance,a.wallet_balance,
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN mm_level lv
@@ -137,17 +137,17 @@ func (m *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
 	qp := "%" + key + "%"
 	list := make([]*dto.SimpleMember, 0)
 	var id int
-	var usr, name, phone, avatar string
-	m.Query(`SELECT id,usr,mm_profile.name,mm_profile.phone,
+	var user, name, phone, avatar string
+	m.Query(`SELECT id,user,mm_profile.name,mm_profile.phone,
         mm_profile.avatar FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
-        WHERE usr LIKE $1 OR mm_profile.name LIKE $2 OR
+        WHERE user LIKE $1 OR mm_profile.name LIKE $2 OR
         mm_profile.phone LIKE $3`, func(rows *sql.Rows) {
 		for rows.Next() {
-			rows.Scan(&id, &usr, &name, &phone, &avatar)
+			rows.Scan(&id, &user, &name, &phone, &avatar)
 			list = append(list, &dto.SimpleMember{
 				Id:     id,
-				User:   usr,
+				User:   user,
 				Name:   name,
 				Phone:  phone,
 				Avatar: format.GetResUrl(avatar),
@@ -157,12 +157,12 @@ func (m *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
 	return list
 }
 
-func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
+func (m *MemberQuery) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 	e := dto.SimpleMember{}
-	err := m.QueryRow(`SELECT id,usr,mm_profile.name,mm_profile.phone,
+	err := m.QueryRow(`SELECT id,user,mm_profile.name,mm_profile.phone,
         mm_profile.avatar FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
-        WHERE usr = $1 OR mm_profile.phone = $2`, func(rows *sql.Row) error {
+        WHERE user = $1 OR mm_profile.phone = $2`, func(rows *sql.Row) error {
 		er := rows.Scan(&e.Id, &e.User, &e.Name, &e.Phone, &e.Avatar)
 		e.Avatar = format.GetResUrl(e.Avatar)
 		return er
@@ -187,7 +187,7 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	list := make([]*dto.RankMember, 0)
 	var id int64
-	var usr, name string
+	var user, name string
 	var inviNum, totalNum, regTime int
 	var rank int = 0
 
@@ -199,7 +199,7 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
 	var levelCompStr string = fmt.Sprintf("%s%d", levelComp, level)
 	//{level_comp}{level_value}
 
-	m.Query(fmt.Sprintf(`SELECT id,usr,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
+	m.Query(fmt.Sprintf(`SELECT id,user,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
 	AND r.reg_mchid=rl.reg_mchid  AND m1.reg_time BETWEEN
@@ -218,11 +218,11 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
  WHERE rl.reg_mchid = $7 AND state= $8) t ORDER BY %s,t.reg_time asc
  LIMIT $9`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
 		for rows.Next() {
-			rows.Scan(&id, &usr, &name, &inviNum, &totalNum, &regTime)
+			rows.Scan(&id, &user, &name, &inviNum, &totalNum, &regTime)
 			rank++
 			list = append(list, &dto.RankMember{
 				Id:       id,
-				Usr:      usr,
+				Usr:      user,
 				Name:     name,
 				RankNum:  rank,
 				InviNum:  inviNum,

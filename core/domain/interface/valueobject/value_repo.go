@@ -8,10 +8,6 @@
  */
 package valueobject
 
-import (
-	"go2o/core/domain/interface/enum"
-)
-
 var (
 	TradeCsnTypeByOrder = 1 //按订单笔数收取手续费
 	TradeCsnTypeByFee   = 2 //按交易金额收取手续费
@@ -43,44 +39,44 @@ const (
 )
 
 type (
-	Registry struct {
+	Registry_ struct {
 		MerchantTakeOutCashFree bool
 		// 收货时的提示信息
 		OrderReceiveAlertMessage string
 		// 是否启用会员经验值功能
 		MemberExperienceEnabled bool
-		// 会员资料不完善提醒信息
+		// !会员资料不完善提醒信息
 		MemberProfileNotCompletedMessage string
-		// 会员实名提醒信息
+		// !会员实名提醒信息
 		MemberNotTrustedMessage string
-		// 注册后赠送积分数量
+		// !注册后赠送积分数量
 		PresentIntegralNumOfRegister int64
-		// 会员邀请关系级数
+		// !会员邀请关系级数
 		MemberReferLayer int
-		// 会员即时通讯是否必须
+		// !会员即时通讯是否必须
 		MemberImRequired bool
-		// 会员是否验证手机号码格式
+		// !会员是否验证手机号码格式
 		MemberCheckPhoneFormat bool
-		// 会员默认个人签名
+		// !会员默认个人签名
 		MemberDefaultPersonRemark string
 
-		// 会员提现开关
+		// !会员提现开关
 		MemberTakeOutOn bool
-		// 会员提现提示
+		// !会员提现提示
 		MemberTakeOutMessage string
-		// 提现是否必须实名制认证
+		// !提现是否必须实名制认证
 		TakeOutMustTrust bool
 
-		// 商品默认图片
+		// !商品默认图片
 		GoodsDefaultImage string
-		// 商品最低利润率,既(销售价-供货价)/销售价的比例
+		// !商品最低利润率,既(销售价-供货价)/销售价的比例
 		GoodsMinProfitRate float32
 
-		// 广告缓存时间（秒）
+		// !广告缓存时间（秒）
 		CacheAdMaxAge int64
-		// 敏感词,以|分割
+		// !敏感词,以|分割
 		ShopIncorrectAliasWords string
-		// 键值数据
+		// !键值数据
 		RegistryData map[string]string
 	}
 
@@ -210,47 +206,47 @@ type (
 	}
 
 	// 全局数值设置
-	GlobNumberConf struct {
-		// 兑换1元所需要的积分
-		IntegralExchangeRate float32
-		// 抵扣1元所需要的积分
-		IntegralDiscountRate float32
-		// 消费1元产生的经验
-		ExperienceRateByOrder float32
-		// 消费1元产生的积分
-		IntegralRateByConsumption float32
-		// 每单额外赠送
-		IntegralBackExtra int64
-		// 提现手续费费率
-		TakeOutCsn float32
-		// 转账手续费费率
-		TransferCsn float32
-		// 活动账户转为赠送可提现奖金手续费费率
-		FlowConvertCsn float32
-		// 钱包账户转换手续费费率
-		PresentConvertCsn float32
-		// 交易手续费类型
-		TradeCsnType int
-		// 按交易笔数收取手续费的金额
-		TradeCsnFeeByOrder float32
-		// 按交易金额收取手续费的百分百
-		TradeCsnPercentByFee float32
-		// 最低提现金额
-		MinTakeOutAmount float32
-		// 单笔最高提现金额
-		MaxTakeOutAmount float32
-		// 每日提现上限
-		MaxTakeOutTimesOfDay int
-	}
+	//GlobNumberConf struct {
+	// 兑换1元所需要的积分
+	//IntegralExchangeRate float32
+	// 抵扣1元所需要的积分
+	//IntegralDiscountRate float32
+	// !消费1元产生的经验
+	//ExperienceRateByOrder float32
+	// !消费1元产生的积分
+	//IntegralRateByConsumption float32
+	// 每单额外赠送
+	//IntegralBackExtra int64
+	// !提现手续费费率
+	//TakeOutCsn float32
+	// !转账手续费费率
+	//TransferCsn float32
+	// 活动账户转为赠送可提现奖金手续费费率
+	//FlowConvertCsn float32
+	// 钱包账户转换手续费费率
+	//PresentConvertCsn float32
+	// 交易手续费类型
+	//TradeCsnType int
+	// 按交易笔数收取手续费的金额
+	//TradeCsnFeeByOrder float32
+	// 按交易金额收取手续费的百分百
+	//TradeCsnPercentByFee float32
+	// !最低提现金额
+	//MinTakeOutAmount float32
+	// !单笔最高提现金额
+	//MaxTakeOutAmount float32
+	// !每日提现上限
+	//MaxTakeOutTimesOfDay int
+	//}
 
 	// 全局商户销售设置
 	GlobMchSaleConf struct {
-		// 商户订单结算模式
-		MchOrderSettleMode enum.MchSettleMode
-		// 商户订单结算比例
-		MchOrderSettleRate float32
+		// !商户订单结算模式
+		//MchOrderSettleMode enum.MchSettleMode
+		// !商户订单结算比例
+		//MchOrderSettleRate float32
 		// 商户交易单是否需上传发票
-		TradeOrderRequireTicket bool
+		//TradeOrderRequireTicket bool
 		// 是否启用分销模式
 		FxSalesEnabled bool
 		// 返现比例,0则不返现
@@ -294,29 +290,16 @@ type (
 		// 保存注册权限
 		SaveRegisterPerm(v *RegisterPerm) error
 
-		// 获取全局系统数值设置
-		GetGlobNumberConf() GlobNumberConf
-
-		// 保存全局系统数值设置
-		SaveGlobNumberConf(v *GlobNumberConf) error
-
 		// 获取平台设置
 		GetPlatformConf() PlatformConf
 
 		// 保存平台设置
 		SavePlatformConf(v *PlatformConf) error
 
-		// 获取数据存储
-		GetRegistry() Registry
-		// 保存数据存储
-		SaveRegistry(v *Registry) error
-
 		// 根据键获取数据值
 		GetsRegistry(keys []string) []string
 		// 根据键获取数据值字典
 		GetsRegistryMap(keys []string) map[string]string
-		// 保存数据值
-		SavesRegistry(values map[string]string) error
 
 		// 获取模板配置
 		GetTemplateConf() TemplateConf

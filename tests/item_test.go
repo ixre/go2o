@@ -1,8 +1,8 @@
-package testing
+package tests
 
 import (
 	"go2o/core/domain/interface/item"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"testing"
 )
 

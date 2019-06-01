@@ -14,7 +14,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
-	_ "go2o/core/testing"
+	_ "go2o/tests"
 	"testing"
 )
 

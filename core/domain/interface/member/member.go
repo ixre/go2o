@@ -48,12 +48,14 @@ const (
 )
 
 const (
-	FlagDefault = 1 << iota
-	FlagLocked  = 2
+	// 已激活
+	FlagActive = 1 << iota
+	// 已锁定的
+	FlagLocked = 2
+	// 已认证的
+	FlagTrusted = 4
 	// 已完善的资料
-	FlagProfileCompleted = 4
-	// 已认证
-	FlagTrusted = 8
+	FlagProfileCompleted = 8
 )
 
 type (
@@ -80,6 +82,8 @@ type (
 		SendCheckCode(operation string, mssType int) (string, error)
 		// 对比验证码
 		CompareCode(code string) error
+		// 激活
+		Active() error
 		// 锁定会员
 		Lock() error
 		// 解锁会员
@@ -87,11 +91,9 @@ type (
 		// 判断是否包含标志
 		ContainFlag(f int) bool
 		// 获取关联的会员
-		GetRelation() *Relation
-		// 更新会员绑定
-		SaveRelation(r *Relation) error
-		// 更改邀请人
-		ChangeReferees(memberId int64) error
+		GetRelation() *InviteRelation
+		// 绑定邀请人,如果已邀请,force为true时更新
+		BindInviter(memberId int64, force bool) error
 		// 增加经验值
 		AddExp(exp int) error
 		// 升级为高级会员
@@ -224,10 +226,16 @@ type (
 	Member struct {
 		// 编号
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		// 用户编码
+		Code string `db:"code"`
+		// 昵称
+		Name string `db:"name"`
 		// 用户名
-		Usr string `db:"usr"`
+		User string `db:"\"user\""`
 		// 密码
-		Pwd string `db:"Pwd"`
+		Pwd string `db:"pwd"`
+		// 头像
+		Avatar string `db:"avatar"`
 		// 交易密码
 		TradePwd string `db:"trade_pwd"`
 		// 经验值
@@ -240,6 +248,10 @@ type (
 		PremiumUser int `db:"premium_user"`
 		// 高级用户过期时间
 		PremiumExpires int64 `db:"premium_expires"`
+		// 手机号码
+		Phone string `db:"phone"`
+		// 电子邮箱
+		Email string `db:"email"`
 		// 注册来源
 		RegFrom string `db:"reg_from"`
 		// 注册IP
@@ -311,8 +323,8 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	//会员关联表
-	Relation struct {
+	// 会员邀请关联表
+	InviteRelation struct {
 		// 会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
 		// 会员卡号

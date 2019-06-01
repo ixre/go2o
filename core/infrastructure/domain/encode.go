@@ -58,7 +58,7 @@ func TradePwd(pwd string) string {
 }
 
 //加密合作商密码
-func MerchantSha1Pwd(usr, pwd string) string {
+func MerchantSha1Pwd(user, pwd string) string {
 	if pwd == "" {
 		return ""
 	}

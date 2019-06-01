@@ -12,10 +12,12 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"log"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -37,13 +39,14 @@ type wholesaleOrderImpl struct {
 	itemRepo     item.IGoodsItemRepo
 	mchRepo      merchant.IMerchantRepo
 	valueRepo    valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func newWholesaleOrder(base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IGoodsItemRepo,
 	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	shipRepo shipment.IShipmentRepo, mchRepo merchant.IMerchantRepo,
-	valueRepo valueobject.IValueRepo) order.IOrder {
+	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrder {
 	o := &wholesaleOrderImpl{
 		baseOrderImpl: base,
 		orderRepo:     shoppingRepo,
@@ -53,6 +56,7 @@ func newWholesaleOrder(base *baseOrderImpl,
 		shipRepo:      shipRepo,
 		mchRepo:       mchRepo,
 		valueRepo:     valueRepo,
+		registryRepo:  registryRepo,
 	}
 	return o.init()
 }
@@ -273,7 +277,7 @@ func (o *wholesaleOrderImpl) checkBuyer() error {
 		return member.ErrNoSuchMember
 	}
 	if buyer.GetValue().State == 0 {
-		return member.ErrMemberDisabled
+		return member.ErrMemberLocked
 	}
 	if o.value.ShippingAddress == "" ||
 		o.value.ConsigneePhone == "" ||
@@ -688,14 +692,15 @@ func (o *wholesaleOrderImpl) getOrderCost() float32 {
 func (o *wholesaleOrderImpl) vendorSettle() error {
 	vendor := o.mchRepo.GetMerchant(o.value.VendorId)
 	if vendor != nil {
-		conf := o.valueRepo.GetGlobMchSaleConf()
-		switch conf.MchOrderSettleMode {
+		settleMode := o.registryRepo.Get(registry.MchOrderSettleMode).IntValue()
+		switch enum.MchSettleMode(settleMode) {
 		case enum.MchModeSettleByCost:
 			return o.vendorSettleByCost(vendor)
 		case enum.MchModeSettleByRate:
-			return o.vendorSettleByRate(vendor, conf.MchOrderSettleRate)
+			return o.vendorSettleByRate(vendor)
+		case enum.MchModeSettleByOrderQuantity:
+			return o.vendorSettleByOrderQuantity(vendor)
 		}
-
 	}
 	return nil
 }
@@ -716,9 +721,10 @@ func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error
 }
 
 // 根据比例进行商户结算
-func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float32) error {
+func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchant) error {
+	rate := o.registryRepo.Get(registry.MchOrderSettleRate).FloatValue()
 	amount, refund := o.getOrderAmount()
-	sAmount := amount * rate
+	sAmount := amount * float32(rate)
 	if sAmount > 0 {
 		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
 		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
@@ -726,6 +732,20 @@ func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate 
 			merchant.TKWholesaleOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.OrderNo(),
 			totalAmount, tradeFee, refundAmount, "批发订单结算")
+	}
+	return nil
+}
+func (o *wholesaleOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchant) error {
+	fee := o.registryRepo.Get(registry.MchSingleOrderServiceFee).FloatValue()
+	amount, refund := o.getOrderAmount()
+	if fee > 0 {
+		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
+		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
+		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+			merchant.TKWholesaleOrder, totalAmount)
+		return vendor.Account().SettleOrder(o.value.OrderNo,
+			totalAmount, tradeFee, refundAmount, "零售订单结算")
+
 	}
 	return nil
 }
@@ -756,15 +776,14 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	m := o.Buyer()
 	var err error
 	ov := o.value
-	conf := o.valueRepo.GetGlobNumberConf()
-	registry := o.valueRepo.GetRegistry()
 	amount := ov.FinalAmount
 	acc := m.GetAccount()
 
 	// 增加经验
-	if registry.MemberExperienceEnabled {
-		rate := conf.ExperienceRateByOrder
-		if exp := int(amount * rate); exp > 0 {
+	expEnabled := o.registryRepo.Get(registry.ExperienceEnabled).BoolValue()
+	if expEnabled {
+		rate := o.registryRepo.Get(registry.ExperienceRateByWholesaleOrder).FloatValue()
+		if exp := int(float64(amount) * rate); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}
@@ -772,8 +791,9 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	}
 
 	// 增加积分
-	//todo: 增加阶梯的返积分,比如订单满30送100积分
-	integral := int64(amount*conf.IntegralRateByConsumption) + conf.IntegralBackExtra
+	//todo: 增加阶梯的返积分,比如订单满30送100积分, 不考虑额外赠送,额外的当做补贴
+	rate := o.registryRepo.Get(registry.IntegralRateByWholesaleOrder).FloatValue()
+	integral := int64(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
 		err = m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralShoppingPresent,

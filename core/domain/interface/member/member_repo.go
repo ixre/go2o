@@ -36,7 +36,7 @@ type IMemberRepo interface {
 	SaveMemberLevel_New(v *Level) (int, error)
 
 	// 根据用户名获取会员
-	GetMemberByUsr(usr string) *Member
+	GetMemberByUser(user string) *Member
 
 	// 根据手机号码获取会员
 	GetMemberValueByPhone(phone string) *Member
@@ -71,14 +71,17 @@ type IMemberRepo interface {
 	// 获取会员编号
 	GetMemberIdByUser(user string) int64
 
+	// 根据编码获取会员
+	GetMemberIdByCode(code string) int
+
 	// 用户名是否存在
-	CheckUsrExist(usr string, memberId int64) bool
+	CheckUsrExist(user string, memberId int64) bool
 
 	// 手机号码是否使用
 	CheckPhoneBind(phone string, memberId int64) bool
 
 	// 保存绑定
-	SaveRelation(*Relation) error
+	SaveRelation(*InviteRelation) error
 
 	// 获取账户
 	GetAccount(memberId int64) *Account
@@ -111,7 +114,7 @@ type IMemberRepo interface {
 	GetTodayTakeOutTimes(memberId int64) int
 
 	// 获取会员关联
-	GetRelation(memberId int64) *Relation
+	GetRelation(memberId int64) *InviteRelation
 
 	// 获取经验值对应的等级
 	GetLevelValueByExp(mchId int32, exp int64) int

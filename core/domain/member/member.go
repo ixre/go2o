@@ -15,10 +15,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -39,11 +41,12 @@ type memberImpl struct {
 	value           *member.Member
 	account         member.IAccount
 	level           *member.Level
-	rep             member.IMemberRepo
-	relation        *member.Relation
+	repo            member.IMemberRepo
+	relation        *member.InviteRelation
 	invitation      member.IInvitationManager
 	mssRepo         mss.IMssRepo
-	valRepo         valueobject.IValueRepo
+	registryRepo    registry.IRegistryRepo
+	valueRepo       valueobject.IValueRepo
 	profileManager  member.IProfileManager
 	favoriteManager member.IFavoriteManager
 	giftCardManager member.IGiftCardManager
@@ -54,13 +57,14 @@ func (m *memberImpl) ContainFlag(f int) bool {
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRepo,
-	mp mss.IMssRepo, valRepo valueobject.IValueRepo) member.IMember {
+	mp mss.IMssRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMember {
 	return &memberImpl{
-		manager: manager,
-		value:   val,
-		rep:     rep,
-		mssRepo: mp,
-		valRepo: valRepo,
+		manager:      manager,
+		value:        val,
+		repo:         rep,
+		mssRepo:      mp,
+		valueRepo:    valRepo,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -81,7 +85,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 
 	s := &member.ComplexMember{
 		MemberId:          m.GetAggregateRootId(),
-		Usr:               mv.Usr,
+		Usr:               mv.User,
 		Name:              pro.Name,
 		Avatar:            format.GetResUrl(pro.Avatar),
 		Exp:               mv.Exp,
@@ -111,7 +115,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 func (m *memberImpl) Profile() member.IProfileManager {
 	if m.profileManager == nil {
 		m.profileManager = newProfileManagerImpl(m,
-			m.GetAggregateRootId(), m.rep, m.valRepo)
+			m.GetAggregateRootId(), m.repo, m.registryRepo, m.valueRepo)
 	}
 	return m.profileManager
 }
@@ -120,7 +124,7 @@ func (m *memberImpl) Profile() member.IProfileManager {
 func (m *memberImpl) Favorite() member.IFavoriteManager {
 	if m.favoriteManager == nil {
 		m.favoriteManager = newFavoriteManagerImpl(
-			m.GetAggregateRootId(), m.rep)
+			m.GetAggregateRootId(), m.repo)
 	}
 	return m.favoriteManager
 }
@@ -129,7 +133,7 @@ func (m *memberImpl) Favorite() member.IFavoriteManager {
 func (m *memberImpl) GiftCard() member.IGiftCardManager {
 	if m.giftCardManager == nil {
 		m.giftCardManager = newGiftCardManagerImpl(
-			m.GetAggregateRootId(), m.rep)
+			m.GetAggregateRootId(), m.repo)
 	}
 	return m.giftCardManager
 }
@@ -155,21 +159,9 @@ var (
 	phoneRegex = regexp.MustCompile("^(13[0-9]|14[5|6|7]|15[0-9]|16[6|8]|18[0-9]|17[0|1|2|3|4|5|6|7|8]|19[9|8])(\\d{8})$")
 )
 
-// 验证用户名
-func validUsr(usr string) error {
-	usr = strings.ToLower(strings.TrimSpace(usr)) // 小写并删除空格
-	if len([]rune(usr)) < 6 {
-		return member.ErrUsrLength
-	}
-	if !userRegex.MatchString(usr) {
-		return member.ErrUsrValidErr
-	}
-	return nil
-}
-
 // 设置值
 func (m *memberImpl) SetValue(v *member.Member) error {
-	v.Usr = m.value.Usr
+	v.User = m.value.User
 	if len(m.value.InvitationCode) == 0 {
 		m.value.InvitationCode = v.InvitationCode
 	}
@@ -204,7 +196,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 		switch mssType {
 		case notify.TypePhoneMessage:
 			// 某些短信平台要求传入模板ID,在这里附加参数
-			provider, _ := m.valRepo.GetDefaultSmsApiPerm()
+			provider, _ := m.valueRepo.GetDefaultSmsApiPerm()
 			data = sms.AppendCheckPhoneParams(provider, data)
 
 			// 构造并发送短信
@@ -239,8 +231,8 @@ func (m *memberImpl) CompareCode(code string) error {
 // 获取账户
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m.account == nil {
-		v := m.rep.GetAccount(m.value.Id)
-		return NewAccount(m, v, m.rep, m.manager, m.valRepo)
+		v := m.repo.GetAccount(m.value.Id)
+		return NewAccount(m, v, m.repo, m.manager, m.registryRepo)
 	}
 	return m.account
 }
@@ -312,7 +304,7 @@ func (m *memberImpl) checkLevelUp() bool {
 			UpgradeMode: member.LAutoUpgrade,
 			CreateTime:  unix,
 		}
-		_, err = m.rep.SaveLevelUpLog(lvLog)
+		_, err = m.repo.SaveLevelUpLog(lvLog)
 	}
 	return true
 }
@@ -342,7 +334,7 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	if !review {
 		lvLog.ReviewState = int(enum.ReviewConfirm)
 	}
-	_, err := m.rep.SaveLevelUpLog(lvLog)
+	_, err := m.repo.SaveLevelUpLog(lvLog)
 	if err == nil && !review {
 		m.value.Exp = lv.RequireExp
 		m.value.Level = level
@@ -357,7 +349,7 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 
 // 审核升级请求
 func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
-	l := m.rep.GetLevelUpLog(int32(id))
+	l := m.repo.GetLevelUpLog(int32(id))
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
 		if l.ReviewState == int(enum.ReviewPass) {
 			return member.ErrLevelUpPass
@@ -373,7 +365,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 		}
 		if pass {
 			l.ReviewState = int(enum.ReviewPass)
-			_, err := m.rep.SaveLevelUpLog(l)
+			_, err := m.repo.SaveLevelUpLog(l)
 			if err == nil {
 				lv := m.manager.LevelManager().GetLevelById(l.TargetLevel)
 				m.value.Exp = lv.RequireExp
@@ -384,7 +376,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 			return err
 		} else {
 			l.ReviewState = int(enum.ReviewReject)
-			_, err := m.rep.SaveLevelUpLog(l)
+			_, err := m.repo.SaveLevelUpLog(l)
 			return err
 		}
 	}
@@ -394,7 +386,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 
 // 标记已经处理升级
 func (m *memberImpl) ConfirmLevelUp(id int32) error {
-	l := m.rep.GetLevelUpLog(id)
+	l := m.repo.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
 		if l.ReviewState == int(enum.ReviewConfirm) {
 			return member.ErrLevelUpConfirm
@@ -403,49 +395,40 @@ func (m *memberImpl) ConfirmLevelUp(id int32) error {
 			return member.ErrLevelUpReject
 		}
 		l.ReviewState = int(enum.ReviewConfirm)
-		_, err := m.rep.SaveLevelUpLog(l)
+		_, err := m.repo.SaveLevelUpLog(l)
 		return err
 	}
 	return member.ErrNoSuchLevelUpLog
 }
 
 // 获取会员关联
-func (m *memberImpl) GetRelation() *member.Relation {
+func (m *memberImpl) GetRelation() *member.InviteRelation {
 	if m.relation == nil {
-		m.relation = m.rep.GetRelation(m.GetAggregateRootId())
+		rel := m.repo.GetRelation(m.GetAggregateRootId())
+		if rel == nil {
+			rel = &member.InviteRelation{
+				MemberId:   m.GetAggregateRootId(),
+				CardCard:   "",
+				InviterId:  0,
+				InviterStr: "",
+				RegMchId:   0,
+			}
+		}
+		m.relation = rel
 	}
 	return m.relation
 }
 
-// 保存推荐关系
-func (m *memberImpl) SaveRelation(r *member.Relation) error {
-	m.relation = r
-	m.relation.MemberId = m.value.Id
-	m.updateInviterStr(m.relation)
-	err := m.rep.SaveRelation(m.relation)
-	if err == nil {
-		// 推送关系更新消息
-		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(m.GetAggregateRootId())), "", 1000)
-	}
-	return err
-}
-
 // 更换用户名
-func (m *memberImpl) ChangeUsr(usr string) error {
-	if usr == m.value.Usr {
+func (m *memberImpl) ChangeUsr(user string) error {
+	if user == m.value.User {
 		return member.ErrSameUsr
 	}
-	if len([]rune(usr)) < 6 {
-		return member.ErrUsrLength
+	err := m.checkUser(m.value.User)
+	if err == nil {
+		m.value.User = user
+		_, err = m.Save()
 	}
-	if !userRegex.MatchString(usr) {
-		return member.ErrUsrValidErr
-	}
-	if m.usrIsExist(usr) {
-		return member.ErrUsrExist
-	}
-	m.value.Usr = usr
-	_, err := m.Save()
 	return err
 }
 
@@ -463,9 +446,22 @@ func (m *memberImpl) UpdateLoginTime() error {
 func (m *memberImpl) Save() (int64, error) {
 	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
-		return m.rep.SaveMember(m.value)
+		return m.repo.SaveMember(m.value)
 	}
-	return m.create(m.value, nil)
+	return m.create(m.value)
+}
+
+// 激活
+func (m *memberImpl) Active() error {
+	if m.ContainFlag(member.FlagActive) {
+		return member.ErrMemberHasActive
+	}
+	if m.ContainFlag(member.FlagLocked) {
+		return member.ErrMemberLocked
+	}
+	m.value.Flag |= member.FlagActive
+	_, err := m.Save()
+	return err
 }
 
 // 锁定会员
@@ -487,42 +483,144 @@ func (m *memberImpl) Unlock() error {
 }
 
 // 创建会员
-func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int64, error) {
-	if err := validUsr(m.value.Usr); err != nil {
-		return 0, err
-	}
-	if m.usrIsExist(v.Usr) {
-		return 0, member.ErrUsrExist
-	}
-	t := time.Now().Unix()
-	v.State = 1
-	v.RegTime = t
-	v.LastLoginTime = t
-	v.Level = 1
-	v.Exp = 0
-	v.DynamicToken = v.Pwd
-	if len(v.RegFrom) == 0 {
-		v.RegFrom = "API-INTERNAL"
-	}
-	v.PremiumUser = member.PremiumNormal
-	v.PremiumExpires = 0
-	v.InvitationCode = m.generateInvitationCode() // 创建一个邀请码
-	id, err := m.rep.SaveMember(v)
+func (m *memberImpl) create(v *member.Member) (int64, error) {
+	err := m.prepare()
 	if err == nil {
-		m.value.Id = id
-		go m.memberInit()
+		unix := time.Now().Unix()
+		v.State = 1
+		v.RegTime = unix
+		v.LastLoginTime = unix
+		v.Level = 1
+		v.Exp = 0
+		v.DynamicToken = ""
+		if len(v.RegFrom) == 0 {
+			v.RegFrom = ""
+		}
+		// 设置VIP用户信息
+		v.PremiumUser = member.PremiumNormal
+		v.PremiumExpires = 0
+		// 创建一个用户编码
+		v.Code = m.generateMemberCode()
+		// 创建一个邀请码
+		v.InvitationCode = m.generateInvitationCode()
+		id, err1 := m.repo.SaveMember(v)
+		if err1 == nil {
+			m.value.Id = id
+			go m.memberInit()
+		} else {
+			err = err1
+		}
 	}
-	return id, err
+	return m.GetAggregateRootId(), err
+}
+
+// 验证用户名
+func (m *memberImpl) checkUser(user string) error {
+	if len([]rune(user)) < 6 {
+		return member.ErrUsrLength
+	}
+	if !userRegex.MatchString(user) {
+		return member.ErrUsrValidErr
+	}
+	if m.repo.CheckUsrExist(user, m.GetAggregateRootId()) {
+		return member.ErrUsrExist
+	}
+	return nil
 }
 
 // 会员初始化
-func (m *memberImpl) memberInit() {
-	conf := m.valRepo.GetRegistry()
-	// 注册后赠送积分
-	if conf.PresentIntegralNumOfRegister > 0 {
-		m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
-			"", float32(conf.PresentIntegralNumOfRegister), 0)
+func (m *memberImpl) memberInit() error {
+	// 创建账户
+	m.account = NewAccount(m, &member.Account{}, m.repo, m.manager, m.registryRepo)
+	if _, err := m.account.Save(); err != nil {
+		return err
 	}
+	// 注册后赠送积分
+	regPresent := m.registryRepo.Get(registry.MemberPresentIntegralNumOfRegister).IntValue()
+	if regPresent > 0 {
+		go m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
+			"", float32(regPresent), 0)
+	}
+	return nil
+}
+
+// 检查注册信息是否正确
+func (m *memberImpl) prepare() (err error) {
+	perm := m.valueRepo.GetRegisterPerm()
+	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
+	m.value.User = strings.TrimSpace(m.value.User)
+	if m.value.User != "" || !perm.PhoneAsUser {
+		if err = m.checkUser(m.value.User); err != nil {
+			return err
+		}
+	}
+	// 验证密码
+	m.value.Pwd = strings.TrimSpace(m.value.Pwd)
+	if len(m.value.Pwd) < 6 {
+		return member.ErrPwdLength
+	}
+	// 验证手机
+	m.value.Phone = strings.TrimSpace(m.value.Phone)
+	lp := len(m.value.Phone)
+	if perm.MustBindPhone && lp == 0 {
+		return member.ErrMissingPhone
+	}
+	if lp > 0 {
+		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
+		if checkPhone && !phoneRegex.MatchString(m.value.Phone) {
+			return member.ErrBadPhoneFormat
+		}
+		if m.checkPhoneBind(m.value.Phone, m.GetAggregateRootId()) != nil {
+			return member.ErrPhoneHasBind
+		}
+	}
+	// 使用手机号作为用户名
+	if perm.PhoneAsUser {
+		if m.repo.CheckUsrExist(m.value.Phone, 0) {
+			return member.ErrPhoneHasBind
+		}
+		m.value.User = m.value.Phone
+	}
+
+	// 验证IM
+	//pro.Im = strings.TrimSpace(pro.Im)
+	//if perm.NeedIm && len(pro.Im) == 0 {
+	//	return 0, errors.New(strings.Replace(member.ErrMissingIM.Error(),
+	//		"IM", variable.AliasMemberIM, -1))
+	//}
+	m.value.Name = strings.TrimSpace(m.value.Name)
+
+	//如果未设置昵称,则默认为用户名
+	if len(m.value.Name) == 0 {
+		m.value.Name = "User" + m.value.User
+	}
+	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
+	if len(m.value.Avatar) == 0 {
+		m.value.Avatar = "res/no_avatar.gif"
+	}
+	return err
+}
+
+// 检查手机绑定,同时检查手机格式
+func (m *memberImpl) checkPhoneBind(phone string, memberId int64) error {
+	if len(phone) <= 0 {
+		return member.ErrMissingPhone
+	}
+	if m.repo.CheckPhoneBind(phone, memberId) {
+		return member.ErrPhoneHasBind
+	}
+	return nil
+}
+
+func (m *memberImpl) generateMemberCode() string {
+	var code string
+	for {
+		code = util.RandString(6)
+		if memberId := m.repo.GetMemberIdByCode(code); memberId == 0 {
+			break
+		}
+	}
+	return code
 }
 
 // 创建邀请码
@@ -530,26 +628,24 @@ func (m *memberImpl) generateInvitationCode() string {
 	var code string
 	for {
 		code = domain.GenerateInvitationCode()
-		if memberId := m.rep.GetMemberIdByInvitationCode(code); memberId == 0 {
+		if memberId := m.repo.GetMemberIdByInvitationCode(code); memberId == 0 {
 			break
 		}
 	}
 	return code
 }
 
-// 用户是否已经存在
-func (m *memberImpl) usrIsExist(usr string) bool {
-	return m.rep.CheckUsrExist(usr, m.GetAggregateRootId())
-}
-
 // 强制更新邀请关系
-func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
+func (m *memberImpl) forceUpdateInviterStr(r *member.InviteRelation) {
 	// 无邀请关系
 	if r.InviterId == 0 {
 		r.InviterStr = ""
 		return
 	}
-	level := m.valRepo.GetRegistry().MemberReferLayer - 1
+	level := m.registryRepo.Get(registry.MemberReferLayer).IntValue() - 1
+	if level < 0 {
+		level = 0
+	}
 	arr := m.Invitation().InviterArray(r.InviterId, level)
 	arr = append([]int64{r.InviterId}, arr...)
 
@@ -574,19 +670,32 @@ func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
 }
 
 // 更新邀请关系
-func (m *memberImpl) updateInviterStr(r *member.Relation) {
+func (m *memberImpl) updateInviterStr(r *member.InviteRelation) {
 	prefix := fmt.Sprintf("{'r0':%d,", r.InviterId)
 	if !strings.HasPrefix(r.InviterStr, prefix) {
 		m.forceUpdateInviterStr(r)
 	}
 }
 
-// 更改邀请人
-func (m *memberImpl) ChangeReferees(memberId int64) error {
+// 保存推荐关系
+func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
+	m.relation = r
+	m.relation.MemberId = m.value.Id
+	m.updateInviterStr(m.relation)
+	err := m.repo.SaveRelation(m.relation)
+	if err == nil {
+		// 推送关系更新消息
+		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(m.GetAggregateRootId())), "", 1000)
+	}
+	return err
+}
+
+// 绑定邀请人,如果已邀请,force为true时更新
+func (m *memberImpl) BindInviter(memberId int64, force bool) error {
 	if memberId > 0 {
-		rm := m.rep.GetMember(memberId)
+		rm := m.repo.GetMember(memberId)
 		if rm == nil {
-			return member.ErrNoSuchMember
+			return member.ErrNoValidInviter
 		}
 	}
 	rl := m.GetRelation()
@@ -595,7 +704,7 @@ func (m *memberImpl) ChangeReferees(memberId int64) error {
 		if memberId == 0 {
 			rl.InviterStr = ""
 		}
-		return m.SaveRelation(rl)
+		return m.saveRelation(rl)
 	}
 	return nil
 }

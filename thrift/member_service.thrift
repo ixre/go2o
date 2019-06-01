@@ -8,13 +8,17 @@ include "ttype.thrift"
 service MemberService{
     /**
      * 注册会员
-     * @param member 会员信息
-     * @param profile 资料
-     * @param mchId 商户编号
-     * @param cardId 会员卡号
-     * @param inviteCode 邀请码
-     **/
-    ttype.Result RegisterMemberV1(1:SMember member,2:SProfile profile,3:i32 mchId,4:string cardId,5:string inviteCode)
+     * @param user 登陆用户名
+     * @param pwd 登陆密码,md5运算后的字符串
+     * @param flag 用户自定义标志
+     * @param phone 手机号码
+     * @param email 邮箱
+     * @param avatar 头像
+     * @param extend 扩展数据
+     * @return 注册结果，返回user_code
+     */
+    ttype.Result RegisterMemberV2(1:string user,2:string pwd,3:i32 flag,4:string name,
+        5:string phone,6:string email,7:string avatar,8:map<string,string> extend)
 
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
@@ -35,6 +39,8 @@ service MemberService{
     SMember GetMemberByUser(1:string user)
     // 根据会员编号获取会员资料
     SProfile GetProfile(1:i64 id)
+    /** 激活会员 */
+    ttype.Result Active(1:i64 memberId)
     /** 锁定/解锁会员 */
     ttype.Result ToggleLock(1:i64 memberId)
     // 获取会员汇总信息
@@ -93,29 +99,49 @@ struct SLevel {
 
 /** 会员 */
 struct SMember {
-    1: i64 ID
-    2: string Usr
-    3: string Pwd
-    4: string TradePwd
-    5: i32 Exp
-    6: i32 Level
-    7: string InvitationCode
-    // 高级用户类型
-    8:i32   PremiumUser
-    // 高级用户过期时间
-    9:i64   PremiumExpires
-    10: string RegFrom
-    11: string RegIp
-    12: i64 RegTime
-    13: string CheckCode
-    14: i64 CheckExpires
-    15: i32 Flag
-    16: i32 State
-    17: i64 LoginTime
-    18: i64 LastLoginTime
-    19: i64 UpdateTime
-    20: string DynamicToken
-    21: i64 TimeoutTime
+
+    /**  */
+    1:i64 Id
+    /** 用户名 */
+    2:string User
+    /**  */
+    3:string Pwd
+    /**  */
+    4:string TradePwd
+    /**  */
+    5:i64 Exp
+    /**  */
+    6:i32 Level
+    /** 高级用户级别 */
+    7:i32 PremiumUser
+    /** 高级用户过期时间 */
+    8:i64 PremiumExpires
+    /**  */
+    9:string InvitationCode
+    /**  */
+    10:string RegIp
+    /**  */
+    11:string RegFrom
+    /**  */
+    12:i32 State
+    /** 会员标志 */
+    13:i32 Flag
+    /**  */
+    14:string Code
+    /**  */
+    15:string Avatar
+    /**  */
+    16:string Phone
+    /**  */
+    17:string Email
+    /** 昵称 */
+    18:string Name
+    /* 用户会员密钥 */
+    19:string DynamicToken
+    /** 注册时间 */
+    20:i64 RegTime
+    /** 最后登录时间 */
+    21:i64 LastLoginTime
 }
 
 /** 资料 */

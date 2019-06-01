@@ -44,11 +44,9 @@ type valueRepo struct {
 	wxGob           *util.GobFile
 	rpConf          *valueobject.RegisterPerm
 	rpGob           *util.GobFile
-	numConf         *valueobject.GlobNumberConf
-	numGob          *util.GobFile
 	globMchConf     *valueobject.PlatformConf
 	mchGob          *util.GobFile
-	globRegistry    *valueobject.Registry
+	globRegistry    *valueobject.Registry_
 	rstGob          *util.GobFile
 	globMchSaleConf *valueobject.GlobMchSaleConf
 	mscGob          *util.GobFile
@@ -75,10 +73,8 @@ func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface)
 		o:            conn.GetOrm(),
 		storage:      storage,
 		kvMux:        &sync.RWMutex{},
-		rstGob:       util.NewGobFile("conf/core/registry"),
 		wxGob:        util.NewGobFile("conf/core/wx_api"),
 		rpGob:        util.NewGobFile("conf/core/register_perm"),
-		numGob:       util.NewGobFile("conf/core/number_conf"),
 		mchGob:       util.NewGobFile("conf/core/pm_conf"),
 		mscGob:       util.NewGobFile("conf/core/mch_sale_conf"),
 		smsGob:       util.NewGobFile("conf/core/sms_conf"),
@@ -92,7 +88,6 @@ func (r *valueRepo) checkReload() error {
 	i, err := r.storage.GetInt(valueRepCacheKey)
 	if i == 0 || err != nil {
 		r.wxConf = nil
-		r.numConf = nil
 		r.rpConf = nil
 		r.smsConf = nil
 		r.globMchConf = nil
@@ -261,27 +256,6 @@ func (r *valueRepo) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	return nil
 }
 
-// 获取全局系统销售设置
-func (r *valueRepo) GetGlobNumberConf() valueobject.GlobNumberConf {
-	r.checkReload()
-	if r.numConf == nil {
-		v := DefaultGlobNumberConf
-		r.numConf = &v
-		r.numGob.Unmarshal(r.numConf)
-	}
-	return *r.numConf
-}
-
-// 保存全局系统销售设置
-func (r *valueRepo) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
-	if v != nil {
-		defer r.signReload()
-		r.numConf = v
-		return r.numGob.Save(r.numConf)
-	}
-	return nil
-}
-
 // 获取平台设置
 func (r *valueRepo) GetPlatformConf() valueobject.PlatformConf {
 	r.checkReload()
@@ -346,13 +320,13 @@ func (r *valueRepo) SaveMoAppConf(v *valueobject.MoAppConf) error {
 }
 
 // 获取数据存储
-func (r *valueRepo) GetRegistry() valueobject.Registry {
+func (r *valueRepo) GetRegistry() valueobject.Registry_ {
 	v := r.getRegistry()
 	return *v
 }
 
 // 保存数据存储
-func (r *valueRepo) SaveRegistry(v *valueobject.Registry) error {
+func (r *valueRepo) SaveRegistry(v *valueobject.Registry_) error {
 	if r != nil {
 		defer r.signReload()
 		r.globRegistry = v
@@ -362,7 +336,7 @@ func (r *valueRepo) SaveRegistry(v *valueobject.Registry) error {
 }
 
 // 获取数据存储
-func (r *valueRepo) getRegistry() *valueobject.Registry {
+func (r *valueRepo) getRegistry() *valueobject.Registry_ {
 	r.checkReload()
 	if r.globRegistry == nil {
 		v2 := DefaultRegistry

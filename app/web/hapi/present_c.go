@@ -6,7 +6,9 @@ import (
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/ad"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"net/http"
 	"strconv"
 	"strings"
@@ -34,7 +36,7 @@ func (p *presentC) AdApi(c *echox.Context) error {
 	if rds == nil {
 		panic("storage need redis support")
 	}
-	var seconds int64 = 0
+	var seconds int = 0
 	rds.RWJson(key, &result, func() interface{} {
 		//从缓存中读取
 		for _, n := range names {
@@ -46,8 +48,14 @@ func (p *presentC) AdApi(c *echox.Context) error {
 			}
 			result[n] = dto
 		}
-		seconds = rsi.FoundationService.GetRegistry().CacheAdMaxAge
+		regArr := []string{registry.CacheAdMaxAge}
+		trans, cli, err := thrift.FoundationServeClient()
+		if err == nil {
+			defer trans.Close()
+			mp, _ := cli.GetRegistries(thrift.Context, regArr)
+			seconds, _ = strconv.Atoi(mp[regArr[0]])
+		}
 		return result
-	}, seconds)
+	}, int64(seconds))
 	return c.JSONP(http.StatusOK, callback, result)
 }

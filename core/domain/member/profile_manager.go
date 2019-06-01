@@ -18,6 +18,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
@@ -37,26 +38,29 @@ var (
 )
 
 type profileManagerImpl struct {
-	member      *memberImpl
-	memberId    int64
-	rep         member.IMemberRepo
-	valRepo     valueobject.IValueRepo
-	bank        *member.BankInfo
-	trustedInfo *member.TrustedInfo
-	profile     *member.Profile
+	member       *memberImpl
+	memberId     int64
+	rep          member.IMemberRepo
+	valueRepo    valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
+	bank         *member.BankInfo
+	trustedInfo  *member.TrustedInfo
+	profile      *member.Profile
 }
 
 func newProfileManagerImpl(m *memberImpl, memberId int64,
-	rep member.IMemberRepo, valRepo valueobject.IValueRepo) member.IProfileManager {
+	rep member.IMemberRepo, registryRepo registry.IRegistryRepo,
+	valueRepo valueobject.IValueRepo) member.IProfileManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
 		panic(errors.New("member not exists"))
 	}
 	return &profileManagerImpl{
-		member:   m,
-		memberId: memberId,
-		rep:      rep,
-		valRepo:  valRepo,
+		member:       m,
+		memberId:     memberId,
+		rep:          rep,
+		registryRepo: registryRepo,
+		valueRepo:    valueRepo,
 	}
 }
 
@@ -84,8 +88,8 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 		return member.ErrEmailValidErr
 	}
 	// 检查手机
-	conf := p.valRepo.GetRegistry()
-	if len(v.Phone) != 0 && conf.MemberCheckPhoneFormat {
+	checkPhone := p.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
+	if len(v.Phone) != 0 && checkPhone {
 		if !phoneRegex.MatchString(v.Phone) {
 			return member.ErrPhoneValidErr
 		}
@@ -95,7 +99,8 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 	}
 	// 检查IM
 	if v.UpdateTime > 0 {
-		if conf.MemberImRequired && len(v.Im) == 0 {
+		imRequire := p.registryRepo.Get(registry.MemberImRequired).BoolValue()
+		if imRequire && len(v.Im) == 0 {
 			return member.ErrMissingIM
 		}
 	}
@@ -151,8 +156,8 @@ func (p *profileManagerImpl) ProfileCompleted() bool {
 		len(v.BirthDay) != 0 && len(v.Address) != 0 && v.Sex != 0 &&
 		v.Province != 0 && v.City != 0 && v.District != 0
 	if r {
-		conf := p.valRepo.GetRegistry()
-		if conf.MemberImRequired && len(v.Im) == 0 {
+		imRequire := p.registryRepo.Get(registry.MemberImRequired).BoolValue()
+		if imRequire && len(v.Im) == 0 {
 			return false
 		}
 	}
@@ -170,8 +175,8 @@ func (p *profileManagerImpl) CheckProfileComplete() error {
 	if v.Province <= 0 || v.City <= 0 || v.District <= 0 || v.Address == "" {
 		return errors.New("address")
 	}
-	conf := p.valRepo.GetRegistry()
-	if conf.MemberImRequired && len(v.Im) == 0 {
+	imRequire := p.registryRepo.Get(registry.MemberImRequired).BoolValue()
+	if imRequire && len(v.Im) == 0 {
 		return errors.New("im")
 	}
 	return nil
@@ -428,7 +433,7 @@ func (p *profileManagerImpl) UnlockBank() error {
 
 // 创建配送地址
 func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {
-	return newDeliver(v, p.rep, p.valRepo)
+	return newDeliver(v, p.rep, p.valueRepo)
 }
 
 // 获取配送地址

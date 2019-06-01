@@ -75,8 +75,6 @@ const (
 	KindWalletFreeze int = 8
 	// 解冻
 	KindWalletUnfreeze int = 9
-	// 客服调整
-	KindWalletAdjust int = 10
 	// 提现到余额
 	KindWalletTakeOutToBalance int = 11
 	// 提现到银行卡(人工提现)
@@ -344,7 +342,7 @@ type (
 		MemberId int64  `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int `db:"kind"`
+		Kind int `db:"kind"`
 
 		Title string `db:"title"`
 		// 金额

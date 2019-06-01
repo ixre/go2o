@@ -19,6 +19,7 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/dto"
@@ -42,19 +43,21 @@ var (
 type MemberRepoImpl struct {
 	Storage storage.Interface
 	db.Connector
-	_orm    orm.Orm
-	valrepo valueobject.IValueRepo
-	mssrepo mss.IMssRepo
+	_orm         orm.Orm
+	valueRepo    valueobject.IValueRepo
+	mssrepo      mss.IMssRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
-	valRepo valueobject.IValueRepo) *MemberRepoImpl {
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
 	return &MemberRepoImpl{
-		Storage:   sto,
-		Connector: c,
-		_orm:      c.GetOrm(),
-		mssrepo:   mssRepo,
-		valrepo:   valRepo,
+		Storage:      sto,
+		Connector:    c,
+		_orm:         c.GetOrm(),
+		mssrepo:      mssRepo,
+		valueRepo:    valRepo,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -62,7 +65,7 @@ func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
 func (m *MemberRepoImpl) GetManager() member.IMemberManager {
 	memberMux.Lock()
 	if memberManager == nil {
-		memberManager = memberImpl.NewMemberManager(m, m.valrepo)
+		memberManager = memberImpl.NewMemberManager(m, m.valueRepo, m.registryRepo)
 	}
 	memberMux.Unlock()
 	return memberManager
@@ -168,38 +171,43 @@ func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 }
 
 // 根据用户名获取会员
-func (m *MemberRepoImpl) GetMemberByUsr(usr string) *member.Member {
+func (m *MemberRepoImpl) GetMemberByUser(user string) *member.Member {
 	e := &member.Member{}
-	err := m.Connector.GetOrm().GetBy(e, "usr= $1", usr)
+	err := m.Connector.GetOrm().GetBy(e, "\"user\"= $1", user)
 	if err == nil {
 		return e
 	}
 	return nil
 }
 
+// 根据编码获取会员
+func (m *MemberRepoImpl) GetMemberIdByCode(code string) int {
+	var id int
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE code= $1", &id, code)
+	return id
+}
+
 // 根据手机号码获取会员
 func (m *MemberRepoImpl) GetMemberValueByPhone(phone string) *member.Member {
 	e := &member.Member{}
-	err := m.GetOrm().GetByQuery(e, `SELECT * FROM mm_member
-		INNER JOIN mm_profile ON mm_profile.member_id = mm_member.id
-		 WHERE phone= $1`, phone)
-	if err != nil {
-		return nil
+	err := m.Connector.GetOrm().GetBy(e, "phone = $1", phone)
+	if err == nil {
+		return e
 	}
-	return e
+	return nil
 }
 
 // 根据手机号获取会员编号
 func (m *MemberRepoImpl) GetMemberIdByPhone(phone string) int64 {
 	var id int64
-	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone= $1", &id, phone)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE phone= $1", &id, phone)
 	return id
 }
 
 // 根据邮箱地址获取会员编号
 func (m *MemberRepoImpl) GetMemberIdByEmail(email string) int64 {
 	var id int64
-	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email= $1", &id, email)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE email= $1", &id, email)
 	return id
 }
 
@@ -259,7 +267,6 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 		}
 		return v.Id, err
 	}
-
 	return m.createMember(v)
 }
 
@@ -288,26 +295,12 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 
 func (m *MemberRepoImpl) initMember(v *member.Member) {
 	orm := m.Connector.GetOrm()
-	orm.Save(nil, &member.Account{
-		MemberId:     v.Id,
-		Balance:      0,
-		TotalExpense: 0,
-		TotalCharge:  0,
-		TotalPay:     0,
-		UpdateTime:   v.RegTime,
-	})
 
 	orm.Save(nil, &member.BankInfo{
 		MemberId: v.Id,
 		State:    1,
 	})
 
-	orm.Save(nil, &member.Relation{
-		MemberId:  v.Id,
-		CardCard:  "",
-		InviterId: 0,
-		RegMchId:  0,
-	})
 }
 
 // 删除会员
@@ -337,14 +330,14 @@ func (m *MemberRepoImpl) DeleteMember(id int64) error {
 
 func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 	var id int64
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = $1", &id, user)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE user = $1", &id, user)
 	return id
 }
 
 // 创建会员
 func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m.mssrepo, m.valrepo)
+		m.mssrepo, m.valueRepo, m.registryRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存
@@ -376,17 +369,22 @@ func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 			return nil
 		}
 		m.Storage.Set(key, *e)
-	} else {
-		//log.Println(key,fmt.Sprintf("--- account: %d > %#v",memberId,e))
 	}
 	return e
 }
 
 // 保存账户，传入会员编号
 func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
-	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
+	var err error
+	if m.GetAccount(v.MemberId) == nil {
+		_, _, err = m.Connector.GetOrm().Save(nil, v)
+	} else {
+		_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
+		if err == nil {
+			go m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
+		}
+	}
 	if err == nil {
-		m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
 		m.Storage.Set(m.getAccountCk(v.MemberId), *v)
 	}
 	return v.MemberId, err
@@ -478,8 +476,8 @@ func (m *MemberRepoImpl) getRelationCk(memberId int64) string {
 }
 
 // 获取会员关联
-func (m *MemberRepoImpl) GetRelation(memberId int64) *member.Relation {
-	e := member.Relation{}
+func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
+	e := member.InviteRelation{}
 	key := m.getRelationCk(memberId)
 	if m.Storage.Get(key, &e) != nil {
 		if err := m.Connector.GetOrm().Get(memberId, &e); err != nil {
@@ -502,24 +500,29 @@ func (m *MemberRepoImpl) GetLevelValueByExp(mchId int32, exp int64) int {
 }
 
 // 用户名是否存在
-func (m *MemberRepoImpl) CheckUsrExist(usr string, memberId int64) bool {
+func (m *MemberRepoImpl) CheckUsrExist(user string, memberId int64) bool {
 	var c int
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr= $1 AND id <> $2 LIMIT 1",
-		&c, usr, memberId)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE user= $1 AND id <> $2 LIMIT 1",
+		&c, user, memberId)
 	return c != 0
 }
 
 // 手机号码是否使用
 func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int64) bool {
 	var c int
-	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_profile WHERE phone= $1 AND member_id <> $2",
+	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE phone= $1 AND id <> $2",
 		&c, phone, memberId)
 	return c != 0
 }
 
 // 保存绑定
-func (m *MemberRepoImpl) SaveRelation(v *member.Relation) error {
-	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
+func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
+	rel := m.GetRelation(v.MemberId)
+	if rel == nil {
+		_, _, err = m.Connector.GetOrm().Save(nil, v)
+	} else {
+		_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
+	}
 	if err == nil {
 		err = m.Storage.Set(m.getRelationCk(v.MemberId), *v)
 	}
@@ -578,8 +581,8 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
-		m.Connector.Query(`SELECT m.id,m.usr,m.level,p.avatar,p.name,p.phone,p.im FROM
-            (SELECT id,usr,level FROM mm_member WHERE id IN (SELECT member_id FROM
+		m.Connector.Query(`SELECT m.id,m.user,m.level,p.avatar,p.name,p.phone,p.im FROM
+            (SELECT id,user,level FROM mm_member WHERE id IN (SELECT member_id FROM
              mm_relation WHERE inviter_id= $1) ORDER BY level DESC,id LIMIT $3 OFFSET $2) m
              INNER JOIN mm_profile p ON p.member_id = m.id ORDER BY level DESC,id`,
 			func(rs *sql.Rows) {

@@ -62,11 +62,11 @@ func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 
 func (s *memberService) init() *memberService {
 	db := gof.CurrentApp.Db()
-	var list []*member.Relation
+	var list []*member.InviteRelation
 	db.GetOrm().Select(&list, "")
-	for _, v := range list {
-		s.repo.GetMember(v.MemberId).SaveRelation(v)
-	}
+	//for _, v := range list {
+	//	s.repo.GetMember(v.MemberId).saveRelation(v)
+	//}
 	return s
 }
 
@@ -92,8 +92,8 @@ func (s *memberService) GetMember(ctx context.Context, id int64) (*member_servic
 }
 
 // 根据用户名获取会员
-func (s *memberService) GetMemberByUser(ctx context.Context, usr string) (*member_service.SMember, error) {
-	v := s.repo.GetMemberByUsr(usr)
+func (s *memberService) GetMemberByUser(ctx context.Context, user string) (*member_service.SMember, error) {
+	v := s.repo.GetMemberByUser(user)
 	if v != nil {
 		return parser.MemberDto(v), nil
 	}
@@ -332,8 +332,8 @@ func (s *memberService) CompareCode(memberId int64, code string) error {
 }
 
 // 更改会员用户名
-func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, usr string) (*ttype.Result_, error) {
-	err := s.changeUsr(int(memberId), usr)
+func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, user string) (*ttype.Result_, error) {
+	err := s.changeUsr(int(memberId), user)
 	return s.result(err), nil
 }
 
@@ -367,7 +367,7 @@ func (s *memberService) SaveMember(v *member_service.SMember) (int64, error) {
 }
 
 func (s *memberService) updateMember(v *member_service.SMember) (int64, error) {
-	m := s.repo.GetMember(v.ID)
+	m := s.repo.GetMember(int64(v.ID))
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
@@ -379,32 +379,48 @@ func (s *memberService) updateMember(v *member_service.SMember) (int64, error) {
 }
 
 // 注册会员
-func (s *memberService) RegisterMemberV1(ctx context.Context, member *member_service.SMember, profile *member_service.SProfile, mchId int32, cardId string, inviteCode string) (r *ttype.Result_, err error) {
-	if member == nil || profile == nil {
-		return s.error(errors.New("缺少参数:member/profile")), nil
+func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd string,
+	flag int32, name string, phone string, email string, avatar string,
+	extend map[string]string) (r *ttype.Result_, err error) {
+	inviteCode := extend["invite_code"]
+	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
+	if err != nil {
+		return s.error(err), nil
 	}
-	v := parser.Member(member)
-	pro := parser.MemberProfile2(profile)
-	invitationId, err := s.repo.GetManager().PrepareRegister(
-		v, pro, inviteCode)
+	v := &member.Member{
+		User:    user,
+		Pwd:     domain.Sha1Pwd(pwd),
+		Name:    name,
+		Avatar:  avatar,
+		Phone:   phone,
+		Email:   email,
+		RegFrom: extend["reg_from"],
+		RegIp:   extend["reg_ip"],
+		Flag:    int(flag),
+	}
+	m := s.repo.CreateMember(v) //创建会员
+	id, err := m.Save()
+
 	if err == nil {
-		m := s.repo.CreateMember(v) //创建会员
-		id, err := m.Save()
-		if err == nil {
-			pro.Sex = 1
-			pro.MemberId = id
-			//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
-			if err = m.Profile().SaveProfile(pro); err != nil {
-				s.repo.DeleteMember(id)
-			} else {
-				// 保存关联信息
-				rl := m.GetRelation()
-				rl.InviterId = invitationId
-				rl.RegMchId = mchId
-				rl.CardCard = cardId
-				err = m.SaveRelation(rl)
-			}
-		}
+		// 保存关联信息
+		err = m.BindInviter(inviterId, true)
+		//m := s.repo.CreateMember(v) //创建会员
+		//id, err := m.Save()
+		//if err == nil {
+		//	pro.Sex = 1
+		//	pro.MemberId = id
+		//	//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
+		//	if err = m.Profile().SaveProfile(pro); err != nil {
+		//		s.repo.DeleteMember(id)
+		//	} else {
+		//		// 保存关联信息
+		//		rl := m.GetRelation()
+		//		rl.InviterId = invitationId
+		//		rl.RegMchId = mchId
+		//		rl.CardCard = cardId
+		//		err = m.saveRelation(rl)
+		//	}
+		//}
 		return s.success(map[string]string{
 			"member_id": util.Str(id),
 		}), nil
@@ -413,7 +429,7 @@ func (s *memberService) RegisterMemberV1(ctx context.Context, member *member_ser
 }
 
 // 注册会员
-func (s *memberService) RegisterMember(mchId int32, v1 *member_service.SMember,
+func (s *memberService) RegisterMember1(mchId int32, v1 *member_service.SMember,
 	pro1 *member_service.SProfile, cardId string, invitationCode string) (int64, error) {
 	if v1 == nil || pro1 == nil {
 		return 0, errors.New("missing data")
@@ -433,11 +449,7 @@ func (s *memberService) RegisterMember(mchId int32, v1 *member_service.SMember,
 				s.repo.DeleteMember(id)
 			} else {
 				// 保存关联信息
-				rl := m.GetRelation()
-				rl.InviterId = invitationId
-				rl.RegMchId = mchId
-				rl.CardCard = cardId
-				err = m.SaveRelation(rl)
+				err = m.BindInviter(invitationId, true)
 			}
 		}
 		return id, err
@@ -454,8 +466,20 @@ func (s *memberService) GetMemberLevel(memberId int64) *member.Level {
 	return m.GetLevel()
 }
 
-func (s *memberService) GetRelation(memberId int64) *member.Relation {
+func (s *memberService) GetRelation(memberId int64) *member.InviteRelation {
 	return s.repo.GetRelation(memberId)
+}
+
+// 激活会员
+func (s *memberService) Active(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	if err := m.Active(); err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // 锁定/解锁会员
@@ -560,12 +584,12 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) {
-	usr = strings.ToLower(strings.TrimSpace(usr))
-	val := s.repo.GetMemberByUsr(usr)
+func (s *memberService) testLogin(user string, pwd string) (id int64, err error) {
+	user = strings.ToLower(strings.TrimSpace(user))
+	val := s.repo.GetMemberByUser(user)
 	if val == nil {
 		//todo: 界面加上使用手机号码登陆
-		//val = m.repo.GetMemberValueByPhone(usr)
+		//val = m.repo.GetMemberValueByPhone(user)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
@@ -573,23 +597,23 @@ func (s *memberService) testLogin(usr string, pwd string) (id int64, err error) 
 	if val.Pwd != pwd {
 		return 0, member.ErrCredential
 	}
-	if val.State == member.StateStopped {
-		return 0, member.ErrMemberDisabled
+	if val.Flag&member.FlagLocked == member.FlagLocked {
+		return 0, member.ErrMemberLocked
 	}
 	return val.Id, nil
 }
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) CheckLogin(ctx context.Context, usr string, pwd string, update bool) (*ttype.Result_, error) {
-	id, err := s.testLogin(usr, pwd)
+func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*ttype.Result_, error) {
+	id, err := s.testLogin(user, pwd)
 	if update && err == nil {
 		m := s.repo.GetMember(id)
 		err = m.UpdateLoginTime()
 	}
 	r := s.result(err)
 	r.Data = map[string]string{
-		"MemberId": strconv.Itoa(int(id)),
+		"member_id": strconv.Itoa(int(id)),
 	}
 	return r, nil
 }
@@ -611,11 +635,11 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
-func (s *memberService) CheckUsr(usr string, memberId int64) error {
-	if len(usr) < 6 {
+func (s *memberService) CheckUsr(user string, memberId int64) error {
+	if len(user) < 6 {
 		return member.ErrUsrLength
 	}
-	if s.repo.CheckUsrExist(usr, memberId) {
+	if s.repo.CheckUsrExist(user, memberId) {
 		return member.ErrUsrExist
 	}
 	return nil
@@ -1215,7 +1239,7 @@ func (s *memberService) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember
 
 // 根据用户名货手机获取会员
 func (s *memberService) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
-	return s.query.GetMemberByUsrOrPhone(key)
+	return s.query.GetMemberByUserOrPhone(key)
 }
 
 // 根据手机获取会员编号
@@ -1298,12 +1322,12 @@ func (s *memberService) PagedExpiresCoupon(memberId int, start, end int) (int, [
 }
 
 // 更改用户名
-func (s *memberService) changeUsr(memberId int, usr string) error {
+func (s *memberService) changeUsr(memberId int, user string) error {
 	m := s.repo.GetMember(int64(memberId))
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.ChangeUsr(usr)
+	return m.ChangeUsr(user)
 }
 
 // 更改手机号

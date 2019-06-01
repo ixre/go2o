@@ -1,9 +1,9 @@
 // create for src 29/11/2017 ( jarrysix@gmail.com )
-package testing
+package tests
 
 import (
 	"go2o/core/domain/interface/wallet"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"testing"
 )
 

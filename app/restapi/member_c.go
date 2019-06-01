@@ -9,13 +9,11 @@
 package restapi
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/labstack/echo"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"go2o/core/variable"
@@ -50,7 +48,7 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)
 		if r.ErrCode == 0 {
-			memberId, _ := strconv.Atoi(r.Data["MemberId"])
+			memberId, _ := strconv.Atoi(r.Data["member_id"])
 			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
 			result.Member = &dto.LoginMember{
 				ID:         memberId,
@@ -62,42 +60,12 @@ func (mc *MemberC) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-// 注册
-func (mc *MemberC) Register(c echo.Context) error {
-	result := &gof.Result{}
-	return c.JSON(http.StatusOK,
-		result.Error(errors.New("注册暂停，请通过微信或其他方式注册!")))
-
-	r := c.Request()
-	mchId := getMerchantId(c)
-	usr := r.FormValue("usr")
-	pwd := r.FormValue("pwd")
-	phone := r.FormValue("phone")
-	registerFrom := r.FormValue("reg_from")          // 注册来源
-	invitationCode := r.FormValue("invitation_code") // 邀请码
-	var regIp string
-	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
-		regIp = r.RemoteAddr[:i]
-	}
-	m := &member_service.SMember{}
-	pro := &member_service.SProfile{}
-	m.Usr = usr
-	m.Pwd = domain.MemberSha1Pwd(pwd)
-	m.RegIp = regIp
-	m.RegFrom = registerFrom
-	pro.Phone = phone
-	pro.Name = m.Usr
-	_, err := rsi.MemberService.RegisterMember(mchId,
-		m, pro, "", invitationCode)
-	return c.JSON(http.StatusOK, result.Error(err))
-}
-
 func (mc *MemberC) Ping(c echo.Context) error {
 	//log.Println("---", ctx.Request.FormValue("member_id"), ctx.Request.FormValue("member_token"))
 	return c.String(http.StatusOK, "PONG")
 }
 
-// 同步
+// 同步 todo: 过时
 func (mc *MemberC) Async(c echo.Context) error {
 	var rlt AsyncResult
 	var form = url.Values(c.Request().Form)
@@ -110,8 +78,8 @@ func (mc *MemberC) Async(c echo.Context) error {
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	sto.Get(autKey, &kvAut)
 	if kvMut == 0 {
-		m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
-		kvMut = int(m.UpdateTime)
+		//m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
+		//kvMut = int(m.UpdateTime)
 		sto.Set(mutKey, kvMut)
 	}
 	//kvAut = 0

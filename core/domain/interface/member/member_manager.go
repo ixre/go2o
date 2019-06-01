@@ -26,6 +26,8 @@ type (
 		// 检查注册信息是否正确
 		PrepareRegister(v *Member, pro *Profile, invitationCode string) (
 			invitationId int64, err error)
+		// 检查邀请注册
+		CheckInviteRegister(code string) (inviterId int64, err error)
 		// 获取所有买家分组
 		GetAllBuyerGroups() []*BuyerGroup
 		// 获取买家分组

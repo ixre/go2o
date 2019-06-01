@@ -1,4 +1,4 @@
-package factory
+package repos
 
 import (
 	"github.com/ixre/gof/db"
@@ -23,22 +23,23 @@ import (
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
-	"go2o/core/repos"
 )
 
 var (
-	Repo *RepoFactory = &RepoFactory{}
+	Repo = &RepoFactory{}
 )
 
 type RepoFactory struct {
-	proMRepo   promodel.IProModelRepo
-	valueRepo  valueobject.IValueRepo
-	userRepo   user.IUserRepo
-	notifyRepo notify.INotifyRepo
-	mssRepo    mss.IMssRepo
+	registryRepo registry.IRegistryRepo
+	proMRepo     promodel.IProModelRepo
+	valueRepo    valueobject.IValueRepo
+	userRepo     user.IUserRepo
+	notifyRepo   notify.INotifyRepo
+	mssRepo      mss.IMssRepo
 
 	expressRepo express.IExpressRepo
 	shipRepo    shipment.IShipmentRepo
@@ -69,41 +70,42 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface, confPath stri
 	Repo = r
 	orm := db.GetOrm()
 	/** Repository **/
-	r.proMRepo = repos.NewProModelRepo(db, orm)
-	r.valueRepo = repos.NewValueRepo(confPath, db, sto)
-	r.userRepo = repos.NewUserRepo(db)
-	r.notifyRepo = repos.NewNotifyRepo(db)
-	r.mssRepo = repos.NewMssRepo(db, r.notifyRepo, r.valueRepo)
-	r.expressRepo = repos.NewExpressRepo(db, r.valueRepo)
-	r.shipRepo = repos.NewShipmentRepo(db, r.expressRepo)
-	r.memberRepo = repos.NewMemberRepo(sto, db, r.mssRepo, r.valueRepo)
-	r.productRepo = repos.NewProductRepo(db, r.proMRepo, r.valueRepo)
-	r.itemWsRepo = repos.NewItemWholesaleRepo(db)
-	r.catRepo = repos.NewCategoryRepo(db, r.valueRepo, sto)
-	r.itemRepo = repos.NewGoodsItemRepo(db, r.catRepo, r.productRepo,
-		r.proMRepo, r.itemWsRepo, r.expressRepo, r.valueRepo)
-	r.tagSaleRepo = repos.NewTagSaleRepo(db, r.valueRepo)
-	r.promRepo = repos.NewPromotionRepo(db, r.itemRepo, r.memberRepo)
+	r.registryRepo = NewRegistryRepo(db)
+	r.proMRepo = NewProModelRepo(db, orm)
+	r.valueRepo = NewValueRepo(confPath, db, sto)
+	r.userRepo = NewUserRepo(db)
+	r.notifyRepo = NewNotifyRepo(db)
+	r.mssRepo = NewMssRepo(db, r.notifyRepo, r.valueRepo)
+	r.expressRepo = NewExpressRepo(db, r.valueRepo)
+	r.shipRepo = NewShipmentRepo(db, r.expressRepo)
+	r.memberRepo = NewMemberRepo(sto, db, r.mssRepo, r.valueRepo, r.registryRepo)
+	r.productRepo = NewProductRepo(db, r.proMRepo, r.valueRepo)
+	r.itemWsRepo = NewItemWholesaleRepo(db)
+	r.catRepo = NewCategoryRepo(db, r.valueRepo, sto)
+	r.itemRepo = NewGoodsItemRepo(db, r.catRepo, r.productRepo,
+		r.proMRepo, r.itemWsRepo, r.expressRepo, r.registryRepo)
+	r.tagSaleRepo = NewTagSaleRepo(db, r.valueRepo)
+	r.promRepo = NewPromotionRepo(db, r.itemRepo, r.memberRepo)
 
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
-	r.walletRepo = repos.NewWalletRepo(db)
-	r.shopRepo = repos.NewShopRepo(db, sto, r.valueRepo)
-	r.wholesaleRepo = repos.NewWholesaleRepo(db)
-	r.mchRepo = repos.NewMerchantRepo(db, sto, r.wholesaleRepo,
-		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo)
-	r.cartRepo = repos.NewCartRepo(db, r.memberRepo, r.mchRepo, r.itemRepo)
-	r.personFinanceRepo = repos.NewPersonFinanceRepository(db, r.memberRepo)
-	r.deliveryRepo = repos.NewDeliverRepo(db)
-	r.contentRepo = repos.NewContentRepo(db)
-	r.adRepo = repos.NewAdvertisementRepo(db, sto)
-	r.orderRepo = repos.NewOrderRepo(sto, db, r.mchRepo, nil,
+	r.walletRepo = NewWalletRepo(db)
+	r.shopRepo = NewShopRepo(db, sto, r.valueRepo)
+	r.wholesaleRepo = NewWholesaleRepo(db)
+	r.mchRepo = NewMerchantRepo(db, sto, r.wholesaleRepo,
+		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo, r.registryRepo)
+	r.cartRepo = NewCartRepo(db, r.memberRepo, r.mchRepo, r.itemRepo)
+	r.personFinanceRepo = NewPersonFinanceRepository(db, r.memberRepo)
+	r.deliveryRepo = NewDeliverRepo(db)
+	r.contentRepo = NewContentRepo(db)
+	r.adRepo = NewAdvertisementRepo(db, sto)
+	r.orderRepo = NewOrderRepo(sto, db, r.mchRepo, nil,
 		r.productRepo, r.cartRepo, r.itemRepo, r.promRepo, r.memberRepo,
-		r.deliveryRepo, r.expressRepo, r.shipRepo, r.valueRepo)
-	r.paymentRepo = repos.NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.valueRepo)
-	r.asRepo = repos.NewAfterSalesRepo(db, r.orderRepo, r.memberRepo, r.paymentRepo)
+		r.deliveryRepo, r.expressRepo, r.shipRepo, r.valueRepo, r.registryRepo)
+	r.paymentRepo = NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.registryRepo)
+	r.asRepo = NewAfterSalesRepo(db, r.orderRepo, r.memberRepo, r.paymentRepo)
 
 	// 解决依赖
-	r.orderRepo.(*repos.OrderRepImpl).SetPaymentRepo(r.paymentRepo)
+	r.orderRepo.(*OrderRepImpl).SetPaymentRepo(r.paymentRepo)
 	// 初始化数据
 	r.memberRepo.GetManager().GetAllBuyerGroups()
 	return r
@@ -187,4 +189,8 @@ func (r *RepoFactory) GetAfterSalesRepo() afterSales.IAfterSalesRepo {
 }
 func (r *RepoFactory) GetWalletRepo() wallet.IWalletRepo {
 	return r.walletRepo
+}
+
+func (r *RepoFactory) GetRegistryRepo() registry.IRegistryRepo {
+	return r.registryRepo
 }

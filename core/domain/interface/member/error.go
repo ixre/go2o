@@ -31,8 +31,11 @@ var (
 	ErrSessionTimeout = domain.NewError(
 		"member_session_time_out", "会员会话超时")
 
-	ErrMemberDisabled = domain.NewError(
-		"err_member_stopped", "会员已被停用")
+	ErrMemberLocked = domain.NewError(
+		"err_member_locked", "会员已被停用")
+
+	ErrMemberHasActive = domain.NewError(
+		"err_member_has_active", "会员已激活")
 
 	ErrPremiumValue = domain.NewError(
 		"err_member_premium_value", "premium not match")
@@ -93,6 +96,8 @@ var (
 	ErrNoSuchMember = domain.NewError(
 		"member_no_such_member", "会员不存在")
 
+	ErrNoValidInviter = domain.NewError(
+		"member_no_valid_inviter", "邀请人不正确")
 	ErrDeliverAddressLen = domain.NewError(
 		"err_deliver_address_len", "请填写详细的配送地址")
 
@@ -164,10 +169,10 @@ var (
 		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
 
 	ErrSameUsr = domain.NewError(
-		"err_same_usr", "用户名与原来相同")
+		"err_same_user", "用户名与原来相同")
 
 	ErrUsrExist = domain.NewError(
-		"err_member_usr_exist", "用户名已存在")
+		"err_member_user_exist", "用户名已存在")
 
 	ErrNilNickName = domain.NewError(
 		"err_member_nil_nick_name", "昵称不能为空")

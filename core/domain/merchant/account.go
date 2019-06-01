@@ -5,6 +5,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/domain/tmp"
 	"go2o/core/variable"
@@ -201,20 +202,18 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 		if err != nil {
 			return err
 		}
-
 		// 判断是否提现免费,如果免费,则赠送手续费
-		registry := a.mchImpl._valRepo.GetRegistry()
-		if registry.MerchantTakeOutCashFree {
-			conf := a.mchImpl._valRepo.GetGlobNumberConf()
-			if conf.TakeOutCsn > 0 {
-				csn := amount * conf.TakeOutCsn
+		takeFee := a.mchImpl._registryRepo.Get(registry.MerchantTakeOutCashFree).BoolValue()
+		if takeFee {
+			takeRate := a.mchImpl._registryRepo.Get(registry.MerchantTakeOutCsn).FloatValue()
+			if takeRate > 0 {
+				csn := amount * float32(takeRate)
 				err = m.GetAccount().Charge(member.AccountWallet,
 					member.KindWalletAdd, "返还商户提现手续费", "",
 					csn, member.DefaultRelateUser)
 			}
 		}
 	}
-
 	return err
 }
 
@@ -252,11 +251,11 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 		}
 
 		// 判断是否提现免费,如果免费,则赠送手续费
-		registry := a.mchImpl._valRepo.GetRegistry()
-		if registry.MerchantTakeOutCashFree {
-			conf := a.mchImpl._valRepo.GetGlobNumberConf()
-			if conf.TakeOutCsn > 0 {
-				csn := float32(0)
+		takeFree := a.mchImpl._registryRepo.Get(registry.MerchantTakeOutCashFree).BoolValue()
+		if takeFree {
+			rate := a.mchImpl._registryRepo.Get(registry.MerchantTakeOutCsn).FloatValue()
+			if rate > 0 {
+				csn := float32(float32(rate) * amount)
 				err = m.GetAccount().Charge(member.AccountWallet,
 					member.KindWalletAdd, "返还商户提现手续费", "",
 					csn, member.DefaultRelateUser)

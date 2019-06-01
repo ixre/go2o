@@ -12,7 +12,7 @@ package dto
 type MemberSummary struct {
 	MemberId int32 `db:"id" auto:"yes" pk:"yes"`
 	// 用户名
-	Usr string `db:"usr"`
+	Usr string `db:"user"`
 	// 昵称
 	Name string `db:"name"`
 	// 头像

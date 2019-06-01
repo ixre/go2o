@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -26,22 +26,22 @@ import (
 var _ member.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	member    *memberImpl
-	mm        member.IMemberManager
-	value     *member.Account
-	rep       member.IMemberRepo
-	valueRepo valueobject.IValueRepo
+	member       *memberImpl
+	mm           member.IMemberManager
+	value        *member.Account
+	rep          member.IMemberRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func NewAccount(m *memberImpl, value *member.Account,
 	rep member.IMemberRepo, mm member.IMemberManager,
-	valueRepo valueobject.IValueRepo) member.IAccount {
+	registryRepo registry.IRegistryRepo) member.IAccount {
 	return &accountImpl{
-		member:    m,
-		value:     value,
-		rep:       rep,
-		mm:        mm,
-		valueRepo: valueRepo,
+		member:       m,
+		value:        value,
+		rep:          rep,
+		mm:           mm,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -57,9 +57,11 @@ func (a *accountImpl) GetValue() *member.Account {
 
 // 保存
 func (a *accountImpl) Save() (int64, error) {
+	isCreate := a.GetDomainId() == 0
+	a.value.MemberId = a.member.GetAggregateRootId()
 	a.value.UpdateTime = time.Now().Unix()
 	n, err := a.rep.SaveAccount(a.value)
-	if err == nil {
+	if err == nil && !isCreate {
 		go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), "", 500)
 	}
 	return n, err
@@ -144,7 +146,7 @@ func (a *accountImpl) Adjust(account int, title string, amount float32, remark s
 	case member.AccountWallet:
 		return a.adjustWalletAccount(title, amount, remark, relateUser)
 	case member.AccountIntegral:
-		return a.adjustIntegralAccount(title, amount, remark, relateUser)
+		return a.adjustIntegralAccount(title, int(amount), remark, relateUser)
 	}
 	panic("not support other account adjust")
 }
@@ -153,16 +155,16 @@ func (a *accountImpl) Adjust(account int, title string, amount float32, remark s
 func (a *accountImpl) adjustBalanceAccount(title string, amount float32, remark string, relateUser int64) error {
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindAdjust,
-		Title:        title,
-		OuterNo:      "",
-		Amount:       amount,
-		Remark:       remark,
-		RelateUser:   relateUser,
-		ReviewState:  enum.ReviewPass,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        member.KindAdjust,
+		Title:       title,
+		OuterNo:     "",
+		Amount:      amount,
+		Remark:      remark,
+		RelateUser:  relateUser,
+		ReviewState: enum.ReviewPass,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
@@ -196,23 +198,23 @@ func (a *accountImpl) adjustWalletAccount(title string, amount float32, remark s
 }
 
 // 调整积分余额
-func (a *accountImpl) adjustIntegralAccount(title string, amount float32, remark string, relateUser int64) error {
+func (a *accountImpl) adjustIntegralAccount(title string, value int, remark string, relateUser int64) error {
 	unix := time.Now().Unix()
-	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindAdjust,
-		Title:        title,
-		OuterNo:      "",
-		Amount:       amount,
-		Remark:       remark,
-		RelateUser:   relateUser,
-		ReviewState:  enum.ReviewPass,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+	v := &member.IntegralLog{
+		MemberId:    int(a.GetDomainId()),
+		Kind:        member.KindAdjust,
+		Title:       title,
+		OuterNo:     "",
+		Value:       value,
+		Remark:      remark,
+		RelUser:     int(relateUser),
+		ReviewState: int16(enum.ReviewPass),
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
-	_, err := a.rep.SaveBalanceLog(v)
+	err := a.rep.SaveIntegralLog(v)
 	if err == nil {
-		a.value.Balance += amount
+		a.value.Integral += value
 		_, err = a.Save()
 	}
 	return err
@@ -271,15 +273,15 @@ func (a *accountImpl) chargeBalanceNoLimit(kind int, title string, outerNo strin
 	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: kind,
-		Title:        title,
-		OuterNo:      outerNo,
-		Amount:       amount,
-		ReviewState:  enum.ReviewPass,
-		RelateUser:   relateUser,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        kind,
+		Title:       title,
+		OuterNo:     outerNo,
+		Amount:      amount,
+		ReviewState: enum.ReviewPass,
+		RelateUser:  relateUser,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
@@ -374,15 +376,15 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: kind,
-		Title:        title,
-		OuterNo:      outerNo,
-		Amount:       -amount,
-		ReviewState:  enum.ReviewPass,
-		RelateUser:   relateUser,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        kind,
+		Title:       title,
+		OuterNo:     outerNo,
+		Amount:      -amount,
+		ReviewState: enum.ReviewPass,
+		RelateUser:  relateUser,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	_, err = a.rep.SaveBalanceLog(v)
 	if err == nil {
@@ -406,15 +408,15 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindBalanceFreeze,
-		Title:        title,
-		Amount:       -amount,
-		OuterNo:      outerNo,
-		RelateUser:   relateUser,
-		ReviewState:  enum.ReviewPass,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        member.KindBalanceFreeze,
+		Title:       title,
+		Amount:      -amount,
+		OuterNo:     outerNo,
+		RelateUser:  relateUser,
+		ReviewState: enum.ReviewPass,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	a.value.Balance -= amount
 	a.value.FreezeBalance += amount
@@ -439,15 +441,15 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindBalanceUnfreeze,
-		Title:        title,
-		RelateUser:   relateUser,
-		Amount:       amount,
-		OuterNo:      outerNo,
-		ReviewState:  enum.ReviewPass,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        member.KindBalanceUnfreeze,
+		Title:       title,
+		RelateUser:  relateUser,
+		Amount:      amount,
+		OuterNo:     outerNo,
+		ReviewState: enum.ReviewPass,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	a.value.Balance += amount
 	a.value.FreezeBalance -= amount
@@ -603,15 +605,15 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindBalanceDiscount,
-		Title:        remark,
-		OuterNo:      tradeNo,
-		Amount:       -amount,
-		ReviewState:  enum.ReviewPass,
-		RelateUser:   member.DefaultRelateUser,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        member.KindBalanceDiscount,
+		Title:       remark,
+		OuterNo:     tradeNo,
+		Amount:      -amount,
+		ReviewState: enum.ReviewPass,
+		RelateUser:  member.DefaultRelateUser,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
@@ -800,13 +802,15 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 		return 0, "", member.ErrIncorrectAmount
 	}
 	// 检测是否开启提现
-	conf := a.valueRepo.GetRegistry()
-	if !conf.MemberTakeOutOn {
-		return 0, "", errors.New(conf.MemberTakeOutMessage)
+	takOutOn := a.registryRepo.Get(registry.MemberTakeOutOn).BoolValue()
+	if !takOutOn {
+		msg := a.registryRepo.Get(registry.MemberTakeOutMessage).StringValue()
+		return 0, "", errors.New(msg)
 	}
 
 	// 检测是否实名
-	if conf.TakeOutMustTrust {
+	mustTrust := a.registryRepo.Get(registry.MemberTakeOutMustTrust).BoolValue()
+	if mustTrust {
 		trust := a.member.Profile().GetTrustedInfo()
 		if trust.ReviewState != int(enum.ReviewPass) {
 			return 0, "", member.ErrTakeOutNotTrust
@@ -824,17 +828,19 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制
-	conf2 := a.valueRepo.GetGlobNumberConf()
-	if amount < conf2.MinTakeOutAmount {
+	minAmount := float32(a.registryRepo.Get(registry.MemberMinTakeOutAmount).FloatValue())
+	if amount < minAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
-			format.FormatFloat(conf2.MinTakeOutAmount)))
+			format.FormatFloat(minAmount)))
 	}
-	if amount > conf2.MaxTakeOutAmount {
+	maxAmount := float32(a.registryRepo.Get(registry.MemberMaxTakeOutAmount).FloatValue())
+	if maxAmount > 0 && amount > maxAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
-			format.FormatFloat(conf2.MaxTakeOutAmount)))
+			format.FormatFloat(maxAmount)))
 	}
 	// 检测是否超过限制
-	if maxTimes := conf2.MaxTakeOutTimesOfDay; maxTimes > 0 {
+	maxTimes := a.registryRepo.Get(registry.MemberMaxTakeOutTimesOfDay).IntValue()
+	if maxTimes > 0 {
 		takeTimes := a.rep.GetTodayTakeOutTimes(a.GetDomainId())
 		if takeTimes >= maxTimes {
 			return 0, "", member.ErrAccountOutOfTakeOutTimes
@@ -905,7 +911,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	v.UpdateTime = time.Now().Unix()
 	_, err := a.rep.SavePresentLog(v)
 	return err
-	//if v.BusinessKind == member.KindWalletTakeOutToBankCard {
+	//if v.Kind == member.KindWalletTakeOutToBankCard {
 	//	if pass {
 	//		v.State = enum.ReviewPass
 	//	} else {
@@ -925,7 +931,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	//		v.CsnFee = 0
 	//	}
 	//	v.UpdateTime = time.Now().Unix()
-	//	_, err := a.rep.SavePresentLog(v)
+	//	_, err := a.repo.SavePresentLog(v)
 	//	return err
 	//}
 	//return member.ErrNotSupportTakeOutBusinessKind
@@ -946,11 +952,11 @@ func (a *accountImpl) FinishTakeOut(id int32, tradeNo string) error {
 	_, err := a.rep.SavePresentLog(v)
 	return err
 
-	//if v.BusinessKind == member.KindWalletTakeOutToBankCard {
+	//if v.Kind == member.KindWalletTakeOutToBankCard {
 	//    v.OuterNo = tradeNo
 	//    v.State = enum.ReviewConfirm
 	//    v.Remark = "银行凭证:" + tradeNo
-	//    _, err := a.rep.SavePresentLog(v)
+	//    _, err := a.repo.SavePresentLog(v)
 	//    return err
 	//}
 	//return member.ErrNotSupportTakeOutBusinessKind
@@ -979,17 +985,17 @@ func (a *accountImpl) balanceFreezeExpired(amount float32, remark string) error 
 	a.value.ExpiredBalance += amount
 	a.value.UpdateTime = unix
 	l := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindBalanceExpired,
-		Title:        "过期失效",
-		OuterNo:      "",
-		Amount:       amount,
-		CsnFee:       0,
-		ReviewState:  enum.ReviewPass,
-		RelateUser:   member.DefaultRelateUser,
-		Remark:       remark,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        member.KindBalanceExpired,
+		Title:       "过期失效",
+		OuterNo:     "",
+		Amount:      amount,
+		CsnFee:      0,
+		ReviewState: enum.ReviewPass,
+		RelateUser:  member.DefaultRelateUser,
+		Remark:      remark,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	_, err := a.rep.SaveBalanceLog(l)
 	if err == nil {
@@ -1032,7 +1038,7 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 		tr.ReviewState == int(enum.ReviewPass) {
 		return tr.RealName
 	} else {
-		return m.GetValue().Usr
+		return m.GetValue().User
 	}
 }
 
@@ -1051,11 +1057,10 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount fl
 	csnFee := amount * csnRate
 
 	// 检测是否开启转账
-	keys := []string{valueobject.RKMemberTransferAccountsOn,
-		valueobject.RKMemberTransferAccountsMessage}
-	registry := a.valueRepo.GetsRegistryMap(keys)
-	if b := registry[keys[0]]; b != "true" && b != "1" {
-		return errors.New(registry[keys[1]])
+	transferOn := a.registryRepo.Get(registry.MemberTransferAccountsOn).BoolValue()
+	if !transferOn {
+		msg := a.registryRepo.Get(registry.MemberTransferAccountsMessage).StringValue()
+		return errors.New(msg)
 	}
 
 	switch accountKind {
@@ -1076,17 +1081,17 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 	// 扣款
 	toName := a.getMemberName(tm)
 	l := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindBalanceTransferOut,
-		Title:        "转账给" + toName,
-		OuterNo:      tradeNo,
-		Amount:       -amount,
-		CsnFee:       csnFee,
-		ReviewState:  enum.ReviewPass,
-		RelateUser:   member.DefaultRelateUser,
-		Remark:       remark,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        member.KindBalanceTransferOut,
+		Title:       "转账给" + toName,
+		OuterNo:     tradeNo,
+		Amount:      -amount,
+		CsnFee:      csnFee,
+		ReviewState: enum.ReviewPass,
+		RelateUser:  member.DefaultRelateUser,
+		Remark:      remark,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	_, err := a.rep.SaveBalanceLog(l)
 	if err == nil {
@@ -1188,17 +1193,17 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int64, tradeNo string,
 	fromName := a.getMemberName(a.rep.GetMember(a.GetDomainId()))
 	unix := time.Now().Unix()
 	tl := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindBalanceTransferIn,
-		Title:        "转账收款（" + fromName + "）",
-		OuterNo:      tradeNo,
-		Amount:       amount,
-		CsnFee:       0,
-		ReviewState:  enum.ReviewPass,
-		RelateUser:   member.DefaultRelateUser,
-		Remark:       remark,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		MemberId:    a.GetDomainId(),
+		Kind:        member.KindBalanceTransferIn,
+		Title:       "转账收款（" + fromName + "）",
+		OuterNo:     tradeNo,
+		Amount:      amount,
+		CsnFee:      0,
+		ReviewState: enum.ReviewPass,
+		RelateUser:  member.DefaultRelateUser,
+		Remark:      remark,
+		CreateTime:  unix,
+		UpdateTime:  unix,
 	}
 	_, err := a.rep.SaveBalanceLog(tl)
 	if err == nil {

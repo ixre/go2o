@@ -12,6 +12,7 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/rsi"
@@ -71,7 +72,7 @@ func (t *templateIncludeToolkit) getFuncMap() ht.FuncMap {
 	fm["multi"] = t.multi
 	fm["articles"] = t.articles
 	fm["mathRemain"] = t.mathRemain
-	fm["kv"] = t.kv
+	//fm["kv"] = t.kv
 	fm["registry"] = t.registry
 	fm["priceStr"] = t.priceStr
 
@@ -197,7 +198,7 @@ func (t *templateIncludeToolkit) entryUrl(k string) string {
 
 // 去掉虚拟未启用的分类
 func (t *templateIncludeToolkit) fixCatTree(cat *product.Category) {
-	catArr := []*product.Category{}
+	var catArr []*product.Category
 	for _, v := range cat.Children {
 		if v.Enabled == 1 {
 			catArr = append(catArr, v)
@@ -244,7 +245,7 @@ func (t *templateIncludeToolkit) modelBrands(proModel int32) []*promodel.ProBran
 // 栏目上级栏目
 func (t *templateIncludeToolkit) catParent(catId int32) []*product.Category {
 	s := rsi.ProductService
-	arr := []*product.Category{}
+	var arr []*product.Category
 	for catId > 0 {
 		cat := s.GetCategory(0, catId)
 		if cat != nil {
@@ -273,7 +274,7 @@ func (t *templateIncludeToolkit) pageTitle(tit string) string {
 		trans, cli, err := thrift.FoundationServeClient()
 		if err == nil {
 			defer trans.Close()
-			r, _ := cli.GetRegistryMapV1(thrift.Context, []string{"PlatformName"})
+			r, _ := cli.GetRegistries(thrift.Context, []string{"PlatformName"})
 			titleSuffix = r["PlatformName"]
 		}
 	}
@@ -456,15 +457,21 @@ func (t *templateIncludeToolkit) mathRemain(i int, j int) int {
 
 // 根据键获取值
 func (t *templateIncludeToolkit) kv(key string) string {
-	r, _ := rsi.FoundationService.GetValue(thrift.Context, key)
-	return r
+	regArr := []string{registry.CacheAdMaxAge}
+	trans, cli, err := thrift.FoundationServeClient()
+	if err == nil {
+		defer trans.Close()
+		mp, _ := cli.GetRegistries(thrift.Context, regArr)
+		regArr[0] = mp[regArr[0]]
+	}
+	return regArr[0]
 }
 
 func (t *templateIncludeToolkit) registry(keys ...string) map[string]string {
 	trans, cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.GetRegistryMapV1(thrift.Context, keys)
+		r, _ := cli.GetRegistries(thrift.Context, keys)
 		return r
 	}
 	return map[string]string{}

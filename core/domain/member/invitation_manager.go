@@ -26,7 +26,7 @@ func (i *invitationManager) InviterArray(memberId int64, depth int) []int64 {
 	var di int
 	inviterId := memberId
 	for di <= depth-1 {
-		rl := i.member.rep.GetRelation(inviterId)
+		rl := i.member.repo.GetRelation(inviterId)
 		if rl == nil || rl.InviterId <= 0 {
 			break
 		}
@@ -49,7 +49,7 @@ func (i *invitationManager) InvitationBy(memberId int64) bool {
 // 获取我邀请的会员
 func (i *invitationManager) GetInvitationMembers(begin, end int) (
 	int, []*dto.InvitationMember) {
-	return i.member.rep.GetMyInvitationMembers(
+	return i.member.repo.GetMyInvitationMembers(
 		i.member.GetAggregateRootId(), begin, end)
 }
 
@@ -63,11 +63,11 @@ func (i *invitationManager) GetSubInvitationNum(memberIdArr []int32) map[int32]i
 	if memberIdArr == nil || len(memberIdArr) == 0 {
 		return map[int32]int{}
 	}
-	return i.member.rep.GetSubInvitationNum(i.member.GetAggregateRootId(),
+	return i.member.repo.GetSubInvitationNum(i.member.GetAggregateRootId(),
 		memberIdArr)
 }
 
 // 获取邀请要的会员
 func (i *invitationManager) GetInvitationMeMember() *member.Member {
-	return i.member.rep.GetInvitationMeMember(i.member.GetAggregateRootId())
+	return i.member.repo.GetInvitationMeMember(i.member.GetAggregateRootId())
 }

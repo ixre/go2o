@@ -1,4 +1,4 @@
-package testing
+package tests
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"github.com/ixre/gof/log"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
-	"go2o/core/testing/ti"
+	"go2o/tests/ti"
 	"strconv"
 	"testing"
 )

@@ -1,10 +1,10 @@
-package testing
+package tests
 
 import (
 	"go2o/core/domain/interface/payment"
-	"go2o/core/factory"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/testing/ti"
+	"go2o/core/repos"
+	"go2o/tests/ti"
 	"testing"
 	"time"
 )
@@ -64,7 +64,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 // 测试支付单交易完成
 func TestPaymentOrderTradeFinish(t *testing.T) {
 	tradeNo := "IC6180515221155668"
-	ic := factory.Repo.GetPaymentRepo().GetPaymentOrder(tradeNo)
+	ic := repos.Repo.GetPaymentRepo().GetPaymentOrder(tradeNo)
 	if ic == nil {
 		t.Errorf("支付单:%s不存在", tradeNo)
 		t.Failed()

@@ -13,6 +13,7 @@ import (
 var _ api.Handler = new(MemberApi)
 
 type MemberApi struct {
+	*apiUtil
 }
 
 func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
@@ -53,7 +54,7 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)
 		if r.ErrCode == 0 {
-			memberId, _ := strconv.Atoi(r.Data["MemberId"])
+			memberId, _ := strconv.Atoi(r.Data["member_id"])
 			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
 			result.Member = &dto.LoginMember{
 				ID:         memberId,
@@ -63,6 +64,28 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 		}
 	}
 	return result
+}
+
+// 注册
+func (m MemberApi) Register(ctx api.Context) interface{} {
+	user := ctx.Form().GetString("user")
+	pwd := ctx.Form().GetString("pwd")
+	phone := ctx.Form().GetString("phone")
+	regFrom := ctx.Form().GetString("reg_from")       // 注册来源
+	inviteCode := ctx.Form().GetString("invite_code") // 邀请码
+	regIp := ctx.Form().GetString("$user_ip_addr")    // IP地址
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		mp := map[string]string{
+			"reg_ip":      regIp,
+			"reg_from":    regFrom,
+			"invite_code": inviteCode,
+		}
+		r, _ := cli.RegisterMemberV2(thrift.Context, user, pwd, 0, "", phone, "", "", mp)
+		return r
+	}
+	return m.SResult(err)
 }
 
 // 账号信息

@@ -31,6 +31,7 @@ import (
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
@@ -54,7 +55,7 @@ func registerTypes() {
 	gob.Register(&shop.ComplexShop{})
 	gob.Register(&member.Account{})
 	gob.Register(&payment.Order{})
-	gob.Register(&member.Relation{})
+	gob.Register(&member.InviteRelation{})
 	gob.Register(&dto.ListOnlineShop{})
 	gob.Register([]*dto.ListOnlineShop{})
 	gob.Register(&member_service.SMember{})
@@ -81,7 +82,7 @@ func OrmMapping(conn db.Connector) {
 	//table mapping
 	orm := conn.GetOrm()
 	orm.Mapping(valueobject.Area{}, "china_area")
-
+	orm.Mapping(registry.Registry{}, "registry")
 	// ad
 	orm.Mapping(ad.Ad{}, "ad_list")
 	orm.Mapping(ad.Image{}, "ad_image")
@@ -110,7 +111,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.MWalletLog{}, "mm_wallet_log")
 	orm.Mapping(member.Account{}, "mm_account")
 	orm.Mapping(member.Address{}, "mm_deliver_addr")
-	orm.Mapping(member.Relation{}, "mm_relation")
+	orm.Mapping(member.InviteRelation{}, "mm_relation")
 	orm.Mapping(member.BalanceInfo{}, "mm_balance_info")
 	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
 	orm.Mapping(member.Favorite{}, "mm_favorite")
@@ -211,9 +212,9 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(delivery.MerchantDeliverBind{}, "dlv_merchant_bind")
 
 	// 用户
-	orm.Mapping(user.RoleValue{}, "usr_role")
-	orm.Mapping(user.PersonValue{}, "usr_person")
-	orm.Mapping(user.CredentialValue{}, "usr_credential")
+	orm.Mapping(user.RoleValue{}, "user_role")
+	orm.Mapping(user.PersonValue{}, "user_person")
+	orm.Mapping(user.CredentialValue{}, "user_credential")
 
 	orm.Mapping(personfinance.RiseInfoValue{}, "pf_riseinfo")
 	orm.Mapping(personfinance.RiseDayInfo{}, "pf_riseday")

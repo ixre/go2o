@@ -11,6 +11,7 @@ import (
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
@@ -206,7 +207,7 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	payRepo payment.IPaymentRepo, cartRepo cart.ICartRepo,
-	valRepo valueobject.IValueRepo) order.IOrder {
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrder {
 	b := &baseOrderImpl{
 		baseValue:  v,
 		repo:       repo,
@@ -219,12 +220,12 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	case order.TRetail:
 		return newNormalOrder(manager, b, repo, itemRepo,
 			productRepo, promRepo, expressRepo,
-			payRepo, cartRepo, valRepo)
+			payRepo, cartRepo, registryRepo, valRepo)
 	case order.TWholesale:
 		return newWholesaleOrder(b, repo, itemRepo,
-			expressRepo, payRepo, shipRepo, mchRepo, valRepo)
+			expressRepo, payRepo, shipRepo, mchRepo, valRepo, registryRepo)
 	case order.TTrade:
-		return newTradeOrder(b, payRepo, mchRepo, valRepo)
+		return newTradeOrder(b, payRepo, mchRepo, valRepo, registryRepo)
 	}
 	return nil
 }

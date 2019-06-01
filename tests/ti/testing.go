@@ -13,15 +13,18 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"go2o/core"
-	"go2o/core/factory"
+	"go2o/core/msq"
+	"go2o/core/repos"
+	"time"
 )
 
 var (
 	app     *testingApp
-	Factory *factory.RepoFactory
+	Factory *repos.RepoFactory
 )
 var (
 	REDIS_DB = "1"
@@ -30,13 +33,18 @@ var (
 func GetApp() gof.App {
 	if app == nil {
 		app = new(testingApp)
-		app.Config().Set("conf_path", "../../conf")
+		app.Config().Set("conf_path", "../conf")
 		app.Config().Set("redis_host", "127.0.0.1")
 		app.Config().Set("redis_db", REDIS_DB)
 		app.Config().Set("redis_port", "6379")
 		//app.Config().Set("redis_auth", "123456")
 		app.Config().Set("redis_auth", "")
-		app.Config().Set("db_name", "gcy_v3")
+		app.Config().Set("db_server", "172.17.0.1")
+		app._config.Set("db_port", "5432")
+		app.Config().Set("db_name", "go2o")
+		app._config.Set("db_user", "postgres")
+		app._config.Set("db_pwd", "123456")
+		app._config.Set("kafka_address", "127.0.0.1:9092")
 		gof.CurrentApp = app
 		app.Init(true, true)
 	}
@@ -68,24 +76,25 @@ func newMainApp(confPath string) *testingApp {
 
 func (t *testingApp) Registry() *gof.Registry {
 	if t._registry == nil {
-		t._registry, _ = gof.NewRegistry("../../conf", ":")
+		t._registry, _ = gof.NewRegistry("../conf", ":")
 	}
 	return t._registry
 }
 
 func (t *testingApp) Db() db.Connector {
 	if t._dbConnector == nil {
-		connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local",
-			"root",
-			"123456",
-			"127.0.0.1",
-			"3306",
-			t.Config().GetString("db_name"),
-			"utf8",
-		)
-		connector := db.NewConnector("mysql", connStr, t.Log(), false)
-		core.OrmMapping(connector)
-		t._dbConnector = connector
+		connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
+			t._config.GetString(core.DbUsr),
+			t._config.GetString(core.DbPwd),
+			t._config.GetString(core.DbServer),
+			t._config.GetString(core.DbPort),
+			t._config.GetString(core.DbName))
+		conn := db.NewConnector("postgresql", connStr, t.Log(), t._debugMode)
+		conn.SetMaxIdleConns(10000)
+		conn.SetMaxIdleConns(5000)
+		conn.SetConnMaxLifetime(time.Second * 10)
+		t._dbConnector = conn
+		orm.CacheProxy(t._dbConnector.GetOrm(), t.Storage())
 	}
 	return t._dbConnector
 }
@@ -149,9 +158,15 @@ func (t *testingApp) Init(debug, trace bool) bool {
 }
 
 func init() {
-	app := GetApp()
+	app := core.NewApp("../app_dev.conf")
+	gof.CurrentApp = app
+	core.Init(app, false, false)
 	conn := app.Db()
 	sto := app.Storage()
-	confPath := app.Config().GetString("conf_path")
-	Factory = (&factory.RepoFactory{}).Init(conn, sto, confPath)
+	Factory = (&repos.RepoFactory{}).Init(conn, sto, "../conf")
+}
+
+// 初始化producer
+func InitMsq() {
+	msq.Configure(msq.KAFKA, []string{"127.0.0.1:9092"})
 }

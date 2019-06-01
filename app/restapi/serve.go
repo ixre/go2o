@@ -78,7 +78,7 @@ func registerRoutes(s *echo.Echo) {
 	s.GET(PathPrefix+"/get/invite_qr", gc.Invite_qr) // 获取二维码
 	s.GET(PathPrefix+"/get/gen_qr", gc.GenQr)        //生成二维码
 	s.POST(PathPrefix+"/mm_login", mc.Login)         // 会员登录接口
-	s.POST(PathPrefix+"/mm_register", mc.Register)   // 会员注册接口
+	//s.POST(PathPrefix+"/mm_register", mc.Register)   // 会员注册接口
 	s.POST(PathPrefix+"/merchant/get_ad", pc.Get_ad) // 商户广告接口
 	s.POST(PathPrefix+"/partner/get_ad", pc.Get_ad)  // 商户广告接口
 	//s.Post("/member/*",mc)  // 会员接口

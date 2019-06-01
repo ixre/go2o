@@ -26,8 +26,8 @@ var (
 	EMAIL_FROM                  = ""
 )
 
-func SendMail(server, host, usr, pwd, from string, subject string, to []string, body []byte) error {
-	auth := smtp.PlainAuth("", usr, pwd, host)
+func SendMail(server, host, user, pwd, from string, subject string, to []string, body []byte) error {
+	auth := smtp.PlainAuth("", user, pwd, host)
 	header := make(map[string]string)
 	header["From"] = from
 	header["To"] = strings.Join(to, ";")

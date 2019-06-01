@@ -9,13 +9,12 @@
 package repos
 
 import (
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 )
 
 var (
-	DefaultRegistry = valueobject.Registry{
+	DefaultRegistry = valueobject.Registry_{
 		// 商户提现是否免费
 		MerchantTakeOutCashFree: true,
 		// 收货提示信息
@@ -50,17 +49,17 @@ var (
 
 		// 商铺别名敏感词,以|分割
 		ShopIncorrectAliasWords: "shop|master|o2o|super|www|sys|system|mall|mch|system|passport|api|image|static|img",
-		RegistryData: map[string]string{
-			"PlatformName":      "GO2O",
-			"Logo":              "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-			"RetailSiteLogo":    "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-			"WholesaleSiteLogo": "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-			"Telephone":         "021-88888888",
-			// 会员转账开关
-			valueobject.RKMemberTransferAccountsOn: "true",
-			// 会员转账提示信息
-			valueobject.RKMemberTransferAccountsMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
-		},
+		//RegistryData: map[string]string{
+		//	"PlatformName":      "GO2O",
+		//	"Logo":              "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		//	"RetailSiteLogo":    "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		//	"WholesaleSiteLogo": "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		//	"Telephone":         "021-88888888",
+		//	// 会员转账开关
+		//	//valueobject.RKMemberTransferAccountsOn: "true",
+		//	// 会员转账提示信息
+		//	valueobject.RKMemberTransferAccountsMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
+		//},
 	}
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
 
@@ -84,7 +83,7 @@ var (
 		MchGoodsCategory: false,
 		MchPageCategory:  false,
 		// 系统是否开挂起状态
-		Suspend: false,
+		//Suspend: false,
 		// 系统挂起提示消息
 		SuspendMessage: "系统正在升级维护，请稍后再试!",
 	}
@@ -125,43 +124,43 @@ var (
 	}
 
 	// 默认全局销售设置
-	DefaultGlobNumberConf = valueobject.GlobNumberConf{
-		// 兑换1元所需要的积分
-		IntegralExchangeRate: 100,
-		// 抵扣1元所需要的积分
-		IntegralDiscountRate: 100,
-		// 消费1元产生的经验
-		ExperienceRateByOrder: 1,
-		// 消费1元产生的积分
-		IntegralRateByConsumption: 1,
-		// 每单额外赠送
-		IntegralBackExtra: 0,
-		// 提现手续费费率
-		TakeOutCsn: 0.01,
-		// 转账手续费费率
-		TransferCsn: 0.01,
-		// 活动账户转为赠送可提现奖金手续费费率
-		FlowConvertCsn: 0.05,
-		// 钱包账户转换手续费费率
-		PresentConvertCsn: 0.05,
-		// 交易手续费类型
-		TradeCsnType: valueobject.TradeCsnTypeByFee,
-		// 按交易笔数收取手续费的金额
-		TradeCsnFeeByOrder: 1, // 每笔订单最低收取1元
-		// 按交易金额收取手续费的百分百
-		TradeCsnPercentByFee: 0.01, // 1%收取
-		MinTakeOutAmount:     0.01,
-		// 单笔最高提现金额
-		MaxTakeOutAmount: 5000,
-	}
+	//DefaultGlobNumberConf = valueobject.GlobNumberConf{
+	// 兑换1元所需要的积分
+	//IntegralExchangeRate: 100,
+	// 抵扣1元所需要的积分
+	//IntegralDiscountRate: 100,
+	// 消费1元产生的经验
+	//ExperienceRateByOrder: 1,
+	// 消费1元产生的积分
+	//IntegralRateByConsumption: 1,
+	// 每单额外赠送
+	//IntegralBackExtra: 0,
+	// 提现手续费费率
+	//TakeOutCsn: 0.01,
+	// 转账手续费费率
+	//TransferCsn: 0.01,
+	// 活动账户转为赠送可提现奖金手续费费率
+	//FlowConvertCsn: 0.05,
+	// 钱包账户转换手续费费率
+	//PresentConvertCsn: 0.05,
+	// 交易手续费类型
+	//TradeCsnType: valueobject.TradeCsnTypeByFee,
+	// 按交易笔数收取手续费的金额
+	//TradeCsnFeeByOrder: 1, // 每笔订单最低收取1元
+	// 按交易金额收取手续费的百分百
+	//TradeCsnPercentByFee: 0.01, // 1%收取
+	//MinTakeOutAmount:     0.01,
+	// 单笔最高提现金额
+	//MaxTakeOutAmount: 5000,
+	//}
 
 	DefaultGlobMchSaleConf = valueobject.GlobMchSaleConf{
 		// 商户订单结算模式
-		MchOrderSettleMode: enum.MchModeSettleByRate,
+		//MchOrderSettleMode: enum.MchModeSettleByRate,
 		// 商户订单结算比例
-		MchOrderSettleRate: 1,
+		//MchOrderSettleRate: 1,
 		// 商户交易单是否需上传发票
-		TradeOrderRequireTicket: false,
+		//TradeOrderRequireTicket: false,
 		// 是否启用分销模式
 		FxSalesEnabled: false,
 		// 返现比例,0则不返现

@@ -18,6 +18,7 @@ import (
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
@@ -42,30 +43,29 @@ type itemImpl struct {
 	promRepo      promotion.IPromotionRepo
 	levelPrices   []*item.MemberPrice
 	promDescribes map[string]string
-
-	valRepo     valueobject.IValueRepo
-	expressRepo express.IExpressRepo
+	registryRepo  registry.IRegistryRepo
+	expressRepo   express.IExpressRepo
 }
 
 //todo:??? 去掉依赖promotion.IPromotionRepo
 
 func NewItem(
 	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
-	pro product.IProduct, value *item.GoodsItem, valRepo valueobject.IValueRepo,
+	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
 	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
 	v := &itemImpl{
-		pro:         pro,
-		value:       value,
-		catRepo:     catRepo,
-		productRepo: itemRepo,
-		repo:        goodsRepo,
-		proMRepo:    proMRepo,
-		itemWsRepo:  itemWsRepo,
-		promRepo:    promRepo,
-		valRepo:     valRepo,
-		expressRepo: expressRepo,
+		pro:          pro,
+		value:        value,
+		catRepo:      catRepo,
+		productRepo:  itemRepo,
+		repo:         goodsRepo,
+		proMRepo:     proMRepo,
+		itemWsRepo:   itemWsRepo,
+		promRepo:     promRepo,
+		registryRepo: registryRepo,
+		expressRepo:  expressRepo,
 	}
 	return v.init()
 }
@@ -303,9 +303,9 @@ func (i *itemImpl) resetReview() {
 
 // 检查商品数据是否正确
 func (g *itemImpl) checkItemValue(v *item.GoodsItem) error {
-	registry := g.valRepo.GetRegistry()
+	defaultImage := g.registryRepo.Get(registry.GoodsDefaultImage).StringValue()
 	// 检测是否上传图片
-	if v.Image == "" || v.Image == registry.GoodsDefaultImage {
+	if v.Image == "" || v.Image == defaultImage {
 		return product.ErrNotUploadImage
 	}
 	if v.ShopId <= 0 {
@@ -335,10 +335,9 @@ func (g *itemImpl) checkItemValue(v *item.GoodsItem) error {
 // 判断价格是否正确
 func (i *itemImpl) checkPrice(v *item.GoodsItem) error {
 	rate := (v.Price - v.Cost) / v.Price
-	conf := i.valRepo.GetRegistry()
-	minRate := conf.GoodsMinProfitRate
+	minRate := i.registryRepo.Get(registry.GoodsMinProfitRate).FloatValue()
 	// 如果未设定最低利润率，则可以与供货价一致
-	if minRate != 0 && rate < minRate {
+	if minRate != 0 && float64(rate) < minRate {
 		return errors.New(fmt.Sprintf(item.ErrGoodsMinProfitRate.Error(),
 			strconv.Itoa(int(minRate*100))+"%"))
 	}
