@@ -17,7 +17,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
 	"math"
 	"regexp"
@@ -35,7 +35,7 @@ type paymentOrderImpl struct {
 	repo               payment.IPaymentRepo
 	value              *payment.Order
 	memberRepo         member.IMemberRepo
-	valueRepo          valueobject.IValueRepo
+	registryRepo       registry.IRegistryRepo
 	coupons            []promotion.ICouponPromotion
 	orderManager       order.IOrderManager
 	firstFinishPayment bool //第一次完成支付
@@ -361,9 +361,9 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 // 计算积分折算后的金额
 func (p *paymentOrderImpl) getIntegralExchangeAmount(integral int) int {
 	if integral > 0 {
-		conf := p.valueRepo.GetGlobNumberConf()
-		if conf.IntegralDiscountRate > 0 {
-			return int(float32(integral)/conf.IntegralDiscountRate) * 100
+		dic := p.registryRepo.Get(registry.IntegralDiscountQuantity).IntValue()
+		if dic > 0 {
+			return int(float32(integral)/float32(dic)) * 100
 		}
 	}
 	return 0
@@ -383,8 +383,8 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	// 如果不忽略超出订单支付金额的积分,那么按实际来抵扣
 	if !ignoreAmount && amount > p.value.FinalFee {
 		amount = p.value.FinalFee
-		conf := p.valueRepo.GetGlobNumberConf()
-		integral = int(float32(amount) * conf.IntegralDiscountRate)
+		dic := p.registryRepo.Get(registry.IntegralDiscountQuantity).IntValue()
+		integral = int(float32(amount) * float32(dic))
 	}
 	if amount <= 0 {
 		return 0, nil
@@ -645,12 +645,12 @@ type RepoBase struct {
 
 func (p *RepoBase) CreatePaymentOrder(v *payment.
 	Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
-	orderManager order.IOrderManager, valRepo valueobject.IValueRepo) payment.IPaymentOrder {
+	orderManager order.IOrderManager, registryRepo registry.IRegistryRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		repo:         repo,
 		value:        v,
 		memberRepo:   mmRepo,
-		valueRepo:    valRepo,
 		orderManager: orderManager,
+		registryRepo: registryRepo,
 	}
 }

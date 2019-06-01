@@ -11,7 +11,7 @@ import (
 
 func TestCreateNewMember(t *testing.T) {
 	inviteCode := ""
-	phone := "13162222815"
+	phone := "13162222817"
 	inviterId := 22149
 	ti.InitMsq()
 	defer msq.Close()

@@ -49,11 +49,11 @@ func (p *presentC) AdApi(c *echox.Context) error {
 			result[n] = dto
 		}
 		regArr := []string{registry.CacheAdMaxAge}
-		trans,cli,err := thrift.FoundationServeClient()
+		trans, cli, err := thrift.FoundationServeClient()
 		if err == nil {
 			defer trans.Close()
 			mp, _ := cli.GetRegistries(thrift.Context, regArr)
-			seconds,_ = strconv.Atoi(mp[regArr[0]])
+			seconds, _ = strconv.Atoi(mp[regArr[0]])
 		}
 		return result
 	}, int64(seconds))

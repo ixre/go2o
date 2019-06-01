@@ -31,7 +31,7 @@ import (
 var _ item_service.ItemService = new(itemService)
 
 type itemService struct {
-	*serviceUtil
+	serviceUtil
 	itemRepo  item.IGoodsItemRepo
 	itemQuery *query.ItemQuery
 	cateRepo  product.ICategoryRepo

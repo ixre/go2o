@@ -29,58 +29,57 @@ var _ foundation_service.FoundationService = new(foundationService)
 
 // 基础服务
 type foundationService struct {
-	_rep valueobject.IValueRepo
+	_rep         valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
-	*serviceUtil
+	serviceUtil
 }
 
-
-func NewFoundationService(rep valueobject.IValueRepo,registryRepo registry.IRegistryRepo) *foundationService {
+func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *foundationService {
 	return &foundationService{
-		_rep: rep,
-		registryRepo:registryRepo,
+		_rep:         rep,
+		registryRepo: registryRepo,
 	}
 }
 
 // 根据键获取值
 func (s *foundationService) GetValue(ctx context.Context, key string) (r string, err error) {
 	ir := s.registryRepo.Get(key)
-	if ir != nil{
-		return ir.StringValue(),nil
+	if ir != nil {
+		return ir.StringValue(), nil
 	}
-	return "",nil
+	return "", nil
 }
 
 // 获取键值存储数据
 func (s *foundationService) GetRegistries(ctx context.Context, keys []string) (map[string]string, error) {
 	mp := make(map[string]string)
-	for _,k := range keys{
-		if ir := s.registryRepo.Get(k);ir != nil{
+	for _, k := range keys {
+		if ir := s.registryRepo.Get(k); ir != nil {
 			mp[k] = ir.StringValue()
-		}else{
+		} else {
 			mp[k] = ""
 		}
 	}
-	return mp,nil
+	return mp, nil
 }
 
 // 获取数据存储
-func (s *foundationService) GetRegistry(ctx context.Context, key string,)(string,error) {
+func (s *foundationService) GetRegistry(ctx context.Context, key string) (string, error) {
 	ir := s.registryRepo.Get(key)
-	if ir != nil{
-		return ir.StringValue(),nil
+	if ir != nil {
+		return ir.StringValue(), nil
 	}
-	return "",nil
+	return "", nil
 }
 
 // 创建用户自定义注册项
 func (s *foundationService) CreateUserRegistry(ctx context.Context, key string, defaultValue string, description string) (r *ttype.Result_, err error) {
-	if s.registryRepo.Get(key) != nil{
-		return s.error(errors.New("注册项已存在")),nil
+	if s.registryRepo.Get(key) != nil {
+		return s.error(errors.New("注册项已存在")), nil
 	}
 	rv := &registry.Registry{
 		Key:          key,
-		Value:        defaultValue,
+		Value:        "",
 		DefaultValue: defaultValue,
 		Options:      "",
 		UserDefine:   1,
@@ -88,24 +87,24 @@ func (s *foundationService) CreateUserRegistry(ctx context.Context, key string, 
 	}
 	ir := s.registryRepo.Create(rv)
 	err = ir.Update(defaultValue)
-	if err != nil{
-		return s.error(err),nil
+	if err != nil {
+		return s.error(err), nil
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
 
 // 更新注册表数据
 func (s *foundationService) UpdateRegistry(ctx context.Context, registries map[string]string) (r *ttype.Result_, err error) {
-	for k,v := range registries{
-		if ir := s.registryRepo.Get(k);ir != nil{
-			if err = ir.Update(v);err != nil{
-				return s.error(err),nil
+	for k, v := range registries {
+		if ir := s.registryRepo.Get(k); ir != nil {
+			if err = ir.Update(v); err != nil {
+				return s.error(err), nil
 			}
 		}
 	}
-	return s.success(nil),nil
+	r = s.success(nil)
+	return r, nil
 }
-
 
 // 设置键值
 func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
@@ -127,11 +126,6 @@ func (s *foundationService) GetValuesByPrefix(ctx context.Context, prefix string
 // 获取键值存储数据
 func (s *foundationService) GetRegistryV1(ctx context.Context, keys []string) ([]string, error) {
 	return s._rep.GetsRegistry(keys), nil
-}
-
-// 保存键值存储数据
-func (s *foundationService) SavesRegistry(values map[string]string) error {
-	return s._rep.SavesRegistry(values)
 }
 
 // 验证超级用户账号和密码
@@ -182,13 +176,6 @@ func (s *foundationService) GetSyncLoginUrl(ctx context.Context, returnUrl strin
 		variable.Domain, returnUrl), nil
 }
 
-
-// 保存数据存储
-func (s *foundationService) SaveRegistry(v *valueobject.Registry_) error {
-	//return s._rep.SaveRegistry(v)
-	return nil
-}
-
 // 获取模板配置
 func (s *foundationService) GetTemplateConf() valueobject.TemplateConf {
 	return s._rep.GetTemplateConf()
@@ -227,16 +214,6 @@ func (s *foundationService) GetRegisterPerm() valueobject.RegisterPerm {
 // 保存注册配置
 func (s *foundationService) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	return s._rep.SaveRegisterPerm(v)
-}
-
-// 获取全局系统数值设置
-func (s *foundationService) GetGlobNumberConf() valueobject.GlobNumberConf {
-	return s._rep.GetGlobNumberConf()
-}
-
-// 保存全局系统数值设置
-func (s *foundationService) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
-	return s._rep.SaveGlobNumberConf(v)
 }
 
 // 获取资源地址

@@ -8,10 +8,6 @@
  */
 package valueobject
 
-import (
-	"go2o/core/domain/interface/enum"
-)
-
 var (
 	TradeCsnTypeByOrder = 1 //按订单笔数收取手续费
 	TradeCsnTypeByFee   = 2 //按交易金额收取手续费
@@ -210,47 +206,47 @@ type (
 	}
 
 	// 全局数值设置
-	GlobNumberConf struct {
-		// 兑换1元所需要的积分
-		IntegralExchangeRate float32
-		// 抵扣1元所需要的积分
-		IntegralDiscountRate float32
-		// !消费1元产生的经验
-		ExperienceRateByOrder float32
-		// !消费1元产生的积分
-		IntegralRateByConsumption float32
-		// 每单额外赠送
-		IntegralBackExtra int64
-		// !提现手续费费率
-		TakeOutCsn float32
-		// !转账手续费费率
-		TransferCsn float32
-		// 活动账户转为赠送可提现奖金手续费费率
-		FlowConvertCsn float32
-		// 钱包账户转换手续费费率
-		PresentConvertCsn float32
-		// 交易手续费类型
-		TradeCsnType int
-		// 按交易笔数收取手续费的金额
-		TradeCsnFeeByOrder float32
-		// 按交易金额收取手续费的百分百
-		TradeCsnPercentByFee float32
-		// !最低提现金额
-		MinTakeOutAmount float32
-		// !单笔最高提现金额
-		MaxTakeOutAmount float32
-		// !每日提现上限
-		MaxTakeOutTimesOfDay int
-	}
+	//GlobNumberConf struct {
+	// 兑换1元所需要的积分
+	//IntegralExchangeRate float32
+	// 抵扣1元所需要的积分
+	//IntegralDiscountRate float32
+	// !消费1元产生的经验
+	//ExperienceRateByOrder float32
+	// !消费1元产生的积分
+	//IntegralRateByConsumption float32
+	// 每单额外赠送
+	//IntegralBackExtra int64
+	// !提现手续费费率
+	//TakeOutCsn float32
+	// !转账手续费费率
+	//TransferCsn float32
+	// 活动账户转为赠送可提现奖金手续费费率
+	//FlowConvertCsn float32
+	// 钱包账户转换手续费费率
+	//PresentConvertCsn float32
+	// 交易手续费类型
+	//TradeCsnType int
+	// 按交易笔数收取手续费的金额
+	//TradeCsnFeeByOrder float32
+	// 按交易金额收取手续费的百分百
+	//TradeCsnPercentByFee float32
+	// !最低提现金额
+	//MinTakeOutAmount float32
+	// !单笔最高提现金额
+	//MaxTakeOutAmount float32
+	// !每日提现上限
+	//MaxTakeOutTimesOfDay int
+	//}
 
 	// 全局商户销售设置
 	GlobMchSaleConf struct {
 		// !商户订单结算模式
-		MchOrderSettleMode enum.MchSettleMode
+		//MchOrderSettleMode enum.MchSettleMode
 		// !商户订单结算比例
-		MchOrderSettleRate float32
+		//MchOrderSettleRate float32
 		// 商户交易单是否需上传发票
-		TradeOrderRequireTicket bool
+		//TradeOrderRequireTicket bool
 		// 是否启用分销模式
 		FxSalesEnabled bool
 		// 返现比例,0则不返现
@@ -294,12 +290,6 @@ type (
 		// 保存注册权限
 		SaveRegisterPerm(v *RegisterPerm) error
 
-		// 获取全局系统数值设置
-		GetGlobNumberConf() GlobNumberConf
-
-		// 保存全局系统数值设置
-		SaveGlobNumberConf(v *GlobNumberConf) error
-
 		// 获取平台设置
 		GetPlatformConf() PlatformConf
 
@@ -310,8 +300,6 @@ type (
 		GetsRegistry(keys []string) []string
 		// 根据键获取数据值字典
 		GetsRegistryMap(keys []string) map[string]string
-		// 保存数据值
-		SavesRegistry(values map[string]string) error
 
 		// 获取模板配置
 		GetTemplateConf() TemplateConf

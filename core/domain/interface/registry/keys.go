@@ -1,6 +1,60 @@
 package registry
 
 var (
+	/** 域名 */
+	// 是否启用SSL连接
+	DomainEnabledSSL = KeyFormat("DomainEnabledSsl")
+	// 零售门户前缀
+	DomainPrefixPortal = KeyFormat("DomainPrefixPortal")
+	// 批发门户域名前缀
+	DomainPrefixWholesalePortal = KeyFormat("DomainPrefixWholesalePortal")
+	// 零售门户手机端域名前缀
+	DomainPrefixPortalMobile = KeyFormat("DomainPrefixPortalMobile")
+	// 会员中心域名前缀
+	DomainPrefixMember = KeyFormat("DomainPrefixMember")
+	// 商户系统域名前缀
+	DomainPrefixMerchant = KeyFormat("DomainPrefixMerchant")
+	// 通行证域名前缀
+	DomainPrefixPassport = KeyFormat("DomainPrefixPassport")
+	// 通行证域名协议,默认为http,可以使用https安全加密
+	DomainPassportProto = KeyFormat("DomainPassportProto")
+	// API系统
+	DomainPrefixApi = KeyFormat("DomainPrefixApi")
+	// 静态服务器前缀
+	DomainPrefixStatic = KeyFormat("DomainPrefixStatic")
+	// 图片服务器前缀
+	DomainPrefixImage = KeyFormat("DomainPrefixImage")
+	// 批发中心移动端
+	DomainPrefixMobileWholesale = KeyFormat("DomainPrefixMobileWholesale")
+	// 会员中心域名前缀(移动端)
+	DomainPrefixMobileMember = KeyFormat("DomainPrefixMobileMember")
+	// 通行证域名前缀(移动端)
+	DomainPrefixMobilePassport = KeyFormat("DomainPrefixMobilePassport")
+
+	DomainStaticServer          = "D_StaticServer"
+	DomainImageServer           = "D_ImageServer"
+	DomainUrlHash               = "D_Hash"
+	DomainRetailPortal          = "D_RetailPortal"
+	DomainWholesalePortal       = "D_WholesalePortal"
+	DomainUCenter               = "D_UCenter"
+	DomainPassport              = "D_Passport"
+	DomainMerchant              = "D_Merchant"
+	DomainApi                   = "D_HApi"
+	DomainRetailMobilePortal    = "D_RetailMobilePortal"
+	DomainWholesaleMobilePortal = "D_WholesaleMobilePortal"
+	DomainMobilePassport        = "D_MobilePassport"
+	DomainMobileUCenter         = "D_MobileUCenter"
+
+	/** 系统 */
+	// 启用商户店铺商品分类
+	EnableMchGoodsCategory = KeyFormat("EnableMchGoodsCategory")
+	// 启用商户页面分类
+	EnableMchPageCategory = KeyFormat("EnableMchPageCategory")
+	// 系统是否挂起
+	SysSuspend = KeyFormat("SysSuspend")
+	// 系统挂起提示消息
+	SysSuspendMessage = KeyFormat("SysSuspendMessage")
+
 	// 收货时的提示信息
 	OrderReceiveAlertMessage = KeyFormat("OrderReceiveAlertMessage")
 
@@ -41,6 +95,8 @@ var (
 	MemberTransferAccountsMessage = KeyFormat("MemberTransferAccountsMessage")
 	// 会员转账手续费费率
 	MemberTransferCsn = KeyFormat("MemberTransferCsn")
+	// 活动账户转为赠送可提现奖金手续费费率
+	MemberFlowAccountConvertCsn = KeyFormat("MemberFlowAccountConvertCsn")
 
 	/* 经验值 */
 	// 是否启用会员经验值功能
@@ -59,6 +115,10 @@ var (
 	IntegralRateByTradeOrder = KeyFormat("IntegralRateByTradeOrder")
 	// 会员批发消费1元产生的积分比例
 	IntegralRateByWholesaleOrder = KeyFormat("IntegralRateByWholesaleOrder")
+	// 兑换1元所需要的积分个数
+	IntegralExchangeQuantity = KeyFormat("IntegralExchangeQuantity")
+	// 抵扣1元所需要的积分个数
+	IntegralDiscountQuantity = KeyFormat("IntegralDiscountQuantity")
 
 	/* 商户订单 */
 	// 商户订单结算模式
@@ -69,12 +129,16 @@ var (
 	MchSingleOrderServiceFee = KeyFormat("MchSingleOrderServiceFee")
 	// 商户订单每月免服务费订单数
 	MchMonthFreeOrders = KeyFormat("MchMonthFreeOrders")
+	// 商户交易单是否需上传发票
+	MchOrderRequireTicket = KeyFormat("MchOrderRequireTicket")
 
 	/* 商户 */
 	// 商户提现手续费
 	MerchantTakeOutCashFree = KeyFormat("MerchantTakeOutCashFree")
 	// 商户提现手续费费率
 	MerchantTakeOutCsn = KeyFormat("MerchantTakeOutCsn")
+	// 商户提现
+	MerchantMinTakeOutAmount = KeyFormat("MerchantMinTakeOutAmount")
 
 	// 商品默认图片
 	GoodsDefaultImage = KeyFormat("GoodsDefaultImage")

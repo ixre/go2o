@@ -238,9 +238,9 @@ func (o *tradeOrderImpl) CashPay() error {
 func (o *tradeOrderImpl) TradePaymentFinish() error {
 	o.getValue()
 	if o.value.State == order.StatAwaitingPayment {
-		conf := o.valueRepo.GetGlobMchSaleConf()
 		// 如果交易单需要上传发票，则变为待确认。否则直接完成
-		if conf.TradeOrderRequireTicket {
+		needTicket := o.registryRepo.Get(registry.MchOrderRequireTicket).BoolValue()
+		if needTicket {
 			if o.value.TicketImage != "" {
 				return o.updateOrderComplete()
 			}

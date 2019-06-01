@@ -65,7 +65,7 @@ type IRegistryRepo interface {
 
 func KeyFormat(s string) string {
 	dst := make([]byte, 0)
-	for i, b := range s {
+	for i, b := range strings.TrimSpace(s) {
 		if unicode.IsUpper(b) {
 			l := byte(unicode.ToLower(b))
 			if i == 0 {
@@ -152,8 +152,11 @@ func (r *registryImpl) Update(value string) error {
 	if len(value) > 45 {
 		return errors.New("value length out of 45")
 	}
-	r.value.Value = value
-	return r.repo.Save(r)
+	if r.value.Value != value {
+		r.value.Value = value
+		return r.repo.Save(r)
+	}
+	return nil
 }
 
 func (r *registryImpl) panic(e error) {

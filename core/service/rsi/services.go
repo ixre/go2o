@@ -17,6 +17,7 @@ import (
 	"github.com/ixre/gof/storage"
 	"go2o/app"
 	"go2o/core/dao"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/repos"
@@ -134,7 +135,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	/** Service **/
 	StatusService = NewStatusService()
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
-	FoundationService = NewFoundationService(valueRepo,registryRepo)
+	FoundationService = NewFoundationService(valueRepo, registryRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
 		productRepo, itemRepo, mchRepo, orderQuery)
@@ -171,6 +172,10 @@ func initRpcServe(ctx gof.App) {
 	if ssl == "true" || ssl == "1" {
 		prefix = "https://"
 	}
+	// 更新值
+	mp[registry.DomainEnabledSSL] = gf("ssl_enabled")
+	FoundationService.UpdateRegistry(nil, mp)
+
 	mp[variable.DEnabledSSL] = gf("ssl_enabled")
 	mp[variable.DStaticServer] = gf("static_server")
 	mp[variable.DImageServer] = gf("image_server")
@@ -197,7 +202,6 @@ func initRpcServe(ctx gof.App) {
 	mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
 
-	fact.GetValueRepo().SavesRegistry(mp)
 }
 
 // 服务工具类，实现的服务组合此类,可直接调用其方法
@@ -233,6 +237,9 @@ func (s serviceUtil) failCodeResult(code int, msg string) *ttype.Result_ {
 
 // 返回成功的结果
 func (s serviceUtil) success(data map[string]string) *ttype.Result_ {
+	if data == nil {
+		data = map[string]string{}
+	}
 	return &ttype.Result_{ErrCode: 0, ErrMsg: "", Data: data}
 }
 
