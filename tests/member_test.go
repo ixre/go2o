@@ -11,7 +11,7 @@ import (
 
 func TestCreateNewMember(t *testing.T) {
 	inviteCode := ""
-	phone := "13162222807"
+	phone := "13162222815"
 	inviterId := 22149
 	ti.InitMsq()
 	defer msq.Close()
@@ -27,7 +27,7 @@ func TestCreateNewMember(t *testing.T) {
 		Avatar: "",
 		Phone:  phone,
 		Email:  "",
-		Flag:   member.FlagActive,
+		Flag:   0,
 	}
 	m := repo.CreateMember(v) //创建会员
 	id, err := m.Save()
