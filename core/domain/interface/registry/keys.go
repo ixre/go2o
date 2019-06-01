@@ -31,6 +31,21 @@ var (
 	// 通行证域名前缀(移动端)
 	DomainPrefixMobilePassport = KeyFormat("DomainPrefixMobilePassport")
 
+	/* 平台 */
+
+	// 平台名称
+	PlatformName = KeyFormat("PlatformName")
+	// 客服电话
+	PlatformServiceTel = KeyFormat("PlatformServiceTel")
+	// Logo标志
+	PlatformLogo = KeyFormat("PlatformLogo")
+	// 反色标志
+	PlatformInverseColorLogo = KeyFormat("PlatformInverseColorLogo")
+	// 零售门户标志
+	PlatformRetailSiteLogo = KeyFormat("PlatformRetailSiteLogo")
+	// 批发门户标志
+	PlatformWholesaleSiteLogo = KeyFormat("PlatformWholesaleSiteLogo")
+
 	DomainStaticServer          = "D_StaticServer"
 	DomainImageServer           = "D_ImageServer"
 	DomainUrlHash               = "D_Hash"
