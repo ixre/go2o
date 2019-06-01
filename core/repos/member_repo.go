@@ -366,17 +366,22 @@ func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 			return nil
 		}
 		m.Storage.Set(key, *e)
-	} else {
-		//log.Println(key,fmt.Sprintf("--- account: %d > %#v",memberId,e))
 	}
 	return e
 }
 
 // 保存账户，传入会员编号
 func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
-	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
+	var err error
+	if m.GetAccount(v.MemberId) == nil {
+		_, _, err = m.Connector.GetOrm().Save(nil, v)
+	}else{
+		_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
+		if err == nil{
+			go m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
+		}
+	}
 	if err == nil {
-		m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
 		m.Storage.Set(m.getAccountCk(v.MemberId), *v)
 	}
 	return v.MemberId, err

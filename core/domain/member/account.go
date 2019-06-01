@@ -57,9 +57,11 @@ func (a *accountImpl) GetValue() *member.Account {
 
 // 保存
 func (a *accountImpl) Save() (int64, error) {
+	isCreate := a.GetDomainId() == 0
+	a.value.MemberId = a.member.GetAggregateRootId()
 	a.value.UpdateTime = time.Now().Unix()
 	n, err := a.rep.SaveAccount(a.value)
-	if err == nil {
+	if err == nil && !isCreate {
 		go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), "", 500)
 	}
 	return n, err

@@ -453,6 +453,9 @@ func (m *memberImpl) Active() error {
 	if m.ContainFlag(member.FlagActive) {
 		return member.ErrMemberHasActive
 	}
+	if m.ContainFlag(member.FlagLocked){
+		return member.ErrMemberLocked
+	}
 	m.value.Flag |= member.FlagActive
 	_, err := m.Save()
 	return err
@@ -523,45 +526,22 @@ func (m *memberImpl) checkUser(user string) error {
 }
 
 // 会员初始化
-func (m *memberImpl) memberInit() {
+func (m *memberImpl) memberInit()error {
 	// 创建账户
-	m.initAccount()
+	m.account = NewAccount(m, &member.Account{}, m.repo, m.manager, m.valRepo)
+	if _, err := m.account.Save();err != nil{
+		return err
+	}
 	// 其他操作
 	conf := m.valRepo.GetRegistry()
 	// 注册后赠送积分
 	if conf.PresentIntegralNumOfRegister > 0 {
-		m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
+		go m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
 			"", float32(conf.PresentIntegralNumOfRegister), 0)
 	}
+	return nil
 }
 
-// 初始化账户
-func (m *memberImpl) initAccount() error {
-	m.account = NewAccount(m, &member.Account{
-		MemberId:          m.GetAggregateRootId(),
-		Integral:          0,
-		FreezeIntegral:    0,
-		Balance:           0,
-		FreezeBalance:     0,
-		ExpiredBalance:    0,
-		WalletBalance:     0,
-		FreezeWallet:      0,
-		ExpiredPresent:    0,
-		TotalPresentFee:   0,
-		FlowBalance:       0,
-		GrowBalance:       0,
-		GrowAmount:        0,
-		GrowEarnings:      0,
-		GrowTotalEarnings: 0,
-		TotalExpense:      0,
-		TotalCharge:       0,
-		TotalPay:          0,
-		PriorityPay:       0,
-		UpdateTime:        m.value.RegTime,
-	}, m.repo, m.manager, m.valRepo)
-	_, err := m.account.Save()
-	return err
-}
 
 // 检查注册信息是否正确
 func (m *memberImpl) prepare() (err error) {
