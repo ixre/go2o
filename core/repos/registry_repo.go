@@ -44,7 +44,7 @@ func (r *registryRepo) Get(key string) registry.IRegistry {
 }
 
 func (r *registryRepo) Remove(key string) error {
-	_, err := r.conn.ExecNonQuery("DELETE FROM registry WHERE key=?", key)
+	_, err := r.conn.ExecNonQuery("DELETE FROM registry WHERE key=$1", key)
 	delete(r.data, key)
 	return err
 }

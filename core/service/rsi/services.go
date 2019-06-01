@@ -98,6 +98,7 @@ func Init(ctx gof.App, appFlag int, confDir string) {
 func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	sto storage.Interface, confPath string) {
 	fact = (&repos.RepoFactory{}).Init(db, sto, confPath)
+	registryRepo := fact.GetRegistryRepo()
 	proMRepo := fact.GetProModelRepo()
 	valueRepo := fact.GetValueRepo()
 	mssRepo := fact.GetMssRepo()
@@ -133,7 +134,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm,
 	/** Service **/
 	StatusService = NewStatusService()
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
-	FoundationService = NewFoundationService(valueRepo)
+	FoundationService = NewFoundationService(valueRepo,registryRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
 		productRepo, itemRepo, mchRepo, orderQuery)

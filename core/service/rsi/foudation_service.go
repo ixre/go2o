@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -29,19 +30,82 @@ var _ foundation_service.FoundationService = new(foundationService)
 // 基础服务
 type foundationService struct {
 	_rep valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
 	*serviceUtil
 }
 
-func NewFoundationService(rep valueobject.IValueRepo) *foundationService {
+
+func NewFoundationService(rep valueobject.IValueRepo,registryRepo registry.IRegistryRepo) *foundationService {
 	return &foundationService{
 		_rep: rep,
+		registryRepo:registryRepo,
 	}
 }
 
 // 根据键获取值
 func (s *foundationService) GetValue(ctx context.Context, key string) (r string, err error) {
-	return s._rep.GetValue(key), nil
+	ir := s.registryRepo.Get(key)
+	if ir != nil{
+		return ir.StringValue(),nil
+	}
+	return "",nil
 }
+
+// 获取键值存储数据
+func (s *foundationService) GetRegistries(ctx context.Context, keys []string) (map[string]string, error) {
+	mp := make(map[string]string)
+	for _,k := range keys{
+		if ir := s.registryRepo.Get(k);ir != nil{
+			mp[k] = ir.StringValue()
+		}else{
+			mp[k] = ""
+		}
+	}
+	return mp,nil
+}
+
+// 获取数据存储
+func (s *foundationService) GetRegistry(ctx context.Context, key string,)(string,error) {
+	ir := s.registryRepo.Get(key)
+	if ir != nil{
+		return ir.StringValue(),nil
+	}
+	return "",nil
+}
+
+// 创建用户自定义注册项
+func (s *foundationService) CreateUserRegistry(ctx context.Context, key string, defaultValue string, description string) (r *ttype.Result_, err error) {
+	if s.registryRepo.Get(key) != nil{
+		return s.error(errors.New("注册项已存在")),nil
+	}
+	rv := &registry.Registry{
+		Key:          key,
+		Value:        defaultValue,
+		DefaultValue: defaultValue,
+		Options:      "",
+		UserDefine:   1,
+		Description:  description,
+	}
+	ir := s.registryRepo.Create(rv)
+	err = ir.Update(defaultValue)
+	if err != nil{
+		return s.error(err),nil
+	}
+	return s.success(nil),nil
+}
+
+// 更新注册表数据
+func (s *foundationService) UpdateRegistry(ctx context.Context, registries map[string]string) (r *ttype.Result_, err error) {
+	for k,v := range registries{
+		if ir := s.registryRepo.Get(k);ir != nil{
+			if err = ir.Update(v);err != nil{
+				return s.error(err),nil
+			}
+		}
+	}
+	return s.success(nil),nil
+}
+
 
 // 设置键值
 func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
@@ -63,11 +127,6 @@ func (s *foundationService) GetValuesByPrefix(ctx context.Context, prefix string
 // 获取键值存储数据
 func (s *foundationService) GetRegistryV1(ctx context.Context, keys []string) ([]string, error) {
 	return s._rep.GetsRegistry(keys), nil
-}
-
-// 获取键值存储数据
-func (s *foundationService) GetRegistryMapV1(ctx context.Context, keys []string) (map[string]string, error) {
-	return s._rep.GetsRegistryMap(keys), nil
 }
 
 // 保存键值存储数据
@@ -123,11 +182,6 @@ func (s *foundationService) GetSyncLoginUrl(ctx context.Context, returnUrl strin
 		variable.Domain, returnUrl), nil
 }
 
-// 获取数据存储
-func (s *foundationService) GetRegistry() valueobject.Registry_ {
-	//return s._rep.GetRegistry()
-	return valueobject.Registry_{}
-}
 
 // 保存数据存储
 func (s *foundationService) SaveRegistry(v *valueobject.Registry_) error {

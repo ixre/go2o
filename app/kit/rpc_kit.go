@@ -29,7 +29,7 @@ func (r *RpcToolkit) RegistryMap(keys ...string) map[string]string {
 	trans, cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.GetRegistryMapV1(thrift.Context, keys)
+		r, _ := cli.GetRegistries(thrift.Context, keys)
 		return r
 	}
 	return map[string]string{}

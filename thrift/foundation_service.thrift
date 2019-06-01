@@ -35,20 +35,26 @@ struct SArea  {
 
 // 基础服务
 service FoundationService{
+
+   /** 获取注册表键值 */
+   string GetRegistry(1:string key)
+   /** 获取键值存储数据字典 */
+   map<string,string> GetRegistries(1:list<string> keys)
+   /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
+   ttype.Result CreateUserRegistry(1:string key,2:string defaultValue,3:string description)
+   /** 更新注册表键值 */
+   ttype.Result UpdateRegistry(1:map<string,string> registries)
+
    // 格式化资源地址并返回
    string ResourceUrl(1:string url)
    // 获取平台设置
    PlatformConf GetPlatformConf()
-   // 根据键获取值
-   string GetValue(1:string key)
    // 设置键值
    ttype.Result SetValue(1:string key,2:string value)
    // 删除值
    ttype.Result DeleteValue(1:string key)
    // 获取键值存储数据
    list<string> GetRegistryV1(1:list<string> keys)
-   // 获取键值存储数据字典
-   map<string,string> GetRegistryMapV1(1:list<string> keys)
    // 根据前缀获取值
    map<string,string> GetValuesByPrefix(1:string prefix)
    // 注册单点登录应用,返回值：

@@ -50,7 +50,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	pstUrl := fmt.Sprintf("//%s%s", mPrefix, variable.Domain)
 	memberId := getMemberId(c)
 	if memberId <= 0 {
-		registry, _ := rsi.FoundationService.GetRegistryMapV1(thrift.Context,
+		registry, _ := rsi.FoundationService.GetRegistries(thrift.Context,
 			[]string{"PlatformName"})
 		mp["PtName"] = registry["PlatformName"]
 		mp["LoginUrl"] = pstUrl + "/auth/login"
