@@ -101,7 +101,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface, confPath stri
 	r.orderRepo = NewOrderRepo(sto, db, r.mchRepo, nil,
 		r.productRepo, r.cartRepo, r.itemRepo, r.promRepo, r.memberRepo,
 		r.deliveryRepo, r.expressRepo, r.shipRepo, r.valueRepo, r.registryRepo)
-	r.paymentRepo = NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.valueRepo)
+	r.paymentRepo = NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.registryRepo)
 	r.asRepo = NewAfterSalesRepo(db, r.orderRepo, r.memberRepo, r.paymentRepo)
 
 	// 解决依赖

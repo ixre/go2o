@@ -458,7 +458,7 @@ func (t *templateIncludeToolkit) mathRemain(i int, j int) int {
 // 根据键获取值
 func (t *templateIncludeToolkit) kv(key string) string {
 	regArr := []string{registry.CacheAdMaxAge}
-	trans,cli,err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer trans.Close()
 		mp, _ := cli.GetRegistries(thrift.Context, regArr)

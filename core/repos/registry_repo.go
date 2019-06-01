@@ -63,7 +63,6 @@ func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 	} else if err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Registry")
 	}
-
 	return err
 }
 

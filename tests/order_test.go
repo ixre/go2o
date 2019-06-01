@@ -323,7 +323,7 @@ func TestTradeOrder(t *testing.T) {
 	cashPay := true
 	requireTicket := true
 	if requireTicket {
-		repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
+		//repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
 	}
 	c := &order.ComplexOrder{
 		VendorId:   104, //1,
