@@ -79,11 +79,11 @@ func (c *categoryRepo) CheckContainGoods(vendorId, catId int32) bool {
 
 func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	//删除子类
-	_, _, err := c.Connector.Exec("DELETE FROM pro_category WHERE parent_id= $1",
+	_, err := c.Connector.ExecNonQuery("DELETE FROM pro_category WHERE parent_id= $1",
 		id)
 
 	//删除分类
-	_, _, err = c.Connector.Exec("DELETE FROM pro_category WHERE id= $1",
+	_, err = c.Connector.ExecNonQuery("DELETE FROM pro_category WHERE id= $1",
 		id)
 
 	// 清理缓存

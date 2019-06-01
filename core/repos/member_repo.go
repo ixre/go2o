@@ -19,6 +19,7 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/dto"
@@ -42,19 +43,21 @@ var (
 type MemberRepoImpl struct {
 	Storage storage.Interface
 	db.Connector
-	_orm    orm.Orm
-	valrepo valueobject.IValueRepo
-	mssrepo mss.IMssRepo
+	_orm         orm.Orm
+	valueRepo    valueobject.IValueRepo
+	mssrepo      mss.IMssRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
-	valRepo valueobject.IValueRepo) *MemberRepoImpl {
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
 	return &MemberRepoImpl{
-		Storage:   sto,
-		Connector: c,
-		_orm:      c.GetOrm(),
-		mssrepo:   mssRepo,
-		valrepo:   valRepo,
+		Storage:      sto,
+		Connector:    c,
+		_orm:         c.GetOrm(),
+		mssrepo:      mssRepo,
+		valueRepo:    valRepo,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -62,7 +65,7 @@ func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
 func (m *MemberRepoImpl) GetManager() member.IMemberManager {
 	memberMux.Lock()
 	if memberManager == nil {
-		memberManager = memberImpl.NewMemberManager(m, m.valrepo)
+		memberManager = memberImpl.NewMemberManager(m, m.valueRepo, m.registryRepo)
 	}
 	memberMux.Unlock()
 	return memberManager
@@ -334,7 +337,7 @@ func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 // 创建会员
 func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m.mssrepo, m.valrepo)
+		m.mssrepo, m.valueRepo, m.registryRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存

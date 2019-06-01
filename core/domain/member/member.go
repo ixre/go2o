@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -44,7 +45,8 @@ type memberImpl struct {
 	relation        *member.InviteRelation
 	invitation      member.IInvitationManager
 	mssRepo         mss.IMssRepo
-	valRepo         valueobject.IValueRepo
+	registryRepo    registry.IRegistryRepo
+	valueRepo       valueobject.IValueRepo
 	profileManager  member.IProfileManager
 	favoriteManager member.IFavoriteManager
 	giftCardManager member.IGiftCardManager
@@ -55,13 +57,14 @@ func (m *memberImpl) ContainFlag(f int) bool {
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRepo,
-	mp mss.IMssRepo, valRepo valueobject.IValueRepo) member.IMember {
+	mp mss.IMssRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMember {
 	return &memberImpl{
-		manager: manager,
-		value:   val,
-		repo:    rep,
-		mssRepo: mp,
-		valRepo: valRepo,
+		manager:      manager,
+		value:        val,
+		repo:         rep,
+		mssRepo:      mp,
+		valueRepo:    valRepo,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -112,7 +115,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 func (m *memberImpl) Profile() member.IProfileManager {
 	if m.profileManager == nil {
 		m.profileManager = newProfileManagerImpl(m,
-			m.GetAggregateRootId(), m.repo, m.valRepo)
+			m.GetAggregateRootId(), m.repo, m.registryRepo, m.valueRepo)
 	}
 	return m.profileManager
 }
@@ -193,7 +196,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 		switch mssType {
 		case notify.TypePhoneMessage:
 			// 某些短信平台要求传入模板ID,在这里附加参数
-			provider, _ := m.valRepo.GetDefaultSmsApiPerm()
+			provider, _ := m.valueRepo.GetDefaultSmsApiPerm()
 			data = sms.AppendCheckPhoneParams(provider, data)
 
 			// 构造并发送短信
@@ -229,7 +232,7 @@ func (m *memberImpl) CompareCode(code string) error {
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m.account == nil {
 		v := m.repo.GetAccount(m.value.Id)
-		return NewAccount(m, v, m.repo, m.manager, m.valRepo)
+		return NewAccount(m, v, m.repo, m.manager, m.registryRepo)
 	}
 	return m.account
 }
@@ -528,24 +531,22 @@ func (m *memberImpl) checkUser(user string) error {
 // 会员初始化
 func (m *memberImpl) memberInit() error {
 	// 创建账户
-	m.account = NewAccount(m, &member.Account{}, m.repo, m.manager, m.valRepo)
+	m.account = NewAccount(m, &member.Account{}, m.repo, m.manager, m.registryRepo)
 	if _, err := m.account.Save(); err != nil {
 		return err
 	}
-	// 其他操作
-	conf := m.valRepo.GetRegistry()
 	// 注册后赠送积分
-	if conf.PresentIntegralNumOfRegister > 0 {
+	regPresent := m.registryRepo.Get(registry.MemberPresentIntegralNumOfRegister).IntValue()
+	if regPresent > 0 {
 		go m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
-			"", float32(conf.PresentIntegralNumOfRegister), 0)
+			"", float32(regPresent), 0)
 	}
 	return nil
 }
 
 // 检查注册信息是否正确
 func (m *memberImpl) prepare() (err error) {
-	perm := m.valRepo.GetRegisterPerm()
-	conf := m.valRepo.GetRegistry()
+	perm := m.valueRepo.GetRegisterPerm()
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	m.value.User = strings.TrimSpace(m.value.User)
 	if m.value.User != "" || !perm.PhoneAsUser {
@@ -565,7 +566,8 @@ func (m *memberImpl) prepare() (err error) {
 		return member.ErrMissingPhone
 	}
 	if lp > 0 {
-		if conf.MemberCheckPhoneFormat && !phoneRegex.MatchString(m.value.Phone) {
+		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
+		if checkPhone && !phoneRegex.MatchString(m.value.Phone) {
 			return member.ErrBadPhoneFormat
 		}
 		if m.checkPhoneBind(m.value.Phone, m.GetAggregateRootId()) != nil {
@@ -640,7 +642,10 @@ func (m *memberImpl) forceUpdateInviterStr(r *member.InviteRelation) {
 		r.InviterStr = ""
 		return
 	}
-	level := m.valRepo.GetRegistry().MemberReferLayer - 1
+	level := m.registryRepo.Get(registry.MemberReferLayer).IntValue() - 1
+	if level < 0 {
+		level = 0
+	}
 	arr := m.Invitation().InviterArray(r.InviterId, level)
 	arr = append([]int64{r.InviterId}, arr...)
 

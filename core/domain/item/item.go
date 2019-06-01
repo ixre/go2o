@@ -43,29 +43,29 @@ type itemImpl struct {
 	promRepo      promotion.IPromotionRepo
 	levelPrices   []*item.MemberPrice
 	promDescribes map[string]string
-	registryRepo     registry.IRegistryRepo
-	expressRepo express.IExpressRepo
+	registryRepo  registry.IRegistryRepo
+	expressRepo   express.IExpressRepo
 }
 
 //todo:??? 去掉依赖promotion.IPromotionRepo
 
 func NewItem(
 	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
-	pro product.IProduct, value *item.GoodsItem, 	registryRepo     registry.IRegistryRepo,
+	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
 	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
 	v := &itemImpl{
-		pro:         pro,
-		value:       value,
-		catRepo:     catRepo,
-		productRepo: itemRepo,
-		repo:        goodsRepo,
-		proMRepo:    proMRepo,
-		itemWsRepo:  itemWsRepo,
-		promRepo:    promRepo,
-		registryRepo:     registryRepo,
-		expressRepo: expressRepo,
+		pro:          pro,
+		value:        value,
+		catRepo:      catRepo,
+		productRepo:  itemRepo,
+		repo:         goodsRepo,
+		proMRepo:     proMRepo,
+		itemWsRepo:   itemWsRepo,
+		promRepo:     promRepo,
+		registryRepo: registryRepo,
+		expressRepo:  expressRepo,
 	}
 	return v.init()
 }

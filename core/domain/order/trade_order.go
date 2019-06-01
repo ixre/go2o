@@ -9,6 +9,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
 	"strings"
@@ -25,15 +26,17 @@ type tradeOrderImpl struct {
 	payRepo      payment.IPaymentRepo
 	mchRepo      merchant.IMerchantRepo
 	valueRepo    valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func newTradeOrder(base *baseOrderImpl, payRepo payment.IPaymentRepo,
-	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) order.IOrder {
+	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrder {
 	o := &tradeOrderImpl{
 		baseOrderImpl: base,
 		payRepo:       payRepo,
 		mchRepo:       mchRepo,
 		valueRepo:     valueRepo,
+		registryRepo:  registryRepo,
 	}
 	return o.init()
 }
@@ -340,15 +343,14 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 	m := o.Buyer()
 	var err error
 	ov := o.getValue()
-	conf := o.valueRepo.GetGlobNumberConf()
-	registry := o.valueRepo.GetRegistry()
 	amount := ov.FinalAmount
 	acc := m.GetAccount()
 
 	// 增加经验
-	if registry.MemberExperienceEnabled {
-		rate := conf.ExperienceRateByOrder
-		if exp := int(amount * float64(rate)); exp > 0 {
+	expEnabled := o.registryRepo.Get(registry.ExperienceEnabled).BoolValue()
+	if expEnabled {
+		rate := o.registryRepo.Get(registry.ExperienceRateByTradeOrder).FloatValue()
+		if exp := int(amount * rate); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}
@@ -356,9 +358,9 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 	}
 
 	// 增加积分
-	//todo: 增加阶梯的返积分,比如订单满30送100积分
-	iRate := float64(conf.IntegralRateByConsumption)
-	integral := int64(amount*iRate) + conf.IntegralBackExtra
+	//todo: 增加阶梯的返积分,比如订单满30送100积分, 不考虑额外赠送,额外的当做补贴
+	rate := o.registryRepo.Get(registry.IntegralRateByTradeOrder).FloatValue()
+	integral := int64(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
 		err = m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralShoppingPresent,

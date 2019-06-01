@@ -46,14 +46,14 @@ func NewGoodsItemRepo(c db.Connector, catRepo product.ICategoryRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	registryRepo registry.IRegistryRepo) *goodsRepo {
 	return &goodsRepo{
-		Connector:   c,
-		_orm:        c.GetOrm(),
-		catRepo:     catRepo,
-		proRepo:     proRepo,
-		proMRepo:    proMRepo,
-		itemWsRepo:  itemWsRepo,
-		expressRepo: expressRepo,
-		registryRepo:registryRepo,
+		Connector:    c,
+		_orm:         c.GetOrm(),
+		catRepo:      catRepo,
+		proRepo:      proRepo,
+		proMRepo:     proMRepo,
+		itemWsRepo:   itemWsRepo,
+		expressRepo:  expressRepo,
+		registryRepo: registryRepo,
 	}
 }
 

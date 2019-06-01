@@ -21,7 +21,7 @@ func NewRegistryRepo(conn db.Connector) registry.IRegistryRepo {
 	}).init()
 }
 
-func (r *registryRepo) init()registry.IRegistryRepo {
+func (r *registryRepo) init() registry.IRegistryRepo {
 	// 从数据源加载数据
 	list := make([]*registry.Registry, 0)
 	err := r.conn.GetOrm().Select(&list, "")
@@ -58,9 +58,9 @@ func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 	} else {
 		_, _, err = r.conn.GetOrm().Save(nil, val)
 	}
-	if err == nil{ // 更新缓存
+	if err == nil { // 更新缓存
 		r.data[key] = registry
-	} else if  err != sql.ErrNoRows {
+	} else if err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Registry")
 	}
 
@@ -103,5 +103,20 @@ func (r *registryRepo) Create(v *registry.Registry) registry.IRegistry {
 
 // 清理不使用的系统键
 func (r *registryRepo) truncUnused(registries []*registry.Registry) error {
-
+	exists := true
+	for _, ir := range r.data {
+		if !ir.IsUser() {
+			exists = false
+			for _, ir2 := range registries {
+				if ir2.Key == ir.Key() {
+					exists = true
+					break
+				}
+			}
+			if !exists {
+				r.Remove(ir.Key())
+			}
+		}
+	}
+	return nil
 }

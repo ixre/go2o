@@ -26,6 +26,7 @@ import (
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	orderImpl "go2o/core/domain/order"
@@ -40,20 +41,21 @@ var _ order.IOrderRepo = new(OrderRepImpl)
 type OrderRepImpl struct {
 	Storage storage.Interface
 	db.Connector
-	_orm         orm.Orm
-	_productRepo product.IProductRepo
-	_goodsRepo   item.IGoodsItemRepo
-	_promRepo    promotion.IPromotionRepo
-	_memberRepo  member.IMemberRepo
-	_mchRepo     merchant.IMerchantRepo
-	_deliverRepo delivery.IDeliveryRepo
-	_cartRepo    cart.ICartRepo
-	_valRepo     valueobject.IValueRepo
-	_cache       map[int]order.IOrderManager
-	_payRepo     payment.IPaymentRepo
-	_manager     order.IOrderManager
-	_expressRepo express.IExpressRepo
-	_shipRepo    shipment.IShipmentRepo
+	_orm          orm.Orm
+	_productRepo  product.IProductRepo
+	_goodsRepo    item.IGoodsItemRepo
+	_promRepo     promotion.IPromotionRepo
+	_memberRepo   member.IMemberRepo
+	_mchRepo      merchant.IMerchantRepo
+	_deliverRepo  delivery.IDeliveryRepo
+	_cartRepo     cart.ICartRepo
+	_valRepo      valueobject.IValueRepo
+	_cache        map[int]order.IOrderManager
+	_payRepo      payment.IPaymentRepo
+	_manager      order.IOrderManager
+	_expressRepo  express.IExpressRepo
+	_shipRepo     shipment.IShipmentRepo
+	_registryRepo registry.IRegistryRepo
 }
 
 func NewOrderRepo(sto storage.Interface, c db.Connector,
@@ -62,22 +64,23 @@ func NewOrderRepo(sto storage.Interface, c db.Connector,
 	promRepo promotion.IPromotionRepo, memRepo member.IMemberRepo,
 	deliverRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo,
 	shipRepo shipment.IShipmentRepo,
-	valRepo valueobject.IValueRepo) order.IOrderRepo {
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrderRepo {
 	return &OrderRepImpl{
-		Storage:      sto,
-		Connector:    c,
-		_orm:         c.GetOrm(),
-		_productRepo: proRepo,
-		_goodsRepo:   goodsRepo,
-		_promRepo:    promRepo,
-		_payRepo:     payRepo,
-		_memberRepo:  memRepo,
-		_mchRepo:     mchRepo,
-		_cartRepo:    cartRepo,
-		_deliverRepo: deliverRepo,
-		_valRepo:     valRepo,
-		_expressRepo: expressRepo,
-		_shipRepo:    shipRepo,
+		Storage:       sto,
+		Connector:     c,
+		_orm:          c.GetOrm(),
+		_productRepo:  proRepo,
+		_goodsRepo:    goodsRepo,
+		_promRepo:     promRepo,
+		_payRepo:      payRepo,
+		_memberRepo:   memRepo,
+		_mchRepo:      mchRepo,
+		_cartRepo:     cartRepo,
+		_deliverRepo:  deliverRepo,
+		_valRepo:      valRepo,
+		_expressRepo:  expressRepo,
+		_shipRepo:     shipRepo,
+		_registryRepo: registryRepo,
 	}
 }
 
@@ -102,14 +105,14 @@ func (o *OrderRepImpl) Manager() order.IOrderManager {
 func (o *OrderRepImpl) CreateOrder(val *order.Order) order.IOrder {
 	return orderImpl.FactoryOrder(val, o.Manager(), o, o._mchRepo, o._goodsRepo,
 		o._productRepo, o._promRepo, o._memberRepo, o._expressRepo,
-		o._shipRepo, o._payRepo, o._cartRepo, o._valRepo)
+		o._shipRepo, o._payRepo, o._cartRepo, o._valRepo, o._registryRepo)
 }
 
 // 生成空白订单,并保存返回对象
 func (o *OrderRepImpl) CreateNormalSubOrder(v *order.NormalSubOrder) order.ISubOrder {
 	return orderImpl.NewSubNormalOrder(v, o.Manager(), o, o._memberRepo,
 		o._goodsRepo, o._shipRepo, o._productRepo, o._payRepo,
-		o._valRepo, o._mchRepo)
+		o._valRepo, o._mchRepo, o._registryRepo)
 }
 
 // 获取可用的订单号
