@@ -149,8 +149,8 @@ func (r *registryImpl) Update(value string) error {
 	if len(r.value.Key) > 45 {
 		return errors.New("key length out of 40")
 	}
-	if len(value) > 45 {
-		return errors.New("value length out of 45")
+	if len(value) > 120 {
+		return errors.New("value length out of 120")
 	}
 	if r.value.Value != value {
 		r.value.Value = value

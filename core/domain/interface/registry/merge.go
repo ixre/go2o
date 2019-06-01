@@ -32,6 +32,14 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员中心域名前缀(移动端)", DomainPrefixMobileMember, "mu.", "")
 	mergeAdd("通行证域名前缀(移动端)", DomainPrefixMobilePassport, "mpp.", "")
 
+	/* 平台 */
+	mergeAdd("平台名称", PlatformName, "GO2O商城系统", "")
+	mergeAdd("客服客服电话", PlatformServiceTel, "+86-021-66666666", "")
+	mergeAdd("Logo标志", PlatformLogo, "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("反色标志", PlatformInverseColorLogo, "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("零售门户标志", PlatformRetailSiteLogo, "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("批发门户标志", PlatformWholesaleSiteLogo, "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+
 	/** 系统 */
 	mergeAdd("启用商户店铺商品分类", EnableMchGoodsCategory, "false", "")
 	mergeAdd("启用商户页面分类", EnableMchPageCategory, "false", "")
@@ -57,7 +65,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员每日提现上限", MemberMaxTakeOutTimesOfDay, "0", "")
 	// 会员转账
 	mergeAdd("会员转账开关", MemberTransferAccountsOn, "true", "")
-	mergeAdd("会员转账提示信息", MemberTransferAccountsMessage, "系统转账功能暂不可用", "")
+	mergeAdd("会员转账提示信息", MemberTransferAccountsMessage, "平台仅提供转账功能，请尽量当面交易以保证安全！", "")
 	mergeAdd("会员转账手续费费率", MemberTransferCsn, "0.00", "")
 	mergeAdd("活动账户转为赠送可提现奖金手续费费率", MemberFlowAccountConvertCsn, "0.20", "")
 	// 经验值

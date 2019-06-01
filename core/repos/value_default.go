@@ -49,17 +49,17 @@ var (
 
 		// 商铺别名敏感词,以|分割
 		ShopIncorrectAliasWords: "shop|master|o2o|super|www|sys|system|mall|mch|system|passport|api|image|static|img",
-		RegistryData: map[string]string{
-			"PlatformName":      "GO2O",
-			"Logo":              "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-			"RetailSiteLogo":    "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-			"WholesaleSiteLogo": "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-			"Telephone":         "021-88888888",
-			// 会员转账开关
-			valueobject.RKMemberTransferAccountsOn: "true",
-			// 会员转账提示信息
-			valueobject.RKMemberTransferAccountsMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
-		},
+		//RegistryData: map[string]string{
+		//	"PlatformName":      "GO2O",
+		//	"Logo":              "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		//	"RetailSiteLogo":    "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		//	"WholesaleSiteLogo": "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		//	"Telephone":         "021-88888888",
+		//	// 会员转账开关
+		//	//valueobject.RKMemberTransferAccountsOn: "true",
+		//	// 会员转账提示信息
+		//	valueobject.RKMemberTransferAccountsMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
+		//},
 	}
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
 
