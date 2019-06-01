@@ -124,13 +124,15 @@ func (s *foundationService) GetSyncLoginUrl(ctx context.Context, returnUrl strin
 }
 
 // 获取数据存储
-func (s *foundationService) GetRegistry() valueobject.Registry {
-	return s._rep.GetRegistry()
+func (s *foundationService) GetRegistry() valueobject.Registry_ {
+	//return s._rep.GetRegistry()
+	return valueobject.Registry_{}
 }
 
 // 保存数据存储
-func (s *foundationService) SaveRegistry(v *valueobject.Registry) error {
-	return s._rep.SaveRegistry(v)
+func (s *foundationService) SaveRegistry(v *valueobject.Registry_) error {
+	//return s._rep.SaveRegistry(v)
+	return nil
 }
 
 // 获取模板配置

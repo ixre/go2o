@@ -48,7 +48,7 @@ type valueRepo struct {
 	numGob          *util.GobFile
 	globMchConf     *valueobject.PlatformConf
 	mchGob          *util.GobFile
-	globRegistry    *valueobject.Registry
+	globRegistry    *valueobject.Registry_
 	rstGob          *util.GobFile
 	globMchSaleConf *valueobject.GlobMchSaleConf
 	mscGob          *util.GobFile
@@ -346,13 +346,13 @@ func (r *valueRepo) SaveMoAppConf(v *valueobject.MoAppConf) error {
 }
 
 // 获取数据存储
-func (r *valueRepo) GetRegistry() valueobject.Registry {
+func (r *valueRepo) GetRegistry() valueobject.Registry_ {
 	v := r.getRegistry()
 	return *v
 }
 
 // 保存数据存储
-func (r *valueRepo) SaveRegistry(v *valueobject.Registry) error {
+func (r *valueRepo) SaveRegistry(v *valueobject.Registry_) error {
 	if r != nil {
 		defer r.signReload()
 		r.globRegistry = v
@@ -362,7 +362,7 @@ func (r *valueRepo) SaveRegistry(v *valueobject.Registry) error {
 }
 
 // 获取数据存储
-func (r *valueRepo) getRegistry() *valueobject.Registry {
+func (r *valueRepo) getRegistry() *valueobject.Registry_ {
 	r.checkReload()
 	if r.globRegistry == nil {
 		v2 := DefaultRegistry

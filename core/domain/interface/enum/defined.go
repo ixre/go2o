@@ -48,10 +48,12 @@ func ReviewString(r int32) string {
 type MchSettleMode int
 
 const (
-	// 结算供货价
+	// 按供货价销售额比例结算
 	MchModeSettleByCost MchSettleMode = 1
-	// 按比例结算
+	// 按销售额比例结算
 	MchModeSettleByRate MchSettleMode = 2
+	// 按单数结算
+	MchModeSettleByOrderQuantity MchSettleMode = 3
 )
 
 // 金额依据

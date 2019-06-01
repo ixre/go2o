@@ -13,37 +13,40 @@ import (
 	"fmt"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/variable"
 	"sort"
 	"strings"
 )
 
-var _ member.IMemberManager = new(MemberManagerImpl)
+var _ member.IMemberManager = new(memberManagerImpl)
 var _ member.ILevelManager = new(levelManagerImpl)
 
-type MemberManagerImpl struct {
+type memberManagerImpl struct {
 	levelManager member.ILevelManager
 	valRepo      valueobject.IValueRepo
 	rep          member.IMemberRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func NewMemberManager(rep member.IMemberRepo,
-	valRepo valueobject.IValueRepo) member.IMemberManager {
-	return &MemberManagerImpl{
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMemberManager {
+	return &memberManagerImpl{
 		levelManager: newLevelManager(rep),
 		valRepo:      valRepo,
 		rep:          rep,
+		registryRepo: registryRepo,
 	}
 }
 
 // 等级服务
-func (m *MemberManagerImpl) LevelManager() member.ILevelManager {
+func (m *memberManagerImpl) LevelManager() member.ILevelManager {
 	return m.levelManager
 }
 
 // 检测注册权限
-func (m *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitation bool) error {
+func (m *memberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitation bool) error {
 	if perm.RegisterMode == member.RegisterModeClosed {
 		return member.ErrRegOff
 	}
@@ -56,7 +59,7 @@ func (m *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitat
 	return nil
 }
 
-func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int64, error) {
+func (m *memberManagerImpl) checkInvitationCode(invitationCode string) (int64, error) {
 	var invitationId int64
 	if len(invitationCode) > 0 {
 		//判断邀请码是否正确
@@ -69,7 +72,7 @@ func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int64, e
 }
 
 // 检查手机绑定,同时检查手机格式
-func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
+func (m *memberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
 	if len(phone) <= 0 {
 		return member.ErrMissingPhone
 	}
@@ -80,7 +83,7 @@ func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
 }
 
 // 检查邀请注册
-func (m *MemberManagerImpl) CheckInviteRegister(code string) (inviterId int64, err error) {
+func (m *memberManagerImpl) CheckInviteRegister(code string) (inviterId int64, err error) {
 	perm := m.valRepo.GetRegisterPerm()
 	isInvite := len(code) > 0
 	// 检查注册模式及邀请码
@@ -97,10 +100,9 @@ func (m *MemberManagerImpl) CheckInviteRegister(code string) (inviterId int64, e
 }
 
 // 检查注册信息是否正确
-func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
+func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	pro *member.Profile, invitationCode string) (invitationId int64, err error) {
 	perm := m.valRepo.GetRegisterPerm()
-	conf := m.valRepo.GetRegistry()
 
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	v.User = strings.TrimSpace(v.User)
@@ -129,8 +131,8 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 		return 0, member.ErrMissingPhone
 	}
 	if lp > 0 {
-		if conf.MemberCheckPhoneFormat &&
-			!phoneRegex.MatchString(pro.Phone) {
+		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
+		if checkPhone && !phoneRegex.MatchString(pro.Phone) {
 			return 0, member.ErrBadPhoneFormat
 		}
 		if m.CheckPhoneBind(pro.Phone, v.Id) != nil {
@@ -166,7 +168,7 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 }
 
 // 获取所有买家分组
-func (m *MemberManagerImpl) GetAllBuyerGroups() []*member.BuyerGroup {
+func (m *memberManagerImpl) GetAllBuyerGroups() []*member.BuyerGroup {
 	list := m.rep.SelectMmBuyerGroup("")
 	if len(list) == 0 {
 		m.initBuyerGroups()
@@ -176,7 +178,7 @@ func (m *MemberManagerImpl) GetAllBuyerGroups() []*member.BuyerGroup {
 }
 
 // 初始化买家分组
-func (m *MemberManagerImpl) initBuyerGroups() {
+func (m *memberManagerImpl) initBuyerGroups() {
 	arr := []*member.BuyerGroup{
 		{
 			Name:      "默认分组",
@@ -216,7 +218,7 @@ func (m *MemberManagerImpl) initBuyerGroups() {
 }
 
 // 获取买家分组
-func (m *MemberManagerImpl) GetBuyerGroup(id int32) *member.BuyerGroup {
+func (m *memberManagerImpl) GetBuyerGroup(id int32) *member.BuyerGroup {
 	for _, v := range m.GetAllBuyerGroups() {
 		if v.ID == id {
 			return v
@@ -226,7 +228,7 @@ func (m *MemberManagerImpl) GetBuyerGroup(id int32) *member.BuyerGroup {
 }
 
 // 保存买家分组
-func (m *MemberManagerImpl) SaveBuyerGroup(v *member.BuyerGroup) (int32, error) {
+func (m *memberManagerImpl) SaveBuyerGroup(v *member.BuyerGroup) (int32, error) {
 	return util.I32Err(m.rep.SaveMmBuyerGroup(v))
 }
 

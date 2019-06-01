@@ -14,7 +14,6 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
-	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -27,10 +26,10 @@ import (
 var _ member.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	member    *memberImpl
-	mm        member.IMemberManager
-	value     *member.Account
-	rep       member.IMemberRepo
+	member       *memberImpl
+	mm           member.IMemberManager
+	value        *member.Account
+	rep          member.IMemberRepo
 	registryRepo registry.IRegistryRepo
 }
 
@@ -38,11 +37,11 @@ func NewAccount(m *memberImpl, value *member.Account,
 	rep member.IMemberRepo, mm member.IMemberManager,
 	registryRepo registry.IRegistryRepo) member.IAccount {
 	return &accountImpl{
-		member:    m,
-		value:     value,
-		rep:       rep,
-		mm:        mm,
-		registryRepo:registryRepo,
+		member:       m,
+		value:        value,
+		rep:          rep,
+		mm:           mm,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -841,7 +840,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 	}
 	// 检测是否超过限制
 	maxTimes := a.registryRepo.Get(registry.MemberMaxTakeOutTimesOfDay).IntValue()
-	if  maxTimes > 0 {
+	if maxTimes > 0 {
 		takeTimes := a.rep.GetTodayTakeOutTimes(a.GetDomainId())
 		if takeTimes >= maxTimes {
 			return 0, "", member.ErrAccountOutOfTakeOutTimes
@@ -1059,7 +1058,7 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount fl
 
 	// 检测是否开启转账
 	transferOn := a.registryRepo.Get(registry.MemberTransferAccountsOn).BoolValue()
-	if  !transferOn {
+	if !transferOn {
 		msg := a.registryRepo.Get(registry.MemberTransferAccountsMessage).StringValue()
 		return errors.New(msg)
 	}

@@ -56,22 +56,22 @@ type IRegistryRepo interface {
 	// 保存键
 	Save(registry IRegistry) error
 	// 创建
-	Create(r *Registry)IRegistry
+	Create(r *Registry) IRegistry
 	// 获取键
-	Get(key string)IRegistry
+	Get(key string) IRegistry
 	// 合并数据
 	Merge(registries []*Registry) error
 }
 
 func KeyFormat(s string) string {
-	dst := make([]byte,0)
+	dst := make([]byte, 0)
 	for i, b := range s {
 		if unicode.IsUpper(b) {
 			l := byte(unicode.ToLower(b))
 			if i == 0 {
 				dst = append(dst, l)
 			} else {
-				dst = append(dst,byte('_'), l)
+				dst = append(dst, byte('_'), l)
 			}
 		} else {
 			dst = append(dst, byte(b))

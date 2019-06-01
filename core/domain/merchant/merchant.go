@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
 	"go2o/core/domain/interface/merchant/wholesaler"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
 	si "go2o/core/domain/merchant/shop"
@@ -268,22 +269,24 @@ type merchantImpl struct {
 	_apiManager     merchant.IApiManager
 	_shopManager    shop.IShopManager
 	_walletRepo     wallet.IWalletRepo
+	_registryRepo   registry.IRegistryRepo
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo,
-	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo) merchant.IMerchant {
+	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchant {
 	mch := &merchantImpl{
-		_value:      v,
-		_rep:        rep,
-		_wsRepo:     wsRepo,
-		_itemRepo:   itemRepo,
-		_shopRepo:   shopRepo,
-		_userRepo:   userRepo,
-		_valRepo:    valRepo,
-		_memberRepo: memberRepo,
-		_walletRepo: walletRepo,
+		_value:        v,
+		_rep:          rep,
+		_wsRepo:       wsRepo,
+		_itemRepo:     itemRepo,
+		_shopRepo:     shopRepo,
+		_userRepo:     userRepo,
+		_valRepo:      valRepo,
+		_memberRepo:   memberRepo,
+		_walletRepo:   walletRepo,
+		_registryRepo: registryRepo,
 	}
 	return mch
 }

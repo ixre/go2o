@@ -34,12 +34,12 @@ var (
 )
 
 type RepoFactory struct {
-	registryRepo  registry.IRegistryRepo
-	proMRepo   promodel.IProModelRepo
-	valueRepo  valueobject.IValueRepo
-	userRepo   user.IUserRepo
-	notifyRepo notify.INotifyRepo
-	mssRepo    mss.IMssRepo
+	registryRepo registry.IRegistryRepo
+	proMRepo     promodel.IProModelRepo
+	valueRepo    valueobject.IValueRepo
+	userRepo     user.IUserRepo
+	notifyRepo   notify.INotifyRepo
+	mssRepo      mss.IMssRepo
 
 	expressRepo express.IExpressRepo
 	shipRepo    shipment.IShipmentRepo
@@ -78,7 +78,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface, confPath stri
 	r.mssRepo = NewMssRepo(db, r.notifyRepo, r.valueRepo)
 	r.expressRepo = NewExpressRepo(db, r.valueRepo)
 	r.shipRepo = NewShipmentRepo(db, r.expressRepo)
-	r.memberRepo = NewMemberRepo(sto, db, r.mssRepo, r.valueRepo)
+	r.memberRepo = NewMemberRepo(sto, db, r.mssRepo, r.valueRepo, r.registryRepo)
 	r.productRepo = NewProductRepo(db, r.proMRepo, r.valueRepo)
 	r.itemWsRepo = NewItemWholesaleRepo(db)
 	r.catRepo = NewCategoryRepo(db, r.valueRepo, sto)
@@ -92,7 +92,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface, confPath stri
 	r.shopRepo = NewShopRepo(db, sto, r.valueRepo)
 	r.wholesaleRepo = NewWholesaleRepo(db)
 	r.mchRepo = NewMerchantRepo(db, sto, r.wholesaleRepo,
-		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo)
+		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo, r.registryRepo)
 	r.cartRepo = NewCartRepo(db, r.memberRepo, r.mchRepo, r.itemRepo)
 	r.personFinanceRepo = NewPersonFinanceRepository(db, r.memberRepo)
 	r.deliveryRepo = NewDeliverRepo(db)
@@ -100,7 +100,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface, confPath stri
 	r.adRepo = NewAdvertisementRepo(db, sto)
 	r.orderRepo = NewOrderRepo(sto, db, r.mchRepo, nil,
 		r.productRepo, r.cartRepo, r.itemRepo, r.promRepo, r.memberRepo,
-		r.deliveryRepo, r.expressRepo, r.shipRepo, r.valueRepo)
+		r.deliveryRepo, r.expressRepo, r.shipRepo, r.valueRepo, r.registryRepo)
 	r.paymentRepo = NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.valueRepo)
 	r.asRepo = NewAfterSalesRepo(db, r.orderRepo, r.memberRepo, r.paymentRepo)
 

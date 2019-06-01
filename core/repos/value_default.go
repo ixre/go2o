@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	DefaultRegistry = valueobject.Registry{
+	DefaultRegistry = valueobject.Registry_{
 		// 商户提现是否免费
 		MerchantTakeOutCashFree: true,
 		// 收货提示信息

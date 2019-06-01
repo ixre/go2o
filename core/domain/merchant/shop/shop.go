@@ -270,8 +270,10 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 	if !shopAliasRegexp.Match([]byte(alias)) {
 		return shop.ErrShopAliasFormat
 	}
-	conf := s.valRepo.GetRegistry()
-	arr := strings.Split(conf.ShopIncorrectAliasWords, "|")
+
+	//todo: 非法关键字
+	//arr := strings.Split(conf.ShopIncorrectAliasWords, "|")
+	arr := strings.Split("", "|")
 	for _, v := range arr {
 		if strings.Index(alias, v) != -1 {
 			return shop.ErrShopAliasIncorrect

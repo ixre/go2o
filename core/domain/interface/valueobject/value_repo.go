@@ -49,38 +49,38 @@ type (
 		OrderReceiveAlertMessage string
 		// 是否启用会员经验值功能
 		MemberExperienceEnabled bool
-		// 会员资料不完善提醒信息
+		// !会员资料不完善提醒信息
 		MemberProfileNotCompletedMessage string
-		// 会员实名提醒信息
+		// !会员实名提醒信息
 		MemberNotTrustedMessage string
-		// 注册后赠送积分数量
+		// !注册后赠送积分数量
 		PresentIntegralNumOfRegister int64
-		// 会员邀请关系级数
+		// !会员邀请关系级数
 		MemberReferLayer int
-		// 会员即时通讯是否必须
+		// !会员即时通讯是否必须
 		MemberImRequired bool
-		// 会员是否验证手机号码格式
+		// !会员是否验证手机号码格式
 		MemberCheckPhoneFormat bool
-		// 会员默认个人签名
+		// !会员默认个人签名
 		MemberDefaultPersonRemark string
 
-		// 会员提现开关
+		// !会员提现开关
 		MemberTakeOutOn bool
-		// 会员提现提示
+		// !会员提现提示
 		MemberTakeOutMessage string
-		// 提现是否必须实名制认证
+		// !提现是否必须实名制认证
 		TakeOutMustTrust bool
 
-		// 商品默认图片
+		// !商品默认图片
 		GoodsDefaultImage string
-		// 商品最低利润率,既(销售价-供货价)/销售价的比例
+		// !商品最低利润率,既(销售价-供货价)/销售价的比例
 		GoodsMinProfitRate float32
 
-		// 广告缓存时间（秒）
+		// !广告缓存时间（秒）
 		CacheAdMaxAge int64
-		// 敏感词,以|分割
+		// !敏感词,以|分割
 		ShopIncorrectAliasWords string
-		// 键值数据
+		// !键值数据
 		RegistryData map[string]string
 	}
 
@@ -215,9 +215,9 @@ type (
 		IntegralExchangeRate float32
 		// 抵扣1元所需要的积分
 		IntegralDiscountRate float32
-		// 消费1元产生的经验
+		// !消费1元产生的经验
 		ExperienceRateByOrder float32
-		// 消费1元产生的积分
+		// !消费1元产生的积分
 		IntegralRateByConsumption float32
 		// 每单额外赠送
 		IntegralBackExtra int64
@@ -245,9 +245,9 @@ type (
 
 	// 全局商户销售设置
 	GlobMchSaleConf struct {
-		// 商户订单结算模式
+		// !商户订单结算模式
 		MchOrderSettleMode enum.MchSettleMode
-		// 商户订单结算比例
+		// !商户订单结算比例
 		MchOrderSettleRate float32
 		// 商户交易单是否需上传发票
 		TradeOrderRequireTicket bool
