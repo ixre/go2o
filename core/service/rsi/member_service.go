@@ -933,20 +933,6 @@ func (s *memberService) Complex(ctx context.Context, memberId int64) (*member_se
 	return nil, nil
 }
 
-// 充值,account为账户类型,kind为业务类型
-func (s *memberService) ChargeAccount(ctx context.Context, memberId int64, account int32,
-	kind int32, title, outerNo string, amount float64, relateUser int64) (*ttype.Result_, error) {
-	var err error
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
-	acc := m.GetAccount()
-	if acc == nil {
-		err = member.ErrNoSuchMember
-	} else {
-		err = acc.Charge(account, int(kind), title, outerNo, float32(amount), relateUser)
-	}
-	return s.result(err), nil
-}
-
 // 冻结积分,当new为true不扣除积分,反之扣除积分
 func (s *memberService) FreezesIntegral(memberId int64, title string, value int64,
 	new bool) error {
@@ -966,28 +952,55 @@ func (s *memberService) UnfreezesIntegral(memberId int64, title string, value in
 	return m.GetAccount().UnfreezesIntegral(title, int(value))
 }
 
-// 抵扣账户
-func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, account int32, title string,
-	outerNo string, amount float64, relateUser int64, mustLargeZero bool) (r *ttype.Result_, err error) {
+// 充值,account为账户类型,kind为业务类型
+func (s *memberService) AccountCharge(ctx context.Context, memberId int64, account int32,
+	kind int32, title, outerNo string, amount float64, relateUser int64) (*ttype.Result_, error) {
+	var err error
+	m := s.repo.CreateMember(&member.Member{Id: memberId})
+	acc := m.GetAccount()
+	if acc == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		err = acc.Charge(account, int(kind), title, outerNo, float32(amount), relateUser)
+	}
+	return s.result(err), nil
+}
+
+// 账户抵扣
+func (s *memberService) AccountDiscount(ctx context.Context, memberId int64, account int32, title string,
+	amount float64, outerNo string, remark string) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {
 		acc := m.GetAccount()
-		switch int(account) {
-		case member.AccountBalance:
-			err = acc.DiscountBalance(title, outerNo, float32(amount),
-				member.DefaultRelateUser)
-		case member.AccountWallet:
-			err = acc.DiscountWallet(title, outerNo, float32(amount),
-				member.DefaultRelateUser, mustLargeZero)
-		case member.AccountIntegral:
-			err = acc.IntegralDiscount(title, outerNo, int(amount))
-		}
+		err = acc.Discount(int(account), title, float32(amount), outerNo, remark)
+	}
+	return s.result(err), nil
+}
+
+// 账户消耗
+func (s *memberService) AccountConsume(ctx context.Context, memberId int64, account int32, title string,
+	amount float64, outerNo string, remark string) (r *ttype.Result_, err error) {
+	m, err := s.getMember(memberId)
+	if err == nil {
+		acc := m.GetAccount()
+		err = acc.Consume(int(account), title, float32(amount), outerNo, remark)
+	}
+	return s.result(err), nil
+}
+
+// 账户消耗
+func (s *memberService) AccountRefund(ctx context.Context, memberId int64, account int32, title string,
+	amount float64, outerNo string, remark string) (r *ttype.Result_, err error) {
+	m, err := s.getMember(memberId)
+	if err == nil {
+		acc := m.GetAccount()
+		err = acc.Refund(int(account), title, float32(amount), outerNo, remark)
 	}
 	return s.result(err), nil
 }
 
 // 调整账户
-func (s *memberService) AdjustAccount(ctx context.Context, memberId int64, account int32,
+func (s *memberService) AccountAdjust(ctx context.Context, memberId int64, account int32,
 	amount float64, relateUser int64, remark string) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {

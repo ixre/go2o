@@ -102,27 +102,36 @@ type (
 		// 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account int, enabled bool) error
 
-		// 保存余额变动信息
-		SaveFlowAccountInfo(*FlowAccountLog) (int32, error)
+		// 退款
+		Refund(accountKind int, title string, amount float32, outerNo string, remark string) error
 
-		// 获取钱包账户日志
-		GetWalletLog(id int32) *MWalletLog
+		// 充值
+		Charge(account int32, kind int, title, outerNo string, amount float32, relateUser int64) error
 
-		// 充值,客服操作时,需提供操作人(relateUser)
-		//ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int64) error
+		// 客服调整
+		Adjust(account int, title string, amount float32, remark string, relateUser int64) error
+
+		// 消耗
+		Consume(account int, title string, amount float32, outerNo string, remark string) error
+
+		// 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
+		Discount(account int, title string, amount float32, outerNo string, remark string) error
 
 		// 扣减余额
-		DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
+		//DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
+
+		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
+		//DiscountWallet(title string, outerNo string, amount float32,
+		//	relateUser int64, mustLargeZero bool) error
+
+		// 积分抵扣
+		//IntegralDiscount(title string, outerNo string, value int) error
 
 		// 冻结余额
 		Freeze(title string, outerNo string, amount float32, relateUser int64) error
 
 		// 解冻金额
 		Unfreeze(title string, outerNo string, amount float32, relateUser int64) error
-
-		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
-		DiscountWallet(title string, outerNo string, amount float32,
-			relateUser int64, mustLargeZero bool) error
 
 		// 冻结赠送金额
 		FreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
@@ -133,20 +142,14 @@ type (
 		// 支付单抵扣消费,tradeNo为支付单单号
 		PaymentDiscount(tradeNo string, amount float32, remark string) error
 
-		//　增加积分
-		//AddIntegral(iType int, outerNo string, value int64, remark string) error
-
-		// 积分抵扣
-		IntegralDiscount(title string, outerNo string, value int) error
-
 		// 冻结积分,当new为true不扣除积分,反之扣除积分
 		FreezesIntegral(title string, value int, new bool, relateUser int64) error
 
 		// 解冻积分
 		UnfreezesIntegral(title string, value int) error
 
-		// 退款
-		RequestBackBalance(backType int, title string, amount float32) error
+		// 获取钱包账户日志
+		GetWalletLog(id int32) *MWalletLog
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
 		RequestTakeOut(takeKind int, title string, amount float32, commission float32) (int32, string, error)
@@ -167,21 +170,6 @@ type (
 		// 接收转账
 		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
 			amount float32, remark string) error
-
-		// 退款
-		Refund(accountKind int, kind int, title string, outerNo string, amount float32, relateUser int64) error
-
-		// 充值
-		Charge(account int32, kind int, title, outerNo string, amount float32, relateUser int64) error
-
-		// 客服调整
-		Adjust(account int, title string, amount float32, remark string, relateUser int64) error
-
-		// 赠送金额,客服操作时,需提供操作人(relateUser)
-		//ChargeForPresent(title string, outerNo string, amount float32, relateUser int64) error
-
-		// 赠送金额(指定业务类型)
-		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int64) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
@@ -217,7 +205,7 @@ type (
 		//失效的赠送金额
 		ExpiredPresent float32 `db:"expired_wallet"`
 		//总赠送金额
-		TotalPresentFee float32 `db:"total_wallet_amount"`
+		TotalWalletAmount float32 `db:"total_wallet_amount"`
 		//流动账户余额
 		FlowBalance float32 `db:"flow_balance"`
 		//当前理财账户余额
