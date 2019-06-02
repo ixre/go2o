@@ -27,3 +27,18 @@ COMMENT ON COLUMN "public".mm_member.flag IS '会员标志';
 
 ALTER TABLE "public".mm_member ADD COLUMN name varchar(20) DEFAULT '' NOT NULL;
   COMMENT ON COLUMN "public".mm_member.name IS '昵称';
+
+CREATE TABLE mm_flow_log (id serial NOT NULL, member_id int4 NOT NULL, kind int2 NOT NULL, title varchar(60) NOT NULL, outer_no varchar(40) NOT NULL, amount float8 NOT NULL, csn_fee float8 NOT NULL, review_state int2 DEFAULT 0 NOT NULL, rel_user int4 NOT NULL, remark varchar(60) NOT NULL, create_time int4 NOT NULL, update_time int4 NOT NULL, PRIMARY KEY (id));
+COMMENT ON TABLE mm_flow_log IS '活动账户明细';
+COMMENT ON COLUMN mm_flow_log.id IS '编号';
+COMMENT ON COLUMN mm_flow_log.member_id IS '会员编号';
+COMMENT ON COLUMN mm_flow_log.kind IS '类型';
+COMMENT ON COLUMN mm_flow_log.title IS '标题';
+COMMENT ON COLUMN mm_flow_log.outer_no IS '外部交易号';
+COMMENT ON COLUMN mm_flow_log.amount IS '金额';
+COMMENT ON COLUMN mm_flow_log.csn_fee IS '手续费';
+COMMENT ON COLUMN mm_flow_log.review_state IS '审核状态';
+COMMENT ON COLUMN mm_flow_log.rel_user IS '关联用户';
+COMMENT ON COLUMN mm_flow_log.remark IS '备注';
+COMMENT ON COLUMN mm_flow_log.create_time IS '创建时间';
+COMMENT ON COLUMN mm_flow_log.update_time IS '更新时间';

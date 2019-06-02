@@ -190,7 +190,7 @@ func (p *paymentOrderImpl) Cancel() (err error) {
 	//退回到余额
 	if v := chanMap[payment.MBalance]; v > 0 {
 		err = acc.Refund(member.AccountBalance,
-			member.KindBalanceRefund, "订单退款", pv.TradeNo,
+			member.KindRefund, "订单退款", pv.TradeNo,
 			float32(v/100), member.DefaultRelateUser)
 	}
 	//退积分
@@ -200,7 +200,7 @@ func (p *paymentOrderImpl) Cancel() (err error) {
 	// 如果已经支付，则将支付的款项退回到账户
 	if v := chanMap[payment.MWallet]; v > 0 {
 		return acc.Refund(member.AccountWallet,
-			member.KindWalletPaymentRefund,
+			member.KindRefund,
 			"订单退款", pv.TradeNo, float32(v/100),
 			member.DefaultRelateUser)
 	}
@@ -392,8 +392,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	acc := p.memberRepo.GetMember(p.value.BuyerId).GetAccount()
 	//log.Println("----", p.value.BuyerId, acc.Value().Integral, "discount:", integral)
 	//log.Printf("-----%#v\n", acc.Value())
-	err = acc.IntegralDiscount(member.TypeIntegralPaymentDiscount,
-		"积分支付抵扣", p.Get().TradeNo, integral)
+	err = acc.IntegralDiscount("积分支付抵扣", p.Get().TradeNo, integral)
 	// 抵扣积分
 	if err == nil {
 		p.value.DeductAmount += amount
@@ -553,7 +552,7 @@ func (p *paymentOrderImpl) Refund(amount int) (err error) {
 			amount = amount - final
 		}
 		err = acc.Refund(member.AccountBalance,
-			member.KindBalanceRefund, "订单退款", pv.TradeNo,
+			member.KindRefund, "订单退款", pv.TradeNo,
 			float32(final)/100, member.DefaultRelateUser)
 		if err == nil {
 			p.value.DeductAmount -= final
@@ -566,7 +565,7 @@ func (p *paymentOrderImpl) Refund(amount int) (err error) {
 			amount = amount - final
 		}
 		err = acc.Refund(member.AccountWallet,
-			member.KindWalletPaymentRefund,
+			member.KindRefund,
 			"订单退款", pv.TradeNo, float32(final)/100,
 			member.DefaultRelateUser)
 		if err == nil {
@@ -576,7 +575,7 @@ func (p *paymentOrderImpl) Refund(amount int) (err error) {
 	//todo: 原路退回，目前全部退回钱包
 	if amount > 0 {
 		err = acc.Refund(member.AccountWallet,
-			member.KindWalletPaymentRefund,
+			member.KindRefund,
 			"订单退款", pv.TradeNo, float32(amount)/100,
 			member.DefaultRelateUser)
 		if err == nil {

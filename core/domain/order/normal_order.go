@@ -878,7 +878,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 		//给自己返现
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.Name, fee)
 		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, orderNo, float32(fee),
+			member.KindCharge, tit, orderNo, float32(fee),
 			member.DefaultRelateUser)
 	}
 	return err
@@ -928,7 +928,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
 		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, orderNo, float32(cpv.BackFee),
+			member.KindCharge, tit, orderNo, float32(cpv.BackFee),
 			member.DefaultRelateUser)
 	}
 	return err
@@ -1700,6 +1700,6 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
 	return acc.Charge(member.AccountWallet,
-		member.KindWalletAdd, tit, v.OrderNo, float32(fee),
+		member.KindCharge, tit, v.OrderNo, float32(fee),
 		member.DefaultRelateUser)
 }

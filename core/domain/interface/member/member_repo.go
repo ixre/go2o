@@ -146,14 +146,8 @@ type IMemberRepo interface {
 	// 获取推荐我的人
 	GetInvitationMeMember(memberId int64) *Member
 
-	// 根据编号获取余额变动信息
-	GetBalanceInfo(id int32) *BalanceInfo
-
-	// 根据号码获取余额变动信息
-	GetBalanceInfoByNo(tradeNo string) *BalanceInfo
-
 	// 保存余额变动信息
-	SaveBalanceInfo(v *BalanceInfo) (int32, error)
+	SaveFlowAccountInfo(v *FlowAccountLog) (int32, error)
 
 	// 保存理财账户信息
 	SaveGrowAccount(memberId int64, balance, totalAmount,

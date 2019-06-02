@@ -190,7 +190,7 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 	//如果支付单已清理数据，则全部退回到余额
 	if po == nil {
 		return acc.Refund(member.AccountBalance,
-			member.KindBalanceRefund, "订单退款",
+			member.KindRefund, "订单退款",
 			o.OrderNo, amount,
 			member.DefaultRelateUser)
 	}
