@@ -772,12 +772,6 @@ func (s *memberService) ReviewTrustedInfo(memberId int64, pass bool, remark stri
 	return m.Profile().ReviewTrustedInfo(pass, remark)
 }
 
-// 获取返现记录
-func (s *memberService) QueryIncomeLog(memberId int64, begin, end int,
-	where, orderBy string) (int, []map[string]interface{}) {
-	return s.query.QueryBalanceLog(memberId, begin, end, where, orderBy)
-}
-
 // 获取分页商铺收藏
 func (s *memberService) PagedShopFav(memberId int64, begin, end int,
 	where string) (int, []*dto.PagedShopFav) {
@@ -939,15 +933,6 @@ func (s *memberService) Complex(ctx context.Context, memberId int64) (*member_se
 	return nil, nil
 }
 
-// 获取余额变动信息
-func (s *memberService) GetBalanceInfoById(memberId int64, infoId int32) *member.BalanceInfo {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return nil
-	}
-	return m.GetAccount().GetBalanceInfo(infoId)
-}
-
 // 充值,account为账户类型,kind为业务类型
 func (s *memberService) ChargeAccount(ctx context.Context, memberId int64, account int32,
 	kind int32, title, outerNo string, amount float64, relateUser int64) (*ttype.Result_, error) {
@@ -994,6 +979,8 @@ func (s *memberService) DiscountAccount(ctx context.Context, memberId int64, acc
 		case member.AccountWallet:
 			err = acc.DiscountWallet(title, outerNo, float32(amount),
 				member.DefaultRelateUser, mustLargeZero)
+		case member.AccountIntegral:
+			err = acc.IntegralDiscount(title, outerNo, int(amount))
 		}
 	}
 	return s.result(err), nil
@@ -1073,26 +1060,21 @@ func (s *memberService) SubmitTakeOutRequest(memberId int64, takeKind int32,
 	return acc.RequestTakeOut(int(takeKind), title, applyAmount, commission)
 }
 
-// 获取最近的提现
-func (s *memberService) GetLatestTakeOut(memberId int64) *member.BalanceInfo {
-	return s.query.GetLatestBalanceInfoByKind(memberId,
-		member.KindWalletTakeOutToBankCard)
-}
-
 // 获取最近的提现描述
 func (s *memberService) GetLatestApplyCashText(memberId int64) string {
 	var latestInfo string
-	latestApplyInfo := s.GetLatestTakeOut(memberId)
+	latestApplyInfo := s.query.GetLatestWalletLogByKind(memberId,
+		member.KindWalletTakeOutToBankCard)
 	if latestApplyInfo != nil {
 		var sText string
-		switch latestApplyInfo.State {
-		case 0:
+		switch latestApplyInfo.ReviewState {
+		case enum.ReviewAwaiting:
 			sText = "已申请"
-		case 1:
+		case enum.ReviewPass:
 			sText = "已审核,等待打款"
-		case 2:
+		case enum.ReviewReject:
 			sText = "被退回"
-		case 3:
+		case enum.ReviewConfirm:
 			sText = "已完成"
 		}
 		if latestApplyInfo.Amount < 0 {
@@ -1196,18 +1178,6 @@ func (s *memberService) TransferBalance(memberId int64, kind int32, amount float
 	return m.GetAccount().TransferBalance(int(kind), amount, tradeNo, toTitle, fromTitle)
 }
 
-// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
-// commission手续费
-func (s *memberService) TransferWallet(memberId int64, kind int32, amount float32, commission float32,
-	tradeNo string, toTitle string, fromTitle string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().TransferWallet(int(kind), amount, commission,
-		tradeNo, toTitle, fromTitle)
-}
-
 // 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
 func (s *memberService) TransferFlow(memberId int64, kind int32, amount float32,
@@ -1252,53 +1222,6 @@ func (s *memberService) GetMemberInviRank(mchId int32, allTeam bool,
 	levelComp string, level int, startTime int64, endTime int64,
 	num int) []*dto.RankMember {
 	return s.query.GetMemberInviRank(mchId, allTeam, levelComp, level, startTime, endTime, num)
-}
-
-// 生成会员账户人工单据
-func (s *memberService) NewBalanceTicket(mchId int32, memberId int64, accountType int,
-	tit string, amount float32, relateUser int64) (string, error) {
-	//todo: 暂时不记录人员,等支持系统多用户后再传入
-	if relateUser <= 0 {
-		relateUser = 1
-	}
-	var err error
-	if amount == 0 {
-		return "", member.ErrIncorrectAmount
-	}
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return "", member.ErrNoSuchMember
-	}
-	acc := m.GetAccount()
-	outerNo := domain.NewTradeNo(8, int(mchId))
-	var tit2 string
-	if accountType == member.AccountWallet {
-		if amount > 0 {
-			//增加奖金
-			tit2 = "[KF]" + variable.AliasWalletAccount
-			if len(tit) > 0 {
-				tit2 = tit2 + "(" + tit + ")"
-			}
-			err = acc.Charge(member.AccountWallet,
-				member.KindWalletServiceAdd,
-				tit2, outerNo, amount, relateUser)
-		} else {
-			//扣减奖金
-			tit2 = "[KF]" + variable.AliasWalletAccount
-			if len(tit) > 0 {
-				tit2 = tit2 + "(" + tit + ")"
-			}
-			err = acc.DiscountWallet(tit2, outerNo, -amount, relateUser, false)
-		}
-		return outerNo, err
-	}
-
-	if accountType == member.AccountBalance {
-		err = acc.Adjust(member.AccountBalance, "[KF]客服调整", amount, tit, relateUser)
-		return outerNo, err
-	}
-
-	return outerNo, err
 }
 
 //********* 促销  **********//

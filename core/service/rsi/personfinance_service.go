@@ -95,7 +95,7 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		//转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountBalance,
-				member.KindBalanceSystemCharge, variable.AliasGrowthAccount+"转出",
+				member.KindExchange, variable.AliasGrowthAccount+"转出",
 				tradeNo, amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
@@ -109,7 +109,7 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		//转入钱包
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountWallet,
-				member.KindWalletAdd, variable.AliasGrowthAccount+"转出",
+				member.KindCharge, variable.AliasGrowthAccount+"转出",
 				tradeNo, amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())

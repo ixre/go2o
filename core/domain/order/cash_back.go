@@ -91,7 +91,7 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 			tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
 				o.value.OrderNo, ptName, mName, fee)
 			err = acc.Charge(member.AccountWallet,
-				member.KindWalletAdd,
+				member.KindCharge,
 				tit, o.value.OrderNo,
 				fee, member.DefaultRelateUser)
 		}
@@ -209,7 +209,7 @@ func backCashForMember(m member.IMember, o order.IOrder,
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
 			format.FormatFloat(bFee), orderNo, refName)
 		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, orderNo,
+			member.KindCharge, tit, orderNo,
 			float32(fee), member.DefaultRelateUser)
 	}
 	return err
