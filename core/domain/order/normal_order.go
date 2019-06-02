@@ -870,7 +870,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
 	acv.WalletBalance += fee // 更新赠送余额
-	acv.TotalPresentFee += fee
+	acv.TotalWalletAmount += fee
 	acv.UpdateTime = unixTime
 	_, err := acc.Save()
 	if err == nil {
@@ -908,7 +908,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	acc := m.GetAccount()
 	acv := acc.GetValue()
 	acv.WalletBalance += bFee // 更新赠送余额
-	acv.TotalPresentFee += bFee
+	acv.TotalWalletAmount += bFee
 	// 赠送金额，不应该计入到余额，可采取充值到余额
 	//acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
 
@@ -1693,7 +1693,7 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
 	acv.WalletBalance += fee // 更新赠送余额
-	acv.TotalPresentFee += fee
+	acv.TotalWalletAmount += fee
 	acv.UpdateTime = unixTime
 	acc.Save()
 
