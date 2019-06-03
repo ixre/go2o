@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : option.go
  * author : jarryliu
  * date : 2016-04-18 13:48

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : types.go
  * author : jarryliu
  * date : -- :
@@ -109,10 +109,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
 	orm.Mapping(member.BalanceLog{}, "mm_balance_log")
 	orm.Mapping(member.MWalletLog{}, "mm_wallet_log")
+	orm.Mapping(member.FlowAccountLog{}, "mm_flow_log")
 	orm.Mapping(member.Account{}, "mm_account")
 	orm.Mapping(member.Address{}, "mm_deliver_addr")
 	orm.Mapping(member.InviteRelation{}, "mm_relation")
-	orm.Mapping(member.BalanceInfo{}, "mm_balance_info")
 	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
 	orm.Mapping(member.Favorite{}, "mm_favorite")
 	orm.Mapping(member.BankInfo{}, "mm_bank")

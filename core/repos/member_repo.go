@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ z3q.net.
+ * Copyright 2014 @ to2.net.
  * name :
  * author : jarryliu
  * date : 2013-12-09 10:13
@@ -427,7 +427,7 @@ func (m *MemberRepoImpl) SaveBalanceLog(v *member.BalanceLog) (int32, error) {
 
 // 保存钱包账户日志
 func (m *MemberRepoImpl) SavePresentLog(v *member.MWalletLog) (int32, error) {
-	return orm.I32(orm.Save(m.GetOrm(), v, int(v.ID)))
+	return orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
 }
 
 func (m *MemberRepoImpl) GetWalletLog(id int32) *member.MWalletLog {
@@ -631,26 +631,8 @@ func (m *MemberRepoImpl) GetInvitationMeMember(memberId int64) *member.Member {
 	return d
 }
 
-// 根据编号获取余额变动信息
-func (m *MemberRepoImpl) GetBalanceInfo(id int32) *member.BalanceInfo {
-	var e member.BalanceInfo
-	if err := m.Connector.GetOrm().Get(id, &e); err == nil {
-		return &e
-	}
-	return nil
-}
-
-// 根据号码获取余额变动信息
-func (m *MemberRepoImpl) GetBalanceInfoByNo(tradeNo string) *member.BalanceInfo {
-	var e member.BalanceInfo
-	if err := m.Connector.GetOrm().GetBy(&e, "trade_no= $1", tradeNo); err == nil {
-		return &e
-	}
-	return nil
-}
-
 // 保存余额变动信息
-func (m *MemberRepoImpl) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
+func (m *MemberRepoImpl) SaveFlowAccountInfo(v *member.FlowAccountLog) (int32, error) {
 	return orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
 }
 

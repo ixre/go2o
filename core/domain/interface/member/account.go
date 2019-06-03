@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : account
  * author : jarryliu
  * date : 2015-07-24 08:48
@@ -20,76 +20,41 @@ const (
 )
 
 const (
-	// 用户充值
-	ChargeByUser int = 1
-	// 系统自动充值
-	ChargeBySystem int = 2
-	// 客服充值
-	ChargeByService int = 3
-	// 退款充值
-	ChargeByRefund int = 4
-)
-
-const (
 	// 自定义的业务类型
 	KindMine int = 30
-	// 会员充值
-	KindBalanceCharge int = 1
-	// 系统充值
-	KindBalanceSystemCharge int = 2
-	// 支付抵扣
-	KindBalanceDiscount int = 3
-	// 退款
-	KindBalanceRefund int = 4
-	// 转入
-	KindBalanceTransferIn int = 5
-	// 转出
-	KindBalanceTransferOut int = 6
-	// 失效
-	KindBalanceExpired int = 7
-	// 冻结
-	KindBalanceFreeze int = 8
-	// 解冻
-	KindBalanceUnfreeze int = 9
 	// 客服调整
-	KindAdjust int = 10
-
-	// 客服充值
-	KindBalanceServiceCharge int = 15
-	// 客服扣减
-	KindBalanceServiceDiscount int = 16
+	KindAdjust = 1
+	// 会员充值
+	KindCharge = 2
+	// 消耗
+	KindConsumes = 3
+	// 支付抵扣
+	KindDiscount = 4
+	// 退款
+	KindRefund int = 5
+	// 兑换充值, 比如将钱包充值到余额
+	KindExchange int = 6
+	// 转入
+	KindTransferIn int = 7
+	// 转出
+	KindTransferOut int = 8
+	// 失效
+	KindExpired int = 9
+	// 冻结
+	KindFreeze int = 10
+	// 解冻
+	KindUnfreeze int = 11
 )
 
 const (
-	// 赠送金额
-	KindWalletAdd int = 1
-	// 抵扣奖金
-	KindWalletDiscount int = 2
-	// 转入
-	KindWalletTransferIn int = 5
-	// 转出
-	KindWalletTransferOut int = 6
-	// 失效
-	KindWalletExpired int = 7
-	// 冻结
-	KindWalletFreeze int = 8
-	// 解冻
-	KindWalletUnfreeze int = 9
 	// 提现到余额
-	KindWalletTakeOutToBalance int = 11
+	KindWalletTakeOutToBalance int = 21
 	// 提现到银行卡(人工提现)
-	KindWalletTakeOutToBankCard int = 12
+	KindWalletTakeOutToBankCard int = 22
 	// 提现到第三方
-	KindWalletTakeOutToThirdPart int = 13
-	// 提现退还到银行卡
-	KindWalletTakeOutRefund int = 14
-	// 支付单退款
-	KindWalletPaymentRefund int = 15
-
-	// 客服赠送
-	KindWalletServiceAdd int = 21
-	// 客服扣减
-	KindWalletServiceDiscount int = 22
+	KindWalletTakeOutToThirdPart int = 23
+	// 提现退还
+	KindWalletTakeOutRefund int = 24
 )
 
 const (
@@ -113,8 +78,6 @@ const (
 const (
 	// 赠送
 	TypeIntegralPresent = 1
-	// 积分抵扣
-	TypeIntegralDiscount = 2
 	// 积分冻结
 	TypeIntegralFreeze = 3
 	// 积分解冻
@@ -139,33 +102,36 @@ type (
 		// 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account int, enabled bool) error
 
-		// 根据编号获取余额变动信息
-		GetBalanceInfo(id int32) *BalanceInfo
+		// 退款
+		Refund(accountKind int, title string, amount float32, outerNo string, remark string) error
 
-		// 根据号码获取余额变动信息
-		// GetBalanceInfoByNo(no string) *BalanceInfo
+		// 充值
+		Charge(account int32, title string, amount float32, outerNo string, remark string) error
 
-		// 保存余额变动信息
-		SaveBalanceInfo(*BalanceInfo) (int32, error)
+		// 客服调整
+		Adjust(account int, title string, amount float32, remark string, relateUser int64) error
 
-		// 获取钱包账户日志
-		GetWalletLog(id int32) *MWalletLog
+		// 消耗
+		Consume(account int, title string, amount float32, outerNo string, remark string) error
 
-		// 充值,客服操作时,需提供操作人(relateUser)
-		//ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int64) error
+		// 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
+		Discount(account int, title string, amount float32, outerNo string, remark string) error
 
 		// 扣减余额
-		DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
+		//DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
+
+		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
+		//DiscountWallet(title string, outerNo string, amount float32,
+		//	relateUser int64, mustLargeZero bool) error
+
+		// 积分抵扣
+		//IntegralDiscount(title string, outerNo string, value int) error
 
 		// 冻结余额
 		Freeze(title string, outerNo string, amount float32, relateUser int64) error
 
 		// 解冻金额
 		Unfreeze(title string, outerNo string, amount float32, relateUser int64) error
-
-		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
-		DiscountWallet(title string, outerNo string, amount float32,
-			relateUser int64, mustLargeZero bool) error
 
 		// 冻结赠送金额
 		FreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
@@ -176,23 +142,14 @@ type (
 		// 支付单抵扣消费,tradeNo为支付单单号
 		PaymentDiscount(tradeNo string, amount float32, remark string) error
 
-		//　增加积分
-		//AddIntegral(iType int, outerNo string, value int64, remark string) error
-
-		// 积分抵扣
-		IntegralDiscount(logType int, title string, outerNo string, value int) error
-
 		// 冻结积分,当new为true不扣除积分,反之扣除积分
 		FreezesIntegral(title string, value int, new bool, relateUser int64) error
 
 		// 解冻积分
 		UnfreezesIntegral(title string, value int) error
 
-		// 退款
-		RequestBackBalance(backType int, title string, amount float32) error
-
-		// 完成退款
-		FinishBackBalance(id int32, tradeNo string) error
+		// 获取钱包账户日志
+		GetWalletLog(id int32) *MWalletLog
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
 		RequestTakeOut(takeKind int, title string, amount float32, commission float32) (int32, string, error)
@@ -214,28 +171,8 @@ type (
 		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
 			amount float32, remark string) error
 
-		// 退款
-		Refund(accountKind int, kind int, title string, outerNo string, amount float32, relateUser int64) error
-
-		// 充值
-		Charge(account int32, kind int, title, outerNo string, amount float32, relateUser int64) error
-
-		// 客服调整
-		Adjust(account int, title string, amount float32, remark string, relateUser int64) error
-
-		// 赠送金额,客服操作时,需提供操作人(relateUser)
-		//ChargeForPresent(title string, outerNo string, amount float32, relateUser int64) error
-
-		// 赠送金额(指定业务类型)
-		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int64) error
-
 		// 转账余额到其他账户
 		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
-
-		// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
-		// commission手续费
-		TransferWallet(kind int, amount float32, commission float32, tradeNo string,
-			toTitle string, fromTitle string) error
 
 		// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
@@ -245,25 +182,6 @@ type (
 		// 将活动金转给其他人
 		TransferFlowTo(memberId int64, kind int, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
-	}
-
-	// 余额变动信息
-	BalanceInfo struct {
-		Id       int64  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int64  `db:"member_id"`
-		TradeNo  string `db:"trade_no"`
-		Kind     int    `db:"kind"`
-		Type     int    `db:"type"`
-		Title    string `db:"title"`
-		// 金额
-		Amount float32 `db:"amount"`
-		// 手续费
-		CsnAmount float32 `db:"csn_amount"`
-		// 引用编号
-		RefId      int64 `db:"ref_id"`
-		State      int   `db:"state"`
-		CreateTime int64 `db:"create_time"`
-		UpdateTime int64 `db:"update_time"`
 	}
 
 	// 账户值对象
@@ -287,7 +205,7 @@ type (
 		//失效的赠送金额
 		ExpiredPresent float32 `db:"expired_wallet"`
 		//总赠送金额
-		TotalPresentFee float32 `db:"total_wallet_amount"`
+		TotalWalletAmount float32 `db:"total_wallet_amount"`
 		//流动账户余额
 		FlowBalance float32 `db:"flow_balance"`
 		//当前理财账户余额
@@ -327,7 +245,7 @@ type (
 		// 备注
 		Remark string `db:"remark"`
 		// 关联用户
-		RelUser int `db:"rel_user"`
+		RelateUser int `db:"rel_user"`
 		// 审核状态
 		ReviewState int16 `db:"review_state"`
 		// 创建时间
@@ -363,13 +281,13 @@ type (
 
 	// 钱包账户日志
 	MWalletLog struct {
-		ID int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 外部单号
 		OuterNo string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int `db:"kind"`
+		Kind int `db:"kind"`
 		// 标题
 		Title string `db:"title"`
 		// 金额
@@ -386,5 +304,29 @@ type (
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
+	}
+
+	// 余额变动信息(todo: 活动账户还在用,暂时不删除)
+	FlowAccountLog struct {
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		// 会员编号
+		MemberId int64 `db:"member_id"`
+		// 外部单号
+		OuterNo string `db:"outer_no"`
+		// 业务类型
+		Kind int `db:"kind"`
+		// 标题
+		Title string `db:"title"`
+		// 金额
+		Amount float32 `db:"amount"`
+		// 手续费
+		CsnFee float32 `db:"csn_amount"`
+		// 引用编号
+		RelateUser  int64 `db:"rel_user"`
+		ReviewState int   `db:"state"`
+		// 备注
+		Remark     string `db:"remark"`
+		CreateTime int64  `db:"create_time"`
+		UpdateTime int64  `db:"update_time"`
 	}
 )

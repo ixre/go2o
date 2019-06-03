@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : personfinance_service
  * author : jarryliu
  * date : 2016-04-01 09:41
@@ -94,9 +94,8 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 	if transferWith == personfinance.TransferOutWithBalance {
 		//转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
-			err = acc.Charge(member.AccountBalance,
-				member.KindBalanceSystemCharge, variable.AliasGrowthAccount+"转出",
-				tradeNo, amount, member.DefaultRelateUser)
+			err = acc.Charge(member.AccountBalance, variable.AliasGrowthAccount+"转出",
+				amount, tradeNo, "sys")
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
 			}
@@ -108,9 +107,8 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 	if transferWith == personfinance.TransferFromWithWallet {
 		//转入钱包
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
-			err = acc.Charge(member.AccountWallet,
-				member.KindWalletAdd, variable.AliasGrowthAccount+"转出",
-				tradeNo, amount, member.DefaultRelateUser)
+			err = acc.Charge(member.AccountWallet, variable.AliasGrowthAccount+"转出",
+				amount, tradeNo, "sys")
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
 			}

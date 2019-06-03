@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : goods_query.go
  * author : jarryliu
  * date : 2016-04-23 12:37

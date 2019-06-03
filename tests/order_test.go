@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : order_test.go
  * author : jarryliu
  * date : 2016-07-15 15:14
@@ -15,7 +15,6 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	oi "go2o/core/domain/order"
-	"go2o/core/repos"
 	"go2o/core/variable"
 	"go2o/tests/ti"
 	"log"

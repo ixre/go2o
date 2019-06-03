@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ z3q.net.
+ * Copyright 2014 @ to2.net.
  * name :
  * author : jarryliu
  * date : 2013-12-03 23:20
@@ -97,34 +97,9 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 	return num, rows
 }
 
-// 获取返现记录
-func (m *MemberQuery) QueryBalanceLog(memberId int64, begin, end int,
-	where, orderBy string) (num int, rows []map[string]interface{}) {
-
-	d := m.Connector
-
-	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
-	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_info bi
-	 	INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE bi.member_id= $1 %s`, where), &num, memberId)
-
-	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_info bi
-			INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
-		where, orderBy)
-
-	d.Query(sqlLine, func(_rows *sql.Rows) {
-		rows = db.RowsToMarshalMap(_rows)
-	}, memberId, begin, end-begin)
-
-	return num, rows
-}
-
 // 获取最近的余额变动信息
-func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int64, kind int) *member.BalanceInfo {
-	var info = new(member.BalanceInfo)
+func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member.MWalletLog {
+	var info = new(member.MWalletLog)
 	if err := m.GetOrm().GetBy(info, "member_id= $1 AND kind= $2 ORDER BY create_time DESC",
 		memberId, kind); err == nil {
 		return info

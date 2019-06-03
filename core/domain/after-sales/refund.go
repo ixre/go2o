@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : refund
  * author : jarryliu
  * date : 2016-07-17 11:43
@@ -189,7 +189,7 @@ func (r *refundOrderImpl) backAmount(amount float32) error {
 		//如果支付单已清理数据，则全部退回到余额
 		if po == nil {
 			return acc.Refund(member.AccountBalance,
-				member.KindBalanceRefund, "订单退款",
+				member.KindRefund, "订单退款",
 				o.OrderNo, amount, member.DefaultRelateUser)
 		}
 		return nil
@@ -198,7 +198,7 @@ func (r *refundOrderImpl) backAmount(amount float32) error {
 		pv := po.Get()
 		if pv.BalanceDiscount > 0 {
 			if err := acc.Refund(member.AccountBalance,
-				member.KindBalanceRefund,
+				member.KindRefund,
 				"订单退款", o.OrderNo, pv.BalanceDiscount,
 				member.DefaultRelateUser); err == nil {
 				amount -= pv.BalanceDiscount

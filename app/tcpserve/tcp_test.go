@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : tcp_test.go
  * author : jarryliu
  * date : 2015-11-23 16:15

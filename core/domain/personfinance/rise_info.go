@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : rise_info
  * author : jarryliu
  * date : 2016-03-31 18:06
@@ -93,23 +93,17 @@ func (r *riseInfo) transferInPayment(amount float32,
 	switch transferWith {
 	//从余额转入
 	case personfinance.TransferFromWithBalance:
-		err = acc.DiscountBalance("理财转入", tradeNo,
-			amount, member.DefaultRelateUser)
-		if err != nil {
-			return err
-		}
+		err = acc.Discount(member.AccountBalance, "理财转入",
+			amount, tradeNo, "")
 		//从钱包转入
 	case personfinance.TransferFromWithWallet:
-		err = acc.DiscountWallet("理财转入", tradeNo,
-			amount, member.DefaultRelateUser, true)
-		if err != nil {
-			return err
-		}
+		err = acc.Discount(member.AccountWallet, "理财转入",
+			amount, tradeNo, "")
 		//其他方式转入
 	default:
 		return errors.New("暂时无法提供服务")
 	}
-	return nil
+	return err
 }
 
 // 转入

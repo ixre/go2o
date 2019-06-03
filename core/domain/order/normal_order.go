@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ z3q.net.
+ * Copyright 2014 @ to2.net.
  * name :
  * author : jarryliu
  * date : 2013-12-09 15:03
@@ -870,16 +870,14 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
 	acv.WalletBalance += fee // 更新赠送余额
-	acv.TotalPresentFee += fee
+	acv.TotalWalletAmount += fee
 	acv.UpdateTime = unixTime
 	_, err := acc.Save()
 	if err == nil {
 		orderNo := o.OrderNo()
 		//给自己返现
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.Name, fee)
-		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, orderNo, float32(fee),
-			member.DefaultRelateUser)
+		err = acc.Charge(member.AccountWallet, tit, float32(fee), orderNo, "sys")
 	}
 	return err
 }
@@ -908,7 +906,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	acc := m.GetAccount()
 	acv := acc.GetValue()
 	acv.WalletBalance += bFee // 更新赠送余额
-	acv.TotalPresentFee += bFee
+	acv.TotalWalletAmount += bFee
 	// 赠送金额，不应该计入到余额，可采取充值到余额
 	//acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
 
@@ -927,9 +925,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
-		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, orderNo, float32(cpv.BackFee),
-			member.DefaultRelateUser)
+		err = acc.Charge(member.AccountWallet, tit, float32(cpv.BackFee), orderNo, "sys")
 	}
 	return err
 }
@@ -1496,8 +1492,8 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	integral := int64(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
-		err = m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralShoppingPresent,
-			"购物消费赠送积分", o.value.OrderNo, float32(integral), 0)
+		err = m.GetAccount().Charge(member.AccountIntegral,
+			"购物消费赠送积分", float32(integral), o.value.OrderNo, "sys")
 		if err != nil {
 			return err
 		}
@@ -1693,13 +1689,11 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
 	acv.WalletBalance += fee // 更新赠送余额
-	acv.TotalPresentFee += fee
+	acv.TotalWalletAmount += fee
 	acv.UpdateTime = unixTime
 	acc.Save()
 
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
-	return acc.Charge(member.AccountWallet,
-		member.KindWalletAdd, tit, v.OrderNo, float32(fee),
-		member.DefaultRelateUser)
+	return acc.Charge(member.AccountWallet, tit, float32(fee), v.OrderNo, "sys")
 }

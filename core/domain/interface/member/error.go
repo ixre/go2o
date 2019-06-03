@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ z3q.net.
+ * Copyright 2014 @ to2.net.
  * name :
  * author : jarryliu
  * date : 2014-02-05 20:12
@@ -208,6 +208,7 @@ var (
 
 	ErrIncorrectTradePwd            = domain.NewError("err_incorrect_trade_pwd", "交易密码错误")
 	ErrNoSuchLogTitleOrRemark       = domain.NewError("err_member_no_such_log_title_or_remark", "缺少账户变动的标题和备注")
+	ErrNotSupportAccountType        = domain.NewError("err_account_not_support", "账户类型不支持此操作")
 	ErrNotSupportPaymentAccountType = domain.NewError("err_account_not_support_payment", "不支持支付的账户类型")
 
 	ErrAccountNotEnoughAmount = domain.NewError("err_not_enough_amount", "账户余额不足")

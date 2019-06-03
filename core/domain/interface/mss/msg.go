@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : msg_template
  * author : jarryliu
  * date : 2015-07-26 21:57
