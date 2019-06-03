@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : time
  * author : jarryliu
  * date : 2015-11-07 22:52

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : payment
  * author : jarryliu
  * date : 2016-07-02 23:06

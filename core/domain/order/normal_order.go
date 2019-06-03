@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ z3q.net.
+ * Copyright 2014 @ to2.net.
  * name :
  * author : jarryliu
  * date : 2013-12-09 15:03
@@ -877,9 +877,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 		orderNo := o.OrderNo()
 		//给自己返现
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.Name, fee)
-		err = acc.Charge(member.AccountWallet,
-			member.KindCharge, tit, orderNo, float32(fee),
-			member.DefaultRelateUser)
+		err = acc.Charge(member.AccountWallet, tit, float32(fee), orderNo, "sys")
 	}
 	return err
 }
@@ -927,9 +925,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
-		err = acc.Charge(member.AccountWallet,
-			member.KindCharge, tit, orderNo, float32(cpv.BackFee),
-			member.DefaultRelateUser)
+		err = acc.Charge(member.AccountWallet, tit, float32(cpv.BackFee), orderNo, "sys")
 	}
 	return err
 }
@@ -1496,8 +1492,8 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	integral := int64(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
-		err = m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralShoppingPresent,
-			"购物消费赠送积分", o.value.OrderNo, float32(integral), 0)
+		err = m.GetAccount().Charge(member.AccountIntegral,
+			"购物消费赠送积分", float32(integral), o.value.OrderNo, "sys")
 		if err != nil {
 			return err
 		}
@@ -1699,7 +1695,5 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
-	return acc.Charge(member.AccountWallet,
-		member.KindCharge, tit, v.OrderNo, float32(fee),
-		member.DefaultRelateUser)
+	return acc.Charge(member.AccountWallet, tit, float32(fee), v.OrderNo, "sys")
 }

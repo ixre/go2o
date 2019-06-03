@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : member_profile.go
  * author : jarryliu
  * date : 2016-06-23 16:31

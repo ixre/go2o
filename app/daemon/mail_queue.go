@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : mail_queue
  * author : jarryliu
  * date : 2015-07-27 17:06
