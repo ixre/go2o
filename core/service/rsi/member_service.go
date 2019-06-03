@@ -954,14 +954,14 @@ func (s *memberService) UnfreezesIntegral(memberId int64, title string, value in
 
 // 充值,account为账户类型,kind为业务类型
 func (s *memberService) AccountCharge(ctx context.Context, memberId int64, account int32,
-	title string, amount float64, outerNo string, remark string) (*ttype.Result_, error) {
+	title string, amount int32, outerNo string, remark string) (*ttype.Result_, error) {
 	var err error
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	acc := m.GetAccount()
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(account, title, float32(amount), outerNo, remark)
+		err = acc.Charge(account, title, int(amount), outerNo, remark)
 	}
 	return s.result(err), nil
 }

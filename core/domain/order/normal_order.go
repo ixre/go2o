@@ -877,7 +877,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 		orderNo := o.OrderNo()
 		//给自己返现
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.Name, fee)
-		err = acc.Charge(member.AccountWallet, tit, float32(fee), orderNo, "sys")
+		err = acc.Charge(member.AccountWallet, tit, int(fee*100), orderNo, "sys")
 	}
 	return err
 }
@@ -925,7 +925,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
-		err = acc.Charge(member.AccountWallet, tit, float32(cpv.BackFee), orderNo, "sys")
+		err = acc.Charge(member.AccountWallet, tit, int(cpv.BackFee*100), orderNo, "sys")
 	}
 	return err
 }
@@ -1489,11 +1489,11 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	// 增加积分
 	//todo: 增加阶梯的返积分,比如订单满30送100积分, 不考虑额外赠送,额外的当做补贴
 	rate := o.registryRepo.Get(registry.IntegralRateByWholesaleOrder).FloatValue()
-	integral := int64(float64(amount) * rate)
+	integral := int(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
 		err = m.GetAccount().Charge(member.AccountIntegral,
-			"购物消费赠送积分", float32(integral), o.value.OrderNo, "sys")
+			"购物消费赠送积分", integral, o.value.OrderNo, "sys")
 		if err != nil {
 			return err
 		}
@@ -1695,5 +1695,5 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
-	return acc.Charge(member.AccountWallet, tit, float32(fee), v.OrderNo, "sys")
+	return acc.Charge(member.AccountWallet, tit, int(fee*100), v.OrderNo, "sys")
 }

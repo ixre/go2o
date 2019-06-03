@@ -97,19 +97,19 @@ func (a *accountImpl) SetPriorityPay(account int, enabled bool) error {
 
 // 充值
 func (a *accountImpl) Charge(account int32, title string,
-	amount float32, outerNo string, remark string) error {
+	amount int, outerNo string, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectQuota
 	}
 	switch account {
 	case member.AccountIntegral:
-		return a.integralCharge(title, int(amount), outerNo, remark)
+		return a.integralCharge(title, amount, outerNo, remark)
 	case member.AccountBalance:
-		return a.chargeBalance(title, amount, outerNo, remark)
+		return a.chargeBalance(title, float32(amount)/100, outerNo, remark)
 	case member.AccountWallet:
-		return a.chargeWallet(title, amount, outerNo, remark)
+		return a.chargeWallet(title, float32(amount)/100, outerNo, remark)
 	case member.AccountFlow:
-		return a.chargeFlowBalance(title, amount, outerNo, remark)
+		return a.chargeFlowBalance(title, float32(amount)/100, outerNo, remark)
 	}
 	return member.ErrNotSupportAccountType
 }

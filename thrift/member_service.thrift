@@ -73,16 +73,16 @@ service MemberService{
     i32 GetInviterQuantity(1:i64 memberId,2:map<string,string> data)
     // 按条件获取荐指定等级会员的列表
     list<i64> GetInviterArray(1:i64 memberId,2:map<string,string> data)
-    // 账户充值
+    // 账户充值,amount精确到分
     ttype.Result AccountCharge(1:i64 memberId ,2:i32 account,3:string title,
-      4:double amount,5:string outerNo,6:string remark)
-    // 账户消耗
+      4:i32 amount,5:string outerNo,6:string remark)
+    // 账户消耗,amount精确到分
     ttype.Result AccountConsume(1:i64 memberId,2:i32 account,3:string title,
       4:double amount, 5:string outerNo,6:string remark)
-    // 账户抵扣
+    // 账户抵扣,amount精确到分
     ttype.Result AccountDiscount(1:i64 memberId,2:i32 account,3:string title,
       4:double amount, 5:string outerNo,6:string remark)
-    // 账户退款
+    // 账户退款,amount精确到分
     ttype.Result AccountRefund(1:i64 memberId,2:i32 account,3:string title,
         4:double amount, 5:string outerNo,6:string remark)
     // 账户人工调整
