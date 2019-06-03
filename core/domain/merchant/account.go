@@ -190,7 +190,7 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 	if err == nil {
 		err = m.GetAccount().Charge(member.AccountWallet,
 			variable.AliasMerchantBalanceAccount+
-				"提现", amount, "-", "sys")
+				"提现", int(amount*100), "-", "sys")
 		if err != nil {
 			return err
 		}
@@ -208,7 +208,7 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 			if takeRate > 0 {
 				csn := amount * float32(takeRate)
 				err = m.GetAccount().Charge(member.AccountWallet, "返还商户提现手续费",
-					csn, "-", "")
+					int(csn*100), "-", "")
 			}
 		}
 	}
@@ -235,7 +235,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
 		err = m.GetAccount().Charge(member.AccountWallet, variable.AliasMerchantBalanceAccount+
-			"提现", amount, "-", "sys")
+			"提现", int(amount*100), "-", "sys")
 		if err != nil {
 			return err
 		}
@@ -254,7 +254,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 			if rate > 0 {
 				csn := float32(float32(rate) * amount)
 				err = m.GetAccount().Charge(member.AccountWallet, "返还商户提现手续费",
-					csn, "-", "sys")
+					int(csn*100), "-", "sys")
 			}
 		}
 	}
