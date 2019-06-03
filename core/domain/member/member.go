@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ z3q.net.
+ * Copyright 2014 @ to2.net.
  * name :
  * author : jarryliu
  * date : 2013-12-09 10:12
@@ -232,6 +232,11 @@ func (m *memberImpl) CompareCode(code string) error {
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m.account == nil {
 		v := m.repo.GetAccount(m.value.Id)
+		if v == nil {
+			v = &member.Account{
+				MemberId: m.GetAggregateRootId(),
+			}
+		}
 		return NewAccount(m, v, m.repo, m.manager, m.registryRepo)
 	}
 	return m.account
@@ -538,8 +543,8 @@ func (m *memberImpl) memberInit() error {
 	// 注册后赠送积分
 	regPresent := m.registryRepo.Get(registry.MemberPresentIntegralNumOfRegister).IntValue()
 	if regPresent > 0 {
-		go m.GetAccount().Charge(member.AccountIntegral, member.TypeIntegralPresent, "新会员注册赠送积分",
-			"", float32(regPresent), 0)
+		go m.GetAccount().Charge(member.AccountIntegral, "新会员注册赠送积分",
+			float32(regPresent), "-", "sys")
 	}
 	return nil
 }

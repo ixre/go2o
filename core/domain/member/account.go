@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : account
  * author : jarryliu
  * date : 2015-07-24 08:50
@@ -58,7 +58,10 @@ func (a *accountImpl) GetValue() *member.Account {
 
 // 保存
 func (a *accountImpl) Save() (int64, error) {
-	isCreate := a.GetDomainId() == 0
+	// 判断是否新建账号
+	origin := a.rep.GetAccount(a.member.GetAggregateRootId())
+	isCreate := origin == nil
+	// 更新账户
 	a.value.MemberId = a.member.GetAggregateRootId()
 	a.value.UpdateTime = time.Now().Unix()
 	n, err := a.rep.SaveAccount(a.value)
@@ -93,20 +96,20 @@ func (a *accountImpl) SetPriorityPay(account int, enabled bool) error {
 }
 
 // 充值
-func (a *accountImpl) Charge(account int32, kind int, title, outerNo string,
-	amount float32, relateUser int64) error {
+func (a *accountImpl) Charge(account int32, title string,
+	amount float32, outerNo string, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectQuota
 	}
 	switch account {
 	case member.AccountIntegral:
-		return a.integralCharge(kind, title, outerNo, int(amount), relateUser)
+		return a.integralCharge(title, int(amount), outerNo, remark)
 	case member.AccountBalance:
-		return a.chargeBalance(title, outerNo, amount)
+		return a.chargeBalance(title, amount, outerNo, remark)
 	case member.AccountWallet:
-		return a.chargeWallet(kind, title, outerNo, amount, relateUser)
+		return a.chargeWallet(title, amount, outerNo, remark)
 	case member.AccountFlow:
-		return a.chargeFlowBalance(title, outerNo, amount)
+		return a.chargeFlowBalance(title, amount, outerNo, remark)
 	}
 	return member.ErrNotSupportAccountType
 }
@@ -278,13 +281,13 @@ func (a *accountImpl) createFlowAccountLog(kind int, title string, amount float3
 }
 
 //　充值积分
-func (a *accountImpl) integralCharge(logType int, title string, outerNo string,
-	value int, relateUser int64) error {
+func (a *accountImpl) integralCharge(title string, value int, outerNo string, remark string) error {
 	if value <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	l, err := a.createIntegralLog(member.KindCharge, title, value, outerNo, !true)
+	l, err := a.createIntegralLog(member.KindCharge, title, value, outerNo, true)
 	if err == nil {
+		l.Remark = remark
 		err = a.rep.SaveIntegralLog(l)
 		if err == nil {
 			a.value.Integral += value
@@ -318,12 +321,13 @@ func (a *accountImpl) adjustBalanceAccount(title string, amount float32, remark 
 }
 
 // 充值余额
-func (a *accountImpl) chargeBalance(title string, outerNo string, amount float32) error {
+func (a *accountImpl) chargeBalance(title string, amount float32, outerNo string, remark string) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
 	l, err := a.createBalanceLog(member.KindCharge, title, amount, outerNo, true)
 	if err == nil {
+		l.Remark = remark
 		_, err = a.rep.SaveBalanceLog(l)
 		if err == nil {
 			a.value.Balance += amount
@@ -409,6 +413,8 @@ func (a *accountImpl) adjustIntegralAccount(title string, value int, remark stri
 func (a *accountImpl) Refund(account int, title string,
 	amount float32, outerNo string, remark string) error {
 	switch account {
+	case member.AccountIntegral:
+		return a.integralRefund(title, outerNo, int(amount), remark)
 	case member.AccountBalance:
 		return a.chargeBalanceNoLimit(member.KindRefund, title, outerNo, amount, 0)
 	case member.AccountWallet:
@@ -421,8 +427,7 @@ func (a *accountImpl) Refund(account int, title string,
 	panic(errors.New("不支持的账户类型操作"))
 }
 
-func (a *accountImpl) chargeWallet(kind int, title string,
-	outerNo string, amount float32, relateUser int64) error {
+func (a *accountImpl) chargeWallet(title string, amount float32, outerNo string, remark string) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -435,6 +440,7 @@ func (a *accountImpl) chargeWallet(kind int, title string,
 	}
 	l, err := a.createWalletLog(member.KindCharge, title, amount, outerNo, true)
 	if err == nil {
+		l.Remark = remark
 		_, err = a.rep.SavePresentLog(l)
 		if err == nil {
 			a.value.WalletBalance += amount
@@ -627,8 +633,7 @@ func (a *accountImpl) UnfreezeWallet(title string, outerNo string,
 }
 
 // 流通账户余额充值，如扣除,amount传入负数金额
-func (a *accountImpl) chargeFlowBalance(title string,
-	tradeNo string, amount float32) error {
+func (a *accountImpl) chargeFlowBalance(title string, amount float32, outerNo string, remark string) error {
 	if len(title) == 0 {
 		if amount > 0 {
 			title = "流动账户入账"
@@ -636,17 +641,14 @@ func (a *accountImpl) chargeFlowBalance(title string,
 			title = "流动账户出账"
 		}
 	}
-	v := &member.FlowAccountLog{
-		Kind:        member.KindBalanceFlow,
-		Title:       title,
-		OuterNo:     tradeNo,
-		Amount:      amount,
-		ReviewState: int(enum.ReviewPass),
-	}
-	_, err := a.rep.SaveFlowAccountInfo(v)
+	l, err := a.createFlowAccountLog(member.KindCharge, title, amount, outerNo, true)
 	if err == nil {
-		a.value.FlowBalance += amount
-		_, err = a.Save()
+		l.Remark = remark
+		_, err = a.rep.SaveFlowAccountInfo(l)
+		if err == nil {
+			a.value.FlowBalance += amount
+			_, err = a.Save()
+		}
 	}
 	return err
 }
@@ -1368,6 +1370,24 @@ func (a *accountImpl) discountWallet(title string, amount float32, outerNo strin
 		l.Remark = remark
 		a.value.WalletBalance -= amount
 		_, err = a.Save()
+	}
+	return err
+}
+
+//　充值积分
+func (a *accountImpl) integralRefund(title string, outerNo string,
+	value int, remark string) error {
+	if value <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	l, err := a.createIntegralLog(member.KindRefund, title, value, outerNo, true)
+	if err == nil {
+		l.Remark = remark
+		err = a.rep.SaveIntegralLog(l)
+		if err == nil {
+			a.value.Integral += value
+			_, err = a.Save()
+		}
 	}
 	return err
 }

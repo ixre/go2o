@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : result.go
  * author : jarryliu
  * date : 2015-07-27 21:52

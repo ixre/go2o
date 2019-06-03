@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : qr_code
  * author : jarryliu
  * date : -- :

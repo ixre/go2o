@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : image_ad
  * author : jarryliu
  * date : 2016-05-25 11:29

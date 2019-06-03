@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : promotion
  * author : jarryliu
  * date : 2016-06-24 17:52

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : cash_back
  * author : jarryliu
  * date : -- :
@@ -90,10 +90,8 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 			//给自己返现
 			tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
 				o.value.OrderNo, ptName, mName, fee)
-			err = acc.Charge(member.AccountWallet,
-				member.KindCharge,
-				tit, o.value.OrderNo,
-				fee, member.DefaultRelateUser)
+			err = acc.Charge(member.AccountWallet, tit,
+				fee, o.value.OrderNo, "sys")
 		}
 		return err
 	}
@@ -208,9 +206,8 @@ func backCashForMember(m member.IMember, o order.IOrder,
 		orderNo := o.OrderNo()
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
 			format.FormatFloat(bFee), orderNo, refName)
-		err = acc.Charge(member.AccountWallet,
-			member.KindCharge, tit, orderNo,
-			float32(fee), member.DefaultRelateUser)
+		err = acc.Charge(member.AccountWallet, tit,
+			float32(fee), orderNo, "sys")
 	}
 	return err
 }

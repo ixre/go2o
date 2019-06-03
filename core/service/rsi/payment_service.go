@@ -1,7 +1,7 @@
 package rsi
 
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : payment_service.go
  * author : jarryliu
  * date : 2016-07-03 13:24

@@ -74,8 +74,8 @@ service MemberService{
     // 按条件获取荐指定等级会员的列表
     list<i64> GetInviterArray(1:i64 memberId,2:map<string,string> data)
     // 账户充值
-    ttype.Result AccountCharge(1:i64 memberId ,2:i32 account,3:i32 kind,
-      4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
+    ttype.Result AccountCharge(1:i64 memberId ,2:i32 account,3:string title,
+      4:double amount,5:string outerNo,6:string remark)
     // 账户消耗
     ttype.Result AccountConsume(1:i64 memberId,2:i32 account,3:string title,
       4:double amount, 5:string outerNo,6:string remark)
@@ -86,7 +86,7 @@ service MemberService{
     ttype.Result AccountRefund(1:i64 memberId,2:i32 account,3:string title,
         4:double amount, 5:string outerNo,6:string remark)
     // 账户人工调整
-    ttype.Result AccountAdjust(1:i64 memberId,2:i32 account,3:double value,4:i64 relateUser,5:string remark,)
+    ttype.Result AccountAdjust(1:i64 memberId,2:i32 account,3:double value,4:i64 relateUser,5:string remark)
 
     // !银行四要素认证
     ttype.Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ z3q.net.
+ * Copyright 2015 @ to2.net.
  * name : account
  * author : jarryliu
  * date : 2015-07-24 08:48
@@ -106,7 +106,7 @@ type (
 		Refund(accountKind int, title string, amount float32, outerNo string, remark string) error
 
 		// 充值
-		Charge(account int32, kind int, title, outerNo string, amount float32, relateUser int64) error
+		Charge(account int32, title string, amount float32, outerNo string, remark string) error
 
 		// 客服调整
 		Adjust(account int, title string, amount float32, remark string, relateUser int64) error
