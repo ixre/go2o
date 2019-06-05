@@ -544,7 +544,7 @@ func (m *memberImpl) memberInit() error {
 	regPresent := m.registryRepo.Get(registry.MemberPresentIntegralNumOfRegister).IntValue()
 	if regPresent > 0 {
 		go m.GetAccount().Charge(member.AccountIntegral, "新会员注册赠送积分",
-			float32(regPresent), "-", "sys")
+			regPresent, "-", "sys")
 	}
 	return nil
 }

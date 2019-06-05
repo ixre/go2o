@@ -954,54 +954,54 @@ func (s *memberService) UnfreezesIntegral(memberId int64, title string, value in
 
 // 充值,account为账户类型,kind为业务类型
 func (s *memberService) AccountCharge(ctx context.Context, memberId int64, account int32,
-	title string, amount float64, outerNo string, remark string) (*ttype.Result_, error) {
+	title string, amount int32, outerNo string, remark string) (*ttype.Result_, error) {
 	var err error
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	acc := m.GetAccount()
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(account, title, float32(amount), outerNo, remark)
+		err = acc.Charge(account, title, int(amount), outerNo, remark)
 	}
 	return s.result(err), nil
 }
 
 // 账户抵扣
 func (s *memberService) AccountDiscount(ctx context.Context, memberId int64, account int32, title string,
-	amount float64, outerNo string, remark string) (r *ttype.Result_, err error) {
+	amount int32, outerNo string, remark string) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Discount(int(account), title, float32(amount), outerNo, remark)
+		err = acc.Discount(int(account), title, int(amount), outerNo, remark)
 	}
 	return s.result(err), nil
 }
 
 // 账户消耗
 func (s *memberService) AccountConsume(ctx context.Context, memberId int64, account int32, title string,
-	amount float64, outerNo string, remark string) (r *ttype.Result_, err error) {
+	amount int32, outerNo string, remark string) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Consume(int(account), title, float32(amount), outerNo, remark)
+		err = acc.Consume(int(account), title, int(amount), outerNo, remark)
 	}
 	return s.result(err), nil
 }
 
 // 账户消耗
 func (s *memberService) AccountRefund(ctx context.Context, memberId int64, account int32, title string,
-	amount float64, outerNo string, remark string) (r *ttype.Result_, err error) {
+	amount int32, outerNo string, remark string) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(int(account), title, float32(amount), outerNo, remark)
+		err = acc.Refund(int(account), title, int(amount), outerNo, remark)
 	}
 	return s.result(err), nil
 }
 
 // 调整账户
 func (s *memberService) AccountAdjust(ctx context.Context, memberId int64, account int32,
-	amount float64, relateUser int64, remark string) (r *ttype.Result_, err error) {
+	amount int32, relateUser int64, remark string) (r *ttype.Result_, err error) {
 	m, err := s.getMember(memberId)
 	if err == nil {
 		tit := "[KF]系统冲正"
@@ -1009,7 +1009,7 @@ func (s *memberService) AccountAdjust(ctx context.Context, memberId int64, accou
 			tit = "[KF]系统充值"
 		}
 		acc := m.GetAccount()
-		err = acc.Adjust(int(account), tit, float32(amount), remark, relateUser)
+		err = acc.Adjust(int(account), tit, int(amount), remark, relateUser)
 	}
 	return s.result(err), nil
 }
