@@ -103,19 +103,19 @@ type (
 		SetPriorityPay(account int, enabled bool) error
 
 		// 退款
-		Refund(accountKind int, title string, amount float32, outerNo string, remark string) error
+		Refund(accountKind int, title string, amount int, outerNo string, remark string) error
 
-		// 充值
-		Charge(account int32, title string, amount float32, outerNo string, remark string) error
+		// 充值,金额放大100倍
+		Charge(account int32, title string, amount int, outerNo string, remark string) error
 
 		// 客服调整
-		Adjust(account int, title string, amount float32, remark string, relateUser int64) error
+		Adjust(account int, title string, amount int, remark string, relateUser int64) error
 
 		// 消耗
-		Consume(account int, title string, amount float32, outerNo string, remark string) error
+		Consume(account int, title string, amount int, outerNo string, remark string) error
 
 		// 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
-		Discount(account int, title string, amount float32, outerNo string, remark string) error
+		Discount(account int, title string, amount int, outerNo string, remark string) error
 
 		// 扣减余额
 		//DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error

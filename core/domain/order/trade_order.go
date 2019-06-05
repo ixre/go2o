@@ -360,11 +360,11 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 	// 增加积分
 	//todo: 增加阶梯的返积分,比如订单满30送100积分, 不考虑额外赠送,额外的当做补贴
 	rate := o.registryRepo.Get(registry.IntegralRateByTradeOrder).FloatValue()
-	integral := int64(float64(amount) * rate)
+	integral := int(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
 		err = m.GetAccount().Charge(member.AccountIntegral,
-			"购物消费赠送积分", float32(integral), o.OrderNo(), "sys")
+			"购物消费赠送积分", integral, o.OrderNo(), "sys")
 		if err != nil {
 			return err
 		}

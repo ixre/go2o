@@ -31,24 +31,7 @@ var (
 )
 
 func GetApp() gof.App {
-	if app == nil {
-		app = new(testingApp)
-		app.Config().Set("conf_path", "../conf")
-		app.Config().Set("redis_host", "127.0.0.1")
-		app.Config().Set("redis_db", REDIS_DB)
-		app.Config().Set("redis_port", "6379")
-		//app.Config().Set("redis_auth", "123456")
-		app.Config().Set("redis_auth", "")
-		app.Config().Set("db_server", "172.17.0.1")
-		app._config.Set("db_port", "5432")
-		app.Config().Set("db_name", "go2o")
-		app._config.Set("db_user", "postgres")
-		app._config.Set("db_pwd", "123456")
-		app._config.Set("kafka_address", "127.0.0.1:9092")
-		gof.CurrentApp = app
-		app.Init(true, true)
-	}
-	return app
+	return gof.CurrentApp
 }
 
 var _ gof.App = new(testingApp)

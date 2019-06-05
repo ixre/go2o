@@ -97,24 +97,24 @@ func (a *accountImpl) SetPriorityPay(account int, enabled bool) error {
 
 // 充值
 func (a *accountImpl) Charge(account int32, title string,
-	amount float32, outerNo string, remark string) error {
+	amount int, outerNo string, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectQuota
 	}
 	switch account {
 	case member.AccountIntegral:
-		return a.integralCharge(title, int(amount), outerNo, remark)
+		return a.integralCharge(title, amount, outerNo, remark)
 	case member.AccountBalance:
-		return a.chargeBalance(title, amount, outerNo, remark)
+		return a.chargeBalance(title, float32(amount)/100, outerNo, remark)
 	case member.AccountWallet:
-		return a.chargeWallet(title, amount, outerNo, remark)
+		return a.chargeWallet(title, float32(amount)/100, outerNo, remark)
 	case member.AccountFlow:
-		return a.chargeFlowBalance(title, amount, outerNo, remark)
+		return a.chargeFlowBalance(title, float32(amount)/100, outerNo, remark)
 	}
 	return member.ErrNotSupportAccountType
 }
 
-func (a *accountImpl) Adjust(account int, title string, amount float32, remark string, relateUser int64) error {
+func (a *accountImpl) Adjust(account int, title string, amount int, remark string, relateUser int64) error {
 	if amount == 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -126,9 +126,9 @@ func (a *accountImpl) Adjust(account int, title string, amount float32, remark s
 	}
 	switch account {
 	case member.AccountBalance:
-		return a.adjustBalanceAccount(title, amount, remark, relateUser)
+		return a.adjustBalanceAccount(title, float32(amount)/100, remark, relateUser)
 	case member.AccountWallet:
-		return a.adjustWalletAccount(title, amount, remark, relateUser)
+		return a.adjustWalletAccount(title,  float32(amount)/100, remark, relateUser)
 	case member.AccountIntegral:
 		return a.adjustIntegralAccount(title, int(amount), remark, relateUser)
 	}
@@ -136,7 +136,7 @@ func (a *accountImpl) Adjust(account int, title string, amount float32, remark s
 }
 
 // 消耗
-func (a *accountImpl) Consume(account int, title string, amount float32, outerNo string, remark string) error {
+func (a *accountImpl) Consume(account int, title string, amount int, outerNo string, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectQuota
 	}
@@ -144,28 +144,28 @@ func (a *accountImpl) Consume(account int, title string, amount float32, outerNo
 	case member.AccountIntegral:
 		return a.integralConsume(title, int(amount), outerNo, remark)
 	case member.AccountBalance:
-		return a.balanceConsume(title, amount, outerNo, remark)
+		return a.balanceConsume(title,  float32(amount)/100, outerNo, remark)
 	case member.AccountWallet:
-		return a.walletConsume(title, amount, outerNo, remark)
+		return a.walletConsume(title,  float32(amount)/100, outerNo, remark)
 	case member.AccountFlow:
-		return a.flowAccountConsume(title, amount, outerNo, remark)
+		return a.flowAccountConsume(title,  float32(amount)/100, outerNo, remark)
 	}
 	return member.ErrNotSupportAccountType
 }
 
-func (a *accountImpl) Discount(account int, title string, amount float32, outerNo string, remark string) error {
+func (a *accountImpl) Discount(account int, title string, amount int, outerNo string, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectQuota
 	}
 	switch account {
 	case member.AccountIntegral:
-		return a.integralDiscount(title, int(amount), outerNo, remark)
+		return a.integralDiscount(title, amount, outerNo, remark)
 	case member.AccountBalance:
-		return a.discountBalance(title, amount, outerNo, remark)
+		return a.discountBalance(title,  float32(amount)/100, outerNo, remark)
 	case member.AccountWallet:
-		return a.discountWallet(title, amount, outerNo, remark)
+		return a.discountWallet(title,  float32(amount)/100, outerNo, remark)
 	case member.AccountFlow:
-		//return a(title, amount, outerNo, remark)
+		//return a(title,  float32(amount)/100, outerNo, remark)
 	}
 	return member.ErrNotSupportAccountType
 }
@@ -411,18 +411,18 @@ func (a *accountImpl) adjustIntegralAccount(title string, value int, remark stri
 
 // 退款
 func (a *accountImpl) Refund(account int, title string,
-	amount float32, outerNo string, remark string) error {
+	amount int, outerNo string, remark string) error {
 	switch account {
 	case member.AccountIntegral:
-		return a.integralRefund(title, outerNo, int(amount), remark)
+		return a.integralRefund(title, outerNo, amount, remark)
 	case member.AccountBalance:
-		return a.chargeBalanceNoLimit(member.KindRefund, title, outerNo, amount, 0)
+		return a.chargeBalanceNoLimit(member.KindRefund, title, outerNo,  float32(amount)/100, 0)
 	case member.AccountWallet:
 		//if kind != member.KindRefund &&
 		//	kind != member.KindWalletTakeOutRefund {
 		//	return member.ErrBusinessKind
 		//}
-		return a.chargeWalletNoLimit(member.KindRefund, title, outerNo, amount, 0)
+		return a.chargeWalletNoLimit(member.KindRefund, title, outerNo,  float32(amount)/100, 0)
 	}
 	panic(errors.New("不支持的账户类型操作"))
 }
