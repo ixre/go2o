@@ -36,7 +36,7 @@ func NewServe(debug bool, version string) http.Handler {
 // 服务
 func NewService(factory api.ContextFactory, ver string, debug bool) *api.ServeMux {
 	// 创建服务
-	s := api.NewServerMux(factory, swapApiKeyFunc)
+	s := api.NewServerMux(factory, swapApiKeyFunc,true)
 	// 注册处理器
 	s.Register("member", &MemberApi{})
 	s.Register("article", &ArticleApi{})
@@ -75,6 +75,7 @@ func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool) {
 			return errors.New(fmt.Sprintf("%s,require version=%s",
 				api.RDeprecated.Message, tarVer))
 		}
+
 		return nil
 	})
 

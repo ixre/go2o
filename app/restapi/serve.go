@@ -55,6 +55,10 @@ func registerNewApi(s *echo.Echo) {
 		mux.ServeHTTP(ctx.Response(), ctx.Request())
 		return nil
 	})
+	s.OPTIONS("/api", func(ctx echo.Context) error {
+		mux.ServeHTTP(ctx.Response(), ctx.Request())
+		return nil
+	})
 }
 
 // 获取服务实例

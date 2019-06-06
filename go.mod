@@ -12,7 +12,7 @@ require (
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/ixre/goex v1.5.1
-	github.com/ixre/gof v1.5.5
+	github.com/ixre/gof v1.5.6
 	github.com/ixre/tto v0.0.0-20190530073932-649527f4bcdb
 	github.com/jsix/alidayu v0.0.0-20160128071321-7eadea36c79c
 	github.com/labstack/echo v3.3.10+incompatible
@@ -24,11 +24,11 @@ require (
 	github.com/robfig/cron v1.1.0
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/valyala/fasttemplate v1.0.1 // indirect
-	golang.org/x/crypto v0.0.0-20190530122614-20be4c3c3ed5 // indirect
+	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5 // indirect
 	golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff // indirect
-	golang.org/x/net v0.0.0-20190522155817-f3200d17e092 // indirect
+	golang.org/x/net v0.0.0-20190603091049-60506f45cf65 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20190530043710-12d73424210d // indirect
+	golang.org/x/tools v0.0.0-20190603231351-8aaa1484dc10 // indirect
 	google.golang.org/appengine v1.6.0 // indirect
 	gopkg.in/square/go-jose.v1 v1.1.2
 )
