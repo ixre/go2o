@@ -625,8 +625,8 @@ func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string,
 	}
 	r := s.result(err)
 	r.Data = map[string]string{
-		"member_id":   strconv.Itoa(int(id)),
-		"member_code": memberCode,
+		"id":   strconv.Itoa(int(id)),
+		"code": memberCode,
 	}
 	return r, nil
 }

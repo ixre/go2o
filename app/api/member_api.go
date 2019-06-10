@@ -2,12 +2,10 @@ package api
 
 import (
 	"github.com/ixre/gof/api"
-	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/thrift"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var _ api.Handler = new(MemberApi)
@@ -31,42 +29,24 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 	form := ctx.Form()
 	user := strings.TrimSpace(form.GetString("user"))
 	pwd := strings.TrimSpace(form.GetString("pwd"))
-	if len(user) == 0 {
-		return dto.MemberLoginResult{
-			ErrCode: 2,
-			ErrMsg:  "缺少参数:user",
-			Member:  nil,
-		}
+	if len(user) == 0 || len(pwd) == 0 {
+		return api.ResponseWithCode(2, "缺少参数: user or pwd")
 	}
-	if len(pwd) == 0 {
-		return dto.MemberLoginResult{
-			ErrCode: 2,
-			ErrMsg:  "缺少参数:pwd",
-			Member:  nil,
-		}
-	}
-	var result dto.MemberLoginResult
 	trans, cli, err := thrift.MemberServeClient()
 	if err != nil {
-		result.ErrMsg = "网络连接失败"
-	} else {
-		defer trans.Close()
-		encPwd := domain.MemberSha1Pwd(pwd)
-		r, _ := cli.CheckLogin(thrift.Context, user, encPwd, true)
-		result.ErrMsg = r.ErrMsg
-		result.ErrCode = int(r.ErrCode)
-		if r.ErrCode == 0 {
-			memberId, _ := strconv.Atoi(r.Data["member_id"])
-			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
-			result.Member = &dto.LoginMember{
-				ID:         memberId,
-				Code:       r.Data["member_code"],
-				Token:      token,
-				UpdateTime: time.Now().Unix(),
-			}
-		}
+		return api.ResponseWithCode(3, "网络连接失败")
 	}
-	return result
+	defer trans.Close()
+	encPwd := domain.MemberSha1Pwd(pwd)
+	r, _ := cli.CheckLogin(thrift.Context, user, encPwd, true)
+	if r.ErrCode == 0 {
+		memberId, _ := strconv.Atoi(r.Data["id"])
+		token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
+		r.Data["token"] = token
+		return r
+	} else {
+		return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
+	}
 }
 
 // 注册
