@@ -237,8 +237,6 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
 			return nil
 		}
 		m.Storage.Set(key, *e)
-	} else {
-		//log.Println(fmt.Sprintf("--- member: %d > %#v",memberId,e))
 	}
 	return m.CreateMember(e)
 }

@@ -11,6 +11,7 @@ package dto
 // 登录的会员信息
 type LoginMember struct {
 	ID         int
+	Code       string
 	Token      string
 	UpdateTime int64
 }

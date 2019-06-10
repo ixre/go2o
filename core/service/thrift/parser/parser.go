@@ -64,6 +64,7 @@ func MemberDto(src *member.Member) *member_service.SMember {
 	return &member_service.SMember{
 		ID:             src.Id,
 		User:           src.User,
+		Code:           src.Code,
 		Pwd:            src.Pwd,
 		TradePwd:       src.TradePwd,
 		Exp:            int64(src.Exp),
@@ -75,7 +76,6 @@ func MemberDto(src *member.Member) *member_service.SMember {
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
 		Flag:           int32(src.Flag),
-		Code:           src.Code,
 		Avatar:         src.Avatar,
 		Phone:          src.Phone,
 		Email:          src.Email,

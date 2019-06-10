@@ -58,6 +58,7 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
 			result.Member = &dto.LoginMember{
 				ID:         memberId,
+				Code:       r.Data["member_code"],
 				Token:      token,
 				UpdateTime: time.Now().Unix(),
 			}
