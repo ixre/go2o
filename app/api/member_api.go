@@ -19,8 +19,10 @@ type MemberApi struct {
 func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
 		"login":   m.login,
+		"get":m.getMember,
 		"account": m.account,
 		"profile": m.profile,
+		"checkToken":m.checkToken,
 	})
 }
 
@@ -115,6 +117,44 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 			return r
 		}
 		err = err1
+	}
+	return api.NewErrorResponse(err.Error())
+}
+// 账号信息
+func (m MemberApi) checkToken(ctx api.Context) interface{} {
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	token := strings.TrimSpace(ctx.Form().GetString("token"))
+	if len(code) == 0 || len(token) == 0 {
+		return api.NewErrorResponse("missing params: code or token")
+	}
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		memberId,_ := cli.GetMemberId(thrift.Context,code)
+		r, err1 := cli.CheckToken(thrift.Context, memberId, token)
+		if err1 == nil {
+			return r
+		}
+		err = err1
+	}
+	return api.NewErrorResponse(err.Error())
+}
+
+// 获取会员信息
+func (m MemberApi) getMember(ctx api.Context) interface{} {
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	if len(code) == 0{
+		return api.NewErrorResponse("missing params: code")
+	}
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		memberId,_ := cli.GetMemberId(thrift.Context,code)
+		if memberId <= 0{
+			return api.NewErrorResponse("no such member")
+		}
+		r, _ := cli.GetMember(thrift.Context, memberId)
+		return r
 	}
 	return api.NewErrorResponse(err.Error())
 }

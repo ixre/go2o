@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-var _ Module = new(SSOModule)
+var _ Module = new(MemberModule)
 
 type MemberModule struct {
 	app         gof.App
@@ -34,8 +34,8 @@ func (m *MemberModule) SetApp(app gof.App) {
 
 // 初始化模块
 func (m *MemberModule) Init() {
-	m.tokenHours = 24 * 30 //默认保存1个月
-	m.tokenOffset = "%$^&@to2.net"
+	m.tokenHours = 24 * 7 //默认保存7天
+	m.tokenOffset = ""
 }
 
 // 获取会员Token-Key
@@ -104,8 +104,8 @@ func (m *MemberModule) RemoveToken(memberId int64) {
 // 重设并返回会员的会员Token，token有效时间默认为60天
 func (m *MemberModule) ResetToken(memberId int64, pwd string) string {
 	cyp := crypto.NewUnixCrypto(pwd+m.tokenOffset, m.tokenOffset)
-	var token string = string(cyp.Encode())
-	var key string = m.getMemberTokenKey(memberId)
+	var token = string(cyp.Encode())
+	var key = m.getMemberTokenKey(memberId)
 	// 存储令牌
 	m.storage.SetExpire(key, token, m.tokenHours*3600)
 	// 存储令牌凭据
