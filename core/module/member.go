@@ -104,6 +104,7 @@ func (m *MemberModule) RemoveToken(memberId int64) {
 // 重设并返回会员的会员Token，token有效时间默认为60天
 func (m *MemberModule) ResetToken(memberId int64, pwd string) string {
 	cyp := crypto.NewUnixCrypto(pwd+m.tokenOffset, m.tokenOffset)
+	println("--", pwd, "|", m.tokenOffset)
 	var token = string(cyp.Encode())
 	var key = m.getMemberTokenKey(memberId)
 	// 存储令牌

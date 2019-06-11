@@ -46,9 +46,10 @@ type memberService struct {
 	valRepo    valueobject.IValueRepo
 	serviceUtil
 }
+
 // 根据会员编码获取会员ID
 func (s *memberService) GetMemberId(ctx context.Context, memberCode string) (r int64, err error) {
-	return int64(s.repo.GetMemberIdByCode(memberCode)),nil
+	return int64(s.repo.GetMemberIdByCode(memberCode)), nil
 }
 
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
@@ -147,7 +148,6 @@ func (s *memberService) CheckToken(ctx context.Context, memberId int64, token st
 	md := module.Get(module.M_MM).(*module.MemberModule)
 	return md.CheckToken(memberId, token), nil
 }
-
 
 // 获取会员的会员Token,reset表示是否重置会员的token
 func (s *memberService) GetToken(ctx context.Context, memberId int64, reset bool) (r string, err error) {

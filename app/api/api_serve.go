@@ -40,7 +40,7 @@ func NewService(factory api.ContextFactory, ver string, debug bool) *api.ServeMu
 	// 注册处理器
 	s.Register("member", &MemberApi{})
 	s.Register("article", &ArticleApi{})
-	s.Register("app", &AppApi{})
+	s.Register("app", NewAppApi())
 	//s.Register("dept", &DeptApi{})
 	//s.Register("role", &RoleApi{})
 	//s.Register("res", &ResApi{})
