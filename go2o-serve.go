@@ -22,12 +22,36 @@ import (
 	"go2o/core"
 	"go2o/core/msq"
 	"go2o/core/service/rsi"
-	"go2o/core/service/thrift"
+	rs "go2o/core/service/thrift/service"
 	"log"
 	"os"
 	"runtime"
 	"strings"
 )
+
+var _ = `
+
+  ###   ###   ###   ###
+ #     #  ##    #  #  ##
+#     #    #    # #    #
+#  #  #   #   ##  #   #
+#  #  #   #  #    #   #
+ ###   ###   ###   ###
+
+
+Go2o is Google Go language binding domain-driven design (DDD) O2O open source implementation. Support Online Store
+, Offline stores; multi-channel (businesses), multi-store, merchandise, snapshots, orders, sales, payment, distribution and other functions.
+
+Project by a management center (including platform management center, business background, store background), online store (PC shop,
+Handheld shops, micro-channel), the member center, open API in four parts.
+
+Go2o using domain-driven design for business depth abstract, theoretical support in most sectors O2O scenarios.
+Through open API, you can seamlessly integrate into legacy systems.
+
+
+Email: jarrysix#gmail.com
+
+`
 
 func main() {
 	var (
@@ -99,7 +123,7 @@ func main() {
 	msq.Configure(msq.KAFKA, kafkaAddress)
 
 	if runRpc {
-		go thrift.ListenAndServe(":1427", false)
+		go rs.ListenAndServe(":1427", false)
 	}
 	if runDaemon {
 		go daemon.Run(newApp)

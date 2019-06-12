@@ -44,6 +44,4 @@ const (
 var (
 	// 域名
 	Domain string = "go2o.to2.net"
-	// 配置路径
-	ConfPath string = "./conf"
 )

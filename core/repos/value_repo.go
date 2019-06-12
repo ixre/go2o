@@ -21,7 +21,6 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/tool/sms"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -63,24 +62,24 @@ type valueRepo struct {
 }
 
 func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
-	confRegistry, err := gof.NewRegistry(confPath, ":")
-	if err != nil {
-		log.Println("[ Go2o][ Crash]: can't load registry,", err.Error())
-		os.Exit(1)
-	}
+	//confRegistry, err := gof.NewRegistry(confPath, ":")
+	//if err != nil {
+	//	log.Println("[ Go2o][ Crash]: can't load registry,", err.Error())
+	//	os.Exit(1)
+	//}
 	return &valueRepo{
 		Connector:    conn,
 		o:            conn.GetOrm(),
 		storage:      storage,
 		kvMux:        &sync.RWMutex{},
-		wxGob:        util.NewGobFile("conf/core/wx_api"),
-		rpGob:        util.NewGobFile("conf/core/register_perm"),
-		mchGob:       util.NewGobFile("conf/core/pm_conf"),
-		mscGob:       util.NewGobFile("conf/core/mch_sale_conf"),
-		smsGob:       util.NewGobFile("conf/core/sms_conf"),
-		tplGob:       util.NewGobFile("conf/core/tpl_conf"),
-		moAppGob:     util.NewGobFile("conf/core/mo_app"),
-		confRegistry: confRegistry,
+		//wxGob:        util.NewGobFile("conf/core/wx_api"),
+		//rpGob:        util.NewGobFile("conf/core/register_perm"),
+		//mchGob:       util.NewGobFile("conf/core/pm_conf"),
+		//mscGob:       util.NewGobFile("conf/core/mch_sale_conf"),
+		//smsGob:       util.NewGobFile("conf/core/sms_conf"),
+		//tplGob:       util.NewGobFile("conf/core/tpl_conf"),
+		//moAppGob:     util.NewGobFile("conf/core/mo_app"),
+		//confRegistry: confRegistry,
 	}
 }
 

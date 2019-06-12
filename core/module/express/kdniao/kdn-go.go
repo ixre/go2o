@@ -18,8 +18,8 @@ import (
 var (
 	EBusinessID = ""
 	AppKey      = ""
-	ReqUrl      = "http://api.kdniao.cc/Ebusiness/EbusinessOrderHandle.aspx"
-
+	//ReqUrl      = "http://api.kdniao.cc/Ebusiness/EbusinessOrderHandle.aspx"
+	ReqUrl = "http://api.kdniao.com/api/dist"
 	SHIP_CODE_YUNDA    = "YD"
 	SHIP_CODE_SHUNFENG = "SF"
 	// You can add more, get code from https://view.officeapps.live.com/op/view.aspx?src=http://www.kdniao.com/file/ExpressCode.xls
@@ -74,11 +74,11 @@ func KdnTraces(shipperCode string, logisticCode string) (traceResult *TraceResul
 			"DataType":    {"2"},
 		}
 		resp, err := http.PostForm(ReqUrl, form)
-		defer resp.Body.Close()
 		if err != nil {
 			//fmt.Printf("KdnTraces post error:%v\n", err)
 			return nil, err
 		} else {
+			defer resp.Body.Close()
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil && err != io.EOF && strings.Index(err.Error(), "EOF") == -1 {
 				fmt.Printf("KdnTraces read body error:%v\n", err)

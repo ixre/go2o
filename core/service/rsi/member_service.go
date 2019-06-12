@@ -145,14 +145,14 @@ func (s *memberService) Premium(ctx context.Context, memberId int64, v int32, ex
 
 // 检查会员的会话Token是否正确
 func (s *memberService) CheckToken(ctx context.Context, memberId int64, token string) (r bool, err error) {
-	md := module.Get(module.M_MM).(*module.MemberModule)
+	md := module.Get(module.MM).(*module.MemberModule)
 	return md.CheckToken(memberId, token), nil
 }
 
 // 获取会员的会员Token,reset表示是否重置会员的token
 func (s *memberService) GetToken(ctx context.Context, memberId int64, reset bool) (r string, err error) {
 	pubToken := ""
-	md := module.Get(module.M_MM).(*module.MemberModule)
+	md := module.Get(module.MM).(*module.MemberModule)
 	if !reset {
 		pubToken = md.GetToken(memberId)
 	}
@@ -167,7 +167,7 @@ func (s *memberService) GetToken(ctx context.Context, memberId int64, reset bool
 
 // 移除会员的Token
 func (s *memberService) RemoveToken(ctx context.Context, memberId int64) (err error) {
-	md := module.Get(module.M_MM).(*module.MemberModule)
+	md := module.Get(module.MM).(*module.MemberModule)
 	md.RemoveToken(memberId)
 	return nil
 }
@@ -1029,7 +1029,7 @@ func (s *memberService) AccountAdjust(ctx context.Context, memberId int64, accou
 
 // !银行四要素认证
 func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *ttype.Result_, err error) {
-	mod := module.Get(module.M_B4E).(*module.Bank4E)
+	mod := module.Get(module.B4E).(*module.Bank4E)
 	if action == "get" {
 		data := mod.GetBasicInfo(memberId)
 		d, err := json.Marshal(data)

@@ -25,3 +25,4 @@ auto_gen
 go.sum
 output
 tmp
+docker/data

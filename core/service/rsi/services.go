@@ -225,6 +225,11 @@ func (s serviceUtil) result(err error) *ttype.Result_ {
 	return s.error(err)
 }
 
+// 返回自定义编码的结果
+func (s serviceUtil)resultWithCode(code int,message string)*ttype.Result_{
+	return &ttype.Result_{ErrCode:int32(code),ErrMsg:message,Data:map[string]string{}}
+}
+
 // 返回失败的结果
 func (s serviceUtil) errorCodeResult(code int, err error) *ttype.Result_ {
 	return &ttype.Result_{ErrCode: int32(code), ErrMsg: err.Error(), Data: map[string]string{}}

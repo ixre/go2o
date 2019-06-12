@@ -18,12 +18,12 @@ import (
 var (
 	mux       sync.Mutex
 	moduleMap map[string]Module
-	initOk           = false //是否已初始化
-	M_SSO     string = "sso"
-	M_MM      string = "member"
-	M_PAY     string = "payment"
-	M_B4E     string = "bank4e"
-	M_EXPRESS string = "express"
+	initOk    = false //是否已初始化
+	SSO       = "sso"
+	MM        = "member"
+	PAY       = "payment"
+	B4E       = "bank4e"
+	EXPRESS   = "express"
 )
 
 // 模块实现
@@ -62,11 +62,11 @@ func initModule() {
 
 // 注册内置的模块
 func registerInternal() {
-	Register(M_SSO, &SSOModule{})
-	Register(M_MM, &MemberModule{})
-	Register(M_PAY, &PaymentModule{})
-	Register(M_B4E, &Bank4E{})
-	Register(M_EXPRESS, &ExpressModule{})
+	Register(SSO, &SSOModule{})
+	Register(MM, &MemberModule{})
+	Register(PAY, &PaymentModule{})
+	Register(B4E, &Bank4E{})
+	Register(EXPRESS, &ExpressModule{})
 }
 
 // 获取模块

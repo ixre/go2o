@@ -17,6 +17,7 @@ import (
 	"go2o/core/variable"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -69,9 +70,13 @@ func GetServe() *echo.Echo {
 func Run(app gof.App, port int) {
 	sto = app.Storage()
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
-	log.Println("** [ Go2o][ API][ Booted] - Api server running on port " +
+	log.Println("** [ Go2o][ API] - Api server running on port " +
 		strconv.Itoa(port))
-	http.ListenAndServe(":"+strconv.Itoa(port), serve)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), serve)
+	if err != nil{
+		log.Println("** [ Go2o][ API] : " +err.Error())
+		os.Exit(1)
+	}
 }
 
 func registerRoutes(s *echo.Echo) {

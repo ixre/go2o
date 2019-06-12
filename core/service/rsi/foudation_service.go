@@ -75,7 +75,7 @@ func (s *foundationService) GetRegistry(ctx context.Context, key string) (string
 // 创建用户自定义注册项
 func (s *foundationService) CreateUserRegistry(ctx context.Context, key string, defaultValue string, description string) (r *ttype.Result_, err error) {
 	if s.registryRepo.Get(key) != nil {
-		return s.error(errors.New("注册项已存在")), nil
+		return s.resultWithCode(-1,"registry is exist"), nil
 	}
 	rv := &registry.Registry{
 		Key:          key,
@@ -149,7 +149,7 @@ func (s *foundationService) FlushSuperPwd(ctx context.Context, user string, pwd 
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
 func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_service.SSsoApp) (r string, err error) {
-	sso := module.Get(module.M_SSO).(*module.SSOModule)
+	sso := module.Get(module.SSO).(*module.SSOModule)
 	token, err := sso.Register(app)
 	if err == nil {
 		return "1:" + token, nil
@@ -159,13 +159,13 @@ func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_ser
 
 // 获取应用信息
 func (s *foundationService) GetApp(ctx context.Context, name string) (r *foundation_service.SSsoApp, err error) {
-	sso := module.Get(module.M_SSO).(*module.SSOModule)
+	sso := module.Get(module.SSO).(*module.SSOModule)
 	return sso.Get(name), nil
 }
 
 // 获取单点登录应用
 func (s *foundationService) GetAllSsoApp(ctx context.Context) (r []string, err error) {
-	sso := module.Get(module.M_SSO).(*module.SSOModule)
+	sso := module.Get(module.SSO).(*module.SSOModule)
 	return sso.Array(), nil
 }
 
@@ -285,6 +285,6 @@ func (s *foundationService) GetAreaString(province, city, district int32) string
 
 // 获取支付平台
 func (s *foundationService) GetPayPlatform() []*bank.PaymentPlatform {
-	m := module.Get(module.M_PAY).(*module.PaymentModule)
+	m := module.Get(module.PAY).(*module.PaymentModule)
 	return m.GetPayPlatform()
 }

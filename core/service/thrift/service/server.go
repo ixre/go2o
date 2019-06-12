@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package thrift
+package service
 
 import (
 	"crypto/tls"

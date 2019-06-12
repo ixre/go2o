@@ -16,7 +16,7 @@ import (
 	"go2o/app"
 	"go2o/core"
 	"go2o/core/service/rsi"
-	"go2o/core/service/thrift"
+	 rs "go2o/core/service/thrift/service"
 	"os"
 )
 
@@ -44,7 +44,7 @@ func main() {
 	rsi.Init(newApp, app.FlagRpcServe, confDir)
 	//app.Configure(hook.HookUp, newApp, app.FlagRpcServe)
 
-	err := thrift.ListenAndServe(addr, false)
+	err := rs.ListenAndServe(addr, false)
 	if err != nil {
 		log.Println("error running ", addr, " :", err.Error())
 	}

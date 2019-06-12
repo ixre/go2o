@@ -16,9 +16,8 @@ RUN rm -rf go.sum && sed -i 's/replace/\/\/replace/' go.mod && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -ldflags='-s -w' go2o-serve.go && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -ldflags='-s -w' go2o-rpc.go
 
-RUN mkdir -p /opt/go2o/dist && mkdir -p /opt/go2o/conf && \
-    cp -r go2o-serve go2o-rpc LICENSE README.md app.conf /opt/go2o/dist && \
-    cp -r conf /opt/go2o/conf
+RUN mkdir -p /opt/go2o/dist && \
+    cp -r go2o-serve go2o-rpc LICENSE README.md app.conf /opt/go2o/dist
 
 FROM alpine
 MAINTAINER jarrysix
@@ -27,7 +26,6 @@ LABEL version="1.0.0"
 
 WORKDIR /app
 COPY --from=build /opt/go2o/dist/* /app/
-COPY --from=build /opt/go2o/conf /app/conf
 
 RUN ln -s /app/go2o-* /bin && \
     apk update && apk add ca-certificates && \

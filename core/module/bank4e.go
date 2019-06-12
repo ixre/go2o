@@ -12,6 +12,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module/bank"
 	"go2o/core/repos"
+	"go2o/core/service/thrift"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -25,11 +26,13 @@ var (
 	_            Module = new(Bank4E)
 	zhNameRegexp        = regexp.MustCompile("^[\u4e00-\u9fa5]{2,6}$")
 )
-
+var keys = []string{"bank4e_trust_on", "bank4e_jd_app_key"}
 type Bank4E struct {
 	memberRepo member.IMemberRepo
 	valueRepo  valueobject.IValueRepo
 	storage    storage.Interface
+	appKey     string
+	open      bool
 }
 
 func (b *Bank4E) SetApp(app gof.App) {
@@ -39,6 +42,15 @@ func (b *Bank4E) SetApp(app gof.App) {
 func (b *Bank4E) Init() {
 	b.memberRepo = repos.Repo.GetMemberRepo()
 	b.valueRepo = repos.Repo.GetValueRepo()
+	trans, cli, err := thrift.FoundationServeClient()
+	if err == nil {
+		defer trans.Close()
+		cli.CreateUserRegistry(thrift.Context, keys[0], "false", "是否开启四要素实名认证")
+		cli.CreateUserRegistry(thrift.Context, keys[1], "", "京东银行四要素接口KEY")
+		data, _ := cli.GetRegistries(thrift.Context, keys)
+		b.open, _ = strconv.ParseBool(data[keys[0]])
+		b.appKey = data[keys[1]]
+	}
 }
 
 // 获取基础信息
@@ -204,14 +216,16 @@ func (b *Bank4E) turnCheckInfo(r bool) {
 
 // 调用验证接口
 func (b *Bank4E) b4eApi(realName, idCard, phone, bankAccount string) error {
-	appKey := b.valueRepo.GetsRegistry([]string{"bank-e4:config:app_key"})[0]
 	apiServer := "https://way.jd.com/youhuoBeijing/QryBankCardBy4Element"
-	if appKey == "" {
+	if !b.open{
+		return errors.New("未开启四要素实名认证")
+	}
+	if b.appKey == "" {
 		return errors.New("验证接口未配置")
 	}
 	cli := http.Client{}
 	data := url.Values{
-		"appkey":        []string{appKey},
+		"appkey":        []string{b.appKey},
 		"accountNo":     []string{bankAccount},
 		"name":          []string{realName},
 		"idCardCode":    []string{idCard},
