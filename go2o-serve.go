@@ -57,7 +57,6 @@ func main() {
 	var (
 		ch        = make(chan bool)
 		confFile  string
-		confDir   string
 		httpPort  int
 		restPort  int
 		debug     bool
@@ -76,7 +75,6 @@ func main() {
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.StringVar(&confFile, "conf", "app.conf", "")
-	flag.StringVar(&confDir, "conf-dir", "./conf", "config file directory")
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&runRpc, "r", false, "run rpc service")
 	flag.BoolVar(&showVer, "v", false, "print version")
@@ -115,20 +113,18 @@ func main() {
 		XSRFCookie: true,
 	})
 	app.FsInit(debug)
-	rsi.Init(newApp, appFlag, confDir)
+	rsi.Init(newApp, appFlag)
 	//app.Configure(hook.HookUp, newApp, appFlag)
 
 	// 初始化producer
 	kafkaAddress := strings.Split(newApp.Config().GetString("kafka_address"), ",")
 	msq.Configure(msq.KAFKA, kafkaAddress)
-
 	if runRpc {
 		go rs.ListenAndServe(":1427", false)
 	}
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
-	//go serve.Run(newApp, fmt.Sprintf(":%d", httpPort)) //运行HTTP
 	go restapi.Run(newApp, restPort) // 运行REST API
 	<-ch
 }
