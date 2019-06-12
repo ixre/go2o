@@ -32,6 +32,9 @@ func init() {
 
 // 设置Thrift地址
 func Configure(server string) *ClientFactory {
+	if server == ""{
+		server = factory.thriftServer
+	}
 	factory = NewClientFactory(server, false, "", "")
 	return factory
 }
