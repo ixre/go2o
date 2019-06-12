@@ -29,8 +29,8 @@ COPY --from=build /opt/go2o/dist/* /app/
 
 RUN ln -s /app/go2o-* /bin && \
     apk update && apk add ca-certificates && \
-    echo "if [ ! -f '/data/app.conf' ];then cp -r /app/app.conf /data;cp -r /app/conf /data;fi;"\
-    "go2o-serve -conf /data/app.conf --conf-dir /data/conf -r -d"> /docker-boot.sh
+    echo "if [ ! -f '/data/app.conf' ];then cp -r /app/app.conf /data;fi;"\
+    "go2o-serve -conf /data/app.conf  -r -d"> /docker-boot.sh
 VOLUME ["/data"]
 EXPOSE 1427 1428
 CMD ["sh","/docker-boot.sh"]

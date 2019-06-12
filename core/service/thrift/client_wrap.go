@@ -20,6 +20,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/shipment_service"
 	"go2o/core/service/auto_gen/rpc/shop_service"
 	"go2o/core/service/auto_gen/rpc/wallet_service"
+	"go2o/core/service/auto_gen/rpc/status_service"
 )
 
 var (
@@ -37,6 +38,11 @@ func Configure(server string) *ClientFactory {
 	}
 	factory = NewClientFactory(server, false, "", "")
 	return factory
+}
+// 状态客户端
+func StatusServeClient() (thrift.TTransport, *status_service.StatusServiceClient, error) {
+	trans, cli, err := factory.GetClient("merchant")
+	return trans, status_service.NewStatusServiceClient(cli), err
 }
 
 // 商户客户端
