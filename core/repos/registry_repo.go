@@ -93,13 +93,13 @@ func (r *registryRepo) Merge(registries []*registry.Registry) error {
 				raw.Options = v.Options
 				// 更新缓存并保存
 				ir = r.Create(&raw)
-				if err := r.Save(ir); err != nil {
+				if err := ir.Save(); err != nil {
 					return err
 				}
 			}
 		} else {
 			ir := r.Create(v)
-			if err := r.Save(ir); err != nil {
+			if err := ir.Save(); err != nil {
 				return err
 			}
 		}

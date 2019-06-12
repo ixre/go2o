@@ -1,8 +1,7 @@
 # Go2o Docker Image
 # Version 1.0
 # Author : jarrysix(jarrysix@gmail.com)
-# Date : 2018-05-02 23:20
-
+# Date : 2019-06-12 13:20
 
 FROM golang:latest AS build
 ENV BUILD=/gobuild
@@ -10,32 +9,33 @@ ENV GOPATH=$BUILD
 WORKDIR $BUILD/src/go2o
 COPY . ./
 
-RUN go get -u github.com/golang/dep/cmd/dep && ln -s $BUILD/bin/* /bin
-RUN dep ensure -v; rm -f $BUILD/bin/dep ;return 0
-# 释放其他引用的包
-#RUN cd ../ && tar xvzf go2o/gopkg.tar.gz
-RUN CGO_ENABLED=0 GOOS=linux ARCH=amd64 GOFLAGS='-ldflags="-s -w"' go build bin/go2o-pub.go &&\
-    CGO_ENABLED=0 GOOS=linux ARCH=amd64 GOFLAGS='-ldflags="-s -w"' go build bin/go2o-rpc.go
-RUN ls -l bin
+ENV GO111MODULE=on
+ENV GOPROXY=https://athens.azurefd.net
+RUN CGO_ENABLED=0 GOOS=linux ARCH=amd64 GOFLAGS='-ldflags="-s"' && \
+    sed -i 's/replace/\/\/replace/' go.mod && \
+	go mod tidy && \
+    go build go2o-serve.go &&\
+    go build go2o-rpc.go
 
+RUN mkdir -p /opt/go2o/dist && mkdir -p /opt/go2o/conf && \
+    cp -r go2o-serve go2o-rpc LICENSE README.md app.conf /opt/go2o/dist && \
+    cp -r conf /opt/go2o/conf
 
+FROM alpine
+MAINTAINER jarrysix
+LABEL vendor="Go2o"
+LABEL version="1.0.0"
 
-#RUN mkdir -p /opt/dist && cp -r mzld conf /opt/dist && ls -l /opt/dist
-#
-#FROM alpine
-#MAINTAINER jarrysix
-#LABEL vendor="YQTech"
-#LABEL version="1.0.0"
-#
-#WORKDIR /app
-#COPY --from=build /opt/dist/mzld /app/
-#COPY --from=build /opt/dist/conf /app/conf
-#RUN ln -s /app/mzl* /bin
-#RUN apk update && apk add ca-certificates
-#RUN echo "if [ ! -d '/data/conf' ];then cp -r /app/conf /data/;fi;"\
-#    "mzld -conf /data/conf"> /docker-boot.sh
-#VOLUME ["/data"]
-#EXPOSE 7020
-#CMD ["sh","/docker-boot.sh"]
+WORKDIR /app
+COPY --from=build /opt/go2o/dist/* /app/
+COPY --from=build /opt/go2o/conf /app/conf
+
+RUN ln -s /app/go2o-* /bin && RUN ls -al && ls -al /bin && \
+    apk update && apk add ca-certificates && \
+    echo "if [ ! -f '/data/app.conf' ];then cp -r /app/app.conf /data;cp -r /app/conf /data;fi;"\
+    "go2o-serve -conf /data/conf -r -d"> /docker-boot.sh
+VOLUME ["/data"]
+EXPOSE 1427 1428
+CMD ["sh","/docker-boot.sh"]
 
 

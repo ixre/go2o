@@ -47,7 +47,7 @@ func main() {
 	)
 
 	flag.IntVar(&httpPort, "port", 14190, "web server port")
-	flag.IntVar(&restPort, "restport", 14191, "rest api port")
+	flag.IntVar(&restPort, "restport", 1428, "rest api port")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
@@ -99,7 +99,7 @@ func main() {
 	msq.Configure(msq.KAFKA, kafkaAddress)
 
 	if runRpc {
-		go thrift.ListenAndServe("localhost:14280", false)
+		go thrift.ListenAndServe(":1427", false)
 	}
 	if runDaemon {
 		go daemon.Run(newApp)

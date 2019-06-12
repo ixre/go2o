@@ -48,6 +48,8 @@ type IRegistry interface {
 	Reset() error
 	// 更新
 	Update(value string) error
+	// 保存
+	Save() error
 }
 
 type IRegistryRepo interface {
@@ -145,18 +147,22 @@ func (r *registryImpl) Reset() error {
 }
 
 func (r *registryImpl) Update(value string) error {
+	if r.value.Value != value {
+		r.value.Value = value
+		return r.Save()
+	}
+	return nil
+}
+
+func (r *registryImpl) Save() error {
 	r.value.Key = KeyFormat(r.value.Key)
 	if len(r.value.Key) > 45 {
 		return errors.New("key length out of 40")
 	}
-	if len(value) > 120 {
+	if len(r.value.Value) > 120 {
 		return errors.New("value length out of 120")
 	}
-	if r.value.Value != value {
-		r.value.Value = value
-		return r.repo.Save(r)
-	}
-	return nil
+	return r.repo.Save(r)
 }
 
 func (r *registryImpl) panic(e error) {

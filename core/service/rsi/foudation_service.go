@@ -79,14 +79,14 @@ func (s *foundationService) CreateUserRegistry(ctx context.Context, key string, 
 	}
 	rv := &registry.Registry{
 		Key:          key,
-		Value:        "",
+		Value:        defaultValue,
 		DefaultValue: defaultValue,
 		Options:      "",
 		UserDefine:   1,
 		Description:  description,
 	}
 	ir := s.registryRepo.Create(rv)
-	err = ir.Update(defaultValue)
+	err = ir.Save()
 	if err != nil {
 		return s.error(err), nil
 	}

@@ -16,7 +16,7 @@ var _ api.Handler = new(AppApi)
 type AppApi struct {
 }
 
-func NewAppApi()*AppApi {
+func NewAppApi() *AppApi {
 	r := &AppApi{}
 	go r.init()
 	return r
@@ -33,7 +33,7 @@ func (a AppApi) check(ctx api.Context) interface{} {
 	form := ctx.Form()
 	prodVersion := form.GetString("prod_version")
 	prodType := form.GetString("prod_type")
-	trans,cli,err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{appVersion, appReleaseInfo, appApkFileUrl, appIosFileUrl}
@@ -57,10 +57,10 @@ func (a AppApi) check(ctx api.Context) interface{} {
 			return data
 		}
 	}
-	return api.ResponseWithCode(-1,"无法检测版本信息")
+	return api.ResponseWithCode(-1, "无法检测版本信息")
 }
 
-func (a *AppApi) init()*AppApi {
+func (a *AppApi) init() *AppApi {
 	time.Sleep(time.Second * 5) // 等待RPC服务启动5秒
 	trans, cli, err := thrift.FoundationServeClient()
 	if err == nil {
