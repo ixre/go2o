@@ -53,7 +53,7 @@ func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *ship
 
 func (s *shipmentServiceImpl) GetLogisticFlowTrack(ctx context.Context, shipperCode string,
 	logisticCode string, invert bool) (r *shipment_service.SShipOrderTrack, err error) {
-	em := module.Get(module.M_EXPRESS).(*module.ExpressModule)
+	em := module.Get(module.EXPRESS).(*module.ExpressModule)
 	flow, err := em.GetLogisticFlowTrack(shipperCode, logisticCode, invert)
 	if err == nil {
 		return s.logisticFlowTrackDto(flow), nil

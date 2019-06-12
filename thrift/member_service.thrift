@@ -33,6 +33,8 @@ service MemberService{
     SLevel GetLevel(1:i32 id)
     // 根据SIGN获取等级
     SLevel GetLevelBySign(1:string sign)
+    /** 根据会员编码获取会员ID */
+    i64 GetMemberId(1:string memberCode)
     // 根据会员编号获取会员信息
     SMember GetMember(1:i64 id)
     // 根据用户名获取会员信息

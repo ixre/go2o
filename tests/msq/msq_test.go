@@ -31,4 +31,3 @@ func TestMemberTrustPassedMQ(t *testing.T) {
 			1, "513701981888455487", "刘铭"))
 	time.Sleep(5 * time.Second)
 }
-

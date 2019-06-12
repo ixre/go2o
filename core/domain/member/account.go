@@ -128,7 +128,7 @@ func (a *accountImpl) Adjust(account int, title string, amount int, remark strin
 	case member.AccountBalance:
 		return a.adjustBalanceAccount(title, float32(amount)/100, remark, relateUser)
 	case member.AccountWallet:
-		return a.adjustWalletAccount(title,  float32(amount)/100, remark, relateUser)
+		return a.adjustWalletAccount(title, float32(amount)/100, remark, relateUser)
 	case member.AccountIntegral:
 		return a.adjustIntegralAccount(title, int(amount), remark, relateUser)
 	}
@@ -144,11 +144,11 @@ func (a *accountImpl) Consume(account int, title string, amount int, outerNo str
 	case member.AccountIntegral:
 		return a.integralConsume(title, int(amount), outerNo, remark)
 	case member.AccountBalance:
-		return a.balanceConsume(title,  float32(amount)/100, outerNo, remark)
+		return a.balanceConsume(title, float32(amount)/100, outerNo, remark)
 	case member.AccountWallet:
-		return a.walletConsume(title,  float32(amount)/100, outerNo, remark)
+		return a.walletConsume(title, float32(amount)/100, outerNo, remark)
 	case member.AccountFlow:
-		return a.flowAccountConsume(title,  float32(amount)/100, outerNo, remark)
+		return a.flowAccountConsume(title, float32(amount)/100, outerNo, remark)
 	}
 	return member.ErrNotSupportAccountType
 }
@@ -161,9 +161,9 @@ func (a *accountImpl) Discount(account int, title string, amount int, outerNo st
 	case member.AccountIntegral:
 		return a.integralDiscount(title, amount, outerNo, remark)
 	case member.AccountBalance:
-		return a.discountBalance(title,  float32(amount)/100, outerNo, remark)
+		return a.discountBalance(title, float32(amount)/100, outerNo, remark)
 	case member.AccountWallet:
-		return a.discountWallet(title,  float32(amount)/100, outerNo, remark)
+		return a.discountWallet(title, float32(amount)/100, outerNo, remark)
 	case member.AccountFlow:
 		//return a(title,  float32(amount)/100, outerNo, remark)
 	}
@@ -416,13 +416,13 @@ func (a *accountImpl) Refund(account int, title string,
 	case member.AccountIntegral:
 		return a.integralRefund(title, outerNo, amount, remark)
 	case member.AccountBalance:
-		return a.chargeBalanceNoLimit(member.KindRefund, title, outerNo,  float32(amount)/100, 0)
+		return a.chargeBalanceNoLimit(member.KindRefund, title, outerNo, float32(amount)/100, 0)
 	case member.AccountWallet:
 		//if kind != member.KindRefund &&
 		//	kind != member.KindWalletTakeOutRefund {
 		//	return member.ErrBusinessKind
 		//}
-		return a.chargeWalletNoLimit(member.KindRefund, title, outerNo,  float32(amount)/100, 0)
+		return a.chargeWalletNoLimit(member.KindRefund, title, outerNo, float32(amount)/100, 0)
 	}
 	panic(errors.New("不支持的账户类型操作"))
 }

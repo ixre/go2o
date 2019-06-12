@@ -9,7 +9,7 @@
 package test
 
 import (
-	"github.com/ixre/goex/generator"
+	"github.com/ixre/tto"
 	//"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/member"
 	"testing"
@@ -23,7 +23,7 @@ var (
 
 // 生成Thrift结构
 func TestThriftStruct(t *testing.T) {
-	data, err := generator.ThriftStruct(v)
+	data, err := tto.ThriftStruct(v)
 	if err != nil {
 		t.Error(err)
 	} else {
@@ -33,7 +33,7 @@ func TestThriftStruct(t *testing.T) {
 
 // 生成结构赋值代码
 func TestStructAssignCode(t *testing.T) {
-	data, err := generator.StructAssignCode(v)
+	data, err := tto.StructAssignCode(v)
 	if err != nil {
 		t.Error(err)
 	} else {

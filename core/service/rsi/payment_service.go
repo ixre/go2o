@@ -176,7 +176,7 @@ func (p *paymentService) FinishPayment(ctx context.Context, tradeNo string, spNa
 
 // 支付网关
 func (p *paymentService) GatewayV1(ctx context.Context, action string, userId int64, data map[string]string) (r *ttype.Result_, err error) {
-	mod := module.Get(module.M_PAY).(*module.PaymentModule)
+	mod := module.Get(module.PAY).(*module.PaymentModule)
 	// 获取令牌
 	if action == "get_token" {
 		token := mod.CreateToken(userId)

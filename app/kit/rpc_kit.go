@@ -15,14 +15,14 @@ func NewRpcToolkit() *RpcToolkit {
 	return &RpcToolkit{}
 }
 
-func (r *RpcToolkit) Registry(keys ...string) []string {
+func (r *RpcToolkit) Registry(keys ...string) map[string]string {
 	trans, cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.GetRegistryV1(thrift.Context, keys)
+		r, _ := cli.GetRegistries(thrift.Context, keys)
 		return r
 	}
-	return []string{}
+	return make(map[string]string, 0)
 }
 
 func (r *RpcToolkit) RegistryMap(keys ...string) map[string]string {

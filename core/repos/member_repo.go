@@ -41,7 +41,7 @@ var (
 )
 
 type MemberRepoImpl struct {
-	Storage storage.Interface
+	storage storage.Interface
 	db.Connector
 	_orm         orm.Orm
 	valueRepo    valueobject.IValueRepo
@@ -52,7 +52,7 @@ type MemberRepoImpl struct {
 func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
 	return &MemberRepoImpl{
-		Storage:      sto,
+		storage:      sto,
 		Connector:    c,
 		_orm:         c.GetOrm(),
 		mssrepo:      mssRepo,
@@ -75,14 +75,14 @@ func (m *MemberRepoImpl) GetManager() member.IMemberManager {
 func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 	e := &member.Profile{}
 	key := m.getProfileCk(memberId)
-	if m.Storage.Get(key, &e) != nil {
+	if m.storage.Get(key, &e) != nil {
 		if err := m.Connector.GetOrm().Get(memberId, e); err != nil {
 			if err == sql.ErrNoRows {
 				e.MemberId = memberId
 				orm.Save(m.GetOrm(), e, 0)
 			}
 		} else {
-			m.Storage.Set(key, *e)
+			m.storage.Set(key, *e)
 		}
 	}
 	return e
@@ -92,7 +92,7 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 func (m *MemberRepoImpl) SaveProfile(v *member.Profile) error {
 	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
 	if err == nil {
-		err = m.Storage.Set(m.getProfileCk(v.MemberId), *v)
+		err = m.storage.Set(m.getProfileCk(v.MemberId), *v)
 	}
 	return err
 }
@@ -132,13 +132,13 @@ var (
 // 获取会员等级
 func (m *MemberRepoImpl) GetMemberLevels_New() []*member.Level {
 	const key = "go2o:repo:level:glob:cache"
-	i, err := m.Storage.GetInt(key)
+	i, err := m.storage.GetInt(key)
 	load := err != nil || i != 1 || globLevels == nil
 	if load {
 		list := make([]*member.Level, 0)
 		m.Connector.GetOrm().Select(&list, "1=1 ORDER BY id ASC")
 		globLevels = list
-		m.Storage.Set(key, 1)
+		m.storage.Set(key, 1)
 	}
 	return globLevels
 }
@@ -155,7 +155,7 @@ func (m *MemberRepoImpl) DeleteMemberLevel_New(id int) error {
 	err := m.Connector.GetOrm().DeleteByPk(&member.Level{}, id)
 	if err == nil {
 		globLevels = nil
-		PrefixDel(m.Storage, "go2o:repo:level:*")
+		PrefixDel(m.storage, "go2o:repo:level:*")
 	}
 	return err
 }
@@ -165,7 +165,7 @@ func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 	id, err := orm.I32(orm.Save(m.GetOrm(), v, int(v.ID)))
 	if err == nil {
 		globLevels = nil
-		PrefixDel(m.Storage, "go2o:repo:level:*")
+		PrefixDel(m.storage, "go2o:repo:level:*")
 	}
 	return int(id), err
 }
@@ -180,11 +180,21 @@ func (m *MemberRepoImpl) GetMemberByUser(user string) *member.Member {
 	return nil
 }
 
+func (m *MemberRepoImpl) getId(field string, value string) int {
+	key := fmt.Sprintf("go2o:member:id:%s-%s", field, value)
+	id, err := m.storage.GetInt(key)
+	if err != nil {
+		m.Connector.ExecScalar(fmt.Sprintf("SELECT id FROM mm_member WHERE %s=$1 LIMIT 1", field), &id, value)
+		if id > 0 {
+			m.storage.SetExpire(key, id, 48*3600)
+		}
+	}
+	return id
+}
+
 // 根据编码获取会员
 func (m *MemberRepoImpl) GetMemberIdByCode(code string) int {
-	var id int
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE code= $1", &id, code)
-	return id
+	return m.getId("code", code)
 }
 
 // 根据手机号码获取会员
@@ -199,16 +209,12 @@ func (m *MemberRepoImpl) GetMemberValueByPhone(phone string) *member.Member {
 
 // 根据手机号获取会员编号
 func (m *MemberRepoImpl) GetMemberIdByPhone(phone string) int64 {
-	var id int64
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE phone= $1", &id, phone)
-	return id
+	return int64(m.getId("phone", phone))
 }
 
 // 根据邮箱地址获取会员编号
 func (m *MemberRepoImpl) GetMemberIdByEmail(email string) int64 {
-	var id int64
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE email= $1", &id, email)
-	return id
+	return int64(m.getId("email", email))
 }
 
 func (m *MemberRepoImpl) getMemberCk(memberId int64) string {
@@ -231,14 +237,12 @@ func (m *MemberRepoImpl) getGlobLevelsCk() string {
 func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
-	if err := m.Storage.Get(key, &e); err != nil {
+	if err := m.storage.Get(key, &e); err != nil {
 		//log.Println("-- mm",err)
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
-		m.Storage.Set(key, *e)
-	} else {
-		//log.Println(fmt.Sprintf("--- member: %d > %#v",memberId,e))
+		m.storage.Set(key, *e)
 	}
 	return m.CreateMember(e)
 }
@@ -258,7 +262,7 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 
 		if err == nil {
 			// 存储到缓存中
-			err = m.Storage.Set(m.getMemberCk(v.Id), *v)
+			err = m.storage.Set(m.getMemberCk(v.Id), *v)
 			// 存储到队列
 			rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
 
@@ -305,7 +309,7 @@ func (m *MemberRepoImpl) initMember(v *member.Member) {
 
 // 删除会员
 func (m *MemberRepoImpl) DeleteMember(id int64) error {
-	m.Storage.Del(m.getMemberCk(id))
+	m.storage.Del(m.getMemberCk(id))
 	_, err := m.ExecNonQuery("delete from mm_member where id = $1", id)
 	sql := `
     /* 清理会员 */
@@ -364,11 +368,11 @@ func (m *MemberRepoImpl) GetMemberLatestUpdateTime(memberId int64) int64 {
 func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 	e := &member.Account{}
 	key := m.getAccountCk(memberId)
-	if m.Storage.Get(key, &e) != nil {
+	if m.storage.Get(key, &e) != nil {
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
-		m.Storage.Set(key, *e)
+		m.storage.Set(key, *e)
 	}
 	return e
 }
@@ -385,7 +389,7 @@ func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
 		}
 	}
 	if err == nil {
-		m.Storage.Set(m.getAccountCk(v.MemberId), *v)
+		m.storage.Set(m.getAccountCk(v.MemberId), *v)
 	}
 	return v.MemberId, err
 }
@@ -450,13 +454,13 @@ func (m *MemberRepoImpl) AddTodayTakeOutTimes(memberId int64) error {
 	// 保存到当天结束
 	t := time.Now()
 	d := (24-t.Hour())*3600 + (60-t.Minute())*60 + (60 - t.Second())
-	return m.Storage.SetExpire(key, times+1, int64(d))
+	return m.storage.SetExpire(key, times+1, int64(d))
 }
 
 // 获取会员每日提现次数
 func (m *MemberRepoImpl) GetTodayTakeOutTimes(memberId int64) int {
 	key := m.getMemberTakeOutTimesKey(memberId)
-	applyTimes, _ := m.Storage.GetInt(key)
+	applyTimes, _ := m.storage.GetInt(key)
 	return applyTimes
 
 	total := 0
@@ -479,11 +483,11 @@ func (m *MemberRepoImpl) getRelationCk(memberId int64) string {
 func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
 	e := member.InviteRelation{}
 	key := m.getRelationCk(memberId)
-	if m.Storage.Get(key, &e) != nil {
+	if m.storage.Get(key, &e) != nil {
 		if err := m.Connector.GetOrm().Get(memberId, &e); err != nil {
 			return nil
 		}
-		m.Storage.Set(key, e)
+		m.storage.Set(key, e)
 	}
 	return &e
 }
@@ -524,7 +528,7 @@ func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
 		_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
 	}
 	if err == nil {
-		err = m.Storage.Set(m.getRelationCk(v.MemberId), *v)
+		err = m.storage.Set(m.getRelationCk(v.MemberId), *v)
 	}
 	return err
 }
@@ -643,7 +647,7 @@ func (m *MemberRepoImpl) SaveGrowAccount(memberId int64, balance, totalAmount,
 		grow_amount= $2,grow_earnings= $3,grow_total_earnings= $4,update_time= $5 where member_id= $6`,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
 	//清除缓存
-	m.Storage.Del(m.getAccountCk(memberId))
+	m.storage.Del(m.getAccountCk(memberId))
 	//加入通知队列
 	m.pushToAccountUpdateQueue(memberId, updateTime)
 	return err

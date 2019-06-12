@@ -35,10 +35,10 @@ func MergeRegistries() []*Registry {
 	/* 平台 */
 	mergeAdd("平台名称", PlatformName, "GO2O商城系统", "")
 	mergeAdd("客服客服电话", PlatformServiceTel, "+86-021-66666666", "")
-	mergeAdd("Logo标志", PlatformLogo, "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
-	mergeAdd("反色标志", PlatformInverseColorLogo, "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
-	mergeAdd("零售门户标志", PlatformRetailSiteLogo, "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
-	mergeAdd("批发门户标志", PlatformWholesaleSiteLogo, "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("Logo标志", PlatformLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("反色标志", PlatformInverseColorLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("零售门户标志", PlatformRetailSiteLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("批发门户标志", PlatformWholesaleSiteLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
 
 	/** 系统 */
 	mergeAdd("启用商户店铺商品分类", EnableMchGoodsCategory, "false", "")

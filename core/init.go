@@ -38,7 +38,6 @@ import (
 	"go2o/core/dto"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/variable"
-	"strings"
 )
 
 func init() {
@@ -70,10 +69,6 @@ func Init(a *AppImpl, debug, trace bool) bool {
 	OrmMapping(a.Db())
 	// 初始化变量
 	variable.Domain = a._config.GetString(variable.ServerDomain)
-	confPath := strings.TrimSpace(a._config.GetString("conf_path"))
-	if len(confPath) > 0 {
-		variable.ConfPath = confPath
-	}
 	a.Loaded = true
 	return true
 }

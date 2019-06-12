@@ -105,7 +105,7 @@ QQ群：**338164725**
            -port int
              	web server port (default 14190)
            -restport int
-             	rest api port (default 14191)
+             	rest api port (default 1419)
 
 	Usage of ./go2o-daemon:
 		-debug = false : enable debug

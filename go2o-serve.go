@@ -22,18 +22,41 @@ import (
 	"go2o/core"
 	"go2o/core/msq"
 	"go2o/core/service/rsi"
-	"go2o/core/service/thrift"
+	rs "go2o/core/service/thrift/service"
 	"log"
 	"os"
 	"runtime"
 	"strings"
 )
 
+var _ = `
+
+  ###   ###   ###   ###
+ #     #  ##    #  #  ##
+#     #    #    # #    #
+#  #  #   #   ##  #   #
+#  #  #   #  #    #   #
+ ###   ###   ###   ###
+
+
+Go2o is Google Go language binding domain-driven design (DDD) O2O open source implementation. Support Online Store
+, Offline stores; multi-channel (businesses), multi-store, merchandise, snapshots, orders, sales, payment, distribution and other functions.
+
+Project by a management center (including platform management center, business background, store background), online store (PC shop,
+Handheld shops, micro-channel), the member center, open API in four parts.
+
+Go2o using domain-driven design for business depth abstract, theoretical support in most sectors O2O scenarios.
+Through open API, you can seamlessly integrate into legacy systems.
+
+
+Email: jarrysix#gmail.com
+
+`
+
 func main() {
 	var (
 		ch        = make(chan bool)
 		confFile  string
-		confDir   string
 		httpPort  int
 		restPort  int
 		debug     bool
@@ -47,12 +70,11 @@ func main() {
 	)
 
 	flag.IntVar(&httpPort, "port", 14190, "web server port")
-	flag.IntVar(&restPort, "restport", 14191, "rest api port")
+	flag.IntVar(&restPort, "restport", 1428, "rest api port")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.StringVar(&confFile, "conf", "app.conf", "")
-	flag.StringVar(&confDir, "conf-dir", "./conf", "config file directory")
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&runRpc, "r", false, "run rpc service")
 	flag.BoolVar(&showVer, "v", false, "print version")
@@ -91,20 +113,18 @@ func main() {
 		XSRFCookie: true,
 	})
 	app.FsInit(debug)
-	rsi.Init(newApp, appFlag, confDir)
+	rsi.Init(newApp, appFlag)
 	//app.Configure(hook.HookUp, newApp, appFlag)
 
 	// 初始化producer
 	kafkaAddress := strings.Split(newApp.Config().GetString("kafka_address"), ",")
 	msq.Configure(msq.KAFKA, kafkaAddress)
-
 	if runRpc {
-		go thrift.ListenAndServe("localhost:14280", false)
+		go rs.ListenAndServe(":1427", false)
 	}
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
-	//go serve.Run(newApp, fmt.Sprintf(":%d", httpPort)) //运行HTTP
 	go restapi.Run(newApp, restPort) // 运行REST API
 	<-ch
 }

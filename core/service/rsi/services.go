@@ -82,23 +82,22 @@ func handleError(err error) error {
 	//return err
 }
 
-func Init(ctx gof.App, appFlag int, confDir string) {
+func Init(ctx gof.App, appFlag int) {
 	Context := ctx
 	db := Context.Db()
 	orm := db.GetOrm()
 	sto := Context.Storage()
 
 	// 初始化服务
-	initService(ctx, db, orm, sto, confDir)
+	initService(ctx, db, orm, sto)
 	// RPC
 	if appFlag&app.FlagRpcServe == app.FlagRpcServe {
 		initRpcServe(ctx)
 	}
 }
 
-func initService(ctx gof.App, db db.Connector, orm orm.Orm,
-	sto storage.Interface, confPath string) {
-	fact = (&repos.RepoFactory{}).Init(db, sto, confPath)
+func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
+	fact = (&repos.RepoFactory{}).Init(db, sto)
 	registryRepo := fact.GetRegistryRepo()
 	proMRepo := fact.GetProModelRepo()
 	valueRepo := fact.GetValueRepo()
@@ -223,6 +222,11 @@ func (s serviceUtil) result(err error) *ttype.Result_ {
 		return s.success(nil)
 	}
 	return s.error(err)
+}
+
+// 返回自定义编码的结果
+func (s serviceUtil)resultWithCode(code int,message string)*ttype.Result_{
+	return &ttype.Result_{ErrCode:int32(code),ErrMsg:message,Data:map[string]string{}}
 }
 
 // 返回失败的结果

@@ -47,31 +47,41 @@ type memberService struct {
 	serviceUtil
 }
 
+// 根据会员编码获取会员ID
+func (s *memberService) GetMemberId(ctx context.Context, memberCode string) (r int64, err error) {
+	return int64(s.repo.GetMemberIdByCode(memberCode)), nil
+}
+
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
-	ms := &memberService{
+	s := &memberService{
 		repo:       repo,
 		query:      q,
 		mchService: mchService,
 		orderQuery: oq,
 		valRepo:    valRepo,
 	}
-	return ms
-	//return m.init()
+	return s
+	//return s.init()
 }
 
 func (s *memberService) init() *memberService {
 	db := gof.CurrentApp.Db()
-	var list []*member.InviteRelation
+	var list []*member.Member
 	db.GetOrm().Select(&list, "")
-	//for _, v := range list {
-	//	s.repo.GetMember(v.MemberId).saveRelation(v)
-	//}
+	for _, v := range list {
+		if len(v.Code) < 6 {
+			im := s.repo.CreateMember(v)
+			v.Code = s.generateMemberCode()
+			im.SetValue(v)
+			im.Save()
+		}
+	}
 	return s
 }
 
 // 根据会员编号获取会员
-func (s *memberService) getValueMember(memberId int64) *member.Member {
+func (s *memberService) getMemberValue(memberId int64) *member.Member {
 	if memberId > 0 {
 		v := s.repo.GetMember(memberId)
 		if v != nil {
@@ -84,7 +94,7 @@ func (s *memberService) getValueMember(memberId int64) *member.Member {
 
 // 根据会员编号获取会员
 func (s *memberService) GetMember(ctx context.Context, id int64) (*member_service.SMember, error) {
-	v := s.getValueMember(id)
+	v := s.getMemberValue(id)
 	if v != nil {
 		return parser.MemberDto(v), nil
 	}
@@ -135,19 +145,19 @@ func (s *memberService) Premium(ctx context.Context, memberId int64, v int32, ex
 
 // 检查会员的会话Token是否正确
 func (s *memberService) CheckToken(ctx context.Context, memberId int64, token string) (r bool, err error) {
-	md := module.Get(module.M_MM).(*module.MemberModule)
+	md := module.Get(module.MM).(*module.MemberModule)
 	return md.CheckToken(memberId, token), nil
 }
 
 // 获取会员的会员Token,reset表示是否重置会员的token
 func (s *memberService) GetToken(ctx context.Context, memberId int64, reset bool) (r string, err error) {
 	pubToken := ""
-	md := module.Get(module.M_MM).(*module.MemberModule)
+	md := module.Get(module.MM).(*module.MemberModule)
 	if !reset {
 		pubToken = md.GetToken(memberId)
 	}
 	if reset || (pubToken == "" && memberId > 0) {
-		m := s.getValueMember(memberId)
+		m := s.getMemberValue(memberId)
 		if m != nil {
 			return md.ResetToken(memberId, m.Pwd), nil
 		}
@@ -157,7 +167,7 @@ func (s *memberService) GetToken(ctx context.Context, memberId int64, reset bool
 
 // 移除会员的Token
 func (s *memberService) RemoveToken(ctx context.Context, memberId int64) (err error) {
-	md := module.Get(module.M_MM).(*module.MemberModule)
+	md := module.Get(module.MM).(*module.MemberModule)
 	md.RemoveToken(memberId)
 	return nil
 }
@@ -607,13 +617,16 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, err error)
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*ttype.Result_, error) {
 	id, err := s.testLogin(user, pwd)
+	memberCode := ""
 	if update && err == nil {
 		m := s.repo.GetMember(id)
-		err = m.UpdateLoginTime()
+		memberCode = m.GetValue().Code
+		go m.UpdateLoginTime()
 	}
 	r := s.result(err)
 	r.Data = map[string]string{
-		"member_id": strconv.Itoa(int(id)),
+		"id":   strconv.Itoa(int(id)),
+		"code": memberCode,
 	}
 	return r, nil
 }
@@ -1016,7 +1029,7 @@ func (s *memberService) AccountAdjust(ctx context.Context, memberId int64, accou
 
 // !银行四要素认证
 func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *ttype.Result_, err error) {
-	mod := module.Get(module.M_B4E).(*module.Bank4E)
+	mod := module.Get(module.B4E).(*module.Bank4E)
 	if action == "get" {
 		data := mod.GetBasicInfo(memberId)
 		d, err := json.Marshal(data)

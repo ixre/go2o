@@ -5,6 +5,7 @@ import (
 	"github.com/ixre/gof/db"
 	"go2o/core/domain/interface/registry"
 	"log"
+	"sync"
 )
 
 var _ registry.IRegistryRepo = new(registryRepo)
@@ -12,6 +13,7 @@ var _ registry.IRegistryRepo = new(registryRepo)
 type registryRepo struct {
 	conn db.Connector
 	data map[string]registry.IRegistry
+	lock sync.RWMutex
 }
 
 func NewRegistryRepo(conn db.Connector) registry.IRegistryRepo {
@@ -22,6 +24,7 @@ func NewRegistryRepo(conn db.Connector) registry.IRegistryRepo {
 }
 
 func (r *registryRepo) init() registry.IRegistryRepo {
+	r.lock.Lock()
 	// 从数据源加载数据
 	list := make([]*registry.Registry, 0)
 	err := r.conn.GetOrm().Select(&list, "")
@@ -31,6 +34,7 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 	for _, v := range list {
 		r.data[v.Key] = r.Create(v)
 	}
+	r.lock.Unlock()
 	// 合并数据源
 	registries := registry.MergeRegistries()
 	r.Merge(registries)
@@ -40,18 +44,24 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 }
 
 func (r *registryRepo) Get(key string) registry.IRegistry {
-	return r.data[key]
+	r.lock.RLock()
+	v := r.data[key]
+	r.lock.RUnlock()
+	return v
 }
 
 func (r *registryRepo) Remove(key string) error {
 	_, err := r.conn.ExecNonQuery("DELETE FROM registry WHERE key=$1", key)
+	r.lock.Lock()
 	delete(r.data, key)
+	r.lock.Unlock()
 	return err
 }
 
 func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 	key := registry.Key()
 	val := registry.Value()
+	r.lock.Lock()
 	_, ok := r.data[key]
 	if ok {
 		_, _, err = r.conn.GetOrm().Save(key, val)
@@ -63,6 +73,7 @@ func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 	} else if err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Registry")
 	}
+	r.lock.Unlock()
 	return err
 }
 
@@ -82,13 +93,13 @@ func (r *registryRepo) Merge(registries []*registry.Registry) error {
 				raw.Options = v.Options
 				// 更新缓存并保存
 				ir = r.Create(&raw)
-				if err := r.Save(ir); err != nil {
+				if err := ir.Save(); err != nil {
 					return err
 				}
 			}
 		} else {
 			ir := r.Create(v)
-			if err := r.Save(ir); err != nil {
+			if err := ir.Save(); err != nil {
 				return err
 			}
 		}
@@ -103,6 +114,7 @@ func (r *registryRepo) Create(v *registry.Registry) registry.IRegistry {
 // 清理不使用的系统键
 func (r *registryRepo) truncUnused(registries []*registry.Registry) error {
 	exists := true
+	r.lock.RLock()
 	for _, ir := range r.data {
 		if !ir.IsUser() {
 			exists = false
@@ -117,5 +129,6 @@ func (r *registryRepo) truncUnused(registries []*registry.Registry) error {
 			}
 		}
 	}
+	r.lock.RUnlock()
 	return nil
 }

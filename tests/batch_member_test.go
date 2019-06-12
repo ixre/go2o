@@ -22,23 +22,23 @@ func init() {
 	msq.Configure(msq.KAFKA, []string{"127.0.0.1:9092"})
 }
 
-func TestBatchPushMember(t *testing.T){
+func TestBatchPushMember(t *testing.T) {
 	defer msq.Close()
 	orm := ti.GetApp().Db().GetOrm()
 
 	var members []member.Member
-	err := orm.SelectByQuery(&members,"select * FROM mm_member where id > 0 LIMIT 100 OFFSET 0")
-	if err != nil{
+	err := orm.SelectByQuery(&members, "select * FROM mm_member where id > 0 LIMIT 100 OFFSET 0")
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	for _,v := range members{
+	for _, v := range members {
 		id := int(v.Id)
 		msq.Push(msq.MemberUpdated, strconv.Itoa(id), "update")
 		msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(id), "", 1000)
 		msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(id), "", 1000)
 		msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(id), "", 1000)
-		t.Log("notify ",id)
+		t.Log("notify ", id)
 	}
 	t.Log("finished")
 	time.Sleep(5 * time.Minute)
