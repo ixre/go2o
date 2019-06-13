@@ -24,15 +24,11 @@ import (
 
 var (
 	API_DOMAIN   string
-	API_HOST_CHK bool = false // 必须匹配Host
-	PathPrefix        = "/go2o_api_v1"
+	API_HOST_CHK = false // 必须匹配Host
+	PathPrefix   = "/go2o_api_v1"
 	sto          storage.Interface
 	serve        *echo.Echo
 )
-
-func init() {
-	serve = newServe()
-}
 
 func newServe() *echo.Echo {
 	serve := echo.New()
@@ -72,7 +68,7 @@ func Run(app gof.App, port int) {
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	log.Println("** [ Go2o][ API] - Api server running on port " +
 		strconv.Itoa(port))
-	err := http.ListenAndServe(":"+strconv.Itoa(port), serve)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), newServe())
 	if err != nil{
 		log.Println("** [ Go2o][ API] : " +err.Error())
 		os.Exit(1)

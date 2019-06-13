@@ -55,23 +55,22 @@ Email: jarrysix#gmail.com
 
 func main() {
 	var (
-		ch                = make(chan bool)
+		ch= make(chan bool)
 		confFile  string
-		port   int
+		port      int
 		apiPort   int
 		kafkaAddr string
 		debug     bool
 		trace     bool
 		runDaemon bool // 运行daemon
-		runRpc    bool // 运行Rpc服务
 		help      bool
 		showVer   bool
 		newApp    *core.AppImpl
-		appFlag      = app.FlagWebApp
+		appFlag= app.FlagWebApp
 	)
 
 	defaultKafkaAddr := os.Getenv("GO2O_KAFKA_ADDR")
-	if len(defaultKafkaAddr) == 0{
+	if len(defaultKafkaAddr) == 0 {
 		defaultKafkaAddr = "127.0.0.1:9092"
 	}
 	flag.IntVar(&port, "-port", 1427, "thrift service port")
@@ -80,19 +79,16 @@ func main() {
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.StringVar(&confFile, "conf", "app.conf", "")
-	flag.StringVar(&kafkaAddr,"kafka",defaultKafkaAddr,
+	flag.StringVar(&kafkaAddr, "kafka", defaultKafkaAddr,
 		"kafka cluster address, like: 192.168.1.1:9092,192.168.1.2:9092")
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
-	flag.BoolVar(&runRpc, "r", false, "run rpc service")
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
 
 	if runDaemon {
 		appFlag = appFlag | app.FlagDaemon
 	}
-	if runRpc {
-		appFlag = appFlag | app.FlagRpcServe
-	}
+	appFlag = appFlag | app.FlagRpcServe
 	if help {
 		flag.Usage()
 		return
@@ -121,16 +117,14 @@ func main() {
 	})
 	app.FsInit(debug)
 	rsi.Init(newApp, appFlag)
-
 	// 初始化producer
-	msq.Configure(msq.KAFKA, strings.Split(kafkaAddr,","))
-	// 运行服务
-	if runRpc {
-		go rs.ListenAndServe(fmt.Sprintf(":%d",port), false)
-	}
+	msq.Configure(msq.KAFKA, strings.Split(kafkaAddr, ","))
+	// 运行RPC服务
+	go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
+	// 运行REST API
+	go restapi.Run(newApp, apiPort)
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
-	go restapi.Run(newApp, apiPort) // 运行REST API
 	<-ch
 }
