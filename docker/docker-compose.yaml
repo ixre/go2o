@@ -1,0 +1,62 @@
+version: "3"
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    restart: always
+
+  kafka:
+    image: wurstmeister/kafka
+    depends_on:
+      - "zookeeper"
+    restart: always
+    ports:
+      - 19092:9092
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: "172.17.0.1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  postgres:
+    image: postgres:11.2-alpine
+    restart: always
+    ports:
+      - "15432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD:123456
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - ./redis:/data
+  go2o:
+    image: docker-base.to2.net:5020/go2o
+    depends_on:
+      - "postgres"
+      - "kafka"
+      - "redis"
+    restart: always
+    ports:
+      - "1427:1427"
+      - "1428:1428"
+    volumes:
+      - ./go2o:/data
+    environment:
+      GO2O_KAFKA_ADDR: kafka:9092
+
+  web:
+    image: docker-base.to2.net:5020/go2o-web
+    depends_on:
+      - "go2o"
+    restart: always
+    ports:
+      - "14190:14190"
+      - "14281:14281"
+    volumes:
+      - ./go2o-web/data:/data
+      - ./go2o-web/uploads:/app/uploads
+    environment:
+      GO2O_RPC_ADDR: go2o:1427
+

@@ -74,6 +74,10 @@ QQ群：**338164725**
 
     sudo sysctl -w kern.ipc.somaxconn=4096
 
+## Deploy by docker-compose
+
+[docker-compose.yaml](./docker/docker-compose.yaml)
+
 ## Deploy ##
 ### 1. Import database ###
 > Create new mysql db instance named "go2o"
