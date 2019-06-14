@@ -2,7 +2,7 @@
 ```
 server {
     listen  80;
-    listen  443 default ssl;
+    listen  443 ssl;
     server_name api.xxx.com;
     ssl_certificate      /data/cert/ssl_certificate.cer;
     ssl_certificate_key  /data/cert/ssl_certificate.key;
@@ -18,7 +18,7 @@ server {
 
 server{
     listen                  80;
-    listen          		443 default ssl;
+    listen          		443 ssl;
     server_name          	*.xxx.com localhost;
     client_max_body_size  	10m;
     location / {
@@ -29,7 +29,18 @@ server{
 
 server {
     listen                  80;
-    listen          		443 default ssl;
+    listen          		443 ssl;
+    server_name     		master.xxx.com;
+    client_max_body_size  	10m;
+    location / {
+        proxy_pass   http://localhost:14281;
+        proxy_set_header Host $host;
+    }
+}
+    
+server {
+    listen                  80;
+    listen          		443 ssl;
     server_name     		static.xxx.com;
     root    	    		/go2o/static/;
     location / {
@@ -43,7 +54,7 @@ server {
 
 server {
     listen                  80;
-    listen          		443 default ssl;
+    listen          		443 ssl;
     server_name     		img.xxx.com;
     root            		/go2o/uploads;
     location / {
