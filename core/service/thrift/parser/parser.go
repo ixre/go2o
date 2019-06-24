@@ -162,28 +162,15 @@ func MemberProfile2(src *member_service.SProfile) *member.Profile {
 
 func ComplexMemberDto(src *member.ComplexMember) *member_service.SComplexMember {
 	return &member_service.SComplexMember{
-		MemberId:          src.MemberId,
-		Usr:               src.Usr,
-		Name:              src.Name,
-		Avatar:            src.Avatar,
-		Exp:               int32(src.Exp),
-		Level:             int32(src.Level),
-		LevelName:         src.LevelName,
-		LevelSign:         src.LevelSign,
-		LevelOfficial:     int32(src.LevelOfficial),
-		PremiumUser:       int32(src.PremiumUser),
-		PremiumExpires:    src.PremiumExpires,
-		InvitationCode:    src.InvitationCode,
-		TrustAuthState:    int32(src.TrustAuthState),
-		State:             int32(src.State),
-		Integral:          int64(src.Integral),
-		Balance:           src.Balance,
-		WalletBalance:     src.WalletBalance,
-		GrowBalance:       src.GrowBalance,
-		GrowAmount:        src.GrowAmount,
-		GrowEarnings:      src.GrowEarnings,
-		GrowTotalEarnings: src.GrowTotalEarnings,
-		UpdateTime:        src.UpdateTime,
+		Name:           src.Name,
+		Avatar:         src.Avatar,
+		Exp:            int32(src.Exp),
+		Level:          int32(src.Level),
+		LevelName:      src.LevelName,
+		PremiumUser:    int32(src.PremiumUser),
+		InvitationCode: src.InvitationCode,
+		TrustAuthState: int32(src.TrustAuthState),
+		UpdateTime:     src.UpdateTime,
 	}
 }
 

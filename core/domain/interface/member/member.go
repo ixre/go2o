@@ -176,49 +176,26 @@ type (
 
 	// 会员概览信息
 	ComplexMember struct {
-		MemberId int64
-		// 用户名
-		Usr string
 		// 昵称
 		Name string
 		// 头像
 		Avatar string
+		// 手机号码
+		Phone string
 		// 经验值
 		Exp int
 		// 等级
 		Level int
 		// 等级名称
 		LevelName string
-		// 等级标识
-		LevelSign string
-		// 等级是否为正式会员
-		LevelOfficial int
 		// 邀请码
 		InvitationCode string
 		// 实名认证状态
 		TrustAuthState int
 		// 高级会员类型
 		PremiumUser int
-		// 高级会员是否过期
-		PremiumExpires int64
 		// 会员标志
 		Flag int
-		// 是否启用
-		State int
-		// 积分
-		Integral int
-		// 账户余额
-		Balance float64
-		// 钱包余额
-		WalletBalance float64
-		// 理财金余额
-		GrowBalance float64
-		// 理财总投资金额,不含收益
-		GrowAmount float64
-		// 当前收益金额
-		GrowEarnings float64
-		// 累积收益金额
-		GrowTotalEarnings float64
 		// 更新时间
 		UpdateTime int64
 	}

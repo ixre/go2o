@@ -69,8 +69,8 @@ func Run(app gof.App, port int) {
 	log.Println("** [ Go2o][ API] - Api server running on port " +
 		strconv.Itoa(port))
 	err := http.ListenAndServe(":"+strconv.Itoa(port), newServe())
-	if err != nil{
-		log.Println("** [ Go2o][ API] : " +err.Error())
+	if err != nil {
+		log.Println("** [ Go2o][ API] : " + err.Error())
 		os.Exit(1)
 	}
 }

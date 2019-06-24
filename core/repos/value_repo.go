@@ -68,10 +68,10 @@ func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface)
 	//	os.Exit(1)
 	//}
 	return &valueRepo{
-		Connector:    conn,
-		o:            conn.GetOrm(),
-		storage:      storage,
-		kvMux:        &sync.RWMutex{},
+		Connector: conn,
+		o:         conn.GetOrm(),
+		storage:   storage,
+		kvMux:     &sync.RWMutex{},
 		//wxGob:        util.NewGobFile("conf/core/wx_api"),
 		//rpGob:        util.NewGobFile("conf/core/register_perm"),
 		//mchGob:       util.NewGobFile("conf/core/pm_conf"),

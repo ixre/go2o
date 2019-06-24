@@ -55,7 +55,7 @@ Email: jarrysix#gmail.com
 
 func main() {
 	var (
-		ch= make(chan bool)
+		ch        = make(chan bool)
 		confFile  string
 		port      int
 		apiPort   int
@@ -66,7 +66,7 @@ func main() {
 		help      bool
 		showVer   bool
 		newApp    *core.AppImpl
-		appFlag= app.FlagWebApp
+		appFlag   = app.FlagWebApp
 	)
 
 	defaultKafkaAddr := os.Getenv("GO2O_KAFKA_ADDR")

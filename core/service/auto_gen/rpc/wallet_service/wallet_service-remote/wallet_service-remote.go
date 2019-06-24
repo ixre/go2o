@@ -4,579 +4,579 @@
 package main
 
 import (
-        "context"
-        "flag"
-        "fmt"
-        "math"
-        "net"
-        "net/url"
-        "os"
-        "strconv"
-        "strings"
-        "github.com/apache/thrift/lib/go/thrift"
+	"context"
+	"flag"
+	"fmt"
+	"github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
-        "go2o/core/service/auto_gen/rpc/wallet_service"
+	"go2o/core/service/auto_gen/rpc/wallet_service"
+	"math"
+	"net"
+	"net/url"
+	"os"
+	"strconv"
+	"strings"
 )
 
 var _ = ttype.GoUnusedProtection__
 
 func Usage() {
-  fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
-  flag.PrintDefaults()
-  fmt.Fprintln(os.Stderr, "\nFunctions:")
-  fmt.Fprintln(os.Stderr, "  Result CreateWallet(i64 userId, i32 walletType, i32 flag, string remark)")
-  fmt.Fprintln(os.Stderr, "  i64 GetWalletId(i64 userId, i32 walletType)")
-  fmt.Fprintln(os.Stderr, "  SWallet GetWallet(i64 walletId)")
-  fmt.Fprintln(os.Stderr, "  SWalletLog GetWalletLog(i64 walletId, i64 id)")
-  fmt.Fprintln(os.Stderr, "  Result Adjust(i64 walletId, i32 value, string title, string outerNo, i32 opuId, string opuName)")
-  fmt.Fprintln(os.Stderr, "  Result Discount(i64 walletId, i32 value, string title, string outerNo, bool must)")
-  fmt.Fprintln(os.Stderr, "  Result Freeze(i64 walletId, i32 value, string title, string outerNo, i32 opuId, string opuName)")
-  fmt.Fprintln(os.Stderr, "  Result Unfreeze(i64 walletId, i32 value, string title, string outerNo, i32 opuId, string opuName)")
-  fmt.Fprintln(os.Stderr, "  Result Charge(i64 walletId, i32 value, i32 by, string title, string outerNo, i32 opuId, string opuName)")
-  fmt.Fprintln(os.Stderr, "  Result Transfer(i64 walletId, i64 toWalletId, i32 value, i32 tradeFee, string remark)")
-  fmt.Fprintln(os.Stderr, "  Result RequestTakeOut(i64 walletId, i32 value, i32 tradeFee, i32 kind, string title)")
-  fmt.Fprintln(os.Stderr, "  Result ReviewTakeOut(i64 walletId, i64 takeId, bool reviewPass, string remark, i32 opuId, string opuName)")
-  fmt.Fprintln(os.Stderr, "  Result FinishTakeOut(i64 walletId, i64 takeId, string outerNo)")
-  fmt.Fprintln(os.Stderr, "  SPagingResult PagingWalletLog(i64 walletId, SPagingParams params)")
-  fmt.Fprintln(os.Stderr)
-  os.Exit(0)
+	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
+	flag.PrintDefaults()
+	fmt.Fprintln(os.Stderr, "\nFunctions:")
+	fmt.Fprintln(os.Stderr, "  Result CreateWallet(i64 userId, i32 walletType, i32 flag, string remark)")
+	fmt.Fprintln(os.Stderr, "  i64 GetWalletId(i64 userId, i32 walletType)")
+	fmt.Fprintln(os.Stderr, "  SWallet GetWallet(i64 walletId)")
+	fmt.Fprintln(os.Stderr, "  SWalletLog GetWalletLog(i64 walletId, i64 id)")
+	fmt.Fprintln(os.Stderr, "  Result Adjust(i64 walletId, i32 value, string title, string outerNo, i32 opuId, string opuName)")
+	fmt.Fprintln(os.Stderr, "  Result Discount(i64 walletId, i32 value, string title, string outerNo, bool must)")
+	fmt.Fprintln(os.Stderr, "  Result Freeze(i64 walletId, i32 value, string title, string outerNo, i32 opuId, string opuName)")
+	fmt.Fprintln(os.Stderr, "  Result Unfreeze(i64 walletId, i32 value, string title, string outerNo, i32 opuId, string opuName)")
+	fmt.Fprintln(os.Stderr, "  Result Charge(i64 walletId, i32 value, i32 by, string title, string outerNo, i32 opuId, string opuName)")
+	fmt.Fprintln(os.Stderr, "  Result Transfer(i64 walletId, i64 toWalletId, i32 value, i32 tradeFee, string remark)")
+	fmt.Fprintln(os.Stderr, "  Result RequestTakeOut(i64 walletId, i32 value, i32 tradeFee, i32 kind, string title)")
+	fmt.Fprintln(os.Stderr, "  Result ReviewTakeOut(i64 walletId, i64 takeId, bool reviewPass, string remark, i32 opuId, string opuName)")
+	fmt.Fprintln(os.Stderr, "  Result FinishTakeOut(i64 walletId, i64 takeId, string outerNo)")
+	fmt.Fprintln(os.Stderr, "  SPagingResult PagingWalletLog(i64 walletId, SPagingParams params)")
+	fmt.Fprintln(os.Stderr)
+	os.Exit(0)
 }
 
 type httpHeaders map[string]string
 
 func (h httpHeaders) String() string {
-  var m map[string]string = h
-  return fmt.Sprintf("%s", m)
+	var m map[string]string = h
+	return fmt.Sprintf("%s", m)
 }
 
 func (h httpHeaders) Set(value string) error {
-  parts := strings.Split(value, ": ")
-  if len(parts) != 2 {
-    return fmt.Errorf("header should be of format 'Key: Value'")
-  }
-  h[parts[0]] = parts[1]
-  return nil
+	parts := strings.Split(value, ": ")
+	if len(parts) != 2 {
+		return fmt.Errorf("header should be of format 'Key: Value'")
+	}
+	h[parts[0]] = parts[1]
+	return nil
 }
 
 func main() {
-  flag.Usage = Usage
-  var host string
-  var port int
-  var protocol string
-  var urlString string
-  var framed bool
-  var useHttp bool
-  headers := make(httpHeaders)
-  var parsedUrl *url.URL
-  var trans thrift.TTransport
-  _ = strconv.Atoi
-  _ = math.Abs
-  flag.Usage = Usage
-  flag.StringVar(&host, "h", "localhost", "Specify host and port")
-  flag.IntVar(&port, "p", 9090, "Specify port")
-  flag.StringVar(&protocol, "P", "binary", "Specify the protocol (binary, compact, simplejson, json)")
-  flag.StringVar(&urlString, "u", "", "Specify the url")
-  flag.BoolVar(&framed, "framed", false, "Use framed transport")
-  flag.BoolVar(&useHttp, "http", false, "Use http")
-  flag.Var(headers, "H", "Headers to set on the http(s) request (e.g. -H \"Key: Value\")")
-  flag.Parse()
-  
-  if len(urlString) > 0 {
-    var err error
-    parsedUrl, err = url.Parse(urlString)
-    if err != nil {
-      fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
-      flag.Usage()
-    }
-    host = parsedUrl.Host
-    useHttp = len(parsedUrl.Scheme) <= 0 || parsedUrl.Scheme == "http" || parsedUrl.Scheme == "https"
-  } else if useHttp {
-    _, err := url.Parse(fmt.Sprint("http://", host, ":", port))
-    if err != nil {
-      fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
-      flag.Usage()
-    }
-  }
-  
-  cmd := flag.Arg(0)
-  var err error
-  if useHttp {
-    trans, err = thrift.NewTHttpClient(parsedUrl.String())
-    if len(headers) > 0 {
-      httptrans := trans.(*thrift.THttpClient)
-      for key, value := range headers {
-        httptrans.SetHeader(key, value)
-      }
-    }
-  } else {
-    portStr := fmt.Sprint(port)
-    if strings.Contains(host, ":") {
-           host, portStr, err = net.SplitHostPort(host)
-           if err != nil {
-                   fmt.Fprintln(os.Stderr, "error with host:", err)
-                   os.Exit(1)
-           }
-    }
-    trans, err = thrift.NewTSocket(net.JoinHostPort(host, portStr))
-    if err != nil {
-      fmt.Fprintln(os.Stderr, "error resolving address:", err)
-      os.Exit(1)
-    }
-    if framed {
-      trans = thrift.NewTFramedTransport(trans)
-    }
-  }
-  if err != nil {
-    fmt.Fprintln(os.Stderr, "Error creating transport", err)
-    os.Exit(1)
-  }
-  defer trans.Close()
-  var protocolFactory thrift.TProtocolFactory
-  switch protocol {
-  case "compact":
-    protocolFactory = thrift.NewTCompactProtocolFactory()
-    break
-  case "simplejson":
-    protocolFactory = thrift.NewTSimpleJSONProtocolFactory()
-    break
-  case "json":
-    protocolFactory = thrift.NewTJSONProtocolFactory()
-    break
-  case "binary", "":
-    protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
-    break
-  default:
-    fmt.Fprintln(os.Stderr, "Invalid protocol specified: ", protocol)
-    Usage()
-    os.Exit(1)
-  }
-  iprot := protocolFactory.GetProtocol(trans)
-  oprot := protocolFactory.GetProtocol(trans)
-  client := wallet_service.NewWalletServiceClient(thrift.NewTStandardClient(iprot, oprot))
-  if err := trans.Open(); err != nil {
-    fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
-    os.Exit(1)
-  }
-  
-  switch cmd {
-  case "CreateWallet":
-    if flag.NArg() - 1 != 4 {
-      fmt.Fprintln(os.Stderr, "CreateWallet requires 4 args")
-      flag.Usage()
-    }
-    argvalue0, err30 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err30 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err31 := (strconv.Atoi(flag.Arg(2)))
-    if err31 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    tmp2, err32 := (strconv.Atoi(flag.Arg(3)))
-    if err32 != nil {
-      Usage()
-      return
-    }
-    argvalue2 := int32(tmp2)
-    value2 := argvalue2
-    argvalue3 := flag.Arg(4)
-    value3 := argvalue3
-    fmt.Print(client.CreateWallet(context.Background(), value0, value1, value2, value3))
-    fmt.Print("\n")
-    break
-  case "GetWalletId":
-    if flag.NArg() - 1 != 2 {
-      fmt.Fprintln(os.Stderr, "GetWalletId requires 2 args")
-      flag.Usage()
-    }
-    argvalue0, err34 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err34 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err35 := (strconv.Atoi(flag.Arg(2)))
-    if err35 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    fmt.Print(client.GetWalletId(context.Background(), value0, value1))
-    fmt.Print("\n")
-    break
-  case "GetWallet":
-    if flag.NArg() - 1 != 1 {
-      fmt.Fprintln(os.Stderr, "GetWallet requires 1 args")
-      flag.Usage()
-    }
-    argvalue0, err36 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err36 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    fmt.Print(client.GetWallet(context.Background(), value0))
-    fmt.Print("\n")
-    break
-  case "GetWalletLog":
-    if flag.NArg() - 1 != 2 {
-      fmt.Fprintln(os.Stderr, "GetWalletLog requires 2 args")
-      flag.Usage()
-    }
-    argvalue0, err37 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err37 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    argvalue1, err38 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-    if err38 != nil {
-      Usage()
-      return
-    }
-    value1 := argvalue1
-    fmt.Print(client.GetWalletLog(context.Background(), value0, value1))
-    fmt.Print("\n")
-    break
-  case "Adjust":
-    if flag.NArg() - 1 != 6 {
-      fmt.Fprintln(os.Stderr, "Adjust requires 6 args")
-      flag.Usage()
-    }
-    argvalue0, err39 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err39 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err40 := (strconv.Atoi(flag.Arg(2)))
-    if err40 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    argvalue2 := flag.Arg(3)
-    value2 := argvalue2
-    argvalue3 := flag.Arg(4)
-    value3 := argvalue3
-    tmp4, err43 := (strconv.Atoi(flag.Arg(5)))
-    if err43 != nil {
-      Usage()
-      return
-    }
-    argvalue4 := int32(tmp4)
-    value4 := argvalue4
-    argvalue5 := flag.Arg(6)
-    value5 := argvalue5
-    fmt.Print(client.Adjust(context.Background(), value0, value1, value2, value3, value4, value5))
-    fmt.Print("\n")
-    break
-  case "Discount":
-    if flag.NArg() - 1 != 5 {
-      fmt.Fprintln(os.Stderr, "Discount requires 5 args")
-      flag.Usage()
-    }
-    argvalue0, err45 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err45 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err46 := (strconv.Atoi(flag.Arg(2)))
-    if err46 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    argvalue2 := flag.Arg(3)
-    value2 := argvalue2
-    argvalue3 := flag.Arg(4)
-    value3 := argvalue3
-    argvalue4 := flag.Arg(5) == "true"
-    value4 := argvalue4
-    fmt.Print(client.Discount(context.Background(), value0, value1, value2, value3, value4))
-    fmt.Print("\n")
-    break
-  case "Freeze":
-    if flag.NArg() - 1 != 6 {
-      fmt.Fprintln(os.Stderr, "Freeze requires 6 args")
-      flag.Usage()
-    }
-    argvalue0, err50 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err50 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err51 := (strconv.Atoi(flag.Arg(2)))
-    if err51 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    argvalue2 := flag.Arg(3)
-    value2 := argvalue2
-    argvalue3 := flag.Arg(4)
-    value3 := argvalue3
-    tmp4, err54 := (strconv.Atoi(flag.Arg(5)))
-    if err54 != nil {
-      Usage()
-      return
-    }
-    argvalue4 := int32(tmp4)
-    value4 := argvalue4
-    argvalue5 := flag.Arg(6)
-    value5 := argvalue5
-    fmt.Print(client.Freeze(context.Background(), value0, value1, value2, value3, value4, value5))
-    fmt.Print("\n")
-    break
-  case "Unfreeze":
-    if flag.NArg() - 1 != 6 {
-      fmt.Fprintln(os.Stderr, "Unfreeze requires 6 args")
-      flag.Usage()
-    }
-    argvalue0, err56 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err56 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err57 := (strconv.Atoi(flag.Arg(2)))
-    if err57 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    argvalue2 := flag.Arg(3)
-    value2 := argvalue2
-    argvalue3 := flag.Arg(4)
-    value3 := argvalue3
-    tmp4, err60 := (strconv.Atoi(flag.Arg(5)))
-    if err60 != nil {
-      Usage()
-      return
-    }
-    argvalue4 := int32(tmp4)
-    value4 := argvalue4
-    argvalue5 := flag.Arg(6)
-    value5 := argvalue5
-    fmt.Print(client.Unfreeze(context.Background(), value0, value1, value2, value3, value4, value5))
-    fmt.Print("\n")
-    break
-  case "Charge":
-    if flag.NArg() - 1 != 7 {
-      fmt.Fprintln(os.Stderr, "Charge requires 7 args")
-      flag.Usage()
-    }
-    argvalue0, err62 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err62 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err63 := (strconv.Atoi(flag.Arg(2)))
-    if err63 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    tmp2, err64 := (strconv.Atoi(flag.Arg(3)))
-    if err64 != nil {
-      Usage()
-      return
-    }
-    argvalue2 := int32(tmp2)
-    value2 := argvalue2
-    argvalue3 := flag.Arg(4)
-    value3 := argvalue3
-    argvalue4 := flag.Arg(5)
-    value4 := argvalue4
-    tmp5, err67 := (strconv.Atoi(flag.Arg(6)))
-    if err67 != nil {
-      Usage()
-      return
-    }
-    argvalue5 := int32(tmp5)
-    value5 := argvalue5
-    argvalue6 := flag.Arg(7)
-    value6 := argvalue6
-    fmt.Print(client.Charge(context.Background(), value0, value1, value2, value3, value4, value5, value6))
-    fmt.Print("\n")
-    break
-  case "Transfer":
-    if flag.NArg() - 1 != 5 {
-      fmt.Fprintln(os.Stderr, "Transfer requires 5 args")
-      flag.Usage()
-    }
-    argvalue0, err69 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err69 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    argvalue1, err70 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-    if err70 != nil {
-      Usage()
-      return
-    }
-    value1 := argvalue1
-    tmp2, err71 := (strconv.Atoi(flag.Arg(3)))
-    if err71 != nil {
-      Usage()
-      return
-    }
-    argvalue2 := int32(tmp2)
-    value2 := argvalue2
-    tmp3, err72 := (strconv.Atoi(flag.Arg(4)))
-    if err72 != nil {
-      Usage()
-      return
-    }
-    argvalue3 := int32(tmp3)
-    value3 := argvalue3
-    argvalue4 := flag.Arg(5)
-    value4 := argvalue4
-    fmt.Print(client.Transfer(context.Background(), value0, value1, value2, value3, value4))
-    fmt.Print("\n")
-    break
-  case "RequestTakeOut":
-    if flag.NArg() - 1 != 5 {
-      fmt.Fprintln(os.Stderr, "RequestTakeOut requires 5 args")
-      flag.Usage()
-    }
-    argvalue0, err74 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err74 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err75 := (strconv.Atoi(flag.Arg(2)))
-    if err75 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    tmp2, err76 := (strconv.Atoi(flag.Arg(3)))
-    if err76 != nil {
-      Usage()
-      return
-    }
-    argvalue2 := int32(tmp2)
-    value2 := argvalue2
-    tmp3, err77 := (strconv.Atoi(flag.Arg(4)))
-    if err77 != nil {
-      Usage()
-      return
-    }
-    argvalue3 := int32(tmp3)
-    value3 := argvalue3
-    argvalue4 := flag.Arg(5)
-    value4 := argvalue4
-    fmt.Print(client.RequestTakeOut(context.Background(), value0, value1, value2, value3, value4))
-    fmt.Print("\n")
-    break
-  case "ReviewTakeOut":
-    if flag.NArg() - 1 != 6 {
-      fmt.Fprintln(os.Stderr, "ReviewTakeOut requires 6 args")
-      flag.Usage()
-    }
-    argvalue0, err79 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err79 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    argvalue1, err80 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-    if err80 != nil {
-      Usage()
-      return
-    }
-    value1 := argvalue1
-    argvalue2 := flag.Arg(3) == "true"
-    value2 := argvalue2
-    argvalue3 := flag.Arg(4)
-    value3 := argvalue3
-    tmp4, err83 := (strconv.Atoi(flag.Arg(5)))
-    if err83 != nil {
-      Usage()
-      return
-    }
-    argvalue4 := int32(tmp4)
-    value4 := argvalue4
-    argvalue5 := flag.Arg(6)
-    value5 := argvalue5
-    fmt.Print(client.ReviewTakeOut(context.Background(), value0, value1, value2, value3, value4, value5))
-    fmt.Print("\n")
-    break
-  case "FinishTakeOut":
-    if flag.NArg() - 1 != 3 {
-      fmt.Fprintln(os.Stderr, "FinishTakeOut requires 3 args")
-      flag.Usage()
-    }
-    argvalue0, err85 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err85 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    argvalue1, err86 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-    if err86 != nil {
-      Usage()
-      return
-    }
-    value1 := argvalue1
-    argvalue2 := flag.Arg(3)
-    value2 := argvalue2
-    fmt.Print(client.FinishTakeOut(context.Background(), value0, value1, value2))
-    fmt.Print("\n")
-    break
-  case "PagingWalletLog":
-    if flag.NArg() - 1 != 2 {
-      fmt.Fprintln(os.Stderr, "PagingWalletLog requires 2 args")
-      flag.Usage()
-    }
-    argvalue0, err88 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err88 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    arg89 := flag.Arg(2)
-    mbTrans90 := thrift.NewTMemoryBufferLen(len(arg89))
-    defer mbTrans90.Close()
-    _, err91 := mbTrans90.WriteString(arg89)
-    if err91 != nil {
-      Usage()
-      return
-    }
-    factory92 := thrift.NewTJSONProtocolFactory()
-    jsProt93 := factory92.GetProtocol(mbTrans90)
-    argvalue1 := ttype.NewSPagingParams()
-    err94 := argvalue1.Read(jsProt93)
-    if err94 != nil {
-      Usage()
-      return
-    }
-    value1 := argvalue1
-    fmt.Print(client.PagingWalletLog(context.Background(), value0, value1))
-    fmt.Print("\n")
-    break
-  case "":
-    Usage()
-    break
-  default:
-    fmt.Fprintln(os.Stderr, "Invalid function ", cmd)
-  }
+	flag.Usage = Usage
+	var host string
+	var port int
+	var protocol string
+	var urlString string
+	var framed bool
+	var useHttp bool
+	headers := make(httpHeaders)
+	var parsedUrl *url.URL
+	var trans thrift.TTransport
+	_ = strconv.Atoi
+	_ = math.Abs
+	flag.Usage = Usage
+	flag.StringVar(&host, "h", "localhost", "Specify host and port")
+	flag.IntVar(&port, "p", 9090, "Specify port")
+	flag.StringVar(&protocol, "P", "binary", "Specify the protocol (binary, compact, simplejson, json)")
+	flag.StringVar(&urlString, "u", "", "Specify the url")
+	flag.BoolVar(&framed, "framed", false, "Use framed transport")
+	flag.BoolVar(&useHttp, "http", false, "Use http")
+	flag.Var(headers, "H", "Headers to set on the http(s) request (e.g. -H \"Key: Value\")")
+	flag.Parse()
+
+	if len(urlString) > 0 {
+		var err error
+		parsedUrl, err = url.Parse(urlString)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
+			flag.Usage()
+		}
+		host = parsedUrl.Host
+		useHttp = len(parsedUrl.Scheme) <= 0 || parsedUrl.Scheme == "http" || parsedUrl.Scheme == "https"
+	} else if useHttp {
+		_, err := url.Parse(fmt.Sprint("http://", host, ":", port))
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
+			flag.Usage()
+		}
+	}
+
+	cmd := flag.Arg(0)
+	var err error
+	if useHttp {
+		trans, err = thrift.NewTHttpClient(parsedUrl.String())
+		if len(headers) > 0 {
+			httptrans := trans.(*thrift.THttpClient)
+			for key, value := range headers {
+				httptrans.SetHeader(key, value)
+			}
+		}
+	} else {
+		portStr := fmt.Sprint(port)
+		if strings.Contains(host, ":") {
+			host, portStr, err = net.SplitHostPort(host)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "error with host:", err)
+				os.Exit(1)
+			}
+		}
+		trans, err = thrift.NewTSocket(net.JoinHostPort(host, portStr))
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "error resolving address:", err)
+			os.Exit(1)
+		}
+		if framed {
+			trans = thrift.NewTFramedTransport(trans)
+		}
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error creating transport", err)
+		os.Exit(1)
+	}
+	defer trans.Close()
+	var protocolFactory thrift.TProtocolFactory
+	switch protocol {
+	case "compact":
+		protocolFactory = thrift.NewTCompactProtocolFactory()
+		break
+	case "simplejson":
+		protocolFactory = thrift.NewTSimpleJSONProtocolFactory()
+		break
+	case "json":
+		protocolFactory = thrift.NewTJSONProtocolFactory()
+		break
+	case "binary", "":
+		protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
+		break
+	default:
+		fmt.Fprintln(os.Stderr, "Invalid protocol specified: ", protocol)
+		Usage()
+		os.Exit(1)
+	}
+	iprot := protocolFactory.GetProtocol(trans)
+	oprot := protocolFactory.GetProtocol(trans)
+	client := wallet_service.NewWalletServiceClient(thrift.NewTStandardClient(iprot, oprot))
+	if err := trans.Open(); err != nil {
+		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
+		os.Exit(1)
+	}
+
+	switch cmd {
+	case "CreateWallet":
+		if flag.NArg()-1 != 4 {
+			fmt.Fprintln(os.Stderr, "CreateWallet requires 4 args")
+			flag.Usage()
+		}
+		argvalue0, err30 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err30 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err31 := (strconv.Atoi(flag.Arg(2)))
+		if err31 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		tmp2, err32 := (strconv.Atoi(flag.Arg(3)))
+		if err32 != nil {
+			Usage()
+			return
+		}
+		argvalue2 := int32(tmp2)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		fmt.Print(client.CreateWallet(context.Background(), value0, value1, value2, value3))
+		fmt.Print("\n")
+		break
+	case "GetWalletId":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetWalletId requires 2 args")
+			flag.Usage()
+		}
+		argvalue0, err34 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err34 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err35 := (strconv.Atoi(flag.Arg(2)))
+		if err35 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		fmt.Print(client.GetWalletId(context.Background(), value0, value1))
+		fmt.Print("\n")
+		break
+	case "GetWallet":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetWallet requires 1 args")
+			flag.Usage()
+		}
+		argvalue0, err36 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err36 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		fmt.Print(client.GetWallet(context.Background(), value0))
+		fmt.Print("\n")
+		break
+	case "GetWalletLog":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetWalletLog requires 2 args")
+			flag.Usage()
+		}
+		argvalue0, err37 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err37 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		argvalue1, err38 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err38 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		fmt.Print(client.GetWalletLog(context.Background(), value0, value1))
+		fmt.Print("\n")
+		break
+	case "Adjust":
+		if flag.NArg()-1 != 6 {
+			fmt.Fprintln(os.Stderr, "Adjust requires 6 args")
+			flag.Usage()
+		}
+		argvalue0, err39 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err39 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err40 := (strconv.Atoi(flag.Arg(2)))
+		if err40 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		tmp4, err43 := (strconv.Atoi(flag.Arg(5)))
+		if err43 != nil {
+			Usage()
+			return
+		}
+		argvalue4 := int32(tmp4)
+		value4 := argvalue4
+		argvalue5 := flag.Arg(6)
+		value5 := argvalue5
+		fmt.Print(client.Adjust(context.Background(), value0, value1, value2, value3, value4, value5))
+		fmt.Print("\n")
+		break
+	case "Discount":
+		if flag.NArg()-1 != 5 {
+			fmt.Fprintln(os.Stderr, "Discount requires 5 args")
+			flag.Usage()
+		}
+		argvalue0, err45 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err45 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err46 := (strconv.Atoi(flag.Arg(2)))
+		if err46 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		argvalue4 := flag.Arg(5) == "true"
+		value4 := argvalue4
+		fmt.Print(client.Discount(context.Background(), value0, value1, value2, value3, value4))
+		fmt.Print("\n")
+		break
+	case "Freeze":
+		if flag.NArg()-1 != 6 {
+			fmt.Fprintln(os.Stderr, "Freeze requires 6 args")
+			flag.Usage()
+		}
+		argvalue0, err50 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err50 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err51 := (strconv.Atoi(flag.Arg(2)))
+		if err51 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		tmp4, err54 := (strconv.Atoi(flag.Arg(5)))
+		if err54 != nil {
+			Usage()
+			return
+		}
+		argvalue4 := int32(tmp4)
+		value4 := argvalue4
+		argvalue5 := flag.Arg(6)
+		value5 := argvalue5
+		fmt.Print(client.Freeze(context.Background(), value0, value1, value2, value3, value4, value5))
+		fmt.Print("\n")
+		break
+	case "Unfreeze":
+		if flag.NArg()-1 != 6 {
+			fmt.Fprintln(os.Stderr, "Unfreeze requires 6 args")
+			flag.Usage()
+		}
+		argvalue0, err56 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err56 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err57 := (strconv.Atoi(flag.Arg(2)))
+		if err57 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		tmp4, err60 := (strconv.Atoi(flag.Arg(5)))
+		if err60 != nil {
+			Usage()
+			return
+		}
+		argvalue4 := int32(tmp4)
+		value4 := argvalue4
+		argvalue5 := flag.Arg(6)
+		value5 := argvalue5
+		fmt.Print(client.Unfreeze(context.Background(), value0, value1, value2, value3, value4, value5))
+		fmt.Print("\n")
+		break
+	case "Charge":
+		if flag.NArg()-1 != 7 {
+			fmt.Fprintln(os.Stderr, "Charge requires 7 args")
+			flag.Usage()
+		}
+		argvalue0, err62 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err62 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err63 := (strconv.Atoi(flag.Arg(2)))
+		if err63 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		tmp2, err64 := (strconv.Atoi(flag.Arg(3)))
+		if err64 != nil {
+			Usage()
+			return
+		}
+		argvalue2 := int32(tmp2)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		argvalue4 := flag.Arg(5)
+		value4 := argvalue4
+		tmp5, err67 := (strconv.Atoi(flag.Arg(6)))
+		if err67 != nil {
+			Usage()
+			return
+		}
+		argvalue5 := int32(tmp5)
+		value5 := argvalue5
+		argvalue6 := flag.Arg(7)
+		value6 := argvalue6
+		fmt.Print(client.Charge(context.Background(), value0, value1, value2, value3, value4, value5, value6))
+		fmt.Print("\n")
+		break
+	case "Transfer":
+		if flag.NArg()-1 != 5 {
+			fmt.Fprintln(os.Stderr, "Transfer requires 5 args")
+			flag.Usage()
+		}
+		argvalue0, err69 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err69 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		argvalue1, err70 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err70 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		tmp2, err71 := (strconv.Atoi(flag.Arg(3)))
+		if err71 != nil {
+			Usage()
+			return
+		}
+		argvalue2 := int32(tmp2)
+		value2 := argvalue2
+		tmp3, err72 := (strconv.Atoi(flag.Arg(4)))
+		if err72 != nil {
+			Usage()
+			return
+		}
+		argvalue3 := int32(tmp3)
+		value3 := argvalue3
+		argvalue4 := flag.Arg(5)
+		value4 := argvalue4
+		fmt.Print(client.Transfer(context.Background(), value0, value1, value2, value3, value4))
+		fmt.Print("\n")
+		break
+	case "RequestTakeOut":
+		if flag.NArg()-1 != 5 {
+			fmt.Fprintln(os.Stderr, "RequestTakeOut requires 5 args")
+			flag.Usage()
+		}
+		argvalue0, err74 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err74 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err75 := (strconv.Atoi(flag.Arg(2)))
+		if err75 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		tmp2, err76 := (strconv.Atoi(flag.Arg(3)))
+		if err76 != nil {
+			Usage()
+			return
+		}
+		argvalue2 := int32(tmp2)
+		value2 := argvalue2
+		tmp3, err77 := (strconv.Atoi(flag.Arg(4)))
+		if err77 != nil {
+			Usage()
+			return
+		}
+		argvalue3 := int32(tmp3)
+		value3 := argvalue3
+		argvalue4 := flag.Arg(5)
+		value4 := argvalue4
+		fmt.Print(client.RequestTakeOut(context.Background(), value0, value1, value2, value3, value4))
+		fmt.Print("\n")
+		break
+	case "ReviewTakeOut":
+		if flag.NArg()-1 != 6 {
+			fmt.Fprintln(os.Stderr, "ReviewTakeOut requires 6 args")
+			flag.Usage()
+		}
+		argvalue0, err79 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err79 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		argvalue1, err80 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err80 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3) == "true"
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		tmp4, err83 := (strconv.Atoi(flag.Arg(5)))
+		if err83 != nil {
+			Usage()
+			return
+		}
+		argvalue4 := int32(tmp4)
+		value4 := argvalue4
+		argvalue5 := flag.Arg(6)
+		value5 := argvalue5
+		fmt.Print(client.ReviewTakeOut(context.Background(), value0, value1, value2, value3, value4, value5))
+		fmt.Print("\n")
+		break
+	case "FinishTakeOut":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "FinishTakeOut requires 3 args")
+			flag.Usage()
+		}
+		argvalue0, err85 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err85 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		argvalue1, err86 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err86 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		fmt.Print(client.FinishTakeOut(context.Background(), value0, value1, value2))
+		fmt.Print("\n")
+		break
+	case "PagingWalletLog":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "PagingWalletLog requires 2 args")
+			flag.Usage()
+		}
+		argvalue0, err88 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err88 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		arg89 := flag.Arg(2)
+		mbTrans90 := thrift.NewTMemoryBufferLen(len(arg89))
+		defer mbTrans90.Close()
+		_, err91 := mbTrans90.WriteString(arg89)
+		if err91 != nil {
+			Usage()
+			return
+		}
+		factory92 := thrift.NewTJSONProtocolFactory()
+		jsProt93 := factory92.GetProtocol(mbTrans90)
+		argvalue1 := ttype.NewSPagingParams()
+		err94 := argvalue1.Read(jsProt93)
+		if err94 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		fmt.Print(client.PagingWalletLog(context.Background(), value0, value1))
+		fmt.Print("\n")
+		break
+	case "":
+		Usage()
+		break
+	default:
+		fmt.Fprintln(os.Stderr, "Invalid function ", cmd)
+	}
 }

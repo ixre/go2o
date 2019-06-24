@@ -42,7 +42,7 @@ func createKafkaProducer(address []string) sarama.AsyncProducer {
 	var err error
 	var retryTimes = 10
 	log.Println("[ Go2o][ Kafka]: start kafka producer...")
-	for i:=0 ;i<retryTimes;i++ {
+	for i := 0; i < retryTimes; i++ {
 		producer, err = sarama.NewAsyncProducer(address, config)
 		if err == nil {
 			break

@@ -75,7 +75,7 @@ func (s *foundationService) GetRegistry(ctx context.Context, key string) (string
 // 创建用户自定义注册项
 func (s *foundationService) CreateUserRegistry(ctx context.Context, key string, defaultValue string, description string) (r *ttype.Result_, err error) {
 	if s.registryRepo.Get(key) != nil {
-		return s.resultWithCode(-1,"registry is exist"), nil
+		return s.resultWithCode(-1, "registry is exist"), nil
 	}
 	rv := &registry.Registry{
 		Key:          key,

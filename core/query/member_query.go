@@ -210,7 +210,6 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
 	return list
 }
 
-
 // 获取分页商铺收藏
 func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 	where string) (num int, rows []*dto.PagedShopFav) {

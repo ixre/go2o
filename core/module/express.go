@@ -27,7 +27,7 @@ func (e *ExpressModule) Init() {
 		cli.CreateUserRegistry(thrift.Context, keys[0], "1314567", "快递鸟接口业务ID")
 		cli.CreateUserRegistry(thrift.Context, keys[1], "27d809c3-51b6-479c-9b77-6b98d7f3d41", "快递鸟接口KEY")
 		data, _ := cli.GetRegistries(thrift.Context, keys)
-		kdniao.EBusinessID =  data[keys[0]]
+		kdniao.EBusinessID = data[keys[0]]
 		kdniao.AppKey = data[keys[1]]
 	} else {
 		log.Println("intialize express module error:", err.Error())

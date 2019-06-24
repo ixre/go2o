@@ -36,13 +36,13 @@ func init() {
 
 // 设置Thrift地址
 func Configure(server string) *ClientFactory {
-	if server == ""{
+	if server == "" {
 		server = factory.thriftServer
 	}
 	log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
 	factory = NewClientFactory(server, false, "", "")
 	var retryTimes = 10
-	for i:=0 ;i<retryTimes;i++ {
+	for i := 0; i < retryTimes; i++ {
 		trans, _, err := StatusServeClient()
 		if err == nil {
 			trans.Close()
@@ -55,6 +55,7 @@ func Configure(server string) *ClientFactory {
 	}
 	return factory
 }
+
 // 状态客户端
 func StatusServeClient() (thrift.TTransport, *status_service.StatusServiceClient, error) {
 	trans, cli, err := factory.GetClient("merchant")

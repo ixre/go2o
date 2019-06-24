@@ -21,6 +21,7 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 		"account":    m.account,
 		"profile":    m.profile,
 		"checkToken": m.checkToken,
+		"complex":    m.complex,
 	})
 }
 
@@ -86,6 +87,22 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 			return r
 		}
 		err = err1
+	}
+	return api.NewErrorResponse(err.Error())
+}
+
+// 账号信息
+func (m MemberApi) complex(ctx api.Context) interface{} {
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	if len(code) == 0 {
+		return api.NewErrorResponse("missing params: code or token")
+	}
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		memberId, _ := cli.GetMemberId(thrift.Context, code)
+		r, _ := cli.Complex(thrift.Context, int64(memberId))
+		return r
 	}
 	return api.NewErrorResponse(err.Error())
 }

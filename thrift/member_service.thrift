@@ -205,28 +205,17 @@ struct SAccount {
 }
 
 struct SComplexMember {
-    1: i64 MemberId
-    2: string Usr
-    3: string Name
-    4: string Avatar
-    5: i32 Exp
-    6: i32 Level
-    7: string LevelName
-    8: string LevelSign
-    9: i32 LevelOfficial
-    10: i32	PremiumUser
-    11: i64	PremiumExpires
-    12: string InvitationCode
-    13: i32 TrustAuthState
-    14: i32 State
-    15: i64 Integral
-    16: double Balance
-    17: double WalletBalance
-    18: double GrowBalance
-    19: double GrowAmount
-    20: double GrowEarnings
-    21: double GrowTotalEarnings
-    22: i64 UpdateTime
+    1: string Name
+    2: string Avatar
+    3: string Phone
+    4: i32 Exp
+    5: i32 Level
+    6: string LevelName
+    7: string InvitationCode
+    8: i32 TrustAuthState
+    9: i32 PremiumUser
+    10: i32 Flag
+    11: i64 UpdateTime
 }
 
 struct SMemberRelation {
@@ -271,10 +260,12 @@ struct SMemberLevelInfo{
     2:string LevelName
     /** 经验值 */
     3:i32 Exp
+    /** 编程符号 */
+    4:string ProgramSignal
     /** 下一级等级,返回-1表示最高级别 */
-    4:i32 NextLevel
+    5:i32 NextLevel
     /** 下一等级名称 */
-    5:string NextLevelName
+    6:string NextLevelName
     /** 需要经验值 */
-    6:i32 RequireExp
+    7:i32 RequireExp
 }

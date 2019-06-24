@@ -47,7 +47,6 @@ type memberService struct {
 	serviceUtil
 }
 
-
 // 根据会员编码获取会员ID
 func (s *memberService) GetMemberId(ctx context.Context, memberCode string) (r int64, err error) {
 	return int64(s.repo.GetMemberIdByCode(memberCode)), nil
@@ -72,8 +71,8 @@ func (s *memberService) init() *memberService {
 	db.GetOrm().Select(&list, "")
 	for _, v := range list {
 		im := s.repo.CreateMember(v)
-		if rl := im.GetRelation();rl  != nil {
-			im.BindInviter(rl.InviterId,true)
+		if rl := im.GetRelation(); rl != nil {
+			im.BindInviter(rl.InviterId, true)
 		}
 		//if len(v.Code) < 6 {
 		//	im := s.repo.CreateMember(v)
@@ -362,6 +361,7 @@ func (s *memberService) MemberLevelInfo(ctx context.Context, memberId int64) (r 
 		level.Level = int32(v.Level)
 		lv := im.GetLevel()
 		level.LevelName = lv.Name
+		level.ProgramSignal = lv.ProgramSignal
 		nextLv := s.repo.GetManager().LevelManager().GetNextLevelById(lv.ID)
 		if nextLv == nil {
 			level.NextLevel = -1
@@ -373,7 +373,6 @@ func (s *memberService) MemberLevelInfo(ctx context.Context, memberId int64) (r 
 	}
 	return level, nil
 }
-
 
 // 更改会员等级
 func (s *memberService) UpdateLevel(ctx context.Context, memberId int64, level int32,

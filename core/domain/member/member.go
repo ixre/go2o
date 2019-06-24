@@ -76,35 +76,18 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	mv := m.GetValue()
 	lv := m.GetLevel()
 	pf := m.Profile()
-	pro := pf.GetProfile()
-	acv := m.GetAccount().GetValue()
-	// 实名信息
 	tr := pf.GetTrustedInfo()
-
 	s := &member.ComplexMember{
-		MemberId:          m.GetAggregateRootId(),
-		Usr:               mv.User,
-		Name:              pro.Name,
-		Avatar:            format.GetResUrl(pro.Avatar),
-		Exp:               mv.Exp,
-		Level:             mv.Level,
-		LevelOfficial:     lv.IsOfficial,
-		LevelSign:         lv.ProgramSignal,
-		LevelName:         lv.Name,
-		InvitationCode:    mv.InvitationCode,
-		TrustAuthState:    tr.ReviewState,
-		PremiumUser:       mv.PremiumUser,
-		PremiumExpires:    mv.PremiumExpires,
-		Flag:              mv.Flag,
-		State:             mv.State,
-		Integral:          acv.Integral,
-		Balance:           float64(acv.Balance),
-		WalletBalance:     float64(acv.WalletBalance),
-		GrowBalance:       float64(acv.GrowBalance),
-		GrowAmount:        float64(acv.GrowAmount),
-		GrowEarnings:      float64(acv.GrowEarnings),
-		GrowTotalEarnings: float64(acv.GrowTotalEarnings),
-		UpdateTime:        mv.UpdateTime,
+		Name:           mv.Name,
+		Avatar:         format.GetResUrl(mv.Avatar),
+		Exp:            mv.Exp,
+		Level:          mv.Level,
+		LevelName:      lv.Name,
+		InvitationCode: mv.InvitationCode,
+		TrustAuthState: tr.ReviewState,
+		PremiumUser:    mv.PremiumUser,
+		Flag:           mv.Flag,
+		UpdateTime:     mv.UpdateTime,
 	}
 	return s
 }
@@ -410,10 +393,10 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 		rel := m.repo.GetRelation(m.GetAggregateRootId())
 		if rel == nil {
 			rel = &member.InviteRelation{
-				MemberId:   m.GetAggregateRootId(),
-				CardCard:   "",
-				InviterId:  0,
-				RegMchId:   0,
+				MemberId:  m.GetAggregateRootId(),
+				CardCard:  "",
+				InviterId: 0,
+				RegMchId:  0,
 			}
 		}
 		m.relation = rel
@@ -637,16 +620,14 @@ func (m *memberImpl) generateInvitationCode() string {
 	return code
 }
 
-
 // 更新邀请关系
 func (m *memberImpl) updateDepthInvite(r *member.InviteRelation) {
-	if r.InviterId > 0{
+	if r.InviterId > 0 {
 		arr := m.Invitation().InviterArray(r.InviterId, 2)
 		r.InviterD2 = arr[0]
 		r.InviterD3 = arr[1]
 	}
 }
-
 
 // 保存推荐关系
 func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
@@ -664,7 +645,7 @@ func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
 // 绑定邀请人,如果已邀请,force为true时更新
 func (m *memberImpl) BindInviter(memberId int64, force bool) error {
 	if memberId > 0 {
-		if rm := m.repo.GetMember(memberId);rm == nil {
+		if rm := m.repo.GetMember(memberId); rm == nil {
 			return member.ErrNoValidInviter
 		}
 	}

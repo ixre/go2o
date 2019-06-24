@@ -27,12 +27,13 @@ var (
 	zhNameRegexp        = regexp.MustCompile("^[\u4e00-\u9fa5]{2,6}$")
 )
 var keys = []string{"bank4e_trust_on", "bank4e_jd_app_key"}
+
 type Bank4E struct {
 	memberRepo member.IMemberRepo
 	valueRepo  valueobject.IValueRepo
 	storage    storage.Interface
 	appKey     string
-	open      bool
+	open       bool
 }
 
 func (b *Bank4E) SetApp(app gof.App) {
@@ -217,7 +218,7 @@ func (b *Bank4E) turnCheckInfo(r bool) {
 // 调用验证接口
 func (b *Bank4E) b4eApi(realName, idCard, phone, bankAccount string) error {
 	apiServer := "https://way.jd.com/youhuoBeijing/QryBankCardBy4Element"
-	if !b.open{
+	if !b.open {
 		return errors.New("未开启四要素实名认证")
 	}
 	if b.appKey == "" {

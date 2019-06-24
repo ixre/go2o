@@ -16,16 +16,16 @@ import (
 	"go2o/app"
 	"go2o/core"
 	"go2o/core/service/rsi"
-	 rs "go2o/core/service/thrift/service"
+	rs "go2o/core/service/thrift/service"
 	"os"
 )
 
 func main() {
 	var (
-		addr    string
-		conf    string
-		debug   bool
-		trace   bool
+		addr  string
+		conf  string
+		debug bool
+		trace bool
 	)
 
 	flag.StringVar(&addr, "addr", ":1427", "Address to listen to")
