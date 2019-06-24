@@ -329,10 +329,12 @@ type (
 		MemberId int64 `db:"member_id" pk:"yes"`
 		// 会员卡号
 		CardCard string `db:"card_no"`
-		// 推荐人（会员）
+		// 邀请人（会员）
 		InviterId int64 `db:"inviter_id"`
-		// 会员关系字符串
-		InviterStr string `db:"inviter_str"`
+		// 邀请会员编号(depth2)
+		InviterD2 int64 `db:"inviter_d2"`
+		// 邀请会员编号(depth3)
+		InviterD3 int64 `db:"inviter_d3"`
 		// 注册关联商户编号
 		RegMchId int32 `db:"reg_mchid"`
 	}

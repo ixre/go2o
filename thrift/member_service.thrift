@@ -49,6 +49,8 @@ service MemberService{
     SComplexMember Complex(1:i64 memberId)
     // 检查资料是否完成
     ttype.Result CheckProfileComplete(1:i64 memberId)
+    /** 获取会员等级信息 */
+    SMemberLevelInfo MemberLevelInfo(1:i64 memberId)
     // 更改会员等级
     ttype.Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
     /* 更改手机号码，不验证手机格式 */
@@ -71,10 +73,12 @@ service MemberService{
     SAccount GetAccount(1:i64 memberId)
     // 获取自己的邀请人会员编号数组
     list<i64> InviterArray(1:i64 memberId,2:i32 depth)
+    // 获取邀请会员的数量
+    i32 InviteMembersQuantity(1:i64 memberId,2:i32 depth)
     // 按条件获取荐指定等级会员的数量
-    i32 GetInviterQuantity(1:i64 memberId,2:map<string,string> data)
+    i32 QueryInviteQuantity(1:i64 memberId,2:map<string,string> data)
     // 按条件获取荐指定等级会员的列表
-    list<i64> GetInviterArray(1:i64 memberId,2:map<string,string> data)
+    list<i64> QueryInviteArray(1:i64 memberId,2:map<string,string> data)
     // 账户充值,amount精确到分
     ttype.Result AccountCharge(1:i64 memberId ,2:i32 account,3:string title,
       4:i32 amount,5:string outerNo,6:string remark)
@@ -257,4 +261,20 @@ struct SAddress {
     8: string Area
     9: string Address
     10: i32 IsDefault
+}
+
+/* 会员等级信息 */
+struct SMemberLevelInfo{
+    /** 等级 */
+    1:i32 Level
+    /** 等级名称 */
+    2:string LevelName
+    /** 经验值 */
+    3:i32 Exp
+    /** 下一级等级,返回-1表示最高级别 */
+    4:i32 NextLevel
+    /** 下一等级名称 */
+    5:string NextLevelName
+    /** 需要经验值 */
+    6:i32 RequireExp
 }

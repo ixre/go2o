@@ -370,7 +370,6 @@ func MemberRelationDto(src *member.InviteRelation) *member_service.SMemberRelati
 		MemberId:      src.MemberId,
 		CardId:        src.CardCard,
 		InviterId:     src.InviterId,
-		InviterStr:    src.InviterStr,
 		RegisterMchId: src.RegMchId,
 	}
 }

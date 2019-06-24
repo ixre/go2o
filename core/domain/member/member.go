@@ -12,9 +12,7 @@ package member
 //todo: 要注意UpdateTime的更新
 
 import (
-	"bytes"
 	"errors"
-	"fmt"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
@@ -415,7 +413,6 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 				MemberId:   m.GetAggregateRootId(),
 				CardCard:   "",
 				InviterId:  0,
-				InviterStr: "",
 				RegMchId:   0,
 			}
 		}
@@ -640,53 +637,22 @@ func (m *memberImpl) generateInvitationCode() string {
 	return code
 }
 
-// 强制更新邀请关系
-func (m *memberImpl) forceUpdateInviterStr(r *member.InviteRelation) {
-	// 无邀请关系
-	if r.InviterId == 0 {
-		r.InviterStr = ""
-		return
-	}
-	level := m.registryRepo.Get(registry.MemberReferLayer).IntValue() - 1
-	if level < 0 {
-		level = 0
-	}
-	arr := m.Invitation().InviterArray(r.InviterId, level)
-	arr = append([]int64{r.InviterId}, arr...)
-
-	if len(arr) > 0 {
-		// 有邀请关系
-		buf := bytes.NewBuffer([]byte("{"))
-		for i, v := range arr {
-			if v == 0 {
-				continue
-			}
-			if buf.Len() > 1 {
-				buf.WriteString(",")
-			}
-			buf.WriteString("'r")
-			buf.WriteString(strconv.Itoa(i))
-			buf.WriteString("':")
-			buf.WriteString(strconv.Itoa(int(v)))
-		}
-		buf.WriteString("}")
-		r.InviterStr = buf.String()
-	}
-}
 
 // 更新邀请关系
-func (m *memberImpl) updateInviterStr(r *member.InviteRelation) {
-	prefix := fmt.Sprintf("{'r0':%d,", r.InviterId)
-	if !strings.HasPrefix(r.InviterStr, prefix) {
-		m.forceUpdateInviterStr(r)
+func (m *memberImpl) updateDepthInvite(r *member.InviteRelation) {
+	if r.InviterId > 0{
+		arr := m.Invitation().InviterArray(r.InviterId, 2)
+		r.InviterD2 = arr[0]
+		r.InviterD3 = arr[1]
 	}
 }
+
 
 // 保存推荐关系
 func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
 	m.relation = r
 	m.relation.MemberId = m.value.Id
-	m.updateInviterStr(m.relation)
+	m.updateDepthInvite(m.relation)
 	err := m.repo.SaveRelation(m.relation)
 	if err == nil {
 		// 推送关系更新消息
@@ -698,17 +664,13 @@ func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
 // 绑定邀请人,如果已邀请,force为true时更新
 func (m *memberImpl) BindInviter(memberId int64, force bool) error {
 	if memberId > 0 {
-		rm := m.repo.GetMember(memberId)
-		if rm == nil {
+		if rm := m.repo.GetMember(memberId);rm == nil {
 			return member.ErrNoValidInviter
 		}
 	}
 	rl := m.GetRelation()
-	if rl.InviterId != memberId {
+	if true || rl.InviterId != memberId {
 		rl.InviterId = memberId
-		if memberId == 0 {
-			rl.InviterStr = ""
-		}
 		return m.saveRelation(rl)
 	}
 	return nil
