@@ -190,8 +190,8 @@ struct SAccount {
     6: double ExpiredBalance
     7: double WalletBalance
     8: double FreezeWallet
-    9: double ExpiredPresent
-    10: double TotalPresentFee
+    9: double ExpiredWallet
+    10: double TotalWalletAmount
     11: double FlowBalance
     12: double GrowBalance
     13: double GrowAmount
@@ -266,6 +266,8 @@ struct SMemberLevelInfo{
     5:i32 NextLevel
     /** 下一等级名称 */
     6:string NextLevelName
+    /** 编程符号 */
+    7:string NextProgramSignal
     /** 需要经验值 */
-    7:i32 RequireExp
+    8:i32 RequireExp
 }

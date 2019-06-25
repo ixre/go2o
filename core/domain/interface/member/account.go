@@ -203,7 +203,7 @@ type (
 		//冻结赠送金额
 		FreezeWallet float32 `db:"freeze_wallet"`
 		//失效的赠送金额
-		ExpiredPresent float32 `db:"expired_wallet"`
+		ExpiredWallet float32 `db:"expired_wallet"`
 		//总赠送金额
 		TotalWalletAmount float32 `db:"total_wallet_amount"`
 		//流动账户余额

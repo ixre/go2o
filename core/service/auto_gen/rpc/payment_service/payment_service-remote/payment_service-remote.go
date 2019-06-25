@@ -4,399 +4,399 @@
 package main
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"github.com/apache/thrift/lib/go/thrift"
-	"go2o/core/service/auto_gen/rpc/payment_service"
+        "context"
+        "flag"
+        "fmt"
+        "math"
+        "net"
+        "net/url"
+        "os"
+        "strconv"
+        "strings"
+        "github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
-	"math"
-	"net"
-	"net/url"
-	"os"
-	"strconv"
-	"strings"
+        "go2o/core/service/auto_gen/rpc/payment_service"
 )
 
 var _ = ttype.GoUnusedProtection__
 
 func Usage() {
-	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
-	flag.PrintDefaults()
-	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  Result SubmitPaymentOrder(SPaymentOrder o)")
-	fmt.Fprintln(os.Stderr, "  SPaymentOrder GetPaymentOrder(string orderNo)")
-	fmt.Fprintln(os.Stderr, "  i32 GetPaymentOrderId(string tradeNo)")
-	fmt.Fprintln(os.Stderr, "  SPaymentOrder GetPaymentOrderById(i32 id)")
-	fmt.Fprintln(os.Stderr, "  Result AdjustOrder(string paymentNo, double amount)")
-	fmt.Fprintln(os.Stderr, "  Result DiscountByBalance(i32 orderId, string remark)")
-	fmt.Fprintln(os.Stderr, "  Result DiscountByIntegral(i32 orderId, i64 integral, bool ignoreOut)")
-	fmt.Fprintln(os.Stderr, "  Result PaymentByWallet(string tradeNo, bool mergePay, string remark)")
-	fmt.Fprintln(os.Stderr, "  Result HybridPayment(i32 orderId, string remark)")
-	fmt.Fprintln(os.Stderr, "  Result FinishPayment(string tradeNo, string spName, string outerNo)")
-	fmt.Fprintln(os.Stderr, "  Result GatewayV1(string action, i64 userId,  data)")
-	fmt.Fprintln(os.Stderr, "  SPrepareTradeData GetPaymentOrderInfo(string tradeNo, bool mergePay)")
-	fmt.Fprintln(os.Stderr, "  Result MixedPayment(string tradeNo,  data)")
-	fmt.Fprintln(os.Stderr)
-	os.Exit(0)
+  fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
+  flag.PrintDefaults()
+  fmt.Fprintln(os.Stderr, "\nFunctions:")
+  fmt.Fprintln(os.Stderr, "  Result SubmitPaymentOrder(SPaymentOrder o)")
+  fmt.Fprintln(os.Stderr, "  SPaymentOrder GetPaymentOrder(string orderNo)")
+  fmt.Fprintln(os.Stderr, "  i32 GetPaymentOrderId(string tradeNo)")
+  fmt.Fprintln(os.Stderr, "  SPaymentOrder GetPaymentOrderById(i32 id)")
+  fmt.Fprintln(os.Stderr, "  Result AdjustOrder(string paymentNo, double amount)")
+  fmt.Fprintln(os.Stderr, "  Result DiscountByBalance(i32 orderId, string remark)")
+  fmt.Fprintln(os.Stderr, "  Result DiscountByIntegral(i32 orderId, i64 integral, bool ignoreOut)")
+  fmt.Fprintln(os.Stderr, "  Result PaymentByWallet(string tradeNo, bool mergePay, string remark)")
+  fmt.Fprintln(os.Stderr, "  Result HybridPayment(i32 orderId, string remark)")
+  fmt.Fprintln(os.Stderr, "  Result FinishPayment(string tradeNo, string spName, string outerNo)")
+  fmt.Fprintln(os.Stderr, "  Result GatewayV1(string action, i64 userId,  data)")
+  fmt.Fprintln(os.Stderr, "  SPrepareTradeData GetPaymentOrderInfo(string tradeNo, bool mergePay)")
+  fmt.Fprintln(os.Stderr, "  Result MixedPayment(string tradeNo,  data)")
+  fmt.Fprintln(os.Stderr)
+  os.Exit(0)
 }
 
 type httpHeaders map[string]string
 
 func (h httpHeaders) String() string {
-	var m map[string]string = h
-	return fmt.Sprintf("%s", m)
+  var m map[string]string = h
+  return fmt.Sprintf("%s", m)
 }
 
 func (h httpHeaders) Set(value string) error {
-	parts := strings.Split(value, ": ")
-	if len(parts) != 2 {
-		return fmt.Errorf("header should be of format 'Key: Value'")
-	}
-	h[parts[0]] = parts[1]
-	return nil
+  parts := strings.Split(value, ": ")
+  if len(parts) != 2 {
+    return fmt.Errorf("header should be of format 'Key: Value'")
+  }
+  h[parts[0]] = parts[1]
+  return nil
 }
 
 func main() {
-	flag.Usage = Usage
-	var host string
-	var port int
-	var protocol string
-	var urlString string
-	var framed bool
-	var useHttp bool
-	headers := make(httpHeaders)
-	var parsedUrl *url.URL
-	var trans thrift.TTransport
-	_ = strconv.Atoi
-	_ = math.Abs
-	flag.Usage = Usage
-	flag.StringVar(&host, "h", "localhost", "Specify host and port")
-	flag.IntVar(&port, "p", 9090, "Specify port")
-	flag.StringVar(&protocol, "P", "binary", "Specify the protocol (binary, compact, simplejson, json)")
-	flag.StringVar(&urlString, "u", "", "Specify the url")
-	flag.BoolVar(&framed, "framed", false, "Use framed transport")
-	flag.BoolVar(&useHttp, "http", false, "Use http")
-	flag.Var(headers, "H", "Headers to set on the http(s) request (e.g. -H \"Key: Value\")")
-	flag.Parse()
-
-	if len(urlString) > 0 {
-		var err error
-		parsedUrl, err = url.Parse(urlString)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
-			flag.Usage()
-		}
-		host = parsedUrl.Host
-		useHttp = len(parsedUrl.Scheme) <= 0 || parsedUrl.Scheme == "http" || parsedUrl.Scheme == "https"
-	} else if useHttp {
-		_, err := url.Parse(fmt.Sprint("http://", host, ":", port))
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
-			flag.Usage()
-		}
-	}
-
-	cmd := flag.Arg(0)
-	var err error
-	if useHttp {
-		trans, err = thrift.NewTHttpClient(parsedUrl.String())
-		if len(headers) > 0 {
-			httptrans := trans.(*thrift.THttpClient)
-			for key, value := range headers {
-				httptrans.SetHeader(key, value)
-			}
-		}
-	} else {
-		portStr := fmt.Sprint(port)
-		if strings.Contains(host, ":") {
-			host, portStr, err = net.SplitHostPort(host)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "error with host:", err)
-				os.Exit(1)
-			}
-		}
-		trans, err = thrift.NewTSocket(net.JoinHostPort(host, portStr))
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "error resolving address:", err)
-			os.Exit(1)
-		}
-		if framed {
-			trans = thrift.NewTFramedTransport(trans)
-		}
-	}
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating transport", err)
-		os.Exit(1)
-	}
-	defer trans.Close()
-	var protocolFactory thrift.TProtocolFactory
-	switch protocol {
-	case "compact":
-		protocolFactory = thrift.NewTCompactProtocolFactory()
-		break
-	case "simplejson":
-		protocolFactory = thrift.NewTSimpleJSONProtocolFactory()
-		break
-	case "json":
-		protocolFactory = thrift.NewTJSONProtocolFactory()
-		break
-	case "binary", "":
-		protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
-		break
-	default:
-		fmt.Fprintln(os.Stderr, "Invalid protocol specified: ", protocol)
-		Usage()
-		os.Exit(1)
-	}
-	iprot := protocolFactory.GetProtocol(trans)
-	oprot := protocolFactory.GetProtocol(trans)
-	client := payment_service.NewPaymentServiceClient(thrift.NewTStandardClient(iprot, oprot))
-	if err := trans.Open(); err != nil {
-		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
-		os.Exit(1)
-	}
-
-	switch cmd {
-	case "SubmitPaymentOrder":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "SubmitPaymentOrder requires 1 args")
-			flag.Usage()
-		}
-		arg33 := flag.Arg(1)
-		mbTrans34 := thrift.NewTMemoryBufferLen(len(arg33))
-		defer mbTrans34.Close()
-		_, err35 := mbTrans34.WriteString(arg33)
-		if err35 != nil {
-			Usage()
-			return
-		}
-		factory36 := thrift.NewTJSONProtocolFactory()
-		jsProt37 := factory36.GetProtocol(mbTrans34)
-		argvalue0 := payment_service.NewSPaymentOrder()
-		err38 := argvalue0.Read(jsProt37)
-		if err38 != nil {
-			Usage()
-			return
-		}
-		value0 := payment_service.SPaymentOrder(argvalue0)
-		fmt.Print(client.SubmitPaymentOrder(context.Background(), value0))
-		fmt.Print("\n")
-		break
-	case "GetPaymentOrder":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetPaymentOrder requires 1 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		fmt.Print(client.GetPaymentOrder(context.Background(), value0))
-		fmt.Print("\n")
-		break
-	case "GetPaymentOrderId":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetPaymentOrderId requires 1 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		fmt.Print(client.GetPaymentOrderId(context.Background(), value0))
-		fmt.Print("\n")
-		break
-	case "GetPaymentOrderById":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err41 := (strconv.Atoi(flag.Arg(1)))
-		if err41 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.GetPaymentOrderById(context.Background(), value0))
-		fmt.Print("\n")
-		break
-	case "AdjustOrder":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "AdjustOrder requires 2 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		argvalue1, err43 := (strconv.ParseFloat(flag.Arg(2), 64))
-		if err43 != nil {
-			Usage()
-			return
-		}
-		value1 := argvalue1
-		fmt.Print(client.AdjustOrder(context.Background(), value0, value1))
-		fmt.Print("\n")
-		break
-	case "DiscountByBalance":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "DiscountByBalance requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err44 := (strconv.Atoi(flag.Arg(1)))
-		if err44 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		fmt.Print(client.DiscountByBalance(context.Background(), value0, value1))
-		fmt.Print("\n")
-		break
-	case "DiscountByIntegral":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "DiscountByIntegral requires 3 args")
-			flag.Usage()
-		}
-		tmp0, err46 := (strconv.Atoi(flag.Arg(1)))
-		if err46 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		argvalue1, err47 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-		if err47 != nil {
-			Usage()
-			return
-		}
-		value1 := argvalue1
-		argvalue2 := flag.Arg(3) == "true"
-		value2 := argvalue2
-		fmt.Print(client.DiscountByIntegral(context.Background(), value0, value1, value2))
-		fmt.Print("\n")
-		break
-	case "PaymentByWallet":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "PaymentByWallet requires 3 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2) == "true"
-		value1 := argvalue1
-		argvalue2 := flag.Arg(3)
-		value2 := argvalue2
-		fmt.Print(client.PaymentByWallet(context.Background(), value0, value1, value2))
-		fmt.Print("\n")
-		break
-	case "HybridPayment":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "HybridPayment requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err52 := (strconv.Atoi(flag.Arg(1)))
-		if err52 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		fmt.Print(client.HybridPayment(context.Background(), value0, value1))
-		fmt.Print("\n")
-		break
-	case "FinishPayment":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "FinishPayment requires 3 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		argvalue2 := flag.Arg(3)
-		value2 := argvalue2
-		fmt.Print(client.FinishPayment(context.Background(), value0, value1, value2))
-		fmt.Print("\n")
-		break
-	case "GatewayV1":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "GatewayV1 requires 3 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		argvalue1, err58 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-		if err58 != nil {
-			Usage()
-			return
-		}
-		value1 := argvalue1
-		arg59 := flag.Arg(3)
-		mbTrans60 := thrift.NewTMemoryBufferLen(len(arg59))
-		defer mbTrans60.Close()
-		_, err61 := mbTrans60.WriteString(arg59)
-		if err61 != nil {
-			Usage()
-			return
-		}
-		factory62 := thrift.NewTJSONProtocolFactory()
-		jsProt63 := factory62.GetProtocol(mbTrans60)
-		containerStruct2 := payment_service.NewPaymentServiceGatewayV1Args()
-		err64 := containerStruct2.ReadField3(jsProt63)
-		if err64 != nil {
-			Usage()
-			return
-		}
-		argvalue2 := containerStruct2.Data
-		value2 := argvalue2
-		fmt.Print(client.GatewayV1(context.Background(), value0, value1, value2))
-		fmt.Print("\n")
-		break
-	case "GetPaymentOrderInfo":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetPaymentOrderInfo requires 2 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2) == "true"
-		value1 := argvalue1
-		fmt.Print(client.GetPaymentOrderInfo(context.Background(), value0, value1))
-		fmt.Print("\n")
-		break
-	case "MixedPayment":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "MixedPayment requires 2 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		arg68 := flag.Arg(2)
-		mbTrans69 := thrift.NewTMemoryBufferLen(len(arg68))
-		defer mbTrans69.Close()
-		_, err70 := mbTrans69.WriteString(arg68)
-		if err70 != nil {
-			Usage()
-			return
-		}
-		factory71 := thrift.NewTJSONProtocolFactory()
-		jsProt72 := factory71.GetProtocol(mbTrans69)
-		containerStruct1 := payment_service.NewPaymentServiceMixedPaymentArgs()
-		err73 := containerStruct1.ReadField2(jsProt72)
-		if err73 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := containerStruct1.Data
-		value1 := argvalue1
-		fmt.Print(client.MixedPayment(context.Background(), value0, value1))
-		fmt.Print("\n")
-		break
-	case "":
-		Usage()
-		break
-	default:
-		fmt.Fprintln(os.Stderr, "Invalid function ", cmd)
-	}
+  flag.Usage = Usage
+  var host string
+  var port int
+  var protocol string
+  var urlString string
+  var framed bool
+  var useHttp bool
+  headers := make(httpHeaders)
+  var parsedUrl *url.URL
+  var trans thrift.TTransport
+  _ = strconv.Atoi
+  _ = math.Abs
+  flag.Usage = Usage
+  flag.StringVar(&host, "h", "localhost", "Specify host and port")
+  flag.IntVar(&port, "p", 9090, "Specify port")
+  flag.StringVar(&protocol, "P", "binary", "Specify the protocol (binary, compact, simplejson, json)")
+  flag.StringVar(&urlString, "u", "", "Specify the url")
+  flag.BoolVar(&framed, "framed", false, "Use framed transport")
+  flag.BoolVar(&useHttp, "http", false, "Use http")
+  flag.Var(headers, "H", "Headers to set on the http(s) request (e.g. -H \"Key: Value\")")
+  flag.Parse()
+  
+  if len(urlString) > 0 {
+    var err error
+    parsedUrl, err = url.Parse(urlString)
+    if err != nil {
+      fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
+      flag.Usage()
+    }
+    host = parsedUrl.Host
+    useHttp = len(parsedUrl.Scheme) <= 0 || parsedUrl.Scheme == "http" || parsedUrl.Scheme == "https"
+  } else if useHttp {
+    _, err := url.Parse(fmt.Sprint("http://", host, ":", port))
+    if err != nil {
+      fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
+      flag.Usage()
+    }
+  }
+  
+  cmd := flag.Arg(0)
+  var err error
+  if useHttp {
+    trans, err = thrift.NewTHttpClient(parsedUrl.String())
+    if len(headers) > 0 {
+      httptrans := trans.(*thrift.THttpClient)
+      for key, value := range headers {
+        httptrans.SetHeader(key, value)
+      }
+    }
+  } else {
+    portStr := fmt.Sprint(port)
+    if strings.Contains(host, ":") {
+           host, portStr, err = net.SplitHostPort(host)
+           if err != nil {
+                   fmt.Fprintln(os.Stderr, "error with host:", err)
+                   os.Exit(1)
+           }
+    }
+    trans, err = thrift.NewTSocket(net.JoinHostPort(host, portStr))
+    if err != nil {
+      fmt.Fprintln(os.Stderr, "error resolving address:", err)
+      os.Exit(1)
+    }
+    if framed {
+      trans = thrift.NewTFramedTransport(trans)
+    }
+  }
+  if err != nil {
+    fmt.Fprintln(os.Stderr, "Error creating transport", err)
+    os.Exit(1)
+  }
+  defer trans.Close()
+  var protocolFactory thrift.TProtocolFactory
+  switch protocol {
+  case "compact":
+    protocolFactory = thrift.NewTCompactProtocolFactory()
+    break
+  case "simplejson":
+    protocolFactory = thrift.NewTSimpleJSONProtocolFactory()
+    break
+  case "json":
+    protocolFactory = thrift.NewTJSONProtocolFactory()
+    break
+  case "binary", "":
+    protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
+    break
+  default:
+    fmt.Fprintln(os.Stderr, "Invalid protocol specified: ", protocol)
+    Usage()
+    os.Exit(1)
+  }
+  iprot := protocolFactory.GetProtocol(trans)
+  oprot := protocolFactory.GetProtocol(trans)
+  client := payment_service.NewPaymentServiceClient(thrift.NewTStandardClient(iprot, oprot))
+  if err := trans.Open(); err != nil {
+    fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
+    os.Exit(1)
+  }
+  
+  switch cmd {
+  case "SubmitPaymentOrder":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "SubmitPaymentOrder requires 1 args")
+      flag.Usage()
+    }
+    arg33 := flag.Arg(1)
+    mbTrans34 := thrift.NewTMemoryBufferLen(len(arg33))
+    defer mbTrans34.Close()
+    _, err35 := mbTrans34.WriteString(arg33)
+    if err35 != nil {
+      Usage()
+      return
+    }
+    factory36 := thrift.NewTJSONProtocolFactory()
+    jsProt37 := factory36.GetProtocol(mbTrans34)
+    argvalue0 := payment_service.NewSPaymentOrder()
+    err38 := argvalue0.Read(jsProt37)
+    if err38 != nil {
+      Usage()
+      return
+    }
+    value0 := payment_service.SPaymentOrder(argvalue0)
+    fmt.Print(client.SubmitPaymentOrder(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "GetPaymentOrder":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "GetPaymentOrder requires 1 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    fmt.Print(client.GetPaymentOrder(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "GetPaymentOrderId":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "GetPaymentOrderId requires 1 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    fmt.Print(client.GetPaymentOrderId(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "GetPaymentOrderById":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
+      flag.Usage()
+    }
+    tmp0, err41 := (strconv.Atoi(flag.Arg(1)))
+    if err41 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    fmt.Print(client.GetPaymentOrderById(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "AdjustOrder":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "AdjustOrder requires 2 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    argvalue1, err43 := (strconv.ParseFloat(flag.Arg(2), 64))
+    if err43 != nil {
+      Usage()
+      return
+    }
+    value1 := argvalue1
+    fmt.Print(client.AdjustOrder(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "DiscountByBalance":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "DiscountByBalance requires 2 args")
+      flag.Usage()
+    }
+    tmp0, err44 := (strconv.Atoi(flag.Arg(1)))
+    if err44 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    argvalue1 := flag.Arg(2)
+    value1 := argvalue1
+    fmt.Print(client.DiscountByBalance(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "DiscountByIntegral":
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "DiscountByIntegral requires 3 args")
+      flag.Usage()
+    }
+    tmp0, err46 := (strconv.Atoi(flag.Arg(1)))
+    if err46 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    argvalue1, err47 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+    if err47 != nil {
+      Usage()
+      return
+    }
+    value1 := argvalue1
+    argvalue2 := flag.Arg(3) == "true"
+    value2 := argvalue2
+    fmt.Print(client.DiscountByIntegral(context.Background(), value0, value1, value2))
+    fmt.Print("\n")
+    break
+  case "PaymentByWallet":
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "PaymentByWallet requires 3 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    argvalue1 := flag.Arg(2) == "true"
+    value1 := argvalue1
+    argvalue2 := flag.Arg(3)
+    value2 := argvalue2
+    fmt.Print(client.PaymentByWallet(context.Background(), value0, value1, value2))
+    fmt.Print("\n")
+    break
+  case "HybridPayment":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "HybridPayment requires 2 args")
+      flag.Usage()
+    }
+    tmp0, err52 := (strconv.Atoi(flag.Arg(1)))
+    if err52 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    argvalue1 := flag.Arg(2)
+    value1 := argvalue1
+    fmt.Print(client.HybridPayment(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "FinishPayment":
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "FinishPayment requires 3 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    argvalue1 := flag.Arg(2)
+    value1 := argvalue1
+    argvalue2 := flag.Arg(3)
+    value2 := argvalue2
+    fmt.Print(client.FinishPayment(context.Background(), value0, value1, value2))
+    fmt.Print("\n")
+    break
+  case "GatewayV1":
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "GatewayV1 requires 3 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    argvalue1, err58 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+    if err58 != nil {
+      Usage()
+      return
+    }
+    value1 := argvalue1
+    arg59 := flag.Arg(3)
+    mbTrans60 := thrift.NewTMemoryBufferLen(len(arg59))
+    defer mbTrans60.Close()
+    _, err61 := mbTrans60.WriteString(arg59)
+    if err61 != nil { 
+      Usage()
+      return
+    }
+    factory62 := thrift.NewTJSONProtocolFactory()
+    jsProt63 := factory62.GetProtocol(mbTrans60)
+    containerStruct2 := payment_service.NewPaymentServiceGatewayV1Args()
+    err64 := containerStruct2.ReadField3(jsProt63)
+    if err64 != nil {
+      Usage()
+      return
+    }
+    argvalue2 := containerStruct2.Data
+    value2 := argvalue2
+    fmt.Print(client.GatewayV1(context.Background(), value0, value1, value2))
+    fmt.Print("\n")
+    break
+  case "GetPaymentOrderInfo":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "GetPaymentOrderInfo requires 2 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    argvalue1 := flag.Arg(2) == "true"
+    value1 := argvalue1
+    fmt.Print(client.GetPaymentOrderInfo(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "MixedPayment":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "MixedPayment requires 2 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    arg68 := flag.Arg(2)
+    mbTrans69 := thrift.NewTMemoryBufferLen(len(arg68))
+    defer mbTrans69.Close()
+    _, err70 := mbTrans69.WriteString(arg68)
+    if err70 != nil { 
+      Usage()
+      return
+    }
+    factory71 := thrift.NewTJSONProtocolFactory()
+    jsProt72 := factory71.GetProtocol(mbTrans69)
+    containerStruct1 := payment_service.NewPaymentServiceMixedPaymentArgs()
+    err73 := containerStruct1.ReadField2(jsProt72)
+    if err73 != nil {
+      Usage()
+      return
+    }
+    argvalue1 := containerStruct1.Data
+    value1 := argvalue1
+    fmt.Print(client.MixedPayment(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "":
+    Usage()
+    break
+  default:
+    fmt.Fprintln(os.Stderr, "Invalid function ", cmd)
+  }
 }

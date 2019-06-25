@@ -63,15 +63,15 @@ var (
 
 	/** 账户 */
 	// 余额账户
-	AccountAliasBalance = KeyFormat("AccountAliasBalance")
+	AccountBalanceAlias = KeyFormat("AccountBalanceAlias")
 	// 积分账户
-	AccountAliasIntegral = KeyFormat("AccountAliasIntegral")
+	AccountIntegralAlias = KeyFormat("AccountIntegralAlias")
 	// 钱包账户
-	AccountAliasWallet = KeyFormat("AccountAliasWallet")
+	AccountWalletAlias = KeyFormat("AccountWalletAlias")
 	// 流动金账户
-	AccountAliasFlow = KeyFormat("AccountAliasFlow")
+	AccountFlowAlias = KeyFormat("AccountFlowAlias")
 	// 增利金账户
-	AccountAliasGrowth = KeyFormat("AccountAliasGrowth")
+	AccountGrowthAlias = KeyFormat("AccountGrowthAlias")
 
 	/** 系统 */
 	// 启用商户店铺商品分类

@@ -933,7 +933,7 @@ func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error 
 	}
 	unix := time.Now().Unix()
 	a.value.FreezeWallet -= amount
-	a.value.ExpiredPresent += amount
+	a.value.ExpiredWallet += amount
 	a.value.UpdateTime = unix
 	l := &member.WalletAccountLog{
 		MemberId:    a.GetDomainId(),

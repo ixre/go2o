@@ -368,6 +368,7 @@ func (s *memberService) MemberLevelInfo(ctx context.Context, memberId int64) (r 
 		} else {
 			level.NextLevel = int32(nextLv.ID)
 			level.NextLevelName = nextLv.Name
+			level.NextProgramSignal = nextLv.ProgramSignal
 			level.RequireExp = int32(nextLv.RequireExp - v.Exp)
 		}
 	}
