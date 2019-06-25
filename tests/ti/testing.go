@@ -146,7 +146,7 @@ func init() {
 	core.Init(app, false, false)
 	conn := app.Db()
 	sto := app.Storage()
-	Factory = (&repos.RepoFactory{}).Init(conn, sto, "../conf")
+	Factory = (&repos.RepoFactory{}).Init(conn, sto)
 }
 
 // 初始化producer

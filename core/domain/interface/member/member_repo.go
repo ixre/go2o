@@ -102,10 +102,10 @@ type IMemberRepo interface {
 	SaveBalanceLog(*BalanceLog) (int32, error)
 
 	// 保存钱包账户日志
-	SavePresentLog(*MWalletLog) (int32, error)
+	SaveWalletAccountLog(*WalletAccountLog) (int32, error)
 
 	// 获取钱包账户日志信息
-	GetWalletLog(id int32) *MWalletLog
+	GetWalletLog(id int32) *WalletAccountLog
 
 	// 增加会员当天提现次数
 	AddTodayTakeOutTimes(memberId int64) error

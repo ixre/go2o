@@ -294,7 +294,7 @@ func (s *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
-func (s *memberService) GetWalletLog(memberId int64, logId int32) *member.MWalletLog {
+func (s *memberService) GetWalletLog(memberId int64, logId int32) *member.WalletAccountLog {
 	m := s.repo.GetMember(memberId)
 	return m.GetAccount().GetWalletLog(logId)
 }

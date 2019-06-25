@@ -98,8 +98,8 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 }
 
 // 获取最近的余额变动信息
-func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member.MWalletLog {
-	var info = new(member.MWalletLog)
+func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member.WalletAccountLog {
+	var info = new(member.WalletAccountLog)
 	if err := m.GetOrm().GetBy(info, "member_id= $1 AND kind= $2 ORDER BY create_time DESC",
 		memberId, kind); err == nil {
 		return info

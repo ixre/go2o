@@ -60,6 +60,19 @@ var (
 	DomainMobilePassport        = "D_MobilePassport"
 	DomainMobileUCenter         = "D_MobileUCenter"
 
+
+	/** 账户 */
+	// 余额账户
+	AccountAliasBalance = KeyFormat("AccountAliasBalance")
+	// 积分账户
+	AccountAliasIntegral = KeyFormat("AccountAliasIntegral")
+	// 钱包账户
+	AccountAliasWallet = KeyFormat("AccountAliasWallet")
+	// 流动金账户
+	AccountAliasFlow = KeyFormat("AccountAliasFlow")
+	// 增利金账户
+	AccountAliasGrowth = KeyFormat("AccountAliasGrowth")
+
 	/** 系统 */
 	// 启用商户店铺商品分类
 	EnableMchGoodsCategory = KeyFormat("EnableMchGoodsCategory")

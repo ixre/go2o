@@ -576,7 +576,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //	}
 //	m._mchRepo.SaveMachBlanceLog(o)
 //
-//	v := &member.MWalletLog{
+//	v := &member.WalletAccountLog{
 //		MemberId:     memberId,
 //		Kind: merchant.KindＭachTakeOutToBankCard,
 //		OuterNo:      "00000000",
@@ -604,7 +604,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //		return member.ErrIncorrectAmount
 //	}
 //	unix := time.Now().Unix()
-//	v := &member.MWalletLog{
+//	v := &member.WalletAccountLog{
 //		MemberId:     memberId,
 //		Kind: kind,
 //		Title:        title,
@@ -628,7 +628,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //		UpdateTime: time.Now().Unix(),
 //	}
 //	m._mchRepo.SaveMachBlanceLog(o)
-//	_, err := m._memberRepo.SavePresentLog(v)
+//	_, err := m._memberRepo.SaveWalletAccountLog(v)
 //	if err == nil {
 //		machAcc := m.GetAccount(machId)
 //		machAcc.Balance = machAcc.Balance + amount
@@ -666,7 +666,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //			return err
 //		}
 //		v.UpdateTime = time.Now().Unix()
-//		_, err1 := a._memberRepo.SavePresentLog(v)
+//		_, err1 := a._memberRepo.SaveWalletAccountLog(v)
 //		return err1
 //	}
 //

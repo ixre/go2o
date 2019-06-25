@@ -44,4 +44,4 @@ COMMENT ON COLUMN mm_flow_log.create_time IS '创建时间';
 COMMENT ON COLUMN mm_flow_log.update_time IS '更新时间';
 
 
-/** --- 会员关系: mm_relation */
+/** --- 会员关系: mm_relation,  删除: mm_income_log */
