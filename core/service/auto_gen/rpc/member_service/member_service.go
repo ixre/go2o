@@ -4511,7 +4511,9 @@ type MemberService interface {
   // 
   // Parameters:
   //  - MemberId
-  ToggleLock(ctx context.Context, memberId int64) (r *ttype.Result_, err error)
+  //  - Lock
+  //  - Remark
+  Lock(ctx context.Context, memberId int64, lock bool, remark string) (r *ttype.Result_, err error)
   // Parameters:
   //  - MemberId
   Complex(ctx context.Context, memberId int64) (r *SComplexMember, err error)
@@ -4829,11 +4831,15 @@ func (p *MemberServiceClient) Active(ctx context.Context, memberId int64) (r *tt
 // 
 // Parameters:
 //  - MemberId
-func (p *MemberServiceClient) ToggleLock(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
-  var _args24 MemberServiceToggleLockArgs
+//  - Lock
+//  - Remark
+func (p *MemberServiceClient) Lock(ctx context.Context, memberId int64, lock bool, remark string) (r *ttype.Result_, err error) {
+  var _args24 MemberServiceLockArgs
   _args24.MemberId = memberId
-  var _result25 MemberServiceToggleLockResult
-  if err = p.Client_().Call(ctx, "ToggleLock", &_args24, &_result25); err != nil {
+  _args24.Lock = lock
+  _args24.Remark = remark
+  var _result25 MemberServiceLockResult
+  if err = p.Client_().Call(ctx, "Lock", &_args24, &_result25); err != nil {
     return
   }
   return _result25.GetSuccess(), nil
@@ -5230,7 +5236,7 @@ func NewMemberServiceProcessor(handler MemberService) *MemberServiceProcessor {
   self72.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler:handler}
   self72.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler:handler}
   self72.processorMap["Active"] = &memberServiceProcessorActive{handler:handler}
-  self72.processorMap["ToggleLock"] = &memberServiceProcessorToggleLock{handler:handler}
+  self72.processorMap["Lock"] = &memberServiceProcessorLock{handler:handler}
   self72.processorMap["Complex"] = &memberServiceProcessorComplex{handler:handler}
   self72.processorMap["CheckProfileComplete"] = &memberServiceProcessorCheckProfileComplete{handler:handler}
   self72.processorMap["MemberLevelInfo"] = &memberServiceProcessorMemberLevelInfo{handler:handler}
@@ -5850,16 +5856,16 @@ var retval *ttype.Result_
   return true, err
 }
 
-type memberServiceProcessorToggleLock struct {
+type memberServiceProcessorLock struct {
   handler MemberService
 }
 
-func (p *memberServiceProcessorToggleLock) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-  args := MemberServiceToggleLockArgs{}
+func (p *memberServiceProcessorLock) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := MemberServiceLockArgs{}
   if err = args.Read(iprot); err != nil {
     iprot.ReadMessageEnd()
     x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-    oprot.WriteMessageBegin("ToggleLock", thrift.EXCEPTION, seqId)
+    oprot.WriteMessageBegin("Lock", thrift.EXCEPTION, seqId)
     x.Write(oprot)
     oprot.WriteMessageEnd()
     oprot.Flush(ctx)
@@ -5867,12 +5873,12 @@ func (p *memberServiceProcessorToggleLock) Process(ctx context.Context, seqId in
   }
 
   iprot.ReadMessageEnd()
-  result := MemberServiceToggleLockResult{}
+  result := MemberServiceLockResult{}
 var retval *ttype.Result_
   var err2 error
-  if retval, err2 = p.handler.ToggleLock(ctx, args.MemberId); err2 != nil {
-    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ToggleLock: " + err2.Error())
-    oprot.WriteMessageBegin("ToggleLock", thrift.EXCEPTION, seqId)
+  if retval, err2 = p.handler.Lock(ctx, args.MemberId, args.Lock, args.Remark); err2 != nil {
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing Lock: " + err2.Error())
+    oprot.WriteMessageBegin("Lock", thrift.EXCEPTION, seqId)
     x.Write(oprot)
     oprot.WriteMessageEnd()
     oprot.Flush(ctx)
@@ -5880,7 +5886,7 @@ var retval *ttype.Result_
   } else {
     result.Success = retval
 }
-  if err2 = oprot.WriteMessageBegin("ToggleLock", thrift.REPLY, seqId); err2 != nil {
+  if err2 = oprot.WriteMessageBegin("Lock", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -9663,19 +9669,31 @@ func (p *MemberServiceActiveResult) String() string {
 
 // Attributes:
 //  - MemberId
-type MemberServiceToggleLockArgs struct {
+//  - Lock
+//  - Remark
+type MemberServiceLockArgs struct {
   MemberId int64 `thrift:"memberId,1" db:"memberId" json:"memberId"`
+  Lock bool `thrift:"lock,2" db:"lock" json:"lock"`
+  Remark string `thrift:"remark,3" db:"remark" json:"remark"`
 }
 
-func NewMemberServiceToggleLockArgs() *MemberServiceToggleLockArgs {
-  return &MemberServiceToggleLockArgs{}
+func NewMemberServiceLockArgs() *MemberServiceLockArgs {
+  return &MemberServiceLockArgs{}
 }
 
 
-func (p *MemberServiceToggleLockArgs) GetMemberId() int64 {
+func (p *MemberServiceLockArgs) GetMemberId() int64 {
   return p.MemberId
 }
-func (p *MemberServiceToggleLockArgs) Read(iprot thrift.TProtocol) error {
+
+func (p *MemberServiceLockArgs) GetLock() bool {
+  return p.Lock
+}
+
+func (p *MemberServiceLockArgs) GetRemark() string {
+  return p.Remark
+}
+func (p *MemberServiceLockArgs) Read(iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
   }
@@ -9698,6 +9716,26 @@ func (p *MemberServiceToggleLockArgs) Read(iprot thrift.TProtocol) error {
           return err
         }
       }
+    case 2:
+      if fieldTypeId == thrift.BOOL {
+        if err := p.ReadField2(iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 3:
+      if fieldTypeId == thrift.STRING {
+        if err := p.ReadField3(iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(fieldTypeId); err != nil {
+          return err
+        }
+      }
     default:
       if err := iprot.Skip(fieldTypeId); err != nil {
         return err
@@ -9713,7 +9751,7 @@ func (p *MemberServiceToggleLockArgs) Read(iprot thrift.TProtocol) error {
   return nil
 }
 
-func (p *MemberServiceToggleLockArgs)  ReadField1(iprot thrift.TProtocol) error {
+func (p *MemberServiceLockArgs)  ReadField1(iprot thrift.TProtocol) error {
   if v, err := iprot.ReadI64(); err != nil {
   return thrift.PrependError("error reading field 1: ", err)
 } else {
@@ -9722,11 +9760,31 @@ func (p *MemberServiceToggleLockArgs)  ReadField1(iprot thrift.TProtocol) error 
   return nil
 }
 
-func (p *MemberServiceToggleLockArgs) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("ToggleLock_args"); err != nil {
+func (p *MemberServiceLockArgs)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadBool(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.Lock = v
+}
+  return nil
+}
+
+func (p *MemberServiceLockArgs)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.Remark = v
+}
+  return nil
+}
+
+func (p *MemberServiceLockArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("Lock_args"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -9735,7 +9793,7 @@ func (p *MemberServiceToggleLockArgs) Write(oprot thrift.TProtocol) error {
   return nil
 }
 
-func (p *MemberServiceToggleLockArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceLockArgs) writeField1(oprot thrift.TProtocol) (err error) {
   if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err) }
   if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
@@ -9745,35 +9803,55 @@ func (p *MemberServiceToggleLockArgs) writeField1(oprot thrift.TProtocol) (err e
   return err
 }
 
-func (p *MemberServiceToggleLockArgs) String() string {
+func (p *MemberServiceLockArgs) writeField2(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("lock", thrift.BOOL, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:lock: ", p), err) }
+  if err := oprot.WriteBool(bool(p.Lock)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.lock (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:lock: ", p), err) }
+  return err
+}
+
+func (p *MemberServiceLockArgs) writeField3(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("remark", thrift.STRING, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:remark: ", p), err) }
+  if err := oprot.WriteString(string(p.Remark)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.remark (3) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:remark: ", p), err) }
+  return err
+}
+
+func (p *MemberServiceLockArgs) String() string {
   if p == nil {
     return "<nil>"
   }
-  return fmt.Sprintf("MemberServiceToggleLockArgs(%+v)", *p)
+  return fmt.Sprintf("MemberServiceLockArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type MemberServiceToggleLockResult struct {
+type MemberServiceLockResult struct {
   Success *ttype.Result_ `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
-func NewMemberServiceToggleLockResult() *MemberServiceToggleLockResult {
-  return &MemberServiceToggleLockResult{}
+func NewMemberServiceLockResult() *MemberServiceLockResult {
+  return &MemberServiceLockResult{}
 }
 
-var MemberServiceToggleLockResult_Success_DEFAULT *ttype.Result_
-func (p *MemberServiceToggleLockResult) GetSuccess() *ttype.Result_ {
+var MemberServiceLockResult_Success_DEFAULT *ttype.Result_
+func (p *MemberServiceLockResult) GetSuccess() *ttype.Result_ {
   if !p.IsSetSuccess() {
-    return MemberServiceToggleLockResult_Success_DEFAULT
+    return MemberServiceLockResult_Success_DEFAULT
   }
 return p.Success
 }
-func (p *MemberServiceToggleLockResult) IsSetSuccess() bool {
+func (p *MemberServiceLockResult) IsSetSuccess() bool {
   return p.Success != nil
 }
 
-func (p *MemberServiceToggleLockResult) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceLockResult) Read(iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
   }
@@ -9811,7 +9889,7 @@ func (p *MemberServiceToggleLockResult) Read(iprot thrift.TProtocol) error {
   return nil
 }
 
-func (p *MemberServiceToggleLockResult)  ReadField0(iprot thrift.TProtocol) error {
+func (p *MemberServiceLockResult)  ReadField0(iprot thrift.TProtocol) error {
   p.Success = &ttype.Result_{}
   if err := p.Success.Read(iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
@@ -9819,8 +9897,8 @@ func (p *MemberServiceToggleLockResult)  ReadField0(iprot thrift.TProtocol) erro
   return nil
 }
 
-func (p *MemberServiceToggleLockResult) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("ToggleLock_result"); err != nil {
+func (p *MemberServiceLockResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("Lock_result"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField0(oprot); err != nil { return err }
@@ -9832,7 +9910,7 @@ func (p *MemberServiceToggleLockResult) Write(oprot thrift.TProtocol) error {
   return nil
 }
 
-func (p *MemberServiceToggleLockResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceLockResult) writeField0(oprot thrift.TProtocol) (err error) {
   if p.IsSetSuccess() {
     if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
@@ -9845,11 +9923,11 @@ func (p *MemberServiceToggleLockResult) writeField0(oprot thrift.TProtocol) (err
   return err
 }
 
-func (p *MemberServiceToggleLockResult) String() string {
+func (p *MemberServiceLockResult) String() string {
   if p == nil {
     return "<nil>"
   }
-  return fmt.Sprintf("MemberServiceToggleLockResult(%+v)", *p)
+  return fmt.Sprintf("MemberServiceLockResult(%+v)", *p)
 }
 
 // Attributes:

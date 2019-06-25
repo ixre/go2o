@@ -521,13 +521,12 @@ func (s *memberService) Active(ctx context.Context, memberId int64) (r *ttype.Re
 }
 
 // 锁定/解锁会员
-func (s *memberService) ToggleLock(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
+func (s *memberService) Lock(ctx context.Context, memberId int64,lock bool,remark string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	state := m.GetValue().State
-	if state == 1 {
+	if lock {
 		err = m.Lock()
 	} else {
 		err = m.Unlock()
