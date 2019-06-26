@@ -976,6 +976,19 @@ func (s *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
 	return list
 }
 
+// 标志赋值, 如果flag小于零, 则异或运算
+func (s *memberService) GrantFlag(ctx context.Context,memberId int64, flag int32) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember),nil
+	}
+	if err := m.GrantFlag(int(flag));err != nil{
+		return s.error(err),nil
+	}
+	return s.success(nil),nil
+}
+
+
 // 获取会员汇总信息
 func (s *memberService) Complex(ctx context.Context, memberId int64) (*member_service.SComplexMember, error) {
 	m := s.repo.GetMember(memberId)

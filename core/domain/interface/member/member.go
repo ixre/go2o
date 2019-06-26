@@ -100,7 +100,8 @@ type (
 		Premium(v int, expires int64) error
 		// 获取等级
 		GetLevel() *Level
-
+		// 标志赋值, 如果flag小于零, 则异或运算
+		GrantFlag(flag int)error
 		// 更改会员等级,@paymentId:支付单编号,@review:是否需要审核
 		ChangeLevel(level int, paymentId int, review bool) error
 

@@ -44,6 +44,11 @@ func init() {
 	registerTypes()
 }
 
+var startJobs = make([]func(),0)
+func Startup(job func()){
+	startJobs = append(startJobs,job)
+}
+
 // 注册序列类型
 func registerTypes() {
 	gob.Register(&member.Member{})
@@ -70,6 +75,9 @@ func Init(a *AppImpl, debug, trace bool) bool {
 	// 初始化变量
 	variable.Domain = a._config.GetString(variable.ServerDomain)
 	a.Loaded = true
+	for _, f := range startJobs {
+		f()
+	}
 	return true
 }
 

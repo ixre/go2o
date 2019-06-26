@@ -24,6 +24,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool/sms"
 	"go2o/core/msq"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -333,6 +334,31 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	return err
 }
 
+// 标志赋值, 如果flag小于零, 则异或运算
+func (m *memberImpl) GrantFlag(flag int) error {
+	f := int(math.Abs(float64(flag)))
+	if f &(f-1) != 0 {
+		return errors.New("not right flag value")
+	}
+	if f < 128{
+		return errors.New("disallow grant system flag, flag must large than or equals 128")
+	}
+	own:= m.value.Flag & f ==f
+	if flag >0 {
+		if own {
+			return errors.New("member has granted flag:"+strconv.Itoa(flag))
+		}
+		m.value.Flag |= flag
+	}else{
+		if !own{
+			return errors.New("member not grant flag:"+strconv.Itoa(flag))
+		}
+		m.value.Flag ^= f
+	}
+	_,err := m.Save()
+	return err
+}
+
 // 审核升级请求
 func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 	l := m.repo.GetLevelUpLog(int32(id))
@@ -451,7 +477,9 @@ func (m *memberImpl) Active() error {
 
 // 锁定会员
 func (m *memberImpl) Lock() error {
-	m.value.State = 0
+	if m.ContainFlag(member.FlagLocked) {
+		return nil
+	}
 	m.value.Flag |= member.FlagLocked
 	_, err := m.Save()
 	return err
@@ -459,10 +487,10 @@ func (m *memberImpl) Lock() error {
 
 // 解锁会员
 func (m *memberImpl) Unlock() error {
-	m.value.State = 1
-	if m.ContainFlag(member.FlagLocked) {
-		m.value.Flag ^= member.FlagLocked
+	if !m.ContainFlag(member.FlagLocked) {
+		return nil
 	}
+	m.value.Flag ^= member.FlagLocked
 	_, err := m.Save()
 	return err
 }

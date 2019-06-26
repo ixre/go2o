@@ -20,12 +20,12 @@ require (
 	github.com/pierrec/lz4 v2.1.2+incompatible // indirect
 	github.com/pkg/profile v1.3.0 // indirect
 	github.com/robfig/cron v1.2.0
-	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8 // indirect
-	golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff // indirect
-	golang.org/x/net v0.0.0-20190613194153-d28f0bde5980 // indirect
-	golang.org/x/sys v0.0.0-20190616124812-15dcb6c0061f // indirect
+	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
+	golang.org/x/image v0.0.0-20190618124811-92942e4437e2 // indirect
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
+	golang.org/x/sys v0.0.0-20190624142023-c5567b49c5d0 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20190614205625-5aca471b1d59 // indirect
+	golang.org/x/tools v0.0.0-20190624222133-a101b041ded4 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
 	gopkg.in/square/go-jose.v1 v1.1.2
 )

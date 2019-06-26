@@ -45,7 +45,9 @@ service MemberService{
     ttype.Result Active(1:i64 memberId)
     /** 锁定/解锁会员 */
     ttype.Result Lock(1:i64 memberId,2:bool lock,3:string remark)
-    // 获取会员汇总信息
+    /** 标志赋值, 如果flag小于零, 则异或运算 */
+    ttype.Result GrantFlag(1:i64 memberId,2:i32 flag)
+    /** 获取会员汇总信息 */
     SComplexMember Complex(1:i64 memberId)
     // 检查资料是否完成
     ttype.Result CheckProfileComplete(1:i64 memberId)
