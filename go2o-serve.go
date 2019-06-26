@@ -115,7 +115,6 @@ func main() {
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
 	})
-	app.FsInit(debug)
 	rsi.Init(newApp, appFlag)
 	// 初始化producer
 	msq.Configure(msq.KAFKA, strings.Split(kafkaAddr, ","))

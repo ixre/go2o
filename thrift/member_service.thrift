@@ -33,8 +33,8 @@ service MemberService{
     SLevel GetLevel(1:i32 id)
     // 根据SIGN获取等级
     SLevel GetLevelBySign(1:string sign)
-    /** 根据会员编码获取会员ID */
-    i64 GetMemberId(1:string memberCode)
+    /** 交换会员编号 */
+    i64 SwapMemberId(1:ECredentials cred,2:string value)
     // 根据会员编号获取会员信息
     SMember GetMember(1:i64 id)
     // 根据用户名获取会员信息
@@ -49,6 +49,10 @@ service MemberService{
     ttype.Result GrantFlag(1:i64 memberId,2:i32 flag)
     /** 获取会员汇总信息 */
     SComplexMember Complex(1:i64 memberId)
+    /** 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取 */
+    ttype.Result SendCode(1:i64 memberId ,2:string op,3:i32 msgType)
+    /** 比较验证码是否正确 */
+    ttype.Result CompareCode(1:i64 memberId ,2:string code)
     // 检查资料是否完成
     ttype.Result CheckProfileComplete(1:i64 memberId)
     /** 获取会员等级信息 */
@@ -272,4 +276,17 @@ struct SMemberLevelInfo{
     7:string NextProgramSignal
     /** 需要经验值 */
     8:i32 RequireExp
+}
+
+
+/** 凭据 */
+enum ECredentials{
+    /** 用户名 */
+    User = 1
+    /** 用户代码 */
+    Code = 2
+    /** 邮箱 */
+    Email = 3
+    /** 手机号码 */
+    Phone = 4
 }

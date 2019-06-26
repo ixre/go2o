@@ -47,10 +47,23 @@ type memberService struct {
 	serviceUtil
 }
 
-// 根据会员编码获取会员ID
-func (s *memberService) GetMemberId(ctx context.Context, memberCode string) (r int64, err error) {
-	return int64(s.repo.GetMemberIdByCode(memberCode)), nil
+// 交换会员编号
+func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
+	var memberId int64
+	switch cred {
+	default:
+	case member_service.ECredentials_User:
+		memberId = s.repo.GetMemberIdByUser(value)
+	case member_service.ECredentials_Code:
+		memberId = int64(s.repo.GetMemberIdByCode(value))
+	case member_service.ECredentials_Phone:
+		memberId = s.repo.GetMemberIdByPhone(value)
+	case member_service.ECredentials_Email:
+		memberId = s.repo.GetMemberIdByEmail(value)
+	}
+	return memberId,nil
 }
+
 
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
@@ -327,22 +340,31 @@ func (s *memberService) GetMemberIdByBasis(str string, basic int) int64 {
 	return -1
 }
 
-// 发送验证码
-func (s *memberService) SendCode(memberId int64, operation string, msgType int) (string, error) {
+
+
+// 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
+func (s *memberService) SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return "", member.ErrNoSuchMember
+		return s.error(member.ErrNoSuchMember),nil
 	}
-	return m.SendCheckCode(operation, msgType)
+	code,err := m.SendCheckCode(op, int(msgType))
+	if err != nil{
+		return s.error(err),nil
+	}
+	return s.success(map[string]string{"code":code}),nil
 }
 
-// 对比验证码
-func (s *memberService) CompareCode(memberId int64, code string) error {
+// 比较验证码是否正确
+func (s *memberService) CompareCode(ctx context.Context, memberId int64, code string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		return s.error(member.ErrNoSuchMember),nil
 	}
-	return m.CompareCode(code)
+	if err := m.CompareCode(code);err != nil{
+		return s.error(err),nil
+	}
+	return s.success(nil),nil
 }
 
 // 更改会员用户名
