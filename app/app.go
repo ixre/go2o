@@ -64,8 +64,6 @@ var (
 
 type CustomConfig func(gof.App, int) error
 
-
-
 // 自动安装包
 func AutoInstall() {
 	execInstall()

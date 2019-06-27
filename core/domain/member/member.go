@@ -337,25 +337,25 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 // 标志赋值, 如果flag小于零, 则异或运算
 func (m *memberImpl) GrantFlag(flag int) error {
 	f := int(math.Abs(float64(flag)))
-	if f &(f-1) != 0 {
+	if f&(f-1) != 0 {
 		return errors.New("not right flag value")
 	}
-	if f < 128{
+	if f < 128 {
 		return errors.New("disallow grant system flag, flag must large than or equals 128")
 	}
-	own:= m.value.Flag & f ==f
-	if flag >0 {
+	own := m.value.Flag&f == f
+	if flag > 0 {
 		if own {
-			return errors.New("member has granted flag:"+strconv.Itoa(flag))
+			return errors.New("member has granted flag:" + strconv.Itoa(flag))
 		}
 		m.value.Flag |= flag
-	}else{
-		if !own{
-			return errors.New("member not grant flag:"+strconv.Itoa(flag))
+	} else {
+		if !own {
+			return errors.New("member not grant flag:" + strconv.Itoa(flag))
 		}
 		m.value.Flag ^= f
 	}
-	_,err := m.Save()
+	_, err := m.Save()
 	return err
 }
 

@@ -21,7 +21,6 @@ import (
 	"go2o/core/module/bank"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
-	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
 )
 
@@ -176,16 +175,6 @@ func (s *foundationService) GetSyncLoginUrl(ctx context.Context, returnUrl strin
 		variable.Domain, returnUrl), nil
 }
 
-// 获取模板配置
-func (s *foundationService) GetTemplateConf() valueobject.TemplateConf {
-	return s._rep.GetTemplateConf()
-}
-
-// 保存模板配置
-func (s *foundationService) SaveTemplateConf(v *valueobject.TemplateConf) error {
-	return s._rep.SaveTemplateConf(v)
-}
-
 // 获取移动应用设置
 func (s *foundationService) GetMoAppConf() valueobject.MoAppConf {
 	return s._rep.GetMoAppConf()
@@ -219,17 +208,6 @@ func (s *foundationService) SaveRegisterPerm(v *valueobject.RegisterPerm) error 
 // 获取资源地址
 func (s *foundationService) ResourceUrl(ctx context.Context, url string) (r string, err error) {
 	return format.GetResUrl(url), nil
-}
-
-// 获取平台设置
-func (s *foundationService) GetPlatformConf(ctx context.Context) (r *foundation_service.PlatformConf, err error) {
-	v := s._rep.GetPlatformConf()
-	return parser.PlatformConfDto(&v), nil
-}
-
-// 保存平台设置
-func (s *foundationService) SavePlatformConf(v *valueobject.PlatformConf) error {
-	return s._rep.SavePlatformConf(v)
 }
 
 // 获取全局商户销售设置

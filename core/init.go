@@ -44,9 +44,10 @@ func init() {
 	registerTypes()
 }
 
-var startJobs = make([]func(),0)
-func Startup(job func()){
-	startJobs = append(startJobs,job)
+var startJobs = make([]func(), 0)
+
+func Startup(job func()) {
+	startJobs = append(startJobs, job)
 }
 
 // 注册序列类型

@@ -3,15 +3,6 @@ namespace csharp com.github.jsix.go2o.rpc
 namespace go go2o.core.service.auto_gen.rpc.foundation_service
 include "ttype.thrift"
 
-struct PlatformConf {
-   // 1: string Name
-   // 2: string Logo
-   // 3: string Telephone
-    1: bool Suspend
-    2: string SuspendMessage
-    3: bool MchGoodsCategory
-    4: bool MchPageCategory
-}
 
 // 单点登录应用
 struct SSsoApp{
@@ -47,8 +38,6 @@ service FoundationService{
 
    // 格式化资源地址并返回
    string ResourceUrl(1:string url)
-   // 获取平台设置
-   PlatformConf GetPlatformConf()
    // 设置键值
    ttype.Result SetValue(1:string key,2:string value)
    // 删除值

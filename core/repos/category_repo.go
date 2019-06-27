@@ -18,7 +18,7 @@ import (
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/registry"
 	productImpl "go2o/core/domain/product"
 	"go2o/core/infrastructure/format"
 	"log"
@@ -29,25 +29,25 @@ var _ product.ICategoryRepo = new(categoryRepo)
 
 type categoryRepo struct {
 	db.Connector
-	_valRepo     valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
 	_globService product.IGlobCatService
 	_orm         orm.Orm
 	storage      storage.Interface
 }
 
-func NewCategoryRepo(conn db.Connector, valRepo valueobject.IValueRepo,
+func NewCategoryRepo(conn db.Connector, registryRepo registry.IRegistryRepo,
 	storage storage.Interface) product.ICategoryRepo {
 	return &categoryRepo{
-		Connector: conn,
-		_orm:      conn.GetOrm(),
-		_valRepo:  valRepo,
-		storage:   storage,
+		Connector:    conn,
+		_orm:         conn.GetOrm(),
+		registryRepo: registryRepo,
+		storage:      storage,
 	}
 }
 
 func (c *categoryRepo) GlobCatService() product.IGlobCatService {
 	if c._globService == nil {
-		c._globService = productImpl.NewCategoryManager(0, c, c._valRepo)
+		c._globService = productImpl.NewCategoryManager(0, c, c.registryRepo)
 	}
 	return c._globService
 }

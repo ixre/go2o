@@ -63,31 +63,6 @@ var (
 	}
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
 
-	// 默认模板设置
-	DefaultTemplateConf = valueobject.TemplateConf{
-		// 平台首页模板文件路径
-		PlatformIndexPath: "index.html",
-		// 商铺首页模板文件路径
-		ShopIndexPath: "index.html",
-		// 会员中心首页模板文件路径
-		UCenterIndexPath: "index.html",
-		// 会员中心个人资料模板文件路径
-		UCenterPersonInfoPath: "person_info.html",
-		// 会员中心推广海报模板文件路径
-		UCenterInvitationDmPath: "user/invitation_dm.html",
-	}
-
-	// 默认平台设置
-	DefaultPlatformConf = valueobject.PlatformConf{
-
-		MchGoodsCategory: false,
-		MchPageCategory:  false,
-		// 系统是否开挂起状态
-		//Suspend: false,
-		// 系统挂起提示消息
-		SuspendMessage: "系统正在升级维护，请稍后再试!",
-	}
-
 	// 移动应用配置
 	DefaultMoAppConf = valueobject.MoAppConf{
 		// 应用名称

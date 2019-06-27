@@ -23,9 +23,7 @@ import (
 	"go2o/core/repos"
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/auto_gen/rpc/wallet_service"
-	"go2o/core/variable"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -161,45 +159,45 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 func initRpcServe(ctx gof.App) {
 	gf := ctx.Config().GetString
 	mp := make(map[string]string)
-	domain := gf("domain")
+	//domain := gf("domain")
 	hash := gf("url_hash")
 	if hash == "" {
 		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
 	}
-	ssl := gf("ssl_enabled")
-	prefix := "http://"
-	if ssl == "true" || ssl == "1" {
-		prefix = "https://"
-	}
+	//ssl := gf("ssl_enabled")
+	//prefix := "http://"
+	//if ssl == "true" || ssl == "1" {
+	//	prefix = "https://"
+	//}
 	// 更新值
 	mp[registry.DomainEnabledSSL] = gf("ssl_enabled")
 	FoundationService.UpdateRegistry(nil, mp)
 
-	mp[variable.DEnabledSSL] = gf("ssl_enabled")
-	mp[variable.DStaticServer] = gf("static_server")
-	mp[variable.DImageServer] = gf("image_server")
-	mp[variable.DUrlHash] = hash
-	mp[variable.DRetailPortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_PORTAL, domain}, "")
-	mp[variable.DWholesalePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_WHOLESALE_PORTAL, domain}, "")
-	mp[variable.DUCenter] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MEMBER, domain}, "")
-	mp[variable.DPassport] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
-	mp[variable.DMerchant] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_MERCHANT, domain}, "")
-	mp[variable.DHApi] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_HApi, domain}, "")
-
-	mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_PORTAL_MOBILE, domain}, "")
-	mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_M_WHOLESALE, domain}, "")
-	mp[variable.DMobilePassport] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_M_PASSPORT, domain}, "")
-	mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
-		variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
+	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
+	//mp[variable.DStaticServer] = gf("static_server")
+	//mp[variable.DImageServer] = gf("image_server")
+	//mp[variable.DUrlHash] = hash
+	//mp[variable.DRetailPortal] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_PORTAL, domain}, "")
+	//mp[variable.DWholesalePortal] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_WHOLESALE_PORTAL, domain}, "")
+	//mp[variable.DUCenter] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_MEMBER, domain}, "")
+	//mp[variable.DPassport] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
+	//mp[variable.DMerchant] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_MERCHANT, domain}, "")
+	//mp[variable.DHApi] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_HApi, domain}, "")
+	//
+	//mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_PORTAL_MOBILE, domain}, "")
+	//mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_M_WHOLESALE, domain}, "")
+	//mp[variable.DMobilePassport] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_M_PASSPORT, domain}, "")
+	//mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
 
 }
 

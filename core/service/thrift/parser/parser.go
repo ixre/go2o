@@ -17,8 +17,6 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
-	"go2o/core/domain/interface/valueobject"
-	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
@@ -188,8 +186,8 @@ func AccountDto(src *member.Account) *member_service.SAccount {
 		ExpiredBalance:    round(src.ExpiredBalance, 2),
 		WalletBalance:     round(src.WalletBalance, 2),
 		FreezeWallet:      round(src.FreezeWallet, 2),
-		ExpiredWallet:    round(src.ExpiredWallet, 2),
-		TotalWalletAmount:   round(src.TotalWalletAmount, 2),
+		ExpiredWallet:     round(src.ExpiredWallet, 2),
+		TotalWalletAmount: round(src.TotalWalletAmount, 2),
 		FlowBalance:       round(src.FlowBalance, 2),
 		GrowBalance:       round(src.GrowBalance, 2),
 		GrowAmount:        round(src.GrowAmount, 2),
@@ -213,7 +211,7 @@ func Account(src *member_service.SAccount) *member.Account {
 		ExpiredBalance:    float32(src.ExpiredBalance),
 		WalletBalance:     float32(src.WalletBalance),
 		FreezeWallet:      float32(src.FreezeWallet),
-		ExpiredWallet:    float32(src.ExpiredWallet),
+		ExpiredWallet:     float32(src.ExpiredWallet),
 		TotalWalletAmount: float32(src.TotalWalletAmount),
 		FlowBalance:       float32(src.FlowBalance),
 		GrowBalance:       float32(src.GrowBalance),
@@ -225,24 +223,6 @@ func Account(src *member_service.SAccount) *member.Account {
 		TotalPay:          float32(src.TotalPay),
 		PriorityPay:       int(src.PriorityPay),
 		UpdateTime:        src.UpdateTime,
-	}
-}
-
-func PlatformConfDto(src *valueobject.PlatformConf) *foundation_service.PlatformConf {
-	return &foundation_service.PlatformConf{
-		Suspend:          src.Suspend,
-		SuspendMessage:   src.SuspendMessage,
-		MchGoodsCategory: src.MchGoodsCategory,
-		MchPageCategory:  src.MchPageCategory,
-	}
-}
-
-func PlatFromConf(src *foundation_service.PlatformConf) *valueobject.PlatformConf {
-	return &valueobject.PlatformConf{
-		Suspend:          src.Suspend,
-		SuspendMessage:   src.SuspendMessage,
-		MchGoodsCategory: src.MchGoodsCategory,
-		MchPageCategory:  src.MchPageCategory,
 	}
 }
 

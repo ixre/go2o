@@ -61,9 +61,8 @@ func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.EC
 	case member_service.ECredentials_Email:
 		memberId = s.repo.GetMemberIdByEmail(value)
 	}
-	return memberId,nil
+	return memberId, nil
 }
-
 
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
@@ -340,31 +339,29 @@ func (s *memberService) GetMemberIdByBasis(str string, basic int) int64 {
 	return -1
 }
 
-
-
 // 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
 func (s *memberService) SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember),nil
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	code,err := m.SendCheckCode(op, int(msgType))
-	if err != nil{
-		return s.error(err),nil
+	code, err := m.SendCheckCode(op, int(msgType))
+	if err != nil {
+		return s.error(err), nil
 	}
-	return s.success(map[string]string{"code":code}),nil
+	return s.success(map[string]string{"code": code}), nil
 }
 
 // 比较验证码是否正确
 func (s *memberService) CompareCode(ctx context.Context, memberId int64, code string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember),nil
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	if err := m.CompareCode(code);err != nil{
-		return s.error(err),nil
+	if err := m.CompareCode(code); err != nil {
+		return s.error(err), nil
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
 
 // 更改会员用户名
@@ -543,7 +540,7 @@ func (s *memberService) Active(ctx context.Context, memberId int64) (r *ttype.Re
 }
 
 // 锁定/解锁会员
-func (s *memberService) Lock(ctx context.Context, memberId int64,lock bool,remark string) (r *ttype.Result_, err error) {
+func (s *memberService) Lock(ctx context.Context, memberId int64, lock bool, remark string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
@@ -999,17 +996,16 @@ func (s *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
 }
 
 // 标志赋值, 如果flag小于零, 则异或运算
-func (s *memberService) GrantFlag(ctx context.Context,memberId int64, flag int32) (r *ttype.Result_, err error) {
+func (s *memberService) GrantFlag(ctx context.Context, memberId int64, flag int32) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember),nil
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	if err := m.GrantFlag(int(flag));err != nil{
-		return s.error(err),nil
+	if err := m.GrantFlag(int(flag)); err != nil {
+		return s.error(err), nil
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
-
 
 // 获取会员汇总信息
 func (s *memberService) Complex(ctx context.Context, memberId int64) (*member_service.SComplexMember, error) {
