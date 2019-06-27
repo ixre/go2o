@@ -62,6 +62,24 @@ func (s *foundationService) GetRegistries(ctx context.Context, keys []string) (m
 	return mp, nil
 }
 
+// 搜索注册表
+func (s *foundationService) SearchRegistry(ctx context.Context, key string) (r []*foundation_service.SRegistry, err error) {
+	arr := s.registryRepo.SearchRegistry(key)
+	list := make([]*foundation_service.SRegistry,len(arr))
+	for i,a := range arr{
+		list[i] = &foundation_service.SRegistry{
+			Key:         a.Key,
+			Value:       a.Value,
+			Default:     a.DefaultValue,
+			Options:     a.Options,
+			UserDefine:  a.UserDefine == 1,
+			Description: a.Description,
+		}
+	}
+	return list,nil
+}
+
+
 // 获取数据存储
 func (s *foundationService) GetRegistry(ctx context.Context, key string) (string, error) {
 	ir := s.registryRepo.Get(key)
