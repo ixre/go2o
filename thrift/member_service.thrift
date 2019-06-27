@@ -33,8 +33,8 @@ service MemberService{
     SLevel GetLevel(1:i32 id)
     // 根据SIGN获取等级
     SLevel GetLevelBySign(1:string sign)
-    /** 根据会员编码获取会员ID */
-    i64 GetMemberId(1:string memberCode)
+    /** 交换会员编号 */
+    i64 SwapMemberId(1:ECredentials cred,2:string value)
     // 根据会员编号获取会员信息
     SMember GetMember(1:i64 id)
     // 根据用户名获取会员信息
@@ -44,11 +44,19 @@ service MemberService{
     /** 激活会员 */
     ttype.Result Active(1:i64 memberId)
     /** 锁定/解锁会员 */
-    ttype.Result ToggleLock(1:i64 memberId)
-    // 获取会员汇总信息
+    ttype.Result Lock(1:i64 memberId,2:bool lock,3:string remark)
+    /** 标志赋值, 如果flag小于零, 则异或运算 */
+    ttype.Result GrantFlag(1:i64 memberId,2:i32 flag)
+    /** 获取会员汇总信息 */
     SComplexMember Complex(1:i64 memberId)
+    /** 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取 */
+    ttype.Result SendCode(1:i64 memberId ,2:string op,3:i32 msgType)
+    /** 比较验证码是否正确 */
+    ttype.Result CompareCode(1:i64 memberId ,2:string code)
     // 检查资料是否完成
     ttype.Result CheckProfileComplete(1:i64 memberId)
+    /** 获取会员等级信息 */
+    SMemberLevelInfo MemberLevelInfo(1:i64 memberId)
     // 更改会员等级
     ttype.Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
     /* 更改手机号码，不验证手机格式 */
@@ -71,10 +79,12 @@ service MemberService{
     SAccount GetAccount(1:i64 memberId)
     // 获取自己的邀请人会员编号数组
     list<i64> InviterArray(1:i64 memberId,2:i32 depth)
+    // 获取邀请会员的数量
+    i32 InviteMembersQuantity(1:i64 memberId,2:i32 depth)
     // 按条件获取荐指定等级会员的数量
-    i32 GetInviterQuantity(1:i64 memberId,2:map<string,string> data)
+    i32 QueryInviteQuantity(1:i64 memberId,2:map<string,string> data)
     // 按条件获取荐指定等级会员的列表
-    list<i64> GetInviterArray(1:i64 memberId,2:map<string,string> data)
+    list<i64> QueryInviteArray(1:i64 memberId,2:map<string,string> data)
     // 账户充值,amount精确到分
     ttype.Result AccountCharge(1:i64 memberId ,2:i32 account,3:string title,
       4:i32 amount,5:string outerNo,6:string remark)
@@ -186,8 +196,8 @@ struct SAccount {
     6: double ExpiredBalance
     7: double WalletBalance
     8: double FreezeWallet
-    9: double ExpiredPresent
-    10: double TotalPresentFee
+    9: double ExpiredWallet
+    10: double TotalWalletAmount
     11: double FlowBalance
     12: double GrowBalance
     13: double GrowAmount
@@ -201,28 +211,17 @@ struct SAccount {
 }
 
 struct SComplexMember {
-    1: i64 MemberId
-    2: string Usr
-    3: string Name
-    4: string Avatar
-    5: i32 Exp
-    6: i32 Level
-    7: string LevelName
-    8: string LevelSign
-    9: i32 LevelOfficial
-    10: i32	PremiumUser
-    11: i64	PremiumExpires
-    12: string InvitationCode
-    13: i32 TrustAuthState
-    14: i32 State
-    15: i64 Integral
-    16: double Balance
-    17: double WalletBalance
-    18: double GrowBalance
-    19: double GrowAmount
-    20: double GrowEarnings
-    21: double GrowTotalEarnings
-    22: i64 UpdateTime
+    1: string Name
+    2: string Avatar
+    3: string Phone
+    4: i32 Exp
+    5: i32 Level
+    6: string LevelName
+    7: string InvitationCode
+    8: i32 TrustAuthState
+    9: i32 PremiumUser
+    10: i32 Flag
+    11: i64 UpdateTime
 }
 
 struct SMemberRelation {
@@ -257,4 +256,37 @@ struct SAddress {
     8: string Area
     9: string Address
     10: i32 IsDefault
+}
+
+/* 会员等级信息 */
+struct SMemberLevelInfo{
+    /** 等级 */
+    1:i32 Level
+    /** 等级名称 */
+    2:string LevelName
+    /** 经验值 */
+    3:i32 Exp
+    /** 编程符号 */
+    4:string ProgramSignal
+    /** 下一级等级,返回-1表示最高级别 */
+    5:i32 NextLevel
+    /** 下一等级名称 */
+    6:string NextLevelName
+    /** 编程符号 */
+    7:string NextProgramSignal
+    /** 需要经验值 */
+    8:i32 RequireExp
+}
+
+
+/** 凭据 */
+enum ECredentials{
+    /** 用户名 */
+    User = 1
+    /** 用户代码 */
+    Code = 2
+    /** 邮箱 */
+    Email = 3
+    /** 手机号码 */
+    Phone = 4
 }

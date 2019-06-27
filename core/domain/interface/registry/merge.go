@@ -32,6 +32,13 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员中心域名前缀(移动端)", DomainPrefixMobileMember, "mu.", "")
 	mergeAdd("通行证域名前缀(移动端)", DomainPrefixMobilePassport, "mpp.", "")
 
+	/* 账户 */
+	mergeAdd("余额账户", AccountBalanceAlias, "余额", "")
+	mergeAdd("积分账户", AccountIntegralAlias, "积分", "")
+	mergeAdd("钱包账户", AccountWalletAlias, "钱包", "")
+	mergeAdd("流动金账户", AccountFlowAlias, "流动金", "")
+	mergeAdd("增利金账户", AccountGrowthAlias, "增利金", "")
+
 	/* 平台 */
 	mergeAdd("平台名称", PlatformName, "GO2O商城系统", "")
 	mergeAdd("客服客服电话", PlatformServiceTel, "+86-021-66666666", "")

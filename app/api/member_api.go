@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/ixre/gof/api"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/thrift"
 	"strconv"
 	"strings"
@@ -21,6 +22,7 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 		"account":    m.account,
 		"profile":    m.profile,
 		"checkToken": m.checkToken,
+		"complex":    m.complex,
 	})
 }
 
@@ -80,12 +82,28 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.GetMemberId(thrift.Context, code)
+		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
 		r, err1 := cli.GetAccount(thrift.Context, int64(memberId))
 		if err1 == nil {
 			return r
 		}
 		err = err1
+	}
+	return api.NewErrorResponse(err.Error())
+}
+
+// 账号信息
+func (m MemberApi) complex(ctx api.Context) interface{} {
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	if len(code) == 0 {
+		return api.NewErrorResponse("missing params: code or token")
+	}
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+		r, _ := cli.Complex(thrift.Context, memberId)
+		return r
 	}
 	return api.NewErrorResponse(err.Error())
 }
@@ -99,8 +117,8 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.GetMemberId(thrift.Context, code)
-		r, err1 := cli.GetProfile(thrift.Context, int64(memberId))
+		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+		r, err1 := cli.GetProfile(thrift.Context, memberId)
 		if err1 == nil {
 			return r
 		}
@@ -119,7 +137,7 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.GetMemberId(thrift.Context, code)
+		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
 		r, err1 := cli.CheckToken(thrift.Context, memberId, token)
 		if err1 == nil {
 			return r
@@ -138,7 +156,7 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.GetMemberId(thrift.Context, code)
+		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
 		if memberId <= 0 {
 			return api.NewErrorResponse("no such member")
 		}

@@ -43,8 +43,6 @@ type valueRepo struct {
 	wxGob           *util.GobFile
 	rpConf          *valueobject.RegisterPerm
 	rpGob           *util.GobFile
-	globMchConf     *valueobject.PlatformConf
-	mchGob          *util.GobFile
 	globRegistry    *valueobject.Registry_
 	rstGob          *util.GobFile
 	globMchSaleConf *valueobject.GlobMchSaleConf
@@ -53,8 +51,6 @@ type valueRepo struct {
 	smsGob          *util.GobFile
 	moAppConf       *valueobject.MoAppConf
 	moAppGob        *util.GobFile
-	tplConf         *valueobject.TemplateConf
-	tplGob          *util.GobFile
 	areaCache       map[int32][]*valueobject.Area
 	areaMux         sync.Mutex
 
@@ -68,10 +64,10 @@ func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface)
 	//	os.Exit(1)
 	//}
 	return &valueRepo{
-		Connector:    conn,
-		o:            conn.GetOrm(),
-		storage:      storage,
-		kvMux:        &sync.RWMutex{},
+		Connector: conn,
+		o:         conn.GetOrm(),
+		storage:   storage,
+		kvMux:     &sync.RWMutex{},
 		//wxGob:        util.NewGobFile("conf/core/wx_api"),
 		//rpGob:        util.NewGobFile("conf/core/register_perm"),
 		//mchGob:       util.NewGobFile("conf/core/pm_conf"),
@@ -89,7 +85,6 @@ func (r *valueRepo) checkReload() error {
 		r.wxConf = nil
 		r.rpConf = nil
 		r.smsConf = nil
-		r.globMchConf = nil
 		r.globMchSaleConf = nil
 		r.globRegistry = nil
 	}
@@ -251,48 +246,6 @@ func (r *valueRepo) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 		}
 		r.rpConf = v
 		return r.rpGob.Save(r.rpConf)
-	}
-	return nil
-}
-
-// 获取平台设置
-func (r *valueRepo) GetPlatformConf() valueobject.PlatformConf {
-	r.checkReload()
-	if r.globMchConf == nil {
-		v := DefaultPlatformConf
-		r.globMchConf = &v
-		r.mchGob.Unmarshal(r.globMchConf)
-	}
-	return *r.globMchConf
-}
-
-// 保存平台设置
-func (r *valueRepo) SavePlatformConf(v *valueobject.PlatformConf) error {
-	if v != nil {
-		defer r.signReload()
-		r.globMchConf = v
-		return r.mchGob.Save(r.globMchConf)
-	}
-	return nil
-}
-
-// 获取模板配置
-func (r *valueRepo) GetTemplateConf() valueobject.TemplateConf {
-	r.checkReload()
-	if r.tplConf == nil {
-		v2 := DefaultTemplateConf
-		r.tplConf = &v2
-		r.tplGob.Unmarshal(r.tplConf)
-	}
-	return *r.tplConf
-}
-
-// 保存模板配置
-func (r *valueRepo) SaveTemplateConf(t *valueobject.TemplateConf) error {
-	if t != nil {
-		defer r.signReload()
-		r.tplConf = t
-		return r.tplGob.Save(r.tplConf)
 	}
 	return nil
 }

@@ -100,7 +100,8 @@ type (
 		Premium(v int, expires int64) error
 		// 获取等级
 		GetLevel() *Level
-
+		// 标志赋值, 如果flag小于零, 则异或运算
+		GrantFlag(flag int) error
 		// 更改会员等级,@paymentId:支付单编号,@review:是否需要审核
 		ChangeLevel(level int, paymentId int, review bool) error
 
@@ -176,49 +177,26 @@ type (
 
 	// 会员概览信息
 	ComplexMember struct {
-		MemberId int64
-		// 用户名
-		Usr string
 		// 昵称
 		Name string
 		// 头像
 		Avatar string
+		// 手机号码
+		Phone string
 		// 经验值
 		Exp int
 		// 等级
 		Level int
 		// 等级名称
 		LevelName string
-		// 等级标识
-		LevelSign string
-		// 等级是否为正式会员
-		LevelOfficial int
 		// 邀请码
 		InvitationCode string
 		// 实名认证状态
 		TrustAuthState int
 		// 高级会员类型
 		PremiumUser int
-		// 高级会员是否过期
-		PremiumExpires int64
 		// 会员标志
 		Flag int
-		// 是否启用
-		State int
-		// 积分
-		Integral int
-		// 账户余额
-		Balance float64
-		// 钱包余额
-		WalletBalance float64
-		// 理财金余额
-		GrowBalance float64
-		// 理财总投资金额,不含收益
-		GrowAmount float64
-		// 当前收益金额
-		GrowEarnings float64
-		// 累积收益金额
-		GrowTotalEarnings float64
 		// 更新时间
 		UpdateTime int64
 	}
@@ -329,10 +307,12 @@ type (
 		MemberId int64 `db:"member_id" pk:"yes"`
 		// 会员卡号
 		CardCard string `db:"card_no"`
-		// 推荐人（会员）
+		// 邀请人（会员）
 		InviterId int64 `db:"inviter_id"`
-		// 会员关系字符串
-		InviterStr string `db:"inviter_str"`
+		// 邀请会员编号(depth2)
+		InviterD2 int64 `db:"inviter_d2"`
+		// 邀请会员编号(depth3)
+		InviterD3 int64 `db:"inviter_d3"`
 		// 注册关联商户编号
 		RegMchId int32 `db:"reg_mchid"`
 	}

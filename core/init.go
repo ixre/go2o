@@ -44,6 +44,12 @@ func init() {
 	registerTypes()
 }
 
+var startJobs = make([]func(), 0)
+
+func Startup(job func()) {
+	startJobs = append(startJobs, job)
+}
+
 // 注册序列类型
 func registerTypes() {
 	gob.Register(&member.Member{})
@@ -70,6 +76,9 @@ func Init(a *AppImpl, debug, trace bool) bool {
 	// 初始化变量
 	variable.Domain = a._config.GetString(variable.ServerDomain)
 	a.Loaded = true
+	for _, f := range startJobs {
+		f()
+	}
 	return true
 }
 
@@ -103,7 +112,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.Profile{}, "mm_profile")
 	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
 	orm.Mapping(member.BalanceLog{}, "mm_balance_log")
-	orm.Mapping(member.MWalletLog{}, "mm_wallet_log")
+	orm.Mapping(member.WalletAccountLog{}, "mm_wallet_log")
 	orm.Mapping(member.FlowAccountLog{}, "mm_flow_log")
 	orm.Mapping(member.Account{}, "mm_account")
 	orm.Mapping(member.Address{}, "mm_deliver_addr")

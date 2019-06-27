@@ -12,9 +12,7 @@ package member
 //todo: 要注意UpdateTime的更新
 
 import (
-	"bytes"
 	"errors"
-	"fmt"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
@@ -26,6 +24,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool/sms"
 	"go2o/core/msq"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -78,35 +77,18 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	mv := m.GetValue()
 	lv := m.GetLevel()
 	pf := m.Profile()
-	pro := pf.GetProfile()
-	acv := m.GetAccount().GetValue()
-	// 实名信息
 	tr := pf.GetTrustedInfo()
-
 	s := &member.ComplexMember{
-		MemberId:          m.GetAggregateRootId(),
-		Usr:               mv.User,
-		Name:              pro.Name,
-		Avatar:            format.GetResUrl(pro.Avatar),
-		Exp:               mv.Exp,
-		Level:             mv.Level,
-		LevelOfficial:     lv.IsOfficial,
-		LevelSign:         lv.ProgramSignal,
-		LevelName:         lv.Name,
-		InvitationCode:    mv.InvitationCode,
-		TrustAuthState:    tr.ReviewState,
-		PremiumUser:       mv.PremiumUser,
-		PremiumExpires:    mv.PremiumExpires,
-		Flag:              mv.Flag,
-		State:             mv.State,
-		Integral:          acv.Integral,
-		Balance:           float64(acv.Balance),
-		WalletBalance:     float64(acv.WalletBalance),
-		GrowBalance:       float64(acv.GrowBalance),
-		GrowAmount:        float64(acv.GrowAmount),
-		GrowEarnings:      float64(acv.GrowEarnings),
-		GrowTotalEarnings: float64(acv.GrowTotalEarnings),
-		UpdateTime:        mv.UpdateTime,
+		Name:           mv.Name,
+		Avatar:         format.GetResUrl(mv.Avatar),
+		Exp:            mv.Exp,
+		Level:          mv.Level,
+		LevelName:      lv.Name,
+		InvitationCode: mv.InvitationCode,
+		TrustAuthState: tr.ReviewState,
+		PremiumUser:    mv.PremiumUser,
+		Flag:           mv.Flag,
+		UpdateTime:     mv.UpdateTime,
 	}
 	return s
 }
@@ -352,6 +334,31 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	return err
 }
 
+// 标志赋值, 如果flag小于零, 则异或运算
+func (m *memberImpl) GrantFlag(flag int) error {
+	f := int(math.Abs(float64(flag)))
+	if f&(f-1) != 0 {
+		return errors.New("not right flag value")
+	}
+	if f < 128 {
+		return errors.New("disallow grant system flag, flag must large than or equals 128")
+	}
+	own := m.value.Flag&f == f
+	if flag > 0 {
+		if own {
+			return errors.New("member has granted flag:" + strconv.Itoa(flag))
+		}
+		m.value.Flag |= flag
+	} else {
+		if !own {
+			return errors.New("member not grant flag:" + strconv.Itoa(flag))
+		}
+		m.value.Flag ^= f
+	}
+	_, err := m.Save()
+	return err
+}
+
 // 审核升级请求
 func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 	l := m.repo.GetLevelUpLog(int32(id))
@@ -412,11 +419,10 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 		rel := m.repo.GetRelation(m.GetAggregateRootId())
 		if rel == nil {
 			rel = &member.InviteRelation{
-				MemberId:   m.GetAggregateRootId(),
-				CardCard:   "",
-				InviterId:  0,
-				InviterStr: "",
-				RegMchId:   0,
+				MemberId:  m.GetAggregateRootId(),
+				CardCard:  "",
+				InviterId: 0,
+				RegMchId:  0,
 			}
 		}
 		m.relation = rel
@@ -471,7 +477,9 @@ func (m *memberImpl) Active() error {
 
 // 锁定会员
 func (m *memberImpl) Lock() error {
-	m.value.State = 0
+	if m.ContainFlag(member.FlagLocked) {
+		return nil
+	}
 	m.value.Flag |= member.FlagLocked
 	_, err := m.Save()
 	return err
@@ -479,10 +487,10 @@ func (m *memberImpl) Lock() error {
 
 // 解锁会员
 func (m *memberImpl) Unlock() error {
-	m.value.State = 1
-	if m.ContainFlag(member.FlagLocked) {
-		m.value.Flag ^= member.FlagLocked
+	if !m.ContainFlag(member.FlagLocked) {
+		return nil
 	}
+	m.value.Flag ^= member.FlagLocked
 	_, err := m.Save()
 	return err
 }
@@ -640,45 +648,12 @@ func (m *memberImpl) generateInvitationCode() string {
 	return code
 }
 
-// 强制更新邀请关系
-func (m *memberImpl) forceUpdateInviterStr(r *member.InviteRelation) {
-	// 无邀请关系
-	if r.InviterId == 0 {
-		r.InviterStr = ""
-		return
-	}
-	level := m.registryRepo.Get(registry.MemberReferLayer).IntValue() - 1
-	if level < 0 {
-		level = 0
-	}
-	arr := m.Invitation().InviterArray(r.InviterId, level)
-	arr = append([]int64{r.InviterId}, arr...)
-
-	if len(arr) > 0 {
-		// 有邀请关系
-		buf := bytes.NewBuffer([]byte("{"))
-		for i, v := range arr {
-			if v == 0 {
-				continue
-			}
-			if buf.Len() > 1 {
-				buf.WriteString(",")
-			}
-			buf.WriteString("'r")
-			buf.WriteString(strconv.Itoa(i))
-			buf.WriteString("':")
-			buf.WriteString(strconv.Itoa(int(v)))
-		}
-		buf.WriteString("}")
-		r.InviterStr = buf.String()
-	}
-}
-
 // 更新邀请关系
-func (m *memberImpl) updateInviterStr(r *member.InviteRelation) {
-	prefix := fmt.Sprintf("{'r0':%d,", r.InviterId)
-	if !strings.HasPrefix(r.InviterStr, prefix) {
-		m.forceUpdateInviterStr(r)
+func (m *memberImpl) updateDepthInvite(r *member.InviteRelation) {
+	if r.InviterId > 0 {
+		arr := m.Invitation().InviterArray(r.InviterId, 2)
+		r.InviterD2 = arr[0]
+		r.InviterD3 = arr[1]
 	}
 }
 
@@ -686,7 +661,7 @@ func (m *memberImpl) updateInviterStr(r *member.InviteRelation) {
 func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
 	m.relation = r
 	m.relation.MemberId = m.value.Id
-	m.updateInviterStr(m.relation)
+	m.updateDepthInvite(m.relation)
 	err := m.repo.SaveRelation(m.relation)
 	if err == nil {
 		// 推送关系更新消息
@@ -698,17 +673,13 @@ func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
 // 绑定邀请人,如果已邀请,force为true时更新
 func (m *memberImpl) BindInviter(memberId int64, force bool) error {
 	if memberId > 0 {
-		rm := m.repo.GetMember(memberId)
-		if rm == nil {
+		if rm := m.repo.GetMember(memberId); rm == nil {
 			return member.ErrNoValidInviter
 		}
 	}
 	rl := m.GetRelation()
-	if rl.InviterId != memberId {
+	if true || rl.InviterId != memberId {
 		rl.InviterId = memberId
-		if memberId == 0 {
-			rl.InviterStr = ""
-		}
 		return m.saveRelation(rl)
 	}
 	return nil

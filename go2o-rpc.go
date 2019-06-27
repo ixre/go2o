@@ -16,22 +16,20 @@ import (
 	"go2o/app"
 	"go2o/core"
 	"go2o/core/service/rsi"
-	 rs "go2o/core/service/thrift/service"
+	rs "go2o/core/service/thrift/service"
 	"os"
 )
 
 func main() {
 	var (
-		addr    string
-		conf    string
-		confDir string
-		debug   bool
-		trace   bool
+		addr  string
+		conf  string
+		debug bool
+		trace bool
 	)
 
-	flag.StringVar(&addr, "addr", ":14280", "Address to listen to")
+	flag.StringVar(&addr, "addr", ":1427", "Address to listen to")
 	flag.StringVar(&conf, "conf", "app.conf", "Config file path")
-	flag.StringVar(&confDir, "conf-dir", "./conf", "config file directory")
 	flag.BoolVar(&debug, "debug", false, "Enable debug")
 	flag.BoolVar(&trace, "trace", false, "Enable trace")
 	flag.Parse()
@@ -41,7 +39,7 @@ func main() {
 		os.Exit(1)
 	}
 	gof.CurrentApp = newApp
-	rsi.Init(newApp, app.FlagRpcServe, confDir)
+	rsi.Init(newApp, app.FlagRpcServe)
 	//app.Configure(hook.HookUp, newApp, app.FlagRpcServe)
 
 	err := rs.ListenAndServe(addr, false)

@@ -12,9 +12,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/labstack/gommon/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"strconv"
 	"strings"
@@ -98,8 +98,8 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 }
 
 // 获取最近的余额变动信息
-func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member.MWalletLog {
-	var info = new(member.MWalletLog)
+func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member.WalletAccountLog {
+	var info = new(member.WalletAccountLog)
 	if err := m.GetOrm().GetBy(info, "member_id= $1 AND kind= $2 ORDER BY create_time DESC",
 		memberId, kind); err == nil {
 		return info
@@ -210,19 +210,6 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
 	return list
 }
 
-// 查询有邀请关系的会员数量
-func (m *MemberQuery) GetReferNum(memberId int64, layer int) int {
-	total := 0
-	keyword := fmt.Sprintf("''r%d'':%d", layer, memberId)
-	where := "inviter_str LIKE '%" + keyword +
-		",%' OR inviter_str LIKE '%" + keyword + "}'"
-	err := m.ExecScalar("SELECT COUNT(0) FROM mm_relation WHERE "+where, &total)
-	if err != nil {
-		domain.HandleError(err, "[ Go2o][ Member][ Query]:")
-	}
-	return total
-}
-
 // 获取分页商铺收藏
 func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 	where string) (num int, rows []*dto.PagedShopFav) {
@@ -298,7 +285,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 }
 
 // 获取从指定时间到现在推荐指定等级会员的数量
-func (m *MemberQuery) GetInviterQuantity(memberId int64, where string) int32 {
+func (m *MemberQuery) GetInviteQuantity(memberId int64, where string) int32 {
 	var total int32
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_relation
         INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
@@ -308,7 +295,7 @@ func (m *MemberQuery) GetInviterQuantity(memberId int64, where string) int32 {
 }
 
 // 获取从指定时间到现在推荐指定等级会员的数量
-func (m *MemberQuery) GetInviterArray(memberId int64, where string) []int64 {
+func (m *MemberQuery) GetInviteArray(memberId int64, where string) []int64 {
 	arr := []int64{}
 	m.Connector.Query(`SELECT mm_relation.member_id FROM mm_relation
         INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
@@ -322,4 +309,14 @@ func (m *MemberQuery) GetInviterArray(memberId int64, where string) []int64 {
 		}
 	}, memberId)
 	return arr
+}
+
+// 获取邀请会员数量
+func (m *MemberQuery) InviteMembersQuantity(memberId int64, where string) int {
+	total := 0
+	err := m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE `+where, &total)
+	if err != nil {
+		log.Printf("[ Query][ Error]: invite member quantity error:%s", err.Error())
+	}
+	return total
 }

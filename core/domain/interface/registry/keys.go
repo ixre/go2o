@@ -46,6 +46,16 @@ var (
 	// 批发门户标志
 	PlatformWholesaleSiteLogo = KeyFormat("PlatformWholesaleSiteLogo")
 
+	/** 系统 */
+	// 启用商户店铺商品分类
+	EnableMchGoodsCategory = KeyFormat("EnableMchGoodsCategory")
+	// 启用商户页面分类
+	EnableMchPageCategory = KeyFormat("EnableMchPageCategory")
+	// 系统是否挂起
+	SysSuspend = KeyFormat("SysSuspend")
+	// 系统挂起提示消息
+	SysSuspendMessage = KeyFormat("SysSuspendMessage")
+
 	DomainStaticServer          = "D_StaticServer"
 	DomainImageServer           = "D_ImageServer"
 	DomainUrlHash               = "D_Hash"
@@ -60,15 +70,17 @@ var (
 	DomainMobilePassport        = "D_MobilePassport"
 	DomainMobileUCenter         = "D_MobileUCenter"
 
-	/** 系统 */
-	// 启用商户店铺商品分类
-	EnableMchGoodsCategory = KeyFormat("EnableMchGoodsCategory")
-	// 启用商户页面分类
-	EnableMchPageCategory = KeyFormat("EnableMchPageCategory")
-	// 系统是否挂起
-	SysSuspend = KeyFormat("SysSuspend")
-	// 系统挂起提示消息
-	SysSuspendMessage = KeyFormat("SysSuspendMessage")
+	/** 账户 */
+	// 余额账户
+	AccountBalanceAlias = KeyFormat("AccountBalanceAlias")
+	// 积分账户
+	AccountIntegralAlias = KeyFormat("AccountIntegralAlias")
+	// 钱包账户
+	AccountWalletAlias = KeyFormat("AccountWalletAlias")
+	// 流动金账户
+	AccountFlowAlias = KeyFormat("AccountFlowAlias")
+	// 增利金账户
+	AccountGrowthAlias = KeyFormat("AccountGrowthAlias")
 
 	// 收货时的提示信息
 	OrderReceiveAlertMessage = KeyFormat("OrderReceiveAlertMessage")

@@ -6,6 +6,8 @@ package member_service
 import (
 	"bytes"
 	"context"
+	"database/sql/driver"
+	"errors"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
@@ -20,6 +22,75 @@ var _ = reflect.DeepEqual
 var _ = bytes.Equal
 
 var _ = ttype.GoUnusedProtection__
+
+//凭据
+type ECredentials int64
+
+const (
+	ECredentials_User  ECredentials = 1
+	ECredentials_Code  ECredentials = 2
+	ECredentials_Email ECredentials = 3
+	ECredentials_Phone ECredentials = 4
+)
+
+func (p ECredentials) String() string {
+	switch p {
+	case ECredentials_User:
+		return "User"
+	case ECredentials_Code:
+		return "Code"
+	case ECredentials_Email:
+		return "Email"
+	case ECredentials_Phone:
+		return "Phone"
+	}
+	return "<UNSET>"
+}
+
+func ECredentialsFromString(s string) (ECredentials, error) {
+	switch s {
+	case "User":
+		return ECredentials_User, nil
+	case "Code":
+		return ECredentials_Code, nil
+	case "Email":
+		return ECredentials_Email, nil
+	case "Phone":
+		return ECredentials_Phone, nil
+	}
+	return ECredentials(0), fmt.Errorf("not a valid ECredentials string")
+}
+
+func ECredentialsPtr(v ECredentials) *ECredentials { return &v }
+
+func (p ECredentials) MarshalText() ([]byte, error) {
+	return []byte(p.String()), nil
+}
+
+func (p *ECredentials) UnmarshalText(text []byte) error {
+	q, err := ECredentialsFromString(string(text))
+	if err != nil {
+		return err
+	}
+	*p = q
+	return nil
+}
+
+func (p *ECredentials) Scan(value interface{}) error {
+	v, ok := value.(int64)
+	if !ok {
+		return errors.New("Scan value is not int64")
+	}
+	*p = ECredentials(v)
+	return nil
+}
+
+func (p *ECredentials) Value() (driver.Value, error) {
+	if p == nil {
+		return nil, nil
+	}
+	return int64(*p), nil
+}
 
 // 等级
 //
@@ -2139,8 +2210,8 @@ func (p *SProfile) String() string {
 //  - ExpiredBalance
 //  - WalletBalance
 //  - FreezeWallet
-//  - ExpiredPresent
-//  - TotalPresentFee
+//  - ExpiredWallet
+//  - TotalWalletAmount
 //  - FlowBalance
 //  - GrowBalance
 //  - GrowAmount
@@ -2160,8 +2231,8 @@ type SAccount struct {
 	ExpiredBalance    float64 `thrift:"ExpiredBalance,6" db:"ExpiredBalance" json:"ExpiredBalance"`
 	WalletBalance     float64 `thrift:"WalletBalance,7" db:"WalletBalance" json:"WalletBalance"`
 	FreezeWallet      float64 `thrift:"FreezeWallet,8" db:"FreezeWallet" json:"FreezeWallet"`
-	ExpiredPresent    float64 `thrift:"ExpiredPresent,9" db:"ExpiredPresent" json:"ExpiredPresent"`
-	TotalPresentFee   float64 `thrift:"TotalPresentFee,10" db:"TotalPresentFee" json:"TotalPresentFee"`
+	ExpiredWallet     float64 `thrift:"ExpiredWallet,9" db:"ExpiredWallet" json:"ExpiredWallet"`
+	TotalWalletAmount float64 `thrift:"TotalWalletAmount,10" db:"TotalWalletAmount" json:"TotalWalletAmount"`
 	FlowBalance       float64 `thrift:"FlowBalance,11" db:"FlowBalance" json:"FlowBalance"`
 	GrowBalance       float64 `thrift:"GrowBalance,12" db:"GrowBalance" json:"GrowBalance"`
 	GrowAmount        float64 `thrift:"GrowAmount,13" db:"GrowAmount" json:"GrowAmount"`
@@ -2210,12 +2281,12 @@ func (p *SAccount) GetFreezeWallet() float64 {
 	return p.FreezeWallet
 }
 
-func (p *SAccount) GetExpiredPresent() float64 {
-	return p.ExpiredPresent
+func (p *SAccount) GetExpiredWallet() float64 {
+	return p.ExpiredWallet
 }
 
-func (p *SAccount) GetTotalPresentFee() float64 {
-	return p.TotalPresentFee
+func (p *SAccount) GetTotalWalletAmount() float64 {
+	return p.TotalWalletAmount
 }
 
 func (p *SAccount) GetFlowBalance() float64 {
@@ -2562,7 +2633,7 @@ func (p *SAccount) ReadField9(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadDouble(); err != nil {
 		return thrift.PrependError("error reading field 9: ", err)
 	} else {
-		p.ExpiredPresent = v
+		p.ExpiredWallet = v
 	}
 	return nil
 }
@@ -2571,7 +2642,7 @@ func (p *SAccount) ReadField10(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadDouble(); err != nil {
 		return thrift.PrependError("error reading field 10: ", err)
 	} else {
-		p.TotalPresentFee = v
+		p.TotalWalletAmount = v
 	}
 	return nil
 }
@@ -2846,27 +2917,27 @@ func (p *SAccount) writeField8(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *SAccount) writeField9(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("ExpiredPresent", thrift.DOUBLE, 9); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:ExpiredPresent: ", p), err)
+	if err := oprot.WriteFieldBegin("ExpiredWallet", thrift.DOUBLE, 9); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:ExpiredWallet: ", p), err)
 	}
-	if err := oprot.WriteDouble(float64(p.ExpiredPresent)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.ExpiredPresent (9) field write error: ", p), err)
+	if err := oprot.WriteDouble(float64(p.ExpiredWallet)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.ExpiredWallet (9) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:ExpiredPresent: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:ExpiredWallet: ", p), err)
 	}
 	return err
 }
 
 func (p *SAccount) writeField10(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("TotalPresentFee", thrift.DOUBLE, 10); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:TotalPresentFee: ", p), err)
+	if err := oprot.WriteFieldBegin("TotalWalletAmount", thrift.DOUBLE, 10); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:TotalWalletAmount: ", p), err)
 	}
-	if err := oprot.WriteDouble(float64(p.TotalPresentFee)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.TotalPresentFee (10) field write error: ", p), err)
+	if err := oprot.WriteDouble(float64(p.TotalWalletAmount)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.TotalWalletAmount (10) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 10:TotalPresentFee: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 10:TotalWalletAmount: ", p), err)
 	}
 	return err
 }
@@ -3009,63 +3080,33 @@ func (p *SAccount) String() string {
 }
 
 // Attributes:
-//  - MemberId
-//  - Usr
 //  - Name
 //  - Avatar
+//  - Phone
 //  - Exp
 //  - Level
 //  - LevelName
-//  - LevelSign
-//  - LevelOfficial
-//  - PremiumUser
-//  - PremiumExpires
 //  - InvitationCode
 //  - TrustAuthState
-//  - State
-//  - Integral
-//  - Balance
-//  - WalletBalance
-//  - GrowBalance
-//  - GrowAmount
-//  - GrowEarnings
-//  - GrowTotalEarnings
+//  - PremiumUser
+//  - Flag
 //  - UpdateTime
 type SComplexMember struct {
-	MemberId          int64   `thrift:"MemberId,1" db:"MemberId" json:"MemberId"`
-	Usr               string  `thrift:"Usr,2" db:"Usr" json:"Usr"`
-	Name              string  `thrift:"Name,3" db:"Name" json:"Name"`
-	Avatar            string  `thrift:"Avatar,4" db:"Avatar" json:"Avatar"`
-	Exp               int32   `thrift:"Exp,5" db:"Exp" json:"Exp"`
-	Level             int32   `thrift:"Level,6" db:"Level" json:"Level"`
-	LevelName         string  `thrift:"LevelName,7" db:"LevelName" json:"LevelName"`
-	LevelSign         string  `thrift:"LevelSign,8" db:"LevelSign" json:"LevelSign"`
-	LevelOfficial     int32   `thrift:"LevelOfficial,9" db:"LevelOfficial" json:"LevelOfficial"`
-	PremiumUser       int32   `thrift:"PremiumUser,10" db:"PremiumUser" json:"PremiumUser"`
-	PremiumExpires    int64   `thrift:"PremiumExpires,11" db:"PremiumExpires" json:"PremiumExpires"`
-	InvitationCode    string  `thrift:"InvitationCode,12" db:"InvitationCode" json:"InvitationCode"`
-	TrustAuthState    int32   `thrift:"TrustAuthState,13" db:"TrustAuthState" json:"TrustAuthState"`
-	State             int32   `thrift:"State,14" db:"State" json:"State"`
-	Integral          int64   `thrift:"Integral,15" db:"Integral" json:"Integral"`
-	Balance           float64 `thrift:"Balance,16" db:"Balance" json:"Balance"`
-	WalletBalance     float64 `thrift:"WalletBalance,17" db:"WalletBalance" json:"WalletBalance"`
-	GrowBalance       float64 `thrift:"GrowBalance,18" db:"GrowBalance" json:"GrowBalance"`
-	GrowAmount        float64 `thrift:"GrowAmount,19" db:"GrowAmount" json:"GrowAmount"`
-	GrowEarnings      float64 `thrift:"GrowEarnings,20" db:"GrowEarnings" json:"GrowEarnings"`
-	GrowTotalEarnings float64 `thrift:"GrowTotalEarnings,21" db:"GrowTotalEarnings" json:"GrowTotalEarnings"`
-	UpdateTime        int64   `thrift:"UpdateTime,22" db:"UpdateTime" json:"UpdateTime"`
+	Name           string `thrift:"Name,1" db:"Name" json:"Name"`
+	Avatar         string `thrift:"Avatar,2" db:"Avatar" json:"Avatar"`
+	Phone          string `thrift:"Phone,3" db:"Phone" json:"Phone"`
+	Exp            int32  `thrift:"Exp,4" db:"Exp" json:"Exp"`
+	Level          int32  `thrift:"Level,5" db:"Level" json:"Level"`
+	LevelName      string `thrift:"LevelName,6" db:"LevelName" json:"LevelName"`
+	InvitationCode string `thrift:"InvitationCode,7" db:"InvitationCode" json:"InvitationCode"`
+	TrustAuthState int32  `thrift:"TrustAuthState,8" db:"TrustAuthState" json:"TrustAuthState"`
+	PremiumUser    int32  `thrift:"PremiumUser,9" db:"PremiumUser" json:"PremiumUser"`
+	Flag           int32  `thrift:"Flag,10" db:"Flag" json:"Flag"`
+	UpdateTime     int64  `thrift:"UpdateTime,11" db:"UpdateTime" json:"UpdateTime"`
 }
 
 func NewSComplexMember() *SComplexMember {
 	return &SComplexMember{}
-}
-
-func (p *SComplexMember) GetMemberId() int64 {
-	return p.MemberId
-}
-
-func (p *SComplexMember) GetUsr() string {
-	return p.Usr
 }
 
 func (p *SComplexMember) GetName() string {
@@ -3074,6 +3115,10 @@ func (p *SComplexMember) GetName() string {
 
 func (p *SComplexMember) GetAvatar() string {
 	return p.Avatar
+}
+
+func (p *SComplexMember) GetPhone() string {
+	return p.Phone
 }
 
 func (p *SComplexMember) GetExp() int32 {
@@ -3088,22 +3133,6 @@ func (p *SComplexMember) GetLevelName() string {
 	return p.LevelName
 }
 
-func (p *SComplexMember) GetLevelSign() string {
-	return p.LevelSign
-}
-
-func (p *SComplexMember) GetLevelOfficial() int32 {
-	return p.LevelOfficial
-}
-
-func (p *SComplexMember) GetPremiumUser() int32 {
-	return p.PremiumUser
-}
-
-func (p *SComplexMember) GetPremiumExpires() int64 {
-	return p.PremiumExpires
-}
-
 func (p *SComplexMember) GetInvitationCode() string {
 	return p.InvitationCode
 }
@@ -3112,36 +3141,12 @@ func (p *SComplexMember) GetTrustAuthState() int32 {
 	return p.TrustAuthState
 }
 
-func (p *SComplexMember) GetState() int32 {
-	return p.State
+func (p *SComplexMember) GetPremiumUser() int32 {
+	return p.PremiumUser
 }
 
-func (p *SComplexMember) GetIntegral() int64 {
-	return p.Integral
-}
-
-func (p *SComplexMember) GetBalance() float64 {
-	return p.Balance
-}
-
-func (p *SComplexMember) GetWalletBalance() float64 {
-	return p.WalletBalance
-}
-
-func (p *SComplexMember) GetGrowBalance() float64 {
-	return p.GrowBalance
-}
-
-func (p *SComplexMember) GetGrowAmount() float64 {
-	return p.GrowAmount
-}
-
-func (p *SComplexMember) GetGrowEarnings() float64 {
-	return p.GrowEarnings
-}
-
-func (p *SComplexMember) GetGrowTotalEarnings() float64 {
-	return p.GrowTotalEarnings
+func (p *SComplexMember) GetFlag() int32 {
+	return p.Flag
 }
 
 func (p *SComplexMember) GetUpdateTime() int64 {
@@ -3162,7 +3167,7 @@ func (p *SComplexMember) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				if err := p.ReadField1(iprot); err != nil {
 					return err
 				}
@@ -3192,7 +3197,7 @@ func (p *SComplexMember) Read(iprot thrift.TProtocol) error {
 				}
 			}
 		case 4:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I32 {
 				if err := p.ReadField4(iprot); err != nil {
 					return err
 				}
@@ -3212,7 +3217,7 @@ func (p *SComplexMember) Read(iprot thrift.TProtocol) error {
 				}
 			}
 		case 6:
-			if fieldTypeId == thrift.I32 {
+			if fieldTypeId == thrift.STRING {
 				if err := p.ReadField6(iprot); err != nil {
 					return err
 				}
@@ -3232,7 +3237,7 @@ func (p *SComplexMember) Read(iprot thrift.TProtocol) error {
 				}
 			}
 		case 8:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I32 {
 				if err := p.ReadField8(iprot); err != nil {
 					return err
 				}
@@ -3271,116 +3276,6 @@ func (p *SComplexMember) Read(iprot thrift.TProtocol) error {
 					return err
 				}
 			}
-		case 12:
-			if fieldTypeId == thrift.STRING {
-				if err := p.ReadField12(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 13:
-			if fieldTypeId == thrift.I32 {
-				if err := p.ReadField13(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 14:
-			if fieldTypeId == thrift.I32 {
-				if err := p.ReadField14(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 15:
-			if fieldTypeId == thrift.I64 {
-				if err := p.ReadField15(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 16:
-			if fieldTypeId == thrift.DOUBLE {
-				if err := p.ReadField16(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 17:
-			if fieldTypeId == thrift.DOUBLE {
-				if err := p.ReadField17(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 18:
-			if fieldTypeId == thrift.DOUBLE {
-				if err := p.ReadField18(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 19:
-			if fieldTypeId == thrift.DOUBLE {
-				if err := p.ReadField19(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 20:
-			if fieldTypeId == thrift.DOUBLE {
-				if err := p.ReadField20(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 21:
-			if fieldTypeId == thrift.DOUBLE {
-				if err := p.ReadField21(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 22:
-			if fieldTypeId == thrift.I64 {
-				if err := p.ReadField22(iprot); err != nil {
-					return err
-				}
-			} else {
-				if err := iprot.Skip(fieldTypeId); err != nil {
-					return err
-				}
-			}
 		default:
 			if err := iprot.Skip(fieldTypeId); err != nil {
 				return err
@@ -3397,10 +3292,10 @@ func (p *SComplexMember) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *SComplexMember) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI64(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
-		p.MemberId = v
+		p.Name = v
 	}
 	return nil
 }
@@ -3409,7 +3304,7 @@ func (p *SComplexMember) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
-		p.Usr = v
+		p.Avatar = v
 	}
 	return nil
 }
@@ -3418,16 +3313,16 @@ func (p *SComplexMember) ReadField3(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
 	} else {
-		p.Name = v
+		p.Phone = v
 	}
 	return nil
 }
 
 func (p *SComplexMember) ReadField4(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
+	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 4: ", err)
 	} else {
-		p.Avatar = v
+		p.Exp = v
 	}
 	return nil
 }
@@ -3436,16 +3331,16 @@ func (p *SComplexMember) ReadField5(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 5: ", err)
 	} else {
-		p.Exp = v
+		p.Level = v
 	}
 	return nil
 }
 
 func (p *SComplexMember) ReadField6(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 6: ", err)
 	} else {
-		p.Level = v
+		p.LevelName = v
 	}
 	return nil
 }
@@ -3454,16 +3349,16 @@ func (p *SComplexMember) ReadField7(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 7: ", err)
 	} else {
-		p.LevelName = v
+		p.InvitationCode = v
 	}
 	return nil
 }
 
 func (p *SComplexMember) ReadField8(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
+	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 8: ", err)
 	} else {
-		p.LevelSign = v
+		p.TrustAuthState = v
 	}
 	return nil
 }
@@ -3472,7 +3367,7 @@ func (p *SComplexMember) ReadField9(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 9: ", err)
 	} else {
-		p.LevelOfficial = v
+		p.PremiumUser = v
 	}
 	return nil
 }
@@ -3481,7 +3376,7 @@ func (p *SComplexMember) ReadField10(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 10: ", err)
 	} else {
-		p.PremiumUser = v
+		p.Flag = v
 	}
 	return nil
 }
@@ -3489,105 +3384,6 @@ func (p *SComplexMember) ReadField10(iprot thrift.TProtocol) error {
 func (p *SComplexMember) ReadField11(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 11: ", err)
-	} else {
-		p.PremiumExpires = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField12(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
-		return thrift.PrependError("error reading field 12: ", err)
-	} else {
-		p.InvitationCode = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField13(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
-		return thrift.PrependError("error reading field 13: ", err)
-	} else {
-		p.TrustAuthState = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField14(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
-		return thrift.PrependError("error reading field 14: ", err)
-	} else {
-		p.State = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField15(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI64(); err != nil {
-		return thrift.PrependError("error reading field 15: ", err)
-	} else {
-		p.Integral = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField16(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadDouble(); err != nil {
-		return thrift.PrependError("error reading field 16: ", err)
-	} else {
-		p.Balance = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField17(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadDouble(); err != nil {
-		return thrift.PrependError("error reading field 17: ", err)
-	} else {
-		p.WalletBalance = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField18(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadDouble(); err != nil {
-		return thrift.PrependError("error reading field 18: ", err)
-	} else {
-		p.GrowBalance = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField19(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadDouble(); err != nil {
-		return thrift.PrependError("error reading field 19: ", err)
-	} else {
-		p.GrowAmount = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField20(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadDouble(); err != nil {
-		return thrift.PrependError("error reading field 20: ", err)
-	} else {
-		p.GrowEarnings = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField21(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadDouble(); err != nil {
-		return thrift.PrependError("error reading field 21: ", err)
-	} else {
-		p.GrowTotalEarnings = v
-	}
-	return nil
-}
-
-func (p *SComplexMember) ReadField22(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI64(); err != nil {
-		return thrift.PrependError("error reading field 22: ", err)
 	} else {
 		p.UpdateTime = v
 	}
@@ -3632,39 +3428,6 @@ func (p *SComplexMember) Write(oprot thrift.TProtocol) error {
 		if err := p.writeField11(oprot); err != nil {
 			return err
 		}
-		if err := p.writeField12(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField13(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField14(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField15(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField16(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField17(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField18(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField19(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField20(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField21(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField22(oprot); err != nil {
-			return err
-		}
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
@@ -3676,287 +3439,144 @@ func (p *SComplexMember) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *SComplexMember) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("MemberId", thrift.I64, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:MemberId: ", p), err)
+	if err := oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Name: ", p), err)
 	}
-	if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.MemberId (1) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.Name)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Name (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:MemberId: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Name: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Usr", thrift.STRING, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Usr: ", p), err)
+	if err := oprot.WriteFieldBegin("Avatar", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Avatar: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Usr)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Usr (2) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.Avatar)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Avatar (2) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Usr: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Avatar: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Name", thrift.STRING, 3); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Name: ", p), err)
+	if err := oprot.WriteFieldBegin("Phone", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Phone: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Name)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Name (3) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.Phone)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Phone (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Name: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Phone: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField4(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Avatar", thrift.STRING, 4); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Avatar: ", p), err)
+	if err := oprot.WriteFieldBegin("Exp", thrift.I32, 4); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Exp: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Avatar)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Avatar (4) field write error: ", p), err)
+	if err := oprot.WriteI32(int32(p.Exp)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Exp (4) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Avatar: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Exp: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField5(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Exp", thrift.I32, 5); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:Exp: ", p), err)
+	if err := oprot.WriteFieldBegin("Level", thrift.I32, 5); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:Level: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.Exp)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Exp (5) field write error: ", p), err)
+	if err := oprot.WriteI32(int32(p.Level)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Level (5) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:Exp: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:Level: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField6(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Level", thrift.I32, 6); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:Level: ", p), err)
+	if err := oprot.WriteFieldBegin("LevelName", thrift.STRING, 6); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:LevelName: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.Level)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Level (6) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.LevelName)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.LevelName (6) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:Level: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:LevelName: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField7(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("LevelName", thrift.STRING, 7); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:LevelName: ", p), err)
+	if err := oprot.WriteFieldBegin("InvitationCode", thrift.STRING, 7); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:InvitationCode: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.LevelName)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.LevelName (7) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.InvitationCode)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.InvitationCode (7) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:LevelName: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:InvitationCode: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField8(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("LevelSign", thrift.STRING, 8); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:LevelSign: ", p), err)
+	if err := oprot.WriteFieldBegin("TrustAuthState", thrift.I32, 8); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:TrustAuthState: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.LevelSign)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.LevelSign (8) field write error: ", p), err)
+	if err := oprot.WriteI32(int32(p.TrustAuthState)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.TrustAuthState (8) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:LevelSign: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:TrustAuthState: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField9(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("LevelOfficial", thrift.I32, 9); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:LevelOfficial: ", p), err)
+	if err := oprot.WriteFieldBegin("PremiumUser", thrift.I32, 9); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:PremiumUser: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.LevelOfficial)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.LevelOfficial (9) field write error: ", p), err)
+	if err := oprot.WriteI32(int32(p.PremiumUser)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.PremiumUser (9) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:LevelOfficial: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:PremiumUser: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField10(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("PremiumUser", thrift.I32, 10); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:PremiumUser: ", p), err)
+	if err := oprot.WriteFieldBegin("Flag", thrift.I32, 10); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:Flag: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.PremiumUser)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.PremiumUser (10) field write error: ", p), err)
+	if err := oprot.WriteI32(int32(p.Flag)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Flag (10) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 10:PremiumUser: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 10:Flag: ", p), err)
 	}
 	return err
 }
 
 func (p *SComplexMember) writeField11(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("PremiumExpires", thrift.I64, 11); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 11:PremiumExpires: ", p), err)
-	}
-	if err := oprot.WriteI64(int64(p.PremiumExpires)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.PremiumExpires (11) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 11:PremiumExpires: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField12(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("InvitationCode", thrift.STRING, 12); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 12:InvitationCode: ", p), err)
-	}
-	if err := oprot.WriteString(string(p.InvitationCode)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.InvitationCode (12) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 12:InvitationCode: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField13(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("TrustAuthState", thrift.I32, 13); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 13:TrustAuthState: ", p), err)
-	}
-	if err := oprot.WriteI32(int32(p.TrustAuthState)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.TrustAuthState (13) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 13:TrustAuthState: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField14(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("State", thrift.I32, 14); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 14:State: ", p), err)
-	}
-	if err := oprot.WriteI32(int32(p.State)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.State (14) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 14:State: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField15(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Integral", thrift.I64, 15); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 15:Integral: ", p), err)
-	}
-	if err := oprot.WriteI64(int64(p.Integral)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Integral (15) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 15:Integral: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField16(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Balance", thrift.DOUBLE, 16); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 16:Balance: ", p), err)
-	}
-	if err := oprot.WriteDouble(float64(p.Balance)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Balance (16) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 16:Balance: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField17(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("WalletBalance", thrift.DOUBLE, 17); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 17:WalletBalance: ", p), err)
-	}
-	if err := oprot.WriteDouble(float64(p.WalletBalance)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.WalletBalance (17) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 17:WalletBalance: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField18(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("GrowBalance", thrift.DOUBLE, 18); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 18:GrowBalance: ", p), err)
-	}
-	if err := oprot.WriteDouble(float64(p.GrowBalance)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.GrowBalance (18) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 18:GrowBalance: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField19(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("GrowAmount", thrift.DOUBLE, 19); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 19:GrowAmount: ", p), err)
-	}
-	if err := oprot.WriteDouble(float64(p.GrowAmount)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.GrowAmount (19) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 19:GrowAmount: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField20(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("GrowEarnings", thrift.DOUBLE, 20); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 20:GrowEarnings: ", p), err)
-	}
-	if err := oprot.WriteDouble(float64(p.GrowEarnings)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.GrowEarnings (20) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 20:GrowEarnings: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField21(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("GrowTotalEarnings", thrift.DOUBLE, 21); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 21:GrowTotalEarnings: ", p), err)
-	}
-	if err := oprot.WriteDouble(float64(p.GrowTotalEarnings)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.GrowTotalEarnings (21) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 21:GrowTotalEarnings: ", p), err)
-	}
-	return err
-}
-
-func (p *SComplexMember) writeField22(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("UpdateTime", thrift.I64, 22); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 22:UpdateTime: ", p), err)
+	if err := oprot.WriteFieldBegin("UpdateTime", thrift.I64, 11); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 11:UpdateTime: ", p), err)
 	}
 	if err := oprot.WriteI64(int64(p.UpdateTime)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.UpdateTime (22) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.UpdateTime (11) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 22:UpdateTime: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 11:UpdateTime: ", p), err)
 	}
 	return err
 }
@@ -5085,6 +4705,392 @@ func (p *SAddress) String() string {
 	return fmt.Sprintf("SAddress(%+v)", *p)
 }
 
+// Attributes:
+//  - Level: 等级
+//  - LevelName: 等级名称
+//  - Exp: 经验值
+//  - ProgramSignal: 编程符号
+//  - NextLevel: 下一级等级,返回-1表示最高级别
+//  - NextLevelName: 下一等级名称
+//  - NextProgramSignal: 编程符号
+//  - RequireExp: 需要经验值
+type SMemberLevelInfo struct {
+	Level             int32  `thrift:"Level,1" db:"Level" json:"Level"`
+	LevelName         string `thrift:"LevelName,2" db:"LevelName" json:"LevelName"`
+	Exp               int32  `thrift:"Exp,3" db:"Exp" json:"Exp"`
+	ProgramSignal     string `thrift:"ProgramSignal,4" db:"ProgramSignal" json:"ProgramSignal"`
+	NextLevel         int32  `thrift:"NextLevel,5" db:"NextLevel" json:"NextLevel"`
+	NextLevelName     string `thrift:"NextLevelName,6" db:"NextLevelName" json:"NextLevelName"`
+	NextProgramSignal string `thrift:"NextProgramSignal,7" db:"NextProgramSignal" json:"NextProgramSignal"`
+	RequireExp        int32  `thrift:"RequireExp,8" db:"RequireExp" json:"RequireExp"`
+}
+
+func NewSMemberLevelInfo() *SMemberLevelInfo {
+	return &SMemberLevelInfo{}
+}
+
+func (p *SMemberLevelInfo) GetLevel() int32 {
+	return p.Level
+}
+
+func (p *SMemberLevelInfo) GetLevelName() string {
+	return p.LevelName
+}
+
+func (p *SMemberLevelInfo) GetExp() int32 {
+	return p.Exp
+}
+
+func (p *SMemberLevelInfo) GetProgramSignal() string {
+	return p.ProgramSignal
+}
+
+func (p *SMemberLevelInfo) GetNextLevel() int32 {
+	return p.NextLevel
+}
+
+func (p *SMemberLevelInfo) GetNextLevelName() string {
+	return p.NextLevelName
+}
+
+func (p *SMemberLevelInfo) GetNextProgramSignal() string {
+	return p.NextProgramSignal
+}
+
+func (p *SMemberLevelInfo) GetRequireExp() int32 {
+	return p.RequireExp
+}
+func (p *SMemberLevelInfo) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I32 {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.I32 {
+				if err := p.ReadField3(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 4:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField4(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 5:
+			if fieldTypeId == thrift.I32 {
+				if err := p.ReadField5(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 6:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField6(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 7:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField7(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 8:
+			if fieldTypeId == thrift.I32 {
+				if err := p.ReadField8(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Level = v
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.LevelName = v
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Exp = v
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
+		p.ProgramSignal = v
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) ReadField5(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 5: ", err)
+	} else {
+		p.NextLevel = v
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) ReadField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 6: ", err)
+	} else {
+		p.NextLevelName = v
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) ReadField7(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 7: ", err)
+	} else {
+		p.NextProgramSignal = v
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) ReadField8(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 8: ", err)
+	} else {
+		p.RequireExp = v
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SMemberLevelInfo"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField3(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField4(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField5(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField6(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField7(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField8(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SMemberLevelInfo) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Level", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Level: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.Level)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Level (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Level: ", p), err)
+	}
+	return err
+}
+
+func (p *SMemberLevelInfo) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("LevelName", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:LevelName: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.LevelName)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.LevelName (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:LevelName: ", p), err)
+	}
+	return err
+}
+
+func (p *SMemberLevelInfo) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Exp", thrift.I32, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Exp: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.Exp)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Exp (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Exp: ", p), err)
+	}
+	return err
+}
+
+func (p *SMemberLevelInfo) writeField4(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("ProgramSignal", thrift.STRING, 4); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:ProgramSignal: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.ProgramSignal)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.ProgramSignal (4) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:ProgramSignal: ", p), err)
+	}
+	return err
+}
+
+func (p *SMemberLevelInfo) writeField5(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("NextLevel", thrift.I32, 5); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:NextLevel: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.NextLevel)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.NextLevel (5) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:NextLevel: ", p), err)
+	}
+	return err
+}
+
+func (p *SMemberLevelInfo) writeField6(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("NextLevelName", thrift.STRING, 6); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:NextLevelName: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.NextLevelName)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.NextLevelName (6) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:NextLevelName: ", p), err)
+	}
+	return err
+}
+
+func (p *SMemberLevelInfo) writeField7(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("NextProgramSignal", thrift.STRING, 7); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:NextProgramSignal: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.NextProgramSignal)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.NextProgramSignal (7) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:NextProgramSignal: ", p), err)
+	}
+	return err
+}
+
+func (p *SMemberLevelInfo) writeField8(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("RequireExp", thrift.I32, 8); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:RequireExp: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.RequireExp)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.RequireExp (8) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:RequireExp: ", p), err)
+	}
+	return err
+}
+
+func (p *SMemberLevelInfo) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SMemberLevelInfo(%+v)", *p)
+}
+
 type MemberService interface {
 	// 注册会员
 	// @param user 登陆用户名
@@ -5125,11 +5131,12 @@ type MemberService interface {
 	// Parameters:
 	//  - Sign
 	GetLevelBySign(ctx context.Context, sign string) (r *SLevel, err error)
-	// 根据会员编码获取会员ID
+	// 交换会员编号
 	//
 	// Parameters:
-	//  - MemberCode
-	GetMemberId(ctx context.Context, memberCode string) (r int64, err error)
+	//  - Cred
+	//  - Value
+	SwapMemberId(ctx context.Context, cred ECredentials, value string) (r int64, err error)
 	// Parameters:
 	//  - ID
 	GetMember(ctx context.Context, id int64) (r *SMember, err error)
@@ -5148,13 +5155,41 @@ type MemberService interface {
 	//
 	// Parameters:
 	//  - MemberId
-	ToggleLock(ctx context.Context, memberId int64) (r *ttype.Result_, err error)
+	//  - Lock
+	//  - Remark
+	Lock(ctx context.Context, memberId int64, lock bool, remark string) (r *ttype.Result_, err error)
+	// 标志赋值, 如果flag小于零, 则异或运算
+	//
+	// Parameters:
+	//  - MemberId
+	//  - Flag
+	GrantFlag(ctx context.Context, memberId int64, flag int32) (r *ttype.Result_, err error)
+	// 获取会员汇总信息
+	//
 	// Parameters:
 	//  - MemberId
 	Complex(ctx context.Context, memberId int64) (r *SComplexMember, err error)
+	// 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
+	//
+	// Parameters:
+	//  - MemberId
+	//  - Op
+	//  - MsgType
+	SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error)
+	// 比较验证码是否正确
+	//
+	// Parameters:
+	//  - MemberId
+	//  - Code
+	CompareCode(ctx context.Context, memberId int64, code string) (r *ttype.Result_, err error)
 	// Parameters:
 	//  - MemberId
 	CheckProfileComplete(ctx context.Context, memberId int64) (r *ttype.Result_, err error)
+	// 获取会员等级信息
+	//
+	// Parameters:
+	//  - MemberId
+	MemberLevelInfo(ctx context.Context, memberId int64) (r *SMemberLevelInfo, err error)
 	// Parameters:
 	//  - MemberId
 	//  - Level
@@ -5201,12 +5236,16 @@ type MemberService interface {
 	InviterArray(ctx context.Context, memberId int64, depth int32) (r []int64, err error)
 	// Parameters:
 	//  - MemberId
-	//  - Data
-	GetInviterQuantity(ctx context.Context, memberId int64, data map[string]string) (r int32, err error)
+	//  - Depth
+	InviteMembersQuantity(ctx context.Context, memberId int64, depth int32) (r int32, err error)
 	// Parameters:
 	//  - MemberId
 	//  - Data
-	GetInviterArray(ctx context.Context, memberId int64, data map[string]string) (r []int64, err error)
+	QueryInviteQuantity(ctx context.Context, memberId int64, data map[string]string) (r int32, err error)
+	// Parameters:
+	//  - MemberId
+	//  - Data
+	QueryInviteArray(ctx context.Context, memberId int64, data map[string]string) (r []int64, err error)
 	// Parameters:
 	//  - MemberId
 	//  - Account
@@ -5390,15 +5429,17 @@ func (p *MemberServiceClient) GetLevelBySign(ctx context.Context, sign string) (
 	return _result13.GetSuccess(), nil
 }
 
-// 根据会员编码获取会员ID
+// 交换会员编号
 //
 // Parameters:
-//  - MemberCode
-func (p *MemberServiceClient) GetMemberId(ctx context.Context, memberCode string) (r int64, err error) {
-	var _args14 MemberServiceGetMemberIdArgs
-	_args14.MemberCode = memberCode
-	var _result15 MemberServiceGetMemberIdResult
-	if err = p.Client_().Call(ctx, "GetMemberId", &_args14, &_result15); err != nil {
+//  - Cred
+//  - Value
+func (p *MemberServiceClient) SwapMemberId(ctx context.Context, cred ECredentials, value string) (r int64, err error) {
+	var _args14 MemberServiceSwapMemberIdArgs
+	_args14.Cred = cred
+	_args14.Value = value
+	var _result15 MemberServiceSwapMemberIdResult
+	if err = p.Client_().Call(ctx, "SwapMemberId", &_args14, &_result15); err != nil {
 		return
 	}
 	return _result15.GetSuccess(), nil
@@ -5458,38 +5499,108 @@ func (p *MemberServiceClient) Active(ctx context.Context, memberId int64) (r *tt
 //
 // Parameters:
 //  - MemberId
-func (p *MemberServiceClient) ToggleLock(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
-	var _args24 MemberServiceToggleLockArgs
+//  - Lock
+//  - Remark
+func (p *MemberServiceClient) Lock(ctx context.Context, memberId int64, lock bool, remark string) (r *ttype.Result_, err error) {
+	var _args24 MemberServiceLockArgs
 	_args24.MemberId = memberId
-	var _result25 MemberServiceToggleLockResult
-	if err = p.Client_().Call(ctx, "ToggleLock", &_args24, &_result25); err != nil {
+	_args24.Lock = lock
+	_args24.Remark = remark
+	var _result25 MemberServiceLockResult
+	if err = p.Client_().Call(ctx, "Lock", &_args24, &_result25); err != nil {
 		return
 	}
 	return _result25.GetSuccess(), nil
 }
 
+// 标志赋值, 如果flag小于零, 则异或运算
+//
 // Parameters:
 //  - MemberId
-func (p *MemberServiceClient) Complex(ctx context.Context, memberId int64) (r *SComplexMember, err error) {
-	var _args26 MemberServiceComplexArgs
+//  - Flag
+func (p *MemberServiceClient) GrantFlag(ctx context.Context, memberId int64, flag int32) (r *ttype.Result_, err error) {
+	var _args26 MemberServiceGrantFlagArgs
 	_args26.MemberId = memberId
-	var _result27 MemberServiceComplexResult
-	if err = p.Client_().Call(ctx, "Complex", &_args26, &_result27); err != nil {
+	_args26.Flag = flag
+	var _result27 MemberServiceGrantFlagResult
+	if err = p.Client_().Call(ctx, "GrantFlag", &_args26, &_result27); err != nil {
 		return
 	}
 	return _result27.GetSuccess(), nil
 }
 
+// 获取会员汇总信息
+//
 // Parameters:
 //  - MemberId
-func (p *MemberServiceClient) CheckProfileComplete(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
-	var _args28 MemberServiceCheckProfileCompleteArgs
+func (p *MemberServiceClient) Complex(ctx context.Context, memberId int64) (r *SComplexMember, err error) {
+	var _args28 MemberServiceComplexArgs
 	_args28.MemberId = memberId
-	var _result29 MemberServiceCheckProfileCompleteResult
-	if err = p.Client_().Call(ctx, "CheckProfileComplete", &_args28, &_result29); err != nil {
+	var _result29 MemberServiceComplexResult
+	if err = p.Client_().Call(ctx, "Complex", &_args28, &_result29); err != nil {
 		return
 	}
 	return _result29.GetSuccess(), nil
+}
+
+// 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
+//
+// Parameters:
+//  - MemberId
+//  - Op
+//  - MsgType
+func (p *MemberServiceClient) SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error) {
+	var _args30 MemberServiceSendCodeArgs
+	_args30.MemberId = memberId
+	_args30.Op = op
+	_args30.MsgType = msgType
+	var _result31 MemberServiceSendCodeResult
+	if err = p.Client_().Call(ctx, "SendCode", &_args30, &_result31); err != nil {
+		return
+	}
+	return _result31.GetSuccess(), nil
+}
+
+// 比较验证码是否正确
+//
+// Parameters:
+//  - MemberId
+//  - Code
+func (p *MemberServiceClient) CompareCode(ctx context.Context, memberId int64, code string) (r *ttype.Result_, err error) {
+	var _args32 MemberServiceCompareCodeArgs
+	_args32.MemberId = memberId
+	_args32.Code = code
+	var _result33 MemberServiceCompareCodeResult
+	if err = p.Client_().Call(ctx, "CompareCode", &_args32, &_result33); err != nil {
+		return
+	}
+	return _result33.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+func (p *MemberServiceClient) CheckProfileComplete(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
+	var _args34 MemberServiceCheckProfileCompleteArgs
+	_args34.MemberId = memberId
+	var _result35 MemberServiceCheckProfileCompleteResult
+	if err = p.Client_().Call(ctx, "CheckProfileComplete", &_args34, &_result35); err != nil {
+		return
+	}
+	return _result35.GetSuccess(), nil
+}
+
+// 获取会员等级信息
+//
+// Parameters:
+//  - MemberId
+func (p *MemberServiceClient) MemberLevelInfo(ctx context.Context, memberId int64) (r *SMemberLevelInfo, err error) {
+	var _args36 MemberServiceMemberLevelInfoArgs
+	_args36.MemberId = memberId
+	var _result37 MemberServiceMemberLevelInfoResult
+	if err = p.Client_().Call(ctx, "MemberLevelInfo", &_args36, &_result37); err != nil {
+		return
+	}
+	return _result37.GetSuccess(), nil
 }
 
 // Parameters:
@@ -5498,71 +5609,13 @@ func (p *MemberServiceClient) CheckProfileComplete(ctx context.Context, memberId
 //  - Review
 //  - PaymentOrderId
 func (p *MemberServiceClient) UpdateLevel(ctx context.Context, memberId int64, level int32, review bool, paymentOrderId int64) (r *ttype.Result_, err error) {
-	var _args30 MemberServiceUpdateLevelArgs
-	_args30.MemberId = memberId
-	_args30.Level = level
-	_args30.Review = review
-	_args30.PaymentOrderId = paymentOrderId
-	var _result31 MemberServiceUpdateLevelResult
-	if err = p.Client_().Call(ctx, "UpdateLevel", &_args30, &_result31); err != nil {
-		return
-	}
-	return _result31.GetSuccess(), nil
-}
-
-// Parameters:
-//  - MemberId
-//  - Phone
-func (p *MemberServiceClient) ChangePhone(ctx context.Context, memberId int64, phone string) (r *ttype.Result_, err error) {
-	var _args32 MemberServiceChangePhoneArgs
-	_args32.MemberId = memberId
-	_args32.Phone = phone
-	var _result33 MemberServiceChangePhoneResult
-	if err = p.Client_().Call(ctx, "ChangePhone", &_args32, &_result33); err != nil {
-		return
-	}
-	return _result33.GetSuccess(), nil
-}
-
-// Parameters:
-//  - MemberId
-//  - Usr
-func (p *MemberServiceClient) ChangeUsr(ctx context.Context, memberId int64, usr string) (r *ttype.Result_, err error) {
-	var _args34 MemberServiceChangeUsrArgs
-	_args34.MemberId = memberId
-	_args34.Usr = usr
-	var _result35 MemberServiceChangeUsrResult
-	if err = p.Client_().Call(ctx, "ChangeUsr", &_args34, &_result35); err != nil {
-		return
-	}
-	return _result35.GetSuccess(), nil
-}
-
-// Parameters:
-//  - MemberId
-//  - V
-//  - Expires
-func (p *MemberServiceClient) Premium(ctx context.Context, memberId int64, v int32, expires int64) (r *ttype.Result_, err error) {
-	var _args36 MemberServicePremiumArgs
-	_args36.MemberId = memberId
-	_args36.V = v
-	_args36.Expires = expires
-	var _result37 MemberServicePremiumResult
-	if err = p.Client_().Call(ctx, "Premium", &_args36, &_result37); err != nil {
-		return
-	}
-	return _result37.GetSuccess(), nil
-}
-
-// Parameters:
-//  - MemberId
-//  - Reset
-func (p *MemberServiceClient) GetToken(ctx context.Context, memberId int64, reset bool) (r string, err error) {
-	var _args38 MemberServiceGetTokenArgs
+	var _args38 MemberServiceUpdateLevelArgs
 	_args38.MemberId = memberId
-	_args38.Reset = reset
-	var _result39 MemberServiceGetTokenResult
-	if err = p.Client_().Call(ctx, "GetToken", &_args38, &_result39); err != nil {
+	_args38.Level = level
+	_args38.Review = review
+	_args38.PaymentOrderId = paymentOrderId
+	var _result39 MemberServiceUpdateLevelResult
+	if err = p.Client_().Call(ctx, "UpdateLevel", &_args38, &_result39); err != nil {
 		return
 	}
 	return _result39.GetSuccess(), nil
@@ -5570,13 +5623,13 @@ func (p *MemberServiceClient) GetToken(ctx context.Context, memberId int64, rese
 
 // Parameters:
 //  - MemberId
-//  - Token
-func (p *MemberServiceClient) CheckToken(ctx context.Context, memberId int64, token string) (r bool, err error) {
-	var _args40 MemberServiceCheckTokenArgs
+//  - Phone
+func (p *MemberServiceClient) ChangePhone(ctx context.Context, memberId int64, phone string) (r *ttype.Result_, err error) {
+	var _args40 MemberServiceChangePhoneArgs
 	_args40.MemberId = memberId
-	_args40.Token = token
-	var _result41 MemberServiceCheckTokenResult
-	if err = p.Client_().Call(ctx, "CheckToken", &_args40, &_result41); err != nil {
+	_args40.Phone = phone
+	var _result41 MemberServiceChangePhoneResult
+	if err = p.Client_().Call(ctx, "ChangePhone", &_args40, &_result41); err != nil {
 		return
 	}
 	return _result41.GetSuccess(), nil
@@ -5584,11 +5637,69 @@ func (p *MemberServiceClient) CheckToken(ctx context.Context, memberId int64, to
 
 // Parameters:
 //  - MemberId
-func (p *MemberServiceClient) RemoveToken(ctx context.Context, memberId int64) (err error) {
-	var _args42 MemberServiceRemoveTokenArgs
+//  - Usr
+func (p *MemberServiceClient) ChangeUsr(ctx context.Context, memberId int64, usr string) (r *ttype.Result_, err error) {
+	var _args42 MemberServiceChangeUsrArgs
 	_args42.MemberId = memberId
-	var _result43 MemberServiceRemoveTokenResult
-	if err = p.Client_().Call(ctx, "RemoveToken", &_args42, &_result43); err != nil {
+	_args42.Usr = usr
+	var _result43 MemberServiceChangeUsrResult
+	if err = p.Client_().Call(ctx, "ChangeUsr", &_args42, &_result43); err != nil {
+		return
+	}
+	return _result43.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+//  - V
+//  - Expires
+func (p *MemberServiceClient) Premium(ctx context.Context, memberId int64, v int32, expires int64) (r *ttype.Result_, err error) {
+	var _args44 MemberServicePremiumArgs
+	_args44.MemberId = memberId
+	_args44.V = v
+	_args44.Expires = expires
+	var _result45 MemberServicePremiumResult
+	if err = p.Client_().Call(ctx, "Premium", &_args44, &_result45); err != nil {
+		return
+	}
+	return _result45.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+//  - Reset
+func (p *MemberServiceClient) GetToken(ctx context.Context, memberId int64, reset bool) (r string, err error) {
+	var _args46 MemberServiceGetTokenArgs
+	_args46.MemberId = memberId
+	_args46.Reset = reset
+	var _result47 MemberServiceGetTokenResult
+	if err = p.Client_().Call(ctx, "GetToken", &_args46, &_result47); err != nil {
+		return
+	}
+	return _result47.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+//  - Token
+func (p *MemberServiceClient) CheckToken(ctx context.Context, memberId int64, token string) (r bool, err error) {
+	var _args48 MemberServiceCheckTokenArgs
+	_args48.MemberId = memberId
+	_args48.Token = token
+	var _result49 MemberServiceCheckTokenResult
+	if err = p.Client_().Call(ctx, "CheckToken", &_args48, &_result49); err != nil {
+		return
+	}
+	return _result49.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+func (p *MemberServiceClient) RemoveToken(ctx context.Context, memberId int64) (err error) {
+	var _args50 MemberServiceRemoveTokenArgs
+	_args50.MemberId = memberId
+	var _result51 MemberServiceRemoveTokenResult
+	if err = p.Client_().Call(ctx, "RemoveToken", &_args50, &_result51); err != nil {
 		return
 	}
 	return nil
@@ -5597,64 +5708,10 @@ func (p *MemberServiceClient) RemoveToken(ctx context.Context, memberId int64) (
 // Parameters:
 //  - MemberId
 func (p *MemberServiceClient) GetAddressList(ctx context.Context, memberId int64) (r []*SAddress, err error) {
-	var _args44 MemberServiceGetAddressListArgs
-	_args44.MemberId = memberId
-	var _result45 MemberServiceGetAddressListResult
-	if err = p.Client_().Call(ctx, "GetAddressList", &_args44, &_result45); err != nil {
-		return
-	}
-	return _result45.GetSuccess(), nil
-}
-
-// Parameters:
-//  - MemberId
-//  - AddrId
-func (p *MemberServiceClient) GetAddress(ctx context.Context, memberId int64, addrId int64) (r *SAddress, err error) {
-	var _args46 MemberServiceGetAddressArgs
-	_args46.MemberId = memberId
-	_args46.AddrId = addrId
-	var _result47 MemberServiceGetAddressResult
-	if err = p.Client_().Call(ctx, "GetAddress", &_args46, &_result47); err != nil {
-		return
-	}
-	return _result47.GetSuccess(), nil
-}
-
-// Parameters:
-//  - MemberId
-func (p *MemberServiceClient) GetAccount(ctx context.Context, memberId int64) (r *SAccount, err error) {
-	var _args48 MemberServiceGetAccountArgs
-	_args48.MemberId = memberId
-	var _result49 MemberServiceGetAccountResult
-	if err = p.Client_().Call(ctx, "GetAccount", &_args48, &_result49); err != nil {
-		return
-	}
-	return _result49.GetSuccess(), nil
-}
-
-// Parameters:
-//  - MemberId
-//  - Depth
-func (p *MemberServiceClient) InviterArray(ctx context.Context, memberId int64, depth int32) (r []int64, err error) {
-	var _args50 MemberServiceInviterArrayArgs
-	_args50.MemberId = memberId
-	_args50.Depth = depth
-	var _result51 MemberServiceInviterArrayResult
-	if err = p.Client_().Call(ctx, "InviterArray", &_args50, &_result51); err != nil {
-		return
-	}
-	return _result51.GetSuccess(), nil
-}
-
-// Parameters:
-//  - MemberId
-//  - Data
-func (p *MemberServiceClient) GetInviterQuantity(ctx context.Context, memberId int64, data map[string]string) (r int32, err error) {
-	var _args52 MemberServiceGetInviterQuantityArgs
+	var _args52 MemberServiceGetAddressListArgs
 	_args52.MemberId = memberId
-	_args52.Data = data
-	var _result53 MemberServiceGetInviterQuantityResult
-	if err = p.Client_().Call(ctx, "GetInviterQuantity", &_args52, &_result53); err != nil {
+	var _result53 MemberServiceGetAddressListResult
+	if err = p.Client_().Call(ctx, "GetAddressList", &_args52, &_result53); err != nil {
 		return
 	}
 	return _result53.GetSuccess(), nil
@@ -5662,16 +5719,84 @@ func (p *MemberServiceClient) GetInviterQuantity(ctx context.Context, memberId i
 
 // Parameters:
 //  - MemberId
-//  - Data
-func (p *MemberServiceClient) GetInviterArray(ctx context.Context, memberId int64, data map[string]string) (r []int64, err error) {
-	var _args54 MemberServiceGetInviterArrayArgs
+//  - AddrId
+func (p *MemberServiceClient) GetAddress(ctx context.Context, memberId int64, addrId int64) (r *SAddress, err error) {
+	var _args54 MemberServiceGetAddressArgs
 	_args54.MemberId = memberId
-	_args54.Data = data
-	var _result55 MemberServiceGetInviterArrayResult
-	if err = p.Client_().Call(ctx, "GetInviterArray", &_args54, &_result55); err != nil {
+	_args54.AddrId = addrId
+	var _result55 MemberServiceGetAddressResult
+	if err = p.Client_().Call(ctx, "GetAddress", &_args54, &_result55); err != nil {
 		return
 	}
 	return _result55.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+func (p *MemberServiceClient) GetAccount(ctx context.Context, memberId int64) (r *SAccount, err error) {
+	var _args56 MemberServiceGetAccountArgs
+	_args56.MemberId = memberId
+	var _result57 MemberServiceGetAccountResult
+	if err = p.Client_().Call(ctx, "GetAccount", &_args56, &_result57); err != nil {
+		return
+	}
+	return _result57.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+//  - Depth
+func (p *MemberServiceClient) InviterArray(ctx context.Context, memberId int64, depth int32) (r []int64, err error) {
+	var _args58 MemberServiceInviterArrayArgs
+	_args58.MemberId = memberId
+	_args58.Depth = depth
+	var _result59 MemberServiceInviterArrayResult
+	if err = p.Client_().Call(ctx, "InviterArray", &_args58, &_result59); err != nil {
+		return
+	}
+	return _result59.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+//  - Depth
+func (p *MemberServiceClient) InviteMembersQuantity(ctx context.Context, memberId int64, depth int32) (r int32, err error) {
+	var _args60 MemberServiceInviteMembersQuantityArgs
+	_args60.MemberId = memberId
+	_args60.Depth = depth
+	var _result61 MemberServiceInviteMembersQuantityResult
+	if err = p.Client_().Call(ctx, "InviteMembersQuantity", &_args60, &_result61); err != nil {
+		return
+	}
+	return _result61.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+//  - Data
+func (p *MemberServiceClient) QueryInviteQuantity(ctx context.Context, memberId int64, data map[string]string) (r int32, err error) {
+	var _args62 MemberServiceQueryInviteQuantityArgs
+	_args62.MemberId = memberId
+	_args62.Data = data
+	var _result63 MemberServiceQueryInviteQuantityResult
+	if err = p.Client_().Call(ctx, "QueryInviteQuantity", &_args62, &_result63); err != nil {
+		return
+	}
+	return _result63.GetSuccess(), nil
+}
+
+// Parameters:
+//  - MemberId
+//  - Data
+func (p *MemberServiceClient) QueryInviteArray(ctx context.Context, memberId int64, data map[string]string) (r []int64, err error) {
+	var _args64 MemberServiceQueryInviteArrayArgs
+	_args64.MemberId = memberId
+	_args64.Data = data
+	var _result65 MemberServiceQueryInviteArrayResult
+	if err = p.Client_().Call(ctx, "QueryInviteArray", &_args64, &_result65); err != nil {
+		return
+	}
+	return _result65.GetSuccess(), nil
 }
 
 // Parameters:
@@ -5682,18 +5807,18 @@ func (p *MemberServiceClient) GetInviterArray(ctx context.Context, memberId int6
 //  - OuterNo
 //  - Remark
 func (p *MemberServiceClient) AccountCharge(ctx context.Context, memberId int64, account int32, title string, amount int32, outerNo string, remark string) (r *ttype.Result_, err error) {
-	var _args56 MemberServiceAccountChargeArgs
-	_args56.MemberId = memberId
-	_args56.Account = account
-	_args56.Title = title
-	_args56.Amount = amount
-	_args56.OuterNo = outerNo
-	_args56.Remark = remark
-	var _result57 MemberServiceAccountChargeResult
-	if err = p.Client_().Call(ctx, "AccountCharge", &_args56, &_result57); err != nil {
+	var _args66 MemberServiceAccountChargeArgs
+	_args66.MemberId = memberId
+	_args66.Account = account
+	_args66.Title = title
+	_args66.Amount = amount
+	_args66.OuterNo = outerNo
+	_args66.Remark = remark
+	var _result67 MemberServiceAccountChargeResult
+	if err = p.Client_().Call(ctx, "AccountCharge", &_args66, &_result67); err != nil {
 		return
 	}
-	return _result57.GetSuccess(), nil
+	return _result67.GetSuccess(), nil
 }
 
 // Parameters:
@@ -5704,18 +5829,18 @@ func (p *MemberServiceClient) AccountCharge(ctx context.Context, memberId int64,
 //  - OuterNo
 //  - Remark
 func (p *MemberServiceClient) AccountConsume(ctx context.Context, memberId int64, account int32, title string, amount int32, outerNo string, remark string) (r *ttype.Result_, err error) {
-	var _args58 MemberServiceAccountConsumeArgs
-	_args58.MemberId = memberId
-	_args58.Account = account
-	_args58.Title = title
-	_args58.Amount = amount
-	_args58.OuterNo = outerNo
-	_args58.Remark = remark
-	var _result59 MemberServiceAccountConsumeResult
-	if err = p.Client_().Call(ctx, "AccountConsume", &_args58, &_result59); err != nil {
+	var _args68 MemberServiceAccountConsumeArgs
+	_args68.MemberId = memberId
+	_args68.Account = account
+	_args68.Title = title
+	_args68.Amount = amount
+	_args68.OuterNo = outerNo
+	_args68.Remark = remark
+	var _result69 MemberServiceAccountConsumeResult
+	if err = p.Client_().Call(ctx, "AccountConsume", &_args68, &_result69); err != nil {
 		return
 	}
-	return _result59.GetSuccess(), nil
+	return _result69.GetSuccess(), nil
 }
 
 // Parameters:
@@ -5726,18 +5851,18 @@ func (p *MemberServiceClient) AccountConsume(ctx context.Context, memberId int64
 //  - OuterNo
 //  - Remark
 func (p *MemberServiceClient) AccountDiscount(ctx context.Context, memberId int64, account int32, title string, amount int32, outerNo string, remark string) (r *ttype.Result_, err error) {
-	var _args60 MemberServiceAccountDiscountArgs
-	_args60.MemberId = memberId
-	_args60.Account = account
-	_args60.Title = title
-	_args60.Amount = amount
-	_args60.OuterNo = outerNo
-	_args60.Remark = remark
-	var _result61 MemberServiceAccountDiscountResult
-	if err = p.Client_().Call(ctx, "AccountDiscount", &_args60, &_result61); err != nil {
+	var _args70 MemberServiceAccountDiscountArgs
+	_args70.MemberId = memberId
+	_args70.Account = account
+	_args70.Title = title
+	_args70.Amount = amount
+	_args70.OuterNo = outerNo
+	_args70.Remark = remark
+	var _result71 MemberServiceAccountDiscountResult
+	if err = p.Client_().Call(ctx, "AccountDiscount", &_args70, &_result71); err != nil {
 		return
 	}
-	return _result61.GetSuccess(), nil
+	return _result71.GetSuccess(), nil
 }
 
 // Parameters:
@@ -5748,18 +5873,18 @@ func (p *MemberServiceClient) AccountDiscount(ctx context.Context, memberId int6
 //  - OuterNo
 //  - Remark
 func (p *MemberServiceClient) AccountRefund(ctx context.Context, memberId int64, account int32, title string, amount int32, outerNo string, remark string) (r *ttype.Result_, err error) {
-	var _args62 MemberServiceAccountRefundArgs
-	_args62.MemberId = memberId
-	_args62.Account = account
-	_args62.Title = title
-	_args62.Amount = amount
-	_args62.OuterNo = outerNo
-	_args62.Remark = remark
-	var _result63 MemberServiceAccountRefundResult
-	if err = p.Client_().Call(ctx, "AccountRefund", &_args62, &_result63); err != nil {
+	var _args72 MemberServiceAccountRefundArgs
+	_args72.MemberId = memberId
+	_args72.Account = account
+	_args72.Title = title
+	_args72.Amount = amount
+	_args72.OuterNo = outerNo
+	_args72.Remark = remark
+	var _result73 MemberServiceAccountRefundResult
+	if err = p.Client_().Call(ctx, "AccountRefund", &_args72, &_result73); err != nil {
 		return
 	}
-	return _result63.GetSuccess(), nil
+	return _result73.GetSuccess(), nil
 }
 
 // Parameters:
@@ -5769,17 +5894,17 @@ func (p *MemberServiceClient) AccountRefund(ctx context.Context, memberId int64,
 //  - RelateUser
 //  - Remark
 func (p *MemberServiceClient) AccountAdjust(ctx context.Context, memberId int64, account int32, value int32, relateUser int64, remark string) (r *ttype.Result_, err error) {
-	var _args64 MemberServiceAccountAdjustArgs
-	_args64.MemberId = memberId
-	_args64.Account = account
-	_args64.Value = value
-	_args64.RelateUser = relateUser
-	_args64.Remark = remark
-	var _result65 MemberServiceAccountAdjustResult
-	if err = p.Client_().Call(ctx, "AccountAdjust", &_args64, &_result65); err != nil {
+	var _args74 MemberServiceAccountAdjustArgs
+	_args74.MemberId = memberId
+	_args74.Account = account
+	_args74.Value = value
+	_args74.RelateUser = relateUser
+	_args74.Remark = remark
+	var _result75 MemberServiceAccountAdjustResult
+	if err = p.Client_().Call(ctx, "AccountAdjust", &_args74, &_result75); err != nil {
 		return
 	}
-	return _result65.GetSuccess(), nil
+	return _result75.GetSuccess(), nil
 }
 
 // Parameters:
@@ -5787,15 +5912,15 @@ func (p *MemberServiceClient) AccountAdjust(ctx context.Context, memberId int64,
 //  - Action
 //  - Data
 func (p *MemberServiceClient) B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *ttype.Result_, err error) {
-	var _args66 MemberServiceB4EAuthArgs
-	_args66.MemberId = memberId
-	_args66.Action = action
-	_args66.Data = data
-	var _result67 MemberServiceB4EAuthResult
-	if err = p.Client_().Call(ctx, "B4EAuth", &_args66, &_result67); err != nil {
+	var _args76 MemberServiceB4EAuthArgs
+	_args76.MemberId = memberId
+	_args76.Action = action
+	_args76.Data = data
+	var _result77 MemberServiceB4EAuthResult
+	if err = p.Client_().Call(ctx, "B4EAuth", &_args76, &_result77); err != nil {
 		return
 	}
-	return _result67.GetSuccess(), nil
+	return _result77.GetSuccess(), nil
 }
 
 type MemberServiceProcessor struct {
@@ -5818,42 +5943,47 @@ func (p *MemberServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunc
 
 func NewMemberServiceProcessor(handler MemberService) *MemberServiceProcessor {
 
-	self68 := &MemberServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self68.processorMap["RegisterMemberV2"] = &memberServiceProcessorRegisterMemberV2{handler: handler}
-	self68.processorMap["CheckLogin"] = &memberServiceProcessorCheckLogin{handler: handler}
-	self68.processorMap["CheckTradePwd"] = &memberServiceProcessorCheckTradePwd{handler: handler}
-	self68.processorMap["LevelList"] = &memberServiceProcessorLevelList{handler: handler}
-	self68.processorMap["GetTrustInfo"] = &memberServiceProcessorGetTrustInfo{handler: handler}
-	self68.processorMap["GetLevel"] = &memberServiceProcessorGetLevel{handler: handler}
-	self68.processorMap["GetLevelBySign"] = &memberServiceProcessorGetLevelBySign{handler: handler}
-	self68.processorMap["GetMemberId"] = &memberServiceProcessorGetMemberId{handler: handler}
-	self68.processorMap["GetMember"] = &memberServiceProcessorGetMember{handler: handler}
-	self68.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler: handler}
-	self68.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler: handler}
-	self68.processorMap["Active"] = &memberServiceProcessorActive{handler: handler}
-	self68.processorMap["ToggleLock"] = &memberServiceProcessorToggleLock{handler: handler}
-	self68.processorMap["Complex"] = &memberServiceProcessorComplex{handler: handler}
-	self68.processorMap["CheckProfileComplete"] = &memberServiceProcessorCheckProfileComplete{handler: handler}
-	self68.processorMap["UpdateLevel"] = &memberServiceProcessorUpdateLevel{handler: handler}
-	self68.processorMap["ChangePhone"] = &memberServiceProcessorChangePhone{handler: handler}
-	self68.processorMap["ChangeUsr"] = &memberServiceProcessorChangeUsr{handler: handler}
-	self68.processorMap["Premium"] = &memberServiceProcessorPremium{handler: handler}
-	self68.processorMap["GetToken"] = &memberServiceProcessorGetToken{handler: handler}
-	self68.processorMap["CheckToken"] = &memberServiceProcessorCheckToken{handler: handler}
-	self68.processorMap["RemoveToken"] = &memberServiceProcessorRemoveToken{handler: handler}
-	self68.processorMap["GetAddressList"] = &memberServiceProcessorGetAddressList{handler: handler}
-	self68.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
-	self68.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
-	self68.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
-	self68.processorMap["GetInviterQuantity"] = &memberServiceProcessorGetInviterQuantity{handler: handler}
-	self68.processorMap["GetInviterArray"] = &memberServiceProcessorGetInviterArray{handler: handler}
-	self68.processorMap["AccountCharge"] = &memberServiceProcessorAccountCharge{handler: handler}
-	self68.processorMap["AccountConsume"] = &memberServiceProcessorAccountConsume{handler: handler}
-	self68.processorMap["AccountDiscount"] = &memberServiceProcessorAccountDiscount{handler: handler}
-	self68.processorMap["AccountRefund"] = &memberServiceProcessorAccountRefund{handler: handler}
-	self68.processorMap["AccountAdjust"] = &memberServiceProcessorAccountAdjust{handler: handler}
-	self68.processorMap["B4EAuth"] = &memberServiceProcessorB4EAuth{handler: handler}
-	return self68
+	self78 := &MemberServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self78.processorMap["RegisterMemberV2"] = &memberServiceProcessorRegisterMemberV2{handler: handler}
+	self78.processorMap["CheckLogin"] = &memberServiceProcessorCheckLogin{handler: handler}
+	self78.processorMap["CheckTradePwd"] = &memberServiceProcessorCheckTradePwd{handler: handler}
+	self78.processorMap["LevelList"] = &memberServiceProcessorLevelList{handler: handler}
+	self78.processorMap["GetTrustInfo"] = &memberServiceProcessorGetTrustInfo{handler: handler}
+	self78.processorMap["GetLevel"] = &memberServiceProcessorGetLevel{handler: handler}
+	self78.processorMap["GetLevelBySign"] = &memberServiceProcessorGetLevelBySign{handler: handler}
+	self78.processorMap["SwapMemberId"] = &memberServiceProcessorSwapMemberId{handler: handler}
+	self78.processorMap["GetMember"] = &memberServiceProcessorGetMember{handler: handler}
+	self78.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler: handler}
+	self78.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler: handler}
+	self78.processorMap["Active"] = &memberServiceProcessorActive{handler: handler}
+	self78.processorMap["Lock"] = &memberServiceProcessorLock{handler: handler}
+	self78.processorMap["GrantFlag"] = &memberServiceProcessorGrantFlag{handler: handler}
+	self78.processorMap["Complex"] = &memberServiceProcessorComplex{handler: handler}
+	self78.processorMap["SendCode"] = &memberServiceProcessorSendCode{handler: handler}
+	self78.processorMap["CompareCode"] = &memberServiceProcessorCompareCode{handler: handler}
+	self78.processorMap["CheckProfileComplete"] = &memberServiceProcessorCheckProfileComplete{handler: handler}
+	self78.processorMap["MemberLevelInfo"] = &memberServiceProcessorMemberLevelInfo{handler: handler}
+	self78.processorMap["UpdateLevel"] = &memberServiceProcessorUpdateLevel{handler: handler}
+	self78.processorMap["ChangePhone"] = &memberServiceProcessorChangePhone{handler: handler}
+	self78.processorMap["ChangeUsr"] = &memberServiceProcessorChangeUsr{handler: handler}
+	self78.processorMap["Premium"] = &memberServiceProcessorPremium{handler: handler}
+	self78.processorMap["GetToken"] = &memberServiceProcessorGetToken{handler: handler}
+	self78.processorMap["CheckToken"] = &memberServiceProcessorCheckToken{handler: handler}
+	self78.processorMap["RemoveToken"] = &memberServiceProcessorRemoveToken{handler: handler}
+	self78.processorMap["GetAddressList"] = &memberServiceProcessorGetAddressList{handler: handler}
+	self78.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
+	self78.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
+	self78.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
+	self78.processorMap["InviteMembersQuantity"] = &memberServiceProcessorInviteMembersQuantity{handler: handler}
+	self78.processorMap["QueryInviteQuantity"] = &memberServiceProcessorQueryInviteQuantity{handler: handler}
+	self78.processorMap["QueryInviteArray"] = &memberServiceProcessorQueryInviteArray{handler: handler}
+	self78.processorMap["AccountCharge"] = &memberServiceProcessorAccountCharge{handler: handler}
+	self78.processorMap["AccountConsume"] = &memberServiceProcessorAccountConsume{handler: handler}
+	self78.processorMap["AccountDiscount"] = &memberServiceProcessorAccountDiscount{handler: handler}
+	self78.processorMap["AccountRefund"] = &memberServiceProcessorAccountRefund{handler: handler}
+	self78.processorMap["AccountAdjust"] = &memberServiceProcessorAccountAdjust{handler: handler}
+	self78.processorMap["B4EAuth"] = &memberServiceProcessorB4EAuth{handler: handler}
+	return self78
 }
 
 func (p *MemberServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -5866,12 +5996,12 @@ func (p *MemberServiceProcessor) Process(ctx context.Context, iprot, oprot thrif
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x69 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x79 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x69.Write(oprot)
+	x79.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush(ctx)
-	return false, x69
+	return false, x79
 
 }
 
@@ -6211,16 +6341,16 @@ func (p *memberServiceProcessorGetLevelBySign) Process(ctx context.Context, seqI
 	return true, err
 }
 
-type memberServiceProcessorGetMemberId struct {
+type memberServiceProcessorSwapMemberId struct {
 	handler MemberService
 }
 
-func (p *memberServiceProcessorGetMemberId) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MemberServiceGetMemberIdArgs{}
+func (p *memberServiceProcessorSwapMemberId) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceSwapMemberIdArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("GetMemberId", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("SwapMemberId", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -6228,12 +6358,12 @@ func (p *memberServiceProcessorGetMemberId) Process(ctx context.Context, seqId i
 	}
 
 	iprot.ReadMessageEnd()
-	result := MemberServiceGetMemberIdResult{}
+	result := MemberServiceSwapMemberIdResult{}
 	var retval int64
 	var err2 error
-	if retval, err2 = p.handler.GetMemberId(ctx, args.MemberCode); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetMemberId: "+err2.Error())
-		oprot.WriteMessageBegin("GetMemberId", thrift.EXCEPTION, seqId)
+	if retval, err2 = p.handler.SwapMemberId(ctx, args.Cred, args.Value); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing SwapMemberId: "+err2.Error())
+		oprot.WriteMessageBegin("SwapMemberId", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -6241,7 +6371,7 @@ func (p *memberServiceProcessorGetMemberId) Process(ctx context.Context, seqId i
 	} else {
 		result.Success = &retval
 	}
-	if err2 = oprot.WriteMessageBegin("GetMemberId", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("SwapMemberId", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -6451,16 +6581,16 @@ func (p *memberServiceProcessorActive) Process(ctx context.Context, seqId int32,
 	return true, err
 }
 
-type memberServiceProcessorToggleLock struct {
+type memberServiceProcessorLock struct {
 	handler MemberService
 }
 
-func (p *memberServiceProcessorToggleLock) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MemberServiceToggleLockArgs{}
+func (p *memberServiceProcessorLock) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceLockArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("ToggleLock", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("Lock", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -6468,12 +6598,12 @@ func (p *memberServiceProcessorToggleLock) Process(ctx context.Context, seqId in
 	}
 
 	iprot.ReadMessageEnd()
-	result := MemberServiceToggleLockResult{}
+	result := MemberServiceLockResult{}
 	var retval *ttype.Result_
 	var err2 error
-	if retval, err2 = p.handler.ToggleLock(ctx, args.MemberId); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ToggleLock: "+err2.Error())
-		oprot.WriteMessageBegin("ToggleLock", thrift.EXCEPTION, seqId)
+	if retval, err2 = p.handler.Lock(ctx, args.MemberId, args.Lock, args.Remark); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing Lock: "+err2.Error())
+		oprot.WriteMessageBegin("Lock", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -6481,7 +6611,55 @@ func (p *memberServiceProcessorToggleLock) Process(ctx context.Context, seqId in
 	} else {
 		result.Success = retval
 	}
-	if err2 = oprot.WriteMessageBegin("ToggleLock", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("Lock", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type memberServiceProcessorGrantFlag struct {
+	handler MemberService
+}
+
+func (p *memberServiceProcessorGrantFlag) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceGrantFlagArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("GrantFlag", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MemberServiceGrantFlagResult{}
+	var retval *ttype.Result_
+	var err2 error
+	if retval, err2 = p.handler.GrantFlag(ctx, args.MemberId, args.Flag); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GrantFlag: "+err2.Error())
+		oprot.WriteMessageBegin("GrantFlag", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("GrantFlag", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -6547,6 +6725,102 @@ func (p *memberServiceProcessorComplex) Process(ctx context.Context, seqId int32
 	return true, err
 }
 
+type memberServiceProcessorSendCode struct {
+	handler MemberService
+}
+
+func (p *memberServiceProcessorSendCode) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceSendCodeArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("SendCode", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MemberServiceSendCodeResult{}
+	var retval *ttype.Result_
+	var err2 error
+	if retval, err2 = p.handler.SendCode(ctx, args.MemberId, args.Op, args.MsgType); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing SendCode: "+err2.Error())
+		oprot.WriteMessageBegin("SendCode", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("SendCode", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type memberServiceProcessorCompareCode struct {
+	handler MemberService
+}
+
+func (p *memberServiceProcessorCompareCode) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceCompareCodeArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("CompareCode", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MemberServiceCompareCodeResult{}
+	var retval *ttype.Result_
+	var err2 error
+	if retval, err2 = p.handler.CompareCode(ctx, args.MemberId, args.Code); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing CompareCode: "+err2.Error())
+		oprot.WriteMessageBegin("CompareCode", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("CompareCode", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
 type memberServiceProcessorCheckProfileComplete struct {
 	handler MemberService
 }
@@ -6578,6 +6852,54 @@ func (p *memberServiceProcessorCheckProfileComplete) Process(ctx context.Context
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("CheckProfileComplete", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type memberServiceProcessorMemberLevelInfo struct {
+	handler MemberService
+}
+
+func (p *memberServiceProcessorMemberLevelInfo) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceMemberLevelInfoArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("MemberLevelInfo", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MemberServiceMemberLevelInfoResult{}
+	var retval *SMemberLevelInfo
+	var err2 error
+	if retval, err2 = p.handler.MemberLevelInfo(ctx, args.MemberId); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing MemberLevelInfo: "+err2.Error())
+		oprot.WriteMessageBegin("MemberLevelInfo", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("MemberLevelInfo", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -7120,16 +7442,16 @@ func (p *memberServiceProcessorInviterArray) Process(ctx context.Context, seqId 
 	return true, err
 }
 
-type memberServiceProcessorGetInviterQuantity struct {
+type memberServiceProcessorInviteMembersQuantity struct {
 	handler MemberService
 }
 
-func (p *memberServiceProcessorGetInviterQuantity) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MemberServiceGetInviterQuantityArgs{}
+func (p *memberServiceProcessorInviteMembersQuantity) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceInviteMembersQuantityArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("GetInviterQuantity", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("InviteMembersQuantity", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -7137,12 +7459,12 @@ func (p *memberServiceProcessorGetInviterQuantity) Process(ctx context.Context, 
 	}
 
 	iprot.ReadMessageEnd()
-	result := MemberServiceGetInviterQuantityResult{}
+	result := MemberServiceInviteMembersQuantityResult{}
 	var retval int32
 	var err2 error
-	if retval, err2 = p.handler.GetInviterQuantity(ctx, args.MemberId, args.Data); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetInviterQuantity: "+err2.Error())
-		oprot.WriteMessageBegin("GetInviterQuantity", thrift.EXCEPTION, seqId)
+	if retval, err2 = p.handler.InviteMembersQuantity(ctx, args.MemberId, args.Depth); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing InviteMembersQuantity: "+err2.Error())
+		oprot.WriteMessageBegin("InviteMembersQuantity", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -7150,7 +7472,7 @@ func (p *memberServiceProcessorGetInviterQuantity) Process(ctx context.Context, 
 	} else {
 		result.Success = &retval
 	}
-	if err2 = oprot.WriteMessageBegin("GetInviterQuantity", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("InviteMembersQuantity", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -7168,16 +7490,16 @@ func (p *memberServiceProcessorGetInviterQuantity) Process(ctx context.Context, 
 	return true, err
 }
 
-type memberServiceProcessorGetInviterArray struct {
+type memberServiceProcessorQueryInviteQuantity struct {
 	handler MemberService
 }
 
-func (p *memberServiceProcessorGetInviterArray) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MemberServiceGetInviterArrayArgs{}
+func (p *memberServiceProcessorQueryInviteQuantity) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceQueryInviteQuantityArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("GetInviterArray", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("QueryInviteQuantity", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -7185,12 +7507,60 @@ func (p *memberServiceProcessorGetInviterArray) Process(ctx context.Context, seq
 	}
 
 	iprot.ReadMessageEnd()
-	result := MemberServiceGetInviterArrayResult{}
+	result := MemberServiceQueryInviteQuantityResult{}
+	var retval int32
+	var err2 error
+	if retval, err2 = p.handler.QueryInviteQuantity(ctx, args.MemberId, args.Data); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing QueryInviteQuantity: "+err2.Error())
+		oprot.WriteMessageBegin("QueryInviteQuantity", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = &retval
+	}
+	if err2 = oprot.WriteMessageBegin("QueryInviteQuantity", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type memberServiceProcessorQueryInviteArray struct {
+	handler MemberService
+}
+
+func (p *memberServiceProcessorQueryInviteArray) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceQueryInviteArrayArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("QueryInviteArray", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MemberServiceQueryInviteArrayResult{}
 	var retval []int64
 	var err2 error
-	if retval, err2 = p.handler.GetInviterArray(ctx, args.MemberId, args.Data); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetInviterArray: "+err2.Error())
-		oprot.WriteMessageBegin("GetInviterArray", thrift.EXCEPTION, seqId)
+	if retval, err2 = p.handler.QueryInviteArray(ctx, args.MemberId, args.Data); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing QueryInviteArray: "+err2.Error())
+		oprot.WriteMessageBegin("QueryInviteArray", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -7198,7 +7568,7 @@ func (p *memberServiceProcessorGetInviterArray) Process(ctx context.Context, seq
 	} else {
 		result.Success = retval
 	}
-	if err2 = oprot.WriteMessageBegin("GetInviterArray", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("QueryInviteArray", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -7741,19 +8111,19 @@ func (p *MemberServiceRegisterMemberV2Args) ReadField8(iprot thrift.TProtocol) e
 	tMap := make(map[string]string, size)
 	p.Extend = tMap
 	for i := 0; i < size; i++ {
-		var _key70 string
+		var _key80 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key70 = v
+			_key80 = v
 		}
-		var _val71 string
+		var _val81 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val71 = v
+			_val81 = v
 		}
-		p.Extend[_key70] = _val71
+		p.Extend[_key80] = _val81
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -8691,11 +9061,11 @@ func (p *MemberServiceLevelListResult) ReadField0(iprot thrift.TProtocol) error 
 	tSlice := make([]*SLevel, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem72 := &SLevel{}
-		if err := _elem72.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem72), err)
+		_elem82 := &SLevel{}
+		if err := _elem82.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem82), err)
 		}
-		p.Success = append(p.Success, _elem72)
+		p.Success = append(p.Success, _elem82)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -9376,19 +9746,25 @@ func (p *MemberServiceGetLevelBySignResult) String() string {
 }
 
 // Attributes:
-//  - MemberCode
-type MemberServiceGetMemberIdArgs struct {
-	MemberCode string `thrift:"memberCode,1" db:"memberCode" json:"memberCode"`
+//  - Cred
+//  - Value
+type MemberServiceSwapMemberIdArgs struct {
+	Cred  ECredentials `thrift:"cred,1" db:"cred" json:"cred"`
+	Value string       `thrift:"value,2" db:"value" json:"value"`
 }
 
-func NewMemberServiceGetMemberIdArgs() *MemberServiceGetMemberIdArgs {
-	return &MemberServiceGetMemberIdArgs{}
+func NewMemberServiceSwapMemberIdArgs() *MemberServiceSwapMemberIdArgs {
+	return &MemberServiceSwapMemberIdArgs{}
 }
 
-func (p *MemberServiceGetMemberIdArgs) GetMemberCode() string {
-	return p.MemberCode
+func (p *MemberServiceSwapMemberIdArgs) GetCred() ECredentials {
+	return p.Cred
 }
-func (p *MemberServiceGetMemberIdArgs) Read(iprot thrift.TProtocol) error {
+
+func (p *MemberServiceSwapMemberIdArgs) GetValue() string {
+	return p.Value
+}
+func (p *MemberServiceSwapMemberIdArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -9403,8 +9779,18 @@ func (p *MemberServiceGetMemberIdArgs) Read(iprot thrift.TProtocol) error {
 		}
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I32 {
 				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField2(iprot); err != nil {
 					return err
 				}
 			} else {
@@ -9427,21 +9813,34 @@ func (p *MemberServiceGetMemberIdArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceGetMemberIdArgs) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
+func (p *MemberServiceSwapMemberIdArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
-		p.MemberCode = v
+		temp := ECredentials(v)
+		p.Cred = temp
 	}
 	return nil
 }
 
-func (p *MemberServiceGetMemberIdArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("GetMemberId_args"); err != nil {
+func (p *MemberServiceSwapMemberIdArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Value = v
+	}
+	return nil
+}
+
+func (p *MemberServiceSwapMemberIdArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SwapMemberId_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
 		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
 			return err
 		}
 	}
@@ -9454,49 +9853,62 @@ func (p *MemberServiceGetMemberIdArgs) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceGetMemberIdArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("memberCode", thrift.STRING, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberCode: ", p), err)
+func (p *MemberServiceSwapMemberIdArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("cred", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:cred: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.MemberCode)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.memberCode (1) field write error: ", p), err)
+	if err := oprot.WriteI32(int32(p.Cred)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.cred (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:memberCode: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:cred: ", p), err)
 	}
 	return err
 }
 
-func (p *MemberServiceGetMemberIdArgs) String() string {
+func (p *MemberServiceSwapMemberIdArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("value", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:value: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Value)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.value (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:value: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceSwapMemberIdArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceGetMemberIdArgs(%+v)", *p)
+	return fmt.Sprintf("MemberServiceSwapMemberIdArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type MemberServiceGetMemberIdResult struct {
+type MemberServiceSwapMemberIdResult struct {
 	Success *int64 `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
-func NewMemberServiceGetMemberIdResult() *MemberServiceGetMemberIdResult {
-	return &MemberServiceGetMemberIdResult{}
+func NewMemberServiceSwapMemberIdResult() *MemberServiceSwapMemberIdResult {
+	return &MemberServiceSwapMemberIdResult{}
 }
 
-var MemberServiceGetMemberIdResult_Success_DEFAULT int64
+var MemberServiceSwapMemberIdResult_Success_DEFAULT int64
 
-func (p *MemberServiceGetMemberIdResult) GetSuccess() int64 {
+func (p *MemberServiceSwapMemberIdResult) GetSuccess() int64 {
 	if !p.IsSetSuccess() {
-		return MemberServiceGetMemberIdResult_Success_DEFAULT
+		return MemberServiceSwapMemberIdResult_Success_DEFAULT
 	}
 	return *p.Success
 }
-func (p *MemberServiceGetMemberIdResult) IsSetSuccess() bool {
+func (p *MemberServiceSwapMemberIdResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MemberServiceGetMemberIdResult) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceSwapMemberIdResult) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -9535,7 +9947,7 @@ func (p *MemberServiceGetMemberIdResult) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceGetMemberIdResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MemberServiceSwapMemberIdResult) ReadField0(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 0: ", err)
 	} else {
@@ -9544,8 +9956,8 @@ func (p *MemberServiceGetMemberIdResult) ReadField0(iprot thrift.TProtocol) erro
 	return nil
 }
 
-func (p *MemberServiceGetMemberIdResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("GetMemberId_result"); err != nil {
+func (p *MemberServiceSwapMemberIdResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SwapMemberId_result"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -9562,7 +9974,7 @@ func (p *MemberServiceGetMemberIdResult) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceGetMemberIdResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceSwapMemberIdResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err := oprot.WriteFieldBegin("success", thrift.I64, 0); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
@@ -9577,11 +9989,11 @@ func (p *MemberServiceGetMemberIdResult) writeField0(oprot thrift.TProtocol) (er
 	return err
 }
 
-func (p *MemberServiceGetMemberIdResult) String() string {
+func (p *MemberServiceSwapMemberIdResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceGetMemberIdResult(%+v)", *p)
+	return fmt.Sprintf("MemberServiceSwapMemberIdResult(%+v)", *p)
 }
 
 // Attributes:
@@ -10418,18 +10830,30 @@ func (p *MemberServiceActiveResult) String() string {
 
 // Attributes:
 //  - MemberId
-type MemberServiceToggleLockArgs struct {
-	MemberId int64 `thrift:"memberId,1" db:"memberId" json:"memberId"`
+//  - Lock
+//  - Remark
+type MemberServiceLockArgs struct {
+	MemberId int64  `thrift:"memberId,1" db:"memberId" json:"memberId"`
+	Lock     bool   `thrift:"lock,2" db:"lock" json:"lock"`
+	Remark   string `thrift:"remark,3" db:"remark" json:"remark"`
 }
 
-func NewMemberServiceToggleLockArgs() *MemberServiceToggleLockArgs {
-	return &MemberServiceToggleLockArgs{}
+func NewMemberServiceLockArgs() *MemberServiceLockArgs {
+	return &MemberServiceLockArgs{}
 }
 
-func (p *MemberServiceToggleLockArgs) GetMemberId() int64 {
+func (p *MemberServiceLockArgs) GetMemberId() int64 {
 	return p.MemberId
 }
-func (p *MemberServiceToggleLockArgs) Read(iprot thrift.TProtocol) error {
+
+func (p *MemberServiceLockArgs) GetLock() bool {
+	return p.Lock
+}
+
+func (p *MemberServiceLockArgs) GetRemark() string {
+	return p.Remark
+}
+func (p *MemberServiceLockArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -10453,6 +10877,26 @@ func (p *MemberServiceToggleLockArgs) Read(iprot thrift.TProtocol) error {
 					return err
 				}
 			}
+		case 2:
+			if fieldTypeId == thrift.BOOL {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField3(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
 		default:
 			if err := iprot.Skip(fieldTypeId); err != nil {
 				return err
@@ -10468,7 +10912,7 @@ func (p *MemberServiceToggleLockArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceToggleLockArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MemberServiceLockArgs) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -10477,12 +10921,36 @@ func (p *MemberServiceToggleLockArgs) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceToggleLockArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("ToggleLock_args"); err != nil {
+func (p *MemberServiceLockArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Lock = v
+	}
+	return nil
+}
+
+func (p *MemberServiceLockArgs) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Remark = v
+	}
+	return nil
+}
+
+func (p *MemberServiceLockArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Lock_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
 		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField3(oprot); err != nil {
 			return err
 		}
 	}
@@ -10495,7 +10963,7 @@ func (p *MemberServiceToggleLockArgs) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceToggleLockArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceLockArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
 	}
@@ -10508,36 +10976,62 @@ func (p *MemberServiceToggleLockArgs) writeField1(oprot thrift.TProtocol) (err e
 	return err
 }
 
-func (p *MemberServiceToggleLockArgs) String() string {
+func (p *MemberServiceLockArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("lock", thrift.BOOL, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:lock: ", p), err)
+	}
+	if err := oprot.WriteBool(bool(p.Lock)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.lock (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:lock: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceLockArgs) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("remark", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:remark: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Remark)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.remark (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:remark: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceLockArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceToggleLockArgs(%+v)", *p)
+	return fmt.Sprintf("MemberServiceLockArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type MemberServiceToggleLockResult struct {
+type MemberServiceLockResult struct {
 	Success *ttype.Result_ `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
-func NewMemberServiceToggleLockResult() *MemberServiceToggleLockResult {
-	return &MemberServiceToggleLockResult{}
+func NewMemberServiceLockResult() *MemberServiceLockResult {
+	return &MemberServiceLockResult{}
 }
 
-var MemberServiceToggleLockResult_Success_DEFAULT *ttype.Result_
+var MemberServiceLockResult_Success_DEFAULT *ttype.Result_
 
-func (p *MemberServiceToggleLockResult) GetSuccess() *ttype.Result_ {
+func (p *MemberServiceLockResult) GetSuccess() *ttype.Result_ {
 	if !p.IsSetSuccess() {
-		return MemberServiceToggleLockResult_Success_DEFAULT
+		return MemberServiceLockResult_Success_DEFAULT
 	}
 	return p.Success
 }
-func (p *MemberServiceToggleLockResult) IsSetSuccess() bool {
+func (p *MemberServiceLockResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MemberServiceToggleLockResult) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceLockResult) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -10576,7 +11070,7 @@ func (p *MemberServiceToggleLockResult) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceToggleLockResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MemberServiceLockResult) ReadField0(iprot thrift.TProtocol) error {
 	p.Success = &ttype.Result_{}
 	if err := p.Success.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
@@ -10584,8 +11078,8 @@ func (p *MemberServiceToggleLockResult) ReadField0(iprot thrift.TProtocol) error
 	return nil
 }
 
-func (p *MemberServiceToggleLockResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("ToggleLock_result"); err != nil {
+func (p *MemberServiceLockResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Lock_result"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -10602,7 +11096,7 @@ func (p *MemberServiceToggleLockResult) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceToggleLockResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceLockResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
@@ -10617,11 +11111,260 @@ func (p *MemberServiceToggleLockResult) writeField0(oprot thrift.TProtocol) (err
 	return err
 }
 
-func (p *MemberServiceToggleLockResult) String() string {
+func (p *MemberServiceLockResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceToggleLockResult(%+v)", *p)
+	return fmt.Sprintf("MemberServiceLockResult(%+v)", *p)
+}
+
+// Attributes:
+//  - MemberId
+//  - Flag
+type MemberServiceGrantFlagArgs struct {
+	MemberId int64 `thrift:"memberId,1" db:"memberId" json:"memberId"`
+	Flag     int32 `thrift:"flag,2" db:"flag" json:"flag"`
+}
+
+func NewMemberServiceGrantFlagArgs() *MemberServiceGrantFlagArgs {
+	return &MemberServiceGrantFlagArgs{}
+}
+
+func (p *MemberServiceGrantFlagArgs) GetMemberId() int64 {
+	return p.MemberId
+}
+
+func (p *MemberServiceGrantFlagArgs) GetFlag() int32 {
+	return p.Flag
+}
+func (p *MemberServiceGrantFlagArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.I32 {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceGrantFlagArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MemberId = v
+	}
+	return nil
+}
+
+func (p *MemberServiceGrantFlagArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Flag = v
+	}
+	return nil
+}
+
+func (p *MemberServiceGrantFlagArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GrantFlag_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceGrantFlagArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.memberId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:memberId: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceGrantFlagArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("flag", thrift.I32, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:flag: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.Flag)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.flag (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:flag: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceGrantFlagArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceGrantFlagArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type MemberServiceGrantFlagResult struct {
+	Success *ttype.Result_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewMemberServiceGrantFlagResult() *MemberServiceGrantFlagResult {
+	return &MemberServiceGrantFlagResult{}
+}
+
+var MemberServiceGrantFlagResult_Success_DEFAULT *ttype.Result_
+
+func (p *MemberServiceGrantFlagResult) GetSuccess() *ttype.Result_ {
+	if !p.IsSetSuccess() {
+		return MemberServiceGrantFlagResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *MemberServiceGrantFlagResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MemberServiceGrantFlagResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField0(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceGrantFlagResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &ttype.Result_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceGrantFlagResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GrantFlag_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceGrantFlagResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MemberServiceGrantFlagResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceGrantFlagResult(%+v)", *p)
 }
 
 // Attributes:
@@ -10834,6 +11577,545 @@ func (p *MemberServiceComplexResult) String() string {
 
 // Attributes:
 //  - MemberId
+//  - Op
+//  - MsgType
+type MemberServiceSendCodeArgs struct {
+	MemberId int64  `thrift:"memberId,1" db:"memberId" json:"memberId"`
+	Op       string `thrift:"op,2" db:"op" json:"op"`
+	MsgType  int32  `thrift:"msgType,3" db:"msgType" json:"msgType"`
+}
+
+func NewMemberServiceSendCodeArgs() *MemberServiceSendCodeArgs {
+	return &MemberServiceSendCodeArgs{}
+}
+
+func (p *MemberServiceSendCodeArgs) GetMemberId() int64 {
+	return p.MemberId
+}
+
+func (p *MemberServiceSendCodeArgs) GetOp() string {
+	return p.Op
+}
+
+func (p *MemberServiceSendCodeArgs) GetMsgType() int32 {
+	return p.MsgType
+}
+func (p *MemberServiceSendCodeArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.I32 {
+				if err := p.ReadField3(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSendCodeArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MemberId = v
+	}
+	return nil
+}
+
+func (p *MemberServiceSendCodeArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Op = v
+	}
+	return nil
+}
+
+func (p *MemberServiceSendCodeArgs) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.MsgType = v
+	}
+	return nil
+}
+
+func (p *MemberServiceSendCodeArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SendCode_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField3(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSendCodeArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.memberId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:memberId: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceSendCodeArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("op", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:op: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Op)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.op (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:op: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceSendCodeArgs) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("msgType", thrift.I32, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:msgType: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.MsgType)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.msgType (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:msgType: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceSendCodeArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceSendCodeArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type MemberServiceSendCodeResult struct {
+	Success *ttype.Result_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewMemberServiceSendCodeResult() *MemberServiceSendCodeResult {
+	return &MemberServiceSendCodeResult{}
+}
+
+var MemberServiceSendCodeResult_Success_DEFAULT *ttype.Result_
+
+func (p *MemberServiceSendCodeResult) GetSuccess() *ttype.Result_ {
+	if !p.IsSetSuccess() {
+		return MemberServiceSendCodeResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *MemberServiceSendCodeResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MemberServiceSendCodeResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField0(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSendCodeResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &ttype.Result_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSendCodeResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SendCode_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSendCodeResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MemberServiceSendCodeResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceSendCodeResult(%+v)", *p)
+}
+
+// Attributes:
+//  - MemberId
+//  - Code
+type MemberServiceCompareCodeArgs struct {
+	MemberId int64  `thrift:"memberId,1" db:"memberId" json:"memberId"`
+	Code     string `thrift:"code,2" db:"code" json:"code"`
+}
+
+func NewMemberServiceCompareCodeArgs() *MemberServiceCompareCodeArgs {
+	return &MemberServiceCompareCodeArgs{}
+}
+
+func (p *MemberServiceCompareCodeArgs) GetMemberId() int64 {
+	return p.MemberId
+}
+
+func (p *MemberServiceCompareCodeArgs) GetCode() string {
+	return p.Code
+}
+func (p *MemberServiceCompareCodeArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceCompareCodeArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MemberId = v
+	}
+	return nil
+}
+
+func (p *MemberServiceCompareCodeArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Code = v
+	}
+	return nil
+}
+
+func (p *MemberServiceCompareCodeArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("CompareCode_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceCompareCodeArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.memberId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:memberId: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceCompareCodeArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("code", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:code: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Code)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.code (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:code: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceCompareCodeArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceCompareCodeArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type MemberServiceCompareCodeResult struct {
+	Success *ttype.Result_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewMemberServiceCompareCodeResult() *MemberServiceCompareCodeResult {
+	return &MemberServiceCompareCodeResult{}
+}
+
+var MemberServiceCompareCodeResult_Success_DEFAULT *ttype.Result_
+
+func (p *MemberServiceCompareCodeResult) GetSuccess() *ttype.Result_ {
+	if !p.IsSetSuccess() {
+		return MemberServiceCompareCodeResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *MemberServiceCompareCodeResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MemberServiceCompareCodeResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField0(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceCompareCodeResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &ttype.Result_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceCompareCodeResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("CompareCode_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceCompareCodeResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MemberServiceCompareCodeResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceCompareCodeResult(%+v)", *p)
+}
+
+// Attributes:
+//  - MemberId
 type MemberServiceCheckProfileCompleteArgs struct {
 	MemberId int64 `thrift:"memberId,1" db:"memberId" json:"memberId"`
 }
@@ -11038,6 +12320,214 @@ func (p *MemberServiceCheckProfileCompleteResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("MemberServiceCheckProfileCompleteResult(%+v)", *p)
+}
+
+// Attributes:
+//  - MemberId
+type MemberServiceMemberLevelInfoArgs struct {
+	MemberId int64 `thrift:"memberId,1" db:"memberId" json:"memberId"`
+}
+
+func NewMemberServiceMemberLevelInfoArgs() *MemberServiceMemberLevelInfoArgs {
+	return &MemberServiceMemberLevelInfoArgs{}
+}
+
+func (p *MemberServiceMemberLevelInfoArgs) GetMemberId() int64 {
+	return p.MemberId
+}
+func (p *MemberServiceMemberLevelInfoArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceMemberLevelInfoArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MemberId = v
+	}
+	return nil
+}
+
+func (p *MemberServiceMemberLevelInfoArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("MemberLevelInfo_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceMemberLevelInfoArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.memberId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:memberId: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceMemberLevelInfoArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceMemberLevelInfoArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type MemberServiceMemberLevelInfoResult struct {
+	Success *SMemberLevelInfo `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewMemberServiceMemberLevelInfoResult() *MemberServiceMemberLevelInfoResult {
+	return &MemberServiceMemberLevelInfoResult{}
+}
+
+var MemberServiceMemberLevelInfoResult_Success_DEFAULT *SMemberLevelInfo
+
+func (p *MemberServiceMemberLevelInfoResult) GetSuccess() *SMemberLevelInfo {
+	if !p.IsSetSuccess() {
+		return MemberServiceMemberLevelInfoResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *MemberServiceMemberLevelInfoResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MemberServiceMemberLevelInfoResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField0(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceMemberLevelInfoResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &SMemberLevelInfo{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceMemberLevelInfoResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("MemberLevelInfo_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceMemberLevelInfoResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MemberServiceMemberLevelInfoResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceMemberLevelInfoResult(%+v)", *p)
 }
 
 // Attributes:
@@ -12978,11 +14468,11 @@ func (p *MemberServiceGetAddressListResult) ReadField0(iprot thrift.TProtocol) e
 	tSlice := make([]*SAddress, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem73 := &SAddress{}
-		if err := _elem73.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem73), err)
+		_elem83 := &SAddress{}
+		if err := _elem83.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem83), err)
 		}
-		p.Success = append(p.Success, _elem73)
+		p.Success = append(p.Success, _elem83)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -13701,13 +15191,13 @@ func (p *MemberServiceInviterArrayResult) ReadField0(iprot thrift.TProtocol) err
 	tSlice := make([]int64, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem74 int64
+		var _elem84 int64
 		if v, err := iprot.ReadI64(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem74 = v
+			_elem84 = v
 		}
-		p.Success = append(p.Success, _elem74)
+		p.Success = append(p.Success, _elem84)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -13765,24 +15255,24 @@ func (p *MemberServiceInviterArrayResult) String() string {
 
 // Attributes:
 //  - MemberId
-//  - Data
-type MemberServiceGetInviterQuantityArgs struct {
-	MemberId int64             `thrift:"memberId,1" db:"memberId" json:"memberId"`
-	Data     map[string]string `thrift:"data,2" db:"data" json:"data"`
+//  - Depth
+type MemberServiceInviteMembersQuantityArgs struct {
+	MemberId int64 `thrift:"memberId,1" db:"memberId" json:"memberId"`
+	Depth    int32 `thrift:"depth,2" db:"depth" json:"depth"`
 }
 
-func NewMemberServiceGetInviterQuantityArgs() *MemberServiceGetInviterQuantityArgs {
-	return &MemberServiceGetInviterQuantityArgs{}
+func NewMemberServiceInviteMembersQuantityArgs() *MemberServiceInviteMembersQuantityArgs {
+	return &MemberServiceInviteMembersQuantityArgs{}
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) GetMemberId() int64 {
+func (p *MemberServiceInviteMembersQuantityArgs) GetMemberId() int64 {
 	return p.MemberId
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) GetData() map[string]string {
-	return p.Data
+func (p *MemberServiceInviteMembersQuantityArgs) GetDepth() int32 {
+	return p.Depth
 }
-func (p *MemberServiceGetInviterQuantityArgs) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceInviteMembersQuantityArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -13807,7 +15297,7 @@ func (p *MemberServiceGetInviterQuantityArgs) Read(iprot thrift.TProtocol) error
 				}
 			}
 		case 2:
-			if fieldTypeId == thrift.MAP {
+			if fieldTypeId == thrift.I32 {
 				if err := p.ReadField2(iprot); err != nil {
 					return err
 				}
@@ -13831,7 +15321,7 @@ func (p *MemberServiceGetInviterQuantityArgs) Read(iprot thrift.TProtocol) error
 	return nil
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MemberServiceInviteMembersQuantityArgs) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -13840,36 +15330,17 @@ func (p *MemberServiceGetInviterQuantityArgs) ReadField1(iprot thrift.TProtocol)
 	return nil
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) ReadField2(iprot thrift.TProtocol) error {
-	_, _, size, err := iprot.ReadMapBegin()
-	if err != nil {
-		return thrift.PrependError("error reading map begin: ", err)
-	}
-	tMap := make(map[string]string, size)
-	p.Data = tMap
-	for i := 0; i < size; i++ {
-		var _key75 string
-		if v, err := iprot.ReadString(); err != nil {
-			return thrift.PrependError("error reading field 0: ", err)
-		} else {
-			_key75 = v
-		}
-		var _val76 string
-		if v, err := iprot.ReadString(); err != nil {
-			return thrift.PrependError("error reading field 0: ", err)
-		} else {
-			_val76 = v
-		}
-		p.Data[_key75] = _val76
-	}
-	if err := iprot.ReadMapEnd(); err != nil {
-		return thrift.PrependError("error reading map end: ", err)
+func (p *MemberServiceInviteMembersQuantityArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Depth = v
 	}
 	return nil
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("GetInviterQuantity_args"); err != nil {
+func (p *MemberServiceInviteMembersQuantityArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("InviteMembersQuantity_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -13889,7 +15360,7 @@ func (p *MemberServiceGetInviterQuantityArgs) Write(oprot thrift.TProtocol) erro
 	return nil
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceInviteMembersQuantityArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
 	}
@@ -13902,60 +15373,49 @@ func (p *MemberServiceGetInviterQuantityArgs) writeField1(oprot thrift.TProtocol
 	return err
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("data", thrift.MAP, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:data: ", p), err)
+func (p *MemberServiceInviteMembersQuantityArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("depth", thrift.I32, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:depth: ", p), err)
 	}
-	if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Data)); err != nil {
-		return thrift.PrependError("error writing map begin: ", err)
-	}
-	for k, v := range p.Data {
-		if err := oprot.WriteString(string(k)); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
-		}
-		if err := oprot.WriteString(string(v)); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
-		}
-	}
-	if err := oprot.WriteMapEnd(); err != nil {
-		return thrift.PrependError("error writing map end: ", err)
+	if err := oprot.WriteI32(int32(p.Depth)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.depth (2) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:data: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:depth: ", p), err)
 	}
 	return err
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) String() string {
+func (p *MemberServiceInviteMembersQuantityArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceGetInviterQuantityArgs(%+v)", *p)
+	return fmt.Sprintf("MemberServiceInviteMembersQuantityArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type MemberServiceGetInviterQuantityResult struct {
+type MemberServiceInviteMembersQuantityResult struct {
 	Success *int32 `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
-func NewMemberServiceGetInviterQuantityResult() *MemberServiceGetInviterQuantityResult {
-	return &MemberServiceGetInviterQuantityResult{}
+func NewMemberServiceInviteMembersQuantityResult() *MemberServiceInviteMembersQuantityResult {
+	return &MemberServiceInviteMembersQuantityResult{}
 }
 
-var MemberServiceGetInviterQuantityResult_Success_DEFAULT int32
+var MemberServiceInviteMembersQuantityResult_Success_DEFAULT int32
 
-func (p *MemberServiceGetInviterQuantityResult) GetSuccess() int32 {
+func (p *MemberServiceInviteMembersQuantityResult) GetSuccess() int32 {
 	if !p.IsSetSuccess() {
-		return MemberServiceGetInviterQuantityResult_Success_DEFAULT
+		return MemberServiceInviteMembersQuantityResult_Success_DEFAULT
 	}
 	return *p.Success
 }
-func (p *MemberServiceGetInviterQuantityResult) IsSetSuccess() bool {
+func (p *MemberServiceInviteMembersQuantityResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MemberServiceGetInviterQuantityResult) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceInviteMembersQuantityResult) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -13994,7 +15454,7 @@ func (p *MemberServiceGetInviterQuantityResult) Read(iprot thrift.TProtocol) err
 	return nil
 }
 
-func (p *MemberServiceGetInviterQuantityResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MemberServiceInviteMembersQuantityResult) ReadField0(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 0: ", err)
 	} else {
@@ -14003,8 +15463,8 @@ func (p *MemberServiceGetInviterQuantityResult) ReadField0(iprot thrift.TProtoco
 	return nil
 }
 
-func (p *MemberServiceGetInviterQuantityResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("GetInviterQuantity_result"); err != nil {
+func (p *MemberServiceInviteMembersQuantityResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("InviteMembersQuantity_result"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -14021,7 +15481,7 @@ func (p *MemberServiceGetInviterQuantityResult) Write(oprot thrift.TProtocol) er
 	return nil
 }
 
-func (p *MemberServiceGetInviterQuantityResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceInviteMembersQuantityResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err := oprot.WriteFieldBegin("success", thrift.I32, 0); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
@@ -14036,33 +15496,33 @@ func (p *MemberServiceGetInviterQuantityResult) writeField0(oprot thrift.TProtoc
 	return err
 }
 
-func (p *MemberServiceGetInviterQuantityResult) String() string {
+func (p *MemberServiceInviteMembersQuantityResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceGetInviterQuantityResult(%+v)", *p)
+	return fmt.Sprintf("MemberServiceInviteMembersQuantityResult(%+v)", *p)
 }
 
 // Attributes:
 //  - MemberId
 //  - Data
-type MemberServiceGetInviterArrayArgs struct {
+type MemberServiceQueryInviteQuantityArgs struct {
 	MemberId int64             `thrift:"memberId,1" db:"memberId" json:"memberId"`
 	Data     map[string]string `thrift:"data,2" db:"data" json:"data"`
 }
 
-func NewMemberServiceGetInviterArrayArgs() *MemberServiceGetInviterArrayArgs {
-	return &MemberServiceGetInviterArrayArgs{}
+func NewMemberServiceQueryInviteQuantityArgs() *MemberServiceQueryInviteQuantityArgs {
+	return &MemberServiceQueryInviteQuantityArgs{}
 }
 
-func (p *MemberServiceGetInviterArrayArgs) GetMemberId() int64 {
+func (p *MemberServiceQueryInviteQuantityArgs) GetMemberId() int64 {
 	return p.MemberId
 }
 
-func (p *MemberServiceGetInviterArrayArgs) GetData() map[string]string {
+func (p *MemberServiceQueryInviteQuantityArgs) GetData() map[string]string {
 	return p.Data
 }
-func (p *MemberServiceGetInviterArrayArgs) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceQueryInviteQuantityArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -14111,7 +15571,7 @@ func (p *MemberServiceGetInviterArrayArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceGetInviterArrayArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MemberServiceQueryInviteQuantityArgs) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -14120,7 +15580,7 @@ func (p *MemberServiceGetInviterArrayArgs) ReadField1(iprot thrift.TProtocol) er
 	return nil
 }
 
-func (p *MemberServiceGetInviterArrayArgs) ReadField2(iprot thrift.TProtocol) error {
+func (p *MemberServiceQueryInviteQuantityArgs) ReadField2(iprot thrift.TProtocol) error {
 	_, _, size, err := iprot.ReadMapBegin()
 	if err != nil {
 		return thrift.PrependError("error reading map begin: ", err)
@@ -14128,19 +15588,19 @@ func (p *MemberServiceGetInviterArrayArgs) ReadField2(iprot thrift.TProtocol) er
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key77 string
+		var _key85 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key77 = v
+			_key85 = v
 		}
-		var _val78 string
+		var _val86 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val78 = v
+			_val86 = v
 		}
-		p.Data[_key77] = _val78
+		p.Data[_key85] = _val86
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -14148,8 +15608,8 @@ func (p *MemberServiceGetInviterArrayArgs) ReadField2(iprot thrift.TProtocol) er
 	return nil
 }
 
-func (p *MemberServiceGetInviterArrayArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("GetInviterArray_args"); err != nil {
+func (p *MemberServiceQueryInviteQuantityArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("QueryInviteQuantity_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -14169,7 +15629,7 @@ func (p *MemberServiceGetInviterArrayArgs) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceGetInviterArrayArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceQueryInviteQuantityArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
 	}
@@ -14182,7 +15642,7 @@ func (p *MemberServiceGetInviterArrayArgs) writeField1(oprot thrift.TProtocol) (
 	return err
 }
 
-func (p *MemberServiceGetInviterArrayArgs) writeField2(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceQueryInviteQuantityArgs) writeField2(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("data", thrift.MAP, 2); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:data: ", p), err)
 	}
@@ -14206,33 +15666,313 @@ func (p *MemberServiceGetInviterArrayArgs) writeField2(oprot thrift.TProtocol) (
 	return err
 }
 
-func (p *MemberServiceGetInviterArrayArgs) String() string {
+func (p *MemberServiceQueryInviteQuantityArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceGetInviterArrayArgs(%+v)", *p)
+	return fmt.Sprintf("MemberServiceQueryInviteQuantityArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type MemberServiceGetInviterArrayResult struct {
-	Success []int64 `thrift:"success,0" db:"success" json:"success,omitempty"`
+type MemberServiceQueryInviteQuantityResult struct {
+	Success *int32 `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
-func NewMemberServiceGetInviterArrayResult() *MemberServiceGetInviterArrayResult {
-	return &MemberServiceGetInviterArrayResult{}
+func NewMemberServiceQueryInviteQuantityResult() *MemberServiceQueryInviteQuantityResult {
+	return &MemberServiceQueryInviteQuantityResult{}
 }
 
-var MemberServiceGetInviterArrayResult_Success_DEFAULT []int64
+var MemberServiceQueryInviteQuantityResult_Success_DEFAULT int32
 
-func (p *MemberServiceGetInviterArrayResult) GetSuccess() []int64 {
-	return p.Success
+func (p *MemberServiceQueryInviteQuantityResult) GetSuccess() int32 {
+	if !p.IsSetSuccess() {
+		return MemberServiceQueryInviteQuantityResult_Success_DEFAULT
+	}
+	return *p.Success
 }
-func (p *MemberServiceGetInviterArrayResult) IsSetSuccess() bool {
+func (p *MemberServiceQueryInviteQuantityResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MemberServiceGetInviterArrayResult) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceQueryInviteQuantityResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.I32 {
+				if err := p.ReadField0(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceQueryInviteQuantityResult) ReadField0(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 0: ", err)
+	} else {
+		p.Success = &v
+	}
+	return nil
+}
+
+func (p *MemberServiceQueryInviteQuantityResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("QueryInviteQuantity_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceQueryInviteQuantityResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.I32, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := oprot.WriteI32(int32(*p.Success)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.success (0) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MemberServiceQueryInviteQuantityResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceQueryInviteQuantityResult(%+v)", *p)
+}
+
+// Attributes:
+//  - MemberId
+//  - Data
+type MemberServiceQueryInviteArrayArgs struct {
+	MemberId int64             `thrift:"memberId,1" db:"memberId" json:"memberId"`
+	Data     map[string]string `thrift:"data,2" db:"data" json:"data"`
+}
+
+func NewMemberServiceQueryInviteArrayArgs() *MemberServiceQueryInviteArrayArgs {
+	return &MemberServiceQueryInviteArrayArgs{}
+}
+
+func (p *MemberServiceQueryInviteArrayArgs) GetMemberId() int64 {
+	return p.MemberId
+}
+
+func (p *MemberServiceQueryInviteArrayArgs) GetData() map[string]string {
+	return p.Data
+}
+func (p *MemberServiceQueryInviteArrayArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.MAP {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceQueryInviteArrayArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MemberId = v
+	}
+	return nil
+}
+
+func (p *MemberServiceQueryInviteArrayArgs) ReadField2(iprot thrift.TProtocol) error {
+	_, _, size, err := iprot.ReadMapBegin()
+	if err != nil {
+		return thrift.PrependError("error reading map begin: ", err)
+	}
+	tMap := make(map[string]string, size)
+	p.Data = tMap
+	for i := 0; i < size; i++ {
+		var _key87 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_key87 = v
+		}
+		var _val88 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_val88 = v
+		}
+		p.Data[_key87] = _val88
+	}
+	if err := iprot.ReadMapEnd(); err != nil {
+		return thrift.PrependError("error reading map end: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceQueryInviteArrayArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("QueryInviteArray_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceQueryInviteArrayArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.memberId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:memberId: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceQueryInviteArrayArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("data", thrift.MAP, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:data: ", p), err)
+	}
+	if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Data)); err != nil {
+		return thrift.PrependError("error writing map begin: ", err)
+	}
+	for k, v := range p.Data {
+		if err := oprot.WriteString(string(k)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+		if err := oprot.WriteString(string(v)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+	}
+	if err := oprot.WriteMapEnd(); err != nil {
+		return thrift.PrependError("error writing map end: ", err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:data: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceQueryInviteArrayArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceQueryInviteArrayArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type MemberServiceQueryInviteArrayResult struct {
+	Success []int64 `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewMemberServiceQueryInviteArrayResult() *MemberServiceQueryInviteArrayResult {
+	return &MemberServiceQueryInviteArrayResult{}
+}
+
+var MemberServiceQueryInviteArrayResult_Success_DEFAULT []int64
+
+func (p *MemberServiceQueryInviteArrayResult) GetSuccess() []int64 {
+	return p.Success
+}
+func (p *MemberServiceQueryInviteArrayResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MemberServiceQueryInviteArrayResult) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -14271,7 +16011,7 @@ func (p *MemberServiceGetInviterArrayResult) Read(iprot thrift.TProtocol) error 
 	return nil
 }
 
-func (p *MemberServiceGetInviterArrayResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MemberServiceQueryInviteArrayResult) ReadField0(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return thrift.PrependError("error reading list begin: ", err)
@@ -14279,13 +16019,13 @@ func (p *MemberServiceGetInviterArrayResult) ReadField0(iprot thrift.TProtocol) 
 	tSlice := make([]int64, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem79 int64
+		var _elem89 int64
 		if v, err := iprot.ReadI64(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem79 = v
+			_elem89 = v
 		}
-		p.Success = append(p.Success, _elem79)
+		p.Success = append(p.Success, _elem89)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -14293,8 +16033,8 @@ func (p *MemberServiceGetInviterArrayResult) ReadField0(iprot thrift.TProtocol) 
 	return nil
 }
 
-func (p *MemberServiceGetInviterArrayResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("GetInviterArray_result"); err != nil {
+func (p *MemberServiceQueryInviteArrayResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("QueryInviteArray_result"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -14311,7 +16051,7 @@ func (p *MemberServiceGetInviterArrayResult) Write(oprot thrift.TProtocol) error
 	return nil
 }
 
-func (p *MemberServiceGetInviterArrayResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceQueryInviteArrayResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err := oprot.WriteFieldBegin("success", thrift.LIST, 0); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
@@ -14334,11 +16074,11 @@ func (p *MemberServiceGetInviterArrayResult) writeField0(oprot thrift.TProtocol)
 	return err
 }
 
-func (p *MemberServiceGetInviterArrayResult) String() string {
+func (p *MemberServiceQueryInviteArrayResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceGetInviterArrayResult(%+v)", *p)
+	return fmt.Sprintf("MemberServiceQueryInviteArrayResult(%+v)", *p)
 }
 
 // Attributes:
@@ -16475,19 +18215,19 @@ func (p *MemberServiceB4EAuthArgs) ReadField3(iprot thrift.TProtocol) error {
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key80 string
+		var _key90 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key80 = v
+			_key90 = v
 		}
-		var _val81 string
+		var _val91 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val81 = v
+			_val91 = v
 		}
-		p.Data[_key80] = _val81
+		p.Data[_key90] = _val91
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)

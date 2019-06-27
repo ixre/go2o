@@ -19,7 +19,11 @@ import (
 	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/auto_gen/rpc/shipment_service"
 	"go2o/core/service/auto_gen/rpc/shop_service"
+	"go2o/core/service/auto_gen/rpc/status_service"
 	"go2o/core/service/auto_gen/rpc/wallet_service"
+	"log"
+	"os"
+	"time"
 )
 
 var (
@@ -27,16 +31,35 @@ var (
 )
 
 func init() {
-	factory = Configure("localhost:1427")
+	factory = NewClientFactory("localhost:1427", false, "", "")
 }
 
 // 设置Thrift地址
 func Configure(server string) *ClientFactory {
-	if server == ""{
+	if server == "" {
 		server = factory.thriftServer
 	}
+	log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
 	factory = NewClientFactory(server, false, "", "")
+	var retryTimes = 10
+	for i := 0; i < retryTimes; i++ {
+		trans, _, err := StatusServeClient()
+		if err == nil {
+			trans.Close()
+			break
+		} else if i == retryTimes-1 {
+			log.Println("[ Go2o][ RPC]: can't connect go2o rpc server! ", err.Error())
+			os.Exit(1)
+		}
+		time.Sleep(time.Second * 2)
+	}
 	return factory
+}
+
+// 状态客户端
+func StatusServeClient() (thrift.TTransport, *status_service.StatusServiceClient, error) {
+	trans, cli, err := factory.GetClient("merchant")
+	return trans, status_service.NewStatusServiceClient(cli), err
 }
 
 // 商户客户端

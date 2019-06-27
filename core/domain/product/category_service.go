@@ -15,7 +15,7 @@ import (
 	"github.com/ixre/gof/algorithm/iterator"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
 	"sort"
 	"strconv"
@@ -287,25 +287,25 @@ var _ product.IGlobCatService = new(categoryManagerImpl)
 type categoryManagerImpl struct {
 	readonly       bool
 	repo           product.ICategoryRepo
-	valRepo        valueobject.IValueRepo
+	registryRepo   registry.IRegistryRepo
 	vendorId       int32
 	lastUpdateTime int64
 	categories     []product.ICategory
 }
 
 func NewCategoryManager(mchId int32, rep product.ICategoryRepo,
-	valRepo valueobject.IValueRepo) product.IGlobCatService {
+	registryRepo registry.IRegistryRepo) product.IGlobCatService {
 	c := &categoryManagerImpl{
-		repo:     rep,
-		vendorId: mchId,
-		valRepo:  valRepo,
+		repo:         rep,
+		vendorId:     mchId,
+		registryRepo: registryRepo,
 	}
 	return c.init()
 }
 
 func (c *categoryManagerImpl) init() product.IGlobCatService {
-	mchConf := c.valRepo.GetPlatformConf()
-	if !mchConf.MchGoodsCategory && c.vendorId > 0 {
+	enableMchCat := c.registryRepo.Get(registry.EnableMchGoodsCategory).BoolValue()
+	if !enableMchCat && c.vendorId > 0 {
 		c.readonly = true
 		c.vendorId = 0
 	}

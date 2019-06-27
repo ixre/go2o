@@ -81,7 +81,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 	r.memberRepo = NewMemberRepo(sto, db, r.mssRepo, r.valueRepo, r.registryRepo)
 	r.productRepo = NewProductRepo(db, r.proMRepo, r.valueRepo)
 	r.itemWsRepo = NewItemWholesaleRepo(db)
-	r.catRepo = NewCategoryRepo(db, r.valueRepo, sto)
+	r.catRepo = NewCategoryRepo(db, r.registryRepo, sto)
 	r.itemRepo = NewGoodsItemRepo(db, r.catRepo, r.productRepo,
 		r.proMRepo, r.itemWsRepo, r.expressRepo, r.registryRepo)
 	r.tagSaleRepo = NewTagSaleRepo(db, r.valueRepo)

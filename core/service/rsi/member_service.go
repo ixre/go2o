@@ -47,9 +47,21 @@ type memberService struct {
 	serviceUtil
 }
 
-// 根据会员编码获取会员ID
-func (s *memberService) GetMemberId(ctx context.Context, memberCode string) (r int64, err error) {
-	return int64(s.repo.GetMemberIdByCode(memberCode)), nil
+// 交换会员编号
+func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
+	var memberId int64
+	switch cred {
+	default:
+	case member_service.ECredentials_User:
+		memberId = s.repo.GetMemberIdByUser(value)
+	case member_service.ECredentials_Code:
+		memberId = int64(s.repo.GetMemberIdByCode(value))
+	case member_service.ECredentials_Phone:
+		memberId = s.repo.GetMemberIdByPhone(value)
+	case member_service.ECredentials_Email:
+		memberId = s.repo.GetMemberIdByEmail(value)
+	}
+	return memberId, nil
 }
 
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
@@ -70,12 +82,16 @@ func (s *memberService) init() *memberService {
 	var list []*member.Member
 	db.GetOrm().Select(&list, "")
 	for _, v := range list {
-		if len(v.Code) < 6 {
-			im := s.repo.CreateMember(v)
-			v.Code = s.generateMemberCode()
-			im.SetValue(v)
-			im.Save()
+		im := s.repo.CreateMember(v)
+		if rl := im.GetRelation(); rl != nil {
+			im.BindInviter(rl.InviterId, true)
 		}
+		//if len(v.Code) < 6 {
+		//	im := s.repo.CreateMember(v)
+		//	v.Code = s.generateMemberCode()
+		//	im.SetValue(v)
+		//	im.Save()
+		//}
 	}
 	return s
 }
@@ -290,7 +306,7 @@ func (s *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
-func (s *memberService) GetWalletLog(memberId int64, logId int32) *member.MWalletLog {
+func (s *memberService) GetWalletLog(memberId int64, logId int32) *member.WalletAccountLog {
 	m := s.repo.GetMember(memberId)
 	return m.GetAccount().GetWalletLog(logId)
 }
@@ -323,28 +339,59 @@ func (s *memberService) GetMemberIdByBasis(str string, basic int) int64 {
 	return -1
 }
 
-// 发送验证码
-func (s *memberService) SendCode(memberId int64, operation string, msgType int) (string, error) {
+// 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
+func (s *memberService) SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return "", member.ErrNoSuchMember
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	return m.SendCheckCode(operation, msgType)
+	code, err := m.SendCheckCode(op, int(msgType))
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(map[string]string{"code": code}), nil
 }
 
-// 对比验证码
-func (s *memberService) CompareCode(memberId int64, code string) error {
+// 比较验证码是否正确
+func (s *memberService) CompareCode(ctx context.Context, memberId int64, code string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	return m.CompareCode(code)
+	if err := m.CompareCode(code); err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // 更改会员用户名
 func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, user string) (*ttype.Result_, error) {
 	err := s.changeUsr(int(memberId), user)
 	return s.result(err), nil
+}
+
+// 获取会员等级信息
+func (s *memberService) MemberLevelInfo(ctx context.Context, memberId int64) (r *member_service.SMemberLevelInfo, err error) {
+	level := &member_service.SMemberLevelInfo{Level: -1}
+	im := s.repo.GetMember(memberId)
+	if im != nil {
+		v := im.GetValue()
+		level.Exp = int32(v.Exp)
+		level.Level = int32(v.Level)
+		lv := im.GetLevel()
+		level.LevelName = lv.Name
+		level.ProgramSignal = lv.ProgramSignal
+		nextLv := s.repo.GetManager().LevelManager().GetNextLevelById(lv.ID)
+		if nextLv == nil {
+			level.NextLevel = -1
+		} else {
+			level.NextLevel = int32(nextLv.ID)
+			level.NextLevelName = nextLv.Name
+			level.NextProgramSignal = nextLv.ProgramSignal
+			level.RequireExp = int32(nextLv.RequireExp - v.Exp)
+		}
+	}
+	return level, nil
 }
 
 // 更改会员等级
@@ -493,13 +540,12 @@ func (s *memberService) Active(ctx context.Context, memberId int64) (r *ttype.Re
 }
 
 // 锁定/解锁会员
-func (s *memberService) ToggleLock(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
+func (s *memberService) Lock(ctx context.Context, memberId int64, lock bool, remark string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	state := m.GetValue().State
-	if state == 1 {
+	if lock {
 		err = m.Lock()
 	} else {
 		err = m.Unlock()
@@ -683,21 +729,39 @@ func (s *memberService) InviterArray(ctx context.Context, memberId int64, depth 
 }
 
 // 按条件获取荐指定等级会员的数量
-func (s *memberService) GetInviterQuantity(ctx context.Context, memberId int64, data map[string]string) (int32, error) {
+func (s *memberService) InviteMembersQuantity(ctx context.Context, memberId int64, depth int32) (r int32, err error) {
+	where := ""
+	switch depth {
+	case 1:
+		where = fmt.Sprintf(" inviter_id = %d", memberId)
+	case 2:
+		where = fmt.Sprintf(" inviter_id = %d OR inviter_d2 = %d", memberId, memberId)
+	case 3:
+		where = fmt.Sprintf(" inviter_id = %d OR inviter_d2 = %d OR inviter_d3 = %d", memberId, memberId, memberId)
+	}
+	if len(where) == 0 {
+		return 0, nil
+	}
+	q := s.query.InviteMembersQuantity(memberId, where)
+	return int32(q), nil
+}
+
+// 按条件获取荐指定等级会员的数量
+func (s *memberService) QueryInviteQuantity(ctx context.Context, memberId int64, data map[string]string) (int32, error) {
 	where := ""
 	if data != nil && len(data) > 0 {
 		where = s.parseGetInviterDataParams(data)
 	}
-	return s.query.GetInviterQuantity(memberId, where), nil
+	return s.query.GetInviteQuantity(memberId, where), nil
 }
 
 // 按条件获取荐指定等级会员的列表
-func (s *memberService) GetInviterArray(ctx context.Context, memberId int64, data map[string]string) ([]int64, error) {
+func (s *memberService) QueryInviteArray(ctx context.Context, memberId int64, data map[string]string) ([]int64, error) {
 	where := ""
 	if data != nil && len(data) > 0 {
 		where = s.parseGetInviterDataParams(data)
 	}
-	return s.query.GetInviterArray(memberId, where), nil
+	return s.query.GetInviteArray(memberId, where), nil
 }
 
 func (s *memberService) parseGetInviterDataParams(data map[string]string) string {
@@ -918,11 +982,6 @@ func (s *memberService) GetMyPagedInvitationMembers(memberId int64,
 	return total, rows
 }
 
-// 查询有邀请关系的会员数量
-func (s *memberService) GetReferNum(memberId int64, layer int) int {
-	return s.query.GetReferNum(memberId, layer)
-}
-
 // 获取会员最后更新时间
 func (s *memberService) GetMemberLatestUpdateTime(memberId int64) int64 {
 	return s.repo.GetMemberLatestUpdateTime(memberId)
@@ -934,6 +993,18 @@ func (s *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
 		v.Avatar = format.GetResUrl(v.Avatar)
 	}
 	return list
+}
+
+// 标志赋值, 如果flag小于零, 则异或运算
+func (s *memberService) GrantFlag(ctx context.Context, memberId int64, flag int32) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	if err := m.GrantFlag(int(flag)); err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // 获取会员汇总信息

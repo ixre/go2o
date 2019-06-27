@@ -9,15 +9,9 @@
 package app
 
 import (
-	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/shell"
-	"go2o/core/variable"
-	"io/ioutil"
-	"os"
-	"runtime"
-	"strings"
 	"time"
 )
 
@@ -70,58 +64,6 @@ var (
 
 type CustomConfig func(gof.App, int) error
 
-// 自定义配置应用系统
-func Configure(c CustomConfig, app gof.App, tag int) error {
-	err := c(app, tag)
-	if tag&FlagWebServe == FlagWebServe {
-		defer flushJsGlob()
-	}
-	return err
-}
-
-// 将变量输出到JS中
-func flushJsGlob() {
-	filePath := "static/assets/js/base.js"
-	fi, err := os.Open(filePath)
-	if err == nil {
-		defer fi.Close()
-		data, err := ioutil.ReadAll(fi)
-		if err == nil {
-			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='//%s'+domain;",
-				variable.Domain, variable.DOMAIN_PREFIX_HApi,
-			))
-			txt := string(data)
-			delimer := "/*~*/"
-			i := strings.Index(txt, delimer)
-			if i == -1 {
-				newBytes = append(newBytes, delimer...)
-				newBytes = append(newBytes, txt...)
-			} else {
-				newBytes = append(newBytes, txt[i:]...)
-			}
-			ioutil.WriteFile(filePath, newBytes, os.ModePerm)
-		}
-	} else {
-		log.Println("[ Flush][ JS][ Error]:", err)
-	}
-}
-
-// 初始化，如果不调用此操作。则默认全部不监视。
-func FsInit(debug bool) {
-	for i := 0; i < fsLast; i++ {
-		webFs[i] = debug
-	}
-	// MAC OX 连接数限制,在这里指定部分应用更新模板
-	if debug && runtime.GOOS == "darwin" {
-		resetFsOnDarwin()
-	}
-}
-
-// 获取模板是否监视更改
-func GetFs(i int) bool {
-	return webFs[i]
-}
-
 // 自动安装包
 func AutoInstall() {
 	execInstall()
@@ -145,18 +87,4 @@ func execInstall() error {
 		log.Println("[ Go2o][ Install]:", err)
 	}
 	return err
-}
-
-// 重设MAC OX下的文件监视更改
-func resetFsOnDarwin() {
-	webFs[FsPortal] = false
-	webFs[FsPortalMobile] = !false
-	webFs[FsPassport] = false
-	webFs[FsPassportMobile] = false
-	webFs[FsUCenter] = false
-	webFs[FsUCenterMobile] = false
-	webFs[FsShop] = false
-	webFs[FsShopMobile] = false
-	webFs[FsMch] = false
-	webFs[FsWholesale] = false
 }

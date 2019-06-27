@@ -57,35 +57,38 @@ func main() {
 	var (
 		ch        = make(chan bool)
 		confFile  string
-		httpPort  int
-		restPort  int
+		port      int
+		apiPort   int
+		kafkaAddr string
 		debug     bool
 		trace     bool
 		runDaemon bool // 运行daemon
-		runRpc    bool // 运行Rpc服务
 		help      bool
 		showVer   bool
 		newApp    *core.AppImpl
 		appFlag   = app.FlagWebApp
 	)
 
-	flag.IntVar(&httpPort, "port", 14190, "web server port")
-	flag.IntVar(&restPort, "restport", 1428, "rest api port")
+	defaultKafkaAddr := os.Getenv("GO2O_KAFKA_ADDR")
+	if len(defaultKafkaAddr) == 0 {
+		defaultKafkaAddr = "127.0.0.1:9092"
+	}
+	flag.IntVar(&port, "-port", 1427, "thrift service port")
+	flag.IntVar(&apiPort, "-apiport", 1428, "api service port")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.StringVar(&confFile, "conf", "app.conf", "")
+	flag.StringVar(&kafkaAddr, "kafka", defaultKafkaAddr,
+		"kafka cluster address, like: 192.168.1.1:9092,192.168.1.2:9092")
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
-	flag.BoolVar(&runRpc, "r", false, "run rpc service")
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
 
 	if runDaemon {
 		appFlag = appFlag | app.FlagDaemon
 	}
-	if runRpc {
-		appFlag = appFlag | app.FlagRpcServe
-	}
+	appFlag = appFlag | app.FlagRpcServe
 	if help {
 		flag.Usage()
 		return
@@ -112,19 +115,15 @@ func main() {
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
 	})
-	app.FsInit(debug)
 	rsi.Init(newApp, appFlag)
-	//app.Configure(hook.HookUp, newApp, appFlag)
-
 	// 初始化producer
-	kafkaAddress := strings.Split(newApp.Config().GetString("kafka_address"), ",")
-	msq.Configure(msq.KAFKA, kafkaAddress)
-	if runRpc {
-		go rs.ListenAndServe(":1427", false)
-	}
+	msq.Configure(msq.KAFKA, strings.Split(kafkaAddr, ","))
+	// 运行RPC服务
+	go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
+	// 运行REST API
+	go restapi.Run(newApp, apiPort)
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
-	go restapi.Run(newApp, restPort) // 运行REST API
 	<-ch
 }

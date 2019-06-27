@@ -19,7 +19,7 @@ var (
 	EBusinessID = ""
 	AppKey      = ""
 	//ReqUrl      = "http://api.kdniao.cc/Ebusiness/EbusinessOrderHandle.aspx"
-	ReqUrl = "http://api.kdniao.com/api/dist"
+	ReqUrl             = "http://api.kdniao.com/api/dist"
 	SHIP_CODE_YUNDA    = "YD"
 	SHIP_CODE_SHUNFENG = "SF"
 	// You can add more, get code from https://view.officeapps.live.com/op/view.aspx?src=http://www.kdniao.com/file/ExpressCode.xls

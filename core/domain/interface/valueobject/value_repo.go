@@ -92,23 +92,6 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 平台设置
-	PlatformConf struct {
-		// 平台名称
-		//Name string
-		// 标志
-		//Logo string
-		// 客服电话
-		//Telephone string
-		// 系统是否开挂起状态
-		Suspend bool
-		// 系统挂起提示消息
-		SuspendMessage string
-		// 允许商户创建商品分类
-		MchGoodsCategory bool
-		// 允许商户创建页面分类
-		MchPageCategory bool
-	}
 	// 移动应用配置
 	MoAppConf struct {
 		// 应用名称
@@ -131,20 +114,6 @@ type (
 		WpVersion string
 		// 微软APP版发布地址
 		WpReleaseUrl string
-	}
-
-	// 模板配置
-	TemplateConf struct {
-		// 平台首页模板文件路径
-		PlatformIndexPath string
-		// 商铺首页模板文件路径
-		ShopIndexPath string
-		// 会员中心首页模板文件路径
-		UCenterIndexPath string
-		// 会员中心个人资料模板文件路径
-		UCenterPersonInfoPath string
-		// 会员中心推广海报模板文件路径
-		UCenterInvitationDmPath string
 	}
 
 	// 微信API设置
@@ -290,22 +259,10 @@ type (
 		// 保存注册权限
 		SaveRegisterPerm(v *RegisterPerm) error
 
-		// 获取平台设置
-		GetPlatformConf() PlatformConf
-
-		// 保存平台设置
-		SavePlatformConf(v *PlatformConf) error
-
 		// 根据键获取数据值
 		GetsRegistry(keys []string) []string
 		// 根据键获取数据值字典
 		GetsRegistryMap(keys []string) map[string]string
-
-		// 获取模板配置
-		GetTemplateConf() TemplateConf
-
-		// 保存模板配置
-		SaveTemplateConf(v *TemplateConf) error
 
 		// 获取移动应用设置
 		GetMoAppConf() MoAppConf

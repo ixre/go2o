@@ -17,17 +17,19 @@ const (
 	AccountWallet = 3
 	// 流通金账户
 	AccountFlow = 4
+	// 增长金账户
+	AccountGrow = 7
 )
 
 const (
 	// 自定义的业务类型
 	KindMine int = 30
-	// 客服调整
-	KindAdjust = 1
 	// 会员充值
-	KindCharge = 2
+	KindCharge = 1
 	// 消耗
-	KindConsumes = 3
+	KindConsume = 2
+	// 客服调整
+	KindAdjust = 3
 	// 支付抵扣
 	KindDiscount = 4
 	// 退款
@@ -58,15 +60,13 @@ const (
 )
 
 const (
-	KindGrow = 7 // 增利
-
 	//KindCommission = 9 // 手续费
 
 	// 赠送
 	//KindBalancePresent = 3
 
 	// 流通账户
-	KindBalanceFlow int = 4 // 账户流通
+	//KindBalanceFlow int = 4 // 账户流通
 
 	// 提现
 	//KindBalanceApplyCash = 11
@@ -149,7 +149,7 @@ type (
 		UnfreezesIntegral(title string, value int) error
 
 		// 获取钱包账户日志
-		GetWalletLog(id int32) *MWalletLog
+		GetWalletLog(id int32) *WalletAccountLog
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
 		RequestTakeOut(takeKind int, title string, amount float32, commission float32) (int32, string, error)
@@ -203,7 +203,7 @@ type (
 		//冻结赠送金额
 		FreezeWallet float32 `db:"freeze_wallet"`
 		//失效的赠送金额
-		ExpiredPresent float32 `db:"expired_wallet"`
+		ExpiredWallet float32 `db:"expired_wallet"`
 		//总赠送金额
 		TotalWalletAmount float32 `db:"total_wallet_amount"`
 		//流动账户余额
@@ -280,7 +280,7 @@ type (
 	}
 
 	// 钱包账户日志
-	MWalletLog struct {
+	WalletAccountLog struct {
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id"`
@@ -306,7 +306,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 余额变动信息(todo: 活动账户还在用,暂时不删除)
+	// 活动账户日志信息(todo: 活动账户还在用,暂时不删除)
 	FlowAccountLog struct {
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号
@@ -320,13 +320,16 @@ type (
 		// 金额
 		Amount float32 `db:"amount"`
 		// 手续费
-		CsnFee float32 `db:"csn_amount"`
+		CsnFee float32 `db:"csn_fee"`
 		// 引用编号
-		RelateUser  int64 `db:"rel_user"`
-		ReviewState int   `db:"state"`
+		RelateUser int64 `db:"rel_user"`
+		// 审核状态
+		ReviewState int `db:"review_state"`
 		// 备注
-		Remark     string `db:"remark"`
-		CreateTime int64  `db:"create_time"`
-		UpdateTime int64  `db:"update_time"`
+		Remark string `db:"remark"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
 	}
 )

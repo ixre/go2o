@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/Shopify/sarama"
 	"log"
+	"os"
+	"time"
 )
 
 var _ Producer = new(KafkaProducer)
@@ -35,13 +37,22 @@ func createKafkaProducer(address []string) sarama.AsyncProducer {
 	//注意，版本设置不对的话，kafka会返回很奇怪的错误，并且无法成功发送消息
 	config.Version = sarama.V0_11_0_2
 	config.ClientID = "go2o-server-producer"
-	log.Println("[ Go2o][ Info]: start kafka producer")
 	//使用配置,新建一个异步生产者
-	producer, e := sarama.NewAsyncProducer(address, config)
-	if e != nil {
-		fmt.Println(e)
-		return nil
+	var producer sarama.AsyncProducer
+	var err error
+	var retryTimes = 10
+	log.Println("[ Go2o][ Kafka]: start kafka producer...")
+	for i := 0; i < retryTimes; i++ {
+		producer, err = sarama.NewAsyncProducer(address, config)
+		if err == nil {
+			break
+		} else if i == retryTimes-1 {
+			log.Println("[ Go2o][ Kafka]: can't connect kafka server! ", err.Error())
+			os.Exit(1)
+		}
+		time.Sleep(time.Second * 2)
 	}
+
 	//defer producer.AsyncClose()
 	// 判断哪个通道发送过来数据.
 	go func(p sarama.AsyncProducer) {

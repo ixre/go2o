@@ -17,8 +17,6 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
-	"go2o/core/domain/interface/valueobject"
-	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
@@ -162,28 +160,15 @@ func MemberProfile2(src *member_service.SProfile) *member.Profile {
 
 func ComplexMemberDto(src *member.ComplexMember) *member_service.SComplexMember {
 	return &member_service.SComplexMember{
-		MemberId:          src.MemberId,
-		Usr:               src.Usr,
-		Name:              src.Name,
-		Avatar:            src.Avatar,
-		Exp:               int32(src.Exp),
-		Level:             int32(src.Level),
-		LevelName:         src.LevelName,
-		LevelSign:         src.LevelSign,
-		LevelOfficial:     int32(src.LevelOfficial),
-		PremiumUser:       int32(src.PremiumUser),
-		PremiumExpires:    src.PremiumExpires,
-		InvitationCode:    src.InvitationCode,
-		TrustAuthState:    int32(src.TrustAuthState),
-		State:             int32(src.State),
-		Integral:          int64(src.Integral),
-		Balance:           src.Balance,
-		WalletBalance:     src.WalletBalance,
-		GrowBalance:       src.GrowBalance,
-		GrowAmount:        src.GrowAmount,
-		GrowEarnings:      src.GrowEarnings,
-		GrowTotalEarnings: src.GrowTotalEarnings,
-		UpdateTime:        src.UpdateTime,
+		Name:           src.Name,
+		Avatar:         src.Avatar,
+		Exp:            int32(src.Exp),
+		Level:          int32(src.Level),
+		LevelName:      src.LevelName,
+		PremiumUser:    int32(src.PremiumUser),
+		InvitationCode: src.InvitationCode,
+		TrustAuthState: int32(src.TrustAuthState),
+		UpdateTime:     src.UpdateTime,
 	}
 }
 
@@ -201,8 +186,8 @@ func AccountDto(src *member.Account) *member_service.SAccount {
 		ExpiredBalance:    round(src.ExpiredBalance, 2),
 		WalletBalance:     round(src.WalletBalance, 2),
 		FreezeWallet:      round(src.FreezeWallet, 2),
-		ExpiredPresent:    round(src.ExpiredPresent, 2),
-		TotalPresentFee:   round(src.TotalWalletAmount, 2),
+		ExpiredWallet:     round(src.ExpiredWallet, 2),
+		TotalWalletAmount: round(src.TotalWalletAmount, 2),
 		FlowBalance:       round(src.FlowBalance, 2),
 		GrowBalance:       round(src.GrowBalance, 2),
 		GrowAmount:        round(src.GrowAmount, 2),
@@ -226,8 +211,8 @@ func Account(src *member_service.SAccount) *member.Account {
 		ExpiredBalance:    float32(src.ExpiredBalance),
 		WalletBalance:     float32(src.WalletBalance),
 		FreezeWallet:      float32(src.FreezeWallet),
-		ExpiredPresent:    float32(src.ExpiredPresent),
-		TotalWalletAmount: float32(src.TotalPresentFee),
+		ExpiredWallet:     float32(src.ExpiredWallet),
+		TotalWalletAmount: float32(src.TotalWalletAmount),
 		FlowBalance:       float32(src.FlowBalance),
 		GrowBalance:       float32(src.GrowBalance),
 		GrowAmount:        float32(src.GrowAmount),
@@ -238,24 +223,6 @@ func Account(src *member_service.SAccount) *member.Account {
 		TotalPay:          float32(src.TotalPay),
 		PriorityPay:       int(src.PriorityPay),
 		UpdateTime:        src.UpdateTime,
-	}
-}
-
-func PlatformConfDto(src *valueobject.PlatformConf) *foundation_service.PlatformConf {
-	return &foundation_service.PlatformConf{
-		Suspend:          src.Suspend,
-		SuspendMessage:   src.SuspendMessage,
-		MchGoodsCategory: src.MchGoodsCategory,
-		MchPageCategory:  src.MchPageCategory,
-	}
-}
-
-func PlatFromConf(src *foundation_service.PlatformConf) *valueobject.PlatformConf {
-	return &valueobject.PlatformConf{
-		Suspend:          src.Suspend,
-		SuspendMessage:   src.SuspendMessage,
-		MchGoodsCategory: src.MchGoodsCategory,
-		MchPageCategory:  src.MchPageCategory,
 	}
 }
 
@@ -370,7 +337,6 @@ func MemberRelationDto(src *member.InviteRelation) *member_service.SMemberRelati
 		MemberId:      src.MemberId,
 		CardId:        src.CardCard,
 		InviterId:     src.InviterId,
-		InviterStr:    src.InviterStr,
 		RegisterMchId: src.RegMchId,
 	}
 }
