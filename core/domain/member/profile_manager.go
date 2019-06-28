@@ -38,14 +38,47 @@ var (
 )
 
 type profileManagerImpl struct {
-	member       *memberImpl
-	memberId     int64
-	rep          member.IMemberRepo
-	valueRepo    valueobject.IValueRepo
-	registryRepo registry.IRegistryRepo
-	bank         *member.BankInfo
-	trustedInfo  *member.TrustedInfo
-	profile      *member.Profile
+	member        *memberImpl
+	memberId      int64
+	repo          member.IMemberRepo
+	valueRepo     valueobject.IValueRepo
+	registryRepo  registry.IRegistryRepo
+	bank          *member.BankInfo
+	trustedInfo   *member.TrustedInfo
+	profile       *member.Profile
+	collectsCodes []member.CollectsCode
+}
+
+func (p *profileManagerImpl) CollectsCodes() []member.CollectsCode {
+	if p.collectsCodes == nil{
+		p.collectsCodes = p.repo.GetCollectsCodes(p.memberId)
+	}
+	return p.collectsCodes
+}
+
+func (p *profileManagerImpl) SaveCollectsCode(c *member.CollectsCode) error {
+	if c.MemberId > 0 && c.MemberId != p.memberId{
+		return errors.New("collects code owner not match")
+	}
+	if c.Id <= 0{
+		for _,v := range p.CollectsCodes(){
+			if v.Identity == c.Identity{
+				return member.ErrCollectsRepeated
+			}
+		}
+	}
+	c.MemberId = p.memberId
+	if len(c.Identity) == 0{
+		return member.ErrCollectsNoIdentity
+	}
+	if len(c.Name) == 0{
+		return member.ErrCollectsNoName
+	}
+	_,err := p.repo.SaveCollectsCode(c,p.memberId)
+	if err == nil{
+		p.collectsCodes = nil
+	}
+	return err
 }
 
 func newProfileManagerImpl(m *memberImpl, memberId int64,
@@ -58,7 +91,7 @@ func newProfileManagerImpl(m *memberImpl, memberId int64,
 	return &profileManagerImpl{
 		member:       m,
 		memberId:     memberId,
-		rep:          rep,
+		repo:         rep,
 		registryRepo: registryRepo,
 		valueRepo:    valueRepo,
 	}
@@ -66,7 +99,7 @@ func newProfileManagerImpl(m *memberImpl, memberId int64,
 
 // 手机号码是否占用
 func (p *profileManagerImpl) phoneIsExist(phone string) bool {
-	return p.rep.CheckPhoneBind(phone, p.memberId)
+	return p.repo.CheckPhoneBind(phone, p.memberId)
 }
 
 // 验证数据,用v.updateTime > 0 判断是否为新创建用户
@@ -187,7 +220,7 @@ func (p *profileManagerImpl) CheckProfileComplete() error {
 // 获取资料
 func (p *profileManagerImpl) GetProfile() member.Profile {
 	if p.profile == nil {
-		p.profile = p.rep.GetProfile(p.memberId)
+		p.profile = p.repo.GetProfile(p.memberId)
 	}
 	return *p.profile
 }
@@ -198,7 +231,7 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 	err := p.copyProfile(v, &ptr)
 	if err == nil {
 		ptr.MemberId = p.memberId
-		err = p.rep.SaveProfile(&ptr)
+		err = p.repo.SaveProfile(&ptr)
 		if err == nil {
 			// 推送资料更新消息
 			go msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), "", 500)
@@ -225,11 +258,11 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	if phone == "" {
 		return member.ErrPhoneValidErr
 	}
-	used := p.rep.CheckPhoneBind(phone, p.memberId)
+	used := p.repo.CheckPhoneBind(phone, p.memberId)
 	if !used {
 		v := p.GetProfile()
 		v.Phone = phone
-		return p.rep.SaveProfile(&v)
+		return p.repo.SaveProfile(&v)
 	}
 	return member.ErrPhoneHasBind
 }
@@ -244,7 +277,7 @@ func (p *profileManagerImpl) ChangeAvatar(avatar string) error {
 		p.profile.Avatar = avatar
 	}
 	v.Avatar = avatar
-	return p.rep.SaveProfile(&v)
+	return p.repo.SaveProfile(&v)
 }
 
 //todo: ?? 重构
@@ -352,7 +385,7 @@ func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 // 获取提现银行信息
 func (p *profileManagerImpl) GetBank() member.BankInfo {
 	if p.bank == nil {
-		p.bank = p.rep.GetBankInfo(p.memberId)
+		p.bank = p.repo.GetBankInfo(p.memberId)
 		if p.bank == nil {
 			p.bank = &member.BankInfo{
 				MemberId:   p.memberId,
@@ -394,7 +427,7 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 		p.bank.IsLocked = member.BankLocked //锁定
 		p.bank.UpdateTime = time.Now().Unix()
 		p.bank.MemberId = p.memberId
-		err = p.rep.SaveBankInfo(p.bank)
+		err = p.repo.SaveBankInfo(p.bank)
 	}
 	return err
 }
@@ -428,17 +461,17 @@ func (p *profileManagerImpl) UnlockBank() error {
 		return member.ErrBankInfoNoYetSet
 	}
 	p.bank.IsLocked = member.BankNoLock
-	return p.rep.SaveBankInfo(p.bank)
+	return p.repo.SaveBankInfo(p.bank)
 }
 
 // 创建配送地址
 func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {
-	return newDeliver(v, p.rep, p.valueRepo)
+	return newDeliver(v, p.repo, p.valueRepo)
 }
 
 // 获取配送地址
 func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
-	list := p.rep.GetDeliverAddress(p.memberId)
+	list := p.repo.GetDeliverAddress(p.memberId)
 	var arr []member.IDeliverAddress = make([]member.IDeliverAddress, len(list))
 	for i, v := range list {
 		arr[i] = p.CreateDeliver(v)
@@ -455,14 +488,14 @@ func (p *profileManagerImpl) SetDefaultAddress(addressId int64) error {
 		} else {
 			vv.IsDefault = 0
 		}
-		p.rep.SaveDeliver(&vv)
+		p.repo.SaveDeliver(&vv)
 	}
 	return nil
 }
 
 // 获取默认收货地址
 func (p *profileManagerImpl) GetDefaultAddress() member.IDeliverAddress {
-	list := p.rep.GetDeliverAddress(p.memberId)
+	list := p.repo.GetDeliverAddress(p.memberId)
 	// 查找是否有默认地址
 	for _, v := range list {
 		if v.IsDefault == 1 {
@@ -478,7 +511,7 @@ func (p *profileManagerImpl) GetDefaultAddress() member.IDeliverAddress {
 
 // 获取配送地址
 func (p *profileManagerImpl) GetAddress(addressId int64) member.IDeliverAddress {
-	v := p.rep.GetSingleDeliverAddress(p.memberId, addressId)
+	v := p.repo.GetSingleDeliverAddress(p.memberId, addressId)
 	if v != nil {
 		return p.CreateDeliver(v)
 	}
@@ -488,7 +521,7 @@ func (p *profileManagerImpl) GetAddress(addressId int64) member.IDeliverAddress 
 // 删除配送地址
 func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 	//todo: 至少保留一个配送地址
-	return p.rep.DeleteAddress(p.memberId, addressId)
+	return p.repo.DeleteAddress(p.memberId, addressId)
 }
 
 // 拷贝认证信息

@@ -21,7 +21,7 @@ var (
 	//connString = "root:123456@tcp(127.0.0.1:3306)/gcy_v3?charset=utf8"
 	driver     = "postgresql"
 	dbName     = ""
-	dbPrefix   = ""
+	dbPrefix   = "mm_collects"
 	connString = "postgres://postgres:123456@127.0.0.1:5432/go2o?sslmode=disable"
 	genDir     = "output/"
 )

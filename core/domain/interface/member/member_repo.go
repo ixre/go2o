@@ -94,7 +94,10 @@ type IMemberRepo interface {
 
 	// 保存银行信息
 	SaveBankInfo(*BankInfo) error
-
+	// 获取收款码
+	GetCollectsCodes(memberId int64) []CollectsCode
+	// 保存收款码
+	SaveCollectsCode(code *CollectsCode, memberId int64) (int, error)
 	// 保存积分记录
 	SaveIntegralLog(*IntegralLog) error
 

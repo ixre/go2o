@@ -94,3 +94,33 @@ func TestModifyPwd(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+
+func TestCollectsCode(t *testing.T){
+	memberId := 22149
+	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
+	err := m.Profile().SaveCollectsCode(&member.CollectsCode{
+		Identity:  "alipay",
+		Name:      "刘铭",
+		AccountId: "jarrysix#gmail.com",
+		CodeUrl:   "1.jpg",
+		State:     1,
+	})
+	t.Log("err:",err)
+	err = m.Profile().SaveCollectsCode(&member.CollectsCode{
+		Id:2,
+		Identity:  "unipay",
+		Name:      "刘铭",
+		AccountId: "jarrysix",
+		CodeUrl:   "1.jpg",
+		State:     1,
+	})
+	err = m.Profile().SaveCollectsCode(&member.CollectsCode{
+		Identity:  "wepay",
+		Name:      "刘铭",
+		AccountId: "jarrysix",
+		CodeUrl:   "1.jpg",
+		State:     1,
+	})
+	t.Log("err:",err)
+}

@@ -418,6 +418,25 @@ func (m *MemberRepoImpl) SaveBankInfo(v *member.BankInfo) error {
 	return err
 }
 
+
+func (m *MemberRepoImpl) GetCollectsCodes(memberId int64) []member.CollectsCode {
+	list := make([]member.CollectsCode, 0)
+	err := m._orm.Select(&list, "member_id=$1", memberId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmCollectsCode")
+	}
+	return list
+}
+
+func (m *MemberRepoImpl) SaveCollectsCode(v *member.CollectsCode, memberId int64) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmCollectsCode")
+	}
+	return id, err
+}
+
+
 // 保存积分记录
 func (m *MemberRepoImpl) SaveIntegralLog(v *member.IntegralLog) error {
 	_, err := orm.Save(m.GetOrm(), v, int(v.Id))

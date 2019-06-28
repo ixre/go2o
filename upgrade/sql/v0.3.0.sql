@@ -45,3 +45,13 @@ COMMENT ON COLUMN mm_flow_log.update_time IS '更新时间';
 
 
 /** --- 会员关系: mm_relation,  删除: mm_income_log */
+
+CREATE TABLE mm_collects_code (id  SERIAL NOT NULL, member_id int4 NOT NULL, "identity" varchar(10) NOT NULL, name varchar(10) NOT NULL, account_id varchar(40) NOT NULL, code_url varchar(120) NOT NULL, state int2 NOT NULL, PRIMARY KEY (id));
+COMMENT ON TABLE mm_collects_code IS '收款码';
+COMMENT ON COLUMN mm_collects_code.id IS '编号';
+COMMENT ON COLUMN mm_collects_code.member_id IS '会员编号';
+COMMENT ON COLUMN mm_collects_code."identity" IS '账户标识,如:alipay';
+COMMENT ON COLUMN mm_collects_code.name IS '账户名称';
+COMMENT ON COLUMN mm_collects_code.account_id IS '账号';
+COMMENT ON COLUMN mm_collects_code.code_url IS '收款码地址';
+COMMENT ON COLUMN mm_collects_code.state IS '是否启用';

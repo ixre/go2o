@@ -145,6 +145,10 @@ type (
 		SaveBank(*BankInfo) error
 		// 解锁提现银行卡信息
 		UnlockBank() error
+		// 获取收款码
+		CollectsCodes()[]CollectsCode
+		// 保存收款码
+		SaveCollectsCode(c *CollectsCode)error
 		// 实名认证信息
 		GetTrustedInfo() TrustedInfo
 		// 保存实名认证信息
@@ -365,7 +369,23 @@ type (
 		//更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
-
+	// 收款码
+ CollectsCode struct {
+// 编号
+Id int `db:"id" pk:"yes" auto:"yes"`
+// 会员编号
+MemberId int64 `db:"member_id"`
+// 账户标识,如:alipay
+Identity string `db:"identity"`
+// 账户名称
+Name string `db:"name"`
+// 账号
+AccountId string `db:"account_id"`
+// 收款码地址
+CodeUrl string `db:"code_url"`
+// 是否启用
+State int `db:"state"`
+}
 	// 收藏
 	Favorite struct {
 		// 编号

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"github.com/ixre/gof/api"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/auto_gen/rpc/member_service"
@@ -10,6 +11,12 @@ import (
 )
 
 var _ api.Handler = new(MemberApi)
+
+var provider = map[string]string{
+	"alipay":"支付宝",
+	"wepay":"微信支付",
+	"unipay":"云闪付",
+}
 
 type MemberApi struct {
 	*apiUtil
@@ -23,8 +30,14 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 		"profile":    m.profile,
 		"checkToken": m.checkToken,
 		"complex":    m.complex,
+		"collects_code":m.collectsCode,
+		"save_collects":m.saveCollectsCode,
+		"toggle_collects":m.toggleCollects,
 	})
 }
+
+
+
 
 // 登录
 func (m MemberApi) login(ctx api.Context) interface{} {
@@ -164,4 +177,50 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
+}
+
+func (m MemberApi) collectsCode(ctx api.Context) interface{} {
+	trans,cli,_ := thrift.MemberServeClient()
+	defer trans.Close()
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+	arr ,_ := cli.GetCollectsCodes(thrift.Context,memberId)
+	mp := map[string]interface{}{
+		"list":arr,
+		"provider":provider,
+	}
+	return mp
+}
+func (m MemberApi) saveCollectsCode(ctx api.Context) interface{} {
+	trans,cli,_ := thrift.MemberServeClient()
+	defer trans.Close()
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	data := ctx.Form().GetBytes("data")
+	c := &member_service.SCollectsCode{}
+	json.Unmarshal(data,c)
+	if _,ok := provider[c.Identity];!ok{
+		return api.NewErrorResponse("不支持的收款码")
+	}
+	if c.ID == 0 {
+		c.State = 1
+	}
+	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+	r ,_ := cli.SaveCollectsCode(thrift.Context,memberId,c)
+	return r
+}
+func (m MemberApi) toggleCollects(ctx api.Context) interface{} {
+	trans, cli, _ := thrift.MemberServeClient()
+	defer trans.Close()
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	id := ctx.Form().GetInt("id")
+	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+	arr, _ := cli.GetCollectsCodes(thrift.Context, memberId)
+	for _, v := range arr {
+		if int(v.ID) == id {
+			v.State = 1 - v.State
+			r, _ := cli.SaveCollectsCode(thrift.Context, memberId, v)
+			return r
+		}
+	}
+	return api.NewErrorResponse("no such data")
 }

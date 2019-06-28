@@ -47,6 +47,7 @@ type memberService struct {
 	serviceUtil
 }
 
+
 // 交换会员编号
 func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
 	var memberId int64
@@ -822,6 +823,47 @@ func (s *memberService) SaveBankInfo(v *member.BankInfo) error {
 func (s *memberService) UnlockBankInfo(memberId int64) error {
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	return m.Profile().UnlockBank()
+}
+
+// 获取收款码
+func (s *memberService) GetCollectsCodes(ctx context.Context, memberId int64) (r []*member_service.SCollectsCode, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil{
+		return make([]*member_service.SCollectsCode,0),nil
+	}
+	arr := m.Profile().CollectsCodes()
+	list := make([]*member_service.SCollectsCode,len(arr))
+	for i,v := range arr{
+		list[i] = &member_service.SCollectsCode{
+			ID:        int32(v.Id),
+			Identity:  v.Identity,
+			Name:      v.Name,
+			AccountId: v.AccountId,
+			CodeUrl:   v.CodeUrl,
+			State:     int32(v.State),
+		}
+	}
+	return list,nil
+}
+
+// 保存收款码
+func (s *memberService) SaveCollectsCode(ctx context.Context, memberId int64, code *member_service.SCollectsCode) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil{
+		return s.error(member.ErrNoSuchMember),nil
+	}
+	v := &member.CollectsCode{
+		Id:        int(code.ID),
+		Identity:  code.Identity,
+		Name:      code.Name,
+		AccountId: code.AccountId,
+		CodeUrl:   code.CodeUrl,
+		State:     int(code.State),
+	}
+	if err = m.Profile().SaveCollectsCode(v);err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil),nil
 }
 
 // 实名认证信息
