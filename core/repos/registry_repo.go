@@ -17,7 +17,6 @@ type registryRepo struct {
 	lock sync.RWMutex
 }
 
-
 func NewRegistryRepo(conn db.Connector) registry.IRegistryRepo {
 	return (&registryRepo{
 		conn: conn,
@@ -44,7 +43,6 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 	r.truncUnused(registries)
 	return r
 }
-
 
 func (r *registryRepo) SearchRegistry(key string) []registry.Registry {
 	r.lock.RLock()

@@ -46,37 +46,37 @@ type profileManagerImpl struct {
 	bank          *member.BankInfo
 	trustedInfo   *member.TrustedInfo
 	profile       *member.Profile
-	collectsCodes []member.CollectsCode
+	receiptsCodes []member.ReceiptsCode
 }
 
-func (p *profileManagerImpl) CollectsCodes() []member.CollectsCode {
-	if p.collectsCodes == nil{
-		p.collectsCodes = p.repo.GetCollectsCodes(p.memberId)
+func (p *profileManagerImpl) ReceiptsCodes() []member.ReceiptsCode {
+	if p.receiptsCodes == nil {
+		p.receiptsCodes = p.repo.ReceiptsCodes(p.memberId)
 	}
-	return p.collectsCodes
+	return p.receiptsCodes
 }
 
-func (p *profileManagerImpl) SaveCollectsCode(c *member.CollectsCode) error {
-	if c.MemberId > 0 && c.MemberId != p.memberId{
-		return errors.New("collects code owner not match")
+func (p *profileManagerImpl) SaveReceiptsCode(c *member.ReceiptsCode) error {
+	if c.MemberId > 0 && c.MemberId != p.memberId {
+		return errors.New("receipts code owner not match")
 	}
-	if c.Id <= 0{
-		for _,v := range p.CollectsCodes(){
-			if v.Identity == c.Identity{
-				return member.ErrCollectsRepeated
+	if c.Id <= 0 {
+		for _, v := range p.ReceiptsCodes() {
+			if v.Identity == c.Identity {
+				return member.ErrReceiptsRepeated
 			}
 		}
 	}
 	c.MemberId = p.memberId
-	if len(c.Identity) == 0{
-		return member.ErrCollectsNoIdentity
+	if len(c.Identity) == 0 {
+		return member.ErrReceiptsNoIdentity
 	}
-	if len(c.Name) == 0{
-		return member.ErrCollectsNoName
+	if len(c.Name) == 0 {
+		return member.ErrReceiptsNoName
 	}
-	_,err := p.repo.SaveCollectsCode(c,p.memberId)
-	if err == nil{
-		p.collectsCodes = nil
+	_, err := p.repo.SaveReceiptsCode(c, p.memberId)
+	if err == nil {
+		p.receiptsCodes = nil
 	}
 	return err
 }
@@ -385,7 +385,7 @@ func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 // 获取提现银行信息
 func (p *profileManagerImpl) GetBank() member.BankInfo {
 	if p.bank == nil {
-		p.bank = p.repo.GetBankInfo(p.memberId)
+		p.bank = p.repo.Bankcards(p.memberId)
 		if p.bank == nil {
 			p.bank = &member.BankInfo{
 				MemberId:   p.memberId,
@@ -427,7 +427,7 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 		p.bank.IsLocked = member.BankLocked //锁定
 		p.bank.UpdateTime = time.Now().Unix()
 		p.bank.MemberId = p.memberId
-		err = p.repo.SaveBankInfo(p.bank)
+		err = p.repo.SaveBankcard(p.bank)
 	}
 	return err
 }
@@ -461,7 +461,7 @@ func (p *profileManagerImpl) UnlockBank() error {
 		return member.ErrBankInfoNoYetSet
 	}
 	p.bank.IsLocked = member.BankNoLock
-	return p.repo.SaveBankInfo(p.bank)
+	return p.repo.SaveBankcard(p.bank)
 }
 
 // 创建配送地址

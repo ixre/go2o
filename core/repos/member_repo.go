@@ -405,37 +405,35 @@ func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int
 }
 
 // 获取银行信息
-func (m *MemberRepoImpl) GetBankInfo(memberId int64) *member.BankInfo {
+func (m *MemberRepoImpl) Bankcards(memberId int64) *member.BankInfo {
 	e := new(member.BankInfo)
 	m.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
 // 保存银行信息
-func (m *MemberRepoImpl) SaveBankInfo(v *member.BankInfo) error {
+func (m *MemberRepoImpl) SaveBankcard(v *member.BankInfo) error {
 	var err error
 	_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
 	return err
 }
 
-
-func (m *MemberRepoImpl) GetCollectsCodes(memberId int64) []member.CollectsCode {
-	list := make([]member.CollectsCode, 0)
+func (m *MemberRepoImpl) ReceiptsCodes(memberId int64) []member.ReceiptsCode {
+	list := make([]member.ReceiptsCode, 0)
 	err := m._orm.Select(&list, "member_id=$1", memberId)
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmCollectsCode")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmReceiptsCode")
 	}
 	return list
 }
 
-func (m *MemberRepoImpl) SaveCollectsCode(v *member.CollectsCode, memberId int64) (int, error) {
+func (m *MemberRepoImpl) SaveReceiptsCode(v *member.ReceiptsCode, memberId int64) (int, error) {
 	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmCollectsCode")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmReceiptsCode")
 	}
 	return id, err
 }
-
 
 // 保存积分记录
 func (m *MemberRepoImpl) SaveIntegralLog(v *member.IntegralLog) error {

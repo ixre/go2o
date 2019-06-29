@@ -6,9 +6,9 @@ package ttype
 import (
 	"bytes"
 	"context"
-	"reflect"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
+	"reflect"
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -24,4 +24,3 @@ const RATE_DISCOUNT = 1000
 
 func init() {
 }
-

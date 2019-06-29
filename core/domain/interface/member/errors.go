@@ -264,10 +264,10 @@ var (
 
 	ErrMissingOuterNo = domain.NewError(
 		"err_account_missing_outer_no", "缺少订单号")
-	ErrCollectsNoIdentity = domain.NewError(
-		"err_member_collects_no_identity","无法识别收款码")
-	ErrCollectsNoName = domain.NewError(
-		"err_member_collects_no_name","未填写收款名称")
-	ErrCollectsRepeated = domain.NewError(
-		"err_member_collection_repeated","已添加相同类型的收款码")
+	ErrReceiptsNoIdentity = domain.NewError(
+		"err_member_receipts_no_identity", "无法识别收款码")
+	ErrReceiptsNoName = domain.NewError(
+		"err_member_receipts_no_name", "未填写收款名称")
+	ErrReceiptsRepeated = domain.NewError(
+		"err_member_collection_repeated", "已添加相同类型的收款码")
 )

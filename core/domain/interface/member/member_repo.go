@@ -88,16 +88,14 @@ type IMemberRepo interface {
 
 	// 保存账户，传入会员编号
 	SaveAccount(*Account) (int64, error)
-
-	// 获取银行信息
-	GetBankInfo(memberId int64) *BankInfo
-
-	// 保存银行信息
-	SaveBankInfo(*BankInfo) error
+	// 获取银行卡
+	Bankcards(memberId int64) *BankInfo
+	// 保存银行卡信息
+	SaveBankcard(*BankInfo) error
 	// 获取收款码
-	GetCollectsCodes(memberId int64) []CollectsCode
+	ReceiptsCodes(memberId int64) []ReceiptsCode
 	// 保存收款码
-	SaveCollectsCode(code *CollectsCode, memberId int64) (int, error)
+	SaveReceiptsCode(code *ReceiptsCode, memberId int64) (int, error)
 	// 保存积分记录
 	SaveIntegralLog(*IntegralLog) error
 
