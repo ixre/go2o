@@ -112,8 +112,8 @@ func (t *templateIncludeToolkit) alias(s string) string {
 
 // CSS标签
 func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
-	registry := RPC.RegistryMap(variable.DStaticServer, variable.DUrlHash)
-	staticServe := registry[variable.DStaticServer]
+	registry := RPC.RegistryMap(variable.DStaticPathr, variable.DUrlHash)
+	staticServe := registry[variable.DStaticPathr]
 	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
 	arr := strings.Split(s, ",")
@@ -134,8 +134,8 @@ func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
 
 // 脚本标签
 func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
-	registry := RPC.RegistryMap(variable.DStaticServer, variable.DUrlHash)
-	staticServe := registry[variable.DStaticServer]
+	registry := RPC.RegistryMap(variable.DStaticPathr, variable.DUrlHash)
+	staticServe := registry[variable.DStaticPathr]
 	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
 	arr := strings.Split(s, ",")
@@ -176,7 +176,7 @@ func (t *templateIncludeToolkit) entryUrl(k string) string {
 	case "image_serve", "img_serve", "img":
 		key = variable.DImageServer
 	case "static_serve", "static":
-		key = variable.DStaticServer
+		key = variable.DStaticPathr
 	}
 	t.rwMut.RLock()
 	if t.entryUrlMap != nil {

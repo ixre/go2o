@@ -41,7 +41,7 @@ var (
 
 const (
 	DEnabledSSL            = "D_EnabledSSL"
-	DStaticServer          = "D_StaticServer"
+	DStaticPathr          = "D_StaticPathr"
 	DImageServer           = "D_ImageServer"
 	DUrlHash               = "D_Hash"
 	DRetailPortal          = "D_RetailPortal"

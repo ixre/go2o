@@ -56,7 +56,7 @@ var (
 	// 系统挂起提示消息
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
 
-	DomainStaticServer          = "D_StaticServer"
+	DomainStaticPathr          = "D_StaticPathr"
 	DomainImageServer           = "D_ImageServer"
 	DomainUrlHash               = "D_Hash"
 	DomainRetailPortal          = "D_RetailPortal"

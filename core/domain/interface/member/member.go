@@ -335,6 +335,8 @@ type (
 		CardId string `db:"card_id"`
 		// 证件图片
 		CardImage string `db:"card_image"`
+		// 证件反面图片
+		CardReverseImage string `db:"card_reverse_image"`
 		// 认证图片,人与身份证的图像等
 		TrustImage string `db:"trust_image"`
 		// 是否人工审核认证
