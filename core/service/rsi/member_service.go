@@ -824,6 +824,79 @@ func (s *memberService) UnlockBankInfo(memberId int64) error {
 	return m.Profile().UnlockBank()
 }
 
+// 获取收款码
+func (s *memberService) ReceiptsCodes(ctx context.Context, memberId int64) (r []*member_service.SReceiptsCode, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return make([]*member_service.SReceiptsCode, 0), nil
+	}
+	arr := m.Profile().ReceiptsCodes()
+	list := make([]*member_service.SReceiptsCode, len(arr))
+	for i, v := range arr {
+		list[i] = &member_service.SReceiptsCode{
+			ID:        int32(v.Id),
+			Identity:  v.Identity,
+			Name:      v.Name,
+			AccountId: v.AccountId,
+			CodeUrl:   v.CodeUrl,
+			State:     int32(v.State),
+		}
+	}
+	return list, nil
+}
+
+// 保存收款码
+func (s *memberService) SaveReceiptsCode(ctx context.Context, memberId int64, code *member_service.SReceiptsCode) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	v := &member.ReceiptsCode{
+		Id:        int(code.ID),
+		Identity:  code.Identity,
+		Name:      code.Name,
+		AccountId: code.AccountId,
+		CodeUrl:   code.CodeUrl,
+		State:     int(code.State),
+	}
+	if err = m.Profile().SaveReceiptsCode(v); err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
+}
+
+// 获取银行卡
+func (s *memberService) Bankcards(ctx context.Context, memberId int64) (r []*member_service.SBankcard, err error) {
+	m := s.repo.CreateMember(&member.Member{Id: memberId})
+	b := m.Profile().GetBank()
+	arr := make([]*member_service.SBankcard, 0)
+	arr = append(arr, &member_service.SBankcard{
+		ID:          -1,
+		BankName:    b.BankName,
+		AccountName: b.AccountName,
+		Account:     b.Account,
+		Network:     b.Network,
+		State:       int32(b.State),
+	})
+	return arr, nil
+}
+
+// 保存银行卡
+func (s *memberService) SaveBankcard(ctx context.Context, memberId int64, card *member_service.SBankcard) (r *ttype.Result_, err error) {
+	m := s.repo.CreateMember(&member.Member{Id: memberId})
+	var v = &member.BankInfo{
+		BankName:    card.BankName,
+		AccountName: card.AccountName,
+		Account:     card.Account,
+		Network:     card.Network,
+		State:       int(card.State),
+	}
+	if err = m.Profile().SaveBank(v); err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
+}
+
 // 实名认证信息
 func (s *memberService) GetTrustInfo(ctx context.Context, memberId int64) (*member_service.STrustedInfo, error) {
 	t := member.TrustedInfo{}

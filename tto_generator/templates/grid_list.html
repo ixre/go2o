@@ -44,10 +44,10 @@
     <a class="gra-btn gra-btn-a" href="javascript:void(0)" onclick="_del('{id}')">删除</a>
 </template>
 
-<script type="text/javascript" src="${.Var.StaticServe}/assets/js/base.js?spam=${.Var.Spam}"></script>
+<script type="text/javascript" src="${.Var.StaticPath}/assets/js/base.js?spam=${.Var.Spam}"></script>
 <script type="text/javascript">
 
-    var baseJsUrl = "${.Var.StaticServe}"; //设置JS文件的路径
+    var baseJsUrl = "${.Var.StaticPath}"; //设置JS文件的路径
     require([baseJsUrl + "/assets/js/require_config.js?spam=${.Var.Spam}"], function () {
         require(["base", "jquery.easyui.zh", "extra/export","extra/util"], pageLoad);
     });

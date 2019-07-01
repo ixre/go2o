@@ -13,7 +13,9 @@ import (
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
+	"go2o/core/service/thrift"
 	"go2o/core/variable"
 	"strings"
 )
@@ -35,43 +37,56 @@ func (s *SSOModule) SetApp(app gof.App) {
 func (s *SSOModule) Init() {
 	s.appMap = make(map[string]*foundation_service.SSsoApp)
 	domain := variable.Domain
-	s.Register(&foundation_service.SSsoApp{
-		ID:   1,
-		Name: "RetailPortal",
-		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_PORTAL, domain),
-	})
-	s.Register(&foundation_service.SSsoApp{
-		ID:   2,
-		Name: "WholesalePortal",
-		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_WHOLESALE_PORTAL, domain),
-	})
-	s.Register(&foundation_service.SSsoApp{
-		ID:   3,
-		Name: "HApi",
-		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_HApi, domain),
-	})
-	s.Register(&foundation_service.SSsoApp{
-		ID:   4,
-		Name: "Member",
-		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_MEMBER, domain),
-	})
-	s.Register(&foundation_service.SSsoApp{
-		ID:   5,
-		Name: "MemberMobile",
-		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_M_MEMBER,
-			domain),
-	})
-	s.Register(&foundation_service.SSsoApp{
-		ID:   6,
-		Name: "RetailPortalMobile",
-		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_PORTAL_MOBILE, domain),
-	})
+	trans, cli, err := thrift.FoundationServeClient()
+	if err == nil {
+		defer trans.Close()
+		keys := []string{
+			registry.DomainPrefixPortal,
+			registry.DomainPrefixWholesalePortal,
+			registry.DomainPrefixApi,
+			registry.DomainPrefixMember,
+			registry.DomainPrefixMobileMember,
+			registry.DomainPrefixMobilePortal,
+		}
+		registries, _ := cli.GetRegistries(thrift.Context, keys)
+		s.Register(&foundation_service.SSsoApp{
+			ID:   1,
+			Name: "RetailPortal",
+			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+				registries[keys[0]], domain),
+		})
+		s.Register(&foundation_service.SSsoApp{
+			ID:   2,
+			Name: "WholesalePortal",
+			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+				registries[keys[1]], domain),
+		})
+		s.Register(&foundation_service.SSsoApp{
+			ID:   3,
+			Name: "HApi",
+			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+				registries[keys[2]], domain),
+		})
+		s.Register(&foundation_service.SSsoApp{
+			ID:   4,
+			Name: "Member",
+			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+				registries[keys[3]], domain),
+		})
+		s.Register(&foundation_service.SSsoApp{
+			ID:   5,
+			Name: "MemberMobile",
+			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+				registries[keys[4]],
+				domain),
+		})
+		s.Register(&foundation_service.SSsoApp{
+			ID:   6,
+			Name: "RetailPortalMobile",
+			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+				registries[keys[5]], domain),
+		})
+	}
 }
 
 func (s *SSOModule) Register(app *foundation_service.SSsoApp) (token string, err error) {

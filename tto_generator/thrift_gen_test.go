@@ -16,6 +16,7 @@ import (
  */
 
 func TestGenerateThriftStruct(t *testing.T) {
-	bytes, _ := tto.ThriftStruct(member.ComplexMember{})
+	//bytes, _ := tto.ThriftStruct(member.ComplexMember{})
+	bytes, _ := tto.ThriftStruct(member.BankInfo{})
 	t.Log(string(bytes))
 }

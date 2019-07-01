@@ -16,7 +16,7 @@ const (
 	ApiDomain    = "api_domain"
 
 	//静态服务器
-	StaticServer = "static_server"
+	StaticPathr = "static_server"
 	//图片服务器
 	ImageServer = "image_server"
 

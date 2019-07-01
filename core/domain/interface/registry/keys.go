@@ -9,7 +9,7 @@ var (
 	// 批发门户域名前缀
 	DomainPrefixWholesalePortal = KeyFormat("DomainPrefixWholesalePortal")
 	// 零售门户手机端域名前缀
-	DomainPrefixPortalMobile = KeyFormat("DomainPrefixPortalMobile")
+	DomainPrefixMobilePortal = KeyFormat("DomainPrefixMobilePortal")
 	// 会员中心域名前缀
 	DomainPrefixMember = KeyFormat("DomainPrefixMember")
 	// 商户系统域名前缀
@@ -56,7 +56,7 @@ var (
 	// 系统挂起提示消息
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
 
-	DomainStaticServer          = "D_StaticServer"
+	DomainStaticPathr           = "D_StaticPathr"
 	DomainImageServer           = "D_ImageServer"
 	DomainUrlHash               = "D_Hash"
 	DomainRetailPortal          = "D_RetailPortal"
@@ -89,6 +89,8 @@ var (
 	MemberProfileNotCompletedMessage = KeyFormat("MemberProfileNotCompletedMessage")
 	// 会员实名提醒信息
 	MemberNotTrustedMessage = KeyFormat("MemberNotTrustedMessage")
+	// 实名时是否需要先完善资料
+	MemberRequireProfileOnTrusting = KeyFormat("MemberRequireProfileOnTrusting")
 	// 注册后赠送积分数量
 	MemberPresentIntegralNumOfRegister = KeyFormat("MemberPresentIntegralNumOfRegister")
 	// 会员邀请关系级数

@@ -37,11 +37,11 @@
 
 </form>
 
-<script type="text/javascript" src="${.Var.StaticServe}/assets/js/base.js?hash=${.Var.Spam}"></script>
+<script type="text/javascript" src="${.Var.StaticPath}/assets/js/base.js?hash=${.Var.Spam}"></script>
 <script type="text/javascript">
     //var entity = ${.Map.Entity} || {};
     var formId = "form1";
-    var baseJsUrl = "${.Var.StaticServe}";
+    var baseJsUrl = "${.Var.StaticPath}";
     require([baseJsUrl + "/assets/js/super/require_config.js?hash=${.Var.Spam}"], function () {
         require(["base"], pageLoad);
     });
@@ -63,7 +63,7 @@
             if (result) {
                 $b.$('upload_path').value = data.url;
                 $b.$('upload_img').setAttribute('url',
-                    '{{.Var.ImgServe}}/' + data.url);
+                    '{{.Var.ImgPath}}/' + data.url);
             } else {
                 $b.dialog.alert("上传失败：" + data);
             }

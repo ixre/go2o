@@ -8,6 +8,9 @@ import (
 	"go2o/core/service/thrift"
 )
 
+// RPC服务
+var RPC = NewRpcToolkit()
+
 type RpcToolkit struct {
 }
 

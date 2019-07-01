@@ -31,6 +31,8 @@ service FoundationService{
    string GetRegistry(1:string key)
    /** 获取键值存储数据字典 */
    map<string,string> GetRegistries(1:list<string> keys)
+   /** 搜索注册表 */
+   list<SRegistry> SearchRegistry(1:string key)
    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
    ttype.Result CreateUserRegistry(1:string key,2:string defaultValue,3:string description)
    /** 更新注册表键值 */
@@ -69,3 +71,11 @@ service FoundationService{
 
 
 
+struct SRegistry {
+    1: string Key
+    2: string Value
+    3: string Default
+    4: string Options
+    5: bool UserDefine
+    6: string Description
+}

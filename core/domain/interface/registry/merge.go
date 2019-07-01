@@ -20,7 +20,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("是否启用SSL连接", DomainEnabledSSL, "false", "")
 	mergeAdd("零售门户前缀", DomainPrefixPortal, "www.", "")
 	mergeAdd("批发门户域名前缀", DomainPrefixWholesalePortal, "whs.", "")
-	mergeAdd("零售门户手机端域名前缀", DomainPrefixPortalMobile, "m.", "")
+	mergeAdd("零售门户手机端域名前缀", DomainPrefixMobilePortal, "m.", "")
 	mergeAdd("会员中心域名前缀", DomainPrefixMember, "u.", "")
 	mergeAdd("商户系统域名前缀", DomainPrefixMerchant, "mch.", "")
 	mergeAdd("通行证域名前缀", DomainPrefixPassport, "passport.", "")
@@ -57,6 +57,7 @@ func MergeRegistries() []*Registry {
 
 	mergeAdd("会员资料不完善提醒信息", MemberProfileNotCompletedMessage, "您的个人资料未完善,是否立即完善?", "")
 	mergeAdd("会员未实名认证提示信息", MemberNotTrustedMessage, "您尚未实名认证!", "")
+	mergeAdd("实名时是否需要先完善资", MemberRequireProfileOnTrusting, "false", "")
 	mergeAdd("会员是否验证手机号码格式", MemberCheckPhoneFormat, "true", "")
 	mergeAdd("注册后赠送积分数量", MemberPresentIntegralNumOfRegister, "0", "")
 	mergeAdd("会员邀请关系级数", MemberReferLayer, "3", "")

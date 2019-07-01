@@ -5,6 +5,7 @@ import (
 	"github.com/ixre/gof/db"
 	"go2o/core/domain/interface/registry"
 	"log"
+	"strings"
 	"sync"
 )
 
@@ -41,6 +42,18 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 	// 清理不再使用的注册表
 	r.truncUnused(registries)
 	return r
+}
+
+func (r *registryRepo) SearchRegistry(key string) []registry.Registry {
+	r.lock.RLock()
+	arr := make([]registry.Registry, 0)
+	for k, v := range r.data {
+		if strings.Index(k, key) != -1 {
+			arr = append(arr, v.Value())
+		}
+	}
+	r.lock.RUnlock()
+	return arr
 }
 
 func (r *registryRepo) Get(key string) registry.IRegistry {

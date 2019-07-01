@@ -45,3 +45,30 @@ COMMENT ON COLUMN mm_flow_log.update_time IS '更新时间';
 
 
 /** --- 会员关系: mm_relation,  删除: mm_income_log */
+
+CREATE TABLE mm_receipts_code (id  SERIAL NOT NULL, member_id int4 NOT NULL, "identity" varchar(10) NOT NULL, name varchar(10) NOT NULL, account_id varchar(40) NOT NULL, code_url varchar(120) NOT NULL, state int2 NOT NULL, PRIMARY KEY (id));
+COMMENT ON TABLE mm_receipts_code IS '收款码';
+COMMENT ON COLUMN mm_receipts_code.id IS '编号';
+COMMENT ON COLUMN mm_receipts_code.member_id IS '会员编号';
+COMMENT ON COLUMN mm_receipts_code."identity" IS '账户标识,如:alipay';
+COMMENT ON COLUMN mm_receipts_code.name IS '账户名称';
+COMMENT ON COLUMN mm_receipts_code.account_id IS '账号';
+COMMENT ON COLUMN mm_receipts_code.code_url IS '收款码地址';
+COMMENT ON COLUMN mm_receipts_code.state IS '是否启用';
+
+/** 实名认证 */
+CREATE TABLE "public".mm_trusted_info (member_id  SERIAL NOT NULL, real_name varchar(10) NOT NULL, country_code varchar(10) NOT NULL, card_type int4 NOT NULL, card_id varchar(20) NOT NULL, card_image varchar(120) NOT NULL, card_reverse_image varchar(120) DEFAULT ' ' NOT NULL, trust_image varchar(120) NOT NULL, manual_review int4 NOT NULL, review_state int2 DEFAULT 0 NOT NULL, review_time int4 NOT NULL, remark varchar(120) NOT NULL, update_time int4 NOT NULL, CONSTRAINT mm_trusted_info_pkey PRIMARY KEY (member_id));
+COMMENT ON COLUMN "public".mm_trusted_info.member_id IS '会员编号';
+COMMENT ON COLUMN "public".mm_trusted_info.real_name IS '真实姓名';
+COMMENT ON COLUMN "public".mm_trusted_info.country_code IS '国家代码';
+COMMENT ON COLUMN "public".mm_trusted_info.card_type IS '证件类型';
+COMMENT ON COLUMN "public".mm_trusted_info.card_id IS '证件编号';
+COMMENT ON COLUMN "public".mm_trusted_info.card_image IS '证件图片';
+COMMENT ON COLUMN "public".mm_trusted_info.card_reverse_image IS '证件反面图片';
+COMMENT ON COLUMN "public".mm_trusted_info.trust_image IS '认证图片,人与身份证的图像等';
+COMMENT ON COLUMN "public".mm_trusted_info.manual_review IS '人工审核';
+COMMENT ON COLUMN "public".mm_trusted_info.review_state IS '审核状态';
+COMMENT ON COLUMN "public".mm_trusted_info.review_time IS '审核时间';
+COMMENT ON COLUMN "public".mm_trusted_info.remark IS '备注';
+COMMENT ON COLUMN "public".mm_trusted_info.update_time IS '更新时间';
+

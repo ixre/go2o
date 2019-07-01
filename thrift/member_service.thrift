@@ -53,6 +53,14 @@ service MemberService{
     ttype.Result SendCode(1:i64 memberId ,2:string op,3:i32 msgType)
     /** 比较验证码是否正确 */
     ttype.Result CompareCode(1:i64 memberId ,2:string code)
+    /** 获取收款码 */
+    list<SReceiptsCode> ReceiptsCodes(1:i64 memberId)
+    /** 保存收款码 */
+    ttype.Result SaveReceiptsCode(1:i64 memberId,2:SReceiptsCode code)
+    /** 获取银行卡 */
+    list<SBankcard> Bankcards(1:i64 memberId)
+    /** 保存银行卡 */
+    ttype.Result SaveBankcard(1:i64 memberId,2:SBankcard card)
     // 检查资料是否完成
     ttype.Result CheckProfileComplete(1:i64 memberId)
     /** 获取会员等级信息 */
@@ -256,6 +264,38 @@ struct SAddress {
     8: string Area
     9: string Address
     10: i32 IsDefault
+}
+
+/** 收款码 */
+struct SReceiptsCode{
+    /** 编号 */
+    1:i32 Id
+    /** 账户标识,如:alipay */
+    2:string Identity
+    /** 账户名称 */
+    3:string Name
+    /** 账号 */
+    4:string AccountId
+    /** 收款码地址 */
+    5:string CodeUrl
+    /** 是否启用 */
+    6:i32 State
+}
+
+/** 会员银行卡 */
+struct SBankcard {
+    /** 编号 */
+    1: i64 Id
+    /** 银行名称 */
+    2: string BankName
+    /** 账户名 */
+    3: string AccountName
+    /** 账号 */
+    4: string Account
+    /** 网点名称 */
+    5: string Network
+    /** 状态 */
+    6: i32 State
 }
 
 /* 会员等级信息 */
