@@ -55,11 +55,23 @@ func MergeRegistries() []*Registry {
 
 	mergeAdd("收货提示信息", OrderReceiveAlertMessage, "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!", "")
 
+	/** 会员注册 */
+	// 注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册,等于member.RegisterMode
+	mergeAdd("注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册",MemberRegisterMode,"1","")
+	mergeAdd("是否允许匿名注册", MemberRegisterAllowAnonymous ,"true","")
+	mergeAdd("手机号码作为用户名", MemberRegisterPhoneAsUser,"false","")
+	mergeAdd("是否需要填写手机", MemberRegisterNeedPhone,"false","")
+	mergeAdd("必须绑定手机", MemberRegisterMustBindPhone,"false","")
+	mergeAdd("是否需要填写即时通讯", MemberRegisterNeedIm,"false","")
+	mergeAdd("注册提示", MemberRegisterNotice ,"","")
+	mergeAdd("注册成功后跳转地址,默认登录页面", MemberRegisterReturnUrl,"/auth?uc=1","")
+	mergeAdd("注册后赠送积分数量", MemberRegisterPresentIntegral, "0", "")
+
 	mergeAdd("会员资料不完善提醒信息", MemberProfileNotCompletedMessage, "您的个人资料未完善,是否立即完善?", "")
 	mergeAdd("会员未实名认证提示信息", MemberNotTrustedMessage, "您尚未实名认证!", "")
 	mergeAdd("实名时是否需要先完善资", MemberRequireProfileOnTrusting, "false", "")
 	mergeAdd("会员是否验证手机号码格式", MemberCheckPhoneFormat, "true", "")
-	mergeAdd("注册后赠送积分数量", MemberPresentIntegralNumOfRegister, "0", "")
+
 	mergeAdd("会员邀请关系级数", MemberReferLayer, "3", "")
 	mergeAdd("会员即时通讯是否必须", MemberImRequired, "false", "")
 

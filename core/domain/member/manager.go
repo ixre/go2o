@@ -46,14 +46,14 @@ func (m *memberManagerImpl) LevelManager() member.ILevelManager {
 }
 
 // 检测注册权限
-func (m *memberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitation bool) error {
-	if perm.RegisterMode == member.RegisterModeClosed {
+func (m *memberManagerImpl) registerPerm(regMode int, invitation bool) error {
+	if regMode== member.RegisterModeClosed {
 		return member.ErrRegOff
 	}
-	if perm.RegisterMode == member.RegisterModeMustInvitation && !invitation {
+	if regMode == member.RegisterModeMustInvitation && !invitation {
 		return member.ErrRegMissingInvitationCode
 	}
-	if perm.RegisterMode == member.RegisterModeMustRedirect && invitation {
+	if regMode == member.RegisterModeMustRedirect && invitation {
 		return member.ErrRegOffInvitation
 	}
 	return nil
@@ -84,10 +84,10 @@ func (m *memberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
 
 // 检查邀请注册
 func (m *memberManagerImpl) CheckInviteRegister(code string) (inviterId int64, err error) {
-	perm := m.valRepo.GetRegisterPerm()
+	regMode := m.registryRepo.Get(registry.MemberRegisterMode).IntValue()
 	isInvite := len(code) > 0
 	// 检查注册模式及邀请码
-	err = m.registerPerm(&perm, isInvite)
+	err = m.registerPerm(regMode, isInvite)
 	if err == nil && isInvite {
 		//判断邀请码是否正确
 		inviterId = m.rep.GetMemberIdByInvitationCode(code)
@@ -102,11 +102,13 @@ func (m *memberManagerImpl) CheckInviteRegister(code string) (inviterId int64, e
 // 检查注册信息是否正确
 func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	pro *member.Profile, invitationCode string) (invitationId int64, err error) {
-	perm := m.valRepo.GetRegisterPerm()
 
+	phoneAsUser := m.registryRepo.Get(registry.MemberRegisterPhoneAsUser).BoolValue()
+	mustBindPhone := m.registryRepo.Get(registry.MemberRegisterMustBindPhone).BoolValue()
+	needIm := m.registryRepo.Get(registry.MemberRegisterNeedIm).BoolValue()
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	v.User = strings.TrimSpace(v.User)
-	if v.User != "" || !perm.PhoneAsUser {
+	if v.User != "" || !phoneAsUser {
 		if len(v.User) < 6 {
 			return 0, member.ErrUsrLength
 		}
@@ -127,7 +129,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	// 验证手机
 	pro.Phone = strings.TrimSpace(pro.Phone)
 	lp := len(pro.Phone)
-	if perm.MustBindPhone && lp == 0 {
+	if mustBindPhone && lp == 0 {
 		return 0, member.ErrMissingPhone
 	}
 	if lp > 0 {
@@ -141,7 +143,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	}
 
 	// 使用手机号作为用户名
-	if perm.PhoneAsUser {
+	if phoneAsUser {
 		if m.rep.CheckUsrExist(pro.Phone, 0) {
 			return 0, member.ErrPhoneHasBind
 		}
@@ -150,7 +152,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 
 	// 验证IM
 	pro.Im = strings.TrimSpace(pro.Im)
-	if perm.NeedIm && len(pro.Im) == 0 {
+	if needIm && len(pro.Im) == 0 {
 		return 0, errors.New(strings.Replace(member.ErrMissingIM.Error(),
 			"IM", variable.AliasMemberIM, -1))
 	}

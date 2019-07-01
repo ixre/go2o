@@ -37,7 +37,7 @@ type IRegistry interface {
 	// 返回字符值
 	StringValue() string
 	// 返回Int值
-	IntValue() int
+	IntValue()int
 	// 返回浮点值
 	FloatValue() float64
 	// 返回布尔值

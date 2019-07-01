@@ -56,19 +56,6 @@ var (
 	// 系统挂起提示消息
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
 
-	DomainStaticPathr           = "D_StaticPathr"
-	DomainImageServer           = "D_ImageServer"
-	DomainUrlHash               = "D_Hash"
-	DomainRetailPortal          = "D_RetailPortal"
-	DomainWholesalePortal       = "D_WholesalePortal"
-	DomainUCenter               = "D_UCenter"
-	DomainPassport              = "D_Passport"
-	DomainMerchant              = "D_Merchant"
-	DomainApi                   = "D_HApi"
-	DomainRetailMobilePortal    = "D_RetailMobilePortal"
-	DomainWholesaleMobilePortal = "D_WholesaleMobilePortal"
-	DomainMobilePassport        = "D_MobilePassport"
-	DomainMobileUCenter         = "D_MobileUCenter"
 
 	/** 账户 */
 	// 余额账户
@@ -81,9 +68,28 @@ var (
 	AccountFlowAlias = KeyFormat("AccountFlowAlias")
 	// 增利金账户
 	AccountGrowthAlias = KeyFormat("AccountGrowthAlias")
-
 	// 收货时的提示信息
 	OrderReceiveAlertMessage = KeyFormat("OrderReceiveAlertMessage")
+
+	/** 会员注册 */
+	// 注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册,等于member.RegisterMode
+	MemberRegisterMode =  KeyFormat("MemberRegisterMode")
+	// 是否允许匿名注册
+	MemberRegisterAllowAnonymous =  KeyFormat("MemberRegisterAllowAnonymous")
+	// 手机号码作为用户名
+	MemberRegisterPhoneAsUser =  KeyFormat("MemberRegisterPhoneAsUser")
+	// 是否需要填写手机
+	MemberRegisterNeedPhone=  KeyFormat("MemberRegisterNeedPhone")
+	// 必须绑定手机
+	MemberRegisterMustBindPhone=  KeyFormat("MemberRegisterMustBindPhone")
+	// 是否需要填写即时通讯
+	MemberRegisterNeedIm=  KeyFormat("MemberRegisterNeedIm")
+	// 注册提示
+	MemberRegisterNotice =  KeyFormat("MemberRegisterNotice")
+	// 注册回调页
+	MemberRegisterReturnUrl =  KeyFormat("MemberRegisterReturnUrl")
+	// 注册后赠送积分数量
+	MemberRegisterPresentIntegral = KeyFormat("MemberRegisterPresentIntegral")
 
 	// 会员资料不完善提醒信息
 	MemberProfileNotCompletedMessage = KeyFormat("MemberProfileNotCompletedMessage")
@@ -91,8 +97,6 @@ var (
 	MemberNotTrustedMessage = KeyFormat("MemberNotTrustedMessage")
 	// 实名时是否需要先完善资料
 	MemberRequireProfileOnTrusting = KeyFormat("MemberRequireProfileOnTrusting")
-	// 注册后赠送积分数量
-	MemberPresentIntegralNumOfRegister = KeyFormat("MemberPresentIntegralNumOfRegister")
 	// 会员邀请关系级数
 	MemberReferLayer = KeyFormat("MemberReferLayer")
 	// 会员即时通讯是否必须
@@ -101,6 +105,7 @@ var (
 	MemberCheckPhoneFormat = KeyFormat("MemberCheckPhoneFormat")
 	// 会员默认个人签名
 	MemberDefaultPersonRemark = KeyFormat("MemberDefaultPersonRemark")
+
 	/*会员提现*/
 	// 会员提现开关
 	MemberTakeOutOn = KeyFormat("MemberTakeOutOn")

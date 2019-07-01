@@ -31,12 +31,14 @@ service FoundationService{
    string GetRegistry(1:string key)
    /** 获取键值存储数据字典 */
    map<string,string> GetRegistries(1:list<string> keys)
+   /** 按键前缀获取键数据 */
+   map<string,string> findRegistries(1:string prefix)
+   /** 更新注册表键值 */
+   ttype.Result UpdateRegistry(1:map<string,string> registries)
    /** 搜索注册表 */
    list<SRegistry> SearchRegistry(1:string key)
    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
    ttype.Result CreateUserRegistry(1:string key,2:string defaultValue,3:string description)
-   /** 更新注册表键值 */
-   ttype.Result UpdateRegistry(1:map<string,string> registries)
 
    // 格式化资源地址并返回
    string ResourceUrl(1:string url)

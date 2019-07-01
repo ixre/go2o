@@ -549,7 +549,7 @@ func (m *memberImpl) memberInit() error {
 		return err
 	}
 	// 注册后赠送积分
-	regPresent := m.registryRepo.Get(registry.MemberPresentIntegralNumOfRegister).IntValue()
+	regPresent := m.registryRepo.Get(registry.MemberRegisterPresentIntegral).IntValue()
 	if regPresent > 0 {
 		go m.GetAccount().Charge(member.AccountIntegral, "新会员注册赠送积分",
 			regPresent, "-", "sys")
@@ -559,10 +559,12 @@ func (m *memberImpl) memberInit() error {
 
 // 检查注册信息是否正确
 func (m *memberImpl) prepare() (err error) {
-	perm := m.valueRepo.GetRegisterPerm()
+
+	phoneAsUser := m.registryRepo.Get(registry.MemberRegisterPhoneAsUser).BoolValue()
+	mustBindPhone := m.registryRepo.Get(registry.MemberRegisterMustBindPhone).BoolValue()
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	m.value.User = strings.TrimSpace(m.value.User)
-	if m.value.User != "" || !perm.PhoneAsUser {
+	if m.value.User != "" || !phoneAsUser {
 		if err = m.checkUser(m.value.User); err != nil {
 			return err
 		}
@@ -575,7 +577,7 @@ func (m *memberImpl) prepare() (err error) {
 	// 验证手机
 	m.value.Phone = strings.TrimSpace(m.value.Phone)
 	lp := len(m.value.Phone)
-	if perm.MustBindPhone && lp == 0 {
+	if mustBindPhone && lp == 0 {
 		return member.ErrMissingPhone
 	}
 	if lp > 0 {
@@ -588,7 +590,7 @@ func (m *memberImpl) prepare() (err error) {
 		}
 	}
 	// 使用手机号作为用户名
-	if perm.PhoneAsUser {
+	if phoneAsUser {
 		if m.repo.CheckUsrExist(m.value.Phone, 0) {
 			return member.ErrPhoneHasBind
 		}

@@ -9,7 +9,6 @@
 package repos
 
 import (
-	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 )
 
@@ -87,16 +86,6 @@ var (
 		WpReleaseUrl: "",
 	}
 
-	// 默认注册权限设置
-	defaultRegisterPerm = valueobject.RegisterPerm{
-		RegisterMode:        member.RegisterModeNormal,
-		NeedPhone:           false,
-		MustBindPhone:       false,
-		NeedIm:              false,
-		AnonymousRegistered: true,
-		PhoneAsUser:         false,
-		CallBackUrl:         "/auth?uc=1", //默认进入会员中心
-	}
 
 	// 默认全局销售设置
 	//DefaultGlobNumberConf = valueobject.GlobNumberConf{

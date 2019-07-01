@@ -41,8 +41,6 @@ type valueRepo struct {
 	storage         storage.Interface
 	wxConf          *valueobject.WxApiConfig
 	wxGob           *util.GobFile
-	rpConf          *valueobject.RegisterPerm
-	rpGob           *util.GobFile
 	globRegistry    *valueobject.Registry_
 	rstGob          *util.GobFile
 	globMchSaleConf *valueobject.GlobMchSaleConf
@@ -83,7 +81,6 @@ func (r *valueRepo) checkReload() error {
 	i, err := r.storage.GetInt(valueRepCacheKey)
 	if i == 0 || err != nil {
 		r.wxConf = nil
-		r.rpConf = nil
 		r.smsConf = nil
 		r.globMchSaleConf = nil
 		r.globRegistry = nil
@@ -225,30 +222,6 @@ func (r *valueRepo) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	return errors.New("nil value")
 }
 
-// 获取注册权限
-func (r *valueRepo) GetRegisterPerm() valueobject.RegisterPerm {
-	r.checkReload()
-	if r.rpConf == nil {
-		v := defaultRegisterPerm
-		r.rpConf = &v
-		r.rpGob.Unmarshal(r.rpConf)
-	}
-	return *r.rpConf
-}
-
-// 保存注册权限
-func (r *valueRepo) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
-	if v != nil {
-		defer r.signReload()
-		// 如果要验证手机，则必须开启填写手机
-		if v.MustBindPhone {
-			v.NeedPhone = true
-		}
-		r.rpConf = v
-		return r.rpGob.Save(r.rpConf)
-	}
-	return nil
-}
 
 // 获取移动应用设置
 func (r *valueRepo) GetMoAppConf() valueobject.MoAppConf {

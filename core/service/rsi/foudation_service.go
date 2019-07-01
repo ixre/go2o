@@ -20,6 +20,7 @@ import (
 	"go2o/core/module/bank"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
+	"strings"
 )
 
 var _ foundation_service.FoundationService = new(foundationService)
@@ -55,6 +56,18 @@ func (s *foundationService) GetRegistries(ctx context.Context, keys []string) (m
 			mp[k] = ir.StringValue()
 		} else {
 			mp[k] = ""
+		}
+	}
+	return mp, nil
+}
+
+
+// 按键前缀获取键数据
+func (s *foundationService) FindRegistries(ctx context.Context, prefix string) (r map[string]string, err error) {
+	mp := make(map[string]string)
+	for _, k := range s.registryRepo.SearchRegistry(prefix) {
+		if strings.HasPrefix(k.Key,prefix){
+			mp[k.Key] = k.Value
 		}
 	}
 	return mp, nil
@@ -209,16 +222,6 @@ func (s *foundationService) GetWxApiConfig() valueobject.WxApiConfig {
 // 保存微信接口配置
 func (s *foundationService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	return s._rep.SaveWxApiConfig(v)
-}
-
-// 获取注册配置
-func (s *foundationService) GetRegisterPerm() valueobject.RegisterPerm {
-	return s._rep.GetRegisterPerm()
-}
-
-// 保存注册配置
-func (s *foundationService) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
-	return s._rep.SaveRegisterPerm(v)
 }
 
 // 获取资源地址

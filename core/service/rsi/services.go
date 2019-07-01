@@ -174,7 +174,7 @@ func initRpcServe(ctx gof.App) {
 	FoundationService.UpdateRegistry(nil, mp)
 
 	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
-	//mp[variable.DStaticPathr] = gf("static_server")
+	//mp[variable.DStaticPath] = gf("static_server")
 	//mp[variable.DImageServer] = gf("image_server")
 	//mp[variable.DUrlHash] = hash
 	//mp[variable.DRetailPortal] = strings.Join([]string{prefix,

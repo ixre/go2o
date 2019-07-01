@@ -152,27 +152,6 @@ type (
 		//MchPayNotifyPath string //微信支付异步通知的路径
 	}
 
-	// 注册权限设置
-	RegisterPerm struct {
-		// 注册模式,等于member.RegisterMode
-		RegisterMode int
-		// 是否允许匿名注册
-		AnonymousRegistered bool
-		// 手机号码作为用户名
-		PhoneAsUser bool
-		// 是否需要填写手机
-		NeedPhone bool
-		// 必须绑定手机
-		MustBindPhone bool
-		// 是否需要填写即时通讯
-		NeedIm bool
-		// 注册提示
-		Notice string
-		// 用户条款内容
-		Licence string
-		// 注册回调页
-		CallBackUrl string
-	}
 
 	// 全局数值设置
 	//GlobNumberConf struct {
@@ -252,12 +231,6 @@ type (
 
 		// 保存微信接口配置
 		SaveWxApiConfig(v *WxApiConfig) error
-
-		// 获取注册权限
-		GetRegisterPerm() RegisterPerm
-
-		// 保存注册权限
-		SaveRegisterPerm(v *RegisterPerm) error
 
 		// 根据键获取数据值
 		GetsRegistry(keys []string) []string
