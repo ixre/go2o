@@ -10,7 +10,7 @@ package sms
 
 import (
 	"errors"
-	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/iface/aliyu"
 	"go2o/core/infrastructure/iface/cl253"
@@ -31,10 +31,10 @@ const (
 )
 
 // 发送短信,tpl:短信内容模板
-func SendSms(provider int, appKey, appSecret, phoneNum string,
+func SendSms(provider string, appKey, appSecret, phoneNum string,
 	apiUrl string, enc string, successChar string, tpl string,
 	param map[string]interface{}) error {
-	switch provider {
+	switch getProviderID(provider) {
 	case SmsHttp:
 		return sendPhoneMsgByHttpApi(apiUrl, appKey, appSecret, phoneNum,
 			compile(tpl, param), enc, successChar)
@@ -43,7 +43,7 @@ func SendSms(provider int, appKey, appSecret, phoneNum string,
 	case SmsCl253:
 		return cl253.SendMsgToMobile(appKey, appSecret, phoneNum, compile(tpl, param))
 	}
-	return errors.New("未知的短信接口服务商" + strconv.Itoa(provider))
+	return errors.New("未知的短信接口服务商:" + provider)
 }
 
 // 解析模板中的参数
@@ -68,18 +68,31 @@ func compile(tpl string, param map[string]interface{}) string {
 }
 
 // 附加检查手机短信的参数
-func AppendCheckPhoneParams(provider int, param map[string]interface{}) map[string]interface{} {
+func AppendCheckPhoneParams(provider string, param map[string]interface{}) map[string]interface{} {
 	//todo: 考虑在参数中读取
-	if provider == SmsAli {
+	if getProviderID(provider) == SmsAli {
 		param[aliyu.ParamKeyTplName] = ""
 		param[aliyu.ParamKeyTplId] = ""
 	}
 	return param
 }
 
+func getProviderID(provider string)int {
+	switch provider {
+	case "http":
+		return SmsHttp
+	case "253":
+		return SmsCl253
+	case "ali":
+		return SmsAli
+	}
+	return -1
+}
+
 // 检查API接口数据是否正确
-func CheckSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
-	if provider == SmsHttp {
+func CheckSmsApiPerm(provider string, s *notify.SmsApiPerm) error {
+	id := getProviderID(provider)
+	if id == SmsHttp {
 		if s.ApiUrl == "" {
 			return errors.New("HTTP短信接口必须提供API URL")
 		}

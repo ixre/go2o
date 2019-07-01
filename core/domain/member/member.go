@@ -56,7 +56,8 @@ func (m *memberImpl) ContainFlag(f int) bool {
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRepo,
-	mp mss.IMssRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMember {
+	mp mss.IMssRepo, valRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo) member.IMember {
 	return &memberImpl{
 		manager:      manager,
 		value:        val,
@@ -178,9 +179,11 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 		switch mssType {
 		case notify.TypePhoneMessage:
 			// 某些短信平台要求传入模板ID,在这里附加参数
-			provider, _ := m.valueRepo.GetDefaultSmsApiPerm()
+			provider := m.registryRepo.Get(registry.SmsDefaultProvider).StringValue()
+			if provider == "" {
+				return "", notify.ErrNotSettingSmsProvider
+			}
 			data = sms.AppendCheckPhoneParams(provider, data)
-
 			// 构造并发送短信
 			n := mgr.GetNotifyItem("验证手机")
 			c := notify.PhoneMessage(n.Content)

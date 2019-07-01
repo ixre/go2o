@@ -55,7 +55,8 @@ var (
 	SysSuspend = KeyFormat("SysSuspend")
 	// 系统挂起提示消息
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
-
+	// 默认短信服务商
+	SmsDefaultProvider =KeyFormat("SmsDefaultProvider")
 
 	/** 账户 */
 	// 余额账户

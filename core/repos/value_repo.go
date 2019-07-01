@@ -19,7 +19,6 @@ import (
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/infrastructure/tool/sms"
 	"log"
 	"strconv"
 	"strings"
@@ -45,8 +44,6 @@ type valueRepo struct {
 	rstGob          *util.GobFile
 	globMchSaleConf *valueobject.GlobMchSaleConf
 	mscGob          *util.GobFile
-	smsConf         valueobject.SmsApiSet
-	smsGob          *util.GobFile
 	moAppConf       *valueobject.MoAppConf
 	moAppGob        *util.GobFile
 	areaCache       map[int32][]*valueobject.Area
@@ -81,7 +78,6 @@ func (r *valueRepo) checkReload() error {
 	i, err := r.storage.GetInt(valueRepCacheKey)
 	if i == 0 || err != nil {
 		r.wxConf = nil
-		r.smsConf = nil
 		r.globMchSaleConf = nil
 		r.globRegistry = nil
 	}
@@ -355,55 +351,6 @@ func (r *valueRepo) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 		return r.mscGob.Save(r.globMchSaleConf)
 	}
 	return nil
-}
-
-// 获取短信设置
-func (r *valueRepo) GetSmsApiSet() valueobject.SmsApiSet {
-	r.checkReload()
-	if r.smsConf == nil {
-		r.smsConf = defaultSmsConf
-		r.smsGob.Unmarshal(&r.smsConf)
-	}
-	return r.smsConf
-}
-
-// 保存短信API
-func (r *valueRepo) SaveSmsApiPerm(provider int, v *valueobject.SmsApiPerm) error {
-	if _, ok := r.GetSmsApiSet()[provider]; !ok {
-		return errors.New("系统不支持的短信接口")
-	}
-	err := sms.CheckSmsApiPerm(provider, v)
-	if err == nil {
-		if v.Default {
-			// 取消其他接口的默认选项
-			for p, c := range r.smsConf {
-				if p == provider {
-					c.Default = true
-				} else {
-					c.Default = false
-				}
-			}
-		} else {
-			//检验是否取消了正在使用的短信接口
-			if i, _ := r.GetDefaultSmsApiPerm(); i == provider {
-				return errors.New("系统应启用一个短信接口")
-			}
-		}
-		defer r.signReload()
-		r.smsConf[provider] = v
-		err = r.smsGob.Save(r.smsConf)
-	}
-	return err
-}
-
-// 获取默认的短信API
-func (r *valueRepo) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
-	for i, v := range r.GetSmsApiSet() {
-		if v.Default {
-			return i, v
-		}
-	}
-	panic(errors.New("至少为系统设置一个短信接口"))
 }
 
 // 获取下级区域

@@ -8,6 +8,10 @@ import (
 	"unicode"
 )
 
+const(
+	FlagUserDefine = 1 << iota
+)
+
 // 注册表
 type Registry struct {
 	// 键
@@ -19,7 +23,7 @@ type Registry struct {
 	// 可选值
 	Options string `db:"options"`
 	// 是否用户定义,0:否,1:是
-	UserDefine int16 `db:"user_define"`
+	Flag int `db:"flag"`
 	// 描述
 	Description string `db:"description"`
 }
@@ -100,7 +104,7 @@ func NewRegistry(r *Registry, repo IRegistryRepo) IRegistry {
 }
 
 func (r *registryImpl) IsUser() bool {
-	return r.value.UserDefine == 1
+	return (r.value.Flag & FlagUserDefine) == FlagUserDefine
 }
 
 func (r *registryImpl) GetAggregateRootId() string {
@@ -138,7 +142,7 @@ func (r *registryImpl) BoolValue() bool {
 }
 
 func (r *registryImpl) Remove() error {
-	if r.value.UserDefine == 0 {
+	if r.IsUser(){
 		return errors.New("registry is not create by user, can't be removed")
 	}
 	return r.repo.Remove(r.Key())

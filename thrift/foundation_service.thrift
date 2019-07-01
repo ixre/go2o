@@ -4,25 +4,6 @@ namespace go go2o.core.service.auto_gen.rpc.foundation_service
 include "ttype.thrift"
 
 
-// 单点登录应用
-struct SSsoApp{
-    // 编号
-    1: i32 ID
-    // 应用名称
-    2: string Name
-    // API地址
-    3: string ApiUrl
-    // 密钥
-    4: string Token
-}
-
-/** 行政区域 */
-struct SArea  {
-    1:i32 Code
-    2:i32 Parent
-    3:string Name
-}
-
 
 // 基础服务
 service FoundationService{
@@ -72,12 +53,38 @@ service FoundationService{
 }
 
 
-
+/** 注册表 */
 struct SRegistry {
+    /** 键 */
     1: string Key
+    /** 值 */
     2: string Value
+    /** 默认值 */
     3: string Default
+    /** 可选值 */
     4: string Options
-    5: bool UserDefine
+    /** 标志 */
+    5: i32 Flag
+    /** 描述 */
     6: string Description
+}
+
+
+// 单点登录应用
+struct SSsoApp{
+    // 编号
+    1: i32 ID
+    // 应用名称
+    2: string Name
+    // API地址
+    3: string ApiUrl
+    // 密钥
+    4: string Token
+}
+
+/** 行政区域 */
+struct SArea  {
+    1:i32 Code
+    2:i32 Parent
+    3:string Name
 }

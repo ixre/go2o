@@ -147,9 +147,9 @@ var (
 	}
 
 	// 默认短信接口设置
-	defaultSmsConf = map[int]*valueobject.SmsApiPerm{
-		valueobject.SmsHttp:   {Default: true},
-		valueobject.SmsAli:    {},
-		valueobject.Sms253Com: {},
-	}
+	//defaultSmsConf = map[int]*valueobject.SmsApiPerm{
+	//	valueobject.SmsHttp:   {Default: true},
+	//	valueobject.SmsAli:    {},
+	//	valueobject.Sms253Com: {},
+	//}
 )

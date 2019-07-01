@@ -12,6 +12,7 @@ import (
 	"context"
 	"errors"
 	"github.com/ixre/gof"
+	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -83,7 +84,7 @@ func (s *foundationService) SearchRegistry(ctx context.Context, key string) (r [
 			Value:       a.Value,
 			Default:     a.DefaultValue,
 			Options:     a.Options,
-			UserDefine:  a.UserDefine == 1,
+			Flag:  int32(a.Flag),
 			Description: a.Description,
 		}
 	}
@@ -109,7 +110,7 @@ func (s *foundationService) CreateUserRegistry(ctx context.Context, key string, 
 		Value:        defaultValue,
 		DefaultValue: defaultValue,
 		Options:      "",
-		UserDefine:   1,
+		Flag:   registry.FlagUserDefine,
 		Description:  description,
 	}
 	ir := s.registryRepo.Create(rv)
@@ -240,18 +241,17 @@ func (s *foundationService) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) 
 }
 
 // 获取短信设置
-func (s *foundationService) GetSmsApiSet() valueobject.SmsApiSet {
-	return s._rep.GetSmsApiSet()
+func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
+	//return s._rep.GetSmsApiSet()
+	//todo: ???
+	return notify.SmsApiSet{}
 }
 
 // 保存短信API
-func (s *foundationService) SaveSmsApiPerm(provider int, perm *valueobject.SmsApiPerm) error {
-	return s._rep.SaveSmsApiPerm(provider, perm)
-}
-
-// 获取默认的短信API
-func (s *foundationService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
-	return s._rep.GetDefaultSmsApiPerm()
+func (s *foundationService) SaveSmsApiPerm(provider int, perm *notify.SmsApiPerm) error {
+	//return s._rep.SaveSmsApiPerm(provider, perm)
+	//todo: ???
+	return nil
 }
 
 // 获取下级区域

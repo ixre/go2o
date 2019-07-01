@@ -17,6 +17,7 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	mssImpl "go2o/core/domain/mss"
 	notifyImpl "go2o/core/domain/mss/notify"
@@ -31,14 +32,17 @@ type mssRepo struct {
 	_notifyManger notify.INotifyManager
 	_notifyRepo   notify.INotifyRepo
 	_valRepo      valueobject.IValueRepo
+	registryRepo  registry.IRegistryRepo
 	_globMss      mss.IUserMessageManager
 }
 
 func NewMssRepo(conn db.Connector, notifyRepo notify.INotifyRepo,
+	registryRepo  registry.IRegistryRepo,
 	valRepo valueobject.IValueRepo) mss.IMssRepo {
 	return &mssRepo{
 		_conn:       conn,
 		_notifyRepo: notifyRepo,
+		registryRepo:registryRepo,
 		_valRepo:    valRepo,
 	}
 }
@@ -55,7 +59,7 @@ func (m *mssRepo) MessageManager() mss.IMessageManager {
 func (m *mssRepo) NotifyManager() notify.INotifyManager {
 	if m._notifyManger == nil {
 		m._notifyManger = notifyImpl.NewNotifyManager(
-			m._notifyRepo, m._valRepo)
+			m._notifyRepo, m.registryRepo)
 	}
 	return m._notifyManger
 }

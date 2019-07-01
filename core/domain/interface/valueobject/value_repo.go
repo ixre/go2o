@@ -249,15 +249,6 @@ type (
 		// 保存全局商户销售设置
 		SaveGlobMchSaleConf(v *GlobMchSaleConf) error
 
-		// 获取短信设置
-		GetSmsApiSet() SmsApiSet
-
-		// 保存短信API
-		SaveSmsApiPerm(provider int, s *SmsApiPerm) error
-
-		// 获取默认的短信API,返回API提供商编号及API信息
-		GetDefaultSmsApiPerm() (int, *SmsApiPerm)
-
 		// 获取下级区域
 		GetChildAreas(code int32) []*Area
 
@@ -273,7 +264,7 @@ type (
 	}
 
 	// 短信接口
-	SmsApiPerm struct {
+	SmsApiPerm1 struct {
 		//接口编号
 		ApiKey string
 		//接口密钥
@@ -289,7 +280,7 @@ type (
 	}
 
 	// 短信接口设置
-	SmsApiSet map[int]*SmsApiPerm
+	SmsApiSet1 map[int]*SmsApiPerm1
 
 	//http://www.stats.gov.cn/tjsj/tjbz/xzqhdm/
 	// 区域,中国行政区划

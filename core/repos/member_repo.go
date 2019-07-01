@@ -341,7 +341,7 @@ func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 // 创建会员
 func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m.mssrepo, m.valueRepo, m.registryRepo)
+		m.mssrepo, m.valueRepo,m.registryRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存

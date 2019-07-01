@@ -12,6 +12,8 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/mss/notify"
+	"go2o/core/domain/interface/registry"
+	notify2 "go2o/core/domain/mss/notify"
 )
 
 var _ notify.INotifyRepo = new(notifyRepImpl)
@@ -20,11 +22,21 @@ type notifyRepImpl struct {
 	_conn        db.Connector
 	_itemGob     *util.GobFile
 	_notifyItems map[string]*notify.NotifyItem
+	registryRepo registry.IRegistryRepo
+	manager notify.INotifyManager
 }
 
-func NewNotifyRepo(conn db.Connector) notify.INotifyRepo {
+func (n *notifyRepImpl) Manager() notify.INotifyManager {
+	if(n.manager == nil){
+		n.manager = notify2.NewNotifyManager(n,n.registryRepo)
+	}
+	panic("implement me")
+}
+
+func NewNotifyRepo(conn db.Connector,registryRepo registry.IRegistryRepo) notify.INotifyRepo {
 	return &notifyRepImpl{
 		_conn:    conn,
+		registryRepo:registryRepo,
 		_itemGob: util.NewGobFile("conf/core/mss_notify"),
 	}
 }

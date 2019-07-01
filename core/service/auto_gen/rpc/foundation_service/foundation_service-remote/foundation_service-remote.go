@@ -349,7 +349,7 @@ func main() {
       Usage()
       return
     }
-    value0 := argvalue0
+    value0 := foundation_service.SSsoApp(argvalue0)
     fmt.Print(client.RegisterApp(context.Background(), value0))
     fmt.Print("\n")
     break
