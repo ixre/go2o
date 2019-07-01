@@ -11,7 +11,6 @@ package rsi
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/ixre/gof"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
@@ -21,7 +20,6 @@ import (
 	"go2o/core/module/bank"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
-	"go2o/core/variable"
 )
 
 var _ foundation_service.FoundationService = new(foundationService)
@@ -187,9 +185,10 @@ func (s *foundationService) GetAllSsoApp(ctx context.Context) (r []string, err e
 
 // 创建同步登录的地址
 func (s *foundationService) GetSyncLoginUrl(ctx context.Context, returnUrl string) (r string, err error) {
-	return fmt.Sprintf("%s://%s%s/auth?return_url=%s",
-		variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_PASSPORT,
-		variable.Domain, returnUrl), nil
+	panic("not implement")
+	//return fmt.Sprintf("%s://%s%s/auth?return_url=%s",
+	//	consts.DOMAIN_PASSPORT_PROTO, consts.DOMAIN_PREFIX_PASSPORT,
+	//	variable.Domain, returnUrl), nil
 }
 
 // 获取移动应用设置

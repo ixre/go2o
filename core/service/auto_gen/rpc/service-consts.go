@@ -6,21 +6,20 @@ package rpc
 import (
 	"bytes"
 	"context"
-	"reflect"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
-	"go2o/core/service/auto_gen/rpc/status_service"
+	"go2o/core/service/auto_gen/rpc/finance_service"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/item_service"
 	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
-	"go2o/core/service/auto_gen/rpc/payment_service"
-	"go2o/core/service/auto_gen/rpc/shop_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
-	"go2o/core/service/auto_gen/rpc/finance_service"
-	"go2o/core/service/auto_gen/rpc/wallet_service"
+	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/auto_gen/rpc/shipment_service"
-
+	"go2o/core/service/auto_gen/rpc/shop_service"
+	"go2o/core/service/auto_gen/rpc/status_service"
+	"go2o/core/service/auto_gen/rpc/wallet_service"
+	"reflect"
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -44,4 +43,3 @@ var _ = shipment_service.GoUnusedProtection__
 
 func init() {
 }
-

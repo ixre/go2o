@@ -11,6 +11,7 @@ package pub
 
 import (
 	"github.com/ixre/gof"
+	"go2o-web/src/app/consts"
 	"go2o/core/variable"
 	"log"
 	"net/http"
@@ -75,9 +76,9 @@ func (this *pubHandler) set(s *StaticHandler, i *ImageFileHandler) http.Handler 
 func (this *pubHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	subName := r.Host[:strings.Index(r.Host, ".")+1]
 	switch subName {
-	case variable.DOMAIN_PREFIX_STATIC:
+	case consts.DOMAIN_PREFIX_STATIC:
 		this.staticServe.ServeHTTP(w, r)
-	case variable.DOMAIN_PREFIX_IMAGE:
+	case consts.DOMAIN_PREFIX_IMAGE:
 		this.imgServe.ServeHTTP(w, r)
 	default:
 		http.Error(w, "no such file", 404)
