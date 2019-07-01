@@ -13,7 +13,7 @@ import (
 	"errors"
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/gof"
-	"go2o/app/util"
+	"go2o-web/src/app/util"
 	"go2o/core"
 	"go2o/core/service/rsi"
 	"log"
