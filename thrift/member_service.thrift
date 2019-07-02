@@ -143,7 +143,7 @@ struct SMember {
     /** 高级用户过期时间 */
     8:i64 PremiumExpires
     /**  */
-    9:string InvitationCode
+    9:string InviteCode
     /**  */
     10:string RegIp
     /**  */
@@ -225,7 +225,7 @@ struct SComplexMember {
     4: i32 Exp
     5: i32 Level
     6: string LevelName
-    7: string InvitationCode
+    7: string InviteCode
     8: i32 TrustAuthState
     9: i32 PremiumUser
     10: i32 Flag
@@ -329,4 +329,6 @@ enum ECredentials{
     Email = 3
     /** 手机号码 */
     Phone = 4
+    /** 邀请码 */
+    InviteCode = 6
 }

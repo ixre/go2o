@@ -137,11 +137,11 @@ type (
 		// 不允许修改发送方式
 		ReadonlyBy bool
 		// 模板编号
-		TplId      int
+		TplId int
 		// 内容
-		Content    string
+		Content string
 		// 模板包含的标签
-		Tags       map[string]string
+		Tags map[string]string
 	}
 
 	// 通知项集合

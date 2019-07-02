@@ -84,7 +84,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		Exp:            mv.Exp,
 		Level:          mv.Level,
 		LevelName:      lv.Name,
-		InvitationCode: mv.InvitationCode,
+		InviteCode:     mv.InviteCode,
 		TrustAuthState: tr.ReviewState,
 		PremiumUser:    mv.PremiumUser,
 		Flag:           mv.Flag,
@@ -144,8 +144,8 @@ var (
 // 设置值
 func (m *memberImpl) SetValue(v *member.Member) error {
 	v.User = m.value.User
-	if len(m.value.InvitationCode) == 0 {
-		m.value.InvitationCode = v.InvitationCode
+	if len(m.value.InviteCode) == 0 {
+		m.value.InviteCode = v.InviteCode
 	}
 	if v.Level > 0 {
 		m.value.Level = v.Level
@@ -510,7 +510,7 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		// 创建一个用户编码
 		v.Code = m.generateMemberCode()
 		// 创建一个邀请码
-		v.InvitationCode = m.generateInvitationCode()
+		v.InviteCode = m.generateInviteCode()
 		id, err1 := m.repo.SaveMember(v)
 		if err1 == nil {
 			m.value.Id = id
@@ -634,11 +634,11 @@ func (m *memberImpl) generateMemberCode() string {
 }
 
 // 创建邀请码
-func (m *memberImpl) generateInvitationCode() string {
+func (m *memberImpl) generateInviteCode() string {
 	var code string
 	for {
-		code = domain.GenerateInvitationCode()
-		if memberId := m.repo.GetMemberIdByInvitationCode(code); memberId == 0 {
+		code = domain.GenerateInviteCode()
+		if memberId := m.repo.GetMemberIdByInviteCode(code); memberId == 0 {
 			break
 		}
 	}

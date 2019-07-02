@@ -55,7 +55,7 @@ func (i *invitationManager) GetInvitationMembers(begin, end int) (
 
 // 获取我的邀请码
 func (i *invitationManager) MyCode() string {
-	return i.member.GetValue().InvitationCode
+	return i.member.GetValue().InviteCode
 }
 
 // 获取邀请会员下级邀请数量

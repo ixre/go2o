@@ -16,13 +16,13 @@ import (
 	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
 )
+
 var _ message_service.MessageService = new(messageService)
+
 type messageService struct {
 	_rep mss.IMssRepo
 	*serviceUtil
 }
-
-
 
 func NewMessageService(rep mss.IMssRepo) *messageService {
 	return &messageService{
@@ -40,23 +40,23 @@ func (m *messageService) GetNotifyItem(ctx context.Context, key string) (r *mess
 		TplId:      int32(it.TplId),
 		Content:    it.Content,
 		Tags:       it.Tags,
-	},nil
+	}, nil
 }
 
 // 发送短信
 func (m *messageService) SendPhoneMessage(ctx context.Context, phone string, message string, data map[string]string) (r *ttype.Result_, err error) {
 	mg := m._rep.NotifyManager()
 	extra := make(map[string]interface{})
-	if data != nil{
-		for k,v := range data{
+	if data != nil {
+		for k, v := range data {
 			extra[k] = v
 		}
 	}
-	err = mg.SendPhoneMessage(phone, notify.PhoneMessage( message), extra)
-	if err!= nil{
-		return m.error(err),nil
+	err = mg.SendPhoneMessage(phone, notify.PhoneMessage(message), extra)
+	if err != nil {
+		return m.error(err), nil
 	}
-	return m.success(nil),nil
+	return m.success(nil), nil
 }
 
 // 获取邮件模版

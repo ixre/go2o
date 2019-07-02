@@ -41,7 +41,7 @@ func TestMssSendSms(t *testing.T) {
 
 }
 
-func TestSendSms(t *testing.T){
+func TestSendSms(t *testing.T) {
 	//data := map[string]interface{}{
 	//	"templateId":8332,
 	//}

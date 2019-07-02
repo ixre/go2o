@@ -51,7 +51,7 @@ func (m *memberManagerImpl) registerPerm(regMode int, invitation bool) error {
 		return member.ErrRegOff
 	}
 	if regMode == member.RegisterModeMustInvitation && !invitation {
-		return member.ErrRegMissingInvitationCode
+		return member.ErrRegMissingInviteCode
 	}
 	if regMode == member.RegisterModeMustRedirect && invitation {
 		return member.ErrRegOffInvitation
@@ -59,13 +59,13 @@ func (m *memberManagerImpl) registerPerm(regMode int, invitation bool) error {
 	return nil
 }
 
-func (m *memberManagerImpl) checkInvitationCode(invitationCode string) (int64, error) {
+func (m *memberManagerImpl) checkInviteCode(invitationCode string) (int64, error) {
 	var invitationId int64
 	if len(invitationCode) > 0 {
 		//判断邀请码是否正确
-		invitationId = m.rep.GetMemberIdByInvitationCode(invitationCode)
+		invitationId = m.rep.GetMemberIdByInviteCode(invitationCode)
 		if invitationId <= 0 {
-			return -1, member.ErrInvitationCode
+			return -1, member.ErrInviteCode
 		}
 	}
 	return invitationId, nil
@@ -90,9 +90,9 @@ func (m *memberManagerImpl) CheckInviteRegister(code string) (inviterId int64, e
 	err = m.registerPerm(regMode, isInvite)
 	if err == nil && isInvite {
 		//判断邀请码是否正确
-		inviterId = m.rep.GetMemberIdByInvitationCode(code)
+		inviterId = m.rep.GetMemberIdByInviteCode(code)
 		if inviterId <= 0 {
-			return 0, member.ErrInvitationCode
+			return 0, member.ErrInviteCode
 		}
 		return inviterId, nil
 	}

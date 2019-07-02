@@ -19,13 +19,13 @@ var (
 	ErrRegOff = domain.NewError(
 		"err_reg_off", "CODE:1010,系统暂停注册")
 
-	ErrRegMissingInvitationCode = domain.NewError(
+	ErrRegMissingInviteCode = domain.NewError(
 		"err_reg_must_invitation", "CODE:1011,请填写邀请码")
 
 	ErrRegOffInvitation = domain.NewError(
 		"err_reg_off_invitation", "CODE:1012,系统关闭邀请注册")
 
-	ErrInvitationCode = domain.NewError(
+	ErrInviteCode = domain.NewError(
 		"member_err_invation_code", "CODE:1013,邀请码错误")
 
 	ErrSessionTimeout = domain.NewError(

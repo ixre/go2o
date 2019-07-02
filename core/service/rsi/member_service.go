@@ -60,6 +60,8 @@ func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.EC
 		memberId = s.repo.GetMemberIdByPhone(value)
 	case member_service.ECredentials_Email:
 		memberId = s.repo.GetMemberIdByEmail(value)
+	case member_service.ECredentials_InviteCode:
+		memberId = s.repo.GetMemberIdByInviteCode(value)
 	}
 	return memberId, nil
 }
@@ -323,8 +325,8 @@ func (s *memberService) getMember(memberId int64) (
 	return m, nil
 }
 
-func (s *memberService) GetMemberIdByInvitationCode(code string) int64 {
-	return s.repo.GetMemberIdByInvitationCode(code)
+func (s *memberService) GetMemberIdByInviteCode(code string) int64 {
+	return s.repo.GetMemberIdByInviteCode(code)
 }
 
 // 根据信息获取会员编号
@@ -704,7 +706,6 @@ func (s *memberService) CheckUsr(user string, memberId int64) error {
 	}
 	return nil
 }
-
 
 // 获取会员账户
 func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*member_service.SAccount, error) {
@@ -1380,7 +1381,7 @@ func (s *memberService) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 }
 
 // 根据手机获取会员编号
-func (s *memberService) GetMemberIdByPhone(phone string) int64 {
+func (s *memberService) GetMemberIdByPhone1(phone string) int64 {
 	return s.query.GetMemberIdByPhone(phone)
 }
 

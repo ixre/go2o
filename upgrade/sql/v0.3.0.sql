@@ -72,3 +72,4 @@ COMMENT ON COLUMN "public".mm_trusted_info.review_time IS '审核时间';
 COMMENT ON COLUMN "public".mm_trusted_info.remark IS '备注';
 COMMENT ON COLUMN "public".mm_trusted_info.update_time IS '更新时间';
 
+/** invitation_code => invite_code */
