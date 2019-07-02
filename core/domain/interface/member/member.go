@@ -194,7 +194,7 @@ type (
 		// 等级名称
 		LevelName string
 		// 邀请码
-		InvitationCode string
+		InviteCode string
 		// 实名认证状态
 		TrustAuthState int
 		// 高级会员类型
@@ -225,7 +225,7 @@ type (
 		// 等级
 		Level int `db:"level"`
 		// 邀请码
-		InvitationCode string `db:"invitation_code"`
+		InviteCode string `db:"invite_code"`
 		// 高级用户类型
 		PremiumUser int `db:"premium_user"`
 		// 高级用户过期时间

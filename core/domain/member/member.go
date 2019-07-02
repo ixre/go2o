@@ -22,7 +22,6 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/core/infrastructure/tool/sms"
 	"go2o/core/msq"
 	"math"
 	"regexp"
@@ -56,7 +55,8 @@ func (m *memberImpl) ContainFlag(f int) bool {
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRepo,
-	mp mss.IMssRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMember {
+	mp mss.IMssRepo, valRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo) member.IMember {
 	return &memberImpl{
 		manager:      manager,
 		value:        val,
@@ -84,7 +84,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		Exp:            mv.Exp,
 		Level:          mv.Level,
 		LevelName:      lv.Name,
-		InvitationCode: mv.InvitationCode,
+		InviteCode:     mv.InviteCode,
 		TrustAuthState: tr.ReviewState,
 		PremiumUser:    mv.PremiumUser,
 		Flag:           mv.Flag,
@@ -144,8 +144,8 @@ var (
 // 设置值
 func (m *memberImpl) SetValue(v *member.Member) error {
 	v.User = m.value.User
-	if len(m.value.InvitationCode) == 0 {
-		m.value.InvitationCode = v.InvitationCode
+	if len(m.value.InviteCode) == 0 {
+		m.value.InviteCode = v.InviteCode
 	}
 	if v.Level > 0 {
 		m.value.Level = v.Level
@@ -164,28 +164,23 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 	m.value.CheckExpires = time.Now().Add(time.Minute * expiresMinutes).Unix()
 	_, err := m.Save()
 	if err == nil {
-		mgr := m.mssRepo.NotifyManager()
-		pro := m.Profile().GetProfile()
-
 		// 创建参数
 		data := map[string]interface{}{
 			"code":      code,
 			"operation": operation,
 			"minutes":   expiresMinutes,
 		}
-
+		mgr := m.mssRepo.NotifyManager()
 		// 根据消息类型发送信息
 		switch mssType {
 		case notify.TypePhoneMessage:
 			// 某些短信平台要求传入模板ID,在这里附加参数
-			provider, _ := m.valueRepo.GetDefaultSmsApiPerm()
-			data = sms.AppendCheckPhoneParams(provider, data)
-
+			re := m.registryRepo.Get(registry.SmsMemberCheckTemplateId)
+			data["templateId"] = re.StringValue()
 			// 构造并发送短信
 			n := mgr.GetNotifyItem("验证手机")
 			c := notify.PhoneMessage(n.Content)
-			err = mgr.SendPhoneMessage(pro.Phone, c, data)
-
+			err = mgr.SendPhoneMessage(m.value.Phone, c, data)
 		default:
 		case notify.TypeEmailMessage:
 			n := mgr.GetNotifyItem("验证邮箱")
@@ -193,7 +188,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 				Subject: operation + "验证码",
 				Body:    n.Content,
 			}
-			err = mgr.SendEmail(pro.Phone, c, data)
+			err = mgr.SendEmail(m.value.Email, c, data)
 		}
 	}
 	return code, err
@@ -515,7 +510,7 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		// 创建一个用户编码
 		v.Code = m.generateMemberCode()
 		// 创建一个邀请码
-		v.InvitationCode = m.generateInvitationCode()
+		v.InviteCode = m.generateInviteCode()
 		id, err1 := m.repo.SaveMember(v)
 		if err1 == nil {
 			m.value.Id = id
@@ -549,7 +544,7 @@ func (m *memberImpl) memberInit() error {
 		return err
 	}
 	// 注册后赠送积分
-	regPresent := m.registryRepo.Get(registry.MemberPresentIntegralNumOfRegister).IntValue()
+	regPresent := m.registryRepo.Get(registry.MemberRegisterPresentIntegral).IntValue()
 	if regPresent > 0 {
 		go m.GetAccount().Charge(member.AccountIntegral, "新会员注册赠送积分",
 			regPresent, "-", "sys")
@@ -559,10 +554,12 @@ func (m *memberImpl) memberInit() error {
 
 // 检查注册信息是否正确
 func (m *memberImpl) prepare() (err error) {
-	perm := m.valueRepo.GetRegisterPerm()
+
+	phoneAsUser := m.registryRepo.Get(registry.MemberRegisterPhoneAsUser).BoolValue()
+	mustBindPhone := m.registryRepo.Get(registry.MemberRegisterMustBindPhone).BoolValue()
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	m.value.User = strings.TrimSpace(m.value.User)
-	if m.value.User != "" || !perm.PhoneAsUser {
+	if m.value.User != "" || !phoneAsUser {
 		if err = m.checkUser(m.value.User); err != nil {
 			return err
 		}
@@ -575,7 +572,7 @@ func (m *memberImpl) prepare() (err error) {
 	// 验证手机
 	m.value.Phone = strings.TrimSpace(m.value.Phone)
 	lp := len(m.value.Phone)
-	if perm.MustBindPhone && lp == 0 {
+	if mustBindPhone && lp == 0 {
 		return member.ErrMissingPhone
 	}
 	if lp > 0 {
@@ -588,7 +585,7 @@ func (m *memberImpl) prepare() (err error) {
 		}
 	}
 	// 使用手机号作为用户名
-	if perm.PhoneAsUser {
+	if phoneAsUser {
 		if m.repo.CheckUsrExist(m.value.Phone, 0) {
 			return member.ErrPhoneHasBind
 		}
@@ -637,11 +634,11 @@ func (m *memberImpl) generateMemberCode() string {
 }
 
 // 创建邀请码
-func (m *memberImpl) generateInvitationCode() string {
+func (m *memberImpl) generateInviteCode() string {
 	var code string
 	for {
-		code = domain.GenerateInvitationCode()
-		if memberId := m.repo.GetMemberIdByInvitationCode(code); memberId == 0 {
+		code = domain.GenerateInviteCode()
+		if memberId := m.repo.GetMemberIdByInviteCode(code); memberId == 0 {
 			break
 		}
 	}

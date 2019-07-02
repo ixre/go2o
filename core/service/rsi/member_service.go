@@ -60,6 +60,8 @@ func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.EC
 		memberId = s.repo.GetMemberIdByPhone(value)
 	case member_service.ECredentials_Email:
 		memberId = s.repo.GetMemberIdByEmail(value)
+	case member_service.ECredentials_InviteCode:
+		memberId = s.repo.GetMemberIdByInviteCode(value)
 	}
 	return memberId, nil
 }
@@ -323,8 +325,8 @@ func (s *memberService) getMember(memberId int64) (
 	return m, nil
 }
 
-func (s *memberService) GetMemberIdByInvitationCode(code string) int64 {
-	return s.repo.GetMemberIdByInvitationCode(code)
+func (s *memberService) GetMemberIdByInviteCode(code string) int64 {
+	return s.repo.GetMemberIdByInviteCode(code)
 }
 
 // 根据信息获取会员编号
@@ -455,6 +457,7 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		RegIp:   extend["reg_ip"],
 		Flag:    int(flag),
 	}
+	log.Println(fmt.Sprintf("%#v", v))
 	m := s.repo.CreateMember(v) //创建会员
 	id, err := m.Save()
 
@@ -702,11 +705,6 @@ func (s *memberService) CheckUsr(user string, memberId int64) error {
 		return member.ErrUsrExist
 	}
 	return nil
-}
-
-// 检查手机号码是否与会员一致
-func (s *memberService) CheckPhone(phone string, memberId int64) error {
-	return s.repo.GetManager().CheckPhoneBind(phone, memberId)
 }
 
 // 获取会员账户
@@ -1383,7 +1381,7 @@ func (s *memberService) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 }
 
 // 根据手机获取会员编号
-func (s *memberService) GetMemberIdByPhone(phone string) int64 {
+func (s *memberService) GetMemberIdByPhone1(phone string) int64 {
 	return s.query.GetMemberIdByPhone(phone)
 }
 

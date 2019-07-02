@@ -60,7 +60,7 @@ type IMemberRepo interface {
 	GetMemberLatestUpdateTime(id int64) int64
 
 	// 根据邀请码获取会员编号
-	GetMemberIdByInvitationCode(code string) int64
+	GetMemberIdByInviteCode(code string) int64
 
 	// 根据手机号获取会员编号
 	GetMemberIdByPhone(phone string) int64

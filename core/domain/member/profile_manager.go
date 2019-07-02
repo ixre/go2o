@@ -331,8 +331,8 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 			msg := p.member.mssRepo.MessageManager().CreateMessage(v, val)
 			//todo:?? data
 			var data = map[string]string{
-				"Name":           p.profile.Name,
-				"InvitationCode": p.member.GetValue().InvitationCode,
+				"Name":       p.profile.Name,
+				"InviteCode": p.member.GetValue().InviteCode,
 			}
 			return msg.Send(data)
 		}

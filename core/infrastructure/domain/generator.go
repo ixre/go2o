@@ -41,7 +41,7 @@ func NewTradeNo(business int, userId int) string {
 }
 
 // 创建邀请码(6位)
-func GenerateInvitationCode() string {
+func GenerateInviteCode() string {
 	var seed = fmt.Sprintf("%d%s", time.Now().Unix(), util.RandString(6))
 	var md5 = crypto.Md5([]byte(seed))
 	return md5[8:14]

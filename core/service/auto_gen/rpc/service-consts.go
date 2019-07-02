@@ -13,6 +13,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/item_service"
 	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/auto_gen/rpc/shipment_service"
@@ -34,6 +35,7 @@ var _ = foundation_service.GoUnusedProtection__
 var _ = item_service.GoUnusedProtection__
 var _ = mch_service.GoUnusedProtection__
 var _ = member_service.GoUnusedProtection__
+var _ = message_service.GoUnusedProtection__
 var _ = payment_service.GoUnusedProtection__
 var _ = shop_service.GoUnusedProtection__
 var _ = order_service.GoUnusedProtection__

@@ -43,7 +43,7 @@ func (s *SSOModule) Init() {
 		keys := []string{
 			registry.DomainPrefixPortal,
 			registry.DomainPrefixWholesalePortal,
-			registry.DomainPrefixApi,
+			registry.DomainPrefixHApi,
 			registry.DomainPrefixMember,
 			registry.DomainPrefixMobileMember,
 			registry.DomainPrefixMobilePortal,

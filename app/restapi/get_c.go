@@ -35,8 +35,8 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	//if m != nil {
 	//	query := "return_url=" + targetUrl
 	//	c.Response().Header().Add("Content-Type", "Image/Jpeg")
-	//	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%s.jpg", m.InvitationCode))
-	//	c.Response().Write(autil.GenerateInvitationQr(domain, m.InvitationCode, query))
+	//	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%s.jpg", m.InviteCode))
+	//	c.Response().Write(autil.GenerateInvitationQr(domain, m.InviteCode, query))
 	//}
 	//return nil
 }

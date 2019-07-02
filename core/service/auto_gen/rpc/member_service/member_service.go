@@ -27,10 +27,11 @@ var _ = ttype.GoUnusedProtection__
 type ECredentials int64
 
 const (
-	ECredentials_User  ECredentials = 1
-	ECredentials_Code  ECredentials = 2
-	ECredentials_Email ECredentials = 3
-	ECredentials_Phone ECredentials = 4
+	ECredentials_User       ECredentials = 1
+	ECredentials_Code       ECredentials = 2
+	ECredentials_Email      ECredentials = 3
+	ECredentials_Phone      ECredentials = 4
+	ECredentials_InviteCode ECredentials = 6
 )
 
 func (p ECredentials) String() string {
@@ -43,6 +44,8 @@ func (p ECredentials) String() string {
 		return "Email"
 	case ECredentials_Phone:
 		return "Phone"
+	case ECredentials_InviteCode:
+		return "InviteCode"
 	}
 	return "<UNSET>"
 }
@@ -57,6 +60,8 @@ func ECredentialsFromString(s string) (ECredentials, error) {
 		return ECredentials_Email, nil
 	case "Phone":
 		return ECredentials_Phone, nil
+	case "InviteCode":
+		return ECredentials_InviteCode, nil
 	}
 	return ECredentials(0), fmt.Errorf("not a valid ECredentials string")
 }
@@ -409,7 +414,7 @@ func (p *SLevel) String() string {
 //  - Level
 //  - PremiumUser: 高级用户级别
 //  - PremiumExpires: 高级用户过期时间
-//  - InvitationCode
+//  - InviteCode
 //  - RegIp
 //  - RegFrom
 //  - State
@@ -431,7 +436,7 @@ type SMember struct {
 	Level          int32  `thrift:"Level,6" db:"Level" json:"Level"`
 	PremiumUser    int32  `thrift:"PremiumUser,7" db:"PremiumUser" json:"PremiumUser"`
 	PremiumExpires int64  `thrift:"PremiumExpires,8" db:"PremiumExpires" json:"PremiumExpires"`
-	InvitationCode string `thrift:"InvitationCode,9" db:"InvitationCode" json:"InvitationCode"`
+	InviteCode     string `thrift:"InviteCode,9" db:"InviteCode" json:"InviteCode"`
 	RegIp          string `thrift:"RegIp,10" db:"RegIp" json:"RegIp"`
 	RegFrom        string `thrift:"RegFrom,11" db:"RegFrom" json:"RegFrom"`
 	State          int32  `thrift:"State,12" db:"State" json:"State"`
@@ -482,8 +487,8 @@ func (p *SMember) GetPremiumExpires() int64 {
 	return p.PremiumExpires
 }
 
-func (p *SMember) GetInvitationCode() string {
-	return p.InvitationCode
+func (p *SMember) GetInviteCode() string {
+	return p.InviteCode
 }
 
 func (p *SMember) GetRegIp() string {
@@ -848,7 +853,7 @@ func (p *SMember) ReadField9(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 9: ", err)
 	} else {
-		p.InvitationCode = v
+		p.InviteCode = v
 	}
 	return nil
 }
@@ -1144,14 +1149,14 @@ func (p *SMember) writeField8(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *SMember) writeField9(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("InvitationCode", thrift.STRING, 9); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:InvitationCode: ", p), err)
+	if err := oprot.WriteFieldBegin("InviteCode", thrift.STRING, 9); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:InviteCode: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.InvitationCode)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.InvitationCode (9) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.InviteCode)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.InviteCode (9) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:InvitationCode: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:InviteCode: ", p), err)
 	}
 	return err
 }
@@ -3086,7 +3091,7 @@ func (p *SAccount) String() string {
 //  - Exp
 //  - Level
 //  - LevelName
-//  - InvitationCode
+//  - InviteCode
 //  - TrustAuthState
 //  - PremiumUser
 //  - Flag
@@ -3098,7 +3103,7 @@ type SComplexMember struct {
 	Exp            int32  `thrift:"Exp,4" db:"Exp" json:"Exp"`
 	Level          int32  `thrift:"Level,5" db:"Level" json:"Level"`
 	LevelName      string `thrift:"LevelName,6" db:"LevelName" json:"LevelName"`
-	InvitationCode string `thrift:"InvitationCode,7" db:"InvitationCode" json:"InvitationCode"`
+	InviteCode     string `thrift:"InviteCode,7" db:"InviteCode" json:"InviteCode"`
 	TrustAuthState int32  `thrift:"TrustAuthState,8" db:"TrustAuthState" json:"TrustAuthState"`
 	PremiumUser    int32  `thrift:"PremiumUser,9" db:"PremiumUser" json:"PremiumUser"`
 	Flag           int32  `thrift:"Flag,10" db:"Flag" json:"Flag"`
@@ -3133,8 +3138,8 @@ func (p *SComplexMember) GetLevelName() string {
 	return p.LevelName
 }
 
-func (p *SComplexMember) GetInvitationCode() string {
-	return p.InvitationCode
+func (p *SComplexMember) GetInviteCode() string {
+	return p.InviteCode
 }
 
 func (p *SComplexMember) GetTrustAuthState() int32 {
@@ -3349,7 +3354,7 @@ func (p *SComplexMember) ReadField7(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 7: ", err)
 	} else {
-		p.InvitationCode = v
+		p.InviteCode = v
 	}
 	return nil
 }
@@ -3517,14 +3522,14 @@ func (p *SComplexMember) writeField6(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *SComplexMember) writeField7(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("InvitationCode", thrift.STRING, 7); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:InvitationCode: ", p), err)
+	if err := oprot.WriteFieldBegin("InviteCode", thrift.STRING, 7); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:InviteCode: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.InvitationCode)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.InvitationCode (7) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.InviteCode)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.InviteCode (7) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:InvitationCode: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:InviteCode: ", p), err)
 	}
 	return err
 }

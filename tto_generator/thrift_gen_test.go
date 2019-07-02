@@ -2,7 +2,7 @@ package tool
 
 import (
 	"github.com/ixre/tto"
-	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/mss/notify"
 	"testing"
 )
 
@@ -17,6 +17,6 @@ import (
 
 func TestGenerateThriftStruct(t *testing.T) {
 	//bytes, _ := tto.ThriftStruct(member.ComplexMember{})
-	bytes, _ := tto.ThriftStruct(member.BankInfo{})
+	bytes, _ := tto.ThriftStruct(notify.NotifyItem{})
 	t.Log(string(bytes))
 }

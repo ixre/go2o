@@ -10,7 +10,6 @@ package notify
 
 import (
 	"errors"
-	"go2o/core/infrastructure/domain"
 )
 
 const (
@@ -20,9 +19,6 @@ const (
 )
 
 var (
-	ErrNoSuchNotifyItem *domain.DomainError = domain.NewError(
-		"err_no_such_notify_item", "通知项不存在")
-
 	// 类型字典
 	NotifyTypeMap = map[int]string{
 		TypeSiteMessage:  "站内信",
@@ -110,6 +106,10 @@ type (
 		GetNotifyItem(key string) NotifyItem
 		// 保存通知项设置
 		SaveNotifyItem(item *NotifyItem) error
+		// 保存短信API
+		SaveSmsApiPerm(provider string, s *SmsApiPerm) error
+		// 获取短信API信息
+		GetSmsApiPerm(provider string) *SmsApiPerm
 		// 发送手机短信
 		SendPhoneMessage(phone string, msg PhoneMessage, data map[string]interface{}) error
 		// 发送邮件
@@ -117,6 +117,8 @@ type (
 	}
 
 	INotifyRepo interface {
+		// 获取通知服务
+		Manager() INotifyManager
 		// 获取所有的通知项
 		GetAllNotifyItem() []NotifyItem
 
@@ -134,9 +136,12 @@ type (
 		NotifyBy int
 		// 不允许修改发送方式
 		ReadonlyBy bool
-		TplId      int
-		Content    string
-		Tags       map[string]string
+		// 模板编号
+		TplId int
+		// 内容
+		Content string
+		// 模板包含的标签
+		Tags map[string]string
 	}
 
 	// 通知项集合

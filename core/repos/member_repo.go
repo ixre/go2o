@@ -212,6 +212,11 @@ func (m *MemberRepoImpl) GetMemberIdByPhone(phone string) int64 {
 	return int64(m.getId("phone", phone))
 }
 
+// 根据邀请码获取会员编号
+func (m *MemberRepoImpl) GetMemberIdByInviteCode(code string) int64 {
+	return int64(m.getId("invite_code", code))
+}
+
 // 根据邮箱地址获取会员编号
 func (m *MemberRepoImpl) GetMemberIdByEmail(email string) int64 {
 	return int64(m.getId("email", email))
@@ -347,13 +352,6 @@ func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
 // 创建会员,仅作为某些操作使用,不保存
 func (m *MemberRepoImpl) CreateMemberById(memberId int64) member.IMember {
 	return m.CreateMember(&member.Member{Id: memberId})
-}
-
-// 根据邀请码获取会员编号
-func (m *MemberRepoImpl) GetMemberIdByInvitationCode(code string) int64 {
-	var memberId int64
-	m.ExecScalar("SELECT id FROM mm_member WHERE invitation_code= $1", &memberId, code)
-	return memberId
 }
 
 // 获取会员最后更新时间

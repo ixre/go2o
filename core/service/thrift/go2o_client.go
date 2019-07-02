@@ -15,6 +15,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/item_service"
 	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/auto_gen/rpc/shipment_service"
@@ -80,13 +81,19 @@ func FoundationServeClient() (thrift.TTransport, *foundation_service.FoundationS
 	return trans, foundation_service.NewFoundationServiceClient(cli), err
 }
 
-// 基础服务
+// 消息客户端
+func MessageServeClient() (thrift.TTransport, *message_service.MessageServiceClient, error) {
+	trans, cli, err := factory.GetClient("message")
+	return trans, message_service.NewMessageServiceClient(cli), err
+}
+
+// 支付服务
 func PaymentServeClient() (thrift.TTransport, *payment_service.PaymentServiceClient, error) {
 	trans, cli, err := factory.GetClient("payment")
 	return trans, payment_service.NewPaymentServiceClient(cli), err
 }
 
-// 基础服务
+// 钱包服务
 func WalletClient() (thrift.TTransport, *wallet_service.WalletServiceClient, error) {
 	trans, cli, err := factory.GetClient("wallet")
 	return trans, wallet_service.NewWalletServiceClient(cli), err
@@ -98,7 +105,7 @@ func OrderServeClient() (thrift.TTransport, *order_service.OrderServiceClient, e
 	return trans, order_service.NewOrderServiceClient(cli), err
 }
 
-// 基础服务
+// 物流服务
 func ShipmentServeClient() (thrift.TTransport, *shipment_service.ShipmentServiceClient, error) {
 	trans, cli, err := factory.GetClient("shipment")
 	return trans, shipment_service.NewShipmentServiceClient(cli), err
@@ -116,7 +123,7 @@ func ShopServeClient() (thrift.TTransport, *shop_service.ShopServiceClient, erro
 	return trans, shop_service.NewShopServiceClient(cli), err
 }
 
-// 商店服务
+// 财务服务
 func FinanceServeClient() (thrift.TTransport, *finance_service.FinanceServiceClient, error) {
 	trans, cli, err := factory.GetClient("finance")
 	return trans, finance_service.NewFinanceServiceClient(cli), err

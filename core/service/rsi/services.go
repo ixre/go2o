@@ -52,7 +52,7 @@ var (
 	// 支付服务
 	PaymentService *paymentService
 	// 消息服务
-	MssService *mssService
+	MessageService *messageService
 	// 快递服务
 	ExpressService *expressService
 	// 配送服务
@@ -119,7 +119,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	orderRepo := fact.GetOrderRepo()
 	paymentRepo := fact.GetPaymentRepo()
 	asRepo := fact.GetAfterSalesRepo()
-
+	notifyRepo := fact.GetNotifyRepo()
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
 	mchQuery := query.NewMerchantQuery(ctx)
@@ -132,7 +132,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	/** Service **/
 	StatusService = NewStatusService()
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
-	FoundationService = NewFoundationService(valueRepo, registryRepo)
+	FoundationService = NewFoundationService(valueRepo, registryRepo, notifyRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
 		productRepo, itemRepo, mchRepo, orderQuery)
@@ -142,7 +142,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
 	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
-	MssService = NewMssService(mssRepo)
+	MessageService = NewMessageService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
 	ShipmentService = NewShipmentService(shipRepo, deliveryRepo, expressRepo)
 	ContentService = NewContentService(contentRepo, contentQue)
@@ -174,7 +174,7 @@ func initRpcServe(ctx gof.App) {
 	FoundationService.UpdateRegistry(nil, mp)
 
 	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
-	//mp[variable.DStaticPathr] = gf("static_server")
+	//mp[variable.DStaticPath] = gf("static_server")
 	//mp[variable.DImageServer] = gf("image_server")
 	//mp[variable.DUrlHash] = hash
 	//mp[variable.DRetailPortal] = strings.Join([]string{prefix,

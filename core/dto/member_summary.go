@@ -28,7 +28,7 @@ type MemberSummary struct {
 	// 等级是否为正式会员
 	LevelOfficial int `db:"is_official"`
 	// 邀请码
-	InvitationCode string `db:"invitation_code"`
+	InviteCode string `db:"invite_code"`
 	// 积分
 	Integral int64 `db:"integral"`
 	// 账户余额

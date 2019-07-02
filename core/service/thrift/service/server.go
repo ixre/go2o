@@ -16,6 +16,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/item_service"
 	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/auto_gen/rpc/shipment_service"
@@ -55,6 +56,7 @@ func ListenAndServe(addr string, secure bool) error {
 		processor.RegisterProcessor("item", item_service.NewItemServiceProcessor(rsi.ItemService))
 		processor.RegisterProcessor("shop", shop_service.NewShopServiceProcessor(rsi.ShopService))
 		processor.RegisterProcessor("finance", finance_service.NewFinanceServiceProcessor(rsi.PersonFinanceService))
+		processor.RegisterProcessor("message", message_service.NewMessageServiceProcessor(rsi.MessageService))
 		processor.RegisterProcessor("wallet", wallet_service.NewWalletServiceProcessor(rsi.WalletService))
 		server := thrift.NewTSimpleServer4(processor, transport, transportFactory, protocolFactory)
 		log.Println("** [ Go2o][ RPC]: Starting thrift server on port ", addr)
