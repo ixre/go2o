@@ -47,7 +47,7 @@ func (m *memberManagerImpl) LevelManager() member.ILevelManager {
 
 // 检测注册权限
 func (m *memberManagerImpl) registerPerm(regMode int, invitation bool) error {
-	if regMode== member.RegisterModeClosed {
+	if regMode == member.RegisterModeClosed {
 		return member.ErrRegOff
 	}
 	if regMode == member.RegisterModeMustInvitation && !invitation {

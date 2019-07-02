@@ -26,7 +26,7 @@ type notifyManagerImpl struct {
 	valueRepo    valueobject.IValueRepo
 }
 
-func NewNotifyManager(repo notify.INotifyRepo,registryRepo registry.IRegistryRepo) notify.INotifyManager {
+func NewNotifyManager(repo notify.INotifyRepo, registryRepo registry.IRegistryRepo) notify.INotifyManager {
 	return &notifyManagerImpl{
 		repo:         repo,
 		registryRepo: registryRepo,
@@ -98,8 +98,8 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider string) *notify.SmsApiPerm {
 }
 
 // 发送手机短信
-func (n *notifyManagerImpl) SendPhoneMessage(phone string,
-	msg notify.PhoneMessage, data map[string]interface{}) error {
+func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessage,
+	data map[string]interface{}) error {
 	provider := n.registryRepo.Get(registry.SmsDefaultProvider).StringValue()
 	if provider == "" {
 		return notify.ErrNotSettingSmsProvider
@@ -108,8 +108,17 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string,
 	if api == nil {
 		return notify.ErrNoSuchSmsProvider
 	}
-	return sms.SendSms(provider, api.ApiKey, api.ApiSecret, phone,
-		api.ApiUrl, api.Encoding, api.SuccessChar, string(msg), data)
+	a := &sms.SmsApi{
+		ApiUrl:      api.ApiUrl,
+		Key:         api.Key,
+		Secret:      api.Secret,
+		Params:      api.Params,
+		Method:      api.Method,
+		Charset:     api.Charset,
+		SuccessChar: api.SuccessChar,
+		Signature:   api.Signature,
+	}
+	return sms.SendSms(provider, a, phone, string(msg), data)
 }
 
 // 发送邮件

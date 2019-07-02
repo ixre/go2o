@@ -11,18 +11,22 @@ package notify
 
 // 短信接口
 type SmsApiPerm struct {
-	//接口编号
-	ApiKey string
-	//接口密钥
-	ApiSecret string
 	//接口地址
 	ApiUrl string
+	//接口编号
+	Key string
+	//接口密钥
+	Secret string
+	// 请求数据,如: phone={phone}&content={content}
+	Params string
+	// 请求方式, GET或POST
+	Method string
 	//发送内容的编码
-	Encoding string
+	Charset string
+	// 签名
+	Signature string
 	//发送成功，包含的字符，用于检测是否发送成功
 	SuccessChar string
-	//是否默认的接口使用
-	Default bool
 }
 
 // 短信接口设置

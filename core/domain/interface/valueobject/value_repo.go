@@ -152,7 +152,6 @@ type (
 		//MchPayNotifyPath string //微信支付异步通知的路径
 	}
 
-
 	// 全局数值设置
 	//GlobNumberConf struct {
 	// 兑换1元所需要的积分

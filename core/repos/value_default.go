@@ -86,7 +86,6 @@ var (
 		WpReleaseUrl: "",
 	}
 
-
 	// 默认全局销售设置
 	//DefaultGlobNumberConf = valueobject.GlobNumberConf{
 	// 兑换1元所需要的积分

@@ -8,7 +8,7 @@ import (
 	"unicode"
 )
 
-const(
+const (
 	FlagUserDefine = 1 << iota
 )
 
@@ -41,7 +41,7 @@ type IRegistry interface {
 	// 返回字符值
 	StringValue() string
 	// 返回Int值
-	IntValue()int
+	IntValue() int
 	// 返回浮点值
 	FloatValue() float64
 	// 返回布尔值
@@ -142,7 +142,7 @@ func (r *registryImpl) BoolValue() bool {
 }
 
 func (r *registryImpl) Remove() error {
-	if r.IsUser(){
+	if r.IsUser() {
 		return errors.New("registry is not create by user, can't be removed")
 	}
 	return r.repo.Remove(r.Key())
@@ -165,8 +165,8 @@ func (r *registryImpl) Save() error {
 	if len(r.value.Key) > 45 {
 		return errors.New("key length out of 40")
 	}
-	if len(r.value.Value) > 120 {
-		return errors.New("value length out of 120")
+	if len(r.value.Value) > 512 {
+		return errors.New("value length out of 512")
 	}
 	return r.repo.Save(r)
 }

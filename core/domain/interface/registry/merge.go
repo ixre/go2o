@@ -25,7 +25,8 @@ func MergeRegistries() []*Registry {
 	mergeAdd("商户系统域名前缀", DomainPrefixMerchant, "mch.", "")
 	mergeAdd("通行证域名前缀", DomainPrefixPassport, "passport.", "")
 	mergeAdd("通行证域名协议", DomainPassportProto, "http", "http或https")
-	mergeAdd("API系统", DomainPrefixApi, "api.", "")
+	mergeAdd("API前缀", DomainPrefixApi, "api.", "")
+	mergeAdd("HAPI前缀", DomainPrefixHApi, "hapi.", "")
 	mergeAdd("静态服务器前缀", DomainPrefixStatic, "static.", "")
 	mergeAdd("图片服务器前缀", DomainPrefixImage, "img.", "")
 	mergeAdd("批发中心移动端", DomainPrefixMobileWholesale, "mwhs.", "")
@@ -52,10 +53,13 @@ func MergeRegistries() []*Registry {
 	mergeAdd("启用商户页面分类", EnableMchPageCategory, "false", "")
 	mergeAdd("系统是否挂起", SysSuspend, "false", "")
 	mergeAdd("系统挂起提示消息", SysSuspendMessage, "系统正在升级维护，请稍后再试!", "")
-	mergeAdd("默认短信服务商",SmsDefaultProvider,"","")
 	mergeAdd("收货提示信息", OrderReceiveAlertMessage, "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!", "")
 
-	/** 会员注册 */
+	/** 短信 */
+	mergeAdd("默认短信服务商", SmsDefaultProvider, "", "")
+	mergeAdd("用户注册短信模板ID", SmsRegisterTemplateId, "", "")
+	mergeAdd("用户验证码短信模板ID", SmsMemberCheckTemplateId, "", "")
+
 	// 注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册,等于member.RegisterMode
 	mergeAdd("注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册", MemberRegisterMode, "1", "")
 	mergeAdd("是否允许匿名注册", MemberRegisterAllowAnonymous, "true", "")

@@ -37,13 +37,13 @@ type mssRepo struct {
 }
 
 func NewMssRepo(conn db.Connector, notifyRepo notify.INotifyRepo,
-	registryRepo  registry.IRegistryRepo,
+	registryRepo registry.IRegistryRepo,
 	valRepo valueobject.IValueRepo) mss.IMssRepo {
 	return &mssRepo{
-		_conn:       conn,
-		_notifyRepo: notifyRepo,
-		registryRepo:registryRepo,
-		_valRepo:    valRepo,
+		_conn:        conn,
+		_notifyRepo:  notifyRepo,
+		registryRepo: registryRepo,
+		_valRepo:     valRepo,
 	}
 }
 

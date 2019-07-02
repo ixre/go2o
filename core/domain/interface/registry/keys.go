@@ -18,8 +18,10 @@ var (
 	DomainPrefixPassport = KeyFormat("DomainPrefixPassport")
 	// 通行证域名协议,默认为http,可以使用https安全加密
 	DomainPassportProto = KeyFormat("DomainPassportProto")
-	// API系统
+	// API前缀
 	DomainPrefixApi = KeyFormat("DomainPrefixApi")
+	// HAPI前缀
+	DomainPrefixHApi = KeyFormat("DomainPrefixHApi")
 	// 静态服务器前缀
 	DomainPrefixStatic = KeyFormat("DomainPrefixStatic")
 	// 图片服务器前缀
@@ -55,8 +57,14 @@ var (
 	SysSuspend = KeyFormat("SysSuspend")
 	// 系统挂起提示消息
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
+
+	/** 短信 */
 	// 默认短信服务商
-	SmsDefaultProvider =KeyFormat("SmsDefaultProvider")
+	SmsDefaultProvider = KeyFormat("SmsDefaultProvider")
+	// 用户注册短信模板ID
+	SmsRegisterTemplateId = KeyFormat("SmsRegisterTemplateId")
+	// 用户验证码短信模板ID
+	SmsMemberCheckTemplateId = KeyFormat("SmsMemberCheckTemplateId")
 
 	/** 账户 */
 	// 余额账户
@@ -74,21 +82,21 @@ var (
 
 	/** 会员注册 */
 	// 注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册,等于member.RegisterMode
-	MemberRegisterMode =  KeyFormat("MemberRegisterMode")
+	MemberRegisterMode = KeyFormat("MemberRegisterMode")
 	// 是否允许匿名注册
-	MemberRegisterAllowAnonymous =  KeyFormat("MemberRegisterAllowAnonymous")
+	MemberRegisterAllowAnonymous = KeyFormat("MemberRegisterAllowAnonymous")
 	// 手机号码作为用户名
-	MemberRegisterPhoneAsUser =  KeyFormat("MemberRegisterPhoneAsUser")
+	MemberRegisterPhoneAsUser = KeyFormat("MemberRegisterPhoneAsUser")
 	// 是否需要填写手机
-	MemberRegisterNeedPhone=  KeyFormat("MemberRegisterNeedPhone")
+	MemberRegisterNeedPhone = KeyFormat("MemberRegisterNeedPhone")
 	// 必须绑定手机
-	MemberRegisterMustBindPhone=  KeyFormat("MemberRegisterMustBindPhone")
+	MemberRegisterMustBindPhone = KeyFormat("MemberRegisterMustBindPhone")
 	// 是否需要填写即时通讯
-	MemberRegisterNeedIm=  KeyFormat("MemberRegisterNeedIm")
+	MemberRegisterNeedIm = KeyFormat("MemberRegisterNeedIm")
 	// 注册提示
-	MemberRegisterNotice =  KeyFormat("MemberRegisterNotice")
+	MemberRegisterNotice = KeyFormat("MemberRegisterNotice")
 	// 注册回调页
-	MemberRegisterReturnUrl =  KeyFormat("MemberRegisterReturnUrl")
+	MemberRegisterReturnUrl = KeyFormat("MemberRegisterReturnUrl")
 	// 注册后赠送积分数量
 	MemberRegisterPresentIntegral = KeyFormat("MemberRegisterPresentIntegral")
 

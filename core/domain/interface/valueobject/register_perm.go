@@ -11,7 +11,6 @@ import "go2o/core/domain/interface/registry"
  * history :
  */
 
-
 // 注册权限设置
 type RegisterPerm1 struct {
 	// 注册模式,等于member.RegisterMode
@@ -32,10 +31,10 @@ type RegisterPerm1 struct {
 	Licence string `key:"MemberRegisterReturnUrl"`
 	// 注册回调页
 	CallBackUrl string `key:"MemberRegisterPresentIntegral"`
-	keys []string
+	keys        []string
 }
 
-func (r RegisterPerm1) Keys(){
+func (r RegisterPerm1) Keys() {
 	if r.keys == nil {
 		r.keys = []string{
 			//registry.MemberReg
@@ -43,6 +42,6 @@ func (r RegisterPerm1) Keys(){
 	}
 }
 
-func LoadRegisterPerm(repo registry.IRegistryRepo){
+func LoadRegisterPerm(repo registry.IRegistryRepo) {
 
 }

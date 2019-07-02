@@ -218,7 +218,6 @@ func (r *valueRepo) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	return errors.New("nil value")
 }
 
-
 // 获取移动应用设置
 func (r *valueRepo) GetMoAppConf() valueobject.MoAppConf {
 	r.checkReload()

@@ -20,6 +20,8 @@ service FoundationService{
    list<SRegistry> SearchRegistry(1:string key)
    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
    ttype.Result CreateUserRegistry(1:string key,2:string defaultValue,3:string description)
+   /** 保存短信API凭据,@provider 短信服务商, 默认:http */
+   ttype.Result SaveSmsApi(1:string provider,2:SmsApi api)
 
    // 格式化资源地址并返回
    string ResourceUrl(1:string url)
@@ -87,4 +89,24 @@ struct SArea  {
     1:i32 Code
     2:i32 Parent
     3:string Name
+}
+
+/** 短信接口信息 */
+struct SmsApi {
+    /** 接口地址 */
+    1:string ApiUrl
+    /* 接口KEY */
+    2:string Key
+    /* 接口密钥 */
+    3:string Secret
+	/** 请求数据,如: phone={phone}&content={content}*/
+	4:string Params
+	/** 请求方式, GET或POST */
+	5:string Method
+    /** 编码 */
+    6:string Charset
+   // 签名
+   	7:string Signature
+   	//发送成功，包含的字符，用于检测是否发送成功
+   	8:string SuccessChar
 }

@@ -119,7 +119,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	orderRepo := fact.GetOrderRepo()
 	paymentRepo := fact.GetPaymentRepo()
 	asRepo := fact.GetAfterSalesRepo()
-
+	notifyRepo := fact.GetNotifyRepo()
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
 	mchQuery := query.NewMerchantQuery(ctx)
@@ -132,7 +132,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	/** Service **/
 	StatusService = NewStatusService()
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
-	FoundationService = NewFoundationService(valueRepo, registryRepo)
+	FoundationService = NewFoundationService(valueRepo, registryRepo, notifyRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
 		productRepo, itemRepo, mchRepo, orderQuery)

@@ -13,7 +13,7 @@ import (
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
-	notify2 "go2o/core/domain/mss/notify"
+	impl "go2o/core/domain/mss/notify"
 )
 
 var _ notify.INotifyRepo = new(notifyRepImpl)
@@ -23,21 +23,21 @@ type notifyRepImpl struct {
 	_itemGob     *util.GobFile
 	_notifyItems map[string]*notify.NotifyItem
 	registryRepo registry.IRegistryRepo
-	manager notify.INotifyManager
+	manager      notify.INotifyManager
 }
 
 func (n *notifyRepImpl) Manager() notify.INotifyManager {
-	if(n.manager == nil){
-		n.manager = notify2.NewNotifyManager(n,n.registryRepo)
+	if n.manager == nil {
+		n.manager = impl.NewNotifyManager(n, n.registryRepo)
 	}
-	panic("implement me")
+	return n.manager
 }
 
-func NewNotifyRepo(conn db.Connector,registryRepo registry.IRegistryRepo) notify.INotifyRepo {
+func NewNotifyRepo(conn db.Connector, registryRepo registry.IRegistryRepo) notify.INotifyRepo {
 	return &notifyRepImpl{
-		_conn:    conn,
-		registryRepo:registryRepo,
-		_itemGob: util.NewGobFile("conf/core/mss_notify"),
+		_conn:        conn,
+		registryRepo: registryRepo,
+		_itemGob:     util.NewGobFile("conf/core/mss_notify"),
 	}
 }
 
@@ -58,7 +58,7 @@ func (this *notifyRepImpl) getNotifyItemMap() map[string]*notify.NotifyItem {
 
 // 获取所有的通知项
 func (this *notifyRepImpl) GetAllNotifyItem() []notify.NotifyItem {
-	list := []notify.NotifyItem{}
+	var list []notify.NotifyItem
 	for _, v := range notify.DefaultNotifyItems {
 		v2 := this.getNotifyItemMap()[v.Key]
 		if v2 != nil {

@@ -118,7 +118,7 @@ type (
 
 	INotifyRepo interface {
 		// 获取通知服务
-		Manager()INotifyManager
+		Manager() INotifyManager
 		// 获取所有的通知项
 		GetAllNotifyItem() []NotifyItem
 
@@ -127,7 +127,6 @@ type (
 
 		// 保存通知项
 		SaveNotifyItem(v *NotifyItem) error
-
 	}
 
 	// 通知项
