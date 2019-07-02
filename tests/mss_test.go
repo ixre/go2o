@@ -31,13 +31,17 @@ func TestMssSendSms(t *testing.T) {
 			"&batchNum={stamp}&templateId={templateId}",
 		Method:      "POST",
 		Charset:     "utf-8",
-		Signature:   "【区块兔】",
+		Signature:   "",
 		SuccessChar: "errorCode\":\"000000\"",
 	})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+
+}
+
+func TestSendSms(t *testing.T){
 	//data := map[string]interface{}{
 	//	"templateId":8332,
 	//}

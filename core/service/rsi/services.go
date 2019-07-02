@@ -52,7 +52,7 @@ var (
 	// 支付服务
 	PaymentService *paymentService
 	// 消息服务
-	MssService *mssService
+	MessageService *messageService
 	// 快递服务
 	ExpressService *expressService
 	// 配送服务
@@ -142,7 +142,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
 	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
-	MssService = NewMssService(mssRepo)
+	MessageService = NewMessageService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
 	ShipmentService = NewShipmentService(shipRepo, deliveryRepo, expressRepo)
 	ContentService = NewContentService(contentRepo, contentQue)

@@ -1,6 +1,6 @@
 /**
  * Copyright 2015 @ to2.net.
- * name : mss_service.go
+ * name : message_service.go
  * author : jarryliu
  * date : 2016-06-11 20:51
  * description :
@@ -9,67 +9,97 @@
 package rsi
 
 import (
+	"context"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
+	"go2o/core/service/auto_gen/rpc/message_service"
+	"go2o/core/service/auto_gen/rpc/ttype"
 )
-
-type mssService struct {
+var _ message_service.MessageService = new(messageService)
+type messageService struct {
 	_rep mss.IMssRepo
+	*serviceUtil
 }
 
-func NewMssService(rep mss.IMssRepo) *mssService {
-	return &mssService{
+
+
+func NewMessageService(rep mss.IMssRepo) *messageService {
+	return &messageService{
 		_rep: rep,
 	}
 }
 
+// 获取通知项配置
+func (m *messageService) GetNotifyItem(ctx context.Context, key string) (r *message_service.SNotifyItem, err error) {
+	it := m._rep.NotifyManager().GetNotifyItem(key)
+	return &message_service.SNotifyItem{
+		Key:        it.Key,
+		NotifyBy:   int32(it.NotifyBy),
+		ReadonlyBy: it.ReadonlyBy,
+		TplId:      int32(it.TplId),
+		Content:    it.Content,
+		Tags:       it.Tags,
+	},nil
+}
+
+// 发送短信
+func (m *messageService) SendPhoneMessage(ctx context.Context, phone string, message string, data map[string]string) (r *ttype.Result_, err error) {
+	mg := m._rep.NotifyManager()
+	extra := make(map[string]interface{})
+	if data != nil{
+		for k,v := range data{
+			extra[k] = v
+		}
+	}
+	err = mg.SendPhoneMessage(phone, notify.PhoneMessage( message), extra)
+	if err!= nil{
+		return m.error(err),nil
+	}
+	return m.success(nil),nil
+}
+
 // 获取邮件模版
-func (m *mssService) GetMailTemplate(id int32) *mss.MailTemplate {
+func (m *messageService) GetMailTemplate(id int32) *mss.MailTemplate {
 	return m._rep.GetProvider().GetMailTemplate(id)
 }
 
 // 保存邮件模板
-func (m *mssService) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
+func (m *messageService) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 	return m._rep.GetProvider().SaveMailTemplate(v)
 }
 
 // 获取邮件模板
-func (m *mssService) GetMailTemplates() []*mss.MailTemplate {
+func (m *messageService) GetMailTemplates() []*mss.MailTemplate {
 	return m._rep.GetProvider().GetMailTemplates()
 }
 
 // 删除邮件模板
-func (m *mssService) DeleteMailTemplate(id int32) error {
+func (m *messageService) DeleteMailTemplate(id int32) error {
 	return m._rep.GetProvider().DeleteMailTemplate(id)
 }
 
 // 获取邮件绑定
-func (m *mssService) GetConfig() mss.Config {
+func (m *messageService) GetConfig() mss.Config {
 	return m._rep.GetProvider().GetConfig()
 }
 
 // 保存邮件
-func (m *mssService) SaveConfig(conf *mss.Config) error {
+func (m *messageService) SaveConfig(conf *mss.Config) error {
 	return m._rep.GetProvider().SaveConfig(conf)
 }
 
 //可通过外部添加
-func (m *mssService) RegisterNotifyItem(key string, item *notify.NotifyItem) {
+func (m *messageService) RegisterNotifyItem(key string, item *notify.NotifyItem) {
 	notify.RegisterNotifyItem(key, item)
 }
 
-func (m *mssService) GetAllNotifyItem() []notify.NotifyItem {
+func (m *messageService) GetAllNotifyItem() []notify.NotifyItem {
 	return m._rep.NotifyManager().GetAllNotifyItem()
 }
 
-// 获取通知项配置
-func (m *mssService) GetNotifyItem(key string) notify.NotifyItem {
-	return m._rep.NotifyManager().GetNotifyItem(key)
-}
-
 // 保存通知项设置
-func (m *mssService) SaveNotifyItem(item *notify.NotifyItem) error {
+func (m *messageService) SaveNotifyItem(item *notify.NotifyItem) error {
 	return m._rep.NotifyManager().SaveNotifyItem(item)
 }
 
@@ -77,7 +107,7 @@ func (m *mssService) SaveNotifyItem(item *notify.NotifyItem) error {
 // 发送站内通知信息,
 // toRole: 为-1时发送给所有用户
 // sendNow: 是否马上发送
-func (ms *mssService) SendSiteNotifyMessage(senderId int32, toRole int,
+func (ms *messageService) SendSiteNotifyMessage(senderId int32, toRole int,
 	msg *notify.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
@@ -111,7 +141,7 @@ func (ms *mssService) SendSiteNotifyMessage(senderId int32, toRole int,
 }
 
 // 对会用户发送站内信
-func (ms *mssService) SendSiteMessageToUser(senderId int32, toRole int, toUser int64,
+func (ms *messageService) SendSiteMessageToUser(senderId int32, toRole int, toUser int64,
 	msg *notify.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
@@ -143,7 +173,7 @@ func (ms *mssService) SendSiteMessageToUser(senderId int32, toRole int, toUser i
 }
 
 // 获取站内信
-func (m *mssService) GetSiteMessage(id, toUserId int32, toRole int) *dto.SiteMessage {
+func (m *messageService) GetSiteMessage(id, toUserId int32, toRole int) *dto.SiteMessage {
 	msg := m._rep.MessageManager().GetMessage(id)
 	if msg != nil && msg.CheckPerm(toUserId, toRole) {
 		val := msg.GetValue()
@@ -179,19 +209,12 @@ func (m *mssService) GetSiteMessage(id, toUserId int32, toRole int) *dto.SiteMes
 	return nil
 }
 
-// 发送短信
-func (m *mssService) SendPhoneMessage(phone string,
-	msg notify.PhoneMessage, data map[string]interface{}) error {
-	mg := m._rep.NotifyManager()
-	return mg.SendPhoneMessage(phone, msg, data)
-}
-
 // 获取聊天会话编号
-func (m *mssService) GetChatSessionId(senderRole int, senderId int32, toRole int, toId int32) int32 {
+func (m *messageService) GetChatSessionId(senderRole int, senderId int32, toRole int, toId int32) int32 {
 	return m._rep.MessageManager().GetChatSessionId(senderRole, senderId, toRole, toId)
 }
 
 // 创建聊天会话
-func (m *mssService) CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error) {
+func (m *messageService) CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error) {
 	return m._rep.MessageManager().CreateChatSession(senderRole, senderId, toRole, toId)
 }

@@ -705,10 +705,6 @@ func (s *memberService) CheckUsr(user string, memberId int64) error {
 	return nil
 }
 
-// 检查手机号码是否与会员一致
-func (s *memberService) CheckPhone(phone string, memberId int64) error {
-	return s.repo.GetManager().CheckPhoneBind(phone, memberId)
-}
 
 // 获取会员账户
 func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*member_service.SAccount, error) {
