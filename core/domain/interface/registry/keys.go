@@ -4,6 +4,8 @@ var (
 	/** 域名 */
 	// 是否启用SSL连接
 	DomainEnabledSSL = KeyFormat("DomainEnabledSsl")
+	// 根域名
+	Domain = KeyFormat("Domain")
 	// 零售门户前缀
 	DomainPrefixPortal = KeyFormat("DomainPrefixPortal")
 	// 批发门户域名前缀

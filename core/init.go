@@ -50,6 +50,8 @@ func Startup(job func()) {
 	startJobs = append(startJobs, job)
 }
 
+
+
 // 注册序列类型
 func registerTypes() {
 	gob.Register(&member.Member{})
