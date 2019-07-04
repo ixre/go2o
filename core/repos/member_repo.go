@@ -247,7 +247,7 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
-		m.storage.Set(key, *e)
+		m.storage.SetExpire(key, *e, DefaultCacheSeconds*3)
 	}
 	return m.CreateMember(e)
 }

@@ -68,7 +68,7 @@ func MemberDto(src *member.Member) *member_service.SMember {
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
-		PremiumExpires: int64(src.PremiumExpires),
+		PremiumExpires: src.PremiumExpires,
 		InviteCode:     src.InviteCode,
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,

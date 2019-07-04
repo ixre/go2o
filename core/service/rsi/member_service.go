@@ -325,6 +325,7 @@ func (s *memberService) getMember(memberId int64) (
 	return m, nil
 }
 
+//todo: remove
 func (s *memberService) GetMemberIdByInviteCode(code string) int64 {
 	return s.repo.GetMemberIdByInviteCode(code)
 }
