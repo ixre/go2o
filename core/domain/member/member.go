@@ -554,7 +554,6 @@ func (m *memberImpl) memberInit() error {
 
 // 检查注册信息是否正确
 func (m *memberImpl) prepare() (err error) {
-
 	phoneAsUser := m.registryRepo.Get(registry.MemberRegisterPhoneAsUser).BoolValue()
 	mustBindPhone := m.registryRepo.Get(registry.MemberRegisterMustBindPhone).BoolValue()
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
@@ -591,6 +590,8 @@ func (m *memberImpl) prepare() (err error) {
 		}
 		m.value.User = m.value.Phone
 	}
+	// 用户名全小写
+	m.value.User = strings.ToLower(m.value.User)
 
 	// 验证IM
 	//pro.Im = strings.TrimSpace(pro.Im)

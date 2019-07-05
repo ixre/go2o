@@ -2,7 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ixre/gof/api"
+	"github.com/ixre/gof/types"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/thrift"
@@ -31,6 +34,7 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 		"checkToken":      m.checkToken,
 		"complex":         m.complex,
 		"bankcard":        m.bankcard,
+		"invites":         m.invites,
 		"receipts_code":   m.receiptsCode,
 		"save_receipts":   m.saveReceiptsCode,
 		"toggle_receipts": m.toggleReceipts,
@@ -237,4 +241,29 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 		}
 	}
 	return api.NewErrorResponse("no such data")
+}
+
+// 获取邀请码和邀请链接
+func (m *MemberApi) invites(ctx api.Context) interface{} {
+	trans, cli, _ := thrift.MemberServeClient()
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+	member, _ := cli.GetMember(thrift.Context, memberId)
+	trans.Close()
+	trans2, cli2, _ := thrift.FoundationServeClient()
+	defer trans2.Close()
+	keys := []string{registry.Domain, registry.DomainEnabledSSL, registry.DomainPrefixMember}
+	mp, _ := cli2.GetRegistries(thrift.Context, keys)
+	if member != nil {
+		inviteCode := member.InviteCode
+		inviteLink := fmt.Sprintf("%s://%s%s/i/%s",
+			types.ElseString(mp[keys[1]] == "true", "https", "http"),
+			mp[keys[2]], mp[keys[0]], inviteCode)
+		mp := map[string]string{
+			"code": inviteCode,
+			"link": inviteLink,
+		}
+		return api.NewResponse(mp)
+	}
+	return api.NewErrorResponse("no such user")
 }

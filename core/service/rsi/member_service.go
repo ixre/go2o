@@ -88,9 +88,9 @@ func (s *memberService) init() *memberService {
 		if rl := im.GetRelation(); rl != nil {
 			im.BindInviter(rl.InviterId, true)
 		}
-		//if len(v.Code) < 6 {
+		//if len(v.InviteCode) < 6 {
 		//	im := s.repo.CreateMember(v)
-		//	v.Code = s.generateMemberCode()
+		//	v.InviteCode = s.generateInviteCode()
 		//	im.SetValue(v)
 		//	im.Save()
 		//}
@@ -325,6 +325,7 @@ func (s *memberService) getMember(memberId int64) (
 	return m, nil
 }
 
+//todo: remove
 func (s *memberService) GetMemberIdByInviteCode(code string) int64 {
 	return s.repo.GetMemberIdByInviteCode(code)
 }

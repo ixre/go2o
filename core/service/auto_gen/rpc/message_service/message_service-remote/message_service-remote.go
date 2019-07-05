@@ -15,7 +15,7 @@ import (
         "strings"
         "github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
-        "go2o/core/service/auto_gen/rpc/status_service"
+        "go2o/core/service/auto_gen/rpc/message_service"
 )
 
 var _ = ttype.GoUnusedProtection__
@@ -24,7 +24,8 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
   flag.PrintDefaults()
   fmt.Fprintln(os.Stderr, "\nFunctions:")
-  fmt.Fprintln(os.Stderr, "  string Ping()")
+  fmt.Fprintln(os.Stderr, "  SNotifyItem GetNotifyItem(string key)")
+  fmt.Fprintln(os.Stderr, "  Result SendPhoneMessage(string phone, string message,  data)")
   fmt.Fprintln(os.Stderr)
   os.Exit(0)
 }
@@ -139,19 +140,51 @@ func main() {
   }
   iprot := protocolFactory.GetProtocol(trans)
   oprot := protocolFactory.GetProtocol(trans)
-  client := status_service.NewStatusServiceClient(thrift.NewTStandardClient(iprot, oprot))
+  client := message_service.NewMessageServiceClient(thrift.NewTStandardClient(iprot, oprot))
   if err := trans.Open(); err != nil {
     fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
     os.Exit(1)
   }
   
   switch cmd {
-  case "Ping":
-    if flag.NArg() - 1 != 0 {
-      fmt.Fprintln(os.Stderr, "Ping requires 0 args")
+  case "GetNotifyItem":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "GetNotifyItem requires 1 args")
       flag.Usage()
     }
-    fmt.Print(client.Ping(context.Background()))
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    fmt.Print(client.GetNotifyItem(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "SendPhoneMessage":
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "SendPhoneMessage requires 3 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    argvalue1 := flag.Arg(2)
+    value1 := argvalue1
+    arg13 := flag.Arg(3)
+    mbTrans14 := thrift.NewTMemoryBufferLen(len(arg13))
+    defer mbTrans14.Close()
+    _, err15 := mbTrans14.WriteString(arg13)
+    if err15 != nil { 
+      Usage()
+      return
+    }
+    factory16 := thrift.NewTJSONProtocolFactory()
+    jsProt17 := factory16.GetProtocol(mbTrans14)
+    containerStruct2 := message_service.NewMessageServiceSendPhoneMessageArgs()
+    err18 := containerStruct2.ReadField3(jsProt17)
+    if err18 != nil {
+      Usage()
+      return
+    }
+    argvalue2 := containerStruct2.Data
+    value2 := argvalue2
+    fmt.Print(client.SendPhoneMessage(context.Background(), value0, value1, value2))
     fmt.Print("\n")
     break
   case "":

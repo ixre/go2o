@@ -11,7 +11,7 @@ package aliyu
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jsix/alidayu"
+	"github.com/ixre/alidayu"
 	"sync"
 )
 
