@@ -447,6 +447,9 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 	if err != nil {
 		return s.error(err), nil
 	}
+	if len(pwd)!=32 {
+		return s.error(member.ErrNotMD5Format),nil
+	}
 	v := &member.Member{
 		User:    user,
 		Pwd:     domain.Sha1Pwd(pwd),
@@ -473,14 +476,6 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		//	//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
 		//	if err = m.Profile().SaveProfile(pro); err != nil {
 		//		s.repo.DeleteMember(id)
-		//	} else {
-		//		// 保存关联信息
-		//		rl := m.GetRelation()
-		//		rl.InviterId = invitationId
-		//		rl.RegMchId = mchId
-		//		rl.CardCard = cardId
-		//		err = m.saveRelation(rl)
-		//	}
 		//}
 		return s.success(map[string]string{
 			"member_id": util.Str(id),
@@ -489,34 +484,6 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 	return s.error(err), nil
 }
 
-// 注册会员
-func (s *memberService) RegisterMember1(mchId int32, v1 *member_service.SMember,
-	pro1 *member_service.SProfile, cardId string, invitationCode string) (int64, error) {
-	if v1 == nil || pro1 == nil {
-		return 0, errors.New("missing data")
-	}
-	v := parser.Member(v1)
-	pro := parser.MemberProfile2(pro1)
-	invitationId, err := s.repo.GetManager().PrepareRegister(
-		v, pro, invitationCode)
-	if err == nil {
-		m := s.repo.CreateMember(v) //创建会员
-		id, err := m.Save()
-		if err == nil {
-			pro.Sex = 1
-			pro.MemberId = id
-			//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
-			if err = m.Profile().SaveProfile(pro); err != nil {
-				s.repo.DeleteMember(id)
-			} else {
-				// 保存关联信息
-				err = m.BindInviter(invitationId, true)
-			}
-		}
-		return id, err
-	}
-	return -1, err
-}
 
 // 获取会员等级
 func (s *memberService) GetMemberLevel(memberId int64) *member.Level {
@@ -629,6 +596,16 @@ func (s *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) er
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
+	if l := len(newPwd); l != 32{
+		return member.ErrNotMD5Format
+	}else{
+		newPwd = domain.MemberSha1Pwd(newPwd)
+	}
+	if l := len(oldPwd); l > 0 && l != 32{
+		return member.ErrNotMD5Format
+	}else{
+		oldPwd = domain.MemberSha1Pwd(oldPwd)
+	}
 	return m.Profile().ModifyPassword(newPwd, oldPwd)
 }
 
@@ -638,6 +615,16 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
+	}
+	if l := len(newPwd); l != 32{
+		return member.ErrNotMD5Format
+	}else{
+		newPwd = domain.TradePwd(newPwd)
+	}
+	if l := len(oldPwd); l > 0 && l != 32{
+		return member.ErrNotMD5Format
+	}else{
+		oldPwd = domain.TradePwd(oldPwd)
 	}
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 }
@@ -654,7 +641,11 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, err error)
 	if val == nil {
 		return 0, member.ErrNoSuchMember
 	}
-	if val.Pwd != pwd {
+	if len(pwd) != 32 {
+		return -1,member.ErrNotMD5Format
+	}
+	println("---",pwd,val.Pwd,domain.Sha1Pwd(pwd))
+	if val.Pwd != domain.Sha1Pwd(pwd) {
 		return 0, member.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
@@ -689,10 +680,13 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 	}
 	mv := m.GetValue()
 	if mv.TradePwd == "" {
-		return s.result(member.ErrNotSetTradePwd), nil
+		return s.error(member.ErrNotSetTradePwd), nil
 	}
-	if mv.TradePwd != tradePwd {
-		return s.result(member.ErrIncorrectTradePwd), nil
+	if len(tradePwd) != 32{
+		return s.error(member.ErrNotMD5Format),nil
+	}
+	if encPwd := domain.TradePwd(tradePwd); mv.TradePwd != encPwd {
+		return s.error(member.ErrIncorrectTradePwd), nil
 	}
 	return s.success(nil), nil
 }

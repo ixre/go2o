@@ -12,10 +12,10 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ixre/gof/db"
-	"github.com/labstack/gommon/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
+	"log"
 	"strconv"
 	"strings"
 )

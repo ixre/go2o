@@ -187,7 +187,7 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, params map[string
 		if err == nil {
 			result := string(data)
 			if strings.Index(result, api.SuccessChar) == -1 {
-				err = errors.New("send fail : " + result)
+				err = errors.New("send fail : " + result+" message body:"+content)
 			}
 		}
 	}

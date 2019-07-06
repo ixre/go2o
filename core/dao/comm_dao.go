@@ -10,6 +10,7 @@ package dao
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/ixre/gof/db/orm"
@@ -17,7 +18,6 @@ import (
 	"go2o/core/dao/model"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/product"
-	"gopkg.in/square/go-jose.v1/json"
 	"log"
 	"strings"
 )
@@ -45,7 +45,7 @@ func NewCommDao(o orm.Orm, sto storage.Interface,
 
 // 获取二维码所有模板
 func (c *CommonDao) GetQrTemplates() []*model.CommQrTemplate {
-	list := []*model.CommQrTemplate{}
+	var list []*model.CommQrTemplate
 	str, err := c.storage.GetString(qrStoKey)
 	if err == nil {
 		err = json.Unmarshal([]byte(str), &list)
