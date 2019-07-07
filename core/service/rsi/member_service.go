@@ -447,8 +447,8 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 	if err != nil {
 		return s.error(err), nil
 	}
-	if len(pwd)!=32 {
-		return s.error(member.ErrNotMD5Format),nil
+	if len(pwd) != 32 {
+		return s.error(member.ErrNotMD5Format), nil
 	}
 	v := &member.Member{
 		User:    user,
@@ -483,7 +483,6 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 	}
 	return s.error(err), nil
 }
-
 
 // 获取会员等级
 func (s *memberService) GetMemberLevel(memberId int64) *member.Level {
@@ -596,14 +595,14 @@ func (s *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) er
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	if l := len(newPwd); l != 32{
+	if l := len(newPwd); l != 32 {
 		return member.ErrNotMD5Format
-	}else{
+	} else {
 		newPwd = domain.MemberSha1Pwd(newPwd)
 	}
-	if l := len(oldPwd); l > 0 && l != 32{
+	if l := len(oldPwd); l > 0 && l != 32 {
 		return member.ErrNotMD5Format
-	}else{
+	} else {
 		oldPwd = domain.MemberSha1Pwd(oldPwd)
 	}
 	return m.Profile().ModifyPassword(newPwd, oldPwd)
@@ -616,14 +615,14 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	if l := len(newPwd); l != 32{
+	if l := len(newPwd); l != 32 {
 		return member.ErrNotMD5Format
-	}else{
+	} else {
 		newPwd = domain.TradePwd(newPwd)
 	}
-	if l := len(oldPwd); l > 0 && l != 32{
+	if l := len(oldPwd); l > 0 && l != 32 {
 		return member.ErrNotMD5Format
-	}else{
+	} else {
 		oldPwd = domain.TradePwd(oldPwd)
 	}
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
@@ -642,9 +641,9 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, err error)
 		return 0, member.ErrNoSuchMember
 	}
 	if len(pwd) != 32 {
-		return -1,member.ErrNotMD5Format
+		return -1, member.ErrNotMD5Format
 	}
-	println("---",pwd,val.Pwd,domain.Sha1Pwd(pwd))
+	println("---", pwd, val.Pwd, domain.Sha1Pwd(pwd))
 	if val.Pwd != domain.Sha1Pwd(pwd) {
 		return 0, member.ErrCredential
 	}
@@ -682,8 +681,8 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 	if mv.TradePwd == "" {
 		return s.error(member.ErrNotSetTradePwd), nil
 	}
-	if len(tradePwd) != 32{
-		return s.error(member.ErrNotMD5Format),nil
+	if len(tradePwd) != 32 {
+		return s.error(member.ErrNotMD5Format), nil
 	}
 	if encPwd := domain.TradePwd(tradePwd); mv.TradePwd != encPwd {
 		return s.error(member.ErrIncorrectTradePwd), nil

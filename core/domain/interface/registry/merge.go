@@ -18,7 +18,7 @@ func mergeAdd(description string, key string, defaultValue string, options strin
 func MergeRegistries() []*Registry {
 	/** 域名 */
 	mergeAdd("是否启用SSL连接", DomainEnabledSSL, "false", "")
-	mergeAdd("域名",Domain,"yourdomain.com","")
+	mergeAdd("域名", Domain, "yourdomain.com", "")
 	mergeAdd("零售门户前缀", DomainPrefixPortal, "www.", "")
 	mergeAdd("批发门户域名前缀", DomainPrefixWholesalePortal, "whs.", "")
 	mergeAdd("零售门户手机端域名前缀", DomainPrefixMobilePortal, "m.", "")

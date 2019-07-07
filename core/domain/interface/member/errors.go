@@ -56,7 +56,7 @@ var (
 		"err_member_pwd_length", "密码至少包含6个字符")
 
 	ErrNotMD5Format = domain.NewError(
-		"err_member_not_md5_format","密码参数非32位MD5")
+		"err_member_not_md5_format", "密码参数非32位MD5")
 	ErrNoSuchAddress = domain.NewError(
 		"member_no_such_deliver_address", "配送地址错误")
 

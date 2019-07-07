@@ -6,7 +6,6 @@ import (
 	"github.com/ixre/gof/api"
 	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/registry"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/thrift"
 	"strconv"
@@ -54,8 +53,7 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 		return api.ResponseWithCode(3, "网络连接失败")
 	}
 	defer trans.Close()
-	encPwd := domain.MemberSha1Pwd(pwd)
-	r, _ := cli.CheckLogin(thrift.Context, user, encPwd, true)
+	r, _ := cli.CheckLogin(thrift.Context, user, pwd, true)
 	if r.ErrCode == 0 {
 		memberId, _ := strconv.Atoi(r.Data["id"])
 		token, _ := cli.GetToken(thrift.Context, int64(memberId), true)
