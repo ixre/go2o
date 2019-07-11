@@ -67,7 +67,7 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "  Result AccountRefund(i64 memberId, i32 account, string title, i32 amount, string outerNo, string remark)")
   fmt.Fprintln(os.Stderr, "  Result AccountAdjust(i64 memberId, i32 account, i32 value, i64 relateUser, string remark)")
   fmt.Fprintln(os.Stderr, "  Result B4EAuth(i64 memberId, string action,  data)")
-  fmt.Fprintln(os.Stderr, "  SPagingResult PagedIntegralAccountLog(i64 memberId, SPagingParams params)")
+  fmt.Fprintln(os.Stderr, "  SPagingResult PagingAccountLog(i64 memberId, i32 accountType, SPagingParams params)")
   fmt.Fprintln(os.Stderr)
   os.Exit(0)
 }
@@ -1084,9 +1084,9 @@ func main() {
     fmt.Print(client.B4EAuth(context.Background(), value0, value1, value2))
     fmt.Print("\n")
     break
-  case "PagedIntegralAccountLog":
-    if flag.NArg() - 1 != 2 {
-      fmt.Fprintln(os.Stderr, "PagedIntegralAccountLog requires 2 args")
+  case "PagingAccountLog":
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "PagingAccountLog requires 3 args")
       flag.Usage()
     }
     argvalue0, err234 := (strconv.ParseInt(flag.Arg(1), 10, 64))
@@ -1095,24 +1095,31 @@ func main() {
       return
     }
     value0 := argvalue0
-    arg235 := flag.Arg(2)
-    mbTrans236 := thrift.NewTMemoryBufferLen(len(arg235))
-    defer mbTrans236.Close()
-    _, err237 := mbTrans236.WriteString(arg235)
-    if err237 != nil {
+    tmp1, err235 := (strconv.Atoi(flag.Arg(2)))
+    if err235 != nil {
       Usage()
       return
     }
-    factory238 := thrift.NewTJSONProtocolFactory()
-    jsProt239 := factory238.GetProtocol(mbTrans236)
-    argvalue1 := ttype.NewSPagingParams()
-    err240 := argvalue1.Read(jsProt239)
-    if err240 != nil {
-      Usage()
-      return
-    }
+    argvalue1 := int32(tmp1)
     value1 := argvalue1
-    fmt.Print(client.PagedIntegralAccountLog(context.Background(), value0, value1))
+    arg236 := flag.Arg(3)
+    mbTrans237 := thrift.NewTMemoryBufferLen(len(arg236))
+    defer mbTrans237.Close()
+    _, err238 := mbTrans237.WriteString(arg236)
+    if err238 != nil {
+      Usage()
+      return
+    }
+    factory239 := thrift.NewTJSONProtocolFactory()
+    jsProt240 := factory239.GetProtocol(mbTrans237)
+    argvalue2 := ttype.NewSPagingParams()
+    err241 := argvalue2.Read(jsProt240)
+    if err241 != nil {
+      Usage()
+      return
+    }
+    value2 := argvalue2
+    fmt.Print(client.PagingAccountLog(context.Background(), value0, value1, value2))
     fmt.Print("\n")
     break
   case "":

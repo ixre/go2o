@@ -10,6 +10,7 @@
 package rsi
 
 import (
+	"encoding/json"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db"
@@ -253,4 +254,16 @@ func (s serviceUtil) intArray(values []int32) []int {
 		arr[i] = int(v)
 	}
 	return arr
+}
+
+// 转换为JSON
+func (s serviceUtil) json(data interface{}) string {
+	if data == nil{
+		return "{}"
+	}
+	r,err := json.Marshal(data)
+	if err != nil{
+		return "{\"error\":\"parse error:"+err.Error()+"\"}"
+	}
+	return string(r)
 }

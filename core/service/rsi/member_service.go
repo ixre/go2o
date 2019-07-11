@@ -658,7 +658,7 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, err error)
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*ttype.Result_, error) {
 	id, err := s.testLogin(user, pwd)
-	memberCode := ""
+	var memberCode = ""
 	if update && err == nil {
 		m := s.repo.GetMember(id)
 		memberCode = m.GetValue().Code
@@ -929,8 +929,18 @@ func (s *memberService) PagedGoodsFav(memberId int64, begin, end int,
 
 
 // 获取钱包账户分页记录
-func (s *memberService) PagedIntegralAccountLog(ctx context.Context, memberId int64, params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
-	total, rows := s.query.PagedIntegralAccountLog(memberId, params)
+func (s *memberService) PagingAccountLog(ctx context.Context, memberId int64,accountType int32,
+	params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
+	var total int
+	var rows []map[string]interface{}
+	switch accountType {
+	case member.AccountIntegral:
+		total, rows = s.query.PagedIntegralAccountLog(memberId, params)
+	case member.AccountBalance:
+		total,rows = s.query.PagedBalanceAccountLog(memberId,int(params.Begin),int(params.Over),"","")
+	case member.AccountWallet:
+		total,rows = s.query.PagedWalletAccountLog(memberId,int(params.Begin),int(params.Over),"","")
+	}
 	rs := &ttype.SPagingResult_{
 		ErrCode: 0,
 		ErrMsg:  "",
@@ -1440,11 +1450,4 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 	return m.Profile().ChangePhone(phone)
 }
 
-// 转换为JSON
-func (s *memberService) json(rows []map[string]interface{}) string {
-	r,err := json.Marshal(rows)
-	if err != nil{
-		return "{\"error\":\"parse error:"+err.Error()+"\"}"
-	}
-	return string(r)
-}
+

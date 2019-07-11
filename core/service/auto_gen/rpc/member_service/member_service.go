@@ -5280,10 +5280,13 @@ type MemberService interface {
   //  - Action
   //  - Data
   B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *ttype.Result_, err error)
+  // 获取指定账户的流水记录
+  // 
   // Parameters:
   //  - MemberId
+  //  - AccountType
   //  - Params
-  PagedIntegralAccountLog(ctx context.Context, memberId int64, params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error)
+  PagingAccountLog(ctx context.Context, memberId int64, accountType int32, params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error)
 }
 
 type MemberServiceClient struct {
@@ -5976,15 +5979,19 @@ func (p *MemberServiceClient) B4EAuth(ctx context.Context, memberId int64, actio
   return _result85.GetSuccess(), nil
 }
 
+// 获取指定账户的流水记录
+// 
 // Parameters:
 //  - MemberId
+//  - AccountType
 //  - Params
-func (p *MemberServiceClient) PagedIntegralAccountLog(ctx context.Context, memberId int64, params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
-  var _args86 MemberServicePagedIntegralAccountLogArgs
+func (p *MemberServiceClient) PagingAccountLog(ctx context.Context, memberId int64, accountType int32, params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
+  var _args86 MemberServicePagingAccountLogArgs
   _args86.MemberId = memberId
+  _args86.AccountType = accountType
   _args86.Params = params
-  var _result87 MemberServicePagedIntegralAccountLogResult
-  if err = p.Client_().Call(ctx, "PagedIntegralAccountLog", &_args86, &_result87); err != nil {
+  var _result87 MemberServicePagingAccountLogResult
+  if err = p.Client_().Call(ctx, "PagingAccountLog", &_args86, &_result87); err != nil {
     return
   }
   return _result87.GetSuccess(), nil
@@ -6054,7 +6061,7 @@ func NewMemberServiceProcessor(handler MemberService) *MemberServiceProcessor {
   self88.processorMap["AccountRefund"] = &memberServiceProcessorAccountRefund{handler:handler}
   self88.processorMap["AccountAdjust"] = &memberServiceProcessorAccountAdjust{handler:handler}
   self88.processorMap["B4EAuth"] = &memberServiceProcessorB4EAuth{handler:handler}
-  self88.processorMap["PagedIntegralAccountLog"] = &memberServiceProcessorPagedIntegralAccountLog{handler:handler}
+  self88.processorMap["PagingAccountLog"] = &memberServiceProcessorPagingAccountLog{handler:handler}
 return self88
 }
 
@@ -8136,16 +8143,16 @@ var retval *ttype.Result_
   return true, err
 }
 
-type memberServiceProcessorPagedIntegralAccountLog struct {
+type memberServiceProcessorPagingAccountLog struct {
   handler MemberService
 }
 
-func (p *memberServiceProcessorPagedIntegralAccountLog) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-  args := MemberServicePagedIntegralAccountLogArgs{}
+func (p *memberServiceProcessorPagingAccountLog) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := MemberServicePagingAccountLogArgs{}
   if err = args.Read(iprot); err != nil {
     iprot.ReadMessageEnd()
     x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-    oprot.WriteMessageBegin("PagedIntegralAccountLog", thrift.EXCEPTION, seqId)
+    oprot.WriteMessageBegin("PagingAccountLog", thrift.EXCEPTION, seqId)
     x.Write(oprot)
     oprot.WriteMessageEnd()
     oprot.Flush(ctx)
@@ -8153,12 +8160,12 @@ func (p *memberServiceProcessorPagedIntegralAccountLog) Process(ctx context.Cont
   }
 
   iprot.ReadMessageEnd()
-  result := MemberServicePagedIntegralAccountLogResult{}
+  result := MemberServicePagingAccountLogResult{}
 var retval *ttype.SPagingResult_
   var err2 error
-  if retval, err2 = p.handler.PagedIntegralAccountLog(ctx, args.MemberId, args.Params); err2 != nil {
-    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing PagedIntegralAccountLog: " + err2.Error())
-    oprot.WriteMessageBegin("PagedIntegralAccountLog", thrift.EXCEPTION, seqId)
+  if retval, err2 = p.handler.PagingAccountLog(ctx, args.MemberId, args.AccountType, args.Params); err2 != nil {
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing PagingAccountLog: " + err2.Error())
+    oprot.WriteMessageBegin("PagingAccountLog", thrift.EXCEPTION, seqId)
     x.Write(oprot)
     oprot.WriteMessageEnd()
     oprot.Flush(ctx)
@@ -8166,7 +8173,7 @@ var retval *ttype.SPagingResult_
   } else {
     result.Success = retval
 }
-  if err2 = oprot.WriteMessageBegin("PagedIntegralAccountLog", thrift.REPLY, seqId); err2 != nil {
+  if err2 = oprot.WriteMessageBegin("PagingAccountLog", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -18678,32 +18685,38 @@ func (p *MemberServiceB4EAuthResult) String() string {
 
 // Attributes:
 //  - MemberId
+//  - AccountType
 //  - Params
-type MemberServicePagedIntegralAccountLogArgs struct {
+type MemberServicePagingAccountLogArgs struct {
   MemberId int64 `thrift:"memberId,1" db:"memberId" json:"memberId"`
-  Params *ttype.SPagingParams `thrift:"params,2" db:"params" json:"params"`
+  AccountType int32 `thrift:"accountType,2" db:"accountType" json:"accountType"`
+  Params *ttype.SPagingParams `thrift:"params,3" db:"params" json:"params"`
 }
 
-func NewMemberServicePagedIntegralAccountLogArgs() *MemberServicePagedIntegralAccountLogArgs {
-  return &MemberServicePagedIntegralAccountLogArgs{}
+func NewMemberServicePagingAccountLogArgs() *MemberServicePagingAccountLogArgs {
+  return &MemberServicePagingAccountLogArgs{}
 }
 
 
-func (p *MemberServicePagedIntegralAccountLogArgs) GetMemberId() int64 {
+func (p *MemberServicePagingAccountLogArgs) GetMemberId() int64 {
   return p.MemberId
 }
-var MemberServicePagedIntegralAccountLogArgs_Params_DEFAULT *ttype.SPagingParams
-func (p *MemberServicePagedIntegralAccountLogArgs) GetParams() *ttype.SPagingParams {
+
+func (p *MemberServicePagingAccountLogArgs) GetAccountType() int32 {
+  return p.AccountType
+}
+var MemberServicePagingAccountLogArgs_Params_DEFAULT *ttype.SPagingParams
+func (p *MemberServicePagingAccountLogArgs) GetParams() *ttype.SPagingParams {
   if !p.IsSetParams() {
-    return MemberServicePagedIntegralAccountLogArgs_Params_DEFAULT
+    return MemberServicePagingAccountLogArgs_Params_DEFAULT
   }
 return p.Params
 }
-func (p *MemberServicePagedIntegralAccountLogArgs) IsSetParams() bool {
+func (p *MemberServicePagingAccountLogArgs) IsSetParams() bool {
   return p.Params != nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogArgs) Read(iprot thrift.TProtocol) error {
+func (p *MemberServicePagingAccountLogArgs) Read(iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
   }
@@ -18727,8 +18740,18 @@ func (p *MemberServicePagedIntegralAccountLogArgs) Read(iprot thrift.TProtocol) 
         }
       }
     case 2:
-      if fieldTypeId == thrift.STRUCT {
+      if fieldTypeId == thrift.I32 {
         if err := p.ReadField2(iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 3:
+      if fieldTypeId == thrift.STRUCT {
+        if err := p.ReadField3(iprot); err != nil {
           return err
         }
       } else {
@@ -18751,7 +18774,7 @@ func (p *MemberServicePagedIntegralAccountLogArgs) Read(iprot thrift.TProtocol) 
   return nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogArgs)  ReadField1(iprot thrift.TProtocol) error {
+func (p *MemberServicePagingAccountLogArgs)  ReadField1(iprot thrift.TProtocol) error {
   if v, err := iprot.ReadI64(); err != nil {
   return thrift.PrependError("error reading field 1: ", err)
 } else {
@@ -18760,7 +18783,16 @@ func (p *MemberServicePagedIntegralAccountLogArgs)  ReadField1(iprot thrift.TPro
   return nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogArgs)  ReadField2(iprot thrift.TProtocol) error {
+func (p *MemberServicePagingAccountLogArgs)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.AccountType = v
+}
+  return nil
+}
+
+func (p *MemberServicePagingAccountLogArgs)  ReadField3(iprot thrift.TProtocol) error {
   p.Params = &ttype.SPagingParams{}
   if err := p.Params.Read(iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Params), err)
@@ -18768,12 +18800,13 @@ func (p *MemberServicePagedIntegralAccountLogArgs)  ReadField2(iprot thrift.TPro
   return nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogArgs) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("PagedIntegralAccountLog_args"); err != nil {
+func (p *MemberServicePagingAccountLogArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("PagingAccountLog_args"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField1(oprot); err != nil { return err }
     if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -18782,7 +18815,7 @@ func (p *MemberServicePagedIntegralAccountLogArgs) Write(oprot thrift.TProtocol)
   return nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MemberServicePagingAccountLogArgs) writeField1(oprot thrift.TProtocol) (err error) {
   if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err) }
   if err := oprot.WriteI64(int64(p.MemberId)); err != nil {
@@ -18792,46 +18825,56 @@ func (p *MemberServicePagedIntegralAccountLogArgs) writeField1(oprot thrift.TPro
   return err
 }
 
-func (p *MemberServicePagedIntegralAccountLogArgs) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("params", thrift.STRUCT, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:params: ", p), err) }
+func (p *MemberServicePagingAccountLogArgs) writeField2(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("accountType", thrift.I32, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:accountType: ", p), err) }
+  if err := oprot.WriteI32(int32(p.AccountType)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.accountType (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:accountType: ", p), err) }
+  return err
+}
+
+func (p *MemberServicePagingAccountLogArgs) writeField3(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("params", thrift.STRUCT, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:params: ", p), err) }
   if err := p.Params.Write(oprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Params), err)
   }
   if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:params: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:params: ", p), err) }
   return err
 }
 
-func (p *MemberServicePagedIntegralAccountLogArgs) String() string {
+func (p *MemberServicePagingAccountLogArgs) String() string {
   if p == nil {
     return "<nil>"
   }
-  return fmt.Sprintf("MemberServicePagedIntegralAccountLogArgs(%+v)", *p)
+  return fmt.Sprintf("MemberServicePagingAccountLogArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type MemberServicePagedIntegralAccountLogResult struct {
+type MemberServicePagingAccountLogResult struct {
   Success *ttype.SPagingResult_ `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
-func NewMemberServicePagedIntegralAccountLogResult() *MemberServicePagedIntegralAccountLogResult {
-  return &MemberServicePagedIntegralAccountLogResult{}
+func NewMemberServicePagingAccountLogResult() *MemberServicePagingAccountLogResult {
+  return &MemberServicePagingAccountLogResult{}
 }
 
-var MemberServicePagedIntegralAccountLogResult_Success_DEFAULT *ttype.SPagingResult_
-func (p *MemberServicePagedIntegralAccountLogResult) GetSuccess() *ttype.SPagingResult_ {
+var MemberServicePagingAccountLogResult_Success_DEFAULT *ttype.SPagingResult_
+func (p *MemberServicePagingAccountLogResult) GetSuccess() *ttype.SPagingResult_ {
   if !p.IsSetSuccess() {
-    return MemberServicePagedIntegralAccountLogResult_Success_DEFAULT
+    return MemberServicePagingAccountLogResult_Success_DEFAULT
   }
 return p.Success
 }
-func (p *MemberServicePagedIntegralAccountLogResult) IsSetSuccess() bool {
+func (p *MemberServicePagingAccountLogResult) IsSetSuccess() bool {
   return p.Success != nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogResult) Read(iprot thrift.TProtocol) error {
+func (p *MemberServicePagingAccountLogResult) Read(iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
   }
@@ -18869,7 +18912,7 @@ func (p *MemberServicePagedIntegralAccountLogResult) Read(iprot thrift.TProtocol
   return nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogResult)  ReadField0(iprot thrift.TProtocol) error {
+func (p *MemberServicePagingAccountLogResult)  ReadField0(iprot thrift.TProtocol) error {
   p.Success = &ttype.SPagingResult_{}
   if err := p.Success.Read(iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
@@ -18877,8 +18920,8 @@ func (p *MemberServicePagedIntegralAccountLogResult)  ReadField0(iprot thrift.TP
   return nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogResult) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("PagedIntegralAccountLog_result"); err != nil {
+func (p *MemberServicePagingAccountLogResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("PagingAccountLog_result"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField0(oprot); err != nil { return err }
@@ -18890,7 +18933,7 @@ func (p *MemberServicePagedIntegralAccountLogResult) Write(oprot thrift.TProtoco
   return nil
 }
 
-func (p *MemberServicePagedIntegralAccountLogResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MemberServicePagingAccountLogResult) writeField0(oprot thrift.TProtocol) (err error) {
   if p.IsSetSuccess() {
     if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
@@ -18903,11 +18946,11 @@ func (p *MemberServicePagedIntegralAccountLogResult) writeField0(oprot thrift.TP
   return err
 }
 
-func (p *MemberServicePagedIntegralAccountLogResult) String() string {
+func (p *MemberServicePagingAccountLogResult) String() string {
   if p == nil {
     return "<nil>"
   }
-  return fmt.Sprintf("MemberServicePagedIntegralAccountLogResult(%+v)", *p)
+  return fmt.Sprintf("MemberServicePagingAccountLogResult(%+v)", *p)
 }
 
 
