@@ -13,6 +13,7 @@ import (
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/util"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 )
 
 // 设置商户站点配置
@@ -43,9 +44,13 @@ func GetShopIdByHost(host string) int32 {
 	sto := GetKVS()
 	shopId, err := util.I32Err(sto.GetInt(key))
 	if err != nil || shopId <= 0 {
-		_, shopId = rsi.ShopService.GetShopIdByHost(host)
-		if shopId > 0 {
-			sto.SetExpire(key, shopId, DefaultMaxSeconds)
+		trans,cli,err := thrift.ShopServeClient()
+		if err == nil{
+			defer trans.Close()
+			shopId,_ = cli.QueryStoreByHost(thrift.Context,host)
+			if shopId > 0 {
+				sto.SetExpire(key, shopId, DefaultMaxSeconds)
+			}
 		}
 	}
 	return shopId

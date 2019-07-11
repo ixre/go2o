@@ -67,6 +67,7 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "  Result AccountRefund(i64 memberId, i32 account, string title, i32 amount, string outerNo, string remark)")
   fmt.Fprintln(os.Stderr, "  Result AccountAdjust(i64 memberId, i32 account, i32 value, i64 relateUser, string remark)")
   fmt.Fprintln(os.Stderr, "  Result B4EAuth(i64 memberId, string action,  data)")
+  fmt.Fprintln(os.Stderr, "  SPagingResult PagingAccountLog(i64 memberId, i32 accountType, SPagingParams params)")
   fmt.Fprintln(os.Stderr)
   os.Exit(0)
 }
@@ -197,8 +198,8 @@ func main() {
     value0 := argvalue0
     argvalue1 := flag.Arg(2)
     value1 := argvalue1
-    tmp2, err104 := (strconv.Atoi(flag.Arg(3)))
-    if err104 != nil {
+    tmp2, err106 := (strconv.Atoi(flag.Arg(3)))
+    if err106 != nil {
       Usage()
       return
     }
@@ -212,19 +213,19 @@ func main() {
     value5 := argvalue5
     argvalue6 := flag.Arg(7)
     value6 := argvalue6
-    arg109 := flag.Arg(8)
-    mbTrans110 := thrift.NewTMemoryBufferLen(len(arg109))
-    defer mbTrans110.Close()
-    _, err111 := mbTrans110.WriteString(arg109)
-    if err111 != nil { 
+    arg111 := flag.Arg(8)
+    mbTrans112 := thrift.NewTMemoryBufferLen(len(arg111))
+    defer mbTrans112.Close()
+    _, err113 := mbTrans112.WriteString(arg111)
+    if err113 != nil { 
       Usage()
       return
     }
-    factory112 := thrift.NewTJSONProtocolFactory()
-    jsProt113 := factory112.GetProtocol(mbTrans110)
+    factory114 := thrift.NewTJSONProtocolFactory()
+    jsProt115 := factory114.GetProtocol(mbTrans112)
     containerStruct7 := member_service.NewMemberServiceRegisterMemberV2Args()
-    err114 := containerStruct7.ReadField8(jsProt113)
-    if err114 != nil {
+    err116 := containerStruct7.ReadField8(jsProt115)
+    if err116 != nil {
       Usage()
       return
     }
@@ -252,8 +253,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "CheckTradePwd requires 2 args")
       flag.Usage()
     }
-    argvalue0, err118 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err118 != nil {
+    argvalue0, err120 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err120 != nil {
       Usage()
       return
     }
@@ -276,8 +277,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetTrustInfo requires 1 args")
       flag.Usage()
     }
-    argvalue0, err120 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err120 != nil {
+    argvalue0, err122 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err122 != nil {
       Usage()
       return
     }
@@ -290,8 +291,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetLevel requires 1 args")
       flag.Usage()
     }
-    tmp0, err121 := (strconv.Atoi(flag.Arg(1)))
-    if err121 != nil {
+    tmp0, err123 := (strconv.Atoi(flag.Arg(1)))
+    if err123 != nil {
       Usage()
       return
     }
@@ -332,8 +333,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
       flag.Usage()
     }
-    argvalue0, err124 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err124 != nil {
+    argvalue0, err126 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err126 != nil {
       Usage()
       return
     }
@@ -356,8 +357,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
       flag.Usage()
     }
-    argvalue0, err126 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err126 != nil {
+    argvalue0, err128 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err128 != nil {
       Usage()
       return
     }
@@ -370,8 +371,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "Active requires 1 args")
       flag.Usage()
     }
-    argvalue0, err127 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err127 != nil {
+    argvalue0, err129 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err129 != nil {
       Usage()
       return
     }
@@ -384,8 +385,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "Lock requires 3 args")
       flag.Usage()
     }
-    argvalue0, err128 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err128 != nil {
+    argvalue0, err130 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err130 != nil {
       Usage()
       return
     }
@@ -402,14 +403,14 @@ func main() {
       fmt.Fprintln(os.Stderr, "GrantFlag requires 2 args")
       flag.Usage()
     }
-    argvalue0, err131 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err131 != nil {
+    argvalue0, err133 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err133 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    tmp1, err132 := (strconv.Atoi(flag.Arg(2)))
-    if err132 != nil {
+    tmp1, err134 := (strconv.Atoi(flag.Arg(2)))
+    if err134 != nil {
       Usage()
       return
     }
@@ -423,8 +424,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "Complex requires 1 args")
       flag.Usage()
     }
-    argvalue0, err133 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err133 != nil {
+    argvalue0, err135 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err135 != nil {
       Usage()
       return
     }
@@ -437,16 +438,16 @@ func main() {
       fmt.Fprintln(os.Stderr, "SendCode requires 3 args")
       flag.Usage()
     }
-    argvalue0, err134 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err134 != nil {
+    argvalue0, err136 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err136 != nil {
       Usage()
       return
     }
     value0 := argvalue0
     argvalue1 := flag.Arg(2)
     value1 := argvalue1
-    tmp2, err136 := (strconv.Atoi(flag.Arg(3)))
-    if err136 != nil {
+    tmp2, err138 := (strconv.Atoi(flag.Arg(3)))
+    if err138 != nil {
       Usage()
       return
     }
@@ -460,8 +461,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "CompareCode requires 2 args")
       flag.Usage()
     }
-    argvalue0, err137 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err137 != nil {
+    argvalue0, err139 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err139 != nil {
       Usage()
       return
     }
@@ -476,8 +477,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "ReceiptsCodes requires 1 args")
       flag.Usage()
     }
-    argvalue0, err139 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err139 != nil {
+    argvalue0, err141 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err141 != nil {
       Usage()
       return
     }
@@ -490,25 +491,25 @@ func main() {
       fmt.Fprintln(os.Stderr, "SaveReceiptsCode requires 2 args")
       flag.Usage()
     }
-    argvalue0, err140 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err140 != nil {
+    argvalue0, err142 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err142 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    arg141 := flag.Arg(2)
-    mbTrans142 := thrift.NewTMemoryBufferLen(len(arg141))
-    defer mbTrans142.Close()
-    _, err143 := mbTrans142.WriteString(arg141)
-    if err143 != nil {
+    arg143 := flag.Arg(2)
+    mbTrans144 := thrift.NewTMemoryBufferLen(len(arg143))
+    defer mbTrans144.Close()
+    _, err145 := mbTrans144.WriteString(arg143)
+    if err145 != nil {
       Usage()
       return
     }
-    factory144 := thrift.NewTJSONProtocolFactory()
-    jsProt145 := factory144.GetProtocol(mbTrans142)
+    factory146 := thrift.NewTJSONProtocolFactory()
+    jsProt147 := factory146.GetProtocol(mbTrans144)
     argvalue1 := member_service.NewSReceiptsCode()
-    err146 := argvalue1.Read(jsProt145)
-    if err146 != nil {
+    err148 := argvalue1.Read(jsProt147)
+    if err148 != nil {
       Usage()
       return
     }
@@ -521,8 +522,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "Bankcards requires 1 args")
       flag.Usage()
     }
-    argvalue0, err147 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err147 != nil {
+    argvalue0, err149 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err149 != nil {
       Usage()
       return
     }
@@ -535,25 +536,25 @@ func main() {
       fmt.Fprintln(os.Stderr, "SaveBankcard requires 2 args")
       flag.Usage()
     }
-    argvalue0, err148 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err148 != nil {
+    argvalue0, err150 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err150 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    arg149 := flag.Arg(2)
-    mbTrans150 := thrift.NewTMemoryBufferLen(len(arg149))
-    defer mbTrans150.Close()
-    _, err151 := mbTrans150.WriteString(arg149)
-    if err151 != nil {
+    arg151 := flag.Arg(2)
+    mbTrans152 := thrift.NewTMemoryBufferLen(len(arg151))
+    defer mbTrans152.Close()
+    _, err153 := mbTrans152.WriteString(arg151)
+    if err153 != nil {
       Usage()
       return
     }
-    factory152 := thrift.NewTJSONProtocolFactory()
-    jsProt153 := factory152.GetProtocol(mbTrans150)
+    factory154 := thrift.NewTJSONProtocolFactory()
+    jsProt155 := factory154.GetProtocol(mbTrans152)
     argvalue1 := member_service.NewSBankcard()
-    err154 := argvalue1.Read(jsProt153)
-    if err154 != nil {
+    err156 := argvalue1.Read(jsProt155)
+    if err156 != nil {
       Usage()
       return
     }
@@ -566,8 +567,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "CheckProfileComplete requires 1 args")
       flag.Usage()
     }
-    argvalue0, err155 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err155 != nil {
+    argvalue0, err157 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err157 != nil {
       Usage()
       return
     }
@@ -580,8 +581,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "MemberLevelInfo requires 1 args")
       flag.Usage()
     }
-    argvalue0, err156 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err156 != nil {
+    argvalue0, err158 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err158 != nil {
       Usage()
       return
     }
@@ -594,14 +595,14 @@ func main() {
       fmt.Fprintln(os.Stderr, "UpdateLevel requires 4 args")
       flag.Usage()
     }
-    argvalue0, err157 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err157 != nil {
+    argvalue0, err159 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err159 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    tmp1, err158 := (strconv.Atoi(flag.Arg(2)))
-    if err158 != nil {
+    tmp1, err160 := (strconv.Atoi(flag.Arg(2)))
+    if err160 != nil {
       Usage()
       return
     }
@@ -609,8 +610,8 @@ func main() {
     value1 := argvalue1
     argvalue2 := flag.Arg(3) == "true"
     value2 := argvalue2
-    argvalue3, err160 := (strconv.ParseInt(flag.Arg(4), 10, 64))
-    if err160 != nil {
+    argvalue3, err162 := (strconv.ParseInt(flag.Arg(4), 10, 64))
+    if err162 != nil {
       Usage()
       return
     }
@@ -623,8 +624,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "ChangePhone requires 2 args")
       flag.Usage()
     }
-    argvalue0, err161 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err161 != nil {
+    argvalue0, err163 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err163 != nil {
       Usage()
       return
     }
@@ -639,8 +640,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "ChangeUsr requires 2 args")
       flag.Usage()
     }
-    argvalue0, err163 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err163 != nil {
+    argvalue0, err165 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err165 != nil {
       Usage()
       return
     }
@@ -655,21 +656,21 @@ func main() {
       fmt.Fprintln(os.Stderr, "Premium requires 3 args")
       flag.Usage()
     }
-    argvalue0, err165 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err165 != nil {
+    argvalue0, err167 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err167 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    tmp1, err166 := (strconv.Atoi(flag.Arg(2)))
-    if err166 != nil {
+    tmp1, err168 := (strconv.Atoi(flag.Arg(2)))
+    if err168 != nil {
       Usage()
       return
     }
     argvalue1 := int32(tmp1)
     value1 := argvalue1
-    argvalue2, err167 := (strconv.ParseInt(flag.Arg(3), 10, 64))
-    if err167 != nil {
+    argvalue2, err169 := (strconv.ParseInt(flag.Arg(3), 10, 64))
+    if err169 != nil {
       Usage()
       return
     }
@@ -682,8 +683,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
       flag.Usage()
     }
-    argvalue0, err168 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err168 != nil {
+    argvalue0, err170 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err170 != nil {
       Usage()
       return
     }
@@ -698,8 +699,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "CheckToken requires 2 args")
       flag.Usage()
     }
-    argvalue0, err170 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err170 != nil {
+    argvalue0, err172 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err172 != nil {
       Usage()
       return
     }
@@ -714,8 +715,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
       flag.Usage()
     }
-    argvalue0, err172 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err172 != nil {
+    argvalue0, err174 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err174 != nil {
       Usage()
       return
     }
@@ -728,8 +729,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetAddressList requires 1 args")
       flag.Usage()
     }
-    argvalue0, err173 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err173 != nil {
+    argvalue0, err175 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err175 != nil {
       Usage()
       return
     }
@@ -742,14 +743,14 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetAddress requires 2 args")
       flag.Usage()
     }
-    argvalue0, err174 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err174 != nil {
+    argvalue0, err176 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err176 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    argvalue1, err175 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-    if err175 != nil {
+    argvalue1, err177 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+    if err177 != nil {
       Usage()
       return
     }
@@ -762,8 +763,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetAccount requires 1 args")
       flag.Usage()
     }
-    argvalue0, err176 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err176 != nil {
+    argvalue0, err178 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err178 != nil {
       Usage()
       return
     }
@@ -774,27 +775,6 @@ func main() {
   case "InviterArray":
     if flag.NArg() - 1 != 2 {
       fmt.Fprintln(os.Stderr, "InviterArray requires 2 args")
-      flag.Usage()
-    }
-    argvalue0, err177 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err177 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    tmp1, err178 := (strconv.Atoi(flag.Arg(2)))
-    if err178 != nil {
-      Usage()
-      return
-    }
-    argvalue1 := int32(tmp1)
-    value1 := argvalue1
-    fmt.Print(client.InviterArray(context.Background(), value0, value1))
-    fmt.Print("\n")
-    break
-  case "InviteMembersQuantity":
-    if flag.NArg() - 1 != 2 {
-      fmt.Fprintln(os.Stderr, "InviteMembersQuantity requires 2 args")
       flag.Usage()
     }
     argvalue0, err179 := (strconv.ParseInt(flag.Arg(1), 10, 64))
@@ -810,12 +790,12 @@ func main() {
     }
     argvalue1 := int32(tmp1)
     value1 := argvalue1
-    fmt.Print(client.InviteMembersQuantity(context.Background(), value0, value1))
+    fmt.Print(client.InviterArray(context.Background(), value0, value1))
     fmt.Print("\n")
     break
-  case "QueryInviteQuantity":
+  case "InviteMembersQuantity":
     if flag.NArg() - 1 != 2 {
-      fmt.Fprintln(os.Stderr, "QueryInviteQuantity requires 2 args")
+      fmt.Fprintln(os.Stderr, "InviteMembersQuantity requires 2 args")
       flag.Usage()
     }
     argvalue0, err181 := (strconv.ParseInt(flag.Arg(1), 10, 64))
@@ -824,19 +804,40 @@ func main() {
       return
     }
     value0 := argvalue0
-    arg182 := flag.Arg(2)
-    mbTrans183 := thrift.NewTMemoryBufferLen(len(arg182))
-    defer mbTrans183.Close()
-    _, err184 := mbTrans183.WriteString(arg182)
-    if err184 != nil { 
+    tmp1, err182 := (strconv.Atoi(flag.Arg(2)))
+    if err182 != nil {
       Usage()
       return
     }
-    factory185 := thrift.NewTJSONProtocolFactory()
-    jsProt186 := factory185.GetProtocol(mbTrans183)
+    argvalue1 := int32(tmp1)
+    value1 := argvalue1
+    fmt.Print(client.InviteMembersQuantity(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "QueryInviteQuantity":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "QueryInviteQuantity requires 2 args")
+      flag.Usage()
+    }
+    argvalue0, err183 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err183 != nil {
+      Usage()
+      return
+    }
+    value0 := argvalue0
+    arg184 := flag.Arg(2)
+    mbTrans185 := thrift.NewTMemoryBufferLen(len(arg184))
+    defer mbTrans185.Close()
+    _, err186 := mbTrans185.WriteString(arg184)
+    if err186 != nil { 
+      Usage()
+      return
+    }
+    factory187 := thrift.NewTJSONProtocolFactory()
+    jsProt188 := factory187.GetProtocol(mbTrans185)
     containerStruct1 := member_service.NewMemberServiceQueryInviteQuantityArgs()
-    err187 := containerStruct1.ReadField2(jsProt186)
-    if err187 != nil {
+    err189 := containerStruct1.ReadField2(jsProt188)
+    if err189 != nil {
       Usage()
       return
     }
@@ -850,25 +851,25 @@ func main() {
       fmt.Fprintln(os.Stderr, "QueryInviteArray requires 2 args")
       flag.Usage()
     }
-    argvalue0, err188 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err188 != nil {
+    argvalue0, err190 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err190 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    arg189 := flag.Arg(2)
-    mbTrans190 := thrift.NewTMemoryBufferLen(len(arg189))
-    defer mbTrans190.Close()
-    _, err191 := mbTrans190.WriteString(arg189)
-    if err191 != nil { 
+    arg191 := flag.Arg(2)
+    mbTrans192 := thrift.NewTMemoryBufferLen(len(arg191))
+    defer mbTrans192.Close()
+    _, err193 := mbTrans192.WriteString(arg191)
+    if err193 != nil { 
       Usage()
       return
     }
-    factory192 := thrift.NewTJSONProtocolFactory()
-    jsProt193 := factory192.GetProtocol(mbTrans190)
+    factory194 := thrift.NewTJSONProtocolFactory()
+    jsProt195 := factory194.GetProtocol(mbTrans192)
     containerStruct1 := member_service.NewMemberServiceQueryInviteArrayArgs()
-    err194 := containerStruct1.ReadField2(jsProt193)
-    if err194 != nil {
+    err196 := containerStruct1.ReadField2(jsProt195)
+    if err196 != nil {
       Usage()
       return
     }
@@ -882,14 +883,14 @@ func main() {
       fmt.Fprintln(os.Stderr, "AccountCharge requires 6 args")
       flag.Usage()
     }
-    argvalue0, err195 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err195 != nil {
+    argvalue0, err197 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err197 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    tmp1, err196 := (strconv.Atoi(flag.Arg(2)))
-    if err196 != nil {
+    tmp1, err198 := (strconv.Atoi(flag.Arg(2)))
+    if err198 != nil {
       Usage()
       return
     }
@@ -897,8 +898,8 @@ func main() {
     value1 := argvalue1
     argvalue2 := flag.Arg(3)
     value2 := argvalue2
-    tmp3, err198 := (strconv.Atoi(flag.Arg(4)))
-    if err198 != nil {
+    tmp3, err200 := (strconv.Atoi(flag.Arg(4)))
+    if err200 != nil {
       Usage()
       return
     }
@@ -916,14 +917,14 @@ func main() {
       fmt.Fprintln(os.Stderr, "AccountConsume requires 6 args")
       flag.Usage()
     }
-    argvalue0, err201 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err201 != nil {
+    argvalue0, err203 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err203 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    tmp1, err202 := (strconv.Atoi(flag.Arg(2)))
-    if err202 != nil {
+    tmp1, err204 := (strconv.Atoi(flag.Arg(2)))
+    if err204 != nil {
       Usage()
       return
     }
@@ -931,8 +932,8 @@ func main() {
     value1 := argvalue1
     argvalue2 := flag.Arg(3)
     value2 := argvalue2
-    tmp3, err204 := (strconv.Atoi(flag.Arg(4)))
-    if err204 != nil {
+    tmp3, err206 := (strconv.Atoi(flag.Arg(4)))
+    if err206 != nil {
       Usage()
       return
     }
@@ -950,14 +951,14 @@ func main() {
       fmt.Fprintln(os.Stderr, "AccountDiscount requires 6 args")
       flag.Usage()
     }
-    argvalue0, err207 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err207 != nil {
+    argvalue0, err209 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err209 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    tmp1, err208 := (strconv.Atoi(flag.Arg(2)))
-    if err208 != nil {
+    tmp1, err210 := (strconv.Atoi(flag.Arg(2)))
+    if err210 != nil {
       Usage()
       return
     }
@@ -965,8 +966,8 @@ func main() {
     value1 := argvalue1
     argvalue2 := flag.Arg(3)
     value2 := argvalue2
-    tmp3, err210 := (strconv.Atoi(flag.Arg(4)))
-    if err210 != nil {
+    tmp3, err212 := (strconv.Atoi(flag.Arg(4)))
+    if err212 != nil {
       Usage()
       return
     }
@@ -984,14 +985,14 @@ func main() {
       fmt.Fprintln(os.Stderr, "AccountRefund requires 6 args")
       flag.Usage()
     }
-    argvalue0, err213 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err213 != nil {
+    argvalue0, err215 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err215 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    tmp1, err214 := (strconv.Atoi(flag.Arg(2)))
-    if err214 != nil {
+    tmp1, err216 := (strconv.Atoi(flag.Arg(2)))
+    if err216 != nil {
       Usage()
       return
     }
@@ -999,8 +1000,8 @@ func main() {
     value1 := argvalue1
     argvalue2 := flag.Arg(3)
     value2 := argvalue2
-    tmp3, err216 := (strconv.Atoi(flag.Arg(4)))
-    if err216 != nil {
+    tmp3, err218 := (strconv.Atoi(flag.Arg(4)))
+    if err218 != nil {
       Usage()
       return
     }
@@ -1018,28 +1019,28 @@ func main() {
       fmt.Fprintln(os.Stderr, "AccountAdjust requires 5 args")
       flag.Usage()
     }
-    argvalue0, err219 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err219 != nil {
+    argvalue0, err221 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err221 != nil {
       Usage()
       return
     }
     value0 := argvalue0
-    tmp1, err220 := (strconv.Atoi(flag.Arg(2)))
-    if err220 != nil {
+    tmp1, err222 := (strconv.Atoi(flag.Arg(2)))
+    if err222 != nil {
       Usage()
       return
     }
     argvalue1 := int32(tmp1)
     value1 := argvalue1
-    tmp2, err221 := (strconv.Atoi(flag.Arg(3)))
-    if err221 != nil {
+    tmp2, err223 := (strconv.Atoi(flag.Arg(3)))
+    if err223 != nil {
       Usage()
       return
     }
     argvalue2 := int32(tmp2)
     value2 := argvalue2
-    argvalue3, err222 := (strconv.ParseInt(flag.Arg(4), 10, 64))
-    if err222 != nil {
+    argvalue3, err224 := (strconv.ParseInt(flag.Arg(4), 10, 64))
+    if err224 != nil {
       Usage()
       return
     }
@@ -1054,33 +1055,71 @@ func main() {
       fmt.Fprintln(os.Stderr, "B4EAuth requires 3 args")
       flag.Usage()
     }
-    argvalue0, err224 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-    if err224 != nil {
+    argvalue0, err226 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err226 != nil {
       Usage()
       return
     }
     value0 := argvalue0
     argvalue1 := flag.Arg(2)
     value1 := argvalue1
-    arg226 := flag.Arg(3)
-    mbTrans227 := thrift.NewTMemoryBufferLen(len(arg226))
-    defer mbTrans227.Close()
-    _, err228 := mbTrans227.WriteString(arg226)
-    if err228 != nil { 
+    arg228 := flag.Arg(3)
+    mbTrans229 := thrift.NewTMemoryBufferLen(len(arg228))
+    defer mbTrans229.Close()
+    _, err230 := mbTrans229.WriteString(arg228)
+    if err230 != nil { 
       Usage()
       return
     }
-    factory229 := thrift.NewTJSONProtocolFactory()
-    jsProt230 := factory229.GetProtocol(mbTrans227)
+    factory231 := thrift.NewTJSONProtocolFactory()
+    jsProt232 := factory231.GetProtocol(mbTrans229)
     containerStruct2 := member_service.NewMemberServiceB4EAuthArgs()
-    err231 := containerStruct2.ReadField3(jsProt230)
-    if err231 != nil {
+    err233 := containerStruct2.ReadField3(jsProt232)
+    if err233 != nil {
       Usage()
       return
     }
     argvalue2 := containerStruct2.Data
     value2 := argvalue2
     fmt.Print(client.B4EAuth(context.Background(), value0, value1, value2))
+    fmt.Print("\n")
+    break
+  case "PagingAccountLog":
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "PagingAccountLog requires 3 args")
+      flag.Usage()
+    }
+    argvalue0, err234 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+    if err234 != nil {
+      Usage()
+      return
+    }
+    value0 := argvalue0
+    tmp1, err235 := (strconv.Atoi(flag.Arg(2)))
+    if err235 != nil {
+      Usage()
+      return
+    }
+    argvalue1 := int32(tmp1)
+    value1 := argvalue1
+    arg236 := flag.Arg(3)
+    mbTrans237 := thrift.NewTMemoryBufferLen(len(arg236))
+    defer mbTrans237.Close()
+    _, err238 := mbTrans237.WriteString(arg236)
+    if err238 != nil {
+      Usage()
+      return
+    }
+    factory239 := thrift.NewTJSONProtocolFactory()
+    jsProt240 := factory239.GetProtocol(mbTrans237)
+    argvalue2 := ttype.NewSPagingParams()
+    err241 := argvalue2.Read(jsProt240)
+    if err241 != nil {
+      Usage()
+      return
+    }
+    value2 := argvalue2
+    fmt.Print(client.PagingAccountLog(context.Background(), value0, value1, value2))
     fmt.Print("\n")
     break
   case "":

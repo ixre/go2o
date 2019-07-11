@@ -47,6 +47,7 @@ type memberService struct {
 	serviceUtil
 }
 
+
 // 交换会员编号
 func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
 	var memberId int64
@@ -631,19 +632,18 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) testLogin(user string, pwd string) (id int64, err error) {
-	user = strings.ToLower(strings.TrimSpace(user))
-	val := s.repo.GetMemberByUser(user)
-	if val == nil {
+	user = strings.ToLower(user)
+	memberId := s.repo.GetMemberIdByUser(user)
+	if len(pwd) != 32 {
+		return -1,member.ErrNotMD5Format
+	}
+	log.Println("登陆用户:",user,memberId)
+	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
-	}
-	if val == nil {
 		return 0, member.ErrNoSuchMember
 	}
-	if len(pwd) != 32 {
-		return -1, member.ErrNotMD5Format
-	}
-	println("---", pwd, val.Pwd, domain.Sha1Pwd(pwd))
+	val := s.repo.GetMember(memberId).GetValue()
 	if val.Pwd != domain.Sha1Pwd(pwd) {
 		return 0, member.ErrCredential
 	}
@@ -657,7 +657,7 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, err error)
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*ttype.Result_, error) {
 	id, err := s.testLogin(user, pwd)
-	memberCode := ""
+	var memberCode = ""
 	if update && err == nil {
 		m := s.repo.GetMember(id)
 		memberCode = m.GetValue().Code
@@ -926,6 +926,29 @@ func (s *memberService) PagedGoodsFav(memberId int64, begin, end int,
 	return s.query.PagedGoodsFav(memberId, begin, end, where)
 }
 
+
+// 获取钱包账户分页记录
+func (s *memberService) PagingAccountLog(ctx context.Context, memberId int64,accountType int32,
+	params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
+	var total int
+	var rows []map[string]interface{}
+	switch accountType {
+	case member.AccountIntegral:
+		total, rows = s.query.PagedIntegralAccountLog(memberId, params)
+	case member.AccountBalance:
+		total,rows = s.query.PagedBalanceAccountLog(memberId,int(params.Begin),int(params.Over),"","")
+	case member.AccountWallet:
+		total,rows = s.query.PagedWalletAccountLog(memberId,int(params.Begin),int(params.Over),"","")
+	}
+	rs := &ttype.SPagingResult_{
+		ErrCode: 0,
+		ErrMsg:  "",
+		Count:   int32(total),
+		Data:    s.json(rows),
+	}
+	return rs, nil
+}
+
 // 获取余额账户分页记录
 func (s *memberService) PagedBalanceAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
@@ -937,6 +960,8 @@ func (s *memberService) PagedWalletAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
 	return s.query.PagedWalletAccountLog(memberId, begin, end, where, orderBy)
 }
+
+
 
 // 查询分页普通订单
 func (s *memberService) QueryNormalOrder(memberId int64, begin, size int, pagination bool,
@@ -1423,3 +1448,5 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 	}
 	return m.Profile().ChangePhone(phone)
 }
+
+

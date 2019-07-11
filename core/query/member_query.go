@@ -12,9 +12,11 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"log"
 	"strconv"
 	"strings"
@@ -30,7 +32,7 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 
 // 获取会员列表
 func (m *MemberQuery) GetMemberList(ids []int64) []*dto.MemberSummary {
-	list := []*dto.MemberSummary{}
+	var list []*dto.MemberSummary
 	strIds := make([]string, len(ids))
 	for i, v := range ids {
 		strIds[i] = strconv.Itoa(int(v))
@@ -58,16 +60,41 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE bi.member_id= $1 %s`, where), &num, memberId)
-
 	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
-
 	d.Query(sqlLine, func(_rows *sql.Rows) {
 		rows = db.RowsToMarshalMap(_rows)
 	}, memberId, begin, end-begin)
 
+	return num, rows
+}
+
+// 获取账户余额分页记录
+func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, params *ttype.SPagingParams) (num int, rows []map[string]interface{}) {
+	d := m.Connector
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_integral_log bi
+	 	INNER JOIN mm_member m ON m.id = bi.member_id
+			WHERE bi.member_id= $1`), &num, memberId)
+	if num > 0 {
+		orderBy := ""
+		if params.OrderField != ""{
+			orderBy = "ORDER BY " + params.OrderField +
+				types.ElseString(params.OrderDesc," DESC"," ASC") +",bi.id DESC"
+		}
+		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_integral_log bi
+			INNER JOIN mm_member m ON m.id=bi.member_id
+			WHERE member_id= $1 %s LIMIT $3 OFFSET $2`, orderBy)
+		err := d.Query(sqlLine, func(_rows *sql.Rows) {
+			rows = db.RowsToMarshalMap(_rows)
+		}, memberId, params.Begin , params.Over - params.Begin)
+		if err != nil{
+			log.Println("[ Go2o][ Query]: query error ",err.Error())
+		}
+	} else {
+		rows = []map[string]interface{}{}
+	}
 	return num, rows
 }
 
