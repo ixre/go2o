@@ -110,6 +110,9 @@ service MemberService{
 
     // !银行四要素认证
     ttype.Result B4EAuth(1:i64 memberId,2:string action,3:map<string,string> data)
+
+    /* 获取积分账户日志 */
+    ttype.SPagingResult PagedIntegralAccountLog(1:i64 memberId,2:ttype.SPagingParams params)
 }
 
 

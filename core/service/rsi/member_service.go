@@ -47,6 +47,7 @@ type memberService struct {
 	serviceUtil
 }
 
+
 // 交换会员编号
 func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
 	var memberId int64
@@ -926,6 +927,19 @@ func (s *memberService) PagedGoodsFav(memberId int64, begin, end int,
 	return s.query.PagedGoodsFav(memberId, begin, end, where)
 }
 
+
+// 获取钱包账户分页记录
+func (s *memberService) PagedIntegralAccountLog(ctx context.Context, memberId int64, params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
+	total, rows := s.query.PagedIntegralAccountLog(memberId, params)
+	rs := &ttype.SPagingResult_{
+		ErrCode: 0,
+		ErrMsg:  "",
+		Count:   int32(total),
+		Data:    s.json(rows),
+	}
+	return rs, nil
+}
+
 // 获取余额账户分页记录
 func (s *memberService) PagedBalanceAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
@@ -937,6 +951,8 @@ func (s *memberService) PagedWalletAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
 	return s.query.PagedWalletAccountLog(memberId, begin, end, where, orderBy)
 }
+
+
 
 // 查询分页普通订单
 func (s *memberService) QueryNormalOrder(memberId int64, begin, size int, pagination bool,
@@ -1422,4 +1438,13 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 		return member.ErrNoSuchMember
 	}
 	return m.Profile().ChangePhone(phone)
+}
+
+// 转换为JSON
+func (s *memberService) json(rows []map[string]interface{}) string {
+	r,err := json.Marshal(rows)
+	if err != nil{
+		return "{\"error\":\"parse error:"+err.Error()+"\"}"
+	}
+	return string(r)
 }
