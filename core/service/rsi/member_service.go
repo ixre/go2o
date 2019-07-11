@@ -632,19 +632,18 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) testLogin(user string, pwd string) (id int64, err error) {
-	user = strings.ToLower(strings.TrimSpace(user))
-	val := s.repo.GetMemberByUser(user)
-	if val == nil {
-		//todo: 界面加上使用手机号码登陆
-		//val = m.repo.GetMemberValueByPhone(user)
-	}
-	if val == nil {
-		return 0, member.ErrNoSuchMember
-	}
+	user = strings.ToLower(user)
+	memberId := s.repo.GetMemberIdByUser(user)
 	if len(pwd) != 32 {
 		return -1,member.ErrNotMD5Format
 	}
-	println("---",pwd,val.Pwd,domain.Sha1Pwd(pwd))
+	log.Println("登陆用户:",user,memberId)
+	if memberId <= 0 {
+		//todo: 界面加上使用手机号码登陆
+		//val = m.repo.GetMemberValueByPhone(user)
+		return 0, member.ErrNoSuchMember
+	}
+	val := s.repo.GetMember(memberId).GetValue()
 	if val.Pwd != domain.Sha1Pwd(pwd) {
 		return 0, member.ErrCredential
 	}

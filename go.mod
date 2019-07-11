@@ -17,7 +17,6 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/robfig/cron v1.2.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
-	golang.org/x/image v0.0.0-20190622003408-7e034cad6442 // indirect
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	golang.org/x/sys v0.0.0-20190730174312-6a60838ec25 // indirect
 	golang.org/x/text v0.3.2

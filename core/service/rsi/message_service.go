@@ -21,7 +21,7 @@ var _ message_service.MessageService = new(messageService)
 
 type messageService struct {
 	_rep mss.IMssRepo
-	*serviceUtil
+	serviceUtil
 }
 
 func NewMessageService(rep mss.IMssRepo) *messageService {
