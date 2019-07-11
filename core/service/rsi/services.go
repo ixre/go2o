@@ -95,6 +95,12 @@ func Init(ctx gof.App, appFlag int) {
 	}
 }
 
+// 初始化测试服务
+func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
+	initService(ctx,db,orm,sto)
+}
+
+// 初始化服务
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 	fact = (&repos.RepoFactory{}).Init(db, sto)
 	registryRepo := fact.GetRegistryRepo()

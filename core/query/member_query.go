@@ -12,6 +12,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
@@ -79,14 +80,18 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, params *ttype.SPag
 	if num > 0 {
 		orderBy := ""
 		if params.OrderField != ""{
-			orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
+			orderBy = "ORDER BY " + params.OrderField +
+				types.ElseString(params.OrderDesc," DESC"," ASC") +",bi.id DESC"
 		}
 		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_integral_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id= $1 %s LIMIT $3 OFFSET $2`, orderBy)
-		d.Query(sqlLine, func(_rows *sql.Rows) {
+		err := d.Query(sqlLine, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
 		}, memberId, params.Begin , params.Over - params.Begin)
+		if err != nil{
+			log.Println("[ Go2o][ Query]: query error ",err.Error())
+		}
 	} else {
 		rows = []map[string]interface{}{}
 	}
