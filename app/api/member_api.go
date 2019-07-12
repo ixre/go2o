@@ -147,7 +147,7 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-		r, err1 := cli.GetProfile(thrift.Context, memberId)
+		r, err1 := cli.GetMember(thrift.Context, memberId)
 		if err1 == nil {
 			return r
 		}
