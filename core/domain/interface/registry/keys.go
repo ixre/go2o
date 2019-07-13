@@ -67,6 +67,8 @@ var (
 	SmsRegisterTemplateId = KeyFormat("SmsRegisterTemplateId")
 	// 用户验证码短信模板ID
 	SmsMemberCheckTemplateId = KeyFormat("SmsMemberCheckTemplateId")
+	// 短信接收间隔
+	SmsSendDuration = KeyFormat("SmsSendDuration")
 
 	/** 账户 */
 	// 余额账户

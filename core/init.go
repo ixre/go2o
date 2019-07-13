@@ -11,6 +11,7 @@ package core
 import (
 	"encoding/gob"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/log"
 	"go2o/core/dao/model"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/after-sales"
@@ -50,8 +51,6 @@ func Startup(job func()) {
 	startJobs = append(startJobs, job)
 }
 
-
-
 // 注册序列类型
 func registerTypes() {
 	gob.Register(&member.Member{})
@@ -70,6 +69,7 @@ func registerTypes() {
 }
 
 func Init(a *AppImpl, debug, trace bool) bool {
+	log.Println("[ Go2o][ Boot]: initialize ...")
 	a._debugMode = debug
 	if trace {
 		a.Db().GetOrm().SetTrace(a._debugMode)

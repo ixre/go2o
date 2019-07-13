@@ -35,6 +35,8 @@ service ShopService{
     SStore GetStore(1:i32 venderId)
     // 获取店铺
     SStore GetStoreById(1:i32 shopId)
+    /** 根据主机头获取店铺编号 */
+    i32 QueryStoreByHost(1:string host)
     // 获取门店
     //Shop GetOfflineShop(1:i32 shopId)
     // 打开或关闭商店

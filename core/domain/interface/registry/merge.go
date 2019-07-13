@@ -18,7 +18,7 @@ func mergeAdd(description string, key string, defaultValue string, options strin
 func MergeRegistries() []*Registry {
 	/** 域名 */
 	mergeAdd("是否启用SSL连接", DomainEnabledSSL, "false", "")
-	mergeAdd("域名",Domain,"yourdomain.com","")
+	mergeAdd("域名", Domain, "yourdomain.com", "")
 	mergeAdd("零售门户前缀", DomainPrefixPortal, "www.", "")
 	mergeAdd("批发门户域名前缀", DomainPrefixWholesalePortal, "whs.", "")
 	mergeAdd("零售门户手机端域名前缀", DomainPrefixMobilePortal, "m.", "")
@@ -60,6 +60,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("默认短信服务商", SmsDefaultProvider, "", "")
 	mergeAdd("用户注册短信模板ID", SmsRegisterTemplateId, "", "")
 	mergeAdd("用户验证码短信模板ID", SmsMemberCheckTemplateId, "", "")
+	mergeAdd("短信接收间隔,默认(2s)",SmsSendDuration,"2000","")
 
 	// 注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册,等于member.RegisterMode
 	mergeAdd("注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册", MemberRegisterMode, "1", "")

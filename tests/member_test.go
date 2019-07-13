@@ -80,10 +80,10 @@ func TestToBePremium(t *testing.T) {
 		time.Unix(v.PremiumExpires, 0).Format("2006-01-02 15:04:05"))
 }
 
-func TestGetMember(t *testing.T){
+func TestGetMember(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(502)
-	t.Logf("%#v",m.GetValue())
+	t.Logf("%#v", m.GetValue())
 }
 
 func TestModifyPwd(t *testing.T) {
@@ -128,4 +128,9 @@ func TestReceiptsCode(t *testing.T) {
 		State:     1,
 	})
 	t.Log("err:", err)
+}
+
+func TestLogin(t *testing.T){
+	pwd := "d682a6db237d3fe29f07a1545778ecf3"
+	t.Log(len(pwd))
 }

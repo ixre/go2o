@@ -26,6 +26,7 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "\nFunctions:")
   fmt.Fprintln(os.Stderr, "  SStore GetStore(i32 venderId)")
   fmt.Fprintln(os.Stderr, "  SStore GetStoreById(i32 shopId)")
+  fmt.Fprintln(os.Stderr, "  i32 QueryStoreByHost(string host)")
   fmt.Fprintln(os.Stderr, "  Result TurnShop(i32 shopId, bool on, string reason)")
   fmt.Fprintln(os.Stderr, "  Result OpenShop(i32 shopId, bool opening, string reason)")
   fmt.Fprintln(os.Stderr)
@@ -154,8 +155,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetStore requires 1 args")
       flag.Usage()
     }
-    tmp0, err12 := (strconv.Atoi(flag.Arg(1)))
-    if err12 != nil {
+    tmp0, err14 := (strconv.Atoi(flag.Arg(1)))
+    if err14 != nil {
       Usage()
       return
     }
@@ -169,8 +170,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetStoreById requires 1 args")
       flag.Usage()
     }
-    tmp0, err13 := (strconv.Atoi(flag.Arg(1)))
-    if err13 != nil {
+    tmp0, err15 := (strconv.Atoi(flag.Arg(1)))
+    if err15 != nil {
       Usage()
       return
     }
@@ -179,13 +180,23 @@ func main() {
     fmt.Print(client.GetStoreById(context.Background(), value0))
     fmt.Print("\n")
     break
+  case "QueryStoreByHost":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "QueryStoreByHost requires 1 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    fmt.Print(client.QueryStoreByHost(context.Background(), value0))
+    fmt.Print("\n")
+    break
   case "TurnShop":
     if flag.NArg() - 1 != 3 {
       fmt.Fprintln(os.Stderr, "TurnShop requires 3 args")
       flag.Usage()
     }
-    tmp0, err14 := (strconv.Atoi(flag.Arg(1)))
-    if err14 != nil {
+    tmp0, err17 := (strconv.Atoi(flag.Arg(1)))
+    if err17 != nil {
       Usage()
       return
     }
@@ -203,8 +214,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "OpenShop requires 3 args")
       flag.Usage()
     }
-    tmp0, err17 := (strconv.Atoi(flag.Arg(1)))
-    if err17 != nil {
+    tmp0, err20 := (strconv.Atoi(flag.Arg(1)))
+    if err20 != nil {
       Usage()
       return
     }

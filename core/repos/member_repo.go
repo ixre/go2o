@@ -180,7 +180,7 @@ func (m *MemberRepoImpl) GetMemberByUser(user string) *member.Member {
 	return nil
 }
 
-func (m *MemberRepoImpl) getId(field string, value string) int {
+func (m *MemberRepoImpl) getId(field string, value string) int64 {
 	key := fmt.Sprintf("go2o:member:id:%s-%s", field, value)
 	id, err := m.storage.GetInt(key)
 	if err != nil {
@@ -189,11 +189,11 @@ func (m *MemberRepoImpl) getId(field string, value string) int {
 			m.storage.SetExpire(key, id, 48*3600)
 		}
 	}
-	return id
+	return int64(id)
 }
 
 // 根据编码获取会员
-func (m *MemberRepoImpl) GetMemberIdByCode(code string) int {
+func (m *MemberRepoImpl) GetMemberIdByCode(code string) int64 {
 	return m.getId("code", code)
 }
 
@@ -338,9 +338,7 @@ func (m *MemberRepoImpl) DeleteMember(id int64) error {
 }
 
 func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
-	var id int64
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE user = $1", &id, user)
-	return id
+	return m.getId("\"user\"",user)
 }
 
 // 创建会员

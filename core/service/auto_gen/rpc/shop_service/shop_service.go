@@ -815,6 +815,11 @@ type ShopService interface {
   // Parameters:
   //  - ShopId
   GetStoreById(ctx context.Context, shopId int32) (r *SStore, err error)
+  // 根据主机头获取店铺编号
+  // 
+  // Parameters:
+  //  - Host
+  QueryStoreByHost(ctx context.Context, host string) (r int32, err error)
   // Parameters:
   //  - ShopId
   //  - On
@@ -876,17 +881,15 @@ func (p *ShopServiceClient) GetStoreById(ctx context.Context, shopId int32) (r *
   return _result5.GetSuccess(), nil
 }
 
+// 根据主机头获取店铺编号
+// 
 // Parameters:
-//  - ShopId
-//  - On
-//  - Reason
-func (p *ShopServiceClient) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (r *ttype.Result_, err error) {
-  var _args6 ShopServiceTurnShopArgs
-  _args6.ShopId = shopId
-  _args6.On = on
-  _args6.Reason = reason
-  var _result7 ShopServiceTurnShopResult
-  if err = p.Client_().Call(ctx, "TurnShop", &_args6, &_result7); err != nil {
+//  - Host
+func (p *ShopServiceClient) QueryStoreByHost(ctx context.Context, host string) (r int32, err error) {
+  var _args6 ShopServiceQueryStoreByHostArgs
+  _args6.Host = host
+  var _result7 ShopServiceQueryStoreByHostResult
+  if err = p.Client_().Call(ctx, "QueryStoreByHost", &_args6, &_result7); err != nil {
     return
   }
   return _result7.GetSuccess(), nil
@@ -894,18 +897,34 @@ func (p *ShopServiceClient) TurnShop(ctx context.Context, shopId int32, on bool,
 
 // Parameters:
 //  - ShopId
-//  - Opening
+//  - On
 //  - Reason
-func (p *ShopServiceClient) OpenShop(ctx context.Context, shopId int32, opening bool, reason string) (r *ttype.Result_, err error) {
-  var _args8 ShopServiceOpenShopArgs
+func (p *ShopServiceClient) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (r *ttype.Result_, err error) {
+  var _args8 ShopServiceTurnShopArgs
   _args8.ShopId = shopId
-  _args8.Opening = opening
+  _args8.On = on
   _args8.Reason = reason
-  var _result9 ShopServiceOpenShopResult
-  if err = p.Client_().Call(ctx, "OpenShop", &_args8, &_result9); err != nil {
+  var _result9 ShopServiceTurnShopResult
+  if err = p.Client_().Call(ctx, "TurnShop", &_args8, &_result9); err != nil {
     return
   }
   return _result9.GetSuccess(), nil
+}
+
+// Parameters:
+//  - ShopId
+//  - Opening
+//  - Reason
+func (p *ShopServiceClient) OpenShop(ctx context.Context, shopId int32, opening bool, reason string) (r *ttype.Result_, err error) {
+  var _args10 ShopServiceOpenShopArgs
+  _args10.ShopId = shopId
+  _args10.Opening = opening
+  _args10.Reason = reason
+  var _result11 ShopServiceOpenShopResult
+  if err = p.Client_().Call(ctx, "OpenShop", &_args10, &_result11); err != nil {
+    return
+  }
+  return _result11.GetSuccess(), nil
 }
 
 type ShopServiceProcessor struct {
@@ -928,12 +947,13 @@ func (p *ShopServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFuncti
 
 func NewShopServiceProcessor(handler ShopService) *ShopServiceProcessor {
 
-  self10 := &ShopServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self10.processorMap["GetStore"] = &shopServiceProcessorGetStore{handler:handler}
-  self10.processorMap["GetStoreById"] = &shopServiceProcessorGetStoreById{handler:handler}
-  self10.processorMap["TurnShop"] = &shopServiceProcessorTurnShop{handler:handler}
-  self10.processorMap["OpenShop"] = &shopServiceProcessorOpenShop{handler:handler}
-return self10
+  self12 := &ShopServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self12.processorMap["GetStore"] = &shopServiceProcessorGetStore{handler:handler}
+  self12.processorMap["GetStoreById"] = &shopServiceProcessorGetStoreById{handler:handler}
+  self12.processorMap["QueryStoreByHost"] = &shopServiceProcessorQueryStoreByHost{handler:handler}
+  self12.processorMap["TurnShop"] = &shopServiceProcessorTurnShop{handler:handler}
+  self12.processorMap["OpenShop"] = &shopServiceProcessorOpenShop{handler:handler}
+return self12
 }
 
 func (p *ShopServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -944,12 +964,12 @@ func (p *ShopServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x11 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x13 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x11.Write(oprot)
+  x13.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush(ctx)
-  return false, x11
+  return false, x13
 
 }
 
@@ -1032,6 +1052,54 @@ var retval *SStore
     result.Success = retval
 }
   if err2 = oprot.WriteMessageBegin("GetStoreById", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type shopServiceProcessorQueryStoreByHost struct {
+  handler ShopService
+}
+
+func (p *shopServiceProcessorQueryStoreByHost) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := ShopServiceQueryStoreByHostArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("QueryStoreByHost", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush(ctx)
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := ShopServiceQueryStoreByHostResult{}
+var retval int32
+  var err2 error
+  if retval, err2 = p.handler.QueryStoreByHost(ctx, args.Host); err2 != nil {
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing QueryStoreByHost: " + err2.Error())
+    oprot.WriteMessageBegin("QueryStoreByHost", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush(ctx)
+    return true, err2
+  } else {
+    result.Success = &retval
+}
+  if err2 = oprot.WriteMessageBegin("QueryStoreByHost", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -1528,6 +1596,197 @@ func (p *ShopServiceGetStoreByIdResult) String() string {
     return "<nil>"
   }
   return fmt.Sprintf("ShopServiceGetStoreByIdResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Host
+type ShopServiceQueryStoreByHostArgs struct {
+  Host string `thrift:"host,1" db:"host" json:"host"`
+}
+
+func NewShopServiceQueryStoreByHostArgs() *ShopServiceQueryStoreByHostArgs {
+  return &ShopServiceQueryStoreByHostArgs{}
+}
+
+
+func (p *ShopServiceQueryStoreByHostArgs) GetHost() string {
+  return p.Host
+}
+func (p *ShopServiceQueryStoreByHostArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if fieldTypeId == thrift.STRING {
+        if err := p.ReadField1(iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(fieldTypeId); err != nil {
+          return err
+        }
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ShopServiceQueryStoreByHostArgs)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Host = v
+}
+  return nil
+}
+
+func (p *ShopServiceQueryStoreByHostArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("QueryStoreByHost_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ShopServiceQueryStoreByHostArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("host", thrift.STRING, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:host: ", p), err) }
+  if err := oprot.WriteString(string(p.Host)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.host (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:host: ", p), err) }
+  return err
+}
+
+func (p *ShopServiceQueryStoreByHostArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ShopServiceQueryStoreByHostArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type ShopServiceQueryStoreByHostResult struct {
+  Success *int32 `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewShopServiceQueryStoreByHostResult() *ShopServiceQueryStoreByHostResult {
+  return &ShopServiceQueryStoreByHostResult{}
+}
+
+var ShopServiceQueryStoreByHostResult_Success_DEFAULT int32
+func (p *ShopServiceQueryStoreByHostResult) GetSuccess() int32 {
+  if !p.IsSetSuccess() {
+    return ShopServiceQueryStoreByHostResult_Success_DEFAULT
+  }
+return *p.Success
+}
+func (p *ShopServiceQueryStoreByHostResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *ShopServiceQueryStoreByHostResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if fieldTypeId == thrift.I32 {
+        if err := p.ReadField0(iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(fieldTypeId); err != nil {
+          return err
+        }
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ShopServiceQueryStoreByHostResult)  ReadField0(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 0: ", err)
+} else {
+  p.Success = &v
+}
+  return nil
+}
+
+func (p *ShopServiceQueryStoreByHostResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("QueryStoreByHost_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ShopServiceQueryStoreByHostResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.I32, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.Success)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.success (0) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *ShopServiceQueryStoreByHostResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ShopServiceQueryStoreByHostResult(%+v)", *p)
 }
 
 // Attributes:

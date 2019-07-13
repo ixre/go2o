@@ -21,11 +21,17 @@ var (
 
 // 密码SHA1加密
 func Sha1Pwd(pwd string) string {
+	if pwd == "" {
+		return ""
+	}
 	return crypto.Sha1([]byte(strings.Join([]string{pwd, Sha1OffSet}, "")))
 }
 
 // MD5加密
 func Md5(pwd string) string {
+	if pwd == "" {
+		return ""
+	}
 	return crypto.Md5([]byte(pwd))
 }
 
@@ -43,9 +49,7 @@ func Sha1(s string) string {
 // 加密会员密码,因为可能会使用手机号码登录，
 // 所以密码不能依据用户名作为生成凭据
 func MemberSha1Pwd(pwd string) string {
-	if pwd == "" {
-		return ""
-	}
+
 	return Sha1Pwd(pwd)
 }
 

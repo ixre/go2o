@@ -47,6 +47,7 @@ type memberService struct {
 	serviceUtil
 }
 
+
 // 交换会员编号
 func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
 	var memberId int64
@@ -447,6 +448,9 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 	if err != nil {
 		return s.error(err), nil
 	}
+	if len(pwd) != 32 {
+		return s.error(member.ErrNotMD5Format), nil
+	}
 	v := &member.Member{
 		User:    user,
 		Pwd:     domain.Sha1Pwd(pwd),
@@ -473,49 +477,12 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		//	//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
 		//	if err = m.Profile().SaveProfile(pro); err != nil {
 		//		s.repo.DeleteMember(id)
-		//	} else {
-		//		// 保存关联信息
-		//		rl := m.GetRelation()
-		//		rl.InviterId = invitationId
-		//		rl.RegMchId = mchId
-		//		rl.CardCard = cardId
-		//		err = m.saveRelation(rl)
-		//	}
 		//}
 		return s.success(map[string]string{
 			"member_id": util.Str(id),
 		}), nil
 	}
 	return s.error(err), nil
-}
-
-// 注册会员
-func (s *memberService) RegisterMember1(mchId int32, v1 *member_service.SMember,
-	pro1 *member_service.SProfile, cardId string, invitationCode string) (int64, error) {
-	if v1 == nil || pro1 == nil {
-		return 0, errors.New("missing data")
-	}
-	v := parser.Member(v1)
-	pro := parser.MemberProfile2(pro1)
-	invitationId, err := s.repo.GetManager().PrepareRegister(
-		v, pro, invitationCode)
-	if err == nil {
-		m := s.repo.CreateMember(v) //创建会员
-		id, err := m.Save()
-		if err == nil {
-			pro.Sex = 1
-			pro.MemberId = id
-			//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
-			if err = m.Profile().SaveProfile(pro); err != nil {
-				s.repo.DeleteMember(id)
-			} else {
-				// 保存关联信息
-				err = m.BindInviter(invitationId, true)
-			}
-		}
-		return id, err
-	}
-	return -1, err
 }
 
 // 获取会员等级
@@ -629,6 +596,16 @@ func (s *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) er
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
+	if l := len(newPwd); l != 32 {
+		return member.ErrNotMD5Format
+	} else {
+		newPwd = domain.MemberSha1Pwd(newPwd)
+	}
+	if l := len(oldPwd); l > 0 && l != 32 {
+		return member.ErrNotMD5Format
+	} else {
+		oldPwd = domain.MemberSha1Pwd(oldPwd)
+	}
 	return m.Profile().ModifyPassword(newPwd, oldPwd)
 }
 
@@ -639,22 +616,35 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
+	if l := len(newPwd); l != 32 {
+		return member.ErrNotMD5Format
+	} else {
+		newPwd = domain.TradePwd(newPwd)
+	}
+	if l := len(oldPwd); l > 0 && l != 32 {
+		return member.ErrNotMD5Format
+	} else {
+		oldPwd = domain.TradePwd(oldPwd)
+	}
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 }
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) testLogin(user string, pwd string) (id int64, err error) {
-	user = strings.ToLower(strings.TrimSpace(user))
-	val := s.repo.GetMemberByUser(user)
-	if val == nil {
+	user = strings.ToLower(user)
+	memberId := s.repo.GetMemberIdByUser(user)
+	if len(pwd) != 32 {
+		return -1,member.ErrNotMD5Format
+	}
+	log.Println("登陆用户:",user,memberId)
+	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
-	}
-	if val == nil {
 		return 0, member.ErrNoSuchMember
 	}
-	if val.Pwd != pwd {
+	val := s.repo.GetMember(memberId).GetValue()
+	if val.Pwd != domain.Sha1Pwd(pwd) {
 		return 0, member.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
@@ -667,7 +657,7 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, err error)
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*ttype.Result_, error) {
 	id, err := s.testLogin(user, pwd)
-	memberCode := ""
+	var memberCode = ""
 	if update && err == nil {
 		m := s.repo.GetMember(id)
 		memberCode = m.GetValue().Code
@@ -689,10 +679,13 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 	}
 	mv := m.GetValue()
 	if mv.TradePwd == "" {
-		return s.result(member.ErrNotSetTradePwd), nil
+		return s.error(member.ErrNotSetTradePwd), nil
 	}
-	if mv.TradePwd != tradePwd {
-		return s.result(member.ErrIncorrectTradePwd), nil
+	if len(tradePwd) != 32 {
+		return s.error(member.ErrNotMD5Format), nil
+	}
+	if encPwd := domain.TradePwd(tradePwd); mv.TradePwd != encPwd {
+		return s.error(member.ErrIncorrectTradePwd), nil
 	}
 	return s.success(nil), nil
 }
@@ -933,6 +926,29 @@ func (s *memberService) PagedGoodsFav(memberId int64, begin, end int,
 	return s.query.PagedGoodsFav(memberId, begin, end, where)
 }
 
+
+// 获取钱包账户分页记录
+func (s *memberService) PagingAccountLog(ctx context.Context, memberId int64,accountType int32,
+	params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
+	var total int
+	var rows []map[string]interface{}
+	switch accountType {
+	case member.AccountIntegral:
+		total, rows = s.query.PagedIntegralAccountLog(memberId, params)
+	case member.AccountBalance:
+		total,rows = s.query.PagedBalanceAccountLog(memberId,int(params.Begin),int(params.Over),"","")
+	case member.AccountWallet:
+		total,rows = s.query.PagedWalletAccountLog(memberId,int(params.Begin),int(params.Over),"","")
+	}
+	rs := &ttype.SPagingResult_{
+		ErrCode: 0,
+		ErrMsg:  "",
+		Count:   int32(total),
+		Data:    s.json(rows),
+	}
+	return rs, nil
+}
+
 // 获取余额账户分页记录
 func (s *memberService) PagedBalanceAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
@@ -944,6 +960,8 @@ func (s *memberService) PagedWalletAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
 	return s.query.PagedWalletAccountLog(memberId, begin, end, where, orderBy)
 }
+
+
 
 // 查询分页普通订单
 func (s *memberService) QueryNormalOrder(memberId int64, begin, size int, pagination bool,
@@ -1430,3 +1448,5 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 	}
 	return m.Profile().ChangePhone(phone)
 }
+
+

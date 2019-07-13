@@ -72,7 +72,7 @@ type IMemberRepo interface {
 	GetMemberIdByUser(user string) int64
 
 	// 根据编码获取会员
-	GetMemberIdByCode(code string) int
+	GetMemberIdByCode(code string) int64
 
 	// 用户名是否存在
 	CheckUsrExist(user string, memberId int64) bool

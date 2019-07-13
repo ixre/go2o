@@ -19,6 +19,7 @@ import (
 	"go2o/core"
 	"go2o/core/msq"
 	"go2o/core/repos"
+	"go2o/core/service/rsi"
 	"time"
 )
 
@@ -141,12 +142,13 @@ func (t *testingApp) Init(debug, trace bool) bool {
 }
 
 func init() {
-	app := core.NewApp("../app_dev.conf")
+	app := core.NewApp("../../app_dev.conf")
 	gof.CurrentApp = app
 	core.Init(app, false, false)
 	conn := app.Db()
 	sto := app.Storage()
 	Factory = (&repos.RepoFactory{}).Init(conn, sto)
+	rsi.InitTestService(app,conn,conn.GetOrm(),sto)
 }
 
 // 初始化producer
