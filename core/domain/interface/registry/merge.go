@@ -35,6 +35,10 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员中心域名前缀(移动端)", DomainPrefixMobileMember, "mu.", "")
 	mergeAdd("通行证域名前缀(移动端)", DomainPrefixMobilePassport, "mpp.", "")
 
+	/* 管理面板 */
+	mergeAdd("面板链接钩子访问密钥",BoardHookToken,"","")
+	mergeAdd("面板链接钩子URL地址",BoardHookURL,"","")
+
 	/* 账户 */
 	mergeAdd("余额账户", AccountBalanceAlias, "余额", "")
 	mergeAdd("积分账户", AccountIntegralAlias, "积分", "")
@@ -78,7 +82,6 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员未实名认证提示信息", MemberNotTrustedMessage, "您尚未实名认证!", "")
 	mergeAdd("实名时是否需要先完善资", MemberRequireProfileOnTrusting, "false", "")
 	mergeAdd("会员是否验证手机号码格式", MemberCheckPhoneFormat, "true", "")
-
 	mergeAdd("会员邀请关系级数", MemberReferLayer, "3", "")
 	mergeAdd("会员即时通讯是否必须", MemberImRequired, "false", "")
 
