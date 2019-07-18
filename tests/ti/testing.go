@@ -148,7 +148,7 @@ func init() {
 	conn := app.Db()
 	sto := app.Storage()
 	Factory = (&repos.RepoFactory{}).Init(conn, sto)
-	rsi.InitTestService(app,conn,conn.GetOrm(),sto)
+	rsi.InitTestService(app, conn, conn.GetOrm(), sto)
 }
 
 // 初始化producer

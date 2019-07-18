@@ -33,8 +33,8 @@ type shopServiceImpl struct {
 
 // 根据主机头获取店铺编号
 func (si *shopServiceImpl) QueryStoreByHost(ctx context.Context, host string) (r int32, err error) {
-	_,shopId := si.query.QueryShopIdByHost(host)
-	return shopId,nil
+	_, shopId := si.query.QueryShopIdByHost(host)
+	return shopId, nil
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
@@ -102,7 +102,6 @@ func (si *shopServiceImpl) getMerchantId(shopId int32) int32 {
 func (si *shopServiceImpl) GetMerchantId(shopId int32) int32 {
 	return si.query.GetMerchantId(shopId)
 }
-
 
 // 获取商店的数据
 func (si *shopServiceImpl) GetShopData(mchId, shopId int32) *shop.ComplexShop {

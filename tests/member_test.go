@@ -130,7 +130,7 @@ func TestReceiptsCode(t *testing.T) {
 	t.Log("err:", err)
 }
 
-func TestLogin(t *testing.T){
+func TestLogin(t *testing.T) {
 	pwd := "d682a6db237d3fe29f07a1545778ecf3"
 	t.Log(len(pwd))
 }
