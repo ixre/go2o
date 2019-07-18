@@ -338,7 +338,7 @@ func (m *MemberRepoImpl) DeleteMember(id int64) error {
 }
 
 func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
-	return m.getId("\"user\"",user)
+	return m.getId("\"user\"", user)
 }
 
 // 创建会员

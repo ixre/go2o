@@ -6,6 +6,8 @@ var (
 	DomainEnabledSSL = KeyFormat("DomainEnabledSsl")
 	// 根域名
 	Domain = KeyFormat("Domain")
+	// 控制面板前缀
+	DomainPrefixDashboard = KeyFormat("DomainPrefixDashboard")
 	// 零售门户前缀
 	DomainPrefixPortal = KeyFormat("DomainPrefixPortal")
 	// 批发门户域名前缀
