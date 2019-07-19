@@ -34,8 +34,6 @@ type foundationService struct {
 	serviceUtil
 }
 
-
-
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
 	return &foundationService{
 		_rep:         rep,
@@ -133,7 +131,7 @@ func (s *foundationService) UpdateRegistry(ctx context.Context, registries map[s
 			}
 		}
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
 
 // 设置键值

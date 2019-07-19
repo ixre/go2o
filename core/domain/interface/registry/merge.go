@@ -36,8 +36,9 @@ func MergeRegistries() []*Registry {
 	mergeAdd("通行证域名前缀(移动端)", DomainPrefixMobilePassport, "mpp.", "")
 
 	/* 管理面板 */
-	mergeAdd("面板链接钩子访问密钥",BoardHookToken,"","")
-	mergeAdd("面板链接钩子URL地址",BoardHookURL,"","")
+	mergeAdd("面板钩子显示名称", BoardHookDisplayName, "Hooks", "")
+	mergeAdd("面板链接钩子访问密钥", BoardHookToken, "", "")
+	mergeAdd("面板链接钩子URL地址", BoardHookURL, "", "")
 
 	/* 账户 */
 	mergeAdd("余额账户", AccountBalanceAlias, "余额", "")
