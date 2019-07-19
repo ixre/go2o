@@ -131,8 +131,7 @@ func (s *foundationService) UpdateRegistry(ctx context.Context, registries map[s
 			}
 		}
 	}
-	r = s.success(nil)
-	return r, nil
+	return s.success(nil), nil
 }
 
 // 设置键值
@@ -141,7 +140,7 @@ func (s *foundationService) SetValue(ctx context.Context, key string, value stri
 	return s.result(err), nil
 }
 
-/** 保存短信API凭据 */
+// 保存短信API凭据
 func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api *foundation_service.SmsApi) (r *ttype.Result_, err error) {
 	manager := s.notifyRepo.Manager()
 	perm := &notify.SmsApiPerm{
@@ -156,6 +155,22 @@ func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api
 	}
 	if err := manager.SaveSmsApiPerm(provider, perm); err != nil {
 		return s.error(err), nil
+	}
+	return s.success(nil), nil
+}
+
+// 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks
+func (s *foundationService) SaveBoardHook(ctx context.Context, hookURL string, token string) (r *ttype.Result_, err error) {
+	mp := map[string]string{
+		registry.BoardHookURL:   hookURL,
+		registry.BoardHookToken: token,
+	}
+	for k, v := range mp {
+		if ir := s.registryRepo.Get(k); ir != nil {
+			if err = ir.Update(v); err != nil {
+				return s.error(err), nil
+			}
+		}
 	}
 	return s.success(nil), nil
 }

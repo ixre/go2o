@@ -1159,6 +1159,12 @@ type FoundationService interface {
 	//  - Provider
 	//  - API
 	SaveSmsApi(ctx context.Context, provider string, api *SmsApi) (r *ttype.Result_, err error)
+	// 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks
+	//
+	// Parameters:
+	//  - HookURL
+	//  - Token
+	SaveBoardHook(ctx context.Context, hookURL string, token string) (r *ttype.Result_, err error)
 	// Parameters:
 	//  - URL
 	ResourceUrl(ctx context.Context, url string) (r string, err error)
@@ -1331,27 +1337,29 @@ func (p *FoundationServiceClient) SaveSmsApi(ctx context.Context, provider strin
 	return _result13.GetSuccess(), nil
 }
 
+// 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks
+//
 // Parameters:
-//  - URL
-func (p *FoundationServiceClient) ResourceUrl(ctx context.Context, url string) (r string, err error) {
-	var _args14 FoundationServiceResourceUrlArgs
-	_args14.URL = url
-	var _result15 FoundationServiceResourceUrlResult
-	if err = p.Client_().Call(ctx, "ResourceUrl", &_args14, &_result15); err != nil {
+//  - HookURL
+//  - Token
+func (p *FoundationServiceClient) SaveBoardHook(ctx context.Context, hookURL string, token string) (r *ttype.Result_, err error) {
+	var _args14 FoundationServiceSaveBoardHookArgs
+	_args14.HookURL = hookURL
+	_args14.Token = token
+	var _result15 FoundationServiceSaveBoardHookResult
+	if err = p.Client_().Call(ctx, "SaveBoardHook", &_args14, &_result15); err != nil {
 		return
 	}
 	return _result15.GetSuccess(), nil
 }
 
 // Parameters:
-//  - Key
-//  - Value
-func (p *FoundationServiceClient) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
-	var _args16 FoundationServiceSetValueArgs
-	_args16.Key = key
-	_args16.Value = value
-	var _result17 FoundationServiceSetValueResult
-	if err = p.Client_().Call(ctx, "SetValue", &_args16, &_result17); err != nil {
+//  - URL
+func (p *FoundationServiceClient) ResourceUrl(ctx context.Context, url string) (r string, err error) {
+	var _args16 FoundationServiceResourceUrlArgs
+	_args16.URL = url
+	var _result17 FoundationServiceResourceUrlResult
+	if err = p.Client_().Call(ctx, "ResourceUrl", &_args16, &_result17); err != nil {
 		return
 	}
 	return _result17.GetSuccess(), nil
@@ -1359,82 +1367,82 @@ func (p *FoundationServiceClient) SetValue(ctx context.Context, key string, valu
 
 // Parameters:
 //  - Key
-func (p *FoundationServiceClient) DeleteValue(ctx context.Context, key string) (r *ttype.Result_, err error) {
-	var _args18 FoundationServiceDeleteValueArgs
+//  - Value
+func (p *FoundationServiceClient) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
+	var _args18 FoundationServiceSetValueArgs
 	_args18.Key = key
-	var _result19 FoundationServiceDeleteValueResult
-	if err = p.Client_().Call(ctx, "DeleteValue", &_args18, &_result19); err != nil {
+	_args18.Value = value
+	var _result19 FoundationServiceSetValueResult
+	if err = p.Client_().Call(ctx, "SetValue", &_args18, &_result19); err != nil {
 		return
 	}
 	return _result19.GetSuccess(), nil
 }
 
 // Parameters:
-//  - Keys
-func (p *FoundationServiceClient) GetRegistryV1(ctx context.Context, keys []string) (r []string, err error) {
-	var _args20 FoundationServiceGetRegistryV1Args
-	_args20.Keys = keys
-	var _result21 FoundationServiceGetRegistryV1Result
-	if err = p.Client_().Call(ctx, "GetRegistryV1", &_args20, &_result21); err != nil {
+//  - Key
+func (p *FoundationServiceClient) DeleteValue(ctx context.Context, key string) (r *ttype.Result_, err error) {
+	var _args20 FoundationServiceDeleteValueArgs
+	_args20.Key = key
+	var _result21 FoundationServiceDeleteValueResult
+	if err = p.Client_().Call(ctx, "DeleteValue", &_args20, &_result21); err != nil {
 		return
 	}
 	return _result21.GetSuccess(), nil
 }
 
 // Parameters:
-//  - Prefix
-func (p *FoundationServiceClient) GetValuesByPrefix(ctx context.Context, prefix string) (r map[string]string, err error) {
-	var _args22 FoundationServiceGetValuesByPrefixArgs
-	_args22.Prefix = prefix
-	var _result23 FoundationServiceGetValuesByPrefixResult
-	if err = p.Client_().Call(ctx, "GetValuesByPrefix", &_args22, &_result23); err != nil {
+//  - Keys
+func (p *FoundationServiceClient) GetRegistryV1(ctx context.Context, keys []string) (r []string, err error) {
+	var _args22 FoundationServiceGetRegistryV1Args
+	_args22.Keys = keys
+	var _result23 FoundationServiceGetRegistryV1Result
+	if err = p.Client_().Call(ctx, "GetRegistryV1", &_args22, &_result23); err != nil {
 		return
 	}
 	return _result23.GetSuccess(), nil
 }
 
 // Parameters:
-//  - App
-func (p *FoundationServiceClient) RegisterApp(ctx context.Context, app *SSsoApp) (r string, err error) {
-	var _args24 FoundationServiceRegisterAppArgs
-	_args24.App = app
-	var _result25 FoundationServiceRegisterAppResult
-	if err = p.Client_().Call(ctx, "RegisterApp", &_args24, &_result25); err != nil {
+//  - Prefix
+func (p *FoundationServiceClient) GetValuesByPrefix(ctx context.Context, prefix string) (r map[string]string, err error) {
+	var _args24 FoundationServiceGetValuesByPrefixArgs
+	_args24.Prefix = prefix
+	var _result25 FoundationServiceGetValuesByPrefixResult
+	if err = p.Client_().Call(ctx, "GetValuesByPrefix", &_args24, &_result25); err != nil {
 		return
 	}
 	return _result25.GetSuccess(), nil
 }
 
 // Parameters:
-//  - Name
-func (p *FoundationServiceClient) GetApp(ctx context.Context, name string) (r *SSsoApp, err error) {
-	var _args26 FoundationServiceGetAppArgs
-	_args26.Name = name
-	var _result27 FoundationServiceGetAppResult
-	if err = p.Client_().Call(ctx, "GetApp", &_args26, &_result27); err != nil {
+//  - App
+func (p *FoundationServiceClient) RegisterApp(ctx context.Context, app *SSsoApp) (r string, err error) {
+	var _args26 FoundationServiceRegisterAppArgs
+	_args26.App = app
+	var _result27 FoundationServiceRegisterAppResult
+	if err = p.Client_().Call(ctx, "RegisterApp", &_args26, &_result27); err != nil {
 		return
 	}
 	return _result27.GetSuccess(), nil
 }
 
-func (p *FoundationServiceClient) GetAllSsoApp(ctx context.Context) (r []string, err error) {
-	var _args28 FoundationServiceGetAllSsoAppArgs
-	var _result29 FoundationServiceGetAllSsoAppResult
-	if err = p.Client_().Call(ctx, "GetAllSsoApp", &_args28, &_result29); err != nil {
+// Parameters:
+//  - Name
+func (p *FoundationServiceClient) GetApp(ctx context.Context, name string) (r *SSsoApp, err error) {
+	var _args28 FoundationServiceGetAppArgs
+	_args28.Name = name
+	var _result29 FoundationServiceGetAppResult
+	if err = p.Client_().Call(ctx, "GetApp", &_args28, &_result29); err != nil {
 		return
 	}
 	return _result29.GetSuccess(), nil
 }
 
-// Parameters:
-//  - User
-//  - Pwd
-func (p *FoundationServiceClient) SuperValidate(ctx context.Context, user string, pwd string) (r bool, err error) {
-	var _args30 FoundationServiceSuperValidateArgs
-	_args30.User = user
-	_args30.Pwd = pwd
-	var _result31 FoundationServiceSuperValidateResult
-	if err = p.Client_().Call(ctx, "SuperValidate", &_args30, &_result31); err != nil {
+func (p *FoundationServiceClient) GetAllSsoApp(ctx context.Context) (r []string, err error) {
+	var _args30 FoundationServiceGetAllSsoAppArgs
+	var _result31 FoundationServiceGetAllSsoAppResult
+	if err = p.Client_().Call(ctx, "GetAllSsoApp", &_args30, &_result31); err != nil {
 		return
 	}
 	return _result31.GetSuccess(), nil
@@ -1443,12 +1451,26 @@ func (p *FoundationServiceClient) SuperValidate(ctx context.Context, user string
 // Parameters:
 //  - User
 //  - Pwd
-func (p *FoundationServiceClient) FlushSuperPwd(ctx context.Context, user string, pwd string) (err error) {
-	var _args32 FoundationServiceFlushSuperPwdArgs
+func (p *FoundationServiceClient) SuperValidate(ctx context.Context, user string, pwd string) (r bool, err error) {
+	var _args32 FoundationServiceSuperValidateArgs
 	_args32.User = user
 	_args32.Pwd = pwd
-	var _result33 FoundationServiceFlushSuperPwdResult
-	if err = p.Client_().Call(ctx, "FlushSuperPwd", &_args32, &_result33); err != nil {
+	var _result33 FoundationServiceSuperValidateResult
+	if err = p.Client_().Call(ctx, "SuperValidate", &_args32, &_result33); err != nil {
+		return
+	}
+	return _result33.GetSuccess(), nil
+}
+
+// Parameters:
+//  - User
+//  - Pwd
+func (p *FoundationServiceClient) FlushSuperPwd(ctx context.Context, user string, pwd string) (err error) {
+	var _args34 FoundationServiceFlushSuperPwdArgs
+	_args34.User = user
+	_args34.Pwd = pwd
+	var _result35 FoundationServiceFlushSuperPwdResult
+	if err = p.Client_().Call(ctx, "FlushSuperPwd", &_args34, &_result35); err != nil {
 		return
 	}
 	return nil
@@ -1457,37 +1479,37 @@ func (p *FoundationServiceClient) FlushSuperPwd(ctx context.Context, user string
 // Parameters:
 //  - ReturnUrl
 func (p *FoundationServiceClient) GetSyncLoginUrl(ctx context.Context, returnUrl string) (r string, err error) {
-	var _args34 FoundationServiceGetSyncLoginUrlArgs
-	_args34.ReturnUrl = returnUrl
-	var _result35 FoundationServiceGetSyncLoginUrlResult
-	if err = p.Client_().Call(ctx, "GetSyncLoginUrl", &_args34, &_result35); err != nil {
-		return
-	}
-	return _result35.GetSuccess(), nil
-}
-
-// Parameters:
-//  - Codes
-func (p *FoundationServiceClient) GetAreaNames(ctx context.Context, codes []int32) (r []string, err error) {
-	var _args36 FoundationServiceGetAreaNamesArgs
-	_args36.Codes = codes
-	var _result37 FoundationServiceGetAreaNamesResult
-	if err = p.Client_().Call(ctx, "GetAreaNames", &_args36, &_result37); err != nil {
+	var _args36 FoundationServiceGetSyncLoginUrlArgs
+	_args36.ReturnUrl = returnUrl
+	var _result37 FoundationServiceGetSyncLoginUrlResult
+	if err = p.Client_().Call(ctx, "GetSyncLoginUrl", &_args36, &_result37); err != nil {
 		return
 	}
 	return _result37.GetSuccess(), nil
 }
 
 // Parameters:
-//  - Code
-func (p *FoundationServiceClient) GetChildAreas(ctx context.Context, code int32) (r []*SArea, err error) {
-	var _args38 FoundationServiceGetChildAreasArgs
-	_args38.Code = code
-	var _result39 FoundationServiceGetChildAreasResult
-	if err = p.Client_().Call(ctx, "GetChildAreas", &_args38, &_result39); err != nil {
+//  - Codes
+func (p *FoundationServiceClient) GetAreaNames(ctx context.Context, codes []int32) (r []string, err error) {
+	var _args38 FoundationServiceGetAreaNamesArgs
+	_args38.Codes = codes
+	var _result39 FoundationServiceGetAreaNamesResult
+	if err = p.Client_().Call(ctx, "GetAreaNames", &_args38, &_result39); err != nil {
 		return
 	}
 	return _result39.GetSuccess(), nil
+}
+
+// Parameters:
+//  - Code
+func (p *FoundationServiceClient) GetChildAreas(ctx context.Context, code int32) (r []*SArea, err error) {
+	var _args40 FoundationServiceGetChildAreasArgs
+	_args40.Code = code
+	var _result41 FoundationServiceGetChildAreasResult
+	if err = p.Client_().Call(ctx, "GetChildAreas", &_args40, &_result41); err != nil {
+		return
+	}
+	return _result41.GetSuccess(), nil
 }
 
 type FoundationServiceProcessor struct {
@@ -1510,28 +1532,29 @@ func (p *FoundationServiceProcessor) ProcessorMap() map[string]thrift.TProcessor
 
 func NewFoundationServiceProcessor(handler FoundationService) *FoundationServiceProcessor {
 
-	self40 := &FoundationServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self40.processorMap["GetRegistry"] = &foundationServiceProcessorGetRegistry{handler: handler}
-	self40.processorMap["GetRegistries"] = &foundationServiceProcessorGetRegistries{handler: handler}
-	self40.processorMap["findRegistries"] = &foundationServiceProcessorFindRegistries{handler: handler}
-	self40.processorMap["UpdateRegistry"] = &foundationServiceProcessorUpdateRegistry{handler: handler}
-	self40.processorMap["SearchRegistry"] = &foundationServiceProcessorSearchRegistry{handler: handler}
-	self40.processorMap["CreateUserRegistry"] = &foundationServiceProcessorCreateUserRegistry{handler: handler}
-	self40.processorMap["SaveSmsApi"] = &foundationServiceProcessorSaveSmsApi{handler: handler}
-	self40.processorMap["ResourceUrl"] = &foundationServiceProcessorResourceUrl{handler: handler}
-	self40.processorMap["SetValue"] = &foundationServiceProcessorSetValue{handler: handler}
-	self40.processorMap["DeleteValue"] = &foundationServiceProcessorDeleteValue{handler: handler}
-	self40.processorMap["GetRegistryV1"] = &foundationServiceProcessorGetRegistryV1{handler: handler}
-	self40.processorMap["GetValuesByPrefix"] = &foundationServiceProcessorGetValuesByPrefix{handler: handler}
-	self40.processorMap["RegisterApp"] = &foundationServiceProcessorRegisterApp{handler: handler}
-	self40.processorMap["GetApp"] = &foundationServiceProcessorGetApp{handler: handler}
-	self40.processorMap["GetAllSsoApp"] = &foundationServiceProcessorGetAllSsoApp{handler: handler}
-	self40.processorMap["SuperValidate"] = &foundationServiceProcessorSuperValidate{handler: handler}
-	self40.processorMap["FlushSuperPwd"] = &foundationServiceProcessorFlushSuperPwd{handler: handler}
-	self40.processorMap["GetSyncLoginUrl"] = &foundationServiceProcessorGetSyncLoginUrl{handler: handler}
-	self40.processorMap["GetAreaNames"] = &foundationServiceProcessorGetAreaNames{handler: handler}
-	self40.processorMap["GetChildAreas"] = &foundationServiceProcessorGetChildAreas{handler: handler}
-	return self40
+	self42 := &FoundationServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self42.processorMap["GetRegistry"] = &foundationServiceProcessorGetRegistry{handler: handler}
+	self42.processorMap["GetRegistries"] = &foundationServiceProcessorGetRegistries{handler: handler}
+	self42.processorMap["findRegistries"] = &foundationServiceProcessorFindRegistries{handler: handler}
+	self42.processorMap["UpdateRegistry"] = &foundationServiceProcessorUpdateRegistry{handler: handler}
+	self42.processorMap["SearchRegistry"] = &foundationServiceProcessorSearchRegistry{handler: handler}
+	self42.processorMap["CreateUserRegistry"] = &foundationServiceProcessorCreateUserRegistry{handler: handler}
+	self42.processorMap["SaveSmsApi"] = &foundationServiceProcessorSaveSmsApi{handler: handler}
+	self42.processorMap["SaveBoardHook"] = &foundationServiceProcessorSaveBoardHook{handler: handler}
+	self42.processorMap["ResourceUrl"] = &foundationServiceProcessorResourceUrl{handler: handler}
+	self42.processorMap["SetValue"] = &foundationServiceProcessorSetValue{handler: handler}
+	self42.processorMap["DeleteValue"] = &foundationServiceProcessorDeleteValue{handler: handler}
+	self42.processorMap["GetRegistryV1"] = &foundationServiceProcessorGetRegistryV1{handler: handler}
+	self42.processorMap["GetValuesByPrefix"] = &foundationServiceProcessorGetValuesByPrefix{handler: handler}
+	self42.processorMap["RegisterApp"] = &foundationServiceProcessorRegisterApp{handler: handler}
+	self42.processorMap["GetApp"] = &foundationServiceProcessorGetApp{handler: handler}
+	self42.processorMap["GetAllSsoApp"] = &foundationServiceProcessorGetAllSsoApp{handler: handler}
+	self42.processorMap["SuperValidate"] = &foundationServiceProcessorSuperValidate{handler: handler}
+	self42.processorMap["FlushSuperPwd"] = &foundationServiceProcessorFlushSuperPwd{handler: handler}
+	self42.processorMap["GetSyncLoginUrl"] = &foundationServiceProcessorGetSyncLoginUrl{handler: handler}
+	self42.processorMap["GetAreaNames"] = &foundationServiceProcessorGetAreaNames{handler: handler}
+	self42.processorMap["GetChildAreas"] = &foundationServiceProcessorGetChildAreas{handler: handler}
+	return self42
 }
 
 func (p *FoundationServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1544,12 +1567,12 @@ func (p *FoundationServiceProcessor) Process(ctx context.Context, iprot, oprot t
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x41 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x43 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x41.Write(oprot)
+	x43.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush(ctx)
-	return false, x41
+	return false, x43
 
 }
 
@@ -1872,6 +1895,54 @@ func (p *foundationServiceProcessorSaveSmsApi) Process(ctx context.Context, seqI
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("SaveSmsApi", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type foundationServiceProcessorSaveBoardHook struct {
+	handler FoundationService
+}
+
+func (p *foundationServiceProcessorSaveBoardHook) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := FoundationServiceSaveBoardHookArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("SaveBoardHook", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := FoundationServiceSaveBoardHookResult{}
+	var retval *ttype.Result_
+	var err2 error
+	if retval, err2 = p.handler.SaveBoardHook(ctx, args.HookURL, args.Token); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing SaveBoardHook: "+err2.Error())
+		oprot.WriteMessageBegin("SaveBoardHook", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("SaveBoardHook", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -2781,13 +2852,13 @@ func (p *FoundationServiceGetRegistriesArgs) ReadField1(iprot thrift.TProtocol) 
 	tSlice := make([]string, 0, size)
 	p.Keys = tSlice
 	for i := 0; i < size; i++ {
-		var _elem42 string
+		var _elem44 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem42 = v
+			_elem44 = v
 		}
-		p.Keys = append(p.Keys, _elem42)
+		p.Keys = append(p.Keys, _elem44)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -2907,19 +2978,19 @@ func (p *FoundationServiceGetRegistriesResult) ReadField0(iprot thrift.TProtocol
 	tMap := make(map[string]string, size)
 	p.Success = tMap
 	for i := 0; i < size; i++ {
-		var _key43 string
+		var _key45 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key43 = v
+			_key45 = v
 		}
-		var _val44 string
+		var _val46 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val44 = v
+			_val46 = v
 		}
-		p.Success[_key43] = _val44
+		p.Success[_key45] = _val46
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -3143,19 +3214,19 @@ func (p *FoundationServiceFindRegistriesResult) ReadField0(iprot thrift.TProtoco
 	tMap := make(map[string]string, size)
 	p.Success = tMap
 	for i := 0; i < size; i++ {
-		var _key45 string
+		var _key47 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key45 = v
+			_key47 = v
 		}
-		var _val46 string
+		var _val48 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val46 = v
+			_val48 = v
 		}
-		p.Success[_key45] = _val46
+		p.Success[_key47] = _val48
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -3274,19 +3345,19 @@ func (p *FoundationServiceUpdateRegistryArgs) ReadField1(iprot thrift.TProtocol)
 	tMap := make(map[string]string, size)
 	p.Registries = tMap
 	for i := 0; i < size; i++ {
-		var _key47 string
+		var _key49 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key47 = v
+			_key49 = v
 		}
-		var _val48 string
+		var _val50 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val48 = v
+			_val50 = v
 		}
-		p.Registries[_key47] = _val48
+		p.Registries[_key49] = _val50
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -3617,11 +3688,11 @@ func (p *FoundationServiceSearchRegistryResult) ReadField0(iprot thrift.TProtoco
 	tSlice := make([]*SRegistry, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem49 := &SRegistry{}
-		if err := _elem49.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem49), err)
+		_elem51 := &SRegistry{}
+		if err := _elem51.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem51), err)
 		}
-		p.Success = append(p.Success, _elem49)
+		p.Success = append(p.Success, _elem51)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -4222,6 +4293,255 @@ func (p *FoundationServiceSaveSmsApiResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("FoundationServiceSaveSmsApiResult(%+v)", *p)
+}
+
+// Attributes:
+//  - HookURL
+//  - Token
+type FoundationServiceSaveBoardHookArgs struct {
+	HookURL string `thrift:"hookURL,1" db:"hookURL" json:"hookURL"`
+	Token   string `thrift:"token,2" db:"token" json:"token"`
+}
+
+func NewFoundationServiceSaveBoardHookArgs() *FoundationServiceSaveBoardHookArgs {
+	return &FoundationServiceSaveBoardHookArgs{}
+}
+
+func (p *FoundationServiceSaveBoardHookArgs) GetHookURL() string {
+	return p.HookURL
+}
+
+func (p *FoundationServiceSaveBoardHookArgs) GetToken() string {
+	return p.Token
+}
+func (p *FoundationServiceSaveBoardHookArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceSaveBoardHookArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.HookURL = v
+	}
+	return nil
+}
+
+func (p *FoundationServiceSaveBoardHookArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *FoundationServiceSaveBoardHookArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SaveBoardHook_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceSaveBoardHookArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("hookURL", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:hookURL: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.HookURL)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.hookURL (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:hookURL: ", p), err)
+	}
+	return err
+}
+
+func (p *FoundationServiceSaveBoardHookArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("token", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:token: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:token: ", p), err)
+	}
+	return err
+}
+
+func (p *FoundationServiceSaveBoardHookArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("FoundationServiceSaveBoardHookArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type FoundationServiceSaveBoardHookResult struct {
+	Success *ttype.Result_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewFoundationServiceSaveBoardHookResult() *FoundationServiceSaveBoardHookResult {
+	return &FoundationServiceSaveBoardHookResult{}
+}
+
+var FoundationServiceSaveBoardHookResult_Success_DEFAULT *ttype.Result_
+
+func (p *FoundationServiceSaveBoardHookResult) GetSuccess() *ttype.Result_ {
+	if !p.IsSetSuccess() {
+		return FoundationServiceSaveBoardHookResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *FoundationServiceSaveBoardHookResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *FoundationServiceSaveBoardHookResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField0(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceSaveBoardHookResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &ttype.Result_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceSaveBoardHookResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SaveBoardHook_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *FoundationServiceSaveBoardHookResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *FoundationServiceSaveBoardHookResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("FoundationServiceSaveBoardHookResult(%+v)", *p)
 }
 
 // Attributes:
@@ -4950,13 +5270,13 @@ func (p *FoundationServiceGetRegistryV1Args) ReadField1(iprot thrift.TProtocol) 
 	tSlice := make([]string, 0, size)
 	p.Keys = tSlice
 	for i := 0; i < size; i++ {
-		var _elem50 string
+		var _elem52 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem50 = v
+			_elem52 = v
 		}
-		p.Keys = append(p.Keys, _elem50)
+		p.Keys = append(p.Keys, _elem52)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -5076,13 +5396,13 @@ func (p *FoundationServiceGetRegistryV1Result) ReadField0(iprot thrift.TProtocol
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem51 string
+		var _elem53 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem51 = v
+			_elem53 = v
 		}
-		p.Success = append(p.Success, _elem51)
+		p.Success = append(p.Success, _elem53)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -5303,19 +5623,19 @@ func (p *FoundationServiceGetValuesByPrefixResult) ReadField0(iprot thrift.TProt
 	tMap := make(map[string]string, size)
 	p.Success = tMap
 	for i := 0; i < size; i++ {
-		var _key52 string
+		var _key54 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key52 = v
+			_key54 = v
 		}
-		var _val53 string
+		var _val55 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val53 = v
+			_val55 = v
 		}
-		p.Success[_key52] = _val53
+		p.Success[_key54] = _val55
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -5920,13 +6240,13 @@ func (p *FoundationServiceGetAllSsoAppResult) ReadField0(iprot thrift.TProtocol)
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem54 string
+		var _elem56 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem54 = v
+			_elem56 = v
 		}
-		p.Success = append(p.Success, _elem54)
+		p.Success = append(p.Success, _elem56)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -6696,13 +7016,13 @@ func (p *FoundationServiceGetAreaNamesArgs) ReadField1(iprot thrift.TProtocol) e
 	tSlice := make([]int32, 0, size)
 	p.Codes = tSlice
 	for i := 0; i < size; i++ {
-		var _elem55 int32
+		var _elem57 int32
 		if v, err := iprot.ReadI32(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem55 = v
+			_elem57 = v
 		}
-		p.Codes = append(p.Codes, _elem55)
+		p.Codes = append(p.Codes, _elem57)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -6822,13 +7142,13 @@ func (p *FoundationServiceGetAreaNamesResult) ReadField0(iprot thrift.TProtocol)
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem56 string
+		var _elem58 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem56 = v
+			_elem58 = v
 		}
-		p.Success = append(p.Success, _elem56)
+		p.Success = append(p.Success, _elem58)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -7049,11 +7369,11 @@ func (p *FoundationServiceGetChildAreasResult) ReadField0(iprot thrift.TProtocol
 	tSlice := make([]*SArea, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem57 := &SArea{}
-		if err := _elem57.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem57), err)
+		_elem59 := &SArea{}
+		if err := _elem59.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem59), err)
 		}
-		p.Success = append(p.Success, _elem57)
+		p.Success = append(p.Success, _elem59)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

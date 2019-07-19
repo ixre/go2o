@@ -37,8 +37,15 @@ var (
 	// 通行证域名前缀(移动端)
 	DomainPrefixMobilePassport = KeyFormat("DomainPrefixMobilePassport")
 
-	/* 平台 */
+	/* 管理面板 */
+	// 面板钩子显示名称
+	BoardHookDisplayName = KeyFormat("board_hook_display_name")
+	// 面板链接钩子访问密钥
+	BoardHookToken = KeyFormat("board_hook_token")
+	// 面板链接钩子URL地址
+	BoardHookURL = KeyFormat("board_hook_url")
 
+	/* 平台 */
 	// 平台名称
 	PlatformName = KeyFormat("PlatformName")
 	// 客服电话
