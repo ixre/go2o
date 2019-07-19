@@ -19,6 +19,7 @@ func MergeRegistries() []*Registry {
 	/** 域名 */
 	mergeAdd("是否启用SSL连接", DomainEnabledSSL, "false", "")
 	mergeAdd("域名", Domain, "yourdomain.com", "")
+	mergeAdd("管理面板前缀", DomainPrefixDashboard, "board.", "")
 	mergeAdd("零售门户前缀", DomainPrefixPortal, "www.", "")
 	mergeAdd("批发门户域名前缀", DomainPrefixWholesalePortal, "whs.", "")
 	mergeAdd("零售门户手机端域名前缀", DomainPrefixMobilePortal, "m.", "")
@@ -33,6 +34,11 @@ func MergeRegistries() []*Registry {
 	mergeAdd("批发中心移动端", DomainPrefixMobileWholesale, "mwhs.", "")
 	mergeAdd("会员中心域名前缀(移动端)", DomainPrefixMobileMember, "mu.", "")
 	mergeAdd("通行证域名前缀(移动端)", DomainPrefixMobilePassport, "mpp.", "")
+
+	/* 管理面板 */
+	mergeAdd("面板钩子显示名称", BoardHookDisplayName, "Hooks", "")
+	mergeAdd("面板链接钩子访问密钥", BoardHookToken, "", "")
+	mergeAdd("面板链接钩子URL地址", BoardHookURL, "", "")
 
 	/* 账户 */
 	mergeAdd("余额账户", AccountBalanceAlias, "余额", "")
@@ -60,7 +66,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("默认短信服务商", SmsDefaultProvider, "", "")
 	mergeAdd("用户注册短信模板ID", SmsRegisterTemplateId, "", "")
 	mergeAdd("用户验证码短信模板ID", SmsMemberCheckTemplateId, "", "")
-	mergeAdd("短信接收间隔,默认(2s)",SmsSendDuration,"2000","")
+	mergeAdd("短信接收间隔,默认(2s)", SmsSendDuration, "2000", "")
 
 	// 注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册,等于member.RegisterMode
 	mergeAdd("注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册", MemberRegisterMode, "1", "")
@@ -77,7 +83,6 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员未实名认证提示信息", MemberNotTrustedMessage, "您尚未实名认证!", "")
 	mergeAdd("实名时是否需要先完善资", MemberRequireProfileOnTrusting, "false", "")
 	mergeAdd("会员是否验证手机号码格式", MemberCheckPhoneFormat, "true", "")
-
 	mergeAdd("会员邀请关系级数", MemberReferLayer, "3", "")
 	mergeAdd("会员即时通讯是否必须", MemberImRequired, "false", "")
 

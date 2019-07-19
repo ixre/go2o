@@ -4,9 +4,7 @@
 # Date : 2019-06-12 13:20
 
 FROM golang:latest AS build
-ENV BUILD=/gobuild
-ENV GOPATH=$BUILD
-WORKDIR $BUILD/src/go2o
+ENV GOPATH=/gobuild
 COPY ./app ./app
 COPY ./core ./core
 COPY ./*.go go.mod LICENSE README.md app.conf ./

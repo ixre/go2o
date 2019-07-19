@@ -44,10 +44,10 @@ func GetShopIdByHost(host string) int32 {
 	sto := GetKVS()
 	shopId, err := util.I32Err(sto.GetInt(key))
 	if err != nil || shopId <= 0 {
-		trans,cli,err := thrift.ShopServeClient()
-		if err == nil{
+		trans, cli, err := thrift.ShopServeClient()
+		if err == nil {
 			defer trans.Close()
-			shopId,_ = cli.QueryStoreByHost(thrift.Context,host)
+			shopId, _ = cli.QueryStoreByHost(thrift.Context, host)
 			if shopId > 0 {
 				sto.SetExpire(key, shopId, DefaultMaxSeconds)
 			}

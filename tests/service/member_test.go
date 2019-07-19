@@ -8,9 +8,10 @@ import (
 	"go2o/tests/ti"
 	"testing"
 )
+
 var _ = ti.Factory.GetAdRepo()
 
-func TestPagingIntegralLog(t *testing.T){
+func TestPagingIntegralLog(t *testing.T) {
 	params := &ttype.SPagingParams{
 		Opt:        nil,
 		OrderField: "",
@@ -18,6 +19,6 @@ func TestPagingIntegralLog(t *testing.T){
 		Begin:      0,
 		Over:       10,
 	}
-	r,_ := rsi.MemberService.PagingAccountLog(thrift.Context,1,member.AccountWallet,params)
-	t.Logf("%#v",r)
+	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context, 1, member.AccountWallet, params)
+	t.Logf("%#v", r)
 }

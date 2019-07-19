@@ -22,6 +22,8 @@ service FoundationService{
    ttype.Result CreateUserRegistry(1:string key,2:string defaultValue,3:string description)
    /** 保存短信API凭据,@provider 短信服务商, 默认:http */
    ttype.Result SaveSmsApi(1:string provider,2:SmsApi api)
+   /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
+   ttype.Result SaveBoardHook(1:string hookURL,2:string token)
 
    // 格式化资源地址并返回
    string ResourceUrl(1:string url)

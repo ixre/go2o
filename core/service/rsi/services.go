@@ -97,7 +97,7 @@ func Init(ctx gof.App, appFlag int) {
 
 // 初始化测试服务
 func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
-	initService(ctx,db,orm,sto)
+	initService(ctx, db, orm, sto)
 }
 
 // 初始化服务
@@ -264,12 +264,12 @@ func (s serviceUtil) intArray(values []int32) []int {
 
 // 转换为JSON
 func (s serviceUtil) json(data interface{}) string {
-	if data == nil{
+	if data == nil {
 		return "{}"
 	}
-	r,err := json.Marshal(data)
-	if err != nil{
-		return "{\"error\":\"parse error:"+err.Error()+"\"}"
+	r, err := json.Marshal(data)
+	if err != nil {
+		return "{\"error\":\"parse error:" + err.Error() + "\"}"
 	}
 	return string(r)
 }

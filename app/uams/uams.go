@@ -178,10 +178,19 @@ type (
 	}
 
 	// 菜单
+	//Res struct {
+	//	ID       int64
+	//	Title    string
+	//	Code     string
+	//	URI      string
+	//	Data     map[string]string
+	//	Children []*Res
+	//}
+
 	Res struct {
-		ID       int64
-		Title    string
-		Code     string
+		Name string
+		// 标志, 1: 新窗口中打开 ,2: 弹窗打开
+		Flag     int
 		URI      string
 		Data     map[string]string
 		Children []*Res
