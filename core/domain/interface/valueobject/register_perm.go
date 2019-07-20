@@ -28,7 +28,7 @@ type RegisterPerm1 struct {
 	// 注册提示
 	Notice string `key:"MemberRegisterNotice"`
 	// 用户条款内容
-	Licence string `key:"MemberRegisterReturnUrl"`
+	Licence string `key:"MemberInviteRegisterReturnUrl"`
 	// 注册回调页
 	CallBackUrl string `key:"MemberRegisterPresentIntegral"`
 	keys        []string
