@@ -41,7 +41,7 @@ const (
 )
 
 const (
-	/****** 在履行前,订单可以取消申请推狂  ******/
+	/****** 在履行前,订单可以取消申请退款  ******/
 
 	// 等待支付
 	StatAwaitingPayment = 1
@@ -69,10 +69,10 @@ const (
 	PartiallyShipped = 5
 	// 完成发货
 	StatShipped = 6
-	// 订单完成
-	StatCompleted = 7
 	// 订单已拆分
-	StatBreak = 8
+	StatBreak = 7
+	// 订单完成
+	StatCompleted = 8
 
 	/****** 售后状态 ******/
 

@@ -73,3 +73,5 @@ COMMENT ON COLUMN "public".mm_trusted_info.remark IS '备注';
 COMMENT ON COLUMN "public".mm_trusted_info.update_time IS '更新时间';
 
 /** invitation_code => invite_code */
+
+/** 订单状态, break改为7, complete改为8 */
