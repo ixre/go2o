@@ -31,6 +31,47 @@ service OrderService {
     ttype.Result TradeOrderUpdateTicket(1:i64 orderId,2:string img)
 }
 
+
+/** 订单状态 */
+enum EOrderState{
+	/****** 在履行前,订单可以取消申请退款  ******/
+	/** 等待支付 */
+	StatAwaitingPayment = 1
+	/** 等待确认 */
+	StatAwaitingConfirm = 2
+	/** 等待备货 */
+	StatAwaitingPickup = 3
+	/** 等待发货 */
+	StatAwaitingShipment = 4
+
+	/****** 订单取消 ******/
+
+	/** 系统取消 */
+	StatCancelled = 11
+	/** 买家申请取消,等待卖家确认 */
+	StatAwaitingCancel = 12
+	/** 卖家谢绝订单,由于无货等原因 */
+	StatDeclined = 13
+	/** 已退款,完成取消 */
+	StatRefunded = 14
+
+	/****** 履行后订单只能退货或换货 ******/
+
+	/** 部分发货(将订单商品分多个包裹发货) */
+	PartiallyShipped = 5
+	/** 完成发货 */
+	StatShipped = 6
+	/** 订单已拆分 */
+	StatBreak = 7
+	/** 订单完成 */
+	StatCompleted = 8
+
+	/****** 售后状态 ******/
+
+	/** 已退货 */
+	StatGoodsRefunded = 15
+}
+
 // 订单项
 struct SComplexItem {
     1: i64 ID

@@ -252,4 +252,6 @@ struct SPagingResult{
     3:i32 Count
     /** 数据 */
     4:string Data
+    /** 额外的数据 */
+    5:map<string,string> Extras
 }
