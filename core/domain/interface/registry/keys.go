@@ -108,10 +108,12 @@ var (
 	MemberRegisterNeedIm = KeyFormat("MemberRegisterNeedIm")
 	// 注册提示
 	MemberRegisterNotice = KeyFormat("MemberRegisterNotice")
-	// 注册回调页
-	MemberRegisterReturnUrl = KeyFormat("MemberRegisterReturnUrl")
 	// 注册后赠送积分数量
 	MemberRegisterPresentIntegral = KeyFormat("MemberRegisterPresentIntegral")
+	// 邀请注册成功后跳转地址
+	MemberInviteRegisterReturnUrl = KeyFormat("MemberInviteRegisterReturnUrl")
+	// 邀请注册开启桥接页面,如跳转到注册前先显示一个页面
+	MemberInviteEnableBridge = KeyFormat("MemberInviteEnableBridge")
 
 	// 会员资料不完善提醒信息
 	MemberProfileNotCompletedMessage = KeyFormat("MemberProfileNotCompletedMessage")

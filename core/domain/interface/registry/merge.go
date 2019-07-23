@@ -76,8 +76,9 @@ func MergeRegistries() []*Registry {
 	mergeAdd("必须绑定手机", MemberRegisterMustBindPhone, "false", "")
 	mergeAdd("是否需要填写即时通讯", MemberRegisterNeedIm, "false", "")
 	mergeAdd("注册提示", MemberRegisterNotice, "", "")
-	mergeAdd("注册成功后跳转地址,默认登录页面", MemberRegisterReturnUrl, "/auth?uc=1", "")
+	mergeAdd("邀请注册成功后跳转地址", MemberInviteRegisterReturnUrl, "", "")
 	mergeAdd("注册后赠送积分数量", MemberRegisterPresentIntegral, "0", "")
+	mergeAdd("邀请注册开启桥接页面,跳转到注册页前显示一个自定义页面", MemberInviteEnableBridge, "false", "")
 
 	mergeAdd("会员资料不完善提醒信息", MemberProfileNotCompletedMessage, "您的个人资料未完善,是否立即完善?", "")
 	mergeAdd("会员未实名认证提示信息", MemberNotTrustedMessage, "您尚未实名认证!", "")
