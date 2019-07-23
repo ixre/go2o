@@ -4892,11 +4892,13 @@ func (p *SPagingParams) String() string {
 //  - ErrMsg: 消息
 //  - Count: 总数
 //  - Data: 数据
+//  - Extras: 额外的数据
 type SPagingResult_ struct {
   ErrCode int32 `thrift:"ErrCode,1" db:"ErrCode" json:"ErrCode"`
   ErrMsg string `thrift:"ErrMsg,2" db:"ErrMsg" json:"ErrMsg"`
   Count int32 `thrift:"Count,3" db:"Count" json:"Count"`
   Data string `thrift:"Data,4" db:"Data" json:"Data"`
+  Extras map[string]string `thrift:"Extras,5" db:"Extras" json:"Extras"`
 }
 
 func NewSPagingResult_() *SPagingResult_ {
@@ -4918,6 +4920,10 @@ func (p *SPagingResult_) GetCount() int32 {
 
 func (p *SPagingResult_) GetData() string {
   return p.Data
+}
+
+func (p *SPagingResult_) GetExtras() map[string]string {
+  return p.Extras
 }
 func (p *SPagingResult_) Read(iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(); err != nil {
@@ -4965,6 +4971,16 @@ func (p *SPagingResult_) Read(iprot thrift.TProtocol) error {
     case 4:
       if fieldTypeId == thrift.STRING {
         if err := p.ReadField4(iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 5:
+      if fieldTypeId == thrift.MAP {
+        if err := p.ReadField5(iprot); err != nil {
           return err
         }
       } else {
@@ -5023,6 +5039,34 @@ func (p *SPagingResult_)  ReadField4(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *SPagingResult_)  ReadField5(iprot thrift.TProtocol) error {
+  _, _, size, err := iprot.ReadMapBegin()
+  if err != nil {
+    return thrift.PrependError("error reading map begin: ", err)
+  }
+  tMap := make(map[string]string, size)
+  p.Extras =  tMap
+  for i := 0; i < size; i ++ {
+var _key13 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _key13 = v
+}
+var _val14 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _val14 = v
+}
+    p.Extras[_key13] = _val14
+  }
+  if err := iprot.ReadMapEnd(); err != nil {
+    return thrift.PrependError("error reading map end: ", err)
+  }
+  return nil
+}
+
 func (p *SPagingResult_) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("SPagingResult"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -5031,6 +5075,7 @@ func (p *SPagingResult_) Write(oprot thrift.TProtocol) error {
     if err := p.writeField2(oprot); err != nil { return err }
     if err := p.writeField3(oprot); err != nil { return err }
     if err := p.writeField4(oprot); err != nil { return err }
+    if err := p.writeField5(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -5076,6 +5121,26 @@ func (p *SPagingResult_) writeField4(oprot thrift.TProtocol) (err error) {
   return thrift.PrependError(fmt.Sprintf("%T.Data (4) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Data: ", p), err) }
+  return err
+}
+
+func (p *SPagingResult_) writeField5(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("Extras", thrift.MAP, 5); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:Extras: ", p), err) }
+  if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Extras)); err != nil {
+    return thrift.PrependError("error writing map begin: ", err)
+  }
+  for k, v := range p.Extras {
+    if err := oprot.WriteString(string(k)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    if err := oprot.WriteString(string(v)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+  }
+  if err := oprot.WriteMapEnd(); err != nil {
+    return thrift.PrependError("error writing map end: ", err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 5:Extras: ", p), err) }
   return err
 }
 
