@@ -191,8 +191,14 @@ func (a *articleManagerImpl) initSystemCategory() {
 		},
 		{
 			ID:       0,
+			Alias:    "about",
+			Name:     "关于商城",
+			PermFlag: content.PermAll,
+		},
+		{
+			ID:       0,
 			Alias:    "wholesale",
-			Name:     "批发中心公告",
+			Name:     "批发公告",
 			PermFlag: content.PermAll,
 		},
 		{
@@ -221,9 +227,9 @@ func (a *articleManagerImpl) initSystemCategory() {
 		},
 		{
 			ID:       0,
-			Alias:    "about",
-			Name:     "关于商城",
-			PermFlag: content.PermAll,
+			Alias:    "notification",
+			Name:     "系统通知",
+			PermFlag: content.PermMember,
 		},
 	}
 	for _, v := range list {
