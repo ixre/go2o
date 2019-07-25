@@ -2,6 +2,8 @@ namespace java com.github.jsix.go2o.rpc
 namespace csharp com.github.jsix.go2o.rpc
 namespace go go2o.core.service.auto_gen.rpc.member_service
 include "ttype.thrift"
+include "message_service.thrift"
+
 
 
 //会员服务
@@ -50,7 +52,7 @@ service MemberService{
     /** 获取会员汇总信息 */
     SComplexMember Complex(1:i64 memberId)
     /** 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取 */
-    ttype.Result SendCode(1:i64 memberId ,2:string op,3:i32 msgType)
+    ttype.Result SendCode(1:i64 memberId ,2:string operation,3:message_service.EMessageChannel msgType)
     /** 比较验证码是否正确 */
     ttype.Result CompareCode(1:i64 memberId ,2:string code)
     /** 获取收款码 */

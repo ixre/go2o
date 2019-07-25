@@ -7,6 +7,8 @@ import (
 	"bytes"
 	"context"
 	"reflect"
+	"database/sql/driver"
+	"errors"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
@@ -21,6 +23,63 @@ var _ = reflect.DeepEqual
 var _ = bytes.Equal
 
 var _ = ttype.GoUnusedProtection__
+//消息方式
+type EMessageChannel int64
+const (
+  EMessageChannel_SiteMessage EMessageChannel = 1
+  EMessageChannel_EmailMessage EMessageChannel = 2
+  EMessageChannel_SmsMessage EMessageChannel = 3
+)
+
+func (p EMessageChannel) String() string {
+  switch p {
+  case EMessageChannel_SiteMessage: return "SiteMessage"
+  case EMessageChannel_EmailMessage: return "EmailMessage"
+  case EMessageChannel_SmsMessage: return "SmsMessage"
+  }
+  return "<UNSET>"
+}
+
+func EMessageChannelFromString(s string) (EMessageChannel, error) {
+  switch s {
+  case "SiteMessage": return EMessageChannel_SiteMessage, nil 
+  case "EmailMessage": return EMessageChannel_EmailMessage, nil 
+  case "SmsMessage": return EMessageChannel_SmsMessage, nil 
+  }
+  return EMessageChannel(0), fmt.Errorf("not a valid EMessageChannel string")
+}
+
+
+func EMessageChannelPtr(v EMessageChannel) *EMessageChannel { return &v }
+
+func (p EMessageChannel) MarshalText() ([]byte, error) {
+return []byte(p.String()), nil
+}
+
+func (p *EMessageChannel) UnmarshalText(text []byte) error {
+q, err := EMessageChannelFromString(string(text))
+if (err != nil) {
+return err
+}
+*p = q
+return nil
+}
+
+func (p *EMessageChannel) Scan(value interface{}) error {
+v, ok := value.(int64)
+if !ok {
+return errors.New("Scan value is not int64")
+}
+*p = EMessageChannel(v)
+return nil
+}
+
+func (p * EMessageChannel) Value() (driver.Value, error) {
+  if p == nil {
+    return nil, nil
+  }
+return int64(*p), nil
+}
 // 通知项
 // 
 // Attributes:

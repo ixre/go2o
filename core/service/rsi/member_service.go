@@ -26,6 +26,7 @@ import (
 	"go2o/core/module"
 	"go2o/core/query"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
@@ -343,12 +344,13 @@ func (s *memberService) GetMemberIdByBasis(str string, basic int) int64 {
 }
 
 // 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
-func (s *memberService) SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error) {
+func (s *memberService) SendCode(ctx context.Context, memberId int64, operation string,
+	msgType message_service.EMessageChannel) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	code, err := m.SendCheckCode(op, int(msgType))
+	code, err := m.SendCheckCode(operation, int(msgType))
 	if err != nil {
 		return s.error(err), nil
 	}
