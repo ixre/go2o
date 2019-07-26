@@ -632,44 +632,48 @@ func (s *memberService) ModifyTradePassword(memberId int64,
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) testLogin(user string, pwd string) (id int64, err error) {
+func (s *memberService) testLogin(user string, pwd string) (id int64,errCode int32, err error) {
 	user = strings.ToLower(user)
 	memberId := s.repo.GetMemberIdByUser(user)
 	if len(pwd) != 32 {
-		return -1, member.ErrNotMD5Format
+		return -1,4, member.ErrNotMD5Format
 	}
 	log.Println("登陆用户:", user, memberId)
 	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
-		return 0, member.ErrNoSuchMember
+		return 0,2, member.ErrNoSuchMember
 	}
 	val := s.repo.GetMember(memberId).GetValue()
 	if val.Pwd != domain.Sha1Pwd(pwd) {
-		return 0, member.ErrCredential
+		return 0,1, member.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
-		return 0, member.ErrMemberLocked
+		return 0,3, member.ErrMemberLocked
 	}
-	return val.Id, nil
+	return val.Id,0, nil
 }
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*ttype.Result_, error) {
-	id, err := s.testLogin(user, pwd)
+	id, code, err := s.testLogin(user, pwd)
+	if err != nil {
+		r := s.error(err)
+		r.ErrCode = code
+		return r, nil
+	}
 	var memberCode = ""
-	if update && err == nil {
+	if update {
 		m := s.repo.GetMember(id)
 		memberCode = m.GetValue().Code
 		go m.UpdateLoginTime()
 	}
-	r := s.result(err)
-	r.Data = map[string]string{
+	mp := map[string]string{
 		"id":   strconv.Itoa(int(id)),
 		"code": memberCode,
 	}
-	return r, nil
+	return s.success(mp), nil
 }
 
 // 检查交易密码
