@@ -638,7 +638,6 @@ func (s *memberService) testLogin(user string, pwd string) (id int64,errCode int
 	if len(pwd) != 32 {
 		return -1,4, member.ErrNotMD5Format
 	}
-	log.Println("登陆用户:", user, memberId)
 	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
@@ -651,6 +650,7 @@ func (s *memberService) testLogin(user string, pwd string) (id int64,errCode int
 	if val.Flag&member.FlagLocked == member.FlagLocked {
 		return 0,3, member.ErrMemberLocked
 	}
+
 	return val.Id,0, nil
 }
 
