@@ -22,3 +22,16 @@ func TestPagingIntegralLog(t *testing.T) {
 	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context, 1, member.AccountWallet, params)
 	t.Logf("%#v", r)
 }
+
+func TestPagingWalletLog(t *testing.T) {
+	memberId := 77153
+	params := &ttype.SPagingParams{
+		Opt:        nil,
+		OrderField: "",
+		OrderDesc:  false,
+		Begin:      0,
+		Over:       10,
+	}
+	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context,int64(memberId), member.AccountWallet, params)
+	t.Logf("%#v", r)
+}
