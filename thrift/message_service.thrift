@@ -11,6 +11,16 @@ service MessageService{
     ttype.Result SendPhoneMessage(1:string phone,2:string message,3:map<string,string> data)
 }
 
+/** 消息方式 */
+enum EMessageChannel{
+    /** 站内信 */
+    SiteMessage = 1,
+    /** 邮件 */
+	EmailMessage = 2,
+	/** 短信 */
+	SmsMessage = 3,
+}
+
 /** 通知项 */
 struct SNotifyItem {
     /** 键 */

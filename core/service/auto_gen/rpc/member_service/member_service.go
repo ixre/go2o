@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/auto_gen/rpc/message_service"
 
 )
 
@@ -23,6 +24,7 @@ var _ = reflect.DeepEqual
 var _ = bytes.Equal
 
 var _ = ttype.GoUnusedProtection__
+var _ = message_service.GoUnusedProtection__
 //凭据
 type ECredentials int64
 const (
@@ -5141,9 +5143,9 @@ type MemberService interface {
   // 
   // Parameters:
   //  - MemberId
-  //  - Op
+  //  - Operation
   //  - MsgType
-  SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error)
+  SendCode(ctx context.Context, memberId int64, operation string, msgType message_service.EMessageChannel) (r *ttype.Result_, err error)
   // 比较验证码是否正确
   // 
   // Parameters:
@@ -5543,12 +5545,12 @@ func (p *MemberServiceClient) Complex(ctx context.Context, memberId int64) (r *S
 // 
 // Parameters:
 //  - MemberId
-//  - Op
+//  - Operation
 //  - MsgType
-func (p *MemberServiceClient) SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error) {
+func (p *MemberServiceClient) SendCode(ctx context.Context, memberId int64, operation string, msgType message_service.EMessageChannel) (r *ttype.Result_, err error) {
   var _args30 MemberServiceSendCodeArgs
   _args30.MemberId = memberId
-  _args30.Op = op
+  _args30.Operation = operation
   _args30.MsgType = msgType
   var _result31 MemberServiceSendCodeResult
   if err = p.Client_().Call(ctx, "SendCode", &_args30, &_result31); err != nil {
@@ -6822,7 +6824,7 @@ func (p *memberServiceProcessorSendCode) Process(ctx context.Context, seqId int3
   result := MemberServiceSendCodeResult{}
 var retval *ttype.Result_
   var err2 error
-  if retval, err2 = p.handler.SendCode(ctx, args.MemberId, args.Op, args.MsgType); err2 != nil {
+  if retval, err2 = p.handler.SendCode(ctx, args.MemberId, args.Operation, args.MsgType); err2 != nil {
     x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing SendCode: " + err2.Error())
     oprot.WriteMessageBegin("SendCode", thrift.EXCEPTION, seqId)
     x.Write(oprot)
@@ -11573,12 +11575,12 @@ func (p *MemberServiceComplexResult) String() string {
 
 // Attributes:
 //  - MemberId
-//  - Op
+//  - Operation
 //  - MsgType
 type MemberServiceSendCodeArgs struct {
   MemberId int64 `thrift:"memberId,1" db:"memberId" json:"memberId"`
-  Op string `thrift:"op,2" db:"op" json:"op"`
-  MsgType int32 `thrift:"msgType,3" db:"msgType" json:"msgType"`
+  Operation string `thrift:"operation,2" db:"operation" json:"operation"`
+  MsgType message_service.EMessageChannel `thrift:"msgType,3" db:"msgType" json:"msgType"`
 }
 
 func NewMemberServiceSendCodeArgs() *MemberServiceSendCodeArgs {
@@ -11590,11 +11592,11 @@ func (p *MemberServiceSendCodeArgs) GetMemberId() int64 {
   return p.MemberId
 }
 
-func (p *MemberServiceSendCodeArgs) GetOp() string {
-  return p.Op
+func (p *MemberServiceSendCodeArgs) GetOperation() string {
+  return p.Operation
 }
 
-func (p *MemberServiceSendCodeArgs) GetMsgType() int32 {
+func (p *MemberServiceSendCodeArgs) GetMsgType() message_service.EMessageChannel {
   return p.MsgType
 }
 func (p *MemberServiceSendCodeArgs) Read(iprot thrift.TProtocol) error {
@@ -11668,7 +11670,7 @@ func (p *MemberServiceSendCodeArgs)  ReadField2(iprot thrift.TProtocol) error {
   if v, err := iprot.ReadString(); err != nil {
   return thrift.PrependError("error reading field 2: ", err)
 } else {
-  p.Op = v
+  p.Operation = v
 }
   return nil
 }
@@ -11677,7 +11679,8 @@ func (p *MemberServiceSendCodeArgs)  ReadField3(iprot thrift.TProtocol) error {
   if v, err := iprot.ReadI32(); err != nil {
   return thrift.PrependError("error reading field 3: ", err)
 } else {
-  p.MsgType = v
+  temp := message_service.EMessageChannel(v)
+  p.MsgType = temp
 }
   return nil
 }
@@ -11708,12 +11711,12 @@ func (p *MemberServiceSendCodeArgs) writeField1(oprot thrift.TProtocol) (err err
 }
 
 func (p *MemberServiceSendCodeArgs) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("op", thrift.STRING, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:op: ", p), err) }
-  if err := oprot.WriteString(string(p.Op)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.op (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldBegin("operation", thrift.STRING, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:operation: ", p), err) }
+  if err := oprot.WriteString(string(p.Operation)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.operation (2) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:op: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:operation: ", p), err) }
   return err
 }
 
