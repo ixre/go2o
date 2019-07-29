@@ -1,5 +1,11 @@
 #!/bin/bash
 
+
+# generate api docs
+rm -rf api_docs && \
+apidoc -i $(find . -name 'apidoc.json' -print -quit|xargs dirname) -o api_docs/
+
+
 # 生成服务代码
 # author : liuming
 # data   : 2017-11-26 11:00

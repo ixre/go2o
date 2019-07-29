@@ -1,6 +1,8 @@
 package registry
 
 var (
+
+
 	/** 域名 */
 	// 是否启用SSL连接
 	DomainEnabledSSL = KeyFormat("DomainEnabledSsl")
@@ -64,6 +66,8 @@ var (
 	EnableMchGoodsCategory = KeyFormat("EnableMchGoodsCategory")
 	// 启用商户页面分类
 	EnableMchPageCategory = KeyFormat("EnableMchPageCategory")
+	// 开启调试模式
+	EnableDebugMode = KeyFormat("EnableDebugMode")
 	// 系统是否挂起
 	SysSuspend = KeyFormat("SysSuspend")
 	// 系统挂起提示消息
