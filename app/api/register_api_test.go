@@ -13,7 +13,8 @@ import (
  * description :
  * history :
  */
-
+const phone = "13163000001"
+const token = "sTRz2UhO4h"
 func TestRegisterApi_SendRegisterCode(t *testing.T) {
 	mp := map[string]string{}
 	testApi(t, "register.get_token", mp)
@@ -21,19 +22,20 @@ func TestRegisterApi_SendRegisterCode(t *testing.T) {
 
 func TestRegisterApi_SendRegisterCode2(t *testing.T) {
 	mp := map[string]string{
-		"phone": "13162221120",
-		"token": "0L0XIvcUyq",
+		"phone": phone,
+		"token": token,
 	}
 	testApi(t, "register.send_code", mp)
 }
 
 func TestRegisterApi_Register(t *testing.T) {
 	mp := map[string]string{
-		"phone":       "13162221121",
-		"token":       "0L0XIvcUyq",
+		"phone":       phone,
+		"token":       token,
 		"pwd":         domain.Md5("123456"),
 		"reg_from":    "app",
 		"invite_code": "",
+		"check_code":"5993",
 	}
 	testApi(t, "register.submit", mp)
 

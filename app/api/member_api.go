@@ -28,7 +28,6 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
 		"login":           m.login,
 		"get":             m.getMember,
-		"register":        m.register,
 		"account":         m.account,
 		"profile":         m.profile,
 		"checkToken":      m.checkToken,
@@ -63,41 +62,6 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 	} else {
 		return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 	}
-}
-
-/**
- * @api {post} /user/register 用户注册
- * @apiName register
- * @apiGroup user
- * @apiParam {String} user 用户名
- * @apiParam {String} pwd 密码
- * @apiParam {String} phone 手机号
- * @apiParam {String} reg_from 注册来源
- * @apiParam {String} invite_code 邀请码
- * @apiSuccessExample Success-Response
- * {}
- * @apiSuccessExample Error-Response
- * {"code":1,"message":"api not defined"}
- */
-func (m MemberApi) register(ctx api.Context) interface{} {
-	user := ctx.Form().GetString("user")
-	pwd := ctx.Form().GetString("pwd")
-	phone := ctx.Form().GetString("phone")
-	regFrom := ctx.Form().GetString("reg_from")       // 注册来源
-	inviteCode := ctx.Form().GetString("invite_code") // 邀请码
-	regIp := ctx.Form().GetString("$user_ip_addr")    // IP地址
-	trans, cli, err := thrift.MemberServeClient()
-	if err == nil {
-		defer trans.Close()
-		mp := map[string]string{
-			"reg_ip":      regIp,
-			"reg_from":    regFrom,
-			"invite_code": inviteCode,
-		}
-		r, _ := cli.RegisterMemberV2(thrift.Context, user, pwd, 0, "", phone, "", "", mp)
-		return r
-	}
-	return m.SResult(err)
 }
 
 // 账号信息

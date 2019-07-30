@@ -19,6 +19,7 @@ import (
 
 var _ api.Handler = new(RegisterApi)
 
+// 注册接口API
 type RegisterApi struct {
 	apiUtil
 	st storage.Interface
@@ -34,10 +35,11 @@ func NewRegisterApi() api.Handler {
 func (m RegisterApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
 		"get_token": m.getToken,
-		"send_code": m.SendRegisterCode,
+		"send_code": m.sendRegisterCode,
 		"submit":    m.submit,
 	})
 }
+
 
 /**
  * @api {post} /register/submit 用户注册
@@ -46,6 +48,7 @@ func (m RegisterApi) Process(fn string, ctx api.Context) *api.Response {
  * @apiParam {String} user 用户名
  * @apiParam {String} pwd 密码
  * @apiParam {String} phone 手机号
+ * @apiParam {String} token 注册令牌
  * @apiParam {String} check_code 验证码, 如果手机注册时,需要填写
  * @apiParam {String} reg_from 注册来源
  * @apiParam {String} invite_code 邀请码
@@ -55,16 +58,19 @@ func (m RegisterApi) Process(fn string, ctx api.Context) *api.Response {
  * {"code":1,"message":"api not defined"}
  */
 func (m RegisterApi) submit(ctx api.Context) interface{} {
-	user := ctx.Form().GetString("user")
-	pwd := ctx.Form().GetString("pwd")
-	phone := ctx.Form().GetString("phone")
-	regFrom := ctx.Form().GetString("reg_from") // 注册来源
-	//checkCode := ctx.Form().GetString("check_code") // 验证码
-	inviteCode := ctx.Form().GetString("invite_code") // 邀请码
-	regIp := ctx.Form().GetString("$user_ip_addr")    // IP地址
+	user := strings.TrimSpace(ctx.Form().GetString("user"))
+	pwd := strings.TrimSpace(ctx.Form().GetString("pwd"))
+	phone := strings.TrimSpace(ctx.Form().GetString("phone"))
+	regFrom := strings.TrimSpace(ctx.Form().GetString("reg_from"))       // 注册来源
+	checkCode := strings.TrimSpace(ctx.Form().GetString("check_code"))   // 验证码
+	inviteCode := strings.TrimSpace(ctx.Form().GetString("invite_code")) // 邀请码
+	regIp := strings.TrimSpace(ctx.Form().GetString("$user_ip_addr"))    // IP地址
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
 	if len(token) == 0 || !m.checkRegToken(token) {
 		return api.ResponseWithCode(6, "非法注册请求")
+	}
+	if b := m.compareCheckCode(token,phone, checkCode);!b{
+		return api.ResponseWithCode(7, "注册校验码不正确")
 	}
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
@@ -160,6 +166,25 @@ func (m RegisterApi) saveCheckCodeData(token string, phone string, code string) 
 	m.st.SetExpire(key1, phone, 600)
 }
 
+
+// 获取校验结果
+func (m RegisterApi) compareCheckCode(token,phone string, code string)bool{
+	if len(phone) > 0 {
+		key := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_code", token)
+		key1 := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_phone", token)
+		ckCode, _ := m.st.GetString(key)
+		ckPhone, _ := m.st.GetString(key1)
+		if ckCode == "" || ckCode != code {
+			return false
+		}
+		if ckPhone == "" || ckPhone != phone {
+			return false
+		}
+	}
+	return true
+}
+
+
 /**
  * @api {post} /register/send_code 发送注册验证码
  * @apiName send_code
@@ -171,7 +196,7 @@ func (m RegisterApi) saveCheckCodeData(token string, phone string, code string) 
  * @apiSuccessExample Error-Response
  * {"code":1,"message":"api not defined"}
  */
-func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
+func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 	trans, cli, _ := thrift.FoundationServeClient()
 	keys := []string{
 		registry.MemberRegisterMustBindPhone,
