@@ -592,7 +592,7 @@ func (s *memberService) ResetTradePwd(memberId int64) string {
 }
 
 // 修改密码
-func (s *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) error {
+func (s *memberService) ModifyPassword(memberId int64, oldPwd string, newPwd string) error {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember

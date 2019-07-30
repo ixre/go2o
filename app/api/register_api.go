@@ -147,8 +147,7 @@ func (m RegisterApi) signCheckCodeSendOk(token string) {
 // 验证注册令牌是否正确
 func (m RegisterApi) checkRegToken(token string) bool {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
-	_, err := m.st.GetInt64(key)
-	return err == nil
+	return m.st.Exists(key)
 }
 
 // 将注册令牌标记为过期

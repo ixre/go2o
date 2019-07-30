@@ -9,7 +9,6 @@ import (
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/rsi"
@@ -45,9 +44,9 @@ func (m PassportApi) Process(fn string, ctx api.Context) *api.Response {
 		"get_token":    m.getToken,
 		"send_code":    m.sendCode,
 		"compare_code": m.compareCode,
-		"reset_pwd":    m.ResetPwdPost,
-		"modify_pwd":   m.ModifyPwdPost,
-		"trade_pwd":    m.ModifyPwdPost,
+		"reset_pwd":    m.resetPwd,
+		"modify_pwd":   m.modifyPwd,
+		"trade_pwd":    m.tradePwd,
 	})
 }
 
@@ -86,19 +85,17 @@ func (h PassportApi) signCodeSendInfo(token string) {
 }
 
 // 获取校验结果
-func (p PassportApi) GetCodeVerifyResult(token string) (memberId int64, result bool) {
+func (p PassportApi) GetCodeVerifyResult(token string) (int64,bool) {
 	prefix := "sys:go2o:pwd:token"
 	checkKey := fmt.Sprintf("%s:%s:check_ok", prefix, token)
 	v, err := p.st.GetInt64(checkKey)
-	b := err == nil && v == 1 //验证码校验成功
-	if b {
+	//验证码校验成功
+	if err == nil && v == 1 {
 		mmKey := fmt.Sprintf("%s:%s:member_id", prefix, token)
-		if memberId, err := p.st.GetInt64(mmKey); err == nil {
-			return memberId, false
-		}
-		return memberId, true
+		memberId, err := p.st.GetInt64(mmKey)
+		return memberId, err == nil
 	}
-	return memberId, false
+	return 0, false
 }
 
 // 清理验证码校验结果
@@ -115,6 +112,12 @@ func (p PassportApi) setCodeVerifySuccess(token string, memberId int64) {
 	mmKey := fmt.Sprintf("%s:%s:member_id", prefix, token)
 	p.st.SetExpire(checkKey, 1, 600)     // 验证码校验成功
 	p.st.SetExpire(mmKey, memberId, 600) // 记录会员编号
+}
+
+// 验证令牌是否正确
+func (m PassportApi) checkToken(token string) bool {
+	key := fmt.Sprintf("sys:go2o:pwd:token:%s:last-time", token)
+	return m.st.Exists(key)
 }
 
 /**
@@ -138,7 +141,7 @@ func (h PassportApi) getToken(ctx api.Context) interface{} {
  * @apiName send_code
  * @apiGroup passport
  * @apiParam {String} account 账号
- * @apiParam {Int} cred_type 账号类型,1:站内信 3:邮箱 4:短信
+ * @apiParam {Int} cred_type 账号类型,1:用户名 3:邮件 4:手机号
  * @apiParam {String} token 令牌
  * @apiParam {Int} op 验证码场景:0:找回密码, 1:重置密码 2:绑定手机
  * @apiSuccessExample Success-Response
@@ -148,8 +151,8 @@ func (h PassportApi) getToken(ctx api.Context) interface{} {
  */
 func (h PassportApi) sendCode(ctx api.Context) interface{} {
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
-	if len(token) == 0 {
-		return api.ResponseWithCode(6, "非法注册请求")
+	if len(token) == 0 || !h.checkToken(token) {
+		return api.ResponseWithCode(6, "令牌无效")
 	}
 	operation, _ := strconv.Atoi(ctx.Form().GetString("op")) //操作
 	account, credType, err := h.checkMemberBasis(ctx)
@@ -233,16 +236,15 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
 	return api.NewResponse(map[string]string{})
 }
 
-// 提交重置密码
 
 /**
  * @api {post} /passport/reset_pwd 重置密码
- * @apiName send_code
+ * @apiName reset_pwd
  * @apiGroup passport
  * @apiParam {String} account 账号
- * @apiParam {Int} cred_type 账号类型,1:站内信 3:邮箱 4:短信
+ * @apiParam {Int} cred_type 账号类型,1:用户名 3:邮件 4:手机号
  * @apiParam {String} token 令牌
- * @apiParam {String} pwd 密码
+ * @apiParam {String} pwd md5编码后的密码
  * @apiSuccessExample Success-Response
  * {}
  * @apiSuccessExample Error-Response
@@ -250,124 +252,117 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
  */
 func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
-	if len(token) == 0 {
-		return api.ResponseWithCode(6, "非法注册请求")
+	pwd := strings.TrimSpace(ctx.Form().GetString("pwd"))
+	if len(token) == 0 || !h.checkToken(token) {
+		return api.ResponseWithCode(6, "请求已过期")
 	}
-
 	account, credType, err := h.checkMemberBasis(ctx)
 	if err != nil {
 		return api.ResponseWithCode(2, err.Error())
 	}
+	// 验证校验码是否正确
 	memberId, b := h.GetCodeVerifyResult(token)
 	if !b {
-		return api.ResponseWithCode(2, "验证码不正确")
+		return api.ResponseWithCode(2, "验证无效")
 	}
-	trans, cli, err := thrift.MemberServeClient()
-	if err == nil {
-		defer trans.Close()
-		mid, _ := cli.SwapMemberId(thrift.Context, credType, account)
-		if mid <= 0 {
-			return api.ResponseWithCode(1, member.ErrNoSuchMember.Error())
-		}
-		if mid != memberId {
-			return api.ResponseWithCode(1, "member not match")
-		}
+	// 验证会员是否匹配
+	if err := h.checkMemberMatch(account,credType,memberId);err != nil{
+		return api.ResponseWithCode(1, err.Error())
 	}
+	err = rsi.MemberService.ModifyPassword(memberId, "",pwd)
+	if err != nil {
+		return api.ResponseWithCode(1, err.Error())
+	}
+	h.resetCodeVerifyResult(token)
+	return api.NewResponse(map[string]string{})
+}
+
+
+/**
+ * @api {post} /passport/modify_pwd 修改密码
+ * @apiName modify_pwd
+ * @apiGroup passport
+ * @apiParam {String} account 账号
+ * @apiParam {Int} cred_type 账号类型,1:用户名 3:邮件 4:手机号
+ * @apiParam {String} token 令牌
+ * @apiParam {String} pwd md5编码后的密码
+ * @apiParam {String} old_pwd md5编码后的旧密码
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ *
+ */
+func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
+	token := strings.TrimSpace(ctx.Form().GetString("token"))
 	pwd := strings.TrimSpace(ctx.Form().GetString("pwd"))
-	if len(pwd) < 6 {
-		return api.ResponseWithCode(1, "密码不能小于6位")
+	oldPwd := strings.TrimSpace(ctx.Form().GetString("old_pwd"))
+	if len(token) == 0 || !h.checkToken(token) {
+		return api.ResponseWithCode(6, "请求已过期")
 	}
-	err = rsi.MemberService.ModifyPassword(memberId, domain.Md5(pwd), "")
-	if err == nil {
-		h.resetCodeVerifyResult(token)
+	account, credType, err := h.checkMemberBasis(ctx)
+	if err != nil {
+		return api.ResponseWithCode(2, err.Error())
 	}
+	// 验证校验码是否正确
+	memberId, b := h.GetCodeVerifyResult(token)
+	if !b {
+		return api.ResponseWithCode(2, "验证无效")
+	}
+	// 验证会员是否匹配
+	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
+		return api.ResponseWithCode(1, err.Error())
+	}
+	err = rsi.MemberService.ModifyPassword(memberId, oldPwd, pwd)
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
+	h.resetCodeVerifyResult(token)
 	return api.NewResponse(map[string]string{})
 }
 
-// 提交修改密码
-func (p PassportApi) ModifyPwdPost(ctx api.Context) interface{} {
+
+/**
+ * @api {post} /passport/trade_pwd 修改交易密码
+ * @apiName modify_pwd
+ * @apiGroup passport
+ * @apiParam {String} account 账号
+ * @apiParam {Int} cred_type 账号类型,1:用户名 3:邮件 4:手机号
+ * @apiParam {String} token 令牌
+ * @apiParam {String} pwd md5编码后的密码
+ * @apiParam {String} old_pwd md5编码后的旧密码,如果没有设置交易密码,则为空
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ *
+ */
+func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
-	if len(token) == 0 {
-		return api.ResponseWithCode(6, "非法注册请求")
+	pwd := strings.TrimSpace(ctx.Form().GetString("pwd"))
+	oldPwd := strings.TrimSpace(ctx.Form().GetString("old_pwd"))
+	if len(token) == 0 || !h.checkToken(token) {
+		return api.ResponseWithCode(6, "请求已过期")
 	}
-	memberId, b := p.GetCodeVerifyResult(token)
+	account, credType, err := h.checkMemberBasis(ctx)
+	if err != nil {
+		return api.ResponseWithCode(2, err.Error())
+	}
+	// 验证校验码是否正确
+	memberId, b := h.GetCodeVerifyResult(token)
 	if !b {
-		return api.ResponseWithCode(2, "验证码不正确")
+		return api.ResponseWithCode(2, "验证无效")
 	}
-	var err error
-	oldPwd := domain.Md5(strings.TrimSpace(ctx.Form().GetString("OldPwd")))
-	newPwd := domain.Md5(strings.TrimSpace(ctx.Form().GetString("pwd")))
-	rePwd := domain.Md5(strings.TrimSpace(ctx.Form().GetString("repwd")))
-	if oldPwd == "" {
-		err = errors.New("旧密码不能为空")
-	} else if len(newPwd) == 0 {
-		err = errors.New("新密码不能为空")
-	} else if newPwd != rePwd {
-		err = errors.New("两次密码输入不一致")
-	} else {
-		err = rsi.MemberService.ModifyPassword(memberId, newPwd, oldPwd)
-		if err == nil {
-			p.resetCodeVerifyResult(token)
-		}
+	// 验证会员是否匹配
+	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
+		return api.ResponseWithCode(1, err.Error())
 	}
+	err = rsi.MemberService.ModifyTradePassword(memberId, oldPwd,pwd)
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
+	h.resetCodeVerifyResult(token)
 	return api.NewResponse(map[string]string{})
-}
-
-// 提交修改交易密码
-func (p PassportApi) TradePwdPost(ctx api.Context) *api.Response {
-	token := strings.TrimSpace(ctx.Form().GetString("token"))
-	if len(token) == 0 {
-		return api.ResponseWithCode(6, "非法注册请求")
-	}
-	memberId, b := p.GetCodeVerifyResult(token)
-	if !b {
-		return api.ResponseWithCode(2, "验证码不正确")
-	}
-	var err error
-	oldPwd := domain.Md5(strings.TrimSpace(ctx.Form().GetString("OldPwd")))
-	newPwd := domain.Md5(strings.TrimSpace(ctx.Form().GetString("pwd")))
-	rePwd := domain.Md5(strings.TrimSpace(ctx.Form().GetString("repwd")))
-	if oldPwd == "" {
-		err = errors.New("旧密码不能为空")
-	} else if len(newPwd) == 0 {
-		err = errors.New("新密码不能为空")
-	} else if newPwd != rePwd {
-		err = errors.New("两次密码输入不一致")
-	} else {
-		err = rsi.MemberService.ModifyTradePassword(memberId, newPwd, oldPwd)
-		if err == nil {
-			p.resetCodeVerifyResult(token)
-		}
-	}
-	if err != nil {
-		return api.ResponseWithCode(1, err.Error())
-	}
-	return api.NewResponse(map[string]string{})
-
-	//
-	//if oldPwd == "" {
-	//	m := GetMember(c)
-	//	if m.TradePwd != "" {
-	//		err := errors.New("请输入原交易密码")
-	//		return c.JSON(http.StatusOK, result.Error(err))
-	//	}
-	//}
-
-	/*
-		var err error
-		if newPwd != rePwd {
-			err = errors.New("两次密码输入不一致")
-		} else {
-			err = rsi.MemberService.ModifyTradePassword(int64(memberId), oldPwd, newPwd)
-		}
-		return c.JSON(http.StatusOK, result.Error(err))
-	*/
 }
 
 // 获取验证码的间隔时间
@@ -390,9 +385,6 @@ func (m PassportApi) checkCodeDuration(token, phone string) error {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
 	nowUnix := time.Now().Unix()
 	unix, err := m.st.GetInt64(key)
-
-	log.Println("---", nowUnix, unix, key)
-
 	if err == nil {
 		if nowUnix-unix < m.getDurationSecond() {
 			return errors.New("请勿在短时间内获取短信验证码!")
@@ -428,4 +420,20 @@ func (m PassportApi) saveCheckCodeData(token string, phone string, code string) 
 	key1 := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_phone", token)
 	m.st.SetExpire(key, code, 600)
 	m.st.SetExpire(key1, phone, 600)
+}
+
+// 验证会员是否匹配
+func (m PassportApi) checkMemberMatch(account string, credType member_service.ECredentials, memberId int64) error {
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		mid, _ := cli.SwapMemberId(thrift.Context, credType, account)
+		if mid <= 0 {
+			return member.ErrNoSuchMember
+		}
+		if mid != memberId {
+			return errors.New("member not match")
+		}
+	}
+	return err
 }
