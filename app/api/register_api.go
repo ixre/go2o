@@ -3,7 +3,6 @@ package api
 import (
 	"errors"
 	"fmt"
-	"github.com/ixre/goex/echox"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
 	"github.com/ixre/gof/storage"
@@ -35,6 +34,7 @@ func NewRegisterApi()api.Handler{
 func (m RegisterApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
 		"get_token":m.getToken,
+		"send_code":m.SendRegisterCode,
 		"submit":m.submit,
 	})
 }
@@ -48,6 +48,7 @@ func (m RegisterApi) Process(fn string, ctx api.Context) *api.Response {
  * @apiParam {String} user 用户名
  * @apiParam {String} pwd 密码
  * @apiParam {String} phone 手机号
+ * @apiParam {String} check_code 验证码, 如果手机注册时,需要填写
  * @apiParam {String} reg_from 注册来源
  * @apiParam {String} invite_code 邀请码
  * @apiSuccessExample Success-Response
@@ -60,8 +61,13 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	pwd := ctx.Form().GetString("pwd")
 	phone := ctx.Form().GetString("phone")
 	regFrom := ctx.Form().GetString("reg_from")       // 注册来源
+	//checkCode := ctx.Form().GetString("check_code") // 验证码
 	inviteCode := ctx.Form().GetString("invite_code") // 邀请码
 	regIp := ctx.Form().GetString("$user_ip_addr")    // IP地址
+	token := strings.TrimSpace(ctx.Form().GetString("token"))
+	if len(token) == 0 || !m.checkRegToken(token){
+		return api.ResponseWithCode(6,"非法注册请求")
+	}
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
@@ -71,6 +77,10 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 			"invite_code": inviteCode,
 		}
 		r, _ := cli.RegisterMemberV2(thrift.Context, user, pwd, 0, "", phone, "", "", mp)
+		if r.ErrCode == 0{
+			//todo: 未生效
+			m.signCheckTokenExpires(token)
+		}
 		return r
 	}
 	return m.SResult(err)
@@ -88,13 +98,13 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 func (m RegisterApi) getToken(ctx api.Context)interface{}{
 	rd := util.RandString(10)
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",rd)
-	m.st.SetExpire(key,rd,600)
+	m.st.SetExpire(key,0,600)
 	return rd
 }
 
 
 // 获取验证码的间隔时间
-func (m RegisterApi) getDuractionSecond() int64 {
+func (m RegisterApi) getDurationSecond() int64 {
 	trans, cli, err := thrift.FoundationServeClient()
 	if err == nil {
 		val, _ := cli.GetRegistry(thrift.Context, registry.SmsSendDuration)
@@ -109,36 +119,62 @@ func (m RegisterApi) getDuractionSecond() int64 {
 }
 
 // 检查短信验证码是否频繁发送
-func (m RegisterApi) checkCodeDuration_Reg(token,phone string) error {
+func (m RegisterApi) checkCodeDuration(token,phone string) error {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",token)
 	nowUnix := time.Now().Unix()
 	unix,err := m.st.GetInt64(key)
+
+	log.Println("---",nowUnix,unix,key)
+
 	if err == nil {
-		if nowUnix - unix < m.getDuractionSecond(){
+		if nowUnix - unix < m.getDurationSecond(){
 			return errors.New("请勿在短时间内获取短信验证码!")
 		}
 	}
 	return nil
 }
 
+// 标记验证码发送时间
+func (m RegisterApi) signCheckCodeSendOk(token string) {
+	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",token)
+	unix := time.Now().Unix()
+	log.Println("----save code:",unix)
+	m.st.SetExpire(key, unix,600)
+}
 
+// 验证注册令牌是否正确
+func (m RegisterApi) checkRegToken(token string)bool{
+	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",token)
+	_,err := m.st.GetInt64(key)
+	return err == nil
+}
+
+// 将注册令牌标记为过期
+func (m RegisterApi) signCheckTokenExpires(token string) {
+	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",token)
+	m.st.Del(key)
+}
 
 // 存储校验数据
-func (m RegisterApi) saveCheckData_Reg(token string,phone string, code string) {
+func (m RegisterApi) saveCheckCodeData(token string,phone string, code string) {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_code", token)
 	key1 := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_phone", token)
 	m.st.SetExpire(key, code, 600)
 	m.st.SetExpire(key1, phone, 600)
 }
 
-// 标记验证码发送时间
-func (m RegisterApi) signCheckCodeSend_Reg(c *echox.Context) {
-	ss := c.Session
-	ss.Set("reg_last_unix", time.Now().Unix()) //最后的发送时间
-	ss.Save()
-}
 
-// 发送验证码
+/**
+ * @api {post} /register/send_code 发送注册验证码
+ * @apiName send_code
+ * @apiGroup register
+ * @apiParam {String} phone 手机号码
+ * @apiParam {String} token 注册令牌
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ */
 func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 	trans, cli, _ := thrift.FoundationServeClient()
 	keys := []string{
@@ -158,7 +194,7 @@ func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 	if len(token) == 0{
 		return api.ResponseWithCode(6,"非法注册请求")
 	}
-	err := m.checkCodeDuration_Reg(token,phone)
+	err := m.checkCodeDuration(token,phone)
 	if err == nil {
 		// 检查手机号码是否被其他人使用
 		trans, cli, _ := thrift.MemberServeClient()
@@ -166,7 +202,7 @@ func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 		trans.Close()
 		if memberId <= 0 {
 			code := domain.NewCheckCode()
-			m.saveCheckData_Reg(token,phone,code)
+			m.saveCheckCodeData(token,phone,code)
 			expiresMinutes := 10
 			// 创建参数
 			data := map[string]string{
@@ -186,7 +222,7 @@ func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 			// 发送短信
 			r, _ := cli.SendPhoneMessage(thrift.Context, phone, n.Content, data)
 			if r.ErrCode == 0 {
-				m.signCheckCodeSend_Reg(code) // 标记为已发送
+				m.signCheckCodeSendOk(code) // 标记为已发送
 			} else {
 				log.Println("[ Go2o][ Sms]: 验证码发送失败:", r.ErrMsg)
 				return api.ResponseWithCode(3,"验证码发送失败")
@@ -197,4 +233,5 @@ func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 	}
 	return api.NewResponse(map[string]string{})
 }
+
 
