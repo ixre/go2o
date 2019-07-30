@@ -40,7 +40,6 @@ func (m RegisterApi) Process(fn string, ctx api.Context) *api.Response {
 	})
 }
 
-
 /**
  * @api {post} /register/submit 用户注册
  * @apiName submit
@@ -69,7 +68,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	if len(token) == 0 || !m.checkRegToken(token) {
 		return api.ResponseWithCode(6, "非法注册请求")
 	}
-	if b := m.compareCheckCode(token,phone, checkCode);!b{
+	if b := m.compareCheckCode(token, phone, checkCode); !b {
 		return api.ResponseWithCode(7, "注册校验码不正确")
 	}
 	trans, cli, err := thrift.MemberServeClient()
@@ -166,9 +165,8 @@ func (m RegisterApi) saveCheckCodeData(token string, phone string, code string) 
 	m.st.SetExpire(key1, phone, 600)
 }
 
-
 // 获取校验结果
-func (m RegisterApi) compareCheckCode(token,phone string, code string)bool{
+func (m RegisterApi) compareCheckCode(token, phone string, code string) bool {
 	if len(phone) > 0 {
 		key := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_code", token)
 		key1 := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_phone", token)
@@ -183,7 +181,6 @@ func (m RegisterApi) compareCheckCode(token,phone string, code string)bool{
 	}
 	return true
 }
-
 
 /**
  * @api {post} /register/send_code 发送注册验证码

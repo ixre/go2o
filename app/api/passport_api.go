@@ -8,7 +8,6 @@ import (
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/auto_gen/rpc/member_service"
@@ -43,8 +42,9 @@ func NewPassportApi() api.Handler {
 
 func (m PassportApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
-		"send_code":    m.SendCode,
-		"compare_code": m.CompareCode,
+		"get_token":    m.getToken,
+		"send_code":    m.sendCode,
+		"compare_code": m.compareCode,
 		"reset_pwd":    m.ResetPwdPost,
 		"modify_pwd":   m.ModifyPwdPost,
 		"trade_pwd":    m.ModifyPwdPost,
@@ -52,26 +52,25 @@ func (m PassportApi) Process(fn string, ctx api.Context) *api.Response {
 }
 
 // 根据输入的凭据获取会员编号
-func (m PassportApi) checkMemberBasis(ctx api.Context) (string, int, error) {
-	acc := strings.TrimSpace(ctx.Form().GetString("basis"))    //账号、手机或邮箱
-	msgType, err := strconv.Atoi(ctx.Form().GetString("type")) //发送方式、短信或邮箱
+func (m PassportApi) checkMemberBasis(ctx api.Context) (string, member_service.ECredentials, error) {
+	acc := strings.TrimSpace(ctx.Form().GetString("account"))          //账号、手机或邮箱
+	credTypeId, err := strconv.Atoi(ctx.Form().GetString("cred_type")) //账号类型
 	if err != nil {
-		return acc, msgType, err
+		return acc, member_service.ECredentials_User, err
 	}
+	credType := member_service.ECredentials(credTypeId)
 	if len(acc) == 0 {
-		return acc, msgType, errors.New("信息不完整")
+		return acc, credType, errors.New("信息不完整")
 	}
-	return acc, msgType, nil
+	return acc, credType, nil
 }
 
 // 根据发送的校验码类型获取用户凭据类型
-func (h PassportApi) getMemberCredential(msgType int) member_service.ECredentials {
-	if msgType == notify.TypeEmailMessage {
-		return member_service.ECredentials_Email
-	} else if msgType == notify.TypePhoneMessage {
-		return member_service.ECredentials_Phone
+func (h PassportApi) parseMessageChannel(credType member_service.ECredentials) message_service.EMessageChannel {
+	if credType == member_service.ECredentials_Email {
+		return message_service.EMessageChannel_EmailMessage
 	}
-	return member_service.ECredentials_User
+	return message_service.EMessageChannel_SmsMessage
 }
 
 // 标记验证码发送时间
@@ -79,7 +78,7 @@ func (h PassportApi) signCodeSendInfo(token string) {
 	prefix := "sys:go2o:pwd:token"
 	// 最后的发送时间
 	unix := time.Now().Unix()
-	h.st.SetExpire(fmt.Sprintf("%s:%s:last_unix", prefix, token), unix, 600)
+	h.st.SetExpire(fmt.Sprintf("%s:%s:last-time", prefix, token), unix, 600)
 	// 验证码校验成功
 	h.st.SetExpire(fmt.Sprintf("%s:%s:check_ok", prefix, token), 0, 600)
 	// 清除记录的会员编号
@@ -119,41 +118,56 @@ func (p PassportApi) setCodeVerifySuccess(token string, memberId int64) {
 }
 
 /**
- * @api {post} /passport/send_code 发送验证码
- * @apiName send_code
+ * @api {post} /passport/get_token 获取注册Token
+ * @apiName get_token
  * @apiGroup passport
- * @apiParam {String} token 注册令牌
- * @apiParam {Int} op 验证码场景:0:找回密码, 1:重置密码 2:绑定手机
- * @apiParam {String} basis 账号
- * @apiParam {Int} type 验证码类型,1: 站内信 2: 短信 3:邮箱,
  * @apiSuccessExample Success-Response
  * {}
  * @apiSuccessExample Error-Response
  * {"code":1,"message":"api not defined"}
  */
-func (h PassportApi) SendCode(ctx api.Context) interface{} {
+func (h PassportApi) getToken(ctx api.Context) interface{} {
+	rd := util.RandString(10)
+	key := fmt.Sprintf("sys:go2o:pwd:token:%s:last-time", rd)
+	h.st.SetExpire(key, 0, 600)
+	return rd
+}
+
+/**
+ * @api {post} /passport/send_code 发送验证码
+ * @apiName send_code
+ * @apiGroup passport
+ * @apiParam {String} account 账号
+ * @apiParam {Int} cred_type 账号类型,1:站内信 3:邮箱 4:短信
+ * @apiParam {String} token 令牌
+ * @apiParam {Int} op 验证码场景:0:找回密码, 1:重置密码 2:绑定手机
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ */
+func (h PassportApi) sendCode(ctx api.Context) interface{} {
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
 	if len(token) == 0 {
 		return api.ResponseWithCode(6, "非法注册请求")
 	}
 	operation, _ := strconv.Atoi(ctx.Form().GetString("op")) //操作
-	account, msgType, err := h.checkMemberBasis(ctx)
+	account, credType, err := h.checkMemberBasis(ctx)
 	if err != nil {
 		return api.ResponseWithCode(2, err.Error())
 	}
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		var cred = h.getMemberCredential(msgType)
-		memberId, _ := cli.SwapMemberId(thrift.Context, cred, account)
+		memberId, _ := cli.SwapMemberId(thrift.Context, credType, account)
 		if memberId <= 0 {
 			return api.ResponseWithCode(1, member.ErrNoSuchMember.Error())
 		}
 		err = h.checkCodeDuration(token, account)
 		if err == nil {
+			var msgChan = h.parseMessageChannel(credType)
 			r, _ := cli.SendCode(thrift.Context, memberId,
-				operationArr[operation],
-				message_service.EMessageChannel(msgType))
+				operationArr[operation], msgChan)
 			code := r.Data["code"]
 			if r.ErrCode == 0 {
 				h.signCodeSendInfo(token) // 标记为已发送
@@ -171,6 +185,46 @@ func (h PassportApi) SendCode(ctx api.Context) interface{} {
 			if debugMode && len(code) != 0 {
 				return api.ResponseWithCode(3, "【测试】短信验证码为:"+code)
 			}
+		}
+	}
+	if err != nil {
+		return api.ResponseWithCode(1, err.Error())
+	}
+	return api.NewResponse(map[string]string{})
+}
+
+/**
+ * @api {post} /passport/compare_code 校验验证码
+ * @apiName compare_code
+ * @apiGroup passport
+ * @apiParam {String} account 账号
+ * @apiParam {Int} cred_type 账号类型,1:站内信 3:邮箱 4:短信
+ * @apiParam {String} token 令牌
+ * @apiParam {String} check_code 校验码
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ */
+func (h PassportApi) compareCode(ctx api.Context) interface{} {
+	token := strings.TrimSpace(ctx.Form().GetString("token"))
+	if len(token) == 0 {
+		return api.ResponseWithCode(6, "非法注册请求")
+	}
+	account, credType, err := h.checkMemberBasis(ctx)
+	if err != nil {
+		return api.ResponseWithCode(2, err.Error())
+	}
+	code := ctx.Form().GetString("check_code")
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		memberId, _ := cli.SwapMemberId(thrift.Context, credType, account)
+		r, _ := cli.CompareCode(thrift.Context, memberId, code)
+		if r.ErrCode == 0 {
+			h.setCodeVerifySuccess(token, memberId)
+		} else {
+			err = errors.New(r.ErrMsg)
 		}
 	}
 	if err != nil {
@@ -302,51 +356,6 @@ func (p PassportApi) TradePwdPost(ctx api.Context) *api.Response {
 		}
 		return c.JSON(http.StatusOK, result.Error(err))
 	*/
-}
-
-// 对比验证码
-func (h PassportApi) CompareCode(ctx api.Context) interface{} {
-	token := strings.TrimSpace(ctx.Form().GetString("token"))
-	if len(token) == 0 {
-		return api.ResponseWithCode(6, "非法注册请求")
-	}
-	account, msgType, err := h.checkMemberBasis(ctx)
-	if err != nil {
-		return api.ResponseWithCode(2, err.Error())
-	}
-	code := ctx.Form().GetString("code")
-	trans, cli, err := thrift.MemberServeClient()
-	if err == nil {
-		defer trans.Close()
-		var cred = h.getMemberCredential(msgType)
-		memberId, _ := cli.SwapMemberId(thrift.Context, cred, account)
-		r, _ := cli.CompareCode(thrift.Context, memberId, code)
-		if r.ErrCode == 0 {
-			h.setCodeVerifySuccess(token, memberId)
-		} else {
-			err = errors.New(r.ErrMsg)
-		}
-	}
-	if err != nil {
-		return api.ResponseWithCode(1, err.Error())
-	}
-	return api.NewResponse(map[string]string{})
-}
-
-/**
- * @api {post} /register/get_token 获取注册Token
- * @apiName get_token
- * @apiGroup register
- * @apiSuccessExample Success-Response
- * {}
- * @apiSuccessExample Error-Response
- * {"code":1,"message":"api not defined"}
- */
-func (m PassportApi) getToken(ctx api.Context) interface{} {
-	rd := util.RandString(10)
-	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", rd)
-	m.st.SetExpire(key, 0, 600)
-	return rd
 }
 
 // 获取验证码的间隔时间

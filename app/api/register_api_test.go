@@ -15,6 +15,7 @@ import (
  */
 const phone = "13163000001"
 const token = "sTRz2UhO4h"
+
 func TestRegisterApi_SendRegisterCode(t *testing.T) {
 	mp := map[string]string{}
 	testApi(t, "register.get_token", mp)
@@ -35,7 +36,7 @@ func TestRegisterApi_Register(t *testing.T) {
 		"pwd":         domain.Md5("123456"),
 		"reg_from":    "app",
 		"invite_code": "",
-		"check_code":"5993",
+		"check_code":  "5993",
 	}
 	testApi(t, "register.submit", mp)
 
