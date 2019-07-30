@@ -28,7 +28,7 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
 		"login":           m.login,
 		"get":             m.getMember,
-		"register":m.register,
+		"register":        m.register,
 		"account":         m.account,
 		"profile":         m.profile,
 		"checkToken":      m.checkToken,
@@ -279,15 +279,15 @@ func (m *MemberApi) invites(ctx api.Context) interface{} {
 	mp, _ := cli2.GetRegistries(thrift.Context, keys)
 	if member != nil {
 		inviteCode := member.InviteCode
-		prot :=types.ElseString(mp[keys[1]] == "true", "https", "http")
+		prot := types.ElseString(mp[keys[1]] == "true", "https", "http")
 		// 网页推广链接
 		inviteLink := fmt.Sprintf("%s://%s%s/i/%s", prot, mp[keys[2]], mp[keys[0]], inviteCode)
 		// 手机网页推广链接
 		mobileInviteLink := fmt.Sprintf("%s://%s%s/i/%s", prot, mp[keys[3]], mp[keys[0]], inviteCode)
 		mp := map[string]string{
-			"code": inviteCode,
-			"link": inviteLink,
-			"mobile_link":mobileInviteLink,
+			"code":        inviteCode,
+			"link":        inviteLink,
+			"mobile_link": mobileInviteLink,
 		}
 		return api.NewResponse(mp)
 	}

@@ -24,22 +24,20 @@ type RegisterApi struct {
 	st storage.Interface
 }
 
-func NewRegisterApi()api.Handler{
+func NewRegisterApi() api.Handler {
 	st := gof.CurrentApp.Storage()
 	return &RegisterApi{
-		st:      st,
+		st: st,
 	}
 }
 
 func (m RegisterApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
-		"get_token":m.getToken,
-		"send_code":m.SendRegisterCode,
-		"submit":m.submit,
+		"get_token": m.getToken,
+		"send_code": m.SendRegisterCode,
+		"submit":    m.submit,
 	})
 }
-
-
 
 /**
  * @api {post} /register/submit 用户注册
@@ -60,13 +58,13 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	user := ctx.Form().GetString("user")
 	pwd := ctx.Form().GetString("pwd")
 	phone := ctx.Form().GetString("phone")
-	regFrom := ctx.Form().GetString("reg_from")       // 注册来源
+	regFrom := ctx.Form().GetString("reg_from") // 注册来源
 	//checkCode := ctx.Form().GetString("check_code") // 验证码
 	inviteCode := ctx.Form().GetString("invite_code") // 邀请码
 	regIp := ctx.Form().GetString("$user_ip_addr")    // IP地址
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
-	if len(token) == 0 || !m.checkRegToken(token){
-		return api.ResponseWithCode(6,"非法注册请求")
+	if len(token) == 0 || !m.checkRegToken(token) {
+		return api.ResponseWithCode(6, "非法注册请求")
 	}
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
@@ -77,7 +75,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 			"invite_code": inviteCode,
 		}
 		r, _ := cli.RegisterMemberV2(thrift.Context, user, pwd, 0, "", phone, "", "", mp)
-		if r.ErrCode == 0{
+		if r.ErrCode == 0 {
 			//todo: 未生效
 			m.signCheckTokenExpires(token)
 		}
@@ -95,13 +93,12 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
  * @apiSuccessExample Error-Response
  * {"code":1,"message":"api not defined"}
  */
-func (m RegisterApi) getToken(ctx api.Context)interface{}{
+func (m RegisterApi) getToken(ctx api.Context) interface{} {
 	rd := util.RandString(10)
-	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",rd)
-	m.st.SetExpire(key,0,600)
+	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", rd)
+	m.st.SetExpire(key, 0, 600)
 	return rd
 }
-
 
 // 获取验证码的间隔时间
 func (m RegisterApi) getDurationSecond() int64 {
@@ -119,15 +116,15 @@ func (m RegisterApi) getDurationSecond() int64 {
 }
 
 // 检查短信验证码是否频繁发送
-func (m RegisterApi) checkCodeDuration(token,phone string) error {
-	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",token)
+func (m RegisterApi) checkCodeDuration(token, phone string) error {
+	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
 	nowUnix := time.Now().Unix()
-	unix,err := m.st.GetInt64(key)
+	unix, err := m.st.GetInt64(key)
 
-	log.Println("---",nowUnix,unix,key)
+	log.Println("---", nowUnix, unix, key)
 
 	if err == nil {
-		if nowUnix - unix < m.getDurationSecond(){
+		if nowUnix-unix < m.getDurationSecond() {
 			return errors.New("请勿在短时间内获取短信验证码!")
 		}
 	}
@@ -136,33 +133,32 @@ func (m RegisterApi) checkCodeDuration(token,phone string) error {
 
 // 标记验证码发送时间
 func (m RegisterApi) signCheckCodeSendOk(token string) {
-	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",token)
+	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
 	unix := time.Now().Unix()
-	log.Println("----save code:",unix)
-	m.st.SetExpire(key, unix,600)
+	log.Println("----save code:", unix)
+	m.st.SetExpire(key, unix, 600)
 }
 
 // 验证注册令牌是否正确
-func (m RegisterApi) checkRegToken(token string)bool{
-	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",token)
-	_,err := m.st.GetInt64(key)
+func (m RegisterApi) checkRegToken(token string) bool {
+	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
+	_, err := m.st.GetInt64(key)
 	return err == nil
 }
 
 // 将注册令牌标记为过期
 func (m RegisterApi) signCheckTokenExpires(token string) {
-	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time",token)
+	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
 	m.st.Del(key)
 }
 
 // 存储校验数据
-func (m RegisterApi) saveCheckCodeData(token string,phone string, code string) {
+func (m RegisterApi) saveCheckCodeData(token string, phone string, code string) {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_code", token)
 	key1 := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_phone", token)
 	m.st.SetExpire(key, code, 600)
 	m.st.SetExpire(key1, phone, 600)
 }
-
 
 /**
  * @api {post} /register/send_code 发送注册验证码
@@ -186,15 +182,15 @@ func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 	trans.Close()
 	allowPhoneAsUser := mp[keys[0]]
 	debugMode := mp[keys[2]] == "true"
-	if  allowPhoneAsUser!= "true" {
-		return api.ResponseWithCode(2,"不允许使用手机号注册")
+	if allowPhoneAsUser != "true" {
+		return api.ResponseWithCode(2, "不允许使用手机号注册")
 	}
 	phone := strings.TrimSpace(ctx.Form().GetString("phone"))
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
-	if len(token) == 0{
-		return api.ResponseWithCode(6,"非法注册请求")
+	if len(token) == 0 {
+		return api.ResponseWithCode(6, "非法注册请求")
 	}
-	err := m.checkCodeDuration(token,phone)
+	err := m.checkCodeDuration(token, phone)
 	if err == nil {
 		// 检查手机号码是否被其他人使用
 		trans, cli, _ := thrift.MemberServeClient()
@@ -202,7 +198,7 @@ func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 		trans.Close()
 		if memberId <= 0 {
 			code := domain.NewCheckCode()
-			m.saveCheckCodeData(token,phone,code)
+			m.saveCheckCodeData(token, phone, code)
 			expiresMinutes := 10
 			// 创建参数
 			data := map[string]string{
@@ -217,7 +213,7 @@ func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 			n, _ := cli.GetNotifyItem(thrift.Context, "验证手机")
 			// 测试环境不发送短信
 			if debugMode {
-				return api.ResponseWithCode(3,"【测试】短信验证码为:" + code)
+				return api.ResponseWithCode(3, "【测试】短信验证码为:"+code)
 			}
 			// 发送短信
 			r, _ := cli.SendPhoneMessage(thrift.Context, phone, n.Content, data)
@@ -225,13 +221,11 @@ func (m RegisterApi) SendRegisterCode(ctx api.Context) interface{} {
 				m.signCheckCodeSendOk(code) // 标记为已发送
 			} else {
 				log.Println("[ Go2o][ Sms]: 验证码发送失败:", r.ErrMsg)
-				return api.ResponseWithCode(3,"验证码发送失败")
+				return api.ResponseWithCode(3, "验证码发送失败")
 			}
 		} else {
-			return api.ResponseWithCode(1,"手机号码已注册")
+			return api.ResponseWithCode(1, "手机号码已注册")
 		}
 	}
 	return api.NewResponse(map[string]string{})
 }
-
-

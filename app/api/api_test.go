@@ -29,7 +29,7 @@ func testApi(t *testing.T, apiName string, paramsMap map[string]string) {
 	params["key"] = []string{key}
 	params["sign_type"] = []string{signType}
 	params["version"] = []string{"1.0.1"}
-	for k,v := range paramsMap {
+	for k, v := range paramsMap {
 		params[k] = []string{v}
 	}
 	sign := api.Sign(signType, params, secret)

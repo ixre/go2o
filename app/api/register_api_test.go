@@ -16,25 +16,25 @@ import (
 
 func TestRegisterApi_SendRegisterCode(t *testing.T) {
 	mp := map[string]string{}
-	testApi(t,"register.get_token",mp)
+	testApi(t, "register.get_token", mp)
 }
 
 func TestRegisterApi_SendRegisterCode2(t *testing.T) {
 	mp := map[string]string{
-		"phone":"13162221120",
-		"token":"0L0XIvcUyq",
+		"phone": "13162221120",
+		"token": "0L0XIvcUyq",
 	}
-	testApi(t,"register.send_code",mp)
+	testApi(t, "register.send_code", mp)
 }
 
 func TestRegisterApi_Register(t *testing.T) {
 	mp := map[string]string{
-		"phone":"13162221121",
-		"token":"0L0XIvcUyq",
-		"pwd":domain.Md5("123456"),
-		"reg_from":"app",
-		"invite_code":"",
+		"phone":       "13162221121",
+		"token":       "0L0XIvcUyq",
+		"pwd":         domain.Md5("123456"),
+		"reg_from":    "app",
+		"invite_code": "",
 	}
-	testApi(t,"register.submit",mp)
+	testApi(t, "register.submit", mp)
 
 }

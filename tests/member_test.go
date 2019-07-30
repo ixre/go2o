@@ -135,6 +135,6 @@ func TestLogin(t *testing.T) {
 	t.Log(len(pwd))
 	flag := 133
 	b := flag&member.FlagLocked == member.FlagLocked
-	t.Log("--",b)
+	t.Log("--", b)
 
 }

@@ -58,7 +58,7 @@ func MergeRegistries() []*Registry {
 	/** 系统 */
 	mergeAdd("启用商户店铺商品分类", EnableMchGoodsCategory, "false", "")
 	mergeAdd("启用商户页面分类", EnableMchPageCategory, "false", "")
-	mergeAdd("开启调试模式",EnableDebugMode,"false","")
+	mergeAdd("开启调试模式", EnableDebugMode, "false", "")
 	mergeAdd("系统是否挂起", SysSuspend, "false", "")
 	mergeAdd("系统挂起提示消息", SysSuspendMessage, "系统正在升级维护，请稍后再试!", "")
 	mergeAdd("收货提示信息", OrderReceiveAlertMessage, "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!", "")

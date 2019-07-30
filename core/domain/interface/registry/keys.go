@@ -2,7 +2,6 @@ package registry
 
 var (
 
-
 	/** 域名 */
 	// 是否启用SSL连接
 	DomainEnabledSSL = KeyFormat("DomainEnabledSsl")

@@ -32,6 +32,6 @@ func TestPagingWalletLog(t *testing.T) {
 		Begin:      0,
 		Over:       10,
 	}
-	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context,int64(memberId), member.AccountWallet, params)
+	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context, int64(memberId), member.AccountWallet, params)
 	t.Logf("%#v", r)
 }
