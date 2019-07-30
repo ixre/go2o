@@ -239,35 +239,47 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
  * @api {post} /passport/reset_pwd 重置密码
  * @apiName send_code
  * @apiGroup passport
- * @apiParam {String} token 注册令牌
+ * @apiParam {String} account 账号
+ * @apiParam {Int} cred_type 账号类型,1:站内信 3:邮箱 4:短信
+ * @apiParam {String} token 令牌
  * @apiParam {String} pwd 密码
- * @apiParam {String} repwd 确认密码
  * @apiSuccessExample Success-Response
  * {}
  * @apiSuccessExample Error-Response
  * {"code":1,"message":"api not defined"}
  */
-func (p PassportApi) ResetPwdPost(ctx api.Context) interface{} {
+func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
 	if len(token) == 0 {
 		return api.ResponseWithCode(6, "非法注册请求")
 	}
-	memberId, b := p.GetCodeVerifyResult(token)
+
+	account, credType, err := h.checkMemberBasis(ctx)
+	if err != nil {
+		return api.ResponseWithCode(2, err.Error())
+	}
+	memberId, b := h.GetCodeVerifyResult(token)
 	if !b {
 		return api.ResponseWithCode(2, "验证码不正确")
 	}
-	var err error
-	newPwd := domain.Md5(strings.TrimSpace(ctx.Form().GetString("pwd")))
-	rePwd := domain.Md5(strings.TrimSpace(ctx.Form().GetString("repwd")))
-	if len(newPwd) == 0 {
-		err = errors.New("密码不能为空")
-	} else if newPwd != rePwd {
-		err = errors.New("两次密码输入不一致")
-	} else {
-		err = rsi.MemberService.ModifyPassword(memberId, newPwd, "")
-		if err == nil {
-			p.resetCodeVerifyResult(token)
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		mid, _ := cli.SwapMemberId(thrift.Context, credType, account)
+		if mid <= 0 {
+			return api.ResponseWithCode(1, member.ErrNoSuchMember.Error())
 		}
+		if mid != memberId {
+			return api.ResponseWithCode(1, "member not match")
+		}
+	}
+	pwd := strings.TrimSpace(ctx.Form().GetString("pwd"))
+	if len(pwd) < 6 {
+		return api.ResponseWithCode(1, "密码不能小于6位")
+	}
+	err = rsi.MemberService.ModifyPassword(memberId, domain.Md5(pwd), "")
+	if err == nil {
+		h.resetCodeVerifyResult(token)
 	}
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
