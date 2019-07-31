@@ -13,7 +13,7 @@ import (
  * description :
  * history :
  */
-const phone = "13163000001"
+const phone = "13163000002"
 const token = "sTRz2UhO4h"
 
 func TestRegisterApi_SendRegisterCode(t *testing.T) {
