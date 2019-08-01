@@ -577,7 +577,7 @@ func (s *memberService) ModifyPwd(ctx context.Context, memberId int64, old strin
 	} else {
 		old = domain.MemberSha1Pwd(old)
 	}
-	err = m.Profile().ModifyPassword(old, pwd)
+	err = m.Profile().ModifyPassword(pwd, old)
 	if err != nil {
 		return s.error(err), nil
 	}
