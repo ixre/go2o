@@ -561,6 +561,52 @@ func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64
 	return s.result(err), nil
 }
 
+// 更改密码
+func (s *memberService) ModifyPwd(ctx context.Context, memberId int64, old string, pwd string) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	if l := len(pwd); l != 32 {
+		return s.error(member.ErrNotMD5Format), nil
+	} else {
+		pwd = domain.MemberSha1Pwd(pwd)
+	}
+	if l := len(old); l > 0 && l != 32 {
+		return s.error(member.ErrNotMD5Format), nil
+	} else {
+		old = domain.MemberSha1Pwd(old)
+	}
+	err = m.Profile().ModifyPassword(old, pwd)
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
+}
+
+// 更改交易密码
+func (s *memberService) ModifyTradePwd(ctx context.Context, memberId int64, old string, pwd string) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	if l := len(pwd); l != 32 {
+		return s.error(member.ErrNotMD5Format), nil
+	} else {
+		pwd = domain.TradePwd(pwd)
+	}
+	if l := len(old); l > 0 && l != 32 {
+		return s.error(member.ErrNotMD5Format), nil
+	} else {
+		old = domain.TradePwd(old)
+	}
+	err = m.Profile().ModifyTradePassword(pwd, old)
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
+}
+
 // 重置密码
 func (s *memberService) ResetPassword(memberId int64) string {
 	m := s.repo.GetMember(memberId)

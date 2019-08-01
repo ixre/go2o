@@ -45,35 +45,34 @@ func TestPassportApi_CompareCode(t *testing.T) {
 	testApi(t, "passport.compare_code", mp)
 }
 
-
 func TestPassportApi_ResetPwd(t *testing.T) {
 	mp := map[string]string{
-		"account":    phone2,
-		"cred_type":  strconv.Itoa(int(member_service.ECredentials_Phone)),
-		"token":      token2,
-		"pwd": domain.Md5("123456"),
+		"account":   phone2,
+		"cred_type": strconv.Itoa(int(member_service.ECredentials_Phone)),
+		"token":     token2,
+		"pwd":       domain.Md5("123456"),
 	}
 	testApi(t, "passport.reset_pwd", mp)
 }
 
 func TestPassportApi_ModifyPwd(t *testing.T) {
 	mp := map[string]string{
-		"account":    phone2,
-		"cred_type":  strconv.Itoa(int(member_service.ECredentials_Phone)),
-		"token":      token2,
-		"pwd": domain.Md5("123000"),
-		"old_pwd":domain.Md5("123456"),
+		"account":   phone2,
+		"cred_type": strconv.Itoa(int(member_service.ECredentials_Phone)),
+		"token":     token2,
+		"pwd":       domain.Md5("123000"),
+		"old_pwd":   domain.Md5("123456"),
 	}
 	testApi(t, "passport.modify_pwd", mp)
 }
 
 func TestPassportApi_TradePwd(t *testing.T) {
 	mp := map[string]string{
-		"account":    phone2,
-		"cred_type":  strconv.Itoa(int(member_service.ECredentials_Phone)),
-		"token":      token2,
-		"pwd": domain.Md5("123000"),
-		"old_pwd":domain.Md5("237561"),
+		"account":   phone2,
+		"cred_type": strconv.Itoa(int(member_service.ECredentials_Phone)),
+		"token":     token2,
+		"pwd":       domain.Md5("123000"),
+		"old_pwd":   domain.Md5("237561"),
 	}
 	testApi(t, "passport.trade_pwd", mp)
 }

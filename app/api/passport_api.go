@@ -85,7 +85,7 @@ func (h PassportApi) signCodeSendInfo(token string) {
 }
 
 // 获取校验结果
-func (p PassportApi) GetCodeVerifyResult(token string) (int64,bool) {
+func (p PassportApi) GetCodeVerifyResult(token string) (int64, bool) {
 	prefix := "sys:go2o:pwd:token"
 	checkKey := fmt.Sprintf("%s:%s:check_ok", prefix, token)
 	v, err := p.st.GetInt64(checkKey)
@@ -236,7 +236,6 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
 	return api.NewResponse(map[string]string{})
 }
 
-
 /**
  * @api {post} /passport/reset_pwd 重置密码
  * @apiName reset_pwd
@@ -266,17 +265,16 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 		return api.ResponseWithCode(2, "验证无效")
 	}
 	// 验证会员是否匹配
-	if err := h.checkMemberMatch(account,credType,memberId);err != nil{
+	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	err = rsi.MemberService.ModifyPassword(memberId, "",pwd)
+	err = rsi.MemberService.ModifyPassword(memberId, "", pwd)
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
 	h.resetCodeVerifyResult(token)
 	return api.NewResponse(map[string]string{})
 }
-
 
 /**
  * @api {post} /passport/modify_pwd 修改密码
@@ -321,7 +319,6 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 	return api.NewResponse(map[string]string{})
 }
 
-
 /**
  * @api {post} /passport/trade_pwd 修改交易密码
  * @apiName modify_pwd
@@ -357,7 +354,7 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	err = rsi.MemberService.ModifyTradePassword(memberId, oldPwd,pwd)
+	err = rsi.MemberService.ModifyTradePassword(memberId, oldPwd, pwd)
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
