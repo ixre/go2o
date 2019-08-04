@@ -86,6 +86,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		LevelName:      lv.Name,
 		InviteCode:     mv.InviteCode,
 		TrustAuthState: tr.ReviewState,
+		TradePwdHasSet: mv.TradePwd != "",
 		PremiumUser:    mv.PremiumUser,
 		Flag:           mv.Flag,
 		UpdateTime:     mv.UpdateTime,

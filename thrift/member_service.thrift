@@ -240,6 +240,8 @@ struct SComplexMember {
     9: i32 PremiumUser
     10: i32 Flag
     11: i64 UpdateTime
+    /** 交易密码是否已设置 */
+    12:bool TradePwdHasSet
 }
 
 struct SMemberRelation {

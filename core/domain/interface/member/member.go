@@ -197,6 +197,8 @@ type (
 		InviteCode string
 		// 实名认证状态
 		TrustAuthState int
+		// 交易密码是否已设置
+		TradePwdHasSet bool
 		// 高级会员类型
 		PremiumUser int
 		// 会员标志

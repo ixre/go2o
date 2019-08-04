@@ -168,6 +168,7 @@ func ComplexMemberDto(src *member.ComplexMember) *member_service.SComplexMember 
 		PremiumUser:    int32(src.PremiumUser),
 		InviteCode:     src.InviteCode,
 		TrustAuthState: int32(src.TrustAuthState),
+		TradePwdHasSet: src.TradePwdHasSet,
 		UpdateTime:     src.UpdateTime,
 	}
 }
