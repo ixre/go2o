@@ -96,3 +96,10 @@ COMMENT ON COLUMN mm_levelup.target_level IS '现在等级';
 COMMENT ON COLUMN mm_levelup.is_free IS '是否为免费升级的会员';
 COMMENT ON COLUMN mm_levelup.payment_id IS '支付单编号';
 COMMENT ON COLUMN mm_levelup.create_time IS '升级时间';
+
+/** 会员表 */
+ALTER TABLE public.mm_member
+    ADD COLUMN real_name character varying(20) NOT NULL ;
+COMMENT ON COLUMN public.mm_member.real_name
+    IS '真实姓名';
+

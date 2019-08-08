@@ -11,7 +11,6 @@ import (
 	"go2o/core/domain/interface/registry"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/service/auto_gen/rpc/message_service"
-	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"log"
 	"strconv"
@@ -268,9 +267,13 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	err = rsi.MemberService.ModifyPassword(memberId, "", pwd)
-	if err != nil {
-		return api.ResponseWithCode(1, err.Error())
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		r, _ := cli.ModifyPwd(thrift.Context, memberId, "", pwd)
+		if r.ErrCode != 0 {
+			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
+		}
 	}
 	h.resetCodeVerifyResult(token)
 	return api.NewResponse(map[string]string{})
@@ -311,9 +314,13 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	err = rsi.MemberService.ModifyPassword(memberId, oldPwd, pwd)
-	if err != nil {
-		return api.ResponseWithCode(1, err.Error())
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		r, _ := cli.ModifyPwd(thrift.Context, memberId, oldPwd, pwd)
+		if r.ErrCode != 0 {
+			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
+		}
 	}
 	h.resetCodeVerifyResult(token)
 	return api.NewResponse(map[string]string{})
@@ -354,9 +361,13 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	err = rsi.MemberService.ModifyTradePassword(memberId, oldPwd, pwd)
-	if err != nil {
-		return api.ResponseWithCode(1, err.Error())
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		r, _ := cli.ModifyTradePwd(thrift.Context, memberId, oldPwd, pwd)
+		if r.ErrCode != 0 {
+			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
+		}
 	}
 	h.resetCodeVerifyResult(token)
 	return api.NewResponse(map[string]string{})
