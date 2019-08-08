@@ -78,6 +78,7 @@ func MemberDto(src *member.Member) *member_service.SMember {
 		Phone:          src.Phone,
 		Email:          src.Email,
 		Name:           src.Name,
+		RealName:       src.RealName,
 		DynamicToken:   src.DynamicToken,
 		RegTime:        src.RegTime,
 		LastLoginTime:  src.LastLoginTime,
@@ -89,6 +90,7 @@ func Member(src *member_service.SMember) *member.Member {
 		Id:             int64(src.ID),
 		Code:           src.Code,
 		Name:           src.Name,
+		RealName:       src.RealName,
 		User:           src.User,
 		Pwd:            src.Pwd,
 		Avatar:         src.Avatar,
@@ -168,6 +170,7 @@ func ComplexMemberDto(src *member.ComplexMember) *member_service.SComplexMember 
 		PremiumUser:    int32(src.PremiumUser),
 		InviteCode:     src.InviteCode,
 		TrustAuthState: int32(src.TrustAuthState),
+		TradePwdHasSet: src.TradePwdHasSet,
 		UpdateTime:     src.UpdateTime,
 	}
 }

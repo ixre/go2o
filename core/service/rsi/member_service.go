@@ -26,6 +26,7 @@ import (
 	"go2o/core/module"
 	"go2o/core/query"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
@@ -343,12 +344,13 @@ func (s *memberService) GetMemberIdByBasis(str string, basic int) int64 {
 }
 
 // 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
-func (s *memberService) SendCode(ctx context.Context, memberId int64, op string, msgType int32) (r *ttype.Result_, err error) {
+func (s *memberService) SendCode(ctx context.Context, memberId int64, operation string,
+	msgType message_service.EMessageChannel) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	code, err := m.SendCheckCode(op, int(msgType))
+	code, err := m.SendCheckCode(operation, int(msgType))
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -451,15 +453,16 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		return s.error(member.ErrNotMD5Format), nil
 	}
 	v := &member.Member{
-		User:    user,
-		Pwd:     domain.Sha1Pwd(pwd),
-		Name:    name,
-		Avatar:  avatar,
-		Phone:   phone,
-		Email:   email,
-		RegFrom: extend["reg_from"],
-		RegIp:   extend["reg_ip"],
-		Flag:    int(flag),
+		User:     user,
+		Pwd:      domain.Sha1Pwd(pwd),
+		Name:     name,
+		RealName: "",
+		Avatar:   avatar,
+		Phone:    phone,
+		Email:    email,
+		RegFrom:  extend["reg_from"],
+		RegIp:    extend["reg_ip"],
+		Flag:     int(flag),
 	}
 	log.Println(fmt.Sprintf("%#v", v))
 	m := s.repo.CreateMember(v) //创建会员
@@ -559,115 +562,96 @@ func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64
 	return s.result(err), nil
 }
 
-// 重置密码
-func (s *memberService) ResetPassword(memberId int64) string {
-	m := s.repo.GetMember(memberId)
-	if m != nil {
-		newPwd := domain.GenerateRandomIntPwd(6)
-		newEncPwd := domain.MemberSha1Pwd(domain.Md5(newPwd))
-		if err := m.Profile().ModifyPassword(newEncPwd, ""); err == nil {
-			return newPwd
-		} else {
-			log.Println("--- 重置密码:", err)
-		}
-	}
-	return ""
-}
-
-// 重置交易密码
-func (s *memberService) ResetTradePwd(memberId int64) string {
-	m := s.repo.GetMember(memberId)
-	if m != nil {
-		newPwd := domain.GenerateRandomIntPwd(6)
-		newEncPwd := domain.TradePwd(domain.Md5(newPwd))
-		if err := m.Profile().ModifyTradePassword(newEncPwd, ""); err == nil {
-			return newPwd
-		} else {
-			log.Println("--- 重置交易密码:", err)
-		}
-	}
-	return ""
-}
-
-// 修改密码
-func (s *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) error {
+// 更改密码
+func (s *memberService) ModifyPwd(ctx context.Context, memberId int64, old string, pwd string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	if l := len(newPwd); l != 32 {
-		return member.ErrNotMD5Format
+	if l := len(pwd); l != 32 {
+		return s.error(member.ErrNotMD5Format), nil
 	} else {
-		newPwd = domain.MemberSha1Pwd(newPwd)
+		pwd = domain.MemberSha1Pwd(pwd)
 	}
-	if l := len(oldPwd); l > 0 && l != 32 {
-		return member.ErrNotMD5Format
+	if l := len(old); l > 0 && l != 32 {
+		return s.error(member.ErrNotMD5Format), nil
 	} else {
-		oldPwd = domain.MemberSha1Pwd(oldPwd)
+		old = domain.MemberSha1Pwd(old)
 	}
-	return m.Profile().ModifyPassword(newPwd, oldPwd)
+	err = m.Profile().ModifyPassword(pwd, old)
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
-//修改密码,传入密文密码
-func (s *memberService) ModifyTradePassword(memberId int64,
-	oldPwd, newPwd string) error {
+// 更改交易密码
+func (s *memberService) ModifyTradePwd(ctx context.Context, memberId int64, old string, pwd string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	if l := len(newPwd); l != 32 {
-		return member.ErrNotMD5Format
+	if l := len(pwd); l != 32 {
+		return s.error(member.ErrNotMD5Format), nil
 	} else {
-		newPwd = domain.TradePwd(newPwd)
+		pwd = domain.TradePwd(pwd)
 	}
-	if l := len(oldPwd); l > 0 && l != 32 {
-		return member.ErrNotMD5Format
+	if l := len(old); l > 0 && l != 32 {
+		return s.error(member.ErrNotMD5Format), nil
 	} else {
-		oldPwd = domain.TradePwd(oldPwd)
+		old = domain.TradePwd(old)
 	}
-	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
+	err = m.Profile().ModifyTradePassword(pwd, old)
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) testLogin(user string, pwd string) (id int64, err error) {
+func (s *memberService) testLogin(user string, pwd string) (id int64, errCode int32, err error) {
 	user = strings.ToLower(user)
 	memberId := s.repo.GetMemberIdByUser(user)
 	if len(pwd) != 32 {
-		return -1, member.ErrNotMD5Format
+		return -1, 4, member.ErrNotMD5Format
 	}
-	log.Println("登陆用户:", user, memberId)
 	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
-		return 0, member.ErrNoSuchMember
+		return 0, 2, member.ErrNoSuchMember
 	}
 	val := s.repo.GetMember(memberId).GetValue()
 	if val.Pwd != domain.Sha1Pwd(pwd) {
-		return 0, member.ErrCredential
+		return 0, 1, member.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
-		return 0, member.ErrMemberLocked
+		return 0, 3, member.ErrMemberLocked
 	}
-	return val.Id, nil
+
+	return val.Id, 0, nil
 }
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*ttype.Result_, error) {
-	id, err := s.testLogin(user, pwd)
+	id, code, err := s.testLogin(user, pwd)
+	if err != nil {
+		r := s.error(err)
+		r.ErrCode = code
+		return r, nil
+	}
 	var memberCode = ""
-	if update && err == nil {
+	if update {
 		m := s.repo.GetMember(id)
 		memberCode = m.GetValue().Code
 		go m.UpdateLoginTime()
 	}
-	r := s.result(err)
-	r.Data = map[string]string{
+	mp := map[string]string{
 		"id":   strconv.Itoa(int(id)),
 		"code": memberCode,
 	}
-	return r, nil
+	return s.success(mp), nil
 }
 
 // 检查交易密码
@@ -690,15 +674,15 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
-func (s *memberService) CheckUsr(user string, memberId int64) error {
-	if len(user) < 6 {
-		return member.ErrUsrLength
-	}
-	if s.repo.CheckUsrExist(user, memberId) {
-		return member.ErrUsrExist
-	}
-	return nil
-}
+//func (s *memberService) CheckUsr(user string, memberId int64) error {
+//	if len(user) < 6 {
+//		return member.ErrUsrLength
+//	}
+//	if s.repo.CheckUsrExist(user, memberId) {
+//		return member.ErrUsrExist
+//	}
+//	return nil
+//}
 
 // 获取会员账户
 func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*member_service.SAccount, error) {

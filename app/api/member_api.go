@@ -64,28 +64,6 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 	}
 }
 
-// 注册
-func (m MemberApi) Register(ctx api.Context) interface{} {
-	user := ctx.Form().GetString("user")
-	pwd := ctx.Form().GetString("pwd")
-	phone := ctx.Form().GetString("phone")
-	regFrom := ctx.Form().GetString("reg_from")       // 注册来源
-	inviteCode := ctx.Form().GetString("invite_code") // 邀请码
-	regIp := ctx.Form().GetString("$user_ip_addr")    // IP地址
-	trans, cli, err := thrift.MemberServeClient()
-	if err == nil {
-		defer trans.Close()
-		mp := map[string]string{
-			"reg_ip":      regIp,
-			"reg_from":    regFrom,
-			"invite_code": inviteCode,
-		}
-		r, _ := cli.RegisterMemberV2(thrift.Context, user, pwd, 0, "", phone, "", "", mp)
-		return r
-	}
-	return m.SResult(err)
-}
-
 // 账号信息
 func (m MemberApi) account(ctx api.Context) interface{} {
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
@@ -241,7 +219,16 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 	return api.NewErrorResponse("no such data")
 }
 
-// 获取邀请码和邀请链接
+/**
+ * @api {post} /member/invites 获取邀请码和邀请链接
+ * @apiName invites
+ * @apiGroup member
+ * @apiParam {String} code 用户代码
+ * @apiSuccessExample Success-Response
+ * {"ErrCode":0,"ErrMsg":""9\"}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ */
 func (m *MemberApi) invites(ctx api.Context) interface{} {
 	trans, cli, _ := thrift.MemberServeClient()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
@@ -250,16 +237,21 @@ func (m *MemberApi) invites(ctx api.Context) interface{} {
 	trans.Close()
 	trans2, cli2, _ := thrift.FoundationServeClient()
 	defer trans2.Close()
-	keys := []string{registry.Domain, registry.DomainEnabledSSL, registry.DomainPrefixMember}
+	keys := []string{registry.Domain, registry.DomainEnabledSSL,
+		registry.DomainPrefixMember,
+		registry.DomainPrefixMobileMember}
 	mp, _ := cli2.GetRegistries(thrift.Context, keys)
 	if member != nil {
 		inviteCode := member.InviteCode
-		inviteLink := fmt.Sprintf("%s://%s%s/i/%s",
-			types.ElseString(mp[keys[1]] == "true", "https", "http"),
-			mp[keys[2]], mp[keys[0]], inviteCode)
+		prot := types.ElseString(mp[keys[1]] == "true", "https", "http")
+		// 网页推广链接
+		inviteLink := fmt.Sprintf("%s://%s%s/i/%s", prot, mp[keys[2]], mp[keys[0]], inviteCode)
+		// 手机网页推广链接
+		mobileInviteLink := fmt.Sprintf("%s://%s%s/i/%s", prot, mp[keys[3]], mp[keys[0]], inviteCode)
 		mp := map[string]string{
-			"code": inviteCode,
-			"link": inviteLink,
+			"code":        inviteCode,
+			"link":        inviteLink,
+			"mobile_link": mobileInviteLink,
 		}
 		return api.NewResponse(mp)
 	}

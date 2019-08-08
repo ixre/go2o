@@ -6,7 +6,7 @@
 </head>
 <body>
 
-#!target:html/form/{{.table.Name}}_edit.html
+#target!html/form/{{.table.Name}}_edit.html
 
 <form action="" method="post" class="gra-form" id="form1">
     {{range $i,$c := .T.Columns}}{{if $c.IsPk}}

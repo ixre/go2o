@@ -75,3 +75,31 @@ COMMENT ON COLUMN "public".mm_trusted_info.update_time IS '更新时间';
 /** invitation_code => invite_code */
 
 /** 订单状态, break改为7, complete改为8 */
+
+
+/** mm_levelup 重新创建 */
+CREATE TABLE mm_levelup (
+  id            SERIAL NOT NULL,
+  member_id    int4 NOT NULL,
+  origin_level int4 NOT NULL,
+  target_level int4 NOT NULL,
+  is_free      int2 NOT NULL,
+  payment_id   int4 NOT NULL,
+  upgrade_mode int4 NOT NULL,
+  review_state int4 NOT NULL,
+  create_time  int8 NOT NULL,
+  PRIMARY KEY (id));
+COMMENT ON TABLE mm_levelup IS '会员升级日志表';
+COMMENT ON COLUMN mm_levelup.member_id IS '会员编号';
+COMMENT ON COLUMN mm_levelup.origin_level IS '原来等级';
+COMMENT ON COLUMN mm_levelup.target_level IS '现在等级';
+COMMENT ON COLUMN mm_levelup.is_free IS '是否为免费升级的会员';
+COMMENT ON COLUMN mm_levelup.payment_id IS '支付单编号';
+COMMENT ON COLUMN mm_levelup.create_time IS '升级时间';
+
+/** 会员表 */
+ALTER TABLE public.mm_member
+    ADD COLUMN real_name character varying(20) NOT NULL ;
+COMMENT ON COLUMN public.mm_member.real_name
+    IS '真实姓名';
+

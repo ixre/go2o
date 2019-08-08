@@ -2,6 +2,8 @@ namespace java com.github.jsix.go2o.rpc
 namespace csharp com.github.jsix.go2o.rpc
 namespace go go2o.core.service.auto_gen.rpc.member_service
 include "ttype.thrift"
+include "message_service.thrift"
+
 
 
 //会员服务
@@ -50,7 +52,7 @@ service MemberService{
     /** 获取会员汇总信息 */
     SComplexMember Complex(1:i64 memberId)
     /** 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取 */
-    ttype.Result SendCode(1:i64 memberId ,2:string op,3:i32 msgType)
+    ttype.Result SendCode(1:i64 memberId ,2:string operation,3:message_service.EMessageChannel msgType)
     /** 比较验证码是否正确 */
     ttype.Result CompareCode(1:i64 memberId ,2:string code)
     /** 获取收款码 */
@@ -69,8 +71,13 @@ service MemberService{
     ttype.Result UpdateLevel(1:i64 memberId,2:i32 level,3:bool review,4:i64 paymentOrderId)
     /* 更改手机号码，不验证手机格式 */
     ttype.Result ChangePhone(1:i64 memberId,2:string phone)
-     /* 更改用户名 */
+    /* 更改用户名 */
     ttype.Result ChangeUsr(1:i64 memberId,2:string usr)
+    /** 更改密码 */
+    ttype.Result ModifyPwd(1:i64 memberId,2:string old,3:string pwd)
+    /** 更改交易密码 */
+    ttype.Result ModifyTradePwd(1:i64 memberId,2:string old,3:string pwd)
+
     // 升级为高级会员
     ttype.Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
@@ -165,12 +172,14 @@ struct SMember {
     17:string Email
     /** 昵称 */
     18:string Name
+    /** 真实姓名 */
+    19:string RealName
     /* 用户会员密钥 */
-    19:string DynamicToken
+    20:string DynamicToken
     /** 注册时间 */
-    20:i64 RegTime
+    21:i64 RegTime
     /** 最后登录时间 */
-    21:i64 LastLoginTime
+    22:i64 LastLoginTime
 }
 
 /** 资料 */
@@ -233,6 +242,8 @@ struct SComplexMember {
     9: i32 PremiumUser
     10: i32 Flag
     11: i64 UpdateTime
+    /** 交易密码是否已设置 */
+    12:bool TradePwdHasSet
 }
 
 struct SMemberRelation {

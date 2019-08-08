@@ -226,8 +226,6 @@ struct SShoppingCartItem {
     12: i32 ShopId
 }
 
-
-
 /** 分页参数 */
 struct SPagingParams{
     /** 参数 */
