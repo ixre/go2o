@@ -10,7 +10,7 @@ COPY ./core ./core
 COPY ./*.go go.mod LICENSE README.md app.conf ./
 
 ENV GO111MODULE=on
-ENV GOPROXY=https://athens.azurefd.net
+#ENV GOPROXY=https://athens.azurefd.net
 RUN rm -rf go.sum && sed -i 's/replace/\/\/replace/' go.mod && \
     go mod tidy && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build go2o-serve.go && \
