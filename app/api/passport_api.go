@@ -375,14 +375,13 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 }
 
 /**
- * @api {post} /passport/trade_pwd 修改交易密码
- * @apiName trade_pwd
+ * @api {post} /passport/reset_trade_pwd 重置交易密码
+ * @apiName reset_trade_pwd
  * @apiGroup passport
  * @apiParam {String} account 账号
  * @apiParam {Int} cred_type 账号类型,1:用户名 3:邮件 4:手机号
  * @apiParam {String} token 令牌
  * @apiParam {String} pwd md5编码后的密码
- * @apiParam {String} old_pwd md5编码后的旧密码,如果没有设置交易密码,则为空
  * @apiSuccessExample Success-Response
  * {}
  * @apiSuccessExample Error-Response
@@ -408,9 +407,13 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	err = rsi.MemberService.ModifyTradePassword(memberId,"", pwd)
-	if err != nil {
-		return api.ResponseWithCode(1, err.Error())
+	trans, cli, err := thrift.MemberServeClient()
+	if err == nil {
+		defer trans.Close()
+		r, _ := cli.ModifyTradePwd(thrift.Context, memberId, "", pwd)
+		if r.ErrCode != 0 {
+			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
+		}
 	}
 	h.resetCodeVerifyResult(token)
 	return api.NewResponse(map[string]string{})
