@@ -44,9 +44,10 @@ func (m PassportApi) Process(fn string, ctx api.Context) *api.Response {
 		"get_token":    m.getToken,
 		"send_code":    m.sendCode,
 		"compare_code": m.compareCode,
-		"reset_pwd":    m.resetPwd,
 		"modify_pwd":   m.modifyPwd,
+		"reset_pwd":    m.resetPwd,
 		"trade_pwd":    m.tradePwd,
+		"reset_trade_pwd":m.resetTradePwd,
 	})
 }
 
@@ -321,7 +322,7 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 
 /**
  * @api {post} /passport/trade_pwd 修改交易密码
- * @apiName modify_pwd
+ * @apiName trade_pwd
  * @apiGroup passport
  * @apiParam {String} account 账号
  * @apiParam {Int} cred_type 账号类型,1:用户名 3:邮件 4:手机号
@@ -355,6 +356,48 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 		return api.ResponseWithCode(1, err.Error())
 	}
 	err = rsi.MemberService.ModifyTradePassword(memberId, oldPwd, pwd)
+	if err != nil {
+		return api.ResponseWithCode(1, err.Error())
+	}
+	h.resetCodeVerifyResult(token)
+	return api.NewResponse(map[string]string{})
+}
+
+/**
+ * @api {post} /passport/trade_pwd 修改交易密码
+ * @apiName trade_pwd
+ * @apiGroup passport
+ * @apiParam {String} account 账号
+ * @apiParam {Int} cred_type 账号类型,1:用户名 3:邮件 4:手机号
+ * @apiParam {String} token 令牌
+ * @apiParam {String} pwd md5编码后的密码
+ * @apiParam {String} old_pwd md5编码后的旧密码,如果没有设置交易密码,则为空
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ *
+ */
+func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
+	token := strings.TrimSpace(ctx.Form().GetString("token"))
+	pwd := strings.TrimSpace(ctx.Form().GetString("pwd"))
+	if len(token) == 0 || !h.checkToken(token) {
+		return api.ResponseWithCode(6, "请求已过期")
+	}
+	account, credType, err := h.checkMemberBasis(ctx)
+	if err != nil {
+		return api.ResponseWithCode(2, err.Error())
+	}
+	// 验证校验码是否正确
+	memberId, b := h.GetCodeVerifyResult(token)
+	if !b {
+		return api.ResponseWithCode(2, "验证无效")
+	}
+	// 验证会员是否匹配
+	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
+		return api.ResponseWithCode(1, err.Error())
+	}
+	err = rsi.MemberService.ModifyTradePassword(memberId,"", pwd)
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
