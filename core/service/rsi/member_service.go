@@ -453,15 +453,16 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		return s.error(member.ErrNotMD5Format), nil
 	}
 	v := &member.Member{
-		User:    user,
-		Pwd:     domain.Sha1Pwd(pwd),
-		Name:    name,
-		Avatar:  avatar,
-		Phone:   phone,
-		Email:   email,
-		RegFrom: extend["reg_from"],
-		RegIp:   extend["reg_ip"],
-		Flag:    int(flag),
+		User:     user,
+		Pwd:      domain.Sha1Pwd(pwd),
+		Name:     name,
+		RealName: "",
+		Avatar:   avatar,
+		Phone:    phone,
+		Email:    email,
+		RegFrom:  extend["reg_from"],
+		RegIp:    extend["reg_ip"],
+		Flag:     int(flag),
 	}
 	log.Println(fmt.Sprintf("%#v", v))
 	m := s.repo.CreateMember(v) //创建会员
@@ -607,75 +608,6 @@ func (s *memberService) ModifyTradePwd(ctx context.Context, memberId int64, old 
 	return s.success(nil), nil
 }
 
-// 重置密码
-func (s *memberService) ResetPassword(memberId int64) string {
-	m := s.repo.GetMember(memberId)
-	if m != nil {
-		newPwd := domain.GenerateRandomIntPwd(6)
-		newEncPwd := domain.MemberSha1Pwd(domain.Md5(newPwd))
-		if err := m.Profile().ModifyPassword(newEncPwd, ""); err == nil {
-			return newPwd
-		} else {
-			log.Println("--- 重置密码:", err)
-		}
-	}
-	return ""
-}
-
-// 重置交易密码
-func (s *memberService) ResetTradePwd(memberId int64) string {
-	m := s.repo.GetMember(memberId)
-	if m != nil {
-		newPwd := domain.GenerateRandomIntPwd(6)
-		newEncPwd := domain.TradePwd(domain.Md5(newPwd))
-		if err := m.Profile().ModifyTradePassword(newEncPwd, ""); err == nil {
-			return newPwd
-		} else {
-			log.Println("--- 重置交易密码:", err)
-		}
-	}
-	return ""
-}
-
-// 修改密码
-func (s *memberService) ModifyPassword(memberId int64, oldPwd string, newPwd string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	if l := len(newPwd); l != 32 {
-		return member.ErrNotMD5Format
-	} else {
-		newPwd = domain.MemberSha1Pwd(newPwd)
-	}
-	if l := len(oldPwd); l > 0 && l != 32 {
-		return member.ErrNotMD5Format
-	} else {
-		oldPwd = domain.MemberSha1Pwd(oldPwd)
-	}
-	return m.Profile().ModifyPassword(newPwd, oldPwd)
-}
-
-//修改密码,传入密文密码
-func (s *memberService) ModifyTradePassword(memberId int64,
-	oldPwd, newPwd string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	if l := len(newPwd); l != 32 {
-		return member.ErrNotMD5Format
-	} else {
-		newPwd = domain.TradePwd(newPwd)
-	}
-	if l := len(oldPwd); l > 0 && l != 32 {
-		return member.ErrNotMD5Format
-	} else {
-		oldPwd = domain.TradePwd(oldPwd)
-	}
-	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
-}
-
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) testLogin(user string, pwd string) (id int64, errCode int32, err error) {
@@ -742,15 +674,15 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
-func (s *memberService) CheckUsr(user string, memberId int64) error {
-	if len(user) < 6 {
-		return member.ErrUsrLength
-	}
-	if s.repo.CheckUsrExist(user, memberId) {
-		return member.ErrUsrExist
-	}
-	return nil
-}
+//func (s *memberService) CheckUsr(user string, memberId int64) error {
+//	if len(user) < 6 {
+//		return member.ErrUsrLength
+//	}
+//	if s.repo.CheckUsrExist(user, memberId) {
+//		return member.ErrUsrExist
+//	}
+//	return nil
+//}
 
 // 获取会员账户
 func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*member_service.SAccount, error) {

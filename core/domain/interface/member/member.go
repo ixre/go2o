@@ -183,6 +183,8 @@ type (
 	ComplexMember struct {
 		// 昵称
 		Name string
+		// 真实姓名
+		RealName string
 		// 头像
 		Avatar string
 		// 手机号码
@@ -214,6 +216,8 @@ type (
 		Code string `db:"code"`
 		// 昵称
 		Name string `db:"name"`
+		// 真实姓名
+		RealName string `db:"real_name"`
 		// 用户名
 		User string `db:"\"user\""`
 		// 密码

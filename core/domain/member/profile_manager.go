@@ -616,6 +616,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	if pass {
 		p.trustedInfo.ReviewState = int(enum.ReviewPass)
 		p.member.value.Flag |= member.FlagTrusted
+		p.member.value.RealName = p.trustedInfo.RealName
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {

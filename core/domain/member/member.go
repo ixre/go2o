@@ -80,6 +80,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	tr := pf.GetTrustedInfo()
 	s := &member.ComplexMember{
 		Name:           mv.Name,
+		RealName:       mv.RealName,
 		Avatar:         format.GetResUrl(mv.Avatar),
 		Exp:            mv.Exp,
 		Level:          mv.Level,
@@ -601,7 +602,7 @@ func (m *memberImpl) prepare() (err error) {
 	//		"IM", variable.AliasMemberIM, -1))
 	//}
 	m.value.Name = strings.TrimSpace(m.value.Name)
-
+	m.value.RealName = strings.TrimSpace(m.value.RealName)
 	//如果未设置昵称,则默认为用户名
 	if len(m.value.Name) == 0 {
 		m.value.Name = "User" + m.value.User

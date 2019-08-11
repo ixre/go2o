@@ -172,12 +172,14 @@ struct SMember {
     17:string Email
     /** 昵称 */
     18:string Name
+    /** 真实姓名 */
+    19:string RealName
     /* 用户会员密钥 */
-    19:string DynamicToken
+    20:string DynamicToken
     /** 注册时间 */
-    20:i64 RegTime
+    21:i64 RegTime
     /** 最后登录时间 */
-    21:i64 LastLoginTime
+    22:i64 LastLoginTime
 }
 
 /** 资料 */

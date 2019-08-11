@@ -382,6 +382,7 @@ func (p *SLevel) String() string {
 //  - Phone
 //  - Email
 //  - Name: 昵称
+//  - RealName: 真实姓名
 //  - DynamicToken
 //  - RegTime: 注册时间
 //  - LastLoginTime: 最后登录时间
@@ -404,9 +405,10 @@ type SMember struct {
   Phone string `thrift:"Phone,16" db:"Phone" json:"Phone"`
   Email string `thrift:"Email,17" db:"Email" json:"Email"`
   Name string `thrift:"Name,18" db:"Name" json:"Name"`
-  DynamicToken string `thrift:"DynamicToken,19" db:"DynamicToken" json:"DynamicToken"`
-  RegTime int64 `thrift:"RegTime,20" db:"RegTime" json:"RegTime"`
-  LastLoginTime int64 `thrift:"LastLoginTime,21" db:"LastLoginTime" json:"LastLoginTime"`
+  RealName string `thrift:"RealName,19" db:"RealName" json:"RealName"`
+  DynamicToken string `thrift:"DynamicToken,20" db:"DynamicToken" json:"DynamicToken"`
+  RegTime int64 `thrift:"RegTime,21" db:"RegTime" json:"RegTime"`
+  LastLoginTime int64 `thrift:"LastLoginTime,22" db:"LastLoginTime" json:"LastLoginTime"`
 }
 
 func NewSMember() *SMember {
@@ -484,6 +486,10 @@ func (p *SMember) GetEmail() string {
 
 func (p *SMember) GetName() string {
   return p.Name
+}
+
+func (p *SMember) GetRealName() string {
+  return p.RealName
 }
 
 func (p *SMember) GetDynamicToken() string {
@@ -701,7 +707,7 @@ func (p *SMember) Read(iprot thrift.TProtocol) error {
         }
       }
     case 20:
-      if fieldTypeId == thrift.I64 {
+      if fieldTypeId == thrift.STRING {
         if err := p.ReadField20(iprot); err != nil {
           return err
         }
@@ -713,6 +719,16 @@ func (p *SMember) Read(iprot thrift.TProtocol) error {
     case 21:
       if fieldTypeId == thrift.I64 {
         if err := p.ReadField21(iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 22:
+      if fieldTypeId == thrift.I64 {
+        if err := p.ReadField22(iprot); err != nil {
           return err
         }
       } else {
@@ -901,16 +917,16 @@ func (p *SMember)  ReadField19(iprot thrift.TProtocol) error {
   if v, err := iprot.ReadString(); err != nil {
   return thrift.PrependError("error reading field 19: ", err)
 } else {
-  p.DynamicToken = v
+  p.RealName = v
 }
   return nil
 }
 
 func (p *SMember)  ReadField20(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI64(); err != nil {
+  if v, err := iprot.ReadString(); err != nil {
   return thrift.PrependError("error reading field 20: ", err)
 } else {
-  p.RegTime = v
+  p.DynamicToken = v
 }
   return nil
 }
@@ -918,6 +934,15 @@ func (p *SMember)  ReadField20(iprot thrift.TProtocol) error {
 func (p *SMember)  ReadField21(iprot thrift.TProtocol) error {
   if v, err := iprot.ReadI64(); err != nil {
   return thrift.PrependError("error reading field 21: ", err)
+} else {
+  p.RegTime = v
+}
+  return nil
+}
+
+func (p *SMember)  ReadField22(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 22: ", err)
 } else {
   p.LastLoginTime = v
 }
@@ -949,6 +974,7 @@ func (p *SMember) Write(oprot thrift.TProtocol) error {
     if err := p.writeField19(oprot); err != nil { return err }
     if err := p.writeField20(oprot); err != nil { return err }
     if err := p.writeField21(oprot); err != nil { return err }
+    if err := p.writeField22(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -1138,32 +1164,42 @@ func (p *SMember) writeField18(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *SMember) writeField19(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("DynamicToken", thrift.STRING, 19); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 19:DynamicToken: ", p), err) }
-  if err := oprot.WriteString(string(p.DynamicToken)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.DynamicToken (19) field write error: ", p), err) }
+  if err := oprot.WriteFieldBegin("RealName", thrift.STRING, 19); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 19:RealName: ", p), err) }
+  if err := oprot.WriteString(string(p.RealName)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.RealName (19) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 19:DynamicToken: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 19:RealName: ", p), err) }
   return err
 }
 
 func (p *SMember) writeField20(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("RegTime", thrift.I64, 20); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 20:RegTime: ", p), err) }
-  if err := oprot.WriteI64(int64(p.RegTime)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.RegTime (20) field write error: ", p), err) }
+  if err := oprot.WriteFieldBegin("DynamicToken", thrift.STRING, 20); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 20:DynamicToken: ", p), err) }
+  if err := oprot.WriteString(string(p.DynamicToken)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.DynamicToken (20) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 20:RegTime: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 20:DynamicToken: ", p), err) }
   return err
 }
 
 func (p *SMember) writeField21(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("LastLoginTime", thrift.I64, 21); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 21:LastLoginTime: ", p), err) }
-  if err := oprot.WriteI64(int64(p.LastLoginTime)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.LastLoginTime (21) field write error: ", p), err) }
+  if err := oprot.WriteFieldBegin("RegTime", thrift.I64, 21); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 21:RegTime: ", p), err) }
+  if err := oprot.WriteI64(int64(p.RegTime)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.RegTime (21) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 21:LastLoginTime: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 21:RegTime: ", p), err) }
+  return err
+}
+
+func (p *SMember) writeField22(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("LastLoginTime", thrift.I64, 22); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 22:LastLoginTime: ", p), err) }
+  if err := oprot.WriteI64(int64(p.LastLoginTime)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.LastLoginTime (22) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 22:LastLoginTime: ", p), err) }
   return err
 }
 
