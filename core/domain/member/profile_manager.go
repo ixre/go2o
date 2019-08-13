@@ -627,8 +627,9 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 			p.member.value.Flag ^= member.FlagTrusted
 		}
 	}
+	unix := time.Now().Unix()
 	p.trustedInfo.Remark = remark
-	p.trustedInfo.ReviewTime = time.Now().Unix()
+	p.trustedInfo.ReviewTime = unix
 	_, err := orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
 		int(p.trustedInfo.MemberId))
 	if err == nil {
