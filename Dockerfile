@@ -29,7 +29,7 @@ ENV GO2O_KAFKA_ADDR=172.17.0.1:9092
 WORKDIR /app
 COPY --from=build /opt/go2o/dist/* /app/
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && \
 	apk --update add tzdata ca-certificates && \
 	cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && apk del tzdata && \
 	ln -s /app/go2o-* /bin && \
