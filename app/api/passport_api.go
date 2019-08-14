@@ -40,13 +40,13 @@ func NewPassportApi() api.Handler {
 
 func (m PassportApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
-		"get_token":    m.getToken,
-		"send_code":    m.sendCode,
-		"compare_code": m.compareCode,
-		"modify_pwd":   m.modifyPwd,
-		"reset_pwd":    m.resetPwd,
-		"trade_pwd":    m.tradePwd,
-		"reset_trade_pwd":m.resetTradePwd,
+		"get_token":       m.getToken,
+		"send_code":       m.sendCode,
+		"compare_code":    m.compareCode,
+		"modify_pwd":      m.modifyPwd,
+		"reset_pwd":       m.resetPwd,
+		"trade_pwd":       m.tradePwd,
+		"reset_trade_pwd": m.resetTradePwd,
 	})
 }
 

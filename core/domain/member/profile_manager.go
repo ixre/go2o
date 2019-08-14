@@ -340,18 +340,11 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	return errors.New("no such email template")
 }
 
-//todo: 密码应独立为credential
-
 // 修改密码,旧密码可为空
 func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 	if b, err := dm.ChkPwdRight(newPwd); !b {
 		return err
 	}
-	//log.Println("----",p.member.value.Pwd)
-	//log.Println("----",oldPwd)
-	//log.Println("----",newPwd)
-	//log.Println("---- 123000 / ",dm.MemberSha1Pwd("123000"))
-	//log.Println("---- 123456 / ",dm.MemberSha1Pwd("123456"))
 	if len(oldPwd) != 0 {
 		if newPwd == oldPwd {
 			return domain.ErrPwdCannotSame
@@ -472,7 +465,7 @@ func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAdd
 // 获取配送地址
 func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 	list := p.repo.GetDeliverAddress(p.memberId)
-	var arr []member.IDeliverAddress = make([]member.IDeliverAddress, len(list))
+	var arr = make([]member.IDeliverAddress, len(list))
 	for i, v := range list {
 		arr[i] = p.CreateDeliver(v)
 	}
@@ -561,7 +554,8 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	mId := 0
-	tmp.Db().ExecScalar("SELECT id FROM mm_trusted_info WHERE review_state= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1",
+	tmp.Db().ExecScalar(`SELECT COUNT(0) FROM mm_trusted_info WHERE 
+			review_state= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
 		&mId, enum.ReviewPass, cardId, memberId)
 	return mId == 0
 }

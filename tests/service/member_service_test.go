@@ -47,8 +47,8 @@ func TestCheckTradePwd(t *testing.T) {
 	t.Logf("%#v", r)
 }
 
-func TestGetMember(t *testing.T){
+func TestGetMember(t *testing.T) {
 	memberId := 22149
-	r,_ := rsi.MemberService.GetMember(thrift.Context,int64(memberId))
-	t.Logf("%#v",r)
+	r, _ := rsi.MemberService.GetMember(thrift.Context, int64(memberId))
+	t.Logf("%#v", r)
 }
