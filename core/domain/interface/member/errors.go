@@ -255,6 +255,9 @@ var (
 	ErrTrustMissingImage = domain.NewError(
 		"err_member_trust_missing_image", "请上传认证照片")
 
+	ErrTrustMissingCardImage = domain.NewError(
+		"err_member_trust_missing_card_image", "请上传证件照片")
+
 	ErrFavored = domain.NewError(
 		"err_favored", "已经收藏过了")
 

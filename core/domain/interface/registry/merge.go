@@ -87,6 +87,8 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员是否验证手机号码格式", MemberCheckPhoneFormat, "true", "")
 	mergeAdd("会员邀请关系级数", MemberReferLayer, "3", "")
 	mergeAdd("会员即时通讯是否必须", MemberImRequired, "false", "")
+	mergeAdd("会员实名是否需要证件照片", MemberTrustRequireCardImage, "false", "")
+	mergeAdd("会员实名是否需要人相图片", MemberTrustRequirePeopleImage, "true", "")
 
 	// 会员提现
 	mergeAdd("会员提现开关", MemberTakeOutOn, "true", "")

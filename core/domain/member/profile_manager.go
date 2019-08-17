@@ -519,15 +519,12 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 
 // 拷贝认证信息
 func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error {
-	//if dst.RealName == src.RealName && dst.CardId == src.CardId &&
-	//	dst.TrustImage == src.TrustImage {
-	//	return member.ErrNoChangedTrustInfo
-	//}
 	dst.RealName = src.RealName
 	dst.CountryCode = src.CountryCode
 	dst.CardId = src.CardId
 	dst.CardType = src.CardType
 	dst.CardImage = src.CardImage
+	dst.CardReverseImage = src.CardReverseImage
 	dst.TrustImage = src.TrustImage
 	return nil
 }
@@ -564,9 +561,10 @@ func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	// 验证数据是否完整
 	v.TrustImage = strings.TrimSpace(v.TrustImage)
+	v.CardImage = strings.TrimSpace(v.CardImage)
+	v.CardReverseImage = strings.TrimSpace(v.CardReverseImage)
 	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
-
 	if len(v.TrustImage) == 0 || len(v.RealName) == 0 ||
 		len(v.CardId) == 0 {
 		return member.ErrMissingTrustedInfo
@@ -586,10 +584,22 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		return member.ErrCarIdExists
 	}
 	// 检测上传认证图片
+	requirePeopleImg := p.registryRepo.Get(registry.MemberTrustRequirePeopleImage).BoolValue()
 	if v.TrustImage != "" {
 		if len(v.TrustImage) < 10 || v.TrustImage == exampleTrustImageUrl {
 			return member.ErrTrustMissingImage
 		}
+	} else if requirePeopleImg {
+		return member.ErrTrustMissingImage
+	}
+	// 检测证件照片
+	requireCardImg := p.registryRepo.Get(registry.MemberTrustRequireCardImage).BoolValue()
+	if v.CardImage != "" {
+		if len(v.CardImage) < 10 {
+			return member.ErrTrustMissingCardImage
+		}
+	} else if requireCardImg {
+		return member.ErrTrustMissingCardImage
 	}
 	// 保存
 	p.GetTrustedInfo()
@@ -598,8 +608,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		p.trustedInfo.Remark = ""
 		p.trustedInfo.ReviewState = int(enum.ReviewAwaiting) //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
-		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
-			int(p.trustedInfo.MemberId))
+		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo, int(p.trustedInfo.MemberId))
 	}
 	return err
 }
