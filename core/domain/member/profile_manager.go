@@ -587,19 +587,19 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	requirePeopleImg := p.registryRepo.Get(registry.MemberTrustRequirePeopleImage).BoolValue()
 	if v.TrustImage != "" {
 		if len(v.TrustImage) < 10 || v.TrustImage == exampleTrustImageUrl {
-			//return member.ErrTrustMissingImage
+			return member.ErrTrustMissingImage
 		}
 	} else if requirePeopleImg {
-		//return member.ErrTrustMissingImage
+		return member.ErrTrustMissingImage
 	}
 	// 检测证件照片
 	requireCardImg := p.registryRepo.Get(registry.MemberTrustRequireCardImage).BoolValue()
 	if v.CardImage != "" {
 		if len(v.CardImage) < 10 {
-		//	return member.ErrTrustMissingCardImage
+		return member.ErrTrustMissingCardImage
 		}
 	} else if requireCardImg {
-		//return member.ErrTrustMissingCardImage
+		return member.ErrTrustMissingCardImage
 	}
 	// 保存
 	p.GetTrustedInfo()
