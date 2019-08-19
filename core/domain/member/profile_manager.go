@@ -565,8 +565,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	v.CardReverseImage = strings.TrimSpace(v.CardReverseImage)
 	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
-	if len(v.TrustImage) == 0 || len(v.RealName) == 0 ||
-		len(v.CardId) == 0 {
+	if len(v.RealName) == 0 || len(v.CardId) == 0 {
 		return member.ErrMissingTrustedInfo
 	}
 	// 验证姓名
