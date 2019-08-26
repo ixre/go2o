@@ -272,7 +272,9 @@ var (
 	ErrReceiptsNoIdentity = domain.NewError(
 		"err_member_receipts_no_identity", "无法识别收款码")
 	ErrReceiptsNoName = domain.NewError(
-		"err_member_receipts_no_name", "未填写收款名称")
+		"err_member_receipts_no_name", "未填写收款账户")
+	ErrReceiptsNameLen = domain.NewError(
+		"err_member_receipts_name_len", "收款账户超出长度")
 	ErrReceiptsRepeated = domain.NewError(
 		"err_member_collection_repeated", "已添加相同类型的收款码")
 )

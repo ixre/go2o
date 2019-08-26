@@ -71,8 +71,10 @@ func (p *profileManagerImpl) SaveReceiptsCode(c *member.ReceiptsCode) error {
 	if len(c.Identity) == 0 {
 		return member.ErrReceiptsNoIdentity
 	}
-	if len(c.Name) == 0 {
+	if l := len([]rune(c.Name)); l == 0 {
 		return member.ErrReceiptsNoName
+	} else if l > 10 {
+		return member.ErrReceiptsNameLen
 	}
 	_, err := p.repo.SaveReceiptsCode(c, p.memberId)
 	if err == nil {
@@ -595,7 +597,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	requireCardImg := p.registryRepo.Get(registry.MemberTrustRequireCardImage).BoolValue()
 	if v.CardImage != "" {
 		if len(v.CardImage) < 10 {
-		return member.ErrTrustMissingCardImage
+			return member.ErrTrustMissingCardImage
 		}
 	} else if requireCardImg {
 		return member.ErrTrustMissingCardImage
