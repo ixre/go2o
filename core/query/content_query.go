@@ -35,7 +35,7 @@ func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where str
 		article_list WHERE cat_id= $1 %s ORDER BY update_time DESC LIMIT $3 OFFSET $2`, where),
 			catId, begin, size)
 		for i := 0; i < len(rows); i++ {
-			rows[i].Content = ""
+			//rows[i].Content = ""
 		}
 	}
 

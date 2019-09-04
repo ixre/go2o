@@ -90,7 +90,7 @@ func MessageServeClient() (thrift.TTransport, *message_service.MessageServiceCli
 
 // 消息客户端
 func ContentServeClient() (thrift.TTransport, *content_service.ContentServiceClient, error) {
-	trans, cli, err := factory.GetClient("message")
+	trans, cli, err := factory.GetClient("content")
 	return trans, content_service.NewContentServiceClient(cli), err
 }
 
