@@ -9,16 +9,22 @@
 package rsi
 
 import (
+	"context"
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/query"
+	"go2o/core/service/auto_gen/rpc/content_service"
+	"go2o/core/service/auto_gen/rpc/ttype"
 	"strconv"
 )
+
+var _ content_service.ContentService = new(contentService)
 
 type contentService struct {
 	_contentRepo content.IContentRepo
 	_query       *query.ContentQuery
 	_sysContent  content.IContent
+	serviceUtil
 }
 
 func NewContentService(rep content.IContentRepo, q *query.ContentQuery) *contentService {
@@ -26,6 +32,53 @@ func NewContentService(rep content.IContentRepo, q *query.ContentQuery) *content
 		_contentRepo: rep,
 		_query:       q,
 		_sysContent:  rep.GetContent(0),
+	}
+}
+
+func (cs *contentService) QueryPagingArticles(ctx context.Context, cat string, begin int32, size int32) (r *ttype.SPagingResult_, err error) {
+	var total = 0
+	var rows []*content.Article
+	ic := cs._sysContent.ArticleManager().GetCategoryByAlias(cat)
+	if ic != nil && ic.GetDomainId() > 0 {
+		total, rows = cs._query.PagedArticleList(ic.GetDomainId(), int(begin), int(size), "")
+	}
+	var arr []*content_service.SArticle
+	for _, v := range rows {
+		arr = append(arr, cs.parseArticle(v))
+	}
+	return cs.pagingResult(total, arr), nil
+}
+
+func (cs *contentService) QueryTopArticles(ctx context.Context, cat string) (r []*content_service.SArticle, err error) {
+	var rows []*content.Article
+	ic := cs._sysContent.ArticleManager().GetCategoryByAlias(cat)
+	if ic != nil && ic.GetDomainId() > 0 {
+		_, rows = cs._query.PagedArticleList(ic.GetDomainId(), 0, 1, "")
+	}
+	var arr []*content_service.SArticle
+	for _, v := range rows {
+		arr = append(arr, cs.parseArticle(v))
+	}
+	return arr, nil
+}
+
+func (cs *contentService) parseArticle(v *content.Article) *content_service.SArticle {
+	return &content_service.SArticle{
+		ID:          v.ID,
+		CatId:       v.CatId,
+		Title:       v.Title,
+		SmallTitle:  v.SmallTitle,
+		Thumbnail:   v.Thumbnail,
+		PublisherId: int32(v.PublisherId),
+		Location:    v.Location,
+		Priority:    int32(v.Priority),
+		AccessKey:   v.AccessKey,
+		Content:     v.Content,
+		Tags:        v.Tags,
+		ViewCount:   int32(v.ViewCount),
+		SortNum:     int32(v.SortNum),
+		CreateTime:  int32(v.CreateTime),
+		UpdateTime:  int32(v.UpdateTime),
 	}
 }
 

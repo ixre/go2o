@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
+	"go2o/core/service/auto_gen/rpc/content_service"
 	"go2o/core/service/auto_gen/rpc/finance_service"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/item_service"
@@ -42,6 +43,7 @@ var _ = order_service.GoUnusedProtection__
 var _ = finance_service.GoUnusedProtection__
 var _ = wallet_service.GoUnusedProtection__
 var _ = shipment_service.GoUnusedProtection__
+var _ = content_service.GoUnusedProtection__
 
 func init() {
 }
