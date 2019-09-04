@@ -18,7 +18,18 @@ func (a ArticleApi) Process(fn string, ctx api.Context) *api.Response {
 	})
 }
 
-// 文章列表
+/**
+ * @api {post} /article/list 文章列表
+ * @apiName list
+ * @apiGroup article
+ * @apiParam {String} cat 栏目别名
+ * @apiParam {Int} page 页码
+ * @apiParam {Int} size 数量
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ */
 func (a ArticleApi) list(ctx api.Context) interface{} {
 	form := ctx.Form()
 	catStr := form.GetString("cat")
@@ -40,7 +51,17 @@ func (a ArticleApi) list(ctx api.Context) interface{} {
 	}
 }
 
-// 文章列表
+
+/**
+ * @api {post} /article/top_article 获取置顶文章
+ * @apiName top_article
+ * @apiGroup article
+ * @apiParam {String} cat 栏目别名
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"code":1,"message":"api not defined"}
+ */
 func (a ArticleApi) topArticle(ctx api.Context) interface{} {
 	form := ctx.Form()
 	catStr := form.GetString("cat")

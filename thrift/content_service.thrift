@@ -6,7 +6,7 @@ include "ttype.thrift"
 /** 内容服务 */
 service ContentService{
     /** 获取分页文章 */
-    ttype.SPagingResult QueryPagingArticles(1:string cat,2:i32 begin,3:i32 size)
+    ttype.SPagingResult QueryPagingArticles(1:string cat,2:i32 begin_,3:i32 size)
     /** 获取置顶的文章 */
     list<SArticle> QueryTopArticles(1:string cat)
 }
