@@ -11,7 +11,6 @@ package pub
 
 import (
 	"github.com/ixre/gof"
-	"go2o-web/src/app/consts"
 	"go2o/core/variable"
 	"log"
 	"net/http"
