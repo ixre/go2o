@@ -30,7 +30,6 @@ func (this *MssRepo) SaveConfig(userId int32, conf *mss.Config) error {
 	panic("implement me")
 }
 
-
 func (this *MssRepo) MessageManager() mss.IMessageManager {
 	panic("implement me")
 }
@@ -73,7 +72,6 @@ func (this *MssRepo) GetConfig(userId int32) *mss.Config {
 	return nil
 }
 
-
 // 获取所有的通知项
 func (this *MssRepo) GetAllNotifyItem() []notify.NotifyItem {
 	return []notify.NotifyItem{}
@@ -88,7 +86,6 @@ func (this *MssRepo) GetNotifyItem(key string) *notify.NotifyItem {
 func (this *MssRepo) SaveNotifyItem(v *notify.NotifyItem) error {
 	return nil
 }
-
 
 func (this *MssRepo) GetMailTemplate(userId, id int32) *mss.MailTemplate {
 	var e mss.MailTemplate
@@ -106,7 +103,6 @@ func (this *MssRepo) DeleteMailTemplate(userId, id int32) error {
 	//return v.Id, nil
 	return nil
 }
-
 
 // 获取所有的邮箱模版
 func (this *MssRepo) GetMailTemplates(mchId int32) []*mss.MailTemplate {
@@ -225,8 +221,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		// 是否只能阅读
 		Readonly: 1,
 	}
-	pv := mss.Message{
-	}
+	pv := mss.Message{}
 	msg = mgr.CreateMessage(v, &pv)
 	if msg.GetDomainId() == 0 {
 		_, err = msg.Save()

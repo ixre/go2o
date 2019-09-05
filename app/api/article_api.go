@@ -51,7 +51,6 @@ func (a ArticleApi) list(ctx api.Context) interface{} {
 	}
 }
 
-
 /**
  * @api {post} /article/top_article 获取置顶文章
  * @apiName top_article
