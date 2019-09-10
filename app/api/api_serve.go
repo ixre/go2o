@@ -43,6 +43,8 @@ func NewService(factory api.ContextFactory, ver string, debug bool) *api.ServeMu
 	s.Register("app", NewAppApi())
 	s.Register("register", NewRegisterApi())
 	s.Register("passport", NewPassportApi())
+	s.Register("settings", NewSettingsApi())
+
 
 	//s.Register("dept", &DeptApi{})
 	//s.Register("role", &RoleApi{})
