@@ -11,10 +11,8 @@ var _ api.Handler = new(SettingsApi)
 type SettingsApi struct {
 }
 
-func NewSettingsApi() *AppApi {
-	r := &AppApi{}
-	go r.init()
-	return r
+func NewSettingsApi() *SettingsApi {
+	return &SettingsApi{}
 }
 
 func (a SettingsApi) Process(fn string, ctx api.Context) *api.Response {

@@ -31,6 +31,7 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "   SearchRegistry(string key)")
   fmt.Fprintln(os.Stderr, "  Result CreateUserRegistry(string key, string defaultValue, string description)")
   fmt.Fprintln(os.Stderr, "  Result SaveSmsApi(string provider, SmsApi api)")
+  fmt.Fprintln(os.Stderr, "  SmsApi GetSmsApi(string provider)")
   fmt.Fprintln(os.Stderr, "  Result SaveBoardHook(string hookURL, string token)")
   fmt.Fprintln(os.Stderr, "  string ResourceUrl(string url)")
   fmt.Fprintln(os.Stderr, "  Result SetValue(string key, string value)")
@@ -181,19 +182,19 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetRegistries requires 1 args")
       flag.Usage()
     }
-    arg61 := flag.Arg(1)
-    mbTrans62 := thrift.NewTMemoryBufferLen(len(arg61))
-    defer mbTrans62.Close()
-    _, err63 := mbTrans62.WriteString(arg61)
-    if err63 != nil { 
+    arg63 := flag.Arg(1)
+    mbTrans64 := thrift.NewTMemoryBufferLen(len(arg63))
+    defer mbTrans64.Close()
+    _, err65 := mbTrans64.WriteString(arg63)
+    if err65 != nil { 
       Usage()
       return
     }
-    factory64 := thrift.NewTJSONProtocolFactory()
-    jsProt65 := factory64.GetProtocol(mbTrans62)
+    factory66 := thrift.NewTJSONProtocolFactory()
+    jsProt67 := factory66.GetProtocol(mbTrans64)
     containerStruct0 := foundation_service.NewFoundationServiceGetRegistriesArgs()
-    err66 := containerStruct0.ReadField1(jsProt65)
-    if err66 != nil {
+    err68 := containerStruct0.ReadField1(jsProt67)
+    if err68 != nil {
       Usage()
       return
     }
@@ -217,19 +218,19 @@ func main() {
       fmt.Fprintln(os.Stderr, "UpdateRegistry requires 1 args")
       flag.Usage()
     }
-    arg68 := flag.Arg(1)
-    mbTrans69 := thrift.NewTMemoryBufferLen(len(arg68))
-    defer mbTrans69.Close()
-    _, err70 := mbTrans69.WriteString(arg68)
-    if err70 != nil { 
+    arg70 := flag.Arg(1)
+    mbTrans71 := thrift.NewTMemoryBufferLen(len(arg70))
+    defer mbTrans71.Close()
+    _, err72 := mbTrans71.WriteString(arg70)
+    if err72 != nil { 
       Usage()
       return
     }
-    factory71 := thrift.NewTJSONProtocolFactory()
-    jsProt72 := factory71.GetProtocol(mbTrans69)
+    factory73 := thrift.NewTJSONProtocolFactory()
+    jsProt74 := factory73.GetProtocol(mbTrans71)
     containerStruct0 := foundation_service.NewFoundationServiceUpdateRegistryArgs()
-    err73 := containerStruct0.ReadField1(jsProt72)
-    if err73 != nil {
+    err75 := containerStruct0.ReadField1(jsProt74)
+    if err75 != nil {
       Usage()
       return
     }
@@ -269,24 +270,34 @@ func main() {
     }
     argvalue0 := flag.Arg(1)
     value0 := argvalue0
-    arg79 := flag.Arg(2)
-    mbTrans80 := thrift.NewTMemoryBufferLen(len(arg79))
-    defer mbTrans80.Close()
-    _, err81 := mbTrans80.WriteString(arg79)
-    if err81 != nil {
+    arg81 := flag.Arg(2)
+    mbTrans82 := thrift.NewTMemoryBufferLen(len(arg81))
+    defer mbTrans82.Close()
+    _, err83 := mbTrans82.WriteString(arg81)
+    if err83 != nil {
       Usage()
       return
     }
-    factory82 := thrift.NewTJSONProtocolFactory()
-    jsProt83 := factory82.GetProtocol(mbTrans80)
+    factory84 := thrift.NewTJSONProtocolFactory()
+    jsProt85 := factory84.GetProtocol(mbTrans82)
     argvalue1 := foundation_service.NewSmsApi()
-    err84 := argvalue1.Read(jsProt83)
-    if err84 != nil {
+    err86 := argvalue1.Read(jsProt85)
+    if err86 != nil {
       Usage()
       return
     }
     value1 := foundation_service.SmsApi(argvalue1)
     fmt.Print(client.SaveSmsApi(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "GetSmsApi":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "GetSmsApi requires 1 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    fmt.Print(client.GetSmsApi(context.Background(), value0))
     fmt.Print("\n")
     break
   case "SaveBoardHook":
@@ -338,19 +349,19 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetRegistryV1 requires 1 args")
       flag.Usage()
     }
-    arg91 := flag.Arg(1)
-    mbTrans92 := thrift.NewTMemoryBufferLen(len(arg91))
-    defer mbTrans92.Close()
-    _, err93 := mbTrans92.WriteString(arg91)
-    if err93 != nil { 
+    arg94 := flag.Arg(1)
+    mbTrans95 := thrift.NewTMemoryBufferLen(len(arg94))
+    defer mbTrans95.Close()
+    _, err96 := mbTrans95.WriteString(arg94)
+    if err96 != nil { 
       Usage()
       return
     }
-    factory94 := thrift.NewTJSONProtocolFactory()
-    jsProt95 := factory94.GetProtocol(mbTrans92)
+    factory97 := thrift.NewTJSONProtocolFactory()
+    jsProt98 := factory97.GetProtocol(mbTrans95)
     containerStruct0 := foundation_service.NewFoundationServiceGetRegistryV1Args()
-    err96 := containerStruct0.ReadField1(jsProt95)
-    if err96 != nil {
+    err99 := containerStruct0.ReadField1(jsProt98)
+    if err99 != nil {
       Usage()
       return
     }
@@ -374,19 +385,19 @@ func main() {
       fmt.Fprintln(os.Stderr, "RegisterApp requires 1 args")
       flag.Usage()
     }
-    arg98 := flag.Arg(1)
-    mbTrans99 := thrift.NewTMemoryBufferLen(len(arg98))
-    defer mbTrans99.Close()
-    _, err100 := mbTrans99.WriteString(arg98)
-    if err100 != nil {
+    arg101 := flag.Arg(1)
+    mbTrans102 := thrift.NewTMemoryBufferLen(len(arg101))
+    defer mbTrans102.Close()
+    _, err103 := mbTrans102.WriteString(arg101)
+    if err103 != nil {
       Usage()
       return
     }
-    factory101 := thrift.NewTJSONProtocolFactory()
-    jsProt102 := factory101.GetProtocol(mbTrans99)
+    factory104 := thrift.NewTJSONProtocolFactory()
+    jsProt105 := factory104.GetProtocol(mbTrans102)
     argvalue0 := foundation_service.NewSSsoApp()
-    err103 := argvalue0.Read(jsProt102)
-    if err103 != nil {
+    err106 := argvalue0.Read(jsProt105)
+    if err106 != nil {
       Usage()
       return
     }
@@ -451,19 +462,19 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetAreaNames requires 1 args")
       flag.Usage()
     }
-    arg110 := flag.Arg(1)
-    mbTrans111 := thrift.NewTMemoryBufferLen(len(arg110))
-    defer mbTrans111.Close()
-    _, err112 := mbTrans111.WriteString(arg110)
-    if err112 != nil { 
+    arg113 := flag.Arg(1)
+    mbTrans114 := thrift.NewTMemoryBufferLen(len(arg113))
+    defer mbTrans114.Close()
+    _, err115 := mbTrans114.WriteString(arg113)
+    if err115 != nil { 
       Usage()
       return
     }
-    factory113 := thrift.NewTJSONProtocolFactory()
-    jsProt114 := factory113.GetProtocol(mbTrans111)
+    factory116 := thrift.NewTJSONProtocolFactory()
+    jsProt117 := factory116.GetProtocol(mbTrans114)
     containerStruct0 := foundation_service.NewFoundationServiceGetAreaNamesArgs()
-    err115 := containerStruct0.ReadField1(jsProt114)
-    if err115 != nil {
+    err118 := containerStruct0.ReadField1(jsProt117)
+    if err118 != nil {
       Usage()
       return
     }
@@ -477,8 +488,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetChildAreas requires 1 args")
       flag.Usage()
     }
-    tmp0, err116 := (strconv.Atoi(flag.Arg(1)))
-    if err116 != nil {
+    tmp0, err119 := (strconv.Atoi(flag.Arg(1)))
+    if err119 != nil {
       Usage()
       return
     }
