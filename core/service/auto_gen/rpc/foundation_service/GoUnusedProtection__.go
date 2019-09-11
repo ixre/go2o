@@ -3,4 +3,5 @@
 
 package foundation_service
 
-var GoUnusedProtection__ int
+var GoUnusedProtection__ int;
+

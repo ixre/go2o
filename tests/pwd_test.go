@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"github.com/ixre/gof/crypto"
 	"go2o/core/infrastructure/domain"
 	"testing"
 )
@@ -17,12 +16,9 @@ func TestMasterPwd(t *testing.T) {
 func TestMasterPwd2(t *testing.T) {
 	user := "master"
 	pwd := "fs888888@txxfmall"
-	sha1 := crypto.Sha1([]byte(
-		pwd + domain.Sha1OffSet))
-	encPwd := domain.Md5Pwd(sha1, user)
+	sha1 := domain.Sha1(domain.Md5(pwd) + user + domain.Sha1OffSet)
 	t.Log(sha1)
 	t.Log(domain.Sha1OffSet)
-	t.Log(encPwd)
 }
 
 func TestMemberPwd(t *testing.T) {

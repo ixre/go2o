@@ -9,8 +9,8 @@ COPY ./app ./app
 COPY ./core ./core
 COPY ./*.go go.mod LICENSE README.md app.conf ./
 
-ENV GO111MODULE=on
-ENV GOPROXY=https://athens.azurefd.net
+#ENV GO111MODULE=on
+#ENV GOPROXY=https://goproxy.io
 RUN rm -rf go.sum && sed -i 's/replace/\/\/replace/' go.mod && \
     go mod tidy && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build go2o-serve.go && \
@@ -29,7 +29,7 @@ ENV GO2O_KAFKA_ADDR=172.17.0.1:9092
 WORKDIR /app
 COPY --from=build /opt/go2o/dist/* /app/
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && \
 	apk --update add tzdata ca-certificates && \
 	cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && apk del tzdata && \
 	ln -s /app/go2o-* /bin && \

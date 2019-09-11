@@ -43,11 +43,7 @@ func NewService(factory api.ContextFactory, ver string, debug bool) *api.ServeMu
 	s.Register("app", NewAppApi())
 	s.Register("register", NewRegisterApi())
 	s.Register("passport", NewPassportApi())
-
-	//s.Register("dept", &DeptApi{})
-	//s.Register("role", &RoleApi{})
-	//s.Register("res", &ResApi{})
-	//s.Register("user", &UserApi{})
+	s.Register("settings", NewSettingsApi())
 	// 注册中间键
 	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", ver, debug)
 	return s

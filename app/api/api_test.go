@@ -18,11 +18,13 @@ import (
  * history :
  */
 
+var serverUrl = "http://localhost:1428/api"
+
+
 func testApi(t *testing.T, apiName string, paramsMap map[string]string) {
 	key := "go2o"
 	secret := "131409"
 	signType := "sha1"
-	serverUrl := "http://localhost:1428/api"
 	params := url.Values{}
 	params["key"] = []string{key}
 	params["api"] = []string{apiName}

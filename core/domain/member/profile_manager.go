@@ -71,8 +71,10 @@ func (p *profileManagerImpl) SaveReceiptsCode(c *member.ReceiptsCode) error {
 	if len(c.Identity) == 0 {
 		return member.ErrReceiptsNoIdentity
 	}
-	if len(c.Name) == 0 {
+	if l := len([]rune(c.Name)); l == 0 {
 		return member.ErrReceiptsNoName
+	} else if l > 10 {
+		return member.ErrReceiptsNameLen
 	}
 	_, err := p.repo.SaveReceiptsCode(c, p.memberId)
 	if err == nil {
@@ -340,18 +342,11 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	return errors.New("no such email template")
 }
 
-//todo: 密码应独立为credential
-
 // 修改密码,旧密码可为空
 func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 	if b, err := dm.ChkPwdRight(newPwd); !b {
 		return err
 	}
-	//log.Println("----",p.member.value.Pwd)
-	//log.Println("----",oldPwd)
-	//log.Println("----",newPwd)
-	//log.Println("---- 123000 / ",dm.MemberSha1Pwd("123000"))
-	//log.Println("---- 123456 / ",dm.MemberSha1Pwd("123456"))
 	if len(oldPwd) != 0 {
 		if newPwd == oldPwd {
 			return domain.ErrPwdCannotSame
@@ -472,7 +467,7 @@ func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAdd
 // 获取配送地址
 func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 	list := p.repo.GetDeliverAddress(p.memberId)
-	var arr []member.IDeliverAddress = make([]member.IDeliverAddress, len(list))
+	var arr = make([]member.IDeliverAddress, len(list))
 	for i, v := range list {
 		arr[i] = p.CreateDeliver(v)
 	}
@@ -526,15 +521,12 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 
 // 拷贝认证信息
 func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error {
-	//if dst.RealName == src.RealName && dst.CardId == src.CardId &&
-	//	dst.TrustImage == src.TrustImage {
-	//	return member.ErrNoChangedTrustInfo
-	//}
 	dst.RealName = src.RealName
 	dst.CountryCode = src.CountryCode
 	dst.CardId = src.CardId
 	dst.CardType = src.CardType
 	dst.CardImage = src.CardImage
+	dst.CardReverseImage = src.CardReverseImage
 	dst.TrustImage = src.TrustImage
 	return nil
 }
@@ -561,7 +553,8 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	mId := 0
-	tmp.Db().ExecScalar("SELECT id FROM mm_trusted_info WHERE review_state= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1",
+	tmp.Db().ExecScalar(`SELECT COUNT(0) FROM mm_trusted_info WHERE 
+			review_state= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
 		&mId, enum.ReviewPass, cardId, memberId)
 	return mId == 0
 }
@@ -570,11 +563,11 @@ func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	// 验证数据是否完整
 	v.TrustImage = strings.TrimSpace(v.TrustImage)
+	v.CardImage = strings.TrimSpace(v.CardImage)
+	v.CardReverseImage = strings.TrimSpace(v.CardReverseImage)
 	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
-
-	if len(v.TrustImage) == 0 || len(v.RealName) == 0 ||
-		len(v.CardId) == 0 {
+	if len(v.RealName) == 0 || len(v.CardId) == 0 {
 		return member.ErrMissingTrustedInfo
 	}
 	// 验证姓名
@@ -592,10 +585,22 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		return member.ErrCarIdExists
 	}
 	// 检测上传认证图片
+	requirePeopleImg := p.registryRepo.Get(registry.MemberTrustRequirePeopleImage).BoolValue()
 	if v.TrustImage != "" {
 		if len(v.TrustImage) < 10 || v.TrustImage == exampleTrustImageUrl {
 			return member.ErrTrustMissingImage
 		}
+	} else if requirePeopleImg {
+		return member.ErrTrustMissingImage
+	}
+	// 检测证件照片
+	requireCardImg := p.registryRepo.Get(registry.MemberTrustRequireCardImage).BoolValue()
+	if v.CardImage != "" {
+		if len(v.CardImage) < 10 {
+			return member.ErrTrustMissingCardImage
+		}
+	} else if requireCardImg {
+		return member.ErrTrustMissingCardImage
 	}
 	// 保存
 	p.GetTrustedInfo()
@@ -604,8 +609,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		p.trustedInfo.Remark = ""
 		p.trustedInfo.ReviewState = int(enum.ReviewAwaiting) //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
-		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
-			int(p.trustedInfo.MemberId))
+		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo, int(p.trustedInfo.MemberId))
 	}
 	return err
 }
@@ -627,8 +631,9 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 			p.member.value.Flag ^= member.FlagTrusted
 		}
 	}
+	unix := time.Now().Unix()
 	p.trustedInfo.Remark = remark
-	p.trustedInfo.ReviewTime = time.Now().Unix()
+	p.trustedInfo.ReviewTime = unix
 	_, err := orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
 		int(p.trustedInfo.MemberId))
 	if err == nil {

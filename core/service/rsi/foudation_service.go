@@ -34,6 +34,7 @@ type foundationService struct {
 	serviceUtil
 }
 
+
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
 	return &foundationService{
 		_rep:         rep,
@@ -157,6 +158,34 @@ func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
+}
+
+// 获取短信API凭据, @provider 短信服务商, 默认:http
+func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *foundation_service.SmsApi, err error) {
+	manager := s.notifyRepo.Manager()
+	perm := manager.GetSmsApiPerm(provider)
+	if perm != nil {
+		return &foundation_service.SmsApi{
+			ApiUrl:      perm.ApiUrl,
+			Key:         perm.Key,
+			Secret:      perm.Secret,
+			Params:      perm.Params,
+			Method:      perm.Method,
+			Charset:     perm.Charset,
+			Signature:   perm.Signature,
+			SuccessChar: perm.SuccessChar,
+		}, nil
+	}
+	return &foundation_service.SmsApi{
+		ApiUrl:      "",
+		Key:         "",
+		Secret:      "",
+		Params:      "",
+		Method:      "",
+		Charset:     "",
+		Signature:   "",
+		SuccessChar: "",
+	}, nil
 }
 
 // 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks

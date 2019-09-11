@@ -22,6 +22,8 @@ service FoundationService{
    ttype.Result CreateUserRegistry(1:string key,2:string defaultValue,3:string description)
    /** 保存短信API凭据,@provider 短信服务商, 默认:http */
    ttype.Result SaveSmsApi(1:string provider,2:SmsApi api)
+   /** 获取短信API凭据, @provider 短信服务商, 默认:http */
+   SmsApi GetSmsApi(1:string provider)
    /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
    ttype.Result SaveBoardHook(1:string hookURL,2:string token)
 
@@ -97,9 +99,9 @@ struct SArea  {
 struct SmsApi {
     /** 接口地址 */
     1:string ApiUrl
-    /* 接口KEY */
+    /** 接口KEY */
     2:string Key
-    /* 接口密钥 */
+    /** 接口密钥 */
     3:string Secret
 	/** 请求数据,如: phone={phone}&content={content}*/
 	4:string Params
@@ -107,8 +109,8 @@ struct SmsApi {
 	5:string Method
     /** 编码 */
     6:string Charset
-   // 签名
+    /** 签名 */
    	7:string Signature
-   	//发送成功，包含的字符，用于检测是否发送成功
+   	/** 发送成功，包含的字符，用于检测是否发送成功 */
    	8:string SuccessChar
 }

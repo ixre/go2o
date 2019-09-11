@@ -10,6 +10,7 @@ package thrift
 
 import (
 	"github.com/apache/thrift/lib/go/thrift"
+	"go2o/core/service/auto_gen/rpc/content_service"
 	"go2o/core/service/auto_gen/rpc/finance_service"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/item_service"
@@ -85,6 +86,12 @@ func FoundationServeClient() (thrift.TTransport, *foundation_service.FoundationS
 func MessageServeClient() (thrift.TTransport, *message_service.MessageServiceClient, error) {
 	trans, cli, err := factory.GetClient("message")
 	return trans, message_service.NewMessageServiceClient(cli), err
+}
+
+// 消息客户端
+func ContentServeClient() (thrift.TTransport, *content_service.ContentServiceClient, error) {
+	trans, cli, err := factory.GetClient("content")
+	return trans, content_service.NewContentServiceClient(cli), err
 }
 
 // 支付服务

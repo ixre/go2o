@@ -14,5 +14,6 @@ include "order_service.thrift"
 include "finance_service.thrift"
 include "wallet_service.thrift"
 include "shipment_service.thrift"
+include "content_service.thrift"
 
 

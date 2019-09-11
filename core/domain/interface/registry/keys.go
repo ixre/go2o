@@ -132,6 +132,10 @@ var (
 	MemberCheckPhoneFormat = KeyFormat("MemberCheckPhoneFormat")
 	// 会员默认个人签名
 	MemberDefaultPersonRemark = KeyFormat("MemberDefaultPersonRemark")
+	// 会员实名是否需要证件照片
+	MemberTrustRequireCardImage = KeyFormat("MemberTrustRequireCardImage")
+	// 会员实名是否需要人相图片
+	MemberTrustRequirePeopleImage = KeyFormat("MemberTrustRequirePeopleImage")
 
 	/*会员提现*/
 	// 会员提现开关

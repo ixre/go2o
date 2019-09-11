@@ -15,7 +15,7 @@ import (
         "strings"
         "github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
-        "go2o/core/service/auto_gen/rpc/status_service"
+        "go2o/core/service/auto_gen/rpc/content_service"
 )
 
 var _ = ttype.GoUnusedProtection__
@@ -24,7 +24,8 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
   flag.PrintDefaults()
   fmt.Fprintln(os.Stderr, "\nFunctions:")
-  fmt.Fprintln(os.Stderr, "  string Ping()")
+  fmt.Fprintln(os.Stderr, "  SPagingResult QueryPagingArticles(string cat, i32 begin_, i32 size)")
+  fmt.Fprintln(os.Stderr, "   QueryTopArticles(string cat)")
   fmt.Fprintln(os.Stderr)
   os.Exit(0)
 }
@@ -139,19 +140,45 @@ func main() {
   }
   iprot := protocolFactory.GetProtocol(trans)
   oprot := protocolFactory.GetProtocol(trans)
-  client := status_service.NewStatusServiceClient(thrift.NewTStandardClient(iprot, oprot))
+  client := content_service.NewContentServiceClient(thrift.NewTStandardClient(iprot, oprot))
   if err := trans.Open(); err != nil {
     fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
     os.Exit(1)
   }
   
   switch cmd {
-  case "Ping":
-    if flag.NArg() - 1 != 0 {
-      fmt.Fprintln(os.Stderr, "Ping requires 0 args")
+  case "QueryPagingArticles":
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "QueryPagingArticles requires 3 args")
       flag.Usage()
     }
-    fmt.Print(client.Ping(context.Background()))
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    tmp1, err8 := (strconv.Atoi(flag.Arg(2)))
+    if err8 != nil {
+      Usage()
+      return
+    }
+    argvalue1 := int32(tmp1)
+    value1 := argvalue1
+    tmp2, err9 := (strconv.Atoi(flag.Arg(3)))
+    if err9 != nil {
+      Usage()
+      return
+    }
+    argvalue2 := int32(tmp2)
+    value2 := argvalue2
+    fmt.Print(client.QueryPagingArticles(context.Background(), value0, value1, value2))
+    fmt.Print("\n")
+    break
+  case "QueryTopArticles":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "QueryTopArticles requires 1 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    fmt.Print(client.QueryTopArticles(context.Background(), value0))
     fmt.Print("\n")
     break
   case "":

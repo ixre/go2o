@@ -99,7 +99,7 @@ COMMENT ON COLUMN mm_levelup.create_time IS '升级时间';
 
 /** 会员表 */
 ALTER TABLE public.mm_member
-    ADD COLUMN real_name character varying(20) NOT NULL ;
+    ADD COLUMN real_name character varying(20) NOT NULL DEFAULT '' ;
 COMMENT ON COLUMN public.mm_member.real_name
     IS '真实姓名';
 

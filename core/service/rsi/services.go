@@ -273,3 +273,23 @@ func (s serviceUtil) json(data interface{}) string {
 	}
 	return string(r)
 }
+
+// 分页响应结果
+func (s serviceUtil) pagingResult(total int, data interface{}) *ttype.SPagingResult_ {
+	switch data.(type) {
+	case string:
+		return &ttype.SPagingResult_{
+			Count:  int32(total),
+			Data:   data.(string),
+			Extras: map[string]string{},
+		}
+	}
+	r, _ := json.Marshal(data)
+	return &ttype.SPagingResult_{
+		ErrCode: 0,
+		ErrMsg:  "",
+		Count:   int32(total),
+		Data:    string(r),
+		Extras:  map[string]string{},
+	}
+}

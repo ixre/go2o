@@ -879,22 +879,52 @@ func (s *memberService) GetTrustInfo(ctx context.Context, memberId int64) (*memb
 	if m != nil {
 		t = m.Profile().GetTrustedInfo()
 	}
-	return parser.TrustedInfoDto(&t), nil
+	return &member_service.STrustedInfo{
+		RealName:         t.RealName,
+		CountryCode:      t.CountryCode,
+		CardType:         int32(t.CardType),
+		CardId:           t.CardId,
+		CardImage:        t.CardImage,
+		CardReverseImage: t.CardReverseImage,
+		TrustImage:       t.TrustImage,
+		ManualReview:     int32(t.ManualReview),
+		ReviewState:      int32(t.ReviewState),
+		ReviewTime:       t.ReviewTime,
+		Remark:           t.Remark,
+	}, nil
 }
 
 // 保存实名认证信息
-func (s *memberService) SaveTrustedInfo(memberId int64, v *member.TrustedInfo) error {
+func (s *memberService) SubmitTrustInfo(ctx context.Context, memberId int64, info *member_service.STrustedInfo) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		err = member.ErrNoSuchMember
+	} else {
+		err = m.Profile().SaveTrustedInfo(&member.TrustedInfo{
+			MemberId:         memberId,
+			RealName:         info.RealName,
+			CountryCode:      info.CountryCode,
+			CardType:         int(info.CardType),
+			CardId:           info.CardId,
+			CardImage:        info.CardImage,
+			CardReverseImage: info.CardReverseImage,
+			TrustImage:       info.TrustImage,
+		})
 	}
-	return m.Profile().SaveTrustedInfo(v)
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (s *memberService) ReviewTrustedInfo(memberId int64, pass bool, remark string) error {
+func (s *memberService) ReviewTrustedInfo(ctx context.Context, memberId int64, reviewPass bool, remark string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
-	return m.Profile().ReviewTrustedInfo(pass, remark)
+	err = m.Profile().ReviewTrustedInfo(reviewPass, remark)
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // 获取分页商铺收藏

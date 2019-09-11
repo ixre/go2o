@@ -26,17 +26,21 @@ service MemberService{
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
     ttype.Result CheckLogin(1:string user,2:string pwd,3:bool update)
     // 检查交易密码
-    ttype.Result CheckTradePwd(1:i64 id,2:string tradePwd)
+    ttype.Result CheckTradePwd(1:i64 memberId,2:string tradePwd)
+    /** 交换会员编号 */
+    i64 SwapMemberId(1:ECredentials cred,2:string value)
     // 等级列表
     list<SLevel> LevelList()
-    // 获取实名信息
-    STrustedInfo GetTrustInfo(1:i64 id)
+    /* 获取实名信息 */
+    STrustedInfo GetTrustInfo(1:i64 memberId)
+    /** 提交实名信息 */
+    ttype.Result SubmitTrustInfo(1:i64 memberId,2:STrustedInfo info)
+    /** 审核实名认证,若重复审核将返回错误 **/
+    ttype.Result ReviewTrustedInfo(1:i64 memberId,2:bool reviewPass,3:string remark)
     // 获取等级信息
     SLevel GetLevel(1:i32 id)
     // 根据SIGN获取等级
     SLevel GetLevelBySign(1:string sign)
-    /** 交换会员编号 */
-    i64 SwapMemberId(1:ECredentials cred,2:string value)
     // 根据会员编号获取会员信息
     SMember GetMember(1:i64 id)
     // 根据用户名获取会员信息
@@ -254,18 +258,31 @@ struct SMemberRelation {
     5: i32 RegisterMchId
 }
 
-
+/** 实名认证信息 */
 struct STrustedInfo {
-    1: i64 MemberId
-    2: string RealName
-    3: string CardId
-    4: string TrustImage
-    5: i32 ReviewState
-    6: i64 ReviewTime
-    7: string Remark
-    8: i64 UpdateTime
+    /** 真实姓名 */
+    1: string RealName
+    /** 国家代码,如:CN */
+    2: string CountryCode
+    /** 证件类型 */
+    3: i32 CardType
+    /** 证件号码 */
+    4: string CardId
+    /** 证件正面照 */
+    5: string CardImage
+    /** 证件反面照 */
+    6: string CardReverseImage
+    /** 认证人脸照 */
+    7: string TrustImage
+    /** 是否人工审核 */
+    8: i32 ManualReview
+    /** 审核状态 */
+    9: i32 ReviewState
+    /** 审核时间 */
+    10: i64 ReviewTime
+    /** 备注 */
+    11: string Remark
 }
-
 
 struct SAddress {
     1: i64 ID

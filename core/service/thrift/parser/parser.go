@@ -344,19 +344,6 @@ func MemberRelationDto(src *member.InviteRelation) *member_service.SMemberRelati
 	}
 }
 
-func TrustedInfoDto(src *member.TrustedInfo) *member_service.STrustedInfo {
-	return &member_service.STrustedInfo{
-		MemberId:    src.MemberId,
-		RealName:    src.RealName,
-		CardId:      src.CardId,
-		TrustImage:  src.TrustImage,
-		ReviewState: int32(src.ReviewState),
-		ReviewTime:  src.ReviewTime,
-		Remark:      src.Remark,
-		UpdateTime:  src.UpdateTime,
-	}
-}
-
 func ItemDto(src *item.GoodsItem) *ttype.SOldItem {
 	it := &ttype.SOldItem{
 		ItemId:       src.ID,

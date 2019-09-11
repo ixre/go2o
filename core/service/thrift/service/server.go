@@ -11,6 +11,7 @@ package service
 import (
 	"crypto/tls"
 	"github.com/apache/thrift/lib/go/thrift"
+	"go2o/core/service/auto_gen/rpc/content_service"
 	"go2o/core/service/auto_gen/rpc/finance_service"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/item_service"
@@ -58,6 +59,8 @@ func ListenAndServe(addr string, secure bool) error {
 		processor.RegisterProcessor("finance", finance_service.NewFinanceServiceProcessor(rsi.PersonFinanceService))
 		processor.RegisterProcessor("message", message_service.NewMessageServiceProcessor(rsi.MessageService))
 		processor.RegisterProcessor("wallet", wallet_service.NewWalletServiceProcessor(rsi.WalletService))
+		processor.RegisterProcessor("content", content_service.NewContentServiceProcessor(rsi.ContentService))
+
 		server := thrift.NewTSimpleServer4(processor, transport, transportFactory, protocolFactory)
 		log.Println("** [ Go2o][ RPC]: Starting thrift server on port ", addr)
 		err = server.Serve()

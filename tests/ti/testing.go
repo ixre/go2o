@@ -142,7 +142,7 @@ func (t *testingApp) Init(debug, trace bool) bool {
 }
 
 func init() {
-	app := core.NewApp("../../app.conf")
+	app := core.NewApp("../app.conf")
 	gof.CurrentApp = app
 	core.Init(app, false, false)
 	conn := app.Db()
