@@ -31,7 +31,6 @@ import (
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -464,7 +463,6 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		RegIp:    extend["reg_ip"],
 		Flag:     int(flag),
 	}
-	log.Println(fmt.Sprintf("%#v", v))
 	m := s.repo.CreateMember(v) //创建会员
 	id, err := m.Save()
 
