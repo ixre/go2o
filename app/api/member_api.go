@@ -185,6 +185,7 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 	}
 	return mp
 }
+
 func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
 	trans, cli, _ := thrift.MemberServeClient()
 	defer trans.Close()

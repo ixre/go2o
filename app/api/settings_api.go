@@ -5,7 +5,6 @@ import (
 	"go2o/core/service/thrift"
 )
 
-
 var _ api.Handler = new(SettingsApi)
 
 type SettingsApi struct {
@@ -37,5 +36,5 @@ func (a SettingsApi) registerSettings(ctx api.Context) interface{} {
 		mp, _ := cli.FindRegistries(thrift.Context, "member_register")
 		return mp
 	}
-	return api.ResponseWithCode(1,"no register settings")
+	return api.ResponseWithCode(1, "no register settings")
 }

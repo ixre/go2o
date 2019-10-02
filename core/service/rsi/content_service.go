@@ -42,7 +42,7 @@ func (cs *contentService) QueryPagingArticles(ctx context.Context, cat string, b
 	if ic != nil && ic.GetDomainId() > 0 {
 		total, rows = cs._query.PagedArticleList(ic.GetDomainId(), int(begin), int(size), "")
 	}
-	var arr  = make([]*content_service.SArticle,0)
+	var arr = make([]*content_service.SArticle, 0)
 	for _, v := range rows {
 		arr = append(arr, cs.parseArticle(v))
 	}
@@ -50,7 +50,7 @@ func (cs *contentService) QueryPagingArticles(ctx context.Context, cat string, b
 }
 
 func (cs *contentService) QueryTopArticles(ctx context.Context, cat string) (r []*content_service.SArticle, err error) {
-	var arr = make([]*content_service.SArticle,0)
+	var arr = make([]*content_service.SArticle, 0)
 	ic := cs._sysContent.ArticleManager().GetCategoryByAlias(cat)
 	if ic != nil && ic.GetDomainId() > 0 {
 		_, rows := cs._query.PagedArticleList(ic.GetDomainId(), 0, 1, "")

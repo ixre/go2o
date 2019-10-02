@@ -17,5 +17,5 @@ func TestMemberApi_Process(t *testing.T) {
 	mp := map[string]string{
 		"code": "eNe6FR",
 	}
-	testApi(t, "member.invites", mp)
+	testApi(t, "member.invites", mp, true)
 }

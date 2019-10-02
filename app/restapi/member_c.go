@@ -74,19 +74,19 @@ func (mc *MemberC) Async(c echo.Context) error {
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))
 	aut, _ = strconv.Atoi(form.Get("account_update_time"))
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
-	sto.Get(mutKey, &kvMut)
+	store.Get(mutKey, &kvMut)
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
-	sto.Get(autKey, &kvAut)
+	store.Get(autKey, &kvAut)
 	if kvMut == 0 {
 		//m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
 		//kvMut = int(m.UpdateTime)
-		sto.Set(mutKey, kvMut)
+		store.Set(mutKey, kvMut)
 	}
 	//kvAut = 0
 	if kvAut == 0 {
 		acc, _ := rsi.MemberService.GetAccount(thrift.Context, memberId)
 		kvAut = int(acc.UpdateTime)
-		sto.Set(autKey, kvAut)
+		store.Set(autKey, kvAut)
 	}
 	rlt.MemberId = memberId
 	rlt.MemberUpdated = kvMut != mut

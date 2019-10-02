@@ -6,11 +6,10 @@ package shipment_service
 import (
 	"bytes"
 	"context"
-	"reflect"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
-
+	"reflect"
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -21,6 +20,7 @@ var _ = reflect.DeepEqual
 var _ = bytes.Equal
 
 var _ = ttype.GoUnusedProtection__
+
 // Attributes:
 //  - Code
 //  - Message
@@ -31,357 +31,399 @@ var _ = ttype.GoUnusedProtection__
 //  - UpdateTime
 //  - Flows
 type SShipOrderTrack struct {
-  Code int32 `thrift:"Code,1" db:"Code" json:"Code"`
-  Message string `thrift:"Message,2" db:"Message" json:"Message"`
-  LogisticCode string `thrift:"LogisticCode,3" db:"LogisticCode" json:"LogisticCode"`
-  ShipperCode string `thrift:"ShipperCode,4" db:"ShipperCode" json:"ShipperCode"`
-  ShipperName string `thrift:"ShipperName,5" db:"ShipperName" json:"ShipperName"`
-  ShipState string `thrift:"ShipState,6" db:"ShipState" json:"ShipState"`
-  UpdateTime int64 `thrift:"UpdateTime,7" db:"UpdateTime" json:"UpdateTime"`
-  Flows []*SShipFlow `thrift:"Flows,8" db:"Flows" json:"Flows"`
+	Code         int32        `thrift:"Code,1" db:"Code" json:"Code"`
+	Message      string       `thrift:"Message,2" db:"Message" json:"Message"`
+	LogisticCode string       `thrift:"LogisticCode,3" db:"LogisticCode" json:"LogisticCode"`
+	ShipperCode  string       `thrift:"ShipperCode,4" db:"ShipperCode" json:"ShipperCode"`
+	ShipperName  string       `thrift:"ShipperName,5" db:"ShipperName" json:"ShipperName"`
+	ShipState    string       `thrift:"ShipState,6" db:"ShipState" json:"ShipState"`
+	UpdateTime   int64        `thrift:"UpdateTime,7" db:"UpdateTime" json:"UpdateTime"`
+	Flows        []*SShipFlow `thrift:"Flows,8" db:"Flows" json:"Flows"`
 }
 
 func NewSShipOrderTrack() *SShipOrderTrack {
-  return &SShipOrderTrack{}
+	return &SShipOrderTrack{}
 }
 
-
 func (p *SShipOrderTrack) GetCode() int32 {
-  return p.Code
+	return p.Code
 }
 
 func (p *SShipOrderTrack) GetMessage() string {
-  return p.Message
+	return p.Message
 }
 
 func (p *SShipOrderTrack) GetLogisticCode() string {
-  return p.LogisticCode
+	return p.LogisticCode
 }
 
 func (p *SShipOrderTrack) GetShipperCode() string {
-  return p.ShipperCode
+	return p.ShipperCode
 }
 
 func (p *SShipOrderTrack) GetShipperName() string {
-  return p.ShipperName
+	return p.ShipperName
 }
 
 func (p *SShipOrderTrack) GetShipState() string {
-  return p.ShipState
+	return p.ShipState
 }
 
 func (p *SShipOrderTrack) GetUpdateTime() int64 {
-  return p.UpdateTime
+	return p.UpdateTime
 }
 
 func (p *SShipOrderTrack) GetFlows() []*SShipFlow {
-  return p.Flows
+	return p.Flows
 }
 func (p *SShipOrderTrack) Read(iprot thrift.TProtocol) error {
-  if _, err := iprot.ReadStructBegin(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-  }
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
 
-
-  for {
-    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-    if err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-    }
-    if fieldTypeId == thrift.STOP { break; }
-    switch fieldId {
-    case 1:
-      if fieldTypeId == thrift.I32 {
-        if err := p.ReadField1(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 2:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField2(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 3:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField3(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 4:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField4(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 5:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField5(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 6:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField6(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 7:
-      if fieldTypeId == thrift.I64 {
-        if err := p.ReadField7(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 8:
-      if fieldTypeId == thrift.LIST {
-        if err := p.ReadField8(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    default:
-      if err := iprot.Skip(fieldTypeId); err != nil {
-        return err
-      }
-    }
-    if err := iprot.ReadFieldEnd(); err != nil {
-      return err
-    }
-  }
-  if err := iprot.ReadStructEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-  }
-  return nil
-}
-
-func (p *SShipOrderTrack)  ReadField1(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(); err != nil {
-  return thrift.PrependError("error reading field 1: ", err)
-} else {
-  p.Code = v
-}
-  return nil
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I32 {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField3(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 4:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField4(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 5:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField5(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 6:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField6(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 7:
+			if fieldTypeId == thrift.I64 {
+				if err := p.ReadField7(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 8:
+			if fieldTypeId == thrift.LIST {
+				if err := p.ReadField8(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
 }
 
-func (p *SShipOrderTrack)  ReadField2(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 2: ", err)
-} else {
-  p.Message = v
-}
-  return nil
-}
-
-func (p *SShipOrderTrack)  ReadField3(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 3: ", err)
-} else {
-  p.LogisticCode = v
-}
-  return nil
+func (p *SShipOrderTrack) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Code = v
+	}
+	return nil
 }
 
-func (p *SShipOrderTrack)  ReadField4(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 4: ", err)
-} else {
-  p.ShipperCode = v
-}
-  return nil
-}
-
-func (p *SShipOrderTrack)  ReadField5(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 5: ", err)
-} else {
-  p.ShipperName = v
-}
-  return nil
+func (p *SShipOrderTrack) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Message = v
+	}
+	return nil
 }
 
-func (p *SShipOrderTrack)  ReadField6(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 6: ", err)
-} else {
-  p.ShipState = v
-}
-  return nil
-}
-
-func (p *SShipOrderTrack)  ReadField7(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI64(); err != nil {
-  return thrift.PrependError("error reading field 7: ", err)
-} else {
-  p.UpdateTime = v
-}
-  return nil
+func (p *SShipOrderTrack) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.LogisticCode = v
+	}
+	return nil
 }
 
-func (p *SShipOrderTrack)  ReadField8(iprot thrift.TProtocol) error {
-  _, size, err := iprot.ReadListBegin()
-  if err != nil {
-    return thrift.PrependError("error reading list begin: ", err)
-  }
-  tSlice := make([]*SShipFlow, 0, size)
-  p.Flows =  tSlice
-  for i := 0; i < size; i ++ {
-    _elem0 := &SShipFlow{}
-    if err := _elem0.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem0), err)
-    }
-    p.Flows = append(p.Flows, _elem0)
-  }
-  if err := iprot.ReadListEnd(); err != nil {
-    return thrift.PrependError("error reading list end: ", err)
-  }
-  return nil
+func (p *SShipOrderTrack) ReadField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
+		p.ShipperCode = v
+	}
+	return nil
+}
+
+func (p *SShipOrderTrack) ReadField5(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 5: ", err)
+	} else {
+		p.ShipperName = v
+	}
+	return nil
+}
+
+func (p *SShipOrderTrack) ReadField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 6: ", err)
+	} else {
+		p.ShipState = v
+	}
+	return nil
+}
+
+func (p *SShipOrderTrack) ReadField7(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 7: ", err)
+	} else {
+		p.UpdateTime = v
+	}
+	return nil
+}
+
+func (p *SShipOrderTrack) ReadField8(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]*SShipFlow, 0, size)
+	p.Flows = tSlice
+	for i := 0; i < size; i++ {
+		_elem0 := &SShipFlow{}
+		if err := _elem0.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem0), err)
+		}
+		p.Flows = append(p.Flows, _elem0)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
 }
 
 func (p *SShipOrderTrack) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("SShipOrderTrack"); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
-  if p != nil {
-    if err := p.writeField1(oprot); err != nil { return err }
-    if err := p.writeField2(oprot); err != nil { return err }
-    if err := p.writeField3(oprot); err != nil { return err }
-    if err := p.writeField4(oprot); err != nil { return err }
-    if err := p.writeField5(oprot); err != nil { return err }
-    if err := p.writeField6(oprot); err != nil { return err }
-    if err := p.writeField7(oprot); err != nil { return err }
-    if err := p.writeField8(oprot); err != nil { return err }
-  }
-  if err := oprot.WriteFieldStop(); err != nil {
-    return thrift.PrependError("write field stop error: ", err) }
-  if err := oprot.WriteStructEnd(); err != nil {
-    return thrift.PrependError("write struct stop error: ", err) }
-  return nil
+	if err := oprot.WriteStructBegin("SShipOrderTrack"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField3(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField4(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField5(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField6(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField7(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField8(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
 }
 
 func (p *SShipOrderTrack) writeField1(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("Code", thrift.I32, 1); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Code: ", p), err) }
-  if err := oprot.WriteI32(int32(p.Code)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.Code (1) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Code: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("Code", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Code: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.Code)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Code (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Code: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipOrderTrack) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("Message", thrift.STRING, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Message: ", p), err) }
-  if err := oprot.WriteString(string(p.Message)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.Message (2) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Message: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("Message", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Message: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Message)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Message (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Message: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipOrderTrack) writeField3(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("LogisticCode", thrift.STRING, 3); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:LogisticCode: ", p), err) }
-  if err := oprot.WriteString(string(p.LogisticCode)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.LogisticCode (3) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:LogisticCode: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("LogisticCode", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:LogisticCode: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.LogisticCode)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.LogisticCode (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:LogisticCode: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipOrderTrack) writeField4(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("ShipperCode", thrift.STRING, 4); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:ShipperCode: ", p), err) }
-  if err := oprot.WriteString(string(p.ShipperCode)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.ShipperCode (4) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 4:ShipperCode: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("ShipperCode", thrift.STRING, 4); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:ShipperCode: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.ShipperCode)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.ShipperCode (4) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:ShipperCode: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipOrderTrack) writeField5(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("ShipperName", thrift.STRING, 5); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:ShipperName: ", p), err) }
-  if err := oprot.WriteString(string(p.ShipperName)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.ShipperName (5) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 5:ShipperName: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("ShipperName", thrift.STRING, 5); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:ShipperName: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.ShipperName)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.ShipperName (5) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:ShipperName: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipOrderTrack) writeField6(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("ShipState", thrift.STRING, 6); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:ShipState: ", p), err) }
-  if err := oprot.WriteString(string(p.ShipState)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.ShipState (6) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 6:ShipState: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("ShipState", thrift.STRING, 6); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:ShipState: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.ShipState)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.ShipState (6) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:ShipState: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipOrderTrack) writeField7(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("UpdateTime", thrift.I64, 7); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:UpdateTime: ", p), err) }
-  if err := oprot.WriteI64(int64(p.UpdateTime)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.UpdateTime (7) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 7:UpdateTime: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("UpdateTime", thrift.I64, 7); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:UpdateTime: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.UpdateTime)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.UpdateTime (7) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:UpdateTime: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipOrderTrack) writeField8(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("Flows", thrift.LIST, 8); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:Flows: ", p), err) }
-  if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Flows)); err != nil {
-    return thrift.PrependError("error writing list begin: ", err)
-  }
-  for _, v := range p.Flows {
-    if err := v.Write(oprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
-    }
-  }
-  if err := oprot.WriteListEnd(); err != nil {
-    return thrift.PrependError("error writing list end: ", err)
-  }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 8:Flows: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("Flows", thrift.LIST, 8); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:Flows: ", p), err)
+	}
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Flows)); err != nil {
+		return thrift.PrependError("error writing list begin: ", err)
+	}
+	for _, v := range p.Flows {
+		if err := v.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+		}
+	}
+	if err := oprot.WriteListEnd(); err != nil {
+		return thrift.PrependError("error writing list end: ", err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:Flows: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipOrderTrack) String() string {
-  if p == nil {
-    return "<nil>"
-  }
-  return fmt.Sprintf("SShipOrderTrack(%+v)", *p)
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SShipOrderTrack(%+v)", *p)
 }
 
 // Attributes:
@@ -389,378 +431,398 @@ func (p *SShipOrderTrack) String() string {
 //  - CreateTime
 //  - Remark
 type SShipFlow struct {
-  Subject string `thrift:"Subject,1" db:"Subject" json:"Subject"`
-  CreateTime string `thrift:"CreateTime,2" db:"CreateTime" json:"CreateTime"`
-  Remark string `thrift:"Remark,3" db:"Remark" json:"Remark"`
+	Subject    string `thrift:"Subject,1" db:"Subject" json:"Subject"`
+	CreateTime string `thrift:"CreateTime,2" db:"CreateTime" json:"CreateTime"`
+	Remark     string `thrift:"Remark,3" db:"Remark" json:"Remark"`
 }
 
 func NewSShipFlow() *SShipFlow {
-  return &SShipFlow{}
+	return &SShipFlow{}
 }
 
-
 func (p *SShipFlow) GetSubject() string {
-  return p.Subject
+	return p.Subject
 }
 
 func (p *SShipFlow) GetCreateTime() string {
-  return p.CreateTime
+	return p.CreateTime
 }
 
 func (p *SShipFlow) GetRemark() string {
-  return p.Remark
+	return p.Remark
 }
 func (p *SShipFlow) Read(iprot thrift.TProtocol) error {
-  if _, err := iprot.ReadStructBegin(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-  }
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
 
-
-  for {
-    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-    if err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-    }
-    if fieldTypeId == thrift.STOP { break; }
-    switch fieldId {
-    case 1:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField1(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 2:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField2(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 3:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField3(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    default:
-      if err := iprot.Skip(fieldTypeId); err != nil {
-        return err
-      }
-    }
-    if err := iprot.ReadFieldEnd(); err != nil {
-      return err
-    }
-  }
-  if err := iprot.ReadStructEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-  }
-  return nil
-}
-
-func (p *SShipFlow)  ReadField1(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 1: ", err)
-} else {
-  p.Subject = v
-}
-  return nil
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField3(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
 }
 
-func (p *SShipFlow)  ReadField2(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 2: ", err)
-} else {
-  p.CreateTime = v
-}
-  return nil
+func (p *SShipFlow) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Subject = v
+	}
+	return nil
 }
 
-func (p *SShipFlow)  ReadField3(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 3: ", err)
-} else {
-  p.Remark = v
+func (p *SShipFlow) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.CreateTime = v
+	}
+	return nil
 }
-  return nil
+
+func (p *SShipFlow) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Remark = v
+	}
+	return nil
 }
 
 func (p *SShipFlow) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("SShipFlow"); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
-  if p != nil {
-    if err := p.writeField1(oprot); err != nil { return err }
-    if err := p.writeField2(oprot); err != nil { return err }
-    if err := p.writeField3(oprot); err != nil { return err }
-  }
-  if err := oprot.WriteFieldStop(); err != nil {
-    return thrift.PrependError("write field stop error: ", err) }
-  if err := oprot.WriteStructEnd(); err != nil {
-    return thrift.PrependError("write struct stop error: ", err) }
-  return nil
+	if err := oprot.WriteStructBegin("SShipFlow"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField3(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
 }
 
 func (p *SShipFlow) writeField1(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("Subject", thrift.STRING, 1); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Subject: ", p), err) }
-  if err := oprot.WriteString(string(p.Subject)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.Subject (1) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Subject: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("Subject", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Subject: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Subject)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Subject (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Subject: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipFlow) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("CreateTime", thrift.STRING, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:CreateTime: ", p), err) }
-  if err := oprot.WriteString(string(p.CreateTime)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.CreateTime (2) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:CreateTime: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("CreateTime", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:CreateTime: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.CreateTime)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.CreateTime (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:CreateTime: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipFlow) writeField3(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("Remark", thrift.STRING, 3); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Remark: ", p), err) }
-  if err := oprot.WriteString(string(p.Remark)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.Remark (3) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Remark: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("Remark", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Remark: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Remark)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Remark (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Remark: ", p), err)
+	}
+	return err
 }
 
 func (p *SShipFlow) String() string {
-  if p == nil {
-    return "<nil>"
-  }
-  return fmt.Sprintf("SShipFlow(%+v)", *p)
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SShipFlow(%+v)", *p)
 }
 
 type ShipmentService interface {
-  // 物流追踪
-  // 
-  // Parameters:
-  //  - ShipperCode
-  //  - LogisticCode
-  //  - Invert
-  GetLogisticFlowTrack(ctx context.Context, shipperCode string, logisticCode string, invert bool) (r *SShipOrderTrack, err error)
-  // 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列
-  // 
-  // Parameters:
-  //  - ShipOrderId
-  //  - Invert
-  ShipOrderLogisticTrack(ctx context.Context, shipOrderId int64, invert bool) (r *SShipOrderTrack, err error)
+	// 物流追踪
+	//
+	// Parameters:
+	//  - ShipperCode
+	//  - LogisticCode
+	//  - Invert
+	GetLogisticFlowTrack(ctx context.Context, shipperCode string, logisticCode string, invert bool) (r *SShipOrderTrack, err error)
+	// 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列
+	//
+	// Parameters:
+	//  - ShipOrderId
+	//  - Invert
+	ShipOrderLogisticTrack(ctx context.Context, shipOrderId int64, invert bool) (r *SShipOrderTrack, err error)
 }
 
 type ShipmentServiceClient struct {
-  c thrift.TClient
+	c thrift.TClient
 }
 
 func NewShipmentServiceClientFactory(t thrift.TTransport, f thrift.TProtocolFactory) *ShipmentServiceClient {
-  return &ShipmentServiceClient{
-    c: thrift.NewTStandardClient(f.GetProtocol(t), f.GetProtocol(t)),
-  }
+	return &ShipmentServiceClient{
+		c: thrift.NewTStandardClient(f.GetProtocol(t), f.GetProtocol(t)),
+	}
 }
 
 func NewShipmentServiceClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, oprot thrift.TProtocol) *ShipmentServiceClient {
-  return &ShipmentServiceClient{
-    c: thrift.NewTStandardClient(iprot, oprot),
-  }
+	return &ShipmentServiceClient{
+		c: thrift.NewTStandardClient(iprot, oprot),
+	}
 }
 
 func NewShipmentServiceClient(c thrift.TClient) *ShipmentServiceClient {
-  return &ShipmentServiceClient{
-    c: c,
-  }
+	return &ShipmentServiceClient{
+		c: c,
+	}
 }
 
 func (p *ShipmentServiceClient) Client_() thrift.TClient {
-  return p.c
+	return p.c
 }
+
 // 物流追踪
-// 
+//
 // Parameters:
 //  - ShipperCode
 //  - LogisticCode
 //  - Invert
 func (p *ShipmentServiceClient) GetLogisticFlowTrack(ctx context.Context, shipperCode string, logisticCode string, invert bool) (r *SShipOrderTrack, err error) {
-  var _args1 ShipmentServiceGetLogisticFlowTrackArgs
-  _args1.ShipperCode = shipperCode
-  _args1.LogisticCode = logisticCode
-  _args1.Invert = invert
-  var _result2 ShipmentServiceGetLogisticFlowTrackResult
-  if err = p.Client_().Call(ctx, "GetLogisticFlowTrack", &_args1, &_result2); err != nil {
-    return
-  }
-  return _result2.GetSuccess(), nil
+	var _args1 ShipmentServiceGetLogisticFlowTrackArgs
+	_args1.ShipperCode = shipperCode
+	_args1.LogisticCode = logisticCode
+	_args1.Invert = invert
+	var _result2 ShipmentServiceGetLogisticFlowTrackResult
+	if err = p.Client_().Call(ctx, "GetLogisticFlowTrack", &_args1, &_result2); err != nil {
+		return
+	}
+	return _result2.GetSuccess(), nil
 }
 
 // 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列
-// 
+//
 // Parameters:
 //  - ShipOrderId
 //  - Invert
 func (p *ShipmentServiceClient) ShipOrderLogisticTrack(ctx context.Context, shipOrderId int64, invert bool) (r *SShipOrderTrack, err error) {
-  var _args3 ShipmentServiceShipOrderLogisticTrackArgs
-  _args3.ShipOrderId = shipOrderId
-  _args3.Invert = invert
-  var _result4 ShipmentServiceShipOrderLogisticTrackResult
-  if err = p.Client_().Call(ctx, "ShipOrderLogisticTrack", &_args3, &_result4); err != nil {
-    return
-  }
-  return _result4.GetSuccess(), nil
+	var _args3 ShipmentServiceShipOrderLogisticTrackArgs
+	_args3.ShipOrderId = shipOrderId
+	_args3.Invert = invert
+	var _result4 ShipmentServiceShipOrderLogisticTrackResult
+	if err = p.Client_().Call(ctx, "ShipOrderLogisticTrack", &_args3, &_result4); err != nil {
+		return
+	}
+	return _result4.GetSuccess(), nil
 }
 
 type ShipmentServiceProcessor struct {
-  processorMap map[string]thrift.TProcessorFunction
-  handler ShipmentService
+	processorMap map[string]thrift.TProcessorFunction
+	handler      ShipmentService
 }
 
 func (p *ShipmentServiceProcessor) AddToProcessorMap(key string, processor thrift.TProcessorFunction) {
-  p.processorMap[key] = processor
+	p.processorMap[key] = processor
 }
 
 func (p *ShipmentServiceProcessor) GetProcessorFunction(key string) (processor thrift.TProcessorFunction, ok bool) {
-  processor, ok = p.processorMap[key]
-  return processor, ok
+	processor, ok = p.processorMap[key]
+	return processor, ok
 }
 
 func (p *ShipmentServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
-  return p.processorMap
+	return p.processorMap
 }
 
 func NewShipmentServiceProcessor(handler ShipmentService) *ShipmentServiceProcessor {
 
-  self5 := &ShipmentServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self5.processorMap["GetLogisticFlowTrack"] = &shipmentServiceProcessorGetLogisticFlowTrack{handler:handler}
-  self5.processorMap["ShipOrderLogisticTrack"] = &shipmentServiceProcessorShipOrderLogisticTrack{handler:handler}
-return self5
+	self5 := &ShipmentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self5.processorMap["GetLogisticFlowTrack"] = &shipmentServiceProcessorGetLogisticFlowTrack{handler: handler}
+	self5.processorMap["ShipOrderLogisticTrack"] = &shipmentServiceProcessorShipOrderLogisticTrack{handler: handler}
+	return self5
 }
 
 func (p *ShipmentServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-  name, _, seqId, err := iprot.ReadMessageBegin()
-  if err != nil { return false, err }
-  if processor, ok := p.GetProcessorFunction(name); ok {
-    return processor.Process(ctx, seqId, iprot, oprot)
-  }
-  iprot.Skip(thrift.STRUCT)
-  iprot.ReadMessageEnd()
-  x6 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
-  oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x6.Write(oprot)
-  oprot.WriteMessageEnd()
-  oprot.Flush(ctx)
-  return false, x6
+	name, _, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return false, err
+	}
+	if processor, ok := p.GetProcessorFunction(name); ok {
+		return processor.Process(ctx, seqId, iprot, oprot)
+	}
+	iprot.Skip(thrift.STRUCT)
+	iprot.ReadMessageEnd()
+	x6 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
+	x6.Write(oprot)
+	oprot.WriteMessageEnd()
+	oprot.Flush(ctx)
+	return false, x6
 
 }
 
 type shipmentServiceProcessorGetLogisticFlowTrack struct {
-  handler ShipmentService
+	handler ShipmentService
 }
 
 func (p *shipmentServiceProcessorGetLogisticFlowTrack) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-  args := ShipmentServiceGetLogisticFlowTrackArgs{}
-  if err = args.Read(iprot); err != nil {
-    iprot.ReadMessageEnd()
-    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-    oprot.WriteMessageBegin("GetLogisticFlowTrack", thrift.EXCEPTION, seqId)
-    x.Write(oprot)
-    oprot.WriteMessageEnd()
-    oprot.Flush(ctx)
-    return false, err
-  }
+	args := ShipmentServiceGetLogisticFlowTrackArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("GetLogisticFlowTrack", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
 
-  iprot.ReadMessageEnd()
-  result := ShipmentServiceGetLogisticFlowTrackResult{}
-var retval *SShipOrderTrack
-  var err2 error
-  if retval, err2 = p.handler.GetLogisticFlowTrack(ctx, args.ShipperCode, args.LogisticCode, args.Invert); err2 != nil {
-    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetLogisticFlowTrack: " + err2.Error())
-    oprot.WriteMessageBegin("GetLogisticFlowTrack", thrift.EXCEPTION, seqId)
-    x.Write(oprot)
-    oprot.WriteMessageEnd()
-    oprot.Flush(ctx)
-    return true, err2
-  } else {
-    result.Success = retval
-}
-  if err2 = oprot.WriteMessageBegin("GetLogisticFlowTrack", thrift.REPLY, seqId); err2 != nil {
-    err = err2
-  }
-  if err2 = result.Write(oprot); err == nil && err2 != nil {
-    err = err2
-  }
-  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
-    err = err2
-  }
-  if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
-    err = err2
-  }
-  if err != nil {
-    return
-  }
-  return true, err
+	iprot.ReadMessageEnd()
+	result := ShipmentServiceGetLogisticFlowTrackResult{}
+	var retval *SShipOrderTrack
+	var err2 error
+	if retval, err2 = p.handler.GetLogisticFlowTrack(ctx, args.ShipperCode, args.LogisticCode, args.Invert); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetLogisticFlowTrack: "+err2.Error())
+		oprot.WriteMessageBegin("GetLogisticFlowTrack", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("GetLogisticFlowTrack", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
 }
 
 type shipmentServiceProcessorShipOrderLogisticTrack struct {
-  handler ShipmentService
+	handler ShipmentService
 }
 
 func (p *shipmentServiceProcessorShipOrderLogisticTrack) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-  args := ShipmentServiceShipOrderLogisticTrackArgs{}
-  if err = args.Read(iprot); err != nil {
-    iprot.ReadMessageEnd()
-    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-    oprot.WriteMessageBegin("ShipOrderLogisticTrack", thrift.EXCEPTION, seqId)
-    x.Write(oprot)
-    oprot.WriteMessageEnd()
-    oprot.Flush(ctx)
-    return false, err
-  }
+	args := ShipmentServiceShipOrderLogisticTrackArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("ShipOrderLogisticTrack", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
 
-  iprot.ReadMessageEnd()
-  result := ShipmentServiceShipOrderLogisticTrackResult{}
-var retval *SShipOrderTrack
-  var err2 error
-  if retval, err2 = p.handler.ShipOrderLogisticTrack(ctx, args.ShipOrderId, args.Invert); err2 != nil {
-    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ShipOrderLogisticTrack: " + err2.Error())
-    oprot.WriteMessageBegin("ShipOrderLogisticTrack", thrift.EXCEPTION, seqId)
-    x.Write(oprot)
-    oprot.WriteMessageEnd()
-    oprot.Flush(ctx)
-    return true, err2
-  } else {
-    result.Success = retval
+	iprot.ReadMessageEnd()
+	result := ShipmentServiceShipOrderLogisticTrackResult{}
+	var retval *SShipOrderTrack
+	var err2 error
+	if retval, err2 = p.handler.ShipOrderLogisticTrack(ctx, args.ShipOrderId, args.Invert); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ShipOrderLogisticTrack: "+err2.Error())
+		oprot.WriteMessageBegin("ShipOrderLogisticTrack", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("ShipOrderLogisticTrack", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
 }
-  if err2 = oprot.WriteMessageBegin("ShipOrderLogisticTrack", thrift.REPLY, seqId); err2 != nil {
-    err = err2
-  }
-  if err2 = result.Write(oprot); err == nil && err2 != nil {
-    err = err2
-  }
-  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
-    err = err2
-  }
-  if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
-    err = err2
-  }
-  if err != nil {
-    return
-  }
-  return true, err
-}
-
 
 // HELPER FUNCTIONS AND STRUCTURES
 
@@ -769,489 +831,536 @@ var retval *SShipOrderTrack
 //  - LogisticCode
 //  - Invert
 type ShipmentServiceGetLogisticFlowTrackArgs struct {
-  ShipperCode string `thrift:"shipperCode,1" db:"shipperCode" json:"shipperCode"`
-  LogisticCode string `thrift:"logisticCode,2" db:"logisticCode" json:"logisticCode"`
-  Invert bool `thrift:"invert,3" db:"invert" json:"invert"`
+	ShipperCode  string `thrift:"shipperCode,1" db:"shipperCode" json:"shipperCode"`
+	LogisticCode string `thrift:"logisticCode,2" db:"logisticCode" json:"logisticCode"`
+	Invert       bool   `thrift:"invert,3" db:"invert" json:"invert"`
 }
 
 func NewShipmentServiceGetLogisticFlowTrackArgs() *ShipmentServiceGetLogisticFlowTrackArgs {
-  return &ShipmentServiceGetLogisticFlowTrackArgs{}
+	return &ShipmentServiceGetLogisticFlowTrackArgs{}
 }
 
-
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) GetShipperCode() string {
-  return p.ShipperCode
+	return p.ShipperCode
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) GetLogisticCode() string {
-  return p.LogisticCode
+	return p.LogisticCode
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) GetInvert() bool {
-  return p.Invert
+	return p.Invert
 }
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) Read(iprot thrift.TProtocol) error {
-  if _, err := iprot.ReadStructBegin(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-  }
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
 
-
-  for {
-    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-    if err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-    }
-    if fieldTypeId == thrift.STOP { break; }
-    switch fieldId {
-    case 1:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField1(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 2:
-      if fieldTypeId == thrift.STRING {
-        if err := p.ReadField2(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 3:
-      if fieldTypeId == thrift.BOOL {
-        if err := p.ReadField3(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    default:
-      if err := iprot.Skip(fieldTypeId); err != nil {
-        return err
-      }
-    }
-    if err := iprot.ReadFieldEnd(); err != nil {
-      return err
-    }
-  }
-  if err := iprot.ReadStructEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-  }
-  return nil
-}
-
-func (p *ShipmentServiceGetLogisticFlowTrackArgs)  ReadField1(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 1: ", err)
-} else {
-  p.ShipperCode = v
-}
-  return nil
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.BOOL {
+				if err := p.ReadField3(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
 }
 
-func (p *ShipmentServiceGetLogisticFlowTrackArgs)  ReadField2(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 2: ", err)
-} else {
-  p.LogisticCode = v
-}
-  return nil
+func (p *ShipmentServiceGetLogisticFlowTrackArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.ShipperCode = v
+	}
+	return nil
 }
 
-func (p *ShipmentServiceGetLogisticFlowTrackArgs)  ReadField3(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadBool(); err != nil {
-  return thrift.PrependError("error reading field 3: ", err)
-} else {
-  p.Invert = v
+func (p *ShipmentServiceGetLogisticFlowTrackArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.LogisticCode = v
+	}
+	return nil
 }
-  return nil
+
+func (p *ShipmentServiceGetLogisticFlowTrackArgs) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Invert = v
+	}
+	return nil
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("GetLogisticFlowTrack_args"); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
-  if p != nil {
-    if err := p.writeField1(oprot); err != nil { return err }
-    if err := p.writeField2(oprot); err != nil { return err }
-    if err := p.writeField3(oprot); err != nil { return err }
-  }
-  if err := oprot.WriteFieldStop(); err != nil {
-    return thrift.PrependError("write field stop error: ", err) }
-  if err := oprot.WriteStructEnd(); err != nil {
-    return thrift.PrependError("write struct stop error: ", err) }
-  return nil
+	if err := oprot.WriteStructBegin("GetLogisticFlowTrack_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField3(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) writeField1(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("shipperCode", thrift.STRING, 1); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:shipperCode: ", p), err) }
-  if err := oprot.WriteString(string(p.ShipperCode)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.shipperCode (1) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:shipperCode: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("shipperCode", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:shipperCode: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.ShipperCode)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.shipperCode (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:shipperCode: ", p), err)
+	}
+	return err
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("logisticCode", thrift.STRING, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:logisticCode: ", p), err) }
-  if err := oprot.WriteString(string(p.LogisticCode)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.logisticCode (2) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:logisticCode: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("logisticCode", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:logisticCode: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.LogisticCode)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.logisticCode (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:logisticCode: ", p), err)
+	}
+	return err
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) writeField3(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("invert", thrift.BOOL, 3); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:invert: ", p), err) }
-  if err := oprot.WriteBool(bool(p.Invert)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.invert (3) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:invert: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("invert", thrift.BOOL, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:invert: ", p), err)
+	}
+	if err := oprot.WriteBool(bool(p.Invert)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.invert (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:invert: ", p), err)
+	}
+	return err
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackArgs) String() string {
-  if p == nil {
-    return "<nil>"
-  }
-  return fmt.Sprintf("ShipmentServiceGetLogisticFlowTrackArgs(%+v)", *p)
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ShipmentServiceGetLogisticFlowTrackArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
 type ShipmentServiceGetLogisticFlowTrackResult struct {
-  Success *SShipOrderTrack `thrift:"success,0" db:"success" json:"success,omitempty"`
+	Success *SShipOrderTrack `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewShipmentServiceGetLogisticFlowTrackResult() *ShipmentServiceGetLogisticFlowTrackResult {
-  return &ShipmentServiceGetLogisticFlowTrackResult{}
+	return &ShipmentServiceGetLogisticFlowTrackResult{}
 }
 
 var ShipmentServiceGetLogisticFlowTrackResult_Success_DEFAULT *SShipOrderTrack
+
 func (p *ShipmentServiceGetLogisticFlowTrackResult) GetSuccess() *SShipOrderTrack {
-  if !p.IsSetSuccess() {
-    return ShipmentServiceGetLogisticFlowTrackResult_Success_DEFAULT
-  }
-return p.Success
+	if !p.IsSetSuccess() {
+		return ShipmentServiceGetLogisticFlowTrackResult_Success_DEFAULT
+	}
+	return p.Success
 }
 func (p *ShipmentServiceGetLogisticFlowTrackResult) IsSetSuccess() bool {
-  return p.Success != nil
+	return p.Success != nil
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackResult) Read(iprot thrift.TProtocol) error {
-  if _, err := iprot.ReadStructBegin(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-  }
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
 
-
-  for {
-    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-    if err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-    }
-    if fieldTypeId == thrift.STOP { break; }
-    switch fieldId {
-    case 0:
-      if fieldTypeId == thrift.STRUCT {
-        if err := p.ReadField0(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    default:
-      if err := iprot.Skip(fieldTypeId); err != nil {
-        return err
-      }
-    }
-    if err := iprot.ReadFieldEnd(); err != nil {
-      return err
-    }
-  }
-  if err := iprot.ReadStructEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-  }
-  return nil
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField0(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
 }
 
-func (p *ShipmentServiceGetLogisticFlowTrackResult)  ReadField0(iprot thrift.TProtocol) error {
-  p.Success = &SShipOrderTrack{}
-  if err := p.Success.Read(iprot); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
-  }
-  return nil
+func (p *ShipmentServiceGetLogisticFlowTrackResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &SShipOrderTrack{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackResult) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("GetLogisticFlowTrack_result"); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
-  if p != nil {
-    if err := p.writeField0(oprot); err != nil { return err }
-  }
-  if err := oprot.WriteFieldStop(); err != nil {
-    return thrift.PrependError("write field stop error: ", err) }
-  if err := oprot.WriteStructEnd(); err != nil {
-    return thrift.PrependError("write struct stop error: ", err) }
-  return nil
+	if err := oprot.WriteStructBegin("GetLogisticFlowTrack_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackResult) writeField0(oprot thrift.TProtocol) (err error) {
-  if p.IsSetSuccess() {
-    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
-    if err := p.Success.Write(oprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
-    }
-    if err := oprot.WriteFieldEnd(); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
-  }
-  return err
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
 }
 
 func (p *ShipmentServiceGetLogisticFlowTrackResult) String() string {
-  if p == nil {
-    return "<nil>"
-  }
-  return fmt.Sprintf("ShipmentServiceGetLogisticFlowTrackResult(%+v)", *p)
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ShipmentServiceGetLogisticFlowTrackResult(%+v)", *p)
 }
 
 // Attributes:
 //  - ShipOrderId
 //  - Invert
 type ShipmentServiceShipOrderLogisticTrackArgs struct {
-  ShipOrderId int64 `thrift:"shipOrderId,1" db:"shipOrderId" json:"shipOrderId"`
-  Invert bool `thrift:"invert,2" db:"invert" json:"invert"`
+	ShipOrderId int64 `thrift:"shipOrderId,1" db:"shipOrderId" json:"shipOrderId"`
+	Invert      bool  `thrift:"invert,2" db:"invert" json:"invert"`
 }
 
 func NewShipmentServiceShipOrderLogisticTrackArgs() *ShipmentServiceShipOrderLogisticTrackArgs {
-  return &ShipmentServiceShipOrderLogisticTrackArgs{}
+	return &ShipmentServiceShipOrderLogisticTrackArgs{}
 }
 
-
 func (p *ShipmentServiceShipOrderLogisticTrackArgs) GetShipOrderId() int64 {
-  return p.ShipOrderId
+	return p.ShipOrderId
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackArgs) GetInvert() bool {
-  return p.Invert
+	return p.Invert
 }
 func (p *ShipmentServiceShipOrderLogisticTrackArgs) Read(iprot thrift.TProtocol) error {
-  if _, err := iprot.ReadStructBegin(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-  }
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
 
-
-  for {
-    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-    if err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-    }
-    if fieldTypeId == thrift.STOP { break; }
-    switch fieldId {
-    case 1:
-      if fieldTypeId == thrift.I64 {
-        if err := p.ReadField1(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 2:
-      if fieldTypeId == thrift.BOOL {
-        if err := p.ReadField2(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    default:
-      if err := iprot.Skip(fieldTypeId); err != nil {
-        return err
-      }
-    }
-    if err := iprot.ReadFieldEnd(); err != nil {
-      return err
-    }
-  }
-  if err := iprot.ReadStructEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-  }
-  return nil
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err := p.ReadField1(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.BOOL {
+				if err := p.ReadField2(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
 }
 
-func (p *ShipmentServiceShipOrderLogisticTrackArgs)  ReadField1(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI64(); err != nil {
-  return thrift.PrependError("error reading field 1: ", err)
-} else {
-  p.ShipOrderId = v
-}
-  return nil
+func (p *ShipmentServiceShipOrderLogisticTrackArgs) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.ShipOrderId = v
+	}
+	return nil
 }
 
-func (p *ShipmentServiceShipOrderLogisticTrackArgs)  ReadField2(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadBool(); err != nil {
-  return thrift.PrependError("error reading field 2: ", err)
-} else {
-  p.Invert = v
-}
-  return nil
+func (p *ShipmentServiceShipOrderLogisticTrackArgs) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Invert = v
+	}
+	return nil
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackArgs) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("ShipOrderLogisticTrack_args"); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
-  if p != nil {
-    if err := p.writeField1(oprot); err != nil { return err }
-    if err := p.writeField2(oprot); err != nil { return err }
-  }
-  if err := oprot.WriteFieldStop(); err != nil {
-    return thrift.PrependError("write field stop error: ", err) }
-  if err := oprot.WriteStructEnd(); err != nil {
-    return thrift.PrependError("write struct stop error: ", err) }
-  return nil
+	if err := oprot.WriteStructBegin("ShipOrderLogisticTrack_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackArgs) writeField1(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("shipOrderId", thrift.I64, 1); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:shipOrderId: ", p), err) }
-  if err := oprot.WriteI64(int64(p.ShipOrderId)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.shipOrderId (1) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:shipOrderId: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("shipOrderId", thrift.I64, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:shipOrderId: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.ShipOrderId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.shipOrderId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:shipOrderId: ", p), err)
+	}
+	return err
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackArgs) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("invert", thrift.BOOL, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:invert: ", p), err) }
-  if err := oprot.WriteBool(bool(p.Invert)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.invert (2) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:invert: ", p), err) }
-  return err
+	if err := oprot.WriteFieldBegin("invert", thrift.BOOL, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:invert: ", p), err)
+	}
+	if err := oprot.WriteBool(bool(p.Invert)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.invert (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:invert: ", p), err)
+	}
+	return err
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackArgs) String() string {
-  if p == nil {
-    return "<nil>"
-  }
-  return fmt.Sprintf("ShipmentServiceShipOrderLogisticTrackArgs(%+v)", *p)
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ShipmentServiceShipOrderLogisticTrackArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
 type ShipmentServiceShipOrderLogisticTrackResult struct {
-  Success *SShipOrderTrack `thrift:"success,0" db:"success" json:"success,omitempty"`
+	Success *SShipOrderTrack `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewShipmentServiceShipOrderLogisticTrackResult() *ShipmentServiceShipOrderLogisticTrackResult {
-  return &ShipmentServiceShipOrderLogisticTrackResult{}
+	return &ShipmentServiceShipOrderLogisticTrackResult{}
 }
 
 var ShipmentServiceShipOrderLogisticTrackResult_Success_DEFAULT *SShipOrderTrack
+
 func (p *ShipmentServiceShipOrderLogisticTrackResult) GetSuccess() *SShipOrderTrack {
-  if !p.IsSetSuccess() {
-    return ShipmentServiceShipOrderLogisticTrackResult_Success_DEFAULT
-  }
-return p.Success
+	if !p.IsSetSuccess() {
+		return ShipmentServiceShipOrderLogisticTrackResult_Success_DEFAULT
+	}
+	return p.Success
 }
 func (p *ShipmentServiceShipOrderLogisticTrackResult) IsSetSuccess() bool {
-  return p.Success != nil
+	return p.Success != nil
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackResult) Read(iprot thrift.TProtocol) error {
-  if _, err := iprot.ReadStructBegin(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-  }
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
 
-
-  for {
-    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-    if err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-    }
-    if fieldTypeId == thrift.STOP { break; }
-    switch fieldId {
-    case 0:
-      if fieldTypeId == thrift.STRUCT {
-        if err := p.ReadField0(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    default:
-      if err := iprot.Skip(fieldTypeId); err != nil {
-        return err
-      }
-    }
-    if err := iprot.ReadFieldEnd(); err != nil {
-      return err
-    }
-  }
-  if err := iprot.ReadStructEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-  }
-  return nil
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField0(iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
 }
 
-func (p *ShipmentServiceShipOrderLogisticTrackResult)  ReadField0(iprot thrift.TProtocol) error {
-  p.Success = &SShipOrderTrack{}
-  if err := p.Success.Read(iprot); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
-  }
-  return nil
+func (p *ShipmentServiceShipOrderLogisticTrackResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &SShipOrderTrack{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackResult) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("ShipOrderLogisticTrack_result"); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
-  if p != nil {
-    if err := p.writeField0(oprot); err != nil { return err }
-  }
-  if err := oprot.WriteFieldStop(); err != nil {
-    return thrift.PrependError("write field stop error: ", err) }
-  if err := oprot.WriteStructEnd(); err != nil {
-    return thrift.PrependError("write struct stop error: ", err) }
-  return nil
+	if err := oprot.WriteStructBegin("ShipOrderLogisticTrack_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackResult) writeField0(oprot thrift.TProtocol) (err error) {
-  if p.IsSetSuccess() {
-    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
-    if err := p.Success.Write(oprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
-    }
-    if err := oprot.WriteFieldEnd(); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
-  }
-  return err
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
 }
 
 func (p *ShipmentServiceShipOrderLogisticTrackResult) String() string {
-  if p == nil {
-    return "<nil>"
-  }
-  return fmt.Sprintf("ShipmentServiceShipOrderLogisticTrackResult(%+v)", *p)
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ShipmentServiceShipOrderLogisticTrackResult(%+v)", *p)
 }
-
-
