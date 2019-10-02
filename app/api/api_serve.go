@@ -80,7 +80,8 @@ func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool, r
 		}
 		// 验证IP请求限制
 		addr := ctx.Form().GetString("$user_addr")
-		if !rl.Acquire(addr, 1) || rl.IsLock(addr) {
+		println("---",addr,!rl.Acquire(addr, 1),rl.IsLock(addr))
+		if len(addr) != 0 && !rl.Acquire(addr, 1) || rl.IsLock(addr) {
 			return errors.New(api.RAccessDenied.Message)
 		}
 		return nil
