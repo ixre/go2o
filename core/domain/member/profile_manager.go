@@ -60,13 +60,7 @@ func (p *profileManagerImpl) SaveReceiptsCode(c *member.ReceiptsCode) error {
 	if c.MemberId > 0 && c.MemberId != p.memberId {
 		return errors.New("receipts code owner not match")
 	}
-	if c.Id <= 0 {
-		for _, v := range p.ReceiptsCodes() {
-			if v.Identity == c.Identity {
-				return member.ErrReceiptsRepeated
-			}
-		}
-	}
+
 	c.MemberId = p.memberId
 	if len(c.Identity) == 0 {
 		return member.ErrReceiptsNoIdentity
@@ -75,6 +69,19 @@ func (p *profileManagerImpl) SaveReceiptsCode(c *member.ReceiptsCode) error {
 		return member.ErrReceiptsNoName
 	} else if l > 10 {
 		return member.ErrReceiptsNameLen
+	}
+	// 如果未传入ID,对ID赋值
+	if c.Id <= 0 {
+		for _, v := range p.ReceiptsCodes() {
+			if v.Identity == c.Identity {
+				c.Id = v.Id
+				break
+			}
+		}
+		// 如果新增,默认启用
+		if c.Id <= 0 {
+			c.State = 1
+		}
 	}
 	_, err := p.repo.SaveReceiptsCode(c, p.memberId)
 	if err == nil {

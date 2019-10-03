@@ -63,7 +63,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	regFrom := strings.TrimSpace(ctx.Form().GetString("reg_from"))       // 注册来源
 	checkCode := strings.TrimSpace(ctx.Form().GetString("check_code"))   // 验证码
 	inviteCode := strings.TrimSpace(ctx.Form().GetString("invite_code")) // 邀请码
-	regIp := strings.TrimSpace(ctx.Form().GetString("$user_addr"))    // IP地址
+	regIp := strings.TrimSpace(ctx.Form().GetString("$user_addr"))       // IP地址
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
 	if len(token) == 0 || !m.checkRegToken(token) {
 		return api.ResponseWithCode(6, "非法注册请求")

@@ -807,7 +807,6 @@ func (s *memberService) ReceiptsCodes(ctx context.Context, memberId int64) (r []
 	list := make([]*member_service.SReceiptsCode, len(arr))
 	for i, v := range arr {
 		list[i] = &member_service.SReceiptsCode{
-			ID:        int32(v.Id),
 			Identity:  v.Identity,
 			Name:      v.Name,
 			AccountId: v.AccountId,
@@ -825,7 +824,6 @@ func (s *memberService) SaveReceiptsCode(ctx context.Context, memberId int64, co
 		return s.error(member.ErrNoSuchMember), nil
 	}
 	v := &member.ReceiptsCode{
-		Id:        int(code.ID),
 		Identity:  code.Identity,
 		Name:      code.Name,
 		AccountId: code.AccountId,

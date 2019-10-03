@@ -139,7 +139,6 @@ struct SLevel {
 
 /** 会员 */
 struct SMember {
-
     /**  */
     1:i64 Id
     /** 用户名 */
@@ -299,18 +298,16 @@ struct SAddress {
 
 /** 收款码 */
 struct SReceiptsCode{
-    /** 编号 */
-    1:i32 Id
     /** 账户标识,如:alipay */
-    2:string Identity
+    1:string Identity
     /** 账户名称 */
-    3:string Name
+    2:string Name
     /** 账号 */
-    4:string AccountId
+    3:string AccountId
     /** 收款码地址 */
-    5:string CodeUrl
+    4:string CodeUrl
     /** 是否启用 */
-    6:i32 State
+    5:i32 State
 }
 
 /** 会员银行卡 */

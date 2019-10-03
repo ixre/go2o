@@ -196,28 +196,26 @@ func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
 	if _, ok := provider[c.Identity]; !ok {
 		return api.NewErrorResponse("不支持的收款码")
 	}
-	if c.ID == 0 {
-		c.State = 1
-	}
 	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
 	r, _ := cli.SaveReceiptsCode(thrift.Context, memberId, c)
 	return r
 }
+
 func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 	trans, cli, _ := thrift.MemberServeClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
-	id := ctx.Form().GetInt("id")
+	identity := ctx.Form().GetString("identity")
 	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
 	arr, _ := cli.ReceiptsCodes(thrift.Context, memberId)
 	for _, v := range arr {
-		if int(v.ID) == id {
+		if v.Identity == identity {
 			v.State = 1 - v.State
 			r, _ := cli.SaveReceiptsCode(thrift.Context, memberId, v)
 			return r
 		}
 	}
-	return api.NewErrorResponse("no such data")
+	return api.NewErrorResponse("no such receipt code")
 }
 
 /**
