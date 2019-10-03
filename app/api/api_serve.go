@@ -14,6 +14,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof/api"
+	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/util"
 	"log"
 	"net/http"
 	"net/url"
@@ -21,12 +23,14 @@ import (
 )
 
 // 服务
-func NewServe(debug bool, version string) http.Handler {
+func NewServe(store storage.Interface, debug bool, version string) http.Handler {
 	// 初始化变量
 	registry := map[string]interface{}{}
 	// 创建上下文工厂
 	factory := api.DefaultFactory.Build(registry)
-	serve := NewService(factory, version, !debug)
+	// 请求限制
+	rl := util.NewRequestLimit(store, 100, 10, 600)
+	serve := NewService(factory, version, debug, rl)
 	// 创建http处理器
 	hs := http.NewServeMux()
 	hs.Handle("/api", serve)
@@ -34,7 +38,7 @@ func NewServe(debug bool, version string) http.Handler {
 }
 
 // 服务
-func NewService(factory api.ContextFactory, ver string, debug bool) *api.ServeMux {
+func NewService(factory api.ContextFactory, ver string, debug bool, rl *util.RequestLimit) *api.ServeMux {
 	// 创建服务
 	s := api.NewServerMux(factory, swapApiKeyFunc, true)
 	// 注册处理器
@@ -45,12 +49,12 @@ func NewService(factory api.ContextFactory, ver string, debug bool) *api.ServeMu
 	s.Register("passport", NewPassportApi())
 	s.Register("settings", NewSettingsApi())
 	// 注册中间键
-	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", ver, debug)
+	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", ver, debug, rl)
 	return s
 }
 
 // 服务调试跟踪
-func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool) {
+func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool, rl *util.RequestLimit) {
 	prefix = "[ Api][ Log]"
 	if debug {
 		// 开启调试
@@ -74,7 +78,11 @@ func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool) {
 			return errors.New(fmt.Sprintf("%s,require version=%s",
 				api.RDeprecated.Message, tarVer))
 		}
-
+		// 验证IP请求限制
+		addr := ctx.Form().GetString("$user_addr")
+		if len(addr) != 0 && !rl.Acquire(addr, 1) || rl.IsLock(addr) {
+			return errors.New(api.RAccessDenied.Message)
+		}
 		return nil
 	})
 

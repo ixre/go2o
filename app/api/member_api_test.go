@@ -13,9 +13,9 @@ import (
  * history :
  */
 
-func TestPassportApi_Top_Article(t *testing.T) {
+func TestMemberApi_Process(t *testing.T) {
 	mp := map[string]string{
-		"cat": "news",
+		"code": "eNe6FR",
 	}
-	testApi(t, "article.top_article", mp, true)
+	testApi(t, "member.invites", mp, true)
 }

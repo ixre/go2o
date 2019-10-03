@@ -185,6 +185,7 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 	}
 	return mp
 }
+
 func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
 	trans, cli, _ := thrift.MemberServeClient()
 	defer trans.Close()
@@ -243,11 +244,11 @@ func (m *MemberApi) invites(ctx api.Context) interface{} {
 	mp, _ := cli2.GetRegistries(thrift.Context, keys)
 	if member != nil {
 		inviteCode := member.InviteCode
-		prot := types.ElseString(mp[keys[1]] == "true", "https", "http")
+		proto := types.ElseString(mp[keys[1]] == "true", "https", "http")
 		// 网页推广链接
-		inviteLink := fmt.Sprintf("%s://%s%s/i/%s", prot, mp[keys[2]], mp[keys[0]], inviteCode)
+		inviteLink := fmt.Sprintf("%s://%s%s/i/%s", proto, mp[keys[2]], mp[keys[0]], inviteCode)
 		// 手机网页推广链接
-		mobileInviteLink := fmt.Sprintf("%s://%s%s/i/%s", prot, mp[keys[3]], mp[keys[0]], inviteCode)
+		mobileInviteLink := fmt.Sprintf("%s://%s%s/i/%s", proto, mp[keys[3]], mp[keys[0]], inviteCode)
 		mp := map[string]string{
 			"code":        inviteCode,
 			"link":        inviteLink,

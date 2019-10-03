@@ -26,11 +26,11 @@ var (
 	API_DOMAIN   string
 	API_HOST_CHK = false // 必须匹配Host
 	PathPrefix   = "/go2o_api_v1"
-	sto          storage.Interface
+	store        storage.Interface
 	serve        *echo.Echo
 )
 
-func newServe() *echo.Echo {
+func newServe(store storage.Interface) *echo.Echo {
 	serve := echo.New()
 	serve.Use(mw.Recover())
 	serve.Use(beforeRequest())
@@ -38,13 +38,13 @@ func newServe() *echo.Echo {
 	//todo:  echo
 	//serve.Hook(splitPath) // 获取新的路径,在请求之前发生
 	registerRoutes(serve)
-	registerNewApi(serve)
+	registerNewApi(serve, store)
 	return serve
 }
 
 // 注册新的服务接口
-func registerNewApi(s *echo.Echo) {
-	mux := api.NewServe(false, "1.0.0")
+func registerNewApi(s *echo.Echo, store storage.Interface) {
+	mux := api.NewServe(store, false, "1.0.0")
 	s.GET("/api", func(ctx echo.Context) error {
 		return ctx.String(200, "go2o api server")
 	})
@@ -64,11 +64,11 @@ func GetServe() *echo.Echo {
 }
 
 func Run(app gof.App, port int) {
-	sto = app.Storage()
+	store = app.Storage()
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	log.Println("** [ Go2o][ API] - Api server running on port " +
 		strconv.Itoa(port))
-	err := http.ListenAndServe(":"+strconv.Itoa(port), newServe())
+	err := http.ListenAndServe(":"+strconv.Itoa(port), newServe(store))
 	if err != nil {
 		log.Println("** [ Go2o][ API] : " + err.Error())
 		os.Exit(1)

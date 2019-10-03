@@ -15,6 +15,5 @@ import (
 
 func TestSettingsApi_RegisterPerm(t *testing.T) {
 	mp := map[string]string{}
-	//serverUrl = "http://api.super4bit.co/api"
-	testApi(t, "settings.register_settings", mp)
+	testApi(t, "settings.register_settings", mp, true)
 }

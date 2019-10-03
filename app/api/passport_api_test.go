@@ -21,7 +21,7 @@ const token2 = "i3C3WvpTmC"
 
 func TestRegisterApi_GetToken(t *testing.T) {
 	mp := map[string]string{}
-	testApi(t, "passport.get_token", mp)
+	testApi(t, "passport.get_token", mp, true)
 }
 
 func TestPassportApi_SendCode(t *testing.T) {
@@ -31,7 +31,7 @@ func TestPassportApi_SendCode(t *testing.T) {
 		"token":     token2,
 		"op":        "1",
 	}
-	testApi(t, "passport.send_code", mp)
+	testApi(t, "passport.send_code", mp, true)
 }
 
 func TestPassportApi_CompareCode(t *testing.T) {
@@ -42,7 +42,7 @@ func TestPassportApi_CompareCode(t *testing.T) {
 		"op":         "1",
 		"check_code": "8799",
 	}
-	testApi(t, "passport.compare_code", mp)
+	testApi(t, "passport.compare_code", mp, true)
 }
 
 func TestPassportApi_ResetPwd(t *testing.T) {
@@ -52,7 +52,7 @@ func TestPassportApi_ResetPwd(t *testing.T) {
 		"token":     token2,
 		"pwd":       domain.Md5("123456"),
 	}
-	testApi(t, "passport.reset_pwd", mp)
+	testApi(t, "passport.reset_pwd", mp, true)
 }
 
 func TestPassportApi_ModifyPwd(t *testing.T) {
@@ -63,7 +63,7 @@ func TestPassportApi_ModifyPwd(t *testing.T) {
 		"pwd":       domain.Md5("123000"),
 		"old_pwd":   domain.Md5("123456"),
 	}
-	testApi(t, "passport.modify_pwd", mp)
+	testApi(t, "passport.modify_pwd", mp, true)
 }
 
 func TestPassportApi_TradePwd(t *testing.T) {
@@ -74,5 +74,5 @@ func TestPassportApi_TradePwd(t *testing.T) {
 		"pwd":       domain.Md5("123000"),
 		"old_pwd":   domain.Md5("237561"),
 	}
-	testApi(t, "passport.trade_pwd", mp)
+	testApi(t, "passport.trade_pwd", mp, true)
 }

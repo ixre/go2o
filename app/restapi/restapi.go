@@ -21,7 +21,7 @@ import (
 
 // 获取存储
 func GetStorage() storage.Interface {
-	return sto
+	return store
 }
 
 // 获取传入的商户接口编号和密钥
