@@ -12,6 +12,7 @@ package daemon
 import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
+	"github.com/ixre/gof/util"
 	"go2o/core"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
@@ -138,6 +139,39 @@ func testIdFromRdsKey(key string) (orderNo string, sub bool, err error) {
 	}
 	return orderNo, sub, err
 }
+
+// 检测已过期的订单并标记
+func memberAutoUnlock() {
+	if appCtx.Debug() {
+		log.Println("[ Order]: execute member unlock job ...")
+	}
+	conn := core.GetRedisConn()
+	defer conn.Close()
+	tick := util.GetMinuteSlice (time.Now(),1)
+	key := fmt.Sprintf("%s:%s:*", variable.KvMemberAutoUnlock, tick)
+	//获取标记为等待过期的订单
+	list, err := redis.Strings(conn.Do("KEYS", key))
+	if err == nil {
+		trans, cli, err := thrift.MemberServeClient()
+		if err == nil {
+			for _, oKey := range list {
+				memberId, _ := redis.Int64(conn.Do("GET", oKey))
+				if memberId > 0 {
+					cli.Unlock(thrift.Context, memberId)
+				}
+				conn.Do("DEL", oKey)
+			}
+			trans.Close()
+		}
+	} else {
+		log.Println("[ Daemon][ Member][ Unlock][ Error]:",
+			err.Error(), "; retry after 10 seconds.")
+		time.Sleep(time.Second * 10)
+	}
+}
+
+
+
 
 // 检测已过期的订单并标记
 func detectOrderExpires() {

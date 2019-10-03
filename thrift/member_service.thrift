@@ -49,8 +49,10 @@ service MemberService{
     SProfile GetProfile(1:i64 id)
     /** 激活会员 */
     ttype.Result Active(1:i64 memberId)
-    /** 锁定/解锁会员 */
-    ttype.Result Lock(1:i64 memberId,2:bool lock,3:string remark)
+    /** 锁定,minutes锁定分钟数,默认:-1永久锁定 */
+    ttype.Result Lock(1:i64 memberId,2:i32 minutes,3:string remark)
+    /** 解锁会员 */
+    ttype.Result Unlock(1:i64 memberId)
     /** 标志赋值, 如果flag小于零, 则异或运算 */
     ttype.Result GrantFlag(1:i64 memberId,2:i32 flag)
     /** 获取会员汇总信息 */

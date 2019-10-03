@@ -125,6 +125,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.ReceiptsCode{}, "mm_receipts_code")
 	orm.Mapping(member.LevelUpLog{}, "mm_levelup")
 	orm.Mapping(member.BuyerGroup{}, "mm_buyer_group")
+	orm.Mapping(member.MmLockInfo{},"mm_lock_info")
+	orm.Mapping(member.MmLockHistory{},"mm_lock_history")
 
 	// ORDER
 	orm.Mapping(order.NormalOrder{}, "sale_order")

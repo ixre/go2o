@@ -47,6 +47,8 @@ type memberService struct {
 	serviceUtil
 }
 
+
+
 // 交换会员编号
 func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
 	var memberId int64
@@ -510,18 +512,26 @@ func (s *memberService) Active(ctx context.Context, memberId int64) (r *ttype.Re
 	return s.success(nil), nil
 }
 
+
 // 锁定/解锁会员
-func (s *memberService) Lock(ctx context.Context, memberId int64, lock bool, remark string) (r *ttype.Result_, err error) {
+func (s *memberService) Lock(ctx context.Context, memberId int64, minutes int32, remark string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	if lock {
-		err = m.Lock()
-	} else {
-		err = m.Unlock()
+	if err = m.Lock(int(minutes),remark);err != nil {
+		return s.error(err), nil
 	}
-	if err != nil {
+	return s.success(nil), nil
+}
+
+// 解锁会员
+func (s *memberService) Unlock(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	if	err = m.Unlock();err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil

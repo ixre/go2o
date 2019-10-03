@@ -84,8 +84,8 @@ type (
 		CompareCode(code string) error
 		// 激活
 		Active() error
-		// 锁定会员
-		Lock() error
+		// 锁定会员,如miniutes为-1, 则永久锁定
+		Lock(minutes int,remark string) error
 		// 解锁会员
 		Unlock() error
 		// 判断是否包含标志
@@ -459,6 +459,34 @@ type (
 		UpgradeMode int `db:"upgrade_mode"`
 		// 升级时间
 		CreateTime int64 `db:"create_time"`
+	}
+
+	// 会员锁定记录
+	MmLockInfo struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 会员编号
+		MemberId int64 `db:"member_id"`
+		// 锁定时间
+		LockTime int64 `db:"lock_time"`
+		// 解锁时间
+		UnlockTime int64 `db:"unlock_time"`
+		// 备注
+		Remark string `db:"remark"`
+	}
+
+	// 会员锁定历史
+	MmLockHistory struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 会员编号
+		MemberId int64 `db:"member_id"`
+		// 锁定时间
+		LockTime int64 `db:"lock_time"`
+		// 锁定持续分钟数
+		Duration int `db:"duration"`
+		// 备注
+		Remark string `db:"remark"`
 	}
 )
 

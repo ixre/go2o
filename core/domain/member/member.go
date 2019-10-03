@@ -473,12 +473,40 @@ func (m *memberImpl) Active() error {
 }
 
 // 锁定会员
-func (m *memberImpl) Lock() error {
+func (m *memberImpl) Lock(minutes int,remark string) error {
 	if m.ContainFlag(member.FlagLocked) {
 		return nil
 	}
 	m.value.Flag |= member.FlagLocked
 	_, err := m.Save()
+	if err == nil{
+		now := time.Now().Unix()
+		ml := &member.MmLockInfo{
+			MemberId:   m.GetAggregateRootId(),
+			LockTime:   now,
+			UnlockTime: now + int64(minutes * 60),
+			Remark:    remark,
+		}
+		his := &member.MmLockHistory{
+			MemberId: ml.MemberId,
+			LockTime: ml.LockTime,
+			Duration: minutes,
+			Remark:   remark,
+		}
+		// 永久锁定
+		if minutes <= 0 {
+			ml.UnlockTime = -1
+			his.Duration = -1
+		}
+		// 注册解锁任务
+		if ml.UnlockTime > 0 {
+			m.repo.RegisterUnlockJob(ml)
+		}
+		_,err = m.repo.SaveLockInfo(ml)
+		if err == nil {
+			_,err = m.repo.SaveLockHistory(his)
+		}
+	}
 	return err
 }
 
@@ -489,6 +517,9 @@ func (m *memberImpl) Unlock() error {
 	}
 	m.value.Flag ^= member.FlagLocked
 	_, err := m.Save()
+	if err == nil{
+		err = m.repo.DeleteLockInfos(m.GetAggregateRootId())
+	}
 	return err
 }
 

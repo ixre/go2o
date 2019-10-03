@@ -19,6 +19,7 @@ const (
 	KvAccountUpdateTcpNotifyQueue = "go2o:mq:acc_tcp_notify"  //账户TCP更新对列
 	KvMemberUpdateQueue           = "go2o:mq:mm_update"       //新加入会员队列
 	KvOrderExpiresTime            = "go2o:order:timeout"      //订单过期时间
+	KvMemberAutoUnlock            = "go2o:order:unlock"      // 会员自动解锁
 	KvOrderAutoReceive            = "go2o:order:auto_receive" //订单自动收货
 )
 

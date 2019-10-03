@@ -169,4 +169,14 @@ type IMemberRepo interface {
 	SelectMmBuyerGroup(where string, v ...interface{}) []*BuyerGroup
 	// Save MmBuyerGroup
 	SaveMmBuyerGroup(v *BuyerGroup) (int, error)
+
+	// Save 会员锁定历史
+	SaveLockHistory(v *MmLockHistory) (int, error)
+	// Save 会员锁定记录
+	SaveLockInfo(v *MmLockInfo) (int, error)
+	// Delete 会员锁定记录
+	DeleteLockInfos(memberId int64) error
+	// 注册解锁任务
+	RegisterUnlockJob(info *MmLockInfo)
+
 }

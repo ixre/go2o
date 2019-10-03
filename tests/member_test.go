@@ -136,5 +136,16 @@ func TestLogin(t *testing.T) {
 	flag := 133
 	b := flag&member.FlagLocked == member.FlagLocked
 	t.Log("--", b)
+}
 
+// 测试锁定会员
+func TestLockMember(t *testing.T) {
+	memberId := 77365
+	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
+	err := m.Lock(1,"测试锁定会员")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+	time.Sleep(time.Second*2)
 }

@@ -103,3 +103,30 @@ ALTER TABLE public.mm_member
 COMMENT ON COLUMN public.mm_member.real_name
     IS '真实姓名';
 
+/** 锁定信息 */
+CREATE TABLE mm_lock_history (
+  id         SERIAL NOT NULL,
+  member_id int8 NOT NULL,
+  lock_time int8 NOT NULL,
+  duration  int4 NOT NULL,
+  remark    varchar(64) NOT NULL,
+  PRIMARY KEY (id));
+COMMENT ON TABLE mm_lock_history IS '会员锁定历史';
+COMMENT ON COLUMN mm_lock_history.id IS '编号';
+COMMENT ON COLUMN mm_lock_history.member_id IS '会员编号';
+COMMENT ON COLUMN mm_lock_history.lock_time IS '锁定时间';
+COMMENT ON COLUMN mm_lock_history.duration IS '锁定持续分钟数';
+COMMENT ON COLUMN mm_lock_history.remark IS '备注';
+CREATE TABLE mm_lock_info (
+  id           SERIAL NOT NULL,
+  member_id   int8 NOT NULL,
+  lock_time   int8 NOT NULL,
+  unlock_time int8 NOT NULL,
+  remark      varchar(64) NOT NULL,
+  PRIMARY KEY (id));
+COMMENT ON TABLE mm_lock_info IS '会员锁定记录';
+COMMENT ON COLUMN mm_lock_info.id IS '编号';
+COMMENT ON COLUMN mm_lock_info.member_id IS '会员编号';
+COMMENT ON COLUMN mm_lock_info.lock_time IS '锁定时间';
+COMMENT ON COLUMN mm_lock_info.unlock_time IS '解锁时间';
+COMMENT ON COLUMN mm_lock_info.remark IS '备注';
