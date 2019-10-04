@@ -72,11 +72,12 @@ func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool, r
 	}
 	// 校验版本
 	s.Use(func(ctx api.Context) error {
-		//prod := ctx.FormData().GetString("product")
+		//prod := ctx.FormData().GetString("product"
 		prodVer := ctx.Form().GetString("version")
 		if api.CompareVersion(prodVer, tarVer) < 0 {
-			return errors.New(fmt.Sprintf("%s,require version=%s",
-				api.RDeprecated.Message, tarVer))
+			return errors.New("您当前使用的APP版本较低, 请升级或安装最新版本")
+			//return errors.New(fmt.Sprintf("%s,require version=%s",
+			//	api.RDeprecated.Message, tarVer))
 		}
 		// 验证IP请求限制
 		addr := ctx.Form().GetString("$user_addr")
