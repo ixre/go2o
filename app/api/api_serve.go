@@ -22,15 +22,24 @@ import (
 	"time"
 )
 
+var(
+	RequireVersion = "1.0.0"
+	ApiUser        = "go2o"
+	ApiSecret      = "123456"
+)
 // 服务
-func NewServe(store storage.Interface, debug bool, version string) http.Handler {
+func NewServe(store storage.Interface, debug bool, requireVer string,
+	apiUser string,apiSecret string) http.Handler {
+	RequireVersion = requireVer
+	ApiUser = apiUser
+	ApiSecret = apiSecret
 	// 初始化变量
 	registry := map[string]interface{}{}
 	// 创建上下文工厂
 	factory := api.DefaultFactory.Build(registry)
 	// 请求限制
 	rl := util.NewRequestLimit(store, 100, 10, 600)
-	serve := NewService(factory, version, debug, rl)
+	serve := NewService(factory,  debug, rl)
 	// 创建http处理器
 	hs := http.NewServeMux()
 	hs.Handle("/api", serve)
@@ -38,7 +47,7 @@ func NewServe(store storage.Interface, debug bool, version string) http.Handler 
 }
 
 // 服务
-func NewService(factory api.ContextFactory, ver string, debug bool, rl *util.RequestLimit) *api.ServeMux {
+func NewService(factory api.ContextFactory,  debug bool, rl *util.RequestLimit) *api.ServeMux {
 	// 创建服务
 	s := api.NewServerMux(factory, swapApiKeyFunc, true)
 	// 注册处理器
@@ -49,12 +58,12 @@ func NewService(factory api.ContextFactory, ver string, debug bool, rl *util.Req
 	s.Register("passport", NewPassportApi())
 	s.Register("settings", NewSettingsApi())
 	// 注册中间键
-	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", ver, debug, rl)
+	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", debug, rl)
 	return s
 }
 
 // 服务调试跟踪
-func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool, rl *util.RequestLimit) {
+func serviceMiddleware(s api.Server, prefix string,  debug bool, rl *util.RequestLimit) {
 	prefix = "[ Api][ Log]"
 	if debug {
 		// 开启调试
@@ -74,7 +83,7 @@ func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool, r
 	s.Use(func(ctx api.Context) error {
 		//prod := ctx.FormData().GetString("product"
 		prodVer := ctx.Form().GetString("version")
-		if api.CompareVersion(prodVer, tarVer) < 0 {
+		if api.CompareVersion(prodVer, RequireVersion) < 0 {
 			return errors.New("您当前使用的APP版本较低, 请升级或安装最新版本")
 			//return errors.New(fmt.Sprintf("%s,require version=%s",
 			//	api.RDeprecated.Message, tarVer))
@@ -119,8 +128,13 @@ func serviceMiddleware(s api.Server, prefix string, tarVer string, debug bool, r
 
 // 交换接口用户凭据
 func swapApiKeyFunc(ctx api.Context, key string) (userId int, userSecret string) {
-	if key == "go2o" {
-		return 1, "131409"
+	if key == ApiUser {
+		return 1, ApiSecret
+	} else if key == "go2o" {
+		tt := time.Date(2019, 12, 01, 0, 0, 0, 0, time.Local)
+		if time.Now().Unix() < tt.Unix() {
+			return 1, "131409"
+		}
 	}
 	//log.Println(fmt.Sprintf("[ UAMS][ API]: 接口用户[%s]交换凭据失败： %s", key, r.ErrMsg))
 	return 0, ""
