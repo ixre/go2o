@@ -30,7 +30,7 @@ func testApi(t *testing.T, apiName string, paramsMap map[string]string, abortOnF
 	params["api"] = []string{apiName}
 	params["key"] = []string{key}
 	params["sign_type"] = []string{signType}
-	params["version"] = []string{"1.0.1"}
+	params["version"] = []string{"1.0.15"}
 	for k, v := range paramsMap {
 		params[k] = []string{v}
 	}
