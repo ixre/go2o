@@ -171,10 +171,10 @@ func (m RegisterApi) compareCheckCode(token, phone string, code string) bool {
 		key1 := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_phone", token)
 		ckCode, _ := m.st.GetString(key)
 		ckPhone, _ := m.st.GetString(key1)
-		if ckCode == "" || ckCode != code {
+		if ckPhone == "" || ckPhone != phone {
 			return false
 		}
-		if ckPhone == "" || ckPhone != phone {
+		if ckCode == "" || ckCode != code {
 			return false
 		}
 	}

@@ -248,6 +248,8 @@ func (m *MemberApi) invites(ctx api.Context) interface{} {
 		inviteLink := fmt.Sprintf("%s://%s%s/i/%s", proto, mp[keys[2]], mp[keys[0]], inviteCode)
 		// 手机网页推广链接
 		mobileInviteLink := fmt.Sprintf("%s://%s%s/i/%s", proto, mp[keys[3]], mp[keys[0]], inviteCode)
+		println("-----",proto,"/",mobileInviteLink)
+
 		mp := map[string]string{
 			"code":        inviteCode,
 			"link":        inviteLink,

@@ -445,11 +445,6 @@ func (s *memberService) updateMember(v *member_service.SMember) (int64, error) {
 func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd string,
 	flag int32, name string, phone string, email string, avatar string,
 	extend map[string]string) (r *ttype.Result_, err error) {
-	inviteCode := extend["invite_code"]
-	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
-	if err != nil {
-		return s.error(err), nil
-	}
 	if len(pwd) != 32 {
 		return s.error(member.ErrNotMD5Format), nil
 	}
@@ -465,7 +460,14 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		RegIp:    extend["reg_ip"],
 		Flag:     int(flag),
 	}
-	m := s.repo.CreateMember(v) //创建会员
+	// 验证邀请码
+	inviteCode := extend["invite_code"]
+	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
+	if err != nil {
+		return s.error(err), nil
+	}
+	// 创建会员
+	m := s.repo.CreateMember(v)
 	id, err := m.Save()
 
 	if err == nil {
