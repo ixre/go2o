@@ -13,7 +13,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.6.4
+	github.com/ixre/gof v1.6.5
 	github.com/ixre/tto v1.3.8
 	github.com/jcmturner/gofork v1.0.0 // indirect
 	github.com/klauspost/compress v1.8.6 // indirect

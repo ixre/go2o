@@ -79,6 +79,15 @@ func serviceMiddleware(s api.Server, prefix string,  debug bool, rl *util.Reques
 			return nil
 		})
 	}
+	// API限流
+	s.Use(func(ctx api.Context)error{
+		// 验证IP请求限制
+		addr := ctx.Form().GetString("$user_addr")
+		if len(addr) != 0 && !rl.Acquire(addr, 1) || rl.IsLock(addr) {
+			return errors.New(api.RAccessDenied.Message)
+		}
+		return nil
+	})
 	// 校验版本
 	s.Use(func(ctx api.Context) error {
 		//prod := ctx.FormData().GetString("product"
@@ -88,11 +97,7 @@ func serviceMiddleware(s api.Server, prefix string,  debug bool, rl *util.Reques
 			//return errors.New(fmt.Sprintf("%s,require version=%s",
 			//	api.RDeprecated.Message, tarVer))
 		}
-		// 验证IP请求限制
-		addr := ctx.Form().GetString("$user_addr")
-		if len(addr) != 0 && !rl.Acquire(addr, 1) || rl.IsLock(addr) {
-			return errors.New(api.RAccessDenied.Message)
-		}
+
 		return nil
 	})
 
