@@ -22,14 +22,15 @@ import (
 	"time"
 )
 
-var(
+var (
 	RequireVersion = "1.0.0"
 	ApiUser        = "go2o"
 	ApiSecret      = "123456"
 )
+
 // 服务
 func NewServe(store storage.Interface, debug bool, requireVer string,
-	apiUser string,apiSecret string) http.Handler {
+	apiUser string, apiSecret string) http.Handler {
 	RequireVersion = requireVer
 	ApiUser = apiUser
 	ApiSecret = apiSecret
@@ -38,8 +39,8 @@ func NewServe(store storage.Interface, debug bool, requireVer string,
 	// 创建上下文工厂
 	factory := api.DefaultFactory.Build(registry)
 	// 请求限制
-	rl := util.NewRequestLimit(store, 100, 10, 600)
-	serve := NewService(factory,  debug, rl)
+	rl := util.NewRequestLimit(store, 200, 10, 600)
+	serve := NewService(factory, debug, rl)
 	// 创建http处理器
 	hs := http.NewServeMux()
 	hs.Handle("/api", serve)
@@ -47,7 +48,7 @@ func NewServe(store storage.Interface, debug bool, requireVer string,
 }
 
 // 服务
-func NewService(factory api.ContextFactory,  debug bool, rl *util.RequestLimit) *api.ServeMux {
+func NewService(factory api.ContextFactory, debug bool, rl *util.RequestLimit) *api.ServeMux {
 	// 创建服务
 	s := api.NewServerMux(factory, swapApiKeyFunc, true)
 	// 注册处理器
@@ -63,7 +64,7 @@ func NewService(factory api.ContextFactory,  debug bool, rl *util.RequestLimit) 
 }
 
 // 服务调试跟踪
-func serviceMiddleware(s api.Server, prefix string,  debug bool, rl *util.RequestLimit) {
+func serviceMiddleware(s api.Server, prefix string, debug bool, rl *util.RequestLimit) {
 	prefix = "[ Api][ Log]"
 	if debug {
 		// 开启调试
@@ -80,11 +81,11 @@ func serviceMiddleware(s api.Server, prefix string,  debug bool, rl *util.Reques
 		})
 	}
 	// API限流
-	s.Use(func(ctx api.Context)error{
+	s.Use(func(ctx api.Context) error {
 		// 验证IP请求限制
 		addr := ctx.Form().GetString("$user_addr")
 		if len(addr) != 0 && !rl.Acquire(addr, 1) || rl.IsLock(addr) {
-			return errors.New(api.RAccessDenied.Message)
+			return errors.New("您的网络存在异常,系统拒绝访问")
 		}
 		return nil
 	})

@@ -705,7 +705,6 @@ func (m *MemberRepoImpl) SaveMmBuyerGroup(v *member.BuyerGroup) (int, error) {
 	return id, err
 }
 
-
 func (m *MemberRepoImpl) SaveLockHistory(v *member.MmLockHistory) (int, error) {
 	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
@@ -736,4 +735,3 @@ func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
 	}
 	return err
 }
-

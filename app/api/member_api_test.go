@@ -22,8 +22,8 @@ func TestMemberApi_Process(t *testing.T) {
 
 func TestMemberCheckToken_Process(t *testing.T) {
 	mp := map[string]string{
-		"code": "m00U41",
-		"token":"4e3fa6045473d5e44017558150",
+		"code":  "m00U41",
+		"token": "4e3fa6045473d5e44017558150",
 	}
 	testApi(t, "member.checkToken", mp, true)
 }

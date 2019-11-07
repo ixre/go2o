@@ -473,19 +473,19 @@ func (m *memberImpl) Active() error {
 }
 
 // 锁定会员
-func (m *memberImpl) Lock(minutes int,remark string) error {
+func (m *memberImpl) Lock(minutes int, remark string) error {
 	if m.ContainFlag(member.FlagLocked) {
 		return nil
 	}
 	m.value.Flag |= member.FlagLocked
 	_, err := m.Save()
-	if err == nil{
+	if err == nil {
 		now := time.Now().Unix()
 		ml := &member.MmLockInfo{
 			MemberId:   m.GetAggregateRootId(),
 			LockTime:   now,
-			UnlockTime: now + int64(minutes * 60),
-			Remark:    remark,
+			UnlockTime: now + int64(minutes*60),
+			Remark:     remark,
 		}
 		his := &member.MmLockHistory{
 			MemberId: ml.MemberId,
@@ -502,9 +502,9 @@ func (m *memberImpl) Lock(minutes int,remark string) error {
 		if ml.UnlockTime > 0 {
 			m.repo.RegisterUnlockJob(ml)
 		}
-		_,err = m.repo.SaveLockInfo(ml)
+		_, err = m.repo.SaveLockInfo(ml)
 		if err == nil {
-			_,err = m.repo.SaveLockHistory(his)
+			_, err = m.repo.SaveLockHistory(his)
 		}
 	}
 	return err
@@ -517,7 +517,7 @@ func (m *memberImpl) Unlock() error {
 	}
 	m.value.Flag ^= member.FlagLocked
 	_, err := m.Save()
-	if err == nil{
+	if err == nil {
 		err = m.repo.DeleteLockInfos(m.GetAggregateRootId())
 	}
 	return err

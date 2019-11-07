@@ -85,7 +85,7 @@ type (
 		// 激活
 		Active() error
 		// 锁定会员,如miniutes为-1, 则永久锁定
-		Lock(minutes int,remark string) error
+		Lock(minutes int, remark string) error
 		// 解锁会员
 		Unlock() error
 		// 判断是否包含标志

@@ -30,7 +30,7 @@ var (
 	serve        *echo.Echo
 )
 
-func newServe(config *gof.Config,store storage.Interface) *echo.Echo {
+func newServe(config *gof.Config, store storage.Interface) *echo.Echo {
 	serve := echo.New()
 	serve.Use(mw.Recover())
 	serve.Use(beforeRequest())
@@ -38,16 +38,16 @@ func newServe(config *gof.Config,store storage.Interface) *echo.Echo {
 	//todo:  echo
 	//serve.Hook(splitPath) // 获取新的路径,在请求之前发生
 	registerRoutes(serve)
-	registerNewApi(serve,config, store)
+	registerNewApi(serve, config, store)
 	return serve
 }
 
 // 注册新的服务接口
-func registerNewApi(s *echo.Echo,config *gof.Config, store storage.Interface) {
+func registerNewApi(s *echo.Echo, config *gof.Config, store storage.Interface) {
 	reqVer := config.GetString("api_require_version")
 	apiUser := config.GetString("api_user")
 	apiSecret := config.GetString("api_secret")
-	mux := api.NewServe(store, false, reqVer,apiUser,apiSecret)
+	mux := api.NewServe(store, false, reqVer, apiUser, apiSecret)
 	s.GET("/api", func(ctx echo.Context) error {
 		return ctx.String(200, "go2o api server")
 	})
@@ -71,7 +71,7 @@ func Run(app gof.App, port int) {
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	log.Println("** [ Go2o][ API] - Api server running on port " +
 		strconv.Itoa(port))
-	err := http.ListenAndServe(":"+strconv.Itoa(port), newServe(app.Config(),store))
+	err := http.ListenAndServe(":"+strconv.Itoa(port), newServe(app.Config(), store))
 	if err != nil {
 		log.Println("** [ Go2o][ API] : " + err.Error())
 		os.Exit(1)

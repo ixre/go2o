@@ -147,7 +147,7 @@ func memberAutoUnlock() {
 	}
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	tick := util.GetMinuteSlice (time.Now(),1)
+	tick := util.GetMinuteSlice(time.Now(), 1)
 	key := fmt.Sprintf("%s:%s:*", variable.KvMemberAutoUnlock, tick)
 	//获取标记为等待过期的订单
 	list, err := redis.Strings(conn.Do("KEYS", key))
@@ -169,9 +169,6 @@ func memberAutoUnlock() {
 		time.Sleep(time.Second * 10)
 	}
 }
-
-
-
 
 // 检测已过期的订单并标记
 func detectOrderExpires() {

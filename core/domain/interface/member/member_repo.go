@@ -178,5 +178,4 @@ type IMemberRepo interface {
 	DeleteLockInfos(memberId int64) error
 	// 注册解锁任务
 	RegisterUnlockJob(info *MmLockInfo)
-
 }

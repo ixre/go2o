@@ -13,7 +13,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.6.5
+	github.com/ixre/gof v1.6.7
 	github.com/ixre/tto v1.3.8
 	github.com/jcmturner/gofork v1.0.0 // indirect
 	github.com/klauspost/compress v1.8.6 // indirect
@@ -34,7 +34,7 @@ require (
 	golang.org/x/net v0.0.0-20191021144547-ec77196f6094 // indirect
 	golang.org/x/sys v0.0.0-20191024073052-e66fe6eb8e0c // indirect
 	golang.org/x/text v0.3.2
-	google.golang.org/appengine v1.6.5 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/jcmturner/gokrb5.v7 v7.3.0 // indirect
 )
 

@@ -142,10 +142,10 @@ func TestLogin(t *testing.T) {
 func TestLockMember(t *testing.T) {
 	memberId := 77365
 	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
-	err := m.Lock(1,"测试锁定会员")
-	if err != nil{
+	err := m.Lock(1, "测试锁定会员")
+	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
-	time.Sleep(time.Second*2)
+	time.Sleep(time.Second * 2)
 }

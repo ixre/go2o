@@ -31,7 +31,7 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 		"account":         m.account,
 		"profile":         m.profile,
 		"checkToken":      m.checkToken,
-		"check_token":      m.checkToken,
+		"check_token":     m.checkToken,
 		"complex":         m.complex,
 		"bankcard":        m.bankcard,
 		"invites":         m.invites,
