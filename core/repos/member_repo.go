@@ -518,7 +518,7 @@ func (m *MemberRepoImpl) GetLevelValueByExp(mchId int32, exp int64) int {
 }
 
 // 用户名是否存在
-func (m *MemberRepoImpl) CheckUsrExist(user string, memberId int64) bool {
+func (m *MemberRepoImpl) CheckUserExist(user string, memberId int64) bool {
 	var c int
 	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE user= $1 AND id <> $2 LIMIT 1",
 		&c, user, memberId)

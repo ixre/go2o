@@ -10,7 +10,7 @@ package shop
 
 import (
 	"errors"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/valueobject"
@@ -39,7 +39,8 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
 	v.VendorId = s.merchant.GetAggregateRootId()
-	return NewShop(v, s.rep, s.valueRepo)
+	return nil
+	//return NewShop(v, s.rep, s.valueRepo,s.registryRepo)
 }
 
 // 获取所有商店

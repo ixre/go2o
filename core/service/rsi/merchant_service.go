@@ -12,6 +12,7 @@ package rsi
 import (
 	"context"
 	"github.com/ixre/gof/util"
+	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -115,7 +116,7 @@ func (m *merchantService) SignUp(user, pwd, companyName string,
 	v := &merchant.Merchant{
 		MemberId: 0,
 		// 用户
-		Usr: user,
+		User: user,
 		// 密码
 		Pwd: pwd,
 		// 商户名称
@@ -187,7 +188,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 	if val.Pwd != pwd {
 		//todo: 兼容旧密码
 		if val.Pwd != domain.Sha1(pwd) {
-			return 0, member.ErrCredential
+			return 0, de.ErrCredential
 		}
 	}
 	if val.State == member.StateStopped {
@@ -196,36 +197,44 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 	return val.Id, nil
 }
 
-// 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(ctx context.Context, user, oriPwd string) (r *ttype.Result_, err error) {
-	user = strings.ToLower(strings.TrimSpace(user))
-	oriPwd = strings.TrimSpace(oriPwd)
-	var mchId int32
-	if user == "" || oriPwd == "" {
-		return m.error(member.ErrCredential), nil
+// 登录，返回结果(Result_)和会员编号(ID);
+// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
+func (m *merchantService) testLogin(user string, pwd string) (id int, errCode int32, err error) {
+	if user == "" || pwd == "" {
+		return 0, 1, de.ErrCredential
+	}
+	var mchId int
+	if len(pwd) != 32 {
+		return -1, 4, de.ErrNotMD5Format
 	}
 	//尝试作为独立的商户账号登陆
-	encPwd := domain.MerchantSha1Pwd(user, oriPwd)
-	mchId = m._query.Verify(user, encPwd)
+	mchId = m._query.Verify(user, domain.MerchantSha1Pwd(pwd))
 	if mchId <= 0 {
 		// 使用会员身份登录
 		var id int64
-		mEncPwd := domain.MemberSha1Pwd(domain.Md5(oriPwd))
-		id, err = m.testMemberLogin(user, mEncPwd)
+		id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd))
 		if err == nil {
 			mch := m.GetMerchantByMemberId(id)
 			if mch != nil {
-				mchId = mch.ID
+				mchId = int(mch.ID)
 			}
 		}
 	}
-	if mchId < 0 && err == nil {
-		err = merchant.ErrNoSuchMerchant
+	if mchId <= 0 {
+		return mchId, 2, merchant.ErrNoSuchMerchant
 	}
+	return mchId, 0, nil
+}
+
+// 验证用户密码,并返回编号。可传入商户或会员的账号密码
+func (m *merchantService) CheckLogin(ctx context.Context, user, pwd string) (r *ttype.Result_, err error) {
+	user = strings.ToLower(strings.TrimSpace(user))
+	pwd = strings.TrimSpace(pwd)
+	id, code, err := m.testLogin(user, pwd)
 	if err != nil {
-		return m.error(err), nil
+		return m.errorCodeResult(int(code), err), nil
 	}
-	return m.success(map[string]string{"mch_id": util.Str(mchId)}), nil
+	return m.success(map[string]string{"mch_id": util.Str(id)}), nil
 }
 
 // 获取企业信息,并返回是否为提交的信息

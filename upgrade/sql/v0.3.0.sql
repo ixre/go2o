@@ -130,3 +130,33 @@ COMMENT ON COLUMN mm_lock_info.member_id IS '会员编号';
 COMMENT ON COLUMN mm_lock_info.lock_time IS '锁定时间';
 COMMENT ON COLUMN mm_lock_info.unlock_time IS '解锁时间';
 COMMENT ON COLUMN mm_lock_info.remark IS '备注';
+
+
+/** 2019-11-11 11:02:53 */
+ALTER TABLE public.mch_merchant RENAME usr TO "user";
+
+ALTER TABLE public.mch_enterprise_info DROP COLUMN review_state;
+
+ALTER TABLE public.mch_enterprise_info
+    ADD COLUMN review_state integer;
+
+COMMENT ON COLUMN public.mch_enterprise_info.review_state
+    IS '审核状态';
+
+
+ALTER TABLE public.mch_shop DROP COLUMN  shop_type;
+
+ALTER TABLE public.mch_shop DROP COLUMN opening_state;
+
+
+ALTER TABLE public.mch_shop
+    ADD COLUMN shop_type integer;
+
+COMMENT ON COLUMN public.mch_shop.shop_type
+    IS '店铺类型';
+
+ALTER TABLE public.mch_shop
+    ADD COLUMN opening_state integer;
+
+COMMENT ON COLUMN public.mch_shop.opening_state
+    IS '营业状态';

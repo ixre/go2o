@@ -6027,8 +6027,8 @@ type MemberService interface {
 	ChangePhone(ctx context.Context, memberId int64, phone string) (r *ttype.Result_, err error)
 	// Parameters:
 	//  - MemberId
-	//  - Usr
-	ChangeUsr(ctx context.Context, memberId int64, usr string) (r *ttype.Result_, err error)
+	//  - User
+	ChangeUser(ctx context.Context, memberId int64, usr string) (r *ttype.Result_, err error)
 	// 更改密码
 	//
 	// Parameters:
@@ -6591,13 +6591,13 @@ func (p *MemberServiceClient) ChangePhone(ctx context.Context, memberId int64, p
 
 // Parameters:
 //  - MemberId
-//  - Usr
-func (p *MemberServiceClient) ChangeUsr(ctx context.Context, memberId int64, usr string) (r *ttype.Result_, err error) {
-	var _args56 MemberServiceChangeUsrArgs
+//  - User
+func (p *MemberServiceClient) ChangeUser(ctx context.Context, memberId int64, usr string) (r *ttype.Result_, err error) {
+	var _args56 MemberServiceChangeUserArgs
 	_args56.MemberId = memberId
 	_args56.Usr = usr
-	var _result57 MemberServiceChangeUsrResult
-	if err = p.Client_().Call(ctx, "ChangeUsr", &_args56, &_result57); err != nil {
+	var _result57 MemberServiceChangeUserResult
+	if err = p.Client_().Call(ctx, "ChangeUser", &_args56, &_result57); err != nil {
 		return
 	}
 	return _result57.GetSuccess(), nil
@@ -6980,7 +6980,7 @@ func NewMemberServiceProcessor(handler MemberService) *MemberServiceProcessor {
 	self98.processorMap["MemberLevelInfo"] = &memberServiceProcessorMemberLevelInfo{handler: handler}
 	self98.processorMap["UpdateLevel"] = &memberServiceProcessorUpdateLevel{handler: handler}
 	self98.processorMap["ChangePhone"] = &memberServiceProcessorChangePhone{handler: handler}
-	self98.processorMap["ChangeUsr"] = &memberServiceProcessorChangeUsr{handler: handler}
+	self98.processorMap["ChangeUser"] = &memberServiceProcessorChangeUser{handler: handler}
 	self98.processorMap["ModifyPwd"] = &memberServiceProcessorModifyPwd{handler: handler}
 	self98.processorMap["ModifyTradePwd"] = &memberServiceProcessorModifyTradePwd{handler: handler}
 	self98.processorMap["Premium"] = &memberServiceProcessorPremium{handler: handler}
@@ -8367,16 +8367,16 @@ func (p *memberServiceProcessorChangePhone) Process(ctx context.Context, seqId i
 	return true, err
 }
 
-type memberServiceProcessorChangeUsr struct {
+type memberServiceProcessorChangeUser struct {
 	handler MemberService
 }
 
-func (p *memberServiceProcessorChangeUsr) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MemberServiceChangeUsrArgs{}
+func (p *memberServiceProcessorChangeUser) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceChangeUserArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("ChangeUsr", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("ChangeUser", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -8384,12 +8384,12 @@ func (p *memberServiceProcessorChangeUsr) Process(ctx context.Context, seqId int
 	}
 
 	iprot.ReadMessageEnd()
-	result := MemberServiceChangeUsrResult{}
+	result := MemberServiceChangeUserResult{}
 	var retval *ttype.Result_
 	var err2 error
-	if retval, err2 = p.handler.ChangeUsr(ctx, args.MemberId, args.Usr); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ChangeUsr: "+err2.Error())
-		oprot.WriteMessageBegin("ChangeUsr", thrift.EXCEPTION, seqId)
+	if retval, err2 = p.handler.ChangeUser(ctx, args.MemberId, args.Usr); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ChangeUser: "+err2.Error())
+		oprot.WriteMessageBegin("ChangeUser", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -8397,7 +8397,7 @@ func (p *memberServiceProcessorChangeUsr) Process(ctx context.Context, seqId int
 	} else {
 		result.Success = retval
 	}
-	if err2 = oprot.WriteMessageBegin("ChangeUsr", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("ChangeUser", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -16330,24 +16330,24 @@ func (p *MemberServiceChangePhoneResult) String() string {
 
 // Attributes:
 //  - MemberId
-//  - Usr
-type MemberServiceChangeUsrArgs struct {
+//  - User
+type MemberServiceChangeUserArgs struct {
 	MemberId int64  `thrift:"memberId,1" db:"memberId" json:"memberId"`
 	Usr      string `thrift:"usr,2" db:"usr" json:"usr"`
 }
 
-func NewMemberServiceChangeUsrArgs() *MemberServiceChangeUsrArgs {
-	return &MemberServiceChangeUsrArgs{}
+func NewMemberServiceChangeUserArgs() *MemberServiceChangeUserArgs {
+	return &MemberServiceChangeUserArgs{}
 }
 
-func (p *MemberServiceChangeUsrArgs) GetMemberId() int64 {
+func (p *MemberServiceChangeUserArgs) GetMemberId() int64 {
 	return p.MemberId
 }
 
-func (p *MemberServiceChangeUsrArgs) GetUsr() string {
+func (p *MemberServiceChangeUserArgs) GetUsr() string {
 	return p.Usr
 }
-func (p *MemberServiceChangeUsrArgs) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceChangeUserArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -16396,7 +16396,7 @@ func (p *MemberServiceChangeUsrArgs) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceChangeUsrArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MemberServiceChangeUserArgs) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -16405,7 +16405,7 @@ func (p *MemberServiceChangeUsrArgs) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceChangeUsrArgs) ReadField2(iprot thrift.TProtocol) error {
+func (p *MemberServiceChangeUserArgs) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
@@ -16414,8 +16414,8 @@ func (p *MemberServiceChangeUsrArgs) ReadField2(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceChangeUsrArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("ChangeUsr_args"); err != nil {
+func (p *MemberServiceChangeUserArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("ChangeUser_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -16435,7 +16435,7 @@ func (p *MemberServiceChangeUsrArgs) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceChangeUsrArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceChangeUserArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("memberId", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
 	}
@@ -16448,7 +16448,7 @@ func (p *MemberServiceChangeUsrArgs) writeField1(oprot thrift.TProtocol) (err er
 	return err
 }
 
-func (p *MemberServiceChangeUsrArgs) writeField2(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceChangeUserArgs) writeField2(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("usr", thrift.STRING, 2); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:usr: ", p), err)
 	}
@@ -16461,36 +16461,36 @@ func (p *MemberServiceChangeUsrArgs) writeField2(oprot thrift.TProtocol) (err er
 	return err
 }
 
-func (p *MemberServiceChangeUsrArgs) String() string {
+func (p *MemberServiceChangeUserArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceChangeUsrArgs(%+v)", *p)
+	return fmt.Sprintf("MemberServiceChangeUserArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type MemberServiceChangeUsrResult struct {
+type MemberServiceChangeUserResult struct {
 	Success *ttype.Result_ `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
-func NewMemberServiceChangeUsrResult() *MemberServiceChangeUsrResult {
-	return &MemberServiceChangeUsrResult{}
+func NewMemberServiceChangeUserResult() *MemberServiceChangeUserResult {
+	return &MemberServiceChangeUserResult{}
 }
 
-var MemberServiceChangeUsrResult_Success_DEFAULT *ttype.Result_
+var MemberServiceChangeUserResult_Success_DEFAULT *ttype.Result_
 
-func (p *MemberServiceChangeUsrResult) GetSuccess() *ttype.Result_ {
+func (p *MemberServiceChangeUserResult) GetSuccess() *ttype.Result_ {
 	if !p.IsSetSuccess() {
-		return MemberServiceChangeUsrResult_Success_DEFAULT
+		return MemberServiceChangeUserResult_Success_DEFAULT
 	}
 	return p.Success
 }
-func (p *MemberServiceChangeUsrResult) IsSetSuccess() bool {
+func (p *MemberServiceChangeUserResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MemberServiceChangeUsrResult) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceChangeUserResult) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -16529,7 +16529,7 @@ func (p *MemberServiceChangeUsrResult) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceChangeUsrResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MemberServiceChangeUserResult) ReadField0(iprot thrift.TProtocol) error {
 	p.Success = &ttype.Result_{}
 	if err := p.Success.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
@@ -16537,8 +16537,8 @@ func (p *MemberServiceChangeUsrResult) ReadField0(iprot thrift.TProtocol) error 
 	return nil
 }
 
-func (p *MemberServiceChangeUsrResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("ChangeUsr_result"); err != nil {
+func (p *MemberServiceChangeUserResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("ChangeUser_result"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -16555,7 +16555,7 @@ func (p *MemberServiceChangeUsrResult) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *MemberServiceChangeUsrResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceChangeUserResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
@@ -16570,11 +16570,11 @@ func (p *MemberServiceChangeUsrResult) writeField0(oprot thrift.TProtocol) (err 
 	return err
 }
 
-func (p *MemberServiceChangeUsrResult) String() string {
+func (p *MemberServiceChangeUserResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServiceChangeUsrResult(%+v)", *p)
+	return fmt.Sprintf("MemberServiceChangeUserResult(%+v)", *p)
 }
 
 // Attributes:

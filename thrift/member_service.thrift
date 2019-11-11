@@ -78,7 +78,7 @@ service MemberService{
     /* 更改手机号码，不验证手机格式 */
     ttype.Result ChangePhone(1:i64 memberId,2:string phone)
     /* 更改用户名 */
-    ttype.Result ChangeUsr(1:i64 memberId,2:string usr)
+    ttype.Result ChangeUser(1:i64 memberId,2:string usr)
     /** 更改密码 */
     ttype.Result ModifyPwd(1:i64 memberId,2:string old,3:string pwd)
     /** 更改交易密码 */

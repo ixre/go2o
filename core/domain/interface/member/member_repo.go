@@ -75,7 +75,7 @@ type IMemberRepo interface {
 	GetMemberIdByCode(code string) int64
 
 	// 用户名是否存在
-	CheckUsrExist(user string, memberId int64) bool
+	CheckUserExist(user string, memberId int64) bool
 
 	// 手机号码是否使用
 	CheckPhoneBind(phone string, memberId int64) bool

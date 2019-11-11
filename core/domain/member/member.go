@@ -14,7 +14,8 @@ package member
 import (
 	"errors"
 	"github.com/ixre/gof/util"
-	"go2o/core/domain/interface/enum"
+	de "go2o/core/domain/interface/domain"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
@@ -199,10 +200,10 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 // 对比验证码
 func (m *memberImpl) CompareCode(code string) error {
 	if m.value.CheckCode != strings.TrimSpace(code) {
-		return member.ErrCheckCodeError
+		return de.ErrCheckCodeError
 	}
 	if m.value.CheckExpires < time.Now().Unix() {
-		return member.ErrCheckCodeExpires
+		return de.ErrCheckCodeExpires
 	}
 	return nil
 }
@@ -428,9 +429,9 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 }
 
 // 更换用户名
-func (m *memberImpl) ChangeUsr(user string) error {
+func (m *memberImpl) ChangeUser(user string) error {
 	if user == m.value.User {
-		return member.ErrSameUsr
+		return member.ErrSameUser
 	}
 	err := m.checkUser(m.value.User)
 	if err == nil {
@@ -558,13 +559,13 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 // 验证用户名
 func (m *memberImpl) checkUser(user string) error {
 	if len([]rune(user)) < 6 {
-		return member.ErrUsrLength
+		return member.ErrUserLength
 	}
 	if !userRegex.MatchString(user) {
-		return member.ErrUsrValidErr
+		return member.ErrUserValidErr
 	}
-	if m.repo.CheckUsrExist(user, m.GetAggregateRootId()) {
-		return member.ErrUsrExist
+	if m.repo.CheckUserExist(user, m.GetAggregateRootId()) {
+		return member.ErrUserExist
 	}
 	return nil
 }
@@ -599,7 +600,7 @@ func (m *memberImpl) prepare() (err error) {
 	// 验证密码
 	m.value.Pwd = strings.TrimSpace(m.value.Pwd)
 	if len(m.value.Pwd) < 6 {
-		return member.ErrPwdLength
+		return de.ErrPwdLength
 	}
 	// 验证手机
 	m.value.Phone = strings.TrimSpace(m.value.Phone)
@@ -618,7 +619,7 @@ func (m *memberImpl) prepare() (err error) {
 	}
 	// 使用手机号作为用户名
 	if phoneAsUser {
-		if m.repo.CheckUsrExist(m.value.Phone, 0) {
+		if m.repo.CheckUserExist(m.value.Phone, 0) {
 			return member.ErrPhoneHasBind
 		}
 		m.value.User = m.value.Phone

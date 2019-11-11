@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"

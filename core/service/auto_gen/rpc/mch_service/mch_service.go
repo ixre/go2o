@@ -24,7 +24,7 @@ var _ = ttype.GoUnusedProtection__
 // Attributes:
 //  - ID
 //  - MemberId
-//  - Usr
+//  - User
 //  - Pwd
 //  - Name
 //  - SelfSales
@@ -43,7 +43,7 @@ var _ = ttype.GoUnusedProtection__
 type SComplexMerchant struct {
 	ID            int32  `thrift:"ID,1" db:"ID" json:"ID"`
 	MemberId      int64  `thrift:"MemberId,2" db:"MemberId" json:"MemberId"`
-	Usr           string `thrift:"Usr,3" db:"Usr" json:"Usr"`
+	Usr           string `thrift:"User,3" db:"User" json:"User"`
 	Pwd           string `thrift:"Pwd,4" db:"Pwd" json:"Pwd"`
 	Name          string `thrift:"Name,5" db:"Name" json:"Name"`
 	SelfSales     int32  `thrift:"SelfSales,6" db:"SelfSales" json:"SelfSales"`
@@ -603,14 +603,14 @@ func (p *SComplexMerchant) writeField2(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *SComplexMerchant) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Usr", thrift.STRING, 3); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Usr: ", p), err)
+	if err := oprot.WriteFieldBegin("User", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:User: ", p), err)
 	}
 	if err := oprot.WriteString(string(p.Usr)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Usr (3) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.User (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Usr: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:User: ", p), err)
 	}
 	return err
 }
@@ -1167,7 +1167,7 @@ type MerchantService interface {
 	//  - MchId
 	Complex(ctx context.Context, mchId int32) (r *SComplexMerchant, err error)
 	// Parameters:
-	//  - Usr
+	//  - User
 	//  - OriPwd
 	CheckLogin(ctx context.Context, usr string, oriPwd string) (r *ttype.Result_, err error)
 	// Parameters:
@@ -1228,7 +1228,7 @@ func (p *MerchantServiceClient) Complex(ctx context.Context, mchId int32) (r *SC
 }
 
 // Parameters:
-//  - Usr
+//  - User
 //  - OriPwd
 func (p *MerchantServiceClient) CheckLogin(ctx context.Context, usr string, oriPwd string) (r *ttype.Result_, err error) {
 	var _args2 MerchantServiceCheckLoginArgs
@@ -1902,7 +1902,7 @@ func (p *MerchantServiceComplexResult) String() string {
 }
 
 // Attributes:
-//  - Usr
+//  - User
 //  - OriPwd
 type MerchantServiceCheckLoginArgs struct {
 	Usr    string `thrift:"usr,1" db:"usr" json:"usr"`

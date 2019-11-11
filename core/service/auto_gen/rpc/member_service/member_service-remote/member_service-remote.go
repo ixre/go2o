@@ -54,7 +54,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  SMemberLevelInfo MemberLevelInfo(i64 memberId)")
 	fmt.Fprintln(os.Stderr, "  Result UpdateLevel(i64 memberId, i32 level, bool review, i64 paymentOrderId)")
 	fmt.Fprintln(os.Stderr, "  Result ChangePhone(i64 memberId, string phone)")
-	fmt.Fprintln(os.Stderr, "  Result ChangeUsr(i64 memberId, string usr)")
+	fmt.Fprintln(os.Stderr, "  Result ChangeUser(i64 memberId, string usr)")
 	fmt.Fprintln(os.Stderr, "  Result ModifyPwd(i64 memberId, string old, string pwd)")
 	fmt.Fprintln(os.Stderr, "  Result ModifyTradePwd(i64 memberId, string old, string pwd)")
 	fmt.Fprintln(os.Stderr, "  Result Premium(i64 memberId, i32 v, i64 expires)")
@@ -710,9 +710,9 @@ func main() {
 		fmt.Print(client.ChangePhone(context.Background(), value0, value1))
 		fmt.Print("\n")
 		break
-	case "ChangeUsr":
+	case "ChangeUser":
 		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "ChangeUsr requires 2 args")
+			fmt.Fprintln(os.Stderr, "ChangeUser requires 2 args")
 			flag.Usage()
 		}
 		argvalue0, err185 := (strconv.ParseInt(flag.Arg(1), 10, 64))
@@ -723,7 +723,7 @@ func main() {
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		fmt.Print(client.ChangeUsr(context.Background(), value0, value1))
+		fmt.Print(client.ChangeUser(context.Background(), value0, value1))
 		fmt.Print("\n")
 		break
 	case "ModifyPwd":

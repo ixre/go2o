@@ -12,7 +12,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/ixre/gof/db"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"

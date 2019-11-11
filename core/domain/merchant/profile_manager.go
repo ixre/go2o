@@ -13,7 +13,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
@@ -41,7 +41,7 @@ func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo) merchant
 // 获取企业信息
 func (p *profileManagerImpl) GetEnterpriseInfo() *merchant.EnterpriseInfo {
 	if p.ent == nil {
-		p.ent = p._rep.GetMchEnterpriseInfo(p.GetAggregateRootId())
+		p.ent = p._repo.GetMchEnterpriseInfo(p.GetAggregateRootId())
 	}
 	return p.ent
 }
@@ -90,7 +90,7 @@ func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int
 	e.ReviewTime = dt
 	e.UpdateTime = dt
 	p.ent = nil //clean cache
-	return util.I32Err(p._rep.SaveMchEnterpriseInfo(e))
+	return util.I32Err(p._repo.SaveMchEnterpriseInfo(e))
 }
 
 // 标记企业为审核通过
@@ -105,7 +105,7 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 	if pass {
 		e.Reviewed = enum.ReviewPass
 		e.ReviewRemark = ""
-		_, err = p._rep.SaveMchEnterpriseInfo(e)
+		_, err = p._repo.SaveMchEnterpriseInfo(e)
 		if err == nil {
 			// 保存省、市、区到Merchant
 			v := p.merchantImpl.GetValue()
@@ -121,7 +121,7 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 	} else {
 		e.Reviewed = enum.ReviewReject
 		e.ReviewRemark = message
-		_, err = p._rep.SaveMchEnterpriseInfo(e)
+		_, err = p._repo.SaveMchEnterpriseInfo(e)
 	}
 	return err
 }

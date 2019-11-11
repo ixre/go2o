@@ -11,7 +11,7 @@ package member
 import (
 	"errors"
 	"fmt"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/tmp"

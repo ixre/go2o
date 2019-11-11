@@ -11,6 +11,7 @@ package shop
 
 type (
 	IShopManager interface {
+
 		// 新建商店
 		CreateShop(*Shop) IShop
 

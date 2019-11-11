@@ -33,7 +33,7 @@ func newKvManager(p *merchantImpl, indent string) merchant.IKvManager {
 
 // 获取键值
 func (k *KvManager) Get(key string) string {
-	return k.mch._rep.GetKeyValue(k.mchId, k.indent, key)
+	return k.mch._repo.GetKeyValue(k.mchId, k.indent, key)
 }
 
 // 获取int类型的键值
@@ -44,12 +44,12 @@ func (k *KvManager) GetInt(key string) int {
 
 // 设置
 func (k *KvManager) Set(key, v string) {
-	k.mch._rep.SaveKeyValue(k.mchId, k.indent, key, v, time.Now().Unix())
+	k.mch._repo.SaveKeyValue(k.mchId, k.indent, key, v, time.Now().Unix())
 }
 
 // 获取多项
 func (k *KvManager) Gets(key []string) map[string]string {
-	return k.mch._rep.GetKeyMap(k.mchId, k.indent, key)
+	return k.mch._repo.GetKeyMap(k.mchId, k.indent, key)
 }
 
 // 设置多项
@@ -62,5 +62,5 @@ func (k *KvManager) Sets(v map[string]string) error {
 
 // 根据关键字获取字典
 func (k *KvManager) GetsByChar(keyword string) map[string]string {
-	return k.mch._rep.GetKeyMapByChar(k.mchId, k.indent, keyword)
+	return k.mch._repo.GetKeyMapByChar(k.mchId, k.indent, keyword)
 }

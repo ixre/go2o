@@ -3,7 +3,7 @@ package order
 import (
 	"errors"
 	"github.com/ixre/gof/util"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
