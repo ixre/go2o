@@ -2,10 +2,38 @@ package tests
 
 import (
 	"errors"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/wholesaler"
+	"go2o/core/infrastructure/domain"
 	"go2o/tests/ti"
 	"testing"
 )
+
+// 测试创建商户
+func TestCreateMerchant(t *testing.T) {
+	repo := ti.Factory.GetMerchantRepo()
+	v := &merchant.Merchant{
+		User:        "zy",
+		Pwd:         domain.Md5("123456"),
+		Name:        "天猫",
+		SelfSales:   1,
+		Level:       0,
+		Logo:        "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		CompanyName: "天猫",
+		Province:    0,
+		City:        0,
+		District:    0,
+	}
+	im := repo.CreateMerchant(v)
+	err := im.SetValue(v)
+	if err == nil {
+		_, err = im.Save()
+	}
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
 
 // 测试商家分组设置
 func TestMchBuyerGroupSet(t *testing.T) {

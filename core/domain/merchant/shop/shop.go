@@ -12,6 +12,7 @@ package shop
 import (
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/lbs"
@@ -28,17 +29,19 @@ var (
 )
 
 type shopImpl struct {
-	shopRepo  shop.IShopRepo
-	value     *shop.Shop
-	valueRepo valueobject.IValueRepo
+	shopRepo     shop.IShopRepo
+	value        *shop.Shop
+	valueRepo    valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func NewShop(v *shop.Shop, shopRepo shop.IShopRepo,
-	valRepo valueobject.IValueRepo) shop.IShop {
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShop {
 	s := &shopImpl{
-		shopRepo:  shopRepo,
-		value:     v,
-		valueRepo: valRepo,
+		shopRepo:     shopRepo,
+		value:        v,
+		valueRepo:    valRepo,
+		registryRepo: registryRepo,
 	}
 	switch s.Type() {
 	case shop.TypeOnlineShop:

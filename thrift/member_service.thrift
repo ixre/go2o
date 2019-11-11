@@ -49,8 +49,10 @@ service MemberService{
     SProfile GetProfile(1:i64 id)
     /** 激活会员 */
     ttype.Result Active(1:i64 memberId)
-    /** 锁定/解锁会员 */
-    ttype.Result Lock(1:i64 memberId,2:bool lock,3:string remark)
+    /** 锁定,minutes锁定分钟数,默认:-1永久锁定 */
+    ttype.Result Lock(1:i64 memberId,2:i32 minutes,3:string remark)
+    /** 解锁会员 */
+    ttype.Result Unlock(1:i64 memberId)
     /** 标志赋值, 如果flag小于零, 则异或运算 */
     ttype.Result GrantFlag(1:i64 memberId,2:i32 flag)
     /** 获取会员汇总信息 */
@@ -76,7 +78,7 @@ service MemberService{
     /* 更改手机号码，不验证手机格式 */
     ttype.Result ChangePhone(1:i64 memberId,2:string phone)
     /* 更改用户名 */
-    ttype.Result ChangeUsr(1:i64 memberId,2:string usr)
+    ttype.Result ChangeUser(1:i64 memberId,2:string usr)
     /** 更改密码 */
     ttype.Result ModifyPwd(1:i64 memberId,2:string old,3:string pwd)
     /** 更改交易密码 */
@@ -139,7 +141,6 @@ struct SLevel {
 
 /** 会员 */
 struct SMember {
-
     /**  */
     1:i64 Id
     /** 用户名 */
@@ -299,18 +300,16 @@ struct SAddress {
 
 /** 收款码 */
 struct SReceiptsCode{
-    /** 编号 */
-    1:i32 Id
     /** 账户标识,如:alipay */
-    2:string Identity
+    1:string Identity
     /** 账户名称 */
-    3:string Name
+    2:string Name
     /** 账号 */
-    4:string AccountId
+    3:string AccountId
     /** 收款码地址 */
-    5:string CodeUrl
+    4:string CodeUrl
     /** 是否启用 */
-    6:i32 State
+    5:i32 State
 }
 
 /** 会员银行卡 */

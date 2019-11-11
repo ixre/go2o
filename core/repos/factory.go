@@ -89,7 +89,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 	r.walletRepo = NewWalletRepo(db)
-	r.shopRepo = NewShopRepo(db, sto, r.valueRepo)
+	r.shopRepo = NewShopRepo(db, sto, r.valueRepo, r.registryRepo)
 	r.wholesaleRepo = NewWholesaleRepo(db)
 	r.mchRepo = NewMerchantRepo(db, sto, r.wholesaleRepo,
 		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo, r.registryRepo)

@@ -30,7 +30,7 @@ func testApi(t *testing.T, apiName string, paramsMap map[string]string, abortOnF
 	params["api"] = []string{apiName}
 	params["key"] = []string{key}
 	params["sign_type"] = []string{signType}
-	params["version"] = []string{"1.0.1"}
+	params["version"] = []string{"1.0.15"}
 	for k, v := range paramsMap {
 		params[k] = []string{v}
 	}
@@ -58,7 +58,7 @@ func testApi(t *testing.T, apiName string, paramsMap map[string]string, abortOnF
 
 // 测试请求限制
 func TestRequestLimit(t *testing.T) {
-	serverUrl = "http://api.super4bit.co/api"
+	//serverUrl = "http://api.super4bit.co/api"
 	mp := map[string]string{}
 	mp["prod_type"] = "android"
 	mp["prod_version"] = "1.0.0"

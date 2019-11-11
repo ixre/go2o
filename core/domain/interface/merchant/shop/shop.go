@@ -42,6 +42,8 @@ const (
 )
 
 const (
+	// 待初始化
+	StateAwaitInitial = 0
 	// 正常状态
 	StateNormal int32 = 1
 	// 停用状态

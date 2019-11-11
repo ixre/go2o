@@ -10,6 +10,8 @@ package shop
 
 type (
 	IShopRepo interface {
+		// 创建电子商城
+		CreateEShop(shop *Shop) IShop
 		// 获取商店
 		GetShop(shopId int32) IShop
 		SaveShop(*Shop) (int32, error)

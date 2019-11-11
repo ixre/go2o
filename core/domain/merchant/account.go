@@ -45,7 +45,7 @@ func (a *accountImpl) GetValue() *merchant.Account {
 // 保存
 func (a *accountImpl) Save() error {
 	_, err := orm.Save(tmp.Db().GetOrm(), a.value, int(a.GetDomainId()))
-	//_, err := a.mchImpl._rep.SaveMerchantAccount(a)
+	//_, err := a.mchImpl._repo.SaveMerchantAccount(a)
 	return err
 }
 
@@ -56,7 +56,7 @@ func (a *accountImpl) GetBalanceLog(id int32) *merchant.BalanceLog {
 		return &e
 	}
 	return nil
-	//return a.mchImpl._rep.GetBalanceLog(id)
+	//return a.mchImpl._repo.GetBalanceLog(id)
 }
 
 // 根据号码获取余额变动信息
@@ -66,7 +66,7 @@ func (a *accountImpl) GetBalanceLogByOuterNo(outerNo string) *merchant.BalanceLo
 		return &e
 	}
 	return nil
-	//return a.mchImpl._rep.GetBalanceLogByOuterNo(outerNo)
+	//return a.mchImpl._repo.GetBalanceLogByOuterNo(outerNo)
 }
 
 func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
@@ -99,7 +99,7 @@ func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
 // 保存余额变动信息
 func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int32, error) {
 	return orm.I32(orm.Save(tmp.Db().GetOrm(), v, int(v.Id)))
-	//return a.mchImpl._rep.SaveBalanceLog(v)
+	//return a.mchImpl._repo.SaveBalanceLog(v)
 }
 
 // 支出

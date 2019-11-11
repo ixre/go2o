@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	shopImpl "go2o/core/domain/merchant/shop"
 	"log"
@@ -27,8 +28,14 @@ var _ shop.IShopRepo = new(shopRepo)
 
 type shopRepo struct {
 	db.Connector
-	valueRepo valueobject.IValueRepo
-	storage   storage.Interface
+	valueRepo    valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
+	storage      storage.Interface
+}
+
+// 创建电子商城
+func (s *shopRepo) CreateEShop(v *shop.Shop) shop.IShop {
+	return shopImpl.NewShop(v, s, s.valueRepo, s.registryRepo)
 }
 
 func (s *shopRepo) ShopCount(vendorId int32, shopType int32) int {
@@ -39,18 +46,19 @@ func (s *shopRepo) ShopCount(vendorId int32, shopType int32) int {
 }
 
 func NewShopRepo(c db.Connector, storage storage.Interface,
-	valueRepo valueobject.IValueRepo) shop.IShopRepo {
+	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShopRepo {
 	return &shopRepo{
-		Connector: c,
-		valueRepo: valueRepo,
-		storage:   storage,
+		Connector:    c,
+		valueRepo:    valueRepo,
+		storage:      storage,
+		registryRepo: registryRepo,
 	}
 }
 
 // 获取商店
 func (s *shopRepo) GetShop(shopId int32) shop.IShop {
 	v := s.GetValueShop(shopId)
-	return shopImpl.NewShop(v, s, s.valueRepo)
+	return shopImpl.NewShop(v, s, s.valueRepo, s.registryRepo)
 }
 
 // 商店别名是否存在

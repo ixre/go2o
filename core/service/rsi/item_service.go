@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/storage"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/pro_model"

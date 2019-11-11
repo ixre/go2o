@@ -29,7 +29,7 @@ func newApiManagerImpl(m *merchantImpl) merchant.IApiManager {
 // 获取API信息
 func (a *apiManagerImpl) getApiInfo() *merchant.ApiInfo {
 	if a.apiInfo == nil {
-		a.apiInfo = a._rep.GetApiInfo(a.GetAggregateRootId())
+		a.apiInfo = a._repo.GetApiInfo(a.GetAggregateRootId())
 		//没有API则生成
 		if a.apiInfo == nil {
 			mchId := int(a.GetAggregateRootId())
@@ -55,7 +55,7 @@ func (a *apiManagerImpl) GetApiInfo() merchant.ApiInfo {
 func (a *apiManagerImpl) SaveApiInfo(v *merchant.ApiInfo) error {
 	a.apiInfo = v
 	a.apiInfo.MerchantId = a.GetAggregateRootId()
-	return a._rep.SaveApiInfo(a.apiInfo)
+	return a._repo.SaveApiInfo(a.apiInfo)
 }
 
 // 启用API权限

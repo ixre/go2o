@@ -149,6 +149,8 @@ func startCronTab() {
 	cronTab.AddFunc("0 * * * * *", detectOrderExpires)
 	//订单自动收货,2分钟检测一次
 	cronTab.AddFunc("0 */2 * * * *", orderAutoReceive)
+	// 自动解锁会员
+	cronTab.AddFunc("0 * * * * *", memberAutoUnlock)
 	cronTab.Start()
 }
 

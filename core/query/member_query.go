@@ -135,7 +135,7 @@ func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member
 }
 
 // 筛选会员根据用户或者手机
-func (m *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
+func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember {
 	qp := "%" + key + "%"
 	list := make([]*dto.SimpleMember, 0)
 	var id int

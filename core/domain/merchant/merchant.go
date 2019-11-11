@@ -13,7 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof/db/orm"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -179,7 +179,6 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		LastLoginTime: 0,
 	}
 	mch := m.rep.CreateMerchant(mchVal)
-
 	err := mch.SetValue(mchVal)
 	if err != nil {
 		return err
@@ -250,7 +249,7 @@ type merchantImpl struct {
 	_account         merchant.IAccount
 	_wholesaler      wholesaler.IWholesaler
 	_host            string
-	_rep             merchant.IMerchantRepo
+	_repo            merchant.IMerchantRepo
 	_wsRepo          wholesaler.IWholesaleRepo
 	_itemRepo        item.IGoodsItemRepo
 	_shopRepo        shop.IShopRepo
@@ -278,7 +277,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchant {
 	mch := &merchantImpl{
 		_value:        v,
-		_rep:          rep,
+		_repo:         rep,
 		_wsRepo:       wsRepo,
 		_itemRepo:     itemRepo,
 		_shopRepo:     shopRepo,
@@ -292,7 +291,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 }
 
 func (m *merchantImpl) GetRepo() merchant.IMerchantRepo {
-	return m._rep
+	return m._repo
 }
 
 func (m *merchantImpl) GetAggregateRootId() int32 {
@@ -305,7 +304,7 @@ func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 	return &merchant.ComplexMerchant{
 		Id:            src.ID,
 		MemberId:      src.MemberId,
-		Usr:           src.Usr,
+		Usr:           src.User,
 		Pwd:           src.Pwd,
 		Name:          src.Name,
 		SelfSales:     src.SelfSales,
@@ -359,7 +358,7 @@ func (m *merchantImpl) Save() (int32, error) {
 	id := m.GetAggregateRootId()
 	if id > 0 {
 		m.checkSelfSales()
-		return m._rep.SaveMerchant(m._value)
+		return m._repo.SaveMerchant(m._value)
 	}
 	return m.createMerchant()
 }
@@ -370,7 +369,7 @@ func (m *merchantImpl) checkSelfSales() bool {
 		//不为自营,但编号为1的商户
 		if m.GetAggregateRootId() == 1 {
 			m._value.SelfSales = 1
-			m._value.Usr = "-"
+			m._value.User = "-"
 			m._value.Pwd = "-"
 			return true
 		}
@@ -423,7 +422,7 @@ func (m *merchantImpl) Member() int64 {
 // 获取商户账户
 func (m *merchantImpl) Account() merchant.IAccount {
 	if m._account == nil {
-		v := m._rep.GetAccount(m.GetAggregateRootId())
+		v := m._repo.GetAccount(m.GetAggregateRootId())
 		m._account = newAccountImpl(m, v, m._memberRepo, m._walletRepo)
 	}
 	return m._account
@@ -464,26 +463,39 @@ func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 
 // 创建商户
 func (m *merchantImpl) createMerchant() (int32, error) {
-	if id := m.GetAggregateRootId(); id > 0 {
-		return id, nil
-	}
-
-	id, err := m._rep.SaveMerchant(m._value)
+	m.checkSelfSales()
+	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
 		return id, err
 	}
-
-	//todo:事务
-
-	// 初始化商户信息
+	// 初始化商店
 	m._value.ID = id
-
-	// 检测自营并保存
-	if m.checkSelfSales() {
-		m._rep.SaveMerchant(m._value)
+	s := &shop.Shop{
+		Id:           0,
+		VendorId:     id,
+		ShopType:     shop.TypeOnlineShop,
+		Name:         m._value.Name,
+		State:        shop.StateAwaitInitial,
+		OpeningState: shop.OStateNormal,
+		SortNum:      0,
+		CreateTime:   m._value.UpdateTime,
 	}
-
-	//todo:  初始化商店
+	is := m._shopRepo.CreateEShop(s)
+	err = is.SetValue(s)
+	if err == nil {
+		_, err = is.Save()
+	}
+	if err != nil {
+		return 0, err
+	}
+	// 创建API
+	api := &merchant.ApiInfo{
+		ApiId:     domain.NewApiId(int(id)),
+		ApiSecret: domain.NewSecret(int(id)),
+		WhiteList: "*",
+		Enabled:   1,
+	}
+	err = m.ApiManager().SaveApiInfo(api)
 
 	// SiteConf
 	//m._siteConf = &shop.ShopSiteConf{
@@ -493,7 +505,7 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	//	State:      1,
 	//	StateHtml:  "",
 	//}
-	//err = m._rep.SaveSiteConf(id, m._siteConf)
+	//err = m._repo.SaveSiteConf(id, m._siteConf)
 	//m._siteConf.VendorId = id
 
 	// SaleConf
@@ -501,26 +513,18 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	//	AutoSetupOrder:  1,
 	//	IntegralBackNum: 0,
 	//}
-	//err = m._rep.SaveSaleConf(id, m._saleConf)
+	//err = m._repo.SaveSaleConf(id, m._saleConf)
 	//m._saleConf.VendorId = id
 
-	// 创建API
-	api := &merchant.ApiInfo{
-		ApiId:     domain.NewApiId(int(id)),
-		ApiSecret: domain.NewSecret(int(id)),
-		WhiteList: "*",
-		Enabled:   1,
-	}
-	err = m.ApiManager().SaveApiInfo(api)
 	return id, err
 }
 
 // 获取商户的域名
 func (m *merchantImpl) GetMajorHost() string {
 	if len(m._host) == 0 {
-		host := m._rep.GetMerchantMajorHost(m.GetAggregateRootId())
+		host := m._repo.GetMerchantMajorHost(m.GetAggregateRootId())
 		if len(host) == 0 {
-			host = fmt.Sprintf("%s.%s", m._value.Usr, infrastructure.GetApp().
+			host = fmt.Sprintf("%s.%s", m._value.User, infrastructure.GetApp().
 				Config().GetString(variable.ServerDomain))
 		}
 		m._host = host
@@ -541,7 +545,7 @@ func (m *merchantImpl) UserManager() user.IUserManager {
 // 获取会员管理服务
 func (m *merchantImpl) LevelManager() merchant.ILevelManager {
 	if m._levelManager == nil {
-		m._levelManager = NewLevelManager(m.GetAggregateRootId(), m._rep)
+		m._levelManager = NewLevelManager(m.GetAggregateRootId(), m._repo)
 	}
 	return m._levelManager
 }
@@ -565,7 +569,7 @@ func (m *merchantImpl) MemberKvManager() merchant.IKvManager {
 // 消息系统管理器
 //func (m *MerchantImpl) MssManager() mss.IMssManager {
 //	if m._mssManager == nil {
-//		m._mssManager = mssImpl.NewMssManager(m, m._mssRepo, m._rep)
+//		m._mssManager = mssImpl.NewMssManager(m, m._mssRepo, m._repo)
 //	}
 //	return m._mssManager
 //}
@@ -574,7 +578,7 @@ func (m *merchantImpl) MemberKvManager() merchant.IKvManager {
 func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	if m._confManager == nil {
 		m._confManager = newConfigManagerImpl(m.GetAggregateRootId(),
-			m._rep, m._memberRepo, m._valRepo)
+			m._repo, m._memberRepo, m._valRepo)
 	}
 	return m._confManager
 }

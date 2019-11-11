@@ -212,8 +212,12 @@ func (m *merchantRepo) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 }
 
 // 保存API信息
-func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) error {
-	_, err := orm.Save(m.GetOrm(), v, int(v.MerchantId))
+func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) (err error) {
+	if m.GetApiInfo(v.MerchantId) == nil {
+		_, err = orm.Save(m.GetOrm(), v, 0)
+	} else {
+		_, err = orm.Save(m.GetOrm(), v, int(v.MerchantId))
+	}
 	return err
 }
 

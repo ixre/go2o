@@ -30,8 +30,8 @@ func TestMemberPwd(t *testing.T) {
 
 // 商户密码
 func TestMerchantPwd(t *testing.T) {
-	user := "zy"
+	//user := "zy"
 	pwd := "123456"
-	encPwd := domain.MerchantSha1Pwd(user, pwd)
+	encPwd := domain.MerchantSha1Pwd(pwd)
 	t.Log(encPwd)
 }

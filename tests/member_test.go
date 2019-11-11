@@ -3,7 +3,6 @@ package tests
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/msq"
 	"go2o/tests/ti"
 	"testing"
 	"time"
@@ -13,8 +12,6 @@ func TestCreateNewMember(t *testing.T) {
 	inviteCode := ""
 	phone := "13162222820"
 	inviterId := 22149
-	ti.InitMsq()
-	defer msq.Close()
 	repo := ti.Factory.GetMemberRepo()
 	_, err := repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
@@ -136,5 +133,16 @@ func TestLogin(t *testing.T) {
 	flag := 133
 	b := flag&member.FlagLocked == member.FlagLocked
 	t.Log("--", b)
+}
 
+// 测试锁定会员
+func TestLockMember(t *testing.T) {
+	memberId := 77365
+	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
+	err := m.Lock(1, "测试锁定会员")
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+	time.Sleep(time.Second * 2)
 }
