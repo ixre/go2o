@@ -160,3 +160,24 @@ ALTER TABLE public.mch_shop
 
 COMMENT ON COLUMN public.mch_shop.opening_state
     IS '营业状态';
+
+DROP TABLE gs_item_tag;
+DROP TABLE gs_category;
+DROP TABLE gs_sale_snapshot;
+DROP TABLE gs_sale_tag;
+DROP TABLE gs_snapshot;
+DROP TABLE gs_item;
+DROP TABLE gs_goods;
+DROP TABLE gc_order_confirm;
+DROP TABLE gc_member;
+DROP TABLE pt_page;
+DROP TABLE pt_positions;
+DROP TABLE pt_shop;
+
+DROP TABLE pt_saleconf;
+DROP TABLE pt_order_log;
+DROP TABLE pt_order_item;
+DROP TABLE pt_order;
+DROP TABLE pt_kvset_member;
+DROP TABLE pt_kvset;
+DROP TABLE pt_api;

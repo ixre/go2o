@@ -496,26 +496,6 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 		Enabled:   1,
 	}
 	err = m.ApiManager().SaveApiInfo(api)
-
-	// SiteConf
-	//m._siteConf = &shop.ShopSiteConf{
-	//	IndexTitle: "线上商店-" + v.Name,
-	//	SubTitle:   "线上商店-" + v.Name,
-	//	Logo:       v.Logo,
-	//	State:      1,
-	//	StateHtml:  "",
-	//}
-	//err = m._repo.SaveSiteConf(id, m._siteConf)
-	//m._siteConf.VendorId = id
-
-	// SaleConf
-	//m._saleConf = &merchant.SaleConf{
-	//	AutoSetupOrder:  1,
-	//	IntegralBackNum: 0,
-	//}
-	//err = m._repo.SaveSaleConf(id, m._saleConf)
-	//m._saleConf.VendorId = id
-
 	return id, err
 }
 
