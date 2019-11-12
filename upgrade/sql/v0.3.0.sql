@@ -194,3 +194,6 @@ COMMENT ON COLUMN public.mch_shop.state
 
 ALTER TABLE public.mch_saleconf
     RENAME TO mch_sale_conf;
+
+ALTER TABLE public.pt_siteconf
+    RENAME TO shop_site_conf;
