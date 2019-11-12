@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"strings"
 	"time"
@@ -21,17 +22,19 @@ import (
 var _ shop.IShopManager = new(shopManagerImpl)
 
 type shopManagerImpl struct {
-	merchant  merchant.IMerchant
-	rep       shop.IShopRepo
-	valueRepo valueobject.IValueRepo
+	merchant     merchant.IMerchant
+	rep          shop.IShopRepo
+	valueRepo    valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
 }
 
 func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
-	valueRepo valueobject.IValueRepo) shop.IShopManager {
+	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShopManager {
 	return &shopManagerImpl{
-		merchant:  m,
-		rep:       rep,
-		valueRepo: valueRepo,
+		merchant:     m,
+		rep:          rep,
+		valueRepo:    valueRepo,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -39,8 +42,7 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
 	v.VendorId = s.merchant.GetAggregateRootId()
-	return nil
-	//return NewShop(v, s.rep, s.valueRepo,s.registryRepo)
+	return NewShop(v, s.rep, s.valueRepo, s.registryRepo)
 }
 
 // 获取所有商店
@@ -48,8 +50,7 @@ func (s *shopManagerImpl) GetShops() []shop.IShop {
 	shopList := s.rep.GetShopsOfMerchant(s.merchant.GetAggregateRootId())
 	shops := make([]shop.IShop, len(shopList))
 	for i, v := range shopList {
-		v2 := v
-		shops[i] = s.CreateShop(&v2)
+		shops[i] = s.CreateShop(&v)
 	}
 	return shops
 }

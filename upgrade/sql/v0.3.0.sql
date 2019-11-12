@@ -161,6 +161,7 @@ ALTER TABLE public.mch_shop
 COMMENT ON COLUMN public.mch_shop.opening_state
     IS '营业状态';
 
+/** 删除无用表 */
 DROP TABLE gs_item_tag;
 DROP TABLE gs_category;
 DROP TABLE gs_sale_snapshot;
@@ -181,3 +182,15 @@ DROP TABLE pt_order;
 DROP TABLE pt_kvset_member;
 DROP TABLE pt_kvset;
 DROP TABLE pt_api;
+
+ALTER TABLE public.mch_shop
+    DROP COLUMN state;
+
+ALTER TABLE public.mch_shop
+    ADD COLUMN state int2;
+
+COMMENT ON COLUMN public.mch_shop.state
+    IS '状态 1:表示正常,2:表示关闭 ';
+
+ALTER TABLE public.mch_saleconf
+    RENAME TO mch_sale_conf;

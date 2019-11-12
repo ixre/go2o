@@ -21,7 +21,7 @@ TRUNCATE TABLE "mch_day_chart";
 TRUNCATE TABLE "mch_merchant";
 TRUNCATE TABLE "mch_online_shop";
 TRUNCATE TABLE "mch_offline_shop";
-TRUNCATE TABLE "mch_saleconf";
+TRUNCATE TABLE "mch_sale_conf";
 
 
 TRUNCATE TABLE "mm_member";

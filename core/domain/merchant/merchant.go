@@ -464,6 +464,12 @@ func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 // 创建商户
 func (m *merchantImpl) createMerchant() (int32, error) {
 	m.checkSelfSales()
+	unix := time.Now().Unix()
+	m._value.ExpiresTime = unix + 3600*24*365
+	m._value.UpdateTime = unix
+	m._value.JoinTime = unix
+	m._value.LoginTime = 0
+	m._value.LastLoginTime = 0
 	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
 		return id, err
@@ -590,7 +596,7 @@ func (m *merchantImpl) ApiManager() merchant.IApiManager {
 // 商店服务
 func (m *merchantImpl) ShopManager() shop.IShopManager {
 	if m._shopManager == nil {
-		m._shopManager = si.NewShopManagerImpl(m, m._shopRepo, m._valRepo)
+		m._shopManager = si.NewShopManagerImpl(m, m._shopRepo, m._valRepo, m._registryRepo)
 	}
 	return m._shopManager
 }
