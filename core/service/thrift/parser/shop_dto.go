@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-func getShopDto(s shop.IShop) *shop_service.SShop {
+func getShopDto(s shop.IShop) *shop_service.SShop2 {
 	b := s.GetValue()
-	dto := &shop_service.SShop{
+	dto := &shop_service.SShop2{
 		ID:           int32(s.GetDomainId()),
 		VendorId:     b.VendorId,
 		ShopType:     b.ShopType,
@@ -22,7 +22,7 @@ func getShopDto(s shop.IShop) *shop_service.SShop {
 	return dto
 }
 
-func parse2Shop(s *shop_service.SShop) *shop.Shop {
+func parse2Shop(s *shop_service.SShop2) *shop.Shop {
 	return &shop.Shop{
 		Id:           s.ID,
 		Name:         s.Name,
@@ -52,7 +52,7 @@ func ParseOnlineShop(s shop.IShop) *shop_service.SStore {
 	return dto
 }
 
-func ParseOfflineShop(s shop.IShop, valRepo valueobject.IValueRepo) *shop_service.SShop {
+func ParseOfflineShop(s shop.IShop, valRepo valueobject.IValueRepo) *shop_service.SShop2 {
 	dto := getShopDto(s)
 	o := s.(shop.IOfflineShop).GetShopValue()
 	areaNames := valRepo.GetAreaNames([]int32{o.Province, o.City, o.District})

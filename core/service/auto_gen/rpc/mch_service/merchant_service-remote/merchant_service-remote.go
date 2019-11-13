@@ -4,285 +4,285 @@
 package main
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"github.com/apache/thrift/lib/go/thrift"
-	"go2o/core/service/auto_gen/rpc/mch_service"
+        "context"
+        "flag"
+        "fmt"
+        "math"
+        "net"
+        "net/url"
+        "os"
+        "strconv"
+        "strings"
+        "github.com/apache/thrift/lib/go/thrift"
 	"go2o/core/service/auto_gen/rpc/ttype"
-	"math"
-	"net"
-	"net/url"
-	"os"
-	"strconv"
-	"strings"
+        "go2o/core/service/auto_gen/rpc/mch_service"
 )
 
 var _ = ttype.GoUnusedProtection__
 
 func Usage() {
-	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
-	flag.PrintDefaults()
-	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  SComplexMerchant Complex(i32 mchId)")
-	fmt.Fprintln(os.Stderr, "  Result CheckLogin(string usr, string oriPwd)")
-	fmt.Fprintln(os.Stderr, "  Result Stat(i32 mchId)")
-	fmt.Fprintln(os.Stderr, "   SyncWholesaleItem(i32 mchId)")
-	fmt.Fprintln(os.Stderr, "   GetAllTradeConf(i32 mchId)")
-	fmt.Fprintln(os.Stderr, "  STradeConf GetTradeConf(i32 mchId, i32 tradeType)")
-	fmt.Fprintln(os.Stderr, "  Result SaveTradeConf(i32 mchId,  arr)")
-	fmt.Fprintln(os.Stderr)
-	os.Exit(0)
+  fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
+  flag.PrintDefaults()
+  fmt.Fprintln(os.Stderr, "\nFunctions:")
+  fmt.Fprintln(os.Stderr, "  SComplexMerchant Complex(i32 mchId)")
+  fmt.Fprintln(os.Stderr, "  Result CheckLogin(string usr, string oriPwd)")
+  fmt.Fprintln(os.Stderr, "  Result Stat(i32 mchId)")
+  fmt.Fprintln(os.Stderr, "   SyncWholesaleItem(i32 mchId)")
+  fmt.Fprintln(os.Stderr, "   GetAllTradeConf(i32 mchId)")
+  fmt.Fprintln(os.Stderr, "  STradeConf GetTradeConf(i32 mchId, i32 tradeType)")
+  fmt.Fprintln(os.Stderr, "  Result SaveTradeConf(i32 mchId,  arr)")
+  fmt.Fprintln(os.Stderr)
+  os.Exit(0)
 }
 
 type httpHeaders map[string]string
 
 func (h httpHeaders) String() string {
-	var m map[string]string = h
-	return fmt.Sprintf("%s", m)
+  var m map[string]string = h
+  return fmt.Sprintf("%s", m)
 }
 
 func (h httpHeaders) Set(value string) error {
-	parts := strings.Split(value, ": ")
-	if len(parts) != 2 {
-		return fmt.Errorf("header should be of format 'Key: Value'")
-	}
-	h[parts[0]] = parts[1]
-	return nil
+  parts := strings.Split(value, ": ")
+  if len(parts) != 2 {
+    return fmt.Errorf("header should be of format 'Key: Value'")
+  }
+  h[parts[0]] = parts[1]
+  return nil
 }
 
 func main() {
-	flag.Usage = Usage
-	var host string
-	var port int
-	var protocol string
-	var urlString string
-	var framed bool
-	var useHttp bool
-	headers := make(httpHeaders)
-	var parsedUrl *url.URL
-	var trans thrift.TTransport
-	_ = strconv.Atoi
-	_ = math.Abs
-	flag.Usage = Usage
-	flag.StringVar(&host, "h", "localhost", "Specify host and port")
-	flag.IntVar(&port, "p", 9090, "Specify port")
-	flag.StringVar(&protocol, "P", "binary", "Specify the protocol (binary, compact, simplejson, json)")
-	flag.StringVar(&urlString, "u", "", "Specify the url")
-	flag.BoolVar(&framed, "framed", false, "Use framed transport")
-	flag.BoolVar(&useHttp, "http", false, "Use http")
-	flag.Var(headers, "H", "Headers to set on the http(s) request (e.g. -H \"Key: Value\")")
-	flag.Parse()
-
-	if len(urlString) > 0 {
-		var err error
-		parsedUrl, err = url.Parse(urlString)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
-			flag.Usage()
-		}
-		host = parsedUrl.Host
-		useHttp = len(parsedUrl.Scheme) <= 0 || parsedUrl.Scheme == "http" || parsedUrl.Scheme == "https"
-	} else if useHttp {
-		_, err := url.Parse(fmt.Sprint("http://", host, ":", port))
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
-			flag.Usage()
-		}
-	}
-
-	cmd := flag.Arg(0)
-	var err error
-	if useHttp {
-		trans, err = thrift.NewTHttpClient(parsedUrl.String())
-		if len(headers) > 0 {
-			httptrans := trans.(*thrift.THttpClient)
-			for key, value := range headers {
-				httptrans.SetHeader(key, value)
-			}
-		}
-	} else {
-		portStr := fmt.Sprint(port)
-		if strings.Contains(host, ":") {
-			host, portStr, err = net.SplitHostPort(host)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "error with host:", err)
-				os.Exit(1)
-			}
-		}
-		trans, err = thrift.NewTSocket(net.JoinHostPort(host, portStr))
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "error resolving address:", err)
-			os.Exit(1)
-		}
-		if framed {
-			trans = thrift.NewTFramedTransport(trans)
-		}
-	}
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating transport", err)
-		os.Exit(1)
-	}
-	defer trans.Close()
-	var protocolFactory thrift.TProtocolFactory
-	switch protocol {
-	case "compact":
-		protocolFactory = thrift.NewTCompactProtocolFactory()
-		break
-	case "simplejson":
-		protocolFactory = thrift.NewTSimpleJSONProtocolFactory()
-		break
-	case "json":
-		protocolFactory = thrift.NewTJSONProtocolFactory()
-		break
-	case "binary", "":
-		protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
-		break
-	default:
-		fmt.Fprintln(os.Stderr, "Invalid protocol specified: ", protocol)
-		Usage()
-		os.Exit(1)
-	}
-	iprot := protocolFactory.GetProtocol(trans)
-	oprot := protocolFactory.GetProtocol(trans)
-	client := mch_service.NewMerchantServiceClient(thrift.NewTStandardClient(iprot, oprot))
-	if err := trans.Open(); err != nil {
-		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
-		os.Exit(1)
-	}
-
-	switch cmd {
-	case "Complex":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err20 := (strconv.Atoi(flag.Arg(1)))
-		if err20 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.Complex(context.Background(), value0))
-		fmt.Print("\n")
-		break
-	case "CheckLogin":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "CheckLogin requires 2 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		fmt.Print(client.CheckLogin(context.Background(), value0, value1))
-		fmt.Print("\n")
-		break
-	case "Stat":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "Stat requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
-		if err23 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.Stat(context.Background(), value0))
-		fmt.Print("\n")
-		break
-	case "SyncWholesaleItem":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "SyncWholesaleItem requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err24 := (strconv.Atoi(flag.Arg(1)))
-		if err24 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.SyncWholesaleItem(context.Background(), value0))
-		fmt.Print("\n")
-		break
-	case "GetAllTradeConf":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetAllTradeConf requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err25 := (strconv.Atoi(flag.Arg(1)))
-		if err25 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.GetAllTradeConf(context.Background(), value0))
-		fmt.Print("\n")
-		break
-	case "GetTradeConf":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetTradeConf requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err26 := (strconv.Atoi(flag.Arg(1)))
-		if err26 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		tmp1, err27 := (strconv.Atoi(flag.Arg(2)))
-		if err27 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.GetTradeConf(context.Background(), value0, value1))
-		fmt.Print("\n")
-		break
-	case "SaveTradeConf":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "SaveTradeConf requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
-		if err28 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		arg29 := flag.Arg(2)
-		mbTrans30 := thrift.NewTMemoryBufferLen(len(arg29))
-		defer mbTrans30.Close()
-		_, err31 := mbTrans30.WriteString(arg29)
-		if err31 != nil {
-			Usage()
-			return
-		}
-		factory32 := thrift.NewTJSONProtocolFactory()
-		jsProt33 := factory32.GetProtocol(mbTrans30)
-		containerStruct1 := mch_service.NewMerchantServiceSaveTradeConfArgs()
-		err34 := containerStruct1.ReadField2(jsProt33)
-		if err34 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := containerStruct1.Arr
-		value1 := argvalue1
-		fmt.Print(client.SaveTradeConf(context.Background(), value0, value1))
-		fmt.Print("\n")
-		break
-	case "":
-		Usage()
-		break
-	default:
-		fmt.Fprintln(os.Stderr, "Invalid function ", cmd)
-	}
+  flag.Usage = Usage
+  var host string
+  var port int
+  var protocol string
+  var urlString string
+  var framed bool
+  var useHttp bool
+  headers := make(httpHeaders)
+  var parsedUrl *url.URL
+  var trans thrift.TTransport
+  _ = strconv.Atoi
+  _ = math.Abs
+  flag.Usage = Usage
+  flag.StringVar(&host, "h", "localhost", "Specify host and port")
+  flag.IntVar(&port, "p", 9090, "Specify port")
+  flag.StringVar(&protocol, "P", "binary", "Specify the protocol (binary, compact, simplejson, json)")
+  flag.StringVar(&urlString, "u", "", "Specify the url")
+  flag.BoolVar(&framed, "framed", false, "Use framed transport")
+  flag.BoolVar(&useHttp, "http", false, "Use http")
+  flag.Var(headers, "H", "Headers to set on the http(s) request (e.g. -H \"Key: Value\")")
+  flag.Parse()
+  
+  if len(urlString) > 0 {
+    var err error
+    parsedUrl, err = url.Parse(urlString)
+    if err != nil {
+      fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
+      flag.Usage()
+    }
+    host = parsedUrl.Host
+    useHttp = len(parsedUrl.Scheme) <= 0 || parsedUrl.Scheme == "http" || parsedUrl.Scheme == "https"
+  } else if useHttp {
+    _, err := url.Parse(fmt.Sprint("http://", host, ":", port))
+    if err != nil {
+      fmt.Fprintln(os.Stderr, "Error parsing URL: ", err)
+      flag.Usage()
+    }
+  }
+  
+  cmd := flag.Arg(0)
+  var err error
+  if useHttp {
+    trans, err = thrift.NewTHttpClient(parsedUrl.String())
+    if len(headers) > 0 {
+      httptrans := trans.(*thrift.THttpClient)
+      for key, value := range headers {
+        httptrans.SetHeader(key, value)
+      }
+    }
+  } else {
+    portStr := fmt.Sprint(port)
+    if strings.Contains(host, ":") {
+           host, portStr, err = net.SplitHostPort(host)
+           if err != nil {
+                   fmt.Fprintln(os.Stderr, "error with host:", err)
+                   os.Exit(1)
+           }
+    }
+    trans, err = thrift.NewTSocket(net.JoinHostPort(host, portStr))
+    if err != nil {
+      fmt.Fprintln(os.Stderr, "error resolving address:", err)
+      os.Exit(1)
+    }
+    if framed {
+      trans = thrift.NewTFramedTransport(trans)
+    }
+  }
+  if err != nil {
+    fmt.Fprintln(os.Stderr, "Error creating transport", err)
+    os.Exit(1)
+  }
+  defer trans.Close()
+  var protocolFactory thrift.TProtocolFactory
+  switch protocol {
+  case "compact":
+    protocolFactory = thrift.NewTCompactProtocolFactory()
+    break
+  case "simplejson":
+    protocolFactory = thrift.NewTSimpleJSONProtocolFactory()
+    break
+  case "json":
+    protocolFactory = thrift.NewTJSONProtocolFactory()
+    break
+  case "binary", "":
+    protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
+    break
+  default:
+    fmt.Fprintln(os.Stderr, "Invalid protocol specified: ", protocol)
+    Usage()
+    os.Exit(1)
+  }
+  iprot := protocolFactory.GetProtocol(trans)
+  oprot := protocolFactory.GetProtocol(trans)
+  client := mch_service.NewMerchantServiceClient(thrift.NewTStandardClient(iprot, oprot))
+  if err := trans.Open(); err != nil {
+    fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
+    os.Exit(1)
+  }
+  
+  switch cmd {
+  case "Complex":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "Complex requires 1 args")
+      flag.Usage()
+    }
+    tmp0, err20 := (strconv.Atoi(flag.Arg(1)))
+    if err20 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    fmt.Print(client.Complex(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "CheckLogin":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "CheckLogin requires 2 args")
+      flag.Usage()
+    }
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    argvalue1 := flag.Arg(2)
+    value1 := argvalue1
+    fmt.Print(client.CheckLogin(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "Stat":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "Stat requires 1 args")
+      flag.Usage()
+    }
+    tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
+    if err23 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    fmt.Print(client.Stat(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "SyncWholesaleItem":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "SyncWholesaleItem requires 1 args")
+      flag.Usage()
+    }
+    tmp0, err24 := (strconv.Atoi(flag.Arg(1)))
+    if err24 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    fmt.Print(client.SyncWholesaleItem(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "GetAllTradeConf":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "GetAllTradeConf requires 1 args")
+      flag.Usage()
+    }
+    tmp0, err25 := (strconv.Atoi(flag.Arg(1)))
+    if err25 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    fmt.Print(client.GetAllTradeConf(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "GetTradeConf":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "GetTradeConf requires 2 args")
+      flag.Usage()
+    }
+    tmp0, err26 := (strconv.Atoi(flag.Arg(1)))
+    if err26 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    tmp1, err27 := (strconv.Atoi(flag.Arg(2)))
+    if err27 != nil {
+      Usage()
+      return
+    }
+    argvalue1 := int32(tmp1)
+    value1 := argvalue1
+    fmt.Print(client.GetTradeConf(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "SaveTradeConf":
+    if flag.NArg() - 1 != 2 {
+      fmt.Fprintln(os.Stderr, "SaveTradeConf requires 2 args")
+      flag.Usage()
+    }
+    tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
+    if err28 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    arg29 := flag.Arg(2)
+    mbTrans30 := thrift.NewTMemoryBufferLen(len(arg29))
+    defer mbTrans30.Close()
+    _, err31 := mbTrans30.WriteString(arg29)
+    if err31 != nil { 
+      Usage()
+      return
+    }
+    factory32 := thrift.NewTJSONProtocolFactory()
+    jsProt33 := factory32.GetProtocol(mbTrans30)
+    containerStruct1 := mch_service.NewMerchantServiceSaveTradeConfArgs()
+    err34 := containerStruct1.ReadField2(jsProt33)
+    if err34 != nil {
+      Usage()
+      return
+    }
+    argvalue1 := containerStruct1.Arr
+    value1 := argvalue1
+    fmt.Print(client.SaveTradeConf(context.Background(), value0, value1))
+    fmt.Print("\n")
+    break
+  case "":
+    Usage()
+    break
+  default:
+    fmt.Fprintln(os.Stderr, "Invalid function ", cmd)
+  }
 }

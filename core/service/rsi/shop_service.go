@@ -27,8 +27,31 @@ var _ shop_service.ShopService = new(shopServiceImpl)
 type shopServiceImpl struct {
 	repo    shop.IShopRepo
 	mchRepo merchant.IMerchantRepo
+	shopRepo shop.IShopRepo
 	query   *query.ShopQuery
 	serviceUtil
+}
+
+func (si *shopServiceImpl) QueryShopIdByHost(ctx context.Context, host string) (r int32, err error) {
+	_, shopId := si.query.QueryShopIdByHost(host)
+	return shopId, nil
+}
+
+func (si *shopServiceImpl) GetShop(ctx context.Context, shopId int32) (r *shop_service.SShop, err error) {
+	sp := si.shopRepo.GetOnlineShop(shopId)
+	if sp != nil {
+		return &shop_service.SShop{
+			ID:          int32(sp.Id),
+			VendorId:    int32(sp.VendorId),
+			ShopName:    sp.ShopName,
+			Alias:       sp.Alias,
+			Host:        sp.Host,
+			Logo:        sp.Logo,
+			StoreTitle:  sp.ShopTitle,
+			StoreNotice: sp.ShopNotice,
+		}, nil
+	}
+	return nil, nil
 }
 
 // 根据主机头获取店铺编号
@@ -38,10 +61,11 @@ func (si *shopServiceImpl) QueryStoreByHost(ctx context.Context, host string) (r
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
-	query *query.ShopQuery) *shopServiceImpl {
+	shopRepo shop.IShopRepo,query *query.ShopQuery) *shopServiceImpl {
 	return &shopServiceImpl{
 		repo:    rep,
 		mchRepo: mchRepo,
+		shopRepo:shopRepo,
 		query:   query,
 	}
 }

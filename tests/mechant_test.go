@@ -9,6 +9,10 @@ import (
 	"testing"
 )
 
+func TestMerchantPwd2(t *testing.T){
+	s := domain.Md5("123456")
+	println(domain.Sha1Pwd(s))
+}
 // 测试创建商户
 func TestCreateMerchant(t *testing.T) {
 	repo := ti.Factory.GetMerchantRepo()
@@ -24,6 +28,7 @@ func TestCreateMerchant(t *testing.T) {
 		City:        0,
 		District:    0,
 	}
+	v.Pwd = domain.Sha1Pwd(v.Pwd)
 	im := repo.CreateMerchant(v)
 	err := im.SetValue(v)
 	if err == nil {
