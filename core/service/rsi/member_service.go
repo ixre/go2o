@@ -941,13 +941,13 @@ func (s *memberService) ReviewTrustedInfo(ctx context.Context, memberId int64, r
 	return s.success(nil), nil
 }
 
-// 获取分页商铺收藏
+// 获取分页店铺收藏
 func (s *memberService) PagedShopFav(memberId int64, begin, end int,
 	where string) (int, []*dto.PagedShopFav) {
 	return s.query.PagedShopFav(memberId, begin, end, where)
 }
 
-// 获取分页商铺收藏
+// 获取分页店铺收藏
 func (s *memberService) PagedGoodsFav(memberId int64, begin, end int,
 	where string) (int, []*dto.PagedGoodsFav) {
 	return s.query.PagedGoodsFav(memberId, begin, end, where)

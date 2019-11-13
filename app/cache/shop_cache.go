@@ -29,7 +29,7 @@ func CleanShopData(shopId int32) {
 	}
 }
 
-// 删除商铺缓存
+// 删除店铺缓存
 func DelShopCache(mchId int32) {
 	kvs := GetKVS()
 	kvs.Del(GetValueMerchantCacheCK(mchId))

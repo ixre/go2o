@@ -183,13 +183,13 @@ struct SShoppingCart {
     //店铺分组
     3: list<SShoppingCartGroup> Shops
 }
-// 购物车商铺分组
+// 购物车店铺分组
 struct SShoppingCartGroup {
-    //商铺编号
+    //店铺编号
     1: i32 ShopId
     //供货商编号
     2: i32 VendorId
-    //商铺名称
+    //店铺名称
     3: string ShopName
     //是否结算
     4: bool Checked

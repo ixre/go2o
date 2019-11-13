@@ -182,6 +182,7 @@ DROP TABLE pt_order;
 DROP TABLE pt_kvset_member;
 DROP TABLE pt_kvset;
 DROP TABLE pt_api;
+DROP TABLE pt_siteconf;
 
 ALTER TABLE public.mch_shop
     DROP COLUMN state;
@@ -195,5 +196,31 @@ COMMENT ON COLUMN public.mch_shop.state
 ALTER TABLE public.mch_saleconf
     RENAME TO mch_sale_conf;
 
-ALTER TABLE public.pt_siteconf
-    RENAME TO shop_site_conf;
+
+ALTER TABLE "public".mch_online_shop
+    DROP CONSTRAINT mch_online_shop_pkey;
+ALTER TABLE "public".mch_online_shop
+    ADD COLUMN id int4 NOT NULL;
+ALTER TABLE "public".mch_online_shop
+    ADD COLUMN vendor_id int4 NOT NULL;
+ALTER TABLE "public".mch_online_shop
+    ADD COLUMN create_time int8 NOT NULL;
+ALTER TABLE "public".mch_online_shop
+    ADD COLUMN state int2 NOT NULL;
+ALTER TABLE "public".mch_online_shop
+    ADD COLUMN shop_name varchar(20) NOT NULL;
+ALTER TABLE "public".mch_online_shop
+    ADD PRIMARY KEY(id);
+COMMENT ON COLUMN "public".mch_online_shop.id IS '店铺编号';
+COMMENT ON COLUMN "public".mch_online_shop.vendor_id IS '商户编号';
+COMMENT ON COLUMN "public".mch_online_shop.host IS '自定义 域名';
+COMMENT ON COLUMN "public".mch_online_shop.alias IS '个性化域名';
+COMMENT ON COLUMN "public".mch_online_shop.logo IS '店铺标志';
+COMMENT ON COLUMN "public".mch_online_shop.shop_name IS '店铺名称';
+COMMENT ON COLUMN "public".mch_online_shop.state IS '状态';
+COMMENT ON COLUMN "public".mch_online_shop.create_time IS '创建时间';
+ALTER TABLE "public".mch_online_shop
+    ADD UNIQUE (id);
+
+
+ALTER TABLE public.mch_online_shop DROP COLUMN shop_id;

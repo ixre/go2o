@@ -112,7 +112,7 @@ func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 	for _, v := range items {
 		o.items = append(o.items, o.createItem(v))
 	}
-	// 获取运营商和商铺编号
+	// 获取运营商和店铺编号
 	o.value.VendorId = o.items[0].VendorId
 	o.value.ShopId = o.items[0].ShopId
 	// 运费计算器

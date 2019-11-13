@@ -476,20 +476,20 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	}
 	// 初始化商店
 	m._value.ID = id
-	s := &shop.Shop{
-		Id:           0,
-		VendorId:     id,
-		ShopType:     shop.TypeOnlineShop,
-		Name:         m._value.Name,
-		State:        shop.StateAwaitInitial,
-		OpeningState: shop.OStateNormal,
-		SortNum:      0,
-		CreateTime:   m._value.UpdateTime,
+	s := &shop.OnlineShop{
+		VendorId:   int(id),
+		ShopName:   m._value.Name,
+		Tel:        "",
+		Addr:       "",
+		Logo:       "",
+		ShopTitle:  "",
+		ShopNotice: "",
 	}
-	is := m._shopRepo.CreateEShop(s)
-	err = is.SetValue(s)
+	is := m._shopRepo.CreateShop(s)
+	io := is.(shop.IOnlineShop)
+	err = io.SetShopValue(s)
 	if err == nil {
-		_, err = is.Save()
+		err = is.Save()
 	}
 	if err != nil {
 		return 0, err

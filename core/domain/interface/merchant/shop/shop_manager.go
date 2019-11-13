@@ -21,7 +21,7 @@ type (
 		// 获取营业中的商店
 		GetBusinessInShops() []IShop
 
-		// 获取商铺
+		// 获取店铺
 		GetOnlineShop() IShop
 
 		// 获取商店

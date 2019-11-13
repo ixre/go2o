@@ -398,7 +398,7 @@ func (s *orderServiceImpl) GetCartSettle(memberId int64,
 		st.Shop = &dto.SettleShopMeta{
 			Id:   v.Id,
 			Name: v.Name,
-			Tel:  ols.GetShopValue().ServiceTel,
+			Tel:  ols.GetShopValue().Tel,
 		}
 	}
 
@@ -609,7 +609,7 @@ func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *order_servic
 		if mch != nil {
 			sp := mch.ShopManager().GetOnlineShop()
 			if sp != nil {
-				o.ShopId = sp.GetDomainId()
+				o.ShopId = int32(sp.GetDomainId())
 			} else {
 				o.ShopId = 1
 			}

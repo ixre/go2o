@@ -14,7 +14,7 @@ struct SShop{
     7:map<string,string> Data
 }
 
-// 商铺
+// 店铺
 struct SStore{
     1:i32 ID
     2:i32 VendorId

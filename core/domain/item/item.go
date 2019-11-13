@@ -311,7 +311,7 @@ func (g *itemImpl) checkItemValue(v *item.GoodsItem) error {
 	if v.ShopId <= 0 {
 		return item.ErrNotBindShop
 	} else {
-		//todo: 判断商铺是否为本商家的
+		//todo: 判断店铺是否为本商家的
 		// return item.ErrIncorrectShopOfItem
 	}
 

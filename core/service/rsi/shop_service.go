@@ -46,7 +46,7 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 	}
 }
 
-// 获取商铺
+// 获取店铺
 func (si *shopServiceImpl) GetStore(ctx context.Context, vendorId int32) (*shop_service.SStore, error) {
 	mch := si.mchRepo.GetMerchant(vendorId)
 	if mch != nil {
@@ -138,7 +138,7 @@ func (si *shopServiceImpl) SaveStore(s *shop_service.SStore) error {
 			ofs := sp.(shop.IOnlineShop)
 			err = ofs.SetShopValue(v1)
 			if err == nil {
-				_, err = sp.Save()
+				err = sp.Save()
 			}
 		}
 		return err
@@ -164,7 +164,7 @@ func (si *shopServiceImpl) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) er
 			ofs := sp.(shop.IOfflineShop)
 			err = ofs.SetShopValue(v)
 			if err == nil {
-				_, err = sp.Save()
+				err = sp.Save()
 			}
 		}
 		return err
@@ -188,7 +188,8 @@ func (si *shopServiceImpl) SaveShop(mchId int32, v *shop.Shop) (int32, error) {
 		if err != nil {
 			return v.Id, err
 		}
-		return shop.Save()
+		err = shop.Save()
+		return int32(shop.GetDomainId()), err
 	}
 	return 0, merchant.ErrNoSuchMerchant
 }

@@ -10,6 +10,7 @@
 package shop
 
 import (
+	"errors"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/registry"
@@ -20,6 +21,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var _ shop.IOfflineShop = new(offlineShopImpl)
@@ -35,7 +37,7 @@ type shopImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
-func NewShop(v *shop.Shop, shopRepo shop.IShopRepo,
+func NewShop2(v *shop.Shop, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShop {
 	s := &shopImpl{
 		shopRepo:     shopRepo,
@@ -44,16 +46,19 @@ func NewShop(v *shop.Shop, shopRepo shop.IShopRepo,
 		registryRepo: registryRepo,
 	}
 	switch s.Type() {
-	case shop.TypeOnlineShop:
-		return newOnlineShopImpl(s, valRepo)
 	case shop.TypeOfflineShop:
 		return newOfflineShopImpl(s, valRepo)
 	}
 	panic("未知的商店类型")
 }
 
-func (s *shopImpl) GetDomainId() int32 {
-	return s.value.Id
+func NewShop(v *shop.OnlineShop, shopRepo shop.IShopRepo,
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShop {
+	return newOnlineShopImpl(v, shopRepo, valRepo)
+}
+
+func (s *shopImpl) GetDomainId() int {
+	return int(s.value.Id)
 }
 
 // 商店类型
@@ -214,14 +219,14 @@ func (s *offlineShopImpl) CanDeliverTo(address string) (bool, int) {
 }
 
 // 保存
-func (s *offlineShopImpl) Save() (int32, error) {
+func (s *offlineShopImpl) Save() error {
 	create := s.GetDomainId() <= 0
 	id, err := s.shopImpl.Save()
 	if err == nil {
-		s._shopVal.ShopId = id
+		s._shopVal.ShopId = int(id)
 		err = s.shopRepo.SaveOfflineShop(s._shopVal, create)
 	}
-	return id, err
+	return err
 }
 
 // 获取商店信息
@@ -229,7 +234,7 @@ func (s *offlineShopImpl) Data() *shop.ComplexShop {
 	sv := s.value
 	ov := s._shopVal
 	v := &shop.ComplexShop{
-		ID:       s.GetDomainId(),
+		ID:       int32(s.GetDomainId()),
 		VendorId: sv.VendorId,
 		ShopType: sv.ShopType,
 		Name:     sv.Name,
@@ -245,31 +250,60 @@ func (s *offlineShopImpl) Data() *shop.ComplexShop {
 	return v
 }
 
+var _ shop.IShop = new(onlineShopImpl)
+var _ shop.IOnlineShop = new(onlineShopImpl)
+
 type onlineShopImpl struct {
-	*shopImpl
 	_shopVal *shop.OnlineShop
 	valRepo  valueobject.IValueRepo
+	shopRepo shop.IShopRepo
 }
 
-func newOnlineShopImpl(s *shopImpl, valRepo valueobject.IValueRepo) shop.IShop {
-	var v *shop.OnlineShop
-	if s.GetDomainId() > 0 {
-		v = s.shopRepo.GetOnlineShop(s.GetDomainId())
-	}
-	if v == nil {
-		dv := shop.DefaultOnlineShop
-		v = &dv
-		v.ShopId = s.GetDomainId()
-	}
+func (s *onlineShopImpl) GetDomainId() int {
+	return s._shopVal.Id
+}
+
+func (s *onlineShopImpl) Type() int32 {
+	return shop.TypeOnlineShop
+}
+
+func (s *onlineShopImpl) GetValue() shop.Shop {
+	panic("implement me")
+}
+
+func (s *onlineShopImpl) SetValue(*shop.Shop) error {
+	panic("implement me")
+}
+
+func (s *onlineShopImpl) TurnOn() error {
+	panic("implement me")
+}
+
+func (s *onlineShopImpl) TurnOff(reason string) error {
+	panic("implement me")
+}
+
+func (s *onlineShopImpl) Opening() error {
+	panic("implement me")
+}
+
+func (s *onlineShopImpl) Pause() error {
+	panic("implement me")
+}
+
+func newOnlineShopImpl(v *shop.OnlineShop, shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo) shop.IShop {
 	return &onlineShopImpl{
-		shopImpl: s,
 		_shopVal: v,
 		valRepo:  valRepo,
+		shopRepo: shopRepo,
 	}
 }
 
 func (s *onlineShopImpl) checkShopAlias(alias string) error {
 	alias = strings.ToLower(alias)
+	if strings.HasPrefix(alias, "shop") {
+		return errors.New("非法的店铺别名")
+	}
 	if !shopAliasRegexp.Match([]byte(alias)) {
 		return shop.ErrShopAliasFormat
 	}
@@ -291,27 +325,33 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 // 设置值
 func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	v.Logo = strings.TrimSpace(v.Logo)
-	s._shopVal.ServiceTel = v.ServiceTel
-	s._shopVal.Address = v.Address
-	if len(v.Host) > 0 {
-		s._shopVal.Host = v.Host
-	}
-	if s.GetDomainId() == 0 {
-		if v.Logo == "" {
-			return shop.ErrShopNoLogo
+	dst := s._shopVal
+	unix := time.Now().Unix()
+	if s.GetDomainId() <= 0 {
+		if v.VendorId <= 0 {
+			panic("vendor id not right")
 		}
+		dst.Logo = shop.DefaultOnlineShop.Logo
+		dst.CreateTime = unix
+		dst.State = shop.StateAwaitInitial
+		dst.Alias = s.generateShopAlias()
 	}
 	if len(v.Logo) > 0 {
-		s._shopVal.Logo = v.Logo
+		dst.Logo = v.Logo
 	}
-	if len(v.Alias) > 0 {
+	if len(v.Host) > 0 {
+		dst.Host = v.Host
+	}
+	if len(v.Alias) > 0 && v.Alias != dst.Alias {
 		err = s.checkShopAlias(v.Alias)
 		if err == nil {
-			s._shopVal.Alias = v.Alias
+			dst.Alias = v.Alias
 		}
 	}
-	s._shopVal.ShopTitle = v.ShopTitle
-	s._shopVal.ShopNotice = v.ShopNotice
+	dst.Tel = v.Tel
+	dst.Addr = v.Addr
+	dst.ShopTitle = v.ShopTitle
+	dst.ShopNotice = v.ShopNotice
 	return err
 }
 
@@ -321,20 +361,29 @@ func (s *onlineShopImpl) GetShopValue() shop.OnlineShop {
 }
 
 // 保存
-func (s *onlineShopImpl) Save() (int32, error) {
-	create := s.GetDomainId() <= 0
-	if create {
-		if s.shopRepo.ShopCount(s.value.VendorId, shop.TypeOnlineShop) > 0 {
-			return 0, shop.ErrSupportSingleOnlineShop
-		}
-		s._shopVal.Alias = s.generateShopAlias()
+func (s *onlineShopImpl) Save() error {
+	if s.GetDomainId() > 0 {
+		_, err := s.shopRepo.SaveOnlineShop(s._shopVal)
+		return err
 	}
-	id, err := s.shopImpl.Save()
+	return s.createShop()
+}
+
+func (s *onlineShopImpl) createShop() error {
+	if s.shopRepo.CheckShopExists(s._shopVal.VendorId) {
+		return shop.ErrSupportSingleOnlineShop
+	}
+	unix := time.Now().Unix()
+	s._shopVal.Alias = s.generateShopAlias()
+	s._shopVal.CreateTime = unix
+	if s._shopVal.Logo == "" {
+		s._shopVal.Logo = shop.DefaultOnlineShop.Logo
+	}
+	id, err := s.shopRepo.SaveOnlineShop(s._shopVal)
 	if err == nil {
-		s._shopVal.ShopId = id
-		err = s.shopRepo.SaveOnlineShop(s._shopVal, create)
+		s._shopVal.Id = id
 	}
-	return id, err
+	return err
 }
 
 func (s *onlineShopImpl) generateShopAlias() string {
@@ -351,18 +400,17 @@ func (s *onlineShopImpl) generateShopAlias() string {
 
 // 获取商店信息
 func (s *onlineShopImpl) Data() *shop.ComplexShop {
-	sv := s.value
 	ov := s._shopVal
 	v := &shop.ComplexShop{
-		ID:       s.GetDomainId(),
-		VendorId: sv.VendorId,
-		ShopType: sv.ShopType,
-		Name:     sv.Name,
-		State:    sv.ShopType,
+		ID:       int32(s.GetDomainId()),
+		VendorId: int32(ov.VendorId),
+		ShopType: shop.TypeOnlineShop,
+		Name:     ov.ShopTitle,
+		State:    shop.StateNormal,
 		Data:     make(map[string]string),
 	}
 	v.Data["Host"] = ov.Host
 	v.Data["Logo"] = ov.Logo
-	v.Data["ServiceTel"] = ov.ServiceTel
+	v.Data["ServiceTel"] = ov.Tel
 	return v
 }

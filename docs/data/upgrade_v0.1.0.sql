@@ -223,7 +223,7 @@ COMMENT '供货商编号',
 COMMENT '品牌编号'
   AFTER `supplier_id`,
   ADD COLUMN `shop_id` INT(11) NULL
-COMMENT '商铺编号'
+COMMENT '店铺编号'
   AFTER `supplier_id`,
   ADD COLUMN `bulk` INT(11) NULL
 COMMENT '体积:毫升(ml)'
@@ -258,10 +258,10 @@ COMMENT '供货商编号'
 COMMENT '品牌编号(冗余)\n'
   AFTER `vendor_id`,
   ADD COLUMN `shop_id` INT(11) NULL
-COMMENT '商铺编号'
+COMMENT '店铺编号'
   AFTER `brand_id`,
   ADD COLUMN `shop_cat_id` INT(11) NULL
-COMMENT '商铺分类编号'
+COMMENT '店铺分类编号'
   AFTER `shop_id`,
   ADD COLUMN `express_tid` INT(11) NULL
 COMMENT '快递模板编号'
@@ -387,7 +387,7 @@ COMMENT '供货商编号',
 COMMENT '编号'
   AFTER `vendor_id`,
   ADD COLUMN `shop_id` INT(11) NULL
-COMMENT '商铺编号'
+COMMENT '店铺编号'
   AFTER `brand_id`,
   ADD COLUMN `shop_cat_id` INT(11) NULL
 COMMENT '编号分类编号'

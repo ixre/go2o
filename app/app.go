@@ -36,7 +36,7 @@ const (
 	FlagUCenterServe
 	// 通行证
 	FlagPassportServe
-	// 商铺系统
+	// 店铺系统
 	FlagShopServe
 )
 
