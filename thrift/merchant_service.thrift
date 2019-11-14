@@ -1,35 +1,47 @@
 namespace java com.github.jsix.go2o.rpc
 namespace csharp com.github.jsix.go2o.rpc
-namespace go go2o.core.service.auto_gen.rpc.mch_service
+namespace go go2o.core.service.auto_gen.rpc.merchant_service
 include "ttype.thrift"
 
 // 商家
-struct SComplexMerchant {
-    1: i32 ID
-    2: i64 MemberId
-    3: string Usr
-    4: string Pwd
-    5: string Name
-    6: i32 SelfSales
-    7: i32 Level
-    8: string Logo
-    9: string CompanyName
-    10: i32 Province
-    11: i32 City
-    12: i32 District
-    13: i32 Enabled
-    14: i64 ExpiresTime
-    15: i64 JoinTime
-    16: i64 UpdateTime
-    17: i64 LoginTime
-    18: i64 LastLoginTime
+struct SMerchant {
+    /** 编号 */
+    1:i32 Id
+    /** 会员编号 */
+    2:i64 MemberId
+    /** 登录用户 */
+    3:string LoginUser
+    /** 登录密码 */
+    4:string LoginPwd
+    /** 名称 */
+    5:string Name
+    /** 公司名称 */
+    6:string CompanyName
+    /** 是否字营 */
+    7:i16 SelfSales
+    /** 商户等级 */
+    8:i32 Level
+    /** 标志 */
+    9:string Logo
+    /** 省 */
+    10:i32 Province
+    /** 市 */
+    11:i32 City
+    /** 区 */
+    12:i32 District
+    /** 标志 */
+    13:i32 Flag
+    /** 是否启用 */
+    14:i16 Enabled
+    /** 最后登录时间 */
+    15:i32 LastLoginTime
 }
 
 
 //商家服务
 service MerchantService{
    // 获取商家符合的信息
-   SComplexMerchant Complex(1:i32 mchId)
+   SMerchant GetMerchant(1:i32 mchId)
    // 验证用户密码,并返回编号。可传入商户或会员的账号密码
    ttype.Result CheckLogin(1:string usr,2:string oriPwd)
    // 验证商户状态

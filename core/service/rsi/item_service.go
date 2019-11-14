@@ -223,11 +223,11 @@ func (s itemService) searchOnShelveItemForWholesale(word string, start,
 // 附加批发商品的信息
 func (s *itemService) attachWholesaleItemData(dto *ttype.SOldItem) {
 	dto.Data = make(map[string]string)
-	vendor := s.mchRepo.GetMerchant(dto.VendorId)
+	vendor := s.mchRepo.GetMerchant(int(dto.VendorId))
 	if vendor != nil {
 		vv := vendor.GetValue()
-		pStr := s.valueRepo.GetAreaName(vv.Province)
-		cStr := s.valueRepo.GetAreaName(vv.City)
+		pStr := s.valueRepo.GetAreaName(int32(vv.Province))
+		cStr := s.valueRepo.GetAreaName(int32(vv.City))
 		dto.Data["VendorName"] = vv.CompanyName
 		dto.Data["ShipArea"] = pStr + cStr
 		// 认证信息

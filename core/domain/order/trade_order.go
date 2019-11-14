@@ -218,7 +218,7 @@ func (o *tradeOrderImpl) CashPay() error {
 	// 商家收取现金，从商家账户扣除交易费
 	vp := (1 - v.TradeRate) * float64(pv.TotalAmount)
 	if vp > 0 {
-		va := o.mchRepo.GetMerchant(v.VendorId)
+		va := o.mchRepo.GetMerchant(int(v.VendorId))
 		err := va.Account().TakePayment(o.OrderNo(), vp, 0,
 			"交易费-"+o.value.Subject)
 		if err != nil {
@@ -314,7 +314,7 @@ func (o *tradeOrderImpl) vendorSettle() error {
 		panic("交易单使用现金支付，不需要对商户结算!")
 	}
 	v := o.getValue()
-	vendor := o.mchRepo.GetMerchant(v.VendorId)
+	vendor := o.mchRepo.GetMerchant(int(v.VendorId))
 	if vendor != nil {
 		return o.vendorSettleByRate(vendor, v.TradeRate)
 	}

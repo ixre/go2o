@@ -317,7 +317,7 @@ func (o *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
 // 计算折扣
 func (o *wholesaleOrderImpl) applyGroupDiscount() {
 	var groupId int32 = 1
-	mch := o.mchRepo.GetMerchant(o.value.VendorId)
+	mch := o.mchRepo.GetMerchant(int(o.value.VendorId))
 	if mch != nil {
 		basisAmount := int32(o.value.ItemAmount)
 		ws := mch.Wholesaler()
@@ -690,7 +690,7 @@ func (o *wholesaleOrderImpl) getOrderCost() float32 {
 
 // 商户结算
 func (o *wholesaleOrderImpl) vendorSettle() error {
-	vendor := o.mchRepo.GetMerchant(o.value.VendorId)
+	vendor := o.mchRepo.GetMerchant(int(o.value.VendorId))
 	if vendor != nil {
 		settleMode := o.registryRepo.Get(registry.MchOrderSettleMode).IntValue()
 		switch enum.MchSettleMode(settleMode) {

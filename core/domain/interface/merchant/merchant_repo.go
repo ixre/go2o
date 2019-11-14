@@ -25,16 +25,16 @@ type IMerchantRepo interface {
 	GetMerchantsId() []int32
 
 	// 获取商户
-	GetMerchant(id int32) IMerchant
+	GetMerchant(id int) IMerchant
 
 	// 获取合作商主要的域名主机
-	GetMerchantMajorHost(mchId int32) string
+	GetMerchantMajorHost(mchId int) string
 
 	// 保存
 	SaveMerchant(*Merchant) (int32, error)
 
 	// 获取账户
-	GetAccount(mchId int32) *Account
+	GetAccount(mchId int) *Account
 
 	// 获取销售配置
 	GetMerchantSaleConf(mchId int32) *SaleConf
@@ -49,25 +49,25 @@ type IMerchantRepo interface {
 	SaveApiInfo(d *ApiInfo) error
 
 	// 获取API信息
-	GetApiInfo(mchId int32) *ApiInfo
+	GetApiInfo(mchId int) *ApiInfo
 
 	// 根据API编号获取商户编号
 	GetMerchantIdByApiId(apiId string) int32
 
 	// 获取键值
-	GetKeyValue(mchId int32, indent string, k string) string
+	GetKeyValue(mchId int, indent string, k string) string
 
 	// 设置键值
-	SaveKeyValue(mchId int32, indent string, k, v string, updateTime int64) error
+	SaveKeyValue(mchId int, indent string, k, v string, updateTime int64) error
 
 	// 获取多个键值
-	GetKeyMap(mchId int32, indent string, k []string) map[string]string
+	GetKeyMap(mchId int, indent string, k []string) map[string]string
 
 	// 检查是否包含值的键数量,keyStr为键模糊匹配
-	CheckKvContainValue(mchId int32, indent string, value string, keyStr string) int
+	CheckKvContainValue(mchId int, indent string, value string, keyStr string) int
 
 	// 根据关键字获取字典
-	GetKeyMapByChar(mchId int32, indent string, keyword string) map[string]string
+	GetKeyMapByChar(mchId int, indent string, keyword string) map[string]string
 
 	//获取等级
 	GetLevel(mchId, levelValue int32) *MemberLevel
@@ -85,7 +85,7 @@ type IMerchantRepo interface {
 	SaveMemberLevel(mchId int32, v *MemberLevel) (int32, error)
 
 	// Get MchEnterpriseInfo
-	GetMchEnterpriseInfo(mchId int32) *EnterpriseInfo
+	GetMchEnterpriseInfo(mchId int) *EnterpriseInfo
 	// Save MchEnterpriseInfo
 	SaveMchEnterpriseInfo(v *EnterpriseInfo) (int, error)
 

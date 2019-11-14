@@ -17,15 +17,30 @@ struct SShop2{
 
 // 店铺
 struct SShop{
-    1:i32 ID
-    2:i32 VendorId
-    3:string ShopName
-    4:string Alias
-    5:string Host
-    6:string Logo
-    9:string StorePhone
-    10:string StoreTitle
-    11:string StoreNotice
+  /** 店铺编号 */
+  1:i32 Id
+  /** 商户编号 */
+  2:i32 VendorId
+  /** 店铺名称 */
+  3:string ShopName
+  /** 店铺标志 */
+  4:string Logo
+  /** 自定义 域名 */
+  5:string Host
+  /** 个性化域名 */
+  6:string Alias
+  /** 电话 */
+  7:string Tel
+  /** 地址 */
+  8:string Addr
+  /** 店铺标题 */
+  9:string ShopTitle
+  /** 店铺公告 */
+  10:string ShopNotice
+  /** 标志 */
+  11:i32 Flag
+  /** 状态 */
+  12:i16 State
 }
 
 // 店铺

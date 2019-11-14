@@ -1368,7 +1368,7 @@ func (o *subOrderImpl) getOrderCost() float32 {
 
 // 商户结算
 func (o *subOrderImpl) vendorSettle() error {
-	vendor := o.mchRepo.GetMerchant(o.value.VendorId)
+	vendor := o.mchRepo.GetMerchant(int(o.value.VendorId))
 	if vendor != nil {
 		settleMode := o.registryRepo.Get(registry.MchOrderSettleMode).IntValue()
 		switch enum.MchSettleMode(settleMode) {

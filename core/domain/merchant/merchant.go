@@ -160,17 +160,17 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		// 公司名称
 		CompanyName: "",
 		// 省
-		Province: v.Province,
+		Province: int(v.Province),
 		// 市
-		City: v.City,
+		City: int(v.City),
 		// 区
-		District: v.District,
+		District: int(v.District),
 		// 是否启用
 		Enabled: 1,
 		// 过期时间
 		ExpiresTime: time.Now().Add(time.Hour * time.Duration(24*365)).Unix(),
 		// 注册时间
-		JoinTime: unix,
+		CreateTime: unix,
 		// 更新时间
 		UpdateTime: unix,
 		// 登录时间
@@ -294,29 +294,29 @@ func (m *merchantImpl) GetRepo() merchant.IMerchantRepo {
 	return m._repo
 }
 
-func (m *merchantImpl) GetAggregateRootId() int32 {
-	return m._value.ID
+func (m *merchantImpl) GetAggregateRootId() int {
+	return m._value.Id
 }
 
 // 获取符合的商家信息
 func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 	src := m.GetValue()
 	return &merchant.ComplexMerchant{
-		Id:            src.ID,
+		Id:            int32(src.Id),
 		MemberId:      src.MemberId,
-		Usr:           src.User,
-		Pwd:           src.Pwd,
+		Usr:           src.LoginUser,
+		Pwd:           src.LoginPwd,
 		Name:          src.Name,
-		SelfSales:     src.SelfSales,
-		Level:         src.Level,
+		SelfSales:     int32(src.SelfSales),
+		Level:         int32(src.Level),
 		Logo:          src.Logo,
 		CompanyName:   src.CompanyName,
-		Province:      src.Province,
-		City:          src.City,
-		District:      src.District,
-		Enabled:       src.Enabled,
+		Province:      int32(src.Province),
+		City:          int32(src.City),
+		District:      int32(src.District),
+		Enabled:       int32(src.Enabled),
 		ExpiresTime:   src.ExpiresTime,
-		JoinTime:      src.JoinTime,
+		JoinTime:      src.CreateTime,
 		UpdateTime:    src.UpdateTime,
 		LoginTime:     src.LoginTime,
 		LastLoginTime: src.LastLoginTime,
@@ -329,7 +329,7 @@ func (m *merchantImpl) GetValue() merchant.Merchant {
 
 func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 	tv := m._value
-	if v.ID == tv.ID {
+	if v.Id == tv.Id {
 		tv.Name = v.Name
 		tv.Province = v.Province
 		tv.City = v.City
@@ -347,7 +347,7 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 		if len(v.CompanyName) != 0 {
 			tv.CompanyName = v.CompanyName
 		}
-		tv.Pwd = v.Pwd
+		tv.LoginPwd = v.LoginPwd
 		tv.UpdateTime = time.Now().Unix()
 	}
 	return nil
@@ -369,8 +369,8 @@ func (m *merchantImpl) checkSelfSales() bool {
 		//不为自营,但编号为1的商户
 		if m.GetAggregateRootId() == 1 {
 			m._value.SelfSales = 1
-			m._value.User = "-"
-			m._value.Pwd = "-"
+			m._value.LoginUser = "-"
+			m._value.LoginPwd = "-"
 			return true
 		}
 	} else if m.GetAggregateRootId() != 1 {
@@ -436,7 +436,7 @@ func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
 		if v == nil {
 			v, _ = m.createWholesaler()
 		}
-		m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo, m._itemRepo)
+		m._wholesaler = wsImpl.NewWholesaler(int32(mchId), v, m._wsRepo, m._itemRepo)
 	}
 	return m._wholesaler
 }
@@ -452,7 +452,7 @@ func (m *merchantImpl) EnableWholesale() error {
 
 func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 	v := &wholesaler.WsWholesaler{
-		MchId:       m.GetAggregateRootId(),
+		MchId:       int32(m.GetAggregateRootId()),
 		Rate:        1,
 		ReviewState: enum.ReviewPass,
 		//ReviewState: enum.ReviewAwaiting,
@@ -467,7 +467,7 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	unix := time.Now().Unix()
 	m._value.ExpiresTime = unix + 3600*24*365
 	m._value.UpdateTime = unix
-	m._value.JoinTime = unix
+	m._value.CreateTime = unix
 	m._value.LoginTime = 0
 	m._value.LastLoginTime = 0
 	id, err := m._repo.SaveMerchant(m._value)
@@ -475,7 +475,7 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 		return id, err
 	}
 	// 初始化商店
-	m._value.ID = id
+	m._value.Id = int(id)
 	s := &shop.OnlineShop{
 		VendorId:   int(id),
 		ShopName:   m._value.Name,
@@ -510,7 +510,7 @@ func (m *merchantImpl) GetMajorHost() string {
 	if len(m._host) == 0 {
 		host := m._repo.GetMerchantMajorHost(m.GetAggregateRootId())
 		if len(host) == 0 {
-			host = fmt.Sprintf("%s.%s", m._value.User, infrastructure.GetApp().
+			host = fmt.Sprintf("%s.%s", m._value.LoginUser, infrastructure.GetApp().
 				Config().GetString(variable.ServerDomain))
 		}
 		m._host = host
@@ -521,9 +521,7 @@ func (m *merchantImpl) GetMajorHost() string {
 // 返回用户服务
 func (m *merchantImpl) UserManager() user.IUserManager {
 	if m._userManager == nil {
-		m._userManager = userImpl.NewUserManager(
-			m.GetAggregateRootId(),
-			m._userRepo)
+		m._userManager = userImpl.NewUserManager(int32(m.GetAggregateRootId()), m._userRepo)
 	}
 	return m._userManager
 }
@@ -531,7 +529,7 @@ func (m *merchantImpl) UserManager() user.IUserManager {
 // 获取会员管理服务
 func (m *merchantImpl) LevelManager() merchant.ILevelManager {
 	if m._levelManager == nil {
-		m._levelManager = NewLevelManager(m.GetAggregateRootId(), m._repo)
+		m._levelManager = NewLevelManager(int32(m.GetAggregateRootId()), m._repo)
 	}
 	return m._levelManager
 }

@@ -9,10 +9,11 @@ import (
 	"testing"
 )
 
-func TestMerchantPwd2(t *testing.T){
+func TestMerchantPwd2(t *testing.T) {
 	s := domain.Md5("123456")
 	println(domain.Sha1Pwd(s))
 }
+
 // 测试创建商户
 func TestCreateMerchant(t *testing.T) {
 	repo := ti.Factory.GetMerchantRepo()

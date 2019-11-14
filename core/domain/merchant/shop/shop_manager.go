@@ -41,13 +41,13 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 // 新建商店
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
-	v.VendorId = s.merchant.GetAggregateRootId()
+	v.VendorId = int32(s.merchant.GetAggregateRootId())
 	return NewShop2(v, s.repo, s.valueRepo, s.registryRepo)
 }
 
 // 获取所有商店
 func (s *shopManagerImpl) GetShops() []shop.IShop {
-	shopList := s.repo.GetShopsOfMerchant(s.merchant.GetAggregateRootId())
+	shopList := s.repo.GetShopsOfMerchant(int32(s.merchant.GetAggregateRootId()))
 	shops := make([]shop.IShop, len(shopList))
 	for i, v := range shopList {
 		shops[i] = s.CreateShop(&v)

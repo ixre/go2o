@@ -45,7 +45,7 @@ func (o *subOrderImpl) handleCashBack() error {
 	}
 	var err error
 	v := o.value
-	mch := o.mchRepo.GetMerchant(v.VendorId)
+	mch := o.mchRepo.GetMerchant(int(v.VendorId))
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {

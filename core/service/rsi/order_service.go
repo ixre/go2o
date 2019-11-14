@@ -119,7 +119,7 @@ func (s *orderServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*tty
 	v := c.(cart.IWholesaleCart).JdoData(checkout, checked)
 	if v != nil {
 		for _, v2 := range v.Seller {
-			mch := s.mchRepo.GetMerchant(v2.SellerId)
+			mch := s.mchRepo.GetMerchant(int(v2.SellerId))
 			if mch != nil {
 				v2.Data["SellerName"] = mch.GetValue().CompanyName
 			}
@@ -317,7 +317,7 @@ func (s *orderServiceImpl) parseCart(c cart.ICart) *ttype.SShoppingCart {
 
 		//todo: 改为不依赖vendor
 
-		mch := s.mchRepo.GetMerchant(v.VendorId)
+		mch := s.mchRepo.GetMerchant(int(v.VendorId))
 		if v.ShopId > 0 {
 			v.ShopName = mch.ShopManager().
 				GetShop(v.ShopId).GetValue().Name
@@ -605,7 +605,7 @@ func (s *orderServiceImpl) LogBytes(orderNo string, sub bool) []byte {
 // 提交订单
 func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *order_service.SComplexOrder, rate float64) (*ttype.Result_, error) {
 	if o.ShopId <= 0 {
-		mch := s.mchRepo.GetMerchant(o.VendorId)
+		mch := s.mchRepo.GetMerchant(int(o.VendorId))
 		if mch != nil {
 			sp := mch.ShopManager().GetOnlineShop()
 			if sp != nil {

@@ -21,7 +21,7 @@ import (
 var _ merchant.IConfManager = new(confManagerImpl)
 
 type confManagerImpl struct {
-	mchId         int32
+	mchId         int
 	repo          merchant.IMerchantRepo
 	saleConf      *merchant.SaleConf
 	valRepo       valueobject.IValueRepo
@@ -29,7 +29,7 @@ type confManagerImpl struct {
 	tradeConfList []*merchant.TradeConf
 }
 
-func newConfigManagerImpl(mchId int32,
+func newConfigManagerImpl(mchId int,
 	repo merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 	valRepo valueobject.IValueRepo) merchant.IConfManager {
 	return &confManagerImpl{
@@ -43,12 +43,12 @@ func newConfigManagerImpl(mchId int32,
 // 获取销售配置
 func (c *confManagerImpl) GetSaleConf() merchant.SaleConf {
 	if c.saleConf == nil {
-		c.saleConf = c.repo.GetMerchantSaleConf(c.mchId)
+		c.saleConf = c.repo.GetMerchantSaleConf(int32(c.mchId))
 		if c.saleConf != nil {
 			c.verifySaleConf(c.saleConf)
 		} else {
 			c.saleConf = &merchant.SaleConf{
-				MerchantId: c.mchId,
+				MerchantId: int32(c.mchId),
 			}
 			c.loadGlobSaleConf(c.saleConf)
 		}
@@ -101,7 +101,7 @@ func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
 		return err
 	}
 	c.saleConf = v
-	c.saleConf.MerchantId = c.mchId
+	c.saleConf.MerchantId = int32(c.mchId)
 	return c.repo.SaveMerchantSaleConf(c.saleConf)
 }
 
@@ -128,7 +128,7 @@ func (c *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
 }
 
 func (c *confManagerImpl) getAllMchBuyerGroups() []*merchant.MchBuyerGroup {
-	return c.repo.SelectMchBuyerGroup(c.mchId)
+	return c.repo.SelectMchBuyerGroup(int32(c.mchId))
 }
 
 // 获取商户的全部客户分组
@@ -165,14 +165,14 @@ func (c *confManagerImpl) SaveMchBuyerGroup(v *merchant.MchBuyerGroup) (int32, e
 
 // 根据分组编号获取分组设置
 func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGroup {
-	v := c.repo.GetMchBuyerGroupByGroupId(c.mchId, groupId)
+	v := c.repo.GetMchBuyerGroupByGroupId(int32(c.mchId), groupId)
 	if v != nil {
 		return v
 	}
 	g := c.memberRepo.GetManager().GetBuyerGroup(groupId)
 	if g != nil {
 		return &merchant.MchBuyerGroup{
-			MchId:           c.mchId,
+			MchId:           int32(c.mchId),
 			GroupId:         groupId,
 			Alias:           g.Name,
 			EnableRetail:    1,

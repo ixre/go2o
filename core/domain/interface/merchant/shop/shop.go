@@ -208,7 +208,9 @@ type (
 		VendorId int `db:"vendor_id"`
 		// 店铺名称
 		ShopName string `db:"shop_name"`
-		// 自定义域名
+		// 店铺标志
+		Logo string `db:"logo"`
+		// 自定义 域名
 		Host string `db:"host"`
 		// 个性化域名
 		Alias string `db:"alias"`
@@ -216,13 +218,14 @@ type (
 		Tel string `db:"tel"`
 		// 地址
 		Addr string `db:"addr"`
-		// 店铺标志
-		Logo string `db:"logo"`
 		// 店铺标题
-		ShopTitle  string `db:"shop_title"`
+		ShopTitle string `db:"shop_title"`
+		// 店铺公告
 		ShopNotice string `db:"shop_notice"`
+		// 标志
+		Flag int `db:"flag"`
 		// 状态
-		State int `db:"state"`
+		State int16 `db:"state"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 	}

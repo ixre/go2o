@@ -49,7 +49,7 @@ func (p *profileManagerImpl) GetEnterpriseInfo() *merchant.EnterpriseInfo {
 func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 	dst *merchant.EnterpriseInfo) {
 	// 商户编号
-	dst.MchId = p.GetAggregateRootId()
+	dst.MchId = int32(p.GetAggregateRootId())
 	// 公司名称
 	dst.CompanyName = src.CompanyName
 	// 公司营业执照编号
@@ -110,9 +110,9 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 			// 保存省、市、区到Merchant
 			v := p.merchantImpl.GetValue()
 			v.CompanyName = e.CompanyName
-			v.Province = e.Province
-			v.City = e.City
-			v.District = e.District
+			v.Province = int(e.Province)
+			v.City = int(e.City)
+			v.District = int(e.District)
 			err = p.SetValue(&v)
 			if err == nil {
 				_, err = p.merchantImpl.Save()
@@ -135,11 +135,11 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 		if newPwd == oldPwd {
 			return domain.ErrPwdCannotSame
 		}
-		if oldPwd != p._value.Pwd {
+		if oldPwd != p._value.LoginPwd {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p._value.Pwd = newPwd
+	p._value.LoginPwd = newPwd
 	_, err := p.Save()
 	return err
 }

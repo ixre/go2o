@@ -5,7 +5,7 @@ namespace go go2o.core.service.auto_gen.rpc
 include "status_service.thrift"
 include "foundation_service.thrift"
 include "item_service.thrift"
-include "mch_service.thrift"
+include "merchant_service.thrift"
 include "member_service.thrift"
 include "message_service.thrift"
 include "payment_service.thrift"

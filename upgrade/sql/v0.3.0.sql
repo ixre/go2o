@@ -196,6 +196,8 @@ COMMENT ON COLUMN public.mch_shop.state
 ALTER TABLE public.mch_saleconf
     RENAME TO mch_sale_conf;
 
+TRUNCATE TABLE "mch_online_shop";
+
 
 ALTER TABLE "public".mch_online_shop
     DROP CONSTRAINT mch_online_shop_pkey;
@@ -224,3 +226,87 @@ ALTER TABLE "public".mch_online_shop
 
 
 ALTER TABLE public.mch_online_shop DROP COLUMN shop_id;
+
+TRUNCATE TABLE "mch_merchant";
+
+ALTER TABLE "public".mch_merchant
+    alter column member_id set not null;
+ALTER TABLE "public".mch_merchant
+    ADD COLUMN login_user varchar(20) NOT NULL;
+ALTER TABLE "public".mch_merchant
+    ADD COLUMN login_pwd varchar(45) NOT NULL;
+ALTER TABLE "public".mch_merchant
+    alter column name set not null;
+ALTER TABLE "public".mch_merchant
+    alter column company_name set not null;
+ALTER TABLE "public".mch_merchant
+    alter column self_sales set not null;
+ALTER TABLE "public".mch_merchant
+    alter column level set not null;
+ALTER TABLE "public".mch_merchant
+    alter column logo set not null;
+ALTER TABLE "public".mch_merchant
+    alter column province set not null;
+ALTER TABLE "public".mch_merchant
+    alter column city set not null;
+ALTER TABLE "public".mch_merchant
+    alter column district set not null;
+ALTER TABLE "public".mch_merchant
+    alter column join_time set not null;
+ALTER TABLE "public".mch_merchant
+    alter column enabled set not null;
+ALTER TABLE "public".mch_merchant
+    alter column expires_time set not null;
+ALTER TABLE "public".mch_merchant
+    alter column update_time set not null;
+ALTER TABLE "public".mch_merchant
+    alter column login_time set not null;
+ALTER TABLE "public".mch_merchant
+    alter column last_login_time set not null;
+COMMENT ON COLUMN "public".mch_merchant.company_name IS '公司名称';
+COMMENT ON COLUMN "public".mch_merchant.level IS '商户等级';
+COMMENT ON COLUMN "public".mch_merchant.last_login_time IS '标志';
+
+ALTER TABLE public.mch_merchant DROP COLUMN "user";
+ALTER TABLE public.mch_merchant DROP COLUMN "pwd";
+
+ALTER TABLE "public".mch_merchant
+    ADD COLUMN create_time int4 NOT NULL;
+ALTER TABLE "public".mch_merchant
+    ADD COLUMN flag int4 NOT NULL;
+COMMENT ON TABLE "public".mch_merchant IS '商户';
+COMMENT ON COLUMN "public".mch_merchant.member_id IS '会员编号';
+COMMENT ON COLUMN "public".mch_merchant.login_user IS '登录用户';
+COMMENT ON COLUMN "public".mch_merchant.login_pwd IS '登录密码';
+COMMENT ON COLUMN "public".mch_merchant.name IS '名称';
+COMMENT ON COLUMN "public".mch_merchant.company_name IS '公司名称';
+COMMENT ON COLUMN "public".mch_merchant.self_sales IS '是否字营';
+COMMENT ON COLUMN "public".mch_merchant.level IS '商户等级';
+COMMENT ON COLUMN "public".mch_merchant.logo IS '标志';
+COMMENT ON COLUMN "public".mch_merchant.province IS '省';
+COMMENT ON COLUMN "public".mch_merchant.city IS '市';
+COMMENT ON COLUMN "public".mch_merchant.district IS '区';
+COMMENT ON COLUMN "public".mch_merchant.create_time IS '创建时间';
+COMMENT ON COLUMN "public".mch_merchant.flag IS '标志';
+COMMENT ON COLUMN "public".mch_merchant.enabled IS '是否启用';
+COMMENT ON COLUMN "public".mch_merchant.expires_time IS '过期时间';
+COMMENT ON COLUMN "public".mch_merchant.update_time IS '更新时间';
+COMMENT ON COLUMN "public".mch_merchant.login_time IS '登录时间';
+COMMENT ON COLUMN "public".mch_merchant.last_login_time IS '最后登录时间';
+
+
+ALTER TABLE "public".mch_online_shop
+    ADD COLUMN flag int4 NOT NULL;
+COMMENT ON COLUMN "public".mch_online_shop.id IS '店铺编号';
+COMMENT ON COLUMN "public".mch_online_shop.vendor_id IS '商户编号';
+COMMENT ON COLUMN "public".mch_online_shop.shop_name IS '店铺名称';
+COMMENT ON COLUMN "public".mch_online_shop.logo IS '店铺标志';
+COMMENT ON COLUMN "public".mch_online_shop.host IS '自定义 域名';
+COMMENT ON COLUMN "public".mch_online_shop.alias IS '个性化域名';
+COMMENT ON COLUMN "public".mch_online_shop.tel IS '电话';
+COMMENT ON COLUMN "public".mch_online_shop.addr IS '地址';
+COMMENT ON COLUMN "public".mch_online_shop.shop_title IS '店铺标题';
+COMMENT ON COLUMN "public".mch_online_shop.shop_notice IS '店铺公告';
+COMMENT ON COLUMN "public".mch_online_shop.flag IS '标志';
+COMMENT ON COLUMN "public".mch_online_shop.state IS '状态';
+COMMENT ON COLUMN "public".mch_online_shop.create_time IS '创建时间';
