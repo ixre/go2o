@@ -79,11 +79,11 @@ func (c *categoryRepo) CheckContainGoods(vendorId, catId int32) bool {
 
 func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	//删除子类
-	_, err := c.Connector.ExecNonQuery("DELETE FROM pro_category WHERE parent_id= $1",
+	_, err := c.Connector.ExecNonQuery("DELETE FROM prod_category WHERE parent_id= $1",
 		id)
 
 	//删除分类
-	_, err = c.Connector.ExecNonQuery("DELETE FROM pro_category WHERE id= $1",
+	_, err = c.Connector.ExecNonQuery("DELETE FROM prod_category WHERE id= $1",
 		id)
 
 	// 清理缓存
@@ -149,7 +149,7 @@ func (c *categoryRepo) GetRelationBrands(idArr []int32) []*promodel.ProBrand {
 	list := []*promodel.ProBrand{}
 	if len(idArr) > 0 {
 		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM pro_model_brand
-        WHERE pro_model IN (SELECT distinct pro_model FROM pro_category WHERE id IN(`+
+        WHERE pro_model IN (SELECT distinct pro_model FROM prod_category WHERE id IN(`+
 			format.I32ArrStrJoin(idArr)+`)))`)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")

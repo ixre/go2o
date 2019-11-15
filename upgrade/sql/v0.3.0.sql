@@ -310,3 +310,30 @@ COMMENT ON COLUMN "public".mch_online_shop.shop_notice IS '店铺公告';
 COMMENT ON COLUMN "public".mch_online_shop.flag IS '标志';
 COMMENT ON COLUMN "public".mch_online_shop.state IS '状态';
 COMMENT ON COLUMN "public".mch_online_shop.create_time IS '创建时间';
+
+/** 2019-11-15 */
+ALTER TABLE "public".pro_category
+    RENAME pro_model TO prod_model;
+ALTER TABLE "public".pro_category
+    alter column priority set not null;
+COMMENT ON TABLE "public".pro_category IS '产品分类';
+COMMENT ON COLUMN "public".pro_category.id IS '编号';
+COMMENT ON COLUMN "public".pro_category.parent_id IS '上级分类';
+COMMENT ON COLUMN "public".pro_category.prod_model IS '产品模型';
+COMMENT ON COLUMN "public".pro_category.priority IS '优先级';
+COMMENT ON COLUMN "public".pro_category.name IS '分类名称';
+COMMENT ON COLUMN "public".pro_category.virtual_cat IS '是否为虚拟分类';
+COMMENT ON COLUMN "public".pro_category.cat_url IS '分类链接地址';
+COMMENT ON COLUMN "public".pro_category.icon IS '图标';
+COMMENT ON COLUMN "public".pro_category.icon_xy IS '图标坐标';
+COMMENT ON COLUMN "public".pro_category.level IS '分类层级';
+COMMENT ON COLUMN "public".pro_category.sort_num IS '序号';
+COMMENT ON COLUMN "public".pro_category.floor_show IS '是否楼层显示';
+COMMENT ON COLUMN "public".pro_category.enabled IS '是否启用';
+COMMENT ON COLUMN "public".pro_category.create_time IS '创建时间';
+
+ALTER TABLE public.pro_category
+    RENAME TO prod_category;
+
+ALTER TABLE public.prod_category
+    ALTER COLUMN enabled TYPE int4 USING enabled::int;

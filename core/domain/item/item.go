@@ -148,7 +148,7 @@ func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 				g.value.ShelveState = item.ShelvesDown
 				// 分类在创建后，不允许再进行修改。并且分类不能为虚拟分类
 				// 如果修改，则所有SKU和属性应删除。
-				c := g.catRepo.GlobCatService().GetCategory(v.CatId)
+				c := g.catRepo.GlobCatService().GetCategory(int(v.CatId))
 				if c == nil {
 					return item.ErrIncorrectProductCategory
 				}

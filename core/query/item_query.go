@@ -251,7 +251,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
+		 INNER JOIN prod_category ON pro_product.cat_id=prod_category.id
 		 WHERE pro_product.review_state= $1 AND pro_product.shelve_state= $2
          AND ($3=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id= $4))
          AND pro_product.name LIKE $5 %s`, where), &total,
@@ -260,7 +260,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 	var e []*valueobject.Goods
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
+		 INNER JOIN prod_category ON pro_product.cat_id=prod_category.id
 		 WHERE pro_product.review_state= $1 AND pro_product.shelve_state= $2
          AND ($3=0 OR pro_product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id= $4))
          AND pro_product.name LIKE $5 %s ORDER BY %s update_time DESC LIMIT $7 OFFSET $6`,

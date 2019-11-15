@@ -241,7 +241,7 @@ func (p *productService) GetCategories(mchId int32) []*product.Category {
 // 根据上级编号获取分类列表
 func (p *productService) GetCategoriesByParentId(mchId, parentId int32) []*product.Category {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := []*product.Category{}
+	var list []*product.Category
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
 			v2 := *vv
