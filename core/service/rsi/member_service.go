@@ -16,7 +16,8 @@ import (
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/util"
-	"go2o/core/domain/interface/enum"
+	de "go2o/core/domain/interface/domain"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
@@ -31,7 +32,6 @@ import (
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -370,8 +370,16 @@ func (s *memberService) CompareCode(ctx context.Context, memberId int64, code st
 }
 
 // 更改会员用户名
-func (s *memberService) ChangeUsr(ctx context.Context, memberId int64, user string) (*ttype.Result_, error) {
-	err := s.changeUsr(int(memberId), user)
+func (s *memberService) ChangeUser(ctx context.Context, memberId int64, user string) (*ttype.Result_, error) {
+	var err error
+	m := s.repo.GetMember(int64(memberId))
+	if m == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		if err = m.ChangeUser(user); err == nil {
+			return s.success(nil), nil
+		}
+	}
 	return s.result(err), nil
 }
 
@@ -444,13 +452,8 @@ func (s *memberService) updateMember(v *member_service.SMember) (int64, error) {
 func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd string,
 	flag int32, name string, phone string, email string, avatar string,
 	extend map[string]string) (r *ttype.Result_, err error) {
-	inviteCode := extend["invite_code"]
-	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
-	if err != nil {
-		return s.error(err), nil
-	}
 	if len(pwd) != 32 {
-		return s.error(member.ErrNotMD5Format), nil
+		return s.error(de.ErrNotMD5Format), nil
 	}
 	v := &member.Member{
 		User:     user,
@@ -464,8 +467,14 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 		RegIp:    extend["reg_ip"],
 		Flag:     int(flag),
 	}
-	log.Println(fmt.Sprintf("%#v", v))
-	m := s.repo.CreateMember(v) //创建会员
+	// 验证邀请码
+	inviteCode := extend["invite_code"]
+	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
+	if err != nil {
+		return s.error(err), nil
+	}
+	// 创建会员
+	m := s.repo.CreateMember(v)
 	id, err := m.Save()
 
 	if err == nil {
@@ -513,17 +522,24 @@ func (s *memberService) Active(ctx context.Context, memberId int64) (r *ttype.Re
 }
 
 // 锁定/解锁会员
-func (s *memberService) Lock(ctx context.Context, memberId int64, lock bool, remark string) (r *ttype.Result_, err error) {
+func (s *memberService) Lock(ctx context.Context, memberId int64, minutes int32, remark string) (r *ttype.Result_, err error) {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	if lock {
-		err = m.Lock()
-	} else {
-		err = m.Unlock()
+	if err = m.Lock(int(minutes), remark); err != nil {
+		return s.error(err), nil
 	}
-	if err != nil {
+	return s.success(nil), nil
+}
+
+// 解锁会员
+func (s *memberService) Unlock(ctx context.Context, memberId int64) (r *ttype.Result_, err error) {
+	m := s.repo.GetMember(memberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	if err = m.Unlock(); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
@@ -569,12 +585,12 @@ func (s *memberService) ModifyPwd(ctx context.Context, memberId int64, old strin
 		return s.error(member.ErrNoSuchMember), nil
 	}
 	if l := len(pwd); l != 32 {
-		return s.error(member.ErrNotMD5Format), nil
+		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.MemberSha1Pwd(pwd)
 	}
 	if l := len(old); l > 0 && l != 32 {
-		return s.error(member.ErrNotMD5Format), nil
+		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		old = domain.MemberSha1Pwd(old)
 	}
@@ -592,12 +608,12 @@ func (s *memberService) ModifyTradePwd(ctx context.Context, memberId int64, old 
 		return s.error(member.ErrNoSuchMember), nil
 	}
 	if l := len(pwd); l != 32 {
-		return s.error(member.ErrNotMD5Format), nil
+		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.TradePwd(pwd)
 	}
 	if l := len(old); l > 0 && l != 32 {
-		return s.error(member.ErrNotMD5Format), nil
+		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		old = domain.TradePwd(old)
 	}
@@ -614,7 +630,7 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, errCode in
 	user = strings.ToLower(user)
 	memberId := s.repo.GetMemberIdByUser(user)
 	if len(pwd) != 32 {
-		return -1, 4, member.ErrNotMD5Format
+		return -1, 4, de.ErrNotMD5Format
 	}
 	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
@@ -623,7 +639,7 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, errCode in
 	}
 	val := s.repo.GetMember(memberId).GetValue()
 	if val.Pwd != domain.Sha1Pwd(pwd) {
-		return 0, 1, member.ErrCredential
+		return 0, 1, de.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
 		return 0, 3, member.ErrMemberLocked
@@ -665,7 +681,7 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 		return s.error(member.ErrNotSetTradePwd), nil
 	}
 	if len(tradePwd) != 32 {
-		return s.error(member.ErrNotMD5Format), nil
+		return s.error(de.ErrNotMD5Format), nil
 	}
 	if encPwd := domain.TradePwd(tradePwd); mv.TradePwd != encPwd {
 		return s.error(member.ErrIncorrectTradePwd), nil
@@ -674,12 +690,12 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
-//func (s *memberService) CheckUsr(user string, memberId int64) error {
+//func (s *memberService) CheckUser(user string, memberId int64) error {
 //	if len(user) < 6 {
-//		return member.ErrUsrLength
+//		return member.ErrUserLength
 //	}
-//	if s.repo.CheckUsrExist(user, memberId) {
-//		return member.ErrUsrExist
+//	if s.repo.CheckUserExist(user, memberId) {
+//		return member.ErrUserExist
 //	}
 //	return nil
 //}
@@ -809,7 +825,6 @@ func (s *memberService) ReceiptsCodes(ctx context.Context, memberId int64) (r []
 	list := make([]*member_service.SReceiptsCode, len(arr))
 	for i, v := range arr {
 		list[i] = &member_service.SReceiptsCode{
-			ID:        int32(v.Id),
 			Identity:  v.Identity,
 			Name:      v.Name,
 			AccountId: v.AccountId,
@@ -827,7 +842,6 @@ func (s *memberService) SaveReceiptsCode(ctx context.Context, memberId int64, co
 		return s.error(member.ErrNoSuchMember), nil
 	}
 	v := &member.ReceiptsCode{
-		Id:        int(code.ID),
 		Identity:  code.Identity,
 		Name:      code.Name,
 		AccountId: code.AccountId,
@@ -927,13 +941,13 @@ func (s *memberService) ReviewTrustedInfo(ctx context.Context, memberId int64, r
 	return s.success(nil), nil
 }
 
-// 获取分页商铺收藏
+// 获取分页店铺收藏
 func (s *memberService) PagedShopFav(memberId int64, begin, end int,
 	where string) (int, []*dto.PagedShopFav) {
 	return s.query.PagedShopFav(memberId, begin, end, where)
 }
 
-// 获取分页商铺收藏
+// 获取分页店铺收藏
 func (s *memberService) PagedGoodsFav(memberId int64, begin, end int,
 	where string) (int, []*dto.PagedGoodsFav) {
 	return s.query.PagedGoodsFav(memberId, begin, end, where)
@@ -1400,8 +1414,8 @@ func (s *memberService) TransferFlowTo(memberId int64, toMemberId int64, kind in
 }
 
 // 根据用户或手机筛选会员
-func (s *memberService) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
-	return s.query.FilterMemberByUsrOrPhone(key)
+func (s *memberService) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember {
+	return s.query.FilterMemberByUserOrPhone(key)
 }
 
 // 根据用户名货手机获取会员
@@ -1439,15 +1453,6 @@ func (s *memberService) PagedAllCoupon(memberId int, start, end int) (int, []*dt
 func (s *memberService) PagedExpiresCoupon(memberId int, start, end int) (int, []*dto.SimpleCoupon) {
 	return s.repo.CreateMemberById(int64(memberId)).
 		GiftCard().PagedExpiresCoupon(start, end)
-}
-
-// 更改用户名
-func (s *memberService) changeUsr(memberId int, user string) error {
-	m := s.repo.GetMember(int64(memberId))
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.ChangeUsr(user)
 }
 
 // 更改手机号

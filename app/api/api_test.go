@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+	"time"
 )
 
 /**
@@ -20,8 +21,7 @@ import (
 
 var serverUrl = "http://localhost:1428/api"
 
-
-func testApi(t *testing.T, apiName string, paramsMap map[string]string) {
+func testApi(t *testing.T, apiName string, paramsMap map[string]string, abortOnFail bool) {
 	key := "go2o"
 	secret := "131409"
 	signType := "sha1"
@@ -30,7 +30,7 @@ func testApi(t *testing.T, apiName string, paramsMap map[string]string) {
 	params["api"] = []string{apiName}
 	params["key"] = []string{key}
 	params["sign_type"] = []string{signType}
-	params["version"] = []string{"1.0.1"}
+	params["version"] = []string{"1.0.15"}
 	for k, v := range paramsMap {
 		params[k] = []string{v}
 	}
@@ -47,9 +47,25 @@ func testApi(t *testing.T, apiName string, paramsMap map[string]string) {
 	rsp1 := api.Response{}
 	json.Unmarshal(data, &rsp1)
 	if rsp1.Code != api.RSuccessCode {
-		t.Log("请求失败：code:", rsp1.Code, "; message:", rsp1.Message)
-		t.Log("接口响应：", string(data))
-		t.FailNow()
+		println("请求失败：code:", rsp1.Code, "; message:", rsp1.Message)
+		println("接口响应：", string(data))
+		if abortOnFail {
+			t.FailNow()
+		}
 	}
-	t.Log("接口响应：", string(data))
+	println("接口响应：", string(data))
+}
+
+// 测试请求限制
+func TestRequestLimit(t *testing.T) {
+	//serverUrl = "http://api.super4bit.co/api"
+	mp := map[string]string{}
+	mp["prod_type"] = "android"
+	mp["prod_version"] = "1.0.0"
+	for {
+		for i := 0; i < 100; i++ {
+			testApi(t, "app.check", mp, false)
+		}
+		time.Sleep(time.Second)
+	}
 }

@@ -4,7 +4,7 @@ namespace go go2o.core.service.auto_gen.rpc.shop_service
 include "ttype.thrift"
 
 // 商店,需重构
-struct SShop{
+struct SShop2{
     1:i32 ID
     2:i32 VendorId
     3:i32 ShopType
@@ -14,7 +14,36 @@ struct SShop{
     7:map<string,string> Data
 }
 
-// 商铺
+
+// 店铺
+struct SShop{
+  /** 店铺编号 */
+  1:i32 Id
+  /** 商户编号 */
+  2:i32 VendorId
+  /** 店铺名称 */
+  3:string ShopName
+  /** 店铺标志 */
+  4:string Logo
+  /** 自定义 域名 */
+  5:string Host
+  /** 个性化域名 */
+  6:string Alias
+  /** 电话 */
+  7:string Tel
+  /** 地址 */
+  8:string Addr
+  /** 店铺标题 */
+  9:string ShopTitle
+  /** 店铺公告 */
+  10:string ShopNotice
+  /** 标志 */
+  11:i32 Flag
+  /** 状态 */
+  12:i16 State
+}
+
+// 店铺
 struct SStore{
     1:i32 ID
     2:i32 VendorId
@@ -31,6 +60,11 @@ struct SStore{
 
 // 商店服务
 service ShopService{
+    /** 查询店铺ID,根据Host */
+    i32 QueryShopIdByHost(1:string host)
+    /** 获取店铺 */
+    SShop GetShop(1:i32 shopId)
+
     // 获取店铺
     SStore GetStore(1:i32 venderId)
     // 获取店铺

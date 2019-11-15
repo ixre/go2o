@@ -75,7 +75,7 @@ type IMemberRepo interface {
 	GetMemberIdByCode(code string) int64
 
 	// 用户名是否存在
-	CheckUsrExist(user string, memberId int64) bool
+	CheckUserExist(user string, memberId int64) bool
 
 	// 手机号码是否使用
 	CheckPhoneBind(phone string, memberId int64) bool
@@ -169,4 +169,13 @@ type IMemberRepo interface {
 	SelectMmBuyerGroup(where string, v ...interface{}) []*BuyerGroup
 	// Save MmBuyerGroup
 	SaveMmBuyerGroup(v *BuyerGroup) (int, error)
+
+	// Save 会员锁定历史
+	SaveLockHistory(v *MmLockHistory) (int, error)
+	// Save 会员锁定记录
+	SaveLockInfo(v *MmLockInfo) (int, error)
+	// Delete 会员锁定记录
+	DeleteLockInfos(memberId int64) error
+	// 注册解锁任务
+	RegisterUnlockJob(info *MmLockInfo)
 }

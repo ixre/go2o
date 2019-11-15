@@ -17,33 +17,29 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
-	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/merchant_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/payment_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
 )
 
-func MerchantDto(src *merchant.ComplexMerchant) *mch_service.SComplexMerchant {
-	return &mch_service.SComplexMerchant{
+func MerchantDto(src *merchant.ComplexMerchant) *merchant_service.SMerchant {
+	return &merchant_service.SMerchant{
 		ID:            src.Id,
 		MemberId:      src.MemberId,
-		Usr:           src.Usr,
-		Pwd:           src.Pwd,
+		LoginUser:     src.Usr,
+		LoginPwd:      src.Pwd,
 		Name:          src.Name,
-		SelfSales:     src.SelfSales,
+		SelfSales:     int16(src.SelfSales),
 		Level:         src.Level,
 		Logo:          src.Logo,
 		CompanyName:   src.CompanyName,
 		Province:      src.Province,
 		City:          src.City,
 		District:      src.District,
-		Enabled:       src.Enabled,
-		ExpiresTime:   src.ExpiresTime,
-		JoinTime:      src.JoinTime,
-		UpdateTime:    src.UpdateTime,
-		LoginTime:     src.LoginTime,
-		LastLoginTime: src.LastLoginTime,
+		Enabled:       int16(src.Enabled),
+		LastLoginTime: int32(src.LastLoginTime),
 	}
 }
 

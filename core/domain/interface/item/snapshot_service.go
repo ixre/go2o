@@ -41,7 +41,7 @@ type (
 		VendorId int32 `db:"vendor_id"`
 		// 编号
 		BrandId int32 `db:"brand_id"`
-		// 商铺编号
+		// 店铺编号
 		ShopId int32 `db:"shop_id"`
 		// 编号分类编号
 		ShopCatId int32 `db:"shop_cat_id"`

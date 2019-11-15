@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -1368,7 +1368,7 @@ func (o *subOrderImpl) getOrderCost() float32 {
 
 // 商户结算
 func (o *subOrderImpl) vendorSettle() error {
-	vendor := o.mchRepo.GetMerchant(o.value.VendorId)
+	vendor := o.mchRepo.GetMerchant(int(o.value.VendorId))
 	if vendor != nil {
 		settleMode := o.registryRepo.Get(registry.MchOrderSettleMode).IntValue()
 		switch enum.MchSettleMode(settleMode) {

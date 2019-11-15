@@ -13,7 +13,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
@@ -41,7 +41,7 @@ func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo) merchant
 // 获取企业信息
 func (p *profileManagerImpl) GetEnterpriseInfo() *merchant.EnterpriseInfo {
 	if p.ent == nil {
-		p.ent = p._rep.GetMchEnterpriseInfo(p.GetAggregateRootId())
+		p.ent = p._repo.GetMchEnterpriseInfo(p.GetAggregateRootId())
 	}
 	return p.ent
 }
@@ -49,7 +49,7 @@ func (p *profileManagerImpl) GetEnterpriseInfo() *merchant.EnterpriseInfo {
 func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 	dst *merchant.EnterpriseInfo) {
 	// 商户编号
-	dst.MchId = p.GetAggregateRootId()
+	dst.MchId = int32(p.GetAggregateRootId())
 	// 公司名称
 	dst.CompanyName = src.CompanyName
 	// 公司营业执照编号
@@ -90,7 +90,7 @@ func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int
 	e.ReviewTime = dt
 	e.UpdateTime = dt
 	p.ent = nil //clean cache
-	return util.I32Err(p._rep.SaveMchEnterpriseInfo(e))
+	return util.I32Err(p._repo.SaveMchEnterpriseInfo(e))
 }
 
 // 标记企业为审核通过
@@ -105,14 +105,14 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 	if pass {
 		e.Reviewed = enum.ReviewPass
 		e.ReviewRemark = ""
-		_, err = p._rep.SaveMchEnterpriseInfo(e)
+		_, err = p._repo.SaveMchEnterpriseInfo(e)
 		if err == nil {
 			// 保存省、市、区到Merchant
 			v := p.merchantImpl.GetValue()
 			v.CompanyName = e.CompanyName
-			v.Province = e.Province
-			v.City = e.City
-			v.District = e.District
+			v.Province = int(e.Province)
+			v.City = int(e.City)
+			v.District = int(e.District)
 			err = p.SetValue(&v)
 			if err == nil {
 				_, err = p.merchantImpl.Save()
@@ -121,7 +121,7 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 	} else {
 		e.Reviewed = enum.ReviewReject
 		e.ReviewRemark = message
-		_, err = p._rep.SaveMchEnterpriseInfo(e)
+		_, err = p._repo.SaveMchEnterpriseInfo(e)
 	}
 	return err
 }
@@ -135,11 +135,11 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 		if newPwd == oldPwd {
 			return domain.ErrPwdCannotSame
 		}
-		if oldPwd != p._value.Pwd {
+		if oldPwd != p._value.LoginPwd {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p._value.Pwd = newPwd
+	p._value.LoginPwd = newPwd
 	_, err := p.Save()
 	return err
 }

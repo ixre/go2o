@@ -33,7 +33,7 @@ type (
 	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
 		// 获取编号
-		GetAggregateRootId() int32
+		GetAggregateRootId() int
 		GetValue() Merchant
 		// 获取符合的商家信息
 		Complex() *ComplexMerchant
@@ -233,35 +233,37 @@ type (
 
 	// 商户
 	Merchant struct {
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
-		// 关联的会员编号,作为结算账户
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 会员编号
 		MemberId int64 `db:"member_id"`
-		// 用户
-		Usr string `db:"user"`
-		// 密码
-		Pwd string `db:"pwd"`
-		// 商户名称
+		// 登录用户
+		LoginUser string `db:"login_user"`
+		// 登录密码
+		LoginPwd string `db:"login_pwd"`
+		// 名称
 		Name string `db:"name"`
-		// 是否自营
-		SelfSales int32 `db:"self_sales"`
-		// 商户等级
-		Level int32 `db:"level"`
-		// 标志
-		Logo string `db:"logo"`
 		// 公司名称
 		CompanyName string `db:"company_name"`
+		// 是否字营
+		SelfSales int16 `db:"self_sales"`
+		// 商户等级
+		Level int `db:"level"`
+		// 标志
+		Logo string `db:"logo"`
 		// 省
-		Province int32 `db:"province"`
+		Province int `db:"province"`
 		// 市
-		City int32 `db:"city"`
+		City int `db:"city"`
 		// 区
-		District int32 `db:"district"`
+		District int `db:"district"`
+		// 标志
+		Flag int `db:"flag"`
 		// 是否启用
-		Enabled int32 `db:"enabled"`
+		Enabled int `db:"enabled"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
 		// 过期时间
 		ExpiresTime int64 `db:"expires_time"`
-		// 注册时间
-		JoinTime int64 `db:"join_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 登录时间

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -112,7 +112,7 @@ func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 	for _, v := range items {
 		o.items = append(o.items, o.createItem(v))
 	}
-	// 获取运营商和商铺编号
+	// 获取运营商和店铺编号
 	o.value.VendorId = o.items[0].VendorId
 	o.value.ShopId = o.items[0].ShopId
 	// 运费计算器
@@ -317,7 +317,7 @@ func (o *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
 // 计算折扣
 func (o *wholesaleOrderImpl) applyGroupDiscount() {
 	var groupId int32 = 1
-	mch := o.mchRepo.GetMerchant(o.value.VendorId)
+	mch := o.mchRepo.GetMerchant(int(o.value.VendorId))
 	if mch != nil {
 		basisAmount := int32(o.value.ItemAmount)
 		ws := mch.Wholesaler()
@@ -690,7 +690,7 @@ func (o *wholesaleOrderImpl) getOrderCost() float32 {
 
 // 商户结算
 func (o *wholesaleOrderImpl) vendorSettle() error {
-	vendor := o.mchRepo.GetMerchant(o.value.VendorId)
+	vendor := o.mchRepo.GetMerchant(int(o.value.VendorId))
 	if vendor != nil {
 		settleMode := o.registryRepo.Get(registry.MchOrderSettleMode).IntValue()
 		switch enum.MchSettleMode(settleMode) {

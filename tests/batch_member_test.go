@@ -19,7 +19,7 @@ import (
  */
 func init() {
 	// 初始化producer
-	msq.Configure(msq.KAFKA, []string{"127.0.0.1:9092"})
+	//msq.Configure(msq.KAFKA, []string{"127.0.0.1:9092"})
 }
 
 func TestBatchPushMember(t *testing.T) {

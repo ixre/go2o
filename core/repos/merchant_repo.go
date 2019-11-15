@@ -125,9 +125,9 @@ func (m *merchantRepo) getMchCacheKey(mchId int32) string {
 	return fmt.Sprintf("go2o:repo:mch:%d", mchId)
 }
 
-func (m *merchantRepo) GetMerchant(id int32) merchant.IMerchant {
+func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 	e := merchant.Merchant{}
-	key := m.getMchCacheKey(id)
+	key := m.getMchCacheKey(int32(id))
 	err := m.storage.Get(key, &e)
 	if err != nil {
 		// 获取并缓存到列表中
@@ -141,14 +141,14 @@ func (m *merchantRepo) GetMerchant(id int32) merchant.IMerchant {
 }
 
 // 获取账户
-func (m *merchantRepo) GetAccount(mchId int32) *merchant.Account {
+func (m *merchantRepo) GetAccount(mchId int) *merchant.Account {
 	e := merchant.Account{}
 	err := m.Connector.GetOrm().Get(mchId, &e)
 	if err == nil {
 		return &e
 	}
 	if err == sql.ErrNoRows {
-		e.MchId = mchId
+		e.MchId = int32(mchId)
 		e.UpdateTime = time.Now().Unix()
 		orm.Save(m.Connector.GetOrm(), &e, 0)
 		return &e
@@ -157,7 +157,7 @@ func (m *merchantRepo) GetAccount(mchId int32) *merchant.Account {
 }
 
 // 获取合作商主要的域名主机
-func (m *merchantRepo) GetMerchantMajorHost(mchId int32) string {
+func (m *merchantRepo) GetMerchantMajorHost(mchId int) string {
 	//todo:
 	var host string
 	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE mch_id= $1 LIMIT 1`,
@@ -165,9 +165,17 @@ func (m *merchantRepo) GetMerchantMajorHost(mchId int32) string {
 	return host
 }
 
+// 验证商户用户名是否存在
+func (m *merchantRepo) CheckUserExists(user string, id int) bool {
+	var row int
+	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_merchant WHERE login_user= $1 AND id <> $2 LIMIT 1`,
+		&row, user, id)
+	return row > 0
+}
+
 // 保存
 func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int32, error) {
-	id, err := orm.I32(orm.Save(m.GetOrm(), v, int(v.ID)))
+	id, err := orm.I32(orm.Save(m.GetOrm(), v, v.Id))
 	if err == nil {
 		m.cleanCache(id)
 	}
@@ -212,13 +220,17 @@ func (m *merchantRepo) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 }
 
 // 保存API信息
-func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) error {
-	_, err := orm.Save(m.GetOrm(), v, int(v.MerchantId))
+func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) (err error) {
+	if m.GetApiInfo(v.MerchantId) == nil {
+		_, err = orm.Save(m.GetOrm(), v, 0)
+	} else {
+		_, err = orm.Save(m.GetOrm(), v, int(v.MerchantId))
+	}
 	return err
 }
 
 // 获取API信息
-func (m *merchantRepo) GetApiInfo(mchId int32) *merchant.ApiInfo {
+func (m *merchantRepo) GetApiInfo(mchId int) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
 	if err := m.GetOrm().Get(mchId, d); err == nil {
 		return d
@@ -234,7 +246,7 @@ func (m *merchantRepo) GetMerchantIdByApiId(apiId string) int32 {
 }
 
 // 获取键值
-func (m *merchantRepo) GetKeyValue(mchId int32, indent string, k string) string {
+func (m *merchantRepo) GetKeyValue(mchId int, indent string, k string) string {
 	var v string
 	m.Connector.ExecScalar(
 		fmt.Sprintf("SELECT value FROM pt_%s WHERE merchant_id= $1 AND `key`= $2", indent),
@@ -243,7 +255,7 @@ func (m *merchantRepo) GetKeyValue(mchId int32, indent string, k string) string 
 }
 
 // 设置键值
-func (m *merchantRepo) SaveKeyValue(mchId int32, indent string, k, v string, updateTime int64) error {
+func (m *merchantRepo) SaveKeyValue(mchId int, indent string, k, v string, updateTime int64) error {
 	i, err := m.Connector.ExecNonQuery(
 		fmt.Sprintf("UPDATE pt_%s SET value= $1,update_time= $2 WHERE merchant_id= $3 AND `key`= $4", indent),
 		v, updateTime, mchId, k)
@@ -256,7 +268,7 @@ func (m *merchantRepo) SaveKeyValue(mchId int32, indent string, k, v string, upd
 }
 
 // 获取多个键值
-func (m *merchantRepo) GetKeyMap(mchId int32, indent string, k []string) map[string]string {
+func (m *merchantRepo) GetKeyMap(mchId int, indent string, k []string) map[string]string {
 	mp := make(map[string]string)
 	var k1, v1 string
 	m.Connector.Query(fmt.Sprintf("SELECT `key`,value FROM pt_%s WHERE merchant_id= $1 AND `key` IN ($2)", indent),
@@ -270,7 +282,7 @@ func (m *merchantRepo) GetKeyMap(mchId int32, indent string, k []string) map[str
 }
 
 // 检查是否包含值的键数量,keyStr为键模糊匹配
-func (m *merchantRepo) CheckKvContainValue(mchId int32, indent string, value string, keyStr string) int {
+func (m *merchantRepo) CheckKvContainValue(mchId int, indent string, value string, keyStr string) int {
 	var i int
 	err := m.Connector.ExecScalar("SELECT COUNT(0) FROM pt_"+indent+
 		" WHERE merchant_id= $1 AND value= $2 AND `key` LIKE '%"+
@@ -282,7 +294,7 @@ func (m *merchantRepo) CheckKvContainValue(mchId int32, indent string, value str
 }
 
 // 根据关键字获取字典
-func (m *merchantRepo) GetKeyMapByChar(mchId int32, indent string, keyword string) map[string]string {
+func (m *merchantRepo) GetKeyMapByChar(mchId int, indent string, keyword string) map[string]string {
 	mp := make(map[string]string)
 	var k1, v1 string
 	m.Connector.Query("SELECT `key`,value FROM pt_"+indent+
@@ -360,7 +372,7 @@ func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
 }
 
 // Get MchEnterpriseInfo
-func (m *merchantRepo) GetMchEnterpriseInfo(mchId int32) *merchant.EnterpriseInfo {
+func (m *merchantRepo) GetMchEnterpriseInfo(mchId int) *merchant.EnterpriseInfo {
 	e := merchant.EnterpriseInfo{}
 	err := m._orm.GetBy(&e, "mch_id= $1", mchId)
 	if err == nil {

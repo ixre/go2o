@@ -3,5 +3,4 @@
 
 package order_service
 
-var GoUnusedProtection__ int;
-
+var GoUnusedProtection__ int

@@ -135,7 +135,7 @@ func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member
 }
 
 // 筛选会员根据用户或者手机
-func (m *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
+func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember {
 	qp := "%" + key + "%"
 	list := make([]*dto.SimpleMember, 0)
 	var id int
@@ -237,7 +237,7 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
 	return list
 }
 
-// 获取分页商铺收藏
+// 获取分页店铺收藏
 func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 	where string) (num int, rows []*dto.PagedShopFav) {
 	d := m.Connector
@@ -274,7 +274,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 	return num, rows
 }
 
-// 获取分页商铺收藏
+// 获取分页店铺收藏
 func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 	where string) (num int, rows []*dto.PagedGoodsFav) {
 	d := m.Connector

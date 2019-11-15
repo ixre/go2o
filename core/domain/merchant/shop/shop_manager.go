@@ -10,9 +10,10 @@ package shop
 
 import (
 	"errors"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"strings"
 	"time"
@@ -21,34 +22,50 @@ import (
 var _ shop.IShopManager = new(shopManagerImpl)
 
 type shopManagerImpl struct {
-	merchant  merchant.IMerchant
-	rep       shop.IShopRepo
-	valueRepo valueobject.IValueRepo
+	merchant     merchant.IMerchant
+	repo         shop.IShopRepo
+	valueRepo    valueobject.IValueRepo
+	registryRepo registry.IRegistryRepo
+}
+
+// 创建线上店铺
+func (s *shopManagerImpl) CreateOnlineShop(o *shop.OnlineShop) (shop.IShop, error) {
+	o.VendorId = s.merchant.GetAggregateRootId()
+	if o.ShopName == "" {
+		o.ShopName = s.merchant.GetValue().Name
+	}
+	is := s.repo.CreateShop(o)
+	io := is.(shop.IOnlineShop)
+	err := io.SetShopValue(o)
+	if err == nil {
+		err = is.Save()
+	}
+	return is, err
 }
 
 func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
-	valueRepo valueobject.IValueRepo) shop.IShopManager {
+	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShopManager {
 	return &shopManagerImpl{
-		merchant:  m,
-		rep:       rep,
-		valueRepo: valueRepo,
+		merchant:     m,
+		repo:         rep,
+		valueRepo:    valueRepo,
+		registryRepo: registryRepo,
 	}
 }
 
 // 新建商店
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
-	v.VendorId = s.merchant.GetAggregateRootId()
-	return NewShop(v, s.rep, s.valueRepo)
+	v.VendorId = int32(s.merchant.GetAggregateRootId())
+	return NewShop2(v, s.repo, s.valueRepo, s.registryRepo)
 }
 
 // 获取所有商店
 func (s *shopManagerImpl) GetShops() []shop.IShop {
-	shopList := s.rep.GetShopsOfMerchant(s.merchant.GetAggregateRootId())
+	shopList := s.repo.GetShopsOfMerchant(int32(s.merchant.GetAggregateRootId()))
 	shops := make([]shop.IShop, len(shopList))
 	for i, v := range shopList {
-		v2 := v
-		shops[i] = s.CreateShop(&v2)
+		shops[i] = s.CreateShop(&v)
 	}
 	return shops
 }
@@ -86,7 +103,7 @@ func (s *shopManagerImpl) GetShop(shopId int32) shop.IShop {
 	return nil
 }
 
-// 获取商铺
+// 获取店铺
 func (s *shopManagerImpl) GetOnlineShop() shop.IShop {
 	for _, v := range s.GetShops() {
 		if v.Type() == shop.TypeOnlineShop {
@@ -104,23 +121,23 @@ func (s *shopManagerImpl) DeleteShop(shopId int32) error {
 	if sp != nil {
 		switch sp.Type() {
 		case shop.TypeOfflineShop:
-			return s.deleteOfflineShop(mchId, sp)
+			return s.deleteOfflineShop(int(mchId), sp)
 		case shop.TypeOnlineShop:
-			return s.deleteOnlineShop(mchId, sp)
+			return s.deleteOnlineShop(int(mchId), sp)
 		}
 	}
 	return nil
 }
 
-func (s *shopManagerImpl) deleteOnlineShop(mchId int32, sp shop.IShop) error {
+func (s *shopManagerImpl) deleteOnlineShop(mchId int, sp shop.IShop) error {
 	return errors.New("暂不支持删除线上商店")
 	shopId := sp.GetDomainId()
-	err := s.rep.DeleteOnlineShop(mchId, shopId)
+	err := s.repo.DeleteOnlineShop(mchId, shopId)
 	return err
 }
 
-func (s *shopManagerImpl) deleteOfflineShop(mchId int32, sp shop.IShop) error {
+func (s *shopManagerImpl) deleteOfflineShop(mchId int, sp shop.IShop) error {
 	shopId := sp.GetDomainId()
-	err := s.rep.DeleteOfflineShop(mchId, shopId)
+	err := s.repo.DeleteOfflineShop(mchId, shopId)
 	return err
 }

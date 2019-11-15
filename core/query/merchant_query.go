@@ -50,7 +50,7 @@ func (m *MerchantQuery) QueryMerchantIdByHost(host string) int32 {
 	if reg.MatchString(host) {
 		matches := reg.FindAllStringSubmatch(host, 1)
 		user := matches[0][1]
-		err = m.Connector.ExecScalar(`SELECT id FROM mch_merchant WHERE user= $1`, &mchId, user)
+		err = m.Connector.ExecScalar(`SELECT id FROM mch_merchant WHERE login_user = $1`, &mchId, user)
 	} else {
 		err = m.Connector.ExecScalar(
 			`SELECT id FROM mch_merchant INNER JOIN pt_siteconf
@@ -64,8 +64,8 @@ func (m *MerchantQuery) QueryMerchantIdByHost(host string) int32 {
 }
 
 // 验证用户密码并返回编号
-func (m *MerchantQuery) Verify(user, pwd string) int32 {
-	var id int32
-	m.Connector.ExecScalar("SELECT id FROM mch_merchant WHERE user= $1 AND pwd= $2", &id, user, pwd)
+func (m *MerchantQuery) Verify(user, pwd string) int {
+	var id int
+	m.Connector.ExecScalar("SELECT id FROM mch_merchant WHERE login_user = $1 AND login_pwd= $2", &id, user, pwd)
 	return id
 }

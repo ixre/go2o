@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-func getShopDto(s shop.IShop) *shop_service.SShop {
+func getShopDto(s shop.IShop) *shop_service.SShop2 {
 	b := s.GetValue()
-	dto := &shop_service.SShop{
-		ID:           s.GetDomainId(),
+	dto := &shop_service.SShop2{
+		ID:           int32(s.GetDomainId()),
 		VendorId:     b.VendorId,
 		ShopType:     b.ShopType,
 		State:        b.State,
@@ -22,7 +22,7 @@ func getShopDto(s shop.IShop) *shop_service.SShop {
 	return dto
 }
 
-func parse2Shop(s *shop_service.SShop) *shop.Shop {
+func parse2Shop(s *shop_service.SShop2) *shop.Shop {
 	return &shop.Shop{
 		Id:           s.ID,
 		Name:         s.Name,
@@ -37,13 +37,13 @@ func ParseOnlineShop(s shop.IShop) *shop_service.SStore {
 	b := s.GetValue()
 	o := s.(shop.IOnlineShop).GetShopValue()
 	dto := &shop_service.SStore{
-		ID:           s.GetDomainId(),
+		ID:           int32(s.GetDomainId()),
 		VendorId:     b.VendorId,
 		State:        b.State,
 		OpeningState: b.OpeningState,
 		Name:         b.Name,
 		Alias:        o.Alias,
-		StorePhone:   o.ServiceTel,
+		StorePhone:   o.Tel,
 		Host:         o.Host,
 		Logo:         o.Logo,
 		StoreTitle:   o.ShopTitle,
@@ -52,7 +52,7 @@ func ParseOnlineShop(s shop.IShop) *shop_service.SStore {
 	return dto
 }
 
-func ParseOfflineShop(s shop.IShop, valRepo valueobject.IValueRepo) *shop_service.SShop {
+func ParseOfflineShop(s shop.IShop, valRepo valueobject.IValueRepo) *shop_service.SShop2 {
 	dto := getShopDto(s)
 	o := s.(shop.IOfflineShop).GetShopValue()
 	areaNames := valRepo.GetAreaNames([]int32{o.Province, o.City, o.District})
@@ -79,9 +79,9 @@ func Parse2OnlineShop(s *shop_service.SStore) (*shop.Shop, *shop.OnlineShop) {
 		OpeningState: s.OpeningState,
 	}
 	ov := &shop.OnlineShop{}
-	ov.ShopId = s.ID
-	ov.Address = "" //todo:???
-	ov.ServiceTel = s.StorePhone
+	ov.Id = int(s.ID)
+	ov.Addr = "" //todo:???
+	ov.Tel = s.StorePhone
 	ov.Logo = s.Logo
 	ov.ShopNotice = s.StoreNotice
 	ov.ShopTitle = s.StoreTitle

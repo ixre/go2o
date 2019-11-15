@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof/util"
+	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
@@ -110,20 +111,20 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	v.User = strings.TrimSpace(v.User)
 	if v.User != "" || !phoneAsUser {
 		if len(v.User) < 6 {
-			return 0, member.ErrUsrLength
+			return 0, member.ErrUserLength
 		}
 		if !userRegex.MatchString(v.User) {
-			return 0, member.ErrUsrValidErr
+			return 0, member.ErrUserValidErr
 		}
-		if m.rep.CheckUsrExist(v.User, 0) {
-			return 0, member.ErrUsrExist
+		if m.rep.CheckUserExist(v.User, 0) {
+			return 0, member.ErrUserExist
 		}
 	}
 
 	// 验证密码
 	v.Pwd = strings.TrimSpace(v.Pwd)
 	if len(v.Pwd) < 6 {
-		return 0, member.ErrPwdLength
+		return 0, de.ErrPwdLength
 	}
 
 	// 验证手机
@@ -144,7 +145,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 
 	// 使用手机号作为用户名
 	if phoneAsUser {
-		if m.rep.CheckUsrExist(pro.Phone, 0) {
+		if m.rep.CheckUserExist(pro.Phone, 0) {
 			return 0, member.ErrPhoneHasBind
 		}
 		v.User = pro.Phone

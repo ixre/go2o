@@ -21,13 +21,14 @@ var (
 	//connString = "root:123456@tcp(127.0.0.1:3306)/gcy_v3?charset=utf8"
 	driver     = "postgresql"
 	dbName     = ""
-	dbPrefix   = "article_"
+	dbPrefix   = "mch_merchant"
 	connString = "postgres://postgres:123456@127.0.0.1:5432/go2o?sslmode=disable"
 	genDir     = "output/"
 )
 
 // 生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
+	connString = "postgres://postgres:123456@www.dev1.super4bit.co:5432/go2o?sslmode=disable"
 	// 初始化生成器
 	conn := db.NewConnector(driver, connString, nil, false).Raw()
 	dialect := getDialect(driver)

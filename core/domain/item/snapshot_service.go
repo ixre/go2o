@@ -10,7 +10,7 @@ package item
 
 import (
 	"fmt"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
 	"time"
 )

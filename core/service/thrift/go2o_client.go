@@ -14,8 +14,8 @@ import (
 	"go2o/core/service/auto_gen/rpc/finance_service"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/item_service"
-	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/merchant_service"
 	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/payment_service"
@@ -65,9 +65,9 @@ func StatusServeClient() (thrift.TTransport, *status_service.StatusServiceClient
 }
 
 // 商户客户端
-func MerchantServeClient() (thrift.TTransport, *mch_service.MerchantServiceClient, error) {
+func MerchantServeClient() (thrift.TTransport, *merchant_service.MerchantServiceClient, error) {
 	trans, cli, err := factory.GetClient("merchant")
-	return trans, mch_service.NewMerchantServiceClient(cli), err
+	return trans, merchant_service.NewMerchantServiceClient(cli), err
 }
 
 // 会员客户端

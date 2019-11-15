@@ -14,7 +14,8 @@ package member
 import (
 	"errors"
 	"github.com/ixre/gof/util"
-	"go2o/core/domain/interface/enum"
+	de "go2o/core/domain/interface/domain"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
@@ -140,7 +141,7 @@ func (m *memberImpl) GetValue() member.Member {
 var (
 	userRegex  = regexp.MustCompile("^[a-zA-Z0-9_]{6,}$")
 	emailRegex = regexp.MustCompile("^[A-Za-z0-9_\\-]+@[a-zA-Z0-9\\-]+(\\.[a-zA-Z0-9]+)+$")
-	phoneRegex = regexp.MustCompile("^(13[0-9]|14[5|6|7]|15[0-9]|16[6|8]|18[0-9]|17[0|1|2|3|4|5|6|7|8]|19[9|8])(\\d{8})$")
+	phoneRegex = regexp.MustCompile("^(13[0-9]|14[5|6|7]|15[0-9]|16[5|6|7|8]|18[0-9]|17[0|1|2|3|4|5|6|7|8]|19[1|8|9])(\\d{8})$")
 )
 
 // 设置值
@@ -199,10 +200,10 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 // 对比验证码
 func (m *memberImpl) CompareCode(code string) error {
 	if m.value.CheckCode != strings.TrimSpace(code) {
-		return member.ErrCheckCodeError
+		return de.ErrCheckCodeError
 	}
 	if m.value.CheckExpires < time.Now().Unix() {
-		return member.ErrCheckCodeExpires
+		return de.ErrCheckCodeExpires
 	}
 	return nil
 }
@@ -428,9 +429,9 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 }
 
 // 更换用户名
-func (m *memberImpl) ChangeUsr(user string) error {
+func (m *memberImpl) ChangeUser(user string) error {
 	if user == m.value.User {
-		return member.ErrSameUsr
+		return member.ErrSameUser
 	}
 	err := m.checkUser(m.value.User)
 	if err == nil {
@@ -473,12 +474,40 @@ func (m *memberImpl) Active() error {
 }
 
 // 锁定会员
-func (m *memberImpl) Lock() error {
+func (m *memberImpl) Lock(minutes int, remark string) error {
 	if m.ContainFlag(member.FlagLocked) {
 		return nil
 	}
 	m.value.Flag |= member.FlagLocked
 	_, err := m.Save()
+	if err == nil {
+		now := time.Now().Unix()
+		ml := &member.MmLockInfo{
+			MemberId:   m.GetAggregateRootId(),
+			LockTime:   now,
+			UnlockTime: now + int64(minutes*60),
+			Remark:     remark,
+		}
+		his := &member.MmLockHistory{
+			MemberId: ml.MemberId,
+			LockTime: ml.LockTime,
+			Duration: minutes,
+			Remark:   remark,
+		}
+		// 永久锁定
+		if minutes <= 0 {
+			ml.UnlockTime = -1
+			his.Duration = -1
+		}
+		// 注册解锁任务
+		if ml.UnlockTime > 0 {
+			m.repo.RegisterUnlockJob(ml)
+		}
+		_, err = m.repo.SaveLockInfo(ml)
+		if err == nil {
+			_, err = m.repo.SaveLockHistory(his)
+		}
+	}
 	return err
 }
 
@@ -489,6 +518,9 @@ func (m *memberImpl) Unlock() error {
 	}
 	m.value.Flag ^= member.FlagLocked
 	_, err := m.Save()
+	if err == nil {
+		err = m.repo.DeleteLockInfos(m.GetAggregateRootId())
+	}
 	return err
 }
 
@@ -527,13 +559,13 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 // 验证用户名
 func (m *memberImpl) checkUser(user string) error {
 	if len([]rune(user)) < 6 {
-		return member.ErrUsrLength
+		return member.ErrUserLength
 	}
 	if !userRegex.MatchString(user) {
-		return member.ErrUsrValidErr
+		return member.ErrUserValidErr
 	}
-	if m.repo.CheckUsrExist(user, m.GetAggregateRootId()) {
-		return member.ErrUsrExist
+	if m.repo.CheckUserExist(user, m.GetAggregateRootId()) {
+		return member.ErrUserExist
 	}
 	return nil
 }
@@ -568,7 +600,7 @@ func (m *memberImpl) prepare() (err error) {
 	// 验证密码
 	m.value.Pwd = strings.TrimSpace(m.value.Pwd)
 	if len(m.value.Pwd) < 6 {
-		return member.ErrPwdLength
+		return de.ErrPwdLength
 	}
 	// 验证手机
 	m.value.Phone = strings.TrimSpace(m.value.Phone)
@@ -587,7 +619,7 @@ func (m *memberImpl) prepare() (err error) {
 	}
 	// 使用手机号作为用户名
 	if phoneAsUser {
-		if m.repo.CheckUsrExist(m.value.Phone, 0) {
+		if m.repo.CheckUserExist(m.value.Phone, 0) {
 			return member.ErrPhoneHasBind
 		}
 		m.value.User = m.value.Phone

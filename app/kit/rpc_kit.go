@@ -1,8 +1,8 @@
 package kit
 
 import (
-	"go2o/core/service/auto_gen/rpc/mch_service"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/auto_gen/rpc/merchant_service"
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/shop_service"
 	"go2o/core/service/thrift"
@@ -58,7 +58,7 @@ func (r *RpcToolkit) InviterArray(memberId int64, depth int32) []int64 {
 	return nil
 }
 
-func (r *RpcToolkit) GetMerchant(mchId int32) *mch_service.SComplexMerchant {
+func (r *RpcToolkit) GetMerchant(mchId int32) *merchant_service.SComplexMerchant {
 	trans, cli, err := thrift.MerchantServeClient()
 	if err == nil {
 		defer trans.Close()

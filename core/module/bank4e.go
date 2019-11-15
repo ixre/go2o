@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
-	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain/util"

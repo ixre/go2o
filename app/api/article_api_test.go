@@ -17,5 +17,5 @@ func TestPassportApi_Top_Article(t *testing.T) {
 	mp := map[string]string{
 		"cat": "news",
 	}
-	testApi(t, "article.top_article", mp)
+	testApi(t, "article.top_article", mp, true)
 }

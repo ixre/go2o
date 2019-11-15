@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	settleUnixKey string = "sys:go2o:d:pf:date"
+	settleUnixKey = "sys:go2o:d:pf:date"
 )
 
 func personFinanceSettle() {
@@ -55,7 +55,7 @@ func confirmTransferIn(t time.Time) {
 	begin := 0
 	size := 20
 	for {
-		idArr := []int32{}
+		var idArr []int32
 		err := conn.Query(`SELECT id FROM pf_riselog WHERE
 		unix_date<= $1 AND type= $2 AND state= $3 LIMIT $5 OFFSET $4`,
 			func(rows *sql.Rows) {

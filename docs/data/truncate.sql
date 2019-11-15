@@ -6,7 +6,7 @@ TRUNCATE TABLE "article_list";
 TRUNCATE TABLE "comm_qr_template";
 TRUNCATE TABLE "dlv_merchant_bind";
 TRUNCATE TABLE "ex_page";
-TRUNCATE TABLE "gs_item_tag";
+--TRUNCATE TABLE "gs_item_tag";
 TRUNCATE TABLE "gs_member_price";
 TRUNCATE TABLE "item_sku";
 TRUNCATE TABLE "item_info";
@@ -21,7 +21,7 @@ TRUNCATE TABLE "mch_day_chart";
 TRUNCATE TABLE "mch_merchant";
 TRUNCATE TABLE "mch_online_shop";
 TRUNCATE TABLE "mch_offline_shop";
-TRUNCATE TABLE "mch_saleconf";
+TRUNCATE TABLE "mch_sale_conf";
 
 
 TRUNCATE TABLE "mm_member";

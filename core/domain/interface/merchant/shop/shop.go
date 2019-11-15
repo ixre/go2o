@@ -42,6 +42,8 @@ const (
 )
 
 const (
+	// 待初始化
+	StateAwaitInitial = 0
 	// 正常状态
 	StateNormal int32 = 1
 	// 停用状态
@@ -86,9 +88,9 @@ var (
 
 	DefaultOnlineShop = OnlineShop{
 		// 通讯地址
-		Address: "",
+		Addr: "",
 		// 联系电话
-		ServiceTel: "",
+		Tel: "",
 		//别名,用于在商店域名
 		Alias: "",
 		//域名
@@ -117,9 +119,10 @@ var (
 
 type (
 	IShop interface {
-		GetDomainId() int32
+		GetDomainId() int
 		// 商店类型
 		Type() int32
+		//todo: 去除
 		// 获取值
 		GetValue() Shop
 		// 设置值
@@ -133,7 +136,7 @@ type (
 		// 商店暂停营业
 		Pause() error
 		// 保存
-		Save() (int32, error)
+		Save() error
 		// 获取商店信息
 		Data() *ComplexShop
 	}
@@ -142,7 +145,6 @@ type (
 	IOnlineShop interface {
 		// 设置值
 		SetShopValue(*OnlineShop) error
-
 		// 获取值
 		GetShopValue() OnlineShop
 	}
@@ -200,28 +202,38 @@ type (
 
 	// 商城
 	OnlineShop struct {
-		// 商店编号
-		ShopId int32 `db:"shop_id" pk:"yes" auto:"no"`
-		// 通讯地址
-		Address string `db:"addr"`
-		// 联系电话
-		ServiceTel string `db:"tel"`
-		//别名,用于在商店域名
-		Alias string `db:"alias"`
-		//域名
-		Host string `db:"host"`
-		//前台Logo
+		// 店铺编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 商户编号
+		VendorId int `db:"vendor_id"`
+		// 店铺名称
+		ShopName string `db:"shop_name"`
+		// 店铺标志
 		Logo string `db:"logo"`
-		//首页标题
+		// 自定义 域名
+		Host string `db:"host"`
+		// 个性化域名
+		Alias string `db:"alias"`
+		// 电话
+		Tel string `db:"tel"`
+		// 地址
+		Addr string `db:"addr"`
+		// 店铺标题
 		ShopTitle string `db:"shop_title"`
-		// ShopNotice
+		// 店铺公告
 		ShopNotice string `db:"shop_notice"`
+		// 标志
+		Flag int `db:"flag"`
+		// 状态
+		State int16 `db:"state"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
 	}
 
 	// 门店
 	OfflineShop struct {
 		// 商店编号
-		ShopId int32 `db:"shop_id" pk:"yes" auto:"no"`
+		ShopId int `db:"shop_id" pk:"yes" auto:"no"`
 		// 联系电话
 		Tel string `db:"tel"`
 		// 省

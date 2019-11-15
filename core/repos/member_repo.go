@@ -16,6 +16,7 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/util"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
@@ -173,7 +174,7 @@ func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 // 根据用户名获取会员
 func (m *MemberRepoImpl) GetMemberByUser(user string) *member.Member {
 	e := &member.Member{}
-	err := m.Connector.GetOrm().GetBy(e, "\"user\"= $1", user)
+	err := m.Connector.GetOrm().GetBy(e, "\"user\" = $1", user)
 	if err == nil {
 		return e
 	}
@@ -517,7 +518,7 @@ func (m *MemberRepoImpl) GetLevelValueByExp(mchId int32, exp int64) int {
 }
 
 // 用户名是否存在
-func (m *MemberRepoImpl) CheckUsrExist(user string, memberId int64) bool {
+func (m *MemberRepoImpl) CheckUserExist(user string, memberId int64) bool {
 	var c int
 	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE user= $1 AND id <> $2 LIMIT 1",
 		&c, user, memberId)
@@ -702,4 +703,35 @@ func (m *MemberRepoImpl) SaveMmBuyerGroup(v *member.BuyerGroup) (int, error) {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmBuyerGroup")
 	}
 	return id, err
+}
+
+func (m *MemberRepoImpl) SaveLockHistory(v *member.MmLockHistory) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockHistory")
+	}
+	return id, err
+}
+
+func (m *MemberRepoImpl) SaveLockInfo(v *member.MmLockInfo) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockInfo")
+	}
+	return id, err
+}
+
+// 存储自动解锁信息到任务队列
+func (m *MemberRepoImpl) RegisterUnlockJob(v *member.MmLockInfo) {
+	slice := util.GetMinuteSlice(time.Unix(v.UnlockTime, 0), 1)
+	key := fmt.Sprintf("%s:%s:%d", variable.KvMemberAutoUnlock, slice, v.MemberId)
+	m.storage.SetExpire(key, v.MemberId, v.UnlockTime-v.LockTime+120)
+}
+
+func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
+	_, err := m._orm.Delete(member.MmLockInfo{}, "member_id=$1", memberId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockInfo")
+	}
+	return err
 }

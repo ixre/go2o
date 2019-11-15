@@ -34,7 +34,6 @@ type foundationService struct {
 	serviceUtil
 }
 
-
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
 	return &foundationService{
 		_rep:         rep,

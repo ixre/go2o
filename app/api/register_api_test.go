@@ -18,7 +18,7 @@ const token = "sTRz2UhO4h"
 
 func TestRegisterApi_SendRegisterCode(t *testing.T) {
 	mp := map[string]string{}
-	testApi(t, "register.get_token", mp)
+	testApi(t, "register.get_token", mp, true)
 }
 
 func TestRegisterApi_SendRegisterCode2(t *testing.T) {
@@ -26,7 +26,7 @@ func TestRegisterApi_SendRegisterCode2(t *testing.T) {
 		"phone": phone,
 		"token": token,
 	}
-	testApi(t, "register.send_code", mp)
+	testApi(t, "register.send_code", mp, true)
 }
 
 func TestRegisterApi_Register(t *testing.T) {
@@ -38,6 +38,6 @@ func TestRegisterApi_Register(t *testing.T) {
 		"invite_code": "",
 		"check_code":  "5993",
 	}
-	testApi(t, "register.submit", mp)
+	testApi(t, "register.submit", mp, true)
 
 }

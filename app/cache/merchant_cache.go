@@ -14,19 +14,21 @@ import (
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/service/auto_gen/rpc/merchant_service"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"sort"
 	"strconv"
 	"strings"
 )
 
 // 获取商户信息缓存
-func GetValueMerchantCache(mchId int32) *merchant.Merchant {
-	var v merchant.Merchant
+func GetValueMerchantCache(mchId int) *merchant_service.SMerchant {
+	var v merchant_service.SMerchant
 	var sto storage.Interface = GetKVS()
 	var key string = GetValueMerchantCacheCK(mchId)
 	if sto.Get(key, &v) != nil {
-		v2 := rsi.MerchantService.GetMerchant(mchId)
+		v2, _ := rsi.MerchantService.GetMerchant(thrift.Context, int32(mchId))
 		if v2 != nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 			return v2
@@ -37,29 +39,29 @@ func GetValueMerchantCache(mchId int32) *merchant.Merchant {
 }
 
 // 设置商户信息缓存
-func GetValueMerchantCacheCK(mchId int32) string {
+func GetValueMerchantCacheCK(mchId int) string {
 	return fmt.Sprintf("cache:partner:value:%d", mchId)
 }
 
 // 设置商户站点配置
-func GetMerchantSiteConfCK(mchId int32) string {
+func GetMerchantSiteConfCK(mchId int) string {
 	return fmt.Sprintf("cache:partner:siteconf:%d", mchId)
 }
 
-func DelMerchantCache(mchId int32) {
+func DelMerchantCache(mchId int) {
 	kvs := GetKVS()
 	kvs.Del(GetValueMerchantCacheCK(mchId))
 	kvs.Del(GetMerchantSiteConfCK(mchId))
 }
 
 // 根据主机头识别会员编号
-func GetMerchantIdByHost(host string) int32 {
+func GetMerchantIdByHost(host string) int {
 	key := "cache:host-for:" + host
 	sto := GetKVS()
 	id, err := sto.GetInt(key)
-	mchId := int32(id)
+	mchId := id
 	if err != nil || mchId <= 0 {
-		mchId = rsi.MerchantService.GetMerchantIdByHost(host)
+		mchId = int(rsi.MerchantService.GetMerchantIdByHost(host))
 		if mchId > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		}
@@ -89,7 +91,7 @@ func GetMerchantApiInfo(mchId int32) *merchant.ApiInfo {
 	key := fmt.Sprintf("cache:partner:api:info-%d", mchId)
 	err := kvs.Get(key, &d)
 	if err != nil {
-		if d = rsi.MerchantService.GetApiInfo(mchId); d != nil {
+		if d = rsi.MerchantService.GetApiInfo(int(mchId)); d != nil {
 			kvs.Set(key, d)
 		}
 	}

@@ -40,23 +40,9 @@ var (
 	ErrPremiumValue = domain.NewError(
 		"err_member_premium_value", "premium not match")
 
-	ErrCredential = domain.NewError(
-		"err_member_credential", "会员用户或密码不正确")
-
-	ErrCheckCodeError = domain.NewError(
-		"err_member_check_code_err", "验证码不正确")
-
-	ErrCheckCodeExpires = domain.NewError(
-		"err_member_check_code_expires", "验证码已过期")
-
 	ErrInvalidSession = domain.NewError(
 		"member_invalid_session", "异常会话")
 
-	ErrPwdLength = domain.NewError(
-		"err_member_pwd_length", "密码至少包含6个字符")
-
-	ErrNotMD5Format = domain.NewError(
-		"err_member_not_md5_format", "密码参数非32位MD5")
 	ErrNoSuchAddress = domain.NewError(
 		"member_no_such_deliver_address", "配送地址错误")
 
@@ -163,17 +149,17 @@ var (
 	ErrTransferAccountsLevelNoPerm = domain.NewError(
 		"err_account_transfer_accounts_level_no_perm", "%s不允许转账")
 
-	ErrUsrLength = domain.NewError(
+	ErrUserLength = domain.NewError(
 		"err_user_length", "用户名至少6位",
 	)
 
-	ErrUsrValidErr = domain.NewError(
+	ErrUserValidErr = domain.NewError(
 		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
 
-	ErrSameUsr = domain.NewError(
+	ErrSameUser = domain.NewError(
 		"err_same_user", "用户名与原来相同")
 
-	ErrUsrExist = domain.NewError(
+	ErrUserExist = domain.NewError(
 		"err_member_user_exist", "用户名已存在")
 
 	ErrNilNickName = domain.NewError(

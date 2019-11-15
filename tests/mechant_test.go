@@ -2,10 +2,58 @@ package tests
 
 import (
 	"errors"
+	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/wholesaler"
+	"go2o/core/infrastructure/domain"
 	"go2o/tests/ti"
 	"testing"
 )
+
+func TestMerchantPwd2(t *testing.T) {
+	s := domain.Md5("123456")
+	println(domain.Sha1Pwd(s))
+}
+
+// 测试创建商户
+func TestCreateMerchant(t *testing.T) {
+	repo := ti.Factory.GetMerchantRepo()
+	v := &merchant.Merchant{
+		LoginUser:   "zy",
+		LoginPwd:    domain.Md5("123456"),
+		Name:        "天猫",
+		SelfSales:   1,
+		Level:       0,
+		Logo:        "",
+		CompanyName: "天猫",
+		Province:    0,
+		City:        0,
+		District:    0,
+	}
+	v.LoginPwd = domain.Sha1Pwd(v.LoginPwd)
+	im := repo.CreateMerchant(v)
+	err := im.SetValue(v)
+	if err == nil {
+		_, err = im.Save()
+		if err == nil {
+			o := shop.OnlineShop{
+				ShopName:   v.Name,
+				Logo:       "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+				Host:       "",
+				Alias:      "zy",
+				Tel:        "",
+				Addr:       "",
+				ShopTitle:  "",
+				ShopNotice: "",
+			}
+			_, err = im.ShopManager().CreateOnlineShop(&o)
+		}
+	}
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
 
 // 测试商家分组设置
 func TestMchBuyerGroupSet(t *testing.T) {

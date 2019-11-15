@@ -17,10 +17,10 @@ var (
 		"err_item_no_such_item_sku", "商品SKU不存在")
 
 	ErrNotBindShop *domain.DomainError = domain.NewError(
-		"err_item_not_bind_shop", "请选择商品上架的商铺")
+		"err_item_not_bind_shop", "请选择商品上架的店铺")
 
 	ErrIncorrectShopOfItem *domain.DomainError = domain.NewError(
-		"err_item_not_bind_shop", "商品绑定的商铺非法")
+		"err_item_not_bind_shop", "商品绑定的店铺非法")
 
 	ErrEmptyReviewRemark *domain.DomainError = domain.NewError(
 		"err_sale_empty_remark", "原因不能为空")

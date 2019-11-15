@@ -23,6 +23,12 @@ var (
 	ErrMerchantExpires *domain.DomainError = domain.NewError(
 		"err_merchant_expires", "商户已过期")
 
+	ErrMissingMerchantUser *domain.DomainError = domain.NewError(
+		"err_missing_merchant_user", "未设置商户用户")
+
+	ErrMerchantUserExists *domain.DomainError = domain.NewError(
+		"err_merchant_user_exists", "商户已存在")
+
 	ErrNoSuchMerchant *domain.DomainError = domain.NewError(
 		"no_such_partner", "商户不存在")
 
