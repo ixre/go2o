@@ -24,6 +24,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/order_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -36,6 +37,46 @@ type merchantService struct {
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
 	serviceUtil
+}
+
+func (m *merchantService) CreateMerchant(ctx context.Context, mch *merchant_service.SMerchantPack, relMemberId int64) (r *ttype.Result_, err error) {
+	v := &merchant.Merchant{
+		LoginUser:   mch.LoginUser,
+		LoginPwd:    domain.MerchantSha1Pwd(mch.LoginPwd),
+		Name:        mch.Name,
+		SelfSales:   mch.SelfSales,
+		MemberId:    relMemberId,
+		Level:       0,
+		Logo:        "",
+		CompanyName: "",
+		Province:    0,
+		City:        0,
+		District:    0,
+	}
+	im := m._mchRepo.CreateMerchant(v)
+	err = im.SetValue(v)
+	if err == nil {
+		_, err = im.Save()
+		if err == nil {
+			o := shop.OnlineShop{
+				ShopName:   mch.ShopName,
+				Logo:       mch.ShopLogo,
+				Host:       "",
+				Alias:      "",
+				Tel:        "",
+				Addr:       "",
+				ShopTitle:  "",
+				ShopNotice: "",
+			}
+			_, err = im.ShopManager().CreateOnlineShop(&o)
+		}
+	}
+	if err == nil {
+		return m.success(map[string]string{
+			"mch_id": strconv.Itoa(im.GetAggregateRootId()),
+		}), nil
+	}
+	return m.result(err), nil
 }
 
 func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r []*merchant_service.STradeConf, err error) {

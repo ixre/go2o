@@ -3,6 +3,7 @@ namespace csharp com.github.jsix.go2o.rpc
 namespace go go2o.core.service.auto_gen.rpc.merchant_service
 include "ttype.thrift"
 
+
 // 商家
 struct SMerchant {
     /** 编号 */
@@ -38,10 +39,34 @@ struct SMerchant {
 }
 
 
+// 商家
+struct SMerchantPack {
+    /** 登录用户 */
+    1:string LoginUser
+    /** 登录密码 */
+    2:string LoginPwd
+    /** 名称 */
+    3:string Name
+    /** 是否字营 */
+    4:i16 SelfSales
+    /** 店铺名称 */
+    5:string ShopName
+    /** 标志 */
+    6:string ShopLogo
+    /** 电话 */
+    7:string Tel
+    /** 地址 */
+    8:string Addr
+}
+
+
 //商家服务
 service MerchantService{
    // 获取商家符合的信息
    SMerchant GetMerchant(1:i32 mchId)
+   // 注册商户并开店
+   ttype.Result CreateMerchant(1:SMerchantPack mch,2:i64 relMemberId)
+
    // 验证用户密码,并返回编号。可传入商户或会员的账号密码
    ttype.Result CheckLogin(1:string usr,2:string oriPwd)
    // 验证商户状态

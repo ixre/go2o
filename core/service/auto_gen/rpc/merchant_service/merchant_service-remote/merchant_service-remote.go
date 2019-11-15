@@ -25,6 +25,7 @@ func Usage() {
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  SMerchant GetMerchant(i32 mchId)")
+	fmt.Fprintln(os.Stderr, "  Result CreateMerchant(SMerchantPack mch, i64 relMemberId)")
 	fmt.Fprintln(os.Stderr, "  Result CheckLogin(string usr, string oriPwd)")
 	fmt.Fprintln(os.Stderr, "  Result Stat(i32 mchId)")
 	fmt.Fprintln(os.Stderr, "   SyncWholesaleItem(i32 mchId)")
@@ -157,14 +158,45 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetMerchant requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err20 := (strconv.Atoi(flag.Arg(1)))
-		if err20 != nil {
+		tmp0, err22 := (strconv.Atoi(flag.Arg(1)))
+		if err22 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.GetMerchant(context.Background(), value0))
+		fmt.Print("\n")
+		break
+	case "CreateMerchant":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "CreateMerchant requires 2 args")
+			flag.Usage()
+		}
+		arg23 := flag.Arg(1)
+		mbTrans24 := thrift.NewTMemoryBufferLen(len(arg23))
+		defer mbTrans24.Close()
+		_, err25 := mbTrans24.WriteString(arg23)
+		if err25 != nil {
+			Usage()
+			return
+		}
+		factory26 := thrift.NewTJSONProtocolFactory()
+		jsProt27 := factory26.GetProtocol(mbTrans24)
+		argvalue0 := merchant_service.NewSMerchantPack()
+		err28 := argvalue0.Read(jsProt27)
+		if err28 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		argvalue1, err29 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err29 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		fmt.Print(client.CreateMerchant(context.Background(), value0, value1))
 		fmt.Print("\n")
 		break
 	case "CheckLogin":
@@ -184,8 +216,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Stat requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
-		if err23 != nil {
+		tmp0, err32 := (strconv.Atoi(flag.Arg(1)))
+		if err32 != nil {
 			Usage()
 			return
 		}
@@ -199,8 +231,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "SyncWholesaleItem requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err24 := (strconv.Atoi(flag.Arg(1)))
-		if err24 != nil {
+		tmp0, err33 := (strconv.Atoi(flag.Arg(1)))
+		if err33 != nil {
 			Usage()
 			return
 		}
@@ -214,8 +246,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetAllTradeConf requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err25 := (strconv.Atoi(flag.Arg(1)))
-		if err25 != nil {
+		tmp0, err34 := (strconv.Atoi(flag.Arg(1)))
+		if err34 != nil {
 			Usage()
 			return
 		}
@@ -229,15 +261,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetTradeConf requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err26 := (strconv.Atoi(flag.Arg(1)))
-		if err26 != nil {
+		tmp0, err35 := (strconv.Atoi(flag.Arg(1)))
+		if err35 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err27 := (strconv.Atoi(flag.Arg(2)))
-		if err27 != nil {
+		tmp1, err36 := (strconv.Atoi(flag.Arg(2)))
+		if err36 != nil {
 			Usage()
 			return
 		}
@@ -251,26 +283,26 @@ func main() {
 			fmt.Fprintln(os.Stderr, "SaveTradeConf requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
-		if err28 != nil {
+		tmp0, err37 := (strconv.Atoi(flag.Arg(1)))
+		if err37 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		arg29 := flag.Arg(2)
-		mbTrans30 := thrift.NewTMemoryBufferLen(len(arg29))
-		defer mbTrans30.Close()
-		_, err31 := mbTrans30.WriteString(arg29)
-		if err31 != nil {
+		arg38 := flag.Arg(2)
+		mbTrans39 := thrift.NewTMemoryBufferLen(len(arg38))
+		defer mbTrans39.Close()
+		_, err40 := mbTrans39.WriteString(arg38)
+		if err40 != nil {
 			Usage()
 			return
 		}
-		factory32 := thrift.NewTJSONProtocolFactory()
-		jsProt33 := factory32.GetProtocol(mbTrans30)
+		factory41 := thrift.NewTJSONProtocolFactory()
+		jsProt42 := factory41.GetProtocol(mbTrans39)
 		containerStruct1 := merchant_service.NewMerchantServiceSaveTradeConfArgs()
-		err34 := containerStruct1.ReadField2(jsProt33)
-		if err34 != nil {
+		err43 := containerStruct1.ReadField2(jsProt42)
+		if err43 != nil {
 			Usage()
 			return
 		}

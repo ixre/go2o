@@ -107,6 +107,8 @@ type IMerchantRepo interface {
 	SaveMchTradeConf(v *TradeConf) (int, error)
 	// Delete MchTradeConf
 	DeleteMchTradeConf(primary interface{}) error
+	// 验证商户用户名是否存在
+	CheckUserExists(user string, id int) bool
 
 	//  //修改线下支付利润
 	//UpdateMechOfflineRate(id int, rate float32, return_rate float32) error

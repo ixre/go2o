@@ -165,11 +165,17 @@ func (m *merchantRepo) GetMerchantMajorHost(mchId int) string {
 	return host
 }
 
+// 验证商户用户名是否存在
+func (m *merchantRepo) CheckUserExists(user string, id int) bool {
+	var row int
+	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_merchant WHERE login_user= $1 AND id <> $2 LIMIT 1`,
+		&row, user, id)
+	return row > 0
+}
+
 // 保存
 func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int32, error) {
 	id, err := orm.I32(orm.Save(m.GetOrm(), v, v.Id))
-	println("-----mch id = ", id)
-
 	if err == nil {
 		m.cleanCache(id)
 	}

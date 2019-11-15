@@ -348,9 +348,11 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 		if len(v.CompanyName) != 0 {
 			tv.CompanyName = v.CompanyName
 		}
-		tv.LoginPwd = v.LoginPwd
-		tv.UpdateTime = time.Now().Unix()
 	}
+	if v.LoginPwd != "" {
+		tv.LoginPwd = v.LoginPwd
+	}
+	tv.UpdateTime = time.Now().Unix()
 	return nil
 }
 
@@ -473,6 +475,14 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	m._value.Flag = 1
 	m._value.LoginTime = 0
 	m._value.LastLoginTime = 0
+	if m._value.MemberId == 0 {
+		if len(m._value.LoginUser) == 0 {
+			return 0, merchant.ErrMissingMerchantUser
+		}
+		if m._repo.CheckUserExists(m._value.LoginUser, 0) {
+			return 0, merchant.ErrMerchantUserExists
+		}
+	}
 	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
 		return id, err

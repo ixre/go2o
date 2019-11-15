@@ -174,7 +174,7 @@ func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 // 根据用户名获取会员
 func (m *MemberRepoImpl) GetMemberByUser(user string) *member.Member {
 	e := &member.Member{}
-	err := m.Connector.GetOrm().GetBy(e, "\"user\"= $1", user)
+	err := m.Connector.GetOrm().GetBy(e, "\"user\" = $1", user)
 	if err == nil {
 		return e
 	}
