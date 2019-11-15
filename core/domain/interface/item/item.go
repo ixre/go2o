@@ -92,7 +92,7 @@ type (
 			sortBy string) []*valueobject.Goods
 
 		// 获取在货架上的商品
-		GetPagedOnShelvesGoods(mchId int32, catIds []int32, start, end int,
+		GetPagedOnShelvesGoods(mchId int32, catIds []int, start, end int,
 			where, orderBy string) (total int, goods []*valueobject.Goods)
 
 		// 根据编号获取商品

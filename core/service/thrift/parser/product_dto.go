@@ -9,7 +9,7 @@ func Category(src *ttype.SCategory) *product.Category {
 	s := &product.Category{
 		Id:         int(src.ID),
 		ParentId:   int(src.ParentId),
-		ProdModel:   int(src.ProdModel),
+		ProdModel:  int(src.ProdModel),
 		Priority:   int(src.Priority),
 		Name:       src.Name,
 		Level:      int(src.Level),

@@ -160,14 +160,14 @@ func (g *goodsRepo) SaveValueGoods(v *item.GoodsItem) (int64, error) {
 }
 
 // 获取已上架的商品
-func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
+func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int,
 	start, end int, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
 	total := 0
 	catIdStr := ""
 	if catIds != nil && len(catIds) > 0 {
 		catIdStr = fmt.Sprintf(" AND cat.id IN (%s)",
-			format.I32ArrStrJoin(catIds))
+			format.IntArrStrJoin(catIds))
 	}
 
 	if len(where) != 0 {

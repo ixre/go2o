@@ -66,11 +66,11 @@ func (p *productRepo) GetProductsById(ids ...int32) ([]*product.Product, error) 
 	return items, err
 }
 
-func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
+func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int,
 	start, end int) (total int, e []*product.Product) {
 	var sql string
 
-	var catIdStr string = format.I32ArrStrJoin(catIds)
+	var catIdStr string = format.IntArrStrJoin(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM pro_product INNER JOIN prod_category ON pro_product.cat_id=prod_category.id
 		WHERE merchant_id=%d AND prod_category.id IN (%s) AND on_shelves=1 LIMIT %d OFFSET %d`, mchId, catIdStr, start, (end - start))
 

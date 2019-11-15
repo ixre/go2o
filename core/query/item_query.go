@@ -181,11 +181,11 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 }
 
 //根据分类获取上架的商品
-func (i ItemQuery) GetOnShelvesItem(catIdArr []int32, start, end int32,
+func (i ItemQuery) GetOnShelvesItem(catIdArr []int, start, end int32,
 	where string) []*item.GoodsItem {
 	var list []*item.GoodsItem
 	if len(catIdArr) > 0 {
-		catIdStr := format.I32ArrStrJoin(catIdArr)
+		catIdStr := format.IntArrStrJoin(catIdArr)
 		sql := fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 WHERE item_info.cat_id IN(%s) AND item_info.review_state= $1

@@ -81,7 +81,7 @@ type (
 		SaveProduct(*Product) (int, error)
 		//todo:  到商品
 		// 获取在货架上的商品
-		GetPagedOnShelvesProduct(supplierId int32, catIds []int32, start, end int) (total int, goods []*Product)
+		GetPagedOnShelvesProduct(supplierId int32, catIds []int, start, end int) (total int, goods []*Product)
 		//todo:  到商品
 		// 获取货品销售总数
 		GetProductSaleNum(productId int64) int
