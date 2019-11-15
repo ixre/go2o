@@ -11,7 +11,9 @@ package shop
 
 type (
 	IShopManager interface {
-
+		// 创建线上店铺
+		CreateOnlineShop(o *OnlineShop) (IShop, error)
+		//todo: will be removed
 		// 新建商店
 		CreateShop(*Shop) IShop
 

@@ -167,7 +167,9 @@ func (m *merchantRepo) GetMerchantMajorHost(mchId int) string {
 
 // 保存
 func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int32, error) {
-	id, err := orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
+	id, err := orm.I32(orm.Save(m.GetOrm(), v, v.Id))
+	println("-----mch id = ", id)
+
 	if err == nil {
 		m.cleanCache(id)
 	}

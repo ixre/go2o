@@ -3,6 +3,7 @@ package tests
 import (
 	"errors"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/wholesaler"
 	"go2o/core/infrastructure/domain"
 	"go2o/tests/ti"
@@ -18,22 +19,35 @@ func TestMerchantPwd2(t *testing.T) {
 func TestCreateMerchant(t *testing.T) {
 	repo := ti.Factory.GetMerchantRepo()
 	v := &merchant.Merchant{
-		User:        "zy",
-		Pwd:         domain.Md5("123456"),
+		LoginUser:   "zy",
+		LoginPwd:    domain.Md5("123456"),
 		Name:        "天猫",
 		SelfSales:   1,
 		Level:       0,
-		Logo:        "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		Logo:        "",
 		CompanyName: "天猫",
 		Province:    0,
 		City:        0,
 		District:    0,
 	}
-	v.Pwd = domain.Sha1Pwd(v.Pwd)
+	v.LoginPwd = domain.Sha1Pwd(v.LoginPwd)
 	im := repo.CreateMerchant(v)
 	err := im.SetValue(v)
 	if err == nil {
 		_, err = im.Save()
+		if err == nil {
+			o := shop.OnlineShop{
+				ShopName:   v.Name,
+				Logo:       "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+				Host:       "",
+				Alias:      "zy",
+				Tel:        "",
+				Addr:       "",
+				ShopTitle:  "",
+				ShopNotice: "",
+			}
+			_, err = im.ShopManager().CreateOnlineShop(&o)
+		}
 	}
 	if err != nil {
 		t.Error(err)

@@ -28,6 +28,21 @@ type shopManagerImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
+// 创建线上店铺
+func (s *shopManagerImpl) CreateOnlineShop(o *shop.OnlineShop) (shop.IShop, error) {
+	o.VendorId = s.merchant.GetAggregateRootId()
+	if o.ShopName == "" {
+		o.ShopName = s.merchant.GetValue().Name
+	}
+	is := s.repo.CreateShop(o)
+	io := is.(shop.IOnlineShop)
+	err := io.SetShopValue(o)
+	if err == nil {
+		err = is.Save()
+	}
+	return is, err
+}
+
 func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShopManager {
 	return &shopManagerImpl{

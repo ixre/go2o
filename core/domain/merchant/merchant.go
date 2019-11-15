@@ -167,6 +167,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		District: int(v.District),
 		// 是否启用
 		Enabled: 1,
+		Flag:    1,
 		// 过期时间
 		ExpiresTime: time.Now().Add(time.Hour * time.Duration(24*365)).Unix(),
 		// 注册时间
@@ -468,32 +469,15 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	m._value.ExpiresTime = unix + 3600*24*365
 	m._value.UpdateTime = unix
 	m._value.CreateTime = unix
+	m._value.Enabled = 1
+	m._value.Flag = 1
 	m._value.LoginTime = 0
 	m._value.LastLoginTime = 0
 	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
 		return id, err
 	}
-	// 初始化商店
 	m._value.Id = int(id)
-	s := &shop.OnlineShop{
-		VendorId:   int(id),
-		ShopName:   m._value.Name,
-		Tel:        "",
-		Addr:       "",
-		Logo:       "",
-		ShopTitle:  "",
-		ShopNotice: "",
-	}
-	is := m._shopRepo.CreateShop(s)
-	io := is.(shop.IOnlineShop)
-	err = io.SetShopValue(s)
-	if err == nil {
-		err = is.Save()
-	}
-	if err != nil {
-		return 0, err
-	}
 	// 创建API
 	api := &merchant.ApiInfo{
 		ApiId:     domain.NewApiId(int(id)),
