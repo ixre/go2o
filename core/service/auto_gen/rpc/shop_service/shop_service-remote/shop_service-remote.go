@@ -26,9 +26,9 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  i32 QueryShopIdByHost(string host)")
 	fmt.Fprintln(os.Stderr, "  SShop GetShop(i32 shopId)")
-	fmt.Fprintln(os.Stderr, "  SStore GetStore(i32 venderId)")
-	fmt.Fprintln(os.Stderr, "  SStore GetStoreById(i32 shopId)")
-	fmt.Fprintln(os.Stderr, "  i32 QueryStoreByHost(string host)")
+	fmt.Fprintln(os.Stderr, "  SShop GetVendorShop(i32 vendorId)")
+	fmt.Fprintln(os.Stderr, "  SStore GetStore(i32 storeId)")
+	fmt.Fprintln(os.Stderr, "  i32 QueryShopByHost(string host)")
 	fmt.Fprintln(os.Stderr, "  Result TurnShop(i32 shopId, bool on, string reason)")
 	fmt.Fprintln(os.Stderr, "  Result OpenShop(i32 shopId, bool opening, string reason)")
 	fmt.Fprintln(os.Stderr)
@@ -177,9 +177,9 @@ func main() {
 		fmt.Print(client.GetShop(context.Background(), value0))
 		fmt.Print("\n")
 		break
-	case "GetStore":
+	case "GetVendorShop":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetStore requires 1 args")
+			fmt.Fprintln(os.Stderr, "GetVendorShop requires 1 args")
 			flag.Usage()
 		}
 		tmp0, err20 := (strconv.Atoi(flag.Arg(1)))
@@ -189,12 +189,12 @@ func main() {
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		fmt.Print(client.GetStore(context.Background(), value0))
+		fmt.Print(client.GetVendorShop(context.Background(), value0))
 		fmt.Print("\n")
 		break
-	case "GetStoreById":
+	case "GetStore":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetStoreById requires 1 args")
+			fmt.Fprintln(os.Stderr, "GetStore requires 1 args")
 			flag.Usage()
 		}
 		tmp0, err21 := (strconv.Atoi(flag.Arg(1)))
@@ -204,17 +204,17 @@ func main() {
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		fmt.Print(client.GetStoreById(context.Background(), value0))
+		fmt.Print(client.GetStore(context.Background(), value0))
 		fmt.Print("\n")
 		break
-	case "QueryStoreByHost":
+	case "QueryShopByHost":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "QueryStoreByHost requires 1 args")
+			fmt.Fprintln(os.Stderr, "QueryShopByHost requires 1 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		fmt.Print(client.QueryStoreByHost(context.Background(), value0))
+		fmt.Print(client.QueryShopByHost(context.Background(), value0))
 		fmt.Print("\n")
 		break
 	case "TurnShop":

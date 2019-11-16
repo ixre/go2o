@@ -337,3 +337,30 @@ ALTER TABLE public.pro_category
 
 ALTER TABLE public.prod_category
     ALTER COLUMN enabled TYPE int4 USING enabled::int;
+
+/** 2019-11-16 */
+DROP TABLE express_template;
+CREATE TABLE "public".mch_express_template (
+   id         serial NOT NULL,
+   vendor_id  int4 NOT NULL,
+   name       varchar(45) NOT NULL,
+   is_free    int2 NOT NULL,
+   basis      int4 NOT NULL,
+   first_unit int4 NOT NULL,
+   first_fee  numeric(6, 2) NOT NULL,
+   add_unit   int4 NOT NULL,
+   add_fee    numeric(6, 2) NOT NULL,
+   enabled    int2 NOT NULL,
+   CONSTRAINT mch_express_template_pkey
+       PRIMARY KEY (id));
+COMMENT ON TABLE "public".mch_express_template IS '商户运费模板';
+COMMENT ON COLUMN "public".mch_express_template.id IS '编号';
+COMMENT ON COLUMN "public".mch_express_template.vendor_id IS '运营商编号';
+COMMENT ON COLUMN "public".mch_express_template.name IS '运费模板名称';
+COMMENT ON COLUMN "public".mch_express_template.is_free IS '是否卖价承担运费';
+COMMENT ON COLUMN "public".mch_express_template.basis IS '运费计价依据';
+COMMENT ON COLUMN "public".mch_express_template.first_unit IS '首次计价单位,如首重为2kg';
+COMMENT ON COLUMN "public".mch_express_template.first_fee IS '首次计价单价,如续重1kg';
+COMMENT ON COLUMN "public".mch_express_template.add_unit IS '超过首次计价计算单位,如续重1kg';
+COMMENT ON COLUMN "public".mch_express_template.add_fee IS '超过首次计价单价，如续重1kg';
+COMMENT ON COLUMN "public".mch_express_template.enabled IS '是否启用';

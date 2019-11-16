@@ -14,6 +14,7 @@ type (
 		CreateShop(shop *OnlineShop) IShop
 		// 获取商店
 		GetShop(shopId int32) IShop
+
 		SaveShop(*Shop) (int32, error)
 		// 检查商户商城是否存在(创建)
 		CheckShopExists(vendorId int) bool
@@ -27,6 +28,9 @@ type (
 		GetOnlineShop(shopId int32) *OnlineShop
 		// 获取线下商店
 		GetOfflineShop(shopId int) *OfflineShop
+
+		// 获取商户的店铺
+		GetOnlineShopOfMerchant(vendorId int) *OnlineShop
 
 		// 获取商户所有商店
 		GetShopsOfMerchant(mchId int32) []Shop

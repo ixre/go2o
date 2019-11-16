@@ -116,7 +116,7 @@ func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 	o.value.VendorId = o.items[0].VendorId
 	o.value.ShopId = o.items[0].ShopId
 	// 运费计算器
-	ue := o.expressRepo.GetUserExpress(o.value.VendorId)
+	ue := o.expressRepo.GetUserExpress(int(o.value.VendorId))
 	ec := ue.CreateCalculator()
 	// 计算订单金额及运费
 	for _, it := range o.items {
@@ -125,7 +125,7 @@ func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 		o.appendToExpressCalculator(ue, it, ec)
 	}
 	ec.Calculate("") //todo:??暂不支持区域
-	o.value.ExpressFee = ec.Total()
+	o.value.ExpressFee = float32(ec.Total())
 	o.value.PackageFee = 0
 	//计算最终金额
 	o.fixFinalAmount()
@@ -173,17 +173,18 @@ func (o *wholesaleOrderImpl) createItem(i *cart.ItemPair) *orderItem {
 // 加入运费计算器
 func (o *wholesaleOrderImpl) appendToExpressCalculator(ue express.IUserExpress,
 	item *orderItem, cul express.IExpressCalculator) {
-	tpl := ue.GetTemplate(item.ExpressTplId)
+	tid := int(item.ExpressTplId)
+	tpl := ue.GetTemplate(tid)
 	if tpl != nil {
 		var err error
 		v := tpl.Value()
 		switch v.Basis {
 		case express.BasisByNumber:
-			err = cul.Add(item.ExpressTplId, item.Quantity)
+			err = cul.Add(tid, int(item.Quantity))
 		case express.BasisByWeight:
-			err = cul.Add(item.ExpressTplId, item.Weight)
+			err = cul.Add(tid, int(item.Weight))
 		case express.BasisByVolume:
-			err = cul.Add(item.ExpressTplId, item.Weight)
+			err = cul.Add(tid, int(item.Weight))
 		}
 		if err != nil {
 			log.Println("[ Wholesale Order][ Express][ Error]:", err)

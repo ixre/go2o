@@ -25,13 +25,13 @@ const (
 var _ express.IUserExpress = new(userExpressImpl)
 
 type userExpressImpl struct {
-	userId  int32
+	userId  int
 	arr     []express.IExpressTemplate
 	rep     express.IExpressRepo
 	valRepo valueobject.IValueRepo
 }
 
-func NewUserExpress(userId int32, rep express.IExpressRepo,
+func NewUserExpress(userId int, rep express.IExpressRepo,
 	valRepo valueobject.IValueRepo) express.IUserExpress {
 	return &userExpressImpl{
 		userId:  userId,
@@ -41,18 +41,18 @@ func NewUserExpress(userId int32, rep express.IExpressRepo,
 }
 
 // 获取聚合根编号
-func (e *userExpressImpl) GetAggregateRootId() int32 {
+func (e *userExpressImpl) GetAggregateRootId() int {
 	return e.userId
 }
 
 // 创建快递模板
 func (e *userExpressImpl) CreateTemplate(t *express.ExpressTemplate) express.IExpressTemplate {
-	t.UserId = e.GetAggregateRootId()
+	t.VendorId = int(e.GetAggregateRootId())
 	return newExpressTemplate(e, t, e.rep, e.valRepo)
 }
 
 // 获取快递模板
-func (e *userExpressImpl) GetTemplate(id int32) express.IExpressTemplate {
+func (e *userExpressImpl) GetTemplate(id int) express.IExpressTemplate {
 	for _, v := range e.GetAllTemplate() {
 		if v.GetDomainId() == id {
 			return v
@@ -64,7 +64,7 @@ func (e *userExpressImpl) GetTemplate(id int32) express.IExpressTemplate {
 // 获取所有的快递模板
 func (e *userExpressImpl) GetAllTemplate() []express.IExpressTemplate {
 	if e.arr == nil {
-		list := e.rep.GetUserAllTemplate(e.GetAggregateRootId())
+		list := e.rep.GetUserAllTemplate(int(e.GetAggregateRootId()))
 		e.arr = make([]express.IExpressTemplate, len(list))
 		for i, v := range list {
 			e.arr[i] = e.CreateTemplate(v)
@@ -74,11 +74,11 @@ func (e *userExpressImpl) GetAllTemplate() []express.IExpressTemplate {
 }
 
 // 删除模板
-func (e *userExpressImpl) DeleteTemplate(id int32) error {
+func (e *userExpressImpl) DeleteTemplate(id int) error {
 	for i, v := range e.GetAllTemplate() {
 		if v.GetDomainId() == id {
 			err := e.rep.DeleteExpressTemplate(
-				e.GetAggregateRootId(), v.GetDomainId())
+				int(e.GetAggregateRootId()), v.GetDomainId())
 			if err == nil {
 				e.arr = append(e.arr[:i], e.arr[i+1:]...)
 			}
@@ -116,7 +116,7 @@ func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
 }
 
 // 获取领域对象编号
-func (e *expressTemplateImpl) GetDomainId() int32 {
+func (e *expressTemplateImpl) GetDomainId() int {
 	return e._value.Id
 }
 
@@ -129,7 +129,7 @@ func (e *expressTemplateImpl) checkValue(v *express.ExpressTemplate) error {
 	if v.Name == "" {
 		return express.ErrExpressTemplateName
 	}
-	if e._value.UserId > 0 && v.UserId != e._value.UserId {
+	if e._value.VendorId > 0 && v.VendorId != e._value.VendorId {
 		return express.ErrUserNotMatch
 	}
 	// 如果不包邮,检查相关设置
@@ -171,7 +171,7 @@ func (e *expressTemplateImpl) Enabled() bool {
 }
 
 // 保存
-func (e *expressTemplateImpl) Save() (int32, error) {
+func (e *expressTemplateImpl) Save() (int, error) {
 	id, err := e._rep.SaveExpressTemplate(e._value)
 	if err == nil {
 		e._value.Id = id

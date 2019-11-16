@@ -47,7 +47,7 @@ func GetShopIdByHost(host string) int32 {
 		trans, cli, err := thrift.ShopServeClient()
 		if err == nil {
 			defer trans.Close()
-			shopId, _ = cli.QueryStoreByHost(thrift.Context, host)
+			shopId, _ = cli.QueryShopByHost(thrift.Context, host)
 			if shopId > 0 {
 				sto.SetExpire(key, shopId, DefaultMaxSeconds)
 			}

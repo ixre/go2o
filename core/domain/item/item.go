@@ -317,8 +317,8 @@ func (g *itemImpl) checkItemValue(v *item.GoodsItem) error {
 
 	// 检测运费模板
 	if v.ExpressTid > 0 {
-		ve := g.expressRepo.GetUserExpress(v.VendorId)
-		tpl := ve.GetTemplate(v.ExpressTid)
+		ve := g.expressRepo.GetUserExpress(int(v.VendorId))
+		tpl := ve.GetTemplate(int(v.ExpressTid))
 		if tpl == nil {
 			return express.ErrNoSuchTemplate
 		}

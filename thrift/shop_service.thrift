@@ -40,7 +40,7 @@ struct SShop{
   /** 标志 */
   11:i32 Flag
   /** 状态 */
-  12:i16 State
+  12:i32 State
 }
 
 // 店铺
@@ -64,13 +64,12 @@ service ShopService{
     i32 QueryShopIdByHost(1:string host)
     /** 获取店铺 */
     SShop GetShop(1:i32 shopId)
-
-    // 获取店铺
-    SStore GetStore(1:i32 venderId)
-    // 获取店铺
-    SStore GetStoreById(1:i32 shopId)
+    /** 获取商户的店铺 */
+    SShop GetVendorShop(1:i32 vendorId)
+    /** 获取门店 */
+    SStore GetStore(1:i32 storeId)
     /** 根据主机头获取店铺编号 */
-    i32 QueryStoreByHost(1:string host)
+    i32 QueryShopByHost(1:string host)
     // 获取门店
     //Shop GetOfflineShop(1:i32 shopId)
     // 打开或关闭商店

@@ -40,22 +40,21 @@ func (si *shopServiceImpl) QueryShopIdByHost(ctx context.Context, host string) (
 func (si *shopServiceImpl) GetShop(ctx context.Context, shopId int32) (r *shop_service.SShop, err error) {
 	sp := si.shopRepo.GetOnlineShop(shopId)
 	if sp != nil {
-		return &shop_service.SShop{
-			ID:         int32(sp.Id),
-			VendorId:   int32(sp.VendorId),
-			ShopName:   sp.ShopName,
-			Alias:      sp.Alias,
-			Host:       sp.Host,
-			Logo:       sp.Logo,
-			ShopTitle:  sp.ShopTitle,
-			ShopNotice: sp.ShopNotice,
-		}, nil
+		return si.parseShop(sp), nil
+	}
+	return nil, nil
+}
+
+func (si *shopServiceImpl) GetVendorShop(ctx context.Context, vendorId int32) (r *shop_service.SShop, err error) {
+	sp := si.shopRepo.GetOnlineShopOfMerchant(int(vendorId))
+	if sp != nil {
+		return si.parseShop(sp), nil
 	}
 	return nil, nil
 }
 
 // 根据主机头获取店铺编号
-func (si *shopServiceImpl) QueryStoreByHost(ctx context.Context, host string) (r int32, err error) {
+func (si *shopServiceImpl) QueryShopByHost(ctx context.Context, host string) (r int32, err error) {
 	_, shopId := si.query.QueryShopIdByHost(host)
 	return shopId, nil
 }
@@ -70,16 +69,17 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 	}
 }
 
-// 获取店铺
-func (si *shopServiceImpl) GetStore(ctx context.Context, vendorId int32) (*shop_service.SStore, error) {
-	mch := si.mchRepo.GetMerchant(int(vendorId))
-	if mch != nil {
-		shop := mch.ShopManager().GetOnlineShop()
-		if shop != nil {
-			return parser.ParseOnlineShop(shop), nil
-		}
-	}
-	return nil, nil
+// 获取门店
+func (si *shopServiceImpl) GetStore(ctx context.Context, storeId int32) (*shop_service.SStore, error) {
+	panic("返回门店")
+	//mch := si.mchRepo.GetMerchant(int(storeId))
+	//if mch != nil {
+	//	shop := mch.ShopManager().GetOnlineShop()
+	//	if shop != nil {
+	//		return parser.ParseOnlineShop(shop), nil
+	//	}
+	//}
+	//return nil, nil
 }
 
 func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId int32) (*shop_service.SStore, error) {
@@ -244,7 +244,7 @@ func (si *shopServiceImpl) GetOnlineShopConf(shopId int32) *shop.OnlineShop {
 func (si *shopServiceImpl) GetOnlineShops(vendorId int32) []*shop.Shop {
 	mch := si.mchRepo.GetMerchant(int(vendorId))
 	shops := mch.ShopManager().GetShops()
-	sv := []*shop.Shop{}
+	sv := make([]*shop.Shop, 0)
 	for _, v := range shops {
 		if v.Type() == shop.TypeOnlineShop {
 			vv := v.GetValue()
@@ -266,4 +266,17 @@ func (si *shopServiceImpl) PagedOnBusinessOnlineShops(begin, end int, where, ord
 		}
 	}
 	return n, rows
+}
+
+func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *shop_service.SShop {
+	return &shop_service.SShop{
+		ID:         int32(sp.Id),
+		VendorId:   int32(sp.VendorId),
+		ShopName:   sp.ShopName,
+		Alias:      sp.Alias,
+		Host:       sp.Host,
+		Logo:       sp.Logo,
+		ShopTitle:  sp.ShopTitle,
+		ShopNotice: sp.ShopNotice,
+	}
 }

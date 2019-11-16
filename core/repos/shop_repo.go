@@ -158,8 +158,18 @@ func (s *shopRepo) getShopCacheKey(mchId int32) string {
 	return fmt.Sprintf("go2o:repo:shop:%d:shops", mchId)
 }
 
+func (s *shopRepo) GetOnlineShopOfMerchant(vendorId int) *shop.OnlineShop {
+	v := shop.OnlineShop{}
+	err := s.Connector.GetOrm().GetBy(&v, "vendor_id= $1 LIMIT 1", vendorId)
+	if err == nil {
+		return &v
+	}
+	return nil
+}
+
+/**/
 func (s *shopRepo) GetShopsOfMerchant(mchId int32) []shop.Shop {
-	shops := []shop.Shop{}
+	shops := make([]shop.Shop, 0)
 	key := s.getShopCacheKey(mchId)
 	jsonStr, err := s.storage.GetString(key)
 	if err == nil {

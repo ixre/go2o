@@ -12,7 +12,7 @@ type (
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
-		GetByVendor() (items map[int32][]*SubOrderItem, expressFee map[int32]float32)
+		GetByVendor() (items map[int][]*SubOrderItem, expressFee map[int]float64)
 		// 在线支付交易完成
 		OnlinePaymentTradeFinish() error
 		// 设置配送地址
