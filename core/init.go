@@ -150,7 +150,7 @@ func OrmMapping(conn db.Connector) {
 
 	// Express
 	orm.Mapping(express.ExpressProvider{}, "express_provider")
-	orm.Mapping(express.ExpressTemplate{}, "express_template")
+	orm.Mapping(express.ExpressTemplate{}, "mch_express_template")
 	orm.Mapping(express.ExpressAreaTemplate{}, "express_area_set")
 
 	// Shipment

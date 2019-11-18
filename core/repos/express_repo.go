@@ -73,14 +73,14 @@ func (er *expressRepo) GetUserExpress(userId int) express.IUserExpress {
 // 获取用户的快递模板
 func (er *expressRepo) GetUserAllTemplate(userId int) []*express.ExpressTemplate {
 	var list []*express.ExpressTemplate
-	er.GetOrm().Select(&list, "user_id= $1", userId)
+	er.GetOrm().Select(&list, "vendor_id= $1", userId)
 	return list
 }
 
 // 删除快递模板
 func (er *expressRepo) DeleteExpressTemplate(userId int, templateId int) error {
 	_, err := er.GetOrm().Delete(express.ExpressTemplate{},
-		"id= $1 AND user_id= $2", templateId, userId)
+		"id= $1 AND vendor_id= $2", templateId, userId)
 	return err
 }
 
