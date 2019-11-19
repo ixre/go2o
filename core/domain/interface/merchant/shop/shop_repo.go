@@ -13,7 +13,7 @@ type (
 		// 创建电子商城
 		CreateShop(shop *OnlineShop) IShop
 		// 获取商店
-		GetShop(shopId int32) IShop
+		GetShop(shopId int) IShop
 
 		SaveShop(*Shop) (int32, error)
 		// 检查商户商城是否存在(创建)
@@ -23,9 +23,9 @@ type (
 		// 商店别名是否存在
 		ShopAliasExists(alias string, shopId int) bool
 		// 获取商店值
-		GetValueShop(shopId int32) *Shop
+		GetValueShop(shopId int) *Shop
 		// 获取线上商店
-		GetOnlineShop(shopId int32) *OnlineShop
+		GetOnlineShop(shopId int) *OnlineShop
 		// 获取线下商店
 		GetOfflineShop(shopId int) *OfflineShop
 

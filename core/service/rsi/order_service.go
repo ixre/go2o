@@ -40,6 +40,7 @@ type orderServiceImpl struct {
 	itemRepo   proItem.IGoodsItemRepo
 	cartRepo   cart.ICartRepo
 	mchRepo    merchant.IMerchantRepo
+	shopRepo   shop.IShopRepo
 	manager    order.IOrderManager
 	memberRepo member.IMemberRepo
 	orderQuery *query.OrderQuery
@@ -49,8 +50,8 @@ type orderServiceImpl struct {
 func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo, memberRepo member.IMemberRepo,
 	prodRepo product.IProductRepo, goodsRepo proItem.IGoodsItemRepo,
-	mchRepo merchant.IMerchantRepo,
-	orderQuery *query.OrderQuery) *orderServiceImpl {
+	mchRepo merchant.IMerchantRepo,	shopRepo   shop.IShopRepo,
+orderQuery *query.OrderQuery) *orderServiceImpl {
 	return &orderServiceImpl{
 		repo:       r,
 		prodRepo:   prodRepo,
@@ -58,6 +59,7 @@ func NewShoppingService(r order.IOrderRepo,
 		memberRepo: memberRepo,
 		itemRepo:   goodsRepo,
 		mchRepo:    mchRepo,
+		shopRepo:   shopRepo,
 		manager:    r.Manager(),
 		orderQuery: orderQuery,
 	}
@@ -314,13 +316,13 @@ func (s *orderServiceImpl) GetShoppingCart(memberId int64,
 func (s *orderServiceImpl) parseCart(c cart.ICart) *ttype.SShoppingCart {
 	dto := cart.ParseToDtoCart(c)
 	for _, v := range dto.Shops {
-
-		//todo: 改为不依赖vendor
-
-		mch := s.mchRepo.GetMerchant(int(v.VendorId))
-		if v.ShopId > 0 {
-			v.ShopName = mch.ShopManager().
-				GetShop(v.ShopId).GetValue().Name
+		is := s.shopRepo.GetOnlineShop(int(v.ShopId))
+		if is != nil {
+			v.ShopName = is.ShopName
+		}else{
+			for _,it := range v.Items{
+				c.Remove(it.ItemId,it.SkuId,it.Quantity)
+			}
 		}
 	}
 	return dto
