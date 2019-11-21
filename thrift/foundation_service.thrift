@@ -7,7 +7,6 @@ include "ttype.thrift"
 
 // 基础服务
 service FoundationService{
-
    /** 获取注册表键值 */
    string GetRegistry(1:string key)
    /** 获取键值存储数据字典 */
@@ -20,10 +19,10 @@ service FoundationService{
    list<SRegistry> SearchRegistry(1:string key)
    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
    ttype.Result CreateUserRegistry(1:string key,2:string defaultValue,3:string description)
-   /** 保存短信API凭据,@provider 短信服务商, 默认:http */
-   ttype.Result SaveSmsApi(1:string provider,2:SmsApi api)
    /** 获取短信API凭据, @provider 短信服务商, 默认:http */
-   SmsApi GetSmsApi(1:string provider)
+   SSmsApi GetSmsApi(1:string provider)
+   /** 保存短信API凭据,@provider 短信服务商, 默认:http */
+   ttype.Result SaveSmsApi(1:string provider,2:SSmsApi api)
    /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
    ttype.Result SaveBoardHook(1:string hookURL,2:string token)
 
@@ -96,7 +95,7 @@ struct SArea  {
 }
 
 /** 短信接口信息 */
-struct SmsApi {
+struct SSmsApi {
     /** 接口地址 */
     1:string ApiUrl
     /** 接口KEY */

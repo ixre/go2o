@@ -141,7 +141,7 @@ func (s *foundationService) SetValue(ctx context.Context, key string, value stri
 }
 
 // 保存短信API凭据
-func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api *foundation_service.SmsApi) (r *ttype.Result_, err error) {
+func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api *foundation_service.SSmsApi) (r *ttype.Result_, err error) {
 	manager := s.notifyRepo.Manager()
 	perm := &notify.SmsApiPerm{
 		Key:         api.Key,
@@ -160,11 +160,11 @@ func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api
 }
 
 // 获取短信API凭据, @provider 短信服务商, 默认:http
-func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *foundation_service.SmsApi, err error) {
+func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *foundation_service.SSmsApi, err error) {
 	manager := s.notifyRepo.Manager()
 	perm := manager.GetSmsApiPerm(provider)
 	if perm != nil {
-		return &foundation_service.SmsApi{
+		return &foundation_service.SSmsApi{
 			ApiUrl:      perm.ApiUrl,
 			Key:         perm.Key,
 			Secret:      perm.Secret,
@@ -175,7 +175,7 @@ func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *
 			SuccessChar: perm.SuccessChar,
 		}, nil
 	}
-	return &foundation_service.SmsApi{
+	return &foundation_service.SSmsApi{
 		ApiUrl:      "",
 		Key:         "",
 		Secret:      "",
@@ -306,14 +306,10 @@ func (s *foundationService) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) 
 // 获取短信设置
 func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
 	//return s._rep.GetSmsApiSet()
-	//todo: ???
+	//todo: will remove
 	return notify.SmsApiSet{}
 }
 
-// 保存短信API
-func (s *foundationService) SaveSmsApiPerm(provider int, perm *notify.SmsApiPerm) error {
-	return nil
-}
 
 // 获取下级区域
 func (s *foundationService) GetChildAreas(ctx context.Context, code int32) ([]*foundation_service.SArea, error) {
