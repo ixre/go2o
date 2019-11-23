@@ -11,7 +11,7 @@ service RegistryService{
    /** 获取键值存储数据字典 */
    map<string,string> GetRegistries(1:list<string> keys)
    /** 按键前缀获取键数据 */
-   map<string,string> findRegistries(1:string prefix)
+   map<string,string> FindRegistries(1:string prefix)
    /** 更新注册表键值 */
    ttype.Result UpdateRegistry(1:map<string,string> registries)
    /** 搜索注册表 */

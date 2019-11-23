@@ -26,7 +26,7 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "\nFunctions:")
   fmt.Fprintln(os.Stderr, "  string GetRegistry(string key)")
   fmt.Fprintln(os.Stderr, "   GetRegistries( keys)")
-  fmt.Fprintln(os.Stderr, "   findRegistries(string prefix)")
+  fmt.Fprintln(os.Stderr, "   FindRegistries(string prefix)")
   fmt.Fprintln(os.Stderr, "  Result UpdateRegistry( registries)")
   fmt.Fprintln(os.Stderr, "   SearchRegistry(string key)")
   fmt.Fprintln(os.Stderr, "  Result CreateUserRegistry(string key, string defaultValue, string description)")
@@ -188,7 +188,7 @@ func main() {
     fmt.Print(client.GetRegistries(context.Background(), value0))
     fmt.Print("\n")
     break
-  case "findRegistries":
+  case "FindRegistries":
     if flag.NArg() - 1 != 1 {
       fmt.Fprintln(os.Stderr, "FindRegistries requires 1 args")
       flag.Usage()

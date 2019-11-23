@@ -395,7 +395,7 @@ func (p *RegistryServiceClient) FindRegistries(ctx context.Context, prefix strin
   var _args4 RegistryServiceFindRegistriesArgs
   _args4.Prefix = prefix
   var _result5 RegistryServiceFindRegistriesResult
-  if err = p.Client_().Call(ctx, "findRegistries", &_args4, &_result5); err != nil {
+  if err = p.Client_().Call(ctx, "FindRegistries", &_args4, &_result5); err != nil {
     return
   }
   return _result5.GetSuccess(), nil
@@ -484,7 +484,7 @@ func NewRegistryServiceProcessor(handler RegistryService) *RegistryServiceProces
   self14 := &RegistryServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
   self14.processorMap["GetRegistry"] = &registryServiceProcessorGetRegistry{handler:handler}
   self14.processorMap["GetRegistries"] = &registryServiceProcessorGetRegistries{handler:handler}
-  self14.processorMap["findRegistries"] = &registryServiceProcessorFindRegistries{handler:handler}
+  self14.processorMap["FindRegistries"] = &registryServiceProcessorFindRegistries{handler:handler}
   self14.processorMap["UpdateRegistry"] = &registryServiceProcessorUpdateRegistry{handler:handler}
   self14.processorMap["SearchRegistry"] = &registryServiceProcessorSearchRegistry{handler:handler}
   self14.processorMap["CreateUserRegistry"] = &registryServiceProcessorCreateUserRegistry{handler:handler}
@@ -614,7 +614,7 @@ func (p *registryServiceProcessorFindRegistries) Process(ctx context.Context, se
   if err = args.Read(iprot); err != nil {
     iprot.ReadMessageEnd()
     x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-    oprot.WriteMessageBegin("findRegistries", thrift.EXCEPTION, seqId)
+    oprot.WriteMessageBegin("FindRegistries", thrift.EXCEPTION, seqId)
     x.Write(oprot)
     oprot.WriteMessageEnd()
     oprot.Flush(ctx)
@@ -626,8 +626,8 @@ func (p *registryServiceProcessorFindRegistries) Process(ctx context.Context, se
 var retval map[string]string
   var err2 error
   if retval, err2 = p.handler.FindRegistries(ctx, args.Prefix); err2 != nil {
-    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing findRegistries: " + err2.Error())
-    oprot.WriteMessageBegin("findRegistries", thrift.EXCEPTION, seqId)
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing FindRegistries: " + err2.Error())
+    oprot.WriteMessageBegin("FindRegistries", thrift.EXCEPTION, seqId)
     x.Write(oprot)
     oprot.WriteMessageEnd()
     oprot.Flush(ctx)
@@ -635,7 +635,7 @@ var retval map[string]string
   } else {
     result.Success = retval
 }
-  if err2 = oprot.WriteMessageBegin("findRegistries", thrift.REPLY, seqId); err2 != nil {
+  if err2 = oprot.WriteMessageBegin("FindRegistries", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -1340,7 +1340,7 @@ func (p *RegistryServiceFindRegistriesArgs)  ReadField1(iprot thrift.TProtocol) 
 }
 
 func (p *RegistryServiceFindRegistriesArgs) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("findRegistries_args"); err != nil {
+  if err := oprot.WriteStructBegin("FindRegistries_args"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField1(oprot); err != nil { return err }
@@ -1455,7 +1455,7 @@ var _val20 string
 }
 
 func (p *RegistryServiceFindRegistriesResult) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("findRegistries_result"); err != nil {
+  if err := oprot.WriteStructBegin("FindRegistries_result"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField0(oprot); err != nil { return err }
