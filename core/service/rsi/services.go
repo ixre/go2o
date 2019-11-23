@@ -33,6 +33,8 @@ var (
 
 	// 状态服务
 	StatusService *statusServiceImpl
+	// 注册表服务
+	RegistryService *registryService
 	PromService   *promotionService
 	// 基础服务
 	FoundationService *foundationService
@@ -138,6 +140,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 
 	/** Service **/
 	StatusService = NewStatusService()
+	RegistryService = NewRegistryService(valueRepo,registryRepo)
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valueRepo, registryRepo, notifyRepo)
 	PromService = NewPromotionService(promRepo)
@@ -179,7 +182,7 @@ func initRpcServe(ctx gof.App) {
 	// 更新值
 	mp[registry.DomainEnabledSSL] = gf("ssl_enabled")
 	mp[registry.Domain] = gf("domain")
-	FoundationService.UpdateRegistry(nil, mp)
+	RegistryService.UpdateRegistry(nil, mp)
 
 	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
 	//mp[variable.DStaticPath] = gf("static_server")

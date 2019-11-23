@@ -22,6 +22,7 @@ import (
 	"go2o/core/service/auto_gen/rpc/wallet_service"
 	"go2o/core/service/auto_gen/rpc/shipment_service"
 	"go2o/core/service/auto_gen/rpc/content_service"
+	"go2o/core/service/auto_gen/rpc/registry_service"
 
 )
 
@@ -45,6 +46,7 @@ var _ = finance_service.GoUnusedProtection__
 var _ = wallet_service.GoUnusedProtection__
 var _ = shipment_service.GoUnusedProtection__
 var _ = content_service.GoUnusedProtection__
+var _ = registry_service.GoUnusedProtection__
 
 func init() {
 }

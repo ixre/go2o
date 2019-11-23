@@ -43,7 +43,7 @@ func (b *Bank4E) SetApp(app gof.App) {
 func (b *Bank4E) Init() {
 	b.memberRepo = repos.Repo.GetMemberRepo()
 	b.valueRepo = repos.Repo.GetValueRepo()
-	trans, cli, err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		cli.CreateUserRegistry(thrift.Context, keys[0], "false", "是否开启四要素实名认证")

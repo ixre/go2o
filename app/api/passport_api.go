@@ -181,7 +181,7 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 			keys := []string{
 				registry.EnableDebugMode,
 			}
-			trans, cli, _ := thrift.FoundationServeClient()
+			trans, cli, _ := thrift.RegistryServeClient()
 			mp, _ := cli.GetRegistries(thrift.Context, keys)
 			trans.Close()
 			debugMode := mp[keys[0]] == "true"
@@ -421,7 +421,7 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 
 // 获取验证码的间隔时间
 func (m PassportApi) getDurationSecond() int64 {
-	trans, cli, err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
 		val, _ := cli.GetRegistry(thrift.Context, registry.SmsSendDuration)
 		trans.Close()
