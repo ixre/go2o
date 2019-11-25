@@ -25,22 +25,24 @@ service MemberService{
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
     ttype.Result CheckLogin(1:string user,2:string pwd,3:bool update)
-    // 检查交易密码
+    /** 检查交易密码 */
     ttype.Result CheckTradePwd(1:i64 memberId,2:string tradePwd)
     /** 交换会员编号 */
     i64 SwapMemberId(1:ECredentials cred,2:string value)
-    // 等级列表
-    list<SLevel> LevelList()
+    /** 等级列表 */
+    list<SMemberLevel> MemberLevelList()
     /* 获取实名信息 */
     STrustedInfo GetTrustInfo(1:i64 memberId)
     /** 提交实名信息 */
     ttype.Result SubmitTrustInfo(1:i64 memberId,2:STrustedInfo info)
     /** 审核实名认证,若重复审核将返回错误 **/
     ttype.Result ReviewTrustedInfo(1:i64 memberId,2:bool reviewPass,3:string remark)
-    // 获取等级信息
-    SLevel GetLevel(1:i32 id)
+    /** 获取会员等级信息 */
+    SMemberLevel GetMemberLevel(1:i32 id)
+    /** 保存等级 */
+    ttype.Result SaveMemberLevel(1:SMemberLevel level)
     // 根据SIGN获取等级
-    SLevel GetLevelBySign(1:string sign)
+    SMemberLevel GetLevelBySign(1:string sign)
     // 根据会员编号获取会员信息
     SMember GetMember(1:i64 id)
     // 根据用户名获取会员信息
@@ -130,13 +132,14 @@ service MemberService{
 
 
 /** 等级 */
-struct SLevel {
+struct SMemberLevel {
     1: i32 ID
     2: string Name
     3: i32 RequireExp
     4: string ProgramSignal
     5: i32 IsOfficial
     6: i32 Enabled
+    7: i32 AllowUpgrade
 }
 
 /** 会员 */
@@ -284,6 +287,7 @@ struct STrustedInfo {
     /** 备注 */
     11: string Remark
 }
+
 
 struct SAddress {
     1: i64 ID

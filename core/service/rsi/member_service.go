@@ -48,6 +48,8 @@ type memberService struct {
 	serviceUtil
 }
 
+
+
 // 交换会员编号
 func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
 	var memberId int64
@@ -252,8 +254,8 @@ func (s *memberService) GetMemberLevels() []*member.Level {
 }
 
 // 等级列表
-func (s *memberService) LevelList(ctx context.Context) ([]*member_service.SLevel, error) {
-	var arr []*member_service.SLevel
+func (s *memberService) MemberLevelList(ctx context.Context) ([]*member_service.SMemberLevel, error) {
+	var arr []*member_service.SMemberLevel
 	list := s.repo.GetManager().LevelManager().GetLevelSet()
 	for _, v := range list {
 		arr = append(arr, parser.LevelDto(v))
@@ -262,7 +264,7 @@ func (s *memberService) LevelList(ctx context.Context) ([]*member_service.SLevel
 }
 
 // 根据编号获取会员等级信息
-func (s *memberService) GetLevel(ctx context.Context, id int32) (*member_service.SLevel, error) {
+func (s *memberService) GetMemberLevel(ctx context.Context, id int32) (*member_service.SMemberLevel, error) {
 	lv := s.repo.GetManager().LevelManager().GetLevelById(int(id))
 	if lv != nil {
 		return parser.LevelDto(lv), nil
@@ -270,8 +272,28 @@ func (s *memberService) GetLevel(ctx context.Context, id int32) (*member_service
 	return nil, nil
 }
 
+
+// 保存会员等级信息
+func (s *memberService) SaveMemberLevel(ctx context.Context,  level *member_service.SMemberLevel) (r *ttype.Result_, err error) {
+	lv := &member.Level{
+		ID:            int(level.ID),
+		Name:          level.Name,
+		RequireExp:    int(level.RequireExp),
+		ProgramSignal: level.ProgramSignal,
+		Enabled:       int(level.Enabled),
+		IsOfficial:    int(level.IsOfficial),
+		AllowUpgrade:  int(level.AllowUpgrade),
+	}
+	_, err = s.repo.GetManager().LevelManager().SaveLevel(lv)
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
+}
+
+
 // 根据SIGN获取等级
-func (s *memberService) GetLevelBySign(ctx context.Context, sign string) (*member_service.SLevel, error) {
+func (s *memberService) GetLevelBySign(ctx context.Context, sign string) (*member_service.SMemberLevel, error) {
 	lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
 	if lv != nil {
 		return parser.LevelDto(lv), nil
@@ -284,11 +306,6 @@ func (s *memberService) GetLevelByProgramSign(sign string) *member.Level {
 	return s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
 }
 
-// 保存会员等级信息
-func (s *memberService) SaveMemberLevel(v *member.Level) (int32, error) {
-	n, err := s.repo.GetManager().LevelManager().SaveLevel(v)
-	return int32(n), err
-}
 
 // 删除会员等级
 func (s *memberService) DelMemberLevel(levelId int32) error {
@@ -496,14 +513,6 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 	return s.error(err), nil
 }
 
-// 获取会员等级
-func (s *memberService) GetMemberLevel(memberId int64) *member.Level {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return nil
-	}
-	return m.GetLevel()
-}
 
 func (s *memberService) GetRelation(memberId int64) *member.InviteRelation {
 	return s.repo.GetRelation(memberId)

@@ -99,13 +99,13 @@ type (
 		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
 
 		// 获取会员价
-		GetGoodsLevelPrice(goodsId int64) []*MemberPrice
+		GetGoodSMemberLevelPrice(goodsId int64) []*MemberPrice
 
 		// 保存会员价
-		SaveGoodsLevelPrice(*MemberPrice) (int32, error)
+		SaveGoodSMemberLevelPrice(*MemberPrice) (int32, error)
 
 		// 移除会员价
-		RemoveGoodsLevelPrice(id int) error
+		RemoveGoodSMemberLevelPrice(id int) error
 
 		// 保存快照
 		SaveSnapshot(*Snapshot) (int64, error)

@@ -1035,7 +1035,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 	lv := a.mm.LevelManager().GetLevelById(a.member.GetValue().Level)
 	if lv != nil && lv.IsOfficial == 0 {
 		return errors.New(fmt.Sprintf(
-			member.ErrTransferAccountsLevelNoPerm.Error(), lv.Name))
+			member.ErrTransferAccountSMemberLevelNoPerm.Error(), lv.Name))
 	}
 	if a.value.WalletBalance < amount+csnFee {
 		return member.ErrAccountNotEnoughAmount

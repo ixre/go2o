@@ -135,7 +135,7 @@ func (g *goodsRepo) GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error) {
 }
 
 // 获取会员价
-func (g *goodsRepo) GetGoodsLevelPrice(goodsId int64) []*item.MemberPrice {
+func (g *goodsRepo) GetGoodSMemberLevelPrice(goodsId int64) []*item.MemberPrice {
 	var items []*item.MemberPrice
 	if g.Connector.GetOrm().SelectByQuery(&items,
 		`SELECT * FROM gs_member_price WHERE goods_id = $1`, goodsId) == nil {
@@ -145,12 +145,12 @@ func (g *goodsRepo) GetGoodsLevelPrice(goodsId int64) []*item.MemberPrice {
 }
 
 // 保存会员价
-func (g *goodsRepo) SaveGoodsLevelPrice(v *item.MemberPrice) (int32, error) {
+func (g *goodsRepo) SaveGoodSMemberLevelPrice(v *item.MemberPrice) (int32, error) {
 	return orm.I32(orm.Save(g.GetOrm(), v, int(v.Id)))
 }
 
 // 移除会员价
-func (g *goodsRepo) RemoveGoodsLevelPrice(id int) error {
+func (g *goodsRepo) RemoveGoodSMemberLevelPrice(id int) error {
 	return g.Connector.GetOrm().DeleteByPk(item.MemberPrice{}, id)
 }
 

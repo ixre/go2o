@@ -450,7 +450,7 @@ func (g *itemImpl) GetPromotionDescribe() map[string]string {
 // 获取会员价
 func (g *itemImpl) GetLevelPrices() []*item.MemberPrice {
 	if g.levelPrices == nil {
-		g.levelPrices = g.repo.GetGoodsLevelPrice(g.GetAggregateRootId())
+		g.levelPrices = g.repo.GetGoodSMemberLevelPrice(g.GetAggregateRootId())
 	}
 	return g.levelPrices
 }
@@ -460,11 +460,11 @@ func (g *itemImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
 	v.GoodsId = g.GetAggregateRootId()
 	if g.value.Price == v.Price {
 		if v.Id > 0 {
-			g.repo.RemoveGoodsLevelPrice(v.Id)
+			g.repo.RemoveGoodSMemberLevelPrice(v.Id)
 		}
 		return -1, nil
 	}
-	return g.repo.SaveGoodsLevelPrice(v)
+	return g.repo.SaveGoodSMemberLevelPrice(v)
 }
 
 // 是否上架

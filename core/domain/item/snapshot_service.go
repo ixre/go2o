@@ -87,7 +87,7 @@ func (s *snapshotServiceImpl) updateSnapshot(ls *item.Snapshot,
 	it *item.GoodsItem) (int64, error) {
 	//todo: ???  SKU的会员价
 	levelSales := 0
-	if len(s.itemRepo.GetGoodsLevelPrice(it.ID)) > 0 {
+	if len(s.itemRepo.GetGoodSMemberLevelPrice(it.ID)) > 0 {
 		levelSales = 1
 	}
 	unix := time.Now().Unix()

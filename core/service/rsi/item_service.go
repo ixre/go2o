@@ -461,7 +461,7 @@ func (s *itemService) DeleteSaleLabel(id int32) error {
 }
 
 // 获取商品的会员价
-func (s *itemService) GetGoodsLevelPrices(itemId int64) []*item.MemberPrice {
+func (s *itemService) GetGoodSMemberLevelPrices(itemId int64) []*item.MemberPrice {
 	gi := s.itemRepo.GetItem(itemId)
 	if gi != nil {
 		return gi.GetLevelPrices()
