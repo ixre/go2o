@@ -92,20 +92,20 @@ type (
 			sortBy string) []*valueobject.Goods
 
 		// 获取在货架上的商品
-		GetPagedOnShelvesGoods(mchId int32, catIds []int32, start, end int,
+		GetPagedOnShelvesGoods(mchId int32, catIds []int, start, end int,
 			where, orderBy string) (total int, goods []*valueobject.Goods)
 
 		// 根据编号获取商品
 		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
 
 		// 获取会员价
-		GetGoodsLevelPrice(goodsId int64) []*MemberPrice
+		GetGoodSMemberLevelPrice(goodsId int64) []*MemberPrice
 
 		// 保存会员价
-		SaveGoodsLevelPrice(*MemberPrice) (int32, error)
+		SaveGoodSMemberLevelPrice(*MemberPrice) (int32, error)
 
 		// 移除会员价
-		RemoveGoodsLevelPrice(id int) error
+		RemoveGoodSMemberLevelPrice(id int) error
 
 		// 保存快照
 		SaveSnapshot(*Snapshot) (int64, error)

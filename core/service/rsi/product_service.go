@@ -147,7 +147,7 @@ func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
 
 // 获取商品分类
 func (p *productService) GetCategory(mchId, id int32) *product.Category {
-	c := p.catRepo.GlobCatService().GetCategory(id)
+	c := p.catRepo.GlobCatService().GetCategory(int(id))
 	if c != nil {
 		return c.GetValue()
 	}
@@ -157,7 +157,7 @@ func (p *productService) GetCategory(mchId, id int32) *product.Category {
 // 获取商品分类和选项
 func (p *productService) GetCategoryAndOptions(mchId, id int32) (*product.Category,
 	domain.IOptionStore) {
-	c := p.catRepo.GlobCatService().GetCategory(id)
+	c := p.catRepo.GlobCatService().GetCategory(int(id))
 	if c != nil {
 		return c.GetValue(), c.GetOption()
 	}
@@ -165,21 +165,26 @@ func (p *productService) GetCategoryAndOptions(mchId, id int32) (*product.Catego
 }
 
 func (p *productService) DeleteCategory(mchId, id int32) error {
-	return p.catRepo.GlobCatService().DeleteCategory(id)
+	return p.catRepo.GlobCatService().DeleteCategory(int(id))
 }
 
 func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, error) {
 	sl := p.catRepo.GlobCatService()
 	var ca product.ICategory
-	if v.ID > 0 {
-		ca = sl.GetCategory(v.ID)
+	if v.Id > 0 {
+		ca = sl.GetCategory(v.Id)
 	} else {
 		ca = sl.CreateCategory(v)
 	}
-	if err := ca.SetValue(v); err != nil {
-		return 0, err
+	err := ca.SetValue(v)
+	if err == nil {
+		id, err1 := ca.Save()
+		if err1 == nil {
+			return int32(id), nil
+		}
+		err = err1
 	}
-	return ca.Save()
+	return 0, err
 }
 
 func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
@@ -197,32 +202,32 @@ func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
 
 // 分类树形
 func (p *productService) CategoryTree(parentId int32) *product.Category {
-	return p.catRepo.GlobCatService().CategoryTree(parentId)
+	return p.catRepo.GlobCatService().CategoryTree(int(parentId))
 }
 
 // 获取分类关联的品牌
 func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
-	arr := p.catRepo.GlobCatService().RelationBrands(catId)
+	arr := p.catRepo.GlobCatService().RelationBrands(int(catId))
 	for _, v := range arr {
 		v.Image = format.GetResUrl(v.Image)
 	}
 	return arr
 }
 
-func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, categories []product.ICategory) {
+func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int, categories []product.ICategory) {
 	node.Children = []*tree.TreeNode{}
 	for _, v := range categories {
 		cate := v.GetValue()
-		if cate.ParentId == parentId {
+		if cate.ParentId == int(parentId) {
 			cNode := &tree.TreeNode{
 				Title:    cate.Name,
-				Value:    strconv.Itoa(int(cate.ID)),
+				Value:    strconv.Itoa(int(cate.Id)),
 				Url:      "",
 				Icon:     "",
 				Expand:   false,
 				Children: nil}
 			node.Children = append(node.Children, cNode)
-			p.walkCategoryTree(cNode, cate.ID, categories)
+			p.walkCategoryTree(cNode, cate.Id, categories)
 		}
 	}
 }
@@ -241,9 +246,9 @@ func (p *productService) GetCategories(mchId int32) []*product.Category {
 // 根据上级编号获取分类列表
 func (p *productService) GetCategoriesByParentId(mchId, parentId int32) []*product.Category {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := []*product.Category{}
+	var list = make([]*product.Category, 0)
 	for _, v := range cats {
-		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
+		if vv := v.GetValue(); vv.ParentId == int(parentId) && vv.Enabled == 1 {
 			v2 := *vv
 			v2.Icon = format.GetResUrl(v2.Icon)
 			list = append(list, &v2)
@@ -258,7 +263,7 @@ func (p *productService) getCategoryManager(mchId int32) product.IGlobCatService
 
 func (p *productService) GetBigCategories(mchId int32) []*ttype.SCategory {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := []*ttype.SCategory{}
+	var list []*ttype.SCategory
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
 			v2.Icon = format.GetResUrl(v2.Icon)
@@ -270,9 +275,9 @@ func (p *productService) GetBigCategories(mchId int32) []*ttype.SCategory {
 
 func (p *productService) GetChildCategories(mchId, parentId int32) []*ttype.SCategory {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := []*ttype.SCategory{}
+	var list []*ttype.SCategory
 	for _, v := range cats {
-		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
+		if vv := v.GetValue(); vv.ParentId == int(parentId) && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
 			p.setChild(cats, vv)
 			list = append(list, parser.CategoryDto(vv))
@@ -292,7 +297,7 @@ func (p *productService) GetChildCategories(mchId, parentId int32) []*ttype.SCat
 
 func (p *productService) setChild(list []product.ICategory, dst *product.Category) {
 	for _, v := range list {
-		if vv := v.GetValue(); vv.ParentId == dst.ID && vv.Enabled == 1 {
+		if vv := v.GetValue(); vv.ParentId == dst.Id && vv.Enabled == 1 {
 			if dst.Children == nil {
 				dst.Children = []*product.Category{}
 			}

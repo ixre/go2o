@@ -21,7 +21,7 @@ var _ api.Handler = new(RegisterApi)
 
 // 注册接口API
 type RegisterApi struct {
-	apiUtil
+	utils
 	st storage.Interface
 }
 
@@ -107,7 +107,7 @@ func (m RegisterApi) getToken(ctx api.Context) interface{} {
 
 // 获取验证码的间隔时间
 func (m RegisterApi) getDurationSecond() int64 {
-	trans, cli, err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
 		val, _ := cli.GetRegistry(thrift.Context, registry.SmsSendDuration)
 		trans.Close()
@@ -193,7 +193,7 @@ func (m RegisterApi) compareCheckCode(token, phone string, code string) bool {
  * {"code":1,"message":"api not defined"}
  */
 func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
-	trans, cli, _ := thrift.FoundationServeClient()
+	trans, cli, _ := thrift.RegistryServeClient()
 	keys := []string{
 		registry.MemberRegisterMustBindPhone,
 		registry.SmsRegisterTemplateId,

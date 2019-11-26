@@ -52,12 +52,12 @@ func (c *categoryRepo) GlobCatService() product.IGlobCatService {
 	return c._globService
 }
 
-func (c *categoryRepo) getCategoryCacheKey(id int32) string {
+func (c *categoryRepo) getCategoryCacheKey(id int) string {
 	return fmt.Sprintf("go2o:repo:cat:c%d", id)
 }
 
-func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
-	id, err := orm.I32(orm.Save(c.GetOrm(), v, int(v.ID)))
+func (c *categoryRepo) SaveCategory(v *product.Category) (int, error) {
+	id, err := orm.Save(c.GetOrm(), v, int(v.Id))
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))
@@ -67,7 +67,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
 }
 
 // 检查分类是否关联商品
-func (c *categoryRepo) CheckContainGoods(vendorId, catId int32) bool {
+func (c *categoryRepo) CheckContainGoods(vendorId int32, catId int) bool {
 	num := 0
 	if vendorId <= 0 {
 		c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id= $1`, &num, catId)
@@ -77,13 +77,13 @@ func (c *categoryRepo) CheckContainGoods(vendorId, catId int32) bool {
 	return num > 0
 }
 
-func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
+func (c *categoryRepo) DeleteCategory(mchId int32, id int) error {
 	//删除子类
-	_, err := c.Connector.ExecNonQuery("DELETE FROM pro_category WHERE parent_id= $1",
+	_, err := c.Connector.ExecNonQuery("DELETE FROM prod_category WHERE parent_id= $1",
 		id)
 
 	//删除分类
-	_, err = c.Connector.ExecNonQuery("DELETE FROM pro_category WHERE id= $1",
+	_, err = c.Connector.ExecNonQuery("DELETE FROM prod_category WHERE id= $1",
 		id)
 
 	// 清理缓存
@@ -95,7 +95,7 @@ func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	return err
 }
 
-func (c *categoryRepo) GetCategory(mchId, id int32) *product.Category {
+func (c *categoryRepo) GetCategory(mchId, id int) *product.Category {
 	e := product.Category{}
 	key := c.getCategoryCacheKey(id)
 	if c.storage.Get(key, &e) != nil {
@@ -118,7 +118,7 @@ func (c *categoryRepo) convertICategory(list product.CategoryList) []product.ICa
 }
 
 func (c *categoryRepo) redirectGetCats() []*product.Category {
-	list := []*product.Category{}
+	var list []*product.Category
 	err := c.Connector.GetOrm().Select(&list, "")
 	if err != nil {
 		handleError(err)
@@ -126,9 +126,9 @@ func (c *categoryRepo) redirectGetCats() []*product.Category {
 	return list
 }
 
-func (c *categoryRepo) GetCategories(mchId int32) []*product.Category {
+func (c *categoryRepo) GetCategories(mchId int) []*product.Category {
 	key := "go2o:repo:cat:list"
-	list := []*product.Category{}
+	var list []*product.Category
 	jsonStr, err := c.storage.GetBytes(key)
 	if err == nil {
 		err = json.Unmarshal(jsonStr, &list)
@@ -145,12 +145,12 @@ func (c *categoryRepo) GetCategories(mchId int32) []*product.Category {
 }
 
 // 获取关联的品牌
-func (c *categoryRepo) GetRelationBrands(idArr []int32) []*promodel.ProBrand {
-	list := []*promodel.ProBrand{}
+func (c *categoryRepo) GetRelationBrands(idArr []int) []*promodel.ProBrand {
+	var list []*promodel.ProBrand
 	if len(idArr) > 0 {
 		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM pro_model_brand
-        WHERE pro_model IN (SELECT distinct pro_model FROM pro_category WHERE id IN(`+
-			format.I32ArrStrJoin(idArr)+`)))`)
+        WHERE pro_model IN (SELECT distinct pro_model FROM prod_category WHERE id IN(`+
+			format.IntArrStrJoin(idArr)+`)))`)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 		}

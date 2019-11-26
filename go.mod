@@ -13,9 +13,10 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.6.8
+	github.com/ixre/gof v1.7.9
 	github.com/ixre/tto v1.3.8
 	github.com/jcmturner/gofork v1.0.0 // indirect
+	github.com/klauspost/compress v1.9.2 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.4 // indirect
@@ -28,10 +29,10 @@ require (
 	github.com/robfig/cron v1.2.0
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/valyala/fasttemplate v1.1.0 // indirect
-	golang.org/x/crypto v0.0.0-20191106202628-ed6320f186d4 // indirect
+	golang.org/x/crypto v0.0.0-20191119213627-4f8c1d86b1ba // indirect
 	golang.org/x/image v0.0.0-20190703141733-d6a02ce849c9 // indirect
-	golang.org/x/net v0.0.0-20191105084925-a882066a44e0 // indirect
-	golang.org/x/sys v0.0.0-20191105231009-c1f44814a5cd // indirect
+	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914 // indirect
+	golang.org/x/sys v0.0.0-20191119195528-f068ffe820e4 // indirect
 	golang.org/x/text v0.3.2
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/jcmturner/gokrb5.v7 v7.3.0 // indirect

@@ -21,7 +21,7 @@ var provider = map[string]string{
 }
 
 type MemberApi struct {
-	*apiUtil
+	utils
 }
 
 func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
@@ -235,7 +235,7 @@ func (m *MemberApi) invites(ctx api.Context) interface{} {
 	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
 	member, _ := cli.GetMember(thrift.Context, memberId)
 	trans.Close()
-	trans2, cli2, _ := thrift.FoundationServeClient()
+	trans2, cli2, _ := thrift.RegistryServeClient()
 	defer trans2.Close()
 	keys := []string{registry.Domain, registry.DomainEnabledSSL,
 		registry.DomainPrefixMember,

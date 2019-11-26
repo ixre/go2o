@@ -215,7 +215,7 @@ func (p *CommonDao) GetFloorAdPos(catId int32) string {
 }
 
 func (p *CommonDao) SetFloorAd(catId int32, posId int32) (err error) {
-	cat := p.catRepo.GetCategory(0, catId)
+	cat := p.catRepo.GetCategory(0, int(catId))
 	if cat == nil {
 		err = product.ErrNoSuchCategory
 	} else if cat.FloorShow != 1 {

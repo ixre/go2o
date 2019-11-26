@@ -64,7 +64,7 @@ func NewShopRepo(c db.Connector, storage storage.Interface,
 }
 
 // 获取商店
-func (s *shopRepo) GetShop(shopId int32) shop.IShop {
+func (s *shopRepo) GetShop(shopId int) shop.IShop {
 	v := s.GetValueShop(shopId)
 	return shopImpl.NewShop2(v, s, s.valueRepo, s.registryRepo)
 }
@@ -78,7 +78,7 @@ func (s *shopRepo) ShopAliasExists(alias string, shopId int) bool {
 }
 
 // 获取线上商店
-func (s *shopRepo) GetOnlineShop(shopId int32) *shop.OnlineShop {
+func (s *shopRepo) GetOnlineShop(shopId int) *shop.OnlineShop {
 	e := shop.OnlineShop{}
 	if s.GetOrm().Get(shopId, &e) != nil {
 		return nil
@@ -138,7 +138,7 @@ func (s *shopRepo) SaveShop(v *shop.Shop) (int32, error) {
 	return id, err
 }
 
-func (s *shopRepo) GetValueShop(shopId int32) *shop.Shop {
+func (s *shopRepo) GetValueShop(shopId int) *shop.Shop {
 	v := &shop.Shop{}
 	err := s.Connector.GetOrm().Get(shopId, v)
 	if err == nil {
@@ -158,8 +158,18 @@ func (s *shopRepo) getShopCacheKey(mchId int32) string {
 	return fmt.Sprintf("go2o:repo:shop:%d:shops", mchId)
 }
 
+func (s *shopRepo) GetOnlineShopOfMerchant(vendorId int) *shop.OnlineShop {
+	v := shop.OnlineShop{}
+	err := s.Connector.GetOrm().GetBy(&v, "vendor_id= $1 LIMIT 1", vendorId)
+	if err == nil {
+		return &v
+	}
+	return nil
+}
+
+/**/
 func (s *shopRepo) GetShopsOfMerchant(mchId int32) []shop.Shop {
-	shops := []shop.Shop{}
+	shops := make([]shop.Shop, 0)
 	key := s.getShopCacheKey(mchId)
 	jsonStr, err := s.storage.GetString(key)
 	if err == nil {

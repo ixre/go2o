@@ -150,7 +150,7 @@ func OrmMapping(conn db.Connector) {
 
 	// Express
 	orm.Mapping(express.ExpressProvider{}, "express_provider")
-	orm.Mapping(express.ExpressTemplate{}, "express_template")
+	orm.Mapping(express.ExpressTemplate{}, "mch_express_template")
 	orm.Mapping(express.ExpressAreaTemplate{}, "express_area_set")
 
 	// Shipment
@@ -161,7 +161,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(product.Product{}, "pro_product")
 	orm.Mapping(item.GoodsItem{}, "item_info")
 	orm.Mapping(item.Sku{}, "item_sku")
-	orm.Mapping(product.Category{}, "pro_category")
+	orm.Mapping(product.Category{}, "prod_category")
 	orm.Mapping(promodel.ProModel{}, "pro_model")
 	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")
 	orm.Mapping(promodel.ProBrand{}, "pro_brand")

@@ -135,7 +135,7 @@ func (g *goodsRepo) GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error) {
 }
 
 // 获取会员价
-func (g *goodsRepo) GetGoodsLevelPrice(goodsId int64) []*item.MemberPrice {
+func (g *goodsRepo) GetGoodSMemberLevelPrice(goodsId int64) []*item.MemberPrice {
 	var items []*item.MemberPrice
 	if g.Connector.GetOrm().SelectByQuery(&items,
 		`SELECT * FROM gs_member_price WHERE goods_id = $1`, goodsId) == nil {
@@ -145,12 +145,12 @@ func (g *goodsRepo) GetGoodsLevelPrice(goodsId int64) []*item.MemberPrice {
 }
 
 // 保存会员价
-func (g *goodsRepo) SaveGoodsLevelPrice(v *item.MemberPrice) (int32, error) {
+func (g *goodsRepo) SaveGoodSMemberLevelPrice(v *item.MemberPrice) (int32, error) {
 	return orm.I32(orm.Save(g.GetOrm(), v, int(v.Id)))
 }
 
 // 移除会员价
-func (g *goodsRepo) RemoveGoodsLevelPrice(id int) error {
+func (g *goodsRepo) RemoveGoodSMemberLevelPrice(id int) error {
 	return g.Connector.GetOrm().DeleteByPk(item.MemberPrice{}, id)
 }
 
@@ -160,14 +160,14 @@ func (g *goodsRepo) SaveValueGoods(v *item.GoodsItem) (int64, error) {
 }
 
 // 获取已上架的商品
-func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
+func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int,
 	start, end int, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
 	total := 0
 	catIdStr := ""
 	if catIds != nil && len(catIds) > 0 {
 		catIdStr = fmt.Sprintf(" AND cat.id IN (%s)",
-			format.I32ArrStrJoin(catIds))
+			format.IntArrStrJoin(catIds))
 	}
 
 	if len(where) != 0 {
@@ -179,13 +179,13 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 
 	var list []*valueobject.Goods
 	err := g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
-	  INNER JOIN pro_category cat ON it.cat_id=cat.id
+	  INNER JOIN prod_category cat ON it.cat_id=cat.id
 		 WHERE ($1 <=0 OR it.shop_id = $2) AND it.review_state= $3
 		  AND it.shelve_state= $4  %s %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN pro_category cat ON it.cat_id=cat.id
+		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN prod_category cat ON it.cat_id=cat.id
 		 WHERE ($1 <=0 OR it.shop_id = $2) %s AND it.review_state= $3 AND it.shelve_state= $4
 		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
 		err = g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
@@ -201,7 +201,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string) []*valueobject.Goods {
 	var e []*valueobject.Goods
 	sql := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN pro_category ON pro_product.cat_id=pro_category.id
+		 INNER JOIN prod_category ON pro_product.cat_id=prod_category.id
 		 WHERE supplier_id= $1 AND pro_product.review_state= $2 AND pro_product.shelve_state= $3
 		 ORDER BY %s,update_time DESC LIMIT $5 OFFSET $4`,
 		sortBy)

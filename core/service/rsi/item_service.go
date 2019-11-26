@@ -268,7 +268,7 @@ func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) [
 
 // 获取上架商品数据（分页）
 func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*ttype.SOldItem {
-	c := s.cateRepo.GlobCatService().GetCategory(catId)
+	c := s.cateRepo.GlobCatService().GetCategory(int(catId))
 	if c != nil {
 		ids := c.GetChildes()
 		list := s.itemQuery.GetOnShelvesItem(ids, 0, quantity, where)
@@ -318,9 +318,9 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int64) *item.TradeSnapshot 
 func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
-		cat := s.cateRepo.GlobCatService().GetCategory(categoryId)
+		cat := s.cateRepo.GlobCatService().GetCategory(int(categoryId))
 		ids := cat.GetChildes()
-		ids = append(ids, categoryId)
+		ids = append(ids, int(categoryId))
 		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId, ids, start, end, "", sortBy)
 	} else {
 		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId, nil, start, end, "", sortBy)
@@ -335,14 +335,14 @@ func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start
 func (s *itemService) GetPagedOnShelvesGoods__(shopId int32, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
-		cate := s.cateRepo.GlobCatService().GetCategory(categoryId)
+		cate := s.cateRepo.GlobCatService().GetCategory(int(categoryId))
 		var ids = cate.GetChildes()
-		ids = append(ids, categoryId)
+		ids = append(ids, int(categoryId))
 		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId,
 			ids, start, end, "", sortBy)
 	} else {
 		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId,
-			[]int32{}, start, end, "", sortBy)
+			[]int{}, start, end, "", sortBy)
 	}
 	for _, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
@@ -461,7 +461,7 @@ func (s *itemService) DeleteSaleLabel(id int32) error {
 }
 
 // 获取商品的会员价
-func (s *itemService) GetGoodsLevelPrices(itemId int64) []*item.MemberPrice {
+func (s *itemService) GetGoodSMemberLevelPrices(itemId int64) []*item.MemberPrice {
 	gi := s.itemRepo.GetItem(itemId)
 	if gi != nil {
 		return gi.GetLevelPrices()

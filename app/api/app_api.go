@@ -35,7 +35,7 @@ func (a AppApi) check(ctx api.Context) interface{} {
 	form := ctx.Form()
 	prodVersion := form.GetString("prod_version")
 	prodType := form.GetString("prod_type")
-	trans, cli, err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{appVersion, appAndroidVersion, appIOSVersion,
@@ -69,7 +69,7 @@ func (a AppApi) check(ctx api.Context) interface{} {
 
 func (a *AppApi) init() *AppApi {
 	time.Sleep(time.Second * 5) // 等待RPC服务启动5秒
-	trans, cli, err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		cli.CreateUserRegistry(thrift.Context, appVersion, "1.0.0", "APP版本号")

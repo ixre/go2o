@@ -37,7 +37,7 @@ func (s *SSOModule) SetApp(app gof.App) {
 func (s *SSOModule) Init() {
 	s.appMap = make(map[string]*foundation_service.SSsoApp)
 	domain := variable.Domain
-	trans, cli, err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{

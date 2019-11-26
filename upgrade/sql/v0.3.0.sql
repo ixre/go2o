@@ -310,3 +310,61 @@ COMMENT ON COLUMN "public".mch_online_shop.shop_notice IS '店铺公告';
 COMMENT ON COLUMN "public".mch_online_shop.flag IS '标志';
 COMMENT ON COLUMN "public".mch_online_shop.state IS '状态';
 COMMENT ON COLUMN "public".mch_online_shop.create_time IS '创建时间';
+
+/** 2019-11-15 */
+ALTER TABLE "public".pro_category
+    RENAME pro_model TO prod_model;
+ALTER TABLE "public".pro_category
+    alter column priority set not null;
+COMMENT ON TABLE "public".pro_category IS '产品分类';
+COMMENT ON COLUMN "public".pro_category.id IS '编号';
+COMMENT ON COLUMN "public".pro_category.parent_id IS '上级分类';
+COMMENT ON COLUMN "public".pro_category.prod_model IS '产品模型';
+COMMENT ON COLUMN "public".pro_category.priority IS '优先级';
+COMMENT ON COLUMN "public".pro_category.name IS '分类名称';
+COMMENT ON COLUMN "public".pro_category.virtual_cat IS '是否为虚拟分类';
+COMMENT ON COLUMN "public".pro_category.cat_url IS '分类链接地址';
+COMMENT ON COLUMN "public".pro_category.icon IS '图标';
+COMMENT ON COLUMN "public".pro_category.icon_xy IS '图标坐标';
+COMMENT ON COLUMN "public".pro_category.level IS '分类层级';
+COMMENT ON COLUMN "public".pro_category.sort_num IS '序号';
+COMMENT ON COLUMN "public".pro_category.floor_show IS '是否楼层显示';
+COMMENT ON COLUMN "public".pro_category.enabled IS '是否启用';
+COMMENT ON COLUMN "public".pro_category.create_time IS '创建时间';
+
+ALTER TABLE public.pro_category
+    RENAME TO prod_category;
+
+ALTER TABLE public.prod_category
+    ALTER COLUMN enabled TYPE int4 USING enabled::int;
+
+/** 2019-11-16 */
+DROP TABLE express_template;
+CREATE TABLE "public".mch_express_template (
+   id         serial NOT NULL,
+   vendor_id  int4 NOT NULL,
+   name       varchar(45) NOT NULL,
+   is_free    int2 NOT NULL,
+   basis      int4 NOT NULL,
+   first_unit int4 NOT NULL,
+   first_fee  numeric(6, 2) NOT NULL,
+   add_unit   int4 NOT NULL,
+   add_fee    numeric(6, 2) NOT NULL,
+   enabled    int2 NOT NULL,
+   CONSTRAINT mch_express_template_pkey
+       PRIMARY KEY (id));
+COMMENT ON TABLE "public".mch_express_template IS '商户运费模板';
+COMMENT ON COLUMN "public".mch_express_template.id IS '编号';
+COMMENT ON COLUMN "public".mch_express_template.vendor_id IS '运营商编号';
+COMMENT ON COLUMN "public".mch_express_template.name IS '运费模板名称';
+COMMENT ON COLUMN "public".mch_express_template.is_free IS '是否卖价承担运费';
+COMMENT ON COLUMN "public".mch_express_template.basis IS '运费计价依据';
+COMMENT ON COLUMN "public".mch_express_template.first_unit IS '首次计价单位,如首重为2kg';
+COMMENT ON COLUMN "public".mch_express_template.first_fee IS '首次计价单价,如续重1kg';
+COMMENT ON COLUMN "public".mch_express_template.add_unit IS '超过首次计价计算单位,如续重1kg';
+COMMENT ON COLUMN "public".mch_express_template.add_fee IS '超过首次计价单价，如续重1kg';
+COMMENT ON COLUMN "public".mch_express_template.enabled IS '是否启用';
+
+
+/** 2019-11-26 */
+ALTER TABLE public.ad_list ALTER COLUMN type_id TYPE int4 USING type_id::integer

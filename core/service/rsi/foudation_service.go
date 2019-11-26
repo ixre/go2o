@@ -21,7 +21,6 @@ import (
 	"go2o/core/module/bank"
 	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
-	"strings"
 )
 
 var _ foundation_service.FoundationService = new(foundationService)
@@ -51,89 +50,6 @@ func (s *foundationService) GetValue(ctx context.Context, key string) (r string,
 	return "", nil
 }
 
-// 获取键值存储数据
-func (s *foundationService) GetRegistries(ctx context.Context, keys []string) (map[string]string, error) {
-	mp := make(map[string]string)
-	for _, k := range keys {
-		if ir := s.registryRepo.Get(k); ir != nil {
-			mp[k] = ir.StringValue()
-		} else {
-			mp[k] = ""
-		}
-	}
-	return mp, nil
-}
-
-// 按键前缀获取键数据
-func (s *foundationService) FindRegistries(ctx context.Context, prefix string) (r map[string]string, err error) {
-	mp := make(map[string]string)
-	for _, k := range s.registryRepo.SearchRegistry(prefix) {
-		if strings.HasPrefix(k.Key, prefix) {
-			mp[k.Key] = k.Value
-		}
-	}
-	return mp, nil
-}
-
-// 搜索注册表
-func (s *foundationService) SearchRegistry(ctx context.Context, key string) (r []*foundation_service.SRegistry, err error) {
-	arr := s.registryRepo.SearchRegistry(key)
-	list := make([]*foundation_service.SRegistry, len(arr))
-	for i, a := range arr {
-		list[i] = &foundation_service.SRegistry{
-			Key:         a.Key,
-			Value:       a.Value,
-			Default:     a.DefaultValue,
-			Options:     a.Options,
-			Flag:        int32(a.Flag),
-			Description: a.Description,
-		}
-	}
-	return list, nil
-}
-
-// 获取数据存储
-func (s *foundationService) GetRegistry(ctx context.Context, key string) (string, error) {
-	ir := s.registryRepo.Get(key)
-	if ir != nil {
-		return ir.StringValue(), nil
-	}
-	return "", nil
-}
-
-// 创建用户自定义注册项
-func (s *foundationService) CreateUserRegistry(ctx context.Context, key string, defaultValue string, description string) (r *ttype.Result_, err error) {
-	if s.registryRepo.Get(key) != nil {
-		return s.resultWithCode(-1, "registry is exist"), nil
-	}
-	rv := &registry.Registry{
-		Key:          key,
-		Value:        defaultValue,
-		DefaultValue: defaultValue,
-		Options:      "",
-		Flag:         registry.FlagUserDefine,
-		Description:  description,
-	}
-	ir := s.registryRepo.Create(rv)
-	err = ir.Save()
-	if err != nil {
-		return s.error(err), nil
-	}
-	return s.success(nil), nil
-}
-
-// 更新注册表数据
-func (s *foundationService) UpdateRegistry(ctx context.Context, registries map[string]string) (r *ttype.Result_, err error) {
-	for k, v := range registries {
-		if ir := s.registryRepo.Get(k); ir != nil {
-			if err = ir.Update(v); err != nil {
-				return s.error(err), nil
-			}
-		}
-	}
-	return s.success(nil), nil
-}
-
 // 设置键值
 func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
 	err = s._rep.SetValue(key, value)
@@ -141,7 +57,7 @@ func (s *foundationService) SetValue(ctx context.Context, key string, value stri
 }
 
 // 保存短信API凭据
-func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api *foundation_service.SmsApi) (r *ttype.Result_, err error) {
+func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api *foundation_service.SSmsApi) (r *ttype.Result_, err error) {
 	manager := s.notifyRepo.Manager()
 	perm := &notify.SmsApiPerm{
 		Key:         api.Key,
@@ -160,11 +76,11 @@ func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api
 }
 
 // 获取短信API凭据, @provider 短信服务商, 默认:http
-func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *foundation_service.SmsApi, err error) {
+func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *foundation_service.SSmsApi, err error) {
 	manager := s.notifyRepo.Manager()
 	perm := manager.GetSmsApiPerm(provider)
 	if perm != nil {
-		return &foundation_service.SmsApi{
+		return &foundation_service.SSmsApi{
 			ApiUrl:      perm.ApiUrl,
 			Key:         perm.Key,
 			Secret:      perm.Secret,
@@ -175,7 +91,7 @@ func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *
 			SuccessChar: perm.SuccessChar,
 		}, nil
 	}
-	return &foundation_service.SmsApi{
+	return &foundation_service.SSmsApi{
 		ApiUrl:      "",
 		Key:         "",
 		Secret:      "",
@@ -306,14 +222,10 @@ func (s *foundationService) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) 
 // 获取短信设置
 func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
 	//return s._rep.GetSmsApiSet()
-	//todo: ???
+	//todo: will remove
 	return notify.SmsApiSet{}
 }
 
-// 保存短信API
-func (s *foundationService) SaveSmsApiPerm(provider int, perm *notify.SmsApiPerm) error {
-	return nil
-}
 
 // 获取下级区域
 func (s *foundationService) GetChildAreas(ctx context.Context, code int32) ([]*foundation_service.SArea, error) {

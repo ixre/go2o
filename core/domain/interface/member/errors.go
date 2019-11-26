@@ -146,7 +146,7 @@ var (
 	ErrAccountOutOfTakeOutTimes = domain.NewError(
 		"err_account_out_of_take_out_times", "今日已达到提现次数上限")
 
-	ErrTransferAccountsLevelNoPerm = domain.NewError(
+	ErrTransferAccountSMemberLevelNoPerm = domain.NewError(
 		"err_account_transfer_accounts_level_no_perm", "%s不允许转账")
 
 	ErrUserLength = domain.NewError(

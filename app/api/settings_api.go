@@ -30,7 +30,7 @@ func (a SettingsApi) Process(fn string, ctx api.Context) *api.Response {
  * {"code":1,"message":"api not defined"}
  */
 func (a SettingsApi) registerSettings(ctx api.Context) interface{} {
-	trans, cli, err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		mp, _ := cli.FindRegistries(thrift.Context, "member_register")

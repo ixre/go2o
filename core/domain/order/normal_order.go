@@ -58,9 +58,9 @@ type normalOrderImpl struct {
 	valRepo         valueobject.IValueRepo
 	cartRepo        cart.ICartRepo
 	// 运营商商品映射,用于整理购物车
-	vendorItemsMap map[int32][]*order.SubOrderItem
+	vendorItemsMap map[int][]*order.SubOrderItem
 	// 运营商与邮费的MAP
-	vendorExpressMap map[int32]float32
+	vendorExpressMap map[int]float64
 	// 是否为内部挂起
 	internalSuspend bool
 	_list           []order.ISubOrder
@@ -260,17 +260,18 @@ func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
 // 加入运费计算器
 func (o *normalOrderImpl) addItemToExpressCalculator(ue express.IUserExpress,
 	item *order.SubOrderItem, cul express.IExpressCalculator) {
-	tpl := ue.GetTemplate(item.ExpressTplId)
+	tid := int(item.ExpressTplId)
+	tpl := ue.GetTemplate(tid)
 	if tpl != nil {
 		var err error
 		v := tpl.Value()
 		switch v.Basis {
 		case express.BasisByNumber:
-			err = cul.Add(item.ExpressTplId, item.Quantity)
+			err = cul.Add(tid, int(item.Quantity))
 		case express.BasisByWeight:
-			err = cul.Add(item.ExpressTplId, item.Weight)
+			err = cul.Add(tid, int(item.Weight))
 		case express.BasisByVolume:
-			err = cul.Add(item.ExpressTplId, item.Weight)
+			err = cul.Add(tid, int(item.Weight))
 		}
 		if err != nil {
 			log.Println("[ Order][ Express][ Error]:", err)
@@ -279,10 +280,10 @@ func (o *normalOrderImpl) addItemToExpressCalculator(ue express.IUserExpress,
 }
 
 // 更新订单金额,并返回运费
-func (o *normalOrderImpl) updateOrderFee(mp map[int32][]*order.SubOrderItem) map[int32]float32 {
+func (o *normalOrderImpl) updateOrderFee(mp map[int][]*order.SubOrderItem) map[int]float64 {
 	o.value.ItemAmount = 0
-	expCul := make(map[int32]express.IExpressCalculator)
-	expressMap := make(map[int32]float32)
+	expCul := make(map[int]express.IExpressCalculator)
+	expressMap := make(map[int]float64)
 	for k, v := range mp {
 		userExpress := o.expressRepo.GetUserExpress(k)
 		expCul[k] = userExpress.CreateCalculator()
@@ -298,7 +299,7 @@ func (o *normalOrderImpl) updateOrderFee(mp map[int32][]*order.SubOrderItem) map
 		expCul[k].Calculate("") //todo: 传入城市地区编号
 		expressMap[k] = expCul[k].Total()
 		//叠加运费
-		o.value.ExpressFee += expressMap[k]
+		o.value.ExpressFee += float32(expressMap[k])
 	}
 	o.value.PackageFee = 0
 	//计算最终金额
@@ -308,8 +309,8 @@ func (o *normalOrderImpl) updateOrderFee(mp map[int32][]*order.SubOrderItem) map
 }
 
 // 根据运营商获取商品和运费信息,限未生成的订单
-func (o *normalOrderImpl) GetByVendor() (items map[int32][]*order.SubOrderItem,
-	expressFeeMap map[int32]float32) {
+func (o *normalOrderImpl) GetByVendor() (items map[int][]*order.SubOrderItem,
+	expressFeeMap map[int]float64) {
 	if o.vendorItemsMap == nil {
 		panic("订单尚未读取购物车!")
 	}
@@ -339,8 +340,8 @@ func (o *normalOrderImpl) checkCart() error {
 }
 
 // 生成运营商与订单商品的映射
-func (o *normalOrderImpl) buildVendorItemMap(items []*cart.NormalCartItem) map[int32][]*order.SubOrderItem {
-	mp := make(map[int32][]*order.SubOrderItem)
+func (o *normalOrderImpl) buildVendorItemMap(items []*cart.NormalCartItem) map[int][]*order.SubOrderItem {
+	mp := make(map[int][]*order.SubOrderItem)
 	for _, v := range items {
 		//必须勾选为结算
 		if v.Checked == 1 {
@@ -350,11 +351,11 @@ func (o *normalOrderImpl) buildVendorItemMap(items []*cart.NormalCartItem) map[i
 					strconv.Itoa(int(v.SkuId))), "domain")
 				continue
 			}
-			list, ok := mp[v.VendorId]
+			list, ok := mp[int(v.VendorId)]
 			if !ok {
 				list = []*order.SubOrderItem{}
 			}
-			mp[v.VendorId] = append(list, item)
+			mp[int(v.VendorId)] = append(list, item)
 			//log.Println("--- vendor map len:", len(mp[v.VendorId]))
 		}
 	}
@@ -727,10 +728,10 @@ func (o *normalOrderImpl) saveNewOrderOnSubmit() (int64, error) {
 
 // 根据运营商生成子订单
 func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId int64,
-	vendorId int32, newOrderNo bool, items []*order.SubOrderItem) order.ISubOrder {
+	vendorId int, newOrderNo bool, items []*order.SubOrderItem) order.ISubOrder {
 	orderNo := o.OrderNo()
 	if newOrderNo {
-		orderNo = o.manager.GetFreeOrderNo(vendorId)
+		orderNo = o.manager.GetFreeOrderNo(int32(vendorId))
 	}
 	if len(items) == 0 {
 		domain.HandleError(errors.New("拆分订单,运营商下未获取到商品,订单:"+
@@ -740,7 +741,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	v := &order.NormalSubOrder{
 		OrderNo:  orderNo,
 		BuyerId:  buyerId,
-		VendorId: vendorId,
+		VendorId: int32(vendorId),
 		OrderId:  o.GetAggregateRootId(),
 		Subject:  "子订单",
 		ShopId:   items[0].ShopId,
@@ -766,7 +767,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		v.DiscountAmount += item.Amount - item.FinalAmount
 	}
 	// 设置运费
-	v.ExpressFee = o.vendorExpressMap[vendorId]
+	v.ExpressFee = float32(o.vendorExpressMap[int(vendorId)])
 	// 设置包装费
 	v.PackageFee = 0
 	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费

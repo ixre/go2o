@@ -43,8 +43,8 @@ func MerchantDto(src *merchant.ComplexMerchant) *merchant_service.SMerchant {
 	}
 }
 
-func LevelDto(src *member.Level) *member_service.SLevel {
-	return &member_service.SLevel{
+func LevelDto(src *member.Level) *member_service.SMemberLevel {
+	return &member_service.SMemberLevel{
 		ID:            int32(src.ID),
 		Name:          src.Name,
 		RequireExp:    int32(src.RequireExp),

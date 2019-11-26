@@ -7,20 +7,20 @@ import (
 
 func Category(src *ttype.SCategory) *product.Category {
 	s := &product.Category{
-		ID:         src.ID,
-		ParentId:   src.ParentId,
-		ProModel:   src.ProModel,
-		Priority:   src.Priority,
+		Id:         int(src.ID),
+		ParentId:   int(src.ParentId),
+		ProdModel:  int(src.ProdModel),
+		Priority:   int(src.Priority),
 		Name:       src.Name,
-		Level:      src.Level,
+		Level:      int(src.Level),
 		Icon:       src.Icon,
-		IconXY:     src.IconXY,
-		VirtualCat: src.VirtualCat,
+		IconXy:     src.IconXy,
+		VirtualCat: int(src.VirtualCat),
 		CatUrl:     src.CatUrl,
-		SortNum:    src.SortNum,
-		Enabled:    src.Enabled,
-		FloorShow:  src.FloorShow,
-		CreateTime: src.CreateTime,
+		SortNum:    int(src.SortNum),
+		Enabled:    int(src.Enabled),
+		FloorShow:  int(src.FloorShow),
+		CreateTime: int64(src.CreateTime),
 	}
 	if src.Children != nil {
 		s.Children = make([]*product.Category, len(src.Children))
@@ -33,19 +33,19 @@ func Category(src *ttype.SCategory) *product.Category {
 
 func CategoryDto(src *product.Category) *ttype.SCategory {
 	s := &ttype.SCategory{
-		ID:         src.ID,
-		ParentId:   src.ParentId,
-		ProModel:   src.ProModel,
-		Priority:   src.Priority,
+		ID:         int32(src.Id),
+		ParentId:   int32(src.ParentId),
+		ProdModel:  int32(src.ProdModel),
+		Priority:   int32(src.Priority),
 		Name:       src.Name,
-		Level:      src.Level,
+		Level:      int32(src.Level),
 		Icon:       src.Icon,
-		IconXY:     src.IconXY,
-		VirtualCat: src.VirtualCat,
+		IconXy:     src.IconXy,
+		VirtualCat: int32(src.VirtualCat),
 		CatUrl:     src.CatUrl,
-		SortNum:    src.SortNum,
-		FloorShow:  src.FloorShow,
-		Enabled:    src.Enabled,
+		SortNum:    int32(src.SortNum),
+		FloorShow:  int32(src.FloorShow),
+		Enabled:    int32(src.Enabled),
 		CreateTime: src.CreateTime,
 	}
 	if src.Children != nil {

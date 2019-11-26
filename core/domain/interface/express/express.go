@@ -86,34 +86,34 @@ type (
 	// 运费计算器
 	IExpressCalculator interface {
 		// 添加计算项,tplId为运费模板的编号
-		Add(tplId int32, unit int32) error
+		Add(tplId int, unit int) error
 
 		// 计算运费
 		Calculate(areaCode string)
 
 		// 获取累计运费
-		Total() float32
+		Total() float64
 
 		// 获取运费模板编号与费用的集合
-		Fee() map[int32]float32
+		Fee() map[int]float64
 	}
 
 	// 物流快递
 	IUserExpress interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int32
+		GetAggregateRootId() int
 
 		// 创建快递模板
 		CreateTemplate(t *ExpressTemplate) IExpressTemplate
 
 		// 获取快递模板
-		GetTemplate(id int32) IExpressTemplate
+		GetTemplate(id int) IExpressTemplate
 
 		// 获取所有的快递模板
 		GetAllTemplate() []IExpressTemplate
 
 		// 删除模板
-		DeleteTemplate(id int32) error
+		DeleteTemplate(id int) error
 
 		// 创建运费计算器
 		CreateCalculator() IExpressCalculator
@@ -122,7 +122,7 @@ type (
 	// 快递模板
 	IExpressTemplate interface {
 		// 获取领域对象编号
-		GetDomainId() int32
+		GetDomainId() int
 
 		// 获取快递模板数据
 		Value() ExpressTemplate
@@ -134,7 +134,7 @@ type (
 		Enabled() bool
 
 		// 保存
-		Save() (int32, error)
+		Save() (int, error)
 
 		// 根据地区编码获取运费模板
 		GetAreaExpressTemplateByAreaCode(areaCode string) *ExpressAreaTemplate
@@ -163,25 +163,25 @@ type (
 		SaveExpressProvider(v *ExpressProvider) (int32, error)
 
 		// 获取用户的快递
-		GetUserExpress(userId int32) IUserExpress
+		GetUserExpress(userId int) IUserExpress
 
 		// 获取用户的快递模板
-		GetUserAllTemplate(userId int32) []*ExpressTemplate
+		GetUserAllTemplate(userId int) []*ExpressTemplate
 
 		// 删除快递模板
-		DeleteExpressTemplate(userId int32, templateId int32) error
+		DeleteExpressTemplate(userId int, templateId int) error
 
 		// 保存快递模板
-		SaveExpressTemplate(value *ExpressTemplate) (int32, error)
+		SaveExpressTemplate(value *ExpressTemplate) (int, error)
 
 		// 获取模板的所有地区设置
-		GetExpressTemplateAllAreaSet(templateId int32) []ExpressAreaTemplate
+		GetExpressTemplateAllAreaSet(templateId int) []ExpressAreaTemplate
 
 		// 保存模板的地区设置
 		SaveExpressTemplateAreaSet(t *ExpressAreaTemplate) (int32, error)
 
 		// 删除模板的地区设置
-		DeleteAreaExpressTemplate(templateId int32, areaSetId int32) error
+		DeleteAreaExpressTemplate(templateId int, areaSetId int32) error
 	}
 
 	// 快递服务商
@@ -204,24 +204,24 @@ type (
 
 	// 快递模板
 	ExpressTemplate struct {
-		// 快递模板编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
-		// 用户编号
-		UserId int32 `db:"user_id"`
-		// 快递模板名称
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 运营商编号
+		VendorId int `db:"vendor_id"`
+		// 运费模板名称
 		Name string `db:"name"`
-		// 是否卖家承担运费，0为顾客承担
-		IsFree int32 `db:"is_free"`
-		// 计价方式:1:按重量;2:按数量;3:按体积
+		// 是否卖价承担运费
+		IsFree int `db:"is_free"`
+		// 运费计价依据
 		Basis int `db:"basis"`
-		// 首次数值，如 首重为2kg
-		FirstUnit int32 `db:"first_unit"`
-		// 首次金额，如首重10元
-		FirstFee float32 `db:"first_fee"`
-		// 增加数值，如续重1kg
-		AddUnit int32 `db:"add_unit"`
-		// 增加产生费用，如续重1kg 10元
-		AddFee float32 `db:"add_fee"`
+		// 首次计价单位,如首重为2kg
+		FirstUnit int `db:"first_unit"`
+		// 首次计价单价,如续重1kg
+		FirstFee float64 `db:"first_fee"`
+		// 超过首次计价计算单位,如续重1kg
+		AddUnit int `db:"add_unit"`
+		// 超过首次计价单价，如续重1kg
+		AddFee float64 `db:"add_fee"`
 		// 是否启用
 		Enabled int `db:"enabled"`
 	}

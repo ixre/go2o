@@ -10,25 +10,25 @@ var _ express.IExpressCalculator = new(expressCalculatorImpl)
 // 界面设置也应按照千克/升来设置
 type expressComplex struct {
 	Template express.IExpressTemplate
-	Unit     int32
-	Fee      float32
+	Unit     int
+	Fee      float64
 }
 
 // 运费计算实现
 type expressCalculatorImpl struct {
 	userExpress *userExpressImpl
-	tplMap      map[int32]*expressComplex
+	tplMap      map[int]*expressComplex
 }
 
 func newExpressCalculator(u *userExpressImpl) *expressCalculatorImpl {
 	return &expressCalculatorImpl{
 		userExpress: u,
-		tplMap:      make(map[int32]*expressComplex),
+		tplMap:      make(map[int]*expressComplex),
 	}
 }
 
 // 添加计算项,tplId为运费模板的编号
-func (e *expressCalculatorImpl) Add(tplId int32, unit int32) error {
+func (e *expressCalculatorImpl) Add(tplId int, unit int) error {
 	ec, ok := e.tplMap[tplId]
 	if !ok {
 		tpl := e.userExpress.GetTemplate(tplId)
@@ -55,14 +55,14 @@ func (e *expressCalculatorImpl) Calculate(areaCode string) {
 
 // 计算运费
 func (e *expressCalculatorImpl) calculate(tpl express.IExpressTemplate,
-	areaCode string, basisUnit int32) float32 {
+	areaCode string, basisUnit int) float64 {
 	v := tpl.Value()
 	//如果免邮或计价数值为零，则不计算运费
 	if v.IsFree == 1 || basisUnit == 0 {
 		return 0
 	}
 	var trimUnit float32 //实际计价单位数量(转换后的数量)
-	var finalUnit int32  //最终计价单位数量
+	var finalUnit int    //最终计价单位数量
 
 	switch v.Basis {
 	case express.BasisByNumber:
@@ -76,7 +76,7 @@ func (e *expressCalculatorImpl) calculate(tpl express.IExpressTemplate,
 	}
 	//如果单位超出,则多加一个计量单位
 	if trimUnit > 0 {
-		finalUnit = int32(trimUnit)
+		finalUnit = int(trimUnit)
 		if trimUnit-float32(finalUnit) > 0 {
 			finalUnit += 1
 		}
@@ -86,8 +86,8 @@ func (e *expressCalculatorImpl) calculate(tpl express.IExpressTemplate,
 	if areaCode != "" {
 		areaSet := tpl.GetAreaExpressTemplateByAreaCode(areaCode)
 		if areaSet != nil {
-			return e.mathFee(v.Basis, finalUnit, areaSet.FirstUnit,
-				areaSet.FirstFee, areaSet.AddUnit, areaSet.AddFee)
+			return e.mathFee(v.Basis, finalUnit, int(areaSet.FirstUnit),
+				float64(areaSet.FirstFee), int(areaSet.AddUnit), float64(areaSet.AddFee))
 		}
 	}
 	//根据默认规则计算运费
@@ -96,14 +96,14 @@ func (e *expressCalculatorImpl) calculate(tpl express.IExpressTemplate,
 }
 
 // 计算快递运费
-func (e *expressCalculatorImpl) mathFee(basis int, unit, firstUnit int32,
-	firstFee float32, addUnit int32, addFee float32) float32 {
+func (e *expressCalculatorImpl) mathFee(basis int, unit, firstUnit int,
+	firstFee float64, addUnit int, addFee float64) float64 {
 	return e.getExpressFee(unit, firstUnit, firstFee, addUnit, addFee)
 }
 
 // 根据计量单位和值计算运费
-func (e *expressCalculatorImpl) getExpressFee(unit, firstUnit int32,
-	firstFee float32, addUnit int32, addFee float32) float32 {
+func (e *expressCalculatorImpl) getExpressFee(unit, firstUnit int,
+	firstFee float64, addUnit int, addFee float64) float64 {
 	outUnit := unit - firstUnit
 	if outUnit > 0 {
 		// 如果超过首次计量,则获取超出倍数,叠加计费
@@ -111,14 +111,14 @@ func (e *expressCalculatorImpl) getExpressFee(unit, firstUnit int32,
 		if outUnit%addUnit > 0 {
 			outTimes += 1
 		}
-		return firstFee + float32(outTimes)*addFee
+		return firstFee + float64(outTimes)*addFee
 	}
 	return firstFee
 }
 
 // 获取累计运费
-func (e *expressCalculatorImpl) Total() float32 {
-	var total float32 = 0
+func (e *expressCalculatorImpl) Total() float64 {
+	var total float64 = 0
 	feeMap := e.Fee()
 	for _, v := range feeMap {
 		total += v
@@ -127,8 +127,8 @@ func (e *expressCalculatorImpl) Total() float32 {
 }
 
 // 获取运费模板编号与费用的集合
-func (e *expressCalculatorImpl) Fee() map[int32]float32 {
-	mp := make(map[int32]float32, len(e.tplMap))
+func (e *expressCalculatorImpl) Fee() map[int]float64 {
+	mp := make(map[int]float64, len(e.tplMap))
 	for k, v := range e.tplMap {
 		mp[k] = v.Fee
 	}

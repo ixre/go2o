@@ -148,7 +148,7 @@ func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 				g.value.ShelveState = item.ShelvesDown
 				// 分类在创建后，不允许再进行修改。并且分类不能为虚拟分类
 				// 如果修改，则所有SKU和属性应删除。
-				c := g.catRepo.GlobCatService().GetCategory(v.CatId)
+				c := g.catRepo.GlobCatService().GetCategory(int(v.CatId))
 				if c == nil {
 					return item.ErrIncorrectProductCategory
 				}
@@ -317,8 +317,8 @@ func (g *itemImpl) checkItemValue(v *item.GoodsItem) error {
 
 	// 检测运费模板
 	if v.ExpressTid > 0 {
-		ve := g.expressRepo.GetUserExpress(v.VendorId)
-		tpl := ve.GetTemplate(v.ExpressTid)
+		ve := g.expressRepo.GetUserExpress(int(v.VendorId))
+		tpl := ve.GetTemplate(int(v.ExpressTid))
 		if tpl == nil {
 			return express.ErrNoSuchTemplate
 		}
@@ -450,7 +450,7 @@ func (g *itemImpl) GetPromotionDescribe() map[string]string {
 // 获取会员价
 func (g *itemImpl) GetLevelPrices() []*item.MemberPrice {
 	if g.levelPrices == nil {
-		g.levelPrices = g.repo.GetGoodsLevelPrice(g.GetAggregateRootId())
+		g.levelPrices = g.repo.GetGoodSMemberLevelPrice(g.GetAggregateRootId())
 	}
 	return g.levelPrices
 }
@@ -460,11 +460,11 @@ func (g *itemImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
 	v.GoodsId = g.GetAggregateRootId()
 	if g.value.Price == v.Price {
 		if v.Id > 0 {
-			g.repo.RemoveGoodsLevelPrice(v.Id)
+			g.repo.RemoveGoodSMemberLevelPrice(v.Id)
 		}
 		return -1, nil
 	}
-	return g.repo.SaveGoodsLevelPrice(v)
+	return g.repo.SaveGoodSMemberLevelPrice(v)
 }
 
 // 是否上架

@@ -58,6 +58,7 @@ func NewService(factory api.ContextFactory, debug bool, rl *util.RequestLimit) *
 	s.Register("register", NewRegisterApi())
 	s.Register("passport", NewPassportApi())
 	s.Register("settings", NewSettingsApi())
+	s.Register("res",NewResApi())
 	// 注册中间键
 	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", debug, rl)
 	return s

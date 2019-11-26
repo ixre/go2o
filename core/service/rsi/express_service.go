@@ -44,14 +44,14 @@ func (e *expressService) GetEnabledProviders() []*express.ExpressProvider {
 }
 
 // 保存快递模板
-func (ec *expressService) SaveTemplate(userId int32, v *express.ExpressTemplate) (int32, error) {
-	u := ec._rep.GetUserExpress(userId)
+func (ec *expressService) SaveTemplate(userId int32, v *express.ExpressTemplate) (int, error) {
+	u := ec._rep.GetUserExpress(int(userId))
 	var e express.IExpressTemplate
 	if v.Id > 0 {
 		e = u.GetTemplate(v.Id)
 	} else {
 		e = u.CreateTemplate(&express.ExpressTemplate{
-			UserId: userId,
+			VendorId: int(userId),
 		})
 	}
 	err := e.Set(v)
@@ -63,8 +63,8 @@ func (ec *expressService) SaveTemplate(userId int32, v *express.ExpressTemplate)
 
 // 获取快递模板
 func (e *expressService) GetTemplate(userId, id int32) *express.ExpressTemplate {
-	u := e._rep.GetUserExpress(userId)
-	t := u.GetTemplate(id)
+	u := e._rep.GetUserExpress(int(userId))
+	t := u.GetTemplate(int(id))
 	if t != nil {
 		v := t.Value()
 		return &v
@@ -74,7 +74,7 @@ func (e *expressService) GetTemplate(userId, id int32) *express.ExpressTemplate 
 
 // 获取所有的快递模板
 func (e *expressService) GetAllTemplate(userId int32) []*express.ExpressTemplate {
-	u := e._rep.GetUserExpress(userId)
+	u := e._rep.GetUserExpress(int(userId))
 	list := u.GetAllTemplate()
 	arr := make([]*express.ExpressTemplate, len(list))
 	for i, v := range list {
@@ -86,7 +86,7 @@ func (e *expressService) GetAllTemplate(userId int32) []*express.ExpressTemplate
 
 // 获取可有的快递模板
 func (e *expressService) GetEnabledTemplates(userId int32) []*express.ExpressTemplate {
-	u := e._rep.GetUserExpress(userId)
+	u := e._rep.GetUserExpress(int(userId))
 	list := u.GetAllTemplate()
 	arr := []*express.ExpressTemplate{}
 	for _, v := range list {
@@ -100,14 +100,14 @@ func (e *expressService) GetEnabledTemplates(userId int32) []*express.ExpressTem
 
 // 删除模板
 func (e *expressService) DeleteTemplate(userId int32, id int32) error {
-	u := e._rep.GetUserExpress(userId)
-	return u.DeleteTemplate(id)
+	u := e._rep.GetUserExpress(int(userId))
+	return u.DeleteTemplate(int(id))
 }
 
 // 删除模板地区设定
 func (e *expressService) DeleteTemplateAreaSet(userId, id, areaSetId int32) error {
-	u := e._rep.GetUserExpress(userId)
-	t := u.GetTemplate(id)
+	u := e._rep.GetUserExpress(int(userId))
+	t := u.GetTemplate(int(id))
 	if t == nil {
 		return express.ErrNoSuchTemplate
 	}
@@ -124,8 +124,8 @@ func (e *expressService) DeleteTemplateAreaSet(userId, id, areaSetId int32) erro
 // 根据地区编码获取运费模板
 func (e *expressService) GetAreaExpressTemplateByAreaCode(userId int32,
 	templateId int32, areaCode string) *express.ExpressAreaTemplate {
-	u := e._rep.GetUserExpress(userId)
-	t := u.GetTemplate(templateId)
+	u := e._rep.GetUserExpress(int(userId))
+	t := u.GetTemplate(int(templateId))
 	if t != nil {
 		return t.GetAreaExpressTemplateByAreaCode(areaCode)
 	}
@@ -135,8 +135,8 @@ func (e *expressService) GetAreaExpressTemplateByAreaCode(userId int32,
 // 根据编号获取地区的运费模板
 func (e *expressService) GetAreaExpressTemplate(userId int32,
 	templateId int32, id int32) *express.ExpressAreaTemplate {
-	u := e._rep.GetUserExpress(userId)
-	t := u.GetTemplate(templateId)
+	u := e._rep.GetUserExpress(int(userId))
+	t := u.GetTemplate(int(templateId))
 	if t != nil {
 		return t.GetAreaExpressTemplate(id)
 	}
@@ -146,8 +146,8 @@ func (e *expressService) GetAreaExpressTemplate(userId int32,
 // 保存地区快递模板
 func (e *expressService) SaveAreaTemplate(userId int32,
 	templateId int32, v *express.ExpressAreaTemplate) (int32, error) {
-	u := e._rep.GetUserExpress(userId)
-	t := u.GetTemplate(templateId)
+	u := e._rep.GetUserExpress(int(userId))
+	t := u.GetTemplate(int(templateId))
 	if t != nil {
 		return t.SaveAreaTemplate(v)
 	}
@@ -157,8 +157,8 @@ func (e *expressService) SaveAreaTemplate(userId int32,
 // 获取所有的地区快递模板
 func (e *expressService) GetAllAreaTemplate(userId int32,
 	templateId int32) []express.ExpressAreaTemplate {
-	u := e._rep.GetUserExpress(userId)
-	t := u.GetTemplate(templateId)
+	u := e._rep.GetUserExpress(int(userId))
+	t := u.GetTemplate(int(templateId))
 	if t != nil {
 		return t.GetAllAreaTemplate()
 	}

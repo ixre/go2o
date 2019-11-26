@@ -48,7 +48,7 @@ func (a *advertisementRepo) GetAdGroups() []*ad.AdGroup {
 	return list
 }
 
-// 删除广告组
+// 删除广告位分组
 func (a *advertisementRepo) DelAdGroup(id int32) error {
 	return a.Connector.GetOrm().DeleteByPk(&ad.AdGroup{}, id)
 }

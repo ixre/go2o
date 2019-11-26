@@ -27,7 +27,7 @@ type (
 		GetOnlineShop() IShop
 
 		// 获取商店
-		GetShop(id int32) IShop
+		GetShop(id int) IShop
 
 		// 根据名称获取商店
 		GetShopByName(name string) IShop

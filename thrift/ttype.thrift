@@ -57,25 +57,35 @@ const i32 RATE_DISCOUNT = 1000
 
 //商品分类
 struct SCategory {
-    1: i32 ID
-    2: i32 ParentId
-    3: i32 ProModel
-    // 分类优先级
-    4: i32 Priority
-    // 分类名称
-    5: string Name
-    // 虚拟分类
-    6: i32 VirtualCat
-    // 分类目标地址
-    7: string CatUrl
-    8: string Icon
-    // 图标（雪碧图）坐标
-    9: string IconXY
-    10: i32 SortNum
-    11: i32 FloorShow
-    12: i32 Enabled
-    13: i32 Level
-    14: i64 CreateTime
+    /** 编号 */
+    1:i32 Id
+    /** 上级分类 */
+    2:i32 ParentId
+    /** 产品模型 */
+    3:i32 ProdModel
+    /** 优先级 */
+    4:i32 Priority
+    /** 分类名称 */
+    5:string Name
+    /** 是否为虚拟分类 */
+    6:i32 VirtualCat
+    /** 分类链接地址 */
+    7:string CatUrl
+    /** 图标 */
+    8:string Icon
+    /** 图标坐标 */
+    9:string IconXy
+    /** 分类层级 */
+    10:i32 Level
+    /** 序号 */
+    11:i32 SortNum
+    /** 是否楼层显示 */
+    12:i32 FloorShow
+    /** 是否启用 */
+    13:i32 Enabled
+    /** 创建时间 */
+    14:i64 CreateTime
+    /** 子分类 */
     15: list<SCategory> Children
 }
 

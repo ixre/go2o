@@ -20,7 +20,7 @@ func (e *ExpressModule) SetApp(app gof.App) {
 }
 
 func (e *ExpressModule) Init() {
-	trans, cli, err := thrift.FoundationServeClient()
+	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{"express_kdn_business_id", "express_kdn_api_key"}

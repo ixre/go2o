@@ -58,7 +58,7 @@ func (a *adManagerImpl) GetAdGroup(id int32) ad.IAdGroup {
 	return nil
 }
 
-// 删除广告组
+// 删除广告位分组
 func (a *adManagerImpl) DelAdGroup(id int32) error {
 	g := a.GetAdGroup(id)
 	if g == nil {
@@ -71,7 +71,7 @@ func (a *adManagerImpl) DelAdGroup(id int32) error {
 	return a.rep.DelAdGroup(id)
 }
 
-// 创建广告组
+// 创建广告位分组
 func (a *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
 	return newAdGroup(a, a.rep, &ad.AdGroup{
 		ID:      0,
