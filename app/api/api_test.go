@@ -23,7 +23,7 @@ var serverUrl = "http://localhost:1428/api"
 
 func testApi(t *testing.T, apiName string, paramsMap map[string]string, abortOnFail bool) {
 	key := "go2o"
-	secret := "131409"
+	secret := "123456"
 	signType := "sha1"
 	params := url.Values{}
 	params["key"] = []string{key}

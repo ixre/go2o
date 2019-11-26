@@ -364,3 +364,7 @@ COMMENT ON COLUMN "public".mch_express_template.first_fee IS '首次计价单价
 COMMENT ON COLUMN "public".mch_express_template.add_unit IS '超过首次计价计算单位,如续重1kg';
 COMMENT ON COLUMN "public".mch_express_template.add_fee IS '超过首次计价单价，如续重1kg';
 COMMENT ON COLUMN "public".mch_express_template.enabled IS '是否启用';
+
+
+/** 2019-11-26 */
+ALTER TABLE public.ad_list ALTER COLUMN type_id TYPE int4 USING type_id::integer

@@ -21,7 +21,7 @@ var _ api.Handler = new(RegisterApi)
 
 // 注册接口API
 type RegisterApi struct {
-	apiUtil
+	utils
 	st storage.Interface
 }
 

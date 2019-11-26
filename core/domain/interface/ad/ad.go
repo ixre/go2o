@@ -26,9 +26,9 @@ type (
 		GetAdGroups() []IAdGroup
 		// 获取单个广告分组
 		GetAdGroup(id int32) IAdGroup
-		// 删除广告组
+		// 删除广告位分组
 		DelAdGroup(id int32) error
-		// 创建广告组
+		// 创建广告位分组
 		CreateAdGroup(name string) IAdGroup
 		// 根据编号获取广告位
 		GetAdPositionById(id int32) *AdPosition
@@ -200,7 +200,7 @@ type (
 		// 获取广告分组
 		GetAdGroups() []*AdGroup
 
-		// 删除广告组
+		// 删除广告位分组
 		DelAdGroup(id int32) error
 
 		// 根据KEY获取广告位

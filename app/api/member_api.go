@@ -21,7 +21,7 @@ var provider = map[string]string{
 }
 
 type MemberApi struct {
-	*apiUtil
+	utils
 }
 
 func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {

@@ -27,7 +27,7 @@ var (
 )
 
 type PassportApi struct {
-	apiUtil
+utils
 	st storage.Interface
 }
 
