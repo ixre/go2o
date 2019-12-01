@@ -138,7 +138,7 @@ func swapApiKeyFunc(ctx api.Context, key string) (userId int, userSecret string)
 	if key == ApiUser {
 		return 1, ApiSecret
 	} else if key == "go2o" {
-		tt := time.Date(2019, 12, 01, 0, 0, 0, 0, time.Local)
+		tt := time.Date(2019, 12, 31, 0, 0, 0, 0, time.Local)
 		if time.Now().Unix() < tt.Unix() {
 			return 1, "131409"
 		}
