@@ -84,6 +84,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 			//todo: 未生效
 			m.signCheckTokenExpires(token)
 		}
+		log.Println("----",fmt.Sprintf("%#v",r))
 		return r
 	}
 	return m.SResult(err)
