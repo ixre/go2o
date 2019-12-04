@@ -35,7 +35,7 @@ var (
 	StatusService *statusServiceImpl
 	// 注册表服务
 	RegistryService *registryService
-	PromService   *promotionService
+	PromService     *promotionService
 	// 基础服务
 	FoundationService *foundationService
 	// 会员服务
@@ -140,12 +140,12 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 
 	/** Service **/
 	StatusService = NewStatusService()
-	RegistryService = NewRegistryService(valueRepo,registryRepo)
+	RegistryService = NewRegistryService(valueRepo, registryRepo)
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valueRepo, registryRepo, notifyRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
-		productRepo, itemRepo, mchRepo,shopRepo, orderQuery)
+		productRepo, itemRepo, mchRepo, shopRepo, orderQuery)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopRepo, shopQuery)

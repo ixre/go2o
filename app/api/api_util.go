@@ -8,7 +8,6 @@ import (
 )
 
 type utils struct {
-
 }
 
 func (u utils) SResult(err error) *ttype.Result_ {

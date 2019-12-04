@@ -23,7 +23,8 @@ import (
  */
 
 var _ api.Handler = new(resApi)
-type resApi struct{
+
+type resApi struct {
 	utils
 }
 
@@ -35,7 +36,6 @@ func (a resApi) Process(fn string, ctx api.Context) *api.Response {
 		"ad_api": a.adApi,
 	})
 }
-
 
 /**
  * @api {post} /res/ad_api 获取广告数据
@@ -51,7 +51,7 @@ func (a resApi) Process(fn string, ctx api.Context) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (a resApi) adApi(ctx api.Context) interface{} {
-	posKeys :=ctx.Form().GetString("pos_keys")
+	posKeys := ctx.Form().GetString("pos_keys")
 	userId := ctx.Form().GetInt("user_id")
 	namesParams := strings.TrimSpace(posKeys)
 	names := strings.Split(namesParams, "|")
@@ -86,6 +86,3 @@ func (a resApi) adApi(ctx api.Context) interface{} {
 	}, int64(seconds))
 	return result
 }
-
-
-

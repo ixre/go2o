@@ -11,10 +11,10 @@ import "testing"
  * history :
  */
 
-func TestAdApi(t *testing.T){
+func TestAdApi(t *testing.T) {
 	mp := map[string]string{
 		"pos_keys": "mobi-index-scroller",
-		"user_id":"0",
+		"user_id":  "0",
 	}
 	testApi(t, "res.ad_api", mp, true)
 }

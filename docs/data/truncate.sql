@@ -6,7 +6,6 @@ TRUNCATE TABLE "article_list";
 TRUNCATE TABLE "comm_qr_template";
 TRUNCATE TABLE "dlv_merchant_bind";
 TRUNCATE TABLE "ex_page";
---TRUNCATE TABLE "gs_item_tag";
 TRUNCATE TABLE "gs_member_price";
 TRUNCATE TABLE "item_sku";
 TRUNCATE TABLE "item_info";
@@ -17,11 +16,10 @@ TRUNCATE TABLE "mch_api_info";
 TRUNCATE TABLE "mch_balance_log";
 TRUNCATE TABLE "mch_buyer_group";
 TRUNCATE TABLE "mch_day_chart";
---TRUNCATE TABLE "mch_enterprise_conf";
+TRUNCATE TABLE "mch_enterprise_info";
 TRUNCATE TABLE "mch_merchant";
 TRUNCATE TABLE "mch_online_shop";
 TRUNCATE TABLE "mch_offline_shop";
-TRUNCATE TABLE "mch_sale_conf";
 
 
 TRUNCATE TABLE "mm_member";
@@ -40,6 +38,9 @@ TRUNCATE TABLE "mm_bank";
 TRUNCATE TABLE "mm_receipts_code";
 TRUNCATE TABLE "mm_levelup";
 TRUNCATE TABLE "mm_buyer_group";
+TRUNCATE TABLE "mm_lock_info";
+TRUNCATE TABLE "mm_lock_history";
+
 
 
 
@@ -62,7 +63,7 @@ TRUNCATE TABLE "sale_exchange";
 TRUNCATE TABLE "sale_refund";
 
 TRUNCATE TABLE "express_provider";
-TRUNCATE TABLE "express_template";
+TRUNCATE TABLE "mch_express_template";
 TRUNCATE TABLE "express_area_set";
 
 TRUNCATE TABLE "ship_order";
@@ -71,7 +72,7 @@ TRUNCATE TABLE "ship_item";
 TRUNCATE TABLE "pro_product";
 TRUNCATE TABLE "item_info";
 TRUNCATE TABLE "item_sku";
-TRUNCATE TABLE "pro_category";
+TRUNCATE TABLE "prod_category";
 TRUNCATE TABLE "pro_model";
 TRUNCATE TABLE "pro_model_brand";
 TRUNCATE TABLE "pro_brand";
