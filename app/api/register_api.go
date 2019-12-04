@@ -84,7 +84,6 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 			//todo: 未生效
 			m.signCheckTokenExpires(token)
 		}
-		log.Println("----",fmt.Sprintf("%#v",r))
 		return r
 	}
 	return m.SResult(err)
@@ -249,5 +248,5 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 			return api.ResponseWithCode(1, "手机号码已注册")
 		}
 	}
-	return api.NewResponse(map[string]string{})
+	return api.NewResponse(nil)
 }

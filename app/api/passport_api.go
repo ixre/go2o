@@ -193,7 +193,7 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	return api.NewResponse(map[string]string{})
+	return api.NewResponse(nil)
 }
 
 /**
@@ -233,7 +233,7 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	return api.NewResponse(map[string]string{})
+	return api.NewResponse(nil)
 }
 
 /**
@@ -277,7 +277,7 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 		}
 	}
 	h.resetCodeVerifyResult(token)
-	return api.NewResponse(map[string]string{})
+	return api.NewResponse(nil)
 }
 
 /**
@@ -324,7 +324,7 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 		}
 	}
 	h.resetCodeVerifyResult(token)
-	return api.NewResponse(map[string]string{})
+	return api.NewResponse(nil)
 }
 
 /**
@@ -371,7 +371,7 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 		}
 	}
 	h.resetCodeVerifyResult(token)
-	return api.NewResponse(map[string]string{})
+	return api.NewResponse(nil)
 }
 
 /**
@@ -416,7 +416,7 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 		}
 	}
 	h.resetCodeVerifyResult(token)
-	return api.NewResponse(map[string]string{})
+	return api.NewResponse(nil)
 }
 
 // 获取验证码的间隔时间
