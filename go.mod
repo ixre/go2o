@@ -13,6 +13,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
+	github.com/ixre/goex v1.6.0
 	github.com/ixre/gof v1.7.10
 	github.com/ixre/tto v1.3.8
 	github.com/jcmturner/gofork v1.0.0 // indirect
@@ -27,7 +28,6 @@ require (
 	github.com/pkg/profile v1.2.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect
 	github.com/robfig/cron v1.2.0
-	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20191119213627-4f8c1d86b1ba // indirect
 	golang.org/x/image v0.0.0-20190703141733-d6a02ce849c9 // indirect

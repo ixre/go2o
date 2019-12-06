@@ -59,6 +59,7 @@ func NewService(factory api.ContextFactory, debug bool, rl *util.RequestLimit) *
 	s.Register("passport", NewPassportApi())
 	s.Register("settings", NewSettingsApi())
 	s.Register("res",NewResApi())
+	s.Register("goods",NewGoodsApi())
 	// 注册中间键
 	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", debug, rl)
 	return s
@@ -99,7 +100,6 @@ func serviceMiddleware(s api.Server, prefix string, debug bool, rl *util.Request
 			//return errors.New(fmt.Sprintf("%s,require version=%s",
 			//	api.RDeprecated.Message, tarVer))
 		}
-
 		return nil
 	})
 

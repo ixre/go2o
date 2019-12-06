@@ -66,7 +66,20 @@ func registerTypes() {
 	gob.Register([]*dto.ListOnlineShop{})
 	gob.Register(&member_service.SMember{})
 	gob.Register(&member_service.SProfile{})
+	init2()
 }
+
+
+func init2() {
+	gob.Register(map[string]map[string]interface{}{})
+	gob.Register(ad.ValueGallery{})
+	gob.Register(ad.Ad{})
+	gob.Register([]*valueobject.Goods{})
+	gob.Register(valueobject.Goods{})
+	gob.Register(ad.HyperLink{})
+	gob.Register(ad.Image{})
+}
+
 
 func Init(a *AppImpl, debug, trace bool) bool {
 	log.Println("[ Go2o][ Boot]: initialize ...")
