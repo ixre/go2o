@@ -1,12 +1,14 @@
 package api
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/gen"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"strconv"
@@ -88,4 +90,19 @@ func (a resApi) adApi(ctx api.Context) interface{} {
 }
 
 
+
+/**
+ * @api {post} /res/qr_code 生成二维码
+ * @apiGroup res
+ * @apiParam {string} text 文本内容
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"err_code":1,"err_msg":"access denied"}
+ */
+func (a resApi) qrCode(ctx api.Context) interface{} {
+	text := ctx.Form().GetString("text")
+	data := gen.BuildQrCodeForUrl(text, 20)
+	return base64.URLEncoding.EncodeToString(data)
+}
 

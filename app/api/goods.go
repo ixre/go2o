@@ -29,6 +29,7 @@ func (g goodsApi) Process(fn string, ctx api.Context) *api.Response {
 		"get_new_goods":       g.newGoods,
 		"get_hot_sales_goods": g.hotSalesGoods,
 		"get_label_goods":     g.saleLabelGoods,
+		"favorite":            g.Favorite,
 	})
 }
 
@@ -101,6 +102,27 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 	return list
 }
 
+
+/**
+ * @api {post} /goods/favorite 收藏商品
+ * @apiGroup goods
+ * @apiParam {int} item_id 商品编号
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"err_code":1,"err_msg":"access denied"}
+ */
+func (g goodsApi) Favorite(ctx api.Context) interface{} {
+	memberId := getMemberId(ctx)
+	id := ctx.Form().GetInt("item_id")
+	err := rsi.MemberService.FavoriteGoods(int64(memberId), int32(id))
+	if err != nil {
+		return api.ResponseWithCode(1, err.Error())
+	}
+	return api.NewResponse(nil)
+}
+
+
 //
 //func (j *JsonC) Mch_goods(c *echox.Context) error {
 //	typeParams := strings.TrimSpace(c.FormValue("params"))
@@ -128,29 +150,6 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 //	return c.Debug(c.JSON(http.StatusOK, result))
 //}
 
-//// 商城/店铺分类JSON，shop_id为0，则返回商城的分类
-//// todo: ??? gob编码提示错误
-//func (j *JsonC) ShopCat(c *echox.Context) error {
-//	parentId, _ := util.I32Err(strconv.Atoi(c.FormValue("parent_id")))
-//	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
-//	var list []*ttype.SCategory
-//	key := fmt.Sprintf("go2o:repo:cat:%d:json:%d", shopId, parentId)
-//	sto := c.App.Storage()
-//	if err := j.unmarshal(sto, key, &list); err != nil {
-//		//if err := sto.Get(key,*list);err != nil{
-//		if parentId == 0 {
-//			list = rsi.ProductService.GetBigCategories(shopId)
-//		} else {
-//			list = rsi.ProductService.GetChildCategories(shopId, parentId)
-//		}
-//		//sto.Set(key,list)
-//		var d []byte
-//		d, err = json.Marshal(list)
-//		sto.Set(key, string(d))
-//		//log.Println("---- 更新分类缓存 ", err)
-//	}
-//	return c.JSON(http.StatusOK, list)
-//}
 //
 //func (j *JsonC) Get_shop(c *echox.Context) error {
 //	typeParams := strings.TrimSpace(c.FormValue("params"))
