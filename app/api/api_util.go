@@ -30,6 +30,13 @@ func (u utils) error(ctx echo.Context, err error) error {
 	return ctx.JSON(http.StatusOK, gof.Result{ErrCode: 1, ErrMsg: err.Error()})
 }
 
+func (u utils) response(ctx echo.Context,err error)error{
+	if err != nil{
+		return u.error(ctx,err)
+	}
+	return u.success(ctx)
+}
+
 func (u utils) errorJson(ctx echo.Context, errCode int, err error) error {
 	return ctx.JSON(http.StatusOK, gof.Result{ErrCode: errCode, ErrMsg: err.Error()})
 }
