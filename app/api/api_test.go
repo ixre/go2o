@@ -78,7 +78,7 @@ func TestSign(t *testing.T){
 		t.Failed()
 	}
 	cli := http.Client{}
-	rsp, err := cli.PostForm("http://www.super4bit.co:1428/api", values)
+	rsp, err := cli.PostForm("http://localhost:1428/api", values)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

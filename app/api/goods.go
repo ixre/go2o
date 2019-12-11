@@ -187,3 +187,4 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //
 //	return c.Debug(c.JSON(http.StatusOK, result))
 //}
+
