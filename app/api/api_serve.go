@@ -34,6 +34,7 @@ func NewServe(store storage.Interface, debug bool, requireVer string,
 	RequireVersion = requireVer
 	ApiUser = apiUser
 	ApiSecret = apiSecret
+	log.Println(fmt.Sprintf("[ Go2o][ API]: api key is '%s' and secret is '%s'",ApiUser,ApiSecret))
 	// 初始化变量
 	registry := map[string]interface{}{}
 	// 创建上下文工厂
