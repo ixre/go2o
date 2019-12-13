@@ -60,7 +60,7 @@ func (o *OrderQuery) QueryOrderItems(subOrderId int64) []*dto.OrderItem {
 func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
-	orderList := []*dto.PagedMemberSubOrder{}
+	orderList := make([]*dto.PagedMemberSubOrder,0)
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -85,14 +85,13 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
 
 	orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	idBuf := bytes.NewBufferString("")
-
 	// 查询分页的订单
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
-        o.vendor_id,o.shop_id,s.name as shop_name,
+        o.vendor_id,o.shop_id,s.shop_name,
         o.item_amount,o.discount_amount,o.express_fee,
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
          FROM sale_sub_order o INNER JOIN order_list po ON o.order_id = po.id
-            INNER JOIN mch_shop s ON o.shop_id=s.id
+            INNER JOIN mch_online_shop s ON o.shop_id=s.id
          WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {

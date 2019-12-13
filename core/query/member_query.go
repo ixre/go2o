@@ -253,7 +253,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 
 	if num > 0 {
 		sqlLine := fmt.Sprintf(`SELECT f.id,s.id as shop_id,mch.id as mch_id,
-    s.name as shop_name,o.logo,f.update_time FROM mm_favorite f
+    s.shop_name,o.logo,f.update_time FROM mm_favorite f
     INNER JOIN  mch_shop s ON f.refer_id =s.id
     INNER JOIN mch_online_shop o ON s.id = o.shop_id
     INNER JOIN mch_merchant mch ON mch.id = s.vendor_id
