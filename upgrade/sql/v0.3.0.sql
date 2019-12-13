@@ -372,7 +372,7 @@ ALTER TABLE public.ad_list ALTER COLUMN type_id TYPE int4 USING type_id::integer
 /** 2019-12-13 */
 UPDATE  "public".pro_product  set sale_price = 0 WHERE sale_price IS NULL;
 UPDATE  "public".pro_product  set shelve_state = true WHERE shelve_state IS NULL;
-UPDATE  "public".pro_product  set review_state = 1 WHERE review_state IS NULL;
+UPDATE  "public".pro_product  set review_state = true WHERE review_state IS NULL;
 
 ALTER TABLE "public".pro_product
   alter column cat_id set not null;
@@ -524,6 +524,7 @@ COMMENT ON COLUMN "public".pro_model_brand.id IS '编号';
 COMMENT ON COLUMN "public".pro_model_brand.brand_id IS '品牌编号';
 COMMENT ON COLUMN "public".pro_model_brand.pro_model IS '商品模型';
 
+ALTER TABLE pro_product DROP COLUMN sale_price;
 
 ALTER TABLE public.pro_product RENAME TO product;
 ALTER TABLE public.pro_model RENAME TO product_model;
@@ -535,6 +536,7 @@ ALTER TABLE public.pro_attr_item RENAME TO product_model_attr_item;
 ALTER TABLE public.pro_model_brand RENAME TO product_model_brand;
 ALTER TABLE public.pro_attr_info RENAME TO product_attr_info;
 ALTER TABLE public.prod_category RENAME TO product_category;
+
 
 
 
