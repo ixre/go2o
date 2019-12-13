@@ -70,7 +70,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int, error) {
 func (c *categoryRepo) CheckContainGoods(vendorId int32, catId int) bool {
 	num := 0
 	if vendorId <= 0 {
-		c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id= $1`, &num, catId)
+		c.Connector.ExecScalar(`SELECT COUNT(0) FROM product WHERE cat_id= $1`, &num, catId)
 	} else {
 		panic(errors.New("暂时不支持商户绑定分类"))
 	}
@@ -79,11 +79,11 @@ func (c *categoryRepo) CheckContainGoods(vendorId int32, catId int) bool {
 
 func (c *categoryRepo) DeleteCategory(mchId int32, id int) error {
 	//删除子类
-	_, err := c.Connector.ExecNonQuery("DELETE FROM prod_category WHERE parent_id= $1",
+	_, err := c.Connector.ExecNonQuery("DELETE FROM product_category WHERE parent_id= $1",
 		id)
 
 	//删除分类
-	_, err = c.Connector.ExecNonQuery("DELETE FROM prod_category WHERE id= $1",
+	_, err = c.Connector.ExecNonQuery("DELETE FROM product_category WHERE id= $1",
 		id)
 
 	// 清理缓存
@@ -148,8 +148,8 @@ func (c *categoryRepo) GetCategories(mchId int) []*product.Category {
 func (c *categoryRepo) GetRelationBrands(idArr []int) []*promodel.ProBrand {
 	var list []*promodel.ProBrand
 	if len(idArr) > 0 {
-		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM pro_model_brand
-        WHERE pro_model IN (SELECT distinct pro_model FROM prod_category WHERE id IN(`+
+		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM product_model_brand
+        WHERE pro_model IN (SELECT distinct pro_model FROM product_category WHERE id IN(`+
 			format.IntArrStrJoin(idArr)+`)))`)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
