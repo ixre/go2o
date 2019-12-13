@@ -525,6 +525,8 @@ COMMENT ON COLUMN "public".pro_model_brand.brand_id IS '品牌编号';
 COMMENT ON COLUMN "public".pro_model_brand.pro_model IS '商品模型';
 
 ALTER TABLE pro_product DROP COLUMN sale_price;
+ALTER TABLE pro_product DROP COLUMN shelve_state;
+ALTER TABLE pro_product DROP COLUMN review_state;
 
 ALTER TABLE public.pro_product RENAME TO product;
 ALTER TABLE public.pro_model RENAME TO product_model;
