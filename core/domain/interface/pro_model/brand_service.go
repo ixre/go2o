@@ -14,7 +14,7 @@ type (
 		// 介绍
 		Intro string `db:"intro"`
 		// 是否审核
-		Review int32 `db:"review"`
+		ReviewState int32 `db:"review_state"`
 		// 加入时间
 		CreateTime int64 `db:"create_time"`
 	}

@@ -270,7 +270,7 @@ func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
 		for _, v := range ia {
 			item := s.proMRepo.GetSpecItem(v)
 			if item == nil {
-				log.Println("no such spec product, id:", v)
+				log.Println("no such spec item, id:", v)
 				continue
 			}
 			if n, ok := iName[item.ID]; ok && n != "" {

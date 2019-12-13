@@ -369,6 +369,7 @@ COMMENT ON COLUMN "public".mch_express_template.enabled IS '是否启用';
 /** 2019-11-26 */
 ALTER TABLE public.ad_list ALTER COLUMN type_id TYPE int4 USING type_id::integer;
 
+<<<<<<< HEAD
 /** 2019-11-29 */
 ALTER TABLE "public".mch_enterprise_info
   alter column mch_id set not null;
@@ -518,5 +519,178 @@ COMMENT ON COLUMN "public".mch_express_template.first_fee IS '首次计价单价
 COMMENT ON COLUMN "public".mch_express_template.add_unit IS '超过首次计价计算单位,如续重1kg';
 COMMENT ON COLUMN "public".mch_express_template.add_fee IS '超过首次计价单价，如续重1kg';
 COMMENT ON COLUMN "public".mch_express_template.enabled IS '是否启用';
+=======
+/** 2019-12-13 */
+UPDATE  "public".pro_product  set sale_price = 0 WHERE sale_price IS NULL;
+UPDATE  "public".pro_product  set shelve_state = true WHERE shelve_state IS NULL;
+UPDATE  "public".pro_product  set review_state = true WHERE review_state IS NULL;
+
+ALTER TABLE "public".pro_product
+  alter column cat_id set not null;
+ALTER TABLE "public".pro_product
+  alter column supplier_id set not null;
+ALTER TABLE "public".pro_product
+  alter column brand_id set not null;
+ALTER TABLE "public".pro_product
+  alter column name set not null;
+ALTER TABLE "public".pro_product
+  alter column code set not null;
+ALTER TABLE "public".pro_product
+  alter column img set not null;
+ALTER TABLE "public".pro_product
+  alter column sale_price set not null;
+ALTER TABLE "public".pro_product
+  alter column shelve_state TYPE int4 USING shelve_state::integer;
+  ALTER TABLE "public".pro_product
+  alter column shelve_state  set not null;
+ALTER TABLE "public".pro_product
+  alter column review_state TYPE int4 USING review_state::integer;
+ALTER TABLE "public".pro_product
+  alter column review_state set not null;
+ALTER TABLE "public".pro_product
+  alter column sort_num set not null;
+ALTER TABLE "public".pro_product
+  alter column description set not null;
+ALTER TABLE "public".pro_product
+  alter column state set not null;
+ALTER TABLE "public".pro_product
+  alter column remark set not null;
+ALTER TABLE "public".pro_product
+  alter column create_time set not null;
+ALTER TABLE "public".pro_product
+  alter column update_time set not null;
+COMMENT ON TABLE "public".pro_product IS '产品';
+COMMENT ON COLUMN "public".pro_product.id IS '编号';
+COMMENT ON COLUMN "public".pro_product.cat_id IS '分类编号';
+COMMENT ON COLUMN "public".pro_product.supplier_id IS '供货商编号';
+COMMENT ON COLUMN "public".pro_product.brand_id IS '品牌编号';
+COMMENT ON COLUMN "public".pro_product.name IS '名称';
+COMMENT ON COLUMN "public".pro_product.code IS '产品编码';
+COMMENT ON COLUMN "public".pro_product.img IS '产品图片';
+COMMENT ON COLUMN "public".pro_product.sale_price IS '销售价格';
+COMMENT ON COLUMN "public".pro_product.shelve_state IS '上架状态';
+COMMENT ON COLUMN "public".pro_product.review_state IS '审核状态';
+COMMENT ON COLUMN "public".pro_product.sort_num IS '排序编号';
+COMMENT ON COLUMN "public".pro_product.description IS '描述';
+COMMENT ON COLUMN "public".pro_product.state IS '产品状态';
+COMMENT ON COLUMN "public".pro_product.remark IS '备注';
+COMMENT ON COLUMN "public".pro_product.create_time IS '创建时间';
+COMMENT ON COLUMN "public".pro_product.update_time IS '更新时间';
+
+
+COMMENT ON TABLE "public".prod_category IS '产品分类';
+COMMENT ON COLUMN "public".prod_category.id IS '编号';
+COMMENT ON COLUMN "public".prod_category.parent_id IS '上级分类';
+COMMENT ON COLUMN "public".prod_category.prod_model IS '产品模型';
+COMMENT ON COLUMN "public".prod_category.priority IS '优先级';
+COMMENT ON COLUMN "public".prod_category.name IS '分类名称';
+COMMENT ON COLUMN "public".prod_category.virtual_cat IS '是否为虚拟分类';
+COMMENT ON COLUMN "public".prod_category.cat_url IS '分类链接地址';
+COMMENT ON COLUMN "public".prod_category.icon IS '图标';
+COMMENT ON COLUMN "public".prod_category.icon_xy IS '图标坐标';
+COMMENT ON COLUMN "public".prod_category.level IS '分类层级';
+COMMENT ON COLUMN "public".prod_category.sort_num IS '序号';
+COMMENT ON COLUMN "public".prod_category.floor_show IS '是否楼层显示';
+COMMENT ON COLUMN "public".prod_category.enabled IS '是否启用';
+COMMENT ON COLUMN "public".prod_category.create_time IS '创建时间';
+
+
+ALTER TABLE "public".pro_brand
+  alter column site_url set not null;
+ALTER TABLE "public".pro_brand
+  alter column intro set not null;
+ALTER TABLE "public".pro_brand
+  ADD COLUMN review_state int4 NOT NULL DEFAULT 0;
+ALTER TABLE "public".pro_brand
+  DROP COLUMN review;
+ALTER TABLE "public".pro_brand
+  alter column create_time set not null;
+COMMENT ON TABLE "public".pro_brand IS '品牌';
+COMMENT ON COLUMN "public".pro_brand.id IS '编号';
+COMMENT ON COLUMN "public".pro_brand.name IS '品牌名称';
+COMMENT ON COLUMN "public".pro_brand.image IS '品牌图片';
+COMMENT ON COLUMN "public".pro_brand.site_url IS '品牌官网';
+COMMENT ON COLUMN "public".pro_brand.intro IS '品牌介绍';
+COMMENT ON COLUMN "public".pro_brand.review_state IS '审核';
+COMMENT ON COLUMN "public".pro_brand.create_time IS '创建时间';
+
+
+COMMENT ON TABLE "public".pro_attr_info IS '产品属性信息';
+COMMENT ON COLUMN "public".pro_attr_info.id IS '编号';
+COMMENT ON COLUMN "public".pro_attr_info.product_id IS '产品编号';
+COMMENT ON COLUMN "public".pro_attr_info.attr_id IS '属性编号';
+COMMENT ON COLUMN "public".pro_attr_info.attr_data IS '属性数据';
+COMMENT ON COLUMN "public".pro_attr_info.attr_word IS '属性文本';
+
+
+ALTER TABLE "public".pro_model
+    alter column attr_str set not null;
+ALTER TABLE "public".pro_model
+    alter column spec_str set not null;
+COMMENT ON TABLE "public".pro_model IS '产品模型';
+COMMENT ON COLUMN "public".pro_model.id IS '编号';
+COMMENT ON COLUMN "public".pro_model.name IS '模型名称';
+COMMENT ON COLUMN "public".pro_model.attr_str IS '属性值';
+COMMENT ON COLUMN "public".pro_model.spec_str IS '规格值';
+COMMENT ON COLUMN "public".pro_model.enabled IS '是否启用';
+
+ALTER TABLE "public".pro_attr
+    alter column item_values set not null;
+COMMENT ON TABLE "public".pro_attr IS '模型商品属性';
+COMMENT ON COLUMN "public".pro_attr.id IS '编号';
+COMMENT ON COLUMN "public".pro_attr.pro_model IS '商品模型';
+COMMENT ON COLUMN "public".pro_attr.name IS '属性名称';
+COMMENT ON COLUMN "public".pro_attr.is_filter IS '是否作为筛选条件';
+COMMENT ON COLUMN "public".pro_attr.multi_chk IS '是否多选';
+COMMENT ON COLUMN "public".pro_attr.item_values IS '属性项值';
+COMMENT ON COLUMN "public".pro_attr.sort_num IS '排列序号';
+
+COMMENT ON TABLE "public".pro_attr_item IS '商品模型属性项';
+COMMENT ON COLUMN "public".pro_attr_item.id IS '编号';
+COMMENT ON COLUMN "public".pro_attr_item.attr_id IS '属性编号';
+COMMENT ON COLUMN "public".pro_attr_item.pro_model IS '商品模型';
+COMMENT ON COLUMN "public".pro_attr_item.value IS '属性值';
+COMMENT ON COLUMN "public".pro_attr_item.sort_num IS '排列序号';
+
+
+ALTER TABLE "public".pro_spec
+    alter column item_values set not null;
+COMMENT ON TABLE "public".pro_spec IS '商品模型规格';
+COMMENT ON COLUMN "public".pro_spec.id IS '编号';
+COMMENT ON COLUMN "public".pro_spec.pro_model IS '商品模型';
+COMMENT ON COLUMN "public".pro_spec.name IS '规格名称';
+COMMENT ON COLUMN "public".pro_spec.item_values IS '规格项值';
+COMMENT ON COLUMN "public".pro_spec.sort_num IS '排列序号';
+
+COMMENT ON TABLE "public".pro_spec_item IS '产品模型规格项';
+COMMENT ON COLUMN "public".pro_spec_item.id IS '编号';
+COMMENT ON COLUMN "public".pro_spec_item.spec_id IS '规格编号';
+COMMENT ON COLUMN "public".pro_spec_item.pro_model IS '商品模型';
+COMMENT ON COLUMN "public".pro_spec_item.value IS '规格值';
+COMMENT ON COLUMN "public".pro_spec_item.color IS '规格颜色';
+COMMENT ON COLUMN "public".pro_spec_item.sort_num IS '排列序号';
+
+COMMENT ON TABLE "public".pro_model_brand IS '商品模型关联品牌';
+COMMENT ON COLUMN "public".pro_model_brand.id IS '编号';
+COMMENT ON COLUMN "public".pro_model_brand.brand_id IS '品牌编号';
+COMMENT ON COLUMN "public".pro_model_brand.pro_model IS '商品模型';
+
+ALTER TABLE pro_product DROP COLUMN sale_price;
+ALTER TABLE pro_product DROP COLUMN shelve_state;
+ALTER TABLE pro_product DROP COLUMN review_state;
+
+ALTER TABLE public.pro_product RENAME TO product;
+ALTER TABLE public.pro_model RENAME TO product_model;
+ALTER TABLE public.pro_brand RENAME TO product_brand;
+ALTER TABLE public.pro_spec RENAME TO product_model_spec;
+ALTER TABLE public.pro_spec_item RENAME TO product_model_spec_item;
+ALTER TABLE public.pro_attr RENAME TO product_model_attr;
+ALTER TABLE public.pro_attr_item RENAME TO product_model_attr_item;
+ALTER TABLE public.pro_model_brand RENAME TO product_model_brand;
+ALTER TABLE public.pro_attr_info RENAME TO product_attr_info;
+ALTER TABLE public.prod_category RENAME TO product_category;
+
+
+>>>>>>> feature
 
 

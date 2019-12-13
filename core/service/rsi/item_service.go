@@ -546,7 +546,7 @@ func (s *itemService) ReviewItem(vendorId int32, itemId int64,
 }
 
 // 标记为违规
-func (s *itemService) SignIncorrect(vendorId int32, itemId int64,
+func (s *itemService) SignGoodsIllegal(vendorId int32, itemId int64,
 	remark string) (_ *ttype.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {

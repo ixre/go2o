@@ -248,5 +248,5 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 			return api.ResponseWithCode(1, "手机号码已注册")
 		}
 	}
-	return api.NewResponse(map[string]string{})
+	return api.NewResponse(nil)
 }

@@ -61,7 +61,7 @@ func (p *productRepo) GetProductsById(ids ...int32) ([]*product.Product, error) 
 
 	//todo:改成database/sql方式，不使用orm
 	err := p.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM pro_product WHERE id IN (`+format.I32ArrStrJoin(ids)+`)`)
+		`SELECT * FROM product WHERE id IN (`+format.I32ArrStrJoin(ids)+`)`)
 
 	return items, err
 }
@@ -71,11 +71,11 @@ func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int,
 	var sql string
 
 	var catIdStr string = format.IntArrStrJoin(catIds)
-	sql = fmt.Sprintf(`SELECT * FROM pro_product INNER JOIN prod_category ON pro_product.cat_id=prod_category.id
-		WHERE merchant_id=%d AND prod_category.id IN (%s) AND on_shelves=1 LIMIT %d OFFSET %d`, mchId, catIdStr, start, (end - start))
+	sql = fmt.Sprintf(`SELECT * FROM product INNER JOIN product_category ON product.cat_id=product_category.id
+		WHERE merchant_id=%d AND product_category.id IN (%s) AND on_shelves=1 LIMIT %d OFFSET %d`, mchId, catIdStr, start, (end - start))
 
-	p.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pro_product INNER JOIN prod_category ON pro_product.cat_id=prod_category.id
-		WHERE merchant_id=%d AND prod_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)
+	p.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM product INNER JOIN product_category ON product.cat_id=product_category.id
+		WHERE merchant_id=%d AND product_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)
 
 	e = []*product.Product{}
 	p.Connector.GetOrm().SelectByQuery(&e, sql)

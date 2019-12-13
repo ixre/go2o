@@ -11,7 +11,7 @@ package dto
 type (
 	/*
 	   o.order_no,po.order_no as parent_no,
-	       o.vendor_id,o.shop_id,s.name as shop_name,
+	       o.vendor_id,o.shop_id,s.shop_name,
 	       o.item_amount,o.discount_amount,o.express_fee,
 	       o.package_fee,o.final_fee,o.status
 	*/

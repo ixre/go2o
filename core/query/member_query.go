@@ -253,7 +253,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 
 	if num > 0 {
 		sqlLine := fmt.Sprintf(`SELECT f.id,s.id as shop_id,mch.id as mch_id,
-    s.name as shop_name,o.logo,f.update_time FROM mm_favorite f
+    s.shop_name,o.logo,f.update_time FROM mm_favorite f
     INNER JOIN  mch_shop s ON f.refer_id =s.id
     INNER JOIN mch_online_shop o ON s.id = o.shop_id
     INNER JOIN mch_merchant mch ON mch.id = s.vendor_id
@@ -283,7 +283,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
     INNER JOIN item_info gs ON gs.id = f.refer_id
-    INNER JOIN pro_product product ON gs.product_id=product.id
+    INNER JOIN product product ON gs.product_id=product.id
     WHERE f.member_id= $1 AND f.fav_type= $2 %s`, where), &num,
 		memberId, member.FavTypeGoods)
 
@@ -291,7 +291,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 		sqlLine := fmt.Sprintf(`SELECT f.id,gs.id as goods_id,product.name as goods_name,
             img,sale_price,gs.stock_num,product.update_time
             FROM mm_favorite f INNER JOIN item_info gs ON gs.id = f.refer_id
-            INNER JOIN pro_product product ON gs.product_id=product.id
+            INNER JOIN product product ON gs.product_id=product.id
             WHERE f.member_id= $1 AND f.fav_type= $2 %s ORDER BY f.update_time DESC
             LIMIT $4 OFFSET $3`,
 			where)

@@ -128,7 +128,7 @@ func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int64) *item.GoodsItem {
 func (g *goodsRepo) GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error) {
 	var items []*valueobject.Goods
 	err := g.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM item_info INNER JOIN pro_product ON item_info.product_id=pro_product.id
+		`SELECT * FROM item_info INNER JOIN product ON item_info.product_id=product.id
      WHERE item_info.id IN (`+format.I64ArrStrJoin(ids)+`)`)
 
 	return items, err
@@ -179,13 +179,13 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int,
 
 	var list []*valueobject.Goods
 	err := g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
-	  INNER JOIN prod_category cat ON it.cat_id=cat.id
+	  INNER JOIN product_category cat ON it.cat_id=cat.id
 		 WHERE ($1 <=0 OR it.shop_id = $2) AND it.review_state= $3
 		  AND it.shelve_state= $4  %s %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN prod_category cat ON it.cat_id=cat.id
+		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN product_category cat ON it.cat_id=cat.id
 		 WHERE ($1 <=0 OR it.shop_id = $2) %s AND it.review_state= $3 AND it.shelve_state= $4
 		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
 		err = g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
@@ -200,9 +200,9 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int,
 // 获取指定数量已上架的商品
 func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string) []*valueobject.Goods {
 	var e []*valueobject.Goods
-	sql := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN prod_category ON pro_product.cat_id=prod_category.id
-		 WHERE supplier_id= $1 AND pro_product.review_state= $2 AND pro_product.shelve_state= $3
+	sql := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN product ON product.id = item_info.product_id
+		 INNER JOIN product_category ON product.cat_id=product_category.id
+		 WHERE supplier_id= $1 AND product.review_state= $2 AND product.shelve_state= $3
 		 ORDER BY %s,update_time DESC LIMIT $5 OFFSET $4`,
 		sortBy)
 

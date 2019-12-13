@@ -66,7 +66,20 @@ func registerTypes() {
 	gob.Register([]*dto.ListOnlineShop{})
 	gob.Register(&member_service.SMember{})
 	gob.Register(&member_service.SProfile{})
+	init2()
 }
+
+
+func init2() {
+	gob.Register(map[string]map[string]interface{}{})
+	gob.Register(ad.ValueGallery{})
+	gob.Register(ad.Ad{})
+	gob.Register([]*valueobject.Goods{})
+	gob.Register(valueobject.Goods{})
+	gob.Register(ad.HyperLink{})
+	gob.Register(ad.Image{})
+}
+
 
 func Init(a *AppImpl, debug, trace bool) bool {
 	log.Println("[ Go2o][ Boot]: initialize ...")
@@ -158,18 +171,18 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shipment.Item{}, "ship_item")
 
 	// 产品
-	orm.Mapping(product.Product{}, "pro_product")
+	orm.Mapping(product.Product{}, "product")
 	orm.Mapping(item.GoodsItem{}, "item_info")
 	orm.Mapping(item.Sku{}, "item_sku")
-	orm.Mapping(product.Category{}, "prod_category")
-	orm.Mapping(promodel.ProModel{}, "pro_model")
-	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")
-	orm.Mapping(promodel.ProBrand{}, "pro_brand")
-	orm.Mapping(promodel.Attr{}, "pro_attr")
-	orm.Mapping(promodel.AttrItem{}, "pro_attr_item")
-	orm.Mapping(promodel.Spec{}, "pro_spec")
-	orm.Mapping(promodel.SpecItem{}, "pro_spec_item")
-	orm.Mapping(product.Attr{}, "pro_attr_info")
+	orm.Mapping(product.Category{}, "product_category")
+	orm.Mapping(promodel.ProModel{}, "product_model")
+	orm.Mapping(promodel.ProBrand{}, "product_brand")
+	orm.Mapping(promodel.ProModelBrand{}, "product_model_brand")
+	orm.Mapping(promodel.Attr{}, "product_model_attr")
+	orm.Mapping(promodel.AttrItem{}, "product_model_attr_item")
+	orm.Mapping(promodel.Spec{}, "product_model_spec")
+	orm.Mapping(promodel.SpecItem{}, "product_model_spec_item")
+	orm.Mapping(product.Attr{}, "product_attr_info")
 	orm.Mapping(item.Snapshot{}, "item_snapshot")
 	orm.Mapping(item.TradeSnapshot{}, "item_trade_snapshot")
 	orm.Mapping(item.Label{}, "gs_sale_label")
