@@ -265,9 +265,6 @@ func (m *merchantService) testLogin(user string, pwd string) (id int, errCode in
 	if pwd := domain.MerchantSha1Pwd(pwd);pwd != mv.LoginPwd{
 		return 0,1,de.ErrCredential
 	}
-	if err = mch.Stat();err != nil{
-		return 0,5,err
-	}
 	return mch.GetAggregateRootId(), 0, nil
 }
 
