@@ -244,27 +244,31 @@ func (m *merchantService) testLogin(user string, pwd string) (id int, errCode in
 	if user == "" || pwd == "" {
 		return 0, 1, de.ErrCredential
 	}
-	var mchId int
 	if len(pwd) != 32 {
 		return -1, 4, de.ErrNotMD5Format
 	}
 	//尝试作为独立的商户账号登陆
-	mchId = m._query.Verify(user, domain.MerchantSha1Pwd(pwd))
-	if mchId <= 0 {
+	mch := m._mchRepo.GetMerchantByLoginUser(user)
+	if mch == nil {
 		// 使用会员身份登录
 		var id int64
 		id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd))
-		if err == nil {
-			mch := m.GetMerchantByMemberId(id)
-			if mch != nil {
-				mchId = int(mch.Id)
-			}
+		if err != nil {
+			return 0, 2, err
 		}
+		if mch2 := m.GetMerchantByMemberId(id); mch2 != nil {
+			return mch2.Id,0,nil
+		}
+		return 0, 2, merchant.ErrNoSuchMerchant
 	}
-	if mchId <= 0 {
-		return mchId, 2, merchant.ErrNoSuchMerchant
+	mv := mch.GetValue()
+	if pwd := domain.MerchantSha1Pwd(pwd);pwd != mv.LoginPwd{
+		return 0,1,de.ErrCredential
 	}
-	return mchId, 0, nil
+	if err = mch.Stat();err != nil{
+		return 0,5,err
+	}
+	return mch.GetAggregateRootId(), 0, nil
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码

@@ -26,7 +26,8 @@ type IMerchantRepo interface {
 
 	// 获取商户
 	GetMerchant(id int) IMerchant
-
+	// 根据登录用户名获取商户
+	GetMerchantByLoginUser(user string)IMerchant
 	// 获取合作商主要的域名主机
 	GetMerchantMajorHost(mchId int) string
 

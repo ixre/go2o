@@ -52,6 +52,7 @@ type merchantRepo struct {
 	mux           *sync.RWMutex
 }
 
+
 func NewMerchantRepo(c db.Connector, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
@@ -138,6 +139,15 @@ func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 		m.storage.Set(key, e)
 	}
 	return m.CreateMerchant(&e)
+}
+
+// 根据登录用户名获取商户
+func (m *merchantRepo) GetMerchantByLoginUser(user string) merchant.IMerchant {
+	e := merchant.Merchant{}
+	if err := m.Connector.GetOrm().GetBy(&e, "login_user=$1", user); err == nil {
+		return m.CreateMerchant(&e)
+	}
+	return nil
 }
 
 // 获取账户
