@@ -163,11 +163,7 @@ func (w *walletServiceImpl) PagingWalletLog(ctx context.Context, walletId int64,
 	if iw == nil {
 		return parser.PagingResult(0, nil, wallet.ErrNoSuchWalletAccount), nil
 	}
-	sortBy := params.OrderField
-	if params.OrderDesc {
-		sortBy += " DESC"
-	}
-	total, list := iw.PagingLog(int(params.Begin), int(params.Over), params.Opt, sortBy)
+	total, list := iw.PagingLog(int(params.Begin), int(params.Over), params.Parameters, params.SortBy)
 	return parser.PagingResult(total, list, err), nil
 }
 

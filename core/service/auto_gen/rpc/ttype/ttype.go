@@ -4622,17 +4622,15 @@ func (p *SShoppingCartItem) String() string {
 // 分页参数
 // 
 // Attributes:
-//  - Opt: 参数
-//  - OrderField: 排序字段
-//  - OrderDesc: 是否倒序排列
 //  - Begin: 开始记录数
 //  - Over: 结束记录数
+//  - SortBy: 排序字段
+//  - Parameters: 参数
 type SPagingParams struct {
-  Opt map[string]string `thrift:"Opt,1" db:"Opt" json:"Opt"`
-  OrderField string `thrift:"OrderField,2" db:"OrderField" json:"OrderField"`
-  OrderDesc bool `thrift:"OrderDesc,3" db:"OrderDesc" json:"OrderDesc"`
-  Begin int32 `thrift:"Begin,4" db:"Begin" json:"Begin"`
-  Over int32 `thrift:"Over,5" db:"Over" json:"Over"`
+  Begin int32 `thrift:"Begin,1" db:"Begin" json:"Begin"`
+  Over int32 `thrift:"Over,2" db:"Over" json:"Over"`
+  SortBy string `thrift:"SortBy,3" db:"SortBy" json:"SortBy"`
+  Parameters map[string]string `thrift:"Parameters,4" db:"Parameters" json:"Parameters"`
 }
 
 func NewSPagingParams() *SPagingParams {
@@ -4640,24 +4638,20 @@ func NewSPagingParams() *SPagingParams {
 }
 
 
-func (p *SPagingParams) GetOpt() map[string]string {
-  return p.Opt
-}
-
-func (p *SPagingParams) GetOrderField() string {
-  return p.OrderField
-}
-
-func (p *SPagingParams) GetOrderDesc() bool {
-  return p.OrderDesc
-}
-
 func (p *SPagingParams) GetBegin() int32 {
   return p.Begin
 }
 
 func (p *SPagingParams) GetOver() int32 {
   return p.Over
+}
+
+func (p *SPagingParams) GetSortBy() string {
+  return p.SortBy
+}
+
+func (p *SPagingParams) GetParameters() map[string]string {
+  return p.Parameters
 }
 func (p *SPagingParams) Read(iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(); err != nil {
@@ -4673,7 +4667,7 @@ func (p *SPagingParams) Read(iprot thrift.TProtocol) error {
     if fieldTypeId == thrift.STOP { break; }
     switch fieldId {
     case 1:
-      if fieldTypeId == thrift.MAP {
+      if fieldTypeId == thrift.I32 {
         if err := p.ReadField1(iprot); err != nil {
           return err
         }
@@ -4683,7 +4677,7 @@ func (p *SPagingParams) Read(iprot thrift.TProtocol) error {
         }
       }
     case 2:
-      if fieldTypeId == thrift.STRING {
+      if fieldTypeId == thrift.I32 {
         if err := p.ReadField2(iprot); err != nil {
           return err
         }
@@ -4693,7 +4687,7 @@ func (p *SPagingParams) Read(iprot thrift.TProtocol) error {
         }
       }
     case 3:
-      if fieldTypeId == thrift.BOOL {
+      if fieldTypeId == thrift.STRING {
         if err := p.ReadField3(iprot); err != nil {
           return err
         }
@@ -4703,18 +4697,8 @@ func (p *SPagingParams) Read(iprot thrift.TProtocol) error {
         }
       }
     case 4:
-      if fieldTypeId == thrift.I32 {
+      if fieldTypeId == thrift.MAP {
         if err := p.ReadField4(iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 5:
-      if fieldTypeId == thrift.I32 {
-        if err := p.ReadField5(iprot); err != nil {
           return err
         }
       } else {
@@ -4738,12 +4722,39 @@ func (p *SPagingParams) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *SPagingParams)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Begin = v
+}
+  return nil
+}
+
+func (p *SPagingParams)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.Over = v
+}
+  return nil
+}
+
+func (p *SPagingParams)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.SortBy = v
+}
+  return nil
+}
+
+func (p *SPagingParams)  ReadField4(iprot thrift.TProtocol) error {
   _, _, size, err := iprot.ReadMapBegin()
   if err != nil {
     return thrift.PrependError("error reading map begin: ", err)
   }
   tMap := make(map[string]string, size)
-  p.Opt =  tMap
+  p.Parameters =  tMap
   for i := 0; i < size; i ++ {
 var _key11 string
     if v, err := iprot.ReadString(); err != nil {
@@ -4757,47 +4768,11 @@ var _val12 string
 } else {
     _val12 = v
 }
-    p.Opt[_key11] = _val12
+    p.Parameters[_key11] = _val12
   }
   if err := iprot.ReadMapEnd(); err != nil {
     return thrift.PrependError("error reading map end: ", err)
   }
-  return nil
-}
-
-func (p *SPagingParams)  ReadField2(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 2: ", err)
-} else {
-  p.OrderField = v
-}
-  return nil
-}
-
-func (p *SPagingParams)  ReadField3(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadBool(); err != nil {
-  return thrift.PrependError("error reading field 3: ", err)
-} else {
-  p.OrderDesc = v
-}
-  return nil
-}
-
-func (p *SPagingParams)  ReadField4(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(); err != nil {
-  return thrift.PrependError("error reading field 4: ", err)
-} else {
-  p.Begin = v
-}
-  return nil
-}
-
-func (p *SPagingParams)  ReadField5(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(); err != nil {
-  return thrift.PrependError("error reading field 5: ", err)
-} else {
-  p.Over = v
-}
   return nil
 }
 
@@ -4809,7 +4784,6 @@ func (p *SPagingParams) Write(oprot thrift.TProtocol) error {
     if err := p.writeField2(oprot); err != nil { return err }
     if err := p.writeField3(oprot); err != nil { return err }
     if err := p.writeField4(oprot); err != nil { return err }
-    if err := p.writeField5(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -4819,12 +4793,42 @@ func (p *SPagingParams) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *SPagingParams) writeField1(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("Opt", thrift.MAP, 1); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Opt: ", p), err) }
-  if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Opt)); err != nil {
+  if err := oprot.WriteFieldBegin("Begin", thrift.I32, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Begin: ", p), err) }
+  if err := oprot.WriteI32(int32(p.Begin)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.Begin (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Begin: ", p), err) }
+  return err
+}
+
+func (p *SPagingParams) writeField2(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("Over", thrift.I32, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Over: ", p), err) }
+  if err := oprot.WriteI32(int32(p.Over)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.Over (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Over: ", p), err) }
+  return err
+}
+
+func (p *SPagingParams) writeField3(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("SortBy", thrift.STRING, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:SortBy: ", p), err) }
+  if err := oprot.WriteString(string(p.SortBy)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.SortBy (3) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:SortBy: ", p), err) }
+  return err
+}
+
+func (p *SPagingParams) writeField4(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("Parameters", thrift.MAP, 4); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Parameters: ", p), err) }
+  if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Parameters)); err != nil {
     return thrift.PrependError("error writing map begin: ", err)
   }
-  for k, v := range p.Opt {
+  for k, v := range p.Parameters {
     if err := oprot.WriteString(string(k)); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
     if err := oprot.WriteString(string(v)); err != nil {
@@ -4834,47 +4838,7 @@ func (p *SPagingParams) writeField1(oprot thrift.TProtocol) (err error) {
     return thrift.PrependError("error writing map end: ", err)
   }
   if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Opt: ", p), err) }
-  return err
-}
-
-func (p *SPagingParams) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("OrderField", thrift.STRING, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:OrderField: ", p), err) }
-  if err := oprot.WriteString(string(p.OrderField)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.OrderField (2) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:OrderField: ", p), err) }
-  return err
-}
-
-func (p *SPagingParams) writeField3(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("OrderDesc", thrift.BOOL, 3); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:OrderDesc: ", p), err) }
-  if err := oprot.WriteBool(bool(p.OrderDesc)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.OrderDesc (3) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:OrderDesc: ", p), err) }
-  return err
-}
-
-func (p *SPagingParams) writeField4(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("Begin", thrift.I32, 4); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Begin: ", p), err) }
-  if err := oprot.WriteI32(int32(p.Begin)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.Begin (4) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Begin: ", p), err) }
-  return err
-}
-
-func (p *SPagingParams) writeField5(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("Over", thrift.I32, 5); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:Over: ", p), err) }
-  if err := oprot.WriteI32(int32(p.Over)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.Over (5) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 5:Over: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Parameters: ", p), err) }
   return err
 }
 
