@@ -540,5 +540,20 @@ ALTER TABLE public.pro_attr_info RENAME TO product_attr_info;
 ALTER TABLE public.prod_category RENAME TO product_category;
 
 
+/* 2019-12-16 */
+DROP TABLE mm_favorite;
 
-
+CREATE TABLE "public".mm_favorite (
+  id          serial NOT NULL,
+  member_id   int4 NOT NULL,
+  fav_type    int4 NOT NULL,
+  refer_id    int4 NOT NULL,
+  create_time int8 NOT NULL,
+  CONSTRAINT mm_favorite_pkey
+      PRIMARY KEY (id));
+COMMENT ON TABLE "public".mm_favorite IS '会员收藏';
+COMMENT ON COLUMN "public".mm_favorite.id IS '编号';
+COMMENT ON COLUMN "public".mm_favorite.member_id IS '会员编号';
+COMMENT ON COLUMN "public".mm_favorite.fav_type IS '收藏类型';
+COMMENT ON COLUMN "public".mm_favorite.refer_id IS '关联编号';
+COMMENT ON COLUMN "public".mm_favorite.create_time IS '收藏时间';

@@ -16,6 +16,9 @@ type accountApi struct {
 	utils
 }
 
+func NewAccountApi()*accountApi{
+	return &accountApi{}
+}
 func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))

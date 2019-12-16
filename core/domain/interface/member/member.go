@@ -397,7 +397,7 @@ type (
 	// 收藏
 	Favorite struct {
 		// 编号
-		Id int32 `db:"id"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 收藏类型
@@ -405,7 +405,7 @@ type (
 		// 引用编号
 		ReferId int32 `db:"refer_id"`
 		// 收藏时间
-		UpdateTime int64 `db:"update_time"`
+		CreateTime int64 `db:"create_time"`
 	}
 
 	// 收货地址
