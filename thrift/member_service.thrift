@@ -86,6 +86,10 @@ service MemberService{
     /** 更改交易密码 */
     ttype.Result ModifyTradePwd(1:i64 memberId,2:string old,3:string pwd)
 
+    /** 获取会员的订单状态及其数量 */
+    map<i32,i32> OrdersQuantity(1:i64 memberId)
+
+
     // 升级为高级会员
     ttype.Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
@@ -128,6 +132,8 @@ service MemberService{
 
     /** 获取指定账户的流水记录 */
     ttype.SPagingResult PagingAccountLog(1:i64 memberId,2:i32 accountType,3:ttype.SPagingParams params)
+
+
 }
 
 
@@ -352,6 +358,17 @@ struct SMemberLevelInfo{
     8:i32 RequireExp
 }
 
+/** 订单汇总信息 */
+struct SMemberOrderSummary{
+    /** 待付款订单数量 */
+    1:i32 AwaitPayment
+    /** 待发货订单数量 */
+    2:i32 AwaitShipment
+    /** 待收货订单数量 */
+    3:i32 AwaitReceive
+    /** 已完成订单数量 */
+    4:i32 Completed
+}
 
 /** 凭据 */
 enum ECredentials{
@@ -366,3 +383,4 @@ enum ECredentials{
     /** 邀请码 */
     InviteCode = 6
 }
+

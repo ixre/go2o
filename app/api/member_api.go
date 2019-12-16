@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/ixre/gof/api"
 	"github.com/ixre/gof/types"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"strconv"
 	"strings"
@@ -25,6 +27,15 @@ type MemberApi struct {
 }
 
 func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
+	var memberId int64
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
+	if len(code) > 0{
+		memberId, _ = rsi.MemberService.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+	}
+	switch fn {
+	case "order_summary":return m.orderSummary(ctx,memberId)
+	case "orders_quantity":return m.ordersQuantity(ctx,memberId)
+	}
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
 		"login":           m.login,
 		"get":             m.getMember,
@@ -256,4 +267,33 @@ func (m *MemberApi) invites(ctx api.Context) interface{} {
 		return api.NewResponse(mp)
 	}
 	return api.NewErrorResponse("no such user")
+}
+
+func (m MemberApi) orderSummary(ctx api.Context,memberId int64)*api.Response {
+   return api.ResponseWithCode(0,"")
+}
+
+
+/**
+ * @api {post} /member/orders_quantity 获取会员的订单状态及其数量
+ * @apiGroup member
+ * @apiParam {String} code 用户代码
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"err_code":1,"err_msg":"access denied"}
+ */
+func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
+	mp, _ := rsi.MemberService.OrdersQuantity(thrift.Context,id)
+	ret := map[string]int32{
+		/** 待付款订单数量 */
+		"AwaitPayment":mp[int32(order.StatAwaitingPayment)],
+		/** 待发货订单数量 */
+		"AwaitShipment":mp[int32(order.StatAwaitingShipment)],
+		/** 待收货订单数量 */
+		"AwaitReceive":mp[int32(order.StatShipped)],
+		/** 已完成订单数量 */
+		"Completed":mp[int32(order.StatCompleted)],
+	}
+	return api.NewResponse(ret)
 }

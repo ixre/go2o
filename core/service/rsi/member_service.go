@@ -15,6 +15,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof"
+	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/domain/enum"
@@ -46,9 +47,8 @@ type memberService struct {
 	orderQuery *query.OrderQuery
 	valRepo    valueobject.IValueRepo
 	serviceUtil
+	sto storage.Interface
 }
-
-
 
 // 交换会员编号
 func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
@@ -246,6 +246,16 @@ func (s *memberService) ShopFavored(memberId int64, shopId int32) bool {
 	return s.repo.CreateMemberById(memberId).
 		Favorite().Favored(member.FavTypeShop, shopId)
 }
+
+// 获取会员的订单状态及其数量
+func (s *memberService) OrdersQuantity(ctx context.Context, memberId int64) (mp map[int32]int32, err error) {
+	ret := make(map[int32]int32,0)
+	for k,v := range s.query.OrdersQuantity(memberId){
+		ret[int32(k)] = int32(v)
+	}
+	return ret,nil
+}
+
 
 /**================ 会员等级 ==================**/
 // 获取所有会员等级
