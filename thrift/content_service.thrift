@@ -1,5 +1,5 @@
 namespace java com.github.jsix.go2o.rpc
-namespace csharp com.github.jsix.go2o.rpc
+namespace netstd com.github.jsix.go2o.rpc
 namespace go go2o.core.service.auto_gen.rpc.content_service
 include "ttype.thrift"
 

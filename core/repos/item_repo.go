@@ -177,7 +177,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int,
 		orderBy += ","
 	}
 
-	var list []*valueobject.Goods
+	var list =make([]*valueobject.Goods,0)
 	err := g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
 	  INNER JOIN product_category cat ON it.cat_id=cat.id
 		 WHERE ($1 <=0 OR it.shop_id = $2) AND it.review_state= $3

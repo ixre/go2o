@@ -1,5 +1,5 @@
 namespace java {{pkg "thrift" .global.Pkg}}.rpc
-namespace csharp {{pkg "thrift" .global.Pkg}}.rpc
+namespace netstd {{pkg "thrift" .global.Pkg}}.rpc
 
 /** {{.table.Comment}} */
 struct S{{.table.Title}}{
