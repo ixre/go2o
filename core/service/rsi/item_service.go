@@ -319,6 +319,9 @@ func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
 		cat := s.cateRepo.GlobCatService().GetCategory(int(categoryId))
+		if cat == nil{
+			return 0,[]*valueobject.Goods{}
+		}
 		ids := cat.GetChildes()
 		ids = append(ids, int(categoryId))
 		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId, ids, start, end, "", sortBy)
