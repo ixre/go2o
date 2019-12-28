@@ -40,7 +40,7 @@ func NewServe(store storage.Interface, debug bool, requireVer string,
 	// 创建上下文工厂
 	factory := api.DefaultFactory.Build(registry)
 	// 请求限制
-	rl := util.NewRequestLimit(store, 200, 10, 600)
+	rl := util.NewRequestLimit(store, 100, 10, 600)
 	serve := NewService(factory, debug, rl)
 	// 创建http处理器
 	hs := http.NewServeMux()
