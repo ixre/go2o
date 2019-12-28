@@ -79,7 +79,7 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, params *ttype.SPag
 	if num > 0 {
 		orderBy := ""
 		if params.SortBy != "" {
-			orderBy = "ORDER BY " +params.SortBy + ",bi.id DESC"
+			orderBy = "ORDER BY " + params.SortBy + ",bi.id DESC"
 		}
 		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_integral_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id

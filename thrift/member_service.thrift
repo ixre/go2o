@@ -297,15 +297,16 @@ struct STrustedInfo {
 
 struct SAddress {
     1: i64 ID
-    2: i64 MemberId
-    3: string RealName
-    4: string Phone
-    5: i32 Province
-    6: i32 City
-    7: i32 District
-    8: string Area
-    9: string Address
-    10: i32 IsDefault
+    /** 收货人姓名 */
+    2: string ConsigneeName
+    /** 收货人电话 */
+    3: string ConsigneePhone
+    4: i32 Province
+    5: i32 City
+    6: i32 District
+    7: string Area
+    8: string DetailAddress
+    9: i32 IsDefault
 }
 
 /** 收款码 */

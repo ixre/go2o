@@ -52,7 +52,6 @@ type merchantRepo struct {
 	mux           *sync.RWMutex
 }
 
-
 func NewMerchantRepo(c db.Connector, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,

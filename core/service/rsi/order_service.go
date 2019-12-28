@@ -50,8 +50,8 @@ type orderServiceImpl struct {
 func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo, memberRepo member.IMemberRepo,
 	prodRepo product.IProductRepo, goodsRepo proItem.IGoodsItemRepo,
-	mchRepo merchant.IMerchantRepo,	shopRepo   shop.IShopRepo,
-orderQuery *query.OrderQuery) *orderServiceImpl {
+	mchRepo merchant.IMerchantRepo, shopRepo shop.IShopRepo,
+	orderQuery *query.OrderQuery) *orderServiceImpl {
 	return &orderServiceImpl{
 		repo:       r,
 		prodRepo:   prodRepo,
@@ -319,9 +319,9 @@ func (s *orderServiceImpl) parseCart(c cart.ICart) *ttype.SShoppingCart {
 		is := s.shopRepo.GetOnlineShop(int(v.ShopId))
 		if is != nil {
 			v.ShopName = is.ShopName
-		}else{
-			for _,it := range v.Items{
-				c.Remove(it.ItemId,it.SkuId,it.Quantity)
+		} else {
+			for _, it := range v.Items {
+				c.Remove(it.ItemId, it.SkuId, it.Quantity)
 			}
 		}
 	}
@@ -407,10 +407,10 @@ func (s *orderServiceImpl) GetCartSettle(memberId int64,
 	if deliver != nil {
 		v := deliver.GetValue()
 		st.Deliver = &dto.SettleDeliverMeta{
-			Id:         v.ID,
-			PersonName: v.RealName,
-			Phone:      v.Phone,
-			Address:    strings.Replace(v.Area, " ", "", -1) + v.Address,
+			Id:             v.ID,
+			ConsigneeName:  v.ConsigneeName,
+			ConsigneePhone: v.ConsigneePhone,
+			Address:        strings.Replace(v.Area, " ", "", -1) + v.DetailAddress,
 		}
 	}
 

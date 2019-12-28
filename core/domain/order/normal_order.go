@@ -225,9 +225,9 @@ func (o *normalOrderImpl) SetAddress(addressId int64) error {
 		return order.ErrNoSuchAddress
 	}
 	d := addr.GetValue()
-	o.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.Address
-	o.value.ConsigneePerson = d.RealName
-	o.value.ConsigneePhone = d.Phone
+	o.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.DetailAddress
+	o.value.ConsigneePerson = d.ConsigneeName
+	o.value.ConsigneePhone = d.ConsigneePhone
 	return nil
 }
 

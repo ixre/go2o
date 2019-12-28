@@ -69,7 +69,6 @@ func registerTypes() {
 	init2()
 }
 
-
 func init2() {
 	gob.Register(map[string]map[string]interface{}{})
 	gob.Register(ad.ValueGallery{})
@@ -79,7 +78,6 @@ func init2() {
 	gob.Register(ad.HyperLink{})
 	gob.Register(ad.Image{})
 }
-
 
 func Init(a *AppImpl, debug, trace bool) bool {
 	log.Println("[ Go2o][ Boot]: initialize ...")

@@ -65,13 +65,11 @@ func StatusServeClient() (thrift.TTransport, *status_service.StatusServiceClient
 	return trans, status_service.NewStatusServiceClient(cli), err
 }
 
-
 // 基础服务
 func RegistryServeClient() (thrift.TTransport, *registry_service.RegistryServiceClient, error) {
 	trans, cli, err := factory.GetClient("registry")
 	return trans, registry_service.NewRegistryServiceClient(cli), err
 }
-
 
 // 商户客户端
 func MerchantServeClient() (thrift.TTransport, *merchant_service.MerchantServiceClient, error) {

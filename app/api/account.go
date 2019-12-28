@@ -16,7 +16,7 @@ type accountApi struct {
 	utils
 }
 
-func NewAccountApi()*accountApi{
+func NewAccountApi() *accountApi {
 	return &accountApi{}
 }
 func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
@@ -33,18 +33,18 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	case "balance_log":
 		return a.balanceAccountLog(ctx, memberId)
 	}
-	return api.ResponseWithCode(-1,"api not defined")
+	return api.ResponseWithCode(-1, "api not defined")
 }
 
-func (a accountApi) accountLog(ctx api.Context, memberId int64,account int) *api.Response {
+func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *api.Response {
 	begin := int32(ctx.Form().GetInt("begin"))
 	size := int32(ctx.Form().GetInt("size"))
 	p := &ttype.SPagingParams{
-		SortBy:"create_time DESC,bi.id DESC",
-		Begin:      begin,
-		Over:       begin+size,
+		SortBy: "create_time DESC,bi.id DESC",
+		Begin:  begin,
+		Over:   begin + size,
 	}
-	r,_ := rsi.MemberService.PagingAccountLog(thrift.Context,int64(memberId), int32(account),p)
+	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context, int64(memberId), int32(account), p)
 	return api.NewResponse(r)
 }
 
@@ -60,7 +60,7 @@ func (a accountApi) accountLog(ctx api.Context, memberId int64,account int) *api
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (a accountApi) WalletAccountLog(ctx api.Context, memberId int64) *api.Response {
-	return a.accountLog(ctx,memberId,member.AccountWallet)
+	return a.accountLog(ctx, memberId, member.AccountWallet)
 }
 
 /**
@@ -75,7 +75,7 @@ func (a accountApi) WalletAccountLog(ctx api.Context, memberId int64) *api.Respo
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (a accountApi) walletAccountLog(ctx api.Context, memberId int64) *api.Response {
-	return a.accountLog(ctx,memberId,member.AccountWallet)
+	return a.accountLog(ctx, memberId, member.AccountWallet)
 }
 
 /**
@@ -90,7 +90,7 @@ func (a accountApi) walletAccountLog(ctx api.Context, memberId int64) *api.Respo
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (a accountApi) integralAccountLog(ctx api.Context, memberId int64) *api.Response {
-	return a.accountLog(ctx, memberId,member.AccountIntegral)
+	return a.accountLog(ctx, memberId, member.AccountIntegral)
 
 }
 
@@ -106,5 +106,5 @@ func (a accountApi) integralAccountLog(ctx api.Context, memberId int64) *api.Res
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (a accountApi) balanceAccountLog(ctx api.Context, memberId int64) *api.Response {
-	return a.accountLog(ctx, memberId,member.AccountBalance)
+	return a.accountLog(ctx, memberId, member.AccountBalance)
 }

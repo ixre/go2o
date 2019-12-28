@@ -557,3 +557,35 @@ COMMENT ON COLUMN "public".mm_favorite.member_id IS '会员编号';
 COMMENT ON COLUMN "public".mm_favorite.fav_type IS '收藏类型';
 COMMENT ON COLUMN "public".mm_favorite.refer_id IS '关联编号';
 COMMENT ON COLUMN "public".mm_favorite.create_time IS '收藏时间';
+
+/** 2019-12-28 */
+ALTER TABLE "public".mm_deliver_addr
+  alter column member_id set not null;
+ALTER TABLE "public".mm_deliver_addr
+    RENAME COLUMN real_name to consignee_name;
+ALTER TABLE "public".mm_deliver_addr
+  ALTER COLUMN consignee_name set NOT NULL;
+ALTER TABLE "public".mm_deliver_addr
+    RENAME COLUMN phone to consignee_phone;
+ALTER TABLE "public".mm_deliver_addr
+    RENAME COLUMN address to detail_address;
+ALTER TABLE "public".mm_deliver_addr
+  ALTER COLUMN consignee_phone set NOT NULL;
+ALTER TABLE "public".mm_deliver_addr
+  alter column province set not null;
+ALTER TABLE "public".mm_deliver_addr
+  alter column city set not null;
+ALTER TABLE "public".mm_deliver_addr
+  alter column district set not null;
+ALTER TABLE "public".mm_deliver_addr
+  alter column area set not null;
+ALTER TABLE "public".mm_deliver_addr
+  alter COLUMN detail_address set NOT NULL;
+ALTER TABLE "public".mm_deliver_addr
+  alter column is_default set not null;
+COMMENT ON TABLE "public".mm_deliver_addr IS '会员收货地址';
+COMMENT ON COLUMN "public".mm_deliver_addr.id IS '编号';
+COMMENT ON COLUMN "public".mm_deliver_addr.member_id IS '会员编号';
+COMMENT ON COLUMN "public".mm_deliver_addr.consignee_name IS '收货人姓名';
+COMMENT ON COLUMN "public".mm_deliver_addr.consignee_phone IS '收货人电话';
+COMMENT ON COLUMN "public".mm_deliver_addr.province IS '数字编码(省)';

@@ -257,13 +257,13 @@ func (m *merchantService) testLogin(user string, pwd string) (id int, errCode in
 			return 0, 2, err
 		}
 		if mch2 := m.GetMerchantByMemberId(id); mch2 != nil {
-			return mch2.Id,0,nil
+			return mch2.Id, 0, nil
 		}
 		return 0, 2, merchant.ErrNoSuchMerchant
 	}
 	mv := mch.GetValue()
-	if pwd := domain.MerchantSha1Pwd(pwd);pwd != mv.LoginPwd{
-		return 0,1,de.ErrCredential
+	if pwd := domain.MerchantSha1Pwd(pwd); pwd != mv.LoginPwd {
+		return 0, 1, de.ErrCredential
 	}
 	return mch.GetAggregateRootId(), 0, nil
 }

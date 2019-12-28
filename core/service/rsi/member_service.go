@@ -249,13 +249,12 @@ func (s *memberService) ShopFavored(memberId int64, shopId int32) bool {
 
 // 获取会员的订单状态及其数量
 func (s *memberService) OrdersQuantity(ctx context.Context, memberId int64) (mp map[int32]int32, err error) {
-	ret := make(map[int32]int32,0)
-	for k,v := range s.query.OrdersQuantity(memberId){
+	ret := make(map[int32]int32, 0)
+	for k, v := range s.query.OrdersQuantity(memberId) {
 		ret[int32(k)] = int32(v)
 	}
-	return ret,nil
+	return ret, nil
 }
-
 
 /**================ 会员等级 ==================**/
 // 获取所有会员等级
@@ -282,9 +281,8 @@ func (s *memberService) GetMemberLevel(ctx context.Context, id int32) (*member_s
 	return nil, nil
 }
 
-
 // 保存会员等级信息
-func (s *memberService) SaveMemberLevel(ctx context.Context,  level *member_service.SMemberLevel) (r *ttype.Result_, err error) {
+func (s *memberService) SaveMemberLevel(ctx context.Context, level *member_service.SMemberLevel) (r *ttype.Result_, err error) {
 	lv := &member.Level{
 		ID:            int(level.ID),
 		Name:          level.Name,
@@ -301,7 +299,6 @@ func (s *memberService) SaveMemberLevel(ctx context.Context,  level *member_serv
 	return s.success(nil), nil
 }
 
-
 // 根据SIGN获取等级
 func (s *memberService) GetLevelBySign(ctx context.Context, sign string) (*member_service.SMemberLevel, error) {
 	lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
@@ -315,7 +312,6 @@ func (s *memberService) GetLevelBySign(ctx context.Context, sign string) (*membe
 func (s *memberService) GetLevelByProgramSign(sign string) *member.Level {
 	return s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
 }
-
 
 // 删除会员等级
 func (s *memberService) DelMemberLevel(levelId int32) error {
@@ -522,7 +518,6 @@ func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd s
 	}
 	return s.error(err), nil
 }
-
 
 func (s *memberService) GetRelation(memberId int64) *member.InviteRelation {
 	return s.repo.GetRelation(memberId)

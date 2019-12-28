@@ -9,8 +9,8 @@
 package dto
 
 type SettleDeliverMeta struct {
-	Id         int64  `db:"id"`
-	PersonName string `db:"personName"`
-	Phone      string `db:"phone"`
-	Address    string `db:"address"`
+	Id             int64  `db:"id"`
+	ConsigneeName  string `db:"personName"`
+	ConsigneePhone string `db:"phone"`
+	Address        string `db:"address"`
 }

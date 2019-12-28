@@ -92,14 +92,14 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
  	INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
     WHERE sp.state=%d AND mch.enabled = 1 %s`, shop.StateNormal, where), &total)
 
-	var e  = make([]*dto.ListOnlineShop,0)
+	var e = make([]*dto.ListOnlineShop, 0)
 	if total > 0 && err == nil {
 		sql = fmt.Sprintf(`SELECT sp.id,sp.name,alias,host,ol.logo,sp.create_time
         FROM mch_shop sp INNER JOIN mch_online_shop ol
         ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
         WHERE sp.state=%d AND mch.enabled = 1 %s %s LIMIT $2 OFFSET $1`,
 			shop.StateNormal, where, order)
-		err = s.GetOrm().SelectByQuery(&e, sql, begin, end - begin)
+		err = s.GetOrm().SelectByQuery(&e, sql, begin, end-begin)
 	}
 	if err != nil {
 		log.Println("[ Go2o][ Query][ Error]:", err.Error())

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ixre/gof/api"
 	"github.com/ixre/gof/types"
@@ -29,12 +30,23 @@ type MemberApi struct {
 func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
-	if len(code) > 0{
+	if len(code) > 0 {
 		memberId, _ = rsi.MemberService.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
 	}
 	switch fn {
-	case "order_summary":return m.orderSummary(ctx,memberId)
-	case "orders_quantity":return m.ordersQuantity(ctx,memberId)
+	case "order_summary":
+		return m.orderSummary(ctx, memberId)
+	case "orders_quantity":
+		return m.ordersQuantity(ctx, memberId)
+	case "address":
+		return m.address(ctx, memberId)
+	case "save_address":
+		return m.saveAddress(ctx, memberId)
+	case "delete_address":
+		return m.deleteAddress(ctx, memberId)
+	case "invites":
+		return m.invites(ctx, memberId)
+
 	}
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
 		"login":           m.login,
@@ -45,7 +57,6 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 		"check_token":     m.checkToken,
 		"complex":         m.complex,
 		"bankcard":        m.bankcard,
-		"invites":         m.invites,
 		"receipts_code":   m.receiptsCode,
 		"save_receipts":   m.saveReceiptsCode,
 		"toggle_receipts": m.toggleReceipts,
@@ -227,7 +238,7 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 			return r
 		}
 	}
-	return api.NewErrorResponse("no such receipt code")
+	return m.utils.error(errors.New("no such receipt code"))
 }
 
 /**
@@ -240,10 +251,8 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
  * @apiSuccessExample Error-Response
  * {"code":1,"message":"api not defined"}
  */
-func (m *MemberApi) invites(ctx api.Context) interface{} {
+func (m *MemberApi) invites(ctx api.Context, memberId int64) *api.Response {
 	trans, cli, _ := thrift.MemberServeClient()
-	code := strings.TrimSpace(ctx.Form().GetString("code"))
-	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
 	member, _ := cli.GetMember(thrift.Context, memberId)
 	trans.Close()
 	trans2, cli2, _ := thrift.RegistryServeClient()
@@ -264,15 +273,14 @@ func (m *MemberApi) invites(ctx api.Context) interface{} {
 			"link":        inviteLink,
 			"mobile_link": mobileInviteLink,
 		}
-		return api.NewResponse(mp)
+		return m.utils.success(mp)
 	}
-	return api.NewErrorResponse("no such user")
+	return m.utils.error(errors.New("no such user"))
 }
 
-func (m MemberApi) orderSummary(ctx api.Context,memberId int64)*api.Response {
-   return api.ResponseWithCode(0,"")
+func (m MemberApi) orderSummary(ctx api.Context, memberId int64) *api.Response {
+	return api.ResponseWithCode(0, "")
 }
-
 
 /**
  * @api {post} /member/orders_quantity 获取会员的订单状态及其数量
@@ -284,16 +292,87 @@ func (m MemberApi) orderSummary(ctx api.Context,memberId int64)*api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
-	mp, _ := rsi.MemberService.OrdersQuantity(thrift.Context,id)
+	mp, _ := rsi.MemberService.OrdersQuantity(thrift.Context, id)
 	ret := map[string]int32{
 		/** 待付款订单数量 */
-		"AwaitPayment":mp[int32(order.StatAwaitingPayment)],
+		"AwaitPayment": mp[int32(order.StatAwaitingPayment)],
 		/** 待发货订单数量 */
-		"AwaitShipment":mp[int32(order.StatAwaitingShipment)],
+		"AwaitShipment": mp[int32(order.StatAwaitingShipment)],
 		/** 待收货订单数量 */
-		"AwaitReceive":mp[int32(order.StatShipped)],
+		"AwaitReceive": mp[int32(order.StatShipped)],
 		/** 已完成订单数量 */
-		"Completed":mp[int32(order.StatCompleted)],
+		"Completed": mp[int32(order.StatCompleted)],
 	}
-	return api.NewResponse(ret)
+	return m.utils.success(ret)
+}
+
+/**
+ * @api {post} /member/address 获取会员的收货地址
+ * @apiGroup member
+ * @apiParam {String} code 用户代码
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"err_code":1,"err_msg":"access denied"}
+ */
+func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
+	address, _ := rsi.MemberService.GetAddressList(thrift.Context, memberId)
+	return m.utils.success(address)
+}
+
+/**
+ * @api {post} /member/save_address 保存会员的收货地址
+ * @apiGroup member
+ * @apiParam {String} code 用户代码
+ * @apiParam {int} address_id 地址编号, 保存时需传递
+ * @apiParam {int} consignee_name 收货人姓名
+ * @apiParam {int} consignee_phone 收货人电话
+ * @apiParam {int} province 数字编码(省)
+ * @apiParam {int} city 数字编码(市)
+ * @apiParam {int} district 数字编码(区)
+ * @apiParam {int} detail_address 详细的地址,比如: 幸福路12号
+ * @apiParam {int} is_default 是否默认收货地址, 1:表示默认收货地址
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"err_code":1,"err_msg":"access denied"}
+ */
+func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
+	form := ctx.Form()
+	var e = member_service.SAddress{
+		ID:             int64(form.GetInt("address_id")),
+		ConsigneeName:  form.GetString("consignee_name"),
+		ConsigneePhone: form.GetString("consignee_phone"),
+		Province:       int32(form.GetInt("province")),
+		City:           int32(form.GetInt("city")),
+		District:       int32(form.GetInt("district")),
+		DetailAddress:  form.GetString("detail_address"),
+		IsDefault:      int32(form.GetInt("is_default")),
+	}
+	id, err := rsi.MemberService.SaveAddress(memberId, &e)
+	// 设置用户默认收货地址
+	if err == nil {
+		err = rsi.ShoppingService.SetBuyerAddress(memberId, "", id)
+	}
+	if err != nil {
+		return m.error(err)
+	}
+	ret := map[string]int64{"addressId": id}
+	return m.utils.success(ret)
+}
+
+/**
+ * @api {post} /member/delete_address 删除会员的收货地址
+ * @apiGroup member
+ * @apiParam {String} code 用户代码
+ * @apiParam {int} address_id 地址编号
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"err_code":1,"err_msg":"access denied"}
+ */
+func (m MemberApi) deleteAddress(ctx api.Context, memberId int64) *api.Response {
+	addressId := int64(ctx.Form().GetInt("address_id"))
+	err := rsi.MemberService.DeleteAddress(memberId, addressId)
+	return m.utils.response(err)
 }

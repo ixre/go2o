@@ -34,7 +34,7 @@ func NewServe(store storage.Interface, debug bool, requireVer string,
 	RequireVersion = requireVer
 	ApiUser = apiUser
 	ApiSecret = apiSecret
-	log.Println(fmt.Sprintf("[ Go2o][ API]: api key is '%s' and secret is '%s'",ApiUser,ApiSecret))
+	log.Println(fmt.Sprintf("[ Go2o][ API]: api key is '%s' and secret is '%s'", ApiUser, ApiSecret))
 	// 初始化变量
 	registry := map[string]interface{}{}
 	// 创建上下文工厂
@@ -62,7 +62,7 @@ func NewService(factory api.ContextFactory, debug bool, rl *util.RequestLimit) *
 	s.Register("res", NewResApi())
 	s.Register("goods", NewGoodsApi())
 	s.Register("shop", NewShopApi())
-	s.Register("account",NewAccountApi())
+	s.Register("account", NewAccountApi())
 	// 注册中间键
 	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", debug, rl)
 	return s

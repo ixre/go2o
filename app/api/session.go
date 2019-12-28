@@ -11,7 +11,6 @@ import "github.com/ixre/gof/api"
  * history :
  */
 
-
-func getMemberId(ctx api.Context)int{
+func getMemberId(ctx api.Context) int {
 	return 0
 }

@@ -226,7 +226,6 @@ func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
 	return notify.SmsApiSet{}
 }
 
-
 // 获取下级区域
 func (s *foundationService) GetChildAreas(ctx context.Context, code int32) ([]*foundation_service.SArea, error) {
 	var arr []*foundation_service.SArea
