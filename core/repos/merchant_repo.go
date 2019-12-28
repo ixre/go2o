@@ -140,6 +140,15 @@ func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 	return m.CreateMerchant(&e)
 }
 
+// 根据登录用户名获取商户
+func (m *merchantRepo) GetMerchantByLoginUser(user string) merchant.IMerchant {
+	e := merchant.Merchant{}
+	if err := m.Connector.GetOrm().GetBy(&e, "login_user=$1", user); err == nil {
+		return m.CreateMerchant(&e)
+	}
+	return nil
+}
+
 // 获取账户
 func (m *merchantRepo) GetAccount(mchId int) *merchant.Account {
 	e := merchant.Account{}

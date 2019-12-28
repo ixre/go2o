@@ -1,5 +1,5 @@
 namespace java com.github.jsix.go2o.rpc
-namespace csharp com.github.jsix.go2o.rpc
+namespace netstd com.github.jsix.go2o.rpc
 namespace go go2o.core.service.auto_gen.rpc.member_service
 include "ttype.thrift"
 include "message_service.thrift"
@@ -86,6 +86,10 @@ service MemberService{
     /** 更改交易密码 */
     ttype.Result ModifyTradePwd(1:i64 memberId,2:string old,3:string pwd)
 
+    /** 获取会员的订单状态及其数量 */
+    map<i32,i32> OrdersQuantity(1:i64 memberId)
+
+
     // 升级为高级会员
     ttype.Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
@@ -128,6 +132,8 @@ service MemberService{
 
     /** 获取指定账户的流水记录 */
     ttype.SPagingResult PagingAccountLog(1:i64 memberId,2:i32 accountType,3:ttype.SPagingParams params)
+
+
 }
 
 
@@ -291,15 +297,16 @@ struct STrustedInfo {
 
 struct SAddress {
     1: i64 ID
-    2: i64 MemberId
-    3: string RealName
-    4: string Phone
-    5: i32 Province
-    6: i32 City
-    7: i32 District
-    8: string Area
-    9: string Address
-    10: i32 IsDefault
+    /** 收货人姓名 */
+    2: string ConsigneeName
+    /** 收货人电话 */
+    3: string ConsigneePhone
+    4: i32 Province
+    5: i32 City
+    6: i32 District
+    7: string Area
+    8: string DetailAddress
+    9: i32 IsDefault
 }
 
 /** 收款码 */
@@ -352,6 +359,17 @@ struct SMemberLevelInfo{
     8:i32 RequireExp
 }
 
+/** 订单汇总信息 */
+struct SMemberOrderSummary{
+    /** 待付款订单数量 */
+    1:i32 AwaitPayment
+    /** 待发货订单数量 */
+    2:i32 AwaitShipment
+    /** 待收货订单数量 */
+    3:i32 AwaitReceive
+    /** 已完成订单数量 */
+    4:i32 Completed
+}
 
 /** 凭据 */
 enum ECredentials{
@@ -366,3 +384,4 @@ enum ECredentials{
     /** 邀请码 */
     InviteCode = 6
 }
+

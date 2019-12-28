@@ -1,5 +1,5 @@
 namespace java com.github.jsix.go2o.rpc
-namespace csharp com.github.jsix.go2o.rpc
+namespace netstd com.github.jsix.go2o.rpc
 namespace go go2o.core.service.auto_gen.rpc.ttype
 
 //传输结果对象
@@ -238,16 +238,14 @@ struct SShoppingCartItem {
 
 /** 分页参数 */
 struct SPagingParams{
-    /** 参数 */
-    1:map<string,string> Opt
-    /** 排序字段 */
-    2:string OrderField
-    /** 是否倒序排列 */
-    3:bool OrderDesc
     /** 开始记录数 */
-    4:i32 Begin
+    1:i32 Begin
     /** 结束记录数 */
-    5:i32 Over
+    2:i32 Over
+    /** 排序字段 */
+    3:string SortBy
+    /** 参数 */
+    4:map<string,string> Parameters
 }
 
 /** 分页结果 */

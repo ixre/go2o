@@ -369,157 +369,6 @@ COMMENT ON COLUMN "public".mch_express_template.enabled IS '是否启用';
 /** 2019-11-26 */
 ALTER TABLE public.ad_list ALTER COLUMN type_id TYPE int4 USING type_id::integer;
 
-<<<<<<< HEAD
-/** 2019-11-29 */
-ALTER TABLE "public".mch_enterprise_info
-  alter column mch_id set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column company_name set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column company_no set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column person_name set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column person_id set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column tel set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column location set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column address set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column person_image set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column company_image set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column auth_doc set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column review_remark set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column review_state set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column review_time set not null;
-ALTER TABLE "public".mch_enterprise_info
-  alter column update_time set not null;
-COMMENT ON TABLE "public".mch_enterprise_info IS '商户认证信息';
-COMMENT ON COLUMN "public".mch_enterprise_info.id IS '编号';
-COMMENT ON COLUMN "public".mch_enterprise_info.mch_id IS '商户编号';
-COMMENT ON COLUMN "public".mch_enterprise_info.company_name IS '公司名称';
-COMMENT ON COLUMN "public".mch_enterprise_info.company_no IS '营业执照编号';
-COMMENT ON COLUMN "public".mch_enterprise_info.person_name IS '法人姓名';
-COMMENT ON COLUMN "public".mch_enterprise_info.person_id IS '法人身份证号';
-COMMENT ON COLUMN "public".mch_enterprise_info.tel IS '公司电话';
-COMMENT ON COLUMN "public".mch_enterprise_info.province IS '所在省';
-COMMENT ON COLUMN "public".mch_enterprise_info.city IS '所在市';
-COMMENT ON COLUMN "public".mch_enterprise_info.district IS '所在区';
-COMMENT ON COLUMN "public".mch_enterprise_info.location IS '位置';
-COMMENT ON COLUMN "public".mch_enterprise_info.address IS '公司地址';
-COMMENT ON COLUMN "public".mch_enterprise_info.person_image IS '法人身份证照片';
-COMMENT ON COLUMN "public".mch_enterprise_info.company_image IS '营业执照照片';
-COMMENT ON COLUMN "public".mch_enterprise_info.auth_doc IS '授权书';
-COMMENT ON COLUMN "public".mch_enterprise_info.review_remark IS '审核备注';
-COMMENT ON COLUMN "public".mch_enterprise_info.review_state IS '审核状态';
-COMMENT ON COLUMN "public".mch_enterprise_info.review_time IS '审核时间';
-COMMENT ON COLUMN "public".mch_enterprise_info.update_time IS '更新时间';
-
-
-COMMENT ON TABLE "public".mch_sign_up IS '商户申请表';
-COMMENT ON COLUMN "public".mch_sign_up.id IS '编号';
-COMMENT ON COLUMN "public".mch_sign_up.member_id IS '公员编号';
-COMMENT ON COLUMN "public".mch_sign_up.sign_no IS '申请编号';
-COMMENT ON COLUMN "public".mch_sign_up.usr IS '用户名';
-COMMENT ON COLUMN "public".mch_sign_up.pwd IS '密码';
-COMMENT ON COLUMN "public".mch_sign_up.mch_name IS '商户名称';
-COMMENT ON COLUMN "public".mch_sign_up.province IS '省';
-COMMENT ON COLUMN "public".mch_sign_up.city IS '市';
-COMMENT ON COLUMN "public".mch_sign_up.district IS '区';
-COMMENT ON COLUMN "public".mch_sign_up.shop_name IS '店铺名称';
-COMMENT ON COLUMN "public".mch_sign_up.company_name IS '企业名称';
-COMMENT ON COLUMN "public".mch_sign_up.company_no IS '营业执照编号';
-COMMENT ON COLUMN "public".mch_sign_up.person_name IS '法人姓名';
-COMMENT ON COLUMN "public".mch_sign_up.person_id IS '法人身份证编号';
-COMMENT ON COLUMN "public".mch_sign_up.phone IS '联系电话';
-COMMENT ON COLUMN "public".mch_sign_up.address IS '地址';
-COMMENT ON COLUMN "public".mch_sign_up.person_image IS '法人照片';
-COMMENT ON COLUMN "public".mch_sign_up.company_image IS '营业执照图片';
-COMMENT ON COLUMN "public".mch_sign_up.auth_doc IS '授权协议文件URL';
-COMMENT ON COLUMN "public".mch_sign_up.remark IS '备注';
-COMMENT ON COLUMN "public".mch_sign_up.review_state IS '审核状态';
-
-COMMENT ON TABLE "public".mch_account IS '商户账户';
-COMMENT ON COLUMN "public".mch_account.mch_id IS '商户编号';
-COMMENT ON COLUMN "public".mch_account.balance IS '余额';
-COMMENT ON COLUMN "public".mch_account.freeze_amount IS '冻结金额';
-COMMENT ON COLUMN "public".mch_account.await_amount IS '待入账金额';
-COMMENT ON COLUMN "public".mch_account.present_amount IS '平台赠送金额';
-COMMENT ON COLUMN "public".mch_account.sales_amount IS '累计销售总额';
-COMMENT ON COLUMN "public".mch_account.refund_amount IS '累计退款金额';
-COMMENT ON COLUMN "public".mch_account.take_amount IS '已提取金额';
-COMMENT ON COLUMN "public".mch_account.offline_sales IS '线下销售金额';
-COMMENT ON COLUMN "public".mch_account.update_time IS '更新时间';
-
-COMMENT ON TABLE "public".mch_offline_shop IS '门店';
-COMMENT ON COLUMN "public".mch_offline_shop.shop_id IS '编号';
-COMMENT ON COLUMN "public".mch_offline_shop.tel IS '电话';
-COMMENT ON COLUMN "public".mch_offline_shop.addr IS '地址';
-COMMENT ON COLUMN "public".mch_offline_shop.lng IS '经度';
-COMMENT ON COLUMN "public".mch_offline_shop.lat IS '纬度';
-COMMENT ON COLUMN "public".mch_offline_shop.deliver_radius IS '配送范围';
-COMMENT ON COLUMN "public".mch_offline_shop.province IS '省';
-COMMENT ON COLUMN "public".mch_offline_shop.city IS '市';
-COMMENT ON COLUMN "public".mch_offline_shop.district IS '区';
-
-
-COMMENT ON TABLE "public".mch_balance_log IS '商户余额日志';
-COMMENT ON COLUMN "public".mch_balance_log.id IS '编号';
-COMMENT ON COLUMN "public".mch_balance_log.mch_id IS '商户编号';
-COMMENT ON COLUMN "public".mch_balance_log.kind IS '日志类型';
-COMMENT ON COLUMN "public".mch_balance_log.title IS '标题';
-COMMENT ON COLUMN "public".mch_balance_log.outer_no IS '外部订单号';
-COMMENT ON COLUMN "public".mch_balance_log.amount IS '金额';
-COMMENT ON COLUMN "public".mch_balance_log.csn_amount IS '手续费';
-COMMENT ON COLUMN "public".mch_balance_log.state IS '状态';
-COMMENT ON COLUMN "public".mch_balance_log.create_time IS '创建时间';
-COMMENT ON COLUMN "public".mch_balance_log.update_time IS '更新时间';
-
-
-ALTER TABLE "public".mch_api_info
-  alter column api_id set not null;
-ALTER TABLE "public".mch_api_info
-  alter column api_secret set not null;
-ALTER TABLE "public".mch_api_info
-  alter column enabled set not null;
-ALTER TABLE "public".mch_api_info
-  alter column white_list set not null;
-COMMENT ON TABLE "public".mch_api_info IS '商户接口表';
-COMMENT ON COLUMN "public".mch_api_info.mch_id IS '商户编号';
-COMMENT ON COLUMN "public".mch_api_info.api_id IS '接口用户';
-COMMENT ON COLUMN "public".mch_api_info.api_secret IS '接口密钥';
-COMMENT ON COLUMN "public".mch_api_info.enabled IS '是否启用';
-COMMENT ON COLUMN "public".mch_api_info.white_list IS '白名单';
-
-
-COMMENT ON COLUMN "public".mch_buyer_group.id IS '编号';
-COMMENT ON COLUMN "public".mch_buyer_group.mch_id IS '商家编号';
-COMMENT ON COLUMN "public".mch_buyer_group.group_id IS '客户分组编号';
-COMMENT ON COLUMN "public".mch_buyer_group.alias IS '分组别名';
-COMMENT ON COLUMN "public".mch_buyer_group.enable_retail IS '是否启用零售';
-COMMENT ON COLUMN "public".mch_buyer_group.enable_wholesale IS '是否启用批发';
-COMMENT ON COLUMN "public".mch_buyer_group.rebate_period IS '批发返点周期';
-
-
-COMMENT ON TABLE "public".mch_express_template IS '商户运费模板';
-COMMENT ON COLUMN "public".mch_express_template.id IS '编号';
-COMMENT ON COLUMN "public".mch_express_template.vendor_id IS '运营商编号';
-COMMENT ON COLUMN "public".mch_express_template.name IS '运费模板名称';
-COMMENT ON COLUMN "public".mch_express_template.is_free IS '是否卖价承担运费';
-COMMENT ON COLUMN "public".mch_express_template.basis IS '运费计价依据';
-COMMENT ON COLUMN "public".mch_express_template.first_unit IS '首次计价单位,如首重为2kg';
-COMMENT ON COLUMN "public".mch_express_template.first_fee IS '首次计价单价,如续重1kg';
-COMMENT ON COLUMN "public".mch_express_template.add_unit IS '超过首次计价计算单位,如续重1kg';
-COMMENT ON COLUMN "public".mch_express_template.add_fee IS '超过首次计价单价，如续重1kg';
-COMMENT ON COLUMN "public".mch_express_template.enabled IS '是否启用';
-=======
 /** 2019-12-13 */
 UPDATE  "public".pro_product  set sale_price = 0 WHERE sale_price IS NULL;
 UPDATE  "public".pro_product  set shelve_state = true WHERE shelve_state IS NULL;
@@ -691,6 +540,52 @@ ALTER TABLE public.pro_attr_info RENAME TO product_attr_info;
 ALTER TABLE public.prod_category RENAME TO product_category;
 
 
->>>>>>> feature
+/* 2019-12-16 */
+DROP TABLE mm_favorite;
 
+CREATE TABLE "public".mm_favorite (
+  id          serial NOT NULL,
+  member_id   int4 NOT NULL,
+  fav_type    int4 NOT NULL,
+  refer_id    int4 NOT NULL,
+  create_time int8 NOT NULL,
+  CONSTRAINT mm_favorite_pkey
+      PRIMARY KEY (id));
+COMMENT ON TABLE "public".mm_favorite IS '会员收藏';
+COMMENT ON COLUMN "public".mm_favorite.id IS '编号';
+COMMENT ON COLUMN "public".mm_favorite.member_id IS '会员编号';
+COMMENT ON COLUMN "public".mm_favorite.fav_type IS '收藏类型';
+COMMENT ON COLUMN "public".mm_favorite.refer_id IS '关联编号';
+COMMENT ON COLUMN "public".mm_favorite.create_time IS '收藏时间';
 
+/** 2019-12-28 */
+ALTER TABLE "public".mm_deliver_addr
+  alter column member_id set not null;
+ALTER TABLE "public".mm_deliver_addr
+    RENAME COLUMN real_name to consignee_name;
+ALTER TABLE "public".mm_deliver_addr
+  ALTER COLUMN consignee_name set NOT NULL;
+ALTER TABLE "public".mm_deliver_addr
+    RENAME COLUMN phone to consignee_phone;
+ALTER TABLE "public".mm_deliver_addr
+    RENAME COLUMN address to detail_address;
+ALTER TABLE "public".mm_deliver_addr
+  ALTER COLUMN consignee_phone set NOT NULL;
+ALTER TABLE "public".mm_deliver_addr
+  alter column province set not null;
+ALTER TABLE "public".mm_deliver_addr
+  alter column city set not null;
+ALTER TABLE "public".mm_deliver_addr
+  alter column district set not null;
+ALTER TABLE "public".mm_deliver_addr
+  alter column area set not null;
+ALTER TABLE "public".mm_deliver_addr
+  alter COLUMN detail_address set NOT NULL;
+ALTER TABLE "public".mm_deliver_addr
+  alter column is_default set not null;
+COMMENT ON TABLE "public".mm_deliver_addr IS '会员收货地址';
+COMMENT ON COLUMN "public".mm_deliver_addr.id IS '编号';
+COMMENT ON COLUMN "public".mm_deliver_addr.member_id IS '会员编号';
+COMMENT ON COLUMN "public".mm_deliver_addr.consignee_name IS '收货人姓名';
+COMMENT ON COLUMN "public".mm_deliver_addr.consignee_phone IS '收货人电话';
+COMMENT ON COLUMN "public".mm_deliver_addr.province IS '数字编码(省)';

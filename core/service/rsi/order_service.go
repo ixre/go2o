@@ -407,10 +407,10 @@ func (s *orderServiceImpl) GetCartSettle(memberId int64,
 	if deliver != nil {
 		v := deliver.GetValue()
 		st.Deliver = &dto.SettleDeliverMeta{
-			Id:         v.ID,
-			PersonName: v.RealName,
-			Phone:      v.Phone,
-			Address:    strings.Replace(v.Area, " ", "", -1) + v.Address,
+			Id:             v.ID,
+			ConsigneeName:  v.ConsigneeName,
+			ConsigneePhone: v.ConsigneePhone,
+			Address:        strings.Replace(v.Area, " ", "", -1) + v.DetailAddress,
 		}
 	}
 

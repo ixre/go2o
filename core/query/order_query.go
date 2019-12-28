@@ -60,7 +60,7 @@ func (o *OrderQuery) QueryOrderItems(subOrderId int64) []*dto.OrderItem {
 func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
-	orderList := make([]*dto.PagedMemberSubOrder,0)
+	orderList := make([]*dto.PagedMemberSubOrder, 0)
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList

@@ -468,6 +468,7 @@ func (p *profileManagerImpl) UnlockBank() error {
 
 // 创建配送地址
 func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {
+	v.MemberId = p.memberId
 	return newDeliver(v, p.repo, p.valueRepo)
 }
 
@@ -708,11 +709,11 @@ func (p *addressImpl) renewAreaName(v *member.Address) string {
 }
 
 func (p *addressImpl) checkValue(v *member.Address) error {
-	v.Address = strings.TrimSpace(v.Address)
-	v.RealName = strings.TrimSpace(v.RealName)
-	v.Phone = strings.TrimSpace(v.Phone)
+	v.DetailAddress = strings.TrimSpace(v.DetailAddress)
+	v.ConsigneeName = strings.TrimSpace(v.ConsigneeName)
+	v.ConsigneePhone = strings.TrimSpace(v.ConsigneePhone)
 
-	if len([]rune(v.RealName)) < 2 {
+	if len([]rune(v.ConsigneeName)) < 2 {
 		return member.ErrDeliverContactPersonName
 	}
 
@@ -720,11 +721,11 @@ func (p *addressImpl) checkValue(v *member.Address) error {
 		return member.ErrNotSetArea
 	}
 
-	if !phoneRegex.MatchString(v.Phone) {
+	if !phoneRegex.MatchString(v.ConsigneePhone) {
 		return member.ErrDeliverContactPhone
 	}
 
-	if len([]rune(v.Address)) < 6 {
+	if len([]rune(v.DetailAddress)) < 6 {
 		// 判断字符长度
 		return member.ErrDeliverAddressLen
 	}

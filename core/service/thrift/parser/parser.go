@@ -227,31 +227,29 @@ func Account(src *member_service.SAccount) *member.Account {
 
 func AddressDto(src *member.Address) *member_service.SAddress {
 	return &member_service.SAddress{
-		ID:        src.ID,
-		MemberId:  src.MemberId,
-		RealName:  src.RealName,
-		Phone:     src.Phone,
-		Province:  src.Province,
-		City:      src.City,
-		District:  src.District,
-		Area:      src.Area,
-		Address:   src.Address,
-		IsDefault: int32(src.IsDefault),
+		ID:             src.ID,
+		ConsigneeName:  src.ConsigneeName,
+		ConsigneePhone: src.ConsigneePhone,
+		Province:       src.Province,
+		City:           src.City,
+		District:       src.District,
+		Area:           src.Area,
+		DetailAddress:  src.DetailAddress,
+		IsDefault:      int32(src.IsDefault),
 	}
 }
 
 func Address(src *member_service.SAddress) *member.Address {
 	return &member.Address{
-		ID:        src.ID,
-		MemberId:  src.MemberId,
-		RealName:  src.RealName,
-		Phone:     src.Phone,
-		Province:  src.Province,
-		City:      src.City,
-		District:  src.District,
-		Area:      src.Area,
-		Address:   src.Address,
-		IsDefault: int(src.IsDefault),
+		ID:             src.ID,
+		ConsigneeName:  src.ConsigneeName,
+		ConsigneePhone: src.ConsigneePhone,
+		Province:       src.Province,
+		City:           src.City,
+		District:       src.District,
+		Area:           src.Area,
+		DetailAddress:  src.DetailAddress,
+		IsDefault:      int(src.IsDefault),
 	}
 }
 

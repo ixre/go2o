@@ -102,7 +102,6 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 	return list
 }
 
-
 /**
  * @api {post} /goods/favorite 收藏商品
  * @apiGroup goods
@@ -121,7 +120,6 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 	}
 	return api.NewResponse(nil)
 }
-
 
 //
 //func (j *JsonC) Mch_goods(c *echox.Context) error {
@@ -187,4 +185,3 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //
 //	return c.Debug(c.JSON(http.StatusOK, result))
 //}
-

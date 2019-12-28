@@ -397,7 +397,7 @@ type (
 	// 收藏
 	Favorite struct {
 		// 编号
-		Id int32 `db:"id"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 收藏类型
@@ -405,7 +405,7 @@ type (
 		// 引用编号
 		ReferId int32 `db:"refer_id"`
 		// 收藏时间
-		UpdateTime int64 `db:"update_time"`
+		CreateTime int64 `db:"create_time"`
 	}
 
 	// 收货地址
@@ -423,19 +423,19 @@ type (
 		//会员编号
 		MemberId int64 `db:"member_id"`
 		//收货人
-		RealName string `db:"real_name"`
+		ConsigneeName string `db:"consignee_name"`
 		//电话
-		Phone string `db:"phone"`
+		ConsigneePhone string `db:"consignee_phone"`
 		//省
 		Province int32 `db:"province"`
 		//市
 		City int32 `db:"city"`
 		//区
 		District int32 `db:"district"`
-		//地区(省市区连接)
+		//地区(省市区连接文本)
 		Area string `db:"area"`
 		//地址
-		Address string `db:"address"`
+		DetailAddress string `db:"detail_address"`
 		//是否默认
 		IsDefault int `db:"is_default"`
 	}

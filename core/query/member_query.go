@@ -12,7 +12,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ixre/gof/db"
-	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
@@ -55,7 +54,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
+		orderBy = "ORDER BY " + orderBy
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
@@ -79,9 +78,8 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, params *ttype.SPag
 			WHERE bi.member_id= $1`), &num, memberId)
 	if num > 0 {
 		orderBy := ""
-		if params.OrderField != "" {
-			orderBy = "ORDER BY " + params.OrderField +
-				types.ElseString(params.OrderDesc, " DESC", " ASC") + ",bi.id DESC"
+		if params.SortBy != "" {
+			orderBy = "ORDER BY " + params.SortBy + ",bi.id DESC"
 		}
 		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_integral_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
@@ -346,4 +344,18 @@ func (m *MemberQuery) InviteMembersQuantity(memberId int64, where string) int {
 		log.Printf("[ Query][ Error]: invite member quantity error:%s", err.Error())
 	}
 	return total
+}
+
+// 获取订单状态及其数量
+func (m *MemberQuery) OrdersQuantity(memberId int64) map[int]int {
+	mp := make(map[int]int, 0)
+	m.Connector.Query(`SELECT state,COUNT(0) as n FROM sale_sub_order o
+		  INNER JOIN order_list po ON o.order_id = po.id GROUP BY state having o.buyer_id= $1`, func(rows *sql.Rows) {
+		s, n := 0, 0
+		for rows.Next() {
+			rows.Scan(&s, &n)
+			mp[s] = n
+		}
+	}, memberId)
+	return mp
 }

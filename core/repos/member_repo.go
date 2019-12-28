@@ -104,7 +104,7 @@ func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int32) er
 		MemberId:   memberId,
 		FavType:    favType,
 		ReferId:    referId,
-		UpdateTime: time.Now().Unix(),
+		CreateTime: time.Now().Unix(),
 	})
 	return err
 }

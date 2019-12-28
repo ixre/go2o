@@ -34,13 +34,13 @@ func NewServe(store storage.Interface, debug bool, requireVer string,
 	RequireVersion = requireVer
 	ApiUser = apiUser
 	ApiSecret = apiSecret
-	log.Println(fmt.Sprintf("[ Go2o][ API]: api key is '%s' and secret is '%s'",ApiUser,ApiSecret))
+	log.Println(fmt.Sprintf("[ Go2o][ API]: api key is '%s' and secret is '%s'", ApiUser, ApiSecret))
 	// 初始化变量
 	registry := map[string]interface{}{}
 	// 创建上下文工厂
 	factory := api.DefaultFactory.Build(registry)
 	// 请求限制
-	rl := util.NewRequestLimit(store, 200, 10, 600)
+	rl := util.NewRequestLimit(store, 100, 10, 600)
 	serve := NewService(factory, debug, rl)
 	// 创建http处理器
 	hs := http.NewServeMux()
@@ -60,11 +60,9 @@ func NewService(factory api.ContextFactory, debug bool, rl *util.RequestLimit) *
 	s.Register("passport", NewPassportApi())
 	s.Register("settings", NewSettingsApi())
 	s.Register("res", NewResApi())
-<<<<<<< HEAD
-=======
 	s.Register("goods", NewGoodsApi())
 	s.Register("shop", NewShopApi())
->>>>>>> feature
+	s.Register("account", NewAccountApi())
 	// 注册中间键
 	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", debug, rl)
 	return s
@@ -143,8 +141,8 @@ func swapApiKeyFunc(ctx api.Context, key string) (userId int, userSecret string)
 	if key == ApiUser {
 		return 1, ApiSecret
 	} else if key == "go2o" {
-		if tt := time.Date(2019, 12, 31, 0,
-			0, 0, 0, time.Local); tt.After(time.Now()) {
+		tt := time.Date(2019, 12, 01, 0, 0, 0, 0, time.Local)
+		if time.Now().Unix() < tt.Unix() {
 			return 1, "131409"
 		}
 	}

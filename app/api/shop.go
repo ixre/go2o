@@ -31,9 +31,9 @@ func NewShopApi() *shopApi {
 
 func (s shopApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
-		"category":       s.shopCat,
-		"favorite":s.Favorite,
-		"my_addrss":s.addressList,
+		"category":  s.shopCat,
+		"favorite":  s.Favorite,
+		"my_addrss": s.addressList,
 	})
 }
 
@@ -47,7 +47,7 @@ func (s shopApi) Process(fn string, ctx api.Context) *api.Response {
  * @apiSuccessExample Error-Response
  * {"err_code":1,"err_msg":"access denied"}
  */
-func (s shopApi) shopCat(ctx api.Context)interface{} {
+func (s shopApi) shopCat(ctx api.Context) interface{} {
 	parentId := ctx.Form().GetInt("parent_id")
 	shopId := ctx.Form().GetInt("shop_id")
 	var list []*ttype.SCategory
@@ -65,7 +65,6 @@ func (s shopApi) shopCat(ctx api.Context)interface{} {
 	}
 	return list
 }
-
 
 /**
  * @api {post} /shop/favorite 收藏店铺
@@ -85,7 +84,6 @@ func (s shopApi) Favorite(ctx api.Context) interface{} {
 	}
 	return api.NewResponse(nil)
 }
-
 
 /*
 
@@ -115,8 +113,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	}
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), mp)
 }
- */
-
+*/
 
 //
 
