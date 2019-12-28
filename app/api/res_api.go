@@ -9,6 +9,8 @@ import (
 	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/gen"
+	"go2o/core/infrastructure/tool"
+	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"strconv"
@@ -33,10 +35,16 @@ type resApi struct {
 func NewResApi() api.Handler {
 	return &resApi{}
 }
-func (a resApi) Process(fn string, ctx api.Context) *api.Response {
-	return api.HandleMultiFunc(fn, ctx, map[string]api.HandlerFunc{
-		"ad_api": a.adApi,
-	})
+func (r resApi) Process(fn string, ctx api.Context) *api.Response {
+	switch fn {
+	case "ad_api":
+		return r.adApi(ctx)
+	case "geo_location":
+		return r.geoLocation(ctx)
+	case "area":
+		return r.childArea(ctx)
+	}
+	return api.RUndefinedApi
 }
 
 /**
@@ -52,7 +60,7 @@ func (a resApi) Process(fn string, ctx api.Context) *api.Response {
  * @apiSuccessExample Error-Response
  * {"err_code":1,"err_msg":"access denied"}
  */
-func (a resApi) adApi(ctx api.Context) interface{} {
+func (r resApi) adApi(ctx api.Context) *api.Response {
 	posKeys := ctx.Form().GetString("pos_keys")
 	userId := ctx.Form().GetInt("user_id")
 	namesParams := strings.TrimSpace(posKeys)
@@ -65,8 +73,8 @@ func (a resApi) adApi(ctx api.Context) interface{} {
 	if rds == nil {
 		panic("storage need redis support")
 	}
-	var seconds int = 0
-	rds.RWJson(key, &result, func() interface{} {
+	var seconds = 0
+	_ = rds.RWJson(key, &result, func() interface{} {
 		//从缓存中读取
 		for _, n := range names {
 			//分别绑定广告
@@ -80,13 +88,13 @@ func (a resApi) adApi(ctx api.Context) interface{} {
 		regArr := []string{registry.CacheAdMaxAge}
 		trans, cli, err := thrift.RegistryServeClient()
 		if err == nil {
-			defer trans.Close()
 			mp, _ := cli.GetRegistries(thrift.Context, regArr)
+			_ = trans.Close()
 			seconds, _ = strconv.Atoi(mp[regArr[0]])
 		}
 		return result
 	}, int64(seconds))
-	return result
+	return r.utils.success(result)
 }
 
 /**
@@ -98,8 +106,58 @@ func (a resApi) adApi(ctx api.Context) interface{} {
  * @apiSuccessExample Error-Response
  * {"err_code":1,"err_msg":"access denied"}
  */
-func (a resApi) qrCode(ctx api.Context) interface{} {
+func (r resApi) qrCode(ctx api.Context) interface{} {
 	text := ctx.Form().GetString("text")
 	data := gen.BuildQrCodeForUrl(text, 20)
 	return base64.URLEncoding.EncodeToString(data)
+}
+
+/**
+ * @api {post} /res/geo_location 返回用户的IP及其地址
+ * @apiGroup res
+ * @apiSuccessExample Success-Response
+ * {"ip":"121.83.88.49":"address":"中国上海徐汇区"}
+ * @apiSuccessExample Error-Response
+ * {"err_code":1,"err_msg":"access denied"}
+ */
+func (r resApi) geoLocation(ctx api.Context) *api.Response {
+	ip := ctx.Form().GetString("$user_addr")
+	if i := strings.Index(ip, ":"); i != -1 {
+		ip = ip[:i]
+	}
+	addr := tool.GetLocation(ip)
+	mp := map[string]string{
+		"ip":      ip,
+		"address": addr,
+	}
+	return r.utils.success(mp)
+}
+
+/**
+ * @api {post} /res/area 获取地区(省市区)数据
+ * @apiGroup res
+ * @apiParam {int} area_code(省市区)地区编码, 如获取全部省, 参数传:0,如果获取四川省下面的市,则传四川省的数字编码
+ * @apiParam {int} area_type 地区类型,1:省, 2:市, 3:区
+ * @apiSuccessExample Success-Response
+ * {}
+ * @apiSuccessExample Error-Response
+ * {"err_code":1,"err_msg":"access denied"}
+ */
+func (r resApi) childArea(ctx api.Context) *api.Response {
+	code, _ := strconv.Atoi(ctx.Form().GetString("area_code"))
+	areaType := ctx.Form().GetInt("area_type")
+	tran, cli, err := thrift.FoundationServeClient()
+	areas := make([]*foundation_service.SArea, 0)
+	if err == nil {
+		areas, _ = cli.GetChildAreas(thrift.Context, int32(code))
+		_ = tran.Close()
+		if areaType == 3 {
+			for i, v := range areas {
+				if strings.TrimSpace(v.Name) == "市辖区" {
+					areas = append(areas[:i], areas[i+1:]...)
+				}
+			}
+		}
+	}
+	return r.success(areas)
 }
