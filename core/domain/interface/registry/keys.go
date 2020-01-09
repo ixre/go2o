@@ -46,6 +46,11 @@ var (
 	// 面板链接钩子URL地址
 	BoardHookURL = KeyFormat("board_hook_url")
 
+	/* API设置 */
+	// 接口需要的最低版本
+	ApiRequireVersion = KeyFormat("api_require_version")
+
+
 	/* 平台 */
 	// 平台名称
 	PlatformName = KeyFormat("PlatformName")

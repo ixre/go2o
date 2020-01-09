@@ -182,6 +182,7 @@ func initRpcServe(ctx gof.App) {
 	// 更新值
 	mp[registry.DomainEnabledSSL] = gf("ssl_enabled")
 	mp[registry.Domain] = gf("domain")
+	mp[registry.ApiRequireVersion] = gf("api_require_version")
 	RegistryService.UpdateRegistry(nil, mp)
 
 	//mp[variable.DEnabledSSL] = gf("ssl_enabled")

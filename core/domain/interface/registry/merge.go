@@ -39,6 +39,8 @@ func MergeRegistries() []*Registry {
 	mergeAdd("面板钩子显示名称", BoardHookDisplayName, "Hooks", "")
 	mergeAdd("面板链接钩子访问密钥", BoardHookToken, "", "")
 	mergeAdd("面板链接钩子URL地址", BoardHookURL, "", "")
+	/* API设置 */
+	mergeAdd("接口需要的最低版本",ApiRequireVersion,"0.0.1","")
 
 	/* 账户 */
 	mergeAdd("余额账户", AccountBalanceAlias, "余额", "")

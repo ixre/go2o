@@ -101,7 +101,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 		mp["PtName"] = registry["PlatformName"]
 		mp["LoginUrl"] = pstUrl + "/auth/login"
 		mp["RegisterUrl"] = pstUrl + "/register"
-		mp["Login"] = 0
+		mp["login"] = 0
 	} else {
 		mmUrl := fmt.Sprintf("//%s%s",
 			consts.DOMAIN_PREFIX_MEMBER, variable.Domain)
@@ -109,7 +109,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"
 		mp["MMUrl"] = mmUrl
-		mp["Login"] = 1
+		mp["login"] = 1
 	}
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), mp)
 }
