@@ -50,7 +50,6 @@ var (
 	// 接口需要的最低版本
 	ApiRequireVersion = KeyFormat("api_require_version")
 
-
 	/* 平台 */
 	// 平台名称
 	PlatformName = KeyFormat("PlatformName")
