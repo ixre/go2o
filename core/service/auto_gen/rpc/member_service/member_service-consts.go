@@ -3,14 +3,15 @@
 
 package member_service
 
-import (
+import(
 	"bytes"
 	"context"
+	"reflect"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
-	"go2o/core/service/auto_gen/rpc/message_service"
 	"go2o/core/service/auto_gen/rpc/ttype"
-	"reflect"
+	"go2o/core/service/auto_gen/rpc/message_service"
+
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -25,3 +26,4 @@ var _ = message_service.GoUnusedProtection__
 
 func init() {
 }
+
