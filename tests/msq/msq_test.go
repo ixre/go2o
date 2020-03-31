@@ -12,14 +12,13 @@ const id = 22149
 
 func init() {
 	// 初始化producer
-	msq.Configure(msq.KAFKA, []string{"127.0.0.1:9092"})
-	msq.Configure(msq.KAFKA, []string{"www.dev1.super4bit:9092"})
-
+	msq.Configure(msq.NATS, []string{"127.0.0.1:4222"})
+	//msq.Configure(msq.NATS, []string{"www.dev1.super4bit:4222"})
 }
 
 func TestMemberUpdate(t *testing.T) {
 	defer msq.Close()
-	msq.Push(msq.MemberUpdated, strconv.Itoa(id), "update")
+	msq.Push(msq.MemberUpdated, "update!"+ strconv.Itoa(id))
 	msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(id), "", 1000)
 	msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(id), "", 1000)
 	msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(id), "", 1000)
@@ -28,8 +27,8 @@ func TestMemberUpdate(t *testing.T) {
 
 func TestMemberTrustPassedMQ(t *testing.T) {
 	defer msq.Close()
-	msq.Push(msq.MemberTrustInfoPassed, strconv.Itoa(id),
-		fmt.Sprintf("%d|%s|%s",
-			1, "513701981888455487", "刘铭"))
+	msq.Push(msq.MemberTrustInfoPassed,
+		fmt.Sprintf("%d|%d|%s|%s",
+			id,1, "513701981888455487", "刘铭"))
 	time.Sleep(5 * time.Second)
 }

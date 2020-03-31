@@ -10,12 +10,14 @@ var (
 	producer Producer
 )
 
-const KAFKA = 1
-const REDIS = 2
+
+const NATS = 1
+const KAFKA = 2
+const REDIS = 3
 
 type Producer interface {
 	// 推送消息
-	Push(topic string, key string, message string) error
+	Push(topic string,message string) error
 	// 关闭生产者
 	Close()
 }
@@ -23,16 +25,22 @@ type Producer interface {
 // 设置
 func Configure(mqType int, address []string) error {
 	if mqType == KAFKA {
-		producer = newKafkaProducer(address)
+		panic("if you want to use kafka as mq server. please uncomment blow line")
+		//producer = newKafkaProducer(address)
 		return nil
+	}
+	if mqType == NATS{
+		var err error
+		producer,err = newNatsProducer("nats://"+address[0])
+		return err
 	}
 	return errors.New(fmt.Sprintf("not implement mq type %d", mqType))
 }
 
 // 推送消息
-func Push(topic string, key string, message string) error {
+func Push(topic string, message string) error {
 	if producer != nil {
-		return producer.Push(topic, key, message)
+		return producer.Push(topic, message)
 	}
 	return nil
 }
@@ -45,7 +53,7 @@ func PushDelay(topic string, key string, message string, delay int) error {
 	if delay > 0 {
 		time.Sleep(time.Millisecond * time.Duration(delay))
 	}
-	return Push(topic, key, message)
+	return Push(topic, message)
 }
 
 // 关闭生产者

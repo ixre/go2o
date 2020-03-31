@@ -3,7 +3,7 @@ package msq
 const (
 	// 会员创建或更新
 	MemberUpdated = "go2o-member-updated"
-	// 会员实名信息通过,key: id ,value: 证件类型|证件号码|姓名
+	// 会员实名信息通过,key: id ,value: 会员ID|证件类型|证件号码|姓名
 	MemberTrustInfoPassed = "go2o-member-trusted-info-passed"
 	// 会员账户更新
 	MemberAccountUpdated = "go2o-member-account-updated"

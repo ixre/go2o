@@ -69,18 +69,18 @@ func main() {
 		appFlag   = app.FlagWebApp
 	)
 
-	defaultKafkaAddr := os.Getenv("GO2O_KAFKA_ADDR")
-	if len(defaultKafkaAddr) == 0 {
-		defaultKafkaAddr = "127.0.0.1:9092"
+	defaultMqAddr := os.Getenv("GO2O_KAFKA_ADDR")
+	if len(defaultMqAddr) == 0 {
+		defaultMqAddr = "127.0.0.1:4222"
 	}
-	flag.IntVar(&port, "-port", 1427, "thrift service port")
-	flag.IntVar(&apiPort, "-apiport", 1428, "api service port")
+	flag.IntVar(&port, "port", 1427, "thrift service port")
+	flag.IntVar(&apiPort, "apiport", 1428, "api service port")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.StringVar(&confFile, "conf", "app.conf", "")
-	flag.StringVar(&kafkaAddr, "kafka", defaultKafkaAddr,
-		"kafka cluster address, like: 192.168.1.1:9092,192.168.1.2:9092")
+	flag.StringVar(&kafkaAddr, "mqs", defaultMqAddr,
+		"mq cluster address, like: 192.168.1.1:4222,192.168.1.2:4222")
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
@@ -117,7 +117,7 @@ func main() {
 	})
 	rsi.Init(newApp, appFlag)
 	// 初始化producer
-	msq.Configure(msq.KAFKA, strings.Split(kafkaAddr, ","))
+	msq.Configure(msq.NATS, strings.Split(kafkaAddr, ","))
 	// 运行RPC服务
 	go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
 	// 运行REST API

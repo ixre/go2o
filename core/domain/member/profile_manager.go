@@ -647,8 +647,9 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	if err == nil {
 		if _, err = p.member.Save(); err == nil && pass {
 			// 通知实名通过
-			msq.Push(msq.MemberTrustInfoPassed, strconv.Itoa(int(p.memberId)),
-				fmt.Sprintf("%d|%s|%s",
+			msq.Push(msq.MemberTrustInfoPassed,
+				fmt.Sprintf("%d|%d|%s|%s",
+					p.memberId,
 					p.trustedInfo.CardType,
 					p.trustedInfo.CardId,
 					p.trustedInfo.RealName))
