@@ -15,6 +15,10 @@ steps:
           from_secret: docker_password
       build_args:
         - GOPROXY=https://goproxy.io
+  - name: finish
+    image: alpine
+    commands:
+      - echo 'success'
 trigger:
   branch:
     - master
