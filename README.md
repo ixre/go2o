@@ -2,9 +2,7 @@
 ![Go2o](https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif "GO2O")
 
 
-
-
- 
+[![Build Status](https://cloud.drone.io/api/badges/ixre/cms/status.svg)](https://cloud.drone.io/ixre/cms)
 
 ## What's Go2o? ##
 
