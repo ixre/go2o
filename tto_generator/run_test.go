@@ -28,9 +28,9 @@ var (
 
 // 生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
-	connString = "postgres://postgres:123456@www.dev1.super4bit.co:5432/go2o?sslmode=disable"
+	connString = "postgres://postgres:123456@www.dev.bitsxx.com:5432/go2o?sslmode=disable"
 	// 初始化生成器
-	conn := db.NewConnector(driver, connString, nil, false).Raw()
+	conn,_ := db.NewConnector(driver, connString, nil, false).Raw()
 	dialect := getDialect(driver)
 	ds := orm.DialectSession(conn, dialect)
 	dg := tto.DBCodeGenerator()

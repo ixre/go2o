@@ -11,7 +11,6 @@ package core
 import (
 	"encoding/gob"
 	"github.com/ixre/gof/db"
-	"github.com/ixre/gof/log"
 	"go2o/core/dao/model"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/after-sales"
@@ -80,7 +79,6 @@ func init2() {
 }
 
 func Init(a *AppImpl, debug, trace bool) bool {
-	log.Println("[ Go2o][ Boot]: initialize ...")
 	a._debugMode = debug
 	if trace {
 		a.Db().GetOrm().SetTrace(a._debugMode)

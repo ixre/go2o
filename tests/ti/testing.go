@@ -72,7 +72,7 @@ func (t *testingApp) Db() db.Connector {
 			t._config.GetString(core.DbServer),
 			t._config.GetString(core.DbPort),
 			t._config.GetString(core.DbName))
-		conn := db.NewConnector("postgresql", connStr, t.Log(), t._debugMode)
+		conn,_ := db.NewConnector("postgresql", connStr, t.Log(), t._debugMode)
 		conn.SetMaxIdleConns(10000)
 		conn.SetMaxIdleConns(5000)
 		conn.SetConnMaxLifetime(time.Second * 10)

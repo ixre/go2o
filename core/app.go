@@ -148,7 +148,15 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		c.GetString(DbPort),
 		c.GetString(DbName))
 	//todo: charset for connection string?
-	conn := db.NewConnector(driver, connStr, l, debug)
+	conn,err:= db.NewConnector(driver, connStr, l, debug)
+	if err == nil {
+		log.Println("[ Go2o][ Init]: create database connection..")
+		if err := conn.Ping(); err != nil {
+			conn.Close()
+			//如果异常，则显示并退出
+			log.Fatalln("[ Go2o][ Connector]:" + conn.Driver() + "-" + err.Error())
+		}
+	}
 	conn.SetMaxIdleConns(10000)
 	conn.SetMaxIdleConns(5000)
 	conn.SetConnMaxLifetime(time.Second * 10)
