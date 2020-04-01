@@ -69,7 +69,7 @@ func main() {
 		appFlag   = app.FlagWebApp
 	)
 
-	defaultMqAddr := os.Getenv("GO2O_KAFKA_ADDR")
+	defaultMqAddr := os.Getenv("GO2O_NATS_ADDR")
 	if len(defaultMqAddr) == 0 {
 		defaultMqAddr = "127.0.0.1:4222"
 	}

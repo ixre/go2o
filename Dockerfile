@@ -24,7 +24,7 @@ MAINTAINER jarrysix
 LABEL vendor="Go2o"
 LABEL version="1.0.0"
 
-ENV GO2O_KAFKA_ADDR=172.17.0.1:9092
+ENV GO2O_NATS_ADDR=172.17.0.1:4222
 
 WORKDIR /app
 COPY --from=build /opt/go2o/dist/* /app/

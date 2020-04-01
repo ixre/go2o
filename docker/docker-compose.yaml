@@ -45,7 +45,7 @@ services:
     volumes:
       - ./go2o:/data
     environment:
-      GO2O_KAFKA_ADDR: kafka:9092
+      GO2O_NATS_ADDR: nats:4222
 
   web:
     image: docker-base.to2.net:5020/go2o-web
