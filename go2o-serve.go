@@ -59,7 +59,7 @@ func main() {
 		confFile  string
 		port      int
 		apiPort   int
-		kafkaAddr string
+		mqAddr string
 		debug     bool
 		trace     bool
 		runDaemon bool // 运行daemon
@@ -79,7 +79,7 @@ func main() {
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.StringVar(&confFile, "conf", "app.conf", "")
-	flag.StringVar(&kafkaAddr, "mqs", defaultMqAddr,
+	flag.StringVar(&mqAddr, "mqs", defaultMqAddr,
 		"mq cluster address, like: 192.168.1.1:4222,192.168.1.2:4222")
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&showVer, "v", false, "print version")
@@ -117,7 +117,7 @@ func main() {
 	})
 	rsi.Init(newApp, appFlag)
 	// 初始化producer
-	msq.Configure(msq.NATS, strings.Split(kafkaAddr, ","))
+	msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
 	go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
 	// 运行REST API
