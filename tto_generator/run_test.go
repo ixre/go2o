@@ -30,7 +30,7 @@ var (
 func TestGenAll(t *testing.T) {
 	connString = "postgres://postgres:123456@www.dev.bitsxx.com:5432/go2o?sslmode=disable"
 	// 初始化生成器
-	conn,_ := db.NewConnector(driver, connString, nil, false).Raw()
+	conn, _ := db.NewConnector(driver, connString, nil, false).Raw()
 	dialect := getDialect(driver)
 	ds := orm.DialectSession(conn, dialect)
 	dg := tto.DBCodeGenerator()

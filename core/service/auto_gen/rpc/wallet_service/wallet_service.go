@@ -3,7 +3,7 @@
 
 package wallet_service
 
-import(
+import (
 	"bytes"
 	"context"
 	"database/sql/driver"

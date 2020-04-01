@@ -3,7 +3,7 @@
 
 package message_service
 
-import(
+import (
 	"bytes"
 	"context"
 	"fmt"

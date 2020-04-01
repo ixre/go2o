@@ -3,7 +3,7 @@
 
 package member_service
 
-import(
+import (
 	"bytes"
 	"context"
 	"fmt"

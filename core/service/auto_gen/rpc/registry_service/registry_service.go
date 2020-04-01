@@ -3,7 +3,7 @@
 
 package registry_service
 
-import(
+import (
 	"bytes"
 	"context"
 	"fmt"

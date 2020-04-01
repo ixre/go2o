@@ -37,7 +37,7 @@ func TestBatchPushMember(t *testing.T) {
 		msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(id))
 		msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(id), 1000)
 		msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(id), 1000)
-		msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(id),  1000)
+		msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(id), 1000)
 		t.Log("notify ", id)
 	}
 	t.Log("finished")

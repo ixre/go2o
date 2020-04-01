@@ -3,7 +3,7 @@
 
 package ttype
 
-import(
+import (
 	"bytes"
 	"context"
 	"fmt"

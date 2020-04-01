@@ -3,7 +3,7 @@
 
 package shop_service
 
-import(
+import (
 	"bytes"
 	"context"
 	"fmt"

@@ -10,14 +10,13 @@ var (
 	producer Producer
 )
 
-
 const NATS = 1
 const KAFKA = 2
 const REDIS = 3
 
 type Producer interface {
 	// 推送消息
-	Push(topic string,message string) error
+	Push(topic string, message string) error
 	// 关闭生产者
 	Close()
 }
@@ -29,9 +28,9 @@ func Configure(mqType int, address []string) error {
 		//producer = newKafkaProducer(address)
 		return nil
 	}
-	if mqType == NATS{
+	if mqType == NATS {
 		var err error
-		producer,err = newNatsProducer("nats://"+address[0])
+		producer, err = newNatsProducer("nats://" + address[0])
 		return err
 	}
 	return errors.New(fmt.Sprintf("not implement mq type %d", mqType))
@@ -46,7 +45,7 @@ func Push(topic string, message string) error {
 }
 
 // 延迟推送消息
-func PushDelay(topic string,  message string, delay int) error {
+func PushDelay(topic string, message string, delay int) error {
 	if producer == nil {
 		return nil
 	}

@@ -76,104 +76,108 @@ QQ群：**338164725**
 
 [docker-compose.yaml](./docker/docker-compose.yaml)
 
-## Deploy ##
-### 1. Import database ###
+## Deploy
+### 1. Import database
+
 > Create new mysql db instance named "go2o"
  and import data use mysql utility.
  Database backup file is here : [go2o.sql](https://github.com/ixre/go2o/blob/master/docs/data/go2o.sql)
 
-### 2.Complied ###
-	git clone https://github.com/ixre/go2o.git /home/usr/go/src/go2o
-	export GOPATH=$GOPATH:/home/usr/go/
-	cd /home/usr/go/src/go2o
-	go build go2o-serve.go
-	go build go2o-daemon.go
-	go build go2o-tcpserve.go
+### 2.Complied
+```
+git clone https://github.com/ixre/go2o.git /home/usr/go/src/go2o
+export GOPATH=$GOPATH:/home/usr/go/
+cd /home/usr/go/src/go2o
+go build go2o-serve.go
+go build go2o-daemon.go
+go build go2o-tcpserve.go
+```
+### 2.Running Service
+```
+Usage of ./go2o-serve:
+     -conf string
+             (default "app.conf")
+       -d	
+            run daemon
+       -r   
+            run rpc server
+       -debug
+            enable debug
+       -trace
+            enable trace
+       -help
+            command usage
+       -port int
+            web server port (default 14190)
+       -restport int
+            rest api port (default 1419)
 
-### 2.Running Service ###
-	Usage of ./go2o-serve:
-		 -conf string
-             	 (default "app.conf")
-           -d	
-                run daemon
-           -r   
-                run rpc server
-           -debug
-             	enable debug
-           -trace
-             	enable trace
-           -help
-             	command usage
-           -port int
-             	web server port (default 14190)
-           -restport int
-             	rest api port (default 1419)
+Usage of ./go2o-daemon:
+    -debug = false : enable debug
 
-	Usage of ./go2o-daemon:
-		-debug = false : enable debug
-
-	Usage of ./go2o-tcpserve:
-	  -conf string
-        	 (default "app.conf")
-      -l	log output
-      -port int
-        	 (default 14197)
-
-### 3.Add http proxy pass for Nginx ###
-	server {
-            listen          80;
-            server_name     static.ts.com;
-            root    /home/usr/go/src/go2o/static;
-    	location ~* \.(eot|ttf|woff|woff2|svg)$ {
-          		add_header Access-Control-Allow-Origin *;
-      	}
+Usage of ./go2o-tcpserve:
+  -conf string
+         (default "app.conf")
+  -l	log output
+  -port int
+         (default 14197)
+```
+### 3.Add http proxy pass for nginx
+```
+server {
+        listen          80;
+        server_name     static.ts.com;
+        root    /home/usr/go/src/go2o/static;
+    location ~* \.(eot|ttf|woff|woff2|svg)$ {
+            add_header Access-Control-Allow-Origin *;
     }
+}
 
-    server {
-            listen          80;
-            server_name     img.ts.com;
-            root            /home/usr/go/src/go2o/uploads;
-    	location ~* \.(eot|ttf|woff|woff2|svg)$ {
-          		add_header Access-Control-Allow-Origin *;
-      	}
+server {
+        listen          80;
+        server_name     img.ts.com;
+        root            /home/usr/go/src/go2o/uploads;
+    location ~* \.(eot|ttf|woff|woff2|svg)$ {
+            add_header Access-Control-Allow-Origin *;
     }
+}
 
-    server {
-            listen          80;
-            server_name     *.ts.com;
-            client_max_body_size    10m;  
-            location / {
-                    proxy_pass   http://localhost:14190;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header Host $host;
-                    proxy_redirect   off;
-            }
-    }
+server {
+        listen          80;
+        server_name     *.ts.com;
+        client_max_body_size    10m;  
+        location / {
+                proxy_pass   http://localhost:14190;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $host;
+                proxy_redirect   off;
+        }
+}
+```
 
 
-
-### 4.Add test hosts ###
+### 4.Add test hosts
 > echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com hapi.ts.com 
 u.ts.com mu.ts.com passport.ts.com mpp.ts.com
  master.ts.com zy.ts.com whs.ts.com >> /etc/hosts
 
-## Access Entry ##
+## Access Entry
 
-### WebMaster ##
+### WebMaster
 master.ts.com
 
 account: go2o / 123456
 
-### Merchant Management ###
+### Merchant Management
 mch.ts.com
 
 account: go2o / 123456
 
-### Member Center ###
+### Member Center
 u.ts.com
 
-### Merchant Sales ###
+### Merchant Sales
 go2o.ts.com
 
 
