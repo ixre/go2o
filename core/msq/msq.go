@@ -46,7 +46,7 @@ func Push(topic string, message string) error {
 }
 
 // 延迟推送消息
-func PushDelay(topic string, key string, message string, delay int) error {
+func PushDelay(topic string,  message string, delay int) error {
 	if producer == nil {
 		return nil
 	}

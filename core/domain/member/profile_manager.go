@@ -243,7 +243,7 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 		err = p.repo.SaveProfile(&ptr)
 		if err == nil {
 			// 推送资料更新消息
-			go msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), "", 500)
+			go msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), 500)
 			// 完善资料通知
 			if p.ProfileCompleted() {
 				// 标记会员已完善资料

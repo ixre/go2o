@@ -34,10 +34,10 @@ func TestBatchPushMember(t *testing.T) {
 	}
 	for _, v := range members {
 		id := int(v.Id)
-		msq.Push(msq.MemberUpdated, strconv.Itoa(id), "update")
-		msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(id), "", 1000)
-		msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(id), "", 1000)
-		msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(id), "", 1000)
+		msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(id))
+		msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(id), 1000)
+		msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(id), 1000)
+		msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(id),  1000)
 		t.Log("notify ", id)
 	}
 	t.Log("finished")
