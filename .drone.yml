@@ -1,0 +1,21 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: docker
+    image: plugins/docker
+    settings:
+      repo: docker-base.ops.cc:5020/go2o
+      tags: latest
+      registry: docker-base.ops.cc:5020
+      insecure: true
+      username:
+          from_secret: docker_username
+      password:
+          from_secret: docker_password
+      build_args:
+        - GOPROXY=https://goproxy.io
+trigger:
+  branch:
+    - master
+    - feature
