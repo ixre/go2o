@@ -147,7 +147,6 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		c.GetString(DbServer),
 		c.GetString(DbPort),
 		c.GetString(DbName))
-	println("---",connStr)
 	//todo: charset for connection string?
 	conn, err := db.NewConnector(driver, connStr, l, debug)
 	if err == nil {
