@@ -15,8 +15,8 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
-	"log"
 	"time"
 )
 
