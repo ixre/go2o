@@ -15,8 +15,8 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
+	"log"
 	"time"
 )
 
@@ -154,7 +154,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		if err := conn.Ping(); err != nil {
 			conn.Close()
 			//如果异常，则显示并退出
-			log.Fatalln("[ Go2o][ Connector]:" +  err.Error())
+			log.Fatalln("[ Go2o][ Connector]:" + err.Error())
 		}
 		conn.SetMaxIdleConns(10000)
 		conn.SetMaxIdleConns(5000)
