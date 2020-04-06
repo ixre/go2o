@@ -5,9 +5,9 @@ steps:
   - name: docker
     image: plugins/docker
     settings:
-      repo: docker-base.ops.cc:5020/go2o
+      repo: docker-base.56x.net:5020/go2o
       tags: latest
-      registry: docker-base.ops.cc:5020
+      registry: docker-base.56x.net:5020
       insecure: true
       username:
           from_secret: docker_username
