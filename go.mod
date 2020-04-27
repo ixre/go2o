@@ -1,6 +1,6 @@
 module go2o
 
-go 1.13
+go 1.14
 
 require (
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
