@@ -10,9 +10,9 @@ steps:
       registry: docker-base.56x.net:5020
       insecure: true
       username:
-          from_secret: registry_username
+          from_secret: docker_username
       password:
-          from_secret: registry_password
+          from_secret: docker_password
       build_args:
         - GOPROXY=https://goproxy.io
 trigger:
