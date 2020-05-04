@@ -608,7 +608,7 @@ func (o *normalOrderImpl) applyCartPromotionOnSubmit(vo *order.NormalOrder,
 	//	for _, v1 := range v.GetPromotions() {
 	//
 	//		// 返现
-	//		if v1.Type() == promotion.TypeFlagCashBack {
+	//		if v1.DbType() == promotion.TypeFlagCashBack {
 	//			vc := v1.GetRelationValue().(*promotion.ValueCashBack)
 	//			if vc.MinFee < intOrderFee {
 	//				if vc.BackFee > saveFee {

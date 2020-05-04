@@ -12,7 +12,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
 	github.com/ixre/gof v1.8.1
-	github.com/ixre/tto v1.3.8
+	github.com/ixre/tto v0.3.15
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect

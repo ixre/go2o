@@ -1,7 +1,7 @@
 package tool
 
 import (
-	"github.com/ixre/tto"
+	"github.com/ixre/tto/utils"
 	"go2o/core/domain/interface/member"
 	"testing"
 )
@@ -16,6 +16,6 @@ import (
  */
 
 func TestGenerateThriftStruct(t *testing.T) {
-	bytes, _ := tto.ThriftStruct(member.TrustedInfo{})
+	bytes, _ := utils.ThriftStruct(member.TrustedInfo{})
 	t.Log(string(bytes))
 }
