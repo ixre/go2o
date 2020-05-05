@@ -2,6 +2,7 @@
 platforms/
 bin
 pkg
+meta
 .a
 *~
 *.swp

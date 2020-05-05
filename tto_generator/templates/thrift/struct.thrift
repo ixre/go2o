@@ -5,5 +5,5 @@ namespace netstd {{pkg "thrift" .global.Pkg}}.rpc
 struct S{{.table.Title}}{
     {{range $i,$c:=.T.Columns}}
     /** {{$c.Comment}} */
-    {{plus $c.Ordinal 1}}:{{type "thrift" $c.Type}} {{$c.Title}}{{end}}
+    {{plus $c.Ordinal 1}}:{{type "thrift" $c.Type}} {{$c.Prop}}{{end}}
 }

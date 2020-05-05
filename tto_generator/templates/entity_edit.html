@@ -10,16 +10,16 @@
 
 <form action="" method="post" class="gra-form" id="form1">
     {{range $i,$c := .T.Columns}}{{if $c.IsPk}}
-    <input type="hidden" field="{{$c.Title}}" name="{{$c.Title}}" value="0"/>{{else}}
+    <input type="hidden" field="{{$c.Prop}}" name="{{$c.Prop}}" value="0"/>{{else}}
     <div class="gra-form-field">{{if $c.NotNull}}
         <div class="gra-form-label"><span class="red">*&nbsp;</span>{{$c.Comment}}：</div>
         <div class="gra-form-col">
-            <input type="text" field="{{$c.Title}}" name="{{$c.Title}}" class="ui-validate"/>
+            <input type="text" field="{{$c.Prop}}" name="{{$c.Prop}}" class="ui-validate"/>
         </div>
         {{else}}
         <div class="gra-form-label">{{$c.Comment}}：</div>
         <div class="gra-form-col">
-            <input type="text" field="{{$c.Title}}" name="{{$c.Title}}" class="ui-validate"/>
+            <input type="text" field="{{$c.Prop}}" name="{{$c.Prop}}" class="ui-validate"/>
         </div>
         {{end}}
     </div>
