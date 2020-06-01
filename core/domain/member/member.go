@@ -51,6 +51,7 @@ type memberImpl struct {
 	giftCardManager member.IGiftCardManager
 }
 
+
 func (m *memberImpl) ContainFlag(f int) bool {
 	return m.value.Flag&f == f
 }
@@ -688,6 +689,7 @@ func (m *memberImpl) updateDepthInvite(r *member.InviteRelation) {
 		r.InviterD3 = arr[1]
 	}
 }
+
 
 // 保存推荐关系
 func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
