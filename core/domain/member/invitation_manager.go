@@ -13,6 +13,7 @@ import (
 	"go2o/core/dto"
 	"go2o/core/msq"
 	"strconv"
+	"time"
 )
 
 var _ member.IInvitationManager = new(invitationManager)
@@ -23,15 +24,22 @@ type invitationManager struct {
 }
 
 // 更换邀请人
-func (i *invitationManager) UpdateInviter(id int64, inviterId int64) error {
-	if id <= 0 {
-		return nil
-	}
+func (i *invitationManager) UpdateInviter(inviterId int64,sync bool) error {
+	id := i.member.GetAggregateRootId()
 	var rl *member.InviteRelation
 	if inviterId > 0 {
 		rl = i.member.repo.GetRelation(inviterId)
 	}
-	return i.walkUpdateInvitation(id, rl)
+	// 判断邀请人是否为下别的被邀请会员
+	if i.checkInvitation(id,inviterId) {
+		return member.ErrInvalidInviter
+	}
+	if !sync {
+		return i.walkUpdateInvitation(id, rl)
+	}
+	// 异步更新
+	go i.walkUpdateInvitation(id, rl)
+	return nil
 }
 
 // 递归修改邀请人
@@ -52,8 +60,11 @@ func (i *invitationManager) walkUpdateInvitation(id int64, p *member.InviteRelat
 		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(r.MemberId)), 500)
 		// 更新被邀请会员的邀请关系
 		var idList = i.member.repo.GetInviteChildren(id)
-		for _, cid := range idList {
+		for idx, cid := range idList {
 			i.walkUpdateInvitation(cid, r)
+			if idx % 5 == 0{
+				time.Sleep(time.Second/10)
+			}
 		}
 	}
 	return err
@@ -93,7 +104,7 @@ func (i *invitationManager) InviterArray(memberId int64, depth int) []int64 {
 	return arr
 }
 
-// 判断是否推荐了某个会员
+// 判断是否直接推荐了某个会员
 func (i *invitationManager) InvitationBy(memberId int64) bool {
 	rl := i.member.GetRelation()
 	if rl != nil {
@@ -126,4 +137,20 @@ func (i *invitationManager) GetSubInvitationNum(memberIdArr []int32) map[int32]i
 // 获取邀请要的会员
 func (i *invitationManager) GetInvitationMeMember() *member.Member {
 	return i.member.repo.GetInvitationMeMember(i.member.GetAggregateRootId())
+}
+
+//  是否存在邀请关系
+func (i *invitationManager) checkInvitation(inviterId int64,id int64) bool {
+	currId := id
+	for {
+		arr := i.InviterArray(currId, 1)
+		currId = arr[0]
+		if currId == inviterId {
+			return true
+		}
+		if currId == 0 {
+			break
+		}
+	}
+	return false
 }

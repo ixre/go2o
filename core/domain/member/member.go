@@ -689,7 +689,7 @@ func (m *memberImpl) BindInviter(inviterId int64, force bool) (err error) {
 	}
 	if rl.InviterId != inviterId {
 		m.relation = nil
-		return m.Invitation().UpdateInviter(m.GetAggregateRootId(), inviterId)
+		return m.Invitation().UpdateInviter(inviterId,true)
 	}
 	return err
 }
