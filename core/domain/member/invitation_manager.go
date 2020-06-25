@@ -11,6 +11,8 @@ package member
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
+	"go2o/core/msq"
+	"strconv"
 )
 
 var _ member.IInvitationManager = new(invitationManager)
@@ -18,6 +20,60 @@ var _ member.IInvitationManager = new(invitationManager)
 type invitationManager struct {
 	member       *memberImpl
 	myInvMembers []*member.Member
+}
+
+// 更换邀请人
+func (i *invitationManager) UpdateInviter(id int64, inviterId int64) error {
+	if id <= 0 {
+		return nil
+	}
+	var rl *member.InviteRelation
+	if inviterId > 0 {
+		rl = i.member.repo.GetRelation(inviterId)
+	}
+	return i.walkUpdateInvitation(id, rl)
+}
+
+// 递归修改邀请人
+func (i *invitationManager) walkUpdateInvitation(id int64, p *member.InviteRelation) error {
+	r := i.member.repo.GetRelation(id)
+	if p == nil {
+		r.InviterId = 0
+		r.InviterD2 = 0
+		r.InviterD3 = 0
+	} else {
+		r.InviterId = p.MemberId
+		r.InviterD2 = p.InviterId
+		r.InviterD3 = p.InviterD2
+	}
+	err := i.member.repo.SaveRelation(r)
+	if err == nil {
+		// 推送关系更新消息
+		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(r.MemberId)), 500)
+		// 更新被邀请会员的邀请关系
+		var idList = i.member.repo.GetInviteChildren(id)
+		for _, cid := range idList {
+			i.walkUpdateInvitation(cid, r)
+		}
+	}
+	return err
+}
+
+// 更新邀请关系
+func (m *memberImpl) updateDepthInvite(r *member.InviteRelation) error {
+	if r.InviterId > 0 {
+		arr := m.Invitation().InviterArray(r.InviterId, 2)
+		r.InviterD2 = arr[0]
+		r.InviterD3 = arr[1]
+	} else {
+		r.InviterD2 = 0
+		r.InviterD3 = 0
+	}
+	err := m.repo.SaveRelation(r)
+	if err == nil {
+
+	}
+	return err
 }
 
 // 获取推荐数组

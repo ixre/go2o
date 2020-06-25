@@ -146,3 +146,15 @@ func TestLockMember(t *testing.T) {
 	}
 	time.Sleep(time.Second * 2)
 }
+
+// 测试更改邀请人
+func TestUpdateInviter(t *testing.T){
+	memberId := 97622
+	inviterId := 97613
+	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
+	err := m.BindInviter(int64(inviterId),true)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+}

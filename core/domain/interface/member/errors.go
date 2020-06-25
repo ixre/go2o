@@ -86,6 +86,10 @@ var (
 
 	ErrNoValidInviter = domain.NewError(
 		"member_no_valid_inviter", "邀请人不正确")
+
+	ErrExistsInviter = domain.NewError(
+		"member_exists_inviter", "已绑定邀请人")
+
 	ErrDeliverAddressLen = domain.NewError(
 		"err_deliver_address_len", "请填写详细的配送地址")
 
