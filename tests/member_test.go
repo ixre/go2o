@@ -137,9 +137,9 @@ func TestLogin(t *testing.T) {
 
 // 测试锁定会员
 func TestLockMember(t *testing.T) {
-	memberId := 77365
+	memberId := 97839
 	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
-	err := m.Lock(1, "测试锁定会员")
+	err := m.Lock(1440, "测试锁定会员")
 	if err != nil {
 		t.Log(err)
 		t.FailNow()

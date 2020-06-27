@@ -85,6 +85,7 @@ func main() {
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
 
+	//confFile = "./app_dev.conf"
 	if runDaemon {
 		appFlag = appFlag | app.FlagDaemon
 	}
