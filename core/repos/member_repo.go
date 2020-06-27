@@ -727,7 +727,7 @@ func (m *MemberRepoImpl) SaveLockHistory(v *member.MmLockHistory) (int, error) {
 }
 
 func (m *MemberRepoImpl) SaveLockInfo(v *member.MmLockInfo) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.Id))
+	id, err := orm.Save(m._orm, v, v.Id)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockInfo")
 	}

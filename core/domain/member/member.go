@@ -500,13 +500,14 @@ func (m *memberImpl) Lock(minutes int, remark string) error {
 			ml.UnlockTime = -1
 			his.Duration = -1
 		}
-		// 注册解锁任务
-		if ml.UnlockTime > 0 {
-			m.repo.RegisterUnlockJob(ml)
-		}
 		_, err = m.repo.SaveLockInfo(ml)
 		if err == nil {
+			println("保存锁定信息:",ml.MemberId)
 			_, err = m.repo.SaveLockHistory(his)
+			// 注册解锁任务
+			if ml.UnlockTime > 0 {
+				m.repo.RegisterUnlockJob(ml)
+			}
 		}
 	}
 	return err
