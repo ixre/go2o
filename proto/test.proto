@@ -1,0 +1,12 @@
+syntax = "proto3";
+option go_package = "./pb;pb";
+message User {
+    string name = 1;
+    sint64 group_id = 2;
+    map<string,string> extra = 3;
+}
+enum EState{
+    _ = 0;
+    Normal = 1;
+    Stopped = 3;
+}
