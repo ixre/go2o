@@ -7,7 +7,6 @@ replace github.com/ixre/gof => ../github.com/ixre/gof
 replace github.com/ixre/tto => ../github.com/ixre/tto
 
 require (
-	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
 	github.com/apache/thrift v0.13.0
 	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo v1.8.2
