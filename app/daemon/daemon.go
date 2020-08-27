@@ -17,7 +17,7 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"

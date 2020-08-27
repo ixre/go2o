@@ -10,7 +10,7 @@ package tool
 
 import (
 	"bytes"
-	"github.com/nfnt/resize"
+	"github.com/smartwalle/resize"
 	"image"
 	"image/jpeg"
 	"io"

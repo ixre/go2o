@@ -117,6 +117,7 @@ func main() {
 		XSRFCookie: true,
 	})
 	rsi.Init(newApp, appFlag)
+	runGoMicro()
 	// 初始化producer
 	msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
@@ -127,4 +128,12 @@ func main() {
 		go daemon.Run(newApp)
 	}
 	<-ch
+}
+
+func runGoMicro() {
+	//service := micro.NewService(micro.Name("Greeter"))
+	//proto.RegisterGreeterServiceHandler(new(grpc.TestServiceImpl))
+	//service.
+	//service.Init()
+	//proto.RegisterGreeterServiceHandler(new(proto.GreeterService),service.Options())
 }
