@@ -141,6 +141,7 @@ func runGoMicro() {
 		//micro.Address(":1081"),
 		micro.Registry(r),
 		)
+	service.Server().Handle(new(grpc.TestServiceImpl))
 	//service.Init()
 	proto.RegisterGreeterServiceHandler(new(grpc.TestServiceImpl))
 	//proto.RegisterGreeterServiceHandler(new(proto.GreeterService),service.Options())

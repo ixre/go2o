@@ -14,8 +14,6 @@ import (
 	api "github.com/micro/go-micro/v3/api"
 	client "github.com/micro/go-micro/v3/client"
 	server "github.com/micro/go-micro/v3/server"
-	microClient "github.com/micro/micro/v3/service/client"
-	microServer "github.com/micro/micro/v3/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -34,8 +32,6 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
-var _ = microServer.Handle
-var _ = microClient.Call
 
 // Api Endpoints for GreeterService service
 
@@ -50,17 +46,21 @@ type GreeterService interface {
 }
 
 type greeterService struct {
+	c    client.Client
 	name string
 }
 
-func NewGreeterService(name string) GreeterService {
-	return &greeterService{name: name}
+func NewGreeterService(name string, c client.Client) GreeterService {
+	return &greeterService{
+		c:    c,
+		name: name,
+	}
 }
 
 func (c *greeterService) Hello(ctx context.Context, in *User, opts ...client.CallOption) (*UserResponse, error) {
-	req := microClient.NewRequest(c.name, "GreeterService.Hello", in)
+	req := c.c.NewRequest(c.name, "GreeterService.Hello", in)
 	out := new(UserResponse)
-	err := microClient.Call(ctx, req, out, opts...)
+	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ type GreeterServiceHandler interface {
 	Hello(context.Context, *User, *UserResponse) error
 }
 
-func RegisterGreeterServiceHandler(hdlr GreeterServiceHandler, opts ...server.HandlerOption) error {
+func RegisterGreeterServiceHandler(s server.Server, hdlr GreeterServiceHandler, opts ...server.HandlerOption) error {
 	type greeterService interface {
 		Hello(ctx context.Context, in *User, out *UserResponse) error
 	}
@@ -81,7 +81,7 @@ func RegisterGreeterServiceHandler(hdlr GreeterServiceHandler, opts ...server.Ha
 		greeterService
 	}
 	h := &greeterServiceHandler{hdlr}
-	return microServer.Handle(microServer.NewHandler(&GreeterService{h}, opts...))
+	return s.Handle(s.NewHandler(&GreeterService{h}, opts...))
 }
 
 type greeterServiceHandler struct {
