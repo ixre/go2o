@@ -8,8 +8,6 @@ replace github.com/ixre/tto => ../github.com/ixre/tto
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
-//replace google.golang.org/genproto => github.com/googleapis/go-genproto v0.0.0-20170731182057-09f6ed296fc6
-
 require (
 	github.com/apache/thrift v0.13.0
 	github.com/golang/protobuf v1.4.2

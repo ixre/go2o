@@ -15,14 +15,18 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/web"
+	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-plugins/registry/consul"
 	"go2o/app"
 	"go2o/app/cache"
 	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
 	"go2o/core/msq"
+	"go2o/core/service/grpc"
+	"go2o/core/service/proto"
 	"go2o/core/service/rsi"
-	rs "go2o/core/service/thrift/service"
 	"log"
 	"os"
 	"runtime"
@@ -109,7 +113,7 @@ func main() {
 	if !core.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
-	go core.SignalNotify(ch)
+	go core.SignalNotify(ch,core.AppDispose)
 	gof.CurrentApp = newApp
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	web.Initialize(web.Options{
@@ -121,19 +125,24 @@ func main() {
 	// 初始化producer
 	msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
-	go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
-	// 运行REST API
-	go restapi.Run(newApp, apiPort)
+	//go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
+	// 运行REST API
+	go restapi.Run(ch,newApp, apiPort)
 	<-ch
 }
 
 func runGoMicro() {
-	//service := micro.NewService(micro.Name("Greeter"))
-	//proto.RegisterGreeterServiceHandler(new(grpc.TestServiceImpl))
-	//service.
+	r := consul.NewRegistry(registry.Addrs("127.0.0.1:8500"))
+	service := micro.NewService(
+		micro.Name("Greeter"),
+		//micro.Address(":1081"),
+		micro.Registry(r),
+		)
 	//service.Init()
+	proto.RegisterGreeterServiceHandler(new(grpc.TestServiceImpl))
 	//proto.RegisterGreeterServiceHandler(new(proto.GreeterService),service.Options())
+	service.Run()
 }

@@ -36,6 +36,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
+	"go2o/core/msq"
 	"go2o/core/service/auto_gen/rpc/member_service"
 	"go2o/core/variable"
 )
@@ -251,4 +252,9 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(wallet.WalletLog{}, "wal_wallet_log")
 	// KV
 	orm.Mapping(valueobject.SysKeyValue{}, "sys_kv")
+}
+
+func AppDispose() {
+	GetRedisPool().Close()
+	msq.Close()
 }
