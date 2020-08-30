@@ -6,6 +6,10 @@ replace github.com/ixre/gof => ../github.com/ixre/gof
 
 replace github.com/ixre/tto => ../github.com/ixre/tto
 
+replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
+
+//replace google.golang.org/genproto => github.com/googleapis/go-genproto v0.0.0-20170731182057-09f6ed296fc6
+
 require (
 	github.com/apache/thrift v0.13.0
 	github.com/golang/protobuf v1.4.2
@@ -26,3 +30,7 @@ require (
 	golang.org/x/text v0.3.3
 	google.golang.org/protobuf v1.25.0
 )
+
+//exclude github.com/coreos/etcd v3.3.18+incompatible
+
+//exclude github.com/coreos/etcd v3.3.19+incompatible
