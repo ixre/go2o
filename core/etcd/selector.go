@@ -1,6 +1,5 @@
 package etcd
 
-
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
  *
@@ -27,42 +26,64 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
+type SelectAlgorithm int
+
+const AlgRandom SelectAlgorithm = 0
+const AlgRoundRobin SelectAlgorithm = 1
+
 type Selector interface {
 	Next() (Node, error)
 }
 
-type selectorServer struct {
+type serverSelector struct {
 	cli    *clientv3.Client
 	nodes  []Node
 	config clientv3.Config
+	alg    SelectAlgorithm
+	last   int
 	name   string
 }
 
-
-func NewSelector(name string,config clientv3.Config) (Selector, error) {
+func NewSelector(name string, config clientv3.Config, alg SelectAlgorithm) (Selector, error) {
 	cli, err := clientv3.New(config)
 	if err != nil {
 		return nil, err
 	}
-	var s = &selectorServer{
+	var s = &serverSelector{
 		config: config,
-		cli:     cli,
-		name:name,
+		cli:    cli,
+		name:   name,
+		alg:    alg,
+		last:   -1,
 	}
+	s.loadNodes()
 	go s.Watch()
 	return s, nil
 }
 
-func (s *selectorServer) Next() (Node, error) {
-	if len(s.nodes) == 0 {
+// 使用轮询算法
+func (s *serverSelector) RoundRobin() {
+	s.alg = AlgRoundRobin
+}
+
+func (s *serverSelector) Next() (Node, error) {
+	l := len(s.nodes)
+	if l == 0 {
 		return Node{}, fmt.Errorf("no nodes found on %s", s.name)
 	}
-	i := rand.Int() % len(s.nodes)
+	if s.alg == AlgRoundRobin {
+		if s.last += 1;s.last >= l {
+			s.last = 0
+		}
+		return s.nodes[s.last], nil
+	}
+	// 随机算法
+	//i := rand.Int() % len(s.nodes)
+	i := rand.Intn(len(s.nodes))
 	return s.nodes[i], nil
 }
 
-func (s *selectorServer) Watch() {
-	s.loadNodes()
+func (s *serverSelector) Watch() {
 	//　监听变化,并动态处理节点
 	ch := s.cli.Watch(context.TODO(), prefix, clientv3.WithPrefix())
 	for {
@@ -95,7 +116,7 @@ func (s *selectorServer) Watch() {
 	}
 }
 
-func (s *selectorServer) DelNode(id uint32) {
+func (s *serverSelector) DelNode(id uint32) {
 	var node []Node
 	for _, v := range s.nodes {
 		if v.Id != id {
@@ -105,7 +126,7 @@ func (s *selectorServer) DelNode(id uint32) {
 	s.nodes = node
 }
 
-func (s *selectorServer) AddNode(node Node) {
+func (s *serverSelector) AddNode(node Node) {
 	var exist bool
 	for _, v := range s.nodes {
 		if v.Id == node.Id {
@@ -117,11 +138,11 @@ func (s *selectorServer) AddNode(node Node) {
 	}
 }
 
-func (s *selectorServer) GetKey() string {
+func (s *serverSelector) GetKey() string {
 	return fmt.Sprintf("%s%s", prefix, s.name)
 }
 
-func (s *selectorServer) GetVal(val []byte) (Node, error) {
+func (s *serverSelector) GetVal(val []byte) (Node, error) {
 	var node Node
 	err := json.Unmarshal(val, &node)
 	if err != nil {
@@ -130,7 +151,7 @@ func (s *selectorServer) GetVal(val []byte) (Node, error) {
 	return node, nil
 }
 
-func (s *selectorServer) loadNodes() {
+func (s *serverSelector) loadNodes() {
 	res, err := s.cli.Get(context.TODO(), s.GetKey(), clientv3.WithPrefix(), clientv3.WithSerializable())
 	if err != nil {
 		log.Printf("[Watch] err : %s", err.Error())

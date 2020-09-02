@@ -27,7 +27,7 @@ func TestRegisterService(t *testing.T) {
 	leaseIDList := make([]int64,0)
 	for i:= 0;i<3;i++ {
 		r, _ := NewRegistry(service, ttl, cfg)
-		id,_ := r.Register("127.0.0."+strconv.Itoa(i)+":1428")
+		id,_ := r.Register("127.0.0."+strconv.Itoa(i+3)+":1428")
 		leaseIDList = append(leaseIDList,id)
 	}
 	time.Sleep(150 * time.Second)
@@ -38,7 +38,7 @@ func TestRegisterService(t *testing.T) {
 }
 
 func TestSelector(t *testing.T) {
-	selector,_ := NewSelector(service,cfg)
+	selector,_ := NewSelector(service,cfg,AlgRoundRobin)
 	for {
 		next, err := selector.Next()
 		if err != nil{
