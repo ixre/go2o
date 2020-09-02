@@ -15,22 +15,20 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/web"
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/registry"
-	"github.com/micro/go-plugins/registry/consul"
+	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
 	"go2o/app/cache"
 	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
+	"go2o/core/etcd"
 	"go2o/core/msq"
-	"go2o/core/service/grpc"
-	"go2o/core/service/proto"
 	"go2o/core/service/rsi"
 	"log"
 	"os"
 	"runtime"
 	"strings"
+	"time"
 )
 
 var _ = `
@@ -121,7 +119,8 @@ func main() {
 		XSRFCookie: true,
 	})
 	rsi.Init(newApp, appFlag)
-	runGoMicro()
+    initRegistry()
+	//runGoMicro()
 	// 初始化producer
 	msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
@@ -134,16 +133,47 @@ func main() {
 	<-ch
 }
 
+func initRegistry() {
+	r, err := etcd.NewRegistry("Go2oService", 10, clientv3.Config{
+		Endpoints:   []string{"http://localhost:2379/"},
+		DialTimeout: 5 * time.Second,
+	})
+	if err != nil{
+		panic(err)
+	}
+	err = r.Register("127.0.0.1")
+	if err != nil{
+		panic(err)
+	}
+}
+
+/*
+// todo: v3 还是测试版本
 func runGoMicro() {
-	r := consul.NewRegistry(registry.Addrs("127.0.0.1:8500"))
-	service := micro.NewService(
-		micro.Name("Greeter"),
-		//micro.Address(":1081"),
-		micro.Registry(r),
+	r := consul.NewRegistry(func(options *registry.Options) {
+		options.Addrs = []string{
+			"127.0.0.1:8500",
+		}
+	})
+	grpc.NewServer(
+		server.Name("Greeter"),
+		server.Registry(NewRegisterV3(r)))
+	s := service.New(
+		service.Name("Greeter"),
+		service.Address(":1081"),
 		)
-	service.Server().Handle(new(grpc.TestServiceImpl))
+	//service := micro.NewService(
+	//	micro.Name("Greeter"),
+	//	//micro.Address(":1081"),
+	//	micro.Registry(r),
+	//	)
 	//service.Init()
-	proto.RegisterGreeterServiceHandler(new(grpc.TestServiceImpl))
-	//proto.RegisterGreeterServiceHandler(new(proto.GreeterService),service.Options())
+	s.Handle(new(grpc.TestServiceImpl))
+	//proto.RegisterGreeterServiceHandler(service,new(grpc.TestServiceImpl))
 	service.Run()
 }
+
+func NewRegisterV3(r registry.Registry) registry2.Registry {
+	return &RegisterV3{r}
+}
+ */

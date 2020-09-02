@@ -8,6 +8,8 @@ replace github.com/ixre/tto => ../github.com/ixre/tto
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
+replace github.com/lucas-clemente/quic-go => github.com/lucas-clemente/quic-go v0.14.1
+
 require (
 	github.com/apache/thrift v0.13.0
 	github.com/armon/go-metrics v0.3.4 // indirect
@@ -15,7 +17,7 @@ require (
 	github.com/go-log/log v0.2.0 // indirect
 	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo v1.8.2
-	github.com/gosimple/slug v1.9.0 // indirect
+	github.com/google/uuid v1.1.2 // indirect
 	github.com/hashicorp/consul/api v1.6.0 // indirect
 	github.com/hashicorp/go-hclog v0.14.1 // indirect
 	github.com/hashicorp/go-immutable-radix v1.2.0 // indirect
@@ -26,14 +28,12 @@ require (
 	github.com/ixre/tto v0.0.0-00010101000000-000000000000
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
-	github.com/lithammer/shortuuid/v3 v3.0.4 // indirect
 	github.com/lucas-clemente/quic-go v0.18.0 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-micro/v3 v3.0.0-beta.0.20200825081046-bf8b3aeac796
 	github.com/micro/go-plugins/registry/consul v0.0.0-20200119172437-4fe21aa238fd
 	github.com/micro/micro/v3 v3.0.0-beta.3
-	github.com/micro/services v0.10.0 // indirect
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/nats-io/jwt v1.0.1 // indirect
@@ -43,6 +43,7 @@ require (
 	github.com/smartwalle/resize v1.0.0
 	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
+	go.etcd.io/etcd v3.3.25+incompatible
 	go.uber.org/zap v1.15.0 // indirect
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect

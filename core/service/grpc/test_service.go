@@ -14,11 +14,3 @@ func (t *TestServiceImpl) Hello(ctx context.Context, user *proto.User, response 
 	return nil
 }
 
-
-type Helloworld struct{}
-
-// Call is a single request handler called via client.Call or the generated client code
-func (e *Helloworld) Call(ctx context.Context, req *helloworld.Request, rsp *helloworld.Response) error {
-	return nil
-}
-
