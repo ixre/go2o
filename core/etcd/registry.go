@@ -23,9 +23,9 @@ import (
 var prefix = "/registry/server/"
 
 type Registry interface {
-	// 创建租期/注册服务,返回租期ID和错误
+	// 创建租期/注册节点,返回租期ID和错误
 	Register(addr string)(int64,error)
-	// 撤销租期/注销服务
+	// 撤销租期/注销节点
 	Revoke(LeaseID int64)error
 	UnRegister()
 }
@@ -37,10 +37,6 @@ type registryServer struct {
 	leaseID    clientv3.LeaseID // 租约ID
 	service    string
 	ttl        int64 // 租约时间
-}
-type Node struct {
-	Id   uint32 `json:"id"`
-	Addr string `json:"addr"`
 }
 
 // 创建服务注册, ttl租约时间
@@ -59,7 +55,7 @@ func NewRegistry(service string, ttl int64, config clientv3.Config) (Registry, e
 }
 func (s *registryServer) Register(addr string)(leaseId int64, err error){
 	if s.isRegistry {
-		panic("only one node can be registered")
+		panic("only one nodes can be registered")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.ttl)*time.Second)
 	defer cancel()
