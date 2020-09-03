@@ -4,13 +4,15 @@ import (
 	"context"
 	"go2o/core/service/proto"
 )
-var _ proto.GreeterServiceHandler = new(TestServiceImpl)
+var _ proto.GreeterServiceServer = new(TestServiceImpl)
 type TestServiceImpl struct{
 }
 
-func (t *TestServiceImpl) Hello(ctx context.Context, user *proto.User, response *proto.UserResponse) error {
-	response.Name = user.Name
-	response.State = proto.EState_Normal
-	return nil
+func (t *TestServiceImpl) Hello(ctx context.Context, user *proto.User)(response *proto.UserResponse,err error) {
+	rsp := &proto.UserResponse{
+		Name:  user.Name,
+		State: proto.EState_Normal,
+	}
+	return rsp, nil
 }
 

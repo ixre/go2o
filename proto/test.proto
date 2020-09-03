@@ -1,6 +1,7 @@
 syntax = "proto3";
 option go_package = "../core/service/proto;proto";
 
+
 enum EState{
     _ = 0;
     Normal = 1;

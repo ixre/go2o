@@ -13,9 +13,6 @@ import (
 	"github.com/ixre/gof/storage"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
-	"github.com/micro/go-micro/registry"
-	"github.com/micro/go-micro/web"
-	"github.com/micro/go-plugins/registry/consul"
 	"go2o/app/api"
 	"go2o/core/variable"
 	"log"
@@ -76,14 +73,17 @@ func Run(ch chan bool, app gof.App, port int) {
 	log.Println("** [ Go2o][ API] - Api server running on port " +
 		strconv.Itoa(port))
 
-	r := consul.NewRegistry(registry.Addrs("127.0.0.1:8500"))
-	s := web.NewService(
-		//web.RegisterTTL(time.Second*2),
-		web.Name("Go2oService"),
-		web.Address(":"+strconv.Itoa(port)),
-		web.Handler(handler),
-		web.Registry(r))
-	if err := s.Run();err != nil {
+	err := http.ListenAndServe(":"+strconv.Itoa(port),handler)
+
+	//r := consul.NewRegistry(registry.Addrs("127.0.0.1:8500"))
+	//s := web.NewService(
+	//	//web.RegisterTTL(time.Second*2),
+	//	web.Name("Go2oService"),
+	//	web.Address(":"+strconv.Itoa(port)),
+	//	web.Handler(handler),
+	//	web.Registry(r))
+	//if err := s.Run();err != nil {
+	if err != nil {
 		log.Println("** [ Go2o][ API] : " + err.Error())
 		os.Exit(1)
 	}

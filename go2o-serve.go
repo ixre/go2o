@@ -24,6 +24,7 @@ import (
 	"go2o/core/etcd"
 	"go2o/core/msq"
 	"go2o/core/service/rsi"
+	"go2o/core/service/server"
 	"log"
 	"os"
 	"runtime"
@@ -125,6 +126,7 @@ func main() {
 	msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
 	//go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
+	go server.ServeRPC(ch,fmt.Sprintf(":%d", port))
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
@@ -141,7 +143,7 @@ func initRegistry() {
 	if err != nil{
 		panic(err)
 	}
-	err = r.Register("127.0.0.1")
+	_,err = r.Register("127.0.0.1")
 	if err != nil{
 		panic(err)
 	}
