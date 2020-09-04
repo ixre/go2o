@@ -2,7 +2,6 @@ package etcd
 
 import (
 	"go.etcd.io/etcd/clientv3"
-	"strconv"
 	"testing"
 	"time"
 )
@@ -26,16 +25,15 @@ var cfg = clientv3.Config{
 }
 
 func TestRegisterService(t *testing.T) {
-	leaseIDList := make([]int64,0)
+	arr := make([]Registry,0)
 	for i:= 0;i<3;i++ {
 		r, _ := NewRegistry(service, ttl, cfg)
-		id,_ := r.Register("127.0.0."+strconv.Itoa(i)+":1428")
-		leaseIDList = append(leaseIDList,id)
+		_, _ = r.Register(10 + i)
+		arr = append(arr,r)
 	}
-	time.Sleep(150 * time.Second)
-	for _,v := range leaseIDList{
-		r, _ := NewRegistry(service, ttl, cfg)
-		r.Revoke(v)
+	time.Sleep(15 * time.Second)
+	for _,v := range arr {
+		v.UnRegister()
 	}
 }
 

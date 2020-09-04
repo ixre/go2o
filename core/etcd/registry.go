@@ -17,6 +17,8 @@ import (
 	"go.etcd.io/etcd/clientv3"
 	"hash/crc32"
 	"log"
+	"net"
+	"os"
 	"time"
 )
 
@@ -24,7 +26,7 @@ var prefix = "/registry/server/"
 
 type Registry interface {
 	// 创建租期/注册节点,返回租期ID和错误
-	Register(addr string)(int64,error)
+	Register(port int)(int64,error)
 	// 撤销租期/注销节点
 	Revoke(LeaseID int64)error
 	UnRegister()
@@ -53,12 +55,29 @@ func NewRegistry(service string, ttl int64, config clientv3.Config) (Registry, e
 		cli:        cli,
 	}, nil
 }
-func (s *registryServer) Register(addr string)(leaseId int64, err error){
+func (s *registryServer) resolveIp()string{
+	addrList, err := net.InterfaceAddrs()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	for _, address := range addrList {
+		// 检查ip地址判断是否回环地址
+		if i, ok := address.(*net.IPNet); ok && !i.IP.IsLoopback() {
+			if i.IP.To4() != nil {
+				return i.IP.String()
+			}
+		}
+	}
+	return "127.0.0.1"
+}
+func (s *registryServer) Register(port int)(leaseId int64, err error){
 	if s.isRegistry {
 		panic("only one nodes can be registered")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.ttl)*time.Second)
 	defer cancel()
+	addr := fmt.Sprintf("%s:%d", s.resolveIp(), port)
 	// 创建租约
 	grant, err := s.cli.Grant(context.Background(), s.ttl)
 	if err != nil {
