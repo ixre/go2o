@@ -13,6 +13,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ixre/gof/crypto"
+	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
@@ -22,13 +23,13 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
-	"go2o/core/service/thrift/auto_gen/rpc/item_service"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
 	"strconv"
 )
 
-var _ item_service.ItemService = new(itemService)
+var _ proto.ItemServiceServer = new(itemService)
 
 type itemService struct {
 	serviceUtil
@@ -68,12 +69,12 @@ func (s *itemService) GetItemValue(itemId int64) *ttype.SOldItem {
 }
 
 // 获取SKU
-func (s *itemService) GetSku(ctx context.Context, itemId, skuId int64) (r *ttype.SSku, err error) {
-	item := s.itemRepo.GetItem(itemId)
+func (s *itemService) GetSku(ctx context.Context, request *proto.SkuRequest) (*proto.SSku, error) {
+	item := s.itemRepo.GetItem(request.ItemId)
 	if item != nil {
-		sku := item.GetSku(skuId)
+		sku := item.GetSku(request.SkuId)
 		if sku != nil {
-			return parser.SkuDto(sku), nil
+			return s.parseSkuDto(sku), nil
 		}
 	}
 	return nil, nil
@@ -96,21 +97,21 @@ func (s *itemService) GetSkuHtmOfItem(itemId int64) (specHtm string) {
 }
 
 // 获取商品详细数据
-func (s *itemService) GetItemDetailData(ctx context.Context, itemId int64, iType int32) (r string, err error) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
-	switch iType {
+func (s *itemService) GetItemDetailData(ctx context.Context, request *proto.ItemDetailRequest) (*proto.String, error) {
+	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: request.ItemId})
+	switch request.IType {
 	case item.ItemWholesale:
 		data := it.Wholesale().GetJsonDetailData()
-		return string(data), nil
+		return &proto.String{Value: string(data)}, nil
 	}
-	return "不支持的商品类型", nil
+	return &proto.String{Value: "不支持的商品类型"}, nil
 }
 
 // 获取商品的Sku-JSON格式
-func (s *itemService) GetItemSkuJson(ctx context.Context, itemId int64) (r string, err error) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
+func (s *itemService) GetItemSkuJson(ctx context.Context, i *proto.Int64) (*proto.String, error) {
+	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: i.Value})
 	skuBytes := s.itemRepo.SkuService().GetSkuJson(it.SkuArray())
-	return string(skuBytes), nil
+	return &proto.String{Value: string(skuBytes)}, nil
 }
 
 // 保存商品
@@ -582,4 +583,24 @@ func (s *itemService) GetWholesaleDiscountArray(itemId int64, groupId int32) []*
 func (s *itemService) SaveWholesaleDiscount(itemId int64, groupId int32, arr []*item.WsItemDiscount) error {
 	it := s.itemRepo.GetItem(itemId)
 	return it.Wholesale().SaveItemDiscount(groupId, arr)
+}
+
+func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
+	return &proto.SSku{
+		SkuId:       sku.ID,
+		ProductId:   sku.ProductId,
+		ItemId:      sku.ItemId,
+		Title:       sku.Title,
+		Image:       sku.Image,
+		SpecData:    sku.SpecData,
+		SpecWord:    sku.SpecWord,
+		Code:        sku.Code,
+		RetailPrice: math.Round(float64(sku.RetailPrice), 2),
+		Price:       math.Round(float64(sku.Price), 2),
+		Cost:        math.Round(float64(sku.Cost), 2),
+		Weight:      sku.Weight,
+		Bulk:        sku.Bulk,
+		Stock:       sku.Stock,
+		SaleNum:     sku.SaleNum,
+	}
 }

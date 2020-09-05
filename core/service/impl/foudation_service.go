@@ -1,16 +1,17 @@
+
+package impl
+
 /**
  * Copyright 2015 @ to2.net.
  * name : platform_service
  * author : jarryliu
- * date : 2016-05-27 15:30
+ * date : 2020-09-05 15:30
  * description :
  * history :
  */
-package impl
 
 import (
 	"context"
-	"errors"
 	"github.com/ixre/gof"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
@@ -35,28 +36,6 @@ type foundationService struct {
 
 
 
-
-
-
-func (s *foundationService) SuperValidate(c context2.Context, pwd *proto.UserPwd) (*proto.Bool, error) {
-	panic("implement me")
-}
-
-func (s *foundationService) FlushSuperPwd(c context2.Context, pwd *proto.UserPwd) (*proto.Empty, error) {
-	panic("implement me")
-}
-
-func (s *foundationService) GetSyncLoginUrl(c context2.Context, s2 *proto.String) (*proto.String, error) {
-	panic("implement me")
-}
-
-func (s *foundationService) GetAreaNames(c context2.Context, request *proto.GetAreaNamesRequest) (*proto.StringListResponse, error) {
-	panic("implement me")
-}
-
-func (s *foundationService) GetChildAreas(c context2.Context, i *proto.Int32) (*proto.AreaListResponse, error) {
-	panic("implement me")
-}
 
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
 	return &foundationService{
@@ -165,19 +144,20 @@ func (s *foundationService) GetRegistryV1(ctx context.Context, keys []string) ([
 }
 
 // 验证超级用户账号和密码
-func (s *foundationService) SuperValidate(ctx context.Context, user string, pwd string) (r bool, err error) {
+func (s *foundationService) SuperValidate(ctx context.Context, user *proto.UserPwd) (*proto.Bool, error) {
 	superPwd := gof.CurrentApp.Config().Get("super_login_md5")
-	encPwd := domain.Sha1Pwd(pwd + user)
-	return superPwd == encPwd, nil
+	encPwd := domain.Sha1Pwd(user.Pwd + user.User)
+	return &proto.Bool{Value:superPwd == encPwd}, nil
 }
 
 // 保存超级用户账号和密码
-func (s *foundationService) FlushSuperPwd(ctx context.Context, user string, pwd string) (err error) {
+func (s *foundationService) FlushSuperPwd(ctx context.Context,user *proto.UserPwd) (*proto.Empty, error) {
 	conf := gof.CurrentApp.Config()
-	encPwd := domain.Sha1Pwd(pwd + user)
+	encPwd := domain.Sha1Pwd(user.Pwd + user.User)
 	conf.Set("super_login_md5", encPwd)
 	//conf.Flush()
-	return errors.New("暂不支持保存")
+	//todo:
+	panic("暂不支持保存")
 }
 
 // 注册单点登录应用,返回值：
@@ -204,7 +184,7 @@ func (s *foundationService) GetApp(ctx context.Context,s2 *proto.String) (*proto
 }
 
 // 获取单点登录应用
-func (s *foundationService) GetAllSsoApp(ctx context.Context empty *proto.Empty) (*proto.StringListResponse, error) {
+func (s *foundationService) GetAllSsoApp(ctx context.Context ,_ *proto.Empty) (*proto.StringListResponse, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	return &proto.StringListResponse{
 		List: sso.Array(),
@@ -212,7 +192,7 @@ func (s *foundationService) GetAllSsoApp(ctx context.Context empty *proto.Empty)
 }
 
 // 创建同步登录的地址
-func (s *foundationService) GetSyncLoginUrl(ctx context.Context, returnUrl string) (r string, err error) {
+func (s *foundationService) GetSyncLoginUrl(ctx context.Context, s2 *proto.String) (*proto.String, error) {
 	panic("not implement")
 	//return fmt.Sprintf("%s://%s%s/auth?return_url=%s",
 	//	consts.DOMAIN_PASSPORT_PROTO, consts.DOMAIN_PREFIX_PASSPORT,
@@ -262,21 +242,25 @@ func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
 }
 
 // 获取下级区域
-func (s *foundationService) GetChildAreas(ctx context.Context, code int32) ([]*foundation_service.SArea, error) {
-	var arr []*foundation_service.SArea
-	for _, v := range s._rep.GetChildAreas(code) {
-		arr = append(arr, &foundation_service.SArea{
+func (s *foundationService) GetChildAreas(ctx context.Context, code *proto.Int32) (*proto.AreaListResponse, error) {
+	var arr []*proto.SArea
+	for _, v := range s._rep.GetChildAreas(code.Value) {
+		arr = append(arr, &proto.SArea{
 			Code:   int32(v.Code),
 			Parent: int32(v.Parent),
 			Name:   v.Name,
 		})
 	}
-	return arr, nil
+	return &proto.AreaListResponse{
+		List:arr,
+	}, nil
 }
 
 // 获取地区名称
-func (s *foundationService) GetAreaNames(ctx context.Context, codes []int32) ([]string, error) {
-	return s._rep.GetAreaNames(codes), nil
+func (s *foundationService) GetAreaNames(ctx context.Context, request *proto.GetAreaNamesRequest) (*proto.StringListResponse, error) {
+	return &proto.StringListResponse{
+		List: s._rep.GetAreaNames(request.Codes),
+	}, nil
 }
 
 // 获取省市区字符串

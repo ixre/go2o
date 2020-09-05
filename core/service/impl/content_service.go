@@ -1,3 +1,6 @@
+
+package impl
+
 /**
  * Copyright 2015 @ to2.net.
  * name : content_service
@@ -6,7 +9,6 @@
  * description :
  * history :
  */
-package impl
 
 import (
 	"context"
