@@ -2,7 +2,7 @@ package parser
 
 import (
 	"go2o/core/domain/interface/product"
-	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 )
 
 func Category(src *ttype.SCategory) *product.Category {

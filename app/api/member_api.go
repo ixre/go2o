@@ -8,9 +8,9 @@ import (
 	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/registry"
-	"go2o/core/service/auto_gen/rpc/member_service"
-	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
+	"go2o/core/service/thrift/auto_gen/rpc/member_service"
+	"go2o/core/service/thrift/rsi"
 	"strconv"
 	"strings"
 )

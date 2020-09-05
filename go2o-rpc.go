@@ -15,7 +15,7 @@ import (
 	"github.com/ixre/gof/log"
 	"go2o/app"
 	"go2o/core"
-	"go2o/core/service/rsi"
+	"go2o/core/service/thrift/rsi"
 	rs "go2o/core/service/thrift/service"
 	"os"
 )

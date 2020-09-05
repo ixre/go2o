@@ -12,7 +12,7 @@ import (
 	"database/sql"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/tool"
-	"go2o/core/service/rsi"
+	"go2o/core/service/thrift/rsi"
 	"log"
 	"math"
 	"sync"

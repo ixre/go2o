@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/ixre/gof/api"
-	"go2o/core/service/auto_gen/rpc/content_service"
 	"go2o/core/service/thrift"
+	"go2o/core/service/thrift/auto_gen/rpc/content_service"
 )
 
 var _ api.Handler = new(ArticleApi)

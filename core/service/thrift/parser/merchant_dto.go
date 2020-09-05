@@ -2,7 +2,7 @@ package parser
 
 import (
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/service/auto_gen/rpc/merchant_service"
+	"go2o/core/service/thrift/auto_gen/rpc/merchant_service"
 )
 
 func TradeConfDto(conf *merchant.TradeConf) *merchant_service.STradeConf {

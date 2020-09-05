@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/util"
-	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
+	"go2o/core/service/thrift/rsi"
 )
 
 // 设置商户站点配置

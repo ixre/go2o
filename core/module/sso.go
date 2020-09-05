@@ -14,8 +14,8 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
 	"go2o/core/domain/interface/registry"
-	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/thrift"
+	"go2o/core/service/thrift/auto_gen/rpc/foundation_service"
 	"go2o/core/variable"
 	"strings"
 )

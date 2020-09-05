@@ -12,8 +12,8 @@ import (
 	"errors"
 	"github.com/ixre/gof/log"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/auto_gen/rpc/foundation_service"
 	"go2o/core/service/thrift"
+	"go2o/core/service/thrift/auto_gen/rpc/foundation_service"
 	"strings"
 	"testing"
 )

@@ -11,7 +11,7 @@ package cache
 import (
 	"encoding/json"
 	"go2o/core/domain/interface/member"
-	"go2o/core/service/rsi"
+	"go2o/core/service/thrift/rsi"
 	"strconv"
 )
 

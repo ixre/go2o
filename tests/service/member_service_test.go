@@ -3,9 +3,9 @@ package service
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/auto_gen/rpc/ttype"
-	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
+	"go2o/core/service/thrift/auto_gen/rpc/ttype"
+	"go2o/core/service/thrift/rsi"
 	"go2o/tests/ti"
 	"testing"
 )

@@ -10,7 +10,7 @@ package parser
 
 import (
 	"encoding/json"
-	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 )
 
 func PagingResult(total int, data interface{}, err error) *ttype.SPagingResult_ {

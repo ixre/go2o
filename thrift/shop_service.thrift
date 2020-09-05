@@ -1,6 +1,6 @@
 namespace java com.github.jsix.go2o.rpc
 namespace netstd com.github.jsix.go2o.rpc
-namespace go go2o.core.service.auto_gen.rpc.shop_service
+namespace go go2o.core.service.thrift.auto_gen.rpc.shop_service
 include "ttype.thrift"
 
 // 商店,需重构

@@ -37,7 +37,7 @@ import (
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
 	"go2o/core/msq"
-	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/thrift/auto_gen/rpc/member_service"
 	"go2o/core/variable"
 )
 

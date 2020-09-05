@@ -17,7 +17,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 )
 
 var (

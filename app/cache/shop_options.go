@@ -11,7 +11,7 @@ package cache
 import (
 	"bytes"
 	"fmt"
-	"go2o/core/service/rsi"
+	"go2o/core/service/thrift/rsi"
 )
 
 //func GetShopCheckboxs(mchId  int32, chks string) []byte {

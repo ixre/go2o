@@ -23,8 +23,8 @@ import (
 	"go2o/core"
 	"go2o/core/etcd"
 	"go2o/core/msq"
-	"go2o/core/service/rsi"
-	"go2o/core/service/server"
+	"go2o/core/service"
+	"go2o/core/service/thrift/rsi"
 	"log"
 	"os"
 	"runtime"
@@ -133,7 +133,7 @@ println(fmt.Sprintf("%#v",etcdEndPoints))
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
 	//go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
-	go server.ServeRPC(ch, fmt.Sprintf(":%d", port))
+	go service.ServeRPC(ch, fmt.Sprintf(":%d", port))
 	if runDaemon {
 		go daemon.Run(newApp)
 	}

@@ -2,7 +2,7 @@ package api
 
 import (
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/auto_gen/rpc/member_service"
+	"go2o/core/service/thrift/auto_gen/rpc/member_service"
 	"strconv"
 	"testing"
 )

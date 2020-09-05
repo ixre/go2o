@@ -1,6 +1,6 @@
 namespace java com.github.jsix.go2o.rpc
 namespace netstd com.github.jsix.go2o.rpc
-namespace go go2o.core.service.auto_gen.rpc.status_service
+namespace go go2o.core.service.thrift.auto_gen.rpc.status_service
 include "ttype.thrift"
 
 /** 状态服务 */

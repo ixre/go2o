@@ -15,7 +15,7 @@ import (
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain/util"
-	"go2o/core/service/rsi"
+	"go2o/core/service/thrift/rsi"
 	"strings"
 )
 

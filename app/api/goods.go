@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/ixre/gof/api"
-	"go2o/core/service/rsi"
+	"go2o/core/service/thrift/rsi"
 )
 
 /**

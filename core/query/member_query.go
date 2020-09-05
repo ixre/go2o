@@ -15,7 +15,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 	"log"
 	"strconv"
 	"strings"

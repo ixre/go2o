@@ -12,9 +12,9 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ixre/gof/net/nc"
-	"go2o/core/service/auto_gen/rpc/member_service"
-	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
+	"go2o/core/service/thrift/auto_gen/rpc/member_service"
+	"go2o/core/service/thrift/rsi"
 	"strconv"
 	"strings"
 )

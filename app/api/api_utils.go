@@ -4,7 +4,7 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
 	"github.com/labstack/echo"
-	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 	"net/http"
 )
 
