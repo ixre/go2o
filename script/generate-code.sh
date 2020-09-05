@@ -18,7 +18,7 @@ thrift_path=$(find . -name "service.thrift" -print -quit)
 cmd=$1
 
 rm -rf ./go2o/core/service/proto
-protoc -I ./proto  --go_out=plugins=grpc:proto ./**/*.proto
+protoc -I ./proto  --go_out=plugins=grpc:proto ./proto/*.proto
 
 
 #if [[ ${cmd} = "all" ]] || [[ ${cmd} = "format" ]];then

@@ -6,19 +6,19 @@ import "ttype.proto";
 // 基础服务
 service RegistryService{
    /** 获取注册表键值,key */
-   rpc GetRegistry(string)returns(string)
+   rpc GetRegistry(String)returns(String){}
    /** 获取键值存储数据字典,keys */
-   rpc GetRegistries(StringArray)returns(StringMap)
+   rpc GetRegistries(StringArray)returns(StringMap){}
    /** 按键前缀获取键数据,prefix*/
-   rpc FindRegistries(string)returns(StringMap)
+   rpc FindRegistries(String)returns(StringMap){}
    /** 更新注册表键值 */
-   rpc UpdateRegistryValues(StringMap)returns(Result)
+   rpc UpdateRegistryValues(StringMap)returns(Result){}
    /** 搜索注册表,keyword */
-   rpc SearchRegistry(string)returns(RegistriesResponse)
+   rpc SearchRegistry(String)returns(RegistriesResponse){}
    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
-   rpc CreateUserRegistry(UserRegistryCreateRequest)returns(Result)
+   rpc CreateUserRegistry(UserRegistryCreateRequest)returns(Result){}
    /** 获取键值存储数据,keys */
-   rpc GetRegistryV1(StringArray)returns (StringArray)
+   rpc GetRegistryV1(StringArray)returns (StringArray){}
 }
 
 message RegistriesResponse{

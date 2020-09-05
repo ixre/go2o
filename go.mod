@@ -4,7 +4,7 @@ go 1.15
 
 replace github.com/ixre/gof => ../github.com/ixre/gof
 
-replace github.com/ixre/tto => ../github.com/ixre/tto
+//replace github.com/ixre/tto => ../github.com/ixre/tto
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 

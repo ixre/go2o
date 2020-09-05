@@ -45,33 +45,33 @@ message ComplexItemsResponse {
 // 销售服务
 service OrderService {
     // 批发购物车接口
-    rpc WholesaleCartV1 (WsCartRequest) returns (Result)
+    rpc WholesaleCartV1 (WsCartRequest) returns (Result){}
     // 普通购物车接口
-    rpc NormalCartV1 (NormalCartRequest) returns (Result)
+    rpc NormalCartV1 (NormalCartRequest) returns (Result){}
     // 提交订单
-    rpc SubmitOrderV1 (SubmitOrderRequest) returns (StringMap)
+    rpc SubmitOrderV1 (SubmitOrderRequest) returns (StringMap){}
     // 获取订单信息
-    rpc GetOrder (GetOrderRequest) returns (SComplexOrder)
+    rpc GetOrder (GetOrderRequest) returns (SComplexOrder){}
     // 获取订单和商品项信息
-    rpc GetOrderAndItems (GetOrderItemsRequest) returns (SComplexOrder)
+    rpc GetOrderAndItems (GetOrderItemsRequest) returns (SComplexOrder){}
     // 获取子订单,orderId
-    rpc GetSubOrder (sint64) returns (SComplexOrder)
+    rpc GetSubOrder (Int64) returns (SComplexOrder){}
     // 根据订单号获取子订单,orderNo
-    rpc GetSubOrderByNo (string) returns (SComplexOrder)
+    rpc GetSubOrderByNo (String) returns (SComplexOrder){}
     // 获取订单商品项,subOrderId
-    rpc GetSubOrderItems (sint64) returns (ComplexItemsResponse)
+    rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse){}
 
     // 提交交易订单
-    rpc SubmitTradeOrder (TradeOrderSubmitRequest) returns (Result)
+    rpc SubmitTradeOrder (TradeOrderSubmitRequest) returns (Result){}
     // 交易单现金支付,orderId
-    rpc TradeOrderCashPay (sint64) returns (Result)
+    rpc TradeOrderCashPay (Int64) returns (Result){}
     // 上传交易单发票
-    rpc TradeOrderUpdateTicket (TradeOrderTicketRequest) returns (Result)
+    rpc TradeOrderUpdateTicket (TradeOrderTicketRequest) returns (Result){}
 }
 
 /** 订单状态 */
 enum EOrderState {
-    _ = 0;
+    _3 = 0;
     /****** 在履行前,订单可以取消申请退款  ******/
     /** 等待支付 */
     StatAwaitingPayment = 1;

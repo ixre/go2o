@@ -5,6 +5,10 @@ syntax = "proto3";
 option go_package = "../core/service/proto;proto";
 
 message Empty{}
+message String{string Value = 1;}
+message Int64{sint64 Value = 1;}
+message Int32{sint32 Value = 1;}
+message Bool{bool Value = 1;}
 message StringMap{
     map<string,string> Data = 1;
 }
@@ -27,6 +31,7 @@ message Pair {
     string Value = 2;
 }
 
+
 /** 设置依据 */
 enum ESettingBasis {
     /** 未设置 */
@@ -45,12 +50,12 @@ enum EPriceBasis {
     /** 会员折扣价 */
     Discount = 2;
     /** 自定义价格 */
-    Custom = 3;
+    CustomBasis = 3;
 }
 
 /** 金额/提成依据 */
 enum EAmountBasis {
-    _ = 0;
+    _12 = 0;
     /** 未设置 */
     NotSet = 1;
     /** 按金额 */

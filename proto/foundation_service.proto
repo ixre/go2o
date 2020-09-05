@@ -1,49 +1,73 @@
 syntax = "proto3";
 option go_package = "../core/service/proto;proto";
 
+import "ttype.proto";
 
-
-// 基础服务
-service FoundationService{
-   /** 获取短信API凭据, @provider 短信服务商, 默认:http */
-   rpc GetSmsApi(1:string provider)returns(SSmsApi)
-   /** 保存短信API凭据,@provider 短信服务商, 默认:http */
-   rpc SaveSmsApi(1:string provider,2:SSmsApi api)returns(Result)
-   /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
-   rpc SaveBoardHook(1:string hookURL,2:string token)returns(Result)
-
-   // 格式化资源地址并返回
-   rpc ResourceUrl(1:string url)returns(string)
-   // 设置键值
-   rpc SetValue(1:string key,2:string value)returns(Result)
-   // 删除值
-   rpc DeleteValue(1:string key)returns(Result)
-   // 根据前缀获取值
-   map<string,string> GetValuesByPrefix(1:string prefix)
-   // 注册单点登录应用,返回值：
-   //   -  1. 成功，并返回token
-   //   - -1. 接口地址不正确
-   //   - -2. 已经注册
-   rpc RegisterApp(1:SSsoApp app)returns(string)
-   // 获取应用信息
-   rpc GetApp(1:string name)returns(SSsoApp)
-   // 获取单点登录应用
-   list<string> GetAllSsoApp()
-   // 验证超级用户账号和密码
-   rpc SuperValidate(1:string user,2:string pwd)returns(bool)
-   // 保存超级用户账号和密码
-   rpc FlushSuperPwd(1:string user,2:string pwd)returns(void)
-   // 创建同步登录的地址
-   rpc GetSyncLoginUrl(1:string returnUrl)returns(string)
-   // 获取地区名称
-   list<string> GetAreaNames(1:list<i32> codes)
-   // 获取下级区域
-   list<SArea> GetChildAreas(1:sint32 code)
+message SmsApiSaveRequest {
+    string provider = 1;
+    SSmsApi api = 2;
 }
 
+message BoardHookSaveRequest {
+    string hookURL = 1;
+    string token = 2;
+}
+
+// 基础服务
+service FoundationService {
+    /** 获取短信API凭据, provider 短信服务商, 默认:http */
+    rpc GetSmsApi (String) returns (SSmsApi){}
+    /** 保存短信API凭据,@provider 短信服务商, 默认:http */
+    rpc SaveSmsApi (SmsApiSaveRequest) returns (Result){}
+    /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
+    rpc SaveBoardHook (BoardHookSaveRequest) returns (Result){}
+
+    // 格式化资源地址并返回
+    rpc ResourceUrl (String) returns (String){}
+    // 设置键值
+    rpc SetValue (Pair) returns (Result){}
+    // 删除值,key
+    rpc DeleteValue (String) returns (Result){}
+    // 根据前缀获取值,prefix
+    rpc GetValuesByPrefix (String) returns (StringMap){}
+    // 注册单点登录应用,返回值：
+    //   -  1. 成功，并返回token
+    //   - -1. 接口地址不正确
+    //   - -2. 已经注册
+    rpc RegisterApp (SSsoApp) returns (String){}
+    // 获取应用信息,name
+    rpc GetApp (String) returns (SSsoApp){}
+    // 获取单点登录应用
+    rpc GetAllSsoApp (Empty) returns (StringListResponse){}
+    // 验证超级用户账号和密码
+    rpc SuperValidate (UserPwd) returns (Bool){}
+    // 保存超级用户账号和密码
+    rpc FlushSuperPwd (UserPwd) returns (Empty){}
+    // 创建同步登录的地址,returnUrl
+    rpc GetSyncLoginUrl (String) returns (String){}
+    // 获取地区名称
+    rpc GetAreaNames (GetAreaNamesRequest) returns (StringListResponse){}
+    // 获取下级区域,code
+    rpc GetChildAreas (Int32) returns (AreaListResponse){}
+}
+
+message AreaListResponse {
+    repeated SArea List = 1;
+}
+message StringListResponse {
+    repeated string List = 1;
+}
+message GetAreaNamesRequest {
+    repeated sint32 Codes = 1;
+}
+
+message UserPwd {
+    string user = 1;
+    string pwd = 2;
+}
 
 // 单点登录应用
-message SSsoApp{
+message SSsoApp {
     // 编号
     sint32 ID = 1;
     // 应用名称
@@ -55,7 +79,7 @@ message SSsoApp{
 }
 
 /** 行政区域 */
-message SArea  {
+message SArea {
     sint32 Code = 1;
     sint32 Parent = 2;
     string Name = 3;
@@ -69,12 +93,14 @@ message SSmsApi {
     string Key = 2;
     /** 接口密钥 */
     string Secret = 3;
-	/** 请求数据,如: phone={phone}&content={content}*/  string Params = 4;
-	/** 请求方式, GET或POST */  string Method = 5;
+    /** 请求数据,如: phone={phone}&content={content}*/
+    string Params = 4;
+    /** 请求方式, GET或POST */
+    string Method = 5;
     /** 编码 */
     string Charset = 6;
     /** 签名 */
     string Signature = 7;
-   	/** 发送成功，包含的字符，用于检测是否发送成功 */
+    /** 发送成功，包含的字符，用于检测是否发送成功 */
     string SuccessChar = 8;
 }
