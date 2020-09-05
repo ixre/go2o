@@ -490,6 +490,7 @@ type (
 	}
 )
 
+
 func (b BankInfo) Right() bool {
 	return len(b.BankName) > 0 && len(b.Account) > 0 &&
 		len(b.AccountName) > 0

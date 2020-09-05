@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/order_service"
 	"log"
 	"strconv"
@@ -383,9 +384,9 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int
 
 // 查询分页订单
 func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*order_service.SComplexOrder) {
+	where, orderBy string) (int, []*proto.SComplexOrder) {
 	d := o.Connector
-	var orderList []*order_service.SComplexOrder
+	var orderList []*proto.SComplexOrder
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -419,7 +420,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
 			var cashPay int
 			var ticket string
 			for rs.Next() {
-				e := &order_service.SComplexOrder{}
+				e := &proto.SComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime)

@@ -15,6 +15,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof"
+	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
 	de "go2o/core/domain/interface/domain"
@@ -27,18 +28,14 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
 	"go2o/core/query"
-	"go2o/core/service/thrift/auto_gen/rpc/member_service"
-	"go2o/core/service/thrift/auto_gen/rpc/message_service"
-	"go2o/core/service/thrift/auto_gen/rpc/order_service"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
-	"go2o/core/service/thrift/parser"
+	"go2o/core/service/proto"
 	"go2o/core/variable"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var _ member_service.MemberService = new(memberService)
+var _ proto.MemberServiceServer = new(memberService)
 
 type memberService struct {
 	repo       member.IMemberRepo
@@ -51,22 +48,22 @@ type memberService struct {
 }
 
 // 交换会员编号
-func (s *memberService) SwapMemberId(ctx context.Context, cred member_service.ECredentials, value string) (r int64, err error) {
+func (s *memberService) SwapMemberId(ctx context.Context, r *proto.SwapMemberRequest) (*proto.Int64, error) {
 	var memberId int64
-	switch cred {
+	switch r.Cred {
 	default:
-	case member_service.ECredentials_User:
-		memberId = s.repo.GetMemberIdByUser(value)
-	case member_service.ECredentials_Code:
-		memberId = int64(s.repo.GetMemberIdByCode(value))
-	case member_service.ECredentials_Phone:
-		memberId = s.repo.GetMemberIdByPhone(value)
-	case member_service.ECredentials_Email:
-		memberId = s.repo.GetMemberIdByEmail(value)
-	case member_service.ECredentials_InviteCode:
-		memberId = s.repo.GetMemberIdByInviteCode(value)
+	case proto.ECredentials_User:
+		memberId = s.repo.GetMemberIdByUser(r.Value)
+	case proto.ECredentials_Code:
+		memberId = int64(s.repo.GetMemberIdByCode(r.Value))
+	case proto.ECredentials_Phone:
+		memberId = s.repo.GetMemberIdByPhone(r.Value)
+	case proto.ECredentials_Email:
+		memberId = s.repo.GetMemberIdByEmail(r.Value)
+	case proto.ECredentials_InviteCode:
+		memberId = s.repo.GetMemberIdByInviteCode(r.Value)
 	}
-	return memberId, nil
+	return &proto.Int64{Value: memberId}, nil
 }
 
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
@@ -114,37 +111,37 @@ func (s *memberService) getMemberValue(memberId int64) *member.Member {
 }
 
 // 根据会员编号获取会员
-func (s *memberService) GetMember(ctx context.Context, id int64) (*member_service.SMember, error) {
-	v := s.getMemberValue(id)
+func (s *memberService) GetMember(ctx context.Context, id *proto.Int64) (*proto.SMember, error) {
+	v := s.getMemberValue(id.Value)
 	if v != nil {
-		return parser.MemberDto(v), nil
+		return s.parseMemberDto(v), nil
 	}
 	return nil, nil
 }
 
 // 根据用户名获取会员
-func (s *memberService) GetMemberByUser(ctx context.Context, user string) (*member_service.SMember, error) {
-	v := s.repo.GetMemberByUser(user)
+func (s *memberService) GetMemberByUser(ctx context.Context, user *proto.String) (*proto.SMember, error) {
+	v := s.repo.GetMemberByUser(user.Value)
 	if v != nil {
-		return parser.MemberDto(v), nil
+		return s.parseMemberDto(v), nil
 	}
 	return nil, nil
 }
 
 // 获取资料
-func (s *memberService) GetProfile(ctx context.Context, memberId int64) (*member_service.SProfile, error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) GetProfile(ctx context.Context, i *proto.Int64) (*proto.SProfile, error) {
+	m := s.repo.GetMember(i.Value)
 	if m != nil {
 		v := m.Profile().GetProfile()
-		return parser.MemberProfile(&v), nil
+		return s.parseMemberProfile(&v), nil
 	}
 	return nil, nil
 }
 
 // 保存资料
-func (s *memberService) SaveProfile(v *member_service.SProfile) error {
+func (s *memberService) SaveProfile(v *proto.SProfile) error {
 	if v.MemberId > 0 {
-		v2 := parser.MemberProfile2(v)
+		v2 := s.parseMemberProfile2(v)
 		m := s.repo.GetMember(v.MemberId)
 		if m == nil {
 			return member.ErrNoSuchMember
@@ -155,57 +152,59 @@ func (s *memberService) SaveProfile(v *member_service.SProfile) error {
 }
 
 // 升级为高级会员
-func (s *memberService) Premium(ctx context.Context, memberId int64, v int32, expires int64) (*proto.Result, error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) Premium(ctx context.Context, r *proto.PremiumRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	err := m.Premium(int(v), expires)
+	err := m.Premium(int(r.V), r.Expires)
 	return s.result(err), nil
 }
 
 // 检查会员的会话Token是否正确
-func (s *memberService) CheckToken(ctx context.Context, memberId int64, token string) (r bool, err error) {
+func (s *memberService) CheckToken(ctx context.Context, r *proto.CheckTokenRequest) (*proto.Bool, error) {
 	md := module.Get(module.MM).(*module.MemberModule)
-	return md.CheckToken(memberId, token), nil
+	return &proto.Bool{
+		Value: md.CheckToken(r.MemberId, r.Token),
+	}, nil
 }
 
 // 获取会员的会员Token,reset表示是否重置会员的token
-func (s *memberService) GetToken(ctx context.Context, memberId int64, reset bool) (r string, err error) {
+func (s *memberService) GetToken(ctx context.Context, r *proto.GetTokenRequest) (*proto.String, error) {
 	pubToken := ""
 	md := module.Get(module.MM).(*module.MemberModule)
-	if !reset {
-		pubToken = md.GetToken(memberId)
+	if !r.Reset_ {
+		pubToken = md.GetToken(r.MemberId)
 	}
-	if reset || (pubToken == "" && memberId > 0) {
-		m := s.getMemberValue(memberId)
+	if r.Reset_ || (pubToken == "" && r.MemberId > 0) {
+		m := s.getMemberValue(r.MemberId)
 		if m != nil {
-			return md.ResetToken(memberId, m.Pwd), nil
+			return &proto.String{Value: md.ResetToken(r.MemberId, m.Pwd)}, nil
 		}
 	}
-	return pubToken, nil
+	return &proto.String{Value: pubToken}, nil
 }
 
 // 移除会员的Token
-func (s *memberService) RemoveToken(ctx context.Context, memberId int64) (err error) {
+func (s *memberService) RemoveToken(ctx context.Context, id *proto.Int64) (*proto.Empty, error) {
 	md := module.Get(module.MM).(*module.MemberModule)
-	md.RemoveToken(memberId)
-	return nil
+	md.RemoveToken(id.Value)
+	return &proto.Empty{}, nil
 }
 
 // 更改手机号码，不验证手机格式
-func (s *memberService) ChangePhone(ctx context.Context, memberId int64, phone string) (*proto.Result, error) {
-	err := s.changePhone(memberId, phone)
+func (s *memberService) ChangePhone(ctx context.Context, r *proto.ChangePhoneRequest) (*proto.Result, error) {
+	err := s.changePhone(r.MemberId, r.Phone)
 	return s.result(err), nil
 }
 
 // 更改邀请人
-func (s *memberService) ChangeInviterId(ctx context.Context, memberId int64, inviterId int64) (r *proto.Result, err error) {
-	im := s.repo.GetMember(memberId)
+func (s *memberService) ChangeInviterId(ctx context.Context, r *proto.ChangeInviterRequest) (*proto.Result, error) {
+	im := s.repo.GetMember(r.MemberId)
 	if im == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	err = im.BindInviter(inviterId, true)
+	err := im.BindInviter(r.InviterId, true)
 	return s.result(err), nil
 }
 
@@ -258,12 +257,12 @@ func (s *memberService) ShopFavored(memberId int64, shopId int32) bool {
 }
 
 // 获取会员的订单状态及其数量
-func (s *memberService) OrdersQuantity(ctx context.Context, memberId int64) (mp map[int32]int32, err error) {
+func (s *memberService) OrdersQuantity(ctx context.Context, id *proto.Int64) (*proto.OrderQuantityMapResponse, error) {
 	ret := make(map[int32]int32, 0)
-	for k, v := range s.query.OrdersQuantity(memberId) {
+	for k, v := range s.query.OrdersQuantity(id.Value) {
 		ret[int32(k)] = int32(v)
 	}
-	return ret, nil
+	return &proto.OrderQuantityMapResponse{Data: ret}, nil
 }
 
 /**================ 会员等级 ==================**/
@@ -273,26 +272,26 @@ func (s *memberService) GetMemberLevels() []*member.Level {
 }
 
 // 等级列表
-func (s *memberService) MemberLevelList(ctx context.Context) ([]*member_service.SMemberLevel, error) {
-	var arr []*member_service.SMemberLevel
+func (s *memberService) MemberLevelList(ctx context.Context, empty *proto.Empty) (*proto.SMemberLevelListResponse, error) {
+	var arr []*proto.SMemberLevel
 	list := s.repo.GetManager().LevelManager().GetLevelSet()
 	for _, v := range list {
-		arr = append(arr, parser.LevelDto(v))
+		arr = append(arr, s.parseLevelDto(v))
 	}
-	return arr, nil
+	return &proto.SMemberLevelListResponse{List: arr}, nil
 }
 
 // 根据编号获取会员等级信息
-func (s *memberService) GetMemberLevel(ctx context.Context, id int32) (*member_service.SMemberLevel, error) {
-	lv := s.repo.GetManager().LevelManager().GetLevelById(int(id))
+func (s *memberService) GetMemberLevel(ctx context.Context, i *proto.Int32) (*proto.SMemberLevel, error) {
+	lv := s.repo.GetManager().LevelManager().GetLevelById(int(i.Value))
 	if lv != nil {
-		return parser.LevelDto(lv), nil
+		return s.parseLevelDto(lv), nil
 	}
 	return nil, nil
 }
 
 // 保存会员等级信息
-func (s *memberService) SaveMemberLevel(ctx context.Context, level *member_service.SMemberLevel) (r *proto.Result, err error) {
+func (s *memberService) SaveMemberLevel(ctx context.Context, level *proto.SMemberLevel) (*proto.Result, error) {
 	lv := &member.Level{
 		ID:            int(level.ID),
 		Name:          level.Name,
@@ -302,7 +301,7 @@ func (s *memberService) SaveMemberLevel(ctx context.Context, level *member_servi
 		IsOfficial:    int(level.IsOfficial),
 		AllowUpgrade:  int(level.AllowUpgrade),
 	}
-	_, err = s.repo.GetManager().LevelManager().SaveLevel(lv)
+	_, err := s.repo.GetManager().LevelManager().SaveLevel(lv)
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -310,10 +309,10 @@ func (s *memberService) SaveMemberLevel(ctx context.Context, level *member_servi
 }
 
 // 根据SIGN获取等级
-func (s *memberService) GetLevelBySign(ctx context.Context, sign string) (*member_service.SMemberLevel, error) {
-	lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
+func (s *memberService) GetLevelBySign(ctx context.Context, sign *proto.String) (*proto.SMemberLevel, error) {
+	lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign.Value)
 	if lv != nil {
-		return parser.LevelDto(lv), nil
+		return s.parseLevelDto(lv), nil
 	}
 	return nil, nil
 }
@@ -377,13 +376,13 @@ func (s *memberService) GetMemberIdByBasis(str string, basic int) int64 {
 }
 
 // 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
-func (s *memberService) SendCode(ctx context.Context, memberId int64, operation string,
-	msgType message_service.EMessageChannel) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) SendCode(ctx context.Context, r *proto.SendCodeRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	code, err := m.SendCheckCode(operation, int(msgType))
+	msgType, _ := strconv.Atoi(r.MsgType)
+	code, err := m.SendCheckCode(r.Operation, msgType)
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -391,25 +390,25 @@ func (s *memberService) SendCode(ctx context.Context, memberId int64, operation 
 }
 
 // 比较验证码是否正确
-func (s *memberService) CompareCode(ctx context.Context, memberId int64, code string) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) CompareCode(ctx context.Context, r *proto.CompareCodeRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	if err := m.CompareCode(code); err != nil {
+	if err := m.CompareCode(r.Code); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
 // 更改会员用户名
-func (s *memberService) ChangeUser(ctx context.Context, memberId int64, user string) (*proto.Result, error) {
+func (s *memberService) ChangeUser(ctx context.Context, r *proto.ChangeUserRequest) (*proto.Result, error) {
 	var err error
-	m := s.repo.GetMember(int64(memberId))
+	m := s.repo.GetMember(int64(r.MemberId))
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		if err = m.ChangeUser(user); err == nil {
+		if err = m.ChangeUser(r.Usr); err == nil {
 			return s.success(nil), nil
 		}
 	}
@@ -417,9 +416,9 @@ func (s *memberService) ChangeUser(ctx context.Context, memberId int64, user str
 }
 
 // 获取会员等级信息
-func (s *memberService) MemberLevelInfo(ctx context.Context, memberId int64) (r *member_service.SMemberLevelInfo, err error) {
-	level := &member_service.SMemberLevelInfo{Level: -1}
-	im := s.repo.GetMember(memberId)
+func (s *memberService) MemberLevelInfo(ctx context.Context, id *proto.Int64) (*proto.SMemberLevelInfo, error) {
+	level := &proto.SMemberLevelInfo{Level: -1}
+	im := s.repo.GetMember(id.Value)
 	if im != nil {
 		v := im.GetValue()
 		level.Exp = int32(v.Exp)
@@ -441,13 +440,13 @@ func (s *memberService) MemberLevelInfo(ctx context.Context, memberId int64) (r 
 }
 
 // 更改会员等级
-func (s *memberService) UpdateLevel(ctx context.Context, memberId int64, level int32,
-	review bool, paymentOrderId int64) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) UpdateLevel(ctx context.Context, r *proto.UpdateLevelRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
+	var err error
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = m.ChangeLevel(int(level), int(paymentOrderId), review)
+		err = m.ChangeLevel(int(r.Level), int(r.PaymentOrderId), r.Review)
 	}
 	return s.result(err), nil
 }
@@ -462,19 +461,19 @@ func (s *memberService) ChangeAvatar(memberId int64, avatar string) error {
 }
 
 // 保存用户
-func (s *memberService) SaveMember(v *member_service.SMember) (int64, error) {
-	if v.ID > 0 {
+func (s *memberService) SaveMember(v *proto.SMember) (int64, error) {
+	if v.Id > 0 {
 		return s.updateMember(v)
 	}
 	return -1, errors.New("Create member use \"RegisterMember\" method.")
 }
 
-func (s *memberService) updateMember(v *member_service.SMember) (int64, error) {
-	m := s.repo.GetMember(int64(v.ID))
+func (s *memberService) updateMember(v *proto.SMember) (int64, error) {
+	m := s.repo.GetMember(v.Id)
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
-	mv := parser.Member(v)
+	mv := s.parseMember(v)
 	if err := m.SetValue(mv); err != nil {
 		return m.GetAggregateRootId(), err
 	}
@@ -482,26 +481,24 @@ func (s *memberService) updateMember(v *member_service.SMember) (int64, error) {
 }
 
 // 注册会员
-func (s *memberService) RegisterMemberV2(ctx context.Context, user string, pwd string,
-	flag int32, name string, phone string, email string, avatar string,
-	extend map[string]string) (r *proto.Result, err error) {
-	if len(pwd) != 32 {
+func (s *memberService) RegisterMemberV2(ctx context.Context, r *proto.RegisterMemberRequest) (*proto.Result, error) {
+	if len(r.Pwd) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
 	v := &member.Member{
-		User:     user,
-		Pwd:      domain.Sha1Pwd(pwd),
-		Name:     name,
+		User:     r.User,
+		Pwd:      domain.Sha1Pwd(r.Pwd),
+		Name:     r.Name,
 		RealName: "",
-		Avatar:   avatar,
-		Phone:    phone,
-		Email:    email,
-		RegFrom:  extend["reg_from"],
-		RegIp:    extend["reg_ip"],
-		Flag:     int(flag),
+		Avatar:   r.Avatar,
+		Phone:    r.Phone,
+		Email:    r.Email,
+		RegFrom:  r.Extend["reg_from"],
+		RegIp:    r.Extend["reg_ip"],
+		Flag:     int(r.Flag),
 	}
 	// 验证邀请码
-	inviteCode := extend["invite_code"]
+	inviteCode := r.Extend["invite_code"]
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
 		return s.error(err), nil
@@ -534,8 +531,8 @@ func (s *memberService) GetRelation(memberId int64) *member.InviteRelation {
 }
 
 // 激活会员
-func (s *memberService) Active(ctx context.Context, memberId int64) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) Active(ctx context.Context, i *proto.Int64) (*proto.Result, error) {
+	m := s.repo.GetMember(i.Value)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
@@ -546,24 +543,24 @@ func (s *memberService) Active(ctx context.Context, memberId int64) (r *proto.Re
 }
 
 // 锁定/解锁会员
-func (s *memberService) Lock(ctx context.Context, memberId int64, minutes int32, remark string) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) Lock(ctx context.Context, r *proto.LockRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	if err = m.Lock(int(minutes), remark); err != nil {
+	if err := m.Lock(int(r.Minutes), r.Remark); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
 // 解锁会员
-func (s *memberService) Unlock(ctx context.Context, memberId int64) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) Unlock(ctx context.Context, i *proto.Int64) (*proto.Result, error) {
+	m := s.repo.GetMember(i.Value)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	if err = m.Unlock(); err != nil {
+	if err := m.Unlock(); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
@@ -579,8 +576,8 @@ func (s *memberService) ProfileCompleted(memberId int64) bool {
 }
 
 // 判断资料是否完善
-func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64) (r *proto.Result, e error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) CheckProfileComplete(ctx context.Context, id *proto.Int64) (*proto.Result, error) {
+	m := s.repo.GetMember(id.Value)
 	var err error
 	if m == nil {
 		err = member.ErrNoSuchMember
@@ -603,12 +600,14 @@ func (s *memberService) CheckProfileComplete(ctx context.Context, memberId int64
 }
 
 // 更改密码
-func (s *memberService) ModifyPwd(ctx context.Context, memberId int64, old string, pwd string) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) ModifyPwd(ctx context.Context, r *proto.ModifyPwdRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	if l := len(pwd); l != 32 {
+	pwd := r.Pwd
+	old := r.Old
+	if l := len(r.Pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.MemberSha1Pwd(pwd)
@@ -618,7 +617,7 @@ func (s *memberService) ModifyPwd(ctx context.Context, memberId int64, old strin
 	} else {
 		old = domain.MemberSha1Pwd(old)
 	}
-	err = m.Profile().ModifyPassword(pwd, old)
+	err := m.Profile().ModifyPassword(pwd, old)
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -626,11 +625,12 @@ func (s *memberService) ModifyPwd(ctx context.Context, memberId int64, old strin
 }
 
 // 更改交易密码
-func (s *memberService) ModifyTradePwd(ctx context.Context, memberId int64, old string, pwd string) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) ModifyTradePwd(ctx context.Context, r *proto.ModifyPwdRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
+	pwd, old := r.Pwd, r.Old
 	if l := len(pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
@@ -641,7 +641,7 @@ func (s *memberService) ModifyTradePwd(ctx context.Context, memberId int64, old 
 	} else {
 		old = domain.TradePwd(old)
 	}
-	err = m.Profile().ModifyTradePassword(pwd, old)
+	err := m.Profile().ModifyTradePassword(pwd, old)
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -674,15 +674,15 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, errCode in
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string, update bool) (*proto.Result, error) {
-	id, code, err := s.testLogin(user, pwd)
+func (s *memberService) CheckLogin(ctx context.Context, r *proto.LoginRequest) (*proto.Result, error) {
+	id, code, err := s.testLogin(r.User, r.Pwd)
 	if err != nil {
 		r := s.error(err)
 		r.ErrCode = code
 		return r, nil
 	}
 	var memberCode = ""
-	if update {
+	if r.Update {
 		m := s.repo.GetMember(id)
 		memberCode = m.GetValue().Code
 		go m.UpdateLoginTime()
@@ -695,8 +695,8 @@ func (s *memberService) CheckLogin(ctx context.Context, user string, pwd string,
 }
 
 // 检查交易密码
-func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd string) (r *proto.Result, err error) {
-	m := s.repo.GetMember(id)
+func (s *memberService) CheckTradePwd(ctx context.Context, r *proto.CheckTradePwdRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
@@ -704,10 +704,10 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 	if mv.TradePwd == "" {
 		return s.error(member.ErrNotSetTradePwd), nil
 	}
-	if len(tradePwd) != 32 {
+	if len(r.TradePwd) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	if encPwd := domain.TradePwd(tradePwd); mv.TradePwd != encPwd {
+	if encPwd := domain.TradePwd(r.TradePwd); mv.TradePwd != encPwd {
 		return s.error(member.ErrIncorrectTradePwd), nil
 	}
 	return s.success(nil), nil
@@ -725,28 +725,32 @@ func (s *memberService) CheckTradePwd(ctx context.Context, id int64, tradePwd st
 //}
 
 // 获取会员账户
-func (s *memberService) GetAccount(ctx context.Context, memberId int64) (*member_service.SAccount, error) {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
+func (s *memberService) GetAccount(ctx context.Context, id *proto.Int64) (*proto.SAccount, error) {
+	m := s.repo.CreateMember(&member.Member{Id: id.Value})
 	acc := m.GetAccount()
 	if acc != nil {
-		return parser.AccountDto(acc.GetValue()), nil
+		return s.parseAccountDto(acc.GetValue()), nil
 	}
 	return nil, nil
 }
 
 // 获取上级邀请人会员编号数组
-func (s *memberService) InviterArray(ctx context.Context, memberId int64, depth int32) (r []int64, err error) {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
+func (s *memberService) InviterArray(ctx context.Context, r *proto.DepthRequest) (*proto.InviterIdListResponse, error) {
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	var arr []int64
 	if m != nil {
-		return m.Invitation().InviterArray(memberId, int(depth)), nil
+		arr = m.Invitation().InviterArray(r.MemberId, int(r.Depth))
 	}
-	return []int64{}, nil
+	return &proto.InviterIdListResponse{
+		List: arr,
+	}, nil
 }
 
 // 按条件获取荐指定等级会员的数量
-func (s *memberService) InviteMembersQuantity(ctx context.Context, memberId int64, depth int32) (r int32, err error) {
+func (s *memberService) InviteMembersQuantity(ctx context.Context, r *proto.DepthRequest) (*proto.Int32, error) {
 	where := ""
-	switch depth {
+	memberId := r.MemberId
+	switch r.Depth {
 	case 1:
 		where = fmt.Sprintf(" inviter_id = %d", memberId)
 	case 2:
@@ -755,28 +759,32 @@ func (s *memberService) InviteMembersQuantity(ctx context.Context, memberId int6
 		where = fmt.Sprintf(" inviter_id = %d OR inviter_d2 = %d OR inviter_d3 = %d", memberId, memberId, memberId)
 	}
 	if len(where) == 0 {
-		return 0, nil
+		return &proto.Int32{Value: 0}, nil
 	}
 	q := s.query.InviteMembersQuantity(memberId, where)
-	return int32(q), nil
+	return &proto.Int32{Value: int32(q)}, nil
 }
 
 // 按条件获取荐指定等级会员的数量
-func (s *memberService) QueryInviteQuantity(ctx context.Context, memberId int64, data map[string]string) (int32, error) {
+func (s *memberService) QueryInviteQuantity(ctx context.Context, r *proto.InviteQuantityRequest) (*proto.Int64, error) {
 	where := ""
-	if data != nil && len(data) > 0 {
-		where = s.parseGetInviterDataParams(data)
+	if r.Data != nil && len(r.Data) > 0 {
+		where = s.parseGetInviterDataParams(r.Data)
 	}
-	return s.query.GetInviteQuantity(memberId, where), nil
+	return &proto.Int64{
+		Value: int64(s.query.GetInviteQuantity(r.MemberId, where)),
+	}, nil
 }
 
 // 按条件获取荐指定等级会员的列表
-func (s *memberService) QueryInviteArray(ctx context.Context, memberId int64, data map[string]string) ([]int64, error) {
+func (s *memberService) QueryInviteArray(ctx context.Context, r *proto.InviteQuantityRequest) (*proto.MemberIdListResponse, error) {
 	where := ""
-	if data != nil && len(data) > 0 {
-		where = s.parseGetInviterDataParams(data)
+	if r.Data != nil && len(r.Data) > 0 {
+		where = s.parseGetInviterDataParams(r.Data)
 	}
-	return s.query.GetInviteArray(memberId, where), nil
+	return &proto.MemberIdListResponse{
+		List: s.query.GetInviteArray(r.MemberId, where),
+	}, nil
 }
 
 func (s *memberService) parseGetInviterDataParams(data map[string]string) string {
@@ -840,15 +848,17 @@ func (s *memberService) UnlockBankInfo(memberId int64) error {
 }
 
 // 获取收款码
-func (s *memberService) ReceiptsCodes(ctx context.Context, memberId int64) (r []*member_service.SReceiptsCode, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) ReceiptsCodes(ctx context.Context, id *proto.Int64) (*proto.SReceiptsCodeListResponse, error) {
+	m := s.repo.GetMember(id.Value)
 	if m == nil {
-		return make([]*member_service.SReceiptsCode, 0), nil
+		return &proto.SReceiptsCodeListResponse{
+			List: make([]*proto.SReceiptsCode, 0),
+		}, nil
 	}
 	arr := m.Profile().ReceiptsCodes()
-	list := make([]*member_service.SReceiptsCode, len(arr))
+	list := make([]*proto.SReceiptsCode, len(arr))
 	for i, v := range arr {
-		list[i] = &member_service.SReceiptsCode{
+		list[i] = &proto.SReceiptsCode{
 			Identity:  v.Identity,
 			Name:      v.Name,
 			AccountId: v.AccountId,
@@ -856,68 +866,70 @@ func (s *memberService) ReceiptsCodes(ctx context.Context, memberId int64) (r []
 			State:     int32(v.State),
 		}
 	}
-	return list, nil
+	return &proto.SReceiptsCodeListResponse{List: list}, nil
 }
 
 // 保存收款码
-func (s *memberService) SaveReceiptsCode(ctx context.Context, memberId int64, code *member_service.SReceiptsCode) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) SaveReceiptsCode(ctx context.Context, r *proto.ReceiptsCodeSaveRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
 	v := &member.ReceiptsCode{
-		Identity:  code.Identity,
-		Name:      code.Name,
-		AccountId: code.AccountId,
-		CodeUrl:   code.CodeUrl,
-		State:     int(code.State),
+		Identity:  r.Code.Identity,
+		Name:      r.Code.Name,
+		AccountId: r.Code.AccountId,
+		CodeUrl:   r.Code.CodeUrl,
+		State:     int(r.Code.State),
 	}
-	if err = m.Profile().SaveReceiptsCode(v); err != nil {
+	if err := m.Profile().SaveReceiptsCode(v); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
 // 获取银行卡
-func (s *memberService) Bankcards(ctx context.Context, memberId int64) (r []*member_service.SBankcard, err error) {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
+func (s *memberService) BankCards(ctx context.Context, id *proto.Int64) (*proto.BankCardListResponse, error) {
+	m := s.repo.CreateMember(&member.Member{Id: id.Value})
 	b := m.Profile().GetBank()
-	arr := make([]*member_service.SBankcard, 0)
-	arr = append(arr, &member_service.SBankcard{
-		ID:          -1,
+	arr := make([]*proto.SBankcard, 0)
+	arr = append(arr, &proto.SBankcard{
+		Id:          -1,
 		BankName:    b.BankName,
 		AccountName: b.AccountName,
 		Account:     b.Account,
 		Network:     b.Network,
 		State:       int32(b.State),
 	})
-	return arr, nil
+	return &proto.BankCardListResponse{
+		List: arr,
+	}, nil
 }
 
 // 保存银行卡
-func (s *memberService) SaveBankcard(ctx context.Context, memberId int64, card *member_service.SBankcard) (r *proto.Result, err error) {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
+func (s *memberService) SaveBankcard(ctx context.Context, r *proto.BankCardSaveRequest) (*proto.Result, error) {
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v = &member.BankInfo{
-		BankName:    card.BankName,
-		AccountName: card.AccountName,
-		Account:     card.Account,
-		Network:     card.Network,
-		State:       int(card.State),
+		BankName:    r.Card.BankName,
+		AccountName: r.Card.AccountName,
+		Account:     r.Card.Account,
+		Network:     r.Card.Network,
+		State:       int(r.Card.State),
 	}
-	if err = m.Profile().SaveBank(v); err != nil {
+	if err := m.Profile().SaveBank(v); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
 // 实名认证信息
-func (s *memberService) GetTrustInfo(ctx context.Context, memberId int64) (*member_service.STrustedInfo, error) {
+func (s *memberService) GetTrustInfo(ctx context.Context, i *proto.Int64) (*proto.STrustedInfo, error) {
 	t := member.TrustedInfo{}
-	m := s.repo.GetMember(memberId)
+	m := s.repo.GetMember(i.Value)
 	if m != nil {
 		t = m.Profile().GetTrustedInfo()
 	}
-	return &member_service.STrustedInfo{
+	return &proto.STrustedInfo{
 		RealName:         t.RealName,
 		CountryCode:      t.CountryCode,
 		CardType:         int32(t.CardType),
@@ -933,20 +945,20 @@ func (s *memberService) GetTrustInfo(ctx context.Context, memberId int64) (*memb
 }
 
 // 保存实名认证信息
-func (s *memberService) SubmitTrustInfo(ctx context.Context, memberId int64, info *member_service.STrustedInfo) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) SubmitTrustInfo(ctx context.Context, r *proto.SubmitTrustInfoRequest) (result *proto.Result, err error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
 		err = m.Profile().SaveTrustedInfo(&member.TrustedInfo{
-			MemberId:         memberId,
-			RealName:         info.RealName,
-			CountryCode:      info.CountryCode,
-			CardType:         int(info.CardType),
-			CardId:           info.CardId,
-			CardImage:        info.CardImage,
-			CardReverseImage: info.CardReverseImage,
-			TrustImage:       info.TrustImage,
+			MemberId:         r.MemberId,
+			RealName:         r.Info.RealName,
+			CountryCode:      r.Info.CountryCode,
+			CardType:         int(r.Info.CardType),
+			CardId:           r.Info.CardId,
+			CardImage:        r.Info.CardImage,
+			CardReverseImage: r.Info.CardReverseImage,
+			TrustImage:       r.Info.TrustImage,
 		})
 	}
 	if err != nil {
@@ -956,9 +968,9 @@ func (s *memberService) SubmitTrustInfo(ctx context.Context, memberId int64, inf
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (s *memberService) ReviewTrustedInfo(ctx context.Context, memberId int64, reviewPass bool, remark string) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
-	err = m.Profile().ReviewTrustedInfo(reviewPass, remark)
+func (s *memberService) ReviewTrustedInfo(ctx context.Context, r *proto.ReviewTrustInfoRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
+	err := m.Profile().ReviewTrustedInfo(r.ReviewPass, r.Remark)
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -978,19 +990,18 @@ func (s *memberService) PagedGoodsFav(memberId int64, begin, end int,
 }
 
 // 获取钱包账户分页记录
-func (s *memberService) PagingAccountLog(ctx context.Context, memberId int64, accountType int32,
-	params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
+func (s *memberService) PagingAccountLog(ctx context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {
 	var total int
 	var rows []map[string]interface{}
-	switch accountType {
+	switch r.AccountType {
 	case member.AccountIntegral:
-		total, rows = s.query.PagedIntegralAccountLog(memberId, params)
+		total, rows = s.query.PagedIntegralAccountLog(r.MemberId, r.Params.Begin, r.Params.Over, r.Params.SortBy)
 	case member.AccountBalance:
-		total, rows = s.query.PagedBalanceAccountLog(memberId, int(params.Begin), int(params.Over), "", "")
+		total, rows = s.query.PagedBalanceAccountLog(r.MemberId, int(r.Params.Begin), int(r.Params.Over), "", "")
 	case member.AccountWallet:
-		total, rows = s.query.PagedWalletAccountLog(memberId, int(params.Begin), int(params.Over), "", "")
+		total, rows = s.query.PagedWalletAccountLog(r.MemberId, int(r.Params.Begin), int(r.Params.Over), "", "")
 	}
-	rs := &ttype.SPagingResult_{
+	rs := &proto.SPagingResult{
 		ErrCode: 0,
 		ErrMsg:  "",
 		Count:   int32(total),
@@ -1025,36 +1036,35 @@ func (s *memberService) QueryWholesaleOrder(memberId int64, begin, size int, pag
 
 // 查询分页订单
 func (s *memberService) PagedTradeOrder(buyerId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*order_service.SComplexOrder) {
+	where, orderBy string) (int, []*proto.SComplexOrder) {
 	return s.orderQuery.PagedTradeOrderOfBuyer(buyerId, begin, size, pagination, where, orderBy)
 }
 
 /*********** 收货地址 ***********/
 
 // 获取会员的收货地址
-func (s *memberService) GetAddressList(ctx context.Context, memberId int64) ([]*member_service.SAddress, error) {
-	src := s.repo.GetDeliverAddress(memberId)
-	var arr []*member_service.SAddress
+func (s *memberService) GetAddressList(ctx context.Context, id *proto.Int64) (*proto.AddressListResponse, error) {
+	src := s.repo.GetDeliverAddress(id.Value)
+	var arr []*proto.SAddress
 	for _, v := range src {
-		arr = append(arr, parser.AddressDto(v))
+		arr = append(arr, s.parseAddressDto(v))
 	}
-	return arr, nil
+	return &proto.AddressListResponse{List: arr}, nil
 }
 
 //获取配送地址
-func (s *memberService) GetAddress(ctx context.Context, memberId int64, addrId int64) (
-	*member_service.SAddress, error) {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
+func (s *memberService) GetAddress(ctx context.Context, r *proto.GetAddressRequest) (*proto.SAddress, error) {
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	pro := m.Profile()
 	var addr member.IDeliverAddress
-	if addrId > 0 {
-		addr = pro.GetAddress(addrId)
+	if r.AddrId > 0 {
+		addr = pro.GetAddress(r.AddrId)
 	} else {
 		addr = pro.GetDefaultAddress()
 	}
 	if addr != nil {
 		v := addr.GetValue()
-		d := parser.AddressDto(&v)
+		d := s.parseAddressDto(&v)
 		d.Area = s.valRepo.GetAreaString(
 			v.Province, v.City, v.District)
 		return d, nil
@@ -1063,8 +1073,8 @@ func (s *memberService) GetAddress(ctx context.Context, memberId int64, addrId i
 }
 
 //保存配送地址
-func (s *memberService) SaveAddress(memberId int64, src *member_service.SAddress) (int64, error) {
-	e := parser.Address(src)
+func (s *memberService) SaveAddress(memberId int64, src *proto.SAddress) (int64, error) {
+	e := s.parseAddress(src)
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	var v member.IDeliverAddress
 	var err error
@@ -1134,23 +1144,23 @@ func (s *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
 }
 
 // 标志赋值, 如果flag小于零, 则异或运算
-func (s *memberService) GrantFlag(ctx context.Context, memberId int64, flag int32) (r *proto.Result, err error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) GrantFlag(ctx context.Context, r *proto.GrantFlagRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	if err := m.GrantFlag(int(flag)); err != nil {
+	if err := m.GrantFlag(int(r.Flag)); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
 // 获取会员汇总信息
-func (s *memberService) Complex(ctx context.Context, memberId int64) (*member_service.SComplexMember, error) {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) Complex(ctx context.Context, id *proto.Int64) (*proto.SComplexMember, error) {
+	m := s.repo.GetMember(id.Value)
 	if m != nil {
-		s := m.Complex()
-		return parser.ComplexMemberDto(s), nil
+		x := m.Complex()
+		return s.parseComplexMemberDto(x), nil
 	}
 	return nil, nil
 }
@@ -1175,84 +1185,79 @@ func (s *memberService) UnfreezesIntegral(memberId int64, title string, value in
 }
 
 // 充值,account为账户类型,kind为业务类型
-func (s *memberService) AccountCharge(ctx context.Context, memberId int64, account int32,
-	title string, amount int32, outerNo string, remark string) (*proto.Result, error) {
+func (s *memberService) AccountCharge(ctx context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
 	var err error
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	acc := m.GetAccount()
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(account, title, int(amount), outerNo, remark)
+		err = acc.Charge(r.Account, r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
 
 // 账户抵扣
-func (s *memberService) AccountDiscount(ctx context.Context, memberId int64, account int32, title string,
-	amount int32, outerNo string, remark string) (r *proto.Result, err error) {
-	m, err := s.getMember(memberId)
+func (s *memberService) AccountDiscount(ctx context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
+	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Discount(int(account), title, int(amount), outerNo, remark)
+		err = acc.Discount(int(r.Account), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
 
 // 账户消耗
-func (s *memberService) AccountConsume(ctx context.Context, memberId int64, account int32, title string,
-	amount int32, outerNo string, remark string) (r *proto.Result, err error) {
-	m, err := s.getMember(memberId)
+func (s *memberService) AccountConsume(ctx context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
+	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Consume(int(account), title, int(amount), outerNo, remark)
+		err = acc.Consume(int(r.Account), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
 
 // 账户消耗
-func (s *memberService) AccountRefund(ctx context.Context, memberId int64, account int32, title string,
-	amount int32, outerNo string, remark string) (r *proto.Result, err error) {
-	m, err := s.getMember(memberId)
+func (s *memberService) AccountRefund(ctx context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
+	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(int(account), title, int(amount), outerNo, remark)
+		err = acc.Refund(int(r.Account), r.Title, int(r.Account), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
 
 // 调整账户
-func (s *memberService) AccountAdjust(ctx context.Context, memberId int64, account int32,
-	amount int32, relateUser int64, remark string) (r *proto.Result, err error) {
-	m, err := s.getMember(memberId)
+func (s *memberService) AccountAdjust(ctx context.Context, r *proto.AccountAdjustRequest) (*proto.Result, error) {
+	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		tit := "[KF]系统冲正"
-		if amount > 0 {
+		if r.Value > 0 {
 			tit = "[KF]系统充值"
 		}
 		acc := m.GetAccount()
-		err = acc.Adjust(int(account), tit, int(amount), remark, relateUser)
+		err = acc.Adjust(int(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
 	}
 	return s.result(err), nil
 }
 
 // !银行四要素认证
-func (s *memberService) B4EAuth(ctx context.Context, memberId int64, action string, data map[string]string) (r *proto.Result, err error) {
+func (s *memberService) B4EAuth(ctx context.Context, r *proto.B4EAuthRequest) (*proto.Result, error) {
 	mod := module.Get(module.B4E).(*module.Bank4E)
-	if action == "get" {
-		data := mod.GetBasicInfo(memberId)
+	if r.Action == "get" {
+		data := mod.GetBasicInfo(r.MemberId)
 		d, err := json.Marshal(data)
 		if err != nil {
 			return s.error(err), nil
 		}
 		return s.success(map[string]string{"data": string(d)}), nil
 	}
-	if action == "update" {
-		err := mod.UpdateInfo(memberId,
-			data["real_name"],
-			data["id_card"],
-			data["phone"],
-			data["bank_account"])
+	if r.Action == "update" {
+		err := mod.UpdateInfo(r.MemberId,
+			r.Data["real_name"],
+			r.Data["id_card"],
+			r.Data["phone"],
+			r.Data["bank_account"])
 		return s.result(err), nil
 	}
 	return s.error(errors.New("未知操作")), nil
@@ -1486,4 +1491,187 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 		return member.ErrNoSuchMember
 	}
 	return m.Profile().ChangePhone(phone)
+}
+
+func (s *memberService) parseLevelDto(src *member.Level) *proto.SMemberLevel {
+	return &proto.SMemberLevel{
+		ID:            int32(src.ID),
+		Name:          src.Name,
+		RequireExp:    int32(src.RequireExp),
+		ProgramSignal: src.ProgramSignal,
+		Enabled:       int32(src.Enabled),
+		IsOfficial:    int32(src.IsOfficial),
+	}
+}
+
+func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
+	return &proto.SMember{
+		Id:             src.Id,
+		User:           src.User,
+		Code:           src.Code,
+		Pwd:            src.Pwd,
+		TradePwd:       src.TradePwd,
+		Exp:            int64(src.Exp),
+		Level:          int32(src.Level),
+		PremiumUser:    int32(src.PremiumUser),
+		PremiumExpires: src.PremiumExpires,
+		InviteCode:     src.InviteCode,
+		RegIp:          src.RegIp,
+		RegFrom:        src.RegFrom,
+		State:          int32(src.State),
+		Flag:           int32(src.Flag),
+		Avatar:         src.Avatar,
+		Phone:          src.Phone,
+		Email:          src.Email,
+		Name:           src.Name,
+		RealName:       src.RealName,
+		DynamicToken:   src.DynamicToken,
+		RegTime:        src.RegTime,
+		LastLoginTime:  src.LastLoginTime,
+	}
+}
+
+func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile {
+	return &proto.SProfile{
+		MemberId:   src.MemberId,
+		Name:       src.Name,
+		Avatar:     src.Avatar,
+		Sex:        src.Sex,
+		BirthDay:   src.BirthDay,
+		Phone:      src.Phone,
+		Address:    src.Address,
+		Im:         src.Im,
+		Email:      src.Email,
+		Province:   src.Province,
+		City:       src.City,
+		District:   src.District,
+		Remark:     src.Remark,
+		Ext1:       src.Ext1,
+		Ext2:       src.Ext2,
+		Ext3:       src.Ext3,
+		Ext4:       src.Ext4,
+		Ext5:       src.Ext5,
+		Ext6:       src.Ext6,
+		UpdateTime: src.UpdateTime,
+	}
+}
+
+func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
+	return &proto.SComplexMember{
+		Name:           src.Name,
+		Avatar:         src.Avatar,
+		Exp:            int32(src.Exp),
+		Level:          int32(src.Level),
+		LevelName:      src.LevelName,
+		PremiumUser:    int32(src.PremiumUser),
+		InviteCode:     src.InviteCode,
+		TrustAuthState: int32(src.TrustAuthState),
+		TradePwdHasSet: src.TradePwdHasSet,
+		UpdateTime:     src.UpdateTime,
+	}
+}
+
+func (s *memberService) parseAddressDto(src *member.Address) *proto.SAddress {
+	return &proto.SAddress{
+		ID:             src.ID,
+		ConsigneeName:  src.ConsigneeName,
+		ConsigneePhone: src.ConsigneePhone,
+		Province:       src.Province,
+		City:           src.City,
+		District:       src.District,
+		Area:           src.Area,
+		DetailAddress:  src.DetailAddress,
+		IsDefault:      int32(src.IsDefault),
+	}
+}
+func round(f float32, n int) float64 {
+	return math.Round(float64(f), n)
+}
+func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
+	return &proto.SAccount{
+		MemberId:          src.MemberId,
+		Integral:          int64(src.Integral),
+		FreezeIntegral:    int64(src.FreezeIntegral),
+		Balance:           round(src.Balance, 2),
+		FreezeBalance:     round(src.FreezeBalance, 2),
+		ExpiredBalance:    round(src.ExpiredBalance, 2),
+		WalletBalance:     round(src.WalletBalance, 2),
+		FreezeWallet:      round(src.FreezeWallet, 2),
+		ExpiredWallet:     round(src.ExpiredWallet, 2),
+		TotalWalletAmount: round(src.TotalWalletAmount, 2),
+		FlowBalance:       round(src.FlowBalance, 2),
+		GrowBalance:       round(src.GrowBalance, 2),
+		GrowAmount:        round(src.GrowAmount, 2),
+		GrowEarnings:      round(src.GrowEarnings, 2),
+		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
+		TotalExpense:      round(src.TotalExpense, 2),
+		TotalCharge:       round(src.TotalCharge, 2),
+		TotalPay:          round(src.TotalPay, 2),
+		PriorityPay:       int64(src.PriorityPay),
+		UpdateTime:        src.UpdateTime,
+	}
+}
+
+func (s *memberService) parseMember(src *proto.SMember) *member.Member {
+	return &member.Member{
+		Id:             int64(src.Id),
+		Code:           src.Code,
+		Name:           src.Name,
+		RealName:       src.RealName,
+		User:           src.User,
+		Pwd:            src.Pwd,
+		Avatar:         src.Avatar,
+		TradePwd:       src.TradePwd,
+		Exp:            int(src.Exp),
+		Level:          int(src.Level),
+		InviteCode:     src.InviteCode,
+		PremiumUser:    int(src.PremiumUser),
+		PremiumExpires: src.PremiumExpires,
+		Phone:          src.Phone,
+		Email:          src.Email,
+		RegFrom:        src.RegFrom,
+		RegIp:          src.RegIp,
+		Flag:           int(src.Flag),
+		State:          int(src.State),
+		DynamicToken:   src.DynamicToken,
+	}
+}
+
+func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile {
+	return &member.Profile{
+		MemberId:   src.MemberId,
+		Name:       src.Name,
+		Avatar:     src.Avatar,
+		Sex:        src.Sex,
+		BirthDay:   src.BirthDay,
+		Phone:      src.Phone,
+		Address:    src.Address,
+		Im:         src.Im,
+		Email:      src.Email,
+		Province:   src.Province,
+		City:       src.City,
+		District:   src.District,
+		Remark:     src.Remark,
+		Ext1:       src.Ext1,
+		Ext2:       src.Ext2,
+		Ext3:       src.Ext3,
+		Ext4:       src.Ext4,
+		Ext5:       src.Ext5,
+		Ext6:       src.Ext6,
+		UpdateTime: src.UpdateTime,
+	}
+}
+
+func (s *memberService) parseAddress(src *proto.SAddress) *member.Address {
+	return &member.Address{
+		ID:             src.ID,
+		ConsigneeName:  src.ConsigneeName,
+		ConsigneePhone: src.ConsigneePhone,
+		Province:       src.Province,
+		City:           src.City,
+		District:       src.District,
+		Area:           src.Area,
+		DetailAddress:  src.DetailAddress,
+		IsDefault:      int(src.IsDefault),
+	}
 }

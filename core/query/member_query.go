@@ -15,7 +15,6 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 	"log"
 	"strconv"
 	"strings"
@@ -70,23 +69,25 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 	return num, rows
 }
 
+
+
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, params *ttype.SPagingParams) (num int, rows []map[string]interface{}) {
+func (m *MemberQuery) PagedIntegralAccountLog(memberId int64,begin,over int32,sortBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_integral_log bi
 	 	INNER JOIN mm_member m ON m.id = bi.member_id
 			WHERE bi.member_id= $1`), &num, memberId)
 	if num > 0 {
 		orderBy := ""
-		if params.SortBy != "" {
-			orderBy = "ORDER BY " + params.SortBy + ",bi.id DESC"
+		if sortBy != "" {
+			orderBy = "ORDER BY " + sortBy + ",bi.id DESC"
 		}
 		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_integral_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id= $1 %s LIMIT $3 OFFSET $2`, orderBy)
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
-		}, memberId, params.Begin, params.Over-params.Begin)
+		}, memberId, begin, over-begin)
 		if err != nil {
 			log.Println("[ Go2o][ Query]: query error ", err.Error())
 		}
