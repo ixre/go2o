@@ -4,7 +4,7 @@ go 1.15
 
 replace github.com/ixre/gof => ../github.com/ixre/gof
 
-//replace github.com/ixre/tto => ../github.com/ixre/tto
+replace github.com/ixre/tto => ../github.com/ixre/tto
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
@@ -30,7 +30,7 @@ require (
 	github.com/gomodule/redigo v1.8.2
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v0.0.0-00010101000000-000000000000
+	github.com/ixre/gof v1.9.9
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/nats-io/nats.go v1.10.0
