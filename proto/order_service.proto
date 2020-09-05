@@ -1,74 +1,113 @@
 syntax = "proto3";
 option go_package = "../core/service/proto;proto";
+import "ttype.proto";
 
+message WsCartRequest {
+    sint64 memberId = 1;
+    string action = 2;
+    map<string, string> data = 3;
+}
+message NormalCartRequest {
+    sint64 memberId = 1;
+    string action = 2;
+    map<string, string> data = 3;
+}
 
+message SubmitOrderRequest {
+    sint64 buyerId = 1;
+    sint32 cartType = 2;
+    map<string, string> data = 3;
+}
+
+message GetOrderRequest {
+    string order_no = 1;
+    bool sub_order = 2;
+}
+
+message GetOrderItemsRequest {
+    string order_no = 1;
+    bool sub_order = 2;
+}
+message TradeOrderSubmitRequest {
+    SComplexOrder o = 1;
+    double rate = 2;
+}
+
+message TradeOrderTicketRequest {
+    sint64 orderId = 1;
+    string img = 2;
+}
+
+message ComplexItemsResponse {
+    repeated SComplexItem Items = 1;
+}
 
 // 销售服务
 service OrderService {
     // 批发购物车接口
-    rpc WholesaleCartV1(1:sint64 memberId,2:string action,3:map<string,string> data)returns(Result)
+    rpc WholesaleCartV1 (WsCartRequest) returns (Result)
     // 普通购物车接口
-    rpc NormalCartV1(1:sint64 memberId,2:string action,3:map<string,string> data)returns(Result)
+    rpc NormalCartV1 (NormalCartRequest) returns (Result)
     // 提交订单
-    map<string,string> SubmitOrderV1(1:sint64 buyerId,2:sint32 cartType,3:map<string,string> data)
+    rpc SubmitOrderV1 (SubmitOrderRequest) returns (StringMap)
     // 获取订单信息
-    rpc GetOrder(1:string order_no,2:bool sub_order)returns(SComplexOrder)
+    rpc GetOrder (GetOrderRequest) returns (SComplexOrder)
     // 获取订单和商品项信息
-    rpc GetOrderAndItems(1:string order_no,2:bool sub_order)returns(SComplexOrder)
-    // 获取子订单
-    rpc GetSubOrder(1:sint64 id)returns(SComplexOrder)
-    // 根据订单号获取子订单
-    rpc GetSubOrderByNo(1:string orderNo)returns(SComplexOrder)
-    // 获取订单商品项
-    list<SComplexItem> GetSubOrderItems(1:sint64 subOrderId)
+    rpc GetOrderAndItems (GetOrderItemsRequest) returns (SComplexOrder)
+    // 获取子订单,orderId
+    rpc GetSubOrder (sint64) returns (SComplexOrder)
+    // 根据订单号获取子订单,orderNo
+    rpc GetSubOrderByNo (string) returns (SComplexOrder)
+    // 获取订单商品项,subOrderId
+    rpc GetSubOrderItems (sint64) returns (ComplexItemsResponse)
 
     // 提交交易订单
-    rpc SubmitTradeOrder(1:SComplexOrder o,2:double rate)returns(Result)
-    // 交易单现金支付
-    rpc TradeOrderCashPay(1:sint64 orderId)returns(Result)
+    rpc SubmitTradeOrder (TradeOrderSubmitRequest) returns (Result)
+    // 交易单现金支付,orderId
+    rpc TradeOrderCashPay (sint64) returns (Result)
     // 上传交易单发票
-    rpc TradeOrderUpdateTicket(1:sint64 orderId,2:string img)returns(Result)
+    rpc TradeOrderUpdateTicket (TradeOrderTicketRequest) returns (Result)
 }
 
-
 /** 订单状态 */
-enum EOrderState{
-	/****** 在履行前,订单可以取消申请退款  ******/
-	/** 等待支付 */
-	StatAwaitingPayment = 1
-	/** 等待确认 */
-	StatAwaitingConfirm = 2
-	/** 等待备货 */
-	StatAwaitingPickup = 3
-	/** 等待发货 */
-	StatAwaitingShipment = 4
+enum EOrderState {
+    _ = 0;
+    /****** 在履行前,订单可以取消申请退款  ******/
+    /** 等待支付 */
+    StatAwaitingPayment = 1;
+    /** 等待确认 */
+    StatAwaitingConfirm = 2;
+    /** 等待备货 */
+    StatAwaitingPickup = 3;
+    /** 等待发货 */
+    StatAwaitingShipment = 4;
 
-	/****** 订单取消 ******/
+    /****** 订单取消 ******/
 
-	/** 系统取消 */
-	StatCancelled = 11
-	/** 买家申请取消,等待卖家确认 */
-	StatAwaitingCancel = 12
-	/** 卖家谢绝订单,由于无货等原因 */
-	StatDeclined = 13
-	/** 已退款,完成取消 */
-	StatRefunded = 14
+    /** 系统取消 */
+    StatCancelled = 11;
+    /** 买家申请取消,等待卖家确认 */
+    StatAwaitingCancel = 12;
+    /** 卖家谢绝订单,由于无货等原因 */
+    StatDeclined = 13;
+    /** 已退款,完成取消 */
+    StatRefunded = 14;
 
-	/****** 履行后订单只能退货或换货 ******/
+    /****** 履行后订单只能退货或换货 ******/
 
-	/** 部分发货(将订单商品分多个包裹发货) */
-	PartiallyShipped = 5
-	/** 完成发货 */
-	StatShipped = 6
-	/** 订单已拆分 */
-	StatBreak = 7
-	/** 订单完成 */
-	StatCompleted = 8
+    /** 部分发货(将订单商品分多个包裹发货) */
+    PartiallyShipped = 5;
+    /** 完成发货 */
+    StatShipped = 6;
+    /** 订单已拆分 */
+    StatBreak = 7;
+    /** 订单完成 */
+    StatCompleted = 8;
 
-	/****** 售后状态 ******/
+    /****** 售后状态 ******/
 
-	/** 已退货 */
-	StatGoodsRefunded = 15
+    /** 已退货 */
+    StatGoodsRefunded = 15;
 }
 
 // 订单项
@@ -83,7 +122,7 @@ message SComplexItem {
     double Amount = 8;
     double FinalAmount = 9;
     sint32 IsShipped = 10;
-    11: map<string,string> Data
+    map<string, string> Data = 11;
 }
 
 // 子订单
@@ -111,7 +150,7 @@ message SComplexOrder {
     sint64 UpdateTime = 21;
     repeated SComplexItem Items = 22;
     // 扩展信息
-    23: map<string,string> Data
+    map<string, string> Data = 23;
     // 是否为子订单
     bool SubOrder = 24;
 }
