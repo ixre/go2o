@@ -1,19 +1,19 @@
 syntax = "proto3";
 option go_package = "../core/service/proto;proto";
 
-
+import "ttype.proto";
 // 支付服务
 service PaymentService{
     // 创建支付单并提交
-    rpc SubmitPaymentOrder(1:SPaymentOrder o)returns(Result)
-    // 根据支付单号获取支付单
-    rpc GetPaymentOrder(1:string orderNo)returns(SPaymentOrder)
-    // 根据交易号获取支付单编号
-    rpc GetPaymentOrderId(1:string tradeNo)returns(sint32)
+    rpc SubmitPaymentOrder(SPaymentOrder)returns(Result)
+    // 根据支付单号获取支付单,orderNo
+    rpc GetPaymentOrder(string )returns(SPaymentOrder)
+    // 根据交易号获取支付单编号,tradeNo
+    rpc GetPaymentOrderId(string )returns(sint32)
     // 根据编号获取支付单
-    rpc GetPaymentOrderById(1:sint32 id)returns(SPaymentOrder)
+    rpc GetPaymentOrderById(sint32)returns(SPaymentOrder)
     // 调整支付单金额
-    rpc AdjustOrder(1:string paymentNo, 2:double amount)returns(Result)
+    rpc AdjustOrder(AdjustOrderRequest)returns(Result)
     // 余额抵扣
     rpc DiscountByBalance(1:sint32 orderId,2:string remark )returns(Result)
    // 积分抵扣支付单
@@ -65,7 +65,9 @@ enum EPayMethod{
     /** 系统支付通道 */
     SystemPay = 512
 }
+message AdjustOrderRequest{
 
+}
 /** 支付单 */
 message SPaymentOrder{
     /** 交易号 */

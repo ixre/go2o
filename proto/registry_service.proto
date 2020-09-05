@@ -1,26 +1,34 @@
 syntax = "proto3";
 option go_package = "../core/service/proto;proto";
 
-
+import "ttype.proto";
 
 // 基础服务
 service RegistryService{
-   /** 获取注册表键值 */
-   rpc GetRegistry(1:string key)returns(string)
-   /** 获取键值存储数据字典 */
-   map<string,string> GetRegistries(1:list<string> keys)
-   /** 按键前缀获取键数据 */
-   map<string,string> FindRegistries(1:string prefix)
+   /** 获取注册表键值,key */
+   rpc GetRegistry(string)returns(string)
+   /** 获取键值存储数据字典,keys */
+   rpc GetRegistries(StringArray)returns(StringMap)
+   /** 按键前缀获取键数据,prefix*/
+   rpc FindRegistries(string)returns(StringMap)
    /** 更新注册表键值 */
-   rpc UpdateRegistry(1:map<string,string> registries)returns(Result)
-   /** 搜索注册表 */
-   list<SRegistry> SearchRegistry(1:string key)
+   rpc UpdateRegistryValues(StringMap)returns(Result)
+   /** 搜索注册表,keyword */
+   rpc SearchRegistry(string)returns(RegistriesResponse)
    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
-   rpc CreateUserRegistry(1:string key,2:string defaultValue,3:string description)returns(Result)
-   /** 获取键值存储数据 */
-   list<string> GetRegistryV1(1:list<string> keys)
+   rpc CreateUserRegistry(UserRegistryCreateRequest)returns(Result)
+   /** 获取键值存储数据,keys */
+   rpc GetRegistryV1(StringArray)returns (StringArray)
 }
 
+message RegistriesResponse{
+    repeated SRegistry Registries = 1;
+}
+message UserRegistryCreateRequest{
+    string key = 1;
+    string defaultValue = 2;
+    string description = 3;
+}
 /** 注册表 */
 message SRegistry {
     /** 键 */

@@ -5,6 +5,12 @@ syntax = "proto3";
 option go_package = "../core/service/proto;proto";
 
 message Empty{}
+message StringMap{
+    map<string,string> Data = 1;
+}
+message StringArray{
+    repeated string Data = 1;
+}
 //传输结果对象
 message Result {
     /* 状态码,如为0表示成功 */

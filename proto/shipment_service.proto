@@ -5,11 +5,19 @@ option go_package = "../core/service/proto;proto";
 // 发货服务
 service ShipmentService{
     /** 物流追踪 */
-    rpc GetLogisticFlowTrack(1:string shipperCode,2:string logisticCode,3:bool invert)returns(SShipOrderTrack)
+    rpc GetLogisticFlowTrack(LogisticFlowTrackRequest)returns(SShipOrderTrack)
     /** 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列 */
-    rpc ShipOrderLogisticTrack(1:sint64 shipOrderId,2:bool invert)returns(SShipOrderTrack)
+    rpc ShipOrderLogisticTrack(OrderLogisticTrackRequest)returns(SShipOrderTrack)
 }
-
+message LogisticFlowTrackRequest{
+    string shipperCode = 1;
+    string logisticCode = 2;
+    bool invert = 3;
+}
+message OrderLogisticTrackRequest{
+    sint64 shipOrderId = 1;
+    bool invert = 2;
+}
 // 发货单追踪
 message SShipOrderTrack {
     // 返回状态码
