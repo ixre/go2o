@@ -20,16 +20,13 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
-	"go2o/core/service/thrift/auto_gen/rpc/merchant_service"
-	"go2o/core/service/thrift/auto_gen/rpc/order_service"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
-	"go2o/core/service/thrift/parser"
+	"go2o/core/service/proto"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var _ merchant_service.MerchantService = new(merchantService)
+var _ proto.MerchantServiceServer = new(merchantService)
 
 type merchantService struct {
 	_mchRepo    merchant.IMerchantRepo
@@ -39,13 +36,18 @@ type merchantService struct {
 	serviceUtil
 }
 
-func (m *merchantService) CreateMerchant(ctx context.Context, mch *merchant_service.SMerchantPack, relMemberId int64) (r *proto.Result, err error) {
+func (m *merchantService) GetAllTradeConf(ctx context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) CreateMerchant(ctx context.Context, r *proto.MerchantCreateRequest) (*proto.Result, error) {
+	mch := r.Mch
 	v := &merchant.Merchant{
 		LoginUser:   mch.LoginUser,
 		LoginPwd:    domain.MerchantSha1Pwd(mch.LoginPwd),
 		Name:        mch.Name,
-		SelfSales:   mch.SelfSales,
-		MemberId:    relMemberId,
+		SelfSales:   int16(mch.SelfSales),
+		MemberId:    r.RelMemberId,
 		Level:       0,
 		Logo:        "",
 		CompanyName: "",
@@ -54,7 +56,7 @@ func (m *merchantService) CreateMerchant(ctx context.Context, mch *merchant_serv
 		District:    0,
 	}
 	im := m._mchRepo.CreateMerchant(v)
-	err = im.SetValue(v)
+	err := im.SetValue(v)
 	if err == nil {
 		_, err = im.Save()
 		if err == nil {
@@ -79,36 +81,25 @@ func (m *merchantService) CreateMerchant(ctx context.Context, mch *merchant_serv
 	return m.result(err), nil
 }
 
-func (m *merchantService) GetAllTradeConf(ctx context.Context, mchId int32) (r []*merchant_service.STradeConf, err error) {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	var arr []*merchant_service.STradeConf
+func (m *merchantService) GetTradeConf(ctx context.Context, r *proto.TradeConfRequest) (*proto.STradeConf, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch != nil {
-		for _, v := range mch.ConfManager().GetAllTradeConf() {
-			arr = append(arr, parser.TradeConfDto(v))
-		}
-	}
-	return arr, nil
-}
-
-func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeType int32) (r *merchant_service.STradeConf, err error) {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		v := mch.ConfManager().GetTradeConf(int(tradeType))
+		v := mch.ConfManager().GetTradeConf(int(r.TradeType))
 		if v != nil {
-			return parser.TradeConfDto(v), nil
+			return m.parseTradeConfDto(v), nil
 		}
 	}
 	return nil, nil
 }
 
-func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []*merchant_service.STradeConf) (r *proto.Result, err error) {
-	mch := m._mchRepo.GetMerchant(int(mchId))
+func (m *merchantService) SaveTradeConf(ctx context.Context, r *proto.TradeConfSaveRequest) (rsp *proto.Result, err error) {
+	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
 		var dst []*merchant.TradeConf
-		for _, v := range arr {
-			dst = append(dst, parser.TradeConf(v))
+		for _, v := range r.Arr {
+			dst = append(dst, m.parseTradeConf(v))
 		}
 		err = mch.ConfManager().SaveTradeConf(dst)
 	}
@@ -269,9 +260,9 @@ func (m *merchantService) testLogin(user string, pwd string) (id int, errCode in
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(ctx context.Context, user, pwd string) (r *proto.Result, err error) {
-	user = strings.ToLower(strings.TrimSpace(user))
-	pwd = strings.TrimSpace(pwd)
+func (m *merchantService) CheckLogin(ctx context.Context, u *proto.MchUserPwd) (*proto.Result, error) {
+	user := strings.ToLower(strings.TrimSpace(u.User))
+	pwd := strings.TrimSpace(u.Pwd)
 	id, code, err := m.testLogin(user, pwd)
 	if err != nil {
 		return m.errorCodeResult(int(code), err), nil
@@ -306,11 +297,11 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) GetMerchant(ctx context.Context, mchId int32) (*merchant_service.SMerchant, error) {
-	mch := m._mchRepo.GetMerchant(int(mchId))
+func (m *merchantService) GetMerchant(ctx context.Context, id *proto.Int64) (*proto.SMerchant, error) {
+	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
 		c := mch.Complex()
-		return parser.MerchantDto(c), nil
+		return m.parseMerchantDto(c), nil
 	}
 	return nil, nil
 }
@@ -367,8 +358,8 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *proto.Result, err error) {
-	mch := m._mchRepo.GetMerchant(int(mchId))
+func (m *merchantService) Stat(ctx context.Context, mchId *proto.Int64) (r *proto.Result, err error) {
+	mch := m._mchRepo.GetMerchant(int(mchId.Value))
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
@@ -558,7 +549,7 @@ func (m *merchantService) PagedWholesaleOrderOfVendor(vendorId int32, begin, siz
 
 // 查询分页订单
 func (m *merchantService) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
-	where, orderBy string) (int32, []*order_service.SComplexOrder) {
+	where, orderBy string) (int32, []*proto.SComplexOrder) {
 	return m._orderQuery.PagedTradeOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
@@ -727,14 +718,15 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 // 获取
 
 // 同步批发商品
-func (m *merchantService) SyncWholesaleItem(ctx context.Context, vendorId int32) (map[string]int32, error) {
-	mch := m._mchRepo.GetMerchant(int(vendorId))
-	if mch != nil {
-		return mch.Wholesaler().SyncItems(true), nil
-	}
-	return map[string]int32{
+func (m *merchantService) SyncWholesaleItem(ctx context.Context, vendorId *proto.Int32) (*proto.SyncWSItemsResponse, error) {
+	mch := m._mchRepo.GetMerchant(int(vendorId.Value))
+	var mp = map[string]int32{
 		"add": 0, "del": 0,
-	}, nil
+	}
+	if mch != nil {
+		mp = mch.Wholesaler().SyncItems(true)
+	}
+	return &proto.SyncWSItemsResponse{Value: mp}, nil
 }
 
 func (m *merchantService) GetMchBuyerGroup_(mchId, id int32) *merchant.MchBuyerGroup {
@@ -782,4 +774,47 @@ func (m *merchantService) SaveGroupRebateRate(mchId, groupId int32,
 		return merchant.ErrNoSuchMerchant
 	}
 	return mch.Wholesaler().SaveGroupRebateRate(groupId, arr)
+}
+
+func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.SMerchant {
+	return &proto.SMerchant{
+		Id:            src.Id,
+		MemberId:      src.MemberId,
+		LoginUser:     src.Usr,
+		LoginPwd:      src.Pwd,
+		Name:          src.Name,
+		SelfSales:     int32(src.SelfSales),
+		Level:         src.Level,
+		Logo:          src.Logo,
+		CompanyName:   src.CompanyName,
+		Province:      src.Province,
+		City:          src.City,
+		District:      src.District,
+		Enabled:       src.Enabled,
+		LastLoginTime: int32(src.LastLoginTime),
+	}
+}
+
+func (m *merchantService) parseTradeConf(conf *proto.STradeConf) *merchant.TradeConf {
+	return &merchant.TradeConf{
+		//MchId:       conf.MchId,
+		//TradeType:   int(conf.TradeType),
+		//PlanId:      conf.PlanId,
+		//Flag:        int(conf.Flag),
+		//AmountBasis: int(conf.AmountBasis),
+		//TradeFee:    int(conf.TradeFee),
+		//TradeRate:   int(conf.TradeRate),
+	}
+}
+
+func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STradeConf {
+	return &proto.STradeConf{
+		//MchId:       conf.MchId,
+		//TradeType:   int32(conf.TradeType),
+		//PlanId:      conf.PlanId,
+		//Flag:        int32(conf.Flag),
+		//AmountBasis: int32(conf.AmountBasis),
+		//TradeFee:    int32(conf.TradeFee),
+		//TradeRate:   int32(conf.TradeRate),
+	}
 }

@@ -984,7 +984,7 @@ func (s *memberService) PagingAccountLog(ctx context.Context, memberId int64, ac
 	var rows []map[string]interface{}
 	switch accountType {
 	case member.AccountIntegral:
-		total, rows = s.query.PagedIntegralAccountLog(memberId, params)
+		total, rows = s.query.PagedIntegralAccountLog(memberId, params.Begin,params.Over,params.SortBy)
 	case member.AccountBalance:
 		total, rows = s.query.PagedBalanceAccountLog(memberId, int(params.Begin), int(params.Over), "", "")
 	case member.AccountWallet:
@@ -1026,7 +1026,7 @@ func (s *memberService) QueryWholesaleOrder(memberId int64, begin, size int, pag
 // 查询分页订单
 func (s *memberService) PagedTradeOrder(buyerId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*order_service.SComplexOrder) {
-	return s.orderQuery.PagedTradeOrderOfBuyer(buyerId, begin, size, pagination, where, orderBy)
+	return s.orderQuery.PagedTradeOrderOfBuyerThrift(buyerId, begin, size, pagination, where, orderBy)
 }
 
 /*********** 收货地址 ***********/

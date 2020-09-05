@@ -19,6 +19,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
 	"go2o/core/module/bank"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/foundation_service"
 	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 )
@@ -157,7 +158,12 @@ func (s *foundationService) FlushSuperPwd(ctx context.Context, user string, pwd 
 //   - -2. 已经注册
 func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_service.SSsoApp) (r string, err error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
-	token, err := sso.Register(app)
+	token, err := sso.Register(&proto.SSsoApp{
+		ID:                   app.ID,
+		Name:                 app.Name,
+		ApiUrl:               app.ApiUrl,
+		Token:                app.Token,
+	})
 	if err == nil {
 		return "1:" + token, nil
 	}
@@ -167,7 +173,13 @@ func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_ser
 // 获取应用信息
 func (s *foundationService) GetApp(ctx context.Context, name string) (r *foundation_service.SSsoApp, err error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
-	return sso.Get(name), nil
+	app := sso.Get(name)
+	return  &foundation_service.SSsoApp{
+		ID:     app.ID,
+		Name:   app.Name,
+		ApiUrl: app.ApiUrl,
+		Token:  app.Token,
+	}, nil
 }
 
 // 获取单点登录应用

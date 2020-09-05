@@ -63,16 +63,16 @@ message MerchantCreateRequest {
 }
 
 message MchUserPwd {
-    string usr = 1;
-    string oriPwd = 2;
+    string user = 1;
+    string pwd = 2;
 }
 
 message SyncWSItemsResponse {
-    map<string, sint32> Result = 1;
+    map<string, sint32> Value = 1;
 }
 
 message STradeConfListResponse {
-    repeated STradeConf List = 1;
+    repeated STradeConf Value = 1;
 }
 
 message TradeConfRequest {
