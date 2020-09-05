@@ -88,7 +88,7 @@ func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId int32) (*sho
 }
 
 // 打开或关闭商店
-func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (*ttype.Result_, error) {
+func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (*proto.Result, error) {
 	var err error
 	sp := si.repo.GetShop(int(shopId))
 	if sp == nil {
@@ -104,7 +104,7 @@ func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, 
 }
 
 // 设置商店是否营业
-func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, reason string) (*ttype.Result_, error) {
+func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, reason string) (*proto.Result, error) {
 	var err error
 	sp := si.repo.GetShop(int(shopId))
 	if sp == nil {

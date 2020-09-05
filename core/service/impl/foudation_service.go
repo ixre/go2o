@@ -19,11 +19,10 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
 	"go2o/core/module/bank"
-	"go2o/core/service/thrift/auto_gen/rpc/foundation_service"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
+	"go2o/core/service/proto"
 )
 
-var _ foundation_service.FoundationService = new(foundationService)
+var _ proto.FoundationServiceServer = new(foundationService)
 
 // 基础服务
 type foundationService struct {
@@ -31,6 +30,32 @@ type foundationService struct {
 	registryRepo registry.IRegistryRepo
 	notifyRepo   notify.INotifyRepo
 	serviceUtil
+}
+
+
+
+
+
+
+
+func (s *foundationService) SuperValidate(c context2.Context, pwd *proto.UserPwd) (*proto.Bool, error) {
+	panic("implement me")
+}
+
+func (s *foundationService) FlushSuperPwd(c context2.Context, pwd *proto.UserPwd) (*proto.Empty, error) {
+	panic("implement me")
+}
+
+func (s *foundationService) GetSyncLoginUrl(c context2.Context, s2 *proto.String) (*proto.String, error) {
+	panic("implement me")
+}
+
+func (s *foundationService) GetAreaNames(c context2.Context, request *proto.GetAreaNamesRequest) (*proto.StringListResponse, error) {
+	panic("implement me")
+}
+
+func (s *foundationService) GetChildAreas(c context2.Context, i *proto.Int32) (*proto.AreaListResponse, error) {
+	panic("implement me")
 }
 
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
@@ -51,36 +76,37 @@ func (s *foundationService) GetValue(ctx context.Context, key string) (r string,
 }
 
 // 设置键值
-func (s *foundationService) SetValue(ctx context.Context, key string, value string) (r *ttype.Result_, err error) {
-	err = s._rep.SetValue(key, value)
+func (s *foundationService) SetValue(ctx context.Context, pair *proto.Pair) (*proto.Result, error) {
+	err := s._rep.SetValue(pair.Key, pair.Value)
 	return s.result(err), nil
 }
 
 // 保存短信API凭据
-func (s *foundationService) SaveSmsApi(ctx context.Context, provider string, api *foundation_service.SSmsApi) (r *ttype.Result_, err error) {
+func (s *foundationService) SaveSmsApi(ctx context.Context,r *proto.SmsApiSaveRequest) (*proto.Result, error) {
 	manager := s.notifyRepo.Manager()
+	a := r.Api
 	perm := &notify.SmsApiPerm{
-		Key:         api.Key,
-		Secret:      api.Secret,
-		ApiUrl:      api.ApiUrl,
-		Params:      api.Params,
-		Method:      api.Method,
-		Charset:     api.Charset,
-		Signature:   api.Signature,
-		SuccessChar: api.SuccessChar,
+		Key:         a.Key,
+		Secret:      a.Secret,
+		ApiUrl:      a.ApiUrl,
+		Params:      a.Params,
+		Method:      a.Method,
+		Charset:     a.Charset,
+		Signature:   a.Signature,
+		SuccessChar: a.SuccessChar,
 	}
-	if err := manager.SaveSmsApiPerm(provider, perm); err != nil {
+	if err := manager.SaveSmsApiPerm(r.Provider, perm); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
 // 获取短信API凭据, @provider 短信服务商, 默认:http
-func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *foundation_service.SSmsApi, err error) {
+func (s *foundationService) GetSmsApi(ctx context.Context,provider *proto.String) (*proto.SSmsApi, error) {
 	manager := s.notifyRepo.Manager()
-	perm := manager.GetSmsApiPerm(provider)
+	perm := manager.GetSmsApiPerm(provider.Value)
 	if perm != nil {
-		return &foundation_service.SSmsApi{
+		return &proto.SSmsApi{
 			ApiUrl:      perm.ApiUrl,
 			Key:         perm.Key,
 			Secret:      perm.Secret,
@@ -91,7 +117,7 @@ func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *
 			SuccessChar: perm.SuccessChar,
 		}, nil
 	}
-	return &foundation_service.SSmsApi{
+	return &proto.SSmsApi{
 		ApiUrl:      "",
 		Key:         "",
 		Secret:      "",
@@ -104,14 +130,15 @@ func (s *foundationService) GetSmsApi(ctx context.Context, provider string) (r *
 }
 
 // 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks
-func (s *foundationService) SaveBoardHook(ctx context.Context, hookURL string, token string) (r *ttype.Result_, err error) {
+func (s *foundationService) SaveBoardHook(ctx context.Context,request *proto.BoardHookSaveRequest) (*proto.Result, error) {
+
 	mp := map[string]string{
-		registry.BoardHookURL:   hookURL,
-		registry.BoardHookToken: token,
+		registry.BoardHookURL:   request.HookURL,
+		registry.BoardHookToken: request.Token,
 	}
 	for k, v := range mp {
 		if ir := s.registryRepo.Get(k); ir != nil {
-			if err = ir.Update(v); err != nil {
+			if err := ir.Update(v); err != nil {
 				return s.error(err), nil
 			}
 		}
@@ -120,14 +147,16 @@ func (s *foundationService) SaveBoardHook(ctx context.Context, hookURL string, t
 }
 
 // 删除值
-func (s *foundationService) DeleteValue(ctx context.Context, key string) (r *ttype.Result_, err error) {
-	err = s._rep.DeleteValue(key)
+func (s *foundationService) DeleteValue(ctx context.Context,s2 *proto.String) (*proto.Result, error) {
+	err := s._rep.DeleteValue(s2.Value)
 	return s.result(err), nil
 }
 
 // 根据前缀获取值
-func (s *foundationService) GetValuesByPrefix(ctx context.Context, prefix string) (r map[string]string, err error) {
-	return s._rep.GetValues(prefix), nil
+func (s *foundationService) GetValuesByPrefix(ctx context.Context, s2 *proto.String) (*proto.StringMap, error) {
+	return &proto.StringMap{
+		Value: s._rep.GetValues(s2.Value),
+	}, nil
 }
 
 // 获取键值存储数据
@@ -155,25 +184,31 @@ func (s *foundationService) FlushSuperPwd(ctx context.Context, user string, pwd 
 //   -  1. 成功，并返回token
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
-func (s *foundationService) RegisterApp(ctx context.Context, app *foundation_service.SSsoApp) (r string, err error) {
+func (s *foundationService) RegisterApp(ctx context.Context,app *proto.SSsoApp) (*proto.String, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	token, err := sso.Register(app)
 	if err == nil {
-		return "1:" + token, nil
+		return  &proto.String{
+			Value:"1:" + token,
+		}, nil
 	}
-	return err.Error(), nil
+	return  &proto.String{
+		Value:err.Error(),
+	}, nil
 }
 
 // 获取应用信息
-func (s *foundationService) GetApp(ctx context.Context, name string) (r *foundation_service.SSsoApp, err error) {
+func (s *foundationService) GetApp(ctx context.Context,s2 *proto.String) (*proto.SSsoApp, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
-	return sso.Get(name), nil
+	return sso.Get(s2.Value), nil
 }
 
 // 获取单点登录应用
-func (s *foundationService) GetAllSsoApp(ctx context.Context) (r []string, err error) {
+func (s *foundationService) GetAllSsoApp(ctx context.Context empty *proto.Empty) (*proto.StringListResponse, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
-	return sso.Array(), nil
+	return &proto.StringListResponse{
+		List: sso.Array(),
+	}, nil
 }
 
 // 创建同步登录的地址
@@ -205,8 +240,8 @@ func (s *foundationService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 }
 
 // 获取资源地址
-func (s *foundationService) ResourceUrl(ctx context.Context, url string) (r string, err error) {
-	return format.GetResUrl(url), nil
+func (s *foundationService) ResourceUrl(ctx context.Context,  s2 *proto.String) (*proto.String, error) {
+	return &proto.String{Value:format.GetResUrl(s2.Value)},nil
 }
 
 // 获取全局商户销售设置

@@ -94,7 +94,7 @@ func (s *registryService) GetRegistry(ctx context.Context, key string) (string, 
 }
 
 // 创建用户自定义注册项
-func (s *registryService) CreateUserRegistry(ctx context.Context, key string, defaultValue string, description string) (r *ttype.Result_, err error) {
+func (s *registryService) CreateUserRegistry(ctx context.Context, key string, defaultValue string, description string) (r *proto.Result, err error) {
 	if s.registryRepo.Get(key) != nil {
 		return s.resultWithCode(-1, "registry is exist"), nil
 	}
@@ -115,7 +115,7 @@ func (s *registryService) CreateUserRegistry(ctx context.Context, key string, de
 }
 
 // 更新注册表数据
-func (s *registryService) UpdateRegistry(ctx context.Context, registries map[string]string) (r *ttype.Result_, err error) {
+func (s *registryService) UpdateRegistry(ctx context.Context, registries map[string]string) (r *proto.Result, err error) {
 	for k, v := range registries {
 		if ir := s.registryRepo.Get(k); ir != nil {
 			if err = ir.Update(v); err != nil {

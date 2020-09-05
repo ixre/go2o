@@ -9,12 +9,8 @@ message String{string Value = 1;}
 message Int64{sint64 Value = 1;}
 message Int32{sint32 Value = 1;}
 message Bool{bool Value = 1;}
-message StringMap{
-    map<string,string> Data = 1;
-}
-message StringArray{
-    repeated string Data = 1;
-}
+message StringMap{map<string,string> Value = 1;}
+message StringArray{repeated string Value = 1;}
 //传输结果对象
 message Result {
     /* 状态码,如为0表示成功 */

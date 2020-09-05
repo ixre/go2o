@@ -70,7 +70,7 @@ func NewShoppingService(r order.IOrderRepo,
 /*---------------- 批发购物车 ----------------*/
 
 // 批发购物车接口
-func (s *orderServiceImpl) WholesaleCartV1(ctx context.Context, memberId int64, action string, data map[string]string) (*ttype.Result_, error) {
+func (s *orderServiceImpl) WholesaleCartV1(ctx context.Context, memberId int64, action string, data map[string]string) (*proto.Result, error) {
 	//todo: check member
 	c := s.cartRepo.GetMyCart(memberId, cart.KWholesale)
 	if data == nil {
@@ -114,7 +114,7 @@ func (s *orderServiceImpl) parseCheckedMap(data string) (m map[int64][]int64) {
 }
 
 // 获取可结算的购物车
-func (s *orderServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*ttype.Result_, error) {
+func (s *orderServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*proto.Result, error) {
 	//统计checked
 	checked := s.parseCheckedMap(data["checked"])
 	checkout := data["checkout"] == "true"
@@ -131,7 +131,7 @@ func (s *orderServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*tty
 }
 
 // 获取简易的购物车
-func (s *orderServiceImpl) wsGetSimpleCart(c cart.ICart, data map[string]string) (*ttype.Result_, error) {
+func (s *orderServiceImpl) wsGetSimpleCart(c cart.ICart, data map[string]string) (*proto.Result, error) {
 	size, err := strconv.Atoi(data["size"])
 	if err != nil {
 		size = 5
@@ -179,7 +179,7 @@ func (s *orderServiceImpl) createCheckedData(itemId int64, arr []*cart.ItemPair)
 }
 
 // 放入商品，data["Data"]
-func (s *orderServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*ttype.Result_, error) {
+func (s *orderServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*proto.Result, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
@@ -201,7 +201,7 @@ func (s *orderServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*tty
 	return s.result(err), nil
 }
 
-func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*ttype.Result_, error) {
+func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*proto.Result, error) {
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
@@ -217,7 +217,7 @@ func (s *orderServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*
 }
 
 // 勾选购物车，格式如：1:2;1:5
-func (s *orderServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*ttype.Result_, error) {
+func (s *orderServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*proto.Result, error) {
 	checked := data["Checked"]
 	var arr []*cart.ItemPair
 	splitArr := strings.Split(checked, ";")
@@ -242,7 +242,7 @@ func (s *orderServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*t
 /*---------------- 普通购物车 ----------------*/
 
 // 普通购物车接口
-func (s *orderServiceImpl) NormalCartV1(ctx context.Context, memberId int64, action string, data map[string]string) (*ttype.Result_, error) {
+func (s *orderServiceImpl) NormalCartV1(ctx context.Context, memberId int64, action string, data map[string]string) (*proto.Result, error) {
 	//todo: check member
 	c := s.cartRepo.GetMyCart(memberId, cart.KWholesale)
 	if data == nil {
@@ -605,7 +605,7 @@ func (s *orderServiceImpl) LogBytes(orderNo string, sub bool) []byte {
 }
 
 // 提交订单
-func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *order_service.SComplexOrder, rate float64) (*ttype.Result_, error) {
+func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *order_service.SComplexOrder, rate float64) (*proto.Result, error) {
 	if o.ShopId <= 0 {
 		mch := s.mchRepo.GetMerchant(int(o.VendorId))
 		if mch != nil {
@@ -632,7 +632,7 @@ func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *order_servic
 }
 
 // 交易单现金支付
-func (s *orderServiceImpl) TradeOrderCashPay(ctx context.Context, orderId int64) (r *ttype.Result_, err error) {
+func (s *orderServiceImpl) TradeOrderCashPay(ctx context.Context, orderId int64) (r *proto.Result, err error) {
 	o := s.manager.GetOrderById(orderId)
 	if o == nil || o.Type() != order.TTrade {
 		err = order.ErrNoSuchOrder
@@ -644,7 +644,7 @@ func (s *orderServiceImpl) TradeOrderCashPay(ctx context.Context, orderId int64)
 }
 
 // 上传交易单发票
-func (s *orderServiceImpl) TradeOrderUpdateTicket(ctx context.Context, orderId int64, img string) (r *ttype.Result_, err error) {
+func (s *orderServiceImpl) TradeOrderUpdateTicket(ctx context.Context, orderId int64, img string) (r *proto.Result, err error) {
 	o := s.manager.GetOrderById(orderId)
 	if o == nil || o.Type() != order.TTrade {
 		err = order.ErrNoSuchOrder

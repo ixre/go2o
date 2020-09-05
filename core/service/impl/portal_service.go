@@ -23,13 +23,13 @@ func (p *portalService) GetPortalNav_(id int32) *model.PortalNav {
 }
 
 // 保存门户导航
-func (p *portalService) SavePortalNav_(v *model.PortalNav) (*ttype.Result_, error) {
+func (p *portalService) SavePortalNav_(v *model.PortalNav) (*proto.Result, error) {
 	_, err := p.repo.SavePortalNav(v)
 	return p.result(err), nil
 }
 
 // 删除门户导航
-func (p *portalService) DeletePortalNav_(id int32) (*ttype.Result_, error) {
+func (p *portalService) DeletePortalNav_(id int32) (*proto.Result, error) {
 	err := p.repo.DeletePortalNav(id)
 	return p.result(err), nil
 }
@@ -45,13 +45,13 @@ func (p *portalService) GetPortalNavType_(id int32) *model.PortalNavType {
 }
 
 // 保存导航类型
-func (p *portalService) SavePortalNavType_(v *model.PortalNavType) (*ttype.Result_, error) {
+func (p *portalService) SavePortalNavType_(v *model.PortalNavType) (*proto.Result, error) {
 	_, err := p.repo.SavePortalNavType(v)
 	return p.result(err), nil
 }
 
 // 删除导航类型
-func (p *portalService) DeletePortalNavType_(id int32) (*ttype.Result_, error) {
+func (p *portalService) DeletePortalNavType_(id int32) (*proto.Result, error) {
 	err := p.repo.DeletePortalNavType(id)
 	return p.result(err), nil
 }

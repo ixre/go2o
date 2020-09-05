@@ -39,7 +39,7 @@ type merchantService struct {
 	serviceUtil
 }
 
-func (m *merchantService) CreateMerchant(ctx context.Context, mch *merchant_service.SMerchantPack, relMemberId int64) (r *ttype.Result_, err error) {
+func (m *merchantService) CreateMerchant(ctx context.Context, mch *merchant_service.SMerchantPack, relMemberId int64) (r *proto.Result, err error) {
 	v := &merchant.Merchant{
 		LoginUser:   mch.LoginUser,
 		LoginPwd:    domain.MerchantSha1Pwd(mch.LoginPwd),
@@ -101,7 +101,7 @@ func (m *merchantService) GetTradeConf(ctx context.Context, mchId int32, tradeTy
 	return nil, nil
 }
 
-func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []*merchant_service.STradeConf) (r *ttype.Result_, err error) {
+func (m *merchantService) SaveTradeConf(ctx context.Context, mchId int32, arr []*merchant_service.STradeConf) (r *proto.Result, err error) {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
@@ -269,7 +269,7 @@ func (m *merchantService) testLogin(user string, pwd string) (id int, errCode in
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(ctx context.Context, user, pwd string) (r *ttype.Result_, err error) {
+func (m *merchantService) CheckLogin(ctx context.Context, user, pwd string) (r *proto.Result, err error) {
 	user = strings.ToLower(strings.TrimSpace(user))
 	pwd = strings.TrimSpace(pwd)
 	id, code, err := m.testLogin(user, pwd)
@@ -367,7 +367,7 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *ttype.Result_, err error) {
+func (m *merchantService) Stat(ctx context.Context, mchId int32) (r *proto.Result, err error) {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
@@ -746,7 +746,7 @@ func (m *merchantService) GetMchBuyerGroup_(mchId, id int32) *merchant.MchBuyerG
 }
 
 // 保存
-func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *ttype.Result_, err error) {
+func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *proto.Result, err error) {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant

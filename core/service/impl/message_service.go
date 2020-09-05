@@ -44,7 +44,7 @@ func (m *messageService) GetNotifyItem(ctx context.Context, key string) (r *mess
 }
 
 // 发送短信
-func (m *messageService) SendPhoneMessage(ctx context.Context, phone string, message string, data map[string]string) (r *ttype.Result_, err error) {
+func (m *messageService) SendPhoneMessage(ctx context.Context, phone string, message string, data map[string]string) (r *proto.Result, err error) {
 	mg := m._rep.NotifyManager()
 	extra := make(map[string]interface{})
 	if data != nil {

@@ -23,7 +23,6 @@ import (
 	"go2o/core/query"
 	"go2o/core/repos"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/auto_gen/rpc/wallet_service"
 	"strconv"
 	"time"
@@ -218,17 +217,17 @@ func initRpcServe(ctx gof.App) {
 type serviceUtil struct{}
 
 // 返回失败的结果
-func (s serviceUtil) failResult(msg string) *ttype.Result_ {
+func (s serviceUtil) failResult(msg string) *proto.Result {
 	return s.failCodeResult(1, msg)
 }
 
 // 返回错误的结果
-func (s serviceUtil) error(err error) *ttype.Result_ {
+func (s serviceUtil) error(err error) *proto.Result {
 	return s.failResult(err.Error())
 }
 
 // 返回结果
-func (s serviceUtil) result(err error) *ttype.Result_ {
+func (s serviceUtil) result(err error) *proto.Result {
 	if err == nil {
 		return s.success(nil)
 	}
@@ -236,26 +235,26 @@ func (s serviceUtil) result(err error) *ttype.Result_ {
 }
 
 // 返回自定义编码的结果
-func (s serviceUtil) resultWithCode(code int, message string) *ttype.Result_ {
-	return &ttype.Result_{ErrCode: int32(code), ErrMsg: message, Data: map[string]string{}}
+func (s serviceUtil) resultWithCode(code int, message string) *proto.Result {
+	return &proto.Result{ErrCode: int32(code), ErrMsg: message, Data: map[string]string{}}
 }
 
 // 返回失败的结果
-func (s serviceUtil) errorCodeResult(code int, err error) *ttype.Result_ {
-	return &ttype.Result_{ErrCode: int32(code), ErrMsg: err.Error(), Data: map[string]string{}}
+func (s serviceUtil) errorCodeResult(code int, err error) *proto.Result {
+	return &proto.Result{ErrCode: int32(code), ErrMsg: err.Error(), Data: map[string]string{}}
 }
 
 // 返回失败的结果
-func (s serviceUtil) failCodeResult(code int, msg string) *ttype.Result_ {
-	return &ttype.Result_{ErrCode: int32(code), ErrMsg: msg, Data: map[string]string{}}
+func (s serviceUtil) failCodeResult(code int, msg string) *proto.Result {
+	return &proto.Result{ErrCode: int32(code), ErrMsg: msg, Data: map[string]string{}}
 }
 
 // 返回成功的结果
-func (s serviceUtil) success(data map[string]string) *ttype.Result_ {
+func (s serviceUtil) success(data map[string]string) *proto.Result {
 	if data == nil {
 		data = map[string]string{}
 	}
-	return &ttype.Result_{ErrCode: 0, ErrMsg: "", Data: data}
+	return &proto.Result{ErrCode: 0, ErrMsg: "", Data: data}
 }
 
 // 将int32数组装换为int数组

@@ -114,7 +114,7 @@ func (s *itemService) GetItemSkuJson(ctx context.Context, itemId int64) (r strin
 }
 
 // 保存商品
-func (s *itemService) SaveItem(di *ttype.SOldItem, vendorId int32) (_ *ttype.Result_, err error) {
+func (s *itemService) SaveItem(di *ttype.SOldItem, vendorId int32) (_ *proto.Result, err error) {
 	var gi item.IGoodsItem
 	it := parser.Item(di)
 	if it.ID > 0 {
@@ -521,7 +521,7 @@ func (s *itemService) GetSnapshot(skuId int64) *item.Snapshot {
 
 // 设置商品货架状态
 func (s *itemService) SetShelveState(vendorId int32, itemId int64,
-	itemType int32, state int32, remark string) (_ *ttype.Result_, err error) {
+	itemType int32, state int32, remark string) (_ *proto.Result, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
 		err = item.ErrNoSuchItem
@@ -538,7 +538,7 @@ func (s *itemService) SetShelveState(vendorId int32, itemId int64,
 
 // 设置商品货架状态
 func (s *itemService) ReviewItem(vendorId int32, itemId int64,
-	pass bool, remark string) (_ *ttype.Result_, err error) {
+	pass bool, remark string) (_ *proto.Result, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
 		err = item.ErrNoSuchItem
@@ -550,7 +550,7 @@ func (s *itemService) ReviewItem(vendorId int32, itemId int64,
 
 // 标记为违规
 func (s *itemService) SignGoodsIllegal(vendorId int32, itemId int64,
-	remark string) (_ *ttype.Result_, err error) {
+	remark string) (_ *proto.Result, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
 		err = item.ErrNoSuchItem

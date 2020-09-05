@@ -70,7 +70,7 @@ func (p *personFinanceService) CommitTransfer(personId int64, logId int32) error
 //  - PersonId
 //  - TransferWith
 //  - Amount
-func (p *personFinanceService) RiseTransferIn(ctx context.Context, personId int64, transferWith int32, amount float64) (r *ttype.Result_, err error) {
+func (p *personFinanceService) RiseTransferIn(ctx context.Context, personId int64, transferWith int32, amount float64) (r *proto.Result, err error) {
 	//return errors.New("服务暂时不可用")
 	pf := p.repo.GetPersonFinance(personId)
 	err = pf.GetRiseInfo().TransferIn(float32(amount), personfinance.TransferWith(transferWith))

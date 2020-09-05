@@ -14,17 +14,19 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
 	"go2o/core/domain/interface/registry"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/auto_gen/rpc/foundation_service"
 	"go2o/core/variable"
 	"strings"
 )
 
 var _ Module = new(SSOModule)
 
+//todo: 去掉rpc
+
 type SSOModule struct {
 	app         gof.App
-	appMap      map[string]*foundation_service.SSsoApp
+	appMap      map[string]*proto.SSsoApp
 	apiUrlArray []string
 }
 
@@ -35,7 +37,7 @@ func (s *SSOModule) SetApp(app gof.App) {
 
 // 初始化模块
 func (s *SSOModule) Init() {
-	s.appMap = make(map[string]*foundation_service.SSsoApp)
+	s.appMap = make(map[string]*proto.SSsoApp)
 	domain := variable.Domain
 	trans, cli, err := thrift.RegistryServeClient()
 	if err == nil {
@@ -49,38 +51,38 @@ func (s *SSOModule) Init() {
 			registry.DomainPrefixMobilePortal,
 		}
 		registries, _ := cli.GetRegistries(thrift.Context, keys)
-		s.Register(&foundation_service.SSsoApp{
+		s.Register(&proto.SSsoApp{
 			ID:   1,
 			Name: "RetailPortal",
 			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 				registries[keys[0]], domain),
 		})
-		s.Register(&foundation_service.SSsoApp{
+		s.Register(&proto.SSsoApp{
 			ID:   2,
 			Name: "WholesalePortal",
 			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 				registries[keys[1]], domain),
 		})
-		s.Register(&foundation_service.SSsoApp{
+		s.Register(&proto.SSsoApp{
 			ID:   3,
 			Name: "HApi",
 			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 				registries[keys[2]], domain),
 		})
-		s.Register(&foundation_service.SSsoApp{
+		s.Register(&proto.SSsoApp{
 			ID:   4,
 			Name: "Member",
 			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 				registries[keys[3]], domain),
 		})
-		s.Register(&foundation_service.SSsoApp{
+		s.Register(&proto.SSsoApp{
 			ID:   5,
 			Name: "MemberMobile",
 			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 				registries[keys[4]],
 				domain),
 		})
-		s.Register(&foundation_service.SSsoApp{
+		s.Register(&proto.SSsoApp{
 			ID:   6,
 			Name: "RetailPortalMobile",
 			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
@@ -89,7 +91,7 @@ func (s *SSOModule) Init() {
 	}
 }
 
-func (s *SSOModule) Register(app *foundation_service.SSsoApp) (token string, err error) {
+func (s *SSOModule) Register(app *proto.SSsoApp) (token string, err error) {
 	if app.Name == "" {
 		return "", errors.New("-1:serve name is null")
 	}
@@ -116,7 +118,7 @@ func (s *SSOModule) Register(app *foundation_service.SSsoApp) (token string, err
 }
 
 // 获取APP的配置
-func (s *SSOModule) Get(name string) *foundation_service.SSsoApp {
+func (s *SSOModule) Get(name string) *proto.SSsoApp {
 	if s.appMap != nil {
 		return s.appMap[name]
 	}

@@ -71,7 +71,7 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 }
 
 // 保存产品模型
-func (p *productService) SaveModel(v *promodel.ProModel) (*ttype.Result_, error) {
+func (p *productService) SaveModel(v *promodel.ProModel) (*proto.Result, error) {
 	var pm promodel.IModel
 	var err error
 	if v.ID > 0 {
@@ -107,7 +107,7 @@ R:
 }
 
 // 删除产品模型
-func (p *productService) DeleteProModel_(id int32) (*ttype.Result_, error) {
+func (p *productService) DeleteProModel_(id int32) (*proto.Result, error) {
 	//err := p.pmRepo.DeleteProModel(id)
 	//todo: 暂时不允许删除模型
 	return p.result(errors.New("暂时不允许删除模型")), nil
@@ -121,13 +121,13 @@ func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
 }
 
 // Save 产品品牌
-func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*ttype.Result_, error) {
+func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*proto.Result, error) {
 	_, err := p.pmRepo.BrandService().SaveBrand(v)
 	return p.result(err), nil
 }
 
 // Delete 产品品牌
-func (p *productService) DeleteProBrand_(id int32) (*ttype.Result_, error) {
+func (p *productService) DeleteProBrand_(id int32) (*proto.Result, error) {
 	err := p.pmRepo.BrandService().DeleteBrand(id)
 	return p.result(err), nil
 }
@@ -320,7 +320,7 @@ func (p *productService) GetProductValue(productId int64) *product.Product {
 }
 
 // 保存产品
-func (p *productService) SaveProduct(v *product.Product) (r *ttype.Result_, err error) {
+func (p *productService) SaveProduct(v *product.Product) (r *proto.Result, err error) {
 	var pro product.IProduct
 	if v.Id > 0 {
 		pro = p.proRepo.GetProduct(v.Id)
