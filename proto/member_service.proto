@@ -1,0 +1,386 @@
+syntax = "proto3";
+option go_package = "../core/service/proto;proto";
+
+
+
+
+//会员服务
+service MemberService{
+    /**
+     * 注册会员
+     * @param user 登陆用户名
+     * @param pwd 登陆密码,md5运算后的字符串
+     * @param flag 用户自定义标志
+     * @param phone 手机号码
+     * @param email 邮箱
+     * @param avatar 头像
+     * @param extend 扩展数据
+     * @return 注册结果，返回user_code
+     */
+    rpc RegisterMemberV2(1:string user,2:string pwd,3:sint32 flag,4:string name,
+        string phone = 5;,6:string email,7:string avatar,8:map<string,string> extend)returns(Result)
+
+    // 登录，返回结果(Result)和会员编号(Id);
+    // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
+    rpc CheckLogin(1:string user,2:string pwd,3:bool update)returns(Result)
+    /** 检查交易密码 */
+    rpc CheckTradePwd(1:sint64 memberId,2:string tradePwd)returns(Result)
+    /** 交换会员编号 */
+    rpc SwapMemberId(1:ECredentials cred,2:string value)returns(sint64)
+    /** 等级列表 */
+    list<SMemberLevel> MemberLevelList()
+    /* 获取实名信息 */
+    rpc GetTrustInfo(1:sint64 memberId)returns(STrustedInfo)
+    /** 提交实名信息 */
+    rpc SubmitTrustInfo(1:sint64 memberId,2:STrustedInfo info)returns(Result)
+    /** 审核实名认证,若重复审核将返回错误 **/
+    rpc ReviewTrustedInfo(1:sint64 memberId,2:bool reviewPass,3:string remark)returns(Result)
+    /** 获取会员等级信息 */
+    rpc GetMemberLevel(1:sint32 id)returns(SMemberLevel)
+    /** 保存等级 */
+    rpc SaveMemberLevel(1:SMemberLevel level)returns(Result)
+    // 根据SIGN获取等级
+    rpc GetLevelBySign(1:string sign)returns(SMemberLevel)
+    // 根据会员编号获取会员信息
+    rpc GetMember(1:sint64 id)returns(SMember)
+    // 根据用户名获取会员信息
+    rpc GetMemberByUser(1:string user)returns(SMember)
+    // 根据会员编号获取会员资料
+    rpc GetProfile(1:sint64 id)returns(SProfile)
+    /** 激活会员 */
+    rpc Active(1:sint64 memberId)returns(Result)
+    /** 锁定,minutes锁定分钟数,默认:-1永久锁定 */
+    rpc Lock(1:sint64 memberId,2:sint32 minutes,3:string remark)returns(Result)
+    /** 解锁会员 */
+    rpc Unlock(1:sint64 memberId)returns(Result)
+    /** 标志赋值, 如果flag小于零, 则异或运算 */
+    rpc GrantFlag(1:sint64 memberId,2:sint32 flag)returns(Result)
+    /** 获取会员汇总信息 */
+    rpc Complex(1:sint64 memberId)returns(SComplexMember)
+    /** 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取 */
+    rpc SendCode(1:sint64 memberId ,2:string operation,3:message_service.EMessageChannel msgType)returns(Result)
+    /** 比较验证码是否正确 */
+    rpc CompareCode(1:sint64 memberId ,2:string code)returns(Result)
+    /** 获取收款码 */
+    list<SReceiptsCode> ReceiptsCodes(1:sint64 memberId)
+    /** 保存收款码 */
+    rpc SaveReceiptsCode(1:sint64 memberId,2:SReceiptsCode code)returns(Result)
+    /** 获取银行卡 */
+    list<SBankcard> Bankcards(1:sint64 memberId)
+    /** 保存银行卡 */
+    rpc SaveBankcard(1:sint64 memberId,2:SBankcard card)returns(Result)
+    // 检查资料是否完成
+    rpc CheckProfileComplete(1:sint64 memberId)returns(Result)
+    /** 获取会员等级信息 */
+    rpc MemberLevelInfo(1:sint64 memberId)returns(SMemberLevelInfo)
+    // 更改会员等级
+    rpc UpdateLevel(1:sint64 memberId,2:sint32 level,3:bool review,4:sint64 paymentOrderId)returns(Result)
+    /* 更改手机号码，不验证手机格式 */
+    rpc ChangePhone(1:sint64 memberId,2:string phone)returns(Result)
+    /* 更改用户名 */
+    rpc ChangeUser(1:sint64 memberId,2:string usr)returns(Result)
+    /** 更改密码 */
+    rpc ModifyPwd(1:sint64 memberId,2:string old,3:string pwd)returns(Result)
+    /** 更改交易密码 */
+    rpc ModifyTradePwd(1:sint64 memberId,2:string old,3:string pwd)returns(Result)
+    /** 更改邀请人 */
+    rpc ChangeInviterId(1:sint64 memberId,2:sint64 inviterId)returns(Result)
+    /** 获取会员的订单状态及其数量 */
+    map<i32,i32> OrdersQuantity(1:sint64 memberId)
+
+
+    // 升级为高级会员
+    rpc Premium(1:sint64 memberId,2:sint32 v,3:sint64 expires)returns(Result)
+    // 获取会员的会员Token,reset表示是否重置token
+    rpc GetToken(1:sint64 memberId,2:bool reset)returns(string)
+    // 检查会员的会话Token是否正确，如正确返回: 1
+    rpc CheckToken(1:sint64 memberId,2:string token)returns(bool)
+    // 移除会员的Token
+    rpc RemoveToken(1:sint64 memberId)returns(void)
+    // 获取会员的收货地址
+    list<SAddress> GetAddressList(1:sint64 memberId)
+    // 获取地址，如果addrId为0，则返回默认地址
+    rpc GetAddress(1:sint64 memberId,2:sint64 addrId)returns(SAddress)
+    // 获取会员账户信息
+    rpc GetAccount(1:sint64 memberId)returns(SAccount)
+    // 获取自己的邀请人会员编号数组
+    list<i64> InviterArray(1:sint64 memberId,2:sint32 depth)
+    // 获取邀请会员的数量
+    rpc InviteMembersQuantity(1:sint64 memberId,2:sint32 depth)returns(sint32)
+    // 按条件获取荐指定等级会员的数量
+    rpc QueryInviteQuantity(1:sint64 memberId,2:map<string,string> data)returns(sint32)
+    // 按条件获取荐指定等级会员的列表
+    list<i64> QueryInviteArray(1:sint64 memberId,2:map<string,string> data)
+    // 账户充值,amount精确到分
+    rpc AccountCharge(1:sint64 memberId ,2:sint32 account,3:string title,
+      sint32 amount = 4;,5:string outerNo,6:string remark)returns(Result)
+    // 账户消耗,amount精确到分
+    rpc AccountConsume(1:sint64 memberId,2:sint32 account,3:string title,
+      sint32 amount = 4;, 5:string outerNo,6:string remark)returns(Result)
+    // 账户抵扣,amount精确到分
+    rpc AccountDiscount(1:sint64 memberId,2:sint32 account,3:string title,
+      sint32 amount = 4;, 5:string outerNo,6:string remark)returns(Result)
+    // 账户退款,amount精确到分
+    rpc AccountRefund(1:sint64 memberId,2:sint32 account,3:string title,
+        sint32 amount = 4;, 5:string outerNo,6:string remark)returns(Result)
+    // 账户人工调整
+    rpc AccountAdjust(1:sint64 memberId,2:sint32 account,3:sint32 value,4:sint64 relateUser,5:string remark)returns(Result)
+
+    // !银行四要素认证
+    rpc B4EAuth(1:sint64 memberId,2:string action,3:map<string,string> data)returns(Result)
+
+    /** 获取指定账户的流水记录 */
+    rpc PagingAccountLog(1:sint64 memberId,2:sint32 accountType,3:ttype.SPagingParams params)returns(SPagingResult)
+
+
+}
+
+
+/** 等级 */
+message SMemberLevel {
+    sint32 ID = 1;
+    string Name = 2;
+    sint32 RequireExp = 3;
+    string ProgramSignal = 4;
+    sint32 IsOfficial = 5;
+    sint32 Enabled = 6;
+    sint32 AllowUpgrade = 7;
+}
+
+/** 会员 */
+message SMember {
+    /**  */
+    sint64 Id = 1;
+    /** 用户名 */
+    string User = 2;
+    /**  */
+    string Pwd = 3;
+    /**  */
+    string TradePwd = 4;
+    /**  */
+    sint64 Exp = 5;
+    /**  */
+    sint32 Level = 6;
+    /** 高级用户级别 */
+    sint32 PremiumUser = 7;
+    /** 高级用户过期时间 */
+    sint64 PremiumExpires = 8;
+    /**  */
+    string InviteCode = 9;
+    /**  */
+    string RegIp = 10;
+    /**  */
+    string RegFrom = 11;
+    /**  */
+    sint32 State = 12;
+    /** 会员标志 */
+    sint32 Flag = 13;
+    /**  */
+    string Code = 14;
+    /**  */
+    string Avatar = 15;
+    /**  */
+    string Phone = 16;
+    /**  */
+    string Email = 17;
+    /** 昵称 */
+    string Name = 18;
+    /** 真实姓名 */
+    string RealName = 19;
+    /* 用户会员密钥 */
+    string DynamicToken = 20;
+    /** 注册时间 */
+    sint64 RegTime = 21;
+    /** 最后登录时间 */
+    sint64 LastLoginTime = 22;
+}
+
+/** 资料 */
+message SProfile {
+    sint64 MemberId = 1;
+    string Name = 2;
+    string Avatar = 3;
+    sint32 Sex = 4;
+    string BirthDay = 5;
+    string Phone = 6;
+    string Address = 7;
+    string Im = 8;
+    string Email = 9;
+    sint32 Province = 10;
+    sint32 City = 11;
+    sint32 District = 12;
+    string Remark = 13;
+    string Ext1 = 14;
+    string Ext2 = 15;
+    string Ext3 = 16;
+    string Ext4 = 17;
+    string Ext5 = 18;
+    string Ext6 = 19;
+    sint64 UpdateTime = 20;
+}
+
+/** 账户 */
+message SAccount {
+    sint64 MemberId = 1;
+    sint64 Integral = 2;
+    sint64 FreezeIntegral = 3;
+    double Balance = 4;
+    double FreezeBalance = 5;
+    double ExpiredBalance = 6;
+    double WalletBalance = 7;
+    double FreezeWallet = 8;
+    double ExpiredWallet = 9;
+    double TotalWalletAmount = 10;
+    double FlowBalance = 11;
+    double GrowBalance = 12;
+    double GrowAmount = 13;
+    double GrowEarnings = 14;
+    double GrowTotalEarnings = 15;
+    double TotalExpense = 16;
+    double TotalCharge = 17;
+    double TotalPay = 18;
+    sint64 PriorityPay = 19;
+    sint64 UpdateTime = 20;
+}
+
+message SComplexMember {
+    string Name = 1;
+    string Avatar = 2;
+    string Phone = 3;
+    sint32 Exp = 4;
+    sint32 Level = 5;
+    string LevelName = 6;
+    string InviteCode = 7;
+    sint32 TrustAuthState = 8;
+    sint32 PremiumUser = 9;
+    sint32 Flag = 10;
+    sint64 UpdateTime = 11;
+    /** 交易密码是否已设置 */
+    bool TradePwdHasSet = 12;
+}
+
+message SMemberRelation {
+    sint64 MemberId = 1;
+    string CardId = 2;
+    sint64 InviterId = 3;
+    string InviterStr = 4;
+    sint32 RegisterMchId = 5;
+}
+
+/** 实名认证信息 */
+message STrustedInfo {
+    /** 真实姓名 */
+    string RealName = 1;
+    /** 国家代码,如:CN */
+    string CountryCode = 2;
+    /** 证件类型 */
+    sint32 CardType = 3;
+    /** 证件号码 */
+    string CardId = 4;
+    /** 证件正面照 */
+    string CardImage = 5;
+    /** 证件反面照 */
+    string CardReverseImage = 6;
+    /** 认证人脸照 */
+    string TrustImage = 7;
+    /** 是否人工审核 */
+    sint32 ManualReview = 8;
+    /** 审核状态 */
+    sint32 ReviewState = 9;
+    /** 审核时间 */
+    sint64 ReviewTime = 10;
+    /** 备注 */
+    string Remark = 11;
+}
+
+
+message SAddress {
+    sint64 ID = 1;
+    /** 收货人姓名 */
+    string ConsigneeName = 2;
+    /** 收货人电话 */
+    string ConsigneePhone = 3;
+    sint32 Province = 4;
+    sint32 City = 5;
+    sint32 District = 6;
+    string Area = 7;
+    string DetailAddress = 8;
+    sint32 IsDefault = 9;
+}
+
+/** 收款码 */
+message SReceiptsCode{
+    /** 账户标识,如:alipay */
+    string Identity = 1;
+    /** 账户名称 */
+    string Name = 2;
+    /** 账号 */
+    string AccountId = 3;
+    /** 收款码地址 */
+    string CodeUrl = 4;
+    /** 是否启用 */
+    sint32 State = 5;
+}
+
+/** 会员银行卡 */
+message SBankcard {
+    /** 编号 */
+    sint64 Id = 1;
+    /** 银行名称 */
+    string BankName = 2;
+    /** 账户名 */
+    string AccountName = 3;
+    /** 账号 */
+    string Account = 4;
+    /** 网点名称 */
+    string Network = 5;
+    /** 状态 */
+    sint32 State = 6;
+}
+
+/* 会员等级信息 */
+message SMemberLevelInfo{
+    /** 等级 */
+    sint32 Level = 1;
+    /** 等级名称 */
+    string LevelName = 2;
+    /** 经验值 */
+    sint32 Exp = 3;
+    /** 编程符号 */
+    string ProgramSignal = 4;
+    /** 下一级等级,返回-1表示最高级别 */
+    sint32 NextLevel = 5;
+    /** 下一等级名称 */
+    string NextLevelName = 6;
+    /** 编程符号 */
+    string NextProgramSignal = 7;
+    /** 需要经验值 */
+    sint32 RequireExp = 8;
+}
+
+/** 订单汇总信息 */
+message SMemberOrderSummary{
+    /** 待付款订单数量 */
+    sint32 AwaitPayment = 1;
+    /** 待发货订单数量 */
+    sint32 AwaitShipment = 2;
+    /** 待收货订单数量 */
+    sint32 AwaitReceive = 3;
+    /** 已完成订单数量 */
+    sint32 Completed = 4;
+}
+
+/** 凭据 */
+enum ECredentials{
+    /** 用户名 */
+    User = 1
+    /** 用户代码 */
+    Code = 2
+    /** 邮箱 */
+    Email = 3
+    /** 手机号码 */
+    Phone = 4
+    /** 邀请码 */
+    InviteCode = 6
+}
+

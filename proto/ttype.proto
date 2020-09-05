@@ -1,0 +1,256 @@
+//namespace java com.github.jsix.go2o.rpc
+//namespace netstd com.github.jsix.go2o.rpc
+//namespace go go2o.core.service.auto_gen.rpc.ttype
+syntax = "proto3";
+option go_package = "../core/service/proto;proto";
+
+//传输结果对象
+message Result {
+    /* 状态码,如为0表示成功 */
+    sint32 ErrCode = 1;
+    /* 消息 */
+    string ErrMsg = 2;
+    /** 数据字典 */
+    map<string, string> Data = 3;
+}
+
+// 键值对
+message Pair {
+    string Key = 1;
+    string Value = 2;
+}
+
+/** 设置依据 */
+enum ESettingBasis {
+    /** 未设置 */
+    None = 0;
+    /** 使用全局 */
+    Global = 1;
+    /** 自定义 */
+    Custom = 2;
+}
+
+/** 价格计算方式 */
+enum EPriceBasis {
+    _ = 0;
+    /** 原价 */
+    Original = 1;
+    /** 会员折扣价 */
+    Discount = 2;
+    /** 自定义价格 */
+    Custom = 3;
+}
+
+/** 金额/提成依据 */
+enum EAmountBasis {
+    _ = 0;
+    /** 未设置 */
+    NotSet = 1;
+    /** 按金额 */
+    Amount = 2;
+    /** 按百分比 */
+    Percent = 3;
+}
+
+// 商品分类
+message SCategory {
+    /** 编号 */
+    sint32 Id = 1;
+    /** 上级分类 */
+    sint32 ParentId = 2;
+    /** 产品模型 */
+    sint32 ProdModel = 3;
+    /** 优先级 */
+    sint32 Priority = 4;
+    /** 分类名称 */
+    string Name = 5;
+    /** 是否为虚拟分类 */
+    sint32 VirtualCat = 6;
+    /** 分类链接地址 */
+    string CatUrl = 7;
+    /** 图标 */
+    string Icon = 8;
+    /** 图标坐标 */
+    string IconXy = 9;
+    /** 分类层级 */
+    sint32 Level = 10;
+    /** 序号 */
+    sint32 SortNum = 11;
+    /** 是否楼层显示 */
+    sint32 FloorShow = 12;
+    /** 是否启用 */
+    sint32 Enabled = 13;
+    /** 创建时间 */
+    sint64 CreateTime = 14;
+    /** 子分类 */
+    repeated SCategory Children = 15;
+}
+
+/** SKU */
+message SSku {
+    sint64 SkuId = 1;
+    sint64 ItemId = 2;
+    sint64 ProductId = 3;
+    string Title = 4;
+    string Image = 5;
+    string SpecData = 6;
+    string SpecWord = 7;
+    string Code = 8;
+    double RetailPrice = 9;
+    double Price = 10;
+    double Cost = 11;
+    sint32 Weight = 12;
+    sint32 Bulk = 13;
+    sint32 Stock = 14;
+    sint32 SaleNum = 15;
+}
+
+
+message SOldItem {
+    sint64 ItemId = 1;
+    sint64 ProductId = 2;
+    sint32 PromFlag = 3;
+    sint32 CatId = 4;
+    sint32 VendorId = 5;
+    sint32 BrandId = 6;
+    sint32 ShopId = 7;
+    sint32 ShopCatId = 8;
+    sint32 ExpressTid = 9;
+    string Title = 10;
+    string ShortTitle = 11;
+    string Code = 12;
+    string Image = 13;
+    sint32 IsPresent = 14;
+    string PriceRange = 15;
+    sint32 StockNum = 16;
+    sint32 SaleNum = 17;
+    sint32 SkuNum = 18;
+    sint64 SkuId = 19;
+    double Cost = 20;
+    double Price = 21;
+    double RetailPrice = 22;
+    sint32 Weight = 23;
+    sint32 Bulk = 24;
+    sint32 ShelveState = 25;
+    sint32 ReviewState = 26;
+    string ReviewRemark = 27;
+    sint32 SortNum = 28;
+    sint64 CreateTime = 29;
+    sint64 UpdateTime = 30;
+    double PromPrice = 31;
+    repeated SSku SkuArray = 32;
+    map<string, string> Data = 33;
+}
+
+// 统一的商品对象
+message SUnifiedItem {
+    sint64 ItemId = 1;
+    sint32 ProductId = 2;
+    sint32 CatId = 3;
+    sint32 VendorId = 4;
+    sint32 BrandId = 5;
+    string Title = 6;
+    string Code = 7;
+    string Image = 8;
+    double Price = 9;
+    string PriceRange = 10;
+    sint32 StockNum = 11;
+    sint32 ShelveState = 12;
+    sint32 ReviewState = 13;
+    sint64 UpdateTime = 14;
+    repeated SSku SkuArray = 15;
+    map<string, string> Data = 16;
+    // 3: sint32 PromFlag
+    // 7: sint32 ShopId
+    // 8: sint32 ShopCatId
+    // 9: sint32 ExpressTid
+    // 11: string ShortTitle
+    // 14: sint32 IsPresent
+    // 23: sint32 Weight
+    // 24: sint32 Bulk
+    // 18: sint32 SkuNum
+    // 28: sint32 SortNum
+    // 29: sint64 CreateTime
+    // 31: double PromPrice
+    // 22: double RetailPrice
+    // 19: sint32 SkuId
+    // 20: double Cost
+    // 17: sint32 SaleNum
+}
+
+// 购物车
+message SShoppingCart {
+    //编号
+    sint32 CartId = 1;
+    //购物车KEY
+    string Code = 2;
+    //店铺分组
+    repeated SShoppingCartGroup Shops = 3;
+}
+// 购物车店铺分组
+message SShoppingCartGroup {
+    //店铺编号
+    sint32 ShopId = 1;
+    //供货商编号
+    sint32 VendorId = 2;
+    //店铺名称
+    string ShopName = 3;
+    //是否结算
+    bool Checked = 4;
+    //商品
+    repeated SShoppingCartItem Items = 5;
+}
+
+// 购物车商品
+message SShoppingCartItem {
+    //商品编号
+    sint64 ItemId = 1;
+    //SKU编号
+    sint64 SkuId = 2;
+    //商品标题
+    string Title = 3;
+    //商品图片
+    string Image = 4;
+    //规格文本
+    string SpecWord = 5;
+    //商品编码
+    string Code = 6;
+    //零售价
+    double RetailPrice = 7;
+    //销售价
+    double Price = 8;
+    //数量
+    sint32 Quantity = 9;
+    //是否结算
+    bool Checked = 10;
+    //库存文本
+    string StockText = 11;
+    //店铺编号
+    sint32 ShopId = 12;
+}
+
+/** 分页参数 */
+message SPagingParams {
+    /** 开始记录数 */
+    sint32 Begin = 1;
+    /** 结束记录数 */
+    sint32 Over = 2;
+    /** 排序字段 */
+    string SortBy = 3;
+    /** 参数 */
+    map<string, string> Parameters = 4;
+}
+
+/** 分页结果 */
+message SPagingResult {
+    /** 代码 */
+    sint32 ErrCode = 1;
+    /** 消息 */
+    string ErrMsg = 2;
+    /** 总数 */
+    sint32 Count = 3;
+    /** 数据 */
+    string Data = 4;
+    /** 额外的数据 */
+    map<string, string> Extras = 5;
+}

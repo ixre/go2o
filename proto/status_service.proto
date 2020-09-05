@@ -1,0 +1,9 @@
+syntax = "proto3";
+option go_package = "../core/service/proto;proto";
+
+
+/** 状态服务 */
+service StatusService{
+    /** 尝试连接 */
+    string Ping()
+}

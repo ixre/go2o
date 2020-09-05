@@ -1,0 +1,9 @@
+syntax = "proto3";
+option go_package = "../core/service/proto;proto";
+
+
+// 财务服务
+service FinanceService{
+    // 转入(业务放在service,是为person_finance解耦)
+    rpc RiseTransferIn(1:sint64 personId,2:sint32 transferWith,3:double amount)returns(Result)
+}

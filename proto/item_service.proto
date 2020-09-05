@@ -1,0 +1,15 @@
+syntax = "proto3";
+option go_package = "../core/service/proto;proto";
+
+
+
+// 商品服务
+service ItemService{
+    // 获取SKU
+    rpc GetSku(1:sint64 itemId,2:sint64 skuId)returns(SSku)
+    // 获取商品的Sku-JSON格式
+    rpc GetItemSkuJson(1:sint64 itemId)returns(string)
+    // 获取商品详细数据
+    rpc GetItemDetailData(1:sint64 itemId,2:sint32 iType)returns(string)
+}
+

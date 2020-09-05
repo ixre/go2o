@@ -11,6 +11,7 @@ message User {
     string name = 1;
     sint64 group_id = 2;
     map<string,string> extra = 3;
+    repeated string roles = 4;
 }
 message UserResponse{
     string name = 1;

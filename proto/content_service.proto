@@ -1,0 +1,47 @@
+syntax = "proto3";
+option go_package = "../core/service/proto;proto";
+
+
+/** 内容服务 */
+service ContentService{
+    /** 获取分页文章 */
+    rpc QueryPagingArticles(1:string cat,2:sint32 begin_,3:sint32 size)returns(SPagingResult)
+    /** 获取置顶的文章 */
+    list<SArticle> QueryTopArticles(1:string cat)
+}
+
+
+
+/** 文章 */
+message SArticle{
+    /** 编号  */
+    sint32 Id = 1;
+    /** 栏目编号 */
+    sint32 CatId = 2;
+    /** 标题 */
+    string Title = 3;
+    /** 小标题 */
+    string SmallTitle = 4;
+    /** 文章附图 */
+    string Thumbnail = 5;
+    /** 重定向URL */
+    sint32 PublisherId = 6;
+    /** 重定向URL */
+    string Location = 7;
+    /** 优先级,优先级越高，则置顶 */
+    sint32 Priority = 8;
+    /** 浏览钥匙 */
+    string AccessKey = 9;
+    /** 文档内容 */
+    string Content = 10;
+    /** 标签（关键词） */
+    string Tags = 11;
+    /** 显示次数 */
+    sint32 ViewCount = 12;
+    /** 排序序号 */
+    sint32 SortNum = 13;
+    /** 创建时间 */
+    sint32 CreateTime = 14;
+    /** 最后修改时间 */
+    sint32 UpdateTime = 15;
+}

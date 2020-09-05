@@ -1,0 +1,92 @@
+syntax = "proto3";
+option go_package = "../core/service/proto;proto";
+
+
+
+// 商家
+message SMerchant {
+    /** 编号 */
+    sint32 Id = 1;
+    /** 会员编号 */
+    sint64 MemberId = 2;
+    /** 登录用户 */
+    string LoginUser = 3;
+    /** 登录密码 */
+    string LoginPwd = 4;
+    /** 名称 */
+    string Name = 5;
+    /** 公司名称 */
+    string CompanyName = 6;
+    /** 是否字营 */
+    i16 SelfSales = 7;
+    /** 商户等级 */
+    sint32 Level = 8;
+    /** 标志 */
+    string Logo = 9;
+    /** 省 */
+    sint32 Province = 10;
+    /** 市 */
+    sint32 City = 11;
+    /** 区 */
+    sint32 District = 12;
+    /** 标志 */
+    sint32 Flag = 13;
+    /** 是否启用 */
+    i16 Enabled = 14;
+    /** 最后登录时间 */
+    sint32 LastLoginTime = 15;
+}
+
+
+// 商家
+message SMerchantPack {
+    /** 登录用户 */
+    string LoginUser = 1;
+    /** 登录密码 */
+    string LoginPwd = 2;
+    /** 名称 */
+    string Name = 3;
+    /** 是否字营 */
+    i16 SelfSales = 4;
+    /** 店铺名称 */
+    string ShopName = 5;
+    /** 标志 */
+    string ShopLogo = 6;
+    /** 电话 */
+    string Tel = 7;
+    /** 地址 */
+    string Addr = 8;
+}
+
+
+//商家服务
+service MerchantService{
+   // 获取商家符合的信息
+   rpc GetMerchant(1:sint32 mchId)returns(SMerchant)
+   // 注册商户并开店
+   rpc CreateMerchant(1:SMerchantPack mch,2:sint64 relMemberId)returns(Result)
+
+   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
+   rpc CheckLogin(1:string usr,2:string oriPwd)returns(Result)
+   // 验证商户状态
+   rpc Stat(1:sint32 mchId)returns(Result)
+   // 同步批发商品
+   map<string,i32> SyncWholesaleItem(1:sint32 mchId)
+   // 获取所有的交易设置
+   list<STradeConf> GetAllTradeConf(1:sint32 mchId)
+   // 根据交易类型获取交易设置
+   rpc GetTradeConf(1:sint32 mchId,2:sint32 tradeType)returns(STradeConf)
+   // 保存交易设置
+   rpc SaveTradeConf(1:sint32 mchId,2:list<STradeConf> arr)returns(Result)
+}
+
+// 商户交易设置
+message STradeConf  {
+	// 商户编号  sint64 MchId = 1;
+	// 交易类型  sint32 TradeType = 2;
+	// 交易方案，根据方案来自动调整比例  sint64 PlanId = 3;
+	// 交易标志  sint32 Flag = 4;
+	// 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
+	// 交易费，按单笔收取  sint32 TradeFee = 6;
+	// 交易手续费比例  sint32 TradeRate = 7;
+}

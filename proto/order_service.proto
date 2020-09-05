@@ -1,0 +1,117 @@
+syntax = "proto3";
+option go_package = "../core/service/proto;proto";
+
+
+
+// 销售服务
+service OrderService {
+    // 批发购物车接口
+    rpc WholesaleCartV1(1:sint64 memberId,2:string action,3:map<string,string> data)returns(Result)
+    // 普通购物车接口
+    rpc NormalCartV1(1:sint64 memberId,2:string action,3:map<string,string> data)returns(Result)
+    // 提交订单
+    map<string,string> SubmitOrderV1(1:sint64 buyerId,2:sint32 cartType,3:map<string,string> data)
+    // 获取订单信息
+    rpc GetOrder(1:string order_no,2:bool sub_order)returns(SComplexOrder)
+    // 获取订单和商品项信息
+    rpc GetOrderAndItems(1:string order_no,2:bool sub_order)returns(SComplexOrder)
+    // 获取子订单
+    rpc GetSubOrder(1:sint64 id)returns(SComplexOrder)
+    // 根据订单号获取子订单
+    rpc GetSubOrderByNo(1:string orderNo)returns(SComplexOrder)
+    // 获取订单商品项
+    list<SComplexItem> GetSubOrderItems(1:sint64 subOrderId)
+
+    // 提交交易订单
+    rpc SubmitTradeOrder(1:SComplexOrder o,2:double rate)returns(Result)
+    // 交易单现金支付
+    rpc TradeOrderCashPay(1:sint64 orderId)returns(Result)
+    // 上传交易单发票
+    rpc TradeOrderUpdateTicket(1:sint64 orderId,2:string img)returns(Result)
+}
+
+
+/** 订单状态 */
+enum EOrderState{
+	/****** 在履行前,订单可以取消申请退款  ******/
+	/** 等待支付 */
+	StatAwaitingPayment = 1
+	/** 等待确认 */
+	StatAwaitingConfirm = 2
+	/** 等待备货 */
+	StatAwaitingPickup = 3
+	/** 等待发货 */
+	StatAwaitingShipment = 4
+
+	/****** 订单取消 ******/
+
+	/** 系统取消 */
+	StatCancelled = 11
+	/** 买家申请取消,等待卖家确认 */
+	StatAwaitingCancel = 12
+	/** 卖家谢绝订单,由于无货等原因 */
+	StatDeclined = 13
+	/** 已退款,完成取消 */
+	StatRefunded = 14
+
+	/****** 履行后订单只能退货或换货 ******/
+
+	/** 部分发货(将订单商品分多个包裹发货) */
+	PartiallyShipped = 5
+	/** 完成发货 */
+	StatShipped = 6
+	/** 订单已拆分 */
+	StatBreak = 7
+	/** 订单完成 */
+	StatCompleted = 8
+
+	/****** 售后状态 ******/
+
+	/** 已退货 */
+	StatGoodsRefunded = 15
+}
+
+// 订单项
+message SComplexItem {
+    sint64 ID = 1;
+    sint64 OrderId = 2;
+    sint64 ItemId = 3;
+    sint64 SkuId = 4;
+    sint64 SnapshotId = 5;
+    sint32 Quantity = 6;
+    sint32 ReturnQuantity = 7;
+    double Amount = 8;
+    double FinalAmount = 9;
+    sint32 IsShipped = 10;
+    11: map<string,string> Data
+}
+
+// 子订单
+message SComplexOrder {
+    sint64 OrderId = 1;
+    sint64 SubOrderId = 2;
+    sint32 OrderType = 3;
+    string OrderNo = 4;
+    sint64 BuyerId = 5;
+    sint32 VendorId = 6;
+    sint32 ShopId = 7;
+    string Subject = 8;
+    double ItemAmount = 9;
+    double DiscountAmount = 10;
+    double ExpressFee = 11;
+    double PackageFee = 12;
+    double FinalAmount = 13;
+    string ConsigneePerson = 14;
+    string ConsigneePhone = 15;
+    string ShippingAddress = 16;
+    string BuyerComment = 17;
+    sint32 IsBreak = 18;
+    sint32 State = 19;
+    sint64 CreateTime = 20;
+    sint64 UpdateTime = 21;
+    repeated SComplexItem Items = 22;
+    // 扩展信息
+    23: map<string,string> Data
+    // 是否为子订单
+    bool SubOrder = 24;
+}
