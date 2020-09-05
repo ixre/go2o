@@ -14,7 +14,7 @@ import (
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
  *
- * name : rpc_client_test.go
+ * name : grpc_client_test.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2020-09-05 02:29
  * description :
@@ -52,7 +52,7 @@ func requestRPC(addr string) {
 	c := proto.NewGreeterServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.Hello(ctx, &proto.User{Name: "jarrysix"})
+	r, err := c.Hello(ctx, &proto.User1{Name: "jarrysix"})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
