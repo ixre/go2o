@@ -1,9 +1,10 @@
 syntax = "proto3";
 option go_package = "../core/service/proto;proto";
 
+import "ttype.proto";
 
 /** 状态服务 */
-service StatusService{
+service StatusService {
     /** 尝试连接 */
-    string Ping()
+    rpc Ping (Empty) returns (string)
 }

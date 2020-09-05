@@ -4,6 +4,7 @@
 syntax = "proto3";
 option go_package = "../core/service/proto;proto";
 
+message Empty{}
 //传输结果对象
 message Result {
     /* 状态码,如为0表示成功 */
