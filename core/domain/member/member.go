@@ -23,7 +23,6 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/core/msq"
 	"math"
 	"regexp"
 	"strconv"
@@ -422,11 +421,13 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 				InviterId: 0,
 				RegMchId:  0,
 			}
+			m.repo.SaveRelation(rel)
 		}
 		m.relation = rel
 	}
 	return m.relation
 }
+
 
 // 更换用户名
 func (m *memberImpl) ChangeUser(user string) error {
@@ -499,13 +500,13 @@ func (m *memberImpl) Lock(minutes int, remark string) error {
 			ml.UnlockTime = -1
 			his.Duration = -1
 		}
-		// 注册解锁任务
-		if ml.UnlockTime > 0 {
-			m.repo.RegisterUnlockJob(ml)
-		}
 		_, err = m.repo.SaveLockInfo(ml)
 		if err == nil {
 			_, err = m.repo.SaveLockHistory(his)
+			// 注册解锁任务
+			if ml.UnlockTime > 0 {
+				m.repo.RegisterUnlockJob(ml)
+			}
 		}
 	}
 	return err
@@ -680,41 +681,17 @@ func (m *memberImpl) generateInviteCode() string {
 	return code
 }
 
-// 更新邀请关系
-func (m *memberImpl) updateDepthInvite(r *member.InviteRelation) {
-	if r.InviterId > 0 {
-		arr := m.Invitation().InviterArray(r.InviterId, 2)
-		r.InviterD2 = arr[0]
-		r.InviterD3 = arr[1]
+// 绑定邀请人,如果已邀请,force为true时更新
+func (m *memberImpl) BindInviter(inviterId int64, force bool) (err error) {
+	rl := m.GetRelation()
+	if !force && rl.InviterId > 0 {
+		return member.ErrExistsInviter
 	}
-}
-
-// 保存推荐关系
-func (m *memberImpl) saveRelation(r *member.InviteRelation) error {
-	m.relation = r
-	m.relation.MemberId = m.value.Id
-	m.updateDepthInvite(m.relation)
-	err := m.repo.SaveRelation(m.relation)
-	if err == nil {
-		// 推送关系更新消息
-		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(m.GetAggregateRootId())), 1000)
+	if rl.InviterId != inviterId {
+		m.relation = nil
+		return m.Invitation().UpdateInviter(inviterId,true)
 	}
 	return err
-}
-
-// 绑定邀请人,如果已邀请,force为true时更新
-func (m *memberImpl) BindInviter(memberId int64, force bool) error {
-	if memberId > 0 {
-		if rm := m.repo.GetMember(memberId); rm == nil {
-			return member.ErrNoValidInviter
-		}
-	}
-	rl := m.GetRelation()
-	if true || rl.InviterId != memberId {
-		rl.InviterId = memberId
-		return m.saveRelation(rl)
-	}
-	return nil
 }
 
 var _ member.IFavoriteManager = new(favoriteManagerImpl)

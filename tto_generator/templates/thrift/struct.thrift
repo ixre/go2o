@@ -1,9 +1,9 @@
-namespace java {{pkg "thrift" .global.Pkg}}.rpc
-namespace netstd {{pkg "thrift" .global.Pkg}}.rpc
+namespace java {{pkg "thrift" .global.pkg}}.rpc
+namespace netstd {{pkg "thrift" .global.pkg}}.rpc
 
 /** {{.table.Comment}} */
 struct S{{.table.Title}}{
     {{range $i,$c:=.T.Columns}}
     /** {{$c.Comment}} */
-    {{plus $c.Ordinal 1}}:{{type "thrift" $c.TypeId}} {{$c.Title}}{{end}}
+    {{plus $c.Ordinal 1}}:{{type "thrift" $c.Type}} {{$c.Prop}}{{end}}
 }

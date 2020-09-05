@@ -10,7 +10,7 @@ COPY ./core ./core
 COPY ./*.go go.mod LICENSE README.md app.conf ./
 
 #ENV GO111MODULE=on
-#ENV GOPROXY=https://goproxy.io
+ENV GOPROXY=https://goproxy.io
 RUN rm -rf go.sum && sed -i 's/replace/\/\/replace/' go.mod && \
     go mod tidy && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build go2o-serve.go && \
@@ -24,7 +24,7 @@ MAINTAINER jarrysix
 LABEL vendor="Go2o"
 LABEL version="1.0.0"
 
-ENV GO2O_KAFKA_ADDR=172.17.0.1:9092
+ENV GO2O_NATS_ADDR=172.17.0.1:4222
 
 WORKDIR /app
 COPY --from=build /opt/go2o/dist/* /app/

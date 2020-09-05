@@ -30,13 +30,14 @@ var (
 func TestGenAll(t *testing.T) {
 	connString = "postgres://postgres:123456@www.dev.bitsxx.com:5432/go2o?sslmode=disable"
 	// 初始化生成器
-	conn, _ := db.NewConnector(driver, connString, nil, false).Raw()
+	conn, _ := db.NewConnector(driver, connString, nil, false)
 	dialect := getDialect(driver)
-	ds := orm.DialectSession(conn, dialect)
+	ds := orm.DialectSession(conn.Raw(), dialect)
 	dg := tto.DBCodeGenerator()
 	dg.IdUpper = false
 	// 获取表格并转换
-	tables, err := dg.ParseTables(ds.TablesByPrefix(dbName, "", dbPrefix))
+	raws,_ := ds.TablesByPrefix(dbName, "", dbPrefix)
+	tables, err := dg.Parses(raws,false)
 	if err != nil {
 		t.Error(err)
 		return
@@ -48,7 +49,13 @@ func TestGenAll(t *testing.T) {
 	// 生成GoRepo代码
 	dg.GenerateGoRepoCodes(tables, genDir)
 	// 生成自定义代码
-	dg.WalkGenerateCode(tables, "./templates", genDir)
+	opt := &tto.GenerateOptions{
+		TplDir:         "./templates",
+		AttachCopyright: true,
+		OutputDir:       genDir,
+		ExcludeFiles:    nil,
+	}
+	dg.WalkGenerateCode(tables, opt)
 	//格式化代码
 	shell.Run("gofmt -w " + genDir)
 	t.Log("生成成功, 输出目录", genDir)

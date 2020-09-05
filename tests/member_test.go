@@ -137,12 +137,28 @@ func TestLogin(t *testing.T) {
 
 // 测试锁定会员
 func TestLockMember(t *testing.T) {
-	memberId := 77365
+	memberId := 97839
 	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
-	err := m.Lock(1, "测试锁定会员")
+	err := m.Lock(1440, "测试锁定会员")
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 	time.Sleep(time.Second * 2)
+}
+
+// 测试更改邀请人
+func TestUpdateInviter(t *testing.T){
+	memberId := 96941
+	inviterId := 96949
+	//memberId := 97622
+	//inviterId := 97613  13630000873
+	//inviterId = 96999
+	//  18824894128
+	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
+	err := m.BindInviter(int64(inviterId),true)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
 }

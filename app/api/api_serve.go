@@ -76,7 +76,7 @@ func serviceMiddleware(s api.Server, prefix string, debug bool, rl *util.Request
 		s.Trace()
 		// 输出请求信息
 		s.Use(func(ctx api.Context) error {
-			apiName := ctx.Form().Get("$api_name").(string)
+			apiName := ctx.Form().Get("$api").(string)
 			log.Println(prefix, "user", ctx.Key(), " calling ", apiName)
 			data, _ := url.QueryUnescape(ctx.Request().Form.Encode())
 			log.Println(prefix, "request data = [", data, "]")
@@ -96,12 +96,12 @@ func serviceMiddleware(s api.Server, prefix string, debug bool, rl *util.Request
 	})
 	// 校验版本
 	s.Use(func(ctx api.Context) error {
-		//prod := ctx.FormData().GetString("product"
+		//prod := ctx.StoredValues().GetString("product"
 		prodVer := ctx.Form().GetString("version")
 		if api.CompareVersion(prodVer, RequireVersion) < 0 {
 			return errors.New("您当前使用的APP版本较低, 请升级或安装最新版本")
 			//return errors.New(fmt.Sprintf("%s,require version=%s",
-			//	api.RDeprecated.Message, tarVer))
+			//	api.RCDeprecated.Message, tarVer))
 		}
 		return nil
 	})

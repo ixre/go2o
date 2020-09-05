@@ -28,4 +28,7 @@ type IInvitationManager interface {
 
 	// 获取邀请我的会员
 	GetInvitationMeMember() *Member
+
+	// 更换邀请人,async是否异步更新
+	UpdateInviter(inviterId int64,sync bool) error
 }

@@ -199,6 +199,16 @@ func (s *memberService) ChangePhone(ctx context.Context, memberId int64, phone s
 	return s.result(err), nil
 }
 
+// 更改邀请人
+func (s *memberService) ChangeInviterId(ctx context.Context, memberId int64, inviterId int64) (r *ttype.Result_, err error) {
+	im := s.repo.GetMember(memberId)
+	if im == nil {
+		return s.result(member.ErrNoSuchMember), nil
+	}
+	err = im.BindInviter(inviterId, true)
+	return s.result(err), nil
+}
+
 // 是否已收藏
 func (s *memberService) Favored(memberId int64, favType int, referId int32) bool {
 	return s.repo.CreateMemberById(memberId).

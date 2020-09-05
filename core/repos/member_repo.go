@@ -506,6 +506,19 @@ func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
 	return &e
 }
 
+//　获取会员邀请的会员编号列表
+func (m *MemberRepoImpl) GetInviteChildren(id int64) []int64 {
+	arr := make([]int64, 0)
+	var d int64
+	m.Query("SELECT member_id FROM mm_relation WHERE inviter_id=$1", func(r *sql.Rows) {
+		for r.Next() {
+			r.Scan(&d)
+			arr = append(arr, d)
+		}
+	}, id)
+	return arr
+}
+
 // 获取积分对应的等级
 func (m *MemberRepoImpl) GetLevelValueByExp(mchId int32, exp int64) int {
 	var levelId int
@@ -714,7 +727,7 @@ func (m *MemberRepoImpl) SaveLockHistory(v *member.MmLockHistory) (int, error) {
 }
 
 func (m *MemberRepoImpl) SaveLockInfo(v *member.MmLockInfo) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.Id))
+	id, err := orm.Save(m._orm, v, v.Id)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockInfo")
 	}

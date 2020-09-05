@@ -124,12 +124,12 @@ func TestItemSaveSku(t *testing.T) {
 	}
 	iv := it.GetValue()
 	catId := iv.CatId
-	cat := catRepo.GetCategory(0, catId)
+	cat := catRepo.GetCategory(0, int(catId))
 	if cat == nil {
 		t.Errorf("编号为%d的分类不存在", catId)
 	}
 	//生成的规格组合
-	specs := proMRepo.GetModel(cat.ProdModel).Specs()
+	specs := proMRepo.GetModel(int32(cat.ProdModel)).Specs()
 	//最多只使用2个规格
 	if len(specs) > 2 {
 		specs = specs[:2]

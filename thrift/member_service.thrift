@@ -85,7 +85,8 @@ service MemberService{
     ttype.Result ModifyPwd(1:i64 memberId,2:string old,3:string pwd)
     /** 更改交易密码 */
     ttype.Result ModifyTradePwd(1:i64 memberId,2:string old,3:string pwd)
-
+    /** 更改邀请人 */
+    ttype.Result ChangeInviterId(1:i64 memberId,2:i64 inviterId)
     /** 获取会员的订单状态及其数量 */
     map<i32,i32> OrdersQuantity(1:i64 memberId)
 

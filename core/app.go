@@ -154,13 +154,15 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		if err := conn.Ping(); err != nil {
 			conn.Close()
 			//如果异常，则显示并退出
-			log.Fatalln("[ Go2o][ Connector]:" + conn.Driver() + "-" + err.Error())
+			log.Fatalln("[ Go2o][ Connector]:" + err.Error())
 		}
+		conn.SetMaxIdleConns(10000)
+		conn.SetMaxIdleConns(5000)
+		conn.SetConnMaxLifetime(time.Second * 10)
+		return conn
 	}
-	conn.SetMaxIdleConns(10000)
-	conn.SetMaxIdleConns(5000)
-	conn.SetConnMaxLifetime(time.Second * 10)
-	return conn
+	log.Fatalln("[ Go2o][ Connector]:" + err.Error())
+	return nil
 }
 
 func CreateRedisPool(c *gof.Config) *redis.Pool {
