@@ -14,7 +14,6 @@ ENV GOPROXY=https://goproxy.io
 RUN rm -rf go.sum && sed -i 's/replace github.com/ixre/\/\/replace  github.com/ixre/g' go.mod && \
     go mod tidy && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build go2o-serve.go && \
-    CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -ldflags='-s -w' go2o-rpc.go
 
 RUN mkdir -p /opt/go2o/dist && \
     cp -r go2o-serve go2o-rpc LICENSE README.md app.conf /opt/go2o/dist
