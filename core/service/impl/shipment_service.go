@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/module"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/shipment_service"
 )
 

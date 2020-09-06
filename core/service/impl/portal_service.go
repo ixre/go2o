@@ -3,7 +3,7 @@ package impl
 import (
 	"go2o/core/dao"
 	"go2o/core/dao/model"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
+	"go2o/core/service/proto"
 )
 
 type portalService struct {

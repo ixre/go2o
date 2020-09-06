@@ -12,13 +12,11 @@ import (
 	"context"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/service/thrift/auto_gen/rpc/foundation_service"
-	"go2o/core/service/thrift/auto_gen/rpc/registry_service"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
+	"go2o/core/service/proto"
 	"strings"
 )
 
-var _ foundation_service.FoundationService = new(foundationService)
+var _ proto.RegistryServiceServer = new(foundationService)
 
 // 基础服务
 type registryService struct {
@@ -26,6 +24,7 @@ type registryService struct {
 	registryRepo registry.IRegistryRepo
 	serviceUtil
 }
+
 
 func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *registryService {
 	return &registryService{
@@ -44,35 +43,35 @@ func (s *registryService) GetValue(_ context.Context, key string) (r string, err
 }
 
 // 获取键值存储数据
-func (s *registryService) GetRegistries(_ context.Context, keys []string) (map[string]string, error) {
+func (s *registryService) GetRegistries(_ context.Context,  array *proto.StringArray) (*proto.StringMap, error) {
 	mp := make(map[string]string)
-	for _, k := range keys {
+	for _, k := range array.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {
 			mp[k] = ir.StringValue()
 		} else {
 			mp[k] = ""
 		}
 	}
-	return mp, nil
+	return &proto.StringMap{Value: mp}, nil
 }
 
 // 按键前缀获取键数据
-func (s *registryService) FindRegistries(_ context.Context, prefix string) (r map[string]string, err error) {
+func (s *registryService) FindRegistries(_ context.Context, prefix *proto.String) (*proto.StringMap, error) {
 	mp := make(map[string]string)
-	for _, k := range s.registryRepo.SearchRegistry(prefix) {
-		if strings.HasPrefix(k.Key, prefix) {
+	for _, k := range s.registryRepo.SearchRegistry(prefix.Value) {
+		if strings.HasPrefix(k.Key, prefix.Value) {
 			mp[k.Key] = k.Value
 		}
 	}
-	return mp, nil
+	return &proto.StringMap{Value: mp}, nil
 }
 
 // 搜索注册表
-func (s *registryService) SearchRegistry(_ context.Context, key string) (r []*registry_service.SRegistry, err error) {
-	arr := s.registryRepo.SearchRegistry(key)
-	list := make([]*registry_service.SRegistry, len(arr))
+func (s *registryService) SearchRegistry(_ context.Context,  key *proto.String) (*proto.RegistriesResponse, error) {
+	arr := s.registryRepo.SearchRegistry(key.Value)
+	list := make([]*proto.SRegistry, len(arr))
 	for i, a := range arr {
-		list[i] = &registry_service.SRegistry{
+		list[i] = &proto.SRegistry{
 			Key:         a.Key,
 			Value:       a.Value,
 			Default:     a.DefaultValue,
@@ -81,33 +80,33 @@ func (s *registryService) SearchRegistry(_ context.Context, key string) (r []*re
 			Description: a.Description,
 		}
 	}
-	return list, nil
+	return &proto.RegistriesResponse{Value: list}, nil
 }
 
 // 获取数据存储
-func (s *registryService) GetRegistry(_ context.Context, key string) (string, error) {
-	ir := s.registryRepo.Get(key)
+func (s *registryService) GetRegistry(_ context.Context, key *proto.String) (*proto.String, error) {
+	ir := s.registryRepo.Get(key.Value)
 	if ir != nil {
-		return ir.StringValue(), nil
+		return &proto.String{Value: ir.StringValue()}, nil
 	}
-	return "", nil
+	return &proto.String{Value: ""}, nil
 }
 
 // 创建用户自定义注册项
-func (s *registryService) CreateUserRegistry(_ context.Context, key string, defaultValue string, description string) (r *proto.Result, err error) {
-	if s.registryRepo.Get(key) != nil {
+func (s *registryService) CreateUserRegistry(_ context.Context,r *proto.UserRegistryCreateRequest) (*proto.Result, error) {
+	if s.registryRepo.Get(r.Key) != nil {
 		return s.resultWithCode(-1, "registry is exist"), nil
 	}
 	rv := &registry.Registry{
-		Key:          key,
-		Value:        defaultValue,
-		DefaultValue: defaultValue,
+		Key:          r.Key,
+		Value:        r.DefaultValue,
+		DefaultValue:r.DefaultValue ,
 		Options:      "",
 		Flag:         registry.FlagUserDefine,
-		Description:  description,
+		Description:  r.Description,
 	}
 	ir := s.registryRepo.Create(rv)
-	err = ir.Save()
+	err := ir.Save()
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -115,10 +114,10 @@ func (s *registryService) CreateUserRegistry(_ context.Context, key string, defa
 }
 
 // 更新注册表数据
-func (s *registryService) UpdateRegistry(_ context.Context, registries map[string]string) (r *proto.Result, err error) {
-	for k, v := range registries {
+func (s *registryService) UpdateRegistryValues(_ context.Context,  registries *proto.StringMap) (*proto.Result, error) {
+	for k, v := range registries.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {
-			if err = ir.Update(v); err != nil {
+			if err := ir.Update(v); err != nil {
 				return s.error(err), nil
 			}
 		}
@@ -127,6 +126,7 @@ func (s *registryService) UpdateRegistry(_ context.Context, registries map[strin
 }
 
 // 获取键值存储数据
-func (s *registryService) GetRegistryV1(_ context.Context, keys []string) ([]string, error) {
-	return s._rep.GetsRegistry(keys), nil
+func (s *registryService) GetRegistryV1(_ context.Context,  array *proto.StringArray) (*proto.StringArray, error) {
+	a := s._rep.GetsRegistry(array.Value)
+	return &proto.StringArray{Value: a},nil
 }

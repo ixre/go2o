@@ -22,7 +22,7 @@ service RegistryService{
 }
 
 message RegistriesResponse{
-    repeated SRegistry Registries = 1;
+    repeated SRegistry Value = 1;
 }
 message UserRegistryCreateRequest{
     string key = 1;

@@ -15,12 +15,11 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/thrift/auto_gen/rpc/finance_service"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
+	"go2o/core/service/proto"
 	"go2o/core/variable"
 )
 
-var _ finance_service.FinanceService = new(personFinanceService)
+var _ proto.FinanceServiceServer = new(personFinanceService)
 
 type personFinanceService struct {
 	repo    personfinance.IPersonFinanceRepository
@@ -70,10 +69,11 @@ func (p *personFinanceService) CommitTransfer(personId int64, logId int32) error
 //  - PersonId
 //  - TransferWith
 //  - Amount
-func (p *personFinanceService) RiseTransferIn(_ context.Context, personId int64, transferWith int32, amount float64) (r *proto.Result, err error) {
+func (p *personFinanceService) RiseTransferIn(_ context.Context, r *proto.TransferInRequest) (*proto.Result, error) {
 	//return errors.New("服务暂时不可用")
-	pf := p.repo.GetPersonFinance(personId)
-	err = pf.GetRiseInfo().TransferIn(float32(amount), personfinance.TransferWith(transferWith))
+	pf := p.repo.GetPersonFinance(r.PersonId)
+	err := pf.GetRiseInfo().TransferIn(float32(r.Amount),
+		personfinance.TransferWith(r.TransferWith))
 	return p.result(err), nil
 }
 
