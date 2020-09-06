@@ -23,8 +23,6 @@ type messageService struct {
 	serviceUtil
 }
 
-
-
 func NewMessageService(rep mss.IMssRepo) *messageService {
 	return &messageService{
 		_rep: rep,
@@ -32,7 +30,7 @@ func NewMessageService(rep mss.IMssRepo) *messageService {
 }
 
 // 获取通知项配置
-func (m *messageService) GetNotifyItem(_ context.Context,key *proto.String) (*proto.SNotifyItem, error) {
+func (m *messageService) GetNotifyItem(_ context.Context, key *proto.String) (*proto.SNotifyItem, error) {
 	it := m._rep.NotifyManager().GetNotifyItem(key.Value)
 	return &proto.SNotifyItem{
 		Key:        it.Key,
@@ -45,7 +43,7 @@ func (m *messageService) GetNotifyItem(_ context.Context,key *proto.String) (*pr
 }
 
 // 发送短信
-func (m *messageService) SendPhoneMessage(_ context.Context,r *proto.SendMessageRequest) (*proto.Result, error) {
+func (m *messageService) SendPhoneMessage(_ context.Context, r *proto.SendMessageRequest) (*proto.Result, error) {
 	mg := m._rep.NotifyManager()
 	extra := make(map[string]interface{})
 	if r.Data != nil {

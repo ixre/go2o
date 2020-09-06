@@ -27,7 +27,7 @@ func NewPromotionService(rep promotion.IPromotionRepo) *promotionService {
 
 // 获取促销
 func (p *promotionService) GetPromotion(id int32) (*promotion.PromotionInfo, interface{}) {
-	var prom promotion.IPromotion = p._rep.GetPromotion(id)
+	var prom = p._rep.GetPromotion(id)
 	if prom != nil {
 		return prom.GetValue(), prom.GetRelationValue()
 	}

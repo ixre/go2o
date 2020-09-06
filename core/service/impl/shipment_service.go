@@ -16,10 +16,9 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/module"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/auto_gen/rpc/shipment_service"
 )
 
-var _ shipment_service.ShipmentService = new(shipmentServiceImpl)
+var _ proto.ShipmentServiceServer = new(shipmentServiceImpl)
 
 type shipmentServiceImpl struct {
 	repo         shipment.IShipmentRepo
@@ -52,35 +51,34 @@ func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *ship
 	return nil
 }
 
-func (s *shipmentServiceImpl) GetLogisticFlowTrack(_ context.Context, shipperCode string,
-	logisticCode string, invert bool) (r *shipment_service.SShipOrderTrack, err error) {
+func (s *shipmentServiceImpl) GetLogisticFlowTrack(_ context.Context, r *proto.LogisticFlowTrackRequest) (*proto.SShipOrderTrack, error) {
 	em := module.Get(module.EXPRESS).(*module.ExpressModule)
-	flow, err := em.GetLogisticFlowTrack(shipperCode, logisticCode, invert)
+	flow, err := em.GetLogisticFlowTrack(r.ShipperCode, r.LogisticCode, r.Invert)
 	if err == nil {
 		return s.logisticFlowTrackDto(flow), nil
 	}
-	return &shipment_service.SShipOrderTrack{
+	return &proto.SShipOrderTrack{
 		Code:    1,
 		Message: err.Error(),
 	}, nil
 }
-func (s *shipmentServiceImpl) logisticFlowTrackDto(o *shipment.ShipOrderTrack) *shipment_service.SShipOrderTrack {
+func (s *shipmentServiceImpl) logisticFlowTrackDto(o *shipment.ShipOrderTrack) *proto.SShipOrderTrack {
 	if o == nil {
-		return &shipment_service.SShipOrderTrack{
+		return &proto.SShipOrderTrack{
 			Code:    1,
 			Message: "无法获取物流信息",
 		}
 	}
-	r := &shipment_service.SShipOrderTrack{
+	r := &proto.SShipOrderTrack{
 		LogisticCode: o.LogisticCode,
 		ShipperName:  o.ShipperName,
 		ShipperCode:  o.ShipperCode,
 		ShipState:    o.ShipState,
 		UpdateTime:   o.UpdateTime,
-		Flows:        make([]*shipment_service.SShipFlow, 0),
+		Flows:        make([]*proto.SShipFlow, 0),
 	}
 	for _, v := range o.Flows {
-		r.Flows = append(r.Flows, &shipment_service.SShipFlow{
+		r.Flows = append(r.Flows, &proto.SShipFlow{
 			Subject:    v.Subject,
 			CreateTime: v.CreateTime,
 			Remark:     v.Remark,
@@ -91,8 +89,8 @@ func (s *shipmentServiceImpl) logisticFlowTrackDto(o *shipment.ShipOrderTrack) *
 
 // 获取发货单的物流追踪信息,
 // - shipOrderId:发货单编号
-func (s *shipmentServiceImpl) ShipOrderLogisticTrack(_ context.Context, shipOrderId int64, invert bool) (r *shipment_service.SShipOrderTrack, err error) {
-	so := s.repo.GetShipmentOrder(shipOrderId)
+func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, rq *proto.OrderLogisticTrackRequest) (*proto.SShipOrderTrack, error) {
+	so := s.repo.GetShipmentOrder(rq.ShipOrderId)
 	if so != nil {
 		sp := s.expressRepo.GetExpressProvider(so.Value().SpId)
 		if sp == nil {
@@ -101,7 +99,14 @@ func (s *shipmentServiceImpl) ShipOrderLogisticTrack(_ context.Context, shipOrde
 			//spOrder = "462681586678"
 			//sp.ApiCode = "ZTO"
 			spOrder := so.Value().SpOrder
-			r, err := s.GetLogisticFlowTrack(ctx, sp.ApiCode, spOrder, invert)
+			r, err := s.GetLogisticFlowTrack(ctx, &proto.LogisticFlowTrackRequest{
+				ShipperCode:          sp.ApiCode,
+				LogisticCode:         spOrder,
+				Invert:               rq.Invert,
+				XXX_NoUnkeyedLiteral: struct{}{},
+				XXX_unrecognized:     nil,
+				XXX_sizecache:        0,
+			})
 			r.ShipperName = sp.Name
 			return r, err
 		}

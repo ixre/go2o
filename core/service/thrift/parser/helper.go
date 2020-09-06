@@ -10,10 +10,32 @@ package parser
 
 import (
 	"encoding/json"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 )
 
-func PagingResult(total int, data interface{}, err error) *ttype.SPagingResult_ {
+func PagingResult(total int, data interface{}, err error) *proto.SPagingResult {
+	r := &proto.SPagingResult{}
+	if err == nil {
+		r.Count = int32(total)
+		if data == nil || data == "" {
+			r.Data = "[]"
+		} else {
+			d, err := json.Marshal(data)
+			if err != nil {
+				panic(err)
+			}
+			r.Data = string(d)
+		}
+	} else {
+		r.ErrCode = 1
+		r.ErrMsg = err.Error()
+	}
+	return r
+}
+
+
+func PagingResultThrift(total int, data interface{}, err error) *ttype.SPagingResult_ {
 	r := &ttype.SPagingResult_{}
 	if err == nil {
 		r.Count = int32(total)

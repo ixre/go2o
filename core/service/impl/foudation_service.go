@@ -1,4 +1,3 @@
-
 package impl
 
 /**
@@ -33,10 +32,6 @@ type foundationService struct {
 	serviceUtil
 }
 
-
-
-
-
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
 	return &foundationService{
 		_rep:         rep,
@@ -61,7 +56,7 @@ func (s *foundationService) SetValue(_ context.Context, pair *proto.Pair) (*prot
 }
 
 // 保存短信API凭据
-func (s *foundationService) SaveSmsApi(_ context.Context,r *proto.SmsApiSaveRequest) (*proto.Result, error) {
+func (s *foundationService) SaveSmsApi(_ context.Context, r *proto.SmsApiSaveRequest) (*proto.Result, error) {
 	manager := s.notifyRepo.Manager()
 	a := r.Api
 	perm := &notify.SmsApiPerm{
@@ -81,7 +76,7 @@ func (s *foundationService) SaveSmsApi(_ context.Context,r *proto.SmsApiSaveRequ
 }
 
 // 获取短信API凭据, @provider 短信服务商, 默认:http
-func (s *foundationService) GetSmsApi(_ context.Context,provider *proto.String) (*proto.SSmsApi, error) {
+func (s *foundationService) GetSmsApi(_ context.Context, provider *proto.String) (*proto.SSmsApi, error) {
 	manager := s.notifyRepo.Manager()
 	perm := manager.GetSmsApiPerm(provider.Value)
 	if perm != nil {
@@ -109,7 +104,7 @@ func (s *foundationService) GetSmsApi(_ context.Context,provider *proto.String) 
 }
 
 // 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks
-func (s *foundationService) SaveBoardHook(_ context.Context,request *proto.BoardHookSaveRequest) (*proto.Result, error) {
+func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.BoardHookSaveRequest) (*proto.Result, error) {
 
 	mp := map[string]string{
 		registry.BoardHookURL:   request.HookURL,
@@ -126,7 +121,7 @@ func (s *foundationService) SaveBoardHook(_ context.Context,request *proto.Board
 }
 
 // 删除值
-func (s *foundationService) DeleteValue(_ context.Context,s2 *proto.String) (*proto.Result, error) {
+func (s *foundationService) DeleteValue(_ context.Context, s2 *proto.String) (*proto.Result, error) {
 	err := s._rep.DeleteValue(s2.Value)
 	return s.result(err), nil
 }
@@ -147,11 +142,11 @@ func (s *foundationService) GetRegistryV1(_ context.Context, keys []string) ([]s
 func (s *foundationService) SuperValidate(_ context.Context, user *proto.UserPwd) (*proto.Bool, error) {
 	superPwd := gof.CurrentApp.Config().Get("super_login_md5")
 	encPwd := domain.Sha1Pwd(user.Pwd + user.User)
-	return &proto.Bool{Value:superPwd == encPwd}, nil
+	return &proto.Bool{Value: superPwd == encPwd}, nil
 }
 
 // 保存超级用户账号和密码
-func (s *foundationService) FlushSuperPwd(_ context.Context,user *proto.UserPwd) (*proto.Empty, error) {
+func (s *foundationService) FlushSuperPwd(_ context.Context, user *proto.UserPwd) (*proto.Empty, error) {
 	conf := gof.CurrentApp.Config()
 	encPwd := domain.Sha1Pwd(user.Pwd + user.User)
 	conf.Set("super_login_md5", encPwd)
@@ -164,27 +159,27 @@ func (s *foundationService) FlushSuperPwd(_ context.Context,user *proto.UserPwd)
 //   -  1. 成功，并返回token
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
-func (s *foundationService) RegisterApp(_ context.Context,app *proto.SSsoApp) (*proto.String, error) {
+func (s *foundationService) RegisterApp(_ context.Context, app *proto.SSsoApp) (*proto.String, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	token, err := sso.Register(app)
 	if err == nil {
-		return  &proto.String{
-			Value:"1:" + token,
+		return &proto.String{
+			Value: "1:" + token,
 		}, nil
 	}
-	return  &proto.String{
-		Value:err.Error(),
+	return &proto.String{
+		Value: err.Error(),
 	}, nil
 }
 
 // 获取应用信息
-func (s *foundationService) GetApp(_ context.Context,s2 *proto.String) (*proto.SSsoApp, error) {
+func (s *foundationService) GetApp(_ context.Context, s2 *proto.String) (*proto.SSsoApp, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	return sso.Get(s2.Value), nil
 }
 
 // 获取单点登录应用
-func (s *foundationService) GetAllSsoApp(_ context.Context ,_ *proto.Empty) (*proto.StringListResponse, error) {
+func (s *foundationService) GetAllSsoApp(_ context.Context, _ *proto.Empty) (*proto.StringListResponse, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	return &proto.StringListResponse{
 		List: sso.Array(),
@@ -220,8 +215,8 @@ func (s *foundationService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 }
 
 // 获取资源地址
-func (s *foundationService) ResourceUrl(_ context.Context,  s2 *proto.String) (*proto.String, error) {
-	return &proto.String{Value:format.GetResUrl(s2.Value)},nil
+func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
+	return &proto.String{Value: format.GetResUrl(s2.Value)}, nil
 }
 
 // 获取全局商户销售设置
@@ -252,7 +247,7 @@ func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) 
 		})
 	}
 	return &proto.AreaListResponse{
-		List:arr,
+		List: arr,
 	}, nil
 }
 

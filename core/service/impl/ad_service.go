@@ -165,7 +165,7 @@ func (a *adService) DeleteAd(adUserId, adId int32) error {
 func (a *adService) SaveHyperLinkAd(adUserId int32, v *ad.HyperLink) (int32, error) {
 	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
-	var adv ad.IAd = pa.GetById(v.AdId)
+	var adv = pa.GetById(v.AdId)
 	if adv.Type() == ad.TypeHyperLink {
 		g := adv.(ad.IHyperLinkAd)
 		g.SetData(v)
@@ -177,7 +177,7 @@ func (a *adService) SaveHyperLinkAd(adUserId int32, v *ad.HyperLink) (int32, err
 // 保存图片广告
 func (a *adService) SaveImageAd(adUserId int32, v *ad.Image) (int32, error) {
 	pa := a.getUserAd(adUserId)
-	var adv ad.IAd = pa.GetById(v.AdId)
+	var adv = pa.GetById(v.AdId)
 	if adv.Type() == ad.TypeImage {
 		g := adv.(ad.IImageAd)
 		g.SetData(v)
@@ -190,7 +190,7 @@ func (a *adService) SaveImageAd(adUserId int32, v *ad.Image) (int32, error) {
 func (a *adService) SaveImage(adUserId int32, adId int32, v *ad.Image) (int32, error) {
 	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
-	var adv ad.IAd = pa.GetById(adId)
+	var adv = pa.GetById(adId)
 	if adv != nil {
 		switch adv.Type() {
 		case ad.TypeGallery:
@@ -208,7 +208,7 @@ func (a *adService) SaveImage(adUserId int32, adId int32, v *ad.Image) (int32, e
 // 获取广告图片
 func (a *adService) GetValueAdImage(adUserId, adId, imgId int32) *ad.Image {
 	pa := a.getUserAd(adUserId)
-	var adv ad.IAd = pa.GetById(adId)
+	var adv = pa.GetById(adId)
 	if adv != nil {
 		if adv.Type() == ad.TypeGallery {
 			gad := adv.(ad.IGalleryAd)
@@ -222,7 +222,7 @@ func (a *adService) GetValueAdImage(adUserId, adId, imgId int32) *ad.Image {
 func (a *adService) DelAdImage(adUserId, adId, imgId int32) error {
 	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
-	var adv ad.IAd = pa.GetById(adId)
+	var adv = pa.GetById(adId)
 	if adv != nil {
 		if adv.Type() == ad.TypeGallery {
 			gad := adv.(ad.IGalleryAd)

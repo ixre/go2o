@@ -267,7 +267,7 @@ func (p *productService) GetBigCategories(mchId int32) []*ttype.SCategory {
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
 			v2.Icon = format.GetResUrl(v2.Icon)
-			list = append(list, parser.CategoryDto(v2))
+			list = append(list, parser.CategoryDtoThrift(v2))
 		}
 	}
 	return list
@@ -280,7 +280,7 @@ func (p *productService) GetChildCategories(mchId, parentId int32) []*ttype.SCat
 		if vv := v.GetValue(); vv.ParentId == int(parentId) && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
 			p.setChild(cats, vv)
-			list = append(list, parser.CategoryDto(vv))
+			list = append(list, parser.CategoryDtoThrift(vv))
 		}
 	}
 	return list

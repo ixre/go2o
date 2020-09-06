@@ -161,10 +161,10 @@ func (w *walletServiceImpl) FinishTakeOut(ctx context.Context, walletId int64, t
 func (w *walletServiceImpl) PagingWalletLog(ctx context.Context, walletId int64, params *ttype.SPagingParams) (r *ttype.SPagingResult_, err error) {
 	iw := w._repo.GetWallet(walletId)
 	if iw == nil {
-		return parser.PagingResult(0, nil, wallet.ErrNoSuchWalletAccount), nil
+		return parser.PagingResultThrift(0, nil, wallet.ErrNoSuchWalletAccount), nil
 	}
 	total, list := iw.PagingLog(int(params.Begin), int(params.Over), params.Parameters, params.SortBy)
-	return parser.PagingResult(total, list, err), nil
+	return parser.PagingResultThrift(total, list, err), nil
 }
 
 func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *wallet_service.SWallet {

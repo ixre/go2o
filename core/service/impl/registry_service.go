@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-var _ proto.RegistryServiceServer = new(foundationService)
+var _ proto.RegistryServiceServer = new(registryService)
 
 // 基础服务
 type registryService struct {
@@ -24,7 +24,6 @@ type registryService struct {
 	registryRepo registry.IRegistryRepo
 	serviceUtil
 }
-
 
 func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *registryService {
 	return &registryService{
@@ -43,7 +42,7 @@ func (s *registryService) GetValue(_ context.Context, key string) (r string, err
 }
 
 // 获取键值存储数据
-func (s *registryService) GetRegistries(_ context.Context,  array *proto.StringArray) (*proto.StringMap, error) {
+func (s *registryService) GetRegistries(_ context.Context, array *proto.StringArray) (*proto.StringMap, error) {
 	mp := make(map[string]string)
 	for _, k := range array.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {
@@ -67,7 +66,7 @@ func (s *registryService) FindRegistries(_ context.Context, prefix *proto.String
 }
 
 // 搜索注册表
-func (s *registryService) SearchRegistry(_ context.Context,  key *proto.String) (*proto.RegistriesResponse, error) {
+func (s *registryService) SearchRegistry(_ context.Context, key *proto.String) (*proto.RegistriesResponse, error) {
 	arr := s.registryRepo.SearchRegistry(key.Value)
 	list := make([]*proto.SRegistry, len(arr))
 	for i, a := range arr {
@@ -93,14 +92,14 @@ func (s *registryService) GetRegistry(_ context.Context, key *proto.String) (*pr
 }
 
 // 创建用户自定义注册项
-func (s *registryService) CreateUserRegistry(_ context.Context,r *proto.UserRegistryCreateRequest) (*proto.Result, error) {
+func (s *registryService) CreateUserRegistry(_ context.Context, r *proto.UserRegistryCreateRequest) (*proto.Result, error) {
 	if s.registryRepo.Get(r.Key) != nil {
 		return s.resultWithCode(-1, "registry is exist"), nil
 	}
 	rv := &registry.Registry{
 		Key:          r.Key,
 		Value:        r.DefaultValue,
-		DefaultValue:r.DefaultValue ,
+		DefaultValue: r.DefaultValue,
 		Options:      "",
 		Flag:         registry.FlagUserDefine,
 		Description:  r.Description,
@@ -114,7 +113,7 @@ func (s *registryService) CreateUserRegistry(_ context.Context,r *proto.UserRegi
 }
 
 // 更新注册表数据
-func (s *registryService) UpdateRegistryValues(_ context.Context,  registries *proto.StringMap) (*proto.Result, error) {
+func (s *registryService) UpdateRegistryValues(_ context.Context, registries *proto.StringMap) (*proto.Result, error) {
 	for k, v := range registries.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {
 			if err := ir.Update(v); err != nil {
@@ -126,7 +125,7 @@ func (s *registryService) UpdateRegistryValues(_ context.Context,  registries *p
 }
 
 // 获取键值存储数据
-func (s *registryService) GetRegistryV1(_ context.Context,  array *proto.StringArray) (*proto.StringArray, error) {
+func (s *registryService) GetRegistryV1(_ context.Context, array *proto.StringArray) (*proto.StringArray, error) {
 	a := s._rep.GetsRegistry(array.Value)
-	return &proto.StringArray{Value: a},nil
+	return &proto.StringArray{Value: a}, nil
 }

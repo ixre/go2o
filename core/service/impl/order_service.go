@@ -25,6 +25,7 @@ import (
 	orderImpl "go2o/core/domain/order"
 	"go2o/core/dto"
 	"go2o/core/query"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/order_service"
 	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 	"go2o/core/service/thrift/parser"
@@ -32,7 +33,7 @@ import (
 	"strings"
 )
 
-var _ order_service.OrderService = new(orderServiceImpl)
+var   _ order_service.OrderService = new(orderServiceImpl)
 
 type orderServiceImpl struct {
 	repo       order.IOrderRepo

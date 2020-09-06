@@ -2,10 +2,10 @@ package impl
 
 import (
 	"context"
-	"go2o/core/service/thrift/auto_gen/rpc/status_service"
+	"go2o/core/service/proto"
 )
 
-var _ status_service.StatusService = new(statusServiceImpl)
+var _ proto.StatusServiceServer = new(statusServiceImpl)
 
 type statusServiceImpl struct {
 }
@@ -14,6 +14,6 @@ func NewStatusService() *statusServiceImpl {
 	return &statusServiceImpl{}
 }
 
-func (s *statusServiceImpl) Ping(_ context.Context) (r string, err error) {
-	return "pong", nil
+func (s *statusServiceImpl) Ping(_ context.Context, empty *proto.Empty) (*proto.String, error) {
+	return &proto.String{Value: "pong"}, nil
 }

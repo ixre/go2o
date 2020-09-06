@@ -16,13 +16,12 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/shop_service"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
-	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
 )
 
-var _ shop_service.ShopService = new(shopServiceImpl)
+var _ proto.ShopServiceServer = new(shopServiceImpl)
 
 type shopServiceImpl struct {
 	repo     shop.IShopRepo
@@ -32,21 +31,21 @@ type shopServiceImpl struct {
 	serviceUtil
 }
 
-func (si *shopServiceImpl) QueryShopIdByHost(_ context.Context, host string) (r int32, err error) {
-	_, shopId := si.query.QueryShopIdByHost(host)
-	return shopId, nil
+func (si *shopServiceImpl) QueryShopIdByHost(_ context.Context, host *proto.String) (*proto.Int32, error) {
+	_, shopId := si.query.QueryShopIdByHost(host.Value)
+	return &proto.Int32{Value: shopId}, nil
 }
 
-func (si *shopServiceImpl) GetShop(_ context.Context, shopId int32) (r *shop_service.SShop, err error) {
-	sp := si.shopRepo.GetOnlineShop(int(shopId))
+func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.Int32) (*proto.SShop, error) {
+	sp := si.shopRepo.GetOnlineShop(int(shopId.Value))
 	if sp != nil {
 		return si.parseShop(sp), nil
 	}
 	return nil, nil
 }
 
-func (si *shopServiceImpl) GetVendorShop(_ context.Context, vendorId int32) (r *shop_service.SShop, err error) {
-	sp := si.shopRepo.GetOnlineShopOfMerchant(int(vendorId))
+func (si *shopServiceImpl) GetVendorShop(_ context.Context, vendorId *proto.Int32) (*proto.SShop, error) {
+	sp := si.shopRepo.GetOnlineShopOfMerchant(int(vendorId.Value))
 	if sp != nil {
 		return si.parseShop(sp), nil
 	}
@@ -54,9 +53,9 @@ func (si *shopServiceImpl) GetVendorShop(_ context.Context, vendorId int32) (r *
 }
 
 // 根据主机头获取店铺编号
-func (si *shopServiceImpl) QueryShopByHost(_ context.Context, host string) (r int32, err error) {
-	_, shopId := si.query.QueryShopIdByHost(host)
-	return shopId, nil
+func (si *shopServiceImpl) QueryShopByHost(_ context.Context, host *proto.String) (*proto.Int32, error) {
+	_, shopId := si.query.QueryShopIdByHost(host.Value)
+	return &proto.Int32{Value: shopId}, nil
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
@@ -70,7 +69,7 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 }
 
 // 获取门店
-func (si *shopServiceImpl) GetStore(_ context.Context, storeId int32) (*shop_service.SStore, error) {
+func (si *shopServiceImpl) GetStore(_ context.Context, storeId *proto.Int32) (*proto.SStore, error) {
 	panic("返回门店")
 	//mch := si.mchRepo.GetMerchant(int(storeId))
 	//if mch != nil {
@@ -82,22 +81,22 @@ func (si *shopServiceImpl) GetStore(_ context.Context, storeId int32) (*shop_ser
 	//return nil, nil
 }
 
-func (si *shopServiceImpl) GetStoreById(_ context.Context, shopId int32) (*shop_service.SStore, error) {
-	vendorId := si.query.GetMerchantId(shopId)
-	return si.GetStore(ctx, vendorId)
+func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId *proto.Int32) (*proto.SStore, error) {
+	vendorId := si.query.GetMerchantId(shopId.Value)
+	return si.GetStore(ctx, &proto.Int32{Value: vendorId})
 }
 
 // 打开或关闭商店
-func (si *shopServiceImpl) TurnShop(_ context.Context, shopId int32, on bool, reason string) (*proto.Result, error) {
+func (si *shopServiceImpl) TurnShop(_ context.Context, r *proto.TurnShopRequest) (*proto.Result, error) {
 	var err error
-	sp := si.repo.GetShop(int(shopId))
+	sp := si.repo.GetShop(int(r.ShopId))
 	if sp == nil {
 		err = shop.ErrNoSuchShop
 	} else {
-		if on {
+		if r.On {
 			err = sp.TurnOn()
 		} else {
-			err = sp.TurnOff(reason)
+			err = sp.TurnOff(r.Reason)
 		}
 	}
 	return si.result(err), nil
@@ -150,7 +149,7 @@ func (si *shopServiceImpl) GetShopValueById(mchId, shopId int32) *shop.Shop {
 func (si *shopServiceImpl) SaveStore(s *shop_service.SStore) error {
 	mch := si.mchRepo.GetMerchant(int(s.VendorId))
 	if mch != nil {
-		v, v1 := parser.Parse2OnlineShop(s)
+		v, v1 := si.parse2OnlineShop(s)
 		mgr := mch.ShopManager()
 		sp := mgr.GetOnlineShop()
 		// 创建商店
@@ -268,9 +267,9 @@ func (si *shopServiceImpl) PagedOnBusinessOnlineShops(begin, end int, where, ord
 	return n, rows
 }
 
-func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *shop_service.SShop {
-	return &shop_service.SShop{
-		ID:         int32(sp.Id),
+func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
+	return &proto.SShop{
+		Id:         int32(sp.Id),
 		VendorId:   int32(sp.VendorId),
 		ShopName:   sp.ShopName,
 		Alias:      sp.Alias,
@@ -279,4 +278,23 @@ func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *shop_service.SShop {
 		ShopTitle:  sp.ShopTitle,
 		ShopNotice: sp.ShopNotice,
 	}
+}
+
+func (si *shopServiceImpl) parse2OnlineShop(s *shop_service.SStore) (*shop.Shop, *shop.OnlineShop) {
+	sv := &shop.Shop{
+		Id:           s.ID,
+		Name:         s.Name,
+		VendorId:     s.VendorId,
+		ShopType:     shop.TypeOnlineShop,
+		State:        s.State,
+		OpeningState: s.OpeningState,
+	}
+	ov := &shop.OnlineShop{}
+	ov.Id = int(s.ID)
+	ov.Addr = "" //todo:???
+	ov.Tel = s.StorePhone
+	ov.Logo = s.Logo
+	ov.ShopNotice = s.StoreNotice
+	ov.ShopTitle = s.StoreTitle
+	return sv, ov
 }
