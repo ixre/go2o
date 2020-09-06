@@ -29,8 +29,8 @@ message GetOrderItemsRequest {
     bool sub_order = 2;
 }
 message TradeOrderSubmitRequest {
-    SComplexOrder o = 1;
-    double rate = 2;
+    SComplexOrder Order = 1;
+    double Rate = 2;
 }
 
 message TradeOrderTicketRequest {
@@ -39,7 +39,7 @@ message TradeOrderTicketRequest {
 }
 
 message ComplexItemsResponse {
-    repeated SComplexItem Items = 1;
+    repeated SComplexItem Value = 1;
 }
 
 // 销售服务

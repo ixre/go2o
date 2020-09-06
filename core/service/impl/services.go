@@ -23,7 +23,6 @@ import (
 	"go2o/core/query"
 	"go2o/core/repos"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/auto_gen/rpc/wallet_service"
 	"strconv"
 	"time"
 )
@@ -65,7 +64,7 @@ var (
 	// 广告服务
 	AdService *adService
 	// 钱包服务
-	WalletService wallet_service.WalletService
+	WalletService *walletServiceImpl
 	// 个人金融服务
 	PersonFinanceService *personFinanceService
 	// 门户数据服务
@@ -183,7 +182,7 @@ func initRpcServe(ctx gof.App) {
 	mp[registry.DomainEnabledSSL] = gf("ssl_enabled")
 	mp[registry.Domain] = gf("domain")
 	mp[registry.ApiRequireVersion] = gf("api_require_version")
-	RegistryService.UpdateRegistry(nil, mp)
+	_, _ = RegistryService.UpdateRegistryValues(nil, &proto.StringMap{Value: mp})
 
 	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
 	//mp[variable.DStaticPath] = gf("static_server")

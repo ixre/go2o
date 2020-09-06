@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/member_service"
 	"go2o/core/service/thrift/auto_gen/rpc/merchant_service"
 	"go2o/core/service/thrift/auto_gen/rpc/order_service"
@@ -475,96 +476,8 @@ func ShoppingCartItem(src *ttype.SShoppingCartItem) *cart.NormalCartItem {
 	return i
 }
 
-func SubOrderItemDto(src *order.SubOrderItem) *order_service.SComplexItem {
-	return &order_service.SComplexItem{
-		ID:             int64(src.ID),
-		OrderId:        src.OrderId,
-		ItemId:         int64(src.ItemId),
-		SkuId:          int64(src.SkuId),
-		SnapshotId:     int64(src.SnapshotId),
-		Quantity:       src.Quantity,
-		ReturnQuantity: src.ReturnQuantity,
-		Amount:         float64(src.Amount),
-		FinalAmount:    float64(src.FinalAmount),
-		IsShipped:      int32(src.IsShipped),
-	}
-}
 
-func SubOrderDto(src *order.NormalSubOrder) *order_service.SComplexOrder {
-	o := &order_service.SComplexOrder{
-		OrderId:        src.OrderId,
-		SubOrderId:     src.OrderId,
-		OrderNo:        src.OrderNo,
-		BuyerId:        int64(src.BuyerId),
-		VendorId:       src.VendorId,
-		ShopId:         src.ShopId,
-		Subject:        src.Subject,
-		ItemAmount:     float64(src.ItemAmount),
-		DiscountAmount: float64(src.DiscountAmount),
-		ExpressFee:     float64(src.ExpressFee),
-		PackageFee:     float64(src.PackageFee),
-		FinalAmount:    float64(src.FinalAmount),
-		CreateTime:     src.CreateTime,
-		UpdateTime:     src.UpdateTime,
-		State:          int32(src.State),
-		Items:          make([]*order_service.SComplexItem, len(src.Items)),
-	}
-	for i, v := range src.Items {
-		o.Items[i] = SubOrderItemDto(v)
-	}
-	return o
-}
-
-func OrderItemDto(src *order.ComplexItem) *order_service.SComplexItem {
-	return &order_service.SComplexItem{
-		ID:             src.ID,
-		OrderId:        src.OrderId,
-		ItemId:         src.ItemId,
-		SkuId:          src.SkuId,
-		SnapshotId:     src.SnapshotId,
-		Quantity:       src.Quantity,
-		ReturnQuantity: src.ReturnQuantity,
-		Amount:         src.Amount,
-		FinalAmount:    src.FinalAmount,
-		IsShipped:      src.IsShipped,
-		Data:           src.Data,
-	}
-}
-
-func OrderDto(src *order.ComplexOrder) *order_service.SComplexOrder {
-	o := &order_service.SComplexOrder{
-		OrderId:         src.OrderId,
-		SubOrderId:      src.SubOrderId,
-		OrderType:       src.OrderType,
-		OrderNo:         src.OrderNo,
-		BuyerId:         src.BuyerId,
-		VendorId:        src.VendorId,
-		ShopId:          src.ShopId,
-		Subject:         src.Subject,
-		ItemAmount:      src.ItemAmount,
-		DiscountAmount:  src.DiscountAmount,
-		ExpressFee:      src.ExpressFee,
-		PackageFee:      src.PackageFee,
-		FinalAmount:     src.FinalAmount,
-		ConsigneePerson: src.ConsigneePerson,
-		ConsigneePhone:  src.ConsigneePhone,
-		ShippingAddress: src.ShippingAddress,
-		BuyerComment:    src.BuyerComment,
-		CreateTime:      src.CreateTime,
-		UpdateTime:      src.UpdateTime,
-		State:           src.State,
-		Items:           make([]*order_service.SComplexItem, len(src.Items)),
-		Data:            src.Data,
-	}
-	if src.Items != nil {
-		for i, v := range src.Items {
-			o.Items[i] = OrderItemDto(v)
-		}
-	}
-	return o
-}
-
-func Order(src *order_service.SComplexOrder) *order.ComplexOrder {
+func Order(src *proto.SComplexOrder) *order.ComplexOrder {
 	o := &order.ComplexOrder{
 		OrderId:         src.OrderId,
 		SubOrderId:      src.SubOrderId,
@@ -597,7 +510,236 @@ func Order(src *order_service.SComplexOrder) *order.ComplexOrder {
 	return o
 }
 
-func OrderItem(src *order_service.SComplexItem) *order.ComplexItem {
+func OrderItem(src *proto.SComplexItem) *order.ComplexItem {
+	return &order.ComplexItem{
+		ID:             src.ID,
+		OrderId:        src.OrderId,
+		ItemId:         src.ItemId,
+		SkuId:          src.SkuId,
+		SnapshotId:     src.SnapshotId,
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         src.Amount,
+		FinalAmount:    src.FinalAmount,
+		IsShipped:      src.IsShipped,
+		Data:           src.Data,
+	}
+}
+
+
+func SubOrderItemDto(src *order.SubOrderItem) *proto.SComplexItem {
+	return &proto.SComplexItem{
+		ID:             int64(src.ID),
+		OrderId:        src.OrderId,
+		ItemId:         int64(src.ItemId),
+		SkuId:          int64(src.SkuId),
+		SnapshotId:     int64(src.SnapshotId),
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         float64(src.Amount),
+		FinalAmount:    float64(src.FinalAmount),
+		IsShipped:      src.IsShipped,
+	}
+}
+
+func SubOrderDto(src *order.NormalSubOrder) *proto.SComplexOrder {
+	o := &proto.SComplexOrder{
+		OrderId:        src.OrderId,
+		SubOrderId:     src.OrderId,
+		OrderNo:        src.OrderNo,
+		BuyerId:        int64(src.BuyerId),
+		VendorId:       src.VendorId,
+		ShopId:         src.ShopId,
+		Subject:        src.Subject,
+		ItemAmount:     float64(src.ItemAmount),
+		DiscountAmount: float64(src.DiscountAmount),
+		ExpressFee:     float64(src.ExpressFee),
+		PackageFee:     float64(src.PackageFee),
+		FinalAmount:    float64(src.FinalAmount),
+		CreateTime:     src.CreateTime,
+		UpdateTime:     src.UpdateTime,
+		State:          src.State,
+		Items:          make([]*proto.SComplexItem, len(src.Items)),
+	}
+	for i, v := range src.Items {
+		o.Items[i] = SubOrderItemDto(v)
+	}
+	return o
+}
+
+func OrderItemDto(src *order.ComplexItem) *proto.SComplexItem {
+	return &proto.SComplexItem{
+		ID:             src.ID,
+		OrderId:        src.OrderId,
+		ItemId:         src.ItemId,
+		SkuId:          src.SkuId,
+		SnapshotId:     src.SnapshotId,
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         src.Amount,
+		FinalAmount:    src.FinalAmount,
+		IsShipped:      src.IsShipped,
+		Data:           src.Data,
+	}
+}
+
+func OrderDto(src *order.ComplexOrder) *proto.SComplexOrder {
+	o := &proto.SComplexOrder{
+		OrderId:         src.OrderId,
+		SubOrderId:      src.SubOrderId,
+		OrderType:       src.OrderType,
+		OrderNo:         src.OrderNo,
+		BuyerId:         src.BuyerId,
+		VendorId:        src.VendorId,
+		ShopId:          src.ShopId,
+		Subject:         src.Subject,
+		ItemAmount:      src.ItemAmount,
+		DiscountAmount:  src.DiscountAmount,
+		ExpressFee:      src.ExpressFee,
+		PackageFee:      src.PackageFee,
+		FinalAmount:     src.FinalAmount,
+		ConsigneePerson: src.ConsigneePerson,
+		ConsigneePhone:  src.ConsigneePhone,
+		ShippingAddress: src.ShippingAddress,
+		BuyerComment:    src.BuyerComment,
+		CreateTime:      src.CreateTime,
+		UpdateTime:      src.UpdateTime,
+		State:           src.State,
+		Items:           make([]*proto.SComplexItem, len(src.Items)),
+		Data:            src.Data,
+	}
+	if src.Items != nil {
+		for i, v := range src.Items {
+			o.Items[i] = OrderItemDto(v)
+		}
+	}
+	return o
+}
+
+
+func SubOrderItemDtoThrift(src *order.SubOrderItem) *order_service.SComplexItem {
+	return &order_service.SComplexItem{
+		ID:             int64(src.ID),
+		OrderId:        src.OrderId,
+		ItemId:         int64(src.ItemId),
+		SkuId:          int64(src.SkuId),
+		SnapshotId:     int64(src.SnapshotId),
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         float64(src.Amount),
+		FinalAmount:    float64(src.FinalAmount),
+		IsShipped:      int32(src.IsShipped),
+	}
+}
+
+func SubOrderDtoThrift(src *order.NormalSubOrder) *order_service.SComplexOrder {
+	o := &order_service.SComplexOrder{
+		OrderId:        src.OrderId,
+		SubOrderId:     src.OrderId,
+		OrderNo:        src.OrderNo,
+		BuyerId:        int64(src.BuyerId),
+		VendorId:       src.VendorId,
+		ShopId:         src.ShopId,
+		Subject:        src.Subject,
+		ItemAmount:     float64(src.ItemAmount),
+		DiscountAmount: float64(src.DiscountAmount),
+		ExpressFee:     float64(src.ExpressFee),
+		PackageFee:     float64(src.PackageFee),
+		FinalAmount:    float64(src.FinalAmount),
+		CreateTime:     src.CreateTime,
+		UpdateTime:     src.UpdateTime,
+		State:          int32(src.State),
+		Items:          make([]*order_service.SComplexItem, len(src.Items)),
+	}
+	for i, v := range src.Items {
+		o.Items[i] = SubOrderItemDtoThrift(v)
+	}
+	return o
+}
+
+func OrderItemDtoThrift(src *order.ComplexItem) *order_service.SComplexItem {
+	return &order_service.SComplexItem{
+		ID:             src.ID,
+		OrderId:        src.OrderId,
+		ItemId:         src.ItemId,
+		SkuId:          src.SkuId,
+		SnapshotId:     src.SnapshotId,
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         src.Amount,
+		FinalAmount:    src.FinalAmount,
+		IsShipped:      src.IsShipped,
+		Data:           src.Data,
+	}
+}
+
+func OrderDtoThrift(src *order.ComplexOrder) *order_service.SComplexOrder {
+	o := &order_service.SComplexOrder{
+		OrderId:         src.OrderId,
+		SubOrderId:      src.SubOrderId,
+		OrderType:       src.OrderType,
+		OrderNo:         src.OrderNo,
+		BuyerId:         src.BuyerId,
+		VendorId:        src.VendorId,
+		ShopId:          src.ShopId,
+		Subject:         src.Subject,
+		ItemAmount:      src.ItemAmount,
+		DiscountAmount:  src.DiscountAmount,
+		ExpressFee:      src.ExpressFee,
+		PackageFee:      src.PackageFee,
+		FinalAmount:     src.FinalAmount,
+		ConsigneePerson: src.ConsigneePerson,
+		ConsigneePhone:  src.ConsigneePhone,
+		ShippingAddress: src.ShippingAddress,
+		BuyerComment:    src.BuyerComment,
+		CreateTime:      src.CreateTime,
+		UpdateTime:      src.UpdateTime,
+		State:           src.State,
+		Items:           make([]*order_service.SComplexItem, len(src.Items)),
+		Data:            src.Data,
+	}
+	if src.Items != nil {
+		for i, v := range src.Items {
+			o.Items[i] = OrderItemDtoThrift(v)
+		}
+	}
+	return o
+}
+
+func OrderThrift(src *order_service.SComplexOrder) *order.ComplexOrder {
+	o := &order.ComplexOrder{
+		OrderId:         src.OrderId,
+		SubOrderId:      src.SubOrderId,
+		OrderType:       src.OrderType,
+		OrderNo:         src.OrderNo,
+		BuyerId:         src.BuyerId,
+		VendorId:        src.VendorId,
+		ShopId:          src.ShopId,
+		Subject:         src.Subject,
+		ItemAmount:      src.ItemAmount,
+		DiscountAmount:  src.DiscountAmount,
+		ExpressFee:      src.ExpressFee,
+		PackageFee:      src.PackageFee,
+		FinalAmount:     src.FinalAmount,
+		ConsigneePerson: src.ConsigneePerson,
+		ConsigneePhone:  src.ConsigneePhone,
+		ShippingAddress: src.ShippingAddress,
+		BuyerComment:    src.BuyerComment,
+		CreateTime:      src.CreateTime,
+		UpdateTime:      src.UpdateTime,
+		State:           src.State,
+		Items:           make([]*order.ComplexItem, len(src.Items)),
+		Data:            src.Data,
+	}
+	if src.Items != nil {
+		for i, v := range src.Items {
+			o.Items[i] = OrderItemThrift(v)
+		}
+	}
+	return o
+}
+
+func OrderItemThrift(src *order_service.SComplexItem) *order.ComplexItem {
 	return &order.ComplexItem{
 		ID:             src.ID,
 		OrderId:        src.OrderId,

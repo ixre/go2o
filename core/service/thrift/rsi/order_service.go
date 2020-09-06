@@ -314,7 +314,7 @@ func (s *orderServiceImpl) GetShoppingCart(memberId int64,
 
 // 转换购物车数据
 func (s *orderServiceImpl) parseCart(c cart.ICart) *ttype.SShoppingCart {
-	dto := cart.ParseToDtoCart(c)
+	dto := cart.ParseToDtoCartThrift(c)
 	for _, v := range dto.Shops {
 		is := s.shopRepo.GetOnlineShop(int(v.ShopId))
 		if is != nil {
@@ -340,7 +340,7 @@ func (s *orderServiceImpl) PutInCart(memberId int64, code string,
 		if _, err = c.Save(); err == nil {
 			rc := c.(cart.INormalCart)
 			item := rc.GetItem(itemId, skuId)
-			return cart.ParseCartItem(item), err
+			return cart.ParseCartItemThrift(item), err
 		}
 	}
 	return nil, err
@@ -508,7 +508,7 @@ func (s *orderServiceImpl) SubmitOrder_V1(buyerId int64, cartCode string,
 func (s *orderServiceImpl) GetOrder(ctx context.Context, orderNo string, sub bool) (*order_service.SComplexOrder, error) {
 	c := s.manager.Unified(orderNo, sub).Complex()
 	if c != nil {
-		return parser.OrderDto(c), nil
+		return parser.OrderDtoThrift(c), nil
 	}
 	return nil, nil
 }
@@ -517,7 +517,7 @@ func (s *orderServiceImpl) GetOrder(ctx context.Context, orderNo string, sub boo
 func (s *orderServiceImpl) GetOrderAndItems(ctx context.Context, orderNo string, sub bool) (*order_service.SComplexOrder, error) {
 	c := s.manager.Unified(orderNo, sub).Complex()
 	if c != nil {
-		return parser.OrderDto(c), nil
+		return parser.OrderDtoThrift(c), nil
 	}
 	return nil, nil
 }
@@ -554,7 +554,7 @@ func (s *orderServiceImpl) PayForOrderByManager(orderNo string) error {
 func (s *orderServiceImpl) GetSubOrder(ctx context.Context, id int64) (r *order_service.SComplexOrder, err error) {
 	o := s.repo.GetSubOrder(id)
 	if o != nil {
-		return parser.SubOrderDto(o), nil
+		return parser.SubOrderDtoThrift(o), nil
 	}
 	return nil, nil
 }
@@ -564,7 +564,7 @@ func (s *orderServiceImpl) GetSubOrderByNo(ctx context.Context, orderNo string) 
 	orderId := s.repo.GetOrderId(orderNo, true)
 	o := s.repo.GetSubOrder(orderId)
 	if o != nil {
-		return parser.SubOrderDto(o), nil
+		return parser.SubOrderDtoThrift(o), nil
 	}
 	return nil, nil
 }
@@ -574,7 +574,7 @@ func (s *orderServiceImpl) GetSubOrderItems(ctx context.Context, subOrderId int6
 	list := s.repo.GetSubOrderItems(subOrderId)
 	arr := make([]*order_service.SComplexItem, len(list))
 	for i, v := range list {
-		arr[i] = parser.SubOrderItemDto(v)
+		arr[i] = parser.SubOrderItemDtoThrift(v)
 	}
 	return arr, nil
 }
@@ -617,7 +617,7 @@ func (s *orderServiceImpl) SubmitTradeOrder(ctx context.Context, o *order_servic
 			}
 		}
 	}
-	io, err := s.manager.SubmitTradeOrder(parser.Order(o), rate)
+	io, err := s.manager.SubmitTradeOrder(parser.OrderThrift(o), rate)
 	r := s.result(err)
 	r.Data = map[string]string{
 		"OrderId": strconv.Itoa(int(io.GetAggregateRootId())),

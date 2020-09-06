@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift/auto_gen/rpc/ttype"
 )
 
@@ -316,7 +317,7 @@ type (
 	}
 )
 
-func ParseCartItem(item *NormalCartItem) *ttype.SShoppingCartItem {
+func ParseCartItemThrift(item *NormalCartItem) *ttype.SShoppingCartItem {
 	i := &ttype.SShoppingCartItem{
 		ItemId:   item.ItemId,
 		SkuId:    item.SkuId,
@@ -339,7 +340,67 @@ func ParseCartItem(item *NormalCartItem) *ttype.SShoppingCartItem {
 	return i
 }
 
-func ParseToDtoCart(c ICart) *ttype.SShoppingCart {
+func ParseCartItem(item *NormalCartItem) *proto.SShoppingCartItem {
+	i := &proto.SShoppingCartItem{
+		ItemId:   item.ItemId,
+		SkuId:    item.SkuId,
+		Quantity: item.Quantity,
+		Checked:  item.Checked == 1,
+		ShopId:   item.ShopId,
+	}
+	if item.Sku != nil {
+		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
+		i.RetailPrice = math.Round(float64(item.Sku.RetailPrice), 2)
+		i.Price = math.Round(float64(item.Sku.Price), 2)
+		i.SpecWord = item.Sku.SpecWord
+		if i.Title == "" {
+			i.Title = item.Sku.Title
+		}
+		i.Code = item.Sku.ItemCode
+		i.StockText = util.BoolExt.TString(item.Sku.Stock > 0,
+			"有货", "无货")
+	}
+	return i
+}
+
+func ParseToDtoCart(c ICart) *proto.SShoppingCart {
+	cart := &proto.SShoppingCart{}
+	if c.Kind() != KNormal {
+		panic("购物车类型非零售")
+	}
+	rc := c.(INormalCart)
+	v := rc.Value()
+
+	cart.CartId = c.GetAggregateRootId()
+	cart.Code = v.CartCode
+	cart.Shops = []*proto.SShoppingCartGroup{}
+
+	items := rc.Items()
+	if items != nil && len(items) > 0 {
+		mp := make(map[int32]*proto.SShoppingCartGroup, 0) //保存运营商到map
+		for _, v := range items {
+			vendor, ok := mp[v.ShopId]
+			if !ok {
+				vendor = &proto.SShoppingCartGroup{
+					VendorId: v.VendorId,
+					ShopId:   v.ShopId,
+					Items:    []*proto.SShoppingCartItem{},
+				}
+				mp[v.ShopId] = vendor
+				cart.Shops = append(cart.Shops, vendor)
+			}
+			if v.Checked == 1 {
+				vendor.Checked = true
+			}
+			vendor.Items = append(vendor.Items, ParseCartItem(v))
+			//cart.TotalNum += v.Quantity
+		}
+	}
+
+	return cart
+}
+
+func ParseToDtoCartThrift(c ICart) *ttype.SShoppingCart {
 	cart := &ttype.SShoppingCart{}
 	if c.Kind() != KNormal {
 		panic("购物车类型非零售")
@@ -368,7 +429,7 @@ func ParseToDtoCart(c ICart) *ttype.SShoppingCart {
 			if v.Checked == 1 {
 				vendor.Checked = true
 			}
-			vendor.Items = append(vendor.Items, ParseCartItem(v))
+			vendor.Items = append(vendor.Items, ParseCartItemThrift(v))
 			//cart.TotalNum += v.Quantity
 		}
 	}
