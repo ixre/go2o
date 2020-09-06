@@ -13,16 +13,17 @@ import (
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
-	"go2o/core/service/thrift/auto_gen/rpc/message_service"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
+	"go2o/core/service/proto"
 )
 
-var _ message_service.MessageService = new(messageService)
+var _ proto.MessageServiceServer = new(messageService)
 
 type messageService struct {
 	_rep mss.IMssRepo
 	serviceUtil
 }
+
+
 
 func NewMessageService(rep mss.IMssRepo) *messageService {
 	return &messageService{
@@ -31,9 +32,9 @@ func NewMessageService(rep mss.IMssRepo) *messageService {
 }
 
 // 获取通知项配置
-func (m *messageService) GetNotifyItem(ctx context.Context, key string) (r *message_service.SNotifyItem, err error) {
-	it := m._rep.NotifyManager().GetNotifyItem(key)
-	return &message_service.SNotifyItem{
+func (m *messageService) GetNotifyItem(_ context.Context,key *proto.String) (*proto.SNotifyItem, error) {
+	it := m._rep.NotifyManager().GetNotifyItem(key.Value)
+	return &proto.SNotifyItem{
 		Key:        it.Key,
 		NotifyBy:   int32(it.NotifyBy),
 		ReadonlyBy: it.ReadonlyBy,
@@ -44,15 +45,15 @@ func (m *messageService) GetNotifyItem(ctx context.Context, key string) (r *mess
 }
 
 // 发送短信
-func (m *messageService) SendPhoneMessage(ctx context.Context, phone string, message string, data map[string]string) (r *proto.Result, err error) {
+func (m *messageService) SendPhoneMessage(_ context.Context,r *proto.SendMessageRequest) (*proto.Result, error) {
 	mg := m._rep.NotifyManager()
 	extra := make(map[string]interface{})
-	if data != nil {
-		for k, v := range data {
+	if r.Data != nil {
+		for k, v := range r.Data {
 			extra[k] = v
 		}
 	}
-	err = mg.SendPhoneMessage(phone, notify.PhoneMessage(message), extra)
+	err := mg.SendPhoneMessage(r.Account, notify.PhoneMessage(r.Message), extra)
 	if err != nil {
 		return m.error(err), nil
 	}

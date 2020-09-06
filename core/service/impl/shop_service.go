@@ -32,12 +32,12 @@ type shopServiceImpl struct {
 	serviceUtil
 }
 
-func (si *shopServiceImpl) QueryShopIdByHost(ctx context.Context, host string) (r int32, err error) {
+func (si *shopServiceImpl) QueryShopIdByHost(_ context.Context, host string) (r int32, err error) {
 	_, shopId := si.query.QueryShopIdByHost(host)
 	return shopId, nil
 }
 
-func (si *shopServiceImpl) GetShop(ctx context.Context, shopId int32) (r *shop_service.SShop, err error) {
+func (si *shopServiceImpl) GetShop(_ context.Context, shopId int32) (r *shop_service.SShop, err error) {
 	sp := si.shopRepo.GetOnlineShop(int(shopId))
 	if sp != nil {
 		return si.parseShop(sp), nil
@@ -45,7 +45,7 @@ func (si *shopServiceImpl) GetShop(ctx context.Context, shopId int32) (r *shop_s
 	return nil, nil
 }
 
-func (si *shopServiceImpl) GetVendorShop(ctx context.Context, vendorId int32) (r *shop_service.SShop, err error) {
+func (si *shopServiceImpl) GetVendorShop(_ context.Context, vendorId int32) (r *shop_service.SShop, err error) {
 	sp := si.shopRepo.GetOnlineShopOfMerchant(int(vendorId))
 	if sp != nil {
 		return si.parseShop(sp), nil
@@ -54,7 +54,7 @@ func (si *shopServiceImpl) GetVendorShop(ctx context.Context, vendorId int32) (r
 }
 
 // 根据主机头获取店铺编号
-func (si *shopServiceImpl) QueryShopByHost(ctx context.Context, host string) (r int32, err error) {
+func (si *shopServiceImpl) QueryShopByHost(_ context.Context, host string) (r int32, err error) {
 	_, shopId := si.query.QueryShopIdByHost(host)
 	return shopId, nil
 }
@@ -70,7 +70,7 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 }
 
 // 获取门店
-func (si *shopServiceImpl) GetStore(ctx context.Context, storeId int32) (*shop_service.SStore, error) {
+func (si *shopServiceImpl) GetStore(_ context.Context, storeId int32) (*shop_service.SStore, error) {
 	panic("返回门店")
 	//mch := si.mchRepo.GetMerchant(int(storeId))
 	//if mch != nil {
@@ -82,13 +82,13 @@ func (si *shopServiceImpl) GetStore(ctx context.Context, storeId int32) (*shop_s
 	//return nil, nil
 }
 
-func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId int32) (*shop_service.SStore, error) {
+func (si *shopServiceImpl) GetStoreById(_ context.Context, shopId int32) (*shop_service.SStore, error) {
 	vendorId := si.query.GetMerchantId(shopId)
 	return si.GetStore(ctx, vendorId)
 }
 
 // 打开或关闭商店
-func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, reason string) (*proto.Result, error) {
+func (si *shopServiceImpl) TurnShop(_ context.Context, shopId int32, on bool, reason string) (*proto.Result, error) {
 	var err error
 	sp := si.repo.GetShop(int(shopId))
 	if sp == nil {
@@ -104,7 +104,7 @@ func (si *shopServiceImpl) TurnShop(ctx context.Context, shopId int32, on bool, 
 }
 
 // 设置商店是否营业
-func (si *shopServiceImpl) OpenShop(ctx context.Context, shopId int32, on bool, reason string) (*proto.Result, error) {
+func (si *shopServiceImpl) OpenShop(_ context.Context, shopId int32, on bool, reason string) (*proto.Result, error) {
 	var err error
 	sp := si.repo.GetShop(int(shopId))
 	if sp == nil {

@@ -51,7 +51,7 @@ func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *ship
 	return nil
 }
 
-func (s *shipmentServiceImpl) GetLogisticFlowTrack(ctx context.Context, shipperCode string,
+func (s *shipmentServiceImpl) GetLogisticFlowTrack(_ context.Context, shipperCode string,
 	logisticCode string, invert bool) (r *shipment_service.SShipOrderTrack, err error) {
 	em := module.Get(module.EXPRESS).(*module.ExpressModule)
 	flow, err := em.GetLogisticFlowTrack(shipperCode, logisticCode, invert)
@@ -90,7 +90,7 @@ func (s *shipmentServiceImpl) logisticFlowTrackDto(o *shipment.ShipOrderTrack) *
 
 // 获取发货单的物流追踪信息,
 // - shipOrderId:发货单编号
-func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, shipOrderId int64, invert bool) (r *shipment_service.SShipOrderTrack, err error) {
+func (s *shipmentServiceImpl) ShipOrderLogisticTrack(_ context.Context, shipOrderId int64, invert bool) (r *shipment_service.SShipOrderTrack, err error) {
 	so := s.repo.GetShipmentOrder(shipOrderId)
 	if so != nil {
 		sp := s.expressRepo.GetExpressProvider(so.Value().SpId)

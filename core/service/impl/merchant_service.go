@@ -36,11 +36,11 @@ type merchantService struct {
 	serviceUtil
 }
 
-func (m *merchantService) GetAllTradeConf(ctx context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
+func (m *merchantService) GetAllTradeConf(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
 	panic("implement me")
 }
 
-func (m *merchantService) CreateMerchant(ctx context.Context, r *proto.MerchantCreateRequest) (*proto.Result, error) {
+func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCreateRequest) (*proto.Result, error) {
 	mch := r.Mch
 	v := &merchant.Merchant{
 		LoginUser:   mch.LoginUser,
@@ -81,7 +81,7 @@ func (m *merchantService) CreateMerchant(ctx context.Context, r *proto.MerchantC
 	return m.result(err), nil
 }
 
-func (m *merchantService) GetTradeConf(ctx context.Context, r *proto.TradeConfRequest) (*proto.STradeConf, error) {
+func (m *merchantService) GetTradeConf(_ context.Context, r *proto.TradeConfRequest) (*proto.STradeConf, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch != nil {
 		v := mch.ConfManager().GetTradeConf(int(r.TradeType))
@@ -92,7 +92,7 @@ func (m *merchantService) GetTradeConf(ctx context.Context, r *proto.TradeConfRe
 	return nil, nil
 }
 
-func (m *merchantService) SaveTradeConf(ctx context.Context, r *proto.TradeConfSaveRequest) (rsp *proto.Result, err error) {
+func (m *merchantService) SaveTradeConf(_ context.Context, r *proto.TradeConfSaveRequest) (rsp *proto.Result, err error) {
 	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
@@ -260,7 +260,7 @@ func (m *merchantService) testLogin(user string, pwd string) (id int, errCode in
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(ctx context.Context, u *proto.MchUserPwd) (*proto.Result, error) {
+func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwd) (*proto.Result, error) {
 	user := strings.ToLower(strings.TrimSpace(u.User))
 	pwd := strings.TrimSpace(u.Pwd)
 	id, code, err := m.testLogin(user, pwd)
@@ -297,7 +297,7 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) GetMerchant(ctx context.Context, id *proto.Int64) (*proto.SMerchant, error) {
+func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*proto.SMerchant, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
 		c := mch.Complex()
@@ -358,7 +358,7 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(ctx context.Context, mchId *proto.Int64) (r *proto.Result, err error) {
+func (m *merchantService) Stat(_ context.Context, mchId *proto.Int64) (r *proto.Result, err error) {
 	mch := m._mchRepo.GetMerchant(int(mchId.Value))
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
@@ -718,7 +718,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 // 获取
 
 // 同步批发商品
-func (m *merchantService) SyncWholesaleItem(ctx context.Context, vendorId *proto.Int32) (*proto.SyncWSItemsResponse, error) {
+func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.Int32) (*proto.SyncWSItemsResponse, error) {
 	mch := m._mchRepo.GetMerchant(int(vendorId.Value))
 	var mp = map[string]int32{
 		"add": 0, "del": 0,

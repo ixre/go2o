@@ -14,6 +14,6 @@ func NewStatusService() *statusServiceImpl {
 	return &statusServiceImpl{}
 }
 
-func (s *statusServiceImpl) Ping(ctx context.Context) (r string, err error) {
+func (s *statusServiceImpl) Ping(_ context.Context) (r string, err error) {
 	return "pong", nil
 }

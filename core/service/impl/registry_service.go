@@ -35,7 +35,7 @@ func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegis
 }
 
 // 根据键获取值
-func (s *registryService) GetValue(ctx context.Context, key string) (r string, err error) {
+func (s *registryService) GetValue(_ context.Context, key string) (r string, err error) {
 	ir := s.registryRepo.Get(key)
 	if ir != nil {
 		return ir.StringValue(), nil
@@ -44,7 +44,7 @@ func (s *registryService) GetValue(ctx context.Context, key string) (r string, e
 }
 
 // 获取键值存储数据
-func (s *registryService) GetRegistries(ctx context.Context, keys []string) (map[string]string, error) {
+func (s *registryService) GetRegistries(_ context.Context, keys []string) (map[string]string, error) {
 	mp := make(map[string]string)
 	for _, k := range keys {
 		if ir := s.registryRepo.Get(k); ir != nil {
@@ -57,7 +57,7 @@ func (s *registryService) GetRegistries(ctx context.Context, keys []string) (map
 }
 
 // 按键前缀获取键数据
-func (s *registryService) FindRegistries(ctx context.Context, prefix string) (r map[string]string, err error) {
+func (s *registryService) FindRegistries(_ context.Context, prefix string) (r map[string]string, err error) {
 	mp := make(map[string]string)
 	for _, k := range s.registryRepo.SearchRegistry(prefix) {
 		if strings.HasPrefix(k.Key, prefix) {
@@ -68,7 +68,7 @@ func (s *registryService) FindRegistries(ctx context.Context, prefix string) (r 
 }
 
 // 搜索注册表
-func (s *registryService) SearchRegistry(ctx context.Context, key string) (r []*registry_service.SRegistry, err error) {
+func (s *registryService) SearchRegistry(_ context.Context, key string) (r []*registry_service.SRegistry, err error) {
 	arr := s.registryRepo.SearchRegistry(key)
 	list := make([]*registry_service.SRegistry, len(arr))
 	for i, a := range arr {
@@ -85,7 +85,7 @@ func (s *registryService) SearchRegistry(ctx context.Context, key string) (r []*
 }
 
 // 获取数据存储
-func (s *registryService) GetRegistry(ctx context.Context, key string) (string, error) {
+func (s *registryService) GetRegistry(_ context.Context, key string) (string, error) {
 	ir := s.registryRepo.Get(key)
 	if ir != nil {
 		return ir.StringValue(), nil
@@ -94,7 +94,7 @@ func (s *registryService) GetRegistry(ctx context.Context, key string) (string, 
 }
 
 // 创建用户自定义注册项
-func (s *registryService) CreateUserRegistry(ctx context.Context, key string, defaultValue string, description string) (r *proto.Result, err error) {
+func (s *registryService) CreateUserRegistry(_ context.Context, key string, defaultValue string, description string) (r *proto.Result, err error) {
 	if s.registryRepo.Get(key) != nil {
 		return s.resultWithCode(-1, "registry is exist"), nil
 	}
@@ -115,7 +115,7 @@ func (s *registryService) CreateUserRegistry(ctx context.Context, key string, de
 }
 
 // 更新注册表数据
-func (s *registryService) UpdateRegistry(ctx context.Context, registries map[string]string) (r *proto.Result, err error) {
+func (s *registryService) UpdateRegistry(_ context.Context, registries map[string]string) (r *proto.Result, err error) {
 	for k, v := range registries {
 		if ir := s.registryRepo.Get(k); ir != nil {
 			if err = ir.Update(v); err != nil {
@@ -127,6 +127,6 @@ func (s *registryService) UpdateRegistry(ctx context.Context, registries map[str
 }
 
 // 获取键值存储数据
-func (s *registryService) GetRegistryV1(ctx context.Context, keys []string) ([]string, error) {
+func (s *registryService) GetRegistryV1(_ context.Context, keys []string) ([]string, error) {
 	return s._rep.GetsRegistry(keys), nil
 }

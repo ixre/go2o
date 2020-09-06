@@ -36,7 +36,7 @@ func NewContentService(rep content.IContentRepo, q *query.ContentQuery) *content
 	}
 }
 
-func (cs *contentService) QueryPagingArticles(ctx context.Context, r *proto.PagingArticleRequest) (*proto.SPagingResult, error) {
+func (cs *contentService) QueryPagingArticles(_ context.Context, r *proto.PagingArticleRequest) (*proto.SPagingResult, error) {
 	var total = 0
 	var rows []*content.Article
 	ic := cs._sysContent.ArticleManager().GetCategoryByAlias(r.Cat)
@@ -50,7 +50,7 @@ func (cs *contentService) QueryPagingArticles(ctx context.Context, r *proto.Pagi
 	return cs.pagingResult(total, arr), nil
 }
 
-func (cs *contentService) QueryTopArticles(ctx context.Context, cat *proto.String) (r *proto.ArticlesResponse, err error) {
+func (cs *contentService) QueryTopArticles(_ context.Context, cat *proto.String) (r *proto.ArticlesResponse, err error) {
 	var arr = make([]*proto.SArticle, 0)
 	ic := cs._sysContent.ArticleManager().GetCategoryByAlias(cat.Value)
 	if ic != nil && ic.GetDomainId() > 0 {

@@ -69,7 +69,7 @@ func (s *itemService) GetItemValue(itemId int64) *ttype.SOldItem {
 }
 
 // 获取SKU
-func (s *itemService) GetSku(ctx context.Context, request *proto.SkuRequest) (*proto.SSku, error) {
+func (s *itemService) GetSku(_ context.Context, request *proto.SkuRequest) (*proto.SSku, error) {
 	item := s.itemRepo.GetItem(request.ItemId)
 	if item != nil {
 		sku := item.GetSku(request.SkuId)
@@ -97,7 +97,7 @@ func (s *itemService) GetSkuHtmOfItem(itemId int64) (specHtm string) {
 }
 
 // 获取商品详细数据
-func (s *itemService) GetItemDetailData(ctx context.Context, request *proto.ItemDetailRequest) (*proto.String, error) {
+func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDetailRequest) (*proto.String, error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: request.ItemId})
 	switch request.IType {
 	case item.ItemWholesale:
@@ -108,7 +108,7 @@ func (s *itemService) GetItemDetailData(ctx context.Context, request *proto.Item
 }
 
 // 获取商品的Sku-JSON格式
-func (s *itemService) GetItemSkuJson(ctx context.Context, i *proto.Int64) (*proto.String, error) {
+func (s *itemService) GetItemSkuJson(_ context.Context, i *proto.Int64) (*proto.String, error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: i.Value})
 	skuBytes := s.itemRepo.SkuService().GetSkuJson(it.SkuArray())
 	return &proto.String{Value: string(skuBytes)}, nil
