@@ -17,6 +17,8 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
+	"go.etcd.io/etcd/clientv3"
+	"go2o/core/infrastructure"
 	"time"
 )
 
@@ -57,8 +59,14 @@ type AppImpl struct {
 	_registry    *gof.Registry
 }
 
-func NewApp(confPath string) *AppImpl {
+func NewApp(confPath string, cfg *clientv3.Config) *AppImpl {
+	s ,err := infrastructure.NewEtcdStorage(*cfg)
+	if err != nil {
+		println(len(cfg.Endpoints))
+		panic("[ go2o][ init]: "+err.Error())
+	}
 	return &AppImpl{
+		_storage: s,
 		_confFile: confPath,
 	}
 }
@@ -73,7 +81,7 @@ func (a *AppImpl) Db() db.Connector {
 
 func (a *AppImpl) Storage() storage.Interface {
 	if a._storage == nil {
-		a._storage = storage.NewRedisStorage(a.Redis())
+		//a._storage = storage.NewRedisStorage(a.Redis())
 	}
 	return a._storage
 }

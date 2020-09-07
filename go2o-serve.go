@@ -27,7 +27,6 @@ import (
 	"go2o/core/service/thrift/rsi"
 	"log"
 	"os"
-	"runtime"
 	"strings"
 	"time"
 )
@@ -90,7 +89,6 @@ func main() {
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
-println(fmt.Sprintf("%#v",etcdEndPoints))
 	//confFile = "./app_dev.conf"
 	if runDaemon {
 		appFlag = appFlag | app.FlagDaemon
@@ -107,8 +105,17 @@ println(fmt.Sprintf("%#v",etcdEndPoints))
 
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	newApp = core.NewApp(confFile)
+
+	// 默认的ETCD端点
+	if len(etcdEndPoints) == 0{
+		etcdEndPoints =  []string{"http://127.0.0.1:2379"}
+	}
+	cfg := clientv3.Config{
+		Endpoints:   etcdEndPoints,
+		DialTimeout: 5 * time.Second,
+	}
+
+	newApp = core.NewApp(confFile,&cfg)
 	if debug {
 		go app.AutoInstall()
 	}
@@ -123,11 +130,7 @@ println(fmt.Sprintf("%#v",etcdEndPoints))
 		XSRFCookie: true,
 	})
 	rsi.Init(newApp, appFlag)
-	// 默认的ETCD端点
-	if len(etcdEndPoints) == 0{
-		etcdEndPoints =  []string{"http://127.0.0.1:2379"}
-	}
-	initRegistry(etcdEndPoints, port)
+	initRegistry(&cfg, port)
 	//runGoMicro()
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
@@ -142,11 +145,8 @@ println(fmt.Sprintf("%#v",etcdEndPoints))
 	<-ch
 }
 
-func initRegistry(points []string, port int) {
-	r, err := etcd.NewRegistry("Go2oService", 10, clientv3.Config{
-		Endpoints:   points,
-		DialTimeout: 5 * time.Second,
-	})
+func initRegistry(cfg *clientv3.Config, port int) {
+	r, err := etcd.NewRegistry("Go2oService", 10,*cfg )
 	if err != nil {
 		panic(err)
 	}

@@ -339,7 +339,7 @@ func Run(ctx gof.App) {
 	if ctx != nil {
 		appCtx = ctx.(*core.AppImpl)
 	} else {
-		appCtx = core.NewApp("app.conf")
+		appCtx = core.NewApp("app.conf", nil)
 	}
 	conn = appCtx.Db()
 	_orm = conn.GetOrm()
@@ -370,7 +370,7 @@ func FlagRun() {
 
 	flag.Parse()
 
-	appCtx = core.NewApp(conf)
+	appCtx = core.NewApp(conf, nil)
 	core.Init(appCtx, debug, trace)
 	gof.CurrentApp = appCtx
 

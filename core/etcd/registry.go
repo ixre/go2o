@@ -123,8 +123,9 @@ func (s *registryServer) revoke(leaseID clientv3.LeaseID) error {
 	return err
 }
 
-// 监听服务
+// 续租/监听服务
 func (s *registryServer) KeepAlive() error {
+	//　续租
 	keepAliveCh, err := s.cli.KeepAlive(context.TODO(), s.leaseID)
 	if err != nil {
 		log.Printf("[KeepAlive] err : %s", err.Error())
