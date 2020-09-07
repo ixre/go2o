@@ -2,7 +2,7 @@
 //namespace netstd com.github.jsix.go2o.rpc
 //namespace go go2o.core.service.thrift.auto_gen.rpc.ttype
 syntax = "proto3";
-option go_package = "../core/service/proto;proto";
+option go_package = ".;proto";
 
 message Empty{}
 message String{string Value = 1;}
