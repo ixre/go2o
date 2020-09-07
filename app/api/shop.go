@@ -96,7 +96,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	pstUrl := fmt.Sprintf("//%s%s", mPrefix, variable.Domain)
 	memberId := getMemberId(c)
 	if memberId <= 0 {
-		registry, _ := rsi.RegistryService.GetRegistries(thrift.Context,
+		registry, _ := rsi.RegistryService.GetRegistries(context.TODO(),
 			[]string{"PlatformName"})
 		mp["PtName"] = registry["PlatformName"]
 		mp["LoginUrl"] = pstUrl + "/auth/login"
@@ -105,7 +105,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	} else {
 		mmUrl := fmt.Sprintf("//%s%s",
 			consts.DOMAIN_PREFIX_MEMBER, variable.Domain)
-		m, _ := rsi.MemberService.GetProfile(thrift.Context, int64(memberId))
+		m, _ := rsi.MemberService.GetProfile(context.TODO(), int64(memberId))
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"
 		mp["MMUrl"] = mmUrl
@@ -127,6 +127,6 @@ func (s *serviceC) LoginState(c *echox.Context) error {
  */
 func (s shopApi) addressList(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
-	address, _ := rsi.MemberService.GetAddressList(thrift.Context, int64(memberId))
+	address, _ := rsi.MemberService.GetAddressList(context.TODO(), int64(memberId))
 	return address
 }

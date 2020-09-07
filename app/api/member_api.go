@@ -31,7 +31,7 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	if len(code) > 0 {
-		memberId, _ = rsi.MemberService.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+		memberId, _ = rsi.MemberService.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
 	}
 	switch fn {
 	case "order_summary":
@@ -76,10 +76,10 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 		return api.ResponseWithCode(3, "网络连接失败")
 	}
 	defer trans.Close()
-	r, _ := cli.CheckLogin(thrift.Context, user, pwd, true)
+	r, _ := cli.CheckLogin(context.TODO(), user, pwd, true)
 	if r.ErrCode == 0 {
 		memberId, _ := strconv.Atoi(r.Data["id"])
-		token, _ := cli.GetToken(thrift.Context, int64(memberId), true)
+		token, _ := cli.GetToken(context.TODO(), int64(memberId), true)
 		r.Data["token"] = token
 		return r
 	} else {
@@ -96,8 +96,8 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-		r, err1 := cli.GetAccount(thrift.Context, int64(memberId))
+		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		r, err1 := cli.GetAccount(context.TODO(), int64(memberId))
 		if err1 == nil {
 			return r
 		}
@@ -115,8 +115,8 @@ func (m MemberApi) complex(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-		r, _ := cli.Complex(thrift.Context, memberId)
+		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		r, _ := cli.Complex(context.TODO(), memberId)
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
@@ -131,8 +131,8 @@ func (m MemberApi) bankcard(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-		r, _ := cli.Bankcards(thrift.Context, memberId)
+		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		r, _ := cli.Bankcards(context.TODO(), memberId)
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
@@ -147,8 +147,8 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-		r, err1 := cli.GetMember(thrift.Context, memberId)
+		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		r, err1 := cli.GetMember(context.TODO(), memberId)
 		if err1 == nil {
 			return r
 		}
@@ -167,8 +167,8 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-		r, err1 := cli.CheckToken(thrift.Context, memberId, token)
+		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		r, err1 := cli.CheckToken(context.TODO(), memberId, token)
 		if err1 == nil {
 			return r
 		}
@@ -186,11 +186,11 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
 		if memberId <= 0 {
 			return api.NewErrorResponse("no such member")
 		}
-		r, _ := cli.GetMember(thrift.Context, memberId)
+		r, _ := cli.GetMember(context.TODO(), memberId)
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
@@ -200,8 +200,8 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 	trans, cli, _ := thrift.MemberServeClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
-	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-	arr, _ := cli.ReceiptsCodes(thrift.Context, memberId)
+	memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
 	mp := map[string]interface{}{
 		"list":     arr,
 		"provider": provider,
@@ -219,8 +219,8 @@ func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
 	if _, ok := provider[c.Identity]; !ok {
 		return api.NewErrorResponse("不支持的收款码")
 	}
-	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-	r, _ := cli.SaveReceiptsCode(thrift.Context, memberId, c)
+	memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+	r, _ := cli.SaveReceiptsCode(context.TODO(), memberId, c)
 	return r
 }
 
@@ -229,12 +229,12 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	identity := ctx.Form().GetString("identity")
-	memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
-	arr, _ := cli.ReceiptsCodes(thrift.Context, memberId)
+	memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
 	for _, v := range arr {
 		if v.Identity == identity {
 			v.State = 1 - v.State
-			r, _ := cli.SaveReceiptsCode(thrift.Context, memberId, v)
+			r, _ := cli.SaveReceiptsCode(context.TODO(), memberId, v)
 			return r
 		}
 	}
@@ -253,14 +253,14 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
  */
 func (m *MemberApi) invites(ctx api.Context, memberId int64) *api.Response {
 	trans, cli, _ := thrift.MemberServeClient()
-	member, _ := cli.GetMember(thrift.Context, memberId)
+	member, _ := cli.GetMember(context.TODO(), memberId)
 	trans.Close()
-	trans2, cli2, _ := thrift.RegistryServeClient()
+	trans2, cli2, _ := service.RegistryServeClient()
 	defer trans2.Close()
 	keys := []string{registry.Domain, registry.DomainEnabledSSL,
 		registry.DomainPrefixMember,
 		registry.DomainPrefixMobileMember}
-	mp, _ := cli2.GetRegistries(thrift.Context, keys)
+	mp, _ := cli2.GetRegistries(context.TODO(), keys)
 	if member != nil {
 		inviteCode := member.InviteCode
 		proto := types.ElseString(mp[keys[1]] == "true", "https", "http")
@@ -292,7 +292,7 @@ func (m MemberApi) orderSummary(ctx api.Context, memberId int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
-	mp, _ := rsi.MemberService.OrdersQuantity(thrift.Context, id)
+	mp, _ := rsi.MemberService.OrdersQuantity(context.TODO(), id)
 	ret := map[string]int32{
 		/** 待付款订单数量 */
 		"AwaitPayment": mp[int32(order.StatAwaitingPayment)],
@@ -316,7 +316,7 @@ func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
-	address, _ := rsi.MemberService.GetAddressList(thrift.Context, memberId)
+	address, _ := rsi.MemberService.GetAddressList(context.TODO(), memberId)
 	return m.utils.success(address)
 }
 

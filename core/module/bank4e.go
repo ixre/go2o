@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/ixre/gof"
@@ -12,7 +13,8 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/module/bank"
 	"go2o/core/repos"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -43,14 +45,23 @@ func (b *Bank4E) SetApp(app gof.App) {
 func (b *Bank4E) Init() {
 	b.memberRepo = repos.Repo.GetMemberRepo()
 	b.valueRepo = repos.Repo.GetValueRepo()
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
+		ctx := context.TODO()
 		defer trans.Close()
-		cli.CreateUserRegistry(thrift.Context, keys[0], "false", "是否开启四要素实名认证")
-		cli.CreateUserRegistry(thrift.Context, keys[1], "", "京东银行四要素接口KEY")
-		data, _ := cli.GetRegistries(thrift.Context, keys)
-		b.open, _ = strconv.ParseBool(data[keys[0]])
-		b.appKey = data[keys[1]]
+		_, _ = cli.CreateUserRegistry(ctx, &proto.UserRegistryCreateRequest{
+			Key:          keys[0],
+			DefaultValue: "false",
+			Description:  "是否开启四要素实名认证",
+		})
+		_, _ = cli.CreateUserRegistry(ctx, &proto.UserRegistryCreateRequest{
+			Key:          keys[1],
+			DefaultValue: "",
+			Description:  "京东银行四要素接口KEY",
+		})
+		data, _ := cli.GetRegistries(ctx, &proto.StringArray{Value: keys})
+		b.open, _ = strconv.ParseBool(data.Value[keys[0]])
+		b.appKey = data.Value[keys[1]]
 	}
 }
 

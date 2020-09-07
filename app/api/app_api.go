@@ -35,12 +35,12 @@ func (a AppApi) check(ctx api.Context) interface{} {
 	form := ctx.Form()
 	prodVersion := form.GetString("prod_version")
 	prodType := form.GetString("prod_type")
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{appVersion, appAndroidVersion, appIOSVersion,
 			appReleaseInfo, appApkFileUrl, appIOSFileUrl}
-		mp, _ := cli.GetRegistries(thrift.Context, keys)
+		mp, _ := cli.GetRegistries(context.TODO(), keys)
 		version := ""
 		url := ""
 		if prodType == "android" {
@@ -69,15 +69,15 @@ func (a AppApi) check(ctx api.Context) interface{} {
 
 func (a *AppApi) init() *AppApi {
 	time.Sleep(time.Second * 5) // 等待RPC服务启动5秒
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
-		cli.CreateUserRegistry(thrift.Context, appVersion, "1.0.0", "APP版本号")
-		cli.CreateUserRegistry(thrift.Context, appAndroidVersion, "1.0.0", "安卓APP版本号")
-		cli.CreateUserRegistry(thrift.Context, appIOSVersion, "1.0.0", "苹果APP版本号")
-		cli.CreateUserRegistry(thrift.Context, appReleaseInfo, "修复已知BUG\n界面调整", "版本发布日志")
-		cli.CreateUserRegistry(thrift.Context, appApkFileUrl, "", "安卓APK文件下载地址")
-		cli.CreateUserRegistry(thrift.Context, appIOSFileUrl, "", "苹果APP文件下载地址")
+		cli.CreateUserRegistry(context.TODO(), appVersion, "1.0.0", "APP版本号")
+		cli.CreateUserRegistry(context.TODO(), appAndroidVersion, "1.0.0", "安卓APP版本号")
+		cli.CreateUserRegistry(context.TODO(), appIOSVersion, "1.0.0", "苹果APP版本号")
+		cli.CreateUserRegistry(context.TODO(), appReleaseInfo, "修复已知BUG\n界面调整", "版本发布日志")
+		cli.CreateUserRegistry(context.TODO(), appApkFileUrl, "", "安卓APK文件下载地址")
+		cli.CreateUserRegistry(context.TODO(), appIOSFileUrl, "", "苹果APP文件下载地址")
 	} else {
 		println("init app api err:", err.Error())
 	}

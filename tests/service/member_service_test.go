@@ -20,7 +20,7 @@ func TestPagingIntegralLog(t *testing.T) {
 		Begin:      0,
 		Over:       10,
 	}
-	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context, 1, member.AccountWallet, params)
+	r, _ := rsi.MemberService.PagingAccountLog(context.TODO(), 1, member.AccountWallet, params)
 	t.Logf("%#v", r)
 }
 
@@ -33,22 +33,22 @@ func TestPagingWalletLog(t *testing.T) {
 		Begin:      0,
 		Over:       10,
 	}
-	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context, int64(memberId), member.AccountWallet, params)
+	r, _ := rsi.MemberService.PagingAccountLog(context.TODO(), int64(memberId), member.AccountWallet, params)
 	t.Logf("%#v", r)
 }
 
 func TestCheckTradePwd(t *testing.T) {
 	memberId := 22149
 	pwd := domain.Md5("123456")
-	//r2,_ := rsi.MemberService.ModifyTradePwd(thrift.Context,int64(memberId),"",pwd)
+	//r2,_ := rsi.MemberService.ModifyTradePwd(context.TODO(),int64(memberId),"",pwd)
 	//t.Logf("%#v", r2)
 
-	r, _ := rsi.MemberService.CheckTradePwd(thrift.Context, int64(memberId), pwd)
+	r, _ := rsi.MemberService.CheckTradePwd(context.TODO(), int64(memberId), pwd)
 	t.Logf("%#v", r)
 }
 
 func TestGetMember(t *testing.T) {
 	memberId := 22149
-	r, _ := rsi.MemberService.GetMember(thrift.Context, int64(memberId))
+	r, _ := rsi.MemberService.GetMember(context.TODO(), int64(memberId))
 	t.Logf("%#v", r)
 }

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"github.com/ixre/gof"
@@ -10,9 +11,9 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/gen"
 	"go2o/core/infrastructure/tool"
-	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/auto_gen/rpc/foundation_service"
-	"go2o/core/service/thrift/rsi"
+	"go2o/core/service"
+	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 	"strconv"
 	"strings"
 )
@@ -65,7 +66,7 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 	userId := ctx.Form().GetInt("user_id")
 	namesParams := strings.TrimSpace(posKeys)
 	names := strings.Split(namesParams, "|")
-	as := rsi.AdService
+	as := impl.AdService
 	result := make(map[string]*ad.AdDto, len(names))
 	key := fmt.Sprintf("go2o:repo:ad:%d:front:%s", userId,
 		domain.Md5(namesParams))
@@ -86,11 +87,11 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 			result[n] = dto
 		}
 		regArr := []string{registry.CacheAdMaxAge}
-		trans, cli, err := thrift.RegistryServeClient()
+		trans, cli, err := service.RegistryServeClient()
 		if err == nil {
-			mp, _ := cli.GetRegistries(thrift.Context, regArr)
+			mp, _ := cli.GetRegistries(context.TODO(),&proto.StringArray{Value:  regArr})
 			_ = trans.Close()
-			seconds, _ = strconv.Atoi(mp[regArr[0]])
+			seconds, _ = strconv.Atoi(mp.Value[regArr[0]])
 		}
 		return result
 	}, int64(seconds))
@@ -146,15 +147,16 @@ func (r resApi) geoLocation(ctx api.Context) *api.Response {
 func (r resApi) childArea(ctx api.Context) *api.Response {
 	code, _ := strconv.Atoi(ctx.Form().GetString("area_code"))
 	areaType := ctx.Form().GetInt("area_type")
-	tran, cli, err := thrift.FoundationServeClient()
-	areas := make([]*foundation_service.SArea, 0)
+	tran, cli, err := service.FoundationServeClient()
+	var areas *proto.AreaListResponse
 	if err == nil {
-		areas, _ = cli.GetChildAreas(thrift.Context, int32(code))
+		areas, _ = cli.GetChildAreas(context.TODO(),
+			&proto.Int32{Value:int32(code)})
 		_ = tran.Close()
 		if areaType == 3 {
-			for i, v := range areas {
+			for i, v := range areas.Value {
 				if strings.TrimSpace(v.Name) == "市辖区" {
-					areas = append(areas[:i], areas[i+1:]...)
+					areas.Value = append(areas.Value[:i], areas.Value[i+1:]...)
 				}
 			}
 		}

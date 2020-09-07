@@ -30,7 +30,7 @@ if [[ ${cmd} == "java" || ${cmd} = "all" ]];then
 fi
 
 #if [[ ${cmd} = "go" || ${cmd} = "all" ]];then
-	rm -rf ./go2o/core/service/auto_gen/rpc
+	rm -rf ./go2o/core/service/thrift/auto_gen/rpc
 	thrift -r -gen go -out ../ ${thrift_path}
 #fi
 

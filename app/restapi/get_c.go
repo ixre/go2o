@@ -31,7 +31,7 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	//if len(targetUrl) == 0 {
 	//	targetUrl = rsi.FoundationService.GetRegisterPerm().CallBackUrl
 	//}
-	//m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
+	//m, _ := rsi.MemberService.GetMember(context.TODO(), memberId)
 	//if m != nil {
 	//	query := "return_url=" + targetUrl
 	//	c.Response().Header().Add("Content-Type", "Image/Jpeg")

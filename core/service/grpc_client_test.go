@@ -21,8 +21,8 @@ import (
  * history :
  */
 
-var service = "Go2oService"
-var ttl int64 = 3
+//var service = "Go2oService"
+//var ttl int64 = 3
 var cfg = clientv3.Config{
 	Endpoints:   []string{"http://localhost:2379/"},
 	DialTimeout: 5 * time.Second,

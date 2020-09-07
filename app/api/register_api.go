@@ -79,7 +79,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 			"reg_from":    regFrom,
 			"invite_code": inviteCode,
 		}
-		r, _ := cli.RegisterMemberV2(thrift.Context, user, pwd, 0, "", phone, "", "", mp)
+		r, _ := cli.RegisterMemberV2(context.TODO(), user, pwd, 0, "", phone, "", "", mp)
 		if r.ErrCode == 0 {
 			//todo: 未生效
 			m.signCheckTokenExpires(token)
@@ -107,9 +107,9 @@ func (m RegisterApi) getToken(ctx api.Context) interface{} {
 
 // 获取验证码的间隔时间
 func (m RegisterApi) getDurationSecond() int64 {
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
-		val, _ := cli.GetRegistry(thrift.Context, registry.SmsSendDuration)
+		val, _ := cli.GetRegistry(context.TODO(), registry.SmsSendDuration)
 		trans.Close()
 		i, err := strconv.Atoi(val)
 		if err != nil {
@@ -193,13 +193,13 @@ func (m RegisterApi) compareCheckCode(token, phone string, code string) bool {
  * {"code":1,"message":"api not defined"}
  */
 func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
-	trans, cli, _ := thrift.RegistryServeClient()
+	trans, cli, _ := service.RegistryServeClient()
 	keys := []string{
 		registry.MemberRegisterMustBindPhone,
 		registry.SmsRegisterTemplateId,
 		registry.EnableDebugMode,
 	}
-	mp, _ := cli.GetRegistries(thrift.Context, keys)
+	mp, _ := cli.GetRegistries(context.TODO(), keys)
 	trans.Close()
 	allowPhoneAsUser := mp[keys[0]]
 	debugMode := mp[keys[2]] == "true"
@@ -215,7 +215,7 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 	if err == nil {
 		// 检查手机号码是否被其他人使用
 		trans, cli, _ := thrift.MemberServeClient()
-		memberId, _ := cli.SwapMemberId(thrift.Context, member_service.ECredentials_Phone, phone)
+		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Phone, phone)
 		trans.Close()
 		if memberId <= 0 {
 			code := domain.NewCheckCode()
@@ -231,13 +231,13 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 			// 构造并发送短信
 			trans, cli, _ := thrift.MessageServeClient()
 			defer trans.Close()
-			n, _ := cli.GetNotifyItem(thrift.Context, "验证手机")
+			n, _ := cli.GetNotifyItem(context.TODO(), "验证手机")
 			// 测试环境不发送短信
 			if debugMode {
 				return api.ResponseWithCode(3, "【测试】短信验证码为:"+code)
 			}
 			// 发送短信
-			r, _ := cli.SendPhoneMessage(thrift.Context, phone, n.Content, data)
+			r, _ := cli.SendPhoneMessage(context.TODO(), phone, n.Content, data)
 			if r.ErrCode == 0 {
 				m.signCheckCodeSendOk(code) // 标记为已发送
 			} else {

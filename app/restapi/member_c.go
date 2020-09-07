@@ -44,12 +44,12 @@ func (mc *MemberC) Login(c echo.Context) error {
 	} else {
 		defer trans.Close()
 		encPwd := domain.MemberSha1Pwd(pwd)
-		r, _ := cli.CheckLogin(thrift.Context, user, encPwd, true)
+		r, _ := cli.CheckLogin(context.TODO(), user, encPwd, true)
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)
 		if r.ErrCode == 0 {
 			memberId, _ := strconv.Atoi(r.Data["member_id"])
-			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
+			token, _ := cli.GetToken(context.TODO(), int64(memberId), false)
 			result.Member = &dto.LoginMember{
 				ID:         memberId,
 				Token:      token,
@@ -78,13 +78,13 @@ func (mc *MemberC) Async(c echo.Context) error {
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	store.Get(autKey, &kvAut)
 	if kvMut == 0 {
-		//m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
+		//m, _ := rsi.MemberService.GetMember(context.TODO(), memberId)
 		//kvMut = int(m.UpdateTime)
 		store.Set(mutKey, kvMut)
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		acc, _ := rsi.MemberService.GetAccount(thrift.Context, memberId)
+		acc, _ := rsi.MemberService.GetAccount(context.TODO(), memberId)
 		kvAut = int(acc.UpdateTime)
 		store.Set(autKey, kvAut)
 	}
@@ -97,11 +97,11 @@ func (mc *MemberC) Async(c echo.Context) error {
 // 获取最新的会员信息
 func (mc *MemberC) Get(c echo.Context) error {
 	memberId := GetMemberId(c)
-	m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
+	m, _ := rsi.MemberService.GetMember(context.TODO(), memberId)
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		m.DynamicToken, _ = cli.GetToken(thrift.Context, memberId, false)
+		m.DynamicToken, _ = cli.GetToken(context.TODO(), memberId, false)
 	}
 	return c.JSON(http.StatusOK, m)
 }
@@ -109,14 +109,14 @@ func (mc *MemberC) Get(c echo.Context) error {
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	v, _ := rsi.MemberService.Complex(thrift.Context, memberId)
+	v, _ := rsi.MemberService.Complex(context.TODO(), memberId)
 	return c.JSON(http.StatusOK, v)
 }
 
 // 获取最新的会员账户信息
 func (mc *MemberC) Account(c echo.Context) error {
 	memberId := GetMemberId(c)
-	m, _ := rsi.MemberService.GetAccount(thrift.Context, memberId)
+	m, _ := rsi.MemberService.GetAccount(context.TODO(), memberId)
 	return c.JSON(http.StatusOK, m)
 }
 
@@ -131,7 +131,7 @@ func (mc *MemberC) Disconnect(c echo.Context) error {
 	//trans,cli, err := thrift.MemberClient()
 	//if err == nil {
 	//	defer trans.Close()
-	//	if b, _ := cli.CheckToken(thrift.Context,memberId, token); b {
+	//	if b, _ := cli.CheckToken(context.TODO(),memberId, token); b {
 	//		cli.RemoveToken(memberId)
 	//	} else {
 	//		err = errors.New("error credential")

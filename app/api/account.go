@@ -23,7 +23,7 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	if len(code) > 0 {
-		memberId, _ = rsi.MemberService.SwapMemberId(thrift.Context, member_service.ECredentials_Code, code)
+		memberId, _ = rsi.MemberService.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
 	}
 	switch fn {
 	case "wallet_log":
@@ -44,7 +44,7 @@ func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *ap
 		Begin:  begin,
 		Over:   begin + size,
 	}
-	r, _ := rsi.MemberService.PagingAccountLog(thrift.Context, int64(memberId), int32(account), p)
+	r, _ := rsi.MemberService.PagingAccountLog(context.TODO(), int64(memberId), int32(account), p)
 	return api.NewResponse(r)
 }
 

@@ -52,13 +52,13 @@ service FoundationService {
 }
 
 message AreaListResponse {
-    repeated SArea List = 1;
+    repeated SArea Value = 1;
 }
 message StringListResponse {
-    repeated string List = 1;
+    repeated string Value = 1;
 }
 message GetAreaNamesRequest {
-    repeated sint32 Codes = 1;
+    repeated sint32 Value = 1;
 }
 
 message UserPwd {

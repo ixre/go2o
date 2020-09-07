@@ -65,7 +65,7 @@ func checkMemberToken(c echo.Context) bool {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		if b, _ := cli.CheckToken(thrift.Context, memberId, token); b {
+		if b, _ := cli.CheckToken(context.TODO(), memberId, token); b {
 			c.Set("member_id", memberId)
 			return true
 		}

@@ -162,14 +162,14 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, credType, account)
+		memberId, _ := cli.SwapMemberId(context.TODO(), credType, account)
 		if memberId <= 0 {
 			return api.ResponseWithCode(1, member.ErrNoSuchMember.Error())
 		}
 		err = h.checkCodeDuration(token, account)
 		if err == nil {
 			var msgChan = h.parseMessageChannel(credType)
-			r, _ := cli.SendCode(thrift.Context, memberId,
+			r, _ := cli.SendCode(context.TODO(), memberId,
 				operationArr[operation], msgChan)
 			code := r.Data["code"]
 			if r.ErrCode == 0 {
@@ -181,8 +181,8 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 			keys := []string{
 				registry.EnableDebugMode,
 			}
-			trans, cli, _ := thrift.RegistryServeClient()
-			mp, _ := cli.GetRegistries(thrift.Context, keys)
+			trans, cli, _ := service.RegistryServeClient()
+			mp, _ := cli.GetRegistries(context.TODO(), keys)
 			trans.Close()
 			debugMode := mp[keys[0]] == "true"
 			if debugMode && len(code) != 0 {
@@ -222,8 +222,8 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, credType, account)
-		r, _ := cli.CompareCode(thrift.Context, memberId, code)
+		memberId, _ := cli.SwapMemberId(context.TODO(), credType, account)
+		r, _ := cli.CompareCode(context.TODO(), memberId, code)
 		if r.ErrCode == 0 {
 			h.setCodeVerifySuccess(token, memberId)
 		} else {
@@ -271,7 +271,7 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyPwd(thrift.Context, memberId, "", pwd)
+		r, _ := cli.ModifyPwd(context.TODO(), memberId, "", pwd)
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 		}
@@ -318,7 +318,7 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyPwd(thrift.Context, memberId, oldPwd, pwd)
+		r, _ := cli.ModifyPwd(context.TODO(), memberId, oldPwd, pwd)
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 		}
@@ -365,7 +365,7 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyTradePwd(thrift.Context, memberId, oldPwd, pwd)
+		r, _ := cli.ModifyTradePwd(context.TODO(), memberId, oldPwd, pwd)
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 		}
@@ -410,7 +410,7 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyTradePwd(thrift.Context, memberId, "", pwd)
+		r, _ := cli.ModifyTradePwd(context.TODO(), memberId, "", pwd)
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 		}
@@ -421,9 +421,9 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 
 // 获取验证码的间隔时间
 func (m PassportApi) getDurationSecond() int64 {
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
-		val, _ := cli.GetRegistry(thrift.Context, registry.SmsSendDuration)
+		val, _ := cli.GetRegistry(context.TODO(), registry.SmsSendDuration)
 		trans.Close()
 		i, err := strconv.Atoi(val)
 		if err != nil {
@@ -481,7 +481,7 @@ func (m PassportApi) checkMemberMatch(account string, credType member_service.EC
 	trans, cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		mid, _ := cli.SwapMemberId(thrift.Context, credType, account)
+		mid, _ := cli.SwapMemberId(context.TODO(), credType, account)
 		if mid <= 0 {
 			return member.ErrNoSuchMember
 		}

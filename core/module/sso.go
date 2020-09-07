@@ -39,7 +39,7 @@ func (s *SSOModule) SetApp(app gof.App) {
 func (s *SSOModule) Init() {
 	s.appMap = make(map[string]*proto.SSsoApp)
 	domain := variable.Domain
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{
@@ -50,7 +50,7 @@ func (s *SSOModule) Init() {
 			registry.DomainPrefixMobileMember,
 			registry.DomainPrefixMobilePortal,
 		}
-		registries, _ := cli.GetRegistries(thrift.Context, keys)
+		registries, _ := cli.GetRegistries(context.TODO(), keys)
 		s.Register(&proto.SSsoApp{
 			ID:   1,
 			Name: "RetailPortal",
