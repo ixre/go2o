@@ -26,7 +26,7 @@ func init() {
 var selector etcd.Selector
 
 // 设置Thrift地址
-func Configure(c clientv3.Config){
+func ConfigureClient(c clientv3.Config){
 	//cfg = c
 	log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
 	s,err := etcd.NewSelector(service,c,etcd.AlgRoundRobin)

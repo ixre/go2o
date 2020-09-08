@@ -134,6 +134,7 @@ func main() {
 	// 运行RPC服务
 	//go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
 	go service.ServeRPC(ch,&cfg,port)
+	service.ConfigureClient(cfg) // initial service client
 	if runDaemon {
 		go daemon.Run(newApp)
 	}

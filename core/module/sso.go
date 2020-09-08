@@ -9,15 +9,10 @@
 package module
 
 import (
-	"context"
 	"errors"
-	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
-	"go2o/core/domain/interface/registry"
-	"go2o/core/service"
 	"go2o/core/service/proto"
-	"go2o/core/variable"
 	"strings"
 )
 
@@ -39,57 +34,6 @@ func (s *SSOModule) SetApp(app gof.App) {
 // 初始化模块
 func (s *SSOModule) Init() {
 	s.appMap = make(map[string]*proto.SSsoApp)
-	domain := variable.Domain
-	trans, cli, err := service.RegistryServeClient()
-	if err == nil {
-		defer trans.Close()
-		keys := []string{
-			registry.DomainPrefixPortal,
-			registry.DomainPrefixWholesalePortal,
-			registry.DomainPrefixHApi,
-			registry.DomainPrefixMember,
-			registry.DomainPrefixMobileMember,
-			registry.DomainPrefixMobilePortal,
-		}
-		registries, _ := cli.GetRegistries(context.TODO(),&proto.StringArray{Value:  keys})
-		_, _ = s.Register(&proto.SSsoApp{
-			ID:   1,
-			Name: "RetailPortal",
-			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-				registries.Value[keys[0]], domain),
-		})
-		_, _ = s.Register(&proto.SSsoApp{
-			ID:   2,
-			Name: "WholesalePortal",
-			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-				registries.Value[keys[1]], domain),
-		})
-		_, _ = s.Register(&proto.SSsoApp{
-			ID:   3,
-			Name: "HApi",
-			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-				registries.Value[keys[2]], domain),
-		})
-		_, _ = s.Register(&proto.SSsoApp{
-			ID:   4,
-			Name: "Member",
-			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-				registries.Value[keys[3]], domain),
-		})
-		_, _ = s.Register(&proto.SSsoApp{
-			ID:   5,
-			Name: "MemberMobile",
-			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-				registries.Value[keys[4]],
-				domain),
-		})
-		_, _ = s.Register(&proto.SSsoApp{
-			ID:   6,
-			Name: "RetailPortalMobile",
-			ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
-				registries.Value[keys[5]], domain),
-		})
-	}
 }
 
 func (s *SSOModule) Register(app *proto.SSsoApp) (token string, err error) {

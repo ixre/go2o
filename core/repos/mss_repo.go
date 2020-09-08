@@ -14,14 +14,12 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
-	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	mssImpl "go2o/core/domain/mss"
 	notifyImpl "go2o/core/domain/mss/notify"
-	"go2o/core/variable"
 )
 
 var _ mss.IMssRepo = new(mssRepo)
@@ -134,9 +132,9 @@ func (m *mssRepo) JoinMailTaskToQueen(v *mss.MailTask) error {
 	}
 
 	if err == nil {
-		rc := core.GetRedisConn()
-		defer rc.Close()
-		rc.Do("RPUSH", variable.KvNewMailTask, v.Id) // push to queue
+		//rc := core.GetRedisConn()
+		//defer rc.Close()
+		//rc.Do("RPUSH", variable.KvNewMailTask, v.Id) // push to queue
 	}
 	return err
 }

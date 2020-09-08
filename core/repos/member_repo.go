@@ -17,7 +17,6 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
-	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/registry"
@@ -256,12 +255,12 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
 // 保存会员
 func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 	if v.Id > 0 {
-		rc := core.GetRedisConn()
-		defer rc.Close()
-		// 保存最后更新时间
-		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
-		rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
-		rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
+		//rc := core.GetRedisConn()
+		//defer rc.Close()
+		//// 保存最后更新时间
+		//mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
+		//rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
+		//rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息
 		_, _, err := m.Connector.GetOrm().Save(v.Id, v)
@@ -270,7 +269,7 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 			// 存储到缓存中
 			err = m.storage.Set(m.getMemberCk(v.Id), *v)
 			// 存储到队列
-			rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
+			//rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
 
 			// 推送消息
 			go msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(int(v.Id)))
@@ -290,10 +289,10 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	m.initMember(v)
 	// 推送消息
 	go msq.Push(msq.MemberUpdated, "create|"+strconv.Itoa(int(v.Id)))
-	rc := core.GetRedisConn()
-	defer rc.Close()
-	rc.Do("RPUSH", variable.KvMemberUpdateQueue,
-		fmt.Sprintf("%d-create", v.Id)) // push to queue
+	//rc := core.GetRedisConn()
+	//defer rc.Close()
+	//rc.Do("RPUSH", variable.KvMemberUpdateQueue,
+	//	fmt.Sprintf("%d-create", v.Id)) // push to queue
 
 	// 更新会员数 todo: 考虑去掉
 	var total = 0
@@ -392,13 +391,13 @@ func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
 }
 
 func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int64) {
-	rc := core.GetRedisConn()
-	defer rc.Close()
-	// 保存最后更新时间
-	mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
-	rc.Do("SETEX", mutKey, 3600*400, updateTime)
-	// push to tcp notify queue
-	rc.Do("RPUSH", variable.KvAccountUpdateTcpNotifyQueue, memberId)
+	//rc := core.GetRedisConn()
+	//defer rc.Close()
+	//// 保存最后更新时间
+	//mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
+	//rc.Do("SETEX", mutKey, 3600*400, updateTime)
+	//// push to tcp notify queue
+	//rc.Do("RPUSH", variable.KvAccountUpdateTcpNotifyQueue, memberId)
 }
 
 // 获取银行信息

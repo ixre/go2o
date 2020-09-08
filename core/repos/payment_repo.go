@@ -15,13 +15,11 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/registry"
 	payImpl "go2o/core/domain/payment"
-	"go2o/core/variable"
 	"log"
 	"strings"
 	"time"
@@ -135,11 +133,12 @@ func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 
 // 通知支付单完成
 func (p *paymentRepoImpl) notifyPaymentFinish(paymentOrderId int) error {
-	rc := core.GetRedisConn()
-	defer rc.Close()
-	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)
-	//log.Println("--  推送支付单成功", paymentOrderId,err)
-	return err
+	//rc := core.GetRedisConn()
+	//defer rc.Close()
+	//_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)
+	////log.Println("--  推送支付单成功", paymentOrderId,err)
+	//return err
+	return nil
 }
 
 // 检查交易单号是否匹配
