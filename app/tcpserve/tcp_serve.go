@@ -74,8 +74,8 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
 			var af nc.AuthFunc = func() (int64, error) {
-				mchId := rsi.MerchantService.GetMerchantIdByApiId(arr[0])
-				apiInfo := rsi.MerchantService.GetApiInfo(mchId)
+				mchId :=impl.MerchantService.GetMerchantIdByApiId(arr[0])
+				apiInfo :=impl.MerchantService.GetApiInfo(mchId)
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled == 0 {
 						return int64(mchId), errors.New("api has exipres")
@@ -100,7 +100,7 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 	if len(arr) == 2 {
 		f := func() (int64, error) {
 			memberId, _ := util.I64Err(strconv.Atoi(arr[0]))
-			trans, cli, err := thrift.MemberServeClient()
+			trans, cli, err := service.MemberServeClient()
 			if err == nil {
 				defer trans.Close()
 				if b, _ := cli.CheckToken(context.TODO(), memberId, arr[1]); b {

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/ixre/gof"
@@ -9,8 +10,8 @@ import (
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/auto_gen/rpc/member_service"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"log"
 	"strconv"
 	"strings"
@@ -71,7 +72,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	if b := m.compareCheckCode(token, phone, checkCode); !b {
 		return api.ResponseWithCode(7, "注册校验码不正确")
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
 		mp := map[string]string{
@@ -79,7 +80,16 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 			"reg_from":    regFrom,
 			"invite_code": inviteCode,
 		}
-		r, _ := cli.RegisterMemberV2(context.TODO(), user, pwd, 0, "", phone, "", "", mp)
+		r, _ := cli.RegisterMemberV2(context.TODO(), &proto.RegisterMemberRequest{
+			User:                 user,
+			Pwd:                  pwd,
+			Flag:                 0,
+			Name:                 "",
+			Phone:                phone,
+			Email:                "",
+			Avatar:               "",
+			Extend:               mp,
+		})
 		if r.ErrCode == 0 {
 			//todo: 未生效
 			m.signCheckTokenExpires(token)
@@ -109,9 +119,11 @@ func (m RegisterApi) getToken(ctx api.Context) interface{} {
 func (m RegisterApi) getDurationSecond() int64 {
 	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
-		val, _ := cli.GetRegistry(context.TODO(), registry.SmsSendDuration)
+		val, _ := cli.GetRegistry(context.TODO(), &proto.String{
+			Value:                registry.SmsSendDuration,
+		})
 		trans.Close()
-		i, err := strconv.Atoi(val)
+		i, err := strconv.Atoi(val.Value)
 		if err != nil {
 			log.Println("[ Go2o][ Registry]: parse value error:", err.Error())
 		}
@@ -199,10 +211,10 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 		registry.SmsRegisterTemplateId,
 		registry.EnableDebugMode,
 	}
-	mp, _ := cli.GetRegistries(context.TODO(), keys)
+	mp, _ := cli.GetRegistries(context.TODO(),&proto.StringArray{Value: keys})
 	trans.Close()
-	allowPhoneAsUser := mp[keys[0]]
-	debugMode := mp[keys[2]] == "true"
+	allowPhoneAsUser := mp.Value[keys[0]]
+	debugMode := mp.Value[keys[2]] == "true"
 	if allowPhoneAsUser != "true" {
 		return api.ResponseWithCode(2, "不允许使用手机号注册")
 	}
@@ -214,10 +226,14 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 	err := m.checkCodeDuration(token, phone)
 	if err == nil {
 		// 检查手机号码是否被其他人使用
-		trans, cli, _ := thrift.MemberServeClient()
-		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Phone, phone)
+		trans, cli, _ := service.MemberServeClient()
+		memberId, _ := cli.SwapMemberId(context.TODO(),
+			&proto.SwapMemberRequest{
+				Cred:                 proto.ECredentials_Phone,
+				Value:                phone,
+			})
 		trans.Close()
-		if memberId <= 0 {
+		if memberId.Value <= 0 {
 			code := domain.NewCheckCode()
 			m.saveCheckCodeData(token, phone, code)
 			expiresMinutes := 10
@@ -226,18 +242,23 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 				"code":       code,
 				"operation":  "注册会员",
 				"minutes":    strconv.Itoa(expiresMinutes),
-				"templateId": mp[keys[1]],
+				"templateId": mp.Value[keys[1]],
 			}
 			// 构造并发送短信
-			trans, cli, _ := thrift.MessageServeClient()
+			trans, cli, _ := service.MessageServeClient()
 			defer trans.Close()
-			n, _ := cli.GetNotifyItem(context.TODO(), "验证手机")
+			n, _ := cli.GetNotifyItem(context.TODO(), &proto.String{Value: "验证手机"})
 			// 测试环境不发送短信
 			if debugMode {
 				return api.ResponseWithCode(3, "【测试】短信验证码为:"+code)
 			}
 			// 发送短信
-			r, _ := cli.SendPhoneMessage(context.TODO(), phone, n.Content, data)
+			r, _ := cli.SendPhoneMessage(context.TODO(),
+				&proto.SendMessageRequest{
+					Account:              phone,
+					Message:             n.Content,
+					Data:                 data,
+				})
 			if r.ErrCode == 0 {
 				m.signCheckCodeSendOk(code) // 标记为已发送
 			} else {

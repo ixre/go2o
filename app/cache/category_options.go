@@ -15,12 +15,12 @@ import (
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain/util"
-	"go2o/core/service/thrift/rsi"
+	"go2o/core/service/impl"
 	"strings"
 )
 
 func readToCategoryDropList(mchId int32) []byte {
-	categories := rsi.ProductService.GetCategories(mchId)
+	categories := impl.ProductService.GetCategories(mchId)
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*product.Category)
@@ -46,7 +46,7 @@ func GetDropOptionsOfSaleCategory(mchId int32) []byte {
 // 获取商品模型下拉选项
 func GetDropOptionsOfProModel() string {
 	buf := bytes.NewBuffer([]byte{})
-	list := rsi.ProductService.GetModels()
+	list := impl.ProductService.GetModels()
 	for _, v := range list {
 		buf.WriteString(fmt.Sprintf(
 			`<option value="%d">%s</option>`,
@@ -58,7 +58,7 @@ func GetDropOptionsOfProModel() string {
 }
 
 func readToArticleCategoryDropList() []byte {
-	categories := rsi.ContentService.GetArticleCategories()
+	categories := impl.ContentService.GetArticleCategories()
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*content.ArticleCategory)

@@ -29,9 +29,9 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	//	domain = "http://" + c.Request().Host
 	//}
 	//if len(targetUrl) == 0 {
-	//	targetUrl = rsi.FoundationService.GetRegisterPerm().CallBackUrl
+	//	targetUrl = impl.FoundationService.GetRegisterPerm().CallBackUrl
 	//}
-	//m, _ := rsi.MemberService.GetMember(context.TODO(), memberId)
+	//m, _ := service.MemberService.GetMember(context.TODO(), memberId)
 	//if m != nil {
 	//	query := "return_url=" + targetUrl
 	//	c.Response().Header().Add("Content-Type", "Image/Jpeg")

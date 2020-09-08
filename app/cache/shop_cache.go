@@ -9,11 +9,13 @@
 package cache
 
 import (
+	"context"
 	"fmt"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/util"
-	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/rsi"
+	"go2o/core/service"
+	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 )
 
 // 设置商户站点配置
@@ -44,12 +46,13 @@ func GetShopIdByHost(host string) int32 {
 	sto := GetKVS()
 	shopId, err := util.I32Err(sto.GetInt(key))
 	if err != nil || shopId <= 0 {
-		trans, cli, err := thrift.ShopServeClient()
+		trans, cli, err := service.ShopServeClient()
 		if err == nil {
 			defer trans.Close()
-			shopId, _ = cli.QueryShopByHost(context.TODO(), host)
+			v, _ := cli.QueryShopByHost(context.TODO(),&proto.String{Value:  host})
+			shopId = v.Value
 			if shopId > 0 {
-				sto.SetExpire(key, shopId, DefaultMaxSeconds)
+				_ = sto.SetExpire(key, shopId, DefaultMaxSeconds)
 			}
 		}
 	}
@@ -64,7 +67,7 @@ func GetMchIdByShopId(shopId int32) int32 {
 	tmpId, err := sto.GetInt(key)
 	mchId := int32(tmpId)
 	if err != nil || mchId <= 0 {
-		mchId = rsi.ShopService.GetMerchantId(shopId)
+		mchId = impl.ShopService.GetMerchantId(shopId)
 		if mchId > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		} else {

@@ -37,7 +37,7 @@ import (
 	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
 	"go2o/core/msq"
-	"go2o/core/service/thrift/auto_gen/rpc/member_service"
+	"go2o/core/service/proto"
 	"go2o/core/variable"
 )
 
@@ -64,8 +64,8 @@ func registerTypes() {
 	gob.Register(&member.InviteRelation{})
 	gob.Register(&dto.ListOnlineShop{})
 	gob.Register([]*dto.ListOnlineShop{})
-	gob.Register(&member_service.SMember{})
-	gob.Register(&member_service.SProfile{})
+	gob.Register(&proto.SMember{})
+	gob.Register(&proto.SProfile{})
 	init2()
 }
 

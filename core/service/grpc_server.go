@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+	"go.etcd.io/etcd/clientv3"
 	grpc2 "go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"google.golang.org/grpc"
@@ -17,13 +19,14 @@ import (
  * history :
  */
 
-func ServeRPC(ch chan bool, addr string){
+func ServeRPC(ch chan bool,cfg *clientv3.Config, port int){
 	s := grpc.NewServer()
-	l, err := net.Listen("tcp", addr)
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		panic(err)
 	}
 	proto.RegisterGreeterServiceServer(s, &grpc2.TestServiceImpl{})
+	initRegistry(cfg,port)
 	if err = s.Serve(l); err != nil {
 		ch <- false
 		panic(err)

@@ -11,7 +11,7 @@ package cache
 import (
 	"encoding/json"
 	"go2o/core/domain/interface/member"
-	"go2o/core/service/thrift/rsi"
+	"go2o/core/service/impl"
 	"strconv"
 )
 
@@ -21,7 +21,7 @@ func GetHighestLevel() *member.Level {
 	sto := GetKVS()
 	lv := member.Level{}
 	if sto.Get(key, &lv) != nil {
-		lv = rsi.MemberService.GetHighestLevel()
+		lv = impl.MemberService.GetHighestLevel()
 		if lv.ID > 0 {
 			sto.SetExpire(key, lv, DefaultMaxSeconds)
 		}
@@ -35,7 +35,7 @@ func GetLevelMapJson() string {
 	sto := GetKVS()
 	str, err := sto.GetString(key)
 	if err != nil {
-		list := rsi.MemberService.GetMemberLevels()
+		list := impl.MemberService.GetMemberLevels()
 		mp := make(map[string]string, 0)
 		for _, v := range list {
 			if v.Enabled == 1 {

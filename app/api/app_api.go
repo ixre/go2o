@@ -1,8 +1,10 @@
 package api
 
 import (
+	"context"
 	"github.com/ixre/gof/api"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"time"
 )
 
@@ -40,20 +42,20 @@ func (a AppApi) check(ctx api.Context) interface{} {
 		defer trans.Close()
 		keys := []string{appVersion, appAndroidVersion, appIOSVersion,
 			appReleaseInfo, appApkFileUrl, appIOSFileUrl}
-		mp, _ := cli.GetRegistries(context.TODO(), keys)
+		mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
 		version := ""
 		url := ""
 		if prodType == "android" {
-			version = mp[appAndroidVersion]
-			url = mp[appApkFileUrl]
+			version = mp.Value[appAndroidVersion]
+			url = mp.Value[appApkFileUrl]
 		} else if prodType == "ios" {
-			version = mp[appIOSVersion]
-			url = mp[appIOSFileUrl]
+			version = mp.Value[appIOSVersion]
+			url = mp.Value[appIOSFileUrl]
 		} else {
-			version = mp[appVersion]
+			version = mp.Value[appVersion]
 			url = ""
 		}
-		info := mp[appReleaseInfo]
+		info := mp.Value[appReleaseInfo]
 		isLatest := api.CompareVersion(prodVersion, version) >= 0
 		data := map[string]interface{}{
 			"version": version,
@@ -72,12 +74,42 @@ func (a *AppApi) init() *AppApi {
 	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
-		cli.CreateUserRegistry(context.TODO(), appVersion, "1.0.0", "APP版本号")
-		cli.CreateUserRegistry(context.TODO(), appAndroidVersion, "1.0.0", "安卓APP版本号")
-		cli.CreateUserRegistry(context.TODO(), appIOSVersion, "1.0.0", "苹果APP版本号")
-		cli.CreateUserRegistry(context.TODO(), appReleaseInfo, "修复已知BUG\n界面调整", "版本发布日志")
-		cli.CreateUserRegistry(context.TODO(), appApkFileUrl, "", "安卓APK文件下载地址")
-		cli.CreateUserRegistry(context.TODO(), appIOSFileUrl, "", "苹果APP文件下载地址")
+		cli.CreateUserRegistry(context.TODO(),
+			&proto.UserRegistryCreateRequest{
+				Key:          appVersion,
+				DefaultValue: "1.0.0",
+				Description:  "APP版本号",
+			})
+		cli.CreateUserRegistry(context.TODO(),
+			&proto.UserRegistryCreateRequest{
+				Key:          appAndroidVersion,
+				DefaultValue: "1.0.0",
+				Description:  "安卓APP版本号",
+			})
+		cli.CreateUserRegistry(context.TODO(),
+			&proto.UserRegistryCreateRequest{
+				Key:          appIOSVersion,
+				DefaultValue: "1.0.0",
+				Description:  "苹果APP版本号",
+			})
+		cli.CreateUserRegistry(context.TODO(),
+			&proto.UserRegistryCreateRequest{
+				Key:          appReleaseInfo,
+				DefaultValue: "修复已知BUG\n界面调整",
+				Description:  "版本发布日志",
+			})
+		cli.CreateUserRegistry(context.TODO(),
+			&proto.UserRegistryCreateRequest{
+				Key:          appApkFileUrl,
+				DefaultValue: "",
+				Description:  "安卓APK文件下载地址",
+			})
+		cli.CreateUserRegistry(context.TODO(),
+			&proto.UserRegistryCreateRequest{
+				Key:          appIOSFileUrl,
+				DefaultValue: "",
+				Description:  "苹果APP文件下载地址",
+			})
 	} else {
 		println("init app api err:", err.Error())
 	}

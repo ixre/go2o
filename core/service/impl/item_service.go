@@ -23,9 +23,8 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/service/parser"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
-	"go2o/core/service/thrift/parser"
 	"strconv"
 )
 
@@ -60,7 +59,7 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 }
 
 // 获取商品值
-func (s *itemService) GetItemValue(itemId int64) *ttype.SOldItem {
+func (s *itemService) GetItemValue(itemId int64) *proto.SOldItem {
 	item := s.itemRepo.GetItem(itemId)
 	if item != nil {
 		return parser.ItemDto(item.GetValue())
@@ -115,7 +114,7 @@ func (s *itemService) GetItemSkuJson(_ context.Context, i *proto.Int64) (*proto.
 }
 
 // 保存商品
-func (s *itemService) SaveItem(di *ttype.SOldItem, vendorId int32) (_ *proto.Result, err error) {
+func (s *itemService) SaveItem(di *proto.SOldItem, vendorId int32) (_ *proto.Result, err error) {
 	var gi item.IGoodsItem
 	it := parser.Item(di)
 	if it.ID > 0 {
@@ -144,21 +143,21 @@ R:
 
 // 获取上架商品数据（分页）
 func (s *itemService) GetPagedOnShelvesItem(itemType int32, catId int32, start,
-	end int32, where, sortBy string) (int32, []*ttype.SOldItem) {
+	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
 	switch itemType {
 	case item.ItemNormal:
 		return s.getPagedOnShelvesItem(catId, start, end, where, sortBy)
 	case item.ItemWholesale:
 		return s.getPagedOnShelvesItemForWholesale(catId, start, end, where, sortBy)
 	}
-	return 0, []*ttype.SOldItem{}
+	return 0, []*proto.SOldItem{}
 }
 func (s *itemService) getPagedOnShelvesItem(catId int32, start,
-	end int32, where, sortBy string) (int32, []*ttype.SOldItem) {
+	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
 
 	total, list := s.itemQuery.GetPagedOnShelvesItem(catId,
 		start, end, where, sortBy)
-	arr := make([]*ttype.SOldItem, len(list))
+	arr := make([]*proto.SOldItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
 		arr[i] = parser.ItemDto(v)
@@ -167,11 +166,11 @@ func (s *itemService) getPagedOnShelvesItem(catId int32, start,
 }
 
 func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
-	end int32, where, sortBy string) (int32, []*ttype.SOldItem) {
+	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
 
 	total, list := s.itemQuery.GetPagedOnShelvesItemForWholesale(catId,
 		start, end, where, sortBy)
-	arr := make([]*ttype.SOldItem, len(list))
+	arr := make([]*proto.SOldItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
 		dto := parser.ItemDto(v)
@@ -183,7 +182,7 @@ func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 
 // 获取上架商品数据（分页）
 func (s *itemService) SearchOnShelvesItem(itemType int32, word string, start,
-	end int32, where, sortBy string) (int32, []*ttype.SOldItem) {
+	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
 
 	switch itemType {
 	case item.ItemNormal:
@@ -191,14 +190,14 @@ func (s *itemService) SearchOnShelvesItem(itemType int32, word string, start,
 	case item.ItemWholesale:
 		return s.searchOnShelveItemForWholesale(word, start, end, where, sortBy)
 	}
-	return 0, []*ttype.SOldItem{}
+	return 0, []*proto.SOldItem{}
 }
 
 func (s itemService) searchOnShelveItem(word string, start,
-	end int32, where, sortBy string) (int32, []*ttype.SOldItem) {
+	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
 	total, list := s.itemQuery.SearchOnShelvesItem(word,
 		start, end, where, sortBy)
-	arr := make([]*ttype.SOldItem, len(list))
+	arr := make([]*proto.SOldItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
 		arr[i] = parser.ItemDto(v)
@@ -207,10 +206,10 @@ func (s itemService) searchOnShelveItem(word string, start,
 }
 
 func (s itemService) searchOnShelveItemForWholesale(word string, start,
-	end int32, where, sortBy string) (int32, []*ttype.SOldItem) {
+	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
 	total, list := s.itemQuery.SearchOnShelvesItemForWholesale(word,
 		start, end, where, sortBy)
-	arr := make([]*ttype.SOldItem, len(list))
+	arr := make([]*proto.SOldItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
 		dto := parser.ItemDto(v)
@@ -222,7 +221,7 @@ func (s itemService) searchOnShelveItemForWholesale(word string, start,
 }
 
 // 附加批发商品的信息
-func (s *itemService) attachWholesaleItemData(dto *ttype.SOldItem) {
+func (s *itemService) attachWholesaleItemData(dto *proto.SOldItem) {
 	dto.Data = make(map[string]string)
 	vendor := s.mchRepo.GetMerchant(int(dto.VendorId))
 	if vendor != nil {
@@ -249,11 +248,11 @@ func (s *itemService) attachWholesaleItemData(dto *ttype.SOldItem) {
 }
 
 // 获取上架商品数据（分页）
-func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) []*ttype.SOldItem {
+func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) []*proto.SOldItem {
 	hash := fmt.Sprintf("%d-%d-%s", catId, quantity, where)
 	hash = crypto.Md5([]byte(hash))
 	key := "go2o:query:cache:rd-item:" + hash
-	var arr []*ttype.SOldItem
+	var arr []*proto.SOldItem
 
 	fn := func() interface{} {
 		list := s.itemQuery.GetRandomItem(catId, quantity, where)
@@ -268,19 +267,19 @@ func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) [
 }
 
 // 获取上架商品数据（分页）
-func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*ttype.SOldItem {
+func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*proto.SOldItem {
 	c := s.cateRepo.GlobCatService().GetCategory(int(catId))
 	if c != nil {
 		ids := c.GetChildes()
 		list := s.itemQuery.GetOnShelvesItem(ids, 0, quantity, where)
-		arr := make([]*ttype.SOldItem, len(list))
+		arr := make([]*proto.SOldItem, len(list))
 		for i, v := range list {
 			v.Image = format.GetGoodsImageUrl(v.Image)
 			arr[i] = parser.ItemDto(v)
 		}
 		return arr
 	}
-	return []*ttype.SOldItem{}
+	return []*proto.SOldItem{}
 }
 
 // 根据SKU获取商品

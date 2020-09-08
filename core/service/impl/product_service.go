@@ -8,8 +8,8 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/parser"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/parser"
 	"strconv"
 )
 

@@ -72,7 +72,7 @@ func (c *cartImpl) init() cart.ICart {
 }
 
 // 购物车种类
-func (c *cartImpl) Kind() cart.CartKind {
+func (c *cartImpl) Kind() cart.Kind {
 	return cart.KNormal
 }
 

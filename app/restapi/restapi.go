@@ -9,12 +9,14 @@
 package restapi
 
 import (
+	"context"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"net/http"
 	"strconv"
 )
@@ -62,10 +64,14 @@ func checkMemberToken(c echo.Context) bool {
 	r := c.Request()
 	memberId, _ := util.I64Err(strconv.Atoi(r.FormValue("member_id")))
 	token := r.FormValue("member_token")
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		if b, _ := cli.CheckToken(context.TODO(), memberId, token); b {
+		if b, _ := cli.CheckToken(context.TODO(),
+			&proto.CheckTokenRequest{
+				MemberId:             memberId,
+				Token:                token,
+			}); b.Value {
 			c.Set("member_id", memberId)
 			return true
 		}

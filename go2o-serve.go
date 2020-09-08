@@ -21,10 +21,8 @@ import (
 	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
-	"go2o/core/etcd"
 	"go2o/core/msq"
 	"go2o/core/service"
-	"go2o/core/service/thrift/rsi"
 	"log"
 	"os"
 	"strings"
@@ -129,14 +127,13 @@ func main() {
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
 	})
-	rsi.Init(newApp, appFlag)
-	initRegistry(&cfg, port)
+	//rsi.Init(newApp, appFlag)
 	//runGoMicro()
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
 	//go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
-	go service.ServeRPC(ch, fmt.Sprintf(":%d", port))
+	go service.ServeRPC(ch,&cfg,port)
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
@@ -145,16 +142,6 @@ func main() {
 	<-ch
 }
 
-func initRegistry(cfg *clientv3.Config, port int) {
-	r, err := etcd.NewRegistry("Go2oService", 10,*cfg )
-	if err != nil {
-		panic(err)
-	}
-	_, err = r.Register(port)
-	if err != nil {
-		panic(err)
-	}
-}
 
 /*
 // todo: v3 还是测试版本

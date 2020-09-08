@@ -25,9 +25,8 @@ import (
 	orderImpl "go2o/core/domain/order"
 	"go2o/core/dto"
 	"go2o/core/query"
+	"go2o/core/service/parser"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
-	"go2o/core/service/thrift/parser"
 	"strconv"
 	"strings"
 )
@@ -314,7 +313,7 @@ func (s *orderServiceImpl) GetShoppingCart(memberId int64,
 
 // 转换购物车数据
 func (s *orderServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
-	dto := cart.ParseToDtoCart(c)
+	dto := parser.ParseToDtoCart(c)
 	for _, v := range dto.Shops {
 		is := s.shopRepo.GetOnlineShop(int(v.ShopId))
 		if is != nil {
@@ -330,7 +329,7 @@ func (s *orderServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 
 // 放入购物车
 func (s *orderServiceImpl) PutInCart(memberId int64, code string,
-	itemId, skuId int64, quantity int32) (*ttype.SShoppingCartItem, error) {
+	itemId, skuId int64, quantity int32) (*proto.SShoppingCartItem, error) {
 	c := s.getShoppingCart(memberId, code)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
@@ -340,7 +339,7 @@ func (s *orderServiceImpl) PutInCart(memberId int64, code string,
 		if _, err = c.Save(); err == nil {
 			rc := c.(cart.INormalCart)
 			item := rc.GetItem(itemId, skuId)
-			return cart.ParseCartItemThrift(item), err
+			return parser.ParseCartItem(item), err
 		}
 	}
 	return nil, err
@@ -360,7 +359,7 @@ func (s *orderServiceImpl) SubCartItem(memberId int64, code string,
 
 // 勾选商品结算
 func (s *orderServiceImpl) CartCheckSign(memberId int64,
-	cartCode string, arr []*ttype.SShoppingCartItem) error {
+	cartCode string, arr []*proto.SShoppingCartItem) error {
 	c := s.getShoppingCart(memberId, cartCode)
 	items := make([]*cart.ItemPair, len(arr))
 	for i, v := range arr {

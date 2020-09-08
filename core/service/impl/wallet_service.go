@@ -3,8 +3,8 @@ package impl
 import (
 	"context"
 	"go2o/core/domain/interface/wallet"
+	"go2o/core/service/parser"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/parser"
 )
 
 var _ proto.WalletServiceServer = new(walletServiceImpl)

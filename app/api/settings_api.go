@@ -1,8 +1,10 @@
 package api
 
 import (
+	"context"
 	"github.com/ixre/gof/api"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 )
 
 var _ api.Handler = new(SettingsApi)
@@ -33,7 +35,7 @@ func (a SettingsApi) registerSettings(ctx api.Context) interface{} {
 	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
-		mp, _ := cli.FindRegistries(context.TODO(), "member_register")
+		mp, _ := cli.FindRegistries(context.TODO(), &proto.String{Value:"member_register"})
 		return mp
 	}
 	return api.ResponseWithCode(1, "no register settings")

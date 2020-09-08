@@ -17,7 +17,6 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/auto_gen/rpc/order_service"
 	"log"
 	"strconv"
 )
@@ -482,129 +481,6 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
 			var user string
 			for rs.Next() {
 				e := &proto.SComplexOrder{}
-				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
-					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
-					&cashPay, &ticket, &e.State, &e.CreateTime, &user)
-				e.Data = map[string]string{
-					"StateText":   order.OrderState(e.State).String(),
-					"CashPay":     strconv.Itoa(cashPay),
-					"TicketImage": ticket,
-					"User":        user,
-					"CreateTime":  format.UnixTimeStr(e.CreateTime),
-				}
-				orderList = append(orderList, e)
-			}
-			rs.Close()
-		}, vendorId, begin, size)
-
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("QueryPagerTradeOrder: ", err)
-	}
-	return num, orderList
-}
-
-
-// 查询分页订单
-func (o *OrderQuery) PagedTradeOrderOfBuyerThrift(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*order_service.SComplexOrder) {
-	d := o.Connector
-	var orderList []*order_service.SComplexOrder
-	num := 0
-	if size == 0 || begin < 0 {
-		return 0, orderList
-	}
-	if where != "" {
-		where = "AND " + where
-	}
-	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
-	} else {
-		orderBy = " ORDER BY o.create_time desc "
-	}
-
-	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
-		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE o.buyer_id= $1 %s`,
-			where), &num, memberId)
-		if num == 0 {
-			return num, orderList
-		}
-	}
-
-	// 查询分页的订单
-	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
-        ot.order_amount,ot.discount_amount,
-        ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time
-        FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
-         WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
-		where, orderBy),
-		func(rs *sql.Rows) {
-			var cashPay int
-			var ticket string
-			for rs.Next() {
-				e := &order_service.SComplexOrder{}
-				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
-					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
-					&cashPay, &ticket, &e.State, &e.CreateTime)
-				e.Data = map[string]string{
-					"StateText":   order.OrderState(e.State).String(),
-					"CashPay":     strconv.Itoa(cashPay),
-					"TicketImage": ticket,
-				}
-
-				orderList = append(orderList, e)
-			}
-			rs.Close()
-		}, memberId, begin, size)
-
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("QueryPagerTradeOrder: ", err)
-	}
-	return num, orderList
-}
-
-
-// 查询分页订单
-func (o *OrderQuery) PagedTradeOrderOfVendorThrift(vendorId int32, begin, size int, pagination bool,
-	where, orderBy string) (int32, []*order_service.SComplexOrder) {
-	d := o.Connector
-	var orderList []*order_service.SComplexOrder
-	var num int32
-	if size == 0 || begin < 0 {
-		return 0, orderList
-	}
-	if where != "" {
-		where = "AND " + where
-	}
-	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
-	} else {
-		orderBy = " ORDER BY o.create_time desc "
-	}
-
-	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
-		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE ot.vendor_id= $1 %s`,
-			where), &num, vendorId)
-		if num == 0 {
-			return num, orderList
-		}
-	}
-
-	// 查询分页的订单
-	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
-        ot.order_amount,ot.discount_amount,
-        ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time,
-        m.user FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
-        LEFT JOIN mm_member m ON m.id = o.buyer_id
-         WHERE ot.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
-		where, orderBy),
-		func(rs *sql.Rows) {
-			var cashPay int
-			var ticket string
-			var user string
-			for rs.Next() {
-				e := &order_service.SComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime, &user)

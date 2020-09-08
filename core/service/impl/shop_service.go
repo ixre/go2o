@@ -17,7 +17,6 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift/auto_gen/rpc/shop_service"
 	"go2o/core/variable"
 )
 
@@ -146,7 +145,7 @@ func (si *shopServiceImpl) GetShopValueById(mchId, shopId int32) *shop.Shop {
 }
 
 // 保存线上商店
-func (si *shopServiceImpl) SaveStore(s *shop_service.SStore) error {
+func (si *shopServiceImpl) SaveStore(s *proto.SStore) error {
 	mch := si.mchRepo.GetMerchant(int(s.VendorId))
 	if mch != nil {
 		v, v1 := si.parse2OnlineShop(s)
@@ -280,7 +279,7 @@ func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
 	}
 }
 
-func (si *shopServiceImpl) parse2OnlineShop(s *shop_service.SStore) (*shop.Shop, *shop.OnlineShop) {
+func (si *shopServiceImpl) parse2OnlineShop(s *proto.SStore) (*shop.Shop, *shop.OnlineShop) {
 	sv := &shop.Shop{
 		Id:           s.ID,
 		Name:         s.Name,

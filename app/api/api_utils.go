@@ -4,18 +4,18 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
 	"github.com/labstack/echo"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
+	"go2o/core/service/proto"
 	"net/http"
 )
 
 type utils struct {
 }
 
-func (u utils) SResult(err error) *ttype.Result_ {
+func (u utils) SResult(err error) *proto.Result {
 	if err != nil {
-		return &ttype.Result_{ErrCode: 1, ErrMsg: err.Error()}
+		return &proto.Result{ErrCode: 1, ErrMsg: err.Error()}
 	}
-	return &ttype.Result_{}
+	return &proto.Result{}
 }
 
 func (u utils) JSON(ctx echo.Context, ret interface{}) error {

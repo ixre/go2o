@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/ixre/gof/api"
-	"go2o/core/service/thrift/rsi"
+	"go2o/core/service/impl"
 )
 
 /**
@@ -51,7 +51,7 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	_, ss := rsi.ItemService.GetPagedOnShelvesGoods__(int32(shopId), -1,
+	_, ss := impl.ItemService.GetPagedOnShelvesGoods__(int32(shopId), -1,
 		begin, begin+size, "it.id DESC")
 	return ss
 }
@@ -74,7 +74,7 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	_, ss := rsi.ItemService.GetPagedOnShelvesGoods__(int32(shopId), -1,
+	_, ss := impl.ItemService.GetPagedOnShelvesGoods__(int32(shopId), -1,
 		begin, begin+size, "it.sale_num DESC")
 	return ss
 }
@@ -97,7 +97,7 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	list := rsi.ItemService.GetValueGoodsBySaleLabel(
+	list := impl.ItemService.GetValueGoodsBySaleLabel(
 		code, "", begin, begin+size)
 	return list
 }
@@ -114,7 +114,7 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 func (g goodsApi) Favorite(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	id := ctx.Form().GetInt("item_id")
-	err := rsi.MemberService.FavoriteGoods(int64(memberId), int32(id))
+	err := impl.MemberService.FavoriteGoods(int64(memberId), int32(id))
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}

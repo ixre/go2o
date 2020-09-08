@@ -182,7 +182,7 @@ func (s *foundationService) GetApp(_ context.Context, s2 *proto.String) (*proto.
 func (s *foundationService) GetAllSsoApp(_ context.Context, _ *proto.Empty) (*proto.StringListResponse, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	return &proto.StringListResponse{
-		List: sso.Array(),
+		Value: sso.Array(),
 	}, nil
 }
 
@@ -247,14 +247,14 @@ func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) 
 		})
 	}
 	return &proto.AreaListResponse{
-		List: arr,
+		Value: arr,
 	}, nil
 }
 
 // 获取地区名称
 func (s *foundationService) GetAreaNames(_ context.Context, request *proto.GetAreaNamesRequest) (*proto.StringListResponse, error) {
 	return &proto.StringListResponse{
-		List: s._rep.GetAreaNames(request.Codes),
+		Value: s._rep.GetAreaNames(request.Value),
 	}, nil
 }
 

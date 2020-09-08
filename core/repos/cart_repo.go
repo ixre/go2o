@@ -44,7 +44,7 @@ func NewCartRepo(conn db.Connector, memberRepo member.IMemberRepo,
 }
 
 // 获取买家的购物车
-func (c *cartRepo) GetMyCart(buyerId int64, k cart.CartKind) cart.ICart {
+func (c *cartRepo) GetMyCart(buyerId int64, k cart.Kind) cart.ICart {
 	switch k {
 	case cart.KNormal:
 		return c.getMyNormalCart(buyerId)

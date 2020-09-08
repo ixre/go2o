@@ -23,8 +23,6 @@ func init() {
 }
 
 //var cfg  clientv3.Config
-var service = "Go2oService"
-var ttl int64 = 3
 var selector etcd.Selector
 
 // 设置Thrift地址

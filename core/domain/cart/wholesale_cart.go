@@ -79,7 +79,7 @@ func (c *wholesaleCartImpl) init() cart.ICart {
 }
 
 // 购物车种类
-func (c *wholesaleCartImpl) Kind() cart.CartKind {
+func (c *wholesaleCartImpl) Kind() cart.Kind {
 	return cart.KWholesale
 }
 

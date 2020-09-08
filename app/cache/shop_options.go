@@ -11,7 +11,7 @@ package cache
 import (
 	"bytes"
 	"fmt"
-	"go2o/core/service/thrift/rsi"
+	"go2o/core/service/impl"
 )
 
 //func GetShopCheckboxs(mchId  int32, chks string) []byte {
@@ -60,7 +60,7 @@ import (
 //}
 
 func GetShopsJson(mchId int32) []byte {
-	shops := rsi.MerchantService.GetShopsOfMerchant(mchId)
+	shops := impl.MerchantService.GetShopsOfMerchant(mchId)
 	buf := bytes.NewBufferString("[")
 	for i, v := range shops {
 		if i != 0 {
@@ -74,7 +74,7 @@ func GetShopsJson(mchId int32) []byte {
 
 func GetShopDropList(mchId int32, selected int32) []byte {
 	buf := bytes.NewBuffer([]byte{})
-	shops := rsi.MerchantService.GetShopsOfMerchant(mchId)
+	shops :=impl.MerchantService.GetShopsOfMerchant(mchId)
 	for _, v := range shops {
 		if v.Id == selected {
 			buf.WriteString(fmt.Sprintf(`<option value="%d" selected="selected">%s</option>`, v.Id, v.Name))

@@ -1,12 +1,11 @@
 package api
 
 import (
+	"context"
 	"github.com/ixre/gof/api"
 	"go2o/core/domain/interface/member"
-	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/auto_gen/rpc/member_service"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
-	"go2o/core/service/thrift/rsi"
+	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 	"strings"
 )
 
@@ -23,7 +22,12 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	if len(code) > 0 {
-		memberId, _ = rsi.MemberService.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		v, _ := impl.MemberService.SwapMemberId(context.TODO(),
+			&proto.SwapMemberRequest{
+				Cred:                 proto.ECredentials_Code,
+				Value:                code,
+			})
+		memberId = v.Value
 	}
 	switch fn {
 	case "wallet_log":
@@ -39,12 +43,17 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *api.Response {
 	begin := int32(ctx.Form().GetInt("begin"))
 	size := int32(ctx.Form().GetInt("size"))
-	p := &ttype.SPagingParams{
+	p := &proto.SPagingParams{
 		SortBy: "create_time DESC,bi.id DESC",
 		Begin:  begin,
 		Over:   begin + size,
 	}
-	r, _ := rsi.MemberService.PagingAccountLog(context.TODO(), int64(memberId), int32(account), p)
+	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
+		&proto.PagingAccountInfoRequest{
+			MemberId:    memberId,
+			AccountType: int32(account),
+			Params:      p,
+		})
 	return api.NewResponse(r)
 }
 

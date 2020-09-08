@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,9 +9,9 @@ import (
 	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/registry"
-	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/auto_gen/rpc/member_service"
-	"go2o/core/service/thrift/rsi"
+	"go2o/core/service"
+	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 	"strconv"
 	"strings"
 )
@@ -31,7 +32,12 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	if len(code) > 0 {
-		memberId, _ = rsi.MemberService.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		v, _ := impl.MemberService.SwapMemberId(context.TODO(),
+			&proto.SwapMemberRequest{
+				Cred:                 proto.ECredentials_Code,
+				Value:                code,
+			})
+		memberId = v.Value
 	}
 	switch fn {
 	case "order_summary":
@@ -71,16 +77,24 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 	if len(user) == 0 || len(pwd) == 0 {
 		return api.ResponseWithCode(2, "缺少参数: user or pwd")
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err != nil {
 		return api.ResponseWithCode(3, "网络连接失败")
 	}
 	defer trans.Close()
-	r, _ := cli.CheckLogin(context.TODO(), user, pwd, true)
+	r, _ := cli.CheckLogin(context.TODO(),&proto.LoginRequest{
+		User:                user,
+		Pwd:                  pwd,
+		Update:               true,
+	} )
 	if r.ErrCode == 0 {
 		memberId, _ := strconv.Atoi(r.Data["id"])
-		token, _ := cli.GetToken(context.TODO(), int64(memberId), true)
-		r.Data["token"] = token
+		token, _ := cli.GetToken(context.TODO(),
+			&proto.GetTokenRequest{
+				MemberId:             int64(memberId),
+				Reset_:               true,
+			})
+		r.Data["token"] = token.Value
 		return r
 	} else {
 		return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
@@ -93,11 +107,14 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
-		r, err1 := cli.GetAccount(context.TODO(), int64(memberId))
+		memberId, _ := cli.SwapMemberId(context.TODO(),&proto.SwapMemberRequest{
+			Cred:                 proto.ECredentials_Code,
+			Value:                code,
+		})
+		r, err1 := cli.GetAccount(context.TODO(), memberId)
 		if err1 == nil {
 			return r
 		}
@@ -112,10 +129,14 @@ func (m MemberApi) complex(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		memberId, _ := cli.SwapMemberId(context.TODO(),
+			&proto.SwapMemberRequest{
+				Cred:                 proto.ECredentials_Code,
+				Value:                code,
+			})
 		r, _ := cli.Complex(context.TODO(), memberId)
 		return r
 	}
@@ -128,11 +149,15 @@ func (m MemberApi) bankcard(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
-		r, _ := cli.Bankcards(context.TODO(), memberId)
+		memberId, _ := cli.SwapMemberId(context.TODO(),
+			&proto.SwapMemberRequest{
+				Cred:                 proto.ECredentials_Code,
+				Value:                code,
+			})
+		r, _ := cli.BankCards(context.TODO(), memberId)
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
@@ -144,10 +169,14 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+		memberId, _ := cli.SwapMemberId(context.TODO(),
+			&proto.SwapMemberRequest{
+				Cred:                 proto.ECredentials_Code,
+				Value:                code,
+			})
 		r, err1 := cli.GetMember(context.TODO(), memberId)
 		if err1 == nil {
 			return r
@@ -164,11 +193,19 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
-		r, err1 := cli.CheckToken(context.TODO(), memberId, token)
+		memberId, _ := cli.SwapMemberId(context.TODO(),
+			&proto.SwapMemberRequest{
+				Cred:                 proto.ECredentials_Code,
+				Value:                code,
+			})
+		r, err1 := cli.CheckToken(context.TODO(),
+			&proto.CheckTokenRequest{
+				MemberId:             memberId.Value,
+				Token:                token,
+			})
 		if err1 == nil {
 			return r
 		}
@@ -183,11 +220,15 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code")
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
-		if memberId <= 0 {
+		memberId, _ := cli.SwapMemberId(context.TODO(),
+			&proto.SwapMemberRequest{
+				Cred:                 proto.ECredentials_Code,
+				Value:                code,
+			})
+		if memberId.Value <= 0 {
 			return api.NewErrorResponse("no such member")
 		}
 		r, _ := cli.GetMember(context.TODO(), memberId)
@@ -197,10 +238,14 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 }
 
 func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
-	trans, cli, _ := thrift.MemberServeClient()
+	trans, cli, _ := service.MemberServeClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
-	memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+	memberId, _ := cli.SwapMemberId(context.TODO(),
+		&proto.SwapMemberRequest{
+			Cred:                 proto.ECredentials_Code,
+			Value:                code,
+		})
 	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
 	mp := map[string]interface{}{
 		"list":     arr,
@@ -210,31 +255,45 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 }
 
 func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
-	trans, cli, _ := thrift.MemberServeClient()
+	trans, cli, _ := service.MemberServeClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	data := ctx.Form().GetBytes("data")
-	c := &member_service.SReceiptsCode{}
-	json.Unmarshal(data, c)
+	c := &proto.SReceiptsCode{}
+	_ = json.Unmarshal(data, c)
 	if _, ok := provider[c.Identity]; !ok {
 		return api.NewErrorResponse("不支持的收款码")
 	}
-	memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
-	r, _ := cli.SaveReceiptsCode(context.TODO(), memberId, c)
+	memberId, _ := cli.SwapMemberId(context.TODO(),
+		&proto.SwapMemberRequest{
+			Cred:  proto.ECredentials_Code,
+			Value: code,
+		})
+	r, _ := cli.SaveReceiptsCode(context.TODO(), &proto.ReceiptsCodeSaveRequest{
+		MemberId: memberId.Value,
+		Code:     c,
+	})
 	return r
 }
 
 func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
-	trans, cli, _ := thrift.MemberServeClient()
+	trans, cli, _ := service.MemberServeClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	identity := ctx.Form().GetString("identity")
-	memberId, _ := cli.SwapMemberId(context.TODO(), member_service.ECredentials_Code, code)
+	memberId, _ := cli.SwapMemberId(context.TODO(),
+		&proto.SwapMemberRequest{
+			Cred:                 proto.ECredentials_Code,
+			Value:                code,
+		})
 	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
-	for _, v := range arr {
+	for _, v := range arr.List {
 		if v.Identity == identity {
 			v.State = 1 - v.State
-			r, _ := cli.SaveReceiptsCode(context.TODO(), memberId, v)
+			r, _ := cli.SaveReceiptsCode(context.TODO(),&proto.ReceiptsCodeSaveRequest{
+				MemberId:             memberId.Value,
+				Code:                 v,
+			})
 			return r
 		}
 	}
@@ -252,22 +311,30 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
  * {"code":1,"message":"api not defined"}
  */
 func (m *MemberApi) invites(ctx api.Context, memberId int64) *api.Response {
-	trans, cli, _ := thrift.MemberServeClient()
-	member, _ := cli.GetMember(context.TODO(), memberId)
+	trans, cli, _ := service.MemberServeClient()
+	member, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: memberId})
 	trans.Close()
 	trans2, cli2, _ := service.RegistryServeClient()
 	defer trans2.Close()
 	keys := []string{registry.Domain, registry.DomainEnabledSSL,
 		registry.DomainPrefixMember,
 		registry.DomainPrefixMobileMember}
-	mp, _ := cli2.GetRegistries(context.TODO(), keys)
+	mp, _ := cli2.GetRegistries(context.TODO(),&proto.StringArray{Value:  keys})
 	if member != nil {
 		inviteCode := member.InviteCode
-		proto := types.ElseString(mp[keys[1]] == "true", "https", "http")
+		proto := types.ElseString(mp.Value[keys[1]] == "true", "https", "http")
 		// 网页推广链接
-		inviteLink := fmt.Sprintf("%s://%s%s/i/%s", proto, mp[keys[2]], mp[keys[0]], inviteCode)
+		inviteLink := fmt.Sprintf("%s://%s%s/i/%s",
+			proto,
+			mp.Value[keys[2]],
+			mp.Value[keys[0]],
+			inviteCode)
 		// 手机网页推广链接
-		mobileInviteLink := fmt.Sprintf("%s://%s%s/i/%s", proto, mp[keys[3]], mp[keys[0]], inviteCode)
+		mobileInviteLink := fmt.Sprintf("%s://%s%s/i/%s",
+			proto,
+			mp.Value[keys[3]],
+			mp.Value[keys[0]],
+			inviteCode)
 		mp := map[string]string{
 			"code":        inviteCode,
 			"link":        inviteLink,
@@ -292,16 +359,16 @@ func (m MemberApi) orderSummary(ctx api.Context, memberId int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
-	mp, _ := rsi.MemberService.OrdersQuantity(context.TODO(), id)
+	mp, _ := impl.MemberService.OrdersQuantity(context.TODO(),&proto.Int64{Value:id} )
 	ret := map[string]int32{
 		/** 待付款订单数量 */
-		"AwaitPayment": mp[int32(order.StatAwaitingPayment)],
+		"AwaitPayment": mp.Data[int32(order.StatAwaitingPayment)],
 		/** 待发货订单数量 */
-		"AwaitShipment": mp[int32(order.StatAwaitingShipment)],
+		"AwaitShipment": mp.Data[int32(order.StatAwaitingShipment)],
 		/** 待收货订单数量 */
-		"AwaitReceive": mp[int32(order.StatShipped)],
+		"AwaitReceive": mp.Data[int32(order.StatShipped)],
 		/** 已完成订单数量 */
-		"Completed": mp[int32(order.StatCompleted)],
+		"Completed": mp.Data[int32(order.StatCompleted)],
 	}
 	return m.utils.success(ret)
 }
@@ -316,7 +383,7 @@ func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
-	address, _ := rsi.MemberService.GetAddressList(context.TODO(), memberId)
+	address, _ := impl.MemberService.GetAddressList(context.TODO(),&proto.Int64{Value: memberId})
 	return m.utils.success(address)
 }
 
@@ -339,7 +406,7 @@ func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
  */
 func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 	form := ctx.Form()
-	var e = member_service.SAddress{
+	var e = proto.SAddress{
 		ID:             int64(form.GetInt("address_id")),
 		ConsigneeName:  form.GetString("consignee_name"),
 		ConsigneePhone: form.GetString("consignee_phone"),
@@ -349,10 +416,10 @@ func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 		DetailAddress:  form.GetString("detail_address"),
 		IsDefault:      int32(form.GetInt("is_default")),
 	}
-	id, err := rsi.MemberService.SaveAddress(memberId, &e)
+	id, err := impl.MemberService.SaveAddress(memberId, &e)
 	// 设置用户默认收货地址
 	if err == nil {
-		err = rsi.ShoppingService.SetBuyerAddress(memberId, "", id)
+		err = impl.ShoppingService.SetBuyerAddress(memberId, "", id)
 	}
 	if err != nil {
 		return m.error(err)
@@ -373,6 +440,6 @@ func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
  */
 func (m MemberApi) deleteAddress(ctx api.Context, memberId int64) *api.Response {
 	addressId := int64(ctx.Form().GetInt("address_id"))
-	err := rsi.MemberService.DeleteAddress(memberId, addressId)
+	err := impl.MemberService.DeleteAddress(memberId, addressId)
 	return m.utils.response(err)
 }
