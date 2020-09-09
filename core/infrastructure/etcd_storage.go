@@ -64,7 +64,17 @@ func (e EtcdStorage) Set(key string, v interface{}) error {
 }
 
 func (e EtcdStorage) SetExpire(key string, v interface{}, seconds int64) error {
-	panic("implement me")
+	j,err := json.Marshal(v)
+	if err == nil{
+		ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+		var rsp *clientv3.LeaseGrantResponse
+		rsp, err = e.cli.Grant(ctx, seconds)
+		if err == nil{
+			_,err = e.cli.Put(ctx,key,string(j),clientv3.WithLease(rsp.ID))
+		}
+		cancel()
+	}
+	return err
 }
 
 func (e EtcdStorage) Get(key string, dst interface{}) error {

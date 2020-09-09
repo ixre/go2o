@@ -70,7 +70,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 	Repo = r
 	orm := db.GetOrm()
 	/** Repository **/
-	r.registryRepo = NewRegistryRepo(db)
+	r.registryRepo = NewRegistryRepo(db,sto)
 	r.proMRepo = NewProModelRepo(db, orm)
 	r.valueRepo = NewValueRepo("", db, sto)
 	r.userRepo = NewUserRepo(db)

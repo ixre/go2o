@@ -451,9 +451,12 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 func (m PassportApi) getDurationSecond() int64 {
 	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
-		val, _ := cli.GetRegistry(context.TODO(), &proto.String{Value: registry.SmsSendDuration})
+		rsp, _ := cli.GetValue(context.TODO(), &proto.String{Value: registry.SmsSendDuration})
 		trans.Close()
-		i, err := strconv.Atoi(val.Value)
+		if rsp.ErrorMsg == "" {
+			log.Println("[ app][ warning]: parse value error:", rsp.ErrorMsg)
+		}
+		i, err := strconv.Atoi(rsp.Value)
 		if err != nil {
 			log.Println("[ Go2o][ Registry]: parse value error:", err.Error())
 		}

@@ -32,13 +32,15 @@ func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegis
 	}
 }
 
-// 根据键获取值
-func (s *registryService) GetValue(_ context.Context, key string) (r string, err error) {
-	ir := s.registryRepo.Get(key)
-	if ir != nil {
-		return ir.StringValue(), nil
+
+// 获取数据存储
+func (s *registryService) GetValue(_ context.Context, key *proto.String) (*proto.RegistryValueResponse, error) {
+	v,err := s.registryRepo.GetValue(key.Value)
+	rsp := &proto.RegistryValueResponse{Value: v}
+	if err != nil {
+		rsp.ErrorMsg = err.Error()
 	}
-	return "", nil
+	return rsp, nil
 }
 
 // 获取键值存储数据
@@ -80,15 +82,6 @@ func (s *registryService) SearchRegistry(_ context.Context, key *proto.String) (
 		}
 	}
 	return &proto.RegistriesResponse{Value: list}, nil
-}
-
-// 获取数据存储
-func (s *registryService) GetRegistry(_ context.Context, key *proto.String) (*proto.String, error) {
-	ir := s.registryRepo.Get(key.Value)
-	if ir != nil {
-		return &proto.String{Value: ir.StringValue()}, nil
-	}
-	return &proto.String{Value: ""}, nil
 }
 
 // 创建用户自定义注册项

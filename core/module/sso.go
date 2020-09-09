@@ -12,6 +12,8 @@ import (
 	"errors"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
+	"go2o/core/domain/interface/registry"
+	"go2o/core/repos"
 	"go2o/core/service/proto"
 	"strings"
 )
@@ -21,9 +23,10 @@ var _ Module = new(SSOModule)
 //todo: 去掉rpc
 
 type SSOModule struct {
-	app         gof.App
-	appMap      map[string]*proto.SSsoApp
-	apiUrlArray []string
+	app          gof.App
+	appMap       map[string]*proto.SSsoApp
+	apiUrlArray  []string
+	registryRepo registry.IRegistryRepo
 }
 
 // 模块数据
@@ -34,6 +37,7 @@ func (s *SSOModule) SetApp(app gof.App) {
 // 初始化模块
 func (s *SSOModule) Init() {
 	s.appMap = make(map[string]*proto.SSsoApp)
+	s.registryRepo = repos.Repo.GetRegistryRepo()
 }
 
 func (s *SSOModule) Register(app *proto.SSsoApp) (token string, err error) {

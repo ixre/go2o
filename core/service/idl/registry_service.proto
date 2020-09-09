@@ -6,7 +6,7 @@ import "ttype.proto";
 // 基础服务
 service RegistryService{
    /** 获取注册表键值,key */
-   rpc GetRegistry(String)returns(String){}
+   rpc GetValue(String)returns(RegistryValueResponse){}
    /** 获取键值存储数据字典,keys */
    rpc GetRegistries(StringArray)returns(StringMap){}
    /** 按键前缀获取键数据,prefix*/
@@ -24,6 +24,12 @@ service RegistryService{
 message RegistriesResponse{
     repeated SRegistry Value = 1;
 }
+
+message RegistryValueResponse{
+    string Value = 1;
+    string ErrorMsg = 2;
+}
+
 message UserRegistryCreateRequest{
     string key = 1;
     string defaultValue = 2;

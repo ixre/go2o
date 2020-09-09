@@ -18,10 +18,6 @@ import (
 	"time"
 )
 
-
-func init() {
-}
-
 //var cfg  clientv3.Config
 var selector etcd.Selector
 

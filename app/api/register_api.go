@@ -81,14 +81,14 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 			"invite_code": inviteCode,
 		}
 		r, _ := cli.RegisterMemberV2(context.TODO(), &proto.RegisterMemberRequest{
-			User:                 user,
-			Pwd:                  pwd,
-			Flag:                 0,
-			Name:                 "",
-			Phone:                phone,
-			Email:                "",
-			Avatar:               "",
-			Extend:               mp,
+			User:   user,
+			Pwd:    pwd,
+			Flag:   0,
+			Name:   "",
+			Phone:  phone,
+			Email:  "",
+			Avatar: "",
+			Extend: mp,
 		})
 		if r.ErrCode == 0 {
 			//todo: 未生效
@@ -119,11 +119,14 @@ func (m RegisterApi) getToken(ctx api.Context) interface{} {
 func (m RegisterApi) getDurationSecond() int64 {
 	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
-		val, _ := cli.GetRegistry(context.TODO(), &proto.String{
-			Value:                registry.SmsSendDuration,
+		rsp, _ := cli.GetValue(context.TODO(), &proto.String{
+			Value: registry.SmsSendDuration,
 		})
 		trans.Close()
-		i, err := strconv.Atoi(val.Value)
+		if rsp.ErrorMsg == ""{
+			log.Println("[ app][ warning]: parse value error:", rsp.ErrorMsg)
+		}
+		i, err := strconv.Atoi(rsp.Value)
 		if err != nil {
 			log.Println("[ Go2o][ Registry]: parse value error:", err.Error())
 		}
@@ -211,7 +214,7 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 		registry.SmsRegisterTemplateId,
 		registry.EnableDebugMode,
 	}
-	mp, _ := cli.GetRegistries(context.TODO(),&proto.StringArray{Value: keys})
+	mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
 	trans.Close()
 	allowPhoneAsUser := mp.Value[keys[0]]
 	debugMode := mp.Value[keys[2]] == "true"
@@ -229,8 +232,8 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 		trans, cli, _ := service.MemberServeClient()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
-				Cred:                 proto.ECredentials_Phone,
-				Value:                phone,
+				Cred:  proto.ECredentials_Phone,
+				Value: phone,
 			})
 		trans.Close()
 		if memberId.Value <= 0 {
@@ -255,9 +258,9 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 			// 发送短信
 			r, _ := cli.SendPhoneMessage(context.TODO(),
 				&proto.SendMessageRequest{
-					Account:              phone,
-					Message:             n.Content,
-					Data:                 data,
+					Account: phone,
+					Message: n.Content,
+					Data:    data,
 				})
 			if r.ErrCode == 0 {
 				m.signCheckCodeSendOk(code) // 标记为已发送

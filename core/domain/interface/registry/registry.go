@@ -65,6 +65,8 @@ type IRegistryRepo interface {
 	Create(r *Registry) IRegistry
 	// 获取键
 	Get(key string) IRegistry
+	//　获取值
+	GetValue(key string)(string,error)
 	// 合并数据
 	Merge(registries []*Registry) error
 	// 搜索注册表

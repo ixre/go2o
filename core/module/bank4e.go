@@ -7,6 +7,7 @@ import (
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/infrastructure/format"
@@ -25,14 +26,15 @@ var (
 	_            Module = new(Bank4E)
 	zhNameRegexp        = regexp.MustCompile("^[\u4e00-\u9fa5]{2,6}$")
 )
-var keys = []string{"bank4e_trust_on", "bank4e_jd_app_key"}
+var keys = []string{"bank4e_trust_on", "bank4e_jd_app_key","bank4e_turn_stat"}
 
 type Bank4E struct {
-	memberRepo member.IMemberRepo
-	valueRepo  valueobject.IValueRepo
-	storage    storage.Interface
-	appKey     string
-	open       bool
+	memberRepo   member.IMemberRepo
+	valueRepo    valueobject.IValueRepo
+	storage      storage.Interface
+	appKey       string
+	open         bool
+	registryRepo registry.IRegistryRepo
 }
 
 func (b *Bank4E) SetApp(app gof.App) {
@@ -42,8 +44,9 @@ func (b *Bank4E) SetApp(app gof.App) {
 func (b *Bank4E) Init() {
 	b.memberRepo = repos.Repo.GetMemberRepo()
 	b.valueRepo = repos.Repo.GetValueRepo()
-	v,_ := b.storage.GetString(keys[0])
-	v2,_ := b.storage.GetString(keys[1])
+	b.registryRepo = repos.Repo.GetRegistryRepo()
+	v,_ := b.registryRepo.GetValue(keys[0])
+	v2,_ := b.registryRepo.GetValue(keys[1])
 	b.open = v=="1" || v=="true"
 	b.appKey = v2
 }
@@ -166,7 +169,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	}
 
 	// 保存银行信息
-	m.Profile().UnlockBank()
+	_ = m.Profile().UnlockBank()
 	if err := m.Profile().SaveBank(&member.BankInfo{
 		BankName:    result["BankName"],
 		AccountName: realName,
@@ -181,14 +184,13 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 // 检查是否为上次提交，如果不是，则更新
 func (b *Bank4E) checkLatestInfo(memberId int64, realName, idCard, phone, bankAccount string) bool {
 	// 获取是否关闭检查
-	keyStat := "sys:go2o:b4e:turn_stat"
-	turnStat, _ := b.storage.GetInt(keyStat)
+	turnStat, _ := b.registryRepo.GetValue(keys[2])
 	// 获取之前提交信息
 	key := "sys:go2o:b4e:last-post:" + strconv.Itoa(int(memberId))
 	result := strings.Join([]string{realName, idCard, phone, bankAccount}, "|")
 	src, _ := b.storage.GetString(key)
-	if src != result || turnStat == 0 {
-		b.storage.SetExpire(key, result, int64(time.Hour)*24*100)
+	if src != result || turnStat == "0" {
+		_ = b.storage.SetExpire(key, result, int64(time.Hour)*24*100)
 		return true
 	}
 	return false
