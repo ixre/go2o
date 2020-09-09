@@ -31,7 +31,7 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	//if len(targetUrl) == 0 {
 	//	targetUrl = impl.FoundationService.GetRegisterPerm().CallBackUrl
 	//}
-	//m, _ := service.MemberService.GetMember(context.TODO(), memberId)
+	//m, _ := impl.MemberService.GetMember(context.TODO(), memberId)
 	//if m != nil {
 	//	query := "return_url=" + targetUrl
 	//	c.Response().Header().Add("Content-Type", "Image/Jpeg")

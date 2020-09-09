@@ -10,6 +10,7 @@ package impl
 
 import (
 	"context"
+	"errors"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/service/proto"
@@ -24,6 +25,7 @@ type registryService struct {
 	registryRepo registry.IRegistryRepo
 	serviceUtil
 }
+
 
 func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *registryService {
 	return &registryService{
@@ -41,6 +43,20 @@ func (s *registryService) GetValue(_ context.Context, key *proto.String) (*proto
 		rsp.ErrorMsg = err.Error()
 	}
 	return rsp, nil
+}
+
+
+func (s *registryService) UpdateValue(c context.Context, pair *proto.RegistryPair) (r *proto.Result,err error) {
+	e := s.registryRepo.Get(pair.Key)
+	if e == nil{
+		err = errors.New("not exists key")
+	}else{
+		err = s.registryRepo.UpdateValue(pair.Key,pair.Value)
+	}
+	if err != nil{
+		return s.error(err),nil
+	}
+	return s.success(nil),nil
 }
 
 // 获取键值存储数据
@@ -118,7 +134,7 @@ func (s *registryService) UpdateRegistryValues(_ context.Context, registries *pr
 }
 
 // 获取键值存储数据
-func (s *registryService) GetRegistryV1(_ context.Context, array *proto.StringArray) (*proto.StringArray, error) {
+func (s *registryService) _GetRegistryV1(_ context.Context, array *proto.StringArray) (*proto.StringArray, error) {
 	a := s._rep.GetsRegistry(array.Value)
 	return &proto.StringArray{Value: a}, nil
 }

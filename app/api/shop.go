@@ -105,7 +105,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	} else {
 		mmUrl := fmt.Sprintf("//%s%s",
 			consts.DOMAIN_PREFIX_MEMBER, variable.Domain)
-		m, _ := service.MemberService.GetProfile(context.TODO(), int64(memberId))
+		m, _ := impl.MemberService.GetProfile(context.TODO(), int64(memberId))
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"
 		mp["MMUrl"] = mmUrl
@@ -127,6 +127,6 @@ func (s *serviceC) LoginState(c *echox.Context) error {
  */
 func (s shopApi) addressList(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
-	address, _ := impl.MemberService.GetAddressList(context.TODO(), &proto.Int64{Value:int64(memberId)})
+	address, _ := impl.MemberService.GetAddressList(context.TODO(), &proto.Int64{Value: int64(memberId)})
 	return address
 }

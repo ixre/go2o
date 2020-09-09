@@ -34,8 +34,8 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	if len(code) > 0 {
 		v, _ := impl.MemberService.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
-				Cred:                 proto.ECredentials_Code,
-				Value:                code,
+				Cred:  proto.ECredentials_Code,
+				Value: code,
 			})
 		memberId = v.Value
 	}
@@ -82,17 +82,17 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 		return api.ResponseWithCode(3, "网络连接失败")
 	}
 	defer trans.Close()
-	r, _ := cli.CheckLogin(context.TODO(),&proto.LoginRequest{
-		User:                user,
-		Pwd:                  pwd,
-		Update:               true,
-	} )
+	r, _ := cli.CheckLogin(context.TODO(), &proto.LoginRequest{
+		User:   user,
+		Pwd:    pwd,
+		Update: true,
+	})
 	if r.ErrCode == 0 {
 		memberId, _ := strconv.Atoi(r.Data["id"])
 		token, _ := cli.GetToken(context.TODO(),
 			&proto.GetTokenRequest{
-				MemberId:             int64(memberId),
-				Reset_:               true,
+				MemberId: int64(memberId),
+				Reset_:   true,
 			})
 		r.Data["token"] = token.Value
 		return r
@@ -110,9 +110,9 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(),&proto.SwapMemberRequest{
-			Cred:                 proto.ECredentials_Code,
-			Value:                code,
+		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
+			Cred:  proto.ECredentials_Code,
+			Value: code,
 		})
 		r, err1 := cli.GetAccount(context.TODO(), memberId)
 		if err1 == nil {
@@ -134,8 +134,8 @@ func (m MemberApi) complex(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
-				Cred:                 proto.ECredentials_Code,
-				Value:                code,
+				Cred:  proto.ECredentials_Code,
+				Value: code,
 			})
 		r, _ := cli.Complex(context.TODO(), memberId)
 		return r
@@ -154,8 +154,8 @@ func (m MemberApi) bankcard(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
-				Cred:                 proto.ECredentials_Code,
-				Value:                code,
+				Cred:  proto.ECredentials_Code,
+				Value: code,
 			})
 		r, _ := cli.BankCards(context.TODO(), memberId)
 		return r
@@ -174,8 +174,8 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
-				Cred:                 proto.ECredentials_Code,
-				Value:                code,
+				Cred:  proto.ECredentials_Code,
+				Value: code,
 			})
 		r, err1 := cli.GetMember(context.TODO(), memberId)
 		if err1 == nil {
@@ -198,13 +198,13 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
-				Cred:                 proto.ECredentials_Code,
-				Value:                code,
+				Cred:  proto.ECredentials_Code,
+				Value: code,
 			})
 		r, err1 := cli.CheckToken(context.TODO(),
 			&proto.CheckTokenRequest{
-				MemberId:             memberId.Value,
-				Token:                token,
+				MemberId: memberId.Value,
+				Token:    token,
 			})
 		if err1 == nil {
 			return r
@@ -225,8 +225,8 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
-				Cred:                 proto.ECredentials_Code,
-				Value:                code,
+				Cred:  proto.ECredentials_Code,
+				Value: code,
 			})
 		if memberId.Value <= 0 {
 			return api.NewErrorResponse("no such member")
@@ -243,8 +243,8 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	memberId, _ := cli.SwapMemberId(context.TODO(),
 		&proto.SwapMemberRequest{
-			Cred:                 proto.ECredentials_Code,
-			Value:                code,
+			Cred:  proto.ECredentials_Code,
+			Value: code,
 		})
 	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
 	mp := map[string]interface{}{
@@ -283,16 +283,16 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 	identity := ctx.Form().GetString("identity")
 	memberId, _ := cli.SwapMemberId(context.TODO(),
 		&proto.SwapMemberRequest{
-			Cred:                 proto.ECredentials_Code,
-			Value:                code,
+			Cred:  proto.ECredentials_Code,
+			Value: code,
 		})
 	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
 	for _, v := range arr.List {
 		if v.Identity == identity {
 			v.State = 1 - v.State
-			r, _ := cli.SaveReceiptsCode(context.TODO(),&proto.ReceiptsCodeSaveRequest{
-				MemberId:             memberId.Value,
-				Code:                 v,
+			r, _ := cli.SaveReceiptsCode(context.TODO(), &proto.ReceiptsCodeSaveRequest{
+				MemberId: memberId.Value,
+				Code:     v,
 			})
 			return r
 		}
@@ -319,7 +319,7 @@ func (m *MemberApi) invites(ctx api.Context, memberId int64) *api.Response {
 	keys := []string{registry.Domain, registry.DomainEnabledSSL,
 		registry.DomainPrefixMember,
 		registry.DomainPrefixMobileMember}
-	mp, _ := cli2.GetRegistries(context.TODO(),&proto.StringArray{Value:  keys})
+	mp, _ := cli2.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
 	if member != nil {
 		inviteCode := member.InviteCode
 		proto := types.ElseString(mp.Value[keys[1]] == "true", "https", "http")
@@ -359,7 +359,7 @@ func (m MemberApi) orderSummary(ctx api.Context, memberId int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
-	mp, _ := impl.MemberService.OrdersQuantity(context.TODO(),&proto.Int64{Value:id} )
+	mp, _ := impl.MemberService.OrdersQuantity(context.TODO(), &proto.Int64{Value: id})
 	ret := map[string]int32{
 		/** 待付款订单数量 */
 		"AwaitPayment": mp.Data[int32(order.StatAwaitingPayment)],
@@ -383,7 +383,7 @@ func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
-	address, _ := impl.MemberService.GetAddressList(context.TODO(),&proto.Int64{Value: memberId})
+	address, _ := impl.MemberService.GetAddressList(context.TODO(), &proto.Int64{Value: memberId})
 	return m.utils.success(address)
 }
 

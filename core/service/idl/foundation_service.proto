@@ -25,11 +25,11 @@ service FoundationService {
     // 格式化资源地址并返回
     rpc ResourceUrl (String) returns (String){}
     // 设置键值
-    rpc SetValue (Pair) returns (Result){}
+    //rpc SetValue (Pair) returns (Result){}
     // 删除值,key
-    rpc DeleteValue (String) returns (Result){}
+    //rpc DeleteValue (String) returns (Result){}
     // 根据前缀获取值,prefix
-    rpc GetValuesByPrefix (String) returns (StringMap){}
+    //rpc GetValuesByPrefix (String) returns (StringMap){}
     // 注册单点登录应用,返回值：
     //   -  1. 成功，并返回token
     //   - -1. 接口地址不正确

@@ -40,20 +40,6 @@ func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IReg
 	}
 }
 
-// 根据键获取值
-func (s *foundationService) GetValue(_ context.Context, key string) (r string, err error) {
-	ir := s.registryRepo.Get(key)
-	if ir != nil {
-		return ir.StringValue(), nil
-	}
-	return "", nil
-}
-
-// 设置键值
-func (s *foundationService) SetValue(_ context.Context, pair *proto.Pair) (*proto.Result, error) {
-	err := s._rep.SetValue(pair.Key, pair.Value)
-	return s.result(err), nil
-}
 
 // 保存短信API凭据
 func (s *foundationService) SaveSmsApi(_ context.Context, r *proto.SmsApiSaveRequest) (*proto.Result, error) {
@@ -119,24 +105,20 @@ func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.Boar
 	}
 	return s.success(nil), nil
 }
+//
+//// 删除值
+//func (s *foundationService) DeleteValue(_ context.Context, s2 *proto.String) (*proto.Result, error) {
+//	err := s._rep.DeleteValue(s2.Value)
+//	return s.result(err), nil
+//}
+//
+//// 根据前缀获取值
+//func (s *foundationService) GetValuesByPrefix(_ context.Context, s2 *proto.String) (*proto.StringMap, error) {
+//	return &proto.StringMap{
+//		Value: s._rep.GetValues(s2.Value),
+//	}, nil
+//}
 
-// 删除值
-func (s *foundationService) DeleteValue(_ context.Context, s2 *proto.String) (*proto.Result, error) {
-	err := s._rep.DeleteValue(s2.Value)
-	return s.result(err), nil
-}
-
-// 根据前缀获取值
-func (s *foundationService) GetValuesByPrefix(_ context.Context, s2 *proto.String) (*proto.StringMap, error) {
-	return &proto.StringMap{
-		Value: s._rep.GetValues(s2.Value),
-	}, nil
-}
-
-// 获取键值存储数据
-func (s *foundationService) GetRegistryV1(_ context.Context, keys []string) ([]string, error) {
-	return s._rep.GetsRegistry(keys), nil
-}
 
 // 验证超级用户账号和密码
 func (s *foundationService) SuperValidate(_ context.Context, user *proto.UserPwd) (*proto.Bool, error) {

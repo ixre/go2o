@@ -45,9 +45,9 @@ func (a ArticleApi) list(ctx api.Context) interface{} {
 		defer trans.Close()
 		r, _ := cli.QueryPagingArticles(context.TODO(),
 			&proto.PagingArticleRequest{
-				Cat:                  catStr,
-				Begin:                int32(begin),
-				Size:                 int32(size),
+				Cat:   catStr,
+				Begin: int32(begin),
+				Size:  int32(size),
 			})
 		return r
 	}

@@ -88,7 +88,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	store.Get(autKey, &kvAut)
 	if kvMut == 0 {
-		//m, _ := service.MemberService.GetMember(context.TODO(), memberId)
+		//m, _ := impl.MemberService.GetMember(context.TODO(), memberId)
 		//kvMut = int(m.UpdateTime)
 		store.Set(mutKey, kvMut)
 	}

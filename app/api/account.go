@@ -24,8 +24,8 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	if len(code) > 0 {
 		v, _ := impl.MemberService.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
-				Cred:                 proto.ECredentials_Code,
-				Value:                code,
+				Cred:  proto.ECredentials_Code,
+				Value: code,
 			})
 		memberId = v.Value
 	}

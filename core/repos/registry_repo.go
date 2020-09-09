@@ -66,6 +66,21 @@ func (r *registryRepo) GetValue(key string) (string, error) {
 	return "",errors.New("no exists key")
 }
 
+func (r *registryRepo) UpdateValue(key string, value string) error {
+	e := r.Get(key)
+	if e == nil {
+		return errors.New("no exists key")
+	}
+	// 更新etcd
+	k := fmt.Sprintf("%s/%s",prefix,key)
+	_ = r.store.Set(k, value)
+	// 持久化
+	ev := e.Value()
+	ev.Value = value
+	return r.Save(e)
+}
+
+
 func (r *registryRepo) SearchRegistry(key string) []registry.Registry {
 	r.lock.RLock()
 	arr := make([]registry.Registry, 0)
@@ -160,7 +175,7 @@ func (r *registryRepo) truncUnused(registries []*registry.Registry) error {
 				}
 			}
 			if !exists {
-				r.Remove(ir.Key())
+				_ = r.Remove(ir.Key())
 			}
 		}
 	}

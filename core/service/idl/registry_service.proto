@@ -7,6 +7,8 @@ import "ttype.proto";
 service RegistryService{
    /** 获取注册表键值,key */
    rpc GetValue(String)returns(RegistryValueResponse){}
+   /** 更新注册表值 */
+   rpc UpdateValue(RegistryPair)returns(Result){}
    /** 获取键值存储数据字典,keys */
    rpc GetRegistries(StringArray)returns(StringMap){}
    /** 按键前缀获取键数据,prefix*/
@@ -17,12 +19,15 @@ service RegistryService{
    rpc SearchRegistry(String)returns(RegistriesResponse){}
    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
    rpc CreateRegistry(RegistryCreateRequest)returns(Result){}
-   /** 获取键值存储数据,keys */
-   rpc GetRegistryV1(StringArray)returns (StringArray){}
 }
 
 message RegistriesResponse{
     repeated SRegistry Value = 1;
+}
+
+message RegistryPair{
+    string Key = 1;
+    string Value = 2;
 }
 
 message RegistryValueResponse{
@@ -35,6 +40,7 @@ message RegistryCreateRequest{
     string defaultValue = 2;
     string description = 3;
 }
+
 /** 注册表 */
 message SRegistry {
     /** 键 */

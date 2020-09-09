@@ -89,7 +89,7 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 		regArr := []string{registry.CacheAdMaxAge}
 		trans, cli, err := service.RegistryServeClient()
 		if err == nil {
-			mp, _ := cli.GetRegistries(context.TODO(),&proto.StringArray{Value:  regArr})
+			mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: regArr})
 			_ = trans.Close()
 			seconds, _ = strconv.Atoi(mp.Value[regArr[0]])
 		}
@@ -151,7 +151,7 @@ func (r resApi) childArea(ctx api.Context) *api.Response {
 	var areas *proto.AreaListResponse
 	if err == nil {
 		areas, _ = cli.GetChildAreas(context.TODO(),
-			&proto.Int32{Value:int32(code)})
+			&proto.Int32{Value: int32(code)})
 		_ = tran.Close()
 		if areaType == 3 {
 			for i, v := range areas.Value {
