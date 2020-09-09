@@ -74,38 +74,38 @@ func (a *AppApi) init() *AppApi {
 	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
-		cli.CreateUserRegistry(context.TODO(),
-			&proto.UserRegistryCreateRequest{
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
 				Key:          appVersion,
 				DefaultValue: "1.0.0",
 				Description:  "APP版本号",
 			})
-		cli.CreateUserRegistry(context.TODO(),
-			&proto.UserRegistryCreateRequest{
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
 				Key:          appAndroidVersion,
 				DefaultValue: "1.0.0",
 				Description:  "安卓APP版本号",
 			})
-		cli.CreateUserRegistry(context.TODO(),
-			&proto.UserRegistryCreateRequest{
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
 				Key:          appIOSVersion,
 				DefaultValue: "1.0.0",
 				Description:  "苹果APP版本号",
 			})
-		cli.CreateUserRegistry(context.TODO(),
-			&proto.UserRegistryCreateRequest{
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
 				Key:          appReleaseInfo,
 				DefaultValue: "修复已知BUG\n界面调整",
 				Description:  "版本发布日志",
 			})
-		cli.CreateUserRegistry(context.TODO(),
-			&proto.UserRegistryCreateRequest{
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
 				Key:          appApkFileUrl,
 				DefaultValue: "",
 				Description:  "安卓APK文件下载地址",
 			})
-		cli.CreateUserRegistry(context.TODO(),
-			&proto.UserRegistryCreateRequest{
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
 				Key:          appIOSFileUrl,
 				DefaultValue: "",
 				Description:  "苹果APP文件下载地址",

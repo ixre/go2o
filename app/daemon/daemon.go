@@ -376,7 +376,7 @@ func FlagRun() {
 	_orm = conn.GetOrm()
 
 	//todo: daemon 应不依赖于service
-	//rsi.Init(appCtx, app.FlagDaemon)
+	//impl.Init(appCtx, app.FlagDaemon)
 
 	//todo:???
 	//	if service != "all" {

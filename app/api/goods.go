@@ -131,7 +131,7 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //	sto := c.App.Storage()
 //	if err := sto.Get(key, &result); err != nil {
 //		//从缓存中读取
-//		ss := rsi.ItemService
+//		ss := impl.ItemService
 //		for _, t := range types {
 //			p, size, begin := j.getMultiParams(t)
 //			switch p {
@@ -157,7 +157,7 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //	sto := c.App.Storage()
 //	//从缓存中读取
 //	if err := sto.Get(key, &result); err != nil {
-//		ss := rsi.ShopService
+//		ss := impl.ShopService
 //		for _, t := range types {
 //			p, size, begin := j.getMultiParams(t)
 //			switch p {
@@ -179,7 +179,7 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //func (j *JsonC) Get_NewShop2(c *echox.Context) error {
 //	begin, _ := strconv.Atoi(c.FormValue("begin"))
 //	size, _ := strconv.Atoi(c.FormValue("size"))
-//	ss := rsi.ShopService
+//	ss := impl.ShopService
 //	_, result := ss.PagedOnBusinessOnlineShops(
 //		begin, begin+size, "", "sp.create_time DESC")
 //

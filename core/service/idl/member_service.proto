@@ -94,8 +94,8 @@ message ChangePhoneRequest {
     string phone = 2;
 }
 message ChangeUserRequest {
-    sint64 memberId = 1;
-    string usr = 2;
+    sint64 MemberId = 1;
+    string User = 2;
 }
 message ModifyPwdRequest {
     sint64 memberId = 1;
@@ -265,7 +265,7 @@ message DepthRequest {
     sint32 depth = 2;
 }
 message InviterIdListResponse {
-    repeated sint64 List = 1;
+    repeated sint64 Value = 1;
 
 }
 message InviteQuantityRequest {

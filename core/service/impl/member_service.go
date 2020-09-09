@@ -408,7 +408,7 @@ func (s *memberService) ChangeUser(_ context.Context, r *proto.ChangeUserRequest
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		if err = m.ChangeUser(r.Usr); err == nil {
+		if err = m.ChangeUser(r.User); err == nil {
 			return s.success(nil), nil
 		}
 	}
@@ -742,7 +742,7 @@ func (s *memberService) InviterArray(_ context.Context, r *proto.DepthRequest) (
 		arr = m.Invitation().InviterArray(r.MemberId, int(r.Depth))
 	}
 	return &proto.InviterIdListResponse{
-		List: arr,
+		Value: arr,
 	}, nil
 }
 

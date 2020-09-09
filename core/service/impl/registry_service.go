@@ -85,7 +85,7 @@ func (s *registryService) SearchRegistry(_ context.Context, key *proto.String) (
 }
 
 // 创建用户自定义注册项
-func (s *registryService) CreateUserRegistry(_ context.Context, r *proto.UserRegistryCreateRequest) (*proto.Result, error) {
+func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCreateRequest) (*proto.Result, error) {
 	if s.registryRepo.Get(r.Key) != nil {
 		return s.resultWithCode(-1, "registry is exist"), nil
 	}

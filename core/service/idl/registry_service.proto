@@ -16,7 +16,7 @@ service RegistryService{
    /** 搜索注册表,keyword */
    rpc SearchRegistry(String)returns(RegistriesResponse){}
    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
-   rpc CreateUserRegistry(UserRegistryCreateRequest)returns(Result){}
+   rpc CreateRegistry(RegistryCreateRequest)returns(Result){}
    /** 获取键值存储数据,keys */
    rpc GetRegistryV1(StringArray)returns (StringArray){}
 }
@@ -30,7 +30,7 @@ message RegistryValueResponse{
     string ErrorMsg = 2;
 }
 
-message UserRegistryCreateRequest{
+message RegistryCreateRequest{
     string key = 1;
     string defaultValue = 2;
     string description = 3;

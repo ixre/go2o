@@ -127,7 +127,7 @@ func main() {
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
 	})
-	//rsi.Init(newApp, appFlag)
+	//impl.Init(newApp, appFlag)
 	//runGoMicro()
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))

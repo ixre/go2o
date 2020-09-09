@@ -335,12 +335,12 @@ func initBankB4eAPI() {
 	if err == nil {
 		ctx := context.TODO()
 		defer trans.Close()
-		_, _ = cli.CreateUserRegistry(ctx, &proto.UserRegistryCreateRequest{
+		_, _ = cli.CreateRegistry(ctx, &proto.RegistryCreateRequest{
 			Key:          "bank4e_trust_on",
 			DefaultValue: "false",
 			Description:  "是否开启四要素实名认证",
 		})
-		_, _ = cli.CreateUserRegistry(ctx, &proto.UserRegistryCreateRequest{
+		_, _ = cli.CreateRegistry(ctx, &proto.RegistryCreateRequest{
 			Key:          "bank4e_jd_app_key",
 			DefaultValue: "",
 			Description:  "京东银行四要素接口KEY",
@@ -360,14 +360,14 @@ func initExpressAPI() {
 	if err == nil {
 		defer trans.Close()
 		keys := []string{"express_kdn_business_id", "express_kdn_api_key"}
-		_, _ = cli.CreateUserRegistry(context.TODO(),
-			&proto.UserRegistryCreateRequest{
+		_, _ = cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
 				Key:          keys[0],
 				DefaultValue: "1314567",
 				Description:  "快递鸟接口业务ID",
 			})
-		_, _ = cli.CreateUserRegistry(context.TODO(),
-			&proto.UserRegistryCreateRequest{
+		_, _ = cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
 				Key:          keys[1],
 				DefaultValue: "27d809c3-51b6-479c-9b77-6b98d7f3d41",
 				Description:  "快递鸟接口KEY",
