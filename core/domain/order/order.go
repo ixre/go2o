@@ -45,9 +45,9 @@ type orderItem struct {
 	// 更新时间
 	UpdateTime int64
 	// 运营商编号
-	VendorId int32
+	VendorId int64
 	// 商店编号
-	ShopId int32
+	ShopId int64
 	// 重量,用于生成订单时存储数据
 	Weight int32
 	// 体积:毫升(ml)

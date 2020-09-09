@@ -35,7 +35,7 @@ func (p *postedDataImpl) AddressId() int64 {
 	return p._addressId
 }
 
-func (p *postedDataImpl) GetComment(sellerId int32) string {
+func (p *postedDataImpl) GetComment(sellerId int64) string {
 	k := fmt.Sprintf("seller_comment_%d", sellerId)
 	return p.data[k]
 }

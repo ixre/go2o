@@ -18,8 +18,6 @@ import (
  * history :
  */
 
-
-
 func ParseCartItem(item *cart.NormalCartItem) *proto.SShoppingCartItem {
 	i := &proto.SShoppingCartItem{
 		ItemId:   item.ItemId,
@@ -57,7 +55,7 @@ func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
 
 	items := rc.Items()
 	if items != nil && len(items) > 0 {
-		mp := make(map[int32]*proto.SShoppingCartGroup, 0) //保存运营商到map
+		mp := make(map[int64]*proto.SShoppingCartGroup, 0) //保存运营商到map
 		for _, v := range items {
 			vendor, ok := mp[v.ShopId]
 			if !ok {
@@ -78,4 +76,3 @@ func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
 	}
 	return c
 }
-

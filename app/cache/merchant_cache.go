@@ -28,7 +28,7 @@ func GetValueMerchantCache(mchId int) *proto.SMerchant {
 	var sto storage.Interface = GetKVS()
 	var key string = GetValueMerchantCacheCK(mchId)
 	if sto.Get(key, &v) != nil {
-		v2, _ := impl.MerchantService.GetMerchant(context.TODO(), &proto.Int64{Value:int64(mchId)})
+		v2, _ := impl.MerchantService.GetMerchant(context.TODO(), &proto.Int64{Value: int64(mchId)})
 		if v2 != nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 			return v2

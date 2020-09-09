@@ -88,7 +88,6 @@ func TradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeMethodData {
 	}
 }
 
-
 func ItemDto(src *item.GoodsItem) *proto.SOldItem {
 	it := &proto.SOldItem{
 		ItemId:       src.ID,
@@ -215,7 +214,6 @@ func Sku(src *proto.SSku) *item.Sku {
 	}
 }
 
-
 func Order(src *proto.SComplexOrder) *order.ComplexOrder {
 	o := &order.ComplexOrder{
 		OrderId:         src.OrderId,
@@ -264,7 +262,6 @@ func OrderItem(src *proto.SComplexItem) *order.ComplexItem {
 		Data:           src.Data,
 	}
 }
-
 
 func SubOrderItemDto(src *order.SubOrderItem) *proto.SComplexItem {
 	return &proto.SComplexItem{

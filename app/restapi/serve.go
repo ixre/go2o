@@ -69,11 +69,11 @@ func GetServe() *echo.Echo {
 func Run(ch chan bool, app gof.App, port int) {
 	store = app.Storage()
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
-	handler :=  newServe(app.Config(), store)
+	handler := newServe(app.Config(), store)
 	log.Println("** [ Go2o][ API] - Api server running on port " +
 		strconv.Itoa(port))
 
-	err := http.ListenAndServe(":"+strconv.Itoa(port),handler)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), handler)
 
 	//r := consul.NewRegistry(registry.Addrs("127.0.0.1:8500"))
 	//s := web.NewService(
@@ -87,7 +87,7 @@ func Run(ch chan bool, app gof.App, port int) {
 		log.Println("** [ Go2o][ API] : " + err.Error())
 		os.Exit(1)
 	}
-	ch<-false
+	ch <- false
 }
 
 func registerRoutes(s *echo.Echo) {

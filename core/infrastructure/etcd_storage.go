@@ -21,8 +21,9 @@ import (
 
 var _ storage.Interface = new(EtcdStorage)
 var ctx = context.TODO()
+
 type EtcdStorage struct {
-	cli        *clientv3.Client
+	cli     *clientv3.Client
 	timeout time.Duration
 }
 
@@ -33,8 +34,8 @@ func NewEtcdStorage(config clientv3.Config) (storage.Interface, error) {
 		return nil, err
 	}
 	return &EtcdStorage{
-		cli: cli,
-		timeout: 10*time.Second,
+		cli:     cli,
+		timeout: 10 * time.Second,
 	}, nil
 }
 
@@ -54,23 +55,23 @@ func (e EtcdStorage) Exists(key string) (exists bool) {
 }
 
 func (e EtcdStorage) Set(key string, v interface{}) error {
-	j,err := json.Marshal(v)
-	if err == nil{
+	j, err := json.Marshal(v)
+	if err == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
-		_,err = e.cli.Put(ctx,key,string(j))
+		_, err = e.cli.Put(ctx, key, string(j))
 		cancel()
 	}
 	return err
 }
 
 func (e EtcdStorage) SetExpire(key string, v interface{}, seconds int64) error {
-	j,err := json.Marshal(v)
-	if err == nil{
+	j, err := json.Marshal(v)
+	if err == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 		var rsp *clientv3.LeaseGrantResponse
 		rsp, err = e.cli.Grant(ctx, seconds)
-		if err == nil{
-			_,err = e.cli.Put(ctx,key,string(j),clientv3.WithLease(rsp.ID))
+		if err == nil {
+			_, err = e.cli.Put(ctx, key, string(j), clientv3.WithLease(rsp.ID))
 		}
 		cancel()
 	}
@@ -78,9 +79,9 @@ func (e EtcdStorage) SetExpire(key string, v interface{}, seconds int64) error {
 }
 
 func (e EtcdStorage) Get(key string, dst interface{}) error {
-	s,err := e.GetBytes(key)
-	if err == nil{
-		err = json.Unmarshal(s,&dst)
+	s, err := e.GetBytes(key)
+	if err == nil {
+		err = json.Unmarshal(s, &dst)
 	}
 	return err
 }
@@ -94,11 +95,11 @@ func (e EtcdStorage) GetBool(key string) (bool, error) {
 }
 
 func (e EtcdStorage) GetInt(key string) (int, error) {
-	s,err := e.GetString(key)
+	s, err := e.GetString(key)
 	if err == nil {
 		return strconv.Atoi(s)
 	}
-	return 0,err
+	return 0, err
 }
 
 func (e EtcdStorage) GetInt64(key string) (int64, error) {
@@ -109,28 +110,28 @@ func (e EtcdStorage) GetString(key string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	v, err := e.cli.Get(ctx, key)
 	cancel()
-	if err == nil && len(v.Kvs) > 0{
+	if err == nil && len(v.Kvs) > 0 {
 		return string(v.Kvs[0].Value), err
 	}
-	return "",err
+	return "", err
 }
 
 func (e EtcdStorage) GetFloat64(key string) (float64, error) {
-	s,err := e.GetString(key)
+	s, err := e.GetString(key)
 	if err == nil {
-		return strconv.ParseFloat(s,64)
+		return strconv.ParseFloat(s, 64)
 	}
-	return 0,err
+	return 0, err
 }
 
 func (e EtcdStorage) GetBytes(key string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	v, err := e.cli.Get(ctx, key)
 	cancel()
-	if err == nil&& len(v.Kvs) > 0 {
+	if err == nil && len(v.Kvs) > 0 {
 		return v.Kvs[0].Value, err
 	}
-	return []byte(""),err
+	return []byte(""), err
 }
 
 func (e EtcdStorage) Del(key string) {

@@ -316,24 +316,27 @@ func (m *MemberApi) invites(ctx api.Context, memberId int64) *api.Response {
 	trans.Close()
 	trans2, cli2, _ := service.RegistryServeClient()
 	defer trans2.Close()
-	keys := []string{registry.Domain, registry.DomainEnabledSSL,
-		registry.DomainPrefixMember,
-		registry.DomainPrefixMobileMember}
-	mp, _ := cli2.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
+	mp1, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.Domain})
+	mp2, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.DomainEnabledSSL})
+	mp3, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.DomainPrefixMember})
+	mp4, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.DomainPrefixMobileMember})
+	trans.Close()
+	domain := mp1.Value
+	proto := types.ElseString(mp2.Value == "true", "https", "http")
+
 	if member != nil {
 		inviteCode := member.InviteCode
-		proto := types.ElseString(mp.Value[keys[1]] == "true", "https", "http")
 		// 网页推广链接
 		inviteLink := fmt.Sprintf("%s://%s%s/i/%s",
 			proto,
-			mp.Value[keys[2]],
-			mp.Value[keys[0]],
+			mp3.Value,
+			domain,
 			inviteCode)
 		// 手机网页推广链接
 		mobileInviteLink := fmt.Sprintf("%s://%s%s/i/%s",
 			proto,
-			mp.Value[keys[3]],
-			mp.Value[keys[0]],
+			mp4.Value,
+			domain,
 			inviteCode)
 		mp := map[string]string{
 			"code":        inviteCode,

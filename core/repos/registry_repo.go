@@ -15,18 +15,19 @@ import (
 var _ registry.IRegistryRepo = new(registryRepo)
 
 var prefix = "registry/key"
+
 type registryRepo struct {
-	conn db.Connector
+	conn  db.Connector
 	store storage.Interface
-	data map[string]registry.IRegistry
-	lock sync.RWMutex
+	data  map[string]registry.IRegistry
+	lock  sync.RWMutex
 }
 
-func NewRegistryRepo(conn db.Connector,s storage.Interface) registry.IRegistryRepo {
+func NewRegistryRepo(conn db.Connector, s storage.Interface) registry.IRegistryRepo {
 	return (&registryRepo{
-		conn: conn,
-		store:s,
-		data: make(map[string]registry.IRegistry),
+		conn:  conn,
+		store: s,
+		data:  make(map[string]registry.IRegistry),
 	}).init()
 }
 
@@ -51,19 +52,19 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 }
 
 func (r *registryRepo) GetValue(key string) (string, error) {
-	k := fmt.Sprintf("%s/%s",prefix,key)
+	k := fmt.Sprintf("%s/%s", prefix, key)
 	v, err := r.store.GetString(k)
-	if err == nil{
-		return v,err
+	if err == nil {
+		return v, err
 	}
-	if ir := r.Get(key);ir != nil{
+	if ir := r.Get(key); ir != nil {
 		v := ir.Value().Value
-		if err := r.store.Set(k, v);err != nil{
-			log.Println("[ app][ warning]: registry persists failed, ",err.Error())
+		if err := r.store.Set(k, v); err != nil {
+			log.Println("[ app][ warning]: registry persists failed, ", err.Error())
 		}
-		return v,nil
+		return v, nil
 	}
-	return "",errors.New("no exists key")
+	return "", errors.New("no exists key")
 }
 
 func (r *registryRepo) UpdateValue(key string, value string) error {
@@ -72,14 +73,13 @@ func (r *registryRepo) UpdateValue(key string, value string) error {
 		return errors.New("no exists key")
 	}
 	// 更新etcd
-	k := fmt.Sprintf("%s/%s",prefix,key)
+	k := fmt.Sprintf("%s/%s", prefix, key)
 	_ = r.store.Set(k, value)
 	// 持久化
 	ev := e.Value()
 	ev.Value = value
 	return r.Save(e)
 }
-
 
 func (r *registryRepo) SearchRegistry(key string) []registry.Registry {
 	r.lock.RLock()

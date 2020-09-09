@@ -428,7 +428,6 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 	return m.relation
 }
 
-
 // 更换用户名
 func (m *memberImpl) ChangeUser(user string) error {
 	if user == m.value.User {
@@ -689,7 +688,7 @@ func (m *memberImpl) BindInviter(inviterId int64, force bool) (err error) {
 	}
 	if rl.InviterId != inviterId {
 		m.relation = nil
-		return m.Invitation().UpdateInviter(inviterId,true)
+		return m.Invitation().UpdateInviter(inviterId, true)
 	}
 	return err
 }

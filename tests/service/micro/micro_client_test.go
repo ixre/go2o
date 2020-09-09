@@ -19,7 +19,7 @@ import (
  * history :
  */
 
-func  TestMicroClient(t *testing.T)  {
+func TestMicroClient(t *testing.T) {
 	//// 创建一个新的服务
 	//service := micro.NewService(micro.Name("Greeter.Client"))
 	//// 初始化
@@ -41,15 +41,14 @@ func  TestMicroClient(t *testing.T)  {
 	//fmt.Printf("%#v", ret)
 }
 
-
-func TestRequest(t *testing.T){
+func TestRequest(t *testing.T) {
 	r := consul.NewRegistry(registry.Addrs("127.0.0.1:8500"))
 	service, err := r.GetService("Go2oService")
-	if err == nil{
-		s,err := selector.Random(service)()
-		if err == nil{
-			println("---",s.Address)
-			rsp,_ := http.Get("http://"+s.Address)
+	if err == nil {
+		s, err := selector.Random(service)()
+		if err == nil {
+			println("---", s.Address)
+			rsp, _ := http.Get("http://" + s.Address)
 			all, _ := ioutil.ReadAll(rsp.Body)
 			println(string(all))
 		}

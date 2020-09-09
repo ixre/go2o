@@ -26,20 +26,21 @@ import (
 var cfg = clientv3.Config{
 	Endpoints:   []string{"http://localhost:2379/"},
 	DialTimeout: 5 * time.Second,
-	Username: "",
-	Password: "",
+	Username:    "",
+	Password:    "",
 }
+
 func TestSelector(t *testing.T) {
-	selector,_ := etcd.NewSelector(service,cfg,etcd.AlgRoundRobin)
+	selector, _ := etcd.NewSelector(service, cfg, etcd.AlgRoundRobin)
 	for {
 		next, err := selector.Next()
-		if err != nil{
-			t.Logf("select node error %s",err.Error())
-		}else {
+		if err != nil {
+			t.Logf("select node error %s", err.Error())
+		} else {
 			t.Log("selected:" + next.Addr)
 			requestRPC(next.Addr)
 		}
-		time.Sleep(time.Second*5)
+		time.Sleep(time.Second * 5)
 	}
 }
 

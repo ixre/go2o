@@ -164,7 +164,7 @@ func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 			g.value.IsPresent = v.IsPresent
 			g.value.ProductId = v.ProductId
 			g.value.PromFlag = v.PromFlag
-			g.value.ShopCatId = v.ShopId
+			g.value.ShopCatId = v.ShopCatId
 			g.value.ExpressTid = v.ExpressTid
 			g.value.Title = v.Title
 			g.value.ShortTitle = v.ShortTitle

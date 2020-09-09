@@ -340,9 +340,9 @@ type (
 		// 购买人编号
 		BuyerId int64
 		// 运营商编号
-		VendorId int32
+		VendorId int64
 		// 店铺编号
-		ShopId int32
+		ShopId int64
 		// 订单标题
 		Subject string
 		// 商品金额
@@ -422,9 +422,9 @@ type (
 		// 买家编号
 		BuyerId int64 `db:"buyer_id"`
 		// 商家编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id"`
+		ShopId int64 `db:"shop_id"`
 		// 商品总价
 		ItemAmount float32 `db:"item_amount"`
 		// 抵扣金额
@@ -488,9 +488,9 @@ type (
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 商家编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id"`
+		ShopId int64 `db:"shop_id"`
 		// 订单标题
 		Subject string `db:"subject"`
 		// 订单金额

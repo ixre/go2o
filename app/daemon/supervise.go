@@ -29,9 +29,9 @@ import (
 func superviseOrder(ss []Service) {
 	sv := impl.ShoppingService
 	notify := func(orderNo string, sub bool, ss []Service) {
-		o, _ := sv.GetOrder(context.TODO(),&proto.GetOrderRequest{
-			OrderNo:              orderNo,
-			SubOrder:             sub,
+		o, _ := sv.GetOrder(context.TODO(), &proto.GetOrderRequest{
+			OrderNo:  orderNo,
+			SubOrder: sub,
 		})
 		if o != nil {
 			for _, v := range ss {
@@ -104,7 +104,7 @@ func superviseMemberUpdate(ss []Service) {
 func supervisePaymentOrderFinish(ss []Service) {
 	sv := impl.PaymentService
 	notify := func(id int, ss []Service) {
-		order, _ := sv.GetPaymentOrderById(context.TODO(), &proto.Int32{Value:int32(id)})
+		order, _ := sv.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
 		if order != nil {
 			for _, v := range ss {
 				if !v.PaymentOrderObs(order) {

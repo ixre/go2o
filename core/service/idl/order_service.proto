@@ -132,8 +132,8 @@ message SComplexOrder {
     sint32 OrderType = 3;
     string OrderNo = 4;
     sint64 BuyerId = 5;
-    sint32 VendorId = 6;
-    sint32 ShopId = 7;
+    sint64 VendorId = 6;
+    sint64 ShopId = 7;
     string Subject = 8;
     double ItemAmount = 9;
     double DiscountAmount = 10;

@@ -114,7 +114,7 @@ func (s *itemService) GetItemSkuJson(_ context.Context, i *proto.Int64) (*proto.
 }
 
 // 保存商品
-func (s *itemService) SaveItem(di *proto.SOldItem, vendorId int32) (_ *proto.Result, err error) {
+func (s *itemService) SaveItem(di *proto.SOldItem, vendorId int64) (_ *proto.Result, err error) {
 	var gi item.IGoodsItem
 	it := parser.Item(di)
 	if it.ID > 0 {
@@ -283,7 +283,7 @@ func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*pro
 }
 
 // 根据SKU获取商品
-func (s *itemService) GetGoodsBySku(mchId int32, itemId, sku int64) *valueobject.Goods {
+func (s *itemService) GetGoodsBySku(mchId, itemId, sku int64) *valueobject.Goods {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
 	if v != nil {
 		return s.itemRepo.CreateItem(v).GetPackedValue()
@@ -381,7 +381,7 @@ func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end i
 }
 
 // 删除产品
-func (s *itemService) DeleteGoods(mchId int32, itemId int64) error {
+func (s *itemService) DeleteGoods(mchId, itemId int64) error {
 	gi := s.itemRepo.GetItem(itemId)
 	if gi == nil || gi.GetValue().VendorId != mchId {
 		return item.ErrNoSuchItem
@@ -473,7 +473,7 @@ func (s *itemService) GetGoodSMemberLevelPrices(itemId int64) []*item.MemberPric
 }
 
 // 保存商品的会员价
-func (s *itemService) SaveMemberPrices(mchId int32, itemId int64,
+func (s *itemService) SaveMemberPrices(mchId, itemId int64,
 	priceSet []*item.MemberPrice) (err error) {
 	gi := s.itemRepo.GetItem(itemId)
 	if gi != nil {
@@ -520,7 +520,7 @@ func (s *itemService) GetSnapshot(skuId int64) *item.Snapshot {
 }
 
 // 设置商品货架状态
-func (s *itemService) SetShelveState(vendorId int32, itemId int64,
+func (s *itemService) SetShelveState(vendorId, itemId int64,
 	itemType int32, state int32, remark string) (_ *proto.Result, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
@@ -537,7 +537,7 @@ func (s *itemService) SetShelveState(vendorId int32, itemId int64,
 }
 
 // 设置商品货架状态
-func (s *itemService) ReviewItem(vendorId int32, itemId int64,
+func (s *itemService) ReviewItem(vendorId, itemId int64,
 	pass bool, remark string) (_ *proto.Result, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
@@ -549,7 +549,7 @@ func (s *itemService) ReviewItem(vendorId int32, itemId int64,
 }
 
 // 标记为违规
-func (s *itemService) SignGoodsIllegal(vendorId int32, itemId int64,
+func (s *itemService) SignGoodsIllegal(vendorId, itemId int64,
 	remark string) (_ *proto.Result, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {

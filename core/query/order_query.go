@@ -501,5 +501,3 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
 	}
 	return num, orderList
 }
-
-

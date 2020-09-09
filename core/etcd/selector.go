@@ -72,7 +72,7 @@ func (s *serverSelector) Next() (Node, error) {
 		return Node{}, fmt.Errorf("no nodes found on %s", s.name)
 	}
 	if s.alg == AlgRoundRobin {
-		if s.last += 1;s.last >= l {
+		if s.last += 1; s.last >= l {
 			s.last = 0
 		}
 		return s.nodes[s.last], nil

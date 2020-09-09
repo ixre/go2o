@@ -31,7 +31,7 @@ import (
 	"strings"
 )
 
-var   _ proto.OrderServiceServer = new(orderServiceImpl)
+var _ proto.OrderServiceServer = new(orderServiceImpl)
 
 type orderServiceImpl struct {
 	repo       order.IOrderRepo
@@ -45,7 +45,6 @@ type orderServiceImpl struct {
 	orderQuery *query.OrderQuery
 	serviceUtil
 }
-
 
 func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo, memberRepo member.IMemberRepo,
@@ -264,7 +263,7 @@ func (s *orderServiceImpl) NormalCartV1(_ context.Context, r *proto.NormalCartRe
 }
 
 // 提交订单
-func (s *orderServiceImpl) SubmitOrderV1(_ context.Context,r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
+func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
 	c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
 	iData := orderImpl.NewPostedData(r.Data)
 	rd, err := s.repo.Manager().SubmitWholesaleOrder(c, iData)
@@ -550,7 +549,7 @@ func (s *orderServiceImpl) PayForOrderByManager(orderNo string) error {
 }
 
 // 获取子订单
-func (s *orderServiceImpl) GetSubOrder(_ context.Context, id   *proto.Int64) (*proto.SComplexOrder, error) {
+func (s *orderServiceImpl) GetSubOrder(_ context.Context, id *proto.Int64) (*proto.SComplexOrder, error) {
 	o := s.repo.GetSubOrder(id.Value)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
@@ -569,13 +568,13 @@ func (s *orderServiceImpl) GetSubOrderByNo(_ context.Context, orderNo *proto.Str
 }
 
 // 获取订单商品项
-func (s *orderServiceImpl) GetSubOrderItems(_ context.Context,subOrderId *proto.Int64) (*proto.ComplexItemsResponse, error) {
+func (s *orderServiceImpl) GetSubOrderItems(_ context.Context, subOrderId *proto.Int64) (*proto.ComplexItemsResponse, error) {
 	list := s.repo.GetSubOrderItems(subOrderId.Value)
 	arr := make([]*proto.SComplexItem, len(list))
 	for i, v := range list {
 		arr[i] = parser.SubOrderItemDto(v)
 	}
-	return &proto.ComplexItemsResponse{Value:arr}, nil
+	return &proto.ComplexItemsResponse{Value: arr}, nil
 }
 
 // 获取子订单及商品项
@@ -610,7 +609,7 @@ func (s *orderServiceImpl) SubmitTradeOrder(_ context.Context, r *proto.TradeOrd
 		if mch != nil {
 			sp := mch.ShopManager().GetOnlineShop()
 			if sp != nil {
-				r.Order.ShopId = int32(sp.GetDomainId())
+				r.Order.ShopId = int64(sp.GetDomainId())
 			} else {
 				r.Order.ShopId = 1
 			}
@@ -643,7 +642,7 @@ func (s *orderServiceImpl) TradeOrderCashPay(_ context.Context, orderId *proto.I
 }
 
 // 上传交易单发票
-func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.TradeOrderTicketRequest) (rs *proto.Result,err error) {
+func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.TradeOrderTicketRequest) (rs *proto.Result, err error) {
 	o := s.manager.GetOrderById(r.OrderId)
 	if o == nil || o.Type() != order.TTrade {
 		err = order.ErrNoSuchOrder

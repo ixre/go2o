@@ -38,7 +38,7 @@ func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
 	if l := len(vendorItemsMap); l == 0 {
 		return []order.IOrder{}, cart.ErrNoChecked
 	}
-	list := []order.IOrder{}
+	var list []order.IOrder
 	cc := c.(cart.ICart)
 	buyerId := cc.BuyerId()
 	for sellerId, items := range vendorItemsMap {
@@ -49,7 +49,7 @@ func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
 }
 
 // 创建批发订单
-func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int32,
+func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int64,
 	buyerId int64, items []*cart.ItemPair, data order.IPostedData) order.IOrder {
 	v := &order.Order{
 		BuyerId:   buyerId,
@@ -66,8 +66,8 @@ func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int32,
 }
 
 // 生成运营商与订单商品的映射
-func (w *wholesaleOrderBreaker) breakSellerItemMap(items []*cart.ItemPair) map[int32][]*cart.ItemPair {
-	mp := make(map[int32][]*cart.ItemPair)
+func (w *wholesaleOrderBreaker) breakSellerItemMap(items []*cart.ItemPair) map[int64][]*cart.ItemPair {
+	mp := make(map[int64][]*cart.ItemPair)
 	for _, v := range items {
 		list, ok := mp[v.SellerId]
 		if !ok {

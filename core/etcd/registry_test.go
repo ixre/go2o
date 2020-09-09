@@ -20,32 +20,32 @@ var ttl int64 = 3
 var cfg = clientv3.Config{
 	Endpoints:   []string{"http://localhost:2379/"},
 	DialTimeout: 5 * time.Second,
-	Username: "",
-	Password: "",
+	Username:    "",
+	Password:    "",
 }
 
 func TestRegisterService(t *testing.T) {
-	arr := make([]Registry,0)
-	for i:= 0;i<3;i++ {
+	arr := make([]Registry, 0)
+	for i := 0; i < 3; i++ {
 		r, _ := NewRegistry(service, ttl, cfg)
 		_, _ = r.Register(10 + i)
-		arr = append(arr,r)
+		arr = append(arr, r)
 	}
 	time.Sleep(15 * time.Second)
-	for _,v := range arr {
+	for _, v := range arr {
 		v.UnRegister()
 	}
 }
 
 func TestSelector(t *testing.T) {
-	selector,_ := NewSelector(service,cfg,AlgRoundRobin)
+	selector, _ := NewSelector(service, cfg, AlgRoundRobin)
 	for {
 		next, err := selector.Next()
-		if err != nil{
-			t.Logf("select node error %s",err.Error())
-		}else {
+		if err != nil {
+			t.Logf("select node error %s", err.Error())
+		} else {
 			t.Log("selected:" + next.Addr)
 		}
-		time.Sleep(time.Second*5)
+		time.Sleep(time.Second * 5)
 	}
 }

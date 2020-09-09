@@ -50,7 +50,7 @@ type (
 		// 获取收货地址编号
 		AddressId() int64
 		// 获取订单留言
-		GetComment(sellerId int32) string
+		GetComment(sellerId int64) string
 	}
 
 	// 统一订单适配器

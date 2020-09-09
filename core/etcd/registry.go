@@ -26,12 +26,14 @@ var prefix = "/registry/server/"
 
 type Registry interface {
 	// 创建租期/注册节点,返回租期ID和错误
-	Register(port int)(int64,error)
+	Register(port int) (int64, error)
 	// 撤销租期/注销节点
-	Revoke(LeaseID int64)error
+	Revoke(LeaseID int64) error
 	UnRegister()
 }
+
 var _ Registry = new(registryServer)
+
 type registryServer struct {
 	cli        *clientv3.Client
 	stop       chan bool
@@ -55,7 +57,7 @@ func NewRegistry(service string, ttl int64, config clientv3.Config) (Registry, e
 		cli:        cli,
 	}, nil
 }
-func (s *registryServer) resolveIp()string{
+func (s *registryServer) resolveIp() string {
 	addrList, err := net.InterfaceAddrs()
 	if err != nil {
 		fmt.Println(err)
@@ -71,7 +73,7 @@ func (s *registryServer) resolveIp()string{
 	}
 	return "127.0.0.1"
 }
-func (s *registryServer) Register(port int)(leaseId int64, err error){
+func (s *registryServer) Register(port int) (leaseId int64, err error) {
 	if s.isRegistry {
 		panic("only one nodes can be registered")
 	}
@@ -81,7 +83,7 @@ func (s *registryServer) Register(port int)(leaseId int64, err error){
 	// 创建租约
 	grant, err := s.cli.Grant(context.Background(), s.ttl)
 	if err != nil {
-		return -1,err
+		return -1, err
 	}
 	var node = Node{
 		Id:   s.HashKey(addr),
@@ -89,20 +91,20 @@ func (s *registryServer) Register(port int)(leaseId int64, err error){
 	}
 	nodeVal, err := s.GetVal(node)
 	if err != nil {
-		return -1,err
+		return -1, err
 	}
 	//　存储键值,注册服务
 	_, err = s.cli.Put(ctx, s.GetKey(node), nodeVal, clientv3.WithLease(grant.ID))
 	if err != nil {
-		return -1,err
+		return -1, err
 	}
 	s.leaseID = grant.ID
 	s.isRegistry = true
 	go s.KeepAlive()
-	return int64(s.leaseID),nil
+	return int64(s.leaseID), nil
 }
 func (s *registryServer) UnRegister() {
-	if s.isRegistry{
+	if s.isRegistry {
 		s.stop <- true
 	}
 }
@@ -115,7 +117,7 @@ func (s *registryServer) Revoke(leaseId int64) error {
 // 注销服务
 func (s *registryServer) revoke(leaseID clientv3.LeaseID) error {
 	// 撤销租期
-	_, err := s.cli.Revoke(context.TODO(),leaseID)
+	_, err := s.cli.Revoke(context.TODO(), leaseID)
 	if err != nil {
 		log.Printf("[Revoke] err : %s", err.Error())
 	}

@@ -40,7 +40,6 @@ func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IReg
 	}
 }
 
-
 // 保存短信API凭据
 func (s *foundationService) SaveSmsApi(_ context.Context, r *proto.SmsApiSaveRequest) (*proto.Result, error) {
 	manager := s.notifyRepo.Manager()
@@ -105,6 +104,7 @@ func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.Boar
 	}
 	return s.success(nil), nil
 }
+
 //
 //// 删除值
 //func (s *foundationService) DeleteValue(_ context.Context, s2 *proto.String) (*proto.Result, error) {
@@ -118,7 +118,6 @@ func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.Boar
 //		Value: s._rep.GetValues(s2.Value),
 //	}, nil
 //}
-
 
 // 验证超级用户账号和密码
 func (s *foundationService) SuperValidate(_ context.Context, user *proto.UserPwd) (*proto.Bool, error) {

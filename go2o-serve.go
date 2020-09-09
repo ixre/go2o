@@ -53,7 +53,6 @@ Email: jarrysix#gmail.com
 
 `
 
-
 func main() {
 	var (
 		ch            = make(chan bool)
@@ -105,15 +104,15 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
 
 	// 默认的ETCD端点
-	if len(etcdEndPoints) == 0{
-		etcdEndPoints =  []string{"http://127.0.0.1:2379"}
+	if len(etcdEndPoints) == 0 {
+		etcdEndPoints = []string{"http://127.0.0.1:2379"}
 	}
 	cfg := clientv3.Config{
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
 
-	newApp = core.NewApp(confFile,&cfg)
+	newApp = core.NewApp(confFile, &cfg)
 	if debug {
 		go app.AutoInstall()
 	}
@@ -133,7 +132,7 @@ func main() {
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
 	//go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
-	go service.ServeRPC(ch,&cfg,port)
+	go service.ServeRPC(ch, &cfg, port)
 	service.ConfigureClient(cfg) // initial service client
 	if runDaemon {
 		go daemon.Run(newApp)
@@ -142,7 +141,6 @@ func main() {
 	go restapi.Run(ch, newApp, apiPort)
 	<-ch
 }
-
 
 /*
 // todo: v3 还是测试版本

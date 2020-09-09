@@ -179,7 +179,7 @@ type (
 		// SKU编号
 		SkuId int64
 		// 卖家编号
-		SellerId int32
+		SellerId int64
 		// 数量
 		Quantity int32
 		// 是否勾选结算
@@ -206,9 +206,9 @@ type (
 		// 购物车编号
 		CartId int32 `db:"cart_id"`
 		// 运营商编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id"`
+		ShopId int64 `db:"shop_id"`
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// SKU编号
@@ -246,9 +246,9 @@ type (
 		// 购物车编号
 		CartId int32 `db:"cart_id"`
 		// 运营商编号
-		SellerId int32 `db:"vendor_id"`
+		SellerId int64 `db:"vendor_id"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id"`
+		ShopId int64 `db:"shop_id"`
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// SKU编号
@@ -268,7 +268,7 @@ type (
 	// 批发购物车卖家JSON数据对象
 	WCartSellerJdo struct {
 		// 运营商编号
-		SellerId int32
+		SellerId int64
 		// 购物车商品
 		Item []WCartItemJdo
 		// 其他数据

@@ -26,7 +26,7 @@ var (
 	_            Module = new(Bank4E)
 	zhNameRegexp        = regexp.MustCompile("^[\u4e00-\u9fa5]{2,6}$")
 )
-var keys = []string{"bank4e_trust_on", "bank4e_jd_app_key","bank4e_turn_stat"}
+var keys = []string{"bank4e_trust_on", "bank4e_jd_app_key", "bank4e_turn_stat"}
 
 type Bank4E struct {
 	memberRepo   member.IMemberRepo
@@ -45,9 +45,9 @@ func (b *Bank4E) Init() {
 	b.memberRepo = repos.Repo.GetMemberRepo()
 	b.valueRepo = repos.Repo.GetValueRepo()
 	b.registryRepo = repos.Repo.GetRegistryRepo()
-	v,_ := b.registryRepo.GetValue(keys[0])
-	v2,_ := b.registryRepo.GetValue(keys[1])
-	b.open = v=="1" || v=="true"
+	v, _ := b.registryRepo.GetValue(keys[0])
+	v2, _ := b.registryRepo.GetValue(keys[1])
+	b.open = v == "1" || v == "true"
 	b.appKey = v2
 }
 

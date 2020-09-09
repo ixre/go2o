@@ -74,7 +74,7 @@ func GetShopsJson(mchId int32) []byte {
 
 func GetShopDropList(mchId int32, selected int32) []byte {
 	buf := bytes.NewBuffer([]byte{})
-	shops :=impl.MerchantService.GetShopsOfMerchant(mchId)
+	shops := impl.MerchantService.GetShopsOfMerchant(mchId)
 	for _, v := range shops {
 		if v.Id == selected {
 			buf.WriteString(fmt.Sprintf(`<option value="%d" selected="selected">%s</option>`, v.Id, v.Name))

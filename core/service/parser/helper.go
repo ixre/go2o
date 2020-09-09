@@ -32,5 +32,3 @@ func PagingResult(total int, data interface{}, err error) *proto.SPagingResult {
 	}
 	return r
 }
-
-

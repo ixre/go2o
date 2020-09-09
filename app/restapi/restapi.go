@@ -69,8 +69,8 @@ func checkMemberToken(c echo.Context) bool {
 		defer trans.Close()
 		if b, _ := cli.CheckToken(context.TODO(),
 			&proto.CheckTokenRequest{
-				MemberId:             memberId,
-				Token:                token,
+				MemberId: memberId,
+				Token:    token,
 			}); b.Value {
 			c.Set("member_id", memberId)
 			return true

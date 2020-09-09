@@ -46,10 +46,10 @@ func (mc *MemberC) Login(c echo.Context) error {
 	} else {
 		defer trans.Close()
 		encPwd := domain.MemberSha1Pwd(pwd)
-		r, _ := cli.CheckLogin(context.TODO(),&proto.LoginRequest{
-			User:                 user,
-			Pwd:                  encPwd,
-			Update:               true,
+		r, _ := cli.CheckLogin(context.TODO(), &proto.LoginRequest{
+			User:   user,
+			Pwd:    encPwd,
+			Update: true,
 		})
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)
@@ -57,8 +57,8 @@ func (mc *MemberC) Login(c echo.Context) error {
 			memberId, _ := strconv.Atoi(r.Data["member_id"])
 			token, _ := cli.GetToken(context.TODO(),
 				&proto.GetTokenRequest{
-					MemberId:             int64(memberId),
-					Reset_:               false,
+					MemberId: int64(memberId),
+					Reset_:   false,
 				})
 			result.Member = &dto.LoginMember{
 				ID:         memberId,
@@ -94,7 +94,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		acc, _ := impl.MemberService.GetAccount(context.TODO(),&proto.Int64{Value:memberId})
+		acc, _ := impl.MemberService.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
 		kvAut = int(acc.UpdateTime)
 		store.Set(autKey, kvAut)
 	}
@@ -113,8 +113,8 @@ func (mc *MemberC) Get(c echo.Context) error {
 		defer trans.Close()
 		tk, _ := cli.GetToken(context.TODO(),
 			&proto.GetTokenRequest{
-				MemberId:             memberId,
-				Reset_:                false,
+				MemberId: memberId,
+				Reset_:   false,
 			})
 		m.DynamicToken = tk.Value
 	}
@@ -124,7 +124,7 @@ func (mc *MemberC) Get(c echo.Context) error {
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	v, _ := impl.MemberService.Complex(context.TODO(),&proto.Int64{Value: memberId})
+	v, _ := impl.MemberService.Complex(context.TODO(), &proto.Int64{Value: memberId})
 	return c.JSON(http.StatusOK, v)
 }
 

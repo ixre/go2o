@@ -24,3 +24,96 @@ service ItemService{
     rpc GetItemDetailData(ItemDetailRequest)returns(String){}
 }
 
+
+message SOldItem {
+    sint64 ItemId = 1;
+    sint64 ProductId = 2;
+    sint32 PromFlag = 3;
+    sint32 CatId = 4;
+    sint64 VendorId = 5;
+    sint32 BrandId = 6;
+    sint64 ShopId = 7;
+    sint32 ShopCatId = 8;
+    sint32 ExpressTid = 9;
+    string Title = 10;
+    string ShortTitle = 11;
+    string Code = 12;
+    string Image = 13;
+    sint32 IsPresent = 14;
+    string PriceRange = 15;
+    sint32 StockNum = 16;
+    sint32 SaleNum = 17;
+    sint32 SkuNum = 18;
+    sint64 SkuId = 19;
+    double Cost = 20;
+    double Price = 21;
+    double RetailPrice = 22;
+    sint32 Weight = 23;
+    sint32 Bulk = 24;
+    sint32 ShelveState = 25;
+    sint32 ReviewState = 26;
+    string ReviewRemark = 27;
+    sint32 SortNum = 28;
+    sint64 CreateTime = 29;
+    sint64 UpdateTime = 30;
+    double PromPrice = 31;
+    repeated SSku SkuArray = 32;
+    map<string, string> Data = 33;
+}
+
+
+/** SKU */
+message SSku {
+    sint64 SkuId = 1;
+    sint64 ItemId = 2;
+    sint64 ProductId = 3;
+    string Title = 4;
+    string Image = 5;
+    string SpecData = 6;
+    string SpecWord = 7;
+    string Code = 8;
+    double RetailPrice = 9;
+    double Price = 10;
+    double Cost = 11;
+    sint32 Weight = 12;
+    sint32 Bulk = 13;
+    sint32 Stock = 14;
+    sint32 SaleNum = 15;
+}
+
+
+// 统一的商品对象
+message SUnifiedItem {
+    sint64 ItemId = 1;
+    sint32 ProductId = 2;
+    sint32 CatId = 3;
+    sint32 VendorId = 4;
+    sint32 BrandId = 5;
+    string Title = 6;
+    string Code = 7;
+    string Image = 8;
+    double Price = 9;
+    string PriceRange = 10;
+    sint32 StockNum = 11;
+    sint32 ShelveState = 12;
+    sint32 ReviewState = 13;
+    sint64 UpdateTime = 14;
+    repeated SSku SkuArray = 15;
+    map<string, string> Data = 16;
+    // 3: sint32 PromFlag
+    // 7: sint32 ShopId
+    // 8: sint32 ShopCatId
+    // 9: sint32 ExpressTid
+    // 11: string ShortTitle
+    // 14: sint32 IsPresent
+    // 23: sint32 Weight
+    // 24: sint32 Bulk
+    // 18: sint32 SkuNum
+    // 28: sint32 SortNum
+    // 29: sint64 CreateTime
+    // 31: double PromPrice
+    // 22: double RetailPrice
+    // 19: sint32 SkuId
+    // 20: double Cost
+    // 17: sint32 SaleNum
+}

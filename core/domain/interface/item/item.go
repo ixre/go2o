@@ -151,11 +151,11 @@ type (
 		// 分类编号
 		CatId int32 `db:"cat_id"`
 		// 供货商编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 品牌编号(冗余)
 		BrandId int32 `db:"brand_id"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id"`
+		ShopId int64 `db:"shop_id"`
 		// 店铺分类编号
 		ShopCatId int32 `db:"shop_cat_id"`
 		// 快递模板编号
@@ -361,7 +361,7 @@ type (
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 运营商编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// 价格

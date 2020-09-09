@@ -741,7 +741,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	v := &order.NormalSubOrder{
 		OrderNo:  orderNo,
 		BuyerId:  buyerId,
-		VendorId: int32(vendorId),
+		VendorId: int64(vendorId),
 		OrderId:  o.GetAggregateRootId(),
 		Subject:  "子订单",
 		ShopId:   items[0].ShopId,

@@ -110,7 +110,7 @@ type (
 		// 名称
 		Name string `db:"name"`
 		//供应商编号(暂时同mch_id)
-		VendorId int32 `db:"supplier_id"`
+		VendorId int64 `db:"supplier_id"`
 		// 品牌编号
 		BrandId int32 `db:"brand_id"`
 		// 商家编码

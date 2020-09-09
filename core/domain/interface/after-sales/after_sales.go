@@ -173,7 +173,7 @@ type (
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 运营商编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 购买者编号
 		BuyerId int64 `db:"buyer_id"`
 		// 类型，退货、换货、维修

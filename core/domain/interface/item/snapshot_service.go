@@ -38,11 +38,11 @@ type (
 		// 分类编号
 		CatId int32 `db:"cat_id"`
 		// 供货商编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 编号
 		BrandId int32 `db:"brand_id"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id"`
+		ShopId int64 `db:"shop_id"`
 		// 编号分类编号
 		ShopCatId int32 `db:"shop_cat_id"`
 		// 运费模板
@@ -90,7 +90,7 @@ type (
 		//快照编码: 商户编号+g商品编号+快照时间戳
 		SnapshotKey string `db:"snap_key"`
 		// 卖家编号
-		SellerId int32 `db:"seller_id"`
+		SellerId int64 `db:"seller_id"`
 		// 卖家名称
 		//SellerName  string `db:"seller_name"`
 		//商品标题

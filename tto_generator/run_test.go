@@ -36,8 +36,8 @@ func TestGenAll(t *testing.T) {
 	dg := tto.DBCodeGenerator()
 	dg.IdUpper = false
 	// 获取表格并转换
-	raws,_ := ds.TablesByPrefix(dbName, "", dbPrefix)
-	tables, err := dg.Parses(raws,false)
+	raws, _ := ds.TablesByPrefix(dbName, "", dbPrefix)
+	tables, err := dg.Parses(raws, false)
 	if err != nil {
 		t.Error(err)
 		return
@@ -50,7 +50,7 @@ func TestGenAll(t *testing.T) {
 	dg.GenerateGoRepoCodes(tables, genDir)
 	// 生成自定义代码
 	opt := &tto.GenerateOptions{
-		TplDir:         "./templates",
+		TplDir:          "./templates",
 		AttachCopyright: true,
 		OutputDir:       genDir,
 		ExcludeFiles:    nil,

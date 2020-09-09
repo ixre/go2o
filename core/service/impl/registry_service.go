@@ -26,7 +26,6 @@ type registryService struct {
 	serviceUtil
 }
 
-
 func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *registryService {
 	return &registryService{
 		_rep:         rep,
@@ -34,10 +33,9 @@ func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegis
 	}
 }
 
-
 // 获取数据存储
 func (s *registryService) GetValue(_ context.Context, key *proto.String) (*proto.RegistryValueResponse, error) {
-	v,err := s.registryRepo.GetValue(key.Value)
+	v, err := s.registryRepo.GetValue(key.Value)
 	rsp := &proto.RegistryValueResponse{Value: v}
 	if err != nil {
 		rsp.ErrorMsg = err.Error()
@@ -45,18 +43,17 @@ func (s *registryService) GetValue(_ context.Context, key *proto.String) (*proto
 	return rsp, nil
 }
 
-
-func (s *registryService) UpdateValue(c context.Context, pair *proto.RegistryPair) (r *proto.Result,err error) {
+func (s *registryService) UpdateValue(c context.Context, pair *proto.RegistryPair) (r *proto.Result, err error) {
 	e := s.registryRepo.Get(pair.Key)
-	if e == nil{
+	if e == nil {
 		err = errors.New("not exists key")
-	}else{
-		err = s.registryRepo.UpdateValue(pair.Key,pair.Value)
+	} else {
+		err = s.registryRepo.UpdateValue(pair.Key, pair.Value)
 	}
-	if err != nil{
-		return s.error(err),nil
+	if err != nil {
+		return s.error(err), nil
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
 
 // 获取键值存储数据

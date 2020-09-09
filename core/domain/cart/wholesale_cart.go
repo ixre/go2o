@@ -635,7 +635,7 @@ func (c *wholesaleCartImpl) JdoData(checkout bool, checked map[int64][]int64) *c
 		Seller: []cart.WCartSellerJdo{},
 		Data:   map[string]string{},
 	}
-	sellerMap := make(map[int32]int)
+	sellerMap := make(map[int64]int)
 	itemSignMap := make(map[int64]bool)
 	for _, v := range items {
 		// 如果已处理过商品，则跳过
@@ -668,7 +668,7 @@ func (c *wholesaleCartImpl) JdoData(checkout bool, checked map[int64][]int64) *c
 // 附加结算数据
 func (c *wholesaleCartImpl) checkoutJdoData(jdo *cart.WCartJdo) {
 	var totalAmount float64
-	sellerAmountMap := map[int32]float64{}
+	sellerAmountMap := map[int64]float64{}
 	for _, s := range jdo.Seller {
 		for _, i := range s.Item {
 			for _, sku := range i.Sku {

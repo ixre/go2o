@@ -66,7 +66,7 @@ type IRegistryRepo interface {
 	// 获取键
 	Get(key string) IRegistry
 	//　获取值
-	GetValue(key string)(string,error)
+	GetValue(key string) (string, error)
 	// 更新键值
 	UpdateValue(key string, value string) error
 	// 合并数据

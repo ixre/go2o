@@ -3,7 +3,6 @@ package msq
 import (
 	"github.com/ixre/gof/log"
 	"github.com/nats-io/nats.go"
-
 )
 
 var _ Producer = new(natsProducer)

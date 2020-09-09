@@ -85,10 +85,10 @@ func (e *expressService) GetAllTemplate(userId int32) []*express.ExpressTemplate
 }
 
 // 获取可有的快递模板
-func (e *expressService) GetEnabledTemplates(userId int32) []*express.ExpressTemplate {
+func (e *expressService) GetEnabledTemplates(userId int64) []*express.ExpressTemplate {
 	u := e._rep.GetUserExpress(int(userId))
 	list := u.GetAllTemplate()
-	arr := []*express.ExpressTemplate{}
+	var arr []*express.ExpressTemplate
 	for _, v := range list {
 		v2 := v.Value()
 		if v2.Enabled == 1 {

@@ -148,7 +148,7 @@ func TestLockMember(t *testing.T) {
 }
 
 // 测试更改邀请人
-func TestUpdateInviter(t *testing.T){
+func TestUpdateInviter(t *testing.T) {
 	memberId := 96941
 	inviterId := 96949
 	//memberId := 97622
@@ -156,8 +156,8 @@ func TestUpdateInviter(t *testing.T){
 	//inviterId = 96999
 	//  18824894128
 	m := ti.Factory.GetMemberRepo().GetMember(int64(memberId))
-	err := m.BindInviter(int64(inviterId),true)
-	if err != nil{
+	err := m.BindInviter(int64(inviterId), true)
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}

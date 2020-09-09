@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func readToCategoryDropList(mchId int32) []byte {
+func readToCategoryDropList(mchId int64) []byte {
 	categories := impl.ProductService.GetCategories(mchId)
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
@@ -39,7 +39,7 @@ func readToCategoryDropList(mchId int32) []byte {
 }
 
 // 获取销售分类下拉选项
-func GetDropOptionsOfSaleCategory(mchId int32) []byte {
+func GetDropOptionsOfSaleCategory(mchId int64) []byte {
 	return readToCategoryDropList(mchId)
 }
 

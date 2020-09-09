@@ -146,7 +146,7 @@ func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
 /***** 分类 *****/
 
 // 获取商品分类
-func (p *productService) GetCategory(mchId, id int32) *product.Category {
+func (p *productService) GetCategory(mchId int64, id int32) *product.Category {
 	c := p.catRepo.GlobCatService().GetCategory(int(id))
 	if c != nil {
 		return c.GetValue()
@@ -232,7 +232,7 @@ func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int, cat
 	}
 }
 
-func (p *productService) GetCategories(mchId int32) []*product.Category {
+func (p *productService) GetCategories(mchId int64) []*product.Category {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	list := make([]*product.Category, len(cats))
 	for i, v := range cats {
@@ -354,7 +354,7 @@ R:
 }
 
 // 保存货品描述
-func (p *productService) SaveProductInfo(supplierId int32,
+func (p *productService) SaveProductInfo(supplierId int64,
 	productId int64, info string) error {
 	pro := p.proRepo.GetProduct(productId)
 	if pro == nil || pro.GetValue().VendorId != supplierId {
@@ -364,7 +364,7 @@ func (p *productService) SaveProductInfo(supplierId int32,
 }
 
 // 删除货品
-func (p *productService) DeleteItem(supplierId int32, productId int64) error {
+func (p *productService) DeleteItem(supplierId int64, productId int64) error {
 	pro := p.proRepo.GetProduct(productId)
 	if pro == nil || pro.GetValue().VendorId != supplierId {
 		return product.ErrNoSuchProduct
@@ -379,7 +379,7 @@ func (p *productService) GetAttrArray(productId int64) []*product.Attr {
 }
 
 // 获取商品的销售标签
-func (p *productService) GetItemSaleLabels(mchId int32, itemId int64) []*item.Label {
+func (p *productService) GetItemSaleLabels(mchId int64, itemId int64) []*item.Label {
 	var list = make([]*item.Label, 0)
 	//todo: refactor
 
@@ -391,7 +391,7 @@ func (p *productService) GetItemSaleLabels(mchId int32, itemId int64) []*item.La
 }
 
 // 保存商品的销售标签
-func (p *productService) SaveItemSaleLabels(mchId int32, itemId int64, tagIds []int) error {
+func (p *productService) SaveItemSaleLabels(mchId, itemId int64, tagIds []int) error {
 	var err error
 
 	//todo: refactor

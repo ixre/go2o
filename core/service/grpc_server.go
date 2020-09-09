@@ -19,14 +19,14 @@ import (
  * history :
  */
 
-func ServeRPC(ch chan bool,cfg *clientv3.Config, port int){
+func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	s := grpc.NewServer()
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		panic(err)
 	}
 	proto.RegisterGreeterServiceServer(s, &grpc2.TestServiceImpl{})
-	initRegistry(cfg,port)
+	initRegistry(cfg, port)
 	if err = s.Serve(l); err != nil {
 		ch <- false
 		panic(err)
