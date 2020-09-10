@@ -30,19 +30,19 @@ func NewAdvertisementService(rep ad.IAdRepo, storage storage.Interface) *adServi
 	}
 }
 
-func (a *adService) getUserAd(adUserId int32) ad.IUserAd {
+func (a *adService) getUserAd(adUserId int64) ad.IUserAd {
 	return a._rep.GetAdManager().GetUserAd(adUserId)
 }
 
-func (a *adService) GetAdGroupById(id int32) ad.AdGroup {
+func (a *adService) GetAdGroupById(id int64) ad.AdGroup {
 	return a._rep.GetAdManager().GetAdGroup(id).GetValue()
 }
 
-func (a *adService) DelAdGroup(id int32) error {
+func (a *adService) DelAdGroup(id int64) error {
 	return a._rep.GetAdManager().DelAdGroup(id)
 }
 
-func (a *adService) SaveAdGroup(d *ad.AdGroup) (int32, error) {
+func (a *adService) SaveAdGroup(d *ad.AdGroup) (int64, error) {
 	m := a._rep.GetAdManager()
 	var e ad.IAdGroup
 	if d.ID > 0 {
@@ -67,15 +67,15 @@ func (a *adService) GetGroups() []ad.AdGroup {
 	return list2
 }
 
-func (a *adService) GetPosition(groupId, adPosId int32) *ad.AdPosition {
+func (a *adService) GetPosition(groupId, adPosId int64) *ad.AdPosition {
 	return a._rep.GetAdManager().GetAdGroup(groupId).GetPosition(adPosId)
 }
 
-func (a *adService) GetPositionById(adPosId int32) *ad.AdPosition {
+func (a *adService) GetPositionById(adPosId int64) *ad.AdPosition {
 	return a._rep.GetAdPositionById(adPosId)
 }
 
-func (a *adService) SaveAdPosition(e *ad.AdPosition) (int32, error) {
+func (a *adService) SaveAdPosition(e *ad.AdPosition) (int64, error) {
 	group := a._rep.GetAdManager().GetAdGroup(e.GroupId)
 	if group == nil {
 		return -1, errors.New("no such ad group")
@@ -83,24 +83,24 @@ func (a *adService) SaveAdPosition(e *ad.AdPosition) (int32, error) {
 	return group.SavePosition(e)
 }
 
-func (a *adService) DelAdPosition(groupId, id int32) error {
+func (a *adService) DelAdPosition(groupId, id int64) error {
 	return a._rep.GetAdManager().GetAdGroup(groupId).DelPosition(id)
 }
 
 // 设置广告位的默认广告
-func (a *adService) SetDefaultAd(groupId, posId, adId int32) error {
+func (a *adService) SetDefaultAd(groupId, posId, adId int64) error {
 	return a._rep.GetAdManager().GetAdGroup(groupId).SetDefault(posId, adId)
 }
 
 // 用户投放广告
-func (a *adService) SetUserAd(adUserId int32, posId int32, adId int32) error {
+func (a *adService) SetUserAd(adUserId , posId , adId int64) error {
 	defer a.cleanCache(adUserId)
 	ua := a._rep.GetAdManager().GetUserAd(adUserId)
 	return ua.SetAd(posId, adId)
 }
 
 // 获取广告
-func (a *adService) GetAdvertisement(adUserId, id int32) *ad.Ad {
+func (a *adService) GetAdvertisement(adUserId, id int64) *ad.Ad {
 	if adv := a.getUserAd(adUserId).GetById(id); adv != nil {
 		return adv.GetValue()
 	}
@@ -108,7 +108,7 @@ func (a *adService) GetAdvertisement(adUserId, id int32) *ad.Ad {
 }
 
 // 获取广告及广告数据, 用于展示关高
-func (a *adService) GetAdAndDataByKey(adUserId int32, key string) *ad.AdDto {
+func (a *adService) GetAdAndDataByKey(adUserId int64, key string) *ad.AdDto {
 	if adv := a.getUserAd(adUserId).GetByPositionKey(key); adv != nil {
 		switch adv.Type() {
 		case ad.TypeGallery:
@@ -131,7 +131,7 @@ func (a *adService) GetAdAndDataByKey(adUserId int32, key string) *ad.AdDto {
 }
 
 // 获取广告数据传输对象
-func (a *adService) GetAdDto(userId int32, id int32) *ad.AdDto {
+func (a *adService) GetAdDto(userId int64, id int64) *ad.AdDto {
 	ua := a.getUserAd(userId)
 	if adv := ua.GetById(id); adv != nil {
 		return adv.Dto()
@@ -140,7 +140,7 @@ func (a *adService) GetAdDto(userId int32, id int32) *ad.AdDto {
 }
 
 // 保存广告,更新时不允许修改类型
-func (a *adService) SaveAd(adUserId int32, v *ad.Ad) (int32, error) {
+func (a *adService) SaveAd(adUserId int64, v *ad.Ad) (int64, error) {
 	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
 	var adv ad.IAd
@@ -156,13 +156,13 @@ func (a *adService) SaveAd(adUserId int32, v *ad.Ad) (int32, error) {
 	return adv.Save()
 }
 
-func (a *adService) DeleteAd(adUserId, adId int32) error {
+func (a *adService) DeleteAd(adUserId, adId int64) error {
 	defer a.cleanCache(adUserId)
 	return a.getUserAd(adUserId).DeleteAd(adId)
 }
 
 // 保存图片广告
-func (a *adService) SaveHyperLinkAd(adUserId int32, v *ad.HyperLink) (int32, error) {
+func (a *adService) SaveHyperLinkAd(adUserId int64, v *ad.HyperLink) (int64, error) {
 	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
 	var adv = pa.GetById(v.AdId)
@@ -175,7 +175,7 @@ func (a *adService) SaveHyperLinkAd(adUserId int32, v *ad.HyperLink) (int32, err
 }
 
 // 保存图片广告
-func (a *adService) SaveImageAd(adUserId int32, v *ad.Image) (int32, error) {
+func (a *adService) SaveImageAd(adUserId int64, v *ad.Image) (int64, error) {
 	pa := a.getUserAd(adUserId)
 	var adv = pa.GetById(v.AdId)
 	if adv.Type() == ad.TypeImage {
@@ -187,7 +187,7 @@ func (a *adService) SaveImageAd(adUserId int32, v *ad.Image) (int32, error) {
 }
 
 // 保存广告图片
-func (a *adService) SaveImage(adUserId int32, adId int32, v *ad.Image) (int32, error) {
+func (a *adService) SaveImage(adUserId int64, adId int64, v *ad.Image) (int64, error) {
 	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
 	var adv = pa.GetById(adId)
@@ -206,7 +206,7 @@ func (a *adService) SaveImage(adUserId int32, adId int32, v *ad.Image) (int32, e
 }
 
 // 获取广告图片
-func (a *adService) GetValueAdImage(adUserId, adId, imgId int32) *ad.Image {
+func (a *adService) GetValueAdImage(adUserId, adId, imgId int64) *ad.Image {
 	pa := a.getUserAd(adUserId)
 	var adv = pa.GetById(adId)
 	if adv != nil {
@@ -219,7 +219,7 @@ func (a *adService) GetValueAdImage(adUserId, adId, imgId int32) *ad.Image {
 }
 
 // 删除广告图片
-func (a *adService) DelAdImage(adUserId, adId, imgId int32) error {
+func (a *adService) DelAdImage(adUserId int64, adId, imgId int64) error {
 	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
 	var adv = pa.GetById(adId)
@@ -232,6 +232,6 @@ func (a *adService) DelAdImage(adUserId, adId, imgId int32) error {
 	return nil
 }
 
-func (a *adService) cleanCache(adUserId int32) error {
+func (a *adService) cleanCache(adUserId int64) error {
 	return repos.PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", adUserId))
 }

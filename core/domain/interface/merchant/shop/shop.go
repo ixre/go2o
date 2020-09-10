@@ -172,9 +172,9 @@ type (
 	// 商店
 	Shop struct {
 		//商店编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		//运营商编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		//商店类型
 		ShopType int32 `db:"shop_type"`
 		//商店名称
@@ -191,8 +191,8 @@ type (
 
 	// 商店数据传输对象
 	ComplexShop struct {
-		ID       int32
-		VendorId int32
+		ID       int64
+		VendorId int64
 		ShopType int32
 		Name     string
 		State    int32
@@ -203,9 +203,9 @@ type (
 	// 商城
 	OnlineShop struct {
 		// 店铺编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 商户编号
-		VendorId int `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 店铺名称
 		ShopName string `db:"shop_name"`
 		// 店铺标志

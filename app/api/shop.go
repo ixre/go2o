@@ -55,9 +55,9 @@ func (s shopApi) shopCat(ctx api.Context) interface{} {
 	sto := gof.CurrentApp.Storage()
 	if err := sto.Get(key, &list); err != nil {
 		if parentId == 0 {
-			list = impl.ProductService.GetBigCategories(int32(shopId))
+			list = impl.ProductService.GetBigCategories(int64(shopId))
 		} else {
-			list = impl.ProductService.GetChildCategories(int32(shopId), int32(parentId))
+			list = impl.ProductService.GetChildCategories(int64(shopId), int64(parentId))
 		}
 		var d []byte
 		d, err = json.Marshal(list)
@@ -105,7 +105,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	} else {
 		mmUrl := fmt.Sprintf("//%s%s",
 			consts.DOMAIN_PREFIX_MEMBER, variable.Domain)
-		m, _ := impl.MemberService.GetProfile(context.TODO(), int64(memberId))
+		m, _ := impl.MemberService.GetProfile(context.TODO(),&proto.Int64{Value:int64(memberId)})
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"
 		mp["MMUrl"] = mmUrl

@@ -9,19 +9,22 @@
 package tcpserve
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/ixre/gof/net/nc"
+	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 	"go2o/core/service/thrift"
 	"go2o/core/service/thrift/auto_gen/rpc/member_service"
-	"go2o/core/service/thrift/rsi"
+	""
 	"strconv"
 	"strings"
 )
 
 // get summary of member,if dbGet will get summary from database.
 func GetMemberSummary(memberId int64, updateTime int) *proto.SComplexMember {
-	v, _ := impl.MemberService.Complex(context.TODO(), memberId)
+	v, _ := impl.MemberService.Complex(context.TODO(), &proto.Int64{Value:int64(memberId)})
 	if v != nil {
 		return v
 	}
@@ -29,7 +32,8 @@ func GetMemberSummary(memberId int64, updateTime int) *proto.SComplexMember {
 }
 
 func getMemberAccount(memberId int64, updateTime int) *proto.SAccount {
-	v, _ := impl.MemberService.GetAccount(context.TODO(), memberId)
+	v, _ := impl.MemberService.GetAccount(context.TODO(),
+		&proto.Int64{Value: memberId})
 	return v
 }
 

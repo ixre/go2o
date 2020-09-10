@@ -3,8 +3,8 @@ option go_package = ".;proto";
 import "ttype.proto";
 // 商店,需重构
 message SShop2 {
-    sint32 ID = 1;
-    sint32 VendorId = 2;
+    sint64 ID = 1;
+    sint64 VendorId = 2;
     sint32 ShopType = 3;
     string Name = 4;
     sint32 State = 5;
@@ -15,9 +15,9 @@ message SShop2 {
 // 店铺
 message SShop {
     /** 店铺编号 */
-    sint32 Id = 1;
+    sint64 Id = 1;
     /** 商户编号 */
-    sint32 VendorId = 2;
+    sint64 VendorId = 2;
     /** 店铺名称 */
     string ShopName = 3;
     /** 店铺标志 */
@@ -42,8 +42,8 @@ message SShop {
 
 // 店铺
 message SStore {
-    sint32 ID = 1;
-    sint32 VendorId = 2;
+    sint64 ID = 1;
+    sint64 VendorId = 2;
     string Name = 3;
     string Alias = 4;
     string Host = 5;
@@ -72,7 +72,7 @@ service ShopService {
 }
 
 message TurnShopRequest {
-    sint32 shopId = 1;
+    sint64 shopId = 1;
     bool on = 2;
     string reason = 3;
 }

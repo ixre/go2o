@@ -83,7 +83,7 @@ func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId *proto.Int64
 // 打开或关闭商店
 func (si *shopServiceImpl) TurnShop(_ context.Context, r *proto.TurnShopRequest) (*proto.Result, error) {
 	var err error
-	sp := si.repo.GetShop(int(r.ShopId))
+	sp := si.repo.GetShop(r.ShopId)
 	if sp == nil {
 		err = shop.ErrNoSuchShop
 	} else {
@@ -99,7 +99,7 @@ func (si *shopServiceImpl) TurnShop(_ context.Context, r *proto.TurnShopRequest)
 // 设置商店是否营业
 func (si *shopServiceImpl) OpenShop(_ context.Context, shopId int32, on bool, reason string) (*proto.Result, error) {
 	var err error
-	sp := si.repo.GetShop(int(shopId))
+	sp := si.repo.GetShop(int64(shopId))
 	if sp == nil {
 		err = shop.ErrNoSuchShop
 	} else {
@@ -190,7 +190,7 @@ func (si *shopServiceImpl) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) er
 	return merchant.ErrNoSuchMerchant
 }
 
-func (si *shopServiceImpl) SaveShop(mchId int32, v *shop.Shop) (int32, error) {
+func (si *shopServiceImpl) SaveShop(mchId int32, v *shop.Shop) (int64, error) {
 	mch := si.mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		var shop shop.IShop
@@ -207,7 +207,7 @@ func (si *shopServiceImpl) SaveShop(mchId int32, v *shop.Shop) (int32, error) {
 			return v.Id, err
 		}
 		err = shop.Save()
-		return int32(shop.GetDomainId()), err
+		return int64(shop.GetDomainId()), err
 	}
 	return 0, merchant.ErrNoSuchMerchant
 }
@@ -235,7 +235,7 @@ func (si *shopServiceImpl) GetOnlineShopConf(shopId int64) *shop.OnlineShop {
 }
 
 // 获取商城
-func (si *shopServiceImpl) GetOnlineShops(vendorId int32) []*shop.Shop {
+func (si *shopServiceImpl) GetOnlineShops(vendorId int64) []*shop.Shop {
 	mch := si.mchRepo.GetMerchant(int(vendorId))
 	shops := mch.ShopManager().GetShops()
 	sv := make([]*shop.Shop, 0)
@@ -264,8 +264,8 @@ func (si *shopServiceImpl) PagedOnBusinessOnlineShops(begin, end int, where, ord
 
 func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
 	return &proto.SShop{
-		Id:         int32(sp.Id),
-		VendorId:   int32(sp.VendorId),
+		Id:         sp.Id,
+		VendorId:   sp.VendorId,
 		ShopName:   sp.ShopName,
 		Alias:      sp.Alias,
 		Host:       sp.Host,
@@ -285,7 +285,7 @@ func (si *shopServiceImpl) parse2OnlineShop(s *proto.SStore) (*shop.Shop, *shop.
 		OpeningState: s.OpeningState,
 	}
 	ov := &shop.OnlineShop{}
-	ov.Id = int(s.ID)
+	ov.Id = s.ID
 	ov.Addr = "" //todo:???
 	ov.Tel = s.StorePhone
 	ov.Logo = s.Logo

@@ -114,7 +114,7 @@ func (o *OrderRepImpl) CreateNormalSubOrder(v *order.NormalSubOrder) order.ISubO
 }
 
 // 获取可用的订单号
-func (o *OrderRepImpl) GetFreeOrderNo(vendorId int32) string {
+func (o *OrderRepImpl) GetFreeOrderNo(vendorId int64) string {
 	//todo:实际应用需要预先生成订单号
 	d := o.Connector
 	var orderNo string

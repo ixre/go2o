@@ -115,19 +115,19 @@ func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
 		m._shopRepo, m._userRepo, m._memberRepo, m._walletRepo, m._valRepo, m._registryRepo)
 }
 
-func (m *merchantRepo) cleanCache(mchId int32) {
+func (m *merchantRepo) cleanCache(mchId int64) {
 	key := m.getMchCacheKey(mchId)
 	m.storage.Del(key)
 	PrefixDel(m.storage, key+":*")
 }
 
-func (m *merchantRepo) getMchCacheKey(mchId int32) string {
+func (m *merchantRepo) getMchCacheKey(mchId int64) string {
 	return fmt.Sprintf("go2o:repo:mch:%d", mchId)
 }
 
 func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 	e := merchant.Merchant{}
-	key := m.getMchCacheKey(int32(id))
+	key := m.getMchCacheKey(int64(id))
 	err := m.storage.Get(key, &e)
 	if err != nil {
 		// 获取并缓存到列表中
@@ -183,12 +183,12 @@ func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 }
 
 // 保存
-func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int32, error) {
-	id, err := orm.I32(orm.Save(m.GetOrm(), v, v.Id))
+func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int, error) {
+	id, err := orm.I64(orm.Save(m.GetOrm(), v, int(v.Id)))
 	if err == nil {
 		m.cleanCache(id)
 	}
-	return id, err
+	return int(id), err
 }
 
 // 获取商户的编号

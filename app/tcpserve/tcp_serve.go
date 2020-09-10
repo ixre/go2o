@@ -13,7 +13,7 @@ import (
 	"github.com/ixre/gof/net/nc"
 	"github.com/ixre/gof/util"
 	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/rsi"
+	""
 	"net"
 	"strconv"
 	"strings"

@@ -51,7 +51,7 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	_, ss := impl.ItemService.GetPagedOnShelvesGoods__(int32(shopId), -1,
+	_, ss := impl.ItemService.GetPagedOnShelvesGoods__(int64(shopId), -1,
 		begin, begin+size, "it.id DESC")
 	return ss
 }
@@ -74,7 +74,7 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	_, ss := impl.ItemService.GetPagedOnShelvesGoods__(int32(shopId), -1,
+	_, ss := impl.ItemService.GetPagedOnShelvesGoods__(int64(shopId), -1,
 		begin, begin+size, "it.sale_num DESC")
 	return ss
 }
@@ -125,7 +125,7 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //func (j *JsonC) Mch_goods(c *echox.Context) error {
 //	typeParams := strings.TrimSpace(c.FormValue("params"))
 //	types := strings.Split(typeParams, "|")
-//	mchId, _ := util.I32Err(strconv.Atoi(c.FormValue("mch_id")))
+//	mchId, _ := util.I64Err(strconv.Atoi(c.FormValue("mch_id")))
 //	result := make(map[string]interface{}, len(types))
 //	key := fmt.Sprint("go2o:repo:sg:front:%d_%s", mchId, typeParams)
 //	sto := c.App.Storage()

@@ -295,7 +295,7 @@ func (m *merchantImpl) GetRepo() merchant.IMerchantRepo {
 	return m._repo
 }
 
-func (m *merchantImpl) GetAggregateRootId() int {
+func (m *merchantImpl) GetAggregateRootId() int64 {
 	return m._value.Id
 }
 
@@ -357,11 +357,12 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 }
 
 // 保存
-func (m *merchantImpl) Save() (int32, error) {
+func (m *merchantImpl) Save() (int64, error) {
 	id := m.GetAggregateRootId()
 	if id > 0 {
 		m.checkSelfSales()
-		return m._repo.SaveMerchant(m._value)
+		id,err := m._repo.SaveMerchant(m._value)
+		return int64(id),err
 	}
 	return m.createMerchant()
 }
@@ -425,7 +426,7 @@ func (m *merchantImpl) Member() int64 {
 // 获取商户账户
 func (m *merchantImpl) Account() merchant.IAccount {
 	if m._account == nil {
-		v := m._repo.GetAccount(m.GetAggregateRootId())
+		v := m._repo.GetAccount(int(m.GetAggregateRootId()))
 		m._account = newAccountImpl(m, v, m._memberRepo, m._walletRepo)
 	}
 	return m._account
@@ -465,7 +466,7 @@ func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 }
 
 // 创建商户
-func (m *merchantImpl) createMerchant() (int32, error) {
+func (m *merchantImpl) createMerchant() (int64, error) {
 	m.checkSelfSales()
 	unix := time.Now().Unix()
 	m._value.ExpiresTime = unix + 3600*24*365
@@ -485,9 +486,9 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 	}
 	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
-		return id, err
+		return int64(id), err
 	}
-	m._value.Id = int(id)
+	m._value.Id = int64(id)
 	// 创建API
 	api := &merchant.ApiInfo{
 		ApiId:     domain.NewApiId(int(id)),
@@ -496,13 +497,13 @@ func (m *merchantImpl) createMerchant() (int32, error) {
 		Enabled:   1,
 	}
 	err = m.ApiManager().SaveApiInfo(api)
-	return id, err
+	return int64(id), err
 }
 
 // 获取商户的域名
 func (m *merchantImpl) GetMajorHost() string {
 	if len(m._host) == 0 {
-		host := m._repo.GetMerchantMajorHost(m.GetAggregateRootId())
+		host := m._repo.GetMerchantMajorHost(int(m.GetAggregateRootId()))
 		if len(host) == 0 {
 			host = fmt.Sprintf("%s.%s", m._value.LoginUser, infrastructure.GetApp().
 				Config().GetString(variable.ServerDomain))
@@ -555,7 +556,7 @@ func (m *merchantImpl) MemberKvManager() merchant.IKvManager {
 // 返回设置服务
 func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	if m._confManager == nil {
-		m._confManager = newConfigManagerImpl(m.GetAggregateRootId(),
+		m._confManager = newConfigManagerImpl(int(m.GetAggregateRootId()),
 			m._repo, m._memberRepo, m._valRepo)
 	}
 	return m._confManager

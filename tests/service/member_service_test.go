@@ -7,7 +7,7 @@ import (
 	"go2o/core/service/proto"
 	"go2o/core/service/thrift"
 	"go2o/core/service/thrift/auto_gen/rpc/ttype"
-	"go2o/core/service/thrift/rsi"
+	""
 	"go2o/tests/ti"
 	"testing"
 )
@@ -28,7 +28,7 @@ func TestPagingIntegralLog(t *testing.T) {
 
 func TestPagingWalletLog(t *testing.T) {
 	memberId := 77153
-	params := &ttype.SPagingParams{
+	params := &proto.SPagingParams{
 		Opt:        nil,
 		OrderField: "",
 		OrderDesc:  false,

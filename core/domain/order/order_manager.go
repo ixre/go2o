@@ -189,7 +189,7 @@ func (t *orderManagerImpl) SubmitTradeOrder(c *order.ComplexOrder,
 	return o, err
 }
 
-func (t *orderManagerImpl) GetFreeOrderNo(vendorId int32) string {
+func (t *orderManagerImpl) GetFreeOrderNo(vendorId int64) string {
 	return t.repo.GetFreeOrderNo(vendorId)
 }
 

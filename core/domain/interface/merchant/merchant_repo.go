@@ -32,7 +32,7 @@ type IMerchantRepo interface {
 	GetMerchantMajorHost(mchId int) string
 
 	// 保存
-	SaveMerchant(*Merchant) (int32, error)
+	SaveMerchant(*Merchant) (int, error)
 
 	// 获取账户
 	GetAccount(mchId int) *Account

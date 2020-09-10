@@ -33,7 +33,7 @@ type (
 	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
 		// 获取编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 		GetValue() Merchant
 		// 获取符合的商家信息
 		Complex() *ComplexMerchant
@@ -49,7 +49,7 @@ type (
 		// 返回对应的会员编号
 		Member() int64
 		// 保存
-		Save() (int32, error)
+		Save() (int64, error)
 		// 获取商户的域名
 		GetMajorHost() string
 		// 获取商户账户
@@ -233,7 +233,7 @@ type (
 
 	// 商户
 	Merchant struct {
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 登录用户

@@ -14,7 +14,7 @@ type (
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 商户编号
-		MchId int32 `db:"mch_id"`
+		MchId int64 `db:"mch_id"`
 		// 公司名称
 		CompanyName string `db:"company_name"`
 		// 公司营业执照编号

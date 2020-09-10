@@ -79,7 +79,7 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 		//从缓存中读取
 		for _, n := range names {
 			//分别绑定广告
-			dto := as.GetAdAndDataByKey(int32(userId), n)
+			dto := as.GetAdAndDataByKey(int64(userId), n)
 			if dto == nil {
 				result[n] = nil
 				continue

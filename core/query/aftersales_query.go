@@ -62,7 +62,7 @@ WHERE ao.buyer_id= $1 ORDER BY ao.create_time DESC LIMIT $3 OFFSET $2`, func(rs 
 }
 
 // 获取分页售后单
-func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId int32, begin,
+func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId int64, begin,
 	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
 	var list []*dto.PagedVendorAfterSalesOrder
 	total := 0

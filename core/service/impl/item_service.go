@@ -315,7 +315,7 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int64) *item.TradeSnapshot 
 }
 
 // 获取分页上架的商品
-func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start, end int,
+func (s *itemService) GetShopPagedOnShelvesGoods(shopId int64, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
 		cat := s.cateRepo.GlobCatService().GetCategory(int(categoryId))
@@ -335,7 +335,7 @@ func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start
 }
 
 // 获取上架商品数据（分页）
-func (s *itemService) GetPagedOnShelvesGoods__(shopId int32, categoryId int32, start, end int,
+func (s *itemService) GetPagedOnShelvesGoods__(shopId int64, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
 		cate := s.cateRepo.GlobCatService().GetCategory(int(categoryId))
@@ -450,7 +450,7 @@ func (s *itemService) GetValueGoodsBySaleLabel(code, sortBy string, begin int, e
 }
 
 // 根据分页销售标签获取指定数目的商品
-func (s *itemService) GetPagedValueGoodsBySaleLabel(shopId int32, tagId int32, sortBy string, begin int, end int) (int,
+func (s *itemService) GetPagedValueGoodsBySaleLabel(shopId int64, tagId int32, sortBy string, begin int, end int) (int,
 	[]*valueobject.Goods) {
 	tag := s.labelRepo.LabelService().CreateSaleLabel(&item.Label{
 		Id: tagId,

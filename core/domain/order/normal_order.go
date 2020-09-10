@@ -731,7 +731,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	vendorId int, newOrderNo bool, items []*order.SubOrderItem) order.ISubOrder {
 	orderNo := o.OrderNo()
 	if newOrderNo {
-		orderNo = o.manager.GetFreeOrderNo(int32(vendorId))
+		orderNo = o.manager.GetFreeOrderNo(int64(vendorId))
 	}
 	if len(items) == 0 {
 		domain.HandleError(errors.New("拆分订单,运营商下未获取到商品,订单:"+

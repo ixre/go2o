@@ -19,12 +19,12 @@ import (
 )
 
 // 设置商户站点配置
-func GetShopDataKey(shopId int32) string {
+func GetShopDataKey(shopId int64) string {
 	return fmt.Sprintf("go2o:cache:online-shop:siteconf:%d", shopId)
 }
 
 // 清除在线商店缓存
-func CleanShopData(shopId int32) {
+func CleanShopData(shopId int64) {
 	if shopId > 0 {
 		key := GetShopDataKey(shopId)
 		GetKVS().Del(key)

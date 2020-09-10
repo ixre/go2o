@@ -75,7 +75,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 	}
 	if err == nil {
 		return m.success(map[string]string{
-			"mch_id": strconv.Itoa(im.GetAggregateRootId()),
+			"mch_id": strconv.Itoa(int(im.GetAggregateRootId())),
 		}), nil
 	}
 	return m.result(err), nil
@@ -143,7 +143,7 @@ func (m *merchantService) ReviewSignUp(id int32, pass bool, remark string) error
 
 // 商户注册
 func (m *merchantService) SignUp(user, pwd, companyName string,
-	province int32, city int32, district int32) (int32, error) {
+	province int32, city int32, district int32) (int64, error) {
 	unix := time.Now().Unix()
 	v := &merchant.Merchant{
 		MemberId: 0,
@@ -231,7 +231,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (m *merchantService) testLogin(user string, pwd string) (id int, errCode int32, err error) {
+func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode int32, err error) {
 	if user == "" || pwd == "" {
 		return 0, 1, de.ErrCredential
 	}
@@ -319,11 +319,11 @@ func (m *merchantService) GetAccount(mchId int) *merchant.Account {
 	return m._mchRepo.GetAccount(mchId)
 }
 
-func (m *merchantService) SaveMerchant(mchId int32, v *merchant.Merchant) (int32, error) {
+func (m *merchantService) SaveMerchant(mchId int64, v *merchant.Merchant) (int64, error) {
 	var mch merchant.IMerchant
 	var err error
 	var isCreate bool
-	v.Id = int(mchId)
+	v.Id = mchId
 	if mchId > 0 {
 		mch = m._mchRepo.GetMerchant(int(mchId))
 	} else {
@@ -343,7 +343,7 @@ func (m *merchantService) SaveMerchant(mchId int32, v *merchant.Merchant) (int32
 	return mchId, err
 }
 
-func (m *merchantService) initializeMerchant(mchId int32) {
+func (m *merchantService) initializeMerchant(mchId int64) {
 
 	// 初始化会员默认等级
 	// m._mchRepo.GetMerchant(int(mchId))
@@ -408,7 +408,7 @@ func (m *merchantService) GetSaleConf(mchId int32) *merchant.SaleConf {
 	return nil
 }
 
-func (m *merchantService) GetShopsOfMerchant(mchId int32) []*shop.Shop {
+func (m *merchantService) GetShopsOfMerchant(mchId int64) []*shop.Shop {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	shops := mch.ShopManager().GetShops()
 	sv := make([]*shop.Shop, len(shops))
@@ -536,19 +536,19 @@ func (m *merchantService) SaveKeyMaps(mchId int32, data map[string]string) error
 }
 
 // 查询分页订单
-func (m *merchantService) PagedNormalOrderOfVendor(vendorId int32, begin, size int, pagination bool,
+func (m *merchantService) PagedNormalOrderOfVendor(vendorId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedVendorOrder) {
 	return m._orderQuery.PagedNormalOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
 // 查询分页订单
-func (m *merchantService) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int, pagination bool,
+func (m *merchantService) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedVendorOrder) {
 	return m._orderQuery.PagedWholesaleOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
 // 查询分页订单
-func (m *merchantService) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
+func (m *merchantService) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pagination bool,
 	where, orderBy string) (int32, []*proto.SComplexOrder) {
 	return m._orderQuery.PagedTradeOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
@@ -718,7 +718,7 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 // 获取
 
 // 同步批发商品
-func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.Int32) (*proto.SyncWSItemsResponse, error) {
+func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.Int64) (*proto.SyncWSItemsResponse, error) {
 	mch := m._mchRepo.GetMerchant(int(vendorId.Value))
 	var mp = map[string]int32{
 		"add": 0, "del": 0,
@@ -749,7 +749,7 @@ func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGr
 }
 
 // 获取买家分组
-func (m *merchantService) GetBuyerGroups(mchId int32) []*merchant.BuyerGroup {
+func (m *merchantService) GetBuyerGroups(mchId int64) []*merchant.BuyerGroup {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.ConfManager().SelectBuyerGroup()

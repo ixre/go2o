@@ -155,7 +155,7 @@ func (p *productService) GetCategory(mchId int64, id int32) *product.Category {
 }
 
 // 获取商品分类和选项
-func (p *productService) GetCategoryAndOptions(mchId, id int32) (*product.Category,
+func (p *productService) GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
 	domain.IOptionStore) {
 	c := p.catRepo.GlobCatService().GetCategory(int(id))
 	if c != nil {
@@ -261,7 +261,7 @@ func (p *productService) getCategoryManager(mchId int32) product.IGlobCatService
 	return p.catRepo.GlobCatService()
 }
 
-func (p *productService) GetBigCategories(mchId int32) []*proto.SCategory {
+func (p *productService) GetBigCategories(mchId int64) []*proto.SCategory {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	var list []*proto.SCategory
 	for _, v := range cats {
@@ -273,7 +273,7 @@ func (p *productService) GetBigCategories(mchId int32) []*proto.SCategory {
 	return list
 }
 
-func (p *productService) GetChildCategories(mchId, parentId int32) []*proto.SCategory {
+func (p *productService) GetChildCategories(mchId int64, parentId int64) []*proto.SCategory {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	var list []*proto.SCategory
 	for _, v := range cats {

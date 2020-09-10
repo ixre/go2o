@@ -80,8 +80,8 @@ func checkMemberToken(c echo.Context) bool {
 }
 
 // 获取商户编号
-func getMerchantId(c echo.Context) int32 {
-	return c.Get("merchant_id").(int32)
+func getMerchantId(c echo.Context) int64 {
+	return c.Get("merchant_id").(int64)
 }
 
 // 获取会员编号
