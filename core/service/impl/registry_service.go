@@ -35,6 +35,7 @@ func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegis
 
 // 获取数据存储
 func (s *registryService) GetValue(_ context.Context, key *proto.String) (*proto.RegistryValueResponse, error) {
+	println("---",key.Value,s.registryRepo)
 	v, err := s.registryRepo.GetValue(key.Value)
 	rsp := &proto.RegistryValueResponse{Value: v}
 	if err != nil {
