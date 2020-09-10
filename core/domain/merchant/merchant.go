@@ -440,7 +440,7 @@ func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
 		if v == nil {
 			v, _ = m.createWholesaler()
 		}
-		m._wholesaler = wsImpl.NewWholesaler(int32(mchId), v, m._wsRepo, m._itemRepo)
+		m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo, m._itemRepo)
 	}
 	return m._wholesaler
 }
@@ -456,7 +456,7 @@ func (m *merchantImpl) EnableWholesale() error {
 
 func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 	v := &wholesaler.WsWholesaler{
-		MchId:       int32(m.GetAggregateRootId()),
+		MchId:       int64(m.GetAggregateRootId()),
 		Rate:        1,
 		ReviewState: enum.ReviewPass,
 		//ReviewState: enum.ReviewAwaiting,
@@ -516,7 +516,7 @@ func (m *merchantImpl) GetMajorHost() string {
 // 返回用户服务
 func (m *merchantImpl) UserManager() user.IUserManager {
 	if m._userManager == nil {
-		m._userManager = userImpl.NewUserManager(int32(m.GetAggregateRootId()), m._userRepo)
+		m._userManager = userImpl.NewUserManager(m.GetAggregateRootId(), m._userRepo)
 	}
 	return m._userManager
 }
@@ -524,7 +524,7 @@ func (m *merchantImpl) UserManager() user.IUserManager {
 // 获取会员管理服务
 func (m *merchantImpl) LevelManager() merchant.ILevelManager {
 	if m._levelManager == nil {
-		m._levelManager = NewLevelManager(int32(m.GetAggregateRootId()), m._repo)
+		m._levelManager = NewLevelManager(int64(m.GetAggregateRootId()), m._repo)
 	}
 	return m._levelManager
 }

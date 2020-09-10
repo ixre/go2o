@@ -6,7 +6,7 @@ type (
 	// 批发商
 	IWholesaler interface {
 		// 获取领域编号
-		GetDomainId() int32
+		GetDomainId() int64
 		// 获取值
 		Value() *WsWholesaler
 		// 审核批发商
@@ -31,9 +31,9 @@ type (
 		// Save WsWholesaler
 		SaveWsWholesaler(v *WsWholesaler, create bool) (int, error)
 		// 同步商品
-		SyncItems(mchId int32, shelve, review int32) (add int, del int)
+		SyncItems(mchId int64, shelve, review int32) (add int, del int)
 		// 获取待同步的商品编号
-		GetAwaitSyncItems(vendorId int32) (add []int)
+		GetAwaitSyncItems(vendorId int64) (add []int)
 
 		// Select WsRebateRate
 		SelectWsRebateRate(where string, v ...interface{}) []*WsRebateRate
@@ -45,7 +45,7 @@ type (
 	// 批发商
 	WsWholesaler struct {
 		// 供货商编号等于供货商（等同与商户编号)
-		MchId int32 `db:"mch_id" pk:"yes" auto:"yes"`
+		MchId int64 `db:"mch_id" pk:"yes" auto:"yes"`
 		// 批发商评级
 		Rate int `db:"rate"`
 		// 批发商审核状态

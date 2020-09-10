@@ -100,10 +100,10 @@ type (
 		SaveCategory(*Category) (int, error)
 
 		// 检查分类是否关联商品
-		CheckContainGoods(vendorId int32, catId int) bool
+		CheckContainGoods(vendorId int64, catId int) bool
 
 		// 删除分类
-		DeleteCategory(vendorId int32, catId int) error
+		DeleteCategory(vendorId int64, catId int) error
 
 		// 获取分类
 		GetCategory(mchId, id int) *Category

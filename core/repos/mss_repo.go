@@ -70,7 +70,7 @@ func (m *mssRepo) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (m *mssRepo) GetConfig(userId int32) *mss.Config {
+func (m *mssRepo) GetConfig(userId int64) *mss.Config {
 	conf := mss.Config{}
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
@@ -82,7 +82,7 @@ func (m *mssRepo) GetConfig(userId int32) *mss.Config {
 }
 
 // 保存消息设置
-func (m *mssRepo) SaveConfig(userId int32, conf *mss.Config) error {
+func (m *mssRepo) SaveConfig(userId int64, conf *mss.Config) error {
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
 		filePath = fmt.Sprintf("conf/mch/%d/mss_conf", userId)
@@ -92,7 +92,7 @@ func (m *mssRepo) SaveConfig(userId int32, conf *mss.Config) error {
 }
 
 // 获取邮箱模板
-func (m *mssRepo) GetMailTemplate(mchId, id int32) *mss.MailTemplate {
+func (m *mssRepo) GetMailTemplate(mchId int64, id int32) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := m._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -106,14 +106,14 @@ func (m *mssRepo) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 }
 
 // 获取所有的邮箱模版
-func (m *mssRepo) GetMailTemplates(mchId int32) []*mss.MailTemplate {
+func (m *mssRepo) GetMailTemplates(mchId int64) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
 	m._conn.GetOrm().Select(&list, "merchant_id= $1", mchId)
 	return list
 }
 
 // 删除邮件模板
-func (m *mssRepo) DeleteMailTemplate(mchId, id int32) error {
+func (m *mssRepo) DeleteMailTemplate(mchId, id int64) error {
 	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{},
 		"merchant_id= $1 AND id= $2", mchId, id)
 	return err

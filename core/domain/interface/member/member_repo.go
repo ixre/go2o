@@ -118,7 +118,7 @@ type IMemberRepo interface {
 	GetRelation(memberId int64) *InviteRelation
 
 	// 获取经验值对应的等级
-	GetLevelValueByExp(mchId int32, exp int64) int
+	GetLevelValueByExp(mchId int64, exp int64) int
 
 	// 获取会员升级记录
 	GetLevelUpLog(id int32) *LevelUpLog

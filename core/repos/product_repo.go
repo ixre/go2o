@@ -66,7 +66,7 @@ func (p *productRepo) GetProductsById(ids ...int32) ([]*product.Product, error) 
 	return items, err
 }
 
-func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int,
+func (p *productRepo) GetPagedOnShelvesProduct(mchId int64, catIds []int,
 	start, end int) (total int, e []*product.Product) {
 	var sql string
 

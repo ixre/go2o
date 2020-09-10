@@ -59,7 +59,7 @@ func (cs *contentService) QueryTopArticles(_ context.Context, cat *proto.String)
 		}
 	}
 	return &proto.ArticlesResponse{
-		List: arr,
+		Value: arr,
 	}, nil
 }
 
@@ -85,7 +85,7 @@ func (cs *contentService) parseArticle(v *content.Article) *proto.SArticle {
 
 // 获取页面
 //todo: 取消mchId
-func (cs *contentService) GetPage(mchId, id int32) *content.Page {
+func (cs *contentService) GetPage(mchId int64, id int32) *content.Page {
 	c := cs._contentRepo.GetContent(mchId)
 	page := c.GetPage(id)
 	if page != nil {
@@ -96,7 +96,7 @@ func (cs *contentService) GetPage(mchId, id int32) *content.Page {
 
 // 根据标识获取页面
 //todo: 取消mchId
-func (cs *contentService) GetPageByIndent(userId int32, indent string) *content.Page {
+func (cs *contentService) GetPageByIndent(userId int64, indent string) *content.Page {
 	c := cs._contentRepo.GetContent(userId)
 	page := c.GetPageByStringIndent(indent)
 	if page != nil {
@@ -106,7 +106,7 @@ func (cs *contentService) GetPageByIndent(userId int32, indent string) *content.
 }
 
 // 保存页面
-func (cs *contentService) SavePage(mchId int32, v *content.Page) (int32, error) {
+func (cs *contentService) SavePage(mchId int64, v *content.Page) (int32, error) {
 	c := cs._contentRepo.GetContent(mchId)
 	var page content.IPage
 	var err error
@@ -127,7 +127,7 @@ func (cs *contentService) SavePage(mchId int32, v *content.Page) (int32, error) 
 }
 
 // 删除页面
-func (cs *contentService) DeletePage(mchId int32, pageId int32) error {
+func (cs *contentService) DeletePage(mchId int64, pageId int32) error {
 	c := cs._contentRepo.GetContent(mchId)
 	return c.DeletePage(pageId)
 }

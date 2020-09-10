@@ -237,7 +237,7 @@ func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.Go
 }
 
 //根据关键词搜索上架的商品
-func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
+func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
 	keyword, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
 	total := 0

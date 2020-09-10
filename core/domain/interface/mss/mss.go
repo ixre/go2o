@@ -71,7 +71,7 @@ type (
 	// ErrMsg manager,主要用于管理用户的模板
 	IUserMessageManager interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int32
+		GetAggregateRootId() int
 
 		// 获取配置
 		GetConfig() Config
@@ -103,22 +103,22 @@ type (
 		NotifyManager() notify.INotifyManager
 
 		// 获取消息设置
-		GetConfig(userId int32) *Config
+		GetConfig(userId int64) *Config
 
 		// 保存消息设置
-		SaveConfig(userId int32, conf *Config) error
+		SaveConfig(userId int64, conf *Config) error
 
 		// 获取邮箱模板
-		GetMailTemplate(userId, id int32) *MailTemplate
+		GetMailTemplate(userId int64, id int32) *MailTemplate
 
 		// 保存邮箱模版
 		SaveMailTemplate(*MailTemplate) (int32, error)
 
 		// 获取所有的邮箱模版
-		GetMailTemplates(userId int32) []*MailTemplate
+		GetMailTemplates(userId int64) []*MailTemplate
 
 		// 删除邮件模板
-		DeleteMailTemplate(userId, id int32) error
+		DeleteMailTemplate(userId, id int64) error
 
 		// 加入到发送对列
 		JoinMailTaskToQueen(*MailTask) error

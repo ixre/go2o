@@ -153,10 +153,10 @@ var _ content.IArticleManager = new(articleManagerImpl)
 
 type articleManagerImpl struct {
 	_rep    content.IContentRepo
-	_userId int32
+	_userId int64
 }
 
-func newArticleManagerImpl(userId int32, rep content.IContentRepo) content.IArticleManager {
+func newArticleManagerImpl(userId int64, rep content.IContentRepo) content.IArticleManager {
 	return &articleManagerImpl{
 		_rep:    rep,
 		_userId: userId,

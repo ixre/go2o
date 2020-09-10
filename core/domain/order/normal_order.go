@@ -185,7 +185,7 @@ func (o *normalOrderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 		//mchId := o._cart.VendorId
 
 		//todo: 将购物车中的vendor均获取出来
-		var mchId int32 = -1
+		var mchId int64 = -1
 		var vp = o.promRepo.GetPromotionOfMerchantOrder(mchId)
 		var proms = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {

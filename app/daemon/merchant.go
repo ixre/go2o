@@ -45,14 +45,14 @@ func mchDayChart() {
 func generateMchDayChart(start, end int64) {
 	begin := 0
 	size := 20
-	var mchList []int32
-	var tmp int32
+	var mchList []int64
+	var tmp int64
 	dateStr := time.Unix(start, 0).Format("2006-01-02")
 	// 清理数据
 	appCtx.Db().ExecNonQuery(`DELETE FROM mch_day_chart WHERE date_str= $1`, dateStr)
 	// 开始统计数据
 	for {
-		mchList = []int32{}
+		mchList = []int64{}
 		appCtx.Db().Query("SELECT id FROM mch_merchant LIMIT $2 OFFSET $1", func(rs *sql.Rows) {
 			for rs.Next() {
 				rs.Scan(&tmp)
@@ -73,7 +73,7 @@ func generateMchDayChart(start, end int64) {
 	}
 }
 
-func genDayChartForMch(wg *sync.WaitGroup, mchId int32, dateStr string, start int64, end int64) {
+func genDayChartForMch(wg *sync.WaitGroup, mchId int64, dateStr string, start int64, end int64) {
 	defer wg.Done()
 	c := &merchant.MchDayChart{
 		MchId:   mchId,

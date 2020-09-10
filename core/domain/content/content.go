@@ -14,11 +14,11 @@ var _ content.IContent = new(Content)
 
 type Content struct {
 	contentRepo    content.IContentRepo
-	userId         int32
+	userId         int64
 	articleManager content.IArticleManager
 }
 
-func NewContent(userId int32, rep content.IContentRepo) content.IContent {
+func NewContent(userId int64, rep content.IContentRepo) content.IContent {
 	return &Content{
 		contentRepo: rep,
 		userId:      userId,
@@ -26,8 +26,8 @@ func NewContent(userId int32, rep content.IContentRepo) content.IContent {
 }
 
 // 获取聚合根编号
-func (c *Content) GetAggregateRootId() int32 {
-	return c.userId
+func (c *Content) GetAggregateRootId() int {
+	return int(c.userId)
 }
 
 // 文章服务
@@ -40,12 +40,12 @@ func (c *Content) ArticleManager() content.IArticleManager {
 
 // 创建页面
 func (c *Content) CreatePage(v *content.Page) content.IPage {
-	return newPage(c.GetAggregateRootId(), c.contentRepo, v)
+	return newPage(int32(c.GetAggregateRootId()), c.contentRepo, v)
 }
 
 // 获取页面
 func (c *Content) GetPage(id int32) content.IPage {
-	v := c.contentRepo.GetPageById(c.GetAggregateRootId(), id)
+	v := c.contentRepo.GetPageById(int32(c.GetAggregateRootId()), id)
 	if v != nil {
 		return c.CreatePage(v)
 	}
@@ -54,7 +54,7 @@ func (c *Content) GetPage(id int32) content.IPage {
 
 // 根据字符串标识获取页面
 func (c *Content) GetPageByStringIndent(indent string) content.IPage {
-	v := c.contentRepo.GetPageByStringIndent(c.GetAggregateRootId(), indent)
+	v := c.contentRepo.GetPageByStringIndent(int32(c.GetAggregateRootId()), indent)
 	if v != nil {
 		return c.CreatePage(v)
 	}
@@ -63,5 +63,5 @@ func (c *Content) GetPageByStringIndent(indent string) content.IPage {
 
 // 删除页面
 func (c *Content) DeletePage(id int32) error {
-	return c.contentRepo.DeletePage(c.GetAggregateRootId(), id)
+	return c.contentRepo.DeletePage(int32(c.GetAggregateRootId()), id)
 }

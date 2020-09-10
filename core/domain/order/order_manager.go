@@ -203,7 +203,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 	po := py.Get()
 	//todo: ?? 重构
 	cp := t.promRepo.GetCouponByCode(
-		int32(m.GetAggregateRootId()), couponCode)
+		m.GetAggregateRootId(), couponCode)
 	// 如果优惠券不存在
 	if cp == nil {
 		return errors.New("优惠券无效")

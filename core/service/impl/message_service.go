@@ -74,8 +74,8 @@ func (m *messageService) GetMailTemplates() []*mss.MailTemplate {
 }
 
 // 删除邮件模板
-func (m *messageService) DeleteMailTemplate(id int32) error {
-	return m._rep.GetProvider().DeleteMailTemplate(id)
+func (m *messageService) DeleteMailTemplate(id int64) error {
+	return m._rep.GetProvider().DeleteMailTemplate(int32(id))
 }
 
 // 获取邮件绑定
@@ -172,9 +172,10 @@ func (ms *messageService) SendSiteMessageToUser(senderId int32, toRole int, toUs
 }
 
 // 获取站内信
-func (m *messageService) GetSiteMessage(id, toUserId int32, toRole int) *dto.SiteMessage {
-	msg := m._rep.MessageManager().GetMessage(id)
-	if msg != nil && msg.CheckPerm(toUserId, toRole) {
+func (m *messageService) GetSiteMessage(id, toUserId int64, toRole int) *dto.SiteMessage {
+	//todo: id int64
+	msg := m._rep.MessageManager().GetMessage(int32(id))
+	if msg != nil && msg.CheckPerm(int32(toUserId), toRole) {
 		val := msg.GetValue()
 		dto := &dto.SiteMessage{
 			Id:           val.Id,
@@ -184,7 +185,7 @@ func (m *messageService) GetSiteMessage(id, toUserId int32, toRole int) *dto.Sit
 			SenderName:   "系统",
 			Readonly:     val.Readonly,
 			CreateTime:   val.CreateTime,
-			ToId:         toUserId,
+			ToId:         int32(toUserId),
 			ToRole:       toRole,
 		}
 
@@ -198,7 +199,7 @@ func (m *messageService) GetSiteMessage(id, toUserId int32, toRole int) *dto.Sit
 		}
 
 		if msg.SpecialTo() {
-			if to := msg.GetTo(toUserId, toRole); to != nil {
+			if to := msg.GetTo(int32(toUserId), toRole); to != nil {
 				dto.HasRead = to.HasRead
 				dto.ReadTime = to.ReadTime
 			}

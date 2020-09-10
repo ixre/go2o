@@ -11,7 +11,7 @@ package merchant
 type (
 	MemberLevel struct {
 		Id         int32 `db:"id" auto:"yes" pk:"yes"`
-		MerchantId int32 `db:"merchant_id"`
+		MerchantId int64 `db:"merchant_id"`
 		// 等级值(1,2,4,8,16)
 		Value      int32  `db:"value" `
 		Name       string `db:"name"`

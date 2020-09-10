@@ -33,7 +33,7 @@ func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
 }
 
 // 获取领域对象编号
-func (a *accountImpl) GetDomainId() int32 {
+func (a *accountImpl) GetDomainId() int64 {
 	return a.value.MchId
 }
 

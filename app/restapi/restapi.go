@@ -14,7 +14,6 @@ import (
 	"github.com/ixre/gof/util"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
-	"go2o/core/domain/interface/merchant"
 	"go2o/core/service"
 	"go2o/core/service/proto"
 	"net/http"
@@ -94,10 +93,10 @@ func ApiTest(c echo.Context) error {
 }
 
 // 检查是否有权限
-func CheckApiPermission(apiId string, secret string) (bool, int32) {
+func CheckApiPermission(apiId string, secret string) (bool, int64) {
 	if len(apiId) != 0 && len(secret) != 0 {
 		mchId := cache.GetMerchantIdByApiId(apiId)
-		var apiInfo *merchant.ApiInfo = cache.GetMerchantApiInfo(mchId)
+		var apiInfo = cache.GetMerchantApiInfo(mchId)
 		if apiInfo != nil {
 			return apiInfo.ApiSecret == secret, mchId
 		}

@@ -182,7 +182,7 @@ func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
 }
 
 // 会员推广排名
-func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp string, level int,
+func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	list := make([]*dto.RankMember, 0)
 	var id int64

@@ -17,11 +17,11 @@ var _ item.ISaleLabel = new(saleLabelImpl)
 
 type saleLabelImpl struct {
 	rep   item.ISaleLabelRepo
-	mchId int32
+	mchId int64
 	value *item.Label
 }
 
-func NewSaleLabel(mchId int32, value *item.Label,
+func NewSaleLabel(mchId int64, value *item.Label,
 	rep item.ISaleLabelRepo) item.ISaleLabel {
 	return &saleLabelImpl{
 		rep:   rep,
@@ -99,10 +99,10 @@ var _ item.ILabelService = new(labelManagerImpl)
 type labelManagerImpl struct {
 	_rep     item.ISaleLabelRepo
 	_valRepo valueobject.IValueRepo
-	_mchId   int32
+	_mchId   int64
 }
 
-func NewLabelManager(mchId int32, rep item.ISaleLabelRepo,
+func NewLabelManager(mchId int64, rep item.ISaleLabelRepo,
 	valRepo valueobject.IValueRepo) item.ILabelService {
 	c := &labelManagerImpl{
 		_rep:     rep,

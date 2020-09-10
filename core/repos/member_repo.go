@@ -519,7 +519,7 @@ func (m *MemberRepoImpl) GetInviteChildren(id int64) []int64 {
 }
 
 // 获取积分对应的等级
-func (m *MemberRepoImpl) GetLevelValueByExp(mchId int32, exp int64) int {
+func (m *MemberRepoImpl) GetLevelValueByExp(mchId int64, exp int64) int {
 	var levelId int
 	m.Connector.ExecScalar(`SELECT lv.value FROM pt_member_level lv
 	 	where lv.merchant_id= $1 AND lv.require_exp <= $2 AND lv.enabled=1

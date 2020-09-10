@@ -292,7 +292,7 @@ func (s *itemService) GetGoodsBySku(mchId, itemId, sku int64) *valueobject.Goods
 }
 
 // 根据SKU获取商品
-func (s *itemService) GetValueGoodsBySku(mchId int32, itemId, sku int64) *item.GoodsItem {
+func (s *itemService) GetValueGoodsBySku(mchId int64, itemId, sku int64) *item.GoodsItem {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
 	if v != nil {
 		return s.itemRepo.CreateItem(v).GetValue()
@@ -354,7 +354,7 @@ func (s *itemService) GetPagedOnShelvesGoods__(shopId int64, categoryId int32, s
 }
 
 // 获取分页上架的商品
-func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
+func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
 	word, sortQuery string) (int, []*valueobject.Goods) {
 	var where string
 	var orderBy string

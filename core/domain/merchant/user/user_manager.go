@@ -15,11 +15,11 @@ import (
 var _ user.IUserManager = new(UserManager)
 
 type UserManager struct {
-	mchId int32
+	mchId int64
 	rep   user.IUserRepo
 }
 
-func NewUserManager(mchId int32, rep user.IUserRepo) user.IUserManager {
+func NewUserManager(mchId int64, rep user.IUserRepo) user.IUserManager {
 	return &UserManager{
 		mchId: mchId,
 		rep:   rep,

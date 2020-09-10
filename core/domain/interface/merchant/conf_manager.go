@@ -35,7 +35,7 @@ type (
 		//编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		//商家编号
-		MchId int32 `db:"mch_id"`
+		MchId int64 `db:"mch_id"`
 		//客户分组编号
 		GroupId int32 `db:"group_id"`
 		//分组别名
@@ -59,7 +59,7 @@ type (
 	// 销售设置为商户填写,同时可以恢复默认
 	SaleConf struct {
 		// 合作商编号
-		MerchantId int32 `db:"mch_id" auto:"no" pk:"yes"`
+		MerchantId int64 `db:"mch_id" auto:"no" pk:"yes"`
 		// 是否启用分销模式
 		FxSalesEnabled int `db:"fx_sales"`
 		// 返现比例,0则不返现

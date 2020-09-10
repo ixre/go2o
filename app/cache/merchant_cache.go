@@ -70,8 +70,8 @@ func GetMerchantIdByHost(host string) int {
 }
 
 // 根据API ID获取商户ID
-func GetMerchantIdByApiId(apiId string) int32 {
-	var mchId int32
+func GetMerchantIdByApiId(apiId string) int64 {
+	var mchId int64
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
 	kvs.Get(key, &mchId)
@@ -85,8 +85,8 @@ func GetMerchantIdByApiId(apiId string) int32 {
 }
 
 // 获取API 信息
-func GetMerchantApiInfo(mchId int32) *merchant.ApiInfo {
-	var d *merchant.ApiInfo = new(merchant.ApiInfo)
+func GetMerchantApiInfo(mchId int64) *merchant.ApiInfo {
+	var d = new(merchant.ApiInfo)
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:info-%d", mchId)
 	err := kvs.Get(key, &d)

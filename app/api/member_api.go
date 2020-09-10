@@ -287,7 +287,7 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 			Value: code,
 		})
 	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
-	for _, v := range arr.List {
+	for _, v := range arr.Value {
 		if v.Identity == identity {
 			v.State = 1 - v.State
 			r, _ := cli.SaveReceiptsCode(context.TODO(), &proto.ReceiptsCodeSaveRequest{

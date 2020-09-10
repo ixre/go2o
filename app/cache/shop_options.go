@@ -59,7 +59,7 @@ import (
 //	return buf.Bytes()
 //}
 
-func GetShopsJson(mchId int32) []byte {
+func GetShopsJson(mchId int64) []byte {
 	shops := impl.MerchantService.GetShopsOfMerchant(int64(mchId))
 	buf := bytes.NewBufferString("[")
 	for i, v := range shops {

@@ -164,11 +164,11 @@ func (p *productService) GetCategoryAndOptions(mchId int64, id int32) (*product.
 	return nil, nil
 }
 
-func (p *productService) DeleteCategory(mchId, id int32) error {
+func (p *productService) DeleteCategory(mchId int64, id int32) error {
 	return p.catRepo.GlobCatService().DeleteCategory(int(id))
 }
 
-func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, error) {
+func (p *productService) SaveCategory(mchId int64, v *product.Category) (int32, error) {
 	sl := p.catRepo.GlobCatService()
 	var ca product.ICategory
 	if v.Id > 0 {
@@ -187,7 +187,7 @@ func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, 
 	return 0, err
 }
 
-func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
+func (p *productService) GetCategoryTreeNode(mchId int64) *tree.TreeNode {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	rootNode := &tree.TreeNode{
 		Title:    "根节点",
@@ -257,7 +257,7 @@ func (p *productService) GetCategoriesByParentId(mchId, parentId int32) []*produ
 	return list
 }
 
-func (p *productService) getCategoryManager(mchId int32) product.IGlobCatService {
+func (p *productService) getCategoryManager(mchId int64) product.IGlobCatService {
 	return p.catRepo.GlobCatService()
 }
 

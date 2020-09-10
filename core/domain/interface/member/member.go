@@ -324,7 +324,7 @@ type (
 		// 邀请会员编号(depth3)
 		InviterD3 int64 `db:"inviter_d3"`
 		// 注册关联商户编号
-		RegMchId int32 `db:"reg_mchid"`
+		RegMchId int64 `db:"reg_mchid"`
 	}
 
 	// 实名认证信息

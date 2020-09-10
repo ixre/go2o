@@ -88,7 +88,7 @@ type (
 		SaveValueGoods(*GoodsItem) (int64, error)
 
 		// 获取在货架上的商品
-		GetOnShelvesGoods(mchId int32, start, end int,
+		GetOnShelvesGoods(mchId int64, start, end int,
 			sortBy string) []*valueobject.Goods
 
 		// 获取在货架上的商品

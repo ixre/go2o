@@ -31,7 +31,7 @@ message SwapMemberRequest {
 }
 
 message SMemberLevelListResponse {
-    repeated SMemberLevel List = 1;
+    repeated SMemberLevel Value = 1;
 }
 
 message SubmitTrustInfoRequest {
@@ -67,7 +67,7 @@ message CompareCodeRequest {
 }
 
 message SReceiptsCodeListResponse {
-    repeated SReceiptsCode List = 1;
+    repeated SReceiptsCode Value = 1;
 }
 message ReceiptsCodeSaveRequest {
     sint64 memberId = 1;
@@ -75,7 +75,7 @@ message ReceiptsCodeSaveRequest {
 }
 
 message BankCardListResponse {
-    repeated SBankcard List = 1;
+    repeated SBankcard Value = 1;
 }
 message BankCardSaveRequest {
     sint64 memberId = 1;
@@ -128,7 +128,7 @@ message CheckTokenRequest {
 }
 
 message AddressListResponse {
-    repeated SAddress List = 1;
+    repeated SAddress Value = 1;
 }
 
 message GetAddressRequest {
@@ -273,7 +273,7 @@ message InviteQuantityRequest {
     map<string, string> data = 2;
 }
 message MemberIdListResponse {
-    repeated sint64 List = 1;
+    repeated sint64 Value = 1;
 }
 
 message AccountChangeRequest {

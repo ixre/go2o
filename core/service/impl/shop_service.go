@@ -131,7 +131,7 @@ func (si *shopServiceImpl) GetShopData(mchId, shopId int64) *shop.ComplexShop {
 	return nil
 }
 
-func (si *shopServiceImpl) GetShopValueById(mchId, shopId int32) *shop.Shop {
+func (si *shopServiceImpl) GetShopValueById(mchId, shopId int64) *shop.Shop {
 	mch := si.mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		v := mch.ShopManager().GetShop(int(shopId)).GetValue()
@@ -190,7 +190,7 @@ func (si *shopServiceImpl) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) er
 	return merchant.ErrNoSuchMerchant
 }
 
-func (si *shopServiceImpl) SaveShop(mchId int32, v *shop.Shop) (int64, error) {
+func (si *shopServiceImpl) SaveShop(mchId int64, v *shop.Shop) (int64, error) {
 	mch := si.mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		var shop shop.IShop

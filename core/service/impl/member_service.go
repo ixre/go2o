@@ -278,7 +278,7 @@ func (s *memberService) MemberLevelList(_ context.Context, empty *proto.Empty) (
 	for _, v := range list {
 		arr = append(arr, s.parseLevelDto(v))
 	}
-	return &proto.SMemberLevelListResponse{List: arr}, nil
+	return &proto.SMemberLevelListResponse{Value: arr}, nil
 }
 
 // 根据编号获取会员等级信息
@@ -783,7 +783,7 @@ func (s *memberService) QueryInviteArray(_ context.Context, r *proto.InviteQuant
 		where = s.parseGetInviterDataParams(r.Data)
 	}
 	return &proto.MemberIdListResponse{
-		List: s.query.GetInviteArray(r.MemberId, where),
+		Value: s.query.GetInviteArray(r.MemberId, where),
 	}, nil
 }
 
@@ -852,7 +852,7 @@ func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.Int64) (*prot
 	m := s.repo.GetMember(id.Value)
 	if m == nil {
 		return &proto.SReceiptsCodeListResponse{
-			List: make([]*proto.SReceiptsCode, 0),
+			Value: make([]*proto.SReceiptsCode, 0),
 		}, nil
 	}
 	arr := m.Profile().ReceiptsCodes()
@@ -866,7 +866,7 @@ func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.Int64) (*prot
 			State:     int32(v.State),
 		}
 	}
-	return &proto.SReceiptsCodeListResponse{List: list}, nil
+	return &proto.SReceiptsCodeListResponse{Value: list}, nil
 }
 
 // 保存收款码
@@ -902,7 +902,7 @@ func (s *memberService) BankCards(_ context.Context, id *proto.Int64) (*proto.Ba
 		State:       int32(b.State),
 	})
 	return &proto.BankCardListResponse{
-		List: arr,
+		Value: arr,
 	}, nil
 }
 
@@ -1049,7 +1049,7 @@ func (s *memberService) GetAddressList(_ context.Context, id *proto.Int64) (*pro
 	for _, v := range src {
 		arr = append(arr, s.parseAddressDto(v))
 	}
-	return &proto.AddressListResponse{List: arr}, nil
+	return &proto.AddressListResponse{Value: arr}, nil
 }
 
 //获取配送地址
@@ -1458,7 +1458,7 @@ func (s *memberService) GetMemberIdByPhone1(phone string) int64 {
 }
 
 // 会员推广排名
-func (s *memberService) GetMemberInviRank(mchId int32, allTeam bool,
+func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 	levelComp string, level int, startTime int64, endTime int64,
 	num int) []*dto.RankMember {
 	return s.query.GetMemberInviRank(mchId, allTeam, levelComp, level, startTime, endTime, num)

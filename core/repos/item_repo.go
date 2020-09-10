@@ -198,7 +198,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 }
 
 // 获取指定数量已上架的商品
-func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string) []*valueobject.Goods {
+func (g *goodsRepo) GetOnShelvesGoods(mchId int64, start, end int, sortBy string) []*valueobject.Goods {
 	var e []*valueobject.Goods
 	sql := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN product ON product.id = item_info.product_id
 		 INNER JOIN product_category ON product.cat_id=product_category.id

@@ -43,12 +43,12 @@ func newConfigManagerImpl(mchId int,
 // 获取销售配置
 func (c *confManagerImpl) GetSaleConf() merchant.SaleConf {
 	if c.saleConf == nil {
-		c.saleConf = c.repo.GetMerchantSaleConf(int32(c.mchId))
+		c.saleConf = c.repo.GetMerchantSaleConf(int64(c.mchId))
 		if c.saleConf != nil {
 			c.verifySaleConf(c.saleConf)
 		} else {
 			c.saleConf = &merchant.SaleConf{
-				MerchantId: int32(c.mchId),
+				MerchantId: int64(c.mchId),
 			}
 			c.loadGlobSaleConf(c.saleConf)
 		}
@@ -101,7 +101,7 @@ func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
 		return err
 	}
 	c.saleConf = v
-	c.saleConf.MerchantId = int32(c.mchId)
+	c.saleConf.MerchantId = int64(c.mchId)
 	return c.repo.SaveMerchantSaleConf(c.saleConf)
 }
 
@@ -128,7 +128,7 @@ func (c *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
 }
 
 func (c *confManagerImpl) getAllMchBuyerGroups() []*merchant.MchBuyerGroup {
-	return c.repo.SelectMchBuyerGroup(int32(c.mchId))
+	return c.repo.SelectMchBuyerGroup(int64(c.mchId))
 }
 
 // 获取商户的全部客户分组
@@ -172,7 +172,7 @@ func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGro
 	g := c.memberRepo.GetManager().GetBuyerGroup(groupId)
 	if g != nil {
 		return &merchant.MchBuyerGroup{
-			MchId:           int32(c.mchId),
+			MchId:           int64(c.mchId),
 			GroupId:         groupId,
 			Alias:           g.Name,
 			EnableRetail:    1,

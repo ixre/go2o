@@ -50,14 +50,14 @@ func (t *saleLabelRepo) CreateSaleLabel(v *item.Label) item.ISaleLabel {
 }
 
 // 获取所有的销售标签
-func (t *saleLabelRepo) GetAllValueSaleLabels(mchId int32) []*item.Label {
+func (t *saleLabelRepo) GetAllValueSaleLabels(mchId int64) []*item.Label {
 	arr := []*item.Label{}
 	t.Connector.GetOrm().Select(&arr, "mch_id= $1", mchId)
 	return arr
 }
 
 // 获取销售标签值
-func (t *saleLabelRepo) GetValueSaleLabel(mchId int32, tagId int32) *item.Label {
+func (t *saleLabelRepo) GetValueSaleLabel(mchId int64, tagId int32) *item.Label {
 	var v *item.Label = new(item.Label)
 	err := t.Connector.GetOrm().GetBy(v, "mch_id= $1 AND id= $2", mchId, tagId)
 	if err == nil {
@@ -67,18 +67,18 @@ func (t *saleLabelRepo) GetValueSaleLabel(mchId int32, tagId int32) *item.Label 
 }
 
 // 获取销售标签
-func (t *saleLabelRepo) GetSaleLabel(mchId int32, id int32) item.ISaleLabel {
+func (t *saleLabelRepo) GetSaleLabel(mchId int64, id int32) item.ISaleLabel {
 	return t.CreateSaleLabel(t.GetValueSaleLabel(mchId, id))
 }
 
 // 保存销售标签
-func (t *saleLabelRepo) SaveSaleLabel(mchId int32, v *item.Label) (int32, error) {
+func (t *saleLabelRepo) SaveSaleLabel(mchId int64, v *item.Label) (int32, error) {
 	v.MerchantId = mchId
 	return orm.I32(orm.Save(t.GetOrm(), v, int(v.Id)))
 }
 
 // 根据Code获取销售标签
-func (t *saleLabelRepo) GetSaleLabelByCode(mchId int32, code string) *item.Label {
+func (t *saleLabelRepo) GetSaleLabelByCode(mchId int64, code string) *item.Label {
 	var v *item.Label = new(item.Label)
 	if t.GetOrm().GetBy(v, "mch_id= $1 AND tag_code= $2", mchId, code) == nil {
 		return v
@@ -87,13 +87,13 @@ func (t *saleLabelRepo) GetSaleLabelByCode(mchId int32, code string) *item.Label
 }
 
 // 删除销售标签
-func (t *saleLabelRepo) DeleteSaleLabel(mchId int32, id int32) error {
+func (t *saleLabelRepo) DeleteSaleLabel(mchId int64, id int32) error {
 	_, err := t.GetOrm().Delete(&item.Label{}, "mch_id= $1 AND id= $2", mchId, id)
 	return err
 }
 
 // 获取商品
-func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId, tagId int32,
+func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId int64, tagId int32,
 	sortBy string, begin, end int) []*valueobject.Goods {
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
@@ -109,7 +109,7 @@ func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId, tagId int32,
 }
 
 // 获取商品
-func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
+func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 	sortBy string, begin, end int) (int, []*valueobject.Goods) {
 	var total int
 	if len(sortBy) > 0 {

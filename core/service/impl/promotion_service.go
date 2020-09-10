@@ -50,25 +50,25 @@ func (p *promotionService) SavePromotion(v *promotion.PromotionInfo) (int32, err
 }
 
 // 删除促销
-func (p *promotionService) DelPromotion(mchId int32, promId int32) error {
+func (p *promotionService) DelPromotion(mchId int64, promId int32) error {
 	prom := p._rep.GetPromotion(promId)
 	if prom == nil {
 		return promotion.ErrNoSuchPromotion
 	}
-	if prom.GetValue().MerchantId != mchId {
+	if int64(prom.GetValue().MerchantId) != mchId {
 		return merchant.ErrMerchantNotMatch
 	}
 
 	return promImpl.DeletePromotion(prom)
 }
 
-func (p *promotionService) SaveCashBackPromotion(mchId int32,
+func (p *promotionService) SaveCashBackPromotion(mchId int64,
 	v *promotion.PromotionInfo, v1 *promotion.ValueCashBack) (int32, error) {
 	var prom promotion.IPromotion
 	var err error
 	if v.Id > 0 {
 		prom = p._rep.GetPromotion(v.Id)
-		if prom.GetValue().MerchantId != mchId {
+		if int64(prom.GetValue().MerchantId) != mchId {
 			return -1, merchant.ErrMerchantNotMatch
 		}
 	} else {
@@ -88,13 +88,13 @@ func (p *promotionService) SaveCashBackPromotion(mchId int32,
 }
 
 /**************   Coupon ************/
-func (p *promotionService) SaveCoupon(mchId int32, v *promotion.PromotionInfo,
+func (p *promotionService) SaveCoupon(mchId int64, v *promotion.PromotionInfo,
 	v1 *promotion.ValueCoupon) (int32, error) {
 	var prom promotion.IPromotion
 	var err error
 	if v.Id > 0 {
 		prom = p._rep.GetPromotion(v.Id)
-		if prom.GetValue().MerchantId != mchId {
+		if int64(prom.GetValue().MerchantId) != mchId {
 			return -1, merchant.ErrMerchantNotMatch
 		}
 	} else {
@@ -113,7 +113,7 @@ func (p *promotionService) SaveCoupon(mchId int32, v *promotion.PromotionInfo,
 	return prom.Save()
 }
 
-func (p *promotionService) BindCoupons(mchId int32, id int32, members []string) error {
+func (p *promotionService) BindCoupons(mchId int64, id int32, members []string) error {
 	coupon := p._rep.GetPromotion(id).(promotion.ICouponPromotion)
 	return coupon.Binds(members)
 }

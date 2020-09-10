@@ -9,7 +9,7 @@ message PagingArticleRequest {
 }
 
 message ArticlesResponse {
-    repeated SArticle List = 1;
+    repeated SArticle Value = 1;
 }
 /** 内容服务 */
 service ContentService {
