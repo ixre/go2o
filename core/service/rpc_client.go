@@ -31,11 +31,12 @@ func ConfigureClient(c clientv3.Config) {
 		os.Exit(1)
 	}
 	selector = s
-	tryConnect(10)
+	go tryConnect(10)
 }
 
 // 尝试连接服务,如果连接不成功,则退出
 func tryConnect(retryTimes int) {
+	time.Sleep(time.Second)
 	for i := 0; i < retryTimes; i++ {
 		trans, _, err := StatusServeClient()
 		if err == nil {
@@ -53,7 +54,7 @@ func tryConnect(retryTimes int) {
 func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 	next, err := selector.Next()
 	if err != nil {
-		log.Printf("[ go2o][ rpc]: select node error %s\n", err.Error())
+		log.Printf("[ go2o][ error]: %s\n", err.Error())
 		return nil, err
 	}
 	return grpc.Dial(next.Addr, grpc.WithInsecure(), grpc.WithBlock())

@@ -23,6 +23,7 @@ import (
 	"go2o/core"
 	"go2o/core/msq"
 	"go2o/core/service"
+	"go2o/core/service/impl"
 	"log"
 	"os"
 	"strings"
@@ -86,7 +87,7 @@ func main() {
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
-	//confFile = "./app_dev.conf"
+	confFile = "./app_dev.conf"
 	if runDaemon {
 		appFlag = appFlag | app.FlagDaemon
 	}
@@ -126,7 +127,7 @@ func main() {
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
 	})
-	//impl.Init(newApp, appFlag)
+	impl.Init(newApp, appFlag)
 	//runGoMicro()
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
