@@ -20,7 +20,7 @@ import (
 type adService struct {
 	_rep    ad.IAdRepo
 	storage storage.Interface
-	//_query     *query.ContentQuery
+	//_query     *shopQuery.ContentQuery
 }
 
 func NewAdvertisementService(rep ad.IAdRepo, storage storage.Interface) *adService {

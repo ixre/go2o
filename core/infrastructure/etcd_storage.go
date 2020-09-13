@@ -3,7 +3,9 @@ package infrastructure
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types"
 	"go.etcd.io/etcd/clientv3"
 	"strconv"
 	"time"
@@ -51,11 +53,11 @@ func (e EtcdStorage) Exists(key string) (exists bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	v, err := e.cli.Get(ctx, key)
 	cancel()
-	return err == nil && v != nil
+	return err == nil && v.Kvs != nil
 }
 
 func (e EtcdStorage) Set(key string, v interface{}) error {
-	j, err := json.Marshal(v)
+	j, err := e.serialize(v)
 	if err == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 		_, err = e.cli.Put(ctx, key, string(j))
@@ -91,7 +93,11 @@ func (e EtcdStorage) GetRaw(key string) (interface{}, error) {
 }
 
 func (e EtcdStorage) GetBool(key string) (bool, error) {
-	panic("implement me")
+	s,err := e.GetString(key)
+	if err == nil{
+		return strconv.ParseBool(s)
+	}
+	return false,err
 }
 
 func (e EtcdStorage) GetInt(key string) (int, error) {
@@ -103,17 +109,20 @@ func (e EtcdStorage) GetInt(key string) (int, error) {
 }
 
 func (e EtcdStorage) GetInt64(key string) (int64, error) {
-	panic("implement me")
+	s,err := e.GetString(key)
+	if err == nil{
+		i,err := strconv.Atoi(s)
+		return int64(i),err
+	}
+	return 0,err
 }
 
 func (e EtcdStorage) GetString(key string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
-	v, err := e.cli.Get(ctx, key)
-	cancel()
-	if err == nil && len(v.Kvs) > 0 {
-		return string(v.Kvs[0].Value), err
+	s,err := e.GetBytes(key)
+	if err == nil{
+		return string(s),nil
 	}
-	return "", err
+	return "",err
 }
 
 func (e EtcdStorage) GetFloat64(key string) (float64, error) {
@@ -128,10 +137,11 @@ func (e EtcdStorage) GetBytes(key string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	v, err := e.cli.Get(ctx, key)
 	cancel()
-	if err == nil && len(v.Kvs) > 0 {
-		return v.Kvs[0].Value, err
+	if err == nil && v.Kvs == nil {
+		return nil, errors.New("no such key")
 	}
-	return []byte(""), err
+	//&& v.Kvs != nil && len(v.Kvs) > 0 {
+	return v.Kvs[0].Value, err
 }
 
 func (e EtcdStorage) Del(key string) {
@@ -141,5 +151,37 @@ func (e EtcdStorage) Del(key string) {
 }
 
 func (e EtcdStorage) RWJson(key string, dst interface{}, src func() interface{}, second int64) error {
-	panic("implement me")
+	jsonBytes, err := e.GetBytes(key)
+	if err == nil {
+		err = json.Unmarshal(jsonBytes, &dst)
+	}
+	if err != nil {
+		if src == nil {
+			panic(errors.New("src is null pointer"))
+		}
+		dst = src()
+		if dst != nil {
+			jsonBytes, err = json.Marshal(dst)
+			if err == nil {
+				if second > 0 {
+					e.SetExpire(key, jsonBytes, second)
+				} else {
+					e.Set(key, jsonBytes)
+				}
+			}
+		}
+	}
+	return err
+}
+
+func (e EtcdStorage) serialize(v interface{}) (string,error) {
+	s,b := types.ToString(v)
+	if !b{
+		if j,err := json.Marshal(v);err != nil{
+			return "",err
+		}else{
+			s = string(j)
+		}
+	}
+	return s,nil
 }

@@ -69,6 +69,8 @@ var (
 	PersonFinanceService *personFinanceService
 	// 门户数据服务
 	PortalService *portalService
+	// 查询服务
+	QueryService *queryService
 
 	CommonDao *dao.CommonDao
 )
@@ -162,6 +164,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 
 	CommonDao = dao.NewCommDao(orm, sto, adRepo, catRepo)
 	PortalService = NewPortalService(CommonDao)
+	QueryService = NewQueryService()
 }
 
 // RPC服务初始化

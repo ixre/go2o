@@ -11,7 +11,7 @@ package impl
 
 import (
 	"context"
-	"github.com/ixre/gof/util"
+	"github.com/ixre/gof/types"
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -267,7 +267,7 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwd) (*p
 	if err != nil {
 		return m.errorCodeResult(int(code), err), nil
 	}
-	return m.success(map[string]string{"mch_id": util.Str(id)}), nil
+	return m.success(map[string]string{"mch_id": types.String(id)}), nil
 }
 
 // 获取企业信息,并返回是否为提交的信息

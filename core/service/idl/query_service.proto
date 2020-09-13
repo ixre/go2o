@@ -1,0 +1,29 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+import "global.proto";
+
+service QueryService {
+    // 获取分页店铺数据
+    rpc PagingShops (QueryPagingShopRequest) returns (QueryPagingShopsResponse);
+}
+
+message QueryPagingShopRequest {
+    // 参数
+    SPagingParams Params = 1;
+    // 是否只查询营业中的店铺
+    bool OnlyBusiness = 2;
+}
+message QueryPagingShopsResponse {
+    sint32 Total = 1;
+    repeated QueryPagingShop Value = 2;
+}
+
+message QueryPagingShop{
+    sint64 Id = 1;
+    string Name = 2;
+    string Alias = 3;
+    string Host = 4;
+    string Logo = 5;
+    sint64 CreateTime = 6;
+}

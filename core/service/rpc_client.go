@@ -185,3 +185,12 @@ func FinanceServeClient() (*grpc.ClientConn, proto.FinanceServiceClient, error) 
 	}
 	return conn, nil, err
 }
+
+// 查询服务
+func QueryServeClient() (*grpc.ClientConn, proto.QueryServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewQueryServiceClient(conn), err
+	}
+	return conn, nil, err
+}

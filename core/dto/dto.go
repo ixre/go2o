@@ -138,7 +138,7 @@ type (
 	//	Child []Category
 	//}
 	ListOnlineShop struct {
-		Id         int32  `db:"sp.id"`
+		Id         int64  `db:"sp.id"`
 		Name       string `db:"sp.name"`
 		Alias      string `db:"alias"`
 		Host       string `db:"ol.host"`

@@ -12,7 +12,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/service/impl"

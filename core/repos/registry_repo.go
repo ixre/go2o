@@ -64,7 +64,7 @@ func (r *registryRepo) GetValue(key string) (string, error) {
 		}
 		return v, nil
 	}
-	return "", errors.New("no exists key")
+	return "",err
 }
 
 func (r *registryRepo) UpdateValue(key string, value string) error {

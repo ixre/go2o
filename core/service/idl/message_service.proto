@@ -1,6 +1,6 @@
 syntax = "proto3";
 option go_package = ".;proto";
-import "ttype.proto";
+import "global.proto";
 
 /** 消息服务 */
 service MessageService {

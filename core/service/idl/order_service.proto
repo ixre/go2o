@@ -1,6 +1,6 @@
 syntax = "proto3";
 option go_package = ".;proto";
-import "ttype.proto";
+import "global.proto";
 
 message WsCartRequest {
     sint64 memberId = 1;

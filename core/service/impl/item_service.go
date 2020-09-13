@@ -251,7 +251,7 @@ func (s *itemService) attachWholesaleItemData(dto *proto.SOldItem) {
 func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) []*proto.SOldItem {
 	hash := fmt.Sprintf("%d-%d-%s", catId, quantity, where)
 	hash = crypto.Md5([]byte(hash))
-	key := "go2o:query:cache:rd-item:" + hash
+	key := "go2o:shopQuery:cache:rd-item:" + hash
 	var arr []*proto.SOldItem
 
 	fn := func() interface{} {

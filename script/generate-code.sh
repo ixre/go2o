@@ -13,7 +13,7 @@ if [[ $GO2O_JAVA_HOME != "" ]];then java_target_path=$GO2O_JAVA_HOME;fi;
 
 PROTO_PATH=$(find . -name "idl" -print -quit)
 TARGET_PATH=$PROTO_PATH/../proto
-mkdir -p "$TARGET_PATH"
+rm -rf "$TARGET_PATH" && mkdir -p "$TARGET_PATH"
 protoc -I "$PROTO_PATH"  --go_out=plugins=grpc:"$TARGET_PATH" "$PROTO_PATH"/*.proto
 
 

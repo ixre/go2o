@@ -1,6 +1,6 @@
 syntax = "proto3";
 option go_package = ".;proto";
-import "ttype.proto";
+import "global.proto";
 // 商店,需重构
 message SShop2 {
     sint64 ID = 1;

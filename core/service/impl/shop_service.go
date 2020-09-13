@@ -13,11 +13,8 @@ import (
 	"errors"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/dto"
-	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/service/proto"
-	"go2o/core/variable"
 )
 
 var _ proto.ShopServiceServer = new(shopServiceImpl)
@@ -248,19 +245,7 @@ func (si *shopServiceImpl) GetOnlineShops(vendorId int64) []*shop.Shop {
 	return sv
 }
 
-// 获取指定的营业中的店铺
-func (si *shopServiceImpl) PagedOnBusinessOnlineShops(begin, end int, where, order string) (int, []*dto.ListOnlineShop) {
-	n, rows := si.query.PagedOnBusinessOnlineShops(begin, end, where, order)
-	if len(rows) > 0 {
-		for _, v := range rows {
-			v.Logo = format.GetResUrl(v.Logo)
-			if v.Host == "" {
-				v.Host = v.Alias + "." + variable.Domain
-			}
-		}
-	}
-	return n, rows
-}
+
 
 func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
 	return &proto.SShop{

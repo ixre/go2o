@@ -17,7 +17,7 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/util"
+	"github.com/ixre/gof/types"
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
@@ -520,7 +520,7 @@ func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMem
 		//		s.repo.DeleteMember(id)
 		//}
 		return s.success(map[string]string{
-			"member_id": util.Str(id),
+			"member_id": types.String(id),
 		}), nil
 	}
 	return s.error(err), nil

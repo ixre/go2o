@@ -26,6 +26,7 @@ type MssRepo struct {
 	_sysManger   mss.IMessageManager
 }
 
+
 func (this *MssRepo) SaveConfig(userId int64, conf *mss.Config) error {
 	panic("implement me")
 }
@@ -87,7 +88,7 @@ func (this *MssRepo) SaveNotifyItem(v *notify.NotifyItem) error {
 	return nil
 }
 
-func (this *MssRepo) GetMailTemplate(userId, id int32) *mss.MailTemplate {
+func (this *MssRepo) GetMailTemplate(userId int64, id int32) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := this._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
