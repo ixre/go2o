@@ -43,5 +43,5 @@ const (
 
 var (
 	// 域名
-	Domain string = "go2o.to2.net"
+	Domain = "go2o.to2.net"
 )

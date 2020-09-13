@@ -211,7 +211,7 @@ func (m *merchantRepo) GetMerchantSaleConf(mchId int64) *merchant.SaleConf {
 	//0.2,         #上级
 	//0.1,         #上上级
 	//0.8          #消费者自己
-	var saleConf *merchant.SaleConf = new(merchant.SaleConf)
+	var saleConf = new(merchant.SaleConf)
 	if m.Connector.GetOrm().Get(mchId, saleConf) == nil {
 		return saleConf
 	}
@@ -240,7 +240,7 @@ func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) (err error) {
 
 // 获取API信息
 func (m *merchantRepo) GetApiInfo(mchId int) *merchant.ApiInfo {
-	var d *merchant.ApiInfo = new(merchant.ApiInfo)
+	var d = new(merchant.ApiInfo)
 	if err := m.GetOrm().Get(mchId, d); err == nil {
 		return d
 	}

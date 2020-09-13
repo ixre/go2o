@@ -361,8 +361,8 @@ func (m *merchantImpl) Save() (int64, error) {
 	id := m.GetAggregateRootId()
 	if id > 0 {
 		m.checkSelfSales()
-		id,err := m._repo.SaveMerchant(m._value)
-		return int64(id),err
+		id, err := m._repo.SaveMerchant(m._value)
+		return int64(id), err
 	}
 	return m.createMerchant()
 }

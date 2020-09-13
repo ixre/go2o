@@ -87,22 +87,30 @@ message TradeConfSaveRequest {
 //商家服务
 service MerchantService {
     // 获取商家的信息,mchId
-    rpc GetMerchant (Int64) returns (SMerchant){}
+    rpc GetMerchant (Int64) returns (SMerchant) {
+    }
     // 注册商户并开店
-    rpc CreateMerchant (MerchantCreateRequest) returns (Result){}
+    rpc CreateMerchant (MerchantCreateRequest) returns (Result) {
+    }
 
     // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-    rpc CheckLogin (MchUserPwd) returns (Result){}
+    rpc CheckLogin (MchUserPwd) returns (Result) {
+    }
     // 验证商户状态,mchId
-    rpc Stat (Int64) returns (Result){}
+    rpc Stat (Int64) returns (Result) {
+    }
     // 同步批发商品,mchId
-    rpc SyncWholesaleItem (Int64) returns (SyncWSItemsResponse){}
+    rpc SyncWholesaleItem (Int64) returns (SyncWSItemsResponse) {
+    }
     // 获取所有的交易设置,mchId
-    rpc GetAllTradeConf (Int64) returns (STradeConfListResponse){}
+    rpc GetAllTradeConf (Int64) returns (STradeConfListResponse) {
+    }
     // 根据交易类型获取交易设置
-    rpc GetTradeConf (TradeConfRequest) returns (STradeConf){}
+    rpc GetTradeConf (TradeConfRequest) returns (STradeConf) {
+    }
     // 保存交易设置
-    rpc SaveTradeConf (TradeConfSaveRequest) returns (Result){}
+    rpc SaveTradeConf (TradeConfSaveRequest) returns (Result) {
+    }
 }
 
 // 商户交易设置

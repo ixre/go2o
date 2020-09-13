@@ -116,7 +116,7 @@ func (a *AppImpl) Debug() bool {
 
 func (a *AppImpl) Log() log.ILogger {
 	if a._logger == nil {
-		var flag int = 0
+		var flag = 0
 		if a._debugMode {
 			flag = log.LOpen | log.LESource | log.LStdFlags
 		}

@@ -25,8 +25,8 @@ import (
 // 获取商户信息缓存
 func GetValueMerchantCache(mchId int) *proto.SMerchant {
 	var v proto.SMerchant
-	var sto storage.Interface = GetKVS()
-	var key string = GetValueMerchantCacheCK(mchId)
+	var sto = GetKVS()
+	var key = GetValueMerchantCacheCK(mchId)
 	if sto.Get(key, &v) != nil {
 		v2, _ := impl.MerchantService.GetMerchant(context.TODO(), &proto.Int64{Value: int64(mchId)})
 		if v2 != nil {

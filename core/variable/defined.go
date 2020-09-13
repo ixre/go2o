@@ -9,56 +9,56 @@
 package variable
 
 var (
-	AliasCommission             string = "手续费"
-	AliasBalanceAccount         string = "余额"
-	AliasWalletAccount          string = "钱包"
-	AliasRisePersonFinance      string = "余额宝"
-	AliasGrowthAccount          string = "理财"
-	AliasFlowAccount            string = "流通金"
-	AliasMerchantBalanceAccount string = "商户余额"
-	FlowConvertSlogan           string = "流通金作为可以转让的虚拟货币"
-	AliasIntegralAccount        string = "积分"
+	AliasCommission             = "手续费"
+	AliasBalanceAccount         = "余额"
+	AliasWalletAccount          = "钱包"
+	AliasRisePersonFinance      = "余额宝"
+	AliasGrowthAccount          = "理财"
+	AliasFlowAccount            = "流通金"
+	AliasMerchantBalanceAccount = "商户余额"
+	FlowConvertSlogan           = "流通金作为可以转让的虚拟货币"
+	AliasIntegralAccount        = "积分"
 
-	AliasTradeOrder string = "交易类订单"
+	AliasTradeOrder = "交易类订单"
 
-	AliasMemberName string = "昵称"
-	MemberNameShow  bool   = true
+	AliasMemberName = "昵称"
+	MemberNameShow  = true
 
-	AliasMemberIM    string = "即时通讯"
-	MemberImNote     string = ""
-	MemberImRequired bool   = true
-	MemberImShow     bool   = true
+	AliasMemberIM    = "即时通讯"
+	MemberImNote     = ""
+	MemberImRequired = true
+	MemberImShow     = true
 
-	AliasMemberExt1    string = "扩展1"
-	MemberExt1Note     string = ""
-	MemberExt1Required bool   = false
-	MemberExt1Show     bool   = false
+	AliasMemberExt1    = "扩展1"
+	MemberExt1Note     = ""
+	MemberExt1Required = false
+	MemberExt1Show     = false
 
-	AliasMemberExt2    string = "扩展2"
-	MemberExt2Note     string = ""
-	MemberExt2Required bool   = false
-	MemberExt2Show     bool   = false
+	AliasMemberExt2    = "扩展2"
+	MemberExt2Note     = ""
+	MemberExt2Required = false
+	MemberExt2Show     = false
 
-	AliasMemberExt3    string = "扩展3"
-	MemberExt3Note     string = ""
-	MemberExt3Required bool   = false
-	MemberExt3Show     bool   = false
+	AliasMemberExt3    = "扩展3"
+	MemberExt3Note     = ""
+	MemberExt3Required = false
+	MemberExt3Show     = false
 
-	AliasMemberExt4    string = "扩展4"
-	MemberExt4Note     string = ""
-	MemberExt4Required bool   = false
-	MemberExt4Show     bool   = false
+	AliasMemberExt4    = "扩展4"
+	MemberExt4Note     = ""
+	MemberExt4Required = false
+	MemberExt4Show     = false
 
-	AliasMemberExt5    string = "扩展5"
-	MemberExt5Note     string = ""
-	MemberExt5Required bool   = false
-	MemberExt5Show     bool   = false
+	AliasMemberExt5    = "扩展5"
+	MemberExt5Note     = ""
+	MemberExt5Required = false
+	MemberExt5Show     = false
 
-	AliasMemberExt6    string = "扩展6"
-	MemberExt6Note     string = ""
-	MemberExt6Required bool   = false
-	MemberExt6Show     bool   = false
+	AliasMemberExt6    = "扩展6"
+	MemberExt6Note     = ""
+	MemberExt6Required = false
+	MemberExt6Show     = false
 
 	// 理财最低等级限制
-	PersonFinanceMinLevelLimit int = 0
+	PersonFinanceMinLevelLimit = 0
 )

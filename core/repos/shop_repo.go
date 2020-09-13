@@ -123,7 +123,7 @@ func (s *shopRepo) SaveApiInfo(v *merchant.ApiInfo) error {
 
 // 获取API信息
 func (s *shopRepo) GetApiInfo(mchId int) *merchant.ApiInfo {
-	var d *merchant.ApiInfo = new(merchant.ApiInfo)
+	var d = new(merchant.ApiInfo)
 	if err := s.GetOrm().Get(mchId, d); err == nil {
 		return d
 	}

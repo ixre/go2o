@@ -53,7 +53,7 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			catId, enum.ReviewPass, item.ShelvesOn, start, end - start)
 	}
 	return total, list
 }
@@ -84,7 +84,7 @@ func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			catId, enum.ReviewPass, item.ShelvesOn, start, end - start)
 	}
 	return total, list
 }
@@ -124,7 +124,7 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			enum.ReviewPass, item.ShelvesOn, start, end - start)
 	}
 	return total, list
 }
@@ -175,7 +175,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			enum.ReviewPass, item.ShelvesOn, start, end - start)
 	}
 	return total, list
 }
@@ -192,7 +192,7 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int, start, end int32,
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY item_info.update_time DESC LIMIT $4 OFFSET $3`, catIdStr, where)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			enum.ReviewPass, item.ShelvesOn, start, end - start)
 	}
 	return list
 }
@@ -266,7 +266,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
          AND product.name LIKE $5 %s ORDER BY %s update_time DESC LIMIT $7 OFFSET $6`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,
-			item.ShelvesOn, shopId, shopId, keyword, start, (end - start))
+			item.ShelvesOn, shopId, shopId, keyword, start, end - start)
 	}
 
 	return total, e

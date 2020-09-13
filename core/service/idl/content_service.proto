@@ -15,9 +15,11 @@ message ArticlesResponse {
 service ContentService {
 
     /** 获取置顶的文章,cat */
-    rpc QueryTopArticles(String) returns (ArticlesResponse){}
+    rpc QueryTopArticles (String) returns (ArticlesResponse) {
+    }
     /** 获取分页文章 */
-    rpc QueryPagingArticles(PagingArticleRequest) returns (SPagingResult){}
+    rpc QueryPagingArticles (PagingArticleRequest) returns (SPagingResult) {
+    }
 }
 
 /** 文章 */

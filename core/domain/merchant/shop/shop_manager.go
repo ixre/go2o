@@ -138,6 +138,6 @@ func (s *shopManagerImpl) deleteOnlineShop(mchId int64, sp shop.IShop) error {
 
 func (s *shopManagerImpl) deleteOfflineShop(mchId int64, sp shop.IShop) error {
 	shopId := sp.GetDomainId()
-	err := s.repo.DeleteOfflineShop(mchId,int64(shopId))
+	err := s.repo.DeleteOfflineShop(mchId, int64(shopId))
 	return err
 }

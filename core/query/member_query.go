@@ -188,14 +188,14 @@ func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp str
 	var id int64
 	var user, name string
 	var inviNum, totalNum, regTime int
-	var rank int = 0
+	var rank = 0
 
-	var sortField string = "t.all_num DESC"
+	var sortField = "t.all_num DESC"
 	if !allTeam {
 		sortField = "t.invi_num DESC"
 	}
 
-	var levelCompStr string = fmt.Sprintf("%s%d", levelComp, level)
+	var levelCompStr = fmt.Sprintf("%s%d", levelComp, level)
 	//{level_comp}{level_value}
 
 	m.Query(fmt.Sprintf(`SELECT id,user,name,invi_num,all_num,reg_time FROM ( SELECT m.*,

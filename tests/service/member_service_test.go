@@ -1,13 +1,11 @@
 package service
 
 import (
+	"context"
 	"go2o/core/domain/interface/member"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/impl"
 	"go2o/core/service/proto"
-	"go2o/core/service/thrift"
-	"go2o/core/service/thrift/auto_gen/rpc/ttype"
-	""
 	"go2o/tests/ti"
 	"testing"
 )
@@ -16,26 +14,34 @@ var _ = ti.Factory.GetAdRepo()
 
 func TestPagingIntegralLog(t *testing.T) {
 	params := &proto.SPagingParams{
-		Opt:        nil,
-		OrderField: "",
-		OrderDesc:  false,
+		Parameters:        nil,
+		SortBy: "",
 		Begin:      0,
 		Over:       10,
 	}
-	r, _ := impl.MemberService.PagingAccountLog(context.TODO(), 1, member.AccountWallet, params)
+	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
+		&proto.PagingAccountInfoRequest{
+			MemberId:             1,
+			AccountType:          member.AccountWallet,
+			Params:               params,
+		})
 	t.Logf("%#v", r)
 }
 
 func TestPagingWalletLog(t *testing.T) {
 	memberId := 77153
 	params := &proto.SPagingParams{
-		Opt:        nil,
-		OrderField: "",
-		OrderDesc:  false,
+		Parameters:        nil,
+		SortBy: "",
 		Begin:      0,
 		Over:       10,
 	}
-	r, _ := impl.MemberService.PagingAccountLog(context.TODO(), int64(memberId), member.AccountWallet, params)
+	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
+		&proto.PagingAccountInfoRequest{
+			MemberId:             int64(memberId),
+			AccountType:          member.AccountWallet,
+			Params:               params,
+		})
 	t.Logf("%#v", r)
 }
 
@@ -45,7 +51,11 @@ func TestCheckTradePwd(t *testing.T) {
 	//r2,_ := impl.MemberService.ModifyTradePwd(context.TODO(),int64(memberId),"",pwd)
 	//t.Logf("%#v", r2)
 
-	r, _ := impl.MemberService.CheckTradePwd(context.TODO(), int64(memberId), pwd)
+	r, _ := impl.MemberService.CheckTradePwd(context.TODO(),
+		&proto.CheckTradePwdRequest{
+			MemberId:             int64(memberId),
+			TradePwd:             pwd,
+		})
 	t.Logf("%#v", r)
 }
 

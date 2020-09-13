@@ -86,7 +86,7 @@ func (c *CashBackPromotion) Save() (int32, error) {
 		return c.GetAggregateRootId(), promotion.ErrCanNotApplied
 	}
 
-	var isCreate bool = c.GetAggregateRootId() == 0
+	var isCreate = c.GetAggregateRootId() == 0
 	c.value.TypeFlag = promotion.TypeFlagCashBack
 	id, err := c.promotionImpl.Save()
 	if err == nil {

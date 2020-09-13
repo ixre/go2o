@@ -35,25 +35,25 @@ const (
 )
 
 var (
-	ErrNoSuchItem *domain.DomainError = domain.NewError(
+	ErrNoSuchItem = domain.NewError(
 		"no_such_goods", "商品不存在")
 
-	ErrIncorrectProductCategory *domain.DomainError = domain.NewError(
+	ErrIncorrectProductCategory = domain.NewError(
 		"err_item_incorrect_product_category", "非法的商品分类")
 
-	ErrItemWholesaleOff *domain.DomainError = domain.NewError(
+	ErrItemWholesaleOff = domain.NewError(
 		"err_item_wholesale_off", "商品已下架或待审核!")
 
-	ErrLatestSnapshot *domain.DomainError = domain.NewError(
+	ErrLatestSnapshot = domain.NewError(
 		"latest_snapshot", "已经是最新的快照")
 
-	ErrNoSuchSnapshot *domain.DomainError = domain.NewError(
+	ErrNoSuchSnapshot = domain.NewError(
 		"no_such_snapshot", "商品快照不存在")
 
-	ErrNotOnShelves *domain.DomainError = domain.NewError(
+	ErrNotOnShelves = domain.NewError(
 		"not_on_shelves", "商品已下架")
 
-	ErrGoodsMinProfitRate *domain.DomainError = domain.NewError(
+	ErrGoodsMinProfitRate = domain.NewError(
 		"err_goods_min_profit_rate", "商品利润率不能低于%s")
 )
 

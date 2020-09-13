@@ -74,45 +74,59 @@ message TransferRequest {
 /** 钱包服务 */
 service WalletService {
     /** 创建钱包，并返回钱包编号 */
-    rpc CreateWallet (CreateWalletRequest) returns (Result){}
+    rpc CreateWallet (CreateWalletRequest) returns (Result) {
+    }
     /** 获取钱包编号，如果钱包不存在，则返回0 */
-    rpc GetWalletId (GetWalletRequest) returns (Int64){}
+    rpc GetWalletId (GetWalletRequest) returns (Int64) {
+    }
 
     /** 获取钱包账户,传入walletId */
-    rpc GetWallet (Int64) returns (SWallet){}
+    rpc GetWallet (Int64) returns (SWallet) {
+    }
 
     /** 获取钱包日志 */
-    rpc GetWalletLog (WalletLogIDRequest) returns (SWalletLog){}
+    rpc GetWalletLog (WalletLogIDRequest) returns (SWalletLog) {
+    }
 
     /** 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称 */
-    rpc Adjust (AdjustRequest) returns (Result){}
+    rpc Adjust (AdjustRequest) returns (Result) {
+    }
 
     /** 支付抵扣,must是否必须大于0 */
-    rpc Discount (DiscountRequest) returns (Result){}
+    rpc Discount (DiscountRequest) returns (Result) {
+    }
 
     /** 冻结余额 */
-    rpc Freeze (FreezeRequest) returns (Result){}
+    rpc Freeze (FreezeRequest) returns (Result) {
+    }
 
     /** 解冻金额 */
-    rpc Unfreeze (UnfreezeRequest) returns (Result){}
+    rpc Unfreeze (UnfreezeRequest) returns (Result) {
+    }
 
     /** 充值,kind: 业务类型 */
-    rpc Charge (ChargeRequest) returns (Result){}
+    rpc Charge (ChargeRequest) returns (Result) {
+    }
 
     /** 转账,title如:转账给xxx， toTitle: 转账收款xxx */
-    rpc Transfer (TransferRequest) returns (Result){}
+    rpc Transfer (TransferRequest) returns (Result) {
+    }
 
     /** 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费 */
-    rpc RequestTakeOut (RequestTakeOutRequest) returns (Result){}
+    rpc RequestTakeOut (RequestTakeOutRequest) returns (Result) {
+    }
 
     /** 确认提现 */
-    rpc ReviewTakeOut (ReviewTakeOutRequest) returns (Result){}
+    rpc ReviewTakeOut (ReviewTakeOutRequest) returns (Result) {
+    }
 
     /** 完成提现 */
-    rpc FinishTakeOut (FinishTakeOutRequest) returns (Result){}
+    rpc FinishTakeOut (FinishTakeOutRequest) returns (Result) {
+    }
 
     /** 获取分页钱包日志 */
-    rpc PagingWalletLog (PagingWalletLogRequest) returns (SPagingResult){}
+    rpc PagingWalletLog (PagingWalletLogRequest) returns (SPagingResult) {
+    }
 }
 
 message PagingWalletLogRequest {

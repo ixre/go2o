@@ -40,7 +40,7 @@ func GetLocation(address string) (lng, lat float64, err error) {
 		return 0, 0, err
 	}
 
-	var m map[string]interface{} = make(map[string]interface{})
+	var m = make(map[string]interface{})
 	err = json.Unmarshal(d, &m)
 	result := m["result"]
 	if result == nil {
@@ -56,8 +56,8 @@ func rad(f float64) float64 {
 
 func GetLocDistance(lng1, lat1, lng2, lat2 float64) float64 {
 	const EARTH_RADIUS = 6378.137
-	var radLat1 float64 = rad(lat1)
-	var radLat2 float64 = rad(lat2)
+	var radLat1 = rad(lat1)
+	var radLat2 = rad(lat2)
 	a := radLat1 - radLat2
 	b := rad(lng1) - rad(lng2)
 	s := 2 * math.Asin(math.Sqrt(math.Pow(math.Sin(a/2), 2)+

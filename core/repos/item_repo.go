@@ -99,7 +99,7 @@ func (g *goodsRepo) GetGoodsBySkuId(skuId int64) interface{} {
 
 // 获取商品
 func (g *goodsRepo) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
-	var e *item.GoodsItem = new(item.GoodsItem)
+	var e = new(item.GoodsItem)
 	if g.Connector.GetOrm().GetBy(e, "product_id= $1 AND sku_id= $2", itemId, skuId) == nil {
 		return e
 	}
@@ -108,7 +108,7 @@ func (g *goodsRepo) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
 
 // 获取商品
 func (g *goodsRepo) GetValueGoodsById(goodsId int64) *item.GoodsItem {
-	var e *item.GoodsItem = new(item.GoodsItem)
+	var e = new(item.GoodsItem)
 	if g.Connector.GetOrm().Get(goodsId, e) == nil {
 		return e
 	}
@@ -117,7 +117,7 @@ func (g *goodsRepo) GetValueGoodsById(goodsId int64) *item.GoodsItem {
 
 // 根据SKU获取商品
 func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int64) *item.GoodsItem {
-	var e *item.GoodsItem = new(item.GoodsItem)
+	var e = new(item.GoodsItem)
 	if g.Connector.GetOrm().GetBy(e, "product_id= $1 AND sku_id= $2", itemId, sku) == nil {
 		return e
 	}
@@ -207,7 +207,7 @@ func (g *goodsRepo) GetOnShelvesGoods(mchId int64, start, end int, sortBy string
 		sortBy)
 
 	g.Connector.GetOrm().SelectByQuery(&e, sql, mchId, enum.ReviewPass,
-		item.ShelvesOn, start, (end - start))
+		item.ShelvesOn, start, end - start)
 	return e
 }
 
@@ -257,7 +257,7 @@ func (g *goodsRepo) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 
 // 根据Key获取商品销售快照
 func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
-	var e *item.TradeSnapshot = new(item.TradeSnapshot)
+	var e = new(item.TradeSnapshot)
 	if g.Connector.GetOrm().GetBy(e, "key= $1", key) == nil {
 		return e
 	}

@@ -632,7 +632,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 		return map[int32]int{}
 	}
 	memberIds := format.I32ArrStrJoin(memberIdArr)
-	var d map[int32]int = make(map[int32]int)
+	var d = make(map[int32]int)
 	err := m.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
 		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.inviter_id=r1.member_id)"+
 		"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
@@ -650,7 +650,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 
 // 获取推荐我的人
 func (m *MemberRepoImpl) GetInvitationMeMember(memberId int64) *member.Member {
-	var d *member.Member = new(member.Member)
+	var d = new(member.Member)
 	err := m.Connector.GetOrm().GetByQuery(d,
 		"SELECT * FROM mm_member WHERE id =(SELECT inviter_id FROM mm_relation  WHERE id= $1)",
 		memberId)

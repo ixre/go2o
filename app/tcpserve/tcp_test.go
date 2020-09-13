@@ -18,7 +18,7 @@ import (
 )
 
 func TestConn(t *testing.T) {
-	var ch chan bool = make(chan bool)
+	var ch = make(chan bool)
 	fmt.Println("---beigin test ---")
 	rAddr, err := net.ResolveTCPAddr("tcp", ":14197")
 	if err != nil {
@@ -32,7 +32,7 @@ func TestConn(t *testing.T) {
 		t.Fail()
 	}
 
-	var buffer []byte = make([]byte, 6048)
+	var buffer = make([]byte, 6048)
 
 	cli.Write([]byte("AUTH:6000037440#0befdb52f387cc93#1.0\n"))
 	n, _ := cli.Read(buffer)

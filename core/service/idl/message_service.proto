@@ -5,9 +5,11 @@ import "ttype.proto";
 /** 消息服务 */
 service MessageService {
     /** 获取通知项,key */
-    rpc GetNotifyItem (String) returns (SNotifyItem){}
+    rpc GetNotifyItem (String) returns (SNotifyItem) {
+    }
     /** 发送短信 */
-    rpc SendPhoneMessage (SendMessageRequest) returns (Result){}
+    rpc SendPhoneMessage (SendMessageRequest) returns (Result) {
+    }
 }
 
 message SendMessageRequest {

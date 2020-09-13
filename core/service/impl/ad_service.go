@@ -93,7 +93,7 @@ func (a *adService) SetDefaultAd(groupId, posId, adId int64) error {
 }
 
 // 用户投放广告
-func (a *adService) SetUserAd(adUserId , posId , adId int64) error {
+func (a *adService) SetUserAd(adUserId, posId, adId int64) error {
 	defer a.cleanCache(adUserId)
 	ua := a._rep.GetAdManager().GetUserAd(adUserId)
 	return ua.SetAd(posId, adId)

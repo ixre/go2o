@@ -15,22 +15,22 @@ import (
 )
 
 var (
-	ErrNoSuchShop *domain.DomainError = domain.NewError(
+	ErrNoSuchShop = domain.NewError(
 		"err_shop_no_such_shop", "未指定店铺")
 
-	ErrShopNoLogo *domain.DomainError = domain.NewError(
+	ErrShopNoLogo = domain.NewError(
 		"err_shop_no_logo", "请上传店铺Logo")
 
-	ErrShopAliasFormat *domain.DomainError = domain.NewError(
+	ErrShopAliasFormat = domain.NewError(
 		"err_shop_alias_format", "域名前缀为3-11位的字母数字的组合")
 
-	ErrShopAliasIncorrect *domain.DomainError = domain.NewError(
+	ErrShopAliasIncorrect = domain.NewError(
 		"err_shop_alias_incorrect", "域名前缀不允许使用")
 
-	ErrShopAliasUsed *domain.DomainError = domain.NewError(
+	ErrShopAliasUsed = domain.NewError(
 		"err_shop_alias_used", "域名已被占用")
 
-	ErrSupportSingleOnlineShop *domain.DomainError = domain.NewError(
+	ErrSupportSingleOnlineShop = domain.NewError(
 		"err_shop_support_only_online_shop", "当前商户仅支持1个店铺")
 )
 
@@ -55,7 +55,7 @@ const (
 )
 
 var (
-	ErrSameNameShopExists *domain.DomainError = domain.NewError(
+	ErrSameNameShopExists = domain.NewError(
 		"err_same_name_shop_exists", "商店已经存在")
 
 	// 商店状态字典

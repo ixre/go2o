@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	mchDayChartKey string = "cron:go2o:d:mch:day-chart-unix"
+	mchDayChartKey = "cron:go2o:d:mch:day-chart-unix"
 )
 
 // 商户每日报表

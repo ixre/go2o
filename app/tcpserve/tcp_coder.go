@@ -17,8 +17,8 @@ import (
 // 分包与解包
 func encodeContent(content string) ([]byte, error) {
 	// 读取消息的长度
-	var length int32 = int32(len(content))
-	var pkg *bytes.Buffer = new(bytes.Buffer)
+	var length = int32(len(content))
+	var pkg = new(bytes.Buffer)
 	// 写入消息头
 	err := binary.Write(pkg, binary.LittleEndian, length)
 	if err != nil {
@@ -45,7 +45,7 @@ func decodeContent(reader *bufio.Reader) (string, error) {
 		return "", err
 	}
 	// 获取完整包的内容
-	var bytes []byte = make([]byte, 4+length)
+	var bytes = make([]byte, 4+length)
 	_, err = reader.Read(bytes)
 	if err != nil {
 		return "", err

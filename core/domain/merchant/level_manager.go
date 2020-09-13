@@ -116,7 +116,7 @@ func (l *LevelManager) GetNextLevel(value int32) *merchant.MemberLevel {
 
 // 删除等级
 func (l *LevelManager) DeleteLevel(id int32) error {
-	var exists bool = true
+	var exists = true
 	if l.levelSet != nil {
 		exists = false
 		for i, v := range l.levelSet {

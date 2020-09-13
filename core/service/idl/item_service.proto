@@ -4,24 +4,27 @@ option go_package = ".;proto";
 import "ttype.proto";
 
 
-message SkuRequest{
-   sint64 itemId = 1;
-   sint64 skuId = 2;
+message SkuRequest {
+    sint64 itemId = 1;
+    sint64 skuId = 2;
 }
 
-message ItemDetailRequest{
+message ItemDetailRequest {
     sint64 itemId = 1;
     sint32 iType = 2;
 }
 
 // 商品服务
-service ItemService{
+service ItemService {
     // 获取SKU
-    rpc GetSku(SkuRequest)returns(SSku){}
+    rpc GetSku (SkuRequest) returns (SSku) {
+    }
     // 获取商品的Sku-JSON格式,itemId
-    rpc GetItemSkuJson(Int64)returns(String){}
+    rpc GetItemSkuJson (Int64) returns (String) {
+    }
     // 获取商品详细数据
-    rpc GetItemDetailData(ItemDetailRequest)returns(String){}
+    rpc GetItemDetailData (ItemDetailRequest) returns (String) {
+    }
 }
 
 
@@ -61,7 +64,6 @@ message SOldItem {
     map<string, string> Data = 33;
 }
 
-
 /** SKU */
 message SSku {
     sint64 SkuId = 1;
@@ -80,7 +82,6 @@ message SSku {
     sint32 Stock = 14;
     sint32 SaleNum = 15;
 }
-
 
 // 统一的商品对象
 message SUnifiedItem {

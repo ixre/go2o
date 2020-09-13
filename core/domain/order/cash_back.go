@@ -137,7 +137,7 @@ func HandleCashBackDataTag(m member.IMember, o order.IOrder,
 	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 	data := c.GetDataTag()
 	level := 0
-	for k, _ := range data {
+	for k := range data {
 		if strings.HasPrefix(k, "G") {
 			if l, err := strconv.Atoi(k[1:]); err == nil && l > level {
 				level = l
@@ -162,7 +162,7 @@ func cashBack3R(level int, m member.IMember, o order.IOrder,
 		// fmt.Println("---------[ back ]",parentM.Value().Name,fee)
 		backCashForMember(m, o, fee, parentM.Profile().GetProfile().Name)
 	}
-	var i int = 0
+	var i = 0
 	for true {
 		rl := cm.GetRelation()
 		// fmt.Println("-------- BACK - ID - ",rl.InvitationMemberId)
@@ -207,7 +207,7 @@ func backCashForMember(m member.IMember, o order.IOrder,
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
 			format.FormatFloat(bFee), orderNo, refName)
 		err = acc.Charge(member.AccountWallet, tit,
-			(fee * 100), orderNo, "sys")
+			fee * 100, orderNo, "sys")
 	}
 	return err
 }

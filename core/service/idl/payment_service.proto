@@ -40,30 +40,42 @@ message FinishPaymentRequest {
 // 支付服务
 service PaymentService {
     // 创建支付单并提交
-    rpc SubmitPaymentOrder (SPaymentOrder) returns (Result){}
+    rpc SubmitPaymentOrder (SPaymentOrder) returns (Result) {
+    }
     // 根据支付单号获取支付单,orderNo
-    rpc GetPaymentOrder (String) returns (SPaymentOrder){}
+    rpc GetPaymentOrder (String) returns (SPaymentOrder) {
+    }
     // 根据交易号获取支付单编号,tradeNo
-    rpc GetPaymentOrderId (String) returns (Int32){}
+    rpc GetPaymentOrderId (String) returns (Int32) {
+    }
     // 根据编号获取支付单
-    rpc GetPaymentOrderById (Int32) returns (SPaymentOrder){}
+    rpc GetPaymentOrderById (Int32) returns (SPaymentOrder) {
+    }
     // 调整支付单金额
-    rpc AdjustOrder (AdjustOrderRequest) returns (Result){}
+    rpc AdjustOrder (AdjustOrderRequest) returns (Result) {
+    }
     // 余额抵扣
-    rpc DiscountByBalance (DiscountBalanceRequest) returns (Result){}
+    rpc DiscountByBalance (DiscountBalanceRequest) returns (Result) {
+    }
     // 积分抵扣支付单
-    rpc DiscountByIntegral (DiscountIntegralRequest) returns (Result){}
+    rpc DiscountByIntegral (DiscountIntegralRequest) returns (Result) {
+    }
     // 钱包账户支付
-    rpc PaymentByWallet (WalletPaymentRequest) returns (Result){}
+    rpc PaymentByWallet (WalletPaymentRequest) returns (Result) {
+    }
     // 余额钱包混合支付，优先扣除余额。
-    rpc HybridPayment (HyperPaymentRequest) returns (Result){}
+    rpc HybridPayment (HyperPaymentRequest) returns (Result) {
+    }
     // 完成支付单支付，并传入支付方式及外部订单号
-    rpc FinishPayment (FinishPaymentRequest) returns (Result){}
+    rpc FinishPayment (FinishPaymentRequest) returns (Result) {
+    }
 
     // 支付网关
-    rpc GatewayV1 (PayGatewayRequest) returns (Result){}
+    rpc GatewayV1 (PayGatewayRequest) returns (Result) {
+    }
     // 获取支付预交易数据
-    rpc GetPaymentOrderInfo (OrderInfoRequest) returns (SPrepareTradeData){}
+    rpc GetPaymentOrderInfo (OrderInfoRequest) returns (SPrepareTradeData) {
+    }
 
     /**
      * 支付单混合支付
@@ -73,7 +85,8 @@ service PaymentService {
      * @param data  支付数据
      * @return 支付结果,返回:order_state
      */
-    rpc MixedPayment (MixedPaymentRequest) returns (Result){}
+    rpc MixedPayment (MixedPaymentRequest) returns (Result) {
+    }
 }
 
 message OrderInfoRequest {

@@ -17,10 +17,10 @@ import (
 var (
 	RiseMinTransferInAmount  float32 = 100.00       //最低转入金额为100
 	RiseMinTransferOutAmount float32 = 0.00         //最低转出金额
-	RiseSettleTValue         int     = 2            //T+? 开使计算收益
+	RiseSettleTValue                 = 2            //T+? 开使计算收益
 	RiseNormalDayRatio       float32 = 0.0001369863 // 年化5%,按365天计算
 	// 比例提供者,默认为:personfinance.RiseNormalDayRatio
-	RiseDayRatioProvider func(personId int64) float32 = func(personId int64) float32 {
+	RiseDayRatioProvider = func(personId int64) float32 {
 		return RiseNormalDayRatio
 	}
 
@@ -72,25 +72,25 @@ const (
 )
 
 var (
-	ErrIncorrectAmount *domain.DomainError = domain.NewError(
+	ErrIncorrectAmount = domain.NewError(
 		"err_balance_amount", "金额错误")
-	ErrIncorrectTransfer *domain.DomainError = domain.NewError(
+	ErrIncorrectTransfer = domain.NewError(
 		"err_incorrent_transfer", "已确认或非转入(转出)操作")
-	ErrNoSuchRiseInfo *domain.DomainError = domain.NewError(
+	ErrNoSuchRiseInfo = domain.NewError(
 		"err_no_such_rise_info", "未开通该功能")
-	ErrHasSettled *domain.DomainError = domain.NewError(
+	ErrHasSettled = domain.NewError(
 		"err_has_settled", "已经结算")
-	ErrUnixDate *domain.DomainError = domain.NewError(
+	ErrUnixDate = domain.NewError(
 		"err_unix_date", "错误的日期时间戳")
-	ErrRatio *domain.DomainError = domain.NewError(
+	ErrRatio = domain.NewError(
 		"err_ratio", "利率不正确")
-	ErrLessThanMinTransferIn *domain.DomainError = domain.NewError(
+	ErrLessThanMinTransferIn = domain.NewError(
 		"err_less_than_min_transfer_in", "转入金额最低%s")
-	ErrLessThanMinTransferOut *domain.DomainError = domain.NewError(
+	ErrLessThanMinTransferOut = domain.NewError(
 		"err_less_than_min_transfer_out", "转出金额最低%s")
-	ErrMustAllTransferOut *domain.DomainError = domain.NewError(
+	ErrMustAllTransferOut = domain.NewError(
 		"err_must_all_transfer_out", "金额最低%s或全部转出")
-	ErrOutOfBalance *domain.DomainError = domain.NewError(
+	ErrOutOfBalance = domain.NewError(
 		"err_out_of_balance", "超出帐户最大金额")
 )
 

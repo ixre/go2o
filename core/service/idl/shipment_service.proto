@@ -1,20 +1,21 @@
 syntax = "proto3";
 option go_package = ".;proto";
 
-
 // 发货服务
-service ShipmentService{
+service ShipmentService {
     /** 物流追踪 */
-    rpc GetLogisticFlowTrack(LogisticFlowTrackRequest)returns(SShipOrderTrack){}
+    rpc GetLogisticFlowTrack (LogisticFlowTrackRequest) returns (SShipOrderTrack) {
+    }
     /** 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列 */
-    rpc ShipOrderLogisticTrack(OrderLogisticTrackRequest)returns(SShipOrderTrack){}
+    rpc ShipOrderLogisticTrack (OrderLogisticTrackRequest) returns (SShipOrderTrack) {
+    }
 }
-message LogisticFlowTrackRequest{
+message LogisticFlowTrackRequest {
     string shipperCode = 1;
     string logisticCode = 2;
     bool invert = 3;
 }
-message OrderLogisticTrackRequest{
+message OrderLogisticTrackRequest {
     sint64 shipOrderId = 1;
     bool invert = 2;
 }
@@ -38,7 +39,7 @@ message SShipOrderTrack {
     repeated SShipFlow Flows = 8;
 }
 // 发货流
-message SShipFlow  {
+message SShipFlow {
     // 记录标题
     string Subject = 1;
     // 记录时间

@@ -166,10 +166,10 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		SenderId: 0,
 		// 发送的目标
 		To: []mss.User{
-			mss.User{
+			{
 				Role: mss.RoleMember,
 				Id:   1,
-			},
+						},
 		},
 		// 发送的用户角色
 		ToRole: -1,
@@ -209,10 +209,10 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		SenderId: 0,
 		// 发送的目标
 		To: []mss.User{
-			mss.User{
+			{
 				Role: mss.RoleMember,
 				Id:   1,
-			},
+						},
 		},
 		// 发送的用户角色
 		ToRole: -1,

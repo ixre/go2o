@@ -58,17 +58,22 @@ message SStore {
 // 商店服务
 service ShopService {
     /** 获取店铺,shopId */
-    rpc GetShop (Int64) returns (SShop){}
+    rpc GetShop (Int64) returns (SShop) {
+    }
     /** 获取商户的店铺,vendorId */
-    rpc GetVendorShop (Int64) returns (SShop){}
+    rpc GetVendorShop (Int64) returns (SShop) {
+    }
     /** 获取门店,storeId */
-    rpc GetStore (Int64) returns (SStore){}
+    rpc GetStore (Int64) returns (SStore) {
+    }
     /** 根据主机头获取店铺编号,host */
-    rpc QueryShopByHost (String) returns (Int64){}
+    rpc QueryShopByHost (String) returns (Int64) {
+    }
     // 获取门店
     //rpc GetOfflineShop(1:sint32 shopId)returns(Shop)
     // 打开或关闭商店
-    rpc TurnShop (TurnShopRequest) returns (Result){}
+    rpc TurnShop (TurnShopRequest) returns (Result) {
+    }
 }
 
 message TurnShopRequest {

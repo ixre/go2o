@@ -175,7 +175,7 @@ func (this *AliPay) Return(r *http.Request) Result {
 
 	//解析表单内容，失败返回错误代码-3
 	form := r.URL.Query()
-	for k, _ := range param {
+	for k := range param {
 		param[k] = form.Get(k)
 	}
 

@@ -58,7 +58,7 @@ func (t *saleLabelRepo) GetAllValueSaleLabels(mchId int64) []*item.Label {
 
 // 获取销售标签值
 func (t *saleLabelRepo) GetValueSaleLabel(mchId int64, tagId int32) *item.Label {
-	var v *item.Label = new(item.Label)
+	var v = new(item.Label)
 	err := t.Connector.GetOrm().GetBy(v, "mch_id= $1 AND id= $2", mchId, tagId)
 	if err == nil {
 		return v
@@ -79,7 +79,7 @@ func (t *saleLabelRepo) SaveSaleLabel(mchId int64, v *item.Label) (int32, error)
 
 // 根据Code获取销售标签
 func (t *saleLabelRepo) GetSaleLabelByCode(mchId int64, code string) *item.Label {
-	var v *item.Label = new(item.Label)
+	var v = new(item.Label)
 	if t.GetOrm().GetBy(v, "mch_id= $1 AND tag_code= $2", mchId, code) == nil {
 		return v
 	}

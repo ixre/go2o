@@ -335,7 +335,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, opuId int,
 		if value < 0 {
 			value = -value
 		}
-		var kind int = by
+		var kind = by
 		// 用户或客服充值、才会计入累计充值记录
 		switch by {
 		case wallet.CUserCharge:
@@ -405,7 +405,7 @@ func (w *WalletImpl) Transfer(toWalletId int64, value int, tradeFee int, title, 
 	if tradeFee < 0 {
 		tradeFee = -tradeFee
 	}
-	var tw wallet.IWallet = w._repo.GetWallet(toWalletId)
+	var tw = w._repo.GetWallet(toWalletId)
 	err := w.checkWalletState(tw, true)
 	if err != nil {
 		return err

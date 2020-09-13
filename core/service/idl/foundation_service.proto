@@ -16,14 +16,18 @@ message BoardHookSaveRequest {
 // 基础服务
 service FoundationService {
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
-    rpc GetSmsApi (String) returns (SSmsApi){}
+    rpc GetSmsApi (String) returns (SSmsApi) {
+    }
     /** 保存短信API凭据,@provider 短信服务商, 默认:http */
-    rpc SaveSmsApi (SmsApiSaveRequest) returns (Result){}
+    rpc SaveSmsApi (SmsApiSaveRequest) returns (Result) {
+    }
     /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
-    rpc SaveBoardHook (BoardHookSaveRequest) returns (Result){}
+    rpc SaveBoardHook (BoardHookSaveRequest) returns (Result) {
+    }
 
     // 格式化资源地址并返回
-    rpc ResourceUrl (String) returns (String){}
+    rpc ResourceUrl (String) returns (String) {
+    }
     // 设置键值
     //rpc SetValue (Pair) returns (Result){}
     // 删除值,key
@@ -34,21 +38,29 @@ service FoundationService {
     //   -  1. 成功，并返回token
     //   - -1. 接口地址不正确
     //   - -2. 已经注册
-    rpc RegisterApp (SSsoApp) returns (String){}
+    rpc RegisterApp (SSsoApp) returns (String) {
+    }
     // 获取应用信息,name
-    rpc GetApp (String) returns (SSsoApp){}
+    rpc GetApp (String) returns (SSsoApp) {
+    }
     // 获取单点登录应用
-    rpc GetAllSsoApp (Empty) returns (StringListResponse){}
+    rpc GetAllSsoApp (Empty) returns (StringListResponse) {
+    }
     // 验证超级用户账号和密码
-    rpc SuperValidate (UserPwd) returns (Bool){}
+    rpc SuperValidate (UserPwd) returns (Bool) {
+    }
     // 保存超级用户账号和密码
-    rpc FlushSuperPwd (UserPwd) returns (Empty){}
+    rpc FlushSuperPwd (UserPwd) returns (Empty) {
+    }
     // 创建同步登录的地址,returnUrl
-    rpc GetSyncLoginUrl (String) returns (String){}
+    rpc GetSyncLoginUrl (String) returns (String) {
+    }
     // 获取地区名称
-    rpc GetAreaNames (GetAreaNamesRequest) returns (StringListResponse){}
+    rpc GetAreaNames (GetAreaNamesRequest) returns (StringListResponse) {
+    }
     // 获取下级区域,code
-    rpc GetChildAreas (Int32) returns (AreaListResponse){}
+    rpc GetChildAreas (Int32) returns (AreaListResponse) {
+    }
 }
 
 message AreaListResponse {

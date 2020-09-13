@@ -42,7 +42,7 @@ func DownloadToLocal(url string, savePath string, ext string) string {
 			if _, err := os.Stat(savePath); os.IsNotExist(err) {
 				os.MkdirAll(savePath, os.ModePerm)
 			}
-			var filePath string = savePath + fileName
+			var filePath = savePath + fileName
 
 			src := rsp.Body
 			defer src.Close()

@@ -11,19 +11,19 @@ package content
 import "go2o/core/infrastructure/domain"
 
 var (
-	ErrCategoryContainArchive *domain.DomainError = domain.NewError(
+	ErrCategoryContainArchive = domain.NewError(
 		"err_category_contain_archive", "栏目包含文章,不允许删除")
 
-	ErrCategoryAliasExists *domain.DomainError = domain.NewError(
+	ErrCategoryAliasExists = domain.NewError(
 		"err_category_alias_exists", "已存在相同标识的栏目")
 
-	ErrAliasHasExists *domain.DomainError = domain.NewError(
+	ErrAliasHasExists = domain.NewError(
 		"err_content_alias_exists", "页面别名已存在")
 
-	NotSetCategory *domain.DomainError = domain.NewError(
+	NotSetCategory = domain.NewError(
 		"err_not_set_category", "请选择分类")
 
-	ErrUserNotMatch *domain.DomainError = domain.NewError(
+	ErrUserNotMatch = domain.NewError(
 		"err_content_user_not_match", "用户不匹配")
 )
 

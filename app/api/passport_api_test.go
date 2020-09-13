@@ -2,7 +2,7 @@ package api
 
 import (
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/thrift/auto_gen/rpc/member_service"
+	"go2o/core/service/proto"
 	"strconv"
 	"testing"
 )
@@ -27,7 +27,7 @@ func TestRegisterApi_GetToken(t *testing.T) {
 func TestPassportApi_SendCode(t *testing.T) {
 	mp := map[string]string{
 		"account":   phone2,
-		"cred_type": strconv.Itoa(int(member_service.ECredentials_Phone)),
+		"cred_type": strconv.Itoa(int(proto.ECredentials_Phone)),
 		"token":     token2,
 		"op":        "1",
 	}
@@ -37,7 +37,7 @@ func TestPassportApi_SendCode(t *testing.T) {
 func TestPassportApi_CompareCode(t *testing.T) {
 	mp := map[string]string{
 		"account":    phone2,
-		"cred_type":  strconv.Itoa(int(member_service.ECredentials_Phone)),
+		"cred_type":  strconv.Itoa(int(proto.ECredentials_Phone)),
 		"token":      token2,
 		"op":         "1",
 		"check_code": "8799",
@@ -48,7 +48,7 @@ func TestPassportApi_CompareCode(t *testing.T) {
 func TestPassportApi_ResetPwd(t *testing.T) {
 	mp := map[string]string{
 		"account":   phone2,
-		"cred_type": strconv.Itoa(int(member_service.ECredentials_Phone)),
+		"cred_type": strconv.Itoa(int(proto.ECredentials_Phone)),
 		"token":     token2,
 		"pwd":       domain.Md5("123456"),
 	}
@@ -58,7 +58,7 @@ func TestPassportApi_ResetPwd(t *testing.T) {
 func TestPassportApi_ModifyPwd(t *testing.T) {
 	mp := map[string]string{
 		"account":   phone2,
-		"cred_type": strconv.Itoa(int(member_service.ECredentials_Phone)),
+		"cred_type": strconv.Itoa(int(proto.ECredentials_Phone)),
 		"token":     token2,
 		"pwd":       domain.Md5("123000"),
 		"old_pwd":   domain.Md5("123456"),
@@ -69,7 +69,7 @@ func TestPassportApi_ModifyPwd(t *testing.T) {
 func TestPassportApi_TradePwd(t *testing.T) {
 	mp := map[string]string{
 		"account":   phone2,
-		"cred_type": strconv.Itoa(int(member_service.ECredentials_Phone)),
+		"cred_type": strconv.Itoa(int(proto.ECredentials_Phone)),
 		"token":     token2,
 		"pwd":       domain.Md5("123000"),
 		"old_pwd":   domain.Md5("237561"),

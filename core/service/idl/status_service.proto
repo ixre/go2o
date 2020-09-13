@@ -6,5 +6,6 @@ import "ttype.proto";
 /** 状态服务 */
 service StatusService {
     /** 尝试连接 */
-    rpc Ping (Empty) returns (String){}
+    rpc Ping (Empty) returns (String) {
+    }
 }
