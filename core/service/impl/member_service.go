@@ -841,6 +841,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 	return buf.String()
 }
 
+// 获取会员绑定银行卡信息
 func (s *memberService) GetBank(memberId int64) *member.BankInfo {
 	m := s.repo.CreateMember(&member.Member{Id: memberId})
 	b := m.Profile().GetBank()
@@ -903,8 +904,8 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 func (s *memberService) BankCards(_ context.Context, id *proto.Int64) (*proto.BankCardListResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: id.Value})
 	b := m.Profile().GetBank()
-	arr := make([]*proto.SBankcard, 0)
-	arr = append(arr, &proto.SBankcard{
+	arr := make([]*proto.SBankCardInfo, 0)
+	arr = append(arr, &proto.SBankCardInfo{
 		Id:          -1,
 		BankName:    b.BankName,
 		AccountName: b.AccountName,
