@@ -98,7 +98,7 @@ func (m *MemberRepoImpl) SaveProfile(v *member.Profile) error {
 }
 
 //收藏,typeId 为类型编号, referId为关联的ID
-func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int32) error {
+func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int64) error {
 	_, _, err := m.Connector.GetOrm().Save(nil, &member.Favorite{
 		MemberId:   memberId,
 		FavType:    favType,
@@ -109,7 +109,7 @@ func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int32) er
 }
 
 //是否已收藏
-func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int32) bool {
+func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int64) bool {
 	num := 0
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_favorite
 	WHERE member_id= $1 AND fav_type= $2 AND refer_id= $3`, &num,
@@ -118,7 +118,7 @@ func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int32) boo
 }
 
 //取消收藏
-func (m *MemberRepoImpl) CancelFavorite(memberId int64, favType int, referId int32) error {
+func (m *MemberRepoImpl) CancelFavorite(memberId int64, favType int, referId int64) error {
 	_, err := m.Connector.GetOrm().Delete(&member.Favorite{},
 		"member_id= $1 AND fav_type= $2 AND refer_id= $3",
 		memberId, favType, referId)

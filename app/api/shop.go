@@ -3,9 +3,11 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
+	"go2o/core/service"
 	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 )
@@ -78,7 +80,16 @@ func (s shopApi) shopCat(ctx api.Context) interface{} {
 func (s shopApi) Favorite(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	id := ctx.Form().GetInt("shop_id")
-	err := impl.MemberService.FavoriteShop(int64(memberId), int32(id))
+	trans,cli,_ := service.MemberServeClient()
+	r,err := cli.Favorite(context.TODO(),&proto.FavoriteRequest{
+		MemberId:            int64(memberId),
+		FavoriteType:         proto.FavoriteType_Shop,
+		ReferId:              int64(id),
+	})
+	trans.Close()
+	if r.ErrCode >0{
+		err = errors.New(r.ErrMsg)
+	}
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}

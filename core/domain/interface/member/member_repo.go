@@ -155,14 +155,11 @@ type IMemberRepo interface {
 		growEarnings, totalGrowEarnings float32, updateTime int64) error
 
 	//收藏,favType 为收藏类型, referId为关联的ID
-	Favorite(memberId int64, favType int, referId int32) error
-
+	Favorite(memberId int64, favType int, referId int64) error
 	//是否已收藏
-	Favored(memberId int64, favType int, referId int32) bool
-
+	Favored(memberId int64, favType int, referId int64) bool
 	//取消收藏
-	CancelFavorite(memberId int64, favType int, referId int32) error
-
+	CancelFavorite(memberId int64, favType int, referId int64) error
 	// 获取会员分页的优惠券列表
 	GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
 	// Select MmBuyerGroup

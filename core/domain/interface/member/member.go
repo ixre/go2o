@@ -172,11 +172,11 @@ type (
 	// 收藏服务
 	IFavoriteManager interface {
 		// 收藏
-		Favorite(favType int, referId int32) error
+		Favorite(favType int, referId int64) error
 		// 是否已收藏
-		Favored(favType int, referId int32) bool
+		Favored(favType int, referId int64) bool
 		// 取消收藏
-		Cancel(favType int, referId int32) error
+		Cancel(favType int, referId int64) error
 	}
 
 	// 会员概览信息
@@ -403,7 +403,7 @@ type (
 		// 收藏类型
 		FavType int `db:"fav_type"`
 		// 引用编号
-		ReferId int32 `db:"refer_id"`
+		ReferId int64 `db:"refer_id"`
 		// 收藏时间
 		CreateTime int64 `db:"create_time"`
 	}

@@ -47,6 +47,7 @@ type memberService struct {
 	sto storage.Interface
 }
 
+
 // 交换会员编号
 func (s *memberService) SwapMemberId(_ context.Context, r *proto.SwapMemberRequest) (*proto.Int64, error) {
 	var memberId int64
@@ -208,53 +209,48 @@ func (s *memberService) ChangeInviterId(_ context.Context, r *proto.ChangeInvite
 	return s.result(err), nil
 }
 
-// 是否已收藏
-func (s *memberService) Favored(memberId int64, favType int, referId int32) bool {
-	return s.repo.CreateMemberById(memberId).
-		Favorite().Favored(favType, referId)
-}
-
 // 取消收藏
-func (s *memberService) Cancel(memberId int64, favType int, referId int32) error {
-	return s.repo.CreateMemberById(memberId).
-		Favorite().Cancel(favType, referId)
+func (s *memberService) RemoveFavorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result,err error) {
+	f := s.repo.CreateMemberById(r.MemberId).Favorite()
+	switch r.FavoriteType {
+	case proto.FavoriteType_Shop:
+		err = f.Cancel(member.FavTypeShop,r.ReferId)
+	case proto.FavoriteType_Goods:
+		err = f.Cancel(member.FavTypeGoods,r.ReferId)
+	}
+	if err != nil {
+		return s.error(err),nil
+	}
+	return s.success(nil),nil}
+
+func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result,err error) {
+	f := s.repo.CreateMemberById(r.MemberId).Favorite()
+	switch r.FavoriteType {
+	case proto.FavoriteType_Shop:
+		err = f.Favorite(member.FavTypeShop,r.ReferId)
+	case proto.FavoriteType_Goods:
+		err = f.Favorite(member.FavTypeGoods,r.ReferId)
+	}
+	if err != nil {
+		return s.error(err),nil
+	}
+	return s.success(nil),nil
 }
 
-// 收藏商品
-func (s *memberService) FavoriteGoods(memberId int64, goodsId int32) error {
-	return s.repo.CreateMemberById(memberId).
-		Favorite().Favorite(member.FavTypeGoods, goodsId)
+// 是否已收藏
+func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (*proto.Bool, error) {
+	f := s.repo.CreateMemberById(r.MemberId).Favorite()
+	t := member.FavTypeGoods
+	switch r.FavoriteType {
+	case proto.FavoriteType_Shop:
+		t = member.FavTypeShop
+	case proto.FavoriteType_Goods:
+		t = member.FavTypeGoods
+	}
+	b := f.Favored(t, r.ReferId)
+	return &proto.Bool{Value:b},nil
 }
 
-// 取消收藏商品
-func (s *memberService) CancelGoodsFavorite(memberId int64, goodsId int32) error {
-	return s.repo.CreateMemberById(memberId).
-		Favorite().Cancel(member.FavTypeGoods, goodsId)
-}
-
-// 收藏店铺
-func (s *memberService) FavoriteShop(memberId int64, shopId int32) error {
-	return s.repo.CreateMemberById(memberId).
-		Favorite().Favorite(member.FavTypeShop, shopId)
-}
-
-// 取消收藏店铺
-func (s *memberService) CancelShopFavorite(memberId int64, shopId int32) error {
-	return s.repo.CreateMemberById(memberId).
-		Favorite().Cancel(member.FavTypeShop, shopId)
-}
-
-// 商品是否已收藏
-func (s *memberService) GoodsFavored(memberId int64, goodsId int32) bool {
-	return s.repo.CreateMemberById(memberId).
-		Favorite().Favored(member.FavTypeGoods, goodsId)
-}
-
-// 商店是否已收藏
-func (s *memberService) ShopFavored(memberId int64, shopId int32) bool {
-	return s.repo.CreateMemberById(memberId).
-		Favorite().Favored(member.FavTypeShop, shopId)
-}
 
 // 获取会员的订单状态及其数量
 func (s *memberService) OrdersQuantity(_ context.Context, id *proto.Int64) (*proto.OrderQuantityMapResponse, error) {

@@ -1,8 +1,12 @@
 package api
 
 import (
+	"context"
+	"errors"
 	"github.com/ixre/gof/api"
+	"go2o/core/service"
 	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 )
 
 /**
@@ -114,7 +118,16 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 func (g goodsApi) Favorite(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	id := ctx.Form().GetInt("item_id")
-	err := impl.MemberService.FavoriteGoods(int64(memberId), int32(id))
+	trans,cli,_ := service.MemberServeClient()
+	r,err := cli.Favorite(context.TODO(),&proto.FavoriteRequest{
+		MemberId:            int64(memberId),
+		FavoriteType:         proto.FavoriteType_Goods,
+		ReferId:              int64(id),
+	})
+	trans.Close()
+	if r.ErrCode >0{
+		err = errors.New(r.ErrMsg)
+	}
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}

@@ -306,12 +306,26 @@ service MemberService {
     }
 
     /** 获取指定账户的流水记录 */
-    rpc PagingAccountLog (PagingAccountInfoRequest) returns (SPagingResult) {
-    }
-
-
+    rpc PagingAccountLog (PagingAccountInfoRequest) returns (SPagingResult) {}
+    // 取消收藏
+    rpc RemoveFavorite(FavoriteRequest) returns(Result){}
+    // 收藏商品
+    rpc Favorite(FavoriteRequest)returns(Result){}
+    // 是否已收藏
+    rpc IsFavored(FavoriteRequest)returns(Bool){}
 }
 
+enum FavoriteType{
+    Unused = 0;
+    Shop = 1;
+    Goods = 2;
+}
+
+message FavoriteRequest{
+    sint64 MemberId = 1;
+    FavoriteType FavoriteType  = 2;
+    sint64 ReferId = 3;
+}
 message DepthRequest {
     sint64 memberId = 1;
     sint32 depth = 2;

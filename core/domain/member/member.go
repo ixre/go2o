@@ -714,7 +714,7 @@ func newFavoriteManagerImpl(memberId int64,
 }
 
 // 收藏
-func (m *favoriteManagerImpl) Favorite(favType int, referId int32) error {
+func (m *favoriteManagerImpl) Favorite(favType int, referId int64) error {
 	if m.Favored(favType, referId) {
 		return member.ErrFavored
 	}
@@ -722,11 +722,11 @@ func (m *favoriteManagerImpl) Favorite(favType int, referId int32) error {
 }
 
 // 是否已收藏
-func (m *favoriteManagerImpl) Favored(favType int, referId int32) bool {
+func (m *favoriteManagerImpl) Favored(favType int, referId int64) bool {
 	return m._rep.Favored(m._memberId, favType, referId)
 }
 
 // 取消收藏
-func (m *favoriteManagerImpl) Cancel(favType int, referId int32) error {
+func (m *favoriteManagerImpl) Cancel(favType int, referId int64) error {
 	return m._rep.CancelFavorite(m._memberId, favType, referId)
 }
