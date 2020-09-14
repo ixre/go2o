@@ -12,6 +12,7 @@ import (
 	"go2o/core/service"
 	"go2o/core/service/impl"
 	"go2o/core/service/proto"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -419,14 +420,15 @@ func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 		DetailAddress:  form.GetString("detail_address"),
 		IsDefault:      int32(form.GetInt("is_default")),
 	}
-	id, err := impl.MemberService.SaveAddress(memberId, &e)
-	// 设置用户默认收货地址
-	if err == nil {
-		err = impl.ShoppingService.SetBuyerAddress(memberId, "", id)
-	}
-	if err != nil {
-		return m.error(err)
-	}
+	trans,cli,_ := service.MemberServeClient()
+	defer trans.Close()
+	ret, _ := cli.SaveAddress(context.TODO(),&proto.SaveAddressRequest{
+		MemberId:             memberId,
+		Value:                &e,
+	})
+	return m.utils.SResult()
+	return c.JSON(http.StatusOK,ret)
+
 	ret := map[string]int64{"addressId": id}
 	return m.utils.success(ret)
 }
@@ -443,6 +445,12 @@ func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
  */
 func (m MemberApi) deleteAddress(ctx api.Context, memberId int64) *api.Response {
 	addressId := int64(ctx.Form().GetInt("address_id"))
-	err := impl.MemberService.DeleteAddress(memberId, addressId)
-	return m.utils.response(err)
+	trans,cli,_ := service.MemberServeClient()
+	defer trans.Close()
+	ret,_ := cli.DeleteAddress(context.TODO(),&proto.AddressIdRequest{
+		MemberId:             memberId,
+		AddressId:           addressId ,
+
+	})
+	return m.result(ret)
 }

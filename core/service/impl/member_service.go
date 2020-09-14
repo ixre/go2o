@@ -56,7 +56,7 @@ func (s *memberService) SwapMemberId(_ context.Context, r *proto.SwapMemberReque
 	case proto.ECredentials_User:
 		memberId = s.repo.GetMemberIdByUser(r.Value)
 	case proto.ECredentials_Code:
-		memberId = int64(s.repo.GetMemberIdByCode(r.Value))
+		memberId = s.repo.GetMemberIdByCode(r.Value)
 	case proto.ECredentials_Phone:
 		memberId = s.repo.GetMemberIdByPhone(r.Value)
 	case proto.ECredentials_Email:
@@ -140,16 +140,16 @@ func (s *memberService) GetProfile(_ context.Context, i *proto.Int64) (*proto.SP
 }
 
 // 保存资料
-func (s *memberService) SaveProfile(v *proto.SProfile) error {
+func (s *memberService) SaveProfile(_ context.Context, v *proto.SProfile) (*proto.Result, error) {
 	if v.MemberId > 0 {
 		v2 := s.parseMemberProfile2(v)
 		m := s.repo.GetMember(v.MemberId)
-		if m == nil {
-			return member.ErrNoSuchMember
+		if m != nil {
+			err := m.Profile().SaveProfile(v2)
+			return s.error(err),nil
 		}
-		return m.Profile().SaveProfile(v2)
 	}
-	return nil
+	return s.error( member.ErrNoSuchMember),nil
 }
 
 // 升级为高级会员
@@ -268,7 +268,7 @@ func (s *memberService) GetMemberLevels() []*member.Level {
 }
 
 // 等级列表
-func (s *memberService) MemberLevelList(_ context.Context, empty *proto.Empty) (*proto.SMemberLevelListResponse, error) {
+func (s *memberService) GetLevels(_ context.Context, empty *proto.Empty) (*proto.SMemberLevelListResponse, error) {
 	var arr []*proto.SMemberLevel
 	list := s.repo.GetManager().LevelManager().GetLevelSet()
 	for _, v := range list {
@@ -448,12 +448,16 @@ func (s *memberService) UpdateLevel(_ context.Context, r *proto.UpdateLevelReque
 }
 
 // 上传会员头像
-func (s *memberService) ChangeAvatar(memberId int64, avatar string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
+func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
+	if m != nil {
+		return s.error(member.ErrNoSuchMember),nil
 	}
-	return m.Profile().ChangeAvatar(avatar)
+	err := m.Profile().ChangeAvatar(r.AvatarUrl)
+	if err != nil{
+		return s.error(err),nil
+	}
+	return s.success(nil),nil
 }
 
 // 保存用户
@@ -522,8 +526,17 @@ func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMem
 	return s.error(err), nil
 }
 
-func (s *memberService) GetRelation(memberId int64) *member.InviteRelation {
-	return s.repo.GetRelation(memberId)
+// 获取会员邀请关系
+func (s *memberService) GetRelation(_ context.Context, id *proto.Int64) (*proto.MemberRelationResponse, error) {
+	r := s.repo.GetRelation(id.Value)
+	if r != nil {
+		return &proto.MemberRelationResponse{
+			InviterId: r.InviterId,
+			InviterD2: r.InviterD2,
+			InviterD3: r.InviterD3,
+		}, nil
+	}
+	return &proto.MemberRelationResponse{}, nil
 }
 
 // 激活会员
@@ -563,12 +576,14 @@ func (s *memberService) Unlock(_ context.Context, i *proto.Int64) (*proto.Result
 }
 
 // 判断资料是否完善
-func (s *memberService) ProfileCompleted(memberId int64) bool {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) CheckProfileCompleted( _ context.Context, memberId *proto.Int64) (*proto.Bool, error) {
+	m := s.repo.GetMember(memberId.Value)
 	if m != nil {
-		return m.Profile().ProfileCompleted()
+		return &proto.Bool{Value:
+		m.Profile().ProfileCompleted(),
+		},nil
 	}
-	return false
+	return &proto.Bool{},nil
 }
 
 // 判断资料是否完善
@@ -1018,23 +1033,6 @@ func (s *memberService) PagedWalletAccountLog(memberId int64, begin, end int,
 	return s.query.PagedWalletAccountLog(memberId, begin, end, where, orderBy)
 }
 
-// 查询分页普通订单
-func (s *memberService) QueryNormalOrder(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (num int, rows []*dto.PagedMemberSubOrder) {
-	return s.orderQuery.QueryPagerOrder(memberId, begin, size, pagination, where, orderBy)
-}
-
-// 查询分页批发订单
-func (s *memberService) QueryWholesaleOrder(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (num int, rows []*dto.PagedMemberSubOrder) {
-	return s.orderQuery.PagedWholesaleOrderOfBuyer(memberId, begin, size, pagination, where, orderBy)
-}
-
-// 查询分页订单
-func (s *memberService) PagedTradeOrder(buyerId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*proto.SComplexOrder) {
-	return s.orderQuery.PagedTradeOrderOfBuyer(buyerId, begin, size, pagination, where, orderBy)
-}
 
 /*********** 收货地址 ***********/
 
@@ -1069,27 +1067,33 @@ func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest
 }
 
 //保存配送地址
-func (s *memberService) SaveAddress(memberId int64, src *proto.SAddress) (int64, error) {
-	e := s.parseAddress(src)
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
+func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressRequest) (*proto.Result, error) {
+	e := s.parseAddress(r.Value)
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v member.IDeliverAddress
-	var err error
 	if e.ID > 0 {
 		v = m.Profile().GetAddress(e.ID)
-		err = v.SetValue(e)
 	} else {
 		v = m.Profile().CreateDeliver(e)
 	}
-	if err != nil {
-		return -1, err
+	err := v.SetValue(e)
+	if err == nil{
+		_,err = v.Save()
 	}
-	return v.Save()
+	if err != nil {
+		return s.error(err),nil
+	}
+	return s.success(nil),nil
 }
 
 //删除配送地址
-func (s *memberService) DeleteAddress(memberId int64, deliverId int64) error {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
-	return m.Profile().DeleteAddress(deliverId)
+func (s *memberService) DeleteAddress(_ context.Context,r *proto.AddressIdRequest) (*proto.Result, error) {
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	err := m.Profile().DeleteAddress(r.AddressId)
+	if err != nil{
+		return s.error(err),nil
+	}
+	return s.success(nil),nil
 }
 
 //设置余额优先支付

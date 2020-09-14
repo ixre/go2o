@@ -2,10 +2,17 @@ syntax = "proto3";
 option go_package = ".;proto";
 
 import "global.proto";
+import "order_service.proto";
 
 service QueryService {
     // 获取分页店铺数据
     rpc PagingShops (QueryPagingShopRequest) returns (QueryPagingShopsResponse);
+    // 查询分页普通订单
+    rpc MemberNormalOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
+    // 查询分页批发订单
+    rpc QueryWholesaleOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
+    // 查询分页交易/服务类订单
+    rpc QueryTradeOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
 }
 
 message QueryPagingShopRequest {
@@ -15,7 +22,7 @@ message QueryPagingShopRequest {
     bool OnlyBusiness = 2;
 }
 message QueryPagingShopsResponse {
-    sint32 Total = 1;
+    sint64 Total = 1;
     repeated QueryPagingShop Value = 2;
 }
 
@@ -26,4 +33,31 @@ message QueryPagingShop{
     string Host = 4;
     string Logo = 5;
     sint64 CreateTime = 6;
+}
+
+message MemberOrderPagingRequest{
+    sint64 MemberId = 1;
+    SPagingParams Params = 2;
+}
+message MemberOrderPagingResponse{
+    sint64 Total =1;
+    repeated PagedMemberSubOrder Value = 2;
+}
+message PagedMemberSubOrder {
+    sint64 OrderId = 1;
+    string OrderNo = 2;
+    string ParentNo = 3;
+    sint64 VendorId = 4;
+    sint64 ShopId = 5;
+    string ShopName = 6;
+    double ItemAmount = 7;
+    double DiscountAmount = 8;
+    double ExpressFee = 9;
+    double PackageFee = 10;
+    bool IsPaid = 11;
+    double FinalAmount = 12;
+    sint32 State = 13;
+    string StateText = 14;
+    sint64 CreateTime = 15;
+    repeated SComplexItem Items = 16;
 }

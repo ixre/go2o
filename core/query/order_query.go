@@ -57,8 +57,7 @@ func (o *OrderQuery) QueryOrderItems(subOrderId int64) []*dto.OrderItem {
 }
 
 // 查询分页订单
-func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
+func (o *OrderQuery) QueryPagerOrder(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
 	orderList := make([]*dto.PagedMemberSubOrder, 0)
 	num := 0
@@ -216,8 +215,7 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int64, begin, size int, p
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
+func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
 	var orderList []*dto.PagedMemberSubOrder
 	num := 0
@@ -382,8 +380,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*proto.SComplexOrder) {
+func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*proto.SComplexOrder) {
 	d := o.Connector
 	var orderList []*proto.SComplexOrder
 	num := 0

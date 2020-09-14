@@ -159,14 +159,16 @@ message SShoppingCartItem {
 
 /** 分页参数 */
 message SPagingParams {
-    /** 开始记录数 */
-    sint32 Begin = 1;
-    /** 结束记录数 */
-    sint32 Over = 2;
-    /** 排序字段 */
-    string SortBy = 3;
-    /** 参数 */
-    map<string, string> Parameters = 4;
+    // 开始记录数
+    sint64 Begin = 1;
+    // 结束记录数
+    sint64 Over = 2;
+    // 条件
+    string Where = 3;
+    // 排序字段
+    string SortBy = 4;
+    // 参数
+    map<string, string> Parameters = 5;
 }
 
 /** 分页结果 */
