@@ -721,7 +721,7 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 }
 
 // 检查交易密码
-func (s *memberService) CheckTradePwd(_ context.Context, r *proto.CheckTradePwdRequest) (*proto.Result, error) {
+func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.CheckTradePwdRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
@@ -1163,14 +1163,6 @@ func (s *memberService) GetMemberLatestUpdateTime(memberId int64) int64 {
 	return s.repo.GetMemberLatestUpdateTime(memberId)
 }
 
-func (s *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
-	list := s.query.GetMemberList(ids)
-	for _, v := range list {
-		v.Avatar = format.GetResUrl(v.Avatar)
-	}
-	return list
-}
-
 // 标志赋值, 如果flag小于零, 则异或运算
 func (s *memberService) GrantFlag(_ context.Context, r *proto.GrantFlagRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
@@ -1291,21 +1283,6 @@ func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*pr
 	return s.error(errors.New("未知操作")), nil
 }
 
-// 验证交易密码
-func (s *memberService) VerifyTradePwd(memberId int64, tradePwd string) (bool, error) {
-	im, err := s.getMember(memberId)
-	if err == nil {
-		m := im.GetValue()
-		if len(m.TradePwd) == 0 {
-			return false, member.ErrNotSetTradePwd
-		}
-		if m.TradePwd != tradePwd {
-			return false, member.ErrIncorrectTradePwd
-		}
-		return true, err
-	}
-	return false, err
-}
 
 // 提现并返回提现编号,交易号以及错误信息
 func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*proto.WithdrawalResponse, error) {

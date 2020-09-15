@@ -121,7 +121,7 @@ service WalletService {
     }
 
     /** 完成提现 */
-    rpc FinishTakeOut (FinishTakeOutRequest) returns (Result) {
+    rpc FinishWithdrawal (FinishTakeOutRequest) returns (Result) {
     }
 
     /** 获取分页钱包日志 */

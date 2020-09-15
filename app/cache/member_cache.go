@@ -9,9 +9,12 @@
 package cache
 
 import (
+	"context"
 	"encoding/json"
 	"go2o/core/domain/interface/member"
+	"go2o/core/service"
 	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 	"strconv"
 )
 
@@ -35,9 +38,11 @@ func GetLevelMapJson() string {
 	sto := GetKVS()
 	str, err := sto.GetString(key)
 	if err != nil {
-		list := impl.MemberService.GetMemberLevels()
+		trans,cli,_ := service.MemberServeClient()
+		defer trans.Close()
+		list,_ := cli.GetLevels(context.TODO(),&proto.Empty{})
 		mp := make(map[string]string, 0)
-		for _, v := range list {
+		for _, v := range list.Value {
 			if v.Enabled == 1 {
 				mp[strconv.Itoa(int(v.ID))] = v.Name
 			}

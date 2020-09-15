@@ -25,6 +25,7 @@ var _ proto.QueryServiceServer = new(queryService)
 type queryService struct {
 	shopQuery  *query.ShopQuery
 	orderQuery *query.OrderQuery
+	memberQuery *query.MemberQuery
 }
 
 func NewQueryService() *queryService {
@@ -32,6 +33,7 @@ func NewQueryService() *queryService {
 	shopQuery := query.NewShopQuery(ctx)
 	return &queryService{
 		shopQuery:  shopQuery,
+		memberQuery: query.NewMemberQuery(ctx.Db()),
 		orderQuery: query.NewOrderQuery(ctx.Db()),
 	}
 }
@@ -180,4 +182,26 @@ func (q *queryService) parseTradeOrder(src *proto.SComplexOrder) *proto.PagedMem
 		CreateTime: src.CreateTime,
 		Items:      make([]*proto.SComplexItem, 0),
 	}
+}
+
+
+func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListRequest) (*proto.MemberListResponse, error) {
+	list := q.memberQuery.QueryMemberList(r.IdList)
+	var rsp = &proto.MemberListResponse{
+		Value: make([]*proto.MemberListSingle, len(list)),
+	}
+	for i, v := range list {
+		v.Avatar = format.GetResUrl(v.Avatar)
+		rsp.Value[i] = &proto.MemberListSingle{
+			MemberId:      int64(v.MemberId),
+			User:          v.Usr,
+			NickName:      v.Name,
+			Avatar:        v.Avatar,
+			Level:         v.Level,
+			Integral:      v.Integral,
+			Balance:       float64(v.Balance),
+			WalletBalance: float64(v.WalletBalance),
+		}
+	}
+	return rsp, nil
 }

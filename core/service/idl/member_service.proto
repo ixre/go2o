@@ -26,8 +26,8 @@ service MemberService {
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
     rpc CheckLogin (LoginRequest) returns (Result) {
     }
-    /** 检查交易密码 */
-    rpc CheckTradePwd (CheckTradePwdRequest) returns (Result) {
+    /** 验证交易密码 */
+    rpc VerifyTradePwd (CheckTradePwdRequest) returns (Result) {
     }
     /** 交换会员编号 */
     rpc SwapMemberId (SwapMemberRequest) returns (Int64) {

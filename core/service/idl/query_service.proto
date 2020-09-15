@@ -13,6 +13,8 @@ service QueryService {
     rpc QueryWholesaleOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
     // 查询分页交易/服务类订单
     rpc QueryTradeOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
+    // 查询会员列表
+    rpc QueryMemberList(MemberListRequest)returns(MemberListResponse){}
 }
 
 message QueryPagingShopRequest {
@@ -21,6 +23,7 @@ message QueryPagingShopRequest {
     // 是否只查询营业中的店铺
     bool OnlyBusiness = 2;
 }
+
 message QueryPagingShopsResponse {
     sint64 Total = 1;
     repeated QueryPagingShop Value = 2;
@@ -60,4 +63,35 @@ message PagedMemberSubOrder {
     string StateText = 14;
     sint64 CreateTime = 15;
     repeated SComplexItem Items = 16;
+}
+
+message MemberListRequest{
+    repeated int64 IdList = 1;
+}
+message MemberListResponse{
+    repeated MemberListSingle Value = 1;
+}
+// 会员概览信息
+message MemberListSingle {
+    // 会员编号
+    int64 MemberId = 1;
+    // 用户名
+    string User = 2;
+    // 昵称
+    string NickName = 3;
+    // 头像
+    string Avatar = 4;
+    // 等级
+    int32 Level = 5;
+    // 积分
+    int64 Integral = 6;
+    // 账户余额
+    double Balance = 7;
+    // 钱包余额
+    double WalletBalance = 8;
+    //    GrowBalance       float32 `db:"grow_balance"`
+    //    GrowAmount        float32 `db:"grow_amount"`         // 理财总投资金额,不含收益
+    //    GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额
+    //    GrowTotalEarnings float32 `db:"grow_total_earnings"` // 累积收益金额
+    //    UpdateTime        int64   `db:"update_time"`
 }
