@@ -1506,7 +1506,7 @@ type WalletServiceClient interface {
 	// * 确认提现
 	ReviewTakeOut(ctx context.Context, in *ReviewTakeOutRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 完成提现
-	FinishTakeOut(ctx context.Context, in *FinishTakeOutRequest, opts ...grpc.CallOption) (*Result, error)
+	FinishWithdrawal(ctx context.Context, in *FinishTakeOutRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 获取分页钱包日志
 	PagingWalletLog(ctx context.Context, in *PagingWalletLogRequest, opts ...grpc.CallOption) (*SPagingResult, error)
 }
@@ -1627,7 +1627,7 @@ func (c *walletServiceClient) ReviewTakeOut(ctx context.Context, in *ReviewTakeO
 	return out, nil
 }
 
-func (c *walletServiceClient) FinishTakeOut(ctx context.Context, in *FinishTakeOutRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *walletServiceClient) FinishWithdrawal(ctx context.Context, in *FinishTakeOutRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/WalletService/FinishTakeOut", in, out, opts...)
 	if err != nil {
@@ -1672,7 +1672,7 @@ type WalletServiceServer interface {
 	// * 确认提现
 	ReviewTakeOut(context.Context, *ReviewTakeOutRequest) (*Result, error)
 	// * 完成提现
-	FinishTakeOut(context.Context, *FinishTakeOutRequest) (*Result, error)
+	FinishWithdrawal(context.Context, *FinishTakeOutRequest) (*Result, error)
 	// * 获取分页钱包日志
 	PagingWalletLog(context.Context, *PagingWalletLogRequest) (*SPagingResult, error)
 }
@@ -1903,14 +1903,14 @@ func _WalletService_FinishTakeOut_Handler(srv interface{}, ctx context.Context, 
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WalletServiceServer).FinishTakeOut(ctx, in)
+		return srv.(WalletServiceServer).FinishWithdrawal(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
 		FullMethod: "/WalletService/FinishTakeOut",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletServiceServer).FinishTakeOut(ctx, req.(*FinishTakeOutRequest))
+		return srv.(WalletServiceServer).FinishWithdrawal(ctx, req.(*FinishTakeOutRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -516,3 +516,19 @@ message WithdrawalLog{
     // 更新时间
     sint64 UpdateTime  = 11;
 }
+
+// 申请提现请求
+message ReviewWithdrawalRequest{
+    int64 MemberId = 1;
+    int64 InfoId = 2;
+    bool Pass = 3;
+    string Remark = 4;
+}
+
+message FinishWithdrawalRequest{
+    int64 MemberId = 1;
+    //　提现记录编号
+    int64 InfoId = 2;
+    // 汇款/交易单号
+    string TradeNo = 3;
+}

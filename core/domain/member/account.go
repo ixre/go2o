@@ -831,7 +831,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 }
 
 // 确认提现
-func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
+func (a *accountImpl) ReviewWithdrawal(id int32, pass bool, remark string) error {
 	v := a.GetWalletLog(id)
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
@@ -862,7 +862,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 }
 
 // 完成提现
-func (a *accountImpl) FinishTakeOut(id int32, tradeNo string) error {
+func (a *accountImpl) FinishWithdrawal(id int32, tradeNo string) error {
 	v := a.GetWalletLog(id)
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo

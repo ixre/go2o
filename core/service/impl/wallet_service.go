@@ -150,12 +150,12 @@ func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewTake
 	return w.result(err), nil
 }
 
-func (w *walletServiceImpl) FinishTakeOut(_ context.Context, r *proto.FinishTakeOutRequest) (ro *proto.Result, err error) {
+func (w *walletServiceImpl) FinishWithdrawal(_ context.Context, r *proto.FinishTakeOutRequest) (ro *proto.Result, err error) {
 	iw := w._repo.GetWallet(r.WalletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.FinishTakeOut(r.TakeId, r.OuterNo)
+		err = iw.FinishWithdrawal(r.TakeId, r.OuterNo)
 	}
 	return w.result(err), nil
 }

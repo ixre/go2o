@@ -155,10 +155,10 @@ type (
 		RequestTakeOut(takeKind int, title string, amount int, tradeFee int) (int32, string, error)
 
 		// 确认提现
-		ConfirmTakeOut(id int32, pass bool, remark string) error
+		ReviewWithdrawal(id int32, pass bool, remark string) error
 
 		// 完成提现
-		FinishTakeOut(id int32, tradeNo string) error
+		FinishWithdrawal(id int32, tradeNo string) error
 
 		// 将冻结金额标记为失效
 		FreezeExpired(accountKind int, amount float32, remark string) error

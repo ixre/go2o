@@ -519,7 +519,7 @@ func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string, opuId
 	return w.saveWalletLog(l)
 }
 
-func (w *WalletImpl) FinishTakeOut(takeId int64, outerNo string) error {
+func (w *WalletImpl) FinishWithdrawal(takeId int64, outerNo string) error {
 	l := w.getLog(takeId)
 	if l == nil {
 		return wallet.ErrNoSuchTakeOutLog

@@ -181,7 +181,7 @@ type (
 		ReviewTakeOut(takeId int64, pass bool, remark string, opuId int, opuName string) error
 
 		// 完成提现
-		FinishTakeOut(takeId int64, outerNo string) error
+		FinishWithdrawal(takeId int64, outerNo string) error
 
 		// 分页钱包日志
 		PagingLog(begin int, over int, opt map[string]string, sort string) (int, []*WalletLog)

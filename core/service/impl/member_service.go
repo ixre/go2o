@@ -1380,23 +1380,25 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 }
 
 // 确认提现
-func (s *memberService) ConfirmTakeOutRequest(memberId int64,
-	infoId int32, pass bool, remark string) error {
-	m, err := s.getMember(memberId)
+func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
+	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().ConfirmTakeOut(infoId, pass, remark)
+		err = m.GetAccount().ReviewWithdrawal(int32(r.InfoId), r.Pass, r.Remark)
 	}
-	return err
+	return s.error(err),nil
 }
 
 // 完成提现
-func (s *memberService) FinishTakeOutRequest(memberId int64, id int32, tradeNo string) error {
-	m, err := s.getMember(memberId)
-	if err != nil {
-		return err
+
+func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithdrawalRequest) (*proto.Result, error) {
+	var err error
+	m, err := s.getMember(r.MemberId)
+	if err == nil {
+		 err = m.GetAccount().FinishWithdrawal(int32(r.InfoId), r.TradeNo)
 	}
-	return m.GetAccount().FinishTakeOut(id, tradeNo)
+	return s.error(err),nil
 }
+
 
 // 冻结余额
 func (s *memberService) Freeze(memberId int64, title string,

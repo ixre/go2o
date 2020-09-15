@@ -200,6 +200,10 @@ service MemberService {
     rpc AccountTransfer(AccountTransferRequest)returns(Result){}
     // 提现并返回提现编号,交易号以及错误信息
     rpc Withdraw(WithdrawRequest) returns(WithdrawalResponse){}
+    // 确认提现
+    rpc ReviewWithdrawal(ReviewWithdrawalRequest)returns(Result){}
+    // 收到款项,完成提现
+    rpc FinishWithdrawal(FinishWithdrawalRequest)returns(Result){}
     // 查询提现记录
     rpc QueryWithdrawalLog(WithdrawalLogRequest)returns(WithdrawalLogsResponse){}
     // !银行四要素认证
