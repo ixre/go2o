@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ixre/gof/api"
 	"go2o/core/domain/interface/member"
+	"go2o/core/service"
 	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"strings"
@@ -48,13 +49,14 @@ func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *ap
 		Begin:  begin,
 		Over:   begin + size,
 	}
-	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
-		&proto.PagingAccountInfoRequest{
-			MemberId:    memberId,
-			AccountType: int32(account),
-			Params:      p,
-		})
-	return api.NewResponse(r)
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	ret, _ := cli.PagingAccountLog(context.TODO(), &proto.PagingAccountInfoRequest{
+		MemberId:    memberId,
+		AccountType: member.AccountWallet,
+		Params:      p,
+	})
+	return api.NewResponse(ret)
 }
 
 /**

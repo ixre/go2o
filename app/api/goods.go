@@ -118,14 +118,14 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 func (g goodsApi) Favorite(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	id := ctx.Form().GetInt("item_id")
-	trans,cli,_ := service.MemberServeClient()
-	r,err := cli.Favorite(context.TODO(),&proto.FavoriteRequest{
-		MemberId:            int64(memberId),
-		FavoriteType:         proto.FavoriteType_Goods,
-		ReferId:              int64(id),
+	trans, cli, _ := service.MemberServeClient()
+	r, err := cli.Favorite(context.TODO(), &proto.FavoriteRequest{
+		MemberId:     int64(memberId),
+		FavoriteType: proto.FavoriteType_Goods,
+		ReferId:      int64(id),
 	})
 	trans.Close()
-	if r.ErrCode >0{
+	if r.ErrCode > 0 {
 		err = errors.New(r.ErrMsg)
 	}
 	if err != nil {

@@ -225,7 +225,7 @@ func (s serviceUtil) failResult(msg string) *proto.Result {
 
 // 返回错误的结果
 func (s serviceUtil) error(err error) *proto.Result {
-	if err == nil{
+	if err == nil {
 		return s.success(nil)
 	}
 	return s.failResult(err.Error())

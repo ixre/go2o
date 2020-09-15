@@ -245,8 +245,6 @@ func (si *shopServiceImpl) GetOnlineShops(vendorId int64) []*shop.Shop {
 	return sv
 }
 
-
-
 func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
 	return &proto.SShop{
 		Id:         sp.Id,

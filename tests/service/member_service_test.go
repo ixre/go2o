@@ -14,16 +14,16 @@ var _ = ti.Factory.GetAdRepo()
 
 func TestPagingIntegralLog(t *testing.T) {
 	params := &proto.SPagingParams{
-		Parameters:        nil,
-		SortBy: "",
+		Parameters: nil,
+		SortBy:     "",
 		Begin:      0,
 		Over:       10,
 	}
 	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
-			MemberId:             1,
-			AccountType:          member.AccountWallet,
-			Params:               params,
+			MemberId:    1,
+			AccountType: member.AccountWallet,
+			Params:      params,
 		})
 	t.Logf("%#v", r)
 }
@@ -31,16 +31,16 @@ func TestPagingIntegralLog(t *testing.T) {
 func TestPagingWalletLog(t *testing.T) {
 	memberId := 77153
 	params := &proto.SPagingParams{
-		Parameters:        nil,
-		SortBy: "",
+		Parameters: nil,
+		SortBy:     "",
 		Begin:      0,
 		Over:       10,
 	}
 	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
-			MemberId:             int64(memberId),
-			AccountType:          member.AccountWallet,
-			Params:               params,
+			MemberId:    int64(memberId),
+			AccountType: member.AccountWallet,
+			Params:      params,
 		})
 	t.Logf("%#v", r)
 }
@@ -53,8 +53,8 @@ func TestCheckTradePwd(t *testing.T) {
 
 	r, _ := impl.MemberService.CheckTradePwd(context.TODO(),
 		&proto.CheckTradePwdRequest{
-			MemberId:             int64(memberId),
-			TradePwd:             pwd,
+			MemberId: int64(memberId),
+			TradePwd: pwd,
 		})
 	t.Logf("%#v", r)
 }

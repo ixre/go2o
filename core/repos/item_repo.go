@@ -207,7 +207,7 @@ func (g *goodsRepo) GetOnShelvesGoods(mchId int64, start, end int, sortBy string
 		sortBy)
 
 	g.Connector.GetOrm().SelectByQuery(&e, sql, mchId, enum.ReviewPass,
-		item.ShelvesOn, start, end - start)
+		item.ShelvesOn, start, end-start)
 	return e
 }
 

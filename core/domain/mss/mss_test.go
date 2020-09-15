@@ -26,7 +26,6 @@ type MssRepo struct {
 	_sysManger   mss.IMessageManager
 }
 
-
 func (this *MssRepo) SaveConfig(userId int64, conf *mss.Config) error {
 	panic("implement me")
 }
@@ -170,7 +169,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 			{
 				Role: mss.RoleMember,
 				Id:   1,
-						},
+			},
 		},
 		// 发送的用户角色
 		ToRole: -1,
@@ -213,7 +212,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 			{
 				Role: mss.RoleMember,
 				Id:   1,
-						},
+			},
 		},
 		// 发送的用户角色
 		ToRole: -1,

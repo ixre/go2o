@@ -152,7 +152,7 @@ type (
 		GetWalletLog(id int32) *WalletAccountLog
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
-		RequestTakeOut(takeKind int, title string, amount float32, commission float32) (int32, string, error)
+		RequestTakeOut(takeKind int, title string, amount int, tradeFee int) (int32, string, error)
 
 		// 确认提现
 		ConfirmTakeOut(id int32, pass bool, remark string) error

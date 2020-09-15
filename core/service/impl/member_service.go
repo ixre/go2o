@@ -46,10 +46,6 @@ type memberService struct {
 	sto storage.Interface
 }
 
-
-
-
-
 // 交换会员编号
 func (s *memberService) SwapMemberId(_ context.Context, r *proto.SwapMemberRequest) (*proto.Int64, error) {
 	var memberId int64
@@ -599,8 +595,7 @@ func (s *memberService) Unlock(_ context.Context, i *proto.Int64) (*proto.Result
 func (s *memberService) CheckProfileCompleted(_ context.Context, memberId *proto.Int64) (*proto.Bool, error) {
 	m := s.repo.GetMember(memberId.Value)
 	if m != nil {
-		return &proto.Bool{Value:
-		m.Profile().ProfileCompleted(),
+		return &proto.Bool{Value: m.Profile().ProfileCompleted(),
 		}, nil
 	}
 	return &proto.Bool{}, nil
@@ -1028,11 +1023,19 @@ func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccou
 	var rows []map[string]interface{}
 	switch r.AccountType {
 	case member.AccountIntegral:
-		total, rows = s.query.PagedIntegralAccountLog(r.MemberId, r.Params.Begin, r.Params.Over, r.Params.SortBy)
+		total, rows = s.query.PagedIntegralAccountLog(
+			r.MemberId, r.Params.Begin,
+			r.Params.Over, r.Params.SortBy)
 	case member.AccountBalance:
-		total, rows = s.query.PagedBalanceAccountLog(r.MemberId, int(r.Params.Begin), int(r.Params.Over), "", "")
+		total, rows = s.query.PagedBalanceAccountLog(
+			r.MemberId, int(r.Params.Begin),
+			int(r.Params.Over), r.Params.Where,
+			r.Params.Where)
 	case member.AccountWallet:
-		total, rows = s.query.PagedWalletAccountLog(r.MemberId, int(r.Params.Begin), int(r.Params.Over), "", "")
+		total, rows = s.query.PagedWalletAccountLog(
+			r.MemberId, int(r.Params.Begin),
+			int(r.Params.Over), r.Params.Where,
+			r.Params.Where)
 	}
 	rs := &proto.SPagingResult{
 		ErrCode: 0,
@@ -1047,12 +1050,6 @@ func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccou
 func (s *memberService) PagedBalanceAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
 	return s.query.PagedBalanceAccountLog(memberId, begin, end, where, orderBy)
-}
-
-// 获取钱包账户分页记录
-func (s *memberService) PagedWalletAccountLog(memberId int64, begin, end int,
-	where, orderBy string) (int, []map[string]interface{}) {
-	return s.query.PagedWalletAccountLog(memberId, begin, end, where, orderBy)
 }
 
 /*********** 收货地址 ***********/
@@ -1311,26 +1308,33 @@ func (s *memberService) VerifyTradePwd(memberId int64, tradePwd string) (bool, e
 }
 
 // 提现并返回提现编号,交易号以及错误信息
-func (s *memberService) SubmitTakeOutRequest(memberId int64, takeKind int32,
-	applyAmount float32, commission float32) (int32, string, error) {
-	m, err := s.getMember(memberId)
+func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*proto.WithdrawalResponse, error) {
+	m, err := s.getMember(r.MemberId)
 	if err != nil {
-		return 0, "", err
+		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-
 	acc := m.GetAccount()
 	var title string
-	switch int(takeKind) {
+	switch int(r.Kind) {
 	case member.KindWalletTakeOutToBankCard:
 		title = "提现到银行卡"
 	case member.KindWalletTakeOutToBalance:
 		title = "充值账户"
 	case member.KindWalletTakeOutToThirdPart:
 		title = "充值到第三方账户"
+	default:
+		return &proto.WithdrawalResponse{ErrCode: 2, ErrMsg: "未知的提现方式"}, nil
 	}
-	return acc.RequestTakeOut(int(takeKind), title, applyAmount, commission)
+	_, tradeNo, err := acc.RequestTakeOut(int(r.Kind), title, int(r.Amount), int(r.TradeFee))
+	if err != nil {
+		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+	}
+	return &proto.WithdrawalResponse{
+		ErrCode: 0,
+		ErrMsg:  "",
+		TradeNo: tradeNo,
+	}, nil
 }
-
 
 func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogsResponse, error) {
 	//todo: 这里只返回了一条
@@ -1356,7 +1360,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	//		format.FormatFloat(latestApplyInfo.Amount),
 	//		sText)
 	//}
-	ret := &proto.WithdrawalLogsResponse{Value: make([]*proto.WithdrawalLog,0)}
+	ret := &proto.WithdrawalLogsResponse{Value: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
 		ret.Value = append(ret.Value, &proto.WithdrawalLog{
 			Id:          latestApplyInfo.Id,
@@ -1450,18 +1454,18 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 	m := s.repo.GetMember(r.FromMemberId)
 	if m == nil {
 		err = member.ErrNoSuchMember
-	}else{
+	} else {
 		var kind = 0
 		switch r.TransferAccount {
 		case proto.TransferAccountKind_TA_BALANCE:
-			kind= member.AccountBalance
+			kind = member.AccountBalance
 		case proto.TransferAccountKind_TA_WALLET:
 			kind = member.AccountWallet
 		}
-	   err = m.GetAccount().TransferAccount(kind, r.ToMemberId,
-		   int(r.Amount), int(r.TradeFee), r.Remark)
+		err = m.GetAccount().TransferAccount(kind, r.ToMemberId,
+			int(r.Amount), int(r.TradeFee), r.Remark)
 	}
-	return s.error(err),nil
+	return s.error(err), nil
 }
 
 // 转账余额到其他账户

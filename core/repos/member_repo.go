@@ -49,7 +49,6 @@ type MemberRepoImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
-
 func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
 	return &MemberRepoImpl{
@@ -416,7 +415,7 @@ func (m *MemberRepoImpl) SaveBankCard(v *member.BankInfo) error {
 }
 
 func (m *MemberRepoImpl) RemoveBankCard(id int64) error {
-	return m.Connector.GetOrm().DeleteByPk(&member.BankInfo{},id)
+	return m.Connector.GetOrm().DeleteByPk(&member.BankInfo{}, id)
 }
 
 func (m *MemberRepoImpl) ReceiptsCodes(memberId int64) []member.ReceiptsCode {

@@ -198,6 +198,8 @@ service MemberService {
     }
     // 转账转账
     rpc AccountTransfer(AccountTransferRequest)returns(Result){}
+    // 提现并返回提现编号,交易号以及错误信息
+    rpc Withdraw(WithdrawRequest) returns(WithdrawalResponse){}
     // 查询提现记录
     rpc QueryWithdrawalLog(WithdrawalLogRequest)returns(WithdrawalLogsResponse){}
     // !银行四要素认证

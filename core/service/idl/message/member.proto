@@ -461,6 +461,22 @@ message AccountTransferRequest {
     string Remark  = 6;
 }
 
+message WithdrawRequest{
+    sint64 MemberId = 1;
+    // 提现方式
+    int32 Kind  = 2;
+    // 提现金额
+    int32 Amount =3;
+    // 手续费
+    int32 TradeFee = 4;
+}
+message WithdrawalResponse{
+    sint64 ErrCode = 1;
+    string ErrMsg = 2;
+    string TradeNo = 3;
+    sint64 LogId = 4;
+}
+
 // 获取提现记录
 message WithdrawalLogRequest{
     //　会员编号

@@ -93,11 +93,11 @@ func (e EtcdStorage) GetRaw(key string) (interface{}, error) {
 }
 
 func (e EtcdStorage) GetBool(key string) (bool, error) {
-	s,err := e.GetString(key)
-	if err == nil{
+	s, err := e.GetString(key)
+	if err == nil {
 		return strconv.ParseBool(s)
 	}
-	return false,err
+	return false, err
 }
 
 func (e EtcdStorage) GetInt(key string) (int, error) {
@@ -109,20 +109,20 @@ func (e EtcdStorage) GetInt(key string) (int, error) {
 }
 
 func (e EtcdStorage) GetInt64(key string) (int64, error) {
-	s,err := e.GetString(key)
-	if err == nil{
-		i,err := strconv.Atoi(s)
-		return int64(i),err
+	s, err := e.GetString(key)
+	if err == nil {
+		i, err := strconv.Atoi(s)
+		return int64(i), err
 	}
-	return 0,err
+	return 0, err
 }
 
 func (e EtcdStorage) GetString(key string) (string, error) {
-	s,err := e.GetBytes(key)
-	if err == nil{
-		return string(s),nil
+	s, err := e.GetBytes(key)
+	if err == nil {
+		return string(s), nil
 	}
-	return "",err
+	return "", err
 }
 
 func (e EtcdStorage) GetFloat64(key string) (float64, error) {
@@ -174,14 +174,14 @@ func (e EtcdStorage) RWJson(key string, dst interface{}, src func() interface{},
 	return err
 }
 
-func (e EtcdStorage) serialize(v interface{}) (string,error) {
-	s,b := types.ToString(v)
-	if !b{
-		if j,err := json.Marshal(v);err != nil{
-			return "",err
-		}else{
+func (e EtcdStorage) serialize(v interface{}) (string, error) {
+	s, b := types.ToString(v)
+	if !b {
+		if j, err := json.Marshal(v); err != nil {
+			return "", err
+		} else {
 			s = string(j)
 		}
 	}
-	return s,nil
+	return s, nil
 }

@@ -466,8 +466,6 @@ func (p *profileManagerImpl) RemoveBankCard(backCardId int64) error {
 	return p.repo.RemoveBankCard(v.MemberId)
 }
 
-
-
 // 创建配送地址
 func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {
 	v.MemberId = p.memberId

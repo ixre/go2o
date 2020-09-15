@@ -22,7 +22,6 @@ func (u utils) JSON(ctx echo.Context, ret interface{}) error {
 	return ctx.JSON(http.StatusOK, ret)
 }
 
-
 func (u utils) response(err error) *api.Response {
 	if err != nil {
 		return u.error(err)
@@ -45,6 +44,6 @@ func (u utils) error(err error) *api.Response {
 func (u utils) errorWithCode(code int, err error) *api.Response {
 	return api.ResponseWithCode(code, err.Error())
 }
-func (u utils) result(r *proto.Result)*api.Response{
-	return api.ResponseWithCode(int(r.ErrCode),r.ErrMsg)
+func (u utils) result(r *proto.Result) *api.Response {
+	return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 }

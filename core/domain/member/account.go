@@ -738,7 +738,8 @@ func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestTakeOut(takeKind int, title string,
-	amount float32, commission float32) (int32, string, error) {
+	amount2 int, tradeFee int) (int32, string, error) {
+	amount := float32(amount2) / 100
 	if takeKind != member.KindWalletTakeOutToBalance &&
 		takeKind != member.KindWalletTakeOutToBankCard &&
 		takeKind != member.KindWalletTakeOutToThirdPart {
@@ -750,7 +751,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 	// 检测是否开启提现
 	takOutOn := a.registryRepo.Get(registry.MemberTakeOutOn).BoolValue()
 	if !takOutOn {
-		msg := a.registryRepo.Get(registry.MemberTakeOutMessage).StringValue()
+		msg, _ := a.registryRepo.GetValue(registry.MemberTakeOutMessage)
 		return 0, "", errors.New(msg)
 	}
 
@@ -794,7 +795,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 	}
 
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
-	csnAmount := amount * commission
+	csnAmount := float32(tradeFee) / 100
 	finalAmount := amount - csnAmount
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
@@ -996,8 +997,8 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount in
 
 func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 	tradeAmount, tradeFee int, remark string) error {
-	csnFee := float32(tradeFee)/100
-	amount := float32(tradeAmount)/100
+	csnFee := float32(tradeFee) / 100
+	amount := float32(tradeAmount) / 100
 	if a.value.Balance < amount+csnFee {
 		return member.ErrAccountNotEnoughAmount
 	}
@@ -1032,8 +1033,8 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 
 func (a *accountImpl) transferWalletAccount(tm member.IMember, tradeNo string,
 	tradeAmount, tradeFee int, remark string) error {
-	csnFee := float32(tradeFee)/100
-	amount := float32(tradeAmount)/100
+	csnFee := float32(tradeFee) / 100
+	amount := float32(tradeAmount) / 100
 	// 检测非正式会员转账
 	lv := a.mm.LevelManager().GetLevelById(a.member.GetValue().Level)
 	if lv != nil && lv.IsOfficial == 0 {

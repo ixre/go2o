@@ -83,6 +83,7 @@ func (q *queryService) MemberNormalOrders(_ context.Context, r *proto.MemberOrde
 	}
 	return ret, nil
 }
+
 // 查询分页批发订单
 func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOrderPagingRequest) (*proto.MemberOrderPagingResponse, error) {
 	n, list := q.orderQuery.PagedWholesaleOrderOfBuyer(
@@ -101,6 +102,7 @@ func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOr
 	}
 	return ret, nil
 }
+
 // 查询分页交易/服务类订单
 func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderPagingRequest) (*proto.MemberOrderPagingResponse, error) {
 	n, list := q.orderQuery.PagedTradeOrderOfBuyer(
@@ -119,7 +121,6 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 	}
 	return ret, nil
 }
-
 
 func (q *queryService) parseOrder(src *dto.PagedMemberSubOrder) *proto.PagedMemberSubOrder {
 	dst := &proto.PagedMemberSubOrder{
@@ -163,20 +164,20 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SComplexItem {
 
 func (q *queryService) parseTradeOrder(src *proto.SComplexOrder) *proto.PagedMemberSubOrder {
 	return &proto.PagedMemberSubOrder{
-		OrderId:        src.OrderId,
-		OrderNo:        src.OrderNo,
-		VendorId:       src.VendorId,
-		ShopId:         src.ShopId,
+		OrderId:  src.OrderId,
+		OrderNo:  src.OrderNo,
+		VendorId: src.VendorId,
+		ShopId:   src.ShopId,
 		//ShopName:       src.,
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
 		//IsPaid:         src.IsPaid,
-		FinalAmount:    src.FinalAmount,
-		State:          int32(src.State),
+		FinalAmount: src.FinalAmount,
+		State:       int32(src.State),
 		//StateText:      src.StateText,
-		CreateTime:     src.CreateTime,
-		Items:          make([]*proto.SComplexItem, 0),
+		CreateTime: src.CreateTime,
+		Items:      make([]*proto.SComplexItem, 0),
 	}
 }
