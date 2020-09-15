@@ -32,7 +32,6 @@ import (
 	"go2o/core/variable"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var _ proto.MemberServiceServer = new(memberService)
@@ -46,6 +45,9 @@ type memberService struct {
 	serviceUtil
 	sto storage.Interface
 }
+
+
+
 
 
 // 交换会员编号
@@ -146,10 +148,10 @@ func (s *memberService) SaveProfile(_ context.Context, v *proto.SProfile) (*prot
 		m := s.repo.GetMember(v.MemberId)
 		if m != nil {
 			err := m.Profile().SaveProfile(v2)
-			return s.error(err),nil
+			return s.error(err), nil
 		}
 	}
-	return s.error( member.ErrNoSuchMember),nil
+	return s.error(member.ErrNoSuchMember), nil
 }
 
 // 升级为高级会员
@@ -210,31 +212,32 @@ func (s *memberService) ChangeInviterId(_ context.Context, r *proto.ChangeInvite
 }
 
 // 取消收藏
-func (s *memberService) RemoveFavorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result,err error) {
+func (s *memberService) RemoveFavorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result, err error) {
 	f := s.repo.CreateMemberById(r.MemberId).Favorite()
 	switch r.FavoriteType {
 	case proto.FavoriteType_Shop:
-		err = f.Cancel(member.FavTypeShop,r.ReferId)
+		err = f.Cancel(member.FavTypeShop, r.ReferId)
 	case proto.FavoriteType_Goods:
-		err = f.Cancel(member.FavTypeGoods,r.ReferId)
+		err = f.Cancel(member.FavTypeGoods, r.ReferId)
 	}
 	if err != nil {
-		return s.error(err),nil
+		return s.error(err), nil
 	}
-	return s.success(nil),nil}
+	return s.success(nil), nil
+}
 
-func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result,err error) {
+func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result, err error) {
 	f := s.repo.CreateMemberById(r.MemberId).Favorite()
 	switch r.FavoriteType {
 	case proto.FavoriteType_Shop:
-		err = f.Favorite(member.FavTypeShop,r.ReferId)
+		err = f.Favorite(member.FavTypeShop, r.ReferId)
 	case proto.FavoriteType_Goods:
-		err = f.Favorite(member.FavTypeGoods,r.ReferId)
+		err = f.Favorite(member.FavTypeGoods, r.ReferId)
 	}
 	if err != nil {
-		return s.error(err),nil
+		return s.error(err), nil
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
 
 // 是否已收藏
@@ -248,9 +251,8 @@ func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (
 		t = member.FavTypeGoods
 	}
 	b := f.Favored(t, r.ReferId)
-	return &proto.Bool{Value:b},nil
+	return &proto.Bool{Value: b}, nil
 }
-
 
 // 获取会员的订单状态及其数量
 func (s *memberService) OrdersQuantity(_ context.Context, id *proto.Int64) (*proto.OrderQuantityMapResponse, error) {
@@ -319,9 +321,9 @@ func (s *memberService) GetLevelByProgramSign(sign string) *member.Level {
 }
 
 // 删除会员等级
-func (s *memberService) DeleteMemberLevel(_ context.Context,levelId  *proto.Int64) (*proto.Result, error) {
+func (s *memberService) DeleteMemberLevel(_ context.Context, levelId *proto.Int64) (*proto.Result, error) {
 	err := s.repo.GetManager().LevelManager().DeleteLevel(int(levelId.Value))
-	return s.result(err),nil
+	return s.result(err), nil
 }
 
 // 获取下一个等级
@@ -338,9 +340,26 @@ func (s *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
-func (s *memberService) GetWalletLog(memberId int64, logId int32) *member.WalletAccountLog {
-	m := s.repo.GetMember(memberId)
-	return m.GetAccount().GetWalletLog(logId)
+func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogRequest) (*proto.WalletLogResponse, error) {
+	m := s.repo.GetMember(r.MemberId)
+	v := m.GetAccount().GetWalletLog(int32(r.LogId))
+	if v != nil {
+		return &proto.WalletLogResponse{
+			LogId:       v.Id,
+			MemberId:    v.MemberId,
+			OuterNo:     v.OuterNo,
+			Kind:        int32(v.Kind),
+			Title:       v.Title,
+			Amount:      float64(v.Amount),
+			CsnFee:      float64(v.CsnFee),
+			ReviewState: v.ReviewState,
+			Remark:      v.Remark,
+			CreateTime:  v.CreateTime,
+			UpdateTime:  v.UpdateTime,
+			RelateUser:  v.RelateUser,
+		}, nil
+	}
+	return &proto.WalletLogResponse{}, nil
 }
 
 func (s *memberService) getMember(memberId int64) (
@@ -452,13 +471,13 @@ func (s *memberService) UpdateLevel(_ context.Context, r *proto.UpdateLevelReque
 func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m != nil {
-		return s.error(member.ErrNoSuchMember),nil
+		return s.error(member.ErrNoSuchMember), nil
 	}
 	err := m.Profile().ChangeAvatar(r.AvatarUrl)
-	if err != nil{
-		return s.error(err),nil
+	if err != nil {
+		return s.error(err), nil
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
 
 // 保存用户
@@ -577,14 +596,14 @@ func (s *memberService) Unlock(_ context.Context, i *proto.Int64) (*proto.Result
 }
 
 // 判断资料是否完善
-func (s *memberService) CheckProfileCompleted( _ context.Context, memberId *proto.Int64) (*proto.Bool, error) {
+func (s *memberService) CheckProfileCompleted(_ context.Context, memberId *proto.Int64) (*proto.Bool, error) {
 	m := s.repo.GetMember(memberId.Value)
 	if m != nil {
 		return &proto.Bool{Value:
 		m.Profile().ProfileCompleted(),
-		},nil
+		}, nil
 	}
-	return &proto.Bool{},nil
+	return &proto.Bool{}, nil
 }
 
 // 判断资料是否完善
@@ -855,10 +874,10 @@ func (s *memberService) SaveBankInfo(v *member.BankInfo) error {
 }
 
 // 解锁银行卡信息
-func (s *memberService) RemoveBankCard(_ context.Context,r *proto.BankCardUserIdRequest) (*proto.Result, error) {
+func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardUserIdRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
 	err := m.Profile().RemoveBankCard(r.BankCardId)
-	return s.result(err),nil
+	return s.result(err), nil
 }
 
 // 获取收款码
@@ -903,7 +922,7 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 }
 
 // 获取银行卡
-func (s *memberService) GetBankCards(_ context.Context,id *proto.Int64) (*proto.BankCardListResponse, error) {
+func (s *memberService) GetBankCards(_ context.Context, id *proto.Int64) (*proto.BankCardListResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: id.Value})
 	b := m.Profile().GetBank()
 	arr := make([]*proto.SBankCardInfo, 0)
@@ -1036,7 +1055,6 @@ func (s *memberService) PagedWalletAccountLog(memberId int64, begin, end int,
 	return s.query.PagedWalletAccountLog(memberId, begin, end, where, orderBy)
 }
 
-
 /*********** 收货地址 ***********/
 
 // 获取会员的收货地址
@@ -1080,32 +1098,42 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 		v = m.Profile().CreateDeliver(e)
 	}
 	err := v.SetValue(e)
-	if err == nil{
-		_,err = v.Save()
+	if err == nil {
+		_, err = v.Save()
 	}
 	if err != nil {
-		return s.error(err),nil
+		return s.error(err), nil
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
 
 //删除配送地址
-func (s *memberService) DeleteAddress(_ context.Context,r *proto.AddressIdRequest) (*proto.Result, error) {
+func (s *memberService) DeleteAddress(_ context.Context, r *proto.AddressIdRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	err := m.Profile().DeleteAddress(r.AddressId)
-	if err != nil{
-		return s.error(err),nil
+	if err != nil {
+		return s.error(err), nil
 	}
-	return s.success(nil),nil
+	return s.success(nil), nil
 }
 
 //设置余额优先支付
-func (s *memberService) BalancePriorityPay(memberId int64, enabled bool) error {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.OwnerId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		return s.result(member.ErrNoSuchMember), nil
 	}
-	return m.GetAccount().SetPriorityPay(member.AccountBalance, enabled)
+	var accountTid = 0
+	switch r.Account {
+	case proto.PaymentAccountType_PA_Balance:
+		accountTid = member.AccountBalance
+	case proto.PaymentAccountType_PA_Wallet:
+		accountTid = member.AccountWallet
+	case proto.PaymentAccountType_PA_QuickPay:
+		return s.error(errors.New("暂时不支持")), nil
+	}
+	err := m.GetAccount().SetPriorityPay(accountTid, true)
+	return s.error(err), nil
 }
 
 //判断会员是否由指定会员邀请推荐的
@@ -1303,32 +1331,48 @@ func (s *memberService) SubmitTakeOutRequest(memberId int64, takeKind int32,
 	return acc.RequestTakeOut(int(takeKind), title, applyAmount, commission)
 }
 
-// 获取最近的提现描述
-func (s *memberService) GetLatestApplyCashText(memberId int64) string {
-	var latestInfo string
-	latestApplyInfo := s.query.GetLatestWalletLogByKind(memberId,
+
+func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogsResponse, error) {
+	//todo: 这里只返回了一条
+	latestApplyInfo := s.query.GetLatestWalletLogByKind(r.MemberId,
 		member.KindWalletTakeOutToBankCard)
+	//if latestApplyInfo != nil {
+	//	var sText string
+	//	switch latestApplyInfo.ReviewState {
+	//	case enum.ReviewAwaiting:
+	//		sText = "已申请"
+	//	case enum.ReviewPass:
+	//		sText = "已审核,等待打款"
+	//	case enum.ReviewReject:
+	//		sText = "被退回"
+	//	case enum.ReviewConfirm:
+	//		sText = "已完成"
+	//	}
+	//	if latestApplyInfo.Amount < 0 {
+	//		latestApplyInfo.Amount = -latestApplyInfo.Amount
+	//	}
+	//	latestInfo := fmt.Sprintf(`<b>最近提现：</b>%s&nbsp;申请提现%s ，状态：<span class="status">%s</span>。`,
+	//		time.Unix(latestApplyInfo.CreateTime, 0).Format("2006-01-02 15:04"),
+	//		format.FormatFloat(latestApplyInfo.Amount),
+	//		sText)
+	//}
+	ret := &proto.WithdrawalLogsResponse{Value: make([]*proto.WithdrawalLog,0)}
 	if latestApplyInfo != nil {
-		var sText string
-		switch latestApplyInfo.ReviewState {
-		case enum.ReviewAwaiting:
-			sText = "已申请"
-		case enum.ReviewPass:
-			sText = "已审核,等待打款"
-		case enum.ReviewReject:
-			sText = "被退回"
-		case enum.ReviewConfirm:
-			sText = "已完成"
-		}
-		if latestApplyInfo.Amount < 0 {
-			latestApplyInfo.Amount = -latestApplyInfo.Amount
-		}
-		latestInfo = fmt.Sprintf(`<b>最近提现：</b>%s&nbsp;申请提现%s ，状态：<span class="status">%s</span>。`,
-			time.Unix(latestApplyInfo.CreateTime, 0).Format("2006-01-02 15:04"),
-			format.FormatFloat(latestApplyInfo.Amount),
-			sText)
+		ret.Value = append(ret.Value, &proto.WithdrawalLog{
+			Id:          latestApplyInfo.Id,
+			OuterNo:     latestApplyInfo.OuterNo,
+			Kind:        int32(latestApplyInfo.Kind),
+			Title:       latestApplyInfo.Title,
+			Amount:      int32(latestApplyInfo.Amount * 100),
+			TradeFee:    int32(latestApplyInfo.CsnFee * 100),
+			RelateUser:  latestApplyInfo.RelateUser,
+			ReviewState: latestApplyInfo.ReviewState,
+			Remark:      latestApplyInfo.Remark,
+			SubmitTime:  latestApplyInfo.CreateTime,
+			UpdateTime:  latestApplyInfo.UpdateTime,
+		})
 	}
-	return latestInfo
+	return ret, nil
 }
 
 // 确认提现
@@ -1401,14 +1445,23 @@ func (s *memberService) FreezeExpired(memberId int64, accountKind int, amount fl
 }
 
 // 转账余额到其他账户
-func (s *memberService) TransferAccount(accountKind int, fromMember int64,
-	toMember int64, amount float32, csnRate float32, remark string) error {
-	m := s.repo.GetMember(fromMember)
+func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTransferRequest) (*proto.Result, error) {
+	var err error
+	m := s.repo.GetMember(r.FromMemberId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		err = member.ErrNoSuchMember
+	}else{
+		var kind = 0
+		switch r.TransferAccount {
+		case proto.TransferAccountKind_TA_BALANCE:
+			kind= member.AccountBalance
+		case proto.TransferAccountKind_TA_WALLET:
+			kind = member.AccountWallet
+		}
+	   err = m.GetAccount().TransferAccount(kind, r.ToMemberId,
+		   int(r.Amount), int(r.TradeFee), r.Remark)
 	}
-	return m.GetAccount().TransferAccount(accountKind, toMember,
-		amount, csnRate, remark)
+	return s.error(err),nil
 }
 
 // 转账余额到其他账户

@@ -164,8 +164,8 @@ type (
 		FreezeExpired(accountKind int, amount float32, remark string) error
 
 		// 转账
-		TransferAccount(accountKind int, toMember int64, amount float32,
-			csnRate float32, remark string) error
+		TransferAccount(accountKind int, toMember int64, amount int,
+			tradeFee int, remark string) error
 
 		// 接收转账
 		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
