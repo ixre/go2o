@@ -49,6 +49,7 @@ type MemberRepoImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
+
 func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
 	return &MemberRepoImpl{
@@ -401,17 +402,21 @@ func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int
 }
 
 // 获取银行信息
-func (m *MemberRepoImpl) Bankcards(memberId int64) *member.BankInfo {
+func (m *MemberRepoImpl) BankCards(memberId int64) *member.BankInfo {
 	e := new(member.BankInfo)
 	m.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
 // 保存银行信息
-func (m *MemberRepoImpl) SaveBankcard(v *member.BankInfo) error {
+func (m *MemberRepoImpl) SaveBankCard(v *member.BankInfo) error {
 	var err error
 	_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
 	return err
+}
+
+func (m *MemberRepoImpl) RemoveBankCard(id int64) error {
+	return m.Connector.GetOrm().DeleteByPk(&member.BankInfo{},id)
 }
 
 func (m *MemberRepoImpl) ReceiptsCodes(memberId int64) []member.ReceiptsCode {

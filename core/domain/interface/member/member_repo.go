@@ -89,9 +89,11 @@ type IMemberRepo interface {
 	// 保存账户，传入会员编号
 	SaveAccount(*Account) (int64, error)
 	// 获取银行卡
-	Bankcards(memberId int64) *BankInfo
+	BankCards(memberId int64) *BankInfo
 	// 保存银行卡信息
-	SaveBankcard(*BankInfo) error
+	SaveBankCard(*BankInfo) error
+	// 移除银行卡
+	RemoveBankCard(id int64) error
 	// 获取收款码
 	ReceiptsCodes(memberId int64) []ReceiptsCode
 	// 保存收款码

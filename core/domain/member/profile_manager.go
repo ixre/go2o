@@ -387,7 +387,7 @@ func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 // 获取提现银行信息
 func (p *profileManagerImpl) GetBank() member.BankInfo {
 	if p.bank == nil {
-		p.bank = p.repo.Bankcards(p.memberId)
+		p.bank = p.repo.BankCards(p.memberId)
 		if p.bank == nil {
 			p.bank = &member.BankInfo{
 				MemberId:   p.memberId,
@@ -429,7 +429,7 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 		p.bank.IsLocked = member.BankLocked //锁定
 		p.bank.UpdateTime = time.Now().Unix()
 		p.bank.MemberId = p.memberId
-		err = p.repo.SaveBankcard(p.bank)
+		err = p.repo.SaveBankCard(p.bank)
 	}
 	return err
 }
@@ -456,15 +456,17 @@ func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
 	return nil
 }
 
-// 解锁提现银行卡信息
-func (p *profileManagerImpl) UnlockBank() error {
-	p.GetBank()
+//　移除银行卡
+func (p *profileManagerImpl) RemoveBankCard(backCardId int64) error {
+	v := p.GetBank()
 	if p.bank == nil {
 		return member.ErrBankInfoNoYetSet
 	}
-	p.bank.IsLocked = member.BankNoLock
-	return p.repo.SaveBankcard(p.bank)
+	//todo: if backCardId
+	return p.repo.RemoveBankCard(v.MemberId)
 }
+
+
 
 // 创建配送地址
 func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {

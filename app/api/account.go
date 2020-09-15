@@ -41,8 +41,8 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 }
 
 func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *api.Response {
-	begin := int32(ctx.Form().GetInt("begin"))
-	size := int32(ctx.Form().GetInt("size"))
+	begin := int64(ctx.Form().GetInt("begin"))
+	size := int64(ctx.Form().GetInt("size"))
 	p := &proto.SPagingParams{
 		SortBy: "create_time DESC,bi.id DESC",
 		Begin:  begin,

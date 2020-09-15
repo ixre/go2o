@@ -167,9 +167,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	if err := m.Profile().ReviewTrustedInfo(true, ""); err != nil {
 		return err
 	}
-
 	// 保存银行信息
-	_ = m.Profile().UnlockBank()
 	if err := m.Profile().SaveBank(&member.BankInfo{
 		BankName:    result["BankName"],
 		AccountName: realName,

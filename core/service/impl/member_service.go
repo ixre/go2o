@@ -319,8 +319,9 @@ func (s *memberService) GetLevelByProgramSign(sign string) *member.Level {
 }
 
 // 删除会员等级
-func (s *memberService) DelMemberLevel(levelId int32) error {
-	return s.repo.GetManager().LevelManager().DeleteLevel(int(levelId))
+func (s *memberService) DeleteMemberLevel(_ context.Context,levelId  *proto.Int64) (*proto.Result, error) {
+	err := s.repo.GetManager().LevelManager().DeleteLevel(int(levelId.Value))
+	return s.result(err),nil
 }
 
 // 获取下一个等级
@@ -854,9 +855,10 @@ func (s *memberService) SaveBankInfo(v *member.BankInfo) error {
 }
 
 // 解锁银行卡信息
-func (s *memberService) UnlockBankInfo(memberId int64) error {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
-	return m.Profile().UnlockBank()
+func (s *memberService) RemoveBankCard(_ context.Context,r *proto.BankCardUserIdRequest) (*proto.Result, error) {
+	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
+	err := m.Profile().RemoveBankCard(r.BankCardId)
+	return s.result(err),nil
 }
 
 // 获取收款码
@@ -901,7 +903,7 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 }
 
 // 获取银行卡
-func (s *memberService) BankCards(_ context.Context, id *proto.Int64) (*proto.BankCardListResponse, error) {
+func (s *memberService) GetBankCards(_ context.Context,id *proto.Int64) (*proto.BankCardListResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: id.Value})
 	b := m.Profile().GetBank()
 	arr := make([]*proto.SBankCardInfo, 0)
@@ -919,14 +921,14 @@ func (s *memberService) BankCards(_ context.Context, id *proto.Int64) (*proto.Ba
 }
 
 // 保存银行卡
-func (s *memberService) SaveBankcard(_ context.Context, r *proto.BankCardSaveRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+func (s *memberService) SaveBankCard(_ context.Context, r *proto.BankCardSaveRequest) (*proto.Result, error) {
+	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
 	var v = &member.BankInfo{
-		BankName:    r.Card.BankName,
-		AccountName: r.Card.AccountName,
-		Account:     r.Card.Account,
-		Network:     r.Card.Network,
-		State:       int(r.Card.State),
+		BankName:    r.Value.BankName,
+		AccountName: r.Value.AccountName,
+		Account:     r.Value.Account,
+		Network:     r.Value.Network,
+		State:       int(r.Value.State),
 	}
 	if err := m.Profile().SaveBank(v); err != nil {
 		return s.error(err), nil

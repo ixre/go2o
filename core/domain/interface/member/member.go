@@ -143,8 +143,8 @@ type (
 		GetBank() BankInfo
 		// 保存提现银行信息,保存后将锁定
 		SaveBank(*BankInfo) error
-		// 解锁提现银行卡信息
-		UnlockBank() error
+		// 移除银行卡
+		RemoveBankCard(backCardId int64) error
 		// 获取收款码
 		ReceiptsCodes() []ReceiptsCode
 		// 保存收款码

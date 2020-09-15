@@ -12,7 +12,6 @@ import (
 	"go2o/core/service"
 	"go2o/core/service/impl"
 	"go2o/core/service/proto"
-	"net/http"
 	"strconv"
 	"strings"
 )
@@ -158,7 +157,7 @@ func (m MemberApi) bankcard(ctx api.Context) interface{} {
 				Cred:  proto.ECredentials_Code,
 				Value: code,
 			})
-		r, _ := cli.BankCards(context.TODO(), memberId)
+		r, _ := cli.GetBankCards(context.TODO(), memberId)
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
@@ -426,11 +425,7 @@ func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 		MemberId:             memberId,
 		Value:                &e,
 	})
-	return m.utils.SResult()
-	return c.JSON(http.StatusOK,ret)
-
-	ret := map[string]int64{"addressId": id}
-	return m.utils.success(ret)
+	return m.utils.result(ret)
 }
 
 /**

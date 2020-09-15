@@ -7,12 +7,12 @@ message BankCardSaveRequest {
     SBankCardInfo Value = 2;
 }
 
-message BankCardUserIdRequest{
+message BankCardUserIdRequest {
     sint64 OwnerId = 1;
     sint64 BankCardId = 2;
 }
 
-message BankListResponse {
+message BankCardListResponse {
     sint64 OwnerId = 1;
     repeated SBankCardInfo  Value= 2;
 }
