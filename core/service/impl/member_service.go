@@ -595,8 +595,7 @@ func (s *memberService) Unlock(_ context.Context, i *proto.Int64) (*proto.Result
 func (s *memberService) CheckProfileCompleted(_ context.Context, memberId *proto.Int64) (*proto.Bool, error) {
 	m := s.repo.GetMember(memberId.Value)
 	if m != nil {
-		return &proto.Bool{Value: m.Profile().ProfileCompleted(),
-		}, nil
+		return &proto.Bool{Value: m.Profile().ProfileCompleted()}, nil
 	}
 	return &proto.Bool{}, nil
 }
@@ -1046,12 +1045,6 @@ func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccou
 	return rs, nil
 }
 
-// 获取余额账户分页记录
-func (s *memberService) PagedBalanceAccountLog(memberId int64, begin, end int,
-	where, orderBy string) (int, []map[string]interface{}) {
-	return s.query.PagedBalanceAccountLog(memberId, begin, end, where, orderBy)
-}
-
 /*********** 收货地址 ***********/
 
 // 获取会员的收货地址
@@ -1283,7 +1276,6 @@ func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*pr
 	return s.error(errors.New("未知操作")), nil
 }
 
-
 // 提现并返回提现编号,交易号以及错误信息
 func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*proto.WithdrawalResponse, error) {
 	m, err := s.getMember(r.MemberId)
@@ -1362,7 +1354,7 @@ func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithd
 	if err == nil {
 		err = m.GetAccount().ReviewWithdrawal(int32(r.InfoId), r.Pass, r.Remark)
 	}
-	return s.error(err),nil
+	return s.error(err), nil
 }
 
 // 完成提现
@@ -1371,11 +1363,10 @@ func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithd
 	var err error
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		 err = m.GetAccount().FinishWithdrawal(int32(r.InfoId), r.TradeNo)
+		err = m.GetAccount().FinishWithdrawal(int32(r.InfoId), r.TradeNo)
 	}
-	return s.error(err),nil
+	return s.error(err), nil
 }
-
 
 // 冻结余额
 func (s *memberService) Freeze(memberId int64, title string,

@@ -10,7 +10,6 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"strconv"
 	"strings"
@@ -32,7 +31,9 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	if len(code) > 0 {
-		v, _ := impl.MemberService.SwapMemberId(context.TODO(),
+		trans, cli, _ := service.MemberServeClient()
+		defer trans.Close()
+		v, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,
@@ -362,7 +363,9 @@ func (m MemberApi) orderSummary(ctx api.Context, memberId int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
-	mp, _ := impl.MemberService.OrdersQuantity(context.TODO(), &proto.Int64{Value: id})
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	mp, _ := cli.OrdersQuantity(context.TODO(), &proto.Int64{Value: id})
 	ret := map[string]int32{
 		/** 待付款订单数量 */
 		"AwaitPayment": mp.Data[int32(order.StatAwaitingPayment)],
@@ -386,7 +389,9 @@ func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
-	address, _ := impl.MemberService.GetAddressList(context.TODO(), &proto.Int64{Value: memberId})
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	address, _ := cli.GetAddressList(context.TODO(), &proto.Int64{Value: memberId})
 	return m.utils.success(address)
 }
 

@@ -16,7 +16,6 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"go2o/core/variable"
 	"net/http"
@@ -94,7 +93,9 @@ func (mc *MemberC) Async(c echo.Context) error {
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		acc, _ := impl.MemberService.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
+		trans, cli, _ := service.MemberServeClient()
+		defer trans.Close()
+		acc, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
 		kvAut = int(acc.UpdateTime)
 		store.Set(autKey, kvAut)
 	}
@@ -107,31 +108,34 @@ func (mc *MemberC) Async(c echo.Context) error {
 // 获取最新的会员信息
 func (mc *MemberC) Get(c echo.Context) error {
 	memberId := GetMemberId(c)
-	m, _ := impl.MemberService.GetMember(context.TODO(), &proto.Int64{Value: memberId})
-	trans, cli, err := service.MemberServeClient()
-	if err == nil {
-		defer trans.Close()
-		tk, _ := cli.GetToken(context.TODO(),
-			&proto.GetTokenRequest{
-				MemberId: memberId,
-				Reset_:   false,
-			})
-		m.DynamicToken = tk.Value
-	}
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: memberId})
+	tk, _ := cli.GetToken(context.TODO(),
+		&proto.GetTokenRequest{
+			MemberId: memberId,
+			Reset_:   false,
+		})
+	m.DynamicToken = tk.Value
+
 	return c.JSON(http.StatusOK, m)
 }
 
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	v, _ := impl.MemberService.Complex(context.TODO(), &proto.Int64{Value: memberId})
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	v, _ := cli.Complex(context.TODO(), &proto.Int64{Value: memberId})
 	return c.JSON(http.StatusOK, v)
 }
 
 // 获取最新的会员账户信息
 func (mc *MemberC) Account(c echo.Context) error {
 	memberId := GetMemberId(c)
-	m, _ := impl.MemberService.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	m, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
 	return c.JSON(http.StatusOK, m)
 }
 

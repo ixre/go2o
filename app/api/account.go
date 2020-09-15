@@ -5,7 +5,6 @@ import (
 	"github.com/ixre/gof/api"
 	"go2o/core/domain/interface/member"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"strings"
 )
@@ -23,7 +22,9 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	if len(code) > 0 {
-		v, _ := impl.MemberService.SwapMemberId(context.TODO(),
+		trans, cli, _ := service.MemberServeClient()
+		defer trans.Close()
+		v, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,

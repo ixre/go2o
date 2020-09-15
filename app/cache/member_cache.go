@@ -11,25 +11,26 @@ package cache
 import (
 	"context"
 	"encoding/json"
-	"go2o/core/domain/interface/member"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"strconv"
 )
 
 // 获取最高等级
-func GetHighestLevel() *member.Level {
+func GetHighestLevel() *proto.SMemberLevel {
 	key := "go2o:repo:level:glob:max"
 	sto := GetKVS()
-	lv := member.Level{}
+	lv := &proto.SMemberLevel{}
 	if sto.Get(key, &lv) != nil {
-		lv = impl.MemberService.GetHighestLevel()
+		trans, cli, _ := service.MemberServeClient()
+		defer trans.Close()
+		lvs, _ := cli.GetLevels(context.TODO(), &proto.Empty{})
+		lv = lvs.Value[len(lvs.Value)-1]
 		if lv.ID > 0 {
 			sto.SetExpire(key, lv, DefaultMaxSeconds)
 		}
 	}
-	return &lv
+	return lv
 }
 
 // 获取等级JSON
@@ -38,9 +39,9 @@ func GetLevelMapJson() string {
 	sto := GetKVS()
 	str, err := sto.GetString(key)
 	if err != nil {
-		trans,cli,_ := service.MemberServeClient()
+		trans, cli, _ := service.MemberServeClient()
 		defer trans.Close()
-		list,_ := cli.GetLevels(context.TODO(),&proto.Empty{})
+		list, _ := cli.GetLevels(context.TODO(), &proto.Empty{})
 		mp := make(map[string]string, 0)
 		for _, v := range list.Value {
 			if v.Enabled == 1 {

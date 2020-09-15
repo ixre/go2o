@@ -23,8 +23,8 @@ import (
 var _ proto.QueryServiceServer = new(queryService)
 
 type queryService struct {
-	shopQuery  *query.ShopQuery
-	orderQuery *query.OrderQuery
+	shopQuery   *query.ShopQuery
+	orderQuery  *query.OrderQuery
 	memberQuery *query.MemberQuery
 }
 
@@ -32,9 +32,9 @@ func NewQueryService() *queryService {
 	ctx := gof.CurrentApp
 	shopQuery := query.NewShopQuery(ctx)
 	return &queryService{
-		shopQuery:  shopQuery,
+		shopQuery:   shopQuery,
 		memberQuery: query.NewMemberQuery(ctx.Db()),
-		orderQuery: query.NewOrderQuery(ctx.Db()),
+		orderQuery:  query.NewOrderQuery(ctx.Db()),
 	}
 }
 
@@ -183,7 +183,6 @@ func (q *queryService) parseTradeOrder(src *proto.SComplexOrder) *proto.PagedMem
 		Items:      make([]*proto.SComplexItem, 0),
 	}
 }
-
 
 func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListRequest) (*proto.MemberListResponse, error) {
 	list := q.memberQuery.QueryMemberList(r.IdList)

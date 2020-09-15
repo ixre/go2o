@@ -4,6 +4,7 @@ import (
 	"context"
 	"go2o/core/domain/interface/member"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/service"
 	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"go2o/tests/ti"

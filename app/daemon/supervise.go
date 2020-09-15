@@ -67,9 +67,10 @@ func superviseOrder(ss []Service) {
 
 // 监视新会员
 func superviseMemberUpdate(ss []Service) {
-	sv := impl.MemberService
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
 	notify := func(id int64, action string, ss []Service) {
-		m, _ := sv.GetMember(context.TODO(), &proto.Int64{Value: id})
+		m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: id})
 		if m != nil {
 			for _, v := range ss {
 				if !v.MemberObs(m, action == "create") {

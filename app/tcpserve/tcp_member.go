@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ixre/gof/net/nc"
-	"go2o/core/service/impl"
+	"go2o/core/service"
 	"go2o/core/service/proto"
 	"strconv"
 	"strings"
@@ -21,7 +21,9 @@ import (
 
 // get summary of member,if dbGet will get summary from database.
 func GetMemberSummary(memberId int64, updateTime int) *proto.SComplexMember {
-	v, _ := impl.MemberService.Complex(context.TODO(), &proto.Int64{Value: int64(memberId)})
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	v, _ := cli.Complex(context.TODO(), &proto.Int64{Value: int64(memberId)})
 	if v != nil {
 		return v
 	}
@@ -29,7 +31,9 @@ func GetMemberSummary(memberId int64, updateTime int) *proto.SComplexMember {
 }
 
 func getMemberAccount(memberId int64, updateTime int) *proto.SAccount {
-	v, _ := impl.MemberService.GetAccount(context.TODO(),
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	v, _ := cli.GetAccount(context.TODO(),
 		&proto.Int64{Value: memberId})
 	return v
 }
@@ -37,7 +41,7 @@ func getMemberAccount(memberId int64, updateTime int) *proto.SAccount {
 // get profile of member
 func cliMGet(ci *nc.Client, plan string) ([]byte, error) {
 	var obj interface{} = nil
-	var d = []byte{}
+	var d []byte
 
 	i := strings.Index(plan, ":")
 	ut, _ := strconv.Atoi(plan[i+1:])

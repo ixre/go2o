@@ -138,6 +138,8 @@ func (s *serviceC) LoginState(c *echox.Context) error {
  */
 func (s shopApi) addressList(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
-	address, _ := impl.MemberService.GetAddressList(context.TODO(), &proto.Int64{Value: int64(memberId)})
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	address, _ := cli.GetAddressList(context.TODO(), &proto.Int64{Value: int64(memberId)})
 	return address
 }
