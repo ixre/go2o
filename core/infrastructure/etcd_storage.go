@@ -137,11 +137,13 @@ func (e EtcdStorage) GetBytes(key string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	v, err := e.cli.Get(ctx, key)
 	cancel()
-	if err == nil && v.Kvs == nil {
-		return nil, errors.New("no such key")
+	if err == nil{
+		if v.Kvs == nil{
+			return nil, errors.New("no such key")
+		}
+		return v.Kvs[0].Value, err
 	}
-	//&& v.Kvs != nil && len(v.Kvs) > 0 {
-	return v.Kvs[0].Value, err
+	return []byte(nil), err
 }
 
 func (e EtcdStorage) Del(key string) {

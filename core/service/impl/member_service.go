@@ -21,7 +21,6 @@ import (
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
@@ -370,22 +369,7 @@ func (s *memberService) getMember(memberId int64) (
 	return m, nil
 }
 
-//todo: remove
-func (s *memberService) GetMemberIdByInviteCode(code string) int64 {
-	return s.repo.GetMemberIdByInviteCode(code)
-}
 
-// 根据信息获取会员编号
-func (s *memberService) GetMemberIdByBasis(str string, basic int) int64 {
-	switch basic {
-	default:
-	case notify.TypePhoneMessage:
-		return s.repo.GetMemberIdByPhone(str)
-	case notify.TypeEmailMessage:
-		return s.repo.GetMemberIdByEmail(str)
-	}
-	return -1
-}
 
 // 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
 func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*proto.Result, error) {
@@ -862,10 +846,6 @@ func (s *memberService) GetBank(memberId int64) *member.BankInfo {
 	return &b
 }
 
-func (s *memberService) SaveBankInfo(v *member.BankInfo) error {
-	m := s.repo.CreateMember(&member.Member{Id: v.MemberId})
-	return m.Profile().SaveBank(v)
-}
 
 // 解锁银行卡信息
 func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardUserIdRequest) (*proto.Result, error) {
@@ -934,7 +914,7 @@ func (s *memberService) GetBankCards(_ context.Context, id *proto.Int64) (*proto
 }
 
 // 保存银行卡
-func (s *memberService) SaveBankCard(_ context.Context, r *proto.BankCardSaveRequest) (*proto.Result, error) {
+func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
 	var v = &member.BankInfo{
 		BankName:    r.Value.BankName,
@@ -1127,16 +1107,20 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 }
 
 //判断会员是否由指定会员邀请推荐的
-func (s *memberService) IsInvitation(memberId int64, invitationMemberId int64) bool {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
-	return m.Invitation().InvitationBy(invitationMemberId)
+func (s *memberService) IsInvitation(c context.Context, r *proto.IsInvitationRequest) (*proto.Bool, error) {
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	b:= m.Invitation().InvitationBy(r.InviterId)
+	return &proto.Bool{Value: b},nil
 }
 
 // 获取我邀请的会员及会员邀请的人数
-func (s *memberService) GetMyPagedInvitationMembers(memberId int64,
-	begin, end int) (total int, rows []*dto.InvitationMember) {
-	iv := s.repo.CreateMember(&member.Member{Id: memberId}).Invitation()
-	total, rows = iv.GetInvitationMembers(begin, end)
+func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.MemberInvitationPagingRequest) (*proto.MemberInvitationPagingResponse, error) {
+	iv := s.repo.CreateMember(&member.Member{Id: r.MemberId}).Invitation()
+	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
+	ret := &proto.MemberInvitationPagingResponse{
+		Total: int64(total),
+		Data:make([]*proto.SInvitationMember,total),
+	}
 	if l := len(rows); l > 0 {
 		arr := make([]int32, l)
 		for i := 0; i < l; i++ {
@@ -1146,9 +1130,19 @@ func (s *memberService) GetMyPagedInvitationMembers(memberId int64,
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
 			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
+			ret.Data[i] = &proto.SInvitationMember{
+				MemberId:             int64(rows[i].MemberId),
+				User:                 rows[i].User,
+				Level:                rows[i].Level,
+				Avatar:               rows[i].Avatar,
+				NickName:             rows[i].NickName,
+				Phone:                rows[i].Phone,
+				Im:                  rows[i].Im,
+				InvitationNum:        int32(rows[i].InvitationNum),
+			}
 		}
 	}
-	return total, rows
+	return ret,nil
 }
 
 // 获取会员最后更新时间
@@ -1329,9 +1323,9 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	//		format.FormatFloat(latestApplyInfo.Amount),
 	//		sText)
 	//}
-	ret := &proto.WithdrawalLogsResponse{Value: make([]*proto.WithdrawalLog, 0)}
+	ret := &proto.WithdrawalLogsResponse{Data: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
-		ret.Value = append(ret.Value, &proto.WithdrawalLog{
+		ret.Data = append(ret.Data, &proto.WithdrawalLog{
 			Id:          latestApplyInfo.Id,
 			OuterNo:     latestApplyInfo.OuterNo,
 			Kind:        int32(latestApplyInfo.Kind),
@@ -1472,20 +1466,6 @@ func (s *memberService) TransferFlowTo(memberId int64, toMemberId int64, kind in
 		commission, tradeNo, toTitle, fromTitle)
 }
 
-// 根据用户或手机筛选会员
-func (s *memberService) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember {
-	return s.query.FilterMemberByUserOrPhone(key)
-}
-
-// 根据用户名货手机获取会员
-func (s *memberService) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
-	return s.query.GetMemberByUserOrPhone(key)
-}
-
-// 根据手机获取会员编号
-func (s *memberService) GetMemberIdByPhone1(phone string) int64 {
-	return s.query.GetMemberIdByPhone(phone)
-}
 
 // 会员推广排名
 func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
@@ -1496,23 +1476,40 @@ func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 
 //********* 促销  **********//
 
-// 可用的优惠券分页数据
-func (s *memberService) PagedAvailableCoupon(memberId int, start, end int) (int, []*dto.SimpleCoupon) {
-	return s.repo.CreateMemberById(int64(memberId)).
-		GiftCard().PagedAvailableCoupon(start, end)
+// 查询优惠券
+func (s *memberService) QueryCoupons(_ context.Context, r *proto.MemberCouponPagingRequest) (*proto.MemberCouponListResponse, error) {
+	cp := s.repo.CreateMemberById(r.MemberId).GiftCard()
+	begin,end := int(r.Begin),int(r.End)
+	var total int
+	var list []*dto.SimpleCoupon
+	switch r.State {
+	case proto.PagingCouponState_CS_Available:
+		total,list = cp.PagedAvailableCoupon(begin, end)
+	case proto.PagingCouponState_CS_Expired:
+		total,list = cp.PagedExpiresCoupon(begin, end)
+	default:
+		total,list = cp.PagedAllCoupon(begin, end)
+	}
+	ret := &proto.MemberCouponListResponse{
+		Total: int64(total),
+		Data:make([]*proto.SMemberCoupon,total),
+	}
+	for i,v :=range list{
+		ret.Data[i] = &proto.SMemberCoupon{
+			CouponId:             int64(v.Id),
+			Number:               int32(v.Num),
+			Title:                v.Title,
+			Code:                 v.Code,
+			DiscountFee:          int32(v.Fee),
+			Discount:             int32(v.Discount),
+			IsUsed:               v.IsUsed == 1,
+			GetTime:              0, //todo: ???
+			OverTime:             v.OverTime,
+		}
+	}
+	return ret,nil
 }
 
-// 已使用的优惠券
-func (s *memberService) PagedAllCoupon(memberId int, start, end int) (int, []*dto.SimpleCoupon) {
-	return s.repo.CreateMemberById(int64(memberId)).
-		GiftCard().PagedAllCoupon(start, end)
-}
-
-// 过期的优惠券
-func (s *memberService) PagedExpiresCoupon(memberId int, start, end int) (int, []*dto.SimpleCoupon) {
-	return s.repo.CreateMemberById(int64(memberId)).
-		GiftCard().PagedExpiresCoupon(start, end)
-}
 
 // 更改手机号
 func (s *memberService) changePhone(memberId int64, phone string) error {
@@ -1705,3 +1702,4 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.Address {
 		IsDefault:      int(src.IsDefault),
 	}
 }
+

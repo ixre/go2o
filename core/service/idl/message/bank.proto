@@ -2,7 +2,7 @@ syntax = "proto3";
 option go_package = ".;proto";
 
 
-message BankCardSaveRequest {
+message BankCardAddRequest {
     sint64 OwnerId = 1;
     SBankCardInfo Value = 2;
 }

@@ -28,6 +28,7 @@ type queryService struct {
 	memberQuery *query.MemberQuery
 }
 
+
 func NewQueryService() *queryService {
 	ctx := gof.CurrentApp
 	shopQuery := query.NewShopQuery(ctx)
@@ -203,4 +204,22 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 		}
 	}
 	return rsp, nil
+}
+
+
+// 根据用户或手机筛选会员
+func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchRequest) (*proto.MemberListResponse, error) {
+	list := q.memberQuery.FilterMemberByUserOrPhone(r.Keyword)
+	ret := &proto.MemberListResponse{
+		Value:                make([]*proto.MemberListSingle,len(list)),
+	}
+	for i,v := range list{
+		ret.Value[i] = &proto.MemberListSingle{
+			MemberId:      int64(v.Id),
+			User:          v.User,
+			NickName:      v.Name,
+			Avatar:        v.Avatar,
+		}
+	}
+	return ret,nil
 }

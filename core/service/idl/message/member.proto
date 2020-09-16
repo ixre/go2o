@@ -489,7 +489,7 @@ message WithdrawalLogRequest{
 
 message WithdrawalLogsResponse{
     sint64 MemberId = 1;
-    repeated WithdrawalLog Value = 2;
+    repeated WithdrawalLog Data = 2;
 }
 
 // 提现日志
@@ -531,4 +531,81 @@ message FinishWithdrawalRequest{
     int64 InfoId = 2;
     // 汇款/交易单号
     string TradeNo = 3;
+}
+
+message MemberInvitationPagingRequest{
+    int64 MemberId = 1;
+    int64 Begin = 2;
+    int64 End = 3;
+}
+
+
+message MemberInvitationPagingResponse {
+    int64 Total = 1;
+    repeated SInvitationMember Data = 2;
+}
+
+// 邀请会员数据
+message SInvitationMember {
+    // 会员编号
+   int64 MemberId = 1;
+    // 用户名
+    string User = 2;
+    // 等级
+    int32 Level = 3;
+    // 头像
+    string Avatar = 4;
+    // 昵称
+    string NickName = 5;
+    // 电话
+    string Phone = 6;
+    // 即时通讯
+    string Im = 9;
+    // 邀请人数
+    int32 InvitationNum = 10;
+}
+message IsInvitationRequest{
+    // 会员编号
+    int64 MemberId = 1;
+    // 邀请人会员编号
+    int64 InviterId = 2;
+}
+
+enum PagingCouponState{
+    CS_All = 0;
+    CS_Available = 1;
+    CS_Expired = 2;
+}
+
+message MemberCouponPagingRequest{
+    int64 MemberId = 1;
+    // 状态,-1为全部
+    PagingCouponState State = 2;
+    int64 Begin = 3;
+    int64 End = 4;
+}
+
+message MemberCouponListResponse{
+    int64 Total = 1;
+    repeated SMemberCoupon Data = 2;
+}
+message SMemberCoupon{
+    // 优惠券编号
+    int64 CouponId = 1;
+    // 数量
+    int32 Number = 2;
+    // 优惠券标题
+    string Title = 3;
+    //优惠码
+    string Code = 4;
+    //优惠金额
+    int32 DiscountFee = 5;
+    //订单折扣(不打折为100)
+    int32 Discount = 6;
+    //是否使用
+    bool IsUsed = 7;
+    // 获得时间
+    int64 GetTime = 8;
+    //结束日期
+    int64 OverTime = 9;
 }

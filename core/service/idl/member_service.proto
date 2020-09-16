@@ -74,8 +74,8 @@ service MemberService {
     // 获取会员绑定银行卡信息
     rpc GetBankCards (Int64) returns (BankCardListResponse) {
     }
-    // 保存银行卡
-    rpc SaveBankCard (BankCardSaveRequest) returns (Result) {
+    // 添加银行卡
+    rpc AddBankCard (BankCardAddRequest) returns (Result) {
     }
     // 移除绑定的银行卡
     rpc RemoveBankCard(BankCardUserIdRequest)returns(Result){}
@@ -169,6 +169,8 @@ service MemberService {
     // 获取会员账户信息,memberId
     rpc GetAccount (Int64) returns (SAccount) {
     }
+    //判断会员是否由指定会员邀请推荐的
+    rpc IsInvitation(IsInvitationRequest)returns(Bool){}
     // 获取自己的邀请人会员编号数组
     rpc InviterArray (DepthRequest) returns (InviterIdListResponse) {
     }
@@ -181,6 +183,8 @@ service MemberService {
     // 按条件获取荐指定等级会员的列表
     rpc QueryInviteArray (InviteQuantityRequest) returns (MemberIdListResponse) {
     }
+    // 获取我邀请的会员及会员邀请的人数
+    rpc GetMyPagedInvitationMembers(MemberInvitationPagingRequest) returns(MemberInvitationPagingResponse) {}
     // 账户充值,amount精确到分
     rpc AccountCharge (AccountChangeRequest) returns (Result) {
     }
@@ -223,6 +227,8 @@ service MemberService {
     // 是否已收藏
     rpc IsFavored (FavoriteRequest) returns (Bool) {
     }
+    // 查询优惠券
+    rpc QueryCoupons(MemberCouponPagingRequest)returns(MemberCouponListResponse) {}
 }
 
 enum FavoriteType {

@@ -15,6 +15,8 @@ service QueryService {
     rpc QueryTradeOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
     // 查询会员列表
     rpc QueryMemberList(MemberListRequest)returns(MemberListResponse){}
+    // 查询会员列表
+    rpc SearchMembers(MemberSearchRequest)returns(MemberListResponse){}
 }
 
 message QueryPagingShopRequest {
@@ -67,6 +69,11 @@ message PagedMemberSubOrder {
 
 message MemberListRequest{
     repeated int64 IdList = 1;
+}
+
+message MemberSearchRequest{
+    // 手机号/邮箱/用户名关键词
+    string Keyword = 1;
 }
 message MemberListResponse{
     repeated MemberListSingle Value = 1;
