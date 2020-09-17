@@ -984,17 +984,6 @@ func (s *memberService) ReviewTrustedInfo(_ context.Context, r *proto.ReviewTrus
 	return s.success(nil), nil
 }
 
-// 获取分页店铺收藏
-func (s *memberService) PagedShopFav(memberId int64, begin, end int,
-	where string) (int, []*dto.PagedShopFav) {
-	return s.query.PagedShopFav(memberId, begin, end, where)
-}
-
-// 获取分页店铺收藏
-func (s *memberService) PagedGoodsFav(memberId int64, begin, end int,
-	where string) (int, []*dto.PagedGoodsFav) {
-	return s.query.PagedGoodsFav(memberId, begin, end, where)
-}
 
 // 获取钱包账户分页记录
 func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {

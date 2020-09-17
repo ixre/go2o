@@ -28,7 +28,6 @@ type queryService struct {
 	memberQuery *query.MemberQuery
 }
 
-
 func NewQueryService() *queryService {
 	ctx := gof.CurrentApp
 	shopQuery := query.NewShopQuery(ctx)
@@ -206,20 +205,61 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 	return rsp, nil
 }
 
-
 // 根据用户或手机筛选会员
 func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchRequest) (*proto.MemberListResponse, error) {
 	list := q.memberQuery.FilterMemberByUserOrPhone(r.Keyword)
 	ret := &proto.MemberListResponse{
-		Value:                make([]*proto.MemberListSingle,len(list)),
+		Value: make([]*proto.MemberListSingle, len(list)),
 	}
-	for i,v := range list{
+	for i, v := range list {
 		ret.Value[i] = &proto.MemberListSingle{
-			MemberId:      int64(v.Id),
-			User:          v.User,
-			NickName:      v.Name,
-			Avatar:        v.Avatar,
+			MemberId: int64(v.Id),
+			User:     v.User,
+			NickName: v.Name,
+			Avatar:   v.Avatar,
 		}
 	}
-	return ret,nil
+	return ret, nil
+}
+
+// 获取分页店铺收藏
+
+func (q *queryService) QueryMemberFavoriteShops(_ context.Context, r *proto.FavoriteQueryRequest) (*proto.PagingShopFavoriteResponse, error) {
+	total, rows := q.memberQuery.PagedShopFav(r.MemberId, int(r.Begin), int(r.End), r.Where)
+	ret := &proto.PagingShopFavoriteResponse{
+		Total: int64(total),
+		Data:  make([]*proto.SPagingShopFavorite, len(rows)),
+	}
+	for i, v := range rows {
+		ret.Data[i] = &proto.SPagingShopFavorite{
+			Id:         int64(v.Id),
+			ShopId:     int64(v.ShopId),
+			ShopName:   v.ShopName,
+			Logo:       v.Logo,
+			UpdateTime: v.UpdateTime,
+		}
+	}
+	return ret, nil
+}
+
+// 获取分页商品收藏
+func (q *queryService) QueryMemberFavoriteGoods(_ context.Context, r *proto.FavoriteQueryRequest) (*proto.PagingGoodsFavoriteResponse, error) {
+	total, rows := q.memberQuery.PagedGoodsFav(r.MemberId, int(r.Begin), int(r.End), r.Where)
+	ret := &proto.PagingGoodsFavoriteResponse{
+		Total: int64(total),
+		Data:  make([]*proto.SPagingGoodsFavorite, len(rows)),
+	}
+	for i, v := range rows {
+		ret.Data[i] = &proto.SPagingGoodsFavorite{
+			Id:         int64(v.Id),
+			SkuId:      int64(v.SkuId),
+			GoodsName:  v.GoodsName,
+			Image:      v.Image,
+			OnShelves:  v.OnShelves == 1,
+			StockNum:   int32(v.StockNum),
+			SalePrice:  v.SalePrice,
+			UpdateTime: v.UpdateTime,
+		}
+	}
+	return ret, nil
 }

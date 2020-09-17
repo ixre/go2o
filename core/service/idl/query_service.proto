@@ -17,6 +17,44 @@ service QueryService {
     rpc QueryMemberList(MemberListRequest)returns(MemberListResponse){}
     // 查询会员列表
     rpc SearchMembers(MemberSearchRequest)returns(MemberListResponse){}
+    // 获取分页店铺收藏
+    rpc QueryMemberFavoriteShops(FavoriteQueryRequest)returns(PagingShopFavoriteResponse) {}
+    // 获取分页店铺收藏
+    rpc QueryMemberFavoriteGoods(FavoriteQueryRequest)returns(PagingGoodsFavoriteResponse) {}
+}
+
+message FavoriteQueryRequest{
+    int64 memberId =1;
+    int64 begin = 2;
+    int64 end = 3;
+    string where = 4;
+}
+
+message PagingShopFavoriteResponse{
+    int64 Total = 1;
+    repeated SPagingShopFavorite Data = 2;
+}
+
+message SPagingShopFavorite{
+    int64 Id       =1;
+    int64 ShopId  =2;
+    string ShopName =3;
+    string Logo    =4;
+    int64 UpdateTime = 5;
+}
+message PagingGoodsFavoriteResponse{
+    int64 Total = 1;
+    repeated SPagingGoodsFavorite Data = 2;
+}
+message SPagingGoodsFavorite {
+    int64 Id = 1;
+    int64 SkuId = 2;
+    string GoodsName = 3;
+    string Image = 4;
+    bool OnShelves = 5;
+    int32 StockNum = 6;
+    string SalePrice = 7;
+    int64 UpdateTime = 8;
 }
 
 message QueryPagingShopRequest {

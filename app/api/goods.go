@@ -55,7 +55,9 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	_, ss := impl.ItemService.GetPagedOnShelvesGoods__(int64(shopId), -1,
+	trans,cli,_  := service.ItemServeClient()
+	defer trans.Close()
+	_, ss := cli.GetPagedOnShelvesGoods__(int64(shopId), -1,
 		begin, begin+size, "it.id DESC")
 	return ss
 }
@@ -78,7 +80,9 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	_, ss := impl.ItemService.GetPagedOnShelvesGoods__(int64(shopId), -1,
+	trans,cli,_  := service.ItemServeClient()
+	defer trans.Close()
+	_, ss := cli.GetPagedOnShelvesGoods__(int64(shopId), -1,
 		begin, begin+size, "it.sale_num DESC")
 	return ss
 }
@@ -101,7 +105,9 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	list := impl.ItemService.GetValueGoodsBySaleLabel(
+	trans,cli,_  := service.ItemServeClient()
+	defer trans.Close()
+	list := cli.GetValueGoodsBySaleLabel(
 		code, "", begin, begin+size)
 	return list
 }
