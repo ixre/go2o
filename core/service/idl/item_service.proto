@@ -2,7 +2,7 @@ syntax = "proto3";
 option go_package = ".;proto";
 
 import "global.proto";
-
+import "message/item.proto";
 
 message SkuRequest {
     sint64 itemId = 1;
@@ -25,6 +25,19 @@ service ItemService {
     // 获取商品详细数据
     rpc GetItemDetailData (ItemDetailRequest) returns (String) {
     }
+    // 根据销售标签获取指定数目的商品
+    rpc GetValueGoodsBySaleLabel(GetItemsByLabelRequest)returns(PagingGoodsResponse){}
+    // 获取分页上架的商品
+
+    rpc GetShopPagedOnShelvesGoods(PagingGoodsRequest)returns(PagingGoodsResponse){}
+
+}
+
+
+message PagingGoodsRequest{
+    int64 ShopId = 1;
+    int64 CategoryId = 2;
+    SPagingParams Params = 3;
 }
 
 

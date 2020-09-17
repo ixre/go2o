@@ -1,0 +1,45 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+message GetItemsByLabelRequest {
+    string Label = 1;
+    string SortBy = 2;
+    int64 Begin = 3;
+    int64 End = 4;
+}
+
+message PagingGoodsResponse{
+    repeated SGoods Data = 1;
+}
+
+// 完整的商品信息
+message SGoods {
+    int64 ItemId = 1;
+    int64 ProductId = 2;
+    int64 VendorId = 3;
+    int64 ShopId = 4;
+    int32 CategoryId = 5;
+    // 标题
+    string Title = 6;
+    string ShortTitle = 7;
+    // 货号
+    string GoodsNo = 8;
+    string Image = 9;
+    //定价
+    double RetailPrice = 10;
+    //销售价
+    double Price = 11;
+    // 促销价
+    double PromPrice = 12;
+    // 价格区间
+    string PriceRange = 13;
+    int64 GoodsId = 14;
+    int64 SkuId = 15;
+    bool IsPresent = 16;
+    // 促销标志
+    int32 PromotionFlag = 17;
+    // 库存
+    int32 StockNum = 18;
+    // 已售件数
+    int32 SaleNum = 19;
+}

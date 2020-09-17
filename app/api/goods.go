@@ -107,9 +107,14 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 	}
 	trans,cli,_  := service.ItemServeClient()
 	defer trans.Close()
-	list := cli.GetValueGoodsBySaleLabel(
-		code, "", begin, begin+size)
-	return list
+	ret,_ := cli.GetValueGoodsBySaleLabel(context.TODO(),
+		&proto.GetItemsByLabelRequest{
+			Label:               code,
+			SortBy:               "",
+			Begin:                int64(begin),
+			End:                  int64(begin+size),
+		})
+	return ret.Data
 }
 
 /**

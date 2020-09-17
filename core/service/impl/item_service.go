@@ -42,6 +42,7 @@ type itemService struct {
 	sto       storage.Interface
 }
 
+
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
@@ -437,16 +438,39 @@ func (s *itemService) SaveSaleLabel(v *item.Label) (int32, error) {
 }
 
 // 根据销售标签获取指定数目的商品
-func (s *itemService) GetValueGoodsBySaleLabel(code, sortBy string, begin int, end int) []*valueobject.Goods {
-	tag := s.labelRepo.LabelService().GetSaleLabelByCode(code)
+func (s *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetItemsByLabelRequest) (*proto.PagingGoodsResponse, error) {
+	tag := s.labelRepo.LabelService().GetSaleLabelByCode(r.Label)
+	ret := &proto.PagingGoodsResponse{
+		Data: make([]*proto.SGoods, 0),
+	}
 	if tag != nil {
-		list := tag.GetValueGoods(sortBy, begin, end)
+		list := tag.GetValueGoods(r.SortBy, int(r.Begin), int(r.End))
 		for _, v := range list {
 			v.Image = format.GetGoodsImageUrl(v.Image)
+			ret.Data = append(ret.Data, &proto.SGoods{
+				ItemId:        v.ItemId,
+				ProductId:     v.ProductId,
+				VendorId:      int64(v.VendorId),
+				ShopId:        int64(v.ShopId),
+				CategoryId:    v.CategoryId,
+				Title:         v.Title,
+				ShortTitle:    v.ShortTitle,
+				GoodsNo:       v.GoodsNo,
+				Image:         v.Image,
+				RetailPrice:   float64(v.RetailPrice),
+				Price:         float64(v.ProductId),
+				PromPrice:     float64(v.PromPrice),
+				PriceRange:    v.PriceRange,
+				GoodsId:       v.GoodsId,
+				SkuId:         v.SkuId,
+				IsPresent:     v.IsPresent == 1,
+				PromotionFlag: v.PromotionFlag,
+				StockNum:      v.StockNum,
+				SaleNum:       v.SaleNum,
+			})
 		}
-		return list
 	}
-	return make([]*valueobject.Goods, 0)
+	return ret, nil
 }
 
 // 根据分页销售标签获取指定数目的商品
