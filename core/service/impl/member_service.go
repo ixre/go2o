@@ -369,8 +369,6 @@ func (s *memberService) getMember(memberId int64) (
 	return m, nil
 }
 
-
-
 // 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
 func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
@@ -846,7 +844,6 @@ func (s *memberService) GetBank(memberId int64) *member.BankInfo {
 	return &b
 }
 
-
 // 解锁银行卡信息
 func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardUserIdRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
@@ -984,7 +981,6 @@ func (s *memberService) ReviewTrustedInfo(_ context.Context, r *proto.ReviewTrus
 	return s.success(nil), nil
 }
 
-
 // 获取钱包账户分页记录
 func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {
 	var total int
@@ -993,16 +989,16 @@ func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccou
 	case member.AccountIntegral:
 		total, rows = s.query.PagedIntegralAccountLog(
 			r.MemberId, r.Params.Begin,
-			r.Params.Over, r.Params.SortBy)
+			r.Params.End, r.Params.SortBy)
 	case member.AccountBalance:
 		total, rows = s.query.PagedBalanceAccountLog(
 			r.MemberId, int(r.Params.Begin),
-			int(r.Params.Over), r.Params.Where,
+			int(r.Params.End), r.Params.Where,
 			r.Params.Where)
 	case member.AccountWallet:
 		total, rows = s.query.PagedWalletAccountLog(
 			r.MemberId, int(r.Params.Begin),
-			int(r.Params.Over), r.Params.Where,
+			int(r.Params.End), r.Params.Where,
 			r.Params.Where)
 	}
 	rs := &proto.SPagingResult{
@@ -1098,8 +1094,8 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 //判断会员是否由指定会员邀请推荐的
 func (s *memberService) IsInvitation(c context.Context, r *proto.IsInvitationRequest) (*proto.Bool, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
-	b:= m.Invitation().InvitationBy(r.InviterId)
-	return &proto.Bool{Value: b},nil
+	b := m.Invitation().InvitationBy(r.InviterId)
+	return &proto.Bool{Value: b}, nil
 }
 
 // 获取我邀请的会员及会员邀请的人数
@@ -1108,7 +1104,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
 	ret := &proto.MemberInvitationPagingResponse{
 		Total: int64(total),
-		Data:make([]*proto.SInvitationMember,total),
+		Data:  make([]*proto.SInvitationMember, total),
 	}
 	if l := len(rows); l > 0 {
 		arr := make([]int32, l)
@@ -1120,18 +1116,18 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 			rows[i].InvitationNum = num[rows[i].MemberId]
 			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
 			ret.Data[i] = &proto.SInvitationMember{
-				MemberId:             int64(rows[i].MemberId),
-				User:                 rows[i].User,
-				Level:                rows[i].Level,
-				Avatar:               rows[i].Avatar,
-				NickName:             rows[i].NickName,
-				Phone:                rows[i].Phone,
-				Im:                  rows[i].Im,
-				InvitationNum:        int32(rows[i].InvitationNum),
+				MemberId:      int64(rows[i].MemberId),
+				User:          rows[i].User,
+				Level:         rows[i].Level,
+				Avatar:        rows[i].Avatar,
+				NickName:      rows[i].NickName,
+				Phone:         rows[i].Phone,
+				Im:            rows[i].Im,
+				InvitationNum: int32(rows[i].InvitationNum),
 			}
 		}
 	}
-	return ret,nil
+	return ret, nil
 }
 
 // 获取会员最后更新时间
@@ -1455,7 +1451,6 @@ func (s *memberService) TransferFlowTo(memberId int64, toMemberId int64, kind in
 		commission, tradeNo, toTitle, fromTitle)
 }
 
-
 // 会员推广排名
 func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 	levelComp string, level int, startTime int64, endTime int64,
@@ -1468,37 +1463,36 @@ func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 // 查询优惠券
 func (s *memberService) QueryCoupons(_ context.Context, r *proto.MemberCouponPagingRequest) (*proto.MemberCouponListResponse, error) {
 	cp := s.repo.CreateMemberById(r.MemberId).GiftCard()
-	begin,end := int(r.Begin),int(r.End)
+	begin, end := int(r.Begin), int(r.End)
 	var total int
 	var list []*dto.SimpleCoupon
 	switch r.State {
 	case proto.PagingCouponState_CS_Available:
-		total,list = cp.PagedAvailableCoupon(begin, end)
+		total, list = cp.PagedAvailableCoupon(begin, end)
 	case proto.PagingCouponState_CS_Expired:
-		total,list = cp.PagedExpiresCoupon(begin, end)
+		total, list = cp.PagedExpiresCoupon(begin, end)
 	default:
-		total,list = cp.PagedAllCoupon(begin, end)
+		total, list = cp.PagedAllCoupon(begin, end)
 	}
 	ret := &proto.MemberCouponListResponse{
 		Total: int64(total),
-		Data:make([]*proto.SMemberCoupon,total),
+		Data:  make([]*proto.SMemberCoupon, total),
 	}
-	for i,v :=range list{
+	for i, v := range list {
 		ret.Data[i] = &proto.SMemberCoupon{
-			CouponId:             int64(v.Id),
-			Number:               int32(v.Num),
-			Title:                v.Title,
-			Code:                 v.Code,
-			DiscountFee:          int32(v.Fee),
-			Discount:             int32(v.Discount),
-			IsUsed:               v.IsUsed == 1,
-			GetTime:              0, //todo: ???
-			OverTime:             v.OverTime,
+			CouponId:    int64(v.Id),
+			Number:      int32(v.Num),
+			Title:       v.Title,
+			Code:        v.Code,
+			DiscountFee: int32(v.Fee),
+			Discount:    int32(v.Discount),
+			IsUsed:      v.IsUsed == 1,
+			GetTime:     0, //todo: ???
+			OverTime:    v.OverTime,
 		}
 	}
-	return ret,nil
+	return ret, nil
 }
-
 
 // 更改手机号
 func (s *memberService) changePhone(memberId int64, phone string) error {
@@ -1691,4 +1685,3 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.Address {
 		IsDefault:      int(src.IsDefault),
 	}
 }
-

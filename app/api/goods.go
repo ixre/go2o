@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/ixre/gof/api"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 )
 
@@ -55,11 +54,20 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	trans,cli,_  := service.ItemServeClient()
+	trans, cli, _ := service.ItemServeClient()
 	defer trans.Close()
-	_, ss := cli.GetPagedOnShelvesGoods__(int64(shopId), -1,
-		begin, begin+size, "it.id DESC")
-	return ss
+	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
+		&proto.PagingGoodsRequest{
+			ShopId:     int64(shopId),
+			CategoryId: -1,
+			Params: &proto.SPagingParams{
+				Begin:  int64(begin),
+				End:    int64(begin + size),
+				Where:  "",
+				SortBy: "it.id DESC",
+			},
+		})
+	return ret
 }
 
 /**
@@ -80,11 +88,20 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	trans,cli,_  := service.ItemServeClient()
+	trans, cli, _ := service.ItemServeClient()
 	defer trans.Close()
-	_, ss := cli.GetPagedOnShelvesGoods__(int64(shopId), -1,
-		begin, begin+size, "it.sale_num DESC")
-	return ss
+	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
+		&proto.PagingGoodsRequest{
+			ShopId:     int64(shopId),
+			CategoryId: -1,
+			Params: &proto.SPagingParams{
+				Begin:  int64(begin),
+				End:    int64(begin + size),
+				Where:  "",
+				SortBy: "it.sale_num DESC",
+			},
+		})
+	return ret
 }
 
 /**
@@ -105,14 +122,14 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	trans,cli,_  := service.ItemServeClient()
+	trans, cli, _ := service.ItemServeClient()
 	defer trans.Close()
-	ret,_ := cli.GetValueGoodsBySaleLabel(context.TODO(),
+	ret, _ := cli.GetValueGoodsBySaleLabel(context.TODO(),
 		&proto.GetItemsByLabelRequest{
-			Label:               code,
-			SortBy:               "",
-			Begin:                int64(begin),
-			End:                  int64(begin+size),
+			Label:  code,
+			SortBy: "",
+			Begin:  int64(begin),
+			End:    int64(begin + size),
 		})
 	return ret.Data
 }

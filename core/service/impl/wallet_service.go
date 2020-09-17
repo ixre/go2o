@@ -166,7 +166,7 @@ func (w *walletServiceImpl) PagingWalletLog(_ context.Context, r *proto.PagingWa
 		return parser.PagingResult(0, nil, wallet.ErrNoSuchWalletAccount), nil
 	}
 	total, list := iw.PagingLog(int(r.Params.Begin),
-		int(r.Params.Over), r.Params.Parameters,
+		int(r.Params.End), r.Params.Parameters,
 		r.Params.SortBy)
 	return parser.PagingResult(total, list, err), nil
 }

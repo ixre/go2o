@@ -42,7 +42,7 @@ func NewQueryService() *queryService {
 func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRequest) (*proto.QueryPagingShopsResponse, error) {
 	n, rows := q.shopQuery.PagedOnBusinessOnlineShops(
 		int(r.Params.Begin),
-		int(r.Params.Over),
+		int(r.Params.End),
 		"", r.Params.SortBy)
 	ret := &proto.QueryPagingShopsResponse{
 		Total: int64(n),
@@ -72,7 +72,7 @@ func (q *queryService) MemberNormalOrders(_ context.Context, r *proto.MemberOrde
 	n, list := q.orderQuery.QueryPagerOrder(
 		r.MemberId,
 		r.Params.Begin,
-		r.Params.Over,
+		r.Params.End,
 		true,
 		r.Params.Where,
 		r.Params.SortBy)
@@ -91,7 +91,7 @@ func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOr
 	n, list := q.orderQuery.PagedWholesaleOrderOfBuyer(
 		r.MemberId,
 		r.Params.Begin,
-		r.Params.Over,
+		r.Params.End,
 		true,
 		r.Params.Where,
 		r.Params.SortBy)
@@ -110,7 +110,7 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 	n, list := q.orderQuery.PagedTradeOrderOfBuyer(
 		r.MemberId,
 		r.Params.Begin,
-		r.Params.Over,
+		r.Params.End,
 		true,
 		r.Params.Where,
 		r.Params.SortBy)

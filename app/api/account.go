@@ -48,7 +48,7 @@ func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *ap
 	p := &proto.SPagingParams{
 		SortBy: "create_time DESC,bi.id DESC",
 		Begin:  begin,
-		Over:   begin + size,
+		End:    begin + size,
 	}
 	trans, cli, _ := service.MemberServeClient()
 	defer trans.Close()

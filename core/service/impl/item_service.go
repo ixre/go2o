@@ -42,7 +42,6 @@ type itemService struct {
 	sto       storage.Interface
 }
 
-
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
@@ -316,42 +315,35 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int64) *item.TradeSnapshot 
 }
 
 // 获取分页上架的商品
-func (s *itemService) GetShopPagedOnShelvesGoods(shopId int64, categoryId int32, start, end int,
-	sortBy string) (total int, list []*valueobject.Goods) {
-	if categoryId > 0 {
-		cat := s.cateRepo.GlobCatService().GetCategory(int(categoryId))
+func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingGoodsRequest) (*proto.PagingGoodsResponse, error) {
+	ret := &proto.PagingGoodsResponse{
+		Total: 0,
+		Data:  make([]*proto.SGoods, 0),
+	}
+	var list []*valueobject.Goods
+	var total int
+	var ids []int
+	if r.CategoryId > 0 {
+		cat := s.cateRepo.GlobCatService().GetCategory(int(r.CategoryId))
 		if cat == nil {
-			return 0, []*valueobject.Goods{}
+			return ret, nil
 		}
-		ids := cat.GetChildes()
-		ids = append(ids, int(categoryId))
-		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId, ids, start, end, "", sortBy)
-	} else {
-		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId, nil, start, end, "", sortBy)
-	}
-	for _, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-	}
-	return total, list
-}
+		ids = cat.GetChildes()
+		ids = append(ids, int(r.CategoryId))
 
-// 获取上架商品数据（分页）
-func (s *itemService) GetPagedOnShelvesGoods__(shopId int64, categoryId int32, start, end int,
-	sortBy string) (total int, list []*valueobject.Goods) {
-	if categoryId > 0 {
-		cate := s.cateRepo.GlobCatService().GetCategory(int(categoryId))
-		var ids = cate.GetChildes()
-		ids = append(ids, int(categoryId))
-		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId,
-			ids, start, end, "", sortBy)
-	} else {
-		total, list = s.itemRepo.GetPagedOnShelvesGoods(shopId,
-			[]int{}, start, end, "", sortBy)
 	}
+	total, list = s.itemRepo.GetPagedOnShelvesGoods(
+		r.ShopId, ids,
+		int(r.Params.Begin),
+		int(r.Params.End),
+		r.Params.Where,
+		r.Params.SortBy)
+	ret.Total = int64(total)
 	for _, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
+		ret.Data = append(ret.Data, s.parseGoods(v))
 	}
-	return total, list
+	return ret, nil
 }
 
 // 获取分页上架的商品
@@ -447,27 +439,7 @@ func (s *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetIt
 		list := tag.GetValueGoods(r.SortBy, int(r.Begin), int(r.End))
 		for _, v := range list {
 			v.Image = format.GetGoodsImageUrl(v.Image)
-			ret.Data = append(ret.Data, &proto.SGoods{
-				ItemId:        v.ItemId,
-				ProductId:     v.ProductId,
-				VendorId:      int64(v.VendorId),
-				ShopId:        int64(v.ShopId),
-				CategoryId:    v.CategoryId,
-				Title:         v.Title,
-				ShortTitle:    v.ShortTitle,
-				GoodsNo:       v.GoodsNo,
-				Image:         v.Image,
-				RetailPrice:   float64(v.RetailPrice),
-				Price:         float64(v.ProductId),
-				PromPrice:     float64(v.PromPrice),
-				PriceRange:    v.PriceRange,
-				GoodsId:       v.GoodsId,
-				SkuId:         v.SkuId,
-				IsPresent:     v.IsPresent == 1,
-				PromotionFlag: v.PromotionFlag,
-				StockNum:      v.StockNum,
-				SaleNum:       v.SaleNum,
-			})
+			ret.Data = append(ret.Data, s.parseGoods(v))
 		}
 	}
 	return ret, nil
@@ -625,5 +597,29 @@ func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 		Bulk:        sku.Bulk,
 		Stock:       sku.Stock,
 		SaleNum:     sku.SaleNum,
+	}
+}
+
+func (s *itemService) parseGoods(v *valueobject.Goods) *proto.SGoods {
+	return &proto.SGoods{
+		ItemId:        v.ItemId,
+		ProductId:     v.ProductId,
+		VendorId:      int64(v.VendorId),
+		ShopId:        int64(v.ShopId),
+		CategoryId:    v.CategoryId,
+		Title:         v.Title,
+		ShortTitle:    v.ShortTitle,
+		GoodsNo:       v.GoodsNo,
+		Image:         v.Image,
+		RetailPrice:   float64(v.RetailPrice),
+		Price:         float64(v.ProductId),
+		PromPrice:     float64(v.PromPrice),
+		PriceRange:    v.PriceRange,
+		GoodsId:       v.GoodsId,
+		SkuId:         v.SkuId,
+		IsPresent:     v.IsPresent == 1,
+		PromotionFlag: v.PromotionFlag,
+		StockNum:      v.StockNum,
+		SaleNum:       v.SaleNum,
 	}
 }

@@ -9,7 +9,8 @@ message GetItemsByLabelRequest {
 }
 
 message PagingGoodsResponse{
-    repeated SGoods Data = 1;
+    int64 Total = 1;
+    repeated SGoods Data = 2;
 }
 
 // 完整的商品信息

@@ -162,7 +162,7 @@ message SPagingParams {
     // 开始记录数
     sint64 Begin = 1;
     // 结束记录数
-    sint64 Over = 2;
+    sint64 End = 2;
     // 条件
     string Where = 3;
     // 排序字段
