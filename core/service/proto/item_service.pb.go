@@ -23,6 +23,30 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// 商品销售类型
+type EItemSalesType int32
+
+const (
+	EItemSalesType_IT_NORMAL    EItemSalesType = 0
+	EItemSalesType_IT_WHOLESALE EItemSalesType = 1
+)
+
+var EItemSalesType_name = map[int32]string{
+	0: "IT_NORMAL",
+	1: "IT_WHOLESALE",
+}
+var EItemSalesType_value = map[string]int32{
+	"IT_NORMAL":    0,
+	"IT_WHOLESALE": 1,
+}
+
+func (x EItemSalesType) String() string {
+	return proto.EnumName(EItemSalesType_name, int32(x))
+}
+func (EItemSalesType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_item_service_1b4c1e00c9c7fdb9, []int{0}
+}
+
 type SkuRequest struct {
 	ItemId               int64    `protobuf:"zigzag64,1,opt,name=itemId,proto3" json:"itemId,omitempty"`
 	SkuId                int64    `protobuf:"zigzag64,2,opt,name=skuId,proto3" json:"skuId,omitempty"`
@@ -35,7 +59,7 @@ func (m *SkuRequest) Reset()         { *m = SkuRequest{} }
 func (m *SkuRequest) String() string { return proto.CompactTextString(m) }
 func (*SkuRequest) ProtoMessage()    {}
 func (*SkuRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_212f202c8d28a7c5, []int{0}
+	return fileDescriptor_item_service_1b4c1e00c9c7fdb9, []int{0}
 }
 func (m *SkuRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SkuRequest.Unmarshal(m, b)
@@ -81,7 +105,7 @@ func (m *ItemDetailRequest) Reset()         { *m = ItemDetailRequest{} }
 func (m *ItemDetailRequest) String() string { return proto.CompactTextString(m) }
 func (*ItemDetailRequest) ProtoMessage()    {}
 func (*ItemDetailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_212f202c8d28a7c5, []int{1}
+	return fileDescriptor_item_service_1b4c1e00c9c7fdb9, []int{1}
 }
 func (m *ItemDetailRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ItemDetailRequest.Unmarshal(m, b)
@@ -116,7 +140,7 @@ func (m *ItemDetailRequest) GetIType() int32 {
 }
 
 type PagingGoodsRequest struct {
-	ShopId               int64          `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
+	ItemType             EItemSalesType `protobuf:"varint,1,opt,name=ItemType,proto3,enum=EItemSalesType" json:"ItemType,omitempty"`
 	CategoryId           int64          `protobuf:"varint,2,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
 	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
@@ -128,7 +152,7 @@ func (m *PagingGoodsRequest) Reset()         { *m = PagingGoodsRequest{} }
 func (m *PagingGoodsRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingGoodsRequest) ProtoMessage()    {}
 func (*PagingGoodsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_212f202c8d28a7c5, []int{2}
+	return fileDescriptor_item_service_1b4c1e00c9c7fdb9, []int{2}
 }
 func (m *PagingGoodsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingGoodsRequest.Unmarshal(m, b)
@@ -148,11 +172,11 @@ func (m *PagingGoodsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PagingGoodsRequest proto.InternalMessageInfo
 
-func (m *PagingGoodsRequest) GetShopId() int64 {
+func (m *PagingGoodsRequest) GetItemType() EItemSalesType {
 	if m != nil {
-		return m.ShopId
+		return m.ItemType
 	}
-	return 0
+	return EItemSalesType_IT_NORMAL
 }
 
 func (m *PagingGoodsRequest) GetCategoryId() int64 {
@@ -169,606 +193,56 @@ func (m *PagingGoodsRequest) GetParams() *SPagingParams {
 	return nil
 }
 
-type SOldItem struct {
-	ItemId               int64             `protobuf:"zigzag64,1,opt,name=ItemId,proto3" json:"ItemId,omitempty"`
-	ProductId            int64             `protobuf:"zigzag64,2,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
-	PromFlag             int32             `protobuf:"zigzag32,3,opt,name=PromFlag,proto3" json:"PromFlag,omitempty"`
-	CatId                int32             `protobuf:"zigzag32,4,opt,name=CatId,proto3" json:"CatId,omitempty"`
-	VendorId             int64             `protobuf:"zigzag64,5,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
-	BrandId              int32             `protobuf:"zigzag32,6,opt,name=BrandId,proto3" json:"BrandId,omitempty"`
-	ShopId               int64             `protobuf:"zigzag64,7,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
-	ShopCatId            int32             `protobuf:"zigzag32,8,opt,name=ShopCatId,proto3" json:"ShopCatId,omitempty"`
-	ExpressTid           int32             `protobuf:"zigzag32,9,opt,name=ExpressTid,proto3" json:"ExpressTid,omitempty"`
-	Title                string            `protobuf:"bytes,10,opt,name=Title,proto3" json:"Title,omitempty"`
-	ShortTitle           string            `protobuf:"bytes,11,opt,name=ShortTitle,proto3" json:"ShortTitle,omitempty"`
-	Code                 string            `protobuf:"bytes,12,opt,name=Code,proto3" json:"Code,omitempty"`
-	Image                string            `protobuf:"bytes,13,opt,name=Image,proto3" json:"Image,omitempty"`
-	IsPresent            int32             `protobuf:"zigzag32,14,opt,name=IsPresent,proto3" json:"IsPresent,omitempty"`
-	PriceRange           string            `protobuf:"bytes,15,opt,name=PriceRange,proto3" json:"PriceRange,omitempty"`
-	StockNum             int32             `protobuf:"zigzag32,16,opt,name=StockNum,proto3" json:"StockNum,omitempty"`
-	SaleNum              int32             `protobuf:"zigzag32,17,opt,name=SaleNum,proto3" json:"SaleNum,omitempty"`
-	SkuNum               int32             `protobuf:"zigzag32,18,opt,name=SkuNum,proto3" json:"SkuNum,omitempty"`
-	SkuId                int64             `protobuf:"zigzag64,19,opt,name=SkuId,proto3" json:"SkuId,omitempty"`
-	Cost                 float64           `protobuf:"fixed64,20,opt,name=Cost,proto3" json:"Cost,omitempty"`
-	Price                float64           `protobuf:"fixed64,21,opt,name=Price,proto3" json:"Price,omitempty"`
-	RetailPrice          float64           `protobuf:"fixed64,22,opt,name=RetailPrice,proto3" json:"RetailPrice,omitempty"`
-	Weight               int32             `protobuf:"zigzag32,23,opt,name=Weight,proto3" json:"Weight,omitempty"`
-	Bulk                 int32             `protobuf:"zigzag32,24,opt,name=Bulk,proto3" json:"Bulk,omitempty"`
-	ShelveState          int32             `protobuf:"zigzag32,25,opt,name=ShelveState,proto3" json:"ShelveState,omitempty"`
-	ReviewState          int32             `protobuf:"zigzag32,26,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
-	ReviewRemark         string            `protobuf:"bytes,27,opt,name=ReviewRemark,proto3" json:"ReviewRemark,omitempty"`
-	SortNum              int32             `protobuf:"zigzag32,28,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
-	CreateTime           int64             `protobuf:"zigzag64,29,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
-	UpdateTime           int64             `protobuf:"zigzag64,30,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
-	PromPrice            float64           `protobuf:"fixed64,31,opt,name=PromPrice,proto3" json:"PromPrice,omitempty"`
-	SkuArray             []*SSku           `protobuf:"bytes,32,rep,name=SkuArray,proto3" json:"SkuArray,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,33,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+type PagingShopGoodsRequest struct {
+	ShopId               int64          `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
+	CategoryId           int64          `protobuf:"varint,2,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
+	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
 }
 
-func (m *SOldItem) Reset()         { *m = SOldItem{} }
-func (m *SOldItem) String() string { return proto.CompactTextString(m) }
-func (*SOldItem) ProtoMessage()    {}
-func (*SOldItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_212f202c8d28a7c5, []int{3}
+func (m *PagingShopGoodsRequest) Reset()         { *m = PagingShopGoodsRequest{} }
+func (m *PagingShopGoodsRequest) String() string { return proto.CompactTextString(m) }
+func (*PagingShopGoodsRequest) ProtoMessage()    {}
+func (*PagingShopGoodsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_item_service_1b4c1e00c9c7fdb9, []int{3}
 }
-func (m *SOldItem) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SOldItem.Unmarshal(m, b)
+func (m *PagingShopGoodsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PagingShopGoodsRequest.Unmarshal(m, b)
 }
-func (m *SOldItem) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SOldItem.Marshal(b, m, deterministic)
+func (m *PagingShopGoodsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PagingShopGoodsRequest.Marshal(b, m, deterministic)
 }
-func (dst *SOldItem) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SOldItem.Merge(dst, src)
+func (dst *PagingShopGoodsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PagingShopGoodsRequest.Merge(dst, src)
 }
-func (m *SOldItem) XXX_Size() int {
-	return xxx_messageInfo_SOldItem.Size(m)
+func (m *PagingShopGoodsRequest) XXX_Size() int {
+	return xxx_messageInfo_PagingShopGoodsRequest.Size(m)
 }
-func (m *SOldItem) XXX_DiscardUnknown() {
-	xxx_messageInfo_SOldItem.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SOldItem proto.InternalMessageInfo
-
-func (m *SOldItem) GetItemId() int64 {
-	if m != nil {
-		return m.ItemId
-	}
-	return 0
+func (m *PagingShopGoodsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_PagingShopGoodsRequest.DiscardUnknown(m)
 }
 
-func (m *SOldItem) GetProductId() int64 {
-	if m != nil {
-		return m.ProductId
-	}
-	return 0
-}
+var xxx_messageInfo_PagingShopGoodsRequest proto.InternalMessageInfo
 
-func (m *SOldItem) GetPromFlag() int32 {
-	if m != nil {
-		return m.PromFlag
-	}
-	return 0
-}
-
-func (m *SOldItem) GetCatId() int32 {
-	if m != nil {
-		return m.CatId
-	}
-	return 0
-}
-
-func (m *SOldItem) GetVendorId() int64 {
-	if m != nil {
-		return m.VendorId
-	}
-	return 0
-}
-
-func (m *SOldItem) GetBrandId() int32 {
-	if m != nil {
-		return m.BrandId
-	}
-	return 0
-}
-
-func (m *SOldItem) GetShopId() int64 {
+func (m *PagingShopGoodsRequest) GetShopId() int64 {
 	if m != nil {
 		return m.ShopId
 	}
 	return 0
 }
 
-func (m *SOldItem) GetShopCatId() int32 {
+func (m *PagingShopGoodsRequest) GetCategoryId() int64 {
 	if m != nil {
-		return m.ShopCatId
+		return m.CategoryId
 	}
 	return 0
 }
 
-func (m *SOldItem) GetExpressTid() int32 {
+func (m *PagingShopGoodsRequest) GetParams() *SPagingParams {
 	if m != nil {
-		return m.ExpressTid
-	}
-	return 0
-}
-
-func (m *SOldItem) GetTitle() string {
-	if m != nil {
-		return m.Title
-	}
-	return ""
-}
-
-func (m *SOldItem) GetShortTitle() string {
-	if m != nil {
-		return m.ShortTitle
-	}
-	return ""
-}
-
-func (m *SOldItem) GetCode() string {
-	if m != nil {
-		return m.Code
-	}
-	return ""
-}
-
-func (m *SOldItem) GetImage() string {
-	if m != nil {
-		return m.Image
-	}
-	return ""
-}
-
-func (m *SOldItem) GetIsPresent() int32 {
-	if m != nil {
-		return m.IsPresent
-	}
-	return 0
-}
-
-func (m *SOldItem) GetPriceRange() string {
-	if m != nil {
-		return m.PriceRange
-	}
-	return ""
-}
-
-func (m *SOldItem) GetStockNum() int32 {
-	if m != nil {
-		return m.StockNum
-	}
-	return 0
-}
-
-func (m *SOldItem) GetSaleNum() int32 {
-	if m != nil {
-		return m.SaleNum
-	}
-	return 0
-}
-
-func (m *SOldItem) GetSkuNum() int32 {
-	if m != nil {
-		return m.SkuNum
-	}
-	return 0
-}
-
-func (m *SOldItem) GetSkuId() int64 {
-	if m != nil {
-		return m.SkuId
-	}
-	return 0
-}
-
-func (m *SOldItem) GetCost() float64 {
-	if m != nil {
-		return m.Cost
-	}
-	return 0
-}
-
-func (m *SOldItem) GetPrice() float64 {
-	if m != nil {
-		return m.Price
-	}
-	return 0
-}
-
-func (m *SOldItem) GetRetailPrice() float64 {
-	if m != nil {
-		return m.RetailPrice
-	}
-	return 0
-}
-
-func (m *SOldItem) GetWeight() int32 {
-	if m != nil {
-		return m.Weight
-	}
-	return 0
-}
-
-func (m *SOldItem) GetBulk() int32 {
-	if m != nil {
-		return m.Bulk
-	}
-	return 0
-}
-
-func (m *SOldItem) GetShelveState() int32 {
-	if m != nil {
-		return m.ShelveState
-	}
-	return 0
-}
-
-func (m *SOldItem) GetReviewState() int32 {
-	if m != nil {
-		return m.ReviewState
-	}
-	return 0
-}
-
-func (m *SOldItem) GetReviewRemark() string {
-	if m != nil {
-		return m.ReviewRemark
-	}
-	return ""
-}
-
-func (m *SOldItem) GetSortNum() int32 {
-	if m != nil {
-		return m.SortNum
-	}
-	return 0
-}
-
-func (m *SOldItem) GetCreateTime() int64 {
-	if m != nil {
-		return m.CreateTime
-	}
-	return 0
-}
-
-func (m *SOldItem) GetUpdateTime() int64 {
-	if m != nil {
-		return m.UpdateTime
-	}
-	return 0
-}
-
-func (m *SOldItem) GetPromPrice() float64 {
-	if m != nil {
-		return m.PromPrice
-	}
-	return 0
-}
-
-func (m *SOldItem) GetSkuArray() []*SSku {
-	if m != nil {
-		return m.SkuArray
-	}
-	return nil
-}
-
-func (m *SOldItem) GetData() map[string]string {
-	if m != nil {
-		return m.Data
-	}
-	return nil
-}
-
-// * SKU
-type SSku struct {
-	SkuId                int64    `protobuf:"zigzag64,1,opt,name=SkuId,proto3" json:"SkuId,omitempty"`
-	ItemId               int64    `protobuf:"zigzag64,2,opt,name=ItemId,proto3" json:"ItemId,omitempty"`
-	ProductId            int64    `protobuf:"zigzag64,3,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
-	Title                string   `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title,omitempty"`
-	Image                string   `protobuf:"bytes,5,opt,name=Image,proto3" json:"Image,omitempty"`
-	SpecData             string   `protobuf:"bytes,6,opt,name=SpecData,proto3" json:"SpecData,omitempty"`
-	SpecWord             string   `protobuf:"bytes,7,opt,name=SpecWord,proto3" json:"SpecWord,omitempty"`
-	Code                 string   `protobuf:"bytes,8,opt,name=Code,proto3" json:"Code,omitempty"`
-	RetailPrice          float64  `protobuf:"fixed64,9,opt,name=RetailPrice,proto3" json:"RetailPrice,omitempty"`
-	Price                float64  `protobuf:"fixed64,10,opt,name=Price,proto3" json:"Price,omitempty"`
-	Cost                 float64  `protobuf:"fixed64,11,opt,name=Cost,proto3" json:"Cost,omitempty"`
-	Weight               int32    `protobuf:"zigzag32,12,opt,name=Weight,proto3" json:"Weight,omitempty"`
-	Bulk                 int32    `protobuf:"zigzag32,13,opt,name=Bulk,proto3" json:"Bulk,omitempty"`
-	Stock                int32    `protobuf:"zigzag32,14,opt,name=Stock,proto3" json:"Stock,omitempty"`
-	SaleNum              int32    `protobuf:"zigzag32,15,opt,name=SaleNum,proto3" json:"SaleNum,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SSku) Reset()         { *m = SSku{} }
-func (m *SSku) String() string { return proto.CompactTextString(m) }
-func (*SSku) ProtoMessage()    {}
-func (*SSku) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_212f202c8d28a7c5, []int{4}
-}
-func (m *SSku) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SSku.Unmarshal(m, b)
-}
-func (m *SSku) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SSku.Marshal(b, m, deterministic)
-}
-func (dst *SSku) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SSku.Merge(dst, src)
-}
-func (m *SSku) XXX_Size() int {
-	return xxx_messageInfo_SSku.Size(m)
-}
-func (m *SSku) XXX_DiscardUnknown() {
-	xxx_messageInfo_SSku.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SSku proto.InternalMessageInfo
-
-func (m *SSku) GetSkuId() int64 {
-	if m != nil {
-		return m.SkuId
-	}
-	return 0
-}
-
-func (m *SSku) GetItemId() int64 {
-	if m != nil {
-		return m.ItemId
-	}
-	return 0
-}
-
-func (m *SSku) GetProductId() int64 {
-	if m != nil {
-		return m.ProductId
-	}
-	return 0
-}
-
-func (m *SSku) GetTitle() string {
-	if m != nil {
-		return m.Title
-	}
-	return ""
-}
-
-func (m *SSku) GetImage() string {
-	if m != nil {
-		return m.Image
-	}
-	return ""
-}
-
-func (m *SSku) GetSpecData() string {
-	if m != nil {
-		return m.SpecData
-	}
-	return ""
-}
-
-func (m *SSku) GetSpecWord() string {
-	if m != nil {
-		return m.SpecWord
-	}
-	return ""
-}
-
-func (m *SSku) GetCode() string {
-	if m != nil {
-		return m.Code
-	}
-	return ""
-}
-
-func (m *SSku) GetRetailPrice() float64 {
-	if m != nil {
-		return m.RetailPrice
-	}
-	return 0
-}
-
-func (m *SSku) GetPrice() float64 {
-	if m != nil {
-		return m.Price
-	}
-	return 0
-}
-
-func (m *SSku) GetCost() float64 {
-	if m != nil {
-		return m.Cost
-	}
-	return 0
-}
-
-func (m *SSku) GetWeight() int32 {
-	if m != nil {
-		return m.Weight
-	}
-	return 0
-}
-
-func (m *SSku) GetBulk() int32 {
-	if m != nil {
-		return m.Bulk
-	}
-	return 0
-}
-
-func (m *SSku) GetStock() int32 {
-	if m != nil {
-		return m.Stock
-	}
-	return 0
-}
-
-func (m *SSku) GetSaleNum() int32 {
-	if m != nil {
-		return m.SaleNum
-	}
-	return 0
-}
-
-// 统一的商品对象
-type SUnifiedItem struct {
-	ItemId               int64             `protobuf:"zigzag64,1,opt,name=ItemId,proto3" json:"ItemId,omitempty"`
-	ProductId            int32             `protobuf:"zigzag32,2,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
-	CatId                int32             `protobuf:"zigzag32,3,opt,name=CatId,proto3" json:"CatId,omitempty"`
-	VendorId             int32             `protobuf:"zigzag32,4,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
-	BrandId              int32             `protobuf:"zigzag32,5,opt,name=BrandId,proto3" json:"BrandId,omitempty"`
-	Title                string            `protobuf:"bytes,6,opt,name=Title,proto3" json:"Title,omitempty"`
-	Code                 string            `protobuf:"bytes,7,opt,name=Code,proto3" json:"Code,omitempty"`
-	Image                string            `protobuf:"bytes,8,opt,name=Image,proto3" json:"Image,omitempty"`
-	Price                float64           `protobuf:"fixed64,9,opt,name=Price,proto3" json:"Price,omitempty"`
-	PriceRange           string            `protobuf:"bytes,10,opt,name=PriceRange,proto3" json:"PriceRange,omitempty"`
-	StockNum             int32             `protobuf:"zigzag32,11,opt,name=StockNum,proto3" json:"StockNum,omitempty"`
-	ShelveState          int32             `protobuf:"zigzag32,12,opt,name=ShelveState,proto3" json:"ShelveState,omitempty"`
-	ReviewState          int32             `protobuf:"zigzag32,13,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
-	UpdateTime           int64             `protobuf:"zigzag64,14,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
-	SkuArray             []*SSku           `protobuf:"bytes,15,rep,name=SkuArray,proto3" json:"SkuArray,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,16,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *SUnifiedItem) Reset()         { *m = SUnifiedItem{} }
-func (m *SUnifiedItem) String() string { return proto.CompactTextString(m) }
-func (*SUnifiedItem) ProtoMessage()    {}
-func (*SUnifiedItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_212f202c8d28a7c5, []int{5}
-}
-func (m *SUnifiedItem) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SUnifiedItem.Unmarshal(m, b)
-}
-func (m *SUnifiedItem) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SUnifiedItem.Marshal(b, m, deterministic)
-}
-func (dst *SUnifiedItem) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SUnifiedItem.Merge(dst, src)
-}
-func (m *SUnifiedItem) XXX_Size() int {
-	return xxx_messageInfo_SUnifiedItem.Size(m)
-}
-func (m *SUnifiedItem) XXX_DiscardUnknown() {
-	xxx_messageInfo_SUnifiedItem.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SUnifiedItem proto.InternalMessageInfo
-
-func (m *SUnifiedItem) GetItemId() int64 {
-	if m != nil {
-		return m.ItemId
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetProductId() int32 {
-	if m != nil {
-		return m.ProductId
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetCatId() int32 {
-	if m != nil {
-		return m.CatId
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetVendorId() int32 {
-	if m != nil {
-		return m.VendorId
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetBrandId() int32 {
-	if m != nil {
-		return m.BrandId
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetTitle() string {
-	if m != nil {
-		return m.Title
-	}
-	return ""
-}
-
-func (m *SUnifiedItem) GetCode() string {
-	if m != nil {
-		return m.Code
-	}
-	return ""
-}
-
-func (m *SUnifiedItem) GetImage() string {
-	if m != nil {
-		return m.Image
-	}
-	return ""
-}
-
-func (m *SUnifiedItem) GetPrice() float64 {
-	if m != nil {
-		return m.Price
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetPriceRange() string {
-	if m != nil {
-		return m.PriceRange
-	}
-	return ""
-}
-
-func (m *SUnifiedItem) GetStockNum() int32 {
-	if m != nil {
-		return m.StockNum
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetShelveState() int32 {
-	if m != nil {
-		return m.ShelveState
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetReviewState() int32 {
-	if m != nil {
-		return m.ReviewState
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetUpdateTime() int64 {
-	if m != nil {
-		return m.UpdateTime
-	}
-	return 0
-}
-
-func (m *SUnifiedItem) GetSkuArray() []*SSku {
-	if m != nil {
-		return m.SkuArray
-	}
-	return nil
-}
-
-func (m *SUnifiedItem) GetData() map[string]string {
-	if m != nil {
-		return m.Data
+		return m.Params
 	}
 	return nil
 }
@@ -777,11 +251,8 @@ func init() {
 	proto.RegisterType((*SkuRequest)(nil), "SkuRequest")
 	proto.RegisterType((*ItemDetailRequest)(nil), "ItemDetailRequest")
 	proto.RegisterType((*PagingGoodsRequest)(nil), "PagingGoodsRequest")
-	proto.RegisterType((*SOldItem)(nil), "SOldItem")
-	proto.RegisterMapType((map[string]string)(nil), "SOldItem.DataEntry")
-	proto.RegisterType((*SSku)(nil), "SSku")
-	proto.RegisterType((*SUnifiedItem)(nil), "SUnifiedItem")
-	proto.RegisterMapType((map[string]string)(nil), "SUnifiedItem.DataEntry")
+	proto.RegisterType((*PagingShopGoodsRequest)(nil), "PagingShopGoodsRequest")
+	proto.RegisterEnum("EItemSalesType", EItemSalesType_name, EItemSalesType_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -803,8 +274,11 @@ type ItemServiceClient interface {
 	// 获取商品详细数据
 	GetItemDetailData(ctx context.Context, in *ItemDetailRequest, opts ...grpc.CallOption) (*String, error)
 	// 根据销售标签获取指定数目的商品
-	GetValueGoodsBySaleLabel(ctx context.Context, in *GetItemsByLabelRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
-	GetShopPagedOnShelvesGoods(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
+	GetValueGoodsBySaleLabel(ctx context.Context, in *GetItemsByLabelRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error)
+	// 获取店铺分页上架的商品
+	GetShopPagedOnShelvesGoods(ctx context.Context, in *PagingShopGoodsRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error)
+	// 获取上架商品数据（分页）
+	GetPagedOnShelvesItem(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
 }
 
 type itemServiceClient struct {
@@ -842,8 +316,8 @@ func (c *itemServiceClient) GetItemDetailData(ctx context.Context, in *ItemDetai
 	return out, nil
 }
 
-func (c *itemServiceClient) GetValueGoodsBySaleLabel(ctx context.Context, in *GetItemsByLabelRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error) {
-	out := new(PagingGoodsResponse)
+func (c *itemServiceClient) GetValueGoodsBySaleLabel(ctx context.Context, in *GetItemsByLabelRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error) {
+	out := new(PagingShopGoodsResponse)
 	err := c.cc.Invoke(ctx, "/ItemService/GetValueGoodsBySaleLabel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -851,9 +325,18 @@ func (c *itemServiceClient) GetValueGoodsBySaleLabel(ctx context.Context, in *Ge
 	return out, nil
 }
 
-func (c *itemServiceClient) GetShopPagedOnShelvesGoods(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error) {
-	out := new(PagingGoodsResponse)
+func (c *itemServiceClient) GetShopPagedOnShelvesGoods(ctx context.Context, in *PagingShopGoodsRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error) {
+	out := new(PagingShopGoodsResponse)
 	err := c.cc.Invoke(ctx, "/ItemService/GetShopPagedOnShelvesGoods", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) GetPagedOnShelvesItem(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error) {
+	out := new(PagingGoodsResponse)
+	err := c.cc.Invoke(ctx, "/ItemService/GetPagedOnShelvesItem", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -869,8 +352,11 @@ type ItemServiceServer interface {
 	// 获取商品详细数据
 	GetItemDetailData(context.Context, *ItemDetailRequest) (*String, error)
 	// 根据销售标签获取指定数目的商品
-	GetValueGoodsBySaleLabel(context.Context, *GetItemsByLabelRequest) (*PagingGoodsResponse, error)
-	GetShopPagedOnShelvesGoods(context.Context, *PagingGoodsRequest) (*PagingGoodsResponse, error)
+	GetValueGoodsBySaleLabel(context.Context, *GetItemsByLabelRequest) (*PagingShopGoodsResponse, error)
+	// 获取店铺分页上架的商品
+	GetShopPagedOnShelvesGoods(context.Context, *PagingShopGoodsRequest) (*PagingShopGoodsResponse, error)
+	// 获取上架商品数据（分页）
+	GetPagedOnShelvesItem(context.Context, *PagingGoodsRequest) (*PagingGoodsResponse, error)
 }
 
 func RegisterItemServiceServer(s *grpc.Server, srv ItemServiceServer) {
@@ -950,7 +436,7 @@ func _ItemService_GetValueGoodsBySaleLabel_Handler(srv interface{}, ctx context.
 }
 
 func _ItemService_GetShopPagedOnShelvesGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PagingGoodsRequest)
+	in := new(PagingShopGoodsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -962,7 +448,25 @@ func _ItemService_GetShopPagedOnShelvesGoods_Handler(srv interface{}, ctx contex
 		FullMethod: "/ItemService/GetShopPagedOnShelvesGoods",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetShopPagedOnShelvesGoods(ctx, req.(*PagingGoodsRequest))
+		return srv.(ItemServiceServer).GetShopPagedOnShelvesGoods(ctx, req.(*PagingShopGoodsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_GetPagedOnShelvesItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PagingGoodsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).GetPagedOnShelvesItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/GetPagedOnShelvesItem",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).GetPagedOnShelvesItem(ctx, req.(*PagingGoodsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -991,76 +495,47 @@ var _ItemService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "GetShopPagedOnShelvesGoods",
 			Handler:    _ItemService_GetShopPagedOnShelvesGoods_Handler,
 		},
+		{
+			MethodName: "GetPagedOnShelvesItem",
+			Handler:    _ItemService_GetPagedOnShelvesItem_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "item_service.proto",
 }
 
-func init() { proto.RegisterFile("item_service.proto", fileDescriptor_item_service_212f202c8d28a7c5) }
+func init() { proto.RegisterFile("item_service.proto", fileDescriptor_item_service_1b4c1e00c9c7fdb9) }
 
-var fileDescriptor_item_service_212f202c8d28a7c5 = []byte{
-	// 1004 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0xdb, 0x8e, 0xe3, 0x44,
-	0x13, 0x9e, 0x9c, 0xe3, 0x4e, 0xe6, 0x90, 0x9e, 0xf9, 0x77, 0xfa, 0x0f, 0xc3, 0x90, 0x35, 0x12,
-	0x44, 0x42, 0x32, 0xd2, 0x80, 0x00, 0x2d, 0x57, 0x9b, 0xd9, 0x65, 0x64, 0x40, 0x6c, 0x64, 0xcf,
-	0xee, 0x4a, 0xdc, 0xa0, 0x9e, 0xb8, 0x71, 0xac, 0xf8, 0x10, 0xda, 0xed, 0x81, 0x3c, 0x05, 0x6f,
-	0xc0, 0x9b, 0xf1, 0x12, 0x3c, 0x01, 0xea, 0x2a, 0xc7, 0xe9, 0x24, 0x33, 0x1c, 0x24, 0xae, 0xec,
-	0xef, 0xab, 0xee, 0xaa, 0xea, 0xea, 0xfa, 0x4a, 0x4d, 0x68, 0xa4, 0x44, 0xf2, 0x43, 0x2e, 0xe4,
-	0x7d, 0x34, 0x13, 0xce, 0x52, 0x66, 0x2a, 0x1b, 0xf6, 0xc3, 0x38, 0xbb, 0xe3, 0x71, 0x89, 0x68,
-	0x22, 0xf2, 0x9c, 0x87, 0xe2, 0x63, 0xbd, 0x12, 0x39, 0xfb, 0x19, 0x21, 0xfe, 0xa2, 0xf0, 0xc4,
-	0x4f, 0x85, 0xc8, 0x15, 0x7d, 0x42, 0xda, 0xda, 0xe6, 0x06, 0xac, 0x36, 0xaa, 0x8d, 0xa9, 0x57,
-	0x22, 0x7a, 0x46, 0x5a, 0xf9, 0xa2, 0x70, 0x03, 0x56, 0x07, 0x1a, 0x81, 0xfd, 0x9c, 0x0c, 0x5c,
-	0x25, 0x92, 0x17, 0x42, 0xf1, 0x28, 0xfe, 0x07, 0x2e, 0xa2, 0xdb, 0xd5, 0x52, 0x80, 0x8b, 0x81,
-	0x87, 0xc0, 0x56, 0x84, 0x4e, 0x79, 0x18, 0xa5, 0xe1, 0x4d, 0x96, 0x05, 0xb9, 0xe1, 0xc3, 0x9f,
-	0x67, 0xcb, 0xd2, 0x47, 0xc3, 0x2b, 0x11, 0xbd, 0x24, 0xe4, 0x9a, 0x2b, 0x11, 0x66, 0x72, 0x55,
-	0xe6, 0xd2, 0xf0, 0x0c, 0x86, 0x7e, 0x40, 0xda, 0x53, 0x2e, 0x79, 0x92, 0xb3, 0xc6, 0xa8, 0x36,
-	0xee, 0x5d, 0x1d, 0x39, 0x3e, 0x7a, 0x47, 0xd6, 0x2b, 0xad, 0xf6, 0xef, 0x1d, 0xd2, 0xf5, 0x5f,
-	0xc5, 0x81, 0xce, 0x5e, 0x07, 0x73, 0xb7, 0x12, 0x46, 0x44, 0x2f, 0x88, 0x35, 0x95, 0x59, 0x50,
-	0xcc, 0x54, 0x75, 0xee, 0x0d, 0x41, 0x87, 0xa4, 0x3b, 0x95, 0x59, 0xf2, 0x55, 0xcc, 0x43, 0x08,
-	0x36, 0xf0, 0x2a, 0xac, 0x8f, 0x7a, 0xcd, 0xf5, 0xae, 0x26, 0x1e, 0x15, 0x80, 0xde, 0xf1, 0x46,
-	0xa4, 0x41, 0x26, 0xdd, 0x80, 0xb5, 0xc0, 0x5d, 0x85, 0x29, 0x23, 0x9d, 0x89, 0xe4, 0x69, 0xe0,
-	0x06, 0xac, 0x0d, 0x7b, 0xd6, 0xd0, 0x28, 0x45, 0x07, 0xb3, 0x2b, 0x4b, 0x71, 0x41, 0x2c, 0xfd,
-	0x87, 0x71, 0xba, 0xb0, 0x67, 0x43, 0xe8, 0x42, 0xbd, 0xfc, 0x65, 0x29, 0x45, 0x9e, 0xdf, 0x46,
-	0x01, 0xb3, 0xc0, 0x6c, 0x30, 0x3a, 0xc3, 0xdb, 0x48, 0xc5, 0x82, 0x91, 0x51, 0x6d, 0x6c, 0x79,
-	0x08, 0xf4, 0x2e, 0x7f, 0x9e, 0x49, 0x85, 0xa6, 0x1e, 0x98, 0x0c, 0x86, 0x52, 0xd2, 0xbc, 0xce,
-	0x02, 0xc1, 0xfa, 0x60, 0x81, 0x7f, 0xed, 0xc9, 0x4d, 0x78, 0x28, 0xd8, 0x21, 0x7a, 0x02, 0xa0,
-	0xb3, 0x73, 0xf3, 0xa9, 0x14, 0xb9, 0x48, 0x15, 0x3b, 0xc2, 0xec, 0x2a, 0x42, 0xc7, 0x99, 0xca,
-	0x68, 0x26, 0x3c, 0x9e, 0x86, 0x82, 0x1d, 0x63, 0x9c, 0x0d, 0xa3, 0x2b, 0xe5, 0xab, 0x6c, 0xb6,
-	0xf8, 0xae, 0x48, 0xd8, 0x09, 0xd6, 0x76, 0x8d, 0x75, 0xa5, 0x7c, 0x1e, 0x0b, 0x6d, 0x1a, 0x60,
-	0xa5, 0x4a, 0x08, 0x95, 0x5a, 0x14, 0xda, 0x40, 0xc1, 0x50, 0x22, 0x9d, 0xa1, 0x0f, 0xbd, 0x7b,
-	0x8a, 0xbd, 0x0b, 0x00, 0xcf, 0x92, 0x2b, 0x76, 0x36, 0xaa, 0x8d, 0x6b, 0x1e, 0xfc, 0xeb, 0x95,
-	0x90, 0x05, 0xfb, 0x1f, 0x90, 0x08, 0xe8, 0x88, 0xf4, 0x3c, 0xe8, 0x70, 0xb4, 0x3d, 0x01, 0x9b,
-	0x49, 0xe9, 0xc8, 0x6f, 0x45, 0x14, 0xce, 0x15, 0x3b, 0xc7, 0xc8, 0x88, 0x74, 0x8c, 0x49, 0x11,
-	0x2f, 0x18, 0x03, 0x16, 0xfe, 0xb5, 0x37, 0x7f, 0x2e, 0xe2, 0x7b, 0xe1, 0x2b, 0xae, 0x04, 0xfb,
-	0x3f, 0x98, 0x4c, 0x0a, 0xe3, 0xdd, 0x47, 0xe2, 0x67, 0x5c, 0x31, 0xc4, 0x15, 0x06, 0x45, 0x6d,
-	0xd2, 0x47, 0xe8, 0x89, 0x84, 0xcb, 0x05, 0x7b, 0x07, 0x2a, 0xb8, 0xc5, 0x41, 0x9d, 0x32, 0xa9,
-	0x74, 0x39, 0x2e, 0xca, 0x3a, 0x21, 0x04, 0x11, 0x49, 0xc1, 0x95, 0xb8, 0x8d, 0x12, 0xc1, 0xde,
-	0x85, 0xa2, 0x18, 0x8c, 0xb6, 0xbf, 0x5e, 0x06, 0x6b, 0xfb, 0x25, 0xda, 0x37, 0x4c, 0xa9, 0x8b,
-	0x04, 0xab, 0xf1, 0x1e, 0x54, 0x63, 0x43, 0xd0, 0xa7, 0xa4, 0xeb, 0x2f, 0x8a, 0xe7, 0x52, 0xf2,
-	0x15, 0x1b, 0x8d, 0x1a, 0xe3, 0xde, 0x55, 0xcb, 0xf1, 0xf5, 0x84, 0xa9, 0x68, 0xfa, 0x21, 0x69,
-	0xbe, 0xe0, 0x8a, 0xb3, 0xa7, 0x60, 0x3e, 0x75, 0xd6, 0x4a, 0x74, 0x34, 0xfb, 0x32, 0x55, 0x72,
-	0xe5, 0xc1, 0x82, 0xe1, 0xe7, 0xc4, 0xaa, 0x28, 0x7a, 0x42, 0x1a, 0x0b, 0xb1, 0x02, 0x8d, 0x5a,
-	0x9e, 0xfe, 0xd5, 0xd7, 0x75, 0xcf, 0xe3, 0x02, 0x27, 0x8a, 0xe5, 0x21, 0x78, 0x56, 0xff, 0xa2,
-	0x66, 0xff, 0x51, 0x27, 0x4d, 0x1d, 0x74, 0x73, 0xf7, 0x35, 0xf3, 0xee, 0x37, 0x8a, 0xaf, 0x3f,
-	0xae, 0xf8, 0xc6, 0xae, 0xe2, 0x2b, 0xcd, 0x34, 0x4d, 0xcd, 0x54, 0xfd, 0xdf, 0x32, 0xfb, 0x5f,
-	0x77, 0xf0, 0x52, 0xcc, 0xe0, 0x98, 0x6d, 0x30, 0x54, 0x78, 0x6d, 0x7b, 0x9b, 0x49, 0xd4, 0x74,
-	0x69, 0xd3, 0xb8, 0x52, 0x58, 0xd7, 0x50, 0xd8, 0x4e, 0xff, 0x59, 0xfb, 0xfd, 0x57, 0xf5, 0x2d,
-	0x31, 0xfb, 0x76, 0xdd, 0xe1, 0x3d, 0xa3, 0xc3, 0x37, 0x9d, 0xda, 0x7f, 0xb0, 0x53, 0x0f, 0x8d,
-	0x4e, 0xd5, 0xb5, 0xd3, 0xaa, 0x2b, 0xf5, 0x8b, 0xc0, 0xd4, 0xdf, 0xf1, 0x96, 0xfe, 0xec, 0x5f,
-	0x9b, 0xa4, 0xef, 0xbf, 0x4e, 0xa3, 0x1f, 0x23, 0xf1, 0x2f, 0x07, 0xeb, 0x60, 0xa7, 0xcc, 0x38,
-	0xd4, 0x1a, 0x8f, 0x0d, 0x4f, 0x9c, 0xaa, 0x0f, 0x0e, 0xcf, 0xd6, 0xf6, 0xf0, 0xac, 0xae, 0xac,
-	0x6d, 0x5e, 0xd9, 0xba, 0xc8, 0x9d, 0x87, 0xc6, 0x58, 0xd7, 0xbc, 0xc6, 0xaa, 0xb0, 0x96, 0x59,
-	0xd8, 0xed, 0xf1, 0x45, 0xfe, 0x72, 0x7c, 0xf5, 0x76, 0xc6, 0xd7, 0x8e, 0xfc, 0xfb, 0x7f, 0x2b,
-	0xff, 0xc3, 0x7d, 0xf9, 0x6f, 0x0b, 0xf4, 0x68, 0x4f, 0xa0, 0xa6, 0x04, 0x8f, 0x1f, 0x96, 0xe0,
-	0x47, 0xa5, 0x04, 0x4f, 0xc0, 0x7c, 0xee, 0x98, 0xf7, 0xf6, 0x9f, 0xc9, 0xf0, 0xea, 0xb7, 0x3a,
-	0xe9, 0x69, 0x8f, 0x3e, 0xbe, 0x49, 0xe8, 0x25, 0x69, 0xdf, 0x08, 0xa5, 0x75, 0xd9, 0x73, 0x36,
-	0x8f, 0x8e, 0x21, 0x66, 0x67, 0x1f, 0xd0, 0xf7, 0xc9, 0xd1, 0x8d, 0x50, 0xb0, 0x63, 0x51, 0x7c,
-	0x9d, 0x67, 0x29, 0x6d, 0x3b, 0x6e, 0xaa, 0x3e, 0xfb, 0x74, 0xd8, 0x71, 0x7c, 0x25, 0xa3, 0x34,
-	0xb4, 0x0f, 0xe8, 0x15, 0x19, 0x94, 0x8b, 0xf0, 0xdd, 0x01, 0x9a, 0xa2, 0xce, 0xde, 0x43, 0xc4,
-	0xdc, 0xf3, 0x0d, 0x61, 0x37, 0x42, 0xbd, 0xd1, 0x89, 0xc1, 0x3b, 0x63, 0xb2, 0xd2, 0x4d, 0xfb,
-	0x2d, 0xbf, 0x13, 0x31, 0x3d, 0x77, 0x4a, 0x77, 0xf9, 0x64, 0x05, 0xcc, 0x7a, 0xff, 0x99, 0xb3,
-	0xf5, 0x32, 0xc9, 0x97, 0x59, 0x9a, 0x0b, 0xfb, 0x80, 0xba, 0x64, 0xa8, 0x4f, 0x31, 0xcf, 0x96,
-	0x53, 0x1e, 0x8a, 0xe0, 0x55, 0x8a, 0xb7, 0x97, 0xc3, 0x3a, 0x7a, 0xea, 0xec, 0xbf, 0x67, 0x1e,
-	0x73, 0x35, 0xb1, 0xbe, 0xef, 0x38, 0x5f, 0xc2, 0x3b, 0xec, 0xae, 0x0d, 0x9f, 0x4f, 0xfe, 0x0c,
-	0x00, 0x00, 0xff, 0xff, 0x99, 0x5f, 0x05, 0x5b, 0xc6, 0x09, 0x00, 0x00,
+var fileDescriptor_item_service_1b4c1e00c9c7fdb9 = []byte{
+	// 467 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x93, 0xd1, 0x8e, 0xd2, 0x4e,
+	0x14, 0xc6, 0x61, 0xc9, 0x76, 0xff, 0x7b, 0xd8, 0x3f, 0xc2, 0x71, 0x65, 0x09, 0x17, 0x9b, 0x4d,
+	0x4d, 0xcc, 0x46, 0x93, 0x31, 0xa2, 0xf1, 0x42, 0xaf, 0x40, 0x08, 0xd6, 0xa0, 0x60, 0x87, 0x68,
+	0xe2, 0x0d, 0x19, 0xe4, 0xa4, 0x34, 0x2d, 0x9d, 0xda, 0x99, 0x6e, 0xe4, 0x11, 0x7c, 0x5b, 0x1f,
+	0xc1, 0xcc, 0xb4, 0xe8, 0x12, 0x8c, 0xf1, 0xc2, 0x2b, 0x72, 0x7e, 0xf3, 0x9d, 0x6f, 0xce, 0x99,
+	0x8f, 0x02, 0x86, 0x9a, 0x36, 0x0b, 0x45, 0xd9, 0x4d, 0xf8, 0x99, 0x58, 0x9a, 0x49, 0x2d, 0xbb,
+	0x67, 0x41, 0x2c, 0x97, 0x22, 0x2e, 0x2b, 0xdc, 0x90, 0x52, 0x22, 0xa0, 0xc7, 0x46, 0x59, 0x30,
+	0xf7, 0x05, 0x00, 0x8f, 0x72, 0x9f, 0xbe, 0xe4, 0xa4, 0x34, 0xb6, 0xc1, 0x31, 0x67, 0xde, 0xaa,
+	0x53, 0xbd, 0xaa, 0x5e, 0xa3, 0x5f, 0x56, 0x78, 0x0e, 0xc7, 0x2a, 0xca, 0xbd, 0x55, 0xe7, 0xc8,
+	0xe2, 0xa2, 0x70, 0xfb, 0xd0, 0xf2, 0x34, 0x6d, 0x86, 0xa4, 0x45, 0x18, 0xff, 0x85, 0x45, 0x38,
+	0xdf, 0xa6, 0x64, 0x2d, 0x5a, 0x7e, 0x51, 0xb8, 0xdf, 0xaa, 0x80, 0x33, 0x11, 0x84, 0x49, 0x30,
+	0x96, 0x72, 0xa5, 0x76, 0x26, 0x8f, 0xe0, 0x3f, 0xe3, 0x6c, 0xf5, 0xc6, 0xa6, 0xd1, 0xbb, 0xc3,
+	0x46, 0x86, 0x70, 0x11, 0x93, 0x32, 0xd8, 0xff, 0x29, 0xc0, 0x4b, 0x80, 0x57, 0x42, 0x53, 0x20,
+	0xb3, 0x6d, 0x39, 0x61, 0xcd, 0xbf, 0x45, 0xf0, 0x01, 0x38, 0x33, 0x91, 0x89, 0x8d, 0xea, 0xd4,
+	0xae, 0xaa, 0xd7, 0xf5, 0x5e, 0x83, 0xf1, 0xe2, 0xca, 0x82, 0xfa, 0xe5, 0xa9, 0xfb, 0x15, 0xda,
+	0x05, 0xe7, 0x6b, 0x99, 0xee, 0x8d, 0xd3, 0x06, 0xc7, 0xb0, 0x72, 0xa7, 0x9a, 0x5f, 0x56, 0xff,
+	0xea, 0xe6, 0x87, 0x4f, 0xa0, 0xb1, 0xbf, 0x1d, 0xfe, 0x0f, 0xa7, 0xde, 0x7c, 0xf1, 0x6e, 0xea,
+	0xbf, 0xed, 0x4f, 0x9a, 0x15, 0x6c, 0xc2, 0x99, 0x37, 0x5f, 0x7c, 0x7c, 0x3d, 0x9d, 0x8c, 0x78,
+	0x7f, 0x32, 0x6a, 0x56, 0x7b, 0xdf, 0x8f, 0xa0, 0x6e, 0x5b, 0x8a, 0xbc, 0xf1, 0x12, 0x9c, 0x31,
+	0x69, 0x1e, 0xe5, 0x58, 0x67, 0xbf, 0x02, 0xed, 0x1e, 0x33, 0xce, 0xa3, 0xdc, 0xad, 0xe0, 0x7d,
+	0x68, 0x8c, 0x49, 0xdb, 0x8e, 0x28, 0x7f, 0xa3, 0x64, 0x82, 0x0e, 0xf3, 0x12, 0xfd, 0xfc, 0x59,
+	0xf7, 0x84, 0x71, 0x9d, 0x85, 0x49, 0xe0, 0x56, 0xb0, 0x07, 0xad, 0x52, 0x54, 0x64, 0x3a, 0x14,
+	0x5a, 0x20, 0xb2, 0x83, 0x90, 0x6f, 0xf7, 0x4c, 0xa1, 0x33, 0x26, 0xfd, 0x41, 0xc4, 0x39, 0xd9,
+	0x37, 0x1b, 0x6c, 0xcd, 0x16, 0x13, 0xb1, 0xa4, 0x18, 0x2f, 0x58, 0x69, 0xa7, 0x06, 0x5b, 0x4b,
+	0x76, 0xfd, 0x1d, 0x76, 0xf0, 0xd2, 0x2a, 0x95, 0x89, 0x22, 0xb7, 0x82, 0xef, 0xa1, 0x6b, 0x36,
+	0x59, 0xcb, 0x74, 0x26, 0x02, 0x5a, 0x4d, 0x13, 0xbe, 0xa6, 0xf8, 0x86, 0x94, 0xd5, 0xe1, 0x05,
+	0xfb, 0x7d, 0x46, 0x7f, 0xb4, 0x1c, 0xc2, 0xbd, 0x31, 0xe9, 0x7d, 0x3b, 0x33, 0x16, 0xde, 0x65,
+	0x87, 0x7f, 0xbe, 0xee, 0xf9, 0x3e, 0xdc, 0xb9, 0x0c, 0x4e, 0x3f, 0x9d, 0xb0, 0x97, 0xf6, 0xab,
+	0x59, 0x3a, 0xf6, 0xe7, 0xe9, 0x8f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xf4, 0xb3, 0xdd, 0xbf, 0x74,
+	0x03, 0x00, 0x00,
 }

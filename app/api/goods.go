@@ -57,7 +57,7 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 	trans, cli, _ := service.ItemServeClient()
 	defer trans.Close()
 	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
-		&proto.PagingGoodsRequest{
+		&proto.PagingShopGoodsRequest{
 			ShopId:     int64(shopId),
 			CategoryId: -1,
 			Params: &proto.SPagingParams{
@@ -91,7 +91,7 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 	trans, cli, _ := service.ItemServeClient()
 	defer trans.Close()
 	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
-		&proto.PagingGoodsRequest{
+		&proto.PagingShopGoodsRequest{
 			ShopId:     int64(shopId),
 			CategoryId: -1,
 			Params: &proto.SPagingParams{

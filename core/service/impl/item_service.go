@@ -42,6 +42,7 @@ type itemService struct {
 	sto       storage.Interface
 }
 
+
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
@@ -142,39 +143,56 @@ R:
 }
 
 // 获取上架商品数据（分页）
-func (s *itemService) GetPagedOnShelvesItem(itemType int32, catId int32, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
-	switch itemType {
-	case item.ItemNormal:
-		return s.getPagedOnShelvesItem(catId, start, end, where, sortBy)
-	case item.ItemWholesale:
-		return s.getPagedOnShelvesItemForWholesale(catId, start, end, where, sortBy)
+func (s *itemService) GetPagedOnShelvesItem(_ context.Context, r *proto.PagingGoodsRequest) (*proto.PagingGoodsResponse, error) {
+	ret := &proto.PagingGoodsResponse{
+		Total:                0,
+		Data:                 make([]*proto.SUnifiedViewItem,0),
 	}
-	return 0, []*proto.SOldItem{}
+	var total int32
+	var list []*proto.SUnifiedViewItem
+	switch r.ItemType {
+	case proto.EItemSalesType_IT_NORMAL:
+		total,list = s.getPagedOnShelvesItem(
+			int32(r.CategoryId),
+			int32(r.Params.Begin),
+			int32(r.Params.End),
+			r.Params.Where,
+			r.Params.SortBy)
+	case proto.EItemSalesType_IT_WHOLESALE:
+		total,list = s.getPagedOnShelvesItemForWholesale(
+			int32(r.CategoryId),
+			int32(r.Params.Begin),
+			int32(r.Params.End),
+			r.Params.Where,
+			r.Params.SortBy)
+	}
+	ret.Total = int64(total)
+	ret.Data = list
+	return ret,nil
 }
 func (s *itemService) getPagedOnShelvesItem(catId int32, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
+	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
 
 	total, list := s.itemQuery.GetPagedOnShelvesItem(catId,
 		start, end, where, sortBy)
-	arr := make([]*proto.SOldItem, len(list))
+	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDto(v)
+		arr[i] = parser.ItemDtoV2(v)
 	}
 	return total, arr
 }
 
 func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
+	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
 
 	total, list := s.itemQuery.GetPagedOnShelvesItemForWholesale(catId,
 		start, end, where, sortBy)
-	arr := make([]*proto.SOldItem, len(list))
+	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		dto := parser.ItemDto(v)
-		s.attachWholesaleItemData(dto)
+		dto := parser.ItemDtoV2(v)
+		s.attachWholesaleItemDataV2(dto)
 		arr[i] = dto
 	}
 	return total, arr
@@ -247,6 +265,34 @@ func (s *itemService) attachWholesaleItemData(dto *proto.SOldItem) {
 	}
 }
 
+// 附加批发商品的信息
+func (s *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
+	dto.Data = make(map[string]string)
+	vendor := s.mchRepo.GetMerchant(int(dto.VendorId))
+	if vendor != nil {
+		vv := vendor.GetValue()
+		pStr := s.valueRepo.GetAreaName(int32(vv.Province))
+		cStr := s.valueRepo.GetAreaName(int32(vv.City))
+		dto.Data["VendorName"] = vv.CompanyName
+		dto.Data["ShipArea"] = pStr + cStr
+		// 认证信息
+		ei := vendor.ProfileManager().GetEnterpriseInfo()
+		if ei != nil && ei.Reviewed == enum.ReviewPass {
+			dto.Data["Authorized"] = "true"
+		} else {
+			dto.Data["Authorized"] = "false"
+		}
+		// 品牌
+		b := s.promRepo.BrandService().Get(dto.BrandId)
+		if b != nil {
+			dto.Data["BrandName"] = b.Name
+			dto.Data["BrandImage"] = b.Image
+			dto.Data["BrandId"] = strconv.Itoa(int(b.ID))
+		}
+	}
+}
+
+
 // 获取上架商品数据（分页）
 func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) []*proto.SOldItem {
 	hash := fmt.Sprintf("%d-%d-%s", catId, quantity, where)
@@ -315,8 +361,8 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int64) *item.TradeSnapshot 
 }
 
 // 获取分页上架的商品
-func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingGoodsRequest) (*proto.PagingGoodsResponse, error) {
-	ret := &proto.PagingGoodsResponse{
+func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
+	ret := &proto.PagingShopGoodsResponse{
 		Total: 0,
 		Data:  make([]*proto.SGoods, 0),
 	}
@@ -430,9 +476,9 @@ func (s *itemService) SaveSaleLabel(v *item.Label) (int32, error) {
 }
 
 // 根据销售标签获取指定数目的商品
-func (s *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetItemsByLabelRequest) (*proto.PagingGoodsResponse, error) {
+func (s *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetItemsByLabelRequest) (*proto.PagingShopGoodsResponse, error) {
 	tag := s.labelRepo.LabelService().GetSaleLabelByCode(r.Label)
-	ret := &proto.PagingGoodsResponse{
+	ret := &proto.PagingShopGoodsResponse{
 		Data: make([]*proto.SGoods, 0),
 	}
 	if tag != nil {
