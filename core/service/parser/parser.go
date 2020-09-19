@@ -174,6 +174,14 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	return it
 }
 
+func SkuArrayDto(src []*item.Sku) []*proto.SSku {
+	var dst = make([]*proto.SSku, len(src))
+	for i, v := range src {
+		dst[i] = SkuDto(v)
+	}
+	return dst
+}
+
 func Item(src *proto.SOldItem) *item.GoodsItem {
 	it := &item.GoodsItem{
 		ID:           src.ItemId,
