@@ -286,12 +286,12 @@ type categoryManagerImpl struct {
 	readonly       bool
 	repo           product.ICategoryRepo
 	registryRepo   registry.IRegistryRepo
-	vendorId       int32
+	vendorId       int64
 	lastUpdateTime int64
 	categories     []product.ICategory
 }
 
-func NewCategoryManager(mchId int32, rep product.ICategoryRepo,
+func NewCategoryManager(mchId int64, rep product.ICategoryRepo,
 	registryRepo registry.IRegistryRepo) product.IGlobCatService {
 	c := &categoryManagerImpl{
 		repo:         rep,
@@ -311,7 +311,7 @@ func (c *categoryManagerImpl) init() product.IGlobCatService {
 }
 
 // 获取栏目关联的编号,系统用0表示
-func (c *categoryManagerImpl) getRelationId() int32 {
+func (c *categoryManagerImpl) getRelationId() int64 {
 	return c.vendorId
 }
 

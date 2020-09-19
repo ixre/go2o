@@ -9,12 +9,13 @@
 package restapi
 
 import (
+	"context"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
-	"go2o/core/domain/interface/merchant"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"net/http"
 	"strconv"
 )
@@ -62,10 +63,14 @@ func checkMemberToken(c echo.Context) bool {
 	r := c.Request()
 	memberId, _ := util.I64Err(strconv.Atoi(r.FormValue("member_id")))
 	token := r.FormValue("member_token")
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		if b, _ := cli.CheckToken(thrift.Context, memberId, token); b {
+		if b, _ := cli.CheckToken(context.TODO(),
+			&proto.CheckTokenRequest{
+				MemberId: memberId,
+				Token:    token,
+			}); b.Value {
 			c.Set("member_id", memberId)
 			return true
 		}
@@ -74,8 +79,8 @@ func checkMemberToken(c echo.Context) bool {
 }
 
 // 获取商户编号
-func getMerchantId(c echo.Context) int32 {
-	return c.Get("merchant_id").(int32)
+func getMerchantId(c echo.Context) int64 {
+	return c.Get("merchant_id").(int64)
 }
 
 // 获取会员编号
@@ -88,10 +93,10 @@ func ApiTest(c echo.Context) error {
 }
 
 // 检查是否有权限
-func CheckApiPermission(apiId string, secret string) (bool, int32) {
+func CheckApiPermission(apiId string, secret string) (bool, int64) {
 	if len(apiId) != 0 && len(secret) != 0 {
 		mchId := cache.GetMerchantIdByApiId(apiId)
-		var apiInfo *merchant.ApiInfo = cache.GetMerchantApiInfo(mchId)
+		var apiInfo = cache.GetMerchantApiInfo(mchId)
 		if apiInfo != nil {
 			return apiInfo.ApiSecret == secret, mchId
 		}

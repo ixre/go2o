@@ -14,7 +14,7 @@ import (
 )
 
 //todo:....
-var DebugMode bool = false
+var DebugMode = false
 
 // get application context
 func GetApp() gof.App {

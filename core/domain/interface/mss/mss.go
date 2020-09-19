@@ -16,36 +16,36 @@ import (
 //todo: waiting refactor
 
 var (
-	ErrNotSupportMessageType *domain.DomainError = domain.NewError(
+	ErrNotSupportMessageType = domain.NewError(
 		"err_not_support_message_type", "不支持的消息类型")
 
-	ErrNotEnabled *domain.DomainError = domain.NewError(
+	ErrNotEnabled = domain.NewError(
 		"err_template_not_enabled", "模板未启用")
 
-	ErrTemplateUsed *domain.DomainError = domain.NewError(
+	ErrTemplateUsed = domain.NewError(
 		"err_template_used", "模板被使用，无法删除")
 
-	ErrMessageUpdate *domain.DomainError = domain.NewError(
+	ErrMessageUpdate = domain.NewError(
 		"err_message_update", "消息不需要更新")
 
-	ErrMessageNotSave *domain.DomainError = domain.NewError(
+	ErrMessageNotSave = domain.NewError(
 		"err_message_not_save", "请在消息发送前保存")
 
-	ErrUnknownMessageUseFor *domain.DomainError = domain.NewError(
+	ErrUnknownMessageUseFor = domain.NewError(
 		"err_unknown_message_use_for", "未知的消息用途")
 
-	ErrMessageAllUser *domain.DomainError = domain.NewError(
+	ErrMessageAllUser = domain.NewError(
 		"err_message_all_user", "消息为全员消息,指定了多余的参数",
 	)
 
-	ErrMessageToRole *domain.DomainError = domain.NewError(
+	ErrMessageToRole = domain.NewError(
 		"err_message_to_role", "消息为用户类型消息,指定了多余的用户",
 	)
 
-	ErrUnknownRole *domain.DomainError = domain.NewError(
+	ErrUnknownRole = domain.NewError(
 		"err_unknown_role", "未知的用户类型")
 
-	ErrNoSuchReceiveUser *domain.DomainError = domain.NewError(
+	ErrNoSuchReceiveUser = domain.NewError(
 		"err_no_such_receive_user", "消息没有指定接收用户")
 )
 
@@ -71,7 +71,7 @@ type (
 	// ErrMsg manager,主要用于管理用户的模板
 	IUserMessageManager interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int32
+		GetAggregateRootId() int
 
 		// 获取配置
 		GetConfig() Config
@@ -103,22 +103,22 @@ type (
 		NotifyManager() notify.INotifyManager
 
 		// 获取消息设置
-		GetConfig(userId int32) *Config
+		GetConfig(userId int64) *Config
 
 		// 保存消息设置
-		SaveConfig(userId int32, conf *Config) error
+		SaveConfig(userId int64, conf *Config) error
 
 		// 获取邮箱模板
-		GetMailTemplate(userId, id int32) *MailTemplate
+		GetMailTemplate(userId int64, id int32) *MailTemplate
 
 		// 保存邮箱模版
 		SaveMailTemplate(*MailTemplate) (int32, error)
 
 		// 获取所有的邮箱模版
-		GetMailTemplates(userId int32) []*MailTemplate
+		GetMailTemplates(userId int64) []*MailTemplate
 
 		// 删除邮件模板
-		DeleteMailTemplate(userId, id int32) error
+		DeleteMailTemplate(userId, id int64) error
 
 		// 加入到发送对列
 		JoinMailTaskToQueen(*MailTask) error

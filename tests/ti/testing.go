@@ -18,7 +18,7 @@ import (
 	"github.com/ixre/gof/storage"
 	"go2o/core"
 	"go2o/core/repos"
-	"go2o/core/service/rsi"
+	"go2o/core/service/impl"
 	"time"
 )
 
@@ -141,11 +141,11 @@ func (t *testingApp) Init(debug, trace bool) bool {
 }
 
 func init() {
-	app := core.NewApp("../app_dev.conf")
+	app := core.NewApp("../app_dev.conf", nil)
 	gof.CurrentApp = app
 	core.Init(app, !false, false)
 	conn := app.Db()
 	sto := app.Storage()
 	Factory = (&repos.RepoFactory{}).Init(conn, sto)
-	rsi.InitTestService(app, conn, conn.GetOrm(), sto)
+	impl.InitTestService(app, conn, conn.GetOrm(), sto)
 }

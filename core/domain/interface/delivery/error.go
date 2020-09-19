@@ -14,6 +14,6 @@ import (
 )
 
 var (
-	ErrNotCoveragedArea *domain.DomainError = domain.NewError(
+	ErrNotCoveragedArea = domain.NewError(
 		"not_coveraged_area", "未覆盖的配送区域")
 )

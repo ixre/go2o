@@ -10,43 +10,39 @@
 package cart
 
 import (
-	"github.com/ixre/gof/math"
-	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/infrastructure/format"
-	"go2o/core/service/auto_gen/rpc/ttype"
 )
 
 var (
-	ErrNoSuchCart *domain.DomainError = domain.NewError(
+	ErrNoSuchCart = domain.NewError(
 		"empty_shopping_no_such_cart", "购物车无法使用")
 
-	ErrKindNotMatch *domain.DomainError = domain.NewError(
+	ErrKindNotMatch = domain.NewError(
 		"err_cart_kind_not_match", "购物车类型不匹配")
 
-	ErrEmptyShoppingCart *domain.DomainError = domain.NewError(
+	ErrEmptyShoppingCart = domain.NewError(
 		"empty_shopping_cart", "购物车没有商品")
 
-	ErrNoChecked *domain.DomainError = domain.NewError(
+	ErrNoChecked = domain.NewError(
 		"empty_shopping_cart_no_checked", "购物车没有结算的商品")
 
-	ErrCartNoBuyer *domain.DomainError = domain.NewError(
+	ErrCartNoBuyer = domain.NewError(
 		"err_cart_no_buyer", "购物车未绑定")
 
-	ErrItemNoSku *domain.DomainError = domain.NewError(
+	ErrItemNoSku = domain.NewError(
 		"err_cart_item_no_sku", "请选择商品规格")
 )
 
 const (
 	// 普通(B2C)购物车
-	KNormal CartKind = 1
+	KNormal Kind = 1
 	// 零售(B2C-线下)购物车
-	KRetail CartKind = 2
+	KRetail Kind = 2
 	// 批发(B2B)购物车
-	KWholesale CartKind = 3
+	KWholesale Kind = 3
 )
 
 const (
@@ -58,13 +54,13 @@ const (
 
 type (
 	// 购物车类型
-	CartKind int
+	Kind int
 	// 购物车
 	ICart interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32
 		// 购物车种类
-		Kind() CartKind
+		Kind() Kind
 		// 克隆
 		Clone() ICart
 		// 获取购物车编码
@@ -132,7 +128,7 @@ type (
 	// 如果都没有，则创建一个购物车
 	ICartRepo interface {
 		// 获取买家的购物车
-		GetMyCart(buyerId int64, k CartKind) ICart
+		GetMyCart(buyerId int64, k Kind) ICart
 		// 创建一个购物车
 		NewNormalCart(code string) ICart
 		// 创建一个普通购物车
@@ -183,7 +179,7 @@ type (
 		// SKU编号
 		SkuId int64
 		// 卖家编号
-		SellerId int32
+		SellerId int64
 		// 数量
 		Quantity int32
 		// 是否勾选结算
@@ -210,9 +206,9 @@ type (
 		// 购物车编号
 		CartId int32 `db:"cart_id"`
 		// 运营商编号
-		VendorId int32 `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id"`
+		ShopId int64 `db:"shop_id"`
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// SKU编号
@@ -250,9 +246,9 @@ type (
 		// 购物车编号
 		CartId int32 `db:"cart_id"`
 		// 运营商编号
-		SellerId int32 `db:"vendor_id"`
+		SellerId int64 `db:"vendor_id"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id"`
+		ShopId int64 `db:"shop_id"`
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// SKU编号
@@ -272,7 +268,7 @@ type (
 	// 批发购物车卖家JSON数据对象
 	WCartSellerJdo struct {
 		// 运营商编号
-		SellerId int32
+		SellerId int64
 		// 购物车商品
 		Item []WCartItemJdo
 		// 其他数据
@@ -315,63 +311,3 @@ type (
 		JData string
 	}
 )
-
-func ParseCartItem(item *NormalCartItem) *ttype.SShoppingCartItem {
-	i := &ttype.SShoppingCartItem{
-		ItemId:   item.ItemId,
-		SkuId:    item.SkuId,
-		Quantity: item.Quantity,
-		Checked:  item.Checked == 1,
-		ShopId:   item.ShopId,
-	}
-	if item.Sku != nil {
-		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
-		i.RetailPrice = math.Round(float64(item.Sku.RetailPrice), 2)
-		i.Price = math.Round(float64(item.Sku.Price), 2)
-		i.SpecWord = item.Sku.SpecWord
-		if i.Title == "" {
-			i.Title = item.Sku.Title
-		}
-		i.Code = item.Sku.ItemCode
-		i.StockText = util.BoolExt.TString(item.Sku.Stock > 0,
-			"有货", "无货")
-	}
-	return i
-}
-
-func ParseToDtoCart(c ICart) *ttype.SShoppingCart {
-	cart := &ttype.SShoppingCart{}
-	if c.Kind() != KNormal {
-		panic("购物车类型非零售")
-	}
-	rc := c.(INormalCart)
-	v := rc.Value()
-
-	cart.CartId = c.GetAggregateRootId()
-	cart.Code = v.CartCode
-	cart.Shops = []*ttype.SShoppingCartGroup{}
-
-	items := rc.Items()
-	if items != nil && len(items) > 0 {
-		mp := make(map[int32]*ttype.SShoppingCartGroup, 0) //保存运营商到map
-		for _, v := range items {
-			vendor, ok := mp[v.ShopId]
-			if !ok {
-				vendor = &ttype.SShoppingCartGroup{
-					VendorId: v.VendorId,
-					ShopId:   v.ShopId,
-					Items:    []*ttype.SShoppingCartItem{},
-				}
-				mp[v.ShopId] = vendor
-				cart.Shops = append(cart.Shops, vendor)
-			}
-			if v.Checked == 1 {
-				vendor.Checked = true
-			}
-			vendor.Items = append(vendor.Items, ParseCartItem(v))
-			//cart.TotalNum += v.Quantity
-		}
-	}
-
-	return cart
-}

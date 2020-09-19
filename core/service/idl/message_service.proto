@@ -1,0 +1,44 @@
+syntax = "proto3";
+option go_package = ".;proto";
+import "global.proto";
+
+/** 消息服务 */
+service MessageService {
+    /** 获取通知项,key */
+    rpc GetNotifyItem (String) returns (SNotifyItem) {
+    }
+    /** 发送短信 */
+    rpc SendPhoneMessage (SendMessageRequest) returns (Result) {
+    }
+}
+
+message SendMessageRequest {
+    string account = 1;
+    string message = 2;
+    map<string, string> data = 3;
+}
+
+/** 消息方式 */
+enum EMessageChannel {
+    _2 = 0;
+    /** 站内信 */
+    SiteMessage = 1; /** 邮件 */
+    EmailMessage = 2; /** 短信 */
+    SmsMessage = 3;
+}
+
+/** 通知项 */
+message SNotifyItem {
+    /** 键 */
+    string Key = 1;
+    /** 发送方式 */
+    sint32 NotifyBy = 2;
+    /** 不允许修改发送方式 */
+    bool ReadonlyBy = 3;
+    /** 模板编号 */
+    sint32 TplId = 4;
+    /** 内容 */
+    string Content = 5;
+    /** 模板包含的标签 */
+    map<string, string> Tags = 6;
+}

@@ -1,8 +1,11 @@
 package api
 
 import (
+	"context"
+	"errors"
 	"github.com/ixre/gof/api"
-	"go2o/core/service/rsi"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 )
 
 /**
@@ -51,9 +54,20 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	_, ss := rsi.ItemService.GetPagedOnShelvesGoods__(int32(shopId), -1,
-		begin, begin+size, "it.id DESC")
-	return ss
+	trans, cli, _ := service.ItemServeClient()
+	defer trans.Close()
+	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
+		&proto.PagingShopGoodsRequest{
+			ShopId:     int64(shopId),
+			CategoryId: -1,
+			Params: &proto.SPagingParams{
+				Begin:  int64(begin),
+				End:    int64(begin + size),
+				Where:  "",
+				SortBy: "it.id DESC",
+			},
+		})
+	return ret
 }
 
 /**
@@ -74,9 +88,20 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	_, ss := rsi.ItemService.GetPagedOnShelvesGoods__(int32(shopId), -1,
-		begin, begin+size, "it.sale_num DESC")
-	return ss
+	trans, cli, _ := service.ItemServeClient()
+	defer trans.Close()
+	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
+		&proto.PagingShopGoodsRequest{
+			ShopId:     int64(shopId),
+			CategoryId: -1,
+			Params: &proto.SPagingParams{
+				Begin:  int64(begin),
+				End:    int64(begin + size),
+				Where:  "",
+				SortBy: "it.sale_num DESC",
+			},
+		})
+	return ret
 }
 
 /**
@@ -97,9 +122,16 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	list := rsi.ItemService.GetValueGoodsBySaleLabel(
-		code, "", begin, begin+size)
-	return list
+	trans, cli, _ := service.ItemServeClient()
+	defer trans.Close()
+	ret, _ := cli.GetValueGoodsBySaleLabel(context.TODO(),
+		&proto.GetItemsByLabelRequest{
+			Label:  code,
+			SortBy: "",
+			Begin:  int64(begin),
+			End:    int64(begin + size),
+		})
+	return ret.Data
 }
 
 /**
@@ -114,7 +146,16 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 func (g goodsApi) Favorite(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	id := ctx.Form().GetInt("item_id")
-	err := rsi.MemberService.FavoriteGoods(int64(memberId), int32(id))
+	trans, cli, _ := service.MemberServeClient()
+	r, err := cli.Favorite(context.TODO(), &proto.FavoriteRequest{
+		MemberId:     int64(memberId),
+		FavoriteType: proto.FavoriteType_Goods,
+		ReferId:      int64(id),
+	})
+	trans.Close()
+	if r.ErrCode > 0 {
+		err = errors.New(r.ErrMsg)
+	}
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
@@ -125,13 +166,13 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //func (j *JsonC) Mch_goods(c *echox.Context) error {
 //	typeParams := strings.TrimSpace(c.FormValue("params"))
 //	types := strings.Split(typeParams, "|")
-//	mchId, _ := util.I32Err(strconv.Atoi(c.FormValue("mch_id")))
+//	mchId, _ := util.I64Err(strconv.Atoi(c.FormValue("mch_id")))
 //	result := make(map[string]interface{}, len(types))
 //	key := fmt.Sprint("go2o:repo:sg:front:%d_%s", mchId, typeParams)
 //	sto := c.App.Storage()
 //	if err := sto.Get(key, &result); err != nil {
 //		//从缓存中读取
-//		ss := rsi.ItemService
+//		ss := impl.ItemService
 //		for _, t := range types {
 //			p, size, begin := j.getMultiParams(t)
 //			switch p {
@@ -157,7 +198,7 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //	sto := c.App.Storage()
 //	//从缓存中读取
 //	if err := sto.Get(key, &result); err != nil {
-//		ss := rsi.ShopService
+//		ss := impl.ShopService
 //		for _, t := range types {
 //			p, size, begin := j.getMultiParams(t)
 //			switch p {
@@ -179,7 +220,7 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //func (j *JsonC) Get_NewShop2(c *echox.Context) error {
 //	begin, _ := strconv.Atoi(c.FormValue("begin"))
 //	size, _ := strconv.Atoi(c.FormValue("size"))
-//	ss := rsi.ShopService
+//	ss := impl.ShopService
 //	_, result := ss.PagedOnBusinessOnlineShops(
 //		begin, begin+size, "", "sp.create_time DESC")
 //

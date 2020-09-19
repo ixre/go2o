@@ -1,8 +1,8 @@
 package msq
 
 import (
-	nats "github.com/nats-io/nats.go"
-	"log"
+	"github.com/ixre/gof/log"
+	"github.com/nats-io/nats.go"
 )
 
 var _ Producer = new(natsProducer)

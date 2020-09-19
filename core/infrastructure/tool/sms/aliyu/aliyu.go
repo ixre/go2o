@@ -17,8 +17,8 @@ import (
 
 var (
 	mux             sync.RWMutex
-	ParamKeyTplName string = "ali_template"
-	ParamKeyTplId   string = "ali_template_id"
+	ParamKeyTplName = "ali_template"
+	ParamKeyTplId   = "ali_template_id"
 )
 
 // 发送短信

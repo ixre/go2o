@@ -41,7 +41,7 @@ func WalkSaleCategory(cs []*product.Category, v *product.Category,
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
 		return v1.(*product.Category).ParentId == v.(*product.Category).Id
 	}
-	var arr []interface{} = make([]interface{}, len(cs))
+	var arr = make([]interface{}, len(cs))
 	for i, v := range cs {
 		arr[i] = v
 	}
@@ -55,7 +55,7 @@ func WalkArticleCategory(cs []*content.ArticleCategory, v *content.ArticleCatego
 		return v1.(*content.ArticleCategory).ParentId ==
 			v.(*content.ArticleCategory).ID
 	}
-	var arr []interface{} = make([]interface{}, len(cs))
+	var arr = make([]interface{}, len(cs))
 	for i, v := range cs {
 		arr[i] = v
 	}

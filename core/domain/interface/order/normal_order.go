@@ -120,9 +120,9 @@ type (
 		// 购买人编号(冗余,便于商户处理数据)
 		BuyerId int64 `db:"buyer_id"`
 		// 运营商编号
-		VendorId int32 `db:"vendor_id" json:"vendorId"`
+		VendorId int64 `db:"vendor_id" json:"vendorId"`
 		// 店铺编号
-		ShopId int32 `db:"shop_id" json:"shopId"`
+		ShopId int64 `db:"shop_id" json:"shopId"`
 		// 订单标题
 		Subject string `db:"subject" json:"subject"`
 		// 商品金额
@@ -178,9 +178,9 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 运营商编号
-		VendorId int32 `db:"-"`
+		VendorId int64 `db:"-"`
 		// 商店编号
-		ShopId int32 `db:"-"`
+		ShopId int64 `db:"-"`
 		// 重量,用于生成订单时存储数据
 		Weight int32 `db:"-"`
 		// 体积:毫升(ml)

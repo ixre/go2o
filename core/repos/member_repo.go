@@ -17,7 +17,6 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
-	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/registry"
@@ -99,7 +98,7 @@ func (m *MemberRepoImpl) SaveProfile(v *member.Profile) error {
 }
 
 //收藏,typeId 为类型编号, referId为关联的ID
-func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int32) error {
+func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int64) error {
 	_, _, err := m.Connector.GetOrm().Save(nil, &member.Favorite{
 		MemberId:   memberId,
 		FavType:    favType,
@@ -110,7 +109,7 @@ func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int32) er
 }
 
 //是否已收藏
-func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int32) bool {
+func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int64) bool {
 	num := 0
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_favorite
 	WHERE member_id= $1 AND fav_type= $2 AND refer_id= $3`, &num,
@@ -119,7 +118,7 @@ func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int32) boo
 }
 
 //取消收藏
-func (m *MemberRepoImpl) CancelFavorite(memberId int64, favType int, referId int32) error {
+func (m *MemberRepoImpl) CancelFavorite(memberId int64, favType int, referId int64) error {
 	_, err := m.Connector.GetOrm().Delete(&member.Favorite{},
 		"member_id= $1 AND fav_type= $2 AND refer_id= $3",
 		memberId, favType, referId)
@@ -256,12 +255,12 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
 // 保存会员
 func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 	if v.Id > 0 {
-		rc := core.GetRedisConn()
-		defer rc.Close()
-		// 保存最后更新时间
-		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
-		rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
-		rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
+		//rc := core.GetRedisConn()
+		//defer rc.Close()
+		//// 保存最后更新时间
+		//mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
+		//rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
+		//rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息
 		_, _, err := m.Connector.GetOrm().Save(v.Id, v)
@@ -270,7 +269,7 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 			// 存储到缓存中
 			err = m.storage.Set(m.getMemberCk(v.Id), *v)
 			// 存储到队列
-			rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
+			//rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
 
 			// 推送消息
 			go msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(int(v.Id)))
@@ -290,10 +289,10 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	m.initMember(v)
 	// 推送消息
 	go msq.Push(msq.MemberUpdated, "create|"+strconv.Itoa(int(v.Id)))
-	rc := core.GetRedisConn()
-	defer rc.Close()
-	rc.Do("RPUSH", variable.KvMemberUpdateQueue,
-		fmt.Sprintf("%d-create", v.Id)) // push to queue
+	//rc := core.GetRedisConn()
+	//defer rc.Close()
+	//rc.Do("RPUSH", variable.KvMemberUpdateQueue,
+	//	fmt.Sprintf("%d-create", v.Id)) // push to queue
 
 	// 更新会员数 todo: 考虑去掉
 	var total = 0
@@ -392,27 +391,31 @@ func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
 }
 
 func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int64) {
-	rc := core.GetRedisConn()
-	defer rc.Close()
-	// 保存最后更新时间
-	mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
-	rc.Do("SETEX", mutKey, 3600*400, updateTime)
-	// push to tcp notify queue
-	rc.Do("RPUSH", variable.KvAccountUpdateTcpNotifyQueue, memberId)
+	//rc := core.GetRedisConn()
+	//defer rc.Close()
+	//// 保存最后更新时间
+	//mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
+	//rc.Do("SETEX", mutKey, 3600*400, updateTime)
+	//// push to tcp notify queue
+	//rc.Do("RPUSH", variable.KvAccountUpdateTcpNotifyQueue, memberId)
 }
 
 // 获取银行信息
-func (m *MemberRepoImpl) Bankcards(memberId int64) *member.BankInfo {
+func (m *MemberRepoImpl) BankCards(memberId int64) *member.BankInfo {
 	e := new(member.BankInfo)
 	m.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
 // 保存银行信息
-func (m *MemberRepoImpl) SaveBankcard(v *member.BankInfo) error {
+func (m *MemberRepoImpl) SaveBankCard(v *member.BankInfo) error {
 	var err error
 	_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
 	return err
+}
+
+func (m *MemberRepoImpl) RemoveBankCard(id int64) error {
+	return m.Connector.GetOrm().DeleteByPk(&member.BankInfo{}, id)
 }
 
 func (m *MemberRepoImpl) ReceiptsCodes(memberId int64) []member.ReceiptsCode {
@@ -520,7 +523,7 @@ func (m *MemberRepoImpl) GetInviteChildren(id int64) []int64 {
 }
 
 // 获取积分对应的等级
-func (m *MemberRepoImpl) GetLevelValueByExp(mchId int32, exp int64) int {
+func (m *MemberRepoImpl) GetLevelValueByExp(mchId int64, exp int64) int {
 	var levelId int
 	m.Connector.ExecScalar(`SELECT lv.value FROM pt_member_level lv
 	 	where lv.merchant_id= $1 AND lv.require_exp <= $2 AND lv.enabled=1
@@ -633,7 +636,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 		return map[int32]int{}
 	}
 	memberIds := format.I32ArrStrJoin(memberIdArr)
-	var d map[int32]int = make(map[int32]int)
+	var d = make(map[int32]int)
 	err := m.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
 		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.inviter_id=r1.member_id)"+
 		"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
@@ -651,7 +654,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 
 // 获取推荐我的人
 func (m *MemberRepoImpl) GetInvitationMeMember(memberId int64) *member.Member {
-	var d *member.Member = new(member.Member)
+	var d = new(member.Member)
 	err := m.Connector.GetOrm().GetByQuery(d,
 		"SELECT * FROM mm_member WHERE id =(SELECT inviter_id FROM mm_relation  WHERE id= $1)",
 		memberId)

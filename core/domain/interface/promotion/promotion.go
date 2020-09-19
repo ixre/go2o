@@ -17,16 +17,16 @@ package promotion
 import "go2o/core/infrastructure/domain"
 
 var (
-	ErrCanNotApplied *domain.DomainError = domain.NewError(
+	ErrCanNotApplied = domain.NewError(
 		"name_exists", "无法应用此优惠")
 
-	ErrExistsSamePromotionFlag *domain.DomainError = domain.NewError(
+	ErrExistsSamePromotionFlag = domain.NewError(
 		"exists_same_promotion_flag", "已存在相同的促销")
 
-	ErrNoSuchPromotion *domain.DomainError = domain.NewError(
+	ErrNoSuchPromotion = domain.NewError(
 		"no_such_promotion", "促销不存在")
 
-	ErrNoDetailsPromotion *domain.DomainError = domain.NewError(
+	ErrNoDetailsPromotion = domain.NewError(
 		"no_details_promotion", "促销信息不完整")
 )
 

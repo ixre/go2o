@@ -91,7 +91,7 @@ func (s *snapshotServiceImpl) updateSnapshot(ls *item.Snapshot,
 		levelSales = 1
 	}
 	unix := time.Now().Unix()
-	var snap *item.Snapshot = &item.Snapshot{
+	var snap = &item.Snapshot{
 		ItemId:      it.ID,
 		Key:         fmt.Sprintf("%d-g%d-%d", it.VendorId, it.ID, unix),
 		CatId:       it.CatId,

@@ -74,7 +74,7 @@ func (d *Delivery) GetNearestCoverage(lng, lat float64) delivery.ICoverageArea {
 
 // 查看单个所在的区域
 func (d *Delivery) FindSingleCoverageArea(lng, lat float64) delivery.ICoverageArea {
-	var covers []*delivery.CoverageValue = d.rep.GetAllCoverageAreas(d.id)
+	var covers = d.rep.GetAllCoverageAreas(d.id)
 	if covers != nil {
 		return newCoverageArea(covers[0], d.rep)
 	}
@@ -83,9 +83,9 @@ func (d *Delivery) FindSingleCoverageArea(lng, lat float64) delivery.ICoverageAr
 
 // 查找所有所在的区域
 func (d *Delivery) FindCoverageAreas(lng, lat float64) []delivery.ICoverageArea {
-	var covers []*delivery.CoverageValue = d.rep.GetAllCoverageAreas(d.id)
+	var covers = d.rep.GetAllCoverageAreas(d.id)
 	if covers != nil {
-		var list []delivery.ICoverageArea = make([]delivery.ICoverageArea, len(covers))
+		var list = make([]delivery.ICoverageArea, len(covers))
 		for i, v := range covers {
 			list[i] = newCoverageArea(v, d.rep)
 		}

@@ -1,9 +1,10 @@
 package api
 
 import (
+	"context"
 	"github.com/ixre/gof/api"
-	"go2o/core/service/auto_gen/rpc/content_service"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 )
 
 var _ api.Handler = new(ArticleApi)
@@ -39,15 +40,20 @@ func (a ArticleApi) list(ctx api.Context) interface{} {
 	page := form.GetInt("page")
 	size := form.GetInt("size")
 	begin := (page - 1) * size
-	trans, cli, err := thrift.ContentServeClient()
+	trans, cli, err := service.ContentServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.QueryPagingArticles(thrift.Context, catStr, int32(begin), int32(size))
+		r, _ := cli.QueryPagingArticles(context.TODO(),
+			&proto.PagingArticleRequest{
+				Cat:   catStr,
+				Begin: int32(begin),
+				Size:  int32(size),
+			})
 		return r
 	}
 	return map[string]interface{}{
 		"total": 0,
-		"rows":  []*content_service.SArticle{},
+		"rows":  []*proto.SArticle{},
 	}
 }
 
@@ -67,11 +73,12 @@ func (a ArticleApi) topArticle(ctx api.Context) interface{} {
 	if len(catStr) == 0 {
 		return api.NewErrorResponse("缺少参数:cat")
 	}
-	trans, cli, err := thrift.ContentServeClient()
+	trans, cli, err := service.ContentServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.QueryTopArticles(thrift.Context, catStr)
+		r, _ := cli.QueryTopArticles(context.TODO(),
+			&proto.String{Value: catStr})
 		return r
 	}
-	return []*content_service.SArticle{}
+	return []*proto.SArticle{}
 }

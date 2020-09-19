@@ -164,7 +164,7 @@ func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 			g.value.IsPresent = v.IsPresent
 			g.value.ProductId = v.ProductId
 			g.value.PromFlag = v.PromFlag
-			g.value.ShopCatId = v.ShopId
+			g.value.ShopCatId = v.ShopCatId
 			g.value.ExpressTid = v.ExpressTid
 			g.value.Title = v.Title
 			g.value.ShortTitle = v.ShortTitle
@@ -385,9 +385,9 @@ func (g *itemImpl) GetPromotions() []promotion.IPromotion {
 	//todo: 商品促销
 	return []promotion.IPromotion{}
 
-	var vp []*promotion.PromotionInfo = g.promRepo.GetPromotionOfGoods(
+	var vp = g.promRepo.GetPromotionOfGoods(
 		g.GetAggregateRootId())
-	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
+	var proms = make([]promotion.IPromotion, len(vp))
 	for i, v := range vp {
 		proms[i] = g.promRepo.CreatePromotion(v)
 	}

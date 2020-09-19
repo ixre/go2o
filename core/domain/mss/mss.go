@@ -145,14 +145,14 @@ func (m *messageManagerImpl) CreateChatSession(senderRole int, senderId int32,
 }
 
 type userMessageManagerImpl struct {
-	_appUserId     int32
+	_appUserId     int64
 	_userRole      int //todo: role
 	_mssRepo       mss.IMssRepo
 	_mailTemplates []*mss.MailTemplate
 	_config        *mss.Config
 }
 
-func NewMssManager(appUserId int32, rep mss.IMssRepo) mss.IUserMessageManager {
+func NewMssManager(appUserId int64, rep mss.IMssRepo) mss.IUserMessageManager {
 	return &userMessageManagerImpl{
 		_appUserId: appUserId,
 		_mssRepo:   rep,
@@ -160,8 +160,8 @@ func NewMssManager(appUserId int32, rep mss.IMssRepo) mss.IUserMessageManager {
 }
 
 // 获取聚合根编号
-func (u *userMessageManagerImpl) GetAggregateRootId() int32 {
-	return u._appUserId
+func (u *userMessageManagerImpl) GetAggregateRootId() int {
+	return int(u._appUserId)
 }
 
 // 获取配置
@@ -202,7 +202,7 @@ func (u *userMessageManagerImpl) DeleteMailTemplate(id int32) error {
 	//if this._partnerRepo.CheckKvContainValue(mchId, "kvset", strconv.Itoa(id), "mail") > 0 {
 	//	return mss.ErrTemplateUsed
 	//}
-	return u._mssRepo.DeleteMailTemplate(u._appUserId, id)
+	return u._mssRepo.DeleteMailTemplate(u._appUserId, int64(id))
 }
 
 // 获取所有的邮箱模版

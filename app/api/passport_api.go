@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/ixre/gof"
@@ -9,9 +10,8 @@ import (
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
-	"go2o/core/service/auto_gen/rpc/member_service"
-	"go2o/core/service/auto_gen/rpc/message_service"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"log"
 	"strconv"
 	"strings"
@@ -51,13 +51,13 @@ func (m PassportApi) Process(fn string, ctx api.Context) *api.Response {
 }
 
 // 根据输入的凭据获取会员编号
-func (m PassportApi) checkMemberBasis(ctx api.Context) (string, member_service.ECredentials, error) {
+func (m PassportApi) checkMemberBasis(ctx api.Context) (string, proto.ECredentials, error) {
 	acc := strings.TrimSpace(ctx.Form().GetString("account"))          //账号、手机或邮箱
 	credTypeId, err := strconv.Atoi(ctx.Form().GetString("cred_type")) //账号类型
 	if err != nil {
-		return acc, member_service.ECredentials_User, err
+		return acc, proto.ECredentials_User, err
 	}
-	credType := member_service.ECredentials(credTypeId)
+	credType := proto.ECredentials(credTypeId)
 	if len(acc) == 0 {
 		return acc, credType, errors.New("信息不完整")
 	}
@@ -65,11 +65,11 @@ func (m PassportApi) checkMemberBasis(ctx api.Context) (string, member_service.E
 }
 
 // 根据发送的校验码类型获取用户凭据类型
-func (h PassportApi) parseMessageChannel(credType member_service.ECredentials) message_service.EMessageChannel {
-	if credType == member_service.ECredentials_Email {
-		return message_service.EMessageChannel_EmailMessage
+func (h PassportApi) parseMessageChannel(credType proto.ECredentials) proto.EMessageChannel {
+	if credType == proto.ECredentials_Email {
+		return proto.EMessageChannel_EmailMessage
 	}
-	return message_service.EMessageChannel_SmsMessage
+	return proto.EMessageChannel_SmsMessage
 }
 
 // 标记验证码发送时间
@@ -159,18 +159,24 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 	if err != nil {
 		return api.ResponseWithCode(2, err.Error())
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, credType, account)
-		if memberId <= 0 {
+		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
+			Cred:  credType,
+			Value: account,
+		})
+		if memberId.Value <= 0 {
 			return api.ResponseWithCode(1, member.ErrNoSuchMember.Error())
 		}
 		err = h.checkCodeDuration(token, account)
 		if err == nil {
 			var msgChan = h.parseMessageChannel(credType)
-			r, _ := cli.SendCode(thrift.Context, memberId,
-				operationArr[operation], msgChan)
+			r, _ := cli.SendCode(context.TODO(), &proto.SendCodeRequest{
+				MemberId:  memberId.Value,
+				Operation: operationArr[operation],
+				MsgType:   msgChan.String(),
+			})
 			code := r.Data["code"]
 			if r.ErrCode == 0 {
 				h.signCodeSendInfo(token) // 标记为已发送
@@ -181,10 +187,10 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 			keys := []string{
 				registry.EnableDebugMode,
 			}
-			trans, cli, _ := thrift.RegistryServeClient()
-			mp, _ := cli.GetRegistries(thrift.Context, keys)
+			trans, cli, _ := service.RegistryServeClient()
+			mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
 			trans.Close()
-			debugMode := mp[keys[0]] == "true"
+			debugMode := mp.Value[keys[0]] == "true"
 			if debugMode && len(code) != 0 {
 				return api.ResponseWithCode(3, "【测试】短信验证码为:"+code)
 			}
@@ -219,13 +225,19 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
 		return api.ResponseWithCode(2, err.Error())
 	}
 	code := ctx.Form().GetString("check_code")
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(thrift.Context, credType, account)
-		r, _ := cli.CompareCode(thrift.Context, memberId, code)
+		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
+			Cred:  credType,
+			Value: account,
+		})
+		r, _ := cli.CompareCode(context.TODO(), &proto.CompareCodeRequest{
+			MemberId: memberId.Value,
+			Code:     code,
+		})
 		if r.ErrCode == 0 {
-			h.setCodeVerifySuccess(token, memberId)
+			h.setCodeVerifySuccess(token, memberId.Value)
 		} else {
 			err = errors.New(r.ErrMsg)
 		}
@@ -268,10 +280,14 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyPwd(thrift.Context, memberId, "", pwd)
+		r, _ := cli.ModifyPwd(context.TODO(), &proto.ModifyPwdRequest{
+			MemberId: memberId,
+			Old:      "",
+			Pwd:      pwd,
+		})
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 		}
@@ -315,10 +331,14 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyPwd(thrift.Context, memberId, oldPwd, pwd)
+		r, _ := cli.ModifyPwd(context.TODO(), &proto.ModifyPwdRequest{
+			MemberId: memberId,
+			Old:      oldPwd,
+			Pwd:      pwd,
+		})
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 		}
@@ -362,10 +382,14 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyTradePwd(thrift.Context, memberId, oldPwd, pwd)
+		r, _ := cli.ModifyTradePwd(context.TODO(), &proto.ModifyPwdRequest{
+			MemberId: memberId,
+			Old:      oldPwd,
+			Pwd:      pwd,
+		})
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 		}
@@ -407,10 +431,14 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyTradePwd(thrift.Context, memberId, "", pwd)
+		r, _ := cli.ModifyTradePwd(context.TODO(), &proto.ModifyPwdRequest{
+			MemberId: memberId,
+			Old:      "",
+			Pwd:      pwd,
+		})
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 		}
@@ -421,11 +449,14 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 
 // 获取验证码的间隔时间
 func (m PassportApi) getDurationSecond() int64 {
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
-		val, _ := cli.GetRegistry(thrift.Context, registry.SmsSendDuration)
+		rsp, _ := cli.GetValue(context.TODO(), &proto.String{Value: registry.SmsSendDuration})
 		trans.Close()
-		i, err := strconv.Atoi(val)
+		if rsp.ErrorMsg == "" {
+			log.Println("[ app][ warning]: parse value error:", rsp.ErrorMsg)
+		}
+		i, err := strconv.Atoi(rsp.Value)
 		if err != nil {
 			log.Println("[ Go2o][ Registry]: parse value error:", err.Error())
 		}
@@ -448,11 +479,10 @@ func (m PassportApi) checkCodeDuration(token, phone string) error {
 }
 
 // 标记验证码发送时间
-func (m PassportApi) signCheckCodeSendOk(token string) {
+func (m PassportApi) signCheckCodeSendOk(token string) error {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
 	unix := time.Now().Unix()
-	log.Println("----save code:", unix)
-	m.st.SetExpire(key, unix, 600)
+	return m.st.SetExpire(key, unix, 600)
 }
 
 // 验证注册令牌是否正确
@@ -472,20 +502,23 @@ func (m PassportApi) signCheckTokenExpires(token string) {
 func (m PassportApi) saveCheckCodeData(token string, phone string, code string) {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_code", token)
 	key1 := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_phone", token)
-	m.st.SetExpire(key, code, 600)
-	m.st.SetExpire(key1, phone, 600)
+	_ = m.st.SetExpire(key, code, 600)
+	_ = m.st.SetExpire(key1, phone, 600)
 }
 
 // 验证会员是否匹配
-func (m PassportApi) checkMemberMatch(account string, credType member_service.ECredentials, memberId int64) error {
-	trans, cli, err := thrift.MemberServeClient()
+func (m PassportApi) checkMemberMatch(account string, credType proto.ECredentials, memberId int64) error {
+	trans, cli, err := service.MemberServeClient()
 	if err == nil {
 		defer trans.Close()
-		mid, _ := cli.SwapMemberId(thrift.Context, credType, account)
-		if mid <= 0 {
+		mid, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
+			Cred:  credType,
+			Value: account,
+		})
+		if mid.Value <= 0 {
 			return member.ErrNoSuchMember
 		}
-		if mid != memberId {
+		if mid.Value != memberId {
 			return errors.New("member not match")
 		}
 	}

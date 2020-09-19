@@ -115,19 +115,19 @@ func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
 		m._shopRepo, m._userRepo, m._memberRepo, m._walletRepo, m._valRepo, m._registryRepo)
 }
 
-func (m *merchantRepo) cleanCache(mchId int32) {
+func (m *merchantRepo) cleanCache(mchId int64) {
 	key := m.getMchCacheKey(mchId)
 	m.storage.Del(key)
 	PrefixDel(m.storage, key+":*")
 }
 
-func (m *merchantRepo) getMchCacheKey(mchId int32) string {
+func (m *merchantRepo) getMchCacheKey(mchId int64) string {
 	return fmt.Sprintf("go2o:repo:mch:%d", mchId)
 }
 
 func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 	e := merchant.Merchant{}
-	key := m.getMchCacheKey(int32(id))
+	key := m.getMchCacheKey(int64(id))
 	err := m.storage.Get(key, &e)
 	if err != nil {
 		// 获取并缓存到列表中
@@ -157,7 +157,7 @@ func (m *merchantRepo) GetAccount(mchId int) *merchant.Account {
 		return &e
 	}
 	if err == sql.ErrNoRows {
-		e.MchId = int32(mchId)
+		e.MchId = int64(mchId)
 		e.UpdateTime = time.Now().Unix()
 		orm.Save(m.Connector.GetOrm(), &e, 0)
 		return &e
@@ -183,12 +183,12 @@ func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 }
 
 // 保存
-func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int32, error) {
-	id, err := orm.I32(orm.Save(m.GetOrm(), v, v.Id))
+func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int, error) {
+	id, err := orm.I64(orm.Save(m.GetOrm(), v, int(v.Id)))
 	if err == nil {
 		m.cleanCache(id)
 	}
-	return id, err
+	return int(id), err
 }
 
 // 获取商户的编号
@@ -206,12 +206,12 @@ func (m *merchantRepo) GetMerchantsId() []int32 {
 }
 
 // 获取销售配置
-func (m *merchantRepo) GetMerchantSaleConf(mchId int32) *merchant.SaleConf {
+func (m *merchantRepo) GetMerchantSaleConf(mchId int64) *merchant.SaleConf {
 	//10%分成
 	//0.2,         #上级
 	//0.1,         #上上级
 	//0.8          #消费者自己
-	var saleConf *merchant.SaleConf = new(merchant.SaleConf)
+	var saleConf = new(merchant.SaleConf)
 	if m.Connector.GetOrm().Get(mchId, saleConf) == nil {
 		return saleConf
 	}
@@ -240,7 +240,7 @@ func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) (err error) {
 
 // 获取API信息
 func (m *merchantRepo) GetApiInfo(mchId int) *merchant.ApiInfo {
-	var d *merchant.ApiInfo = new(merchant.ApiInfo)
+	var d = new(merchant.ApiInfo)
 	if err := m.GetOrm().Get(mchId, d); err == nil {
 		return d
 	}
@@ -248,8 +248,8 @@ func (m *merchantRepo) GetApiInfo(mchId int) *merchant.ApiInfo {
 }
 
 // 根据API编号获取商户编号
-func (m *merchantRepo) GetMerchantIdByApiId(apiId string) int32 {
-	var mchId int32
+func (m *merchantRepo) GetMerchantIdByApiId(apiId string) int64 {
+	var mchId int64
 	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id= $1", &mchId, apiId)
 	return mchId
 }
@@ -337,7 +337,7 @@ func (m *merchantRepo) GetNextLevel(mchId, levelVal int32) *merchant.MemberLevel
 }
 
 // 获取会员等级
-func (m *merchantRepo) GetMemberLevels(mchId int32) []*merchant.MemberLevel {
+func (m *merchantRepo) GetMemberLevels(mchId int64) []*merchant.MemberLevel {
 	var list []*merchant.MemberLevel
 	m.Connector.GetOrm().Select(&list,
 		"merchant_id= $1", mchId)
@@ -352,7 +352,7 @@ func (m *merchantRepo) DeleteMemberLevel(mchId, id int32) error {
 }
 
 // 保存等级
-func (m *merchantRepo) SaveMemberLevel(mchId int32, v *merchant.MemberLevel) (int32, error) {
+func (m *merchantRepo) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) (int32, error) {
 	return orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
 }
 
@@ -416,7 +416,7 @@ func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant
 }
 
 // Select MchBuyerGroup
-func (m *merchantRepo) SelectMchBuyerGroup(mchId int32) []*merchant.MchBuyerGroup {
+func (m *merchantRepo) SelectMchBuyerGroup(mchId int64) []*merchant.MchBuyerGroup {
 	var list []*merchant.MchBuyerGroup
 	err := m._orm.Select(&list, "mch_id= $1", mchId)
 	if err != nil && err != sql.ErrNoRows {

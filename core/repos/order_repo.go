@@ -15,7 +15,6 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"go2o/core"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/express"
@@ -32,7 +31,6 @@ import (
 	orderImpl "go2o/core/domain/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/variable"
 	"log"
 )
 
@@ -116,7 +114,7 @@ func (o *OrderRepImpl) CreateNormalSubOrder(v *order.NormalSubOrder) order.ISubO
 }
 
 // 获取可用的订单号
-func (o *OrderRepImpl) GetFreeOrderNo(vendorId int32) string {
+func (o *OrderRepImpl) GetFreeOrderNo(vendorId int64) string {
 	//todo:实际应用需要预先生成订单号
 	d := o.Connector
 	var orderNo string
@@ -307,14 +305,14 @@ func (o *OrderRepImpl) GetOrder(where string, arg ...interface{}) *order.Order {
 
 // 加入到订单通知队列,如果为子订单,则带上sub
 func (o *OrderRepImpl) pushOrderQueue(orderNo string, sub bool) {
-	rc := core.GetRedisConn()
-	if sub {
-		content := fmt.Sprintf("sub!%s", orderNo)
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, content)
-	} else {
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
-	}
-	rc.Close()
+	//rc := core.GetRedisConn()
+	//if sub {
+	//	content := fmt.Sprintf("sub!%s", orderNo)
+	//	rc.Do("RPUSH", variable.KvOrderBusinessQueue, content)
+	//} else {
+	//	rc.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
+	//}
+	//rc.Close()
 
 	//log.Println("----- order notify ! orderNo:", orderNo, " sub:", sub)
 }

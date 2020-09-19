@@ -12,13 +12,13 @@ import (
 var _ wholesaler.IWholesaler = new(wholesalerImpl)
 
 type wholesalerImpl struct {
-	mchId    int32
+	mchId    int64
 	value    *wholesaler.WsWholesaler
 	repo     wholesaler.IWholesaleRepo
 	itemRepo item.IGoodsItemRepo
 }
 
-func NewWholesaler(mchId int32, v *wholesaler.WsWholesaler,
+func NewWholesaler(mchId int64, v *wholesaler.WsWholesaler,
 	repo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo) wholesaler.IWholesaler {
 	return &wholesalerImpl{
 		mchId:    mchId,
@@ -29,7 +29,7 @@ func NewWholesaler(mchId int32, v *wholesaler.WsWholesaler,
 }
 
 // 获取领域编号
-func (w *wholesalerImpl) GetDomainId() int32 {
+func (w *wholesalerImpl) GetDomainId() int64 {
 	return w.mchId
 }
 
@@ -66,8 +66,8 @@ func (w *wholesalerImpl) Save() (int32, error) {
 
 // 同步商品
 func (w *wholesalerImpl) SyncItems(syncPrice bool) map[string]int32 {
-	add := []int{}
-	failed := []int{}
+	var add []int
+	var failed []int
 	newest := w.repo.GetAwaitSyncItems(w.mchId)
 	for _, itemId := range newest {
 		err := w.syncSingleItem(int64(itemId), syncPrice)
@@ -139,7 +139,7 @@ func (w *wholesalerImpl) SaveGroupRebateRate(groupId int32, arr []*wholesaler.Ws
 	}
 	// 保存项
 	for _, v := range arr {
-		v.WsId = w.mchId
+		v.WsId = int32(w.mchId)
 		v.BuyerGid = groupId
 		i, err := util.I32Err(w.repo.SaveWsRebateRate(v))
 		if err == nil {

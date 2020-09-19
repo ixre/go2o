@@ -26,7 +26,7 @@ type MssRepo struct {
 	_sysManger   mss.IMessageManager
 }
 
-func (this *MssRepo) SaveConfig(userId int32, conf *mss.Config) error {
+func (this *MssRepo) SaveConfig(userId int64, conf *mss.Config) error {
 	panic("implement me")
 }
 
@@ -68,7 +68,7 @@ func (this *MssRepo) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (this *MssRepo) GetConfig(userId int32) *mss.Config {
+func (this *MssRepo) GetConfig(userId int64) *mss.Config {
 	return nil
 }
 
@@ -87,7 +87,7 @@ func (this *MssRepo) SaveNotifyItem(v *notify.NotifyItem) error {
 	return nil
 }
 
-func (this *MssRepo) GetMailTemplate(userId, id int32) *mss.MailTemplate {
+func (this *MssRepo) GetMailTemplate(userId int64, id int32) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := this._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -99,13 +99,13 @@ func (this *MssRepo) SaveMailTemplate(*mss.MailTemplate) (int32, error) {
 	panic("implement me")
 }
 
-func (this *MssRepo) DeleteMailTemplate(userId, id int32) error {
+func (this *MssRepo) DeleteMailTemplate(userId, id int64) error {
 	//return v.Id, nil
 	return nil
 }
 
 // 获取所有的邮箱模版
-func (this *MssRepo) GetMailTemplates(mchId int32) []*mss.MailTemplate {
+func (this *MssRepo) GetMailTemplates(mchId int64) []*mss.MailTemplate {
 	return []*mss.MailTemplate{}
 }
 
@@ -166,7 +166,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		SenderId: 0,
 		// 发送的目标
 		To: []mss.User{
-			mss.User{
+			{
 				Role: mss.RoleMember,
 				Id:   1,
 			},
@@ -209,7 +209,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		SenderId: 0,
 		// 发送的目标
 		To: []mss.User{
-			mss.User{
+			{
 				Role: mss.RoleMember,
 				Id:   1,
 			},

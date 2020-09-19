@@ -10,12 +10,14 @@
 package daemon
 
 import (
+	"context"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/gof/util"
 	"go2o/core"
-	"go2o/core/service/rsi"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 	"go2o/core/variable"
 	"log"
 	"strconv"
@@ -25,9 +27,12 @@ import (
 
 // 监视新订单
 func superviseOrder(ss []Service) {
-	sv := rsi.ShoppingService
+	sv := impl.ShoppingService
 	notify := func(orderNo string, sub bool, ss []Service) {
-		o, _ := sv.GetOrder(thrift.Context, orderNo, sub)
+		o, _ := sv.GetOrder(context.TODO(), &proto.GetOrderRequest{
+			OrderNo:  orderNo,
+			SubOrder: sub,
+		})
 		if o != nil {
 			for _, v := range ss {
 				if !v.OrderObs(o) {
@@ -62,9 +67,10 @@ func superviseOrder(ss []Service) {
 
 // 监视新会员
 func superviseMemberUpdate(ss []Service) {
-	sv := rsi.MemberService
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
 	notify := func(id int64, action string, ss []Service) {
-		m, _ := sv.GetMember(thrift.Context, id)
+		m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: id})
 		if m != nil {
 			for _, v := range ss {
 				if !v.MemberObs(m, action == "create") {
@@ -97,9 +103,9 @@ func superviseMemberUpdate(ss []Service) {
 
 // 监视支付单完成
 func supervisePaymentOrderFinish(ss []Service) {
-	sv := rsi.PaymentService
+	sv := impl.PaymentService
 	notify := func(id int, ss []Service) {
-		order, _ := sv.GetPaymentOrderById(thrift.Context, int32(id))
+		order, _ := sv.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
 		if order != nil {
 			for _, v := range ss {
 				if !v.PaymentOrderObs(order) {
@@ -152,12 +158,12 @@ func memberAutoUnlock() {
 	//获取标记为等待过期的订单
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
-		trans, cli, err := thrift.MemberServeClient()
+		trans, cli, err := service.MemberServeClient()
 		if err == nil {
 			for _, oKey := range list {
 				memberId, _ := redis.Int64(conn.Do("GET", oKey))
 				if memberId > 0 {
-					cli.Unlock(thrift.Context, memberId)
+					cli.Unlock(context.TODO(), &proto.Int64{Value: memberId})
 				}
 				conn.Do("DEL", oKey)
 			}
@@ -181,7 +187,7 @@ func detectOrderExpires() {
 	key := fmt.Sprintf("%s:*:%s", variable.KvOrderExpiresTime, tick)
 	//key = "go2o:order:timeout:11-0-2:*"
 	//获取标记为等待过期的订单
-	ss := rsi.ShoppingService
+	ss := impl.ShoppingService
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
 		for _, oKey := range list {
@@ -211,7 +217,7 @@ func orderAutoReceive() {
 	key := fmt.Sprintf("%s:*:%s", variable.KvOrderAutoReceive, tick)
 	//key = "go2o:order:autoreceive:11-0-2:*"
 	//获取标记为自动收货的订单
-	ss := rsi.ShoppingService
+	ss := impl.ShoppingService
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
 		for _, oKey := range list {

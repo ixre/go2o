@@ -9,11 +9,13 @@
 package tcpserve
 
 import (
+	"context"
 	"errors"
 	"github.com/ixre/gof/net/nc"
 	"github.com/ixre/gof/util"
-	"go2o/core/service/rsi"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 	"net"
 	"strconv"
 	"strings"
@@ -27,7 +29,7 @@ var (
 	// 默认连接存活时间
 	defaultReadDeadLine = time.Second * 60
 	// 操作
-	handlers map[string]nc.CmdFunc = map[string]nc.CmdFunc{
+	handlers = map[string]nc.CmdFunc{
 		"PRINT": cliPrint,
 		"MGET":  cliMGet,
 		"PING":  cliPing,
@@ -74,8 +76,8 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
 			var af nc.AuthFunc = func() (int64, error) {
-				mchId := rsi.MerchantService.GetMerchantIdByApiId(arr[0])
-				apiInfo := rsi.MerchantService.GetApiInfo(mchId)
+				mchId := impl.MerchantService.GetMerchantIdByApiId(arr[0])
+				apiInfo := impl.MerchantService.GetApiInfo(int(mchId))
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled == 0 {
 						return int64(mchId), errors.New("api has exipres")
@@ -100,10 +102,13 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 	if len(arr) == 2 {
 		f := func() (int64, error) {
 			memberId, _ := util.I64Err(strconv.Atoi(arr[0]))
-			trans, cli, err := thrift.MemberServeClient()
+			trans, cli, err := service.MemberServeClient()
 			if err == nil {
 				defer trans.Close()
-				if b, _ := cli.CheckToken(thrift.Context, memberId, arr[1]); b {
+				if b, _ := cli.CheckToken(context.TODO(), &proto.CheckTokenRequest{
+					MemberId: memberId,
+					Token:    arr[1],
+				}); b.Value {
 					return memberId, nil
 				}
 				return memberId, errors.New("auth fail")

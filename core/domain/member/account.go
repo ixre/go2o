@@ -738,7 +738,8 @@ func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestTakeOut(takeKind int, title string,
-	amount float32, commission float32) (int32, string, error) {
+	amount2 int, tradeFee int) (int32, string, error) {
+	amount := float32(amount2) / 100
 	if takeKind != member.KindWalletTakeOutToBalance &&
 		takeKind != member.KindWalletTakeOutToBankCard &&
 		takeKind != member.KindWalletTakeOutToThirdPart {
@@ -750,7 +751,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 	// 检测是否开启提现
 	takOutOn := a.registryRepo.Get(registry.MemberTakeOutOn).BoolValue()
 	if !takOutOn {
-		msg := a.registryRepo.Get(registry.MemberTakeOutMessage).StringValue()
+		msg, _ := a.registryRepo.GetValue(registry.MemberTakeOutMessage)
 		return 0, "", errors.New(msg)
 	}
 
@@ -794,7 +795,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 	}
 
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
-	csnAmount := amount * commission
+	csnAmount := float32(tradeFee) / 100
 	finalAmount := amount - csnAmount
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
@@ -830,7 +831,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int, title string,
 }
 
 // 确认提现
-func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
+func (a *accountImpl) ReviewWithdrawal(id int32, pass bool, remark string) error {
 	v := a.GetWalletLog(id)
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
@@ -861,7 +862,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 }
 
 // 完成提现
-func (a *accountImpl) FinishTakeOut(id int32, tradeNo string) error {
+func (a *accountImpl) FinishWithdrawal(id int32, tradeNo string) error {
 	v := a.GetWalletLog(id)
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
@@ -966,8 +967,8 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 }
 
 // 转账
-func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount float32,
-	csnRate float32, remark string) error {
+func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount int,
+	tradeFee int, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -977,7 +978,6 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount fl
 	}
 
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
-	csnFee := amount * csnRate
 
 	// 检测是否开启转账
 	transferOn := a.registryRepo.Get(registry.MemberTransferAccountsOn).BoolValue()
@@ -988,15 +988,17 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount fl
 
 	switch accountKind {
 	case member.AccountWallet:
-		return a.transferPresent(tm, tradeNo, amount, csnFee, remark)
+		return a.transferWalletAccount(tm, tradeNo, amount, tradeFee, remark)
 	case member.AccountBalance:
-		return a.transferBalance(tm, tradeNo, amount, csnFee, remark)
+		return a.transferBalance(tm, tradeNo, amount, tradeFee, remark)
 	}
 	return nil
 }
 
 func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
-	amount, csnFee float32, remark string) error {
+	tradeAmount, tradeFee int, remark string) error {
+	csnFee := float32(tradeFee) / 100
+	amount := float32(tradeAmount) / 100
 	if a.value.Balance < amount+csnFee {
 		return member.ErrAccountNotEnoughAmount
 	}
@@ -1029,8 +1031,10 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 	return err
 }
 
-func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
-	amount, csnFee float32, remark string) error {
+func (a *accountImpl) transferWalletAccount(tm member.IMember, tradeNo string,
+	tradeAmount, tradeFee int, remark string) error {
+	csnFee := float32(tradeFee) / 100
+	amount := float32(tradeAmount) / 100
 	// 检测非正式会员转账
 	lv := a.mm.LevelManager().GetLevelById(a.member.GetValue().Level)
 	if lv != nil && lv.IsOfficial == 0 {

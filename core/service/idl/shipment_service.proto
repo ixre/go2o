@@ -1,0 +1,49 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+// 发货服务
+service ShipmentService {
+    /** 物流追踪 */
+    rpc GetLogisticFlowTrack (LogisticFlowTrackRequest) returns (SShipOrderTrack) {
+    }
+    /** 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列 */
+    rpc ShipOrderLogisticTrack (OrderLogisticTrackRequest) returns (SShipOrderTrack) {
+    }
+}
+message LogisticFlowTrackRequest {
+    string shipperCode = 1;
+    string logisticCode = 2;
+    bool invert = 3;
+}
+message OrderLogisticTrackRequest {
+    sint64 shipOrderId = 1;
+    bool invert = 2;
+}
+// 发货单追踪
+message SShipOrderTrack {
+    // 返回状态码
+    sint32 Code = 1;
+    // 返回错误信息
+    string Message = 2;
+    // 物流单号
+    string LogisticCode = 3;
+    // 承运商代码
+    string ShipperCode = 4;
+    /** 承运商名称 */
+    string ShipperName = 5;
+    // 发货状态
+    string ShipState = 6;
+    // 更新时间
+    sint64 UpdateTime = 7;
+    // 包含发货单流
+    repeated SShipFlow Flows = 8;
+}
+// 发货流
+message SShipFlow {
+    // 记录标题
+    string Subject = 1;
+    // 记录时间
+    string CreateTime = 2;
+    // 备注
+    string Remark = 3;
+}

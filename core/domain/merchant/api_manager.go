@@ -29,12 +29,12 @@ func newApiManagerImpl(m *merchantImpl) merchant.IApiManager {
 // 获取API信息
 func (a *apiManagerImpl) getApiInfo() *merchant.ApiInfo {
 	if a.apiInfo == nil {
-		a.apiInfo = a._repo.GetApiInfo(a.GetAggregateRootId())
+		a.apiInfo = a._repo.GetApiInfo(int(a.GetAggregateRootId()))
 		//没有API则生成
 		if a.apiInfo == nil {
 			mchId := int(a.GetAggregateRootId())
 			a.apiInfo = &merchant.ApiInfo{
-				MerchantId: a.GetAggregateRootId(),
+				MerchantId: int(a.GetAggregateRootId()),
 				ApiId:      domain.NewApiId(mchId),
 				ApiSecret:  domain.NewSecret(mchId),
 				WhiteList:  "*",
@@ -54,7 +54,7 @@ func (a *apiManagerImpl) GetApiInfo() merchant.ApiInfo {
 // 保存API信息
 func (a *apiManagerImpl) SaveApiInfo(v *merchant.ApiInfo) error {
 	a.apiInfo = v
-	a.apiInfo.MerchantId = a.GetAggregateRootId()
+	a.apiInfo.MerchantId = int(a.GetAggregateRootId())
 	return a._repo.SaveApiInfo(a.apiInfo)
 }
 

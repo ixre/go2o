@@ -1,0 +1,611 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+import "global.proto";
+
+message RegisterMemberRequest {
+    string user = 1;
+    string pwd = 2;
+    sint32 flag = 3;
+    string name = 4;
+    string phone = 5;
+    string email = 6;
+    string avatar = 7;
+    map<string, string> extend = 8;
+}
+
+message LoginRequest {
+    string user = 1;
+    string pwd = 2;
+    bool update = 3;
+}
+
+message CheckTradePwdRequest {
+    sint64 memberId = 1;
+    string tradePwd = 2;
+}
+
+message SwapMemberRequest {
+    ECredentials cred = 1;
+    string value = 2;
+}
+
+message SMemberLevelListResponse {
+    repeated SMemberLevel Value = 1;
+}
+
+message SubmitTrustInfoRequest {
+    sint64 memberId = 1;
+    STrustedInfo info = 2;
+}
+
+message ReviewTrustInfoRequest {
+    sint64 memberId = 1;
+    bool reviewPass = 2;
+    string remark = 3;
+}
+
+message LockRequest {
+    sint64 memberId = 1;
+    sint32 minutes = 2;
+    string remark = 3;
+}
+message GrantFlagRequest {
+    sint64 memberId = 1;
+    sint32 flag = 2;
+}
+
+message SendCodeRequest {
+    sint64 memberId = 1;
+    string operation = 2;
+    string msgType = 3;
+}
+
+message CompareCodeRequest {
+    sint64 memberId = 1;
+    string code = 2;
+}
+
+message SReceiptsCodeListResponse {
+    repeated SReceiptsCode Value = 1;
+}
+message ReceiptsCodeSaveRequest {
+    sint64 memberId = 1;
+    SReceiptsCode code = 2;
+}
+
+
+message UpdateLevelRequest {
+    sint64 memberId = 1;
+    sint32 level = 2;
+    bool review = 3;
+    sint64 paymentOrderId = 4;
+}
+
+message ChangePhoneRequest {
+    sint64 memberId = 1;
+    string phone = 2;
+}
+message ChangeUserRequest {
+    sint64 MemberId = 1;
+    string User = 2;
+}
+message ModifyPwdRequest {
+    sint64 memberId = 1;
+    string old = 2;
+    string pwd = 3;
+}
+message ChangeInviterRequest {
+    sint64 memberId = 1;
+    sint64 inviterId = 2;
+}
+
+message OrderQuantityMapResponse {
+    map<sint32, sint32> Data = 1;
+}
+
+message GetTokenRequest {
+    sint64 memberId = 1;
+    bool reset = 2;
+}
+
+message PremiumRequest {
+    sint64 memberId = 1;
+    sint32 v = 2;
+    sint64 expires = 3;
+}
+
+message CheckTokenRequest {
+    sint64 memberId = 1;
+    string token = 2;
+}
+
+message AddressListResponse {
+    repeated SAddress Value = 1;
+}
+message SaveAddressRequest {
+    sint64 MemberId = 1;
+    SAddress Value = 2;
+}
+
+message GetAddressRequest {
+    sint64 memberId = 1;
+    sint64 addrId = 2;
+}
+
+
+message AccountChangeRequest {
+    sint64 memberId = 1;
+    sint32 account = 2;
+    string title = 3;
+    sint32 amount = 4;
+    string outerNo = 5;
+    string remark = 6;
+}
+message AccountAdjustRequest {
+    sint64 memberId = 1;
+    sint32 account = 2;
+    sint32 value = 3;
+    sint64 relateUser = 4;
+    string remark = 5;
+}
+
+message B4EAuthRequest {
+    sint64 memberId = 1;
+    string action = 2;
+    map<string, string> data = 3;
+}
+
+message PagingAccountInfoRequest {
+    sint64 memberId = 1;
+    sint32 accountType = 2;
+    SPagingParams params = 3;
+}
+
+/** 等级 */
+message SMemberLevel {
+    sint32 ID = 1;
+    string Name = 2;
+    sint32 RequireExp = 3;
+    string ProgramSignal = 4;
+    sint32 IsOfficial = 5;
+    sint32 Enabled = 6;
+    sint32 AllowUpgrade = 7;
+}
+
+message AvatarRequest {
+    sint64 MemberId = 1;
+    string AvatarUrl = 2;
+}
+
+/** 会员 */
+message SMember {
+    /**  */
+    sint64 Id = 1;
+    /** 用户名 */
+    string User = 2;
+    /**  */
+    string Pwd = 3;
+    /**  */
+    string TradePwd = 4;
+    /**  */
+    sint64 Exp = 5;
+    /**  */
+    sint32 Level = 6;
+    /** 高级用户级别 */
+    sint32 PremiumUser = 7;
+    /** 高级用户过期时间 */
+    sint64 PremiumExpires = 8;
+    /**  */
+    string InviteCode = 9;
+    /**  */
+    string RegIp = 10;
+    /**  */
+    string RegFrom = 11;
+    /**  */
+    sint32 State = 12;
+    /** 会员标志 */
+    sint32 Flag = 13;
+    /**  */
+    string Code = 14;
+    /**  */
+    string Avatar = 15;
+    /**  */
+    string Phone = 16;
+    /**  */
+    string Email = 17;
+    /** 昵称 */
+    string Name = 18;
+    /** 真实姓名 */
+    string RealName = 19;
+    /* 用户会员密钥 */
+    string DynamicToken = 20;
+    /** 注册时间 */
+    sint64 RegTime = 21;
+    /** 最后登录时间 */
+    sint64 LastLoginTime = 22;
+}
+
+/** 资料 */
+message SProfile {
+    sint64 MemberId = 1;
+    string Name = 2;
+    string Avatar = 3;
+    sint32 Sex = 4;
+    string BirthDay = 5;
+    string Phone = 6;
+    string Address = 7;
+    string Im = 8;
+    string Email = 9;
+    sint32 Province = 10;
+    sint32 City = 11;
+    sint32 District = 12;
+    string Remark = 13;
+    string Ext1 = 14;
+    string Ext2 = 15;
+    string Ext3 = 16;
+    string Ext4 = 17;
+    string Ext5 = 18;
+    string Ext6 = 19;
+    sint64 UpdateTime = 20;
+}
+
+/** 账户 */
+message SAccount {
+    sint64 MemberId = 1;
+    sint64 Integral = 2;
+    sint64 FreezeIntegral = 3;
+    double Balance = 4;
+    double FreezeBalance = 5;
+    double ExpiredBalance = 6;
+    double WalletBalance = 7;
+    double FreezeWallet = 8;
+    double ExpiredWallet = 9;
+    double TotalWalletAmount = 10;
+    double FlowBalance = 11;
+    double GrowBalance = 12;
+    double GrowAmount = 13;
+    double GrowEarnings = 14;
+    double GrowTotalEarnings = 15;
+    double TotalExpense = 16;
+    double TotalCharge = 17;
+    double TotalPay = 18;
+    sint64 PriorityPay = 19;
+    sint64 UpdateTime = 20;
+}
+
+message SComplexMember {
+    string Name = 1;
+    string Avatar = 2;
+    string Phone = 3;
+    sint32 Exp = 4;
+    sint32 Level = 5;
+    string LevelName = 6;
+    string InviteCode = 7;
+    sint32 TrustAuthState = 8;
+    sint32 PremiumUser = 9;
+    sint32 Flag = 10;
+    sint64 UpdateTime = 11;
+    /** 交易密码是否已设置 */
+    bool TradePwdHasSet = 12;
+}
+
+message SMemberRelation {
+    sint64 MemberId = 1;
+    string CardId = 2;
+    sint64 InviterId = 3;
+    string InviterStr = 4;
+    sint32 RegisterMchId = 5;
+}
+
+/** 实名认证信息 */
+message STrustedInfo {
+    /** 真实姓名 */
+    string RealName = 1;
+    /** 国家代码,如:CN */
+    string CountryCode = 2;
+    /** 证件类型 */
+    sint32 CardType = 3;
+    /** 证件号码 */
+    string CardId = 4;
+    /** 证件正面照 */
+    string CardImage = 5;
+    /** 证件反面照 */
+    string CardReverseImage = 6;
+    /** 认证人脸照 */
+    string TrustImage = 7;
+    /** 是否人工审核 */
+    sint32 ManualReview = 8;
+    /** 审核状态 */
+    sint32 ReviewState = 9;
+    /** 审核时间 */
+    sint64 ReviewTime = 10;
+    /** 备注 */
+    string Remark = 11;
+}
+
+message SAddress {
+    sint64 ID = 1;
+    /** 收货人姓名 */
+    string ConsigneeName = 2;
+    /** 收货人电话 */
+    string ConsigneePhone = 3;
+    sint32 Province = 4;
+    sint32 City = 5;
+    sint32 District = 6;
+    string Area = 7;
+    string DetailAddress = 8;
+    sint32 IsDefault = 9;
+}
+
+message AddressIdRequest {
+    sint64 MemberId = 1;
+    sint64 AddressId = 2;
+}
+
+/** 收款码 */
+message SReceiptsCode {
+    /** 账户标识,如:alipay */
+    string Identity = 1;
+    /** 账户名称 */
+    string Name = 2;
+    /** 账号 */
+    string AccountId = 3;
+    /** 收款码地址 */
+    string CodeUrl = 4;
+    /** 是否启用 */
+    sint32 State = 5;
+}
+
+/* 会员等级信息 */
+message SMemberLevelInfo {
+    /** 等级 */
+    sint32 Level = 1;
+    /** 等级名称 */
+    string LevelName = 2;
+    /** 经验值 */
+    sint32 Exp = 3;
+    /** 编程符号 */
+    string ProgramSignal = 4;
+    /** 下一级等级,返回-1表示最高级别 */
+    sint32 NextLevel = 5;
+    /** 下一等级名称 */
+    string NextLevelName = 6;
+    /** 编程符号 */
+    string NextProgramSignal = 7;
+    /** 需要经验值 */
+    sint32 RequireExp = 8;
+}
+
+/** 订单汇总信息 */
+message SMemberOrderSummary {
+    /** 待付款订单数量 */
+    sint32 AwaitPayment = 1;
+    /** 待发货订单数量 */
+    sint32 AwaitShipment = 2;
+    /** 待收货订单数量 */
+    sint32 AwaitReceive = 3;
+    /** 已完成订单数量 */
+    sint32 Completed = 4;
+}
+
+message MemberRelationResponse {
+    // 邀请人（会员）
+    sint64 InviterId = 1;
+    // 邀请会员编号(depth2)
+    sint64 InviterD2 = 2;
+    // 邀请会员编号(depth3)
+    sint64 InviterD3 = 3;
+}
+
+/** 凭据 */
+enum ECredentials {
+    _1 = 0;
+    /** 用户名 */
+    User = 1;
+    /** 用户代码 */
+    Code = 2;
+    /** 邮箱 */
+    Email = 3;
+    /** 手机号码 */
+    Phone = 4;
+    /** 邀请码 */
+    InviteCode = 6;
+}
+
+message WalletLogRequest {
+    sint64 MemberId = 1;
+    sint64 LogId = 2;
+}
+
+// 钱包账户日志
+message WalletLogResponse {
+    // 日志编号
+    sint64 LogId = 1;
+    // 会员编号
+    sint64 MemberId = 2;
+    // 外部单号
+    string OuterNo = 3;
+    // 业务类型
+    sint32 Kind = 4;
+    // 标题
+    string Title = 5;
+    // 金额
+    double Amount = 6;
+    // 手续费
+    double CsnFee = 7;
+    // 状态
+    sint32 ReviewState = 8;
+    // 备注
+    string Remark = 9;
+    // 创建时间
+    sint64 CreateTime = 10;
+    // 更新时间
+    sint64 UpdateTime = 11;
+    // 关联操作人,仅在客服操作时,记录操作人
+    sint64 RelateUser = 12;
+}
+
+enum TransferAccountKind{
+    TA_BALANCE = 0;
+    TA_WALLET = 1;
+}
+
+// 账户转账请求
+message AccountTransferRequest {
+    TransferAccountKind TransferAccount = 1;
+    sint64 FromMemberId = 2;
+	sint64 ToMemberId =3;
+    sint32 Amount = 4;
+    sint32 TradeFee = 5;
+    string Remark  = 6;
+}
+
+message WithdrawRequest{
+    sint64 MemberId = 1;
+    // 提现方式
+    int32 Kind  = 2;
+    // 提现金额
+    int32 Amount =3;
+    // 手续费
+    int32 TradeFee = 4;
+}
+message WithdrawalResponse{
+    sint64 ErrCode = 1;
+    string ErrMsg = 2;
+    string TradeNo = 3;
+    sint64 LogId = 4;
+}
+
+// 获取提现记录
+message WithdrawalLogRequest{
+    //　会员编号
+    sint64 MemberId = 1;
+    //　数量
+    sint32 Number = 2;
+    //　仅返回完成的提现
+    bool OnlyFinished = 3;
+}
+
+message WithdrawalLogsResponse{
+    sint64 MemberId = 1;
+    repeated WithdrawalLog Data = 2;
+}
+
+// 提现日志
+message WithdrawalLog{
+    sint64 Id = 1;
+    // 外部单号
+    string OuterNo = 2;
+    // 业务类型
+    sint32 Kind = 3;
+    // 标题
+    string Title = 4;
+    // 金额
+    sint32 Amount = 5;
+    // 手续费
+    sint32 TradeFee  = 6;
+    // 关联操作人,仅在客服操作时,记录操作人
+    sint64 RelateUser  = 7;
+    // 状态
+    sint32 ReviewState = 8;
+    // 备注
+    string Remark = 9;
+    // 创建时间
+    sint64 SubmitTime  = 10;
+    // 更新时间
+    sint64 UpdateTime  = 11;
+}
+
+// 申请提现请求
+message ReviewWithdrawalRequest{
+    int64 MemberId = 1;
+    int64 InfoId = 2;
+    bool Pass = 3;
+    string Remark = 4;
+}
+
+message FinishWithdrawalRequest{
+    int64 MemberId = 1;
+    //　提现记录编号
+    int64 InfoId = 2;
+    // 汇款/交易单号
+    string TradeNo = 3;
+}
+
+message MemberInvitationPagingRequest{
+    int64 MemberId = 1;
+    int64 Begin = 2;
+    int64 End = 3;
+}
+
+
+message MemberInvitationPagingResponse {
+    int64 Total = 1;
+    repeated SInvitationMember Data = 2;
+}
+
+// 邀请会员数据
+message SInvitationMember {
+    // 会员编号
+   int64 MemberId = 1;
+    // 用户名
+    string User = 2;
+    // 等级
+    int32 Level = 3;
+    // 头像
+    string Avatar = 4;
+    // 昵称
+    string NickName = 5;
+    // 电话
+    string Phone = 6;
+    // 即时通讯
+    string Im = 9;
+    // 邀请人数
+    int32 InvitationNum = 10;
+}
+message IsInvitationRequest{
+    // 会员编号
+    int64 MemberId = 1;
+    // 邀请人会员编号
+    int64 InviterId = 2;
+}
+
+enum PagingCouponState{
+    CS_All = 0;
+    CS_Available = 1;
+    CS_Expired = 2;
+}
+
+message MemberCouponPagingRequest{
+    int64 MemberId = 1;
+    // 状态,-1为全部
+    PagingCouponState State = 2;
+    int64 Begin = 3;
+    int64 End = 4;
+}
+
+message MemberCouponListResponse{
+    int64 Total = 1;
+    repeated SMemberCoupon Data = 2;
+}
+message SMemberCoupon{
+    // 优惠券编号
+    int64 CouponId = 1;
+    // 数量
+    int32 Number = 2;
+    // 优惠券标题
+    string Title = 3;
+    //优惠码
+    string Code = 4;
+    //优惠金额
+    int32 DiscountFee = 5;
+    //订单折扣(不打折为100)
+    int32 Discount = 6;
+    //是否使用
+    bool IsUsed = 7;
+    // 获得时间
+    int64 GetTime = 8;
+    //结束日期
+    int64 OverTime = 9;
+}

@@ -4,18 +4,18 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
 	"github.com/labstack/echo"
-	"go2o/core/service/auto_gen/rpc/ttype"
+	"go2o/core/service/proto"
 	"net/http"
 )
 
 type utils struct {
 }
 
-func (u utils) SResult(err error) *ttype.Result_ {
+func (u utils) SResult(err error) *proto.Result {
 	if err != nil {
-		return &ttype.Result_{ErrCode: 1, ErrMsg: err.Error()}
+		return &proto.Result{ErrCode: 1, ErrMsg: err.Error()}
 	}
-	return &ttype.Result_{}
+	return &proto.Result{}
 }
 
 func (u utils) JSON(ctx echo.Context, ret interface{}) error {
@@ -43,4 +43,7 @@ func (u utils) error(err error) *api.Response {
 
 func (u utils) errorWithCode(code int, err error) *api.Response {
 	return api.ResponseWithCode(code, err.Error())
+}
+func (u utils) result(r *proto.Result) *api.Response {
+	return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 }

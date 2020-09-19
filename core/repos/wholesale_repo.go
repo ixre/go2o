@@ -50,7 +50,7 @@ func (w *wholesaleRepo) SaveWsWholesaler(v *wholesaler.WsWholesaler, create bool
 }
 
 // 同步商品
-func (w *wholesaleRepo) SyncItems(vendorId int32, shelve, review int32) (add int, del int) {
+func (w *wholesaleRepo) SyncItems(vendorId int64, shelve, review int32) (add int, del int) {
 
 	del, err2 := w._conn.ExecNonQuery(`DELETE FROM ws_item WHERE
     vendor_id= $1 AND item_id NOT IN (SELECT id FROM item_info
@@ -62,7 +62,7 @@ func (w *wholesaleRepo) SyncItems(vendorId int32, shelve, review int32) (add int
 }
 
 // 获取待同步商品
-func (w *wholesaleRepo) GetAwaitSyncItems(vendorId int32) []int {
+func (w *wholesaleRepo) GetAwaitSyncItems(vendorId int64) []int {
 	add := []int{}
 	i := 0
 	err := w._conn.Query(`SELECT id FROM item_info WHERE

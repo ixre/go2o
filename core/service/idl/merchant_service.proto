@@ -1,0 +1,125 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+import "global.proto";
+
+// 商家
+message SMerchant {
+    /** 编号 */
+    sint32 Id = 1;
+    /** 会员编号 */
+    sint64 MemberId = 2;
+    /** 登录用户 */
+    string LoginUser = 3;
+    /** 登录密码 */
+    string LoginPwd = 4;
+    /** 名称 */
+    string Name = 5;
+    /** 公司名称 */
+    string CompanyName = 6;
+    /** 是否字营 */
+    sint32 SelfSales = 7;
+    /** 商户等级 */
+    sint32 Level = 8;
+    /** 标志 */
+    string Logo = 9;
+    /** 省 */
+    sint32 Province = 10;
+    /** 市 */
+    sint32 City = 11;
+    /** 区 */
+    sint32 District = 12;
+    /** 标志 */
+    sint32 Flag = 13;
+    /** 是否启用 */
+    sint32 Enabled = 14;
+    /** 最后登录时间 */
+    sint32 LastLoginTime = 15;
+}
+
+// 商家
+message SMerchantPack {
+    /** 登录用户 */
+    string LoginUser = 1;
+    /** 登录密码 */
+    string LoginPwd = 2;
+    /** 名称 */
+    string Name = 3;
+    /** 是否字营 */
+    sint32 SelfSales = 4;
+    /** 店铺名称 */
+    string ShopName = 5;
+    /** 标志 */
+    string ShopLogo = 6;
+    /** 电话 */
+    string Tel = 7;
+    /** 地址 */
+    string Addr = 8;
+}
+
+message MerchantCreateRequest {
+    SMerchantPack mch = 1;
+    sint64 relMemberId = 2;
+}
+
+message MchUserPwd {
+    string user = 1;
+    string pwd = 2;
+}
+
+message SyncWSItemsResponse {
+    map<string, sint32> Value = 1;
+}
+
+message STradeConfListResponse {
+    repeated STradeConf Value = 1;
+}
+
+message TradeConfRequest {
+    sint32 mchId = 1;
+    sint32 tradeType = 2;
+}
+message TradeConfSaveRequest {
+    sint32 mchId = 1;
+    repeated STradeConf arr = 2;
+}
+
+//商家服务
+service MerchantService {
+    // 获取商家的信息,mchId
+    rpc GetMerchant (Int64) returns (SMerchant) {
+    }
+    // 注册商户并开店
+    rpc CreateMerchant (MerchantCreateRequest) returns (Result) {
+    }
+
+    // 验证用户密码,并返回编号。可传入商户或会员的账号密码
+    rpc CheckLogin (MchUserPwd) returns (Result) {
+    }
+    // 验证商户状态,mchId
+    rpc Stat (Int64) returns (Result) {
+    }
+    // 同步批发商品,mchId
+    rpc SyncWholesaleItem (Int64) returns (SyncWSItemsResponse) {
+    }
+    // 获取所有的交易设置,mchId
+    rpc GetAllTradeConf (Int64) returns (STradeConfListResponse) {
+    }
+    // 根据交易类型获取交易设置
+    rpc GetTradeConf (TradeConfRequest) returns (STradeConf) {
+    }
+    // 保存交易设置
+    rpc SaveTradeConf (TradeConfSaveRequest) returns (Result) {
+    }
+}
+
+// 商户交易设置
+message STradeConf {
+    // 商户编号  sint64 MchId = 1;
+    // 交易类型  sint32 TradeType = 2;
+    // 交易方案，根据方案来自动调整比例  sint64 PlanId = 3;
+    // 交易标志  sint32 Flag = 4;
+    // 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
+    // 交易费，按单笔收取  sint32 TradeFee = 6;
+    // 交易手续费比例  sint32 TradeRate = 7;
+}

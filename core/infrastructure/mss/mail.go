@@ -18,12 +18,12 @@ import (
 )
 
 var (
-	loaded               bool   = false
-	EMAIL_SERVER         string = ""
-	EMAIL_HOST           string = ""
-	EMAIL_CREDENTIAL_USR        = ""
-	EMAIL_CREDENTIAL_PWD        = ""
-	EMAIL_FROM                  = ""
+	loaded               = false
+	EMAIL_SERVER         = ""
+	EMAIL_HOST           = ""
+	EMAIL_CREDENTIAL_USR = ""
+	EMAIL_CREDENTIAL_PWD = ""
+	EMAIL_FROM           = ""
 )
 
 func SendMail(server, host, user, pwd, from string, subject string, to []string, body []byte) error {

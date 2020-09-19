@@ -16,7 +16,7 @@ type (
 		Id int32 `db:"id" auto:"yes" pk:"yes"`
 
 		// 商户编号
-		MerchantId int32 `db:"mch_id"`
+		MerchantId int64 `db:"mch_id"`
 
 		// 标签代码
 		TagCode string `db:"tag_code"`
@@ -84,29 +84,29 @@ type (
 		CreateSaleLabel(v *Label) ISaleLabel
 
 		// 获取所有的销售标签
-		GetAllValueSaleLabels(mchId int32) []*Label
+		GetAllValueSaleLabels(mchId int64) []*Label
 
 		// 获取销售标签值
-		GetValueSaleLabel(mchId int32, tagId int32) *Label
+		GetValueSaleLabel(mchId int64, tagId int32) *Label
 
 		// 根据Code获取销售标签
-		GetSaleLabelByCode(mchId int32, code string) *Label
+		GetSaleLabelByCode(mchId int64, code string) *Label
 
 		// 删除销售标签
-		DeleteSaleLabel(mchId int32, id int32) error
+		DeleteSaleLabel(mchId int64, id int32) error
 
 		// 获取销售标签
-		GetSaleLabel(mchId int32, tagId int32) ISaleLabel
+		GetSaleLabel(mchId int64, tagId int32) ISaleLabel
 
 		// 保存销售标签
-		SaveSaleLabel(mchId int32, v *Label) (int32, error)
+		SaveSaleLabel(mchId int64, v *Label) (int32, error)
 
 		// 获取商品
-		GetValueGoodsBySaleLabel(mchId int32, tagId int32, sortBy string,
+		GetValueGoodsBySaleLabel(mchId int64, tagId int32, sortBy string,
 			begin, end int) []*valueobject.Goods
 
 		// 获取分页商品
-		GetPagedValueGoodsBySaleLabel(mchId int32, tagId int32, sortBy string,
+		GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32, sortBy string,
 			begin, end int) (int, []*valueobject.Goods)
 
 		// 获取商品的销售标签

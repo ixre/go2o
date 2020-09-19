@@ -42,8 +42,8 @@ func getHostRegexp() *regexp.Regexp {
 }
 
 // 根据主机查询商户编号
-func (m *MerchantQuery) QueryMerchantIdByHost(host string) int32 {
-	var mchId int32
+func (m *MerchantQuery) QueryMerchantIdByHost(host string) int64 {
+	var mchId int64
 	var err error
 
 	reg := getHostRegexp()

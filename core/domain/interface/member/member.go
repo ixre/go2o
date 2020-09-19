@@ -143,8 +143,8 @@ type (
 		GetBank() BankInfo
 		// 保存提现银行信息,保存后将锁定
 		SaveBank(*BankInfo) error
-		// 解锁提现银行卡信息
-		UnlockBank() error
+		// 移除银行卡
+		RemoveBankCard(backCardId int64) error
 		// 获取收款码
 		ReceiptsCodes() []ReceiptsCode
 		// 保存收款码
@@ -172,11 +172,11 @@ type (
 	// 收藏服务
 	IFavoriteManager interface {
 		// 收藏
-		Favorite(favType int, referId int32) error
+		Favorite(favType int, referId int64) error
 		// 是否已收藏
-		Favored(favType int, referId int32) bool
+		Favored(favType int, referId int64) bool
 		// 取消收藏
-		Cancel(favType int, referId int32) error
+		Cancel(favType int, referId int64) error
 	}
 
 	// 会员概览信息
@@ -324,7 +324,7 @@ type (
 		// 邀请会员编号(depth3)
 		InviterD3 int64 `db:"inviter_d3"`
 		// 注册关联商户编号
-		RegMchId int32 `db:"reg_mchid"`
+		RegMchId int64 `db:"reg_mchid"`
 	}
 
 	// 实名认证信息
@@ -403,7 +403,7 @@ type (
 		// 收藏类型
 		FavType int `db:"fav_type"`
 		// 引用编号
-		ReferId int32 `db:"refer_id"`
+		ReferId int64 `db:"refer_id"`
 		// 收藏时间
 		CreateTime int64 `db:"create_time"`
 	}

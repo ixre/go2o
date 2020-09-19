@@ -33,7 +33,7 @@ type (
 		SubmitOrder(c cart.ICart, addressId int64, couponCode string,
 			balanceDiscount bool) (IOrder, *SubmitReturnData, error)
 		// 获取可用的订单号, 系统直营传入vendor为0
-		GetFreeOrderNo(vendor int32) string
+		GetFreeOrderNo(vendor int64) string
 		// 根据订单编号获取订单
 		GetOrderById(orderId int64) IOrder
 		// 根据订单号获取订单
@@ -50,7 +50,7 @@ type (
 		// 获取收货地址编号
 		AddressId() int64
 		// 获取订单留言
-		GetComment(sellerId int32) string
+		GetComment(sellerId int64) string
 	}
 
 	// 统一订单适配器
@@ -78,7 +78,7 @@ type (
 		// 创建订单
 		CreateOrder(*Order) IOrder
 		// 获取可用的订单号, 系统直营传入vendor为0
-		GetFreeOrderNo(vendorId int32) string
+		GetFreeOrderNo(vendorId int64) string
 		// 获取订单编号
 		GetOrderId(orderNo string, subOrder bool) int64
 		// Get OrderList

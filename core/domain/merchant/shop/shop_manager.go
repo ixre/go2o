@@ -56,13 +56,13 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 // 新建商店
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
-	v.VendorId = int32(s.merchant.GetAggregateRootId())
+	v.VendorId = int64(s.merchant.GetAggregateRootId())
 	return NewShop2(v, s.repo, s.valueRepo, s.registryRepo)
 }
 
 // 获取所有商店
 func (s *shopManagerImpl) GetShops() []shop.IShop {
-	shopList := s.repo.GetShopsOfMerchant(int32(s.merchant.GetAggregateRootId()))
+	shopList := s.repo.GetShopsOfMerchant(s.merchant.GetAggregateRootId())
 	shops := make([]shop.IShop, len(shopList))
 	for i, v := range shopList {
 		shops[i] = s.CreateShop(&v)
@@ -121,23 +121,23 @@ func (s *shopManagerImpl) DeleteShop(shopId int32) error {
 	if sp != nil {
 		switch sp.Type() {
 		case shop.TypeOfflineShop:
-			return s.deleteOfflineShop(int(mchId), sp)
+			return s.deleteOfflineShop(mchId, sp)
 		case shop.TypeOnlineShop:
-			return s.deleteOnlineShop(int(mchId), sp)
+			return s.deleteOnlineShop(mchId, sp)
 		}
 	}
 	return nil
 }
 
-func (s *shopManagerImpl) deleteOnlineShop(mchId int, sp shop.IShop) error {
+func (s *shopManagerImpl) deleteOnlineShop(mchId int64, sp shop.IShop) error {
 	return errors.New("暂不支持删除线上商店")
 	shopId := sp.GetDomainId()
-	err := s.repo.DeleteOnlineShop(mchId, shopId)
+	err := s.repo.DeleteOnlineShop(mchId, int64(shopId))
 	return err
 }
 
-func (s *shopManagerImpl) deleteOfflineShop(mchId int, sp shop.IShop) error {
+func (s *shopManagerImpl) deleteOfflineShop(mchId int64, sp shop.IShop) error {
 	shopId := sp.GetDomainId()
-	err := s.repo.DeleteOfflineShop(mchId, shopId)
+	err := s.repo.DeleteOfflineShop(mchId, int64(shopId))
 	return err
 }

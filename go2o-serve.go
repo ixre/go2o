@@ -15,18 +15,19 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/web"
+	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
 	"go2o/app/cache"
 	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
 	"go2o/core/msq"
-	"go2o/core/service/rsi"
-	rs "go2o/core/service/thrift/service"
+	"go2o/core/service"
+	"go2o/core/service/impl"
 	"log"
 	"os"
-	"runtime"
 	"strings"
+	"time"
 )
 
 var _ = `
@@ -55,18 +56,19 @@ Email: jarrysix#gmail.com
 
 func main() {
 	var (
-		ch        = make(chan bool)
-		confFile  string
-		port      int
-		apiPort   int
-		mqAddr string
-		debug     bool
-		trace     bool
-		runDaemon bool // 运行daemon
-		help      bool
-		showVer   bool
-		newApp    *core.AppImpl
-		appFlag   = app.FlagWebApp
+		ch            = make(chan bool)
+		confFile      string
+		etcdEndPoints gof.ArrayFlags
+		port          int
+		apiPort       int
+		mqAddr        string
+		debug         bool
+		trace         bool
+		runDaemon     bool // 运行daemon
+		help          bool
+		showVer       bool
+		newApp        *core.AppImpl
+		appFlag       = app.FlagWebApp
 	)
 
 	defaultMqAddr := os.Getenv("GO2O_NATS_ADDR")
@@ -75,6 +77,7 @@ func main() {
 	}
 	flag.IntVar(&port, "port", 1427, "thrift service port")
 	flag.IntVar(&apiPort, "apiport", 1428, "api service port")
+	flag.Var(&etcdEndPoints, "endpoint", "")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
@@ -84,8 +87,7 @@ func main() {
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
-
-	//confFile = "./app_dev.conf"
+	confFile = "./app_dev.conf"
 	if runDaemon {
 		appFlag = appFlag | app.FlagDaemon
 	}
@@ -101,30 +103,73 @@ func main() {
 
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	newApp = core.NewApp(confFile)
+
+	// 默认的ETCD端点
+	if len(etcdEndPoints) == 0 {
+		etcdEndPoints = []string{"http://127.0.0.1:2379"}
+	}
+	cfg := clientv3.Config{
+		Endpoints:   etcdEndPoints,
+		DialTimeout: 5 * time.Second,
+	}
+
+	newApp = core.NewApp(confFile, &cfg)
 	if debug {
 		go app.AutoInstall()
 	}
 	if !core.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
-	go core.SignalNotify(ch)
+	go core.SignalNotify(ch, core.AppDispose)
 	gof.CurrentApp = newApp
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	web.Initialize(web.Options{
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
 	})
-	rsi.Init(newApp, appFlag)
+	impl.Init(newApp, appFlag)
+	//runGoMicro()
 	// 初始化producer
-	msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
+	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
-	go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
-	// 运行REST API
-	go restapi.Run(newApp, apiPort)
+	//go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
+	go service.ServeRPC(ch, &cfg, port)
+	service.ConfigureClient(cfg) // initial service client
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
+	// 运行REST API
+	go restapi.Run(ch, newApp, apiPort)
 	<-ch
 }
+
+/*
+// todo: v3 还是测试版本
+func runGoMicro() {
+	r := consul.NewRegistry(func(options *registry.Options) {
+		options.Addrs = []string{
+			"127.0.0.1:8500",
+		}
+	})
+	grpc.NewServer(
+		server.Name("Greeter"),
+		server.Registry(NewRegisterV3(r)))
+	s := service.New(
+		service.Name("Greeter"),
+		service.Address(":1081"),
+		)
+	//service := micro.NewService(
+	//	micro.Name("Greeter"),
+	//	//micro.Address(":1081"),
+	//	micro.Registry(r),
+	//	)
+	//service.Init()
+	s.Handle(new(grpc.TestServiceImpl))
+	//proto.RegisterGreeterServiceHandler(service,new(grpc.TestServiceImpl))
+	service.Run()
+}
+
+func NewRegisterV3(r registry.Registry) registry2.Registry {
+	return &RegisterV3{r}
+}
+*/

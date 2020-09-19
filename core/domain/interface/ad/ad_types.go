@@ -18,8 +18,8 @@ type (
 
 	//  超链接
 	HyperLink struct {
-		Id      int32  `db:"id"`
-		AdId    int32  `db:"ad_id"`
+		Id      int64  `db:"id"`
+		AdId    int64  `db:"ad_id"`
 		Title   string `db:"title"`
 		LinkUrl string `db:"link_url"`
 	}
@@ -32,10 +32,10 @@ type (
 	// 广告图片
 	Image struct {
 		// 图片编号
-		Id int32 `db:"id" auto:"yes" pk:"true"`
+		Id int64 `db:"id" auto:"yes" pk:"true"`
 
 		// 广告编号
-		AdId int32 `db:"ad_id"`
+		AdId int64 `db:"ad_id"`
 
 		// 图片标题
 		Title string `db:"title"`
@@ -62,13 +62,13 @@ type (
 		GetEnabledAdValue() ValueGallery
 
 		// 保存广告图片
-		SaveImage(v *Image) (int32, error)
+		SaveImage(v *Image) (int64, error)
 
 		// 获取图片项
-		GetImage(id int32) *Image
+		GetImage(id int64) *Image
 
 		// 删除图片项
-		DelImage(id int32) error
+		DelImage(id int64) error
 	}
 )
 

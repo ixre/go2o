@@ -185,7 +185,7 @@ func (o *normalOrderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 		//mchId := o._cart.VendorId
 
 		//todo: 将购物车中的vendor均获取出来
-		var mchId int32 = -1
+		var mchId int64 = -1
 		var vp = o.promRepo.GetPromotionOfMerchantOrder(mchId)
 		var proms = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {
@@ -731,7 +731,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	vendorId int, newOrderNo bool, items []*order.SubOrderItem) order.ISubOrder {
 	orderNo := o.OrderNo()
 	if newOrderNo {
-		orderNo = o.manager.GetFreeOrderNo(int32(vendorId))
+		orderNo = o.manager.GetFreeOrderNo(int64(vendorId))
 	}
 	if len(items) == 0 {
 		domain.HandleError(errors.New("拆分订单,运营商下未获取到商品,订单:"+
@@ -741,7 +741,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	v := &order.NormalSubOrder{
 		OrderNo:  orderNo,
 		BuyerId:  buyerId,
-		VendorId: int32(vendorId),
+		VendorId: int64(vendorId),
 		OrderId:  o.GetAggregateRootId(),
 		Subject:  "子订单",
 		ShopId:   items[0].ShopId,

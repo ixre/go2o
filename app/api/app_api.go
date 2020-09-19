@@ -1,8 +1,10 @@
 package api
 
 import (
+	"context"
 	"github.com/ixre/gof/api"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"time"
 )
 
@@ -35,25 +37,25 @@ func (a AppApi) check(ctx api.Context) interface{} {
 	form := ctx.Form()
 	prodVersion := form.GetString("prod_version")
 	prodType := form.GetString("prod_type")
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{appVersion, appAndroidVersion, appIOSVersion,
 			appReleaseInfo, appApkFileUrl, appIOSFileUrl}
-		mp, _ := cli.GetRegistries(thrift.Context, keys)
+		mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
 		version := ""
 		url := ""
 		if prodType == "android" {
-			version = mp[appAndroidVersion]
-			url = mp[appApkFileUrl]
+			version = mp.Value[appAndroidVersion]
+			url = mp.Value[appApkFileUrl]
 		} else if prodType == "ios" {
-			version = mp[appIOSVersion]
-			url = mp[appIOSFileUrl]
+			version = mp.Value[appIOSVersion]
+			url = mp.Value[appIOSFileUrl]
 		} else {
-			version = mp[appVersion]
+			version = mp.Value[appVersion]
 			url = ""
 		}
-		info := mp[appReleaseInfo]
+		info := mp.Value[appReleaseInfo]
 		isLatest := api.CompareVersion(prodVersion, version) >= 0
 		data := map[string]interface{}{
 			"version": version,
@@ -69,15 +71,45 @@ func (a AppApi) check(ctx api.Context) interface{} {
 
 func (a *AppApi) init() *AppApi {
 	time.Sleep(time.Second * 5) // 等待RPC服务启动5秒
-	trans, cli, err := thrift.RegistryServeClient()
+	trans, cli, err := service.RegistryServeClient()
 	if err == nil {
 		defer trans.Close()
-		cli.CreateUserRegistry(thrift.Context, appVersion, "1.0.0", "APP版本号")
-		cli.CreateUserRegistry(thrift.Context, appAndroidVersion, "1.0.0", "安卓APP版本号")
-		cli.CreateUserRegistry(thrift.Context, appIOSVersion, "1.0.0", "苹果APP版本号")
-		cli.CreateUserRegistry(thrift.Context, appReleaseInfo, "修复已知BUG\n界面调整", "版本发布日志")
-		cli.CreateUserRegistry(thrift.Context, appApkFileUrl, "", "安卓APK文件下载地址")
-		cli.CreateUserRegistry(thrift.Context, appIOSFileUrl, "", "苹果APP文件下载地址")
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
+				Key:          appVersion,
+				DefaultValue: "1.0.0",
+				Description:  "APP版本号",
+			})
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
+				Key:          appAndroidVersion,
+				DefaultValue: "1.0.0",
+				Description:  "安卓APP版本号",
+			})
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
+				Key:          appIOSVersion,
+				DefaultValue: "1.0.0",
+				Description:  "苹果APP版本号",
+			})
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
+				Key:          appReleaseInfo,
+				DefaultValue: "修复已知BUG\n界面调整",
+				Description:  "版本发布日志",
+			})
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
+				Key:          appApkFileUrl,
+				DefaultValue: "",
+				Description:  "安卓APK文件下载地址",
+			})
+		cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
+				Key:          appIOSFileUrl,
+				DefaultValue: "",
+				Description:  "苹果APP文件下载地址",
+			})
 	} else {
 		println("init app api err:", err.Error())
 	}

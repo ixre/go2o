@@ -12,7 +12,7 @@ import (
 	"database/sql"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/tool"
-	"go2o/core/service/rsi"
+	"go2o/core/service/impl"
 	"log"
 	"math"
 	"sync"
@@ -100,7 +100,7 @@ func confirmTransferInByCursor(unixDate int64, logId int32) {
 		logId, unixDate, personfinance.RiseTypeTransferIn,
 		personfinance.RiseStateDefault)
 	if err == nil {
-		err = rsi.PersonFinanceService.CommitTransfer(v.PersonId, v.Id)
+		err = impl.PersonFinanceService.CommitTransfer(v.PersonId, v.Id)
 		if err != nil {
 			log.Println("[ PersonFinance][ Transfer][ Fail]: person_id=",
 				v.PersonId, "error=", err.Error())
@@ -152,7 +152,7 @@ func settleRiseData(settleDate time.Time) {
 
 // 结算每日数据
 func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int64) {
-	err := rsi.PersonFinanceService.RiseSettleByDay(personId, settleUnix,
+	err := impl.PersonFinanceService.RiseSettleByDay(personId, settleUnix,
 		personfinance.RiseDayRatioProvider(personId))
 	if err != nil {
 		log.Println("[ PersonFinance][ Settle][ Fail]: person_id=",

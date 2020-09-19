@@ -20,8 +20,8 @@ type (
 		Id             int64
 		OrderNo        string
 		ParentNo       string
-		VendorId       int
-		ShopId         int
+		VendorId       int64
+		ShopId         int64
 		ShopName       string
 		ItemAmount     float32
 		DiscountAmount float32

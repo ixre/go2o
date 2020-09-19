@@ -32,13 +32,13 @@ type IMerchantRepo interface {
 	GetMerchantMajorHost(mchId int) string
 
 	// 保存
-	SaveMerchant(*Merchant) (int32, error)
+	SaveMerchant(*Merchant) (int, error)
 
 	// 获取账户
 	GetAccount(mchId int) *Account
 
 	// 获取销售配置
-	GetMerchantSaleConf(mchId int32) *SaleConf
+	GetMerchantSaleConf(mchId int64) *SaleConf
 
 	// 保存销售配置
 	SaveMerchantSaleConf(v *SaleConf) error
@@ -53,7 +53,7 @@ type IMerchantRepo interface {
 	GetApiInfo(mchId int) *ApiInfo
 
 	// 根据API编号获取商户编号
-	GetMerchantIdByApiId(apiId string) int32
+	GetMerchantIdByApiId(apiId string) int64
 
 	// 获取键值
 	GetKeyValue(mchId int, indent string, k string) string
@@ -77,13 +77,13 @@ type IMerchantRepo interface {
 	GetNextLevel(mchId, levelVal int32) *MemberLevel
 
 	// 获取会员等级
-	GetMemberLevels(mchId int32) []*MemberLevel
+	GetMemberLevels(mchId int64) []*MemberLevel
 
 	// 删除会员等级
 	DeleteMemberLevel(mchId, id int32) error
 
 	// 保存等级
-	SaveMemberLevel(mchId int32, v *MemberLevel) (int32, error)
+	SaveMemberLevel(mchId int64, v *MemberLevel) (int32, error)
 
 	// Get MchEnterpriseInfo
 	GetMchEnterpriseInfo(mchId int) *EnterpriseInfo
@@ -93,7 +93,7 @@ type IMerchantRepo interface {
 	// Get MchBuyerGroup
 	GetMchBuyerGroupByGroupId(mchId, groupId int32) *MchBuyerGroup
 	// Select MchBuyerGroup
-	SelectMchBuyerGroup(mchId int32) []*MchBuyerGroup
+	SelectMchBuyerGroup(mchId int64) []*MchBuyerGroup
 	// Save MchBuyerGroup
 	SaveMchBuyerGroup(v *MchBuyerGroup) (int, error)
 

@@ -7,12 +7,12 @@ import (
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/infrastructure/format"
 	"go2o/core/module/bank"
 	"go2o/core/repos"
-	"go2o/core/service/thrift"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -26,14 +26,15 @@ var (
 	_            Module = new(Bank4E)
 	zhNameRegexp        = regexp.MustCompile("^[\u4e00-\u9fa5]{2,6}$")
 )
-var keys = []string{"bank4e_trust_on", "bank4e_jd_app_key"}
+var keys = []string{"bank4e_trust_on", "bank4e_jd_app_key", "bank4e_turn_stat"}
 
 type Bank4E struct {
-	memberRepo member.IMemberRepo
-	valueRepo  valueobject.IValueRepo
-	storage    storage.Interface
-	appKey     string
-	open       bool
+	memberRepo   member.IMemberRepo
+	valueRepo    valueobject.IValueRepo
+	storage      storage.Interface
+	appKey       string
+	open         bool
+	registryRepo registry.IRegistryRepo
 }
 
 func (b *Bank4E) SetApp(app gof.App) {
@@ -43,15 +44,11 @@ func (b *Bank4E) SetApp(app gof.App) {
 func (b *Bank4E) Init() {
 	b.memberRepo = repos.Repo.GetMemberRepo()
 	b.valueRepo = repos.Repo.GetValueRepo()
-	trans, cli, err := thrift.RegistryServeClient()
-	if err == nil {
-		defer trans.Close()
-		cli.CreateUserRegistry(thrift.Context, keys[0], "false", "是否开启四要素实名认证")
-		cli.CreateUserRegistry(thrift.Context, keys[1], "", "京东银行四要素接口KEY")
-		data, _ := cli.GetRegistries(thrift.Context, keys)
-		b.open, _ = strconv.ParseBool(data[keys[0]])
-		b.appKey = data[keys[1]]
-	}
+	b.registryRepo = repos.Repo.GetRegistryRepo()
+	v, _ := b.registryRepo.GetValue(keys[0])
+	v2, _ := b.registryRepo.GetValue(keys[1])
+	b.open = v == "1" || v == "true"
+	b.appKey = v2
 }
 
 // 获取基础信息
@@ -170,9 +167,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	if err := m.Profile().ReviewTrustedInfo(true, ""); err != nil {
 		return err
 	}
-
 	// 保存银行信息
-	m.Profile().UnlockBank()
 	if err := m.Profile().SaveBank(&member.BankInfo{
 		BankName:    result["BankName"],
 		AccountName: realName,
@@ -187,14 +182,13 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 // 检查是否为上次提交，如果不是，则更新
 func (b *Bank4E) checkLatestInfo(memberId int64, realName, idCard, phone, bankAccount string) bool {
 	// 获取是否关闭检查
-	keyStat := "sys:go2o:b4e:turn_stat"
-	turnStat, _ := b.storage.GetInt(keyStat)
+	turnStat, _ := b.registryRepo.GetValue(keys[2])
 	// 获取之前提交信息
 	key := "sys:go2o:b4e:last-post:" + strconv.Itoa(int(memberId))
 	result := strings.Join([]string{realName, idCard, phone, bankAccount}, "|")
 	src, _ := b.storage.GetString(key)
-	if src != result || turnStat == 0 {
-		b.storage.SetExpire(key, result, int64(time.Hour)*24*100)
+	if src != result || turnStat == "0" {
+		_ = b.storage.SetExpire(key, result, int64(time.Hour)*24*100)
 		return true
 	}
 	return false

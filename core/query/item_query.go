@@ -53,7 +53,7 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			catId, enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
@@ -84,7 +84,7 @@ func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			catId, enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
@@ -124,7 +124,7 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
@@ -175,13 +175,13 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
 
 //根据分类获取上架的商品
-func (i ItemQuery) GetOnShelvesItem(catIdArr []int, start, end int32,
+func (i ItemQuery) GetOnShelvesItem(catIdArr []int, begin, end int,
 	where string) []*item.GoodsItem {
 	var list []*item.GoodsItem
 	if len(catIdArr) > 0 {
@@ -192,13 +192,13 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int, start, end int32,
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY item_info.update_time DESC LIMIT $4 OFFSET $3`, catIdStr, where)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			enum.ReviewPass, item.ShelvesOn, begin, end-begin)
 	}
 	return list
 }
 
 // 搜索随机的商品列表
-func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.GoodsItem {
+func (i ItemQuery) GetRandomItem(catIdArr []int, begin, end int, where string) []*item.GoodsItem {
 	/*
 	       随机查询： 要减去获取的条数，以确保至少有2条数据
 	   SELECT * FROM item_info
@@ -212,11 +212,12 @@ func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.Go
 	*/
 
 	s := []string{where}
-	if catId > 0 {
+	if catIdArr != nil && len(catIdArr) > 0 {
+		catIdStr := format.IntArrStrJoin(catIdArr)
 		if where != "" {
 			s = append(s, " AND")
 		}
-		s = append(s, fmt.Sprintf("item_info.cat_id=%d)", catId))
+		s = append(s, fmt.Sprintf("item_info.cat_id IN (%s)", catIdStr))
 	}
 	search := strings.Join(s, "")
 
@@ -228,16 +229,16 @@ func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.Go
          )) AS id) AS r2
 		 WHERE item_info.ID > r2.id
 		  AND item_info.review_state= ?
-		 AND item_info.shelve_state= ? %s LIMIT ?`,
+		 AND item_info.shelve_state= ? %s LIMIT ? OFFSET $3`,
 		search, search)
 	i.Connector.GetOrm().SelectByQuery(&list, sql,
-		quantity, enum.ReviewPass, item.ShelvesOn,
-		enum.ReviewPass, item.ShelvesOn, quantity)
+		enum.ReviewPass, item.ShelvesOn,
+		enum.ReviewPass, item.ShelvesOn, begin, end-begin)
 	return list
 }
 
 //根据关键词搜索上架的商品
-func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
+func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
 	keyword, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
 	total := 0
@@ -266,7 +267,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
          AND product.name LIKE $5 %s ORDER BY %s update_time DESC LIMIT $7 OFFSET $6`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,
-			item.ShelvesOn, shopId, shopId, keyword, start, (end - start))
+			item.ShelvesOn, shopId, shopId, keyword, start, end-start)
 	}
 
 	return total, e

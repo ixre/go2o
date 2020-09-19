@@ -19,11 +19,11 @@ var _ merchant.ILevelManager = new(LevelManager)
 
 type LevelManager struct {
 	mchRepo  merchant.IMerchantRepo
-	mchId    int32
+	mchId    int64
 	levelSet []*merchant.MemberLevel
 }
 
-func NewLevelManager(mchId int32, rep merchant.IMerchantRepo) merchant.ILevelManager {
+func NewLevelManager(mchId int64, rep merchant.IMerchantRepo) merchant.ILevelManager {
 	return &LevelManager{
 		mchId:   mchId,
 		mchRepo: rep,
@@ -36,7 +36,7 @@ func (l *LevelManager) InitDefaultLevels() error {
 
 		return errors.New("已经存在数据，无法初始化!")
 	}
-	var arr []*merchant.MemberLevel = []*merchant.MemberLevel{
+	var arr = []*merchant.MemberLevel{
 		{
 			MerchantId: l.mchId,
 			Name:       "普通会员",
@@ -111,12 +111,12 @@ func (l *LevelManager) GetLevelByValue(value int32) *merchant.MemberLevel {
 
 // 获取下一个等级
 func (l *LevelManager) GetNextLevel(value int32) *merchant.MemberLevel {
-	return l.mchRepo.GetNextLevel(l.mchId, value)
+	return l.mchRepo.GetNextLevel(int32(l.mchId), value)
 }
 
 // 删除等级
 func (l *LevelManager) DeleteLevel(id int32) error {
-	var exists bool = true
+	var exists = true
 	if l.levelSet != nil {
 		exists = false
 		for i, v := range l.levelSet {
@@ -129,7 +129,7 @@ func (l *LevelManager) DeleteLevel(id int32) error {
 	}
 	if exists {
 		//todo: 更新会员的等级到下一级
-		return l.mchRepo.DeleteMemberLevel(l.mchId, id)
+		return l.mchRepo.DeleteMemberLevel(int32(l.mchId), id)
 	}
 	return errors.New("no such record")
 }

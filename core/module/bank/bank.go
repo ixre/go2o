@@ -2138,7 +2138,7 @@ var (
 // https://ccdcapi.alipay.com/validateAndCacheCardInfo.json?cardNo=6229332000010155164&cardBinCheck=true
 func getNameByAccountNo(accountNo string, offset int) string {
 	if accountNo != "" {
-		var longBin int = 0
+		var longBin = 0
 		ru := []byte(accountNo)
 		for i := 0; i < 6; i++ {
 			longBin = (longBin * 10) + (int(ru[i+offset]) - 48)

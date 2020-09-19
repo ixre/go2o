@@ -41,7 +41,7 @@ func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo) merchant
 // 获取企业信息
 func (p *profileManagerImpl) GetEnterpriseInfo() *merchant.EnterpriseInfo {
 	if p.ent == nil {
-		p.ent = p._repo.GetMchEnterpriseInfo(p.GetAggregateRootId())
+		p.ent = p._repo.GetMchEnterpriseInfo(int(p.GetAggregateRootId()))
 	}
 	return p.ent
 }
@@ -49,7 +49,7 @@ func (p *profileManagerImpl) GetEnterpriseInfo() *merchant.EnterpriseInfo {
 func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 	dst *merchant.EnterpriseInfo) {
 	// 商户编号
-	dst.MchId = int32(p.GetAggregateRootId())
+	dst.MchId = p.GetAggregateRootId()
 	// 公司名称
 	dst.CompanyName = src.CompanyName
 	// 公司营业执照编号

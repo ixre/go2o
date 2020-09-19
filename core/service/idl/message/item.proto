@@ -1,0 +1,174 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+message GetItemsByLabelRequest {
+    string Label = 1;
+    string SortBy = 2;
+    int64 Begin = 3;
+    int64 End = 4;
+}
+
+message PagingShopGoodsResponse{
+    int64 Total = 1;
+    repeated SGoods Data = 2;
+}
+
+message PagingGoodsResponse{
+    int64 Total = 1;
+    repeated SUnifiedViewItem Data = 2;
+}
+
+// 获取商品请求
+message GetItemsRequest{
+    int64 CategoryId = 1;
+    int64 Begin = 2;
+    int64 End = 3;
+    //　是否随机
+    bool Random = 4;
+    string Where = 5;
+}
+
+// 简单的商品信息
+message SGoods {
+    int64 ItemId = 1;
+    int64 ProductId = 2;
+    int64 VendorId = 3;
+    int64 ShopId = 4;
+    int32 CategoryId = 5;
+    // 标题
+    string Title = 6;
+    string ShortTitle = 7;
+    // 货号
+    string GoodsNo = 8;
+    string Image = 9;
+    //定价
+    double RetailPrice = 10;
+    //销售价
+    double Price = 11;
+    // 促销价
+    double PromPrice = 12;
+    // 价格区间
+    string PriceRange = 13;
+    int64 GoodsId = 14;
+    int64 SkuId = 15;
+    bool IsPresent = 16;
+    // 促销标志
+    int32 PromotionFlag = 17;
+    // 库存
+    int32 StockNum = 18;
+    // 已售件数
+    int32 SaleNum = 19;
+}
+
+
+
+/** SKU */
+message SSku {
+    sint64 SkuId = 1;
+    sint64 ItemId = 2;
+    sint64 ProductId = 3;
+    string Title = 4;
+    string Image = 5;
+    string SpecData = 6;
+    string SpecWord = 7;
+    string Code = 8;
+    double RetailPrice = 9;
+    double Price = 10;
+    double Cost = 11;
+    sint32 Weight = 12;
+    sint32 Bulk = 13;
+    sint32 Stock = 14;
+    sint32 SaleNum = 15;
+}
+
+
+// 统一的商品显示对象
+message SUnifiedViewItem {
+    sint64 ItemId = 1;
+    sint64 ProductId = 2;
+    sint32 CatId = 3;
+    sint64 VendorId = 4;
+    sint32 BrandId = 5;
+    string Title = 6;
+    string Code = 7;
+    string Image = 8;
+    double Price = 9;
+    string PriceRange = 10;
+    sint32 StockNum = 11;
+    sint32 ShelveState = 12;
+    sint32 ReviewState = 13;
+    sint64 UpdateTime = 14;
+    repeated SSku SkuArray = 15;
+    map<string, string> Data = 16;
+    // 3: sint32 PromFlag
+    // 7: sint32 ShopId
+    // 8: sint32 ShopCatId
+    // 9: sint32 ExpressTid
+    // 11: string ShortTitle
+    // 14: sint32 IsPresent
+    // 23: sint32 Weight
+    // 24: sint32 Bulk
+    // 18: sint32 SkuNum
+    // 28: sint32 SortNum
+    // 29: sint64 CreateTime
+    // 31: double PromPrice
+    // 22: double RetailPrice
+    // 19: sint32 SkuId
+    // 20: double Cost
+    // 17: sint32 SaleNum
+}
+
+
+// 完整的商品信息
+message SOldItem {
+    sint64 ItemId = 1;
+    sint64 ProductId = 2;
+    sint32 PromFlag = 3;
+    sint32 CatId = 4;
+    sint64 VendorId = 5;
+    sint32 BrandId = 6;
+    sint64 ShopId = 7;
+    sint32 ShopCatId = 8;
+    sint32 ExpressTid = 9;
+    string Title = 10;
+    string ShortTitle = 11;
+    string Code = 12;
+    string Image = 13;
+    sint32 IsPresent = 14;
+    string PriceRange = 15;
+    sint32 StockNum = 16;
+    sint32 SaleNum = 17;
+    sint32 SkuNum = 18;
+    sint64 SkuId = 19;
+    double Cost = 20;
+    double Price = 21;
+    double RetailPrice = 22;
+    sint32 Weight = 23;
+    sint32 Bulk = 24;
+    sint32 ShelveState = 25;
+    sint32 ReviewState = 26;
+    string ReviewRemark = 27;
+    sint32 SortNum = 28;
+    sint64 CreateTime = 29;
+    sint64 UpdateTime = 30;
+    double PromPrice = 31;
+    repeated SSku SkuArray = 32;
+    map<string, string> Data = 33;
+}
+
+message ItemLabelListResponse{
+    repeated SItemLabel Value = 1;
+}
+
+// 销售标签
+message SItemLabel {
+    int32 Id = 1;
+    // 标签名
+    string Name = 2;
+    // 标签代码
+    string TagCode  =5;
+    // 商品的遮盖图
+    string LabelImage =3;
+    // 是否启用
+    bool Enabled = 4;
+}

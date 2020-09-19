@@ -89,9 +89,11 @@ type IMemberRepo interface {
 	// 保存账户，传入会员编号
 	SaveAccount(*Account) (int64, error)
 	// 获取银行卡
-	Bankcards(memberId int64) *BankInfo
+	BankCards(memberId int64) *BankInfo
 	// 保存银行卡信息
-	SaveBankcard(*BankInfo) error
+	SaveBankCard(*BankInfo) error
+	// 移除银行卡
+	RemoveBankCard(id int64) error
 	// 获取收款码
 	ReceiptsCodes(memberId int64) []ReceiptsCode
 	// 保存收款码
@@ -118,7 +120,7 @@ type IMemberRepo interface {
 	GetRelation(memberId int64) *InviteRelation
 
 	// 获取经验值对应的等级
-	GetLevelValueByExp(mchId int32, exp int64) int
+	GetLevelValueByExp(mchId int64, exp int64) int
 
 	// 获取会员升级记录
 	GetLevelUpLog(id int32) *LevelUpLog
@@ -155,14 +157,11 @@ type IMemberRepo interface {
 		growEarnings, totalGrowEarnings float32, updateTime int64) error
 
 	//收藏,favType 为收藏类型, referId为关联的ID
-	Favorite(memberId int64, favType int, referId int32) error
-
+	Favorite(memberId int64, favType int, referId int64) error
 	//是否已收藏
-	Favored(memberId int64, favType int, referId int32) bool
-
+	Favored(memberId int64, favType int, referId int64) bool
 	//取消收藏
-	CancelFavorite(memberId int64, favType int, referId int32) error
-
+	CancelFavorite(memberId int64, favType int, referId int64) error
 	// 获取会员分页的优惠券列表
 	GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
 	// Select MmBuyerGroup

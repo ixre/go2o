@@ -22,5 +22,5 @@ type IUserRepo interface {
 	GetPersonValue(id int32) *PersonValue
 
 	// 获取配送人员
-	GetDeliveryStaffPersons(mchId int32) []*PersonValue
+	GetDeliveryStaffPersons(mchId int64) []*PersonValue
 }

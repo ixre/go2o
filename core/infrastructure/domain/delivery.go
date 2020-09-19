@@ -21,7 +21,7 @@ var (
 
 // 获取地区名称
 func GetAreaName(addr string) (string, error) {
-	var matches [][]string = areaRegexp.FindAllStringSubmatch(addr, -1)
+	var matches = areaRegexp.FindAllStringSubmatch(addr, -1)
 	if len(matches) == 0 {
 		return "", errNotMatch
 	}
@@ -30,7 +30,7 @@ func GetAreaName(addr string) (string, error) {
 
 // 获取城市名称
 func GetCityName(addr string) (string, error) {
-	var matches [][]string = cityRegexp.FindAllStringSubmatch(addr, -1)
+	var matches = cityRegexp.FindAllStringSubmatch(addr, -1)
 	if len(matches) == 0 {
 		return "", errNotMatch
 	}

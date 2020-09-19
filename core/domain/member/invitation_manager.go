@@ -24,14 +24,14 @@ type invitationManager struct {
 }
 
 // 更换邀请人
-func (i *invitationManager) UpdateInviter(inviterId int64,sync bool) error {
+func (i *invitationManager) UpdateInviter(inviterId int64, sync bool) error {
 	id := i.member.GetAggregateRootId()
 	var rl *member.InviteRelation
 	if inviterId > 0 {
 		rl = i.member.repo.GetRelation(inviterId)
 	}
 	// 判断邀请人是否为下别的被邀请会员
-	if i.checkInvitation(id,inviterId) {
+	if i.checkInvitation(id, inviterId) {
 		return member.ErrInvalidInviter
 	}
 	if !sync {
@@ -62,8 +62,8 @@ func (i *invitationManager) walkUpdateInvitation(id int64, p *member.InviteRelat
 		var idList = i.member.repo.GetInviteChildren(id)
 		for idx, cid := range idList {
 			i.walkUpdateInvitation(cid, r)
-			if idx % 5 == 0{
-				time.Sleep(time.Second/10)
+			if idx%5 == 0 {
+				time.Sleep(time.Second / 10)
 			}
 		}
 	}
@@ -140,7 +140,7 @@ func (i *invitationManager) GetInvitationMeMember() *member.Member {
 }
 
 //  是否存在邀请关系
-func (i *invitationManager) checkInvitation(inviterId int64,id int64) bool {
+func (i *invitationManager) checkInvitation(inviterId int64, id int64) bool {
 	currId := id
 	for {
 		arr := i.InviterArray(currId, 1)

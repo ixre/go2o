@@ -142,7 +142,7 @@ func (c *Coupon) Save() (int32, error) {
 		c.detailsValue.Amount = c.detailsValue.TotalAmount
 	}
 
-	var isCreate bool = c.GetAggregateRootId() == 0
+	var isCreate = c.GetAggregateRootId() == 0
 
 	id, err := c.promotionImpl.Save()
 	c.value.Id = id
@@ -308,7 +308,7 @@ func (c *Coupon) Bind(memberId int64) error {
 		return errors.New("优惠券不足")
 	}
 
-	var now time.Time = time.Now()
+	var now = time.Now()
 
 	valBind := &promotion.ValueCouponBind{
 		MemberId: memberId,

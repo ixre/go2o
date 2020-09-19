@@ -2,7 +2,10 @@ package repos
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/registry"
 	"log"
 	"strings"
@@ -11,16 +14,20 @@ import (
 
 var _ registry.IRegistryRepo = new(registryRepo)
 
+var prefix = "registry/key"
+
 type registryRepo struct {
-	conn db.Connector
-	data map[string]registry.IRegistry
-	lock sync.RWMutex
+	conn  db.Connector
+	store storage.Interface
+	data  map[string]registry.IRegistry
+	lock  sync.RWMutex
 }
 
-func NewRegistryRepo(conn db.Connector) registry.IRegistryRepo {
+func NewRegistryRepo(conn db.Connector, s storage.Interface) registry.IRegistryRepo {
 	return (&registryRepo{
-		conn: conn,
-		data: make(map[string]registry.IRegistry),
+		conn:  conn,
+		store: s,
+		data:  make(map[string]registry.IRegistry),
 	}).init()
 }
 
@@ -38,10 +45,40 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 	r.lock.Unlock()
 	// 合并数据源
 	registries := registry.MergeRegistries()
-	r.Merge(registries)
+	_ = r.Merge(registries)
 	// 清理不再使用的注册表
-	r.truncUnused(registries)
+	_ = r.truncUnused(registries)
 	return r
+}
+
+func (r *registryRepo) GetValue(key string) (string, error) {
+	k := fmt.Sprintf("%s/%s", prefix, key)
+	v, err := r.store.GetString(k)
+	if err == nil {
+		return v, err
+	}
+	if ir := r.Get(key); ir != nil {
+		v := ir.Value().Value
+		if err := r.store.Set(k, v); err != nil {
+			log.Println("[ app][ warning]: registry persists failed, ", err.Error())
+		}
+		return v, nil
+	}
+	return "", err
+}
+
+func (r *registryRepo) UpdateValue(key string, value string) error {
+	e := r.Get(key)
+	if e == nil {
+		return errors.New("no exists key")
+	}
+	// 更新etcd
+	k := fmt.Sprintf("%s/%s", prefix, key)
+	_ = r.store.Set(k, value)
+	// 持久化
+	ev := e.Value()
+	ev.Value = value
+	return r.Save(e)
 }
 
 func (r *registryRepo) SearchRegistry(key string) []registry.Registry {
@@ -138,7 +175,7 @@ func (r *registryRepo) truncUnused(registries []*registry.Registry) error {
 				}
 			}
 			if !exists {
-				r.Remove(ir.Key())
+				_ = r.Remove(ir.Key())
 			}
 		}
 	}

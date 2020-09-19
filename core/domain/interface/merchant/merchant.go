@@ -33,7 +33,7 @@ type (
 	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
 		// 获取编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 		GetValue() Merchant
 		// 获取符合的商家信息
 		Complex() *ComplexMerchant
@@ -49,7 +49,7 @@ type (
 		// 返回对应的会员编号
 		Member() int64
 		// 保存
-		Save() (int32, error)
+		Save() (int64, error)
 		// 获取商户的域名
 		GetMajorHost() string
 		// 获取商户账户
@@ -84,7 +84,7 @@ type (
 	// 账户
 	IAccount interface {
 		// 获取领域对象编号
-		GetDomainId() int32
+		GetDomainId() int64
 		// 获取账户值
 		GetValue() *Account
 		// 保存
@@ -233,7 +233,7 @@ type (
 
 	// 商户
 	Merchant struct {
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 登录用户
@@ -275,7 +275,7 @@ type (
 	// 商户账户表
 	Account struct {
 		// 商户编号
-		MchId int32 `db:"mch_id" pk:"yes"`
+		MchId int64 `db:"mch_id" pk:"yes"`
 		// 余额
 		Balance float32 `db:"balance"`
 		// 冻结金额
@@ -301,7 +301,7 @@ type (
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 商户编号
-		MchId int32 `db:"mch_id"`
+		MchId int64 `db:"mch_id"`
 		// 日志类型
 		Kind int `db:"kind"`
 		// 标题
@@ -325,7 +325,7 @@ type (
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 商户编号
-		MchId int32 `db:"mch_id"`
+		MchId int64 `db:"mch_id"`
 		// 新增订单数量
 		OrderNumber int `db:"order_number"`
 		// 订单额

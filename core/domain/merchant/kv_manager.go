@@ -26,7 +26,7 @@ type KvManager struct {
 func newKvManager(p *merchantImpl, indent string) merchant.IKvManager {
 	return &KvManager{
 		mch:    p,
-		mchId:  p.GetAggregateRootId(),
+		mchId:  int(p.GetAggregateRootId()),
 		indent: indent,
 	}
 }

@@ -204,7 +204,7 @@ func (p *CommonDao) GetFloorAdPos(catId int32) string {
 		e := model.PortalFloorAd{}
 		err := p._orm.GetBy(&e, "cat_id= $1", catId)
 		if err == nil {
-			pos := p.adRepo.GetAdPositionById(e.PosId)
+			pos := p.adRepo.GetAdPositionById(int64(e.PosId))
 			if pos != nil {
 				r = pos.Key
 			}

@@ -16,7 +16,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/auto_gen/rpc/order_service"
+	"go2o/core/service/proto"
 	"log"
 	"strconv"
 )
@@ -57,8 +57,7 @@ func (o *OrderQuery) QueryOrderItems(subOrderId int64) []*dto.OrderItem {
 }
 
 // 查询分页订单
-func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
+func (o *OrderQuery) QueryPagerOrder(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
 	orderList := make([]*dto.PagedMemberSubOrder, 0)
 	num := 0
@@ -140,7 +139,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, pagination bool,
+func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedVendorOrder) {
 	d := o.Connector
 	var orderList []*dto.PagedVendorOrder
@@ -216,8 +215,7 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int32, begin, size int, p
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
+func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
 	var orderList []*dto.PagedMemberSubOrder
 	num := 0
@@ -301,7 +299,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int,
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int, pagination bool,
+func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedVendorOrder) {
 	d := o.Connector
 	var orderList []*dto.PagedVendorOrder
@@ -382,10 +380,9 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*order_service.SComplexOrder) {
+func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*proto.SComplexOrder) {
 	d := o.Connector
-	var orderList []*order_service.SComplexOrder
+	var orderList []*proto.SComplexOrder
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -419,7 +416,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
 			var cashPay int
 			var ticket string
 			for rs.Next() {
-				e := &order_service.SComplexOrder{}
+				e := &proto.SComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime)
@@ -441,10 +438,10 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
-	where, orderBy string) (int32, []*order_service.SComplexOrder) {
+func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pagination bool,
+	where, orderBy string) (int32, []*proto.SComplexOrder) {
 	d := o.Connector
-	var orderList []*order_service.SComplexOrder
+	var orderList []*proto.SComplexOrder
 	var num int32
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -480,7 +477,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
 			var ticket string
 			var user string
 			for rs.Next() {
-				e := &order_service.SComplexOrder{}
+				e := &proto.SComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime, &user)

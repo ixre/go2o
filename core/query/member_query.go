@@ -15,7 +15,6 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/auto_gen/rpc/ttype"
 	"log"
 	"strconv"
 	"strings"
@@ -30,7 +29,7 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 }
 
 // 获取会员列表
-func (m *MemberQuery) GetMemberList(ids []int64) []*dto.MemberSummary {
+func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 	var list []*dto.MemberSummary
 	strIds := make([]string, len(ids))
 	for i, v := range ids {
@@ -71,22 +70,22 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, params *ttype.SPagingParams) (num int, rows []map[string]interface{}) {
+func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64, sortBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_integral_log bi
 	 	INNER JOIN mm_member m ON m.id = bi.member_id
 			WHERE bi.member_id= $1`), &num, memberId)
 	if num > 0 {
 		orderBy := ""
-		if params.SortBy != "" {
-			orderBy = "ORDER BY " + params.SortBy + ",bi.id DESC"
+		if sortBy != "" {
+			orderBy = "ORDER BY " + sortBy + ",bi.id DESC"
 		}
 		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_integral_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id= $1 %s LIMIT $3 OFFSET $2`, orderBy)
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
-		}, memberId, params.Begin, params.Over-params.Begin)
+		}, memberId, begin, over-begin)
 		if err != nil {
 			log.Println("[ Go2o][ Query]: query error ", err.Error())
 		}
@@ -183,20 +182,20 @@ func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
 }
 
 // 会员推广排名
-func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp string, level int,
+func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	list := make([]*dto.RankMember, 0)
 	var id int64
 	var user, name string
 	var inviNum, totalNum, regTime int
-	var rank int = 0
+	var rank = 0
 
-	var sortField string = "t.all_num DESC"
+	var sortField = "t.all_num DESC"
 	if !allTeam {
 		sortField = "t.invi_num DESC"
 	}
 
-	var levelCompStr string = fmt.Sprintf("%s%d", levelComp, level)
+	var levelCompStr = fmt.Sprintf("%s%d", levelComp, level)
 	//{level_comp}{level_value}
 
 	m.Query(fmt.Sprintf(`SELECT id,user,name,invi_num,all_num,reg_time FROM ( SELECT m.*,

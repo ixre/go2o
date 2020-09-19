@@ -11,12 +11,12 @@ package domain
 import "go2o/core/infrastructure/domain"
 
 var (
-	ErrState *domain.DomainError = domain.NewError(
+	ErrState = domain.NewError(
 		"err_state", "state error")
 
-	ErrPwdCannotSame *domain.DomainError = domain.NewError(
+	ErrPwdCannotSame = domain.NewError(
 		"Err_Pwd_Can_not_Same", "新密码不能与旧密码相同")
 
-	ErrPwdOldPwdNotRight *domain.DomainError = domain.NewError(
+	ErrPwdOldPwdNotRight = domain.NewError(
 		"Err_Pwd_Pld_Pwd_Not_Right", "原密码不正确")
 )

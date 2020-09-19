@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"github.com/ixre/gof/util"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/item"
 	"log"
 )
@@ -46,7 +46,7 @@ func (w *itemWholesaleRepo) SelectWsItem(where string, v ...interface{}) []*item
 
 // Save WsItem
 func (w *itemWholesaleRepo) SaveWsItem(v *item.WsItem, create bool) (int, error) {
-	iid := util.BoolExt.TInt(create, 0, int(v.ItemId))
+	iid := types.IntCond(create, 0, int(v.ItemId))
 	id, err := orm.Save(w._orm, v, iid)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItem")

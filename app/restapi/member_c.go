@@ -9,13 +9,14 @@
 package restapi
 
 import (
+	"context"
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/labstack/echo"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/rsi"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"go2o/core/variable"
 	"net/http"
 	"net/url"
@@ -38,21 +39,29 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.ErrMsg = "会员不存在"
 		return c.JSON(http.StatusOK, result)
 	}
-	trans, cli, err := thrift.MemberServeClient()
+	trans, cli, err := service.MemberServeClient()
 	if err != nil {
 		result.ErrMsg = "网络连接失败"
 	} else {
 		defer trans.Close()
 		encPwd := domain.MemberSha1Pwd(pwd)
-		r, _ := cli.CheckLogin(thrift.Context, user, encPwd, true)
+		r, _ := cli.CheckLogin(context.TODO(), &proto.LoginRequest{
+			User:   user,
+			Pwd:    encPwd,
+			Update: true,
+		})
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)
 		if r.ErrCode == 0 {
 			memberId, _ := strconv.Atoi(r.Data["member_id"])
-			token, _ := cli.GetToken(thrift.Context, int64(memberId), false)
+			token, _ := cli.GetToken(context.TODO(),
+				&proto.GetTokenRequest{
+					MemberId: int64(memberId),
+					Reset_:   false,
+				})
 			result.Member = &dto.LoginMember{
 				ID:         memberId,
-				Token:      token,
+				Token:      token.Value,
 				UpdateTime: time.Now().Unix(),
 			}
 		}
@@ -78,13 +87,15 @@ func (mc *MemberC) Async(c echo.Context) error {
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	store.Get(autKey, &kvAut)
 	if kvMut == 0 {
-		//m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
+		//m, _ := impl.MemberService.GetMember(context.TODO(), memberId)
 		//kvMut = int(m.UpdateTime)
 		store.Set(mutKey, kvMut)
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		acc, _ := rsi.MemberService.GetAccount(thrift.Context, memberId)
+		trans, cli, _ := service.MemberServeClient()
+		defer trans.Close()
+		acc, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
 		kvAut = int(acc.UpdateTime)
 		store.Set(autKey, kvAut)
 	}
@@ -97,26 +108,34 @@ func (mc *MemberC) Async(c echo.Context) error {
 // 获取最新的会员信息
 func (mc *MemberC) Get(c echo.Context) error {
 	memberId := GetMemberId(c)
-	m, _ := rsi.MemberService.GetMember(thrift.Context, memberId)
-	trans, cli, err := thrift.MemberServeClient()
-	if err == nil {
-		defer trans.Close()
-		m.DynamicToken, _ = cli.GetToken(thrift.Context, memberId, false)
-	}
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: memberId})
+	tk, _ := cli.GetToken(context.TODO(),
+		&proto.GetTokenRequest{
+			MemberId: memberId,
+			Reset_:   false,
+		})
+	m.DynamicToken = tk.Value
+
 	return c.JSON(http.StatusOK, m)
 }
 
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	v, _ := rsi.MemberService.Complex(thrift.Context, memberId)
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	v, _ := cli.Complex(context.TODO(), &proto.Int64{Value: memberId})
 	return c.JSON(http.StatusOK, v)
 }
 
 // 获取最新的会员账户信息
 func (mc *MemberC) Account(c echo.Context) error {
 	memberId := GetMemberId(c)
-	m, _ := rsi.MemberService.GetAccount(thrift.Context, memberId)
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	m, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
 	return c.JSON(http.StatusOK, m)
 }
 
@@ -131,7 +150,7 @@ func (mc *MemberC) Disconnect(c echo.Context) error {
 	//trans,cli, err := thrift.MemberClient()
 	//if err == nil {
 	//	defer trans.Close()
-	//	if b, _ := cli.CheckToken(thrift.Context,memberId, token); b {
+	//	if b, _ := cli.CheckToken(context.TODO(),memberId, token); b {
 	//		cli.RemoveToken(memberId)
 	//	} else {
 	//		err = errors.New("error credential")

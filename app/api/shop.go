@@ -1,13 +1,15 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
-	"go2o/core/service/auto_gen/rpc/ttype"
-	"go2o/core/service/rsi"
-	"go2o/core/service/thrift"
+	"go2o/core/service"
+	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 )
 
 /**
@@ -50,14 +52,14 @@ func (s shopApi) Process(fn string, ctx api.Context) *api.Response {
 func (s shopApi) shopCat(ctx api.Context) interface{} {
 	parentId := ctx.Form().GetInt("parent_id")
 	shopId := ctx.Form().GetInt("shop_id")
-	var list []*ttype.SCategory
+	var list []*proto.SCategory
 	key := fmt.Sprintf("go2o:repo:cat:%d:json:%d", shopId, parentId)
 	sto := gof.CurrentApp.Storage()
 	if err := sto.Get(key, &list); err != nil {
 		if parentId == 0 {
-			list = rsi.ProductService.GetBigCategories(int32(shopId))
+			list = impl.ProductService.GetBigCategories(int64(shopId))
 		} else {
-			list = rsi.ProductService.GetChildCategories(int32(shopId), int32(parentId))
+			list = impl.ProductService.GetChildCategories(int64(shopId), int64(parentId))
 		}
 		var d []byte
 		d, err = json.Marshal(list)
@@ -78,7 +80,16 @@ func (s shopApi) shopCat(ctx api.Context) interface{} {
 func (s shopApi) Favorite(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	id := ctx.Form().GetInt("shop_id")
-	err := rsi.MemberService.FavoriteShop(int64(memberId), int32(id))
+	trans, cli, _ := service.MemberServeClient()
+	r, err := cli.Favorite(context.TODO(), &proto.FavoriteRequest{
+		MemberId:     int64(memberId),
+		FavoriteType: proto.FavoriteType_Shop,
+		ReferId:      int64(id),
+	})
+	trans.Close()
+	if r.ErrCode > 0 {
+		err = errors.New(r.ErrMsg)
+	}
 	if err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
@@ -91,12 +102,12 @@ func (s shopApi) Favorite(ctx api.Context) interface{} {
 func (s *serviceC) LoginState(c *echox.Context) error {
 	mp := make(map[string]interface{})
 	mobileReq := ut.MobileRequest(c.Request())
-	mPrefix := util.BoolExt.TString(mobileReq, consts.DOMAIN_PREFIX_M_PASSPORT,
+	mPrefix := types.StringCond(mobileReq, consts.DOMAIN_PREFIX_M_PASSPORT,
 		consts.DOMAIN_PREFIX_PASSPORT)
 	pstUrl := fmt.Sprintf("//%s%s", mPrefix, variable.Domain)
 	memberId := getMemberId(c)
 	if memberId <= 0 {
-		registry, _ := rsi.RegistryService.GetRegistries(thrift.Context,
+		registry, _ := impl.RegistryService.GetRegistries(context.TODO(),
 			[]string{"PlatformName"})
 		mp["PtName"] = registry["PlatformName"]
 		mp["LoginUrl"] = pstUrl + "/auth/login"
@@ -105,7 +116,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 	} else {
 		mmUrl := fmt.Sprintf("//%s%s",
 			consts.DOMAIN_PREFIX_MEMBER, variable.Domain)
-		m, _ := rsi.MemberService.GetProfile(thrift.Context, int64(memberId))
+		m, _ := impl.MemberService.GetProfile(context.TODO(),&proto.Int64{Value:int64(memberId)})
 		mp["MMName"] = m.Name
 		mp["LogoutUrl"] = pstUrl + "/auth/logout"
 		mp["MMUrl"] = mmUrl
@@ -127,6 +138,8 @@ func (s *serviceC) LoginState(c *echox.Context) error {
  */
 func (s shopApi) addressList(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
-	address, _ := rsi.MemberService.GetAddressList(thrift.Context, int64(memberId))
+	trans, cli, _ := service.MemberServeClient()
+	defer trans.Close()
+	address, _ := cli.GetAddressList(context.TODO(), &proto.Int64{Value: int64(memberId)})
 	return address
 }

@@ -29,14 +29,14 @@ func NewContentRepo(c db.Connector) content.IContentRepo {
 }
 
 // 获取内容
-func (c *contentRepo) GetContent(userId int32) content.IContent {
+func (c *contentRepo) GetContent(userId int64) content.IContent {
 	return contentImpl.NewContent(userId, c)
 }
 
 // 根据编号获取页面
 func (c *contentRepo) GetPageById(mchId, id int32) *content.Page {
 	var e content.Page
-	if err := c.Connector.GetOrm().Get(id, &e); err == nil && e.UserId == mchId {
+	if err := c.Connector.GetOrm().Get(id, &e); err == nil && e.UserId == int64(mchId) {
 		return &e
 	}
 	return nil

@@ -1,0 +1,191 @@
+//namespace java com.github.jsix.go2o.rpc
+//namespace netstd com.github.jsix.go2o.rpc
+//namespace go go2o.core.service.thrift.auto_gen.rpc.ttype
+syntax = "proto3";
+option go_package = ".;proto";
+
+message Empty {
+}
+message String {
+    string Value = 1;
+}
+message Int64 {
+    sint64 Value = 1;
+}
+message Int32 {
+    sint32 Value = 1;
+}
+message Bool {
+    bool Value = 1;
+}
+message StringMap {
+    map<string, string> Value = 1;
+}
+message StringArray {
+    repeated string Value = 1;
+}
+//传输结果对象
+message Result {
+    /* 状态码,如为0表示成功 */
+    sint32 ErrCode = 1;
+    /* 消息 */
+    string ErrMsg = 2;
+    /** 数据字典 */
+    map<string, string> Data = 3;
+}
+
+// 键值对
+message Pair {
+    string Key = 1;
+    string Value = 2;
+}
+
+message IdOrName{
+    int64 Id  = 1;
+    string Name = 2;
+}
+
+/** 设置依据 */
+enum ESettingBasis {
+    /** 未设置 */
+    None = 0;
+    /** 使用全局 */
+    Global = 1;
+    /** 自定义 */
+    Custom = 2;
+}
+
+/** 价格计算方式 */
+enum EPriceBasis {
+    _ = 0;
+    /** 原价 */
+    Original = 1;
+    /** 会员折扣价 */
+    Discount = 2;
+    /** 自定义价格 */
+    CustomBasis = 3;
+}
+
+/** 金额/提成依据 */
+enum EAmountBasis {
+    _12 = 0;
+    /** 未设置 */
+    NotSet = 1;
+    /** 按金额 */
+    Amount = 2;
+    /** 按百分比 */
+    Percent = 3;
+}
+
+// 商品分类
+message SCategory {
+    /** 编号 */
+    sint32 Id = 1;
+    /** 上级分类 */
+    sint32 ParentId = 2;
+    /** 产品模型 */
+    sint32 ProdModel = 3;
+    /** 优先级 */
+    sint32 Priority = 4;
+    /** 分类名称 */
+    string Name = 5;
+    /** 是否为虚拟分类 */
+    sint32 VirtualCat = 6;
+    /** 分类链接地址 */
+    string CatUrl = 7;
+    /** 图标 */
+    string Icon = 8;
+    /** 图标坐标 */
+    string IconXy = 9;
+    /** 分类层级 */
+    sint32 Level = 10;
+    /** 序号 */
+    sint32 SortNum = 11;
+    /** 是否楼层显示 */
+    sint32 FloorShow = 12;
+    /** 是否启用 */
+    sint32 Enabled = 13;
+    /** 创建时间 */
+    sint64 CreateTime = 14;
+    /** 子分类 */
+    repeated SCategory Children = 15;
+}
+
+// 购物车
+message SShoppingCart {
+    //编号
+    sint32 CartId = 1;
+    //购物车KEY
+    string Code = 2;
+    //店铺分组
+    repeated SShoppingCartGroup Shops = 3;
+}
+// 购物车店铺分组
+message SShoppingCartGroup {
+    //店铺编号
+    sint64 ShopId = 1;
+    //供货商编号
+    sint64 VendorId = 2;
+    //店铺名称
+    string ShopName = 3;
+    //是否结算
+    bool Checked = 4;
+    //商品
+    repeated SShoppingCartItem Items = 5;
+}
+
+// 购物车商品
+message SShoppingCartItem {
+    //商品编号
+    sint64 ItemId = 1;
+    //SKU编号
+    sint64 SkuId = 2;
+    //商品标题
+    string Title = 3;
+    //商品图片
+    string Image = 4;
+    //规格文本
+    string SpecWord = 5;
+    //商品编码
+    string Code = 6;
+    //零售价
+    double RetailPrice = 7;
+    //销售价
+    double Price = 8;
+    //数量
+    sint32 Quantity = 9;
+    //是否结算
+    bool Checked = 10;
+    //库存文本
+    string StockText = 11;
+    //店铺编号
+    sint64 ShopId = 12;
+}
+
+/** 分页参数 */
+message SPagingParams {
+    // 开始记录数
+    sint64 Begin = 1;
+    // 结束记录数
+    sint64 End = 2;
+    // 条件
+    string Where = 3;
+    // 排序字段
+    string SortBy = 4;
+    // 参数
+    map<string, string> Parameters = 5;
+}
+
+/** 分页结果 */
+message SPagingResult {
+    /** 代码 */
+    sint32 ErrCode = 1;
+    /** 消息 */
+    string ErrMsg = 2;
+    /** 总数 */
+    sint32 Count = 3;
+    /** 数据 */
+    string Data = 4;
+    /** 额外的数据 */
+    map<string, string> Extras = 5;
+}

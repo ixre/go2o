@@ -67,7 +67,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int, error) {
 }
 
 // 检查分类是否关联商品
-func (c *categoryRepo) CheckContainGoods(vendorId int32, catId int) bool {
+func (c *categoryRepo) CheckContainGoods(vendorId int64, catId int) bool {
 	num := 0
 	if vendorId <= 0 {
 		c.Connector.ExecScalar(`SELECT COUNT(0) FROM product WHERE cat_id= $1`, &num, catId)
@@ -77,7 +77,7 @@ func (c *categoryRepo) CheckContainGoods(vendorId int32, catId int) bool {
 	return num > 0
 }
 
-func (c *categoryRepo) DeleteCategory(mchId int32, id int) error {
+func (c *categoryRepo) DeleteCategory(mchId int64, id int) error {
 	//删除子类
 	_, err := c.Connector.ExecNonQuery("DELETE FROM product_category WHERE parent_id= $1",
 		id)

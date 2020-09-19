@@ -98,7 +98,7 @@ func (s *shopImpl) checkNameExists(v *shop.Shop) bool {
 	return i > 0
 }
 
-func (s *shopImpl) Save() (int32, error) {
+func (s *shopImpl) Save() (int64, error) {
 	return s.shopRepo.SaveShop(s.value)
 }
 
@@ -234,7 +234,7 @@ func (s *offlineShopImpl) Data() *shop.ComplexShop {
 	sv := s.value
 	ov := s._shopVal
 	v := &shop.ComplexShop{
-		ID:       int32(s.GetDomainId()),
+		ID:       int64(s.GetDomainId()),
 		VendorId: sv.VendorId,
 		ShopType: sv.ShopType,
 		Name:     sv.Name,
@@ -260,7 +260,7 @@ type onlineShopImpl struct {
 }
 
 func (s *onlineShopImpl) GetDomainId() int {
-	return s._shopVal.Id
+	return int(s._shopVal.Id)
 }
 
 func (s *onlineShopImpl) Type() int32 {
@@ -402,8 +402,8 @@ func (s *onlineShopImpl) generateShopAlias() string {
 func (s *onlineShopImpl) Data() *shop.ComplexShop {
 	ov := s._shopVal
 	v := &shop.ComplexShop{
-		ID:       int32(s.GetDomainId()),
-		VendorId: int32(ov.VendorId),
+		ID:       int64(s.GetDomainId()),
+		VendorId: int64(ov.VendorId),
 		ShopType: shop.TypeOnlineShop,
 		Name:     ov.ShopTitle,
 		State:    shop.StateNormal,
