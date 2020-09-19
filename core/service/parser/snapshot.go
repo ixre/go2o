@@ -33,6 +33,7 @@ func ParseItemSnapshotDto(src *item.Snapshot) *proto.SItemSnapshot {
 		IsPresent:   src.IsPresent == 1,
 		PriceRange:  src.PriceRange,
 		SkuId:       src.SkuId,
+		Stock: &proto.SItemStock{},
 		Price:       int32(src.Price * 100),
 		RetailPrice: int32(src.RetailPrice * 100),
 		UpdateTime:  src.UpdateTime,

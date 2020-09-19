@@ -184,6 +184,14 @@ message SItemLabel {
     bool Enabled = 4;
 }
 
+//　商品库存数据
+message SItemStock{
+    // 库存数量
+    int32 StockNum = 1;
+    // 已销售数量
+    int32 SaleNum = 19;
+}
+
 // 商品快照(针对商品)
 message SItemSnapshot {
     // 商品编号
@@ -230,12 +238,15 @@ message SItemSnapshot {
     //Bulk int32 `db:"bulk"`
     // 会员价
     //LevelSales int32
+
     // 更新时间
     int64 UpdateTime = 19;
+    // 库存
+    SItemStock Stock = 20;
     // SKU
-    repeated SSku SkuArray = 20;
+    repeated SSku SkuArray = 21;
     //　显示数据
-    SItemViewData ViewData = 21;
+    SItemViewData ViewData = 22;
 }
 
 // 商品交易快照(针对商品)
