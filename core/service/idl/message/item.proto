@@ -18,6 +18,15 @@ message PagingGoodsResponse{
     repeated SUnifiedViewItem Data = 2;
 }
 
+// 获取商品请求
+message GetItemsRequest{
+    int64 CategoryId = 1;
+    int64 Begin = 2;
+    int64 End = 3;
+    //　是否随机
+    bool Random = 4;
+    string Where = 5;
+}
 
 // 简单的商品信息
 message SGoods {
@@ -147,3 +156,19 @@ message SOldItem {
     map<string, string> Data = 33;
 }
 
+message ItemLabelListResponse{
+    repeated SItemLabel Value = 1;
+}
+
+// 销售标签
+message SItemLabel {
+    int32 Id = 1;
+    // 标签名
+    string Name = 2;
+    // 标签代码
+    string TagCode  =5;
+    // 商品的遮盖图
+    string LabelImage =3;
+    // 是否启用
+    bool Enabled = 4;
+}

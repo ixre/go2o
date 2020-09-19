@@ -16,7 +16,7 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"github.com/ixre/gof/util"
+	"github.com/ixre/gof/types"
 	"github.com/robfig/cron/v3"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
@@ -276,7 +276,7 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SComplexOr
 		t := time.Unix(unix, 0)
 		tk := getTick(t)
 		orderNo, sub := d.testSubId(o)
-		prefix := util.BoolExt.TString(sub, "sub!", "")
+		prefix := types.StringCond(sub, "sub!", "")
 		key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderExpiresTime, prefix, orderNo, tk)
 		//log.Println(" [Daemon][Exprire][ Key]:", key)
 		conn.Do("SET", key, unix)
@@ -286,7 +286,7 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SComplexOr
 //取消订单过期时间
 func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *proto.SComplexOrder) {
 	orderNo, sub := d.testSubId(o)
-	prefix := util.BoolExt.TString(sub, "sub!", "")
+	prefix := types.StringCond(sub, "sub!", "")
 	key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderExpiresTime, prefix, orderNo)
 	d.batchDelKeys(conn, key)
 }
@@ -305,7 +305,7 @@ func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SComplexOrde
 		t := time.Unix(unix, 0)
 		tk := getTick(t)
 		orderNo, sub := d.testSubId(o)
-		prefix := util.BoolExt.TString(sub, "sub!", "")
+		prefix := types.StringCond(sub, "sub!", "")
 		key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderAutoReceive, prefix, orderNo, tk)
 		//log.Println(" [Daemon][AutoReceive][ Key]:", key)
 		conn.Do("SET", key, unix)
@@ -316,7 +316,7 @@ func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SComplexOrde
 func (d *defaultService) orderReceived(conn redis.Conn, o *proto.SComplexOrder) {
 	if o.State == order.StatCompleted {
 		orderNo, sub := d.testSubId(o)
-		prefix := util.BoolExt.TString(sub, "sub!", "")
+		prefix := types.StringCond(sub, "sub!", "")
 		key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderAutoReceive, prefix, orderNo)
 		d.batchDelKeys(conn, key)
 	}

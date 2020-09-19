@@ -11,8 +11,8 @@ package impl
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/domain/enum"
@@ -41,7 +41,6 @@ type itemService struct {
 	valueRepo valueobject.IValueRepo
 	sto       storage.Interface
 }
-
 
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
@@ -145,21 +144,21 @@ R:
 // 获取上架商品数据（分页）
 func (s *itemService) GetPagedOnShelvesItem(_ context.Context, r *proto.PagingGoodsRequest) (*proto.PagingGoodsResponse, error) {
 	ret := &proto.PagingGoodsResponse{
-		Total:                0,
-		Data:                 make([]*proto.SUnifiedViewItem,0),
+		Total: 0,
+		Data:  make([]*proto.SUnifiedViewItem, 0),
 	}
 	var total int32
 	var list []*proto.SUnifiedViewItem
 	switch r.ItemType {
 	case proto.EItemSalesType_IT_NORMAL:
-		total,list = s.getPagedOnShelvesItem(
+		total, list = s.getPagedOnShelvesItem(
 			int32(r.CategoryId),
 			int32(r.Params.Begin),
 			int32(r.Params.End),
 			r.Params.Where,
 			r.Params.SortBy)
 	case proto.EItemSalesType_IT_WHOLESALE:
-		total,list = s.getPagedOnShelvesItemForWholesale(
+		total, list = s.getPagedOnShelvesItemForWholesale(
 			int32(r.CategoryId),
 			int32(r.Params.Begin),
 			int32(r.Params.End),
@@ -168,7 +167,7 @@ func (s *itemService) GetPagedOnShelvesItem(_ context.Context, r *proto.PagingGo
 	}
 	ret.Total = int64(total)
 	ret.Data = list
-	return ret,nil
+	return ret, nil
 }
 func (s *itemService) getPagedOnShelvesItem(catId int32, start,
 	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
@@ -292,40 +291,46 @@ func (s *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
 	}
 }
 
+// 获取上架商品数据
+func (s *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*proto.PagingGoodsResponse, error) {
+	/*
+		hash := fmt.Sprintf("%d-%d-%s", catId, quantity, where)
+			hash = crypto.Md5([]byte(hash))
+			key := "go2o:shopQuery:cache:rd-item:" + hash
+			var arr []*proto.SOldItem
 
-// 获取上架商品数据（分页）
-func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) []*proto.SOldItem {
-	hash := fmt.Sprintf("%d-%d-%s", catId, quantity, where)
-	hash = crypto.Md5([]byte(hash))
-	key := "go2o:shopQuery:cache:rd-item:" + hash
-	var arr []*proto.SOldItem
-
-	fn := func() interface{} {
-		list := s.itemQuery.GetRandomItem(catId, quantity, where)
-		for _, v := range list {
-			v.Image = format.GetGoodsImageUrl(v.Image)
-			arr = append(arr, parser.ItemDto(v))
-		}
-		return arr
-	}
-	s.sto.RWJson(key, &arr, fn, 600)
-	return arr
-}
-
-// 获取上架商品数据（分页）
-func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*proto.SOldItem {
-	c := s.cateRepo.GlobCatService().GetCategory(int(catId))
+			fn := func() interface{} {
+				list := s.itemQuery.GetRandomItem(catId, quantity, where)
+				for _, v := range list {
+					v.Image = format.GetGoodsImageUrl(v.Image)
+					arr = append(arr, parser.ItemDto(v))
+				}
+				return arr
+			}
+			s.sto.RWJson(key, &arr, fn, 600)
+			return arr
+	*/
+	c := s.cateRepo.GlobCatService().GetCategory(int(r.CategoryId))
+	var idList []int = nil
+	var list []*item.GoodsItem
 	if c != nil {
-		ids := c.GetChildes()
-		list := s.itemQuery.GetOnShelvesItem(ids, 0, quantity, where)
-		arr := make([]*proto.SOldItem, len(list))
-		for i, v := range list {
-			v.Image = format.GetGoodsImageUrl(v.Image)
-			arr[i] = parser.ItemDto(v)
-		}
-		return arr
+		idList = c.GetChildes()
 	}
-	return []*proto.SOldItem{}
+	if r.Random {
+		list = s.itemQuery.GetRandomItem(idList, int(r.Begin), int(r.End), r.Where)
+
+	} else {
+		list = s.itemQuery.GetOnShelvesItem(idList, int(r.Begin), int(r.End), r.Where)
+	}
+	arr := make([]*proto.SUnifiedViewItem, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		arr[i] = parser.ItemDtoV2(v)
+	}
+	return &proto.PagingGoodsResponse{
+		Total: 0,
+		Data:  arr,
+	}, nil
 }
 
 // 根据SKU获取商品
@@ -428,51 +433,53 @@ func (s *itemService) DeleteGoods(mchId, itemId int64) error {
 	return gi.Destroy()
 }
 
-func (s *itemService) GetAllSaleLabels() []*item.Label {
+func (s *itemService) GetAllSaleLabels(_ context.Context, empty *proto.Empty) (*proto.ItemLabelListResponse, error) {
 	tags := s.labelRepo.LabelService().GetAllSaleLabels()
-	lbs := make([]*item.Label, len(tags))
+	ret := &proto.ItemLabelListResponse{
+		Value: make([]*proto.SItemLabel, len(tags)),
+	}
 	for i, v := range tags {
-		lbs[i] = v.GetValue()
+		ret.Value[i] = parser.ParseSaleLabelDto(v.GetValue())
 	}
-	return lbs
+	return ret, nil
 }
 
-// 获取销售标签
-func (s *itemService) GetSaleLabel(labelId int32) *item.Label {
-	tag := s.labelRepo.LabelService().GetSaleLabel(labelId)
-	if tag != nil {
-		return tag.GetValue()
+func (s *itemService) GetSaleLabel(_ context.Context, id *proto.IdOrName) (*proto.SItemLabel, error) {
+	var tag item.ISaleLabel
+	if id.Id <= 0 {
+		tag = s.labelRepo.LabelService().GetSaleLabelByCode(id.Name)
+	} else {
+		tag = s.labelRepo.LabelService().GetSaleLabel(int32(id.Id))
 	}
-	return nil
-}
-
-// 获取销售标签
-func (s *itemService) GetSaleLabelByCode(code string) *item.Label {
-	tag := s.labelRepo.LabelService().GetSaleLabelByCode(code)
 	if tag != nil {
-		return tag.GetValue()
+		return parser.ParseSaleLabelDto(tag.GetValue()), nil
 	}
-	return nil
+	return nil, nil
 }
 
 // 保存销售标签
-func (s *itemService) SaveSaleLabel(v *item.Label) (int32, error) {
+func (s *itemService) SaveSaleLabel(_ context.Context, v *proto.SItemLabel) (*proto.Result, error) {
 	ls := s.labelRepo.LabelService()
+	var value = parser.FromSaleLabelDto(v)
 	var lb item.ISaleLabel
-
 	if v.Id > 0 {
-		lb = ls.GetSaleLabel(v.Id)
-		if lb == nil {
-			panic("没有销售标签")
+		if lb = ls.GetSaleLabel(v.Id); lb == nil {
+			return s.error(errors.New("没有销售标签")), nil
 		}
 	} else {
-		lb = ls.CreateSaleLabel(v)
+		lb = ls.CreateSaleLabel(value)
 	}
-	err := lb.SetValue(v)
+	err := lb.SetValue(value)
 	if err == nil {
-		return lb.Save()
+		_, err = lb.Save()
 	}
-	return v.Id, err
+	return s.error(err), nil
+}
+
+// 删除销售标签
+func (s *itemService) DeleteSaleLabel(_ context.Context, i *proto.Int64) (*proto.Result, error) {
+	err := s.labelRepo.LabelService().DeleteSaleLabel(int32(i.Value))
+	return s.error(err), nil
 }
 
 // 根据销售标签获取指定数目的商品
@@ -498,11 +505,6 @@ func (s *itemService) GetPagedValueGoodsBySaleLabel(shopId int64, tagId int32, s
 		Id: tagId,
 	})
 	return tag.GetPagedValueGoods(sortBy, begin, end)
-}
-
-// 删除销售标签
-func (s *itemService) DeleteSaleLabel(id int32) error {
-	return s.labelRepo.LabelService().DeleteSaleLabel(id)
 }
 
 // 获取商品的会员价

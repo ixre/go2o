@@ -162,8 +162,8 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
-		UpdateTime:           src.UpdateTime,
-		Data:                 nil,
+		UpdateTime: src.UpdateTime,
+		Data:       nil,
 	}
 	if src.SkuArray != nil {
 		it.SkuArray = make([]*proto.SSku, len(src.SkuArray))
@@ -173,7 +173,6 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	}
 	return it
 }
-
 
 func Item(src *proto.SOldItem) *item.GoodsItem {
 	it := &item.GoodsItem{

@@ -2,7 +2,7 @@ package parser
 
 import (
 	"github.com/ixre/gof/math"
-	"github.com/ixre/gof/util"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/proto"
@@ -35,7 +35,7 @@ func ParseCartItem(item *cart.NormalCartItem) *proto.SShoppingCartItem {
 			i.Title = item.Sku.Title
 		}
 		i.Code = item.Sku.ItemCode
-		i.StockText = util.BoolExt.TString(item.Sku.Stock > 0,
+		i.StockText = types.StringCond(item.Sku.Stock > 0,
 			"有货", "无货")
 	}
 	return i

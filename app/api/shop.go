@@ -102,7 +102,7 @@ func (s shopApi) Favorite(ctx api.Context) interface{} {
 func (s *serviceC) LoginState(c *echox.Context) error {
 	mp := make(map[string]interface{})
 	mobileReq := ut.MobileRequest(c.Request())
-	mPrefix := util.BoolExt.TString(mobileReq, consts.DOMAIN_PREFIX_M_PASSPORT,
+	mPrefix := types.StringCond(mobileReq, consts.DOMAIN_PREFIX_M_PASSPORT,
 		consts.DOMAIN_PREFIX_PASSPORT)
 	pstUrl := fmt.Sprintf("//%s%s", mPrefix, variable.Domain)
 	memberId := getMemberId(c)

@@ -40,6 +40,11 @@ message Pair {
     string Value = 2;
 }
 
+message IdOrName{
+    int64 Id  = 1;
+    string Name = 2;
+}
+
 /** 设置依据 */
 enum ESettingBasis {
     /** 未设置 */
