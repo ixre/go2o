@@ -124,14 +124,6 @@ func (s *itemService) GetSku(_ context.Context, request *proto.SkuRequest) (*pro
 	return nil, nil
 }
 
-// 获取SKU数组
-func (s *itemService) GetSkuArray1(itemId int64) []*item.Sku {
-	it := s.itemRepo.GetItem(itemId)
-	if it != nil {
-		return it.SkuArray()
-	}
-	return []*item.Sku{}
-}
 
 // 获取商品规格HTML信息
 func (s *itemService) GetSkuHtmOfItem1(itemId int64) (specHtm string) {

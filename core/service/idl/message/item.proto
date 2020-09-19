@@ -83,21 +83,22 @@ message SSku {
 message SUnifiedViewItem {
     sint64 ItemId = 1;
     sint64 ProductId = 2;
-    sint32 CatId = 3;
+    sint32 CategoryId = 3;
     sint64 VendorId = 4;
     sint32 BrandId = 5;
     string Title = 6;
     string Code = 7;
-    string Image = 8;
-    double Price = 9;
-    string PriceRange = 10;
-    sint32 StockNum = 11;
-    sint32 ShelveState = 12;
-    sint32 ReviewState = 13;
-    sint64 UpdateTime = 14;
-    repeated SSku SkuArray = 15;
-    SItemViewData ViewData = 16;
-    map<string, string> Data = 17;
+    int64 SkuId = 8;
+    string Image = 9;
+    double Price = 10;
+    string PriceRange = 11;
+    sint32 StockNum = 12;
+    sint32 ShelveState = 13;
+    sint32 ReviewState = 14;
+    sint64 UpdateTime = 15;
+    repeated SSku SkuArray = 16;
+    SItemViewData ViewData = 17;
+    map<string, string> Data = 18;
     // 3: sint32 PromFlag
     // 7: sint32 ShopId
     // 8: sint32 ShopCatId
@@ -111,7 +112,7 @@ message SUnifiedViewItem {
     // 29: sint64 CreateTime
     // 31: double PromPrice
     // 22: double RetailPrice
-    // 19: sint32 SkuId
+    //
     // 20: double Cost
     // 17: sint32 SaleNum
 }
