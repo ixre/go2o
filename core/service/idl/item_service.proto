@@ -16,8 +16,12 @@ message ItemDetailRequest {
 
 // 商品服务
 service ItemService {
-    // 获取商品值
-    rpc GetItem(Int64)returns(SUnifiedViewItem)
+    // 获取商品
+    rpc GetItem(Int64)returns(SUnifiedViewItem){}
+    // 获取商品用于销售的快照和信息
+    rpc GetItemSnapshot(Int64)returns(SItemSnapshot){}
+    // 获取商品交易快照,参数传递:snapshotId
+    rpc GetTradeSnapshot(Int64)returns(STradeSnapshot){}
     // 获取SKU
     rpc GetSku (SkuRequest) returns (SSku) {
     }

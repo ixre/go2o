@@ -8,18 +8,18 @@ message GetItemsByLabelRequest {
     int64 End = 4;
 }
 
-message PagingShopGoodsResponse{
+message PagingShopGoodsResponse {
     int64 Total = 1;
     repeated SGoods Data = 2;
 }
 
-message PagingGoodsResponse{
+message PagingGoodsResponse {
     int64 Total = 1;
     repeated SUnifiedViewItem Data = 2;
 }
 
 // 获取商品请求
-message GetItemsRequest{
+message GetItemsRequest {
     int64 CategoryId = 1;
     int64 Begin = 2;
     int64 End = 3;
@@ -60,8 +60,6 @@ message SGoods {
     int32 SaleNum = 19;
 }
 
-
-
 /** SKU */
 message SSku {
     sint64 SkuId = 1;
@@ -81,25 +79,26 @@ message SSku {
     sint32 SaleNum = 15;
 }
 
-
 // 统一的商品显示对象
 message SUnifiedViewItem {
     sint64 ItemId = 1;
     sint64 ProductId = 2;
-    sint32 CatId = 3;
+    sint32 CategoryId = 3;
     sint64 VendorId = 4;
     sint32 BrandId = 5;
     string Title = 6;
     string Code = 7;
-    string Image = 8;
-    double Price = 9;
-    string PriceRange = 10;
-    sint32 StockNum = 11;
-    sint32 ShelveState = 12;
-    sint32 ReviewState = 13;
-    sint64 UpdateTime = 14;
-    repeated SSku SkuArray = 15;
-    map<string, string> Data = 16;
+    int64 SkuId = 8;
+    string Image = 9;
+    double Price = 10;
+    string PriceRange = 11;
+    sint32 StockNum = 12;
+    sint32 ShelveState = 13;
+    sint32 ReviewState = 14;
+    sint64 UpdateTime = 15;
+    repeated SSku SkuArray = 16;
+    SItemViewData ViewData = 17;
+    map<string, string> Data = 18;
     // 3: sint32 PromFlag
     // 7: sint32 ShopId
     // 8: sint32 ShopCatId
@@ -113,11 +112,23 @@ message SUnifiedViewItem {
     // 29: sint64 CreateTime
     // 31: double PromPrice
     // 22: double RetailPrice
-    // 19: sint32 SkuId
+    //
     // 20: double Cost
     // 17: sint32 SaleNum
 }
 
+message SItemViewData {
+    // 商品详情
+    string Details = 1;
+    // 缩略图
+    repeated string Thumbs = 2;
+    // 产品图片
+    repeated string Images = 3;
+    // SKU选择HTML
+    string SkuHtml = 4;
+    // SKU JSON数据
+    string SkuJson = 5;
+}
 
 // 完整的商品信息
 message SOldItem {
@@ -156,7 +167,7 @@ message SOldItem {
     map<string, string> Data = 33;
 }
 
-message ItemLabelListResponse{
+message ItemLabelListResponse {
     repeated SItemLabel Value = 1;
 }
 
@@ -166,9 +177,104 @@ message SItemLabel {
     // 标签名
     string Name = 2;
     // 标签代码
-    string TagCode  =5;
+    string TagCode = 5;
     // 商品的遮盖图
-    string LabelImage =3;
+    string LabelImage = 3;
     // 是否启用
     bool Enabled = 4;
+}
+
+//　商品库存数据
+message SItemStock{
+    // 库存数量
+    int32 StockNum = 1;
+    // 已销售数量
+    int32 SaleNum = 19;
+}
+
+// 商品快照(针对商品)
+message SItemSnapshot {
+    // 商品编号
+    int64 ItemId = 1;
+    // 产品编号
+    int64 ProductId = 2;
+    // 快照编码
+    string Key = 3;
+    // 分类编号
+    int32 CategoryId = 4;
+    // 供货商编号
+    int64 VendorId = 5;
+    // 编号
+    int64 BrandId = 6;
+    // 店铺编号
+    int64 ShopId = 7;
+    // 编号分类编号
+    int64 ShopCatId = 8;
+    // 运费模板
+    int64 ExpressTid = 9;
+    // 商品标题
+    string Title = 10;
+    // 短标题
+    string ShortTitle = 11;
+    // 产品编码
+    string ProductCode = 12;
+    // 商品图片
+    string MainImage = 13;
+    // 是否为赠品
+    bool IsPresent = 14;
+    // 价格区间
+    string PriceRange = 15;
+    // 默认SKU
+    int64 SkuId = 16;
+    // 成本
+    //Cost float32 `db:"cost"`
+    // 售价
+    int32 Price = 17;
+    // 零售价
+    int32 RetailPrice = 18;
+    // 重量(g)
+    //int32 Weight = 19;
+    // 体积(ml)
+    //Bulk int32 `db:"bulk"`
+    // 会员价
+    //LevelSales int32
+
+    // 更新时间
+    int64 UpdateTime = 19;
+    // 库存
+    SItemStock Stock = 20;
+    // SKU
+    repeated SSku SkuArray = 21;
+    //　显示数据
+    SItemViewData ViewData = 22;
+}
+
+// 商品交易快照(针对商品)
+message STradeSnapshot {
+    //快照编号
+    int64 Id   = 1;
+    // 商品编号
+    int64 ItemId = 2;
+    //商品SKU编号
+    int64 SkuId = 3;
+    //快照编码: 商户编号+g商品编号+快照时间戳
+    string SnapshotKey = 4;
+    // 卖家编号
+    int64 SellerId = 5;
+    // 卖家名称
+    string SellerName = 6;
+    //商品标题
+    string Title = 7;
+    //货号
+    // GoodsNo string `db:"goods_no"`
+    // 产品编码
+    string ProductCode = 8;
+    //SKU
+    string Sku  = 9;
+    //图片
+    string Image = 10;
+    //销售价
+    int32 Price = 11;
+    // 快照时间
+    int64 CreateTime =12;
 }

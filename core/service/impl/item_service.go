@@ -58,13 +58,62 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	}
 }
 
-// 获取商品值
-func (s *itemService) GetItemValue(itemId int64) *proto.SOldItem {
-	item := s.itemRepo.GetItem(itemId)
+// 获取商品
+func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifiedViewItem, error) {
+	item := s.itemRepo.GetItem(id.Value)
 	if item != nil {
-		return parser.ItemDto(item.GetValue())
+		skuService := s.itemRepo.SkuService()
+		v := item.GetValue()
+		ret := parser.ItemDtoV2(v)
+		skuArr := item.SkuArray()
+		ret.SkuArray = parser.SkuArrayDto(skuArr)
+		specArr := item.SpecArray()
+		ret.ViewData = &proto.SItemViewData{
+			Details: "",  //todo:??
+			Thumbs:  nil, //todo:??
+			Images:  nil, //todo:??
+			SkuHtml: skuService.GetSpecHtml(specArr),
+			SkuJson: string(skuService.GetSkuJson(skuArr)),
+		}
+		return ret, nil
 	}
-	return nil
+	return nil, nil
+}
+
+// 获取商品用于销售的快照和信息
+func (s *itemService) GetItemSnapshot(_ context.Context, id *proto.Int64) (*proto.SItemSnapshot, error) {
+	item := s.itemRepo.GetItem(id.Value)
+	if item != nil {
+		skuService := s.itemRepo.SkuService()
+		sn := item.Snapshot()
+		// 基础数据及其销售数量
+		ret := parser.ParseItemSnapshotDto(sn)
+		ret.Stock.SaleNum  = item.GetValue().SaleNum
+		ret.Stock.StockNum = item.GetValue().StockNum
+		//　获取SKU和详情等
+		skuArr := item.SkuArray()
+		ret.SkuArray = parser.SkuArrayDto(skuArr)
+		specArr := item.SpecArray()
+		prod := item.Product()
+		ret.ViewData = &proto.SItemViewData{
+			Details: prod.GetValue().Description,
+			Thumbs:  nil, //todo:??
+			Images:  nil, //todo:??
+			SkuHtml: skuService.GetSpecHtml(specArr),
+			SkuJson: string(skuService.GetSkuJson(skuArr)),
+		}
+		return ret, nil
+	}
+	return nil, nil
+}
+
+// 获取商品交易快照
+func (s *itemService) GetTradeSnapshot(_ context.Context, id *proto.Int64) (*proto.STradeSnapshot, error) {
+	sn := s.itemRepo.GetSalesSnapshot(id.Value)
+	if sn != nil {
+		return parser.ParseTradeSnapshot(sn), nil
+	}
+	return nil, nil
 }
 
 // 获取SKU
@@ -79,17 +128,9 @@ func (s *itemService) GetSku(_ context.Context, request *proto.SkuRequest) (*pro
 	return nil, nil
 }
 
-// 获取SKU数组
-func (s *itemService) GetSkuArray(itemId int64) []*item.Sku {
-	it := s.itemRepo.GetItem(itemId)
-	if it != nil {
-		return it.SkuArray()
-	}
-	return []*item.Sku{}
-}
 
 // 获取商品规格HTML信息
-func (s *itemService) GetSkuHtmOfItem(itemId int64) (specHtm string) {
+func (s *itemService) GetSkuHtmOfItem1(itemId int64) (specHtm string) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
 	specArr := it.SpecArray()
 	return s.itemRepo.SkuService().GetSpecHtml(specArr)
@@ -360,11 +401,6 @@ func (s *itemService) GetGoodsBySnapshotId(snapshotId int64) *item.GoodsItem {
 	return nil
 }
 
-// 根据快照编号获取商品
-func (s *itemService) GetSaleSnapshotById(snapshotId int64) *item.TradeSnapshot {
-	return s.itemRepo.GetSalesSnapshot(snapshotId)
-}
-
 // 获取分页上架的商品
 func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
 	ret := &proto.PagingShopGoodsResponse{
@@ -556,11 +592,6 @@ func (s *itemService) GetItemDescriptionByGoodsId(itemId int64) string {
 		return pro.GetValue().Description
 	}
 	return ""
-}
-
-// 获取商品快照
-func (s *itemService) GetSnapshot(skuId int64) *item.Snapshot {
-	return s.itemRepo.GetLatestSnapshot(skuId)
 }
 
 // 设置商品货架状态
