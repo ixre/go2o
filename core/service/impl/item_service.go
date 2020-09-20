@@ -145,13 +145,6 @@ func (s *itemService) GetSku(_ context.Context, request *proto.SkuRequest) (*pro
 }
 
 
-// 获取商品规格HTML信息
-func (s *itemService) GetSkuHtmOfItem1(itemId int64) (specHtm string) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
-	specArr := it.SpecArray()
-	return s.itemRepo.SkuService().GetSpecHtml(specArr)
-}
-
 // 获取商品详细数据
 func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDetailRequest) (*proto.String, error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: request.ItemId})
@@ -161,13 +154,6 @@ func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDe
 		return &proto.String{Value: string(data)}, nil
 	}
 	return &proto.String{Value: "不支持的商品类型"}, nil
-}
-
-// 获取商品的Sku-JSON格式
-func (s *itemService) GetItemSkuJson(_ context.Context, i *proto.Int64) (*proto.String, error) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: i.Value})
-	skuBytes := s.itemRepo.SkuService().GetSkuJson(it.SkuArray())
-	return &proto.String{Value: string(skuBytes)}, nil
 }
 
 // 保存商品
@@ -390,14 +376,6 @@ func (s *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	}, nil
 }
 
-// 根据快照编号获取商品
-func (s *itemService) GetGoodsBySnapshotId(snapshotId int64) *item.GoodsItem {
-	snap := s.itemRepo.GetSalesSnapshot(snapshotId)
-	if snap != nil {
-		return s.itemRepo.GetValueGoodsById(snap.SkuId)
-	}
-	return nil
-}
 
 // 获取分页上架的商品
 func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {

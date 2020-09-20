@@ -27,9 +27,6 @@ service ItemService {
     // 获取SKU
     rpc GetSku (SkuRequest) returns (SSku) {
     }
-    // 获取商品的Sku-JSON格式,itemId
-    rpc GetItemSkuJson (Int64) returns (String) {
-    }
     // 获取商品详细数据
     rpc GetItemDetailData (ItemDetailRequest) returns (String) {
     }

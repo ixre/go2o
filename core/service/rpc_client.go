@@ -168,6 +168,15 @@ func ItemServeClient() (*grpc.ClientConn, proto.ItemServiceClient, error) {
 	return conn, nil, err
 }
 
+// 产品服务
+func ProductServeClient() (*grpc.ClientConn, proto.ProductServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewProductServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
 // 商店服务
 func ShopServeClient() (*grpc.ClientConn, proto.ShopServiceClient, error) {
 	conn, err := getConn(selector)

@@ -1,0 +1,12 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+import "global.proto";
+import "message/product.proto";
+
+// 产品服务
+service ProductService {
+    // 删除产品
+    rpc DeleteProduct(Int64)returns(Result){}
+}
+
