@@ -42,6 +42,7 @@ type itemService struct {
 	sto       storage.Interface
 }
 
+
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
@@ -62,22 +63,37 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifiedViewItem, error) {
 	item := s.itemRepo.GetItem(id.Value)
 	if item != nil {
-		skuService := s.itemRepo.SkuService()
-		v := item.GetValue()
-		ret := parser.ItemDtoV2(v)
-		skuArr := item.SkuArray()
-		ret.SkuArray = parser.SkuArrayDto(skuArr)
-		specArr := item.SpecArray()
-		ret.ViewData = &proto.SItemViewData{
-			Details: "",  //todo:??
-			Thumbs:  nil, //todo:??
-			Images:  nil, //todo:??
-			SkuHtml: skuService.GetSpecHtml(specArr),
-			SkuJson: string(skuService.GetSkuJson(skuArr)),
-		}
-		return ret, nil
+		return s.attachUnifiedItem(item),nil
 	}
 	return nil, nil
+}
+
+// 附加商品的信息
+func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedViewItem {
+	ret := parser.ItemDtoV2(item.GetValue())
+	skuService := s.itemRepo.SkuService()
+	skuArr := item.SkuArray()
+	ret.SkuArray = parser.SkuArrayDto(skuArr)
+	ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
+	specArr := item.SpecArray()
+	ret.ViewData = &proto.SItemViewData{
+		Details: "",  //todo:??
+		Thumbs:  nil, //todo:??
+		Images:  nil, //todo:??
+		SkuHtml: skuService.GetSpecHtml(specArr),
+		SkuJson: string(skuService.GetSkuJson(skuArr)),
+	}
+	return ret
+}
+
+// 根据SKU获取商品
+func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest) (*proto.SUnifiedViewItem, error) {
+	v := s.itemRepo.GetValueGoodsBySku(r.ProductId, r.SkuId)
+	if v != nil {
+		item := s.itemRepo.CreateItem(v)
+		return s.attachUnifiedItem(item), nil
+	}
+	return nil,nil
 }
 
 // 获取商品用于销售的快照和信息
@@ -374,24 +390,6 @@ func (s *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	}, nil
 }
 
-// 根据SKU获取商品
-func (s *itemService) GetGoodsBySku(mchId, itemId, sku int64) *valueobject.Goods {
-	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
-	if v != nil {
-		return s.itemRepo.CreateItem(v).GetPackedValue()
-	}
-	return nil
-}
-
-// 根据SKU获取商品
-func (s *itemService) GetValueGoodsBySku(mchId int64, itemId, sku int64) *item.GoodsItem {
-	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
-	if v != nil {
-		return s.itemRepo.CreateItem(v).GetValue()
-	}
-	return nil
-}
-
 // 根据快照编号获取商品
 func (s *itemService) GetGoodsBySnapshotId(snapshotId int64) *item.GoodsItem {
 	snap := s.itemRepo.GetSalesSnapshot(snapshotId)
@@ -570,8 +568,8 @@ func (s *itemService) SaveMemberPrices(mchId, itemId int64,
 //	return s._goodsQuery.GetGoodsComplex(goodsId)
 //}
 
-// 获取商品详情
-func (s *itemService) GetGoodsDetails(itemId int64, mLevel int32) (
+// 获取商品促销详情
+func (s *itemService) GetGoodsDetails_(itemId int64, mLevel int32) (
 	*valueobject.Goods, map[string]string) {
 	goods := s.itemRepo.GetItem(itemId)
 	gv := goods.GetPackedValue()

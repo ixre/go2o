@@ -97,8 +97,9 @@ message SUnifiedViewItem {
     sint32 ReviewState = 14;
     sint64 UpdateTime = 15;
     repeated SSku SkuArray = 16;
-    SItemViewData ViewData = 17;
-    map<string, string> Data = 18;
+    repeated SLevelPrice LevelPrices = 17;
+    SItemViewData ViewData = 18;
+    map<string, string> Data = 19;
     // 3: sint32 PromFlag
     // 7: sint32 ShopId
     // 8: sint32 ShopCatId
@@ -245,8 +246,10 @@ message SItemSnapshot {
     SItemStock Stock = 20;
     // SKU
     repeated SSku SkuArray = 21;
+    // 会员价
+    repeated SLevelPrice LevelPrices = 22;
     //　显示数据
-    SItemViewData ViewData = 22;
+    SItemViewData ViewData = 23;
 }
 
 // 商品交易快照(针对商品)
@@ -277,4 +280,23 @@ message STradeSnapshot {
     int32 Price = 11;
     // 快照时间
     int64 CreateTime =12;
+}
+
+//　会员价
+message SLevelPrice{
+    //　编号
+    int64 Id = 1;
+    //　等级
+    int32 Level  = 2;
+    //　价格
+    int64 Price = 3;
+    // 限购数量,-1为不限制
+    int32 MaxNumber = 4;
+    // 是否启用
+    bool Enabled = 5;
+}
+
+message ItemBySkuRequest{
+    int64 ProductId = 1;
+    int64 SkuId = 2;
 }

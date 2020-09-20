@@ -39,3 +39,21 @@ func FromSaleLabelDto(src *proto.SItemLabel) *item.Label {
 		Enabled:    types.IntCond(src.Enabled, 1, 0),
 	}
 }
+
+func PriceArrayDto(src []*item.MemberPrice) []*proto.SLevelPrice {
+	dst := make([]*proto.SLevelPrice,len(src))
+	for i,v := range src{
+		dst[i] = LevelPriceDto(v)
+	}
+	return dst
+}
+
+func LevelPriceDto(src *item.MemberPrice) *proto.SLevelPrice {
+	return &proto.SLevelPrice{
+		Id:                   int64(src.Id),
+		Level:                int32(src.Level),
+		Price:                int64(src.Price*100),
+		MaxNumber:            int32(src.MaxQuota),
+		Enabled:              src.Enabled == 1,
+	}
+}
