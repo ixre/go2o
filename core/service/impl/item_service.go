@@ -587,28 +587,28 @@ func (s *itemService) SetShelveState(vendorId, itemId int64,
 	return s.result(err), nil
 }
 
-// 设置商品货架状态
-func (s *itemService) ReviewItem(vendorId, itemId int64,
-	pass bool, remark string) (_ *proto.Result, err error) {
-	it := s.itemRepo.GetItem(itemId)
-	if it == nil || it.GetValue().VendorId != vendorId {
+// 审核商品
+func (s *itemService) ReviewItem(_ context.Context, r *proto.ItemReviewRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	var err error
+	if it == nil {
 		err = item.ErrNoSuchItem
 	} else {
-		err = it.Review(pass, remark)
+		err = it.Review(r.Pass, r.Remark)
 	}
 	return s.result(err), nil
 }
 
 // 标记为违规
-func (s *itemService) SignGoodsIllegal(vendorId, itemId int64,
-	remark string) (_ *proto.Result, err error) {
-	it := s.itemRepo.GetItem(itemId)
-	if it == nil || it.GetValue().VendorId != vendorId {
+func (s *itemService) SignAsIllegal(_ context.Context, r *proto.ItemIllegalRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	var err error
+	if it == nil{
 		err = item.ErrNoSuchItem
 	} else {
-		err = it.Incorrect(remark)
+		err = it.Incorrect(r.Remark)
 	}
-	return s.result(err), nil
+	return s.error(err),nil
 }
 
 // 获取批发价格数组

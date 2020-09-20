@@ -300,3 +300,14 @@ message ItemBySkuRequest{
     int64 ProductId = 1;
     int64 SkuId = 2;
 }
+
+message ItemIllegalRequest{
+    int64 ItemId = 1;
+    string Remark = 2;
+}
+
+message ItemReviewRequest{
+    int64 ItemId = 1;
+    bool Pass =2;
+    string Remark = 3;
+}

@@ -27,6 +27,10 @@ service ItemService {
     // 获取SKU
     rpc GetSku (SkuRequest) returns (SSku) {
     }
+    // 设置商品货架状态
+    rpc ReviewItem(ItemReviewRequest) returns (Result){}
+    // 商品标记为违规
+    rpc SignAsIllegal(ItemIllegalRequest)returns (Result){}
     // 获取商品详细数据
     rpc GetItemDetailData (ItemDetailRequest) returns (String) {
     }
