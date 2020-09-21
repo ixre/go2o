@@ -10,6 +10,7 @@
 package daemon
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
@@ -21,6 +22,7 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
+	"go2o/core/service"
 	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"go2o/core/variable"
@@ -271,7 +273,9 @@ func (d *defaultService) batchDelKeys(conn redis.Conn, key string) {
 func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SComplexOrder) {
 	//订单刚创建时,设置过期时间
 	if o.State == order.StatAwaitingPayment {
-		ss := impl.FoundationService.GetGlobMchSaleConf()
+		trans,cli,_ := service.FoundationServeClient()
+		defer trans.Close()
+		ss,_ := cli.GetGlobMchSaleConf_(context.TODO(),&proto.Empty{})
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
 		t := time.Unix(unix, 0)
 		tk := getTick(t)
@@ -300,7 +304,9 @@ func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SComplexOrde
 // 订单自动收货
 func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SComplexOrder) {
 	if o.State == order.StatShipped {
-		ss := impl.FoundationService.GetGlobMchSaleConf()
+		trans,cli,_ := service.FoundationServeClient()
+		defer trans.Close()
+		ss,_ := cli.GetGlobMchSaleConf_(context.TODO(),&proto.Empty{})
 		unix := o.UpdateTime + int64(ss.OrderTimeOutReceiveHour)*60*60
 		t := time.Unix(unix, 0)
 		tk := getTick(t)
