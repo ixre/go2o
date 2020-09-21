@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
@@ -41,6 +42,7 @@ type itemService struct {
 	valueRepo valueobject.IValueRepo
 	sto       storage.Interface
 }
+
 
 
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
@@ -511,12 +513,20 @@ func (s *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetIt
 }
 
 // 根据分页销售标签获取指定数目的商品
-func (s *itemService) GetPagedValueGoodsBySaleLabel(shopId int64, tagId int32, sortBy string, begin int, end int) (int,
-	[]*valueobject.Goods) {
+func (s *itemService) GetPagedValueGoodsBySaleLabel_(_ context.Context, r *proto.SaleLabelItemsRequest_) (*proto.PagingGoodsResponse, error) {
 	tag := s.labelRepo.LabelService().CreateSaleLabel(&item.Label{
-		Id: tagId,
+		Id: r.LabelId,
 	})
-	return tag.GetPagedValueGoods(sortBy, begin, end)
+	total,list:= tag.GetPagedValueGoods(r.Params.SortBy, int(r.Params.Begin), int(r.Params.End))
+	arr := make([]*proto.SUnifiedViewItem, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		arr[i] = parser.ParseGoodsDto_(v)
+	}
+	return &proto.PagingGoodsResponse{
+		Total: int64(total),
+		Data:  arr,
+	}, nil
 }
 
 // 获取商品的会员价
@@ -573,17 +583,21 @@ func (s *itemService) GetItemDescriptionByGoodsId(itemId int64) string {
 }
 
 // 设置商品货架状态
-func (s *itemService) SetShelveState(vendorId, itemId int64,
-	itemType int32, state int32, remark string) (_ *proto.Result, err error) {
-	it := s.itemRepo.GetItem(itemId)
-	if it == nil || it.GetValue().VendorId != vendorId {
+func (s *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	var err error
+	if it == nil || it.GetValue().VendorId != r.SellerId {
 		err = item.ErrNoSuchItem
 	} else {
-		switch itemType {
-		case item.ItemWholesale:
-			err = it.Wholesale().SetShelve(state, remark)
+		state := int32(types.IntCond(r.ShelveOn,
+			int(item.ShelvesOn),
+			int(item.ShelvesDown)))
+		switch r.ItemType {
+		case proto.EItemSalesType_IT_WHOLESALE:
+			err = it.Wholesale().SetShelve(state, r.Remark)
+		case proto.EItemSalesType_IT_NORMAL:
 		default:
-			err = it.SetShelve(state, remark)
+			err = it.SetShelve(state,r.Remark)
 		}
 	}
 	return s.result(err), nil

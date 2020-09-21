@@ -54,6 +54,10 @@ service ItemService {
     rpc SaveSaleLabel(SItemLabel)returns(Result){}
     // 删除销售标签
     rpc DeleteSaleLabel(Int64)returns(Result){}
+
+
+    // 根据分页销售标签获取指定数目的商品
+    rpc GetPagedValueGoodsBySaleLabel_(SaleLabelItemsRequest_)returns(PagingGoodsResponse){}
 }
 
 
@@ -68,6 +72,12 @@ message PagingGoodsRequest{
 message PagingShopGoodsRequest{
     int64 ShopId = 1;
     int64 CategoryId = 2;
+    SPagingParams Params = 3;
+}
+
+message SaleLabelItemsRequest_{
+    int64 ShopId = 1;
+    int32 LabelId = 2;
     SPagingParams Params = 3;
 }
 

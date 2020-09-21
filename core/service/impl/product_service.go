@@ -35,9 +35,15 @@ func NewProService(pmRepo promodel.IProModelRepo,
 }
 
 // 删除产品
-func (p *productService) DeleteProduct(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	err := p.proRepo.DeleteProduct(id.Value)
-	//todo: 删除商品
+func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProductRequest) (*proto.Result, error) {
+	var err error
+	prod := p.proRepo.GetProduct(r.ProductId)
+	if prod == nil || prod.GetValue().VendorId != r.SellerId{
+		err = product.ErrNoSuchProduct
+	}else {
+		err = p.proRepo.DeleteProduct(r.ProductId)
+		//todo: 删除商品
+	}
 	return p.error(err),nil
 }
 

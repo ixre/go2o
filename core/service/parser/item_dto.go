@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/service/proto"
 )
 
@@ -66,4 +67,25 @@ func ParseLevelPrice(src *proto.SLevelPrice)*item.MemberPrice{
 		MaxQuota: int(src.MaxNumber),
 		Enabled:  types.IntCond(src.Enabled,1,0),
 	}
+}
+
+func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
+	return &proto.SUnifiedViewItem{
+		ItemId:               src.ItemId,
+		ProductId:            src.ProductId,
+		CategoryId:           src.CategoryId,
+		VendorId:             int64(src.VendorId),
+		BrandId:              0,
+		Title:                src.Title,
+		Code:                 "",
+		SkuId:                src.SkuId,
+		Image:                src.Image,
+		Price:                float64(src.Price),
+		PriceRange:           src.PriceRange,
+		StockNum:             src.StockNum,
+		ShelveState:          item.ShelvesOn,
+		ReviewState:          0,
+		UpdateTime:           0,
+	}
+	return nil
 }
