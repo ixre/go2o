@@ -7,6 +7,11 @@ enum EItemSalesType{
     IT_WHOLESALE = 1;
 }
 
+message SkuId {
+    int64 ItemId = 1;
+    int64 SkuId = 2;
+}
+
 message GetItemsByLabelRequest {
     string Label = 1;
     string SortBy = 2;
@@ -329,4 +334,51 @@ message ShelveStateRequest {
     int64 ItemId = 2;
     bool ShelveOn = 4;
     string Remark = 5;
+}
+
+message SWsSkuPriceListResponse{
+    repeated SWsSkuPrice Value = 1;
+}
+
+message SaveSkuPricesRequest{
+    int64 ItemId = 1;
+    int64 SkuId = 2;
+    repeated SWsSkuPrice Value = 3;
+}
+
+// 商品批发价
+message SWsSkuPrice{
+    // 编号
+    int64 Id = 1;
+    // 需要数量以上
+    int32 RequireNumber =2;
+    // 批发价
+    double WholesalePrice = 3;
+}
+
+message SWsItemDiscountListResponse{
+    repeated SWsItemDiscount Value = 1;
+}
+message GetWsDiscountRequest{
+    //　商品编号
+    int64 ItemId = 1;
+    // 买家分组编号
+    int64 GroupId = 2;
+}
+
+message SaveItemDiscountRequest{
+    int64 ItemId = 1;
+    int64 GroupId = 2;
+    repeated SWsItemDiscount Value = 3;
+}
+// 批发商品折扣
+message SWsItemDiscount {
+    // 编号
+    int64 Id  = 1;
+    // 客户分组
+    int64 BuyerGroupId =2;
+    // 要求金额，默认为0
+    int64 RequireAmount = 3;
+    // 折扣率
+    int64 DiscountRate = 4;
 }

@@ -15,6 +15,7 @@ import (
 )
 
 var _ proto.ProductServiceServer = new(productService)
+
 // 产品服务
 type productService struct {
 	pmRepo  promodel.IProModelRepo
@@ -22,7 +23,6 @@ type productService struct {
 	proRepo product.IProductRepo
 	serviceUtil
 }
-
 
 func NewProService(pmRepo promodel.IProModelRepo,
 	catRepo product.ICategoryRepo,
@@ -38,13 +38,13 @@ func NewProService(pmRepo promodel.IProModelRepo,
 func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProductRequest) (*proto.Result, error) {
 	var err error
 	prod := p.proRepo.GetProduct(r.ProductId)
-	if prod == nil || prod.GetValue().VendorId != r.SellerId{
+	if prod == nil || prod.GetValue().VendorId != r.SellerId {
 		err = product.ErrNoSuchProduct
-	}else {
+	} else {
 		err = p.proRepo.DeleteProduct(r.ProductId)
 		//todo: 删除商品
 	}
-	return p.error(err),nil
+	return p.error(err), nil
 }
 
 // 获取产品模型
