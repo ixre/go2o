@@ -80,7 +80,7 @@ func (s shopApi) shopCat(ctx api.Context) interface{} {
 func (s shopApi) Favorite(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	id := ctx.Form().GetInt("shop_id")
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	r, err := cli.Favorite(context.TODO(), &proto.FavoriteRequest{
 		MemberId:     int64(memberId),
 		FavoriteType: proto.FavoriteType_Shop,
@@ -138,7 +138,7 @@ func (s *serviceC) LoginState(c *echox.Context) error {
  */
 func (s shopApi) addressList(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	address, _ := cli.GetAddressList(context.TODO(), &proto.Int64{Value: int64(memberId)})
 	return address

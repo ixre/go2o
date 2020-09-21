@@ -273,7 +273,7 @@ func (d *defaultService) batchDelKeys(conn redis.Conn, key string) {
 func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SComplexOrder) {
 	//订单刚创建时,设置过期时间
 	if o.State == order.StatAwaitingPayment {
-		trans,cli,_ := service.FoundationServeClient()
+		trans,cli,_ := service.FoundationServiceClient()
 		defer trans.Close()
 		ss,_ := cli.GetGlobMchSaleConf_(context.TODO(),&proto.Empty{})
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
@@ -304,7 +304,7 @@ func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SComplexOrde
 // 订单自动收货
 func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SComplexOrder) {
 	if o.State == order.StatShipped {
-		trans,cli,_ := service.FoundationServeClient()
+		trans,cli,_ := service.FoundationServiceClient()
 		defer trans.Close()
 		ss,_ := cli.GetGlobMchSaleConf_(context.TODO(),&proto.Empty{})
 		unix := o.UpdateTime + int64(ss.OrderTimeOutReceiveHour)*60*60

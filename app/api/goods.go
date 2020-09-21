@@ -54,7 +54,7 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	trans, cli, _ := service.ItemServeClient()
+	trans, cli, _ := service.ItemServiceClient()
 	defer trans.Close()
 	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
 		&proto.PagingShopGoodsRequest{
@@ -88,7 +88,7 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	trans, cli, _ := service.ItemServeClient()
+	trans, cli, _ := service.ItemServiceClient()
 	defer trans.Close()
 	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
 		&proto.PagingShopGoodsRequest{
@@ -122,7 +122,7 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 	if size <= 0 {
 		size = 10
 	}
-	trans, cli, _ := service.ItemServeClient()
+	trans, cli, _ := service.ItemServiceClient()
 	defer trans.Close()
 	ret, _ := cli.GetValueGoodsBySaleLabel(context.TODO(),
 		&proto.GetItemsByLabelRequest{
@@ -146,7 +146,7 @@ func (g goodsApi) saleLabelGoods(ctx api.Context) interface{} {
 func (g goodsApi) Favorite(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	id := ctx.Form().GetInt("item_id")
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	r, err := cli.Favorite(context.TODO(), &proto.FavoriteRequest{
 		MemberId:     int64(memberId),
 		FavoriteType: proto.FavoriteType_Goods,

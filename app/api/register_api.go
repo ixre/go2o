@@ -72,7 +72,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	if b := m.compareCheckCode(token, phone, checkCode); !b {
 		return api.ResponseWithCode(7, "注册校验码不正确")
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		mp := map[string]string{
@@ -117,7 +117,7 @@ func (m RegisterApi) getToken(ctx api.Context) interface{} {
 
 // 获取验证码的间隔时间
 func (m RegisterApi) getDurationSecond() int64 {
-	trans, cli, err := service.RegistryServeClient()
+	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		rsp, _ := cli.GetValue(context.TODO(), &proto.String{
 			Value: registry.SmsSendDuration,
@@ -208,7 +208,7 @@ func (m RegisterApi) compareCheckCode(token, phone string, code string) bool {
  * {"code":1,"message":"api not defined"}
  */
 func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
-	trans, cli, _ := service.RegistryServeClient()
+	trans, cli, _ := service.RegistryServiceClient()
 	keys := []string{
 		registry.MemberRegisterMustBindPhone,
 		registry.SmsRegisterTemplateId,
@@ -229,7 +229,7 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 	err := m.checkCodeDuration(token, phone)
 	if err == nil {
 		// 检查手机号码是否被其他人使用
-		trans, cli, _ := service.MemberServeClient()
+		trans, cli, _ := service.MemberServiceClient()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
 				Cred:  proto.ECredentials_Phone,
@@ -248,7 +248,7 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 				"templateId": mp.Value[keys[1]],
 			}
 			// 构造并发送短信
-			trans, cli, _ := service.MessageServeClient()
+			trans, cli, _ := service.MessageServiceClient()
 			defer trans.Close()
 			n, _ := cli.GetNotifyItem(context.TODO(), &proto.String{Value: "验证手机"})
 			// 测试环境不发送短信

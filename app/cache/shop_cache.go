@@ -46,7 +46,7 @@ func GetShopIdByHost(host string) int64 {
 	sto := GetKVS()
 	shopId, err := util.I64Err(sto.GetInt(key))
 	if err != nil || shopId <= 0 {
-		trans, cli, err := service.ShopServeClient()
+		trans, cli, err := service.ShopServiceClient()
 		if err == nil {
 			defer trans.Close()
 			v, _ := cli.QueryShopByHost(context.TODO(), &proto.String{Value: host})

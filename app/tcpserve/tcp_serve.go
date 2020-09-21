@@ -102,7 +102,7 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 	if len(arr) == 2 {
 		f := func() (int64, error) {
 			memberId, _ := util.I64Err(strconv.Atoi(arr[0]))
-			trans, cli, err := service.MemberServeClient()
+			trans, cli, err := service.MemberServiceClient()
 			if err == nil {
 				defer trans.Close()
 				if b, _ := cli.CheckToken(context.TODO(), &proto.CheckTokenRequest{

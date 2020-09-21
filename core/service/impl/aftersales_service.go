@@ -15,7 +15,10 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/service/proto"
 )
+
+var _ proto.AfterSalesServiceServer = new(afterSalesService)
 
 type afterSalesService struct {
 	_orderRepo order.IOrderRepo

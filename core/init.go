@@ -272,7 +272,7 @@ func InitialModules() {
 
 func initSSOModule() {
 	//domain := variable.Domain
-	trans, _, err := service.RegistryServeClient()
+	trans, _, err := service.RegistryServiceClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{
@@ -331,7 +331,7 @@ func initSSOModule() {
 }
 
 func initBankB4eAPI() {
-	trans, cli, err := service.RegistryServeClient()
+	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		ctx := context.TODO()
 		defer trans.Close()
@@ -355,7 +355,7 @@ func initBankB4eAPI() {
 }
 
 func initExpressAPI() {
-	trans, cli, err := service.RegistryServeClient()
+	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{"express_kdn_business_id", "express_kdn_api_key"}

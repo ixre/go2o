@@ -21,7 +21,7 @@ import (
 
 // get summary of member,if dbGet will get summary from database.
 func GetMemberSummary(memberId int64, updateTime int) *proto.SComplexMember {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	v, _ := cli.Complex(context.TODO(), &proto.Int64{Value: int64(memberId)})
 	if v != nil {
@@ -31,7 +31,7 @@ func GetMemberSummary(memberId int64, updateTime int) *proto.SComplexMember {
 }
 
 func getMemberAccount(memberId int64, updateTime int) *proto.SAccount {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	v, _ := cli.GetAccount(context.TODO(),
 		&proto.Int64{Value: memberId})
