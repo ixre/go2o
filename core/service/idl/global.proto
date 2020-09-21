@@ -45,6 +45,7 @@ message IdOrName{
     string Name = 2;
 }
 
+
 /** 设置依据 */
 enum ESettingBasis {
     /** 未设置 */

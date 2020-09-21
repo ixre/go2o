@@ -57,3 +57,13 @@ func LevelPriceDto(src *item.MemberPrice) *proto.SLevelPrice {
 		Enabled:              src.Enabled == 1,
 	}
 }
+
+func ParseLevelPrice(src *proto.SLevelPrice)*item.MemberPrice{
+	return &item.MemberPrice{
+		Id:       int(src.Id),
+		Level:    int(src.Level),
+		Price:    float32(src.Price)/100,
+		MaxQuota: int(src.MaxNumber),
+		Enabled:  types.IntCond(src.Enabled,1,0),
+	}
+}

@@ -529,17 +529,19 @@ func (s *itemService) GetGoodSMemberLevelPrices(itemId int64) []*item.MemberPric
 }
 
 // 保存商品的会员价
-func (s *itemService) SaveMemberPrices(mchId, itemId int64,
-	priceSet []*item.MemberPrice) (err error) {
-	gi := s.itemRepo.GetItem(itemId)
-	if gi != nil {
-		for _, v := range priceSet {
-			if _, err = gi.SaveLevelPrice(v); err != nil {
-				return err
+func (s *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPriceRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	var err error
+	if it != nil {
+		for _, v := range r.Value {
+			e := parser.ParseLevelPrice(v)
+			e.GoodsId = r.ItemId
+			if _, err := it.SaveLevelPrice(e); err != nil {
+				break
 			}
 		}
 	}
-	return err
+	return s.error(err),nil
 }
 
 //func (s *saleService) GetGoodsComplexInfo(goodsId int32) *dto.GoodsComplex {

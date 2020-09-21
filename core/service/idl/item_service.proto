@@ -29,8 +29,12 @@ service ItemService {
     }
     // 设置商品货架状态
     rpc ReviewItem(ItemReviewRequest) returns (Result){}
+    // 保存商品的会员价
+    rpc SaveLevelPrices(SaveLevelPriceRequest)returns(Result){}
     // 商品标记为违规
     rpc SignAsIllegal(ItemIllegalRequest)returns (Result){}
+    // 设置商品货架状态
+    rpc SetShelveState(ShelveStateRequest)returns (Result){}
     // 获取商品详细数据
     rpc GetItemDetailData (ItemDetailRequest) returns (String) {
     }
@@ -52,12 +56,6 @@ service ItemService {
     rpc DeleteSaleLabel(Int64)returns(Result){}
 }
 
-
-// 商品销售类型
-enum EItemSalesType{
-    IT_NORMAL = 0;
-    IT_WHOLESALE = 1;
-}
 
 message PagingGoodsRequest{
     EItemSalesType ItemType = 1;

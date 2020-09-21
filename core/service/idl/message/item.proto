@@ -1,6 +1,12 @@
 syntax = "proto3";
 option go_package = ".;proto";
 
+// 商品销售类型
+enum EItemSalesType{
+    IT_NORMAL = 0;
+    IT_WHOLESALE = 1;
+}
+
 message GetItemsByLabelRequest {
     string Label = 1;
     string SortBy = 2;
@@ -310,4 +316,17 @@ message ItemReviewRequest{
     int64 ItemId = 1;
     bool Pass =2;
     string Remark = 3;
+}
+
+message SaveLevelPriceRequest{
+    int64 ItemId = 1;
+    repeated SLevelPrice Value = 2;
+}
+
+message ShelveStateRequest {
+    int64 SellerId = 1;
+    EItemSalesType itemType = 3;
+    int64 ItemId = 2;
+    bool ShelveOn = 4;
+    string Remark = 5;
 }
