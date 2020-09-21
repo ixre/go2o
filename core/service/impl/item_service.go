@@ -43,7 +43,6 @@ type itemService struct {
 	sto       storage.Interface
 }
 
-
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
@@ -77,7 +76,7 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	if it.ID > 0 {
 		gi = s.itemRepo.GetItem(it.ID)
 		if gi == nil || gi.GetValue().VendorId != r.VendorId {
-			return s.error(item.ErrNoSuchItem),nil
+			return s.error(item.ErrNoSuchItem), nil
 		}
 	} else {
 		gi = s.itemRepo.CreateItem(it)
@@ -97,7 +96,6 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	}
 	return ret, nil
 }
-
 
 // 附加商品的信息
 func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedViewItem {

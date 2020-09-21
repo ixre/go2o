@@ -32,8 +32,6 @@ type foundationService struct {
 	serviceUtil
 }
 
-
-
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
 	return &foundationService{
 		_rep:         rep,
@@ -181,15 +179,15 @@ func (s *foundationService) GetSyncLoginUrl(_ context.Context, s2 *proto.String)
 func (s *foundationService) GetMoAppConf(_ context.Context, _ *proto.Empty) (*proto.SMobileAppConfig, error) {
 	c := s._rep.GetMoAppConf()
 	return &proto.SMobileAppConfig{
-		AppName:              c.AppName,
-		AppIcon:              c.AppIcon,
-		Description:          c.Description,
-		AndroidVersion:       c.AndroidVersion,
-		AndroidReleaseUrl:    c.AndroidReleaseUrl,
-		IosVersion:           c.IosVersion,
-		IosReleaseUrl:        c.IosReleaseUrl,
-		ShowTplPath_:         c.ShowTplPath,
-	},nil
+		AppName:           c.AppName,
+		AppIcon:           c.AppIcon,
+		Description:       c.Description,
+		AndroidVersion:    c.AndroidVersion,
+		AndroidReleaseUrl: c.AndroidReleaseUrl,
+		IosVersion:        c.IosVersion,
+		IosReleaseUrl:     c.IosReleaseUrl,
+		ShowTplPath_:      c.ShowTplPath,
+	}, nil
 }
 
 // 保存移动应用设置
@@ -198,8 +196,8 @@ func (s *foundationService) SaveMoAppConf(_ context.Context, config *proto.SMobi
 		AppName:           config.AppName,
 		AppIcon:           config.AppIcon,
 		Description:       config.Description,
-		ShowTplPath:      config.ShowTplPath_,
-		AndroidVersion:   config.AndroidVersion,
+		ShowTplPath:       config.ShowTplPath_,
+		AndroidVersion:    config.AndroidVersion,
 		AndroidReleaseUrl: config.AndroidReleaseUrl,
 		IosVersion:        config.IosVersion,
 		IosReleaseUrl:     config.IosReleaseUrl,
@@ -207,32 +205,32 @@ func (s *foundationService) SaveMoAppConf(_ context.Context, config *proto.SMobi
 		WpReleaseUrl:      "",
 	}
 	err := s._rep.SaveMoAppConf(dst)
-	return s.error(err),nil
+	return s.error(err), nil
 }
 
 // 获取微信接口配置
 func (s *foundationService) GetWxApiConfig(_ context.Context, empty *proto.Empty) (*proto.SWxApiConfig, error) {
 	c := s._rep.GetWxApiConfig()
 	return &proto.SWxApiConfig{
-		AppId:                c.AppId,
-		AppSecret:            c.AppSecret,
-		MpToken:              c.MpToken,
-		MpAesKey:             c.MpAesKey,
-		OriId:                c.OriId,
-		MchId:                c.MchId,
-		MchApiKey:            c.MchApiKey,
-		MchCertPath:          c.MchCertPath,
-		MchCertKeyPath:       c.MchCertKeyPath,
-		RedPackEnabled:       c.RedPackEnabled,
-		RedPackAmountLimit:   float64(c.RedPackAmountLimit),
-		RedPackDayTimeLimit:  int32(c.RedPackDayTimeLimit),
-	},nil
+		AppId:               c.AppId,
+		AppSecret:           c.AppSecret,
+		MpToken:             c.MpToken,
+		MpAesKey:            c.MpAesKey,
+		OriId:               c.OriId,
+		MchId:               c.MchId,
+		MchApiKey:           c.MchApiKey,
+		MchCertPath:         c.MchCertPath,
+		MchCertKeyPath:      c.MchCertKeyPath,
+		RedPackEnabled:      c.RedPackEnabled,
+		RedPackAmountLimit:  float64(c.RedPackAmountLimit),
+		RedPackDayTimeLimit: int32(c.RedPackDayTimeLimit),
+	}, nil
 }
 
 // 保存微信接口配置
 func (s *foundationService) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApiConfig) (*proto.Result, error) {
 	dst := &valueobject.WxApiConfig{
-		AppId:               cfg.AppId ,
+		AppId:               cfg.AppId,
 		AppSecret:           cfg.AppSecret,
 		MpToken:             cfg.MpToken,
 		MpAesKey:            cfg.MpAesKey,
@@ -245,16 +243,14 @@ func (s *foundationService) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApi
 		RedPackAmountLimit:  float32(cfg.RedPackAmountLimit),
 		RedPackDayTimeLimit: int(cfg.RedPackDayTimeLimit),
 	}
-	err:= s._rep.SaveWxApiConfig(dst)
-	return s.error(err),nil
+	err := s._rep.SaveWxApiConfig(dst)
+	return s.error(err), nil
 }
-
 
 // 获取资源地址
 func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
 	return &proto.String{Value: format.GetResUrl(s2.Value)}, nil
 }
-
 
 // 获取短信设置
 func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
@@ -301,16 +297,15 @@ func (s *foundationService) GetPayPlatform(_ context.Context, r *proto.Empty) (*
 	ret := &proto.PaymentPlatformResponse{
 		Value: make([]*proto.PaymentPlatform, len(pf)),
 	}
-	for i,v :=  range pf{
+	for i, v := range pf {
 		ret.Value[i] = s.parsePayPlatform(v)
 	}
-	return ret,nil
+	return ret, nil
 }
-
 
 // 获取全局商户销售设置
 func (s *foundationService) GetGlobMchSaleConf_(_ context.Context, r *proto.Empty) (*proto.SGlobMchSaleConf, error) {
-	c :=  s._rep.GetGlobMchSaleConf()
+	c := s._rep.GetGlobMchSaleConf()
 	return &proto.SGlobMchSaleConf{
 		FxSalesEnabled:          c.FxSalesEnabled,
 		CashBackPercent:         float64(c.CashBackPercent),
@@ -321,7 +316,7 @@ func (s *foundationService) GetGlobMchSaleConf_(_ context.Context, r *proto.Empt
 		OrderTimeOutMinute:      int32(c.OrderTimeOutMinute),
 		OrderConfirmAfterMinute: int32(c.OrderConfirmAfterMinute),
 		OrderTimeOutReceiveHour: int32(c.OrderTimeOutReceiveHour),
-	},nil
+	}, nil
 }
 
 // 保存全局商户销售设置
@@ -358,8 +353,8 @@ func (s *foundationService) parsePayPlatform(v *bank.PaymentPlatform) *proto.Pay
 
 func (s *foundationService) parseBankItem(v *bank.BankItem) *proto.BankItem {
 	return &proto.BankItem{
-		Id:                   v.ID,
-		Name:                 v.Name,
-		Sign:                 v.Sign,
+		Id:   v.ID,
+		Name: v.Name,
+		Sign: v.Sign,
 	}
 }
