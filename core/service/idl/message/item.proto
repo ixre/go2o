@@ -1,6 +1,17 @@
 syntax = "proto3";
 option go_package = ".;proto";
 
+// 商品销售类型
+enum EItemSalesType{
+    IT_NORMAL = 0;
+    IT_WHOLESALE = 1;
+}
+
+message SkuId {
+    int64 ItemId = 1;
+    int64 SkuId = 2;
+}
+
 message GetItemsByLabelRequest {
     string Label = 1;
     string SortBy = 2;
@@ -93,16 +104,18 @@ message SUnifiedViewItem {
     double Price = 10;
     string PriceRange = 11;
     sint32 StockNum = 12;
-    sint32 ShelveState = 13;
-    sint32 ReviewState = 14;
-    sint64 UpdateTime = 15;
-    repeated SSku SkuArray = 16;
-    SItemViewData ViewData = 17;
-    map<string, string> Data = 18;
+    int64 ExpressTid = 13;
+    sint32 ShelveState = 14;
+    sint32 ReviewState = 15;
+    sint64 UpdateTime = 16;
+    repeated SSku SkuArray = 17;
+    repeated SLevelPrice LevelPrices = 18;
+    SItemViewData ViewData = 19;
+    map<string, string> Data = 20;
     // 3: sint32 PromFlag
     // 7: sint32 ShopId
     // 8: sint32 ShopCatId
-    // 9: sint32 ExpressTid
+    // 9: s
     // 11: string ShortTitle
     // 14: sint32 IsPresent
     // 23: sint32 Weight
@@ -245,8 +258,10 @@ message SItemSnapshot {
     SItemStock Stock = 20;
     // SKU
     repeated SSku SkuArray = 21;
+    // 会员价
+    repeated SLevelPrice LevelPrices = 22;
     //　显示数据
-    SItemViewData ViewData = 22;
+    SItemViewData ViewData = 23;
 }
 
 // 商品交易快照(针对商品)
@@ -277,4 +292,94 @@ message STradeSnapshot {
     int32 Price = 11;
     // 快照时间
     int64 CreateTime =12;
+}
+
+//　会员价
+message SLevelPrice{
+    //　编号
+    int64 Id = 1;
+    //　等级
+    int32 Level  = 2;
+    //　价格
+    int64 Price = 3;
+    // 限购数量,-1为不限制
+    int32 MaxNumber = 4;
+    // 是否启用
+    bool Enabled = 5;
+}
+
+message ItemBySkuRequest{
+    int64 ProductId = 1;
+    int64 SkuId = 2;
+}
+
+message ItemIllegalRequest{
+    int64 ItemId = 1;
+    string Remark = 2;
+}
+
+message ItemReviewRequest{
+    int64 ItemId = 1;
+    bool Pass =2;
+    string Remark = 3;
+}
+
+message SaveLevelPriceRequest{
+    int64 ItemId = 1;
+    repeated SLevelPrice Value = 2;
+}
+
+message ShelveStateRequest {
+    int64 SellerId = 1;
+    EItemSalesType itemType = 3;
+    int64 ItemId = 2;
+    bool ShelveOn = 4;
+    string Remark = 5;
+}
+
+message SWsSkuPriceListResponse{
+    repeated SWsSkuPrice Value = 1;
+}
+
+message SaveSkuPricesRequest{
+    int64 ItemId = 1;
+    int64 SkuId = 2;
+    repeated SWsSkuPrice Value = 3;
+}
+
+// 商品批发价
+message SWsSkuPrice{
+    // 编号
+    int64 Id = 1;
+    // 需要数量以上
+    int32 RequireNumber =2;
+    // 批发价
+    double WholesalePrice = 3;
+}
+
+message SWsItemDiscountListResponse{
+    repeated SWsItemDiscount Value = 1;
+}
+message GetWsDiscountRequest{
+    //　商品编号
+    int64 ItemId = 1;
+    // 买家分组编号
+    int64 GroupId = 2;
+}
+
+message SaveItemDiscountRequest{
+    int64 ItemId = 1;
+    int64 GroupId = 2;
+    repeated SWsItemDiscount Value = 3;
+}
+// 批发商品折扣
+message SWsItemDiscount {
+    // 编号
+    int64 Id  = 1;
+    // 客户分组
+    int64 BuyerGroupId =2;
+    // 要求金额，默认为0
+    int64 RequireAmount = 3;
+    // 折扣率
+    int64 DiscountRate = 4;
 }

@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
@@ -42,6 +43,7 @@ type itemService struct {
 	sto       storage.Interface
 }
 
+
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
@@ -62,20 +64,65 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifiedViewItem, error) {
 	item := s.itemRepo.GetItem(id.Value)
 	if item != nil {
-		skuService := s.itemRepo.SkuService()
-		v := item.GetValue()
-		ret := parser.ItemDtoV2(v)
-		skuArr := item.SkuArray()
-		ret.SkuArray = parser.SkuArrayDto(skuArr)
-		specArr := item.SpecArray()
-		ret.ViewData = &proto.SItemViewData{
-			Details: "",  //todo:??
-			Thumbs:  nil, //todo:??
-			Images:  nil, //todo:??
-			SkuHtml: skuService.GetSpecHtml(specArr),
-			SkuJson: string(skuService.GetSkuJson(skuArr)),
+		return s.attachUnifiedItem(item), nil
+	}
+	return nil, nil
+}
+
+// 保存商品
+func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.Result, error) {
+	var gi item.IGoodsItem
+	it := parser.ParseGoodsItem(r)
+	var err error
+	if it.ID > 0 {
+		gi = s.itemRepo.GetItem(it.ID)
+		if gi == nil || gi.GetValue().VendorId != r.VendorId {
+			return s.error(item.ErrNoSuchItem),nil
 		}
-		return ret, nil
+	} else {
+		gi = s.itemRepo.CreateItem(it)
+	}
+	err = gi.SetValue(it)
+	if err == nil {
+		err = gi.SetSku(it.SkuArray)
+		if err == nil {
+			it.ID, err = gi.Save()
+		}
+	}
+	ret := s.error(err)
+	if err == nil {
+		r.Data = map[string]string{
+			"ItemId": strconv.Itoa(int(it.ID)),
+		}
+	}
+	return ret, nil
+}
+
+
+// 附加商品的信息
+func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedViewItem {
+	ret := parser.ItemDtoV2(item.GetValue())
+	skuService := s.itemRepo.SkuService()
+	skuArr := item.SkuArray()
+	ret.SkuArray = parser.SkuArrayDto(skuArr)
+	ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
+	specArr := item.SpecArray()
+	ret.ViewData = &proto.SItemViewData{
+		Details: "",  //todo:??
+		Thumbs:  nil, //todo:??
+		Images:  nil, //todo:??
+		SkuHtml: skuService.GetSpecHtml(specArr),
+		SkuJson: string(skuService.GetSkuJson(skuArr)),
+	}
+	return ret
+}
+
+// 根据SKU获取商品
+func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest) (*proto.SUnifiedViewItem, error) {
+	v := s.itemRepo.GetValueGoodsBySku(r.ProductId, r.SkuId)
+	if v != nil {
+		item := s.itemRepo.CreateItem(v)
+		return s.attachUnifiedItem(item), nil
 	}
 	return nil, nil
 }
@@ -88,7 +135,7 @@ func (s *itemService) GetItemSnapshot(_ context.Context, id *proto.Int64) (*prot
 		sn := item.Snapshot()
 		// 基础数据及其销售数量
 		ret := parser.ParseItemSnapshotDto(sn)
-		ret.Stock.SaleNum  = item.GetValue().SaleNum
+		ret.Stock.SaleNum = item.GetValue().SaleNum
 		ret.Stock.StockNum = item.GetValue().StockNum
 		//　获取SKU和详情等
 		skuArr := item.SkuArray()
@@ -117,7 +164,7 @@ func (s *itemService) GetTradeSnapshot(_ context.Context, id *proto.Int64) (*pro
 }
 
 // 获取SKU
-func (s *itemService) GetSku(_ context.Context, request *proto.SkuRequest) (*proto.SSku, error) {
+func (s *itemService) GetSku(_ context.Context, request *proto.SkuId) (*proto.SSku, error) {
 	item := s.itemRepo.GetItem(request.ItemId)
 	if item != nil {
 		sku := item.GetSku(request.SkuId)
@@ -126,14 +173,6 @@ func (s *itemService) GetSku(_ context.Context, request *proto.SkuRequest) (*pro
 		}
 	}
 	return nil, nil
-}
-
-
-// 获取商品规格HTML信息
-func (s *itemService) GetSkuHtmOfItem1(itemId int64) (specHtm string) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
-	specArr := it.SpecArray()
-	return s.itemRepo.SkuService().GetSpecHtml(specArr)
 }
 
 // 获取商品详细数据
@@ -145,41 +184,6 @@ func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDe
 		return &proto.String{Value: string(data)}, nil
 	}
 	return &proto.String{Value: "不支持的商品类型"}, nil
-}
-
-// 获取商品的Sku-JSON格式
-func (s *itemService) GetItemSkuJson(_ context.Context, i *proto.Int64) (*proto.String, error) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: i.Value})
-	skuBytes := s.itemRepo.SkuService().GetSkuJson(it.SkuArray())
-	return &proto.String{Value: string(skuBytes)}, nil
-}
-
-// 保存商品
-func (s *itemService) SaveItem(di *proto.SOldItem, vendorId int64) (_ *proto.Result, err error) {
-	var gi item.IGoodsItem
-	it := parser.Item(di)
-	if it.ID > 0 {
-		gi = s.itemRepo.GetItem(it.ID)
-		if gi == nil || gi.GetValue().VendorId != vendorId {
-			err = item.ErrNoSuchItem
-			goto R
-		}
-	} else {
-		gi = s.itemRepo.CreateItem(it)
-	}
-	err = gi.SetValue(it)
-	if err == nil {
-		err = gi.SetSku(it.SkuArray)
-		if err == nil {
-			it.ID, err = gi.Save()
-		}
-	}
-R:
-	r := s.result(err)
-	r.Data = map[string]string{
-		"ItemId": strconv.Itoa(int(it.ID)),
-	}
-	return r, nil
 }
 
 // 获取上架商品数据（分页）
@@ -374,33 +378,6 @@ func (s *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	}, nil
 }
 
-// 根据SKU获取商品
-func (s *itemService) GetGoodsBySku(mchId, itemId, sku int64) *valueobject.Goods {
-	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
-	if v != nil {
-		return s.itemRepo.CreateItem(v).GetPackedValue()
-	}
-	return nil
-}
-
-// 根据SKU获取商品
-func (s *itemService) GetValueGoodsBySku(mchId int64, itemId, sku int64) *item.GoodsItem {
-	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
-	if v != nil {
-		return s.itemRepo.CreateItem(v).GetValue()
-	}
-	return nil
-}
-
-// 根据快照编号获取商品
-func (s *itemService) GetGoodsBySnapshotId(snapshotId int64) *item.GoodsItem {
-	snap := s.itemRepo.GetSalesSnapshot(snapshotId)
-	if snap != nil {
-		return s.itemRepo.GetValueGoodsById(snap.SkuId)
-	}
-	return nil
-}
-
 // 获取分页上架的商品
 func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
 	ret := &proto.PagingShopGoodsResponse{
@@ -535,12 +512,20 @@ func (s *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetIt
 }
 
 // 根据分页销售标签获取指定数目的商品
-func (s *itemService) GetPagedValueGoodsBySaleLabel(shopId int64, tagId int32, sortBy string, begin int, end int) (int,
-	[]*valueobject.Goods) {
+func (s *itemService) GetPagedValueGoodsBySaleLabel_(_ context.Context, r *proto.SaleLabelItemsRequest_) (*proto.PagingGoodsResponse, error) {
 	tag := s.labelRepo.LabelService().CreateSaleLabel(&item.Label{
-		Id: tagId,
+		Id: r.LabelId,
 	})
-	return tag.GetPagedValueGoods(sortBy, begin, end)
+	total, list := tag.GetPagedValueGoods(r.Params.SortBy, int(r.Params.Begin), int(r.Params.End))
+	arr := make([]*proto.SUnifiedViewItem, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		arr[i] = parser.ParseGoodsDto_(v)
+	}
+	return &proto.PagingGoodsResponse{
+		Total: int64(total),
+		Data:  arr,
+	}, nil
 }
 
 // 获取商品的会员价
@@ -553,25 +538,27 @@ func (s *itemService) GetGoodSMemberLevelPrices(itemId int64) []*item.MemberPric
 }
 
 // 保存商品的会员价
-func (s *itemService) SaveMemberPrices(mchId, itemId int64,
-	priceSet []*item.MemberPrice) (err error) {
-	gi := s.itemRepo.GetItem(itemId)
-	if gi != nil {
-		for _, v := range priceSet {
-			if _, err = gi.SaveLevelPrice(v); err != nil {
-				return err
+func (s *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPriceRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	var err error
+	if it != nil {
+		for _, v := range r.Value {
+			e := parser.ParseLevelPrice(v)
+			e.GoodsId = r.ItemId
+			if _, err := it.SaveLevelPrice(e); err != nil {
+				break
 			}
 		}
 	}
-	return err
+	return s.error(err), nil
 }
 
 //func (s *saleService) GetGoodsComplexInfo(goodsId int32) *dto.GoodsComplex {
 //	return s._goodsQuery.GetGoodsComplex(goodsId)
 //}
 
-// 获取商品详情
-func (s *itemService) GetGoodsDetails(itemId int64, mLevel int32) (
+// 获取商品促销详情
+func (s *itemService) GetGoodsDetails_(itemId int64, mLevel int32) (
 	*valueobject.Goods, map[string]string) {
 	goods := s.itemRepo.GetItem(itemId)
 	gv := goods.GetPackedValue()
@@ -584,79 +571,104 @@ func (s *itemService) GetGoodsDetails(itemId int64, mLevel int32) (
 	return gv, proMap
 }
 
-// 获取货品描述
-func (s *itemService) GetItemDescriptionByGoodsId(itemId int64) string {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: itemId})
-	pro := it.Product()
-	if pro != nil {
-		return pro.GetValue().Description
-	}
-	return ""
-}
-
 // 设置商品货架状态
-func (s *itemService) SetShelveState(vendorId, itemId int64,
-	itemType int32, state int32, remark string) (_ *proto.Result, err error) {
-	it := s.itemRepo.GetItem(itemId)
-	if it == nil || it.GetValue().VendorId != vendorId {
+func (s *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	var err error
+	if it == nil || it.GetValue().VendorId != r.SellerId {
 		err = item.ErrNoSuchItem
 	} else {
-		switch itemType {
-		case item.ItemWholesale:
-			err = it.Wholesale().SetShelve(state, remark)
+		state := int32(types.IntCond(r.ShelveOn,
+			int(item.ShelvesOn),
+			int(item.ShelvesDown)))
+		switch r.ItemType {
+		case proto.EItemSalesType_IT_WHOLESALE:
+			err = it.Wholesale().SetShelve(state, r.Remark)
+		case proto.EItemSalesType_IT_NORMAL:
 		default:
-			err = it.SetShelve(state, remark)
+			err = it.SetShelve(state, r.Remark)
 		}
 	}
 	return s.result(err), nil
 }
 
-// 设置商品货架状态
-func (s *itemService) ReviewItem(vendorId, itemId int64,
-	pass bool, remark string) (_ *proto.Result, err error) {
-	it := s.itemRepo.GetItem(itemId)
-	if it == nil || it.GetValue().VendorId != vendorId {
+// 审核商品
+func (s *itemService) ReviewItem(_ context.Context, r *proto.ItemReviewRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	var err error
+	if it == nil {
 		err = item.ErrNoSuchItem
 	} else {
-		err = it.Review(pass, remark)
+		err = it.Review(r.Pass, r.Remark)
 	}
 	return s.result(err), nil
 }
 
 // 标记为违规
-func (s *itemService) SignGoodsIllegal(vendorId, itemId int64,
-	remark string) (_ *proto.Result, err error) {
-	it := s.itemRepo.GetItem(itemId)
-	if it == nil || it.GetValue().VendorId != vendorId {
+func (s *itemService) SignAsIllegal(_ context.Context, r *proto.ItemIllegalRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	var err error
+	if it == nil {
 		err = item.ErrNoSuchItem
 	} else {
-		err = it.Incorrect(remark)
+		err = it.Incorrect(r.Remark)
 	}
-	return s.result(err), nil
+	return s.error(err), nil
 }
 
 // 获取批发价格数组
-func (s *itemService) GetWholesalePriceArray(itemId, skuId int64) []*item.WsSkuPrice {
-	it := s.itemRepo.GetItem(itemId)
-	return it.Wholesale().GetSkuPrice(skuId)
+func (s *itemService) GetWholesalePriceArray(_ context.Context, id *proto.SkuId) (*proto.SWsSkuPriceListResponse, error) {
+	it := s.itemRepo.GetItem(id.ItemId)
+	arr := it.Wholesale().GetSkuPrice(id.SkuId)
+	ret := make([]*proto.SWsSkuPrice, len(arr))
+	for i, v := range arr {
+		ret[i] = parser.WsSkuPriceDto(v)
+	}
+	return &proto.SWsSkuPriceListResponse{
+		Value: ret,
+	}, nil
 }
 
 // 保存批发价格
-func (s *itemService) SaveWholesalePrice(itemId, skuId int64, arr []*item.WsSkuPrice) error {
-	it := s.itemRepo.GetItem(itemId)
-	return it.Wholesale().SaveSkuPrice(skuId, arr)
+func (s *itemService) SaveWholesalePrice(_ context.Context, r *proto.SaveSkuPricesRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	arr := make([]*item.WsSkuPrice, len(r.Value))
+	for i, v := range r.Value {
+		e := parser.WsSkuPrice(v)
+		e.ItemId = r.ItemId
+		e.SkuId = r.SkuId
+		arr[i] = e
+	}
+	err := it.Wholesale().SaveSkuPrice(r.SkuId, arr)
+	return s.error(err), nil
 }
 
 // 获取批发折扣数组
-func (s *itemService) GetWholesaleDiscountArray(itemId int64, groupId int32) []*item.WsItemDiscount {
-	it := s.itemRepo.GetItem(itemId)
-	return it.Wholesale().GetItemDiscount(groupId)
+func (s *itemService) GetWholesaleDiscountArray(_ context.Context, id *proto.GetWsDiscountRequest) (*proto.SWsItemDiscountListResponse, error) {
+
+	it := s.itemRepo.GetItem(id.ItemId)
+	arr := it.Wholesale().GetItemDiscount(int32(id.GroupId))
+	ret := make([]*proto.SWsItemDiscount, len(arr))
+	for i, v := range arr {
+		ret[i] = parser.WsItemDiscountDto(v)
+	}
+	return &proto.SWsItemDiscountListResponse{
+		Value: ret,
+	}, nil
 }
 
 // 保存批发折扣
-func (s *itemService) SaveWholesaleDiscount(itemId int64, groupId int32, arr []*item.WsItemDiscount) error {
-	it := s.itemRepo.GetItem(itemId)
-	return it.Wholesale().SaveItemDiscount(groupId, arr)
+func (s *itemService) SaveWholesaleDiscount(_ context.Context, r *proto.SaveItemDiscountRequest) (*proto.Result, error) {
+	it := s.itemRepo.GetItem(r.ItemId)
+	arr := make([]*item.WsItemDiscount, len(r.Value))
+	for i, v := range r.Value {
+		e := parser.WsItemDiscount(v)
+		e.ItemId = r.ItemId
+		e.BuyerGid = int32(r.GroupId)
+		arr[i] = e
+	}
+	err := it.Wholesale().SaveItemDiscount(int32(r.GroupId), arr)
+	return s.error(err), nil
 }
 
 func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {

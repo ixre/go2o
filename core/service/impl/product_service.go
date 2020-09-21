@@ -10,8 +10,11 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/parser"
 	"go2o/core/service/proto"
+	context "golang.org/x/net/context"
 	"strconv"
 )
+
+var _ proto.ProductServiceServer = new(productService)
 
 // 产品服务
 type productService struct {
@@ -29,6 +32,19 @@ func NewProService(pmRepo promodel.IProModelRepo,
 		catRepo: catRepo,
 		proRepo: proRepo,
 	}
+}
+
+// 删除产品
+func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProductRequest) (*proto.Result, error) {
+	var err error
+	prod := p.proRepo.GetProduct(r.ProductId)
+	if prod == nil || prod.GetValue().VendorId != r.SellerId {
+		err = product.ErrNoSuchProduct
+	} else {
+		err = p.proRepo.DeleteProduct(r.ProductId)
+		//todo: 删除商品
+	}
+	return p.error(err), nil
 }
 
 // 获取产品模型

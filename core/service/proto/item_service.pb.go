@@ -23,76 +23,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// 商品销售类型
-type EItemSalesType int32
-
-const (
-	EItemSalesType_IT_NORMAL    EItemSalesType = 0
-	EItemSalesType_IT_WHOLESALE EItemSalesType = 1
-)
-
-var EItemSalesType_name = map[int32]string{
-	0: "IT_NORMAL",
-	1: "IT_WHOLESALE",
-}
-var EItemSalesType_value = map[string]int32{
-	"IT_NORMAL":    0,
-	"IT_WHOLESALE": 1,
-}
-
-func (x EItemSalesType) String() string {
-	return proto.EnumName(EItemSalesType_name, int32(x))
-}
-func (EItemSalesType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_3ebc59800fc886b0, []int{0}
-}
-
-type SkuRequest struct {
-	ItemId               int64    `protobuf:"zigzag64,1,opt,name=itemId,proto3" json:"itemId,omitempty"`
-	SkuId                int64    `protobuf:"zigzag64,2,opt,name=skuId,proto3" json:"skuId,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SkuRequest) Reset()         { *m = SkuRequest{} }
-func (m *SkuRequest) String() string { return proto.CompactTextString(m) }
-func (*SkuRequest) ProtoMessage()    {}
-func (*SkuRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_3ebc59800fc886b0, []int{0}
-}
-func (m *SkuRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SkuRequest.Unmarshal(m, b)
-}
-func (m *SkuRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SkuRequest.Marshal(b, m, deterministic)
-}
-func (dst *SkuRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SkuRequest.Merge(dst, src)
-}
-func (m *SkuRequest) XXX_Size() int {
-	return xxx_messageInfo_SkuRequest.Size(m)
-}
-func (m *SkuRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SkuRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SkuRequest proto.InternalMessageInfo
-
-func (m *SkuRequest) GetItemId() int64 {
-	if m != nil {
-		return m.ItemId
-	}
-	return 0
-}
-
-func (m *SkuRequest) GetSkuId() int64 {
-	if m != nil {
-		return m.SkuId
-	}
-	return 0
-}
-
 type ItemDetailRequest struct {
 	ItemId               int64    `protobuf:"zigzag64,1,opt,name=itemId,proto3" json:"itemId,omitempty"`
 	IType                int32    `protobuf:"zigzag32,2,opt,name=iType,proto3" json:"iType,omitempty"`
@@ -105,7 +35,7 @@ func (m *ItemDetailRequest) Reset()         { *m = ItemDetailRequest{} }
 func (m *ItemDetailRequest) String() string { return proto.CompactTextString(m) }
 func (*ItemDetailRequest) ProtoMessage()    {}
 func (*ItemDetailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_3ebc59800fc886b0, []int{1}
+	return fileDescriptor_item_service_f5e82c3fb04cd4f8, []int{0}
 }
 func (m *ItemDetailRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ItemDetailRequest.Unmarshal(m, b)
@@ -141,10 +71,11 @@ func (m *ItemDetailRequest) GetIType() int32 {
 
 type PagingGoodsRequest struct {
 	ItemType   EItemSalesType `protobuf:"varint,1,opt,name=ItemType,proto3,enum=EItemSalesType" json:"ItemType,omitempty"`
-	CategoryId int64          `protobuf:"varint,2,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
+	SellerId   int64          `protobuf:"varint,2,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
+	CategoryId int64          `protobuf:"varint,3,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
 	// 关键词
-	Keyword              string         `protobuf:"bytes,3,opt,name=Keyword,proto3" json:"Keyword,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,4,opt,name=Params,proto3" json:"Params,omitempty"`
+	Keyword              string         `protobuf:"bytes,4,opt,name=Keyword,proto3" json:"Keyword,omitempty"`
+	Params               *SPagingParams `protobuf:"bytes,5,opt,name=Params,proto3" json:"Params,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -154,7 +85,7 @@ func (m *PagingGoodsRequest) Reset()         { *m = PagingGoodsRequest{} }
 func (m *PagingGoodsRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingGoodsRequest) ProtoMessage()    {}
 func (*PagingGoodsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_3ebc59800fc886b0, []int{2}
+	return fileDescriptor_item_service_f5e82c3fb04cd4f8, []int{1}
 }
 func (m *PagingGoodsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingGoodsRequest.Unmarshal(m, b)
@@ -179,6 +110,13 @@ func (m *PagingGoodsRequest) GetItemType() EItemSalesType {
 		return m.ItemType
 	}
 	return EItemSalesType_IT_NORMAL
+}
+
+func (m *PagingGoodsRequest) GetSellerId() int64 {
+	if m != nil {
+		return m.SellerId
+	}
+	return 0
 }
 
 func (m *PagingGoodsRequest) GetCategoryId() int64 {
@@ -215,7 +153,7 @@ func (m *PagingShopGoodsRequest) Reset()         { *m = PagingShopGoodsRequest{}
 func (m *PagingShopGoodsRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingShopGoodsRequest) ProtoMessage()    {}
 func (*PagingShopGoodsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_3ebc59800fc886b0, []int{3}
+	return fileDescriptor_item_service_f5e82c3fb04cd4f8, []int{2}
 }
 func (m *PagingShopGoodsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingShopGoodsRequest.Unmarshal(m, b)
@@ -256,12 +194,65 @@ func (m *PagingShopGoodsRequest) GetParams() *SPagingParams {
 	return nil
 }
 
+type SaleLabelItemsRequest_ struct {
+	ShopId               int64          `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
+	LabelId              int32          `protobuf:"varint,2,opt,name=LabelId,proto3" json:"LabelId,omitempty"`
+	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *SaleLabelItemsRequest_) Reset()         { *m = SaleLabelItemsRequest_{} }
+func (m *SaleLabelItemsRequest_) String() string { return proto.CompactTextString(m) }
+func (*SaleLabelItemsRequest_) ProtoMessage()    {}
+func (*SaleLabelItemsRequest_) Descriptor() ([]byte, []int) {
+	return fileDescriptor_item_service_f5e82c3fb04cd4f8, []int{3}
+}
+func (m *SaleLabelItemsRequest_) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaleLabelItemsRequest_.Unmarshal(m, b)
+}
+func (m *SaleLabelItemsRequest_) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaleLabelItemsRequest_.Marshal(b, m, deterministic)
+}
+func (dst *SaleLabelItemsRequest_) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaleLabelItemsRequest_.Merge(dst, src)
+}
+func (m *SaleLabelItemsRequest_) XXX_Size() int {
+	return xxx_messageInfo_SaleLabelItemsRequest_.Size(m)
+}
+func (m *SaleLabelItemsRequest_) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaleLabelItemsRequest_.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaleLabelItemsRequest_ proto.InternalMessageInfo
+
+func (m *SaleLabelItemsRequest_) GetShopId() int64 {
+	if m != nil {
+		return m.ShopId
+	}
+	return 0
+}
+
+func (m *SaleLabelItemsRequest_) GetLabelId() int32 {
+	if m != nil {
+		return m.LabelId
+	}
+	return 0
+}
+
+func (m *SaleLabelItemsRequest_) GetParams() *SPagingParams {
+	if m != nil {
+		return m.Params
+	}
+	return nil
+}
+
 func init() {
-	proto.RegisterType((*SkuRequest)(nil), "SkuRequest")
 	proto.RegisterType((*ItemDetailRequest)(nil), "ItemDetailRequest")
 	proto.RegisterType((*PagingGoodsRequest)(nil), "PagingGoodsRequest")
 	proto.RegisterType((*PagingShopGoodsRequest)(nil), "PagingShopGoodsRequest")
-	proto.RegisterEnum("EItemSalesType", EItemSalesType_name, EItemSalesType_value)
+	proto.RegisterType((*SaleLabelItemsRequest_)(nil), "SaleLabelItemsRequest_")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -278,14 +269,24 @@ const _ = grpc.SupportPackageIsVersion4
 type ItemServiceClient interface {
 	// 获取商品
 	GetItem(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SUnifiedViewItem, error)
+	// 保存商品
+	SaveItem(ctx context.Context, in *SUnifiedViewItem, opts ...grpc.CallOption) (*Result, error)
+	// 根据SKU获取商品
+	GetItemBySku(ctx context.Context, in *ItemBySkuRequest, opts ...grpc.CallOption) (*SUnifiedViewItem, error)
 	// 获取商品用于销售的快照和信息
 	GetItemSnapshot(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SItemSnapshot, error)
 	// 获取商品交易快照,参数传递:snapshotId
 	GetTradeSnapshot(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*STradeSnapshot, error)
 	// 获取SKU
-	GetSku(ctx context.Context, in *SkuRequest, opts ...grpc.CallOption) (*SSku, error)
-	// 获取商品的Sku-JSON格式,itemId
-	GetItemSkuJson(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*String, error)
+	GetSku(ctx context.Context, in *SkuId, opts ...grpc.CallOption) (*SSku, error)
+	// 设置商品货架状态
+	ReviewItem(ctx context.Context, in *ItemReviewRequest, opts ...grpc.CallOption) (*Result, error)
+	// 保存商品的会员价
+	SaveLevelPrices(ctx context.Context, in *SaveLevelPriceRequest, opts ...grpc.CallOption) (*Result, error)
+	// 商品标记为违规
+	SignAsIllegal(ctx context.Context, in *ItemIllegalRequest, opts ...grpc.CallOption) (*Result, error)
+	// 设置商品货架状态
+	SetShelveState(ctx context.Context, in *ShelveStateRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取商品详细数据
 	GetItemDetailData(ctx context.Context, in *ItemDetailRequest, opts ...grpc.CallOption) (*String, error)
 	// 根据销售标签获取指定数目的商品
@@ -296,6 +297,14 @@ type ItemServiceClient interface {
 	GetPagedOnShelvesItem(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
 	// 获取上架商品数据
 	GetItems(ctx context.Context, in *GetItemsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
+	// 获取批发价格数组
+	GetWholesalePriceArray(ctx context.Context, in *SkuId, opts ...grpc.CallOption) (*SWsSkuPriceListResponse, error)
+	// 保存批发价格
+	SaveWholesalePrice(ctx context.Context, in *SaveSkuPricesRequest, opts ...grpc.CallOption) (*Result, error)
+	// 获取批发折扣数组
+	GetWholesaleDiscountArray(ctx context.Context, in *GetWsDiscountRequest, opts ...grpc.CallOption) (*SWsItemDiscountListResponse, error)
+	// 保存批发折扣
+	SaveWholesaleDiscount(ctx context.Context, in *SaveItemDiscountRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取所有的商品标签
 	GetAllSaleLabels(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ItemLabelListResponse, error)
 	// 获取销售标签
@@ -304,6 +313,8 @@ type ItemServiceClient interface {
 	SaveSaleLabel(ctx context.Context, in *SItemLabel, opts ...grpc.CallOption) (*Result, error)
 	// 删除销售标签
 	DeleteSaleLabel(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	// 根据分页销售标签获取指定数目的商品
+	GetPagedValueGoodsBySaleLabel_(ctx context.Context, in *SaleLabelItemsRequest_, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
 }
 
 type itemServiceClient struct {
@@ -317,6 +328,24 @@ func NewItemServiceClient(cc *grpc.ClientConn) ItemServiceClient {
 func (c *itemServiceClient) GetItem(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SUnifiedViewItem, error) {
 	out := new(SUnifiedViewItem)
 	err := c.cc.Invoke(ctx, "/ItemService/GetItem", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) SaveItem(ctx context.Context, in *SUnifiedViewItem, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ItemService/SaveItem", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) GetItemBySku(ctx context.Context, in *ItemBySkuRequest, opts ...grpc.CallOption) (*SUnifiedViewItem, error) {
+	out := new(SUnifiedViewItem)
+	err := c.cc.Invoke(ctx, "/ItemService/GetItemBySku", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -341,7 +370,7 @@ func (c *itemServiceClient) GetTradeSnapshot(ctx context.Context, in *Int64, opt
 	return out, nil
 }
 
-func (c *itemServiceClient) GetSku(ctx context.Context, in *SkuRequest, opts ...grpc.CallOption) (*SSku, error) {
+func (c *itemServiceClient) GetSku(ctx context.Context, in *SkuId, opts ...grpc.CallOption) (*SSku, error) {
 	out := new(SSku)
 	err := c.cc.Invoke(ctx, "/ItemService/GetSku", in, out, opts...)
 	if err != nil {
@@ -350,9 +379,36 @@ func (c *itemServiceClient) GetSku(ctx context.Context, in *SkuRequest, opts ...
 	return out, nil
 }
 
-func (c *itemServiceClient) GetItemSkuJson(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*String, error) {
-	out := new(String)
-	err := c.cc.Invoke(ctx, "/ItemService/GetItemSkuJson", in, out, opts...)
+func (c *itemServiceClient) ReviewItem(ctx context.Context, in *ItemReviewRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ItemService/ReviewItem", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) SaveLevelPrices(ctx context.Context, in *SaveLevelPriceRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ItemService/SaveLevelPrices", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) SignAsIllegal(ctx context.Context, in *ItemIllegalRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ItemService/SignAsIllegal", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) SetShelveState(ctx context.Context, in *ShelveStateRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ItemService/SetShelveState", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -404,6 +460,42 @@ func (c *itemServiceClient) GetItems(ctx context.Context, in *GetItemsRequest, o
 	return out, nil
 }
 
+func (c *itemServiceClient) GetWholesalePriceArray(ctx context.Context, in *SkuId, opts ...grpc.CallOption) (*SWsSkuPriceListResponse, error) {
+	out := new(SWsSkuPriceListResponse)
+	err := c.cc.Invoke(ctx, "/ItemService/GetWholesalePriceArray", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) SaveWholesalePrice(ctx context.Context, in *SaveSkuPricesRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ItemService/SaveWholesalePrice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) GetWholesaleDiscountArray(ctx context.Context, in *GetWsDiscountRequest, opts ...grpc.CallOption) (*SWsItemDiscountListResponse, error) {
+	out := new(SWsItemDiscountListResponse)
+	err := c.cc.Invoke(ctx, "/ItemService/GetWholesaleDiscountArray", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) SaveWholesaleDiscount(ctx context.Context, in *SaveItemDiscountRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ItemService/SaveWholesaleDiscount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *itemServiceClient) GetAllSaleLabels(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ItemLabelListResponse, error) {
 	out := new(ItemLabelListResponse)
 	err := c.cc.Invoke(ctx, "/ItemService/GetAllSaleLabels", in, out, opts...)
@@ -440,18 +532,37 @@ func (c *itemServiceClient) DeleteSaleLabel(ctx context.Context, in *Int64, opts
 	return out, nil
 }
 
+func (c *itemServiceClient) GetPagedValueGoodsBySaleLabel_(ctx context.Context, in *SaleLabelItemsRequest_, opts ...grpc.CallOption) (*PagingGoodsResponse, error) {
+	out := new(PagingGoodsResponse)
+	err := c.cc.Invoke(ctx, "/ItemService/GetPagedValueGoodsBySaleLabel_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ItemServiceServer is the server API for ItemService service.
 type ItemServiceServer interface {
 	// 获取商品
 	GetItem(context.Context, *Int64) (*SUnifiedViewItem, error)
+	// 保存商品
+	SaveItem(context.Context, *SUnifiedViewItem) (*Result, error)
+	// 根据SKU获取商品
+	GetItemBySku(context.Context, *ItemBySkuRequest) (*SUnifiedViewItem, error)
 	// 获取商品用于销售的快照和信息
 	GetItemSnapshot(context.Context, *Int64) (*SItemSnapshot, error)
 	// 获取商品交易快照,参数传递:snapshotId
 	GetTradeSnapshot(context.Context, *Int64) (*STradeSnapshot, error)
 	// 获取SKU
-	GetSku(context.Context, *SkuRequest) (*SSku, error)
-	// 获取商品的Sku-JSON格式,itemId
-	GetItemSkuJson(context.Context, *Int64) (*String, error)
+	GetSku(context.Context, *SkuId) (*SSku, error)
+	// 设置商品货架状态
+	ReviewItem(context.Context, *ItemReviewRequest) (*Result, error)
+	// 保存商品的会员价
+	SaveLevelPrices(context.Context, *SaveLevelPriceRequest) (*Result, error)
+	// 商品标记为违规
+	SignAsIllegal(context.Context, *ItemIllegalRequest) (*Result, error)
+	// 设置商品货架状态
+	SetShelveState(context.Context, *ShelveStateRequest) (*Result, error)
 	// 获取商品详细数据
 	GetItemDetailData(context.Context, *ItemDetailRequest) (*String, error)
 	// 根据销售标签获取指定数目的商品
@@ -462,6 +573,14 @@ type ItemServiceServer interface {
 	GetPagedOnShelvesItem(context.Context, *PagingGoodsRequest) (*PagingGoodsResponse, error)
 	// 获取上架商品数据
 	GetItems(context.Context, *GetItemsRequest) (*PagingGoodsResponse, error)
+	// 获取批发价格数组
+	GetWholesalePriceArray(context.Context, *SkuId) (*SWsSkuPriceListResponse, error)
+	// 保存批发价格
+	SaveWholesalePrice(context.Context, *SaveSkuPricesRequest) (*Result, error)
+	// 获取批发折扣数组
+	GetWholesaleDiscountArray(context.Context, *GetWsDiscountRequest) (*SWsItemDiscountListResponse, error)
+	// 保存批发折扣
+	SaveWholesaleDiscount(context.Context, *SaveItemDiscountRequest) (*Result, error)
 	// 获取所有的商品标签
 	GetAllSaleLabels(context.Context, *Empty) (*ItemLabelListResponse, error)
 	// 获取销售标签
@@ -470,6 +589,8 @@ type ItemServiceServer interface {
 	SaveSaleLabel(context.Context, *SItemLabel) (*Result, error)
 	// 删除销售标签
 	DeleteSaleLabel(context.Context, *Int64) (*Result, error)
+	// 根据分页销售标签获取指定数目的商品
+	GetPagedValueGoodsBySaleLabel_(context.Context, *SaleLabelItemsRequest_) (*PagingGoodsResponse, error)
 }
 
 func RegisterItemServiceServer(s *grpc.Server, srv ItemServiceServer) {
@@ -490,6 +611,42 @@ func _ItemService_GetItem_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ItemServiceServer).GetItem(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_SaveItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SUnifiedViewItem)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).SaveItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/SaveItem",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).SaveItem(ctx, req.(*SUnifiedViewItem))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_GetItemBySku_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ItemBySkuRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).GetItemBySku(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/GetItemBySku",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).GetItemBySku(ctx, req.(*ItemBySkuRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -531,7 +688,7 @@ func _ItemService_GetTradeSnapshot_Handler(srv interface{}, ctx context.Context,
 }
 
 func _ItemService_GetSku_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SkuRequest)
+	in := new(SkuId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -543,25 +700,79 @@ func _ItemService_GetSku_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/ItemService/GetSku",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetSku(ctx, req.(*SkuRequest))
+		return srv.(ItemServiceServer).GetSku(ctx, req.(*SkuId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ItemService_GetItemSkuJson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int64)
+func _ItemService_ReviewItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ItemReviewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ItemServiceServer).GetItemSkuJson(ctx, in)
+		return srv.(ItemServiceServer).ReviewItem(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ItemService/GetItemSkuJson",
+		FullMethod: "/ItemService/ReviewItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetItemSkuJson(ctx, req.(*Int64))
+		return srv.(ItemServiceServer).ReviewItem(ctx, req.(*ItemReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_SaveLevelPrices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveLevelPriceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).SaveLevelPrices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/SaveLevelPrices",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).SaveLevelPrices(ctx, req.(*SaveLevelPriceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_SignAsIllegal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ItemIllegalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).SignAsIllegal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/SignAsIllegal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).SignAsIllegal(ctx, req.(*ItemIllegalRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_SetShelveState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShelveStateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).SetShelveState(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/SetShelveState",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).SetShelveState(ctx, req.(*ShelveStateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -656,6 +867,78 @@ func _ItemService_GetItems_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ItemService_GetWholesalePriceArray_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SkuId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).GetWholesalePriceArray(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/GetWholesalePriceArray",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).GetWholesalePriceArray(ctx, req.(*SkuId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_SaveWholesalePrice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveSkuPricesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).SaveWholesalePrice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/SaveWholesalePrice",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).SaveWholesalePrice(ctx, req.(*SaveSkuPricesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_GetWholesaleDiscountArray_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetWsDiscountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).GetWholesaleDiscountArray(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/GetWholesaleDiscountArray",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).GetWholesaleDiscountArray(ctx, req.(*GetWsDiscountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_SaveWholesaleDiscount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveItemDiscountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).SaveWholesaleDiscount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/SaveWholesaleDiscount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).SaveWholesaleDiscount(ctx, req.(*SaveItemDiscountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ItemService_GetAllSaleLabels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -728,6 +1011,24 @@ func _ItemService_DeleteSaleLabel_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ItemService_GetPagedValueGoodsBySaleLabel__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaleLabelItemsRequest_)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).GetPagedValueGoodsBySaleLabel_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/GetPagedValueGoodsBySaleLabel_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).GetPagedValueGoodsBySaleLabel_(ctx, req.(*SaleLabelItemsRequest_))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _ItemService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "ItemService",
 	HandlerType: (*ItemServiceServer)(nil),
@@ -735,6 +1036,14 @@ var _ItemService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetItem",
 			Handler:    _ItemService_GetItem_Handler,
+		},
+		{
+			MethodName: "SaveItem",
+			Handler:    _ItemService_SaveItem_Handler,
+		},
+		{
+			MethodName: "GetItemBySku",
+			Handler:    _ItemService_GetItemBySku_Handler,
 		},
 		{
 			MethodName: "GetItemSnapshot",
@@ -749,8 +1058,20 @@ var _ItemService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _ItemService_GetSku_Handler,
 		},
 		{
-			MethodName: "GetItemSkuJson",
-			Handler:    _ItemService_GetItemSkuJson_Handler,
+			MethodName: "ReviewItem",
+			Handler:    _ItemService_ReviewItem_Handler,
+		},
+		{
+			MethodName: "SaveLevelPrices",
+			Handler:    _ItemService_SaveLevelPrices_Handler,
+		},
+		{
+			MethodName: "SignAsIllegal",
+			Handler:    _ItemService_SignAsIllegal_Handler,
+		},
+		{
+			MethodName: "SetShelveState",
+			Handler:    _ItemService_SetShelveState_Handler,
 		},
 		{
 			MethodName: "GetItemDetailData",
@@ -773,6 +1094,22 @@ var _ItemService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _ItemService_GetItems_Handler,
 		},
 		{
+			MethodName: "GetWholesalePriceArray",
+			Handler:    _ItemService_GetWholesalePriceArray_Handler,
+		},
+		{
+			MethodName: "SaveWholesalePrice",
+			Handler:    _ItemService_SaveWholesalePrice_Handler,
+		},
+		{
+			MethodName: "GetWholesaleDiscountArray",
+			Handler:    _ItemService_GetWholesaleDiscountArray_Handler,
+		},
+		{
+			MethodName: "SaveWholesaleDiscount",
+			Handler:    _ItemService_SaveWholesaleDiscount_Handler,
+		},
+		{
 			MethodName: "GetAllSaleLabels",
 			Handler:    _ItemService_GetAllSaleLabels_Handler,
 		},
@@ -788,53 +1125,68 @@ var _ItemService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "DeleteSaleLabel",
 			Handler:    _ItemService_DeleteSaleLabel_Handler,
 		},
+		{
+			MethodName: "GetPagedValueGoodsBySaleLabel_",
+			Handler:    _ItemService_GetPagedValueGoodsBySaleLabel__Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "item_service.proto",
 }
 
-func init() { proto.RegisterFile("item_service.proto", fileDescriptor_item_service_3ebc59800fc886b0) }
+func init() { proto.RegisterFile("item_service.proto", fileDescriptor_item_service_f5e82c3fb04cd4f8) }
 
-var fileDescriptor_item_service_3ebc59800fc886b0 = []byte{
-	// 631 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x5d, 0x6f, 0xda, 0x48,
-	0x14, 0x35, 0xcb, 0x06, 0xc2, 0x25, 0xe1, 0x63, 0x36, 0x4b, 0x90, 0x1f, 0xa2, 0xc8, 0xbb, 0x4a,
-	0x51, 0xa3, 0x4e, 0x55, 0x1a, 0xf5, 0xa1, 0x7d, 0x22, 0x05, 0x51, 0xb7, 0x34, 0xa4, 0x1e, 0x9a,
-	0x4a, 0x7d, 0x89, 0x26, 0xf5, 0xad, 0xb1, 0x30, 0xb6, 0xeb, 0x19, 0x27, 0xe5, 0xf7, 0xf4, 0x57,
-	0xf5, 0xdf, 0x54, 0x63, 0x1b, 0x03, 0xa2, 0x4a, 0xfa, 0x84, 0xee, 0xb9, 0xe7, 0x9e, 0xb9, 0x1f,
-	0x07, 0x03, 0x71, 0x25, 0xce, 0xaf, 0x05, 0x46, 0xb7, 0xee, 0x17, 0xa4, 0x61, 0x14, 0xc8, 0x40,
-	0xdf, 0x73, 0xbc, 0xe0, 0x86, 0x7b, 0x59, 0x44, 0xe6, 0x28, 0x04, 0x77, 0xf0, 0xa9, 0x62, 0xa6,
-	0x98, 0xf1, 0x12, 0x80, 0xcd, 0x62, 0x0b, 0xbf, 0xc5, 0x28, 0x24, 0x69, 0x41, 0x49, 0xe5, 0x4c,
-	0xbb, 0x5d, 0x38, 0x2e, 0x74, 0x88, 0x95, 0x45, 0xe4, 0x00, 0x76, 0xc4, 0x2c, 0x36, 0xed, 0xf6,
-	0x5f, 0x09, 0x9c, 0x06, 0x46, 0x0f, 0x9a, 0xa6, 0xc4, 0x79, 0x1f, 0x25, 0x77, 0xbd, 0x3f, 0x90,
-	0x70, 0x27, 0x8b, 0x10, 0x13, 0x89, 0xa6, 0x95, 0x06, 0xc6, 0x8f, 0x02, 0x90, 0x4b, 0xee, 0xb8,
-	0xbe, 0x33, 0x0c, 0x02, 0x5b, 0x2c, 0x45, 0x4e, 0x61, 0x57, 0x29, 0x27, 0x7c, 0x25, 0x53, 0xeb,
-	0xd6, 0xe9, 0x40, 0x21, 0x8c, 0x7b, 0x28, 0x14, 0x6c, 0xe5, 0x04, 0x72, 0x04, 0xf0, 0x9a, 0x4b,
-	0x74, 0x82, 0x68, 0x91, 0x75, 0x58, 0xb4, 0xd6, 0x10, 0xd2, 0x86, 0xf2, 0x3b, 0x5c, 0xdc, 0x05,
-	0x91, 0xdd, 0x2e, 0x1e, 0x17, 0x3a, 0x15, 0x6b, 0x19, 0x92, 0x13, 0x28, 0x5d, 0xf2, 0x88, 0xcf,
-	0x45, 0xfb, 0xef, 0xe3, 0x42, 0xa7, 0xda, 0xad, 0x51, 0x96, 0x36, 0x93, 0xa2, 0x56, 0x96, 0x35,
-	0xbe, 0x43, 0x2b, 0xc5, 0xd9, 0x34, 0x08, 0x37, 0x1a, 0x6d, 0x41, 0x49, 0x61, 0xd9, 0xb4, 0x45,
-	0x2b, 0x8b, 0x1e, 0xec, 0x69, 0xf5, 0x72, 0xf1, 0xbe, 0x97, 0x1f, 0x3f, 0x83, 0xda, 0xe6, 0xdc,
-	0x64, 0x1f, 0x2a, 0xe6, 0xe4, 0xfa, 0x62, 0x6c, 0xbd, 0xef, 0x8d, 0x1a, 0x1a, 0x69, 0xc0, 0x9e,
-	0x39, 0xb9, 0xfe, 0xf4, 0x66, 0x3c, 0x1a, 0xb0, 0xde, 0x68, 0xd0, 0x28, 0x74, 0x7f, 0xee, 0x40,
-	0x35, 0x29, 0x49, 0x9d, 0x40, 0x4e, 0xa0, 0x3c, 0x44, 0xa9, 0x10, 0x52, 0xa2, 0xa6, 0x2f, 0x5f,
-	0x9c, 0xe9, 0x4d, 0xca, 0x3e, 0xfa, 0xee, 0x57, 0x17, 0xed, 0x2b, 0x17, 0xef, 0x54, 0xca, 0xd0,
-	0xc8, 0x29, 0xd4, 0x33, 0x1e, 0xf3, 0x79, 0x28, 0xa6, 0x81, 0xcc, 0xf9, 0x35, 0xca, 0xd6, 0x71,
-	0x43, 0x23, 0x4f, 0xa0, 0x31, 0x44, 0x39, 0x89, 0xb8, 0x8d, 0x5b, 0xec, 0x3a, 0x65, 0x1b, 0x09,
-	0x43, 0x23, 0x47, 0x50, 0x1a, 0xa2, 0x64, 0xb3, 0x98, 0x54, 0xe9, 0xca, 0x6e, 0xfa, 0x0e, 0x65,
-	0x6c, 0x16, 0x1b, 0x1a, 0xf9, 0x0f, 0x6a, 0xcb, 0xb7, 0x67, 0xf1, 0x5b, 0x11, 0xf8, 0xb9, 0x58,
-	0x99, 0x32, 0x19, 0xb9, 0xbe, 0x63, 0x68, 0xa4, 0x0b, 0xcd, 0x8c, 0x94, 0x3a, 0xae, 0xcf, 0x25,
-	0x27, 0x84, 0x6e, 0x59, 0x70, 0xbd, 0x66, 0x0c, 0xed, 0x21, 0xca, 0x2b, 0xee, 0xc5, 0x98, 0xdc,
-	0xed, 0x7c, 0xa1, 0x36, 0x39, 0xe2, 0x37, 0xe8, 0x91, 0x43, 0x9a, 0xc9, 0x89, 0xf3, 0x45, 0x82,
-	0x2c, 0xeb, 0xdb, 0x74, 0xeb, 0xda, 0x22, 0x0c, 0x7c, 0x81, 0x86, 0x46, 0x3e, 0x80, 0xae, 0x26,
-	0x99, 0x06, 0xe1, 0x25, 0x77, 0xd0, 0x1e, 0xfb, 0x6c, 0x8a, 0xde, 0x2d, 0x8a, 0x84, 0x47, 0x0e,
-	0xe9, 0xef, 0x7d, 0x72, 0xaf, 0x64, 0x1f, 0xfe, 0x1d, 0xa2, 0xdc, 0x94, 0x4b, 0xce, 0xf5, 0x0f,
-	0xdd, 0xfe, 0x6b, 0xe8, 0x07, 0x9b, 0x60, 0xae, 0x72, 0x06, 0xbb, 0xcb, 0x71, 0x48, 0x23, 0x9f,
-	0xec, 0xe1, 0x2a, 0x75, 0xc7, 0x9e, 0xe7, 0xe5, 0x6b, 0x11, 0xa4, 0x44, 0x07, 0xf3, 0x50, 0x2e,
-	0xf4, 0x56, 0xb2, 0xda, 0x04, 0x1c, 0xb9, 0x42, 0xae, 0x55, 0x75, 0x60, 0x4f, 0x2d, 0x21, 0xdf,
-	0x64, 0x85, 0x9a, 0xf6, 0x38, 0xba, 0xe0, 0x73, 0xd4, 0xab, 0xa9, 0x55, 0x12, 0xdc, 0xd0, 0xc8,
-	0x23, 0xd8, 0x67, 0xfc, 0x16, 0x57, 0xd4, 0xf5, 0xbc, 0x5e, 0xa6, 0x16, 0x8a, 0xd8, 0x53, 0x0e,
-	0xf9, 0x1f, 0xea, 0x7d, 0xf4, 0x50, 0xae, 0x51, 0x57, 0x16, 0x58, 0xb2, 0xce, 0x2b, 0x9f, 0xcb,
-	0xf4, 0x55, 0xf2, 0xe1, 0xba, 0x29, 0x25, 0x3f, 0xcf, 0x7f, 0x05, 0x00, 0x00, 0xff, 0xff, 0xd4,
-	0xea, 0x9d, 0xf7, 0xf7, 0x04, 0x00, 0x00,
+var fileDescriptor_item_service_f5e82c3fb04cd4f8 = []byte{
+	// 815 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x55, 0x4d, 0x6f, 0xdb, 0x46,
+	0x10, 0x95, 0xe2, 0x5a, 0xb2, 0xc7, 0x89, 0x15, 0x8d, 0x63, 0x99, 0x21, 0x8a, 0xc0, 0x20, 0x8a,
+	0x54, 0x40, 0xd0, 0x4d, 0xe1, 0x1a, 0xbe, 0x34, 0x17, 0xbb, 0x0a, 0x04, 0xa1, 0x46, 0xed, 0x70,
+	0xd3, 0x18, 0xe8, 0xc5, 0x58, 0x9b, 0x53, 0x8a, 0xf0, 0x8a, 0x54, 0xb9, 0x2b, 0xa5, 0xfa, 0x5b,
+	0xfd, 0x03, 0xfd, 0x6b, 0xc5, 0x2e, 0x3f, 0x42, 0x4a, 0x4c, 0x9a, 0x93, 0x3d, 0x6f, 0xdf, 0xcc,
+	0xbc, 0x9d, 0x7d, 0x43, 0x01, 0x46, 0x9a, 0x66, 0xb7, 0x8a, 0xd2, 0x65, 0x74, 0x4f, 0x6c, 0x9e,
+	0x26, 0x3a, 0x71, 0x1f, 0x87, 0x32, 0xb9, 0x13, 0x32, 0x8f, 0x70, 0x46, 0x4a, 0x89, 0x90, 0x5e,
+	0x1b, 0x66, 0x86, 0x79, 0xe7, 0xd0, 0x9f, 0x68, 0x9a, 0x8d, 0x48, 0x8b, 0x48, 0xfa, 0xf4, 0xd7,
+	0x82, 0x94, 0xc6, 0x01, 0x74, 0x0c, 0x65, 0x12, 0x38, 0xed, 0xe3, 0xf6, 0x10, 0xfd, 0x3c, 0xc2,
+	0x67, 0xb0, 0x1d, 0xbd, 0x5f, 0xcd, 0xc9, 0x79, 0x74, 0xdc, 0x1e, 0xf6, 0xfd, 0x2c, 0xf0, 0xfe,
+	0x6d, 0x03, 0x5e, 0x8b, 0x30, 0x8a, 0xc3, 0x71, 0x92, 0x04, 0xaa, 0x28, 0xf2, 0x0a, 0x76, 0x4c,
+	0x65, 0xcb, 0x37, 0x65, 0xf6, 0x4f, 0x7a, 0xec, 0xad, 0x41, 0xb8, 0x90, 0xa4, 0x0c, 0xec, 0x97,
+	0x04, 0x74, 0x61, 0x87, 0x93, 0x94, 0x94, 0x4e, 0x02, 0x5b, 0x7c, 0xcb, 0x2f, 0x63, 0x7c, 0x01,
+	0xf0, 0x8b, 0xd0, 0x14, 0x26, 0xe9, 0x6a, 0x12, 0x38, 0x5b, 0xf6, 0xb4, 0x82, 0xa0, 0x03, 0xdd,
+	0x5f, 0x69, 0xf5, 0x31, 0x49, 0x03, 0xe7, 0x9b, 0xe3, 0xf6, 0x70, 0xd7, 0x2f, 0x42, 0x7c, 0x09,
+	0x9d, 0x6b, 0x91, 0x8a, 0x99, 0x72, 0xb6, 0x8f, 0xdb, 0xc3, 0xbd, 0x93, 0x7d, 0xc6, 0x33, 0xa1,
+	0x19, 0xea, 0xe7, 0xa7, 0xde, 0xdf, 0x30, 0xc8, 0x70, 0x3e, 0x4d, 0xe6, 0xb5, 0x4b, 0x0c, 0xa0,
+	0x63, 0xb0, 0x7c, 0x12, 0x5b, 0x7e, 0x1e, 0xad, 0x69, 0x7a, 0xb4, 0xa1, 0xe9, 0x53, 0xe7, 0xad,
+	0x2f, 0x76, 0x4e, 0x61, 0x60, 0xc6, 0x71, 0x29, 0xee, 0x48, 0x9a, 0x61, 0x14, 0x8d, 0x6f, 0x3f,
+	0xdb, 0xd9, 0x81, 0x6e, 0xc6, 0xce, 0xda, 0x6e, 0xfb, 0x45, 0xf8, 0xb5, 0x3d, 0x4f, 0xfe, 0x01,
+	0xd8, 0xb3, 0xef, 0x90, 0x59, 0x05, 0x5f, 0x42, 0x77, 0x4c, 0xda, 0x20, 0xd8, 0x61, 0x93, 0x58,
+	0x9f, 0x9d, 0xba, 0x7d, 0xc6, 0x7f, 0x8f, 0xa3, 0x3f, 0x23, 0x0a, 0x3e, 0x44, 0xf4, 0xd1, 0x1c,
+	0x79, 0x2d, 0x1c, 0xc2, 0x0e, 0x17, 0x4b, 0xb2, 0xc4, 0x4d, 0x82, 0xdb, 0x65, 0x3e, 0xa9, 0x85,
+	0xd4, 0x5e, 0x0b, 0xcf, 0xe0, 0x71, 0x5e, 0xf1, 0x62, 0xc5, 0x1f, 0x16, 0xd8, 0x67, 0xe5, 0xff,
+	0xf9, 0xfd, 0x9a, 0x3b, 0xbc, 0x82, 0x5e, 0x9e, 0xc7, 0x63, 0x31, 0x57, 0xd3, 0x44, 0x97, 0x8a,
+	0xf6, 0x19, 0xaf, 0xe2, 0x5e, 0x0b, 0x7f, 0x80, 0xa7, 0x63, 0xd2, 0xef, 0x53, 0x11, 0xd0, 0x06,
+	0xbb, 0xc7, 0x78, 0xed, 0xc0, 0x6b, 0xe1, 0x73, 0xe8, 0x8c, 0x49, 0x1b, 0x35, 0x1d, 0xc6, 0x1f,
+	0x16, 0x93, 0xc0, 0xdd, 0x66, 0x9c, 0x3f, 0x2c, 0x6c, 0x5b, 0xf0, 0x69, 0x99, 0xcb, 0x40, 0xb4,
+	0x62, 0x33, 0xa0, 0x50, 0x5b, 0xb9, 0xdb, 0x29, 0xf4, 0xcc, 0x14, 0x2e, 0x69, 0x49, 0xf2, 0x3a,
+	0x8d, 0xee, 0x49, 0xe1, 0x80, 0xd5, 0x91, 0x86, 0xac, 0xd7, 0xf0, 0x84, 0x47, 0x61, 0x7c, 0xae,
+	0x26, 0x52, 0x52, 0x28, 0x24, 0x1e, 0xd8, 0x2e, 0x79, 0xd4, 0x90, 0xf0, 0x23, 0xec, 0x73, 0xd2,
+	0x7c, 0x4a, 0x72, 0x49, 0x5c, 0x0b, 0x4d, 0x78, 0xc0, 0x2a, 0x51, 0x43, 0xc6, 0x09, 0xf4, 0xf3,
+	0xe1, 0x65, 0xcb, 0x3c, 0x12, 0x5a, 0xe4, 0x97, 0xa9, 0x6d, 0xb7, 0xdb, 0x65, 0x5c, 0xa7, 0x51,
+	0x1c, 0x7a, 0x2d, 0xbc, 0x02, 0x67, 0x4c, 0xfa, 0x83, 0x90, 0x0b, 0xb2, 0xb6, 0xbf, 0x58, 0x95,
+	0x6e, 0xc4, 0x23, 0x96, 0x97, 0x53, 0x17, 0x2b, 0x8b, 0x14, 0xf9, 0x0e, 0xdb, 0x58, 0x16, 0x35,
+	0x4f, 0x62, 0x45, 0x5e, 0x0b, 0xdf, 0x81, 0x6b, 0xa6, 0x3c, 0x4d, 0xe6, 0xd7, 0x22, 0xa4, 0xe0,
+	0x2a, 0xce, 0x34, 0x2b, 0xcb, 0xc3, 0x23, 0xd6, 0xbc, 0x66, 0x5f, 0x2c, 0x39, 0x82, 0xc3, 0x31,
+	0xe9, 0x7a, 0x39, 0xfb, 0x50, 0x07, 0x6c, 0xf3, 0xab, 0xe3, 0x3e, 0xab, 0x83, 0x65, 0x95, 0x53,
+	0xd8, 0x29, 0xae, 0x83, 0x4f, 0xcb, 0x9b, 0xfd, 0x5f, 0xd6, 0x1b, 0x18, 0x8c, 0x49, 0xdf, 0x4c,
+	0x13, 0x49, 0x4a, 0x48, 0xb2, 0xaf, 0x7b, 0x9e, 0xa6, 0x62, 0x55, 0x9a, 0xc8, 0x61, 0xfc, 0x46,
+	0xf1, 0x87, 0x85, 0x3d, 0xba, 0x8c, 0x94, 0xae, 0x64, 0x9f, 0x01, 0x1a, 0x63, 0xd4, 0xd3, 0xf1,
+	0xd0, 0xba, 0xa5, 0x48, 0x51, 0x0d, 0x2f, 0xe9, 0xc3, 0xf3, 0x6a, 0xd7, 0x51, 0xa4, 0xee, 0x93,
+	0x45, 0xac, 0xb3, 0xc6, 0x87, 0x46, 0xfc, 0x8d, 0x2a, 0xc0, 0x22, 0xfd, 0x5b, 0xa3, 0xc3, 0xbe,
+	0x75, 0x7e, 0xb0, 0xa6, 0xe5, 0x0d, 0x1c, 0xd6, 0xb4, 0x14, 0x34, 0x74, 0x58, 0xb1, 0xd4, 0xeb,
+	0x25, 0x6b, 0xa6, 0x37, 0xbb, 0x76, 0x2e, 0x65, 0x69, 0x0f, 0x85, 0x1d, 0xf6, 0x76, 0x36, 0xd7,
+	0x2b, 0x77, 0x60, 0x2d, 0x66, 0xc1, 0xb5, 0x9e, 0x43, 0xfb, 0x19, 0xf8, 0xe4, 0xa8, 0x5d, 0x36,
+	0x09, 0xae, 0xd2, 0xdf, 0xc4, 0x8c, 0xdc, 0xbd, 0x6c, 0x9d, 0x2d, 0xee, 0xb5, 0xf0, 0x7b, 0x78,
+	0x62, 0x87, 0x52, 0x52, 0xab, 0xe7, 0x55, 0x21, 0xdf, 0x41, 0x6f, 0x44, 0x92, 0x74, 0x85, 0x5a,
+	0xec, 0x7c, 0x85, 0xf5, 0x0e, 0x5e, 0x14, 0x96, 0x69, 0xf4, 0xf6, 0x2d, 0x1e, 0xb1, 0xe6, 0xcf,
+	0xee, 0xe7, 0x9c, 0x70, 0xb1, 0xfb, 0x47, 0x97, 0xfd, 0x6c, 0x7f, 0x32, 0xef, 0x3a, 0xf6, 0xcf,
+	0x4f, 0xff, 0x05, 0x00, 0x00, 0xff, 0xff, 0x3f, 0xf7, 0x67, 0xe4, 0x71, 0x07, 0x00, 0x00,
 }

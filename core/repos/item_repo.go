@@ -89,7 +89,7 @@ func (g *goodsRepo) GetItem(itemId int64) item.IGoodsItem {
 }
 
 // 根据SKU-ID获取商品,SKU-ID为商品ID
-func (g *goodsRepo) GetGoodsBySkuId(skuId int64) interface{} {
+func (g *goodsRepo) GetItemBySkuId(skuId int64) interface{} {
 	snap := g.GetLatestSnapshot(skuId)
 	if snap != nil {
 		return g.GetItem(skuId)
@@ -107,18 +107,18 @@ func (g *goodsRepo) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
 }
 
 // 获取商品
-func (g *goodsRepo) GetValueGoodsById(goodsId int64) *item.GoodsItem {
+func (g *goodsRepo) GetValueGoodsById(itemId int64) *item.GoodsItem {
 	var e = new(item.GoodsItem)
-	if g.Connector.GetOrm().Get(goodsId, e) == nil {
+	if g.Connector.GetOrm().Get(itemId, e) == nil {
 		return e
 	}
 	return nil
 }
 
 // 根据SKU获取商品
-func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int64) *item.GoodsItem {
+func (g *goodsRepo) GetValueGoodsBySku(productId, skuId int64) *item.GoodsItem {
 	var e = new(item.GoodsItem)
-	if g.Connector.GetOrm().GetBy(e, "product_id= $1 AND sku_id= $2", itemId, sku) == nil {
+	if g.Connector.GetOrm().GetBy(e, "product_id= $1 AND sku_id= $2", productId, skuId) == nil {
 		return e
 	}
 	return nil

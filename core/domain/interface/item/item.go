@@ -76,13 +76,13 @@ type (
 
 		// 根据SKU-ID获取商品,SKU-ID为商品ID
 		//todo: 循环引有,故为interface{}
-		GetGoodsBySkuId(skuId int64) interface{}
+		GetItemBySkuId(skuId int64) interface{}
 
 		// 获取商品
 		GetValueGoodsById(goodsId int64) *GoodsItem
 
-		// 根据SKU获取商品
-		GetValueGoodsBySku(itemId, sku int64) *GoodsItem
+		// 根据产品编号和SKU获取商品
+		GetValueGoodsBySku(productId, skuId int64) *GoodsItem
 
 		// 保存商品
 		SaveValueGoods(*GoodsItem) (int64, error)
