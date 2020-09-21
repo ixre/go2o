@@ -44,7 +44,10 @@ message IdOrName{
     int64 Id  = 1;
     string Name = 2;
 }
-
+message IdAndRemark{
+    int64 Id = 1;
+    string Remark = 2;
+}
 
 /** 设置依据 */
 enum ESettingBasis {
