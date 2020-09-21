@@ -104,17 +104,18 @@ message SUnifiedViewItem {
     double Price = 10;
     string PriceRange = 11;
     sint32 StockNum = 12;
-    sint32 ShelveState = 13;
-    sint32 ReviewState = 14;
-    sint64 UpdateTime = 15;
-    repeated SSku SkuArray = 16;
-    repeated SLevelPrice LevelPrices = 17;
-    SItemViewData ViewData = 18;
-    map<string, string> Data = 19;
+    int64 ExpressTid = 13;
+    sint32 ShelveState = 14;
+    sint32 ReviewState = 15;
+    sint64 UpdateTime = 16;
+    repeated SSku SkuArray = 17;
+    repeated SLevelPrice LevelPrices = 18;
+    SItemViewData ViewData = 19;
+    map<string, string> Data = 20;
     // 3: sint32 PromFlag
     // 7: sint32 ShopId
     // 8: sint32 ShopCatId
-    // 9: sint32 ExpressTid
+    // 9: s
     // 11: string ShortTitle
     // 14: sint32 IsPresent
     // 23: sint32 Weight

@@ -43,6 +43,7 @@ type itemService struct {
 	sto       storage.Interface
 }
 
+
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
@@ -67,6 +68,36 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifi
 	}
 	return nil, nil
 }
+
+// 保存商品
+func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.Result, error) {
+	var gi item.IGoodsItem
+	it := parser.ParseGoodsItem(r)
+	var err error
+	if it.ID > 0 {
+		gi = s.itemRepo.GetItem(it.ID)
+		if gi == nil || gi.GetValue().VendorId != r.VendorId {
+			return s.error(item.ErrNoSuchItem),nil
+		}
+	} else {
+		gi = s.itemRepo.CreateItem(it)
+	}
+	err = gi.SetValue(it)
+	if err == nil {
+		err = gi.SetSku(it.SkuArray)
+		if err == nil {
+			it.ID, err = gi.Save()
+		}
+	}
+	ret := s.error(err)
+	if err == nil {
+		r.Data = map[string]string{
+			"ItemId": strconv.Itoa(int(it.ID)),
+		}
+	}
+	return ret, nil
+}
+
 
 // 附加商品的信息
 func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedViewItem {
@@ -153,34 +184,6 @@ func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDe
 		return &proto.String{Value: string(data)}, nil
 	}
 	return &proto.String{Value: "不支持的商品类型"}, nil
-}
-
-// 保存商品
-func (s *itemService) SaveItem(di *proto.SOldItem, vendorId int64) (_ *proto.Result, err error) {
-	var gi item.IGoodsItem
-	it := parser.Item(di)
-	if it.ID > 0 {
-		gi = s.itemRepo.GetItem(it.ID)
-		if gi == nil || gi.GetValue().VendorId != vendorId {
-			err = item.ErrNoSuchItem
-			goto R
-		}
-	} else {
-		gi = s.itemRepo.CreateItem(it)
-	}
-	err = gi.SetValue(it)
-	if err == nil {
-		err = gi.SetSku(it.SkuArray)
-		if err == nil {
-			it.ID, err = gi.Save()
-		}
-	}
-R:
-	r := s.result(err)
-	r.Data = map[string]string{
-		"ItemId": strconv.Itoa(int(it.ID)),
-	}
-	return r, nil
 }
 
 // 获取上架商品数据（分页）

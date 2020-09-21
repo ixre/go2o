@@ -87,7 +87,6 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 		ReviewState: 0,
 		UpdateTime:  0,
 	}
-	return nil
 }
 
 func WsSkuPriceDto(src *item.WsSkuPrice) *proto.SWsSkuPrice {
@@ -115,7 +114,6 @@ func WsItemDiscountDto(src *item.WsItemDiscount) *proto.SWsItemDiscount {
 		RequireAmount: int64(src.RequireAmount),
 		DiscountRate:  int64(src.DiscountRate * 1000),
 	}
-	return nil
 }
 func WsItemDiscount(src *proto.SWsItemDiscount) *item.WsItemDiscount {
 	return &item.WsItemDiscount{
@@ -123,4 +121,35 @@ func WsItemDiscount(src *proto.SWsItemDiscount) *item.WsItemDiscount {
 		RequireAmount: int32(src.RequireAmount),
 		DiscountRate:  float64(src.DiscountRate) / 1000,
 	}
+}
+
+func ParseGoodsItem(src *proto.SUnifiedViewItem) *item.GoodsItem {
+	dst := &item.GoodsItem{
+		ID:           src.ItemId,
+		ProductId:    src.ProductId,
+		PromFlag:     -1,//todo:??
+		CatId:        src.CategoryId,
+		VendorId:     src.VendorId,
+		BrandId:      src.BrandId,
+		ShopId:       0,//todo:??
+		ShopCatId:    0,//todo:??
+		ExpressTid:   int32(src.ExpressTid),//src.,
+		Title:        src.Title,
+		ShortTitle:   "",//src.Sho,
+		Code:         src.Code,
+		Image:        src.Image,
+		IsPresent:    0,//todo:???
+		PriceRange:   src.PriceRange,
+		StockNum:     src.StockNum,
+		SaleNum:      0,
+		SkuId:        src.SkuId,
+		Cost:         0,
+		Price:        0,
+		RetailPrice:  0,
+		SkuArray:     make([]*item.Sku,len(src.SkuArray)),
+	}
+	for i,v := range src.SkuArray{
+		dst.SkuArray[i] = Sku(v)
+	}
+	return dst
 }
