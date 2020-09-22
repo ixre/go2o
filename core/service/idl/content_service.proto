@@ -72,9 +72,9 @@ string Description = 10;
 /** 文章 */
 message SArticle {
     /** 编号  */
-    sint32 Id = 1;
+    sint64 Id = 1;
     /** 栏目编号 */
-    sint32 CategoryId = 2;
+    sint64 CategoryId = 2;
     /** 标题 */
     string Title = 3;
     /** 小标题 */
@@ -82,7 +82,7 @@ message SArticle {
     /** 文章附图 */
     string Thumbnail = 5;
     /** 重定向URL */
-    sint32 PublisherId = 6;
+    sint64 PublisherId = 6;
     /** 重定向URL */
     string Location = 7;
     /** 优先级,优先级越高，则置顶 */
@@ -98,9 +98,9 @@ message SArticle {
     /** 排序序号 */
     sint32 SortNum = 13;
     /** 创建时间 */
-    sint32 CreateTime = 14;
+    sint64 CreateTime = 14;
     /** 最后修改时间 */
-    sint32 UpdateTime = 15;
+    sint64 UpdateTime = 15;
 }
 
 message SPage{

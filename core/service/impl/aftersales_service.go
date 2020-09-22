@@ -58,7 +58,7 @@ func (a *afterSalesService) SubmitAfterSalesOrder(_ context.Context, r *proto.Su
 	ret := &proto.SubmitAfterSalesOrderResponse{
 		AfterSalesOrderId: int64(id),
 	}
-	if err != nil{
+	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()
 	}
@@ -194,7 +194,7 @@ func (a *afterSalesService) ProcessAfterSalesOrder(_ context.Context, id *proto.
 	as := a._rep.GetAfterSalesOrder(int32(id.Value))
 	if as == nil {
 		err = afterSales.ErrNoSuchOrder
-	}else {
+	} else {
 		switch as.Value().Type {
 		case afterSales.TypeRefund:
 			err = as.Process()

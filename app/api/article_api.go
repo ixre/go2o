@@ -45,9 +45,9 @@ func (a ArticleApi) list(ctx api.Context) interface{} {
 		defer trans.Close()
 		r, _ := cli.QueryPagingArticles(context.TODO(),
 			&proto.PagingArticleRequest{
-				Cat:   catStr,
-				Begin: int32(begin),
-				Size:  int32(size),
+				CategoryName: catStr,
+				Begin:        int32(begin),
+				Size:         int32(size),
 			})
 		return r
 	}
@@ -77,7 +77,7 @@ func (a ArticleApi) topArticle(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.QueryTopArticles(context.TODO(),
-			&proto.String{Value: catStr})
+			&proto.IdOrName{Name: catStr})
 		return r
 	}
 	return []*proto.SArticle{}

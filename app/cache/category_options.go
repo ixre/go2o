@@ -61,9 +61,9 @@ func GetDropOptionsOfProModel() string {
 }
 
 func readToArticleCategoryDropList() []byte {
-	trans,cli,_ := service.ContentServiceClient()
+	trans, cli, _ := service.ContentServiceClient()
 	defer trans.Close()
-	categories,_ := cli.GetArticleCategories(context.TODO(),&proto.Empty{})
+	categories, _ := cli.GetArticleCategories(context.TODO(), &proto.Empty{})
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*content.ArticleCategory)
