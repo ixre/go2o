@@ -5,7 +5,6 @@ import "global.proto";
 import "message/item.proto";
 
 
-
 message ItemDetailRequest {
     sint64 itemId = 1;
     sint32 iType = 2;
@@ -17,7 +16,8 @@ service ItemService {
     rpc GetItem (Int64) returns (SUnifiedViewItem) {
     }
     // 保存商品
-    rpc SaveItem(SUnifiedViewItem) returns(Result){}
+    rpc SaveItem (SUnifiedViewItem) returns (Result) {
+    }
     // 根据SKU获取商品
     rpc GetItemBySku (ItemBySkuRequest) returns (SUnifiedViewItem) {
     }
@@ -59,13 +59,17 @@ service ItemService {
     }
 
     // 获取批发价格数组
-    rpc GetWholesalePriceArray(SkuId)returns(SWsSkuPriceListResponse){}
+    rpc GetWholesalePriceArray (SkuId) returns (SWsSkuPriceListResponse) {
+    }
     // 保存批发价格
-    rpc SaveWholesalePrice(SaveSkuPricesRequest)returns(Result){}
+    rpc SaveWholesalePrice (SaveSkuPricesRequest) returns (Result) {
+    }
     // 获取批发折扣数组
-    rpc GetWholesaleDiscountArray(GetWsDiscountRequest)returns(SWsItemDiscountListResponse){}
+    rpc GetWholesaleDiscountArray (GetWsDiscountRequest) returns (SWsItemDiscountListResponse) {
+    }
     // 保存批发折扣
-    rpc SaveWholesaleDiscount(SaveItemDiscountRequest)returns(Result){}
+    rpc SaveWholesaleDiscount (SaveItemDiscountRequest) returns (Result) {
+    }
 
     // 获取所有的商品标签
     rpc GetAllSaleLabels (Empty) returns (ItemLabelListResponse) {

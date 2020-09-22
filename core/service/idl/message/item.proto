@@ -2,7 +2,7 @@ syntax = "proto3";
 option go_package = ".;proto";
 
 // 商品销售类型
-enum EItemSalesType{
+enum EItemSalesType {
     IT_NORMAL = 0;
     IT_WHOLESALE = 1;
 }
@@ -198,7 +198,7 @@ message SItemLabel {
 }
 
 //　商品库存数据
-message SItemStock{
+message SItemStock {
     // 库存数量
     int32 StockNum = 1;
     // 已销售数量
@@ -267,7 +267,7 @@ message SItemSnapshot {
 // 商品交易快照(针对商品)
 message STradeSnapshot {
     //快照编号
-    int64 Id   = 1;
+    int64 Id = 1;
     // 商品编号
     int64 ItemId = 2;
     //商品SKU编号
@@ -285,21 +285,21 @@ message STradeSnapshot {
     // 产品编码
     string ProductCode = 8;
     //SKU
-    string Sku  = 9;
+    string Sku = 9;
     //图片
     string Image = 10;
     //销售价
     int32 Price = 11;
     // 快照时间
-    int64 CreateTime =12;
+    int64 CreateTime = 12;
 }
 
 //　会员价
-message SLevelPrice{
+message SLevelPrice {
     //　编号
     int64 Id = 1;
     //　等级
-    int32 Level  = 2;
+    int32 Level = 2;
     //　价格
     int64 Price = 3;
     // 限购数量,-1为不限制
@@ -308,23 +308,23 @@ message SLevelPrice{
     bool Enabled = 5;
 }
 
-message ItemBySkuRequest{
+message ItemBySkuRequest {
     int64 ProductId = 1;
     int64 SkuId = 2;
 }
 
-message ItemIllegalRequest{
+message ItemIllegalRequest {
     int64 ItemId = 1;
     string Remark = 2;
 }
 
-message ItemReviewRequest{
+message ItemReviewRequest {
     int64 ItemId = 1;
-    bool Pass =2;
+    bool Pass = 2;
     string Remark = 3;
 }
 
-message SaveLevelPriceRequest{
+message SaveLevelPriceRequest {
     int64 ItemId = 1;
     repeated SLevelPrice Value = 2;
 }
@@ -337,37 +337,37 @@ message ShelveStateRequest {
     string Remark = 5;
 }
 
-message SWsSkuPriceListResponse{
+message SWsSkuPriceListResponse {
     repeated SWsSkuPrice Value = 1;
 }
 
-message SaveSkuPricesRequest{
+message SaveSkuPricesRequest {
     int64 ItemId = 1;
     int64 SkuId = 2;
     repeated SWsSkuPrice Value = 3;
 }
 
 // 商品批发价
-message SWsSkuPrice{
+message SWsSkuPrice {
     // 编号
     int64 Id = 1;
     // 需要数量以上
-    int32 RequireNumber =2;
+    int32 RequireNumber = 2;
     // 批发价
     double WholesalePrice = 3;
 }
 
-message SWsItemDiscountListResponse{
+message SWsItemDiscountListResponse {
     repeated SWsItemDiscount Value = 1;
 }
-message GetWsDiscountRequest{
+message GetWsDiscountRequest {
     //　商品编号
     int64 ItemId = 1;
     // 买家分组编号
     int64 GroupId = 2;
 }
 
-message SaveItemDiscountRequest{
+message SaveItemDiscountRequest {
     int64 ItemId = 1;
     int64 GroupId = 2;
     repeated SWsItemDiscount Value = 3;
@@ -375,9 +375,9 @@ message SaveItemDiscountRequest{
 // 批发商品折扣
 message SWsItemDiscount {
     // 编号
-    int64 Id  = 1;
+    int64 Id = 1;
     // 客户分组
-    int64 BuyerGroupId =2;
+    int64 BuyerGroupId = 2;
     // 要求金额，默认为0
     int64 RequireAmount = 3;
     // 折扣率

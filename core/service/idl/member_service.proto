@@ -6,7 +6,6 @@ import "message/bank.proto";
 import "message/member.proto";
 import "message/payment.proto";
 
-
 //会员服务
 service MemberService {
     /**
@@ -78,7 +77,8 @@ service MemberService {
     rpc AddBankCard (BankCardAddRequest) returns (Result) {
     }
     // 移除绑定的银行卡
-    rpc RemoveBankCard(BankCardUserIdRequest)returns(Result){}
+    rpc RemoveBankCard (BankCardUserIdRequest) returns (Result) {
+    }
     /** 激活会员,memberId */
     rpc Active (Int64) returns (Result) {
     }
@@ -107,7 +107,8 @@ service MemberService {
     rpc SaveReceiptsCode (ReceiptsCodeSaveRequest) returns (Result) {
     }
     //设置余额优先支付
-    rpc SetPayPriority(PayPriorityRequest)returns(Result){}
+    rpc SetPayPriority (PayPriorityRequest) returns (Result) {
+    }
     // 检查资料是否完成
     rpc CheckProfileComplete (Int64) returns (Result) {
     }
@@ -170,7 +171,8 @@ service MemberService {
     rpc GetAccount (Int64) returns (SAccount) {
     }
     //判断会员是否由指定会员邀请推荐的
-    rpc IsInvitation(IsInvitationRequest)returns(Bool){}
+    rpc IsInvitation (IsInvitationRequest) returns (Bool) {
+    }
     // 获取自己的邀请人会员编号数组
     rpc InviterArray (DepthRequest) returns (InviterIdListResponse) {
     }
@@ -184,7 +186,8 @@ service MemberService {
     rpc QueryInviteArray (InviteQuantityRequest) returns (MemberIdListResponse) {
     }
     // 获取我邀请的会员及会员邀请的人数
-    rpc GetMyPagedInvitationMembers(MemberInvitationPagingRequest) returns(MemberInvitationPagingResponse) {}
+    rpc GetMyPagedInvitationMembers (MemberInvitationPagingRequest) returns (MemberInvitationPagingResponse) {
+    }
     // 账户充值,amount精确到分
     rpc AccountCharge (AccountChangeRequest) returns (Result) {
     }
@@ -201,15 +204,20 @@ service MemberService {
     rpc AccountAdjust (AccountAdjustRequest) returns (Result) {
     }
     // 转账转账
-    rpc AccountTransfer(AccountTransferRequest)returns(Result){}
+    rpc AccountTransfer (AccountTransferRequest) returns (Result) {
+    }
     // 提现并返回提现编号,交易号以及错误信息
-    rpc Withdraw(WithdrawRequest) returns(WithdrawalResponse){}
+    rpc Withdraw (WithdrawRequest) returns (WithdrawalResponse) {
+    }
     // 确认提现
-    rpc ReviewWithdrawal(ReviewWithdrawalRequest)returns(Result){}
+    rpc ReviewWithdrawal (ReviewWithdrawalRequest) returns (Result) {
+    }
     // 收到款项,完成提现
-    rpc FinishWithdrawal(FinishWithdrawalRequest)returns(Result){}
+    rpc FinishWithdrawal (FinishWithdrawalRequest) returns (Result) {
+    }
     // 查询提现记录
-    rpc QueryWithdrawalLog(WithdrawalLogRequest)returns(WithdrawalLogsResponse){}
+    rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogsResponse) {
+    }
     // !银行四要素认证
     rpc B4EAuth (B4EAuthRequest) returns (Result) {
     }
@@ -217,7 +225,7 @@ service MemberService {
     rpc PagingAccountLog (PagingAccountInfoRequest) returns (SPagingResult) {
     }
     // 获取钱包流水记录
-    rpc GetWalletLog(WalletLogRequest) returns(WalletLogResponse);
+    rpc GetWalletLog (WalletLogRequest) returns (WalletLogResponse);
     // 取消收藏
     rpc RemoveFavorite (FavoriteRequest) returns (Result) {
     }
@@ -228,7 +236,8 @@ service MemberService {
     rpc IsFavored (FavoriteRequest) returns (Bool) {
     }
     // 查询优惠券
-    rpc QueryCoupons(MemberCouponPagingRequest)returns(MemberCouponListResponse) {}
+    rpc QueryCoupons (MemberCouponPagingRequest) returns (MemberCouponListResponse) {
+    }
 }
 
 enum FavoriteType {

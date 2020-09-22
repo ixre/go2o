@@ -10,7 +10,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/parser"
 	"go2o/core/service/proto"
-	context "golang.org/x/net/context"
+	"golang.org/x/net/context"
 	"strconv"
 )
 

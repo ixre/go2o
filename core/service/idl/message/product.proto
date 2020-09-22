@@ -1,7 +1,7 @@
 syntax = "proto3";
 option go_package = ".;proto";
 
-message DeleteProductRequest{
+message DeleteProductRequest {
     int64 SellerId = 1;
     int64 ProductId = 2;
 }

@@ -8,41 +8,48 @@ service QueryService {
     // 获取分页店铺数据
     rpc PagingShops (QueryPagingShopRequest) returns (QueryPagingShopsResponse);
     // 查询分页普通订单
-    rpc MemberNormalOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
+    rpc MemberNormalOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+    }
     // 查询分页批发订单
-    rpc QueryWholesaleOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
+    rpc QueryWholesaleOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+    }
     // 查询分页交易/服务类订单
-    rpc QueryTradeOrders(MemberOrderPagingRequest)returns(MemberOrderPagingResponse){}
+    rpc QueryTradeOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+    }
     // 查询会员列表
-    rpc QueryMemberList(MemberListRequest)returns(MemberListResponse){}
+    rpc QueryMemberList (MemberListRequest) returns (MemberListResponse) {
+    }
     // 查询会员列表
-    rpc SearchMembers(MemberSearchRequest)returns(MemberListResponse){}
+    rpc SearchMembers (MemberSearchRequest) returns (MemberListResponse) {
+    }
     // 获取分页店铺收藏
-    rpc QueryMemberFavoriteShops(FavoriteQueryRequest)returns(PagingShopFavoriteResponse) {}
+    rpc QueryMemberFavoriteShops (FavoriteQueryRequest) returns (PagingShopFavoriteResponse) {
+    }
     // 获取分页店铺收藏
-    rpc QueryMemberFavoriteGoods(FavoriteQueryRequest)returns(PagingGoodsFavoriteResponse) {}
+    rpc QueryMemberFavoriteGoods (FavoriteQueryRequest) returns (PagingGoodsFavoriteResponse) {
+    }
 }
 
-message FavoriteQueryRequest{
-    int64 memberId =1;
+message FavoriteQueryRequest {
+    int64 memberId = 1;
     int64 begin = 2;
     int64 end = 3;
     string where = 4;
 }
 
-message PagingShopFavoriteResponse{
+message PagingShopFavoriteResponse {
     int64 Total = 1;
     repeated SPagingShopFavorite Data = 2;
 }
 
-message SPagingShopFavorite{
-    int64 Id       =1;
-    int64 ShopId  =2;
-    string ShopName =3;
-    string Logo    =4;
+message SPagingShopFavorite {
+    int64 Id = 1;
+    int64 ShopId = 2;
+    string ShopName = 3;
+    string Logo = 4;
     int64 UpdateTime = 5;
 }
-message PagingGoodsFavoriteResponse{
+message PagingGoodsFavoriteResponse {
     int64 Total = 1;
     repeated SPagingGoodsFavorite Data = 2;
 }
@@ -69,7 +76,7 @@ message QueryPagingShopsResponse {
     repeated QueryPagingShop Value = 2;
 }
 
-message QueryPagingShop{
+message QueryPagingShop {
     sint64 Id = 1;
     string Name = 2;
     string Alias = 3;
@@ -78,12 +85,12 @@ message QueryPagingShop{
     sint64 CreateTime = 6;
 }
 
-message MemberOrderPagingRequest{
+message MemberOrderPagingRequest {
     sint64 MemberId = 1;
     SPagingParams Params = 2;
 }
-message MemberOrderPagingResponse{
-    sint64 Total =1;
+message MemberOrderPagingResponse {
+    sint64 Total = 1;
     repeated PagedMemberSubOrder Value = 2;
 }
 message PagedMemberSubOrder {
@@ -105,15 +112,15 @@ message PagedMemberSubOrder {
     repeated SComplexItem Items = 16;
 }
 
-message MemberListRequest{
+message MemberListRequest {
     repeated int64 IdList = 1;
 }
 
-message MemberSearchRequest{
+message MemberSearchRequest {
     // 手机号/邮箱/用户名关键词
     string Keyword = 1;
 }
-message MemberListResponse{
+message MemberListResponse {
     repeated MemberListSingle Value = 1;
 }
 // 会员概览信息

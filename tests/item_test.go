@@ -35,9 +35,9 @@ func TestSyncWholesaleItem(t *testing.T) {
 func TestItemWholesaleDiscount(t *testing.T) {
 	repo := ti.Factory.GetItemRepo()
 	mmRepo := ti.Factory.GetMemberRepo()
-	var itemId int64 = 6      //商品编号
-	var disRate float64 = 0.9 //折扣率
-	var disAmount int32 = 50  //折扣金额下限
+	var itemId int64 = 6     //商品编号
+	var disRate = 0.9        //折扣率
+	var disAmount int32 = 50 //折扣金额下限
 	it := repo.GetItem(itemId)
 	wsIt := it.Wholesale()
 	groups := mmRepo.GetManager().GetAllBuyerGroups()

@@ -59,7 +59,8 @@ service FoundationService {
     rpc GetAreaNames (GetAreaNamesRequest) returns (StringListResponse) {
     }
     // 获取省市区字符串
-    rpc GetAreaString(AreaStringRequest)returns(String){}
+    rpc GetAreaString (AreaStringRequest) returns (String) {
+    }
     // 获取下级区域,code
     rpc GetChildAreas (Int32) returns (AreaListResponse) {
     }
@@ -70,15 +71,20 @@ service FoundationService {
     rpc SaveMoAppConf (SMobileAppConfig) returns (Result) {
     }
     // 获取微信接口配置
-    rpc GetWxApiConfig(Empty) returns(SWxApiConfig){}
+    rpc GetWxApiConfig (Empty) returns (SWxApiConfig) {
+    }
     // 保存微信接口配置
-    rpc SaveWxApiConfig(SWxApiConfig)  returns (Result) {}
+    rpc SaveWxApiConfig (SWxApiConfig) returns (Result) {
+    }
     // 获取支付平台
-    rpc GetPayPlatform(Empty)returns(PaymentPlatformResponse){}
+    rpc GetPayPlatform (Empty) returns (PaymentPlatformResponse) {
+    }
     // 获取全局商户销售设置
-    rpc GetGlobMchSaleConf_(Empty)returns(SGlobMchSaleConf){}
+    rpc GetGlobMchSaleConf_ (Empty) returns (SGlobMchSaleConf) {
+    }
     // 保存全局商户销售设置
-    rpc SaveGlobMchSaleConf_(SGlobMchSaleConf)returns(Result){}
+    rpc SaveGlobMchSaleConf_ (SGlobMchSaleConf) returns (Result) {
+    }
 }
 
 message AreaStringRequest {
@@ -190,8 +196,8 @@ message SWxApiConfig {
     int32 RedPackDayTimeLimit = 12;
 }
 
-message PaymentPlatformResponse{
-    repeated PaymentPlatform Value =1;
+message PaymentPlatformResponse {
+    repeated PaymentPlatform Value = 1;
 }
 
 message PaymentPlatform {
@@ -211,7 +217,7 @@ message BankItem {
 }
 
 // 全局商户销售设置
-message SGlobMchSaleConf{
+message SGlobMchSaleConf {
     // !商户订单结算模式
     //MchOrderSettleMode enum.MchSettleMode
     // !商户订单结算比例
@@ -221,20 +227,20 @@ message SGlobMchSaleConf{
     // 是否启用分销模式
     bool FxSalesEnabled = 1;
     // 返现比例,0则不返现
-   double CashBackPercent =2;
+    double CashBackPercent = 2;
     // 一级比例
-   double  CashBackTg1Percent = 3;
+    double CashBackTg1Percent = 3;
     // 二级比例
-   double CashBackTg2Percent = 4;
+    double CashBackTg2Percent = 4;
     // 会员比例
-double CashBackMemberPercent = 5;
+    double CashBackMemberPercent = 5;
 
     // 自动设置订单
-   int32 AutoSetupOrder  = 6;
+    int32 AutoSetupOrder = 6;
     // 订单超时分钟数
-int32  OrderTimeOutMinute = 7;
+    int32 OrderTimeOutMinute = 7;
     // 订单自动确认时间
-   int32 OrderConfirmAfterMinute = 8;
+    int32 OrderConfirmAfterMinute = 8;
     // 订单超时自动收货
-int32  OrderTimeOutReceiveHour = 9;
+    int32 OrderTimeOutReceiveHour = 9;
 }

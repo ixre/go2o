@@ -114,7 +114,7 @@ func (t *testingApp) Debug() bool {
 
 func (t *testingApp) Log() log.ILogger {
 	if t._logger == nil {
-		var flag int = 0
+		var flag = 0
 		if t._debugMode {
 			flag = log.LOpen | log.LESource | log.LStdFlags
 		}
