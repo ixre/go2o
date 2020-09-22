@@ -30,7 +30,7 @@ func (m *BankCardAddRequest) Reset()         { *m = BankCardAddRequest{} }
 func (m *BankCardAddRequest) String() string { return proto.CompactTextString(m) }
 func (*BankCardAddRequest) ProtoMessage()    {}
 func (*BankCardAddRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_bank_1a88cf1103399718, []int{0}
+	return fileDescriptor_bank_51d0d2c50ffd1cb1, []int{0}
 }
 func (m *BankCardAddRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankCardAddRequest.Unmarshal(m, b)
@@ -76,7 +76,7 @@ func (m *BankCardUserIdRequest) Reset()         { *m = BankCardUserIdRequest{} }
 func (m *BankCardUserIdRequest) String() string { return proto.CompactTextString(m) }
 func (*BankCardUserIdRequest) ProtoMessage()    {}
 func (*BankCardUserIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_bank_1a88cf1103399718, []int{1}
+	return fileDescriptor_bank_51d0d2c50ffd1cb1, []int{1}
 }
 func (m *BankCardUserIdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankCardUserIdRequest.Unmarshal(m, b)
@@ -122,7 +122,7 @@ func (m *BankCardListResponse) Reset()         { *m = BankCardListResponse{} }
 func (m *BankCardListResponse) String() string { return proto.CompactTextString(m) }
 func (*BankCardListResponse) ProtoMessage()    {}
 func (*BankCardListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_bank_1a88cf1103399718, []int{2}
+	return fileDescriptor_bank_51d0d2c50ffd1cb1, []int{2}
 }
 func (m *BankCardListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankCardListResponse.Unmarshal(m, b)
@@ -181,7 +181,7 @@ func (m *SBankCardInfo) Reset()         { *m = SBankCardInfo{} }
 func (m *SBankCardInfo) String() string { return proto.CompactTextString(m) }
 func (*SBankCardInfo) ProtoMessage()    {}
 func (*SBankCardInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_bank_1a88cf1103399718, []int{3}
+	return fileDescriptor_bank_51d0d2c50ffd1cb1, []int{3}
 }
 func (m *SBankCardInfo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SBankCardInfo.Unmarshal(m, b)
@@ -257,9 +257,9 @@ func init() {
 	proto.RegisterType((*SBankCardInfo)(nil), "SBankCardInfo")
 }
 
-func init() { proto.RegisterFile("message/bank.proto", fileDescriptor_bank_1a88cf1103399718) }
+func init() { proto.RegisterFile("message/bank.proto", fileDescriptor_bank_51d0d2c50ffd1cb1) }
 
-var fileDescriptor_bank_1a88cf1103399718 = []byte{
+var fileDescriptor_bank_51d0d2c50ffd1cb1 = []byte{
 	// 277 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x91, 0x4d, 0x4b, 0xc3, 0x40,
 	0x10, 0x86, 0x49, 0x6b, 0x1a, 0x3b, 0xc5, 0x82, 0x43, 0x85, 0xc5, 0x83, 0x84, 0xe0, 0x21, 0xa7,

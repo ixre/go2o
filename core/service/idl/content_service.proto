@@ -2,32 +2,79 @@ syntax = "proto3";
 option go_package = ".;proto";
 import "global.proto";
 
-message PagingArticleRequest {
-    string cat = 1;
-    sint32 begin = 2;
-    sint32 size = 3;
-}
-
-message ArticlesResponse {
-    repeated SArticle Value = 1;
-}
 /** 内容服务 */
 service ContentService {
-
+    // 获取页面
+    rpc GetPage(IdOrName)returns(SPage){}
+    // 保存页面
+    rpc SavePage(SPage)returns(Result){}
+    // 删除页面
+    rpc DeletePage(Int64)returns(Result){}
+    // 获取所有栏目
+    rpc GetArticleCategories(Empty)returns(ArticleCategoriesResponse){}
+    // 获取文章栏目,可传入ID或者别名
+    rpc GetArticleCategory(IdOrName)returns(SArticleCategory){}
+    // 保存文章栏目
+    rpc SaveArticleCategory(SArticleCategory)returns(Result){}
+    // 删除文章分类
+    rpc DeleteArticleCategory(Int64)returns(Result){}
+    // 获取文章
+    rpc GetArticle(IdOrName)returns(SArticle){}
+    // 删除文章
+    rpc DeleteArticle(Int64)returns(Result){}
+    // 保存文章
+    rpc SaveArticle(SArticle) returns(Result){}
     /** 获取置顶的文章,cat */
-    rpc QueryTopArticles (String) returns (ArticlesResponse) {
+    rpc QueryTopArticles (IdOrName) returns (ArticleListResponse) {
     }
     /** 获取分页文章 */
-    rpc QueryPagingArticles (PagingArticleRequest) returns (SPagingResult) {
+    rpc QueryPagingArticles (PagingArticleRequest) returns (ArticleListResponse) {
     }
 }
+
+
+message PagingArticleRequest {
+    string CategoryName = 1;
+    sint32 Begin = 2;
+    sint32 Size = 3;
+}
+
+message ArticleListResponse {
+    int64 Total = 1;
+    repeated SArticle Data = 2;
+}
+
+//栏目
+message SArticleCategory  {
+//编号
+int64 Id  = 1;
+//父类编号,如为一级栏目则为0
+int64 ParentId = 2;
+// 浏览权限
+int32 PermFlag = 3;
+// 名称(唯一)
+string Name = 4;
+// 别名
+string Alias = 5;
+// 排序编号
+int32 SortNum = 6;
+// 定位路径（打开栏目页定位到的路径）
+string Location = 7;
+// 页面标题
+string Title = 8;
+// 关键字
+string Keywords = 9;
+// 描述
+string Description = 10;
+}
+
 
 /** 文章 */
 message SArticle {
     /** 编号  */
     sint32 Id = 1;
     /** 栏目编号 */
-    sint32 CatId = 2;
+    sint32 CategoryId = 2;
     /** 标题 */
     string Title = 3;
     /** 小标题 */
@@ -54,4 +101,35 @@ message SArticle {
     sint32 CreateTime = 14;
     /** 最后修改时间 */
     sint32 UpdateTime = 15;
+}
+
+message SPage{
+    // 编号
+    int64 Id = 1;
+    // 商户编号
+    int64 UserId = 2;
+    // 标题
+    string Title = 3;
+    // 字符标识
+    string StrIndent =4;
+    // 浏览权限
+    int32 PermFlag =5;
+    // 浏览钥匙
+    string  AccessKey = 6;
+    // 关键词
+    string KeyWord =7;
+    // 描述
+    string Description =8;
+    // 样式表地址
+    string CssPath =9;
+    // 内容
+    string Body = 10;
+    // 修改时间
+    int64 UpdateTime = 11;
+    // 是否启用
+    bool Enabled = 12;
+}
+
+message ArticleCategoriesResponse{
+    repeated SArticleCategory Value = 1;
 }

@@ -11,7 +11,6 @@ package impl
 import (
 	"context"
 	"github.com/ixre/gof/db"
-	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/order"
 	"go2o/core/infrastructure/format"
@@ -56,11 +55,14 @@ func (a *afterSalesService) SubmitAfterSalesOrder(_ context.Context, r *proto.Su
 	if err == nil {
 		id, err = ro.Submit()
 	}
-	return &proto.SubmitAfterSalesOrderResponse{
-		ErrCode:           int64(types.IntCond(err != nil, 1, 0)),
-		ErrMsg:            types.StringCond(err != nil, err.Error(), ""),
+	ret := &proto.SubmitAfterSalesOrderResponse{
 		AfterSalesOrderId: int64(id),
-	}, nil
+	}
+	if err != nil{
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
 }
 
 // 获取订单的所有售后单
@@ -192,15 +194,15 @@ func (a *afterSalesService) ProcessAfterSalesOrder(_ context.Context, id *proto.
 	as := a._rep.GetAfterSalesOrder(int32(id.Value))
 	if as == nil {
 		err = afterSales.ErrNoSuchOrder
-	}
-	v := as.Value()
-	switch v.Type {
-	case afterSales.TypeRefund:
-		as.Process()
-	case afterSales.TypeReturn:
-		err = as.Process()
-	default:
-		err = afterSales.ErrAutoProcess
+	}else {
+		switch as.Value().Type {
+		case afterSales.TypeRefund:
+			err = as.Process()
+		case afterSales.TypeReturn:
+			err = as.Process()
+		default:
+			err = afterSales.ErrAutoProcess
+		}
 	}
 	return a.error(err), nil
 }

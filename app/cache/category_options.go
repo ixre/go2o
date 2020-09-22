@@ -10,12 +10,15 @@ package cache
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"github.com/ixre/gof/algorithm/iterator"
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain/util"
+	"go2o/core/service"
 	"go2o/core/service/impl"
+	"go2o/core/service/proto"
 	"strings"
 )
 
@@ -58,7 +61,9 @@ func GetDropOptionsOfProModel() string {
 }
 
 func readToArticleCategoryDropList() []byte {
-	categories := impl.ContentService.GetArticleCategories()
+	trans,cli,_ := service.ContentServiceClient()
+	defer trans.Close()
+	categories,_ := cli.GetArticleCategories(context.TODO(),&proto.Empty{})
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*content.ArticleCategory)
@@ -71,7 +76,7 @@ func readToArticleCategoryDropList() []byte {
 			))
 		}
 	}
-	util.WalkArticleCategory(categories, &content.ArticleCategory{ID: 0},
+	util.WalkArticleCategory(categories, &proto.SArticleCategory{Id: 0},
 		f, nil)
 	return buf.Bytes()
 }
