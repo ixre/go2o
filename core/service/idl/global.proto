@@ -193,3 +193,7 @@ message SPagingResult {
     /** 额外的数据 */
     map<string, string> Extras = 5;
 }
+
+message Id{int64 Value = 1;}
+message SellerId{int64 Value = 1;}
+message BuyerId{int64 Value = 1;}

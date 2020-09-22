@@ -12,8 +12,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/service"
 	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"sort"
@@ -114,17 +114,19 @@ func GetShipExpressTab() string {
 
 func getRealShipExpressTab() string {
 	buf := bytes.NewBuffer(nil)
-	list := impl.ExpressService.GetEnabledProviders()
-	iMap := make(map[string][]*express.ExpressProvider, 0)
+	trans,cli,_ := service.ExpressServiceClient()
+	defer trans.Close()
+	list,_ := cli.GetProviders(context.TODO(),&proto.Empty{})
+	iMap := make(map[string][]*proto.SExpressProvider, 0)
 	var letArr []string
-	for _, v := range list {
+	for _, v := range list.Value {
 		for _, g := range strings.Split(v.GroupFlag, ",") {
 			if g == "" {
 				continue
 			}
 			arr, ok := iMap[g]
 			if !ok {
-				arr = []*express.ExpressProvider{}
+				arr = []*proto.SExpressProvider{}
 				letArr = append(letArr, g)
 			}
 			arr = append(arr, v)

@@ -150,6 +150,15 @@ func OrderServiceClient() (*grpc.ClientConn, proto.OrderServiceClient, error) {
 	return conn, nil, err
 }
 
+// 快递服务
+func ExpressServiceClient() (*grpc.ClientConn, proto.ExpressServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewExpressServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
 // 物流服务
 func ShipmentServiceClient() (*grpc.ClientConn, proto.ShipmentServiceClient, error) {
 	conn, err := getConn(selector)
