@@ -114,9 +114,9 @@ func GetShipExpressTab() string {
 
 func getRealShipExpressTab() string {
 	buf := bytes.NewBuffer(nil)
-	trans,cli,_ := service.ExpressServiceClient()
+	trans, cli, _ := service.ExpressServiceClient()
 	defer trans.Close()
-	list,_ := cli.GetProviders(context.TODO(),&proto.Empty{})
+	list, _ := cli.GetProviders(context.TODO(), &proto.Empty{})
 	iMap := make(map[string][]*proto.SExpressProvider, 0)
 	var letArr []string
 	for _, v := range list.Value {

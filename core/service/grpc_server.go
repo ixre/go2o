@@ -43,7 +43,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterQueryServiceServer(s, grpc2.QueryService)
 	proto.RegisterProductServiceServer(s, grpc2.ProductService)
 	proto.RegisterAfterSalesServiceServer(s, grpc2.AfterSalesService)
-	proto.RegisterExpressServiceServer(s,grpc2.ExpressService)
+	proto.RegisterExpressServiceServer(s, grpc2.ExpressService)
 	initRegistry(cfg, port)
 	if err = s.Serve(l); err != nil {
 		ch <- false

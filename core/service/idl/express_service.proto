@@ -12,7 +12,7 @@ rpc SaveExpressProvider(SExpressProvider)returns (Result){}
 // 获取可用的快递公司
 rpc GetProviders(Empty)returns(ExpressProviderListResponse){}
 // 保存快递模板
-rpc SaveTemplate(SExpressTemplate)returns(Result){}
+rpc SaveTemplate(SExpressTemplate)returns(SaveTemplateResponse){}
 // 获取单个快递模板
 rpc GetTemplate(ExpressTemplateId) returns(SExpressTemplate){}
 // 获取卖家的快递模板
@@ -119,4 +119,10 @@ message AreaTemplateId{
     int64 SellerId = 1;
     int64 TemplateId = 2;
     int64 AreaTemplateId = 3;
+}
+
+message SaveTemplateResponse{
+    int64 ErrCode =1;
+    string ErrMsg = 2;
+    int64 TemplateId =3;
 }
