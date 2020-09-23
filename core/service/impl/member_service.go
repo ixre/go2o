@@ -310,20 +310,10 @@ func (s *memberService) GetLevelBySign(_ context.Context, sign *proto.String) (*
 	return nil, nil
 }
 
-// 根据可编程字符获取会员等级
-func (s *memberService) GetLevelByProgramSign(sign string) *member.Level {
-	return s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
-}
-
 // 删除会员等级
 func (s *memberService) DeleteMemberLevel(_ context.Context, levelId *proto.Int64) (*proto.Result, error) {
 	err := s.repo.GetManager().LevelManager().DeleteLevel(int(levelId.Value))
 	return s.result(err), nil
-}
-
-// 获取下一个等级
-func (s *memberService) GetNextLevel(levelId int32) *member.Level {
-	return s.repo.GetManager().LevelManager().GetNextLevelById(int(levelId))
 }
 
 // 获取启用中的最大等级,用于判断是否可以升级
@@ -456,14 +446,6 @@ func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) 
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
-}
-
-// 保存用户
-func (s *memberService) SaveMember(v *proto.SMember) (int64, error) {
-	if v.Id > 0 {
-		return s.updateMember(v)
-	}
-	return -1, errors.New("Create member use \"RegisterMember\" method.")
 }
 
 func (s *memberService) updateMember(v *proto.SMember) (int64, error) {
@@ -835,13 +817,6 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 		buf.WriteString(trustOk)
 	}
 	return buf.String()
-}
-
-// 获取会员绑定银行卡信息
-func (s *memberService) GetBank(memberId int64) *member.BankInfo {
-	m := s.repo.CreateMember(&member.Member{Id: memberId})
-	b := m.Profile().GetBank()
-	return &b
 }
 
 // 解锁银行卡信息

@@ -111,6 +111,80 @@ service MerchantService {
     // 保存交易设置
     rpc SaveTradeConf (TradeConfSaveRequest) returns (Result) {
     }
+    // 创建会员申请商户密钥
+    rpc CreateSignUpToken(memberId int64) string
+    // 根据商户申请密钥获取会员编号
+    rpc GetMemberFromSignUpToken(token string) int64
+    // 获取会员商户申请信息
+    rpc GetMchSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp
+    // 获取商户申请信息
+    rpc GetSignUp(id int32) *merchant.MchSignUp
+    // 审核商户申请信息
+    rpc ReviewSignUp(id int32, pass bool, remark string) error
+    // 提交注册信息
+    rpc SignUpPost(e *merchant.MchSignUp) (int32, error)
+    rpc GetMerchantByMemberId(memberId int64) *merchant.Merchant
+    // 删除会员的商户申请资料
+    rpc RemoveMerchantSignUp(memberId int64) error
+    // 获取企业信息,并返回是否为提交的信息
+    rpc GetEnterpriseInfo(mchId int64)
+    // 保存企业信息
+    rpc SaveEnterpriseInfo(mchId int64,
+    e *merchant.EnterpriseInfo) (int32, error)
+    // 审核企业信息
+    rpc ReviewEnterpriseInfo(mchId int64, pass bool,
+    remark string) error
+
+    rpc GetAccount(mchId int) *merchant.Account
+
+    rpc SaveMerchant(mchId int64, v *merchant.Merchant) (int64, error)
+    // 设置商户启用或停用
+    rpc SetEnabled(mchId int64, enabled bool) error
+    // 根据主机查询商户编号
+    rpc GetMerchantIdByHost(host string) int64
+    // 获取商户的域名
+    rpc GetMerchantMajorHost(mchId int) string
+    rpc SaveSaleConf(mchId int64, v *merchant.SaleConf) error
+
+    rpc GetSaleConf(mchId int64) *merchant.SaleConf
+    rpc GetShopsOfMerchant(mchId int64) []*shop.Shop
+    // 修改密码
+    rpc ModifyPassword(mchId int64, oldPwd, newPwd string) error
+
+    // 保存API信息
+    rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
+    // 获取API接口
+    rpc GetApiInfo(mchId int) *merchant.ApiInfo
+    // 启用/停用接口权限
+    rpc ApiPerm(mchId int64, enabled bool) error
+    // 根据API ID获取MerchantId
+    rpc GetMerchantIdByApiId(apiId string) int64
+    // 查询分页订单
+    rpc PagedNormalOrderOfVendor(vendorId int64, begin, size int, pagination bool,
+    where, orderBy string) (int, []*dto.PagedVendorOrder)
+    // 查询分页订单
+    rpc PagedWholesaleOrderOfVendor(vendorId int64, begin, size int, pagination bool,
+    where, orderBy string) (int, []*dto.PagedVendorOrder)
+    // 查询分页订单
+    rpc PagedTradeOrderOfVendor(vendorId int64, begin, size int, pagination bool,
+    where, orderBy string) (int32, []*proto.SComplexOrder)
+    // 提到会员账户
+    rpc TakeToMemberAccount(mchId int64, amount float32) error
+    // 账户充值
+    rpc ChargeAccount(mchId int64, kind int32, title,
+    outerNo string, amount float64, relateUser int64) error
+
+    rpc GetMchBuyerGroup_(mchId, id int64) *merchant.MchBuyerGroup
+    // 保存
+    rpc SaveMchBuyerGroup_(mchId int64, v *merchant.MchBuyerGroup) (r *proto.Result, err error)
+    // 获取买家分组
+    rpc GetBuyerGroups(mchId int64) []*merchant.BuyerGroup
+    // 获取批发返点率
+    rpc GetRebateRate(mchId, groupId int64) []*wholesaler.WsRebateRate
+
+    // 保存分组返点率
+    rpc SaveGroupRebateRate(mchId, groupId int64,
+    arr []*wholesaler.WsRebateRate) error
 }
 
 // 商户交易设置

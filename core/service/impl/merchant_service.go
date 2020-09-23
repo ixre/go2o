@@ -23,7 +23,6 @@ import (
 	"go2o/core/service/proto"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var _ proto.MerchantServiceServer = new(merchantService)
@@ -34,6 +33,17 @@ type merchantService struct {
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
 	serviceUtil
+}
+
+
+func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
+	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
+	return &merchantService{
+		_mchRepo:    r,
+		_memberRepo: memberRepo,
+		_query:      q,
+		_orderQuery: orderQuery,
+	}
 }
 
 func (m *merchantService) GetAllTradeConf(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
@@ -106,15 +116,6 @@ func (m *merchantService) SaveTradeConf(_ context.Context, r *proto.TradeConfSav
 	return m.result(err), nil
 }
 
-func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
-	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
-	return &merchantService{
-		_mchRepo:    r,
-		_memberRepo: memberRepo,
-		_query:      q,
-		_orderQuery: orderQuery,
-	}
-}
 
 // 创建会员申请商户密钥
 func (m *merchantService) CreateSignUpToken(memberId int64) string {
@@ -141,51 +142,6 @@ func (m *merchantService) ReviewSignUp(id int32, pass bool, remark string) error
 	return m._mchRepo.GetManager().ReviewMchSignUp(id, pass, remark)
 }
 
-// 商户注册
-func (m *merchantService) SignUp(user, pwd, companyName string,
-	province int32, city int32, district int32) (int64, error) {
-	unix := time.Now().Unix()
-	v := &merchant.Merchant{
-		MemberId: 0,
-		// 用户
-		LoginUser: user,
-		// 密码
-		LoginPwd: pwd,
-		// 商户名称
-		Name: companyName,
-		// 是否自营
-		SelfSales: 0,
-		// 商户等级
-		Level: 1,
-		// 标志
-		Logo:        "",
-		CompanyName: companyName,
-		// 省
-		Province: int(province),
-		// 市
-		City: int(city),
-		// 区
-		District: int(district),
-		// 是否启用
-		Enabled: 1,
-		// 过期时间
-		ExpiresTime: time.Now().Add(time.Hour * time.Duration(24*365)).Unix(),
-		// 注册时间
-		CreateTime: unix,
-		// 更新时间
-		UpdateTime: unix,
-		// 登录时间
-		LoginTime: 0,
-		// 最后登录时间
-		LastLoginTime: 0,
-	}
-	mch := m._mchRepo.CreateMerchant(v)
-	err := mch.SetValue(v)
-	if err == nil {
-		return mch.Save()
-	}
-	return -1, err
-}
 
 // 提交注册信息
 func (m *merchantService) SignUpPost(e *merchant.MchSignUp) (int32, error) {
@@ -306,14 +262,7 @@ func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*prot
 	return nil, nil
 }
 
-//func (m *merchantService) GetMerchant(mchId int64) *merchant.Merchant {
-//	mch := m._mchRepo.GetMerchant(int(mchId))
-//	if mch != nil {
-//		v := mch.GetValue()
-//		return &v
-//	}
-//	return nil
-//}
+
 
 func (m *merchantService) GetAccount(mchId int) *merchant.Account {
 	return m._mchRepo.GetAccount(mchId)
@@ -428,9 +377,6 @@ func (m *merchantService) ModifyPassword(mchId int64, oldPwd, newPwd string) err
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) GetMerchantsId() []int32 {
-	return m._mchRepo.GetMerchantsId()
-}
 
 // 保存API信息
 func (m *merchantService) SaveApiInfo(mchId int64, d *merchant.ApiInfo) error {
@@ -463,7 +409,7 @@ func (m *merchantService) GetMerchantIdByApiId(apiId string) int64 {
 }
 
 // 获取所有会员等级
-func (m *merchantService) GetMemberLevels(mchId int64) []*merchant.MemberLevel {
+func (m *merchantService) GetMemberLevels_(mchId int64) []*merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.LevelManager().GetLevelSet()
@@ -472,7 +418,7 @@ func (m *merchantService) GetMemberLevels(mchId int64) []*merchant.MemberLevel {
 }
 
 // 根据编号获取会员等级信息
-func (m *merchantService) GetMemberLevelById(mchId, id int32) *merchant.MemberLevel {
+func (m *merchantService) GetMemberLevelById_(mchId, id int32) *merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.LevelManager().GetLevelById(id)
@@ -481,7 +427,7 @@ func (m *merchantService) GetMemberLevelById(mchId, id int32) *merchant.MemberLe
 }
 
 // 保存会员等级信息
-func (m *merchantService) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) (int32, error) {
+func (m *merchantService) SaveMemberLevel_(mchId int64, v *merchant.MemberLevel) (int32, error) {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.LevelManager().SaveLevel(v)
@@ -490,7 +436,7 @@ func (m *merchantService) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) 
 }
 
 // 删除会员等级
-func (m *merchantService) DelMemberLevel(mchId, levelId int32) error {
+func (m *merchantService) DelMemberLevel_(mchId, levelId int32) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.LevelManager().DeleteLevel(levelId)
@@ -499,7 +445,7 @@ func (m *merchantService) DelMemberLevel(mchId, levelId int32) error {
 }
 
 // 获取等级
-func (m *merchantService) GetLevel(mchId, level int32) *merchant.MemberLevel {
+func (m *merchantService) GetLevel_(mchId, level int32) *merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.LevelManager().GetLevelByValue(level)
@@ -508,7 +454,7 @@ func (m *merchantService) GetLevel(mchId, level int32) *merchant.MemberLevel {
 }
 
 // 获取下一个等级
-func (m *merchantService) GetNextLevel(mchId, levelValue int32) *merchant.MemberLevel {
+func (m *merchantService) GetNextLevel_(mchId, levelValue int32) *merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.LevelManager().GetNextLevel(levelValue)
@@ -518,7 +464,7 @@ func (m *merchantService) GetNextLevel(mchId, levelValue int32) *merchant.Member
 }
 
 // 获取键值字典
-func (m *merchantService) GetKeyMapsByKeyword(mchId int64, keyword string) map[string]string {
+func (m *merchantService) GetKeyMapsByKeyword_(mchId int64, keyword string) map[string]string {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.KvManager().GetsByChar(keyword)
@@ -527,7 +473,7 @@ func (m *merchantService) GetKeyMapsByKeyword(mchId int64, keyword string) map[s
 }
 
 // 保存键值字典
-func (m *merchantService) SaveKeyMaps(mchId int64, data map[string]string) error {
+func (m *merchantService) SaveKeyMaps_(mchId int64, data map[string]string) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		return mch.KvManager().Sets(data)
