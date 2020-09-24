@@ -12,9 +12,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"go2o/core/domain/interface/merchant"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"sort"
 	"strconv"
@@ -27,7 +25,9 @@ func GetValueMerchantCache(mchId int) *proto.SMerchant {
 	var sto = GetKVS()
 	var key = GetValueMerchantCacheCK(mchId)
 	if sto.Get(key, &v) != nil {
-		v2, _ := impl.MerchantService.GetMerchant(context.TODO(), &proto.Int64{Value: int64(mchId)})
+		trans,cli,_ := service.MerchantServiceClient()
+		defer trans.Close()
+		v2, _ := cli.GetMerchant(context.TODO(), &proto.Int64{Value: int64(mchId)})
 		if v2 != nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 			return v2
@@ -60,8 +60,11 @@ func GetMerchantIdByHost(host string) int {
 	id, err := sto.GetInt(key)
 	mchId := id
 	if err != nil || mchId <= 0 {
-		mchId = int(impl.MerchantService.GetMerchantIdByHost(host))
-		if mchId > 0 {
+		trans,cli,_ := service.MerchantServiceClient()
+		defer trans.Close()
+		mchId,_ := cli.GetMerchantIdByHost(context.TODO(),
+			&proto.String{Value:host})
+		if mchId.Value > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		}
 	}
@@ -75,8 +78,11 @@ func GetMerchantIdByApiId(apiId string) int64 {
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
 	kvs.Get(key, &mchId)
 	if mchId == 0 {
-		mchId = impl.MerchantService.GetMerchantIdByApiId(apiId)
-		if mchId != 0 {
+		trans,cli,_ := service.MerchantServiceClient()
+		defer trans.Close()
+		mchId,_ := cli.GetMerchantIdByApiId(context.TODO(),
+			&proto.String{Value:apiId})
+		if mchId.Value != 0 {
 			kvs.Set(key, mchId)
 		}
 	}
@@ -84,13 +90,16 @@ func GetMerchantIdByApiId(apiId string) int64 {
 }
 
 // 获取API 信息
-func GetMerchantApiInfo(mchId int64) *merchant.ApiInfo {
-	var d = new(merchant.ApiInfo)
+func GetMerchantApiInfo(mchId int64) *proto.SMerchantApiInfo {
+	var d = new(proto.SMerchantApiInfo)
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:info-%d", mchId)
 	err := kvs.Get(key, &d)
 	if err != nil {
-		if d = impl.MerchantService.GetApiInfo(int(mchId)); d != nil {
+		trans,cli,_ := service.MerchantServiceClient()
+		defer trans.Close()
+		ret,_ := cli.GetApiInfo(context.TODO(),&proto.MerchantId{Value:mchId})
+		if ret != nil {
 			kvs.Set(key, d)
 		}
 	}

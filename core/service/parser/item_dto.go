@@ -4,6 +4,7 @@ import (
 	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/dto"
 	"go2o/core/service/proto"
 )
 
@@ -152,4 +153,22 @@ func ParseGoodsItem(src *proto.SUnifiedViewItem) *item.GoodsItem {
 		dst.SkuArray[i] = Sku(v)
 	}
 	return dst
+}
+
+func ParseOrderItem(v *dto.OrderItem)*proto.SOrderItem {
+	return &proto.SOrderItem{
+		Id:                   int64(v.Id),
+		SnapshotId:           int64(v.SnapshotId),
+		SkuId:                int64(v.SkuId),
+		ItemId:               int64(v.ItemId),
+		ItemTitle:            v.GoodsTitle,
+		Image:                v.Image,
+		Price:               float64( v.Price),
+		FinalPrice:          float64( v.FinalPrice),
+		Quantity:             int32(v.Quantity),
+		ReturnQuantity:       int32(v.ReturnQuantity),
+		Amount:               float64(v.Amount),
+		FinalAmount:          float64(v.FinalAmount),
+		IsShipped:            v.IsShipped == 1,
+	}
 }

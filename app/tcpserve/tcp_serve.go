@@ -14,7 +14,6 @@ import (
 	"github.com/ixre/gof/net/nc"
 	"github.com/ixre/gof/util"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"net"
 	"strconv"
@@ -76,14 +75,18 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
 			var af nc.AuthFunc = func() (int64, error) {
-				mchId := impl.MerchantService.GetMerchantIdByApiId(arr[0])
-				apiInfo := impl.MerchantService.GetApiInfo(int(mchId))
+				trans,cli,_ := service.MerchantServiceClient()
+				defer trans.Close()
+				mchId,_ := cli.GetMerchantIdByApiId(context.TODO(),&proto.String{
+					Value:arr[0],
+				})
+				apiInfo,_ := cli.GetApiInfo(context.TODO(),&proto.MerchantId{Value:mchId.Value})
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
-					if apiInfo.Enabled == 0 {
-						return int64(mchId), errors.New("api has exipres")
+					if apiInfo.Enabled {
+						return mchId.Value, errors.New("api has exipres")
 					}
 				}
-				return int64(mchId), nil
+				return mchId.Value, nil
 			}
 			if err := s.Auth(conn, af); err != nil {
 				return err

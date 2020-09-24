@@ -120,8 +120,8 @@ service MerchantService {
     rpc SaveMchBuyerGroup_ (SaveMerchantBuyerGroupRequest) returns (Result) {
     }
     // 获取买家分组
-    rpc GetBuyerGroups (MerchantId) returns (MerchantBuyerGroupListResponse) {
-    }
+    //rpc GetBuyerGroups (MerchantId) returns (MerchantBuyerGroupListResponse) {
+    //}
     // 获取批发返点率
     rpc GetRebateRate (MerchantBuyerGroupId) returns (WholesaleRebateRateListResponse) {
     }
@@ -143,7 +143,7 @@ message MerchantOrderRequest {
 
 message PagingMerchantOrderListResponse {
     int64 Total = 1;
-    repeated SMerchantOrder Value = 2;
+    repeated SMerchantOrder Data = 2;
 }
 
 message SMerchantOrder {

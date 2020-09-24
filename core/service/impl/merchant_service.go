@@ -17,9 +17,11 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/wholesaler"
+	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
+	"go2o/core/service/parser"
 	"go2o/core/service/proto"
 	"strconv"
 	"strings"
@@ -33,6 +35,17 @@ type merchantService struct {
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
 	serviceUtil
+}
+
+
+func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
+	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
+	return &merchantService{
+		_mchRepo:    r,
+		_memberRepo: memberRepo,
+		_query:      q,
+		_orderQuery: orderQuery,
+	}
 }
 
 // 创建会员申请商户密钥
@@ -77,7 +90,7 @@ func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.
 // 审核商户申请信息
 func (m *merchantService) ReviewSignUp(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
 	im := m._mchRepo.GetManager()
-	err := im.ReviewMchSignUp(int32(r.Id), r.Pass, r.Remark)
+	err := im.ReviewMchSignUp(int32(r.MerchantId), r.Pass, r.Remark)
 	return m.error(err),nil
 }
 
@@ -154,87 +167,244 @@ func (m *merchantService) SetEnabled(_ context.Context,r  *proto.MerchantDisable
 	return m.error(err),nil
 }
 
-func (m *merchantService) GetMerchantIdByHost(_ context.Context, s *proto.String) (*proto.Int64, error) {
-	panic("implement me")
+
+// 根据主机查询商户编号
+func (m *merchantService) GetMerchantIdByHost(_ context.Context, host *proto.String) (*proto.Int64, error) {
+	id:= m._query.QueryMerchantIdByHost(host.Value)
+	return &proto.Int64{Value: id},nil
 }
 
+
+// 获取商户的域名
 func (m *merchantService) GetMerchantMajorHost(_ context.Context, id *proto.MerchantId) (*proto.String, error) {
-	panic("implement me")
+	mch := m._mchRepo.GetMerchant(int(id.Value))
+	if mch != nil {
+		return &proto.String{
+			Value:mch.GetMajorHost(),
+		},nil
+	}
+	return &proto.String{},nil
 }
 
-func (m *merchantService) SaveSaleConf(_ context.Context, request *proto.SaveMerchantSaleConfRequest) (*proto.Result, error) {
-	panic("implement me")
+
+
+func (m *merchantService) SaveSaleConf(_ context.Context, r *proto.SaveMerchantSaleConfRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	}else{
+		err = mch.ConfManager().SaveSaleConf(m.parseSaleConf(r.Value))
+	}
+	return m.error(err),	nil
 }
 
 func (m *merchantService) GetSaleConf(_ context.Context, id *proto.MerchantId) (*proto.SMerchantSaleConf, error) {
-	panic("implement me")
+	mch := m._mchRepo.GetMerchant(int(id.Value))
+	if mch != nil {
+		conf := mch.ConfManager().GetSaleConf()
+		return m.parseSaleConfDto(conf),nil
+	}
+	return nil,nil
 }
 
+// 获取商户的店铺编号
 func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*proto.Int64, error) {
-	panic("implement me")
+	mch := m._mchRepo.GetMerchant(int(id.Value))
+	shops := mch.ShopManager().GetShops()
+	for _, v := range shops {
+		return &proto.Int64{Value: int64(v.GetDomainId())},nil
+	}
+	return &proto.Int64{},nil
 }
 
-func (m *merchantService) ModifyPassword(_ context.Context, request *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
-	panic("implement me")
+
+// 修改密码
+func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	}else {
+		if l:=len(r.Origin);l > 0 && l < 32{
+			err = de.ErrNotMD5Format
+		}else if len(r.Password) != 32 {
+			err = de.ErrNotMD5Format
+		}else {
+			err = mch.ProfileManager().ModifyPassword(r.Origin, r.Password)
+		}
+	}
+	return m.error(err),nil
 }
 
+// 获取API接口
 func (m *merchantService) GetApiInfo(_ context.Context, id *proto.MerchantId) (*proto.SMerchantApiInfo, error) {
-	panic("implement me")
+	mch := m._mchRepo.GetMerchant(int(id.Value))
+	if mch != nil{
+		v := mch.ApiManager().GetApiInfo()
+			return m.parseApiDto(v),nil
+	}
+	return nil,nil
 }
 
-func (m *merchantService) ToggleApiPerm(_ context.Context, request *proto.MerchantApiPermRequest) (*proto.Result, error) {
-	panic("implement me")
+// 启用/停用接口权限
+func (m *merchantService) ToggleApiPerm(_ context.Context, r *proto.MerchantApiPermRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	im := mch.ApiManager()
+	var err error
+	if r.Enabled {
+		err = im.EnableApiPerm()
+	}else {
+		err = im.DisableApiPerm()
+	}
+	return m.error(err),nil
 }
 
+// 根据API ID获取MerchantId
 func (m *merchantService) GetMerchantIdByApiId(_ context.Context, s *proto.String) (*proto.Int64, error) {
-	panic("implement me")
+	i := m._mchRepo.GetMerchantIdByApiId(s.Value)
+return &proto.Int64{Value: i},nil
 }
 
-func (m *merchantService) PagedNormalOrderOfVendor(_ context.Context, request *proto.MerchantOrderRequest) (*proto.PagingMerchantOrderListResponse, error) {
-	panic("implement me")
+
+// 查询分页订单
+func (m *merchantService) PagedNormalOrderOfVendor(_ context.Context, r *proto.MerchantOrderRequest) (*proto.PagingMerchantOrderListResponse, error) {
+	total,list := m._orderQuery.PagedNormalOrderOfVendor(
+		r.MerchantId,
+		int(r.Params.Begin),
+		int(r.Params.End - r.Params.Begin),
+		r.Pagination,
+		r.Params.Where,
+		r.Params.SortBy)
+	ret := &proto.PagingMerchantOrderListResponse{
+		Total: int64(total),
+		Data:make([]*proto.SMerchantOrder,len(list)),
+	}
+	for i,v := range list{
+		ret.Data[i] = m.parseOrder(v)
+	}
+	return ret,nil
 }
 
-func (m *merchantService) PagedWholesaleOrderOfVendor(_ context.Context, request *proto.MerchantOrderRequest) (*proto.PagingMerchantOrderListResponse, error) {
-	panic("implement me")
+// 查询分页订单
+func (m *merchantService) PagedWholesaleOrderOfVendor(_ context.Context, r *proto.MerchantOrderRequest) (*proto.PagingMerchantOrderListResponse, error) {
+	total,list := m._orderQuery.PagedWholesaleOrderOfVendor(
+		r.MerchantId,
+		int(r.Params.Begin),
+		int(r.Params.End - r.Params.Begin),
+		r.Pagination,
+		r.Params.Where,
+		r.Params.SortBy)
+	ret := &proto.PagingMerchantOrderListResponse{
+		Total: int64(total),
+		Data:make([]*proto.SMerchantOrder,len(list)),
+	}
+	for i,v := range list{
+		ret.Data[i] = m.parseOrder(v)
+	}
+	return ret,nil
 }
 
-func (m *merchantService) WithdrawToMemberAccount(_ context.Context, request *proto.WithdrawToMemberAccountRequest) (*proto.Result, error) {
-	panic("implement me")
+
+// 提到会员账户
+func (m *merchantService) WithdrawToMemberAccount(_ context.Context, r *proto.WithdrawToMemberAccountRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	}else{
+		acc := mch.Account()
+		err =  acc.TransferToMember(float32(r.Amount))
+	}
+	return m.error(err),nil
 }
 
-func (m *merchantService) ChargeAccount(_ context.Context, request *proto.MerchantChargeRequest) (*proto.Result, error) {
-	panic("implement me")
+
+// 账户充值
+func (m *merchantService) ChargeAccount(_ context.Context, r *proto.MerchantChargeRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	}else{
+		err = mch.Account().Charge(r.Kind, r.Amount, r.Title, r.OuterNo, r.RelateUserId)
+	}
+	return m.error(err),nil
 }
 
 func (m *merchantService) GetMchBuyerGroup_(_ context.Context, id *proto.MerchantBuyerGroupId) (*proto.SMerchantBuyerGroup, error) {
-	panic("implement me")
-}
-
-func (m *merchantService) SaveMchBuyerGroup_(_ context.Context, request *proto.SaveMerchantBuyerGroupRequest) (*proto.Result, error) {
-	panic("implement me")
-}
-
-func (m *merchantService) GetBuyerGroups(_ context.Context, id *proto.MerchantId) (*proto.MerchantBuyerGroupListResponse, error) {
-	panic("implement me")
-}
-
-func (m *merchantService) GetRebateRate(_ context.Context, id *proto.MerchantBuyerGroupId) (*proto.WholesaleRebateRateListResponse, error) {
-	panic("implement me")
-}
-
-func (m *merchantService) SaveGroupRebateRate(_ context.Context, request *proto.SaveWholesaleRebateRateRequest) (*proto.Result, error) {
-	panic("implement me")
-}
-
-func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
-	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
-	return &merchantService{
-		_mchRepo:    r,
-		_memberRepo: memberRepo,
-		_query:      q,
-		_orderQuery: orderQuery,
+	mch := m._mchRepo.GetMerchant(int(id.MerchantId))
+	if mch != nil {
+		v := mch.ConfManager().GetGroupByGroupId(int32(id.GroupId))
+		return m.parseGroupDto(v),nil
 	}
+	return nil,nil
 }
+
+
+// 保存
+func (m *merchantService) SaveMchBuyerGroup_(_ context.Context, r *proto.SaveMerchantBuyerGroupRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		v:=m.parseGroup(r.Value)
+		v.MchId = r.MerchantId
+		//v.GroupId =
+		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
+	}
+	return m.result(err), nil
+}
+
+//todo: mchBuyerGroup去调还是BuyerGroup去调
+
+//// 获取买家分组
+//func (m *merchantService) GetBuyerGroups(_ context.Context, id *proto.MerchantId) (*proto.MerchantBuyerGroupListResponse, error) {
+//	mch := m._mchRepo.GetMerchant(int(id.Value))
+//	if mch != nil {
+//		list := mch.ConfManager().SelectBuyerGroup()
+//		arr := make([]*proto.SMerchantBuyerGroup,len(list))
+//		for i,v := range list{
+//			arr[i] = m.parseGroupDto(v)
+//		}
+//	}
+//	return []*merchant.BuyerGroup{}
+//}
+
+
+
+// 获取批发返点率
+func (m *merchantService) GetRebateRate(_ context.Context, id *proto.MerchantBuyerGroupId) (*proto.WholesaleRebateRateListResponse, error) {
+	mch := m._mchRepo.GetMerchant(int(id.MerchantId))
+	ret := &proto.WholesaleRebateRateListResponse{
+		Value:make([]*proto.SWholesaleRebateRate,0),
+	}
+	if mch != nil {
+		arr := mch.Wholesaler().GetGroupRebateRate(int32(id.GroupId))
+		for _,v := range arr{
+			ret.Value = append(ret.Value,m.parseRebateRateDto(v))
+		}
+	}
+	return ret,nil
+}
+
+// 保存分组返点率
+func (m *merchantService) SaveGroupRebateRate(_ context.Context, r *proto.SaveWholesaleRebateRateRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	}else{
+		arr := make([]*wholesaler.WsRebateRate,len(r.Value))
+		for i,v := range r.Value{
+			arr[i] = m.parseRebateRate(v)
+		}
+		err = mch.Wholesaler().SaveGroupRebateRate(int32(r.GroupId), arr)
+	}
+	return m.error(err),nil
+}
+
 
 func (m *merchantService) GetAllTradeConf(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
 	panic("implement me")
@@ -356,8 +526,9 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 		if err != nil {
 			return 0, 2, err
 		}
-		if mch2 := m.GetMerchantByMemberId(id); mch2 != nil {
-			return mch2.Id, 0, nil
+		mchId,_:= m.GetMerchantIdByMember(context.TODO(),&proto.MemberId{Value:id})
+		if mchId.Value >0 {
+			return mchId.Value, 0, nil
 		}
 		return 0, 2, merchant.ErrNoSuchMerchant
 	}
@@ -443,56 +614,10 @@ func (m *merchantService) Stat(_ context.Context, mchId *proto.Int64) (r *proto.
 }
 
 
-// 根据主机查询商户编号
-func (m *merchantService) GetMerchantIdByHost(host string) int64 {
-	return m._query.QueryMerchantIdByHost(host)
-}
 
-// 获取商户的域名
-func (m *merchantService) GetMerchantMajorHost(mchId int) string {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		return mch.GetMajorHost()
-	}
-	return ""
-}
 
-func (m *merchantService) SaveSaleConf(mchId int64, v *merchant.SaleConf) error {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		return mch.ConfManager().SaveSaleConf(v)
-	}
-	return merchant.ErrNoSuchMerchant
-}
 
-func (m *merchantService) GetSaleConf(mchId int64) *merchant.SaleConf {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		conf := mch.ConfManager().GetSaleConf()
-		return &conf
-	}
-	return nil
-}
 
-func (m *merchantService) GetShopId(mchId int64) []*shop.Shop {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	shops := mch.ShopManager().GetShops()
-	sv := make([]*shop.Shop, len(shops))
-	for i, v := range shops {
-		vv := v.GetValue()
-		sv[i] = &vv
-	}
-	return sv
-}
-
-// 修改密码
-func (m *merchantService) ModifyPassword(mchId int64, oldPwd, newPwd string) error {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		return mch.ProfileManager().ModifyPassword(newPwd, oldPwd)
-	}
-	return merchant.ErrNoSuchMerchant
-}
 
 
 // 保存API信息
@@ -504,26 +629,7 @@ func (m *merchantService) SaveApiInfo(mchId int64, d *merchant.ApiInfo) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-// 获取API接口
-func (m *merchantService) GetApiInfo(mchId int) *merchant.ApiInfo {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	v := mch.ApiManager().GetApiInfo()
-	return &v
-}
 
-// 启用/停用接口权限
-func (m *merchantService) ApiPerm(mchId int64, enabled bool) error {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if enabled {
-		return mch.ApiManager().EnableApiPerm()
-	}
-	return mch.ApiManager().DisableApiPerm()
-}
-
-// 根据API ID获取MerchantId
-func (m *merchantService) GetMerchantIdByApiId(apiId string) int64 {
-	return m._mchRepo.GetMerchantIdByApiId(apiId)
-}
 
 // 获取所有会员等级
 func (m *merchantService) GetMemberLevels_(mchId int64) []*merchant.MemberLevel {
@@ -598,17 +704,6 @@ func (m *merchantService) SaveKeyMaps_(mchId int64, data map[string]string) erro
 	return merchant.ErrNoSuchMerchant
 }
 
-// 查询分页订单
-func (m *merchantService) PagedNormalOrderOfVendor(vendorId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*dto.PagedVendorOrder) {
-	return m._orderQuery.PagedNormalOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
-}
-
-// 查询分页订单
-func (m *merchantService) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int, pagination bool,
-	where, orderBy string) (int, []*dto.PagedVendorOrder) {
-	return m._orderQuery.PagedWholesaleOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
-}
 
 // 查询分页订单
 func (m *merchantService) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pagination bool,
@@ -616,15 +711,6 @@ func (m *merchantService) PagedTradeOrderOfVendor(vendorId int64, begin, size in
 	return m._orderQuery.PagedTradeOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
-// 提到会员账户
-func (m *merchantService) WithdrawToMemberAccount(mchId int64, amount float32) error {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		acc := mch.Account()
-		return acc.TransferToMember(amount)
-	}
-	return merchant.ErrNoSuchMerchant
-}
 
 // 提到会员账户
 func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) error {
@@ -636,15 +722,6 @@ func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) 
 	return merchant.ErrNoSuchMerchant
 }
 
-// 账户充值
-func (m *merchantService) ChargeAccount(mchId int64, kind int32, title,
-	outerNo string, amount float64, relateUser int64) error {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch == nil {
-		return merchant.ErrNoSuchMerchant
-	}
-	return mch.Account().Charge(kind, amount, title, outerNo, relateUser)
-}
 
 //
 ////商户利润修改
@@ -792,52 +869,9 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 	return &proto.SyncWSItemsResponse{Value: mp}, nil
 }
 
-func (m *merchantService) GetMchBuyerGroup_(mchId, id int64) *merchant.MchBuyerGroup {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		return mch.ConfManager().GetGroupByGroupId(int32(id))
-	}
-	return nil
-}
 
-// 保存
-func (m *merchantService) SaveMchBuyerGroup_(mchId int64, v *merchant.MchBuyerGroup) (r *proto.Result, err error) {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch == nil {
-		err = merchant.ErrNoSuchMerchant
-	} else {
-		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
-	}
-	return m.result(err), nil
-}
 
-// 获取买家分组
-func (m *merchantService) GetBuyerGroups(mchId int64) []*merchant.BuyerGroup {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		return mch.ConfManager().SelectBuyerGroup()
-	}
-	return []*merchant.BuyerGroup{}
-}
 
-// 获取批发返点率
-func (m *merchantService) GetRebateRate(mchId, groupId int64) []*wholesaler.WsRebateRate {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		return mch.Wholesaler().GetGroupRebateRate(int32(groupId))
-	}
-	return []*wholesaler.WsRebateRate{}
-}
-
-// 保存分组返点率
-func (m *merchantService) SaveGroupRebateRate(mchId, groupId int64,
-	arr []*wholesaler.WsRebateRate) error {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch == nil {
-		return merchant.ErrNoSuchMerchant
-	}
-	return mch.Wholesaler().SaveGroupRebateRate(int32(groupId), arr)
-}
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.SMerchant {
 	return &proto.SMerchant{
@@ -882,22 +916,231 @@ func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STr
 	}
 }
 
-func (m *merchantService) parseMchSignUp(up *proto.SMchSignUp) *merchant.MchSignUp {
-
+func (m *merchantService) parseMchSignUp(v *proto.SMchSignUp) *merchant.MchSignUp {
+	return &merchant.MchSignUp{
+		Id:                   int32(v.Id),
+		SignNo:               v.SignNo,
+		MemberId:             v.MemberId,
+		Usr:                 v.User,
+		Pwd:                  v.Pwd,
+		MchName:              v.MchName,
+		Province:             v.Province,
+		City:                 v.City,
+		District:             v.District,
+		Address:              v.Address,
+		ShopName:             v.ShopName,
+		CompanyName:          v.CompanyName,
+		CompanyNo:            v.CompanyNo,
+		PersonName:           v.PersonName,
+		PersonId:             v.PersonId,
+		PersonImage:          v.PersonImage,
+		Phone:                v.Phone,
+		CompanyImage:         v.CompanyImage,
+		AuthDoc:              v.AuthDoc,
+		Remark:               v.Remark,
+		Reviewed:             int32(v.ReviewStatus),
+		SubmitTime:           v.SubmitTime,
+	}
 }
 
 func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSignUp {
-
+	return &proto.SMchSignUp{
+		Id:                   int64(v.Id),
+		SignNo:               v.SignNo,
+		MemberId:             v.MemberId,
+		User:                 v.Usr,
+		Pwd:                  v.Pwd,
+		MchName:              v.MchName,
+		Province:             v.Province,
+		City:                 v.City,
+		District:             v.District,
+		Address:              v.Address,
+		ShopName:             v.ShopName,
+		CompanyName:          v.CompanyName,
+		CompanyNo:            v.CompanyNo,
+		PersonName:           v.PersonName,
+		PersonId:             v.PersonId,
+		PersonImage:          v.PersonImage,
+		Phone:                v.Phone,
+		CompanyImage:         v.CompanyImage,
+		AuthDoc:              v.AuthDoc,
+		Remark:               v.Remark,
+		ReviewStatus:             v.Reviewed,
+		SubmitTime:           v.SubmitTime,
+	}
 }
 
 func (m *merchantService) parseEnterpriseInfoDto(v *merchant.EnterpriseInfo) *proto.SEnterpriseInfo {
-
+	return &proto.SEnterpriseInfo{
+		Id:           int64(v.ID),
+		MerchantId:        v.MchId,
+		CompanyName:  v.CompanyName,
+		CompanyNo:    v.CompanyNo,
+		PersonName:   v.PersonName,
+		PersonIdNo:   v.PersonIdNo,
+		PersonImage:  v.PersonImage,
+		Telephone:          v.Tel,
+		Province:     v.Province,
+		City:         v.City,
+		District:     v.District,
+		Location:     v.Location,
+		Address:      v.Address,
+		CompanyImage: v.CompanyImage,
+		AuthDoc:      v.AuthDoc,
+		ReviewStatus:     v.Reviewed,
+		ReviewTime:   v.ReviewTime,
+		ReviewRemark: v.ReviewRemark,
+		UpdateTime:   v.UpdateTime,
+	}
 }
 
-func (m *merchantService) parseEnterpriseInfo(value *proto.SEnterpriseInfo) *merchant.EnterpriseInfo {
-
+func (m *merchantService) parseEnterpriseInfo(v *proto.SEnterpriseInfo) *merchant.EnterpriseInfo {
+	return &merchant.EnterpriseInfo{
+		ID:           int32(v.Id),
+		MchId:        v.MerchantId,
+		CompanyName:  v.CompanyName,
+		CompanyNo:    v.CompanyNo,
+		PersonName:   v.PersonName,
+		PersonIdNo:   v.PersonIdNo,
+		PersonImage:  v.PersonImage,
+		Tel:          v.Telephone,
+		Province:     v.Province,
+		City:         v.City,
+		District:     v.District,
+		Location:     v.Location,
+		Address:      v.Address,
+		CompanyImage: v.CompanyImage,
+		AuthDoc:      v.AuthDoc,
+		Reviewed:     int32(v.ReviewStatus),
+		ReviewTime:   v.ReviewTime,
+		ReviewRemark: v.ReviewRemark,
+		UpdateTime:   v.UpdateTime,
+	}
 }
 
 func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantAccount {
+	return &proto.SMerchantAccount{
+		Balance:              float64(v.Balance),
+		FreezeAmount:        float64( v.FreezeAmount),
+		AwaitAmount:          float64(v.AwaitAmount),
+		PresentAmount:       float64( v.PresentAmount),
+		SalesAmount:          float64(v.SalesAmount),
+		RefundAmount:        float64( v.RefundAmount),
+		TakeAmount:          float64( v.TakeAmount),
+		OfflineSales:         float64(v.OfflineSales),
+		UpdateTime:           v.UpdateTime,
+	}
+}
 
+func (m *merchantService) parseSaleConf(v *proto.SMerchantSaleConf) *merchant.SaleConf {
+	return &merchant.SaleConf{
+		MerchantId:              v.MerchantId,
+		FxSalesEnabled:          types.IntCond(v.FxSalesEnabled,1,0),
+		CashBackPercent:         float32(v.CashBackPercent),
+		CashBackTg1Percent:      float32(v.CashBackTg1Percent),
+		CashBackTg2Percent:      float32(v.CashBackTg2Percent),
+		CashBackMemberPercent:   float32(v.CashBackMemberPercent),
+		AutoSetupOrder:          types.IntCond(v.AutoSetupOrder,1,0),
+		OrderTimeOutMinute:      int(v.OrderTimeOutMinute),
+		OrderConfirmAfterMinute: int(v.OrderConfirmAfterMinute),
+		OrderTimeOutReceiveHour: int(v.OrderTimeOutReceiveHour),
+	}
+}
+
+func (m *merchantService) parseSaleConfDto(v merchant.SaleConf) *proto.SMerchantSaleConf {
+	return &proto.SMerchantSaleConf{
+		MerchantId:              v.MerchantId,
+		FxSalesEnabled:          v.FxSalesEnabled == 1,
+		CashBackPercent:         float64(v.CashBackPercent),
+		CashBackTg1Percent:      float64(v.CashBackTg1Percent),
+		CashBackTg2Percent:      float64(v.CashBackTg2Percent),
+		CashBackMemberPercent:   float64(v.CashBackMemberPercent),
+		AutoSetupOrder:          v.AutoSetupOrder == 1,
+		OrderTimeOutMinute:      int32(v.OrderTimeOutMinute),
+		OrderConfirmAfterMinute: int32(v.OrderConfirmAfterMinute),
+		OrderTimeOutReceiveHour: int32(v.OrderTimeOutReceiveHour),
+	}
+}
+
+func (m *merchantService) parseApiDto(v merchant.ApiInfo) *proto.SMerchantApiInfo {
+	arr := strings.Split(v.WhiteList, ",")
+	if len(v.WhiteList) == 0 {
+		arr = []string{}
+	}
+	return &proto.SMerchantApiInfo{
+		ApiId:     v.ApiId,
+		ApiSecret: v.ApiSecret,
+		WhiteList: arr,
+		Enabled:   v.Enabled == 1,
+	}
+}
+
+func (m *merchantService) parseGroupDto(v *merchant.MchBuyerGroup) *proto.SMerchantBuyerGroup {
+	return &proto.SMerchantBuyerGroup{
+		Id:                   int64(v.ID),
+		Alias:                v.Alias,
+		EnableRetail:         v.EnableRetail == 1,
+		EnableWholesale:      v.EnableWholesale == 1,
+		RebatePeriod:         v.RebatePeriod,
+	}
+}
+
+func (m *merchantService) parseGroup(v *proto.SMerchantBuyerGroup) *merchant.MchBuyerGroup {
+	return &merchant.MchBuyerGroup{
+		ID:              int32(v.Id),
+		Alias:           v.Alias,
+		EnableRetail:    int32(types.IntCond(v.EnableRetail,1,0)),
+		EnableWholesale: int32(types.IntCond(v.EnableWholesale,1,0)),
+		RebatePeriod:    v.RebatePeriod,
+	}
+}
+
+func (m *merchantService) parseRebateRateDto(v *wholesaler.WsRebateRate) *proto.SWholesaleRebateRate {
+	return &proto.SWholesaleRebateRate{
+		Id:                   int64(v.ID),
+		WsId:                int64( v.WsId),
+		BuyerGroupId:         int64(v.BuyerGid),
+		RequireAmount:        v.RequireAmount,
+		RebateRate:           v.RebateRate,
+	}
+}
+
+func (m *merchantService) parseRebateRate(v *proto.SWholesaleRebateRate) *wholesaler.WsRebateRate {
+  return &wholesaler.WsRebateRate{
+	  ID:            int32(v.Id),
+	  WsId:         int32( v.WsId),
+	  BuyerGid:      int32(v.BuyerGroupId),
+	  RequireAmount: v.RequireAmount,
+	  RebateRate:    v.RebateRate,
+  }
+}
+
+func (m *merchantService) parseOrder(v *dto.PagedVendorOrder) *proto.SMerchantOrder {
+	items := make([]*proto.SOrderItem,0)
+	if v.Items != nil{
+		for _,v := range v.Items{
+			items = append(items,parser.ParseOrderItem(v))
+		}
+	}
+	return &proto.SMerchantOrder{
+		OrderId:              v.Id,
+		OrderNo:              v.OrderNo,
+		ParentNo:             v.ParentNo,
+		BuyerId:              int64(v.BuyerId),
+		BuyerName:            v.BuyerName,
+		ItemAmount:           float64(v.ItemAmount),
+		DiscountAmount:       float64(v.DiscountAmount),
+		ExpressFee:           float64(v.ExpressFee),
+		PackageFee:          float64( v.PackageFee),
+		IsPaid:               v.IsPaid,
+		FinalAmount:          float64(v.FinalAmount),
+		State:                int32(v.State),
+		StateText:            order.OrderState(v.State).String(),
+		CreateTime:           v.CreateTime,
+		Items:                items,
+		Data:                 make(map[string]string,0),
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
+	}
 }

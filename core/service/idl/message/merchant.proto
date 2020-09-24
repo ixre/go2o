@@ -136,7 +136,7 @@ message SMchSignUp {
     // 备注
     string Remark = 20;
     // 是否通过
-    bool Reviewed = 22;
+    int32 ReviewStatus = 22;
     // 提交时间
     int64 SubmitTime = 21;
 }
@@ -180,11 +180,11 @@ message SEnterpriseInfo{
     // 授权书
     string AuthDoc = 15;
     //是否已审核
-    bool Reviewed = 16;
+    int32 ReviewStatus = 16;
     // 审核时间
     int64 ReviewTime = 17;
     // 审核备注
-    int64  ReviewRemark = 18;
+    string  ReviewRemark = 18;
     //更新时间
     int64 UpdateTime = 19;
 }
