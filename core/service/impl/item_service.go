@@ -489,7 +489,6 @@ func (s *itemService) GetPagedValueGoodsBySaleLabel_(_ context.Context, r *proto
 	}, nil
 }
 
-
 // 保存商品的会员价
 func (s *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPriceRequest) (*proto.Result, error) {
 	it := s.itemRepo.GetItem(r.ItemId)
@@ -505,7 +504,6 @@ func (s *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPrice
 	}
 	return s.error(err), nil
 }
-
 
 // 设置商品货架状态
 func (s *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequest) (*proto.Result, error) {

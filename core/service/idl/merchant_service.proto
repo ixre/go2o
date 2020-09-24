@@ -106,7 +106,8 @@ service MerchantService {
     rpc PagedWholesaleOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
     }
     // 查询分页订单
-    // rpc PagedTradeOrderOfVendor(MerchantOrderRequest) (int32, []*proto.SComplexOrder)
+    rpc PagedTradeOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
+    }
     // 提到会员账户
     rpc WithdrawToMemberAccount (WithdrawToMemberAccountRequest) returns (Result) {
     }
@@ -152,15 +153,17 @@ message SMerchantOrder {
     string ParentNo = 3;
     int64 BuyerId = 4;
     string BuyerName = 5;
-    double ItemAmount = 6;
-    double DiscountAmount = 7;
-    double ExpressFee = 8;
-    double PackageFee = 9;
-    bool IsPaid = 10;
-    double FinalAmount = 11;
-    int32 State = 12;
-    string StateText = 13;
-    int64 CreateTime = 14;
-    repeated SOrderItem Items = 15;
-    map<string, string> Data = 16;
+    // 订单详情,主要描述订单的内容
+    string Details = 6;
+    double ItemAmount = 7;
+    double DiscountAmount = 8;
+    double ExpressFee = 9;
+    double PackageFee = 10;
+    bool IsPaid = 11;
+    double FinalAmount = 12;
+    int32 State = 13;
+    string StateText = 14;
+    int64 CreateTime = 15;
+    repeated SOrderItem Items = 16;
+    map<string, string> Data = 17;
 }

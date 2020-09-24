@@ -439,9 +439,9 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, paginat
 
 // 查询分页订单
 func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pagination bool,
-	where, orderBy string) (int32, []*proto.SComplexOrder) {
+	where, orderBy string) (int32, []*dto.PagedVendorOrder) {
 	d := o.Connector
-	var orderList []*proto.SComplexOrder
+	var orderList []*dto.PagedVendorOrder
 	var num int32
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -465,7 +465,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 	}
 
 	// 查询分页的订单
-	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
+	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,buyer_id,ot.subject,
         ot.order_amount,ot.discount_amount,
         ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time,
         m.user FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
@@ -477,8 +477,8 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 			var ticket string
 			var user string
 			for rs.Next() {
-				e := &proto.SComplexOrder{}
-				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
+				e := &dto.PagedVendorOrder{}
+				rs.Scan(&e.Id, &e.OrderNo, &e.BuyerId, &e.Details,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime, &user)
 				e.Data = map[string]string{

@@ -75,12 +75,12 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
 			var af nc.AuthFunc = func() (int64, error) {
-				trans,cli,_ := service.MerchantServiceClient()
+				trans, cli, _ := service.MerchantServiceClient()
 				defer trans.Close()
-				mchId,_ := cli.GetMerchantIdByApiId(context.TODO(),&proto.String{
-					Value:arr[0],
+				mchId, _ := cli.GetMerchantIdByApiId(context.TODO(), &proto.String{
+					Value: arr[0],
 				})
-				apiInfo,_ := cli.GetApiInfo(context.TODO(),&proto.MerchantId{Value:mchId.Value})
+				apiInfo, _ := cli.GetApiInfo(context.TODO(), &proto.MerchantId{Value: mchId.Value})
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled {
 						return mchId.Value, errors.New("api has exipres")

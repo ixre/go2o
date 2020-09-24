@@ -24,13 +24,11 @@ type messageService struct {
 	serviceUtil
 }
 
-
 func NewMessageService(rep mss.IMssRepo) *messageService {
 	return &messageService{
 		_rep: rep,
 	}
 }
-
 
 // 获取通知项配置
 func (m *messageService) GetNotifyItem(_ context.Context, key *proto.String) (*proto.SNotifyItem, error) {
@@ -45,17 +43,15 @@ func (m *messageService) GetNotifyItem(_ context.Context, key *proto.String) (*p
 	}, nil
 }
 
-
-
 func (m *messageService) GetAllNotifyItem(_ context.Context, empty *proto.Empty) (*proto.NotifyItemListResponse, error) {
 	list := m._rep.NotifyManager().GetAllNotifyItem()
-	arr := make([]*proto.SNotifyItem,len(list))
-	for i,v := range list{
+	arr := make([]*proto.SNotifyItem, len(list))
+	for i, v := range list {
 		arr[i] = m.parseNotifyItemDto(v)
 	}
 	return &proto.NotifyItemListResponse{
-		Value:arr,
-	},nil
+		Value: arr,
+	}, nil
 }
 
 // 发送短信
@@ -74,47 +70,45 @@ func (m *messageService) SendPhoneMessage(_ context.Context, r *proto.SendMessag
 	return m.success(nil), nil
 }
 
-
 // 保存通知项设置
 func (m *messageService) SaveNotifyItem(_ context.Context, item *proto.SNotifyItem) (*proto.Result, error) {
 	v := m.parseNotifyItem(item)
 	err := m._rep.NotifyManager().SaveNotifyItem(v)
-	return m.error(err),nil
+	return m.error(err), nil
 }
 
 // 获取邮件模版
 func (m *messageService) GetMailTemplate(_ context.Context, id *proto.Int64) (*proto.SMailTemplate, error) {
 	v := m._rep.GetProvider().GetMailTemplate(int32(id.Value))
-	if v != nil{
-		return m.parseMailTemplateDto(v),nil
+	if v != nil {
+		return m.parseMailTemplateDto(v), nil
 	}
-	return nil,nil
+	return nil, nil
 }
-
 
 // 保存邮件模板
 func (m *messageService) SaveMailTemplate(_ context.Context, src *proto.SMailTemplate) (*proto.Result, error) {
-	v :=m.parseMailTemplate(src)
-	_,err := m._rep.GetProvider().SaveMailTemplate(v)
-	return m.error(err),nil
+	v := m.parseMailTemplate(src)
+	_, err := m._rep.GetProvider().SaveMailTemplate(v)
+	return m.error(err), nil
 }
 
 // 获取邮件模板
 func (m *messageService) GetMailTemplates(_ context.Context, empty *proto.Empty) (*proto.MailTemplateListResponse, error) {
 	list := m._rep.GetProvider().GetMailTemplates()
-	arr := make([]*proto.SMailTemplate,len(list))
-	for i,v := range list{
+	arr := make([]*proto.SMailTemplate, len(list))
+	for i, v := range list {
 		arr[i] = m.parseMailTemplateDto(v)
 	}
 	return &proto.MailTemplateListResponse{
-		Value:arr,
-	},nil
+		Value: arr,
+	}, nil
 }
 
 // 删除邮件模板
 func (m *messageService) DeleteMailTemplate(_ context.Context, id *proto.Int64) (*proto.Result, error) {
 	err := m._rep.GetProvider().DeleteMailTemplate(int32(id.Value))
-	return m.error(err),nil
+	return m.error(err), nil
 }
 
 // 发送站内信
@@ -147,9 +141,8 @@ func (m *messageService) SendSiteMessage(_ context.Context, r *proto.SendSiteMes
 	if _, err = im.Save(); err == nil {
 		err = im.Send(nil)
 	}
-	return m.error(err),nil
+	return m.error(err), nil
 }
-
 
 // 获取邮件绑定
 func (m *messageService) GetConfig() mss.Config {
@@ -165,7 +158,6 @@ func (m *messageService) SaveConfig(conf *mss.Config) error {
 func (m *messageService) RegisterNotifyItem(key string, item *notify.NotifyItem) {
 	notify.RegisterNotifyItem(key, item)
 }
-
 
 //todo: 考虑弄一个,确定后再发送.这样可以先在系统,然后才发送
 // 发送站内通知信息,
@@ -285,34 +277,34 @@ func (m *messageService) CreateChatSession(senderRole int, senderId int32, toRol
 
 func (m *messageService) parseNotifyItemDto(v notify.NotifyItem) *proto.SNotifyItem {
 	return &proto.SNotifyItem{
-		Key:                 v.Key,
-		NotifyBy:             int32(v.NotifyBy),
-		ReadonlyBy:           v.ReadonlyBy,
-		TplId:                int32(v.TplId),
-		Content:              v.Content,
-		Tags:                 v.Tags,
+		Key:        v.Key,
+		NotifyBy:   int32(v.NotifyBy),
+		ReadonlyBy: v.ReadonlyBy,
+		TplId:      int32(v.TplId),
+		Content:    v.Content,
+		Tags:       v.Tags,
 	}
 }
 
 func (m *messageService) parseNotifyItem(v *proto.SNotifyItem) *notify.NotifyItem {
 	return &notify.NotifyItem{
-		Key:                 v.Key,
-		NotifyBy:             int(v.NotifyBy),
-		ReadonlyBy:           v.ReadonlyBy,
-		TplId:                int(v.TplId),
-		Content:              v.Content,
-		Tags:                 v.Tags,
+		Key:        v.Key,
+		NotifyBy:   int(v.NotifyBy),
+		ReadonlyBy: v.ReadonlyBy,
+		TplId:      int(v.TplId),
+		Content:    v.Content,
+		Tags:       v.Tags,
 	}
 }
 
 func (m *messageService) parseMailTemplateDto(v *mss.MailTemplate) *proto.SMailTemplate {
 	return &proto.SMailTemplate{
-		Id:                   int64(v.Id),
-		MerchantId:           v.MerchantId,
-		Name:                 v.Name,
-		Subject:              v.Subject,
-		Body:                 v.Body,
-		Enabled:              v.Enabled == 1,
+		Id:         int64(v.Id),
+		MerchantId: v.MerchantId,
+		Name:       v.Name,
+		Subject:    v.Subject,
+		Body:       v.Body,
+		Enabled:    v.Enabled == 1,
 	}
 }
 
@@ -323,6 +315,6 @@ func (m *messageService) parseMailTemplate(v *proto.SMailTemplate) *mss.MailTemp
 		Name:       v.Name,
 		Subject:    v.Subject,
 		Body:       v.Body,
-		Enabled:    types.IntCond(v.Enabled,1,0),
+		Enabled:    types.IntCond(v.Enabled, 1, 0),
 	}
 }

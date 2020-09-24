@@ -25,7 +25,7 @@ func GetValueMerchantCache(mchId int) *proto.SMerchant {
 	var sto = GetKVS()
 	var key = GetValueMerchantCacheCK(mchId)
 	if sto.Get(key, &v) != nil {
-		trans,cli,_ := service.MerchantServiceClient()
+		trans, cli, _ := service.MerchantServiceClient()
 		defer trans.Close()
 		v2, _ := cli.GetMerchant(context.TODO(), &proto.Int64{Value: int64(mchId)})
 		if v2 != nil {
@@ -60,10 +60,10 @@ func GetMerchantIdByHost(host string) int {
 	id, err := sto.GetInt(key)
 	mchId := id
 	if err != nil || mchId <= 0 {
-		trans,cli,_ := service.MerchantServiceClient()
+		trans, cli, _ := service.MerchantServiceClient()
 		defer trans.Close()
-		mchId,_ := cli.GetMerchantIdByHost(context.TODO(),
-			&proto.String{Value:host})
+		mchId, _ := cli.GetMerchantIdByHost(context.TODO(),
+			&proto.String{Value: host})
 		if mchId.Value > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		}
@@ -78,10 +78,10 @@ func GetMerchantIdByApiId(apiId string) int64 {
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
 	kvs.Get(key, &mchId)
 	if mchId == 0 {
-		trans,cli,_ := service.MerchantServiceClient()
+		trans, cli, _ := service.MerchantServiceClient()
 		defer trans.Close()
-		mchId,_ := cli.GetMerchantIdByApiId(context.TODO(),
-			&proto.String{Value:apiId})
+		mchId, _ := cli.GetMerchantIdByApiId(context.TODO(),
+			&proto.String{Value: apiId})
 		if mchId.Value != 0 {
 			kvs.Set(key, mchId)
 		}
@@ -96,9 +96,9 @@ func GetMerchantApiInfo(mchId int64) *proto.SMerchantApiInfo {
 	key := fmt.Sprintf("cache:partner:api:info-%d", mchId)
 	err := kvs.Get(key, &d)
 	if err != nil {
-		trans,cli,_ := service.MerchantServiceClient()
+		trans, cli, _ := service.MerchantServiceClient()
 		defer trans.Close()
-		ret,_ := cli.GetApiInfo(context.TODO(),&proto.MerchantId{Value:mchId})
+		ret, _ := cli.GetApiInfo(context.TODO(), &proto.MerchantId{Value: mchId})
 		if ret != nil {
 			kvs.Set(key, d)
 		}

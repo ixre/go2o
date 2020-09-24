@@ -41,7 +41,8 @@ type (
 		ParentNo  string
 		BuyerId   int
 		BuyerName string
-
+		// 订单详情,主要描述订单的内容
+		Details string
 		//VendorId    int
 		//ShopId      int
 		//ShopName    string
@@ -55,6 +56,7 @@ type (
 		StateText      string
 		CreateTime     int64
 		Items          []*OrderItem
+		Data           map[string]string
 	}
 
 	/*
