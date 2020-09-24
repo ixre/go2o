@@ -60,7 +60,7 @@ import (
 //}
 
 func GetShopsJson(mchId int64) []byte {
-	shops := impl.MerchantService.GetShopsOfMerchant(int64(mchId))
+	shops := impl.MerchantService.GetShopId(int64(mchId))
 	buf := bytes.NewBufferString("[")
 	for i, v := range shops {
 		if i != 0 {
@@ -74,7 +74,7 @@ func GetShopsJson(mchId int64) []byte {
 
 func GetShopDropList(mchId int64, selected int64) []byte {
 	buf := bytes.NewBuffer([]byte{})
-	shops := impl.MerchantService.GetShopsOfMerchant(mchId)
+	shops := impl.MerchantService.GetShopId(mchId)
 	for _, v := range shops {
 		if v.Id == selected {
 			buf.WriteString(fmt.Sprintf(`<option value="%d" selected="selected">%s</option>`, v.Id, v.Name))

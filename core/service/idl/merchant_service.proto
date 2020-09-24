@@ -2,88 +2,8 @@ syntax = "proto3";
 option go_package = ".;proto";
 
 import "global.proto";
-
-// 商家
-message SMerchant {
-    /** 编号 */
-    sint32 Id = 1;
-    /** 会员编号 */
-    sint64 MemberId = 2;
-    /** 登录用户 */
-    string LoginUser = 3;
-    /** 登录密码 */
-    string LoginPwd = 4;
-    /** 名称 */
-    string Name = 5;
-    /** 公司名称 */
-    string CompanyName = 6;
-    /** 是否字营 */
-    sint32 SelfSales = 7;
-    /** 商户等级 */
-    sint32 Level = 8;
-    /** 标志 */
-    string Logo = 9;
-    /** 省 */
-    sint32 Province = 10;
-    /** 市 */
-    sint32 City = 11;
-    /** 区 */
-    sint32 District = 12;
-    /** 标志 */
-    sint32 Flag = 13;
-    /** 是否启用 */
-    sint32 Enabled = 14;
-    /** 最后登录时间 */
-    sint32 LastLoginTime = 15;
-}
-
-// 商家
-message SMerchantPack {
-    /** 登录用户 */
-    string LoginUser = 1;
-    /** 登录密码 */
-    string LoginPwd = 2;
-    /** 名称 */
-    string Name = 3;
-    /** 是否字营 */
-    sint32 SelfSales = 4;
-    /** 店铺名称 */
-    string ShopName = 5;
-    /** 标志 */
-    string ShopLogo = 6;
-    /** 电话 */
-    string Tel = 7;
-    /** 地址 */
-    string Addr = 8;
-}
-
-message MerchantCreateRequest {
-    SMerchantPack mch = 1;
-    sint64 relMemberId = 2;
-}
-
-message MchUserPwd {
-    string user = 1;
-    string pwd = 2;
-}
-
-message SyncWSItemsResponse {
-    map<string, sint32> Value = 1;
-}
-
-message STradeConfListResponse {
-    repeated STradeConf Value = 1;
-}
-
-message TradeConfRequest {
-    sint32 mchId = 1;
-    sint32 tradeType = 2;
-}
-message TradeConfSaveRequest {
-    sint32 mchId = 1;
-    repeated STradeConf arr = 2;
-}
-
+import "message/merchant.proto";
+import "message/order.proto";
 //商家服务
 service MerchantService {
     // 获取商家的信息,mchId
@@ -106,94 +26,141 @@ service MerchantService {
     rpc GetAllTradeConf (Int64) returns (STradeConfListResponse) {
     }
     // 根据交易类型获取交易设置
-    rpc GetTradeConf (TradeConfRequest) returns (STradeConf) {
+    rpc GetTradeConf (TradeConfRequest) returns (STradeConf_) {
     }
     // 保存交易设置
     rpc SaveTradeConf (TradeConfSaveRequest) returns (Result) {
     }
     // 创建会员申请商户密钥
-    rpc CreateSignUpToken(memberId int64) string
+    rpc CreateSignUpToken (MemberId) returns (String) {
+    }
     // 根据商户申请密钥获取会员编号
-    rpc GetMemberFromSignUpToken(token string) int64
-    // 获取会员商户申请信息
-    rpc GetMchSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp
-    // 获取商户申请信息
-    rpc GetSignUp(id int32) *merchant.MchSignUp
-    // 审核商户申请信息
-    rpc ReviewSignUp(id int32, pass bool, remark string) error
+    rpc GetMemberFromSignUpToken (String) returns (Int64) {
+    }
     // 提交注册信息
-    rpc SignUpPost(e *merchant.MchSignUp) (int32, error)
-    rpc GetMerchantByMemberId(memberId int64) *merchant.Merchant
+    rpc SignUp (SMchSignUp) returns (Result) {
+    }
+    // 获取会员商户申请信息
+    rpc GetMchSignUpId (MemberId) returns (Int64) {
+    }
+    // 根据ID获取商户申请信息
+    rpc GetSignUp (Int64) returns (SMchSignUp) {
+    }
+    // 审核商户申请信息
+    rpc ReviewSignUp (MchReviewRequest) returns (Result) {
+    }
     // 删除会员的商户申请资料
-    rpc RemoveMerchantSignUp(memberId int64) error
+    rpc RemoveMerchantSignUp (MemberId) returns (Result) {
+    }
+    // 根据会员号获取商户编号
+    rpc GetMerchantIdByMember (MemberId) returns (Int64) {
+    }
     // 获取企业信息,并返回是否为提交的信息
-    rpc GetEnterpriseInfo(mchId int64)
+    rpc GetEnterpriseInfo (MerchantId) returns (SEnterpriseInfo) {
+    }
     // 保存企业信息
-    rpc SaveEnterpriseInfo(mchId int64,
-    e *merchant.EnterpriseInfo) (int32, error)
+    rpc SaveEnterpriseInfo (SaveEnterpriseRequest) returns (Result) {
+    }
     // 审核企业信息
-    rpc ReviewEnterpriseInfo(mchId int64, pass bool,
-    remark string) error
+    rpc ReviewEnterpriseInfo (MchReviewRequest) returns (Result) {
+    }
 
-    rpc GetAccount(mchId int) *merchant.Account
-
-    rpc SaveMerchant(mchId int64, v *merchant.Merchant) (int64, error)
+    rpc GetAccount (MerchantId) returns (SMerchantAccount) {
+    }
+    //rpc SaveMerchant_(mchId int64, v *merchant.Merchant) (int64, error)
     // 设置商户启用或停用
-    rpc SetEnabled(mchId int64, enabled bool) error
+    rpc SetEnabled (MerchantDisableRequest) returns (Result) {
+    }
     // 根据主机查询商户编号
-    rpc GetMerchantIdByHost(host string) int64
+    rpc GetMerchantIdByHost (String) returns (Int64) {
+    }
     // 获取商户的域名
-    rpc GetMerchantMajorHost(mchId int) string
-    rpc SaveSaleConf(mchId int64, v *merchant.SaleConf) error
+    rpc GetMerchantMajorHost (MerchantId) returns (String) {
+    }
+    rpc SaveSaleConf (SaveMerchantSaleConfRequest) returns (Result) {
+    }
+    rpc GetSaleConf (MerchantId) returns (SMerchantSaleConf) {
+    }
 
-    rpc GetSaleConf(mchId int64) *merchant.SaleConf
-    rpc GetShopsOfMerchant(mchId int64) []*shop.Shop
+    rpc GetShopId (MerchantId) returns (Int64) {
+    }
     // 修改密码
-    rpc ModifyPassword(mchId int64, oldPwd, newPwd string) error
+    rpc ModifyPassword (ModifyMerchantPasswordRequest) returns (Result) {
+    }
 
     // 保存API信息
-    rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
+    //rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
     // 获取API接口
-    rpc GetApiInfo(mchId int) *merchant.ApiInfo
+    rpc GetApiInfo (MerchantId) returns (SMerchantApiInfo) {
+    }
     // 启用/停用接口权限
-    rpc ApiPerm(mchId int64, enabled bool) error
+    rpc ToggleApiPerm (MerchantApiPermRequest) returns (Result) {
+    }
     // 根据API ID获取MerchantId
-    rpc GetMerchantIdByApiId(apiId string) int64
+    rpc GetMerchantIdByApiId (String) returns (Int64) {
+    }
     // 查询分页订单
-    rpc PagedNormalOrderOfVendor(vendorId int64, begin, size int, pagination bool,
-    where, orderBy string) (int, []*dto.PagedVendorOrder)
+    rpc PagedNormalOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
+    }
     // 查询分页订单
-    rpc PagedWholesaleOrderOfVendor(vendorId int64, begin, size int, pagination bool,
-    where, orderBy string) (int, []*dto.PagedVendorOrder)
+    rpc PagedWholesaleOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
+    }
     // 查询分页订单
-    rpc PagedTradeOrderOfVendor(vendorId int64, begin, size int, pagination bool,
-    where, orderBy string) (int32, []*proto.SComplexOrder)
+    // rpc PagedTradeOrderOfVendor(MerchantOrderRequest) (int32, []*proto.SComplexOrder)
     // 提到会员账户
-    rpc TakeToMemberAccount(mchId int64, amount float32) error
+    rpc WithdrawToMemberAccount (WithdrawToMemberAccountRequest) returns (Result) {
+    }
     // 账户充值
-    rpc ChargeAccount(mchId int64, kind int32, title,
-    outerNo string, amount float64, relateUser int64) error
+    rpc ChargeAccount (MerchantChargeRequest) returns (Result) {
+    }
 
-    rpc GetMchBuyerGroup_(mchId, id int64) *merchant.MchBuyerGroup
+    rpc GetMchBuyerGroup_ (MerchantBuyerGroupId) returns (SMerchantBuyerGroup) {
+    }
     // 保存
-    rpc SaveMchBuyerGroup_(mchId int64, v *merchant.MchBuyerGroup) (r *proto.Result, err error)
+    rpc SaveMchBuyerGroup_ (SaveMerchantBuyerGroupRequest) returns (Result) {
+    }
     // 获取买家分组
-    rpc GetBuyerGroups(mchId int64) []*merchant.BuyerGroup
+    rpc GetBuyerGroups (MerchantId) returns (MerchantBuyerGroupListResponse) {
+    }
     // 获取批发返点率
-    rpc GetRebateRate(mchId, groupId int64) []*wholesaler.WsRebateRate
-
+    rpc GetRebateRate (MerchantBuyerGroupId) returns (WholesaleRebateRateListResponse) {
+    }
     // 保存分组返点率
-    rpc SaveGroupRebateRate(mchId, groupId int64,
-    arr []*wholesaler.WsRebateRate) error
+    rpc SaveGroupRebateRate (SaveWholesaleRebateRateRequest) returns (Result) {
+    }
 }
 
-// 商户交易设置
-message STradeConf {
-    // 商户编号  sint64 MchId = 1;
-    // 交易类型  sint32 TradeType = 2;
-    // 交易方案，根据方案来自动调整比例  sint64 PlanId = 3;
-    // 交易标志  sint32 Flag = 4;
-    // 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
-    // 交易费，按单笔收取  sint32 TradeFee = 6;
-    // 交易手续费比例  sint32 TradeRate = 7;
+
+message MerchantOrderRequest {
+    //　商户编号
+    int64 MerchantId = 1;
+    // 是否分页
+    bool Pagination = 2;
+    //　分页参数
+    SPagingParams Params = 3;
+}
+
+
+message PagingMerchantOrderListResponse {
+    int64 Total = 1;
+    repeated SMerchantOrder Value = 2;
+}
+
+message SMerchantOrder {
+    int64 OrderId = 1;
+    string OrderNo = 2;
+    string ParentNo = 3;
+    int64 BuyerId = 4;
+    string BuyerName = 5;
+    double ItemAmount = 6;
+    double DiscountAmount = 7;
+    double ExpressFee = 8;
+    double PackageFee = 9;
+    bool IsPaid = 10;
+    double FinalAmount = 11;
+    int32 State = 12;
+    string StateText = 13;
+    int64 CreateTime = 14;
+    repeated SOrderItem Items = 15;
+    map<string, string> Data = 16;
 }

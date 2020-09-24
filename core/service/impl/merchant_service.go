@@ -35,6 +35,196 @@ type merchantService struct {
 	serviceUtil
 }
 
+// 创建会员申请商户密钥
+func (m *merchantService) CreateSignUpToken(_ context.Context, id *proto.MemberId) (*proto.String, error) {
+	s := m._mchRepo.CreateSignUpToken(id.Value)
+	return &proto.String{Value: s},nil
+}
+
+// 根据商户申请密钥获取会员编号
+func (m *merchantService) GetMemberFromSignUpToken(_ context.Context, s *proto.String) (*proto.Int64, error) {
+	i := m._mchRepo.GetMemberFromSignUpToken(s.Value)
+	return &proto.Int64{Value:i},nil
+}
+
+
+// 提交注册信息
+func (m *merchantService) SignUp(_ context.Context, up *proto.SMchSignUp) (*proto.Result, error) {
+	im := m._mchRepo.GetManager()
+	_,err := im.CommitSignUpInfo(m.parseMchSignUp(up))
+	return m.error(err),nil
+}
+
+// 获取会员商户申请信息
+func (m *merchantService) GetMchSignUpId(_ context.Context, id *proto.MemberId) (*proto.Int64, error) {
+	v := m._mchRepo.GetManager().GetSignUpInfoByMemberId(id.Value)
+	if v!= nil{
+		return &proto.Int64{Value:int64(v.Id)},nil
+	}
+	return &proto.Int64{},nil
+}
+
+// 获取商户申请信息
+func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.SMchSignUp, error) {
+	im := m._mchRepo.GetManager()
+	v := im.GetSignUpInfo(int32(id.Value))
+	if v != nil{
+		return m.parseMchSIgnUpDto(v),nil
+	}
+	return nil,nil
+}
+
+// 审核商户申请信息
+func (m *merchantService) ReviewSignUp(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
+	im := m._mchRepo.GetManager()
+	err := im.ReviewMchSignUp(int32(r.Id), r.Pass, r.Remark)
+	return m.error(err),nil
+}
+
+// 删除会员的商户申请资料
+func (m *merchantService) RemoveMerchantSignUp(_ context.Context, id *proto.MemberId) (*proto.Result, error) {
+	err :=  m._mchRepo.GetManager().RemoveSignUp(id.Value)
+	return m.error(err),nil
+}
+
+func (m *merchantService) GetMerchantIdByMember(_ context.Context, id *proto.MemberId) (*proto.Int64, error) {
+	mch := m._mchRepo.GetManager().GetMerchantByMemberId(id.Value)
+	if mch != nil {
+		return &proto.Int64{Value: mch.GetAggregateRootId()},nil
+	}
+	return &proto.Int64{},nil
+}
+
+
+// 获取企业信息,并返回是否为提交的信息
+func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.MerchantId) (*proto.SEnterpriseInfo, error) {
+		mch := m._mchRepo.GetMerchant(int(id.Value))
+		if mch != nil{
+			v :=  mch.ProfileManager().GetEnterpriseInfo()
+			return m.parseEnterpriseInfoDto(v),nil
+		}
+		return nil,nil
+}
+
+// 保存企业信息
+func (m *merchantService) SaveEnterpriseInfo(_ context.Context, r *proto.SaveEnterpriseRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	}else{
+		_,err = mch.ProfileManager().SaveEnterpriseInfo(
+			m.parseEnterpriseInfo(r.Value))
+	}
+	return m.error(err),nil
+}
+
+
+// 审核企业信息
+func (m *merchantService) ReviewEnterpriseInfo(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		im := mch.ProfileManager()
+		err = im.ReviewEnterpriseInfo(r.Pass, r.Remark)
+	}
+	return m.error(err), nil
+}
+
+// 获取商户账户
+func (m *merchantService) GetAccount(_ context.Context, id *proto.MerchantId) (*proto.SMerchantAccount, error) {
+	v := m._mchRepo.GetAccount(int(id.Value))
+	if v != nil{
+		return m.parseAccountDto(v),nil
+	}
+	return nil,nil
+}
+
+// 设置商户启用或停用
+func (m *merchantService) SetEnabled(_ context.Context,r  *proto.MerchantDisableRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	}else{
+		err =  mch.SetEnabled(r.Enabled)
+	}
+	return m.error(err),nil
+}
+
+func (m *merchantService) GetMerchantIdByHost(_ context.Context, s *proto.String) (*proto.Int64, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetMerchantMajorHost(_ context.Context, id *proto.MerchantId) (*proto.String, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) SaveSaleConf(_ context.Context, request *proto.SaveMerchantSaleConfRequest) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetSaleConf(_ context.Context, id *proto.MerchantId) (*proto.SMerchantSaleConf, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*proto.Int64, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) ModifyPassword(_ context.Context, request *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetApiInfo(_ context.Context, id *proto.MerchantId) (*proto.SMerchantApiInfo, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) ToggleApiPerm(_ context.Context, request *proto.MerchantApiPermRequest) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetMerchantIdByApiId(_ context.Context, s *proto.String) (*proto.Int64, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) PagedNormalOrderOfVendor(_ context.Context, request *proto.MerchantOrderRequest) (*proto.PagingMerchantOrderListResponse, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) PagedWholesaleOrderOfVendor(_ context.Context, request *proto.MerchantOrderRequest) (*proto.PagingMerchantOrderListResponse, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) WithdrawToMemberAccount(_ context.Context, request *proto.WithdrawToMemberAccountRequest) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) ChargeAccount(_ context.Context, request *proto.MerchantChargeRequest) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetMchBuyerGroup_(_ context.Context, id *proto.MerchantBuyerGroupId) (*proto.SMerchantBuyerGroup, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) SaveMchBuyerGroup_(_ context.Context, request *proto.SaveMerchantBuyerGroupRequest) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetBuyerGroups(_ context.Context, id *proto.MerchantId) (*proto.MerchantBuyerGroupListResponse, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) GetRebateRate(_ context.Context, id *proto.MerchantBuyerGroupId) (*proto.WholesaleRebateRateListResponse, error) {
+	panic("implement me")
+}
+
+func (m *merchantService) SaveGroupRebateRate(_ context.Context, request *proto.SaveWholesaleRebateRateRequest) (*proto.Result, error) {
+	panic("implement me")
+}
 
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
@@ -91,7 +281,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 	return m.result(err), nil
 }
 
-func (m *merchantService) GetTradeConf(_ context.Context, r *proto.TradeConfRequest) (*proto.STradeConf, error) {
+func (m *merchantService) GetTradeConf(_ context.Context, r *proto.TradeConfRequest) (*proto.STradeConf_, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch != nil {
 		v := mch.ConfManager().GetTradeConf(int(r.TradeType))
@@ -117,50 +307,13 @@ func (m *merchantService) SaveTradeConf(_ context.Context, r *proto.TradeConfSav
 }
 
 
-// 创建会员申请商户密钥
-func (m *merchantService) CreateSignUpToken(memberId int64) string {
-	return m._mchRepo.CreateSignUpToken(memberId)
-}
-
-// 根据商户申请密钥获取会员编号
-func (m *merchantService) GetMemberFromSignUpToken(token string) int64 {
-	return m._mchRepo.GetMemberFromSignUpToken(token)
-}
-
-// 获取会员商户申请信息
-func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
-	return m._mchRepo.GetManager().GetSignUpInfoByMemberId(memberId)
-}
-
-// 获取商户申请信息
-func (m *merchantService) GetSignUp(id int32) *merchant.MchSignUp {
-	return m._mchRepo.GetManager().GetSignUpInfo(id)
-}
-
-// 审核商户申请信息
-func (m *merchantService) ReviewSignUp(id int32, pass bool, remark string) error {
-	return m._mchRepo.GetManager().ReviewMchSignUp(id, pass, remark)
-}
 
 
-// 提交注册信息
-func (m *merchantService) SignUpPost(e *merchant.MchSignUp) (int32, error) {
-	return m._mchRepo.GetManager().CommitSignUpInfo(e)
-}
 
-func (m *merchantService) GetMerchantByMemberId(memberId int64) *merchant.Merchant {
-	mch := m._mchRepo.GetManager().GetMerchantByMemberId(memberId)
-	if mch != nil {
-		v := mch.GetValue()
-		return &v
-	}
-	return nil
-}
 
-// 删除会员的商户申请资料
-func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
-	return m._mchRepo.GetManager().RemoveSignUp(memberId)
-}
+
+
+
 
 // 登录，返回结果(Result_)和会员编号(ID);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
@@ -226,32 +379,7 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwd) (*p
 	return m.success(map[string]string{"mch_id": types.String(id)}), nil
 }
 
-// 获取企业信息,并返回是否为提交的信息
-func (m *merchantService) GetEnterpriseInfo(mchId int64) (
-	e *merchant.EnterpriseInfo) {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	return mch.ProfileManager().GetEnterpriseInfo()
-}
 
-// 保存企业信息
-func (m *merchantService) SaveEnterpriseInfo(mchId int64,
-	e *merchant.EnterpriseInfo) (int32, error) {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		return mch.ProfileManager().SaveEnterpriseInfo(e)
-	}
-	return 0, merchant.ErrNoSuchMerchant
-}
-
-// 审核企业信息
-func (m *merchantService) ReviewEnterpriseInfo(mchId int64, pass bool,
-	remark string) error {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		return mch.ProfileManager().ReviewEnterpriseInfo(pass, remark)
-	}
-	return merchant.ErrNoSuchMerchant
-}
 
 func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*proto.SMerchant, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
@@ -264,9 +392,6 @@ func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*prot
 
 
 
-func (m *merchantService) GetAccount(mchId int) *merchant.Account {
-	return m._mchRepo.GetAccount(mchId)
-}
 
 func (m *merchantService) SaveMerchant(mchId int64, v *merchant.Merchant) (int64, error) {
 	var mch merchant.IMerchant
@@ -317,14 +442,6 @@ func (m *merchantService) Stat(_ context.Context, mchId *proto.Int64) (r *proto.
 	return m.result(err), nil
 }
 
-// 设置商户启用或停用
-func (m *merchantService) SetEnabled(mchId int64, enabled bool) error {
-	mch := m._mchRepo.GetMerchant(int(mchId))
-	if mch == nil {
-		return merchant.ErrNoSuchMerchant
-	}
-	return mch.SetEnabled(enabled)
-}
 
 // 根据主机查询商户编号
 func (m *merchantService) GetMerchantIdByHost(host string) int64 {
@@ -357,7 +474,7 @@ func (m *merchantService) GetSaleConf(mchId int64) *merchant.SaleConf {
 	return nil
 }
 
-func (m *merchantService) GetShopsOfMerchant(mchId int64) []*shop.Shop {
+func (m *merchantService) GetShopId(mchId int64) []*shop.Shop {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	shops := mch.ShopManager().GetShops()
 	sv := make([]*shop.Shop, len(shops))
@@ -500,7 +617,7 @@ func (m *merchantService) PagedTradeOrderOfVendor(vendorId int64, begin, size in
 }
 
 // 提到会员账户
-func (m *merchantService) TakeToMemberAccount(mchId int64, amount float32) error {
+func (m *merchantService) WithdrawToMemberAccount(mchId int64, amount float32) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		acc := mch.Account()
@@ -510,7 +627,7 @@ func (m *merchantService) TakeToMemberAccount(mchId int64, amount float32) error
 }
 
 // 提到会员账户
-func (m *merchantService) TakeToMemberAccount1(mchId int64, amount float32) error {
+func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		acc := mch.Account()
@@ -741,7 +858,7 @@ func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto
 	}
 }
 
-func (m *merchantService) parseTradeConf(conf *proto.STradeConf) *merchant.TradeConf {
+func (m *merchantService) parseTradeConf(conf *proto.STradeConf_) *merchant.TradeConf {
 	return &merchant.TradeConf{
 		//MchId:       conf.MchId,
 		//TradeType:   int(conf.TradeType),
@@ -753,8 +870,8 @@ func (m *merchantService) parseTradeConf(conf *proto.STradeConf) *merchant.Trade
 	}
 }
 
-func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STradeConf {
-	return &proto.STradeConf{
+func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STradeConf_ {
+	return &proto.STradeConf_{
 		//MchId:       conf.MchId,
 		//TradeType:   int32(conf.TradeType),
 		//PlanId:      conf.PlanId,
@@ -763,4 +880,24 @@ func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STr
 		//TradeFee:    int32(conf.TradeFee),
 		//TradeRate:   int32(conf.TradeRate),
 	}
+}
+
+func (m *merchantService) parseMchSignUp(up *proto.SMchSignUp) *merchant.MchSignUp {
+
+}
+
+func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSignUp {
+
+}
+
+func (m *merchantService) parseEnterpriseInfoDto(v *merchant.EnterpriseInfo) *proto.SEnterpriseInfo {
+
+}
+
+func (m *merchantService) parseEnterpriseInfo(value *proto.SEnterpriseInfo) *merchant.EnterpriseInfo {
+
+}
+
+func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantAccount {
+
 }

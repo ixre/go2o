@@ -33,7 +33,7 @@ type (
 		GetOnlineShopOfMerchant(vendorId int) *OnlineShop
 
 		// 获取商户所有商店
-		GetShopsOfMerchant(mchId int64) []Shop
+		GetShopId(mchId int64) []Shop
 
 		// 删除线上商店
 		DeleteOnlineShop(mchId, shopId int64) error

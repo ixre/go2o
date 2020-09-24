@@ -1,0 +1,32 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+// 订单商品项
+message SOrderItem {
+    // 编号
+    int64 Id = 1;
+    // 商品快照编号
+    int64 SnapshotId = 2;
+    // Sku编号
+    int64 SkuId = 3;
+    // 商品编号
+    int64 ItemId = 4;
+    // 商品标题
+    string ItemTitle=5;
+    // 商品图片
+    string Image = 6;
+    // 商品单价
+    double Price = 7;
+    // 商品实际单价
+    double FinalPrice = 8;
+    // 商品数量
+    int32 Quantity  = 9;
+    // 退货数量
+    int32 ReturnQuantity = 10;
+    // 商品总金额
+    double Amount  = 11;
+    // 商品实际总金额
+    double FinalAmount = 12;
+    // 是否已发货
+    bool IsShipped = 13;
+}

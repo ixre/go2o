@@ -195,5 +195,7 @@ message SPagingResult {
 }
 
 message Id{int64 Value = 1;}
+message MemberId{int64 Value = 1;}
+message MerchantId{int64 Value = 1;}
 message SellerId{int64 Value = 1;}
 message BuyerId{int64 Value = 1;}
