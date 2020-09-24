@@ -36,7 +36,7 @@ func (m *TransferInRequest) Reset()         { *m = TransferInRequest{} }
 func (m *TransferInRequest) String() string { return proto.CompactTextString(m) }
 func (*TransferInRequest) ProtoMessage()    {}
 func (*TransferInRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_83db56cd26c37fac, []int{0}
+	return fileDescriptor_finance_service_5460382b2fb7846b, []int{0}
 }
 func (m *TransferInRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TransferInRequest.Unmarshal(m, b)
@@ -77,8 +77,317 @@ func (m *TransferInRequest) GetAmount() float64 {
 	return 0
 }
 
+type PersonId struct {
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PersonId) Reset()         { *m = PersonId{} }
+func (m *PersonId) String() string { return proto.CompactTextString(m) }
+func (*PersonId) ProtoMessage()    {}
+func (*PersonId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_finance_service_5460382b2fb7846b, []int{1}
+}
+func (m *PersonId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PersonId.Unmarshal(m, b)
+}
+func (m *PersonId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PersonId.Marshal(b, m, deterministic)
+}
+func (dst *PersonId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PersonId.Merge(dst, src)
+}
+func (m *PersonId) XXX_Size() int {
+	return xxx_messageInfo_PersonId.Size(m)
+}
+func (m *PersonId) XXX_DiscardUnknown() {
+	xxx_messageInfo_PersonId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PersonId proto.InternalMessageInfo
+
+func (m *PersonId) GetValue() int64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+// 收益总记录
+type SRiseInfo struct {
+	// 人员编号
+	PersonId int64 `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
+	// 本金及收益的余额
+	Balance float64 `protobuf:"fixed64,2,opt,name=Balance,proto3" json:"Balance,omitempty"`
+	// 　结算金额
+	SettlementAmount float64 `protobuf:"fixed64,3,opt,name=SettlementAmount,proto3" json:"SettlementAmount,omitempty"`
+	// 当前的收益
+	Rise float64 `protobuf:"fixed64,4,opt,name=Rise,proto3" json:"Rise,omitempty"`
+	// 今日转入
+	TransferIn float64 `protobuf:"fixed64,5,opt,name=TransferIn,proto3" json:"TransferIn,omitempty"`
+	// 总金额
+	TotalAmount float64 `protobuf:"fixed64,6,opt,name=TotalAmount,proto3" json:"TotalAmount,omitempty"`
+	// 总收益
+	TotalRise float64 `protobuf:"fixed64,7,opt,name=TotalRise,proto3" json:"TotalRise,omitempty"`
+	// 结算日期,用于筛选需要结算的数据
+	SettledDate int64 `protobuf:"varint,8,opt,name=SettledDate,proto3" json:"SettledDate,omitempty"`
+	// 更新时间
+	UpdateTime           int64    `protobuf:"varint,9,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SRiseInfo) Reset()         { *m = SRiseInfo{} }
+func (m *SRiseInfo) String() string { return proto.CompactTextString(m) }
+func (*SRiseInfo) ProtoMessage()    {}
+func (*SRiseInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_finance_service_5460382b2fb7846b, []int{2}
+}
+func (m *SRiseInfo) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SRiseInfo.Unmarshal(m, b)
+}
+func (m *SRiseInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SRiseInfo.Marshal(b, m, deterministic)
+}
+func (dst *SRiseInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SRiseInfo.Merge(dst, src)
+}
+func (m *SRiseInfo) XXX_Size() int {
+	return xxx_messageInfo_SRiseInfo.Size(m)
+}
+func (m *SRiseInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_SRiseInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SRiseInfo proto.InternalMessageInfo
+
+func (m *SRiseInfo) GetPersonId() int64 {
+	if m != nil {
+		return m.PersonId
+	}
+	return 0
+}
+
+func (m *SRiseInfo) GetBalance() float64 {
+	if m != nil {
+		return m.Balance
+	}
+	return 0
+}
+
+func (m *SRiseInfo) GetSettlementAmount() float64 {
+	if m != nil {
+		return m.SettlementAmount
+	}
+	return 0
+}
+
+func (m *SRiseInfo) GetRise() float64 {
+	if m != nil {
+		return m.Rise
+	}
+	return 0
+}
+
+func (m *SRiseInfo) GetTransferIn() float64 {
+	if m != nil {
+		return m.TransferIn
+	}
+	return 0
+}
+
+func (m *SRiseInfo) GetTotalAmount() float64 {
+	if m != nil {
+		return m.TotalAmount
+	}
+	return 0
+}
+
+func (m *SRiseInfo) GetTotalRise() float64 {
+	if m != nil {
+		return m.TotalRise
+	}
+	return 0
+}
+
+func (m *SRiseInfo) GetSettledDate() int64 {
+	if m != nil {
+		return m.SettledDate
+	}
+	return 0
+}
+
+func (m *SRiseInfo) GetUpdateTime() int64 {
+	if m != nil {
+		return m.UpdateTime
+	}
+	return 0
+}
+
+type RiseSettleRequest struct {
+	PersonId             int64    `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
+	SettleDay            int64    `protobuf:"varint,2,opt,name=SettleDay,proto3" json:"SettleDay,omitempty"`
+	Ratio                float64  `protobuf:"fixed64,3,opt,name=Ratio,proto3" json:"Ratio,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RiseSettleRequest) Reset()         { *m = RiseSettleRequest{} }
+func (m *RiseSettleRequest) String() string { return proto.CompactTextString(m) }
+func (*RiseSettleRequest) ProtoMessage()    {}
+func (*RiseSettleRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_finance_service_5460382b2fb7846b, []int{3}
+}
+func (m *RiseSettleRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RiseSettleRequest.Unmarshal(m, b)
+}
+func (m *RiseSettleRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RiseSettleRequest.Marshal(b, m, deterministic)
+}
+func (dst *RiseSettleRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RiseSettleRequest.Merge(dst, src)
+}
+func (m *RiseSettleRequest) XXX_Size() int {
+	return xxx_messageInfo_RiseSettleRequest.Size(m)
+}
+func (m *RiseSettleRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RiseSettleRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RiseSettleRequest proto.InternalMessageInfo
+
+func (m *RiseSettleRequest) GetPersonId() int64 {
+	if m != nil {
+		return m.PersonId
+	}
+	return 0
+}
+
+func (m *RiseSettleRequest) GetSettleDay() int64 {
+	if m != nil {
+		return m.SettleDay
+	}
+	return 0
+}
+
+func (m *RiseSettleRequest) GetRatio() float64 {
+	if m != nil {
+		return m.Ratio
+	}
+	return 0
+}
+
+type RiseTransferOutRequest struct {
+	PersonId             int64    `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
+	TransferWith         int64    `protobuf:"varint,2,opt,name=TransferWith,proto3" json:"TransferWith,omitempty"`
+	Amount               float64  `protobuf:"fixed64,3,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RiseTransferOutRequest) Reset()         { *m = RiseTransferOutRequest{} }
+func (m *RiseTransferOutRequest) String() string { return proto.CompactTextString(m) }
+func (*RiseTransferOutRequest) ProtoMessage()    {}
+func (*RiseTransferOutRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_finance_service_5460382b2fb7846b, []int{4}
+}
+func (m *RiseTransferOutRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RiseTransferOutRequest.Unmarshal(m, b)
+}
+func (m *RiseTransferOutRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RiseTransferOutRequest.Marshal(b, m, deterministic)
+}
+func (dst *RiseTransferOutRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RiseTransferOutRequest.Merge(dst, src)
+}
+func (m *RiseTransferOutRequest) XXX_Size() int {
+	return xxx_messageInfo_RiseTransferOutRequest.Size(m)
+}
+func (m *RiseTransferOutRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RiseTransferOutRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RiseTransferOutRequest proto.InternalMessageInfo
+
+func (m *RiseTransferOutRequest) GetPersonId() int64 {
+	if m != nil {
+		return m.PersonId
+	}
+	return 0
+}
+
+func (m *RiseTransferOutRequest) GetTransferWith() int64 {
+	if m != nil {
+		return m.TransferWith
+	}
+	return 0
+}
+
+func (m *RiseTransferOutRequest) GetAmount() float64 {
+	if m != nil {
+		return m.Amount
+	}
+	return 0
+}
+
+type CommitTransferRequest struct {
+	PersonId             int64    `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
+	LogId                int64    `protobuf:"varint,2,opt,name=LogId,proto3" json:"LogId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CommitTransferRequest) Reset()         { *m = CommitTransferRequest{} }
+func (m *CommitTransferRequest) String() string { return proto.CompactTextString(m) }
+func (*CommitTransferRequest) ProtoMessage()    {}
+func (*CommitTransferRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_finance_service_5460382b2fb7846b, []int{5}
+}
+func (m *CommitTransferRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CommitTransferRequest.Unmarshal(m, b)
+}
+func (m *CommitTransferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CommitTransferRequest.Marshal(b, m, deterministic)
+}
+func (dst *CommitTransferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CommitTransferRequest.Merge(dst, src)
+}
+func (m *CommitTransferRequest) XXX_Size() int {
+	return xxx_messageInfo_CommitTransferRequest.Size(m)
+}
+func (m *CommitTransferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CommitTransferRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CommitTransferRequest proto.InternalMessageInfo
+
+func (m *CommitTransferRequest) GetPersonId() int64 {
+	if m != nil {
+		return m.PersonId
+	}
+	return 0
+}
+
+func (m *CommitTransferRequest) GetLogId() int64 {
+	if m != nil {
+		return m.LogId
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*TransferInRequest)(nil), "TransferInRequest")
+	proto.RegisterType((*PersonId)(nil), "PersonId")
+	proto.RegisterType((*SRiseInfo)(nil), "SRiseInfo")
+	proto.RegisterType((*RiseSettleRequest)(nil), "RiseSettleRequest")
+	proto.RegisterType((*RiseTransferOutRequest)(nil), "RiseTransferOutRequest")
+	proto.RegisterType((*CommitTransferRequest)(nil), "CommitTransferRequest")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -93,8 +402,18 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type FinanceServiceClient interface {
-	// 转入(业务放在service,是为person_finance解耦)
+	// 获取用户的账户信息
+	GetRiseInfo(ctx context.Context, in *PersonId, opts ...grpc.CallOption) (*SRiseInfo, error)
+	// 转入
 	RiseTransferIn(ctx context.Context, in *TransferInRequest, opts ...grpc.CallOption) (*Result, error)
+	// 转出
+	RiseTransferOut(ctx context.Context, in *RiseTransferOutRequest, opts ...grpc.CallOption) (*Result, error)
+	// 结算收益(按日期每天结息)
+	RiseSettleByDay(ctx context.Context, in *RiseSettleRequest, opts ...grpc.CallOption) (*Result, error)
+	// 提交转入/转出日志
+	CommitTransfer(ctx context.Context, in *CommitTransferRequest, opts ...grpc.CallOption) (*Result, error)
+	// 开通增利服务
+	OpenRiseService(ctx context.Context, in *PersonId, opts ...grpc.CallOption) (*Result, error)
 }
 
 type financeServiceClient struct {
@@ -103,6 +422,15 @@ type financeServiceClient struct {
 
 func NewFinanceServiceClient(cc *grpc.ClientConn) FinanceServiceClient {
 	return &financeServiceClient{cc}
+}
+
+func (c *financeServiceClient) GetRiseInfo(ctx context.Context, in *PersonId, opts ...grpc.CallOption) (*SRiseInfo, error) {
+	out := new(SRiseInfo)
+	err := c.cc.Invoke(ctx, "/FinanceService/GetRiseInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *financeServiceClient) RiseTransferIn(ctx context.Context, in *TransferInRequest, opts ...grpc.CallOption) (*Result, error) {
@@ -114,14 +442,78 @@ func (c *financeServiceClient) RiseTransferIn(ctx context.Context, in *TransferI
 	return out, nil
 }
 
+func (c *financeServiceClient) RiseTransferOut(ctx context.Context, in *RiseTransferOutRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/FinanceService/RiseTransferOut", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financeServiceClient) RiseSettleByDay(ctx context.Context, in *RiseSettleRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/FinanceService/RiseSettleByDay", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financeServiceClient) CommitTransfer(ctx context.Context, in *CommitTransferRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/FinanceService/CommitTransfer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financeServiceClient) OpenRiseService(ctx context.Context, in *PersonId, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/FinanceService/OpenRiseService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FinanceServiceServer is the server API for FinanceService service.
 type FinanceServiceServer interface {
-	// 转入(业务放在service,是为person_finance解耦)
+	// 获取用户的账户信息
+	GetRiseInfo(context.Context, *PersonId) (*SRiseInfo, error)
+	// 转入
 	RiseTransferIn(context.Context, *TransferInRequest) (*Result, error)
+	// 转出
+	RiseTransferOut(context.Context, *RiseTransferOutRequest) (*Result, error)
+	// 结算收益(按日期每天结息)
+	RiseSettleByDay(context.Context, *RiseSettleRequest) (*Result, error)
+	// 提交转入/转出日志
+	CommitTransfer(context.Context, *CommitTransferRequest) (*Result, error)
+	// 开通增利服务
+	OpenRiseService(context.Context, *PersonId) (*Result, error)
 }
 
 func RegisterFinanceServiceServer(s *grpc.Server, srv FinanceServiceServer) {
 	s.RegisterService(&_FinanceService_serviceDesc, srv)
+}
+
+func _FinanceService_GetRiseInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PersonId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServiceServer).GetRiseInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FinanceService/GetRiseInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServiceServer).GetRiseInfo(ctx, req.(*PersonId))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _FinanceService_RiseTransferIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -142,13 +534,105 @@ func _FinanceService_RiseTransferIn_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FinanceService_RiseTransferOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RiseTransferOutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServiceServer).RiseTransferOut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FinanceService/RiseTransferOut",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServiceServer).RiseTransferOut(ctx, req.(*RiseTransferOutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinanceService_RiseSettleByDay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RiseSettleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServiceServer).RiseSettleByDay(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FinanceService/RiseSettleByDay",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServiceServer).RiseSettleByDay(ctx, req.(*RiseSettleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinanceService_CommitTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommitTransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServiceServer).CommitTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FinanceService/CommitTransfer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServiceServer).CommitTransfer(ctx, req.(*CommitTransferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinanceService_OpenRiseService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PersonId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServiceServer).OpenRiseService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FinanceService/OpenRiseService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServiceServer).OpenRiseService(ctx, req.(*PersonId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _FinanceService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "FinanceService",
 	HandlerType: (*FinanceServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "GetRiseInfo",
+			Handler:    _FinanceService_GetRiseInfo_Handler,
+		},
+		{
 			MethodName: "RiseTransferIn",
 			Handler:    _FinanceService_RiseTransferIn_Handler,
+		},
+		{
+			MethodName: "RiseTransferOut",
+			Handler:    _FinanceService_RiseTransferOut_Handler,
+		},
+		{
+			MethodName: "RiseSettleByDay",
+			Handler:    _FinanceService_RiseSettleByDay_Handler,
+		},
+		{
+			MethodName: "CommitTransfer",
+			Handler:    _FinanceService_CommitTransfer_Handler,
+		},
+		{
+			MethodName: "OpenRiseService",
+			Handler:    _FinanceService_OpenRiseService_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -156,21 +640,40 @@ var _FinanceService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("finance_service.proto", fileDescriptor_finance_service_83db56cd26c37fac)
+	proto.RegisterFile("finance_service.proto", fileDescriptor_finance_service_5460382b2fb7846b)
 }
 
-var fileDescriptor_finance_service_83db56cd26c37fac = []byte{
-	// 187 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x4d, 0xcb, 0xcc, 0x4b,
-	0xcc, 0x4b, 0x4e, 0x8d, 0x2f, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e, 0xd5, 0x2b, 0x28, 0xca, 0x2f,
-	0xc9, 0x97, 0xe2, 0x49, 0xcf, 0xc9, 0x4f, 0x4a, 0xcc, 0x81, 0xf0, 0x94, 0xb2, 0xb9, 0x04, 0x43,
-	0x8a, 0x12, 0xf3, 0x8a, 0xd3, 0x52, 0x8b, 0x3c, 0xf3, 0x82, 0x52, 0x0b, 0x4b, 0x53, 0x8b, 0x4b,
-	0x84, 0xa4, 0xb8, 0x38, 0x0a, 0x52, 0x8b, 0x8a, 0xf3, 0xf3, 0x3c, 0x53, 0x24, 0x18, 0x15, 0x18,
-	0x35, 0x84, 0x82, 0xe0, 0x7c, 0x21, 0x25, 0x2e, 0x9e, 0x12, 0xa8, 0x86, 0xf0, 0xcc, 0x92, 0x0c,
-	0x09, 0x26, 0x05, 0x46, 0x0d, 0xc1, 0x20, 0x14, 0x31, 0x21, 0x31, 0x2e, 0xb6, 0xc4, 0xdc, 0xfc,
-	0xd2, 0xbc, 0x12, 0x09, 0x66, 0x05, 0x46, 0x0d, 0xc6, 0x20, 0x28, 0xcf, 0xc8, 0x91, 0x8b, 0xcf,
-	0x0d, 0xe2, 0xa6, 0x60, 0x88, 0x93, 0x84, 0xf4, 0xb9, 0xf8, 0x82, 0x32, 0x8b, 0x53, 0x11, 0x4e,
-	0x10, 0x12, 0xd2, 0xc3, 0x70, 0x8f, 0x14, 0xbb, 0x5e, 0x50, 0x6a, 0x71, 0x69, 0x4e, 0x89, 0x12,
-	0x83, 0x13, 0x67, 0x14, 0xbb, 0x9e, 0x35, 0xd8, 0xe9, 0x49, 0x6c, 0x60, 0xca, 0x18, 0x10, 0x00,
-	0x00, 0xff, 0xff, 0x9d, 0x74, 0x72, 0x43, 0xe8, 0x00, 0x00, 0x00,
+var fileDescriptor_finance_service_5460382b2fb7846b = []byte{
+	// 493 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x5d, 0x6f, 0xd3, 0x30,
+	0x14, 0x5d, 0x9a, 0xf5, 0x23, 0x77, 0x55, 0x47, 0xad, 0xad, 0x44, 0xd5, 0x84, 0x22, 0x3f, 0x40,
+	0xc5, 0x83, 0x41, 0x4c, 0x3c, 0xf1, 0x44, 0x99, 0x40, 0x91, 0x90, 0x36, 0xb9, 0x05, 0x24, 0x5e,
+	0x90, 0xd7, 0xba, 0x23, 0x22, 0xb1, 0x43, 0xe2, 0x20, 0xed, 0xf7, 0xf0, 0x07, 0xf8, 0x89, 0xc8,
+	0x76, 0xd2, 0xb8, 0xeb, 0x26, 0xed, 0xa9, 0x3d, 0xc7, 0xf7, 0xdc, 0x8f, 0x73, 0x6f, 0x0b, 0xa7,
+	0x9b, 0x44, 0x30, 0xb1, 0xe2, 0x3f, 0x4a, 0x5e, 0xfc, 0x49, 0x56, 0x9c, 0xe4, 0x85, 0x54, 0x72,
+	0x3a, 0xbc, 0x49, 0xe5, 0x35, 0x4b, 0x2d, 0xc2, 0xbf, 0x60, 0xbc, 0x2c, 0x98, 0x28, 0x37, 0xbc,
+	0x88, 0x05, 0xe5, 0xbf, 0x2b, 0x5e, 0x2a, 0x34, 0x85, 0x41, 0xce, 0x8b, 0x52, 0x8a, 0x78, 0x1d,
+	0x7a, 0x91, 0x37, 0x43, 0x74, 0x8b, 0x11, 0x86, 0xa1, 0xaa, 0x05, 0xdf, 0x12, 0xf5, 0x33, 0xec,
+	0x44, 0xde, 0x6c, 0x4c, 0x77, 0x38, 0x34, 0x81, 0x1e, 0xcb, 0x64, 0x25, 0x54, 0xe8, 0x47, 0xde,
+	0xcc, 0xa3, 0x35, 0xc2, 0x11, 0x0c, 0xae, 0x9a, 0x3c, 0x27, 0xd0, 0xfd, 0xca, 0xd2, 0x8a, 0x9b,
+	0x02, 0x3e, 0xb5, 0x00, 0xff, 0xed, 0x40, 0xb0, 0xa0, 0x49, 0xc9, 0x63, 0xb1, 0x91, 0xba, 0x8f,
+	0x2b, 0xb7, 0x0f, 0x9f, 0xb6, 0xfa, 0x10, 0xfa, 0x73, 0x96, 0xea, 0xf9, 0x4c, 0x0b, 0x1e, 0x6d,
+	0x20, 0x7a, 0x09, 0x4f, 0x16, 0x5c, 0xa9, 0x94, 0x67, 0x5c, 0xa8, 0xf7, 0x6e, 0x1f, 0x7b, 0x3c,
+	0x42, 0x70, 0xa8, 0xab, 0x85, 0x87, 0xe6, 0xdd, 0x7c, 0x47, 0xcf, 0x00, 0x5a, 0x4b, 0xc2, 0xae,
+	0x79, 0x71, 0x18, 0x14, 0xc1, 0xd1, 0x52, 0x2a, 0x96, 0xd6, 0xa9, 0x7b, 0x26, 0xc0, 0xa5, 0xd0,
+	0x19, 0x04, 0x06, 0x9a, 0xd4, 0x7d, 0xf3, 0xde, 0x12, 0x5a, 0x6f, 0xfb, 0x58, 0x5f, 0x30, 0xc5,
+	0xc3, 0x81, 0x19, 0xcc, 0xa5, 0x74, 0x07, 0x5f, 0xf2, 0x35, 0x53, 0x7c, 0x99, 0x64, 0x3c, 0x0c,
+	0x4c, 0x80, 0xc3, 0xe0, 0x15, 0x8c, 0x75, 0x26, 0x2b, 0x71, 0x96, 0xf6, 0xa0, 0x59, 0x67, 0x10,
+	0xd8, 0xe0, 0x0b, 0x76, 0x6b, 0xec, 0xf2, 0x69, 0x4b, 0xe8, 0x55, 0x50, 0xa6, 0x12, 0x59, 0xbb,
+	0x64, 0x01, 0xce, 0x61, 0xa2, 0x8b, 0x34, 0x83, 0x5f, 0x56, 0xea, 0x31, 0x95, 0x30, 0x0c, 0x97,
+	0x77, 0xcf, 0xc3, 0xa7, 0x3b, 0x9c, 0x3e, 0x8f, 0x9d, 0xb5, 0xd4, 0x08, 0xc7, 0x70, 0xfa, 0x41,
+	0x66, 0x59, 0xa2, 0x9a, 0xe8, 0xc7, 0x14, 0x3c, 0x81, 0xee, 0x67, 0x79, 0x13, 0xaf, 0xeb, 0x4a,
+	0x16, 0xbc, 0xf9, 0xd7, 0x81, 0xd1, 0x47, 0x7b, 0xfe, 0x0b, 0x7b, 0xfd, 0xe8, 0x39, 0x1c, 0x7d,
+	0xe2, 0x6a, 0x7b, 0x5b, 0x01, 0x69, 0x52, 0x4c, 0x81, 0x6c, 0x4f, 0x0e, 0x1f, 0xa0, 0x57, 0x30,
+	0x72, 0xe7, 0x8e, 0x05, 0x42, 0x64, 0xef, 0x27, 0x32, 0xed, 0x13, 0xca, 0xcb, 0x2a, 0x55, 0xf8,
+	0x00, 0xbd, 0x85, 0xe3, 0x3b, 0x46, 0xa1, 0xa7, 0xe4, 0x7e, 0xeb, 0x5c, 0xd9, 0x6b, 0x2b, 0xb3,
+	0x6b, 0x98, 0xdf, 0xea, 0x45, 0x20, 0xb2, 0xb7, 0x56, 0x57, 0x71, 0x0e, 0xa3, 0x5d, 0x7f, 0xd0,
+	0x84, 0xdc, 0x6b, 0x98, 0x2b, 0x7a, 0x01, 0xc7, 0x97, 0x39, 0x17, 0x36, 0xb1, 0x75, 0xc2, 0x19,
+	0xbd, 0x0d, 0x9c, 0x07, 0xdf, 0xfb, 0xe4, 0x9d, 0xf9, 0x53, 0xb8, 0xee, 0x99, 0x8f, 0xf3, 0xff,
+	0x01, 0x00, 0x00, 0xff, 0xff, 0x21, 0x19, 0x08, 0xc7, 0x42, 0x04, 0x00, 0x00,
 }
