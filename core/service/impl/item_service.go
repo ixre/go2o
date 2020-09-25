@@ -12,7 +12,6 @@ package impl
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
@@ -42,7 +41,6 @@ type itemService struct {
 	valueRepo valueobject.IValueRepo
 	sto       storage.Interface
 }
-
 
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
@@ -77,7 +75,7 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	if it.ID > 0 {
 		gi = s.itemRepo.GetItem(it.ID)
 		if gi == nil || gi.GetValue().VendorId != r.VendorId {
-			return s.error(item.ErrNoSuchItem),nil
+			return s.error(item.ErrNoSuchItem), nil
 		}
 	} else {
 		gi = s.itemRepo.CreateItem(it)
@@ -97,7 +95,6 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	}
 	return ret, nil
 }
-
 
 // 附加商品的信息
 func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedViewItem {
@@ -410,43 +407,7 @@ func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.Pag
 	return ret, nil
 }
 
-// 获取分页上架的商品
-func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
-	word, sortQuery string) (int, []*valueobject.Goods) {
-	var where string
-	var orderBy string
-	switch sortQuery {
-	case "price_0":
-		where = ""
-		orderBy = "it.price ASC"
-	case "price_1":
-		where = ""
-		orderBy = "it.price DESC"
-	case "sale_0":
-		where = ""
-		orderBy = "it.sale_num ASC"
-	case "sale_1":
-		where = ""
-		orderBy = "it.sale_num DESC"
-	case "rate_0":
-		//todo:
-	case "rate_1":
-		//todo:
-	}
-	return s.itemQuery.GetPagedOnShelvesGoodsByKeyword(shopId,
-		start, end, word, where, orderBy)
-}
-
-// 删除产品
-func (s *itemService) DeleteGoods(mchId, itemId int64) error {
-	gi := s.itemRepo.GetItem(itemId)
-	if gi == nil || gi.GetValue().VendorId != mchId {
-		return item.ErrNoSuchItem
-	}
-	return gi.Destroy()
-}
-
-func (s *itemService) GetAllSaleLabels(_ context.Context, empty *proto.Empty) (*proto.ItemLabelListResponse, error) {
+func (s *itemService) GetAllSaleLabels(_ context.Context, _ *proto.Empty) (*proto.ItemLabelListResponse, error) {
 	tags := s.labelRepo.LabelService().GetAllSaleLabels()
 	ret := &proto.ItemLabelListResponse{
 		Value: make([]*proto.SItemLabel, len(tags)),
@@ -528,15 +489,6 @@ func (s *itemService) GetPagedValueGoodsBySaleLabel_(_ context.Context, r *proto
 	}, nil
 }
 
-// 获取商品的会员价
-func (s *itemService) GetGoodSMemberLevelPrices(itemId int64) []*item.MemberPrice {
-	gi := s.itemRepo.GetItem(itemId)
-	if gi != nil {
-		return gi.GetLevelPrices()
-	}
-	return make([]*item.MemberPrice, 0)
-}
-
 // 保存商品的会员价
 func (s *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPriceRequest) (*proto.Result, error) {
 	it := s.itemRepo.GetItem(r.ItemId)
@@ -551,24 +503,6 @@ func (s *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPrice
 		}
 	}
 	return s.error(err), nil
-}
-
-//func (s *saleService) GetGoodsComplexInfo(goodsId int32) *dto.GoodsComplex {
-//	return s._goodsQuery.GetGoodsComplex(goodsId)
-//}
-
-// 获取商品促销详情
-func (s *itemService) GetGoodsDetails_(itemId int64, mLevel int32) (
-	*valueobject.Goods, map[string]string) {
-	goods := s.itemRepo.GetItem(itemId)
-	gv := goods.GetPackedValue()
-	proMap := goods.GetPromotionDescribe()
-	if b, price := goods.GetLevelPrice(int(mLevel)); b {
-		gv.PromPrice = price
-		proMap["会员专享"] = fmt.Sprintf("会员优惠,仅需<b>￥%s</b>",
-			format.FormatFloat(price))
-	}
-	return gv, proMap
 }
 
 // 设置商品货架状态

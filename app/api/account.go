@@ -22,7 +22,7 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	if len(code) > 0 {
-		trans, cli, _ := service.MemberServeClient()
+		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
 		v, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
@@ -50,7 +50,7 @@ func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *ap
 		Begin:  begin,
 		End:    begin + size,
 	}
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	ret, _ := cli.PagingAccountLog(context.TODO(), &proto.PagingAccountInfoRequest{
 		MemberId:    memberId,

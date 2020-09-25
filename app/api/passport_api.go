@@ -159,7 +159,7 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 	if err != nil {
 		return api.ResponseWithCode(2, err.Error())
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
@@ -187,7 +187,7 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 			keys := []string{
 				registry.EnableDebugMode,
 			}
-			trans, cli, _ := service.RegistryServeClient()
+			trans, cli, _ := service.RegistryServiceClient()
 			mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
 			trans.Close()
 			debugMode := mp.Value[keys[0]] == "true"
@@ -225,7 +225,7 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
 		return api.ResponseWithCode(2, err.Error())
 	}
 	code := ctx.Form().GetString("check_code")
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
@@ -280,7 +280,7 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.ModifyPwd(context.TODO(), &proto.ModifyPwdRequest{
@@ -331,7 +331,7 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.ModifyPwd(context.TODO(), &proto.ModifyPwdRequest{
@@ -382,7 +382,7 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.ModifyTradePwd(context.TODO(), &proto.ModifyPwdRequest{
@@ -431,7 +431,7 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 	if err := h.checkMemberMatch(account, credType, memberId); err != nil {
 		return api.ResponseWithCode(1, err.Error())
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.ModifyTradePwd(context.TODO(), &proto.ModifyPwdRequest{
@@ -449,7 +449,7 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 
 // 获取验证码的间隔时间
 func (m PassportApi) getDurationSecond() int64 {
-	trans, cli, err := service.RegistryServeClient()
+	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		rsp, _ := cli.GetValue(context.TODO(), &proto.String{Value: registry.SmsSendDuration})
 		trans.Close()
@@ -508,7 +508,7 @@ func (m PassportApi) saveCheckCodeData(token string, phone string, code string) 
 
 // 验证会员是否匹配
 func (m PassportApi) checkMemberMatch(account string, credType proto.ECredentials, memberId int64) error {
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		mid, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{

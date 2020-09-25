@@ -8,12 +8,6 @@
  */
 package cache
 
-import (
-	"bytes"
-	"fmt"
-	"go2o/core/service/impl"
-)
-
 //func GetShopCheckboxs(mchId  int32, chks string) []byte {
 //	shops := dps.ShopService.GetOnlineShops(mchId)
 //	buf := bytes.NewBufferString("")
@@ -58,29 +52,31 @@ import (
 //	}
 //	return buf.Bytes()
 //}
-
-func GetShopsJson(mchId int64) []byte {
-	shops := impl.MerchantService.GetShopsOfMerchant(int64(mchId))
-	buf := bytes.NewBufferString("[")
-	for i, v := range shops {
-		if i != 0 {
-			buf.WriteString(",")
-		}
-		buf.WriteString(fmt.Sprintf(`{"id":%d,"name":"%s"}`, v.Id, v.Name))
-	}
-	buf.WriteString("]")
-	return buf.Bytes()
-}
-
-func GetShopDropList(mchId int64, selected int64) []byte {
-	buf := bytes.NewBuffer([]byte{})
-	shops := impl.MerchantService.GetShopsOfMerchant(mchId)
-	for _, v := range shops {
-		if v.Id == selected {
-			buf.WriteString(fmt.Sprintf(`<option value="%d" selected="selected">%s</option>`, v.Id, v.Name))
-		} else {
-			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Id, v.Name))
-		}
-	}
-	return buf.Bytes()
-}
+//
+//func GetShopsJson(mchId int64) []byte {
+//	trans,cli,_ := service.MerchantServiceClient()
+//	defer trans.Close()
+//	shops := cli.GetShopId(int64(mchId))
+//	buf := bytes.NewBufferString("[")
+//	for i, v := range shops {
+//		if i != 0 {
+//			buf.WriteString(",")
+//		}
+//		buf.WriteString(fmt.Sprintf(`{"id":%d,"name":"%s"}`, v.Id, v.Name))
+//	}
+//	buf.WriteString("]")
+//	return buf.Bytes()
+//}
+//
+//func GetShopDropList(mchId int64, selected int64) []byte {
+//	buf := bytes.NewBuffer([]byte{})
+//	shops := impl.MerchantService.GetShopId(mchId)
+//	for _, v := range shops {
+//		if v.Id == selected {
+//			buf.WriteString(fmt.Sprintf(`<option value="%d" selected="selected">%s</option>`, v.Id, v.Name))
+//		} else {
+//			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Id, v.Name))
+//		}
+//	}
+//	return buf.Bytes()
+//}

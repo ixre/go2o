@@ -38,7 +38,7 @@ func ConfigureClient(c clientv3.Config) {
 func tryConnect(retryTimes int) {
 	time.Sleep(time.Second)
 	for i := 0; i < retryTimes; i++ {
-		trans, _, err := StatusServeClient()
+		trans, _, err := StatusServiceClient()
 		if err == nil {
 			trans.Close()
 			break
@@ -61,7 +61,7 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 }
 
 // 状态客户端
-func StatusServeClient() (*grpc.ClientConn, proto.StatusServiceClient, error) {
+func StatusServiceClient() (*grpc.ClientConn, proto.StatusServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewStatusServiceClient(conn), err
@@ -70,7 +70,7 @@ func StatusServeClient() (*grpc.ClientConn, proto.StatusServiceClient, error) {
 }
 
 // 基础服务
-func RegistryServeClient() (*grpc.ClientConn, proto.RegistryServiceClient, error) {
+func RegistryServiceClient() (*grpc.ClientConn, proto.RegistryServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewRegistryServiceClient(conn), err
@@ -79,7 +79,7 @@ func RegistryServeClient() (*grpc.ClientConn, proto.RegistryServiceClient, error
 }
 
 // 商户客户端
-func MerchantServeClient() (*grpc.ClientConn, proto.MerchantServiceClient, error) {
+func MerchantServiceClient() (*grpc.ClientConn, proto.MerchantServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewMerchantServiceClient(conn), err
@@ -88,7 +88,7 @@ func MerchantServeClient() (*grpc.ClientConn, proto.MerchantServiceClient, error
 }
 
 // 会员客户端
-func MemberServeClient() (*grpc.ClientConn, proto.MemberServiceClient, error) {
+func MemberServiceClient() (*grpc.ClientConn, proto.MemberServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewMemberServiceClient(conn), err
@@ -97,7 +97,7 @@ func MemberServeClient() (*grpc.ClientConn, proto.MemberServiceClient, error) {
 }
 
 // 基础服务
-func FoundationServeClient() (*grpc.ClientConn, proto.FoundationServiceClient, error) {
+func FoundationServiceClient() (*grpc.ClientConn, proto.FoundationServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewFoundationServiceClient(conn), err
@@ -106,7 +106,7 @@ func FoundationServeClient() (*grpc.ClientConn, proto.FoundationServiceClient, e
 }
 
 // 消息客户端
-func MessageServeClient() (*grpc.ClientConn, proto.MessageServiceClient, error) {
+func MessageServiceClient() (*grpc.ClientConn, proto.MessageServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewMessageServiceClient(conn), err
@@ -115,7 +115,7 @@ func MessageServeClient() (*grpc.ClientConn, proto.MessageServiceClient, error) 
 }
 
 // 消息客户端
-func ContentServeClient() (*grpc.ClientConn, proto.ContentServiceClient, error) {
+func ContentServiceClient() (*grpc.ClientConn, proto.ContentServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewContentServiceClient(conn), err
@@ -124,7 +124,7 @@ func ContentServeClient() (*grpc.ClientConn, proto.ContentServiceClient, error) 
 }
 
 // 支付服务
-func PaymentServeClient() (*grpc.ClientConn, proto.PaymentServiceClient, error) {
+func PaymentServiceClient() (*grpc.ClientConn, proto.PaymentServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewPaymentServiceClient(conn), err
@@ -142,7 +142,7 @@ func WalletClient() (*grpc.ClientConn, proto.WalletServiceClient, error) {
 }
 
 // 订单服务
-func OrderServeClient() (*grpc.ClientConn, proto.OrderServiceClient, error) {
+func OrderServiceClient() (*grpc.ClientConn, proto.OrderServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewOrderServiceClient(conn), err
@@ -150,8 +150,17 @@ func OrderServeClient() (*grpc.ClientConn, proto.OrderServiceClient, error) {
 	return conn, nil, err
 }
 
+// 快递服务
+func ExpressServiceClient() (*grpc.ClientConn, proto.ExpressServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewExpressServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
 // 物流服务
-func ShipmentServeClient() (*grpc.ClientConn, proto.ShipmentServiceClient, error) {
+func ShipmentServiceClient() (*grpc.ClientConn, proto.ShipmentServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewShipmentServiceClient(conn), err
@@ -160,7 +169,7 @@ func ShipmentServeClient() (*grpc.ClientConn, proto.ShipmentServiceClient, error
 }
 
 // 商品服务
-func ItemServeClient() (*grpc.ClientConn, proto.ItemServiceClient, error) {
+func ItemServiceClient() (*grpc.ClientConn, proto.ItemServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewItemServiceClient(conn), err
@@ -169,7 +178,7 @@ func ItemServeClient() (*grpc.ClientConn, proto.ItemServiceClient, error) {
 }
 
 // 产品服务
-func ProductServeClient() (*grpc.ClientConn, proto.ProductServiceClient, error) {
+func ProductServiceClient() (*grpc.ClientConn, proto.ProductServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewProductServiceClient(conn), err
@@ -178,7 +187,7 @@ func ProductServeClient() (*grpc.ClientConn, proto.ProductServiceClient, error) 
 }
 
 // 商店服务
-func ShopServeClient() (*grpc.ClientConn, proto.ShopServiceClient, error) {
+func ShopServiceClient() (*grpc.ClientConn, proto.ShopServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewShopServiceClient(conn), err
@@ -187,7 +196,7 @@ func ShopServeClient() (*grpc.ClientConn, proto.ShopServiceClient, error) {
 }
 
 // 财务服务
-func FinanceServeClient() (*grpc.ClientConn, proto.FinanceServiceClient, error) {
+func FinanceServiceClient() (*grpc.ClientConn, proto.FinanceServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewFinanceServiceClient(conn), err
@@ -196,10 +205,19 @@ func FinanceServeClient() (*grpc.ClientConn, proto.FinanceServiceClient, error) 
 }
 
 // 查询服务
-func QueryServeClient() (*grpc.ClientConn, proto.QueryServiceClient, error) {
+func QueryServiceClient() (*grpc.ClientConn, proto.QueryServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewQueryServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
+// 售后服务
+func AfterSalesServiceClient() (*grpc.ClientConn, proto.AfterSalesServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewAfterSalesServiceClient(conn), err
 	}
 	return conn, nil, err
 }

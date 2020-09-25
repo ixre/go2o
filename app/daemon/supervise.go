@@ -67,7 +67,7 @@ func superviseOrder(ss []Service) {
 
 // 监视新会员
 func superviseMemberUpdate(ss []Service) {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	notify := func(id int64, action string, ss []Service) {
 		m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: id})
@@ -158,7 +158,7 @@ func memberAutoUnlock() {
 	//获取标记为等待过期的订单
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
-		trans, cli, err := service.MemberServeClient()
+		trans, cli, err := service.MemberServiceClient()
 		if err == nil {
 			for _, oKey := range list {
 				memberId, _ := redis.Int64(conn.Do("GET", oKey))

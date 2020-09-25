@@ -35,33 +35,15 @@ func NewPersonFinanceService(rep personfinance.IPersonFinanceRepository,
 	}
 }
 
-func (p *personFinanceService) GetRiseInfo(personId int64) (
-	personfinance.RiseInfoValue, error) {
-	pf := p.repo.GetPersonFinance(personId)
-	return pf.GetRiseInfo().Value()
-}
-
-// 开通增利服务
-func (p *personFinanceService) OpenRiseService(personId int64) error {
-	m := p.memRepo.GetMember(personId)
-	if m == nil {
-		return member.ErrNoSuchMember
+func (p *personFinanceService) GetRiseInfo(_ context.Context, id *proto.PersonId) (*proto.SRiseInfo, error) {
+	pf := p.repo.GetPersonFinance(id.Value)
+	if pf != nil {
+		v, err := pf.GetRiseInfo().Value()
+		if err == nil {
+			return p.parseRiseInfoDto(v), nil
+		}
 	}
-	if m.GetValue().Level < int(variable.PersonFinanceMinLevelLimit) {
-		return errors.New("会员等级不够,请升级后再开通理财账户！")
-	}
-	pf := p.repo.GetPersonFinance(personId)
-	return pf.CreateRiseInfo()
-}
-
-// 提交转入/转出日志
-func (p *personFinanceService) CommitTransfer(personId int64, logId int32) error {
-	pf := p.repo.GetPersonFinance(personId)
-	rs := pf.GetRiseInfo()
-	if rs == nil {
-		return personfinance.ErrNoSuchRiseInfo
-	}
-	return rs.CommitTransfer(logId)
+	return nil, nil
 }
 
 // 转入(业务放在service,是为person_finance解耦)
@@ -78,65 +60,118 @@ func (p *personFinanceService) RiseTransferIn(_ context.Context, r *proto.Transf
 }
 
 // 转出
-func (p *personFinanceService) RiseTransferOut(personId int64,
-	transferWith personfinance.TransferWith, amount float32) (err error) {
+func (p *personFinanceService) RiseTransferOut(_ context.Context, r *proto.RiseTransferOutRequest) (*proto.Result, error) {
 	//return errors.New("系统正在升级，暂停服务!")
 
-	pf := p.repo.GetPersonFinance(personId)
-	r := pf.GetRiseInfo()
+	pf := p.repo.GetPersonFinance(r.PersonId)
+	ir := pf.GetRiseInfo()
 
-	m := p.memRepo.GetMember(personId)
+	m := p.memRepo.GetMember(r.PersonId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		return p.error(member.ErrNoSuchMember), nil
 	}
 	acc := m.GetAccount()
-	tradeNo := domain.NewTradeNo(8, int(personId))
-	if transferWith == personfinance.TransferOutWithBalance {
+	tradeNo := domain.NewTradeNo(8, int(r.PersonId))
+	if r.TransferWith == personfinance.TransferOutWithBalance {
 		//转入余额
-		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
+		err := ir.TransferOut(float32(r.Amount),
+			personfinance.TransferWith(r.TransferWith),
+			personfinance.RiseStateOk)
+		if err == nil {
 			err = acc.Charge(member.AccountBalance, variable.AliasGrowthAccount+"转出",
-				int(amount*100), tradeNo, "sys")
+				int(r.Amount*100), tradeNo, "sys")
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
 			}
 			err = pf.SyncToAccount()
 		}
-		return err
+		return p.error(err), nil
 	}
 
-	if transferWith == personfinance.TransferFromWithWallet {
+	if r.TransferWith == personfinance.TransferFromWithWallet {
 		//转入钱包
-		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
-			err = acc.Charge(member.AccountWallet, variable.AliasGrowthAccount+"转出",
-				int(amount*100), tradeNo, "sys")
+		err := ir.TransferOut(float32(r.Amount),
+			personfinance.TransferWith(r.TransferWith),
+			personfinance.RiseStateOk)
+		if err == nil {
+			err = acc.Charge(member.AccountWallet,
+				variable.AliasGrowthAccount+"转出",
+				int(r.Amount*100), tradeNo, "sys")
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
 			}
 			err = pf.SyncToAccount()
 		}
-		return err
+		return p.error(err), nil
 	}
 
-	if transferWith == personfinance.TransferOutWithBank {
+	if r.TransferWith == personfinance.TransferOutWithBank {
 		if b := m.Profile().GetBank(); !b.Right() || !b.Locked() {
-			return member.ErrNoSuchBankInfo
+			return p.error(member.ErrNoSuchBankInfo), nil
 		}
-		if err = r.TransferOut(amount, transferWith,
-			personfinance.RiseStateOk); err == nil {
+		err := ir.TransferOut(float32(r.Amount),
+			personfinance.TransferWith(r.TransferWith),
+			personfinance.RiseStateOk)
+		if err == nil {
 			err = pf.SyncToAccount()
 		}
-		return err
+		return p.error(err), nil
 	}
-	return errors.New("暂时无法提供服务")
+	return p.error(errors.New("暂时无法提供服务")), nil
 }
 
 // 结算收益(按日期每天结息)
-func (p *personFinanceService) RiseSettleByDay(personId int64,
-	settleUnix int64, dayRatio float32) (err error) {
-	pf := p.repo.GetPersonFinance(personId)
-	r := pf.GetRiseInfo()
-	if err = r.RiseSettleByDay(settleUnix, dayRatio); err != nil {
-		return err
+func (p *personFinanceService) RiseSettleByDay(_ context.Context, r *proto.RiseSettleRequest) (*proto.Result, error) {
+	pf := p.repo.GetPersonFinance(r.PersonId)
+	ir := pf.GetRiseInfo()
+	err := ir.RiseSettleByDay(r.SettleDay, float32(r.Ratio))
+	if err == nil {
+		//同步到会员账户
+		err = pf.SyncToAccount()
 	}
-	return pf.SyncToAccount() //同步到会员账户
+	return p.error(err), nil
+}
+
+// 提交转入/转出日志
+func (p *personFinanceService) CommitTransfer(_ context.Context, r *proto.CommitTransferRequest) (*proto.Result, error) {
+	pf := p.repo.GetPersonFinance(r.PersonId)
+	var err error
+	if pf == nil {
+		err = personfinance.ErrNoSuchRiseInfo
+	} else {
+		rs := pf.GetRiseInfo()
+		err = rs.CommitTransfer(int32(r.LogId))
+	}
+	return p.error(err), nil
+}
+
+// 开通服务
+func (p *personFinanceService) OpenRiseService(_ context.Context, id *proto.PersonId) (*proto.Result, error) {
+	m := p.memRepo.GetMember(id.Value)
+	var err error
+	if m == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		if m.GetValue().Level < int(variable.PersonFinanceMinLevelLimit) {
+			err = errors.New("会员等级不够,请升级后再开通理财账户！")
+		} else {
+			pf := p.repo.GetPersonFinance(id.Value)
+			err = pf.CreateRiseInfo()
+		}
+	}
+	return p.error(err), nil
+}
+
+func (p *personFinanceService) parseRiseInfoDto(v personfinance.RiseInfoValue) *proto.SRiseInfo {
+	return &proto.SRiseInfo{
+		PersonId:         v.PersonId,
+		Balance:          float64(v.Balance),
+		SettlementAmount: float64(v.SettlementAmount),
+		Rise:             float64(v.Rise),
+		TransferIn:       float64(v.TransferIn),
+		TotalAmount:      float64(v.TotalAmount),
+		TotalRise:        float64(v.TotalRise),
+		SettledDate:      v.SettledDate,
+		UpdateTime:       v.UpdateTime,
+	}
 }

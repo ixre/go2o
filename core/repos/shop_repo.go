@@ -168,7 +168,7 @@ func (s *shopRepo) GetOnlineShopOfMerchant(vendorId int) *shop.OnlineShop {
 }
 
 /**/
-func (s *shopRepo) GetShopsOfMerchant(mchId int64) []shop.Shop {
+func (s *shopRepo) GetShopId(mchId int64) []shop.Shop {
 	shops := make([]shop.Shop, 0)
 	key := s.getShopCacheKey(mchId)
 	jsonStr, err := s.storage.GetString(key)

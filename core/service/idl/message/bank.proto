@@ -14,9 +14,8 @@ message BankCardUserIdRequest {
 
 message BankCardListResponse {
     sint64 OwnerId = 1;
-    repeated SBankCardInfo  Value= 2;
+    repeated SBankCardInfo Value = 2;
 }
-
 
 /** 会员银行卡 */
 message SBankCardInfo {

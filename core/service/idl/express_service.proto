@@ -1,0 +1,128 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+import "global.proto";
+
+// 配送服务
+service ExpressService {
+// 获取快递公司
+rpc GetExpressProvider(IdOrName)returns(SExpressProvider){}
+// 保存快递公司
+rpc SaveExpressProvider(SExpressProvider)returns (Result){}
+// 获取可用的快递公司
+rpc GetProviders(Empty)returns(ExpressProviderListResponse){}
+// 保存快递模板
+rpc SaveTemplate(SExpressTemplate)returns(SaveTemplateResponse){}
+// 获取单个快递模板
+rpc GetTemplate(ExpressTemplateId) returns(SExpressTemplate){}
+// 获取卖家的快递模板
+rpc GetTemplates(GetTemplatesRequest)returns(ExpressTemplateListResponse){}
+// 删除模板
+rpc DeleteTemplate(ExpressTemplateId)returns(Result){}
+// 保存地区快递模板
+rpc SaveAreaTemplate(SaveAreaExpTemplateRequest)returns(Result){}
+// 删除模板地区设定
+rpc DeleteAreaTemplate(AreaTemplateId)returns(Result){}
+// 根据地区编码获取运费模板
+//rpc GetAreaExpressTemplateByAreaCode(userId int64,
+//	templateId int32, areaCode string) *express.ExpressAreaTemplate
+// 根据编号获取地区的运费模板
+//rpc GetAreaExpressTemplate(userId int64,
+//	templateId int32, id int32) *express.ExpressAreaTemplate
+//
+	// 获取所有的地区快递模板
+//rpc GetAllAreaTemplate(userId int64,
+//	templateId int32) []express.ExpressAreaTemplate
+}
+
+message ExpressProviderListResponse{
+    repeated SExpressProvider Value = 1;
+}
+// 快递服务商
+message SExpressProvider {
+    // 快递公司编号
+    int64 Id = 1;
+    // 快递名称
+    string Name = 2;
+    // 首字母，用于索引分组
+    string Letter = 3;
+    // 分组,多个组,用","隔开
+    string GroupFlag = 4;
+    // 快递公司编码
+    string Code = 5;
+    // 接口编码
+    string ApiCode = 6;
+}
+
+// 快递模板
+message SExpressTemplate  {
+// 编号
+int64 Id = 1;
+// 运营商编号
+int64 SellerId = 2;
+// 运费模板名称
+string Name = 3;
+// 是否卖价承担运费
+bool IsFree = 4;
+// 运费计价依据
+int32 Basis = 5;
+// 首次计价单位,如首重为2kg
+int32 FirstUnit = 6;
+// 首次计价单价,如续重1kg
+double FirstFee = 7;
+// 超过首次计价计算单位,如续重1kg
+int32 AddUnit = 8;
+// 超过首次计价单价，如续重1kg
+double AddFee = 9;
+// 是否启用
+bool Enabled = 10;
+}
+
+message ExpressTemplateId{
+    int64 SellerId = 1;
+    int64 TemplateId = 2;
+}
+message GetTemplatesRequest{
+    int64 SellerId = 1;
+    // 仅返回已启用的模板
+    bool OnlyEnabled = 2;
+}
+message ExpressTemplateListResponse{
+    repeated SExpressTemplate Value = 1;
+}
+
+// 快递地区模板
+message SExpressAreaTemplate {
+    // 模板编号
+    int64 Id = 1;
+    // 地区编号列表，通常精确到省即可
+    string CodeList = 2;
+    // 地区名称列表
+    string NameList = 3;
+    // 首次数值，如 首重为2kg
+    int32 FirstUnit = 4;
+    // 首次金额，如首重10元
+    double FirstFee = 5;
+    // 增加数值，如续重1kg
+    int32 AddUnit = 6;
+    // 增加产生费用，如续重1kg 10元
+    double AddFee = 7;
+}
+
+message SaveAreaExpTemplateRequest {
+    int64 SellerId = 1;
+    int64 TemplateId = 2;
+    SExpressAreaTemplate Value = 3;
+}
+
+message AreaTemplateId{
+    int64 SellerId = 1;
+    int64 TemplateId = 2;
+    int64 AreaTemplateId = 3;
+}
+
+message SaveTemplateResponse{
+    int64 ErrCode =1;
+    string ErrMsg = 2;
+    int64 TemplateId =3;
+}

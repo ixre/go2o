@@ -32,7 +32,7 @@ func (a SettingsApi) Process(fn string, ctx api.Context) *api.Response {
  * {"code":1,"message":"api not defined"}
  */
 func (a SettingsApi) registerSettings(ctx api.Context) interface{} {
-	trans, cli, err := service.RegistryServeClient()
+	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		defer trans.Close()
 		mp, _ := cli.FindRegistries(context.TODO(), &proto.String{Value: "member_register"})

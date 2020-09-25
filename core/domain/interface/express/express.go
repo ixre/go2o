@@ -191,7 +191,7 @@ type (
 		// 快递名称
 		Name string `db:"name"`
 		// 首字母，用于索引分组
-		//FirstLetter string `db:"letter"`
+		FirstLetter string `db:"letter"`
 		// 分组,多个组,用","隔开
 		GroupFlag string `db:"group_flag"`
 		// 快递公司编码

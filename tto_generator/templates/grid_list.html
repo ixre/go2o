@@ -49,10 +49,11 @@
 
     var baseJsUrl = "${.Var.StaticPath}"; //设置JS文件的路径
     require([baseJsUrl + "/assets/js/require_config.js?spam=${.Var.Spam}"], function () {
-        require(["base", "jquery.easyui.zh", "extra/export","extra/util"], pageLoad);
+        require(["base", "jquery.easyui.zh", "extra/export", "extra/util"], pageLoad);
     });
 
     var flag = 1;
+
     function pageLoad(_) {
         expo.portal = "{{.table.Prefix}}/{{.table.Title}}List";
         var opHtml = $b.html("tpl_op");
@@ -66,31 +67,31 @@
             columns: [
                 [
 
-        {{range $i,$c := .T.Columns}}
-            {field: "{{$c.Name}}", title: "{{$c.Comment}}", align:"center", width: 100},
-        {{end}}
+                    {{range $i,$c := .T.Columns}}
+                    {field: "{{$c.Name}}", title: "{{$c.Comment}}", align: "center", width: 100},
+                    {{end}}
                     {
-                        field: "-", title:"操作", align:"center", width: 120, formatter: function (val, row) {
-                        return $b.template(opHtml, row);
-                    }
+                        field: "-", title: "操作", align: "center", width: 120, formatter: function (val, row) {
+                            return $b.template(opHtml, row);
+                        }
                     },
                 ]
             ]
         });
         $b.$fn(".btn-search").click(_search);
         $b.$fn(".btn-add").click(_create);
-        $b.$fn(".btn-export").click(function(){
+        $b.$fn(".btn-export").click(function () {
             expo.showExportDialog();
         });
     }
-    
-    
+
+
     function _create() {
         var d = $b.dialog.create2("添加{{.table.Comment}}", true, true);
         d.open("create{{.table.Title}}", 600, 400);
         // $b.tab.open("创建{{.table.Comment}}", "create{{.table.Title}}", true);
     }
-    
+
     function _search() {
         expo.search("dg");
     }
@@ -109,8 +110,10 @@
 
     function _del(id) {
         $b.dialog.confirm("删除后不可恢复，您确定要继续吗？", function (r) {
-            if (!r) {return;}
-            if(flag) {
+            if (!r) {
+                return;
+            }
+            if (flag) {
                 flag = 0;
                 $b.xhr.jsonPost("del{{.table.Title}}", {id: id}, function (r) {
                     flag = 1;

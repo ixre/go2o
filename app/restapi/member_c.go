@@ -39,7 +39,7 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.ErrMsg = "会员不存在"
 		return c.JSON(http.StatusOK, result)
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err != nil {
 		result.ErrMsg = "网络连接失败"
 	} else {
@@ -93,7 +93,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		trans, cli, _ := service.MemberServeClient()
+		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
 		acc, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
 		kvAut = int(acc.UpdateTime)
@@ -108,7 +108,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 // 获取最新的会员信息
 func (mc *MemberC) Get(c echo.Context) error {
 	memberId := GetMemberId(c)
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: memberId})
 	tk, _ := cli.GetToken(context.TODO(),
@@ -124,7 +124,7 @@ func (mc *MemberC) Get(c echo.Context) error {
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	v, _ := cli.Complex(context.TODO(), &proto.Int64{Value: memberId})
 	return c.JSON(http.StatusOK, v)
@@ -133,7 +133,7 @@ func (mc *MemberC) Summary(c echo.Context) error {
 // 获取最新的会员账户信息
 func (mc *MemberC) Account(c echo.Context) error {
 	memberId := GetMemberId(c)
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	m, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
 	return c.JSON(http.StatusOK, m)

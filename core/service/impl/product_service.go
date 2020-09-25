@@ -10,7 +10,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/parser"
 	"go2o/core/service/proto"
-	context "golang.org/x/net/context"
+	"golang.org/x/net/context"
 	"strconv"
 )
 
@@ -131,7 +131,7 @@ func (p *productService) DeleteProModel_(id int32) (*proto.Result, error) {
 
 /***** 品牌  *****/
 
-// Get 产品品牌
+// 获取产品品牌
 func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
 	return p.pmRepo.BrandService().Get(id)
 }
@@ -260,7 +260,7 @@ func (p *productService) GetCategories(mchId int64) []*product.Category {
 }
 
 // 根据上级编号获取分类列表
-func (p *productService) GetCategoriesByParentId(mchId, parentId int32) []*product.Category {
+func (p *productService) GetChildren(mchId, parentId int32) []*product.Category {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	var list = make([]*product.Category, 0)
 	for _, v := range cats {

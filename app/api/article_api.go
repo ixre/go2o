@@ -40,14 +40,14 @@ func (a ArticleApi) list(ctx api.Context) interface{} {
 	page := form.GetInt("page")
 	size := form.GetInt("size")
 	begin := (page - 1) * size
-	trans, cli, err := service.ContentServeClient()
+	trans, cli, err := service.ContentServiceClient()
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.QueryPagingArticles(context.TODO(),
 			&proto.PagingArticleRequest{
-				Cat:   catStr,
-				Begin: int32(begin),
-				Size:  int32(size),
+				CategoryName: catStr,
+				Begin:        int32(begin),
+				Size:         int32(size),
 			})
 		return r
 	}
@@ -73,11 +73,11 @@ func (a ArticleApi) topArticle(ctx api.Context) interface{} {
 	if len(catStr) == 0 {
 		return api.NewErrorResponse("缺少参数:cat")
 	}
-	trans, cli, err := service.ContentServeClient()
+	trans, cli, err := service.ContentServiceClient()
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.QueryTopArticles(context.TODO(),
-			&proto.String{Value: catStr})
+			&proto.IdOrName{Name: catStr})
 		return r
 	}
 	return []*proto.SArticle{}

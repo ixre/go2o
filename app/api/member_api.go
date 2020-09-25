@@ -31,7 +31,7 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	var memberId int64
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	if len(code) > 0 {
-		trans, cli, _ := service.MemberServeClient()
+		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
 		v, _ := cli.SwapMemberId(context.TODO(),
 			&proto.SwapMemberRequest{
@@ -78,7 +78,7 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 	if len(user) == 0 || len(pwd) == 0 {
 		return api.ResponseWithCode(2, "缺少参数: user or pwd")
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err != nil {
 		return api.ResponseWithCode(3, "网络连接失败")
 	}
@@ -108,7 +108,7 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
@@ -130,7 +130,7 @@ func (m MemberApi) complex(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
@@ -150,7 +150,7 @@ func (m MemberApi) bankcard(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
@@ -170,7 +170,7 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
@@ -194,7 +194,7 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code or token")
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
@@ -221,7 +221,7 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 	if len(code) == 0 {
 		return api.NewErrorResponse("missing params: code")
 	}
-	trans, cli, err := service.MemberServeClient()
+	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.SwapMemberId(context.TODO(),
@@ -239,7 +239,7 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 }
 
 func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	memberId, _ := cli.SwapMemberId(context.TODO(),
@@ -256,7 +256,7 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 }
 
 func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	data := ctx.Form().GetBytes("data")
@@ -278,7 +278,7 @@ func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
 }
 
 func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	identity := ctx.Form().GetString("identity")
@@ -312,10 +312,10 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
  * {"code":1,"message":"api not defined"}
  */
 func (m *MemberApi) invites(ctx api.Context, memberId int64) *api.Response {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	member, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: memberId})
 	trans.Close()
-	trans2, cli2, _ := service.RegistryServeClient()
+	trans2, cli2, _ := service.RegistryServiceClient()
 	defer trans2.Close()
 	mp1, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.Domain})
 	mp2, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.DomainEnabledSSL})
@@ -363,7 +363,7 @@ func (m MemberApi) orderSummary(ctx api.Context, memberId int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	mp, _ := cli.OrdersQuantity(context.TODO(), &proto.Int64{Value: id})
 	ret := map[string]int32{
@@ -389,7 +389,7 @@ func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
  * {"err_code":1,"err_msg":"access denied"}
  */
 func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	address, _ := cli.GetAddressList(context.TODO(), &proto.Int64{Value: memberId})
 	return m.utils.success(address)
@@ -424,7 +424,7 @@ func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 		DetailAddress:  form.GetString("detail_address"),
 		IsDefault:      int32(form.GetInt("is_default")),
 	}
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	ret, _ := cli.SaveAddress(context.TODO(), &proto.SaveAddressRequest{
 		MemberId: memberId,
@@ -445,7 +445,7 @@ func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
  */
 func (m MemberApi) deleteAddress(ctx api.Context, memberId int64) *api.Response {
 	addressId := int64(ctx.Form().GetInt("address_id"))
-	trans, cli, _ := service.MemberServeClient()
+	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	ret, _ := cli.DeleteAddress(context.TODO(), &proto.AddressIdRequest{
 		MemberId:  memberId,

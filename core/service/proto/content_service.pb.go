@@ -24,9 +24,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type PagingArticleRequest struct {
-	Cat                  string   `protobuf:"bytes,1,opt,name=cat,proto3" json:"cat,omitempty"`
-	Begin                int32    `protobuf:"zigzag32,2,opt,name=begin,proto3" json:"begin,omitempty"`
-	Size                 int32    `protobuf:"zigzag32,3,opt,name=size,proto3" json:"size,omitempty"`
+	CategoryName         string   `protobuf:"bytes,1,opt,name=CategoryName,proto3" json:"CategoryName,omitempty"`
+	Begin                int32    `protobuf:"zigzag32,2,opt,name=Begin,proto3" json:"Begin,omitempty"`
+	Size                 int32    `protobuf:"zigzag32,3,opt,name=Size,proto3" json:"Size,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -36,7 +36,7 @@ func (m *PagingArticleRequest) Reset()         { *m = PagingArticleRequest{} }
 func (m *PagingArticleRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingArticleRequest) ProtoMessage()    {}
 func (*PagingArticleRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_4b993f449a144a95, []int{0}
+	return fileDescriptor_content_service_0c86d0ed9d2a6ecf, []int{0}
 }
 func (m *PagingArticleRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingArticleRequest.Unmarshal(m, b)
@@ -56,9 +56,9 @@ func (m *PagingArticleRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PagingArticleRequest proto.InternalMessageInfo
 
-func (m *PagingArticleRequest) GetCat() string {
+func (m *PagingArticleRequest) GetCategoryName() string {
 	if m != nil {
-		return m.Cat
+		return m.CategoryName
 	}
 	return ""
 }
@@ -77,50 +77,179 @@ func (m *PagingArticleRequest) GetSize() int32 {
 	return 0
 }
 
-type ArticlesResponse struct {
-	Value                []*SArticle `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+type ArticleListResponse struct {
+	Total                int64       `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
+	Data                 []*SArticle `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *ArticlesResponse) Reset()         { *m = ArticlesResponse{} }
-func (m *ArticlesResponse) String() string { return proto.CompactTextString(m) }
-func (*ArticlesResponse) ProtoMessage()    {}
-func (*ArticlesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_4b993f449a144a95, []int{1}
+func (m *ArticleListResponse) Reset()         { *m = ArticleListResponse{} }
+func (m *ArticleListResponse) String() string { return proto.CompactTextString(m) }
+func (*ArticleListResponse) ProtoMessage()    {}
+func (*ArticleListResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_content_service_0c86d0ed9d2a6ecf, []int{1}
 }
-func (m *ArticlesResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ArticlesResponse.Unmarshal(m, b)
+func (m *ArticleListResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ArticleListResponse.Unmarshal(m, b)
 }
-func (m *ArticlesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ArticlesResponse.Marshal(b, m, deterministic)
+func (m *ArticleListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ArticleListResponse.Marshal(b, m, deterministic)
 }
-func (dst *ArticlesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ArticlesResponse.Merge(dst, src)
+func (dst *ArticleListResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ArticleListResponse.Merge(dst, src)
 }
-func (m *ArticlesResponse) XXX_Size() int {
-	return xxx_messageInfo_ArticlesResponse.Size(m)
+func (m *ArticleListResponse) XXX_Size() int {
+	return xxx_messageInfo_ArticleListResponse.Size(m)
 }
-func (m *ArticlesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ArticlesResponse.DiscardUnknown(m)
+func (m *ArticleListResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ArticleListResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ArticlesResponse proto.InternalMessageInfo
+var xxx_messageInfo_ArticleListResponse proto.InternalMessageInfo
 
-func (m *ArticlesResponse) GetValue() []*SArticle {
+func (m *ArticleListResponse) GetTotal() int64 {
 	if m != nil {
-		return m.Value
+		return m.Total
+	}
+	return 0
+}
+
+func (m *ArticleListResponse) GetData() []*SArticle {
+	if m != nil {
+		return m.Data
 	}
 	return nil
+}
+
+// 栏目
+type SArticleCategory struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	// 父类编号,如为一级栏目则为0
+	ParentId int64 `protobuf:"varint,2,opt,name=ParentId,proto3" json:"ParentId,omitempty"`
+	// 浏览权限
+	PermFlag int32 `protobuf:"varint,3,opt,name=PermFlag,proto3" json:"PermFlag,omitempty"`
+	// 名称(唯一)
+	Name string `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
+	// 别名
+	Alias string `protobuf:"bytes,5,opt,name=Alias,proto3" json:"Alias,omitempty"`
+	// 排序编号
+	SortNum int32 `protobuf:"varint,6,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	// 定位路径（打开栏目页定位到的路径）
+	Location string `protobuf:"bytes,7,opt,name=Location,proto3" json:"Location,omitempty"`
+	// 页面标题
+	Title string `protobuf:"bytes,8,opt,name=Title,proto3" json:"Title,omitempty"`
+	// 关键字
+	Keywords string `protobuf:"bytes,9,opt,name=Keywords,proto3" json:"Keywords,omitempty"`
+	// 描述
+	Description          string   `protobuf:"bytes,10,opt,name=Description,proto3" json:"Description,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SArticleCategory) Reset()         { *m = SArticleCategory{} }
+func (m *SArticleCategory) String() string { return proto.CompactTextString(m) }
+func (*SArticleCategory) ProtoMessage()    {}
+func (*SArticleCategory) Descriptor() ([]byte, []int) {
+	return fileDescriptor_content_service_0c86d0ed9d2a6ecf, []int{2}
+}
+func (m *SArticleCategory) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SArticleCategory.Unmarshal(m, b)
+}
+func (m *SArticleCategory) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SArticleCategory.Marshal(b, m, deterministic)
+}
+func (dst *SArticleCategory) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SArticleCategory.Merge(dst, src)
+}
+func (m *SArticleCategory) XXX_Size() int {
+	return xxx_messageInfo_SArticleCategory.Size(m)
+}
+func (m *SArticleCategory) XXX_DiscardUnknown() {
+	xxx_messageInfo_SArticleCategory.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SArticleCategory proto.InternalMessageInfo
+
+func (m *SArticleCategory) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SArticleCategory) GetParentId() int64 {
+	if m != nil {
+		return m.ParentId
+	}
+	return 0
+}
+
+func (m *SArticleCategory) GetPermFlag() int32 {
+	if m != nil {
+		return m.PermFlag
+	}
+	return 0
+}
+
+func (m *SArticleCategory) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *SArticleCategory) GetAlias() string {
+	if m != nil {
+		return m.Alias
+	}
+	return ""
+}
+
+func (m *SArticleCategory) GetSortNum() int32 {
+	if m != nil {
+		return m.SortNum
+	}
+	return 0
+}
+
+func (m *SArticleCategory) GetLocation() string {
+	if m != nil {
+		return m.Location
+	}
+	return ""
+}
+
+func (m *SArticleCategory) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *SArticleCategory) GetKeywords() string {
+	if m != nil {
+		return m.Keywords
+	}
+	return ""
+}
+
+func (m *SArticleCategory) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
 }
 
 // * 文章
 type SArticle struct {
 	// * 编号
-	Id int32 `protobuf:"zigzag32,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
 	// * 栏目编号
-	CatId int32 `protobuf:"zigzag32,2,opt,name=CatId,proto3" json:"CatId,omitempty"`
+	CategoryId int64 `protobuf:"zigzag64,2,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
 	// * 标题
 	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
 	// * 小标题
@@ -128,7 +257,7 @@ type SArticle struct {
 	// * 文章附图
 	Thumbnail string `protobuf:"bytes,5,opt,name=Thumbnail,proto3" json:"Thumbnail,omitempty"`
 	// * 重定向URL
-	PublisherId int32 `protobuf:"zigzag32,6,opt,name=PublisherId,proto3" json:"PublisherId,omitempty"`
+	PublisherId int64 `protobuf:"zigzag64,6,opt,name=PublisherId,proto3" json:"PublisherId,omitempty"`
 	// * 重定向URL
 	Location string `protobuf:"bytes,7,opt,name=Location,proto3" json:"Location,omitempty"`
 	// * 优先级,优先级越高，则置顶
@@ -144,9 +273,9 @@ type SArticle struct {
 	// * 排序序号
 	SortNum int32 `protobuf:"zigzag32,13,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
 	// * 创建时间
-	CreateTime int32 `protobuf:"zigzag32,14,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"zigzag64,14,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
 	// * 最后修改时间
-	UpdateTime           int32    `protobuf:"zigzag32,15,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"zigzag64,15,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -156,7 +285,7 @@ func (m *SArticle) Reset()         { *m = SArticle{} }
 func (m *SArticle) String() string { return proto.CompactTextString(m) }
 func (*SArticle) ProtoMessage()    {}
 func (*SArticle) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_4b993f449a144a95, []int{2}
+	return fileDescriptor_content_service_0c86d0ed9d2a6ecf, []int{3}
 }
 func (m *SArticle) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SArticle.Unmarshal(m, b)
@@ -176,16 +305,16 @@ func (m *SArticle) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SArticle proto.InternalMessageInfo
 
-func (m *SArticle) GetId() int32 {
+func (m *SArticle) GetId() int64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *SArticle) GetCatId() int32 {
+func (m *SArticle) GetCategoryId() int64 {
 	if m != nil {
-		return m.CatId
+		return m.CategoryId
 	}
 	return 0
 }
@@ -211,7 +340,7 @@ func (m *SArticle) GetThumbnail() string {
 	return ""
 }
 
-func (m *SArticle) GetPublisherId() int32 {
+func (m *SArticle) GetPublisherId() int64 {
 	if m != nil {
 		return m.PublisherId
 	}
@@ -267,24 +396,203 @@ func (m *SArticle) GetSortNum() int32 {
 	return 0
 }
 
-func (m *SArticle) GetCreateTime() int32 {
+func (m *SArticle) GetCreateTime() int64 {
 	if m != nil {
 		return m.CreateTime
 	}
 	return 0
 }
 
-func (m *SArticle) GetUpdateTime() int32 {
+func (m *SArticle) GetUpdateTime() int64 {
 	if m != nil {
 		return m.UpdateTime
 	}
 	return 0
 }
 
+type SPage struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	// 商户编号
+	UserId int64 `protobuf:"varint,2,opt,name=UserId,proto3" json:"UserId,omitempty"`
+	// 标题
+	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
+	// 字符标识
+	StrIndent string `protobuf:"bytes,4,opt,name=StrIndent,proto3" json:"StrIndent,omitempty"`
+	// 浏览权限
+	PermFlag int32 `protobuf:"varint,5,opt,name=PermFlag,proto3" json:"PermFlag,omitempty"`
+	// 浏览钥匙
+	AccessKey string `protobuf:"bytes,6,opt,name=AccessKey,proto3" json:"AccessKey,omitempty"`
+	// 关键词
+	KeyWord string `protobuf:"bytes,7,opt,name=KeyWord,proto3" json:"KeyWord,omitempty"`
+	// 描述
+	Description string `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
+	// 样式表地址
+	CssPath string `protobuf:"bytes,9,opt,name=CssPath,proto3" json:"CssPath,omitempty"`
+	// 内容
+	Body string `protobuf:"bytes,10,opt,name=Body,proto3" json:"Body,omitempty"`
+	// 修改时间
+	UpdateTime int64 `protobuf:"varint,11,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	// 是否启用
+	Enabled              bool     `protobuf:"varint,12,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SPage) Reset()         { *m = SPage{} }
+func (m *SPage) String() string { return proto.CompactTextString(m) }
+func (*SPage) ProtoMessage()    {}
+func (*SPage) Descriptor() ([]byte, []int) {
+	return fileDescriptor_content_service_0c86d0ed9d2a6ecf, []int{4}
+}
+func (m *SPage) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SPage.Unmarshal(m, b)
+}
+func (m *SPage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SPage.Marshal(b, m, deterministic)
+}
+func (dst *SPage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SPage.Merge(dst, src)
+}
+func (m *SPage) XXX_Size() int {
+	return xxx_messageInfo_SPage.Size(m)
+}
+func (m *SPage) XXX_DiscardUnknown() {
+	xxx_messageInfo_SPage.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SPage proto.InternalMessageInfo
+
+func (m *SPage) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SPage) GetUserId() int64 {
+	if m != nil {
+		return m.UserId
+	}
+	return 0
+}
+
+func (m *SPage) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *SPage) GetStrIndent() string {
+	if m != nil {
+		return m.StrIndent
+	}
+	return ""
+}
+
+func (m *SPage) GetPermFlag() int32 {
+	if m != nil {
+		return m.PermFlag
+	}
+	return 0
+}
+
+func (m *SPage) GetAccessKey() string {
+	if m != nil {
+		return m.AccessKey
+	}
+	return ""
+}
+
+func (m *SPage) GetKeyWord() string {
+	if m != nil {
+		return m.KeyWord
+	}
+	return ""
+}
+
+func (m *SPage) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *SPage) GetCssPath() string {
+	if m != nil {
+		return m.CssPath
+	}
+	return ""
+}
+
+func (m *SPage) GetBody() string {
+	if m != nil {
+		return m.Body
+	}
+	return ""
+}
+
+func (m *SPage) GetUpdateTime() int64 {
+	if m != nil {
+		return m.UpdateTime
+	}
+	return 0
+}
+
+func (m *SPage) GetEnabled() bool {
+	if m != nil {
+		return m.Enabled
+	}
+	return false
+}
+
+type ArticleCategoriesResponse struct {
+	Value                []*SArticleCategory `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *ArticleCategoriesResponse) Reset()         { *m = ArticleCategoriesResponse{} }
+func (m *ArticleCategoriesResponse) String() string { return proto.CompactTextString(m) }
+func (*ArticleCategoriesResponse) ProtoMessage()    {}
+func (*ArticleCategoriesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_content_service_0c86d0ed9d2a6ecf, []int{5}
+}
+func (m *ArticleCategoriesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ArticleCategoriesResponse.Unmarshal(m, b)
+}
+func (m *ArticleCategoriesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ArticleCategoriesResponse.Marshal(b, m, deterministic)
+}
+func (dst *ArticleCategoriesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ArticleCategoriesResponse.Merge(dst, src)
+}
+func (m *ArticleCategoriesResponse) XXX_Size() int {
+	return xxx_messageInfo_ArticleCategoriesResponse.Size(m)
+}
+func (m *ArticleCategoriesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ArticleCategoriesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ArticleCategoriesResponse proto.InternalMessageInfo
+
+func (m *ArticleCategoriesResponse) GetValue() []*SArticleCategory {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*PagingArticleRequest)(nil), "PagingArticleRequest")
-	proto.RegisterType((*ArticlesResponse)(nil), "ArticlesResponse")
+	proto.RegisterType((*ArticleListResponse)(nil), "ArticleListResponse")
+	proto.RegisterType((*SArticleCategory)(nil), "SArticleCategory")
 	proto.RegisterType((*SArticle)(nil), "SArticle")
+	proto.RegisterType((*SPage)(nil), "SPage")
+	proto.RegisterType((*ArticleCategoriesResponse)(nil), "ArticleCategoriesResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -299,10 +607,30 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ContentServiceClient interface {
+	// 获取页面
+	GetPage(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SPage, error)
+	// 保存页面
+	SavePage(ctx context.Context, in *SPage, opts ...grpc.CallOption) (*Result, error)
+	// 删除页面
+	DeletePage(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	// 获取所有栏目
+	GetArticleCategories(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArticleCategoriesResponse, error)
+	// 获取文章栏目,可传入ID或者别名
+	GetArticleCategory(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SArticleCategory, error)
+	// 保存文章栏目
+	SaveArticleCategory(ctx context.Context, in *SArticleCategory, opts ...grpc.CallOption) (*Result, error)
+	// 删除文章分类
+	DeleteArticleCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	// 获取文章
+	GetArticle(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SArticle, error)
+	// 删除文章
+	DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	// 保存文章
+	SaveArticle(ctx context.Context, in *SArticle, opts ...grpc.CallOption) (*Result, error)
 	// * 获取置顶的文章,cat
-	QueryTopArticles(ctx context.Context, in *String, opts ...grpc.CallOption) (*ArticlesResponse, error)
+	QueryTopArticles(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*ArticleListResponse, error)
 	// * 获取分页文章
-	QueryPagingArticles(ctx context.Context, in *PagingArticleRequest, opts ...grpc.CallOption) (*SPagingResult, error)
+	QueryPagingArticles(ctx context.Context, in *PagingArticleRequest, opts ...grpc.CallOption) (*ArticleListResponse, error)
 }
 
 type contentServiceClient struct {
@@ -313,8 +641,98 @@ func NewContentServiceClient(cc *grpc.ClientConn) ContentServiceClient {
 	return &contentServiceClient{cc}
 }
 
-func (c *contentServiceClient) QueryTopArticles(ctx context.Context, in *String, opts ...grpc.CallOption) (*ArticlesResponse, error) {
-	out := new(ArticlesResponse)
+func (c *contentServiceClient) GetPage(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SPage, error) {
+	out := new(SPage)
+	err := c.cc.Invoke(ctx, "/ContentService/GetPage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) SavePage(ctx context.Context, in *SPage, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ContentService/SavePage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) DeletePage(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ContentService/DeletePage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) GetArticleCategories(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArticleCategoriesResponse, error) {
+	out := new(ArticleCategoriesResponse)
+	err := c.cc.Invoke(ctx, "/ContentService/GetArticleCategories", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) GetArticleCategory(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SArticleCategory, error) {
+	out := new(SArticleCategory)
+	err := c.cc.Invoke(ctx, "/ContentService/GetArticleCategory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) SaveArticleCategory(ctx context.Context, in *SArticleCategory, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ContentService/SaveArticleCategory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) DeleteArticleCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ContentService/DeleteArticleCategory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) GetArticle(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SArticle, error) {
+	out := new(SArticle)
+	err := c.cc.Invoke(ctx, "/ContentService/GetArticle", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ContentService/DeleteArticle", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) SaveArticle(ctx context.Context, in *SArticle, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ContentService/SaveArticle", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) QueryTopArticles(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*ArticleListResponse, error) {
+	out := new(ArticleListResponse)
 	err := c.cc.Invoke(ctx, "/ContentService/QueryTopArticles", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -322,8 +740,8 @@ func (c *contentServiceClient) QueryTopArticles(ctx context.Context, in *String,
 	return out, nil
 }
 
-func (c *contentServiceClient) QueryPagingArticles(ctx context.Context, in *PagingArticleRequest, opts ...grpc.CallOption) (*SPagingResult, error) {
-	out := new(SPagingResult)
+func (c *contentServiceClient) QueryPagingArticles(ctx context.Context, in *PagingArticleRequest, opts ...grpc.CallOption) (*ArticleListResponse, error) {
+	out := new(ArticleListResponse)
 	err := c.cc.Invoke(ctx, "/ContentService/QueryPagingArticles", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -333,18 +751,218 @@ func (c *contentServiceClient) QueryPagingArticles(ctx context.Context, in *Pagi
 
 // ContentServiceServer is the server API for ContentService service.
 type ContentServiceServer interface {
+	// 获取页面
+	GetPage(context.Context, *IdOrName) (*SPage, error)
+	// 保存页面
+	SavePage(context.Context, *SPage) (*Result, error)
+	// 删除页面
+	DeletePage(context.Context, *Int64) (*Result, error)
+	// 获取所有栏目
+	GetArticleCategories(context.Context, *Empty) (*ArticleCategoriesResponse, error)
+	// 获取文章栏目,可传入ID或者别名
+	GetArticleCategory(context.Context, *IdOrName) (*SArticleCategory, error)
+	// 保存文章栏目
+	SaveArticleCategory(context.Context, *SArticleCategory) (*Result, error)
+	// 删除文章分类
+	DeleteArticleCategory(context.Context, *Int64) (*Result, error)
+	// 获取文章
+	GetArticle(context.Context, *IdOrName) (*SArticle, error)
+	// 删除文章
+	DeleteArticle(context.Context, *Int64) (*Result, error)
+	// 保存文章
+	SaveArticle(context.Context, *SArticle) (*Result, error)
 	// * 获取置顶的文章,cat
-	QueryTopArticles(context.Context, *String) (*ArticlesResponse, error)
+	QueryTopArticles(context.Context, *IdOrName) (*ArticleListResponse, error)
 	// * 获取分页文章
-	QueryPagingArticles(context.Context, *PagingArticleRequest) (*SPagingResult, error)
+	QueryPagingArticles(context.Context, *PagingArticleRequest) (*ArticleListResponse, error)
 }
 
 func RegisterContentServiceServer(s *grpc.Server, srv ContentServiceServer) {
 	s.RegisterService(&_ContentService_serviceDesc, srv)
 }
 
+func _ContentService_GetPage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdOrName)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).GetPage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/GetPage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).GetPage(ctx, req.(*IdOrName))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_SavePage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SPage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).SavePage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/SavePage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).SavePage(ctx, req.(*SPage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_DeletePage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).DeletePage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/DeletePage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).DeletePage(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_GetArticleCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).GetArticleCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/GetArticleCategories",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).GetArticleCategories(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_GetArticleCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdOrName)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).GetArticleCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/GetArticleCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).GetArticleCategory(ctx, req.(*IdOrName))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_SaveArticleCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SArticleCategory)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).SaveArticleCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/SaveArticleCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).SaveArticleCategory(ctx, req.(*SArticleCategory))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_DeleteArticleCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).DeleteArticleCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/DeleteArticleCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).DeleteArticleCategory(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_GetArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdOrName)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).GetArticle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/GetArticle",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).GetArticle(ctx, req.(*IdOrName))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_DeleteArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).DeleteArticle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/DeleteArticle",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).DeleteArticle(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_SaveArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SArticle)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).SaveArticle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ContentService/SaveArticle",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).SaveArticle(ctx, req.(*SArticle))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_QueryTopArticles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
+	in := new(IdOrName)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -356,7 +974,7 @@ func _ContentService_QueryTopArticles_Handler(srv interface{}, ctx context.Conte
 		FullMethod: "/ContentService/QueryTopArticles",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).QueryTopArticles(ctx, req.(*String))
+		return srv.(ContentServiceServer).QueryTopArticles(ctx, req.(*IdOrName))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -384,6 +1002,46 @@ var _ContentService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*ContentServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "GetPage",
+			Handler:    _ContentService_GetPage_Handler,
+		},
+		{
+			MethodName: "SavePage",
+			Handler:    _ContentService_SavePage_Handler,
+		},
+		{
+			MethodName: "DeletePage",
+			Handler:    _ContentService_DeletePage_Handler,
+		},
+		{
+			MethodName: "GetArticleCategories",
+			Handler:    _ContentService_GetArticleCategories_Handler,
+		},
+		{
+			MethodName: "GetArticleCategory",
+			Handler:    _ContentService_GetArticleCategory_Handler,
+		},
+		{
+			MethodName: "SaveArticleCategory",
+			Handler:    _ContentService_SaveArticleCategory_Handler,
+		},
+		{
+			MethodName: "DeleteArticleCategory",
+			Handler:    _ContentService_DeleteArticleCategory_Handler,
+		},
+		{
+			MethodName: "GetArticle",
+			Handler:    _ContentService_GetArticle_Handler,
+		},
+		{
+			MethodName: "DeleteArticle",
+			Handler:    _ContentService_DeleteArticle_Handler,
+		},
+		{
+			MethodName: "SaveArticle",
+			Handler:    _ContentService_SaveArticle_Handler,
+		},
+		{
 			MethodName: "QueryTopArticles",
 			Handler:    _ContentService_QueryTopArticles_Handler,
 		},
@@ -397,37 +1055,60 @@ var _ContentService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("content_service.proto", fileDescriptor_content_service_4b993f449a144a95)
+	proto.RegisterFile("content_service.proto", fileDescriptor_content_service_0c86d0ed9d2a6ecf)
 }
 
-var fileDescriptor_content_service_4b993f449a144a95 = []byte{
-	// 439 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x92, 0xc1, 0x6f, 0xd3, 0x30,
-	0x14, 0xc6, 0x97, 0x76, 0x5d, 0x9b, 0xd7, 0x51, 0x5a, 0xb3, 0x49, 0x56, 0x85, 0xa0, 0xca, 0xa9,
-	0xa7, 0x08, 0x6d, 0x47, 0x24, 0xa4, 0xd1, 0x53, 0x05, 0x42, 0x25, 0x09, 0x3b, 0x70, 0x41, 0x4e,
-	0xf2, 0x94, 0x59, 0x72, 0xed, 0x62, 0x3b, 0xa0, 0x72, 0xe4, 0x4f, 0xe1, 0x2f, 0x45, 0xb6, 0x97,
-	0xb6, 0xa0, 0x9d, 0xe2, 0xef, 0xf7, 0xe9, 0xbd, 0x2f, 0xb2, 0x3f, 0xb8, 0xae, 0x94, 0xb4, 0x28,
-	0xed, 0x37, 0x83, 0xfa, 0x07, 0xaf, 0x30, 0xdd, 0x69, 0x65, 0xd5, 0xfc, 0xb2, 0x11, 0xaa, 0x64,
-	0x22, 0xa8, 0x24, 0x83, 0xab, 0x0d, 0x6b, 0xb8, 0x6c, 0xee, 0xb4, 0xe5, 0x95, 0xc0, 0x0c, 0xbf,
-	0xb7, 0x68, 0x2c, 0x99, 0x42, 0xbf, 0x62, 0x96, 0x46, 0x8b, 0x68, 0x19, 0x67, 0xee, 0x48, 0xae,
-	0x60, 0x50, 0x62, 0xc3, 0x25, 0xed, 0x2d, 0xa2, 0xe5, 0x2c, 0x0b, 0x82, 0x10, 0x38, 0x37, 0xfc,
-	0x17, 0xd2, 0xbe, 0x87, 0xfe, 0x9c, 0xdc, 0xc2, 0xf4, 0x71, 0x9b, 0xc9, 0xd0, 0xec, 0x94, 0x34,
-	0x48, 0x5e, 0xc3, 0xe0, 0x9e, 0x89, 0x16, 0x69, 0xb4, 0xe8, 0x2f, 0xc7, 0x37, 0x71, 0x9a, 0x77,
-	0x81, 0x81, 0x27, 0x7f, 0xfa, 0x30, 0xea, 0x18, 0x99, 0x40, 0x6f, 0x5d, 0xfb, 0xf0, 0x59, 0xd6,
-	0x5b, 0xd7, 0x2e, 0x7b, 0xc5, 0xec, 0xba, 0xee, 0xb2, 0xbd, 0x70, 0xb4, 0xe0, 0x56, 0x84, 0xf0,
-	0x38, 0x0b, 0x82, 0xbc, 0x02, 0xc8, 0xb7, 0x4c, 0x88, 0x60, 0x9d, 0x7b, 0xeb, 0x84, 0x90, 0x97,
-	0x10, 0x17, 0x0f, 0xed, 0xb6, 0x94, 0x8c, 0x0b, 0x3a, 0xf0, 0xf6, 0x11, 0x90, 0x05, 0x8c, 0x37,
-	0x6d, 0x29, 0xb8, 0x79, 0x40, 0xbd, 0xae, 0xe9, 0x85, 0xcf, 0x3b, 0x45, 0x64, 0x0e, 0xa3, 0x8f,
-	0xaa, 0x62, 0x96, 0x2b, 0x49, 0x87, 0x7e, 0xfc, 0xa0, 0x9d, 0xb7, 0xd1, 0x5c, 0x69, 0x6e, 0xf7,
-	0x74, 0xe4, 0x47, 0x0f, 0xda, 0xe5, 0xde, 0x55, 0x15, 0x1a, 0xf3, 0x01, 0xf7, 0x34, 0x0e, 0xb9,
-	0x07, 0x40, 0x28, 0x0c, 0x57, 0xe1, 0xb9, 0x28, 0x78, 0xaf, 0x93, 0xee, 0x86, 0x0b, 0xd6, 0x18,
-	0x3a, 0xf6, 0xd8, 0x9f, 0xdd, 0xae, 0x7b, 0x8e, 0x3f, 0x57, 0xaa, 0x95, 0x96, 0x5e, 0xfa, 0xa0,
-	0x23, 0x70, 0xbb, 0x72, 0xa5, 0xed, 0xa7, 0x76, 0x4b, 0x9f, 0x79, 0xaf, 0x93, 0xee, 0x6e, 0x56,
-	0x1a, 0x99, 0xc5, 0x82, 0x6f, 0x91, 0x4e, 0xbc, 0x79, 0x42, 0x9c, 0xff, 0x65, 0x57, 0x77, 0xfe,
-	0xf3, 0xe0, 0x1f, 0xc9, 0xcd, 0xef, 0x08, 0x26, 0x8f, 0xff, 0x95, 0x87, 0x52, 0x91, 0x37, 0x30,
-	0xfd, 0xdc, 0xa2, 0xde, 0x17, 0x6a, 0xd7, 0x3d, 0x3a, 0x19, 0xa6, 0xb9, 0xd5, 0x5c, 0x36, 0xf3,
-	0x59, 0xfa, 0x7f, 0x11, 0x92, 0x33, 0xf2, 0x0e, 0x5e, 0xf8, 0x89, 0x7f, 0x7a, 0x67, 0xc8, 0x75,
-	0xfa, 0x54, 0x11, 0xe7, 0x93, 0x34, 0x0f, 0x3c, 0x43, 0xd3, 0x0a, 0x9b, 0x9c, 0xbd, 0x8f, 0xbf,
-	0x0e, 0xd3, 0xb7, 0xbe, 0xbd, 0xe5, 0x85, 0xff, 0xdc, 0xfe, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x19,
-	0x1d, 0x50, 0x42, 0xeb, 0x02, 0x00, 0x00,
+var fileDescriptor_content_service_0c86d0ed9d2a6ecf = []byte{
+	// 813 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x55, 0xcd, 0x6e, 0xdb, 0x46,
+	0x10, 0x96, 0xf5, 0xaf, 0x91, 0xe3, 0xc6, 0x6b, 0xbb, 0x60, 0x85, 0xc4, 0x15, 0xd8, 0x02, 0x35,
+	0x7a, 0xe0, 0x21, 0x49, 0x7b, 0x69, 0x2f, 0xb6, 0x95, 0x06, 0xaa, 0x83, 0x54, 0xa5, 0x94, 0x14,
+	0xe8, 0xa5, 0x58, 0x89, 0x03, 0x79, 0x01, 0x8a, 0xab, 0xee, 0x2e, 0x63, 0xb0, 0x0f, 0xd1, 0x27,
+	0xe9, 0xa5, 0x8f, 0xd0, 0x37, 0x2b, 0x76, 0x96, 0x14, 0xa9, 0x1f, 0xe7, 0x24, 0x7d, 0xdf, 0xec,
+	0x0e, 0x67, 0xbe, 0x6f, 0x30, 0x0b, 0x17, 0x0b, 0x99, 0x18, 0x4c, 0xcc, 0x1f, 0x1a, 0xd5, 0x47,
+	0xb1, 0xc0, 0x60, 0xad, 0xa4, 0x91, 0x83, 0xe3, 0x65, 0x2c, 0xe7, 0x3c, 0x76, 0xc8, 0x8f, 0xe0,
+	0x7c, 0xc2, 0x97, 0x22, 0x59, 0x5e, 0x2b, 0x23, 0x16, 0x31, 0x86, 0xf8, 0x67, 0x8a, 0xda, 0x30,
+	0x1f, 0x8e, 0x6f, 0xb9, 0xc1, 0xa5, 0x54, 0xd9, 0x3b, 0xbe, 0x42, 0xef, 0x68, 0x78, 0x74, 0xd5,
+	0x0b, 0xb7, 0x38, 0x76, 0x0e, 0xad, 0x1b, 0x5c, 0x8a, 0xc4, 0xab, 0x0f, 0x8f, 0xae, 0x4e, 0x43,
+	0x07, 0x18, 0x83, 0xe6, 0x54, 0xfc, 0x85, 0x5e, 0x83, 0x48, 0xfa, 0xef, 0xff, 0x0c, 0x67, 0x79,
+	0xfe, 0xb7, 0x42, 0x9b, 0x10, 0xf5, 0x5a, 0x26, 0x9a, 0x12, 0xcc, 0xa4, 0xe1, 0x31, 0x65, 0x6f,
+	0x84, 0x0e, 0xb0, 0xe7, 0xd0, 0x1c, 0x71, 0xc3, 0xbd, 0xfa, 0xb0, 0x71, 0xd5, 0x7f, 0xd1, 0x0b,
+	0xa6, 0x45, 0x69, 0x44, 0xfb, 0x7f, 0xd7, 0xe1, 0x69, 0x41, 0x15, 0xe5, 0xb0, 0x13, 0xa8, 0x8f,
+	0xa3, 0x3c, 0x4d, 0x7d, 0x1c, 0xb1, 0x01, 0x74, 0x27, 0x5c, 0x61, 0x62, 0xc6, 0x11, 0x55, 0xd7,
+	0x08, 0x37, 0x98, 0x62, 0xa8, 0x56, 0x3f, 0xc5, 0x7c, 0x49, 0x45, 0xb6, 0xc2, 0x0d, 0xb6, 0xc5,
+	0x53, 0xbb, 0x4d, 0x6a, 0xb7, 0x59, 0xb4, 0x79, 0x1d, 0x0b, 0xae, 0xbd, 0x16, 0x91, 0x0e, 0x30,
+	0x0f, 0x3a, 0x53, 0xa9, 0xcc, 0xbb, 0x74, 0xe5, 0xb5, 0x29, 0x49, 0x01, 0x6d, 0xfe, 0xb7, 0x72,
+	0xc1, 0x8d, 0x90, 0x89, 0xd7, 0xa1, 0x2b, 0x1b, 0x4c, 0x1d, 0x0b, 0x13, 0xa3, 0xd7, 0x75, 0xb9,
+	0x08, 0xd8, 0x1b, 0x77, 0x98, 0x3d, 0x48, 0x15, 0x69, 0xaf, 0xe7, 0x6e, 0x14, 0x98, 0x0d, 0xa1,
+	0x3f, 0x42, 0xbd, 0x50, 0x62, 0x4d, 0x09, 0x81, 0xc2, 0x55, 0xca, 0xff, 0xa7, 0x01, 0xdd, 0x42,
+	0x90, 0x8a, 0x10, 0x8c, 0x84, 0xb8, 0x04, 0x28, 0x44, 0xca, 0xa5, 0x60, 0x61, 0x85, 0x29, 0x0b,
+	0x6a, 0x54, 0x0b, 0xba, 0x04, 0x98, 0xae, 0x78, 0x1c, 0xbb, 0x90, 0x13, 0xa3, 0xc2, 0xb0, 0x67,
+	0xd0, 0x9b, 0xdd, 0xa7, 0xab, 0x79, 0xc2, 0x45, 0x9c, 0xcb, 0x52, 0x12, 0xb6, 0xe4, 0x49, 0x3a,
+	0x8f, 0x85, 0xbe, 0x47, 0x35, 0x8e, 0x48, 0x1e, 0x16, 0x56, 0xa9, 0x4f, 0x4a, 0x64, 0xed, 0x51,
+	0x42, 0x2a, 0x61, 0x32, 0x52, 0xe9, 0x34, 0xdc, 0x60, 0xfb, 0xdd, 0xeb, 0xc5, 0x02, 0xb5, 0xbe,
+	0xc3, 0x2c, 0x57, 0xaa, 0x24, 0xac, 0x25, 0xb7, 0x6e, 0xe4, 0x73, 0x99, 0x0a, 0x68, 0x6d, 0x9d,
+	0xf1, 0xa5, 0xf6, 0xfa, 0xce, 0x56, 0xfb, 0xdf, 0xe6, 0xfa, 0x20, 0xf0, 0xe1, 0x56, 0xa6, 0x89,
+	0xf1, 0x8e, 0xe9, 0x43, 0x25, 0x51, 0xb5, 0xf7, 0x09, 0xc5, 0x36, 0xf6, 0x5a, 0x45, 0x15, 0x72,
+	0x83, 0x33, 0xb1, 0x42, 0xef, 0x24, 0x57, 0x74, 0xc3, 0xd8, 0xf8, 0xfb, 0x75, 0x54, 0xc4, 0x3f,
+	0x73, 0xf1, 0x92, 0xf1, 0xff, 0xab, 0x43, 0x6b, 0x3a, 0xe1, 0x4b, 0xdc, 0x1b, 0xda, 0xcf, 0xa1,
+	0xfd, 0x5e, 0x93, 0x64, 0x6e, 0x64, 0x73, 0xf4, 0x88, 0x47, 0xcf, 0xa0, 0x37, 0x35, 0x6a, 0x9c,
+	0x44, 0xb6, 0x5f, 0x67, 0x51, 0x49, 0x6c, 0x0d, 0x79, 0x6b, 0x67, 0xc8, 0xb7, 0x54, 0x6c, 0x1f,
+	0x50, 0xf1, 0x0e, 0xb3, 0xdf, 0xa4, 0x8a, 0x72, 0x6b, 0x0a, 0xb8, 0x3b, 0x8a, 0xdd, 0xbd, 0x51,
+	0x24, 0x07, 0xb4, 0x9e, 0x70, 0x73, 0x9f, 0xbb, 0x53, 0x40, 0xeb, 0xc0, 0x8d, 0x8c, 0xb2, 0xdc,
+	0x18, 0xfa, 0xbf, 0xa3, 0x54, 0x9f, 0x7a, 0xae, 0x30, 0x36, 0xdb, 0xeb, 0x84, 0xcf, 0x63, 0x8c,
+	0xc8, 0x9f, 0x6e, 0x58, 0x40, 0x7f, 0x04, 0x5f, 0x6c, 0x6f, 0x00, 0x81, 0x7a, 0xb3, 0x55, 0xbe,
+	0x81, 0xd6, 0x07, 0x1e, 0xa7, 0x76, 0x67, 0xd9, 0x05, 0x72, 0x1a, 0xec, 0x6e, 0x8b, 0xd0, 0xc5,
+	0x5f, 0xfc, 0xdb, 0x84, 0x93, 0x7c, 0x42, 0xa6, 0x6e, 0x45, 0xb2, 0x4b, 0xe8, 0xbc, 0x41, 0x43,
+	0xee, 0xf4, 0x82, 0x71, 0xf4, 0x8b, 0xb2, 0x1b, 0x60, 0xd0, 0x0e, 0xc8, 0x30, 0xbf, 0xc6, 0x9e,
+	0x43, 0x77, 0xca, 0x3f, 0x22, 0x1d, 0xc8, 0xd9, 0x41, 0x27, 0x08, 0x51, 0xa7, 0xb1, 0xf1, 0x6b,
+	0xec, 0x4b, 0x80, 0x11, 0xc6, 0x68, 0x8a, 0x03, 0xe3, 0xc4, 0x7c, 0xff, 0xaa, 0x7a, 0xe0, 0x47,
+	0x38, 0x7f, 0x83, 0x66, 0xaf, 0x76, 0xd6, 0x0e, 0x5e, 0xaf, 0xd6, 0x26, 0x1b, 0x0c, 0x82, 0x47,
+	0xfb, 0xf2, 0x6b, 0xec, 0x15, 0xb0, 0xbd, 0xdb, 0x59, 0xb5, 0xd0, 0xfd, 0x5e, 0xfd, 0x1a, 0x7b,
+	0x09, 0x67, 0xb6, 0xe6, 0xdd, 0x6b, 0xfb, 0x67, 0xab, 0x85, 0x7e, 0x0b, 0x17, 0xae, 0x93, 0xdd,
+	0x6b, 0x07, 0x9a, 0xfa, 0x1a, 0xa0, 0x2c, 0xab, 0x5a, 0x4e, 0xb9, 0xbb, 0xfd, 0x1a, 0xf3, 0xe1,
+	0xc9, 0x56, 0xc6, 0x43, 0x99, 0xbe, 0x82, 0x7e, 0xa5, 0x54, 0x56, 0xde, 0xaf, 0x1e, 0xfa, 0x0e,
+	0x9e, 0xfe, 0x9a, 0xa2, 0xca, 0x66, 0x72, 0x9d, 0x47, 0x75, 0xf5, 0xa3, 0xe7, 0xc1, 0x81, 0xa7,
+	0xc6, 0xaf, 0xb1, 0x11, 0x9c, 0xd1, 0xb5, 0xad, 0xe7, 0x4e, 0xb3, 0x8b, 0xe0, 0xd0, 0xfb, 0xf7,
+	0x58, 0x96, 0x9b, 0xde, 0xef, 0x9d, 0xe0, 0x07, 0x7a, 0x3a, 0xe7, 0x6d, 0xfa, 0x79, 0xf9, 0x7f,
+	0x00, 0x00, 0x00, 0xff, 0xff, 0xe8, 0x94, 0xd1, 0xe0, 0x68, 0x07, 0x00, 0x00,
 }

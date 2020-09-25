@@ -35,7 +35,7 @@ func (m *SmsApiSaveRequest) Reset()         { *m = SmsApiSaveRequest{} }
 func (m *SmsApiSaveRequest) String() string { return proto.CompactTextString(m) }
 func (*SmsApiSaveRequest) ProtoMessage()    {}
 func (*SmsApiSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{0}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{0}
 }
 func (m *SmsApiSaveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SmsApiSaveRequest.Unmarshal(m, b)
@@ -81,7 +81,7 @@ func (m *BoardHookSaveRequest) Reset()         { *m = BoardHookSaveRequest{} }
 func (m *BoardHookSaveRequest) String() string { return proto.CompactTextString(m) }
 func (*BoardHookSaveRequest) ProtoMessage()    {}
 func (*BoardHookSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{1}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{1}
 }
 func (m *BoardHookSaveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BoardHookSaveRequest.Unmarshal(m, b)
@@ -115,6 +115,60 @@ func (m *BoardHookSaveRequest) GetToken() string {
 	return ""
 }
 
+type AreaStringRequest struct {
+	Province             int32    `protobuf:"varint,1,opt,name=Province,proto3" json:"Province,omitempty"`
+	City                 int32    `protobuf:"varint,2,opt,name=City,proto3" json:"City,omitempty"`
+	District             int32    `protobuf:"varint,3,opt,name=District,proto3" json:"District,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *AreaStringRequest) Reset()         { *m = AreaStringRequest{} }
+func (m *AreaStringRequest) String() string { return proto.CompactTextString(m) }
+func (*AreaStringRequest) ProtoMessage()    {}
+func (*AreaStringRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{2}
+}
+func (m *AreaStringRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AreaStringRequest.Unmarshal(m, b)
+}
+func (m *AreaStringRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AreaStringRequest.Marshal(b, m, deterministic)
+}
+func (dst *AreaStringRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AreaStringRequest.Merge(dst, src)
+}
+func (m *AreaStringRequest) XXX_Size() int {
+	return xxx_messageInfo_AreaStringRequest.Size(m)
+}
+func (m *AreaStringRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AreaStringRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AreaStringRequest proto.InternalMessageInfo
+
+func (m *AreaStringRequest) GetProvince() int32 {
+	if m != nil {
+		return m.Province
+	}
+	return 0
+}
+
+func (m *AreaStringRequest) GetCity() int32 {
+	if m != nil {
+		return m.City
+	}
+	return 0
+}
+
+func (m *AreaStringRequest) GetDistrict() int32 {
+	if m != nil {
+		return m.District
+	}
+	return 0
+}
+
 type AreaListResponse struct {
 	Value                []*SArea `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -126,7 +180,7 @@ func (m *AreaListResponse) Reset()         { *m = AreaListResponse{} }
 func (m *AreaListResponse) String() string { return proto.CompactTextString(m) }
 func (*AreaListResponse) ProtoMessage()    {}
 func (*AreaListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{2}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{3}
 }
 func (m *AreaListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AreaListResponse.Unmarshal(m, b)
@@ -164,7 +218,7 @@ func (m *StringListResponse) Reset()         { *m = StringListResponse{} }
 func (m *StringListResponse) String() string { return proto.CompactTextString(m) }
 func (*StringListResponse) ProtoMessage()    {}
 func (*StringListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{3}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{4}
 }
 func (m *StringListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StringListResponse.Unmarshal(m, b)
@@ -202,7 +256,7 @@ func (m *GetAreaNamesRequest) Reset()         { *m = GetAreaNamesRequest{} }
 func (m *GetAreaNamesRequest) String() string { return proto.CompactTextString(m) }
 func (*GetAreaNamesRequest) ProtoMessage()    {}
 func (*GetAreaNamesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{4}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{5}
 }
 func (m *GetAreaNamesRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetAreaNamesRequest.Unmarshal(m, b)
@@ -241,7 +295,7 @@ func (m *UserPwd) Reset()         { *m = UserPwd{} }
 func (m *UserPwd) String() string { return proto.CompactTextString(m) }
 func (*UserPwd) ProtoMessage()    {}
 func (*UserPwd) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{5}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{6}
 }
 func (m *UserPwd) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserPwd.Unmarshal(m, b)
@@ -294,7 +348,7 @@ func (m *SSsoApp) Reset()         { *m = SSsoApp{} }
 func (m *SSsoApp) String() string { return proto.CompactTextString(m) }
 func (*SSsoApp) ProtoMessage()    {}
 func (*SSsoApp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{6}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{7}
 }
 func (m *SSsoApp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSsoApp.Unmarshal(m, b)
@@ -356,7 +410,7 @@ func (m *SArea) Reset()         { *m = SArea{} }
 func (m *SArea) String() string { return proto.CompactTextString(m) }
 func (*SArea) ProtoMessage()    {}
 func (*SArea) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{7}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{8}
 }
 func (m *SArea) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SArea.Unmarshal(m, b)
@@ -424,7 +478,7 @@ func (m *SSmsApi) Reset()         { *m = SSmsApi{} }
 func (m *SSmsApi) String() string { return proto.CompactTextString(m) }
 func (*SSmsApi) ProtoMessage()    {}
 func (*SSmsApi) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_f8c40d04930833fb, []int{8}
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{9}
 }
 func (m *SSmsApi) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSmsApi.Unmarshal(m, b)
@@ -500,9 +554,526 @@ func (m *SSmsApi) GetSuccessChar() string {
 	return ""
 }
 
+// 移动应用配置
+type SMobileAppConfig struct {
+	// 应用名称
+	AppName string `protobuf:"bytes,1,opt,name=AppName,proto3" json:"AppName,omitempty"`
+	// APP图标地址
+	AppIcon string `protobuf:"bytes,2,opt,name=AppIcon,proto3" json:"AppIcon,omitempty"`
+	// 描述
+	Description string `protobuf:"bytes,3,opt,name=Description,proto3" json:"Description,omitempty"`
+	// 安卓APP版本
+	AndroidVersion string `protobuf:"bytes,4,opt,name=AndroidVersion,proto3" json:"AndroidVersion,omitempty"`
+	// 安卓APP版发布地址
+	AndroidReleaseUrl string `protobuf:"bytes,5,opt,name=AndroidReleaseUrl,proto3" json:"AndroidReleaseUrl,omitempty"`
+	// 苹果APP版本
+	IosVersion string `protobuf:"bytes,6,opt,name=IosVersion,proto3" json:"IosVersion,omitempty"`
+	// 苹果APP版发布地址
+	IosReleaseUrl string `protobuf:"bytes,7,opt,name=IosReleaseUrl,proto3" json:"IosReleaseUrl,omitempty"`
+	// 模板文件
+	ShowTplPath_         string   `protobuf:"bytes,8,opt,name=ShowTplPath_,json=ShowTplPath,proto3" json:"ShowTplPath_,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SMobileAppConfig) Reset()         { *m = SMobileAppConfig{} }
+func (m *SMobileAppConfig) String() string { return proto.CompactTextString(m) }
+func (*SMobileAppConfig) ProtoMessage()    {}
+func (*SMobileAppConfig) Descriptor() ([]byte, []int) {
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{10}
+}
+func (m *SMobileAppConfig) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SMobileAppConfig.Unmarshal(m, b)
+}
+func (m *SMobileAppConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SMobileAppConfig.Marshal(b, m, deterministic)
+}
+func (dst *SMobileAppConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SMobileAppConfig.Merge(dst, src)
+}
+func (m *SMobileAppConfig) XXX_Size() int {
+	return xxx_messageInfo_SMobileAppConfig.Size(m)
+}
+func (m *SMobileAppConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_SMobileAppConfig.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SMobileAppConfig proto.InternalMessageInfo
+
+func (m *SMobileAppConfig) GetAppName() string {
+	if m != nil {
+		return m.AppName
+	}
+	return ""
+}
+
+func (m *SMobileAppConfig) GetAppIcon() string {
+	if m != nil {
+		return m.AppIcon
+	}
+	return ""
+}
+
+func (m *SMobileAppConfig) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *SMobileAppConfig) GetAndroidVersion() string {
+	if m != nil {
+		return m.AndroidVersion
+	}
+	return ""
+}
+
+func (m *SMobileAppConfig) GetAndroidReleaseUrl() string {
+	if m != nil {
+		return m.AndroidReleaseUrl
+	}
+	return ""
+}
+
+func (m *SMobileAppConfig) GetIosVersion() string {
+	if m != nil {
+		return m.IosVersion
+	}
+	return ""
+}
+
+func (m *SMobileAppConfig) GetIosReleaseUrl() string {
+	if m != nil {
+		return m.IosReleaseUrl
+	}
+	return ""
+}
+
+func (m *SMobileAppConfig) GetShowTplPath_() string {
+	if m != nil {
+		return m.ShowTplPath_
+	}
+	return ""
+}
+
+type SWxApiConfig struct {
+	// APP ID
+	AppId string `protobuf:"bytes,1,opt,name=AppId,proto3" json:"AppId,omitempty"`
+	// APP 密钥
+	AppSecret string `protobuf:"bytes,2,opt,name=AppSecret,proto3" json:"AppSecret,omitempty"`
+	// 通信密钥
+	MpToken string `protobuf:"bytes,3,opt,name=MpToken,proto3" json:"MpToken,omitempty"`
+	// 通信AES KEY
+	MpAesKey string `protobuf:"bytes,4,opt,name=MpAesKey,proto3" json:"MpAesKey,omitempty"`
+	// 原始ID
+	OriId string `protobuf:"bytes,5,opt,name=OriId,proto3" json:"OriId,omitempty"`
+	// 商户编号
+	MchId string `protobuf:"bytes,6,opt,name=MchId,proto3" json:"MchId,omitempty"`
+	// 商户接口密钥
+	MchApiKey string `protobuf:"bytes,7,opt,name=MchApiKey,proto3" json:"MchApiKey,omitempty"`
+	// 微信支付的证书路径(上传)
+	MchCertPath string `protobuf:"bytes,8,opt,name=MchCertPath,proto3" json:"MchCertPath,omitempty"`
+	// 微信支付的证书公钥路径(上传)
+	MchCertKeyPath string `protobuf:"bytes,9,opt,name=MchCertKeyPath,proto3" json:"MchCertKeyPath,omitempty"`
+	// 是否启用红包功能
+	RedPackEnabled bool `protobuf:"varint,10,opt,name=RedPackEnabled,proto3" json:"RedPackEnabled,omitempty"`
+	// 红包金额限制
+	RedPackAmountLimit float64 `protobuf:"fixed64,11,opt,name=RedPackAmountLimit,proto3" json:"RedPackAmountLimit,omitempty"`
+	// 红包每日数量限制
+	RedPackDayTimeLimit  int32    `protobuf:"varint,12,opt,name=RedPackDayTimeLimit,proto3" json:"RedPackDayTimeLimit,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SWxApiConfig) Reset()         { *m = SWxApiConfig{} }
+func (m *SWxApiConfig) String() string { return proto.CompactTextString(m) }
+func (*SWxApiConfig) ProtoMessage()    {}
+func (*SWxApiConfig) Descriptor() ([]byte, []int) {
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{11}
+}
+func (m *SWxApiConfig) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SWxApiConfig.Unmarshal(m, b)
+}
+func (m *SWxApiConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SWxApiConfig.Marshal(b, m, deterministic)
+}
+func (dst *SWxApiConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SWxApiConfig.Merge(dst, src)
+}
+func (m *SWxApiConfig) XXX_Size() int {
+	return xxx_messageInfo_SWxApiConfig.Size(m)
+}
+func (m *SWxApiConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_SWxApiConfig.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SWxApiConfig proto.InternalMessageInfo
+
+func (m *SWxApiConfig) GetAppId() string {
+	if m != nil {
+		return m.AppId
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetAppSecret() string {
+	if m != nil {
+		return m.AppSecret
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetMpToken() string {
+	if m != nil {
+		return m.MpToken
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetMpAesKey() string {
+	if m != nil {
+		return m.MpAesKey
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetOriId() string {
+	if m != nil {
+		return m.OriId
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetMchId() string {
+	if m != nil {
+		return m.MchId
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetMchApiKey() string {
+	if m != nil {
+		return m.MchApiKey
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetMchCertPath() string {
+	if m != nil {
+		return m.MchCertPath
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetMchCertKeyPath() string {
+	if m != nil {
+		return m.MchCertKeyPath
+	}
+	return ""
+}
+
+func (m *SWxApiConfig) GetRedPackEnabled() bool {
+	if m != nil {
+		return m.RedPackEnabled
+	}
+	return false
+}
+
+func (m *SWxApiConfig) GetRedPackAmountLimit() float64 {
+	if m != nil {
+		return m.RedPackAmountLimit
+	}
+	return 0
+}
+
+func (m *SWxApiConfig) GetRedPackDayTimeLimit() int32 {
+	if m != nil {
+		return m.RedPackDayTimeLimit
+	}
+	return 0
+}
+
+type PaymentPlatformResponse struct {
+	Value                []*PaymentPlatform `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *PaymentPlatformResponse) Reset()         { *m = PaymentPlatformResponse{} }
+func (m *PaymentPlatformResponse) String() string { return proto.CompactTextString(m) }
+func (*PaymentPlatformResponse) ProtoMessage()    {}
+func (*PaymentPlatformResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{12}
+}
+func (m *PaymentPlatformResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PaymentPlatformResponse.Unmarshal(m, b)
+}
+func (m *PaymentPlatformResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PaymentPlatformResponse.Marshal(b, m, deterministic)
+}
+func (dst *PaymentPlatformResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PaymentPlatformResponse.Merge(dst, src)
+}
+func (m *PaymentPlatformResponse) XXX_Size() int {
+	return xxx_messageInfo_PaymentPlatformResponse.Size(m)
+}
+func (m *PaymentPlatformResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_PaymentPlatformResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PaymentPlatformResponse proto.InternalMessageInfo
+
+func (m *PaymentPlatformResponse) GetValue() []*PaymentPlatform {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+type PaymentPlatform struct {
+	Id                   string      `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Name                 string      `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Sign                 string      `protobuf:"bytes,3,opt,name=Sign,proto3" json:"Sign,omitempty"`
+	Items                []*BankItem `protobuf:"bytes,4,rep,name=Items,proto3" json:"Items,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *PaymentPlatform) Reset()         { *m = PaymentPlatform{} }
+func (m *PaymentPlatform) String() string { return proto.CompactTextString(m) }
+func (*PaymentPlatform) ProtoMessage()    {}
+func (*PaymentPlatform) Descriptor() ([]byte, []int) {
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{13}
+}
+func (m *PaymentPlatform) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PaymentPlatform.Unmarshal(m, b)
+}
+func (m *PaymentPlatform) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PaymentPlatform.Marshal(b, m, deterministic)
+}
+func (dst *PaymentPlatform) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PaymentPlatform.Merge(dst, src)
+}
+func (m *PaymentPlatform) XXX_Size() int {
+	return xxx_messageInfo_PaymentPlatform.Size(m)
+}
+func (m *PaymentPlatform) XXX_DiscardUnknown() {
+	xxx_messageInfo_PaymentPlatform.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PaymentPlatform proto.InternalMessageInfo
+
+func (m *PaymentPlatform) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *PaymentPlatform) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *PaymentPlatform) GetSign() string {
+	if m != nil {
+		return m.Sign
+	}
+	return ""
+}
+
+func (m *PaymentPlatform) GetItems() []*BankItem {
+	if m != nil {
+		return m.Items
+	}
+	return nil
+}
+
+type BankItem struct {
+	// 标识
+	Id string `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	// 名称
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	// 签名/别名
+	Sign                 string   `protobuf:"bytes,3,opt,name=Sign,proto3" json:"Sign,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *BankItem) Reset()         { *m = BankItem{} }
+func (m *BankItem) String() string { return proto.CompactTextString(m) }
+func (*BankItem) ProtoMessage()    {}
+func (*BankItem) Descriptor() ([]byte, []int) {
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{14}
+}
+func (m *BankItem) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BankItem.Unmarshal(m, b)
+}
+func (m *BankItem) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BankItem.Marshal(b, m, deterministic)
+}
+func (dst *BankItem) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BankItem.Merge(dst, src)
+}
+func (m *BankItem) XXX_Size() int {
+	return xxx_messageInfo_BankItem.Size(m)
+}
+func (m *BankItem) XXX_DiscardUnknown() {
+	xxx_messageInfo_BankItem.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BankItem proto.InternalMessageInfo
+
+func (m *BankItem) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *BankItem) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *BankItem) GetSign() string {
+	if m != nil {
+		return m.Sign
+	}
+	return ""
+}
+
+// 全局商户销售设置
+type SGlobMchSaleConf struct {
+	// !商户订单结算模式
+	// MchOrderSettleMode enum.MchSettleMode
+	// !商户订单结算比例
+	// MchOrderSettleRate float32
+	// 商户交易单是否需上传发票
+	// TradeOrderRequireTicket bool
+	// 是否启用分销模式
+	FxSalesEnabled bool `protobuf:"varint,1,opt,name=FxSalesEnabled,proto3" json:"FxSalesEnabled,omitempty"`
+	// 返现比例,0则不返现
+	CashBackPercent float64 `protobuf:"fixed64,2,opt,name=CashBackPercent,proto3" json:"CashBackPercent,omitempty"`
+	// 一级比例
+	CashBackTg1Percent float64 `protobuf:"fixed64,3,opt,name=CashBackTg1Percent,proto3" json:"CashBackTg1Percent,omitempty"`
+	// 二级比例
+	CashBackTg2Percent float64 `protobuf:"fixed64,4,opt,name=CashBackTg2Percent,proto3" json:"CashBackTg2Percent,omitempty"`
+	// 会员比例
+	CashBackMemberPercent float64 `protobuf:"fixed64,5,opt,name=CashBackMemberPercent,proto3" json:"CashBackMemberPercent,omitempty"`
+	// 自动设置订单
+	AutoSetupOrder int32 `protobuf:"varint,6,opt,name=AutoSetupOrder,proto3" json:"AutoSetupOrder,omitempty"`
+	// 订单超时分钟数
+	OrderTimeOutMinute int32 `protobuf:"varint,7,opt,name=OrderTimeOutMinute,proto3" json:"OrderTimeOutMinute,omitempty"`
+	// 订单自动确认时间
+	OrderConfirmAfterMinute int32 `protobuf:"varint,8,opt,name=OrderConfirmAfterMinute,proto3" json:"OrderConfirmAfterMinute,omitempty"`
+	// 订单超时自动收货
+	OrderTimeOutReceiveHour int32    `protobuf:"varint,9,opt,name=OrderTimeOutReceiveHour,proto3" json:"OrderTimeOutReceiveHour,omitempty"`
+	XXX_NoUnkeyedLiteral    struct{} `json:"-"`
+	XXX_unrecognized        []byte   `json:"-"`
+	XXX_sizecache           int32    `json:"-"`
+}
+
+func (m *SGlobMchSaleConf) Reset()         { *m = SGlobMchSaleConf{} }
+func (m *SGlobMchSaleConf) String() string { return proto.CompactTextString(m) }
+func (*SGlobMchSaleConf) ProtoMessage()    {}
+func (*SGlobMchSaleConf) Descriptor() ([]byte, []int) {
+	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{15}
+}
+func (m *SGlobMchSaleConf) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SGlobMchSaleConf.Unmarshal(m, b)
+}
+func (m *SGlobMchSaleConf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SGlobMchSaleConf.Marshal(b, m, deterministic)
+}
+func (dst *SGlobMchSaleConf) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SGlobMchSaleConf.Merge(dst, src)
+}
+func (m *SGlobMchSaleConf) XXX_Size() int {
+	return xxx_messageInfo_SGlobMchSaleConf.Size(m)
+}
+func (m *SGlobMchSaleConf) XXX_DiscardUnknown() {
+	xxx_messageInfo_SGlobMchSaleConf.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SGlobMchSaleConf proto.InternalMessageInfo
+
+func (m *SGlobMchSaleConf) GetFxSalesEnabled() bool {
+	if m != nil {
+		return m.FxSalesEnabled
+	}
+	return false
+}
+
+func (m *SGlobMchSaleConf) GetCashBackPercent() float64 {
+	if m != nil {
+		return m.CashBackPercent
+	}
+	return 0
+}
+
+func (m *SGlobMchSaleConf) GetCashBackTg1Percent() float64 {
+	if m != nil {
+		return m.CashBackTg1Percent
+	}
+	return 0
+}
+
+func (m *SGlobMchSaleConf) GetCashBackTg2Percent() float64 {
+	if m != nil {
+		return m.CashBackTg2Percent
+	}
+	return 0
+}
+
+func (m *SGlobMchSaleConf) GetCashBackMemberPercent() float64 {
+	if m != nil {
+		return m.CashBackMemberPercent
+	}
+	return 0
+}
+
+func (m *SGlobMchSaleConf) GetAutoSetupOrder() int32 {
+	if m != nil {
+		return m.AutoSetupOrder
+	}
+	return 0
+}
+
+func (m *SGlobMchSaleConf) GetOrderTimeOutMinute() int32 {
+	if m != nil {
+		return m.OrderTimeOutMinute
+	}
+	return 0
+}
+
+func (m *SGlobMchSaleConf) GetOrderConfirmAfterMinute() int32 {
+	if m != nil {
+		return m.OrderConfirmAfterMinute
+	}
+	return 0
+}
+
+func (m *SGlobMchSaleConf) GetOrderTimeOutReceiveHour() int32 {
+	if m != nil {
+		return m.OrderTimeOutReceiveHour
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*SmsApiSaveRequest)(nil), "SmsApiSaveRequest")
 	proto.RegisterType((*BoardHookSaveRequest)(nil), "BoardHookSaveRequest")
+	proto.RegisterType((*AreaStringRequest)(nil), "AreaStringRequest")
 	proto.RegisterType((*AreaListResponse)(nil), "AreaListResponse")
 	proto.RegisterType((*StringListResponse)(nil), "StringListResponse")
 	proto.RegisterType((*GetAreaNamesRequest)(nil), "GetAreaNamesRequest")
@@ -510,6 +1081,12 @@ func init() {
 	proto.RegisterType((*SSsoApp)(nil), "SSsoApp")
 	proto.RegisterType((*SArea)(nil), "SArea")
 	proto.RegisterType((*SSmsApi)(nil), "SSmsApi")
+	proto.RegisterType((*SMobileAppConfig)(nil), "SMobileAppConfig")
+	proto.RegisterType((*SWxApiConfig)(nil), "SWxApiConfig")
+	proto.RegisterType((*PaymentPlatformResponse)(nil), "PaymentPlatformResponse")
+	proto.RegisterType((*PaymentPlatform)(nil), "PaymentPlatform")
+	proto.RegisterType((*BankItem)(nil), "BankItem")
+	proto.RegisterType((*SGlobMchSaleConf)(nil), "SGlobMchSaleConf")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -555,8 +1132,24 @@ type FoundationServiceClient interface {
 	GetSyncLoginUrl(ctx context.Context, in *String, opts ...grpc.CallOption) (*String, error)
 	// 获取地区名称
 	GetAreaNames(ctx context.Context, in *GetAreaNamesRequest, opts ...grpc.CallOption) (*StringListResponse, error)
+	// 获取省市区字符串
+	GetAreaString(ctx context.Context, in *AreaStringRequest, opts ...grpc.CallOption) (*String, error)
 	// 获取下级区域,code
 	GetChildAreas(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*AreaListResponse, error)
+	// 获取移动应用设置
+	GetMoAppConf(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SMobileAppConfig, error)
+	// 保存移动应用设置
+	SaveMoAppConf(ctx context.Context, in *SMobileAppConfig, opts ...grpc.CallOption) (*Result, error)
+	// 获取微信接口配置
+	GetWxApiConfig(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SWxApiConfig, error)
+	// 保存微信接口配置
+	SaveWxApiConfig(ctx context.Context, in *SWxApiConfig, opts ...grpc.CallOption) (*Result, error)
+	// 获取支付平台
+	GetPayPlatform(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PaymentPlatformResponse, error)
+	// 获取全局商户销售设置
+	GetGlobMchSaleConf_(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SGlobMchSaleConf, error)
+	// 保存全局商户销售设置
+	SaveGlobMchSaleConf_(ctx context.Context, in *SGlobMchSaleConf, opts ...grpc.CallOption) (*Result, error)
 }
 
 type foundationServiceClient struct {
@@ -666,9 +1259,81 @@ func (c *foundationServiceClient) GetAreaNames(ctx context.Context, in *GetAreaN
 	return out, nil
 }
 
+func (c *foundationServiceClient) GetAreaString(ctx context.Context, in *AreaStringRequest, opts ...grpc.CallOption) (*String, error) {
+	out := new(String)
+	err := c.cc.Invoke(ctx, "/FoundationService/GetAreaString", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *foundationServiceClient) GetChildAreas(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*AreaListResponse, error) {
 	out := new(AreaListResponse)
 	err := c.cc.Invoke(ctx, "/FoundationService/GetChildAreas", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) GetMoAppConf(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SMobileAppConfig, error) {
+	out := new(SMobileAppConfig)
+	err := c.cc.Invoke(ctx, "/FoundationService/GetMoAppConf", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) SaveMoAppConf(ctx context.Context, in *SMobileAppConfig, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/FoundationService/SaveMoAppConf", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) GetWxApiConfig(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SWxApiConfig, error) {
+	out := new(SWxApiConfig)
+	err := c.cc.Invoke(ctx, "/FoundationService/GetWxApiConfig", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) SaveWxApiConfig(ctx context.Context, in *SWxApiConfig, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/FoundationService/SaveWxApiConfig", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) GetPayPlatform(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*PaymentPlatformResponse, error) {
+	out := new(PaymentPlatformResponse)
+	err := c.cc.Invoke(ctx, "/FoundationService/GetPayPlatform", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) GetGlobMchSaleConf_(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SGlobMchSaleConf, error) {
+	out := new(SGlobMchSaleConf)
+	err := c.cc.Invoke(ctx, "/FoundationService/GetGlobMchSaleConf_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) SaveGlobMchSaleConf_(ctx context.Context, in *SGlobMchSaleConf, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/FoundationService/SaveGlobMchSaleConf_", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -708,8 +1373,24 @@ type FoundationServiceServer interface {
 	GetSyncLoginUrl(context.Context, *String) (*String, error)
 	// 获取地区名称
 	GetAreaNames(context.Context, *GetAreaNamesRequest) (*StringListResponse, error)
+	// 获取省市区字符串
+	GetAreaString(context.Context, *AreaStringRequest) (*String, error)
 	// 获取下级区域,code
 	GetChildAreas(context.Context, *Int32) (*AreaListResponse, error)
+	// 获取移动应用设置
+	GetMoAppConf(context.Context, *Empty) (*SMobileAppConfig, error)
+	// 保存移动应用设置
+	SaveMoAppConf(context.Context, *SMobileAppConfig) (*Result, error)
+	// 获取微信接口配置
+	GetWxApiConfig(context.Context, *Empty) (*SWxApiConfig, error)
+	// 保存微信接口配置
+	SaveWxApiConfig(context.Context, *SWxApiConfig) (*Result, error)
+	// 获取支付平台
+	GetPayPlatform(context.Context, *Empty) (*PaymentPlatformResponse, error)
+	// 获取全局商户销售设置
+	GetGlobMchSaleConf_(context.Context, *Empty) (*SGlobMchSaleConf, error)
+	// 保存全局商户销售设置
+	SaveGlobMchSaleConf_(context.Context, *SGlobMchSaleConf) (*Result, error)
 }
 
 func RegisterFoundationServiceServer(s *grpc.Server, srv FoundationServiceServer) {
@@ -914,6 +1595,24 @@ func _FoundationService_GetAreaNames_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FoundationService_GetAreaString_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AreaStringRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).GetAreaString(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/GetAreaString",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).GetAreaString(ctx, req.(*AreaStringRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FoundationService_GetChildAreas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Int32)
 	if err := dec(in); err != nil {
@@ -928,6 +1627,132 @@ func _FoundationService_GetChildAreas_Handler(srv interface{}, ctx context.Conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FoundationServiceServer).GetChildAreas(ctx, req.(*Int32))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_GetMoAppConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).GetMoAppConf(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/GetMoAppConf",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).GetMoAppConf(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_SaveMoAppConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SMobileAppConfig)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).SaveMoAppConf(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/SaveMoAppConf",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).SaveMoAppConf(ctx, req.(*SMobileAppConfig))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_GetWxApiConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).GetWxApiConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/GetWxApiConfig",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).GetWxApiConfig(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_SaveWxApiConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SWxApiConfig)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).SaveWxApiConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/SaveWxApiConfig",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).SaveWxApiConfig(ctx, req.(*SWxApiConfig))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_GetPayPlatform_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).GetPayPlatform(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/GetPayPlatform",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).GetPayPlatform(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_GetGlobMchSaleConf__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).GetGlobMchSaleConf_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/GetGlobMchSaleConf_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).GetGlobMchSaleConf_(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_SaveGlobMchSaleConf__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SGlobMchSaleConf)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).SaveGlobMchSaleConf_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/SaveGlobMchSaleConf_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).SaveGlobMchSaleConf_(ctx, req.(*SGlobMchSaleConf))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -981,8 +1806,40 @@ var _FoundationService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _FoundationService_GetAreaNames_Handler,
 		},
 		{
+			MethodName: "GetAreaString",
+			Handler:    _FoundationService_GetAreaString_Handler,
+		},
+		{
 			MethodName: "GetChildAreas",
 			Handler:    _FoundationService_GetChildAreas_Handler,
+		},
+		{
+			MethodName: "GetMoAppConf",
+			Handler:    _FoundationService_GetMoAppConf_Handler,
+		},
+		{
+			MethodName: "SaveMoAppConf",
+			Handler:    _FoundationService_SaveMoAppConf_Handler,
+		},
+		{
+			MethodName: "GetWxApiConfig",
+			Handler:    _FoundationService_GetWxApiConfig_Handler,
+		},
+		{
+			MethodName: "SaveWxApiConfig",
+			Handler:    _FoundationService_SaveWxApiConfig_Handler,
+		},
+		{
+			MethodName: "GetPayPlatform",
+			Handler:    _FoundationService_GetPayPlatform_Handler,
+		},
+		{
+			MethodName: "GetGlobMchSaleConf_",
+			Handler:    _FoundationService_GetGlobMchSaleConf__Handler,
+		},
+		{
+			MethodName: "SaveGlobMchSaleConf_",
+			Handler:    _FoundationService_SaveGlobMchSaleConf__Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -990,52 +1847,94 @@ var _FoundationService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("foundation_service.proto", fileDescriptor_foundation_service_f8c40d04930833fb)
+	proto.RegisterFile("foundation_service.proto", fileDescriptor_foundation_service_05b4a4615552c0ec)
 }
 
-var fileDescriptor_foundation_service_f8c40d04930833fb = []byte{
-	// 673 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x54, 0xdf, 0x4f, 0x13, 0x41,
-	0x10, 0x6e, 0x29, 0xfd, 0x35, 0xa5, 0x4a, 0x97, 0x6a, 0x2e, 0x17, 0x4c, 0xea, 0x1a, 0x13, 0x22,
-	0xba, 0x6a, 0x79, 0xe4, 0xa9, 0x80, 0x54, 0x02, 0x1a, 0x72, 0x27, 0x3c, 0xe8, 0x83, 0x39, 0x7a,
-	0x63, 0x7b, 0xe1, 0x7a, 0x7b, 0xee, 0xee, 0x41, 0xfa, 0x07, 0xf8, 0x27, 0xfa, 0xff, 0x98, 0xdd,
-	0xdb, 0x3b, 0x5a, 0x81, 0xa7, 0xee, 0x37, 0xfb, 0xcd, 0xcc, 0xb7, 0xd3, 0x6f, 0x0e, 0x9c, 0x5f,
-	0x3c, 0x4b, 0xc2, 0x40, 0x45, 0x3c, 0xf9, 0x29, 0x51, 0xdc, 0x44, 0x13, 0x64, 0xa9, 0xe0, 0x8a,
-	0xbb, 0x1b, 0xd3, 0x98, 0x5f, 0x05, 0x71, 0x8e, 0xe8, 0x29, 0xf4, 0xfc, 0xb9, 0x1c, 0xa5, 0x91,
-	0x1f, 0xdc, 0xa0, 0x87, 0xbf, 0x33, 0x94, 0x8a, 0xb8, 0xd0, 0x4a, 0x05, 0xbf, 0x89, 0x42, 0x14,
-	0x4e, 0x75, 0x50, 0xdd, 0x69, 0x7b, 0x25, 0x26, 0x2e, 0xd4, 0x82, 0x34, 0x72, 0xd6, 0x06, 0xd5,
-	0x9d, 0xce, 0xb0, 0xc5, 0xfc, 0x3c, 0xdb, 0xd3, 0x41, 0x7a, 0x0c, 0xfd, 0x03, 0x1e, 0x88, 0xf0,
-	0x33, 0xe7, 0xd7, 0xcb, 0xf5, 0x1c, 0x68, 0xce, 0x38, 0xbf, 0xbe, 0xf0, 0xce, 0x6c, 0xb9, 0x02,
-	0x92, 0x3e, 0xd4, 0x15, 0xbf, 0xc6, 0xc4, 0xd4, 0x6b, 0x7b, 0x39, 0xa0, 0x1f, 0x60, 0x73, 0x24,
-	0x30, 0x38, 0x8b, 0xa4, 0xf2, 0x50, 0xa6, 0x3c, 0x91, 0x48, 0xb6, 0xa1, 0x7e, 0x19, 0xc4, 0x19,
-	0x3a, 0xd5, 0x41, 0x6d, 0xa7, 0x33, 0x6c, 0x30, 0x5f, 0x53, 0xbc, 0x3c, 0x48, 0xdf, 0x00, 0xf1,
-	0x95, 0x88, 0x92, 0xe9, 0x4a, 0x4e, 0x7f, 0x39, 0xa7, 0x5d, 0x70, 0x77, 0x61, 0x6b, 0x8c, 0x4a,
-	0x67, 0x7f, 0x0d, 0xe6, 0x28, 0x0b, 0x91, 0x2b, 0xe4, 0x5e, 0x41, 0x7e, 0x0f, 0xcd, 0x0b, 0x89,
-	0xe2, 0xfc, 0x36, 0x24, 0x04, 0xd6, 0x33, 0x59, 0x4e, 0xc4, 0x9c, 0xc9, 0x26, 0xd4, 0xd2, 0xdb,
-	0xd0, 0xaa, 0xd7, 0x47, 0xfa, 0x03, 0x9a, 0xbe, 0x2f, 0xf9, 0x28, 0x4d, 0xc9, 0x13, 0x58, 0x3b,
-	0x39, 0x32, 0xf4, 0x9e, 0xb7, 0x76, 0x72, 0xa4, 0x0b, 0xe8, 0x8e, 0x96, 0x6d, 0xce, 0xe4, 0x39,
-	0x34, 0x46, 0x69, 0x74, 0x21, 0x62, 0xa7, 0x66, 0xa2, 0x16, 0x69, 0x35, 0xdf, 0xcc, 0x60, 0xd6,
-	0xf3, 0xc1, 0x18, 0x40, 0xc7, 0x50, 0x37, 0xcf, 0xd6, 0xa5, 0x0e, 0x79, 0x88, 0xb6, 0xb8, 0x39,
-	0xeb, 0x52, 0xe7, 0x81, 0xc0, 0x44, 0x99, 0x06, 0x3d, 0xcf, 0xa2, 0xb2, 0x6d, 0xed, 0xae, 0x2d,
-	0xfd, 0x5b, 0xd5, 0x32, 0xcd, 0x5f, 0xb7, 0x24, 0xa1, 0xba, 0x22, 0x61, 0x13, 0x6a, 0xa7, 0xb8,
-	0x28, 0xde, 0x76, 0x8a, 0x0b, 0xcd, 0xf4, 0x71, 0x22, 0x50, 0x15, 0x62, 0x73, 0x64, 0x3b, 0x07,
-	0x73, 0x69, 0xd5, 0x5a, 0xa4, 0xe3, 0x5f, 0x50, 0xcd, 0x78, 0xe8, 0xd4, 0xf3, 0x78, 0x8e, 0xb4,
-	0x1f, 0x0e, 0x67, 0x81, 0x90, 0xa8, 0x9c, 0x46, 0xee, 0x07, 0x0b, 0xc9, 0x36, 0xb4, 0xfd, 0x68,
-	0x9a, 0x04, 0x2a, 0x13, 0xe8, 0x34, 0xcd, 0xdd, 0x5d, 0x80, 0x0c, 0xa0, 0xe3, 0x67, 0x93, 0x09,
-	0x4a, 0xa9, 0xf9, 0x4e, 0xcb, 0xdc, 0x2f, 0x87, 0x86, 0x7f, 0xd6, 0xa1, 0x77, 0x5c, 0x3a, 0xdf,
-	0xcf, 0x8d, 0x4f, 0x06, 0xd0, 0x1e, 0xa3, 0xb2, 0xcf, 0x6d, 0xb2, 0xdc, 0x29, 0x6e, 0x69, 0x5e,
-	0x5a, 0x21, 0xbb, 0x00, 0xda, 0xb0, 0x96, 0x42, 0xd8, 0xbd, 0x9d, 0x70, 0x9b, 0xcc, 0x43, 0x99,
-	0xc5, 0x8a, 0x56, 0xc8, 0x47, 0xe8, 0xea, 0x9b, 0xd2, 0xea, 0xe4, 0x19, 0x7b, 0xc8, 0xf6, 0xcb,
-	0x29, 0x2f, 0xa1, 0xe3, 0xa1, 0xe4, 0x99, 0x98, 0xa0, 0x1e, 0x6d, 0xa9, 0xa1, 0x38, 0xd0, 0x0a,
-	0xa1, 0x9a, 0x32, 0x8d, 0xa4, 0x42, 0xa1, 0xcd, 0xa3, 0xd5, 0x19, 0x1b, 0x2d, 0x73, 0x5e, 0x40,
-	0x43, 0x5b, 0x37, 0x4d, 0x57, 0x5f, 0x61, 0x78, 0xb4, 0x42, 0xde, 0xc1, 0x86, 0xbe, 0x8e, 0x63,
-	0x6b, 0xc0, 0x06, 0xfb, 0x34, 0x4f, 0xd5, 0xc2, 0xdd, 0x62, 0xf7, 0x97, 0xc3, 0x74, 0xec, 0xfa,
-	0x59, 0x8a, 0xe2, 0x32, 0x88, 0xa3, 0x30, 0x50, 0x48, 0x5a, 0xcc, 0x7a, 0xdd, 0xad, 0xb3, 0x03,
-	0xce, 0x63, 0x5a, 0x21, 0xaf, 0xa0, 0x7b, 0x1c, 0x67, 0x72, 0x66, 0x88, 0x7a, 0x0b, 0xee, 0x38,
-	0xb6, 0x3a, 0xad, 0x90, 0xd7, 0xf0, 0x54, 0xcf, 0x77, 0x91, 0x4c, 0xce, 0xf8, 0x34, 0x4a, 0x1e,
-	0x7b, 0xe1, 0x7e, 0x2e, 0xaf, 0x58, 0x3c, 0xd2, 0x67, 0x0f, 0xec, 0xe1, 0x63, 0x62, 0xdf, 0x42,
-	0x77, 0x8c, 0xea, 0x70, 0x16, 0xc5, 0xa1, 0x4e, 0x91, 0xa4, 0xc1, 0x4e, 0x12, 0xb5, 0x37, 0x74,
-	0x7b, 0xec, 0xff, 0x6f, 0x05, 0xad, 0x1c, 0xb4, 0xbf, 0x37, 0xd9, 0xbe, 0xf9, 0xc2, 0x5d, 0x35,
-	0xcc, 0xcf, 0xde, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x50, 0x91, 0xcf, 0xae, 0x12, 0x05, 0x00,
-	0x00,
+var fileDescriptor_foundation_service_05b4a4615552c0ec = []byte{
+	// 1347 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x57, 0xdd, 0x52, 0x1b, 0xc7,
+	0x12, 0x46, 0x08, 0x49, 0xa8, 0x01, 0x83, 0xc6, 0xf8, 0x58, 0xa5, 0xf2, 0x39, 0x07, 0xef, 0x39,
+	0x71, 0x91, 0xd8, 0xd9, 0xd8, 0xd8, 0x17, 0xa9, 0xf2, 0x95, 0x00, 0x83, 0x55, 0xa0, 0x58, 0xb5,
+	0x8b, 0x9d, 0xaa, 0xe4, 0x82, 0x5a, 0x76, 0x07, 0x34, 0x61, 0xb5, 0xb3, 0x99, 0x99, 0xc5, 0xd6,
+	0x23, 0xe4, 0x05, 0xf2, 0x0a, 0x79, 0x93, 0xbc, 0x41, 0xde, 0x27, 0xd5, 0xf3, 0xb3, 0xac, 0x24,
+	0xb8, 0xc9, 0x95, 0xa6, 0xbf, 0xfe, 0xa6, 0xbb, 0xa7, 0x7b, 0xb6, 0xa7, 0x05, 0xdd, 0x4b, 0x5e,
+	0x64, 0x49, 0xa4, 0x18, 0xcf, 0xce, 0x25, 0x15, 0x37, 0x2c, 0xa6, 0x7e, 0x2e, 0xb8, 0xe2, 0xbd,
+	0xf5, 0xab, 0x94, 0x5f, 0x44, 0xa9, 0x91, 0xbc, 0x13, 0xe8, 0x84, 0x13, 0xd9, 0xcf, 0x59, 0x18,
+	0xdd, 0xd0, 0x80, 0xfe, 0x5a, 0x50, 0xa9, 0x48, 0x0f, 0x56, 0x73, 0xc1, 0x6f, 0x58, 0x42, 0x45,
+	0xb7, 0xb6, 0x53, 0xdb, 0x6d, 0x07, 0xa5, 0x4c, 0x7a, 0x50, 0x8f, 0x72, 0xd6, 0x5d, 0xde, 0xa9,
+	0xed, 0xae, 0xed, 0xad, 0xfa, 0xa1, 0xd9, 0x1d, 0x20, 0xe8, 0x1d, 0xc1, 0xf6, 0x3e, 0x8f, 0x44,
+	0xf2, 0x9e, 0xf3, 0xeb, 0xaa, 0xbd, 0x2e, 0xb4, 0xc6, 0x9c, 0x5f, 0x7f, 0x0c, 0x4e, 0xad, 0x39,
+	0x27, 0x92, 0x6d, 0x68, 0x28, 0x7e, 0x4d, 0x33, 0x6d, 0xaf, 0x1d, 0x18, 0xc1, 0x3b, 0x87, 0x4e,
+	0x5f, 0xd0, 0x28, 0x54, 0x82, 0x65, 0x57, 0x95, 0xa0, 0x46, 0x18, 0x44, 0x16, 0x53, 0x6d, 0xa5,
+	0x11, 0x94, 0x32, 0x21, 0xb0, 0x72, 0xc0, 0xd4, 0x54, 0x5b, 0x69, 0x04, 0x7a, 0x8d, 0xfc, 0x43,
+	0x26, 0x95, 0x60, 0xb1, 0xea, 0xd6, 0x0d, 0xdf, 0xc9, 0xde, 0x4b, 0xd8, 0x42, 0x07, 0xa7, 0x4c,
+	0xaa, 0x80, 0xca, 0x9c, 0x67, 0x92, 0x92, 0x27, 0xd0, 0xf8, 0x14, 0xa5, 0x05, 0x1a, 0xaf, 0xef,
+	0xae, 0xed, 0x35, 0xfd, 0x10, 0x29, 0x81, 0x01, 0xbd, 0x6f, 0x80, 0x98, 0x70, 0x66, 0xf6, 0x6c,
+	0x57, 0xf7, 0xb4, 0x1d, 0xf7, 0x39, 0x3c, 0x3c, 0xa6, 0x0a, 0x77, 0xff, 0x10, 0x4d, 0xa8, 0x74,
+	0x07, 0x98, 0x21, 0x77, 0x1c, 0xf9, 0x3b, 0x68, 0x7d, 0x94, 0x54, 0x8c, 0x3e, 0x27, 0x78, 0x8a,
+	0x42, 0x96, 0x29, 0xd7, 0x6b, 0xb2, 0x05, 0xf5, 0xfc, 0x73, 0x62, 0xd3, 0x83, 0x4b, 0xef, 0x67,
+	0x68, 0x85, 0xa1, 0xe4, 0xfd, 0x3c, 0x27, 0x0f, 0x60, 0x79, 0x70, 0xa8, 0xe9, 0x9d, 0x60, 0x79,
+	0x70, 0x88, 0x06, 0xd0, 0xa3, 0x65, 0xeb, 0x35, 0xf9, 0x17, 0x34, 0xfb, 0x39, 0xfb, 0x28, 0x52,
+	0x9d, 0x84, 0x76, 0x60, 0x25, 0x8c, 0xe6, 0x4c, 0x67, 0x7e, 0xc5, 0x64, 0x5e, 0x0b, 0xde, 0x31,
+	0x34, 0xf4, 0xb1, 0x75, 0x46, 0x79, 0x42, 0xad, 0x71, 0xbd, 0x46, 0x53, 0xa3, 0x48, 0xd0, 0x4c,
+	0x69, 0x07, 0x9d, 0xc0, 0x4a, 0xa5, 0xdb, 0xfa, 0xad, 0x5b, 0xef, 0xaf, 0x1a, 0x86, 0xa9, 0xef,
+	0x46, 0x25, 0x84, 0xda, 0x4c, 0x08, 0x5b, 0x50, 0x3f, 0xa1, 0x53, 0x77, 0xb6, 0x13, 0x3a, 0x45,
+	0x66, 0x48, 0x63, 0x41, 0x95, 0x0b, 0xd6, 0x48, 0xd6, 0x73, 0x34, 0x91, 0x36, 0x5a, 0x2b, 0x21,
+	0x3e, 0xa4, 0x6a, 0xcc, 0x93, 0x6e, 0xc3, 0xe0, 0x46, 0xc2, 0x0b, 0x77, 0x30, 0x8e, 0x84, 0xa4,
+	0xaa, 0xdb, 0x34, 0x17, 0xce, 0x8a, 0xe4, 0x09, 0xb4, 0x43, 0x76, 0x95, 0x45, 0xaa, 0x10, 0xb4,
+	0xdb, 0xd2, 0xba, 0x5b, 0x80, 0xec, 0xc0, 0x5a, 0x58, 0xc4, 0x31, 0x95, 0x12, 0xf9, 0xdd, 0x55,
+	0xad, 0xaf, 0x42, 0xde, 0x1f, 0xcb, 0xb0, 0x15, 0x0e, 0xf9, 0x05, 0x4b, 0x69, 0x3f, 0xcf, 0x0f,
+	0x78, 0x76, 0xc9, 0xae, 0xd0, 0x5d, 0x3f, 0xcf, 0x75, 0x0e, 0xec, 0xfd, 0xb6, 0xa2, 0xd5, 0x0c,
+	0x62, 0xee, 0x6e, 0xb8, 0x13, 0xd1, 0xd5, 0x21, 0x95, 0xb1, 0x60, 0x39, 0x7e, 0xa3, 0xf6, 0xbc,
+	0x55, 0x88, 0x3c, 0x83, 0x07, 0xfd, 0x2c, 0x11, 0x9c, 0x25, 0x9f, 0xa8, 0x90, 0x48, 0x32, 0x87,
+	0x9f, 0x43, 0xc9, 0x0b, 0xe8, 0x58, 0x24, 0xa0, 0x29, 0x8d, 0x24, 0xc5, 0x4c, 0x9b, 0x7c, 0x2c,
+	0x2a, 0xc8, 0x7f, 0x00, 0x06, 0x5c, 0x3a, 0x8b, 0x26, 0x3b, 0x15, 0x84, 0xfc, 0x1f, 0x36, 0x06,
+	0x5c, 0x56, 0x2c, 0x99, 0x24, 0xcd, 0x82, 0xe4, 0x29, 0xac, 0x87, 0x63, 0xfe, 0xf9, 0x2c, 0x4f,
+	0x47, 0x91, 0x1a, 0x9f, 0x97, 0x99, 0xba, 0xc5, 0xbc, 0xdf, 0xeb, 0xb0, 0x1e, 0xfe, 0xf8, 0xa5,
+	0x9f, 0x33, 0x9b, 0xa5, 0x6d, 0x68, 0xe0, 0xe1, 0x13, 0x9b, 0x23, 0x23, 0x60, 0x41, 0xfa, 0x79,
+	0x6e, 0xab, 0x6e, 0x72, 0x74, 0x0b, 0x60, 0xfe, 0x86, 0xb9, 0xb9, 0xa7, 0x26, 0x43, 0x4e, 0xc4,
+	0xcf, 0x7b, 0x98, 0xf7, 0xa9, 0xc4, 0x1b, 0x64, 0xf2, 0x52, 0xca, 0xe8, 0xe9, 0x83, 0x60, 0x03,
+	0x77, 0x2b, 0x8c, 0x80, 0xe8, 0x30, 0x1e, 0x0f, 0x12, 0x7b, 0x68, 0x23, 0xa0, 0xff, 0x61, 0x3c,
+	0xee, 0xe7, 0x0c, 0x0d, 0xd9, 0x0b, 0x51, 0x02, 0x58, 0xa5, 0x61, 0x3c, 0x3e, 0xa0, 0x42, 0xe1,
+	0x99, 0xdc, 0x31, 0x2b, 0x10, 0x56, 0xc9, 0x8a, 0x27, 0x74, 0xaa, 0x49, 0x6d, 0x53, 0xa5, 0x59,
+	0x14, 0x79, 0x01, 0x4d, 0x46, 0x51, 0x7c, 0xfd, 0x2e, 0x8b, 0x2e, 0x52, 0x9a, 0x74, 0x61, 0xa7,
+	0xb6, 0xbb, 0x1a, 0xcc, 0xa1, 0xc4, 0x07, 0x62, 0x91, 0xfe, 0x84, 0x17, 0x99, 0x3a, 0x65, 0x13,
+	0xa6, 0xba, 0x6b, 0x3b, 0xb5, 0xdd, 0x5a, 0x70, 0x87, 0x86, 0xbc, 0x84, 0x87, 0x16, 0x3d, 0x8c,
+	0xa6, 0x67, 0x6c, 0x42, 0xcd, 0x86, 0x75, 0xdd, 0xf1, 0xee, 0x52, 0x79, 0x7d, 0x78, 0x3c, 0x8a,
+	0xa6, 0x13, 0x9a, 0xa9, 0x51, 0x1a, 0xa9, 0x4b, 0x2e, 0x26, 0x65, 0x3f, 0x7b, 0x36, 0xdb, 0x03,
+	0xb7, 0xfc, 0x79, 0xa2, 0x6d, 0x5a, 0xbf, 0xc0, 0xe6, 0x9c, 0x46, 0xf7, 0x22, 0x57, 0xda, 0xe5,
+	0x41, 0x72, 0x67, 0x2f, 0x22, 0xb0, 0x82, 0xdf, 0x9a, 0x6b, 0x14, 0xb8, 0x26, 0xff, 0x85, 0xc6,
+	0x40, 0x51, 0xfd, 0x65, 0xa3, 0xcb, 0xb6, 0xbf, 0x1f, 0x65, 0xd7, 0x88, 0x04, 0x06, 0xf7, 0xf6,
+	0x61, 0xd5, 0x41, 0xff, 0xd4, 0x89, 0xf7, 0x67, 0x1d, 0xb6, 0xc2, 0xe3, 0x94, 0x5f, 0x0c, 0xe3,
+	0x71, 0x18, 0xa5, 0x14, 0x6f, 0x24, 0x56, 0xe4, 0xe8, 0x0b, 0x4a, 0xd2, 0x55, 0xa4, 0x66, 0x2a,
+	0x32, 0x8b, 0x92, 0x5d, 0xd8, 0x3c, 0x88, 0xe4, 0x78, 0x3f, 0x8a, 0xaf, 0x47, 0x54, 0xc4, 0xae,
+	0xff, 0xd5, 0x82, 0x79, 0x18, 0x6b, 0xe7, 0xa0, 0xb3, 0xab, 0x57, 0x8e, 0x5c, 0x37, 0xb5, 0x5b,
+	0xd4, 0xcc, 0xf2, 0xf7, 0x1c, 0x7f, 0x65, 0x9e, 0xef, 0x34, 0xe4, 0x0d, 0x3c, 0x72, 0xe8, 0x90,
+	0x4e, 0x2e, 0xa8, 0x70, 0x5b, 0x1a, 0x7a, 0xcb, 0xdd, 0x4a, 0xdd, 0x47, 0x0a, 0xc5, 0x43, 0xaa,
+	0x8a, 0xfc, 0x83, 0xc0, 0x37, 0xbd, 0xa9, 0x2f, 0xc7, 0x1c, 0x8a, 0xd1, 0xe8, 0x05, 0xde, 0x94,
+	0x0f, 0x85, 0x1a, 0xb2, 0xac, 0x50, 0xa6, 0x47, 0x36, 0x82, 0x3b, 0x34, 0xe4, 0x7b, 0x78, 0xac,
+	0x51, 0xfd, 0x79, 0x8b, 0x49, 0xff, 0x52, 0x51, 0x61, 0x37, 0xad, 0xea, 0x4d, 0xf7, 0xa9, 0xcb,
+	0x9d, 0xd6, 0x5e, 0x40, 0x63, 0xca, 0x6e, 0xe8, 0x7b, 0x5e, 0x08, 0xfd, 0xf1, 0xb8, 0x9d, 0x8b,
+	0xea, 0xbd, 0xdf, 0x5a, 0xd0, 0x39, 0x2a, 0x27, 0x9b, 0xd0, 0x0c, 0x36, 0x64, 0x07, 0xda, 0xc7,
+	0x54, 0xd9, 0xd7, 0xa6, 0xe5, 0x9b, 0x87, 0xba, 0x57, 0x0e, 0x27, 0xde, 0x12, 0x79, 0x0e, 0x80,
+	0x03, 0x89, 0xa5, 0x10, 0x7f, 0x61, 0xe6, 0xe9, 0xb5, 0xfc, 0x80, 0xca, 0x22, 0x55, 0xde, 0x12,
+	0x79, 0x05, 0x1b, 0xa8, 0x29, 0x47, 0x19, 0xf2, 0xc8, 0xbf, 0x6b, 0xac, 0xa9, 0x6e, 0x79, 0x0a,
+	0x6b, 0x01, 0x95, 0xbc, 0x10, 0xb1, 0x6e, 0x8f, 0x65, 0x0c, 0x6e, 0xe1, 0x2d, 0x11, 0x0f, 0x29,
+	0x57, 0x4c, 0x2a, 0x2a, 0xf0, 0xed, 0xc6, 0xe8, 0xf4, 0x2b, 0x5e, 0xe5, 0xfc, 0x1b, 0x9a, 0x38,
+	0x39, 0xe4, 0xf9, 0xec, 0x29, 0x34, 0xcf, 0x5b, 0x22, 0xdf, 0xc2, 0x3a, 0xaa, 0xd3, 0xd4, 0xbe,
+	0xff, 0x4d, 0xff, 0xdd, 0x24, 0x57, 0xd3, 0xde, 0x43, 0x7f, 0x71, 0x36, 0xd1, 0x1e, 0x37, 0xc2,
+	0x22, 0xa7, 0xe2, 0x53, 0x94, 0xb2, 0x24, 0x52, 0x94, 0xac, 0xfa, 0x76, 0xd4, 0xe8, 0x35, 0xfc,
+	0x7d, 0xce, 0x53, 0x6f, 0x89, 0xfc, 0x0f, 0x36, 0x8e, 0xd2, 0x42, 0x8e, 0x35, 0x11, 0x87, 0x90,
+	0x5b, 0x8e, 0xb5, 0xee, 0x2d, 0x91, 0xaf, 0x60, 0x13, 0xf3, 0x3b, 0xcd, 0xe2, 0x53, 0x7e, 0xc5,
+	0xb2, 0xfb, 0x4e, 0xf8, 0xd6, 0x84, 0xe7, 0xe6, 0x1e, 0xb2, 0xed, 0xdf, 0x31, 0x06, 0xdd, 0x17,
+	0xac, 0x0f, 0x1b, 0x96, 0x6d, 0xd4, 0x84, 0xf8, 0x0b, 0x33, 0x60, 0xd5, 0xd9, 0x0b, 0xcd, 0x3f,
+	0x18, 0xb3, 0x34, 0x41, 0x9e, 0x24, 0x4d, 0x7f, 0x90, 0xa9, 0xd7, 0x7b, 0xbd, 0x8e, 0x3f, 0x3f,
+	0xda, 0xe9, 0xfa, 0x63, 0x68, 0x43, 0x6e, 0xdf, 0xec, 0x32, 0x73, 0x1d, 0x7f, 0xfe, 0x31, 0xd7,
+	0x69, 0xd6, 0xf5, 0xbf, 0x65, 0x2f, 0xb2, 0xaa, 0xb5, 0xff, 0x1a, 0x1e, 0x1c, 0x53, 0x55, 0x7d,
+	0xe9, 0x9c, 0xf5, 0x0d, 0xbf, 0xfa, 0x00, 0xea, 0x30, 0x36, 0xd1, 0x72, 0x95, 0x3b, 0xcb, 0xa9,
+	0xda, 0x7d, 0xa3, 0xed, 0x8e, 0xa2, 0x69, 0xd9, 0x63, 0x9d, 0xdd, 0xae, 0x7f, 0x4f, 0x03, 0xf7,
+	0x96, 0xc8, 0x9e, 0x1e, 0x3e, 0xe7, 0x7a, 0xdd, 0x79, 0xf5, 0xc0, 0x73, 0x3a, 0xed, 0x69, 0x1b,
+	0xc3, 0x5a, 0xd8, 0xb4, 0x48, 0xae, 0xc4, 0xb7, 0xdf, 0xfe, 0xa9, 0xe5, 0xbf, 0xd5, 0xff, 0x22,
+	0x2e, 0x9a, 0xfa, 0xe7, 0xf5, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x85, 0x68, 0x38, 0xc8, 0x76,
+	0x0c, 0x00, 0x00,
 }

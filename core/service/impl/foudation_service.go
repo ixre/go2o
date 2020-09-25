@@ -176,38 +176,80 @@ func (s *foundationService) GetSyncLoginUrl(_ context.Context, s2 *proto.String)
 }
 
 // 获取移动应用设置
-func (s *foundationService) GetMoAppConf() valueobject.MoAppConf {
-	return s._rep.GetMoAppConf()
+func (s *foundationService) GetMoAppConf(_ context.Context, _ *proto.Empty) (*proto.SMobileAppConfig, error) {
+	c := s._rep.GetMoAppConf()
+	return &proto.SMobileAppConfig{
+		AppName:           c.AppName,
+		AppIcon:           c.AppIcon,
+		Description:       c.Description,
+		AndroidVersion:    c.AndroidVersion,
+		AndroidReleaseUrl: c.AndroidReleaseUrl,
+		IosVersion:        c.IosVersion,
+		IosReleaseUrl:     c.IosReleaseUrl,
+		ShowTplPath_:      c.ShowTplPath,
+	}, nil
 }
 
 // 保存移动应用设置
-func (s *foundationService) SaveMoAppConf(r *valueobject.MoAppConf) error {
-	return s._rep.SaveMoAppConf(r)
+func (s *foundationService) SaveMoAppConf(_ context.Context, config *proto.SMobileAppConfig) (*proto.Result, error) {
+	dst := &valueobject.MoAppConf{
+		AppName:           config.AppName,
+		AppIcon:           config.AppIcon,
+		Description:       config.Description,
+		ShowTplPath:       config.ShowTplPath_,
+		AndroidVersion:    config.AndroidVersion,
+		AndroidReleaseUrl: config.AndroidReleaseUrl,
+		IosVersion:        config.IosVersion,
+		IosReleaseUrl:     config.IosReleaseUrl,
+		WpVersion:         "",
+		WpReleaseUrl:      "",
+	}
+	err := s._rep.SaveMoAppConf(dst)
+	return s.error(err), nil
 }
 
 // 获取微信接口配置
-func (s *foundationService) GetWxApiConfig() valueobject.WxApiConfig {
-	return s._rep.GetWxApiConfig()
+func (s *foundationService) GetWxApiConfig(_ context.Context, empty *proto.Empty) (*proto.SWxApiConfig, error) {
+	c := s._rep.GetWxApiConfig()
+	return &proto.SWxApiConfig{
+		AppId:               c.AppId,
+		AppSecret:           c.AppSecret,
+		MpToken:             c.MpToken,
+		MpAesKey:            c.MpAesKey,
+		OriId:               c.OriId,
+		MchId:               c.MchId,
+		MchApiKey:           c.MchApiKey,
+		MchCertPath:         c.MchCertPath,
+		MchCertKeyPath:      c.MchCertKeyPath,
+		RedPackEnabled:      c.RedPackEnabled,
+		RedPackAmountLimit:  float64(c.RedPackAmountLimit),
+		RedPackDayTimeLimit: int32(c.RedPackDayTimeLimit),
+	}, nil
 }
 
 // 保存微信接口配置
-func (s *foundationService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
-	return s._rep.SaveWxApiConfig(v)
+func (s *foundationService) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApiConfig) (*proto.Result, error) {
+	dst := &valueobject.WxApiConfig{
+		AppId:               cfg.AppId,
+		AppSecret:           cfg.AppSecret,
+		MpToken:             cfg.MpToken,
+		MpAesKey:            cfg.MpAesKey,
+		OriId:               cfg.OriId,
+		MchId:               cfg.MchId,
+		MchApiKey:           cfg.MchApiKey,
+		MchCertPath:         cfg.MchCertPath,
+		MchCertKeyPath:      cfg.MchCertKeyPath,
+		RedPackEnabled:      cfg.RedPackEnabled,
+		RedPackAmountLimit:  float32(cfg.RedPackAmountLimit),
+		RedPackDayTimeLimit: int(cfg.RedPackDayTimeLimit),
+	}
+	err := s._rep.SaveWxApiConfig(dst)
+	return s.error(err), nil
 }
 
 // 获取资源地址
 func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
 	return &proto.String{Value: format.GetResUrl(s2.Value)}, nil
-}
-
-// 获取全局商户销售设置
-func (s *foundationService) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
-	return s._rep.GetGlobMchSaleConf()
-}
-
-// 保存全局商户销售设置
-func (s *foundationService) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
-	return s._rep.SaveGlobMchSaleConf(v)
 }
 
 // 获取短信设置
@@ -240,15 +282,79 @@ func (s *foundationService) GetAreaNames(_ context.Context, request *proto.GetAr
 }
 
 // 获取省市区字符串
-func (s *foundationService) GetAreaString(province, city, district int32) string {
-	if province == 0 || city == 0 || district == 0 {
-		return ""
+func (s *foundationService) GetAreaString(_ context.Context, r *proto.AreaStringRequest) (*proto.String, error) {
+	if r.Province == 0 || r.City == 0 || r.District == 0 {
+		return &proto.String{Value: ""}, nil
 	}
-	return s._rep.GetAreaString(province, city, district)
+	str := s._rep.GetAreaString(r.Province, r.City, r.District)
+	return &proto.String{Value: str}, nil
 }
 
 // 获取支付平台
-func (s *foundationService) GetPayPlatform() []*bank.PaymentPlatform {
+func (s *foundationService) GetPayPlatform(_ context.Context, r *proto.Empty) (*proto.PaymentPlatformResponse, error) {
 	m := module.Get(module.PAY).(*module.PaymentModule)
-	return m.GetPayPlatform()
+	pf := m.GetPayPlatform()
+	ret := &proto.PaymentPlatformResponse{
+		Value: make([]*proto.PaymentPlatform, len(pf)),
+	}
+	for i, v := range pf {
+		ret.Value[i] = s.parsePayPlatform(v)
+	}
+	return ret, nil
+}
+
+// 获取全局商户销售设置
+func (s *foundationService) GetGlobMchSaleConf_(_ context.Context, r *proto.Empty) (*proto.SGlobMchSaleConf, error) {
+	c := s._rep.GetGlobMchSaleConf()
+	return &proto.SGlobMchSaleConf{
+		FxSalesEnabled:          c.FxSalesEnabled,
+		CashBackPercent:         float64(c.CashBackPercent),
+		CashBackTg1Percent:      float64(c.CashBackTg1Percent),
+		CashBackTg2Percent:      float64(c.CashBackTg2Percent),
+		CashBackMemberPercent:   float64(c.CashBackMemberPercent),
+		AutoSetupOrder:          int32(c.AutoSetupOrder),
+		OrderTimeOutMinute:      int32(c.OrderTimeOutMinute),
+		OrderConfirmAfterMinute: int32(c.OrderConfirmAfterMinute),
+		OrderTimeOutReceiveHour: int32(c.OrderTimeOutReceiveHour),
+	}, nil
+}
+
+// 保存全局商户销售设置
+func (s *foundationService) SaveGlobMchSaleConf_(_ context.Context, conf *proto.SGlobMchSaleConf) (*proto.Result, error) {
+	dst := &valueobject.GlobMchSaleConf{
+		FxSalesEnabled:          conf.FxSalesEnabled,
+		CashBackPercent:         float32(conf.CashBackPercent),
+		CashBackTg1Percent:      float32(conf.CashBackTg1Percent),
+		CashBackTg2Percent:      float32(conf.CashBackTg2Percent),
+		CashBackMemberPercent:   float32(conf.CashBackMemberPercent),
+		AutoSetupOrder:          int(conf.AutoSetupOrder),
+		OrderTimeOutMinute:      int(conf.OrderTimeOutMinute),
+		OrderConfirmAfterMinute: int(conf.OrderConfirmAfterMinute),
+		OrderTimeOutReceiveHour: int(conf.OrderTimeOutReceiveHour),
+	}
+	err := s._rep.SaveGlobMchSaleConf(dst)
+	return s.error(err), nil
+}
+
+func (s *foundationService) parsePayPlatform(v *bank.PaymentPlatform) *proto.PaymentPlatform {
+	dst := &proto.PaymentPlatform{
+		Id:    v.ID,
+		Name:  v.Name,
+		Sign:  v.Sign,
+		Items: make([]*proto.BankItem, len(v.Bank)),
+	}
+	if v.Bank == nil {
+		for i, v := range v.Bank {
+			dst.Items[i] = s.parseBankItem(v)
+		}
+	}
+	return dst
+}
+
+func (s *foundationService) parseBankItem(v *bank.BankItem) *proto.BankItem {
+	return &proto.BankItem{
+		Id:   v.ID,
+		Name: v.Name,
+		Sign: v.Sign,
+	}
 }

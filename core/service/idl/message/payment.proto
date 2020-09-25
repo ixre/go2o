@@ -1,7 +1,7 @@
 syntax = "proto3";
 option go_package = ".;proto";
 
-enum PaymentAccountType{
+enum PaymentAccountType {
     // 余额支付
     PA_Balance = 0;
     // 钱包
@@ -10,7 +10,7 @@ enum PaymentAccountType{
     PA_QuickPay = 2;
 }
 
-message PayPriorityRequest{
+message PayPriorityRequest {
     sint64 OwnerId = 1;
     PaymentAccountType Account = 2;
 }

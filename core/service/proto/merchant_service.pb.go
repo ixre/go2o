@@ -23,577 +23,281 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// 商家
-type SMerchant struct {
-	// * 编号
-	Id int32 `protobuf:"zigzag32,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	// * 会员编号
-	MemberId int64 `protobuf:"zigzag64,2,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	// * 登录用户
-	LoginUser string `protobuf:"bytes,3,opt,name=LoginUser,proto3" json:"LoginUser,omitempty"`
-	// * 登录密码
-	LoginPwd string `protobuf:"bytes,4,opt,name=LoginPwd,proto3" json:"LoginPwd,omitempty"`
-	// * 名称
-	Name string `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name,omitempty"`
-	// * 公司名称
-	CompanyName string `protobuf:"bytes,6,opt,name=CompanyName,proto3" json:"CompanyName,omitempty"`
-	// * 是否字营
-	SelfSales int32 `protobuf:"zigzag32,7,opt,name=SelfSales,proto3" json:"SelfSales,omitempty"`
-	// * 商户等级
-	Level int32 `protobuf:"zigzag32,8,opt,name=Level,proto3" json:"Level,omitempty"`
-	// * 标志
-	Logo string `protobuf:"bytes,9,opt,name=Logo,proto3" json:"Logo,omitempty"`
-	// * 省
-	Province int32 `protobuf:"zigzag32,10,opt,name=Province,proto3" json:"Province,omitempty"`
-	// * 市
-	City int32 `protobuf:"zigzag32,11,opt,name=City,proto3" json:"City,omitempty"`
-	// * 区
-	District int32 `protobuf:"zigzag32,12,opt,name=District,proto3" json:"District,omitempty"`
-	// * 标志
-	Flag int32 `protobuf:"zigzag32,13,opt,name=Flag,proto3" json:"Flag,omitempty"`
-	// * 是否启用
-	Enabled int32 `protobuf:"zigzag32,14,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
-	// * 最后登录时间
-	LastLoginTime        int32    `protobuf:"zigzag32,15,opt,name=LastLoginTime,proto3" json:"LastLoginTime,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SMerchant) Reset()         { *m = SMerchant{} }
-func (m *SMerchant) String() string { return proto.CompactTextString(m) }
-func (*SMerchant) ProtoMessage()    {}
-func (*SMerchant) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{0}
-}
-func (m *SMerchant) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SMerchant.Unmarshal(m, b)
-}
-func (m *SMerchant) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SMerchant.Marshal(b, m, deterministic)
-}
-func (dst *SMerchant) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SMerchant.Merge(dst, src)
-}
-func (m *SMerchant) XXX_Size() int {
-	return xxx_messageInfo_SMerchant.Size(m)
-}
-func (m *SMerchant) XXX_DiscardUnknown() {
-	xxx_messageInfo_SMerchant.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SMerchant proto.InternalMessageInfo
-
-func (m *SMerchant) GetId() int32 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *SMerchant) GetMemberId() int64 {
-	if m != nil {
-		return m.MemberId
-	}
-	return 0
-}
-
-func (m *SMerchant) GetLoginUser() string {
-	if m != nil {
-		return m.LoginUser
-	}
-	return ""
-}
-
-func (m *SMerchant) GetLoginPwd() string {
-	if m != nil {
-		return m.LoginPwd
-	}
-	return ""
-}
-
-func (m *SMerchant) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *SMerchant) GetCompanyName() string {
-	if m != nil {
-		return m.CompanyName
-	}
-	return ""
-}
-
-func (m *SMerchant) GetSelfSales() int32 {
-	if m != nil {
-		return m.SelfSales
-	}
-	return 0
-}
-
-func (m *SMerchant) GetLevel() int32 {
-	if m != nil {
-		return m.Level
-	}
-	return 0
-}
-
-func (m *SMerchant) GetLogo() string {
-	if m != nil {
-		return m.Logo
-	}
-	return ""
-}
-
-func (m *SMerchant) GetProvince() int32 {
-	if m != nil {
-		return m.Province
-	}
-	return 0
-}
-
-func (m *SMerchant) GetCity() int32 {
-	if m != nil {
-		return m.City
-	}
-	return 0
-}
-
-func (m *SMerchant) GetDistrict() int32 {
-	if m != nil {
-		return m.District
-	}
-	return 0
-}
-
-func (m *SMerchant) GetFlag() int32 {
-	if m != nil {
-		return m.Flag
-	}
-	return 0
-}
-
-func (m *SMerchant) GetEnabled() int32 {
-	if m != nil {
-		return m.Enabled
-	}
-	return 0
-}
-
-func (m *SMerchant) GetLastLoginTime() int32 {
-	if m != nil {
-		return m.LastLoginTime
-	}
-	return 0
-}
-
-// 商家
-type SMerchantPack struct {
-	// * 登录用户
-	LoginUser string `protobuf:"bytes,1,opt,name=LoginUser,proto3" json:"LoginUser,omitempty"`
-	// * 登录密码
-	LoginPwd string `protobuf:"bytes,2,opt,name=LoginPwd,proto3" json:"LoginPwd,omitempty"`
-	// * 名称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
-	// * 是否字营
-	SelfSales int32 `protobuf:"zigzag32,4,opt,name=SelfSales,proto3" json:"SelfSales,omitempty"`
-	// * 店铺名称
-	ShopName string `protobuf:"bytes,5,opt,name=ShopName,proto3" json:"ShopName,omitempty"`
-	// * 标志
-	ShopLogo string `protobuf:"bytes,6,opt,name=ShopLogo,proto3" json:"ShopLogo,omitempty"`
-	// * 电话
-	Tel string `protobuf:"bytes,7,opt,name=Tel,proto3" json:"Tel,omitempty"`
-	// * 地址
-	Addr                 string   `protobuf:"bytes,8,opt,name=Addr,proto3" json:"Addr,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SMerchantPack) Reset()         { *m = SMerchantPack{} }
-func (m *SMerchantPack) String() string { return proto.CompactTextString(m) }
-func (*SMerchantPack) ProtoMessage()    {}
-func (*SMerchantPack) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{1}
-}
-func (m *SMerchantPack) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SMerchantPack.Unmarshal(m, b)
-}
-func (m *SMerchantPack) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SMerchantPack.Marshal(b, m, deterministic)
-}
-func (dst *SMerchantPack) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SMerchantPack.Merge(dst, src)
-}
-func (m *SMerchantPack) XXX_Size() int {
-	return xxx_messageInfo_SMerchantPack.Size(m)
-}
-func (m *SMerchantPack) XXX_DiscardUnknown() {
-	xxx_messageInfo_SMerchantPack.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SMerchantPack proto.InternalMessageInfo
-
-func (m *SMerchantPack) GetLoginUser() string {
-	if m != nil {
-		return m.LoginUser
-	}
-	return ""
-}
-
-func (m *SMerchantPack) GetLoginPwd() string {
-	if m != nil {
-		return m.LoginPwd
-	}
-	return ""
-}
-
-func (m *SMerchantPack) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *SMerchantPack) GetSelfSales() int32 {
-	if m != nil {
-		return m.SelfSales
-	}
-	return 0
-}
-
-func (m *SMerchantPack) GetShopName() string {
-	if m != nil {
-		return m.ShopName
-	}
-	return ""
-}
-
-func (m *SMerchantPack) GetShopLogo() string {
-	if m != nil {
-		return m.ShopLogo
-	}
-	return ""
-}
-
-func (m *SMerchantPack) GetTel() string {
-	if m != nil {
-		return m.Tel
-	}
-	return ""
-}
-
-func (m *SMerchantPack) GetAddr() string {
-	if m != nil {
-		return m.Addr
-	}
-	return ""
-}
-
-type MerchantCreateRequest struct {
-	Mch                  *SMerchantPack `protobuf:"bytes,1,opt,name=mch,proto3" json:"mch,omitempty"`
-	RelMemberId          int64          `protobuf:"zigzag64,2,opt,name=relMemberId,proto3" json:"relMemberId,omitempty"`
+type MerchantOrderRequest struct {
+	// 　商户编号
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	// 是否分页
+	Pagination bool `protobuf:"varint,2,opt,name=Pagination,proto3" json:"Pagination,omitempty"`
+	// 　分页参数
+	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
 }
 
-func (m *MerchantCreateRequest) Reset()         { *m = MerchantCreateRequest{} }
-func (m *MerchantCreateRequest) String() string { return proto.CompactTextString(m) }
-func (*MerchantCreateRequest) ProtoMessage()    {}
-func (*MerchantCreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{2}
+func (m *MerchantOrderRequest) Reset()         { *m = MerchantOrderRequest{} }
+func (m *MerchantOrderRequest) String() string { return proto.CompactTextString(m) }
+func (*MerchantOrderRequest) ProtoMessage()    {}
+func (*MerchantOrderRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_merchant_service_c1f9c7afad688430, []int{0}
 }
-func (m *MerchantCreateRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_MerchantCreateRequest.Unmarshal(m, b)
+func (m *MerchantOrderRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_MerchantOrderRequest.Unmarshal(m, b)
 }
-func (m *MerchantCreateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_MerchantCreateRequest.Marshal(b, m, deterministic)
+func (m *MerchantOrderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_MerchantOrderRequest.Marshal(b, m, deterministic)
 }
-func (dst *MerchantCreateRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MerchantCreateRequest.Merge(dst, src)
+func (dst *MerchantOrderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MerchantOrderRequest.Merge(dst, src)
 }
-func (m *MerchantCreateRequest) XXX_Size() int {
-	return xxx_messageInfo_MerchantCreateRequest.Size(m)
+func (m *MerchantOrderRequest) XXX_Size() int {
+	return xxx_messageInfo_MerchantOrderRequest.Size(m)
 }
-func (m *MerchantCreateRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MerchantCreateRequest.DiscardUnknown(m)
+func (m *MerchantOrderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MerchantOrderRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MerchantCreateRequest proto.InternalMessageInfo
+var xxx_messageInfo_MerchantOrderRequest proto.InternalMessageInfo
 
-func (m *MerchantCreateRequest) GetMch() *SMerchantPack {
+func (m *MerchantOrderRequest) GetMerchantId() int64 {
 	if m != nil {
-		return m.Mch
-	}
-	return nil
-}
-
-func (m *MerchantCreateRequest) GetRelMemberId() int64 {
-	if m != nil {
-		return m.RelMemberId
+		return m.MerchantId
 	}
 	return 0
 }
 
-type MchUserPwd struct {
-	User                 string   `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	Pwd                  string   `protobuf:"bytes,2,opt,name=pwd,proto3" json:"pwd,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *MchUserPwd) Reset()         { *m = MchUserPwd{} }
-func (m *MchUserPwd) String() string { return proto.CompactTextString(m) }
-func (*MchUserPwd) ProtoMessage()    {}
-func (*MchUserPwd) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{3}
-}
-func (m *MchUserPwd) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_MchUserPwd.Unmarshal(m, b)
-}
-func (m *MchUserPwd) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_MchUserPwd.Marshal(b, m, deterministic)
-}
-func (dst *MchUserPwd) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MchUserPwd.Merge(dst, src)
-}
-func (m *MchUserPwd) XXX_Size() int {
-	return xxx_messageInfo_MchUserPwd.Size(m)
-}
-func (m *MchUserPwd) XXX_DiscardUnknown() {
-	xxx_messageInfo_MchUserPwd.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MchUserPwd proto.InternalMessageInfo
-
-func (m *MchUserPwd) GetUser() string {
+func (m *MerchantOrderRequest) GetPagination() bool {
 	if m != nil {
-		return m.User
+		return m.Pagination
+	}
+	return false
+}
+
+func (m *MerchantOrderRequest) GetParams() *SPagingParams {
+	if m != nil {
+		return m.Params
+	}
+	return nil
+}
+
+type PagingMerchantOrderListResponse struct {
+	Total                int64             `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
+	Data                 []*SMerchantOrder `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *PagingMerchantOrderListResponse) Reset()         { *m = PagingMerchantOrderListResponse{} }
+func (m *PagingMerchantOrderListResponse) String() string { return proto.CompactTextString(m) }
+func (*PagingMerchantOrderListResponse) ProtoMessage()    {}
+func (*PagingMerchantOrderListResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_merchant_service_c1f9c7afad688430, []int{1}
+}
+func (m *PagingMerchantOrderListResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PagingMerchantOrderListResponse.Unmarshal(m, b)
+}
+func (m *PagingMerchantOrderListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PagingMerchantOrderListResponse.Marshal(b, m, deterministic)
+}
+func (dst *PagingMerchantOrderListResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PagingMerchantOrderListResponse.Merge(dst, src)
+}
+func (m *PagingMerchantOrderListResponse) XXX_Size() int {
+	return xxx_messageInfo_PagingMerchantOrderListResponse.Size(m)
+}
+func (m *PagingMerchantOrderListResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_PagingMerchantOrderListResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PagingMerchantOrderListResponse proto.InternalMessageInfo
+
+func (m *PagingMerchantOrderListResponse) GetTotal() int64 {
+	if m != nil {
+		return m.Total
+	}
+	return 0
+}
+
+func (m *PagingMerchantOrderListResponse) GetData() []*SMerchantOrder {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+type SMerchantOrder struct {
+	OrderId   int64  `protobuf:"varint,1,opt,name=OrderId,proto3" json:"OrderId,omitempty"`
+	OrderNo   string `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
+	ParentNo  string `protobuf:"bytes,3,opt,name=ParentNo,proto3" json:"ParentNo,omitempty"`
+	BuyerId   int64  `protobuf:"varint,4,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
+	BuyerName string `protobuf:"bytes,5,opt,name=BuyerName,proto3" json:"BuyerName,omitempty"`
+	// 订单详情,主要描述订单的内容
+	Details              string            `protobuf:"bytes,6,opt,name=Details,proto3" json:"Details,omitempty"`
+	ItemAmount           float64           `protobuf:"fixed64,7,opt,name=ItemAmount,proto3" json:"ItemAmount,omitempty"`
+	DiscountAmount       float64           `protobuf:"fixed64,8,opt,name=DiscountAmount,proto3" json:"DiscountAmount,omitempty"`
+	ExpressFee           float64           `protobuf:"fixed64,9,opt,name=ExpressFee,proto3" json:"ExpressFee,omitempty"`
+	PackageFee           float64           `protobuf:"fixed64,10,opt,name=PackageFee,proto3" json:"PackageFee,omitempty"`
+	IsPaid               bool              `protobuf:"varint,11,opt,name=IsPaid,proto3" json:"IsPaid,omitempty"`
+	FinalAmount          float64           `protobuf:"fixed64,12,opt,name=FinalAmount,proto3" json:"FinalAmount,omitempty"`
+	State                int32             `protobuf:"varint,13,opt,name=State,proto3" json:"State,omitempty"`
+	StateText            string            `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText,omitempty"`
+	CreateTime           int64             `protobuf:"varint,15,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	Items                []*SOrderItem     `protobuf:"bytes,16,rep,name=Items,proto3" json:"Items,omitempty"`
+	Data                 map[string]string `protobuf:"bytes,17,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *SMerchantOrder) Reset()         { *m = SMerchantOrder{} }
+func (m *SMerchantOrder) String() string { return proto.CompactTextString(m) }
+func (*SMerchantOrder) ProtoMessage()    {}
+func (*SMerchantOrder) Descriptor() ([]byte, []int) {
+	return fileDescriptor_merchant_service_c1f9c7afad688430, []int{2}
+}
+func (m *SMerchantOrder) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SMerchantOrder.Unmarshal(m, b)
+}
+func (m *SMerchantOrder) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SMerchantOrder.Marshal(b, m, deterministic)
+}
+func (dst *SMerchantOrder) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SMerchantOrder.Merge(dst, src)
+}
+func (m *SMerchantOrder) XXX_Size() int {
+	return xxx_messageInfo_SMerchantOrder.Size(m)
+}
+func (m *SMerchantOrder) XXX_DiscardUnknown() {
+	xxx_messageInfo_SMerchantOrder.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SMerchantOrder proto.InternalMessageInfo
+
+func (m *SMerchantOrder) GetOrderId() int64 {
+	if m != nil {
+		return m.OrderId
+	}
+	return 0
+}
+
+func (m *SMerchantOrder) GetOrderNo() string {
+	if m != nil {
+		return m.OrderNo
 	}
 	return ""
 }
 
-func (m *MchUserPwd) GetPwd() string {
+func (m *SMerchantOrder) GetParentNo() string {
 	if m != nil {
-		return m.Pwd
+		return m.ParentNo
 	}
 	return ""
 }
 
-type SyncWSItemsResponse struct {
-	Value                map[string]int32 `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"zigzag32,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *SyncWSItemsResponse) Reset()         { *m = SyncWSItemsResponse{} }
-func (m *SyncWSItemsResponse) String() string { return proto.CompactTextString(m) }
-func (*SyncWSItemsResponse) ProtoMessage()    {}
-func (*SyncWSItemsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{4}
-}
-func (m *SyncWSItemsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SyncWSItemsResponse.Unmarshal(m, b)
-}
-func (m *SyncWSItemsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SyncWSItemsResponse.Marshal(b, m, deterministic)
-}
-func (dst *SyncWSItemsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SyncWSItemsResponse.Merge(dst, src)
-}
-func (m *SyncWSItemsResponse) XXX_Size() int {
-	return xxx_messageInfo_SyncWSItemsResponse.Size(m)
-}
-func (m *SyncWSItemsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SyncWSItemsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SyncWSItemsResponse proto.InternalMessageInfo
-
-func (m *SyncWSItemsResponse) GetValue() map[string]int32 {
+func (m *SMerchantOrder) GetBuyerId() int64 {
 	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-type STradeConfListResponse struct {
-	Value                []*STradeConf `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *STradeConfListResponse) Reset()         { *m = STradeConfListResponse{} }
-func (m *STradeConfListResponse) String() string { return proto.CompactTextString(m) }
-func (*STradeConfListResponse) ProtoMessage()    {}
-func (*STradeConfListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{5}
-}
-func (m *STradeConfListResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_STradeConfListResponse.Unmarshal(m, b)
-}
-func (m *STradeConfListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_STradeConfListResponse.Marshal(b, m, deterministic)
-}
-func (dst *STradeConfListResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_STradeConfListResponse.Merge(dst, src)
-}
-func (m *STradeConfListResponse) XXX_Size() int {
-	return xxx_messageInfo_STradeConfListResponse.Size(m)
-}
-func (m *STradeConfListResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_STradeConfListResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_STradeConfListResponse proto.InternalMessageInfo
-
-func (m *STradeConfListResponse) GetValue() []*STradeConf {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-type TradeConfRequest struct {
-	MchId                int32    `protobuf:"zigzag32,1,opt,name=mchId,proto3" json:"mchId,omitempty"`
-	TradeType            int32    `protobuf:"zigzag32,2,opt,name=tradeType,proto3" json:"tradeType,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *TradeConfRequest) Reset()         { *m = TradeConfRequest{} }
-func (m *TradeConfRequest) String() string { return proto.CompactTextString(m) }
-func (*TradeConfRequest) ProtoMessage()    {}
-func (*TradeConfRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{6}
-}
-func (m *TradeConfRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_TradeConfRequest.Unmarshal(m, b)
-}
-func (m *TradeConfRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_TradeConfRequest.Marshal(b, m, deterministic)
-}
-func (dst *TradeConfRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TradeConfRequest.Merge(dst, src)
-}
-func (m *TradeConfRequest) XXX_Size() int {
-	return xxx_messageInfo_TradeConfRequest.Size(m)
-}
-func (m *TradeConfRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_TradeConfRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_TradeConfRequest proto.InternalMessageInfo
-
-func (m *TradeConfRequest) GetMchId() int32 {
-	if m != nil {
-		return m.MchId
+		return m.BuyerId
 	}
 	return 0
 }
 
-func (m *TradeConfRequest) GetTradeType() int32 {
+func (m *SMerchantOrder) GetBuyerName() string {
 	if m != nil {
-		return m.TradeType
+		return m.BuyerName
+	}
+	return ""
+}
+
+func (m *SMerchantOrder) GetDetails() string {
+	if m != nil {
+		return m.Details
+	}
+	return ""
+}
+
+func (m *SMerchantOrder) GetItemAmount() float64 {
+	if m != nil {
+		return m.ItemAmount
 	}
 	return 0
 }
 
-type TradeConfSaveRequest struct {
-	MchId                int32         `protobuf:"zigzag32,1,opt,name=mchId,proto3" json:"mchId,omitempty"`
-	Arr                  []*STradeConf `protobuf:"bytes,2,rep,name=arr,proto3" json:"arr,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *TradeConfSaveRequest) Reset()         { *m = TradeConfSaveRequest{} }
-func (m *TradeConfSaveRequest) String() string { return proto.CompactTextString(m) }
-func (*TradeConfSaveRequest) ProtoMessage()    {}
-func (*TradeConfSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{7}
-}
-func (m *TradeConfSaveRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_TradeConfSaveRequest.Unmarshal(m, b)
-}
-func (m *TradeConfSaveRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_TradeConfSaveRequest.Marshal(b, m, deterministic)
-}
-func (dst *TradeConfSaveRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TradeConfSaveRequest.Merge(dst, src)
-}
-func (m *TradeConfSaveRequest) XXX_Size() int {
-	return xxx_messageInfo_TradeConfSaveRequest.Size(m)
-}
-func (m *TradeConfSaveRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_TradeConfSaveRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_TradeConfSaveRequest proto.InternalMessageInfo
-
-func (m *TradeConfSaveRequest) GetMchId() int32 {
+func (m *SMerchantOrder) GetDiscountAmount() float64 {
 	if m != nil {
-		return m.MchId
+		return m.DiscountAmount
 	}
 	return 0
 }
 
-func (m *TradeConfSaveRequest) GetArr() []*STradeConf {
+func (m *SMerchantOrder) GetExpressFee() float64 {
 	if m != nil {
-		return m.Arr
+		return m.ExpressFee
+	}
+	return 0
+}
+
+func (m *SMerchantOrder) GetPackageFee() float64 {
+	if m != nil {
+		return m.PackageFee
+	}
+	return 0
+}
+
+func (m *SMerchantOrder) GetIsPaid() bool {
+	if m != nil {
+		return m.IsPaid
+	}
+	return false
+}
+
+func (m *SMerchantOrder) GetFinalAmount() float64 {
+	if m != nil {
+		return m.FinalAmount
+	}
+	return 0
+}
+
+func (m *SMerchantOrder) GetState() int32 {
+	if m != nil {
+		return m.State
+	}
+	return 0
+}
+
+func (m *SMerchantOrder) GetStateText() string {
+	if m != nil {
+		return m.StateText
+	}
+	return ""
+}
+
+func (m *SMerchantOrder) GetCreateTime() int64 {
+	if m != nil {
+		return m.CreateTime
+	}
+	return 0
+}
+
+func (m *SMerchantOrder) GetItems() []*SOrderItem {
+	if m != nil {
+		return m.Items
 	}
 	return nil
 }
 
-// 商户交易设置
-type STradeConf struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+func (m *SMerchantOrder) GetData() map[string]string {
+	if m != nil {
+		return m.Data
+	}
+	return nil
 }
-
-func (m *STradeConf) Reset()         { *m = STradeConf{} }
-func (m *STradeConf) String() string { return proto.CompactTextString(m) }
-func (*STradeConf) ProtoMessage()    {}
-func (*STradeConf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_913d1f022a3493ec, []int{8}
-}
-func (m *STradeConf) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_STradeConf.Unmarshal(m, b)
-}
-func (m *STradeConf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_STradeConf.Marshal(b, m, deterministic)
-}
-func (dst *STradeConf) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_STradeConf.Merge(dst, src)
-}
-func (m *STradeConf) XXX_Size() int {
-	return xxx_messageInfo_STradeConf.Size(m)
-}
-func (m *STradeConf) XXX_DiscardUnknown() {
-	xxx_messageInfo_STradeConf.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_STradeConf proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*SMerchant)(nil), "SMerchant")
-	proto.RegisterType((*SMerchantPack)(nil), "SMerchantPack")
-	proto.RegisterType((*MerchantCreateRequest)(nil), "MerchantCreateRequest")
-	proto.RegisterType((*MchUserPwd)(nil), "MchUserPwd")
-	proto.RegisterType((*SyncWSItemsResponse)(nil), "SyncWSItemsResponse")
-	proto.RegisterMapType((map[string]int32)(nil), "SyncWSItemsResponse.ValueEntry")
-	proto.RegisterType((*STradeConfListResponse)(nil), "STradeConfListResponse")
-	proto.RegisterType((*TradeConfRequest)(nil), "TradeConfRequest")
-	proto.RegisterType((*TradeConfSaveRequest)(nil), "TradeConfSaveRequest")
-	proto.RegisterType((*STradeConf)(nil), "STradeConf")
+	proto.RegisterType((*MerchantOrderRequest)(nil), "MerchantOrderRequest")
+	proto.RegisterType((*PagingMerchantOrderListResponse)(nil), "PagingMerchantOrderListResponse")
+	proto.RegisterType((*SMerchantOrder)(nil), "SMerchantOrder")
+	proto.RegisterMapType((map[string]string)(nil), "SMerchantOrder.DataEntry")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -621,9 +325,72 @@ type MerchantServiceClient interface {
 	// 获取所有的交易设置,mchId
 	GetAllTradeConf(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*STradeConfListResponse, error)
 	// 根据交易类型获取交易设置
-	GetTradeConf(ctx context.Context, in *TradeConfRequest, opts ...grpc.CallOption) (*STradeConf, error)
+	GetTradeConf(ctx context.Context, in *TradeConfRequest, opts ...grpc.CallOption) (*STradeConf_, error)
 	// 保存交易设置
 	SaveTradeConf(ctx context.Context, in *TradeConfSaveRequest, opts ...grpc.CallOption) (*Result, error)
+	// 创建会员申请商户密钥
+	CreateSignUpToken(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*String, error)
+	// 根据商户申请密钥获取会员编号
+	GetMemberFromSignUpToken(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error)
+	// 提交注册信息
+	SignUp(ctx context.Context, in *SMchSignUp, opts ...grpc.CallOption) (*Result, error)
+	// 获取会员商户申请信息
+	GetMchSignUpId(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*Int64, error)
+	// 根据ID获取商户申请信息
+	GetSignUp(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SMchSignUp, error)
+	// 审核商户申请信息
+	ReviewSignUp(ctx context.Context, in *MchReviewRequest, opts ...grpc.CallOption) (*Result, error)
+	// 删除会员的商户申请资料
+	RemoveMerchantSignUp(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*Result, error)
+	// 根据会员号获取商户编号
+	GetMerchantIdByMember(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*Int64, error)
+	// 获取企业信息,并返回是否为提交的信息
+	GetEnterpriseInfo(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SEnterpriseInfo, error)
+	// 保存企业信息
+	SaveEnterpriseInfo(ctx context.Context, in *SaveEnterpriseRequest, opts ...grpc.CallOption) (*Result, error)
+	// 审核企业信息
+	ReviewEnterpriseInfo(ctx context.Context, in *MchReviewRequest, opts ...grpc.CallOption) (*Result, error)
+	GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error)
+	// rpc SaveMerchant_(mchId int64, v *merchant.Merchant) (int64, error)
+	// 设置商户启用或停用
+	SetEnabled(ctx context.Context, in *MerchantDisableRequest, opts ...grpc.CallOption) (*Result, error)
+	// 根据主机查询商户编号
+	GetMerchantIdByHost(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error)
+	// 获取商户的域名
+	GetMerchantMajorHost(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*String, error)
+	SaveSaleConf(ctx context.Context, in *SaveMerchantSaleConfRequest, opts ...grpc.CallOption) (*Result, error)
+	GetSaleConf(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantSaleConf, error)
+	GetShopId(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*Int64, error)
+	// 修改密码
+	ModifyPassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*Result, error)
+	// 保存API信息
+	// rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
+	// 获取API接口
+	GetApiInfo(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantApiInfo, error)
+	// 启用/停用接口权限
+	ToggleApiPerm(ctx context.Context, in *MerchantApiPermRequest, opts ...grpc.CallOption) (*Result, error)
+	// 根据API ID获取MerchantId
+	GetMerchantIdByApiId(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error)
+	// 查询分页订单
+	PagedNormalOrderOfVendor(ctx context.Context, in *MerchantOrderRequest, opts ...grpc.CallOption) (*PagingMerchantOrderListResponse, error)
+	// 查询分页订单
+	PagedWholesaleOrderOfVendor(ctx context.Context, in *MerchantOrderRequest, opts ...grpc.CallOption) (*PagingMerchantOrderListResponse, error)
+	// 查询分页订单
+	PagedTradeOrderOfVendor(ctx context.Context, in *MerchantOrderRequest, opts ...grpc.CallOption) (*PagingMerchantOrderListResponse, error)
+	// 提到会员账户
+	WithdrawToMemberAccount(ctx context.Context, in *WithdrawToMemberAccountRequest, opts ...grpc.CallOption) (*Result, error)
+	// 账户充值
+	ChargeAccount(ctx context.Context, in *MerchantChargeRequest, opts ...grpc.CallOption) (*Result, error)
+	GetMchBuyerGroup_(ctx context.Context, in *MerchantBuyerGroupId, opts ...grpc.CallOption) (*SMerchantBuyerGroup, error)
+	// 保存
+	SaveMchBuyerGroup_(ctx context.Context, in *SaveMerchantBuyerGroupRequest, opts ...grpc.CallOption) (*Result, error)
+	// 获取买家分组
+	// rpc GetBuyerGroups (MerchantId) returns (MerchantBuyerGroupListResponse) {
+	// }
+	// 获取批发返点率
+	GetRebateRate(ctx context.Context, in *MerchantBuyerGroupId, opts ...grpc.CallOption) (*WholesaleRebateRateListResponse, error)
+	// 保存分组返点率
+	SaveGroupRebateRate(ctx context.Context, in *SaveWholesaleRebateRateRequest, opts ...grpc.CallOption) (*Result, error)
 }
 
 type merchantServiceClient struct {
@@ -688,8 +455,8 @@ func (c *merchantServiceClient) GetAllTradeConf(ctx context.Context, in *Int64, 
 	return out, nil
 }
 
-func (c *merchantServiceClient) GetTradeConf(ctx context.Context, in *TradeConfRequest, opts ...grpc.CallOption) (*STradeConf, error) {
-	out := new(STradeConf)
+func (c *merchantServiceClient) GetTradeConf(ctx context.Context, in *TradeConfRequest, opts ...grpc.CallOption) (*STradeConf_, error) {
+	out := new(STradeConf_)
 	err := c.cc.Invoke(ctx, "/MerchantService/GetTradeConf", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -700,6 +467,285 @@ func (c *merchantServiceClient) GetTradeConf(ctx context.Context, in *TradeConfR
 func (c *merchantServiceClient) SaveTradeConf(ctx context.Context, in *TradeConfSaveRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/MerchantService/SaveTradeConf", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) CreateSignUpToken(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*String, error) {
+	out := new(String)
+	err := c.cc.Invoke(ctx, "/MerchantService/CreateSignUpToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMemberFromSignUpToken(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error) {
+	out := new(Int64)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetMemberFromSignUpToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) SignUp(ctx context.Context, in *SMchSignUp, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/SignUp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMchSignUpId(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*Int64, error) {
+	out := new(Int64)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetMchSignUpId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetSignUp(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SMchSignUp, error) {
+	out := new(SMchSignUp)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetSignUp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) ReviewSignUp(ctx context.Context, in *MchReviewRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/ReviewSignUp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) RemoveMerchantSignUp(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/RemoveMerchantSignUp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMerchantIdByMember(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*Int64, error) {
+	out := new(Int64)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetMerchantIdByMember", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetEnterpriseInfo(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SEnterpriseInfo, error) {
+	out := new(SEnterpriseInfo)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetEnterpriseInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) SaveEnterpriseInfo(ctx context.Context, in *SaveEnterpriseRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/SaveEnterpriseInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) ReviewEnterpriseInfo(ctx context.Context, in *MchReviewRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/ReviewEnterpriseInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error) {
+	out := new(SMerchantAccount)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) SetEnabled(ctx context.Context, in *MerchantDisableRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/SetEnabled", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMerchantIdByHost(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error) {
+	out := new(Int64)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetMerchantIdByHost", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMerchantMajorHost(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*String, error) {
+	out := new(String)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetMerchantMajorHost", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) SaveSaleConf(ctx context.Context, in *SaveMerchantSaleConfRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/SaveSaleConf", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetSaleConf(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantSaleConf, error) {
+	out := new(SMerchantSaleConf)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetSaleConf", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetShopId(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*Int64, error) {
+	out := new(Int64)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetShopId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) ModifyPassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/ModifyPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetApiInfo(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantApiInfo, error) {
+	out := new(SMerchantApiInfo)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetApiInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) ToggleApiPerm(ctx context.Context, in *MerchantApiPermRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/ToggleApiPerm", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMerchantIdByApiId(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error) {
+	out := new(Int64)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetMerchantIdByApiId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) PagedNormalOrderOfVendor(ctx context.Context, in *MerchantOrderRequest, opts ...grpc.CallOption) (*PagingMerchantOrderListResponse, error) {
+	out := new(PagingMerchantOrderListResponse)
+	err := c.cc.Invoke(ctx, "/MerchantService/PagedNormalOrderOfVendor", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) PagedWholesaleOrderOfVendor(ctx context.Context, in *MerchantOrderRequest, opts ...grpc.CallOption) (*PagingMerchantOrderListResponse, error) {
+	out := new(PagingMerchantOrderListResponse)
+	err := c.cc.Invoke(ctx, "/MerchantService/PagedWholesaleOrderOfVendor", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) PagedTradeOrderOfVendor(ctx context.Context, in *MerchantOrderRequest, opts ...grpc.CallOption) (*PagingMerchantOrderListResponse, error) {
+	out := new(PagingMerchantOrderListResponse)
+	err := c.cc.Invoke(ctx, "/MerchantService/PagedTradeOrderOfVendor", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) WithdrawToMemberAccount(ctx context.Context, in *WithdrawToMemberAccountRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/WithdrawToMemberAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) ChargeAccount(ctx context.Context, in *MerchantChargeRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/ChargeAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMchBuyerGroup_(ctx context.Context, in *MerchantBuyerGroupId, opts ...grpc.CallOption) (*SMerchantBuyerGroup, error) {
+	out := new(SMerchantBuyerGroup)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetMchBuyerGroup_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) SaveMchBuyerGroup_(ctx context.Context, in *SaveMerchantBuyerGroupRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/SaveMchBuyerGroup_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetRebateRate(ctx context.Context, in *MerchantBuyerGroupId, opts ...grpc.CallOption) (*WholesaleRebateRateListResponse, error) {
+	out := new(WholesaleRebateRateListResponse)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetRebateRate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) SaveGroupRebateRate(ctx context.Context, in *SaveWholesaleRebateRateRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MerchantService/SaveGroupRebateRate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -721,9 +767,72 @@ type MerchantServiceServer interface {
 	// 获取所有的交易设置,mchId
 	GetAllTradeConf(context.Context, *Int64) (*STradeConfListResponse, error)
 	// 根据交易类型获取交易设置
-	GetTradeConf(context.Context, *TradeConfRequest) (*STradeConf, error)
+	GetTradeConf(context.Context, *TradeConfRequest) (*STradeConf_, error)
 	// 保存交易设置
 	SaveTradeConf(context.Context, *TradeConfSaveRequest) (*Result, error)
+	// 创建会员申请商户密钥
+	CreateSignUpToken(context.Context, *MemberId) (*String, error)
+	// 根据商户申请密钥获取会员编号
+	GetMemberFromSignUpToken(context.Context, *String) (*Int64, error)
+	// 提交注册信息
+	SignUp(context.Context, *SMchSignUp) (*Result, error)
+	// 获取会员商户申请信息
+	GetMchSignUpId(context.Context, *MemberId) (*Int64, error)
+	// 根据ID获取商户申请信息
+	GetSignUp(context.Context, *Int64) (*SMchSignUp, error)
+	// 审核商户申请信息
+	ReviewSignUp(context.Context, *MchReviewRequest) (*Result, error)
+	// 删除会员的商户申请资料
+	RemoveMerchantSignUp(context.Context, *MemberId) (*Result, error)
+	// 根据会员号获取商户编号
+	GetMerchantIdByMember(context.Context, *MemberId) (*Int64, error)
+	// 获取企业信息,并返回是否为提交的信息
+	GetEnterpriseInfo(context.Context, *MerchantId) (*SEnterpriseInfo, error)
+	// 保存企业信息
+	SaveEnterpriseInfo(context.Context, *SaveEnterpriseRequest) (*Result, error)
+	// 审核企业信息
+	ReviewEnterpriseInfo(context.Context, *MchReviewRequest) (*Result, error)
+	GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error)
+	// rpc SaveMerchant_(mchId int64, v *merchant.Merchant) (int64, error)
+	// 设置商户启用或停用
+	SetEnabled(context.Context, *MerchantDisableRequest) (*Result, error)
+	// 根据主机查询商户编号
+	GetMerchantIdByHost(context.Context, *String) (*Int64, error)
+	// 获取商户的域名
+	GetMerchantMajorHost(context.Context, *MerchantId) (*String, error)
+	SaveSaleConf(context.Context, *SaveMerchantSaleConfRequest) (*Result, error)
+	GetSaleConf(context.Context, *MerchantId) (*SMerchantSaleConf, error)
+	GetShopId(context.Context, *MerchantId) (*Int64, error)
+	// 修改密码
+	ModifyPassword(context.Context, *ModifyMerchantPasswordRequest) (*Result, error)
+	// 保存API信息
+	// rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
+	// 获取API接口
+	GetApiInfo(context.Context, *MerchantId) (*SMerchantApiInfo, error)
+	// 启用/停用接口权限
+	ToggleApiPerm(context.Context, *MerchantApiPermRequest) (*Result, error)
+	// 根据API ID获取MerchantId
+	GetMerchantIdByApiId(context.Context, *String) (*Int64, error)
+	// 查询分页订单
+	PagedNormalOrderOfVendor(context.Context, *MerchantOrderRequest) (*PagingMerchantOrderListResponse, error)
+	// 查询分页订单
+	PagedWholesaleOrderOfVendor(context.Context, *MerchantOrderRequest) (*PagingMerchantOrderListResponse, error)
+	// 查询分页订单
+	PagedTradeOrderOfVendor(context.Context, *MerchantOrderRequest) (*PagingMerchantOrderListResponse, error)
+	// 提到会员账户
+	WithdrawToMemberAccount(context.Context, *WithdrawToMemberAccountRequest) (*Result, error)
+	// 账户充值
+	ChargeAccount(context.Context, *MerchantChargeRequest) (*Result, error)
+	GetMchBuyerGroup_(context.Context, *MerchantBuyerGroupId) (*SMerchantBuyerGroup, error)
+	// 保存
+	SaveMchBuyerGroup_(context.Context, *SaveMerchantBuyerGroupRequest) (*Result, error)
+	// 获取买家分组
+	// rpc GetBuyerGroups (MerchantId) returns (MerchantBuyerGroupListResponse) {
+	// }
+	// 获取批发返点率
+	GetRebateRate(context.Context, *MerchantBuyerGroupId) (*WholesaleRebateRateListResponse, error)
+	// 保存分组返点率
+	SaveGroupRebateRate(context.Context, *SaveWholesaleRebateRateRequest) (*Result, error)
 }
 
 func RegisterMerchantServiceServer(s *grpc.Server, srv MerchantServiceServer) {
@@ -874,6 +983,564 @@ func _MerchantService_SaveTradeConf_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_CreateSignUpToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).CreateSignUpToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/CreateSignUpToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).CreateSignUpToken(ctx, req.(*MemberId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMemberFromSignUpToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(String)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMemberFromSignUpToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetMemberFromSignUpToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMemberFromSignUpToken(ctx, req.(*String))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SMchSignUp)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).SignUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/SignUp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).SignUp(ctx, req.(*SMchSignUp))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMchSignUpId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMchSignUpId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetMchSignUpId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMchSignUpId(ctx, req.(*MemberId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetSignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetSignUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetSignUp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetSignUp(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_ReviewSignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MchReviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).ReviewSignUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/ReviewSignUp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).ReviewSignUp(ctx, req.(*MchReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_RemoveMerchantSignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).RemoveMerchantSignUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/RemoveMerchantSignUp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).RemoveMerchantSignUp(ctx, req.(*MemberId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMerchantIdByMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMerchantIdByMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetMerchantIdByMember",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMerchantIdByMember(ctx, req.(*MemberId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetEnterpriseInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetEnterpriseInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetEnterpriseInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetEnterpriseInfo(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_SaveEnterpriseInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveEnterpriseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).SaveEnterpriseInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/SaveEnterpriseInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).SaveEnterpriseInfo(ctx, req.(*SaveEnterpriseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_ReviewEnterpriseInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MchReviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).ReviewEnterpriseInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/ReviewEnterpriseInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).ReviewEnterpriseInfo(ctx, req.(*MchReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetAccount(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_SetEnabled_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantDisableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).SetEnabled(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/SetEnabled",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).SetEnabled(ctx, req.(*MerchantDisableRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMerchantIdByHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(String)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMerchantIdByHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetMerchantIdByHost",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMerchantIdByHost(ctx, req.(*String))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMerchantMajorHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMerchantMajorHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetMerchantMajorHost",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMerchantMajorHost(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_SaveSaleConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveMerchantSaleConfRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).SaveSaleConf(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/SaveSaleConf",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).SaveSaleConf(ctx, req.(*SaveMerchantSaleConfRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetSaleConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetSaleConf(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetSaleConf",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetSaleConf(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetShopId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetShopId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetShopId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetShopId(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_ModifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModifyMerchantPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).ModifyPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/ModifyPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).ModifyPassword(ctx, req.(*ModifyMerchantPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetApiInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetApiInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetApiInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetApiInfo(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_ToggleApiPerm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantApiPermRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).ToggleApiPerm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/ToggleApiPerm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).ToggleApiPerm(ctx, req.(*MerchantApiPermRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMerchantIdByApiId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(String)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMerchantIdByApiId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetMerchantIdByApiId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMerchantIdByApiId(ctx, req.(*String))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_PagedNormalOrderOfVendor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).PagedNormalOrderOfVendor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/PagedNormalOrderOfVendor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).PagedNormalOrderOfVendor(ctx, req.(*MerchantOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_PagedWholesaleOrderOfVendor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).PagedWholesaleOrderOfVendor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/PagedWholesaleOrderOfVendor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).PagedWholesaleOrderOfVendor(ctx, req.(*MerchantOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_PagedTradeOrderOfVendor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).PagedTradeOrderOfVendor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/PagedTradeOrderOfVendor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).PagedTradeOrderOfVendor(ctx, req.(*MerchantOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_WithdrawToMemberAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawToMemberAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).WithdrawToMemberAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/WithdrawToMemberAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).WithdrawToMemberAccount(ctx, req.(*WithdrawToMemberAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_ChargeAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantChargeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).ChargeAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/ChargeAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).ChargeAccount(ctx, req.(*MerchantChargeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMchBuyerGroup__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantBuyerGroupId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMchBuyerGroup_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetMchBuyerGroup_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMchBuyerGroup_(ctx, req.(*MerchantBuyerGroupId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_SaveMchBuyerGroup__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveMerchantBuyerGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).SaveMchBuyerGroup_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/SaveMchBuyerGroup_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).SaveMchBuyerGroup_(ctx, req.(*SaveMerchantBuyerGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetRebateRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantBuyerGroupId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetRebateRate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetRebateRate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetRebateRate(ctx, req.(*MerchantBuyerGroupId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_SaveGroupRebateRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveWholesaleRebateRateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).SaveGroupRebateRate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/SaveGroupRebateRate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).SaveGroupRebateRate(ctx, req.(*SaveWholesaleRebateRateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _MerchantService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "MerchantService",
 	HandlerType: (*MerchantServiceServer)(nil),
@@ -910,61 +1577,213 @@ var _MerchantService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "SaveTradeConf",
 			Handler:    _MerchantService_SaveTradeConf_Handler,
 		},
+		{
+			MethodName: "CreateSignUpToken",
+			Handler:    _MerchantService_CreateSignUpToken_Handler,
+		},
+		{
+			MethodName: "GetMemberFromSignUpToken",
+			Handler:    _MerchantService_GetMemberFromSignUpToken_Handler,
+		},
+		{
+			MethodName: "SignUp",
+			Handler:    _MerchantService_SignUp_Handler,
+		},
+		{
+			MethodName: "GetMchSignUpId",
+			Handler:    _MerchantService_GetMchSignUpId_Handler,
+		},
+		{
+			MethodName: "GetSignUp",
+			Handler:    _MerchantService_GetSignUp_Handler,
+		},
+		{
+			MethodName: "ReviewSignUp",
+			Handler:    _MerchantService_ReviewSignUp_Handler,
+		},
+		{
+			MethodName: "RemoveMerchantSignUp",
+			Handler:    _MerchantService_RemoveMerchantSignUp_Handler,
+		},
+		{
+			MethodName: "GetMerchantIdByMember",
+			Handler:    _MerchantService_GetMerchantIdByMember_Handler,
+		},
+		{
+			MethodName: "GetEnterpriseInfo",
+			Handler:    _MerchantService_GetEnterpriseInfo_Handler,
+		},
+		{
+			MethodName: "SaveEnterpriseInfo",
+			Handler:    _MerchantService_SaveEnterpriseInfo_Handler,
+		},
+		{
+			MethodName: "ReviewEnterpriseInfo",
+			Handler:    _MerchantService_ReviewEnterpriseInfo_Handler,
+		},
+		{
+			MethodName: "GetAccount",
+			Handler:    _MerchantService_GetAccount_Handler,
+		},
+		{
+			MethodName: "SetEnabled",
+			Handler:    _MerchantService_SetEnabled_Handler,
+		},
+		{
+			MethodName: "GetMerchantIdByHost",
+			Handler:    _MerchantService_GetMerchantIdByHost_Handler,
+		},
+		{
+			MethodName: "GetMerchantMajorHost",
+			Handler:    _MerchantService_GetMerchantMajorHost_Handler,
+		},
+		{
+			MethodName: "SaveSaleConf",
+			Handler:    _MerchantService_SaveSaleConf_Handler,
+		},
+		{
+			MethodName: "GetSaleConf",
+			Handler:    _MerchantService_GetSaleConf_Handler,
+		},
+		{
+			MethodName: "GetShopId",
+			Handler:    _MerchantService_GetShopId_Handler,
+		},
+		{
+			MethodName: "ModifyPassword",
+			Handler:    _MerchantService_ModifyPassword_Handler,
+		},
+		{
+			MethodName: "GetApiInfo",
+			Handler:    _MerchantService_GetApiInfo_Handler,
+		},
+		{
+			MethodName: "ToggleApiPerm",
+			Handler:    _MerchantService_ToggleApiPerm_Handler,
+		},
+		{
+			MethodName: "GetMerchantIdByApiId",
+			Handler:    _MerchantService_GetMerchantIdByApiId_Handler,
+		},
+		{
+			MethodName: "PagedNormalOrderOfVendor",
+			Handler:    _MerchantService_PagedNormalOrderOfVendor_Handler,
+		},
+		{
+			MethodName: "PagedWholesaleOrderOfVendor",
+			Handler:    _MerchantService_PagedWholesaleOrderOfVendor_Handler,
+		},
+		{
+			MethodName: "PagedTradeOrderOfVendor",
+			Handler:    _MerchantService_PagedTradeOrderOfVendor_Handler,
+		},
+		{
+			MethodName: "WithdrawToMemberAccount",
+			Handler:    _MerchantService_WithdrawToMemberAccount_Handler,
+		},
+		{
+			MethodName: "ChargeAccount",
+			Handler:    _MerchantService_ChargeAccount_Handler,
+		},
+		{
+			MethodName: "GetMchBuyerGroup_",
+			Handler:    _MerchantService_GetMchBuyerGroup__Handler,
+		},
+		{
+			MethodName: "SaveMchBuyerGroup_",
+			Handler:    _MerchantService_SaveMchBuyerGroup__Handler,
+		},
+		{
+			MethodName: "GetRebateRate",
+			Handler:    _MerchantService_GetRebateRate_Handler,
+		},
+		{
+			MethodName: "SaveGroupRebateRate",
+			Handler:    _MerchantService_SaveGroupRebateRate_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "merchant_service.proto",
 }
 
 func init() {
-	proto.RegisterFile("merchant_service.proto", fileDescriptor_merchant_service_913d1f022a3493ec)
+	proto.RegisterFile("merchant_service.proto", fileDescriptor_merchant_service_c1f9c7afad688430)
 }
 
-var fileDescriptor_merchant_service_913d1f022a3493ec = []byte{
-	// 728 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x54, 0x4d, 0x6f, 0xdb, 0x46,
-	0x10, 0x15, 0xa9, 0x2f, 0x6b, 0xf4, 0x61, 0x7b, 0x2b, 0xbb, 0x5b, 0xa1, 0x45, 0x55, 0xd6, 0x07,
-	0x9d, 0x88, 0x56, 0x76, 0x0b, 0x23, 0x3e, 0x39, 0x8a, 0x6d, 0x08, 0x91, 0x03, 0x83, 0x54, 0x12,
-	0x20, 0x39, 0x04, 0x2b, 0x72, 0x2c, 0x11, 0x5e, 0x92, 0x0a, 0xb9, 0x52, 0xa0, 0x3f, 0x90, 0x6b,
-	0x7e, 0x5f, 0xfe, 0x4b, 0x0e, 0xc1, 0x2e, 0x25, 0x92, 0x72, 0x14, 0x9f, 0x34, 0xf3, 0xe6, 0x2d,
-	0x67, 0xf6, 0xbd, 0xd1, 0xc2, 0xb1, 0x8f, 0x91, 0x33, 0x63, 0x81, 0xf8, 0x10, 0x63, 0xb4, 0xf4,
-	0x1c, 0x34, 0xe7, 0x51, 0x28, 0xc2, 0x4e, 0x63, 0xca, 0xc3, 0x09, 0xe3, 0x49, 0x66, 0x7c, 0x29,
-	0x42, 0xcd, 0xbe, 0x5d, 0x33, 0x49, 0x0b, 0xf4, 0xa1, 0x4b, 0xb5, 0xae, 0xd6, 0x3b, 0xb4, 0xf4,
-	0xa1, 0x4b, 0x3a, 0xb0, 0x77, 0x8b, 0xfe, 0x04, 0xa3, 0xa1, 0x4b, 0xf5, 0xae, 0xd6, 0x23, 0x56,
-	0x9a, 0x93, 0xdf, 0xa1, 0x36, 0x0a, 0xa7, 0x5e, 0xf0, 0x3a, 0xc6, 0x88, 0x16, 0xbb, 0x5a, 0xaf,
-	0x66, 0x65, 0x80, 0x3c, 0xa9, 0x92, 0xbb, 0x4f, 0x2e, 0x2d, 0xa9, 0x62, 0x9a, 0x13, 0x02, 0xa5,
-	0x57, 0xcc, 0x47, 0x5a, 0x56, 0xb8, 0x8a, 0x49, 0x17, 0xea, 0x83, 0xd0, 0x9f, 0xb3, 0x60, 0xa5,
-	0x4a, 0x15, 0x55, 0xca, 0x43, 0xb2, 0x9f, 0x8d, 0xfc, 0xde, 0x66, 0x1c, 0x63, 0x5a, 0x55, 0x23,
-	0x66, 0x00, 0x69, 0x43, 0x79, 0x84, 0x4b, 0xe4, 0x74, 0x4f, 0x55, 0x92, 0x44, 0x76, 0x1a, 0x85,
-	0xd3, 0x90, 0xd6, 0x92, 0x4e, 0x32, 0x96, 0x93, 0xdd, 0x45, 0xe1, 0xd2, 0x0b, 0x1c, 0xa4, 0xa0,
-	0xc8, 0x69, 0x2e, 0xf9, 0x03, 0x4f, 0xac, 0x68, 0x5d, 0xe1, 0x2a, 0x96, 0xfc, 0x17, 0x5e, 0x2c,
-	0x22, 0xcf, 0x11, 0xb4, 0x91, 0xf0, 0x37, 0xb9, 0xe4, 0x5f, 0x73, 0x36, 0xa5, 0xcd, 0x84, 0x2f,
-	0x63, 0x42, 0xa1, 0x7a, 0x15, 0xb0, 0x09, 0x47, 0x97, 0xb6, 0x14, 0xbc, 0x49, 0xc9, 0x09, 0x34,
-	0x47, 0x2c, 0x16, 0x4a, 0x87, 0xb1, 0xe7, 0x23, 0xdd, 0x57, 0xf5, 0x6d, 0xd0, 0xf8, 0xaa, 0x41,
-	0x33, 0x75, 0xe4, 0x8e, 0x39, 0x0f, 0xdb, 0x4a, 0x6b, 0x4f, 0x29, 0xad, 0xff, 0x44, 0xe9, 0x62,
-	0x4e, 0xe9, 0x2d, 0x1d, 0x4b, 0x8f, 0x75, 0xec, 0xc0, 0x9e, 0x3d, 0x0b, 0xe7, 0x39, 0x7f, 0xd2,
-	0x7c, 0x53, 0x53, 0x8a, 0x56, 0xb2, 0x9a, 0x52, 0xf5, 0x00, 0x8a, 0x63, 0xe4, 0xca, 0x97, 0x9a,
-	0x25, 0x43, 0xd9, 0xfb, 0xd2, 0x75, 0x23, 0x65, 0x48, 0xcd, 0x52, 0xb1, 0xf1, 0x1e, 0x8e, 0x36,
-	0x37, 0x1b, 0x44, 0xc8, 0x04, 0x5a, 0xf8, 0x71, 0x81, 0xb1, 0x20, 0x5d, 0x28, 0xfa, 0xce, 0x4c,
-	0x5d, 0xae, 0xde, 0x6f, 0x99, 0x5b, 0xf7, 0xb7, 0x64, 0x49, 0x2e, 0x48, 0x84, 0xfc, 0xd1, 0x36,
-	0xe6, 0x21, 0xa3, 0x0f, 0x70, 0xeb, 0xcc, 0xa4, 0x26, 0xeb, 0xab, 0x2f, 0x32, 0xbd, 0x54, 0x2c,
-	0x87, 0x9c, 0xa7, 0x2a, 0xc9, 0xd0, 0xf8, 0xac, 0xc1, 0x2f, 0xf6, 0x2a, 0x70, 0xde, 0xda, 0x43,
-	0x81, 0x7e, 0x6c, 0x61, 0x3c, 0x0f, 0x83, 0x18, 0xc9, 0x7f, 0x50, 0x7e, 0xc3, 0xf8, 0x02, 0xa9,
-	0xd6, 0x2d, 0xf6, 0xea, 0xfd, 0x3f, 0xcd, 0x1d, 0x24, 0x53, 0x31, 0xae, 0x02, 0x11, 0xad, 0xac,
-	0x84, 0xdd, 0x39, 0x07, 0xc8, 0x40, 0xd9, 0xee, 0x01, 0x57, 0xeb, 0x09, 0x64, 0x28, 0xb7, 0x74,
-	0xa9, 0x3e, 0xab, 0x27, 0x5b, 0xaa, 0x92, 0x67, 0xfa, 0xb9, 0x66, 0x5c, 0xc0, 0xb1, 0x3d, 0x8e,
-	0x98, 0x8b, 0x83, 0x30, 0xb8, 0x1f, 0x79, 0xb1, 0x48, 0x47, 0xf9, 0x6b, 0x7b, 0x94, 0xba, 0x99,
-	0xf1, 0xd6, 0x6d, 0x8d, 0x6b, 0x38, 0xc8, 0xb0, 0xb5, 0xa2, 0x6d, 0x28, 0xfb, 0xce, 0x2c, 0xfd,
-	0x37, 0x27, 0x89, 0x34, 0x5f, 0x48, 0xe6, 0x78, 0x35, 0xdf, 0x0c, 0x91, 0x01, 0xc6, 0x4b, 0x68,
-	0xa7, 0xdf, 0xb1, 0xd9, 0x12, 0x9f, 0xfe, 0xd6, 0x1f, 0x50, 0x64, 0x51, 0x44, 0xf5, 0x1f, 0xc7,
-	0x92, 0xb8, 0xd1, 0x00, 0xc8, 0xa0, 0xfe, 0x37, 0x1d, 0xf6, 0x37, 0xa6, 0xda, 0xc9, 0x7b, 0x44,
-	0xfe, 0x86, 0xfa, 0x0d, 0x8a, 0xf4, 0xf1, 0xa9, 0x98, 0xc3, 0x40, 0xfc, 0x7f, 0xd6, 0x81, 0xcc,
-	0x7e, 0xa3, 0x40, 0x4e, 0xa1, 0x95, 0xac, 0x4a, 0xca, 0x3b, 0x36, 0x77, 0xee, 0x50, 0xa7, 0x6a,
-	0x5a, 0x18, 0x2f, 0xb8, 0x3c, 0x74, 0x02, 0x30, 0x98, 0xa1, 0xf3, 0xa0, 0xfe, 0x08, 0xa4, 0x6e,
-	0x66, 0x7b, 0x91, 0x67, 0xfd, 0x06, 0x25, 0x5b, 0xb0, 0xac, 0x71, 0xae, 0x74, 0x0a, 0x87, 0xca,
-	0xf1, 0x59, 0xc8, 0x31, 0x66, 0x1c, 0xa5, 0xf1, 0x29, 0xaf, 0xbd, 0x6b, 0x1b, 0x8c, 0x02, 0x39,
-	0x83, 0xfd, 0x1b, 0x14, 0x97, 0x9c, 0xa7, 0xd7, 0x4e, 0x8f, 0xfc, 0x6a, 0xee, 0x76, 0xd7, 0x28,
-	0x90, 0x7f, 0xa0, 0x71, 0x83, 0x22, 0x3b, 0x72, 0x68, 0x3e, 0xf6, 0xb2, 0x93, 0x17, 0xd7, 0x28,
-	0x90, 0x7f, 0xa1, 0x29, 0xdd, 0xc9, 0x8e, 0x1c, 0x99, 0xbb, 0x6c, 0xcb, 0xdd, 0xe7, 0x79, 0xed,
-	0x5d, 0xd5, 0xbc, 0x50, 0x2f, 0xfe, 0xa4, 0xa2, 0x7e, 0x4e, 0xbf, 0x07, 0x00, 0x00, 0xff, 0xff,
-	0x7f, 0x7b, 0x02, 0x92, 0x20, 0x06, 0x00, 0x00,
+var fileDescriptor_merchant_service_c1f9c7afad688430 = []byte{
+	// 1177 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0xdb, 0x6e, 0xdb, 0x46,
+	0x13, 0x96, 0xe2, 0x53, 0x34, 0xb2, 0x65, 0x6b, 0xe3, 0xd8, 0x8c, 0xfe, 0x20, 0xd1, 0xcf, 0xb4,
+	0x81, 0x0a, 0x24, 0xdb, 0xd4, 0x31, 0x9a, 0xa2, 0xb9, 0x28, 0x7c, 0x8a, 0xaa, 0x22, 0x72, 0x04,
+	0x52, 0x69, 0x8a, 0xa2, 0x40, 0xb0, 0x16, 0xc7, 0x14, 0x6b, 0x92, 0xab, 0x2e, 0xd7, 0x76, 0x7c,
+	0xd3, 0x77, 0xe9, 0x33, 0xf5, 0x85, 0x8a, 0xdd, 0xe5, 0x49, 0x0a, 0xd3, 0xde, 0xe4, 0x4a, 0x3b,
+	0xdf, 0x37, 0x33, 0x3b, 0xc7, 0x15, 0x61, 0x27, 0x42, 0x31, 0x99, 0xb2, 0x58, 0xbe, 0x4f, 0x50,
+	0x5c, 0x05, 0x13, 0xa4, 0x33, 0xc1, 0x25, 0xef, 0xac, 0xfb, 0x21, 0x3f, 0x63, 0x61, 0x2a, 0xed,
+	0x44, 0x98, 0x24, 0xcc, 0xc7, 0xaf, 0x33, 0xed, 0x14, 0xbf, 0x93, 0xe1, 0x5c, 0x78, 0x28, 0x0c,
+	0x68, 0xff, 0x09, 0xdb, 0xc3, 0x54, 0xed, 0x8d, 0x82, 0x1d, 0xfc, 0xe3, 0x12, 0x13, 0x49, 0x1e,
+	0x00, 0x64, 0xf8, 0xc0, 0xb3, 0xea, 0xdd, 0x7a, 0x6f, 0xc9, 0x29, 0x21, 0x8a, 0x1f, 0x31, 0x3f,
+	0x88, 0x99, 0x0c, 0x78, 0x6c, 0xdd, 0xea, 0xd6, 0x7b, 0xb7, 0x9d, 0x12, 0x42, 0x1e, 0xc3, 0xea,
+	0x88, 0x09, 0x16, 0x25, 0xd6, 0x52, 0xb7, 0xde, 0x6b, 0xee, 0xb5, 0xa8, 0xab, 0x59, 0xdf, 0xa0,
+	0x4e, 0xca, 0xda, 0xbf, 0xc1, 0x43, 0x83, 0xcf, 0x45, 0xf1, 0x3a, 0x48, 0xa4, 0x83, 0xc9, 0x8c,
+	0xc7, 0x09, 0x92, 0x6d, 0x58, 0x19, 0x73, 0xc9, 0xc2, 0x34, 0x0a, 0x23, 0x90, 0x47, 0xb0, 0x7c,
+	0xcc, 0x24, 0xb3, 0x6e, 0x75, 0x97, 0x7a, 0xcd, 0xbd, 0x4d, 0xea, 0xce, 0xa7, 0xa1, 0x49, 0xfb,
+	0xef, 0x65, 0x68, 0xcd, 0x13, 0xc4, 0x82, 0x35, 0x7d, 0xc8, 0xb3, 0xca, 0xc4, 0x9c, 0x39, 0xe5,
+	0x3a, 0x9f, 0x86, 0x93, 0x89, 0xa4, 0x03, 0xb7, 0x47, 0x4c, 0x60, 0x2c, 0x4f, 0xb9, 0x4e, 0xa7,
+	0xe1, 0xe4, 0xb2, 0xb2, 0x3a, 0xbc, 0xbc, 0xd1, 0xfe, 0x96, 0x8d, 0xbf, 0x54, 0x24, 0xf7, 0xa1,
+	0xa1, 0x8f, 0xa7, 0x2c, 0x42, 0x6b, 0x45, 0x9b, 0x15, 0x80, 0xb2, 0x3b, 0x46, 0xc9, 0x82, 0x30,
+	0xb1, 0x56, 0xcd, 0x6d, 0xa9, 0xa8, 0x4a, 0x3b, 0x90, 0x18, 0x1d, 0x44, 0xfc, 0x32, 0x96, 0xd6,
+	0x5a, 0xb7, 0xde, 0xab, 0x3b, 0x25, 0x84, 0x3c, 0x86, 0xd6, 0x71, 0x90, 0x4c, 0xd4, 0x39, 0xd5,
+	0xb9, 0xad, 0x75, 0x16, 0x50, 0xe5, 0xe7, 0xe4, 0xc3, 0x4c, 0x60, 0x92, 0xbc, 0x42, 0xb4, 0x1a,
+	0xc6, 0x4f, 0x81, 0x98, 0x16, 0x4e, 0x2e, 0x98, 0x8f, 0x8a, 0x07, 0xc3, 0x17, 0x08, 0xd9, 0x81,
+	0xd5, 0x41, 0x32, 0x62, 0x81, 0x67, 0x35, 0x75, 0x7b, 0x53, 0x89, 0x74, 0xa1, 0xf9, 0x2a, 0x88,
+	0x59, 0x98, 0x5e, 0xbe, 0xae, 0x0d, 0xcb, 0x90, 0xea, 0x98, 0x2b, 0x99, 0x44, 0x6b, 0xa3, 0x5b,
+	0xef, 0xad, 0x38, 0x46, 0x50, 0xf5, 0xd0, 0x87, 0x31, 0x7e, 0x90, 0x56, 0xcb, 0xd4, 0x23, 0x07,
+	0x54, 0x34, 0x47, 0x02, 0x95, 0x14, 0x44, 0x68, 0x6d, 0x9a, 0x81, 0x2b, 0x10, 0xf2, 0x7f, 0x58,
+	0x51, 0x35, 0x48, 0xac, 0x2d, 0xdd, 0xf0, 0x26, 0x75, 0x4d, 0xdf, 0x24, 0x46, 0x8e, 0x61, 0xc8,
+	0xd3, 0x74, 0x24, 0xda, 0x5a, 0xe3, 0xde, 0xc2, 0x48, 0x50, 0xc5, 0x9d, 0xc4, 0x52, 0xdc, 0x98,
+	0xe1, 0xe8, 0xbc, 0x80, 0x46, 0x0e, 0x91, 0x2d, 0x58, 0xba, 0xc0, 0x1b, 0x3d, 0x12, 0x0d, 0x47,
+	0x1d, 0x55, 0x12, 0x57, 0x2c, 0xbc, 0xc4, 0x74, 0x18, 0x8c, 0xf0, 0xfd, 0xad, 0xef, 0xea, 0x7b,
+	0x7f, 0x6d, 0xc1, 0x66, 0xe6, 0xda, 0x35, 0x8b, 0x48, 0x1e, 0x41, 0xb3, 0x8f, 0x32, 0x43, 0xc9,
+	0x2a, 0x1d, 0xc4, 0xf2, 0xdb, 0xfd, 0x0e, 0x14, 0x41, 0xd8, 0x35, 0xf2, 0x1c, 0x5a, 0x26, 0xa3,
+	0x5c, 0x6f, 0x87, 0x66, 0x47, 0x43, 0xa4, 0xeb, 0xd7, 0x59, 0xa3, 0x0e, 0x26, 0x97, 0xa1, 0x32,
+	0xfa, 0x02, 0xe0, 0x68, 0x8a, 0x93, 0x8b, 0xd7, 0xdc, 0x0f, 0x62, 0xd2, 0xa4, 0xc3, 0xc9, 0xf4,
+	0x6d, 0x82, 0x62, 0x74, 0xed, 0x95, 0xb5, 0xee, 0xc1, 0xb2, 0xaa, 0x65, 0x7e, 0x71, 0x89, 0x7a,
+	0x0e, 0x6d, 0xf7, 0x26, 0x9e, 0xbc, 0x9b, 0xf2, 0x10, 0x13, 0x16, 0xa2, 0x2a, 0x56, 0xae, 0xb7,
+	0x4d, 0x35, 0xe7, 0xea, 0x0a, 0x66, 0x2b, 0x67, 0xd7, 0xc8, 0x3e, 0x6c, 0xf6, 0x51, 0x1e, 0x84,
+	0xe1, 0x58, 0x30, 0x0f, 0x8f, 0x78, 0x7c, 0x9e, 0x9b, 0xec, 0x52, 0x37, 0x07, 0xcb, 0x8b, 0x6a,
+	0xd7, 0xc8, 0x37, 0xb0, 0xde, 0x47, 0x59, 0x98, 0xb4, 0x69, 0x7e, 0xce, 0x32, 0x5b, 0x2f, 0x59,
+	0xbf, 0xd7, 0x26, 0x1b, 0x2e, 0xbb, 0xc2, 0xc2, 0xe6, 0x6e, 0x61, 0xa3, 0x88, 0x8a, 0x8a, 0x7c,
+	0x05, 0x6d, 0x53, 0x2d, 0x37, 0xf0, 0xe3, 0xb7, 0xb3, 0x31, 0xbf, 0xc0, 0x98, 0x34, 0xe8, 0x10,
+	0xa3, 0x33, 0xb5, 0x78, 0x9d, 0x35, 0xea, 0x4a, 0x11, 0xc4, 0xbe, 0x5d, 0x23, 0x4f, 0xc1, 0xd2,
+	0x6d, 0x51, 0xcc, 0x2b, 0xc1, 0xa3, 0xb2, 0x45, 0xa6, 0xd6, 0x49, 0x13, 0xb3, 0x6b, 0xa4, 0x0b,
+	0xab, 0x46, 0x83, 0x34, 0xa9, 0x3b, 0x9c, 0x4c, 0x8d, 0x50, 0xbe, 0xfb, 0x4b, 0x68, 0x29, 0x87,
+	0x19, 0x35, 0xf0, 0xca, 0x17, 0x17, 0x8e, 0x6c, 0x68, 0xf4, 0x51, 0xa6, 0xbe, 0xb2, 0xc2, 0x95,
+	0x7d, 0xda, 0x35, 0xf2, 0x04, 0xd6, 0x1d, 0xbc, 0x0a, 0xf0, 0x3a, 0x55, 0x6b, 0xab, 0xd6, 0x1a,
+	0xa4, 0x22, 0xe9, 0x27, 0xb0, 0xed, 0x60, 0xc4, 0xaf, 0xf2, 0xd9, 0x49, 0xad, 0xe6, 0xf2, 0x2e,
+	0x69, 0xdf, 0x2d, 0x8d, 0xe3, 0xc0, 0x3b, 0xbc, 0x31, 0x5a, 0xd5, 0xd1, 0xee, 0x43, 0xbb, 0x8f,
+	0xf2, 0x24, 0x96, 0x28, 0x66, 0x22, 0x48, 0x70, 0x10, 0x9f, 0x73, 0x35, 0x69, 0xb9, 0x79, 0x67,
+	0x8b, 0xba, 0xf3, 0xb4, 0x5d, 0x23, 0x2f, 0x80, 0xa8, 0x06, 0x2d, 0x98, 0xed, 0xd0, 0x79, 0xb0,
+	0x22, 0x95, 0x7d, 0x95, 0x8a, 0x4a, 0x73, 0xc1, 0xf4, 0xdf, 0x0b, 0x40, 0x01, 0xd4, 0x44, 0x4e,
+	0xf4, 0x13, 0x37, 0x1f, 0x5d, 0xbb, 0xd8, 0xb2, 0x94, 0xb7, 0x6b, 0xe4, 0x19, 0x80, 0xab, 0x92,
+	0x62, 0x67, 0x21, 0x7a, 0x64, 0x37, 0xd7, 0x3f, 0x0e, 0x12, 0x05, 0x55, 0xdc, 0xd0, 0x83, 0x3b,
+	0x0b, 0x45, 0xfb, 0x91, 0x27, 0xb2, 0x6a, 0x4e, 0x28, 0x6c, 0x97, 0x34, 0x87, 0xec, 0x77, 0x2e,
+	0xb4, 0xea, 0x5c, 0x54, 0xa5, 0x31, 0x7c, 0x01, 0xeb, 0xaa, 0x2a, 0x2e, 0x0b, 0xcd, 0x8c, 0xdf,
+	0xd7, 0x45, 0xca, 0x3b, 0x99, 0xc2, 0x15, 0x21, 0x3d, 0xd3, 0xcf, 0x4a, 0x6e, 0x37, 0xe7, 0x9f,
+	0x14, 0x59, 0x67, 0x0a, 0xc5, 0xe4, 0x4d, 0xb9, 0x9a, 0xcd, 0x39, 0xfd, 0x22, 0xfc, 0x97, 0xd0,
+	0x1a, 0x72, 0x2f, 0x38, 0xbf, 0x19, 0xb1, 0x24, 0xb9, 0xe6, 0xc2, 0x23, 0x0f, 0xa8, 0x01, 0x32,
+	0xf5, 0x8c, 0xf8, 0x74, 0x1f, 0x66, 0xc1, 0xc7, 0x53, 0x52, 0xee, 0x83, 0xe1, 0xf5, 0xf3, 0xb3,
+	0x31, 0xe6, 0xbe, 0x1f, 0xe2, 0xc1, 0x2c, 0x18, 0xa1, 0x88, 0x4a, 0xad, 0x48, 0x91, 0xca, 0x15,
+	0xdf, 0x5e, 0x68, 0x85, 0x72, 0xe8, 0x55, 0xf5, 0xe2, 0x2d, 0x58, 0x23, 0xe6, 0xa3, 0x77, 0xca,
+	0x45, 0xc4, 0x42, 0xfd, 0xd4, 0xbf, 0x39, 0xff, 0x19, 0x63, 0x8f, 0x0b, 0x72, 0x97, 0x56, 0x7d,
+	0xdc, 0x74, 0xba, 0xf4, 0x3f, 0xbe, 0x39, 0xec, 0x1a, 0xf9, 0x05, 0xfe, 0xa7, 0xdd, 0xe6, 0xcf,
+	0xe6, 0x67, 0xf3, 0x3c, 0x86, 0x5d, 0xed, 0x59, 0x3f, 0x73, 0x9f, 0xcd, 0xeb, 0x09, 0xec, 0xbe,
+	0x0b, 0xe4, 0xd4, 0x13, 0xec, 0x7a, 0xcc, 0xcd, 0x8e, 0x67, 0xbb, 0xf2, 0x90, 0x7e, 0x82, 0xa9,
+	0x28, 0xfc, 0x1e, 0x6c, 0x1c, 0x4d, 0x99, 0xf0, 0x31, 0x33, 0x2e, 0xfd, 0x43, 0x69, 0xbc, 0xc2,
+	0xe6, 0x50, 0x3f, 0x1f, 0xc3, 0xc9, 0x54, 0x7f, 0xdd, 0xf4, 0x05, 0xbf, 0x9c, 0xbd, 0x2f, 0xa5,
+	0x52, 0xa0, 0x03, 0x4f, 0xfd, 0xdf, 0x7c, 0x8c, 0xdb, 0x35, 0xf2, 0x83, 0x79, 0x4c, 0x16, 0x9c,
+	0x3c, 0x98, 0xdb, 0x93, 0x82, 0xa9, 0x08, 0xe2, 0x27, 0xd8, 0xe8, 0xa3, 0x74, 0xf0, 0x4c, 0xfd,
+	0x8b, 0xaa, 0xcf, 0x8d, 0x4f, 0x04, 0xd0, 0xa5, 0x79, 0x47, 0x0b, 0xe5, 0x85, 0x5a, 0x1e, 0xc0,
+	0x1d, 0x75, 0x6f, 0x7a, 0x55, 0xee, 0xf1, 0xa1, 0x8e, 0xa6, 0xc2, 0xfc, 0xe3, 0x70, 0x0e, 0x1b,
+	0xbf, 0xae, 0xd1, 0x97, 0xfa, 0x13, 0xfb, 0x6c, 0x55, 0xff, 0x3c, 0xff, 0x27, 0x00, 0x00, 0xff,
+	0xff, 0x6c, 0xc6, 0xa9, 0x2f, 0xbe, 0x0b, 0x00, 0x00,
 }

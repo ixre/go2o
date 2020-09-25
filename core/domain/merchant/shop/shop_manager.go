@@ -62,7 +62,7 @@ func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 
 // 获取所有商店
 func (s *shopManagerImpl) GetShops() []shop.IShop {
-	shopList := s.repo.GetShopsOfMerchant(s.merchant.GetAggregateRootId())
+	shopList := s.repo.GetShopId(s.merchant.GetAggregateRootId())
 	shops := make([]shop.IShop, len(shopList))
 	for i, v := range shopList {
 		shops[i] = s.CreateShop(&v)

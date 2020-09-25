@@ -9,10 +9,12 @@
 package daemon
 
 import (
+	"context"
 	"database/sql"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/tool"
-	"go2o/core/service/impl"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"log"
 	"math"
 	"sync"
@@ -100,10 +102,16 @@ func confirmTransferInByCursor(unixDate int64, logId int32) {
 		logId, unixDate, personfinance.RiseTypeTransferIn,
 		personfinance.RiseStateDefault)
 	if err == nil {
-		err = impl.PersonFinanceService.CommitTransfer(v.PersonId, v.Id)
-		if err != nil {
+		trans, cli, _ := service.FinanceServiceClient()
+		defer trans.Close()
+		ret, _ := cli.CommitTransfer(context.TODO(),
+			&proto.CommitTransferRequest{
+				PersonId: v.PersonId,
+				LogId:    int64(v.Id),
+			})
+		if ret.ErrCode > 0 {
 			log.Println("[ PersonFinance][ Transfer][ Fail]: person_id=",
-				v.PersonId, "error=", err.Error())
+				v.PersonId, "error=", ret.ErrMsg)
 			v.State = -1
 			_orm.Save(v.Id, v) //标记为异常
 		}
@@ -152,11 +160,17 @@ func settleRiseData(settleDate time.Time) {
 
 // 结算每日数据
 func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int64) {
-	err := impl.PersonFinanceService.RiseSettleByDay(personId, settleUnix,
-		personfinance.RiseDayRatioProvider(personId))
-	if err != nil {
+	trans, cli, _ := service.FinanceServiceClient()
+	defer trans.Close()
+	ret, _ := cli.RiseSettleByDay(context.TODO(), &proto.RiseSettleRequest{
+		PersonId:  personId,
+		SettleDay: settleUnix,
+		Ratio:     float64(personfinance.RiseDayRatioProvider(personId)),
+	})
+
+	if ret.ErrCode > 0 {
 		log.Println("[ PersonFinance][ Settle][ Fail]: person_id=",
-			personId, "error=", err.Error())
+			personId, "error=", ret.ErrMsg)
 	}
 	wg.Done()
 }

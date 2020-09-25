@@ -54,7 +54,7 @@ func TestChargeWallet(t *testing.T) {
 func TestDiscountRefundWallet(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
-	var value int = 10000
+	var value = 10000
 	var tradeNo = "02af1208xa209sl2"
 	var balance = wlt.Get().Balance
 	err := wlt.Discount(value, "支付订单"+tradeNo, tradeNo, true)
@@ -180,10 +180,10 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 func TestTransferWallet(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
-	var amount int = 10000
-	var tradeFee int = 1000
+	var amount = 10000
+	var tradeFee = 1000
 	var toWalletId int64 = 2
-	var balance2 int = 0
+	var balance2 = 0
 	wlt2 := repo.GetWallet(toWalletId)
 	if wlt2 == nil {
 		t.Error("目标账户不存在")

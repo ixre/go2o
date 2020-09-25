@@ -51,7 +51,34 @@ func (x EMessageChannel) String() string {
 	return proto.EnumName(EMessageChannel_name, int32(x))
 }
 func (EMessageChannel) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_message_service_398b69cdc84f9ae3, []int{0}
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{0}
+}
+
+// 站内信用户类型
+type MessageUserType int32
+
+const (
+	MessageUserType_All      MessageUserType = 0
+	MessageUserType_Member   MessageUserType = 1
+	MessageUserType_Merchant MessageUserType = 2
+)
+
+var MessageUserType_name = map[int32]string{
+	0: "All",
+	1: "Member",
+	2: "Merchant",
+}
+var MessageUserType_value = map[string]int32{
+	"All":      0,
+	"Member":   1,
+	"Merchant": 2,
+}
+
+func (x MessageUserType) String() string {
+	return proto.EnumName(MessageUserType_name, int32(x))
+}
+func (MessageUserType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{1}
 }
 
 type SendMessageRequest struct {
@@ -67,7 +94,7 @@ func (m *SendMessageRequest) Reset()         { *m = SendMessageRequest{} }
 func (m *SendMessageRequest) String() string { return proto.CompactTextString(m) }
 func (*SendMessageRequest) ProtoMessage()    {}
 func (*SendMessageRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_service_398b69cdc84f9ae3, []int{0}
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{0}
 }
 func (m *SendMessageRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SendMessageRequest.Unmarshal(m, b)
@@ -108,6 +135,44 @@ func (m *SendMessageRequest) GetData() map[string]string {
 	return nil
 }
 
+type NotifyItemListResponse struct {
+	Value                []*SNotifyItem `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *NotifyItemListResponse) Reset()         { *m = NotifyItemListResponse{} }
+func (m *NotifyItemListResponse) String() string { return proto.CompactTextString(m) }
+func (*NotifyItemListResponse) ProtoMessage()    {}
+func (*NotifyItemListResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{1}
+}
+func (m *NotifyItemListResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NotifyItemListResponse.Unmarshal(m, b)
+}
+func (m *NotifyItemListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NotifyItemListResponse.Marshal(b, m, deterministic)
+}
+func (dst *NotifyItemListResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NotifyItemListResponse.Merge(dst, src)
+}
+func (m *NotifyItemListResponse) XXX_Size() int {
+	return xxx_messageInfo_NotifyItemListResponse.Size(m)
+}
+func (m *NotifyItemListResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_NotifyItemListResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NotifyItemListResponse proto.InternalMessageInfo
+
+func (m *NotifyItemListResponse) GetValue() []*SNotifyItem {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
 // * 通知项
 type SNotifyItem struct {
 	// * 键
@@ -131,7 +196,7 @@ func (m *SNotifyItem) Reset()         { *m = SNotifyItem{} }
 func (m *SNotifyItem) String() string { return proto.CompactTextString(m) }
 func (*SNotifyItem) ProtoMessage()    {}
 func (*SNotifyItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_service_398b69cdc84f9ae3, []int{1}
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{2}
 }
 func (m *SNotifyItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SNotifyItem.Unmarshal(m, b)
@@ -193,12 +258,260 @@ func (m *SNotifyItem) GetTags() map[string]string {
 	return nil
 }
 
+// 邮件模版
+type SMailTemplate struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	// 商户编号
+	MerchantId int64 `protobuf:"varint,2,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	// 名称
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	// 主题
+	Subject string `protobuf:"bytes,4,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	// 内容
+	Body string `protobuf:"bytes,5,opt,name=Body,proto3" json:"Body,omitempty"`
+	// 是否启用
+	Enabled              bool     `protobuf:"varint,6,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SMailTemplate) Reset()         { *m = SMailTemplate{} }
+func (m *SMailTemplate) String() string { return proto.CompactTextString(m) }
+func (*SMailTemplate) ProtoMessage()    {}
+func (*SMailTemplate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{3}
+}
+func (m *SMailTemplate) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SMailTemplate.Unmarshal(m, b)
+}
+func (m *SMailTemplate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SMailTemplate.Marshal(b, m, deterministic)
+}
+func (dst *SMailTemplate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SMailTemplate.Merge(dst, src)
+}
+func (m *SMailTemplate) XXX_Size() int {
+	return xxx_messageInfo_SMailTemplate.Size(m)
+}
+func (m *SMailTemplate) XXX_DiscardUnknown() {
+	xxx_messageInfo_SMailTemplate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SMailTemplate proto.InternalMessageInfo
+
+func (m *SMailTemplate) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SMailTemplate) GetMerchantId() int64 {
+	if m != nil {
+		return m.MerchantId
+	}
+	return 0
+}
+
+func (m *SMailTemplate) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *SMailTemplate) GetSubject() string {
+	if m != nil {
+		return m.Subject
+	}
+	return ""
+}
+
+func (m *SMailTemplate) GetBody() string {
+	if m != nil {
+		return m.Body
+	}
+	return ""
+}
+
+func (m *SMailTemplate) GetEnabled() bool {
+	if m != nil {
+		return m.Enabled
+	}
+	return false
+}
+
+type MailTemplateListResponse struct {
+	Value                []*SMailTemplate `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *MailTemplateListResponse) Reset()         { *m = MailTemplateListResponse{} }
+func (m *MailTemplateListResponse) String() string { return proto.CompactTextString(m) }
+func (*MailTemplateListResponse) ProtoMessage()    {}
+func (*MailTemplateListResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{4}
+}
+func (m *MailTemplateListResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_MailTemplateListResponse.Unmarshal(m, b)
+}
+func (m *MailTemplateListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_MailTemplateListResponse.Marshal(b, m, deterministic)
+}
+func (dst *MailTemplateListResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MailTemplateListResponse.Merge(dst, src)
+}
+func (m *MailTemplateListResponse) XXX_Size() int {
+	return xxx_messageInfo_MailTemplateListResponse.Size(m)
+}
+func (m *MailTemplateListResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MailTemplateListResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MailTemplateListResponse proto.InternalMessageInfo
+
+func (m *MailTemplateListResponse) GetValue() []*SMailTemplate {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+// 站内信
+type SSiteMessage struct {
+	// 主题
+	Subject string `protobuf:"bytes,1,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	// 信息内容
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SSiteMessage) Reset()         { *m = SSiteMessage{} }
+func (m *SSiteMessage) String() string { return proto.CompactTextString(m) }
+func (*SSiteMessage) ProtoMessage()    {}
+func (*SSiteMessage) Descriptor() ([]byte, []int) {
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{5}
+}
+func (m *SSiteMessage) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SSiteMessage.Unmarshal(m, b)
+}
+func (m *SSiteMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SSiteMessage.Marshal(b, m, deterministic)
+}
+func (dst *SSiteMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SSiteMessage.Merge(dst, src)
+}
+func (m *SSiteMessage) XXX_Size() int {
+	return xxx_messageInfo_SSiteMessage.Size(m)
+}
+func (m *SSiteMessage) XXX_DiscardUnknown() {
+	xxx_messageInfo_SSiteMessage.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SSiteMessage proto.InternalMessageInfo
+
+func (m *SSiteMessage) GetSubject() string {
+	if m != nil {
+		return m.Subject
+	}
+	return ""
+}
+
+func (m *SSiteMessage) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+type SendSiteMessageRequest struct {
+	SenderId             int64           `protobuf:"varint,1,opt,name=SenderId,proto3" json:"SenderId,omitempty"`
+	ReceiverType         MessageUserType `protobuf:"varint,2,opt,name=ReceiverType,proto3,enum=MessageUserType" json:"ReceiverType,omitempty"`
+	ReceiverId           int64           `protobuf:"varint,3,opt,name=ReceiverId,proto3" json:"ReceiverId,omitempty"`
+	SendNow              bool            `protobuf:"varint,4,opt,name=SendNow,proto3" json:"SendNow,omitempty"`
+	Msg                  *SSiteMessage   `protobuf:"bytes,5,opt,name=Msg,proto3" json:"Msg,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *SendSiteMessageRequest) Reset()         { *m = SendSiteMessageRequest{} }
+func (m *SendSiteMessageRequest) String() string { return proto.CompactTextString(m) }
+func (*SendSiteMessageRequest) ProtoMessage()    {}
+func (*SendSiteMessageRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_message_service_b46a6c04cee9b825, []int{6}
+}
+func (m *SendSiteMessageRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SendSiteMessageRequest.Unmarshal(m, b)
+}
+func (m *SendSiteMessageRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SendSiteMessageRequest.Marshal(b, m, deterministic)
+}
+func (dst *SendSiteMessageRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SendSiteMessageRequest.Merge(dst, src)
+}
+func (m *SendSiteMessageRequest) XXX_Size() int {
+	return xxx_messageInfo_SendSiteMessageRequest.Size(m)
+}
+func (m *SendSiteMessageRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SendSiteMessageRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SendSiteMessageRequest proto.InternalMessageInfo
+
+func (m *SendSiteMessageRequest) GetSenderId() int64 {
+	if m != nil {
+		return m.SenderId
+	}
+	return 0
+}
+
+func (m *SendSiteMessageRequest) GetReceiverType() MessageUserType {
+	if m != nil {
+		return m.ReceiverType
+	}
+	return MessageUserType_All
+}
+
+func (m *SendSiteMessageRequest) GetReceiverId() int64 {
+	if m != nil {
+		return m.ReceiverId
+	}
+	return 0
+}
+
+func (m *SendSiteMessageRequest) GetSendNow() bool {
+	if m != nil {
+		return m.SendNow
+	}
+	return false
+}
+
+func (m *SendSiteMessageRequest) GetMsg() *SSiteMessage {
+	if m != nil {
+		return m.Msg
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*SendMessageRequest)(nil), "SendMessageRequest")
 	proto.RegisterMapType((map[string]string)(nil), "SendMessageRequest.DataEntry")
+	proto.RegisterType((*NotifyItemListResponse)(nil), "NotifyItemListResponse")
 	proto.RegisterType((*SNotifyItem)(nil), "SNotifyItem")
 	proto.RegisterMapType((map[string]string)(nil), "SNotifyItem.TagsEntry")
+	proto.RegisterType((*SMailTemplate)(nil), "SMailTemplate")
+	proto.RegisterType((*MailTemplateListResponse)(nil), "MailTemplateListResponse")
+	proto.RegisterType((*SSiteMessage)(nil), "SSiteMessage")
+	proto.RegisterType((*SendSiteMessageRequest)(nil), "SendSiteMessageRequest")
 	proto.RegisterEnum("EMessageChannel", EMessageChannel_name, EMessageChannel_value)
+	proto.RegisterEnum("MessageUserType", MessageUserType_name, MessageUserType_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -213,10 +526,28 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MessageServiceClient interface {
-	// * 获取通知项,key
+	// 获取通知项,key
 	GetNotifyItem(ctx context.Context, in *String, opts ...grpc.CallOption) (*SNotifyItem, error)
-	// * 发送短信
+	// 发送短信
 	SendPhoneMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*Result, error)
+	// 获取所有通知项
+	GetAllNotifyItem(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*NotifyItemListResponse, error)
+	// 保存通知项设置
+	SaveNotifyItem(ctx context.Context, in *SNotifyItem, opts ...grpc.CallOption) (*Result, error)
+	// 获取邮件模版
+	GetMailTemplate(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SMailTemplate, error)
+	// 保存邮件模板
+	SaveMailTemplate(ctx context.Context, in *SMailTemplate, opts ...grpc.CallOption) (*Result, error)
+	// 获取邮件模板
+	GetMailTemplates(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*MailTemplateListResponse, error)
+	// 删除邮件模板
+	DeleteMailTemplate(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	// 获取邮件绑定
+	// rpc GetConfig() mss.Config
+	// 保存邮件
+	// rpc SaveConfig(conf *mss.Config) error
+	// 发送站内信
+	SendSiteMessage(ctx context.Context, in *SendSiteMessageRequest, opts ...grpc.CallOption) (*Result, error)
 }
 
 type messageServiceClient struct {
@@ -245,12 +576,93 @@ func (c *messageServiceClient) SendPhoneMessage(ctx context.Context, in *SendMes
 	return out, nil
 }
 
+func (c *messageServiceClient) GetAllNotifyItem(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*NotifyItemListResponse, error) {
+	out := new(NotifyItemListResponse)
+	err := c.cc.Invoke(ctx, "/MessageService/GetAllNotifyItem", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageServiceClient) SaveNotifyItem(ctx context.Context, in *SNotifyItem, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MessageService/SaveNotifyItem", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageServiceClient) GetMailTemplate(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SMailTemplate, error) {
+	out := new(SMailTemplate)
+	err := c.cc.Invoke(ctx, "/MessageService/GetMailTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageServiceClient) SaveMailTemplate(ctx context.Context, in *SMailTemplate, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MessageService/SaveMailTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageServiceClient) GetMailTemplates(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*MailTemplateListResponse, error) {
+	out := new(MailTemplateListResponse)
+	err := c.cc.Invoke(ctx, "/MessageService/GetMailTemplates", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageServiceClient) DeleteMailTemplate(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MessageService/DeleteMailTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageServiceClient) SendSiteMessage(ctx context.Context, in *SendSiteMessageRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MessageService/SendSiteMessage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MessageServiceServer is the server API for MessageService service.
 type MessageServiceServer interface {
-	// * 获取通知项,key
+	// 获取通知项,key
 	GetNotifyItem(context.Context, *String) (*SNotifyItem, error)
-	// * 发送短信
+	// 发送短信
 	SendPhoneMessage(context.Context, *SendMessageRequest) (*Result, error)
+	// 获取所有通知项
+	GetAllNotifyItem(context.Context, *Empty) (*NotifyItemListResponse, error)
+	// 保存通知项设置
+	SaveNotifyItem(context.Context, *SNotifyItem) (*Result, error)
+	// 获取邮件模版
+	GetMailTemplate(context.Context, *Int64) (*SMailTemplate, error)
+	// 保存邮件模板
+	SaveMailTemplate(context.Context, *SMailTemplate) (*Result, error)
+	// 获取邮件模板
+	GetMailTemplates(context.Context, *Empty) (*MailTemplateListResponse, error)
+	// 删除邮件模板
+	DeleteMailTemplate(context.Context, *Int64) (*Result, error)
+	// 获取邮件绑定
+	// rpc GetConfig() mss.Config
+	// 保存邮件
+	// rpc SaveConfig(conf *mss.Config) error
+	// 发送站内信
+	SendSiteMessage(context.Context, *SendSiteMessageRequest) (*Result, error)
 }
 
 func RegisterMessageServiceServer(s *grpc.Server, srv MessageServiceServer) {
@@ -293,6 +705,132 @@ func _MessageService_SendPhoneMessage_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MessageService_GetAllNotifyItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).GetAllNotifyItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MessageService/GetAllNotifyItem",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).GetAllNotifyItem(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MessageService_SaveNotifyItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SNotifyItem)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).SaveNotifyItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MessageService/SaveNotifyItem",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).SaveNotifyItem(ctx, req.(*SNotifyItem))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MessageService_GetMailTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).GetMailTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MessageService/GetMailTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).GetMailTemplate(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MessageService_SaveMailTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SMailTemplate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).SaveMailTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MessageService/SaveMailTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).SaveMailTemplate(ctx, req.(*SMailTemplate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MessageService_GetMailTemplates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).GetMailTemplates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MessageService/GetMailTemplates",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).GetMailTemplates(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MessageService_DeleteMailTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).DeleteMailTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MessageService/DeleteMailTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).DeleteMailTemplate(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MessageService_SendSiteMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendSiteMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).SendSiteMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MessageService/SendSiteMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).SendSiteMessage(ctx, req.(*SendSiteMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _MessageService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "MessageService",
 	HandlerType: (*MessageServiceServer)(nil),
@@ -305,40 +843,91 @@ var _MessageService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "SendPhoneMessage",
 			Handler:    _MessageService_SendPhoneMessage_Handler,
 		},
+		{
+			MethodName: "GetAllNotifyItem",
+			Handler:    _MessageService_GetAllNotifyItem_Handler,
+		},
+		{
+			MethodName: "SaveNotifyItem",
+			Handler:    _MessageService_SaveNotifyItem_Handler,
+		},
+		{
+			MethodName: "GetMailTemplate",
+			Handler:    _MessageService_GetMailTemplate_Handler,
+		},
+		{
+			MethodName: "SaveMailTemplate",
+			Handler:    _MessageService_SaveMailTemplate_Handler,
+		},
+		{
+			MethodName: "GetMailTemplates",
+			Handler:    _MessageService_GetMailTemplates_Handler,
+		},
+		{
+			MethodName: "DeleteMailTemplate",
+			Handler:    _MessageService_DeleteMailTemplate_Handler,
+		},
+		{
+			MethodName: "SendSiteMessage",
+			Handler:    _MessageService_SendSiteMessage_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "message_service.proto",
 }
 
 func init() {
-	proto.RegisterFile("message_service.proto", fileDescriptor_message_service_398b69cdc84f9ae3)
+	proto.RegisterFile("message_service.proto", fileDescriptor_message_service_b46a6c04cee9b825)
 }
 
-var fileDescriptor_message_service_398b69cdc84f9ae3 = []byte{
-	// 396 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0xcf, 0x6e, 0xd4, 0x30,
-	0x10, 0xc6, 0x37, 0xc9, 0x76, 0xd3, 0x9d, 0x5d, 0xda, 0x60, 0xfe, 0x28, 0x8a, 0x04, 0x5a, 0xe5,
-	0x14, 0xf5, 0x60, 0x89, 0x70, 0x00, 0xc1, 0xad, 0x65, 0x85, 0xaa, 0x02, 0x42, 0x49, 0x4f, 0x5c,
-	0x2a, 0x77, 0x33, 0xa4, 0x11, 0x8e, 0x5d, 0x12, 0x67, 0xa5, 0xbc, 0x17, 0x0f, 0xc6, 0x23, 0x20,
-	0xc7, 0xce, 0x12, 0x09, 0x2e, 0x3d, 0xc5, 0xbf, 0xf9, 0x3c, 0xfe, 0xf2, 0xd9, 0x03, 0xcf, 0x6a,
-	0x6c, 0x5b, 0x56, 0xe2, 0x4d, 0x8b, 0xcd, 0xbe, 0xda, 0x21, 0xbd, 0x6f, 0xa4, 0x92, 0xd1, 0xba,
-	0xe4, 0xf2, 0x96, 0x71, 0x43, 0xf1, 0x2f, 0x07, 0x48, 0x8e, 0xa2, 0xf8, 0x6c, 0xf6, 0x66, 0xf8,
-	0xb3, 0xc3, 0x56, 0x91, 0x10, 0x7c, 0xb6, 0xdb, 0xc9, 0x4e, 0xa8, 0xd0, 0xd9, 0x38, 0xc9, 0x32,
-	0x1b, 0x51, 0x2b, 0xf6, 0xdc, 0xd0, 0x35, 0x8a, 0x45, 0xf2, 0x0a, 0xe6, 0x05, 0x53, 0x2c, 0xf4,
-	0x36, 0x5e, 0xb2, 0x4a, 0x5f, 0xd0, 0x7f, 0x8f, 0xa5, 0x1f, 0x98, 0x62, 0x5b, 0xa1, 0x9a, 0x3e,
-	0x1b, 0xb6, 0x46, 0x6f, 0x60, 0x79, 0x28, 0x91, 0x00, 0xbc, 0x1f, 0xd8, 0x5b, 0x3f, 0xbd, 0x24,
-	0x4f, 0xe1, 0x68, 0xcf, 0x78, 0x37, 0x3a, 0x19, 0x78, 0xe7, 0xbe, 0x75, 0xe2, 0xdf, 0x0e, 0xac,
-	0xf2, 0x2f, 0x52, 0x55, 0xdf, 0xfb, 0x4b, 0x85, 0xb5, 0xee, 0xbd, 0xfa, 0xdb, 0x7b, 0x85, 0x3d,
-	0x89, 0xe0, 0xd8, 0xe8, 0xe7, 0xfd, 0xd0, 0xfe, 0x38, 0x3b, 0x30, 0x79, 0x09, 0x90, 0x21, 0x2b,
-	0xa4, 0xe0, 0x5a, 0xf5, 0x36, 0x4e, 0x72, 0x9c, 0x4d, 0x2a, 0xda, 0xf7, 0xfa, 0x9e, 0x5f, 0x16,
-	0xe1, 0x7c, 0x68, 0x34, 0xa0, 0x93, 0x5f, 0x48, 0xa1, 0x50, 0xa8, 0xf0, 0xc8, 0x24, 0xb7, 0x48,
-	0xce, 0x60, 0x7e, 0xcd, 0xca, 0x36, 0x5c, 0x0c, 0xc9, 0x9f, 0xd3, 0xc9, 0x9f, 0x51, 0x2d, 0xd8,
-	0xc8, 0x7a, 0xa9, 0x23, 0x1f, 0x4a, 0x0f, 0x89, 0x7c, 0xf6, 0x09, 0x4e, 0xb7, 0xf6, 0x3a, 0x2f,
-	0xee, 0x98, 0x10, 0xc8, 0xc9, 0x02, 0xdc, 0x9b, 0x34, 0x98, 0x91, 0x53, 0x58, 0xe5, 0x95, 0x42,
-	0xab, 0x06, 0x0e, 0x09, 0x60, 0xbd, 0xad, 0x59, 0xc5, 0xc7, 0x8a, 0x4b, 0x4e, 0x00, 0xf2, 0xba,
-	0x1d, 0xd9, 0x4b, 0x05, 0x9c, 0x58, 0xc8, 0xcd, 0x74, 0x90, 0x04, 0x1e, 0x7d, 0x44, 0x35, 0xb9,
-	0x53, 0x9f, 0xe6, 0xaa, 0xa9, 0x44, 0x19, 0xad, 0xa7, 0x81, 0xe2, 0x19, 0x49, 0x21, 0xd0, 0x6f,
-	0xfb, 0xf5, 0x4e, 0x8a, 0xd1, 0x93, 0x3c, 0xf9, 0xcf, 0x73, 0x47, 0x3e, 0xcd, 0xb0, 0xed, 0xb8,
-	0x8a, 0x67, 0xe7, 0xcb, 0x6f, 0x3e, 0x7d, 0x3f, 0x8c, 0xdc, 0xed, 0x62, 0xf8, 0xbc, 0xfe, 0x13,
-	0x00, 0x00, 0xff, 0xff, 0xa4, 0x58, 0x66, 0x00, 0xa0, 0x02, 0x00, 0x00,
+var fileDescriptor_message_service_b46a6c04cee9b825 = []byte{
+	// 762 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x55, 0x5d, 0x8e, 0xe3, 0x44,
+	0x10, 0x8e, 0xe3, 0x99, 0xfc, 0x54, 0x32, 0x89, 0x69, 0x60, 0xd6, 0x58, 0x02, 0x46, 0x16, 0x12,
+	0x61, 0x10, 0x2d, 0x11, 0x06, 0x16, 0x01, 0x0f, 0x6c, 0x76, 0xa3, 0x51, 0xb4, 0x9b, 0x11, 0x6a,
+	0x07, 0x1e, 0x78, 0x59, 0x75, 0xe2, 0x22, 0x63, 0x68, 0xdb, 0xc1, 0xee, 0x04, 0xf9, 0x2c, 0x5c,
+	0x83, 0x2b, 0xec, 0x7d, 0x38, 0x02, 0xea, 0xb6, 0x9d, 0x69, 0x0f, 0xe1, 0x81, 0xa7, 0xf4, 0x57,
+	0x55, 0x5d, 0xf5, 0xd5, 0xd7, 0x55, 0x0e, 0xbc, 0x1b, 0x63, 0x9e, 0xf3, 0x2d, 0xbe, 0xce, 0x31,
+	0x3b, 0x44, 0x1b, 0xa4, 0xbb, 0x2c, 0x95, 0xa9, 0x37, 0xdc, 0x8a, 0x74, 0xcd, 0x45, 0x89, 0xfc,
+	0xbf, 0x2c, 0x20, 0x01, 0x26, 0xe1, 0xb2, 0x8c, 0x65, 0xf8, 0xfb, 0x1e, 0x73, 0x49, 0x5c, 0xe8,
+	0xf2, 0xcd, 0x26, 0xdd, 0x27, 0xd2, 0xb5, 0xae, 0xac, 0x49, 0x9f, 0xd5, 0x50, 0x79, 0xaa, 0xbc,
+	0x6e, 0xbb, 0xf4, 0x54, 0x90, 0x7c, 0x0e, 0x67, 0x21, 0x97, 0xdc, 0xb5, 0xaf, 0xec, 0xc9, 0x60,
+	0xfa, 0x3e, 0xfd, 0x77, 0x5a, 0xfa, 0x82, 0x4b, 0x3e, 0x4f, 0x64, 0x56, 0x30, 0x1d, 0xea, 0x3d,
+	0x85, 0xfe, 0xd1, 0x44, 0x1c, 0xb0, 0x7f, 0xc3, 0xa2, 0xaa, 0xa7, 0x8e, 0xe4, 0x1d, 0x38, 0x3f,
+	0x70, 0xb1, 0xaf, 0x2b, 0x95, 0xe0, 0x9b, 0xf6, 0xd7, 0x96, 0xff, 0x1d, 0x5c, 0xde, 0xa5, 0x32,
+	0xfa, 0xa5, 0x58, 0x48, 0x8c, 0x5f, 0x45, 0xb9, 0x64, 0x98, 0xef, 0xd2, 0x24, 0x47, 0xe2, 0xc3,
+	0xf9, 0x4f, 0xfa, 0x8e, 0xa5, 0x69, 0x0c, 0x69, 0xf0, 0x10, 0xc8, 0x4a, 0x97, 0xff, 0xb7, 0x05,
+	0x03, 0xc3, 0xac, 0x2a, 0xbf, 0x7c, 0xa8, 0xfc, 0x12, 0x0b, 0xe2, 0x41, 0xaf, 0xf4, 0xcf, 0x0a,
+	0x5d, 0xfc, 0x2d, 0x76, 0xc4, 0xe4, 0x03, 0x00, 0x86, 0x3c, 0x4c, 0x13, 0xa1, 0xbc, 0xf6, 0x95,
+	0x35, 0xe9, 0x31, 0xc3, 0xa2, 0x58, 0xaf, 0x76, 0x62, 0x11, 0xba, 0x67, 0xfa, 0x62, 0x09, 0x94,
+	0x6e, 0xcf, 0xd3, 0x44, 0x62, 0x22, 0xdd, 0xf3, 0x52, 0xb7, 0x0a, 0x92, 0x6b, 0x38, 0x5b, 0xf1,
+	0x6d, 0xee, 0x76, 0x34, 0xe1, 0x4b, 0x93, 0x30, 0x55, 0x8e, 0x4a, 0x30, 0x75, 0x54, 0x82, 0x1d,
+	0x4d, 0xff, 0x4b, 0xb0, 0x3f, 0x2d, 0xb8, 0x08, 0x96, 0x3c, 0x12, 0x2b, 0x8c, 0x77, 0x82, 0x4b,
+	0x24, 0x23, 0x68, 0x2f, 0x42, 0x7d, 0xd9, 0x66, 0xed, 0x45, 0xa8, 0xda, 0x5a, 0x62, 0xb6, 0xb9,
+	0xe7, 0x89, 0x5c, 0x84, 0x3a, 0x81, 0xcd, 0x0c, 0x0b, 0x21, 0x70, 0x76, 0xc7, 0x63, 0xd4, 0x0d,
+	0xf7, 0x99, 0x3e, 0xab, 0xa6, 0x82, 0xfd, 0xfa, 0x57, 0xdc, 0x48, 0xdd, 0x6c, 0x9f, 0xd5, 0x50,
+	0x45, 0xcf, 0xd2, 0xb0, 0xa8, 0x7a, 0xd5, 0x67, 0x15, 0x3d, 0x4f, 0xf8, 0x5a, 0x60, 0xe8, 0x76,
+	0xb4, 0x6a, 0x35, 0xf4, 0xbf, 0x07, 0xd7, 0xe4, 0xd6, 0x78, 0xd0, 0x8f, 0x9a, 0x0f, 0x3a, 0xa2,
+	0x8d, 0x36, 0xea, 0x27, 0x9d, 0xc1, 0x30, 0x08, 0x22, 0x89, 0xd5, 0xc0, 0x99, 0xcc, 0xac, 0x26,
+	0x33, 0x17, 0xba, 0xcb, 0xe6, 0x00, 0x57, 0xd0, 0x7f, 0x63, 0xc1, 0xa5, 0x1a, 0x5a, 0x23, 0x4f,
+	0xbd, 0x0f, 0x1e, 0xf4, 0x94, 0x07, 0xb3, 0xa3, 0x64, 0x47, 0x4c, 0x6e, 0x60, 0xc8, 0x70, 0x83,
+	0xd1, 0x01, 0xb3, 0x55, 0xb1, 0x2b, 0xb3, 0x8e, 0xa6, 0x0e, 0xad, 0x52, 0xfc, 0x98, 0x97, 0x76,
+	0xd6, 0x88, 0x2a, 0xa7, 0xa8, 0xc4, 0x8b, 0x50, 0x8b, 0x6a, 0x33, 0xc3, 0xa2, 0x1b, 0xc0, 0x24,
+	0xbc, 0x4b, 0xff, 0xd0, 0xd2, 0xf6, 0x58, 0x0d, 0xc9, 0x87, 0x60, 0x2f, 0xf3, 0xad, 0x56, 0x76,
+	0x30, 0xbd, 0xa0, 0x66, 0xdb, 0x4c, 0x79, 0xae, 0x5f, 0xc1, 0x78, 0x5e, 0x19, 0x9e, 0xdf, 0xf3,
+	0x24, 0x41, 0x41, 0x3a, 0xd0, 0x7e, 0x3d, 0x75, 0x5a, 0x64, 0x0c, 0x03, 0x23, 0xdc, 0xb1, 0x88,
+	0x03, 0xc3, 0x79, 0xcc, 0x23, 0x51, 0x5b, 0xda, 0x64, 0x04, 0x10, 0xc4, 0x79, 0x8d, 0xed, 0xeb,
+	0x1b, 0x18, 0x3f, 0xea, 0x84, 0x74, 0xc1, 0x7e, 0x26, 0x84, 0xd3, 0x22, 0x00, 0x9d, 0x25, 0xc6,
+	0x6b, 0xcc, 0x1c, 0x8b, 0x0c, 0xa1, 0x57, 0x4f, 0x8b, 0xd3, 0x9e, 0xbe, 0xb1, 0x61, 0x54, 0x5d,
+	0x0b, 0xca, 0xcf, 0x0f, 0x99, 0xc0, 0xc5, 0x2d, 0x4a, 0x63, 0xed, 0xba, 0x34, 0x90, 0x59, 0x94,
+	0x6c, 0xbd, 0xc6, 0x92, 0xfa, 0x2d, 0x32, 0x05, 0x47, 0x35, 0xfb, 0xc3, 0x7d, 0x9a, 0x1c, 0x1f,
+	0xf4, 0xed, 0x13, 0xdf, 0x13, 0xaf, 0x4b, 0x19, 0xe6, 0x7b, 0x21, 0xfd, 0x16, 0xf9, 0x12, 0x9c,
+	0x5b, 0x94, 0xcf, 0x84, 0x30, 0x0a, 0x74, 0xe8, 0x3c, 0xde, 0xc9, 0xc2, 0x7b, 0x42, 0x4f, 0x7f,
+	0x2c, 0xfc, 0x16, 0xf9, 0x04, 0x46, 0x01, 0x3f, 0xa0, 0x71, 0xa9, 0x41, 0xc6, 0xac, 0xf0, 0x29,
+	0x8c, 0x6f, 0x51, 0x36, 0x76, 0xa8, 0x43, 0x17, 0x89, 0xfc, 0xea, 0xc6, 0x7b, 0x34, 0x94, 0x7e,
+	0x8b, 0x7c, 0x06, 0x8e, 0xca, 0xdb, 0xdc, 0xb8, 0x66, 0x94, 0x99, 0xfb, 0xa9, 0x66, 0x6f, 0x7a,
+	0xf3, 0x23, 0xfb, 0xf7, 0xe8, 0x7f, 0xed, 0x86, 0xdf, 0x22, 0x1f, 0x03, 0x79, 0x81, 0x02, 0x25,
+	0x9e, 0xe4, 0xd5, 0xd0, 0x67, 0xfc, 0x68, 0xb6, 0xc9, 0x13, 0x7a, 0x7a, 0xda, 0x8d, 0x6b, 0xb3,
+	0xfe, 0xcf, 0x5d, 0xfa, 0xad, 0xfe, 0xab, 0x58, 0x77, 0xf4, 0xcf, 0x17, 0xff, 0x04, 0x00, 0x00,
+	0xff, 0xff, 0x10, 0xaa, 0x20, 0xac, 0x58, 0x06, 0x00, 0x00,
 }

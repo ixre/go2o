@@ -87,7 +87,7 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 			result[n] = dto
 		}
 		regArr := []string{registry.CacheAdMaxAge}
-		trans, cli, err := service.RegistryServeClient()
+		trans, cli, err := service.RegistryServiceClient()
 		if err == nil {
 			mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: regArr})
 			_ = trans.Close()
@@ -147,7 +147,7 @@ func (r resApi) geoLocation(ctx api.Context) *api.Response {
 func (r resApi) childArea(ctx api.Context) *api.Response {
 	code, _ := strconv.Atoi(ctx.Form().GetString("area_code"))
 	areaType := ctx.Form().GetInt("area_type")
-	tran, cli, err := service.FoundationServeClient()
+	tran, cli, err := service.FoundationServiceClient()
 	var areas *proto.AreaListResponse
 	if err == nil {
 		areas, _ = cli.GetChildAreas(context.TODO(),

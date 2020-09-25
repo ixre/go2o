@@ -37,7 +37,7 @@ func (a AppApi) check(ctx api.Context) interface{} {
 	form := ctx.Form()
 	prodVersion := form.GetString("prod_version")
 	prodType := form.GetString("prod_type")
-	trans, cli, err := service.RegistryServeClient()
+	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		defer trans.Close()
 		keys := []string{appVersion, appAndroidVersion, appIOSVersion,
@@ -71,7 +71,7 @@ func (a AppApi) check(ctx api.Context) interface{} {
 
 func (a *AppApi) init() *AppApi {
 	time.Sleep(time.Second * 5) // 等待RPC服务启动5秒
-	trans, cli, err := service.RegistryServeClient()
+	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		defer trans.Close()
 		cli.CreateRegistry(context.TODO(),

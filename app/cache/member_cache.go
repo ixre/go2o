@@ -22,7 +22,7 @@ func GetHighestLevel() *proto.SMemberLevel {
 	sto := GetKVS()
 	lv := &proto.SMemberLevel{}
 	if sto.Get(key, &lv) != nil {
-		trans, cli, _ := service.MemberServeClient()
+		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
 		lvs, _ := cli.GetLevels(context.TODO(), &proto.Empty{})
 		lv = lvs.Value[len(lvs.Value)-1]
@@ -39,7 +39,7 @@ func GetLevelMapJson() string {
 	sto := GetKVS()
 	str, err := sto.GetString(key)
 	if err != nil {
-		trans, cli, _ := service.MemberServeClient()
+		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
 		list, _ := cli.GetLevels(context.TODO(), &proto.Empty{})
 		mp := make(map[string]string, 0)
