@@ -58,7 +58,7 @@ service ProductService {
     // 获取产品值
     rpc GetProductValue(ProductId)returns(SProduct){}
     // 保存产品
-    rpc SaveProduct(SProduct) returns(Result){}
+    rpc SaveProduct(SProduct) returns(SaveProductResponse){}
 
     // 删除产品
     rpc DeleteProduct (DeleteProductRequest) returns (Result) {

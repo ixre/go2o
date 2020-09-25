@@ -24,7 +24,9 @@ func NewAttrService(repo promodel.IProModelRepo) *attrServiceImpl {
 
 // 获取属性
 func (a *attrServiceImpl) GetAttr(attrId int32) *promodel.Attr {
-	return a.repo.GetAttr(attrId)
+	attr := a.repo.GetAttr(attrId)
+	attr.Items = a.GetItems(attrId)
+	return attr
 }
 
 // 保存属性

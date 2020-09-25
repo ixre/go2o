@@ -168,7 +168,7 @@ message SProductCategory {
     // 选项参数
     map<string, string> Options = 15;
     // 关联品牌
-    repeated SProductModel Brands = 16;
+    repeated SProductBrand Brands = 16;
     /** 子分类 */
     repeated SProductCategory Children = 17;
 }
@@ -208,4 +208,10 @@ message SProduct {
 message ProductInfoRequest{
     int64 ProductId = 1;
     string Info = 2;
+}
+
+message SaveProductResponse{
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    int64 ProductId = 3;
 }
