@@ -9,6 +9,61 @@ service ProductService {
     // 删除产品
     rpc DeleteProduct (DeleteProductRequest) returns (Result) {
     }
+    // 获取产品模型
+    rpc GetModel(ProductModelId)returns(SProductModel){}
+    // 获取产品模型
+    rpc GetModels(Empty)returns(ProductModelListResponse){}
+    // 获取属性
+    rpc GetAttr(ProductAttrId)returns(SProductAttr){}
+    // 获取属性项
+    rpc GetAttrItem_(Int64) returns(SProductAttrItem){}
+
+    // 获取模型属性Html
+    rpc GetModelAttrsHtml(Int64)returns(String){}
+    // 保存产品模型
+    rpc SaveModel(SProductModel)returns(Result){}
+    // 删除产品模型
+    rpc DeleteProModel_(Int64)returns(Result){}
+
+    /***** 品牌  *****/
+
+    // Get 产品品牌
+    rpc GetProBrand_(Int64)returns(SProductBrand){}
+    // Save 产品品牌
+    rpc SaveProBrand_(SProductBrand)returns(Result){}
+    // Delete 产品品牌
+    rpc DeleteProBrand_(Int64)returns(Result){}
+    // 获取所有产品品牌
+    rpc GetBrands(Empty)returns(ProductBrandListResponse)
+    // 获取商品分类
+    rpc GetCategory(Int64)returns(SProductCategory){}
+    // 获取商品分类和选项
+//    rpc GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
+//    domain.IOptionStore)
+    rpc DeleteCategory(Int64) returns(Result){}
+    rpc SaveCategory(mchId int64, v *product.Category) (int32, error)
+    rpc GetCategoryTreeNode(mchId int64) *tree.TreeNode
+    // 分类树形
+    rpc CategoryTree(parentId int32) *product.Category
+    // 获取分类关联的品牌
+    rpc GetCatBrands(catId int32) []*promodel.ProBrand
+
+    rpc GetCategories(mchId int64) []*product.Category
+
+    // 根据上级编号获取分类列表
+    rpc GetCategoriesByParentId(mchId, parentId int32) []*product.Category
+    rpc GetBigCategories(mchId int64) []*proto.SCategory
+    rpc GetChildCategories(mchId int64, parentId int64) []*proto.SCategory
+
+    // 获取产品值
+    rpc GetProductValue(productId int64) *product.Product
+    // 保存产品
+    rpc SaveProduct(v *product.Product) (r *proto.Result, err error)
+    // 保存货品描述
+    rpc SaveProductInfo(supplierId int64,
+    productId int64, info string) error
+    // 获取产品属性
+    rpc GetAttrArray(productId int64) []*product.Attr
 }
 
 

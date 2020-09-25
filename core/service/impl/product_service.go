@@ -131,7 +131,7 @@ func (p *productService) DeleteProModel_(id int32) (*proto.Result, error) {
 
 /***** 品牌  *****/
 
-// Get 产品品牌
+// 获取产品品牌
 func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
 	return p.pmRepo.BrandService().Get(id)
 }

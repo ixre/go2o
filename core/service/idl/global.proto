@@ -81,39 +81,6 @@ enum EAmountBasis {
     Percent = 3;
 }
 
-// 商品分类
-message SCategory {
-    /** 编号 */
-    sint32 Id = 1;
-    /** 上级分类 */
-    sint32 ParentId = 2;
-    /** 产品模型 */
-    sint32 ProdModel = 3;
-    /** 优先级 */
-    sint32 Priority = 4;
-    /** 分类名称 */
-    string Name = 5;
-    /** 是否为虚拟分类 */
-    sint32 VirtualCat = 6;
-    /** 分类链接地址 */
-    string CatUrl = 7;
-    /** 图标 */
-    string Icon = 8;
-    /** 图标坐标 */
-    string IconXy = 9;
-    /** 分类层级 */
-    sint32 Level = 10;
-    /** 序号 */
-    sint32 SortNum = 11;
-    /** 是否楼层显示 */
-    sint32 FloorShow = 12;
-    /** 是否启用 */
-    sint32 Enabled = 13;
-    /** 创建时间 */
-    sint64 CreateTime = 14;
-    /** 子分类 */
-    repeated SCategory Children = 15;
-}
 
 // 购物车
 message SShoppingCart {
