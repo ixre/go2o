@@ -5,7 +5,9 @@ message DeleteProductRequest {
     int64 SellerId = 1;
     int64 ProductId = 2;
 }
-
+message ProductId {
+    int64 Value = 1;
+}
 message ProductModelId {
     int64 Value = 1;
 }
@@ -13,7 +15,7 @@ message ProductAttrId {
     int64 Value = 1;
 }
 
-message ProductModelListResponse{
+message ProductModelListResponse {
     repeated SProductModel Value = 1;
 }
 
@@ -32,12 +34,12 @@ message SProductModel {
     // 规格
     repeated SProductSpec Specs = 6;
     // 关联品牌
-    repeated SProductModel Brands= 7;
+    repeated SProductModel Brands = 7;
     // 是否启用
     bool Enabled = 8;
 }
 
-// 属性
+// 产品模型属性
 message SProductAttr {
     // 编号
     int64 Id = 1;
@@ -55,7 +57,7 @@ message SProductAttr {
     repeated SProductAttrItem Items = 7;
 }
 
-// 属性项
+// 产品模型属性项
 message SProductAttrItem {
     // 编号
     int64 Id = 1;
@@ -65,7 +67,19 @@ message SProductAttrItem {
     int32 SortNumber = 3;
 }
 
-// 规格
+// 产品属性值
+message SProductAttrValue {
+    // 编号
+    int64 Id = 1;
+    // 属性编号
+    int64 AttrId = 2;
+    // 属性值
+    string AttrData = 3;
+    // 属性文本
+    string AttrWord = 4;
+}
+
+// 产品模型规格
 message SProductSpec {
     // 编号
     int64 Id = 1;
@@ -91,7 +105,7 @@ message SProductSpecItem {
     int32 SortNumber = 4;
 }
 
-message ProductBrandListResponse{
+message ProductBrandListResponse {
     repeated SProductBrand Value = 1;
 }
 
@@ -113,6 +127,13 @@ message SProductBrand {
     int64 CreateTime = 7;
 }
 
+message ProductCategoriesResponse {
+    repeated SProductCategory Value = 1;
+}
+
+message CategoryParentId {
+    int64 Value = 1;
+}
 
 // 商品分类
 message SProductCategory {
@@ -145,7 +166,46 @@ message SProductCategory {
     /** 创建时间 */
     int64 CreateTime = 14;
     // 选项参数
-    map<string,string> Options = 15;
+    map<string, string> Options = 15;
+    // 关联品牌
+    repeated SProductModel Brands = 16;
     /** 子分类 */
-    repeated SProductCategory Children = 16;
+    repeated SProductCategory Children = 17;
+}
+
+// 产品
+message SProduct {
+    // 编号
+    int64 Id = 1;
+    // 分类
+    int64 CategoryId = 2;
+    // 名称
+    string Name = 3;
+    //供应商编号(暂时同mch_id)
+    int64 VendorId = 4;
+    // 品牌编号
+    int64 BrandId = 5;
+    // 商家编码
+    string Code = 6;
+    // 图片
+    string Image = 7;
+    // 描述
+    string Description = 8;
+    // 备注
+    string Remark = 9;
+    // 状态
+    int32 State = 10;
+    // 排序编号
+    int32 SortNumber = 11;
+    // 产品属性
+    repeated SProductAttrValue Attrs = 12;
+    // 创建时间
+    int64 CreateTime = 13;
+    // 更新时间
+    int64 UpdateTime = 14;
+}
+
+message ProductInfoRequest{
+    int64 ProductId = 1;
+    string Info = 2;
 }
