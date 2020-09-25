@@ -35,8 +35,48 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ProductServiceClient interface {
+	// 获取产品模型
+	GetModel(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*SProductModel, error)
+	// 获取产品模型
+	GetModels(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductModelListResponse, error)
+	// 获取属性
+	GetAttr(ctx context.Context, in *ProductAttrId, opts ...grpc.CallOption) (*SProductAttr, error)
+	// 获取属性项
+	GetAttrItem_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductAttrItem, error)
+	// 获取模型属性Html
+	GetModelAttrsHtml(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*String, error)
+	// 保存产品模型
+	SaveModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error)
+	// 删除产品模型
+	DeleteProModel_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	// Get 产品品牌
+	GetProBrand_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductBrand, error)
+	// Save 产品品牌
+	SaveProBrand_(ctx context.Context, in *SProductBrand, opts ...grpc.CallOption) (*Result, error)
+	// Delete 产品品牌
+	DeleteProBrand_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	// 获取所有产品品牌
+	GetBrands(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductBrandListResponse, error)
+	// 获取全部分类
+	GetCategories(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductCategoriesResponse, error)
+	// 获取商品分类
+	GetCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductCategory, error)
+	// 获取商品分类和选项
+	//    rpc GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
+	//    domain.IOptionStore)
+	DeleteCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	// 保存产品分类
+	SaveCategory(ctx context.Context, in *SProductCategory, opts ...grpc.CallOption) (*Result, error)
+	// 根据上级编号获取分类列表
+	GetChildren(ctx context.Context, in *CategoryParentId, opts ...grpc.CallOption) (*ProductCategoriesResponse, error)
+	// 获取产品值
+	GetProductValue(ctx context.Context, in *ProductId, opts ...grpc.CallOption) (*SProduct, error)
+	// 保存产品
+	SaveProduct(ctx context.Context, in *SProduct, opts ...grpc.CallOption) (*Result, error)
 	// 删除产品
 	DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*Result, error)
+	// 保存货品描述
+	SaveProductInfo(ctx context.Context, in *ProductInfoRequest, opts ...grpc.CallOption) (*Result, error)
 }
 
 type productServiceClient struct {
@@ -45,6 +85,168 @@ type productServiceClient struct {
 
 func NewProductServiceClient(cc *grpc.ClientConn) ProductServiceClient {
 	return &productServiceClient{cc}
+}
+
+func (c *productServiceClient) GetModel(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*SProductModel, error) {
+	out := new(SProductModel)
+	err := c.cc.Invoke(ctx, "/ProductService/GetModel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetModels(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductModelListResponse, error) {
+	out := new(ProductModelListResponse)
+	err := c.cc.Invoke(ctx, "/ProductService/GetModels", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetAttr(ctx context.Context, in *ProductAttrId, opts ...grpc.CallOption) (*SProductAttr, error) {
+	out := new(SProductAttr)
+	err := c.cc.Invoke(ctx, "/ProductService/GetAttr", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetAttrItem_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductAttrItem, error) {
+	out := new(SProductAttrItem)
+	err := c.cc.Invoke(ctx, "/ProductService/GetAttrItem_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetModelAttrsHtml(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*String, error) {
+	out := new(String)
+	err := c.cc.Invoke(ctx, "/ProductService/GetModelAttrsHtml", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) SaveModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ProductService/SaveModel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) DeleteProModel_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ProductService/DeleteProModel_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetProBrand_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductBrand, error) {
+	out := new(SProductBrand)
+	err := c.cc.Invoke(ctx, "/ProductService/GetProBrand_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) SaveProBrand_(ctx context.Context, in *SProductBrand, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ProductService/SaveProBrand_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) DeleteProBrand_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ProductService/DeleteProBrand_", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetBrands(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductBrandListResponse, error) {
+	out := new(ProductBrandListResponse)
+	err := c.cc.Invoke(ctx, "/ProductService/GetBrands", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetCategories(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductCategoriesResponse, error) {
+	out := new(ProductCategoriesResponse)
+	err := c.cc.Invoke(ctx, "/ProductService/GetCategories", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductCategory, error) {
+	out := new(SProductCategory)
+	err := c.cc.Invoke(ctx, "/ProductService/GetCategory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) DeleteCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ProductService/DeleteCategory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) SaveCategory(ctx context.Context, in *SProductCategory, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ProductService/SaveCategory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetChildren(ctx context.Context, in *CategoryParentId, opts ...grpc.CallOption) (*ProductCategoriesResponse, error) {
+	out := new(ProductCategoriesResponse)
+	err := c.cc.Invoke(ctx, "/ProductService/GetChildren", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetProductValue(ctx context.Context, in *ProductId, opts ...grpc.CallOption) (*SProduct, error) {
+	out := new(SProduct)
+	err := c.cc.Invoke(ctx, "/ProductService/GetProductValue", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) SaveProduct(ctx context.Context, in *SProduct, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ProductService/SaveProduct", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *productServiceClient) DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*Result, error) {
@@ -56,14 +258,387 @@ func (c *productServiceClient) DeleteProduct(ctx context.Context, in *DeleteProd
 	return out, nil
 }
 
+func (c *productServiceClient) SaveProductInfo(ctx context.Context, in *ProductInfoRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ProductService/SaveProductInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 type ProductServiceServer interface {
+	// 获取产品模型
+	GetModel(context.Context, *ProductModelId) (*SProductModel, error)
+	// 获取产品模型
+	GetModels(context.Context, *Empty) (*ProductModelListResponse, error)
+	// 获取属性
+	GetAttr(context.Context, *ProductAttrId) (*SProductAttr, error)
+	// 获取属性项
+	GetAttrItem_(context.Context, *Int64) (*SProductAttrItem, error)
+	// 获取模型属性Html
+	GetModelAttrsHtml(context.Context, *Int64) (*String, error)
+	// 保存产品模型
+	SaveModel(context.Context, *SProductModel) (*Result, error)
+	// 删除产品模型
+	DeleteProModel_(context.Context, *Int64) (*Result, error)
+	// Get 产品品牌
+	GetProBrand_(context.Context, *Int64) (*SProductBrand, error)
+	// Save 产品品牌
+	SaveProBrand_(context.Context, *SProductBrand) (*Result, error)
+	// Delete 产品品牌
+	DeleteProBrand_(context.Context, *Int64) (*Result, error)
+	// 获取所有产品品牌
+	GetBrands(context.Context, *Empty) (*ProductBrandListResponse, error)
+	// 获取全部分类
+	GetCategories(context.Context, *Empty) (*ProductCategoriesResponse, error)
+	// 获取商品分类
+	GetCategory(context.Context, *Int64) (*SProductCategory, error)
+	// 获取商品分类和选项
+	//    rpc GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
+	//    domain.IOptionStore)
+	DeleteCategory(context.Context, *Int64) (*Result, error)
+	// 保存产品分类
+	SaveCategory(context.Context, *SProductCategory) (*Result, error)
+	// 根据上级编号获取分类列表
+	GetChildren(context.Context, *CategoryParentId) (*ProductCategoriesResponse, error)
+	// 获取产品值
+	GetProductValue(context.Context, *ProductId) (*SProduct, error)
+	// 保存产品
+	SaveProduct(context.Context, *SProduct) (*Result, error)
 	// 删除产品
 	DeleteProduct(context.Context, *DeleteProductRequest) (*Result, error)
+	// 保存货品描述
+	SaveProductInfo(context.Context, *ProductInfoRequest) (*Result, error)
 }
 
 func RegisterProductServiceServer(s *grpc.Server, srv ProductServiceServer) {
 	s.RegisterService(&_ProductService_serviceDesc, srv)
+}
+
+func _ProductService_GetModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductModelId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetModel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetModel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetModel(ctx, req.(*ProductModelId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetModels(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetModels",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetModels(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetAttr_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductAttrId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetAttr(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetAttr",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetAttr(ctx, req.(*ProductAttrId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetAttrItem__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetAttrItem_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetAttrItem_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetAttrItem_(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetModelAttrsHtml_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetModelAttrsHtml(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetModelAttrsHtml",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetModelAttrsHtml(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_SaveModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SProductModel)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).SaveModel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/SaveModel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).SaveModel(ctx, req.(*SProductModel))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_DeleteProModel__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).DeleteProModel_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/DeleteProModel_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).DeleteProModel_(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetProBrand__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetProBrand_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetProBrand_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetProBrand_(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_SaveProBrand__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SProductBrand)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).SaveProBrand_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/SaveProBrand_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).SaveProBrand_(ctx, req.(*SProductBrand))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_DeleteProBrand__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).DeleteProBrand_(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/DeleteProBrand_",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).DeleteProBrand_(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetBrands_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetBrands(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetBrands",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetBrands(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetCategories",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetCategories(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetCategory(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_DeleteCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).DeleteCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/DeleteCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).DeleteCategory(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_SaveCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SProductCategory)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).SaveCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/SaveCategory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).SaveCategory(ctx, req.(*SProductCategory))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetChildren_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CategoryParentId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetChildren(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetChildren",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetChildren(ctx, req.(*CategoryParentId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetProductValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetProductValue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/GetProductValue",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetProductValue(ctx, req.(*ProductId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_SaveProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SProduct)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).SaveProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/SaveProduct",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).SaveProduct(ctx, req.(*SProduct))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ProductService_DeleteProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -84,13 +659,107 @@ func _ProductService_DeleteProduct_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_SaveProductInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).SaveProductInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ProductService/SaveProductInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).SaveProductInfo(ctx, req.(*ProductInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _ProductService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "ProductService",
 	HandlerType: (*ProductServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "GetModel",
+			Handler:    _ProductService_GetModel_Handler,
+		},
+		{
+			MethodName: "GetModels",
+			Handler:    _ProductService_GetModels_Handler,
+		},
+		{
+			MethodName: "GetAttr",
+			Handler:    _ProductService_GetAttr_Handler,
+		},
+		{
+			MethodName: "GetAttrItem_",
+			Handler:    _ProductService_GetAttrItem__Handler,
+		},
+		{
+			MethodName: "GetModelAttrsHtml",
+			Handler:    _ProductService_GetModelAttrsHtml_Handler,
+		},
+		{
+			MethodName: "SaveModel",
+			Handler:    _ProductService_SaveModel_Handler,
+		},
+		{
+			MethodName: "DeleteProModel_",
+			Handler:    _ProductService_DeleteProModel__Handler,
+		},
+		{
+			MethodName: "GetProBrand_",
+			Handler:    _ProductService_GetProBrand__Handler,
+		},
+		{
+			MethodName: "SaveProBrand_",
+			Handler:    _ProductService_SaveProBrand__Handler,
+		},
+		{
+			MethodName: "DeleteProBrand_",
+			Handler:    _ProductService_DeleteProBrand__Handler,
+		},
+		{
+			MethodName: "GetBrands",
+			Handler:    _ProductService_GetBrands_Handler,
+		},
+		{
+			MethodName: "GetCategories",
+			Handler:    _ProductService_GetCategories_Handler,
+		},
+		{
+			MethodName: "GetCategory",
+			Handler:    _ProductService_GetCategory_Handler,
+		},
+		{
+			MethodName: "DeleteCategory",
+			Handler:    _ProductService_DeleteCategory_Handler,
+		},
+		{
+			MethodName: "SaveCategory",
+			Handler:    _ProductService_SaveCategory_Handler,
+		},
+		{
+			MethodName: "GetChildren",
+			Handler:    _ProductService_GetChildren_Handler,
+		},
+		{
+			MethodName: "GetProductValue",
+			Handler:    _ProductService_GetProductValue_Handler,
+		},
+		{
+			MethodName: "SaveProduct",
+			Handler:    _ProductService_SaveProduct_Handler,
+		},
+		{
 			MethodName: "DeleteProduct",
 			Handler:    _ProductService_DeleteProduct_Handler,
+		},
+		{
+			MethodName: "SaveProductInfo",
+			Handler:    _ProductService_SaveProductInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -98,17 +767,37 @@ var _ProductService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("product_service.proto", fileDescriptor_product_service_36558956a8a226fa)
+	proto.RegisterFile("product_service.proto", fileDescriptor_product_service_8be79210e3796034)
 }
 
-var fileDescriptor_product_service_36558956a8a226fa = []byte{
-	// 127 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x2d, 0x28, 0xca, 0x4f,
-	0x29, 0x4d, 0x2e, 0x89, 0x2f, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e, 0xd5, 0x2b, 0x28, 0xca, 0x2f,
-	0xc9, 0x97, 0xe2, 0x49, 0xcf, 0xc9, 0x4f, 0x4a, 0xcc, 0x81, 0xf2, 0x44, 0x73, 0x53, 0x8b, 0x8b,
-	0x13, 0xd3, 0x53, 0xf5, 0xa1, 0x8a, 0x21, 0xc2, 0x46, 0xce, 0x5c, 0x7c, 0x01, 0x10, 0x81, 0x60,
-	0x88, 0x66, 0x21, 0x43, 0x2e, 0x5e, 0x97, 0xd4, 0x9c, 0xd4, 0x92, 0x54, 0xa8, 0xb8, 0x90, 0xa8,
-	0x1e, 0x0a, 0x3f, 0x28, 0xb5, 0xb0, 0x34, 0xb5, 0xb8, 0x44, 0x8a, 0x5d, 0x2f, 0x28, 0xb5, 0xb8,
-	0x34, 0xa7, 0x44, 0x89, 0xc1, 0x89, 0x33, 0x8a, 0x5d, 0xcf, 0x1a, 0x6c, 0x5e, 0x12, 0x1b, 0x98,
-	0x32, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0xc5, 0xb0, 0x81, 0x56, 0x94, 0x00, 0x00, 0x00,
+var fileDescriptor_product_service_8be79210e3796034 = []byte{
+	// 435 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x93, 0x4b, 0x8b, 0xd4, 0x40,
+	0x10, 0xc7, 0x73, 0x9a, 0x38, 0xbd, 0xf3, 0x60, 0x5a, 0xe6, 0x60, 0x1f, 0xa3, 0x88, 0xf8, 0x68,
+	0xdf, 0x5e, 0x04, 0xc1, 0x55, 0x19, 0x03, 0x0a, 0xc3, 0x0c, 0x78, 0xf0, 0x32, 0x64, 0xb7, 0xcb,
+	0x31, 0xd0, 0x49, 0xc7, 0xee, 0xca, 0xc2, 0x7e, 0x16, 0xbf, 0xac, 0x74, 0x77, 0x1e, 0x9d, 0xcc,
+	0xca, 0x9e, 0x42, 0xd5, 0xff, 0xf7, 0xaf, 0xaa, 0xae, 0x22, 0x64, 0x5d, 0x69, 0x25, 0xea, 0x4b,
+	0x3c, 0x18, 0xd0, 0x57, 0xf9, 0x25, 0xf0, 0x4a, 0x2b, 0x54, 0x6c, 0x76, 0x94, 0xea, 0x22, 0x93,
+	0x4d, 0xb4, 0x2e, 0xc0, 0x98, 0xec, 0x08, 0xcf, 0x1b, 0xd8, 0xa7, 0x5f, 0xfd, 0x8d, 0xc9, 0x62,
+	0xeb, 0x33, 0x7b, 0xef, 0xa6, 0xcf, 0xc8, 0x9d, 0x0d, 0xe0, 0x77, 0x25, 0x40, 0xd2, 0x25, 0x6f,
+	0x44, 0x17, 0xa6, 0x82, 0x2d, 0xf8, 0x3e, 0xcc, 0x24, 0x11, 0x7d, 0x41, 0xa6, 0x2d, 0x6e, 0xe8,
+	0x84, 0x7f, 0x29, 0x2a, 0xbc, 0x66, 0xf7, 0x06, 0xbe, 0x6f, 0xb9, 0xc1, 0x1d, 0x98, 0x4a, 0x95,
+	0x06, 0x92, 0x88, 0x3e, 0x26, 0xf1, 0x06, 0xf0, 0x23, 0xa2, 0xa6, 0x8b, 0x96, 0xb3, 0x51, 0x2a,
+	0xd8, 0xbc, 0x2b, 0x6f, 0x13, 0x49, 0x44, 0x9f, 0x90, 0x59, 0xc3, 0xa6, 0x08, 0xc5, 0x81, 0x4e,
+	0x78, 0x5a, 0xe2, 0xbb, 0x37, 0x6c, 0x35, 0x00, 0xad, 0x96, 0x44, 0xf4, 0x21, 0x59, 0xb5, 0xa3,
+	0xd8, 0xac, 0xf9, 0x8a, 0x85, 0xec, 0x1c, 0x31, 0xdf, 0xa3, 0xce, 0xcb, 0xa3, 0xe3, 0xa6, 0xfb,
+	0xec, 0x0a, 0xfc, 0x13, 0x47, 0x2f, 0x62, 0x31, 0xdf, 0x81, 0xa9, 0x25, 0x26, 0x11, 0x7d, 0x40,
+	0x96, 0x9f, 0x41, 0x02, 0xc2, 0x56, 0x2b, 0x27, 0x1e, 0x82, 0x6a, 0x1d, 0xf5, 0xc8, 0x8d, 0xb8,
+	0xd5, 0xea, 0x5c, 0x67, 0xa5, 0xe8, 0x91, 0xbe, 0xb0, 0x13, 0xdc, 0xc3, 0xe7, 0xb6, 0x6f, 0x8f,
+	0x8e, 0x90, 0xff, 0xf5, 0x1e, 0x15, 0x0e, 0x28, 0xbf, 0x7c, 0xa7, 0xdf, 0xb0, 0x7c, 0x97, 0x1f,
+	0x2d, 0xff, 0x2d, 0x99, 0x6f, 0x00, 0x3f, 0x65, 0x08, 0x47, 0xa5, 0x73, 0xe8, 0x5d, 0xac, 0x75,
+	0xf5, 0xda, 0xe0, 0x66, 0x67, 0xbd, 0xed, 0xfa, 0x86, 0x33, 0xb4, 0x52, 0x12, 0xd1, 0xfb, 0x64,
+	0xe1, 0x47, 0x3f, 0xc1, 0x83, 0xc9, 0x9f, 0x92, 0x99, 0xdd, 0x45, 0x87, 0x9c, 0x56, 0x0a, 0xe9,
+	0x0f, 0xbe, 0xfd, 0xef, 0x5c, 0x0a, 0x0d, 0x25, 0x5d, 0xf1, 0x16, 0xda, 0x66, 0x1a, 0x4a, 0x4c,
+	0xc5, 0xad, 0xe3, 0x2f, 0xfd, 0x8d, 0x2c, 0xf1, 0x23, 0x93, 0x35, 0x50, 0xd2, 0x1a, 0x52, 0xc1,
+	0xa6, 0x5d, 0x73, 0x37, 0xfe, 0x59, 0x73, 0x25, 0x9b, 0xa0, 0xbd, 0x16, 0x0e, 0xf4, 0x92, 0xcc,
+	0xbb, 0xf3, 0x38, 0x6c, 0xcd, 0x07, 0xf1, 0x0e, 0xfe, 0xd4, 0x60, 0x46, 0x96, 0x65, 0x50, 0x37,
+	0x2d, 0x7f, 0x29, 0x7a, 0x97, 0x07, 0xd1, 0xa9, 0xe5, 0x7c, 0xfa, 0x33, 0xe6, 0xef, 0xdd, 0x8f,
+	0x7a, 0x31, 0x71, 0x9f, 0xd7, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0xcc, 0x89, 0x5c, 0x5b, 0xed,
+	0x03, 0x00, 0x00,
 }

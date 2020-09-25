@@ -24,6 +24,81 @@ type productService struct {
 	serviceUtil
 }
 
+
+// 获取产品模型
+func (p *productService) GetModel(c context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
+	im :=  p.pmRepo.GetModel(int32(id.Value))
+	if im != nil{
+		ret := p.parseModelDto(im.Value())
+		// 绑定属性
+		attrs := im.Attrs()
+		ret.Attrs = make([]*proto.SProductAttr,len(attrs))
+		for i,v := range attrs{
+			ret.Attrs[i] = p.parseProductAttrDto(v)
+		}
+		//　绑定规格
+		// 绑定品牌
+		return ret,nil
+	}
+	return nil,nil
+}
+// 获取产品模型
+func (p *productService) GetModels(c context.Context, empty *proto.Empty) (*proto.ProductModelListResponse, error) {
+	list := p.pmRepo.SelectProModel("enabled=1")
+	arr := make([]*proto.SProductModel,len(list))
+	for i,v := range list {
+		arr[i] = p.parseModelDto(v)
+	}
+	return &proto.ProductModelListResponse{
+		Value:arr,
+	},nil
+}
+
+
+// 获取属性
+func (p *productService) GetAttr(c context.Context, id *proto.ProductAttrId) (*proto.SProductAttr, error) {
+	v := p.pmRepo.GetAttr(id.Value)
+	if v != nil{
+		ret := p.parseProductAttrDto(v)
+		attrs := v.Items
+
+		return ret,nil
+	}
+	return nil,nil
+}
+
+
+// 获取模型属性
+func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
+	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
+	return m.Attrs()
+}
+
+func (p *productService) GetAttrItem_(c context.Context, i *proto.Int64) (*proto.SProductAttrItem, error) {
+	panic("implement me")
+}
+
+func (p *productService) GetModelAttrsHtml(c context.Context, i *proto.Int64) (*proto.String, error) {
+	panic("implement me")
+}
+
+func (p *productService) SaveModel(c context.Context, model *proto.SProductModel) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (p *productService) DeleteProModel_(c context.Context, i *proto.Int64) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (p *productService) GetProBrand_(c context.Context, i *proto.Int64) (*proto.SProductBrand, error) {
+	panic("implement me")
+}
+
+func (p *productService) SaveProBrand_(c context.Context, brand *proto.SProductBrand) (*proto.Result, error) {
+	panic("implement me")
+}
+
+
 func NewProService(pmRepo promodel.IProModelRepo,
 	catRepo product.ICategoryRepo,
 	proRepo product.IProductRepo) *productService {
@@ -47,31 +122,12 @@ func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProduct
 	return p.error(err), nil
 }
 
-// 获取产品模型
-func (p *productService) GetModel(id int32) *promodel.ProModel {
-	return p.pmRepo.GetProModel(id)
-}
-
-// 获取产品模型
-func (p *productService) GetModels() []*promodel.ProModel {
-	return p.pmRepo.SelectProModel("enabled=1")
-}
-
-// 获取属性
-func (p *productService) GetAttr(id int32) *promodel.Attr {
-	return p.pmRepo.GetAttr(id)
-}
 
 // 获取属性项
 func (p *productService) GetAttrItem(id int32) *promodel.AttrItem {
 	return p.pmRepo.GetAttrItem(id)
 }
 
-// 获取模型属性
-func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
-	return m.Attrs()
-}
 
 // 获取模型属性Html
 func (p *productService) GetModelAttrsHtml(proModel int32) string {
@@ -419,4 +475,12 @@ func (p *productService) SaveItemSaleLabels(mchId, itemId int64, tagIds []int) e
 	//	err = errors.New("商品不存在")
 	//}
 	return err
+}
+
+func (p *productService) parseModelDto(v *promodel.ProModel)*proto.SProductModel {
+
+}
+
+func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAttr {
+
 }

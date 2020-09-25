@@ -50,7 +50,7 @@ service ProductService {
 
 
     // 根据上级编号获取分类列表
-    rpc GetChildren(CategoryParentId)returns(ProductCategoriesResponse)
+    rpc GetChildren(CategoryParentId)returns(ProductCategoriesResponse){}
 
     //rpc GetBigCategories(mchId int64) []*proto.SCategory
     //rpc GetChildCategories(mchId int64, parentId int64) []*proto.SCategory
