@@ -5,10 +5,10 @@ import "go2o/core/domain/interface/pro_model"
 var _ promodel.IBrandService = new(brandServiceImpl)
 
 type brandServiceImpl struct {
-	rep promodel.IProModelRepo
+	rep promodel.IProductModelRepo
 }
 
-func NewBrandService(rep promodel.IProModelRepo) *brandServiceImpl {
+func NewBrandService(rep promodel.IProductModelRepo) *brandServiceImpl {
 	return &brandServiceImpl{
 		rep: rep,
 	}

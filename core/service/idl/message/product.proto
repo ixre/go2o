@@ -34,7 +34,7 @@ message SProductModel {
     // 规格
     repeated SProductSpec Specs = 6;
     // 关联品牌
-    repeated SProductModel Brands = 7;
+    repeated SProductBrand Brands = 7;
     // 是否启用
     bool Enabled = 8;
 }
@@ -205,12 +205,12 @@ message SProduct {
     int64 UpdateTime = 14;
 }
 
-message ProductInfoRequest{
+message ProductInfoRequest {
     int64 ProductId = 1;
     string Info = 2;
 }
 
-message SaveProductResponse{
+message SaveProductResponse {
     int64 ErrCode = 1;
     string ErrMsg = 2;
     int64 ProductId = 3;

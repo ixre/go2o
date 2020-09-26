@@ -17,13 +17,14 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"strings"
 )
 
-func readToCategoryDropList(mchId int64) []byte {
-	categories := impl.ProductService.GetCategories(mchId)
+func readToCategoryDropList() []byte {
+	trans, cli, _ := service.ProductServiceClient()
+	defer trans.Close()
+	categories, _ := cli.GetCategories(context.TODO(), &proto.Empty{})
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*product.Category)
@@ -37,24 +38,24 @@ func readToCategoryDropList(mchId int64) []byte {
 			))
 		}
 	}
-	util.WalkSaleCategory(categories, &product.Category{Id: 0}, f, nil)
+	util.WalkSaleCategory(categories.Value, &product.Category{Id: 0}, f, nil)
 	return buf.Bytes()
 }
 
 // 获取销售分类下拉选项
 func GetDropOptionsOfSaleCategory(mchId int64) []byte {
-	return readToCategoryDropList(mchId)
+	return readToCategoryDropList()
 }
 
 // 获取商品模型下拉选项
 func GetDropOptionsOfProModel() string {
 	buf := bytes.NewBuffer([]byte{})
-	list := impl.ProductService.GetModels()
-	for _, v := range list {
+	trans, cli, _ := service.ProductServiceClient()
+	defer trans.Close()
+	list, _ := cli.GetModels(context.TODO(), &proto.Empty{})
+	for _, v := range list.Value {
 		buf.WriteString(fmt.Sprintf(
-			`<option value="%d">%s</option>`,
-			v.ID,
-			v.Name,
+			`<option value="%d">%s</option>`, v.Id, v.Name,
 		))
 	}
 	return buf.String()

@@ -51,9 +51,9 @@ type (
 		// 设置产品的值
 		SetValue(v *Product) error
 		// 设置产品属性
-		SetAttr(attr []*Attr) error
+		SetAttr(attr []*AttrValue) error
 		// 获取属性
-		Attr() []*Attr
+		Attr() []*AttrValue
 		// 获取销售标签
 		//GetSaleLabels() []*Label
 
@@ -87,15 +87,15 @@ type (
 		GetProductSaleNum(productId int64) int
 		// 删除货品
 		DeleteProduct(productId int64) error
-		// Get Attr
-		GetAttr(primary interface{}) *Attr
-		// Select Attr
-		SelectAttr(where string, v ...interface{}) []*Attr
-		// Save Attr
-		SaveAttr(v *Attr) (int, error)
-		// Delete Attr
+		// Get AttrValue
+		GetAttr(primary interface{}) *AttrValue
+		// Select AttrValue
+		SelectAttr(where string, v ...interface{}) []*AttrValue
+		// Save AttrValue
+		SaveAttr(v *AttrValue) (int, error)
+		// Delete AttrValue
 		DeleteAttr(primary interface{}) error
-		// Batch Delete Attr
+		// Batch Delete AttrValue
 		BatchDeleteAttr(where string, v ...interface{}) (int64, error)
 	}
 )
@@ -134,11 +134,11 @@ type (
 		// 排序编号
 		SortNum int32 `db:"sort_num"`
 		// 产品属性
-		Attr []*Attr `db:"-"`
+		Attrs []*AttrValue `db:"-"`
 	}
 
 	// 产品属性
-	Attr struct {
+	AttrValue struct {
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号

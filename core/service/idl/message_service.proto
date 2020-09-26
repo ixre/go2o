@@ -11,23 +11,30 @@ service MessageService {
     rpc SendPhoneMessage (SendMessageRequest) returns (Result) {
     }
     // 获取所有通知项
-    rpc GetAllNotifyItem(Empty)returns(NotifyItemListResponse){}
+    rpc GetAllNotifyItem (Empty) returns (NotifyItemListResponse) {
+    }
     // 保存通知项设置
-    rpc SaveNotifyItem(SNotifyItem)returns(Result){}
+    rpc SaveNotifyItem (SNotifyItem) returns (Result) {
+    }
     // 获取邮件模版
-    rpc GetMailTemplate(Int64)returns(SMailTemplate){}
+    rpc GetMailTemplate (Int64) returns (SMailTemplate) {
+    }
     // 保存邮件模板
-    rpc SaveMailTemplate(SMailTemplate)returns(Result){}
+    rpc SaveMailTemplate (SMailTemplate) returns (Result) {
+    }
     // 获取邮件模板
-    rpc GetMailTemplates(Empty)returns(MailTemplateListResponse){}
+    rpc GetMailTemplates (Empty) returns (MailTemplateListResponse) {
+    }
     // 删除邮件模板
-    rpc DeleteMailTemplate(Int64)returns(Result){}
+    rpc DeleteMailTemplate (Int64) returns (Result) {
+    }
     // 获取邮件绑定
     //rpc GetConfig() mss.Config
     // 保存邮件
     //rpc SaveConfig(conf *mss.Config) error
     // 发送站内信
-    rpc SendSiteMessage(SendSiteMessageRequest)returns(Result){}
+    rpc SendSiteMessage (SendSiteMessageRequest) returns (Result) {
+    }
     // 获取站内信
     //rpc GetSiteMessage(Int64) *dto.SiteMessage
 
@@ -50,8 +57,8 @@ enum EMessageChannel {
     SmsMessage = 3;
 }
 
-message NotifyItemListResponse{
-   repeated SNotifyItem Value = 1;
+message NotifyItemListResponse {
+    repeated SNotifyItem Value = 1;
 }
 
 /** 通知项 */
@@ -70,7 +77,6 @@ message SNotifyItem {
     map<string, string> Tags = 6;
 }
 
-
 // 邮件模版
 message SMailTemplate {
     // 编号
@@ -87,8 +93,8 @@ message SMailTemplate {
     bool Enabled = 6;
 }
 
-message MailTemplateListResponse{
-   repeated SMailTemplate Value =1;
+message MailTemplateListResponse {
+    repeated SMailTemplate Value = 1;
 }
 
 // 站内信
@@ -100,14 +106,14 @@ message SSiteMessage {
 }
 
 // 站内信用户类型
-enum MessageUserType{
+enum MessageUserType {
     All = 0;
     Member = 1;
     Merchant = 2;
 }
 
-message SendSiteMessageRequest{
-    int64 SenderId  = 1;
+message SendSiteMessageRequest {
+    int64 SenderId = 1;
     MessageUserType ReceiverType = 2;
     int64 ReceiverId = 3;
     bool SendNow = 4;

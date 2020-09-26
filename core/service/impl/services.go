@@ -142,7 +142,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	/** Service **/
 	StatusService = NewStatusService()
 	RegistryService = NewRegistryService(valueRepo, registryRepo)
-	ProductService = NewProService(proMRepo, catRepo, productRepo)
+	ProductService = NewProductService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valueRepo, registryRepo, notifyRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,

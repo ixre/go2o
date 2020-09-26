@@ -29,7 +29,7 @@ func TestSetBrand(t *testing.T) {
 	if len(list) == 0 {
 		t.Fatal("还没有产品品牌")
 	}
-	m := rep.CreateModel(&promodel.ProModel{
+	m := rep.CreateModel(&promodel.ProductModel{
 		Name:    "测试商品模型",
 		Enabled: 1,
 	})

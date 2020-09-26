@@ -11,7 +11,7 @@ var (
 		"err_empty_brand_array", "请至少包含一个品牌")
 )
 
-type ProModel struct {
+type ProductModel struct {
 	// 编号
 	ID int32 `db:"id" pk:"yes" auto:"yes"`
 	// 名称
@@ -31,11 +31,11 @@ type ProModel struct {
 }
 
 // 产品模型
-type IModel interface {
+type IProductModel interface {
 	// 获取聚合根编号
 	GetAggregateRootId() int32
 	// 获取值
-	Value() *ProModel
+	Value() *ProductModel
 	// 获取属性
 	Attrs() []*Attr
 	// 获取规格
@@ -54,11 +54,11 @@ type IModel interface {
 	Enabled() bool
 }
 
-type IProModelRepo interface {
+type IProductModelRepo interface {
 	// 创建商品模型
-	CreateModel(v *ProModel) IModel
+	CreateModel(v *ProductModel) IProductModel
 	// 获取商品模型
-	GetModel(id int32) IModel
+	GetModel(id int32) IProductModel
 
 	// 属性服务
 	AttrService() IAttrService
@@ -70,13 +70,13 @@ type IProModelRepo interface {
 	// 获取模型的商品品牌
 	GetModelBrands(proModel int32) []*ProBrand
 
-	// Get ProModel
-	GetProModel(primary interface{}) *ProModel
-	// Select ProModel
-	SelectProModel(where string, v ...interface{}) []*ProModel
-	// Save ProModel
-	SaveProModel(v *ProModel) (int, error)
-	// Delete ProModel
+	// Get ProductModel
+	GetProModel(primary interface{}) *ProductModel
+	// Select ProductModel
+	SelectProModel(where string, v ...interface{}) []*ProductModel
+	// Save ProductModel
+	SaveProModel(v *ProductModel) (int, error)
+	// Delete ProductModel
 	DeleteProModel(primary interface{}) error
 
 	// Get Attr

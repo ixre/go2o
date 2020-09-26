@@ -11,11 +11,11 @@ import (
 var _ promodel.IAttrService = new(attrServiceImpl)
 
 type attrServiceImpl struct {
-	repo    promodel.IProModelRepo
+	repo    promodel.IProductModelRepo
 	builder *attrHtmlBuilder
 }
 
-func NewAttrService(repo promodel.IProModelRepo) *attrServiceImpl {
+func NewAttrService(repo promodel.IProductModelRepo) *attrServiceImpl {
 	return &attrServiceImpl{
 		repo:    repo,
 		builder: &attrHtmlBuilder{},

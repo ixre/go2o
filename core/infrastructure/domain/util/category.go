@@ -37,8 +37,7 @@ func IterateCategory(categories []*product.Category, c *product.Category,
 }
 
 // 迭代栏目
-func WalkSaleCategory(cs []*product.Category, v *product.Category,
-	start iterator.WalkFunc, over iterator.WalkFunc) {
+func WalkSaleCategory(cs []*proto.SProductCategory, v *product.Category, start iterator.WalkFunc, over iterator.WalkFunc) {
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
 		return v1.(*product.Category).ParentId == v.(*product.Category).Id
 	}

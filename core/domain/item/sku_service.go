@@ -19,12 +19,12 @@ var _ item.ISkuService = new(skuServiceImpl)
 
 type skuServiceImpl struct {
 	repo     item.IGoodsItemRepo
-	proMRepo promodel.IProModelRepo
+	proMRepo promodel.IProductModelRepo
 	su       *skuServiceUtil
 }
 
 func NewSkuServiceImpl(repo item.IGoodsItemRepo,
-	proMRepo promodel.IProModelRepo) item.ISkuService {
+	proMRepo promodel.IProductModelRepo) item.ISkuService {
 	s := &skuServiceImpl{
 		repo:     repo,
 		proMRepo: proMRepo,

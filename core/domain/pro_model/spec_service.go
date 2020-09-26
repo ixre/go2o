@@ -9,10 +9,10 @@ import (
 var _ promodel.ISpecService = new(specServiceImpl)
 
 type specServiceImpl struct {
-	rep promodel.IProModelRepo
+	rep promodel.IProductModelRepo
 }
 
-func NewSpecService(rep promodel.IProModelRepo) *specServiceImpl {
+func NewSpecService(rep promodel.IProductModelRepo) *specServiceImpl {
 	return &specServiceImpl{
 		rep: rep,
 	}
