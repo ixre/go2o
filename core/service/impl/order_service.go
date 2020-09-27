@@ -194,15 +194,41 @@ func (s *orderServiceImpl) GetParentOrder(c context.Context, id *proto.OrderNoV2
 
 // 获取订单和商品项信息
 func (s *orderServiceImpl) GetOrder(_ context.Context, id *proto.OrderNoV2) (*proto.SSingleOrder, error) {
+	/*
+		c := s.manager.Unified(id.Value, true).Complex()
+			if c != nil {
+				return parser.OrderDto(c), nil
+			}
+			return nil, nil
+	*/
+	orderId := s.repo.GetOrderId(id.Value, true)
+	o := s.repo.GetSubOrder(orderId)
+	if o != nil {
+		return parser.SubOrderDto(o), nil
+	}
+	return nil, nil
+}
+
+
+// 根据订单号获取子订单
+func (s *orderServiceImpl) GetSubOrderByNo_(_ context.Context, orderNo *proto.String) (*proto.SSingleOrder, error) {
+	/*
 	c := s.manager.Unified(id.Value, true).Complex()
-	if c != nil {
-		return parser.OrderDto(c), nil
+		if c != nil {
+			return parser.OrderDto(c), nil
+		}
+		return nil, nil
+	 */
+	orderId := s.repo.GetOrderId(orderNo.Value, true)
+	o := s.repo.GetSubOrder(orderId)
+	if o != nil {
+		return parser.SubOrderDto(o), nil
 	}
 	return nil, nil
 }
 
 // 获取子订单
-func (s *orderServiceImpl) GetSubOrder(_ context.Context, id *proto.Int64) (*proto.SSingleOrder, error) {
+func (s *orderServiceImpl) GetSubOrder_(_ context.Context, id *proto.Int64) (*proto.SSingleOrder, error) {
 	o := s.repo.GetSubOrder(id.Value)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
@@ -212,7 +238,7 @@ func (s *orderServiceImpl) GetSubOrder(_ context.Context, id *proto.Int64) (*pro
 
 
 // 根据编号获取订单
-func (s *orderServiceImpl) GetOrderById(id int64) *order.ComplexOrder {
+func (s *orderServiceImpl) GetOrderById_(id int64) *order.ComplexOrder {
 	o := s.manager.GetOrderById(id)
 	if o != nil {
 		return o.Complex()
@@ -220,7 +246,7 @@ func (s *orderServiceImpl) GetOrderById(id int64) *order.ComplexOrder {
 	return nil
 }
 
-func (s *orderServiceImpl) GetOrderByNo(orderNo string) *order.ComplexOrder {
+func (s *orderServiceImpl) GetOrderByNo_(orderNo string) *order.ComplexOrder {
 	o := s.manager.GetOrderByNo(orderNo)
 	if o != nil {
 		return o.Complex()
@@ -228,18 +254,9 @@ func (s *orderServiceImpl) GetOrderByNo(orderNo string) *order.ComplexOrder {
 	return nil
 }
 
-// 根据订单号获取子订单
-func (s *orderServiceImpl) GetSubOrderByNo(_ context.Context, orderNo *proto.String) (*proto.SSingleOrder, error) {
-	orderId := s.repo.GetOrderId(orderNo.Value, true)
-	o := s.repo.GetSubOrder(orderId)
-	if o != nil {
-		return parser.SubOrderDto(o), nil
-	}
-	return nil, nil
-}
 
 // 获取订单商品项
-func (s *orderServiceImpl) GetSubOrderItems(_ context.Context, subOrderId *proto.Int64) (*proto.ComplexItemsResponse, error) {
+func (s *orderServiceImpl) GetSubOrderItems_(_ context.Context, subOrderId *proto.Int64) (*proto.ComplexItemsResponse, error) {
 	list := s.repo.GetSubOrderItems(subOrderId.Value)
 	arr := make([]*proto.SOrderItem, len(list))
 	for i, v := range list {
@@ -249,7 +266,7 @@ func (s *orderServiceImpl) GetSubOrderItems(_ context.Context, subOrderId *proto
 }
 
 // 获取子订单及商品项
-func (s *orderServiceImpl) GetSubOrderAndItems(id int64) (*order.NormalSubOrder, []*dto.OrderItem) {
+func (s *orderServiceImpl) GetSubOrderAndItems_(id int64) (*order.NormalSubOrder, []*dto.OrderItem) {
 	o := s.repo.GetSubOrder(id)
 	if o == nil {
 		return o, []*dto.OrderItem{}
@@ -258,7 +275,7 @@ func (s *orderServiceImpl) GetSubOrderAndItems(id int64) (*order.NormalSubOrder,
 }
 
 // 获取子订单及商品项
-func (s *orderServiceImpl) GetSubOrderAndItemsByNo(orderNo string) (*order.NormalSubOrder, []*dto.OrderItem) {
+func (s *orderServiceImpl) GetSubOrderAndItemsByNo_(orderNo string) (*order.NormalSubOrder, []*dto.OrderItem) {
 	orderId := s.repo.GetOrderId(orderNo, true)
 	o := s.repo.GetSubOrder(orderId)
 	if o == nil {
