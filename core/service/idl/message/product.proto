@@ -127,7 +127,7 @@ message SProductBrand {
     // 介绍
     string Introduce = 5;
     // 是否审核
-    int32 ReviewStatus = 6;
+    int32 ReviewState = 6;
     // 加入时间
     int64 CreateTime = 7;
 }

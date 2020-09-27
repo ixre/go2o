@@ -509,7 +509,7 @@ func (p *productService) parseBrandDto(v *promodel.ProBrand) *proto.SProductBran
 		Image:        v.Image,
 		SiteUrl:      v.SiteUrl,
 		Introduce:    v.Intro,
-		ReviewStatus: v.ReviewState,
+		ReviewState: v.ReviewState,
 		CreateTime:   v.CreateTime,
 	}
 }
@@ -622,7 +622,7 @@ func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProBrand {
 		Image:       v.Image,
 		SiteUrl:     v.SiteUrl,
 		Intro:       v.Introduce,
-		ReviewState: v.ReviewStatus,
+		ReviewState: v.ReviewState,
 		CreateTime:  v.CreateTime,
 	}
 }

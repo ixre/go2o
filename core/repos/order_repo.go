@@ -258,7 +258,7 @@ func (o *OrderRepImpl) SaveOrderItem(subOrderId int64, v *order.SubOrderItem) (i
 
 // 获取订单的操作记录
 func (o *OrderRepImpl) GetSubOrderLogs(orderId int64) []*order.OrderLog {
-	list := []*order.OrderLog{}
+	var list []*order.OrderLog
 	o.GetOrm().Select(&list, "order_id= $1", orderId)
 	return list
 }

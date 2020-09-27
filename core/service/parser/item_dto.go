@@ -85,7 +85,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 		PriceRange:   src.PriceRange,
 		StockNum:     src.StockNum,
 		ShelveState:  item.ShelvesOn,
-		ReviewStatus: 0,
+		ReviewState: 0,
 		UpdateTime:   0,
 	}
 }

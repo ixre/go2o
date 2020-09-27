@@ -23,8 +23,8 @@ service OrderService {
     // 根据订单号获取子订单,orderNo
    // rpc GetSubOrderByNo (String) returns (SSingleOrder) {}
     // 获取订单商品项,subOrderId
-    rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
-    }
+   // rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
+   // }
 
     // 提交交易订单
     rpc SubmitTradeOrder (TradeOrderSubmitRequest) returns (Result) {

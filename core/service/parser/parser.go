@@ -160,7 +160,7 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
 		ShelveState:  src.ShelveState,
-		ReviewStatus: src.ReviewState,
+		ReviewState: src.ReviewState,
 		//ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,

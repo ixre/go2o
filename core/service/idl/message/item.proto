@@ -106,7 +106,7 @@ message SUnifiedViewItem {
     int32 StockNum = 12;
     int64 ExpressTid = 13;
     sint32 ShelveState = 14;
-    sint32 ReviewStatus = 15;
+    sint32 ReviewState = 15;
     sint64 UpdateTime = 16;
     repeated SSku SkuArray = 17;
     repeated SLevelPrice LevelPrices = 18;
