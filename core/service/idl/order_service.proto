@@ -11,16 +11,17 @@ service OrderService {
     rpc SubmitOrderV1 (SubmitOrderRequest) returns (StringMap) {
     }
     // 获取订单信息
-    rpc GetOrder (GetOrderRequest) returns (SComplexOrder) {
-    }
-    // 获取订单和商品项信息
-    rpc GetOrderAndItems (GetOrderItemsRequest) returns (SComplexOrder) {
+    rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
     }
     // 获取子订单,orderId
-    rpc GetSubOrder (Int64) returns (SComplexOrder) {
+    rpc GetOrder (OrderNoV2) returns (SSingleOrder) {
     }
+
+    // 获取订单和商品项信息
+   // rpc GetOrderAndItems (GetOrderItemsRequest) returns (SSingleOrder) {
+   // }
     // 根据订单号获取子订单,orderNo
-    rpc GetSubOrderByNo (String) returns (SComplexOrder) {
+    rpc GetSubOrderByNo (String) returns (SSingleOrder) {
     }
     // 获取订单商品项,subOrderId
     rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
@@ -35,4 +36,16 @@ service OrderService {
     // 上传交易单发票
     rpc TradeOrderUpdateTicket (TradeOrderTicketRequest) returns (Result) {
     }
+    // 取消订单
+    rpc CancelOrder(CancelOrderRequest)returns (Result) {}
+    // 确定订单
+    rpc ConfirmOrder(OrderNo)returns (Result) {}
+    // 备货完成
+    rpc PickUp(OrderNo)returns (Result) {}
+    // 订单发货,并记录配送服务商编号及单号
+    rpc Ship(OrderShipmentRequest)returns (Result) {}
+    // 买家收货
+    rpc BuyerReceived(OrderNo)returns (Result) {}
+    // 获取订单日志
+    rpc LogBytes(OrderNo)returns(String){}
 }

@@ -42,6 +42,7 @@ type orderServiceImpl struct {
 	serviceUtil
 }
 
+
 func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo, memberRepo member.IMemberRepo,
 	prodRepo product.IProductRepo, goodsRepo item.IGoodsItemRepo,
@@ -87,7 +88,6 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 	//domain.HandleError(err, "service")
 	return c
 }
-
 
 // 提交订单
 func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
@@ -175,30 +175,41 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon(buyerId int64, cartCode string
 
 func (s *orderServiceImpl) SubmitOrder_V1(buyerId int64, cartCode string,
 	addressId int64, subject string, couponCode string, balanceDiscount bool) (*order.SubmitReturnData, error) {
-	//todo: 临时取消余额支付
-	//balanceDiscount = falseorder_manager.go
 	c := s.getShoppingCart(buyerId, cartCode)
 	_, rd, err := s.manager.SubmitOrder(c, addressId, couponCode, balanceDiscount)
 	return rd, err
 }
 
+
 // 根据编号获取订单
-func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.GetOrderRequest) (*proto.SComplexOrder, error) {
-	c := s.manager.Unified(r.OrderNo, r.SubOrder).Complex()
+func (s *orderServiceImpl) GetParentOrder(c context.Context, id *proto.OrderNoV2) (*proto.SParentOrder, error) {
+	//c := s.manager.Unified(id.Value,false).Complex()
+	//if c != nil {
+	//	return parser.OrderDto(c), nil
+	//}
+	return nil, nil
+}
+
+
+
+// 获取订单和商品项信息
+func (s *orderServiceImpl) GetOrder(_ context.Context, id *proto.OrderNoV2) (*proto.SSingleOrder, error) {
+	c := s.manager.Unified(id.Value, true).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
 	}
 	return nil, nil
 }
 
-// 获取订单和商品项信息
-func (s *orderServiceImpl) GetOrderAndItems(_ context.Context, r *proto.GetOrderItemsRequest) (*proto.SComplexOrder, error) {
-	c := s.manager.Unified(r.OrderNo, r.SubOrder).Complex()
-	if c != nil {
-		return parser.OrderDto(c), nil
+// 获取子订单
+func (s *orderServiceImpl) GetSubOrder(_ context.Context, id *proto.Int64) (*proto.SSingleOrder, error) {
+	o := s.repo.GetSubOrder(id.Value)
+	if o != nil {
+		return parser.SubOrderDto(o), nil
 	}
 	return nil, nil
 }
+
 
 // 根据编号获取订单
 func (s *orderServiceImpl) GetOrderById(id int64) *order.ComplexOrder {
@@ -217,17 +228,8 @@ func (s *orderServiceImpl) GetOrderByNo(orderNo string) *order.ComplexOrder {
 	return nil
 }
 
-// 获取子订单
-func (s *orderServiceImpl) GetSubOrder(_ context.Context, id *proto.Int64) (*proto.SComplexOrder, error) {
-	o := s.repo.GetSubOrder(id.Value)
-	if o != nil {
-		return parser.SubOrderDto(o), nil
-	}
-	return nil, nil
-}
-
 // 根据订单号获取子订单
-func (s *orderServiceImpl) GetSubOrderByNo(_ context.Context, orderNo *proto.String) (*proto.SComplexOrder, error) {
+func (s *orderServiceImpl) GetSubOrderByNo(_ context.Context, orderNo *proto.String) (*proto.SSingleOrder, error) {
 	orderId := s.repo.GetOrderId(orderNo.Value, true)
 	o := s.repo.GetSubOrder(orderId)
 	if o != nil {
@@ -239,7 +241,7 @@ func (s *orderServiceImpl) GetSubOrderByNo(_ context.Context, orderNo *proto.Str
 // 获取订单商品项
 func (s *orderServiceImpl) GetSubOrderItems(_ context.Context, subOrderId *proto.Int64) (*proto.ComplexItemsResponse, error) {
 	list := s.repo.GetSubOrderItems(subOrderId.Value)
-	arr := make([]*proto.SComplexItem, len(list))
+	arr := make([]*proto.SOrderItem, len(list))
 	for i, v := range list {
 		arr[i] = parser.SubOrderItemDto(v)
 	}
@@ -265,16 +267,10 @@ func (s *orderServiceImpl) GetSubOrderAndItemsByNo(orderNo string) (*order.Norma
 	return o, s.orderQuery.QueryOrderItems(orderId)
 }
 
-// 获取订单日志
-func (s *orderServiceImpl) LogBytes(orderNo string, sub bool) []byte {
-	c := s.manager.Unified(orderNo, sub)
-	return c.LogBytes()
-}
-
 // 提交订单
 func (s *orderServiceImpl) SubmitTradeOrder(_ context.Context, r *proto.TradeOrderSubmitRequest) (*proto.Result, error) {
 	if r.Order.ShopId <= 0 {
-		mch := s.mchRepo.GetMerchant(int(r.Order.VendorId))
+		mch := s.mchRepo.GetMerchant(int(r.Order.SellerId))
 		if mch != nil {
 			sp := mch.ShopManager().GetOnlineShop()
 			if sp != nil {
@@ -323,41 +319,55 @@ func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.Tr
 }
 
 // 取消订单
-func (s *orderServiceImpl) CancelOrder(orderNo string, sub bool, reason string) error {
-	c := s.manager.Unified(orderNo, sub)
-	return c.Cancel(reason)
+func (s *orderServiceImpl) CancelOrder(_ context.Context, r *proto.CancelOrderRequest) (*proto.Result, error) {
+	c := s.manager.Unified(r.OrderNo, r.Sub)
+	err := c.Cancel(r.Reason)
+	return s.error(err), nil
 }
 
 // 确定订单
-func (s *orderServiceImpl) ConfirmOrder(orderNo string, sub bool) error {
-	c := s.manager.Unified(orderNo, sub)
-	return c.Confirm()
+func (s *orderServiceImpl) ConfirmOrder(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
+	c := s.manager.Unified(r.OrderNo, r.Sub)
+	err := c.Confirm()
+	return s.error(err), nil
 }
 
 // 备货完成
-func (s *orderServiceImpl) PickUp(orderNo string, sub bool) error {
-	c := s.manager.Unified(orderNo, sub)
-	return c.PickUp()
+func (s *orderServiceImpl) PickUp(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
+	c := s.manager.Unified(r.OrderNo, r.Sub)
+	err := c.PickUp()
+	return s.error(err), nil
 }
 
 // 订单发货,并记录配送服务商编号及单号
-func (s *orderServiceImpl) Ship(orderNo string, sub bool, spId int32, spOrder string) error {
-	c := s.manager.Unified(orderNo, sub)
-	return c.Ship(spId, spOrder)
+func (s *orderServiceImpl) Ship(_ context.Context, r *proto.OrderShipmentRequest) (*proto.Result, error) {
+	c := s.manager.Unified(r.OrderNo, r.Sub)
+	err := c.Ship(int32(r.ProviderId), r.ShipOrderNo)
+	return s.error(err), nil
 }
 
-// 消费者收货
-func (s *orderServiceImpl) BuyerReceived(orderNo string, sub bool) error {
-	c := s.manager.Unified(orderNo, sub)
-	return c.BuyerReceived()
+// 买家收货
+func (s *orderServiceImpl) BuyerReceived(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
+	c := s.manager.Unified(r.OrderNo, r.Sub)
+	err := c.BuyerReceived()
+	return s.error(err), nil
 }
 
-// 根据商品快照获取订单项
-func (s *orderServiceImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
-	return s.repo.GetOrderItemBySnapshotId(orderId, snapshotId)
+// 获取订单日志
+func (s *orderServiceImpl) LogBytes(_ context.Context, r *proto.OrderNo) (*proto.String, error) {
+	c := s.manager.Unified(r.OrderNo, r.Sub)
+	return &proto.String{
+		Value: string(c.LogBytes()),
+	}, nil
 }
 
-// 根据商品快照获取订单项数据传输对象
-func (s *orderServiceImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
-	return s.repo.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
-}
+//
+//// 根据商品快照获取订单项
+//func (s *orderServiceImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
+//	return s.repo.GetOrderItemBySnapshotId(orderId, snapshotId)
+//}
+
+//// 根据商品快照获取订单项数据传输对象
+//func (s *orderServiceImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
+//	return s.repo.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
+//}

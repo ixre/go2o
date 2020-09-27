@@ -35,7 +35,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterContentServiceServer(s, grpc2.ContentService)
 	proto.RegisterPaymentServiceServer(s, grpc2.PaymentService)
 	proto.RegisterWalletServiceServer(s, grpc2.WalletService)
-	proto.RegisterCartServiceServer(s,grpc2.CartService)
+	proto.RegisterCartServiceServer(s, grpc2.CartService)
 	proto.RegisterOrderServiceServer(s, grpc2.ShoppingService)
 	proto.RegisterShopServiceServer(s, grpc2.ShopService)
 	proto.RegisterShipmentServiceServer(s, grpc2.ShipmentService)

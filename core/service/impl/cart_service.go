@@ -350,7 +350,6 @@ func (s *cartServiceImpl) SetBuyerAddress(buyerId int64, cartCode string, addres
 	return cart.SetBuyerAddress(addressId)
 }
 
-
 func (s *cartServiceImpl) GetCartSettle(memberId int64,
 	cartCode string) *dto.SettleMeta {
 	cart := s.getShoppingCart(memberId, cartCode)

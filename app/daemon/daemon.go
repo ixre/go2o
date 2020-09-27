@@ -23,7 +23,6 @@ import (
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"go2o/core/variable"
 	"log"
@@ -42,7 +41,7 @@ type Service interface {
 	// 启动服务,并传入APP上下文对象
 	Start(gof.App)
 	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
-	OrderObs(*proto.SComplexOrder) bool
+	OrderObs(singleOrder *proto.SSingleOrder) bool
 	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
 	MemberObs(m *proto.SMember, create bool) bool
 	// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
@@ -203,7 +202,7 @@ func (d *defaultService) Start(a gof.App) {
 
 // 处理订单,需根据订单不同的状态,作不同的业务
 // 返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) OrderObs(o *proto.SComplexOrder) bool {
+func (d *defaultService) OrderObs(o *proto.SSingleOrder) bool {
 	if d.app.Debug() {
 		d.app.Log().Println("-- 订单", o.OrderNo, "状态:", o.State)
 	}
@@ -252,8 +251,8 @@ func (d *defaultService) PaymentOrderObs(order *proto.SPaymentOrder) bool {
 }
 
 // 测试是否为子订单,并返回编号
-func (d *defaultService) testSubId(o *proto.SComplexOrder) (string, bool) {
-	if o.SubOrderId > 0 {
+func (d *defaultService) testSubId(o *proto.SSingleOrder) (string, bool) {
+	if o.ParentOrderId <= 0 {
 		return o.OrderNo, true
 	}
 	return o.OrderNo, false
@@ -270,7 +269,7 @@ func (d *defaultService) batchDelKeys(conn redis.Conn, key string) {
 }
 
 //设置订单过期时间
-func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SComplexOrder) {
+func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SSingleOrder) {
 	//订单刚创建时,设置过期时间
 	if o.State == order.StatAwaitingPayment {
 		trans, cli, _ := service.FoundationServiceClient()
@@ -288,7 +287,7 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SComplexOr
 }
 
 //取消订单过期时间
-func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *proto.SComplexOrder) {
+func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *proto.SSingleOrder) {
 	orderNo, sub := d.testSubId(o)
 	prefix := types.StringCond(sub, "sub!", "")
 	key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderExpiresTime, prefix, orderNo)
@@ -296,15 +295,22 @@ func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *proto.SComplexOr
 }
 
 // 确认订单
-func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SComplexOrder) {
-	trans,cli,_ := service.OrderServiceClient()
+func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SSingleOrder) {
+	trans, cli, _ := service.OrderServiceClient()
 	defer trans.Close()
-	ret,_ := cli.ConfirmOrder(d.testSubId(o))
+	orderNo, sub := d.testSubId(o)
+	ret, _ := cli.ConfirmOrder(context.TODO(), &proto.OrderNo{
+		OrderNo: orderNo,
+		Sub:     sub,
+	})
+	if ret.ErrCode > 0 {
+		log.Println(fmt.Sprintf("[ go2o][ error]: confirm order failed, %s", ret.ErrMsg))
+	}
 	d.cancelOrderExpires(conn, o) //付款后取消自动取消
 }
 
 // 订单自动收货
-func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SComplexOrder) {
+func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SSingleOrder) {
 	if o.State == order.StatShipped {
 		trans, cli, _ := service.FoundationServiceClient()
 		defer trans.Close()
@@ -321,7 +327,7 @@ func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SComplexOrde
 }
 
 // 完成订单自动收货
-func (d *defaultService) orderReceived(conn redis.Conn, o *proto.SComplexOrder) {
+func (d *defaultService) orderReceived(conn redis.Conn, o *proto.SSingleOrder) {
 	if o.State == order.StatCompleted {
 		orderNo, sub := d.testSubId(o)
 		prefix := types.StringCond(sub, "sub!", "")

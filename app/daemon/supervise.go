@@ -11,6 +11,7 @@ package daemon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/gof/util"
@@ -28,10 +29,15 @@ import (
 // 监视新订单
 func superviseOrder(ss []Service) {
 	notify := func(orderNo string, sub bool, ss []Service) {
-		trans,cli,_ := service.OrderServiceClient()
-		o, _ := cli.GetOrder(context.TODO(), &proto.GetOrderRequest{
-			OrderNo:  orderNo,
-			SubOrder: sub,
+		trans, cli, _ := service.OrderServiceClient()
+		// 这里应处理子订单和父订单
+
+		//o, _ := cli.GetOrder(context.TODO(), &proto.GetOrderRequest{
+		//	OrderNo:  orderNo,
+		//	SubOrder: sub,
+		//})
+		o, _ := cli.GetOrder(context.TODO(), &proto.OrderNoV2{
+			Value:orderNo,
 		})
 		trans.Close()
 		if o != nil {
@@ -193,9 +199,17 @@ func detectOrderExpires() {
 		for _, oKey := range list {
 			orderNo, isSub, err := testIdFromRdsKey(oKey)
 			if err == nil && orderNo != "" {
-				trans,cli,_ := service.OrderServiceClient()
-				err = cli.CancelOrder(orderNo, isSub, "订单超时,自动取消")
+				trans, cli, _ := service.OrderServiceClient()
+				ret, _ := cli.CancelOrder(context.TODO(),
+					&proto.CancelOrderRequest{
+						OrderNo: orderNo,
+						Sub:     isSub,
+						Reason:  "订单超时,自动取消",
+					})
 				trans.Close()
+				if ret.ErrCode > 0 {
+					err = errors.New(ret.ErrMsg)
+				}
 				//清除待取消记录
 				conn.Do("DEL", oKey)
 				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
@@ -225,9 +239,16 @@ func orderAutoReceive() {
 			orderNo, isSub, err := testIdFromRdsKey(oKey)
 			//log.Println("----",oKey,orderId,isSub,err)
 			if err == nil && orderNo != "" {
-				trans,cli,_ := service.OrderServiceClient()
-				err = cli.BuyerReceived(orderNo, isSub)
+				trans, cli, _ := service.OrderServiceClient()
+				ret, _ := cli.BuyerReceived(context.TODO(), &proto.OrderNo{
+					OrderNo: orderNo,
+					Sub:     isSub,
+				})
 				trans.Close()
+				if ret.ErrCode > 0 {
+					err = errors.New(ret.ErrMsg)
+				}
+
 			}
 		}
 	} else {

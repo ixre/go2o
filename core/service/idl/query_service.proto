@@ -109,7 +109,7 @@ message PagedMemberSubOrder {
     sint32 State = 13;
     string StateText = 14;
     sint64 CreateTime = 15;
-    repeated SComplexItem Items = 16;
+    repeated SOrderItem Items = 16;
 }
 
 message MemberListRequest {
