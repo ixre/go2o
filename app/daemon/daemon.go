@@ -297,7 +297,9 @@ func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *proto.SComplexOr
 
 // 确认订单
 func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SComplexOrder) {
-	impl.ShoppingService.ConfirmOrder(d.testSubId(o))
+	trans,cli,_ := service.OrderServiceClient()
+	defer trans.Close()
+	ret,_ := cli.ConfirmOrder(d.testSubId(o))
 	d.cancelOrderExpires(conn, o) //付款后取消自动取消
 }
 

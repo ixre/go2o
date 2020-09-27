@@ -2,7 +2,7 @@ syntax = "proto3";
 option go_package = ".;proto";
 
 import "global.proto";
-import "order_service.proto";
+import "message/order.proto";
 
 service QueryService {
     // 获取分页店铺数据

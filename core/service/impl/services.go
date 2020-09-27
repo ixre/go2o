@@ -49,6 +49,8 @@ var (
 	ItemService *itemService
 	// 购物服务
 	ShoppingService *orderServiceImpl
+	// 购物车服务
+	CartService *cartServiceImpl
 	// 售后服务
 	AfterSalesService *afterSalesService
 	// 支付服务
@@ -147,6 +149,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
 		productRepo, itemRepo, mchRepo, shopRepo, orderQuery)
+	CartService = NewCartService(cartRepo,itemRepo,mchRepo,shopRepo)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopRepo, shopQuery)
