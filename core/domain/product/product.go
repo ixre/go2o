@@ -26,7 +26,7 @@ var _ product.IProduct = new(productImpl)
 type productImpl struct {
 	value     *product.Product
 	repo      product.IProductRepo
-	pmRepo    promodel.IProductModelRepo
+	modelRepo promodel.IProductModelRepo
 	valueRepo valueobject.IValueRepo
 }
 
@@ -36,7 +36,7 @@ func NewProductImpl(v *product.Product,
 	return &productImpl{
 		value:     v,
 		repo:      itemRepo,
-		pmRepo:    pmRepo,
+		modelRepo: pmRepo,
 		valueRepo: valRepo,
 	}
 }
@@ -115,6 +115,12 @@ func (p *productImpl) Attr() []*product.AttrValue {
 	if p.value.Attrs == nil {
 		p.value.Attrs = p.repo.SelectAttr("product_id= $1",
 			p.GetAggregateRootId())
+		for _, v := range p.value.Attrs {
+			a := p.modelRepo.GetAttr(v.AttrId)
+			if a != nil {
+				v.AttrName = a.Name
+			}
+		}
 	}
 	return p.value.Attrs
 }
@@ -182,7 +188,7 @@ func (p *productImpl) mergeAttr(src []*product.AttrValue, dst *[]*product.AttrVa
 		return
 	}
 	to := *dst
-	sMap := make(map[int32]int32, len(src))
+	sMap := make(map[int64]int64, len(src))
 	for _, v := range src {
 		sMap[v.AttrId] = v.ID
 	}
@@ -201,9 +207,9 @@ func (p *productImpl) RebuildAttrArray(arr *[]*product.AttrValue) error {
 			if i != 0 {
 				v.AttrWord += ","
 			}
-			item := p.pmRepo.GetAttrItem(v2)
-			if item != nil {
-				v.AttrWord += item.Value
+			it := p.modelRepo.GetAttrItem(v2)
+			if it != nil {
+				v.AttrWord += it.Value
 			}
 		}
 	}
@@ -222,8 +228,8 @@ func (p *productImpl) saveAttr(arr []*product.AttrValue) (err error) {
 		return err
 	}
 	// 分析当前项目并加入到MAP中
-	delList := []int32{}
-	currMap := make(map[int32]*product.AttrValue, len(arr))
+	var delList []int64
+	currMap := make(map[int64]*product.AttrValue, len(arr))
 	for _, v := range arr {
 		currMap[v.ID] = v
 	}
@@ -235,7 +241,7 @@ func (p *productImpl) saveAttr(arr []*product.AttrValue) (err error) {
 	}
 	// 删除项
 	for _, v := range delList {
-		p.repo.DeleteAttr(v)
+		_ = p.repo.DeleteAttr(v)
 	}
 	// 保存项
 	for _, v := range arr {
@@ -243,7 +249,7 @@ func (p *productImpl) saveAttr(arr []*product.AttrValue) (err error) {
 			v.ProductId = pk
 		}
 		if v.ProductId == pk && v.AttrData != "" {
-			v.ID, err = util.I32Err(p.repo.SaveAttr(v))
+			v.ID, err = util.I64Err(p.repo.SaveAttr(v))
 		}
 	}
 	return err

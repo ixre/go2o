@@ -16,16 +16,17 @@ service ProductService {
     rpc GetAttr (ProductAttrId) returns (SProductAttr) {
     }
     // 获取属性项
-    //rpc GetAttrItem_(Int64) returns(SProductAttrItem){}
+    rpc GetAttrItem (ProductAttrItemId) returns (SProductAttrItem) {
+    }
 
     // 获取模型属性Html
-    rpc GetModelAttrsHtml (Int64) returns (String) {
+    rpc GetModelAttrsHtml (ProductModelId) returns (String) {
     }
     // 保存产品模型
     rpc SaveProductModel (SProductModel) returns (Result) {
     }
     // 删除产品模型
-    rpc DeleteProductModel_ (Int64) returns (Result) {
+    rpc DeleteProductModel_ (ProductModelId) returns (Result) {
     }
 
     /***** 品牌  *****/
@@ -56,9 +57,10 @@ service ProductService {
     // 保存产品分类
     rpc SaveCategory (SProductCategory) returns (Result) {
     }
-    //rpc GetCategoryTreeNode(mchId int64) *tree.TreeNode
+    rpc GetCategoryTreeNode (Empty) returns (STreeNode) {
+    }
     // 分类树形
-    //rpc CategoryTree(parentId int32) *product.Category
+    //rpc CategoryTree(CategoryParentId)returns(SProductCategory){}
     // 获取分类关联的品牌
     //rpc GetCatBrands_(catId int32) []*promodel.ProBrand
 

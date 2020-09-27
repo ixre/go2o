@@ -55,7 +55,7 @@ func (m *SOrderItem) Reset()         { *m = SOrderItem{} }
 func (m *SOrderItem) String() string { return proto.CompactTextString(m) }
 func (*SOrderItem) ProtoMessage()    {}
 func (*SOrderItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_905e5c6c5e24ab14, []int{0}
+	return fileDescriptor_order_e392c90e2ebb9ddc, []int{0}
 }
 func (m *SOrderItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SOrderItem.Unmarshal(m, b)
@@ -170,9 +170,9 @@ func init() {
 	proto.RegisterType((*SOrderItem)(nil), "SOrderItem")
 }
 
-func init() { proto.RegisterFile("message/order.proto", fileDescriptor_order_905e5c6c5e24ab14) }
+func init() { proto.RegisterFile("message/order.proto", fileDescriptor_order_e392c90e2ebb9ddc) }
 
-var fileDescriptor_order_905e5c6c5e24ab14 = []byte{
+var fileDescriptor_order_e392c90e2ebb9ddc = []byte{
 	// 268 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x90, 0x31, 0x4f, 0xf3, 0x30,
 	0x10, 0x86, 0xe5, 0xf4, 0x4b, 0x9a, 0x5c, 0x3f, 0x3a, 0x18, 0x84, 0x4e, 0x08, 0x21, 0x8b, 0x01,

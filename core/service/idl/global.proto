@@ -160,6 +160,29 @@ message SPagingResult {
     map<string, string> Extras = 5;
 }
 
+// 树形节点
+message STreeNode {
+    // 文本
+    string Title = 1;
+    // 值
+    string Value = 2;
+    // 图标,icon与JS树形控件冲突
+    string Icon = 3;
+    // 是否展开
+    bool Expand = 4;
+    // 延迟加载
+    bool Lazy = 5;
+    // 其他数据
+    map<string, string> Data = 6;
+    // 子节点
+    repeated STreeNode Children = 7;
+    // 子节点编号
+    int64 Id = 8;
+    // 是否目录，通常Children有元素,则为true
+    bool Folder = 10;
+}
+
+
 message Id {
     int64 Value = 1;
 }

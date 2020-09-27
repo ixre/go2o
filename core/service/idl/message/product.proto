@@ -14,6 +14,9 @@ message ProductModelId {
 message ProductAttrId {
     int64 Value = 1;
 }
+message ProductAttrItemId {
+    int64 Value = 1;
+}
 
 message ProductModelListResponse {
     repeated SProductModel Value = 1;
@@ -73,10 +76,12 @@ message SProductAttrValue {
     int64 Id = 1;
     // 属性编号
     int64 AttrId = 2;
+    // 属性名称
+    string AttrName = 3;
     // 属性值
-    string AttrData = 3;
+    string AttrData = 4;
     // 属性文本
-    string AttrWord = 4;
+    string AttrWord = 5;
 }
 
 // 产品模型规格

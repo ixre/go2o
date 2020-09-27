@@ -3,7 +3,6 @@ package impl
 import (
 	"errors"
 	"github.com/ixre/gof/types"
-	"github.com/ixre/gof/web/ui/tree"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
@@ -80,6 +79,15 @@ func (p *productService) GetAttr(_ context.Context, id *proto.ProductAttrId) (*p
 		attr := p.parseProductAttrDto(v)
 		attr = p.appendAttrItems(attr, v.Items)
 		return attr, nil
+	}
+	return nil, nil
+}
+
+// 获取属性项
+func (p *productService) GetAttrItem(_ context.Context, id *proto.ProductAttrItemId) (*proto.SProductAttrItem, error) {
+	it := p.pmRepo.GetAttrItem(id.Value)
+	if it != nil {
+		return p.parseProductAttrItemDto(it), nil
 	}
 	return nil, nil
 }
@@ -183,8 +191,13 @@ func (p *productService) GetChildren(_ context.Context, id *proto.CategoryParent
 func (p *productService) GetProductValue(_ context.Context, id *proto.ProductId) (*proto.SProduct, error) {
 	pro := p.productRepo.GetProduct(id.Value)
 	if pro != nil {
-		v := p.parseProductDto(pro.GetValue())
-		return v, nil
+		ret := p.parseProductDto(pro.GetValue())
+		attrs := pro.Attr()
+		ret.Attrs = make([]*proto.SProductAttrValue, len(attrs))
+		for i, v := range attrs {
+			ret.Attrs[i] = p.parseProductAttrValueDto(v)
+		}
+		return ret, nil
 	}
 	return nil, nil
 }
@@ -244,7 +257,7 @@ func (p *productService) GetModelAttrs_(proModel int32) []*promodel.Attr {
 }
 
 // 获取模型属性Html
-func (p *productService) GetModelAttrsHtml(_ context.Context, id *proto.Int64) (*proto.String, error) {
+func (p *productService) GetModelAttrsHtml(_ context.Context, id *proto.ProductModelId) (*proto.String, error) {
 	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: int32(id.Value)})
 	attrs := m.Attrs()
 	s := p.pmRepo.AttrService().AttrsHtml(attrs)
@@ -284,7 +297,7 @@ func (p *productService) SaveProductModel(_ context.Context, r *proto.SProductMo
 }
 
 // 删除产品模型
-func (p *productService) DeleteProductModel_(_ context.Context, id *proto.Int64) (*proto.Result, error) {
+func (p *productService) DeleteProductModel_(_ context.Context, id *proto.ProductModelId) (*proto.Result, error) {
 	//err := p.pmRepo.DeleteProModel(id)
 	//todo: 暂时不允许删除模型
 	return p.result(errors.New("暂时不允许删除模型")), nil
@@ -319,23 +332,10 @@ func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProduct
 	return p.error(err), nil
 }
 
-// 获取属性项
-func (p *productService) GetAttrItem(id int32) *promodel.AttrItem {
-	return p.pmRepo.GetAttrItem(id)
-}
-
 // 获取模型规格
 func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: proModel})
 	return m.Specs()
-}
-
-/***** 品牌  *****/
-
-// 获取模型关联的产品品牌
-func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
-	pm := p.pmRepo.CreateModel(&promodel.ProductModel{ID: id})
-	return pm.Brands()
 }
 
 /***** 分类 *****/
@@ -350,17 +350,16 @@ func (p *productService) GetCategoryAndOptions(mchId int64, id int32) (*product.
 	return nil, nil
 }
 
-func (p *productService) GetCategoryTreeNode(mchId int64) *tree.TreeNode {
+func (p *productService) GetCategoryTreeNode(_ context.Context, _ *proto.Empty) (*proto.STreeNode, error) {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	rootNode := &tree.TreeNode{
+	rootNode := &proto.STreeNode{
 		Title:    "根节点",
 		Value:    "",
-		Url:      "",
 		Icon:     "",
 		Expand:   true,
 		Children: nil}
 	p.walkCategoryTree(rootNode, 0, cats)
-	return rootNode
+	return rootNode, nil
 }
 
 // 分类树形
@@ -377,15 +376,14 @@ func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
 	return arr
 }
 
-func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int, categories []product.ICategory) {
-	node.Children = []*tree.TreeNode{}
+func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int, categories []product.ICategory) {
+	node.Children = []*proto.STreeNode{}
 	for _, v := range categories {
 		cate := v.GetValue()
-		if cate.ParentId == int(parentId) {
-			cNode := &tree.TreeNode{
+		if cate.ParentId == parentId {
+			cNode := &proto.STreeNode{
 				Title:    cate.Name,
-				Value:    strconv.Itoa(int(cate.Id)),
-				Url:      "",
+				Value:    strconv.Itoa(cate.Id),
 				Icon:     "",
 				Expand:   false,
 				Children: nil}
@@ -393,10 +391,6 @@ func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int, cat
 			p.walkCategoryTree(cNode, cate.Id, categories)
 		}
 	}
-}
-
-func (p *productService) getCategoryManager(mchId int64) product.IGlobCatService {
-	return p.catRepo.GlobCatService()
 }
 
 func (p *productService) GetBigCategories(mchId int64) []*proto.SProductCategory {
@@ -424,15 +418,6 @@ func (p *productService) GetChildCategories(mchId int64, parentId int64) []*prot
 	return list
 }
 
-//
-//func CopyCategory(src *product.Category, dst *dto.Category) {
-//	dst.ID = src.ID
-//	dst.Name = src.Name
-//	dst.Level = src.Level
-//	dst.Icon = src.Icon
-//	dst.Url = src.CatUrl
-//}
-
 func (p *productService) setChild(list []product.ICategory, dst *product.Category) {
 	for _, v := range list {
 		if vv := v.GetValue(); vv.ParentId == dst.Id && vv.Enabled == 1 {
@@ -454,12 +439,6 @@ func (p *productService) DeleteItem(supplierId int64, productId int64) error {
 		return product.ErrNoSuchProduct
 	}
 	return pro.Destroy()
-}
-
-// 获取产品属性
-func (p *productService) GetAttrArray(productId int64) []*product.AttrValue {
-	pro := p.productRepo.CreateProduct(&product.Product{Id: productId})
-	return pro.Attr()
 }
 
 // 获取商品的销售标签
@@ -696,5 +675,15 @@ func (p *productService) parseProductSpecItem(v *proto.SProductSpecItem) *promod
 		Value:   v.Value,
 		Color:   v.Color,
 		SortNum: v.SortNumber,
+	}
+}
+
+func (p *productService) parseProductAttrValueDto(v *product.AttrValue) *proto.SProductAttrValue {
+	return &proto.SProductAttrValue{
+		Id:       v.ID,
+		AttrId:   v.AttrId,
+		AttrName: v.AttrName,
+		AttrData: v.AttrData,
+		AttrWord: v.AttrWord,
 	}
 }

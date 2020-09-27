@@ -324,7 +324,7 @@ func (s *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
 			dto.Data["Authorized"] = "false"
 		}
 		// 品牌
-		b := s.promRepo.BrandService().Get(dto.BrandId)
+		b := s.promRepo.BrandService().Get(int32(dto.BrandId))
 		if b != nil {
 			dto.Data["BrandName"] = b.Name
 			dto.Data["BrandImage"] = b.Image

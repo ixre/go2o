@@ -140,11 +140,13 @@ type (
 	// 产品属性
 	AttrValue struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
 		ProductId int64 `db:"product_id"`
+		// 属性名称
+		AttrName string `db:"-"`
 		// 属性编号
-		AttrId int32 `db:"attr_id"`
+		AttrId int64 `db:"attr_id"`
 		// 属性值
 		AttrData string `db:"attr_data"`
 		// 属性文本
