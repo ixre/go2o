@@ -66,8 +66,10 @@ func GetMchIdByShopId(shopId int64) int64 {
 	sto := GetKVS()
 	tmpId, err := sto.GetInt(key)
 	mchId := int64(tmpId)
+	trans,cli,_ := service.ShopServiceClient()
+	defer trans.Close()
 	if err != nil || mchId <= 0 {
-		mchId = impl.ShopService.GetMerchantId(shopId)
+		mchId = cli.GetMerchantId(shopId)
 		if mchId > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		} else {

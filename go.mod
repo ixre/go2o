@@ -19,7 +19,6 @@ exclude github.com/coreos/etcd v3.3.18+incompatible
 //exclude github.com/coreos/etcd v3.3.19+incompatible
 
 require (
-	github.com/apache/thrift v0.13.0
 	github.com/coreos/etcd v3.3.25+incompatible // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.2
