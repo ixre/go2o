@@ -3,13 +3,19 @@ option go_package = ".;proto";
 import "global.proto";
 import "message/order.proto";
 
-
-
 // 订单服务
 service OrderService {
     // 提交订单
     rpc SubmitOrderV1 (SubmitOrderRequest) returns (StringMap) {
     }
+
+    // 预生成订单
+    rpc PrepareOrder_ (PrepareOrderRequest) returns (SSingleOrder) {
+    }
+    // 提交普通订单
+    rpc SubmitNormalOrder_ (SubmitNormalOrderV2Request) returns (NormalOrderSubmitResponse) {
+    }
+    //
     // 获取订单信息
     rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
     }
@@ -18,13 +24,13 @@ service OrderService {
     }
 
     // 获取订单和商品项信息
-   // rpc GetOrderAndItems (GetOrderItemsRequest) returns (SSingleOrder) {
-   // }
+    // rpc GetOrderAndItems (GetOrderItemsRequest) returns (SSingleOrder) {
+    // }
     // 根据订单号获取子订单,orderNo
-   // rpc GetSubOrderByNo (String) returns (SSingleOrder) {}
+    // rpc GetSubOrderByNo (String) returns (SSingleOrder) {}
     // 获取订单商品项,subOrderId
-   // rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
-   // }
+    // rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
+    // }
 
     // 提交交易订单
     rpc SubmitTradeOrder (TradeOrderSubmitRequest) returns (Result) {
@@ -35,16 +41,25 @@ service OrderService {
     // 上传交易单发票
     rpc TradeOrderUpdateTicket (TradeOrderTicketRequest) returns (Result) {
     }
+    // 预生成订单，使用优惠券
+    rpc PrepareOrderWithCoupon_ (PrepareOrderRequest) returns (StringMap) {
+    }
     // 取消订单
-    rpc CancelOrder(CancelOrderRequest)returns (Result) {}
+    rpc CancelOrder (CancelOrderRequest) returns (Result) {
+    }
     // 确定订单
-    rpc ConfirmOrder(OrderNo)returns (Result) {}
+    rpc ConfirmOrder (OrderNo) returns (Result) {
+    }
     // 备货完成
-    rpc PickUp(OrderNo)returns (Result) {}
+    rpc PickUp (OrderNo) returns (Result) {
+    }
     // 订单发货,并记录配送服务商编号及单号
-    rpc Ship(OrderShipmentRequest)returns (Result) {}
+    rpc Ship (OrderShipmentRequest) returns (Result) {
+    }
     // 买家收货
-    rpc BuyerReceived(OrderNo)returns (Result) {}
+    rpc BuyerReceived (OrderNo) returns (Result) {
+    }
     // 获取订单日志
-    rpc LogBytes(OrderNo)returns(String){}
+    rpc LogBytes (OrderNo) returns (String) {
+    }
 }

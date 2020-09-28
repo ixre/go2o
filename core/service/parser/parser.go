@@ -159,7 +159,7 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//RetailPrice:  float64(src.RetailPrice),
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		ShelveState:  src.ShelveState,
+		ShelveState: src.ShelveState,
 		ReviewState: src.ReviewState,
 		//ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
@@ -269,18 +269,18 @@ func Sku(src *proto.SSku) *item.Sku {
 
 func Order(src *proto.SSingleOrder) *order.ComplexOrder {
 	o := &order.ComplexOrder{
-		OrderId:         src.OrderId,
-		OrderType:       src.OrderType,
-		OrderNo:         src.OrderNo,
-		BuyerId:         src.BuyerId,
-		VendorId:        src.SellerId,
-		ShopId:          src.ShopId,
-		Subject:         src.Subject,
-		ItemAmount:      src.ItemAmount,
-		DiscountAmount:  src.DiscountAmount,
-		ExpressFee:      src.ExpressFee,
-		PackageFee:      src.PackageFee,
-		FinalAmount:     src.FinalAmount,
+		OrderId:        src.OrderId,
+		OrderType:      src.OrderType,
+		OrderNo:        src.OrderNo,
+		BuyerId:        src.BuyerId,
+		VendorId:       src.SellerId,
+		ShopId:         src.ShopId,
+		Subject:        src.Subject,
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
+		FinalAmount:    src.FinalAmount,
 
 		ConsigneePerson: src.Consignee.ConsigneePerson,
 		ConsigneePhone:  src.Consignee.ConsigneePhone,
@@ -330,9 +330,9 @@ func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 
 func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 	o := &proto.SSingleOrder{
-		OrderId:              src.ID,
-		ParentOrderId:        src.OrderId,
-		OrderNo:              src.OrderNo,
+		OrderId:       src.ID,
+		ParentOrderId: src.OrderId,
+		OrderNo:       src.OrderNo,
 		//OrderType:            src.,
 		BuyerId:        src.BuyerId,
 		SellerId:       src.VendorId,
@@ -346,16 +346,16 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 		PackageFee:     float64(src.PackageFee),
 		ProcedureFee:   0,
 		//TotalAmount:          src.ItemAmount,
-		FinalAmount:          float64(src.FinalAmount),
-		Consignee:            &proto.SConsigneeInfo{
-			ConsigneePerson:     "",
-			ConsigneePhone:       "",
-			ShippingAddress:      "",
+		FinalAmount: float64(src.FinalAmount),
+		Consignee: &proto.SConsigneeInfo{
+			ConsigneePerson: "",
+			ConsigneePhone:  "",
+			ShippingAddress: "",
 		},
-		BuyerComment:         src.BuyerComment,
-		State:                src.State,
-		SubmitTime:           src.CreateTime,
-		Items:                make([]*proto.SOrderItem, len(src.Items)),
+		BuyerComment: src.BuyerComment,
+		State:        src.State,
+		SubmitTime:   src.CreateTime,
+		Items:        make([]*proto.SOrderItem, len(src.Items)),
 	}
 	for i, v := range src.Items {
 		o.Items[i] = SubOrderItemDto(v)

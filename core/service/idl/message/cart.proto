@@ -13,7 +13,6 @@ message NormalCartRequest {
     map<string, string> data = 3;
 }
 
-
 // 购物车
 message SShoppingCart {
     //编号
@@ -35,6 +34,16 @@ message SShoppingCartGroup {
     bool Checked = 4;
     //商品
     repeated SShoppingCartItem Items = 5;
+}
+
+// 购物车商品勾选
+message SCheckCartItem {
+    //商品编号
+    sint64 ItemId = 1;
+    //SKU编号
+    sint64 SkuId = 2;
+    // 是否勾选
+    bool Checked = 3;
 }
 
 // 购物车商品

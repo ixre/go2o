@@ -15,12 +15,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/cart"
 	proItem "go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/dto"
 	"go2o/core/service/parser"
 	"go2o/core/service/proto"
 	"strconv"
@@ -274,10 +274,9 @@ func (s *cartServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICart
 }
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-func (s *cartServiceImpl) GetShoppingCart(memberId int64,
-	cartCode string) *proto.SShoppingCart {
-	c := s.getShoppingCart(memberId, cartCode)
-	return s.parseCart(c)
+func (s *cartServiceImpl) GetShoppingCart_(_ context.Context, r *proto.CartCode) (*proto.SShoppingCart, error) {
+	c := s.getShoppingCart(r.BuyerId, r.CartCode)
+	return s.parseCart(c), nil
 }
 
 // 转换购物车数据
@@ -297,52 +296,54 @@ func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 }
 
 // 放入购物车
-func (s *cartServiceImpl) PutInCart(memberId int64, code string,
-	itemId, skuId int64, quantity int32) (*proto.SShoppingCartItem, error) {
-	c := s.getShoppingCart(memberId, code)
+
+func (s *cartServiceImpl) PutInCart_(_ context.Context, r *proto.CartItemRequest) (*proto.SShoppingCartItem, error) {
+	c := s.getShoppingCart(r.BuyerId, r.CartCode)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
-	err := c.Put(itemId, skuId, quantity)
+	err := c.Put(r.ItemId, r.SkuId, r.Quantity)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
 			rc := c.(cart.INormalCart)
-			item := rc.GetItem(itemId, skuId)
+			item := rc.GetItem(r.ItemId, r.SkuId)
 			return parser.ParseCartItem(item), err
 		}
 	}
 	return nil, err
 }
-func (s *cartServiceImpl) SubCartItem(memberId int64, code string,
-	itemId, skuId int64, quantity int32) error {
-	c := s.getShoppingCart(memberId, code)
+
+func (s *cartServiceImpl) SubCartItem_(_ context.Context, r *proto.CartItemRequest) (*proto.Result, error) {
+	c := s.getShoppingCart(r.BuyerId, r.CartCode)
+	var err error
 	if c == nil {
-		return cart.ErrNoSuchCart
+		err = cart.ErrNoSuchCart
+	} else {
+		err = c.Remove(r.ItemId, r.SkuId, r.Quantity)
+		if err == nil {
+			_, err = c.Save()
+		}
 	}
-	err := c.Remove(itemId, skuId, quantity)
-	if err == nil {
-		_, err = c.Save()
-	}
-	return err
+	return s.error(err), nil
 }
 
 // 勾选商品结算
-func (s *cartServiceImpl) CartCheckSign(memberId int64,
-	cartCode string, arr []*proto.SShoppingCartItem) error {
-	c := s.getShoppingCart(memberId, cartCode)
-	items := make([]*cart.ItemPair, len(arr))
-	for i, v := range arr {
+
+func (s *cartServiceImpl) CheckSign_(_ context.Context, r *proto.CheckSignRequest) (*proto.Result, error) {
+	c := s.getShoppingCart(r.BuyerId, r.CartCode)
+	items := make([]*cart.ItemPair, len(r.Items))
+	for i, v := range r.Items {
 		items[i] = &cart.ItemPair{
 			ItemId:  v.ItemId,
 			SkuId:   v.SkuId,
-			Checked: 1,
+			Checked: int32(types.IntCond(v.Checked, 1, 0)),
 		}
 	}
 	err := c.SignItemChecked(items)
 	if err == nil {
 		_, err = c.Save()
 	}
-	return err
+	return s.error(err), nil
 }
 
 func (s *cartServiceImpl) SetBuyerAddress(buyerId int64, cartCode string, addressId int64) error {
@@ -350,25 +351,24 @@ func (s *cartServiceImpl) SetBuyerAddress(buyerId int64, cartCode string, addres
 	return cart.SetBuyerAddress(addressId)
 }
 
-func (s *cartServiceImpl) GetCartSettle(memberId int64,
-	cartCode string) *dto.SettleMeta {
-	cart := s.getShoppingCart(memberId, cartCode)
+func (s *cartServiceImpl) GetCartSettle_(_ context.Context, code *proto.CartCode) (*proto.SettleMeta_, error) {
+	cart := s.getShoppingCart(code.BuyerId, code.CartCode)
 	sp, deliver, payOpt := cart.GetSettleData()
-	st := new(dto.SettleMeta)
-	st.PaymentOpt = payOpt
+	st := new(proto.SettleMeta_)
+	st.PaymentOpt = int64(payOpt)
 	if sp != nil {
 		v := sp.GetValue()
 		ols := sp.(shop.IOnlineShop)
-		st.Shop = &dto.SettleShopMeta{
-			Id:   v.Id,
-			Name: v.Name,
-			Tel:  ols.GetShopValue().Tel,
+		st.Shop = &proto.SettleShopMeta_{
+			ShopId:    v.Id,
+			ShopName:  v.Name,
+			Telephone: ols.GetShopValue().Tel,
 		}
 	}
 
 	if deliver != nil {
 		v := deliver.GetValue()
-		st.Deliver = &dto.SettleDeliverMeta{
+		st.Deliver = &proto.SettleDeliverMeta_{
 			Id:             v.ID,
 			ConsigneeName:  v.ConsigneeName,
 			ConsigneePhone: v.ConsigneePhone,
@@ -376,5 +376,16 @@ func (s *cartServiceImpl) GetCartSettle(memberId int64,
 		}
 	}
 
-	return st
+	return st, nil
+}
+
+// 更新购物车结算
+func (s *cartServiceImpl) PrepareSettlePersist_(_ context.Context, r *proto.SettlePersistRequest) (*proto.Result, error) {
+	var cart = s.getShoppingCart(r.BuyerId, "")
+	err := cart.SettlePersist(int32(r.ShopId), int32(r.PaymentOpt),
+		int32(r.DeliverOpt), r.AddressId)
+	if err == nil {
+		_, err = cart.Save()
+	}
+	return s.error(err), nil
 }

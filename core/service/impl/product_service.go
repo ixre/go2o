@@ -504,13 +504,13 @@ func (p *productService) parseProductAttrItemDto(v *promodel.AttrItem) *proto.SP
 
 func (p *productService) parseBrandDto(v *promodel.ProBrand) *proto.SProductBrand {
 	return &proto.SProductBrand{
-		Id:           int64(v.ID),
-		Name:         v.Name,
-		Image:        v.Image,
-		SiteUrl:      v.SiteUrl,
-		Introduce:    v.Intro,
+		Id:          int64(v.ID),
+		Name:        v.Name,
+		Image:       v.Image,
+		SiteUrl:     v.SiteUrl,
+		Introduce:   v.Intro,
 		ReviewState: v.ReviewState,
-		CreateTime:   v.CreateTime,
+		CreateTime:  v.CreateTime,
 	}
 }
 

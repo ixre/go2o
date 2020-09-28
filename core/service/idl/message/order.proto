@@ -1,7 +1,6 @@
 syntax = "proto3";
 option go_package = ".;proto";
 
-
 /** 订单状态 */
 enum EOrderState {
     _3 = 0;
@@ -42,7 +41,6 @@ enum EOrderState {
     /** 已退货 */
     StatGoodsRefunded = 15;
 }
-
 
 // 订单商品项
 message SOrderItem {
@@ -91,7 +89,7 @@ message SOrderItem {
 //    map<string, string> Data = 11;
 //}
 
-message SParentOrder{
+message SParentOrder {
     // 订单编号
     int64 OrderId = 1;
     // 订单号
@@ -100,10 +98,10 @@ message SParentOrder{
     int32 OrderType = 4;
     // 子订单
     SSingleOrder Children = 5;
- }
+}
 
- // 子订单
- message SSingleOrder {
+// 子订单
+message SSingleOrder {
     // 订单编号
     int64 OrderId = 1;
     // 父订单编号
@@ -158,7 +156,7 @@ message SParentOrder{
 }
 
 // 收货人信息
-message SConsigneeInfo{
+message SConsigneeInfo {
     // 收货人
     string ConsigneePerson = 14;
     // 收货电话
@@ -167,10 +165,37 @@ message SConsigneeInfo{
     string ShippingAddress = 16;
 }
 
+//todo: 批发的参数改为属性而不是map
 message SubmitOrderRequest {
     sint64 buyerId = 1;
     sint32 cartType = 2;
     map<string, string> data = 3;
+}
+
+// 提交订单请求
+message SubmitNormalOrderV2Request {
+    int64 BuyerId = 1;
+    string CartCode = 2;
+    int64 AddressId = 3;
+    string Subject = 4;
+    string CouponCode = 5;
+    bool BalanceDiscount = 6;
+}
+
+// 订单提交返回数据
+message NormalOrderSubmitResponse {
+    // 错误码
+    int64 ErrCode = 1;
+    // 错误信息
+    string ErrMsg = 2;
+    // 订单号，多个订单号，用","分割
+    string OrderNo = 3;
+    // 合并支付
+    bool MergePay = 4;
+    // 交易号
+    string TradeNo = 5;
+    // 交易金额
+    int64 TradeAmount = 6;
 }
 
 message GetOrderRequest {
@@ -193,7 +218,7 @@ message ComplexItemsResponse {
 }
 
 //　订单号
-message OrderNo{
+message OrderNo {
     //　订单号
     string OrderNo = 1;
     // 是否为子订单
@@ -201,20 +226,19 @@ message OrderNo{
 }
 
 //　订单号
-message OrderNoV2{
+message OrderNoV2 {
     string Value = 1;
 }
 
 
-
-message OrderIdOrNo{
+message OrderIdOrNo {
     // 订单编号
     int64 Id = 1;
     // 订单号
     string OrderNo = 2;
 }
 
-message CancelOrderRequest{
+message CancelOrderRequest {
     //　订单号
     string OrderNo = 1;
     // 是否为子订单
@@ -223,7 +247,7 @@ message CancelOrderRequest{
     string Reason = 3;
 }
 
-message OrderShipmentRequest{
+message OrderShipmentRequest {
     //　订单号
     string OrderNo = 1;
     // 是否为子订单
@@ -232,4 +256,12 @@ message OrderShipmentRequest{
     int64 ProviderId = 3;
     //　发货单号
     string ShipOrderNo = 4;
+}
+
+message PrepareOrderRequest {
+    int64 BuyerId = 1;
+    string CartCode = 2;
+    int64 AddressId = 3;
+    string Subject = 4;
+    string CouponCode = 5;
 }

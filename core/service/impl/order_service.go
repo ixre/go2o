@@ -12,6 +12,7 @@ package impl
 import (
 	"bytes"
 	"context"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -41,7 +42,6 @@ type orderServiceImpl struct {
 	orderQuery *query.OrderQuery
 	serviceUtil
 }
-
 
 func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo, memberRepo member.IMemberRepo,
@@ -102,16 +102,15 @@ func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrder
 	return &proto.StringMap{Value: rd}, nil
 }
 
-func (s *orderServiceImpl) PrepareOrder(buyerId int64, addressId int64,
-	cartCode string) (*order.ComplexOrder, error) {
-	ic := s.getShoppingCart(buyerId, cartCode)
+func (s *orderServiceImpl) PrepareOrder_(_ context.Context, r *proto.PrepareOrderRequest) (*proto.SSingleOrder, error) {
+	ic := s.getShoppingCart(r.BuyerId, r.CouponCode)
 	o, err := s.manager.PrepareNormalOrder(ic)
 	if err == nil {
 		no := o.(order.INormalOrder)
-		if addressId > 0 {
-			err = no.SetAddress(addressId)
+		if r.AddressId > 0 {
+			err = no.SetAddress(r.AddressId)
 		} else {
-			arr := s.memberRepo.GetDeliverAddress(buyerId)
+			arr := s.memberRepo.GetDeliverAddress(r.BuyerId)
 			if len(arr) > 0 {
 				err = no.SetAddress(arr[0].ID)
 			}
@@ -119,21 +118,20 @@ func (s *orderServiceImpl) PrepareOrder(buyerId int64, addressId int64,
 	}
 	if err == nil {
 		//log.Println("-------",o == nil,err)
-		return o.Complex(), err
+		return parser.OrderDto(o.Complex()), err
 	}
 	return nil, err
 }
 
 // 预生成订单，使用优惠券
-func (s *orderServiceImpl) PrepareOrderWithCoupon(buyerId int64, cartCode string,
-	addressId int64, subject string, couponCode string) (map[string]interface{}, error) {
-	cart := s.getShoppingCart(buyerId, cartCode)
+func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.PrepareOrderRequest) (*proto.StringMap, error) {
+	cart := s.getShoppingCart(r.BuyerId, r.CartCode)
 	o, err := s.manager.PrepareNormalOrder(cart)
 	if err != nil {
 		return nil, err
 	}
 	no := o.(order.INormalOrder)
-	no.SetAddress(addressId)
+	no.SetAddress(r.AddressId)
 	//todo: 应用优惠码
 	v := o.Complex()
 	buf := bytes.NewBufferString("")
@@ -148,38 +146,48 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon(buyerId int64, cartCode string
 	}
 
 	discountFee := v.ItemAmount - v.FinalAmount + v.DiscountAmount
-	data := make(map[string]interface{})
+	data := make(map[string]string)
 
 	//　取消优惠券
-	data["totalFee"] = v.ItemAmount
-	data["fee"] = v.ItemAmount
-	data["payFee"] = v.FinalAmount
-	data["discountFee"] = discountFee
-	data["expressFee"] = v.ExpressFee
+	data["totalFee"] = types.String(v.ItemAmount)
+	data["fee"] = types.String(v.ItemAmount)
+	data["payFee"] = types.String(v.FinalAmount)
+	data["discountFee"] = types.String(discountFee)
+	data["expressFee"] = types.String(v.ExpressFee)
 
 	// 设置优惠券的信息
-	if couponCode != "" {
+	if r.CartCode != "" {
 		// 优惠券没有减金额
 		if v.DiscountAmount == 0 {
-			data["result"] = v.DiscountAmount != 0
+			data["result"] = types.String(v.DiscountAmount != 0)
 			data["message"] = "优惠券无效"
 		} else {
 			// 成功应用优惠券
-			data["couponFee"] = v.DiscountAmount
+			data["couponFee"] = types.String(v.DiscountAmount)
 			data["couponDescribe"] = buf.String()
 		}
 	}
 
-	return data, err
+	return &proto.StringMap{Value: data}, err
 }
 
-func (s *orderServiceImpl) SubmitOrder_V1(buyerId int64, cartCode string,
-	addressId int64, subject string, couponCode string, balanceDiscount bool) (*order.SubmitReturnData, error) {
-	c := s.getShoppingCart(buyerId, cartCode)
-	_, rd, err := s.manager.SubmitOrder(c, addressId, couponCode, balanceDiscount)
-	return rd, err
+func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.SubmitNormalOrderV2Request) (*proto.NormalOrderSubmitResponse, error) {
+	c := s.getShoppingCart(r.BuyerId, r.CartCode)
+	_, rd, err := s.manager.SubmitOrder(c,
+		r.AddressId, r.CouponCode, r.BalanceDiscount)
+	ret := &proto.NormalOrderSubmitResponse{
+	}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	} else {
+		ret.OrderNo = rd.OrderNo
+		ret.MergePay = rd.MergePay
+		ret.TradeNo = rd.TradeNo
+		ret.TradeAmount = int64(rd.TradeAmount)
+	}
+	return ret, err
 }
-
 
 // 根据编号获取订单
 func (s *orderServiceImpl) GetParentOrder(c context.Context, id *proto.OrderNoV2) (*proto.SParentOrder, error) {
@@ -189,8 +197,6 @@ func (s *orderServiceImpl) GetParentOrder(c context.Context, id *proto.OrderNoV2
 	//}
 	return nil, nil
 }
-
-
 
 // 获取订单和商品项信息
 func (s *orderServiceImpl) GetOrder(_ context.Context, id *proto.OrderNoV2) (*proto.SSingleOrder, error) {
@@ -209,16 +215,15 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, id *proto.OrderNoV2) (*pr
 	return nil, nil
 }
 
-
 // 根据订单号获取子订单
 func (s *orderServiceImpl) GetSubOrderByNo_(_ context.Context, orderNo *proto.String) (*proto.SSingleOrder, error) {
 	/*
-	c := s.manager.Unified(id.Value, true).Complex()
-		if c != nil {
-			return parser.OrderDto(c), nil
-		}
-		return nil, nil
-	 */
+		c := s.manager.Unified(id.Value, true).Complex()
+			if c != nil {
+				return parser.OrderDto(c), nil
+			}
+			return nil, nil
+	*/
 	orderId := s.repo.GetOrderId(orderNo.Value, true)
 	o := s.repo.GetSubOrder(orderId)
 	if o != nil {
@@ -236,7 +241,6 @@ func (s *orderServiceImpl) GetSubOrder_(_ context.Context, id *proto.Int64) (*pr
 	return nil, nil
 }
 
-
 // 根据编号获取订单
 func (s *orderServiceImpl) GetOrderById_(id int64) *order.ComplexOrder {
 	o := s.manager.GetOrderById(id)
@@ -253,7 +257,6 @@ func (s *orderServiceImpl) GetOrderByNo_(orderNo string) *order.ComplexOrder {
 	}
 	return nil
 }
-
 
 // 获取订单商品项
 func (s *orderServiceImpl) GetSubOrderItems_(_ context.Context, subOrderId *proto.Int64) (*proto.ComplexItemsResponse, error) {

@@ -636,7 +636,7 @@ type RepoBase struct {
 }
 
 func (p *RepoBase) CreatePaymentOrder(v *payment.
-	Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
+Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
 	orderManager order.IOrderManager, registryRepo registry.IRegistryRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		repo:         repo,
