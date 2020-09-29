@@ -9,7 +9,7 @@ message SShop {
     /** 商户编号 */
     sint64 MerchantId = 2;
     /** 店铺名称 */
-    string ShopName = 3;
+    string Name = 3;
     // 店铺标题
     string ShopTitle = 4;
     // 店铺公告
@@ -69,3 +69,10 @@ message SStore {
     int32 SortNumber = 20;
 }
 
+// 检查店铺结果
+message CheckShopResponse{
+    int64 ShopId = 1;
+    // 店铺开通状态,0:未开通 1:已开通 2:待审核 3:审核不通过
+    int32 Status = 2;
+    string Remark= 3;
+}

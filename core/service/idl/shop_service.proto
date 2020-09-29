@@ -7,13 +7,15 @@ import "message/shop.proto";
 // 商店服务
 service ShopService {
     /** 获取店铺,shopId */
-    rpc GetShop (Int64) returns (SShop) {
+    rpc GetShop (ShopId) returns (SShop) {
     }
     /** 获取商户的店铺,vendorId */
-    rpc GetVendorShop (Int64) returns (SShop) {
-    }
+    //rpc GetVendorShop_ (Int64) returns (SShop) {}
+    // 检查商户是否开通店铺
+    rpc CheckMerchantShopState(MerchantId)returns(CheckShopResponse){}
+
     /** 获取门店,storeId */
-    rpc GetStore (Int64) returns (SStore) {
+    rpc GetStore (StoreId) returns (SStore) {
     }
     /** 根据主机头获取店铺编号,host */
     rpc QueryShopByHost (String) returns (Int64) {
@@ -30,7 +32,7 @@ service ShopService {
     rpc SaveOfflineShop(SStore)returns(Result) {
     }
     // 删除商店
-    rpc DeleteStore(ShopId)returns(Result) {
+    rpc DeleteStore(StoreId)returns(Result) {
     }
 }
 

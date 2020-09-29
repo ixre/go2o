@@ -36,7 +36,7 @@ func (m *TurnShopRequest) Reset()         { *m = TurnShopRequest{} }
 func (m *TurnShopRequest) String() string { return proto.CompactTextString(m) }
 func (*TurnShopRequest) ProtoMessage()    {}
 func (*TurnShopRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_2df41df9bf50f57c, []int{0}
+	return fileDescriptor_shop_service_6a077dd4b2f08b80, []int{0}
 }
 func (m *TurnShopRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TurnShopRequest.Unmarshal(m, b)
@@ -94,11 +94,12 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ShopServiceClient interface {
 	// * 获取店铺,shopId
-	GetShop(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SShop, error)
-	// * 获取商户的店铺,vendorId
-	GetVendorShop(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SShop, error)
+	GetShop(ctx context.Context, in *ShopId, opts ...grpc.CallOption) (*SShop, error)
+	// rpc GetVendorShop_ (Int64) returns (SShop) {}
+	// 检查商户是否开通店铺
+	CheckMerchantShopState(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*CheckShopResponse, error)
 	// * 获取门店,storeId
-	GetStore(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SStore, error)
+	GetStore(ctx context.Context, in *StoreId, opts ...grpc.CallOption) (*SStore, error)
 	// * 根据主机头获取店铺编号,host
 	QueryShopByHost(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error)
 	// 获取门店
@@ -110,7 +111,7 @@ type ShopServiceClient interface {
 	// 保存门店
 	SaveOfflineShop(ctx context.Context, in *SStore, opts ...grpc.CallOption) (*Result, error)
 	// 删除商店
-	DeleteStore(ctx context.Context, in *ShopId, opts ...grpc.CallOption) (*Result, error)
+	DeleteStore(ctx context.Context, in *StoreId, opts ...grpc.CallOption) (*Result, error)
 }
 
 type shopServiceClient struct {
@@ -121,7 +122,7 @@ func NewShopServiceClient(cc *grpc.ClientConn) ShopServiceClient {
 	return &shopServiceClient{cc}
 }
 
-func (c *shopServiceClient) GetShop(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SShop, error) {
+func (c *shopServiceClient) GetShop(ctx context.Context, in *ShopId, opts ...grpc.CallOption) (*SShop, error) {
 	out := new(SShop)
 	err := c.cc.Invoke(ctx, "/ShopService/GetShop", in, out, opts...)
 	if err != nil {
@@ -130,16 +131,16 @@ func (c *shopServiceClient) GetShop(ctx context.Context, in *Int64, opts ...grpc
 	return out, nil
 }
 
-func (c *shopServiceClient) GetVendorShop(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SShop, error) {
-	out := new(SShop)
-	err := c.cc.Invoke(ctx, "/ShopService/GetVendorShop", in, out, opts...)
+func (c *shopServiceClient) CheckMerchantShopState(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*CheckShopResponse, error) {
+	out := new(CheckShopResponse)
+	err := c.cc.Invoke(ctx, "/ShopService/CheckMerchantShopState", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *shopServiceClient) GetStore(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SStore, error) {
+func (c *shopServiceClient) GetStore(ctx context.Context, in *StoreId, opts ...grpc.CallOption) (*SStore, error) {
 	out := new(SStore)
 	err := c.cc.Invoke(ctx, "/ShopService/GetStore", in, out, opts...)
 	if err != nil {
@@ -184,7 +185,7 @@ func (c *shopServiceClient) SaveOfflineShop(ctx context.Context, in *SStore, opt
 	return out, nil
 }
 
-func (c *shopServiceClient) DeleteStore(ctx context.Context, in *ShopId, opts ...grpc.CallOption) (*Result, error) {
+func (c *shopServiceClient) DeleteStore(ctx context.Context, in *StoreId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/ShopService/DeleteStore", in, out, opts...)
 	if err != nil {
@@ -196,11 +197,12 @@ func (c *shopServiceClient) DeleteStore(ctx context.Context, in *ShopId, opts ..
 // ShopServiceServer is the server API for ShopService service.
 type ShopServiceServer interface {
 	// * 获取店铺,shopId
-	GetShop(context.Context, *Int64) (*SShop, error)
-	// * 获取商户的店铺,vendorId
-	GetVendorShop(context.Context, *Int64) (*SShop, error)
+	GetShop(context.Context, *ShopId) (*SShop, error)
+	// rpc GetVendorShop_ (Int64) returns (SShop) {}
+	// 检查商户是否开通店铺
+	CheckMerchantShopState(context.Context, *MerchantId) (*CheckShopResponse, error)
 	// * 获取门店,storeId
-	GetStore(context.Context, *Int64) (*SStore, error)
+	GetStore(context.Context, *StoreId) (*SStore, error)
 	// * 根据主机头获取店铺编号,host
 	QueryShopByHost(context.Context, *String) (*Int64, error)
 	// 获取门店
@@ -212,7 +214,7 @@ type ShopServiceServer interface {
 	// 保存门店
 	SaveOfflineShop(context.Context, *SStore) (*Result, error)
 	// 删除商店
-	DeleteStore(context.Context, *ShopId) (*Result, error)
+	DeleteStore(context.Context, *StoreId) (*Result, error)
 }
 
 func RegisterShopServiceServer(s *grpc.Server, srv ShopServiceServer) {
@@ -220,7 +222,7 @@ func RegisterShopServiceServer(s *grpc.Server, srv ShopServiceServer) {
 }
 
 func _ShopService_GetShop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int64)
+	in := new(ShopId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -232,31 +234,31 @@ func _ShopService_GetShop_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/ShopService/GetShop",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShopServiceServer).GetShop(ctx, req.(*Int64))
+		return srv.(ShopServiceServer).GetShop(ctx, req.(*ShopId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ShopService_GetVendorShop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int64)
+func _ShopService_CheckMerchantShopState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ShopServiceServer).GetVendorShop(ctx, in)
+		return srv.(ShopServiceServer).CheckMerchantShopState(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ShopService/GetVendorShop",
+		FullMethod: "/ShopService/CheckMerchantShopState",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShopServiceServer).GetVendorShop(ctx, req.(*Int64))
+		return srv.(ShopServiceServer).CheckMerchantShopState(ctx, req.(*MerchantId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ShopService_GetStore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int64)
+	in := new(StoreId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -268,7 +270,7 @@ func _ShopService_GetStore_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/ShopService/GetStore",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShopServiceServer).GetStore(ctx, req.(*Int64))
+		return srv.(ShopServiceServer).GetStore(ctx, req.(*StoreId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -346,7 +348,7 @@ func _ShopService_SaveOfflineShop_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _ShopService_DeleteStore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ShopId)
+	in := new(StoreId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -358,7 +360,7 @@ func _ShopService_DeleteStore_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/ShopService/DeleteStore",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShopServiceServer).DeleteStore(ctx, req.(*ShopId))
+		return srv.(ShopServiceServer).DeleteStore(ctx, req.(*StoreId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -372,8 +374,8 @@ var _ShopService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _ShopService_GetShop_Handler,
 		},
 		{
-			MethodName: "GetVendorShop",
-			Handler:    _ShopService_GetVendorShop_Handler,
+			MethodName: "CheckMerchantShopState",
+			Handler:    _ShopService_CheckMerchantShopState_Handler,
 		},
 		{
 			MethodName: "GetStore",
@@ -404,27 +406,29 @@ var _ShopService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "shop_service.proto",
 }
 
-func init() { proto.RegisterFile("shop_service.proto", fileDescriptor_shop_service_2df41df9bf50f57c) }
+func init() { proto.RegisterFile("shop_service.proto", fileDescriptor_shop_service_6a077dd4b2f08b80) }
 
-var fileDescriptor_shop_service_2df41df9bf50f57c = []byte{
-	// 301 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x91, 0xc1, 0x4b, 0xc3, 0x30,
-	0x14, 0xc6, 0xd7, 0x0a, 0xcd, 0xf6, 0xa6, 0x4e, 0xde, 0x41, 0x46, 0x45, 0xd8, 0x8a, 0xe2, 0x4e,
-	0x11, 0x54, 0xbc, 0x78, 0x1b, 0xc2, 0xdc, 0x49, 0xd6, 0x88, 0x07, 0x2f, 0xd2, 0xb9, 0xb7, 0xae,
-	0x50, 0x93, 0x9a, 0xa4, 0x83, 0xfd, 0x3f, 0xfe, 0xa1, 0x92, 0xb6, 0x93, 0x22, 0x78, 0x0a, 0xdf,
-	0xf7, 0xfd, 0x92, 0x7c, 0x2f, 0x01, 0x34, 0x1b, 0x55, 0xbc, 0x1b, 0xd2, 0xdb, 0xec, 0x83, 0x78,
-	0xa1, 0x95, 0x55, 0xe1, 0x61, 0x9a, 0xab, 0x65, 0x92, 0x37, 0x0a, 0x3f, 0xc9, 0x98, 0x24, 0xa5,
-	0x6b, 0x47, 0xd6, 0x5e, 0xb4, 0x80, 0xc1, 0x4b, 0xa9, 0xa5, 0xd8, 0xa8, 0x22, 0xa6, 0xaf, 0x92,
-	0x8c, 0xc5, 0x53, 0x08, 0x1c, 0x30, 0x5f, 0x0d, 0xbd, 0x91, 0x37, 0xc1, 0xb8, 0x51, 0x78, 0x0c,
-	0xbe, 0x92, 0x43, 0x7f, 0xe4, 0x4d, 0xba, 0xb1, 0xaf, 0xa4, 0xe3, 0x34, 0x25, 0x46, 0xc9, 0xe1,
-	0xc1, 0xc8, 0x9b, 0xf4, 0xe2, 0x46, 0xdd, 0x7c, 0xfb, 0xd0, 0x77, 0xe7, 0x89, 0xba, 0x0a, 0x9e,
-	0x01, 0x9b, 0x91, 0x75, 0x0e, 0x06, 0x7c, 0x2e, 0xed, 0xfd, 0x5d, 0x18, 0x70, 0xe1, 0x74, 0xd4,
-	0xc1, 0x31, 0x1c, 0xcd, 0xc8, 0xbe, 0x92, 0x5c, 0x29, 0xfd, 0x0f, 0x72, 0x0e, 0x5d, 0xb7, 0xdf,
-	0x2a, 0x4d, 0xbf, 0x29, 0xe3, 0xa2, 0x32, 0xa2, 0x0e, 0x5e, 0xc0, 0x60, 0x51, 0x92, 0xde, 0x39,
-	0x7a, 0xba, 0x7b, 0x52, 0xc6, 0x22, 0xe3, 0xc2, 0xea, 0x4c, 0xa6, 0x61, 0x83, 0x47, 0x1d, 0xbc,
-	0x82, 0xee, 0x7e, 0x4e, 0x3c, 0xe1, 0x7f, 0x46, 0x0e, 0x19, 0x8f, 0xc9, 0x94, 0xb9, 0xad, 0x6f,
-	0x13, 0xc9, 0x96, 0x9a, 0x2e, 0x55, 0x87, 0x76, 0x7c, 0x09, 0x03, 0x17, 0x3f, 0xaf, 0xd7, 0x79,
-	0x26, 0x6b, 0x6a, 0xdf, 0xa5, 0x8d, 0x8d, 0xa1, 0xff, 0x48, 0x39, 0x59, 0xaa, 0x6b, 0x33, 0x2e,
-	0xaa, 0x37, 0x6c, 0x21, 0xd3, 0xde, 0x1b, 0xe3, 0x0f, 0xd5, 0x27, 0x2c, 0x83, 0x6a, 0xb9, 0xfd,
-	0x09, 0x00, 0x00, 0xff, 0xff, 0x7c, 0x49, 0xec, 0x34, 0xc3, 0x01, 0x00, 0x00,
+var fileDescriptor_shop_service_6a077dd4b2f08b80 = []byte{
+	// 329 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x64, 0x91, 0x5f, 0x4b, 0xf3, 0x30,
+	0x14, 0xc6, 0xdb, 0xbe, 0xd0, 0x76, 0xd9, 0x8b, 0x93, 0x73, 0x31, 0x46, 0x51, 0x1c, 0x41, 0x71,
+	0x57, 0x11, 0x54, 0xbc, 0xd9, 0xdd, 0x14, 0xb4, 0x17, 0x22, 0x6b, 0xbc, 0xf2, 0x46, 0xba, 0xed,
+	0x6c, 0x1d, 0xd6, 0xa4, 0x26, 0xe9, 0x60, 0x5f, 0xcf, 0x4f, 0x26, 0x49, 0x5b, 0x18, 0x7a, 0x75,
+	0xfe, 0xfd, 0xf2, 0xf0, 0x9c, 0x13, 0x02, 0xba, 0x90, 0xd5, 0xbb, 0x46, 0xb5, 0xdb, 0x2e, 0x91,
+	0x55, 0x4a, 0x1a, 0x99, 0xfc, 0xdf, 0x94, 0x72, 0x91, 0x97, 0x6d, 0x05, 0x9f, 0xa8, 0x75, 0xbe,
+	0xc1, 0x2b, 0x4b, 0x36, 0x3d, 0x3a, 0x27, 0x83, 0xd7, 0x5a, 0x09, 0x5e, 0xc8, 0x2a, 0xc3, 0xaf,
+	0x1a, 0xb5, 0x81, 0x21, 0x09, 0x2d, 0x90, 0xae, 0x46, 0xfe, 0xd8, 0x9f, 0x40, 0xd6, 0x56, 0x70,
+	0x44, 0x02, 0x29, 0x46, 0xc1, 0xd8, 0x9f, 0xc4, 0x59, 0x20, 0x85, 0xe5, 0x14, 0xe6, 0x5a, 0x8a,
+	0xd1, 0xbf, 0xb1, 0x3f, 0xe9, 0x65, 0x6d, 0x75, 0xfd, 0x1d, 0x90, 0xbe, 0xd5, 0xe3, 0x8d, 0x15,
+	0x38, 0x21, 0xd1, 0x23, 0x1a, 0xdb, 0x81, 0x88, 0x71, 0xa7, 0x95, 0x84, 0x8c, 0xdb, 0x8c, 0x7a,
+	0x30, 0x25, 0xc3, 0xfb, 0x02, 0x97, 0x1f, 0xcf, 0xa8, 0x96, 0x45, 0x2e, 0x1c, 0xc7, 0x4d, 0x6e,
+	0x10, 0xfa, 0xac, 0xeb, 0xa5, 0xab, 0x04, 0x98, 0xa3, 0x1a, 0x9f, 0xba, 0x92, 0x42, 0x23, 0xf5,
+	0xe0, 0x8c, 0xc4, 0x56, 0xda, 0x48, 0x85, 0x10, 0x33, 0x17, 0xd3, 0x55, 0x12, 0x31, 0xee, 0x52,
+	0xea, 0xc1, 0x39, 0x19, 0xcc, 0x6b, 0x54, 0x7b, 0xfb, 0x6e, 0xb6, 0x7f, 0x92, 0xda, 0x58, 0x0f,
+	0x46, 0x6d, 0xc5, 0x26, 0x09, 0x59, 0x2a, 0xcc, 0xdd, 0x2d, 0xf5, 0xe0, 0x92, 0xc4, 0xdd, 0x11,
+	0xe0, 0x98, 0xfd, 0xba, 0x47, 0x12, 0xb1, 0x0c, 0x75, 0x5d, 0x1a, 0xea, 0xc1, 0x29, 0x89, 0x79,
+	0xbe, 0x43, 0x07, 0xb6, 0x2b, 0x1c, 0x8e, 0x2f, 0xc8, 0xc0, 0x8e, 0x5f, 0xd6, 0xeb, 0x72, 0x2b,
+	0xb0, 0xdb, 0xd8, 0x79, 0x39, 0xc4, 0x28, 0xe9, 0x3f, 0x60, 0x89, 0x06, 0xff, 0x1a, 0xef, 0x98,
+	0x59, 0xef, 0x2d, 0x62, 0x53, 0xf7, 0x45, 0x8b, 0xd0, 0x85, 0x9b, 0x9f, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0xa7, 0xa5, 0xc3, 0x2f, 0xe1, 0x01, 0x00, 0x00,
 }

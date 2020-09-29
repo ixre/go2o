@@ -127,7 +127,7 @@ func (t *shipmentOrderImpl) SmartChoiceShop(address string) (shop.IShop, error) 
 	       return nil, delivery.ErrNotCoveragedArea
 	   }
 	   shopId, _, err := dly.GetDeliveryInfo(cov.GetDomainId())
-	   return t.mch.ShopManager().GetShop(shopId), err
+	   return t.mch.ShopManager().GetShopByVendorId(shopId), err
 	*/
 
 }

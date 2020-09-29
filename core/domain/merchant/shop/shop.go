@@ -403,7 +403,7 @@ func (s *onlineShopImpl) Data() *shop.ComplexShop {
 	ov := s._shopVal
 	v := &shop.ComplexShop{
 		ID:       int64(s.GetDomainId()),
-		VendorId: int64(ov.VendorId),
+		VendorId: ov.VendorId,
 		ShopType: shop.TypeOnlineShop,
 		Name:     ov.ShopTitle,
 		State:    shop.StateNormal,

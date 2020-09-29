@@ -68,7 +68,7 @@ func GetMchIdByShopId(shopId int64) int64 {
 	trans, cli, _ := service.ShopServiceClient()
 	defer trans.Close()
 	if err != nil || mchId <= 0 {
-		shop, _ := cli.GetShop(context.TODO(), &proto.Int64{Value: shopId})
+		shop, _ := cli.GetShop(context.TODO(), &proto.ShopId{Value: shopId})
 		if shop.MerchantId > 0 {
 			mchId = shop.MerchantId
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
