@@ -1,38 +1,38 @@
 syntax = "proto3";
 option go_package = ".;proto";
 
-
+import "global.proto";
+import "message/advertisement.proto";
 
 service AdvertisementService {
-  rpc GetAdGroupById(Int64) ad.AdGroup
-  rpc DelAdGroup(Int64) error
-  rpc SaveAdGroup(d *ad.AdGroup) (int64, error)
-  rpc GetGroups() []ad.AdGroup
-  rpc GetPosition(groupId, adPosInt64) *ad.AdPosition
-  rpc GetPositionById(adPosInt64) *ad.AdPosition
-  rpc SaveAdPosition(e *ad.AdPosition) (int64, error)
-  rpc DelAdPosition(groupId, Int64) error
+  rpc GetAdGroupById(Int64) returns(SAdGroup){}
+  rpc DelAdGroup(Int64)returns(Result){}
+  rpc SaveAdGroup(SAdGroup)returns(Result){}
+  rpc GetGroups(Empty)returns(AdGroupListResponse){}
+  rpc GetPosition(AdPositionId)returns(SAdPosition){}
+  rpc SaveAdPosition(SAdPosition)returns(Result){}
+  rpc DelAdPosition(AdPositionId)returns(Result){}
   // 设置广告位的默认广告
-  rpc SetDefaultAd(groupId, posId, adInt64) error
+  rpc SetDefaultAd(SetDefaultAdRequest)returns(Result){}
   // 用户投放广告
-  rpc SetUserAd(adUserId, posId, adInt64) error
+  rpc SetUserAd(SetUserAdRequest) returns(Result){}
   // 获取广告
-  rpc GetAdvertisement(adUserId, Int64) *ad.Ad
+  rpc GetAdvertisement(AdIdRequest)returns(SAd){}
+
   // 获取广告及广告数据, 用于展示关高
-  rpc GetAdAndDataByKey(adUserInt64, key string) *ad.AdDto
+  rpc GetAdAndDataByKey(AdKeyRequest)returns(SAdDto){}
   // 获取广告数据传输对象
-  rpc GetAdDto(userInt64, Int64) *ad.AdDto
+  rpc GetAdDto_(AdIdRequest) returns(SAdDto){}
   // 保存广告,更新时不允许修改类型
-  rpc SaveAd(adUserInt64, v *ad.Ad) (int64, error)
-      func (a *adService) DeleteAd(adUserId, adInt64) error
+  rpc SaveAd(SaveAdRequest) returns(Result){}
+  // 删除广告
+  rpc DeleteAd(AdIdRequest) returns(Result){}
   // 保存图片广告
-  rpc SaveHyperLinkAd(adUserInt64, v *ad.HyperLink) (int64, error)
+  rpc SaveHyperLinkAd(SaveLinkAdRequest)returns(Result){}
   // 保存图片广告
-  rpc SaveImageAd(adUserInt64, v *ad.Image) (int64, error)
-  // 保存广告图片
-  rpc SaveImage(adUserInt64, adInt64, v *ad.Image) (int64, error)
+  rpc SaveImagOfAd(SaveImageAdRequest)returns(Result){}
   // 获取广告图片
-  rpc GetValueAdImage(adUserId, adId, imgInt64) *ad.Image
+  rpc GetValueAdImage(ImageAdIdRequest)returns(SImage){}
   // 删除广告图片
-  rpc DelAdImage(adUserInt64, adId, imgInt64) error
+  rpc DelAdImage(ImageAdIdRequest) returns(Result){}
 }

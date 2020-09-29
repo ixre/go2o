@@ -31,7 +31,7 @@ func (m *WsCartRequest) Reset()         { *m = WsCartRequest{} }
 func (m *WsCartRequest) String() string { return proto.CompactTextString(m) }
 func (*WsCartRequest) ProtoMessage()    {}
 func (*WsCartRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_ea294ec0d7362cae, []int{0}
+	return fileDescriptor_cart_2c83ce720a23abf6, []int{0}
 }
 func (m *WsCartRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_WsCartRequest.Unmarshal(m, b)
@@ -85,7 +85,7 @@ func (m *NormalCartRequest) Reset()         { *m = NormalCartRequest{} }
 func (m *NormalCartRequest) String() string { return proto.CompactTextString(m) }
 func (*NormalCartRequest) ProtoMessage()    {}
 func (*NormalCartRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_ea294ec0d7362cae, []int{1}
+	return fileDescriptor_cart_2c83ce720a23abf6, []int{1}
 }
 func (m *NormalCartRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NormalCartRequest.Unmarshal(m, b)
@@ -143,7 +143,7 @@ func (m *SShoppingCart) Reset()         { *m = SShoppingCart{} }
 func (m *SShoppingCart) String() string { return proto.CompactTextString(m) }
 func (*SShoppingCart) ProtoMessage()    {}
 func (*SShoppingCart) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_ea294ec0d7362cae, []int{2}
+	return fileDescriptor_cart_2c83ce720a23abf6, []int{2}
 }
 func (m *SShoppingCart) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShoppingCart.Unmarshal(m, b)
@@ -205,7 +205,7 @@ func (m *SShoppingCartGroup) Reset()         { *m = SShoppingCartGroup{} }
 func (m *SShoppingCartGroup) String() string { return proto.CompactTextString(m) }
 func (*SShoppingCartGroup) ProtoMessage()    {}
 func (*SShoppingCartGroup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_ea294ec0d7362cae, []int{3}
+	return fileDescriptor_cart_2c83ce720a23abf6, []int{3}
 }
 func (m *SShoppingCartGroup) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShoppingCartGroup.Unmarshal(m, b)
@@ -277,7 +277,7 @@ func (m *SCheckCartItem) Reset()         { *m = SCheckCartItem{} }
 func (m *SCheckCartItem) String() string { return proto.CompactTextString(m) }
 func (*SCheckCartItem) ProtoMessage()    {}
 func (*SCheckCartItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_ea294ec0d7362cae, []int{4}
+	return fileDescriptor_cart_2c83ce720a23abf6, []int{4}
 }
 func (m *SCheckCartItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SCheckCartItem.Unmarshal(m, b)
@@ -353,7 +353,7 @@ func (m *SShoppingCartItem) Reset()         { *m = SShoppingCartItem{} }
 func (m *SShoppingCartItem) String() string { return proto.CompactTextString(m) }
 func (*SShoppingCartItem) ProtoMessage()    {}
 func (*SShoppingCartItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_ea294ec0d7362cae, []int{5}
+	return fileDescriptor_cart_2c83ce720a23abf6, []int{5}
 }
 func (m *SShoppingCartItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShoppingCartItem.Unmarshal(m, b)
@@ -468,9 +468,9 @@ func init() {
 	proto.RegisterType((*SShoppingCartItem)(nil), "SShoppingCartItem")
 }
 
-func init() { proto.RegisterFile("message/cart.proto", fileDescriptor_cart_ea294ec0d7362cae) }
+func init() { proto.RegisterFile("message/cart.proto", fileDescriptor_cart_2c83ce720a23abf6) }
 
-var fileDescriptor_cart_ea294ec0d7362cae = []byte{
+var fileDescriptor_cart_2c83ce720a23abf6 = []byte{
 	// 476 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0xc1, 0x8e, 0xd3, 0x30,
 	0x10, 0x86, 0xe5, 0xa6, 0x69, 0x9b, 0x29, 0x8b, 0xa8, 0x59, 0x21, 0x6b, 0xb5, 0x87, 0x28, 0xa7,

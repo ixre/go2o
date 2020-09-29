@@ -14,7 +14,6 @@ import (
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/util"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 )
 
@@ -66,11 +65,12 @@ func GetMchIdByShopId(shopId int64) int64 {
 	sto := GetKVS()
 	tmpId, err := sto.GetInt(key)
 	mchId := int64(tmpId)
-	trans,cli,_ := service.ShopServiceClient()
+	trans, cli, _ := service.ShopServiceClient()
 	defer trans.Close()
 	if err != nil || mchId <= 0 {
-		mchId = cli.GetMerchantId(shopId)
-		if mchId > 0 {
+		shop, _ := cli.GetShop(context.TODO(), &proto.Int64{Value: shopId})
+		if shop.MerchantId > 0 {
+			mchId = shop.MerchantId
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		} else {
 			log.Println("[ Shop][ Exception] - shop", shopId, " no merchant bind!")

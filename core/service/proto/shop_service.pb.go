@@ -23,351 +23,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// 商店,需重构
-type SShop2 struct {
-	ID                   int64             `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	VendorId             int64             `protobuf:"zigzag64,2,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
-	ShopType             int32             `protobuf:"zigzag32,3,opt,name=ShopType,proto3" json:"ShopType,omitempty"`
-	Name                 string            `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
-	State                int32             `protobuf:"zigzag32,5,opt,name=State,proto3" json:"State,omitempty"`
-	OpeningState         int32             `protobuf:"zigzag32,6,opt,name=OpeningState,proto3" json:"OpeningState,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,7,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *SShop2) Reset()         { *m = SShop2{} }
-func (m *SShop2) String() string { return proto.CompactTextString(m) }
-func (*SShop2) ProtoMessage()    {}
-func (*SShop2) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_4b76dfa8ee2dd014, []int{0}
-}
-func (m *SShop2) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SShop2.Unmarshal(m, b)
-}
-func (m *SShop2) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SShop2.Marshal(b, m, deterministic)
-}
-func (dst *SShop2) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SShop2.Merge(dst, src)
-}
-func (m *SShop2) XXX_Size() int {
-	return xxx_messageInfo_SShop2.Size(m)
-}
-func (m *SShop2) XXX_DiscardUnknown() {
-	xxx_messageInfo_SShop2.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SShop2 proto.InternalMessageInfo
-
-func (m *SShop2) GetID() int64 {
-	if m != nil {
-		return m.ID
-	}
-	return 0
-}
-
-func (m *SShop2) GetVendorId() int64 {
-	if m != nil {
-		return m.VendorId
-	}
-	return 0
-}
-
-func (m *SShop2) GetShopType() int32 {
-	if m != nil {
-		return m.ShopType
-	}
-	return 0
-}
-
-func (m *SShop2) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *SShop2) GetState() int32 {
-	if m != nil {
-		return m.State
-	}
-	return 0
-}
-
-func (m *SShop2) GetOpeningState() int32 {
-	if m != nil {
-		return m.OpeningState
-	}
-	return 0
-}
-
-func (m *SShop2) GetData() map[string]string {
-	if m != nil {
-		return m.Data
-	}
-	return nil
-}
-
-// 店铺
-type SShop struct {
-	// * 店铺编号
-	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	// * 商户编号
-	VendorId int64 `protobuf:"zigzag64,2,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
-	// * 店铺名称
-	ShopName string `protobuf:"bytes,3,opt,name=ShopName,proto3" json:"ShopName,omitempty"`
-	// * 店铺标志
-	Logo string `protobuf:"bytes,4,opt,name=Logo,proto3" json:"Logo,omitempty"`
-	// * 自定义 域名
-	Host string `protobuf:"bytes,5,opt,name=Host,proto3" json:"Host,omitempty"`
-	// * 个性化域名
-	Alias string `protobuf:"bytes,6,opt,name=Alias,proto3" json:"Alias,omitempty"`
-	// * 电话
-	Tel string `protobuf:"bytes,7,opt,name=Tel,proto3" json:"Tel,omitempty"`
-	// * 地址
-	Addr string `protobuf:"bytes,8,opt,name=Addr,proto3" json:"Addr,omitempty"`
-	// * 店铺标题
-	ShopTitle string `protobuf:"bytes,9,opt,name=ShopTitle,proto3" json:"ShopTitle,omitempty"`
-	// * 店铺公告
-	ShopNotice string `protobuf:"bytes,10,opt,name=ShopNotice,proto3" json:"ShopNotice,omitempty"`
-	// * 标志
-	Flag int32 `protobuf:"zigzag32,11,opt,name=Flag,proto3" json:"Flag,omitempty"`
-	// * 状态
-	State                int32    `protobuf:"zigzag32,12,opt,name=State,proto3" json:"State,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SShop) Reset()         { *m = SShop{} }
-func (m *SShop) String() string { return proto.CompactTextString(m) }
-func (*SShop) ProtoMessage()    {}
-func (*SShop) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_4b76dfa8ee2dd014, []int{1}
-}
-func (m *SShop) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SShop.Unmarshal(m, b)
-}
-func (m *SShop) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SShop.Marshal(b, m, deterministic)
-}
-func (dst *SShop) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SShop.Merge(dst, src)
-}
-func (m *SShop) XXX_Size() int {
-	return xxx_messageInfo_SShop.Size(m)
-}
-func (m *SShop) XXX_DiscardUnknown() {
-	xxx_messageInfo_SShop.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SShop proto.InternalMessageInfo
-
-func (m *SShop) GetId() int64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *SShop) GetVendorId() int64 {
-	if m != nil {
-		return m.VendorId
-	}
-	return 0
-}
-
-func (m *SShop) GetShopName() string {
-	if m != nil {
-		return m.ShopName
-	}
-	return ""
-}
-
-func (m *SShop) GetLogo() string {
-	if m != nil {
-		return m.Logo
-	}
-	return ""
-}
-
-func (m *SShop) GetHost() string {
-	if m != nil {
-		return m.Host
-	}
-	return ""
-}
-
-func (m *SShop) GetAlias() string {
-	if m != nil {
-		return m.Alias
-	}
-	return ""
-}
-
-func (m *SShop) GetTel() string {
-	if m != nil {
-		return m.Tel
-	}
-	return ""
-}
-
-func (m *SShop) GetAddr() string {
-	if m != nil {
-		return m.Addr
-	}
-	return ""
-}
-
-func (m *SShop) GetShopTitle() string {
-	if m != nil {
-		return m.ShopTitle
-	}
-	return ""
-}
-
-func (m *SShop) GetShopNotice() string {
-	if m != nil {
-		return m.ShopNotice
-	}
-	return ""
-}
-
-func (m *SShop) GetFlag() int32 {
-	if m != nil {
-		return m.Flag
-	}
-	return 0
-}
-
-func (m *SShop) GetState() int32 {
-	if m != nil {
-		return m.State
-	}
-	return 0
-}
-
-// 店铺
-type SStore struct {
-	ID                   int64    `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	VendorId             int64    `protobuf:"zigzag64,2,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
-	Name                 string   `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
-	Alias                string   `protobuf:"bytes,4,opt,name=Alias,proto3" json:"Alias,omitempty"`
-	Host                 string   `protobuf:"bytes,5,opt,name=Host,proto3" json:"Host,omitempty"`
-	Logo                 string   `protobuf:"bytes,6,opt,name=Logo,proto3" json:"Logo,omitempty"`
-	State                int32    `protobuf:"zigzag32,7,opt,name=State,proto3" json:"State,omitempty"`
-	OpeningState         int32    `protobuf:"zigzag32,8,opt,name=OpeningState,proto3" json:"OpeningState,omitempty"`
-	StorePhone           string   `protobuf:"bytes,9,opt,name=StorePhone,proto3" json:"StorePhone,omitempty"`
-	StoreTitle           string   `protobuf:"bytes,10,opt,name=StoreTitle,proto3" json:"StoreTitle,omitempty"`
-	StoreNotice          string   `protobuf:"bytes,11,opt,name=StoreNotice,proto3" json:"StoreNotice,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SStore) Reset()         { *m = SStore{} }
-func (m *SStore) String() string { return proto.CompactTextString(m) }
-func (*SStore) ProtoMessage()    {}
-func (*SStore) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_4b76dfa8ee2dd014, []int{2}
-}
-func (m *SStore) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SStore.Unmarshal(m, b)
-}
-func (m *SStore) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SStore.Marshal(b, m, deterministic)
-}
-func (dst *SStore) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SStore.Merge(dst, src)
-}
-func (m *SStore) XXX_Size() int {
-	return xxx_messageInfo_SStore.Size(m)
-}
-func (m *SStore) XXX_DiscardUnknown() {
-	xxx_messageInfo_SStore.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SStore proto.InternalMessageInfo
-
-func (m *SStore) GetID() int64 {
-	if m != nil {
-		return m.ID
-	}
-	return 0
-}
-
-func (m *SStore) GetVendorId() int64 {
-	if m != nil {
-		return m.VendorId
-	}
-	return 0
-}
-
-func (m *SStore) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *SStore) GetAlias() string {
-	if m != nil {
-		return m.Alias
-	}
-	return ""
-}
-
-func (m *SStore) GetHost() string {
-	if m != nil {
-		return m.Host
-	}
-	return ""
-}
-
-func (m *SStore) GetLogo() string {
-	if m != nil {
-		return m.Logo
-	}
-	return ""
-}
-
-func (m *SStore) GetState() int32 {
-	if m != nil {
-		return m.State
-	}
-	return 0
-}
-
-func (m *SStore) GetOpeningState() int32 {
-	if m != nil {
-		return m.OpeningState
-	}
-	return 0
-}
-
-func (m *SStore) GetStorePhone() string {
-	if m != nil {
-		return m.StorePhone
-	}
-	return ""
-}
-
-func (m *SStore) GetStoreTitle() string {
-	if m != nil {
-		return m.StoreTitle
-	}
-	return ""
-}
-
-func (m *SStore) GetStoreNotice() string {
-	if m != nil {
-		return m.StoreNotice
-	}
-	return ""
-}
-
 type TurnShopRequest struct {
 	ShopId               int64    `protobuf:"zigzag64,1,opt,name=shopId,proto3" json:"shopId,omitempty"`
 	On                   bool     `protobuf:"varint,2,opt,name=on,proto3" json:"on,omitempty"`
@@ -381,7 +36,7 @@ func (m *TurnShopRequest) Reset()         { *m = TurnShopRequest{} }
 func (m *TurnShopRequest) String() string { return proto.CompactTextString(m) }
 func (*TurnShopRequest) ProtoMessage()    {}
 func (*TurnShopRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_4b76dfa8ee2dd014, []int{3}
+	return fileDescriptor_shop_service_2df41df9bf50f57c, []int{0}
 }
 func (m *TurnShopRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TurnShopRequest.Unmarshal(m, b)
@@ -423,10 +78,6 @@ func (m *TurnShopRequest) GetReason() string {
 }
 
 func init() {
-	proto.RegisterType((*SShop2)(nil), "SShop2")
-	proto.RegisterMapType((map[string]string)(nil), "SShop2.DataEntry")
-	proto.RegisterType((*SShop)(nil), "SShop")
-	proto.RegisterType((*SStore)(nil), "SStore")
 	proto.RegisterType((*TurnShopRequest)(nil), "TurnShopRequest")
 }
 
@@ -454,6 +105,12 @@ type ShopServiceClient interface {
 	// rpc GetOfflineShop(1:sint32 shopId)returns(Shop)
 	// 打开或关闭商店
 	TurnShop(ctx context.Context, in *TurnShopRequest, opts ...grpc.CallOption) (*Result, error)
+	// 保存门店
+	SaveShop(ctx context.Context, in *SShop, opts ...grpc.CallOption) (*Result, error)
+	// 保存门店
+	SaveOfflineShop(ctx context.Context, in *SStore, opts ...grpc.CallOption) (*Result, error)
+	// 删除商店
+	DeleteStore(ctx context.Context, in *ShopId, opts ...grpc.CallOption) (*Result, error)
 }
 
 type shopServiceClient struct {
@@ -509,6 +166,33 @@ func (c *shopServiceClient) TurnShop(ctx context.Context, in *TurnShopRequest, o
 	return out, nil
 }
 
+func (c *shopServiceClient) SaveShop(ctx context.Context, in *SShop, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ShopService/SaveShop", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *shopServiceClient) SaveOfflineShop(ctx context.Context, in *SStore, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ShopService/SaveOfflineShop", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *shopServiceClient) DeleteStore(ctx context.Context, in *ShopId, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ShopService/DeleteStore", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ShopServiceServer is the server API for ShopService service.
 type ShopServiceServer interface {
 	// * 获取店铺,shopId
@@ -523,6 +207,12 @@ type ShopServiceServer interface {
 	// rpc GetOfflineShop(1:sint32 shopId)returns(Shop)
 	// 打开或关闭商店
 	TurnShop(context.Context, *TurnShopRequest) (*Result, error)
+	// 保存门店
+	SaveShop(context.Context, *SShop) (*Result, error)
+	// 保存门店
+	SaveOfflineShop(context.Context, *SStore) (*Result, error)
+	// 删除商店
+	DeleteStore(context.Context, *ShopId) (*Result, error)
 }
 
 func RegisterShopServiceServer(s *grpc.Server, srv ShopServiceServer) {
@@ -619,6 +309,60 @@ func _ShopService_TurnShop_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ShopService_SaveShop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SShop)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShopServiceServer).SaveShop(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ShopService/SaveShop",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShopServiceServer).SaveShop(ctx, req.(*SShop))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ShopService_SaveOfflineShop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SStore)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShopServiceServer).SaveOfflineShop(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ShopService/SaveOfflineShop",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShopServiceServer).SaveOfflineShop(ctx, req.(*SStore))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ShopService_DeleteStore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShopId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShopServiceServer).DeleteStore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ShopService/DeleteStore",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShopServiceServer).DeleteStore(ctx, req.(*ShopId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _ShopService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "ShopService",
 	HandlerType: (*ShopServiceServer)(nil),
@@ -643,49 +387,44 @@ var _ShopService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "TurnShop",
 			Handler:    _ShopService_TurnShop_Handler,
 		},
+		{
+			MethodName: "SaveShop",
+			Handler:    _ShopService_SaveShop_Handler,
+		},
+		{
+			MethodName: "SaveOfflineShop",
+			Handler:    _ShopService_SaveOfflineShop_Handler,
+		},
+		{
+			MethodName: "DeleteStore",
+			Handler:    _ShopService_DeleteStore_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "shop_service.proto",
 }
 
-func init() { proto.RegisterFile("shop_service.proto", fileDescriptor_shop_service_4b76dfa8ee2dd014) }
+func init() { proto.RegisterFile("shop_service.proto", fileDescriptor_shop_service_2df41df9bf50f57c) }
 
-var fileDescriptor_shop_service_4b76dfa8ee2dd014 = []byte{
-	// 564 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0x8d, 0x9d, 0xc4, 0x1f, 0x93, 0x40, 0xdb, 0x15, 0x42, 0x2b, 0xf3, 0xa1, 0x60, 0x81, 0xc8,
-	0xc9, 0x87, 0x80, 0x00, 0xc1, 0xa9, 0x55, 0xa0, 0x44, 0x42, 0x40, 0x37, 0x11, 0x07, 0x2e, 0xc8,
-	0xad, 0x57, 0x89, 0x85, 0xd9, 0x0d, 0xf6, 0xa6, 0x52, 0x7e, 0x0b, 0x37, 0xfe, 0x06, 0xff, 0x0d,
-	0xa1, 0x99, 0x8d, 0x5d, 0x17, 0x15, 0x04, 0xa7, 0xcc, 0x9b, 0x37, 0xbb, 0x99, 0xf7, 0x66, 0xd6,
-	0xc0, 0xaa, 0x95, 0x5e, 0x7f, 0xaa, 0x64, 0x79, 0x9e, 0x9f, 0xc9, 0x64, 0x5d, 0x6a, 0xa3, 0xa3,
-	0xe1, 0xb2, 0xd0, 0xa7, 0x69, 0x61, 0x51, 0xfc, 0xd3, 0x01, 0x6f, 0x3e, 0x5f, 0xe9, 0xf5, 0x84,
-	0x5d, 0x07, 0x77, 0x36, 0xe5, 0xce, 0xc8, 0x19, 0x33, 0xe1, 0xce, 0xa6, 0x2c, 0x82, 0xe0, 0x83,
-	0x54, 0x99, 0x2e, 0x67, 0x19, 0x77, 0x29, 0xdb, 0x60, 0xe4, 0xf0, 0xd0, 0x62, 0xbb, 0x96, 0xbc,
-	0x3b, 0x72, 0xc6, 0x07, 0xa2, 0xc1, 0x8c, 0x41, 0xef, 0x6d, 0xfa, 0x45, 0xf2, 0xde, 0xc8, 0x19,
-	0x87, 0x82, 0x62, 0x76, 0x03, 0xfa, 0x73, 0x93, 0x1a, 0xc9, 0xfb, 0x54, 0x6c, 0x01, 0x8b, 0x61,
-	0xf8, 0x6e, 0x2d, 0x55, 0xae, 0x96, 0x96, 0xf4, 0x88, 0xbc, 0x94, 0x63, 0x0f, 0xa0, 0x37, 0x4d,
-	0x4d, 0xca, 0xfd, 0x51, 0x77, 0x3c, 0x98, 0x1c, 0x24, 0xb6, 0xd9, 0x04, 0x73, 0x2f, 0x95, 0x29,
-	0xb7, 0x82, 0xe8, 0xe8, 0x29, 0x84, 0x4d, 0x8a, 0xed, 0x43, 0xf7, 0xb3, 0xdc, 0x92, 0x94, 0x50,
-	0x60, 0x88, 0xff, 0x7f, 0x9e, 0x16, 0x1b, 0x49, 0x42, 0x42, 0x61, 0xc1, 0x73, 0xf7, 0x99, 0x13,
-	0x7f, 0x73, 0xa1, 0x4f, 0x77, 0x92, 0xfe, 0xac, 0xd1, 0x9f, 0xfd, 0x8b, 0x7e, 0xd2, 0xd9, 0xa5,
-	0x2b, 0x1b, 0x8c, 0xfa, 0xdf, 0xe8, 0xa5, 0xae, 0xf5, 0x63, 0x8c, 0xb9, 0xd7, 0xba, 0x32, 0x24,
-	0x3f, 0x14, 0x14, 0x63, 0x4f, 0x87, 0x45, 0x9e, 0x56, 0x24, 0x3b, 0x14, 0x16, 0x60, 0xef, 0x0b,
-	0x59, 0x70, 0xdf, 0xf6, 0xbe, 0x90, 0x05, 0x9e, 0x3d, 0xcc, 0xb2, 0x92, 0x07, 0xf6, 0x2c, 0xc6,
-	0xec, 0x36, 0x84, 0xe4, 0x77, 0x6e, 0x0a, 0xc9, 0x43, 0x22, 0x2e, 0x12, 0xec, 0x2e, 0x00, 0x75,
-	0xa3, 0x4d, 0x7e, 0x26, 0x39, 0x10, 0xdd, 0xca, 0xe0, 0x8d, 0xaf, 0x8a, 0x74, 0xc9, 0x07, 0xe4,
-	0x37, 0xc5, 0x17, 0x13, 0x1a, 0xb6, 0x26, 0x14, 0x7f, 0x77, 0x71, 0x3d, 0x8c, 0x2e, 0xe5, 0x7f,
-	0xad, 0x47, 0xbd, 0x02, 0xdd, 0xcb, 0x2b, 0x60, 0xe5, 0xf6, 0xda, 0x72, 0xaf, 0x32, 0xa6, 0x36,
-	0xd0, 0x6b, 0x19, 0xd8, 0xb4, 0xe7, 0xff, 0x6d, 0x81, 0x82, 0x2b, 0x16, 0x08, 0xcd, 0x40, 0x01,
-	0xef, 0x57, 0x5a, 0xd5, 0x5e, 0xb5, 0x32, 0x0d, 0x6f, 0xbd, 0x84, 0x16, 0x6f, 0xcd, 0x1c, 0xc1,
-	0x80, 0xd0, 0xce, 0xcd, 0x01, 0x15, 0xb4, 0x53, 0xf1, 0x09, 0xec, 0x2d, 0x36, 0xa5, 0x42, 0x83,
-	0x85, 0xfc, 0xba, 0x91, 0x95, 0x61, 0x37, 0xc1, 0xc3, 0xa7, 0xd7, 0xec, 0xd3, 0x0e, 0xa1, 0x89,
-	0x5a, 0x91, 0x5d, 0x81, 0x70, 0xb5, 0xc2, 0xba, 0x52, 0xa6, 0x95, 0x56, 0x3b, 0xab, 0x76, 0x68,
-	0xf2, 0xc3, 0x81, 0x01, 0xde, 0x37, 0xb7, 0x4f, 0x97, 0xdd, 0x02, 0xff, 0x58, 0x1a, 0x5a, 0x53,
-	0x2f, 0x99, 0x29, 0xf3, 0xe4, 0x71, 0xe4, 0xd9, 0xa7, 0x10, 0x77, 0xd8, 0x3d, 0xb8, 0x76, 0x2c,
-	0x8d, 0x35, 0xff, 0x0f, 0x25, 0x77, 0x20, 0xc0, 0xf3, 0x34, 0xc8, 0x9a, 0xf5, 0x13, 0x3b, 0xd9,
-	0xb8, 0xc3, 0xee, 0xc3, 0xde, 0xc9, 0x46, 0x96, 0x5b, 0xac, 0x3e, 0xda, 0xd2, 0x10, 0xfc, 0x64,
-	0x6e, 0xca, 0x5c, 0x2d, 0xa3, 0x5d, 0x79, 0xdc, 0x61, 0x0f, 0x21, 0xa8, 0x75, 0xb2, 0xfd, 0xe4,
-	0x37, 0xc9, 0x91, 0x9f, 0x08, 0x59, 0x6d, 0x0a, 0x13, 0x77, 0x8e, 0xc2, 0x8f, 0x7e, 0xf2, 0x82,
-	0xbe, 0x2f, 0xa7, 0x1e, 0xfd, 0x3c, 0xfa, 0x15, 0x00, 0x00, 0xff, 0xff, 0xea, 0x7d, 0x01, 0xf0,
-	0x8a, 0x04, 0x00, 0x00,
+var fileDescriptor_shop_service_2df41df9bf50f57c = []byte{
+	// 301 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x91, 0xc1, 0x4b, 0xc3, 0x30,
+	0x14, 0xc6, 0xd7, 0x0a, 0xcd, 0xf6, 0xa6, 0x4e, 0xde, 0x41, 0x46, 0x45, 0xd8, 0x8a, 0xe2, 0x4e,
+	0x11, 0x54, 0xbc, 0x78, 0x1b, 0xc2, 0xdc, 0x49, 0xd6, 0x88, 0x07, 0x2f, 0xd2, 0xb9, 0xb7, 0xae,
+	0x50, 0x93, 0x9a, 0xa4, 0x83, 0xfd, 0x3f, 0xfe, 0xa1, 0x92, 0xb6, 0x93, 0x22, 0x78, 0x0a, 0xdf,
+	0xf7, 0xfd, 0x92, 0x7c, 0x2f, 0x01, 0x34, 0x1b, 0x55, 0xbc, 0x1b, 0xd2, 0xdb, 0xec, 0x83, 0x78,
+	0xa1, 0x95, 0x55, 0xe1, 0x61, 0x9a, 0xab, 0x65, 0x92, 0x37, 0x0a, 0x3f, 0xc9, 0x98, 0x24, 0xa5,
+	0x6b, 0x47, 0xd6, 0x5e, 0xb4, 0x80, 0xc1, 0x4b, 0xa9, 0xa5, 0xd8, 0xa8, 0x22, 0xa6, 0xaf, 0x92,
+	0x8c, 0xc5, 0x53, 0x08, 0x1c, 0x30, 0x5f, 0x0d, 0xbd, 0x91, 0x37, 0xc1, 0xb8, 0x51, 0x78, 0x0c,
+	0xbe, 0x92, 0x43, 0x7f, 0xe4, 0x4d, 0xba, 0xb1, 0xaf, 0xa4, 0xe3, 0x34, 0x25, 0x46, 0xc9, 0xe1,
+	0xc1, 0xc8, 0x9b, 0xf4, 0xe2, 0x46, 0xdd, 0x7c, 0xfb, 0xd0, 0x77, 0xe7, 0x89, 0xba, 0x0a, 0x9e,
+	0x01, 0x9b, 0x91, 0x75, 0x0e, 0x06, 0x7c, 0x2e, 0xed, 0xfd, 0x5d, 0x18, 0x70, 0xe1, 0x74, 0xd4,
+	0xc1, 0x31, 0x1c, 0xcd, 0xc8, 0xbe, 0x92, 0x5c, 0x29, 0xfd, 0x0f, 0x72, 0x0e, 0x5d, 0xb7, 0xdf,
+	0x2a, 0x4d, 0xbf, 0x29, 0xe3, 0xa2, 0x32, 0xa2, 0x0e, 0x5e, 0xc0, 0x60, 0x51, 0x92, 0xde, 0x39,
+	0x7a, 0xba, 0x7b, 0x52, 0xc6, 0x22, 0xe3, 0xc2, 0xea, 0x4c, 0xa6, 0x61, 0x83, 0x47, 0x1d, 0xbc,
+	0x82, 0xee, 0x7e, 0x4e, 0x3c, 0xe1, 0x7f, 0x46, 0x0e, 0x19, 0x8f, 0xc9, 0x94, 0xb9, 0xad, 0x6f,
+	0x13, 0xc9, 0x96, 0x9a, 0x2e, 0x55, 0x87, 0x76, 0x7c, 0x09, 0x03, 0x17, 0x3f, 0xaf, 0xd7, 0x79,
+	0x26, 0x6b, 0x6a, 0xdf, 0xa5, 0x8d, 0x8d, 0xa1, 0xff, 0x48, 0x39, 0x59, 0xaa, 0x6b, 0x33, 0x2e,
+	0xaa, 0x37, 0x6c, 0x21, 0xd3, 0xde, 0x1b, 0xe3, 0x0f, 0xd5, 0x27, 0x2c, 0x83, 0x6a, 0xb9, 0xfd,
+	0x09, 0x00, 0x00, 0xff, 0xff, 0x7c, 0x49, 0xec, 0x34, 0xc3, 0x01, 0x00, 0x00,
 }

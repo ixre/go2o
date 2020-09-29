@@ -175,8 +175,7 @@ func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.Submit
 	c := s.getShoppingCart(r.BuyerId, r.CartCode)
 	_, rd, err := s.manager.SubmitOrder(c,
 		r.AddressId, r.CouponCode, r.BalanceDiscount)
-	ret := &proto.NormalOrderSubmitResponse{
-	}
+	ret := &proto.NormalOrderSubmitResponse{}
 	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()

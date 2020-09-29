@@ -27,6 +27,43 @@ type shopServiceImpl struct {
 	serviceUtil
 }
 
+func (si *shopServiceImpl) SaveShop(_ context.Context, sShop *proto.SShop) (*proto.Result, error) {
+	panic("implement me")
+}
+
+// 保存门店
+func (si *shopServiceImpl) SaveOfflineShop(_ context.Context, r *proto.SStore) (*proto.Result, error) {
+	mch := si.mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		mgr := mch.ShopManager()
+		store, v := si.parseOfflineShop(r)
+		var sp shop.IShop
+		if store.Id > 0 {
+			// 保存商店
+			sp = mgr.GetShop(int(store.Id))
+		} else {
+			//创建商店
+			sp = mgr.CreateShop(store)
+		}
+		err = sp.SetValue(store)
+		if err == nil {
+			ofs := sp.(shop.IOfflineShop)
+			err = ofs.SetShopValue(v)
+			if err == nil {
+				err = sp.Save()
+			}
+		}
+	}
+	return si.error(err), nil
+}
+
+func (si *shopServiceImpl) DeleteStore(_ context.Context, id *proto.ShopId) (*proto.Result, error) {
+	panic("implement me")
+}
+
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 	shopRepo shop.IShopRepo, query *query.ShopQuery) *shopServiceImpl {
 	return &shopServiceImpl{
@@ -139,7 +176,7 @@ func (si *shopServiceImpl) GetShopValueById(mchId, shopId int64) *shop.Shop {
 
 // 保存线上商店
 func (si *shopServiceImpl) SaveStore(s *proto.SStore) error {
-	mch := si.mchRepo.GetMerchant(int(s.VendorId))
+	mch := si.mchRepo.GetMerchant(int(s.MerchantId))
 	if mch != nil {
 		v, v1 := si.parse2OnlineShop(s)
 		mgr := mch.ShopManager()
@@ -161,33 +198,7 @@ func (si *shopServiceImpl) SaveStore(s *proto.SStore) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-// 保存门店
-func (si *shopServiceImpl) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) error {
-	mch := si.mchRepo.GetMerchant(int(s.VendorId))
-	if mch != nil {
-		mgr := mch.ShopManager()
-		var sp shop.IShop
-		if s.Id > 0 {
-			// 保存商店
-			sp = mgr.GetShop(int(s.Id))
-		} else {
-			//创建商店
-			sp = mgr.CreateShop(s)
-		}
-		err := sp.SetValue(s)
-		if err == nil {
-			ofs := sp.(shop.IOfflineShop)
-			err = ofs.SetShopValue(v)
-			if err == nil {
-				err = sp.Save()
-			}
-		}
-		return err
-	}
-	return merchant.ErrNoSuchMerchant
-}
-
-func (si *shopServiceImpl) SaveShop(mchId int64, v *shop.Shop) (int64, error) {
+func (si *shopServiceImpl) SaveShop_(mchId int64, v *shop.Shop) (int64, error) {
 	mch := si.mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
 		var shop shop.IShop
@@ -248,11 +259,14 @@ func (si *shopServiceImpl) GetOnlineShops(vendorId int64) []*shop.Shop {
 func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
 	return &proto.SShop{
 		Id:         sp.Id,
-		VendorId:   sp.VendorId,
+		MerchantId: sp.VendorId,
 		ShopName:   sp.ShopName,
-		Alias:      sp.Alias,
-		Host:       sp.Host,
-		Logo:       sp.Logo,
+		Config: &proto.SShopConfig{
+			Logo:  sp.Logo,
+			Host:  sp.Host,
+			Alias: sp.Alias,
+			Tel:   sp.Tel,
+		},
 		ShopTitle:  sp.ShopTitle,
 		ShopNotice: sp.ShopNotice,
 	}
@@ -260,19 +274,41 @@ func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
 
 func (si *shopServiceImpl) parse2OnlineShop(s *proto.SStore) (*shop.Shop, *shop.OnlineShop) {
 	sv := &shop.Shop{
-		Id:           s.ID,
+		Id:           s.Id,
 		Name:         s.Name,
-		VendorId:     s.VendorId,
+		VendorId:     s.MerchantId,
 		ShopType:     shop.TypeOnlineShop,
 		State:        s.State,
 		OpeningState: s.OpeningState,
 	}
 	ov := &shop.OnlineShop{}
-	ov.Id = s.ID
+	ov.Id = s.Id
 	ov.Addr = "" //todo:???
 	ov.Tel = s.StorePhone
 	ov.Logo = s.Logo
 	ov.ShopNotice = s.StoreNotice
 	ov.ShopTitle = s.StoreTitle
 	return sv, ov
+}
+
+func (si *shopServiceImpl) parseOfflineShop(r *proto.SStore) (*shop.Shop, *shop.OfflineShop) {
+	return &shop.Shop{
+			Id:           r.Id,
+			VendorId:     r.MerchantId,
+			ShopType:     shop.TypeOfflineShop,
+			Name:         r.Name,
+			State:        r.State,
+			OpeningState: r.OpeningState,
+			SortNum:      r.SortNumber,
+		}, &shop.OfflineShop{
+			ShopId:      int(r.Id),
+			Tel:         r.StorePhone,
+			Province:    r.Province,
+			City:        r.City,
+			District:    r.District,
+			Address:     r.DetailAddress,
+			Lng:         float32(r.Lng),
+			Lat:         float32(r.Lat),
+			CoverRadius: int(r.CoverRadius),
+		}
 }
