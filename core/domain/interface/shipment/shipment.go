@@ -36,6 +36,8 @@ type (
 		GetAggregateRootId() int64
 		// 获取值
 		Value() ShipmentOrder
+		// 获取发货商品
+		Items()[]*ShipmentItem
 		// 发货
 		Ship(spId int32, spOrderNo string) error
 		// 发货完成
@@ -56,7 +58,7 @@ type (
 		// 保存发货单
 		SaveShipmentOrder(o *ShipmentOrder) (int, error)
 		// 保存发货商品项
-		SaveShipmentItem(v *Item) (int, error)
+		SaveShipmentItem(v *ShipmentItem) (int, error)
 		// 删除发货单
 		DeleteShipmentOrder(id int64) error
 	}
@@ -86,10 +88,10 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 配送项目
-		Items []*Item `db:"-"`
+		Items []*ShipmentItem `db:"-"`
 	}
 	// 发货单详情
-	Item struct {
+	ShipmentItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 发货单编号

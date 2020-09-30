@@ -170,7 +170,7 @@ func OrmMapping(conn db.Connector) {
 
 	// Shipment
 	orm.Mapping(shipment.ShipmentOrder{}, "ship_order")
-	orm.Mapping(shipment.Item{}, "ship_item")
+	orm.Mapping(shipment.ShipmentItem{}, "ship_item")
 
 	// 产品
 	orm.Mapping(product.Product{}, "product")

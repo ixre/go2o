@@ -26,6 +26,7 @@ type shipmentOrderImpl struct {
 	expSp   *express.ExpressProvider
 }
 
+
 func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRepo,
 	expRepo express.IExpressRepo) shipment.IShipmentOrder {
 	return &shipmentOrderImpl{
@@ -43,6 +44,11 @@ func (s *shipmentOrderImpl) GetAggregateRootId() int64 {
 // 获取值
 func (s *shipmentOrderImpl) Value() shipment.ShipmentOrder {
 	return *s.value
+}
+
+// 获取发货商品
+func (s *shipmentOrderImpl) Items() []*shipment.ShipmentItem {
+	return s.value.Items
 }
 
 func (s *shipmentOrderImpl) getExpressProvider(spId int32) *express.ExpressProvider {

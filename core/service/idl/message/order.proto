@@ -217,6 +217,11 @@ message ComplexItemsResponse {
     repeated SOrderItem Value = 1;
 }
 
+// 订单编号
+message OrderId{
+    int64 Value = 1;
+}
+
 //　订单号
 message OrderNo {
     //　订单号

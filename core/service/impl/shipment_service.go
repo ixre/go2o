@@ -24,6 +24,7 @@ type shipmentServiceImpl struct {
 	repo         shipment.IShipmentRepo
 	deliveryRepo delivery.IDeliveryRepo
 	expressRepo  express.IExpressRepo
+	serviceUtil
 }
 
 // 获取快递服务
@@ -37,18 +38,28 @@ func NewShipmentService(rep shipment.IShipmentRepo,
 }
 
 // 创建一个配送覆盖的区域
-func (s *shipmentServiceImpl) CreateCoverageArea(c *delivery.CoverageValue) (int32, error) {
-	return s.deliveryRepo.SaveCoverageArea(c)
+func (s *shipmentServiceImpl) CreateCoverageArea_(_ context.Context, r *proto.SCoverageValue) (*proto.Result, error) {
+	v  := s.parseCoverArea(r)
+	_,err := s.deliveryRepo.SaveCoverageArea(v)
+	return s.error(err),nil
 }
 
 // 获取订单的发货单信息
-func (s *shipmentServiceImpl) GetShipOrderOfOrder(orderId int64, sub bool) *shipment.ShipmentOrder {
-	arr := s.repo.GetShipOrders(orderId, sub)
-	if arr != nil && len(arr) > 0 {
-		v := arr[0].Value()
-		return &v
+func (s *shipmentServiceImpl) GetShipOrderOfOrder(_ context.Context, r *proto.OrderId) (*proto.ShipmentOrderListResponse, error) {
+	list := s.repo.GetShipOrders(r.Value, true)
+	arr := make([]*proto.SShipmentOrder,len(list))
+	if list != nil  {
+		for i,v := range list{
+			dst := s.parseShipOrderDto(v.Value())
+			items := v.Items()
+			dst.Items = make([]*proto.SShipmentItem,len(items))
+			for i,v := range items{
+				dst.Items[i] = s.parseShipItemDto(v)
+			}
+			arr[i] = dst
+		}
 	}
-	return nil
+	return &proto.ShipmentOrderListResponse{Value:arr},nil
 }
 
 func (s *shipmentServiceImpl) GetLogisticFlowTrack(_ context.Context, r *proto.LogisticFlowTrackRequest) (*proto.SShipOrderTrack, error) {
@@ -112,4 +123,43 @@ func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, rq *pr
 		}
 	}
 	return nil, nil
+}
+
+func (s *shipmentServiceImpl) parseCoverArea(r *proto.SCoverageValue) *delivery.CoverageValue {
+	return &delivery.CoverageValue{
+		Id:      int32(r.Id),
+		Name:    r.Name,
+		Lng:     r.Lng,
+		Lat:     r.Lat,
+		Radius:  int(r.Radius),
+		Address: r.Address,
+		AreaId:  int32(r.AreaId),
+	}
+}
+
+func (s *shipmentServiceImpl) parseShipOrderDto(v shipment.ShipmentOrder) *proto.SShipmentOrder {
+	return &proto.SShipmentOrder{
+		Id:                   v.ID,
+		OrderId:              v.OrderId,
+		SubOrderId:           v.SubOrderId,
+		ExpressSpId:          int64(v.SpId),
+		ShipOrderNo:          v.SpOrder,
+		ShipmentLog:          v.ShipmentLog,
+		Amount:               v.Amount,
+		FinalAmount:          v.FinalAmount,
+		ShipTime:             v.ShipTime,
+		State:                int32(v.State),
+		UpdateTime:           v.UpdateTime,
+		Items:                nil,
+	}
+}
+
+func (s *shipmentServiceImpl) parseShipItemDto(v *shipment.ShipmentItem) *proto.SShipmentItem {
+	return &proto.SShipmentItem{
+		Id:                   v.ID,
+		SnapshotId:           v.SnapshotId,
+		Quantity:             v.Quantity,
+		Amount:               v.Amount,
+		FinalAmount:          v.FinalAmount,
+	}
 }

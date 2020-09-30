@@ -61,6 +61,7 @@ func (s *shipmentRepo) GetShipOrders(orderId int64, sub bool) []shipment.IShipme
 	}
 	orders := make([]shipment.IShipmentOrder, len(list))
 	for i, v := range list {
+		v.Items = s.loadItems(v.ID)
 		orders[i] = s.CreateShipmentOrder(v)
 	}
 	return orders
@@ -72,11 +73,17 @@ func (s *shipmentRepo) SaveShipmentOrder(o *shipment.ShipmentOrder) (int, error)
 }
 
 // 保存发货商品项
-func (s *shipmentRepo) SaveShipmentItem(v *shipment.Item) (int, error) {
+func (s *shipmentRepo) SaveShipmentItem(v *shipment.ShipmentItem) (int, error) {
 	return orm.Save(s.GetOrm(), v, int(v.ID))
 }
 
 // 删除发货单
 func (s *shipmentRepo) DeleteShipmentOrder(id int64) error {
 	return s.GetOrm().DeleteByPk(&shipment.ShipmentOrder{}, id)
+}
+
+func (s *shipmentRepo) loadItems(shipOrderId int64) []*shipment.ShipmentItem {
+	var list []*shipment.ShipmentItem
+	_ = s.GetOrm().Select(&list, "ship_order = $1", shipOrderId)
+	return list
 }
