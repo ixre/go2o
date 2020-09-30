@@ -117,7 +117,7 @@ func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
 
 func (m *merchantRepo) cleanCache(mchId int64) {
 	key := m.getMchCacheKey(mchId)
-	m.storage.Del(key)
+	m.storage.Delete(key)
 	PrefixDel(m.storage, key+":*")
 }
 

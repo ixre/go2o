@@ -92,16 +92,14 @@ func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.ShopId) (*pr
 func (si *shopServiceImpl) CheckMerchantShopState(_ context.Context, id *proto.MerchantId) (*proto.CheckShopResponse, error) {
 	sp := si.shopRepo.GetOnlineShopOfMerchant(int(id.Value))
 	ret := &proto.CheckShopResponse{}
-	if sp != nil{
+	if sp != nil {
 		ret.Status = 1
 		ret.Remark = "已开通"
-	}else{
+	} else {
 		//todo: 返回审核中状态
 	}
-	return ret,nil
+	return ret, nil
 }
-
-
 
 // 根据主机头获取店铺编号
 func (si *shopServiceImpl) QueryShopByHost(_ context.Context, host *proto.String) (*proto.Int64, error) {
@@ -268,7 +266,7 @@ func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
 	return &proto.SShop{
 		Id:         sp.Id,
 		MerchantId: sp.VendorId,
-		Name:   sp.ShopName,
+		Name:       sp.ShopName,
 		Config: &proto.SShopConfig{
 			Logo:  sp.Logo,
 			Host:  sp.Host,
@@ -321,15 +319,15 @@ func (si *shopServiceImpl) parseOfflineShop(r *proto.SStore) (*shop.Shop, *shop.
 		}
 }
 
-func (si *shopServiceImpl) parseShopDto(v shop.Shop) *proto.SShop{
+func (si *shopServiceImpl) parseShopDto(v shop.Shop) *proto.SShop {
 	return &proto.SShop{
-		Id:                   v.Id,
-		MerchantId:           v.VendorId,
-		Name:             v.Name,
-		ShopTitle:            "",
-		ShopNotice:           "",
-		Flag:                 0,
-		Config:               &proto.SShopConfig{},
-		State:                v.State,
+		Id:         v.Id,
+		MerchantId: v.VendorId,
+		Name:       v.Name,
+		ShopTitle:  "",
+		ShopNotice: "",
+		Flag:       0,
+		Config:     &proto.SShopConfig{},
+		State:      v.State,
 	}
 }

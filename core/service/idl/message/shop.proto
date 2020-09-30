@@ -1,7 +1,6 @@
 syntax = "proto3";
 option go_package = ".;proto";
 
-
 // 店铺
 message SShop {
     /** 店铺编号 */
@@ -23,7 +22,7 @@ message SShop {
 }
 
 // 店铺设置
-message SShopConfig{
+message SShopConfig {
     /** 店铺标志 */
     string Logo = 4;
     /** 自定义 域名 */
@@ -35,9 +34,13 @@ message SShopConfig{
 }
 
 // 店铺编号
-message ShopId {int64 Value = 1;}
+message ShopId {
+    int64 Value = 1;
+}
 // 门店编号
-message StoreId {int64 Value = 1;}
+message StoreId {
+    int64 Value = 1;
+}
 
 // 店铺
 message SStore {
@@ -70,9 +73,9 @@ message SStore {
 }
 
 // 检查店铺结果
-message CheckShopResponse{
+message CheckShopResponse {
     int64 ShopId = 1;
     // 店铺开通状态,0:未开通 1:已开通 2:待审核 3:审核不通过
     int32 Status = 2;
-    string Remark= 3;
+    string Remark = 3;
 }

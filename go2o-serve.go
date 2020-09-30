@@ -13,11 +13,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/ixre/gof"
-	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/web"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
-	"go2o/app/cache"
 	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
@@ -122,7 +120,6 @@ func main() {
 	}
 	go core.SignalNotify(ch, core.AppDispose)
 	gof.CurrentApp = newApp
-	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	web.Initialize(web.Options{
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,

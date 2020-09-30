@@ -17,7 +17,7 @@ func TestPagingIntegralLog(t *testing.T) {
 		Parameters: nil,
 		SortBy:     "",
 		Begin:      0,
-		Over:       10,
+		End:       10,
 	}
 	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
@@ -34,7 +34,7 @@ func TestPagingWalletLog(t *testing.T) {
 		Parameters: nil,
 		SortBy:     "",
 		Begin:      0,
-		Over:       10,
+		End:       10,
 	}
 	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
@@ -51,7 +51,7 @@ func TestCheckTradePwd(t *testing.T) {
 	//r2,_ := impl.MemberService.ModifyTradePwd(context.TODO(),int64(memberId),"",pwd)
 	//t.Logf("%#v", r2)
 
-	r, _ := impl.MemberService.CheckTradePwd(context.TODO(),
+	r, _ := impl.MemberService.VerifyTradePwd(context.TODO(),
 		&proto.CheckTradePwdRequest{
 			MemberId: int64(memberId),
 			TradePwd: pwd,

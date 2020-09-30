@@ -56,24 +56,26 @@ func (e EtcdStorage) Exists(key string) (exists bool) {
 	return err == nil && v.Kvs != nil
 }
 
+//Set
 func (e EtcdStorage) Set(key string, v interface{}) error {
-	j, err := e.serialize(v)
+	//j, err := e.serialize(v)
+	bytes, err := e.marshal(v)
 	if err == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
-		_, err = e.cli.Put(ctx, key, string(j))
+		_, err = e.cli.Put(ctx, key, string(bytes))
 		cancel()
 	}
 	return err
 }
 
 func (e EtcdStorage) SetExpire(key string, v interface{}, seconds int64) error {
-	j, err := json.Marshal(v)
+	bytes, err := e.marshal(v)
 	if err == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 		var rsp *clientv3.LeaseGrantResponse
 		rsp, err = e.cli.Grant(ctx, seconds)
 		if err == nil {
-			_, err = e.cli.Put(ctx, key, string(j), clientv3.WithLease(rsp.ID))
+			_, err = e.cli.Put(ctx, key, string(bytes), clientv3.WithLease(rsp.ID))
 		}
 		cancel()
 	}
@@ -83,7 +85,7 @@ func (e EtcdStorage) SetExpire(key string, v interface{}, seconds int64) error {
 func (e EtcdStorage) Get(key string, dst interface{}) error {
 	s, err := e.GetBytes(key)
 	if err == nil {
-		err = json.Unmarshal(s, &dst)
+		err = e.unmarshal(s, &dst)
 	}
 	return err
 }
@@ -146,10 +148,26 @@ func (e EtcdStorage) GetBytes(key string) ([]byte, error) {
 	return []byte(nil), err
 }
 
-func (e EtcdStorage) Del(key string) {
+func (e EtcdStorage) Delete(key string) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	_, _ = e.cli.Delete(ctx, key)
 	cancel()
+}
+
+func (e EtcdStorage) DeleteWith(prefix string) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	ret, _ := e.cli.Get(ctx, prefix, clientv3.WithPrefix())
+	var err error
+	if ret.Count > 0 {
+		for _, v := range ret.Kvs {
+			_, err = e.cli.Delete(ctx, string(v.Key))
+			if err != nil {
+				break
+			}
+		}
+	}
+	cancel()
+	return int(ret.Count), err
 }
 
 func (e EtcdStorage) RWJson(key string, dst interface{}, src func() interface{}, second int64) error {
@@ -166,9 +184,9 @@ func (e EtcdStorage) RWJson(key string, dst interface{}, src func() interface{},
 			jsonBytes, err = json.Marshal(dst)
 			if err == nil {
 				if second > 0 {
-					e.SetExpire(key, jsonBytes, second)
+					_ = e.SetExpire(key, jsonBytes, second)
 				} else {
-					e.Set(key, jsonBytes)
+					_ = e.Set(key, jsonBytes)
 				}
 			}
 		}
@@ -176,7 +194,7 @@ func (e EtcdStorage) RWJson(key string, dst interface{}, src func() interface{},
 	return err
 }
 
-func (e EtcdStorage) serialize(v interface{}) (string, error) {
+func (e EtcdStorage) marshal(v interface{}) (string, error) {
 	s, b := types.ToString(v)
 	if !b {
 		if j, err := json.Marshal(v); err != nil {
@@ -186,4 +204,9 @@ func (e EtcdStorage) serialize(v interface{}) (string, error) {
 		}
 	}
 	return s, nil
+}
+
+func (e EtcdStorage) unmarshal(s []byte, dst *interface{}) error {
+	//err = storage.DecodeBytes(s,&dst)
+	return json.Unmarshal(s, &dst)
 }

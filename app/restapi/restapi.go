@@ -10,20 +10,13 @@ package restapi
 
 import (
 	"context"
-	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
 	"github.com/labstack/echo"
-	"go2o/app/cache"
 	"go2o/core/service"
 	"go2o/core/service/proto"
 	"net/http"
 	"strconv"
 )
-
-// 获取存储
-func GetStorage() storage.Interface {
-	return store
-}
 
 // 获取传入的商户接口编号和密钥
 func getUserInfo(c echo.Context) (string, string) {
@@ -95,8 +88,8 @@ func ApiTest(c echo.Context) error {
 // 检查是否有权限
 func CheckApiPermission(apiId string, secret string) (bool, int64) {
 	if len(apiId) != 0 && len(secret) != 0 {
-		mchId := cache.GetMerchantIdByApiId(apiId)
-		var apiInfo = cache.GetMerchantApiInfo(mchId)
+		mchId := GetMerchantIdByApiId(apiId)
+		var apiInfo = GetMerchantApiInfo(mchId)
 		if apiInfo != nil {
 			return apiInfo.ApiSecret == secret, mchId
 		}

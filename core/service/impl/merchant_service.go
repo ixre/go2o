@@ -111,7 +111,9 @@ func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.Merchan
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
 		v := mch.ProfileManager().GetEnterpriseInfo()
-		return m.parseEnterpriseInfoDto(v), nil
+		if v != nil {
+			return m.parseEnterpriseInfoDto(v), nil
+		}
 	}
 	return nil, nil
 }

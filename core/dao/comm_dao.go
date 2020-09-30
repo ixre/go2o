@@ -83,7 +83,7 @@ func (c *CommonDao) SaveQrTemplate(q *model.CommQrTemplate) error {
 	}
 	_, err := orm.Save(c._orm, q, int(q.Id))
 	if err == nil {
-		c.storage.Del(qrStoKey)
+		c.storage.Delete(qrStoKey)
 	}
 	return err
 }
@@ -92,7 +92,7 @@ func (c *CommonDao) SaveQrTemplate(q *model.CommQrTemplate) error {
 func (c *CommonDao) DelQrTemplate(id int32) error {
 	err := c._orm.DeleteByPk(model.CommQrTemplate{}, id)
 	if err == nil {
-		c.storage.Del(qrStoKey)
+		c.storage.Delete(qrStoKey)
 	}
 	return err
 }
@@ -228,7 +228,7 @@ func (p *CommonDao) SetFloorAd(catId int32, posId int32) (err error) {
 	e.AdIndex = 0
 	_, err = p.SavePortalFloorAd(&e)
 	if err == nil {
-		p.storage.Del(fmt.Sprintf("go2o:portal:floor-ad:%d", catId))
+		p.storage.Delete(fmt.Sprintf("go2o:portal:floor-ad:%d", catId))
 	}
 	return err
 }

@@ -210,9 +210,9 @@ func GetRedisConn() redis.Conn {
 
 // 清除redis缓存
 func CleanRedisCache(app gof.App) {
-	rs := app.Storage().(storage.IRedisStorage)
+	rs := app.Storage()
 	if rs != nil {
-		i, err := rs.DelWith("go2o:*")
+		i, err := rs.DeleteWith("go2o:*")
 		if err != nil {
 			log.Println("[ Go2o][ Redis][ Clean]: Error ", err.Error())
 		} else {

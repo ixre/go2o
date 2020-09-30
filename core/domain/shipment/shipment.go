@@ -26,7 +26,6 @@ type shipmentOrderImpl struct {
 	expSp   *express.ExpressProvider
 }
 
-
 func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRepo,
 	expRepo express.IExpressRepo) shipment.IShipmentOrder {
 	return &shipmentOrderImpl{

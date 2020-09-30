@@ -60,7 +60,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int, error) {
 	id, err := orm.Save(c.GetOrm(), v, int(v.Id))
 	// 清理缓存
 	if err == nil {
-		c.storage.Del(c.getCategoryCacheKey(id))
+		c.storage.Delete(c.getCategoryCacheKey(id))
 		PrefixDel(c.storage, "go2o:repo:cat:list")
 	}
 	return id, err
@@ -88,7 +88,7 @@ func (c *categoryRepo) DeleteCategory(mchId int64, id int) error {
 
 	// 清理缓存
 	if err == nil {
-		c.storage.Del(c.getCategoryCacheKey(id))
+		c.storage.Delete(c.getCategoryCacheKey(id))
 		PrefixDel(c.storage, "go2o:repo:cat:list")
 	}
 

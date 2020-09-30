@@ -196,7 +196,7 @@ func (b *Bank4E) checkLatestInfo(memberId int64, realName, idCard, phone, bankAc
 
 func (b *Bank4E) removeLatestInfo(memberId int64) {
 	key := "sys:go2o:b4e:last-post:" + strconv.Itoa(int(memberId))
-	b.storage.Del(key)
+	b.storage.Delete(key)
 }
 
 // 打开/关闭重复信息验证

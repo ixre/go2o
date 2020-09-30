@@ -37,7 +37,7 @@ type (
 		// 获取值
 		Value() ShipmentOrder
 		// 获取发货商品
-		Items()[]*ShipmentItem
+		Items() []*ShipmentItem
 		// 发货
 		Ship(spId int32, spOrderNo string) error
 		// 发货完成

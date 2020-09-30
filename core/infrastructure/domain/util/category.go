@@ -10,7 +10,6 @@ package util
 
 import (
 	"github.com/ixre/gof/algorithm/iterator"
-	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/product"
 	"go2o/core/service/proto"
 )
@@ -51,8 +50,8 @@ func WalkSaleCategory(cs []*proto.SProductCategory, v *product.Category, start i
 // 迭代栏目
 func WalkArticleCategory(cs *proto.ArticleCategoriesResponse, v *proto.SArticleCategory, start iterator.WalkFunc, over iterator.WalkFunc) {
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
-		return v1.(*content.ArticleCategory).ParentId ==
-			v.(*content.ArticleCategory).ID
+		return v1.(*proto.SArticleCategory).ParentId ==
+			v.(*proto.SArticleCategory).Id
 	}
 	var arr = make([]interface{}, len(cs.Value))
 	for i, v := range cs.Value {

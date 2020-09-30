@@ -3,7 +3,6 @@ option go_package = ".;proto";
 import "global.proto";
 import "message/shop.proto";
 
-
 // 商店服务
 service ShopService {
     /** 获取店铺,shopId */
@@ -12,7 +11,8 @@ service ShopService {
     /** 获取商户的店铺,vendorId */
     //rpc GetVendorShop_ (Int64) returns (SShop) {}
     // 检查商户是否开通店铺
-    rpc CheckMerchantShopState(MerchantId)returns(CheckShopResponse){}
+    rpc CheckMerchantShopState (MerchantId) returns (CheckShopResponse) {
+    }
 
     /** 获取门店,storeId */
     rpc GetStore (StoreId) returns (SStore) {
@@ -26,13 +26,13 @@ service ShopService {
     rpc TurnShop (TurnShopRequest) returns (Result) {
     }
     // 保存门店
-    rpc SaveShop(SShop) returns (Result) {
+    rpc SaveShop (SShop) returns (Result) {
     }
     // 保存门店
-    rpc SaveOfflineShop(SStore)returns(Result) {
+    rpc SaveOfflineShop (SStore) returns (Result) {
     }
     // 删除商店
-    rpc DeleteStore(StoreId)returns(Result) {
+    rpc DeleteStore (StoreId) returns (Result) {
     }
 }
 

@@ -9,10 +9,10 @@ message SAdGroup {
     bool Opened = 3;
     bool Enabled = 4;
 }
-message AdPositionId{
+message AdPositionId {
     int64 Value = 1;
 }
-message AdGroupListResponse{
+message AdGroupListResponse {
     repeated SAdGroup Value = 1;
 }
 
@@ -102,45 +102,45 @@ message SImage {
     bool Enabled = 7;
 }
 
-message SetDefaultAdRequest{
-    int64 GroupId =1;
+message SetDefaultAdRequest {
+    int64 GroupId = 1;
     int64 PosId = 2;
     int64 AdId = 3;
 }
-message SetUserAdRequest{
-    int64 AdUserId =1;
+message SetUserAdRequest {
+    int64 AdUserId = 1;
     int64 PosId = 2;
     int64 AdId = 3;
 }
-message AdIdRequest{
-    int64 AdUserId =1;
+message AdIdRequest {
+    int64 AdUserId = 1;
     int64 AdId = 2;
 }
 
-message AdKeyRequest{
-    int64 AdUserId =1;
+message AdKeyRequest {
+    int64 AdUserId = 1;
     string AdPosKey = 2;
 }
 
-message SaveAdRequest{
-    int64 AdUserId =1;
+message SaveAdRequest {
+    int64 AdUserId = 1;
     SAd Value = 2;
 }
 
-message SaveLinkAdRequest{
-    int64 AdUserId =1;
+message SaveLinkAdRequest {
+    int64 AdUserId = 1;
     int64 AdId = 2;
     SHyperLink Value = 3;
 }
 
-message SaveImageAdRequest{
-    int64 AdUserId =1;
+message SaveImageAdRequest {
+    int64 AdUserId = 1;
     int64 AdId = 2;
     SImage Value = 3;
 }
 
-message ImageAdIdRequest{
-    int64 AdUserId =1;
+message ImageAdIdRequest {
+    int64 AdUserId = 1;
     int64 AdId = 2;
     int64 ImageId = 3;
 }

@@ -193,7 +193,7 @@ func (r *valueRepo) DeleteValue(key string) error {
 		r.kvMux.Lock()
 		delete(r.kvMap, key)
 		r.kvMux.Unlock()
-		r.storage.Del("go2o:repo:kv:" + key)
+		r.storage.Delete("go2o:repo:kv:" + key)
 	}
 	return err
 }

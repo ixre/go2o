@@ -12,8 +12,8 @@ message SCoverageValue {
     int64 AreaId = 7;
 }
 
-message ShipmentOrderListResponse{
-    repeated SShipmentOrder Value= 1;
+message ShipmentOrderListResponse {
+    repeated SShipmentOrder Value = 1;
 }
 // 发货单
 message SShipmentOrder {
@@ -42,7 +42,6 @@ message SShipmentOrder {
     // 配送项目
     repeated SShipmentItem Items = 12;
 }
-
 
 // 发货单详情
 message SShipmentItem {

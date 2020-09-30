@@ -17,7 +17,6 @@ import (
 	"github.com/ixre/gof/util"
 	"go2o/core"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"go2o/core/variable"
 	"log"
@@ -110,9 +109,10 @@ func superviseMemberUpdate(ss []Service) {
 
 // 监视支付单完成
 func supervisePaymentOrderFinish(ss []Service) {
-	sv := impl.PaymentService
 	notify := func(id int, ss []Service) {
-		order, _ := sv.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
+		trans, cli, _ := service.PaymentServiceClient()
+		defer trans.Close()
+		order, _ := cli.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
 		if order != nil {
 			for _, v := range ss {
 				if !v.PaymentOrderObs(order) {
