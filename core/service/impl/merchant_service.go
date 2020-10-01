@@ -410,8 +410,10 @@ func (m *merchantService) SaveGroupRebateRate(_ context.Context, r *proto.SaveWh
 	return m.error(err), nil
 }
 
-func (m *merchantService) GetAllTradeConf(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
-	panic("implement me")
+func (m *merchantService) GetAllTradeConf_(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
+	return &proto.STradeConfListResponse{
+		Value: make([]*proto.STradeConf_, 0),
+	}, nil
 }
 
 func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCreateRequest) (*proto.Result, error) {

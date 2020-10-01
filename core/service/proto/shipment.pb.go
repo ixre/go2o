@@ -36,7 +36,7 @@ func (m *SCoverageValue) Reset()         { *m = SCoverageValue{} }
 func (m *SCoverageValue) String() string { return proto.CompactTextString(m) }
 func (*SCoverageValue) ProtoMessage()    {}
 func (*SCoverageValue) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shipment_a83b16b3d7af732f, []int{0}
+	return fileDescriptor_shipment_1324f2384cd4c094, []int{0}
 }
 func (m *SCoverageValue) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SCoverageValue.Unmarshal(m, b)
@@ -116,7 +116,7 @@ func (m *ShipmentOrderListResponse) Reset()         { *m = ShipmentOrderListResp
 func (m *ShipmentOrderListResponse) String() string { return proto.CompactTextString(m) }
 func (*ShipmentOrderListResponse) ProtoMessage()    {}
 func (*ShipmentOrderListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shipment_a83b16b3d7af732f, []int{1}
+	return fileDescriptor_shipment_1324f2384cd4c094, []int{1}
 }
 func (m *ShipmentOrderListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ShipmentOrderListResponse.Unmarshal(m, b)
@@ -178,7 +178,7 @@ func (m *SShipmentOrder) Reset()         { *m = SShipmentOrder{} }
 func (m *SShipmentOrder) String() string { return proto.CompactTextString(m) }
 func (*SShipmentOrder) ProtoMessage()    {}
 func (*SShipmentOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shipment_a83b16b3d7af732f, []int{2}
+	return fileDescriptor_shipment_1324f2384cd4c094, []int{2}
 }
 func (m *SShipmentOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShipmentOrder.Unmarshal(m, b)
@@ -303,7 +303,7 @@ func (m *SShipmentItem) Reset()         { *m = SShipmentItem{} }
 func (m *SShipmentItem) String() string { return proto.CompactTextString(m) }
 func (*SShipmentItem) ProtoMessage()    {}
 func (*SShipmentItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shipment_a83b16b3d7af732f, []int{3}
+	return fileDescriptor_shipment_1324f2384cd4c094, []int{3}
 }
 func (m *SShipmentItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShipmentItem.Unmarshal(m, b)
@@ -371,7 +371,7 @@ func (m *LogisticFlowTrackRequest) Reset()         { *m = LogisticFlowTrackReque
 func (m *LogisticFlowTrackRequest) String() string { return proto.CompactTextString(m) }
 func (*LogisticFlowTrackRequest) ProtoMessage()    {}
 func (*LogisticFlowTrackRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shipment_a83b16b3d7af732f, []int{4}
+	return fileDescriptor_shipment_1324f2384cd4c094, []int{4}
 }
 func (m *LogisticFlowTrackRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LogisticFlowTrackRequest.Unmarshal(m, b)
@@ -424,7 +424,7 @@ func (m *OrderLogisticTrackRequest) Reset()         { *m = OrderLogisticTrackReq
 func (m *OrderLogisticTrackRequest) String() string { return proto.CompactTextString(m) }
 func (*OrderLogisticTrackRequest) ProtoMessage()    {}
 func (*OrderLogisticTrackRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shipment_a83b16b3d7af732f, []int{5}
+	return fileDescriptor_shipment_1324f2384cd4c094, []int{5}
 }
 func (m *OrderLogisticTrackRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OrderLogisticTrackRequest.Unmarshal(m, b)
@@ -485,7 +485,7 @@ func (m *SShipOrderTrack) Reset()         { *m = SShipOrderTrack{} }
 func (m *SShipOrderTrack) String() string { return proto.CompactTextString(m) }
 func (*SShipOrderTrack) ProtoMessage()    {}
 func (*SShipOrderTrack) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shipment_a83b16b3d7af732f, []int{6}
+	return fileDescriptor_shipment_1324f2384cd4c094, []int{6}
 }
 func (m *SShipOrderTrack) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShipOrderTrack.Unmarshal(m, b)
@@ -578,7 +578,7 @@ func (m *SShipFlow) Reset()         { *m = SShipFlow{} }
 func (m *SShipFlow) String() string { return proto.CompactTextString(m) }
 func (*SShipFlow) ProtoMessage()    {}
 func (*SShipFlow) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shipment_a83b16b3d7af732f, []int{7}
+	return fileDescriptor_shipment_1324f2384cd4c094, []int{7}
 }
 func (m *SShipFlow) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShipFlow.Unmarshal(m, b)
@@ -630,9 +630,9 @@ func init() {
 	proto.RegisterType((*SShipFlow)(nil), "SShipFlow")
 }
 
-func init() { proto.RegisterFile("message/shipment.proto", fileDescriptor_shipment_a83b16b3d7af732f) }
+func init() { proto.RegisterFile("message/shipment.proto", fileDescriptor_shipment_1324f2384cd4c094) }
 
-var fileDescriptor_shipment_a83b16b3d7af732f = []byte{
+var fileDescriptor_shipment_1324f2384cd4c094 = []byte{
 	// 626 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x54, 0xcd, 0x6e, 0xd3, 0x40,
 	0x10, 0x96, 0xe3, 0xb8, 0x89, 0xa7, 0x25, 0x85, 0x15, 0xaa, 0xb6, 0x08, 0x21, 0xcb, 0x02, 0x29,

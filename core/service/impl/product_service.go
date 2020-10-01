@@ -518,7 +518,7 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 	return &proto.SProductCategory{
 		Id:          int64(v.Id),
 		ParentId:    int64(v.ParentId),
-		ModelId:     int64(v.ProdModel),
+		ModelId:     int64(v.ModelId),
 		Priority:    int32(v.Priority),
 		Name:        v.Name,
 		IsVirtual:   v.VirtualCat == 1,
@@ -540,7 +540,7 @@ func (p *productService) parseCategory(v *proto.SProductCategory) *product.Categ
 	return &product.Category{
 		Id:         int(v.Id),
 		ParentId:   int(v.ParentId),
-		ProdModel:  int(v.ModelId),
+		ModelId:    int(v.ModelId),
 		Priority:   int(v.Priority),
 		Name:       v.Name,
 		VirtualCat: types.IntCond(v.IsVirtual, 1, 0),

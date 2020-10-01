@@ -9,11 +9,8 @@
 package format
 
 import (
-	"fmt"
-	"github.com/ixre/gof"
 	"go2o/core/infrastructure"
 	"go2o/core/variable"
-	"strconv"
 	"strings"
 )
 
@@ -24,17 +21,21 @@ var (
 	picCfgLoaded bool
 )
 
-//todo: not used
-// 格式化商品编号，不足位用０补齐
-func FormatGoodsNo(d int) string {
-	const l int = 6
-	s := strconv.Itoa(d)
-	sl := len(s)
-	if sl >= 6 {
-		return s
-	}
-	return strings.Repeat("0", l-sl) + s
-}
+var GlobalImageServer = ""
+
+//func getImageServe() string {
+//	repo :=
+//	ctx := context.TODO()
+//	fn := func(k string)string{
+//		ret,_ := cli.GetValue(ctx,&proto.String{Value:k})
+//		return ret.Value
+//	}
+//	protocol := fn(registry.HttpProtocols)
+//	domain := fn(registry.Domain)
+//	prefix := fn(registry.DomainPrefixImage)
+//	trans.Close()
+//	return fmt.Sprintf("%s://%s%s",protocol,prefix,domain)
+//}
 
 // 获取无图片地址
 func GetNoPicPath() string {
@@ -51,21 +52,10 @@ func containProto(s string) bool {
 		strings.HasPrefix(s, "https://")
 }
 
-func getImageServe() string {
-	app := gof.CurrentApp
-	cfg := app.Config()
-	s := cfg.GetString(variable.ImageServer)
-	if containProto(s) {
-		return s
-	}
-	return fmt.Sprintf("//www.%s%s",
-		cfg.GetString(variable.ServerDomain), s)
-}
-
 // 获取资源前缀
 func GetResUrlPrefix() string {
 	if len(imageServe) == 0 {
-		imageServe = getImageServe()
+		imageServe = GlobalImageServer
 	}
 	return imageServe
 }
@@ -75,7 +65,7 @@ func GetGoodsImageUrl(image string) string {
 	if !picCfgLoaded {
 		ctx := infrastructure.GetApp()
 		if len(imageServe) == 0 {
-			imageServe = getImageServe()
+			imageServe = GlobalImageServer
 		}
 
 		if len(noPicUrl) == 0 {
@@ -99,7 +89,7 @@ func GetResUrl(image string) string {
 	if !picCfgLoaded {
 		ctx := infrastructure.GetApp()
 		if len(imageServe) == 0 {
-			imageServe = getImageServe()
+			imageServe = GlobalImageServer
 		}
 
 		if len(noPicUrl) == 0 {

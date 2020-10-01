@@ -338,7 +338,7 @@ func (r *valueRepo) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 	if r.globMchSaleConf == nil {
 		v := DefaultGlobMchSaleConf
 		r.globMchSaleConf = &v
-		r.mscGob.Unmarshal(r.globMchSaleConf)
+		//r.mscGob.Unmarshal(r.globMchSaleConf)
 	}
 	return *r.globMchSaleConf
 }

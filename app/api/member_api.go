@@ -318,7 +318,7 @@ func (m *MemberApi) invites(ctx api.Context, memberId int64) *api.Response {
 	trans2, cli2, _ := service.RegistryServiceClient()
 	defer trans2.Close()
 	mp1, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.Domain})
-	mp2, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.DomainEnabledSSL})
+	mp2, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.HttpProtocols})
 	mp3, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.DomainPrefixMember})
 	mp4, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.DomainPrefixMobileMember})
 	trans.Close()

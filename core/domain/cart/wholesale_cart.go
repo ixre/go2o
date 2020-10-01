@@ -577,7 +577,7 @@ func (c *wholesaleCartImpl) getItemJdoData(list []*cart.ItemPair,
 		}
 		skuV := it.GetSku(v.SkuId)
 		skuJdo := cart.WCartSkuJdo{
-			SkuId:            int64(v.SkuId),
+			SkuId:            v.SkuId,
 			SkuCode:          skuV.Code,
 			SkuImage:         format.GetResUrl(skuV.Image),
 			SpecWord:         skuV.SpecWord,
@@ -601,7 +601,7 @@ func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 	sku *cart.WCartSkuJdo, mp map[string]interface{}) {
 	prArr := itw.GetSkuPrice(sku.SkuId)
 	price := itw.GetWholesalePrice(sku.SkuId, sku.Quantity)
-	priceRange := [][]string{}
+	var priceRange [][]string
 	for _, v := range prArr {
 		priceRange = append(priceRange, []string{
 			strconv.Itoa(int(v.RequireQuantity)),
@@ -618,7 +618,7 @@ func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 
 // Jdo数据
 func (c *wholesaleCartImpl) JdoData(checkout bool, checked map[int64][]int64) *cart.WCartJdo {
-	items := []*cart.ItemPair{}
+	var items []*cart.ItemPair
 	if checked != nil {
 		items = c.CheckedItems(checked)
 	} else {

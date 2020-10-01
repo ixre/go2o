@@ -66,7 +66,7 @@ type (
 		// 上级分类
 		ParentId int `db:"parent_id"`
 		// 产品模型
-		ProdModel int `db:"prod_model"`
+		ModelId int `db:"prod_model"`
 		// 优先级
 		Priority int `db:"priority"`
 		// 分类名称

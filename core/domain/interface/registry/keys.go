@@ -3,8 +3,8 @@ package registry
 var (
 
 	/** 域名 */
-	// 是否启用SSL连接
-	DomainEnabledSSL = KeyFormat("DomainEnabledSsl")
+	// 访问协议,https或http
+	HttpProtocols = KeyFormat("HttpProtocols")
 	// 根域名
 	Domain = KeyFormat("Domain")
 	// 控制面板前缀

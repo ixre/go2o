@@ -55,6 +55,7 @@ Email: jarrysix#gmail.com
 func main() {
 	var (
 		ch            = make(chan bool)
+		domain        string
 		confFile      string
 		etcdEndPoints gof.ArrayFlags
 		port          int
@@ -73,6 +74,7 @@ func main() {
 	if len(defaultMqAddr) == 0 {
 		defaultMqAddr = "127.0.0.1:4222"
 	}
+	flag.StringVar(&domain, "domain", "http+go2o-dev.56x.net:14190", "protocols and domain,like https+baidu.com:8080")
 	flag.IntVar(&port, "port", 1427, "thrift service port")
 	flag.IntVar(&apiPort, "apiport", 1428, "api service port")
 	flag.Var(&etcdEndPoints, "endpoint", "")
@@ -124,7 +126,7 @@ func main() {
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
 	})
-	impl.Init(newApp, appFlag)
+	impl.Init(newApp, domain, appFlag)
 	//runGoMicro()
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
@@ -136,7 +138,7 @@ func main() {
 		go daemon.Run(newApp)
 	}
 	// 运行REST API
-	go restapi.Run(ch, newApp, apiPort)
+	go restapi.Run(ch, newApp, domain, apiPort)
 	<-ch
 }
 

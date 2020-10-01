@@ -17,7 +17,7 @@ func TestPagingIntegralLog(t *testing.T) {
 		Parameters: nil,
 		SortBy:     "",
 		Begin:      0,
-		End:       10,
+		End:        10,
 	}
 	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
@@ -34,7 +34,7 @@ func TestPagingWalletLog(t *testing.T) {
 		Parameters: nil,
 		SortBy:     "",
 		Begin:      0,
-		End:       10,
+		End:        10,
 	}
 	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{

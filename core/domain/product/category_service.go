@@ -102,7 +102,7 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 		val.Icon = v.Icon
 		val.IconXy = v.IconXy
 		// 设置产品模型
-		val.ProdModel = v.ProdModel
+		val.ModelId = v.ModelId
 		// 设置链接类型
 		if c.GetDomainId() > 0 && val.VirtualCat != v.VirtualCat {
 			return product.ErrIncorrectCategoryType
