@@ -111,7 +111,7 @@ type (
 		// 获取所有分类
 		GetCategories(mchId int) []*Category
 		// 获取关联的品牌
-		GetRelationBrands(idArr []int) []*promodel.ProBrand
+		GetRelationBrands(idArr []int) []*promodel.ProductBrand
 	}
 
 	// 公共分类服务
@@ -130,7 +130,7 @@ type (
 		// 递归获取下级分类
 		CategoryTree(parentId int) *Category
 		// 获取分类关联的品牌
-		RelationBrands(catId int) []*promodel.ProBrand
+		RelationBrands(catId int) []*promodel.ProductBrand
 	}
 )
 

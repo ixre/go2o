@@ -72,7 +72,7 @@ func (m *modelImpl) SetSpecs(s []*promodel.Spec) error {
 }
 
 // 获取关联的品牌编号
-func (m *modelImpl) Brands() []*promodel.ProBrand {
+func (m *modelImpl) Brands() []*promodel.ProductBrand {
 	return m.rep.BrandService().Brands(m.GetAggregateRootId())
 }
 

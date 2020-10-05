@@ -305,7 +305,7 @@ func (si *shopServiceImpl) parseOfflineShop(r *proto.SStore) (*shop.Shop, *shop.
 			Name:         r.Name,
 			State:        r.State,
 			OpeningState: r.OpeningState,
-			SortNum:      r.SortNumber,
+			SortNum:      r.SortNum,
 		}, &shop.OfflineShop{
 			ShopId:      int(r.Id),
 			Tel:         r.StorePhone,

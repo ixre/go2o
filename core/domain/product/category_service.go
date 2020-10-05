@@ -407,14 +407,14 @@ func (c *categoryManagerImpl) walkCategoryTree(node *product.Category,
 }
 
 // 获取分类关联的品牌
-func (c *categoryManagerImpl) RelationBrands(catId int) []*promodel.ProBrand {
+func (c *categoryManagerImpl) RelationBrands(catId int) []*promodel.ProductBrand {
 	p := c.GetCategory(catId)
 	if p != nil {
 		var idArr []int
 		c.childWalk(p, &idArr)
 		return c.repo.GetRelationBrands(idArr)
 	}
-	return []*promodel.ProBrand{}
+	return []*promodel.ProductBrand{}
 }
 
 func (c *categoryManagerImpl) childWalk(p product.ICategory, idArr *[]int) {

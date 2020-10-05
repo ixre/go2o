@@ -59,10 +59,13 @@ func (e EtcdStorage) Exists(key string) (exists bool) {
 //Set
 func (e EtcdStorage) Set(key string, v interface{}) error {
 	//j, err := e.serialize(v)
+	if v == nil{
+		return errors.New("value is nil")
+	}
 	bytes, err := e.marshal(v)
 	if err == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
-		_, err = e.cli.Put(ctx, key, string(bytes))
+		_, err = e.cli.Put(ctx, key, bytes)
 		cancel()
 	}
 	return err

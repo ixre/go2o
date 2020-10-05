@@ -127,15 +127,16 @@ func (c *categoryRepo) redirectGetCats() []*product.Category {
 }
 
 func (c *categoryRepo) GetCategories(mchId int) []*product.Category {
-	key := "go2o:repo:cat:list"
+	key := "go2o:gb:repo:cat:list"
 	var list []*product.Category
 	jsonStr, err := c.storage.GetBytes(key)
 	if err == nil {
+		println("---",string(jsonStr))
 		err = json.Unmarshal(jsonStr, &list)
 	}
 	if err != nil {
 		handleError(err)
-		err := c.Connector.GetOrm().Select(&list, "true ORDER BY sort_num DESC,id ASC")
+		err := c.Connector.GetOrm().Select(&list, "1=1 ORDER BY sort_num DESC,id ASC")
 		if err == nil {
 			b, _ := json.Marshal(list)
 			c.storage.Set(key, b)
@@ -145,8 +146,8 @@ func (c *categoryRepo) GetCategories(mchId int) []*product.Category {
 }
 
 // 获取关联的品牌
-func (c *categoryRepo) GetRelationBrands(idArr []int) []*promodel.ProBrand {
-	var list []*promodel.ProBrand
+func (c *categoryRepo) GetRelationBrands(idArr []int) []*promodel.ProductBrand {
+	var list []*promodel.ProductBrand
 	if len(idArr) > 0 {
 		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM product_model_brand
         WHERE pro_model IN (SELECT distinct pro_model FROM product_category WHERE id IN(`+

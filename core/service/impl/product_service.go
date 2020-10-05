@@ -46,7 +46,18 @@ func (p *productService) GetModel(_ context.Context, id *proto.ProductModelId) (
 			ret.Attrs[i] = attr
 		}
 		//　绑定规格
+		specList := im.Specs()
+		ret.Specs = make([]*proto.SProductSpec,len(specList))
+		for i,v := range specList{
+			spec := p.appendSpecItems(p.parseSpecDto(v),v.Items)
+			ret.Specs[i] = spec
+		}
 		// 绑定品牌
+		brands := im.Brands()
+		ret.Brands = make([]*proto.SProductBrand,len(brands))
+		for i,v := range brands{
+			ret.Brands[i] = p.parseBrandDto(v)
+		}
 		return ret, nil
 	}
 	return nil, nil
@@ -59,6 +70,16 @@ func (p *productService) appendAttrItems(attr *proto.SProductAttr, items []*prom
 	}
 	return attr
 }
+
+
+func (p *productService) appendSpecItems(spec *proto.SProductSpec, items promodel.SpecItemList)*proto.SProductSpec  {
+	spec.Items = make([]*proto.SProductSpecItem, len(items))
+	for i1, v1 := range items {
+		spec.Items[i1] = p.parseProductSpecItemDto(v1)
+	}
+	return spec
+}
+
 
 // 获取产品模型
 func (p *productService) GetModels(_ context.Context, _ *proto.Empty) (*proto.ProductModelListResponse, error) {
@@ -368,7 +389,7 @@ func (p *productService) CategoryTree(parentId int32) *product.Category {
 }
 
 // 获取分类关联的品牌
-func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
+func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 	arr := p.catRepo.GlobCatService().RelationBrands(int(catId))
 	for _, v := range arr {
 		v.Image = format.GetResUrl(v.Image)
@@ -488,7 +509,7 @@ func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAt
 		Name:       v.Name,
 		IsFilter:   v.IsFilter == 1,
 		MultiCheck: v.MultiChk == 1,
-		SortNumber: v.SortNum,
+		SortNum: v.SortNum,
 		ItemValues: v.ItemValues,
 		Items:      nil,
 	}
@@ -498,11 +519,11 @@ func (p *productService) parseProductAttrItemDto(v *promodel.AttrItem) *proto.SP
 	return &proto.SProductAttrItem{
 		Id:         int64(v.ID),
 		Value:      v.Value,
-		SortNumber: v.SortNum,
+		SortNum: v.SortNum,
 	}
 }
 
-func (p *productService) parseBrandDto(v *promodel.ProBrand) *proto.SProductBrand {
+func (p *productService) parseBrandDto(v *promodel.ProductBrand) *proto.SProductBrand {
 	return &proto.SProductBrand{
 		Id:          int64(v.ID),
 		Name:        v.Name,
@@ -526,7 +547,7 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 		Icon:        v.Icon,
 		IconPoint:   v.IconXy,
 		Level:       int32(v.Level),
-		SortNumber:  int32(v.SortNum),
+		SortNum:  int32(v.SortNum),
 		FloorShow:   v.FloorShow == 1,
 		Enabled:     v.Enabled == 1,
 		CreateTime:  v.CreateTime,
@@ -548,7 +569,7 @@ func (p *productService) parseCategory(v *proto.SProductCategory) *product.Categ
 		Icon:       v.Icon,
 		IconXy:     v.IconPoint,
 		Level:      int(v.Level),
-		SortNum:    int(v.SortNumber),
+		SortNum:    int(v.SortNum),
 		FloorShow:  types.IntCond(v.FloorShow, 1, 0),
 		Enabled:    types.IntCond(v.Enabled, 1, 0),
 	}
@@ -566,7 +587,7 @@ func (p *productService) parseProductDto(v product.Product) *proto.SProduct {
 		Description: v.Description,
 		Remark:      v.Remark,
 		State:       v.State,
-		SortNumber:  v.SortNum,
+		SortNum:  v.SortNum,
 		CreateTime:  v.CreateTime,
 		UpdateTime:  v.UpdateTime,
 	}
@@ -584,7 +605,7 @@ func (p *productService) parseProduct(v *proto.SProduct) *product.Product {
 		Description: v.Description,
 		Remark:      v.Remark,
 		State:       v.State,
-		SortNum:     v.SortNumber,
+		SortNum:     v.SortNum,
 	}
 }
 
@@ -615,8 +636,8 @@ func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.Pro
 	return ret
 }
 
-func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProBrand {
-	return &promodel.ProBrand{
+func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProductBrand {
+	return &promodel.ProductBrand{
 		ID:          int32(v.Id),
 		Name:        v.Name,
 		Image:       v.Image,
@@ -634,7 +655,7 @@ func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr 
 		IsFilter:   int32(types.IntCond(v.IsFilter, 1, 0)),
 		MultiChk:   int32(types.IntCond(v.MultiCheck, 1, 0)),
 		ItemValues: "",
-		SortNum:    v.SortNumber,
+		SortNum:    v.SortNum,
 	}
 	if v.Items != nil {
 		ret.Items = make([]*promodel.AttrItem, len(v.Items))
@@ -650,7 +671,7 @@ func (p *productService) parseProductSpec(v *proto.SProductSpec) *promodel.Spec 
 		ID:         int32(v.Id),
 		Name:       v.Name,
 		ItemValues: v.ItemValues,
-		SortNum:    v.SortNumber,
+		SortNum:    v.SortNum,
 	}
 	if v.Items != nil {
 		ret.Items = make([]*promodel.SpecItem, len(v.Items))
@@ -665,7 +686,7 @@ func (p *productService) parseProductAttrItem(v *proto.SProductAttrItem) *promod
 	return &promodel.AttrItem{
 		ID:      int32(v.Id),
 		Value:   v.Value,
-		SortNum: v.SortNumber,
+		SortNum: v.SortNum,
 	}
 }
 
@@ -674,7 +695,7 @@ func (p *productService) parseProductSpecItem(v *proto.SProductSpecItem) *promod
 		ID:      int32(v.Id),
 		Value:   v.Value,
 		Color:   v.Color,
-		SortNum: v.SortNumber,
+		SortNum: v.SortNum,
 	}
 }
 
@@ -685,5 +706,26 @@ func (p *productService) parseProductAttrValueDto(v *product.AttrValue) *proto.S
 		AttrName: v.AttrName,
 		AttrData: v.AttrData,
 		AttrWord: v.AttrWord,
+	}
+}
+
+
+func (p *productService) parseSpecDto(v *promodel.Spec) *proto.SProductSpec {
+	return &proto.SProductSpec{
+		Id:                   int64(v.ID),
+		Name:                 v.Name,
+		SortNum:           v.SortNum,
+		ItemValues:           v.ItemValues,
+		Items:                nil,
+	}
+}
+
+
+func (p *productService) parseProductSpecItemDto(v *promodel.SpecItem) *proto.SProductSpecItem {
+	return &proto.SProductSpecItem{
+		Id:                   int64(v.ID),
+		Value:                v.Value,
+		Color:                v.Color,
+		SortNum:           v.SortNum,
 	}
 }

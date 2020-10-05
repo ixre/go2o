@@ -45,7 +45,7 @@ type IProductModel interface {
 	// 设置规格
 	SetSpecs([]*Spec) error
 	// 获取关联的品牌编号
-	Brands() []*ProBrand
+	Brands() []*ProductBrand
 	// 设置关联品牌
 	SetBrands(brandId []int32) error
 	// 保存
@@ -68,7 +68,7 @@ type IProductModelRepo interface {
 	//获取品牌服务
 	BrandService() IBrandService
 	// 获取模型的商品品牌
-	GetModelBrands(proModel int32) []*ProBrand
+	GetModelBrands(proModel int32) []*ProductBrand
 
 	// Get ProductModel
 	GetProModel(primary interface{}) *ProductModel
@@ -123,16 +123,16 @@ type IProductModelRepo interface {
 	// Batch Delete SpecItem
 	BatchDeleteSpecItem(where string, v ...interface{}) (int64, error)
 
-	// Get ProBrand
-	GetProBrand(primary interface{}) *ProBrand
-	// Save ProBrand
-	SaveProBrand(v *ProBrand) (int, error)
-	// Delete ProBrand
+	// Get ProductBrand
+	GetProBrand(primary interface{}) *ProductBrand
+	// Save ProductBrand
+	SaveProBrand(v *ProductBrand) (int, error)
+	// Delete ProductBrand
 	DeleteProBrand(primary interface{}) error
-	// Select ProBrand
-	SelectProBrand(where string, v ...interface{}) []*ProBrand
+	// Select ProductBrand
+	SelectProBrand(where string, v ...interface{}) []*ProductBrand
 
-	// Batch Delete ProBrand
+	// Batch Delete ProductBrand
 	BatchDeleteProBrand(where string, v ...interface{}) (int64, error)
 
 	// Get ProModelBrand

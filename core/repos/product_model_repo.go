@@ -67,7 +67,7 @@ func (p *proModelRepo) BrandService() promodel.IBrandService {
 }
 
 // 获取模型的商品品牌
-func (p *proModelRepo) GetModelBrands(proModel int32) []*promodel.ProBrand {
+func (p *proModelRepo) GetModelBrands(proModel int32) []*promodel.ProductBrand {
 	return p.selectProBrandByQuery(`SELECT * FROM product_brand WHERE id IN (
 	SELECT brand_id FROM product_model_brand WHERE pro_model= $1)`, proModel)
 }
@@ -313,62 +313,62 @@ func (p *proModelRepo) BatchDeleteSpecItem(where string, v ...interface{}) (int6
 	return r, err
 }
 
-// Get ProBrand
-func (p *proModelRepo) GetProBrand(primary interface{}) *promodel.ProBrand {
-	e := promodel.ProBrand{}
+// Get ProductBrand
+func (p *proModelRepo) GetProBrand(primary interface{}) *promodel.ProductBrand {
+	e := promodel.ProductBrand{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
 	if err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
 	return nil
 }
 
-// Save ProBrand
-func (p *proModelRepo) SaveProBrand(v *promodel.ProBrand) (int, error) {
+// Save ProductBrand
+func (p *proModelRepo) SaveProBrand(v *promodel.ProductBrand) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
 	return id, err
 }
 
-// Delete ProBrand
+// Delete ProductBrand
 func (p *proModelRepo) DeleteProBrand(primary interface{}) error {
-	err := p._orm.DeleteByPk(promodel.ProBrand{}, primary)
+	err := p._orm.DeleteByPk(promodel.ProductBrand{}, primary)
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
 	return err
 }
 
-// Batch Delete ProBrand
+// Batch Delete ProductBrand
 func (p *proModelRepo) BatchDeleteProBrand(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(promodel.ProBrand{}, where, v...)
+	r, err := p._orm.Delete(promodel.ProductBrand{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
 	return r, err
 }
 
-// Select ProBrand
-func (p *proModelRepo) SelectProBrand(where string, v ...interface{}) []*promodel.ProBrand {
-	list := []*promodel.ProBrand{}
+// Select ProductBrand
+func (p *proModelRepo) SelectProBrand(where string, v ...interface{}) []*promodel.ProductBrand {
+	list := []*promodel.ProductBrand{}
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
 	return list
 }
 
-// Select ProBrand
-func (p *proModelRepo) selectProBrandByQuery(query string, v ...interface{}) []*promodel.ProBrand {
-	list := []*promodel.ProBrand{}
+// Select ProductBrand
+func (p *proModelRepo) selectProBrandByQuery(query string, v ...interface{}) []*promodel.ProductBrand {
+	list := []*promodel.ProductBrand{}
 	err := p._orm.SelectByQuery(&list, query, v...)
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
 	return list
 }

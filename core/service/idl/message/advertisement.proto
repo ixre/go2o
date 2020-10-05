@@ -97,7 +97,7 @@ message SImage {
     // 图片地址
     string ImageUrl = 5;
     // 排列序号
-    int32 SortNumber = 6;
+    int32 SortNum = 6;
     // 是否启用
     bool Enabled = 7;
 }
