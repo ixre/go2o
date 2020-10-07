@@ -26,7 +26,7 @@ import (
 )
 
 var _ product.ICategoryRepo = new(categoryRepo)
-
+var categoryPrefix = "go2o:gb:repo:cat:list_"
 type categoryRepo struct {
 	db.Connector
 	registryRepo registry.IRegistryRepo
@@ -61,7 +61,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int, error) {
 	// 清理缓存
 	if err == nil {
 		c.storage.Delete(c.getCategoryCacheKey(id))
-		PrefixDel(c.storage, "go2o:repo:cat:list")
+		c.storage.DeleteWith(categoryPrefix)
 	}
 	return id, err
 }
@@ -89,7 +89,7 @@ func (c *categoryRepo) DeleteCategory(mchId int64, id int) error {
 	// 清理缓存
 	if err == nil {
 		c.storage.Delete(c.getCategoryCacheKey(id))
-		PrefixDel(c.storage, "go2o:repo:cat:list")
+		c.storage.DeleteWith(categoryPrefix)
 	}
 
 	return err
@@ -127,11 +127,11 @@ func (c *categoryRepo) redirectGetCats() []*product.Category {
 }
 
 func (c *categoryRepo) GetCategories(mchId int) []*product.Category {
-	key := "go2o:gb:repo:cat:list"
+	key := categoryPrefix+"data"
 	var list []*product.Category
 	jsonStr, err := c.storage.GetBytes(key)
 	if err == nil {
-		println("---",string(jsonStr))
+		//println("---",string(jsonStr))
 		err = json.Unmarshal(jsonStr, &list)
 	}
 	if err != nil {

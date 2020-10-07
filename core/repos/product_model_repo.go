@@ -87,7 +87,7 @@ func (p *proModelRepo) GetProModel(primary interface{}) *promodel.ProductModel {
 
 // Select ProductModel
 func (p *proModelRepo) SelectProModel(where string, v ...interface{}) []*promodel.ProductModel {
-	list := []*promodel.ProductModel{}
+	var list []*promodel.ProductModel
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductModel")

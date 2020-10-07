@@ -100,7 +100,7 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 		val.Name = v.Name
 		val.SortNum = v.SortNum
 		val.Icon = v.Icon
-		val.IconXy = v.IconXy
+		val.IconPoint = v.IconPoint
 		// 设置产品模型
 		val.ModelId = v.ModelId
 		// 设置链接类型

@@ -6,7 +6,6 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/proto"
 	"golang.org/x/net/context"
@@ -83,7 +82,7 @@ func (p *productService) appendSpecItems(spec *proto.SProductSpec, items promode
 
 // 获取产品模型
 func (p *productService) GetModels(_ context.Context, _ *proto.Empty) (*proto.ProductModelListResponse, error) {
-	list := p.pmRepo.SelectProModel("enabled=1")
+	list := p.pmRepo.SelectProModel("")
 	arr := make([]*proto.SProductModel, len(list))
 	for i, v := range list {
 		arr[i] = p.parseModelDto(v)
@@ -294,6 +293,10 @@ func (p *productService) SaveProductModel(_ context.Context, r *proto.SProductMo
 		if pm == nil {
 			return p.error(errors.New("模型不存在")), nil
 		}
+		// todo: 应新增启用/停用产品模型的方法
+		if r.Enabled {
+			pm.Value().Enabled = 1
+		}
 	} else {
 		pm = p.pmRepo.CreateModel(v)
 	}
@@ -360,17 +363,6 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 }
 
 /***** 分类 *****/
-
-// 获取商品分类和选项
-func (p *productService) GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
-	domain.IOptionStore) {
-	c := p.catRepo.GlobCatService().GetCategory(int(id))
-	if c != nil {
-		return c.GetValue(), c.GetOption()
-	}
-	return nil, nil
-}
-
 func (p *productService) GetCategoryTreeNode(_ context.Context, _ *proto.Empty) (*proto.STreeNode, error) {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	rootNode := &proto.STreeNode{
@@ -545,7 +537,7 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 		IsVirtual:   v.VirtualCat == 1,
 		CategoryUrl: v.CatUrl,
 		Icon:        v.Icon,
-		IconPoint:   v.IconXy,
+		IconPoint:   v.IconPoint,
 		Level:       int32(v.Level),
 		SortNum:  int32(v.SortNum),
 		FloorShow:   v.FloorShow == 1,
@@ -567,7 +559,7 @@ func (p *productService) parseCategory(v *proto.SProductCategory) *product.Categ
 		VirtualCat: types.IntCond(v.IsVirtual, 1, 0),
 		CatUrl:     v.CategoryUrl,
 		Icon:       v.Icon,
-		IconXy:     v.IconPoint,
+		IconPoint:     v.IconPoint,
 		Level:      int(v.Level),
 		SortNum:    int(v.SortNum),
 		FloorShow:  types.IntCond(v.FloorShow, 1, 0),

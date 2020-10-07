@@ -78,7 +78,7 @@ type (
 		// 图标
 		Icon string `db:"icon"`
 		// 图标坐标
-		IconXy string `db:"icon_xy"`
+		IconPoint string `db:"icon_xy"`
 		// 分类层级
 		Level int `db:"level"`
 		// 序号

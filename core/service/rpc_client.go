@@ -54,7 +54,7 @@ func tryConnect(retryTimes int) {
 func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 	next, err := selector.Next()
 	if err != nil {
-		log.Printf("[ go2o][ error]: %s\n", err.Error())
+		log.Printf("[ Go2o][ Error]: %s\n", err.Error())
 		return nil, err
 	}
 	return grpc.Dial(next.Addr, grpc.WithInsecure(), grpc.WithBlock())

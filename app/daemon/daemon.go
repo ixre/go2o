@@ -304,7 +304,7 @@ func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SSingleOrder
 		Sub:     sub,
 	})
 	if ret.ErrCode > 0 {
-		log.Println(fmt.Sprintf("[ go2o][ error]: confirm order failed, %s", ret.ErrMsg))
+		log.Println(fmt.Sprintf("[ Go2o][ Error]: confirm order failed, %s", ret.ErrMsg))
 	}
 	d.cancelOrderExpires(conn, o) //付款后取消自动取消
 }
