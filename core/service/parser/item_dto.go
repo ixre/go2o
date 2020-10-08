@@ -126,21 +126,20 @@ func WsItemDiscount(src *proto.SWsItemDiscount) *item.WsItemDiscount {
 
 func ParseGoodsItem(src *proto.SUnifiedViewItem) *item.GoodsItem {
 	dst := &item.GoodsItem{
-		ID:          src.ItemId,
-		ProductId:   src.ProductId,
-		PromFlag:    -1, //todo:??
-		CatId:       int32(src.CategoryId),
-		VendorId:    src.VendorId,
-		BrandId:     int32(src.BrandId),
-		ShopId:      0,                     //todo:??
-		ShopCatId:   0,                     //todo:??
-		ExpressTid:  int32(src.ExpressTid), //src.,
-		Title:       src.Title,
-		ShortTitle:  "", //src.Sho,
-		Code:        src.Code,
-		Image:       src.Image,
-		IsPresent:   0, //todo:???
-		PriceRange:  src.PriceRange,
+		Id:         src.ItemId,
+		ProductId:  src.ProductId,
+		PromFlag:   -1, //todo:??
+		CategoryId: int32(src.CategoryId),
+		VendorId:   src.VendorId,
+		BrandId:    int32(src.BrandId),
+		ShopCatId:  0,                     //todo:??
+		ExpressTid: int32(src.ExpressTid), //src.,
+		Title:      src.Title,
+		ShortTitle: "", //src.Sho,
+		Code:       src.Code,
+		Image:      src.Image,
+		IsPresent:  0, //todo:???
+		PriceRange: src.PriceRange,
 		StockNum:    src.StockNum,
 		SaleNum:     0,
 		SkuId:       src.SkuId,

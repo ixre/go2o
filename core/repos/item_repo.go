@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/registry"
@@ -38,13 +39,14 @@ type goodsRepo struct {
 	expressRepo  express.IExpressRepo
 	proMRepo     promodel.IProductModelRepo
 	registryRepo registry.IRegistryRepo
+	shopRepo      shop.IShopRepo
 }
 
 // 商品仓储
 func NewGoodsItemRepo(c db.Connector, catRepo product.ICategoryRepo,
 	proRepo product.IProductRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
-	registryRepo registry.IRegistryRepo) *goodsRepo {
+	registryRepo registry.IRegistryRepo,shopRepo      shop.IShopRepo) *goodsRepo {
 	return &goodsRepo{
 		Connector:    c,
 		_orm:         c.GetOrm(),
@@ -54,6 +56,7 @@ func NewGoodsItemRepo(c db.Connector, catRepo product.ICategoryRepo,
 		itemWsRepo:   itemWsRepo,
 		expressRepo:  expressRepo,
 		registryRepo: registryRepo,
+		shopRepo: shopRepo,
 	}
 }
 
@@ -76,7 +79,7 @@ func (g *goodsRepo) SnapshotService() item.ISnapshotService {
 // 创建商品
 func (g *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
 	return itemImpl.NewItem(g.proRepo, g.catRepo, nil, v, g.registryRepo, g,
-		g.proMRepo, g.itemWsRepo, g.expressRepo, nil)
+		g.proMRepo, g.itemWsRepo, g.expressRepo, g.shopRepo,nil)
 }
 
 // 获取商品
@@ -156,7 +159,7 @@ func (g *goodsRepo) RemoveGoodSMemberLevelPrice(id int) error {
 
 // 保存商品
 func (g *goodsRepo) SaveValueGoods(v *item.GoodsItem) (int64, error) {
-	return orm.I64(orm.Save(g.GetOrm(), v, int(v.ID)))
+	return orm.I64(orm.Save(g.GetOrm(), v, int(v.Id)))
 }
 
 // 获取已上架的商品

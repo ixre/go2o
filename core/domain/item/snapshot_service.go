@@ -69,10 +69,10 @@ func (s *snapshotServiceImpl) checkSnapshot(snap *item.Snapshot, it *item.GoodsI
 
 // 更新快照, 通过审核后,才会更新快照
 func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int64, error) {
-	if it.ID <= 0 || it == nil {
+	if it.Id <= 0 || it == nil {
 		return -1, item.ErrNoSuchItem
 	}
-	ls := s.GetLatestSnapshot(it.ID)
+	ls := s.GetLatestSnapshot(it.Id)
 	// 检查快照
 	err := s.checkSnapshot(ls, it)
 	// 审核通过后更新快照
@@ -87,14 +87,14 @@ func (s *snapshotServiceImpl) updateSnapshot(ls *item.Snapshot,
 	it *item.GoodsItem) (int64, error) {
 	//todo: ???  SKU的会员价
 	levelSales := 0
-	if len(s.itemRepo.GetGoodSMemberLevelPrice(it.ID)) > 0 {
+	if len(s.itemRepo.GetGoodSMemberLevelPrice(it.Id)) > 0 {
 		levelSales = 1
 	}
 	unix := time.Now().Unix()
 	var snap = &item.Snapshot{
-		ItemId:      it.ID,
-		Key:         fmt.Sprintf("%d-g%d-%d", it.VendorId, it.ID, unix),
-		CatId:       it.CatId,
+		ItemId:      it.Id,
+		Key:         fmt.Sprintf("%d-g%d-%d", it.VendorId, it.Id, unix),
+		CatId:       it.CategoryId,
 		VendorId:    it.VendorId,
 		BrandId:     it.BrandId,
 		ProductId:   it.ProductId,

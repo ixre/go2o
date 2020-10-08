@@ -143,13 +143,13 @@ type (
 	// 商品,临时改方便辨别
 	GoodsItem struct {
 		// 商品编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
 		ProductId int64 `db:"product_id"`
 		// 促销标志
 		PromFlag int32 `db:"prom_flag"`
 		// 分类编号
-		CatId int32 `db:"cat_id"`
+		CategoryId int32 `db:"cat_id"`
 		// 供货商编号
 		VendorId int64 `db:"vendor_id"`
 		// 品牌编号(冗余)

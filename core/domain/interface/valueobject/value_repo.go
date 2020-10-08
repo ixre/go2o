@@ -121,7 +121,7 @@ type (
 	WxApiConfig struct {
 		/**===== 微信公众平台设置 =====**/
 
-		//APP ID
+		//APP Id
 		AppId string
 		//APP 密钥
 		AppSecret string

@@ -182,7 +182,7 @@ func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 		v.ID = int64(id)
 		// 缓存
 		o.Storage.SetExpire(o.getOrderCk(v.OrderId, false), *v, DefaultCacheSeconds*10)
-		//o.Storage.Set(o.getOrderCkByNo(v.OrderNo, false), v.ID)
+		//o.Storage.Set(o.getOrderCkByNo(v.OrderNo, false), v.Id)
 	}
 	return id, err
 }
@@ -341,7 +341,7 @@ func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 		origin := o.GetOrder("id= $1", v.ID)
 		statusIsChanged = origin.State != v.State
 	}
-	// log.Println("--- save order:", v.ID, "; state:",
+	// log.Println("--- save order:", v.Id, "; state:",
 	// v.State, ";", statusIsChanged)
 	id, err := o.saveOrder(v)
 	if err == nil {

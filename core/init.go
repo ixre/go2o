@@ -289,38 +289,38 @@ func initSSOModule() {
 		/*
 			registries, _ := cli.GetRegistries(context.TODO(),&proto.StringArray{Value:  keys})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   1,
+				Id:   1,
 				Name: "RetailPortal",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[0]], domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   2,
+				Id:   2,
 				Name: "WholesalePortal",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[1]], domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   3,
+				Id:   3,
 				Name: "HApi",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[2]], domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   4,
+				Id:   4,
 				Name: "Member",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[3]], domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   5,
+				Id:   5,
 				Name: "MemberMobile",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[4]],
 					domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   6,
+				Id:   6,
 				Name: "RetailPortalMobile",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[5]], domain),

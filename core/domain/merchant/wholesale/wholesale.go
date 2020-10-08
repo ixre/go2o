@@ -107,7 +107,7 @@ func (w *wholesalerImpl) syncSingleItem(itemId int64, syncPrice bool) error {
 			})
 			if err != nil {
 				log.Println("[ Go2o][ Wholesale][ Sync]:", err.Error(),
-					"ID:", itemId, "; SkuId:", v.ID)
+					"Id:", itemId, "; SkuId:", v.ID)
 			}
 		}
 	}

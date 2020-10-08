@@ -267,7 +267,7 @@ func (p *productImpl) Destroy() error {
 //// 生成快照
 //func (i *Goods) GenerateSnapshot() (int64, error) {
 //	v := i._value
-//	if v.ID <= 0 {
+//	if v.Id <= 0 {
 //		return 0, item.ErrNoSuchGoods
 //	}
 //
@@ -279,7 +279,7 @@ func (p *productImpl) Destroy() error {
 //	unix := time.Now().Unix()
 //	cate := i._saleRepo.GetCategory(mchId, v.CategoryId)
 //	var gsn *goods.GoodsSnapshot = &goods.GoodsSnapshot{
-//		Key:          fmt.Sprintf("%d-g%d-%d", mchId, v.ID, unix),
+//		Key:          fmt.Sprintf("%d-g%d-%d", mchId, v.Id, unix),
 //		GoodsId:      p.GetAggregateRootId(),
 //		GoodsName:    v.Name,
 //		GoodsNo:      v.GoodsNo,

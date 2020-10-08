@@ -360,7 +360,7 @@ func getNotifyFromXml(sXml string) *NotifyResult {
 }
 
 //退款异步通知，包含notify_time,notify_type,notify_id,sign_type,sign,batch_no,success_num,result_details
-//result_details包含 交易号^退款金额^处理结果($退费账号^退费账户^ID^退费金额^处理结果)
+//result_details包含 交易号^退款金额^处理结果($退费账号^退费账户^Id^退费金额^处理结果)
 func Alipay_Refund_NotifyHandler(w http.ResponseWriter, r *http.Request) {
 	sBody, _ := ioutil.ReadAll(r.Body)
 	logger.Printf("即时到账退款异步通知:\n")

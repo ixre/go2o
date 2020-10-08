@@ -91,10 +91,10 @@ func TradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeMethodData {
 
 func ItemDto(src *item.GoodsItem) *proto.SOldItem {
 	it := &proto.SOldItem{
-		ItemId:       src.ID,
+		ItemId:       src.Id,
 		ProductId:    src.ProductId,
 		PromFlag:     src.PromFlag,
-		CatId:        src.CatId,
+		CatId:        src.CategoryId,
 		VendorId:     src.VendorId,
 		BrandId:      src.BrandId,
 		ShopId:       src.ShopId,
@@ -134,10 +134,10 @@ func ItemDto(src *item.GoodsItem) *proto.SOldItem {
 
 func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	it := &proto.SUnifiedViewItem{
-		ItemId:    src.ID,
+		ItemId:    src.Id,
 		ProductId: src.ProductId,
 		//PromFlag:     src.PromFlag,
-		CategoryId: int64(src.CatId),
+		CategoryId: int64(src.CategoryId),
 		SkuId:      src.SkuId,
 		VendorId:   src.VendorId,
 		BrandId:    int64(src.BrandId),
@@ -186,20 +186,20 @@ func SkuArrayDto(src []*item.Sku) []*proto.SSku {
 
 func Item(src *proto.SOldItem) *item.GoodsItem {
 	it := &item.GoodsItem{
-		ID:           src.ItemId,
-		ProductId:    src.ProductId,
-		PromFlag:     src.PromFlag,
-		CatId:        src.CatId,
-		VendorId:     src.VendorId,
-		BrandId:      src.BrandId,
-		ShopId:       src.ShopId,
-		ShopCatId:    src.ShopCatId,
-		ExpressTid:   src.ExpressTid,
-		Title:        src.Title,
-		ShortTitle:   src.ShortTitle,
-		Code:         src.Code,
-		Image:        src.Image,
-		IsPresent:    src.IsPresent,
+		Id:         src.ItemId,
+		ProductId:  src.ProductId,
+		PromFlag:   src.PromFlag,
+		CategoryId: src.CatId,
+		VendorId:   src.VendorId,
+		BrandId:    src.BrandId,
+		ShopId:     src.ShopId,
+		ShopCatId:  src.ShopCatId,
+		ExpressTid: src.ExpressTid,
+		Title:      src.Title,
+		ShortTitle: src.ShortTitle,
+		Code:       src.Code,
+		Image:      src.Image,
+		IsPresent:  src.IsPresent,
 		PriceRange:   src.PriceRange,
 		StockNum:     src.StockNum,
 		SaleNum:      src.SaleNum,

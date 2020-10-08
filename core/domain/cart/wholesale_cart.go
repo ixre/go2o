@@ -184,7 +184,7 @@ func (c *wholesaleCartImpl) setAttachGoodsInfo(items []*cart.WsCartItem) {
 			iv := it.GetValue()
 			sku = &item.Sku{
 				ProductId:   iv.ProductId,
-				ItemId:      iv.ID,
+				ItemId:      iv.Id,
 				Title:       iv.Title,
 				Image:       iv.Image,
 				SpecData:    "",
@@ -302,7 +302,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32) (*cart.WsCa
 		CartId:   c.GetAggregateRootId(),
 		SellerId: iv.VendorId,
 		ShopId:   iv.ShopId,
-		ItemId:   iv.ID,
+		ItemId:   iv.Id,
 		SkuId:    skuId,
 		Quantity: quantity,
 		Sku:      item.ParseSkuMedia(iv, sku),
@@ -481,7 +481,7 @@ func (c *wholesaleCartImpl) Save() (int32, error) {
 	if c.value.Items != nil {
 		for _, v := range c.value.Items {
 			if v.Quantity <= 0 {
-				//c.rep.RemoveCartItem(v.ID)
+				//c.rep.RemoveCartItem(v.Id)
 				c.rep.BatchDeleteWsCartItem("id= $1", v.ID)
 			} else {
 				v.CartId = c.GetAggregateRootId()

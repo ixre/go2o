@@ -3,7 +3,6 @@ package item
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
@@ -45,11 +44,12 @@ func (s *skuServiceImpl) SpecDataToMap(specData string) map[int]int {
 		i := strings.Index(s, ":")
 		k, err := strconv.Atoi(s[:i])
 		v, err1 := strconv.Atoi(s[i+1:])
-		if err != nil || err1 != nil {
-			panic(errors.New("spec arr key or value" +
-				"not as int type! " + specData))
+		if err == nil && err1 == nil {
+			mp[k] = v
+		} else {
+			log.Println("[ Go2o][ Warning]: spec arr key or value" +
+				"not as int type! " + specData)
 		}
-		mp[k] = v
 	}
 	return mp
 }
@@ -130,7 +130,7 @@ func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 	}
 	for _, v := range dst {
 		if fs, ok := fromMap[v.SpecData]; ok {
-			//log.Println("SKU MERGE > dst: ",v.ID,"; src:",fs.ID)
+			//log.Println("SKU MERGE > dst: ",v.Id,"; src:",fs.Id)
 			if v.ID == 0 {
 				v.ID = fs.ID
 			}
@@ -336,7 +336,7 @@ func (s *skuServiceUtil) init() *skuServiceUtil {
             <div class="spec-label">{{$v.Name}}</div>
             <div class="spec-option">
                 {{range $i2,$vi := $v.Items}}
-                <a class="spec-option-check spec-option-item" href="javascript:void(0)" sid="{{$v.ID}}:{{$vi.ID}}">
+                <a class="spec-option-check spec-option-item" href="javascript:void(0)" sid="{{$v.Id}}:{{$vi.Id}}">
                     {{$vi.Value}}
                 </a>
                 {{end}}

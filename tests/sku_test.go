@@ -123,7 +123,7 @@ func TestItemSaveSku(t *testing.T) {
 		t.Errorf("编号为%d的商品不存在", itemId)
 	}
 	iv := it.GetValue()
-	catId := iv.CatId
+	catId := iv.CategoryId
 	cat := catRepo.GetCategory(0, int(catId))
 	if cat == nil {
 		t.Errorf("编号为%d的分类不存在", catId)
@@ -159,7 +159,7 @@ func TestItemSaveSku(t *testing.T) {
 		arr = append(arr, &item.Sku{
 			ProductId: iv.ProductId,
 			// 商品编号
-			ItemId: iv.ID,
+			ItemId: iv.Id,
 			// 图片
 			Image: "",
 			// 规格数据

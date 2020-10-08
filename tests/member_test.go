@@ -36,7 +36,7 @@ func TestCreateNewMember(t *testing.T) {
 		t.FailNow()
 	}
 	time.Sleep(5 * time.Second)
-	t.Logf("注册成功,ID:%d", id)
+	t.Logf("注册成功,Id:%d", id)
 }
 
 func TestSaveMemberGroups(t *testing.T) {

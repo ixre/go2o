@@ -72,8 +72,8 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	var gi item.IGoodsItem
 	it := parser.ParseGoodsItem(r)
 	var err error
-	if it.ID > 0 {
-		gi = s.itemRepo.GetItem(it.ID)
+	if it.Id > 0 {
+		gi = s.itemRepo.GetItem(it.Id)
 		if gi == nil || gi.GetValue().VendorId != r.VendorId {
 			return s.error(item.ErrNoSuchItem), nil
 		}
@@ -84,13 +84,13 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	if err == nil {
 		err = gi.SetSku(it.SkuArray)
 		if err == nil {
-			it.ID, err = gi.Save()
+			it.Id, err = gi.Save()
 		}
 	}
 	ret := s.error(err)
 	if err == nil {
 		r.Data = map[string]string{
-			"ItemId": strconv.Itoa(int(it.ID)),
+			"ItemId": strconv.Itoa(int(it.Id)),
 		}
 	}
 	return ret, nil
@@ -174,7 +174,7 @@ func (s *itemService) GetSku(_ context.Context, request *proto.SkuId) (*proto.SS
 
 // 获取商品详细数据
 func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDetailRequest) (*proto.String, error) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: request.ItemId})
+	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: request.ItemId})
 	switch request.IType {
 	case item.ItemWholesale:
 		data := it.Wholesale().GetJsonDetailData()
