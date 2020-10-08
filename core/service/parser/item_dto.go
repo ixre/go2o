@@ -74,7 +74,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 	return &proto.SUnifiedViewItem{
 		ItemId:      src.ItemId,
 		ProductId:   src.ProductId,
-		CategoryId:  src.CategoryId,
+		CategoryId:  int64(src.CategoryId),
 		VendorId:    int64(src.VendorId),
 		BrandId:     0,
 		Title:       src.Title,
@@ -129,9 +129,9 @@ func ParseGoodsItem(src *proto.SUnifiedViewItem) *item.GoodsItem {
 		ID:          src.ItemId,
 		ProductId:   src.ProductId,
 		PromFlag:    -1, //todo:??
-		CatId:       src.CategoryId,
+		CatId:       int32(src.CategoryId),
 		VendorId:    src.VendorId,
-		BrandId:     src.BrandId,
+		BrandId:     int32(src.BrandId),
 		ShopId:      0,                     //todo:??
 		ShopCatId:   0,                     //todo:??
 		ExpressTid:  int32(src.ExpressTid), //src.,

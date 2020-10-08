@@ -141,7 +141,7 @@ func (q *queryService) parseOrder(src *dto.PagedMemberSubOrder) *proto.PagedMemb
 		State:          int32(src.State),
 		StateText:      src.StateText,
 		CreateTime:     src.CreateTime,
-		Items:          make([]*proto.SComplexItem, 0),
+		Items:          make([]*proto.SOrderItem, 0),
 	}
 	for _, v := range src.Items {
 		dst.Items = append(dst.Items, q.parseOrderItem(v))
@@ -149,9 +149,9 @@ func (q *queryService) parseOrder(src *dto.PagedMemberSubOrder) *proto.PagedMemb
 	return dst
 }
 
-func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SComplexItem {
-	return &proto.SComplexItem{
-		ID:             int64(v.Id),
+func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
+	return &proto.SOrderItem{
+		Id:             int64(v.Id),
 		ItemId:         int64(v.ItemId),
 		SkuId:          int64(v.SkuId),
 		SnapshotId:     int64(v.SnapshotId),
@@ -159,16 +159,16 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SComplexItem {
 		ReturnQuantity: int32(v.ReturnQuantity),
 		Amount:         float64(v.Amount),
 		FinalAmount:    float64(v.FinalAmount),
-		IsShipped:      int32(v.IsShipped),
+		IsShipped:      v.IsShipped == 1,
 		Data:           nil,
 	}
 }
 
-func (q *queryService) parseTradeOrder(src *proto.SComplexOrder) *proto.PagedMemberSubOrder {
+func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.PagedMemberSubOrder {
 	return &proto.PagedMemberSubOrder{
 		OrderId:  src.OrderId,
 		OrderNo:  src.OrderNo,
-		VendorId: src.VendorId,
+		VendorId: src.SellerId,
 		ShopId:   src.ShopId,
 		//ShopName:       src.,
 		ItemAmount:     src.ItemAmount,
@@ -179,8 +179,8 @@ func (q *queryService) parseTradeOrder(src *proto.SComplexOrder) *proto.PagedMem
 		FinalAmount: src.FinalAmount,
 		State:       int32(src.State),
 		//StateText:      src.StateText,
-		CreateTime: src.CreateTime,
-		Items:      make([]*proto.SComplexItem, 0),
+		CreateTime: src.SubmitTime,
+		Items:      make([]*proto.SOrderItem, 0),
 	}
 }
 

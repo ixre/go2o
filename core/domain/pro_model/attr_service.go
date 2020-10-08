@@ -11,11 +11,11 @@ import (
 var _ promodel.IAttrService = new(attrServiceImpl)
 
 type attrServiceImpl struct {
-	repo    promodel.IProModelRepo
+	repo    promodel.IProductModelRepo
 	builder *attrHtmlBuilder
 }
 
-func NewAttrService(repo promodel.IProModelRepo) *attrServiceImpl {
+func NewAttrService(repo promodel.IProductModelRepo) *attrServiceImpl {
 	return &attrServiceImpl{
 		repo:    repo,
 		builder: &attrHtmlBuilder{},
@@ -24,7 +24,9 @@ func NewAttrService(repo promodel.IProModelRepo) *attrServiceImpl {
 
 // 获取属性
 func (a *attrServiceImpl) GetAttr(attrId int32) *promodel.Attr {
-	return a.repo.GetAttr(attrId)
+	attr := a.repo.GetAttr(attrId)
+	attr.Items = a.GetItems(attrId)
+	return attr
 }
 
 // 保存属性

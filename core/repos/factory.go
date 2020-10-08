@@ -35,7 +35,7 @@ var (
 
 type RepoFactory struct {
 	registryRepo registry.IRegistryRepo
-	proMRepo     promodel.IProModelRepo
+	proMRepo     promodel.IProductModelRepo
 	valueRepo    valueobject.IValueRepo
 	userRepo     user.IUserRepo
 	notifyRepo   notify.INotifyRepo
@@ -111,7 +111,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 	return r
 }
 
-func (r *RepoFactory) GetProModelRepo() promodel.IProModelRepo {
+func (r *RepoFactory) GetProModelRepo() promodel.IProductModelRepo {
 	return r.proMRepo
 }
 

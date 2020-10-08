@@ -36,13 +36,13 @@ type goodsRepo struct {
 	proRepo      product.IProductRepo
 	itemWsRepo   item.IItemWholesaleRepo
 	expressRepo  express.IExpressRepo
-	proMRepo     promodel.IProModelRepo
+	proMRepo     promodel.IProductModelRepo
 	registryRepo registry.IRegistryRepo
 }
 
 // 商品仓储
 func NewGoodsItemRepo(c db.Connector, catRepo product.ICategoryRepo,
-	proRepo product.IProductRepo, proMRepo promodel.IProModelRepo,
+	proRepo product.IProductRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	registryRepo registry.IRegistryRepo) *goodsRepo {
 	return &goodsRepo{

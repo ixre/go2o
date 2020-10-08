@@ -20,7 +20,7 @@ func ParseItemSnapshotDto(src *item.Snapshot) *proto.SItemSnapshot {
 		ItemId:      src.ItemId,
 		ProductId:   src.ProductId,
 		Key:         src.Key,
-		CategoryId:  src.CatId,
+		CategoryId:  int64(src.CatId),
 		VendorId:    src.VendorId,
 		BrandId:     int64(src.BrandId),
 		ShopId:      src.ShopId,

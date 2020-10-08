@@ -1,70 +1,21 @@
 syntax = "proto3";
 option go_package = ".;proto";
 import "global.proto";
-// 商店,需重构
-message SShop2 {
-    sint64 ID = 1;
-    sint64 VendorId = 2;
-    sint32 ShopType = 3;
-    string Name = 4;
-    sint32 State = 5;
-    sint32 OpeningState = 6;
-    map<string, string> Data = 7;
-}
-
-// 店铺
-message SShop {
-    /** 店铺编号 */
-    sint64 Id = 1;
-    /** 商户编号 */
-    sint64 VendorId = 2;
-    /** 店铺名称 */
-    string ShopName = 3;
-    /** 店铺标志 */
-    string Logo = 4;
-    /** 自定义 域名 */
-    string Host = 5;
-    /** 个性化域名 */
-    string Alias = 6;
-    /** 电话 */
-    string Tel = 7;
-    /** 地址 */
-    string Addr = 8;
-    /** 店铺标题 */
-    string ShopTitle = 9;
-    /** 店铺公告 */
-    string ShopNotice = 10;
-    /** 标志 */
-    sint32 Flag = 11;
-    /** 状态 */
-    sint32 State = 12;
-}
-
-// 店铺
-message SStore {
-    sint64 ID = 1;
-    sint64 VendorId = 2;
-    string Name = 3;
-    string Alias = 4;
-    string Host = 5;
-    string Logo = 6;
-    sint32 State = 7;
-    sint32 OpeningState = 8;
-    string StorePhone = 9;
-    string StoreTitle = 10;
-    string StoreNotice = 11;
-}
+import "message/shop.proto";
 
 // 商店服务
 service ShopService {
     /** 获取店铺,shopId */
-    rpc GetShop (Int64) returns (SShop) {
+    rpc GetShop (ShopId) returns (SShop) {
     }
     /** 获取商户的店铺,vendorId */
-    rpc GetVendorShop (Int64) returns (SShop) {
+    //rpc GetVendorShop_ (Int64) returns (SShop) {}
+    // 检查商户是否开通店铺
+    rpc CheckMerchantShopState (MerchantId) returns (CheckShopResponse) {
     }
+
     /** 获取门店,storeId */
-    rpc GetStore (Int64) returns (SStore) {
+    rpc GetStore (StoreId) returns (SStore) {
     }
     /** 根据主机头获取店铺编号,host */
     rpc QueryShopByHost (String) returns (Int64) {
@@ -73,6 +24,15 @@ service ShopService {
     //rpc GetOfflineShop(1:sint32 shopId)returns(Shop)
     // 打开或关闭商店
     rpc TurnShop (TurnShopRequest) returns (Result) {
+    }
+    // 保存门店
+    rpc SaveShop (SShop) returns (Result) {
+    }
+    // 保存门店
+    rpc SaveOfflineShop (SStore) returns (Result) {
+    }
+    // 删除商店
+    rpc DeleteStore (StoreId) returns (Result) {
     }
 }
 

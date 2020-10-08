@@ -168,7 +168,7 @@ func (m RegisterApi) checkRegToken(token string) bool {
 // 将注册令牌标记为过期
 func (m RegisterApi) signCheckTokenExpires(token string) {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
-	m.st.Del(key)
+	m.st.Delete(key)
 }
 
 // 存储校验数据

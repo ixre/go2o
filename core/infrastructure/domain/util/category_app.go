@@ -10,15 +10,13 @@ package util
 
 import (
 	"github.com/ixre/gof/algorithm/iterator"
-	"go2o/core/domain/interface/content"
-	"go2o/core/domain/interface/product"
 	"go2o/core/service/proto"
 )
 
-type CategoryFormatFunc func(c *product.Category, level int)
+type CategoryFormatFunc func(c *proto.SProductCategory, level int)
 
-// 迭代栏目
-func IterateCategory(categories []*product.Category, c *product.Category,
+// 遍历栏目
+func IterateCategory(categories []*proto.SProductCategory, c *proto.SProductCategory,
 	iterateFunc CategoryFormatFunc, finishFunc CategoryFormatFunc, level int) {
 	if c.Id != 0 {
 		iterateFunc(c, level)
@@ -37,10 +35,9 @@ func IterateCategory(categories []*product.Category, c *product.Category,
 }
 
 // 迭代栏目
-func WalkSaleCategory(cs []*product.Category, v *product.Category,
-	start iterator.WalkFunc, over iterator.WalkFunc) {
+func WalkSaleCategory(cs []*proto.SProductCategory, v *proto.SProductCategory, start iterator.WalkFunc, over iterator.WalkFunc) {
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
-		return v1.(*product.Category).ParentId == v.(*product.Category).Id
+		return v1.(*proto.SProductCategory).ParentId == v.(*proto.SProductCategory).Id
 	}
 	var arr = make([]interface{}, len(cs))
 	for i, v := range cs {
@@ -52,8 +49,8 @@ func WalkSaleCategory(cs []*product.Category, v *product.Category,
 // 迭代栏目
 func WalkArticleCategory(cs *proto.ArticleCategoriesResponse, v *proto.SArticleCategory, start iterator.WalkFunc, over iterator.WalkFunc) {
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
-		return v1.(*content.ArticleCategory).ParentId ==
-			v.(*content.ArticleCategory).ID
+		return v1.(*proto.SArticleCategory).ParentId ==
+			v.(*proto.SArticleCategory).Id
 	}
 	var arr = make([]interface{}, len(cs.Value))
 	for i, v := range cs.Value {

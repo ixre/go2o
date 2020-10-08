@@ -184,7 +184,7 @@ func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGro
 }
 
 // 获取所有的交易设置
-func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
+func (c *confManagerImpl) GetAllTradeConf_() []*merchant.TradeConf {
 	if c.tradeConfList == nil {
 		c.tradeConfList = c.repo.SelectMchTradeConf("mch_id= $1", c.mchId)
 		if len(c.tradeConfList) == 0 {
@@ -220,7 +220,7 @@ func (c *confManagerImpl) GetAllTradeConf() []*merchant.TradeConf {
 
 // 根据交易类型获取交易设置
 func (c *confManagerImpl) GetTradeConf(tradeType int) *merchant.TradeConf {
-	for _, v := range c.GetAllTradeConf() {
+	for _, v := range c.GetAllTradeConf_() {
 		if v.TradeType == tradeType {
 			return v
 		}

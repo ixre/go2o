@@ -26,17 +26,17 @@ var _ product.IProduct = new(productImpl)
 type productImpl struct {
 	value     *product.Product
 	repo      product.IProductRepo
-	pmRepo    promodel.IProModelRepo
+	modelRepo promodel.IProductModelRepo
 	valueRepo valueobject.IValueRepo
 }
 
 func NewProductImpl(v *product.Product,
-	itemRepo product.IProductRepo, pmRepo promodel.IProModelRepo,
+	itemRepo product.IProductRepo, pmRepo promodel.IProductModelRepo,
 	valRepo valueobject.IValueRepo) product.IProduct {
 	return &productImpl{
 		value:     v,
 		repo:      itemRepo,
-		pmRepo:    pmRepo,
+		modelRepo: pmRepo,
 		valueRepo: valRepo,
 	}
 }
@@ -102,21 +102,27 @@ func (p *productImpl) SetValue(v *product.Product) error {
 }
 
 // 设置产品属性
-func (p *productImpl) SetAttr(attrs []*product.Attr) error {
+func (p *productImpl) SetAttr(attrs []*product.AttrValue) error {
 	if attrs == nil {
 		return product.ErrNoSuchAttr
 	}
-	p.value.Attr = attrs
+	p.value.Attrs = attrs
 	return nil
 }
 
 // 获取属性
-func (p *productImpl) Attr() []*product.Attr {
-	if p.value.Attr == nil {
-		p.value.Attr = p.repo.SelectAttr("product_id= $1",
+func (p *productImpl) Attr() []*product.AttrValue {
+	if p.value.Attrs == nil {
+		p.value.Attrs = p.repo.SelectAttr("product_id= $1",
 			p.GetAggregateRootId())
+		for _, v := range p.value.Attrs {
+			a := p.modelRepo.GetAttr(v.AttrId)
+			if a != nil {
+				v.AttrName = a.Name
+			}
+		}
 	}
-	return p.value.Attr
+	return p.value.Attrs
 }
 
 // 设置商品描述
@@ -152,14 +158,14 @@ func (p *productImpl) SetDescribe(describe string) error {
 
 // 保存
 func (p *productImpl) Save() (i int64, err error) {
-	if p.value.Attr != nil {
+	if p.value.Attrs != nil {
 		if p.GetAggregateRootId() <= 0 {
 			p.value.Id, err = util.I64Err(p.repo.SaveProduct(p.value))
 			if err != nil {
 				goto R
 			}
 		}
-		if err = p.saveAttr(p.value.Attr); err != nil {
+		if err = p.saveAttr(p.value.Attrs); err != nil {
 			goto R
 		}
 	}
@@ -177,12 +183,12 @@ R:
 }
 
 // 合并属性
-func (p *productImpl) mergeAttr(src []*product.Attr, dst *[]*product.Attr) {
+func (p *productImpl) mergeAttr(src []*product.AttrValue, dst *[]*product.AttrValue) {
 	if src == nil || dst == nil || len(src) == 0 || len(*dst) == 0 {
 		return
 	}
 	to := *dst
-	sMap := make(map[int32]int32, len(src))
+	sMap := make(map[int64]int64, len(src))
 	for _, v := range src {
 		sMap[v.AttrId] = v.ID
 	}
@@ -194,16 +200,16 @@ func (p *productImpl) mergeAttr(src []*product.Attr, dst *[]*product.Attr) {
 }
 
 // 重建Attr数组，将信息附加
-func (p *productImpl) RebuildAttrArray(arr *[]*product.Attr) error {
+func (p *productImpl) RebuildAttrArray(arr *[]*product.AttrValue) error {
 	for _, v := range *arr {
 		vArr := util.StrExt.I32Slice(v.AttrData, ",")
 		for i, v2 := range vArr {
 			if i != 0 {
 				v.AttrWord += ","
 			}
-			item := p.pmRepo.GetAttrItem(v2)
-			if item != nil {
-				v.AttrWord += item.Value
+			it := p.modelRepo.GetAttrItem(v2)
+			if it != nil {
+				v.AttrWord += it.Value
 			}
 		}
 	}
@@ -211,19 +217,19 @@ func (p *productImpl) RebuildAttrArray(arr *[]*product.Attr) error {
 }
 
 // 保存属性
-func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
+func (p *productImpl) saveAttr(arr []*product.AttrValue) (err error) {
 	pk := p.GetAggregateRootId()
 	// 获取之前的SKU设置
 	old := p.repo.SelectAttr("product_id= $1", pk)
 	// 合并属性
-	p.mergeAttr(old, &p.value.Attr)
+	p.mergeAttr(old, &p.value.Attrs)
 	// 设置属性值
 	if err = p.RebuildAttrArray(&arr); err != nil {
 		return err
 	}
 	// 分析当前项目并加入到MAP中
-	delList := []int32{}
-	currMap := make(map[int32]*product.Attr, len(arr))
+	var delList []int64
+	currMap := make(map[int64]*product.AttrValue, len(arr))
 	for _, v := range arr {
 		currMap[v.ID] = v
 	}
@@ -235,7 +241,7 @@ func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 	}
 	// 删除项
 	for _, v := range delList {
-		p.repo.DeleteAttr(v)
+		_ = p.repo.DeleteAttr(v)
 	}
 	// 保存项
 	for _, v := range arr {
@@ -243,7 +249,7 @@ func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 			v.ProductId = pk
 		}
 		if v.ProductId == pk && v.AttrData != "" {
-			v.ID, err = util.I32Err(p.repo.SaveAttr(v))
+			v.ID, err = util.I64Err(p.repo.SaveAttr(v))
 		}
 	}
 	return err

@@ -39,7 +39,7 @@ type itemImpl struct {
 	catRepo       product.ICategoryRepo
 	productRepo   product.IProductRepo
 	itemWsRepo    item.IItemWholesaleRepo
-	proMRepo      promodel.IProModelRepo
+	proMRepo      promodel.IProductModelRepo
 	promRepo      promotion.IPromotionRepo
 	levelPrices   []*item.MemberPrice
 	promDescribes map[string]string
@@ -52,7 +52,7 @@ type itemImpl struct {
 func NewItem(
 	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
 	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
-	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProModelRepo,
+	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
 	v := &itemImpl{

@@ -111,7 +111,9 @@ func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.Merchan
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
 		v := mch.ProfileManager().GetEnterpriseInfo()
-		return m.parseEnterpriseInfoDto(v), nil
+		if v != nil {
+			return m.parseEnterpriseInfoDto(v), nil
+		}
 	}
 	return nil, nil
 }
@@ -408,8 +410,10 @@ func (m *merchantService) SaveGroupRebateRate(_ context.Context, r *proto.SaveWh
 	return m.error(err), nil
 }
 
-func (m *merchantService) GetAllTradeConf(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
-	panic("implement me")
+func (m *merchantService) GetAllTradeConf_(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
+	return &proto.STradeConfListResponse{
+		Value: make([]*proto.STradeConf_, 0),
+	}, nil
 }
 
 func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCreateRequest) (*proto.Result, error) {
@@ -906,7 +910,7 @@ func (m *merchantService) parseMchSignUp(v *proto.SMchSignUp) *merchant.MchSignU
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
 		Remark:       v.Remark,
-		Reviewed:     v.ReviewStatus,
+		Reviewed:     v.ReviewState,
 		SubmitTime:   v.SubmitTime,
 	}
 }
@@ -933,7 +937,7 @@ func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSi
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
 		Remark:       v.Remark,
-		ReviewStatus: v.Reviewed,
+		ReviewState:  v.Reviewed,
 		SubmitTime:   v.SubmitTime,
 	}
 }
@@ -955,7 +959,7 @@ func (m *merchantService) parseEnterpriseInfoDto(v *merchant.EnterpriseInfo) *pr
 		Address:      v.Address,
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
-		ReviewStatus: v.Reviewed,
+		ReviewState:  v.Reviewed,
 		ReviewTime:   v.ReviewTime,
 		ReviewRemark: v.ReviewRemark,
 		UpdateTime:   v.UpdateTime,
@@ -979,7 +983,7 @@ func (m *merchantService) parseEnterpriseInfo(v *proto.SEnterpriseInfo) *merchan
 		Address:      v.Address,
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
-		Reviewed:     int32(v.ReviewStatus),
+		Reviewed:     int32(v.ReviewState),
 		ReviewTime:   v.ReviewTime,
 		ReviewRemark: v.ReviewRemark,
 		UpdateTime:   v.UpdateTime,

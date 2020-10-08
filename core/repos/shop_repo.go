@@ -33,6 +33,7 @@ type shopRepo struct {
 	storage      storage.Interface
 }
 
+
 // 创建电子商城
 func (s *shopRepo) CreateShop(v *shop.OnlineShop) shop.IShop {
 	return shopImpl.NewShop(v, s, s.valueRepo, s.registryRepo)
@@ -65,8 +66,29 @@ func NewShopRepo(c db.Connector, storage storage.Interface,
 
 // 获取商店
 func (s *shopRepo) GetShop(shopId int64) shop.IShop {
+	//todo: mch_shop表不用了?
+	v1 := s.GetOnlineShop(int(shopId))
+	if v1 != nil {
+		return shopImpl.NewShop(v1, s, s.valueRepo, s.registryRepo)
+	}
+	/*
 	v := s.GetValueShop(shopId)
-	return shopImpl.NewShop2(v, s, s.valueRepo, s.registryRepo)
+	if v != nil {
+		if v.ShopType == shop.TypeOnlineShop {
+			v1 := s.GetOnlineShop(int(shopId))
+			return shopImpl.NewShop(v1, s, s.valueRepo, s.registryRepo)
+		}
+		//todo: 兼容
+		return s.GetStore(shopId)
+	}
+	 */
+	return nil
+}
+
+// 获取门店
+func (s *shopRepo) GetStore(storeId int64) shop.IShop {
+	v := s.GetValueShop(storeId)
+	return shopImpl.NewStore(v, s, s.valueRepo, s.registryRepo)
 }
 
 // 商店别名是否存在
@@ -158,11 +180,11 @@ func (s *shopRepo) getShopCacheKey(mchId int64) string {
 	return fmt.Sprintf("go2o:repo:shop:%d:shops", mchId)
 }
 
-func (s *shopRepo) GetOnlineShopOfMerchant(vendorId int) *shop.OnlineShop {
+func (s *shopRepo) GetOnlineShopOfMerchant(vendorId int) shop.IShop {
 	v := shop.OnlineShop{}
 	err := s.Connector.GetOrm().GetBy(&v, "vendor_id= $1 LIMIT 1", vendorId)
 	if err == nil {
-		return &v
+		return s.CreateShop(&v)
 	}
 	return nil
 }

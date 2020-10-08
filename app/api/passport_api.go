@@ -81,7 +81,7 @@ func (h PassportApi) signCodeSendInfo(token string) {
 	// 验证码校验成功
 	h.st.SetExpire(fmt.Sprintf("%s:%s:check_ok", prefix, token), 0, 600)
 	// 清除记录的会员编号
-	h.st.Del(fmt.Sprintf("%s:%s:member_id", prefix, token))
+	h.st.Delete(fmt.Sprintf("%s:%s:member_id", prefix, token))
 }
 
 // 获取校验结果
@@ -102,7 +102,7 @@ func (p PassportApi) GetCodeVerifyResult(token string) (int64, bool) {
 func (p PassportApi) resetCodeVerifyResult(token string) {
 	prefix := "sys:go2o:pwd:token"
 	checkKey := fmt.Sprintf("%s:%s:check_ok", prefix, token)
-	p.st.Del(checkKey)
+	p.st.Delete(checkKey)
 }
 
 // 设置校验成功
@@ -495,7 +495,7 @@ func (m PassportApi) checkRegToken(token string) bool {
 // 将注册令牌标记为过期
 func (m PassportApi) signCheckTokenExpires(token string) {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
-	m.st.Del(key)
+	m.st.Delete(key)
 }
 
 // 存储校验数据

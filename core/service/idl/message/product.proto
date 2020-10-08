@@ -14,6 +14,9 @@ message ProductModelId {
 message ProductAttrId {
     int64 Value = 1;
 }
+message ProductAttrItemId {
+    int64 Value = 1;
+}
 
 message ProductModelListResponse {
     repeated SProductModel Value = 1;
@@ -34,7 +37,7 @@ message SProductModel {
     // 规格
     repeated SProductSpec Specs = 6;
     // 关联品牌
-    repeated SProductModel Brands = 7;
+    repeated SProductBrand Brands = 7;
     // 是否启用
     bool Enabled = 8;
 }
@@ -50,7 +53,7 @@ message SProductAttr {
     // 是否多选
     bool MultiCheck = 4;
     // 排列序号
-    int32 SortNumber = 5;
+    int32 SortNum = 5;
     // 属性项值
     string ItemValues = 6;
     // 属性项
@@ -64,7 +67,7 @@ message SProductAttrItem {
     // 属性值
     string Value = 2;
     // 排列序号
-    int32 SortNumber = 3;
+    int32 SortNum = 3;
 }
 
 // 产品属性值
@@ -73,10 +76,12 @@ message SProductAttrValue {
     int64 Id = 1;
     // 属性编号
     int64 AttrId = 2;
+    // 属性名称
+    string AttrName = 3;
     // 属性值
-    string AttrData = 3;
+    string AttrData = 4;
     // 属性文本
-    string AttrWord = 4;
+    string AttrWord = 5;
 }
 
 // 产品模型规格
@@ -86,7 +91,7 @@ message SProductSpec {
     // 规格名称
     string Name = 2;
     // 排列序号
-    int32 SortNumber = 3;
+    int32 SortNum = 3;
     // 规格项值
     string ItemValues = 4;
     // 规格项
@@ -102,7 +107,7 @@ message SProductSpecItem {
     // 规格项颜色
     string Color = 3;
     // 排列序号
-    int32 SortNumber = 4;
+    int32 SortNum = 4;
 }
 
 message ProductBrandListResponse {
@@ -122,7 +127,7 @@ message SProductBrand {
     // 介绍
     string Introduce = 5;
     // 是否审核
-    int32 ReviewStatus = 6;
+    int32 ReviewState = 6;
     // 加入时间
     int64 CreateTime = 7;
 }
@@ -158,7 +163,7 @@ message SProductCategory {
     /** 分类层级 */
     int32 Level = 10;
     /** 序号 */
-    int32 SortNumber = 11;
+    int32 SortNum = 11;
     /** 是否楼层显示 */
     bool FloorShow = 12;
     /** 是否启用 */
@@ -168,7 +173,7 @@ message SProductCategory {
     // 选项参数
     map<string, string> Options = 15;
     // 关联品牌
-    repeated SProductModel Brands = 16;
+    repeated SProductBrand Brands = 16;
     /** 子分类 */
     repeated SProductCategory Children = 17;
 }
@@ -196,7 +201,7 @@ message SProduct {
     // 状态
     int32 State = 10;
     // 排序编号
-    int32 SortNumber = 11;
+    int32 SortNum = 11;
     // 产品属性
     repeated SProductAttrValue Attrs = 12;
     // 创建时间
@@ -205,7 +210,13 @@ message SProduct {
     int64 UpdateTime = 14;
 }
 
-message ProductInfoRequest{
+message ProductInfoRequest {
     int64 ProductId = 1;
     string Info = 2;
+}
+
+message SaveProductResponse {
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    int64 ProductId = 3;
 }

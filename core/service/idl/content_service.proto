@@ -5,25 +5,35 @@ import "global.proto";
 /** 内容服务 */
 service ContentService {
     // 获取页面
-    rpc GetPage(IdOrName)returns(SPage){}
+    rpc GetPage (IdOrName) returns (SPage) {
+    }
     // 保存页面
-    rpc SavePage(SPage)returns(Result){}
+    rpc SavePage (SPage) returns (Result) {
+    }
     // 删除页面
-    rpc DeletePage(Int64)returns(Result){}
+    rpc DeletePage (Int64) returns (Result) {
+    }
     // 获取所有栏目
-    rpc GetArticleCategories(Empty)returns(ArticleCategoriesResponse){}
+    rpc GetArticleCategories (Empty) returns (ArticleCategoriesResponse) {
+    }
     // 获取文章栏目,可传入ID或者别名
-    rpc GetArticleCategory(IdOrName)returns(SArticleCategory){}
+    rpc GetArticleCategory (IdOrName) returns (SArticleCategory) {
+    }
     // 保存文章栏目
-    rpc SaveArticleCategory(SArticleCategory)returns(Result){}
+    rpc SaveArticleCategory (SArticleCategory) returns (Result) {
+    }
     // 删除文章分类
-    rpc DeleteArticleCategory(Int64)returns(Result){}
+    rpc DeleteArticleCategory (Int64) returns (Result) {
+    }
     // 获取文章
-    rpc GetArticle(IdOrName)returns(SArticle){}
+    rpc GetArticle (IdOrName) returns (SArticle) {
+    }
     // 删除文章
-    rpc DeleteArticle(Int64)returns(Result){}
+    rpc DeleteArticle (Int64) returns (Result) {
+    }
     // 保存文章
-    rpc SaveArticle(SArticle) returns(Result){}
+    rpc SaveArticle (SArticle) returns (Result) {
+    }
     /** 获取置顶的文章,cat */
     rpc QueryTopArticles (IdOrName) returns (ArticleListResponse) {
     }
@@ -45,29 +55,28 @@ message ArticleListResponse {
 }
 
 //栏目
-message SArticleCategory  {
-//编号
-int64 Id  = 1;
-//父类编号,如为一级栏目则为0
-int64 ParentId = 2;
-// 浏览权限
-int32 PermFlag = 3;
-// 名称(唯一)
-string Name = 4;
-// 别名
-string Alias = 5;
-// 排序编号
-int32 SortNum = 6;
-// 定位路径（打开栏目页定位到的路径）
-string Location = 7;
-// 页面标题
-string Title = 8;
-// 关键字
-string Keywords = 9;
-// 描述
-string Description = 10;
+message SArticleCategory {
+    //编号
+    int64 Id = 1;
+    //父类编号,如为一级栏目则为0
+    int64 ParentId = 2;
+    // 浏览权限
+    int32 PermFlag = 3;
+    // 名称(唯一)
+    string Name = 4;
+    // 别名
+    string Alias = 5;
+    // 排序编号
+    int32 SortNum = 6;
+    // 定位路径（打开栏目页定位到的路径）
+    string Location = 7;
+    // 页面标题
+    string Title = 8;
+    // 关键字
+    string Keywords = 9;
+    // 描述
+    string Description = 10;
 }
-
 
 /** 文章 */
 message SArticle {
@@ -103,7 +112,7 @@ message SArticle {
     sint64 UpdateTime = 15;
 }
 
-message SPage{
+message SPage {
     // 编号
     int64 Id = 1;
     // 商户编号
@@ -111,17 +120,17 @@ message SPage{
     // 标题
     string Title = 3;
     // 字符标识
-    string StrIndent =4;
+    string StrIndent = 4;
     // 浏览权限
-    int32 PermFlag =5;
+    int32 PermFlag = 5;
     // 浏览钥匙
-    string  AccessKey = 6;
+    string AccessKey = 6;
     // 关键词
-    string KeyWord =7;
+    string KeyWord = 7;
     // 描述
-    string Description =8;
+    string Description = 8;
     // 样式表地址
-    string CssPath =9;
+    string CssPath = 9;
     // 内容
     string Body = 10;
     // 修改时间
@@ -130,6 +139,6 @@ message SPage{
     bool Enabled = 12;
 }
 
-message ArticleCategoriesResponse{
+message ArticleCategoriesResponse {
     repeated SArticleCategory Value = 1;
 }

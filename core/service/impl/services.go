@@ -11,6 +11,7 @@ package impl
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db"
@@ -20,9 +21,11 @@ import (
 	"go2o/core/dao"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/repos"
 	"go2o/core/service/proto"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -49,6 +52,8 @@ var (
 	ItemService *itemService
 	// 购物服务
 	ShoppingService *orderServiceImpl
+	// 购物车服务
+	CartService *cartServiceImpl
 	// 售后服务
 	AfterSalesService *afterSalesService
 	// 支付服务
@@ -84,17 +89,16 @@ func handleError(err error) error {
 	//return err
 }
 
-func Init(ctx gof.App, appFlag int) {
+func Init(ctx gof.App, domain string, appFlag int) {
 	Context := ctx
 	db := Context.Db()
 	orm := db.GetOrm()
 	sto := Context.Storage()
-
 	// 初始化服务
 	initService(ctx, db, orm, sto)
 	// RPC
 	if appFlag&app.FlagRpcServe == app.FlagRpcServe {
-		initRpcServe(ctx)
+		initRpcServe(ctx, domain)
 	}
 }
 
@@ -142,11 +146,12 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	/** Service **/
 	StatusService = NewStatusService()
 	RegistryService = NewRegistryService(valueRepo, registryRepo)
-	ProductService = NewProService(proMRepo, catRepo, productRepo)
+	ProductService = NewProductService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valueRepo, registryRepo, notifyRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
 		productRepo, itemRepo, mchRepo, shopRepo, orderQuery)
+	CartService = NewCartService(cartRepo, itemRepo, mchRepo, shopRepo)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopRepo, shopQuery)
@@ -168,27 +173,34 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 }
 
 // RPC服务初始化
-func initRpcServe(ctx gof.App) {
+func initRpcServe(ctx gof.App, domain string) {
 	gf := ctx.Config().GetString
-	mp := make(map[string]string)
-	//domain := gf("domain")
-	hash := gf("url_hash")
-	if hash == "" {
-		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
-	}
+	// like: http+go2o-dev.56x.net:14190
+	re, _ := regexp.Compile("((https|http)\\+)*([^:]+:*\\d*)")
+	matches := re.FindStringSubmatch(domain)
+	protocol := matches[2]
+	domain = matches[3]
 	//ssl := gf("ssl_enabled")
 	//prefix := "http://"
 	//if ssl == "true" || ssl == "1" {
 	//	prefix = "https://"
 	//}
-	// 更新值
-	mp[registry.DomainEnabledSSL] = gf("ssl_enabled")
-	mp[registry.Domain] = gf("domain")
-	mp[registry.ApiRequireVersion] = gf("api_require_version")
-	_, _ = RegistryService.UpdateRegistryValues(nil, &proto.StringMap{Value: mp})
+	repo := fact.GetRegistryRepo()
+	update := repo.UpdateValue
+	update(registry.HttpProtocols, protocol)
+	update(registry.Domain, domain)
+	update(registry.ApiRequireVersion, gf("api_require_version"))
 
+	// 更新静态服务器的地址(解偶合)
+	prefix := repo.Get(registry.DomainPrefixImage)
+	format.GlobalImageServer = fmt.Sprintf("%s://%s%s", protocol, prefix, domain)
+
+	hash := gf("url_hash")
+	if hash == "" {
+		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
+	}
 	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
-	//mp[variable.DStaticPath] = gf("static_server")
+	//mp[consts.DStaticPath] = gf("static_server")
 	//mp[variable.DImageServer] = gf("image_server")
 	//mp[variable.DUrlHash] = hash
 	//mp[variable.DRetailPortal] = strings.Join([]string{prefix,

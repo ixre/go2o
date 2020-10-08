@@ -66,7 +66,7 @@ type (
 		// 上级分类
 		ParentId int `db:"parent_id"`
 		// 产品模型
-		ProdModel int `db:"prod_model"`
+		ModelId int `db:"prod_model"`
 		// 优先级
 		Priority int `db:"priority"`
 		// 分类名称
@@ -78,7 +78,7 @@ type (
 		// 图标
 		Icon string `db:"icon"`
 		// 图标坐标
-		IconXy string `db:"icon_xy"`
+		IconPoint string `db:"icon_xy"`
 		// 分类层级
 		Level int `db:"level"`
 		// 序号
@@ -111,7 +111,7 @@ type (
 		// 获取所有分类
 		GetCategories(mchId int) []*Category
 		// 获取关联的品牌
-		GetRelationBrands(idArr []int) []*promodel.ProBrand
+		GetRelationBrands(idArr []int) []*promodel.ProductBrand
 	}
 
 	// 公共分类服务
@@ -130,7 +130,7 @@ type (
 		// 递归获取下级分类
 		CategoryTree(parentId int) *Category
 		// 获取分类关联的品牌
-		RelationBrands(catId int) []*promodel.ProBrand
+		RelationBrands(catId int) []*promodel.ProductBrand
 	}
 )
 

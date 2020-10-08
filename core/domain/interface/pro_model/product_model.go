@@ -11,7 +11,7 @@ var (
 		"err_empty_brand_array", "请至少包含一个品牌")
 )
 
-type ProModel struct {
+type ProductModel struct {
 	// 编号
 	ID int32 `db:"id" pk:"yes" auto:"yes"`
 	// 名称
@@ -31,11 +31,11 @@ type ProModel struct {
 }
 
 // 产品模型
-type IModel interface {
+type IProductModel interface {
 	// 获取聚合根编号
 	GetAggregateRootId() int32
 	// 获取值
-	Value() *ProModel
+	Value() *ProductModel
 	// 获取属性
 	Attrs() []*Attr
 	// 获取规格
@@ -45,7 +45,7 @@ type IModel interface {
 	// 设置规格
 	SetSpecs([]*Spec) error
 	// 获取关联的品牌编号
-	Brands() []*ProBrand
+	Brands() []*ProductBrand
 	// 设置关联品牌
 	SetBrands(brandId []int32) error
 	// 保存
@@ -54,11 +54,11 @@ type IModel interface {
 	Enabled() bool
 }
 
-type IProModelRepo interface {
+type IProductModelRepo interface {
 	// 创建商品模型
-	CreateModel(v *ProModel) IModel
+	CreateModel(v *ProductModel) IProductModel
 	// 获取商品模型
-	GetModel(id int32) IModel
+	GetModel(id int32) IProductModel
 
 	// 属性服务
 	AttrService() IAttrService
@@ -68,15 +68,15 @@ type IProModelRepo interface {
 	//获取品牌服务
 	BrandService() IBrandService
 	// 获取模型的商品品牌
-	GetModelBrands(proModel int32) []*ProBrand
+	GetModelBrands(proModel int32) []*ProductBrand
 
-	// Get ProModel
-	GetProModel(primary interface{}) *ProModel
-	// Select ProModel
-	SelectProModel(where string, v ...interface{}) []*ProModel
-	// Save ProModel
-	SaveProModel(v *ProModel) (int, error)
-	// Delete ProModel
+	// Get ProductModel
+	GetProModel(primary interface{}) *ProductModel
+	// Select ProductModel
+	SelectProModel(where string, v ...interface{}) []*ProductModel
+	// Save ProductModel
+	SaveProModel(v *ProductModel) (int, error)
+	// Delete ProductModel
 	DeleteProModel(primary interface{}) error
 
 	// Get Attr
@@ -123,16 +123,16 @@ type IProModelRepo interface {
 	// Batch Delete SpecItem
 	BatchDeleteSpecItem(where string, v ...interface{}) (int64, error)
 
-	// Get ProBrand
-	GetProBrand(primary interface{}) *ProBrand
-	// Save ProBrand
-	SaveProBrand(v *ProBrand) (int, error)
-	// Delete ProBrand
+	// Get ProductBrand
+	GetProBrand(primary interface{}) *ProductBrand
+	// Save ProductBrand
+	SaveProBrand(v *ProductBrand) (int, error)
+	// Delete ProductBrand
 	DeleteProBrand(primary interface{}) error
-	// Select ProBrand
-	SelectProBrand(where string, v ...interface{}) []*ProBrand
+	// Select ProductBrand
+	SelectProBrand(where string, v ...interface{}) []*ProductBrand
 
-	// Batch Delete ProBrand
+	// Batch Delete ProductBrand
 	BatchDeleteProBrand(where string, v ...interface{}) (int64, error)
 
 	// Get ProModelBrand

@@ -19,15 +19,14 @@ exclude github.com/coreos/etcd v3.3.18+incompatible
 //exclude github.com/coreos/etcd v3.3.19+incompatible
 
 require (
-	github.com/apache/thrift v0.13.0
 	github.com/coreos/etcd v3.3.25+incompatible // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.9.10
-	github.com/ixre/tto v0.0.0-00010101000000-000000000000
+	github.com/ixre/gof v1.9.12
+	github.com/ixre/tto v0.3.20
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect

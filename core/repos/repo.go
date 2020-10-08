@@ -31,8 +31,7 @@ func handleError(err error) error {
 
 // 删除指定前缀的缓存
 func PrefixDel(sto storage.Interface, prefix string) error {
-	rds := sto.(storage.IRedisStorage)
-	_, err := rds.DelWith(prefix)
+	_, err := sto.DeleteWith(prefix)
 	if err != nil {
 		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
 	}

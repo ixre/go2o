@@ -8,7 +8,6 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 )
 
@@ -52,14 +51,19 @@ func (s shopApi) Process(fn string, ctx api.Context) *api.Response {
 func (s shopApi) shopCat(ctx api.Context) interface{} {
 	parentId := ctx.Form().GetInt("parent_id")
 	shopId := ctx.Form().GetInt("shop_id")
-	var list []*proto.SCategory
+	var list []*proto.SProductCategory
 	key := fmt.Sprintf("go2o:repo:cat:%d:json:%d", shopId, parentId)
 	sto := gof.CurrentApp.Storage()
+	trans, cli, _ := service.ProductServiceClient()
+	defer trans.Close()
 	if err := sto.Get(key, &list); err != nil {
 		if parentId == 0 {
-			list = impl.ProductService.GetBigCategories(int64(shopId))
+			ret, _ := cli.GetChildren(context.TODO(), &proto.CategoryParentId{})
+			list = ret.Value
 		} else {
-			list = impl.ProductService.GetChildCategories(int64(shopId), int64(parentId))
+			ret, _ := cli.GetCategory(context.TODO(),
+				&proto.Int64{Value: int64(parentId)})
+			list = ret.Children
 		}
 		var d []byte
 		d, err = json.Marshal(list)

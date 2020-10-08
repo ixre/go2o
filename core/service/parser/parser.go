@@ -10,6 +10,7 @@ package parser
 
 import (
 	"github.com/ixre/gof/math"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
@@ -136,10 +137,10 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		ItemId:    src.ID,
 		ProductId: src.ProductId,
 		//PromFlag:     src.PromFlag,
-		CategoryId: src.CatId,
+		CategoryId: int64(src.CatId),
 		SkuId:      src.SkuId,
 		VendorId:   src.VendorId,
-		BrandId:    src.BrandId,
+		BrandId:    int64(src.BrandId),
 		//ShopId:       src.ShopId,
 		//ShopCatId:    src.ShopCatId,
 		//ExpressTid:   src.ExpressTid,
@@ -266,27 +267,26 @@ func Sku(src *proto.SSku) *item.Sku {
 	}
 }
 
-func Order(src *proto.SComplexOrder) *order.ComplexOrder {
+func Order(src *proto.SSingleOrder) *order.ComplexOrder {
 	o := &order.ComplexOrder{
-		OrderId:         src.OrderId,
-		SubOrderId:      src.SubOrderId,
-		OrderType:       src.OrderType,
-		OrderNo:         src.OrderNo,
-		BuyerId:         src.BuyerId,
-		VendorId:        src.VendorId,
-		ShopId:          src.ShopId,
-		Subject:         src.Subject,
-		ItemAmount:      src.ItemAmount,
-		DiscountAmount:  src.DiscountAmount,
-		ExpressFee:      src.ExpressFee,
-		PackageFee:      src.PackageFee,
-		FinalAmount:     src.FinalAmount,
-		ConsigneePerson: src.ConsigneePerson,
-		ConsigneePhone:  src.ConsigneePhone,
-		ShippingAddress: src.ShippingAddress,
+		OrderId:        src.OrderId,
+		OrderType:      src.OrderType,
+		OrderNo:        src.OrderNo,
+		BuyerId:        src.BuyerId,
+		VendorId:       src.SellerId,
+		ShopId:         src.ShopId,
+		Subject:        src.Subject,
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
+		FinalAmount:    src.FinalAmount,
+
+		ConsigneePerson: src.Consignee.ConsigneePerson,
+		ConsigneePhone:  src.Consignee.ConsigneePhone,
+		ShippingAddress: src.Consignee.ShippingAddress,
 		BuyerComment:    src.BuyerComment,
-		CreateTime:      src.CreateTime,
-		UpdateTime:      src.UpdateTime,
+		CreateTime:      src.SubmitTime,
 		State:           src.State,
 		Items:           make([]*order.ComplexItem, len(src.Items)),
 		Data:            src.Data,
@@ -299,10 +299,9 @@ func Order(src *proto.SComplexOrder) *order.ComplexOrder {
 	return o
 }
 
-func OrderItem(src *proto.SComplexItem) *order.ComplexItem {
+func OrderItem(src *proto.SOrderItem) *order.ComplexItem {
 	return &order.ComplexItem{
-		ID:             src.ID,
-		OrderId:        src.OrderId,
+		ID:             src.Id,
 		ItemId:         src.ItemId,
 		SkuId:          src.SkuId,
 		SnapshotId:     src.SnapshotId,
@@ -310,44 +309,53 @@ func OrderItem(src *proto.SComplexItem) *order.ComplexItem {
 		ReturnQuantity: src.ReturnQuantity,
 		Amount:         src.Amount,
 		FinalAmount:    src.FinalAmount,
-		IsShipped:      src.IsShipped,
+		IsShipped:      int32(types.IntCond(src.IsShipped, 1, 0)),
 		Data:           src.Data,
 	}
 }
 
-func SubOrderItemDto(src *order.SubOrderItem) *proto.SComplexItem {
-	return &proto.SComplexItem{
-		ID:             int64(src.ID),
-		OrderId:        src.OrderId,
-		ItemId:         int64(src.ItemId),
-		SkuId:          int64(src.SkuId),
-		SnapshotId:     int64(src.SnapshotId),
+func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
+	return &proto.SOrderItem{
+		Id:             src.ID,
+		ItemId:         src.ItemId,
+		SkuId:          src.SkuId,
+		SnapshotId:     src.SnapshotId,
 		Quantity:       src.Quantity,
 		ReturnQuantity: src.ReturnQuantity,
 		Amount:         float64(src.Amount),
 		FinalAmount:    float64(src.FinalAmount),
-		IsShipped:      src.IsShipped,
+		IsShipped:      src.IsShipped == 1,
 	}
 }
 
-func SubOrderDto(src *order.NormalSubOrder) *proto.SComplexOrder {
-	o := &proto.SComplexOrder{
-		OrderId:        src.OrderId,
-		SubOrderId:     src.OrderId,
-		OrderNo:        src.OrderNo,
-		BuyerId:        int64(src.BuyerId),
-		VendorId:       src.VendorId,
+func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
+	o := &proto.SSingleOrder{
+		OrderId:       src.ID,
+		ParentOrderId: src.OrderId,
+		OrderNo:       src.OrderNo,
+		//OrderType:            src.,
+		BuyerId:        src.BuyerId,
+		SellerId:       src.VendorId,
 		ShopId:         src.ShopId,
 		Subject:        src.Subject,
 		ItemAmount:     float64(src.ItemAmount),
 		DiscountAmount: float64(src.DiscountAmount),
+		DeductAmount:   0,
+		AdjustAmount:   0,
 		ExpressFee:     float64(src.ExpressFee),
 		PackageFee:     float64(src.PackageFee),
-		FinalAmount:    float64(src.FinalAmount),
-		CreateTime:     src.CreateTime,
-		UpdateTime:     src.UpdateTime,
-		State:          src.State,
-		Items:          make([]*proto.SComplexItem, len(src.Items)),
+		ProcedureFee:   0,
+		//TotalAmount:          src.ItemAmount,
+		FinalAmount: float64(src.FinalAmount),
+		Consignee: &proto.SConsigneeInfo{
+			ConsigneePerson: "",
+			ConsigneePhone:  "",
+			ShippingAddress: "",
+		},
+		BuyerComment: src.BuyerComment,
+		State:        src.State,
+		SubmitTime:   src.CreateTime,
+		Items:        make([]*proto.SOrderItem, len(src.Items)),
 	}
 	for i, v := range src.Items {
 		o.Items[i] = SubOrderItemDto(v)
@@ -355,10 +363,8 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SComplexOrder {
 	return o
 }
 
-func OrderItemDto(src *order.ComplexItem) *proto.SComplexItem {
-	return &proto.SComplexItem{
-		ID:             src.ID,
-		OrderId:        src.OrderId,
+func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
+	return &proto.SOrderItem{
 		ItemId:         src.ItemId,
 		SkuId:          src.SkuId,
 		SnapshotId:     src.SnapshotId,
@@ -366,35 +372,36 @@ func OrderItemDto(src *order.ComplexItem) *proto.SComplexItem {
 		ReturnQuantity: src.ReturnQuantity,
 		Amount:         src.Amount,
 		FinalAmount:    src.FinalAmount,
-		IsShipped:      src.IsShipped,
+		IsShipped:      src.IsShipped == 1,
 		Data:           src.Data,
 	}
 }
 
-func OrderDto(src *order.ComplexOrder) *proto.SComplexOrder {
-	o := &proto.SComplexOrder{
-		OrderId:         src.OrderId,
-		SubOrderId:      src.SubOrderId,
-		OrderType:       src.OrderType,
-		OrderNo:         src.OrderNo,
-		BuyerId:         src.BuyerId,
-		VendorId:        src.VendorId,
-		ShopId:          src.ShopId,
-		Subject:         src.Subject,
-		ItemAmount:      src.ItemAmount,
-		DiscountAmount:  src.DiscountAmount,
-		ExpressFee:      src.ExpressFee,
-		PackageFee:      src.PackageFee,
-		FinalAmount:     src.FinalAmount,
-		ConsigneePerson: src.ConsigneePerson,
-		ConsigneePhone:  src.ConsigneePhone,
-		ShippingAddress: src.ShippingAddress,
-		BuyerComment:    src.BuyerComment,
-		CreateTime:      src.CreateTime,
-		UpdateTime:      src.UpdateTime,
-		State:           src.State,
-		Items:           make([]*proto.SComplexItem, len(src.Items)),
-		Data:            src.Data,
+func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
+	o := &proto.SSingleOrder{
+		OrderId: src.OrderId,
+		//SubOrderId:      src.SubOrderId,
+		OrderType:      src.OrderType,
+		OrderNo:        src.OrderNo,
+		BuyerId:        src.BuyerId,
+		SellerId:       src.VendorId,
+		ShopId:         src.ShopId,
+		Subject:        src.Subject,
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
+		FinalAmount:    src.FinalAmount,
+		Consignee: &proto.SConsigneeInfo{
+			ConsigneePerson: src.ConsigneePerson,
+			ConsigneePhone:  src.ConsigneePhone,
+			ShippingAddress: src.ShippingAddress,
+		},
+		BuyerComment: src.BuyerComment,
+		SubmitTime:   src.CreateTime,
+		State:        src.State,
+		Items:        make([]*proto.SOrderItem, len(src.Items)),
+		Data:         src.Data,
 	}
 	if src.Items != nil {
 		for i, v := range src.Items {

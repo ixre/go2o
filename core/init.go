@@ -170,21 +170,21 @@ func OrmMapping(conn db.Connector) {
 
 	// Shipment
 	orm.Mapping(shipment.ShipmentOrder{}, "ship_order")
-	orm.Mapping(shipment.Item{}, "ship_item")
+	orm.Mapping(shipment.ShipmentItem{}, "ship_item")
 
 	// 产品
 	orm.Mapping(product.Product{}, "product")
 	orm.Mapping(item.GoodsItem{}, "item_info")
 	orm.Mapping(item.Sku{}, "item_sku")
 	orm.Mapping(product.Category{}, "product_category")
-	orm.Mapping(promodel.ProModel{}, "product_model")
-	orm.Mapping(promodel.ProBrand{}, "product_brand")
+	orm.Mapping(promodel.ProductModel{}, "product_model")
+	orm.Mapping(promodel.ProductBrand{}, "product_brand")
 	orm.Mapping(promodel.ProModelBrand{}, "product_model_brand")
 	orm.Mapping(promodel.Attr{}, "product_model_attr")
 	orm.Mapping(promodel.AttrItem{}, "product_model_attr_item")
 	orm.Mapping(promodel.Spec{}, "product_model_spec")
 	orm.Mapping(promodel.SpecItem{}, "product_model_spec_item")
-	orm.Mapping(product.Attr{}, "product_attr_info")
+	orm.Mapping(product.AttrValue{}, "product_attr_info")
 	orm.Mapping(item.Snapshot{}, "item_snapshot")
 	orm.Mapping(item.TradeSnapshot{}, "item_trade_snapshot")
 	orm.Mapping(item.Label{}, "gs_sale_label")

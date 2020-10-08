@@ -2,13 +2,11 @@ package impl
 
 import (
 	"errors"
-	"github.com/ixre/gof/web/ui/tree"
+	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/parser"
 	"go2o/core/service/proto"
 	"golang.org/x/net/context"
 	"strconv"
@@ -18,92 +16,293 @@ var _ proto.ProductServiceServer = new(productService)
 
 // 产品服务
 type productService struct {
-	pmRepo  promodel.IProModelRepo
-	catRepo product.ICategoryRepo
-	proRepo product.IProductRepo
+	pmRepo      promodel.IProductModelRepo
+	catRepo     product.ICategoryRepo
+	productRepo product.IProductRepo
 	serviceUtil
 }
 
-func NewProService(pmRepo promodel.IProModelRepo,
+func NewProductService(pmRepo promodel.IProductModelRepo,
 	catRepo product.ICategoryRepo,
 	proRepo product.IProductRepo) *productService {
 	return &productService{
-		pmRepo:  pmRepo,
-		catRepo: catRepo,
-		proRepo: proRepo,
+		pmRepo:      pmRepo,
+		catRepo:     catRepo,
+		productRepo: proRepo,
 	}
 }
 
-// 删除产品
-func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProductRequest) (*proto.Result, error) {
-	var err error
-	prod := p.proRepo.GetProduct(r.ProductId)
-	if prod == nil || prod.GetValue().VendorId != r.SellerId {
-		err = product.ErrNoSuchProduct
+// 获取产品模型
+func (p *productService) GetModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
+	im := p.pmRepo.GetModel(int32(id.Value))
+	if im != nil {
+		ret := p.parseModelDto(im.Value())
+		// 绑定属性
+		attrs := im.Attrs()
+		ret.Attrs = make([]*proto.SProductAttr, len(attrs))
+		for i, v := range attrs {
+			attr := p.appendAttrItems(p.parseProductAttrDto(v), v.Items)
+			ret.Attrs[i] = attr
+		}
+		//　绑定规格
+		specList := im.Specs()
+		ret.Specs = make([]*proto.SProductSpec,len(specList))
+		for i,v := range specList{
+			spec := p.appendSpecItems(p.parseSpecDto(v),v.Items)
+			ret.Specs[i] = spec
+		}
+		// 绑定品牌
+		brands := im.Brands()
+		ret.Brands = make([]*proto.SProductBrand,len(brands))
+		for i,v := range brands{
+			ret.Brands[i] = p.parseBrandDto(v)
+		}
+		return ret, nil
+	}
+	return nil, nil
+}
+
+func (p *productService) appendAttrItems(attr *proto.SProductAttr, items []*promodel.AttrItem) *proto.SProductAttr {
+	attr.Items = make([]*proto.SProductAttrItem, len(items))
+	for i1, v1 := range items {
+		attr.Items[i1] = p.parseProductAttrItemDto(v1)
+	}
+	return attr
+}
+
+
+func (p *productService) appendSpecItems(spec *proto.SProductSpec, items promodel.SpecItemList)*proto.SProductSpec  {
+	spec.Items = make([]*proto.SProductSpecItem, len(items))
+	for i1, v1 := range items {
+		spec.Items[i1] = p.parseProductSpecItemDto(v1)
+	}
+	return spec
+}
+
+
+// 获取产品模型
+func (p *productService) GetModels(_ context.Context, _ *proto.Empty) (*proto.ProductModelListResponse, error) {
+	list := p.pmRepo.SelectProModel("")
+	arr := make([]*proto.SProductModel, len(list))
+	for i, v := range list {
+		arr[i] = p.parseModelDto(v)
+	}
+	return &proto.ProductModelListResponse{
+		Value: arr,
+	}, nil
+}
+
+// 获取属性
+func (p *productService) GetAttr(_ context.Context, id *proto.ProductAttrId) (*proto.SProductAttr, error) {
+	v := p.pmRepo.AttrService().GetAttr(int32(id.Value))
+	if v != nil {
+		attr := p.parseProductAttrDto(v)
+		attr = p.appendAttrItems(attr, v.Items)
+		return attr, nil
+	}
+	return nil, nil
+}
+
+// 获取属性项
+func (p *productService) GetAttrItem(_ context.Context, id *proto.ProductAttrItemId) (*proto.SProductAttrItem, error) {
+	it := p.pmRepo.GetAttrItem(id.Value)
+	if it != nil {
+		return p.parseProductAttrItemDto(it), nil
+	}
+	return nil, nil
+}
+
+// 删除产品品牌
+func (p *productService) DeleteProductBrand_(_ context.Context, id *proto.Int64) (*proto.Result, error) {
+	err := p.pmRepo.BrandService().DeleteBrand(int32(id.Value))
+	return p.result(err), nil
+}
+
+// 获取所有产品品牌
+func (p *productService) GetBrands(_ context.Context, _ *proto.Empty) (*proto.ProductBrandListResponse, error) {
+	list := p.pmRepo.BrandService().AllBrands()
+	arr := make([]*proto.SProductBrand, len(list))
+	for i, v := range list {
+		arr[i] = p.parseBrandDto(v)
+	}
+	return &proto.ProductBrandListResponse{
+		Value: arr,
+	}, nil
+}
+
+func (p *productService) GetCategories(_ context.Context, _ *proto.Empty) (*proto.ProductCategoriesResponse, error) {
+	ic := p.catRepo.GlobCatService()
+	cats := ic.GetCategories()
+	list := make([]*proto.SProductCategory, len(cats))
+	for i, v := range cats {
+		cat := p.parseCategoryDto(v.GetValue())
+		cat.Icon = format.GetResUrl(cat.Icon)
+		p.appendCategoryBrands(ic, v, cat)
+		list[i] = cat
+	}
+	return &proto.ProductCategoriesResponse{
+		Value: list,
+	}, nil
+}
+
+// 为分类绑定品牌
+func (p *productService) appendCategoryBrands(ic product.IGlobCatService, v product.ICategory, cat *proto.SProductCategory) {
+	brands := ic.RelationBrands(v.GetDomainId())
+	cat.Brands = make([]*proto.SProductBrand, len(brands))
+	for i1, v1 := range brands {
+		cat.Brands[i1] = p.parseBrandDto(v1)
+	}
+}
+
+// 获取商品分类
+func (p *productService) GetCategory(_ context.Context, id *proto.Int64) (*proto.SProductCategory, error) {
+	ic := p.catRepo.GlobCatService()
+	v := ic.GetCategory(int(id.Value))
+	if v != nil {
+		cat := p.parseCategoryDto(v.GetValue())
+		p.appendCategoryBrands(ic, v, cat)
+		return cat, nil
+	}
+	return nil, nil
+}
+
+// 删除分类
+func (p *productService) DeleteCategory(_ context.Context, id *proto.Int64) (*proto.Result, error) {
+	err := p.catRepo.GlobCatService().DeleteCategory(int(id.Value))
+	return p.error(err), nil
+}
+
+// 保存分类
+func (p *productService) SaveCategory(_ context.Context, category *proto.SProductCategory) (*proto.Result, error) {
+	sl := p.catRepo.GlobCatService()
+	var ca product.ICategory
+	v := p.parseCategory(category)
+	if v.Id > 0 {
+		ca = sl.GetCategory(v.Id)
 	} else {
-		err = p.proRepo.DeleteProduct(r.ProductId)
-		//todo: 删除商品
+		ca = sl.CreateCategory(v)
+	}
+	err := ca.SetValue(v)
+	if err == nil {
+		_, err = ca.Save()
 	}
 	return p.error(err), nil
 }
 
-// 获取产品模型
-func (p *productService) GetModel(id int32) *promodel.ProModel {
-	return p.pmRepo.GetProModel(id)
+// 根据上级编号获取分类列表
+func (p *productService) GetChildren(_ context.Context, id *proto.CategoryParentId) (*proto.ProductCategoriesResponse, error) {
+	ic := p.catRepo.GlobCatService()
+	cats := ic.GetCategories()
+	var list = make([]*proto.SProductCategory, 0)
+	for _, v := range cats {
+		if vv := v.GetValue(); vv.ParentId == int(id.Value) && vv.Enabled == 1 {
+			cat := p.parseCategoryDto(v.GetValue())
+			cat.Icon = format.GetResUrl(cat.Icon)
+			p.appendCategoryBrands(ic, v, cat)
+			list = append(list, cat)
+		}
+	}
+	return &proto.ProductCategoriesResponse{
+		Value: list,
+	}, nil
 }
 
-// 获取产品模型
-func (p *productService) GetModels() []*promodel.ProModel {
-	return p.pmRepo.SelectProModel("enabled=1")
+// 获取产品值
+func (p *productService) GetProductValue(_ context.Context, id *proto.ProductId) (*proto.SProduct, error) {
+	pro := p.productRepo.GetProduct(id.Value)
+	if pro != nil {
+		ret := p.parseProductDto(pro.GetValue())
+		attrs := pro.Attr()
+		ret.Attrs = make([]*proto.SProductAttrValue, len(attrs))
+		for i, v := range attrs {
+			ret.Attrs[i] = p.parseProductAttrValueDto(v)
+		}
+		return ret, nil
+	}
+	return nil, nil
 }
 
-// 获取属性
-func (p *productService) GetAttr(id int32) *promodel.Attr {
-	return p.pmRepo.GetAttr(id)
+// 保存产品
+func (p *productService) SaveProduct(_ context.Context, r *proto.SProduct) (*proto.SaveProductResponse, error) {
+	var pro product.IProduct
+	v := p.parseProduct(r)
+	ret := &proto.SaveProductResponse{}
+	if v.Id > 0 {
+		pro = p.productRepo.GetProduct(v.Id)
+		if pro == nil || pro.GetValue().VendorId != v.VendorId {
+			ret.ErrCode = 1
+			ret.ErrMsg = product.ErrNoSuchProduct.Error()
+			return ret, nil
+		}
+		// 修改货品时，不会修改详情
+		v.Description = pro.GetValue().Description
+	} else {
+		pro = p.productRepo.CreateProduct(v)
+	}
+	// 保存
+	err := pro.SetValue(v)
+	if err == nil {
+		// 保存属性
+		if v.Attrs != nil {
+			err = pro.SetAttr(v.Attrs)
+		}
+		if err == nil {
+			v.Id, err = pro.Save()
+		}
+	}
+	if err != nil {
+		ret.ErrMsg = err.Error()
+		ret.ErrCode = 2
+	}
+	ret.ProductId = v.Id
+	return ret, nil
 }
 
-// 获取属性项
-func (p *productService) GetAttrItem(id int32) *promodel.AttrItem {
-	return p.pmRepo.GetAttrItem(id)
+// 保存货品描述
+func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfoRequest) (*proto.Result, error) {
+	pro := p.productRepo.GetProduct(r.ProductId)
+	var err error
+	if pro == nil {
+		err = product.ErrNoSuchProduct
+	} else {
+		err = pro.SetDescribe(r.Info)
+	}
+	return p.error(err), nil
 }
 
 // 获取模型属性
-func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
+func (p *productService) GetModelAttrs_(proModel int32) []*promodel.Attr {
+	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: proModel})
 	return m.Attrs()
 }
 
 // 获取模型属性Html
-func (p *productService) GetModelAttrsHtml(proModel int32) string {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
+func (p *productService) GetModelAttrsHtml(_ context.Context, id *proto.ProductModelId) (*proto.String, error) {
+	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: int32(id.Value)})
 	attrs := m.Attrs()
-	return p.pmRepo.AttrService().AttrsHtml(attrs)
-}
-
-// 获取模型规格
-func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
-	m := p.pmRepo.CreateModel(&promodel.ProModel{ID: proModel})
-	return m.Specs()
+	s := p.pmRepo.AttrService().AttrsHtml(attrs)
+	return &proto.String{Value: s}, nil
 }
 
 // 保存产品模型
-func (p *productService) SaveModel(v *promodel.ProModel) (*proto.Result, error) {
-	var pm promodel.IModel
-	var err error
+func (p *productService) SaveProductModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
+	var pm promodel.IProductModel
+	v := p.parseProductModel(r)
 	if v.ID > 0 {
-		ev := p.GetModel(v.ID)
-		if ev == nil {
-			err = errors.New("模型不存在")
-			goto R
+		pm = p.pmRepo.GetModel(int32(r.Id))
+		if pm == nil {
+			return p.error(errors.New("模型不存在")), nil
 		}
-		ev.Name = v.Name
-		ev.Enabled = v.Enabled
-		pm = p.pmRepo.CreateModel(ev)
+		// todo: 应新增启用/停用产品模型的方法
+		if r.Enabled {
+			pm.Value().Enabled = 1
+		}
 	} else {
 		pm = p.pmRepo.CreateModel(v)
 	}
+	var err error
 	// 保存属性
-	if err == nil && v.Attrs != nil {
+	if v.Attrs != nil {
 		err = pm.SetAttrs(v.Attrs)
 	}
 	// 保存规格
@@ -118,102 +317,62 @@ func (p *productService) SaveModel(v *promodel.ProModel) (*proto.Result, error) 
 	if err == nil {
 		v.ID, err = pm.Save()
 	}
-R:
 	return p.result(err), nil
 }
 
 // 删除产品模型
-func (p *productService) DeleteProModel_(id int32) (*proto.Result, error) {
+func (p *productService) DeleteProductModel_(_ context.Context, id *proto.ProductModelId) (*proto.Result, error) {
 	//err := p.pmRepo.DeleteProModel(id)
 	//todo: 暂时不允许删除模型
 	return p.result(errors.New("暂时不允许删除模型")), nil
 }
 
-/***** 品牌  *****/
-
 // 获取产品品牌
-func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
-	return p.pmRepo.BrandService().Get(id)
-}
-
-// Save 产品品牌
-func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*proto.Result, error) {
-	_, err := p.pmRepo.BrandService().SaveBrand(v)
-	return p.result(err), nil
-}
-
-// Delete 产品品牌
-func (p *productService) DeleteProBrand_(id int32) (*proto.Result, error) {
-	err := p.pmRepo.BrandService().DeleteBrand(id)
-	return p.result(err), nil
-}
-
-// 获取所有产品品牌
-func (p *productService) GetBrands() []*promodel.ProBrand {
-	return p.pmRepo.BrandService().AllBrands()
-}
-
-// 获取模型关联的产品品牌
-func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
-	pm := p.pmRepo.CreateModel(&promodel.ProModel{ID: id})
-	return pm.Brands()
-}
-
-/***** 分类 *****/
-
-// 获取商品分类
-func (p *productService) GetCategory(mchId int64, id int32) *product.Category {
-	c := p.catRepo.GlobCatService().GetCategory(int(id))
-	if c != nil {
-		return c.GetValue()
-	}
-	return nil
-}
-
-// 获取商品分类和选项
-func (p *productService) GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
-	domain.IOptionStore) {
-	c := p.catRepo.GlobCatService().GetCategory(int(id))
-	if c != nil {
-		return c.GetValue(), c.GetOption()
+func (p *productService) GetProductBrand_(_ context.Context, id *proto.Int64) (*proto.SProductBrand, error) {
+	brand := p.pmRepo.BrandService().Get(int32(id.Value))
+	if brand != nil {
+		return p.parseBrandDto(brand), nil
 	}
 	return nil, nil
 }
 
-func (p *productService) DeleteCategory(mchId int64, id int32) error {
-	return p.catRepo.GlobCatService().DeleteCategory(int(id))
+// Save 产品品牌
+func (p *productService) SaveProductBrand_(_ context.Context, brand *proto.SProductBrand) (*proto.Result, error) {
+	v := p.parseBrand(brand)
+	_, err := p.pmRepo.BrandService().SaveBrand(v)
+	return p.result(err), nil
 }
 
-func (p *productService) SaveCategory(mchId int64, v *product.Category) (int32, error) {
-	sl := p.catRepo.GlobCatService()
-	var ca product.ICategory
-	if v.Id > 0 {
-		ca = sl.GetCategory(v.Id)
+// 删除产品
+func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProductRequest) (*proto.Result, error) {
+	var err error
+	prod := p.productRepo.GetProduct(r.ProductId)
+	if prod == nil || prod.GetValue().VendorId != r.SellerId {
+		err = product.ErrNoSuchProduct
 	} else {
-		ca = sl.CreateCategory(v)
+		err = p.productRepo.DeleteProduct(r.ProductId)
+		//todo: 删除商品
 	}
-	err := ca.SetValue(v)
-	if err == nil {
-		id, err1 := ca.Save()
-		if err1 == nil {
-			return int32(id), nil
-		}
-		err = err1
-	}
-	return 0, err
+	return p.error(err), nil
 }
 
-func (p *productService) GetCategoryTreeNode(mchId int64) *tree.TreeNode {
+// 获取模型规格
+func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
+	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: proModel})
+	return m.Specs()
+}
+
+/***** 分类 *****/
+func (p *productService) GetCategoryTreeNode(_ context.Context, _ *proto.Empty) (*proto.STreeNode, error) {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	rootNode := &tree.TreeNode{
+	rootNode := &proto.STreeNode{
 		Title:    "根节点",
 		Value:    "",
-		Url:      "",
 		Icon:     "",
 		Expand:   true,
 		Children: nil}
 	p.walkCategoryTree(rootNode, 0, cats)
-	return rootNode
+	return rootNode, nil
 }
 
 // 分类树形
@@ -222,7 +381,7 @@ func (p *productService) CategoryTree(parentId int32) *product.Category {
 }
 
 // 获取分类关联的品牌
-func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
+func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 	arr := p.catRepo.GlobCatService().RelationBrands(int(catId))
 	for _, v := range arr {
 		v.Image = format.GetResUrl(v.Image)
@@ -230,15 +389,14 @@ func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
 	return arr
 }
 
-func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int, categories []product.ICategory) {
-	node.Children = []*tree.TreeNode{}
+func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int, categories []product.ICategory) {
+	node.Children = []*proto.STreeNode{}
 	for _, v := range categories {
 		cate := v.GetValue()
-		if cate.ParentId == int(parentId) {
-			cNode := &tree.TreeNode{
+		if cate.ParentId == parentId {
+			cNode := &proto.STreeNode{
 				Title:    cate.Name,
-				Value:    strconv.Itoa(int(cate.Id)),
-				Url:      "",
+				Value:    strconv.Itoa(cate.Id),
 				Icon:     "",
 				Expand:   false,
 				Children: nil}
@@ -248,68 +406,30 @@ func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int, cat
 	}
 }
 
-func (p *productService) GetCategories(mchId int64) []*product.Category {
+func (p *productService) GetBigCategories(mchId int64) []*proto.SProductCategory {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	list := make([]*product.Category, len(cats))
-	for i, v := range cats {
-		vv := v.GetValue()
-		vv.Icon = format.GetResUrl(vv.Icon)
-		list[i] = vv
-	}
-	return list
-}
-
-// 根据上级编号获取分类列表
-func (p *productService) GetChildren(mchId, parentId int32) []*product.Category {
-	cats := p.catRepo.GlobCatService().GetCategories()
-	var list = make([]*product.Category, 0)
-	for _, v := range cats {
-		if vv := v.GetValue(); vv.ParentId == int(parentId) && vv.Enabled == 1 {
-			v2 := *vv
-			v2.Icon = format.GetResUrl(v2.Icon)
-			list = append(list, &v2)
-		}
-	}
-	return list
-}
-
-func (p *productService) getCategoryManager(mchId int64) product.IGlobCatService {
-	return p.catRepo.GlobCatService()
-}
-
-func (p *productService) GetBigCategories(mchId int64) []*proto.SCategory {
-	cats := p.catRepo.GlobCatService().GetCategories()
-	var list []*proto.SCategory
+	var list []*proto.SProductCategory
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
 			v2.Icon = format.GetResUrl(v2.Icon)
-			list = append(list, parser.CategoryDto(v2))
+			list = append(list, p.parseCategoryDto(v2))
 		}
 	}
 	return list
 }
 
-func (p *productService) GetChildCategories(mchId int64, parentId int64) []*proto.SCategory {
+func (p *productService) GetChildCategories(mchId int64, parentId int64) []*proto.SProductCategory {
 	cats := p.catRepo.GlobCatService().GetCategories()
-	var list []*proto.SCategory
+	var list []*proto.SProductCategory
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == int(parentId) && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
 			p.setChild(cats, vv)
-			list = append(list, parser.CategoryDto(vv))
+			list = append(list, p.parseCategoryDto(vv))
 		}
 	}
 	return list
 }
-
-//
-//func CopyCategory(src *product.Category, dst *dto.Category) {
-//	dst.ID = src.ID
-//	dst.Name = src.Name
-//	dst.Level = src.Level
-//	dst.Icon = src.Icon
-//	dst.Url = src.CatUrl
-//}
 
 func (p *productService) setChild(list []product.ICategory, dst *product.Category) {
 	for _, v := range list {
@@ -325,73 +445,13 @@ func (p *productService) setChild(list []product.ICategory, dst *product.Categor
 
 /***** 产品 *****/
 
-// 获取产品值
-func (p *productService) GetProductValue(productId int64) *product.Product {
-	pro := p.proRepo.GetProduct(productId)
-	if pro != nil {
-		v := pro.GetValue()
-		return &v
-	}
-	return nil
-}
-
-// 保存产品
-func (p *productService) SaveProduct(v *product.Product) (r *proto.Result, err error) {
-	var pro product.IProduct
-	if v.Id > 0 {
-		pro = p.proRepo.GetProduct(v.Id)
-		if pro == nil || pro.GetValue().VendorId != v.VendorId {
-			err = product.ErrNoSuchProduct
-			goto R
-		}
-		// 修改货品时，不会修改详情
-		v.Description = pro.GetValue().Description
-	} else {
-		pro = p.proRepo.CreateProduct(v)
-	}
-	// 保存
-	err = pro.SetValue(v)
-	if err == nil {
-		// 保存属性
-		if v.Attr != nil {
-			err = pro.SetAttr(v.Attr)
-			if err != nil {
-				goto R
-			}
-		}
-		v.Id, err = pro.Save()
-	}
-R:
-	r = p.result(err)
-	r.Data = map[string]string{
-		"ProductId": strconv.Itoa(int(v.Id)),
-	}
-	return r, nil
-}
-
-// 保存货品描述
-func (p *productService) SaveProductInfo(supplierId int64,
-	productId int64, info string) error {
-	pro := p.proRepo.GetProduct(productId)
-	if pro == nil || pro.GetValue().VendorId != supplierId {
-		return product.ErrNoSuchProduct
-	}
-	return pro.SetDescribe(info)
-}
-
 // 删除货品
 func (p *productService) DeleteItem(supplierId int64, productId int64) error {
-	pro := p.proRepo.GetProduct(productId)
+	pro := p.productRepo.GetProduct(productId)
 	if pro == nil || pro.GetValue().VendorId != supplierId {
 		return product.ErrNoSuchProduct
 	}
 	return pro.Destroy()
-}
-
-// 获取产品属性
-func (p *productService) GetAttrArray(productId int64) []*product.Attr {
-	pro := p.proRepo.CreateProduct(&product.Product{Id: productId})
-	return pro.Attr()
 }
 
 // 获取商品的销售标签
@@ -419,4 +479,245 @@ func (p *productService) SaveItemSaleLabels(mchId, itemId int64, tagIds []int) e
 	//	err = errors.New("商品不存在")
 	//}
 	return err
+}
+
+func (p *productService) parseModelDto(v *promodel.ProductModel) *proto.SProductModel {
+	ret := &proto.SProductModel{
+		Id:      int64(v.ID),
+		Name:    v.Name,
+		AttrStr: v.AttrStr,
+		SpecStr: v.SpecStr,
+		Attrs:   nil,
+		Specs:   nil,
+		Brands:  nil,
+		Enabled: v.Enabled == 1,
+	}
+	return ret
+}
+
+func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAttr {
+	return &proto.SProductAttr{
+		Id:         int64(v.ID),
+		Name:       v.Name,
+		IsFilter:   v.IsFilter == 1,
+		MultiCheck: v.MultiChk == 1,
+		SortNum: v.SortNum,
+		ItemValues: v.ItemValues,
+		Items:      nil,
+	}
+}
+
+func (p *productService) parseProductAttrItemDto(v *promodel.AttrItem) *proto.SProductAttrItem {
+	return &proto.SProductAttrItem{
+		Id:         int64(v.ID),
+		Value:      v.Value,
+		SortNum: v.SortNum,
+	}
+}
+
+func (p *productService) parseBrandDto(v *promodel.ProductBrand) *proto.SProductBrand {
+	return &proto.SProductBrand{
+		Id:          int64(v.ID),
+		Name:        v.Name,
+		Image:       v.Image,
+		SiteUrl:     v.SiteUrl,
+		Introduce:   v.Intro,
+		ReviewState: v.ReviewState,
+		CreateTime:  v.CreateTime,
+	}
+}
+
+func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCategory {
+	return &proto.SProductCategory{
+		Id:          int64(v.Id),
+		ParentId:    int64(v.ParentId),
+		ModelId:     int64(v.ModelId),
+		Priority:    int32(v.Priority),
+		Name:        v.Name,
+		IsVirtual:   v.VirtualCat == 1,
+		CategoryUrl: v.CatUrl,
+		Icon:        v.Icon,
+		IconPoint:   v.IconPoint,
+		Level:       int32(v.Level),
+		SortNum:  int32(v.SortNum),
+		FloorShow:   v.FloorShow == 1,
+		Enabled:     v.Enabled == 1,
+		CreateTime:  v.CreateTime,
+		Options:     map[string]string{},
+		Brands:      nil,
+		Children:    nil,
+	}
+}
+
+func (p *productService) parseCategory(v *proto.SProductCategory) *product.Category {
+	return &product.Category{
+		Id:         int(v.Id),
+		ParentId:   int(v.ParentId),
+		ModelId:    int(v.ModelId),
+		Priority:   int(v.Priority),
+		Name:       v.Name,
+		VirtualCat: types.IntCond(v.IsVirtual, 1, 0),
+		CatUrl:     v.CategoryUrl,
+		Icon:       v.Icon,
+		IconPoint:     v.IconPoint,
+		Level:      int(v.Level),
+		SortNum:    int(v.SortNum),
+		FloorShow:  types.IntCond(v.FloorShow, 1, 0),
+		Enabled:    types.IntCond(v.Enabled, 1, 0),
+	}
+}
+
+func (p *productService) parseProductDto(v product.Product) *proto.SProduct {
+	return &proto.SProduct{
+		Id:          v.Id,
+		CategoryId:  int64(v.CatId),
+		Name:        v.Name,
+		VendorId:    v.VendorId,
+		BrandId:     int64(v.BrandId),
+		Code:        v.Code,
+		Image:       v.Image,
+		Description: v.Description,
+		Remark:      v.Remark,
+		State:       v.State,
+		SortNum:  v.SortNum,
+		CreateTime:  v.CreateTime,
+		UpdateTime:  v.UpdateTime,
+	}
+}
+
+func (p *productService) parseProduct(v *proto.SProduct) *product.Product {
+	return &product.Product{
+		Id:          v.Id,
+		CatId:       int32(v.CategoryId),
+		Name:        v.Name,
+		VendorId:    v.VendorId,
+		BrandId:     int32(v.BrandId),
+		Code:        v.Code,
+		Image:       v.Image,
+		Description: v.Description,
+		Remark:      v.Remark,
+		State:       v.State,
+		SortNum:     v.SortNum,
+	}
+}
+
+func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.ProductModel {
+	ret := &promodel.ProductModel{
+		ID:      int32(v.Id),
+		Name:    v.Name,
+		Enabled: types.IntCond(v.Enabled, 1, 0),
+	}
+	if v.Attrs != nil {
+		ret.Attrs = make([]*promodel.Attr, len(v.Attrs))
+		for i, v := range v.Attrs {
+			ret.Attrs[i] = p.parseProductAttr(v)
+		}
+	}
+	if v.Specs != nil {
+		ret.Specs = make([]*promodel.Spec, len(v.Specs))
+		for i, v := range v.Specs {
+			ret.Specs[i] = p.parseProductSpec(v)
+		}
+	}
+	if v.Brands != nil {
+		ret.BrandArray = make([]int32, len(v.Brands))
+		for i, v := range v.Brands {
+			ret.BrandArray[i] = int32(v.Id)
+		}
+	}
+	return ret
+}
+
+func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProductBrand {
+	return &promodel.ProductBrand{
+		ID:          int32(v.Id),
+		Name:        v.Name,
+		Image:       v.Image,
+		SiteUrl:     v.SiteUrl,
+		Intro:       v.Introduce,
+		ReviewState: v.ReviewState,
+		CreateTime:  v.CreateTime,
+	}
+}
+
+func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr {
+	ret := &promodel.Attr{
+		ID:         int32(v.Id),
+		Name:       v.Name,
+		IsFilter:   int32(types.IntCond(v.IsFilter, 1, 0)),
+		MultiChk:   int32(types.IntCond(v.MultiCheck, 1, 0)),
+		ItemValues: "",
+		SortNum:    v.SortNum,
+	}
+	if v.Items != nil {
+		ret.Items = make([]*promodel.AttrItem, len(v.Items))
+		for i, v := range v.Items {
+			ret.Items[i] = p.parseProductAttrItem(v)
+		}
+	}
+	return ret
+}
+
+func (p *productService) parseProductSpec(v *proto.SProductSpec) *promodel.Spec {
+	ret := &promodel.Spec{
+		ID:         int32(v.Id),
+		Name:       v.Name,
+		ItemValues: v.ItemValues,
+		SortNum:    v.SortNum,
+	}
+	if v.Items != nil {
+		ret.Items = make([]*promodel.SpecItem, len(v.Items))
+		for i, v := range v.Items {
+			ret.Items[i] = p.parseProductSpecItem(v)
+		}
+	}
+	return ret
+}
+
+func (p *productService) parseProductAttrItem(v *proto.SProductAttrItem) *promodel.AttrItem {
+	return &promodel.AttrItem{
+		ID:      int32(v.Id),
+		Value:   v.Value,
+		SortNum: v.SortNum,
+	}
+}
+
+func (p *productService) parseProductSpecItem(v *proto.SProductSpecItem) *promodel.SpecItem {
+	return &promodel.SpecItem{
+		ID:      int32(v.Id),
+		Value:   v.Value,
+		Color:   v.Color,
+		SortNum: v.SortNum,
+	}
+}
+
+func (p *productService) parseProductAttrValueDto(v *product.AttrValue) *proto.SProductAttrValue {
+	return &proto.SProductAttrValue{
+		Id:       v.ID,
+		AttrId:   v.AttrId,
+		AttrName: v.AttrName,
+		AttrData: v.AttrData,
+		AttrWord: v.AttrWord,
+	}
+}
+
+
+func (p *productService) parseSpecDto(v *promodel.Spec) *proto.SProductSpec {
+	return &proto.SProductSpec{
+		Id:                   int64(v.ID),
+		Name:                 v.Name,
+		SortNum:           v.SortNum,
+		ItemValues:           v.ItemValues,
+		Items:                nil,
+	}
+}
+
+
+func (p *productService) parseProductSpecItemDto(v *promodel.SpecItem) *proto.SProductSpecItem {
+	return &proto.SProductSpecItem{
+		Id:                   int64(v.ID),
+		Value:                v.Value,
+		Color:                v.Color,
+		SortNum:           v.SortNum,
+	}
 }

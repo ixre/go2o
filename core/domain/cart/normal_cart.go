@@ -396,7 +396,7 @@ func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt int32, addressId
 		//if err != nil {
 		//	return err
 		//}
-		//shop = mch.ShopManager().GetShop(shopId)
+		//shop = mch.ShopManager().GetShopByVendorId(shopId)
 		//if shop == nil {
 		//	return merchant.ErrNoSuchShop
 		//}

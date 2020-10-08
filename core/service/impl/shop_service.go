@@ -10,7 +10,6 @@ package impl
 
 import (
 	"context"
-	"errors"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/query"
@@ -37,20 +36,66 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 	}
 }
 
-func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.Int64) (*proto.SShop, error) {
-	sp := si.shopRepo.GetOnlineShop(int(shopId.Value))
+// 保存门店
+func (si *shopServiceImpl) SaveOfflineShop(_ context.Context, r *proto.SStore) (*proto.Result, error) {
+	mch := si.mchRepo.GetMerchant(int(r.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		mgr := mch.ShopManager()
+		store, v := si.parseOfflineShop(r)
+		var sp shop.IShop
+		if store.Id > 0 {
+			// 保存商店
+			sp = mgr.GetShop(int(store.Id))
+		} else {
+			//创建商店
+			sp = mgr.CreateShop(store)
+		}
+		err = sp.SetValue(store)
+		if err == nil {
+			ofs := sp.(shop.IOfflineShop)
+			err = ofs.SetShopValue(v)
+			if err == nil {
+				err = sp.Save()
+			}
+		}
+	}
+	return si.error(err), nil
+}
+
+func (si *shopServiceImpl) DeleteStore(_ context.Context, id *proto.StoreId) (*proto.Result, error) {
+	panic("implement me")
+}
+
+func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.ShopId) (*proto.SShop, error) {
+	sp := si.shopRepo.GetShop(shopId.Value)
 	if sp != nil {
-		return si.parseShop(sp), nil
+		iop := sp.(shop.IOnlineShop)
+		ret := si.parseShopDto(iop.GetShopValue())
+		dt := sp.Data()
+		ret.ShopTitle = ret.Name
+		ret.Config.Host = dt.Data["Host"]
+		ret.Config.Logo = dt.Data["Logo"]
+		ret.Config.Tel = dt.Data["ServiceTel"]
+		return ret, nil
 	}
 	return nil, nil
 }
 
-func (si *shopServiceImpl) GetVendorShop(_ context.Context, vendorId *proto.Int64) (*proto.SShop, error) {
-	sp := si.shopRepo.GetOnlineShopOfMerchant(int(vendorId.Value))
+// 检查商户是否开通店铺
+func (si *shopServiceImpl) CheckMerchantShopState(_ context.Context, id *proto.MerchantId) (*proto.CheckShopResponse, error) {
+	sp := si.shopRepo.GetOnlineShopOfMerchant(int(id.Value))
+	ret := &proto.CheckShopResponse{}
 	if sp != nil {
-		return si.parseShop(sp), nil
+		ret.Status = 1
+		ret.Remark = "已开通"
+		ret.ShopId = int64(sp.GetDomainId())
+	} else {
+		//todo: 返回审核中状态
 	}
-	return nil, nil
+	return ret, nil
 }
 
 // 根据主机头获取店铺编号
@@ -60,21 +105,33 @@ func (si *shopServiceImpl) QueryShopByHost(_ context.Context, host *proto.String
 }
 
 // 获取门店
-func (si *shopServiceImpl) GetStore(_ context.Context, storeId *proto.Int64) (*proto.SStore, error) {
-	panic("返回门店")
-	//mch := si.mchRepo.GetMerchant(int(storeId))
-	//if mch != nil {
-	//	shop := mch.ShopManager().GetOnlineShop()
-	//	if shop != nil {
-	//		return parser.ParseOnlineShop(shop), nil
-	//	}
-	//}
-	//return nil, nil
-}
-
-func (si *shopServiceImpl) GetStoreById(ctx context.Context, shopId *proto.Int64) (*proto.SStore, error) {
-	vendorId := si.query.GetMerchantId(shopId.Value)
-	return si.GetStore(ctx, &proto.Int64{Value: vendorId})
+func (si *shopServiceImpl) GetStore(_ context.Context, storeId *proto.StoreId) (*proto.SStore, error) {
+	sp := si.shopRepo.GetStore(storeId.Value)
+	if sp != nil {
+		v := sp.GetValue()
+		ifv := sp.(shop.IOfflineShop)
+		iv := ifv.GetShopValue()
+		ret := &proto.SStore{
+			Id:                   storeId.Value,
+			MerchantId:           v.VendorId,
+			Name:                 v.Name,
+			State:                v.State,
+			OpeningState:         v.OpeningState,
+			StorePhone:           iv.Tel,
+			StoreNotice:          "",
+			Province:             iv.Province,
+			City:                 iv.City,
+			District:             iv.District,
+			Address:              "",
+			DetailAddress:        iv.Address,
+			Lat:                  float64(iv.Lat),
+			Lng:                  float64(iv.Lng),
+			CoverRadius:          int32(iv.CoverRadius),
+			SortNum:              v.SortNum,
+		}
+		return ret,nil
+	}
+	return nil, nil
 }
 
 // 打开或关闭商店
@@ -138,75 +195,30 @@ func (si *shopServiceImpl) GetShopValueById(mchId, shopId int64) *shop.Shop {
 }
 
 // 保存线上商店
-func (si *shopServiceImpl) SaveStore(s *proto.SStore) error {
-	mch := si.mchRepo.GetMerchant(int(s.VendorId))
-	if mch != nil {
-		v, v1 := si.parse2OnlineShop(s)
+func (si *shopServiceImpl) SaveShop(_ context.Context, s *proto.SShop) (*proto.Result, error) {
+	mch := si.mchRepo.GetMerchant(int(s.MerchantId))
+	var err error
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	}else{
+		_, v1 := si.parse2OnlineShop(s)
 		mgr := mch.ShopManager()
-		sp := mgr.GetOnlineShop()
-		// 创建商店
-		if sp == nil {
-			sp = mgr.CreateShop(v)
-		}
-		err := sp.SetValue(v)
-		if err == nil {
-			ofs := sp.(shop.IOnlineShop)
-			err = ofs.SetShopValue(v1)
-			if err == nil {
-				err = sp.Save()
-			}
-		}
-		return err
+		_,err = mgr.CreateOnlineShop(v1)
+		//sp := mgr.GetOnlineShop()
+		//// 创建商店
+		//if sp == nil {
+		//	sp = mgr.CreateShop(v)
+		//}
+		//err = sp.SetValue(v)
+		//if err == nil {
+		//	ofs := sp.(shop.IOnlineShop)
+		//	err = ofs.SetShopValue(v1)
+		//	if err == nil {
+		//		err = sp.Save()
+		//	}
+		//}
 	}
-	return merchant.ErrNoSuchMerchant
-}
-
-// 保存门店
-func (si *shopServiceImpl) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) error {
-	mch := si.mchRepo.GetMerchant(int(s.VendorId))
-	if mch != nil {
-		mgr := mch.ShopManager()
-		var sp shop.IShop
-		if s.Id > 0 {
-			// 保存商店
-			sp = mgr.GetShop(int(s.Id))
-		} else {
-			//创建商店
-			sp = mgr.CreateShop(s)
-		}
-		err := sp.SetValue(s)
-		if err == nil {
-			ofs := sp.(shop.IOfflineShop)
-			err = ofs.SetShopValue(v)
-			if err == nil {
-				err = sp.Save()
-			}
-		}
-		return err
-	}
-	return merchant.ErrNoSuchMerchant
-}
-
-func (si *shopServiceImpl) SaveShop(mchId int64, v *shop.Shop) (int64, error) {
-	mch := si.mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		var shop shop.IShop
-		if v.Id > 0 {
-			shop = mch.ShopManager().GetShop(int(v.Id))
-			if shop == nil {
-				return 0, errors.New("门店不存在")
-			}
-		} else {
-			shop = mch.ShopManager().CreateShop(v)
-		}
-		err := shop.SetValue(v)
-		if err != nil {
-			return v.Id, err
-		}
-		err = shop.Save()
-		return int64(shop.GetDomainId()), err
-	}
-	return 0, merchant.ErrNoSuchMerchant
+	return si.error(err),nil
 }
 
 func (si *shopServiceImpl) DeleteShop(mchId, shopId int32) error {
@@ -217,62 +229,57 @@ func (si *shopServiceImpl) DeleteShop(mchId, shopId int32) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-// 获取线上商城配置
-func (si *shopServiceImpl) GetOnlineShopConf(shopId int64) *shop.OnlineShop {
-	mchId := si.getMerchantId(shopId)
-	mch := si.mchRepo.GetMerchant(int(mchId))
-	if mch != nil {
-		s := mch.ShopManager().GetShop(int(shopId))
-		if s == nil {
-			v := s.(shop.IOnlineShop).GetShopValue()
-			return &v
-		}
-	}
-	return nil
-}
-
-// 获取商城
-func (si *shopServiceImpl) GetOnlineShops(vendorId int64) []*shop.Shop {
-	mch := si.mchRepo.GetMerchant(int(vendorId))
-	shops := mch.ShopManager().GetShops()
-	sv := make([]*shop.Shop, 0)
-	for _, v := range shops {
-		if v.Type() == shop.TypeOnlineShop {
-			vv := v.GetValue()
-			sv = append(sv, &vv)
-		}
-	}
-	return sv
-}
-
-func (si *shopServiceImpl) parseShop(sp *shop.OnlineShop) *proto.SShop {
-	return &proto.SShop{
-		Id:         sp.Id,
-		VendorId:   sp.VendorId,
-		ShopName:   sp.ShopName,
-		Alias:      sp.Alias,
-		Host:       sp.Host,
-		Logo:       sp.Logo,
-		ShopTitle:  sp.ShopTitle,
-		ShopNotice: sp.ShopNotice,
-	}
-}
-
-func (si *shopServiceImpl) parse2OnlineShop(s *proto.SStore) (*shop.Shop, *shop.OnlineShop) {
+func (si *shopServiceImpl) parse2OnlineShop(s *proto.SShop) (*shop.Shop, *shop.OnlineShop) {
 	sv := &shop.Shop{
-		Id:           s.ID,
+		Id:           s.Id,
 		Name:         s.Name,
-		VendorId:     s.VendorId,
+		VendorId:     s.MerchantId,
 		ShopType:     shop.TypeOnlineShop,
 		State:        s.State,
-		OpeningState: s.OpeningState,
+		OpeningState: 1,
 	}
 	ov := &shop.OnlineShop{}
-	ov.Id = s.ID
-	ov.Addr = "" //todo:???
-	ov.Tel = s.StorePhone
-	ov.Logo = s.Logo
-	ov.ShopNotice = s.StoreNotice
-	ov.ShopTitle = s.StoreTitle
+	ov.Id = s.Id
+	ov.Addr = "" //todo:???去调
+	ov.ShopName = s.Name
+	ov.Tel = s.Config.Tel
+	ov.Logo = s.Config.Logo
+	ov.ShopNotice = s.ShopNotice
+	ov.ShopTitle = s.ShopTitle
 	return sv, ov
+}
+
+func (si *shopServiceImpl) parseOfflineShop(r *proto.SStore) (*shop.Shop, *shop.OfflineShop) {
+	return &shop.Shop{
+			Id:           r.Id,
+			VendorId:     r.MerchantId,
+			ShopType:     shop.TypeOfflineShop,
+			Name:         r.Name,
+			State:        r.State,
+			OpeningState: r.OpeningState,
+			SortNum:      r.SortNum,
+		}, &shop.OfflineShop{
+			ShopId:      int(r.Id),
+			Tel:         r.StorePhone,
+			Province:    r.Province,
+			City:        r.City,
+			District:    r.District,
+			Address:     r.DetailAddress,
+			Lng:         float32(r.Lng),
+			Lat:         float32(r.Lat),
+			CoverRadius: int(r.CoverRadius),
+		}
+}
+
+func (si *shopServiceImpl) parseShopDto(v shop.OnlineShop) *proto.SShop {
+	return &proto.SShop{
+		Id:         v.Id,
+		MerchantId: v.VendorId,
+		Name:       v.ShopName,
+		ShopTitle:  v.ShopTitle,
+		ShopNotice: v.ShopNotice,
+		Flag:       int32(v.Flag),
+		Config:     &proto.SShopConfig{},
+		State:      int32(v.State),
+	}
 }

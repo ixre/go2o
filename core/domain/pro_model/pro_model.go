@@ -5,19 +5,19 @@ import (
 	"go2o/core/infrastructure/format"
 )
 
-var _ promodel.IModel = new(modelImpl)
+var _ promodel.IProductModel = new(modelImpl)
 
 type modelImpl struct {
-	rep          promodel.IProModelRepo
-	value        *promodel.ProModel
+	rep          promodel.IProductModelRepo
+	value        *promodel.ProductModel
 	attrService  promodel.IAttrService
 	specService  promodel.ISpecService
 	brandService promodel.IBrandService
 }
 
-func NewModel(v *promodel.ProModel, rep promodel.IProModelRepo,
+func NewModel(v *promodel.ProductModel, rep promodel.IProductModelRepo,
 	attrService promodel.IAttrService, specService promodel.ISpecService,
-	brandService promodel.IBrandService) promodel.IModel {
+	brandService promodel.IBrandService) promodel.IProductModel {
 	return &modelImpl{
 		rep:          rep,
 		value:        v,
@@ -33,7 +33,7 @@ func (m *modelImpl) GetAggregateRootId() int32 {
 }
 
 // 获取值
-func (m *modelImpl) Value() *promodel.ProModel {
+func (m *modelImpl) Value() *promodel.ProductModel {
 	return m.value
 }
 
@@ -72,7 +72,7 @@ func (m *modelImpl) SetSpecs(s []*promodel.Spec) error {
 }
 
 // 获取关联的品牌编号
-func (m *modelImpl) Brands() []*promodel.ProBrand {
+func (m *modelImpl) Brands() []*promodel.ProductBrand {
 	return m.rep.BrandService().Brands(m.GetAggregateRootId())
 }
 

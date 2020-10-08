@@ -380,9 +380,9 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*proto.SComplexOrder) {
+func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*proto.SSingleOrder) {
 	d := o.Connector
-	var orderList []*proto.SComplexOrder
+	var orderList []*proto.SSingleOrder
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -416,10 +416,10 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, paginat
 			var cashPay int
 			var ticket string
 			for rs.Next() {
-				e := &proto.SComplexOrder{}
-				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
+				e := &proto.SSingleOrder{}
+				rs.Scan(&e.OrderId, &e.OrderNo, &e.SellerId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
-					&cashPay, &ticket, &e.State, &e.CreateTime)
+					&cashPay, &ticket, &e.State, &e.SubmitTime)
 				e.Data = map[string]string{
 					"StateText":   order.OrderState(e.State).String(),
 					"CashPay":     strconv.Itoa(cashPay),

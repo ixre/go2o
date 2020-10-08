@@ -100,9 +100,9 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 		val.Name = v.Name
 		val.SortNum = v.SortNum
 		val.Icon = v.Icon
-		val.IconXy = v.IconXy
+		val.IconPoint = v.IconPoint
 		// 设置产品模型
-		val.ProdModel = v.ProdModel
+		val.ModelId = v.ModelId
 		// 设置链接类型
 		if c.GetDomainId() > 0 && val.VirtualCat != v.VirtualCat {
 			return product.ErrIncorrectCategoryType
@@ -407,14 +407,14 @@ func (c *categoryManagerImpl) walkCategoryTree(node *product.Category,
 }
 
 // 获取分类关联的品牌
-func (c *categoryManagerImpl) RelationBrands(catId int) []*promodel.ProBrand {
+func (c *categoryManagerImpl) RelationBrands(catId int) []*promodel.ProductBrand {
 	p := c.GetCategory(catId)
 	if p != nil {
 		var idArr []int
 		c.childWalk(p, &idArr)
 		return c.repo.GetRelationBrands(idArr)
 	}
-	return []*promodel.ProBrand{}
+	return []*promodel.ProductBrand{}
 }
 
 func (c *categoryManagerImpl) childWalk(p product.ICategory, idArr *[]int) {

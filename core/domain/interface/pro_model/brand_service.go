@@ -2,7 +2,7 @@ package promodel
 
 // 产品品牌
 type (
-	ProBrand struct {
+	ProductBrand struct {
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 品牌名称
@@ -30,13 +30,13 @@ type (
 // 品牌服务
 type IBrandService interface {
 	// 获取品牌
-	Get(brandId int32) *ProBrand
+	Get(brandId int32) *ProductBrand
 	// 保存品牌
-	SaveBrand(*ProBrand) (int32, error)
+	SaveBrand(*ProductBrand) (int32, error)
 	// 删除品牌
 	DeleteBrand(id int32) error
 	// 获取所有(已审核的)品牌
-	AllBrands() []*ProBrand
+	AllBrands() []*ProductBrand
 	// 获取关联的品牌编号
-	Brands(proModel int32) []*ProBrand
+	Brands(proModel int32) []*ProductBrand
 }

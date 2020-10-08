@@ -16,6 +16,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
+	"go.etcd.io/etcd/clientv3"
 	"go2o/core"
 	"go2o/core/repos"
 	"go2o/core/service/impl"
@@ -141,9 +142,15 @@ func (t *testingApp) Init(debug, trace bool) bool {
 }
 
 func init() {
-	app := core.NewApp("../app_dev.conf", nil)
+	// 默认的ETCD端点
+	etcdEndPoints := []string{"http://127.0.0.1:2379"}
+	cfg := clientv3.Config{
+		Endpoints:   etcdEndPoints,
+		DialTimeout: 5 * time.Second,
+	}
+	app := core.NewApp("../app_dev.conf", &cfg)
 	gof.CurrentApp = app
-	core.Init(app, !false, false)
+	core.Init(app, false, false)
 	conn := app.Db()
 	sto := app.Storage()
 	Factory = (&repos.RepoFactory{}).Init(conn, sto)
