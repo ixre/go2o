@@ -154,7 +154,7 @@ func TestItemSaveSku(t *testing.T) {
 			ov := k.(*promodel.SpecItem)
 			buf.WriteString(strconv.Itoa(int(ov.SpecId)))
 			buf.WriteString(":")
-			buf.WriteString(strconv.Itoa(int(ov.ID)))
+			buf.WriteString(strconv.Itoa(int(ov.Id)))
 		}
 		arr = append(arr, &item.Sku{
 			ProductId: iv.ProductId,

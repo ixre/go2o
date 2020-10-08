@@ -497,7 +497,7 @@ func (p *productService) parseModelDto(v *promodel.ProductModel) *proto.SProduct
 
 func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAttr {
 	return &proto.SProductAttr{
-		Id:         int64(v.ID),
+		Id:         int64(v.Id),
 		Name:       v.Name,
 		IsFilter:   v.IsFilter == 1,
 		MultiCheck: v.MultiChk == 1,
@@ -509,7 +509,7 @@ func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAt
 
 func (p *productService) parseProductAttrItemDto(v *promodel.AttrItem) *proto.SProductAttrItem {
 	return &proto.SProductAttrItem{
-		Id:         int64(v.ID),
+		Id:         int64(v.Id),
 		Value:      v.Value,
 		SortNum: v.SortNum,
 	}
@@ -642,7 +642,7 @@ func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProductBra
 
 func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr {
 	ret := &promodel.Attr{
-		ID:         int32(v.Id),
+		Id:         int32(v.Id),
 		Name:       v.Name,
 		IsFilter:   int32(types.IntCond(v.IsFilter, 1, 0)),
 		MultiChk:   int32(types.IntCond(v.MultiCheck, 1, 0)),
@@ -660,7 +660,7 @@ func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr 
 
 func (p *productService) parseProductSpec(v *proto.SProductSpec) *promodel.Spec {
 	ret := &promodel.Spec{
-		ID:         int32(v.Id),
+		Id:         int32(v.Id),
 		Name:       v.Name,
 		ItemValues: v.ItemValues,
 		SortNum:    v.SortNum,
@@ -676,7 +676,7 @@ func (p *productService) parseProductSpec(v *proto.SProductSpec) *promodel.Spec 
 
 func (p *productService) parseProductAttrItem(v *proto.SProductAttrItem) *promodel.AttrItem {
 	return &promodel.AttrItem{
-		ID:      int32(v.Id),
+		Id:      int32(v.Id),
 		Value:   v.Value,
 		SortNum: v.SortNum,
 	}
@@ -684,7 +684,7 @@ func (p *productService) parseProductAttrItem(v *proto.SProductAttrItem) *promod
 
 func (p *productService) parseProductSpecItem(v *proto.SProductSpecItem) *promodel.SpecItem {
 	return &promodel.SpecItem{
-		ID:      int32(v.Id),
+		Id:      int32(v.Id),
 		Value:   v.Value,
 		Color:   v.Color,
 		SortNum: v.SortNum,
@@ -704,7 +704,7 @@ func (p *productService) parseProductAttrValueDto(v *product.AttrValue) *proto.S
 
 func (p *productService) parseSpecDto(v *promodel.Spec) *proto.SProductSpec {
 	return &proto.SProductSpec{
-		Id:                   int64(v.ID),
+		Id:                   int64(v.Id),
 		Name:                 v.Name,
 		SortNum:           v.SortNum,
 		ItemValues:           v.ItemValues,
@@ -715,7 +715,7 @@ func (p *productService) parseSpecDto(v *promodel.Spec) *proto.SProductSpec {
 
 func (p *productService) parseProductSpecItemDto(v *promodel.SpecItem) *proto.SProductSpecItem {
 	return &proto.SProductSpecItem{
-		Id:                   int64(v.ID),
+		Id:                   int64(v.Id),
 		Value:                v.Value,
 		Color:                v.Color,
 		SortNum:           v.SortNum,

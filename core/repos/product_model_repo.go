@@ -138,7 +138,7 @@ func (p *proModelRepo) SelectAttr(where string, v ...interface{}) []*promodel.At
 
 // Save Attrs
 func (p *proModelRepo) SaveAttr(v *promodel.Attr) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.ID))
+	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Attrs")
 	}
@@ -188,7 +188,7 @@ func (p *proModelRepo) SelectAttrItem(where string, v ...interface{}) []*promode
 
 // Save AttrItem
 func (p *proModelRepo) SaveAttrItem(v *promodel.AttrItem) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.ID))
+	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:AttrItem")
 	}
@@ -238,7 +238,7 @@ func (p *proModelRepo) SelectSpec(where string, v ...interface{}) []*promodel.Sp
 
 // Save Spec
 func (p *proModelRepo) SaveSpec(v *promodel.Spec) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.ID))
+	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Spec")
 	}
@@ -288,7 +288,7 @@ func (p *proModelRepo) SelectSpecItem(where string, v ...interface{}) []*promode
 
 // Save SpecItem
 func (p *proModelRepo) SaveSpecItem(v *promodel.SpecItem) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.ID))
+	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SpecItem")
 	}

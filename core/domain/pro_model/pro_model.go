@@ -142,12 +142,12 @@ func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 	delList := []int32{}
 	currMap := make(map[int32]*promodel.Spec, len(specs))
 	for _, v := range specs {
-		currMap[v.ID] = v
+		currMap[v.Id] = v
 	}
 	// 筛选出要删除的项
 	for _, v := range old {
-		if currMap[v.ID] == nil {
-			delList = append(delList, v.ID)
+		if currMap[v.Id] == nil {
+			delList = append(delList, v.Id)
 		}
 	}
 
@@ -157,11 +157,11 @@ func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 	}
 	// 保存项
 	for _, v := range specs {
-		if v.ProModel == 0 {
-			v.ProModel = pk
+		if v.ModelId == 0 {
+			v.ModelId = pk
 		}
-		if v.ProModel == pk {
-			v.ID, err = m.specService.SaveSpec(v)
+		if v.ModelId == pk {
+			v.Id, err = m.specService.SaveSpec(v)
 		}
 	}
 	return err
@@ -176,12 +176,12 @@ func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 	delList := []int32{}
 	currMap := make(map[int32]*promodel.Attr, len(attrs))
 	for _, v := range attrs {
-		currMap[v.ID] = v
+		currMap[v.Id] = v
 	}
 	// 筛选出要删除的项
 	for _, v := range old {
-		if currMap[v.ID] == nil {
-			delList = append(delList, v.ID)
+		if currMap[v.Id] == nil {
+			delList = append(delList, v.Id)
 		}
 	}
 	// 删除项
@@ -190,11 +190,11 @@ func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 	}
 	// 保存项
 	for _, v := range attrs {
-		if v.ProModel == 0 {
-			v.ProModel = pk
+		if v.ModelId == 0 {
+			v.ModelId = pk
 		}
-		if v.ProModel == pk {
-			v.ID, err = m.attrService.SaveAttr(v)
+		if v.ModelId == pk {
+			v.Id, err = m.attrService.SaveAttr(v)
 		}
 	}
 	return err

@@ -260,11 +260,11 @@ func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
 			}
 			spec.Items = []*promodel.SpecItem{}
 			//重新绑定规格名字
-			if n, ok := sName[spec.ID]; ok && n != "" {
+			if n, ok := sName[spec.Id]; ok && n != "" {
 				spec.Name = n
 			}
 			specArr[i] = spec
-			imp[spec.ID] = i
+			imp[spec.Id] = i
 		}
 		// 绑定规格项
 		for _, v := range ia {
@@ -273,7 +273,7 @@ func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
 				log.Println("no such spec item, id:", v)
 				continue
 			}
-			if n, ok := iName[item.ID]; ok && n != "" {
+			if n, ok := iName[item.Id]; ok && n != "" {
 				item.Value = n
 			}
 			i2 := imp[item.SpecId]
