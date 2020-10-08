@@ -48,12 +48,9 @@ message SStore {
     sint64 MerchantId = 2;
     string Name = 3;
     string Alias = 4;
-    string Host = 5;
-    string Logo = 6;
-    sint32 State = 7;
+    sint32 State = 5;
     sint32 OpeningState = 8;
     string StorePhone = 9;
-    string StoreTitle = 10;
     string StoreNotice = 11;
     int32 Province = 12;
     int32 City = 13;
