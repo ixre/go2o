@@ -106,6 +106,9 @@ func (p *productImpl) SetAttr(attrs []*product.AttrValue) error {
 	if attrs == nil {
 		return product.ErrNoSuchAttr
 	}
+	for _, v := range attrs {
+		v.ProductId = p.GetAggregateRootId()
+	}
 	p.value.Attrs = attrs
 	return nil
 }
@@ -113,7 +116,7 @@ func (p *productImpl) SetAttr(attrs []*product.AttrValue) error {
 // 获取属性
 func (p *productImpl) Attr() []*product.AttrValue {
 	if p.value.Attrs == nil {
-		p.value.Attrs = p.repo.SelectAttr("product_id= $1",
+		p.value.Attrs = p.repo.SelectAttr("product_id = $1",
 			p.GetAggregateRootId())
 		for _, v := range p.value.Attrs {
 			a := p.modelRepo.GetAttr(v.AttrId)

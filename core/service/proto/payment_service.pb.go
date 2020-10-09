@@ -585,7 +585,7 @@ type SPaymentOrder struct {
 	// * 交易数据
 	TradeData []*STradeMethodData `protobuf:"bytes,26,rep,name=TradeData,proto3" json:"TradeData,omitempty"`
 	// * 编号
-	ID                   int32    `protobuf:"zigzag32,27,opt,name=Id,proto3" json:"Id,omitempty"`
+	ID                   int32    `protobuf:"zigzag32,27,opt,name=ID,proto3" json:"ID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

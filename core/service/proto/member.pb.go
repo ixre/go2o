@@ -1596,7 +1596,7 @@ func (m *PagingAccountInfoRequest) GetParams() *SPagingParams {
 
 // * 等级
 type SMemberLevel struct {
-	ID                   int32    `protobuf:"zigzag32,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	ID                   int32    `protobuf:"zigzag32,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
 	RequireExp           int32    `protobuf:"zigzag32,3,opt,name=RequireExp,proto3" json:"RequireExp,omitempty"`
 	ProgramSignal        string   `protobuf:"bytes,4,opt,name=ProgramSignal,proto3" json:"ProgramSignal,omitempty"`
@@ -2666,7 +2666,7 @@ func (m *STrustedInfo) GetRemark() string {
 }
 
 type SAddress struct {
-	ID int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	// * 收货人姓名
 	ConsigneeName string `protobuf:"bytes,2,opt,name=ConsigneeName,proto3" json:"ConsigneeName,omitempty"`
 	// * 收货人电话

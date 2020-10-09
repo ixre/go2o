@@ -208,7 +208,7 @@ func (p *productService) GetChildren(_ context.Context, id *proto.CategoryParent
 }
 
 // 获取产品值
-func (p *productService) GetProductValue(_ context.Context, id *proto.ProductId) (*proto.SProduct, error) {
+func (p *productService) GetProduct(_ context.Context, id *proto.ProductId) (*proto.SProduct, error) {
 	pro := p.productRepo.GetProduct(id.Value)
 	if pro != nil {
 		ret := p.parseProductDto(pro.GetValue())
@@ -586,7 +586,7 @@ func (p *productService) parseProductDto(v product.Product) *proto.SProduct {
 }
 
 func (p *productService) parseProduct(v *proto.SProduct) *product.Product {
-	return &product.Product{
+	ret := &product.Product{
 		Id:          v.Id,
 		CatId:       int32(v.CategoryId),
 		Name:        v.Name,
@@ -599,6 +599,13 @@ func (p *productService) parseProduct(v *proto.SProduct) *product.Product {
 		State:       v.State,
 		SortNum:     v.SortNum,
 	}
+	if v.Attrs != nil{
+		ret.Attrs = make([]*product.AttrValue,len(v.Attrs))
+		for i,v := range v.Attrs{
+			ret.Attrs[i] = p.parseProductAttrValue(v)
+		}
+	}
+	return ret
 }
 
 func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.ProductModel {
@@ -719,5 +726,15 @@ func (p *productService) parseProductSpecItemDto(v *promodel.SpecItem) *proto.SP
 		Value:                v.Value,
 		Color:                v.Color,
 		SortNum:           v.SortNum,
+	}
+}
+
+func (p *productService) parseProductAttrValue(v *proto.SProductAttrValue) *product.AttrValue {
+	return &product.AttrValue{
+		ID:        v.Id,
+		AttrName:  v.AttrName,
+		AttrId:    v.AttrId,
+		AttrData:  v.AttrData,
+		AttrWord:  v.AttrWord,
 	}
 }

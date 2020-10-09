@@ -928,7 +928,7 @@ type SOldItem struct {
 	ItemId               int64             `protobuf:"zigzag64,1,opt,name=ItemId,proto3" json:"ItemId,omitempty"`
 	ProductId            int64             `protobuf:"zigzag64,2,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
 	PromFlag             int32             `protobuf:"zigzag32,3,opt,name=PromFlag,proto3" json:"PromFlag,omitempty"`
-	CatId                int32             `protobuf:"zigzag32,4,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
+	CatId                int32             `protobuf:"zigzag32,4,opt,name=CatId,proto3" json:"CatId,omitempty"`
 	VendorId             int64             `protobuf:"zigzag64,5,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
 	BrandId              int32             `protobuf:"zigzag32,6,opt,name=BrandId,proto3" json:"BrandId,omitempty"`
 	ShopId               int64             `protobuf:"zigzag64,7,opt,name=ShopId,proto3" json:"ShopId,omitempty"`

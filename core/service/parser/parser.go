@@ -143,7 +143,7 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		BrandId:    int64(src.BrandId),
 		//ShopId:       src.ShopId,
 		//ShopCatId:    src.ShopCatId,
-		//ExpressTid:   src.ExpressTid,
+		ExpressTid:   int64(src.ExpressTid),
 		Title: src.Title,
 		//ShortTitle:   src.ShortTitle,
 		Code:  src.Code,
