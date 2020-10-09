@@ -204,7 +204,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(merchant.BalanceLog{}, "mch_balance_log")
 	orm.Mapping(merchant.MchDayChart{}, "mch_day_chart")
 	orm.Mapping(merchant.MchSignUp{}, "mch_sign_up")
-	orm.Mapping(merchant.MchBuyerGroup{}, "mch_buyer_group")
+	orm.Mapping(merchant.MchBuyerGroupSetting{}, "mch_buyer_group")
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
 

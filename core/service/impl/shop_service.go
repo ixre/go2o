@@ -73,12 +73,13 @@ func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.ShopId) (*pr
 	sp := si.shopRepo.GetShop(shopId.Value)
 	if sp != nil {
 		iop := sp.(shop.IOnlineShop)
-		ret := si.parseShopDto(iop.GetShopValue())
-		dt := sp.Data()
+		iv :=iop.GetShopValue()
+		ret := si.parseShopDto(iv)
 		ret.ShopTitle = ret.Name
-		ret.Config.Host = dt.Data["Host"]
-		ret.Config.Logo = dt.Data["Logo"]
-		ret.Config.Tel = dt.Data["ServiceTel"]
+		ret.Config.Host = iv.Host
+		ret.Config.Logo = iv.Logo
+		ret.Config.Alias = iv.Alias
+		ret.Config.Tel =iv.Tel
 		return ret, nil
 	}
 	return nil, nil

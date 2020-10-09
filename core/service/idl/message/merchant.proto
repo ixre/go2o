@@ -310,15 +310,15 @@ message SMerchantBuyerGroup {
     //编号
     int64 Id = 1;
     //客户分组编号
-    // GroupId int32 `db:"group_id"`
+    int64 GroupId = 2;
     //分组别名
-    string Alias = 2;
+    string Name = 3;
     // 是否启用零售
-    bool EnableRetail = 3;
+    bool EnableRetail = 4;
     // 是否启用批发
-    bool EnableWholesale = 4;
+    bool EnableWholesale = 5;
     // 批发返点周期(天)
-    int32 RebatePeriod = 5;
+    int32 RebatePeriod = 6;
 }
 
 message SaveWholesaleRebateRateRequest {

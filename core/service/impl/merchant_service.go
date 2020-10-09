@@ -350,34 +350,35 @@ func (m *merchantService) GetMchBuyerGroup_(_ context.Context, id *proto.Merchan
 }
 
 // 保存
-func (m *merchantService) SaveMchBuyerGroup_(_ context.Context, r *proto.SaveMerchantBuyerGroupRequest) (*proto.Result, error) {
+func (m *merchantService) SaveMchBuyerGroup(_ context.Context, r *proto.SaveMerchantBuyerGroupRequest) (*proto.Result, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
 		v := m.parseGroup(r.Value)
-		v.MchId = r.MerchantId
+		v.MerchantId = r.MerchantId
 		//v.GroupId =
 		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
 	}
 	return m.result(err), nil
 }
 
-//todo: mchBuyerGroup去调还是BuyerGroup去调
-
-//// 获取买家分组
-//func (m *merchantService) GetBuyerGroups(_ context.Context, id *proto.MerchantId) (*proto.MerchantBuyerGroupListResponse, error) {
-//	mch := m._mchRepo.GetMerchant(int(id.Value))
-//	if mch != nil {
-//		list := mch.ConfManager().SelectBuyerGroup()
-//		arr := make([]*proto.SMerchantBuyerGroup,len(list))
-//		for i,v := range list{
-//			arr[i] = m.parseGroupDto(v)
-//		}
-//	}
-//	return []*merchant.BuyerGroup{}
-//}
+// 获取商户的(批发)买家分组
+func (m *merchantService) GetBuyerGroups(_ context.Context, id *proto.MerchantId) (*proto.MerchantBuyerGroupListResponse, error) {
+	mch := m._mchRepo.GetMerchant(int(id.Value))
+	var arr []*proto.SMerchantBuyerGroup
+	if mch != nil {
+		list := mch.ConfManager().SelectBuyerGroup()
+		arr = make([]*proto.SMerchantBuyerGroup, len(list))
+		for i, v := range list {
+			arr[i] = m.parseBuyerGroupDto(v)
+		}
+	}
+	return &proto.MerchantBuyerGroupListResponse{
+		Value: arr,
+	}, nil
+}
 
 // 获取批发返点率
 func (m *merchantService) GetRebateRate(_ context.Context, id *proto.MerchantBuyerGroupId) (*proto.WholesaleRebateRateListResponse, error) {
@@ -721,7 +722,7 @@ func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) 
 ////添加商户提取日志
 //func (m *merchantService) TakeOutBankCardLog(memberId  int32, mchId  int32, amount float32) {
 //	o := &merchant.BalanceLog{
-//		MchId:      mchId,
+//		MerchantId:      mchId,
 //		Kind:       100,
 //		Title:      "商户提现",
 //		OuterNo:    "00002",
@@ -774,7 +775,7 @@ func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) 
 //	}
 //
 //	o := &merchant.BalanceLog{
-//		MchId:      machId,
+//		MerchantId:      machId,
 //		Kind:       kind,
 //		Title:      title,
 //		OuterNo:    "00002",
@@ -866,7 +867,7 @@ func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto
 
 func (m *merchantService) parseTradeConf(conf *proto.STradeConf_) *merchant.TradeConf {
 	return &merchant.TradeConf{
-		//MchId:       conf.MchId,
+		//MerchantId:       conf.MerchantId,
 		//TradeType:   int(conf.TradeType),
 		//PlanId:      conf.PlanId,
 		//Flag:        int(conf.Flag),
@@ -878,7 +879,7 @@ func (m *merchantService) parseTradeConf(conf *proto.STradeConf_) *merchant.Trad
 
 func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STradeConf_ {
 	return &proto.STradeConf_{
-		//MchId:       conf.MchId,
+		//MerchantId:       conf.MerchantId,
 		//TradeType:   int32(conf.TradeType),
 		//PlanId:      conf.PlanId,
 		//Flag:        int32(conf.Flag),
@@ -1047,20 +1048,22 @@ func (m *merchantService) parseApiDto(v merchant.ApiInfo) *proto.SMerchantApiInf
 	}
 }
 
-func (m *merchantService) parseGroupDto(v *merchant.MchBuyerGroup) *proto.SMerchantBuyerGroup {
+func (m *merchantService) parseGroupDto(v *merchant.MchBuyerGroupSetting) *proto.SMerchantBuyerGroup {
 	return &proto.SMerchantBuyerGroup{
 		Id:              int64(v.ID),
-		Alias:           v.Alias,
+		GroupId:         v.GroupId,
+		Name:            v.Alias,
 		EnableRetail:    v.EnableRetail == 1,
 		EnableWholesale: v.EnableWholesale == 1,
 		RebatePeriod:    v.RebatePeriod,
 	}
 }
 
-func (m *merchantService) parseGroup(v *proto.SMerchantBuyerGroup) *merchant.MchBuyerGroup {
-	return &merchant.MchBuyerGroup{
+func (m *merchantService) parseGroup(v *proto.SMerchantBuyerGroup) *merchant.MchBuyerGroupSetting {
+	return &merchant.MchBuyerGroupSetting{
 		ID:              int32(v.Id),
-		Alias:           v.Alias,
+		Alias:           v.Name,
+		GroupId:         v.GroupId,
 		EnableRetail:    int32(types.IntCond(v.EnableRetail, 1, 0)),
 		EnableWholesale: int32(types.IntCond(v.EnableWholesale, 1, 0)),
 		RebatePeriod:    v.RebatePeriod,
@@ -1111,5 +1114,16 @@ func (m *merchantService) parseOrder(v *dto.PagedVendorOrder) *proto.SMerchantOr
 		CreateTime:     v.CreateTime,
 		Items:          items,
 		Data:           v.Data,
+	}
+}
+
+func (m *merchantService) parseBuyerGroupDto(v *merchant.BuyerGroup) *proto.SMerchantBuyerGroup {
+	return &proto.SMerchantBuyerGroup{
+		Id:              v.GroupId,
+		Name:            v.Name,
+		GroupId:         v.GroupId,
+		EnableRetail:    v.EnableRetail,
+		EnableWholesale: v.EnableWholesale,
+		RebatePeriod:    int32(v.RebatePeriod),
 	}
 }

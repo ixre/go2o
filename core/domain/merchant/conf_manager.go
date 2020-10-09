@@ -127,7 +127,7 @@ func (c *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
 	return nil
 }
 
-func (c *confManagerImpl) getAllMchBuyerGroups() []*merchant.MchBuyerGroup {
+func (c *confManagerImpl) getAllMchBuyerGroups() []*merchant.MchBuyerGroupSetting {
 	return c.repo.SelectMchBuyerGroup(int64(c.mchId))
 }
 
@@ -135,27 +135,33 @@ func (c *confManagerImpl) getAllMchBuyerGroups() []*merchant.MchBuyerGroup {
 func (c *confManagerImpl) SelectBuyerGroup() []*merchant.BuyerGroup {
 	groups := c.memberRepo.GetManager().GetAllBuyerGroups()
 	myGroups := c.getAllMchBuyerGroups()
-	mp := make(map[int32]*merchant.MchBuyerGroup)
+	mp := make(map[int64]*merchant.MchBuyerGroupSetting)
 	for _, v := range myGroups {
 		mp[v.GroupId] = v
 	}
 	list := make([]*merchant.BuyerGroup, len(groups))
 	for i, v := range groups {
-		list[i] = &merchant.BuyerGroup{
-			GroupId: v.ID,
+		e := &merchant.BuyerGroup{
+			GroupId: int64(v.ID),
 			Name:    v.Name,
 		}
-		mg, ok := mp[v.ID]
-		if ok && mg.Alias != "" {
-			list[i].Name = mg.Alias
+		mg, ok := mp[int64(v.ID)]
+		if ok {
+			if mg.Alias != "" {
+				e.Name = mg.Alias
+			}
+			e.EnableWholesale = mg.EnableWholesale == 1
+			e.EnableRetail = mg.EnableRetail == 1
+			e.RebatePeriod = int(mg.RebatePeriod)
 		}
+		list[i] = e
 	}
 	return list
 }
 
 // 保存客户分组
-func (c *confManagerImpl) SaveMchBuyerGroup(v *merchant.MchBuyerGroup) (int32, error) {
-	g := c.GetGroupByGroupId(v.GroupId)
+func (c *confManagerImpl) SaveMchBuyerGroup(v *merchant.MchBuyerGroupSetting) (int32, error) {
+	g := c.GetGroupByGroupId(int32(v.GroupId))
 	g.Alias = v.Alias
 	g.EnableRetail = v.EnableRetail
 	g.EnableWholesale = v.EnableWholesale
@@ -164,16 +170,16 @@ func (c *confManagerImpl) SaveMchBuyerGroup(v *merchant.MchBuyerGroup) (int32, e
 }
 
 // 根据分组编号获取分组设置
-func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGroup {
+func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGroupSetting {
 	v := c.repo.GetMchBuyerGroupByGroupId(int32(c.mchId), groupId)
 	if v != nil {
 		return v
 	}
 	g := c.memberRepo.GetManager().GetBuyerGroup(groupId)
 	if g != nil {
-		return &merchant.MchBuyerGroup{
-			MchId:           int64(c.mchId),
-			GroupId:         groupId,
+		return &merchant.MchBuyerGroupSetting{
+			MerchantId:      int64(c.mchId),
+			GroupId:         int64(groupId),
 			Alias:           g.Name,
 			EnableRetail:    1,
 			EnableWholesale: 1,
