@@ -113,14 +113,14 @@ func WsItemDiscountDto(src *item.WsItemDiscount) *proto.SWsItemDiscount {
 		Id:            int64(src.ID),
 		BuyerGroupId:  int64(src.BuyerGid),
 		RequireAmount: int64(src.RequireAmount),
-		DiscountRate:  int64(src.DiscountRate * 1000),
+		DiscountRate:  int64(src.DiscountRate * 100),
 	}
 }
 func WsItemDiscount(src *proto.SWsItemDiscount) *item.WsItemDiscount {
 	return &item.WsItemDiscount{
 		ID:            int32(src.Id),
 		RequireAmount: int32(src.RequireAmount),
-		DiscountRate:  float64(src.DiscountRate) / 1000,
+		DiscountRate:  float64(src.DiscountRate) / 100,
 	}
 }
 

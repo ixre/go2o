@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"github.com/ixre/gof"
 	"go.etcd.io/etcd/clientv3"
 	grpc2 "go2o/core/service/impl"
 	"go2o/core/service/proto"
@@ -19,7 +20,10 @@ import (
  * history :
  */
 
-func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
+func ServeRPC(ch chan bool, cfg *clientv3.Config,port int, domain string) {
+	// 初始化RPC服务
+	prepareRpcServer(gof.CurrentApp, domain)
+	// 启动RPC服务
 	s := grpc.NewServer()
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {

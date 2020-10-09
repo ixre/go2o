@@ -297,7 +297,7 @@ func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 
 // 放入购物车
 
-func (s *cartServiceImpl) PutInCart_(_ context.Context, r *proto.CartItemRequest) (*proto.SShoppingCartItem, error) {
+func (s *cartServiceImpl) PutInCart_(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
 	c := s.getShoppingCart(r.BuyerId, r.CartCode)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
@@ -307,13 +307,15 @@ func (s *cartServiceImpl) PutInCart_(_ context.Context, r *proto.CartItemRequest
 		if _, err = c.Save(); err == nil {
 			rc := c.(cart.INormalCart)
 			item := rc.GetItem(r.ItemId, r.SkuId)
-			return parser.ParseCartItem(item), err
+			return &proto.CartItemResponse{
+				Item: parser.ParseCartItem(item),
+			}, nil
 		}
 	}
-	return nil, err
+	return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 }
 
-func (s *cartServiceImpl) SubCartItem_(_ context.Context, r *proto.CartItemRequest) (*proto.Result, error) {
+func (s *cartServiceImpl) SubCartItem_(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
 	c := s.getShoppingCart(r.BuyerId, r.CartCode)
 	var err error
 	if c == nil {
@@ -322,9 +324,16 @@ func (s *cartServiceImpl) SubCartItem_(_ context.Context, r *proto.CartItemReque
 		err = c.Remove(r.ItemId, r.SkuId, r.Quantity)
 		if err == nil {
 			_, err = c.Save()
+			if err == nil {
+				rc := c.(cart.INormalCart)
+				item := rc.GetItem(r.ItemId, r.SkuId)
+				return &proto.CartItemResponse{
+					Item: parser.ParseCartItem(item),
+				}, nil
+			}
 		}
 	}
-	return s.error(err), nil
+	return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 }
 
 // 勾选商品结算
