@@ -93,7 +93,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 func WsSkuPriceDto(src *item.WsSkuPrice) *proto.SWsSkuPrice {
 	return &proto.SWsSkuPrice{
 		Id:             int64(src.ID),
-		RequireNumber:  src.RequireQuantity,
+		RequireNum:  src.RequireQuantity,
 		WholesalePrice: src.WholesalePrice,
 	}
 }
@@ -103,7 +103,7 @@ func WsSkuPrice(src *proto.SWsSkuPrice) *item.WsSkuPrice {
 		ID:              int32(src.Id),
 		ItemId:          0,
 		SkuId:           0,
-		RequireQuantity: src.RequireNumber,
+		RequireQuantity: src.RequireNum,
 		WholesalePrice:  src.WholesalePrice,
 	}
 }

@@ -352,7 +352,7 @@ message SWsSkuPrice {
     // 编号
     int64 Id = 1;
     // 需要数量以上
-    int32 RequireNumber = 2;
+    int32 RequireNum = 2;
     // 批发价
     double WholesalePrice = 3;
 }

@@ -519,7 +519,6 @@ func (s *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequ
 		case proto.EItemSalesType_IT_WHOLESALE:
 			err = it.Wholesale().SetShelve(state, r.Remark)
 		case proto.EItemSalesType_IT_NORMAL:
-		default:
 			err = it.SetShelve(state, r.Remark)
 		}
 	}
