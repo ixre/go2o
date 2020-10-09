@@ -22,7 +22,6 @@ import (
  * history :
  */
 
-
 // RPC服务初始化
 func prepareRpcServer(ctx gof.App, domain string) {
 	gf := ctx.Config().GetString

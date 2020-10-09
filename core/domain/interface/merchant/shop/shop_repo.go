@@ -15,8 +15,7 @@ type (
 		// 获取商店
 		GetShop(shopId int64) IShop
 		// 获取门店
-		GetStore(storeId int64)IShop
-
+		GetStore(storeId int64) IShop
 
 		SaveShop(*Shop) (int64, error)
 		// 检查商户商城是否存在(创建)
@@ -33,7 +32,7 @@ type (
 		GetOfflineShop(shopId int) *OfflineShop
 
 		// 获取商户的店铺
-		GetOnlineShopOfMerchant(vendorId int)IShop
+		GetOnlineShopOfMerchant(vendorId int) IShop
 
 		// 获取商户所有商店
 		GetShopId(mchId int64) []Shop

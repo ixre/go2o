@@ -60,3 +60,19 @@ func GetPassportURL(mobile bool)string{
 		registry.DomainPrefixPassport)
 	return getDomain(key)
 }
+
+// 获取门户URL
+func GetPortalURL(mobile bool)string{
+	key := types.StringCond(mobile,
+		registry.DomainPrefixMobilePortal,
+		registry.DomainPrefixPortal)
+	return getDomain(key)
+}
+
+func GetHApiURL()string{
+	return getDomain(registry.DomainPrefixHApi)
+}
+
+func GetWholesaleURL()string{
+	return getDomain(registry.DomainPrefixWholesalePortal)
+}

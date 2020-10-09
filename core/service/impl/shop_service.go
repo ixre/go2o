@@ -73,13 +73,13 @@ func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.ShopId) (*pr
 	sp := si.shopRepo.GetShop(shopId.Value)
 	if sp != nil {
 		iop := sp.(shop.IOnlineShop)
-		iv :=iop.GetShopValue()
+		iv := iop.GetShopValue()
 		ret := si.parseShopDto(iv)
 		ret.ShopTitle = ret.Name
 		ret.Config.Host = iv.Host
 		ret.Config.Logo = iv.Logo
 		ret.Config.Alias = iv.Alias
-		ret.Config.Tel =iv.Tel
+		ret.Config.Tel = iv.Tel
 		return ret, nil
 	}
 	return nil, nil
@@ -113,24 +113,24 @@ func (si *shopServiceImpl) GetStore(_ context.Context, storeId *proto.StoreId) (
 		ifv := sp.(shop.IOfflineShop)
 		iv := ifv.GetShopValue()
 		ret := &proto.SStore{
-			Id:                   storeId.Value,
-			MerchantId:           v.VendorId,
-			Name:                 v.Name,
-			State:                v.State,
-			OpeningState:         v.OpeningState,
-			StorePhone:           iv.Tel,
-			StoreNotice:          "",
-			Province:             iv.Province,
-			City:                 iv.City,
-			District:             iv.District,
-			Address:              "",
-			DetailAddress:        iv.Address,
-			Lat:                  float64(iv.Lat),
-			Lng:                  float64(iv.Lng),
-			CoverRadius:          int32(iv.CoverRadius),
-			SortNum:              v.SortNum,
+			Id:            storeId.Value,
+			MerchantId:    v.VendorId,
+			Name:          v.Name,
+			State:         v.State,
+			OpeningState:  v.OpeningState,
+			StorePhone:    iv.Tel,
+			StoreNotice:   "",
+			Province:      iv.Province,
+			City:          iv.City,
+			District:      iv.District,
+			Address:       "",
+			DetailAddress: iv.Address,
+			Lat:           float64(iv.Lat),
+			Lng:           float64(iv.Lng),
+			CoverRadius:   int32(iv.CoverRadius),
+			SortNum:       v.SortNum,
 		}
-		return ret,nil
+		return ret, nil
 	}
 	return nil, nil
 }
@@ -201,10 +201,10 @@ func (si *shopServiceImpl) SaveShop(_ context.Context, s *proto.SShop) (*proto.R
 	var err error
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
-	}else{
+	} else {
 		_, v1 := si.parse2OnlineShop(s)
 		mgr := mch.ShopManager()
-		_,err = mgr.CreateOnlineShop(v1)
+		_, err = mgr.CreateOnlineShop(v1)
 		//sp := mgr.GetOnlineShop()
 		//// 创建商店
 		//if sp == nil {
@@ -219,7 +219,7 @@ func (si *shopServiceImpl) SaveShop(_ context.Context, s *proto.SShop) (*proto.R
 		//	}
 		//}
 	}
-	return si.error(err),nil
+	return si.error(err), nil
 }
 
 func (si *shopServiceImpl) DeleteShop(mchId, shopId int32) error {

@@ -51,8 +51,12 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 	return r
 }
 
+func (r *registryRepo) getStorageKey(key string) string {
+	return fmt.Sprintf("%s/%s", prefix, key)
+}
+
 func (r *registryRepo) GetValue(key string) (string, error) {
-	k := fmt.Sprintf("%s/%s", prefix, key)
+	k := r.getStorageKey(key)
 	v, err := r.store.GetString(k)
 	if err == nil {
 		return v, err
@@ -73,12 +77,14 @@ func (r *registryRepo) UpdateValue(key string, value string) error {
 		return errors.New("no exists key")
 	}
 	// 更新etcd
-	k := fmt.Sprintf("%s/%s", prefix, key)
+	k := r.getStorageKey(key)
 	_ = r.store.Set(k, value)
 	// 持久化
-	ev := e.Value()
-	ev.Value = value
-	return r.Save(e)
+	err := e.Update(value)
+	if err == nil {
+		err = r.Save(e)
+	}
+	return err
 }
 
 func (r *registryRepo) SearchRegistry(key string) []registry.Registry {
@@ -115,6 +121,9 @@ func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 	_, ok := r.data[key]
 	if ok {
 		_, _, err = r.conn.GetOrm().Save(key, val)
+		// 清除缓存
+		sk := r.getStorageKey(key)
+		r.store.Delete(sk)
 	} else {
 		_, _, err = r.conn.GetOrm().Save(nil, val)
 	}

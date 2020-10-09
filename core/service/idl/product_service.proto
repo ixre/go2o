@@ -72,7 +72,7 @@ service ProductService {
     //rpc GetChildCategories(mchId int64, parentId int64) []*proto.SProductCategory
 
     // 获取产品值
-    rpc GetProduct(ProductId) returns (SProduct) {
+    rpc GetProduct (ProductId) returns (SProduct) {
     }
     // 保存产品
     rpc SaveProduct (SProduct) returns (SaveProductResponse) {

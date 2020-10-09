@@ -47,14 +47,14 @@ message SCheckCartItem {
 }
 
 // 购物车商品操作响应
-message CartItemResponse{
+message CartItemResponse {
     int64 ErrCode = 1;
     string ErrMsg = 2;
     SShoppingCartItem Item = 3;
- }
+}
 
- // 购物车商品
- message SShoppingCartItem {
+// 购物车商品
+message SShoppingCartItem {
     //商品编号
     sint64 ItemId = 1;
     //SKU编号

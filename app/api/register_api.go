@@ -214,7 +214,7 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 		registry.SmsRegisterTemplateId,
 		registry.EnableDebugMode,
 	}
-	mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
+	mp, _ := cli.GetValues(context.TODO(), &proto.StringArray{Value: keys})
 	trans.Close()
 	allowPhoneAsUser := mp.Value[keys[0]]
 	debugMode := mp.Value[keys[2]] == "true"

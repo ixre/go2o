@@ -59,7 +59,7 @@ func (e EtcdStorage) Exists(key string) (exists bool) {
 //Set
 func (e EtcdStorage) Set(key string, v interface{}) error {
 	//j, err := e.serialize(v)
-	if v == nil{
+	if v == nil {
 		return errors.New("value is nil")
 	}
 	bytes, err := e.marshal(v)

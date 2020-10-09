@@ -89,7 +89,7 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 		regArr := []string{registry.CacheAdMaxAge}
 		trans, cli, err := service.RegistryServiceClient()
 		if err == nil {
-			mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: regArr})
+			mp, _ := cli.GetValues(context.TODO(), &proto.StringArray{Value: regArr})
 			_ = trans.Close()
 			seconds, _ = strconv.Atoi(mp.Value[regArr[0]])
 		}

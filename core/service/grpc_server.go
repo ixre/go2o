@@ -20,7 +20,7 @@ import (
  * history :
  */
 
-func ServeRPC(ch chan bool, cfg *clientv3.Config,port int, domain string) {
+func ServeRPC(ch chan bool, cfg *clientv3.Config, port int, domain string) {
 	// 初始化RPC服务
 	prepareRpcServer(gof.CurrentApp, domain)
 	// 启动RPC服务

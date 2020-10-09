@@ -118,10 +118,10 @@ service MerchantService {
     rpc GetMchBuyerGroup_ (MerchantBuyerGroupId) returns (SMerchantBuyerGroup) {
     }
     // 保存
-    rpc SaveMchBuyerGroup(SaveMerchantBuyerGroupRequest) returns (Result) {
+    rpc SaveMchBuyerGroup (SaveMerchantBuyerGroupRequest) returns (Result) {
     }
     // 获取买家分组
-    rpc GetBuyerGroups(MerchantId)returns (MerchantBuyerGroupListResponse) {
+    rpc GetBuyerGroups (MerchantId) returns (MerchantBuyerGroupListResponse) {
     }
     // 获取批发返点率
     rpc GetRebateRate (MerchantBuyerGroupId) returns (WholesaleRebateRateListResponse) {

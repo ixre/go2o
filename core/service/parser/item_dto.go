@@ -93,7 +93,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 func WsSkuPriceDto(src *item.WsSkuPrice) *proto.SWsSkuPrice {
 	return &proto.SWsSkuPrice{
 		Id:             int64(src.ID),
-		RequireNum:  src.RequireQuantity,
+		RequireNum:     src.RequireQuantity,
 		WholesalePrice: src.WholesalePrice,
 	}
 }
@@ -126,20 +126,20 @@ func WsItemDiscount(src *proto.SWsItemDiscount) *item.WsItemDiscount {
 
 func ParseGoodsItem(src *proto.SUnifiedViewItem) *item.GoodsItem {
 	dst := &item.GoodsItem{
-		Id:         src.ItemId,
-		ProductId:  src.ProductId,
-		PromFlag:   -1, //todo:??
-		CategoryId: int32(src.CategoryId),
-		VendorId:   src.VendorId,
-		BrandId:    int32(src.BrandId),
-		ShopCatId:  0,                     //todo:??
-		ExpressTid: int32(src.ExpressTid), //src.,
-		Title:      src.Title,
-		ShortTitle: "", //src.Sho,
-		Code:       src.Code,
-		Image:      src.Image,
-		IsPresent:  0, //todo:???
-		PriceRange: src.PriceRange,
+		Id:          src.ItemId,
+		ProductId:   src.ProductId,
+		PromFlag:    -1, //todo:??
+		CategoryId:  int32(src.CategoryId),
+		VendorId:    src.VendorId,
+		BrandId:     int32(src.BrandId),
+		ShopCatId:   0,                     //todo:??
+		ExpressTid:  int32(src.ExpressTid), //src.,
+		Title:       src.Title,
+		ShortTitle:  "", //src.Sho,
+		Code:        src.Code,
+		Image:       src.Image,
+		IsPresent:   0, //todo:???
+		PriceRange:  src.PriceRange,
 		StockNum:    src.StockNum,
 		SaleNum:     0,
 		SkuId:       src.SkuId,

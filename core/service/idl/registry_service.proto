@@ -12,13 +12,13 @@ service RegistryService {
     rpc UpdateValue (RegistryPair) returns (Result) {
     }
     /** 获取键值存储数据字典,keys */
-    rpc GetRegistries (StringArray) returns (StringMap) {
+    rpc GetValues (StringArray) returns (StringMap) {
     }
     /** 按键前缀获取键数据,prefix*/
     rpc FindRegistries (String) returns (StringMap) {
     }
     /** 更新注册表键值 */
-    rpc UpdateRegistryValues (StringMap) returns (Result) {
+    rpc UpdateValues (StringMap) returns (Result) {
     }
     /** 搜索注册表,keyword */
     rpc SearchRegistry (String) returns (RegistriesResponse) {
