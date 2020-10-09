@@ -4,9 +4,9 @@ type (
 	// 属性
 	Attr struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品模型
-		ProModel int32 `db:"pro_model"`
+		ModelId int32 `db:"pro_model"`
 		// 属性名称
 		Name string `db:"name"`
 		// 是否作为筛选条件
@@ -23,11 +23,11 @@ type (
 	// 属性项
 	AttrItem struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 属性编号
 		AttrId int32 `db:"attr_id"`
 		// 产品模型
-		ProModel int32 `db:"pro_model"`
+		ModelId int32 `db:"pro_model"`
 		// 属性值
 		Value string `db:"value"`
 		// 排列序号

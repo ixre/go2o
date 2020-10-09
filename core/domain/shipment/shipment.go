@@ -45,6 +45,11 @@ func (s *shipmentOrderImpl) Value() shipment.ShipmentOrder {
 	return *s.value
 }
 
+// 获取发货商品
+func (s *shipmentOrderImpl) Items() []*shipment.ShipmentItem {
+	return s.value.Items
+}
+
 func (s *shipmentOrderImpl) getExpressProvider(spId int32) *express.ExpressProvider {
 	if s.expSp == nil {
 		s.expSp = s.expRepo.GetExpressProvider(spId)
@@ -127,7 +132,7 @@ func (t *shipmentOrderImpl) SmartChoiceShop(address string) (shop.IShop, error) 
 	       return nil, delivery.ErrNotCoveragedArea
 	   }
 	   shopId, _, err := dly.GetDeliveryInfo(cov.GetDomainId())
-	   return t.mch.ShopManager().GetShop(shopId), err
+	   return t.mch.ShopManager().GetShopByVendorId(shopId), err
 	*/
 
 }

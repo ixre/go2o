@@ -170,21 +170,21 @@ func OrmMapping(conn db.Connector) {
 
 	// Shipment
 	orm.Mapping(shipment.ShipmentOrder{}, "ship_order")
-	orm.Mapping(shipment.Item{}, "ship_item")
+	orm.Mapping(shipment.ShipmentItem{}, "ship_item")
 
 	// 产品
 	orm.Mapping(product.Product{}, "product")
 	orm.Mapping(item.GoodsItem{}, "item_info")
 	orm.Mapping(item.Sku{}, "item_sku")
 	orm.Mapping(product.Category{}, "product_category")
-	orm.Mapping(promodel.ProModel{}, "product_model")
-	orm.Mapping(promodel.ProBrand{}, "product_brand")
+	orm.Mapping(promodel.ProductModel{}, "product_model")
+	orm.Mapping(promodel.ProductBrand{}, "product_brand")
 	orm.Mapping(promodel.ProModelBrand{}, "product_model_brand")
 	orm.Mapping(promodel.Attr{}, "product_model_attr")
 	orm.Mapping(promodel.AttrItem{}, "product_model_attr_item")
 	orm.Mapping(promodel.Spec{}, "product_model_spec")
 	orm.Mapping(promodel.SpecItem{}, "product_model_spec_item")
-	orm.Mapping(product.Attr{}, "product_attr_info")
+	orm.Mapping(product.AttrValue{}, "product_attr_info")
 	orm.Mapping(item.Snapshot{}, "item_snapshot")
 	orm.Mapping(item.TradeSnapshot{}, "item_trade_snapshot")
 	orm.Mapping(item.Label{}, "gs_sale_label")
@@ -289,38 +289,38 @@ func initSSOModule() {
 		/*
 			registries, _ := cli.GetRegistries(context.TODO(),&proto.StringArray{Value:  keys})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   1,
+				Id:   1,
 				Name: "RetailPortal",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[0]], domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   2,
+				Id:   2,
 				Name: "WholesalePortal",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[1]], domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   3,
+				Id:   3,
 				Name: "HApi",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[2]], domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   4,
+				Id:   4,
 				Name: "Member",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[3]], domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   5,
+				Id:   5,
 				Name: "MemberMobile",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[4]],
 					domain),
 			})
 			_, _ = s.Register(&proto.SSsoApp{
-				ID:   6,
+				Id:   6,
 				Name: "RetailPortalMobile",
 				ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
 					registries.Value[keys[5]], domain),

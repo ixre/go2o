@@ -94,16 +94,16 @@ message SSku {
 message SUnifiedViewItem {
     sint64 ItemId = 1;
     sint64 ProductId = 2;
-    sint32 CategoryId = 3;
+    sint64 CategoryId = 3;
     sint64 VendorId = 4;
-    sint32 BrandId = 5;
+    sint64 BrandId = 5;
     string Title = 6;
     string Code = 7;
     int64 SkuId = 8;
     string Image = 9;
     double Price = 10;
     string PriceRange = 11;
-    sint32 StockNum = 12;
+    int32 StockNum = 12;
     int64 ExpressTid = 13;
     sint32 ShelveState = 14;
     sint32 ReviewState = 15;
@@ -214,7 +214,7 @@ message SItemSnapshot {
     // 快照编码
     string Key = 3;
     // 分类编号
-    int32 CategoryId = 4;
+    int64 CategoryId = 4;
     // 供货商编号
     int64 VendorId = 5;
     // 编号
@@ -352,7 +352,7 @@ message SWsSkuPrice {
     // 编号
     int64 Id = 1;
     // 需要数量以上
-    int32 RequireNumber = 2;
+    int32 RequireNum = 2;
     // 批发价
     double WholesalePrice = 3;
 }

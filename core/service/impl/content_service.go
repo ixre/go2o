@@ -96,7 +96,7 @@ func (c *contentService) GetArticleCategory(_ context.Context, name *proto.IdOrN
 	} else {
 		ic = mgr.GetCategoryByAlias(name.Name)
 	}
-	if c != nil {
+	if ic != nil {
 		return c.parseArticleCategoryDto(ic.GetValue()), nil
 	}
 	return nil, nil

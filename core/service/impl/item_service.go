@@ -36,7 +36,7 @@ type itemService struct {
 	itemQuery *query.ItemQuery
 	cateRepo  product.ICategoryRepo
 	labelRepo item.ISaleLabelRepo
-	promRepo  promodel.IProModelRepo
+	promRepo  promodel.IProductModelRepo
 	mchRepo   merchant.IMerchantRepo
 	valueRepo valueobject.IValueRepo
 	sto       storage.Interface
@@ -44,7 +44,7 @@ type itemService struct {
 
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
-	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
+	labelRepo item.ISaleLabelRepo, promRepo promodel.IProductModelRepo,
 	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) *itemService {
 	return &itemService{
 		sto:       sto,
@@ -72,8 +72,8 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	var gi item.IGoodsItem
 	it := parser.ParseGoodsItem(r)
 	var err error
-	if it.ID > 0 {
-		gi = s.itemRepo.GetItem(it.ID)
+	if it.Id > 0 {
+		gi = s.itemRepo.GetItem(it.Id)
 		if gi == nil || gi.GetValue().VendorId != r.VendorId {
 			return s.error(item.ErrNoSuchItem), nil
 		}
@@ -84,13 +84,13 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	if err == nil {
 		err = gi.SetSku(it.SkuArray)
 		if err == nil {
-			it.ID, err = gi.Save()
+			it.Id, err = gi.Save()
 		}
 	}
 	ret := s.error(err)
 	if err == nil {
 		r.Data = map[string]string{
-			"ItemId": strconv.Itoa(int(it.ID)),
+			"ItemId": strconv.Itoa(int(it.Id)),
 		}
 	}
 	return ret, nil
@@ -174,7 +174,7 @@ func (s *itemService) GetSku(_ context.Context, request *proto.SkuId) (*proto.SS
 
 // 获取商品详细数据
 func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDetailRequest) (*proto.String, error) {
-	it := s.itemRepo.CreateItem(&item.GoodsItem{ID: request.ItemId})
+	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: request.ItemId})
 	switch request.IType {
 	case item.ItemWholesale:
 		data := it.Wholesale().GetJsonDetailData()
@@ -324,7 +324,7 @@ func (s *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
 			dto.Data["Authorized"] = "false"
 		}
 		// 品牌
-		b := s.promRepo.BrandService().Get(dto.BrandId)
+		b := s.promRepo.BrandService().Get(int32(dto.BrandId))
 		if b != nil {
 			dto.Data["BrandName"] = b.Name
 			dto.Data["BrandImage"] = b.Image
@@ -519,7 +519,6 @@ func (s *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequ
 		case proto.EItemSalesType_IT_WHOLESALE:
 			err = it.Wholesale().SetShelve(state, r.Remark)
 		case proto.EItemSalesType_IT_NORMAL:
-		default:
 			err = it.SetShelve(state, r.Remark)
 		}
 	}

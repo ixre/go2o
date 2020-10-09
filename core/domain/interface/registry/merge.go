@@ -17,7 +17,7 @@ func mergeAdd(description string, key string, defaultValue string, options strin
 // 返回需要合并的注册表数据
 func MergeRegistries() []*Registry {
 	/** 域名 */
-	mergeAdd("是否启用SSL连接", DomainEnabledSSL, "false", "")
+	mergeAdd("访问协议", HttpProtocols, "http", "")
 	mergeAdd("域名", Domain, "yourdomain.com", "")
 	mergeAdd("管理面板前缀", DomainPrefixDashboard, "board.", "")
 	mergeAdd("零售门户前缀", DomainPrefixPortal, "www.", "")

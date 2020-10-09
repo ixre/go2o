@@ -1286,7 +1286,7 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 		ShipTime:    unix,
 		State:       shipment.StatAwaitingShipment,
 		UpdateTime:  unix,
-		Items:       []*shipment.Item{},
+		Items:       []*shipment.ShipmentItem{},
 	}
 	for _, v := range items {
 		if v.IsShipped == 1 {
@@ -1294,9 +1294,9 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 		}
 		so.Amount += float64(v.Amount)
 		so.FinalAmount += float64(v.FinalAmount)
-		so.Items = append(so.Items, &shipment.Item{
+		so.Items = append(so.Items, &shipment.ShipmentItem{
 			ID:          0,
-			SnapshotId:  int64(v.SnapshotId),
+			SnapshotId:  v.SnapshotId,
 			Quantity:    v.Quantity,
 			Amount:      float64(v.Amount),
 			FinalAmount: float64(v.FinalAmount),

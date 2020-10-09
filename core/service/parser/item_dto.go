@@ -74,7 +74,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 	return &proto.SUnifiedViewItem{
 		ItemId:      src.ItemId,
 		ProductId:   src.ProductId,
-		CategoryId:  src.CategoryId,
+		CategoryId:  int64(src.CategoryId),
 		VendorId:    int64(src.VendorId),
 		BrandId:     0,
 		Title:       src.Title,
@@ -93,7 +93,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 func WsSkuPriceDto(src *item.WsSkuPrice) *proto.SWsSkuPrice {
 	return &proto.SWsSkuPrice{
 		Id:             int64(src.ID),
-		RequireNumber:  src.RequireQuantity,
+		RequireNum:  src.RequireQuantity,
 		WholesalePrice: src.WholesalePrice,
 	}
 }
@@ -103,7 +103,7 @@ func WsSkuPrice(src *proto.SWsSkuPrice) *item.WsSkuPrice {
 		ID:              int32(src.Id),
 		ItemId:          0,
 		SkuId:           0,
-		RequireQuantity: src.RequireNumber,
+		RequireQuantity: src.RequireNum,
 		WholesalePrice:  src.WholesalePrice,
 	}
 }
@@ -126,21 +126,20 @@ func WsItemDiscount(src *proto.SWsItemDiscount) *item.WsItemDiscount {
 
 func ParseGoodsItem(src *proto.SUnifiedViewItem) *item.GoodsItem {
 	dst := &item.GoodsItem{
-		ID:          src.ItemId,
-		ProductId:   src.ProductId,
-		PromFlag:    -1, //todo:??
-		CatId:       src.CategoryId,
-		VendorId:    src.VendorId,
-		BrandId:     src.BrandId,
-		ShopId:      0,                     //todo:??
-		ShopCatId:   0,                     //todo:??
-		ExpressTid:  int32(src.ExpressTid), //src.,
-		Title:       src.Title,
-		ShortTitle:  "", //src.Sho,
-		Code:        src.Code,
-		Image:       src.Image,
-		IsPresent:   0, //todo:???
-		PriceRange:  src.PriceRange,
+		Id:         src.ItemId,
+		ProductId:  src.ProductId,
+		PromFlag:   -1, //todo:??
+		CategoryId: int32(src.CategoryId),
+		VendorId:   src.VendorId,
+		BrandId:    int32(src.BrandId),
+		ShopCatId:  0,                     //todo:??
+		ExpressTid: int32(src.ExpressTid), //src.,
+		Title:      src.Title,
+		ShortTitle: "", //src.Sho,
+		Code:       src.Code,
+		Image:      src.Image,
+		IsPresent:  0, //todo:???
+		PriceRange: src.PriceRange,
 		StockNum:    src.StockNum,
 		SaleNum:     0,
 		SkuId:       src.SkuId,

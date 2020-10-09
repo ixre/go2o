@@ -97,8 +97,8 @@ func (m *MemberModule) CheckToken(memberId int64, token string) bool {
 // 移除会员Token
 func (m *MemberModule) RemoveToken(memberId int64) {
 	key := m.getMemberTokenKey(memberId)
-	m.storage.Del(key)
-	m.storage.Del(key + "base")
+	m.storage.Delete(key)
+	m.storage.Delete(key + "base")
 }
 
 // 重设并返回会员的会员Token，token有效时间默认为60天

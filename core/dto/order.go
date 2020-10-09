@@ -100,7 +100,7 @@ type (
 /*
 func ParseSubOrder(v *order.SubOrder) *SubOrder {
     return &SubOrder{
-        ID:v.ID,
+        Id:v.Id,
         OrderNo:v.OrderNo,
         ParentId:v.ParentId,
         BuyerId:v.BuyerId,

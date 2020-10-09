@@ -35,7 +35,7 @@ var (
 
 type RepoFactory struct {
 	registryRepo registry.IRegistryRepo
-	proMRepo     promodel.IProModelRepo
+	proMRepo     promodel.IProductModelRepo
 	valueRepo    valueobject.IValueRepo
 	userRepo     user.IUserRepo
 	notifyRepo   notify.INotifyRepo
@@ -82,14 +82,14 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 	r.productRepo = NewProductRepo(db, r.proMRepo, r.valueRepo)
 	r.itemWsRepo = NewItemWholesaleRepo(db)
 	r.catRepo = NewCategoryRepo(db, r.registryRepo, sto)
+	r.shopRepo = NewShopRepo(db, sto, r.valueRepo, r.registryRepo)
 	r.itemRepo = NewGoodsItemRepo(db, r.catRepo, r.productRepo,
-		r.proMRepo, r.itemWsRepo, r.expressRepo, r.registryRepo)
+		r.proMRepo, r.itemWsRepo, r.expressRepo, r.registryRepo,r.shopRepo)
 	r.tagSaleRepo = NewTagSaleRepo(db, r.valueRepo)
 	r.promRepo = NewPromotionRepo(db, r.itemRepo, r.memberRepo)
 
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 	r.walletRepo = NewWalletRepo(db)
-	r.shopRepo = NewShopRepo(db, sto, r.valueRepo, r.registryRepo)
 	r.wholesaleRepo = NewWholesaleRepo(db)
 	r.mchRepo = NewMerchantRepo(db, sto, r.wholesaleRepo,
 		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo, r.registryRepo)
@@ -111,7 +111,7 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 	return r
 }
 
-func (r *RepoFactory) GetProModelRepo() promodel.IProModelRepo {
+func (r *RepoFactory) GetProModelRepo() promodel.IProductModelRepo {
 	return r.proMRepo
 }
 

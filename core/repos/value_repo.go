@@ -193,7 +193,7 @@ func (r *valueRepo) DeleteValue(key string) error {
 		r.kvMux.Lock()
 		delete(r.kvMap, key)
 		r.kvMux.Unlock()
-		r.storage.Del("go2o:repo:kv:" + key)
+		r.storage.Delete("go2o:repo:kv:" + key)
 	}
 	return err
 }
@@ -338,7 +338,7 @@ func (r *valueRepo) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 	if r.globMchSaleConf == nil {
 		v := DefaultGlobMchSaleConf
 		r.globMchSaleConf = &v
-		r.mscGob.Unmarshal(r.globMchSaleConf)
+		//r.mscGob.Unmarshal(r.globMchSaleConf)
 	}
 	return *r.globMchSaleConf
 }

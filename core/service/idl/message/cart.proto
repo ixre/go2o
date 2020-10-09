@@ -1,0 +1,75 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+
+message WsCartRequest {
+    sint64 memberId = 1;
+    string action = 2;
+    map<string, string> data = 3;
+}
+message NormalCartRequest {
+    sint64 memberId = 1;
+    string action = 2;
+    map<string, string> data = 3;
+}
+
+// 购物车
+message SShoppingCart {
+    //编号
+    sint32 CartId = 1;
+    //购物车KEY
+    string Code = 2;
+    //店铺分组
+    repeated SShoppingCartGroup Shops = 3;
+}
+// 购物车店铺分组
+message SShoppingCartGroup {
+    //店铺编号
+    sint64 ShopId = 1;
+    //供货商编号
+    sint64 VendorId = 2;
+    //店铺名称
+    string ShopName = 3;
+    //是否结算
+    bool Checked = 4;
+    //商品
+    repeated SShoppingCartItem Items = 5;
+}
+
+// 购物车商品勾选
+message SCheckCartItem {
+    //商品编号
+    sint64 ItemId = 1;
+    //SKU编号
+    sint64 SkuId = 2;
+    // 是否勾选
+    bool Checked = 3;
+}
+
+// 购物车商品
+message SShoppingCartItem {
+    //商品编号
+    sint64 ItemId = 1;
+    //SKU编号
+    sint64 SkuId = 2;
+    //商品标题
+    string Title = 3;
+    //商品图片
+    string Image = 4;
+    //规格文本
+    string SpecWord = 5;
+    //商品编码
+    string Code = 6;
+    //零售价
+    double RetailPrice = 7;
+    //销售价
+    double Price = 8;
+    //数量
+    sint32 Quantity = 9;
+    //是否结算
+    bool Checked = 10;
+    //库存文本
+    string StockText = 11;
+    //店铺编号
+    sint64 ShopId = 12;
+}

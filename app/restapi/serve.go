@@ -61,16 +61,12 @@ func registerNewApi(s *echo.Echo, config *gof.Config, store storage.Interface) {
 	})
 }
 
-// 获取服务实例
-func GetServe() *echo.Echo {
-	return serve
-}
-
-func Run(ch chan bool, app gof.App, port int) {
+func Run(ch chan bool, app gof.App, domain string, port int) {
 	store = app.Storage()
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	handler := newServe(app.Config(), store)
-	log.Println("** [ Go2o][ API] - Api server running on port " +
+	log.Println("** [ Go2o][ Info]: domain : ", domain)
+	log.Println("** [ Go2o][ API]: Api server running on port " +
 		strconv.Itoa(port))
 
 	err := http.ListenAndServe(":"+strconv.Itoa(port), handler)

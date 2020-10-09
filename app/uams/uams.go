@@ -179,7 +179,7 @@ type (
 
 	// 菜单
 	//Res struct {
-	//	ID       int64
+	//	Id       int64
 	//	Title    string
 	//	Code     string
 	//	URI      string

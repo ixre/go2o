@@ -5,7 +5,7 @@ import (
 	"go2o/core/service/proto"
 )
 
-func Category(src *proto.SCategory) *product.Category {
+func Category(src *proto.SProductCategory) *product.Category {
 	s := &product.Category{
 		Id:         int(src.Id),
 		ParentId:   int(src.ParentId),
@@ -14,7 +14,7 @@ func Category(src *proto.SCategory) *product.Category {
 		Name:       src.Name,
 		Level:      int(src.Level),
 		Icon:       src.Icon,
-		IconXy:     src.IconXy,
+		IconPoint:     src.IconPoint,
 		VirtualCat: int(src.VirtualCat),
 		CatUrl:     src.CatUrl,
 		SortNum:    int(src.SortNum),
@@ -31,8 +31,8 @@ func Category(src *proto.SCategory) *product.Category {
 	return s
 }
 
-func CategoryDto(src *product.Category) *proto.SCategory {
-	s := &proto.SCategory{
+func CategoryDto(src *product.Category) *proto.SProductCategory {
+	s := &proto.SProductCategory{
 		Id:         int32(src.Id),
 		ParentId:   int32(src.ParentId),
 		ProdModel:  int32(src.ProdModel),
@@ -40,7 +40,7 @@ func CategoryDto(src *product.Category) *proto.SCategory {
 		Name:       src.Name,
 		Level:      int32(src.Level),
 		Icon:       src.Icon,
-		IconXy:     src.IconXy,
+		IconPoint:     src.IconPoint,
 		VirtualCat: int32(src.VirtualCat),
 		CatUrl:     src.CatUrl,
 		SortNum:    int32(src.SortNum),
@@ -49,7 +49,7 @@ func CategoryDto(src *product.Category) *proto.SCategory {
 		CreateTime: src.CreateTime,
 	}
 	if src.Children != nil {
-		s.Children = make([]*proto.SCategory, len(src.Children))
+		s.Children = make([]*proto.SProductCategory, len(src.Children))
 		for i, v := range src.Children {
 			s.Children[i] = CategoryDto(v)
 		}

@@ -111,7 +111,9 @@ func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.Merchan
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
 		v := mch.ProfileManager().GetEnterpriseInfo()
-		return m.parseEnterpriseInfoDto(v), nil
+		if v != nil {
+			return m.parseEnterpriseInfoDto(v), nil
+		}
 	}
 	return nil, nil
 }
@@ -408,8 +410,10 @@ func (m *merchantService) SaveGroupRebateRate(_ context.Context, r *proto.SaveWh
 	return m.error(err), nil
 }
 
-func (m *merchantService) GetAllTradeConf(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
-	panic("implement me")
+func (m *merchantService) GetAllTradeConf_(_ context.Context, i *proto.Int64) (*proto.STradeConfListResponse, error) {
+	return &proto.STradeConfListResponse{
+		Value: make([]*proto.STradeConf_, 0),
+	}, nil
 }
 
 func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCreateRequest) (*proto.Result, error) {
@@ -478,7 +482,7 @@ func (m *merchantService) SaveTradeConf(_ context.Context, r *proto.TradeConfSav
 	return m.result(err), nil
 }
 
-// 登录，返回结果(Result_)和会员编号(ID);
+// 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, err error) {
 	user = strings.ToLower(strings.TrimSpace(user))
@@ -501,7 +505,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 	return val.Id, nil
 }
 
-// 登录，返回结果(Result_)和会员编号(ID);
+// 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode int32, err error) {
 	if user == "" || pwd == "" {
@@ -811,7 +815,7 @@ func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) 
 //		v.Remark += "失败:" + remark
 //		v.State = enum.ReviewReject
 //		mach := a.GetMerchantByMemberId(v.MemberId)
-//		err := a.ChargeMachAccountByKind(memberId, mach.ID,
+//		err := a.ChargeMachAccountByKind(memberId, mach.Id,
 //			merchant.KindＭachTakOutRefund,
 //			"商户提现退回", v.OuterNo, (-v.Amount),
 //			member.DefaultRelateUser)
@@ -906,7 +910,7 @@ func (m *merchantService) parseMchSignUp(v *proto.SMchSignUp) *merchant.MchSignU
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
 		Remark:       v.Remark,
-		Reviewed:     v.ReviewStatus,
+		Reviewed:     v.ReviewState,
 		SubmitTime:   v.SubmitTime,
 	}
 }
@@ -933,7 +937,7 @@ func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSi
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
 		Remark:       v.Remark,
-		ReviewStatus: v.Reviewed,
+		ReviewState:  v.Reviewed,
 		SubmitTime:   v.SubmitTime,
 	}
 }
@@ -955,7 +959,7 @@ func (m *merchantService) parseEnterpriseInfoDto(v *merchant.EnterpriseInfo) *pr
 		Address:      v.Address,
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
-		ReviewStatus: v.Reviewed,
+		ReviewState:  v.Reviewed,
 		ReviewTime:   v.ReviewTime,
 		ReviewRemark: v.ReviewRemark,
 		UpdateTime:   v.UpdateTime,
@@ -979,7 +983,7 @@ func (m *merchantService) parseEnterpriseInfo(v *proto.SEnterpriseInfo) *merchan
 		Address:      v.Address,
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
-		Reviewed:     int32(v.ReviewStatus),
+		Reviewed:     int32(v.ReviewState),
 		ReviewTime:   v.ReviewTime,
 		ReviewRemark: v.ReviewRemark,
 		UpdateTime:   v.UpdateTime,

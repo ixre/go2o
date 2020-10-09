@@ -11,12 +11,12 @@ package daemon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/gof/util"
 	"go2o/core"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"go2o/core/variable"
 	"log"
@@ -27,12 +27,18 @@ import (
 
 // 监视新订单
 func superviseOrder(ss []Service) {
-	sv := impl.ShoppingService
 	notify := func(orderNo string, sub bool, ss []Service) {
-		o, _ := sv.GetOrder(context.TODO(), &proto.GetOrderRequest{
-			OrderNo:  orderNo,
-			SubOrder: sub,
+		trans, cli, _ := service.OrderServiceClient()
+		// 这里应处理子订单和父订单
+
+		//o, _ := cli.GetOrder(context.TODO(), &proto.GetOrderRequest{
+		//	OrderNo:  orderNo,
+		//	SubOrder: sub,
+		//})
+		o, _ := cli.GetOrder(context.TODO(), &proto.OrderNoV2{
+			Value: orderNo,
 		})
+		trans.Close()
 		if o != nil {
 			for _, v := range ss {
 				if !v.OrderObs(o) {
@@ -103,9 +109,10 @@ func superviseMemberUpdate(ss []Service) {
 
 // 监视支付单完成
 func supervisePaymentOrderFinish(ss []Service) {
-	sv := impl.PaymentService
 	notify := func(id int, ss []Service) {
-		order, _ := sv.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
+		trans, cli, _ := service.PaymentServiceClient()
+		defer trans.Close()
+		order, _ := cli.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
 		if order != nil {
 			for _, v := range ss {
 				if !v.PaymentOrderObs(order) {
@@ -187,13 +194,22 @@ func detectOrderExpires() {
 	key := fmt.Sprintf("%s:*:%s", variable.KvOrderExpiresTime, tick)
 	//key = "go2o:order:timeout:11-0-2:*"
 	//获取标记为等待过期的订单
-	ss := impl.ShoppingService
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
 		for _, oKey := range list {
 			orderNo, isSub, err := testIdFromRdsKey(oKey)
 			if err == nil && orderNo != "" {
-				err = ss.CancelOrder(orderNo, isSub, "订单超时,自动取消")
+				trans, cli, _ := service.OrderServiceClient()
+				ret, _ := cli.CancelOrder(context.TODO(),
+					&proto.CancelOrderRequest{
+						OrderNo: orderNo,
+						Sub:     isSub,
+						Reason:  "订单超时,自动取消",
+					})
+				trans.Close()
+				if ret.ErrCode > 0 {
+					err = errors.New(ret.ErrMsg)
+				}
 				//清除待取消记录
 				conn.Do("DEL", oKey)
 				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
@@ -217,14 +233,22 @@ func orderAutoReceive() {
 	key := fmt.Sprintf("%s:*:%s", variable.KvOrderAutoReceive, tick)
 	//key = "go2o:order:autoreceive:11-0-2:*"
 	//获取标记为自动收货的订单
-	ss := impl.ShoppingService
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
 		for _, oKey := range list {
 			orderNo, isSub, err := testIdFromRdsKey(oKey)
 			//log.Println("----",oKey,orderId,isSub,err)
 			if err == nil && orderNo != "" {
-				err = ss.BuyerReceived(orderNo, isSub)
+				trans, cli, _ := service.OrderServiceClient()
+				ret, _ := cli.BuyerReceived(context.TODO(), &proto.OrderNo{
+					OrderNo: orderNo,
+					Sub:     isSub,
+				})
+				trans.Close()
+				if ret.ErrCode > 0 {
+					err = errors.New(ret.ErrMsg)
+				}
+
 			}
 		}
 	} else {

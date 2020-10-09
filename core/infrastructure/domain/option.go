@@ -155,7 +155,7 @@ func (this *OptionStoreWrapper) Set(key string, v *Option) {
 		this._data = make(map[string]*Option)
 	}
 	this._data[key] = v
-	gof.CurrentApp.Storage().Del(this.getRdKey()) // clean cache
+	gof.CurrentApp.Storage().Delete(this.getRdKey()) // clean cache
 }
 
 // flush to file

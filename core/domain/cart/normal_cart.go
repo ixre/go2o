@@ -173,7 +173,7 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 			iv := it.GetValue()
 			sku = &item.Sku{
 				ProductId:   iv.ProductId,
-				ItemId:      iv.ID,
+				ItemId:      iv.Id,
 				Title:       iv.Title,
 				Image:       iv.Image,
 				SpecData:    "",
@@ -271,7 +271,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32) (*cart.NormalCartItem, er
 		CartId:   c.GetAggregateRootId(),
 		VendorId: iv.VendorId,
 		ShopId:   iv.ShopId,
-		ItemId:   iv.ID,
+		ItemId:   iv.Id,
 		SkuId:    skuId,
 		Quantity: num,
 		Sku:      item.ParseSkuMedia(iv, sku),
@@ -396,7 +396,7 @@ func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt int32, addressId
 		//if err != nil {
 		//	return err
 		//}
-		//shop = mch.ShopManager().GetShop(shopId)
+		//shop = mch.ShopManager().GetShopByVendorId(shopId)
 		//if shop == nil {
 		//	return merchant.ErrNoSuchShop
 		//}

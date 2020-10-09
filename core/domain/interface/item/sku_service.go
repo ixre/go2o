@@ -108,7 +108,7 @@ type (
 // 转换为SKU媒体
 func ParseSkuMedia(it *GoodsItem, sku *Sku) *SkuMedia {
 	media := &SkuMedia{
-		CatId:      it.CatId,
+		CatId:      it.CategoryId,
 		Price:      it.Price,
 		ExpressTid: it.ExpressTid,
 		ItemCode:   it.Code,

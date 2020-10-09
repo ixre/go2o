@@ -54,7 +54,7 @@ func tryConnect(retryTimes int) {
 func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 	next, err := selector.Next()
 	if err != nil {
-		log.Printf("[ go2o][ error]: %s\n", err.Error())
+		log.Printf("[ Go2o][ Error]: %s\n", err.Error())
 		return nil, err
 	}
 	return grpc.Dial(next.Addr, grpc.WithInsecure(), grpc.WithBlock())
@@ -146,6 +146,15 @@ func OrderServiceClient() (*grpc.ClientConn, proto.OrderServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
 		return conn, proto.NewOrderServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
+// 购物车服务
+func CartServiceClient() (*grpc.ClientConn, proto.CartServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewCartServiceClient(conn), err
 	}
 	return conn, nil, err
 }

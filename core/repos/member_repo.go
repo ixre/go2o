@@ -314,7 +314,7 @@ func (m *MemberRepoImpl) initMember(v *member.Member) {
 
 // 删除会员
 func (m *MemberRepoImpl) DeleteMember(id int64) error {
-	m.storage.Del(m.getMemberCk(id))
+	m.storage.Delete(m.getMemberCk(id))
 	_, err := m.ExecNonQuery("delete from mm_member where id = $1", id)
 	sql := `
     /* 清理会员 */
@@ -677,7 +677,7 @@ func (m *MemberRepoImpl) SaveGrowAccount(memberId int64, balance, totalAmount,
 		grow_amount= $2,grow_earnings= $3,grow_total_earnings= $4,update_time= $5 where member_id= $6`,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
 	//清除缓存
-	m.storage.Del(m.getAccountCk(memberId))
+	m.storage.Delete(m.getAccountCk(memberId))
 	//加入通知队列
 	m.pushToAccountUpdateQueue(memberId, updateTime)
 	return err

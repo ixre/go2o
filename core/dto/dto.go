@@ -130,7 +130,7 @@ type (
 	}
 	// 分类
 	//Category struct {
-	//	ID    int32
+	//	Id    int32
 	//	Name  string
 	//	Icon  string
 	//	Url   string

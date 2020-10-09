@@ -184,7 +184,7 @@ func (c *wholesaleCartImpl) setAttachGoodsInfo(items []*cart.WsCartItem) {
 			iv := it.GetValue()
 			sku = &item.Sku{
 				ProductId:   iv.ProductId,
-				ItemId:      iv.ID,
+				ItemId:      iv.Id,
 				Title:       iv.Title,
 				Image:       iv.Image,
 				SpecData:    "",
@@ -302,7 +302,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32) (*cart.WsCa
 		CartId:   c.GetAggregateRootId(),
 		SellerId: iv.VendorId,
 		ShopId:   iv.ShopId,
-		ItemId:   iv.ID,
+		ItemId:   iv.Id,
 		SkuId:    skuId,
 		Quantity: quantity,
 		Sku:      item.ParseSkuMedia(iv, sku),
@@ -428,7 +428,7 @@ func (c *wholesaleCartImpl) SettlePersist(shopId, paymentOpt, deliverOpt int32,
 		//if err != nil {
 		//	return err
 		//}
-		//shop = mch.ShopManager().GetShop(shopId)
+		//shop = mch.ShopManager().GetShopByVendorId(shopId)
 		//if shop == nil {
 		//	return merchant.ErrNoSuchShop
 		//}
@@ -481,7 +481,7 @@ func (c *wholesaleCartImpl) Save() (int32, error) {
 	if c.value.Items != nil {
 		for _, v := range c.value.Items {
 			if v.Quantity <= 0 {
-				//c.rep.RemoveCartItem(v.ID)
+				//c.rep.RemoveCartItem(v.Id)
 				c.rep.BatchDeleteWsCartItem("id= $1", v.ID)
 			} else {
 				v.CartId = c.GetAggregateRootId()
@@ -577,7 +577,7 @@ func (c *wholesaleCartImpl) getItemJdoData(list []*cart.ItemPair,
 		}
 		skuV := it.GetSku(v.SkuId)
 		skuJdo := cart.WCartSkuJdo{
-			SkuId:            int64(v.SkuId),
+			SkuId:            v.SkuId,
 			SkuCode:          skuV.Code,
 			SkuImage:         format.GetResUrl(skuV.Image),
 			SpecWord:         skuV.SpecWord,
@@ -601,7 +601,7 @@ func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 	sku *cart.WCartSkuJdo, mp map[string]interface{}) {
 	prArr := itw.GetSkuPrice(sku.SkuId)
 	price := itw.GetWholesalePrice(sku.SkuId, sku.Quantity)
-	priceRange := [][]string{}
+	var priceRange [][]string
 	for _, v := range prArr {
 		priceRange = append(priceRange, []string{
 			strconv.Itoa(int(v.RequireQuantity)),
@@ -618,7 +618,7 @@ func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 
 // Jdo数据
 func (c *wholesaleCartImpl) JdoData(checkout bool, checked map[int64][]int64) *cart.WCartJdo {
-	items := []*cart.ItemPair{}
+	var items []*cart.ItemPair
 	if checked != nil {
 		items = c.CheckedItems(checked)
 	} else {

@@ -37,7 +37,7 @@ type shopImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
-func NewShop2(v *shop.Shop, shopRepo shop.IShopRepo,
+func NewStore(v *shop.Shop, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShop {
 	s := &shopImpl{
 		shopRepo:     shopRepo,
@@ -259,6 +259,14 @@ type onlineShopImpl struct {
 	shopRepo shop.IShopRepo
 }
 
+func newOnlineShopImpl(v *shop.OnlineShop, shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo) shop.IShop {
+	return &onlineShopImpl{
+		_shopVal: v,
+		valRepo:  valRepo,
+		shopRepo: shopRepo,
+	}
+}
+
 func (s *onlineShopImpl) GetDomainId() int {
 	return int(s._shopVal.Id)
 }
@@ -289,14 +297,6 @@ func (s *onlineShopImpl) Opening() error {
 
 func (s *onlineShopImpl) Pause() error {
 	panic("implement me")
-}
-
-func newOnlineShopImpl(v *shop.OnlineShop, shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo) shop.IShop {
-	return &onlineShopImpl{
-		_shopVal: v,
-		valRepo:  valRepo,
-		shopRepo: shopRepo,
-	}
 }
 
 func (s *onlineShopImpl) checkShopAlias(alias string) error {
@@ -403,7 +403,7 @@ func (s *onlineShopImpl) Data() *shop.ComplexShop {
 	ov := s._shopVal
 	v := &shop.ComplexShop{
 		ID:       int64(s.GetDomainId()),
-		VendorId: int64(ov.VendorId),
+		VendorId: ov.VendorId,
 		ShopType: shop.TypeOnlineShop,
 		Name:     ov.ShopTitle,
 		State:    shop.StateNormal,

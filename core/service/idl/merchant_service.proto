@@ -23,7 +23,7 @@ service MerchantService {
     rpc SyncWholesaleItem (Int64) returns (SyncWSItemsResponse) {
     }
     // 获取所有的交易设置,mchId
-    rpc GetAllTradeConf (Int64) returns (STradeConfListResponse) {
+    rpc GetAllTradeConf_ (Int64) returns (STradeConfListResponse) {
     }
     // 根据交易类型获取交易设置
     rpc GetTradeConf (TradeConfRequest) returns (STradeConf_) {
