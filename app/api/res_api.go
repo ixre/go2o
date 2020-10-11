@@ -6,13 +6,11 @@ import (
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
-	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/gen"
 	"go2o/core/infrastructure/tool"
 	"go2o/core/service"
-	"go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"strconv"
 	"strings"
@@ -66,8 +64,7 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 	userId := ctx.Form().GetInt("user_id")
 	namesParams := strings.TrimSpace(posKeys)
 	names := strings.Split(namesParams, "|")
-	as := impl.AdService
-	result := make(map[string]*ad.AdDto, len(names))
+	result := make(map[string]*proto.SAdDto, len(names))
 	key := fmt.Sprintf("go2o:repo:ad:%d:front:%s", userId,
 		domain.Md5(namesParams))
 	rds := gof.CurrentApp.Storage()
@@ -76,10 +73,16 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 	}
 	var seconds = 0
 	_ = rds.RWJson(key, &result, func() interface{} {
+		trans, cli, _ := service.AdvertisementServiceClient()
+		defer trans.Close()
 		//从缓存中读取
 		for _, n := range names {
 			//分别绑定广告
-			dto := as.GetAdAndDataByKey(int64(userId), n)
+			dto, _ := cli.GetAdAndDataByKey(context.TODO(),
+				&proto.AdKeyRequest{
+					AdUserId: int64(userId),
+					AdPosKey: n,
+				})
 			if dto == nil {
 				result[n] = nil
 				continue
@@ -87,12 +90,10 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 			result[n] = dto
 		}
 		regArr := []string{registry.CacheAdMaxAge}
-		trans, cli, err := service.RegistryServiceClient()
-		if err == nil {
-			mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: regArr})
-			_ = trans.Close()
-			seconds, _ = strconv.Atoi(mp.Value[regArr[0]])
-		}
+		trans2, cli2, _ := service.RegistryServiceClient()
+		mp, _ := cli2.GetValues(context.TODO(), &proto.StringArray{Value: regArr})
+		_ = trans2.Close()
+		seconds, _ = strconv.Atoi(mp.Value[regArr[0]])
 		return result
 	}, int64(seconds))
 	return r.utils.success(result)

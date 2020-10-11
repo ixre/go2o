@@ -159,7 +159,6 @@ func (r *registryImpl) Reset() error {
 func (r *registryImpl) Update(value string) error {
 	if r.value.Value != value {
 		r.value.Value = value
-		return r.Save()
 	}
 	return nil
 }
@@ -169,6 +168,7 @@ func (r *registryImpl) Save() error {
 	if len(r.value.Key) > 45 {
 		return errors.New("key length out of 40")
 	}
+	r.value.Value = strings.TrimSpace(r.value.Value)
 	if len(r.value.Value) > 512 {
 		return errors.New("value length out of 512")
 	}

@@ -5,39 +5,39 @@ import "message/shop.proto";
 
 // 商店服务
 service ShopService {
-    /** 获取店铺,shopId */
-    rpc GetShop (ShopId) returns (SShop) {
-    }
-    /** 获取商户的店铺,vendorId */
-    //rpc GetVendorShop_ (Int64) returns (SShop) {}
-    // 检查商户是否开通店铺
-    rpc CheckMerchantShopState (MerchantId) returns (CheckShopResponse) {
-    }
+  /** 获取店铺,shopId */
+  rpc GetShop (ShopId) returns (SShop) {
+  }
+  /** 获取商户的店铺,vendorId */
+  //rpc GetVendorShop_ (Int64) returns (SShop) {}
+  // 检查商户是否开通店铺
+  rpc CheckMerchantShopState (MerchantId) returns (CheckShopResponse) {
+  }
 
-    /** 获取门店,storeId */
-    rpc GetStore (StoreId) returns (SStore) {
-    }
-    /** 根据主机头获取店铺编号,host */
-    rpc QueryShopByHost (String) returns (Int64) {
-    }
-    // 获取门店
-    //rpc GetOfflineShop(1:sint32 shopId)returns(Shop)
-    // 打开或关闭商店
-    rpc TurnShop (TurnShopRequest) returns (Result) {
-    }
-    // 保存门店
-    rpc SaveShop (SShop) returns (Result) {
-    }
-    // 保存门店
-    rpc SaveOfflineShop (SStore) returns (Result) {
-    }
-    // 删除商店
-    rpc DeleteStore (StoreId) returns (Result) {
-    }
+  /** 获取门店,storeId */
+  rpc GetStore (StoreId) returns (SStore) {
+  }
+  /** 根据主机头获取店铺编号,host */
+  rpc QueryShopByHost (String) returns (Int64) {
+  }
+  // 获取门店
+  //rpc GetOfflineShop(1:sint32 shopId)returns(Shop)
+  // 打开或关闭商店
+  rpc TurnShop (TurnShopRequest) returns (Result) {
+  }
+  // 保存门店
+  rpc SaveShop (SShop) returns (Result) {
+  }
+  // 保存门店
+  rpc SaveOfflineShop (SStore) returns (Result) {
+  }
+  // 删除商店
+  rpc DeleteStore (StoreId) returns (Result) {
+  }
 }
 
 message TurnShopRequest {
-    sint64 shopId = 1;
-    bool on = 2;
-    string reason = 3;
+  sint64 shopId = 1;
+  bool on = 2;
+  string reason = 3;
 }

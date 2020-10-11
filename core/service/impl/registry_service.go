@@ -57,7 +57,7 @@ func (s *registryService) UpdateValue(_ context.Context, pair *proto.RegistryPai
 }
 
 // 获取键值存储数据
-func (s *registryService) GetRegistries(_ context.Context, array *proto.StringArray) (*proto.StringMap, error) {
+func (s *registryService) GetValues(_ context.Context, array *proto.StringArray) (*proto.StringMap, error) {
 	mp := make(map[string]string)
 	for _, k := range array.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {
@@ -119,19 +119,17 @@ func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCre
 }
 
 // 更新注册表数据
-func (s *registryService) UpdateRegistryValues(_ context.Context, registries *proto.StringMap) (*proto.Result, error) {
+func (s *registryService) UpdateValues(_ context.Context, registries *proto.StringMap) (*proto.Result, error) {
 	for k, v := range registries.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {
-			if err := ir.Update(v); err != nil {
+			err := ir.Update(v)
+			if err == nil {
+				err = ir.Save()
+			}
+			if err != nil {
 				return s.error(err), nil
 			}
 		}
 	}
 	return s.success(nil), nil
-}
-
-// 获取键值存储数据
-func (s *registryService) _GetRegistryV1(_ context.Context, array *proto.StringArray) (*proto.StringArray, error) {
-	a := s._rep.GetsRegistry(array.Value)
-	return &proto.StringArray{Value: a}, nil
 }

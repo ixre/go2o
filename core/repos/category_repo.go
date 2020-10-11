@@ -27,6 +27,7 @@ import (
 
 var _ product.ICategoryRepo = new(categoryRepo)
 var categoryPrefix = "go2o:gb:repo:cat:list_"
+
 type categoryRepo struct {
 	db.Connector
 	registryRepo registry.IRegistryRepo
@@ -127,7 +128,7 @@ func (c *categoryRepo) redirectGetCats() []*product.Category {
 }
 
 func (c *categoryRepo) GetCategories(mchId int) []*product.Category {
-	key := categoryPrefix+"data"
+	key := categoryPrefix + "data"
 	var list []*product.Category
 	jsonStr, err := c.storage.GetBytes(key)
 	if err == nil {

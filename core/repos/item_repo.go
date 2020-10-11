@@ -39,14 +39,14 @@ type goodsRepo struct {
 	expressRepo  express.IExpressRepo
 	proMRepo     promodel.IProductModelRepo
 	registryRepo registry.IRegistryRepo
-	shopRepo      shop.IShopRepo
+	shopRepo     shop.IShopRepo
 }
 
 // 商品仓储
 func NewGoodsItemRepo(c db.Connector, catRepo product.ICategoryRepo,
 	proRepo product.IProductRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
-	registryRepo registry.IRegistryRepo,shopRepo      shop.IShopRepo) *goodsRepo {
+	registryRepo registry.IRegistryRepo, shopRepo shop.IShopRepo) *goodsRepo {
 	return &goodsRepo{
 		Connector:    c,
 		_orm:         c.GetOrm(),
@@ -56,7 +56,7 @@ func NewGoodsItemRepo(c db.Connector, catRepo product.ICategoryRepo,
 		itemWsRepo:   itemWsRepo,
 		expressRepo:  expressRepo,
 		registryRepo: registryRepo,
-		shopRepo: shopRepo,
+		shopRepo:     shopRepo,
 	}
 }
 
@@ -79,7 +79,7 @@ func (i *goodsRepo) SnapshotService() item.ISnapshotService {
 // 创建商品
 func (i *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
 	return itemImpl.NewItem(i.proRepo, i.catRepo, nil, v, i.registryRepo, i,
-		i.proMRepo, i.itemWsRepo, i.expressRepo, i.shopRepo,nil)
+		i.proMRepo, i.itemWsRepo, i.expressRepo, i.shopRepo, nil)
 }
 
 // 获取商品

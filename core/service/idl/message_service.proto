@@ -4,118 +4,118 @@ import "global.proto";
 
 /** 消息服务 */
 service MessageService {
-    // 获取通知项,key 
-    rpc GetNotifyItem (String) returns (SNotifyItem) {
-    }
-    // 发送短信 
-    rpc SendPhoneMessage (SendMessageRequest) returns (Result) {
-    }
-    // 获取所有通知项
-    rpc GetAllNotifyItem (Empty) returns (NotifyItemListResponse) {
-    }
-    // 保存通知项设置
-    rpc SaveNotifyItem (SNotifyItem) returns (Result) {
-    }
-    // 获取邮件模版
-    rpc GetMailTemplate (Int64) returns (SMailTemplate) {
-    }
-    // 保存邮件模板
-    rpc SaveMailTemplate (SMailTemplate) returns (Result) {
-    }
-    // 获取邮件模板
-    rpc GetMailTemplates (Empty) returns (MailTemplateListResponse) {
-    }
-    // 删除邮件模板
-    rpc DeleteMailTemplate (Int64) returns (Result) {
-    }
-    // 获取邮件绑定
-    //rpc GetConfig() mss.Config
-    // 保存邮件
-    //rpc SaveConfig(conf *mss.Config) error
-    // 发送站内信
-    rpc SendSiteMessage (SendSiteMessageRequest) returns (Result) {
-    }
-    // 获取站内信
-    //rpc GetSiteMessage(Int64) *dto.SiteMessage
+  // 获取通知项,key
+  rpc GetNotifyItem (String) returns (SNotifyItem) {
+  }
+  // 发送短信
+  rpc SendPhoneMessage (SendMessageRequest) returns (Result) {
+  }
+  // 获取所有通知项
+  rpc GetAllNotifyItem (Empty) returns (NotifyItemListResponse) {
+  }
+  // 保存通知项设置
+  rpc SaveNotifyItem (SNotifyItem) returns (Result) {
+  }
+  // 获取邮件模版
+  rpc GetMailTemplate (Int64) returns (SMailTemplate) {
+  }
+  // 保存邮件模板
+  rpc SaveMailTemplate (SMailTemplate) returns (Result) {
+  }
+  // 获取邮件模板
+  rpc GetMailTemplates (Empty) returns (MailTemplateListResponse) {
+  }
+  // 删除邮件模板
+  rpc DeleteMailTemplate (Int64) returns (Result) {
+  }
+  // 获取邮件绑定
+  //rpc GetConfig() mss.Config
+  // 保存邮件
+  //rpc SaveConfig(conf *mss.Config) error
+  // 发送站内信
+  rpc SendSiteMessage (SendSiteMessageRequest) returns (Result) {
+  }
+  // 获取站内信
+  //rpc GetSiteMessage(Int64) *dto.SiteMessage
 
-    // 创建聊天会话
-    //rpc CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error)
+  // 创建聊天会话
+  //rpc CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error)
 }
 
 message SendMessageRequest {
-    string account = 1;
-    string message = 2;
-    map<string, string> data = 3;
+  string account = 1;
+  string message = 2;
+  map<string, string> data = 3;
 }
 
 /** 消息方式 */
 enum EMessageChannel {
-    _2 = 0;
-    /** 站内信 */
-    SiteMessage = 1; /** 邮件 */
-    EmailMessage = 2; /** 短信 */
-    SmsMessage = 3;
+  _2 = 0;
+  /** 站内信 */
+  SiteMessage = 1; /** 邮件 */
+  EmailMessage = 2; /** 短信 */
+  SmsMessage = 3;
 }
 
 message NotifyItemListResponse {
-    repeated SNotifyItem Value = 1;
+  repeated SNotifyItem Value = 1;
 }
 
 /** 通知项 */
 message SNotifyItem {
-    /** 键 */
-    string Key = 1;
-    /** 发送方式 */
-    sint32 NotifyBy = 2;
-    /** 不允许修改发送方式 */
-    bool ReadonlyBy = 3;
-    /** 模板编号 */
-    sint32 TplId = 4;
-    /** 内容 */
-    string Content = 5;
-    /** 模板包含的标签 */
-    map<string, string> Tags = 6;
+  /** 键 */
+  string Key = 1;
+  /** 发送方式 */
+  sint32 NotifyBy = 2;
+  /** 不允许修改发送方式 */
+  bool ReadonlyBy = 3;
+  /** 模板编号 */
+  sint32 TplId = 4;
+  /** 内容 */
+  string Content = 5;
+  /** 模板包含的标签 */
+  map<string, string> Tags = 6;
 }
 
 // 邮件模版
 message SMailTemplate {
-    // 编号
-    int64 Id = 1;
-    // 商户编号
-    int64 MerchantId = 2;
-    // 名称
-    string Name = 3;
-    // 主题
-    string Subject = 4;
-    // 内容
-    string Body = 5;
-    // 是否启用
-    bool Enabled = 6;
+  // 编号
+  int64 Id = 1;
+  // 商户编号
+  int64 MerchantId = 2;
+  // 名称
+  string Name = 3;
+  // 主题
+  string Subject = 4;
+  // 内容
+  string Body = 5;
+  // 是否启用
+  bool Enabled = 6;
 }
 
 message MailTemplateListResponse {
-    repeated SMailTemplate Value = 1;
+  repeated SMailTemplate Value = 1;
 }
 
 // 站内信
 message SSiteMessage {
-    // 主题
-    string Subject = 1;
-    // 信息内容
-    string Message = 2;
+  // 主题
+  string Subject = 1;
+  // 信息内容
+  string Message = 2;
 }
 
 // 站内信用户类型
 enum MessageUserType {
-    All = 0;
-    Member = 1;
-    Merchant = 2;
+  All = 0;
+  Member = 1;
+  Merchant = 2;
 }
 
 message SendSiteMessageRequest {
-    int64 SenderId = 1;
-    MessageUserType ReceiverType = 2;
-    int64 ReceiverId = 3;
-    bool SendNow = 4;
-    SSiteMessage Msg = 5;
+  int64 SenderId = 1;
+  MessageUserType ReceiverType = 2;
+  int64 ReceiverId = 3;
+  bool SendNow = 4;
+  SSiteMessage Msg = 5;
 }

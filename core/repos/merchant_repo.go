@@ -402,34 +402,34 @@ func (m *merchantRepo) SaveMchEnterpriseInfo(v *merchant.EnterpriseInfo) (int, e
 	return id, err
 }
 
-// Get MchBuyerGroup
-func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant.MchBuyerGroup {
-	e := merchant.MchBuyerGroup{}
+// Get MchBuyerGroupSetting
+func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant.MchBuyerGroupSetting {
+	e := merchant.MchBuyerGroupSetting{}
 	err := m._orm.GetBy(&e, "mch_id= $1 AND group_id= $2", mchId, groupId)
 	if err == nil {
 		return &e
 	}
 	if err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroup")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroupSetting")
 	}
 	return nil
 }
 
-// Select MchBuyerGroup
-func (m *merchantRepo) SelectMchBuyerGroup(mchId int64) []*merchant.MchBuyerGroup {
-	var list []*merchant.MchBuyerGroup
+// Select MchBuyerGroupSetting
+func (m *merchantRepo) SelectMchBuyerGroup(mchId int64) []*merchant.MchBuyerGroupSetting {
+	var list []*merchant.MchBuyerGroupSetting
 	err := m._orm.Select(&list, "mch_id= $1", mchId)
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroup")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroupSetting")
 	}
 	return list
 }
 
-// Save MchBuyerGroup
-func (m *merchantRepo) SaveMchBuyerGroup(v *merchant.MchBuyerGroup) (int, error) {
+// Save MchBuyerGroupSetting
+func (m *merchantRepo) SaveMchBuyerGroup(v *merchant.MchBuyerGroupSetting) (int, error) {
 	id, err := orm.Save(m._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroup")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroupSetting")
 	}
 	return id, err
 }

@@ -46,15 +46,15 @@ func (p *productService) GetModel(_ context.Context, id *proto.ProductModelId) (
 		}
 		//　绑定规格
 		specList := im.Specs()
-		ret.Specs = make([]*proto.SProductSpec,len(specList))
-		for i,v := range specList{
-			spec := p.appendSpecItems(p.parseSpecDto(v),v.Items)
+		ret.Specs = make([]*proto.SProductSpec, len(specList))
+		for i, v := range specList {
+			spec := p.appendSpecItems(p.parseSpecDto(v), v.Items)
 			ret.Specs[i] = spec
 		}
 		// 绑定品牌
 		brands := im.Brands()
-		ret.Brands = make([]*proto.SProductBrand,len(brands))
-		for i,v := range brands{
+		ret.Brands = make([]*proto.SProductBrand, len(brands))
+		for i, v := range brands {
 			ret.Brands[i] = p.parseBrandDto(v)
 		}
 		return ret, nil
@@ -70,15 +70,13 @@ func (p *productService) appendAttrItems(attr *proto.SProductAttr, items []*prom
 	return attr
 }
 
-
-func (p *productService) appendSpecItems(spec *proto.SProductSpec, items promodel.SpecItemList)*proto.SProductSpec  {
+func (p *productService) appendSpecItems(spec *proto.SProductSpec, items promodel.SpecItemList) *proto.SProductSpec {
 	spec.Items = make([]*proto.SProductSpecItem, len(items))
 	for i1, v1 := range items {
 		spec.Items[i1] = p.parseProductSpecItemDto(v1)
 	}
 	return spec
 }
-
 
 // 获取产品模型
 func (p *productService) GetModels(_ context.Context, _ *proto.Empty) (*proto.ProductModelListResponse, error) {
@@ -501,7 +499,7 @@ func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAt
 		Name:       v.Name,
 		IsFilter:   v.IsFilter == 1,
 		MultiCheck: v.MultiChk == 1,
-		SortNum: v.SortNum,
+		SortNum:    v.SortNum,
 		ItemValues: v.ItemValues,
 		Items:      nil,
 	}
@@ -509,8 +507,8 @@ func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAt
 
 func (p *productService) parseProductAttrItemDto(v *promodel.AttrItem) *proto.SProductAttrItem {
 	return &proto.SProductAttrItem{
-		Id:         int64(v.Id),
-		Value:      v.Value,
+		Id:      int64(v.Id),
+		Value:   v.Value,
 		SortNum: v.SortNum,
 	}
 }
@@ -539,7 +537,7 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 		Icon:        v.Icon,
 		IconPoint:   v.IconPoint,
 		Level:       int32(v.Level),
-		SortNum:  int32(v.SortNum),
+		SortNum:     int32(v.SortNum),
 		FloorShow:   v.FloorShow == 1,
 		Enabled:     v.Enabled == 1,
 		CreateTime:  v.CreateTime,
@@ -559,7 +557,7 @@ func (p *productService) parseCategory(v *proto.SProductCategory) *product.Categ
 		VirtualCat: types.IntCond(v.IsVirtual, 1, 0),
 		CatUrl:     v.CategoryUrl,
 		Icon:       v.Icon,
-		IconPoint:     v.IconPoint,
+		IconPoint:  v.IconPoint,
 		Level:      int(v.Level),
 		SortNum:    int(v.SortNum),
 		FloorShow:  types.IntCond(v.FloorShow, 1, 0),
@@ -579,7 +577,7 @@ func (p *productService) parseProductDto(v product.Product) *proto.SProduct {
 		Description: v.Description,
 		Remark:      v.Remark,
 		State:       v.State,
-		SortNum:  v.SortNum,
+		SortNum:     v.SortNum,
 		CreateTime:  v.CreateTime,
 		UpdateTime:  v.UpdateTime,
 	}
@@ -599,9 +597,9 @@ func (p *productService) parseProduct(v *proto.SProduct) *product.Product {
 		State:       v.State,
 		SortNum:     v.SortNum,
 	}
-	if v.Attrs != nil{
-		ret.Attrs = make([]*product.AttrValue,len(v.Attrs))
-		for i,v := range v.Attrs{
+	if v.Attrs != nil {
+		ret.Attrs = make([]*product.AttrValue, len(v.Attrs))
+		for i, v := range v.Attrs {
 			ret.Attrs[i] = p.parseProductAttrValue(v)
 		}
 	}
@@ -708,33 +706,31 @@ func (p *productService) parseProductAttrValueDto(v *product.AttrValue) *proto.S
 	}
 }
 
-
 func (p *productService) parseSpecDto(v *promodel.Spec) *proto.SProductSpec {
 	return &proto.SProductSpec{
-		Id:                   int64(v.Id),
-		Name:                 v.Name,
-		SortNum:           v.SortNum,
-		ItemValues:           v.ItemValues,
-		Items:                nil,
+		Id:         int64(v.Id),
+		Name:       v.Name,
+		SortNum:    v.SortNum,
+		ItemValues: v.ItemValues,
+		Items:      nil,
 	}
 }
 
-
 func (p *productService) parseProductSpecItemDto(v *promodel.SpecItem) *proto.SProductSpecItem {
 	return &proto.SProductSpecItem{
-		Id:                   int64(v.Id),
-		Value:                v.Value,
-		Color:                v.Color,
-		SortNum:           v.SortNum,
+		Id:      int64(v.Id),
+		Value:   v.Value,
+		Color:   v.Color,
+		SortNum: v.SortNum,
 	}
 }
 
 func (p *productService) parseProductAttrValue(v *proto.SProductAttrValue) *product.AttrValue {
 	return &product.AttrValue{
-		ID:        v.Id,
-		AttrName:  v.AttrName,
-		AttrId:    v.AttrId,
-		AttrData:  v.AttrData,
-		AttrWord:  v.AttrWord,
+		ID:       v.Id,
+		AttrName: v.AttrName,
+		AttrId:   v.AttrId,
+		AttrData: v.AttrData,
+		AttrWord: v.AttrWord,
 	}
 }

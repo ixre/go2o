@@ -56,7 +56,7 @@ func NewItem(
 	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
 	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
-	shopRepo      shop.IShopRepo	,
+	shopRepo shop.IShopRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
 	v := &itemImpl{
 		pro:          pro,
@@ -68,7 +68,7 @@ func NewItem(
 		itemWsRepo:   itemWsRepo,
 		promRepo:     promRepo,
 		registryRepo: registryRepo,
-		shopRepo: shopRepo,
+		shopRepo:     shopRepo,
 		expressRepo:  expressRepo,
 	}
 	return v.init()
@@ -318,7 +318,7 @@ func (i *itemImpl) checkItemValue(v *item.GoodsItem) error {
 			return item.ErrNotBindShop
 		}
 		isp := i.shopRepo.GetOnlineShopOfMerchant(int(v.VendorId))
-		if isp == nil{
+		if isp == nil {
 			return shop.ErrNoSuchShop
 		}
 		i.value.ShopId = int64(isp.GetDomainId())
