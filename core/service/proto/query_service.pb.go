@@ -37,7 +37,7 @@ func (m *FavoriteQueryRequest) Reset()         { *m = FavoriteQueryRequest{} }
 func (m *FavoriteQueryRequest) String() string { return proto.CompactTextString(m) }
 func (*FavoriteQueryRequest) ProtoMessage()    {}
 func (*FavoriteQueryRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{0}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{0}
 }
 func (m *FavoriteQueryRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_FavoriteQueryRequest.Unmarshal(m, b)
@@ -97,7 +97,7 @@ func (m *PagingShopFavoriteResponse) Reset()         { *m = PagingShopFavoriteRe
 func (m *PagingShopFavoriteResponse) String() string { return proto.CompactTextString(m) }
 func (*PagingShopFavoriteResponse) ProtoMessage()    {}
 func (*PagingShopFavoriteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{1}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{1}
 }
 func (m *PagingShopFavoriteResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingShopFavoriteResponse.Unmarshal(m, b)
@@ -146,7 +146,7 @@ func (m *SPagingShopFavorite) Reset()         { *m = SPagingShopFavorite{} }
 func (m *SPagingShopFavorite) String() string { return proto.CompactTextString(m) }
 func (*SPagingShopFavorite) ProtoMessage()    {}
 func (*SPagingShopFavorite) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{2}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{2}
 }
 func (m *SPagingShopFavorite) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPagingShopFavorite.Unmarshal(m, b)
@@ -213,7 +213,7 @@ func (m *PagingGoodsFavoriteResponse) Reset()         { *m = PagingGoodsFavorite
 func (m *PagingGoodsFavoriteResponse) String() string { return proto.CompactTextString(m) }
 func (*PagingGoodsFavoriteResponse) ProtoMessage()    {}
 func (*PagingGoodsFavoriteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{3}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{3}
 }
 func (m *PagingGoodsFavoriteResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingGoodsFavoriteResponse.Unmarshal(m, b)
@@ -265,7 +265,7 @@ func (m *SPagingGoodsFavorite) Reset()         { *m = SPagingGoodsFavorite{} }
 func (m *SPagingGoodsFavorite) String() string { return proto.CompactTextString(m) }
 func (*SPagingGoodsFavorite) ProtoMessage()    {}
 func (*SPagingGoodsFavorite) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{4}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{4}
 }
 func (m *SPagingGoodsFavorite) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPagingGoodsFavorite.Unmarshal(m, b)
@@ -355,7 +355,7 @@ func (m *QueryPagingShopRequest) Reset()         { *m = QueryPagingShopRequest{}
 func (m *QueryPagingShopRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPagingShopRequest) ProtoMessage()    {}
 func (*QueryPagingShopRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{5}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{5}
 }
 func (m *QueryPagingShopRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPagingShopRequest.Unmarshal(m, b)
@@ -401,7 +401,7 @@ func (m *QueryPagingShopsResponse) Reset()         { *m = QueryPagingShopsRespon
 func (m *QueryPagingShopsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPagingShopsResponse) ProtoMessage()    {}
 func (*QueryPagingShopsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{6}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{6}
 }
 func (m *QueryPagingShopsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPagingShopsResponse.Unmarshal(m, b)
@@ -451,7 +451,7 @@ func (m *QueryPagingShop) Reset()         { *m = QueryPagingShop{} }
 func (m *QueryPagingShop) String() string { return proto.CompactTextString(m) }
 func (*QueryPagingShop) ProtoMessage()    {}
 func (*QueryPagingShop) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{7}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{7}
 }
 func (m *QueryPagingShop) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPagingShop.Unmarshal(m, b)
@@ -525,7 +525,7 @@ func (m *MemberOrderPagingRequest) Reset()         { *m = MemberOrderPagingReque
 func (m *MemberOrderPagingRequest) String() string { return proto.CompactTextString(m) }
 func (*MemberOrderPagingRequest) ProtoMessage()    {}
 func (*MemberOrderPagingRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{8}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{8}
 }
 func (m *MemberOrderPagingRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberOrderPagingRequest.Unmarshal(m, b)
@@ -571,7 +571,7 @@ func (m *MemberOrderPagingResponse) Reset()         { *m = MemberOrderPagingResp
 func (m *MemberOrderPagingResponse) String() string { return proto.CompactTextString(m) }
 func (*MemberOrderPagingResponse) ProtoMessage()    {}
 func (*MemberOrderPagingResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{9}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{9}
 }
 func (m *MemberOrderPagingResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberOrderPagingResponse.Unmarshal(m, b)
@@ -631,7 +631,7 @@ func (m *PagedMemberSubOrder) Reset()         { *m = PagedMemberSubOrder{} }
 func (m *PagedMemberSubOrder) String() string { return proto.CompactTextString(m) }
 func (*PagedMemberSubOrder) ProtoMessage()    {}
 func (*PagedMemberSubOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{10}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{10}
 }
 func (m *PagedMemberSubOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagedMemberSubOrder.Unmarshal(m, b)
@@ -774,7 +774,7 @@ func (m *MemberListRequest) Reset()         { *m = MemberListRequest{} }
 func (m *MemberListRequest) String() string { return proto.CompactTextString(m) }
 func (*MemberListRequest) ProtoMessage()    {}
 func (*MemberListRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{11}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{11}
 }
 func (m *MemberListRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberListRequest.Unmarshal(m, b)
@@ -813,7 +813,7 @@ func (m *MemberSearchRequest) Reset()         { *m = MemberSearchRequest{} }
 func (m *MemberSearchRequest) String() string { return proto.CompactTextString(m) }
 func (*MemberSearchRequest) ProtoMessage()    {}
 func (*MemberSearchRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{12}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{12}
 }
 func (m *MemberSearchRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberSearchRequest.Unmarshal(m, b)
@@ -851,7 +851,7 @@ func (m *MemberListResponse) Reset()         { *m = MemberListResponse{} }
 func (m *MemberListResponse) String() string { return proto.CompactTextString(m) }
 func (*MemberListResponse) ProtoMessage()    {}
 func (*MemberListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{13}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{13}
 }
 func (m *MemberListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberListResponse.Unmarshal(m, b)
@@ -905,7 +905,7 @@ func (m *MemberListSingle) Reset()         { *m = MemberListSingle{} }
 func (m *MemberListSingle) String() string { return proto.CompactTextString(m) }
 func (*MemberListSingle) ProtoMessage()    {}
 func (*MemberListSingle) Descriptor() ([]byte, []int) {
-	return fileDescriptor_query_service_b67d1e7aa6c2fd58, []int{14}
+	return fileDescriptor_query_service_1d6d400ac384b92c, []int{14}
 }
 func (m *MemberListSingle) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberListSingle.Unmarshal(m, b)
@@ -1318,9 +1318,9 @@ var _QueryService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "query_service.proto",
 }
 
-func init() { proto.RegisterFile("query_service.proto", fileDescriptor_query_service_b67d1e7aa6c2fd58) }
+func init() { proto.RegisterFile("query_service.proto", fileDescriptor_query_service_1d6d400ac384b92c) }
 
-var fileDescriptor_query_service_b67d1e7aa6c2fd58 = []byte{
+var fileDescriptor_query_service_1d6d400ac384b92c = []byte{
 	// 1067 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xcd, 0x6e, 0xdb, 0x46,
 	0x10, 0x36, 0xf5, 0x67, 0x6b, 0x64, 0x3b, 0xf6, 0x4a, 0x49, 0x69, 0x25, 0x08, 0x54, 0xa2, 0x70,

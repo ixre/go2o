@@ -35,7 +35,7 @@ func (m *SmsApiSaveRequest) Reset()         { *m = SmsApiSaveRequest{} }
 func (m *SmsApiSaveRequest) String() string { return proto.CompactTextString(m) }
 func (*SmsApiSaveRequest) ProtoMessage()    {}
 func (*SmsApiSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{0}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{0}
 }
 func (m *SmsApiSaveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SmsApiSaveRequest.Unmarshal(m, b)
@@ -81,7 +81,7 @@ func (m *BoardHookSaveRequest) Reset()         { *m = BoardHookSaveRequest{} }
 func (m *BoardHookSaveRequest) String() string { return proto.CompactTextString(m) }
 func (*BoardHookSaveRequest) ProtoMessage()    {}
 func (*BoardHookSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{1}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{1}
 }
 func (m *BoardHookSaveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BoardHookSaveRequest.Unmarshal(m, b)
@@ -128,7 +128,7 @@ func (m *AreaStringRequest) Reset()         { *m = AreaStringRequest{} }
 func (m *AreaStringRequest) String() string { return proto.CompactTextString(m) }
 func (*AreaStringRequest) ProtoMessage()    {}
 func (*AreaStringRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{2}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{2}
 }
 func (m *AreaStringRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AreaStringRequest.Unmarshal(m, b)
@@ -180,7 +180,7 @@ func (m *AreaListResponse) Reset()         { *m = AreaListResponse{} }
 func (m *AreaListResponse) String() string { return proto.CompactTextString(m) }
 func (*AreaListResponse) ProtoMessage()    {}
 func (*AreaListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{3}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{3}
 }
 func (m *AreaListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AreaListResponse.Unmarshal(m, b)
@@ -218,7 +218,7 @@ func (m *StringListResponse) Reset()         { *m = StringListResponse{} }
 func (m *StringListResponse) String() string { return proto.CompactTextString(m) }
 func (*StringListResponse) ProtoMessage()    {}
 func (*StringListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{4}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{4}
 }
 func (m *StringListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StringListResponse.Unmarshal(m, b)
@@ -256,7 +256,7 @@ func (m *GetAreaNamesRequest) Reset()         { *m = GetAreaNamesRequest{} }
 func (m *GetAreaNamesRequest) String() string { return proto.CompactTextString(m) }
 func (*GetAreaNamesRequest) ProtoMessage()    {}
 func (*GetAreaNamesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{5}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{5}
 }
 func (m *GetAreaNamesRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetAreaNamesRequest.Unmarshal(m, b)
@@ -295,7 +295,7 @@ func (m *UserPwd) Reset()         { *m = UserPwd{} }
 func (m *UserPwd) String() string { return proto.CompactTextString(m) }
 func (*UserPwd) ProtoMessage()    {}
 func (*UserPwd) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{6}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{6}
 }
 func (m *UserPwd) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserPwd.Unmarshal(m, b)
@@ -348,7 +348,7 @@ func (m *SSsoApp) Reset()         { *m = SSsoApp{} }
 func (m *SSsoApp) String() string { return proto.CompactTextString(m) }
 func (*SSsoApp) ProtoMessage()    {}
 func (*SSsoApp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{7}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{7}
 }
 func (m *SSsoApp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSsoApp.Unmarshal(m, b)
@@ -410,7 +410,7 @@ func (m *SArea) Reset()         { *m = SArea{} }
 func (m *SArea) String() string { return proto.CompactTextString(m) }
 func (*SArea) ProtoMessage()    {}
 func (*SArea) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{8}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{8}
 }
 func (m *SArea) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SArea.Unmarshal(m, b)
@@ -478,7 +478,7 @@ func (m *SSmsApi) Reset()         { *m = SSmsApi{} }
 func (m *SSmsApi) String() string { return proto.CompactTextString(m) }
 func (*SSmsApi) ProtoMessage()    {}
 func (*SSmsApi) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{9}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{9}
 }
 func (m *SSmsApi) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSmsApi.Unmarshal(m, b)
@@ -581,7 +581,7 @@ func (m *SMobileAppConfig) Reset()         { *m = SMobileAppConfig{} }
 func (m *SMobileAppConfig) String() string { return proto.CompactTextString(m) }
 func (*SMobileAppConfig) ProtoMessage()    {}
 func (*SMobileAppConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{10}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{10}
 }
 func (m *SMobileAppConfig) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMobileAppConfig.Unmarshal(m, b)
@@ -691,7 +691,7 @@ func (m *SWxApiConfig) Reset()         { *m = SWxApiConfig{} }
 func (m *SWxApiConfig) String() string { return proto.CompactTextString(m) }
 func (*SWxApiConfig) ProtoMessage()    {}
 func (*SWxApiConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{11}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{11}
 }
 func (m *SWxApiConfig) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SWxApiConfig.Unmarshal(m, b)
@@ -806,7 +806,7 @@ func (m *PaymentPlatformResponse) Reset()         { *m = PaymentPlatformResponse
 func (m *PaymentPlatformResponse) String() string { return proto.CompactTextString(m) }
 func (*PaymentPlatformResponse) ProtoMessage()    {}
 func (*PaymentPlatformResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{12}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{12}
 }
 func (m *PaymentPlatformResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PaymentPlatformResponse.Unmarshal(m, b)
@@ -847,7 +847,7 @@ func (m *PaymentPlatform) Reset()         { *m = PaymentPlatform{} }
 func (m *PaymentPlatform) String() string { return proto.CompactTextString(m) }
 func (*PaymentPlatform) ProtoMessage()    {}
 func (*PaymentPlatform) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{13}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{13}
 }
 func (m *PaymentPlatform) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PaymentPlatform.Unmarshal(m, b)
@@ -911,7 +911,7 @@ func (m *BankItem) Reset()         { *m = BankItem{} }
 func (m *BankItem) String() string { return proto.CompactTextString(m) }
 func (*BankItem) ProtoMessage()    {}
 func (*BankItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{14}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{14}
 }
 func (m *BankItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankItem.Unmarshal(m, b)
@@ -987,7 +987,7 @@ func (m *SGlobMchSaleConf) Reset()         { *m = SGlobMchSaleConf{} }
 func (m *SGlobMchSaleConf) String() string { return proto.CompactTextString(m) }
 func (*SGlobMchSaleConf) ProtoMessage()    {}
 func (*SGlobMchSaleConf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_05b4a4615552c0ec, []int{15}
+	return fileDescriptor_foundation_service_d21f40742610a6d1, []int{15}
 }
 func (m *SGlobMchSaleConf) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SGlobMchSaleConf.Unmarshal(m, b)
@@ -1847,10 +1847,10 @@ var _FoundationService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("foundation_service.proto", fileDescriptor_foundation_service_05b4a4615552c0ec)
+	proto.RegisterFile("foundation_service.proto", fileDescriptor_foundation_service_d21f40742610a6d1)
 }
 
-var fileDescriptor_foundation_service_05b4a4615552c0ec = []byte{
+var fileDescriptor_foundation_service_d21f40742610a6d1 = []byte{
 	// 1347 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x57, 0xdd, 0x52, 0x1b, 0xc7,
 	0x12, 0x46, 0x08, 0x49, 0xa8, 0x01, 0x83, 0xc6, 0xf8, 0x58, 0xa5, 0xf2, 0x39, 0x07, 0xef, 0x39,

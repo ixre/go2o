@@ -57,7 +57,7 @@ func (x EAfterSalesType) String() string {
 	return proto.EnumName(EAfterSalesType_name, int32(x))
 }
 func (EAfterSalesType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{0}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{0}
 }
 
 // 原实际销售的订单编号
@@ -72,7 +72,7 @@ func (m *OriginOrderIdRequest) Reset()         { *m = OriginOrderIdRequest{} }
 func (m *OriginOrderIdRequest) String() string { return proto.CompactTextString(m) }
 func (*OriginOrderIdRequest) ProtoMessage()    {}
 func (*OriginOrderIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{0}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{0}
 }
 func (m *OriginOrderIdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OriginOrderIdRequest.Unmarshal(m, b)
@@ -115,7 +115,7 @@ func (m *SubmitAfterSalesOrderRequest) Reset()         { *m = SubmitAfterSalesOr
 func (m *SubmitAfterSalesOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*SubmitAfterSalesOrderRequest) ProtoMessage()    {}
 func (*SubmitAfterSalesOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{1}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{1}
 }
 func (m *SubmitAfterSalesOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SubmitAfterSalesOrderRequest.Unmarshal(m, b)
@@ -190,7 +190,7 @@ func (m *SubmitAfterSalesOrderResponse) Reset()         { *m = SubmitAfterSalesO
 func (m *SubmitAfterSalesOrderResponse) String() string { return proto.CompactTextString(m) }
 func (*SubmitAfterSalesOrderResponse) ProtoMessage()    {}
 func (*SubmitAfterSalesOrderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{2}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{2}
 }
 func (m *SubmitAfterSalesOrderResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SubmitAfterSalesOrderResponse.Unmarshal(m, b)
@@ -242,7 +242,7 @@ func (m *AfterSalesOrderListResponse) Reset()         { *m = AfterSalesOrderList
 func (m *AfterSalesOrderListResponse) String() string { return proto.CompactTextString(m) }
 func (*AfterSalesOrderListResponse) ProtoMessage()    {}
 func (*AfterSalesOrderListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{3}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{3}
 }
 func (m *AfterSalesOrderListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AfterSalesOrderListResponse.Unmarshal(m, b)
@@ -281,7 +281,7 @@ func (m *PagingBuyerOrdersRequest) Reset()         { *m = PagingBuyerOrdersReque
 func (m *PagingBuyerOrdersRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingBuyerOrdersRequest) ProtoMessage()    {}
 func (*PagingBuyerOrdersRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{4}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{4}
 }
 func (m *PagingBuyerOrdersRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingBuyerOrdersRequest.Unmarshal(m, b)
@@ -327,7 +327,7 @@ func (m *PagingSellerOrdersRequest) Reset()         { *m = PagingSellerOrdersReq
 func (m *PagingSellerOrdersRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingSellerOrdersRequest) ProtoMessage()    {}
 func (*PagingSellerOrdersRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{5}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{5}
 }
 func (m *PagingSellerOrdersRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingSellerOrdersRequest.Unmarshal(m, b)
@@ -375,7 +375,7 @@ func (m *PagingBuyerAfterSalesOrderListResponse) Reset() {
 func (m *PagingBuyerAfterSalesOrderListResponse) String() string { return proto.CompactTextString(m) }
 func (*PagingBuyerAfterSalesOrderListResponse) ProtoMessage()    {}
 func (*PagingBuyerAfterSalesOrderListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{6}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{6}
 }
 func (m *PagingBuyerAfterSalesOrderListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingBuyerAfterSalesOrderListResponse.Unmarshal(m, b)
@@ -423,7 +423,7 @@ func (m *PagingSellerAfterSalesOrderListResponse) Reset() {
 func (m *PagingSellerAfterSalesOrderListResponse) String() string { return proto.CompactTextString(m) }
 func (*PagingSellerAfterSalesOrderListResponse) ProtoMessage()    {}
 func (*PagingSellerAfterSalesOrderListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{7}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{7}
 }
 func (m *PagingSellerAfterSalesOrderListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingSellerAfterSalesOrderListResponse.Unmarshal(m, b)
@@ -508,7 +508,7 @@ func (m *SAfterSalesOrder) Reset()         { *m = SAfterSalesOrder{} }
 func (m *SAfterSalesOrder) String() string { return proto.CompactTextString(m) }
 func (*SAfterSalesOrder) ProtoMessage()    {}
 func (*SAfterSalesOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{8}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{8}
 }
 func (m *SAfterSalesOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAfterSalesOrder.Unmarshal(m, b)
@@ -703,7 +703,7 @@ func (m *SPagingBuyerAfterSalesOrder) Reset()         { *m = SPagingBuyerAfterSa
 func (m *SPagingBuyerAfterSalesOrder) String() string { return proto.CompactTextString(m) }
 func (*SPagingBuyerAfterSalesOrder) ProtoMessage()    {}
 func (*SPagingBuyerAfterSalesOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{9}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{9}
 }
 func (m *SPagingBuyerAfterSalesOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPagingBuyerAfterSalesOrder.Unmarshal(m, b)
@@ -857,7 +857,7 @@ func (m *SPagingSellerAfterSalesOrder) Reset()         { *m = SPagingSellerAfter
 func (m *SPagingSellerAfterSalesOrder) String() string { return proto.CompactTextString(m) }
 func (*SPagingSellerAfterSalesOrder) ProtoMessage()    {}
 func (*SPagingSellerAfterSalesOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{10}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{10}
 }
 func (m *SPagingSellerAfterSalesOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPagingSellerAfterSalesOrder.Unmarshal(m, b)
@@ -988,7 +988,7 @@ func (m *ExchangeShipmentRequest) Reset()         { *m = ExchangeShipmentRequest
 func (m *ExchangeShipmentRequest) String() string { return proto.CompactTextString(m) }
 func (*ExchangeShipmentRequest) ProtoMessage()    {}
 func (*ExchangeShipmentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_aftersales_service_fc23dec9edab8ab1, []int{11}
+	return fileDescriptor_aftersales_service_310b290d6b076675, []int{11}
 }
 func (m *ExchangeShipmentRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ExchangeShipmentRequest.Unmarshal(m, b)
@@ -1575,10 +1575,10 @@ var _AfterSalesService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("aftersales_service.proto", fileDescriptor_aftersales_service_fc23dec9edab8ab1)
+	proto.RegisterFile("aftersales_service.proto", fileDescriptor_aftersales_service_310b290d6b076675)
 }
 
-var fileDescriptor_aftersales_service_fc23dec9edab8ab1 = []byte{
+var fileDescriptor_aftersales_service_310b290d6b076675 = []byte{
 	// 1092 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x57, 0x4b, 0x6f, 0xdb, 0x46,
 	0x10, 0xd6, 0xcb, 0xb2, 0x35, 0x92, 0x65, 0x7a, 0x6b, 0xbb, 0x1b, 0x45, 0x0e, 0x5c, 0x22, 0xb5,

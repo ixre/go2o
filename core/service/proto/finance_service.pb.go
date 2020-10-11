@@ -36,7 +36,7 @@ func (m *TransferInRequest) Reset()         { *m = TransferInRequest{} }
 func (m *TransferInRequest) String() string { return proto.CompactTextString(m) }
 func (*TransferInRequest) ProtoMessage()    {}
 func (*TransferInRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_4d518c8e99ea2761, []int{0}
+	return fileDescriptor_finance_service_06045ae7b4e93412, []int{0}
 }
 func (m *TransferInRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TransferInRequest.Unmarshal(m, b)
@@ -88,7 +88,7 @@ func (m *PersonId) Reset()         { *m = PersonId{} }
 func (m *PersonId) String() string { return proto.CompactTextString(m) }
 func (*PersonId) ProtoMessage()    {}
 func (*PersonId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_4d518c8e99ea2761, []int{1}
+	return fileDescriptor_finance_service_06045ae7b4e93412, []int{1}
 }
 func (m *PersonId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PersonId.Unmarshal(m, b)
@@ -144,7 +144,7 @@ func (m *SRiseInfo) Reset()         { *m = SRiseInfo{} }
 func (m *SRiseInfo) String() string { return proto.CompactTextString(m) }
 func (*SRiseInfo) ProtoMessage()    {}
 func (*SRiseInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_4d518c8e99ea2761, []int{2}
+	return fileDescriptor_finance_service_06045ae7b4e93412, []int{2}
 }
 func (m *SRiseInfo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SRiseInfo.Unmarshal(m, b)
@@ -240,7 +240,7 @@ func (m *RiseSettleRequest) Reset()         { *m = RiseSettleRequest{} }
 func (m *RiseSettleRequest) String() string { return proto.CompactTextString(m) }
 func (*RiseSettleRequest) ProtoMessage()    {}
 func (*RiseSettleRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_4d518c8e99ea2761, []int{3}
+	return fileDescriptor_finance_service_06045ae7b4e93412, []int{3}
 }
 func (m *RiseSettleRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RiseSettleRequest.Unmarshal(m, b)
@@ -294,7 +294,7 @@ func (m *RiseTransferOutRequest) Reset()         { *m = RiseTransferOutRequest{}
 func (m *RiseTransferOutRequest) String() string { return proto.CompactTextString(m) }
 func (*RiseTransferOutRequest) ProtoMessage()    {}
 func (*RiseTransferOutRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_4d518c8e99ea2761, []int{4}
+	return fileDescriptor_finance_service_06045ae7b4e93412, []int{4}
 }
 func (m *RiseTransferOutRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RiseTransferOutRequest.Unmarshal(m, b)
@@ -347,7 +347,7 @@ func (m *CommitTransferRequest) Reset()         { *m = CommitTransferRequest{} }
 func (m *CommitTransferRequest) String() string { return proto.CompactTextString(m) }
 func (*CommitTransferRequest) ProtoMessage()    {}
 func (*CommitTransferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_4d518c8e99ea2761, []int{5}
+	return fileDescriptor_finance_service_06045ae7b4e93412, []int{5}
 }
 func (m *CommitTransferRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CommitTransferRequest.Unmarshal(m, b)
@@ -640,10 +640,10 @@ var _FinanceService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("finance_service.proto", fileDescriptor_finance_service_4d518c8e99ea2761)
+	proto.RegisterFile("finance_service.proto", fileDescriptor_finance_service_06045ae7b4e93412)
 }
 
-var fileDescriptor_finance_service_4d518c8e99ea2761 = []byte{
+var fileDescriptor_finance_service_06045ae7b4e93412 = []byte{
 	// 493 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x5d, 0x6f, 0xd3, 0x30,
 	0x14, 0x5d, 0x9a, 0xf5, 0x23, 0x77, 0x55, 0x47, 0xad, 0xad, 0x44, 0xd5, 0x84, 0x22, 0x3f, 0x40,

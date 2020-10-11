@@ -39,7 +39,7 @@ func (m *MerchantOrderRequest) Reset()         { *m = MerchantOrderRequest{} }
 func (m *MerchantOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantOrderRequest) ProtoMessage()    {}
 func (*MerchantOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_be8cd3f14570c496, []int{0}
+	return fileDescriptor_merchant_service_fc53451bfba7ee31, []int{0}
 }
 func (m *MerchantOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantOrderRequest.Unmarshal(m, b)
@@ -92,7 +92,7 @@ func (m *PagingMerchantOrderListResponse) Reset()         { *m = PagingMerchantO
 func (m *PagingMerchantOrderListResponse) String() string { return proto.CompactTextString(m) }
 func (*PagingMerchantOrderListResponse) ProtoMessage()    {}
 func (*PagingMerchantOrderListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_be8cd3f14570c496, []int{1}
+	return fileDescriptor_merchant_service_fc53451bfba7ee31, []int{1}
 }
 func (m *PagingMerchantOrderListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingMerchantOrderListResponse.Unmarshal(m, b)
@@ -154,7 +154,7 @@ func (m *SMerchantOrder) Reset()         { *m = SMerchantOrder{} }
 func (m *SMerchantOrder) String() string { return proto.CompactTextString(m) }
 func (*SMerchantOrder) ProtoMessage()    {}
 func (*SMerchantOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_service_be8cd3f14570c496, []int{2}
+	return fileDescriptor_merchant_service_fc53451bfba7ee31, []int{2}
 }
 func (m *SMerchantOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantOrder.Unmarshal(m, b)
@@ -1736,10 +1736,10 @@ var _MerchantService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("merchant_service.proto", fileDescriptor_merchant_service_be8cd3f14570c496)
+	proto.RegisterFile("merchant_service.proto", fileDescriptor_merchant_service_fc53451bfba7ee31)
 }
 
-var fileDescriptor_merchant_service_be8cd3f14570c496 = []byte{
+var fileDescriptor_merchant_service_fc53451bfba7ee31 = []byte{
 	// 1195 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0xdb, 0x6e, 0xdb, 0x46,
 	0x13, 0x96, 0xe2, 0x53, 0x34, 0xb2, 0x15, 0x6b, 0xe3, 0xd8, 0x8c, 0xfe, 0x20, 0xd6, 0xcf, 0xb4,

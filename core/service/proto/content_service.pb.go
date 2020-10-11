@@ -36,7 +36,7 @@ func (m *PagingArticleRequest) Reset()         { *m = PagingArticleRequest{} }
 func (m *PagingArticleRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingArticleRequest) ProtoMessage()    {}
 func (*PagingArticleRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_ccc6b884a1312277, []int{0}
+	return fileDescriptor_content_service_9d321a4ebff5bcf8, []int{0}
 }
 func (m *PagingArticleRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingArticleRequest.Unmarshal(m, b)
@@ -89,7 +89,7 @@ func (m *ArticleListResponse) Reset()         { *m = ArticleListResponse{} }
 func (m *ArticleListResponse) String() string { return proto.CompactTextString(m) }
 func (*ArticleListResponse) ProtoMessage()    {}
 func (*ArticleListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_ccc6b884a1312277, []int{1}
+	return fileDescriptor_content_service_9d321a4ebff5bcf8, []int{1}
 }
 func (m *ArticleListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ArticleListResponse.Unmarshal(m, b)
@@ -154,7 +154,7 @@ func (m *SArticleCategory) Reset()         { *m = SArticleCategory{} }
 func (m *SArticleCategory) String() string { return proto.CompactTextString(m) }
 func (*SArticleCategory) ProtoMessage()    {}
 func (*SArticleCategory) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_ccc6b884a1312277, []int{2}
+	return fileDescriptor_content_service_9d321a4ebff5bcf8, []int{2}
 }
 func (m *SArticleCategory) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SArticleCategory.Unmarshal(m, b)
@@ -285,7 +285,7 @@ func (m *SArticle) Reset()         { *m = SArticle{} }
 func (m *SArticle) String() string { return proto.CompactTextString(m) }
 func (*SArticle) ProtoMessage()    {}
 func (*SArticle) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_ccc6b884a1312277, []int{3}
+	return fileDescriptor_content_service_9d321a4ebff5bcf8, []int{3}
 }
 func (m *SArticle) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SArticle.Unmarshal(m, b)
@@ -444,7 +444,7 @@ func (m *SPage) Reset()         { *m = SPage{} }
 func (m *SPage) String() string { return proto.CompactTextString(m) }
 func (*SPage) ProtoMessage()    {}
 func (*SPage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_ccc6b884a1312277, []int{4}
+	return fileDescriptor_content_service_9d321a4ebff5bcf8, []int{4}
 }
 func (m *SPage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPage.Unmarshal(m, b)
@@ -559,7 +559,7 @@ func (m *ArticleCategoriesResponse) Reset()         { *m = ArticleCategoriesResp
 func (m *ArticleCategoriesResponse) String() string { return proto.CompactTextString(m) }
 func (*ArticleCategoriesResponse) ProtoMessage()    {}
 func (*ArticleCategoriesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_content_service_ccc6b884a1312277, []int{5}
+	return fileDescriptor_content_service_9d321a4ebff5bcf8, []int{5}
 }
 func (m *ArticleCategoriesResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ArticleCategoriesResponse.Unmarshal(m, b)
@@ -1055,10 +1055,10 @@ var _ContentService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("content_service.proto", fileDescriptor_content_service_ccc6b884a1312277)
+	proto.RegisterFile("content_service.proto", fileDescriptor_content_service_9d321a4ebff5bcf8)
 }
 
-var fileDescriptor_content_service_ccc6b884a1312277 = []byte{
+var fileDescriptor_content_service_9d321a4ebff5bcf8 = []byte{
 	// 813 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x55, 0xcd, 0x6e, 0xdb, 0x46,
 	0x10, 0x96, 0xf5, 0xaf, 0x91, 0xe3, 0xc6, 0x6b, 0xbb, 0x60, 0x85, 0xc4, 0x15, 0xd8, 0x02, 0x35,

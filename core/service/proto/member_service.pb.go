@@ -46,7 +46,7 @@ func (x FavoriteType) String() string {
 	return proto.EnumName(FavoriteType_name, int32(x))
 }
 func (FavoriteType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_225f9284372c9226, []int{0}
+	return fileDescriptor_member_service_aa090206d9e0e93f, []int{0}
 }
 
 type FavoriteRequest struct {
@@ -62,7 +62,7 @@ func (m *FavoriteRequest) Reset()         { *m = FavoriteRequest{} }
 func (m *FavoriteRequest) String() string { return proto.CompactTextString(m) }
 func (*FavoriteRequest) ProtoMessage()    {}
 func (*FavoriteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_225f9284372c9226, []int{0}
+	return fileDescriptor_member_service_aa090206d9e0e93f, []int{0}
 }
 func (m *FavoriteRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_FavoriteRequest.Unmarshal(m, b)
@@ -115,7 +115,7 @@ func (m *DepthRequest) Reset()         { *m = DepthRequest{} }
 func (m *DepthRequest) String() string { return proto.CompactTextString(m) }
 func (*DepthRequest) ProtoMessage()    {}
 func (*DepthRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_225f9284372c9226, []int{1}
+	return fileDescriptor_member_service_aa090206d9e0e93f, []int{1}
 }
 func (m *DepthRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DepthRequest.Unmarshal(m, b)
@@ -160,7 +160,7 @@ func (m *InviterIdListResponse) Reset()         { *m = InviterIdListResponse{} }
 func (m *InviterIdListResponse) String() string { return proto.CompactTextString(m) }
 func (*InviterIdListResponse) ProtoMessage()    {}
 func (*InviterIdListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_225f9284372c9226, []int{2}
+	return fileDescriptor_member_service_aa090206d9e0e93f, []int{2}
 }
 func (m *InviterIdListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_InviterIdListResponse.Unmarshal(m, b)
@@ -199,7 +199,7 @@ func (m *InviteQuantityRequest) Reset()         { *m = InviteQuantityRequest{} }
 func (m *InviteQuantityRequest) String() string { return proto.CompactTextString(m) }
 func (*InviteQuantityRequest) ProtoMessage()    {}
 func (*InviteQuantityRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_225f9284372c9226, []int{3}
+	return fileDescriptor_member_service_aa090206d9e0e93f, []int{3}
 }
 func (m *InviteQuantityRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_InviteQuantityRequest.Unmarshal(m, b)
@@ -244,7 +244,7 @@ func (m *MemberIdListResponse) Reset()         { *m = MemberIdListResponse{} }
 func (m *MemberIdListResponse) String() string { return proto.CompactTextString(m) }
 func (*MemberIdListResponse) ProtoMessage()    {}
 func (*MemberIdListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_225f9284372c9226, []int{4}
+	return fileDescriptor_member_service_aa090206d9e0e93f, []int{4}
 }
 func (m *MemberIdListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberIdListResponse.Unmarshal(m, b)
@@ -2896,10 +2896,10 @@ var _MemberService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("member_service.proto", fileDescriptor_member_service_225f9284372c9226)
+	proto.RegisterFile("member_service.proto", fileDescriptor_member_service_aa090206d9e0e93f)
 }
 
-var fileDescriptor_member_service_225f9284372c9226 = []byte{
+var fileDescriptor_member_service_aa090206d9e0e93f = []byte{
 	// 1471 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0x6d, 0x53, 0xdb, 0x48,
 	0x12, 0x36, 0x90, 0x00, 0x6e, 0xfc, 0x3a, 0x60, 0x5e, 0x9c, 0xaa, 0x0b, 0xe7, 0xbb, 0x4b, 0xc8,

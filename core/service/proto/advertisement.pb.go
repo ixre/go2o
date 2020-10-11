@@ -34,7 +34,7 @@ func (m *SAdGroup) Reset()         { *m = SAdGroup{} }
 func (m *SAdGroup) String() string { return proto.CompactTextString(m) }
 func (*SAdGroup) ProtoMessage()    {}
 func (*SAdGroup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{0}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{0}
 }
 func (m *SAdGroup) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAdGroup.Unmarshal(m, b)
@@ -93,7 +93,7 @@ func (m *AdPositionId) Reset()         { *m = AdPositionId{} }
 func (m *AdPositionId) String() string { return proto.CompactTextString(m) }
 func (*AdPositionId) ProtoMessage()    {}
 func (*AdPositionId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{1}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{1}
 }
 func (m *AdPositionId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AdPositionId.Unmarshal(m, b)
@@ -131,7 +131,7 @@ func (m *AdGroupListResponse) Reset()         { *m = AdGroupListResponse{} }
 func (m *AdGroupListResponse) String() string { return proto.CompactTextString(m) }
 func (*AdGroupListResponse) ProtoMessage()    {}
 func (*AdGroupListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{2}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{2}
 }
 func (m *AdGroupListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AdGroupListResponse.Unmarshal(m, b)
@@ -186,7 +186,7 @@ func (m *SAdPosition) Reset()         { *m = SAdPosition{} }
 func (m *SAdPosition) String() string { return proto.CompactTextString(m) }
 func (*SAdPosition) ProtoMessage()    {}
 func (*SAdPosition) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{3}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{3}
 }
 func (m *SAdPosition) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAdPosition.Unmarshal(m, b)
@@ -281,7 +281,7 @@ func (m *SAdUserSet) Reset()         { *m = SAdUserSet{} }
 func (m *SAdUserSet) String() string { return proto.CompactTextString(m) }
 func (*SAdUserSet) ProtoMessage()    {}
 func (*SAdUserSet) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{4}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{4}
 }
 func (m *SAdUserSet) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAdUserSet.Unmarshal(m, b)
@@ -356,7 +356,7 @@ func (m *SAd) Reset()         { *m = SAd{} }
 func (m *SAd) String() string { return proto.CompactTextString(m) }
 func (*SAd) ProtoMessage()    {}
 func (*SAd) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{5}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{5}
 }
 func (m *SAd) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAd.Unmarshal(m, b)
@@ -446,7 +446,7 @@ func (m *SAdDto) Reset()         { *m = SAdDto{} }
 func (m *SAdDto) String() string { return proto.CompactTextString(m) }
 func (*SAdDto) ProtoMessage()    {}
 func (*SAdDto) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{6}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{6}
 }
 func (m *SAdDto) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAdDto.Unmarshal(m, b)
@@ -502,7 +502,7 @@ func (m *SHyperLink) Reset()         { *m = SHyperLink{} }
 func (m *SHyperLink) String() string { return proto.CompactTextString(m) }
 func (*SHyperLink) ProtoMessage()    {}
 func (*SHyperLink) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{7}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{7}
 }
 func (m *SHyperLink) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SHyperLink.Unmarshal(m, b)
@@ -575,7 +575,7 @@ func (m *SImage) Reset()         { *m = SImage{} }
 func (m *SImage) String() string { return proto.CompactTextString(m) }
 func (*SImage) ProtoMessage()    {}
 func (*SImage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{8}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{8}
 }
 func (m *SImage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SImage.Unmarshal(m, b)
@@ -657,7 +657,7 @@ func (m *SetDefaultAdRequest) Reset()         { *m = SetDefaultAdRequest{} }
 func (m *SetDefaultAdRequest) String() string { return proto.CompactTextString(m) }
 func (*SetDefaultAdRequest) ProtoMessage()    {}
 func (*SetDefaultAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{9}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{9}
 }
 func (m *SetDefaultAdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SetDefaultAdRequest.Unmarshal(m, b)
@@ -711,7 +711,7 @@ func (m *SetUserAdRequest) Reset()         { *m = SetUserAdRequest{} }
 func (m *SetUserAdRequest) String() string { return proto.CompactTextString(m) }
 func (*SetUserAdRequest) ProtoMessage()    {}
 func (*SetUserAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{10}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{10}
 }
 func (m *SetUserAdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SetUserAdRequest.Unmarshal(m, b)
@@ -764,7 +764,7 @@ func (m *AdIdRequest) Reset()         { *m = AdIdRequest{} }
 func (m *AdIdRequest) String() string { return proto.CompactTextString(m) }
 func (*AdIdRequest) ProtoMessage()    {}
 func (*AdIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{11}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{11}
 }
 func (m *AdIdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AdIdRequest.Unmarshal(m, b)
@@ -810,7 +810,7 @@ func (m *AdKeyRequest) Reset()         { *m = AdKeyRequest{} }
 func (m *AdKeyRequest) String() string { return proto.CompactTextString(m) }
 func (*AdKeyRequest) ProtoMessage()    {}
 func (*AdKeyRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{12}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{12}
 }
 func (m *AdKeyRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AdKeyRequest.Unmarshal(m, b)
@@ -856,7 +856,7 @@ func (m *SaveAdRequest) Reset()         { *m = SaveAdRequest{} }
 func (m *SaveAdRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveAdRequest) ProtoMessage()    {}
 func (*SaveAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{13}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{13}
 }
 func (m *SaveAdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveAdRequest.Unmarshal(m, b)
@@ -903,7 +903,7 @@ func (m *SaveLinkAdRequest) Reset()         { *m = SaveLinkAdRequest{} }
 func (m *SaveLinkAdRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveLinkAdRequest) ProtoMessage()    {}
 func (*SaveLinkAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{14}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{14}
 }
 func (m *SaveLinkAdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveLinkAdRequest.Unmarshal(m, b)
@@ -957,7 +957,7 @@ func (m *SaveImageAdRequest) Reset()         { *m = SaveImageAdRequest{} }
 func (m *SaveImageAdRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveImageAdRequest) ProtoMessage()    {}
 func (*SaveImageAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{15}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{15}
 }
 func (m *SaveImageAdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveImageAdRequest.Unmarshal(m, b)
@@ -1011,7 +1011,7 @@ func (m *ImageAdIdRequest) Reset()         { *m = ImageAdIdRequest{} }
 func (m *ImageAdIdRequest) String() string { return proto.CompactTextString(m) }
 func (*ImageAdIdRequest) ProtoMessage()    {}
 func (*ImageAdIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_2dafc3bbd302fcd5, []int{16}
+	return fileDescriptor_advertisement_447b7dba7df6d1fb, []int{16}
 }
 func (m *ImageAdIdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ImageAdIdRequest.Unmarshal(m, b)
@@ -1074,10 +1074,10 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("message/advertisement.proto", fileDescriptor_advertisement_2dafc3bbd302fcd5)
+	proto.RegisterFile("message/advertisement.proto", fileDescriptor_advertisement_447b7dba7df6d1fb)
 }
 
-var fileDescriptor_advertisement_2dafc3bbd302fcd5 = []byte{
+var fileDescriptor_advertisement_447b7dba7df6d1fb = []byte{
 	// 713 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0xdd, 0x6e, 0xd3, 0x4a,
 	0x10, 0x96, 0xe3, 0xfc, 0x4e, 0xce, 0x39, 0x6a, 0xb7, 0x55, 0x65, 0xf5, 0x9c, 0x03, 0xc1, 0x02,
