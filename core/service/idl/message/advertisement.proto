@@ -9,9 +9,13 @@ message SAdGroup {
   bool Opened = 3;
   bool Enabled = 4;
 }
+
+// 广告位编号
 message AdPositionId {
-  int64 Value = 1;
+  int64 GroupId = 1;
+  int64 PositionId = 2;
 }
+
 message AdGroupListResponse {
   repeated SAdGroup Value = 1;
 }

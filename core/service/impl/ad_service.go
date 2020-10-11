@@ -71,7 +71,7 @@ func (a *adService) GetGroups(_ context.Context, empty *proto.Empty) (*proto.AdG
 }
 
 func (a *adService) GetPosition(_ context.Context, id *proto.AdPositionId) (*proto.SAdPosition, error) {
-	ip := a._rep.GetAdPositionById(id.Value)
+	ip := a._rep.GetAdPositionById(id.PositionId)
 	if ip != nil {
 		return a.parseAdPositionDto(ip), nil
 	}
@@ -91,7 +91,7 @@ func (a *adService) SaveAdPosition(_ context.Context, r *proto.SAdPosition) (*pr
 }
 
 func (a *adService) DelAdPosition(_ context.Context, id *proto.AdPositionId) (*proto.Result, error) {
-	err := a._rep.DelAdPosition(id.Value)
+	err := a._rep.DelAdPosition(id.PositionId)
 	return a.error(err), nil
 }
 
