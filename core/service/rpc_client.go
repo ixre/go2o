@@ -230,3 +230,12 @@ func AfterSalesServiceClient() (*grpc.ClientConn, proto.AfterSalesServiceClient,
 	}
 	return conn, nil, err
 }
+
+// 广告服务
+func AdvertisementServiceClient() (*grpc.ClientConn, proto.AdvertisementServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewAdvertisementServiceClient(conn), err
+	}
+	return conn, nil, err
+}

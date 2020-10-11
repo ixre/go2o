@@ -5,61 +5,61 @@ import "global.proto";
 
 // 基础服务
 service RegistryService {
-    /** 获取注册表键值,key */
-    rpc GetValue (String) returns (RegistryValueResponse) {
-    }
-    /** 更新注册表值 */
-    rpc UpdateValue (RegistryPair) returns (Result) {
-    }
-    /** 获取键值存储数据字典,keys */
-    rpc GetValues (StringArray) returns (StringMap) {
-    }
-    /** 按键前缀获取键数据,prefix*/
-    rpc FindRegistries (String) returns (StringMap) {
-    }
-    /** 更新注册表键值 */
-    rpc UpdateValues (StringMap) returns (Result) {
-    }
-    /** 搜索注册表,keyword */
-    rpc SearchRegistry (String) returns (RegistriesResponse) {
-    }
-    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
-    rpc CreateRegistry (RegistryCreateRequest) returns (Result) {
-    }
+  /** 获取注册表键值,key */
+  rpc GetValue (String) returns (RegistryValueResponse) {
+  }
+  /** 更新注册表值 */
+  rpc UpdateValue (RegistryPair) returns (Result) {
+  }
+  /** 获取键值存储数据字典,keys */
+  rpc GetValues (StringArray) returns (StringMap) {
+  }
+  /** 按键前缀获取键数据,prefix*/
+  rpc FindRegistries (String) returns (StringMap) {
+  }
+  /** 更新注册表键值 */
+  rpc UpdateValues (StringMap) returns (Result) {
+  }
+  /** 搜索注册表,keyword */
+  rpc SearchRegistry (String) returns (RegistriesResponse) {
+  }
+  /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
+  rpc CreateRegistry (RegistryCreateRequest) returns (Result) {
+  }
 }
 
 message RegistriesResponse {
-    repeated SRegistry Value = 1;
+  repeated SRegistry Value = 1;
 }
 
 message RegistryPair {
-    string Key = 1;
-    string Value = 2;
+  string Key = 1;
+  string Value = 2;
 }
 
 message RegistryValueResponse {
-    string Value = 1;
-    string ErrorMsg = 2;
+  string Value = 1;
+  string ErrorMsg = 2;
 }
 
 message RegistryCreateRequest {
-    string key = 1;
-    string defaultValue = 2;
-    string description = 3;
+  string key = 1;
+  string defaultValue = 2;
+  string description = 3;
 }
 
 /** 注册表 */
 message SRegistry {
-    /** 键 */
-    string Key = 1;
-    /** 值 */
-    string Value = 2;
-    /** 默认值 */
-    string Default = 3;
-    /** 可选值 */
-    string Options = 4;
-    /** 标志 */
-    sint32 Flag = 5;
-    /** 描述 */
-    string Description = 6;
+  /** 键 */
+  string Key = 1;
+  /** 值 */
+  string Value = 2;
+  /** 默认值 */
+  string Default = 3;
+  /** 可选值 */
+  string Options = 4;
+  /** 标志 */
+  sint32 Flag = 5;
+  /** 描述 */
+  string Description = 6;
 }
