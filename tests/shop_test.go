@@ -15,10 +15,10 @@ import (
  * history :
  */
 
-func TestGetShop(t *testing.T){
+func TestGetShop(t *testing.T) {
 	repo := ti.Factory.GetShopRepo()
 	isp := repo.GetShop(1)
-	if isp == nil{
+	if isp == nil {
 		t.FailNow()
 	}
 }

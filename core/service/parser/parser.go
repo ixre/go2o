@@ -316,15 +316,23 @@ func OrderItem(src *proto.SOrderItem) *order.ComplexItem {
 
 func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 	return &proto.SOrderItem{
-		Id:             src.ID,
-		ItemId:         src.ItemId,
-		SkuId:          src.SkuId,
-		SnapshotId:     src.SnapshotId,
-		Quantity:       src.Quantity,
-		ReturnQuantity: src.ReturnQuantity,
-		Amount:         float64(src.Amount),
-		FinalAmount:    float64(src.FinalAmount),
-		IsShipped:      src.IsShipped == 1,
+		Id:                   src.ID,
+		SnapshotId:           src.SnapshotId,
+		SkuId:                src.SkuId,
+		ItemId:               src.ItemId,
+		ItemTitle:            "", //todo: 没有显示图片
+		Image:                "",
+		Price:                0,
+		FinalPrice:           0,
+		Quantity:             src.Quantity,
+		ReturnQuantity:       src.ReturnQuantity,
+		Amount:               float64(src.Amount),
+		FinalAmount:          float64(src.FinalAmount),
+		IsShipped:            src.IsShipped == 1,
+		Data:                 nil,
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
 	}
 }
 
