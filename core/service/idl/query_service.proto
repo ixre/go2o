@@ -1,5 +1,6 @@
 syntax = "proto3";
 option go_package = ".;proto";
+option java_outer_classname = "QueryServiceR";
 
 import "global.proto";
 import "message/order.proto";

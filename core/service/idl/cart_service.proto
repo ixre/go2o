@@ -1,5 +1,7 @@
 syntax = "proto3";
 option go_package = ".;proto";
+option java_outer_classname = "CartServiceR";
+
 import "global.proto";
 import "message/cart.proto";
 

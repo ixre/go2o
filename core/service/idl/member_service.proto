@@ -1,5 +1,6 @@
 syntax = "proto3";
 option go_package = ".;proto";
+option java_outer_classname = "MemberServiceR";
 
 import "global.proto";
 import "message/bank.proto";
