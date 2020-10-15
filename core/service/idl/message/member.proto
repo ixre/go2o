@@ -128,6 +128,16 @@ message SaveAddressRequest {
   SAddress Value = 2;
 }
 
+// 保存地址响应
+message SaveAddressResponse{
+  /* 状态码,如为0表示成功 */
+  sint32 ErrCode = 1;
+  /* 消息 */
+  string ErrMsg = 2;
+  // 地址编号
+  int64 AddressId = 3;
+}
+
 message GetAddressRequest {
   sint64 memberId = 1;
   sint64 addrId = 2;

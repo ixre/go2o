@@ -378,7 +378,7 @@ func (s *cartServiceImpl) GetCartSettle_(_ context.Context, code *proto.CartCode
 	if deliver != nil {
 		v := deliver.GetValue()
 		st.Deliver = &proto.SettleDeliverMeta_{
-			Id:             v.ID,
+			Id:             v.Id,
 			ConsigneeName:  v.ConsigneeName,
 			ConsigneePhone: v.ConsigneePhone,
 			Address:        strings.Replace(v.Area, " ", "", -1) + v.DetailAddress,

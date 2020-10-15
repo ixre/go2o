@@ -66,7 +66,7 @@ func round(f float32, n int) float64 {
 
 func Address(src *proto.SAddress) *member.Address {
 	return &member.Address{
-		ID:             src.ID,
+		Id:             src.ID,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,

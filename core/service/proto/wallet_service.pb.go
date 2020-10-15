@@ -1064,7 +1064,7 @@ func (m *ReviewTakeOutRequest) GetOpuName() string {
 // * 钱包
 type SWallet struct {
 	// * 钱包编号
-	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
 	// * 哈希值
 	HashCode string `protobuf:"bytes,2,opt,name=HashCode,proto3" json:"HashCode,omitempty"`
 	// * 节点编号
@@ -1266,7 +1266,7 @@ func (m *SWallet) GetUpdateTime() int64 {
 // * 钱包日志
 type SWalletLog struct {
 	// * 编号
-	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
 	// * 钱包编号
 	WalletId int64 `protobuf:"zigzag64,2,opt,name=WalletId,proto3" json:"WalletId,omitempty"`
 	// * 业务类型

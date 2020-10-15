@@ -218,7 +218,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	io := repo.Manager().GetOrderByNo("100000796792")
 	ic := io.BuildCart()
 	memberId := io.Buyer().GetAggregateRootId()
-	shipId := memRepo.GetDeliverAddress(memberId)[0].ID
+	shipId := memRepo.GetDeliverAddress(memberId)[0].Id
 	nio, _, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
 	if err != nil {
 		t.Log("提交订单", err.Error())
@@ -374,7 +374,7 @@ func TestMergePaymentOrder(t *testing.T) {
 	io := repo.Manager().GetOrderByNo("1180517000262166")
 	ic := io.BuildCart()
 	memberId := io.Buyer().GetAggregateRootId()
-	shipId := memRepo.GetDeliverAddress(memberId)[0].ID
+	shipId := memRepo.GetDeliverAddress(memberId)[0].Id
 	_, rd, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
 	if err != nil {
 		t.Error(err)

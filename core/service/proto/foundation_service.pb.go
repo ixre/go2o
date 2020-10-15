@@ -332,7 +332,7 @@ func (m *UserPwd) GetPwd() string {
 // 单点登录应用
 type SSsoApp struct {
 	// 编号
-	ID int32 `protobuf:"zigzag32,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID int32 `protobuf:"zigzag32,1,opt,name=Id,proto3" json:"Id,omitempty"`
 	// 应用名称
 	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
 	// API地址
@@ -658,7 +658,7 @@ func (m *SMobileAppConfig) GetShowTplPath_() string {
 }
 
 type SWxApiConfig struct {
-	// APP ID
+	// APP Id
 	AppId string `protobuf:"bytes,1,opt,name=AppId,proto3" json:"AppId,omitempty"`
 	// APP 密钥
 	AppSecret string `protobuf:"bytes,2,opt,name=AppSecret,proto3" json:"AppSecret,omitempty"`

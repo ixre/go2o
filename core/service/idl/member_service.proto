@@ -159,7 +159,7 @@ service MemberService {
   rpc GetAddressList (Int64) returns (AddressListResponse) {
   }
   // 保存会员的收货地址
-  rpc SaveAddress (SaveAddressRequest) returns (Result) {
+  rpc SaveAddress (SaveAddressRequest) returns (SaveAddressResponse) {
   }
   // 获取地址，如果addrId为0，则返回默认地址
   rpc GetAddress (GetAddressRequest) returns (SAddress) {
