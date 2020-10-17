@@ -3,6 +3,7 @@
 //namespace go go2o.core.service.thrift.auto_gen.rpc.ttype
 syntax = "proto3";
 option go_package = ".;proto";
+option java_package="com.github.go2o.rpc";
 
 message Empty {
 }
@@ -61,7 +62,7 @@ enum ESettingBasis {
 
 /** 价格计算方式 */
 enum EPriceBasis {
-  _ = 0;
+  _Unused = 0;
   /** 原价 */
   Original = 1;
   /** 会员折扣价 */

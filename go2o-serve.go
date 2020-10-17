@@ -17,7 +17,6 @@ import (
 	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
 	"go2o/app/daemon"
-	"go2o/app/restapi"
 	"go2o/core"
 	"go2o/core/msq"
 	"go2o/core/service"
@@ -138,7 +137,7 @@ func main() {
 		go daemon.Run(newApp)
 	}
 	// 运行REST API
-	go restapi.Run(ch, newApp, domain, apiPort)
+	//go restapi.Run(ch, newApp, domain, apiPort)
 	<-ch
 }
 

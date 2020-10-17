@@ -1,6 +1,7 @@
 syntax = "proto3";
 option go_package = ".;proto";
-//option java_outer_classname = "AfterSalesServiceR";
+option java_package="com.github.go2o.rpc";
+option java_outer_classname = "AfterSalesServiceOuterClass";
 
 import "global.proto";
 
