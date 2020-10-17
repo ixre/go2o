@@ -419,7 +419,7 @@ type (
 	// 收货地址
 	Address struct {
 		//编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		//会员编号
 		MemberId int64 `db:"member_id"`
 		//收货人

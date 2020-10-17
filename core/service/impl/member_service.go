@@ -1018,23 +1018,25 @@ func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest
 }
 
 //保存配送地址
-func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressRequest) (*proto.Result, error) {
+func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressRequest) (*proto.SaveAddressResponse, error) {
 	e := s.parseAddress(r.Value)
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v member.IDeliverAddress
-	if e.ID > 0 {
-		v = m.Profile().GetAddress(e.ID)
+	ret := &proto.SaveAddressResponse{}
+	if e.Id > 0 {
+		v = m.Profile().GetAddress(e.Id)
 	} else {
 		v = m.Profile().CreateDeliver(e)
 	}
 	err := v.SetValue(e)
 	if err == nil {
-		_, err = v.Save()
+		ret.AddressId, err = v.Save()
 	}
 	if err != nil {
-		return s.error(err), nil
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
 	}
-	return s.success(nil), nil
+	return ret, nil
 }
 
 //删除配送地址
@@ -1558,7 +1560,7 @@ func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.
 
 func (s *memberService) parseAddressDto(src *member.Address) *proto.SAddress {
 	return &proto.SAddress{
-		ID:             src.ID,
+		ID:             src.Id,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,
@@ -1649,7 +1651,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 
 func (s *memberService) parseAddress(src *proto.SAddress) *member.Address {
 	return &member.Address{
-		ID:             src.ID,
+		Id:             src.ID,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,

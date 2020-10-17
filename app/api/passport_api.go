@@ -188,7 +188,7 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 				registry.EnableDebugMode,
 			}
 			trans, cli, _ := service.RegistryServiceClient()
-			mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
+			mp, _ := cli.GetValues(context.TODO(), &proto.StringArray{Value: keys})
 			trans.Close()
 			debugMode := mp.Value[keys[0]] == "true"
 			if debugMode && len(code) != 0 {

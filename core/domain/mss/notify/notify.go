@@ -65,7 +65,10 @@ func (n *notifyManagerImpl) SaveSmsApiPerm(provider string, v *notify.SmsApiPerm
 		}
 		key := "sms_api_" + provider
 		if ir := n.registryRepo.Get(key); ir != nil {
-			return ir.Update(string(data))
+			err = ir.Update(string(data))
+			if err == nil {
+				return ir.Save()
+			}
 		}
 		// 创建新的键
 		data2, _ := json.Marshal(notify.SmsApiPerm{})

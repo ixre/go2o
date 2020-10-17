@@ -97,7 +97,11 @@ func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.Boar
 	}
 	for k, v := range mp {
 		if ir := s.registryRepo.Get(k); ir != nil {
-			if err := ir.Update(v); err != nil {
+			err := ir.Update(v)
+			if err == nil {
+				err = ir.Save()
+			}
+			if err != nil {
 				return s.error(err), nil
 			}
 		}

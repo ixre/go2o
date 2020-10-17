@@ -42,7 +42,7 @@ func (a AppApi) check(ctx api.Context) interface{} {
 		defer trans.Close()
 		keys := []string{appVersion, appAndroidVersion, appIOSVersion,
 			appReleaseInfo, appApkFileUrl, appIOSFileUrl}
-		mp, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
+		mp, _ := cli.GetValues(context.TODO(), &proto.StringArray{Value: keys})
 		version := ""
 		url := ""
 		if prodType == "android" {

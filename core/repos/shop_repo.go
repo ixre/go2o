@@ -33,7 +33,6 @@ type shopRepo struct {
 	storage      storage.Interface
 }
 
-
 // 创建电子商城
 func (s *shopRepo) CreateShop(v *shop.OnlineShop) shop.IShop {
 	return shopImpl.NewShop(v, s, s.valueRepo, s.registryRepo)
@@ -72,16 +71,16 @@ func (s *shopRepo) GetShop(shopId int64) shop.IShop {
 		return shopImpl.NewShop(v1, s, s.valueRepo, s.registryRepo)
 	}
 	/*
-	v := s.GetValueShop(shopId)
-	if v != nil {
-		if v.ShopType == shop.TypeOnlineShop {
-			v1 := s.GetOnlineShop(int(shopId))
-			return shopImpl.NewShop(v1, s, s.valueRepo, s.registryRepo)
+		v := s.GetValueShop(shopId)
+		if v != nil {
+			if v.ShopType == shop.TypeOnlineShop {
+				v1 := s.GetOnlineShop(int(shopId))
+				return shopImpl.NewShop(v1, s, s.valueRepo, s.registryRepo)
+			}
+			//todo: 兼容
+			return s.GetStore(shopId)
 		}
-		//todo: 兼容
-		return s.GetStore(shopId)
-	}
-	 */
+	*/
 	return nil
 }
 

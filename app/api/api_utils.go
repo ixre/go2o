@@ -18,10 +18,6 @@ func (u utils) SResult(err error) *proto.Result {
 	return &proto.Result{}
 }
 
-func (u utils) JSON(ctx echo.Context, ret interface{}) error {
-	return ctx.JSON(http.StatusOK, ret)
-}
-
 func (u utils) response(err error) *api.Response {
 	if err != nil {
 		return u.error(err)

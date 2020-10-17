@@ -90,12 +90,12 @@ type IMerchantRepo interface {
 	// Save MchEnterpriseInfo
 	SaveMchEnterpriseInfo(v *EnterpriseInfo) (int, error)
 
-	// Get MchBuyerGroup
-	GetMchBuyerGroupByGroupId(mchId, groupId int32) *MchBuyerGroup
-	// Select MchBuyerGroup
-	SelectMchBuyerGroup(mchId int64) []*MchBuyerGroup
-	// Save MchBuyerGroup
-	SaveMchBuyerGroup(v *MchBuyerGroup) (int, error)
+	// Get MchBuyerGroupSetting
+	GetMchBuyerGroupByGroupId(mchId, groupId int32) *MchBuyerGroupSetting
+	// Select MchBuyerGroupSetting
+	SelectMchBuyerGroup(mchId int64) []*MchBuyerGroupSetting
+	// Save MchBuyerGroupSetting
+	SaveMchBuyerGroup(v *MchBuyerGroupSetting) (int, error)
 
 	// auto generate by gof
 	// Get MchTradeConf

@@ -1,0 +1,78 @@
+package service
+
+import (
+	"fmt"
+	"github.com/ixre/gof"
+	"github.com/ixre/gof/crypto"
+	"go2o/core/domain/interface/registry"
+	"go2o/core/infrastructure/format"
+	"go2o/core/service/impl"
+	"regexp"
+	"strconv"
+	"time"
+)
+
+/**
+ * Copyright (C) 2007-2020 56X.NET,All rights reserved.
+ *
+ * name : server.go
+ * author : jarrysix (jarrysix#gmail.com)
+ * date : 2020-10-09 17:33
+ * description :
+ * history :
+ */
+
+// RPC服务初始化
+func prepareRpcServer(ctx gof.App, domain string) {
+	gf := ctx.Config().GetString
+	// like: http+go2o-dev.56x.net:14190
+	re, _ := regexp.Compile("((https|http)\\+)*([^:]+:*\\d*)")
+	matches := re.FindStringSubmatch(domain)
+	protocol := matches[2]
+	domain = matches[3]
+	//ssl := gf("ssl_enabled")
+	//prefix := "http://"
+	//if ssl == "true" || ssl == "1" {
+	//	prefix = "https://"
+	//}
+	repo := impl.Repos.GetRegistryRepo()
+	update := repo.UpdateValue
+	update(registry.HttpProtocols, protocol)
+	update(registry.Domain, domain)
+	update(registry.ApiRequireVersion, gf("api_require_version"))
+
+	// 更新静态服务器的地址(解偶合)
+	prefix := repo.Get(registry.DomainPrefixImage)
+	format.GlobalImageServer = fmt.Sprintf("%s://%s%s", protocol, prefix, domain)
+
+	hash := gf("url_hash")
+	if hash == "" {
+		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
+	}
+	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
+	//mp[consts.DStaticPath] = gf("static_server")
+	//mp[variable.DImageServer] = gf("image_server")
+	//mp[variable.DUrlHash] = hash
+	//mp[variable.DRetailPortal] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_PORTAL, domain}, "")
+	//mp[variable.DWholesalePortal] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_WHOLESALE_PORTAL, domain}, "")
+	//mp[variable.DUCenter] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_MEMBER, domain}, "")
+	//mp[variable.DPassport] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
+	//mp[variable.DMerchant] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_MERCHANT, domain}, "")
+	//mp[variable.DHApi] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_HApi, domain}, "")
+	//
+	//mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_PORTAL_MOBILE, domain}, "")
+	//mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_M_WHOLESALE, domain}, "")
+	//mp[variable.DMobilePassport] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_M_PASSPORT, domain}, "")
+	//mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
+	//	variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
+
+}

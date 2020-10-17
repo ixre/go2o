@@ -1,5 +1,6 @@
 syntax = "proto3";
 option go_package = ".;proto";
+option java_package="com.github.go2o.rpc";
 
 
 import "global.proto";
@@ -8,16 +9,16 @@ import "message/order.proto";
 
 // 发货服务
 service ShipmentService {
-    // 创建一个配送覆盖的区域
-    rpc CreateCoverageArea_ (SCoverageValue) returns (Result) {
-    }
-    // 获取订单的发货单信息
-    rpc GetShipOrderOfOrder (OrderId) returns (ShipmentOrderListResponse) {
-    }
-    /** 物流追踪 */
-    rpc GetLogisticFlowTrack (LogisticFlowTrackRequest) returns (SShipOrderTrack) {
-    }
-    /** 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列 */
-    rpc ShipOrderLogisticTrack (OrderLogisticTrackRequest) returns (SShipOrderTrack) {
-    }
+  // 创建一个配送覆盖的区域
+  rpc CreateCoverageArea_ (SCoverageValue) returns (Result) {
+  }
+  // 获取订单的发货单信息
+  rpc GetShipOrderOfOrder (OrderId) returns (ShipmentOrderListResponse) {
+  }
+  /** 物流追踪 */
+  rpc GetLogisticFlowTrack (LogisticFlowTrackRequest) returns (SShipOrderTrack) {
+  }
+  /** 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列 */
+  rpc ShipOrderLogisticTrack (OrderLogisticTrackRequest) returns (SShipOrderTrack) {
+  }
 }

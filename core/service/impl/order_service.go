@@ -112,7 +112,7 @@ func (s *orderServiceImpl) PrepareOrder_(_ context.Context, r *proto.PrepareOrde
 		} else {
 			arr := s.memberRepo.GetDeliverAddress(r.BuyerId)
 			if len(arr) > 0 {
-				err = no.SetAddress(arr[0].ID)
+				err = no.SetAddress(arr[0].Id)
 			}
 		}
 	}

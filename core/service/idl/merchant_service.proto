@@ -1,169 +1,170 @@
 syntax = "proto3";
 option go_package = ".;proto";
+option java_package="com.github.go2o.rpc";
 
 import "global.proto";
 import "message/merchant.proto";
 import "message/order.proto";
 //商家服务
 service MerchantService {
-    // 获取商家的信息,mchId
-    rpc GetMerchant (Int64) returns (SMerchant) {
-    }
-    // 注册商户并开店
-    rpc CreateMerchant (MerchantCreateRequest) returns (Result) {
-    }
+  // 获取商家的信息,mchId
+  rpc GetMerchant (Int64) returns (SMerchant) {
+  }
+  // 注册商户并开店
+  rpc CreateMerchant (MerchantCreateRequest) returns (Result) {
+  }
 
-    // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-    rpc CheckLogin (MchUserPwd) returns (Result) {
-    }
-    // 验证商户状态,mchId
-    rpc Stat (Int64) returns (Result) {
-    }
-    // 同步批发商品,mchId
-    rpc SyncWholesaleItem (Int64) returns (SyncWSItemsResponse) {
-    }
-    // 获取所有的交易设置,mchId
-    rpc GetAllTradeConf_ (Int64) returns (STradeConfListResponse) {
-    }
-    // 根据交易类型获取交易设置
-    rpc GetTradeConf (TradeConfRequest) returns (STradeConf_) {
-    }
-    // 保存交易设置
-    rpc SaveTradeConf (TradeConfSaveRequest) returns (Result) {
-    }
-    // 创建会员申请商户密钥
-    rpc CreateSignUpToken (MemberId) returns (String) {
-    }
-    // 根据商户申请密钥获取会员编号
-    rpc GetMemberFromSignUpToken (String) returns (Int64) {
-    }
-    // 提交注册信息
-    rpc SignUp (SMchSignUp) returns (Result) {
-    }
-    // 获取会员商户申请信息
-    rpc GetMchSignUpId (MemberId) returns (Int64) {
-    }
-    // 根据ID获取商户申请信息
-    rpc GetSignUp (Int64) returns (SMchSignUp) {
-    }
-    // 审核商户申请信息
-    rpc ReviewSignUp (MchReviewRequest) returns (Result) {
-    }
-    // 删除会员的商户申请资料
-    rpc RemoveMerchantSignUp (MemberId) returns (Result) {
-    }
-    // 根据会员号获取商户编号
-    rpc GetMerchantIdByMember (MemberId) returns (Int64) {
-    }
-    // 获取企业信息,并返回是否为提交的信息
-    rpc GetEnterpriseInfo (MerchantId) returns (SEnterpriseInfo) {
-    }
-    // 保存企业信息
-    rpc SaveEnterpriseInfo (SaveEnterpriseRequest) returns (Result) {
-    }
-    // 审核企业信息
-    rpc ReviewEnterpriseInfo (MchReviewRequest) returns (Result) {
-    }
+  // 验证用户密码,并返回编号。可传入商户或会员的账号密码
+  rpc CheckLogin (MchUserPwd) returns (Result) {
+  }
+  // 验证商户状态,mchId
+  rpc Stat (Int64) returns (Result) {
+  }
+  // 同步批发商品,mchId
+  rpc SyncWholesaleItem (Int64) returns (SyncWSItemsResponse) {
+  }
+  // 获取所有的交易设置,mchId
+  rpc GetAllTradeConf_ (Int64) returns (STradeConfListResponse) {
+  }
+  // 根据交易类型获取交易设置
+  rpc GetTradeConf (TradeConfRequest) returns (STradeConf_) {
+  }
+  // 保存交易设置
+  rpc SaveTradeConf (TradeConfSaveRequest) returns (Result) {
+  }
+  // 创建会员申请商户密钥
+  rpc CreateSignUpToken (MemberId) returns (String) {
+  }
+  // 根据商户申请密钥获取会员编号
+  rpc GetMemberFromSignUpToken (String) returns (Int64) {
+  }
+  // 提交注册信息
+  rpc SignUp (SMchSignUp) returns (Result) {
+  }
+  // 获取会员商户申请信息
+  rpc GetMchSignUpId (MemberId) returns (Int64) {
+  }
+  // 根据ID获取商户申请信息
+  rpc GetSignUp (Int64) returns (SMchSignUp) {
+  }
+  // 审核商户申请信息
+  rpc ReviewSignUp (MchReviewRequest) returns (Result) {
+  }
+  // 删除会员的商户申请资料
+  rpc RemoveMerchantSignUp (MemberId) returns (Result) {
+  }
+  // 根据会员号获取商户编号
+  rpc GetMerchantIdByMember (MemberId) returns (Int64) {
+  }
+  // 获取企业信息,并返回是否为提交的信息
+  rpc GetEnterpriseInfo (MerchantId) returns (SEnterpriseInfo) {
+  }
+  // 保存企业信息
+  rpc SaveEnterpriseInfo (SaveEnterpriseRequest) returns (Result) {
+  }
+  // 审核企业信息
+  rpc ReviewEnterpriseInfo (MchReviewRequest) returns (Result) {
+  }
 
-    rpc GetAccount (MerchantId) returns (SMerchantAccount) {
-    }
-    //rpc SaveMerchant_(mchId int64, v *merchant.Merchant) (int64, error)
-    // 设置商户启用或停用
-    rpc SetEnabled (MerchantDisableRequest) returns (Result) {
-    }
-    // 根据主机查询商户编号
-    rpc GetMerchantIdByHost (String) returns (Int64) {
-    }
-    // 获取商户的域名
-    rpc GetMerchantMajorHost (MerchantId) returns (String) {
-    }
-    rpc SaveSaleConf (SaveMerchantSaleConfRequest) returns (Result) {
-    }
-    rpc GetSaleConf (MerchantId) returns (SMerchantSaleConf) {
-    }
+  rpc GetAccount (MerchantId) returns (SMerchantAccount) {
+  }
+  //rpc SaveMerchant_(mchId int64, v *merchant.Merchant) (int64, error)
+  // 设置商户启用或停用
+  rpc SetEnabled (MerchantDisableRequest) returns (Result) {
+  }
+  // 根据主机查询商户编号
+  rpc GetMerchantIdByHost (String) returns (Int64) {
+  }
+  // 获取商户的域名
+  rpc GetMerchantMajorHost (MerchantId) returns (String) {
+  }
+  rpc SaveSaleConf (SaveMerchantSaleConfRequest) returns (Result) {
+  }
+  rpc GetSaleConf (MerchantId) returns (SMerchantSaleConf) {
+  }
 
-    rpc GetShopId (MerchantId) returns (Int64) {
-    }
-    // 修改密码
-    rpc ModifyPassword (ModifyMerchantPasswordRequest) returns (Result) {
-    }
+  rpc GetShopId (MerchantId) returns (Int64) {
+  }
+  // 修改密码
+  rpc ModifyPassword (ModifyMerchantPasswordRequest) returns (Result) {
+  }
 
-    // 保存API信息
-    //rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
-    // 获取API接口
-    rpc GetApiInfo (MerchantId) returns (SMerchantApiInfo) {
-    }
-    // 启用/停用接口权限
-    rpc ToggleApiPerm (MerchantApiPermRequest) returns (Result) {
-    }
-    // 根据API ID获取MerchantId
-    rpc GetMerchantIdByApiId (String) returns (Int64) {
-    }
-    // 查询分页订单
-    rpc PagedNormalOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
-    }
-    // 查询分页订单
-    rpc PagedWholesaleOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
-    }
-    // 查询分页订单
-    rpc PagedTradeOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
-    }
-    // 提到会员账户
-    rpc WithdrawToMemberAccount (WithdrawToMemberAccountRequest) returns (Result) {
-    }
-    // 账户充值
-    rpc ChargeAccount (MerchantChargeRequest) returns (Result) {
-    }
+  // 保存API信息
+  //rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
+  // 获取API接口
+  rpc GetApiInfo (MerchantId) returns (SMerchantApiInfo) {
+  }
+  // 启用/停用接口权限
+  rpc ToggleApiPerm (MerchantApiPermRequest) returns (Result) {
+  }
+  // 根据API ID获取MerchantId
+  rpc GetMerchantIdByApiId (String) returns (Int64) {
+  }
+  // 查询分页订单
+  rpc PagedNormalOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
+  }
+  // 查询分页订单
+  rpc PagedWholesaleOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
+  }
+  // 查询分页订单
+  rpc PagedTradeOrderOfVendor (MerchantOrderRequest) returns (PagingMerchantOrderListResponse) {
+  }
+  // 提到会员账户
+  rpc WithdrawToMemberAccount (WithdrawToMemberAccountRequest) returns (Result) {
+  }
+  // 账户充值
+  rpc ChargeAccount (MerchantChargeRequest) returns (Result) {
+  }
 
-    rpc GetMchBuyerGroup_ (MerchantBuyerGroupId) returns (SMerchantBuyerGroup) {
-    }
-    // 保存
-    rpc SaveMchBuyerGroup_ (SaveMerchantBuyerGroupRequest) returns (Result) {
-    }
-    // 获取买家分组
-    //rpc GetBuyerGroups (MerchantId) returns (MerchantBuyerGroupListResponse) {
-    //}
-    // 获取批发返点率
-    rpc GetRebateRate (MerchantBuyerGroupId) returns (WholesaleRebateRateListResponse) {
-    }
-    // 保存分组返点率
-    rpc SaveGroupRebateRate (SaveWholesaleRebateRateRequest) returns (Result) {
-    }
+  rpc GetMchBuyerGroup_ (MerchantBuyerGroupId) returns (SMerchantBuyerGroup) {
+  }
+  // 保存
+  rpc SaveMchBuyerGroup (SaveMerchantBuyerGroupRequest) returns (Result) {
+  }
+  // 获取买家分组
+  rpc GetBuyerGroups (MerchantId) returns (MerchantBuyerGroupListResponse) {
+  }
+  // 获取批发返点率
+  rpc GetRebateRate (MerchantBuyerGroupId) returns (WholesaleRebateRateListResponse) {
+  }
+  // 保存分组返点率
+  rpc SaveGroupRebateRate (SaveWholesaleRebateRateRequest) returns (Result) {
+  }
 }
 
 
 message MerchantOrderRequest {
-    //　商户编号
-    int64 MerchantId = 1;
-    // 是否分页
-    bool Pagination = 2;
-    //　分页参数
-    SPagingParams Params = 3;
+  //　商户编号
+  int64 MerchantId = 1;
+  // 是否分页
+  bool Pagination = 2;
+  //　分页参数
+  SPagingParams Params = 3;
 }
 
 
 message PagingMerchantOrderListResponse {
-    int64 Total = 1;
-    repeated SMerchantOrder Data = 2;
+  int64 Total = 1;
+  repeated SMerchantOrder Data = 2;
 }
 
 message SMerchantOrder {
-    int64 OrderId = 1;
-    string OrderNo = 2;
-    string ParentNo = 3;
-    int64 BuyerId = 4;
-    string BuyerName = 5;
-    // 订单详情,主要描述订单的内容
-    string Details = 6;
-    double ItemAmount = 7;
-    double DiscountAmount = 8;
-    double ExpressFee = 9;
-    double PackageFee = 10;
-    bool IsPaid = 11;
-    double FinalAmount = 12;
-    int32 State = 13;
-    string StateText = 14;
-    int64 CreateTime = 15;
-    repeated SOrderItem Items = 16;
-    map<string, string> Data = 17;
+  int64 OrderId = 1;
+  string OrderNo = 2;
+  string ParentNo = 3;
+  int64 BuyerId = 4;
+  string BuyerName = 5;
+  // 订单详情,主要描述订单的内容
+  string Details = 6;
+  double ItemAmount = 7;
+  double DiscountAmount = 8;
+  double ExpressFee = 9;
+  double PackageFee = 10;
+  bool IsPaid = 11;
+  double FinalAmount = 12;
+  int32 State = 13;
+  string StateText = 14;
+  int64 CreateTime = 15;
+  repeated SOrderItem Items = 16;
+  map<string, string> Data = 17;
 }

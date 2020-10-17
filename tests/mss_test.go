@@ -21,8 +21,10 @@ func TestMssSendSms(t *testing.T) {
 	nm := nRepo.Manager()
 	re := registryRepo.Get(registry.SmsDefaultProvider)
 	re.Update("http")
+	re.Save()
 	re = registryRepo.Get(registry.SmsRegisterTemplateId)
 	re.Update("8332")
+	re.Save()
 	err := nm.SaveSmsApiPerm("http", &notify.SmsApiPerm{
 		ApiUrl: "https://api.zhuanxinyun.com/api/v2/sendSms.json",
 		Key:    "NUV2LeZr4c6Ta2tdMHK1AfSsaut1Jscf",

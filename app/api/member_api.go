@@ -430,7 +430,7 @@ func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 		MemberId: memberId,
 		Value:    &e,
 	})
-	return m.utils.result(ret)
+	return api.NewResponse(ret)
 }
 
 /**

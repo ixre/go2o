@@ -17,7 +17,6 @@ import (
 	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
 	"go2o/app/daemon"
-	"go2o/app/restapi"
 	"go2o/core"
 	"go2o/core/msq"
 	"go2o/core/service"
@@ -126,19 +125,19 @@ func main() {
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
 	})
-	impl.Init(newApp, domain, appFlag)
+	impl.Init(newApp)
 	//runGoMicro()
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
 	//go rs.ListenAndServe(fmt.Sprintf(":%d", port), false)
-	go service.ServeRPC(ch, &cfg, port)
+	go service.ServeRPC(ch, &cfg, port, domain)
 	service.ConfigureClient(cfg) // initial service client
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
 	// 运行REST API
-	go restapi.Run(ch, newApp, domain, apiPort)
+	//go restapi.Run(ch, newApp, domain, apiPort)
 	<-ch
 }
 

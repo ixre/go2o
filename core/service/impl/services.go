@@ -11,27 +11,19 @@ package impl
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ixre/gof"
-	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"go2o/app"
 	"go2o/core/dao"
-	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/repos"
 	"go2o/core/service/proto"
-	"regexp"
-	"strconv"
-	"time"
 )
 
 var (
-	fact *repos.RepoFactory
+	Repos *repos.RepoFactory
 
 	// 状态服务
 	StatusService *statusServiceImpl
@@ -89,17 +81,13 @@ func handleError(err error) error {
 	//return err
 }
 
-func Init(ctx gof.App, domain string, appFlag int) {
+func Init(ctx gof.App) {
 	Context := ctx
 	db := Context.Db()
 	orm := db.GetOrm()
 	sto := Context.Storage()
 	// 初始化服务
 	initService(ctx, db, orm, sto)
-	// RPC
-	if appFlag&app.FlagRpcServe == app.FlagRpcServe {
-		initRpcServe(ctx, domain)
-	}
 }
 
 // 初始化测试服务
@@ -109,31 +97,31 @@ func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Inte
 
 // 初始化服务
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
-	fact = (&repos.RepoFactory{}).Init(db, sto)
-	registryRepo := fact.GetRegistryRepo()
-	proMRepo := fact.GetProModelRepo()
-	valueRepo := fact.GetValueRepo()
-	mssRepo := fact.GetMssRepo()
-	expressRepo := fact.GetExpressRepo()
-	shipRepo := fact.GetShipmentRepo()
-	memberRepo := fact.GetMemberRepo()
-	productRepo := fact.GetProductRepo()
-	catRepo := fact.GetCategoryRepo()
-	itemRepo := fact.GetItemRepo()
-	tagSaleRepo := fact.GetSaleLabelRepo()
-	promRepo := fact.GetPromotionRepo()
+	Repos = (&repos.RepoFactory{}).Init(db, sto)
+	registryRepo := Repos.GetRegistryRepo()
+	proMRepo := Repos.GetProModelRepo()
+	valueRepo := Repos.GetValueRepo()
+	mssRepo := Repos.GetMssRepo()
+	expressRepo := Repos.GetExpressRepo()
+	shipRepo := Repos.GetShipmentRepo()
+	memberRepo := Repos.GetMemberRepo()
+	productRepo := Repos.GetProductRepo()
+	catRepo := Repos.GetCategoryRepo()
+	itemRepo := Repos.GetItemRepo()
+	tagSaleRepo := Repos.GetSaleLabelRepo()
+	promRepo := Repos.GetPromotionRepo()
 
-	shopRepo := fact.GetShopRepo()
-	mchRepo := fact.GetMerchantRepo()
-	cartRepo := fact.GetCartRepo()
-	personFinanceRepo := fact.GetPersonFinanceRepository()
-	deliveryRepo := fact.GetDeliveryRepo()
-	contentRepo := fact.GetContentRepo()
-	adRepo := fact.GetAdRepo()
-	orderRepo := fact.GetOrderRepo()
-	paymentRepo := fact.GetPaymentRepo()
-	asRepo := fact.GetAfterSalesRepo()
-	notifyRepo := fact.GetNotifyRepo()
+	shopRepo := Repos.GetShopRepo()
+	mchRepo := Repos.GetMerchantRepo()
+	cartRepo := Repos.GetCartRepo()
+	personFinanceRepo := Repos.GetPersonFinanceRepository()
+	deliveryRepo := Repos.GetDeliveryRepo()
+	contentRepo := Repos.GetContentRepo()
+	adRepo := Repos.GetAdRepo()
+	orderRepo := Repos.GetOrderRepo()
+	paymentRepo := Repos.GetPaymentRepo()
+	asRepo := Repos.GetAfterSalesRepo()
+	notifyRepo := Repos.GetNotifyRepo()
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
 	mchQuery := query.NewMerchantQuery(ctx)
@@ -165,66 +153,11 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	AdService = NewAdvertisementService(adRepo, sto)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
 
-	WalletService = NewWalletService(fact.GetWalletRepo())
+	WalletService = NewWalletService(Repos.GetWalletRepo())
 
 	CommonDao = dao.NewCommDao(orm, sto, adRepo, catRepo)
 	PortalService = NewPortalService(CommonDao)
 	QueryService = NewQueryService()
-}
-
-// RPC服务初始化
-func initRpcServe(ctx gof.App, domain string) {
-	gf := ctx.Config().GetString
-	// like: http+go2o-dev.56x.net:14190
-	re, _ := regexp.Compile("((https|http)\\+)*([^:]+:*\\d*)")
-	matches := re.FindStringSubmatch(domain)
-	protocol := matches[2]
-	domain = matches[3]
-	//ssl := gf("ssl_enabled")
-	//prefix := "http://"
-	//if ssl == "true" || ssl == "1" {
-	//	prefix = "https://"
-	//}
-	repo := fact.GetRegistryRepo()
-	update := repo.UpdateValue
-	update(registry.HttpProtocols, protocol)
-	update(registry.Domain, domain)
-	update(registry.ApiRequireVersion, gf("api_require_version"))
-
-	// 更新静态服务器的地址(解偶合)
-	prefix := repo.Get(registry.DomainPrefixImage)
-	format.GlobalImageServer = fmt.Sprintf("%s://%s%s", protocol, prefix, domain)
-
-	hash := gf("url_hash")
-	if hash == "" {
-		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
-	}
-	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
-	//mp[consts.DStaticPath] = gf("static_server")
-	//mp[variable.DImageServer] = gf("image_server")
-	//mp[variable.DUrlHash] = hash
-	//mp[variable.DRetailPortal] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_PORTAL, domain}, "")
-	//mp[variable.DWholesalePortal] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_WHOLESALE_PORTAL, domain}, "")
-	//mp[variable.DUCenter] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_MEMBER, domain}, "")
-	//mp[variable.DPassport] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
-	//mp[variable.DMerchant] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_MERCHANT, domain}, "")
-	//mp[variable.DHApi] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_HApi, domain}, "")
-	//
-	//mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_PORTAL_MOBILE, domain}, "")
-	//mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_M_WHOLESALE, domain}, "")
-	//mp[variable.DMobilePassport] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_M_PASSPORT, domain}, "")
-	//mp[variable.DMobileUCenter] = strings.Join([]string{prefix,
-	//	variable.DOMAIN_PREFIX_M_MEMBER, domain}, "")
-
 }
 
 // 服务工具类，实现的服务组合此类,可直接调用其方法

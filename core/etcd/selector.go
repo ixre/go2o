@@ -38,7 +38,6 @@ type Selector interface {
 type serverSelector struct {
 	cli    *clientv3.Client
 	nodes  []Node
-	config clientv3.Config
 	alg    SelectAlgorithm
 	last   int
 	name   string
@@ -50,7 +49,6 @@ func NewSelector(name string, config clientv3.Config, alg SelectAlgorithm) (Sele
 		return nil, err
 	}
 	var s = &serverSelector{
-		config: config,
 		cli:    cli,
 		name:   name,
 		alg:    alg,
@@ -79,7 +77,7 @@ func (s *serverSelector) Next() (Node, error) {
 	}
 	// 随机算法
 	//i := rand.Int() % len(s.nodes)
-	i := rand.Intn(len(s.nodes))
+	i := rand.Intn(l)
 	return s.nodes[i], nil
 }
 
@@ -100,8 +98,8 @@ func (s *serverSelector) Watch() {
 					s.AddNode(node)
 				case clientv3.EventTypeDelete:
 					keyArray := strings.Split(string(e.Kv.Key), "/")
-					if len(keyArray) <= 0 {
-						log.Printf("[EventTypeDelete] key Split err")
+					if len(keyArray) == 0 {
+						println("[ Etcd][ Event]: delete node key is empty")
 						return
 					}
 					nodeId, err := strconv.Atoi(keyArray[len(keyArray)-1])
@@ -160,7 +158,7 @@ func (s *serverSelector) loadNodes() {
 	for _, kv := range res.Kvs {
 		node, err := s.GetVal(kv.Value)
 		if err != nil {
-			log.Printf("[GetVal] err : %s", err.Error())
+			log.Println("[ Etcd][ Error]: load nodes failed! error : " + err.Error())
 			continue
 		}
 		s.nodes = append(s.nodes, node)

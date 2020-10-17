@@ -66,7 +66,7 @@ func round(f float32, n int) float64 {
 
 func Address(src *proto.SAddress) *member.Address {
 	return &member.Address{
-		ID:             src.ID,
+		Id:             src.ID,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,
@@ -143,8 +143,8 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		BrandId:    int64(src.BrandId),
 		//ShopId:       src.ShopId,
 		//ShopCatId:    src.ShopCatId,
-		ExpressTid:   int64(src.ExpressTid),
-		Title: src.Title,
+		ExpressTid: int64(src.ExpressTid),
+		Title:      src.Title,
 		//ShortTitle:   src.ShortTitle,
 		Code:  src.Code,
 		Image: src.Image,
@@ -186,20 +186,20 @@ func SkuArrayDto(src []*item.Sku) []*proto.SSku {
 
 func Item(src *proto.SOldItem) *item.GoodsItem {
 	it := &item.GoodsItem{
-		Id:         src.ItemId,
-		ProductId:  src.ProductId,
-		PromFlag:   src.PromFlag,
-		CategoryId: src.CatId,
-		VendorId:   src.VendorId,
-		BrandId:    src.BrandId,
-		ShopId:     src.ShopId,
-		ShopCatId:  src.ShopCatId,
-		ExpressTid: src.ExpressTid,
-		Title:      src.Title,
-		ShortTitle: src.ShortTitle,
-		Code:       src.Code,
-		Image:      src.Image,
-		IsPresent:  src.IsPresent,
+		Id:           src.ItemId,
+		ProductId:    src.ProductId,
+		PromFlag:     src.PromFlag,
+		CategoryId:   src.CatId,
+		VendorId:     src.VendorId,
+		BrandId:      src.BrandId,
+		ShopId:       src.ShopId,
+		ShopCatId:    src.ShopCatId,
+		ExpressTid:   src.ExpressTid,
+		Title:        src.Title,
+		ShortTitle:   src.ShortTitle,
+		Code:         src.Code,
+		Image:        src.Image,
+		IsPresent:    src.IsPresent,
 		PriceRange:   src.PriceRange,
 		StockNum:     src.StockNum,
 		SaleNum:      src.SaleNum,
@@ -316,15 +316,23 @@ func OrderItem(src *proto.SOrderItem) *order.ComplexItem {
 
 func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 	return &proto.SOrderItem{
-		Id:             src.ID,
-		ItemId:         src.ItemId,
-		SkuId:          src.SkuId,
-		SnapshotId:     src.SnapshotId,
-		Quantity:       src.Quantity,
-		ReturnQuantity: src.ReturnQuantity,
-		Amount:         float64(src.Amount),
-		FinalAmount:    float64(src.FinalAmount),
-		IsShipped:      src.IsShipped == 1,
+		Id:                   src.ID,
+		SnapshotId:           src.SnapshotId,
+		SkuId:                src.SkuId,
+		ItemId:               src.ItemId,
+		ItemTitle:            "", //todo: 没有显示图片
+		Image:                "",
+		Price:                0,
+		FinalPrice:           0,
+		Quantity:             src.Quantity,
+		ReturnQuantity:       src.ReturnQuantity,
+		Amount:               float64(src.Amount),
+		FinalAmount:          float64(src.FinalAmount),
+		IsShipped:            src.IsShipped == 1,
+		Data:                 nil,
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
 	}
 }
 

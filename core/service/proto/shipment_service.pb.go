@@ -203,10 +203,10 @@ var _ShipmentService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("shipment_service.proto", fileDescriptor_shipment_service_7f2d08a4b6834d3e)
+	proto.RegisterFile("shipment_service.proto", fileDescriptor_shipment_service_1c87d25cffaf2614)
 }
 
-var fileDescriptor_shipment_service_7f2d08a4b6834d3e = []byte{
+var fileDescriptor_shipment_service_1c87d25cffaf2614 = []byte{
 	// 246 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x90, 0x41, 0x4b, 0xc3, 0x30,
 	0x1c, 0xc5, 0x8b, 0x07, 0xa7, 0x41, 0x98, 0xa4, 0x52, 0x30, 0xc7, 0x7e, 0x80, 0x88, 0x7a, 0x14,

@@ -1,149 +1,150 @@
 syntax = "proto3";
 option go_package = ".;proto";
+option java_package="com.github.go2o.rpc";
 
 import "global.proto";
 import "message/order.proto";
 
 service QueryService {
-    // 获取分页店铺数据
-    rpc PagingShops (QueryPagingShopRequest) returns (QueryPagingShopsResponse);
-    // 查询分页普通订单
-    rpc MemberNormalOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
-    }
-    // 查询分页批发订单
-    rpc QueryWholesaleOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
-    }
-    // 查询分页交易/服务类订单
-    rpc QueryTradeOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
-    }
-    // 查询会员列表
-    rpc QueryMemberList (MemberListRequest) returns (MemberListResponse) {
-    }
-    // 查询会员列表
-    rpc SearchMembers (MemberSearchRequest) returns (MemberListResponse) {
-    }
-    // 获取分页店铺收藏
-    rpc QueryMemberFavoriteShops (FavoriteQueryRequest) returns (PagingShopFavoriteResponse) {
-    }
-    // 获取分页店铺收藏
-    rpc QueryMemberFavoriteGoods (FavoriteQueryRequest) returns (PagingGoodsFavoriteResponse) {
-    }
+  // 获取分页店铺数据
+  rpc PagingShops (QueryPagingShopRequest) returns (QueryPagingShopsResponse);
+  // 查询分页普通订单
+  rpc MemberNormalOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+  }
+  // 查询分页批发订单
+  rpc QueryWholesaleOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+  }
+  // 查询分页交易/服务类订单
+  rpc QueryTradeOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+  }
+  // 查询会员列表
+  rpc QueryMemberList (MemberListRequest) returns (MemberListResponse) {
+  }
+  // 查询会员列表
+  rpc SearchMembers (MemberSearchRequest) returns (MemberListResponse) {
+  }
+  // 获取分页店铺收藏
+  rpc QueryMemberFavoriteShops (FavoriteQueryRequest) returns (PagingShopFavoriteResponse) {
+  }
+  // 获取分页店铺收藏
+  rpc QueryMemberFavoriteGoods (FavoriteQueryRequest) returns (PagingGoodsFavoriteResponse) {
+  }
 }
 
 message FavoriteQueryRequest {
-    int64 memberId = 1;
-    int64 begin = 2;
-    int64 end = 3;
-    string where = 4;
+  int64 memberId = 1;
+  int64 begin = 2;
+  int64 end = 3;
+  string where = 4;
 }
 
 message PagingShopFavoriteResponse {
-    int64 Total = 1;
-    repeated SPagingShopFavorite Data = 2;
+  int64 Total = 1;
+  repeated SPagingShopFavorite Data = 2;
 }
 
 message SPagingShopFavorite {
-    int64 Id = 1;
-    int64 ShopId = 2;
-    string ShopName = 3;
-    string Logo = 4;
-    int64 UpdateTime = 5;
+  int64 Id = 1;
+  int64 ShopId = 2;
+  string ShopName = 3;
+  string Logo = 4;
+  int64 UpdateTime = 5;
 }
 message PagingGoodsFavoriteResponse {
-    int64 Total = 1;
-    repeated SPagingGoodsFavorite Data = 2;
+  int64 Total = 1;
+  repeated SPagingGoodsFavorite Data = 2;
 }
 message SPagingGoodsFavorite {
-    int64 Id = 1;
-    int64 SkuId = 2;
-    string GoodsName = 3;
-    string Image = 4;
-    bool OnShelves = 5;
-    int32 StockNum = 6;
-    string SalePrice = 7;
-    int64 UpdateTime = 8;
+  int64 Id = 1;
+  int64 SkuId = 2;
+  string GoodsName = 3;
+  string Image = 4;
+  bool OnShelves = 5;
+  int32 StockNum = 6;
+  string SalePrice = 7;
+  int64 UpdateTime = 8;
 }
 
 message QueryPagingShopRequest {
-    // 参数
-    SPagingParams Params = 1;
-    // 是否只查询营业中的店铺
-    bool OnlyBusiness = 2;
+  // 参数
+  SPagingParams Params = 1;
+  // 是否只查询营业中的店铺
+  bool OnlyBusiness = 2;
 }
 
 message QueryPagingShopsResponse {
-    sint64 Total = 1;
-    repeated QueryPagingShop Value = 2;
+  sint64 Total = 1;
+  repeated QueryPagingShop Value = 2;
 }
 
 message QueryPagingShop {
-    sint64 Id = 1;
-    string Name = 2;
-    string Alias = 3;
-    string Host = 4;
-    string Logo = 5;
-    sint64 CreateTime = 6;
+  sint64 Id = 1;
+  string Name = 2;
+  string Alias = 3;
+  string Host = 4;
+  string Logo = 5;
+  sint64 CreateTime = 6;
 }
 
 message MemberOrderPagingRequest {
-    sint64 MemberId = 1;
-    SPagingParams Params = 2;
+  sint64 MemberId = 1;
+  SPagingParams Params = 2;
 }
 message MemberOrderPagingResponse {
-    sint64 Total = 1;
-    repeated PagedMemberSubOrder Value = 2;
+  sint64 Total = 1;
+  repeated PagedMemberSubOrder Value = 2;
 }
 message PagedMemberSubOrder {
-    sint64 OrderId = 1;
-    string OrderNo = 2;
-    string ParentNo = 3;
-    sint64 VendorId = 4;
-    sint64 ShopId = 5;
-    string ShopName = 6;
-    double ItemAmount = 7;
-    double DiscountAmount = 8;
-    double ExpressFee = 9;
-    double PackageFee = 10;
-    bool IsPaid = 11;
-    double FinalAmount = 12;
-    sint32 State = 13;
-    string StateText = 14;
-    sint64 CreateTime = 15;
-    repeated SOrderItem Items = 16;
+  sint64 OrderId = 1;
+  string OrderNo = 2;
+  string ParentNo = 3;
+  sint64 VendorId = 4;
+  sint64 ShopId = 5;
+  string ShopName = 6;
+  double ItemAmount = 7;
+  double DiscountAmount = 8;
+  double ExpressFee = 9;
+  double PackageFee = 10;
+  bool IsPaid = 11;
+  double FinalAmount = 12;
+  sint32 State = 13;
+  string StateText = 14;
+  sint64 CreateTime = 15;
+  repeated SOrderItem Items = 16;
 }
 
 message MemberListRequest {
-    repeated int64 IdList = 1;
+  repeated int64 IdList = 1;
 }
 
 message MemberSearchRequest {
-    // 手机号/邮箱/用户名关键词
-    string Keyword = 1;
+  // 手机号/邮箱/用户名关键词
+  string Keyword = 1;
 }
 message MemberListResponse {
-    repeated MemberListSingle Value = 1;
+  repeated MemberListSingle Value = 1;
 }
 // 会员概览信息
 message MemberListSingle {
-    // 会员编号
-    int64 MemberId = 1;
-    // 用户名
-    string User = 2;
-    // 昵称
-    string NickName = 3;
-    // 头像
-    string Avatar = 4;
-    // 等级
-    int32 Level = 5;
-    // 积分
-    int64 Integral = 6;
-    // 账户余额
-    double Balance = 7;
-    // 钱包余额
-    double WalletBalance = 8;
-    //    GrowBalance       float32 `db:"grow_balance"`
-    //    GrowAmount        float32 `db:"grow_amount"`         // 理财总投资金额,不含收益
-    //    GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额
-    //    GrowTotalEarnings float32 `db:"grow_total_earnings"` // 累积收益金额
-    //    UpdateTime        int64   `db:"update_time"`
+  // 会员编号
+  int64 MemberId = 1;
+  // 用户名
+  string User = 2;
+  // 昵称
+  string NickName = 3;
+  // 头像
+  string Avatar = 4;
+  // 等级
+  int32 Level = 5;
+  // 积分
+  int64 Integral = 6;
+  // 账户余额
+  double Balance = 7;
+  // 钱包余额
+  double WalletBalance = 8;
+  //    GrowBalance       float32 `db:"grow_balance"`
+  //    GrowAmount        float32 `db:"grow_amount"`         // 理财总投资金额,不含收益
+  //    GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额
+  //    GrowTotalEarnings float32 `db:"grow_total_earnings"` // 累积收益金额
+  //    UpdateTime        int64   `db:"update_time"`
 }

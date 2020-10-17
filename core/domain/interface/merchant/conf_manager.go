@@ -17,11 +17,11 @@ type (
 		// 使用系统的配置并保存
 		UseGlobSaleConf() error
 		// 保存客户分组
-		SaveMchBuyerGroup(v *MchBuyerGroup) (int32, error)
+		SaveMchBuyerGroup(v *MchBuyerGroupSetting) (int32, error)
 		// 获取商户的全部客户分组
 		SelectBuyerGroup() []*BuyerGroup
 		// 根据分组编号获取分组设置
-		GetGroupByGroupId(groupId int32) *MchBuyerGroup
+		GetGroupByGroupId(groupId int32) *MchBuyerGroupSetting
 		// 获取所有的交易设置
 		GetAllTradeConf_() []*TradeConf
 		// 根据交易类型获取交易设置
@@ -31,13 +31,13 @@ type (
 	}
 
 	// 商户客户分组设置
-	MchBuyerGroup struct {
+	MchBuyerGroupSetting struct {
 		//编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		//商家编号
-		MchId int64 `db:"mch_id"`
+		MerchantId int64 `db:"mch_id"`
 		//客户分组编号
-		GroupId int32 `db:"group_id"`
+		GroupId int64 `db:"group_id"`
 		//分组别名
 		Alias string `db:"alias"`
 		// 是否启用零售
@@ -48,12 +48,18 @@ type (
 		RebatePeriod int32 `db:"rebate_period"`
 	}
 
-	// 商户客户分组设置
+	// 全局客户分组
 	BuyerGroup struct {
 		//编号
-		GroupId int32 `db:"id" pk:"yes" auto:"yes"`
+		GroupId int64
 		//分组别名
-		Name string `db:"alias"`
+		Name string
+		// 是否启用零售
+		EnableRetail bool
+		// 是否启用批发
+		EnableWholesale bool
+		// 批发返点周期
+		RebatePeriod int
 	}
 
 	// 销售设置为商户填写,同时可以恢复默认

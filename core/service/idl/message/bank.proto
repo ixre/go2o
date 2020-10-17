@@ -1,36 +1,36 @@
 syntax = "proto3";
 option go_package = ".;proto";
-
+option java_package="com.github.go2o.rpc";
 
 message BankCardAddRequest {
-    sint64 OwnerId = 1;
-    SBankCardInfo Value = 2;
+  sint64 OwnerId = 1;
+  SBankCardInfo Value = 2;
 }
 
 message BankCardUserIdRequest {
-    sint64 OwnerId = 1;
-    sint64 BankCardId = 2;
+  sint64 OwnerId = 1;
+  sint64 BankCardId = 2;
 }
 
 message BankCardListResponse {
-    sint64 OwnerId = 1;
-    repeated SBankCardInfo Value = 2;
+  sint64 OwnerId = 1;
+  repeated SBankCardInfo Value = 2;
 }
 
 /** 会员银行卡 */
 message SBankCardInfo {
-    /** 编号 */
-    sint64 Id = 1;
-    /** 银行名称 */
-    string BankName = 2;
-    /** 账户名 */
-    string AccountName = 3;
-    /** 账号 */
-    string Account = 4;
-    /** 网点名称 */
-    string Network = 5;
-    /** 状态 */
-    sint32 State = 6;
-    //更新时间
-    sint64 UpdateTime = 7;
+  /** 编号 */
+  sint64 Id = 1;
+  /** 银行名称 */
+  string BankName = 2;
+  /** 账户名 */
+  string AccountName = 3;
+  /** 账号 */
+  string Account = 4;
+  /** 网点名称 */
+  string Network = 5;
+  /** 状态 */
+  sint32 State = 6;
+  //更新时间
+  sint64 UpdateTime = 7;
 }

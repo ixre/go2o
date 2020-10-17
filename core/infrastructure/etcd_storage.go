@@ -59,7 +59,7 @@ func (e EtcdStorage) Exists(key string) (exists bool) {
 //Set
 func (e EtcdStorage) Set(key string, v interface{}) error {
 	//j, err := e.serialize(v)
-	if v == nil{
+	if v == nil {
 		return errors.New("value is nil")
 	}
 	bytes, err := e.marshal(v)
@@ -78,7 +78,7 @@ func (e EtcdStorage) SetExpire(key string, v interface{}, seconds int64) error {
 		var rsp *clientv3.LeaseGrantResponse
 		rsp, err = e.cli.Grant(ctx, seconds)
 		if err == nil {
-			_, err = e.cli.Put(ctx, key, string(bytes), clientv3.WithLease(rsp.ID))
+			_, err = e.cli.Put(ctx, key, bytes, clientv3.WithLease(rsp.ID))
 		}
 		cancel()
 	}

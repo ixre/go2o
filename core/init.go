@@ -204,7 +204,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(merchant.BalanceLog{}, "mch_balance_log")
 	orm.Mapping(merchant.MchDayChart{}, "mch_day_chart")
 	orm.Mapping(merchant.MchSignUp{}, "mch_sign_up")
-	orm.Mapping(merchant.MchBuyerGroup{}, "mch_buyer_group")
+	orm.Mapping(merchant.MchBuyerGroupSetting{}, "mch_buyer_group")
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
 
@@ -287,7 +287,7 @@ func initSSOModule() {
 		println(len(keys))
 		//todo: to etcd
 		/*
-			registries, _ := cli.GetRegistries(context.TODO(),&proto.StringArray{Value:  keys})
+			registries, _ := cli.GetValues(context.TODO(),&proto.StringArray{Value:  keys})
 			_, _ = s.Register(&proto.SSsoApp{
 				Id:   1,
 				Name: "RetailPortal",
@@ -348,7 +348,7 @@ func initBankB4eAPI() {
 
 		//todo: etcd
 
-		//data, _ := cli.GetRegistries(ctx, &proto.StringArray{Value: keys})
+		//data, _ := cli.GetValues(ctx, &proto.StringArray{Value: keys})
 		//b.open, _ = strconv.ParseBool(data.Value[keys[0]])
 		//b.appKey = data.Value[keys[1]]
 	}
@@ -371,7 +371,7 @@ func initExpressAPI() {
 				DefaultValue: "27d809c3-51b6-479c-9b77-6b98d7f3d41",
 				Description:  "快递鸟接口KEY",
 			})
-		data, _ := cli.GetRegistries(context.TODO(), &proto.StringArray{Value: keys})
+		data, _ := cli.GetValues(context.TODO(), &proto.StringArray{Value: keys})
 		kdniao.EBusinessID = data.Value[keys[0]]
 		kdniao.AppKey = data.Value[keys[1]]
 	} else {
