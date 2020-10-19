@@ -52,11 +52,10 @@ message SendMessageRequest {
 
 /** 消息方式 */
 enum EMessageChannel {
-  _2 = 0;
   /** 站内信 */
-  SiteMessage = 1; /** 邮件 */
-  EmailMessage = 2; /** 短信 */
-  SmsMessage = 3;
+  SiteMessage = 0; /** 邮件 */
+  EmailMessage = 1; /** 短信 */
+  SmsMessage = 2;
 }
 
 message NotifyItemListResponse {

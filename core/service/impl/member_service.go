@@ -365,8 +365,7 @@ func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	msgType, _ := strconv.Atoi(r.MsgType)
-	code, err := m.SendCheckCode(r.Operation, msgType)
+	code, err := m.SendCheckCode(r.Operation, int(r.MsgType))
 	if err != nil {
 		return s.error(err), nil
 	}

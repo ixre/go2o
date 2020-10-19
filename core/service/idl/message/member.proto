@@ -59,7 +59,7 @@ message GrantFlagRequest {
 message SendCodeRequest {
   sint64 memberId = 1;
   string operation = 2;
-  string msgType = 3;
+  int32 msgType = 3;
 }
 
 message CompareCodeRequest {
