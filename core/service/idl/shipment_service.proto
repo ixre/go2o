@@ -4,7 +4,7 @@ option java_package="com.github.go2o.rpc";
 
 
 import "global.proto";
-import "message/shipment.proto";
+import "message/shipment_dto.proto";
 import "message/order_dto.proto";
 
 // 发货服务

@@ -5,7 +5,7 @@ option java_package="com.github.go2o.rpc";
 import "global.proto";
 import "message/bank_dto.proto";
 import "message/member_dto.proto";
-import "message/payment.proto";
+import "message/payment_dto.proto";
 
 //会员服务
 service MemberService {
@@ -20,14 +20,14 @@ service MemberService {
    * @param extend 扩展数据
    * @return 注册结果，返回user_code
    */
-  rpc RegisterMemberV2 (RegisterMemberRequest) returns (Result) {
+  rpc RegisterMemberV2 (RegisterMemberRequest) returns (RegisterResponse) {
   }
   // 登录，返回结果(Result)和会员编号(Id);
   // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
   rpc CheckLogin (LoginRequest) returns (Result) {
   }
   /** 验证交易密码 */
-  rpc VerifyTradePwd (CheckTradePwdRequest) returns (Result) {
+  rpc VerifyTradePwd (PwdVerifyRequest) returns (Result) {
   }
   /** 交换会员编号 */
   rpc SwapMemberId (SwapMemberRequest) returns (Int64) {

@@ -5,20 +5,25 @@ option java_package="com.github.go2o.rpc";
 import "global.proto";
 
 message RegisterMemberRequest {
+  //　用户名
   string User = 1;
+  // 密码(md5)
   string Pwd = 2;
-  sint32 Flag = 3;
-  string Name = 4;
-  string Phone = 5;
-  // Email
-  string Email = 6;
+  // 昵称
+  string Name = 3;
+  //　手机
+  string Phone = 4;
+  // 邮箱
+  string Email = 5;
+  //　用户标志
+  int32 Flag = 6;
   // 邀请码
   string InviterCode = 7;
   // 注册IP
   string RegIp=8;
-  // 注册laiyuan
+  // 注册来源
   string RegFrom = 9;
-  map<string, string> Extend = 10;
+  //map<string, string> Extend = 10;
 }
 
 message LoginRequest {
@@ -26,10 +31,20 @@ message LoginRequest {
   string Pwd = 2;
   bool Update = 3;
 }
+// 注册结果
+message RegisterResponse {
+  // 状态码,如为0表示成功
+  int32 ErrCode = 1;
+  //　消息
+  string ErrMsg = 2;
+  // 会员编号
+  int64 MemberId = 3;
+}
 
-message CheckTradePwdRequest {
-  sint64 memberId = 1;
-  string tradePwd = 2;
+// 密码验证请求
+message PwdVerifyRequest {
+  sint64 MemberId = 1;
+  string Pwd = 2;
 }
 
 message SwapMemberRequest {
@@ -98,9 +113,9 @@ message ChangeUserRequest {
   string User = 2;
 }
 message ModifyPwdRequest {
-  sint64 memberId = 1;
-  string old = 2;
-  string pwd = 3;
+  sint64 MemberId = 1;
+  string OriginPwd = 2;
+  string NewPwd = 3;
 }
 message ChangeInviterRequest {
   sint64 memberId = 1;

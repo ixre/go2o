@@ -17,7 +17,6 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types"
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
@@ -460,9 +459,12 @@ func (s *memberService) updateMember(v *proto.SMember) (int64, error) {
 }
 
 // 注册会员
-func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMemberRequest) (*proto.Result, error) {
+func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMemberRequest) (*proto.RegisterResponse, error) {
 	if len(r.Pwd) != 32 {
-		return s.error(de.ErrNotMD5Format), nil
+		return &proto.RegisterResponse{
+			ErrCode: 1,
+			ErrMsg:  de.ErrNotMD5Format.Error(),
+		}, nil
 	}
 	v := &member.Member{
 		User:     r.User,
@@ -480,7 +482,10 @@ func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMem
 	inviteCode := r.InviterCode
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
-		return s.error(err), nil
+		return &proto.RegisterResponse{
+			ErrCode: 2,
+			ErrMsg:  err.Error(),
+		}, nil
 	}
 	// 创建会员
 	m := s.repo.CreateMember(v)
@@ -498,11 +503,13 @@ func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMem
 		//	if err = m.Profile().SaveProfile(pro); err != nil {
 		//		s.repo.DeleteMember(id)
 		//}
-		return s.success(map[string]string{
-			"member_id": types.String(id),
-		}), nil
 	}
-	return s.error(err), nil
+	ret := &proto.RegisterResponse{MemberId: id}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
 }
 
 // 获取会员邀请关系
@@ -593,9 +600,9 @@ func (s *memberService) ModifyPwd(_ context.Context, r *proto.ModifyPwdRequest) 
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	pwd := r.Pwd
-	old := r.Old
-	if l := len(r.Pwd); l != 32 {
+	pwd := r.NewPwd
+	old := r.OriginPwd
+	if l := len(r.NewPwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.MemberSha1Pwd(pwd)
@@ -618,7 +625,7 @@ func (s *memberService) ModifyTradePwd(_ context.Context, r *proto.ModifyPwdRequ
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	pwd, old := r.Pwd, r.Old
+	pwd, old := r.NewPwd, r.OriginPwd
 	if l := len(pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
@@ -683,7 +690,7 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 }
 
 // 检查交易密码
-func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.CheckTradePwdRequest) (*proto.Result, error) {
+func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.PwdVerifyRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
@@ -692,10 +699,10 @@ func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.CheckTradePwd
 	if mv.TradePwd == "" {
 		return s.error(member.ErrNotSetTradePwd), nil
 	}
-	if len(r.TradePwd) != 32 {
+	if len(r.Pwd) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	if encPwd := domain.TradePwd(r.TradePwd); mv.TradePwd != encPwd {
+	if encPwd := domain.TradePwd(r.Pwd); mv.TradePwd != encPwd {
 		return s.error(member.ErrIncorrectTradePwd), nil
 	}
 	return s.success(nil), nil

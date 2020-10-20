@@ -1,0 +1,80 @@
+syntax = "proto3";
+option go_package = ".;proto";
+option java_package="com.github.go2o.rpc";
+
+message SendMessageRequest {
+    string account = 1;
+    string message = 2;
+    map<string, string> data = 3;
+}
+
+/** 消息方式 */
+enum EMessageChannel {
+    /** 站内信 */
+    SiteMessage = 0; /** 邮件 */
+    EmailMessage = 1; /** 短信 */
+    SmsMessage = 2;
+}
+
+message NotifyItemListResponse {
+    repeated SNotifyItem Value = 1;
+}
+
+/** 通知项 */
+message SNotifyItem {
+    /** 键 */
+    string Key = 1;
+    /** 发送方式 */
+    sint32 NotifyBy = 2;
+    /** 不允许修改发送方式 */
+    bool ReadonlyBy = 3;
+    /** 模板编号 */
+    sint32 TplId = 4;
+    /** 内容 */
+    string Content = 5;
+    /** 模板包含的标签 */
+    map<string, string> Tags = 6;
+}
+
+// 邮件模版
+message SMailTemplate {
+    // 编号
+    int64 Id = 1;
+    // 商户编号
+    int64 MerchantId = 2;
+    // 名称
+    string Name = 3;
+    // 主题
+    string Subject = 4;
+    // 内容
+    string Body = 5;
+    // 是否启用
+    bool Enabled = 6;
+}
+
+message MailTemplateListResponse {
+    repeated SMailTemplate Value = 1;
+}
+
+// 站内信
+message SSiteMessage {
+    // 主题
+    string Subject = 1;
+    // 信息内容
+    string Message = 2;
+}
+
+// 站内信用户类型
+enum EMessageUserType {
+    All = 0;
+    Member = 1;
+    Merchant = 2;
+}
+
+message SendSiteMessageRequest {
+    int64 SenderId = 1;
+    EMessageUserType ReceiverType = 2;
+    int64 ReceiverId = 3;
+    bool SendNow = 4;
+    SSiteMessage Msg = 5;
+}
