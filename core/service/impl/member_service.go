@@ -469,15 +469,15 @@ func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMem
 		Pwd:      domain.Sha1Pwd(r.Pwd),
 		Name:     r.Name,
 		RealName: "",
-		Avatar:   r.Avatar,
+		Avatar:   "", //todo: default avatar
 		Phone:    r.Phone,
 		Email:    r.Email,
-		RegFrom:  r.Extend["reg_from"],
-		RegIp:    r.Extend["reg_ip"],
+		RegFrom:  r.RegFrom,
+		RegIp:    r.RegIp,
 		Flag:     int(r.Flag),
 	}
 	// 验证邀请码
-	inviteCode := r.Extend["invite_code"]
+	inviteCode := r.InviterCode
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
 		return s.error(err), nil
@@ -1160,7 +1160,7 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(r.Account, r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Charge(r.AccountType, r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1170,7 +1170,7 @@ func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChang
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Discount(int(r.Account), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Discount(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1180,7 +1180,7 @@ func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChange
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Consume(int(r.Account), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Consume(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1190,7 +1190,7 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(int(r.Account), r.Title, int(r.Account), r.OuterNo, r.Remark)
+		err = acc.Refund(int(r.AccountType), r.Title, int(r.AccountType), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1382,9 +1382,9 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 	} else {
 		var kind = 0
 		switch r.TransferAccount {
-		case proto.TransferAccountKind_TA_BALANCE:
+		case proto.TransferAccountType_TA_BALANCE:
 			kind = member.AccountBalance
-		case proto.TransferAccountKind_TA_WALLET:
+		case proto.TransferAccountType_TA_WALLET:
 			kind = member.AccountWallet
 		}
 		err = m.GetAccount().TransferAccount(kind, r.ToMemberId,

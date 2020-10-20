@@ -3,8 +3,8 @@ option go_package = ".;proto";
 option java_package="com.github.go2o.rpc";
 
 import "global.proto";
-import "message/merchant.proto";
-import "message/order.proto";
+import "message/merchant_dto.proto";
+import "message/order_dto.proto";
 //商家服务
 service MerchantService {
   // 获取商家的信息,mchId

@@ -5,20 +5,26 @@ option java_package="com.github.go2o.rpc";
 import "global.proto";
 
 message RegisterMemberRequest {
-  string user = 1;
-  string pwd = 2;
-  sint32 flag = 3;
-  string name = 4;
-  string phone = 5;
-  string email = 6;
-  string avatar = 7;
-  map<string, string> extend = 8;
+  string User = 1;
+  string Pwd = 2;
+  sint32 Flag = 3;
+  string Name = 4;
+  string Phone = 5;
+  // Email
+  string Email = 6;
+  // 邀请码
+  string InviterCode = 7;
+  // 注册IP
+  string RegIp=8;
+  // 注册laiyuan
+  string RegFrom = 9;
+  map<string, string> Extend = 10;
 }
 
 message LoginRequest {
-  string user = 1;
-  string pwd = 2;
-  bool update = 3;
+  string User = 1;
+  string Pwd = 2;
+  bool Update = 3;
 }
 
 message CheckTradePwdRequest {
@@ -145,13 +151,20 @@ message GetAddressRequest {
 }
 
 
+//　账户资产变动请求
 message AccountChangeRequest {
-  sint64 memberId = 1;
-  sint32 account = 2;
-  string title = 3;
-  sint32 amount = 4;
-  string outerNo = 5;
-  string remark = 6;
+  // 会员编号
+  sint64 MemberId = 1;
+  //　账户类型
+  sint32 AccountType = 2;
+  //　明细标题
+  string Title = 3;
+  //　金额
+  sint32 Amount = 4;
+  //　外部校译号
+  string OuterNo = 5;
+  // 备注
+  string Remark = 6;
 }
 message AccountAdjustRequest {
   sint64 memberId = 1;
@@ -457,14 +470,28 @@ message WalletLogResponse {
   sint64 RelateUser = 12;
 }
 
-enum TransferAccountKind {
+// 账户类型
+enum EAccountType{
+  NoAccount = 0;
+  // 余额账户
+  AccountBalance = 1;
+  // 积分账户
+  AccountIntegral=2;
+  // 钱包账户, 对应邀请奖励
+  AccountWallet = 3;
+  // 流通金账户，对应团队推广奖励
+  AccountFlow = 4 ;
+}
+
+// 转账账户类型
+enum TransferAccountType {
   TA_BALANCE = 0;
   TA_WALLET = 1;
 }
 
 // 账户转账请求
 message AccountTransferRequest {
-  TransferAccountKind TransferAccount = 1;
+  TransferAccountType TransferAccount = 1;
   sint64 FromMemberId = 2;
   sint64 ToMemberId = 3;
   sint32 Amount = 4;
@@ -619,4 +646,29 @@ message SMemberCoupon {
   int64 GetTime = 8;
   //结束日期
   int64 OverTime = 9;
+}
+
+
+enum FavoriteType {
+  Unused = 0;
+  Shop = 1;
+  Goods = 2;
+}
+
+message FavoriteRequest {
+  sint64 MemberId = 1;
+  FavoriteType FavoriteType = 2;
+  sint64 ReferId = 3;
+}
+message DepthRequest {
+  sint64 memberId = 1;
+  sint32 depth = 2;
+}
+message InviterIdListResponse {
+  repeated sint64 Value = 1;
+
+}
+message InviteQuantityRequest {
+  sint64 memberId = 1;
+  map<string, string> data = 2;
 }

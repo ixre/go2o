@@ -3,8 +3,8 @@ option go_package = ".;proto";
 option java_package="com.github.go2o.rpc";
 
 import "global.proto";
-import "message/bank.proto";
-import "message/member.proto";
+import "message/bank_dto.proto";
+import "message/member_dto.proto";
 import "message/payment.proto";
 
 //会员服务
@@ -241,29 +241,6 @@ service MemberService {
   }
 }
 
-enum FavoriteType {
-  Unused = 0;
-  Shop = 1;
-  Goods = 2;
-}
-
-message FavoriteRequest {
-  sint64 MemberId = 1;
-  FavoriteType FavoriteType = 2;
-  sint64 ReferId = 3;
-}
-message DepthRequest {
-  sint64 memberId = 1;
-  sint32 depth = 2;
-}
-message InviterIdListResponse {
-  repeated sint64 Value = 1;
-
-}
-message InviteQuantityRequest {
-  sint64 memberId = 1;
-  map<string, string> data = 2;
-}
 message MemberIdListResponse {
   repeated sint64 Value = 1;
 }
