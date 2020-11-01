@@ -219,9 +219,11 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
 	co.Subject = ""
-	co.ConsigneePerson = v.ConsigneePerson
-	co.ConsigneePhone = v.ConsigneePhone
-	co.ShippingAddress = v.ShippingAddress
+	co.Consignee = &order.ComplexConsignee{
+		ConsigneePerson:v.ConsigneePerson,
+		ConsigneePhone:  v.ConsigneePhone,
+		ShippingAddress: v.ShippingAddress,
+	}
 	co.DiscountAmount = float64(v.DiscountAmount)
 	co.ItemAmount = float64(v.ItemAmount)
 	co.ExpressFee = float64(v.ExpressFee)

@@ -1564,7 +1564,7 @@ func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.
 	}
 }
 
-func (s *memberService) parseAddressDto(src *member.Address) *proto.SAddress {
+func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAddress {
 	return &proto.SAddress{
 		ID:             src.Id,
 		ConsigneeName:  src.ConsigneeName,
@@ -1655,8 +1655,8 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 	}
 }
 
-func (s *memberService) parseAddress(src *proto.SAddress) *member.Address {
-	return &member.Address{
+func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddress {
+	return &member.ConsigneeAddress{
 		Id:             src.ID,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,

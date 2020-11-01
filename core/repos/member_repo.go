@@ -578,20 +578,20 @@ func (m *MemberRepoImpl) SaveLevelUpLog(v *member.LevelUpLog) (int32, error) {
 }
 
 // 保存地址
-func (m *MemberRepoImpl) SaveDeliver(v *member.Address) (int64, error) {
+func (m *MemberRepoImpl) SaveDeliver(v *member.ConsigneeAddress) (int64, error) {
 	return orm.I64(orm.Save(m.Connector.GetOrm(), v, int(v.Id)))
 }
 
 // 获取全部配送地址
-func (m *MemberRepoImpl) GetDeliverAddress(memberId int64) []*member.Address {
-	addresses := []*member.Address{}
+func (m *MemberRepoImpl) GetDeliverAddress(memberId int64) []*member.ConsigneeAddress {
+	addresses := []*member.ConsigneeAddress{}
 	m.Connector.GetOrm().Select(&addresses, "member_id= $1", memberId)
 	return addresses
 }
 
 // 获取配送地址
-func (m *MemberRepoImpl) GetSingleDeliverAddress(memberId, deliverId int64) *member.Address {
-	var address member.Address
+func (m *MemberRepoImpl) GetSingleDeliverAddress(memberId, deliverId int64) *member.ConsigneeAddress {
+	var address member.ConsigneeAddress
 	err := m.Connector.GetOrm().Get(deliverId, &address)
 
 	if err == nil && address.MemberId == memberId {

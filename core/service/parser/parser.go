@@ -64,8 +64,8 @@ func round(f float32, n int) float64 {
 	return math.Round(float64(f), n)
 }
 
-func Address(src *proto.SAddress) *member.Address {
-	return &member.Address{
+func Address(src *proto.SAddress) *member.ConsigneeAddress {
+	return &member.ConsigneeAddress{
 		Id:             src.ID,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
@@ -282,9 +282,11 @@ func Order(src *proto.SSingleOrder) *order.ComplexOrder {
 		PackageFee:     src.PackageFee,
 		FinalAmount:    src.FinalAmount,
 
-		ConsigneePerson: src.Consignee.ConsigneePerson,
+		Consignee: &order.ComplexConsignee{
+		ConsigneePerson:src.Consignee.ConsigneePerson,
 		ConsigneePhone:  src.Consignee.ConsigneePhone,
 		ShippingAddress: src.Consignee.ShippingAddress,
+	},
 		BuyerComment:    src.BuyerComment,
 		CreateTime:      src.SubmitTime,
 		State:           src.State,
@@ -401,9 +403,9 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 		PackageFee:     src.PackageFee,
 		FinalAmount:    src.FinalAmount,
 		Consignee: &proto.SConsigneeInfo{
-			ConsigneePerson: src.ConsigneePerson,
-			ConsigneePhone:  src.ConsigneePhone,
-			ShippingAddress: src.ShippingAddress,
+			ConsigneePerson: src.Consignee.ConsigneePerson,
+			ConsigneePhone:  src.Consignee.ConsigneePhone,
+			ShippingAddress: src.Consignee.ShippingAddress,
 		},
 		BuyerComment: src.BuyerComment,
 		SubmitTime:   src.CreateTime,

@@ -467,7 +467,7 @@ func (p *profileManagerImpl) RemoveBankCard(backCardId int64) error {
 }
 
 // 创建配送地址
-func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {
+func (p *profileManagerImpl) CreateDeliver(v *member.ConsigneeAddress) member.IDeliverAddress {
 	v.MemberId = p.memberId
 	return newDeliver(v, p.repo, p.valueRepo)
 }
@@ -661,12 +661,12 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 var _ member.IDeliverAddress = new(addressImpl)
 
 type addressImpl struct {
-	_value      *member.Address
+	_value      *member.ConsigneeAddress
 	_memberRepo member.IMemberRepo
 	_valRepo    valueobject.IValueRepo
 }
 
-func newDeliver(v *member.Address, memberRepo member.IMemberRepo,
+func newDeliver(v *member.ConsigneeAddress, memberRepo member.IMemberRepo,
 	valRepo valueobject.IValueRepo) member.IDeliverAddress {
 	d := &addressImpl{
 		_value:      v,
@@ -680,11 +680,11 @@ func (p *addressImpl) GetDomainId() int64 {
 	return p._value.Id
 }
 
-func (p *addressImpl) GetValue() member.Address {
+func (p *addressImpl) GetValue() member.ConsigneeAddress {
 	return *p._value
 }
 
-func (p *addressImpl) SetValue(v *member.Address) error {
+func (p *addressImpl) SetValue(v *member.ConsigneeAddress) error {
 	if p._value.MemberId == v.MemberId {
 		if err := p.checkValue(v); err != nil {
 			return err
@@ -695,7 +695,7 @@ func (p *addressImpl) SetValue(v *member.Address) error {
 }
 
 // 设置地区中文名
-func (p *addressImpl) renewAreaName(v *member.Address) string {
+func (p *addressImpl) renewAreaName(v *member.ConsigneeAddress) string {
 	//names := p._valRepo.GetAreaNames([]int{
 	//	v.Province,
 	//	v.City,
@@ -709,7 +709,7 @@ func (p *addressImpl) renewAreaName(v *member.Address) string {
 	return p._valRepo.GetAreaString(v.Province, v.City, v.District)
 }
 
-func (p *addressImpl) checkValue(v *member.Address) error {
+func (p *addressImpl) checkValue(v *member.ConsigneeAddress) error {
 	v.DetailAddress = strings.TrimSpace(v.DetailAddress)
 	v.ConsigneeName = strings.TrimSpace(v.ConsigneeName)
 	v.ConsigneePhone = strings.TrimSpace(v.ConsigneePhone)

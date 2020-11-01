@@ -129,13 +129,13 @@ type IMemberRepo interface {
 	SaveLevelUpLog(l *LevelUpLog) (int32, error)
 
 	// 保存地址
-	SaveDeliver(*Address) (int64, error)
+	SaveDeliver(*ConsigneeAddress) (int64, error)
 
 	// 获取全部配送地址
-	GetDeliverAddress(memberId int64) []*Address
+	GetDeliverAddress(memberId int64) []*ConsigneeAddress
 
 	// 获取配送地址
-	GetSingleDeliverAddress(memberId, addressId int64) *Address
+	GetSingleDeliverAddress(memberId, addressId int64) *ConsigneeAddress
 
 	// 删除配送地址
 	DeleteAddress(memberId, addressId int64) error

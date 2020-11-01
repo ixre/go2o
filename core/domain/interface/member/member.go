@@ -156,7 +156,7 @@ type (
 		// 审核实名认证,若重复审核将返回错误
 		ReviewTrustedInfo(pass bool, remark string) error
 		// 创建配送地址
-		CreateDeliver(*Address) IDeliverAddress
+		CreateDeliver(*ConsigneeAddress) IDeliverAddress
 		// 获取配送地址
 		GetDeliverAddress() []IDeliverAddress
 		// 获取配送地址
@@ -411,13 +411,14 @@ type (
 	// 收货地址
 	IDeliverAddress interface {
 		GetDomainId() int64
-		GetValue() Address
-		SetValue(*Address) error
+		GetValue() ConsigneeAddress
+		SetValue(*ConsigneeAddress) error
 		Save() (int64, error)
 	}
 
+
 	// 收货地址
-	Address struct {
+	ConsigneeAddress struct {
 		//编号
 		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		//会员编号
