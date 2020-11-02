@@ -194,12 +194,17 @@ func (o *wholesaleOrderImpl) appendToExpressCalculator(ue express.IUserExpress,
 
 // 转换订单商品
 func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.ComplexItem {
+	snap := o.itemRepo.GetSalesSnapshot(i.SnapshotId)
 	it := &order.ComplexItem{
 		ID:             i.ID,
-		OrderId:        i.OrderId,
-		ItemId:         int64(i.ItemId),
-		SkuId:          int64(i.SkuId),
-		SnapshotId:     int64(i.SnapshotId),
+		ItemId:         i.ItemId,
+		SkuId:          i.SkuId,
+		SkuWord:        snap.Sku,
+		SnapshotId:     i.SnapshotId,
+		ItemTitle:      snap.GoodsTitle,
+		MainImage:      snap.Image,
+		Price:          i.Price,
+		FinalPrice:     0,
 		Quantity:       i.Quantity,
 		ReturnQuantity: i.ReturnQuantity,
 		Amount:         float64(i.Amount),

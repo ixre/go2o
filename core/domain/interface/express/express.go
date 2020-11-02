@@ -47,7 +47,7 @@ const (
 var (
 	//todo: 选择一些主流的快递
 	// 系统支持的快递服务商
-	SupportedExpressProvider = []*ExpressProvider{
+	SupportedExpressProvider = []*Provider{
 		NewExpressProvider("安能快递", "A-E", "ANE66", "ANE66"),
 		NewExpressProvider("百世汇通", "常用,A-E", "HTKY", "HTKY"),
 		NewExpressProvider("CCES", "A-E", "CCES", "CCES"),
@@ -154,13 +154,13 @@ type (
 
 	IExpressRepo interface {
 		// 获取所有快递公司
-		GetExpressProviders() []*ExpressProvider
+		GetExpressProviders() []*Provider
 
 		// 获取快递公司
-		GetExpressProvider(id int32) *ExpressProvider
+		GetExpressProvider(id int32) *Provider
 
 		// 保存快递公司
-		SaveExpressProvider(v *ExpressProvider) (int32, error)
+		SaveExpressProvider(v *Provider) (int32, error)
 
 		// 获取用户的快递
 		GetUserExpress(userId int) IUserExpress
@@ -185,13 +185,13 @@ type (
 	}
 
 	// 快递服务商
-	ExpressProvider struct {
+	Provider struct {
 		// 快递公司编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 快递名称
 		Name string `db:"name"`
 		// 首字母，用于索引分组
-		FirstLetter string `db:"letter"`
+		FirstLetter string `db:"-"`//`db:"letter"`
 		// 分组,多个组,用","隔开
 		GroupFlag string `db:"group_flag"`
 		// 快递公司编码
@@ -247,8 +247,8 @@ type (
 	}
 )
 
-func NewExpressProvider(name, group, code, apiCode string) *ExpressProvider {
-	return &ExpressProvider{
+func NewExpressProvider(name, group, code, apiCode string) *Provider {
+	return &Provider{
 		Name:      name,
 		GroupFlag: group,
 		Code:      code,

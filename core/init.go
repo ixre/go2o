@@ -164,7 +164,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(afterSales.RefundOrder{}, "sale_refund")
 
 	// Express
-	orm.Mapping(express.ExpressProvider{}, "express_provider")
+	orm.Mapping(express.Provider{}, "express_provider")
 	orm.Mapping(express.ExpressTemplate{}, "mch_express_template")
 	orm.Mapping(express.ExpressAreaTemplate{}, "express_area_set")
 

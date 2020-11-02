@@ -10,7 +10,7 @@ package order
  * history :
  */
 
-type(
+type (
 	// 订单复合信息
 	ComplexOrder struct {
 		// 订单编号
@@ -62,7 +62,7 @@ type(
 	}
 
 	// 收货人信息
-	ComplexConsignee struct{
+	ComplexConsignee struct {
 		// 收货人
 		ConsigneePerson string
 		// 收货人联系电话
@@ -75,16 +75,22 @@ type(
 	ComplexItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
-		// 订单编号
-		OrderId int64 `db:"order_id"`
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// 商品SKU编号
 		SkuId int64 `db:"sku_id"`
 		// SKU名称
-		SkuDesc string `db:"-"`
+		SkuWord string `db:"-"`
 		// 快照编号
 		SnapshotId int64 `db:"snap_id"`
+		// 商品标题
+		ItemTitle string `db:"item_title"`
+		// 商品图片
+		MainImage string `db:"image"`
+		// 商品单价
+		Price float32 `db:"-"`
+		// 商品实际单价
+		FinalPrice float32 `db:"-"`
 		// 数量
 		Quantity int32 `db:"quantity"`
 		// 退回数量(退货)

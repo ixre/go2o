@@ -31,7 +31,7 @@ func NewExpressService(rep express.IExpressRepo) *expressService {
 
 // 获取快递公司
 func (e *expressService) GetExpressProvider(_ context.Context, name *proto.IdOrName) (*proto.SExpressProvider, error) {
-	var v *express.ExpressProvider
+	var v *express.Provider
 	if name.Id > 0 {
 		v = e._rep.GetExpressProvider(int32(name.Id))
 	} else {
@@ -205,7 +205,7 @@ func (e *expressService) GetAllAreaTemplate(userId int64,
 	return []express.ExpressAreaTemplate{}
 }
 
-func (e *expressService) parseProviderDto(v *express.ExpressProvider) *proto.SExpressProvider {
+func (e *expressService) parseProviderDto(v *express.Provider) *proto.SExpressProvider {
 	return &proto.SExpressProvider{
 		Id:        int64(v.Id),
 		Name:      v.Name,
@@ -216,8 +216,8 @@ func (e *expressService) parseProviderDto(v *express.ExpressProvider) *proto.SEx
 	}
 }
 
-func (e *expressService) parseProvider(r *proto.SExpressProvider) *express.ExpressProvider {
-	return &express.ExpressProvider{
+func (e *expressService) parseProvider(r *proto.SExpressProvider) *express.Provider {
+	return &express.Provider{
 		Id:          int32(r.Id),
 		Name:        r.Name,
 		FirstLetter: r.Letter,

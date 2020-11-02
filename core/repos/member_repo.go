@@ -78,6 +78,7 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 	if m.storage.Get(key, &e) != nil {
 		if err := m.Connector.GetOrm().Get(memberId, e); err != nil {
 			if err == sql.ErrNoRows {
+				//todo: 没有资料应该到会员注册时候创建
 				e.MemberId = memberId
 				orm.Save(m.GetOrm(), e, 0)
 			}

@@ -1013,12 +1013,17 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 
 // 转换订单商品
 func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexItem {
+	snap := o.itemRepo.GetSalesSnapshot(i.SnapshotId)
 	it := &order.ComplexItem{
 		ID:             i.ID,
-		OrderId:        i.OrderId,
-		ItemId:         int64(i.ItemId),
-		SkuId:          int64(i.SkuId),
-		SnapshotId:     int64(i.SnapshotId),
+		ItemId:         i.ItemId,
+		SkuId:          i.SkuId,
+		SkuWord:        "-",
+		SnapshotId:     i.SnapshotId,
+		ItemTitle:      snap.GoodsTitle,
+		MainImage:      snap.Image,
+		Price:          i.Price,
+		FinalPrice:     0,
 		Quantity:       i.Quantity,
 		ReturnQuantity: i.ReturnQuantity,
 		Amount:         float64(i.Amount),
