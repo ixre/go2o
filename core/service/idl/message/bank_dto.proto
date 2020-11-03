@@ -7,9 +7,9 @@ message BankCardAddRequest {
   SBankCardInfo Value = 2;
 }
 
-message BankCardUserIdRequest {
-  sint64 OwnerId = 1;
-  sint64 BankCardId = 2;
+message BankCardRequest {
+  int64 OwnerId = 1;
+  string BankCardNo = 2;
 }
 
 message BankCardListResponse {
@@ -19,18 +19,23 @@ message BankCardListResponse {
 
 /** 会员银行卡 */
 message SBankCardInfo {
-  /** 编号 */
-  sint64 Id = 1;
   /** 银行名称 */
   string BankName = 2;
   /** 账户名 */
   string AccountName = 3;
   /** 账号 */
-  string Account = 4;
+  string AccountNo = 4;
+  // 银行编号
+  int32 BankId  = 5;
+  // 银行卡代码
+  string BankCode = 6;
+  // 快捷支付授权码
+  string AuthCode = 7;
+
   /** 网点名称 */
-  string Network = 5;
+  string Network = 8;
   /** 状态 */
-  sint32 State = 6;
+  sint32 State = 9;
   //更新时间
-  sint64 UpdateTime = 7;
+  sint64 UpdateTime = 10;
 }

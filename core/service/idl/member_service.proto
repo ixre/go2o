@@ -78,7 +78,7 @@ service MemberService {
   rpc AddBankCard (BankCardAddRequest) returns (Result) {
   }
   // 移除绑定的银行卡
-  rpc RemoveBankCard (BankCardUserIdRequest) returns (Result) {
+  rpc RemoveBankCard (BankCardRequest) returns (Result) {
   }
   /** 激活会员,memberId */
   rpc Active (Int64) returns (Result) {

@@ -105,8 +105,8 @@ var (
 	ErrNotSetArea = domain.NewError(
 		"err_not_set_area", "地址不正确")
 
-	ErrNoSuchBankInfo = domain.NewError(
-		"err_no_such_bank_info", "请完善银行卡信息")
+	ErrBankCardIsExists = domain.NewError(
+		"err_member_bank_card_is_exists", "银行卡已绑定")
 
 	ErrBankInfo = domain.NewError(
 		"err_member_bank_info", "银行卡信息不正确")
@@ -123,11 +123,8 @@ var (
 	ErrBankNetwork = domain.NewError(
 		"err_member_bank_network", "开户银行支行不正确")
 
-	ErrBankInfoLocked = domain.NewError(
-		"err_bank_info_locked", "银行卡信息已锁定,无法更改")
-
-	ErrBankInfoNoYetSet = domain.NewError(
-		"err_bank_info_no_yet_set", "银行卡信息尚未设置")
+	ErrBankNoSuchCard = domain.NewError(
+		"err_bank_no_such_card", "银行卡未绑定")
 
 	ErrIncorrectAmount = domain.NewError(
 		"err_balance_amount", "金额错误")

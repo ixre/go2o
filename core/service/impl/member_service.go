@@ -826,9 +826,9 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 }
 
 // 解锁银行卡信息
-func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardUserIdRequest) (*proto.Result, error) {
+func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
-	err := m.Profile().RemoveBankCard(r.BankCardId)
+	err := m.Profile().RemoveBankCard(r.BankCardNo)
 	return s.result(err), nil
 }
 
@@ -876,16 +876,21 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 // 获取银行卡
 func (s *memberService) GetBankCards(_ context.Context, id *proto.Int64) (*proto.BankCardListResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: id.Value})
-	b := m.Profile().GetBank()
-	arr := make([]*proto.SBankCardInfo, 0)
-	arr = append(arr, &proto.SBankCardInfo{
-		Id:          -1,
-		BankName:    b.BankName,
-		AccountName: b.AccountName,
-		Account:     b.Account,
-		Network:     b.Network,
-		State:       int32(b.State),
-	})
+	b := m.Profile().GetBankCards()
+	arr := make([]*proto.SBankCardInfo, len(b))
+	for i,v :=range b{
+		arr[i] =  &proto.SBankCardInfo{
+			BankName:             v.BankName,
+			AccountName:          v.AccountName,
+			AccountNo:            v.BankAccount,
+			BankId:               int32(v.BankId),
+			BankCode:             v.BankCode,
+			AuthCode:             v.AuthCode,
+			Network:              v.Network,
+			State:                int32(v.State),
+			UpdateTime:           v.CreateTime,
+		}
+	}
 	return &proto.BankCardListResponse{
 		Value: arr,
 	}, nil
@@ -894,17 +899,19 @@ func (s *memberService) GetBankCards(_ context.Context, id *proto.Int64) (*proto
 // 保存银行卡
 func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
-	var v = &member.BankInfo{
-		BankName:    r.Value.BankName,
+	var v = &member.BankCard{
+		MemberId:    r.OwnerId,
+		BankAccount: r.Value.AccountNo,
 		AccountName: r.Value.AccountName,
-		Account:     r.Value.Account,
+		BankId:      int(r.Value.BankId),
+		BankName:    r.Value.BankName,
+		BankCode:    r.Value.BankCode,
 		Network:     r.Value.Network,
-		State:       int(r.Value.State),
+		AuthCode:    r.Value.AuthCode,
+		State:       int16(r.Value.State),
 	}
-	if err := m.Profile().SaveBank(v); err != nil {
-		return s.error(err), nil
-	}
-	return s.success(nil), nil
+	err := m.Profile().AddBankCard(v)
+	return s.result(err), nil
 }
 
 // 实名认证信息
