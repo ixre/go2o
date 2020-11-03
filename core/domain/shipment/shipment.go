@@ -115,7 +115,7 @@ func (s *shipmentOrderImpl) UpdateLog() error {
 }
 
 // 智能选择门店
-func (t *shipmentOrderImpl) SmartChoiceShop(address string) (shop.IShop, error) {
+func (s *shipmentOrderImpl) SmartChoiceShop(address string) (shop.IShop, error) {
 	panic("not implement")
 	/*
 
