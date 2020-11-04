@@ -151,13 +151,12 @@ func (a *accountImpl) SettleOrder(orderNo string, amount int, tradeFee int,
 }
 
 func (a *accountImpl) getWallet() wallet.IWallet {
-	iw := a.walletRepo.GetWalletByUserId(int64(a.GetValue().MchId), wallet.TMerchant)
+	iw := a.walletRepo.GetWalletByUserId(a.GetValue().MchId, wallet.TMerchant)
 	if iw == nil {
-		iw = a.walletRepo.CreateWallet(&wallet.Wallet{
-			UserId:     int64(a.GetValue().MchId),
-			WalletType: wallet.TMerchant,
-			WalletFlag: wallet.FlagCharge | wallet.FlagDiscount,
-		})
+		iw = a.walletRepo.CreateWallet(a.GetValue().MchId,
+			wallet.TMerchant,
+			"MchWallet",
+			wallet.FlagCharge|wallet.FlagDiscount)
 		iw.Save()
 	}
 	return iw

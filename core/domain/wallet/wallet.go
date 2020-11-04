@@ -27,12 +27,12 @@ type WalletImpl struct {
 }
 
 func (w *WalletImpl) GetAggregateRootId() int64 {
-	return w._value.ID
+	return w._value.Id
 }
 
 func (w *WalletImpl) Hash() string {
 	if w._value.HashCode == "" {
-		str := fmt.Sprintf("%d&%d*%d", w._value.UserId, w._value.WalletType, time.Now().Unix)
+		str := fmt.Sprintf("%d&%d*%d", w._value.UserId, w._value.WalletType, time.Now().Unix())
 		hash := algorithm.DJBHash([]byte(str))
 		w._value.HashCode = strconv.Itoa(hash)
 	}
@@ -51,7 +51,7 @@ func (w *WalletImpl) Get() wallet.Wallet {
 }
 
 func (w *WalletImpl) State() int {
-	return w._value.State
+	return int(w._value.State)
 }
 
 func (w *WalletImpl) getLog(logId int64) *wallet.WalletLog {
@@ -80,7 +80,7 @@ func (w *WalletImpl) Save() (int64, error) {
 		if err2 != nil {
 			return id, err
 		}
-		w._value.ID = id
+		w._value.Id = id
 	}
 	return w.GetAggregateRootId(), err
 }
@@ -110,8 +110,8 @@ func (w *WalletImpl) checkWallet() error {
 	if flag := w._value.WalletFlag; flag <= 0 {
 		panic("incorrect wallet flag:" + strconv.Itoa(flag))
 	}
-	if len(w._value.Remark) > 40 {
-		return wallet.ErrRemarkLength
+	if w._value.WalletName == "" || len(w._value.WalletName) > 40 {
+		return wallet.ErrWalletName
 	}
 	// 判断是否存在
 	match := w._repo.CheckWalletUserMatch(w._value.UserId,
@@ -169,8 +169,8 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, opuId in
 		OuterChan:    "",
 		OuterNo:      "",
 		Value:        value,
-		OperatorId:   opuId,
-		OperatorName: strings.TrimSpace(opuName),
+		OprUid:   opuId,
+		OprName: strings.TrimSpace(opuName),
 		Remark:       "",
 		ReviewState:  wallet.ReviewPass,
 		ReviewRemark: "",
@@ -194,7 +194,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 	}
 	id, err := util.I64Err(w._repo.SaveWalletLog_(l))
 	if err == nil {
-		l.ID = id
+		l.Id = id
 	}
 	return err
 }
@@ -450,12 +450,13 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 }
 
 // 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
-func (w *WalletImpl) RequestTakeOut(value int, tradeFee int, kind int, title string) (int64, string, error) {
-	if value == 0 {
+func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title string,
+	accountNo string,accountName string,bankName string) (int64, string, error) {
+	if amount == 0 {
 		return 0, "", wallet.ErrAmountZero
 	}
-	if value < 0 {
-		value = -value
+	if amount < 0 {
+		amount = -amount
 	}
 	if kind != wallet.KTakeOutToBankCard &&
 		kind != wallet.KTakeOutToThirdPart && kind < 20 {
@@ -466,29 +467,32 @@ func (w *WalletImpl) RequestTakeOut(value int, tradeFee int, kind int, title str
 		return 0, "", wallet.ErrTakeOutPause
 	}
 	// 判断最低提现和最高提现
-	if value < wallet.MinTakeOutAmount {
+	if amount < wallet.MinTakeOutAmount {
 		return 0, "", wallet.ErrLessThanMinTakeAmount
 	}
-	if value > wallet.MaxTakeOutAmount {
+	if amount > wallet.MaxTakeOutAmount {
 		return 0, "", wallet.ErrMoreThanMinTakeAmount
 	}
 	// 余额是否不足
-	if w._value.Balance < value+tradeFee {
+	if w._value.Balance < amount+tradeFee {
 		return 0, "", wallet.ErrOutOfAmount
 	}
 	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
-	w._value.Balance -= value
-	l := w.createWalletLog(kind, -(value - tradeFee), title, 0, "")
+	w._value.Balance -= amount
+	l := w.createWalletLog(kind, -(amount - tradeFee), title, 0, "")
 	l.TradeFee = -tradeFee
 	l.OuterNo = tradeNo
 	l.ReviewState = wallet.ReviewAwaiting
 	l.ReviewRemark = ""
+	l.BankName = bankName
+	l.AccountNo	 = accountNo
+	l.AccountName = accountName
 	l.Balance = w._value.Balance
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()
 	}
-	return l.ID, l.OuterNo, err
+	return l.Id, l.OuterNo, err
 }
 
 func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string, opuId int, opuName string) error {
@@ -513,8 +517,8 @@ func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string, opuId
 			return err
 		}
 	}
-	l.OperatorId = opuId
-	l.OperatorName = opuName
+	l.OprUid = opuId
+	l.OprName = opuName
 	l.UpdateTime = time.Now().Unix()
 	return w.saveWalletLog(l)
 }

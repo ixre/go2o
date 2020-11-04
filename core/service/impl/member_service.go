@@ -1263,7 +1263,8 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	default:
 		return &proto.WithdrawalResponse{ErrCode: 2, ErrMsg: "未知的提现方式"}, nil
 	}
-	_, tradeNo, err := acc.RequestTakeOut(int(r.Kind), title, int(r.Amount), int(r.TradeFee))
+	_, tradeNo, err := acc.RequestWithdrawal(int(r.Kind), title,
+		int(r.Amount), int(r.TradeFee),r.BankAccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}

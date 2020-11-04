@@ -74,11 +74,12 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 	r.proMRepo = NewProModelRepo(db, orm)
 	r.valueRepo = NewValueRepo("", db, sto)
 	r.userRepo = NewUserRepo(db)
+	r.walletRepo = NewWalletRepo(db)
 	r.notifyRepo = NewNotifyRepo(db, r.registryRepo)
 	r.mssRepo = NewMssRepo(db, r.notifyRepo, r.registryRepo, r.valueRepo)
 	r.expressRepo = NewExpressRepo(db, r.valueRepo)
 	r.shipRepo = NewShipmentRepo(db, r.expressRepo)
-	r.memberRepo = NewMemberRepo(sto, db, r.mssRepo, r.valueRepo, r.registryRepo)
+	r.memberRepo = NewMemberRepo(sto, db,r.walletRepo, r.mssRepo, r.valueRepo, r.registryRepo)
 	r.productRepo = NewProductRepo(db, r.proMRepo, r.valueRepo)
 	r.itemWsRepo = NewItemWholesaleRepo(db)
 	r.catRepo = NewCategoryRepo(db, r.registryRepo, sto)
@@ -89,7 +90,6 @@ func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory 
 	r.promRepo = NewPromotionRepo(db, r.itemRepo, r.memberRepo)
 
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
-	r.walletRepo = NewWalletRepo(db)
 	r.wholesaleRepo = NewWholesaleRepo(db)
 	r.mchRepo = NewMerchantRepo(db, sto, r.wholesaleRepo,
 		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo, r.registryRepo)

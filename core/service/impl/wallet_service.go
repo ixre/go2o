@@ -21,13 +21,7 @@ type walletServiceImpl struct {
 }
 
 func (w *walletServiceImpl) CreateWallet(_ context.Context, r *proto.CreateWalletRequest) (*proto.Result, error) {
-	v := &wallet.Wallet{
-		UserId:     r.UserId,
-		WalletType: int(r.WalletType),
-		WalletFlag: int(r.Flag),
-		Remark:     r.Remark,
-	}
-	iw := w._repo.CreateWallet(v)
+	iw := w._repo.CreateWallet(r.UserId,int(r.WalletType),r.WalletName,int(r.WalletFlag))
 	_, err := iw.Save()
 	return w.result(err), nil
 }
@@ -51,7 +45,7 @@ func (w *walletServiceImpl) GetWallet(_ context.Context, walletId *proto.Int64) 
 func (w *walletServiceImpl) GetWalletLog(_ context.Context, r *proto.WalletLogIDRequest) (*proto.SWalletLog, error) {
 	iw := w._repo.GetWallet(r.WalletId)
 	if iw != nil {
-		if l := iw.GetLog(r.Id); l.ID > 0 {
+		if l := iw.GetLog(r.Id); l.Id > 0 {
 			return w.parseWalletLog(l), nil
 		}
 	}
@@ -122,13 +116,14 @@ func (w *walletServiceImpl) Transfer(_ context.Context, r *proto.TransferRequest
 	return w.result(err), nil
 }
 
-func (w *walletServiceImpl) RequestTakeOut(_ context.Context, r *proto.RequestTakeOutRequest) (ro *proto.Result, err error) {
+func (w *walletServiceImpl) RequestWithdrawal(_ context.Context, r *proto.RequestWithdrawalRequest) (ro *proto.Result, err error) {
 	iw := w._repo.GetWallet(r.WalletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		_, tradeNo, err1 := iw.RequestTakeOut(int(r.Value),
-			int(r.TradeFee), int(r.Kind), r.Title)
+		_, tradeNo, err1 := iw.RequestWithdrawal(int(r.Amount),
+			int(r.TradeFee), int(r.Kind), "提现到银行卡",
+			r.BankName,r.BankAccountName,r.BankAccountNo)
 		if err1 != nil {
 			err = err1
 		} else {
@@ -173,7 +168,7 @@ func (w *walletServiceImpl) PagingWalletLog(_ context.Context, r *proto.PagingWa
 
 func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 	return &proto.SWallet{
-		ID:             v.ID,
+		ID:             v.Id,
 		HashCode:       v.HashCode,
 		NodeId:         int32(v.NodeId),
 		UserId:         v.UserId,
@@ -196,7 +191,7 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 }
 func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog {
 	return &proto.SWalletLog{
-		ID:           l.ID,
+		ID:           l.Id,
 		WalletId:     l.WalletId,
 		Kind:         int32(l.Kind),
 		Title:        l.Title,
@@ -205,8 +200,8 @@ func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog
 		Value:        int32(l.Value),
 		Balance:      int32(l.Balance),
 		TradeFee:     int32(l.TradeFee),
-		OperatorId:   int32(l.OperatorId),
-		OperatorName: l.OperatorName,
+		OperatorId:   int32(l.OprUid),
+		OperatorName: l.OprName,
 		Remark:       l.Remark,
 		ReviewState:  int32(l.ReviewState),
 		ReviewRemark: l.ReviewRemark,

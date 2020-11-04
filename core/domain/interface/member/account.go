@@ -8,6 +8,8 @@
  */
 package member
 
+import "go2o/core/domain/interface/wallet"
+
 const (
 	// 余额账户
 	AccountBalance = 1
@@ -99,6 +101,9 @@ type (
 		// 保存
 		Save() (int64, error)
 
+		// 电子钱包
+		Wallet()wallet.IWallet
+
 		// 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account int, enabled bool) error
 
@@ -152,7 +157,8 @@ type (
 		GetWalletLog(id int32) *WalletAccountLog
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
-		RequestTakeOut(takeKind int, title string, amount int, tradeFee int) (int32, string, error)
+		RequestWithdrawal(takeKind int, title string, amount int,
+			tradeFee int,bankAccountNo string) (int32, string, error)
 
 		// 确认提现
 		ReviewWithdrawal(id int32, pass bool, remark string) error
@@ -198,6 +204,8 @@ type (
 		FreezeBalance float32 `db:"freeze_balance"`
 		// 失效的账户余额
 		ExpiredBalance float32 `db:"expired_balance"`
+		// 钱包代码
+		WalletCode string `db:"wallet_code"`
 		//奖金账户余额
 		WalletBalance float32 `db:"wallet_balance"`
 		//冻结赠送金额

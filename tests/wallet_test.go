@@ -14,11 +14,7 @@ func TestCreateWallet(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	if wlt == nil {
-		wl := &wallet.Wallet{
-			UserId:     1,
-			WalletType: wallet.TMerchant,
-		}
-		wlt = repo.CreateWallet(wl)
+		wlt = repo.CreateWallet(1,wallet.TMerchant,"商户钱包",wallet.FlagCharge|wallet.FlagDiscount)
 	}
 	id, err := wlt.Save()
 	if err != nil {
@@ -129,7 +125,9 @@ func TestTakeOutWalletFail(t *testing.T) {
 	wlt := repo.GetWallet(walletId)
 	var amount = 10000
 	balance := wlt.Get().Balance
-	id, _, err := wlt.RequestTakeOut(-amount, 200, wallet.KTakeOutToBankCard, "提现到银行卡")
+	id, _, err := wlt.RequestWithdrawal(-amount, 200,
+		wallet.KTakeOutToBankCard, "提现到银行卡",
+		"6226220285888888","","")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -155,7 +153,9 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 	wlt := repo.GetWallet(walletId)
 	var amount = 10000
 	balance := wlt.Get().Balance
-	id, _, err := wlt.RequestTakeOut(-amount, 200, wallet.KTakeOutToBankCard, "提现到银行卡")
+	id, _, err := wlt.RequestWithdrawal(-amount, 200,
+		wallet.KTakeOutToBankCard, "提现到银行卡",
+		"","","")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

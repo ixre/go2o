@@ -24,20 +24,36 @@ type WalletRepoImpl struct {
 	_conn db.Connector
 }
 
-func (w *WalletRepoImpl) CreateWallet(v *wallet.Wallet) wallet.IWallet {
-	if v != nil {
-		return wi.NewWallet(v, w)
+func (w *WalletRepoImpl) CreateWallet(userId int64,walletType int,walletName string,flag int) wallet.IWallet {
+	return w.createWallet1(&wallet.Wallet{
+		UserId:     userId,
+		WalletType: walletType,
+		WalletName: walletName,
+		WalletFlag: flag,
+	})
+}
+
+func (w *WalletRepoImpl) createWallet1(v *wallet.Wallet)wallet.IWallet{
+	if v != nil{
+		return wi.NewWallet(v,w)
 	}
 	return nil
 }
 
 func (w *WalletRepoImpl) GetWallet(walletId int64) wallet.IWallet {
-	return w.CreateWallet(w.GetWallet_(walletId))
+	return w.createWallet1(w.getWallet_(walletId))
 }
+
+
+func (w *WalletRepoImpl) GetWalletByCode(code string) wallet.IWallet {
+	l := w.GetWalletBy_("hash_code= $1", code)
+	return w.createWallet1(l)
+}
+
 
 func (w *WalletRepoImpl) GetWalletByUserId(userId int64, walletType int) wallet.IWallet {
 	l := w.GetWalletBy_("user_id= $1 AND wallet_type= $2 LIMIT 1", userId, walletType)
-	return w.CreateWallet(l)
+	return w.createWallet1(l)
 }
 
 func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool {
@@ -111,7 +127,7 @@ func (w *WalletRepoImpl) SelectWalletLog_(where string, v ...interface{}) []*wal
 
 // Save WalletLog
 func (w *WalletRepoImpl) SaveWalletLog_(v *wallet.WalletLog) (int, error) {
-	id, err := orm.Save(w._orm, v, int(v.ID))
+	id, err := orm.Save(w._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WalletLog")
 	}
@@ -137,7 +153,7 @@ func (w *WalletRepoImpl) BatchDeleteWalletLog_(where string, v ...interface{}) (
 }
 
 // Get Wallet
-func (w *WalletRepoImpl) GetWallet_(primary interface{}) *wallet.Wallet {
+func (w *WalletRepoImpl) getWallet_(primary interface{}) *wallet.Wallet {
 	e := wallet.Wallet{}
 	err := w._orm.Get(primary, &e)
 	if err == nil {
@@ -164,7 +180,7 @@ func (w *WalletRepoImpl) GetWalletBy_(where string, v ...interface{}) *wallet.Wa
 
 // Select Wallet
 func (w *WalletRepoImpl) SelectWallet_(where string, v ...interface{}) []*wallet.Wallet {
-	list := []*wallet.Wallet{}
+	var list []*wallet.Wallet
 	err := w._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Wallet")
@@ -174,7 +190,7 @@ func (w *WalletRepoImpl) SelectWallet_(where string, v ...interface{}) []*wallet
 
 // Save Wallet
 func (w *WalletRepoImpl) SaveWallet_(v *wallet.Wallet) (int, error) {
-	id, err := orm.Save(w._orm, v, int(v.ID))
+	id, err := orm.Save(w._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Wallet")
 	}

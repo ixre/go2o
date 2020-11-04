@@ -6,11 +6,16 @@ option java_package="com.github.go2o.rpc";
 import "global.proto";
 
 message CreateWalletRequest {
-  sint64 userId = 1;
-  sint32 walletType = 2;
-  sint32 flag = 3;
-  string remark = 4;
+  // 用户编号
+  int64 UserId = 1;
+  // 钱包名称
+  string WalletName = 4;
+  // 钱包类型
+  int32 walletType = 2;
+  // 钱包标志
+  int32 WalletFlag = 3;
 }
+
 message GetWalletRequest {
   sint64 userId = 1;
   sint32 walletType = 2;
@@ -114,7 +119,7 @@ service WalletService {
   }
 
   /** 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费 */
-  rpc RequestTakeOut (RequestTakeOutRequest) returns (Result) {
+  rpc RequestWithdrawal (RequestWithdrawalRequest) returns (Result) {
   }
 
   /** 确认提现 */
@@ -140,12 +145,21 @@ message FinishTakeOutRequest {
   string outerNo = 3;
 }
 
-message RequestTakeOutRequest {
-  sint64 walletId = 1;
-  sint32 value = 2;
-  sint32 tradeFee = 3;
-  sint32 kind = 4;
-  string title = 5;
+message RequestWithdrawalRequest {
+  // 钱包编号
+  int64 WalletId = 1;
+  // 金额
+  int32 Amount = 2;
+  // 手续费
+  int32 TradeFee = 3;
+  // 提现方式
+  sint32 Kind = 4;
+  // 银行名称
+  string BankName = 5;
+  // 银行账号
+  string BankAccountNo = 6;
+  // 银行账户
+  string BankAccountName = 7;
 }
 
 message ReviewTakeOutRequest {

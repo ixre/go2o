@@ -514,6 +514,7 @@ message AccountTransferRequest {
   string Remark = 6;
 }
 
+// 提现申请
 message WithdrawRequest {
   sint64 MemberId = 1;
   // 提现方式
@@ -522,6 +523,8 @@ message WithdrawRequest {
   int32 Amount = 3;
   // 手续费
   int32 TradeFee = 4;
+  // 银行账号,如果不填写,则默认第一张银行
+  string BankAccountNo = 5;
 }
 message WithdrawalResponse {
   sint64 ErrCode = 1;

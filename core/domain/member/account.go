@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -28,19 +29,32 @@ var _ member.IAccount = new(accountImpl)
 
 type accountImpl struct {
 	member       *memberImpl
+	wallet       wallet.IWallet
 	mm           member.IMemberManager
 	value        *member.Account
 	rep          member.IMemberRepo
+	walletRepo   wallet.IWalletRepo
 	registryRepo registry.IRegistryRepo
 }
 
 func NewAccount(m *memberImpl, value *member.Account,
 	rep member.IMemberRepo, mm member.IMemberManager,
+	walletRepo wallet.IWalletRepo,
 	registryRepo registry.IRegistryRepo) member.IAccount {
+	var wal wallet.IWallet
+	if wc := value.WalletCode; len(wc) > 0 {
+		wal = walletRepo.GetWalletByCode(value.WalletCode)
+	} else {
+		flag := wallet.FlagCharge | wallet.FlagDiscount
+		wal = walletRepo.CreateWallet(value.MemberId, 1, "MemberWallet",flag)
+		wal.Save()
+	}
 	return &accountImpl{
 		member:       m,
 		value:        value,
+		wallet:       wal,
 		rep:          rep,
+		walletRepo:   walletRepo,
 		mm:           mm,
 		registryRepo: registryRepo,
 	}
@@ -69,6 +83,10 @@ func (a *accountImpl) Save() (int64, error) {
 		go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), 500)
 	}
 	return n, err
+}
+
+func (a *accountImpl) Wallet() wallet.IWallet {
+	return a.wallet
 }
 
 // 设置优先(默认)支付方式, account 为账户类型
@@ -737,8 +755,8 @@ func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 }
 
 // 请求提现,返回info_id,交易号及错误
-func (a *accountImpl) RequestTakeOut(takeKind int, title string,
-	amount2 int, tradeFee int) (int32, string, error) {
+func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
+	amount2 int, tradeFee int, bankAccountNo string) (int32, string, error) {
 	amount := float32(amount2) / 100
 	if takeKind != member.KindWalletTakeOutToBalance &&
 		takeKind != member.KindWalletTakeOutToBankCard &&

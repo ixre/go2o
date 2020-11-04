@@ -162,3 +162,14 @@ func TestUpdateInviter(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+// 测试钱包
+func TestMemberWallet(t *testing.T){
+	var memberId int64 = 1
+	m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	ic := m.GetAccount()
+	if int(ic.GetValue().WalletBalance*100) != ic.Wallet().Get().Balance{
+		t.Error("钱包金额不符合")
+		t.FailNow()
+	}
+}

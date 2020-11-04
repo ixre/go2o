@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
@@ -44,18 +45,21 @@ type MemberRepoImpl struct {
 	storage storage.Interface
 	db.Connector
 	_orm         orm.Orm
+	walletRepo      wallet.IWalletRepo
 	valueRepo    valueobject.IValueRepo
 	mssRepo      mss.IMssRepo
 	registryRepo registry.IRegistryRepo
 }
 
-func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
+func NewMemberRepo(sto storage.Interface, c db.Connector,
+	walletRepo      wallet.IWalletRepo,mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
 	return &MemberRepoImpl{
 		storage:      sto,
 		Connector:    c,
 		_orm:         c.GetOrm(),
 		mssRepo:      mssRepo,
+		walletRepo: walletRepo,
 		valueRepo:    valRepo,
 		registryRepo: registryRepo,
 	}
@@ -335,7 +339,7 @@ func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 // 创建会员
 func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m.mssRepo, m.valueRepo, m.registryRepo)
+		m.walletRepo,m.mssRepo, m.valueRepo, m.registryRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存
