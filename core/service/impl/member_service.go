@@ -1251,20 +1251,15 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	acc := m.GetAccount()
-	var title string
-	switch int(r.Kind) {
-	case member.KindWalletTakeOutToBankCard:
+	kind := member.	KindWalletTakeOutToThirdPart
+	title := "充值到第三方账户"
+	if r.DrawToBank{
+		kind = member.KindWalletTakeOutToBankCard
 		title = "提现到银行卡"
-	case member.KindWalletTakeOutToBalance:
-		title = "充值账户"
-	case member.KindWalletTakeOutToThirdPart:
-		title = "充值到第三方账户"
-	default:
-		return &proto.WithdrawalResponse{ErrCode: 2, ErrMsg: "未知的提现方式"}, nil
 	}
-	_, tradeNo, err := acc.RequestWithdrawal(int(r.Kind), title,
-		int(r.Amount), int(r.TradeFee),r.BankAccountNo)
+	acc := m.GetAccount()
+	_, tradeNo, err := acc.RequestWithdrawal(kind, title,
+		int(r.Amount), int(r.TradeFee),r.AccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}

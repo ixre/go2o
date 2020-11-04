@@ -517,14 +517,14 @@ message AccountTransferRequest {
 // 提现申请
 message WithdrawRequest {
   sint64 MemberId = 1;
-  // 提现方式
-  int32 Kind = 2;
   // 提现金额
-  int32 Amount = 3;
+  int32 Amount = 2;
   // 手续费
-  int32 TradeFee = 4;
-  // 银行账号,如果不填写,则默认第一张银行
-  string BankAccountNo = 5;
+  int32 TradeFee = 3;
+  // 提现方式,1:银行卡 2:第三方钱包
+  bool DrawToBank = 4;
+  // 银行账号或第三方支付钱包
+  string AccountNo = 5;
 }
 message WithdrawalResponse {
   sint64 ErrCode = 1;

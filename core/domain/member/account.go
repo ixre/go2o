@@ -783,7 +783,7 @@ func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
-	amount int, tradeFee int, bankAccountNo string) (int64, string, error) {
+	amount int, tradeFee int, accountNo string) (int64, string, error) {
 	if takeKind != member.KindWalletTakeOutToBalance &&
 		takeKind != member.KindWalletTakeOutToBankCard &&
 		takeKind != member.KindWalletTakeOutToThirdPart {
@@ -798,7 +798,6 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		msg, _ := a.registryRepo.GetValue(registry.MemberTakeOutMessage)
 		return 0, "", errors.New(msg)
 	}
-
 	// 检测是否实名
 	mustTrust,_ := a.registryRepo.GetValue(registry.MemberWithdrawalMustTrust)
 	if mustTrust=="true" {
@@ -807,7 +806,6 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 			return 0, "", member.ErrTakeOutNotTrust
 		}
 	}
-
 	// 检测非正式会员提现
 	lv := a.mm.LevelManager().GetLevelById(a.member.GetValue().Level)
 	if lv != nil && lv.IsOfficial == 0 {
@@ -839,14 +837,27 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 			return 0, "", member.ErrAccountOutOfTakeOutTimes
 		}
 	}
-
+	// 检测银行卡
+	accountName := ""
+	bankName := ""
+	if takeKind == member.KindWalletTakeOutToBankCard {
+		if len(accountNo) == 0{
+			return 0,"",errors.New("未指定提现的银行卡号")
+		}
+		bank := a.member.Profile().GetBankCard(accountNo)
+		if bank == nil {
+			return 0, "", member.ErrBankNoSuchCard
+		}
+		accountName = bank.AccountName
+		bankName = bank.BankName
+	}
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
 	finalAmount := amount - tradeFee
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
 	}
 	id, tradeNo,err := a.wallet.RequestWithdrawal(finalAmount,tradeFee,takeKind,
-		title,bankAccountNo,"","")
+		title,accountNo,accountName,bankName)
 	if err == nil {
 		err = a.asyncWallet()
 		if err == nil {
