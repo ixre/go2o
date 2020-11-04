@@ -249,32 +249,32 @@ message SWallet {
   sint32 NodeId = 3;
   /** 用户编号 */
   sint64 UserId = 4;
+  // 钱包名称
+  string WalletName = 5;
   /** 钱包类型 */
-  sint32 WalletType = 5;
+  sint32 WalletType = 6;
   /** 钱包标志 */
-  sint32 WalletFlag = 6;
+  sint32 WalletFlag = 7;
   /** 余额 */
-  sint32 Balance = 7;
+  sint32 Balance = 8;
   /** 赠送余额 */
-  sint32 PresentBalance = 8;
+  sint32 PresentBalance = 9;
   /** 调整金额 */
-  sint32 AdjustAmount = 9;
+  sint32 AdjustAmount = 10;
   /** 冻结余额 */
-  sint32 FreezeAmount = 10;
+  sint32 FreezeAmount = 11;
   /** 结余金额 */
-  sint32 LatestAmount = 11;
+  sint32 LatestAmount = 12;
   /** 失效账户余额 */
-  sint32 ExpiredAmount = 12;
+  sint32 ExpiredAmount = 13;
   /** 总充值金额 */
-  sint32 TotalCharge = 13;
+  sint32 TotalCharge = 14;
   /** 累计赠送金额 */
-  sint32 TotalPresent = 14;
+  sint32 TotalPresent = 15;
   /** 总支付额 */
-  sint32 TotalPay = 15;
+  sint32 TotalPay = 16;
   /** 状态 */
-  sint32 State = 16;
-  /** 备注 */
-  string Remark = 17;
+  sint32 State = 17;
   /** 创建时间 */
   sint64 CreateTime = 18;
   /** 更新时间 */

@@ -600,99 +600,7 @@ COMMENT ON COLUMN "public".mm_bank_card.auth_code IS '快捷支付授权码';
 COMMENT ON COLUMN "public".mm_bank_card.state IS '状态';
 COMMENT ON COLUMN "public".mm_bank_card.create_time IS '添加时间';
 
--- 删除钱包表 --
-DROP TABLE IF EXISTS "public".wal_wallet CASCADE;
-DROP TABLE IF EXISTS "public".wal_wallet_log CASCADE;
 
-
-
-CREATE TABLE "public".wal_wallet (
-     id              bigserial NOT NULL,
-     hash_code       varchar(40) NOT NULL,
-     node_id         int4 NOT NULL,
-     user_id         int8 NOT NULL,
-     wallet_type     int4 NOT NULL,
-     wallet_flag     int4 NOT NULL,
-     balance         int4 DEFAULT 0 NOT NULL,
-     present_balance int4 NOT NULL,
-     adjust_amount   int4 NOT NULL,
-     freeze_amount   int4 NOT NULL,
-     latest_amount   int4 NOT NULL,
-     expired_amount  int4 NOT NULL,
-     total_charge    int4 DEFAULT 0 NOT NULL,
-     total_present   int4 NOT NULL,
-     total_pay       int4 DEFAULT 0 NOT NULL,
-     state           int2 NOT NULL,
-     remark          varchar(40) NOT NULL,
-     create_time     int8 NOT NULL,
-     update_time     int8 DEFAULT 0 NOT NULL,
-     CONSTRAINT wal_wallet_pkey
-         PRIMARY KEY (id));
-COMMENT ON TABLE "public".wal_wallet IS '钱包';
-COMMENT ON COLUMN "public".wal_wallet.id IS '编号';
-COMMENT ON COLUMN "public".wal_wallet.hash_code IS '哈希值';
-COMMENT ON COLUMN "public".wal_wallet.node_id IS '节点编号';
-COMMENT ON COLUMN "public".wal_wallet.user_id IS '用户编号';
-COMMENT ON COLUMN "public".wal_wallet.wallet_type IS '钱包类型';
-COMMENT ON COLUMN "public".wal_wallet.wallet_flag IS '钱包标志';
-COMMENT ON COLUMN "public".wal_wallet.balance IS '余额';
-COMMENT ON COLUMN "public".wal_wallet.present_balance IS '赠送余额';
-COMMENT ON COLUMN "public".wal_wallet.adjust_amount IS '调整禁遏';
-COMMENT ON COLUMN "public".wal_wallet.freeze_amount IS '冻结金额';
-COMMENT ON COLUMN "public".wal_wallet.latest_amount IS '结余金额';
-COMMENT ON COLUMN "public".wal_wallet.expired_amount IS '失效账户余额';
-COMMENT ON COLUMN "public".wal_wallet.total_charge IS '总充值金额';
-COMMENT ON COLUMN "public".wal_wallet.total_present IS '累计赠送金额';
-COMMENT ON COLUMN "public".wal_wallet.total_pay IS '总支付额';
-COMMENT ON COLUMN "public".wal_wallet.state IS '状态';
-COMMENT ON COLUMN "public".wal_wallet.remark IS '备注';
-COMMENT ON COLUMN "public".wal_wallet.create_time IS '创建时间';
-COMMENT ON COLUMN "public".wal_wallet.update_time IS '更新时间';
-CREATE TABLE "public".wal_wallet_log (
-     id            bigserial NOT NULL,
-     wallet_id     int8 NOT NULL,
-     kind          int4 NOT NULL,
-     title         varchar(45) NOT NULL,
-     outer_chan    varchar(20) NOT NULL,
-     outer_no      varchar(45) NOT NULL,
-     value         int4 NOT NULL,
-     balance       int4 NOT NULL,
-     trade_fee     int4 NOT NULL,
-     opr_uid       int4 NOT NULL,
-     opr_name      varchar(20) NOT NULL,
-     bank_name     varchar(20) NOT NULL,
-     bank_account  varchar(20) NOT NULL,
-     account_name  varchar(20) NOT NULL,
-     review_state  int4 NOT NULL,
-     review_remark varchar(120) NOT NULL,
-     review_time   int8 NOT NULL,
-     remark        varchar(40) NOT NULL,
-     create_time   int8 NOT NULL,
-     update_time   int8 NOT NULL,
-     CONSTRAINT wal_wallet_log_pkey
-         PRIMARY KEY (id));
-COMMENT ON COLUMN "public".wal_wallet_log.id IS '编号';
-COMMENT ON COLUMN "public".wal_wallet_log.wallet_id IS '钱包编号';
-COMMENT ON COLUMN "public".wal_wallet_log.kind IS '业务类型';
-COMMENT ON COLUMN "public".wal_wallet_log.title IS '标题';
-COMMENT ON COLUMN "public".wal_wallet_log.outer_chan IS '外部通道';
-COMMENT ON COLUMN "public".wal_wallet_log.outer_no IS '外部订单号';
-COMMENT ON COLUMN "public".wal_wallet_log.value IS '变动金额';
-COMMENT ON COLUMN "public".wal_wallet_log.balance IS '余额';
-COMMENT ON COLUMN "public".wal_wallet_log.trade_fee IS '交易手续费';
-COMMENT ON COLUMN "public".wal_wallet_log.opr_uid IS '操作人员用户编号';
-COMMENT ON COLUMN "public".wal_wallet_log.opr_name IS '操作人员名称';
-COMMENT ON COLUMN "public".wal_wallet_log.bank_name IS '提现银行';
-COMMENT ON COLUMN "public".wal_wallet_log.bank_account IS '提现银行账号';
-COMMENT ON COLUMN "public".wal_wallet_log.account_name IS '提现银行账户名称';
-COMMENT ON COLUMN "public".wal_wallet_log.review_state IS '审核状态';
-COMMENT ON COLUMN "public".wal_wallet_log.review_remark IS '审核备注';
-COMMENT ON COLUMN "public".wal_wallet_log.review_time IS '审核时间';
-COMMENT ON COLUMN "public".wal_wallet_log.remark IS '备注';
-COMMENT ON COLUMN "public".wal_wallet_log.create_time IS '创建时间';
-COMMENT ON COLUMN "public".wal_wallet_log.update_time IS '更新时间';
-CREATE INDEX wal_wallet_hash_code
-    ON "public".wal_wallet (hash_code);
 
 -- 关联钱包 --
 ALTER TABLE "public".mm_account
@@ -713,8 +621,75 @@ COMMENT ON COLUMN "public".mm_account.total_pay IS '累计支付';
 COMMENT ON COLUMN "public".mm_account.total_expense IS '累计消费';
 
 
-ALTER TABLE "public".wal_wallet
-    ADD COLUMN wallet_name varchar(40) NOT NULL;
+-- 删除钱包表 --
+DROP TABLE IF EXISTS "public".wal_wallet CASCADE;
+DROP TABLE IF EXISTS "public".wal_wallet_log CASCADE;
+
+CREATE TABLE "public".wal_wallet_log (
+                                         id            serial NOT NULL,
+                                         wallet_id     int8 NOT NULL,
+                                         kind          int4 NOT NULL,
+                                         title         varchar(45) NOT NULL,
+                                         outer_chan    varchar(20) NOT NULL,
+                                         outer_no      varchar(45) NOT NULL,
+                                         value         int4 NOT NULL,
+                                         balance       int4 NOT NULL,
+                                         trade_fee     int4 NOT NULL,
+                                         opr_uid       int4 NOT NULL,
+                                         opr_name      varchar(20) NOT NULL,
+                                         account_no    varchar(20) NOT NULL,
+                                         account_name  varchar(20) NOT NULL,
+                                         bank_name     varchar(20) NOT NULL,
+                                         review_state  int4 NOT NULL,
+                                         review_remark varchar(120) NOT NULL,
+                                         review_time   int8 NOT NULL,
+                                         remark        varchar(40) NOT NULL,
+                                         create_time   int8 NOT NULL,
+                                         update_time   int8 NOT NULL,
+                                         CONSTRAINT wal_wallet_log_pkey
+                                             PRIMARY KEY (id));
+COMMENT ON COLUMN "public".wal_wallet_log.id IS '编号';
+COMMENT ON COLUMN "public".wal_wallet_log.wallet_id IS '钱包编号';
+COMMENT ON COLUMN "public".wal_wallet_log.kind IS '业务类型';
+COMMENT ON COLUMN "public".wal_wallet_log.title IS '标题';
+COMMENT ON COLUMN "public".wal_wallet_log.outer_chan IS '外部通道';
+COMMENT ON COLUMN "public".wal_wallet_log.outer_no IS '外部订单号';
+COMMENT ON COLUMN "public".wal_wallet_log.value IS '变动金额';
+COMMENT ON COLUMN "public".wal_wallet_log.balance IS '余额';
+COMMENT ON COLUMN "public".wal_wallet_log.trade_fee IS '交易手续费';
+COMMENT ON COLUMN "public".wal_wallet_log.opr_uid IS '操作人员用户编号';
+COMMENT ON COLUMN "public".wal_wallet_log.opr_name IS '操作人员名称';
+COMMENT ON COLUMN "public".wal_wallet_log.account_no IS '提现账号';
+COMMENT ON COLUMN "public".wal_wallet_log.account_name IS '提现银行账户名称';
+COMMENT ON COLUMN "public".wal_wallet_log.bank_name IS '提现银行';
+COMMENT ON COLUMN "public".wal_wallet_log.review_state IS '审核状态';
+COMMENT ON COLUMN "public".wal_wallet_log.review_remark IS '审核备注';
+COMMENT ON COLUMN "public".wal_wallet_log.review_time IS '审核时间';
+COMMENT ON COLUMN "public".wal_wallet_log.remark IS '备注';
+COMMENT ON COLUMN "public".wal_wallet_log.create_time IS '创建时间';
+COMMENT ON COLUMN "public".wal_wallet_log.update_time IS '更新时间';
+CREATE TABLE "public".wal_wallet (
+                                     id              serial NOT NULL,
+                                     hash_code       varchar(40) NOT NULL,
+                                     node_id         int4 NOT NULL,
+                                     user_id         int8 NOT NULL,
+                                     wallet_type     int4 NOT NULL,
+                                     wallet_flag     int4 NOT NULL,
+                                     wallet_name     varchar(40) NOT NULL,
+                                     balance         int4 DEFAULT 0 NOT NULL,
+                                     present_balance int4 NOT NULL,
+                                     adjust_amount   int4 NOT NULL,
+                                     freeze_amount   int4 NOT NULL,
+                                     latest_amount   int4 NOT NULL,
+                                     expired_amount  int4 NOT NULL,
+                                     total_charge    int4 DEFAULT 0 NOT NULL,
+                                     total_present   int4 NOT NULL,
+                                     total_pay       int4 DEFAULT 0 NOT NULL,
+                                     state           int2 NOT NULL,
+                                     create_time     int8 NOT NULL,
+                                     update_time     int8 DEFAULT 0 NOT NULL,
+                                     CONSTRAINT wal_wallet_pkey
+                                         PRIMARY KEY (id));
 COMMENT ON TABLE "public".wal_wallet IS '钱包';
 COMMENT ON COLUMN "public".wal_wallet.id IS '编号';
 COMMENT ON COLUMN "public".wal_wallet.hash_code IS '哈希值';
@@ -737,28 +712,3 @@ COMMENT ON COLUMN "public".wal_wallet.create_time IS '创建时间';
 COMMENT ON COLUMN "public".wal_wallet.update_time IS '更新时间';
 CREATE INDEX wal_wallet_hash_code
     ON "public".wal_wallet (hash_code);
-
-
-ALTER TABLE "public".wal_wallet_log
-    ADD COLUMN account_no varchar(20) NOT NULL;
-COMMENT ON COLUMN "public".wal_wallet_log.id IS '编号';
-COMMENT ON COLUMN "public".wal_wallet_log.wallet_id IS '钱包编号';
-COMMENT ON COLUMN "public".wal_wallet_log.kind IS '业务类型';
-COMMENT ON COLUMN "public".wal_wallet_log.title IS '标题';
-COMMENT ON COLUMN "public".wal_wallet_log.outer_chan IS '外部通道';
-COMMENT ON COLUMN "public".wal_wallet_log.outer_no IS '外部订单号';
-COMMENT ON COLUMN "public".wal_wallet_log.value IS '变动金额';
-COMMENT ON COLUMN "public".wal_wallet_log.balance IS '余额';
-COMMENT ON COLUMN "public".wal_wallet_log.trade_fee IS '交易手续费';
-COMMENT ON COLUMN "public".wal_wallet_log.opr_uid IS '操作人员用户编号';
-COMMENT ON COLUMN "public".wal_wallet_log.opr_name IS '操作人员名称';
-COMMENT ON COLUMN "public".wal_wallet_log.account_no IS '提现账号';
-COMMENT ON COLUMN "public".wal_wallet_log.account_name IS '提现银行账户名称';
-COMMENT ON COLUMN "public".wal_wallet_log.bank_name IS '提现银行';
-COMMENT ON COLUMN "public".wal_wallet_log.review_state IS '审核状态';
-COMMENT ON COLUMN "public".wal_wallet_log.review_remark IS '审核备注';
-COMMENT ON COLUMN "public".wal_wallet_log.review_time IS '审核时间';
-COMMENT ON COLUMN "public".wal_wallet_log.remark IS '备注';
-COMMENT ON COLUMN "public".wal_wallet_log.create_time IS '创建时间';
-COMMENT ON COLUMN "public".wal_wallet_log.update_time IS '更新时间';
-

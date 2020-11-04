@@ -1322,7 +1322,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().ReviewWithdrawal(int32(r.InfoId), r.Pass, r.Remark)
+		err = m.GetAccount().ReviewWithdrawal(r.InfoId, r.Pass, r.Remark)
 	}
 	return s.error(err), nil
 }
@@ -1333,7 +1333,7 @@ func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithd
 	var err error
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().FinishWithdrawal(int32(r.InfoId), r.TradeNo)
+		err = m.GetAccount().FinishWithdrawal(r.InfoId, r.TradeNo)
 	}
 	return s.error(err), nil
 }

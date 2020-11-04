@@ -158,13 +158,13 @@ type (
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
 		RequestWithdrawal(takeKind int, title string, amount int,
-			tradeFee int,bankAccountNo string) (int32, string, error)
+			tradeFee int,bankAccountNo string) (int64, string, error)
 
 		// 确认提现
-		ReviewWithdrawal(id int32, pass bool, remark string) error
+		ReviewWithdrawal(id int64, pass bool, remark string) error
 
 		// 完成提现
-		FinishWithdrawal(id int32, tradeNo string) error
+		FinishWithdrawal(id int64, tradeNo string) error
 
 		// 将冻结金额标记为失效
 		FreezeExpired(accountKind int, amount float32, remark string) error

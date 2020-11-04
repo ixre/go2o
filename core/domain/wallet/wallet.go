@@ -26,6 +26,7 @@ type WalletImpl struct {
 	_repo  wallet.IWalletRepo
 }
 
+
 func (w *WalletImpl) GetAggregateRootId() int64 {
 	return w._value.Id
 }
@@ -216,6 +217,26 @@ func (w *WalletImpl) Adjust(value int, title, outerNo string, opuId int, opuName
 	return err
 }
 
+// 消费
+func (w *WalletImpl) Consume(amount int, title string, outerNo string) error {
+	if amount > 0 {
+		amount = -amount
+	}
+	if w._value.Balance < -amount {
+		return wallet.ErrOutOfAmount
+	}
+	w._value.Balance += amount
+	w._value.TotalPay += -amount
+	l := w.createWalletLog(wallet.KConsume, amount, title, 0, "")
+	l.OuterNo = outerNo
+	l.Balance = w._value.Balance
+	err := w.saveWalletLog(l)
+	if err == nil {
+		_, err = w.Save()
+	}
+	return err
+}
+
 // 支付抵扣,must是否必须大于0
 func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error {
 	err := w.checkValueOpu(value, false, 0, "")
@@ -338,11 +359,8 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, opuId int,
 		var kind = by
 		// 用户或客服充值、才会计入累计充值记录
 		switch by {
-		case wallet.CUserCharge:
+		case wallet.CUserCharge,wallet.CServiceAgentCharge:
 			kind = wallet.KCharge
-			w._value.TotalCharge += value
-		case wallet.CServiceAgentCharge:
-			kind = wallet.KServiceAgentCharge
 			w._value.TotalCharge += value
 		case wallet.CSystemCharge:
 			kind = wallet.KIncome
@@ -495,7 +513,7 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	return l.Id, l.OuterNo, err
 }
 
-func (w *WalletImpl) ReviewTakeOut(takeId int64, pass bool, remark string, opuId int, opuName string) error {
+func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, opuId int, opuName string) error {
 	if err := w.checkValueOpu(1, true, opuId, opuName); err != nil {
 		return err
 	}

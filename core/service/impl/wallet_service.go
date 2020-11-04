@@ -140,7 +140,7 @@ func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewTake
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.ReviewTakeOut(r.TakeId, r.ReviewPass, r.Remark, int(r.OpuId), r.OpuName)
+		err = iw.ReviewWithdrawal(r.TakeId, r.ReviewPass, r.Remark, int(r.OpuId), r.OpuName)
 	}
 	return w.result(err), nil
 }
@@ -174,6 +174,7 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 		UserId:         v.UserId,
 		WalletType:     int32(v.WalletType),
 		WalletFlag:     int32(v.WalletFlag),
+		WalletName:v.WalletName,
 		Balance:        int32(v.Balance),
 		PresentBalance: int32(v.PresentBalance),
 		AdjustAmount:   int32(v.AdjustAmount),
@@ -184,7 +185,6 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 		TotalPresent:   int32(v.TotalPresent),
 		TotalPay:       int32(v.TotalPay),
 		State:          int32(v.State),
-		Remark:         v.Remark,
 		CreateTime:     v.CreateTime,
 		UpdateTime:     v.UpdateTime,
 	}

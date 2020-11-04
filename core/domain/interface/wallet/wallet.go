@@ -68,14 +68,14 @@ const (
 const (
 	// 赠送金额
 	KCharge = 1
-	// 客服赠送
-	KServiceAgentCharge = 2
 	// 钱包收入
-	KIncome = 3
+	KIncome = 2
 	// 失效
-	KExpired = 4
+	KExpired = 3
 	// 客服调整
-	KAdjust = 5
+	KAdjust = 4
+	// 消费
+	KConsume = 5
 	// 扣除
 	KDiscount = 6
 	// 转入
@@ -147,23 +147,26 @@ type (
 		// 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
 		Adjust(value int, title, outerNo string, opuId int, opuName string) error
 
-		// 支付抵扣,must是否必须大于0
-		Discount(value int, title, outerNo string, must bool) error
+		// 消费
+		Consume(amount int,title string,outerNo string) error
+
+		// 抵扣,must是否必须大于0
+		Discount(amount int, title, outerNo string, must bool) error
 
 		// 冻结余额
-		Freeze(value int, title, outerNo string, opuId int, opuName string) error
+		Freeze(amount int, title, outerNo string, opuId int, opuName string) error
 
 		// 解冻金额
-		Unfreeze(value int, title, outerNo string, opuId int, opuName string) error
+		Unfreeze(amount int, title, outerNo string, opuId int, opuName string) error
 
 		// 将冻结金额标记为失效
-		FreezeExpired(value int, remark string) error
+		FreezeExpired(amount int, remark string) error
 
 		// 收入
-		Income(value int, tradeFee int, title, outerNo string) error
+		Income(amount int, tradeFee int, title, outerNo string) error
 
 		// 充值,kind: 业务类型
-		Charge(value int, by int, title, outerNo string, opuId int, opuName string) error
+		Charge(value int, kind int, title, outerNo string, opuId int, opuName string) error
 
 		// 退款,kind: 业务类型
 		Refund(value int, kind int, title, outerNo string, opuId int, opuName string) error
@@ -179,7 +182,7 @@ type (
 		accountNo string,accountName string,bankName string) (int64, string, error)
 
 		// 确认提现
-		ReviewTakeOut(takeId int64, pass bool, remark string, opuId int, opuName string) error
+		ReviewWithdrawal(takeId int64, pass bool, remark string, opuId int, opuName string) error
 
 		// 完成提现
 		FinishWithdrawal(takeId int64, outerNo string) error
@@ -266,8 +269,6 @@ type (
 		TotalPay int `db:"total_pay"`
 		// 状态
 		State int16 `db:"state"`
-		// 备注
-		Remark string `db:"remark"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
