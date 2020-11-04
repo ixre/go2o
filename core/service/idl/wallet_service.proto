@@ -30,8 +30,8 @@ message AdjustRequest {
   sint32 value = 2;
   string title = 3;
   string outerNo = 4;
-  sint32 opuId = 5;
-  string opuName = 6;
+  sint32 oprUid = 5;
+  string oprName = 6;
 }
 
 message DiscountRequest {
@@ -47,8 +47,8 @@ message FreezeRequest {
   sint32 value = 2;
   string title = 3;
   string outerNo = 4;
-  sint32 opuId = 5;
-  string opuName = 6;
+  sint32 oprUid = 5;
+  string oprName = 6;
 }
 
 message UnfreezeRequest {
@@ -56,8 +56,8 @@ message UnfreezeRequest {
   sint32 value = 2;
   string title = 3;
   string outerNo = 4;
-  sint32 opuId = 5;
-  string opuName = 6;
+  sint32 oprUid = 5;
+  string oprName = 6;
 }
 
 message ChargeRequest {
@@ -66,8 +66,8 @@ message ChargeRequest {
   sint32 by = 3;
   string title = 4;
   string outerNo = 5;
-  sint32 opuId = 6;
-  string opuName = 7;
+  sint32 oprUid = 6;
+  string oprName = 7;
 }
 
 message TransferRequest {
@@ -167,8 +167,8 @@ message ReviewTakeOutRequest {
   sint64 takeId = 2;
   bool reviewPass = 3;
   string remark = 4;
-  sint32 opuId = 5;
-  string opuName = 6;
+  sint32 oprUid = 5;
+  string oprName = 6;
 }
 /** 钱包类型 */
 enum EWalletType {

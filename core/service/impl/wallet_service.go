@@ -56,7 +56,7 @@ func (w *walletServiceImpl) Adjust(_ context.Context, r *proto.AdjustRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, int(r.OpuId), r.OpuName)
+		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }
@@ -76,7 +76,7 @@ func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Freeze(int(r.Value), r.Title, r.OuterNo, int(r.OpuId), r.OpuName)
+		err = iw.Freeze(int(r.Value), r.Title, r.OuterNo, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }
@@ -86,7 +86,7 @@ func (w *walletServiceImpl) Unfreeze(_ context.Context, r *proto.UnfreezeRequest
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Unfreeze(int(r.Value), r.Title, r.OuterNo, int(r.OpuId), r.OpuName)
+		err = iw.Unfreeze(int(r.Value), r.Title, r.OuterNo, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }
@@ -97,7 +97,7 @@ func (w *walletServiceImpl) Charge(_ context.Context, r *proto.ChargeRequest) (r
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
 		err = iw.Charge(int(r.Value), int(r.By), r.Title,
-			r.OuterNo, int(r.OpuId), r.OpuName)
+			r.OuterNo, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }
@@ -140,7 +140,7 @@ func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewTake
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.ReviewWithdrawal(r.TakeId, r.ReviewPass, r.Remark, int(r.OpuId), r.OpuName)
+		err = iw.ReviewWithdrawal(r.TakeId, r.ReviewPass, r.Remark, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }

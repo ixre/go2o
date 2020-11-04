@@ -44,12 +44,8 @@ func NewAccount(m *memberImpl, value *member.Account,
 	var wal wallet.IWallet
 	if wc := value.WalletCode; len(wc) > 0 {
 		wal = walletRepo.GetWalletByCode(value.WalletCode)
-	} else {
-		flag := wallet.FlagCharge | wallet.FlagDiscount
-		wal = walletRepo.CreateWallet(value.MemberId, 1, "MemberWallet",flag)
-		wal.Save()
 	}
-	return &accountImpl{
+	impl:= &accountImpl{
 		member:       m,
 		value:        value,
 		wallet:       wal,
@@ -58,6 +54,18 @@ func NewAccount(m *memberImpl, value *member.Account,
 		mm:           mm,
 		registryRepo: registryRepo,
 	}
+	if value.MemberId > 0 && wal == nil{
+		impl.createWallet()
+	}
+	return impl
+}
+
+func (a *accountImpl) createWallet() {
+	flag := wallet.FlagCharge | wallet.FlagDiscount
+	a.wallet = a.walletRepo.CreateWallet(a.member.GetAggregateRootId(), 1, "MemberWallet", flag)
+	a.wallet.Save()
+	// 绑定钱包
+	a.value.WalletCode = a.wallet.Get().HashCode
 }
 
 // 获取领域对象编号
@@ -79,8 +87,16 @@ func (a *accountImpl) Save() (int64, error) {
 	a.value.MemberId = a.member.GetAggregateRootId()
 	a.value.UpdateTime = time.Now().Unix()
 	n, err := a.rep.SaveAccount(a.value)
-	if err == nil && !isCreate {
-		go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), 500)
+	if err == nil {
+		// 创建钱包
+		if isCreate{
+			a.createWallet()
+			a.rep.SaveAccount(a.value)
+		}
+		// 推送钱包更新消息
+		if !isCreate {
+			go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), 500)
+		}
 	}
 	return n, err
 }
@@ -424,7 +440,7 @@ func (a *accountImpl) Refund(account int, title string,
 		//	kind != member.KindWalletTakeOutRefund {
 		//	return member.ErrBusinessKind
 		//}
-		return a.walletRefund(member.KindRefund, title, outerNo, amount, 0)
+		return a.walletRefund(member.KindRefund, title, outerNo, amount, 1)
 	}
 	panic(errors.New("不支持的账户类型操作"))
 }
@@ -437,7 +453,7 @@ func (a *accountImpl) chargeWallet(title string, amount int, outerNo string, rem
 		title = "钱包账户入账"
 	}
 	err := a.wallet.Charge(amount, member.KindCharge,
-		title, outerNo, 0, "")
+		title, outerNo, 1, "")
 	if err == nil {
 		a.value.TotalWalletAmount += float32(amount)/100
 		err = a.asyncWallet()
@@ -843,7 +859,7 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 // 确认提现
 func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error {
 	//todo: opr_uid
-	err := a.wallet.ReviewWithdrawal(id,pass,remark,0,"")
+	err := a.wallet.ReviewWithdrawal(id,pass,remark,1,"系统")
 	if err == nil{
 		err = a.asyncWallet()
 	}
