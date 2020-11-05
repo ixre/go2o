@@ -1,0 +1,46 @@
+syntax = "proto3";
+option go_package = ".;proto";
+option java_package = "com.github.go2o.rpc";
+
+// 快捷支付服务
+service QuickPayService {
+    // 申请银行侧认证授权(某些银行需跳转到银行页面进行授权)
+    rpc RequestBankAuth (BankAuthRequest) returns (BankAuthResponse) {
+    }
+    // 查询银行认证授权结果
+    rpc QueryBankAuthResult()returns(){}
+}
+
+// 签名类型
+enum QPaySignType{
+    MD5 = 0;
+    RSA = 1;
+    RSA2 = 2;
+}
+
+message BankAuthRequest {
+    // 随机Id,用于查询授权结果,并防止重复提起申请
+    string NonceId = 1;
+    // 用户银行卡号,如：620000000000000000
+    string bank_card_no = 2;
+    // 用户名,如：张三
+    string bank_user = 3;
+    // 用户银行绑定的手机号
+    string mobile = 4;
+    // 用户身份证号码,如：100100052000000000
+    string cert_no = 5;
+    // 签名类型，MD5\RSA\RSA2,默认MD5
+    QPaySignType sign_type = 6;
+}
+
+// 申请认证返回结果,通常直接使用返回的表单提交获取银行的授权, 并再查询授权
+message BankAuthResponse {
+    // 随机Id
+    string NonceId = 1;
+    // 错误消息
+    string ErrMsg = 2;
+    // 认证的Form表单
+    string AuthForm = 3;
+    // 认证需要的其他数据
+    map<string, string> AuthData = 4;
+}
