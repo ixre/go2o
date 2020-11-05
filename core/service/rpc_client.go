@@ -132,6 +132,15 @@ func PaymentServiceClient() (*grpc.ClientConn, proto.PaymentServiceClient, error
 	return conn, nil, err
 }
 
+// 快捷支付服务
+func QuickPaymentServiceClient() (*grpc.ClientConn, proto.QuickPayServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewQuickPayServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
 // 钱包服务
 func WalletClient() (*grpc.ClientConn, proto.WalletServiceClient, error) {
 	conn, err := getConn(selector)

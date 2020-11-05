@@ -50,6 +50,8 @@ var (
 	AfterSalesService *afterSalesService
 	// 支付服务
 	PaymentService *paymentService
+	// 快捷支付服务
+	QuickPayService *quickPayServiceImpl
 	// 消息服务
 	MessageService *messageService
 	// 快递服务
@@ -146,6 +148,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
 	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
+	QuickPayService = NewQuickPayService(sto)
 	MessageService = NewMessageService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
 	ShipmentService = NewShipmentService(shipRepo, deliveryRepo, expressRepo)
