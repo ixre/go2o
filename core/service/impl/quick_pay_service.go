@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/registry"
+	"go2o/core/infrastructure/qpay"
 	"go2o/core/infrastructure/qpay/hfb"
 	"go2o/core/service/proto"
 )
@@ -21,22 +22,33 @@ import (
 var _ proto.QuickPayServiceServer = new(quickPayServiceImpl)
 
 type quickPayServiceImpl struct {
-	s storage.Interface
-	registryRepo  registry.IRegistryRepo
+	s            storage.Interface
+	qp           qpay.QuickPayProvider
+	registryRepo registry.IRegistryRepo
 	serviceUtil
 }
 
 func NewQuickPayService(s storage.Interface,
-	registryRepo  registry.IRegistryRepo)*quickPayServiceImpl{
-
-	return (&quickPayServiceImpl{
-		s:s,
+	registryRepo registry.IRegistryRepo) *quickPayServiceImpl {
+	initQPayConfig(registryRepo)
+	qp := hfb.NewHfb(s)
+	return &quickPayServiceImpl{
+		s:            s,
+		qp:           qp,
 		registryRepo: registryRepo,
-	}).init()
+	}
 }
 
-func (q quickPayServiceImpl) QueryCardBin(context context.Context, no *proto.BankCardNo) (*proto.CardBinQueryResponse, error) {
-	panic("implement me")
+func (q quickPayServiceImpl) QueryCardBin(_ context.Context, no *proto.BankCardNo) (*proto.CardBinQueryResponse, error) {
+	r := q.qp.QueryCardBin(no.CardNo)
+	return &proto.CardBinQueryResponse{
+		ErrMsg:              r.ErrMsg,
+		BankName:            r.BankName,
+		BankCardNo:          r.BankCardNo,
+		BankCode:            r.BankCode,
+		CardType:            r.CardType,
+		RequireBankSideAuth: r.RequireBankSideAuth,
+	}, nil
 }
 
 func (q quickPayServiceImpl) CheckSign(context context.Context, request *proto.CheckQPaySignRequest) (*proto.CheckQPaySignResponse, error) {
@@ -59,11 +71,12 @@ func (q quickPayServiceImpl) BatchTransfer(context context.Context, request *pro
 	panic("implement me")
 }
 
-func (q *quickPayServiceImpl) init() *quickPayServiceImpl {
+func initQPayConfig(repo registry.IRegistryRepo) {
 	// 初始化HFB
-	q.registryRepo.CreateUserKey("qp_hfb_agent_id","0000000","汇付宝(快捷支付)商户编号")
-	q.registryRepo.CreateUserKey("qp_hfb_md5_key","CC08C5E3E69F4E6B85F1DC0B","汇付宝(快捷支付)签名KEY(md5)")
-	hfb.Init(q.s)
-	return q
+	if _,err := repo.GetValue("qp_hfb_agent_id");err != nil {
+		repo.CreateUserKey("qp_hfb_agent_id", "0000000", "汇付宝(快捷支付)商户编号")
+	}
+	if _,err := repo.GetValue("qp_hfb_md5_key");err != nil{
+		repo.CreateUserKey("qp_hfb_md5_key", "CC08C5E3E69F4E6B85F1DC0B", "汇付宝(快捷支付)签名KEY(md5)")
+	}
 }
-

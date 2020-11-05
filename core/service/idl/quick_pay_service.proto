@@ -31,16 +31,18 @@ message BankCardNo {
 
 // 银行卡查询结果
 message CardBinQueryResponse {
+    // 错误信息
+    string ErrMsg = 1;
     // 银行名称
-    string BankName = 1;
+    string BankName = 2;
     // 用户银行卡号
-    string BankCardNo = 2;
+    string BankCardNo = 3;
     // 返回的银行代号
-    string BankCode = 3;
+    string BankCode = 4;
     // 银行卡类型（0=储蓄卡,1=信用卡）
-    int32 CardType = 4;
+    int32 CardType = 5;
     // 是否需要银行端授权,如果否,则直接使用短信既可授权
-    bool RequireBankSideAuth = 5;
+    bool RequireBankSideAuth = 6;
 }
 
 message BankAuthRequest {

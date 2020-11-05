@@ -24,6 +24,9 @@ type registryRepo struct {
 }
 
 func (r *registryRepo) CreateUserKey(key string, value string, desc string) error {
+	if r.Get(key) != nil{
+		return errors.New("exists key")
+	}
 	rv := &registry.Registry{
 		Key:          key,
 		Value:        value,
@@ -60,6 +63,8 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 	_ = r.Merge(registries)
 	// 清理不再使用的注册表
 	_ = r.truncUnused(registries)
+	// 全部输出到缓存中
+	go r.flushToStorage(list)
 	return r
 }
 
@@ -202,4 +207,10 @@ func (r *registryRepo) truncUnused(registries []*registry.Registry) error {
 	}
 	r.lock.RUnlock()
 	return nil
+}
+
+func (r *registryRepo) flushToStorage(list []*registry.Registry) {
+	for _, v := range list {
+		r.store.Set(r.getStorageKey(v.Key), v.Value)
+	}
 }
