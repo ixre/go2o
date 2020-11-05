@@ -69,6 +69,8 @@ type IRegistryRepo interface {
 	GetValue(key string) (string, error)
 	// 更新键值
 	UpdateValue(key string, value string) error
+	// 创建新的KEY
+	CreateUserKey(key string, value string, desc string)error
 	// 合并数据
 	Merge(registries []*Registry) error
 	// 搜索注册表

@@ -23,6 +23,18 @@ type registryRepo struct {
 	lock  sync.RWMutex
 }
 
+func (r *registryRepo) CreateUserKey(key string, value string, desc string) error {
+	rv := &registry.Registry{
+		Key:          key,
+		Value:        value,
+		DefaultValue: value,
+		Options:      "",
+		Flag:         registry.FlagUserDefine,
+		Description:  desc,
+	}
+	return r.Create(rv).Save()
+}
+
 func NewRegistryRepo(conn db.Connector, s storage.Interface) registry.IRegistryRepo {
 	return (&registryRepo{
 		conn:  conn,

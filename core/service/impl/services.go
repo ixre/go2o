@@ -148,7 +148,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
 	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
-	QuickPayService = NewQuickPayService(sto)
+	QuickPayService = NewQuickPayService(sto,registryRepo)
 	MessageService = NewMessageService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
 	ShipmentService = NewShipmentService(shipRepo, deliveryRepo, expressRepo)
