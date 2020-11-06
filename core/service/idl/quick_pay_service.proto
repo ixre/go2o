@@ -98,7 +98,7 @@ message QPaymentRequest {
     string Subject = 3;
     // 银行授权码
     string BankAuthToken = 4;
-    // 校译用户IP
+    // 交易用户IP
     string TradeUserIp = 5;
     // 异步通知地址,非必填
     string NotifyUrl = 6;
@@ -116,14 +116,20 @@ message QPaymentResponse {
     string Code = 1;
     // 错误信息,成功返回空
     string ErrMsg = 2;
+    // 随机ID
+    string NonceId = 8;
     // 第三方支单据号
     string BillNo = 3;
 }
 
 // 检查签名请求
 message CheckQPaySignRequest {
+    // 签名类型
     string SignType = 1;
+    // 签名
     string Sign = 2;
+    // 参数
+    map<string,string> Params = 3;
 }
 
 // 检查签名响应
@@ -157,14 +163,16 @@ message BatchTransferRequest {
     string BatchTradeNo = 1;
     // 付款总金额,实际金额*100,无小数
     int32 BatchTradeFee = 2;
+    // 交易用户IP
+    string TradeUserIp = 3;
     // 批量付款记录
-    repeated CardTransferRequest BatchList = 3;
+    repeated CardTransferRequest BatchList = 4;
     // 异步通知地址,非必填
-    string NotifyUrl = 6;
+    string NotifyUrl = 5;
     // 自定义数据
-    string Nonce = 7;
+    string Nonce = 6;
     // 安全码+随机内容md5后的字符串
-    string SafeSign = 8;
+    string SafeSign = 7;
 }
 
 // 批量付款响应
@@ -173,6 +181,6 @@ message BatchTransferResponse {
     string Code = 1;
     // 错误信息,成功返回空
     string ErrMsg = 2;
-    // 签名
-    string Sign = 3;
+    // 随机ID
+    string NonceId = 3;
 }
