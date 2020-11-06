@@ -72,6 +72,30 @@ type hfbImpl struct{
 	 version string
 }
 
+func (h *hfbImpl) CheckSign(params map[string]string, signType string, sign string) bool {
+	panic("implement me")
+}
+
+func (h *hfbImpl) RequestBankSideAuth(nonce string, bankCardNo string, accountName string, idCardNo string, mobile string) (*qpay.BankAuthResult, error) {
+	panic("implement me")
+}
+
+func (h *hfbImpl) QueryBankAuthByNonceId(id string) (*qpay.BankAuthQueryResponse, error) {
+	panic("implement me")
+}
+
+func (h *hfbImpl) QueryBankAuth(bankCardNo string) (*qpay.BankAuthQueryResponse, error) {
+	panic("implement me")
+}
+
+func (h *hfbImpl) DirectPayment(orderNo string, fee int32, subject string, bankToken string, tradeIp string, notifyUrl string, returnUrl string) (*qpay.QPaymentResponse, error) {
+	panic("implement me")
+}
+
+func (h *hfbImpl) BatchTransfer(batchTradeNo string, batchTradeFee int32, list []*qpay.CardTransferReq, nonce string, tradeIp string, notifyUrl string) (*qpay.BatchTransferResponse, error) {
+	panic("implement me")
+}
+
 // 签名
 func (h *hfbImpl) signParams(mp url.Values)string{
 	query := string(api.ParamsToBytes(mp,h.md5Key,false))
