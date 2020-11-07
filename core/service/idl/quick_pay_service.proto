@@ -19,6 +19,8 @@ service QuickPayService {
     // 直接支付
     rpc DirectPayment (QPaymentRequest) returns (QPaymentResponse) {
     }
+    // 查询支付状态
+    rpc QueryPaymentStatus(QPaymentQueryRequest)returns(QPaymentQueryResponse){}
     // 批量付款
     rpc BatchTransfer (BatchTransferRequest) returns (BatchTransferResponse) {
     }
@@ -118,6 +120,24 @@ message QPaymentResponse {
     string ErrMsg = 2;
     // 随机ID
     string NonceId = 8;
+    // 第三方支单据号
+    string BillNo = 3;
+}
+
+// 查询支付结果请求
+message QPaymentQueryRequest{
+    // 商户订单号
+    string OrderNo = 1;
+    // 查询需要的其他参数(可选)
+    map<string,string> Options = 3;
+}
+
+// 查询支付结果响应
+message QPaymentQueryResponse{
+    // 状态码，0表示成功
+    int32 Code = 1;
+    // 错误信息,成功返回空
+    string ErrMsg = 2;
     // 第三方支单据号
     string BillNo = 3;
 }

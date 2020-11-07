@@ -6,7 +6,6 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/ixre/gof/api"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
@@ -14,11 +13,13 @@ import (
 	"go2o/core/infrastructure/qpay"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // 快捷（银行侧)
@@ -40,6 +41,7 @@ import (
 const cardBinQueryURL = "https://Pay.heepay.com/API/PayTransit/QueryBankCardInfo.aspx"
 const applyBankAuthFormURL = "https://Pay.Heepay.com/WithholdAuthPay/ApplyBankAuthForm.aspx"
 const bankAuthQueryURL = "https://Pay.Heepay.com/WithholdAuthPay/BankAuthQuery.aspx"
+const redirectPaymentURL = "https://Pay.Heepay.com/WithholdAuthPay/SubmitPay.aspx"
 const paymentQueryURL = "https://query.heepay.com/Payment/Query.aspx"
 
 type cardBinRsp struct {
@@ -125,6 +127,7 @@ func (h *hfbImpl) checkPrivateKey() error {
 	return nil
 }
 
+// 申请银行侧认证授权(某些银行需跳转到银行页面进行授权)
 func (h *hfbImpl) RequestBankSideAuth(nonce string, bankCardNo string, accountName string, idCardNo string, mobile string) (*qpay.BankAuthResult, error) {
 	if err := h.checkPrivateKey(); err != nil {
 		return nil, err
@@ -158,7 +161,6 @@ func (h *hfbImpl) RequestBankSideAuth(nonce string, bankCardNo string, accountNa
 		CardType:    bin.CardType,
 	}
 	h.Cache.SaveBankAuthData(nonce, data, 3600)
-
 	// 加密请求数据
 	encryptData, _ := crypto.EncryptRSAToBase64(
 		h.rsaPublicKey, signParams)
@@ -227,15 +229,7 @@ func (h *hfbImpl) QueryBankAuth(bankCardNo string) (*qpay.BankAuthQueryResponse,
 	if err != nil {
 		return nil, err
 	}
-	body, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		return nil, err
-	}
-	var ret EncryptResponse
-	err = xml.Unmarshal(body, &ret)
-	if err != nil {
-		return nil, err
-	}
+	ret, mp, err := h.readEncryptResponse(rsp.Body)
 	// 未成功
 	if ret.RetCode != "0000" {
 		return nil, errors.New(ret.RetMsg)
@@ -249,29 +243,100 @@ func (h *hfbImpl) QueryBankAuth(bankCardNo string) (*qpay.BankAuthQueryResponse,
 		}, nil
 	}
 	// 已授权,获取授权码
-	retBytes, _ := crypto.DecryptRSAFromBase64(h.rsaPrivateKey, ret.EncryptData)
-	retMsg, _ := http2.ParseQuery(string(retBytes))
 	return &qpay.BankAuthQueryResponse{
 		Code:          0,
 		Message:       "已授权",
-		BankAuthToken: retMsg["hy_auth_uid"],
+		BankAuthToken: mp["hy_auth_uid"],
 	}, nil
 }
 
 func (h *hfbImpl) DirectPayment(orderNo string, fee int32, subject string, bankToken string, tradeIp string, notifyUrl string, returnUrl string) (*qpay.QPaymentResponse, error) {
-	panic("implement me")
+	if err := h.checkPrivateKey(); err != nil {
+		return nil, err
+	}
+	params := map[string]string{
+		"agent_bill_id":  orderNo,
+		"agent_bill_time": time.Now().Format("20060102150405"),
+		"goods_name":      subject,
+		"hy_auth_uid":     bankToken,
+		"notify_url":     notifyUrl,
+		"pay_amt":        types.FixedMoney(float64(fee) / 100),
+		"return_url":      returnUrl,
+		"user_ip":         tradeIp,
+		"version":         h.version,
+	}
+	signParams := []byte(http2.SortedQuery(http2.ParseUrlValues(params)))
+	sign, err := crypto.Sha1WithRSA(h.rsaPrivateKey, signParams)
+	if err != nil {
+		return nil, errors.New("签名失败:" + err.Error())
+	}
+	// 加密请求数据
+	encryptData, _ := crypto.EncryptRSAToBase64(h.rsaPublicKey, signParams)
+	// 拼装Form表单
+	formData := map[string]string{
+		"agent_id":     h.agentId,
+		"sign":         sign,
+		"encrypt_data": encryptData,
+	}
+	cli := http.Client{}
+	rsp, err := cli.PostForm(redirectPaymentURL, http2.ParseUrlValues(formData))
+	if err != nil {
+		return nil, err
+	}
+	ret, mp, err := h.readEncryptResponse(rsp.Body)
+	qp := &qpay.QPaymentResponse{
+		Code:   ret.RetCode,
+		BillNo: "",
+	}
+	if err != nil {
+		return qp, err
+	}
+	// 未成功
+	if ret.RetCode != "0000" {
+		return qp, errors.New(ret.RetMsg)
+	}
+	// 支付成功
+	qp.Code = "0"
+	qp.BillNo = mp["hy_bill_no"]
+	return qp, nil
 }
+
+
+func (h *hfbImpl) QueryPaymentStatus(orderNo string, options map[string]string) (*qpay.QPaymentQueryResponse, error) {
+	mp := url.Values{
+		"agent_id":        []string{h.agentId},
+		"agent_bill_id":   []string{orderNo},
+		"agent_bill_time": []string{options["agent_bill_time"]},
+		"key":             []string{h.md5Key},
+		"return_mode":     []string{"1"},
+		"version":         []string{h.cardBinVersion},
+	}
+	sign := h.signParams(mp)
+	mp["sign"] = []string{sign}
+	cli := http.Client{}
+	rsp, err := cli.PostForm(paymentQueryURL, mp)
+	if err != nil {
+		return nil,err
+	}
+	reader := transform.NewReader(rsp.Body, simplifiedchinese.GBK.NewDecoder())
+	body, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil,err
+	}
+	println(string(body))
+	var ret cardBinRsp
+	err = xml.Unmarshal(body, &ret)
+	if err != nil {
+	}
+	return nil,nil
+}
+
+
 
 func (h *hfbImpl) BatchTransfer(batchTradeNo string, batchTradeFee int32, list []*qpay.CardTransferReq, nonce string, tradeIp string, notifyUrl string) (*qpay.BatchTransferResponse, error) {
 	panic("implement me")
 }
 
-// 签名
-func (h *hfbImpl) signParams(mp url.Values) string {
-	query := string(api.ParamsToBytes(mp, h.md5Key, false))
-	query = strings.ToLower(query)
-	return crypto.Md5([]byte(query))
-}
 
 // 查询银行卡信息
 func (h *hfbImpl) QueryCardBin(bankCardNo string) *qpay.CardBinQueryResult {
@@ -313,4 +378,27 @@ func (h *hfbImpl) QueryCardBin(bankCardNo string) *qpay.CardBinQueryResult {
 		CardType:            types.IntCond(ret.BankCardType == "1", 1, 0),
 		RequireBankSideAuth: true,
 	}
+}
+
+// 签名
+func (h *hfbImpl) signParams(mp url.Values) string {
+	query := strings.ToLower(http2.SortedQuery(mp))
+	return crypto.Md5([]byte(query))
+}
+
+
+// 读取响应并解密加密内容
+func (h *hfbImpl) readEncryptResponse(body io.Reader) (*EncryptResponse, map[string]string, error) {
+	rsp, err := ioutil.ReadAll(body)
+	if err != nil {
+		return nil, nil, err
+	}
+	var ret EncryptResponse
+	err = xml.Unmarshal(rsp, &ret)
+	if err != nil {
+		return nil, nil, err
+	}
+	retBytes, _ := crypto.DecryptRSAFromBase64(h.rsaPrivateKey, ret.EncryptData)
+	retMsg, _ := http2.ParseQuery(string(retBytes))
+	return &ret,retMsg, nil
 }

@@ -31,6 +31,7 @@ type quickPayServiceImpl struct {
 	serviceUtil
 }
 
+
 func NewQuickPayService(s storage.Interface,
 	registryRepo registry.IRegistryRepo) *quickPayServiceImpl {
 	initQPayConfig(registryRepo)
@@ -136,6 +137,20 @@ func (q quickPayServiceImpl) DirectPayment(_ context.Context, r *proto.QPaymentR
 	}, nil
 }
 
+func (q quickPayServiceImpl) QueryPaymentStatus(_ context.Context, r *proto.QPaymentQueryRequest) (*proto.QPaymentQueryResponse, error) {
+	ret,err := q.qp.QueryPaymentStatus(r.OrderNo,r.Options)
+	if err != nil{
+		return &proto.QPaymentQueryResponse{
+			Code:                 1,
+			ErrMsg:               err.Error(),
+		},nil
+	}
+	return &proto.QPaymentQueryResponse{
+		Code:                 ret.Code,
+		ErrMsg:               ret.ErrMsg,
+		BillNo:               ret.BillNo,
+	},nil
+}
 func (q quickPayServiceImpl) BatchTransfer(_ context.Context, r *proto.BatchTransferRequest) (*proto.BatchTransferResponse, error) {
 	if len(strings.TrimSpace(r.Nonce)) == 0 {
 		return &proto.BatchTransferResponse{

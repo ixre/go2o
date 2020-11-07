@@ -38,23 +38,49 @@ func TestCardBin(t *testing.T) {
 	t.Logf("%#v", r)
 }
 
-func TestHfbImpl_QueryBankAuthByNonceId(t *testing.T) {
+func TestHfbImpl_RequestBankSideAuth(t *testing.T) {
 	bankCardNo := "6227000010990006191"
 	nonce := strconv.Itoa(int(time.Now().Unix()))
 	r, err := h.RequestBankSideAuth(nonce, bankCardNo, "闫雪龙",
 		"22011219850823101X", "13810512111")
-	if err == nil {
-		//t.Log(r.AuthForm)
-		var rsp *qpay.BankAuthQueryResponse
-		rsp, err = h.QueryBankAuthByNonceId(r.NonceId)
-		if err == nil {
-			t.Logf("%#v", rsp)
-		}
-	}
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	t.Log(r.AuthForm)
+}
+func TestHfbImpl_DirectPayment(t *testing.T) {
+	bankCardNo := "6227000010990006191"
+	rsp, err := h.QueryBankAuth(bankCardNo)
+	if err == nil {
+		t.Logf("%#v", rsp)
+	}
+	if rsp.Code != 0{
+		t.Log("卡片未授权成功")
+		t.FailNow()
+	}
+	orderNo := "BZ"+time.Now().Format("20060102150405")
+	ret, err := h.DirectPayment(orderNo, 1, "补差价链接", rsp.BankAuthToken,
+		"127.0.0.1", "http://www.go2o-dev.56x.net/qpay/notify_url",
+		"")
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log("支付成功,订单号：",orderNo,"第三方订单号：",ret.BillNo)
+}
+
+
+
+func TestHfbImpl_QueryPaymentStatus(t *testing.T) {
+	orderNo := "BZ20201107224102"
+	billTime := "20201107224102"
+	ret,err := h.QueryPaymentStatus(orderNo,map[string]string{"agent_bill_time":billTime})
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+	println(ret)
 }
 
 func TestHfbImpl_QueryBankAuth(t *testing.T) {
