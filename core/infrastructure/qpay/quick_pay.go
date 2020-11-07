@@ -1,12 +1,5 @@
 package qpay
 
-import (
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
-	"errors"
-)
-
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
  *
@@ -124,13 +117,4 @@ type BankAuthSwapData struct{
 	BankCode string
 	// 银行卡类型（0=储蓄卡,1=信用卡）
 	CardType int
-}
-
-// 转换私钥
-func ParseRSAPrivateKey(s string)(*rsa.PrivateKey,error){
-	block, _ := pem.Decode([]byte(s))
-	if block == nil{
-		return nil,errors.New("私钥不正确")
-	}
-	return x509.ParsePKCS1PrivateKey(block.Bytes)
 }

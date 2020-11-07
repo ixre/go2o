@@ -4,6 +4,7 @@ import (
 	"go.etcd.io/etcd/clientv3"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/qpay"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -19,19 +20,32 @@ import (
  */
 
 var h qpay.QuickPayProvider
-func init(){
+
+func init() {
 	// 默认的ETCD端点
 	etcdEndPoints := []string{"http://127.0.0.1:2379"}
 	cfg := clientv3.Config{
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
-	s,_:= infrastructure.NewEtcdStorage(cfg)
-	h  = NewHfb(s)
+	s, _ := infrastructure.NewEtcdStorage(cfg)
+	h = NewHfb(s)
 }
 
-func TestCardBin(t *testing.T){
+func TestCardBin(t *testing.T) {
 	bankCardNo := "6227000010990006191"
-	r:= h.QueryCardBin(bankCardNo)
-	t.Logf("%#v",r)
+	r := h.QueryCardBin(bankCardNo)
+	t.Logf("%#v", r)
+}
+
+func TestSubmitBankAuth(t *testing.T){
+	bankCardNo := "9559981014352796313"
+	nonce := strconv.Itoa(int(time.Now().Unix()))
+	r,err := h.RequestBankSideAuth(nonce,bankCardNo,"闫雪龙",
+		"22011219850823101X","13810512111")
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log(r.AuthForm)
 }

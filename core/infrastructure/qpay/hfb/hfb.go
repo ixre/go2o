@@ -2,7 +2,6 @@ package hfb
 
 import (
 	"bytes"
-	"crypto/rand"
 	"crypto/rsa"
 	"encoding/xml"
 	"errors"
@@ -39,41 +38,46 @@ import (
 
 const ApplyBankAuthFormURL = "https://Pay.Heepay.com/WithholdAuthPay/ApplyBankAuthForm.aspx"
 
-type (
-	cardBinRsp struct {
-		// 查询状态码
-		RetCode string `xml:"ret_code"`
-		// 查询返回信息，成功为空
-		RetMsg string `xml:"ret_msg"`
-		// 商户编号，（汇付宝商户内码：七位整数数字）
-		AgentId string `xml:"agent_id,omitempty"`
-		// 	所查询银行卡号，查询成功时返回)
-		BankCardNo string `xml:"bank_card_no,omitempty"`
-		// 所属银行名称，查询成功时返回
-		BankName string `xml:"bank_name,omitempty"`
-		// 银行我方对应编号，查询成功时返回
-		BankType int `xml:"bank_type,omitempty"`
-		// 银行卡类型（0=储蓄卡,1=信用卡），查询成功时返回
-		BankCardType string `xml:"bank_card_type,omitempty"`
-	}
-)
+type cardBinRsp struct {
+	// 查询状态码
+	RetCode string `xml:"ret_code"`
+	// 查询返回信息，成功为空
+	RetMsg string `xml:"ret_msg"`
+	// 商户编号，（汇付宝商户内码：七位整数数字）
+	AgentId string `xml:"agent_id,omitempty"`
+	// 	所查询银行卡号，查询成功时返回)
+	BankCardNo string `xml:"bank_card_no,omitempty"`
+	// 所属银行名称，查询成功时返回
+	BankName string `xml:"bank_name,omitempty"`
+	// 银行我方对应编号，查询成功时返回
+	BankType int `xml:"bank_type,omitempty"`
+	// 银行卡类型（0=储蓄卡,1=信用卡），查询成功时返回
+	BankCardType string `xml:"bank_card_type,omitempty"`
+}
 
 func NewHfb(s storage.Interface) qpay.QuickPayProvider {
 	agentId, _ := s.GetString("registry/key/qp_hfb_agent_id")
 	md5Key, _ := s.GetString("registry/key/qp_hfb_md5_key")
 	privateKey := "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDF/hqHZZb7r0S5KuuQ1zE4v6BT+irjybOR0mIBbRqUnlBlIK8eayxs7eTazEn7FIFjepvGMxgH/2tC6R7s45KaoQo5Yq9l/rvziyYI50U4SZor1mV24nlCNLbx5BqDBFcGwxOJqwZGVTelBVjDtOsper10rUjhtwDFcLSe82VoPQUt8k9H4zw8+0lC4DsK0JlNtRJNAi380Fmz5JV19+12D2N8Tn9+pqFXzjyvp2EyJ/hS8uHUXZGy3lh7cbeEkFu5sFcKB2RDSs++8Y5vyeXQ6RLqMlEbJIRcRRAeMaCZ2Vn5OATYQKCvTPmITTzKB7NoOvEOC9FO4V6HMjidZzBTAgMBAAECggEADufwi10EnvI1FFO85GyvEfyrT2c4L2oSENpr8nuKUsIQf2yUgo/DCnhmkGps73A9xYWHkMZr+r4qDyGJ6H/Bm86f/G4HkoA5Gj7RoD35IiG4b7B2dxrZ0jgxxchMjqyW+LVbFTRBBq6Hv+7FHgbS5Y6OEOiy4ftrHXI8xvLAIbbEa9k1EVmH2ZvA5iVTBuZGWsEAQMRrIBNpmyB3Lnmo7iK28vpEPLvxADtlr3/1vpwfIPMb2fUYkuMXsCPuxjGxtkiCNhahUyzzwGG8rvszx/JcP/vWwRC7IQQff+YONdGKrJT5VqchJV1oaKbLg9CbU1/xsuLOn2RZP1A3/ssdsQKBgQDrlYhZ8BYSa2l5euKX7r4NFGETD8UGnyJmCGPy22VstJ77vAvffVLkKSzWrZgOlmW8MdRfFUsLfPaolLx56rCtdgS6mwSh4kqz9nKMuQjQbpECJAJtZL4FuMjVKSL/71Kew3/Bc/MNo6uKGxiK54KjxFu4TXWplKHFAI1MPuhdvQKBgQDXJpkFta6XwWbtrBCrgN5+eROA9qP+xC0WF/Ar8jbNJAntoUYXFLkIMt1HJFKAPND71x54G0ZHHpL7LJCP/NiGhY19/4S1oBP79d67HPku9Kbrm1NXKUzafOv2rPXSK7uGR+XSgnnKbs5GicipcqZP3+OGOajb9xxjer0IpU//TwKBgQCfHy8r4FhoNJjXbsMicCV6XCt9XodsA4yOclhgLwSAujcwPUGfwNx+M7mPf01XfQpWZSnW12EK72sDTwNHLdgMMczb5dzpIxnmGC4jEs/7SNM1KPFixkr7PmaYY+K6EAI0LkRafGDM86Hn9IlNOTYqO3TgNaGl2zixAcBuoYb92QKBgFsS7aerFrMKnWVydsQCkyx6WDU5MoZ/yI4XqAUSTPxdiw5aPG88yG6eCWk6COpb1CMnFrDE6uTkHlfQr4kkAQxAsHprlWPE1XDMzXHre9fSnG4TnB3DT9MVGlWbNZu4A3N+L90CekekzBCz9os0Cw64uXlyIvaqDgxWQnrMb6alAoGBAJ44E3SOo9DD5UOk+6swf/YplhqG2sayJruVib+1D2dlWu/+LxJqQZJGI/jtLVO24q7XGdnlA1YXA85DRI9/VUPPOEaLpUI91KWHUaN0Cgcin/O02UR+UWWvtbNEhI8Huk4BDGOPrBxz1tI2Bw1IvkD6u/mKmiExhzCUX/oAAesT"
+	publicKey := "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsVR6LGVO7kbIBKKuAljjPS+V46Ij8+GVCIhIdx5Nj4kJsByM+wo7Nu8QiZczZsR/Yl9n0hYdb1blAO+O0sA4Dg2ALMJeYamxDe5acC+N5W1aVSiOsqiMmKIX7nOSYL2bPLx6uMG/VZjogZBoqHY5qTQH5AX4nQeqW3rAQACKljuqFTl580+TSZqv+QHcCKQqNDmmFW31a1icELoPWhZF7f+Ry1wr7Q4W1ScpLX3uZZadqsZtH7rvvk+SjxV3y5iCD8ZKFqRdxbuuXXcw+GEth6t0kp5EALkdmJFtIq4uI3lgyqCB+PJq4tyBDZOsU4tY/PqZJ+EbbrPRacRf7ecX0wIDAQAB"
 
-	pk, err := qpay.ParseRSAPrivateKey(privateKey)
+	pk, err := crypto.ParsePrivateKey(privateKey)
 	if err != nil {
-		println("[ Go2o][ Warning]: quick pay error ", err.Error())
+		println("[ Go2o][ Warning]: hfb private key parse error ", err.Error())
+	}
+	pbk, err := crypto.ParsePublicKey(publicKey)
+	if err != nil {
+		println("[ Go2o][ Warning]: hfb public key parse error ", err.Error())
 	}
 	//agentId = "1664502"
 	//md5Key = "CC08C5E3E69F4E6B85F1DC0B"
 	return &hfbImpl{
 		agentId:       agentId,
 		md5Key:        md5Key,
-		version:       "3",
+		cardBinVersion:"3",
+		version:       "1",
 		rsaPrivateKey: pk,
+		rsaPublicKey: pbk,
 		Cache:         qpay.NewCache(s),
 	}
 }
@@ -84,6 +88,7 @@ type hfbImpl struct {
 	agentId       string
 	md5Key        string
 	version       string
+	cardBinVersion string
 	rsaPrivateKey *rsa.PrivateKey
 	rsaPublicKey  *rsa.PublicKey
 	*qpay.Cache
@@ -115,8 +120,7 @@ func (h *hfbImpl) RequestBankSideAuth(nonce string, bankCardNo string, accountNa
 	// RSA加密得出的值就是encrypt_data。
 	signParams := []byte(fmt.Sprintf("bank_card_no=%s&bank_user=%s&cert_no=%s"+
 		"&mobile=%s&version=%s", bankCardNo, accountName, idCardNo, mobile, h.version))
-	// 签名
-	sign, err := crypto.Sha1WithRSA(signParams, h.rsaPrivateKey)
+	sign, err := crypto.Sha1WithRSA(h.rsaPrivateKey,signParams)
 	if err != nil {
 		return nil, errors.New("签名失败:" + err.Error())
 	}
@@ -131,14 +135,16 @@ func (h *hfbImpl) RequestBankSideAuth(nonce string, bankCardNo string, accountNa
 		CardType:    bin.CardType,
 	}
 	h.Cache.SaveBankAuthData(nonce, data, 3600)
+
 	// 加密请求数据
-	encryptData, _ := rsa.EncryptPKCS1v15(rand.Reader,
-		&h.rsaPrivateKey.PublicKey, signParams)
+	encryptData, _ := crypto.EncryptRSAToBase64(
+		h.rsaPublicKey, signParams)
+
 	// 拼装Form表单
 	formData := map[string]string{
 		"agent_id":     h.agentId,
 		"sign":         sign,
-		"encrypt_data": string(encryptData),
+		"encrypt_data":encryptData,
 	}
 	return &qpay.BankAuthResult{
 		NonceId:  nonce,
@@ -195,7 +201,7 @@ func (h *hfbImpl) QueryCardBin(bankCardNo string) *qpay.CardBinQueryResult {
 		"agent_id":     []string{h.agentId},
 		"bank_card_no": []string{bankCardNo},
 		"key":          []string{h.md5Key},
-		"version":      []string{h.version},
+		"version":      []string{h.cardBinVersion},
 	}
 	sign := h.signParams(mp)
 	mp["sign"] = []string{sign}
