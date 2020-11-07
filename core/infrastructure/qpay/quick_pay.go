@@ -1,5 +1,12 @@
 package qpay
 
+import (
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
+	"errors"
+)
+
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
  *
@@ -42,7 +49,7 @@ type CardBinQueryResult struct {
 	// 返回的银行代号
 	BankCode string `protobuf:"bytes,3,opt,name=BankCode,proto3" json:"BankCode,omitempty"`
 	// 银行卡类型（0=储蓄卡,1=信用卡）
-	CardType int32 `protobuf:"varint,4,opt,name=CardType,proto3" json:"CardType,omitempty"`
+	CardType int `protobuf:"varint,4,opt,name=CardType,proto3" json:"CardType,omitempty"`
 	// 是否需要银行端授权,如果否,则直接使用短信既可授权
 	RequireBankSideAuth  bool     `protobuf:"varint,6,opt,name=RequireBankSideAuth,proto3" json:"RequireBankSideAuth,omitempty"`
 }
@@ -99,4 +106,31 @@ type BatchTransferResponse struct {
 	Code string `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code,omitempty"`
 	// 随机ID
 	NonceId string `protobuf:"bytes,3,opt,name=NonceId,proto3" json:"NonceId,omitempty"`
+}
+
+// 银行认证存储中间数据
+type BankAuthSwapData struct{
+	// 银行卡号
+	BankCardNo string
+	// 账户名
+	AccountName string
+	// 身份证号码
+	IdCardNo string
+	// 手机号码
+	Mobile string
+	// 银行名称
+	BankName string
+	// 返回的银行代号
+	BankCode string
+	// 银行卡类型（0=储蓄卡,1=信用卡）
+	CardType int
+}
+
+// 转换私钥
+func ParseRSAPrivateKey(s string)(*rsa.PrivateKey,error){
+	block, _ := pem.Decode([]byte(s))
+	if block == nil{
+		return nil,errors.New("私钥不正确")
+	}
+	return x509.ParsePKCS1PrivateKey(block.Bytes)
 }

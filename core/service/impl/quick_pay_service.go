@@ -49,7 +49,7 @@ func (q quickPayServiceImpl) QueryCardBin(_ context.Context, no *proto.BankCardN
 		BankName:            r.BankName,
 		BankCardNo:          r.BankCardNo,
 		BankCode:            r.BankCode,
-		CardType:            r.CardType,
+		CardType:            int32(r.CardType),
 		RequireBankSideAuth: r.RequireBankSideAuth,
 	}, nil
 }

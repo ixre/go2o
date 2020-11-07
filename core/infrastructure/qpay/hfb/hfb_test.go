@@ -27,7 +27,7 @@ func init(){
 		DialTimeout: 5 * time.Second,
 	}
 	s,_:= infrastructure.NewEtcdStorage(cfg)
-	h = NewHfb(s)
+	h  = NewHfb(s)
 }
 
 func TestCardBin(t *testing.T){
