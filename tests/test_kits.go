@@ -12,9 +12,8 @@ import "testing"
  * history :
  */
 
-
-func assertError(t *testing.T,err error){
-	if err != nil{
+func assertError(t *testing.T, err error) {
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}

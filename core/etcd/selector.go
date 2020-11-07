@@ -36,11 +36,11 @@ type Selector interface {
 }
 
 type serverSelector struct {
-	cli    *clientv3.Client
-	nodes  []Node
-	alg    SelectAlgorithm
-	last   int
-	name   string
+	cli   *clientv3.Client
+	nodes []Node
+	alg   SelectAlgorithm
+	last  int
+	name  string
 }
 
 func NewSelector(name string, config clientv3.Config, alg SelectAlgorithm) (Selector, error) {
@@ -49,10 +49,10 @@ func NewSelector(name string, config clientv3.Config, alg SelectAlgorithm) (Sele
 		return nil, err
 	}
 	var s = &serverSelector{
-		cli:    cli,
-		name:   name,
-		alg:    alg,
-		last:   -1,
+		cli:  cli,
+		name: name,
+		alg:  alg,
+		last: -1,
 	}
 	s.loadNodes()
 	go s.Watch()

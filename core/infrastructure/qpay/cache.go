@@ -12,25 +12,25 @@ import "github.com/ixre/gof/storage"
  * history :
  */
 
-type Cache struct{
+type Cache struct {
 	s storage.Interface
 }
 
-func NewCache(s storage.Interface)*Cache{
-	return &Cache{s:s}
+func NewCache(s storage.Interface) *Cache {
+	return &Cache{s: s}
 }
-func (c *Cache)  BankAuthNonceKey(nonce string) string {
-	return "pay/quick/bank/auth/"+nonce
+func (c *Cache) BankAuthNonceKey(nonce string) string {
+	return "pay/quick/bank/auth/" + nonce
 }
 
-func (c *Cache) GetBankAuthData(nonce string)*BankAuthSwapData {
+func (c *Cache) GetBankAuthData(nonce string) *BankAuthSwapData {
 	key := c.BankAuthNonceKey(nonce)
 	var ret *BankAuthSwapData
-	c.s.Get(key,&ret)
+	c.s.Get(key, &ret)
 	return ret
 }
 
 func (c *Cache) SaveBankAuthData(nonce string, data *BankAuthSwapData, expires int) {
 	key := c.BankAuthNonceKey(nonce)
-	c.s.SetExpire(key,data,int64(expires))
+	c.s.SetExpire(key, data, int64(expires))
 }

@@ -26,7 +26,6 @@ type WalletImpl struct {
 	_repo  wallet.IWalletRepo
 }
 
-
 func (w *WalletImpl) GetAggregateRootId() int64 {
 	return w._value.Id
 }
@@ -170,8 +169,8 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, oprUid i
 		OuterChan:    "",
 		OuterNo:      "",
 		Value:        value,
-		OprUid:   oprUid,
-		OprName: strings.TrimSpace(oprName),
+		OprUid:       oprUid,
+		OprName:      strings.TrimSpace(oprName),
 		Remark:       "",
 		ReviewState:  wallet.ReviewPass,
 		ReviewRemark: "",
@@ -359,7 +358,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, oprUid int
 		var kind = by
 		// 用户或客服充值、才会计入累计充值记录
 		switch by {
-		case wallet.CUserCharge,wallet.CServiceAgentCharge:
+		case wallet.CUserCharge, wallet.CServiceAgentCharge:
 			kind = wallet.KCharge
 			w._value.TotalCharge += value
 		case wallet.CSystemCharge:
@@ -469,7 +468,7 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 
 // 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
 func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title string,
-	accountNo string,accountName string,bankName string) (int64, string, error) {
+	accountNo string, accountName string, bankName string) (int64, string, error) {
 	if amount == 0 {
 		return 0, "", wallet.ErrAmountZero
 	}
@@ -503,7 +502,7 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	l.ReviewState = wallet.ReviewAwaiting
 	l.ReviewRemark = ""
 	l.BankName = bankName
-	l.AccountNo	 = accountNo
+	l.AccountNo = accountNo
 	l.AccountName = accountName
 	l.Balance = w._value.Balance
 	err := w.saveWalletLog(l)

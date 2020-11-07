@@ -22,7 +22,6 @@ import (
  * history :
  */
 
-
 func (a *accountImpl) chargeWallet_(title string, amount float32, outerNo string, remark string) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
@@ -47,7 +46,6 @@ func (a *accountImpl) chargeWallet_(title string, amount float32, outerNo string
 	return err
 }
 
-
 func (a *accountImpl) walletConsume_(title string, amount float32, outerNo string, remark string) error {
 	if a.value.WalletBalance < amount {
 		return member.ErrAccountNotEnoughAmount
@@ -63,7 +61,6 @@ func (a *accountImpl) walletConsume_(title string, amount float32, outerNo strin
 	}
 	return err
 }
-
 
 // 赠送金额(指定业务类型)
 func (a *accountImpl) walletRefund_(kind int, title string,
@@ -119,8 +116,6 @@ func (a *accountImpl) walletDiscount_(title string, amount float32, outerNo stri
 	return err
 }
 
-
-
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	amount2 int, tradeFee int, bankAccountNo string) (int32, string, error) {
@@ -141,8 +136,8 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	}
 
 	// 检测是否实名
-	mustTrust,_ := a.registryRepo.GetValue(registry.MemberWithdrawalMustTrust)
-	if mustTrust=="true" {
+	mustTrust, _ := a.registryRepo.GetValue(registry.MemberWithdrawalMustTrust)
+	if mustTrust == "true" {
 		trust := a.member.Profile().GetTrustedInfo()
 		if trust.ReviewState != int(enum.ReviewPass) {
 			return 0, "", member.ErrTakeOutNotTrust
@@ -214,7 +209,6 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	}
 	return 0, tradeNo, err
 }
-
 
 // 确认提现
 func (a *accountImpl) ReviewWithdrawal_(id int32, pass bool, remark string) error {

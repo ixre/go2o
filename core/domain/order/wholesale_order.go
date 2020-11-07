@@ -225,7 +225,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	co.ShopId = v.ShopId
 	co.Subject = ""
 	co.Consignee = &order.ComplexConsignee{
-		ConsigneePerson:v.ConsigneePerson,
+		ConsigneePerson: v.ConsigneePerson,
 		ConsigneePhone:  v.ConsigneePhone,
 		ShippingAddress: v.ShippingAddress,
 	}

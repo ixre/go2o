@@ -165,11 +165,11 @@ func TestUpdateInviter(t *testing.T) {
 }
 
 // 测试钱包
-func TestMemberWallet(t *testing.T){
+func TestMemberWallet(t *testing.T) {
 	var memberId int64 = 1
 	m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
-	if int(ic.GetValue().WalletBalance*100) != ic.Wallet().Get().Balance{
+	if int(ic.GetValue().WalletBalance*100) != ic.Wallet().Get().Balance {
 		t.Error("钱包金额不符合")
 		t.FailNow()
 	}
@@ -177,22 +177,22 @@ func TestMemberWallet(t *testing.T){
 
 func TestMemberWalletOperate(t *testing.T) {
 	var memberId int64 = 1
-	ti.Factory.GetRegistryRepo().UpdateValue(registry.MemberWithdrawalMustTrust,"false")
+	ti.Factory.GetRegistryRepo().UpdateValue(registry.MemberWithdrawalMustTrust, "false")
 	m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	iw := ic.Wallet()
 	amount := iw.Get().Balance
-	assertError(t,ic.Charge(member.AccountWallet, "钱包充值",
+	assertError(t, ic.Charge(member.AccountWallet, "钱包充值",
 		100000, "-", "测试"))
 	id, _, err := ic.RequestWithdrawal(member.KindWalletTakeOutToBankCard,
 		"提现到银行卡", 70000, 0, "")
-	assertError(t,err)
+	assertError(t, err)
 	ic.ReviewWithdrawal(id, true, "")
 	id, _, err = ic.RequestWithdrawal(member.KindWalletTakeOutToBankCard,
 		"提现到银行卡", 30000, 0, "")
-	assertError(t,err)
-	assertError(t,ic.ReviewWithdrawal(id, false, "退回提现"))
-	assertError(t,ic.Discount(member.AccountWallet, "钱包抵扣",
+	assertError(t, err)
+	assertError(t, ic.ReviewWithdrawal(id, false, "退回提现"))
+	assertError(t, ic.Discount(member.AccountWallet, "钱包抵扣",
 		30000, "-", "测试"))
 	if final := int(ic.GetValue().Balance * 100); final != amount {
 		t.Log("want ", amount, " final ", final)

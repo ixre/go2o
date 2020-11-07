@@ -389,7 +389,7 @@ type (
 		// 商品快照编号
 		SnapshotId int64 `db:"snapshot_id"`
 		// 商品销售价格(不含优惠抵扣)
-		Price  float32 `db:"-"`  //todo
+		Price float32 `db:"-"` //todo
 		// 销售数量
 		Quantity int32 `db:"quantity"`
 		// 退货数量

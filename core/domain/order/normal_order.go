@@ -108,7 +108,7 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	co.ShopId = 0
 	co.SubOrderId = 0
 	co.Consignee = &order.ComplexConsignee{
-		ConsigneePerson:v.ConsigneePerson,
+		ConsigneePerson: v.ConsigneePerson,
 		ConsigneePhone:  v.ConsigneePhone,
 		ShippingAddress: v.ShippingAddress,
 	}

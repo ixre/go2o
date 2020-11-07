@@ -45,21 +45,21 @@ type MemberRepoImpl struct {
 	storage storage.Interface
 	db.Connector
 	_orm         orm.Orm
-	walletRepo      wallet.IWalletRepo
+	walletRepo   wallet.IWalletRepo
 	valueRepo    valueobject.IValueRepo
 	mssRepo      mss.IMssRepo
 	registryRepo registry.IRegistryRepo
 }
 
 func NewMemberRepo(sto storage.Interface, c db.Connector,
-	walletRepo      wallet.IWalletRepo,mssRepo mss.IMssRepo,
+	walletRepo wallet.IWalletRepo, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
 	return &MemberRepoImpl{
 		storage:      sto,
 		Connector:    c,
 		_orm:         c.GetOrm(),
 		mssRepo:      mssRepo,
-		walletRepo: walletRepo,
+		walletRepo:   walletRepo,
 		valueRepo:    valRepo,
 		registryRepo: registryRepo,
 	}
@@ -306,7 +306,6 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	return v.Id, err
 }
 
-
 // 删除会员
 func (m *MemberRepoImpl) DeleteMember(id int64) error {
 	m.storage.Delete(m.getMemberCk(id))
@@ -339,7 +338,7 @@ func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 // 创建会员
 func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m.walletRepo,m.mssRepo, m.valueRepo, m.registryRepo)
+		m.walletRepo, m.mssRepo, m.valueRepo, m.registryRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存
@@ -397,8 +396,8 @@ func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int
 
 // 获取银行信息
 func (m *MemberRepoImpl) BankCards(memberId int64) []member.BankCard {
-	var arr = make([]member.BankCard,0)
-	m.Connector.GetOrm().Select( &arr,"member_id=$1",memberId)
+	var arr = make([]member.BankCard, 0)
+	m.Connector.GetOrm().Select(&arr, "member_id=$1", memberId)
 	return arr
 }
 
@@ -409,9 +408,9 @@ func (m *MemberRepoImpl) SaveBankCard(v *member.BankCard) error {
 	return err
 }
 
-func (m *MemberRepoImpl) RemoveBankCard(memberId int64,cardNo string) error {
-	_,err := m.Connector.GetOrm().Delete(&member.BankCard{},
-		"member_id=$1 AND bank_account=$2",memberId,cardNo)
+func (m *MemberRepoImpl) RemoveBankCard(memberId int64, cardNo string) error {
+	_, err := m.Connector.GetOrm().Delete(&member.BankCard{},
+		"member_id=$1 AND bank_account=$2", memberId, cardNo)
 	return err
 }
 

@@ -43,12 +43,11 @@ type profileManagerImpl struct {
 	repo          member.IMemberRepo
 	valueRepo     valueobject.IValueRepo
 	registryRepo  registry.IRegistryRepo
-	bankCards          []member.BankCard
+	bankCards     []member.BankCard
 	trustedInfo   *member.TrustedInfo
 	profile       *member.Profile
 	receiptsCodes []member.ReceiptsCode
 }
-
 
 func (p *profileManagerImpl) ReceiptsCodes() []member.ReceiptsCode {
 	if p.receiptsCodes == nil {
@@ -386,7 +385,7 @@ func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 }
 
 // 获取提现银行信息
-func (p *profileManagerImpl) GetBankCards()[]member.BankCard {
+func (p *profileManagerImpl) GetBankCards() []member.BankCard {
 	if p.bankCards == nil {
 		p.bankCards = p.repo.BankCards(p.memberId)
 		//if p.bank == nil {
@@ -402,10 +401,9 @@ func (p *profileManagerImpl) GetBankCards()[]member.BankCard {
 	return p.bankCards
 }
 
-
 // 获取绑定的银行卡
 func (p *profileManagerImpl) GetBankCard(cardNo string) *member.BankCard {
-	for _,v :=range p.GetBankCards() {
+	for _, v := range p.GetBankCards() {
 		if v.BankAccount == cardNo {
 			return &v
 		}
@@ -415,7 +413,7 @@ func (p *profileManagerImpl) GetBankCard(cardNo string) *member.BankCard {
 
 // 绑定银行信息
 func (p *profileManagerImpl) AddBankCard(v *member.BankCard) error {
-	if v.MemberId > 0 && v.MemberId != p.memberId{
+	if v.MemberId > 0 && v.MemberId != p.memberId {
 		return member.ErrNoSuchMember
 	}
 	if p.bankCardIsExists(v.BankAccount) {
@@ -433,7 +431,7 @@ func (p *profileManagerImpl) AddBankCard(v *member.BankCard) error {
 	if err == nil {
 		v.CreateTime = time.Now().Unix()
 		v.MemberId = p.memberId
-		if err = p.repo.SaveBankCard(v);err == nil{
+		if err = p.repo.SaveBankCard(v); err == nil {
 			p.bankCards = nil
 		}
 	}
@@ -453,7 +451,7 @@ func (p *profileManagerImpl) checkBank(v *member.BankCard) error {
 	if v.AccountName == "" {
 		return member.ErrBankAccountName
 	}
-	if l:= len(v.BankAccount);l < 16 || l >19 {
+	if l := len(v.BankAccount); l < 16 || l > 19 {
 		return member.ErrBankAccount
 	}
 	if v.Network == "" {
@@ -464,9 +462,9 @@ func (p *profileManagerImpl) checkBank(v *member.BankCard) error {
 
 //　移除银行卡
 func (p *profileManagerImpl) RemoveBankCard(cardNo string) error {
-	if p.bankCardIsExists(cardNo){
-		err := p.repo.RemoveBankCard(p.memberId,cardNo)
-		if err == nil{
+	if p.bankCardIsExists(cardNo) {
+		err := p.repo.RemoveBankCard(p.memberId, cardNo)
+		if err == nil {
 			p.bankCards = nil
 		}
 		return err
@@ -668,9 +666,9 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 
 // 银行卡是否绑定
 func (p *profileManagerImpl) bankCardIsExists(cardNo string) bool {
-	for _,v :=range p.GetBankCards() {
+	for _, v := range p.GetBankCards() {
 		if v.BankAccount == cardNo {
-return true
+			return true
 		}
 	}
 	return false

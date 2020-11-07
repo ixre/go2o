@@ -45,7 +45,7 @@ func NewAccount(m *memberImpl, value *member.Account,
 	if wc := value.WalletCode; len(wc) > 0 {
 		wal = walletRepo.GetWalletByCode(value.WalletCode)
 	}
-	impl:= &accountImpl{
+	impl := &accountImpl{
 		member:       m,
 		value:        value,
 		wallet:       wal,
@@ -54,7 +54,7 @@ func NewAccount(m *memberImpl, value *member.Account,
 		mm:           mm,
 		registryRepo: registryRepo,
 	}
-	if value.MemberId > 0 && wal == nil{
+	if value.MemberId > 0 && wal == nil {
 		impl.createWallet()
 	}
 	return impl
@@ -89,7 +89,7 @@ func (a *accountImpl) Save() (int64, error) {
 	n, err := a.rep.SaveAccount(a.value)
 	if err == nil {
 		// 创建钱包
-		if isCreate{
+		if isCreate {
 			a.createWallet()
 			a.rep.SaveAccount(a.value)
 		}
@@ -399,7 +399,6 @@ func (a *accountImpl) chargeBalanceNoLimit(kind int, title string, outerNo strin
 	return err
 }
 
-
 // 调整钱包余额
 func (a *accountImpl) adjustFlowAccount(title string, amount float32, remark string, relateUser int64) error {
 	l, err := a.createFlowAccountLog(member.KindAdjust, title, amount, "", false)
@@ -455,7 +454,7 @@ func (a *accountImpl) chargeWallet(title string, amount int, outerNo string, rem
 	err := a.wallet.Charge(amount, member.KindCharge,
 		title, outerNo, 1, "")
 	if err == nil {
-		a.value.TotalWalletAmount += float32(amount)/100
+		a.value.TotalWalletAmount += float32(amount) / 100
 		err = a.asyncWallet()
 	}
 	return err
@@ -466,13 +465,12 @@ func (a *accountImpl) walletConsume(title string, amount int, outerNo string, re
 	if a.wallet.Get().Balance < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
-	err := a.wallet.Consume(-amount,title,outerNo)
+	err := a.wallet.Consume(-amount, title, outerNo)
 	if err == nil {
 		err = a.asyncWallet()
 	}
 	return err
 }
-
 
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 func (a *accountImpl) walletDiscount(title string, amount int, outerNo string, remark string) error {
@@ -496,17 +494,16 @@ func (a *accountImpl) walletRefund(kind int, title string,
 	if title == "" {
 		title = "钱包退款入账"
 	}
-	err := a.wallet.Refund(amount,kind,title,outerNo,int(relateUser),"")
-	if err == nil{
+	err := a.wallet.Refund(amount, kind, title, outerNo, int(relateUser), "")
+	if err == nil {
 		err = a.asyncWallet()
 	}
 	return err
 }
 
-
 // 调整钱包余额
 func (a *accountImpl) walletAdjust(title string, amount int, outerNo string, relateUser int64) error {
-	err := a.wallet.Adjust(amount,title,outerNo,int(relateUser),"")
+	err := a.wallet.Adjust(amount, title, outerNo, int(relateUser), "")
 	if err == nil {
 		err = a.asyncWallet()
 	}
@@ -514,7 +511,7 @@ func (a *accountImpl) walletAdjust(title string, amount int, outerNo string, rel
 }
 
 // 检查交易日志所需要的信息是否完整
-func (a *accountImpl) checkTradeLog(amount int,outerNo string)error{
+func (a *accountImpl) checkTradeLog(amount int, outerNo string) error {
 	if math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -525,8 +522,8 @@ func (a *accountImpl) checkTradeLog(amount int,outerNo string)error{
 }
 
 // 同步到账户余额
-func (a *accountImpl) asyncWallet()error{
-	a.value.WalletBalance = float32(a.wallet.Get().Balance)/100
+func (a *accountImpl) asyncWallet() error {
+	a.value.WalletBalance = float32(a.wallet.Get().Balance) / 100
 	_, err := a.Save()
 	return err
 }
@@ -799,8 +796,8 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		return 0, "", errors.New(msg)
 	}
 	// 检测是否实名
-	mustTrust,_ := a.registryRepo.GetValue(registry.MemberWithdrawalMustTrust)
-	if mustTrust=="true" {
+	mustTrust, _ := a.registryRepo.GetValue(registry.MemberWithdrawalMustTrust)
+	if mustTrust == "true" {
 		trust := a.member.Profile().GetTrustedInfo()
 		if trust.ReviewState != int(enum.ReviewPass) {
 			return 0, "", member.ErrTakeOutNotTrust
@@ -817,14 +814,14 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制
-	minAmountStr,_ := a.registryRepo.GetValue(registry.MemberMinTakeOutAmount)
-	minAmount,err := strconv.Atoi(minAmountStr)
+	minAmountStr, _ := a.registryRepo.GetValue(registry.MemberMinTakeOutAmount)
+	minAmount, err := strconv.Atoi(minAmountStr)
 	if amount < minAmount*100 {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
 			format.FormatFloat(float32(minAmount))))
 	}
-	maxAmountStr,_ := a.registryRepo.GetValue(registry.MemberMaxTakeOutAmount)
-	maxAmount,err := strconv.Atoi(maxAmountStr)
+	maxAmountStr, _ := a.registryRepo.GetValue(registry.MemberMaxTakeOutAmount)
+	maxAmount, err := strconv.Atoi(maxAmountStr)
 	if maxAmount > 0 && amount > maxAmount*100 {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
 			format.FormatFloat(float32(maxAmount))))
@@ -841,8 +838,8 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	accountName := ""
 	bankName := ""
 	if takeKind == member.KindWalletTakeOutToBankCard {
-		if len(accountNo) == 0{
-			return 0,"",errors.New("未指定提现的银行卡号")
+		if len(accountNo) == 0 {
+			return 0, "", errors.New("未指定提现的银行卡号")
 		}
 		bank := a.member.Profile().GetBankCard(accountNo)
 		if bank == nil {
@@ -856,8 +853,8 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
 	}
-	id, tradeNo,err := a.wallet.RequestWithdrawal(finalAmount,tradeFee,takeKind,
-		title,accountNo,accountName,bankName)
+	id, tradeNo, err := a.wallet.RequestWithdrawal(finalAmount, tradeFee, takeKind,
+		title, accountNo, accountName, bankName)
 	if err == nil {
 		err = a.asyncWallet()
 		if err == nil {
@@ -870,8 +867,8 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 // 确认提现
 func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error {
 	//todo: opr_uid
-	err := a.wallet.ReviewWithdrawal(id,pass,remark,1,"系统")
-	if err == nil{
+	err := a.wallet.ReviewWithdrawal(id, pass, remark, 1, "系统")
+	if err == nil {
 		err = a.asyncWallet()
 	}
 	return err
@@ -880,8 +877,8 @@ func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error
 // 完成提现
 func (a *accountImpl) FinishWithdrawal(id int64, tradeNo string) error {
 	//todo: opr_uid
-	err := a.wallet.FinishWithdrawal(id,tradeNo)
-	if err == nil{
+	err := a.wallet.FinishWithdrawal(id, tradeNo)
+	if err == nil {
 		err = a.asyncWallet()
 	}
 	return err
@@ -1339,7 +1336,6 @@ func (a *accountImpl) discountBalance(title string, amount float32, outerNo stri
 	}
 	return err
 }
-
 
 //　充值积分
 func (a *accountImpl) integralRefund(title string, outerNo string,

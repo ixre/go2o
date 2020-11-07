@@ -24,8 +24,8 @@ func (e *ExpressModule) Init() {
 func (e *ExpressModule) GetLogisticFlowTrack(shipperCode string, logisticCode string, invert bool) (*shipment.ShipOrderTrack, error) {
 	r, err := kdniao.KdnTraces(shipperCode, logisticCode)
 	if err == nil {
-		if r == nil{
-			return nil,errors.New("数据获取失败")
+		if r == nil {
+			return nil, errors.New("数据获取失败")
 		}
 		return kdniao.Parse(shipperCode, logisticCode, r, invert), nil
 	}

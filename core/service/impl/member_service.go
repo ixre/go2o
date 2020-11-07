@@ -878,17 +878,17 @@ func (s *memberService) GetBankCards(_ context.Context, id *proto.Int64) (*proto
 	m := s.repo.CreateMember(&member.Member{Id: id.Value})
 	b := m.Profile().GetBankCards()
 	arr := make([]*proto.SBankCardInfo, len(b))
-	for i,v :=range b{
-		arr[i] =  &proto.SBankCardInfo{
-			BankName:             v.BankName,
-			AccountName:          v.AccountName,
-			AccountNo:            v.BankAccount,
-			BankId:               int32(v.BankId),
-			BankCode:             v.BankCode,
-			AuthCode:             v.AuthCode,
-			Network:              v.Network,
-			State:                int32(v.State),
-			UpdateTime:           v.CreateTime,
+	for i, v := range b {
+		arr[i] = &proto.SBankCardInfo{
+			BankName:    v.BankName,
+			AccountName: v.AccountName,
+			AccountNo:   v.BankAccount,
+			BankId:      int32(v.BankId),
+			BankCode:    v.BankCode,
+			AuthCode:    v.AuthCode,
+			Network:     v.Network,
+			State:       int32(v.State),
+			UpdateTime:  v.CreateTime,
 		}
 	}
 	return &proto.BankCardListResponse{
@@ -1251,15 +1251,15 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	kind := member.	KindWalletTakeOutToThirdPart
+	kind := member.KindWalletTakeOutToThirdPart
 	title := "充值到第三方账户"
-	if r.DrawToBank{
+	if r.DrawToBank {
 		kind = member.KindWalletTakeOutToBankCard
 		title = "提现到银行卡"
 	}
 	acc := m.GetAccount()
 	_, tradeNo, err := acc.RequestWithdrawal(kind, title,
-		int(r.Amount), int(r.TradeFee),r.AccountNo)
+		int(r.Amount), int(r.TradeFee), r.AccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}

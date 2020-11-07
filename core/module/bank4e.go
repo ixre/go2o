@@ -65,7 +65,7 @@ func (b *Bank4E) GetBasicInfo(memberId int64) map[string]string {
 	data["RealName"] = info.RealName
 	data["IDCard"] = info.CardId
 	data["Phone"] = pr.Phone
-	if len(bankCards)>0 {
+	if len(bankCards) > 0 {
 		data["BankAccount"] = bankCards[0].BankAccount
 	}
 	data["Remark"] = info.Remark
@@ -173,7 +173,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	if err := m.Profile().AddBankCard(&member.BankCard{
 		BankName:    result["BankName"],
 		AccountName: realName,
-		BankAccount:     bankAccount,
+		BankAccount: bankAccount,
 	}); err != nil {
 		return err
 	}

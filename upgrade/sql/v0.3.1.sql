@@ -712,3 +712,17 @@ COMMENT ON COLUMN "public".wal_wallet.create_time IS '创建时间';
 COMMENT ON COLUMN "public".wal_wallet.update_time IS '更新时间';
 CREATE INDEX wal_wallet_hash_code
     ON "public".wal_wallet (hash_code);
+
+
+ALTER TABLE "public".registry
+    ALTER COLUMN value SET DATA TYPE varchar(5120);
+ALTER TABLE "public".registry
+    ALTER COLUMN default_value SET DATA TYPE varchar(5120);
+COMMENT ON TABLE "public".registry IS '注册表';
+COMMENT ON COLUMN "public".registry."key" IS '键';
+COMMENT ON COLUMN "public".registry.description IS '描述';
+COMMENT ON COLUMN "public".registry.value IS '值';
+COMMENT ON COLUMN "public".registry.flag IS '是否用户定义,0:否,1:是';
+COMMENT ON COLUMN "public".registry.default_value IS '默认值';
+COMMENT ON COLUMN "public".registry.options IS '可选值';
+

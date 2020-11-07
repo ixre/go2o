@@ -21,7 +21,7 @@ type walletServiceImpl struct {
 }
 
 func (w *walletServiceImpl) CreateWallet(_ context.Context, r *proto.CreateWalletRequest) (*proto.Result, error) {
-	iw := w._repo.CreateWallet(r.UserId,int(r.WalletType),r.WalletName,int(r.WalletFlag))
+	iw := w._repo.CreateWallet(r.UserId, int(r.WalletType), r.WalletName, int(r.WalletFlag))
 	_, err := iw.Save()
 	return w.result(err), nil
 }
@@ -123,7 +123,7 @@ func (w *walletServiceImpl) RequestWithdrawal(_ context.Context, r *proto.Reques
 	} else {
 		_, tradeNo, err1 := iw.RequestWithdrawal(int(r.Amount),
 			int(r.TradeFee), int(r.Kind), "提现到银行卡",
-			r.BankName,r.BankAccountName,r.BankAccountNo)
+			r.BankName, r.BankAccountName, r.BankAccountNo)
 		if err1 != nil {
 			err = err1
 		} else {
@@ -174,7 +174,7 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 		UserId:         v.UserId,
 		WalletType:     int32(v.WalletType),
 		WalletFlag:     int32(v.WalletFlag),
-		WalletName:v.WalletName,
+		WalletName:     v.WalletName,
 		Balance:        int32(v.Balance),
 		PresentBalance: int32(v.PresentBalance),
 		AdjustAmount:   int32(v.AdjustAmount),

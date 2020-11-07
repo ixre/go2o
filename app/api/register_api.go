@@ -76,14 +76,14 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.RegisterMemberV2(context.TODO(), &proto.RegisterMemberRequest{
-			User:   user,
-			Pwd:    pwd,
-			Flag:   0,
-			Name:   "",
-			Phone:  phone,
-			Email:  "",
-			RegFrom: regFrom,
-			RegIp: regIp,
+			User:        user,
+			Pwd:         pwd,
+			Flag:        0,
+			Name:        "",
+			Phone:       phone,
+			Email:       "",
+			RegFrom:     regFrom,
+			RegIp:       regIp,
 			InviterCode: inviteCode,
 		})
 		if r.ErrCode == 0 {

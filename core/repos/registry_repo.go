@@ -24,7 +24,7 @@ type registryRepo struct {
 }
 
 func (r *registryRepo) CreateUserKey(key string, value string, desc string) error {
-	if r.Get(key) != nil{
+	if r.Get(key) != nil {
 		return errors.New("exists key")
 	}
 	rv := &registry.Registry{

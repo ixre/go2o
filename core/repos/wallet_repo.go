@@ -24,7 +24,7 @@ type WalletRepoImpl struct {
 	_conn db.Connector
 }
 
-func (w *WalletRepoImpl) CreateWallet(userId int64,walletType int,walletName string,flag int) wallet.IWallet {
+func (w *WalletRepoImpl) CreateWallet(userId int64, walletType int, walletName string, flag int) wallet.IWallet {
 	return w.createWallet1(&wallet.Wallet{
 		UserId:     userId,
 		WalletType: walletType,
@@ -33,9 +33,9 @@ func (w *WalletRepoImpl) CreateWallet(userId int64,walletType int,walletName str
 	})
 }
 
-func (w *WalletRepoImpl) createWallet1(v *wallet.Wallet)wallet.IWallet{
-	if v != nil{
-		return wi.NewWallet(v,w)
+func (w *WalletRepoImpl) createWallet1(v *wallet.Wallet) wallet.IWallet {
+	if v != nil {
+		return wi.NewWallet(v, w)
 	}
 	return nil
 }
@@ -44,12 +44,10 @@ func (w *WalletRepoImpl) GetWallet(walletId int64) wallet.IWallet {
 	return w.createWallet1(w.getWallet_(walletId))
 }
 
-
 func (w *WalletRepoImpl) GetWalletByCode(code string) wallet.IWallet {
 	l := w.GetWalletBy_("hash_code= $1", code)
 	return w.createWallet1(l)
 }
-
 
 func (w *WalletRepoImpl) GetWalletByUserId(userId int64, walletType int) wallet.IWallet {
 	l := w.GetWalletBy_("user_id= $1 AND wallet_type= $2 LIMIT 1", userId, walletType)

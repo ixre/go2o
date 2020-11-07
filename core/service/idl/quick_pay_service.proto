@@ -80,8 +80,8 @@ message BankAuthQueryRequest {
 
 // 银行授权查询响应
 message BankAuthQueryResponse {
-    // 状态码，0表示成功
-    string Code = 1;
+    // 状态码，0表示成功,1: 表示处理中 2:处理失败
+    int32 Code = 1;
     // 错误信息,成功返回空
     string ErrMsg = 2;
     // 银行授权认证返回的Token,未处理授权时为空

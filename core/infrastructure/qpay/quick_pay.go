@@ -19,7 +19,7 @@ type QuickPayProvider interface {
 	RequestBankSideAuth(nonce string, bankCardNo string, accountName string,
 		idCardNo string, mobile string) (*BankAuthResult, error)
 	// 根据随机ID查询银行认证状态(提供给外部查询)
-	QueryBankAuthByNonceId(id string) (*BankAuthQueryResponse, error)
+	QueryBankAuthByNonceId(nonce string) (*BankAuthQueryResponse, error)
 	// 根据银行卡查询银行认证状态(提供给内部查询)
 	QueryBankAuth(bankCardNo string) (*BankAuthQueryResponse, error)
 	// 直接支付
@@ -28,7 +28,7 @@ type QuickPayProvider interface {
 	// 批量付款
 	BatchTransfer(batchTradeNo string, batchTradeFee int32,
 		list []*CardTransferReq, nonce string,
-		tradeIp string, notifyUrl string) (*BatchTransferResponse,error)
+		tradeIp string, notifyUrl string) (*BatchTransferResponse, error)
 }
 
 // 银行卡查询结果
@@ -44,7 +44,7 @@ type CardBinQueryResult struct {
 	// 银行卡类型（0=储蓄卡,1=信用卡）
 	CardType int `protobuf:"varint,4,opt,name=CardType,proto3" json:"CardType,omitempty"`
 	// 是否需要银行端授权,如果否,则直接使用短信既可授权
-	RequireBankSideAuth  bool     `protobuf:"varint,6,opt,name=RequireBankSideAuth,proto3" json:"RequireBankSideAuth,omitempty"`
+	RequireBankSideAuth bool `protobuf:"varint,6,opt,name=RequireBankSideAuth,proto3" json:"RequireBankSideAuth,omitempty"`
 }
 
 // 申请认证返回结果,通常直接使用返回的表单提交获取银行的授权, 并再查询授权
@@ -59,8 +59,10 @@ type BankAuthResult struct {
 
 // 银行授权查询响应
 type BankAuthQueryResponse struct {
-	// 状态码，0表示成功
-	Code string `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	// 状态码，0表示成功,1: 表示处理中 2:处理失败
+	Code int `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	// 状态消息
+	Message string
 	// 银行授权认证返回的Token,未处理授权时为空
 	BankAuthToken string `protobuf:"bytes,3,opt,name=BankAuthToken,proto3" json:"BankAuthToken,omitempty"`
 }
@@ -102,7 +104,7 @@ type BatchTransferResponse struct {
 }
 
 // 银行认证存储中间数据
-type BankAuthSwapData struct{
+type BankAuthSwapData struct {
 	// 银行卡号
 	BankCardNo string
 	// 账户名

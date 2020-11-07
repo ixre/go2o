@@ -148,7 +148,7 @@ type (
 		Adjust(value int, title, outerNo string, oprUid int, oprName string) error
 
 		// 消费
-		Consume(amount int,title string,outerNo string) error
+		Consume(amount int, title string, outerNo string) error
 
 		// 抵扣,must是否必须大于0
 		Discount(amount int, title, outerNo string, must bool) error
@@ -179,7 +179,7 @@ type (
 
 		// 申请提现,kind：提现方式,返回info_id,交易号 及错误,amount为提现金额,tradeFee为手续费
 		RequestWithdrawal(amount int, tradeFee int, kind int, title string,
-		accountNo string,accountName string,bankName string) (int64, string, error)
+			accountNo string, accountName string, bankName string) (int64, string, error)
 
 		// 确认提现
 		ReviewWithdrawal(takeId int64, pass bool, remark string, oprUid int, oprName string) error
@@ -194,7 +194,7 @@ type (
 	// 钱包仓储
 	IWalletRepo interface {
 		// 创建钱包
-		CreateWallet(userId int64,walletType int,walletName string,flag int) IWallet
+		CreateWallet(userId int64, walletType int, walletName string, flag int) IWallet
 		// 获取钱包账户
 		GetWallet(walletId int64) IWallet
 		// 根据用户编号获取钱包账户

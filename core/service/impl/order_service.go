@@ -206,35 +206,35 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2)
 	return nil, nil
 
 	/*
-	orderId := s.repo.GetOrderId(id.Value, true)
-	o := s.repo.GetSubOrder(orderId)
-	if o != nil {
-		return parser.SubOrderDto(o), nil
-	}
-	return nil, nil
-	 */
+		orderId := s.repo.GetOrderId(id.Value, true)
+		o := s.repo.GetSubOrder(orderId)
+		if o != nil {
+			return parser.SubOrderDto(o), nil
+		}
+		return nil, nil
+	*/
 }
 
 // 根据订单号获取子订单
 func (s *orderServiceImpl) GetSubOrderByNo_(_ context.Context, orderNo *proto.String) (*proto.SSingleOrder, error) {
-	return s.GetOrder(nil,&proto.OrderNoV2{
-		Value:                orderNo.Value,
+	return s.GetOrder(nil, &proto.OrderNoV2{
+		Value: orderNo.Value,
 	})
 	/*
-	c := s.manager.Unified(orderNo.Value, true).Complex()
-			if c != nil {
-				return parser.OrderDto(c), nil
-			}
-			return nil, nil
+		c := s.manager.Unified(orderNo.Value, true).Complex()
+				if c != nil {
+					return parser.OrderDto(c), nil
+				}
+				return nil, nil
 
 
-	orderId := s.repo.GetOrderId(orderNo.Value, true)
-	o := s.repo.GetSubOrder(orderId)
-	if o != nil {
-		return parser.SubOrderDto(o), nil
-	}
-	return nil, nil
-		 */
+		orderId := s.repo.GetOrderId(orderNo.Value, true)
+		o := s.repo.GetSubOrder(orderId)
+		if o != nil {
+			return parser.SubOrderDto(o), nil
+		}
+		return nil, nil
+	*/
 }
 
 // 根据编号获取订单

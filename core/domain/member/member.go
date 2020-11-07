@@ -57,7 +57,7 @@ func (m *memberImpl) ContainFlag(f int) bool {
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member,
-	rep member.IMemberRepo, walletRepo      wallet.IWalletRepo,
+	rep member.IMemberRepo, walletRepo wallet.IWalletRepo,
 	mp mss.IMssRepo, valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo) member.IMember {
 	return &memberImpl{
@@ -65,7 +65,7 @@ func NewMember(manager member.IMemberManager, val *member.Member,
 		value:        val,
 		repo:         rep,
 		mssRepo:      mp,
-		walletRepo: walletRepo,
+		walletRepo:   walletRepo,
 		valueRepo:    valRepo,
 		registryRepo: registryRepo,
 	}
@@ -220,7 +220,7 @@ func (m *memberImpl) GetAccount() member.IAccount {
 				MemberId: m.GetAggregateRootId(),
 			}
 		}
-		return NewAccount(m, v, m.repo, m.manager,m.walletRepo, m.registryRepo)
+		return NewAccount(m, v, m.repo, m.manager, m.walletRepo, m.registryRepo)
 	}
 	return m.account
 }
@@ -578,7 +578,7 @@ func (m *memberImpl) checkUser(user string) error {
 func (m *memberImpl) memberInit() error {
 	// 创建账户
 	m.account = NewAccount(m, &member.Account{},
-	m.repo, m.manager, m.walletRepo, m.registryRepo)
+		m.repo, m.manager, m.walletRepo, m.registryRepo)
 	if _, err := m.account.Save(); err != nil {
 		return err
 	}

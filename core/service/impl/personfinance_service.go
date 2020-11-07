@@ -106,7 +106,7 @@ func (p *personFinanceService) RiseTransferOut(_ context.Context, r *proto.RiseT
 	}
 
 	if r.TransferWith == personfinance.TransferOutWithBank {
-		if b := m.Profile().GetBankCard(r.BankAccountNo); b ==nil{
+		if b := m.Profile().GetBankCard(r.BankAccountNo); b == nil {
 			return p.error(member.ErrBankNoSuchCard), nil
 		}
 		err := ir.TransferOut(float32(r.Amount),

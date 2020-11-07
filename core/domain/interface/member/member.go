@@ -140,7 +140,7 @@ type (
 		// 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
 		ModifyTradePassword(newPwd, oldPwd string) error
 		// 获取提现银行信息
-		GetBankCards()[]BankCard
+		GetBankCards() []BankCard
 		// 获取绑定的银行卡
 		GetBankCard(cardNo string) *BankCard
 		// 添加银行卡

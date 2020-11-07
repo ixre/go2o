@@ -102,7 +102,7 @@ type (
 		Save() (int64, error)
 
 		// 电子钱包
-		Wallet()wallet.IWallet
+		Wallet() wallet.IWallet
 
 		// 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account int, enabled bool) error
@@ -158,7 +158,7 @@ type (
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
 		RequestWithdrawal(takeKind int, title string, amount int,
-			tradeFee int,bankAccountNo string) (int64, string, error)
+			tradeFee int, bankAccountNo string) (int64, string, error)
 
 		// 确认提现
 		ReviewWithdrawal(id int64, pass bool, remark string) error

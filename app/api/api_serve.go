@@ -124,7 +124,7 @@ func serviceMiddleware(s api.Server, prefix string, debug bool, rl *util.Request
 			)
 			if rsp.Code == api.RAccessDenied.Code {
 				data, _ := url.QueryUnescape(ctx.Request().Form.Encode())
-				sortData := api.ParamsToBytes(ctx.Request().Form, form.GetString("$user_secret"),true)
+				sortData := api.ParamsToBytes(ctx.Request().Form, form.GetString("$user_secret"), true)
 				log.Println(prefix, "request data = [", data, "]")
 				log.Println(" sign not match ! key =", form.Get("key"),
 					"\r\n   server_sign=", form.GetString("$server_sign"),
