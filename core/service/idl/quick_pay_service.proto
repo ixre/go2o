@@ -52,7 +52,7 @@ message BankAuthRequest {
     string NonceId = 1;
     // 用户银行卡号,如：620000000000000000
     string BankCardNo = 2;
-    // 用户名,如：张三
+    // 姓名,如：张三
     string BankAccountName = 3;
     // 用户银行绑定的手机号
     string Mobile = 4;
@@ -163,18 +163,22 @@ message CardTransferRequest {
     string OrderNo = 1;
     // 银行编号
     string BankCode = 2;
-    // 是否为对公转账
-    bool TransferToCompany = 3;
+    // 是否为对私转账
+    bool PersonTransfer = 3;
     // 付款金额,实际金额*100,无小数
     int32 TradeFee = 4;
+    // 银行账户
+    string BankCardNo = 5;
+    // 收款人姓名,如：张三
+    string BankAccountName = 6;
     // 付款事由
-    string Subject = 5;
+    string Subject = 7;
     // 省份
-    string Province = 6;
+    string Province = 8;
     // 城市
-    string City = 7;
+    string City = 9;
     // 支行信息
-    string StoreName = 8;
+    string StoreName = 10;
 }
 
 // 批量付款请求

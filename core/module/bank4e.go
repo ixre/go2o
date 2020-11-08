@@ -66,7 +66,7 @@ func (b *Bank4E) GetBasicInfo(memberId int64) map[string]string {
 	data["IDCard"] = info.CardId
 	data["Phone"] = pr.Phone
 	if len(bankCards) > 0 {
-		data["BankAccount"] = bankCards[0].BankAccount
+		data["BankCardNo"] = bankCards[0].BankAccount
 	}
 	data["Remark"] = info.Remark
 	if info.ReviewState == int(enum.ReviewPass) {

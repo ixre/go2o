@@ -28,9 +28,7 @@ type QuickPayProvider interface {
 	DirectPayment(orderNo string, fee int32, subject string, bankToken string,
 		tradeIp string, notifyUrl string, returnUrl string) (*QPaymentResponse, error)
 	// 批量付款
-	BatchTransfer(batchTradeNo string, batchTradeFee int32,
-		list []*CardTransferReq, nonce string,
-		tradeIp string, notifyUrl string) (*BatchTransferResponse, error)
+	BatchTransfer(batchTradeNo string, list []*CardTransferReq, nonce string,notifyUrl string) (*BatchTransferResponse, error)
 	// 查询支付状态,options为可选参数
 	QueryPaymentStatus(orderNo string, options map[string]string) (*QPaymentQueryResponse, error)
 }
@@ -82,7 +80,7 @@ type QPaymentResponse struct {
 // 查询支付结果响应
 type QPaymentQueryResponse struct {
 	// 状态码，0表示成功
-	Code int32 `protobuf:"varint,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code int `protobuf:"varint,1,opt,name=Code,proto3" json:"Code,omitempty"`
 	// 错误信息,成功返回空
 	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
 	// 第三方支单据号
@@ -95,10 +93,14 @@ type CardTransferReq struct {
 	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
 	// 银行编号
 	BankCode string `protobuf:"bytes,2,opt,name=BankCode,proto3" json:"BankCode,omitempty"`
-	// 是否为对公转账
-	TransferToCompany bool `protobuf:"varint,3,opt,name=TransferToCompany,proto3" json:"TransferToCompany,omitempty"`
+	// 是否为对私转账
+	PersonTransfer bool `protobuf:"varint,3,opt,name=TransferToCompany,proto3" json:"TransferToCompany,omitempty"`
 	// 付款金额,实际金额*100,无小数
 	TradeFee int32 `protobuf:"varint,4,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
+	// 银行账户
+	BankCardNo string `protobuf:"bytes,5,opt,name=BankCardNo,proto3" json:"BankCardNo,omitempty"`
+	// 收款人姓名,如：张三
+	BankAccountName string `protobuf:"bytes,6,opt,name=BankAccountName,proto3" json:"BankAccountName,omitempty"`
 	// 付款事由
 	Subject string `protobuf:"bytes,5,opt,name=Subject,proto3" json:"Subject,omitempty"`
 	// 省份

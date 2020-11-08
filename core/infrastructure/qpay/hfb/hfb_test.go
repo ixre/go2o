@@ -1,10 +1,13 @@
 package hfb
 
 import (
+	"encoding/hex"
+	"github.com/ixre/gof/crypto"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/qpay"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 )
@@ -73,14 +76,14 @@ func TestHfbImpl_DirectPayment(t *testing.T) {
 
 
 func TestHfbImpl_QueryPaymentStatus(t *testing.T) {
-	orderNo := "BZ20201107224102"
+	orderNo := "bz20201107224102"
 	billTime := "20201107224102"
 	ret,err := h.QueryPaymentStatus(orderNo,map[string]string{"agent_bill_time":billTime})
 	if err != nil{
 		t.Error(err)
 		t.FailNow()
 	}
-	println(ret)
+	t.Logf("%#v",ret)
 }
 
 func TestHfbImpl_QueryBankAuth(t *testing.T) {
@@ -94,3 +97,39 @@ func TestHfbImpl_QueryBankAuth(t *testing.T) {
 	}
 	t.Log(r)
 }
+
+func TestHfbImpl_BatchTransfer(t *testing.T) {
+	orderNo := "BZ"+time.Now().Format("20060102150405")
+	nonce := strconv.Itoa(int(time.Now().Unix()))
+	batch := []*qpay.CardTransferReq{
+		{
+			OrderNo:         orderNo,
+			PersonTransfer:  true,
+			TradeFee:        1, //0.01
+			BankCardNo:      "6227000010990006191",
+			BankCode:        "2",
+			BankAccountName: "闫雪龙",
+			Subject:         "",
+			Province:        "-",
+			City:            "-",
+			StoreName:       "-",
+		},
+	}
+	r,err := h.BatchTransfer(orderNo,batch,nonce,"http://www.go2o-dev.56x.net/qpay/callback")
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}else{
+		t.Logf("%#v",r)
+	}
+}
+
+func TestHfbImpl_Encrypt3DES(t *testing.T) {
+	detail_data := "agent_id=2126129&batch_amt=0.01&batch_no=bz20201108080915&batch_num=1&detail_data=bz20201108080915^2^0^6227000010990006191^闫雪龙^0.01^上游结算款^^^&ext_param1=1604794155&key=0e05aac3be0746269f114bd7&notify_url=http://www.go2o-dev.56x.net/qpay/callback&version=3";
+	key := []byte("4865534446254C0F8837DFB3")
+	bytes ,_ := crypto.EncryptECB3DES([]byte(detail_data),key)
+	s := hex.EncodeToString(bytes)
+	t.Log(strings.ToUpper(s))
+}
+
+
