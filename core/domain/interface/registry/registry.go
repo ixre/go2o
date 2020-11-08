@@ -69,6 +69,8 @@ type IRegistryRepo interface {
 	GetValue(key string) (string, error)
 	// 更新键值
 	UpdateValue(key string, value string) error
+	// 创建新的KEY
+	CreateUserKey(key string, value string, desc string) error
 	// 合并数据
 	Merge(registries []*Registry) error
 	// 搜索注册表
@@ -169,8 +171,8 @@ func (r *registryImpl) Save() error {
 		return errors.New("key length out of 40")
 	}
 	r.value.Value = strings.TrimSpace(r.value.Value)
-	if len(r.value.Value) > 512 {
-		return errors.New("value length out of 512")
+	if len(r.value.Value) > 5120 {
+		return errors.New("value length out of 5120")
 	}
 	return r.repo.Save(r)
 }

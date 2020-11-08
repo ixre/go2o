@@ -64,8 +64,8 @@ func round(f float32, n int) float64 {
 	return math.Round(float64(f), n)
 }
 
-func Address(src *proto.SAddress) *member.Address {
-	return &member.Address{
+func Address(src *proto.SAddress) *member.ConsigneeAddress {
+	return &member.ConsigneeAddress{
 		Id:             src.ID,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
@@ -282,14 +282,16 @@ func Order(src *proto.SSingleOrder) *order.ComplexOrder {
 		PackageFee:     src.PackageFee,
 		FinalAmount:    src.FinalAmount,
 
-		ConsigneePerson: src.Consignee.ConsigneePerson,
-		ConsigneePhone:  src.Consignee.ConsigneePhone,
-		ShippingAddress: src.Consignee.ShippingAddress,
-		BuyerComment:    src.BuyerComment,
-		CreateTime:      src.SubmitTime,
-		State:           src.State,
-		Items:           make([]*order.ComplexItem, len(src.Items)),
-		Data:            src.Data,
+		Consignee: &order.ComplexConsignee{
+			ConsigneePerson: src.Consignee.ConsigneePerson,
+			ConsigneePhone:  src.Consignee.ConsigneePhone,
+			ShippingAddress: src.Consignee.ShippingAddress,
+		},
+		BuyerComment: src.BuyerComment,
+		CreateTime:   src.SubmitTime,
+		State:        src.State,
+		Items:        make([]*order.ComplexItem, len(src.Items)),
+		Data:         src.Data,
 	}
 	if src.Items != nil {
 		for i, v := range src.Items {
@@ -373,15 +375,22 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 
 func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 	return &proto.SOrderItem{
-		ItemId:         src.ItemId,
-		SkuId:          src.SkuId,
-		SnapshotId:     src.SnapshotId,
-		Quantity:       src.Quantity,
-		ReturnQuantity: src.ReturnQuantity,
-		Amount:         src.Amount,
-		FinalAmount:    src.FinalAmount,
-		IsShipped:      src.IsShipped == 1,
-		Data:           src.Data,
+		SnapshotId: src.SnapshotId,
+		SkuId:      src.SkuId,
+		ItemId:     src.ItemId,
+		ItemTitle:  src.ItemTitle,
+		Image:      src.MainImage,
+		Price:      float64(src.Price),
+		//FinalPrice:           0,
+		Quantity:             src.Quantity,
+		ReturnQuantity:       src.ReturnQuantity,
+		Amount:               src.Amount,
+		FinalAmount:          src.FinalAmount,
+		IsShipped:            src.IsShipped == 1,
+		Data:                 src.Data,
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
 	}
 }
 
@@ -401,9 +410,9 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 		PackageFee:     src.PackageFee,
 		FinalAmount:    src.FinalAmount,
 		Consignee: &proto.SConsigneeInfo{
-			ConsigneePerson: src.ConsigneePerson,
-			ConsigneePhone:  src.ConsigneePhone,
-			ShippingAddress: src.ShippingAddress,
+			ConsigneePerson: src.Consignee.ConsigneePerson,
+			ConsigneePhone:  src.Consignee.ConsigneePhone,
+			ShippingAddress: src.Consignee.ShippingAddress,
 		},
 		BuyerComment: src.BuyerComment,
 		SubmitTime:   src.CreateTime,

@@ -140,11 +140,13 @@ type (
 		// 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
 		ModifyTradePassword(newPwd, oldPwd string) error
 		// 获取提现银行信息
-		GetBank() BankInfo
-		// 保存提现银行信息,保存后将锁定
-		SaveBank(*BankInfo) error
+		GetBankCards() []BankCard
+		// 获取绑定的银行卡
+		GetBankCard(cardNo string) *BankCard
+		// 添加银行卡
+		AddBankCard(*BankCard) error
 		// 移除银行卡
-		RemoveBankCard(backCardId int64) error
+		RemoveBankCard(cardNo string) error
 		// 获取收款码
 		ReceiptsCodes() []ReceiptsCode
 		// 保存收款码
@@ -156,7 +158,7 @@ type (
 		// 审核实名认证,若重复审核将返回错误
 		ReviewTrustedInfo(pass bool, remark string) error
 		// 创建配送地址
-		CreateDeliver(*Address) IDeliverAddress
+		CreateDeliver(*ConsigneeAddress) IDeliverAddress
 		// 获取配送地址
 		GetDeliverAddress() []IDeliverAddress
 		// 获取配送地址
@@ -359,7 +361,7 @@ type (
 
 	// 银行卡信息,因为重要且非频繁更新的数据
 	// 所以需要用IsLocked来标记是否锁定
-	BankInfo struct {
+	BankInfo_ struct {
 		//会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
 		//名称
@@ -377,6 +379,33 @@ type (
 		//更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
+
+	// 银行卡
+	BankCard struct {
+		// 编号
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		// 会员编号
+		MemberId int64 `db:"member_id"`
+		// 银行账号
+		BankAccount string `db:"bank_account"`
+		// 户名
+		AccountName string `db:"account_name"`
+		// 银行编号
+		BankId int `db:"bank_id"`
+		// 银行名称
+		BankName string `db:"bank_name"`
+		// 银行卡代码
+		BankCode string `db:"bank_code"`
+		// 网点
+		Network string `db:"network"`
+		// 快捷支付授权码
+		AuthCode string `db:"auth_code"`
+		// 状态
+		State int16 `db:"state"`
+		// 添加时间
+		CreateTime int64 `db:"create_time"`
+	}
+
 	// 收款码
 	ReceiptsCode struct {
 		// 编号
@@ -411,13 +440,13 @@ type (
 	// 收货地址
 	IDeliverAddress interface {
 		GetDomainId() int64
-		GetValue() Address
-		SetValue(*Address) error
+		GetValue() ConsigneeAddress
+		SetValue(*ConsigneeAddress) error
 		Save() (int64, error)
 	}
 
 	// 收货地址
-	Address struct {
+	ConsigneeAddress struct {
 		//编号
 		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		//会员编号
@@ -490,11 +519,12 @@ type (
 	}
 )
 
-func (b BankInfo) Right() bool {
-	return len(b.BankName) > 0 && len(b.Account) > 0 &&
+func (b BankCard) Right() bool {
+	return len(b.BankName) > 0 && len(b.BankAccount) > 0 &&
 		len(b.AccountName) > 0
 }
 
-func (b BankInfo) Locked() bool {
-	return b.IsLocked == BankLocked
+func (b BankCard) Locked() bool {
+	panic("remove")
+	//return b.IsLocked == BankLocked
 }

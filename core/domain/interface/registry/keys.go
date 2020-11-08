@@ -147,7 +147,7 @@ var (
 	// 会员提现提示
 	MemberTakeOutMessage = KeyFormat("MemberTakeOutMessage")
 	// 会员提现是否必须实名制认证
-	MemberTakeOutMustTrust = KeyFormat("MemberTakeOutMustTrust")
+	MemberWithdrawalMustTrust = KeyFormat("MemberWithdrawalMustTrust")
 	// 会员最低提现金额
 	MemberMinTakeOutAmount = KeyFormat("MemberMinTakeOutAmount")
 	// 会员单笔最高提现金额

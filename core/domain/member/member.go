@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"math"
@@ -40,6 +41,7 @@ type memberImpl struct {
 	account         member.IAccount
 	level           *member.Level
 	repo            member.IMemberRepo
+	walletRepo      wallet.IWalletRepo
 	relation        *member.InviteRelation
 	invitation      member.IInvitationManager
 	mssRepo         mss.IMssRepo
@@ -54,7 +56,8 @@ func (m *memberImpl) ContainFlag(f int) bool {
 	return m.value.Flag&f == f
 }
 
-func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRepo,
+func NewMember(manager member.IMemberManager, val *member.Member,
+	rep member.IMemberRepo, walletRepo wallet.IWalletRepo,
 	mp mss.IMssRepo, valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo) member.IMember {
 	return &memberImpl{
@@ -62,6 +65,7 @@ func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMe
 		value:        val,
 		repo:         rep,
 		mssRepo:      mp,
+		walletRepo:   walletRepo,
 		valueRepo:    valRepo,
 		registryRepo: registryRepo,
 	}
@@ -216,7 +220,7 @@ func (m *memberImpl) GetAccount() member.IAccount {
 				MemberId: m.GetAggregateRootId(),
 			}
 		}
-		return NewAccount(m, v, m.repo, m.manager, m.registryRepo)
+		return NewAccount(m, v, m.repo, m.manager, m.walletRepo, m.registryRepo)
 	}
 	return m.account
 }
@@ -573,7 +577,8 @@ func (m *memberImpl) checkUser(user string) error {
 // 会员初始化
 func (m *memberImpl) memberInit() error {
 	// 创建账户
-	m.account = NewAccount(m, &member.Account{}, m.repo, m.manager, m.registryRepo)
+	m.account = NewAccount(m, &member.Account{},
+		m.repo, m.manager, m.walletRepo, m.registryRepo)
 	if _, err := m.account.Save(); err != nil {
 		return err
 	}

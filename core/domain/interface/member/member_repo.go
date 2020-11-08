@@ -89,11 +89,11 @@ type IMemberRepo interface {
 	// 保存账户，传入会员编号
 	SaveAccount(*Account) (int64, error)
 	// 获取银行卡
-	BankCards(memberId int64) *BankInfo
+	BankCards(memberId int64) []BankCard
 	// 保存银行卡信息
-	SaveBankCard(*BankInfo) error
+	SaveBankCard(card *BankCard) error
 	// 移除银行卡
-	RemoveBankCard(id int64) error
+	RemoveBankCard(id int64, no string) error
 	// 获取收款码
 	ReceiptsCodes(memberId int64) []ReceiptsCode
 	// 保存收款码
@@ -129,13 +129,13 @@ type IMemberRepo interface {
 	SaveLevelUpLog(l *LevelUpLog) (int32, error)
 
 	// 保存地址
-	SaveDeliver(*Address) (int64, error)
+	SaveDeliver(*ConsigneeAddress) (int64, error)
 
 	// 获取全部配送地址
-	GetDeliverAddress(memberId int64) []*Address
+	GetDeliverAddress(memberId int64) []*ConsigneeAddress
 
 	// 获取配送地址
-	GetSingleDeliverAddress(memberId, addressId int64) *Address
+	GetSingleDeliverAddress(memberId, addressId int64) *ConsigneeAddress
 
 	// 删除配送地址
 	DeleteAddress(memberId, addressId int64) error

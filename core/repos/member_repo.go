@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
@@ -44,18 +45,21 @@ type MemberRepoImpl struct {
 	storage storage.Interface
 	db.Connector
 	_orm         orm.Orm
+	walletRepo   wallet.IWalletRepo
 	valueRepo    valueobject.IValueRepo
-	mssrepo      mss.IMssRepo
+	mssRepo      mss.IMssRepo
 	registryRepo registry.IRegistryRepo
 }
 
-func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
+func NewMemberRepo(sto storage.Interface, c db.Connector,
+	walletRepo wallet.IWalletRepo, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
 	return &MemberRepoImpl{
 		storage:      sto,
 		Connector:    c,
 		_orm:         c.GetOrm(),
-		mssrepo:      mssRepo,
+		mssRepo:      mssRepo,
+		walletRepo:   walletRepo,
 		valueRepo:    valRepo,
 		registryRepo: registryRepo,
 	}
@@ -78,6 +82,7 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 	if m.storage.Get(key, &e) != nil {
 		if err := m.Connector.GetOrm().Get(memberId, e); err != nil {
 			if err == sql.ErrNoRows {
+				//todo: 没有资料应该到会员注册时候创建
 				e.MemberId = memberId
 				orm.Save(m.GetOrm(), e, 0)
 			}
@@ -286,7 +291,6 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 		return -1, err
 	}
 	v.Id = id
-	m.initMember(v)
 	// 推送消息
 	go msq.Push(msq.MemberUpdated, "create|"+strconv.Itoa(int(v.Id)))
 	//rc := core.GetRedisConn()
@@ -300,16 +304,6 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	gof.CurrentApp.Storage().Set(variable.KvTotalMembers, total)
 
 	return v.Id, err
-}
-
-func (m *MemberRepoImpl) initMember(v *member.Member) {
-	orm := m.Connector.GetOrm()
-
-	orm.Save(nil, &member.BankInfo{
-		MemberId: v.Id,
-		State:    1,
-	})
-
 }
 
 // 删除会员
@@ -344,7 +338,7 @@ func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 // 创建会员
 func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m.mssrepo, m.valueRepo, m.registryRepo)
+		m.walletRepo, m.mssRepo, m.valueRepo, m.registryRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存
@@ -401,21 +395,23 @@ func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int
 }
 
 // 获取银行信息
-func (m *MemberRepoImpl) BankCards(memberId int64) *member.BankInfo {
-	e := new(member.BankInfo)
-	m.Connector.GetOrm().Get(memberId, e)
-	return e
+func (m *MemberRepoImpl) BankCards(memberId int64) []member.BankCard {
+	var arr = make([]member.BankCard, 0)
+	m.Connector.GetOrm().Select(&arr, "member_id=$1", memberId)
+	return arr
 }
 
 // 保存银行信息
-func (m *MemberRepoImpl) SaveBankCard(v *member.BankInfo) error {
+func (m *MemberRepoImpl) SaveBankCard(v *member.BankCard) error {
 	var err error
 	_, _, err = m.Connector.GetOrm().Save(v.MemberId, v)
 	return err
 }
 
-func (m *MemberRepoImpl) RemoveBankCard(id int64) error {
-	return m.Connector.GetOrm().DeleteByPk(&member.BankInfo{}, id)
+func (m *MemberRepoImpl) RemoveBankCard(memberId int64, cardNo string) error {
+	_, err := m.Connector.GetOrm().Delete(&member.BankCard{},
+		"member_id=$1 AND bank_account=$2", memberId, cardNo)
+	return err
 }
 
 func (m *MemberRepoImpl) ReceiptsCodes(memberId int64) []member.ReceiptsCode {
@@ -578,20 +574,20 @@ func (m *MemberRepoImpl) SaveLevelUpLog(v *member.LevelUpLog) (int32, error) {
 }
 
 // 保存地址
-func (m *MemberRepoImpl) SaveDeliver(v *member.Address) (int64, error) {
+func (m *MemberRepoImpl) SaveDeliver(v *member.ConsigneeAddress) (int64, error) {
 	return orm.I64(orm.Save(m.Connector.GetOrm(), v, int(v.Id)))
 }
 
 // 获取全部配送地址
-func (m *MemberRepoImpl) GetDeliverAddress(memberId int64) []*member.Address {
-	addresses := []*member.Address{}
+func (m *MemberRepoImpl) GetDeliverAddress(memberId int64) []*member.ConsigneeAddress {
+	addresses := []*member.ConsigneeAddress{}
 	m.Connector.GetOrm().Select(&addresses, "member_id= $1", memberId)
 	return addresses
 }
 
 // 获取配送地址
-func (m *MemberRepoImpl) GetSingleDeliverAddress(memberId, deliverId int64) *member.Address {
-	var address member.Address
+func (m *MemberRepoImpl) GetSingleDeliverAddress(memberId, deliverId int64) *member.ConsigneeAddress {
+	var address member.ConsigneeAddress
 	err := m.Connector.GetOrm().Get(deliverId, &address)
 
 	if err == nil && address.MemberId == memberId {

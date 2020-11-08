@@ -175,7 +175,7 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 			r, _ := cli.SendCode(context.TODO(), &proto.SendCodeRequest{
 				MemberId:  memberId.Value,
 				Operation: operationArr[operation],
-				MsgType:   msgChan.String(),
+				MsgType:   int32(msgChan),
 			})
 			code := r.Data["code"]
 			if r.ErrCode == 0 {
@@ -284,9 +284,9 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.ModifyPwd(context.TODO(), &proto.ModifyPwdRequest{
-			MemberId: memberId,
-			Old:      "",
-			Pwd:      pwd,
+			MemberId:  memberId,
+			OriginPwd: "",
+			NewPwd:    pwd,
 		})
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
@@ -335,9 +335,9 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.ModifyPwd(context.TODO(), &proto.ModifyPwdRequest{
-			MemberId: memberId,
-			Old:      oldPwd,
-			Pwd:      pwd,
+			MemberId:  memberId,
+			OriginPwd: oldPwd,
+			NewPwd:    pwd,
 		})
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
@@ -386,9 +386,9 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.ModifyTradePwd(context.TODO(), &proto.ModifyPwdRequest{
-			MemberId: memberId,
-			Old:      oldPwd,
-			Pwd:      pwd,
+			MemberId:  memberId,
+			OriginPwd: oldPwd,
+			NewPwd:    pwd,
 		})
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
@@ -435,9 +435,9 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		r, _ := cli.ModifyTradePwd(context.TODO(), &proto.ModifyPwdRequest{
-			MemberId: memberId,
-			Old:      "",
-			Pwd:      pwd,
+			MemberId:  memberId,
+			OriginPwd: "",
+			NewPwd:    pwd,
 		})
 		if r.ErrCode != 0 {
 			return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)

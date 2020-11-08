@@ -75,20 +75,16 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		mp := map[string]string{
-			"reg_ip":      regIp,
-			"reg_from":    regFrom,
-			"invite_code": inviteCode,
-		}
 		r, _ := cli.RegisterMemberV2(context.TODO(), &proto.RegisterMemberRequest{
-			User:   user,
-			Pwd:    pwd,
-			Flag:   0,
-			Name:   "",
-			Phone:  phone,
-			Email:  "",
-			Avatar: "",
-			Extend: mp,
+			User:        user,
+			Pwd:         pwd,
+			Flag:        0,
+			Name:        "",
+			Phone:       phone,
+			Email:       "",
+			RegFrom:     regFrom,
+			RegIp:       regIp,
+			InviterCode: inviteCode,
 		})
 		if r.ErrCode == 0 {
 			//todo: 未生效

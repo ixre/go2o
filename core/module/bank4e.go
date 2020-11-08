@@ -61,11 +61,13 @@ func (b *Bank4E) GetBasicInfo(memberId int64) map[string]string {
 	}
 	pr := m.Profile().GetProfile()
 	info := m.Profile().GetTrustedInfo()
-	bank := m.Profile().GetBank()
+	bankCards := m.Profile().GetBankCards()
 	data["RealName"] = info.RealName
 	data["IDCard"] = info.CardId
 	data["Phone"] = pr.Phone
-	data["BankAccount"] = bank.Account
+	if len(bankCards) > 0 {
+		data["BankCardNo"] = bankCards[0].BankAccount
+	}
 	data["Remark"] = info.Remark
 	if info.ReviewState == int(enum.ReviewPass) {
 		data["Reviewed"] = "true"
@@ -168,10 +170,10 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 		return err
 	}
 	// 保存银行信息
-	if err := m.Profile().SaveBank(&member.BankInfo{
+	if err := m.Profile().AddBankCard(&member.BankCard{
 		BankName:    result["BankName"],
 		AccountName: realName,
-		Account:     bankAccount,
+		BankAccount: bankAccount,
 	}); err != nil {
 		return err
 	}

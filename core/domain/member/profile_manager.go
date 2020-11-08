@@ -43,7 +43,7 @@ type profileManagerImpl struct {
 	repo          member.IMemberRepo
 	valueRepo     valueobject.IValueRepo
 	registryRepo  registry.IRegistryRepo
-	bank          *member.BankInfo
+	bankCards     []member.BankCard
 	trustedInfo   *member.TrustedInfo
 	profile       *member.Profile
 	receiptsCodes []member.ReceiptsCode
@@ -385,69 +385,73 @@ func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 }
 
 // 获取提现银行信息
-func (p *profileManagerImpl) GetBank() member.BankInfo {
-	if p.bank == nil {
-		p.bank = p.repo.BankCards(p.memberId)
-		if p.bank == nil {
-			p.bank = &member.BankInfo{
-				MemberId:   p.memberId,
-				IsLocked:   member.BankNoLock,
-				State:      0,
-				UpdateTime: time.Now().Unix(),
-			}
-			orm.Save(tmp.Db().GetOrm(), p.bank, 0)
-		}
+func (p *profileManagerImpl) GetBankCards() []member.BankCard {
+	if p.bankCards == nil {
+		p.bankCards = p.repo.BankCards(p.memberId)
+		//if p.bank == nil {
+		//	p.bank = &member.BankInfo{
+		//		MemberId:   p.memberId,
+		//		IsLocked:   member.BankNoLock,
+		//		State:      0,
+		//		UpdateTime: time.Now().Unix(),
+		//	}
+		//	orm.Save(tmp.Db().GetOrm(), p.bank, 0)
+		//}
 	}
-	return *p.bank
+	return p.bankCards
 }
 
-// 保存提现银行信息
-func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
-	v.Account = strings.TrimSpace(v.Account)
-	v.AccountName = strings.TrimSpace(v.AccountName)
-	v.Network = strings.TrimSpace(v.Network)
-	v.BankName = strings.TrimSpace(v.BankName)
-	if v.Account == "" || v.BankName == "" {
-		return member.ErrBankInfo
+// 获取绑定的银行卡
+func (p *profileManagerImpl) GetBankCard(cardNo string) *member.BankCard {
+	for _, v := range p.GetBankCards() {
+		if v.BankAccount == cardNo {
+			return &v
+		}
+	}
+	return nil
+}
+
+// 绑定银行信息
+func (p *profileManagerImpl) AddBankCard(v *member.BankCard) error {
+	if v.MemberId > 0 && v.MemberId != p.memberId {
+		return member.ErrNoSuchMember
+	}
+	if p.bankCardIsExists(v.BankAccount) {
+		return member.ErrBankCardIsExists
 	}
 	trustInfo := p.GetTrustedInfo()
 	if trustInfo.ReviewState == 0 {
 		return member.ErrNotTrusted
 	}
-	p.GetBank()
-	if p.bank.IsLocked == member.BankLocked {
-		return member.ErrBankInfoLocked
+	if v.BankAccount == "" || v.BankName == "" {
+		return member.ErrBankInfo
 	}
 	v.AccountName = trustInfo.RealName
 	err := p.checkBank(v)
 	if err == nil {
-		p.bank.Account = v.Account
-		p.bank.AccountName = v.AccountName
-		p.bank.Network = v.Network
-		p.bank.BankName = v.BankName
-		p.bank.State = member.StateOk       //todo:???
-		p.bank.IsLocked = member.BankLocked //锁定
-		p.bank.UpdateTime = time.Now().Unix()
-		p.bank.MemberId = p.memberId
-		err = p.repo.SaveBankCard(p.bank)
+		v.CreateTime = time.Now().Unix()
+		v.MemberId = p.memberId
+		if err = p.repo.SaveBankCard(v); err == nil {
+			p.bankCards = nil
+		}
 	}
 	return err
 }
 
 // 检查银行信息
-func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
-	v.Account = strings.TrimSpace(v.Account)
+func (p *profileManagerImpl) checkBank(v *member.BankCard) error {
+	v.BankAccount = strings.TrimSpace(v.BankAccount)
 	v.AccountName = strings.TrimSpace(v.AccountName)
 	v.Network = strings.TrimSpace(v.Network)
 	v.BankName = strings.TrimSpace(v.BankName)
-
+	v.BankCode = strings.TrimSpace(v.BankCode)
 	if v.BankName == "" {
 		return member.ErrBankName
 	}
 	if v.AccountName == "" {
 		return member.ErrBankAccountName
 	}
-	if v.Account == "" || len(v.Account) < 16 {
+	if l := len(v.BankAccount); l < 16 || l > 19 {
 		return member.ErrBankAccount
 	}
 	if v.Network == "" {
@@ -457,17 +461,19 @@ func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
 }
 
 //　移除银行卡
-func (p *profileManagerImpl) RemoveBankCard(backCardId int64) error {
-	v := p.GetBank()
-	if p.bank == nil {
-		return member.ErrBankInfoNoYetSet
+func (p *profileManagerImpl) RemoveBankCard(cardNo string) error {
+	if p.bankCardIsExists(cardNo) {
+		err := p.repo.RemoveBankCard(p.memberId, cardNo)
+		if err == nil {
+			p.bankCards = nil
+		}
+		return err
 	}
-	//todo: if backCardId
-	return p.repo.RemoveBankCard(v.MemberId)
+	return member.ErrBankNoSuchCard
 }
 
 // 创建配送地址
-func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {
+func (p *profileManagerImpl) CreateDeliver(v *member.ConsigneeAddress) member.IDeliverAddress {
 	v.MemberId = p.memberId
 	return newDeliver(v, p.repo, p.valueRepo)
 }
@@ -658,15 +664,25 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	return err
 }
 
+// 银行卡是否绑定
+func (p *profileManagerImpl) bankCardIsExists(cardNo string) bool {
+	for _, v := range p.GetBankCards() {
+		if v.BankAccount == cardNo {
+			return true
+		}
+	}
+	return false
+}
+
 var _ member.IDeliverAddress = new(addressImpl)
 
 type addressImpl struct {
-	_value      *member.Address
+	_value      *member.ConsigneeAddress
 	_memberRepo member.IMemberRepo
 	_valRepo    valueobject.IValueRepo
 }
 
-func newDeliver(v *member.Address, memberRepo member.IMemberRepo,
+func newDeliver(v *member.ConsigneeAddress, memberRepo member.IMemberRepo,
 	valRepo valueobject.IValueRepo) member.IDeliverAddress {
 	d := &addressImpl{
 		_value:      v,
@@ -680,11 +696,11 @@ func (p *addressImpl) GetDomainId() int64 {
 	return p._value.Id
 }
 
-func (p *addressImpl) GetValue() member.Address {
+func (p *addressImpl) GetValue() member.ConsigneeAddress {
 	return *p._value
 }
 
-func (p *addressImpl) SetValue(v *member.Address) error {
+func (p *addressImpl) SetValue(v *member.ConsigneeAddress) error {
 	if p._value.MemberId == v.MemberId {
 		if err := p.checkValue(v); err != nil {
 			return err
@@ -695,7 +711,7 @@ func (p *addressImpl) SetValue(v *member.Address) error {
 }
 
 // 设置地区中文名
-func (p *addressImpl) renewAreaName(v *member.Address) string {
+func (p *addressImpl) renewAreaName(v *member.ConsigneeAddress) string {
 	//names := p._valRepo.GetAreaNames([]int{
 	//	v.Province,
 	//	v.City,
@@ -709,7 +725,7 @@ func (p *addressImpl) renewAreaName(v *member.Address) string {
 	return p._valRepo.GetAreaString(v.Province, v.City, v.District)
 }
 
-func (p *addressImpl) checkValue(v *member.Address) error {
+func (p *addressImpl) checkValue(v *member.ConsigneeAddress) error {
 	v.DetailAddress = strings.TrimSpace(v.DetailAddress)
 	v.ConsigneeName = strings.TrimSpace(v.ConsigneeName)
 	v.ConsigneePhone = strings.TrimSpace(v.ConsigneePhone)

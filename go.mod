@@ -9,6 +9,7 @@ replace github.com/ixre/tto => ../github.com/ixre/tto
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
 //replace github.com/lucas-clemente/quic-go => github.com/lucas-clemente/quic-go v0.14.1
+replace golang.org/x/text => github.com/golang/text v0.3.4
 
 replace github.com/gomodule/redigo/redis => github.com/gomodule/redigo v1.8.2
 
@@ -25,7 +26,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.9.14
+	github.com/ixre/gof v1.9.18
 	github.com/ixre/tto v0.3.20
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
@@ -47,7 +48,7 @@ require (
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/net v0.0.0-20201009032441-dbdefad45b89
 	golang.org/x/sys v0.0.0-20201009025420-dfb3f7c4e634 // indirect
-	golang.org/x/text v0.3.3
+	golang.org/x/text v0.3.4
 	google.golang.org/genproto v0.0.0-20201009135657-4d944d34d83c // indirect
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.25.0 // indirect

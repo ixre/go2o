@@ -21,7 +21,7 @@ type expressRepo struct {
 	db.Connector
 	*expImpl.ExpressRepBase
 	_valRepo       valueobject.IValueRepo
-	ProvidersCache []*express.ExpressProvider
+	ProvidersCache []*express.Provider
 	mux            sync.Mutex
 }
 
@@ -33,10 +33,10 @@ func NewExpressRepo(conn db.Connector, valRepo valueobject.IValueRepo) express.I
 }
 
 // 获取所有快递公司
-func (er *expressRepo) GetExpressProviders() []*express.ExpressProvider {
+func (er *expressRepo) GetExpressProviders() []*express.Provider {
 	mux.Lock()
 	if er.ProvidersCache == nil {
-		er.ProvidersCache = []*express.ExpressProvider{}
+		er.ProvidersCache = []*express.Provider{}
 		err := er.GetOrm().Select(&er.ProvidersCache, "")
 		if err != nil {
 			panic(err)
@@ -50,7 +50,7 @@ func (er *expressRepo) GetExpressProviders() []*express.ExpressProvider {
 }
 
 // 获取快递公司
-func (er *expressRepo) GetExpressProvider(id int32) *express.ExpressProvider {
+func (er *expressRepo) GetExpressProvider(id int32) *express.Provider {
 	for _, v := range er.GetExpressProviders() {
 		if v.Id == id {
 			return v
@@ -60,7 +60,7 @@ func (er *expressRepo) GetExpressProvider(id int32) *express.ExpressProvider {
 }
 
 // 保存快递公司
-func (er *expressRepo) SaveExpressProvider(v *express.ExpressProvider) (int32, error) {
+func (er *expressRepo) SaveExpressProvider(v *express.Provider) (int32, error) {
 	er.ProvidersCache = nil
 	return orm.I32(orm.Save(er.GetOrm(), v, int(v.Id)))
 }

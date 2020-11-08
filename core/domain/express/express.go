@@ -283,7 +283,7 @@ type ExpressRepBase struct {
 }
 
 // 将默认的快递服务商保存
-func (e *ExpressRepBase) SaveDefaultExpressProviders(rep express.IExpressRepo) []*express.ExpressProvider {
+func (e *ExpressRepBase) SaveDefaultExpressProviders(rep express.IExpressRepo) []*express.Provider {
 	var err error
 	for _, v := range express.SupportedExpressProvider {
 		if v.Id, err = rep.SaveExpressProvider(v); err != nil {

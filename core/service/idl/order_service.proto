@@ -3,7 +3,7 @@ option go_package = ".;proto";
 option java_package="com.github.go2o.rpc";
 
 import "global.proto";
-import "message/order.proto";
+import "message/order_dto.proto";
 
 // 订单服务
 service OrderService {

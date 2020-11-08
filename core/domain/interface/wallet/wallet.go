@@ -68,14 +68,14 @@ const (
 const (
 	// 赠送金额
 	KCharge = 1
-	// 客服赠送
-	KServiceAgentCharge = 2
 	// 钱包收入
-	KIncome = 3
+	KIncome = 2
 	// 失效
-	KExpired = 4
+	KExpired = 3
 	// 客服调整
-	KAdjust = 5
+	KAdjust = 4
+	// 消费
+	KConsume = 5
 	// 扣除
 	KDiscount = 6
 	// 转入
@@ -103,7 +103,7 @@ const (
 
 var (
 	ErrSingletonWallet               = domain.NewError("err_wallet_singleton_wallet", "用户已存在相同类型的"+Alias)
-	ErrRemarkLength                  = domain.NewError("err_wallet_remark_length", "备注不能超过40字")
+	ErrWalletName                    = domain.NewError("err_wallet_name", "钱包名称为空或超出长度")
 	ErrMissingOperator               = domain.NewError("err_wallet_missing_operator", "缺少操作人员")
 	ErrAmountZero                    = domain.NewError("err_wallet_amount_zero", "金额不能为零")
 	ErrOutOfAmount                   = domain.NewError("err_wallet_not_enough_amount", Alias+"余额不足")
@@ -145,28 +145,31 @@ type (
 		Save() (int64, error)
 
 		// 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
-		Adjust(value int, title, outerNo string, opuId int, opuName string) error
+		Adjust(value int, title, outerNo string, oprUid int, oprName string) error
 
-		// 支付抵扣,must是否必须大于0
-		Discount(value int, title, outerNo string, must bool) error
+		// 消费
+		Consume(amount int, title string, outerNo string) error
+
+		// 抵扣,must是否必须大于0
+		Discount(amount int, title, outerNo string, must bool) error
 
 		// 冻结余额
-		Freeze(value int, title, outerNo string, opuId int, opuName string) error
+		Freeze(amount int, title, outerNo string, oprUid int, oprName string) error
 
 		// 解冻金额
-		Unfreeze(value int, title, outerNo string, opuId int, opuName string) error
+		Unfreeze(amount int, title, outerNo string, oprUid int, oprName string) error
 
 		// 将冻结金额标记为失效
-		FreezeExpired(value int, remark string) error
+		FreezeExpired(amount int, remark string) error
 
 		// 收入
-		Income(value int, tradeFee int, title, outerNo string) error
+		Income(amount int, tradeFee int, title, outerNo string) error
 
 		// 充值,kind: 业务类型
-		Charge(value int, by int, title, outerNo string, opuId int, opuName string) error
+		Charge(value int, kind int, title, outerNo string, oprUid int, oprName string) error
 
 		// 退款,kind: 业务类型
-		Refund(value int, kind int, title, outerNo string, opuId int, opuName string) error
+		Refund(value int, kind int, title, outerNo string, oprUid int, oprName string) error
 
 		// 转账,title如:转账给xxx， toTitle: 转账收款xxx
 		Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error
@@ -174,11 +177,12 @@ type (
 		// 接收转账
 		ReceiveTransfer(fromWalletId int64, value int, tradeNo, title, remark string) error
 
-		// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
-		RequestTakeOut(value int, tradeFee int, kind int, title string) (int64, string, error)
+		// 申请提现,kind：提现方式,返回info_id,交易号 及错误,amount为提现金额,tradeFee为手续费
+		RequestWithdrawal(amount int, tradeFee int, kind int, title string,
+			accountNo string, accountName string, bankName string) (int64, string, error)
 
 		// 确认提现
-		ReviewTakeOut(takeId int64, pass bool, remark string, opuId int, opuName string) error
+		ReviewWithdrawal(takeId int64, pass bool, remark string, oprUid int, oprName string) error
 
 		// 完成提现
 		FinishWithdrawal(takeId int64, outerNo string) error
@@ -190,7 +194,7 @@ type (
 	// 钱包仓储
 	IWalletRepo interface {
 		// 创建钱包
-		CreateWallet(v *Wallet) IWallet
+		CreateWallet(userId int64, walletType int, walletName string, flag int) IWallet
 		// 获取钱包账户
 		GetWallet(walletId int64) IWallet
 		// 根据用户编号获取钱包账户
@@ -216,9 +220,6 @@ type (
 		// Batch Delete WalletLog
 		BatchDeleteWalletLog_(where string, v ...interface{}) (int64, error)
 
-		// auto generate by gof
-		// Get Wallet
-		GetWallet_(primary interface{}) *Wallet
 		// GetBy Wallet
 		GetWalletBy_(where string, v ...interface{}) *Wallet
 		// Select Wallet
@@ -229,11 +230,13 @@ type (
 		DeleteWallet_(primary interface{}) error
 		// Batch Delete Wallet
 		BatchDeleteWallet_(where string, v ...interface{}) (int64, error)
+		// 根据钱包代码获取钱包
+		GetWalletByCode(code string) IWallet
 	}
 
 	Wallet struct {
-		// 钱包编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 编号
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 哈希值
 		HashCode string `db:"hash_code"`
 		// 节点编号
@@ -244,13 +247,15 @@ type (
 		WalletType int `db:"wallet_type"`
 		// 钱包标志
 		WalletFlag int `db:"wallet_flag"`
+		// 钱包名称
+		WalletName string `db:"wallet_name"`
 		// 余额
 		Balance int `db:"balance"`
 		// 赠送余额
 		PresentBalance int `db:"present_balance"`
-		// 调整金额
+		// 调整禁遏
 		AdjustAmount int `db:"adjust_amount"`
-		// 冻结余额
+		// 冻结金额
 		FreezeAmount int `db:"freeze_amount"`
 		// 结余金额
 		LatestAmount int `db:"latest_amount"`
@@ -263,9 +268,7 @@ type (
 		// 总支付额
 		TotalPay int `db:"total_pay"`
 		// 状态
-		State int `db:"state"`
-		// 备注
-		Remark string `db:"remark"`
+		State int16 `db:"state"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -275,7 +278,7 @@ type (
 	// 钱包日志
 	WalletLog struct {
 		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 钱包编号
 		WalletId int64 `db:"wallet_id"`
 		// 业务类型
@@ -293,17 +296,23 @@ type (
 		// 交易手续费
 		TradeFee int `db:"trade_fee"`
 		// 操作人员用户编号
-		OperatorId int `db:"op_uid"`
+		OprUid int `db:"opr_uid"`
 		// 操作人员名称
-		OperatorName string `db:"op_name"`
-		// 备注
-		Remark string `db:"remark"`
+		OprName string `db:"opr_name"`
+		// 提现账号
+		AccountNo string `db:"account_no"`
+		// 提现账户名称
+		AccountName string `db:"account_name"`
+		// 提现银行名称
+		BankName string `db:"bank_name"`
 		// 审核状态
 		ReviewState int `db:"review_state"`
 		// 审核备注
 		ReviewRemark string `db:"review_remark"`
 		// 审核时间
 		ReviewTime int64 `db:"review_time"`
+		// 备注
+		Remark string `db:"remark"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间

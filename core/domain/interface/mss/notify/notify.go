@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	TypeSiteMessage = 1 + iota
+	TypeSiteMessage = iota
 	TypeEmailMessage
 	TypePhoneMessage
 )

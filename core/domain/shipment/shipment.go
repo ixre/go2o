@@ -23,7 +23,7 @@ type shipmentOrderImpl struct {
 	value   *shipment.ShipmentOrder
 	rep     shipment.IShipmentRepo
 	expRepo express.IExpressRepo
-	expSp   *express.ExpressProvider
+	expSp   *express.Provider
 }
 
 func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRepo,
@@ -50,7 +50,7 @@ func (s *shipmentOrderImpl) Items() []*shipment.ShipmentItem {
 	return s.value.Items
 }
 
-func (s *shipmentOrderImpl) getExpressProvider(spId int32) *express.ExpressProvider {
+func (s *shipmentOrderImpl) getExpressProvider(spId int32) *express.Provider {
 	if s.expSp == nil {
 		s.expSp = s.expRepo.GetExpressProvider(spId)
 	}
@@ -115,7 +115,7 @@ func (s *shipmentOrderImpl) UpdateLog() error {
 }
 
 // 智能选择门店
-func (t *shipmentOrderImpl) SmartChoiceShop(address string) (shop.IShop, error) {
+func (s *shipmentOrderImpl) SmartChoiceShop(address string) (shop.IShop, error) {
 	panic("not implement")
 	/*
 

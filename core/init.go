@@ -132,11 +132,11 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.WalletAccountLog{}, "mm_wallet_log")
 	orm.Mapping(member.FlowAccountLog{}, "mm_flow_log")
 	orm.Mapping(member.Account{}, "mm_account")
-	orm.Mapping(member.Address{}, "mm_deliver_addr")
+	orm.Mapping(member.ConsigneeAddress{}, "mm_deliver_addr")
 	orm.Mapping(member.InviteRelation{}, "mm_relation")
 	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
 	orm.Mapping(member.Favorite{}, "mm_favorite")
-	orm.Mapping(member.BankInfo{}, "mm_bank")
+	orm.Mapping(member.BankCard{}, "mm_bank_card")
 	orm.Mapping(member.ReceiptsCode{}, "mm_receipts_code")
 	orm.Mapping(member.LevelUpLog{}, "mm_levelup")
 	orm.Mapping(member.BuyerGroup{}, "mm_buyer_group")
@@ -164,7 +164,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(afterSales.RefundOrder{}, "sale_refund")
 
 	// Express
-	orm.Mapping(express.ExpressProvider{}, "express_provider")
+	orm.Mapping(express.Provider{}, "express_provider")
 	orm.Mapping(express.ExpressTemplate{}, "mch_express_template")
 	orm.Mapping(express.ExpressAreaTemplate{}, "express_area_set")
 

@@ -67,6 +67,8 @@ message RiseTransferOutRequest {
   int64 PersonId = 1;
   int64 TransferWith = 2;
   double Amount = 3;
+  // 提现银行账号
+  string BankAccountNo = 4;
 }
 
 message CommitTransferRequest {

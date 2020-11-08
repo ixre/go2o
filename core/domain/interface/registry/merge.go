@@ -95,7 +95,7 @@ func MergeRegistries() []*Registry {
 	// 会员提现
 	mergeAdd("会员提现开关", MemberTakeOutOn, "true", "")
 	mergeAdd("会员提现提示", MemberTakeOutMessage, "提现功能暂不可用", "")
-	mergeAdd("会员提现是否必须实名制认证", MemberTakeOutMustTrust, "true", "")
+	mergeAdd("会员提现是否必须实名制认证", MemberWithdrawalMustTrust, "true", "")
 	mergeAdd("会员最低提现金额", MemberMinTakeOutAmount, "0.01", "")
 	mergeAdd("会员单笔最高提现金额", MemberMaxTakeOutAmount, "5000.00", "")
 	mergeAdd("会员提现手续费费率", MemberTakeOutCsn, "0.00", "")

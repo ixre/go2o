@@ -17,7 +17,6 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types"
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
@@ -365,8 +364,7 @@ func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	msgType, _ := strconv.Atoi(r.MsgType)
-	code, err := m.SendCheckCode(r.Operation, msgType)
+	code, err := m.SendCheckCode(r.Operation, int(r.MsgType))
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -461,27 +459,33 @@ func (s *memberService) updateMember(v *proto.SMember) (int64, error) {
 }
 
 // 注册会员
-func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMemberRequest) (*proto.Result, error) {
+func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMemberRequest) (*proto.RegisterResponse, error) {
 	if len(r.Pwd) != 32 {
-		return s.error(de.ErrNotMD5Format), nil
+		return &proto.RegisterResponse{
+			ErrCode: 1,
+			ErrMsg:  de.ErrNotMD5Format.Error(),
+		}, nil
 	}
 	v := &member.Member{
 		User:     r.User,
 		Pwd:      domain.Sha1Pwd(r.Pwd),
 		Name:     r.Name,
 		RealName: "",
-		Avatar:   r.Avatar,
+		Avatar:   "", //todo: default avatar
 		Phone:    r.Phone,
 		Email:    r.Email,
-		RegFrom:  r.Extend["reg_from"],
-		RegIp:    r.Extend["reg_ip"],
+		RegFrom:  r.RegFrom,
+		RegIp:    r.RegIp,
 		Flag:     int(r.Flag),
 	}
 	// 验证邀请码
-	inviteCode := r.Extend["invite_code"]
+	inviteCode := r.InviterCode
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
-		return s.error(err), nil
+		return &proto.RegisterResponse{
+			ErrCode: 2,
+			ErrMsg:  err.Error(),
+		}, nil
 	}
 	// 创建会员
 	m := s.repo.CreateMember(v)
@@ -499,11 +503,13 @@ func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMem
 		//	if err = m.Profile().SaveProfile(pro); err != nil {
 		//		s.repo.DeleteMember(id)
 		//}
-		return s.success(map[string]string{
-			"member_id": types.String(id),
-		}), nil
 	}
-	return s.error(err), nil
+	ret := &proto.RegisterResponse{MemberId: id}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
 }
 
 // 获取会员邀请关系
@@ -594,9 +600,9 @@ func (s *memberService) ModifyPwd(_ context.Context, r *proto.ModifyPwdRequest) 
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	pwd := r.Pwd
-	old := r.Old
-	if l := len(r.Pwd); l != 32 {
+	pwd := r.NewPwd
+	old := r.OriginPwd
+	if l := len(r.NewPwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.MemberSha1Pwd(pwd)
@@ -619,7 +625,7 @@ func (s *memberService) ModifyTradePwd(_ context.Context, r *proto.ModifyPwdRequ
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	pwd, old := r.Pwd, r.Old
+	pwd, old := r.NewPwd, r.OriginPwd
 	if l := len(pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
@@ -684,7 +690,7 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 }
 
 // 检查交易密码
-func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.CheckTradePwdRequest) (*proto.Result, error) {
+func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.PwdVerifyRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
@@ -693,10 +699,10 @@ func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.CheckTradePwd
 	if mv.TradePwd == "" {
 		return s.error(member.ErrNotSetTradePwd), nil
 	}
-	if len(r.TradePwd) != 32 {
+	if len(r.Pwd) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	if encPwd := domain.TradePwd(r.TradePwd); mv.TradePwd != encPwd {
+	if encPwd := domain.TradePwd(r.Pwd); mv.TradePwd != encPwd {
 		return s.error(member.ErrIncorrectTradePwd), nil
 	}
 	return s.success(nil), nil
@@ -820,9 +826,9 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 }
 
 // 解锁银行卡信息
-func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardUserIdRequest) (*proto.Result, error) {
+func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
-	err := m.Profile().RemoveBankCard(r.BankCardId)
+	err := m.Profile().RemoveBankCard(r.BankCardNo)
 	return s.result(err), nil
 }
 
@@ -870,16 +876,21 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 // 获取银行卡
 func (s *memberService) GetBankCards(_ context.Context, id *proto.Int64) (*proto.BankCardListResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: id.Value})
-	b := m.Profile().GetBank()
-	arr := make([]*proto.SBankCardInfo, 0)
-	arr = append(arr, &proto.SBankCardInfo{
-		Id:          -1,
-		BankName:    b.BankName,
-		AccountName: b.AccountName,
-		Account:     b.Account,
-		Network:     b.Network,
-		State:       int32(b.State),
-	})
+	b := m.Profile().GetBankCards()
+	arr := make([]*proto.SBankCardInfo, len(b))
+	for i, v := range b {
+		arr[i] = &proto.SBankCardInfo{
+			BankName:    v.BankName,
+			AccountName: v.AccountName,
+			AccountNo:   v.BankAccount,
+			BankId:      int32(v.BankId),
+			BankCode:    v.BankCode,
+			AuthCode:    v.AuthCode,
+			Network:     v.Network,
+			State:       int32(v.State),
+			UpdateTime:  v.CreateTime,
+		}
+	}
 	return &proto.BankCardListResponse{
 		Value: arr,
 	}, nil
@@ -888,17 +899,19 @@ func (s *memberService) GetBankCards(_ context.Context, id *proto.Int64) (*proto
 // 保存银行卡
 func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
-	var v = &member.BankInfo{
-		BankName:    r.Value.BankName,
+	var v = &member.BankCard{
+		MemberId:    r.OwnerId,
+		BankAccount: r.Value.AccountNo,
 		AccountName: r.Value.AccountName,
-		Account:     r.Value.Account,
+		BankId:      int(r.Value.BankId),
+		BankName:    r.Value.BankName,
+		BankCode:    r.Value.BankCode,
 		Network:     r.Value.Network,
-		State:       int(r.Value.State),
+		AuthCode:    r.Value.AuthCode,
+		State:       int16(r.Value.State),
 	}
-	if err := m.Profile().SaveBank(v); err != nil {
-		return s.error(err), nil
-	}
-	return s.success(nil), nil
+	err := m.Profile().AddBankCard(v)
+	return s.result(err), nil
 }
 
 // 实名认证信息
@@ -1161,7 +1174,7 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(r.Account, r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Charge(r.AccountType, r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1171,7 +1184,7 @@ func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChang
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Discount(int(r.Account), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Discount(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1181,7 +1194,7 @@ func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChange
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Consume(int(r.Account), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Consume(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1191,7 +1204,7 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(int(r.Account), r.Title, int(r.Account), r.OuterNo, r.Remark)
+		err = acc.Refund(int(r.AccountType), r.Title, int(r.AccountType), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1238,19 +1251,15 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	acc := m.GetAccount()
-	var title string
-	switch int(r.Kind) {
-	case member.KindWalletTakeOutToBankCard:
+	kind := member.KindWalletTakeOutToThirdPart
+	title := "充值到第三方账户"
+	if r.DrawToBank {
+		kind = member.KindWalletTakeOutToBankCard
 		title = "提现到银行卡"
-	case member.KindWalletTakeOutToBalance:
-		title = "充值账户"
-	case member.KindWalletTakeOutToThirdPart:
-		title = "充值到第三方账户"
-	default:
-		return &proto.WithdrawalResponse{ErrCode: 2, ErrMsg: "未知的提现方式"}, nil
 	}
-	_, tradeNo, err := acc.RequestTakeOut(int(r.Kind), title, int(r.Amount), int(r.TradeFee))
+	acc := m.GetAccount()
+	_, tradeNo, err := acc.RequestWithdrawal(kind, title,
+		int(r.Amount), int(r.TradeFee), r.AccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
@@ -1308,7 +1317,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().ReviewWithdrawal(int32(r.InfoId), r.Pass, r.Remark)
+		err = m.GetAccount().ReviewWithdrawal(r.InfoId, r.Pass, r.Remark)
 	}
 	return s.error(err), nil
 }
@@ -1319,7 +1328,7 @@ func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithd
 	var err error
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().FinishWithdrawal(int32(r.InfoId), r.TradeNo)
+		err = m.GetAccount().FinishWithdrawal(r.InfoId, r.TradeNo)
 	}
 	return s.error(err), nil
 }
@@ -1383,9 +1392,9 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 	} else {
 		var kind = 0
 		switch r.TransferAccount {
-		case proto.TransferAccountKind_TA_BALANCE:
+		case proto.TransferAccountType_TA_BALANCE:
 			kind = member.AccountBalance
-		case proto.TransferAccountKind_TA_WALLET:
+		case proto.TransferAccountType_TA_WALLET:
 			kind = member.AccountWallet
 		}
 		err = m.GetAccount().TransferAccount(kind, r.ToMemberId,
@@ -1558,7 +1567,7 @@ func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.
 	}
 }
 
-func (s *memberService) parseAddressDto(src *member.Address) *proto.SAddress {
+func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAddress {
 	return &proto.SAddress{
 		ID:             src.Id,
 		ConsigneeName:  src.ConsigneeName,
@@ -1649,8 +1658,8 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 	}
 }
 
-func (s *memberService) parseAddress(src *proto.SAddress) *member.Address {
-	return &member.Address{
+func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddress {
+	return &member.ConsigneeAddress{
 		Id:             src.ID,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,

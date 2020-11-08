@@ -55,7 +55,7 @@ func TestGenAll(t *testing.T) {
 		OutputDir:       genDir,
 		ExcludeFiles:    nil,
 	}
-	dg.WalkGenerateCode(tables, opt)
+	dg.WalkGenerateCodes(tables, opt)
 	//格式化代码
 	shell.Run("gofmt -w " + genDir)
 	t.Log("生成成功, 输出目录", genDir)
