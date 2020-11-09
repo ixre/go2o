@@ -382,20 +382,22 @@ func (h *hfbImpl) BatchTransfer(batchTradeNo string, list []*qpay.CardTransferRe
 		"batch_no":    []string{batchTradeNo},
 		"batch_num":   []string{strconv.Itoa(len(list))},
 		"detail_data": []string{detailData},
-		"ext_param1":  []string{nonce},
-		"key":         []string{h.queryMd5Key},
+		"ext_param1":  []string{url.QueryEscape(nonce)},
+		"key":         []string{h.md5Key},
 		"notify_url":  []string{notifyUrl},
 		"version":     []string{h.batchTransferVersion},
 	}
 	sign := h.signParams(values)
 	values["sign"] = []string{sign}
-
-	// 批付信息用3DES加密
-	bytes,err := crypto.EncryptECB3DES([]byte(detailData),[]byte(h.batch3DesKey))
-	detailData = strings.ToUpper(hex.EncodeToString(bytes))
+	// 批付信息先转换为GBK编码,再用3DES加密
+	gbkBytes,_ := simplifiedchinese.GBK.NewEncoder().Bytes([]byte(detailData))
+	bytes,err := crypto.EncryptECB3DES(gbkBytes,[]byte(h.batch3DesKey))
 	if err != nil {
 		return nil,err
 	}
+	detailData = strings.ToUpper(hex.EncodeToString(bytes))
+	delete(values,"key")
+	values["detail_data"] = []string{detailData}
 	// 大于5W使用大额交易接口
 	reqURL := types.StringCond(totalFee > 50000, largeAmountTransferURL, smallAmountTransferURL)
 	body, err := h.request(reqURL, values, true)
@@ -407,6 +409,12 @@ func (h *hfbImpl) BatchTransfer(batchTradeNo string, list []*qpay.CardTransferRe
 	err = xml.Unmarshal(body, &ret)
 	if err != nil {
 		return nil, err
+	}
+	if ret.RetCode != "0000"{
+		return &qpay.BatchTransferResponse{
+			Code:    "0",
+			NonceId: nonce,
+		},errors.New(ret.RetMsg)
 	}
 	return &qpay.BatchTransferResponse{
 		Code:    "0",
@@ -480,8 +488,9 @@ func (h *hfbImpl) QueryCardBin(bankCardNo string) *qpay.CardBinQueryResult {
 
 // 签名
 func (h *hfbImpl) signParams(mp url.Values) string {
-	query := strings.ToLower(http2.SortedQuery(mp))
+	query := http2.SortedQuery(mp)
 	println(query)
+	query = strings.ToLower(query)
 	return crypto.Md5([]byte(query))
 }
 

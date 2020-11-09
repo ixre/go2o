@@ -248,3 +248,12 @@ func AdvertisementServiceClient() (*grpc.ClientConn, proto.AdvertisementServiceC
 	}
 	return conn, nil, err
 }
+
+// APP服务
+func AppServiceClient() (*grpc.ClientConn, proto.AppServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewAppServiceClient(conn), err
+	}
+	return conn, nil, err
+}
