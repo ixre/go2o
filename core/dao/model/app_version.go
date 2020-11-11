@@ -20,10 +20,11 @@ type AppProd struct {
 	AlphaFileUrl string `db:"alpha_file_url"`
 	// 每夜版文件地址
 	NightlyFileUrl string `db:"nightly_file_url"`
+	// 更新方式,比如APK, EXE等
+	UpdateType string `db:"update_type"`
 	// 更新时间
 	UpdateTime int64 `db:"update_time"`
 }
-
 
 // APP版本
 type AppVersion struct {
@@ -31,7 +32,7 @@ type AppVersion struct {
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 产品
 	ProductId int64 `db:"product_id"`
-	// 更新通道, stable|beta|nightly
+	// 更新通道, 0:stable|1:beta|2:nightly
 	Channel int16 `db:"channel"`
 	// 版本号
 	Version string `db:"version"`

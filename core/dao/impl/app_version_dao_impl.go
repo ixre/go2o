@@ -15,12 +15,11 @@ type appProdDaoImpl struct {
 	_orm orm.Orm
 }
 
-
 // Create new AppProdDao
 func NewAppProdDao(o orm.Orm) dao.IAppProdDao {
 	if !appProdDaoImplMapped {
 		_ = o.Mapping(model.AppProd{}, "app_prod")
-		_ = o.Mapping(model.AppVersion{},"app_version")
+		_ = o.Mapping(model.AppVersion{}, "app_version")
 		appProdDaoImplMapped = true
 	}
 	return &appProdDaoImpl{
@@ -96,7 +95,6 @@ func (t *appProdDaoImpl) BatchDelete(where string, v ...interface{}) (int64, err
 	return r, err
 }
 
-
 // Get APP版本
 func (t *appProdDaoImpl) GetVersion(primary interface{}) *model.AppVersion {
 	e := model.AppVersion{}
@@ -108,6 +106,10 @@ func (t *appProdDaoImpl) GetVersion(primary interface{}) *model.AppVersion {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:AppVersion")
 	}
 	return nil
+}
+
+func (t *appProdDaoImpl) CountVersion(where string, v ...interface{}) (int, error) {
+	return t._orm.Count(model.AppVersion{}, where, v...)
 }
 
 // GetBy APP版本

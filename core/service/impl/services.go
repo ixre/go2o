@@ -163,7 +163,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	CommonDao = dao.NewCommDao(orm, sto, adRepo, catRepo)
 	PortalService = NewPortalService(CommonDao)
 	QueryService = NewQueryService()
-	AppService = NewAppService(sto,orm)
+	AppService = NewAppService(sto, orm)
 }
 
 // 服务工具类，实现的服务组合此类,可直接调用其方法

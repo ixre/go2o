@@ -58,8 +58,8 @@ message CheckVersionResponse {
     bool IsLatest = 4;
     // 是否强制升级
     bool ForceUpdate = 5;
-    // 是否在APP内更新
-    bool UpdateInApp = 6;
+    // 更新文件类型,如APK,EXE,ZIP等
+    string UpdateType = 6;
     // 发布时间
     int64 ReleaseTime = 7;
 }
@@ -82,6 +82,8 @@ message AppProdRequest {
     string AlphaFileUrl = 8;
     // 每夜版文件地址
     string NightlyFileUrl = 10;
+    // 更新方式,比如APK, EXE等
+    string UpdateType = 11;
 }
 
 // APP版本
@@ -91,15 +93,13 @@ message AppVersionRequest {
     // 产品
     int64 ProductId = 2;
     // 更新通道, stable:0|alpha:1|nightly:2
-    int64 Channel = 3;
+    int32 Channel = 3;
     // 版本号
     string Version = 4;
-    // 数字版本
-    int32 VersionCode = 5;
     // 是否强制升级
-    int32 ForceUpdate = 6;
+    bool ForceUpdate = 5;
     // 更新内容
-    string UpdateContent = 7;
+    string UpdateContent = 6;
 }
 
 // APP产品
@@ -122,8 +122,10 @@ message SAppProd {
     string AlphaFileUrl =8;
     // 每夜版文件地址
     string NightlyFileUrl = 9;
+    // 更新方式,比如APK, EXE等
+    string UpdateType = 10;
     // 更新时间
-    int64 UpdateTime = 10;
+    int64 UpdateTime = 11;
 }
 
 // APP版本
@@ -132,14 +134,14 @@ message SAppVersion {
     int64 Id = 1;
     // 产品
     int64 ProductId = 2;
-    // 更新通道, stable|beta|nightly
-    string Channel = 3;
+    // 更新通道, 0:stable|1:beta|2:nightly
+    int32 Channel = 3;
     // 版本号
     string Version = 4;
     // 数字版本
     int32 VersionCode = 5;
     // 是否强制升级
-    int32 ForceUpdate = 6;
+    bool ForceUpdate = 6;
     // 更新内容
     string UpdateContent = 7;
     // 发布时间
