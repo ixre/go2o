@@ -23,6 +23,8 @@ import (
 func ServeRPC(ch chan bool, cfg *clientv3.Config, port int, domain string) {
 	// 初始化RPC服务
 	prepareRpcServer(gof.CurrentApp, domain)
+	// 初始化数据
+	sysInit()
 	// 启动RPC服务
 	s := grpc.NewServer()
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
