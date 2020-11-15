@@ -11,7 +11,7 @@ package impl
 
 import (
 	"context"
-	"github.com/ixre/gof"
+	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/valueobject"
@@ -124,20 +124,34 @@ func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.Boar
 //}
 
 // 验证超级用户账号和密码
-func (s *foundationService) SuperValidate(_ context.Context, user *proto.UserPwd) (*proto.Bool, error) {
-	superPwd := gof.CurrentApp.Config().Get("super_login_md5")
-	encPwd := domain.Sha1Pwd(user.Pwd + user.User)
-	return &proto.Bool{Value: superPwd == encPwd}, nil
+func (s *foundationService) SuperValidate(_ context.Context, user *proto.UserPwd) (*proto.SuperLoginResponse, error) {
+	if len(user.Pwd) != 32 {
+		return &proto.SuperLoginResponse{
+			ErrMsg:  de.ErrNotMD5Format.Error(),
+			ErrCode: 2}, nil
+	}
+	superPwd, _ := s.registryRepo.GetValue(registry.SysSuperLoginToken)
+	encPwd := domain.Sha1Pwd(user.User+user.Pwd)
+	if superPwd != encPwd {
+		return &proto.SuperLoginResponse{
+			ErrMsg:  de.ErrCredential.Error(),
+			ErrCode: 1}, nil
+	}
+	return &proto.SuperLoginResponse{
+		ErrCode: 0,
+		Role:    1,
+	}, nil
 }
 
 // 保存超级用户账号和密码
-func (s *foundationService) FlushSuperPwd(_ context.Context, user *proto.UserPwd) (*proto.Empty, error) {
-	conf := gof.CurrentApp.Config()
-	encPwd := domain.Sha1Pwd(user.Pwd + user.User)
-	conf.Set("super_login_md5", encPwd)
-	//conf.Flush()
-	//todo:
-	panic("暂不支持保存")
+func (s *foundationService) FlushSuperPwd(_ context.Context, user *proto.UserPwd) (*proto.Result, error) {
+	if len(user.Pwd) != 32 {
+		return s.error(de.ErrNotMD5Format),nil
+	}
+	encPwd := domain.Sha1Pwd(user.User+user.Pwd)
+	err := s.registryRepo.UpdateValue(registry.SysSuperLoginToken,
+		encPwd)
+	return s.error(err),nil
 }
 
 // 注册单点登录应用,返回值：

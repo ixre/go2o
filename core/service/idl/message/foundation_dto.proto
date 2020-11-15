@@ -8,6 +8,12 @@ message SmsApiSaveRequest {
     SSmsApi api = 2;
 }
 
+//　 登录结果
+message SuperLoginResponse{
+   int32 ErrCode = 1;
+   string ErrMsg = 2;
+   int32 Role = 3;
+}
 message BoardHookSaveRequest {
     string hookURL = 1;
     string token = 2;

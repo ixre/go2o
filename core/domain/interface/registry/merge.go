@@ -64,6 +64,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("系统是否挂起", SysSuspend, "false", "")
 	mergeAdd("系统挂起提示消息", SysSuspendMessage, "系统正在升级维护，请稍后再试!", "")
 	mergeAdd("接口JWT密钥",SysJWTSecret,"","")
+	mergeAdd("超级管理员登录密钥",SysSuperLoginToken,"","")
 	mergeAdd("收货提示信息", OrderReceiveAlertMessage, "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!", "")
 
 	/** 短信 */

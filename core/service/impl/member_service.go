@@ -645,7 +645,7 @@ func (s *memberService) ModifyTradePwd(_ context.Context, r *proto.ModifyPwdRequ
 
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) testLogin(user string, pwd string) (id int64, errCode int32, err error) {
+func (s *memberService) tryLogin(user string, pwd string) (id int64, errCode int32, err error) {
 	user = strings.ToLower(user)
 	memberId := s.repo.GetMemberIdByUser(user)
 	if len(pwd) != 32 {
@@ -670,7 +670,7 @@ func (s *memberService) testLogin(user string, pwd string) (id int64, errCode in
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.Result, error) {
-	id, code, err := s.testLogin(r.User, r.Pwd)
+	id, code, err := s.tryLogin(r.User, r.Pwd)
 	if err != nil {
 		r := s.error(err)
 		r.ErrCode = code

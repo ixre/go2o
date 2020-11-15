@@ -40,10 +40,10 @@ service FoundationService {
   rpc GetAllSsoApp (Empty) returns (StringListResponse) {
   }
   // 验证超级用户账号和密码
-  rpc SuperValidate (UserPwd) returns (Bool) {
+  rpc SuperValidate (UserPwd) returns (SuperLoginResponse) {
   }
   // 保存超级用户账号和密码
-  rpc FlushSuperPwd (UserPwd) returns (Empty) {
+  rpc FlushSuperPwd (UserPwd) returns (Result) {
   }
   // 创建同步登录的地址,returnUrl
   rpc GetSyncLoginUrl (String) returns (String) {
