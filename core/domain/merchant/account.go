@@ -44,7 +44,7 @@ func (a *accountImpl) GetValue() *merchant.Account {
 
 // 保存
 func (a *accountImpl) Save() error {
-	_, err := orm.Save(tmp.Db().GetOrm(), a.value, int(a.GetDomainId()))
+	_, err := orm.Save(tmp.Orm, a.value, int(a.GetDomainId()))
 	//_, err := a.mchImpl._repo.SaveMerchantAccount(a)
 	return err
 }
@@ -52,7 +52,7 @@ func (a *accountImpl) Save() error {
 // 根据编号获取余额变动信息
 func (a *accountImpl) GetBalanceLog(id int32) *merchant.BalanceLog {
 	e := merchant.BalanceLog{}
-	if tmp.Db().GetOrm().Get(id, &e) == nil {
+	if tmp.Orm.Get(id, &e) == nil {
 		return &e
 	}
 	return nil
@@ -62,7 +62,7 @@ func (a *accountImpl) GetBalanceLog(id int32) *merchant.BalanceLog {
 // 根据号码获取余额变动信息
 func (a *accountImpl) GetBalanceLogByOuterNo(outerNo string) *merchant.BalanceLog {
 	e := merchant.BalanceLog{}
-	if tmp.Db().GetOrm().GetBy(&e, "outer_no= $1", outerNo) == nil {
+	if tmp.Orm.GetBy(&e, "outer_no= $1", outerNo) == nil {
 		return &e
 	}
 	return nil
@@ -98,7 +98,7 @@ func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
 
 // 保存余额变动信息
 func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int32, error) {
-	return orm.I32(orm.Save(tmp.Db().GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(tmp.Orm, v, int(v.Id)))
 	//return a.mchImpl._repo.SaveBalanceLog(v)
 }
 

@@ -10,6 +10,7 @@ package repos
 
 import (
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	asImpl "go2o/core/domain/after-sales"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/member"
@@ -24,12 +25,14 @@ type afterSalesRepo struct {
 	orderRepo   order.IOrderRepo
 	memberRepo  member.IMemberRepo
 	paymentRepo payment.IPaymentRepo
+	o           orm.Orm
 }
 
-func NewAfterSalesRepo(conn db.Connector, orderRepo order.IOrderRepo,
+func NewAfterSalesRepo(o orm.Orm, orderRepo order.IOrderRepo,
 	memberRepo member.IMemberRepo, paymentRepo payment.IPaymentRepo) afterSales.IAfterSalesRepo {
 	return &afterSalesRepo{
-		Connector:   conn,
+		Connector:   o.Connector(),
+		o:           o,
 		orderRepo:   orderRepo,
 		memberRepo:  memberRepo,
 		paymentRepo: paymentRepo,
@@ -45,7 +48,7 @@ func (a *afterSalesRepo) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) af
 // 获取售后单
 func (a *afterSalesRepo) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrder {
 	v := &afterSales.AfterSalesOrder{}
-	if a.GetOrm().Get(id, v) == nil {
+	if a.o.Get(id, v) == nil {
 		return a.CreateAfterSalesOrder(v)
 	}
 	return nil
@@ -55,7 +58,7 @@ func (a *afterSalesRepo) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrde
 func (a *afterSalesRepo) GetAllOfSaleOrder(orderId int64) []afterSales.IAfterSalesOrder {
 	list := []*afterSales.AfterSalesOrder{}
 	orders := []afterSales.IAfterSalesOrder{}
-	if a.GetOrm().Select(&list, "order_id= $1", orderId) == nil {
+	if a.o.Select(&list, "order_id= $1", orderId) == nil {
 		for _, v := range list {
 			orders = append(orders, a.CreateAfterSalesOrder(v))
 		}

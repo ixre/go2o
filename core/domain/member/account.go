@@ -531,7 +531,7 @@ func (a *accountImpl) asyncWallet() error {
 // 根据编号获取余额变动信息
 func (a *accountImpl) GetWalletLog(id int32) *member.WalletAccountLog {
 	e := member.WalletAccountLog{}
-	if tmp.Db().GetOrm().Get(id, &e) == nil {
+	if tmp.Orm.Get(id, &e) == nil {
 		return &e
 	}
 	return nil

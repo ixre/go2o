@@ -53,15 +53,15 @@ type valueRepo struct {
 	confRegistry *gof.Registry
 }
 
-func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
+func NewValueRepo(confPath string, o orm.Orm, storage storage.Interface) valueobject.IValueRepo {
 	//confRegistry, err := gof.NewRegistry(confPath, ":")
 	//if err != nil {
 	//	log.Println("[ Go2o][ Crash]: can't load registry,", err.Error())
 	//	os.Exit(1)
 	//}
 	return &valueRepo{
-		Connector: conn,
-		o:         conn.GetOrm(),
+		Connector: o.Connector(),
+		o:         o,
 		storage:   storage,
 		kvMux:     &sync.RWMutex{},
 		//wxGob:        util.NewGobFile("conf/core/wx_api"),
@@ -364,7 +364,7 @@ func (r *valueRepo) GetChildAreas(code int32) []*valueobject.Area {
 		return v
 	}
 	var v []*valueobject.Area
-	err := r.Connector.GetOrm().Select(&v, "code <> 0 AND parent= $1", code)
+	err := r.o.Select(&v, "code <> 0 AND parent= $1", code)
 	if err == nil {
 		r.areaCache[code] = v
 	}

@@ -23,12 +23,14 @@ type saleLabelRepo struct {
 	db.Connector
 	_service item.ILabelService
 	valRepo  valueobject.IValueRepo
+	o        orm.Orm
 }
 
-func NewTagSaleRepo(c db.Connector,
+func NewTagSaleRepo(o orm.Orm,
 	valRepo valueobject.IValueRepo) item.ISaleLabelRepo {
 	return &saleLabelRepo{
-		Connector: c,
+		Connector: o.Connector(),
+		o:         o,
 		valRepo:   valRepo,
 	}
 }
@@ -52,14 +54,14 @@ func (t *saleLabelRepo) CreateSaleLabel(v *item.Label) item.ISaleLabel {
 // 获取所有的销售标签
 func (t *saleLabelRepo) GetAllValueSaleLabels(mchId int64) []*item.Label {
 	arr := []*item.Label{}
-	t.Connector.GetOrm().Select(&arr, "mch_id= $1", mchId)
+	t.o.Select(&arr, "mch_id= $1", mchId)
 	return arr
 }
 
 // 获取销售标签值
 func (t *saleLabelRepo) GetValueSaleLabel(mchId int64, tagId int32) *item.Label {
 	var v = new(item.Label)
-	err := t.Connector.GetOrm().GetBy(v, "mch_id= $1 AND id= $2", mchId, tagId)
+	err := t.o.GetBy(v, "mch_id= $1 AND id= $2", mchId, tagId)
 	if err == nil {
 		return v
 	}
@@ -74,13 +76,13 @@ func (t *saleLabelRepo) GetSaleLabel(mchId int64, id int32) item.ISaleLabel {
 // 保存销售标签
 func (t *saleLabelRepo) SaveSaleLabel(mchId int64, v *item.Label) (int32, error) {
 	v.MerchantId = mchId
-	return orm.I32(orm.Save(t.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(t.o, v, int(v.Id)))
 }
 
 // 根据Code获取销售标签
 func (t *saleLabelRepo) GetSaleLabelByCode(mchId int64, code string) *item.Label {
 	var v = new(item.Label)
-	if t.GetOrm().GetBy(v, "mch_id= $1 AND tag_code= $2", mchId, code) == nil {
+	if t.o.GetBy(v, "mch_id= $1 AND tag_code= $2", mchId, code) == nil {
 		return v
 	}
 	return nil
@@ -88,7 +90,7 @@ func (t *saleLabelRepo) GetSaleLabelByCode(mchId int64, code string) *item.Label
 
 // 删除销售标签
 func (t *saleLabelRepo) DeleteSaleLabel(mchId int64, id int32) error {
-	_, err := t.GetOrm().Delete(&item.Label{}, "mch_id= $1 AND id= $2", mchId, id)
+	_, err := t.o.Delete(&item.Label{}, "mch_id= $1 AND id= $2", mchId, id)
 	return err
 }
 
@@ -99,7 +101,7 @@ func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId int64, tagId int32,
 		sortBy = "ORDER BY " + sortBy
 	}
 	arr := []*valueobject.Goods{}
-	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM item_info INNER JOIN
+	t.o.SelectByQuery(&arr, `SELECT * FROM item_info INNER JOIN
 	       product ON product.id = item_info.product_id
 		 WHERE product.review_state= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t
@@ -123,7 +125,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 		item.ShelvesOn, mchId, tagId)
 	var arr []*valueobject.Goods
 	if total > 0 {
-		t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM item_info
+		t.o.SelectByQuery(&arr, `SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
 		 WHERE product.review_state= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
@@ -137,7 +139,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 // 获取商品的销售标签
 func (t *saleLabelRepo) GetItemSaleLabels(itemId int32) []*item.Label {
 	arr := []*item.Label{}
-	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_label WHERE id IN
+	t.o.SelectByQuery(&arr, `SELECT * FROM gs_sale_label WHERE id IN
 	(SELECT sale_tag_id FROM product_tag WHERE item_id= $1) AND enabled=1`, itemId)
 	return arr
 }

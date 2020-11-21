@@ -74,7 +74,7 @@ func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 		panic(errors.New("售后单缺少商品"))
 	}
 	a.value.UpdateTime = time.Now().Unix()
-	id, err := orm.I32(orm.Save(tmp.Db().GetOrm(), a.value, int(a.GetDomainId())))
+	id, err := orm.I32(orm.Save(tmp.Orm, a.value, int(a.GetDomainId())))
 	if err == nil {
 		a.value.Id = id
 	}

@@ -24,7 +24,7 @@ func init() {
 
 func TestBatchPushMember(t *testing.T) {
 	defer msq.Close()
-	orm := ti.GetApp().Db().GetOrm()
+	orm := ti.GetApp().Db().o
 
 	var members []member.Member
 	err := orm.SelectByQuery(&members, "select * FROM mm_member where id > 0 LIMIT 100 OFFSET 0")

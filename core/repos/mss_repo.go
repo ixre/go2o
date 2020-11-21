@@ -32,13 +32,15 @@ type mssRepo struct {
 	_valRepo      valueobject.IValueRepo
 	registryRepo  registry.IRegistryRepo
 	_globMss      mss.IUserMessageManager
+	o             orm.Orm
 }
 
-func NewMssRepo(conn db.Connector, notifyRepo notify.INotifyRepo,
+func NewMssRepo(o orm.Orm, notifyRepo notify.INotifyRepo,
 	registryRepo registry.IRegistryRepo,
 	valRepo valueobject.IValueRepo) mss.IMssRepo {
 	return &mssRepo{
-		_conn:        conn,
+		_conn:        o.Connector(),
+		o:            o,
 		_notifyRepo:  notifyRepo,
 		registryRepo: registryRepo,
 		_valRepo:     valRepo,
@@ -94,7 +96,7 @@ func (m *mssRepo) SaveConfig(userId int64, conf *mss.Config) error {
 // 获取邮箱模板
 func (m *mssRepo) GetMailTemplate(mchId int64, id int32) *mss.MailTemplate {
 	var e mss.MailTemplate
-	if err := m._conn.GetOrm().Get(id, &e); err == nil {
+	if err := m.o.Get(id, &e); err == nil {
 		return &e
 	}
 	return nil
@@ -102,19 +104,19 @@ func (m *mssRepo) GetMailTemplate(mchId int64, id int32) *mss.MailTemplate {
 
 // 保存邮箱模版
 func (m *mssRepo) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
-	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
 // 获取所有的邮箱模版
 func (m *mssRepo) GetMailTemplates(mchId int64) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
-	m._conn.GetOrm().Select(&list, "merchant_id= $1", mchId)
+	m.o.Select(&list, "merchant_id= $1", mchId)
 	return list
 }
 
 // 删除邮件模板
 func (m *mssRepo) DeleteMailTemplate(mchId, id int64) error {
-	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{},
+	_, err := m.o.Delete(mss.MailTemplate{},
 		"merchant_id= $1 AND id= $2", mchId, id)
 	return err
 }
@@ -123,9 +125,9 @@ func (m *mssRepo) DeleteMailTemplate(mchId, id int64) error {
 func (m *mssRepo) JoinMailTaskToQueen(v *mss.MailTask) error {
 	var err error
 	if v.Id > 0 {
-		_, _, err = m._conn.GetOrm().Save(v.Id, v)
+		_, _, err = m.o.Save(v.Id, v)
 	} else {
-		_, _, err = m._conn.GetOrm().Save(nil, v)
+		_, _, err = m.o.Save(nil, v)
 		if err == nil {
 			err = m._conn.ExecScalar("SELECT max(id) FROM pt_mail_queue", &v.Id)
 		}
@@ -141,13 +143,13 @@ func (m *mssRepo) JoinMailTaskToQueen(v *mss.MailTask) error {
 
 // 保存消息
 func (m *mssRepo) SaveMessage(v *mss.Message) (int32, error) {
-	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
 // 获取消息
 func (m *mssRepo) GetMessage(id int32) *mss.Message {
 	e := mss.Message{}
-	if m._conn.GetOrm().Get(id, &e) == nil {
+	if m.o.Get(id, &e) == nil {
 		e.To = []mss.User{}
 		m._conn.Query(`SELECT to_id,to_role FROM msg_to WHERE msg_id= $1`, func(rs *sql.Rows) {
 			for rs.Next() {
@@ -163,18 +165,18 @@ func (m *mssRepo) GetMessage(id int32) *mss.Message {
 
 // 保存用户消息关联
 func (m *mssRepo) SaveUserMsg(v *mss.To) (int32, error) {
-	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
 // 保存消息内容
 func (m *mssRepo) SaveMsgContent(v *mss.Content) (int32, error) {
-	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
 // 获取消息内容
 func (m *mssRepo) GetMessageContent(msgId int32) *mss.Content {
 	e := mss.Content{}
-	if m._conn.GetOrm().GetBy(&e, "msg_id= $1", msgId) == nil {
+	if m.o.GetBy(&e, "msg_id= $1", msgId) == nil {
 		return &e
 	}
 	return nil
@@ -183,7 +185,7 @@ func (m *mssRepo) GetMessageContent(msgId int32) *mss.Content {
 // 获取消息目标
 func (m *mssRepo) GetMessageTo(msgId int32, toUserId int32, toRole int) *mss.To {
 	e := mss.To{}
-	if m._conn.GetOrm().GetByQuery(&e, `SELECT * FROM msg_to
+	if m.o.GetByQuery(&e, `SELECT * FROM msg_to
 		WHERE msg_id= $1 AND to_id = $2 AND to_role= $3`,
 		msgId, toUserId, toRole) == nil {
 		return &e

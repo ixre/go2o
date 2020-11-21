@@ -26,7 +26,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.9.18
+	github.com/ixre/gof v1.10.2
 	github.com/ixre/tto v0.3.20
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
@@ -44,11 +44,11 @@ require (
 	go.etcd.io/etcd v3.3.25+incompatible
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0 // indirect
-	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
-	golang.org/x/net v0.0.0-20201031054903-ff519b6c9102
-	golang.org/x/sys v0.0.0-20201107080550-4d91cf3a1aaf // indirect
+	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
+	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
+	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
 	golang.org/x/text v0.3.4
-	google.golang.org/genproto v0.0.0-20201106154455-f9bfe239b0ba // indirect
+	google.golang.org/genproto v0.0.0-20201119123407-9b1e624d6bc4 // indirect
 	google.golang.org/grpc v1.33.2
 	google.golang.org/protobuf v1.25.0 // indirect
 )

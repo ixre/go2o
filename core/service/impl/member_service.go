@@ -14,7 +14,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ixre/gof"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
 	de "go2o/core/domain/interface/domain"
@@ -76,24 +75,24 @@ func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	//return s.init()
 }
 
-func (s *memberService) init() *memberService {
-	db := gof.CurrentApp.Db()
-	var list []*member.Member
-	db.GetOrm().Select(&list, "")
-	for _, v := range list {
-		im := s.repo.CreateMember(v)
-		if rl := im.GetRelation(); rl != nil {
-			im.BindInviter(rl.InviterId, true)
-		}
-		//if len(v.InviteCode) < 6 {
-		//	im := s.repo.CreateMember(v)
-		//	v.InviteCode = s.generateInviteCode()
-		//	im.SetValue(v)
-		//	im.Save()
-		//}
-	}
-	return s
-}
+//func (s *memberService) init() *memberService {
+//	db := gof.CurrentApp.Db()
+//	var list []*member.Member
+//	db.o.Select(&list, "")
+//	for _, v := range list {
+//		im := s.repo.CreateMember(v)
+//		if rl := im.GetRelation(); rl != nil {
+//			im.BindInviter(rl.InviterId, true)
+//		}
+//		//if len(v.InviteCode) < 6 {
+//		//	im := s.repo.CreateMember(v)
+//		//	v.InviteCode = s.generateInviteCode()
+//		//	im.SetValue(v)
+//		//	im.Save()
+//		//}
+//	}
+//	return s
+//}
 
 // 根据会员编号获取会员
 func (s *memberService) getMemberValue(memberId int64) *member.Member {
@@ -982,7 +981,7 @@ func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccou
 		total, rows = s.query.PagedBalanceAccountLog(
 			r.MemberId, int(r.Params.Begin),
 			int(r.Params.End), r.Params.Where,
-			r.Params.Where)
+			r.Params.SortBy)
 	case member.AccountWallet:
 		total, rows = s.query.PagedWalletAccountLog(
 			r.MemberId, int(r.Params.Begin),

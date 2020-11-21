@@ -29,7 +29,7 @@ func sysInit() {
 
 func initSuperLoginToken(repo registry.IRegistryRepo) {
 	value, _ := repo.GetValue(registry.SysSuperLoginToken)
-	if strings.TrimSpace(value) ==  ""{
+	if strings.TrimSpace(value) == "" {
 		pwd := util.RandString(8)
 		log.Println(fmt.Sprintf("[ Go2o][ Info]: the initial super pwd is '%s', it only show first time. plese save it.", pwd))
 		token := domain.Sha1("master" + crypto.Md5([]byte(pwd)))

@@ -1,7 +1,7 @@
 package repos
 
 import (
-	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/after-sales"
@@ -66,43 +66,43 @@ type RepoFactory struct {
 	walletRepo wallet.IWalletRepo
 }
 
-func (r *RepoFactory) Init(db db.Connector, sto storage.Interface) *RepoFactory {
+func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
 	Repo = r
-	orm := db.GetOrm()
-	/** Repository **/
-	r.registryRepo = NewRegistryRepo(db, sto)
-	r.proMRepo = NewProModelRepo(db, orm)
-	r.valueRepo = NewValueRepo("", db, sto)
-	r.userRepo = NewUserRepo(db)
-	r.walletRepo = NewWalletRepo(db)
-	r.notifyRepo = NewNotifyRepo(db, r.registryRepo)
-	r.mssRepo = NewMssRepo(db, r.notifyRepo, r.registryRepo, r.valueRepo)
-	r.expressRepo = NewExpressRepo(db, r.valueRepo)
-	r.shipRepo = NewShipmentRepo(db, r.expressRepo)
-	r.memberRepo = NewMemberRepo(sto, db, r.walletRepo, r.mssRepo, r.valueRepo, r.registryRepo)
-	r.productRepo = NewProductRepo(db, r.proMRepo, r.valueRepo)
-	r.itemWsRepo = NewItemWholesaleRepo(db)
-	r.catRepo = NewCategoryRepo(db, r.registryRepo, sto)
-	r.shopRepo = NewShopRepo(db, sto, r.valueRepo, r.registryRepo)
-	r.itemRepo = NewGoodsItemRepo(db, r.catRepo, r.productRepo,
-		r.proMRepo, r.itemWsRepo, r.expressRepo, r.registryRepo, r.shopRepo)
-	r.tagSaleRepo = NewTagSaleRepo(db, r.valueRepo)
-	r.promRepo = NewPromotionRepo(db, r.itemRepo, r.memberRepo)
 
-	//afterSalesRepo := repository.NewAfterSalesRepo(db)
-	r.wholesaleRepo = NewWholesaleRepo(db)
-	r.mchRepo = NewMerchantRepo(db, sto, r.wholesaleRepo,
+	/** Repository **/
+	r.registryRepo = NewRegistryRepo(o, sto)
+	r.proMRepo = NewProModelRepo(o)
+	r.valueRepo = NewValueRepo("", o, sto)
+	r.userRepo = NewUserRepo(o)
+	r.walletRepo = NewWalletRepo(o)
+	r.notifyRepo = NewNotifyRepo(o, r.registryRepo)
+	r.mssRepo = NewMssRepo(o, r.notifyRepo, r.registryRepo, r.valueRepo)
+	r.expressRepo = NewExpressRepo(o, r.valueRepo)
+	r.shipRepo = NewShipmentRepo(o, r.expressRepo)
+	r.memberRepo = NewMemberRepo(sto, o, r.walletRepo, r.mssRepo, r.valueRepo, r.registryRepo)
+	r.productRepo = NewProductRepo(o, r.proMRepo, r.valueRepo)
+	r.itemWsRepo = NewItemWholesaleRepo(o)
+	r.catRepo = NewCategoryRepo(o, r.registryRepo, sto)
+	r.shopRepo = NewShopRepo(o, sto, r.valueRepo, r.registryRepo)
+	r.itemRepo = NewGoodsItemRepo(o, r.catRepo, r.productRepo,
+		r.proMRepo, r.itemWsRepo, r.expressRepo, r.registryRepo, r.shopRepo)
+	r.tagSaleRepo = NewTagSaleRepo(o, r.valueRepo)
+	r.promRepo = NewPromotionRepo(o, r.itemRepo, r.memberRepo)
+
+	//afterSalesRepo := repository.NewAfterSalesRepo(o)
+	r.wholesaleRepo = NewWholesaleRepo(o)
+	r.mchRepo = NewMerchantRepo(o, sto, r.wholesaleRepo,
 		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo, r.registryRepo)
-	r.cartRepo = NewCartRepo(db, r.memberRepo, r.mchRepo, r.itemRepo)
-	r.personFinanceRepo = NewPersonFinanceRepository(db, r.memberRepo)
-	r.deliveryRepo = NewDeliverRepo(db)
-	r.contentRepo = NewContentRepo(db)
-	r.adRepo = NewAdvertisementRepo(db, sto)
-	r.orderRepo = NewOrderRepo(sto, db, r.mchRepo, nil,
+	r.cartRepo = NewCartRepo(o, r.memberRepo, r.mchRepo, r.itemRepo)
+	r.personFinanceRepo = NewPersonFinanceRepository(o, r.memberRepo)
+	r.deliveryRepo = NewDeliverRepo(o)
+	r.contentRepo = NewContentRepo(o)
+	r.adRepo = NewAdvertisementRepo(o, sto)
+	r.orderRepo = NewOrderRepo(sto, o, r.mchRepo, nil,
 		r.productRepo, r.cartRepo, r.itemRepo, r.promRepo, r.memberRepo,
 		r.deliveryRepo, r.expressRepo, r.shipRepo, r.valueRepo, r.registryRepo)
-	r.paymentRepo = NewPaymentRepo(sto, db, r.memberRepo, r.orderRepo, r.registryRepo)
-	r.asRepo = NewAfterSalesRepo(db, r.orderRepo, r.memberRepo, r.paymentRepo)
+	r.paymentRepo = NewPaymentRepo(sto, o, r.memberRepo, r.orderRepo, r.registryRepo)
+	r.asRepo = NewAfterSalesRepo(o, r.orderRepo, r.memberRepo, r.paymentRepo)
 
 	// 解决依赖
 	r.orderRepo.(*OrderRepImpl).SetPaymentRepo(r.paymentRepo)

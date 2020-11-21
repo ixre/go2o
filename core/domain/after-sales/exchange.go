@@ -42,7 +42,7 @@ func (e *exchangeOrderImpl) getValue() *afterSales.ExchangeOrder {
 			panic(errors.New("换货单还未提交"))
 		}
 		v := &afterSales.ExchangeOrder{}
-		if tmp.Db().GetOrm().Get(e.GetDomainId(), v) != nil {
+		if tmp.Orm.Get(e.GetDomainId(), v) != nil {
 			panic(errors.New("换货单不存在"))
 		}
 		e.refValue = v
@@ -83,14 +83,14 @@ func (e *exchangeOrderImpl) Submit() (int32, error) {
 			ShipTime:    0,
 			ReceiveTime: 0,
 		}
-		_, err = orm.Save(tmp.Db().GetOrm(), e.refValue, 0)
+		_, err = orm.Save(tmp.Orm, e.refValue, 0)
 	}
 	return id, err
 }
 
 // 保存换货单
 func (e *exchangeOrderImpl) saveExchangeOrder(v *afterSales.ExchangeOrder) error {
-	_, err := orm.Save(tmp.Db().GetOrm(), v, int(v.Id))
+	_, err := orm.Save(tmp.Orm, v, int(v.Id))
 	return err
 }
 

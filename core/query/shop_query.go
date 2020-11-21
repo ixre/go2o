@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/dto"
@@ -24,14 +25,16 @@ import (
 
 type ShopQuery struct {
 	db.Connector
+	o              orm.Orm
 	Storage        storage.Interface
 	commHostRegexp *regexp.Regexp
 }
 
-func NewShopQuery(c gof.App) *ShopQuery {
+func NewShopQuery(o orm.Orm, s storage.Interface) *ShopQuery {
 	return &ShopQuery{
-		Connector: c.Db(),
-		Storage:   c.Storage(),
+		Connector: o.Connector(),
+		o:         o,
+		Storage:   s,
 	}
 }
 
@@ -99,7 +102,7 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
         ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
         WHERE sp.state=%d AND mch.enabled = 1 %s %s LIMIT $2 OFFSET $1`,
 			shop.StateNormal, where, order)
-		err = s.GetOrm().SelectByQuery(&e, sql, begin, end-begin)
+		err = s.o.SelectByQuery(&e, sql, begin, end-begin)
 	}
 	if err != nil {
 		log.Println("[ Go2o][ Query][ Error]:", err.Error())

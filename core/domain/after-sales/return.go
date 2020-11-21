@@ -46,7 +46,7 @@ func (r *returnOrderImpl) getValue() *afterSales.ReturnOrder {
 			panic(errors.New("退货单还未提交"))
 		}
 		v := &afterSales.ReturnOrder{}
-		if tmp.Db().GetOrm().Get(r.GetDomainId(), v) != nil {
+		if tmp.Orm.Get(r.GetDomainId(), v) != nil {
 			panic(errors.New("退货单不存在"))
 		}
 		r.refValue = v
@@ -64,7 +64,7 @@ func (r *returnOrderImpl) Value() afterSales.AfterSalesOrder {
 
 // 保存
 func (r *returnOrderImpl) saveReturnOrder() error {
-	_, err := orm.Save(tmp.Db().GetOrm(), r.refValue, int(r.GetDomainId()))
+	_, err := orm.Save(tmp.Orm, r.refValue, int(r.GetDomainId()))
 	return err
 }
 
@@ -122,7 +122,7 @@ func (r *returnOrderImpl) submitReturnOrder() (err error) {
 	if r.refValue.Amount <= 0 || math.IsNaN(float64(r.refValue.Amount)) {
 		return afterSales.ErrOrderAmount
 	}
-	_, err = orm.Save(tmp.Db().GetOrm(), r.refValue, 0)
+	_, err = orm.Save(tmp.Orm, r.refValue, 0)
 	return err
 }
 

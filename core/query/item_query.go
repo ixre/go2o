@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
@@ -21,11 +22,13 @@ import (
 
 type ItemQuery struct {
 	db.Connector
+	o orm.Orm
 }
 
-func NewItemQuery(c db.Connector) *ItemQuery {
+func NewItemQuery(o orm.Orm) *ItemQuery {
 	return &ItemQuery{
-		Connector: c,
+		Connector: o.Connector(),
+		o:         o,
 	}
 }
 
@@ -52,7 +55,7 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 		 AND item_info.shelve_state= $3 %s
 		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
 			where, orderBy)
-		i.Connector.GetOrm().SelectByQuery(&list, sql,
+		i.o.SelectByQuery(&list, sql,
 			catId, enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
@@ -83,7 +86,7 @@ func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 		 AND ws_item.shelve_state= $3 %s
 		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
 			where, orderBy)
-		i.Connector.GetOrm().SelectByQuery(&list, sql,
+		i.o.SelectByQuery(&list, sql,
 			catId, enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
@@ -123,7 +126,7 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
-		i.Connector.GetOrm().SelectByQuery(&list, sql,
+		i.o.SelectByQuery(&list, sql,
 			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
@@ -174,7 +177,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		 AND ws_item.shelve_state= $2 %s
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
-		i.Connector.GetOrm().SelectByQuery(&list, sql,
+		i.o.SelectByQuery(&list, sql,
 			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
@@ -191,7 +194,7 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int, begin, end int,
 		 WHERE item_info.cat_id IN(%s) AND item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY item_info.update_time DESC LIMIT $4 OFFSET $3`, catIdStr, where)
-		i.Connector.GetOrm().SelectByQuery(&list, sql,
+		i.o.SelectByQuery(&list, sql,
 			enum.ReviewPass, item.ShelvesOn, begin, end-begin)
 	}
 	return list
@@ -231,7 +234,7 @@ func (i ItemQuery) GetRandomItem(catIdArr []int, begin, end int, where string) [
 		  AND item_info.review_state= ?
 		 AND item_info.shelve_state= ? %s LIMIT ? OFFSET $3`,
 		search, search)
-	i.Connector.GetOrm().SelectByQuery(&list, sql,
+	i.o.SelectByQuery(&list, sql,
 		enum.ReviewPass, item.ShelvesOn,
 		enum.ReviewPass, item.ShelvesOn, begin, end-begin)
 	return list
@@ -266,7 +269,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
          AND ($3=0 OR product.supplier_id IN (SELECT vendor_id FROM mch_shop WHERE id= $4))
          AND product.name LIKE $5 %s ORDER BY %s update_time DESC LIMIT $7 OFFSET $6`,
 			where, orderBy)
-		i.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,
+		i.o.SelectByQuery(&e, sql, enum.ReviewPass,
 			item.ShelvesOn, shopId, shopId, keyword, start, end-start)
 	}
 

@@ -13,6 +13,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
@@ -25,8 +26,8 @@ type OrderQuery struct {
 	db.Connector
 }
 
-func NewOrderQuery(conn db.Connector) *OrderQuery {
-	return &OrderQuery{Connector: conn}
+func NewOrderQuery(o orm.Orm) *OrderQuery {
+	return &OrderQuery{Connector: o.Connector()}
 }
 
 func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {

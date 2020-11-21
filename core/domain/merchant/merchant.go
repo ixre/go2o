@@ -62,12 +62,12 @@ func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int64 {
 
 // 删除会员的商户申请资料
 func (m *merchantManagerImpl) RemoveSignUp(memberId int64) error {
-	_, err := tmp.Db().GetOrm().Delete(merchant.MchSignUp{}, "member_id= $1", memberId)
+	_, err := tmp.Orm.Delete(merchant.MchSignUp{}, "member_id= $1", memberId)
 	return err
 }
 func (m *merchantManagerImpl) saveSignUpInfo(v *merchant.MchSignUp) (int32, error) {
 	v.UpdateTime = time.Now().Unix()
-	return orm.I32(orm.Save(tmp.Db().GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(tmp.Orm, v, int(v.Id)))
 }
 
 // 检查商户注册信息是否正确
@@ -219,7 +219,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 // 获取商户申请信息
 func (m *merchantManagerImpl) GetSignUpInfo(id int32) *merchant.MchSignUp {
 	v := merchant.MchSignUp{}
-	if tmp.Db().GetOrm().Get(id, &v) != nil {
+	if tmp.Orm.Get(id, &v) != nil {
 		return nil
 	}
 	return &v
@@ -228,7 +228,7 @@ func (m *merchantManagerImpl) GetSignUpInfo(id int32) *merchant.MchSignUp {
 // 获取会员申请的商户信息
 func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
 	v := merchant.MchSignUp{}
-	if tmp.Db().GetOrm().GetBy(&v, "member_id= $1", memberId) != nil {
+	if tmp.Orm.GetBy(&v, "member_id= $1", memberId) != nil {
 		return nil
 	}
 	return &v
@@ -237,7 +237,7 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int64) *merchant.
 // 获取会员关联的商户
 func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int64) merchant.IMerchant {
 	v := merchant.Merchant{}
-	if tmp.Db().GetOrm().GetBy(&v, "member_id= $1", memberId) == nil {
+	if tmp.Orm.GetBy(&v, "member_id= $1", memberId) == nil {
 		return m.rep.CreateMerchant(&v)
 	}
 	return nil

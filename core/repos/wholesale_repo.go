@@ -11,22 +11,22 @@ import (
 var _ wholesaler.IWholesaleRepo = new(wholesaleRepo)
 
 type wholesaleRepo struct {
-	_orm  orm.Orm
+	o     orm.Orm
 	_conn db.Connector
 }
 
 // Create new WsWholesalerRepo
-func NewWholesaleRepo(conn db.Connector) *wholesaleRepo {
+func NewWholesaleRepo(o orm.Orm) *wholesaleRepo {
 	return &wholesaleRepo{
-		_orm:  conn.GetOrm(),
-		_conn: conn,
+		o:     o,
+		_conn: o.Connector(),
 	}
 }
 
 // Get WsWholesaler
 func (w *wholesaleRepo) GetWsWholesaler(primary interface{}) *wholesaler.WsWholesaler {
 	e := wholesaler.WsWholesaler{}
-	err := w._orm.Get(primary, &e)
+	err := w.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -42,7 +42,7 @@ func (w *wholesaleRepo) SaveWsWholesaler(v *wholesaler.WsWholesaler, create bool
 	if create {
 		iid = 0
 	}
-	id, err := orm.Save(w._orm, v, iid)
+	id, err := orm.Save(w.o, v, iid)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsWholesaler")
 	}
@@ -82,7 +82,7 @@ func (w *wholesaleRepo) GetAwaitSyncItems(vendorId int64) []int {
 // Select WsRebateRate
 func (w *wholesaleRepo) SelectWsRebateRate(where string, v ...interface{}) []*wholesaler.WsRebateRate {
 	var list []*wholesaler.WsRebateRate
-	err := w._orm.Select(&list, where, v...)
+	err := w.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsRebateRate")
 	}
@@ -91,7 +91,7 @@ func (w *wholesaleRepo) SelectWsRebateRate(where string, v ...interface{}) []*wh
 
 // Save WsRebateRate
 func (w *wholesaleRepo) SaveWsRebateRate(v *wholesaler.WsRebateRate) (int, error) {
-	id, err := orm.Save(w._orm, v, int(v.ID))
+	id, err := orm.Save(w.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsRebateRate")
 	}
@@ -100,7 +100,7 @@ func (w *wholesaleRepo) SaveWsRebateRate(v *wholesaler.WsRebateRate) (int, error
 
 // Batch Delete WsRebateRate
 func (w *wholesaleRepo) BatchDeleteWsRebateRate(where string, v ...interface{}) (int64, error) {
-	r, err := w._orm.Delete(wholesaler.WsRebateRate{}, where, v...)
+	r, err := w.o.Delete(wholesaler.WsRebateRate{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsRebateRate")
 	}

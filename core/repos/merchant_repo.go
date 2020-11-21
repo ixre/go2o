@@ -37,7 +37,7 @@ var _ merchant.IMerchantRepo = new(merchantRepo)
 
 type merchantRepo struct {
 	db.Connector
-	_orm          orm.Orm
+	o             orm.Orm
 	storage       storage.Interface
 	manager       merchant.IMerchantManager
 	_wsRepo       wholesaler.IWholesaleRepo
@@ -52,13 +52,13 @@ type merchantRepo struct {
 	mux           *sync.RWMutex
 }
 
-func NewMerchantRepo(c db.Connector, storage storage.Interface,
+func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
 	return &merchantRepo{
-		Connector:     c,
-		_orm:          c.GetOrm(),
+		Connector:     o.Connector(),
+		o:             o,
 		storage:       storage,
 		_wsRepo:       wsRepo,
 		_itemRepo:     itemRepo,
@@ -131,7 +131,7 @@ func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 	err := m.storage.Get(key, &e)
 	if err != nil {
 		// 获取并缓存到列表中
-		err = m.Connector.GetOrm().Get(id, &e)
+		err = m.o.Get(id, &e)
 		if err != nil {
 			return nil
 		}
@@ -143,7 +143,7 @@ func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 // 根据登录用户名获取商户
 func (m *merchantRepo) GetMerchantByLoginUser(user string) merchant.IMerchant {
 	e := merchant.Merchant{}
-	if err := m.Connector.GetOrm().GetBy(&e, "login_user=$1", user); err == nil {
+	if err := m.o.GetBy(&e, "login_user=$1", user); err == nil {
 		return m.CreateMerchant(&e)
 	}
 	return nil
@@ -152,14 +152,14 @@ func (m *merchantRepo) GetMerchantByLoginUser(user string) merchant.IMerchant {
 // 获取账户
 func (m *merchantRepo) GetAccount(mchId int) *merchant.Account {
 	e := merchant.Account{}
-	err := m.Connector.GetOrm().Get(mchId, &e)
+	err := m.o.Get(mchId, &e)
 	if err == nil {
 		return &e
 	}
 	if err == sql.ErrNoRows {
 		e.MchId = int64(mchId)
 		e.UpdateTime = time.Now().Unix()
-		orm.Save(m.Connector.GetOrm(), &e, 0)
+		orm.Save(m.o, &e, 0)
 		return &e
 	}
 	return nil
@@ -184,7 +184,7 @@ func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 
 // 保存
 func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int, error) {
-	id, err := orm.I64(orm.Save(m.GetOrm(), v, int(v.Id)))
+	id, err := orm.I64(orm.Save(m.o, v, int(v.Id)))
 	if err == nil {
 		m.cleanCache(id)
 	}
@@ -212,7 +212,7 @@ func (m *merchantRepo) GetMerchantSaleConf(mchId int64) *merchant.SaleConf {
 	//0.1,         #上上级
 	//0.8          #消费者自己
 	var saleConf = new(merchant.SaleConf)
-	if m.Connector.GetOrm().Get(mchId, saleConf) == nil {
+	if m.o.Get(mchId, saleConf) == nil {
 		return saleConf
 	}
 	return nil
@@ -221,9 +221,9 @@ func (m *merchantRepo) GetMerchantSaleConf(mchId int64) *merchant.SaleConf {
 func (m *merchantRepo) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 	var err error
 	if v.MerchantId > 0 {
-		_, _, err = m.Connector.GetOrm().Save(v.MerchantId, v)
+		_, _, err = m.o.Save(v.MerchantId, v)
 	} else {
-		_, _, err = m.Connector.GetOrm().Save(nil, v)
+		_, _, err = m.o.Save(nil, v)
 	}
 	return err
 }
@@ -231,9 +231,9 @@ func (m *merchantRepo) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 // 保存API信息
 func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) (err error) {
 	if m.GetApiInfo(v.MerchantId) == nil {
-		_, err = orm.Save(m.GetOrm(), v, 0)
+		_, err = orm.Save(m.o, v, 0)
 	} else {
-		_, err = orm.Save(m.GetOrm(), v, int(v.MerchantId))
+		_, err = orm.Save(m.o, v, int(v.MerchantId))
 	}
 	return err
 }
@@ -241,7 +241,7 @@ func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) (err error) {
 // 获取API信息
 func (m *merchantRepo) GetApiInfo(mchId int) *merchant.ApiInfo {
 	var d = new(merchant.ApiInfo)
-	if err := m.GetOrm().Get(mchId, d); err == nil {
+	if err := m.o.Get(mchId, d); err == nil {
 		return d
 	}
 	return nil
@@ -319,7 +319,7 @@ func (m *merchantRepo) GetKeyMapByChar(mchId int, indent string, keyword string)
 
 func (m *merchantRepo) GetLevel(mchId, levelValue int32) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
-	err := m.Connector.GetOrm().GetBy(&e, "merchant_id= $1 AND value = $2", mchId, levelValue)
+	err := m.o.GetBy(&e, "merchant_id= $1 AND value = $2", mchId, levelValue)
 	if err != nil {
 		return nil
 	}
@@ -329,7 +329,7 @@ func (m *merchantRepo) GetLevel(mchId, levelValue int32) *merchant.MemberLevel {
 // 获取下一个等级
 func (m *merchantRepo) GetNextLevel(mchId, levelVal int32) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
-	err := m.Connector.GetOrm().GetBy(&e, "merchant_id= $1 AND value> $2 LIMIT 1", mchId, levelVal)
+	err := m.o.GetBy(&e, "merchant_id= $1 AND value> $2 LIMIT 1", mchId, levelVal)
 	if err != nil {
 		return nil
 	}
@@ -339,21 +339,21 @@ func (m *merchantRepo) GetNextLevel(mchId, levelVal int32) *merchant.MemberLevel
 // 获取会员等级
 func (m *merchantRepo) GetMemberLevels(mchId int64) []*merchant.MemberLevel {
 	var list []*merchant.MemberLevel
-	m.Connector.GetOrm().Select(&list,
+	m.o.Select(&list,
 		"merchant_id= $1", mchId)
 	return list
 }
 
 // 删除会员等级
 func (m *merchantRepo) DeleteMemberLevel(mchId, id int32) error {
-	_, err := m.Connector.GetOrm().Delete(&merchant.MemberLevel{},
+	_, err := m.o.Delete(&merchant.MemberLevel{},
 		"id= $1 AND merchant_id= $2", id, mchId)
 	return err
 }
 
 // 保存等级
 func (m *merchantRepo) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) (int32, error) {
-	return orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
 //
@@ -372,7 +372,7 @@ func (m *merchantRepo) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) (in
 //
 // 保存销售配置
 func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
-	orm := m.Connector.GetOrm()
+	orm := m.o
 	var err error
 	if v.MchId > 0 {
 		_, _, err = orm.Save(v.MchId, v)
@@ -383,7 +383,7 @@ func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
 // Get MchEnterpriseInfo
 func (m *merchantRepo) GetMchEnterpriseInfo(mchId int) *merchant.EnterpriseInfo {
 	e := merchant.EnterpriseInfo{}
-	err := m._orm.GetBy(&e, "mch_id= $1", mchId)
+	err := m.o.GetBy(&e, "mch_id= $1", mchId)
 	if err == nil {
 		return &e
 	}
@@ -395,7 +395,7 @@ func (m *merchantRepo) GetMchEnterpriseInfo(mchId int) *merchant.EnterpriseInfo 
 
 // Save MchEnterpriseInfo
 func (m *merchantRepo) SaveMchEnterpriseInfo(v *merchant.EnterpriseInfo) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.ID))
+	id, err := orm.Save(m.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchEnterpriseInfo")
 	}
@@ -405,7 +405,7 @@ func (m *merchantRepo) SaveMchEnterpriseInfo(v *merchant.EnterpriseInfo) (int, e
 // Get MchBuyerGroupSetting
 func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant.MchBuyerGroupSetting {
 	e := merchant.MchBuyerGroupSetting{}
-	err := m._orm.GetBy(&e, "mch_id= $1 AND group_id= $2", mchId, groupId)
+	err := m.o.GetBy(&e, "mch_id= $1 AND group_id= $2", mchId, groupId)
 	if err == nil {
 		return &e
 	}
@@ -418,7 +418,7 @@ func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant
 // Select MchBuyerGroupSetting
 func (m *merchantRepo) SelectMchBuyerGroup(mchId int64) []*merchant.MchBuyerGroupSetting {
 	var list []*merchant.MchBuyerGroupSetting
-	err := m._orm.Select(&list, "mch_id= $1", mchId)
+	err := m.o.Select(&list, "mch_id= $1", mchId)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroupSetting")
 	}
@@ -427,7 +427,7 @@ func (m *merchantRepo) SelectMchBuyerGroup(mchId int64) []*merchant.MchBuyerGrou
 
 // Save MchBuyerGroupSetting
 func (m *merchantRepo) SaveMchBuyerGroup(v *merchant.MchBuyerGroupSetting) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.ID))
+	id, err := orm.Save(m.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroupSetting")
 	}
@@ -437,7 +437,7 @@ func (m *merchantRepo) SaveMchBuyerGroup(v *merchant.MchBuyerGroupSetting) (int,
 // Get MchTradeConf
 func (m *merchantRepo) GetMchTradeConf(primary interface{}) *merchant.TradeConf {
 	e := merchant.TradeConf{}
-	err := m._orm.Get(primary, &e)
+	err := m.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -450,7 +450,7 @@ func (m *merchantRepo) GetMchTradeConf(primary interface{}) *merchant.TradeConf 
 // GetBy MchTradeConf
 func (m *merchantRepo) GetMchTradeConfBy(where string, v ...interface{}) *merchant.TradeConf {
 	e := merchant.TradeConf{}
-	err := m._orm.GetBy(&e, where, v...)
+	err := m.o.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
 	}
@@ -463,7 +463,7 @@ func (m *merchantRepo) GetMchTradeConfBy(where string, v ...interface{}) *mercha
 // Select MchTradeConf
 func (m *merchantRepo) SelectMchTradeConf(where string, v ...interface{}) []*merchant.TradeConf {
 	var list []*merchant.TradeConf
-	err := m._orm.Select(&list, where, v...)
+	err := m.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
 	}
@@ -472,7 +472,7 @@ func (m *merchantRepo) SelectMchTradeConf(where string, v ...interface{}) []*mer
 
 // Save MchTradeConf
 func (m *merchantRepo) SaveMchTradeConf(v *merchant.TradeConf) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.ID))
+	id, err := orm.Save(m.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
 	}
@@ -481,7 +481,7 @@ func (m *merchantRepo) SaveMchTradeConf(v *merchant.TradeConf) (int, error) {
 
 // Delete MchTradeConf
 func (m *merchantRepo) DeleteMchTradeConf(primary interface{}) error {
-	err := m._orm.DeleteByPk(merchant.TradeConf{}, primary)
+	err := m.o.DeleteByPk(merchant.TradeConf{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
 	}
@@ -490,7 +490,7 @@ func (m *merchantRepo) DeleteMchTradeConf(primary interface{}) error {
 
 // Batch Delete MchTradeConf
 func (m *merchantRepo) BatchDeleteMchTradeConf(where string, v ...interface{}) (int64, error) {
-	r, err := m._orm.Delete(merchant.TradeConf{}, where, v...)
+	r, err := m.o.Delete(merchant.TradeConf{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
 	}

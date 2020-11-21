@@ -395,7 +395,7 @@ func (p *profileManagerImpl) GetBankCards() []member.BankCard {
 		//		State:      0,
 		//		UpdateTime: time.Now().Unix(),
 		//	}
-		//	orm.Save(tmp.Db().GetOrm(), p.bank, 0)
+		//	orm.Save(tmp.Orm, p.bank, 0)
 		//}
 	}
 	return p.bankCards
@@ -553,7 +553,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 			ReviewState: int(enum.ReviewNotSet),
 		}
 		//如果还没有实名信息,则新建
-		orm := tmp.Db().GetOrm()
+		orm := tmp.Orm
 		if err := orm.Get(p.memberId, p.trustedInfo); err != nil {
 			orm.Save(nil, p.trustedInfo)
 		}
@@ -623,7 +623,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		p.trustedInfo.Remark = ""
 		p.trustedInfo.ReviewState = int(enum.ReviewAwaiting) //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
-		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo, int(p.trustedInfo.MemberId))
+		_, err = orm.Save(tmp.Orm, p.trustedInfo, int(p.trustedInfo.MemberId))
 	}
 	return err
 }
@@ -648,7 +648,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	unix := time.Now().Unix()
 	p.trustedInfo.Remark = remark
 	p.trustedInfo.ReviewTime = unix
-	_, err := orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
+	_, err := orm.Save(tmp.Orm, p.trustedInfo,
 		int(p.trustedInfo.MemberId))
 	if err == nil {
 		if _, err = p.member.Save(); err == nil && pass {

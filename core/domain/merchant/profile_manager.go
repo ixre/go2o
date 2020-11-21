@@ -145,6 +145,6 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 }
 
 func (p *profileManagerImpl) save(e *merchant.EnterpriseInfo) error {
-	_, err := orm.Save(tmp.Db().GetOrm(), e, int(e.ID))
+	_, err := orm.Save(tmp.Orm, e, int(e.ID))
 	return err
 }

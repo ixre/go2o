@@ -101,6 +101,6 @@ where sale_sub_order.vendor_id= $1 AND pay_order.state = 1 AND pay_order.paid_ti
 		return r.Scan(&c.CompleteOrders, &c.InAmount)
 	}, mchId, order.StatCompleted, start, end)
 	// 保存
-	orm.Save(db.GetOrm(), c, 0)
+	orm.Save(_orm, c, 0)
 	//log.Println("---", c, start, end)
 }

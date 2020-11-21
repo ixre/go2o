@@ -18,33 +18,35 @@ var _ user.IUserRepo = new(userRepo)
 
 type userRepo struct {
 	db.Connector
+	o orm.Orm
 }
 
-func NewUserRepo(c db.Connector) user.IUserRepo {
+func NewUserRepo(o orm.Orm) user.IUserRepo {
 	return &userRepo{
-		Connector: c,
+		Connector: o.Connector(),
+		o:         o,
 	}
 }
 
 // 保存角色
 func (this *userRepo) SaveRole(v *user.RoleValue) (int32, error) {
-	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(this.o, v, int(v.Id)))
 }
 
 // 保存人员
 func (this *userRepo) SavePerson(v *user.PersonValue) (int32, error) {
-	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(this.o, v, int(v.Id)))
 }
 
 // 保存凭据
 func (this *userRepo) SaveCredential(v *user.CredentialValue) (int32, error) {
-	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(this.o, v, int(v.Id)))
 }
 
 // 获取人员
 func (this *userRepo) GetPersonValue(id int32) *user.PersonValue {
 	e := new(user.PersonValue)
-	err := this.Connector.GetOrm().Get(e, id)
+	err := this.o.Get(e, id)
 	if err != nil {
 		return nil
 	}
@@ -54,7 +56,7 @@ func (this *userRepo) GetPersonValue(id int32) *user.PersonValue {
 // 获取配送人员
 func (this *userRepo) GetDeliveryStaffPersons(mchId int64) []*user.PersonValue {
 	e := make([]*user.PersonValue, 0)
-	err := this.Connector.GetOrm().Select(e, "select * from user_person")
+	err := this.o.Select(e, "select * from user_person")
 	if err != nil {
 		return nil
 	}

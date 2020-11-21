@@ -2,7 +2,6 @@ package repos
 
 import (
 	"database/sql"
-	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/item"
@@ -12,19 +11,19 @@ import (
 var _ item.IItemWholesaleRepo = new(itemWholesaleRepo)
 
 type itemWholesaleRepo struct {
-	_orm orm.Orm
+	o orm.Orm
 }
 
-func NewItemWholesaleRepo(conn db.Connector) item.IItemWholesaleRepo {
+func NewItemWholesaleRepo(o orm.Orm) item.IItemWholesaleRepo {
 	return &itemWholesaleRepo{
-		_orm: conn.GetOrm(),
+		o: o,
 	}
 }
 
 // Get WsItem
 func (w *itemWholesaleRepo) GetWsItem(primary interface{}) *item.WsItem {
 	e := item.WsItem{}
-	err := w._orm.Get(primary, &e)
+	err := w.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -37,7 +36,7 @@ func (w *itemWholesaleRepo) GetWsItem(primary interface{}) *item.WsItem {
 // Select WsItem
 func (w *itemWholesaleRepo) SelectWsItem(where string, v ...interface{}) []*item.WsItem {
 	list := []*item.WsItem{}
-	err := w._orm.Select(&list, where, v...)
+	err := w.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItem")
 	}
@@ -47,7 +46,7 @@ func (w *itemWholesaleRepo) SelectWsItem(where string, v ...interface{}) []*item
 // Save WsItem
 func (w *itemWholesaleRepo) SaveWsItem(v *item.WsItem, create bool) (int, error) {
 	iid := types.IntCond(create, 0, int(v.ItemId))
-	id, err := orm.Save(w._orm, v, iid)
+	id, err := orm.Save(w.o, v, iid)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItem")
 	}
@@ -56,7 +55,7 @@ func (w *itemWholesaleRepo) SaveWsItem(v *item.WsItem, create bool) (int, error)
 
 // Delete WsItem
 func (w *itemWholesaleRepo) DeleteWsItem(primary interface{}) error {
-	err := w._orm.DeleteByPk(item.WsItem{}, primary)
+	err := w.o.DeleteByPk(item.WsItem{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItem")
 	}
@@ -65,7 +64,7 @@ func (w *itemWholesaleRepo) DeleteWsItem(primary interface{}) error {
 
 // Batch Delete WsItem
 func (w *itemWholesaleRepo) BatchDeleteWsItem(where string, v ...interface{}) (int64, error) {
-	r, err := w._orm.Delete(item.WsItem{}, where, v...)
+	r, err := w.o.Delete(item.WsItem{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItem")
 	}
@@ -75,7 +74,7 @@ func (w *itemWholesaleRepo) BatchDeleteWsItem(where string, v ...interface{}) (i
 // Get WsItemDiscount
 func (w *itemWholesaleRepo) GetWsItemDiscount(primary interface{}) *item.WsItemDiscount {
 	e := item.WsItemDiscount{}
-	err := w._orm.Get(primary, &e)
+	err := w.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -88,7 +87,7 @@ func (w *itemWholesaleRepo) GetWsItemDiscount(primary interface{}) *item.WsItemD
 // Select WsItemDiscount
 func (w *itemWholesaleRepo) SelectWsItemDiscount(where string, v ...interface{}) []*item.WsItemDiscount {
 	list := []*item.WsItemDiscount{}
-	err := w._orm.Select(&list, where, v...)
+	err := w.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItemDiscount")
 	}
@@ -97,7 +96,7 @@ func (w *itemWholesaleRepo) SelectWsItemDiscount(where string, v ...interface{})
 
 // Save WsItemDiscount
 func (w *itemWholesaleRepo) SaveWsItemDiscount(v *item.WsItemDiscount) (int, error) {
-	id, err := orm.Save(w._orm, v, int(v.ID))
+	id, err := orm.Save(w.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItemDiscount")
 	}
@@ -106,7 +105,7 @@ func (w *itemWholesaleRepo) SaveWsItemDiscount(v *item.WsItemDiscount) (int, err
 
 // Delete WsItemDiscount
 func (w *itemWholesaleRepo) DeleteWsItemDiscount(primary interface{}) error {
-	err := w._orm.DeleteByPk(item.WsItemDiscount{}, primary)
+	err := w.o.DeleteByPk(item.WsItemDiscount{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItemDiscount")
 	}
@@ -115,7 +114,7 @@ func (w *itemWholesaleRepo) DeleteWsItemDiscount(primary interface{}) error {
 
 // Batch Delete WsItemDiscount
 func (w *itemWholesaleRepo) BatchDeleteWsItemDiscount(where string, v ...interface{}) (int64, error) {
-	r, err := w._orm.Delete(item.WsItemDiscount{}, where, v...)
+	r, err := w.o.Delete(item.WsItemDiscount{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItemDiscount")
 	}
@@ -125,7 +124,7 @@ func (w *itemWholesaleRepo) BatchDeleteWsItemDiscount(where string, v ...interfa
 // Get WsSkuPrice
 func (w *itemWholesaleRepo) GetWsSkuPrice(primary interface{}) *item.WsSkuPrice {
 	e := item.WsSkuPrice{}
-	err := w._orm.Get(primary, &e)
+	err := w.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -138,7 +137,7 @@ func (w *itemWholesaleRepo) GetWsSkuPrice(primary interface{}) *item.WsSkuPrice 
 // Select WsSkuPrice
 func (w *itemWholesaleRepo) SelectWsSkuPrice(where string, v ...interface{}) []*item.WsSkuPrice {
 	list := []*item.WsSkuPrice{}
-	err := w._orm.Select(&list, where, v...)
+	err := w.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsSkuPrice")
 	}
@@ -147,7 +146,7 @@ func (w *itemWholesaleRepo) SelectWsSkuPrice(where string, v ...interface{}) []*
 
 // Save WsSkuPrice
 func (w *itemWholesaleRepo) SaveWsSkuPrice(v *item.WsSkuPrice) (int, error) {
-	id, err := orm.Save(w._orm, v, int(v.ID))
+	id, err := orm.Save(w.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsSkuPrice")
 	}
@@ -156,7 +155,7 @@ func (w *itemWholesaleRepo) SaveWsSkuPrice(v *item.WsSkuPrice) (int, error) {
 
 // Delete WsSkuPrice
 func (w *itemWholesaleRepo) DeleteWsSkuPrice(primary interface{}) error {
-	err := w._orm.DeleteByPk(item.WsSkuPrice{}, primary)
+	err := w.o.DeleteByPk(item.WsSkuPrice{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsSkuPrice")
 	}
@@ -165,7 +164,7 @@ func (w *itemWholesaleRepo) DeleteWsSkuPrice(primary interface{}) error {
 
 // Batch Delete WsSkuPrice
 func (w *itemWholesaleRepo) BatchDeleteWsSkuPrice(where string, v ...interface{}) (int64, error) {
-	r, err := w._orm.Delete(item.WsSkuPrice{}, where, v...)
+	r, err := w.o.Delete(item.WsSkuPrice{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsSkuPrice")
 	}

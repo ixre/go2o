@@ -32,15 +32,15 @@ type categoryRepo struct {
 	db.Connector
 	registryRepo registry.IRegistryRepo
 	_globService product.IGlobCatService
-	_orm         orm.Orm
+	o            orm.Orm
 	storage      storage.Interface
 }
 
-func NewCategoryRepo(conn db.Connector, registryRepo registry.IRegistryRepo,
+func NewCategoryRepo(o orm.Orm, registryRepo registry.IRegistryRepo,
 	storage storage.Interface) product.ICategoryRepo {
 	return &categoryRepo{
-		Connector:    conn,
-		_orm:         conn.GetOrm(),
+		Connector:    o.Connector(),
+		o:            o,
 		registryRepo: registryRepo,
 		storage:      storage,
 	}
@@ -58,7 +58,7 @@ func (c *categoryRepo) getCategoryCacheKey(id int) string {
 }
 
 func (c *categoryRepo) SaveCategory(v *product.Category) (int, error) {
-	id, err := orm.Save(c.GetOrm(), v, int(v.Id))
+	id, err := orm.Save(c.o, v, int(v.Id))
 	// 清理缓存
 	if err == nil {
 		c.storage.Delete(c.getCategoryCacheKey(id))
@@ -100,7 +100,7 @@ func (c *categoryRepo) GetCategory(mchId, id int) *product.Category {
 	e := product.Category{}
 	key := c.getCategoryCacheKey(id)
 	if c.storage.Get(key, &e) != nil {
-		err := c.Connector.GetOrm().Get(id, &e)
+		err := c.o.Get(id, &e)
 		if err != nil {
 			return nil
 		}
@@ -120,7 +120,7 @@ func (c *categoryRepo) convertICategory(list product.CategoryList) []product.ICa
 
 func (c *categoryRepo) redirectGetCats() []*product.Category {
 	var list []*product.Category
-	err := c.Connector.GetOrm().Select(&list, "")
+	err := c.o.Select(&list, "")
 	if err != nil {
 		handleError(err)
 	}
@@ -137,7 +137,7 @@ func (c *categoryRepo) GetCategories(mchId int) []*product.Category {
 	}
 	if err != nil {
 		handleError(err)
-		err := c.Connector.GetOrm().Select(&list, "1=1 ORDER BY sort_num DESC,id ASC")
+		err := c.o.Select(&list, "1=1 ORDER BY sort_num DESC,id ASC")
 		if err == nil {
 			b, _ := json.Marshal(list)
 			c.storage.Set(key, b)
@@ -150,7 +150,7 @@ func (c *categoryRepo) GetCategories(mchId int) []*product.Category {
 func (c *categoryRepo) GetRelationBrands(idArr []int) []*promodel.ProductBrand {
 	var list []*promodel.ProductBrand
 	if len(idArr) > 0 {
-		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM product_model_brand
+		err := c.o.Select(&list, `id IN (SELECT brand_id FROM product_model_brand
         WHERE pro_model IN (SELECT distinct pro_model FROM product_category WHERE id IN(`+
 			format.IntArrStrJoin(idArr)+`)))`)
 		if err != nil && err != sql.ErrNoRows {

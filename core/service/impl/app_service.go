@@ -59,17 +59,20 @@ func (a *appServiceImpl) SaveProd(_ context.Context, r *proto.AppProdRequest) (*
 		r.ProdName, r.Id); c > 0 {
 		return a.error(errors.New("APP已经存在")), nil
 	}
-	dst := &model.AppProd{
-		Id:             r.Id,
-		ProdName:       r.ProdName,
-		ProdDes:        r.ProdDes,
-		PublishUrl:     r.PublishUrl,
-		StableFileUrl:  r.StableFileUrl,
-		AlphaFileUrl:   r.AlphaFileUrl,
-		NightlyFileUrl: r.NightlyFileUrl,
-		UpdateType:     r.UpdateType,
-		UpdateTime:     time.Now().Unix(),
+	var dst *model.AppProd
+	if r.Id > 0 {
+		dst = a.dao.Get(r.Id)
+	} else {
+		dst = &model.AppProd{}
 	}
+	dst.ProdName = r.ProdName
+	dst.ProdDes = r.ProdDes
+	dst.PublishUrl = r.PublishUrl
+	dst.StableFileUrl = r.StableFileUrl
+	dst.AlphaFileUrl = r.AlphaFileUrl
+	dst.NightlyFileUrl = r.NightlyFileUrl
+	dst.UpdateType = r.UpdateType
+	dst.UpdateTime = time.Now().Unix()
 	_, err := a.dao.Save(dst)
 	return a.error(err), nil
 }
