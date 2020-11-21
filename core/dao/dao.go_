@@ -35,7 +35,7 @@ func Initialize(c db.Connector, s storage.Interface) {
 	}
 	c = c
 	dSto = s
-	dOrm = c.GetOrm()
+	dOrm = c.o
 	dMap = make(map[string]interface{})
 }
 

@@ -39,7 +39,7 @@ var _ order.IOrderRepo = new(OrderRepImpl)
 type OrderRepImpl struct {
 	Storage storage.Interface
 	db.Connector
-	_orm          orm.Orm
+	o             orm.Orm
 	_productRepo  product.IProductRepo
 	_goodsRepo    item.IGoodsItemRepo
 	_promRepo     promotion.IPromotionRepo
@@ -56,7 +56,7 @@ type OrderRepImpl struct {
 	_registryRepo registry.IRegistryRepo
 }
 
-func NewOrderRepo(sto storage.Interface, c db.Connector,
+func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	mchRepo merchant.IMerchantRepo, payRepo payment.IPaymentRepo,
 	proRepo product.IProductRepo, cartRepo cart.ICartRepo, goodsRepo item.IGoodsItemRepo,
 	promRepo promotion.IPromotionRepo, memRepo member.IMemberRepo,
@@ -65,8 +65,8 @@ func NewOrderRepo(sto storage.Interface, c db.Connector,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrderRepo {
 	return &OrderRepImpl{
 		Storage:       sto,
-		Connector:     c,
-		_orm:          c.GetOrm(),
+		Connector:     o.Connector(),
+		o:             o,
 		_productRepo:  proRepo,
 		_goodsRepo:    goodsRepo,
 		_promRepo:     promRepo,
@@ -131,7 +131,7 @@ func (o *OrderRepImpl) GetFreeOrderNo(vendorId int64) string {
 
 //　保存订单优惠券绑定
 func (o *OrderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
-	_, _, err := o.Connector.GetOrm().Save(nil, val)
+	_, _, err := o.o.Save(nil, val)
 	return err
 }
 
@@ -140,7 +140,7 @@ func (o *OrderRepImpl) GetNormalOrderById(orderId int64) *order.NormalOrder {
 	e := &order.NormalOrder{}
 	k := o.getOrderCk(orderId, false)
 	if o.Storage.Get(k, e) != nil {
-		if o.Connector.GetOrm().GetBy(e, "order_id= $1", orderId) != nil {
+		if o.o.GetBy(e, "order_id= $1", orderId) != nil {
 			return nil
 		}
 		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
@@ -150,14 +150,14 @@ func (o *OrderRepImpl) GetNormalOrderById(orderId int64) *order.NormalOrder {
 
 // 保存订单日志
 func (o *OrderRepImpl) SaveNormalSubOrderLog(v *order.OrderLog) error {
-	_, _, err := o.Connector.GetOrm().Save(nil, v)
+	_, _, err := o.o.Save(nil, v)
 	return err
 }
 
 // 获取订单的促销绑定
 func (o *OrderRepImpl) GetOrderPromotionBinds(orderNo string) []*order.OrderPromotionBind {
 	var arr []*order.OrderPromotionBind
-	err := o.Connector.GetOrm().Select(&arr, "order_no= $1", orderNo)
+	err := o.o.Select(&arr, "order_no= $1", orderNo)
 	if err == nil {
 		return arr
 	}
@@ -166,18 +166,18 @@ func (o *OrderRepImpl) GetOrderPromotionBinds(orderNo string) []*order.OrderProm
 
 // 保存订单的促销绑定
 func (o *OrderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (int32, error) {
-	return orm.I32(orm.Save(o.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(o.o, v, int(v.Id)))
 }
 
 // 获取订单项
 func (o *OrderRepImpl) GetSubOrderItems(orderId int64) []*order.SubOrderItem {
 	var items = []*order.SubOrderItem{}
-	o.Connector.GetOrm().Select(&items, "order_id= $1", orderId)
+	o.o.Select(&items, "order_id= $1", orderId)
 	return items
 }
 
 func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
-	id, err := orm.Save(o.GetOrm(), v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.ID))
 	if err == nil {
 		v.ID = int64(id)
 		// 缓存
@@ -189,7 +189,7 @@ func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 
 func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
 	var e = order.NormalSubOrder{}
-	err := o.Connector.GetOrm().GetBy(&e, "order_no= $1", orderNo)
+	err := o.o.GetBy(&e, "order_no= $1", orderNo)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:order_sub_order")
 		return nil
@@ -200,7 +200,7 @@ func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
 // 获取订单的所有子订单
 func (o *OrderRepImpl) GetNormalSubOrders(orderId int64) []*order.NormalSubOrder {
 	list := make([]*order.NormalSubOrder, 0)
-	o.GetOrm().Select(&list, "order_id= $1", orderId)
+	o.o.Select(&list, "order_id= $1", orderId)
 	return list
 }
 
@@ -242,7 +242,7 @@ func (o *OrderRepImpl) GetSubOrder(id int64) *order.NormalSubOrder {
 	e := &order.NormalSubOrder{}
 	k := o.getOrderCk(id, true)
 	if o.Storage.Get(k, e) != nil {
-		if o.Connector.GetOrm().Get(id, e) != nil {
+		if o.o.Get(id, e) != nil {
 			return nil
 		}
 		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
@@ -253,20 +253,20 @@ func (o *OrderRepImpl) GetSubOrder(id int64) *order.NormalSubOrder {
 // 保存子订单的商品项,并返回编号和错误
 func (o *OrderRepImpl) SaveOrderItem(subOrderId int64, v *order.SubOrderItem) (int32, error) {
 	v.OrderId = subOrderId
-	return orm.I32(orm.Save(o.GetOrm(), v, int(v.ID)))
+	return orm.I32(orm.Save(o.o, v, int(v.ID)))
 }
 
 // 获取订单的操作记录
 func (o *OrderRepImpl) GetSubOrderLogs(orderId int64) []*order.OrderLog {
 	var list []*order.OrderLog
-	o.GetOrm().Select(&list, "order_id= $1", orderId)
+	o.o.Select(&list, "order_id= $1", orderId)
 	return list
 }
 
 // 根据商品快照获取订单项
 func (o *OrderRepImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
 	e := &order.SubOrderItem{}
-	if o.GetOrm().GetBy(e, "order_id= $1 AND snap_id= $2", orderId, snapshotId) == nil {
+	if o.o.GetBy(e, "order_id= $1 AND snap_id= $2", orderId, snapshotId) == nil {
 		return e
 	}
 	return nil
@@ -293,7 +293,7 @@ func (o *OrderRepImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int
 // Get OrderList
 func (o *OrderRepImpl) GetOrder(where string, arg ...interface{}) *order.Order {
 	e := order.Order{}
-	err := o._orm.GetBy(&e, where, arg...)
+	err := o.o.GetBy(&e, where, arg...)
 	if err == nil {
 		return &e
 	}
@@ -319,7 +319,7 @@ func (o *OrderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 
 // Save OrderList
 func (o *OrderRepImpl) saveOrder(v *order.Order) (int, error) {
-	id, err := orm.Save(o._orm, v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderList")
 	}
@@ -355,7 +355,7 @@ func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 }
 
 func (o *OrderRepImpl) saveSubOrder(v *order.NormalSubOrder) (int, error) {
-	id, err := orm.Save(o._orm, v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleSubOrder")
 	}
@@ -393,7 +393,7 @@ func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 // Get WholesaleOrder
 func (o *OrderRepImpl) GetWholesaleOrder(where string, v ...interface{}) *order.WholesaleOrder {
 	e := order.WholesaleOrder{}
-	err := o._orm.GetBy(&e, where, v...)
+	err := o.o.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
 	}
@@ -405,7 +405,7 @@ func (o *OrderRepImpl) GetWholesaleOrder(where string, v ...interface{}) *order.
 
 // Save WholesaleOrder
 func (o *OrderRepImpl) SaveWholesaleOrder(v *order.WholesaleOrder) (int, error) {
-	id, err := orm.Save(o._orm, v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleOrder")
 	}
@@ -415,7 +415,7 @@ func (o *OrderRepImpl) SaveWholesaleOrder(v *order.WholesaleOrder) (int, error) 
 // Select WholesaleItem
 func (o *OrderRepImpl) SelectWholesaleItem(where string, v ...interface{}) []*order.WholesaleItem {
 	list := make([]*order.WholesaleItem, 0)
-	err := o._orm.Select(&list, where, v...)
+	err := o.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleItem")
 	}
@@ -424,7 +424,7 @@ func (o *OrderRepImpl) SelectWholesaleItem(where string, v ...interface{}) []*or
 
 // Save WholesaleItem
 func (o *OrderRepImpl) SaveWholesaleItem(v *order.WholesaleItem) (int, error) {
-	id, err := orm.Save(o._orm, v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleItem")
 	}
@@ -434,7 +434,7 @@ func (o *OrderRepImpl) SaveWholesaleItem(v *order.WholesaleItem) (int, error) {
 // Get OrderTradeOrder
 func (o *OrderRepImpl) GetTradeOrder(where string, v ...interface{}) *order.TradeOrder {
 	e := order.TradeOrder{}
-	err := o._orm.GetBy(&e, where, v...)
+	err := o.o.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
 	}
@@ -446,7 +446,7 @@ func (o *OrderRepImpl) GetTradeOrder(where string, v ...interface{}) *order.Trad
 
 // Save OrderTradeOrder
 func (o *OrderRepImpl) SaveTradeOrder(v *order.TradeOrder) (int, error) {
-	id, err := orm.Save(o._orm, v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderTradeOrder")
 	}

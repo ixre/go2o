@@ -1,92 +1,92 @@
 syntax = "proto3";
 option go_package = ".;proto";
-option java_package="com.github.go2o.rpc";
+option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 import "message/product_dto.proto";
 
 // 产品服务
 service ProductService {
-  // 获取产品模型
-  rpc GetModel (ProductModelId) returns (SProductModel) {
-  }
-  // 获取产品模型
-  rpc GetModels (Empty) returns (ProductModelListResponse) {
-  }
-  // 获取属性
-  rpc GetAttr (ProductAttrId) returns (SProductAttr) {
-  }
-  // 获取属性项
-  rpc GetAttrItem (ProductAttrItemId) returns (SProductAttrItem) {
-  }
+    // 获取产品模型
+    rpc GetModel (ProductModelId) returns (SProductModel) {
+    }
+    // 获取产品模型
+    rpc GetModels (Empty) returns (ProductModelListResponse) {
+    }
+    // 获取属性
+    rpc GetAttr (ProductAttrId) returns (SProductAttr) {
+    }
+    // 获取属性项
+    rpc GetAttrItem (ProductAttrItemId) returns (SProductAttrItem) {
+    }
 
-  // 获取模型属性Html
-  rpc GetModelAttrsHtml (ProductModelId) returns (String) {
-  }
-  // 保存产品模型
-  rpc SaveProductModel (SProductModel) returns (Result) {
-  }
-  // 删除产品模型
-  rpc DeleteProductModel_ (ProductModelId) returns (Result) {
-  }
+    // 获取模型属性Html
+    rpc GetModelAttrsHtml (ProductModelId) returns (String) {
+    }
+    // 保存产品模型
+    rpc SaveProductModel (SProductModel) returns (Result) {
+    }
+    // 删除产品模型
+    rpc DeleteProductModel_ (ProductModelId) returns (Result) {
+    }
 
-  /***** 品牌  *****/
+    /***** 品牌  *****/
 
-  // Get 产品品牌
-  rpc GetProductBrand_ (Int64) returns (SProductBrand) {
-  }
-  // Save 产品品牌
-  rpc SaveProductBrand_ (SProductBrand) returns (Result) {
-  }
-  // Delete 产品品牌
-  rpc DeleteProductBrand_ (Int64) returns (Result) {
-  }
-  // 获取所有产品品牌
-  rpc GetBrands (Empty) returns (ProductBrandListResponse) {
-  }
-  // 获取全部分类
-  rpc GetCategories (Empty) returns (ProductCategoriesResponse) {
-  }
-  // 获取商品分类
-  rpc GetCategory (Int64) returns (SProductCategory) {
-  }
-  // 获取商品分类和选项
-  //    rpc GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
-  //    domain.IOptionStore)
-  rpc DeleteCategory (Int64) returns (Result) {
-  }
-  // 保存产品分类
-  rpc SaveCategory (SProductCategory) returns (Result) {
-  }
-  rpc GetCategoryTreeNode (Empty) returns (STreeNode) {
-  }
-  // 分类树形
-  //rpc CategoryTree(CategoryParentId)returns(SProductCategory){}
-  // 获取分类关联的品牌
-  //rpc GetCatBrands_(catId int32) []*promodel.ProBrand
+    // Get 产品品牌
+    rpc GetProductBrand_ (Int64) returns (SProductBrand) {
+    }
+    // Save 产品品牌
+    rpc SaveProductBrand_ (SProductBrand) returns (Result) {
+    }
+    // Delete 产品品牌
+    rpc DeleteProductBrand_ (Int64) returns (Result) {
+    }
+    // 获取所有产品品牌
+    rpc GetBrands (Empty) returns (ProductBrandListResponse) {
+    }
+    // 获取全部分类
+    rpc GetCategories (Empty) returns (ProductCategoriesResponse) {
+    }
+    // 获取商品分类
+    rpc GetCategory (Int64) returns (SProductCategory) {
+    }
+    // 获取商品分类和选项
+    //    rpc GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
+    //    domain.IOptionStore)
+    rpc DeleteCategory (Int64) returns (Result) {
+    }
+    // 保存产品分类
+    rpc SaveCategory (SProductCategory) returns (Result) {
+    }
+    rpc GetCategoryTreeNode (Empty) returns (STreeNode) {
+    }
+    // 分类树形
+    //rpc CategoryTree(CategoryParentId)returns(SProductCategory){}
+    // 获取分类关联的品牌
+    //rpc GetCatBrands_(catId int32) []*promodel.ProBrand
 
-  // 根据上级编号获取分类列表
-  rpc GetChildren (CategoryParentId) returns (ProductCategoriesResponse) {
-  }
+    // 根据上级编号获取分类列表
+    rpc GetChildren (CategoryParentId) returns (ProductCategoriesResponse) {
+    }
 
-  //rpc GetBigCategories(mchId int64) []*proto.SProductCategory
-  //rpc GetChildCategories(mchId int64, parentId int64) []*proto.SProductCategory
+    //rpc GetBigCategories(mchId int64) []*proto.SProductCategory
+    //rpc GetChildCategories(mchId int64, parentId int64) []*proto.SProductCategory
 
-  // 获取产品值
-  rpc GetProduct (ProductId) returns (SProduct) {
-  }
-  // 保存产品
-  rpc SaveProduct (SProduct) returns (SaveProductResponse) {
-  }
+    // 获取产品值
+    rpc GetProduct (ProductId) returns (SProduct) {
+    }
+    // 保存产品
+    rpc SaveProduct (SProduct) returns (SaveProductResponse) {
+    }
 
-  // 删除产品
-  rpc DeleteProduct (DeleteProductRequest) returns (Result) {
-  }
-  // 保存货品描述
-  rpc SaveProductInfo (ProductInfoRequest) returns (Result) {
-  }
-  // 获取产品属性
-  //rpc GetAttrArray_(productId int64) []*product.Attr
+    // 删除产品
+    rpc DeleteProduct (DeleteProductRequest) returns (Result) {
+    }
+    // 保存货品描述
+    rpc SaveProductInfo (ProductInfoRequest) returns (Result) {
+    }
+    // 获取产品属性
+    //rpc GetAttrArray_(productId int64) []*product.Attr
 }
 
 

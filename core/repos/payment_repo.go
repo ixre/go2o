@@ -34,13 +34,15 @@ type paymentRepoImpl struct {
 	memberRepo   member.IMemberRepo
 	orderRepo    order.IOrderRepo
 	registryRepo registry.IRegistryRepo
+	o            orm.Orm
 }
 
-func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMemberRepo,
+func NewPaymentRepo(sto storage.Interface, o orm.Orm, mmRepo member.IMemberRepo,
 	orderRepo order.IOrderRepo, registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
 	return &paymentRepoImpl{
 		Storage:      sto,
-		Connector:    conn,
+		Connector:    o.Connector(),
+		o:            o,
 		memberRepo:   mmRepo,
 		orderRepo:    orderRepo,
 		registryRepo: registryRepo,
@@ -50,7 +52,7 @@ func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMem
 // 根据订单号获取支付单
 func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOrder {
 	e := &payment.Order{}
-	if p.Connector.GetOrm().GetBy(e, "order_id= $1", orderId) == nil {
+	if p.o.GetBy(e, "order_id= $1", orderId) == nil {
 		return p.CreatePaymentOrder(e)
 	}
 	return nil
@@ -59,7 +61,7 @@ func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPayme
 // 根据订单号获取支付单
 func (p *paymentRepoImpl) GetPaymentOrderByOrderNo(orderType int, orderNo string) payment.IPaymentOrder {
 	e := &payment.Order{}
-	if p.Connector.GetOrm().GetBy(e, "out_order_no= $1 AND order_type= $2",
+	if p.o.GetBy(e, "out_order_no= $1 AND order_type= $2",
 		orderNo, orderType) == nil {
 		return p.CreatePaymentOrder(e)
 	}
@@ -81,7 +83,7 @@ func (p *paymentRepoImpl) GetPaymentOrderById(id int) payment.IPaymentOrder {
 	e := &payment.Order{}
 	k := p.getPaymentOrderCk(id)
 	if err := p.Storage.Get(k, &e); err != nil {
-		if p.Connector.GetOrm().Get(id, e) != nil {
+		if p.o.Get(id, e) != nil {
 			return nil
 		}
 		p.Storage.SetExpire(k, *e, DefaultCacheSeconds)
@@ -116,7 +118,7 @@ func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 	if v.ID > 0 {
 		stat = p.GetPaymentOrderById(v.ID).Get().State
 	}
-	id, err := orm.Save(p.GetOrm(), v, v.ID)
+	id, err := orm.Save(p.o, v, v.ID)
 	if err == nil {
 		v.ID = id
 		// 缓存订单
@@ -150,7 +152,7 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 
 func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeMethodData {
 	list := make([]*payment.TradeMethodData, 0)
-	err := p.GetOrm().Select(&list, "trade_no= $1 LIMIT $2", tradeNo, 10)
+	err := p.o.Select(&list, "trade_no= $1 LIMIT $2", tradeNo, 10)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
 	}
@@ -159,7 +161,7 @@ func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeM
 
 func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeMethodData) (int, error) {
 	tradeChan.TradeNo = tradeNo
-	id, err := orm.Save(p.GetOrm(), tradeChan, tradeChan.ID)
+	id, err := orm.Save(p.o, tradeChan, tradeChan.ID)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
 	}
@@ -182,7 +184,7 @@ func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaym
 	// 查询支付单
 	if l := len(tradeNoArr); l > 0 {
 		list := make([]*payment.Order, 0)
-		p.Connector.GetOrm().Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
+		p.o.Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
 			") LIMIT $1", len(tradeNoArr))
 		for _, v := range list {
 			arr = append(arr, p.CreatePaymentOrder(v))
@@ -202,14 +204,14 @@ func (p *paymentRepoImpl) ResetMergePaymentOrders(tradeNos []string) error {
 		buf.WriteString("'")
 	}
 	buf.WriteString(")")
-	_, err := p.Connector.GetOrm().Delete(&payment.MergeOrder{},
+	_, err := p.o.Delete(&payment.MergeOrder{},
 		"order_trade_no in "+buf.String())
 	return err
 }
 
 func (p *paymentRepoImpl) SaveMergePaymentOrders(mergeTradeNo string, tradeNos []string) error {
 	unix := time.Now().Unix()
-	orm := p.Connector.GetOrm()
+	orm := p.o
 	for _, v := range tradeNos {
 		order := &payment.MergeOrder{
 			MergeTradeNo: mergeTradeNo,

@@ -10,8 +10,6 @@ package qpay
  * history :
  */
 
-
-
 type QuickPayProvider interface {
 	// 查询银行卡信息
 	QueryCardBin(bankCardNo string) *CardBinQueryResult
@@ -28,7 +26,7 @@ type QuickPayProvider interface {
 	DirectPayment(orderNo string, fee int32, subject string, bankToken string,
 		tradeIp string, notifyUrl string, returnUrl string) (*QPaymentResponse, error)
 	// 批量付款
-	BatchTransfer(batchTradeNo string, list []*CardTransferReq, nonce string,notifyUrl string) (*BatchTransferResponse, error)
+	BatchTransfer(batchTradeNo string, list []*CardTransferReq, nonce string, notifyUrl string) (*BatchTransferResponse, error)
 	// 查询支付状态,options为可选参数
 	QueryPaymentStatus(orderNo string, options map[string]string) (*QPaymentQueryResponse, error)
 }
@@ -74,7 +72,7 @@ type QPaymentResponse struct {
 	// 状态码，0表示成功
 	Code string `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code,omitempty"`
 	// 第三方支单据号
-	BillNo  string `protobuf:"bytes,3,opt,name=BillNo,proto3" json:"BillNo,omitempty"`
+	BillNo string `protobuf:"bytes,3,opt,name=BillNo,proto3" json:"BillNo,omitempty"`
 }
 
 // 查询支付结果响应

@@ -2,7 +2,8 @@ package impl
 
 import (
 	"context"
-	"github.com/ixre/gof"
+	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/storage"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
@@ -28,13 +29,12 @@ type queryService struct {
 	memberQuery *query.MemberQuery
 }
 
-func NewQueryService() *queryService {
-	ctx := gof.CurrentApp
-	shopQuery := query.NewShopQuery(ctx)
+func NewQueryService(o orm.Orm, s storage.Interface) *queryService {
+	shopQuery := query.NewShopQuery(o, s)
 	return &queryService{
 		shopQuery:   shopQuery,
-		memberQuery: query.NewMemberQuery(ctx.Db()),
-		orderQuery:  query.NewOrderQuery(ctx.Db()),
+		memberQuery: query.NewMemberQuery(o),
+		orderQuery:  query.NewOrderQuery(o),
 	}
 }
 

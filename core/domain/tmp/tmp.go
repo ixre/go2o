@@ -11,6 +11,7 @@ package tmp
 import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 )
 
 /**  此包用于临时代码
@@ -19,7 +20,13 @@ import (
 
 */
 
+var Orm orm.Orm
+
 // 数据库
 func Db() db.Connector {
 	return gof.CurrentApp.Db()
+}
+
+func SetORM(o orm.Orm) {
+	Orm = o
 }

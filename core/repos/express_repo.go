@@ -23,11 +23,13 @@ type expressRepo struct {
 	_valRepo       valueobject.IValueRepo
 	ProvidersCache []*express.Provider
 	mux            sync.Mutex
+	o              orm.Orm
 }
 
-func NewExpressRepo(conn db.Connector, valRepo valueobject.IValueRepo) express.IExpressRepo {
+func NewExpressRepo(o orm.Orm, valRepo valueobject.IValueRepo) express.IExpressRepo {
 	return &expressRepo{
-		Connector: conn,
+		Connector: o.Connector(),
+		o:         o,
 		_valRepo:  valRepo,
 	}
 }
@@ -37,7 +39,7 @@ func (er *expressRepo) GetExpressProviders() []*express.Provider {
 	mux.Lock()
 	if er.ProvidersCache == nil {
 		er.ProvidersCache = []*express.Provider{}
-		err := er.GetOrm().Select(&er.ProvidersCache, "")
+		err := er.o.Select(&er.ProvidersCache, "")
 		if err != nil {
 			panic(err)
 		}
@@ -62,7 +64,7 @@ func (er *expressRepo) GetExpressProvider(id int32) *express.Provider {
 // 保存快递公司
 func (er *expressRepo) SaveExpressProvider(v *express.Provider) (int32, error) {
 	er.ProvidersCache = nil
-	return orm.I32(orm.Save(er.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(er.o, v, int(v.Id)))
 }
 
 // 获取用户的快递
@@ -73,37 +75,37 @@ func (er *expressRepo) GetUserExpress(userId int) express.IUserExpress {
 // 获取用户的快递模板
 func (er *expressRepo) GetUserAllTemplate(userId int) []*express.ExpressTemplate {
 	var list []*express.ExpressTemplate
-	er.GetOrm().Select(&list, "vendor_id= $1", userId)
+	er.o.Select(&list, "vendor_id= $1", userId)
 	return list
 }
 
 // 删除快递模板
 func (er *expressRepo) DeleteExpressTemplate(userId int, templateId int) error {
-	_, err := er.GetOrm().Delete(express.ExpressTemplate{},
+	_, err := er.o.Delete(express.ExpressTemplate{},
 		"id= $1 AND vendor_id= $2", templateId, userId)
 	return err
 }
 
 // 保存快递模板
 func (er *expressRepo) SaveExpressTemplate(v *express.ExpressTemplate) (int, error) {
-	return orm.Save(er.GetOrm(), v, int(v.Id))
+	return orm.Save(er.o, v, int(v.Id))
 }
 
 // 获取模板的所有地区设置
 func (er *expressRepo) GetExpressTemplateAllAreaSet(templateId int) []express.ExpressAreaTemplate {
 	var list []express.ExpressAreaTemplate
-	er.GetOrm().Select(&list, "template_id= $1", templateId)
+	er.o.Select(&list, "template_id= $1", templateId)
 	return list
 }
 
 // 保存模板的地区设置
 func (er *expressRepo) SaveExpressTemplateAreaSet(v *express.ExpressAreaTemplate) (int32, error) {
-	return orm.I32(orm.Save(er.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(er.o, v, int(v.Id)))
 }
 
 // 删除模板的地区设置
 func (er *expressRepo) DeleteAreaExpressTemplate(templateId int, areaSetId int32) error {
-	_, err := er.Connector.GetOrm().Delete(express.ExpressAreaTemplate{},
+	_, err := er.o.Delete(express.ExpressAreaTemplate{},
 		"id= $1 AND template_id = $2", areaSetId, templateId)
 	return err
 }

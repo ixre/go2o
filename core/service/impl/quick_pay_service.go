@@ -31,7 +31,6 @@ type quickPayServiceImpl struct {
 	serviceUtil
 }
 
-
 func NewQuickPayService(s storage.Interface,
 	registryRepo registry.IRegistryRepo) *quickPayServiceImpl {
 	initQPayConfig(registryRepo)
@@ -138,18 +137,18 @@ func (q quickPayServiceImpl) DirectPayment(_ context.Context, r *proto.QPaymentR
 }
 
 func (q quickPayServiceImpl) QueryPaymentStatus(_ context.Context, r *proto.QPaymentQueryRequest) (*proto.QPaymentQueryResponse, error) {
-	ret,err := q.qp.QueryPaymentStatus(r.OrderNo,r.Options)
-	if err != nil{
+	ret, err := q.qp.QueryPaymentStatus(r.OrderNo, r.Options)
+	if err != nil {
 		return &proto.QPaymentQueryResponse{
-			Code:                 1,
-			ErrMsg:               err.Error(),
-		},nil
+			Code:   1,
+			ErrMsg: err.Error(),
+		}, nil
 	}
 	return &proto.QPaymentQueryResponse{
-		Code:                 int32(ret.Code),
-		ErrMsg:               ret.ErrMsg,
-		BillNo:               ret.BillNo,
-	},nil
+		Code:   int32(ret.Code),
+		ErrMsg: ret.ErrMsg,
+		BillNo: ret.BillNo,
+	}, nil
 }
 func (q quickPayServiceImpl) BatchTransfer(_ context.Context, r *proto.BatchTransferRequest) (*proto.BatchTransferResponse, error) {
 	if len(strings.TrimSpace(r.Nonce)) == 0 {
@@ -207,16 +206,16 @@ func (q quickPayServiceImpl) parseBatchList(list []*proto.CardTransferRequest) [
 	dst := make([]*qpay.CardTransferReq, len(list))
 	for i, v := range list {
 		dst[i] = &qpay.CardTransferReq{
-			OrderNo:        v.OrderNo,
-			BankCode:       v.BankCode,
-			PersonTransfer: v.PersonTransfer,
-			TradeFee:       v.TradeFee,
-			BankCardNo:     v.BankCardNo,
-			BankAccountName:v.BankAccountName,
-			Subject:        v.Subject,
-			Province:       v.Province,
-			City:           v.City,
-			StoreName:      v.StoreName,
+			OrderNo:         v.OrderNo,
+			BankCode:        v.BankCode,
+			PersonTransfer:  v.PersonTransfer,
+			TradeFee:        v.TradeFee,
+			BankCardNo:      v.BankCardNo,
+			BankAccountName: v.BankAccountName,
+			Subject:         v.Subject,
+			Province:        v.Province,
+			City:            v.City,
+			StoreName:       v.StoreName,
 		}
 	}
 	return dst

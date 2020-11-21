@@ -14,7 +14,6 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
-	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"go.etcd.io/etcd/clientv3"
@@ -74,7 +73,6 @@ func NewApp(confPath string, cfg *clientv3.Config) *AppImpl {
 func (a *AppImpl) Db() db.Connector {
 	if a._dbConnector == nil {
 		a._dbConnector = getDb(a.Config(), a._debugMode, a.Log())
-		orm.CacheProxy(a._dbConnector.GetOrm(), a.Storage())
 	}
 	return a._dbConnector
 }

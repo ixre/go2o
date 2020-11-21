@@ -12,18 +12,18 @@ import (
 var _ promodel.IProductModelRepo = new(proModelRepo)
 
 type proModelRepo struct {
-	_orm         orm.Orm
 	conn         db.Connector
 	brandService promodel.IBrandService
 	attrService  promodel.IAttrService
 	specService  promodel.ISpecService
+	o            orm.Orm
 }
 
 // Create new ProBrandRepo
-func NewProModelRepo(conn db.Connector, o orm.Orm) promodel.IProductModelRepo {
+func NewProModelRepo(o orm.Orm) promodel.IProductModelRepo {
 	return &proModelRepo{
-		_orm: o,
-		conn: conn,
+		o:    o,
+		conn: o.Connector(),
 	}
 }
 
@@ -75,7 +75,7 @@ func (p *proModelRepo) GetModelBrands(proModel int32) []*promodel.ProductBrand {
 // Get ProductModel
 func (p *proModelRepo) GetProModel(primary interface{}) *promodel.ProductModel {
 	e := promodel.ProductModel{}
-	err := p._orm.Get(primary, &e)
+	err := p.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -88,7 +88,7 @@ func (p *proModelRepo) GetProModel(primary interface{}) *promodel.ProductModel {
 // Select ProductModel
 func (p *proModelRepo) SelectProModel(where string, v ...interface{}) []*promodel.ProductModel {
 	var list []*promodel.ProductModel
-	err := p._orm.Select(&list, where, v...)
+	err := p.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductModel")
 	}
@@ -97,7 +97,7 @@ func (p *proModelRepo) SelectProModel(where string, v ...interface{}) []*promode
 
 // Save ProductModel
 func (p *proModelRepo) SaveProModel(v *promodel.ProductModel) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductModel")
 	}
@@ -106,7 +106,7 @@ func (p *proModelRepo) SaveProModel(v *promodel.ProductModel) (int, error) {
 
 // Delete ProductModel
 func (p *proModelRepo) DeleteProModel(primary interface{}) error {
-	err := p._orm.DeleteByPk(promodel.ProductModel{}, primary)
+	err := p.o.DeleteByPk(promodel.ProductModel{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductModel")
 	}
@@ -116,7 +116,7 @@ func (p *proModelRepo) DeleteProModel(primary interface{}) error {
 // Get Attrs
 func (p *proModelRepo) GetAttr(primary interface{}) *promodel.Attr {
 	e := promodel.Attr{}
-	err := p._orm.Get(primary, &e)
+	err := p.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -129,7 +129,7 @@ func (p *proModelRepo) GetAttr(primary interface{}) *promodel.Attr {
 // Select Attrs
 func (p *proModelRepo) SelectAttr(where string, v ...interface{}) []*promodel.Attr {
 	list := []*promodel.Attr{}
-	err := p._orm.Select(&list, where, v...)
+	err := p.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Attrs")
 	}
@@ -138,7 +138,7 @@ func (p *proModelRepo) SelectAttr(where string, v ...interface{}) []*promodel.At
 
 // Save Attrs
 func (p *proModelRepo) SaveAttr(v *promodel.Attr) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.Id))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Attrs")
 	}
@@ -147,7 +147,7 @@ func (p *proModelRepo) SaveAttr(v *promodel.Attr) (int, error) {
 
 // Delete Attrs
 func (p *proModelRepo) DeleteAttr(primary interface{}) error {
-	err := p._orm.DeleteByPk(promodel.Attr{}, primary)
+	err := p.o.DeleteByPk(promodel.Attr{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Attrs")
 	}
@@ -156,7 +156,7 @@ func (p *proModelRepo) DeleteAttr(primary interface{}) error {
 
 // Batch Delete Attrs
 func (p *proModelRepo) BatchDeleteAttr(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(promodel.Attr{}, where, v...)
+	r, err := p.o.Delete(promodel.Attr{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Attrs")
 	}
@@ -166,7 +166,7 @@ func (p *proModelRepo) BatchDeleteAttr(where string, v ...interface{}) (int64, e
 // Get AttrItem
 func (p *proModelRepo) GetAttrItem(primary interface{}) *promodel.AttrItem {
 	e := promodel.AttrItem{}
-	err := p._orm.Get(primary, &e)
+	err := p.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -179,7 +179,7 @@ func (p *proModelRepo) GetAttrItem(primary interface{}) *promodel.AttrItem {
 // Select AttrItem
 func (p *proModelRepo) SelectAttrItem(where string, v ...interface{}) []*promodel.AttrItem {
 	list := []*promodel.AttrItem{}
-	err := p._orm.Select(&list, where, v...)
+	err := p.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:AttrItem")
 	}
@@ -188,7 +188,7 @@ func (p *proModelRepo) SelectAttrItem(where string, v ...interface{}) []*promode
 
 // Save AttrItem
 func (p *proModelRepo) SaveAttrItem(v *promodel.AttrItem) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.Id))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:AttrItem")
 	}
@@ -197,7 +197,7 @@ func (p *proModelRepo) SaveAttrItem(v *promodel.AttrItem) (int, error) {
 
 // Delete AttrItem
 func (p *proModelRepo) DeleteAttrItem(primary interface{}) error {
-	err := p._orm.DeleteByPk(promodel.AttrItem{}, primary)
+	err := p.o.DeleteByPk(promodel.AttrItem{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:AttrItem")
 	}
@@ -206,7 +206,7 @@ func (p *proModelRepo) DeleteAttrItem(primary interface{}) error {
 
 // Batch Delete AttrItem
 func (p *proModelRepo) BatchDeleteAttrItem(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(promodel.AttrItem{}, where, v...)
+	r, err := p.o.Delete(promodel.AttrItem{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:AttrItem")
 	}
@@ -216,7 +216,7 @@ func (p *proModelRepo) BatchDeleteAttrItem(where string, v ...interface{}) (int6
 // Get Spec
 func (p *proModelRepo) GetSpec(primary interface{}) *promodel.Spec {
 	e := promodel.Spec{}
-	err := p._orm.Get(primary, &e)
+	err := p.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -229,7 +229,7 @@ func (p *proModelRepo) GetSpec(primary interface{}) *promodel.Spec {
 // Select Spec
 func (p *proModelRepo) SelectSpec(where string, v ...interface{}) []*promodel.Spec {
 	list := []*promodel.Spec{}
-	err := p._orm.Select(&list, where, v...)
+	err := p.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Spec")
 	}
@@ -238,7 +238,7 @@ func (p *proModelRepo) SelectSpec(where string, v ...interface{}) []*promodel.Sp
 
 // Save Spec
 func (p *proModelRepo) SaveSpec(v *promodel.Spec) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.Id))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Spec")
 	}
@@ -247,7 +247,7 @@ func (p *proModelRepo) SaveSpec(v *promodel.Spec) (int, error) {
 
 // Delete Spec
 func (p *proModelRepo) DeleteSpec(primary interface{}) error {
-	err := p._orm.DeleteByPk(promodel.Spec{}, primary)
+	err := p.o.DeleteByPk(promodel.Spec{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Spec")
 	}
@@ -256,7 +256,7 @@ func (p *proModelRepo) DeleteSpec(primary interface{}) error {
 
 // Batch Delete Spec
 func (p *proModelRepo) BatchDeleteSpec(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(promodel.Spec{}, where, v...)
+	r, err := p.o.Delete(promodel.Spec{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Spec")
 	}
@@ -266,7 +266,7 @@ func (p *proModelRepo) BatchDeleteSpec(where string, v ...interface{}) (int64, e
 // Get SpecItem
 func (p *proModelRepo) GetSpecItem(primary interface{}) *promodel.SpecItem {
 	e := promodel.SpecItem{}
-	err := p._orm.Get(primary, &e)
+	err := p.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -279,7 +279,7 @@ func (p *proModelRepo) GetSpecItem(primary interface{}) *promodel.SpecItem {
 // Select SpecItem
 func (p *proModelRepo) SelectSpecItem(where string, v ...interface{}) []*promodel.SpecItem {
 	list := []*promodel.SpecItem{}
-	err := p._orm.Select(&list, where, v...)
+	err := p.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SpecItem")
 	}
@@ -288,7 +288,7 @@ func (p *proModelRepo) SelectSpecItem(where string, v ...interface{}) []*promode
 
 // Save SpecItem
 func (p *proModelRepo) SaveSpecItem(v *promodel.SpecItem) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.Id))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SpecItem")
 	}
@@ -297,7 +297,7 @@ func (p *proModelRepo) SaveSpecItem(v *promodel.SpecItem) (int, error) {
 
 // Delete SpecItem
 func (p *proModelRepo) DeleteSpecItem(primary interface{}) error {
-	err := p._orm.DeleteByPk(promodel.SpecItem{}, primary)
+	err := p.o.DeleteByPk(promodel.SpecItem{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SpecItem")
 	}
@@ -306,7 +306,7 @@ func (p *proModelRepo) DeleteSpecItem(primary interface{}) error {
 
 // Batch Delete SpecItem
 func (p *proModelRepo) BatchDeleteSpecItem(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(promodel.SpecItem{}, where, v...)
+	r, err := p.o.Delete(promodel.SpecItem{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SpecItem")
 	}
@@ -316,7 +316,7 @@ func (p *proModelRepo) BatchDeleteSpecItem(where string, v ...interface{}) (int6
 // Get ProductBrand
 func (p *proModelRepo) GetProBrand(primary interface{}) *promodel.ProductBrand {
 	e := promodel.ProductBrand{}
-	err := p._orm.Get(primary, &e)
+	err := p.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -328,7 +328,7 @@ func (p *proModelRepo) GetProBrand(primary interface{}) *promodel.ProductBrand {
 
 // Save ProductBrand
 func (p *proModelRepo) SaveProBrand(v *promodel.ProductBrand) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
@@ -337,7 +337,7 @@ func (p *proModelRepo) SaveProBrand(v *promodel.ProductBrand) (int, error) {
 
 // Delete ProductBrand
 func (p *proModelRepo) DeleteProBrand(primary interface{}) error {
-	err := p._orm.DeleteByPk(promodel.ProductBrand{}, primary)
+	err := p.o.DeleteByPk(promodel.ProductBrand{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
@@ -346,7 +346,7 @@ func (p *proModelRepo) DeleteProBrand(primary interface{}) error {
 
 // Batch Delete ProductBrand
 func (p *proModelRepo) BatchDeleteProBrand(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(promodel.ProductBrand{}, where, v...)
+	r, err := p.o.Delete(promodel.ProductBrand{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
@@ -356,7 +356,7 @@ func (p *proModelRepo) BatchDeleteProBrand(where string, v ...interface{}) (int6
 // Select ProductBrand
 func (p *proModelRepo) SelectProBrand(where string, v ...interface{}) []*promodel.ProductBrand {
 	list := []*promodel.ProductBrand{}
-	err := p._orm.Select(&list, where, v...)
+	err := p.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
@@ -366,7 +366,7 @@ func (p *proModelRepo) SelectProBrand(where string, v ...interface{}) []*promode
 // Select ProductBrand
 func (p *proModelRepo) selectProBrandByQuery(query string, v ...interface{}) []*promodel.ProductBrand {
 	list := []*promodel.ProductBrand{}
-	err := p._orm.SelectByQuery(&list, query, v...)
+	err := p.o.SelectByQuery(&list, query, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
@@ -376,7 +376,7 @@ func (p *proModelRepo) selectProBrandByQuery(query string, v ...interface{}) []*
 // Get ProModelBrand
 func (p *proModelRepo) GetProModelBrand(primary interface{}) *promodel.ProModelBrand {
 	e := promodel.ProModelBrand{}
-	err := p._orm.Get(primary, &e)
+	err := p.o.Get(primary, &e)
 	if err == nil {
 		return &e
 	}
@@ -388,7 +388,7 @@ func (p *proModelRepo) GetProModelBrand(primary interface{}) *promodel.ProModelB
 
 // Save ProModelBrand
 func (p *proModelRepo) SaveProModelBrand(v *promodel.ProModelBrand) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 	}
@@ -397,7 +397,7 @@ func (p *proModelRepo) SaveProModelBrand(v *promodel.ProModelBrand) (int, error)
 
 // Delete ProModelBrand
 func (p *proModelRepo) DeleteProModelBrand(primary interface{}) error {
-	err := p._orm.DeleteByPk(promodel.ProModelBrand{}, primary)
+	err := p.o.DeleteByPk(promodel.ProModelBrand{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 	}
@@ -406,7 +406,7 @@ func (p *proModelRepo) DeleteProModelBrand(primary interface{}) error {
 
 // Batch Delete ProModelBrand
 func (p *proModelRepo) BatchDeleteProModelBrand(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(promodel.ProModelBrand{}, where, v...)
+	r, err := p.o.Delete(promodel.ProModelBrand{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 	}
@@ -416,7 +416,7 @@ func (p *proModelRepo) BatchDeleteProModelBrand(where string, v ...interface{}) 
 // Select ProModelBrand
 func (p *proModelRepo) SelectProModelBrand(where string, v ...interface{}) []*promodel.ProModelBrand {
 	list := []*promodel.ProModelBrand{}
-	err := p._orm.Select(&list, where, v...)
+	err := p.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 	}

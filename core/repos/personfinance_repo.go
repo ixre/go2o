@@ -20,14 +20,14 @@ var _ personfinance.IPersonFinanceRepository = new(personFinanceRepository)
 
 type personFinanceRepository struct {
 	_db      db.Connector
-	_orm     orm.Orm
+	o        orm.Orm
 	_accRepo member.IMemberRepo
 }
 
-func NewPersonFinanceRepository(conn db.Connector, mRepo member.IMemberRepo) personfinance.IPersonFinanceRepository {
+func NewPersonFinanceRepository(o orm.Orm, mRepo member.IMemberRepo) personfinance.IPersonFinanceRepository {
 	return &personFinanceRepository{
-		_db:      conn,
-		_orm:     conn.GetOrm(),
+		_db:      o.Connector(),
+		o:        o,
 		_accRepo: mRepo,
 	}
 }
@@ -39,23 +39,23 @@ func (p *personFinanceRepository) GetPersonFinance(personId int64) personfinance
 func (p *personFinanceRepository) GetRiseByTime(personId int64, begin,
 	end int64) []*personfinance.RiseDayInfo {
 	var list []*personfinance.RiseDayInfo
-	p._orm.Select(&list, "person_id= $1 AND unix_date BETWEEN $2 AND $3", personId, begin, end)
+	p.o.Select(&list, "person_id= $1 AND unix_date BETWEEN $2 AND $3", personId, begin, end)
 	return list
 }
 
 func (p *personFinanceRepository) GetRiseValueByPersonId(id int64) (
 	*personfinance.RiseInfoValue, error) {
 	e := &personfinance.RiseInfoValue{}
-	err := p._orm.Get(id, e)
+	err := p.o.Get(id, e)
 	return e, err
 }
 
 func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (int, error) {
 	var err error
 	if _, err = p.GetRiseValueByPersonId(v.PersonId); err == nil {
-		_, _, err = p._orm.Save(v.PersonId, v)
+		_, _, err = p.o.Save(v.PersonId, v)
 	} else {
-		_, _, err = p._orm.Save(nil, v)
+		_, _, err = p.o.Save(nil, v)
 	}
 	return int(v.PersonId), err
 }
@@ -63,7 +63,7 @@ func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (
 // 获取日志
 func (p *personFinanceRepository) GetRiseLog(personId int64, logId int32) *personfinance.RiseLog {
 	e := &personfinance.RiseLog{}
-	if p._orm.GetBy(e, "person_id= $1 AND id= $2", personId, logId) == nil {
+	if p.o.GetBy(e, "person_id= $1 AND id= $2", personId, logId) == nil {
 		return e
 	}
 	return nil
@@ -71,17 +71,17 @@ func (p *personFinanceRepository) GetRiseLog(personId int64, logId int32) *perso
 
 // 保存日志
 func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (int32, error) {
-	return orm.I32(orm.Save(p._db.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(p.o, v, int(v.Id)))
 }
 
 // 获取日志
 func (p *personFinanceRepository) GetRiseLogs(personId int64, date int64, riseType int) []*personfinance.RiseLog {
 	list := []*personfinance.RiseLog{}
-	p._orm.Select(&list, "person_id= $1 AND unix_date= $2 AND type= $3", personId, date, riseType)
+	p.o.Select(&list, "person_id= $1 AND unix_date= $2 AND type= $3", personId, date, riseType)
 	return list
 }
 
 // 保存每日收益
 func (p *personFinanceRepository) SaveRiseDayInfo(v *personfinance.RiseDayInfo) (int32, error) {
-	return orm.I32(orm.Save(p._db.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(p.o, v, int(v.Id)))
 }

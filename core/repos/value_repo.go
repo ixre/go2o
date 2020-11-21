@@ -53,15 +53,15 @@ type valueRepo struct {
 	confRegistry *gof.Registry
 }
 
-func NewValueRepo(confPath string, conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
+func NewValueRepo(confPath string, o orm.Orm, storage storage.Interface) valueobject.IValueRepo {
 	//confRegistry, err := gof.NewRegistry(confPath, ":")
 	//if err != nil {
 	//	log.Println("[ Go2o][ Crash]: can't load registry,", err.Error())
 	//	os.Exit(1)
 	//}
 	return &valueRepo{
-		Connector: conn,
-		o:         conn.GetOrm(),
+		Connector: o.Connector(),
+		o:         o,
 		storage:   storage,
 		kvMux:     &sync.RWMutex{},
 		//wxGob:        util.NewGobFile("conf/core/wx_api"),
@@ -164,7 +164,7 @@ func (r *valueRepo) SetValue(key string, v interface{}) error {
 	kv := &valueobject.SysKeyValue{
 		ID:         id,
 		Key:        key,
-		Value:      types.String(v),
+		Value:      types.Stringify(v),
 		UpdateTime: time.Now().Unix(),
 	}
 	id2, err := orm.Save(r.o, kv, int(kv.ID))
@@ -287,7 +287,7 @@ func (r *valueRepo) getsRegistryNew(keys []string) []string {
 	mp := make([]string, len(keys))
 	for i, k := range keys {
 		v := r.confRegistry.Get(k)
-		mp[i] = types.String(v)
+		mp[i] = types.Stringify(v)
 	}
 	return mp
 }
@@ -295,7 +295,7 @@ func (r *valueRepo) getsRegistryMapNew(keys []string) map[string]string {
 	mp := map[string]string{}
 	for _, k := range keys {
 		v := r.confRegistry.Get(k)
-		mp[k] = types.String(v)
+		mp[k] = types.Stringify(v)
 	}
 	return mp
 }
@@ -364,7 +364,7 @@ func (r *valueRepo) GetChildAreas(code int32) []*valueobject.Area {
 		return v
 	}
 	var v []*valueobject.Area
-	err := r.Connector.GetOrm().Select(&v, "code <> 0 AND parent= $1", code)
+	err := r.o.Select(&v, "code <> 0 AND parent= $1", code)
 	if err == nil {
 		r.areaCache[code] = v
 	}

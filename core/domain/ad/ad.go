@@ -84,7 +84,7 @@ func (a *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
 // 根据编号获取广告位
 func (a *adManagerImpl) GetAdPositionById(id int64) *ad.AdPosition {
 	e := ad.AdPosition{}
-	if tmp.Db().GetOrm().Get(id, &e) == nil {
+	if tmp.Orm.Get(id, &e) == nil {
 		return &e
 	}
 	return nil

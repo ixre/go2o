@@ -149,21 +149,21 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.P
 	data := make(map[string]string)
 
 	//　取消优惠券
-	data["totalFee"] = types.String(v.ItemAmount)
-	data["fee"] = types.String(v.ItemAmount)
-	data["payFee"] = types.String(v.FinalAmount)
-	data["discountFee"] = types.String(discountFee)
-	data["expressFee"] = types.String(v.ExpressFee)
+	data["totalFee"] = types.Stringify(v.ItemAmount)
+	data["fee"] = types.Stringify(v.ItemAmount)
+	data["payFee"] = types.Stringify(v.FinalAmount)
+	data["discountFee"] = types.Stringify(discountFee)
+	data["expressFee"] = types.Stringify(v.ExpressFee)
 
 	// 设置优惠券的信息
 	if r.CartCode != "" {
 		// 优惠券没有减金额
 		if v.DiscountAmount == 0 {
-			data["result"] = types.String(v.DiscountAmount != 0)
+			data["result"] = types.Stringify(v.DiscountAmount != 0)
 			data["message"] = "优惠券无效"
 		} else {
 			// 成功应用优惠券
-			data["couponFee"] = types.String(v.DiscountAmount)
+			data["couponFee"] = types.Stringify(v.DiscountAmount)
 			data["couponDescribe"] = buf.String()
 		}
 	}

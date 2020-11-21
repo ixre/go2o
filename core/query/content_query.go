@@ -11,15 +11,17 @@ package query
 import (
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/content"
 )
 
 type ContentQuery struct {
 	db.Connector
+	o orm.Orm
 }
 
-func NewContentQuery(c db.Connector) *ContentQuery {
-	return &ContentQuery{c}
+func NewContentQuery(o orm.Orm) *ContentQuery {
+	return &ContentQuery{o.Connector(), o}
 }
 
 func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where string) (total int,
@@ -31,7 +33,7 @@ func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where str
 		article_list WHERE cat_id= $1 %s`, where), &total, catId)
 	rows = []*content.Article{}
 	if total > 0 {
-		cq.Connector.GetOrm().SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM
+		cq.o.SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM
 		article_list WHERE cat_id= $1 %s ORDER BY update_time DESC LIMIT $3 OFFSET $2`, where),
 			catId, begin, size)
 		for i := 0; i < len(rows); i++ {

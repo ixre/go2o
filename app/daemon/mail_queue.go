@@ -44,7 +44,7 @@ func startMailQueue(ss []Service) {
 
 func sendForWaitingQueue(ss []Service) {
 	var list = []*mss.MailTask{}
-	err := appCtx.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
+	err := _orm.Select(&list, "is_send = 0 OR is_failed = 1")
 	if err == nil && len(list) > 0 {
 		for _, s := range ss {
 			if !s.HandleMailQueue(list) {
@@ -68,7 +68,7 @@ func handleMailQueue(list []*mss.MailTask) {
 				t.IsFailed = 0
 			}
 			t.SendTime = time.Now().Unix()
-			appCtx.Db().GetOrm().Save(t.Id, t)
+			_orm.Save(t.Id, t)
 			mailChan <- 0
 		}(mailChan, v)
 		<-mailChan

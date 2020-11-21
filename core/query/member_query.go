@@ -12,6 +12,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
@@ -22,10 +23,11 @@ import (
 
 type MemberQuery struct {
 	db.Connector
+	o orm.Orm
 }
 
-func NewMemberQuery(c db.Connector) *MemberQuery {
-	return &MemberQuery{c}
+func NewMemberQuery(o orm.Orm) *MemberQuery {
+	return &MemberQuery{o.Connector(), o}
 }
 
 // 获取会员列表
@@ -43,7 +45,7 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 				m.update_time FROM mm_member m INNER JOIN mm_level lv
 				ON m.level = lv.id INNER JOIN mm_account a ON
 				 a.member_id = m.id AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
-		m.Connector.GetOrm().SelectByQuery(&list, query)
+		m.o.SelectByQuery(&list, query)
 	}
 	return list
 }
@@ -124,7 +126,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 // 获取最近的余额变动信息
 func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member.WalletAccountLog {
 	var info = new(member.WalletAccountLog)
-	if err := m.GetOrm().GetBy(info, "member_id= $1 AND kind= $2 ORDER BY create_time DESC",
+	if err := m.o.GetBy(info, "member_id= $1 AND kind= $2 ORDER BY create_time DESC",
 		memberId, kind); err == nil {
 		return info
 	}

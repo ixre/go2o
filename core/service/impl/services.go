@@ -16,6 +16,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"go2o/core/dao"
+	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/repos"
@@ -72,6 +73,8 @@ var (
 	QueryService *queryService
 
 	CommonDao *dao.CommonDao
+	// APP服务
+	AppService *appServiceImpl
 )
 
 // 处理错误
@@ -86,10 +89,12 @@ func handleError(err error) error {
 func Init(ctx gof.App) {
 	Context := ctx
 	db := Context.Db()
-	orm := db.GetOrm()
 	sto := Context.Storage()
+	o := orm.NewOrm(db.Driver(), db.Raw())
+	tmp.SetORM(o)
+	orm.CacheProxy(o, sto)
 	// 初始化服务
-	initService(ctx, db, orm, sto)
+	initService(ctx, db, o, sto)
 }
 
 // 初始化测试服务
@@ -99,7 +104,8 @@ func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Inte
 
 // 初始化服务
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
-	Repos = (&repos.RepoFactory{}).Init(db, sto)
+	OrmMapping(orm)
+	Repos = (&repos.RepoFactory{}).Init(orm, sto)
 	registryRepo := Repos.GetRegistryRepo()
 	proMRepo := Repos.GetProModelRepo()
 	valueRepo := Repos.GetValueRepo()
@@ -125,12 +131,12 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	asRepo := Repos.GetAfterSalesRepo()
 	notifyRepo := Repos.GetNotifyRepo()
 	/** Query **/
-	memberQue := query.NewMemberQuery(db)
+	memberQue := query.NewMemberQuery(orm)
 	mchQuery := query.NewMerchantQuery(ctx)
-	contentQue := query.NewContentQuery(db)
-	goodsQuery := query.NewItemQuery(db)
-	shopQuery := query.NewShopQuery(ctx)
-	orderQuery := query.NewOrderQuery(db)
+	contentQue := query.NewContentQuery(orm)
+	goodsQuery := query.NewItemQuery(orm)
+	shopQuery := query.NewShopQuery(orm, sto)
+	orderQuery := query.NewOrderQuery(orm)
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
@@ -160,7 +166,8 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 
 	CommonDao = dao.NewCommDao(orm, sto, adRepo, catRepo)
 	PortalService = NewPortalService(CommonDao)
-	QueryService = NewQueryService()
+	QueryService = NewQueryService(orm, sto)
+	AppService = NewAppService(sto, orm)
 }
 
 // 服务工具类，实现的服务组合此类,可直接调用其方法

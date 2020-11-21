@@ -1,0 +1,17 @@
+syntax = "proto3";
+option go_package = ".;proto";
+option java_package = "com.github.go2o.rpc";
+
+import "global.proto";
+
+// RBAC服务
+service RBACService {
+}
+
+message RoleId {
+    int64 Value = 1;
+}
+message UserId {
+    int64 Value = 1;
+}
+

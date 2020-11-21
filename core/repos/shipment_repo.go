@@ -21,11 +21,13 @@ var _ shipment.IShipmentRepo = new(shipmentRepo)
 type shipmentRepo struct {
 	_expRepo express.IExpressRepo
 	db.Connector
+	o orm.Orm
 }
 
-func NewShipmentRepo(conn db.Connector, expRepo express.IExpressRepo) *shipmentRepo {
+func NewShipmentRepo(o orm.Orm, expRepo express.IExpressRepo) *shipmentRepo {
 	return &shipmentRepo{
-		Connector: conn,
+		Connector: o.Connector(),
+		o:         o,
 		_expRepo:  expRepo,
 	}
 }
@@ -37,7 +39,7 @@ func (s *shipmentRepo) CreateShipmentOrder(o *shipment.ShipmentOrder) shipment.I
 
 func (s *shipmentRepo) getShipOrderById(id int64) *shipment.ShipmentOrder {
 	e := &shipment.ShipmentOrder{}
-	if s.GetOrm().Get(id, e) == nil {
+	if s.o.Get(id, e) == nil {
 		return e
 	}
 	return nil
@@ -55,9 +57,9 @@ func (s *shipmentRepo) GetShipmentOrder(id int64) shipment.IShipmentOrder {
 func (s *shipmentRepo) GetShipOrders(orderId int64, sub bool) []shipment.IShipmentOrder {
 	var list []*shipment.ShipmentOrder
 	if sub {
-		s.GetOrm().Select(&list, "sub_orderid= $1", orderId)
+		s.o.Select(&list, "sub_orderid= $1", orderId)
 	} else {
-		s.GetOrm().Select(&list, "order_id= $1", orderId)
+		s.o.Select(&list, "order_id= $1", orderId)
 	}
 	orders := make([]shipment.IShipmentOrder, len(list))
 	for i, v := range list {
@@ -69,21 +71,21 @@ func (s *shipmentRepo) GetShipOrders(orderId int64, sub bool) []shipment.IShipme
 
 // 保存发货单
 func (s *shipmentRepo) SaveShipmentOrder(o *shipment.ShipmentOrder) (int, error) {
-	return orm.Save(s.GetOrm(), o, int(o.ID))
+	return orm.Save(s.o, o, int(o.ID))
 }
 
 // 保存发货商品项
 func (s *shipmentRepo) SaveShipmentItem(v *shipment.ShipmentItem) (int, error) {
-	return orm.Save(s.GetOrm(), v, int(v.ID))
+	return orm.Save(s.o, v, int(v.ID))
 }
 
 // 删除发货单
 func (s *shipmentRepo) DeleteShipmentOrder(id int64) error {
-	return s.GetOrm().DeleteByPk(&shipment.ShipmentOrder{}, id)
+	return s.o.DeleteByPk(&shipment.ShipmentOrder{}, id)
 }
 
 func (s *shipmentRepo) loadItems(shipOrderId int64) []*shipment.ShipmentItem {
 	var list []*shipment.ShipmentItem
-	_ = s.GetOrm().Select(&list, "ship_order = $1", shipOrderId)
+	_ = s.o.Select(&list, "ship_order = $1", shipOrderId)
 	return list
 }

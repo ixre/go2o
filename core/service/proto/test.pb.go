@@ -43,7 +43,7 @@ func (x EState) String() string {
 	return proto.EnumName(EState_name, int32(x))
 }
 func (EState) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_test_f77a93fc80d5d168, []int{0}
+	return fileDescriptor_test_04aecd865c878a32, []int{0}
 }
 
 type User1 struct {
@@ -60,7 +60,7 @@ func (m *User1) Reset()         { *m = User1{} }
 func (m *User1) String() string { return proto.CompactTextString(m) }
 func (*User1) ProtoMessage()    {}
 func (*User1) Descriptor() ([]byte, []int) {
-	return fileDescriptor_test_f77a93fc80d5d168, []int{0}
+	return fileDescriptor_test_04aecd865c878a32, []int{0}
 }
 func (m *User1) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_User1.Unmarshal(m, b)
@@ -120,7 +120,7 @@ func (m *UserResponse) Reset()         { *m = UserResponse{} }
 func (m *UserResponse) String() string { return proto.CompactTextString(m) }
 func (*UserResponse) ProtoMessage()    {}
 func (*UserResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_test_f77a93fc80d5d168, []int{1}
+	return fileDescriptor_test_04aecd865c878a32, []int{1}
 }
 func (m *UserResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserResponse.Unmarshal(m, b)
@@ -233,9 +233,9 @@ var _GreeterService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "test.proto",
 }
 
-func init() { proto.RegisterFile("test.proto", fileDescriptor_test_f77a93fc80d5d168) }
+func init() { proto.RegisterFile("test.proto", fileDescriptor_test_04aecd865c878a32) }
 
-var fileDescriptor_test_f77a93fc80d5d168 = []byte{
+var fileDescriptor_test_04aecd865c878a32 = []byte{
 	// 294 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x90, 0x31, 0x4f, 0xc3, 0x30,
 	0x14, 0x84, 0xeb, 0xa6, 0x49, 0xe8, 0x2b, 0x54, 0xc5, 0x30, 0x84, 0x4a, 0xa0, 0xd0, 0x85, 0x88,

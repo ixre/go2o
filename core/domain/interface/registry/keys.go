@@ -75,7 +75,10 @@ var (
 	SysSuspend = KeyFormat("SysSuspend")
 	// 系统挂起提示消息
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
-
+	// 接口JWT密钥
+	SysJWTSecret = KeyFormat("sys_jwt_secret")
+	// 超级管理员登录密钥
+	SysSuperLoginToken = KeyFormat("sys_super_login_token")
 	/** 短信 */
 	// 默认短信服务商
 	SmsDefaultProvider = KeyFormat("SmsDefaultProvider")

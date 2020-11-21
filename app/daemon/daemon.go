@@ -354,7 +354,6 @@ func Run(ctx gof.App) {
 		appCtx = core.NewApp("app.conf", nil)
 	}
 	conn = appCtx.Db()
-	_orm = conn.GetOrm()
 	sMail := appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
 	//sMail := cnf.GetString(variable.)
 
@@ -387,7 +386,6 @@ func FlagRun() {
 	gof.CurrentApp = appCtx
 
 	conn = appCtx.Db()
-	_orm = conn.GetOrm()
 
 	//todo: daemon 应不依赖于service
 	//impl.Init(appCtx, app.FlagDaemon)

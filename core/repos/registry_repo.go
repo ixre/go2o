@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"go2o/core/domain/interface/registry"
 	"log"
@@ -21,6 +22,7 @@ type registryRepo struct {
 	store storage.Interface
 	data  map[string]registry.IRegistry
 	lock  sync.RWMutex
+	_orm  orm.Orm
 }
 
 func (r *registryRepo) CreateUserKey(key string, value string, desc string) error {
@@ -38,9 +40,10 @@ func (r *registryRepo) CreateUserKey(key string, value string, desc string) erro
 	return r.Create(rv).Save()
 }
 
-func NewRegistryRepo(conn db.Connector, s storage.Interface) registry.IRegistryRepo {
+func NewRegistryRepo(conn orm.Orm, s storage.Interface) registry.IRegistryRepo {
 	return (&registryRepo{
-		conn:  conn,
+		conn:  conn.Connector(),
+		_orm:  conn,
 		store: s,
 		data:  make(map[string]registry.IRegistry),
 	}).init()
@@ -50,7 +53,7 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 	r.lock.Lock()
 	// 从数据源加载数据
 	list := make([]*registry.Registry, 0)
-	err := r.conn.GetOrm().Select(&list, "")
+	err := r._orm.Select(&list, "")
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Registry")
 	}
@@ -137,12 +140,12 @@ func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 	r.lock.Lock()
 	_, ok := r.data[key]
 	if ok {
-		_, _, err = r.conn.GetOrm().Save(key, val)
+		_, _, err = r._orm.Save(key, val)
 		// 清除缓存
 		sk := r.getStorageKey(key)
 		r.store.Delete(sk)
 	} else {
-		_, _, err = r.conn.GetOrm().Save(nil, val)
+		_, _, err = r._orm.Save(nil, val)
 	}
 	if err == nil { // 更新缓存
 		r.data[key] = registry

@@ -10,6 +10,7 @@ package repos
 
 import (
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
@@ -33,9 +34,9 @@ func (n *notifyRepImpl) Manager() notify.INotifyManager {
 	return n.manager
 }
 
-func NewNotifyRepo(conn db.Connector, registryRepo registry.IRegistryRepo) notify.INotifyRepo {
+func NewNotifyRepo(o orm.Orm, registryRepo registry.IRegistryRepo) notify.INotifyRepo {
 	return &notifyRepImpl{
-		_conn:        conn,
+		_conn:        o.Connector(),
 		registryRepo: registryRepo,
 		_itemGob:     util.NewGobFile("conf/core/mss_notify"),
 	}

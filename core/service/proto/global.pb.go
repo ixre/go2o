@@ -45,7 +45,7 @@ func (x ESettingBasis) String() string {
 	return proto.EnumName(ESettingBasis_name, int32(x))
 }
 func (ESettingBasis) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{0}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{0}
 }
 
 // * 价格计算方式
@@ -78,7 +78,7 @@ func (x EPriceBasis) String() string {
 	return proto.EnumName(EPriceBasis_name, int32(x))
 }
 func (EPriceBasis) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{1}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{1}
 }
 
 // * 金额/提成依据
@@ -111,7 +111,7 @@ func (x EAmountBasis) String() string {
 	return proto.EnumName(EAmountBasis_name, int32(x))
 }
 func (EAmountBasis) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{2}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{2}
 }
 
 type Empty struct {
@@ -124,7 +124,7 @@ func (m *Empty) Reset()         { *m = Empty{} }
 func (m *Empty) String() string { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()    {}
 func (*Empty) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{0}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{0}
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Empty.Unmarshal(m, b)
@@ -155,7 +155,7 @@ func (m *String) Reset()         { *m = String{} }
 func (m *String) String() string { return proto.CompactTextString(m) }
 func (*String) ProtoMessage()    {}
 func (*String) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{1}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{1}
 }
 func (m *String) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_String.Unmarshal(m, b)
@@ -193,7 +193,7 @@ func (m *Int64) Reset()         { *m = Int64{} }
 func (m *Int64) String() string { return proto.CompactTextString(m) }
 func (*Int64) ProtoMessage()    {}
 func (*Int64) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{2}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{2}
 }
 func (m *Int64) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Int64.Unmarshal(m, b)
@@ -231,7 +231,7 @@ func (m *Int32) Reset()         { *m = Int32{} }
 func (m *Int32) String() string { return proto.CompactTextString(m) }
 func (*Int32) ProtoMessage()    {}
 func (*Int32) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{3}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{3}
 }
 func (m *Int32) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Int32.Unmarshal(m, b)
@@ -269,7 +269,7 @@ func (m *Bool) Reset()         { *m = Bool{} }
 func (m *Bool) String() string { return proto.CompactTextString(m) }
 func (*Bool) ProtoMessage()    {}
 func (*Bool) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{4}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{4}
 }
 func (m *Bool) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Bool.Unmarshal(m, b)
@@ -307,7 +307,7 @@ func (m *StringMap) Reset()         { *m = StringMap{} }
 func (m *StringMap) String() string { return proto.CompactTextString(m) }
 func (*StringMap) ProtoMessage()    {}
 func (*StringMap) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{5}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{5}
 }
 func (m *StringMap) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StringMap.Unmarshal(m, b)
@@ -345,7 +345,7 @@ func (m *StringArray) Reset()         { *m = StringArray{} }
 func (m *StringArray) String() string { return proto.CompactTextString(m) }
 func (*StringArray) ProtoMessage()    {}
 func (*StringArray) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{6}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{6}
 }
 func (m *StringArray) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StringArray.Unmarshal(m, b)
@@ -389,7 +389,7 @@ func (m *Result) Reset()         { *m = Result{} }
 func (m *Result) String() string { return proto.CompactTextString(m) }
 func (*Result) ProtoMessage()    {}
 func (*Result) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{7}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{7}
 }
 func (m *Result) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Result.Unmarshal(m, b)
@@ -443,7 +443,7 @@ func (m *Pair) Reset()         { *m = Pair{} }
 func (m *Pair) String() string { return proto.CompactTextString(m) }
 func (*Pair) ProtoMessage()    {}
 func (*Pair) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{8}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{8}
 }
 func (m *Pair) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Pair.Unmarshal(m, b)
@@ -489,7 +489,7 @@ func (m *IdOrName) Reset()         { *m = IdOrName{} }
 func (m *IdOrName) String() string { return proto.CompactTextString(m) }
 func (*IdOrName) ProtoMessage()    {}
 func (*IdOrName) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{9}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{9}
 }
 func (m *IdOrName) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_IdOrName.Unmarshal(m, b)
@@ -535,7 +535,7 @@ func (m *IdAndRemark) Reset()         { *m = IdAndRemark{} }
 func (m *IdAndRemark) String() string { return proto.CompactTextString(m) }
 func (*IdAndRemark) ProtoMessage()    {}
 func (*IdAndRemark) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{10}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{10}
 }
 func (m *IdAndRemark) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_IdAndRemark.Unmarshal(m, b)
@@ -590,7 +590,7 @@ func (m *SPagingParams) Reset()         { *m = SPagingParams{} }
 func (m *SPagingParams) String() string { return proto.CompactTextString(m) }
 func (*SPagingParams) ProtoMessage()    {}
 func (*SPagingParams) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{11}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{11}
 }
 func (m *SPagingParams) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPagingParams.Unmarshal(m, b)
@@ -666,7 +666,7 @@ func (m *SPagingResult) Reset()         { *m = SPagingResult{} }
 func (m *SPagingResult) String() string { return proto.CompactTextString(m) }
 func (*SPagingResult) ProtoMessage()    {}
 func (*SPagingResult) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{12}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{12}
 }
 func (m *SPagingResult) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPagingResult.Unmarshal(m, b)
@@ -750,7 +750,7 @@ func (m *STreeNode) Reset()         { *m = STreeNode{} }
 func (m *STreeNode) String() string { return proto.CompactTextString(m) }
 func (*STreeNode) ProtoMessage()    {}
 func (*STreeNode) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{13}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{13}
 }
 func (m *STreeNode) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_STreeNode.Unmarshal(m, b)
@@ -844,7 +844,7 @@ func (m *Id) Reset()         { *m = Id{} }
 func (m *Id) String() string { return proto.CompactTextString(m) }
 func (*Id) ProtoMessage()    {}
 func (*Id) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{14}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{14}
 }
 func (m *Id) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Id.Unmarshal(m, b)
@@ -882,7 +882,7 @@ func (m *MemberId) Reset()         { *m = MemberId{} }
 func (m *MemberId) String() string { return proto.CompactTextString(m) }
 func (*MemberId) ProtoMessage()    {}
 func (*MemberId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{15}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{15}
 }
 func (m *MemberId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberId.Unmarshal(m, b)
@@ -920,7 +920,7 @@ func (m *MerchantId) Reset()         { *m = MerchantId{} }
 func (m *MerchantId) String() string { return proto.CompactTextString(m) }
 func (*MerchantId) ProtoMessage()    {}
 func (*MerchantId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{16}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{16}
 }
 func (m *MerchantId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantId.Unmarshal(m, b)
@@ -958,7 +958,7 @@ func (m *SellerId) Reset()         { *m = SellerId{} }
 func (m *SellerId) String() string { return proto.CompactTextString(m) }
 func (*SellerId) ProtoMessage()    {}
 func (*SellerId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{17}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{17}
 }
 func (m *SellerId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SellerId.Unmarshal(m, b)
@@ -996,7 +996,7 @@ func (m *BuyerId) Reset()         { *m = BuyerId{} }
 func (m *BuyerId) String() string { return proto.CompactTextString(m) }
 func (*BuyerId) ProtoMessage()    {}
 func (*BuyerId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_global_d0283e259d279238, []int{18}
+	return fileDescriptor_global_dc9d0d180a668cc4, []int{18}
 }
 func (m *BuyerId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BuyerId.Unmarshal(m, b)
@@ -1053,9 +1053,9 @@ func init() {
 	proto.RegisterEnum("EAmountBasis", EAmountBasis_name, EAmountBasis_value)
 }
 
-func init() { proto.RegisterFile("global.proto", fileDescriptor_global_d0283e259d279238) }
+func init() { proto.RegisterFile("global.proto", fileDescriptor_global_dc9d0d180a668cc4) }
 
-var fileDescriptor_global_d0283e259d279238 = []byte{
+var fileDescriptor_global_dc9d0d180a668cc4 = []byte{
 	// 761 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x55, 0x6b, 0x6f, 0xf3, 0x34,
 	0x14, 0x7e, 0x9b, 0xf4, 0x92, 0x9e, 0xf6, 0x65, 0x99, 0x29, 0x53, 0x54, 0xc1, 0x98, 0x8a, 0x40,

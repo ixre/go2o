@@ -40,7 +40,7 @@ func (m *SettlePersistRequest) Reset()         { *m = SettlePersistRequest{} }
 func (m *SettlePersistRequest) String() string { return proto.CompactTextString(m) }
 func (*SettlePersistRequest) ProtoMessage()    {}
 func (*SettlePersistRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_98108335d968774f, []int{0}
+	return fileDescriptor_cart_service_b3666c44ae76f7f7, []int{0}
 }
 func (m *SettlePersistRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SettlePersistRequest.Unmarshal(m, b)
@@ -115,7 +115,7 @@ func (m *CartItemRequest) Reset()         { *m = CartItemRequest{} }
 func (m *CartItemRequest) String() string { return proto.CompactTextString(m) }
 func (*CartItemRequest) ProtoMessage()    {}
 func (*CartItemRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_98108335d968774f, []int{1}
+	return fileDescriptor_cart_service_b3666c44ae76f7f7, []int{1}
 }
 func (m *CartItemRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CartItemRequest.Unmarshal(m, b)
@@ -183,7 +183,7 @@ func (m *CheckSignRequest) Reset()         { *m = CheckSignRequest{} }
 func (m *CheckSignRequest) String() string { return proto.CompactTextString(m) }
 func (*CheckSignRequest) ProtoMessage()    {}
 func (*CheckSignRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_98108335d968774f, []int{2}
+	return fileDescriptor_cart_service_b3666c44ae76f7f7, []int{2}
 }
 func (m *CheckSignRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CheckSignRequest.Unmarshal(m, b)
@@ -236,7 +236,7 @@ func (m *CartCode) Reset()         { *m = CartCode{} }
 func (m *CartCode) String() string { return proto.CompactTextString(m) }
 func (*CartCode) ProtoMessage()    {}
 func (*CartCode) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_98108335d968774f, []int{3}
+	return fileDescriptor_cart_service_b3666c44ae76f7f7, []int{3}
 }
 func (m *CartCode) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CartCode.Unmarshal(m, b)
@@ -284,7 +284,7 @@ func (m *SettleMeta_) Reset()         { *m = SettleMeta_{} }
 func (m *SettleMeta_) String() string { return proto.CompactTextString(m) }
 func (*SettleMeta_) ProtoMessage()    {}
 func (*SettleMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_98108335d968774f, []int{4}
+	return fileDescriptor_cart_service_b3666c44ae76f7f7, []int{4}
 }
 func (m *SettleMeta_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SettleMeta_.Unmarshal(m, b)
@@ -345,7 +345,7 @@ func (m *SettleShopMeta_) Reset()         { *m = SettleShopMeta_{} }
 func (m *SettleShopMeta_) String() string { return proto.CompactTextString(m) }
 func (*SettleShopMeta_) ProtoMessage()    {}
 func (*SettleShopMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_98108335d968774f, []int{5}
+	return fileDescriptor_cart_service_b3666c44ae76f7f7, []int{5}
 }
 func (m *SettleShopMeta_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SettleShopMeta_.Unmarshal(m, b)
@@ -400,7 +400,7 @@ func (m *SettleDeliverMeta_) Reset()         { *m = SettleDeliverMeta_{} }
 func (m *SettleDeliverMeta_) String() string { return proto.CompactTextString(m) }
 func (*SettleDeliverMeta_) ProtoMessage()    {}
 func (*SettleDeliverMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_98108335d968774f, []int{6}
+	return fileDescriptor_cart_service_b3666c44ae76f7f7, []int{6}
 }
 func (m *SettleDeliverMeta_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SettleDeliverMeta_.Unmarshal(m, b)
@@ -777,9 +777,9 @@ var _CartService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "cart_service.proto",
 }
 
-func init() { proto.RegisterFile("cart_service.proto", fileDescriptor_cart_service_98108335d968774f) }
+func init() { proto.RegisterFile("cart_service.proto", fileDescriptor_cart_service_b3666c44ae76f7f7) }
 
-var fileDescriptor_cart_service_98108335d968774f = []byte{
+var fileDescriptor_cart_service_b3666c44ae76f7f7 = []byte{
 	// 627 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
 	0x10, 0x8d, 0x93, 0xa6, 0x69, 0x26, 0x21, 0x49, 0xb7, 0x1f, 0x8a, 0x22, 0x54, 0x55, 0x56, 0x41,

@@ -12,10 +12,10 @@ import (
 
 var _ wallet.IWalletRepo = new(WalletRepoImpl)
 
-func NewWalletRepo(conn db.Connector) wallet.IWalletRepo {
+func NewWalletRepo(o orm.Orm) wallet.IWalletRepo {
 	return &WalletRepoImpl{
-		_orm:  conn.GetOrm(),
-		_conn: conn,
+		_orm:  o,
+		_conn: o.Connector(),
 	}
 }
 

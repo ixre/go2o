@@ -31,7 +31,7 @@ func (m *WsCartRequest) Reset()         { *m = WsCartRequest{} }
 func (m *WsCartRequest) String() string { return proto.CompactTextString(m) }
 func (*WsCartRequest) ProtoMessage()    {}
 func (*WsCartRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_dto_ec1f103a36525164, []int{0}
+	return fileDescriptor_cart_dto_6c19004535c95070, []int{0}
 }
 func (m *WsCartRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_WsCartRequest.Unmarshal(m, b)
@@ -85,7 +85,7 @@ func (m *NormalCartRequest) Reset()         { *m = NormalCartRequest{} }
 func (m *NormalCartRequest) String() string { return proto.CompactTextString(m) }
 func (*NormalCartRequest) ProtoMessage()    {}
 func (*NormalCartRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_dto_ec1f103a36525164, []int{1}
+	return fileDescriptor_cart_dto_6c19004535c95070, []int{1}
 }
 func (m *NormalCartRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NormalCartRequest.Unmarshal(m, b)
@@ -143,7 +143,7 @@ func (m *SShoppingCart) Reset()         { *m = SShoppingCart{} }
 func (m *SShoppingCart) String() string { return proto.CompactTextString(m) }
 func (*SShoppingCart) ProtoMessage()    {}
 func (*SShoppingCart) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_dto_ec1f103a36525164, []int{2}
+	return fileDescriptor_cart_dto_6c19004535c95070, []int{2}
 }
 func (m *SShoppingCart) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShoppingCart.Unmarshal(m, b)
@@ -205,7 +205,7 @@ func (m *SShoppingCartGroup) Reset()         { *m = SShoppingCartGroup{} }
 func (m *SShoppingCartGroup) String() string { return proto.CompactTextString(m) }
 func (*SShoppingCartGroup) ProtoMessage()    {}
 func (*SShoppingCartGroup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_dto_ec1f103a36525164, []int{3}
+	return fileDescriptor_cart_dto_6c19004535c95070, []int{3}
 }
 func (m *SShoppingCartGroup) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShoppingCartGroup.Unmarshal(m, b)
@@ -277,7 +277,7 @@ func (m *SCheckCartItem) Reset()         { *m = SCheckCartItem{} }
 func (m *SCheckCartItem) String() string { return proto.CompactTextString(m) }
 func (*SCheckCartItem) ProtoMessage()    {}
 func (*SCheckCartItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_dto_ec1f103a36525164, []int{4}
+	return fileDescriptor_cart_dto_6c19004535c95070, []int{4}
 }
 func (m *SCheckCartItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SCheckCartItem.Unmarshal(m, b)
@@ -332,7 +332,7 @@ func (m *CartItemResponse) Reset()         { *m = CartItemResponse{} }
 func (m *CartItemResponse) String() string { return proto.CompactTextString(m) }
 func (*CartItemResponse) ProtoMessage()    {}
 func (*CartItemResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_dto_ec1f103a36525164, []int{5}
+	return fileDescriptor_cart_dto_6c19004535c95070, []int{5}
 }
 func (m *CartItemResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CartItemResponse.Unmarshal(m, b)
@@ -408,7 +408,7 @@ func (m *SShoppingCartItem) Reset()         { *m = SShoppingCartItem{} }
 func (m *SShoppingCartItem) String() string { return proto.CompactTextString(m) }
 func (*SShoppingCartItem) ProtoMessage()    {}
 func (*SShoppingCartItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_dto_ec1f103a36525164, []int{6}
+	return fileDescriptor_cart_dto_6c19004535c95070, []int{6}
 }
 func (m *SShoppingCartItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShoppingCartItem.Unmarshal(m, b)
@@ -524,9 +524,9 @@ func init() {
 	proto.RegisterType((*SShoppingCartItem)(nil), "SShoppingCartItem")
 }
 
-func init() { proto.RegisterFile("message/cart_dto.proto", fileDescriptor_cart_dto_ec1f103a36525164) }
+func init() { proto.RegisterFile("message/cart_dto.proto", fileDescriptor_cart_dto_6c19004535c95070) }
 
-var fileDescriptor_cart_dto_ec1f103a36525164 = []byte{
+var fileDescriptor_cart_dto_6c19004535c95070 = []byte{
 	// 540 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0x41, 0x8b, 0xd3, 0x40,
 	0x14, 0xc7, 0x49, 0xd3, 0xb4, 0xcd, 0xab, 0x2b, 0xdb, 0xd9, 0x65, 0x19, 0x96, 0x45, 0x42, 0x0e,

@@ -78,7 +78,6 @@ func (t *testingApp) Db() db.Connector {
 		conn.SetMaxIdleConns(5000)
 		conn.SetConnMaxLifetime(time.Second * 10)
 		t._dbConnector = conn
-		orm.CacheProxy(t._dbConnector.GetOrm(), t.Storage())
 	}
 	return t._dbConnector
 }
@@ -133,10 +132,6 @@ func (t *testingApp) Redis() *redis.Pool {
 
 func (t *testingApp) Init(debug, trace bool) bool {
 	t._debugMode = debug
-
-	if trace {
-		t.Db().GetOrm().SetTrace(t._debugMode)
-	}
 	t.Loaded = true
 	return true
 }
@@ -153,6 +148,7 @@ func init() {
 	core.Init(app, false, false)
 	conn := app.Db()
 	sto := app.Storage()
-	Factory = (&repos.RepoFactory{}).Init(conn, sto)
-	impl.InitTestService(app, conn, conn.GetOrm(), sto)
+	o := orm.NewOrm(conn.Driver(), conn.Raw())
+	Factory = (&repos.RepoFactory{}).Init(o, sto)
+	impl.InitTestService(app, conn, o, sto)
 }

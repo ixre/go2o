@@ -545,7 +545,7 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwd) (*p
 	if err != nil {
 		return m.errorCodeResult(int(code), err), nil
 	}
-	return m.success(map[string]string{"mch_id": types.String(id)}), nil
+	return m.success(map[string]string{"mch_id": types.Stringify(id)}), nil
 }
 
 func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*proto.SMerchant, error) {

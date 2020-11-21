@@ -726,3 +726,52 @@ COMMENT ON COLUMN "public".registry.flag IS '是否用户定义,0:否,1:是';
 COMMENT ON COLUMN "public".registry.default_value IS '默认值';
 COMMENT ON COLUMN "public".registry.options IS '可选值';
 
+
+CREATE TABLE app_version (
+  id              BIGSERIAL NOT NULL,
+  product_id     int8 NOT NULL,
+  channel        int2 NOT NULL,
+  version        varchar(20) NOT NULL,
+  version_code   int4 NOT NULL,
+  force_update   int2 NOT NULL,
+  update_content varchar(512) NOT NULL,
+  create_time    int8 NOT NULL,
+  PRIMARY KEY (id));
+COMMENT ON TABLE app_version IS 'APP版本';
+COMMENT ON COLUMN app_version.id IS '编号';
+COMMENT ON COLUMN app_version.product_id IS '产品';
+COMMENT ON COLUMN app_version.channel IS '更新通道, stable:0|alpha:1|nightly:2';
+COMMENT ON COLUMN app_version.version IS '版本号';
+COMMENT ON COLUMN app_version.version_code IS '数字版本';
+COMMENT ON COLUMN app_version.force_update IS '是否强制升级';
+COMMENT ON COLUMN app_version.update_content IS '更新内容';
+COMMENT ON COLUMN app_version.create_time IS '发布时间';
+CREATE TABLE app_prod (
+  id                BIGSERIAL NOT NULL,
+  prod_name        varchar(20) NOT NULL,
+  prod_des         varchar(128) NOT NULL,
+  latest_vid       int8 NOT NULL,
+  md5_hash         varchar(40) NOT NULL,
+  publish_url      varchar(256) NOT NULL,
+  stable_file_url  varchar(256) NOT NULL,
+  alpha_file_url   varchar(256) NOT NULL,
+  nightly_file_url varchar(256) NOT NULL,
+  update_type      varchar(10) NOT NULL,
+  update_time      int8 NOT NULL,
+  PRIMARY KEY (id));
+COMMENT ON TABLE app_prod IS 'APP产品';
+COMMENT ON COLUMN app_prod.id IS '产品编号';
+COMMENT ON COLUMN app_prod.prod_name IS '产品名称';
+COMMENT ON COLUMN app_prod.prod_des IS '产品描述';
+COMMENT ON COLUMN app_prod.latest_vid IS '最新的版本ID';
+COMMENT ON COLUMN app_prod.md5_hash IS '正式版文件hash值';
+COMMENT ON COLUMN app_prod.publish_url IS '发布下载页面地址';
+COMMENT ON COLUMN app_prod.stable_file_url IS '正式版文件地址';
+COMMENT ON COLUMN app_prod.alpha_file_url IS '内测版文件地址';
+COMMENT ON COLUMN app_prod.nightly_file_url IS '每夜版文件地址';
+COMMENT ON COLUMN app_prod.update_type IS '更新方式,比如APK, EXE等';
+COMMENT ON COLUMN app_prod.update_time IS '更新时间';
+CREATE INDEX app_version_channel
+  ON app_version (channel);
+CREATE INDEX app_version_version_code
+  ON app_version (version_code);
