@@ -35,7 +35,7 @@ func (m *BankCardNo) Reset()         { *m = BankCardNo{} }
 func (m *BankCardNo) String() string { return proto.CompactTextString(m) }
 func (*BankCardNo) ProtoMessage()    {}
 func (*BankCardNo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{0}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{0}
 }
 func (m *BankCardNo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankCardNo.Unmarshal(m, b)
@@ -85,7 +85,7 @@ func (m *CardBinQueryResponse) Reset()         { *m = CardBinQueryResponse{} }
 func (m *CardBinQueryResponse) String() string { return proto.CompactTextString(m) }
 func (*CardBinQueryResponse) ProtoMessage()    {}
 func (*CardBinQueryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{1}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{1}
 }
 func (m *CardBinQueryResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CardBinQueryResponse.Unmarshal(m, b)
@@ -167,7 +167,7 @@ func (m *BankAuthRequest) Reset()         { *m = BankAuthRequest{} }
 func (m *BankAuthRequest) String() string { return proto.CompactTextString(m) }
 func (*BankAuthRequest) ProtoMessage()    {}
 func (*BankAuthRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{2}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{2}
 }
 func (m *BankAuthRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankAuthRequest.Unmarshal(m, b)
@@ -241,7 +241,7 @@ func (m *BankAuthResponse) Reset()         { *m = BankAuthResponse{} }
 func (m *BankAuthResponse) String() string { return proto.CompactTextString(m) }
 func (*BankAuthResponse) ProtoMessage()    {}
 func (*BankAuthResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{3}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{3}
 }
 func (m *BankAuthResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankAuthResponse.Unmarshal(m, b)
@@ -304,7 +304,7 @@ func (m *BankAuthQueryRequest) Reset()         { *m = BankAuthQueryRequest{} }
 func (m *BankAuthQueryRequest) String() string { return proto.CompactTextString(m) }
 func (*BankAuthQueryRequest) ProtoMessage()    {}
 func (*BankAuthQueryRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{4}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{4}
 }
 func (m *BankAuthQueryRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankAuthQueryRequest.Unmarshal(m, b)
@@ -355,7 +355,7 @@ func (m *BankAuthQueryResponse) Reset()         { *m = BankAuthQueryResponse{} }
 func (m *BankAuthQueryResponse) String() string { return proto.CompactTextString(m) }
 func (*BankAuthQueryResponse) ProtoMessage()    {}
 func (*BankAuthQueryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{5}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{5}
 }
 func (m *BankAuthQueryResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankAuthQueryResponse.Unmarshal(m, b)
@@ -425,7 +425,7 @@ func (m *QPaymentRequest) Reset()         { *m = QPaymentRequest{} }
 func (m *QPaymentRequest) String() string { return proto.CompactTextString(m) }
 func (*QPaymentRequest) ProtoMessage()    {}
 func (*QPaymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{6}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{6}
 }
 func (m *QPaymentRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QPaymentRequest.Unmarshal(m, b)
@@ -527,7 +527,7 @@ func (m *QPaymentResponse) Reset()         { *m = QPaymentResponse{} }
 func (m *QPaymentResponse) String() string { return proto.CompactTextString(m) }
 func (*QPaymentResponse) ProtoMessage()    {}
 func (*QPaymentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{7}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{7}
 }
 func (m *QPaymentResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QPaymentResponse.Unmarshal(m, b)
@@ -590,7 +590,7 @@ func (m *QPaymentQueryRequest) Reset()         { *m = QPaymentQueryRequest{} }
 func (m *QPaymentQueryRequest) String() string { return proto.CompactTextString(m) }
 func (*QPaymentQueryRequest) ProtoMessage()    {}
 func (*QPaymentQueryRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{8}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{8}
 }
 func (m *QPaymentQueryRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QPaymentQueryRequest.Unmarshal(m, b)
@@ -641,7 +641,7 @@ func (m *QPaymentQueryResponse) Reset()         { *m = QPaymentQueryResponse{} }
 func (m *QPaymentQueryResponse) String() string { return proto.CompactTextString(m) }
 func (*QPaymentQueryResponse) ProtoMessage()    {}
 func (*QPaymentQueryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{9}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{9}
 }
 func (m *QPaymentQueryResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QPaymentQueryResponse.Unmarshal(m, b)
@@ -699,7 +699,7 @@ func (m *CheckQPaySignRequest) Reset()         { *m = CheckQPaySignRequest{} }
 func (m *CheckQPaySignRequest) String() string { return proto.CompactTextString(m) }
 func (*CheckQPaySignRequest) ProtoMessage()    {}
 func (*CheckQPaySignRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{10}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{10}
 }
 func (m *CheckQPaySignRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CheckQPaySignRequest.Unmarshal(m, b)
@@ -752,7 +752,7 @@ func (m *CheckQPaySignResponse) Reset()         { *m = CheckQPaySignResponse{} }
 func (m *CheckQPaySignResponse) String() string { return proto.CompactTextString(m) }
 func (*CheckQPaySignResponse) ProtoMessage()    {}
 func (*CheckQPaySignResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{11}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{11}
 }
 func (m *CheckQPaySignResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CheckQPaySignResponse.Unmarshal(m, b)
@@ -810,7 +810,7 @@ func (m *CardTransferRequest) Reset()         { *m = CardTransferRequest{} }
 func (m *CardTransferRequest) String() string { return proto.CompactTextString(m) }
 func (*CardTransferRequest) ProtoMessage()    {}
 func (*CardTransferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{12}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{12}
 }
 func (m *CardTransferRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CardTransferRequest.Unmarshal(m, b)
@@ -925,7 +925,7 @@ func (m *BatchTransferRequest) Reset()         { *m = BatchTransferRequest{} }
 func (m *BatchTransferRequest) String() string { return proto.CompactTextString(m) }
 func (*BatchTransferRequest) ProtoMessage()    {}
 func (*BatchTransferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{13}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{13}
 }
 func (m *BatchTransferRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BatchTransferRequest.Unmarshal(m, b)
@@ -1011,7 +1011,7 @@ func (m *BatchTransferResponse) Reset()         { *m = BatchTransferResponse{} }
 func (m *BatchTransferResponse) String() string { return proto.CompactTextString(m) }
 func (*BatchTransferResponse) ProtoMessage()    {}
 func (*BatchTransferResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_quick_pay_service_8b43817a9a899ff1, []int{14}
+	return fileDescriptor_2_quick_pay_service_fdfe8718155dce04, []int{14}
 }
 func (m *BatchTransferResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BatchTransferResponse.Unmarshal(m, b)
@@ -1358,10 +1358,10 @@ var _QuickPayService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("2.quick_pay_service.proto", fileDescriptor_2_quick_pay_service_8b43817a9a899ff1)
+	proto.RegisterFile("2.quick_pay_service.proto", fileDescriptor_2_quick_pay_service_fdfe8718155dce04)
 }
 
-var fileDescriptor_2_quick_pay_service_8b43817a9a899ff1 = []byte{
+var fileDescriptor_2_quick_pay_service_fdfe8718155dce04 = []byte{
 	// 1018 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xdd, 0x6e, 0xe3, 0x44,
 	0x14, 0x8e, 0xf3, 0x9f, 0xd3, 0x96, 0x66, 0x27, 0x49, 0x65, 0x2c, 0xb4, 0x84, 0xd1, 0x0a, 0xe5,

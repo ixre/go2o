@@ -43,7 +43,7 @@ func (x EMessageChannel) String() string {
 	return proto.EnumName(EMessageChannel_name, int32(x))
 }
 func (EMessageChannel) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{0}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{0}
 }
 
 // 站内信用户类型
@@ -70,7 +70,7 @@ func (x EMessageUserType) String() string {
 	return proto.EnumName(EMessageUserType_name, int32(x))
 }
 func (EMessageUserType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{1}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{1}
 }
 
 type SendMessageRequest struct {
@@ -86,7 +86,7 @@ func (m *SendMessageRequest) Reset()         { *m = SendMessageRequest{} }
 func (m *SendMessageRequest) String() string { return proto.CompactTextString(m) }
 func (*SendMessageRequest) ProtoMessage()    {}
 func (*SendMessageRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{0}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{0}
 }
 func (m *SendMessageRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SendMessageRequest.Unmarshal(m, b)
@@ -138,7 +138,7 @@ func (m *NotifyItemListResponse) Reset()         { *m = NotifyItemListResponse{}
 func (m *NotifyItemListResponse) String() string { return proto.CompactTextString(m) }
 func (*NotifyItemListResponse) ProtoMessage()    {}
 func (*NotifyItemListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{1}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{1}
 }
 func (m *NotifyItemListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NotifyItemListResponse.Unmarshal(m, b)
@@ -188,7 +188,7 @@ func (m *SNotifyItem) Reset()         { *m = SNotifyItem{} }
 func (m *SNotifyItem) String() string { return proto.CompactTextString(m) }
 func (*SNotifyItem) ProtoMessage()    {}
 func (*SNotifyItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{2}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{2}
 }
 func (m *SNotifyItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SNotifyItem.Unmarshal(m, b)
@@ -273,7 +273,7 @@ func (m *SMailTemplate) Reset()         { *m = SMailTemplate{} }
 func (m *SMailTemplate) String() string { return proto.CompactTextString(m) }
 func (*SMailTemplate) ProtoMessage()    {}
 func (*SMailTemplate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{3}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{3}
 }
 func (m *SMailTemplate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMailTemplate.Unmarshal(m, b)
@@ -346,7 +346,7 @@ func (m *MailTemplateListResponse) Reset()         { *m = MailTemplateListRespon
 func (m *MailTemplateListResponse) String() string { return proto.CompactTextString(m) }
 func (*MailTemplateListResponse) ProtoMessage()    {}
 func (*MailTemplateListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{4}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{4}
 }
 func (m *MailTemplateListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MailTemplateListResponse.Unmarshal(m, b)
@@ -388,7 +388,7 @@ func (m *SSiteMessage) Reset()         { *m = SSiteMessage{} }
 func (m *SSiteMessage) String() string { return proto.CompactTextString(m) }
 func (*SSiteMessage) ProtoMessage()    {}
 func (*SSiteMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{5}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{5}
 }
 func (m *SSiteMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSiteMessage.Unmarshal(m, b)
@@ -437,7 +437,7 @@ func (m *SendSiteMessageRequest) Reset()         { *m = SendSiteMessageRequest{}
 func (m *SendSiteMessageRequest) String() string { return proto.CompactTextString(m) }
 func (*SendSiteMessageRequest) ProtoMessage()    {}
 func (*SendSiteMessageRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_message_dto_fb922e64e3fa51d0, []int{6}
+	return fileDescriptor_message_dto_b555c44fe04af3c2, []int{6}
 }
 func (m *SendSiteMessageRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SendSiteMessageRequest.Unmarshal(m, b)
@@ -507,10 +507,10 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("message/message_dto.proto", fileDescriptor_message_dto_fb922e64e3fa51d0)
+	proto.RegisterFile("message/message_dto.proto", fileDescriptor_message_dto_b555c44fe04af3c2)
 }
 
-var fileDescriptor_message_dto_fb922e64e3fa51d0 = []byte{
+var fileDescriptor_message_dto_b555c44fe04af3c2 = []byte{
 	// 607 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0xcd, 0x6e, 0xd3, 0x40,
 	0x10, 0xae, 0xe3, 0x34, 0x3f, 0x93, 0x34, 0x75, 0x17, 0x54, 0x99, 0x4a, 0x94, 0x2a, 0xe2, 0x50,

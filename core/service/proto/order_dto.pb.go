@@ -88,7 +88,7 @@ func (x EOrderState) String() string {
 	return proto.EnumName(EOrderState_name, int32(x))
 }
 func (EOrderState) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{0}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{0}
 }
 
 // 订单商品项
@@ -130,7 +130,7 @@ func (m *SOrderItem) Reset()         { *m = SOrderItem{} }
 func (m *SOrderItem) String() string { return proto.CompactTextString(m) }
 func (*SOrderItem) ProtoMessage()    {}
 func (*SOrderItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{0}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{0}
 }
 func (m *SOrderItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SOrderItem.Unmarshal(m, b)
@@ -266,7 +266,7 @@ func (m *SParentOrder) Reset()         { *m = SParentOrder{} }
 func (m *SParentOrder) String() string { return proto.CompactTextString(m) }
 func (*SParentOrder) ProtoMessage()    {}
 func (*SParentOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{1}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{1}
 }
 func (m *SParentOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SParentOrder.Unmarshal(m, b)
@@ -374,7 +374,7 @@ func (m *SSingleOrder) Reset()         { *m = SSingleOrder{} }
 func (m *SSingleOrder) String() string { return proto.CompactTextString(m) }
 func (*SSingleOrder) ProtoMessage()    {}
 func (*SSingleOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{2}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{2}
 }
 func (m *SSingleOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSingleOrder.Unmarshal(m, b)
@@ -579,7 +579,7 @@ func (m *SConsigneeInfo) Reset()         { *m = SConsigneeInfo{} }
 func (m *SConsigneeInfo) String() string { return proto.CompactTextString(m) }
 func (*SConsigneeInfo) ProtoMessage()    {}
 func (*SConsigneeInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{3}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{3}
 }
 func (m *SConsigneeInfo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SConsigneeInfo.Unmarshal(m, b)
@@ -634,7 +634,7 @@ func (m *SubmitOrderRequest) Reset()         { *m = SubmitOrderRequest{} }
 func (m *SubmitOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*SubmitOrderRequest) ProtoMessage()    {}
 func (*SubmitOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{4}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{4}
 }
 func (m *SubmitOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SubmitOrderRequest.Unmarshal(m, b)
@@ -692,7 +692,7 @@ func (m *SubmitNormalOrderV2Request) Reset()         { *m = SubmitNormalOrderV2R
 func (m *SubmitNormalOrderV2Request) String() string { return proto.CompactTextString(m) }
 func (*SubmitNormalOrderV2Request) ProtoMessage()    {}
 func (*SubmitNormalOrderV2Request) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{5}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{5}
 }
 func (m *SubmitNormalOrderV2Request) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SubmitNormalOrderV2Request.Unmarshal(m, b)
@@ -777,7 +777,7 @@ func (m *NormalOrderSubmitResponse) Reset()         { *m = NormalOrderSubmitResp
 func (m *NormalOrderSubmitResponse) String() string { return proto.CompactTextString(m) }
 func (*NormalOrderSubmitResponse) ProtoMessage()    {}
 func (*NormalOrderSubmitResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{6}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{6}
 }
 func (m *NormalOrderSubmitResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NormalOrderSubmitResponse.Unmarshal(m, b)
@@ -851,7 +851,7 @@ func (m *GetOrderRequest) Reset()         { *m = GetOrderRequest{} }
 func (m *GetOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*GetOrderRequest) ProtoMessage()    {}
 func (*GetOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{7}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{7}
 }
 func (m *GetOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetOrderRequest.Unmarshal(m, b)
@@ -897,7 +897,7 @@ func (m *TradeOrderSubmitRequest) Reset()         { *m = TradeOrderSubmitRequest
 func (m *TradeOrderSubmitRequest) String() string { return proto.CompactTextString(m) }
 func (*TradeOrderSubmitRequest) ProtoMessage()    {}
 func (*TradeOrderSubmitRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{8}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{8}
 }
 func (m *TradeOrderSubmitRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TradeOrderSubmitRequest.Unmarshal(m, b)
@@ -943,7 +943,7 @@ func (m *TradeOrderTicketRequest) Reset()         { *m = TradeOrderTicketRequest
 func (m *TradeOrderTicketRequest) String() string { return proto.CompactTextString(m) }
 func (*TradeOrderTicketRequest) ProtoMessage()    {}
 func (*TradeOrderTicketRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{9}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{9}
 }
 func (m *TradeOrderTicketRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TradeOrderTicketRequest.Unmarshal(m, b)
@@ -988,7 +988,7 @@ func (m *ComplexItemsResponse) Reset()         { *m = ComplexItemsResponse{} }
 func (m *ComplexItemsResponse) String() string { return proto.CompactTextString(m) }
 func (*ComplexItemsResponse) ProtoMessage()    {}
 func (*ComplexItemsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{10}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{10}
 }
 func (m *ComplexItemsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ComplexItemsResponse.Unmarshal(m, b)
@@ -1027,7 +1027,7 @@ func (m *OrderId) Reset()         { *m = OrderId{} }
 func (m *OrderId) String() string { return proto.CompactTextString(m) }
 func (*OrderId) ProtoMessage()    {}
 func (*OrderId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{11}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{11}
 }
 func (m *OrderId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OrderId.Unmarshal(m, b)
@@ -1069,7 +1069,7 @@ func (m *OrderNo) Reset()         { *m = OrderNo{} }
 func (m *OrderNo) String() string { return proto.CompactTextString(m) }
 func (*OrderNo) ProtoMessage()    {}
 func (*OrderNo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{12}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{12}
 }
 func (m *OrderNo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OrderNo.Unmarshal(m, b)
@@ -1115,7 +1115,7 @@ func (m *OrderNoV2) Reset()         { *m = OrderNoV2{} }
 func (m *OrderNoV2) String() string { return proto.CompactTextString(m) }
 func (*OrderNoV2) ProtoMessage()    {}
 func (*OrderNoV2) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{13}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{13}
 }
 func (m *OrderNoV2) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OrderNoV2.Unmarshal(m, b)
@@ -1156,7 +1156,7 @@ func (m *OrderIdOrNo) Reset()         { *m = OrderIdOrNo{} }
 func (m *OrderIdOrNo) String() string { return proto.CompactTextString(m) }
 func (*OrderIdOrNo) ProtoMessage()    {}
 func (*OrderIdOrNo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{14}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{14}
 }
 func (m *OrderIdOrNo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OrderIdOrNo.Unmarshal(m, b)
@@ -1206,7 +1206,7 @@ func (m *CancelOrderRequest) Reset()         { *m = CancelOrderRequest{} }
 func (m *CancelOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*CancelOrderRequest) ProtoMessage()    {}
 func (*CancelOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{15}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{15}
 }
 func (m *CancelOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CancelOrderRequest.Unmarshal(m, b)
@@ -1265,7 +1265,7 @@ func (m *OrderShipmentRequest) Reset()         { *m = OrderShipmentRequest{} }
 func (m *OrderShipmentRequest) String() string { return proto.CompactTextString(m) }
 func (*OrderShipmentRequest) ProtoMessage()    {}
 func (*OrderShipmentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{16}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{16}
 }
 func (m *OrderShipmentRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OrderShipmentRequest.Unmarshal(m, b)
@@ -1328,7 +1328,7 @@ func (m *PrepareOrderRequest) Reset()         { *m = PrepareOrderRequest{} }
 func (m *PrepareOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*PrepareOrderRequest) ProtoMessage()    {}
 func (*PrepareOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_order_dto_11696b65be2996e5, []int{17}
+	return fileDescriptor_order_dto_5b4167a2d6f9c130, []int{17}
 }
 func (m *PrepareOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PrepareOrderRequest.Unmarshal(m, b)
@@ -1408,9 +1408,9 @@ func init() {
 	proto.RegisterEnum("EOrderState", EOrderState_name, EOrderState_value)
 }
 
-func init() { proto.RegisterFile("message/order_dto.proto", fileDescriptor_order_dto_11696b65be2996e5) }
+func init() { proto.RegisterFile("message/order_dto.proto", fileDescriptor_order_dto_5b4167a2d6f9c130) }
 
-var fileDescriptor_order_dto_11696b65be2996e5 = []byte{
+var fileDescriptor_order_dto_5b4167a2d6f9c130 = []byte{
 	// 1355 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x57, 0xcf, 0x72, 0x1b, 0xc5,
 	0x13, 0xfe, 0xad, 0x64, 0xc9, 0xda, 0x96, 0xff, 0xac, 0xc7, 0x4e, 0xbc, 0xf1, 0x0f, 0x82, 0xb2,

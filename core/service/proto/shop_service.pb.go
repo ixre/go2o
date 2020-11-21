@@ -36,7 +36,7 @@ func (m *TurnShopRequest) Reset()         { *m = TurnShopRequest{} }
 func (m *TurnShopRequest) String() string { return proto.CompactTextString(m) }
 func (*TurnShopRequest) ProtoMessage()    {}
 func (*TurnShopRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_c440aa4391becb68, []int{0}
+	return fileDescriptor_shop_service_e0b4ce123fd750f5, []int{0}
 }
 func (m *TurnShopRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TurnShopRequest.Unmarshal(m, b)
@@ -406,9 +406,9 @@ var _ShopService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "shop_service.proto",
 }
 
-func init() { proto.RegisterFile("shop_service.proto", fileDescriptor_shop_service_c440aa4391becb68) }
+func init() { proto.RegisterFile("shop_service.proto", fileDescriptor_shop_service_e0b4ce123fd750f5) }
 
-var fileDescriptor_shop_service_c440aa4391becb68 = []byte{
+var fileDescriptor_shop_service_e0b4ce123fd750f5 = []byte{
 	// 348 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x64, 0x91, 0x4d, 0x4b, 0xeb, 0x40,
 	0x14, 0x86, 0x93, 0x5c, 0x48, 0x72, 0xa7, 0x97, 0x5b, 0x19, 0xa1, 0x94, 0xe0, 0x47, 0x09, 0x8a,

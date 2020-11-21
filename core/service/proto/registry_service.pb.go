@@ -34,7 +34,7 @@ func (m *RegistriesResponse) Reset()         { *m = RegistriesResponse{} }
 func (m *RegistriesResponse) String() string { return proto.CompactTextString(m) }
 func (*RegistriesResponse) ProtoMessage()    {}
 func (*RegistriesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_1cde87ace4d72082, []int{0}
+	return fileDescriptor_registry_service_3a60a2a5b7f55c90, []int{0}
 }
 func (m *RegistriesResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistriesResponse.Unmarshal(m, b)
@@ -73,7 +73,7 @@ func (m *RegistryPair) Reset()         { *m = RegistryPair{} }
 func (m *RegistryPair) String() string { return proto.CompactTextString(m) }
 func (*RegistryPair) ProtoMessage()    {}
 func (*RegistryPair) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_1cde87ace4d72082, []int{1}
+	return fileDescriptor_registry_service_3a60a2a5b7f55c90, []int{1}
 }
 func (m *RegistryPair) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistryPair.Unmarshal(m, b)
@@ -119,7 +119,7 @@ func (m *RegistryValueResponse) Reset()         { *m = RegistryValueResponse{} }
 func (m *RegistryValueResponse) String() string { return proto.CompactTextString(m) }
 func (*RegistryValueResponse) ProtoMessage()    {}
 func (*RegistryValueResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_1cde87ace4d72082, []int{2}
+	return fileDescriptor_registry_service_3a60a2a5b7f55c90, []int{2}
 }
 func (m *RegistryValueResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistryValueResponse.Unmarshal(m, b)
@@ -166,7 +166,7 @@ func (m *RegistryCreateRequest) Reset()         { *m = RegistryCreateRequest{} }
 func (m *RegistryCreateRequest) String() string { return proto.CompactTextString(m) }
 func (*RegistryCreateRequest) ProtoMessage()    {}
 func (*RegistryCreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_1cde87ace4d72082, []int{3}
+	return fileDescriptor_registry_service_3a60a2a5b7f55c90, []int{3}
 }
 func (m *RegistryCreateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistryCreateRequest.Unmarshal(m, b)
@@ -230,7 +230,7 @@ func (m *SRegistry) Reset()         { *m = SRegistry{} }
 func (m *SRegistry) String() string { return proto.CompactTextString(m) }
 func (*SRegistry) ProtoMessage()    {}
 func (*SRegistry) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_1cde87ace4d72082, []int{4}
+	return fileDescriptor_registry_service_3a60a2a5b7f55c90, []int{4}
 }
 func (m *SRegistry) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SRegistry.Unmarshal(m, b)
@@ -585,10 +585,10 @@ var _RegistryService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("registry_service.proto", fileDescriptor_registry_service_1cde87ace4d72082)
+	proto.RegisterFile("registry_service.proto", fileDescriptor_registry_service_3a60a2a5b7f55c90)
 }
 
-var fileDescriptor_registry_service_1cde87ace4d72082 = []byte{
+var fileDescriptor_registry_service_3a60a2a5b7f55c90 = []byte{
 	// 436 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0xc1, 0x6e, 0xd3, 0x40,
 	0x10, 0xad, 0x9b, 0xb6, 0x69, 0x26, 0x26, 0xc0, 0xb6, 0x54, 0x96, 0x0f, 0xc8, 0xb2, 0x84, 0xc8,

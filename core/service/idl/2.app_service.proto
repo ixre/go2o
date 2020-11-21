@@ -119,7 +119,7 @@ message SAppProd {
     // 正式版文件地址
     string StableFileUrl = 7;
     // 内测版文件地址
-    string AlphaFileUrl =8;
+    string AlphaFileUrl = 8;
     // 每夜版文件地址
     string NightlyFileUrl = 9;
     // 更新方式,比如APK, EXE等

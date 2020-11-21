@@ -1,17 +1,17 @@
 syntax = "proto3";
 option go_package = ".;proto";
-option java_package="com.github.go2o.rpc";
+option java_package = "com.github.go2o.rpc";
 
 enum PaymentAccountType {
-  // 余额支付
-  PA_Balance = 0;
-  // 钱包
-  PA_Wallet = 1;
-  // 快捷支付
-  PA_QuickPay = 2;
+    // 余额支付
+    PA_Balance = 0;
+    // 钱包
+    PA_Wallet = 1;
+    // 快捷支付
+    PA_QuickPay = 2;
 }
 
 message PayPriorityRequest {
-  sint64 OwnerId = 1;
-  PaymentAccountType Account = 2;
+    sint64 OwnerId = 1;
+    PaymentAccountType Account = 2;
 }

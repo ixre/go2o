@@ -44,7 +44,7 @@ func (x PaymentAccountType) String() string {
 	return proto.EnumName(PaymentAccountType_name, int32(x))
 }
 func (PaymentAccountType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_payment_dto_8e32523d4ea07ab4, []int{0}
+	return fileDescriptor_payment_dto_4e273c53585b0c02, []int{0}
 }
 
 type PayPriorityRequest struct {
@@ -59,7 +59,7 @@ func (m *PayPriorityRequest) Reset()         { *m = PayPriorityRequest{} }
 func (m *PayPriorityRequest) String() string { return proto.CompactTextString(m) }
 func (*PayPriorityRequest) ProtoMessage()    {}
 func (*PayPriorityRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_dto_8e32523d4ea07ab4, []int{0}
+	return fileDescriptor_payment_dto_4e273c53585b0c02, []int{0}
 }
 func (m *PayPriorityRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PayPriorityRequest.Unmarshal(m, b)
@@ -99,10 +99,10 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("message/payment_dto.proto", fileDescriptor_payment_dto_8e32523d4ea07ab4)
+	proto.RegisterFile("message/payment_dto.proto", fileDescriptor_payment_dto_4e273c53585b0c02)
 }
 
-var fileDescriptor_payment_dto_8e32523d4ea07ab4 = []byte{
+var fileDescriptor_payment_dto_4e273c53585b0c02 = []byte{
 	// 212 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x8f, 0x4f, 0x4b, 0xc4, 0x30,
 	0x10, 0xc5, 0xed, 0x1e, 0x2c, 0x8e, 0xb8, 0x96, 0xec, 0xa5, 0x5e, 0x64, 0xf1, 0xb4, 0x08, 0x46,

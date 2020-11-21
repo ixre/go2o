@@ -34,7 +34,7 @@ func (m *AppId) Reset()         { *m = AppId{} }
 func (m *AppId) String() string { return proto.CompactTextString(m) }
 func (*AppId) ProtoMessage()    {}
 func (*AppId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_app_service_48c0a74c16506dd0, []int{0}
+	return fileDescriptor_2_app_service_7c1d96fbb967c99e, []int{0}
 }
 func (m *AppId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AppId.Unmarshal(m, b)
@@ -72,7 +72,7 @@ func (m *AppVersionId) Reset()         { *m = AppVersionId{} }
 func (m *AppVersionId) String() string { return proto.CompactTextString(m) }
 func (*AppVersionId) ProtoMessage()    {}
 func (*AppVersionId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_app_service_48c0a74c16506dd0, []int{1}
+	return fileDescriptor_2_app_service_7c1d96fbb967c99e, []int{1}
 }
 func (m *AppVersionId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AppVersionId.Unmarshal(m, b)
@@ -116,7 +116,7 @@ func (m *CheckVersionRequest) Reset()         { *m = CheckVersionRequest{} }
 func (m *CheckVersionRequest) String() string { return proto.CompactTextString(m) }
 func (*CheckVersionRequest) ProtoMessage()    {}
 func (*CheckVersionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_app_service_48c0a74c16506dd0, []int{2}
+	return fileDescriptor_2_app_service_7c1d96fbb967c99e, []int{2}
 }
 func (m *CheckVersionRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CheckVersionRequest.Unmarshal(m, b)
@@ -182,7 +182,7 @@ func (m *CheckVersionResponse) Reset()         { *m = CheckVersionResponse{} }
 func (m *CheckVersionResponse) String() string { return proto.CompactTextString(m) }
 func (*CheckVersionResponse) ProtoMessage()    {}
 func (*CheckVersionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_app_service_48c0a74c16506dd0, []int{3}
+	return fileDescriptor_2_app_service_7c1d96fbb967c99e, []int{3}
 }
 func (m *CheckVersionResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CheckVersionResponse.Unmarshal(m, b)
@@ -280,7 +280,7 @@ func (m *AppProdRequest) Reset()         { *m = AppProdRequest{} }
 func (m *AppProdRequest) String() string { return proto.CompactTextString(m) }
 func (*AppProdRequest) ProtoMessage()    {}
 func (*AppProdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_app_service_48c0a74c16506dd0, []int{4}
+	return fileDescriptor_2_app_service_7c1d96fbb967c99e, []int{4}
 }
 func (m *AppProdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AppProdRequest.Unmarshal(m, b)
@@ -386,7 +386,7 @@ func (m *AppVersionRequest) Reset()         { *m = AppVersionRequest{} }
 func (m *AppVersionRequest) String() string { return proto.CompactTextString(m) }
 func (*AppVersionRequest) ProtoMessage()    {}
 func (*AppVersionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_app_service_48c0a74c16506dd0, []int{5}
+	return fileDescriptor_2_app_service_7c1d96fbb967c99e, []int{5}
 }
 func (m *AppVersionRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AppVersionRequest.Unmarshal(m, b)
@@ -481,7 +481,7 @@ func (m *SAppProd) Reset()         { *m = SAppProd{} }
 func (m *SAppProd) String() string { return proto.CompactTextString(m) }
 func (*SAppProd) ProtoMessage()    {}
 func (*SAppProd) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_app_service_48c0a74c16506dd0, []int{6}
+	return fileDescriptor_2_app_service_7c1d96fbb967c99e, []int{6}
 }
 func (m *SAppProd) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAppProd.Unmarshal(m, b)
@@ -605,7 +605,7 @@ func (m *SAppVersion) Reset()         { *m = SAppVersion{} }
 func (m *SAppVersion) String() string { return proto.CompactTextString(m) }
 func (*SAppVersion) ProtoMessage()    {}
 func (*SAppVersion) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_app_service_48c0a74c16506dd0, []int{7}
+	return fileDescriptor_2_app_service_7c1d96fbb967c99e, []int{7}
 }
 func (m *SAppVersion) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAppVersion.Unmarshal(m, b)
@@ -976,9 +976,9 @@ var _AppService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "2.app_service.proto",
 }
 
-func init() { proto.RegisterFile("2.app_service.proto", fileDescriptor_2_app_service_48c0a74c16506dd0) }
+func init() { proto.RegisterFile("2.app_service.proto", fileDescriptor_2_app_service_7c1d96fbb967c99e) }
 
-var fileDescriptor_2_app_service_48c0a74c16506dd0 = []byte{
+var fileDescriptor_2_app_service_7c1d96fbb967c99e = []byte{
 	// 701 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x55, 0xcd, 0x6a, 0xdb, 0x4a,
 	0x14, 0xb6, 0xec, 0xf8, 0x47, 0xc7, 0x76, 0x2e, 0x77, 0x92, 0x0b, 0xc2, 0xe4, 0xe6, 0x1a, 0x11,

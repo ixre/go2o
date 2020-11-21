@@ -34,7 +34,7 @@ func (m *MemberIdListResponse) Reset()         { *m = MemberIdListResponse{} }
 func (m *MemberIdListResponse) String() string { return proto.CompactTextString(m) }
 func (*MemberIdListResponse) ProtoMessage()    {}
 func (*MemberIdListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_6eac54f9dcb97b09, []int{0}
+	return fileDescriptor_member_service_f4475fcfe671645f, []int{0}
 }
 func (m *MemberIdListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MemberIdListResponse.Unmarshal(m, b)
@@ -2680,10 +2680,10 @@ var _MemberService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("member_service.proto", fileDescriptor_member_service_6eac54f9dcb97b09)
+	proto.RegisterFile("member_service.proto", fileDescriptor_member_service_f4475fcfe671645f)
 }
 
-var fileDescriptor_member_service_6eac54f9dcb97b09 = []byte{
+var fileDescriptor_member_service_f4475fcfe671645f = []byte{
 	// 1315 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0x69, 0x73, 0xdb, 0x36,
 	0x13, 0xd6, 0x3b, 0x6f, 0xe3, 0x03, 0xd6, 0x09, 0x49, 0x71, 0xec, 0xcc, 0x24, 0xad, 0xda, 0xe6,

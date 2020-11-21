@@ -1,0 +1,147 @@
+syntax = "proto3";
+option go_package = ".;proto";
+option java_package = "go2o.core.rpc";
+
+import "global.proto";
+
+// 系统用户服务
+service PermUserService {
+    // 保存系统用户
+    rpc SavePermUser (SavePermUserRequest) returns (SavePermUserResponse) {
+    }
+    // 获取系统用户
+    rpc GetPermUser (PermUserId) returns (SPermUser) {
+    }
+    // 删除系统用户
+    rpc DeletePermUser (PermUserId) returns (Result) {
+    }
+    // 获取系统用户分页数据
+    rpc PagingShops (PermUserPagingRequest) returns (PermUserPagingResponse);
+}
+
+message SavePermUserRequest {
+    /** ID */
+    int64 Id = 1;
+    /** 用户名 */
+    string User = 2;
+    /** 密码 */
+    string Pwd = 3;
+    /** 标志 */
+    int32 Flag = 4;
+    /** 头像 */
+    string Avatar = 5;
+    /** NickName */
+    string NickName = 6;
+    /** Sex */
+    string Sex = 7;
+    /** 邮箱 */
+    string Email = 8;
+    /** 手机号码 */
+    string Phone = 9;
+    /** 部门编号 */
+    int64 DeptId = 10;
+    /** 岗位编号 */
+    int64 JobId = 11;
+    /** 状态：1启用、0禁用 */
+    int32 Enabled = 12;
+    /** 最后登录的日期 */
+    int64 LastLogin = 13;
+    /** 创建日期 */
+    int64 CreateTime = 14;
+}
+
+message SavePermUserResponse {
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    int64 Id = 3;
+}
+
+message PermUserId {
+    int64 Value = 1;
+}
+
+message SPermUser {
+    /** ID */
+    int64 Id = 1;
+
+    /** 用户名 */
+    string User = 2;
+
+    /** 密码 */
+    string Pwd = 3;
+
+    /** 标志 */
+    int32 Flag = 4;
+
+    /** 头像 */
+    string Avatar = 5;
+
+    /** NickName */
+    string NickName = 6;
+
+    /** Sex */
+    string Sex = 7;
+
+    /** 邮箱 */
+    string Email = 8;
+
+    /** 手机号码 */
+    string Phone = 9;
+
+    /** 部门编号 */
+    int64 DeptId = 10;
+
+    /** 岗位编号 */
+    int64 JobId = 11;
+
+    /** 状态：1启用、0禁用 */
+    int32 Enabled = 12;
+
+    /** 最后登录的日期 */
+    int64 LastLogin = 13;
+
+    /** 创建日期 */
+    int64 CreateTime = 14;
+
+}
+
+message PermUserPagingRequest {
+    // 分页参数
+    SPagingParams Params = 1;
+}
+
+message PermUserPagingResponse {
+    int64 Total = 1;
+    repeated PagingPermUser Value = 2;
+}
+
+message PagingPermUser {
+    /** ID */
+    int64 Id = 1;
+    /** 用户名 */
+    string User = 2;
+    /** 密码 */
+    string Pwd = 3;
+    /** 标志 */
+    int32 Flag = 4;
+    /** 头像 */
+    string Avatar = 5;
+    /** NickName */
+    string NickName = 6;
+    /** Sex */
+    string Sex = 7;
+    /** 邮箱 */
+    string Email = 8;
+    /** 手机号码 */
+    string Phone = 9;
+    /** 部门编号 */
+    int64 DeptId = 10;
+    /** 岗位编号 */
+    int64 JobId = 11;
+    /** 状态：1启用、0禁用 */
+    int32 Enabled = 12;
+    /** 最后登录的日期 */
+    int64 LastLogin = 13;
+    /** 创建日期 */
+    int64 CreateTime = 14;
+}

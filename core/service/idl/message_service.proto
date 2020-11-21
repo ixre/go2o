@@ -1,46 +1,46 @@
 syntax = "proto3";
 option go_package = ".;proto";
-option java_package="com.github.go2o.rpc";
+option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 import "message/message_dto.proto";
 
 /** 消息服务 */
 service MessageService {
-  // 获取通知项,key
-  rpc GetNotifyItem (String) returns (SNotifyItem) {
-  }
-  // 发送短信
-  rpc SendPhoneMessage (SendMessageRequest) returns (Result) {
-  }
-  // 获取所有通知项
-  rpc GetAllNotifyItem (Empty) returns (NotifyItemListResponse) {
-  }
-  // 保存通知项设置
-  rpc SaveNotifyItem (SNotifyItem) returns (Result) {
-  }
-  // 获取邮件模版
-  rpc GetMailTemplate (Int64) returns (SMailTemplate) {
-  }
-  // 保存邮件模板
-  rpc SaveMailTemplate (SMailTemplate) returns (Result) {
-  }
-  // 获取邮件模板
-  rpc GetMailTemplates (Empty) returns (MailTemplateListResponse) {
-  }
-  // 删除邮件模板
-  rpc DeleteMailTemplate (Int64) returns (Result) {
-  }
-  // 获取邮件绑定
-  //rpc GetConfig() mss.Config
-  // 保存邮件
-  //rpc SaveConfig(conf *mss.Config) error
-  // 发送站内信
-  rpc SendSiteMessage (SendSiteMessageRequest) returns (Result) {
-  }
-  // 获取站内信
-  //rpc GetSiteMessage(Int64) *dto.SiteMessage
+    // 获取通知项,key
+    rpc GetNotifyItem (String) returns (SNotifyItem) {
+    }
+    // 发送短信
+    rpc SendPhoneMessage (SendMessageRequest) returns (Result) {
+    }
+    // 获取所有通知项
+    rpc GetAllNotifyItem (Empty) returns (NotifyItemListResponse) {
+    }
+    // 保存通知项设置
+    rpc SaveNotifyItem (SNotifyItem) returns (Result) {
+    }
+    // 获取邮件模版
+    rpc GetMailTemplate (Int64) returns (SMailTemplate) {
+    }
+    // 保存邮件模板
+    rpc SaveMailTemplate (SMailTemplate) returns (Result) {
+    }
+    // 获取邮件模板
+    rpc GetMailTemplates (Empty) returns (MailTemplateListResponse) {
+    }
+    // 删除邮件模板
+    rpc DeleteMailTemplate (Int64) returns (Result) {
+    }
+    // 获取邮件绑定
+    //rpc GetConfig() mss.Config
+    // 保存邮件
+    //rpc SaveConfig(conf *mss.Config) error
+    // 发送站内信
+    rpc SendSiteMessage (SendSiteMessageRequest) returns (Result) {
+    }
+    // 获取站内信
+    //rpc GetSiteMessage(Int64) *dto.SiteMessage
 
-  // 创建聊天会话
-  //rpc CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error)
+    // 创建聊天会话
+    //rpc CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error)
 }

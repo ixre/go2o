@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types"
+	"github.com/ixre/gof/types/typeconv"
 	"go.etcd.io/etcd/clientv3"
 	"strconv"
 	"time"
@@ -198,7 +198,7 @@ func (e EtcdStorage) RWJson(key string, dst interface{}, src func() interface{},
 }
 
 func (e EtcdStorage) marshal(v interface{}) (string, error) {
-	s, b := types.ToString(v)
+	s, b := typeconv.String(v)
 	if !b {
 		if j, err := json.Marshal(v); err != nil {
 			return "", err

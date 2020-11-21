@@ -1,77 +1,77 @@
 syntax = "proto3";
 option go_package = ".;proto";
-option java_package="com.github.go2o.rpc";
+option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 
 message TransferInRequest {
-  sint64 personId = 1;
-  sint32 transferWith = 2;
-  double amount = 3;
+    sint64 personId = 1;
+    sint32 transferWith = 2;
+    double amount = 3;
 }
 
 // 财务服务
 service FinanceService {
-  // 获取用户的账户信息
-  rpc GetRiseInfo (PersonId) returns (SRiseInfo) {
-  }
-  // 转入
-  rpc RiseTransferIn (TransferInRequest) returns (Result) {
-  }
-  // 转出
-  rpc RiseTransferOut (RiseTransferOutRequest) returns (Result) {
-  }
-  // 结算收益(按日期每天结息)
-  rpc RiseSettleByDay (RiseSettleRequest) returns (Result) {
-  }
-  // 提交转入/转出日志
-  rpc CommitTransfer (CommitTransferRequest) returns (Result) {
-  }
-  // 开通增利服务
-  rpc OpenRiseService (PersonId) returns (Result) {
-  }
+    // 获取用户的账户信息
+    rpc GetRiseInfo (PersonId) returns (SRiseInfo) {
+    }
+    // 转入
+    rpc RiseTransferIn (TransferInRequest) returns (Result) {
+    }
+    // 转出
+    rpc RiseTransferOut (RiseTransferOutRequest) returns (Result) {
+    }
+    // 结算收益(按日期每天结息)
+    rpc RiseSettleByDay (RiseSettleRequest) returns (Result) {
+    }
+    // 提交转入/转出日志
+    rpc CommitTransfer (CommitTransferRequest) returns (Result) {
+    }
+    // 开通增利服务
+    rpc OpenRiseService (PersonId) returns (Result) {
+    }
 }
 
 message PersonId {
-  int64 Value = 1;
+    int64 Value = 1;
 }
 
 // 收益总记录
 message SRiseInfo {
-  // 人员编号
-  int64 PersonId = 1;
-  // 本金及收益的余额
-  double Balance = 2;
-  //　结算金额
-  double SettlementAmount = 3;
-  // 当前的收益
-  double Rise = 4;
-  // 今日转入
-  double TransferIn = 5;
-  // 总金额
-  double TotalAmount = 6;
-  // 总收益
-  double TotalRise = 7;
-  // 结算日期,用于筛选需要结算的数据
-  int64 SettledDate = 8;
-  // 更新时间
-  int64 UpdateTime = 9;
+    // 人员编号
+    int64 PersonId = 1;
+    // 本金及收益的余额
+    double Balance = 2;
+    //　结算金额
+    double SettlementAmount = 3;
+    // 当前的收益
+    double Rise = 4;
+    // 今日转入
+    double TransferIn = 5;
+    // 总金额
+    double TotalAmount = 6;
+    // 总收益
+    double TotalRise = 7;
+    // 结算日期,用于筛选需要结算的数据
+    int64 SettledDate = 8;
+    // 更新时间
+    int64 UpdateTime = 9;
 }
 
 message RiseSettleRequest {
-  int64 PersonId = 1;
-  int64 SettleDay = 2;
-  double Ratio = 3;
+    int64 PersonId = 1;
+    int64 SettleDay = 2;
+    double Ratio = 3;
 }
 message RiseTransferOutRequest {
-  int64 PersonId = 1;
-  int64 TransferWith = 2;
-  double Amount = 3;
-  // 提现银行账号
-  string BankAccountNo = 4;
+    int64 PersonId = 1;
+    int64 TransferWith = 2;
+    double Amount = 3;
+    // 提现银行账号
+    string BankAccountNo = 4;
 }
 
 message CommitTransferRequest {
-  int64 PersonId = 1;
-  int64 LogId = 2;
+    int64 PersonId = 1;
+    int64 LogId = 2;
 }
