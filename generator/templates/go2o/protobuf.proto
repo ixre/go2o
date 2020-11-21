@@ -1,0 +1,64 @@
+#!type:1
+#!target:{{.global.pkg}}/proto/{{.table.Name}}_service.proto
+{{$comment := .table.Comment}}\
+{{$title := .table.Title}}\
+{{$pkType := join .table.Title .table.PkProp ""}}
+syntax = "proto3";
+option go_package = ".;proto";
+option java_package = "{{replace .global.pkg "/" "."}}.rpc";
+
+import "global.proto";
+
+// {{$comment}}服务
+service {{$title}}Service {
+    // 保存{{$comment}}
+    rpc Save{{$title}} (Save{{$title}}Request) returns (Save{{$title}}Response) {
+    }
+    // 获取{{$comment}}
+    rpc Get{{$title}} ({{$pkType}}) returns (S{{$title}}) {
+    }
+    // 删除{{$comment}}
+    rpc Delete{{$title}} ({{$pkType}}) returns (Result) {
+    }
+    // 获取{{$comment}}分页数据
+    rpc PagingShops ({{$title}}PagingRequest) returns ({{$title}}PagingResponse);
+}
+
+message Save{{$title}}Request{
+    {{range $i,$c := .columns}}
+    /** {{$c.Comment}} */
+    {{type "protobuf" $c.Type}} {{$c.Prop}} = {{plus $c.Ordinal 1}};{{end}}
+}
+
+message Save{{$title}}Response{
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    {{type "protobuf" .table.PkType}} {{.table.PkProp}} = 3;
+}
+
+message {{$pkType}}{
+   {{type "protobuf" .table.PkType}} Value = 1;
+}
+
+message S{{$title}}{
+    {{range $i,$c := .columns}}
+    /** {{$c.Comment}} */
+    {{type "protobuf" $c.Type}} {{$c.Prop}} = {{plus $c.Ordinal 1}};
+    {{end}}
+}
+
+message {{$title}}PagingRequest{
+    // 分页参数
+    SPagingParams Params = 1;
+}
+
+message {{$title}}PagingResponse {
+   int64 Total = 1;
+   repeated Paging{{$title}} Value = 2;
+}
+
+message Paging{{$title}}{
+    {{range $i,$c := .columns}}
+    /** {{$c.Comment}} */
+    {{type "protobuf" $c.Type}} {{$c.Prop}} = {{plus $c.Ordinal 1}};{{end}}
+}
