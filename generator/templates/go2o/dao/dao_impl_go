@@ -1,0 +1,123 @@
+package impl
+
+#!type:0#!lang:go
+#!target:{{.global.pkg}}/dao/impl/{{.table.Name}}_dao_impl.go
+{{$structName := join (lower_title .table.Title) "DaoImpl"}}
+
+import(
+	"database/sql"
+	"fmt"
+    "{{.global.pkg}}/model"
+    "{{.global.pkg}}/dao"
+    "database/sql"
+    "github.com/ixre/gof/db/orm"
+    "log"
+)
+
+var _ dao.I{{.table.Title}}Dao = new({{$structName}})
+type {{$structName}} struct{
+    _orm orm.Orm
+}
+
+var {{$structName}}Mapped = false
+
+// Create new {{.table.Title}}Dao
+func New{{.table.Title}}Dao(o orm.Orm) dao.I{{.table.Title}}Dao{
+    if !{{$structName}}Mapped{
+        _ = o.Mapping(model.{{.table.Title}}{},"{{.table.Name}}")
+        {{$structName}}Mapped = true
+    }
+    return &{{$structName}}{
+        _orm:o,
+    }
+}
+// Get {{.table.Comment}}
+func (t *{{$structName}}) Get(primary interface{})*model.{{.table.Title}}{
+    e := model.{{.table.Title}}{}
+    err := t._orm.Get(primary,&e)
+    if err == nil{
+        return &e
+    }
+    if err != sql.ErrNoRows{
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+    }
+    return nil
+}
+
+// GetBy {{.table.Comment}}
+func (t *{{$structName}}) GetBy(where string,v ...interface{})*model.{{.table.Title}}{
+    e := model.{{.table.Title}}{}
+    err := t._orm.GetBy(&e,where,v...)
+    if err == nil{
+        return &e
+    }
+    if err != sql.ErrNoRows{
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+    }
+    return nil
+}
+
+// Count {{.table.Comment}} by condition
+func (t *{{$structName}}) Count(where string,v ...interface{})(int,error){
+   return t._orm.Count(model.{{.table.Title}}{},where,v...)
+}
+
+// Select {{.table.Comment}}
+func (t *{{$structName}}) Select(where string,v ...interface{})[]*model.{{.table.Title}} {
+    list := make([]*model.{{.table.Title}},0)
+    err := t._orm.Select(&list,where,v...)
+    if err != nil && err != sql.ErrNoRows{
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+    }
+    return list
+}
+
+// Save {{.table.Comment}}
+func (t *{{$structName}}) Save(v *model.{{.table.Title}})(int,error){
+    id,err := orm.Save(t._orm,v,int(v.{{title .table.Pk}}))
+    if err != nil && err != sql.ErrNoRows{
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+    }
+    return id,err
+}
+
+// Delete {{.table.Comment}}
+func (t *{{$structName}}) Delete(primary interface{}) error {
+    err := t._orm.DeleteByPk(model.{{.table.Title}}{}, primary)
+    if err != nil && err != sql.ErrNoRows{
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+    }
+    return err
+}
+
+// Batch Delete {{.table.Comment}}
+func (t *{{$structName}}) BatchDelete(where string,v ...interface{})(int64,error) {
+    r,err := t._orm.Delete(model.{{.table.Title}}{},where,v...)
+    if err != nil && err != sql.ErrNoRows{
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+    }
+    return r,err
+}
+
+// Query paging data
+func (t *{{$structName}}) PagingQuery(begin, end int,where, orderBy string) (total int, rows []map[string]interface{}) {
+	if orderBy != "" {
+		orderBy = "ORDER BY " + orderBy
+	}
+	if where == "" {
+	    where = "1=1"
+	}
+	s := fmt.Sprintf(`SELECT COUNT(0) FROM {{.table.Name}} WHERE %s`, where)
+	t._orm.Connector().ExecScalar(s,&total)
+	if total > 0{
+	    s = fmt.Sprintf(`SELECT * FROM {{.table.Name}} WHERE %s %s
+	        {{if eq .global.db "pgsql"}}LIMIT $2 OFFSET $1{{else}}LIMIT $1,$2{{end}}`,
+            where, orderBy)
+        t._orm.Connector().Query(s, func(_rows *sql.Rows) {
+            rows = db.RowsToMarshalMap(_rows)
+        }, begin, end-begin)
+	}else{
+	    rows = make([]map[string]interface{},0)
+	}
+	return total, rows
+}
