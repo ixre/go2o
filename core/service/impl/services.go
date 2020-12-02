@@ -75,6 +75,7 @@ var (
 	CommonDao *dao.CommonDao
 	// APP服务
 	AppService *appServiceImpl
+	RbacService *rbacServiceImpl
 )
 
 // 处理错误

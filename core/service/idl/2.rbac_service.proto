@@ -6,6 +6,18 @@ import "global.proto";
 
 // RBAC服务
 service RBACService {
+    // 保存部门
+    rpc SavePermDept (SavePermDeptRequest) returns (SavePermDeptResponse) {
+    }
+    // 获取部门
+    rpc GetPermDept (PermDeptId) returns (SPermDept) {
+    }
+    // 删除部门
+    rpc DeletePermDept (PermDeptId) returns (Result) {
+    }
+    // 获取部门分页数据
+    rpc PagingPermDept (PermDeptPagingRequest) returns (PermDeptPagingResponse);
+
 }
 
 message RoleId {
@@ -15,3 +27,71 @@ message UserId {
     int64 Value = 1;
 }
 
+
+
+message SavePermDeptRequest{
+
+    /** ID */
+    int64 Id = 1;
+    /** 名称 */
+    string Name = 2;
+    /** 上级部门 */
+    int64 Pid = 3;
+    /** 状态 */
+    int32 Enabled = 4;
+    /** 创建日期 */
+    int64 CreateTime = 5;
+}
+
+message SavePermDeptResponse{
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    int64 Id = 3;
+}
+
+message PermDeptId{
+    int64 Value = 1;
+}
+
+message SPermDept{
+
+    /** ID */
+    int64 Id = 1;
+
+    /** 名称 */
+    string Name = 2;
+
+    /** 上级部门 */
+    int64 Pid = 3;
+
+    /** 状态 */
+    int32 Enabled = 4;
+
+    /** 创建日期 */
+    int64 CreateTime = 5;
+
+}
+
+message PermDeptPagingRequest{
+    // 分页参数
+    SPagingParams Params = 1;
+}
+
+message PermDeptPagingResponse {
+    int64 Total = 1;
+    repeated PagingPermDept Value = 2;
+}
+
+message PagingPermDept{
+
+    /** ID */
+    int64 Id = 1;
+    /** 名称 */
+    string Name = 2;
+    /** 上级部门 */
+    int64 Pid = 3;
+    /** 状态 */
+    int32 Enabled = 4;
+    /** 创建日期 */
+    int64 CreateTime = 5;
+}

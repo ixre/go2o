@@ -28,7 +28,7 @@ import (
 	"{{.global.pkg}}/dao"
 	"{{.global.pkg}}/dao/impl"
 	"{{.global.pkg}}/dao/model"
-	"{{.global.pkg}}/proto"
+	"{{.global.pkg}}/service/proto"
 	"time"
 )
 
@@ -102,7 +102,7 @@ func (a *{{$structName}}) Delete{{$title}}(_ context.Context, id *proto.{{$pkTyp
 	return a.error(err), nil
 }
 
-func (a *{{$structName}}) PagingShops(_ context.Context, r *proto.{{$title}}PagingRequest) (*proto.{{$title}}PagingResponse, error) {
+func (a *{{$structName}}) Paging{{$title}}(_ context.Context, r *proto.{{$title}}PagingRequest) (*proto.{{$title}}PagingResponse, error) {
 	total, rows := a.dao.PagingQuery(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,

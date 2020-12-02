@@ -2,29 +2,29 @@ package impl
 
 #!type:0#!lang:go
 #!target:{{.global.pkg}}/dao/impl/{{.table.Name}}_dao_impl.go
-{{$structName := join (lower_title .table.Title) "DaoImpl"}}
-
+{{$structName := join (lower_title $title) "DaoImpl"}}
+{{$title := $title}}
 import(
 	"database/sql"
 	"fmt"
-    "{{.global.pkg}}/model"
-    "{{.global.pkg}}/dao"
-    "database/sql"
+    "{{pkg "go" .global.pkg}}/dao/model"
+    "{{pkg "go" .global.pkg}}/dao"
+    "github.com/ixre/gof/db"
     "github.com/ixre/gof/db/orm"
     "log"
 )
 
-var _ dao.I{{.table.Title}}Dao = new({{$structName}})
+var _ dao.I{{$title}}Dao = new({{$structName}})
 type {{$structName}} struct{
     _orm orm.Orm
 }
 
 var {{$structName}}Mapped = false
 
-// Create new {{.table.Title}}Dao
-func New{{.table.Title}}Dao(o orm.Orm) dao.I{{.table.Title}}Dao{
+// Create new {{$title}}Dao
+func New{{$title}}Dao(o orm.Orm) dao.I{{$title}}Dao{
     if !{{$structName}}Mapped{
-        _ = o.Mapping(model.{{.table.Title}}{},"{{.table.Name}}")
+        _ = o.Mapping(model.{{$title}}{},"{{.table.Name}}")
         {{$structName}}Mapped = true
     }
     return &{{$structName}}{
@@ -32,69 +32,69 @@ func New{{.table.Title}}Dao(o orm.Orm) dao.I{{.table.Title}}Dao{
     }
 }
 // Get {{.table.Comment}}
-func (t *{{$structName}}) Get(primary interface{})*model.{{.table.Title}}{
-    e := model.{{.table.Title}}{}
+func (t *{{$structName}}) Get(primary interface{})*model.{{$title}}{
+    e := model.{{$title}}{}
     err := t._orm.Get(primary,&e)
     if err == nil{
         return &e
     }
     if err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
     return nil
 }
 
 // GetBy {{.table.Comment}}
-func (t *{{$structName}}) GetBy(where string,v ...interface{})*model.{{.table.Title}}{
-    e := model.{{.table.Title}}{}
+func (t *{{$structName}}) GetBy(where string,v ...interface{})*model.{{$title}}{
+    e := model.{{$title}}{}
     err := t._orm.GetBy(&e,where,v...)
     if err == nil{
         return &e
     }
     if err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
     return nil
 }
 
 // Count {{.table.Comment}} by condition
 func (t *{{$structName}}) Count(where string,v ...interface{})(int,error){
-   return t._orm.Count(model.{{.table.Title}}{},where,v...)
+   return t._orm.Count(model.{{$title}}{},where,v...)
 }
 
 // Select {{.table.Comment}}
-func (t *{{$structName}}) Select(where string,v ...interface{})[]*model.{{.table.Title}} {
-    list := make([]*model.{{.table.Title}},0)
+func (t *{{$structName}}) Select(where string,v ...interface{})[]*model.{{$title}} {
+    list := make([]*model.{{$title}},0)
     err := t._orm.Select(&list,where,v...)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
     return list
 }
 
 // Save {{.table.Comment}}
-func (t *{{$structName}}) Save(v *model.{{.table.Title}})(int,error){
+func (t *{{$structName}}) Save(v *model.{{$title}})(int,error){
     id,err := orm.Save(t._orm,v,int(v.{{title .table.Pk}}))
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
     return id,err
 }
 
 // Delete {{.table.Comment}}
 func (t *{{$structName}}) Delete(primary interface{}) error {
-    err := t._orm.DeleteByPk(model.{{.table.Title}}{}, primary)
+    err := t._orm.DeleteByPk(model.{{$title}}{}, primary)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
     return err
 }
 
 // Batch Delete {{.table.Comment}}
 func (t *{{$structName}}) BatchDelete(where string,v ...interface{})(int64,error) {
-    r,err := t._orm.Delete(model.{{.table.Title}}{},where,v...)
+    r,err := t._orm.Delete(model.{{$title}}{},where,v...)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
     return r,err
 }
