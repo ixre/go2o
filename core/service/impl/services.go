@@ -169,6 +169,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	PortalService = NewPortalService(CommonDao)
 	QueryService = NewQueryService(orm, sto)
 	AppService = NewAppService(sto, orm)
+	RbacService = NewRbacService(sto,orm)
 }
 
 // 服务工具类，实现的服务组合此类,可直接调用其方法

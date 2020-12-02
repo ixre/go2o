@@ -34,7 +34,7 @@ func (m *RoleId) Reset()         { *m = RoleId{} }
 func (m *RoleId) String() string { return proto.CompactTextString(m) }
 func (*RoleId) ProtoMessage()    {}
 func (*RoleId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{0}
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{0}
 }
 func (m *RoleId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RoleId.Unmarshal(m, b)
@@ -72,7 +72,7 @@ func (m *UserId) Reset()         { *m = UserId{} }
 func (m *UserId) String() string { return proto.CompactTextString(m) }
 func (*UserId) ProtoMessage()    {}
 func (*UserId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{1}
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{1}
 }
 func (m *UserId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserId.Unmarshal(m, b)
@@ -99,6 +99,68 @@ func (m *UserId) GetValue() int64 {
 	return 0
 }
 
+type RbacTree struct {
+	Id                   int64       `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                 string      `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Pid                  int64       `protobuf:"varint,3,opt,name=pid,proto3" json:"pid,omitempty"`
+	Children             []*RbacTree `protobuf:"bytes,4,rep,name=Children,proto3" json:"Children,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *RbacTree) Reset()         { *m = RbacTree{} }
+func (m *RbacTree) String() string { return proto.CompactTextString(m) }
+func (*RbacTree) ProtoMessage()    {}
+func (*RbacTree) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{2}
+}
+func (m *RbacTree) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RbacTree.Unmarshal(m, b)
+}
+func (m *RbacTree) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RbacTree.Marshal(b, m, deterministic)
+}
+func (dst *RbacTree) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RbacTree.Merge(dst, src)
+}
+func (m *RbacTree) XXX_Size() int {
+	return xxx_messageInfo_RbacTree.Size(m)
+}
+func (m *RbacTree) XXX_DiscardUnknown() {
+	xxx_messageInfo_RbacTree.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RbacTree proto.InternalMessageInfo
+
+func (m *RbacTree) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *RbacTree) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *RbacTree) GetPid() int64 {
+	if m != nil {
+		return m.Pid
+	}
+	return 0
+}
+
+func (m *RbacTree) GetChildren() []*RbacTree {
+	if m != nil {
+		return m.Children
+	}
+	return nil
+}
+
 type SavePermDeptRequest struct {
 	// * ID
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
@@ -119,7 +181,7 @@ func (m *SavePermDeptRequest) Reset()         { *m = SavePermDeptRequest{} }
 func (m *SavePermDeptRequest) String() string { return proto.CompactTextString(m) }
 func (*SavePermDeptRequest) ProtoMessage()    {}
 func (*SavePermDeptRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{2}
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{3}
 }
 func (m *SavePermDeptRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermDeptRequest.Unmarshal(m, b)
@@ -187,7 +249,7 @@ func (m *SavePermDeptResponse) Reset()         { *m = SavePermDeptResponse{} }
 func (m *SavePermDeptResponse) String() string { return proto.CompactTextString(m) }
 func (*SavePermDeptResponse) ProtoMessage()    {}
 func (*SavePermDeptResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{3}
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{4}
 }
 func (m *SavePermDeptResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermDeptResponse.Unmarshal(m, b)
@@ -239,7 +301,7 @@ func (m *PermDeptId) Reset()         { *m = PermDeptId{} }
 func (m *PermDeptId) String() string { return proto.CompactTextString(m) }
 func (*PermDeptId) ProtoMessage()    {}
 func (*PermDeptId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{4}
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{5}
 }
 func (m *PermDeptId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermDeptId.Unmarshal(m, b)
@@ -286,7 +348,7 @@ func (m *SPermDept) Reset()         { *m = SPermDept{} }
 func (m *SPermDept) String() string { return proto.CompactTextString(m) }
 func (*SPermDept) ProtoMessage()    {}
 func (*SPermDept) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{5}
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{6}
 }
 func (m *SPermDept) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPermDept.Unmarshal(m, b)
@@ -341,176 +403,84 @@ func (m *SPermDept) GetCreateTime() int64 {
 	return 0
 }
 
-type PermDeptPagingRequest struct {
-	// 分页参数
-	Params               *SPagingParams `protobuf:"bytes,1,opt,name=Params,proto3" json:"Params,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
-}
-
-func (m *PermDeptPagingRequest) Reset()         { *m = PermDeptPagingRequest{} }
-func (m *PermDeptPagingRequest) String() string { return proto.CompactTextString(m) }
-func (*PermDeptPagingRequest) ProtoMessage()    {}
-func (*PermDeptPagingRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{6}
-}
-func (m *PermDeptPagingRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_PermDeptPagingRequest.Unmarshal(m, b)
-}
-func (m *PermDeptPagingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_PermDeptPagingRequest.Marshal(b, m, deterministic)
-}
-func (dst *PermDeptPagingRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PermDeptPagingRequest.Merge(dst, src)
-}
-func (m *PermDeptPagingRequest) XXX_Size() int {
-	return xxx_messageInfo_PermDeptPagingRequest.Size(m)
-}
-func (m *PermDeptPagingRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_PermDeptPagingRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PermDeptPagingRequest proto.InternalMessageInfo
-
-func (m *PermDeptPagingRequest) GetParams() *SPagingParams {
-	if m != nil {
-		return m.Params
-	}
-	return nil
-}
-
-type PermDeptPagingResponse struct {
-	Total                int64             `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Value                []*PagingPermDept `protobuf:"bytes,2,rep,name=Value,proto3" json:"Value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *PermDeptPagingResponse) Reset()         { *m = PermDeptPagingResponse{} }
-func (m *PermDeptPagingResponse) String() string { return proto.CompactTextString(m) }
-func (*PermDeptPagingResponse) ProtoMessage()    {}
-func (*PermDeptPagingResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{7}
-}
-func (m *PermDeptPagingResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_PermDeptPagingResponse.Unmarshal(m, b)
-}
-func (m *PermDeptPagingResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_PermDeptPagingResponse.Marshal(b, m, deterministic)
-}
-func (dst *PermDeptPagingResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PermDeptPagingResponse.Merge(dst, src)
-}
-func (m *PermDeptPagingResponse) XXX_Size() int {
-	return xxx_messageInfo_PermDeptPagingResponse.Size(m)
-}
-func (m *PermDeptPagingResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_PermDeptPagingResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PermDeptPagingResponse proto.InternalMessageInfo
-
-func (m *PermDeptPagingResponse) GetTotal() int64 {
-	if m != nil {
-		return m.Total
-	}
-	return 0
-}
-
-func (m *PermDeptPagingResponse) GetValue() []*PagingPermDept {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-type PagingPermDept struct {
-	// * ID
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	// * 名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	// * 上级部门
-	Pid int64 `protobuf:"varint,3,opt,name=Pid,proto3" json:"Pid,omitempty"`
-	// * 状态
-	Enabled int32 `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
-	// * 创建日期
-	CreateTime           int64    `protobuf:"varint,5,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+type QueryPermDeptRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *PagingPermDept) Reset()         { *m = PagingPermDept{} }
-func (m *PagingPermDept) String() string { return proto.CompactTextString(m) }
-func (*PagingPermDept) ProtoMessage()    {}
-func (*PagingPermDept) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00, []int{8}
+func (m *QueryPermDeptRequest) Reset()         { *m = QueryPermDeptRequest{} }
+func (m *QueryPermDeptRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPermDeptRequest) ProtoMessage()    {}
+func (*QueryPermDeptRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{7}
 }
-func (m *PagingPermDept) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_PagingPermDept.Unmarshal(m, b)
+func (m *QueryPermDeptRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryPermDeptRequest.Unmarshal(m, b)
 }
-func (m *PagingPermDept) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_PagingPermDept.Marshal(b, m, deterministic)
+func (m *QueryPermDeptRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryPermDeptRequest.Marshal(b, m, deterministic)
 }
-func (dst *PagingPermDept) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PagingPermDept.Merge(dst, src)
+func (dst *QueryPermDeptRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPermDeptRequest.Merge(dst, src)
 }
-func (m *PagingPermDept) XXX_Size() int {
-	return xxx_messageInfo_PagingPermDept.Size(m)
+func (m *QueryPermDeptRequest) XXX_Size() int {
+	return xxx_messageInfo_QueryPermDeptRequest.Size(m)
 }
-func (m *PagingPermDept) XXX_DiscardUnknown() {
-	xxx_messageInfo_PagingPermDept.DiscardUnknown(m)
+func (m *QueryPermDeptRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPermDeptRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PagingPermDept proto.InternalMessageInfo
+var xxx_messageInfo_QueryPermDeptRequest proto.InternalMessageInfo
 
-func (m *PagingPermDept) GetId() int64 {
+type QueryPermDeptResponse struct {
+	List                 []*SPermDept `protobuf:"bytes,1,rep,name=List,proto3" json:"List,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *QueryPermDeptResponse) Reset()         { *m = QueryPermDeptResponse{} }
+func (m *QueryPermDeptResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPermDeptResponse) ProtoMessage()    {}
+func (*QueryPermDeptResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2_rbac_service_f553a45a5377b596, []int{8}
+}
+func (m *QueryPermDeptResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryPermDeptResponse.Unmarshal(m, b)
+}
+func (m *QueryPermDeptResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryPermDeptResponse.Marshal(b, m, deterministic)
+}
+func (dst *QueryPermDeptResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPermDeptResponse.Merge(dst, src)
+}
+func (m *QueryPermDeptResponse) XXX_Size() int {
+	return xxx_messageInfo_QueryPermDeptResponse.Size(m)
+}
+func (m *QueryPermDeptResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPermDeptResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPermDeptResponse proto.InternalMessageInfo
+
+func (m *QueryPermDeptResponse) GetList() []*SPermDept {
 	if m != nil {
-		return m.Id
+		return m.List
 	}
-	return 0
-}
-
-func (m *PagingPermDept) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *PagingPermDept) GetPid() int64 {
-	if m != nil {
-		return m.Pid
-	}
-	return 0
-}
-
-func (m *PagingPermDept) GetEnabled() int32 {
-	if m != nil {
-		return m.Enabled
-	}
-	return 0
-}
-
-func (m *PagingPermDept) GetCreateTime() int64 {
-	if m != nil {
-		return m.CreateTime
-	}
-	return 0
+	return nil
 }
 
 func init() {
 	proto.RegisterType((*RoleId)(nil), "RoleId")
 	proto.RegisterType((*UserId)(nil), "UserId")
+	proto.RegisterType((*RbacTree)(nil), "RbacTree")
 	proto.RegisterType((*SavePermDeptRequest)(nil), "SavePermDeptRequest")
 	proto.RegisterType((*SavePermDeptResponse)(nil), "SavePermDeptResponse")
 	proto.RegisterType((*PermDeptId)(nil), "PermDeptId")
 	proto.RegisterType((*SPermDept)(nil), "SPermDept")
-	proto.RegisterType((*PermDeptPagingRequest)(nil), "PermDeptPagingRequest")
-	proto.RegisterType((*PermDeptPagingResponse)(nil), "PermDeptPagingResponse")
-	proto.RegisterType((*PagingPermDept)(nil), "PagingPermDept")
+	proto.RegisterType((*QueryPermDeptRequest)(nil), "QueryPermDeptRequest")
+	proto.RegisterType((*QueryPermDeptResponse)(nil), "QueryPermDeptResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -525,14 +495,16 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type RBACServiceClient interface {
+	// 部分树形数据
+	DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RbacTree, error)
 	// 保存部门
 	SavePermDept(ctx context.Context, in *SavePermDeptRequest, opts ...grpc.CallOption) (*SavePermDeptResponse, error)
 	// 获取部门
 	GetPermDept(ctx context.Context, in *PermDeptId, opts ...grpc.CallOption) (*SPermDept, error)
 	// 删除部门
 	DeletePermDept(ctx context.Context, in *PermDeptId, opts ...grpc.CallOption) (*Result, error)
-	// 获取部门分页数据
-	PagingPermDept(ctx context.Context, in *PermDeptPagingRequest, opts ...grpc.CallOption) (*PermDeptPagingResponse, error)
+	// 获取部门列表
+	QueryPermDeptList(ctx context.Context, in *QueryPermDeptRequest, opts ...grpc.CallOption) (*QueryPermDeptResponse, error)
 }
 
 type rBACServiceClient struct {
@@ -541,6 +513,15 @@ type rBACServiceClient struct {
 
 func NewRBACServiceClient(cc *grpc.ClientConn) RBACServiceClient {
 	return &rBACServiceClient{cc}
+}
+
+func (c *rBACServiceClient) DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RbacTree, error) {
+	out := new(RbacTree)
+	err := c.cc.Invoke(ctx, "/RBACService/DepartTree", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *rBACServiceClient) SavePermDept(ctx context.Context, in *SavePermDeptRequest, opts ...grpc.CallOption) (*SavePermDeptResponse, error) {
@@ -570,9 +551,9 @@ func (c *rBACServiceClient) DeletePermDept(ctx context.Context, in *PermDeptId, 
 	return out, nil
 }
 
-func (c *rBACServiceClient) PagingPermDept(ctx context.Context, in *PermDeptPagingRequest, opts ...grpc.CallOption) (*PermDeptPagingResponse, error) {
-	out := new(PermDeptPagingResponse)
-	err := c.cc.Invoke(ctx, "/RBACService/PagingPermDept", in, out, opts...)
+func (c *rBACServiceClient) QueryPermDeptList(ctx context.Context, in *QueryPermDeptRequest, opts ...grpc.CallOption) (*QueryPermDeptResponse, error) {
+	out := new(QueryPermDeptResponse)
+	err := c.cc.Invoke(ctx, "/RBACService/QueryPermDeptList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -581,18 +562,38 @@ func (c *rBACServiceClient) PagingPermDept(ctx context.Context, in *PermDeptPagi
 
 // RBACServiceServer is the server API for RBACService service.
 type RBACServiceServer interface {
+	// 部分树形数据
+	DepartTree(context.Context, *Empty) (*RbacTree, error)
 	// 保存部门
 	SavePermDept(context.Context, *SavePermDeptRequest) (*SavePermDeptResponse, error)
 	// 获取部门
 	GetPermDept(context.Context, *PermDeptId) (*SPermDept, error)
 	// 删除部门
 	DeletePermDept(context.Context, *PermDeptId) (*Result, error)
-	// 获取部门分页数据
-	PagingPermDept(context.Context, *PermDeptPagingRequest) (*PermDeptPagingResponse, error)
+	// 获取部门列表
+	QueryPermDeptList(context.Context, *QueryPermDeptRequest) (*QueryPermDeptResponse, error)
 }
 
 func RegisterRBACServiceServer(s *grpc.Server, srv RBACServiceServer) {
 	s.RegisterService(&_RBACService_serviceDesc, srv)
+}
+
+func _RBACService_DepartTree_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RBACServiceServer).DepartTree(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/RBACService/DepartTree",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RBACServiceServer).DepartTree(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _RBACService_SavePermDept_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -649,20 +650,20 @@ func _RBACService_DeletePermDept_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RBACService_PagingPermDept_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermDeptPagingRequest)
+func _RBACService_QueryPermDeptList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPermDeptRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RBACServiceServer).PagingPermDept(ctx, in)
+		return srv.(RBACServiceServer).QueryPermDeptList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/RBACService/PagingPermDept",
+		FullMethod: "/RBACService/QueryPermDeptList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RBACServiceServer).PagingPermDept(ctx, req.(*PermDeptPagingRequest))
+		return srv.(RBACServiceServer).QueryPermDeptList(ctx, req.(*QueryPermDeptRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -671,6 +672,10 @@ var _RBACService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "RBACService",
 	HandlerType: (*RBACServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "DepartTree",
+			Handler:    _RBACService_DepartTree_Handler,
+		},
 		{
 			MethodName: "SavePermDept",
 			Handler:    _RBACService_SavePermDept_Handler,
@@ -684,8 +689,8 @@ var _RBACService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _RBACService_DeletePermDept_Handler,
 		},
 		{
-			MethodName: "PagingPermDept",
-			Handler:    _RBACService_PagingPermDept_Handler,
+			MethodName: "QueryPermDeptList",
+			Handler:    _RBACService_QueryPermDeptList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -693,37 +698,39 @@ var _RBACService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("2.rbac_service.proto", fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00)
+	proto.RegisterFile("2.rbac_service.proto", fileDescriptor_2_rbac_service_f553a45a5377b596)
 }
 
-var fileDescriptor_2_rbac_service_6f6f2c0dc61b8d00 = []byte{
-	// 433 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x53, 0x41, 0x6f, 0xd3, 0x30,
-	0x14, 0x26, 0xcd, 0xda, 0x6a, 0x2f, 0x53, 0x41, 0x5e, 0x56, 0xa2, 0x1e, 0xaa, 0x2a, 0x12, 0x28,
-	0x27, 0x1f, 0xc2, 0x11, 0x21, 0xb4, 0x75, 0x13, 0xea, 0x01, 0x54, 0xb9, 0x1b, 0x42, 0x5c, 0x90,
-	0xd3, 0x3c, 0x85, 0x48, 0x4e, 0x5d, 0x6c, 0x77, 0x17, 0x2e, 0x5c, 0xf8, 0xa5, 0xfc, 0x11, 0x54,
-	0xc7, 0x1e, 0x1b, 0xcb, 0xae, 0x3d, 0xc5, 0x9f, 0xdf, 0xe7, 0x97, 0xcf, 0xdf, 0xfb, 0x0c, 0x71,
-	0x4e, 0x55, 0xc1, 0xd7, 0xdf, 0x34, 0xaa, 0xdb, 0x7a, 0x8d, 0x74, 0xab, 0xa4, 0x91, 0x93, 0x93,
-	0x4a, 0xc8, 0x82, 0x8b, 0x16, 0xa5, 0x53, 0x18, 0x30, 0x29, 0x70, 0x51, 0x92, 0x18, 0xfa, 0x9f,
-	0xb9, 0xd8, 0x61, 0x12, 0xcc, 0x82, 0x2c, 0x64, 0x2d, 0xd8, 0xd7, 0x6f, 0x34, 0xaa, 0x27, 0xeb,
-	0xbf, 0x03, 0x38, 0x5d, 0xf1, 0x5b, 0x5c, 0xa2, 0x6a, 0x2e, 0x71, 0x6b, 0x18, 0xfe, 0xd8, 0xa1,
-	0x36, 0x64, 0x04, 0xbd, 0x45, 0xe9, 0xa8, 0xbd, 0x45, 0x49, 0x08, 0x1c, 0x7d, 0xe2, 0x0d, 0x26,
-	0xbd, 0x59, 0x90, 0x1d, 0x33, 0xbb, 0x26, 0x2f, 0x20, 0x5c, 0xd6, 0x65, 0x12, 0x5a, 0xd2, 0x7e,
-	0x49, 0x12, 0x18, 0x5e, 0x6d, 0x78, 0x21, 0xb0, 0x4c, 0x8e, 0x66, 0x41, 0xd6, 0x67, 0x1e, 0x92,
-	0x29, 0xc0, 0x5c, 0x21, 0x37, 0x78, 0x5d, 0x37, 0x98, 0xf4, 0xed, 0x91, 0x7b, 0x3b, 0xe9, 0x17,
-	0x88, 0x1f, 0xca, 0xd0, 0x5b, 0xb9, 0xd1, 0x68, 0x3b, 0x2a, 0x35, 0x97, 0xa5, 0xd7, 0xed, 0x21,
-	0x19, 0xc3, 0xe0, 0x4a, 0xa9, 0x8f, 0xba, 0x72, 0x9a, 0x1c, 0x72, 0xca, 0x43, 0xaf, 0x3c, 0x4d,
-	0x01, 0x7c, 0xd7, 0x27, 0x5d, 0xf8, 0x09, 0xc7, 0x2b, 0x4f, 0x3a, 0xf8, 0xd5, 0xdf, 0xc3, 0x99,
-	0xff, 0xf7, 0x92, 0x57, 0xf5, 0xa6, 0xf2, 0x33, 0x78, 0x0d, 0x83, 0x25, 0x57, 0xbc, 0xd1, 0x56,
-	0x4c, 0x94, 0x8f, 0xe8, 0xaa, 0x25, 0xb4, 0xbb, 0xcc, 0x55, 0xd3, 0x1b, 0x18, 0xff, 0xdf, 0xc0,
-	0xb9, 0x17, 0x43, 0xff, 0x5a, 0x1a, 0x2e, 0xfc, 0x6d, 0x2d, 0x20, 0xaf, 0xbc, 0x07, 0xbd, 0x59,
-	0x98, 0x45, 0xf9, 0x73, 0xea, 0xba, 0x7a, 0xef, 0x9d, 0x29, 0xbf, 0x02, 0x18, 0x3d, 0xac, 0x1c,
-	0xda, 0x9a, 0xfc, 0x4f, 0x00, 0x11, 0xbb, 0x38, 0x9f, 0xaf, 0xda, 0x17, 0x40, 0xde, 0xc1, 0xc9,
-	0xfd, 0x94, 0x90, 0x98, 0x76, 0x64, 0x77, 0x72, 0x46, 0xbb, 0xa2, 0x94, 0x3e, 0x23, 0x19, 0x44,
-	0x1f, 0xd0, 0xdc, 0x9d, 0x8e, 0xe8, 0xbf, 0x60, 0x4c, 0x80, 0xde, 0x25, 0xc0, 0x32, 0x47, 0x97,
-	0x28, 0xd0, 0x60, 0x37, 0x79, 0x48, 0x19, 0xea, 0x9d, 0xd8, 0x33, 0xcf, 0x1f, 0x99, 0x34, 0xa6,
-	0x9d, 0xe3, 0x9c, 0xbc, 0xa4, 0xdd, 0x53, 0xba, 0x98, 0xc2, 0xe9, 0x5a, 0x36, 0xb4, 0xaa, 0xcd,
-	0xf7, 0x5d, 0x41, 0x2b, 0x99, 0x4b, 0xaa, 0xb6, 0xeb, 0xaf, 0x43, 0xfa, 0xd6, 0xbe, 0xf1, 0x62,
-	0x60, 0x3f, 0x6f, 0xfe, 0x06, 0x00, 0x00, 0xff, 0xff, 0xdd, 0xce, 0xd1, 0x1e, 0x10, 0x04, 0x00,
+var fileDescriptor_2_rbac_service_f553a45a5377b596 = []byte{
+	// 465 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x53, 0x4d, 0x6b, 0xdb, 0x40,
+	0x10, 0x8d, 0x2c, 0x7f, 0xc4, 0xe3, 0x10, 0xda, 0x8d, 0x6c, 0x84, 0x0e, 0xc6, 0x15, 0x14, 0x74,
+	0xda, 0x83, 0x7b, 0xe8, 0xa1, 0xf4, 0xd0, 0xd8, 0xa6, 0x18, 0xda, 0xe0, 0xae, 0xd3, 0x52, 0x7a,
+	0x29, 0x2b, 0x69, 0x50, 0x16, 0x24, 0xaf, 0xba, 0x5a, 0x05, 0x42, 0xcf, 0x3d, 0xf4, 0x5f, 0x17,
+	0xad, 0x25, 0xdb, 0x09, 0xca, 0xb5, 0x27, 0xed, 0xec, 0xbc, 0x9d, 0xf7, 0xe6, 0xcd, 0x08, 0x9c,
+	0x39, 0x55, 0x21, 0x8f, 0x7e, 0x16, 0xa8, 0xee, 0x45, 0x84, 0x34, 0x57, 0x52, 0x4b, 0xef, 0x22,
+	0x49, 0x65, 0xc8, 0xd3, 0x7d, 0xe4, 0x4f, 0xa1, 0xcf, 0x64, 0x8a, 0xeb, 0x98, 0x38, 0xd0, 0xfb,
+	0xc6, 0xd3, 0x12, 0x5d, 0x6b, 0x66, 0x05, 0x36, 0xdb, 0x07, 0x55, 0xfe, 0x6b, 0x81, 0xea, 0xd9,
+	0x7c, 0x02, 0xe7, 0x2c, 0xe4, 0xd1, 0xad, 0x42, 0x24, 0x97, 0xd0, 0x11, 0x71, 0x9d, 0xee, 0x88,
+	0x98, 0x10, 0xe8, 0xee, 0x78, 0x86, 0x6e, 0x67, 0x66, 0x05, 0x43, 0x66, 0xce, 0xe4, 0x05, 0xd8,
+	0xb9, 0x88, 0x5d, 0xdb, 0x80, 0xaa, 0x23, 0x79, 0x0d, 0xe7, 0x8b, 0x3b, 0x91, 0xc6, 0x0a, 0x77,
+	0x6e, 0x77, 0x66, 0x07, 0xa3, 0xf9, 0x90, 0x36, 0x25, 0xd9, 0x21, 0xe5, 0xff, 0xb1, 0xe0, 0x6a,
+	0xcb, 0xef, 0x71, 0x83, 0x2a, 0x5b, 0x62, 0xae, 0x19, 0xfe, 0x2a, 0xb1, 0xd0, 0x15, 0xe9, 0xfa,
+	0x40, 0xba, 0x36, 0xa4, 0x37, 0x27, 0xa4, 0x37, 0x35, 0xe9, 0xe6, 0x48, 0xba, 0x11, 0x31, 0x71,
+	0x61, 0xb0, 0xda, 0xf1, 0x30, 0xc5, 0xd8, 0xed, 0xce, 0xac, 0xa0, 0xc7, 0x9a, 0x90, 0x4c, 0x01,
+	0x16, 0x0a, 0xb9, 0xc6, 0x5b, 0x91, 0xa1, 0xdb, 0x33, 0x4f, 0x4e, 0x6e, 0xfc, 0xef, 0xe0, 0x3c,
+	0x96, 0x51, 0xe4, 0x72, 0x57, 0xa0, 0xa9, 0xa8, 0xd4, 0x42, 0xc6, 0x8d, 0x41, 0x4d, 0x48, 0x26,
+	0xd0, 0x5f, 0x29, 0xf5, 0xb9, 0x48, 0x6a, 0x4d, 0x75, 0x54, 0x2b, 0xb7, 0x1b, 0xe5, 0xbe, 0x0f,
+	0xd0, 0x54, 0x7d, 0xd6, 0xee, 0xdf, 0x30, 0xdc, 0x36, 0xa0, 0xff, 0xde, 0xfa, 0x04, 0x9c, 0x2f,
+	0x25, 0xaa, 0x87, 0x27, 0x23, 0xf0, 0xdf, 0xc2, 0xf8, 0xc9, 0x7d, 0xed, 0xc9, 0x14, 0xba, 0x9f,
+	0x44, 0xa1, 0x5d, 0xcb, 0x8c, 0x15, 0xe8, 0x41, 0x3a, 0x33, 0xf7, 0xf3, 0xbf, 0x1d, 0x18, 0xb1,
+	0xeb, 0x0f, 0x8b, 0xed, 0x7e, 0x41, 0xc9, 0x2b, 0x80, 0x25, 0xe6, 0x5c, 0x69, 0xb3, 0x4e, 0x7d,
+	0xba, 0xca, 0x72, 0xfd, 0xe0, 0x1d, 0xd7, 0xc1, 0x3f, 0x23, 0xef, 0xe1, 0xe2, 0xd4, 0x7e, 0xe2,
+	0xd0, 0x96, 0xa5, 0xf0, 0xc6, 0xb4, 0x6d, 0x46, 0xfe, 0x19, 0x09, 0x60, 0xf4, 0x11, 0xf5, 0xe1,
+	0xf5, 0x88, 0x1e, 0x1d, 0xf7, 0x4e, 0xf4, 0x19, 0xe4, 0xe5, 0x12, 0x53, 0xd4, 0xd8, 0x0e, 0x1e,
+	0x50, 0x86, 0x45, 0x99, 0x56, 0xc8, 0x25, 0xbc, 0x7c, 0xd4, 0x7e, 0xd5, 0x1a, 0x19, 0xd3, 0x36,
+	0xab, 0xbc, 0x09, 0x6d, 0x75, 0xca, 0x3f, 0xbb, 0x9e, 0xc2, 0x55, 0x24, 0x33, 0x9a, 0x08, 0x7d,
+	0x57, 0x86, 0x34, 0x91, 0x73, 0x49, 0x55, 0x1e, 0xfd, 0x18, 0xd0, 0x77, 0xe6, 0x47, 0x0d, 0xfb,
+	0xe6, 0xf3, 0xe6, 0x5f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x6e, 0x12, 0x73, 0xd5, 0x03, 0x00,
 	0x00,
 }
