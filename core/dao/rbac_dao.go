@@ -23,6 +23,21 @@ type IRbacDao interface{
     DeletePermDept(primary interface{}) error
     // Batch Delete 部门
     BatchDeletePermDept(where string, v ...interface{}) (int64, error)
+
+    // Get 岗位
+    GetPermJob(primary interface{}) *model.PermJob
+    // GetBy 岗位
+    GetPermJobBy(where string, v ...interface{}) *model.PermJob
+    // Count 岗位 by condition
+    CountPermJob(where string, v ...interface{}) (int, error)
+    // Select 岗位
+    SelectPermJob(where string, v ...interface{}) []*model.PermJob
+    // Save 岗位
+    SavePermJob(v *model.PermJob) (int, error)
+    // Delete 岗位
+    DeletePermJob(primary interface{}) error
+    // Batch Delete 岗位
+    BatchDeletePermJob(where string, v ...interface{}) (int64, error)
     // Query paging data
-    PagingQueryPermDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
-}
+    PagingQueryPermJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
+ }

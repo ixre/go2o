@@ -23,6 +23,8 @@ import (
 	"context"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types"
+	"github.com/ixre/gof/types/typeconv"
 	"go2o/core/dao"
 	"go2o/core/dao/impl"
 	"go2o/core/dao/model"
@@ -45,8 +47,7 @@ func walkDepartTree(node *proto.RbacTree, nodeList []*model.PermDept) {
 		if v.Pid == node.Id {
 			v := &proto.RbacTree{
 				Id:       v.Id,
-				Name:     v.Name,
-				Pid:      v.Pid,
+				Label:    v.Name,
 				Children: make([]*proto.RbacTree, 0),
 			}
 			node.Children = append(node.Children, v)
@@ -56,16 +57,15 @@ func walkDepartTree(node *proto.RbacTree, nodeList []*model.PermDept) {
 }
 
 // 部门树形数据
-func (a *rbacServiceImpl) DepartTree(_ context.Context, empty *proto.Empty) (*proto.RbacTree, error) {
+func (p *rbacServiceImpl) DepartTree(_ context.Context, empty *proto.Empty) (*proto.RbacTree, error) {
 	root := &proto.RbacTree{
-		Id:                   0,
-		Name:                 "根节点",
-		Pid:                  0,
-		Children:             make([]*proto.RbacTree,0),
+		Id:       0,
+		Label:    "根节点",
+		Children: make([]*proto.RbacTree, 0),
 	}
-	list := a.dao.SelectPermDept("")
-	walkDepartTree(root,list)
-	return root,nil
+	list := p.dao.SelectPermDept("")
+	walkDepartTree(root, list)
+	return root, nil
 }
 
 func NewRbacService(s storage.Interface, o orm.Orm) *rbacServiceImpl {
@@ -76,10 +76,10 @@ func NewRbacService(s storage.Interface, o orm.Orm) *rbacServiceImpl {
 }
 
 // 保存部门
-func (a *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptRequest) (*proto.SavePermDeptResponse, error) {
+func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptRequest) (*proto.SavePermDeptResponse, error) {
 	var dst *model.PermDept
 	if r.Id > 0 {
-		dst = a.dao.GetPermDept(r.Id)
+		dst = p.dao.GetPermDept(r.Id)
 	} else {
 		dst = &model.PermDept{}
 		dst.CreateTime = time.Now().Unix()
@@ -89,7 +89,7 @@ func (a *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptR
 	dst.Pid = r.Pid
 	dst.Enabled = int16(r.Enabled)
 
-	id, err := a.dao.SavePermDept(dst)
+	id, err := p.dao.SavePermDept(dst)
 	ret := &proto.SavePermDeptResponse{
 		Id: int64(id),
 	}
@@ -101,32 +101,32 @@ func (a *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptR
 }
 
 // 获取部门
-func (a *rbacServiceImpl) GetPermDept(_ context.Context, id *proto.PermDeptId) (*proto.SPermDept, error) {
-	v := a.dao.GetPermDept(id.Value)
+func (p *rbacServiceImpl) GetPermDept(_ context.Context, id *proto.PermDeptId) (*proto.SPermDept, error) {
+	v := p.dao.GetPermDept(id.Value)
 	if v == nil {
 		return nil, nil
 	}
-	return a.parsePermDept(v), nil
+	return p.parsePermDept(v), nil
 }
 
-func (a *rbacServiceImpl) DeletePermDept(_ context.Context, id *proto.PermDeptId) (*proto.Result, error) {
-	err := a.dao.DeletePermDept(id.Value)
-	return a.error(err), nil
+func (p *rbacServiceImpl) DeletePermDept(_ context.Context, id *proto.PermDeptId) (*proto.Result, error) {
+	err := p.dao.DeletePermDept(id.Value)
+	return p.error(err), nil
 }
 
 // 获取部门列表
-func (a *rbacServiceImpl) QueryPermDeptList(_ context.Context, r *proto.QueryPermDeptRequest) (*proto.QueryPermDeptResponse, error) {
-	arr := a.dao.SelectPermDept("1=1")
+func (p *rbacServiceImpl) QueryPermDeptList(_ context.Context, r *proto.QueryPermDeptRequest) (*proto.QueryPermDeptResponse, error) {
+	arr := p.dao.SelectPermDept("1=1")
 	ret := &proto.QueryPermDeptResponse{
 		List: make([]*proto.SPermDept, len(arr)),
 	}
 	for i, v := range arr {
-		ret.List[i] = a.parsePermDept(v)
+		ret.List[i] = p.parsePermDept(v)
 	}
 	return ret, nil
 }
 
-func (a *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
+func (p *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
 	return &proto.SPermDept{
 		Id:         v.Id,
 		Name:       v.Name,
@@ -135,3 +135,90 @@ func (a *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
 		CreateTime: v.CreateTime,
 	}
 }
+
+
+// 保存岗位
+func (p *rbacServiceImpl) SavePermJob(_ context.Context, r *proto.SavePermJobRequest) (*proto.SavePermJobResponse, error) {
+	var dst *model.PermJob
+	if r.Id > 0 {
+		dst = p.dao.GetPermJob(r.Id)
+	} else {
+		dst = &model.PermJob{}
+		dst.CreateTime = time.Now().Unix()
+	}
+
+	dst.Name = r.Name
+	dst.Enabled = int16(r.Enabled)
+	dst.Sort = int(r.Sort)
+	dst.DeptId = r.DeptId
+
+	id, err := p.dao.SavePermJob(dst)
+	ret := &proto.SavePermJobResponse{
+		Id: int64(id),
+	}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
+}
+
+func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SPermJob {
+	return &proto.SPermJob{
+		Id:         v.Id,
+		Name:       v.Name,
+		Enabled:    int32(v.Enabled),
+		Sort:       int32(v.Sort),
+		DeptId:     v.DeptId,
+		CreateTime: v.CreateTime,
+	}
+}
+
+// 获取岗位
+func (p *rbacServiceImpl) GetPermJob(_ context.Context, id *proto.PermJobId) (*proto.SPermJob, error) {
+	v := p.dao.GetPermJob(id.Value)
+	if v == nil {
+		return nil, nil
+	}
+	return p.parsePermJob(v), nil
+}
+
+// 获取岗位列表
+func (p *rbacServiceImpl) QueryPermJobList(_ context.Context, r *proto.QueryPermJobRequest) (*proto.QueryPermJobResponse, error) {
+	arr := p.dao.SelectPermJob("1=1")
+	ret := &proto.QueryPermJobResponse{
+		List: make([]*proto.SPermJob, len(arr)),
+	}
+	for i, v := range arr {
+		ret.List[i] = p.parsePermJob(v)
+	}
+	return ret, nil
+}
+
+func (p *rbacServiceImpl) DeletePermJob(_ context.Context, id *proto.PermJobId) (*proto.Result, error) {
+	err := p.dao.DeletePermJob(id.Value)
+	return p.error(err), nil
+}
+
+func (p *rbacServiceImpl) PagingPermJob(_ context.Context, r *proto.PermJobPagingRequest) (*proto.PermJobPagingResponse, error) {
+	total, rows := p.dao.PagingQueryPermJob(int(r.Params.Begin),
+		int(r.Params.End),
+		r.Params.Where,
+		r.Params.SortBy)
+	ret := &proto.PermJobPagingResponse{
+		Total: int64(total),
+		Value: make([]*proto.PagingPermJob, len(rows)),
+	}
+	for i, v := range rows {
+		ret.Value[i] = &proto.PagingPermJob{
+			Id:         int64(typeconv.MustInt(v["id"])),
+			Name:       types.Stringify(v["name"]),
+			Enabled:    int32(typeconv.MustInt(v["enabled"])),
+			Sort:       int32(typeconv.MustInt(v["sort"])),
+			DeptId:     int64(typeconv.MustInt(v["dept_id"])),
+			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+		}
+	}
+	return ret, nil
+}
+

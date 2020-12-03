@@ -11,7 +11,7 @@ package restapi
 import (
 	"crypto/sha1"
 	"fmt"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"go2o/core/infrastructure/gen"
 	"io"
 )

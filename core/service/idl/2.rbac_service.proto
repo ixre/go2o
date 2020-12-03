@@ -20,6 +20,21 @@ service RBACService {
     // 获取部门列表
     rpc QueryPermDeptList (QueryPermDeptRequest) returns (QueryPermDeptResponse) {
     }
+
+    // 保存岗位
+    rpc SavePermJob (SavePermJobRequest) returns (SavePermJobResponse) {
+    }
+    // 获取岗位
+    rpc GetPermJob (PermJobId) returns (SPermJob) {
+    }
+    // 获取岗位列表
+    rpc QueryPermJobList (QueryPermJobRequest) returns (QueryPermJobResponse) {
+    }
+    // 删除岗位
+    rpc DeletePermJob (PermJobId) returns (Result) {
+    }
+    // 获取岗位分页数据
+    rpc PagingPermJob (PermJobPagingRequest) returns (PermJobPagingResponse);
 }
 
 message RoleId {
@@ -31,10 +46,9 @@ message UserId {
 
 
 message RbacTree{
-    int64 id = 1;
-    string name  = 2;
-    int64 pid = 3;
-    repeated RbacTree Children = 4;
+    int64 Id = 1;
+    string Label  = 2;
+    repeated RbacTree Children = 3;
 }
 
 message SavePermDeptRequest{
@@ -78,4 +92,78 @@ message QueryPermDeptRequest{
 
 message QueryPermDeptResponse{
     repeated SPermDept List = 1;
+}
+
+
+message SavePermJobRequest{
+    /** ID */
+    int64 Id = 1;
+    /** 岗位名称 */
+    string Name = 2;
+    /** 岗位状态 */
+    int32 Enabled = 3;
+    /** 岗位排序 */
+    int32 Sort = 4;
+    /** 部门ID */
+    int64 DeptId = 5;
+    /** 创建日期 */
+    int64 CreateTime = 6;
+}
+
+message SavePermJobResponse{
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    int64 Id = 3;
+}
+
+message PermJobId{
+    int64 Value = 1;
+}
+
+message SPermJob{
+    /** ID */
+    int64 Id = 1;
+    /** 岗位名称 */
+    string Name = 2;
+    /** 岗位状态 */
+    int32 Enabled = 3;
+    /** 岗位排序 */
+    int32 Sort = 4;
+    /** 部门ID */
+    int64 DeptId = 5;
+    /** 创建日期 */
+    int64 CreateTime = 6;
+}
+
+message QueryPermJobRequest{
+    /** 自定义参数 */
+}
+
+message QueryPermJobResponse{
+    repeated SPermJob List = 1;
+}
+
+message PagingPermJob{
+    /** ID */
+    int64 Id = 1;
+    /** 岗位名称 */
+    string Name = 2;
+    /** 岗位状态 */
+    int32 Enabled = 3;
+    /** 岗位排序 */
+    int32 Sort = 4;
+    /** 部门ID */
+    int64 DeptId = 5;
+    /** 创建日期 */
+    int64 CreateTime = 6;
+}
+
+message PermJobPagingRequest{
+    // 分页参数
+    SPagingParams Params = 1;
+}
+
+message PermJobPagingResponse {
+    int64 Total = 1;
+    repeated PagingPermJob Value = 2;
 }

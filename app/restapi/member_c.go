@@ -12,7 +12,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/ixre/gof"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service"

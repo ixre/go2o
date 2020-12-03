@@ -11,8 +11,8 @@ package restapi
 import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
-	"github.com/labstack/echo"
-	mw "github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	mw "github.com/labstack/echo/v4/middleware"
 	"go2o/app/api"
 	"go2o/core/variable"
 	"log"

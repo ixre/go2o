@@ -11,7 +11,7 @@ package restapi
 import (
 	"context"
 	"github.com/ixre/gof/util"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"go2o/core/service"
 	"go2o/core/service/proto"
 	"net/http"
