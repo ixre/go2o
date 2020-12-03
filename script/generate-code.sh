@@ -13,7 +13,7 @@ TARGET_PATH=$PROTO_PATH/../proto
 rm -rf "$TARGET_PATH"wq && mkdir -p "$TARGET_PATH"
 protoc -I "$PROTO_PATH" --go_out=plugins=grpc:"$TARGET_PATH" "$PROTO_PATH"/**/*.proto
 protoc -I "$PROTO_PATH" --go_out=plugins=grpc:"$TARGET_PATH" "$PROTO_PATH"/*.proto
-
+find "${TARGET_PATH}" -name "*.pb.go"|xargs -I{} sed -i "s/,omitempty//g" {}
 #if [[ ${cmd} = "all" ]] || [[ ${cmd} = "format" ]];then
 #	cd ${go_target_path}
 #fi

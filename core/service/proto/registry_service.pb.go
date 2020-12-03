@@ -24,7 +24,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type RegistriesResponse struct {
-	Value                []*SRegistry `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SRegistry `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
 	XXX_unrecognized     []byte       `json:"-"`
 	XXX_sizecache        int32        `json:"-"`
@@ -62,8 +62,8 @@ func (m *RegistriesResponse) GetValue() []*SRegistry {
 }
 
 type RegistryPair struct {
-	Key                  string   `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key,omitempty"`
-	Value                string   `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	Key                  string   `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key"`
+	Value                string   `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -108,8 +108,8 @@ func (m *RegistryPair) GetValue() string {
 }
 
 type RegistryValueResponse struct {
-	Value                string   `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value,omitempty"`
-	ErrorMsg             string   `protobuf:"bytes,2,opt,name=ErrorMsg,proto3" json:"ErrorMsg,omitempty"`
+	Value                string   `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value"`
+	ErrorMsg             string   `protobuf:"bytes,2,opt,name=ErrorMsg,proto3" json:"ErrorMsg"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -154,9 +154,9 @@ func (m *RegistryValueResponse) GetErrorMsg() string {
 }
 
 type RegistryCreateRequest struct {
-	Key                  string   `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	DefaultValue         string   `protobuf:"bytes,2,opt,name=defaultValue,proto3" json:"defaultValue,omitempty"`
-	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Key                  string   `protobuf:"bytes,1,opt,name=key,proto3" json:"key"`
+	DefaultValue         string   `protobuf:"bytes,2,opt,name=defaultValue,proto3" json:"defaultValue"`
+	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -210,17 +210,17 @@ func (m *RegistryCreateRequest) GetDescription() string {
 // * 注册表
 type SRegistry struct {
 	// * 键
-	Key string `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key,omitempty"`
+	Key string `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key"`
 	// * 值
-	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	// * 默认值
-	Default string `protobuf:"bytes,3,opt,name=Default,proto3" json:"Default,omitempty"`
+	Default string `protobuf:"bytes,3,opt,name=Default,proto3" json:"Default"`
 	// * 可选值
-	Options string `protobuf:"bytes,4,opt,name=Options,proto3" json:"Options,omitempty"`
+	Options string `protobuf:"bytes,4,opt,name=Options,proto3" json:"Options"`
 	// * 标志
-	Flag int32 `protobuf:"zigzag32,5,opt,name=Flag,proto3" json:"Flag,omitempty"`
+	Flag int32 `protobuf:"zigzag32,5,opt,name=Flag,proto3" json:"Flag"`
 	// * 描述
-	Description          string   `protobuf:"bytes,6,opt,name=Description,proto3" json:"Description,omitempty"`
+	Description          string   `protobuf:"bytes,6,opt,name=Description,proto3" json:"Description"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

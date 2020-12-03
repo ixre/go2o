@@ -19,8 +19,8 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type SmsApiSaveRequest struct {
-	Provider             string   `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
-	Api                  *SSmsApi `protobuf:"bytes,2,opt,name=api,proto3" json:"api,omitempty"`
+	Provider             string   `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider"`
+	Api                  *SSmsApi `protobuf:"bytes,2,opt,name=api,proto3" json:"api"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -66,9 +66,9 @@ func (m *SmsApiSaveRequest) GetApi() *SSmsApi {
 
 // 　 登录结果
 type SuperLoginResponse struct {
-	ErrCode              int32    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	Role                 int32    `protobuf:"varint,3,opt,name=Role,proto3" json:"Role,omitempty"`
+	ErrCode              int32    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	Role                 int32    `protobuf:"varint,3,opt,name=Role,proto3" json:"Role"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -120,8 +120,8 @@ func (m *SuperLoginResponse) GetRole() int32 {
 }
 
 type BoardHookSaveRequest struct {
-	HookURL              string   `protobuf:"bytes,1,opt,name=hookURL,proto3" json:"hookURL,omitempty"`
-	Token                string   `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	HookURL              string   `protobuf:"bytes,1,opt,name=hookURL,proto3" json:"hookURL"`
+	Token                string   `protobuf:"bytes,2,opt,name=token,proto3" json:"token"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -166,9 +166,9 @@ func (m *BoardHookSaveRequest) GetToken() string {
 }
 
 type AreaStringRequest struct {
-	Province             int32    `protobuf:"varint,1,opt,name=Province,proto3" json:"Province,omitempty"`
-	City                 int32    `protobuf:"varint,2,opt,name=City,proto3" json:"City,omitempty"`
-	District             int32    `protobuf:"varint,3,opt,name=District,proto3" json:"District,omitempty"`
+	Province             int32    `protobuf:"varint,1,opt,name=Province,proto3" json:"Province"`
+	City                 int32    `protobuf:"varint,2,opt,name=City,proto3" json:"City"`
+	District             int32    `protobuf:"varint,3,opt,name=District,proto3" json:"District"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -220,7 +220,7 @@ func (m *AreaStringRequest) GetDistrict() int32 {
 }
 
 type AreaListResponse struct {
-	Value                []*SArea `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SArea `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -258,7 +258,7 @@ func (m *AreaListResponse) GetValue() []*SArea {
 }
 
 type StringListResponse struct {
-	Value                []string `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []string `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -296,7 +296,7 @@ func (m *StringListResponse) GetValue() []string {
 }
 
 type GetAreaNamesRequest struct {
-	Value                []int32  `protobuf:"zigzag32,1,rep,packed,name=Value,proto3" json:"Value,omitempty"`
+	Value                []int32  `protobuf:"zigzag32,1,rep,packed,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -334,8 +334,8 @@ func (m *GetAreaNamesRequest) GetValue() []int32 {
 }
 
 type UserPwd struct {
-	User                 string   `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	Pwd                  string   `protobuf:"bytes,2,opt,name=pwd,proto3" json:"pwd,omitempty"`
+	User                 string   `protobuf:"bytes,1,opt,name=user,proto3" json:"user"`
+	Pwd                  string   `protobuf:"bytes,2,opt,name=pwd,proto3" json:"pwd"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -382,13 +382,13 @@ func (m *UserPwd) GetPwd() string {
 // 单点登录应用
 type SSsoApp struct {
 	// 编号
-	ID int32 `protobuf:"zigzag32,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID int32 `protobuf:"zigzag32,1,opt,name=ID,proto3" json:"ID"`
 	// 应用名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// API地址
-	ApiUrl string `protobuf:"bytes,3,opt,name=ApiUrl,proto3" json:"ApiUrl,omitempty"`
+	ApiUrl string `protobuf:"bytes,3,opt,name=ApiUrl,proto3" json:"ApiUrl"`
 	// 密钥
-	Token                string   `protobuf:"bytes,4,opt,name=Token,proto3" json:"Token,omitempty"`
+	Token                string   `protobuf:"bytes,4,opt,name=Token,proto3" json:"Token"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -448,9 +448,9 @@ func (m *SSsoApp) GetToken() string {
 
 // * 行政区域
 type SArea struct {
-	Code                 int32    `protobuf:"zigzag32,1,opt,name=Code,proto3" json:"Code,omitempty"`
-	Parent               int32    `protobuf:"zigzag32,2,opt,name=Parent,proto3" json:"Parent,omitempty"`
-	Name                 string   `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Code                 int32    `protobuf:"zigzag32,1,opt,name=Code,proto3" json:"Code"`
+	Parent               int32    `protobuf:"zigzag32,2,opt,name=Parent,proto3" json:"Parent"`
+	Name                 string   `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -504,21 +504,21 @@ func (m *SArea) GetName() string {
 // * 短信接口信息
 type SSmsApi struct {
 	// * 接口地址
-	ApiUrl string `protobuf:"bytes,1,opt,name=ApiUrl,proto3" json:"ApiUrl,omitempty"`
+	ApiUrl string `protobuf:"bytes,1,opt,name=ApiUrl,proto3" json:"ApiUrl"`
 	// * 接口KEY
-	Key string `protobuf:"bytes,2,opt,name=Key,proto3" json:"Key,omitempty"`
+	Key string `protobuf:"bytes,2,opt,name=Key,proto3" json:"Key"`
 	// * 接口密钥
-	Secret string `protobuf:"bytes,3,opt,name=Secret,proto3" json:"Secret,omitempty"`
+	Secret string `protobuf:"bytes,3,opt,name=Secret,proto3" json:"Secret"`
 	// * 请求数据,如: phone={phone}&content={content}
-	Params string `protobuf:"bytes,4,opt,name=Params,proto3" json:"Params,omitempty"`
+	Params string `protobuf:"bytes,4,opt,name=Params,proto3" json:"Params"`
 	// * 请求方式, GET或POST
-	Method string `protobuf:"bytes,5,opt,name=Method,proto3" json:"Method,omitempty"`
+	Method string `protobuf:"bytes,5,opt,name=Method,proto3" json:"Method"`
 	// * 编码
-	Charset string `protobuf:"bytes,6,opt,name=Charset,proto3" json:"Charset,omitempty"`
+	Charset string `protobuf:"bytes,6,opt,name=Charset,proto3" json:"Charset"`
 	// * 签名
-	Signature string `protobuf:"bytes,7,opt,name=Signature,proto3" json:"Signature,omitempty"`
+	Signature string `protobuf:"bytes,7,opt,name=Signature,proto3" json:"Signature"`
 	// * 发送成功，包含的字符，用于检测是否发送成功
-	SuccessChar          string   `protobuf:"bytes,8,opt,name=SuccessChar,proto3" json:"SuccessChar,omitempty"`
+	SuccessChar          string   `protobuf:"bytes,8,opt,name=SuccessChar,proto3" json:"SuccessChar"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -607,21 +607,21 @@ func (m *SSmsApi) GetSuccessChar() string {
 // 移动应用配置
 type SMobileAppConfig struct {
 	// 应用名称
-	AppName string `protobuf:"bytes,1,opt,name=AppName,proto3" json:"AppName,omitempty"`
+	AppName string `protobuf:"bytes,1,opt,name=AppName,proto3" json:"AppName"`
 	// APP图标地址
-	AppIcon string `protobuf:"bytes,2,opt,name=AppIcon,proto3" json:"AppIcon,omitempty"`
+	AppIcon string `protobuf:"bytes,2,opt,name=AppIcon,proto3" json:"AppIcon"`
 	// 描述
-	Description string `protobuf:"bytes,3,opt,name=Description,proto3" json:"Description,omitempty"`
+	Description string `protobuf:"bytes,3,opt,name=Description,proto3" json:"Description"`
 	// 安卓APP版本
-	AndroidVersion string `protobuf:"bytes,4,opt,name=AndroidVersion,proto3" json:"AndroidVersion,omitempty"`
+	AndroidVersion string `protobuf:"bytes,4,opt,name=AndroidVersion,proto3" json:"AndroidVersion"`
 	// 安卓APP版发布地址
-	AndroidReleaseUrl string `protobuf:"bytes,5,opt,name=AndroidReleaseUrl,proto3" json:"AndroidReleaseUrl,omitempty"`
+	AndroidReleaseUrl string `protobuf:"bytes,5,opt,name=AndroidReleaseUrl,proto3" json:"AndroidReleaseUrl"`
 	// 苹果APP版本
-	IosVersion string `protobuf:"bytes,6,opt,name=IosVersion,proto3" json:"IosVersion,omitempty"`
+	IosVersion string `protobuf:"bytes,6,opt,name=IosVersion,proto3" json:"IosVersion"`
 	// 苹果APP版发布地址
-	IosReleaseUrl string `protobuf:"bytes,7,opt,name=IosReleaseUrl,proto3" json:"IosReleaseUrl,omitempty"`
+	IosReleaseUrl string `protobuf:"bytes,7,opt,name=IosReleaseUrl,proto3" json:"IosReleaseUrl"`
 	// 模板文件
-	ShowTplPath_         string   `protobuf:"bytes,8,opt,name=ShowTplPath_,json=ShowTplPath,proto3" json:"ShowTplPath_,omitempty"`
+	ShowTplPath_         string   `protobuf:"bytes,8,opt,name=ShowTplPath_,json=ShowTplPath,proto3" json:"ShowTplPath_"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -709,29 +709,29 @@ func (m *SMobileAppConfig) GetShowTplPath_() string {
 
 type SWxApiConfig struct {
 	// APP ID
-	AppId string `protobuf:"bytes,1,opt,name=AppId,proto3" json:"AppId,omitempty"`
+	AppId string `protobuf:"bytes,1,opt,name=AppId,proto3" json:"AppId"`
 	// APP 密钥
-	AppSecret string `protobuf:"bytes,2,opt,name=AppSecret,proto3" json:"AppSecret,omitempty"`
+	AppSecret string `protobuf:"bytes,2,opt,name=AppSecret,proto3" json:"AppSecret"`
 	// 通信密钥
-	MpToken string `protobuf:"bytes,3,opt,name=MpToken,proto3" json:"MpToken,omitempty"`
+	MpToken string `protobuf:"bytes,3,opt,name=MpToken,proto3" json:"MpToken"`
 	// 通信AES KEY
-	MpAesKey string `protobuf:"bytes,4,opt,name=MpAesKey,proto3" json:"MpAesKey,omitempty"`
+	MpAesKey string `protobuf:"bytes,4,opt,name=MpAesKey,proto3" json:"MpAesKey"`
 	// 原始ID
-	OriId string `protobuf:"bytes,5,opt,name=OriId,proto3" json:"OriId,omitempty"`
+	OriId string `protobuf:"bytes,5,opt,name=OriId,proto3" json:"OriId"`
 	// 商户编号
-	MchId string `protobuf:"bytes,6,opt,name=MchId,proto3" json:"MchId,omitempty"`
+	MchId string `protobuf:"bytes,6,opt,name=MchId,proto3" json:"MchId"`
 	// 商户接口密钥
-	MchApiKey string `protobuf:"bytes,7,opt,name=MchApiKey,proto3" json:"MchApiKey,omitempty"`
+	MchApiKey string `protobuf:"bytes,7,opt,name=MchApiKey,proto3" json:"MchApiKey"`
 	// 微信支付的证书路径(上传)
-	MchCertPath string `protobuf:"bytes,8,opt,name=MchCertPath,proto3" json:"MchCertPath,omitempty"`
+	MchCertPath string `protobuf:"bytes,8,opt,name=MchCertPath,proto3" json:"MchCertPath"`
 	// 微信支付的证书公钥路径(上传)
-	MchCertKeyPath string `protobuf:"bytes,9,opt,name=MchCertKeyPath,proto3" json:"MchCertKeyPath,omitempty"`
+	MchCertKeyPath string `protobuf:"bytes,9,opt,name=MchCertKeyPath,proto3" json:"MchCertKeyPath"`
 	// 是否启用红包功能
-	RedPackEnabled bool `protobuf:"varint,10,opt,name=RedPackEnabled,proto3" json:"RedPackEnabled,omitempty"`
+	RedPackEnabled bool `protobuf:"varint,10,opt,name=RedPackEnabled,proto3" json:"RedPackEnabled"`
 	// 红包金额限制
-	RedPackAmountLimit float64 `protobuf:"fixed64,11,opt,name=RedPackAmountLimit,proto3" json:"RedPackAmountLimit,omitempty"`
+	RedPackAmountLimit float64 `protobuf:"fixed64,11,opt,name=RedPackAmountLimit,proto3" json:"RedPackAmountLimit"`
 	// 红包每日数量限制
-	RedPackDayTimeLimit  int32    `protobuf:"varint,12,opt,name=RedPackDayTimeLimit,proto3" json:"RedPackDayTimeLimit,omitempty"`
+	RedPackDayTimeLimit  int32    `protobuf:"varint,12,opt,name=RedPackDayTimeLimit,proto3" json:"RedPackDayTimeLimit"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -846,7 +846,7 @@ func (m *SWxApiConfig) GetRedPackDayTimeLimit() int32 {
 }
 
 type PaymentPlatformResponse struct {
-	Value                []*PaymentPlatform `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*PaymentPlatform `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -884,10 +884,10 @@ func (m *PaymentPlatformResponse) GetValue() []*PaymentPlatform {
 }
 
 type PaymentPlatform struct {
-	Id                   string      `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	Name                 string      `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	Sign                 string      `protobuf:"bytes,3,opt,name=Sign,proto3" json:"Sign,omitempty"`
-	Items                []*BankItem `protobuf:"bytes,4,rep,name=Items,proto3" json:"Items,omitempty"`
+	Id                   string      `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id"`
+	Name                 string      `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	Sign                 string      `protobuf:"bytes,3,opt,name=Sign,proto3" json:"Sign"`
+	Items                []*BankItem `protobuf:"bytes,4,rep,name=Items,proto3" json:"Items"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -947,11 +947,11 @@ func (m *PaymentPlatform) GetItems() []*BankItem {
 
 type BankItem struct {
 	// 标识
-	Id string `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id string `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id"`
 	// 名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// 签名/别名
-	Sign                 string   `protobuf:"bytes,3,opt,name=Sign,proto3" json:"Sign,omitempty"`
+	Sign                 string   `protobuf:"bytes,3,opt,name=Sign,proto3" json:"Sign"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1011,23 +1011,23 @@ type SGlobMchSaleConf struct {
 	// 商户交易单是否需上传发票
 	// TradeOrderRequireTicket bool
 	// 是否启用分销模式
-	FxSalesEnabled bool `protobuf:"varint,1,opt,name=FxSalesEnabled,proto3" json:"FxSalesEnabled,omitempty"`
+	FxSalesEnabled bool `protobuf:"varint,1,opt,name=FxSalesEnabled,proto3" json:"FxSalesEnabled"`
 	// 返现比例,0则不返现
-	CashBackPercent float64 `protobuf:"fixed64,2,opt,name=CashBackPercent,proto3" json:"CashBackPercent,omitempty"`
+	CashBackPercent float64 `protobuf:"fixed64,2,opt,name=CashBackPercent,proto3" json:"CashBackPercent"`
 	// 一级比例
-	CashBackTg1Percent float64 `protobuf:"fixed64,3,opt,name=CashBackTg1Percent,proto3" json:"CashBackTg1Percent,omitempty"`
+	CashBackTg1Percent float64 `protobuf:"fixed64,3,opt,name=CashBackTg1Percent,proto3" json:"CashBackTg1Percent"`
 	// 二级比例
-	CashBackTg2Percent float64 `protobuf:"fixed64,4,opt,name=CashBackTg2Percent,proto3" json:"CashBackTg2Percent,omitempty"`
+	CashBackTg2Percent float64 `protobuf:"fixed64,4,opt,name=CashBackTg2Percent,proto3" json:"CashBackTg2Percent"`
 	// 会员比例
-	CashBackMemberPercent float64 `protobuf:"fixed64,5,opt,name=CashBackMemberPercent,proto3" json:"CashBackMemberPercent,omitempty"`
+	CashBackMemberPercent float64 `protobuf:"fixed64,5,opt,name=CashBackMemberPercent,proto3" json:"CashBackMemberPercent"`
 	// 自动设置订单
-	AutoSetupOrder int32 `protobuf:"varint,6,opt,name=AutoSetupOrder,proto3" json:"AutoSetupOrder,omitempty"`
+	AutoSetupOrder int32 `protobuf:"varint,6,opt,name=AutoSetupOrder,proto3" json:"AutoSetupOrder"`
 	// 订单超时分钟数
-	OrderTimeOutMinute int32 `protobuf:"varint,7,opt,name=OrderTimeOutMinute,proto3" json:"OrderTimeOutMinute,omitempty"`
+	OrderTimeOutMinute int32 `protobuf:"varint,7,opt,name=OrderTimeOutMinute,proto3" json:"OrderTimeOutMinute"`
 	// 订单自动确认时间
-	OrderConfirmAfterMinute int32 `protobuf:"varint,8,opt,name=OrderConfirmAfterMinute,proto3" json:"OrderConfirmAfterMinute,omitempty"`
+	OrderConfirmAfterMinute int32 `protobuf:"varint,8,opt,name=OrderConfirmAfterMinute,proto3" json:"OrderConfirmAfterMinute"`
 	// 订单超时自动收货
-	OrderTimeOutReceiveHour int32    `protobuf:"varint,9,opt,name=OrderTimeOutReceiveHour,proto3" json:"OrderTimeOutReceiveHour,omitempty"`
+	OrderTimeOutReceiveHour int32    `protobuf:"varint,9,opt,name=OrderTimeOutReceiveHour,proto3" json:"OrderTimeOutReceiveHour"`
 	XXX_NoUnkeyedLiteral    struct{} `json:"-"`
 	XXX_unrecognized        []byte   `json:"-"`
 	XXX_sizecache           int32    `json:"-"`

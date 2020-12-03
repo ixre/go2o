@@ -201,13 +201,13 @@ func (EWalletLogKind) EnumDescriptor() ([]byte, []int) {
 
 type CreateWalletRequest struct {
 	// 用户编号
-	UserId int64 `protobuf:"varint,1,opt,name=UserId,proto3" json:"UserId,omitempty"`
+	UserId int64 `protobuf:"varint,1,opt,name=UserId,proto3" json:"UserId"`
 	// 钱包名称
-	WalletName string `protobuf:"bytes,4,opt,name=WalletName,proto3" json:"WalletName,omitempty"`
+	WalletName string `protobuf:"bytes,4,opt,name=WalletName,proto3" json:"WalletName"`
 	// 钱包类型
-	WalletType int32 `protobuf:"varint,2,opt,name=walletType,proto3" json:"walletType,omitempty"`
+	WalletType int32 `protobuf:"varint,2,opt,name=walletType,proto3" json:"walletType"`
 	// 钱包标志
-	WalletFlag           int32    `protobuf:"varint,3,opt,name=WalletFlag,proto3" json:"WalletFlag,omitempty"`
+	WalletFlag           int32    `protobuf:"varint,3,opt,name=WalletFlag,proto3" json:"WalletFlag"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -266,8 +266,8 @@ func (m *CreateWalletRequest) GetWalletFlag() int32 {
 }
 
 type GetWalletRequest struct {
-	UserId               int64    `protobuf:"zigzag64,1,opt,name=userId,proto3" json:"userId,omitempty"`
-	WalletType           int32    `protobuf:"zigzag32,2,opt,name=walletType,proto3" json:"walletType,omitempty"`
+	UserId               int64    `protobuf:"zigzag64,1,opt,name=userId,proto3" json:"userId"`
+	WalletType           int32    `protobuf:"zigzag32,2,opt,name=walletType,proto3" json:"walletType"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -312,8 +312,8 @@ func (m *GetWalletRequest) GetWalletType() int32 {
 }
 
 type WalletLogIDRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	Id                   int64    `protobuf:"zigzag64,2,opt,name=id,proto3" json:"id,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	Id                   int64    `protobuf:"zigzag64,2,opt,name=id,proto3" json:"id"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -358,12 +358,12 @@ func (m *WalletLogIDRequest) GetId() int64 {
 }
 
 type AdjustRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value,omitempty"`
-	Title                string   `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	OuterNo              string   `protobuf:"bytes,4,opt,name=outerNo,proto3" json:"outerNo,omitempty"`
-	OprUid               int32    `protobuf:"zigzag32,5,opt,name=oprUid,proto3" json:"oprUid,omitempty"`
-	OprName              string   `protobuf:"bytes,6,opt,name=oprName,proto3" json:"oprName,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value"`
+	Title                string   `protobuf:"bytes,3,opt,name=title,proto3" json:"title"`
+	OuterNo              string   `protobuf:"bytes,4,opt,name=outerNo,proto3" json:"outerNo"`
+	OprUid               int32    `protobuf:"zigzag32,5,opt,name=oprUid,proto3" json:"oprUid"`
+	OprName              string   `protobuf:"bytes,6,opt,name=oprName,proto3" json:"oprName"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -436,11 +436,11 @@ func (m *AdjustRequest) GetOprName() string {
 }
 
 type DiscountRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value,omitempty"`
-	Title                string   `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	OuterNo              string   `protobuf:"bytes,4,opt,name=outerNo,proto3" json:"outerNo,omitempty"`
-	Must                 bool     `protobuf:"varint,5,opt,name=must,proto3" json:"must,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value"`
+	Title                string   `protobuf:"bytes,3,opt,name=title,proto3" json:"title"`
+	OuterNo              string   `protobuf:"bytes,4,opt,name=outerNo,proto3" json:"outerNo"`
+	Must                 bool     `protobuf:"varint,5,opt,name=must,proto3" json:"must"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -506,12 +506,12 @@ func (m *DiscountRequest) GetMust() bool {
 }
 
 type FreezeRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value,omitempty"`
-	Title                string   `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	OuterNo              string   `protobuf:"bytes,4,opt,name=outerNo,proto3" json:"outerNo,omitempty"`
-	OprUid               int32    `protobuf:"zigzag32,5,opt,name=oprUid,proto3" json:"oprUid,omitempty"`
-	OprName              string   `protobuf:"bytes,6,opt,name=oprName,proto3" json:"oprName,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value"`
+	Title                string   `protobuf:"bytes,3,opt,name=title,proto3" json:"title"`
+	OuterNo              string   `protobuf:"bytes,4,opt,name=outerNo,proto3" json:"outerNo"`
+	OprUid               int32    `protobuf:"zigzag32,5,opt,name=oprUid,proto3" json:"oprUid"`
+	OprName              string   `protobuf:"bytes,6,opt,name=oprName,proto3" json:"oprName"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -584,12 +584,12 @@ func (m *FreezeRequest) GetOprName() string {
 }
 
 type UnfreezeRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value,omitempty"`
-	Title                string   `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	OuterNo              string   `protobuf:"bytes,4,opt,name=outerNo,proto3" json:"outerNo,omitempty"`
-	OprUid               int32    `protobuf:"zigzag32,5,opt,name=oprUid,proto3" json:"oprUid,omitempty"`
-	OprName              string   `protobuf:"bytes,6,opt,name=oprName,proto3" json:"oprName,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value"`
+	Title                string   `protobuf:"bytes,3,opt,name=title,proto3" json:"title"`
+	OuterNo              string   `protobuf:"bytes,4,opt,name=outerNo,proto3" json:"outerNo"`
+	OprUid               int32    `protobuf:"zigzag32,5,opt,name=oprUid,proto3" json:"oprUid"`
+	OprName              string   `protobuf:"bytes,6,opt,name=oprName,proto3" json:"oprName"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -662,13 +662,13 @@ func (m *UnfreezeRequest) GetOprName() string {
 }
 
 type ChargeRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value,omitempty"`
-	By                   int32    `protobuf:"zigzag32,3,opt,name=by,proto3" json:"by,omitempty"`
-	Title                string   `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
-	OuterNo              string   `protobuf:"bytes,5,opt,name=outerNo,proto3" json:"outerNo,omitempty"`
-	OprUid               int32    `protobuf:"zigzag32,6,opt,name=oprUid,proto3" json:"oprUid,omitempty"`
-	OprName              string   `protobuf:"bytes,7,opt,name=oprName,proto3" json:"oprName,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	Value                int32    `protobuf:"zigzag32,2,opt,name=value,proto3" json:"value"`
+	By                   int32    `protobuf:"zigzag32,3,opt,name=by,proto3" json:"by"`
+	Title                string   `protobuf:"bytes,4,opt,name=title,proto3" json:"title"`
+	OuterNo              string   `protobuf:"bytes,5,opt,name=outerNo,proto3" json:"outerNo"`
+	OprUid               int32    `protobuf:"zigzag32,6,opt,name=oprUid,proto3" json:"oprUid"`
+	OprName              string   `protobuf:"bytes,7,opt,name=oprName,proto3" json:"oprName"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -748,11 +748,11 @@ func (m *ChargeRequest) GetOprName() string {
 }
 
 type TransferRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	ToWalletId           int64    `protobuf:"zigzag64,2,opt,name=toWalletId,proto3" json:"toWalletId,omitempty"`
-	Value                int32    `protobuf:"zigzag32,3,opt,name=value,proto3" json:"value,omitempty"`
-	TradeFee             int32    `protobuf:"zigzag32,4,opt,name=tradeFee,proto3" json:"tradeFee,omitempty"`
-	Remark               string   `protobuf:"bytes,5,opt,name=remark,proto3" json:"remark,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	ToWalletId           int64    `protobuf:"zigzag64,2,opt,name=toWalletId,proto3" json:"toWalletId"`
+	Value                int32    `protobuf:"zigzag32,3,opt,name=value,proto3" json:"value"`
+	TradeFee             int32    `protobuf:"zigzag32,4,opt,name=tradeFee,proto3" json:"tradeFee"`
+	Remark               string   `protobuf:"bytes,5,opt,name=remark,proto3" json:"remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -818,8 +818,8 @@ func (m *TransferRequest) GetRemark() string {
 }
 
 type PagingWalletLogRequest struct {
-	WalletId             int64          `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,2,opt,name=params,proto3" json:"params,omitempty"`
+	WalletId             int64          `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	Params               *SPagingParams `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -864,9 +864,9 @@ func (m *PagingWalletLogRequest) GetParams() *SPagingParams {
 }
 
 type FinishTakeOutRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	TakeId               int64    `protobuf:"zigzag64,2,opt,name=takeId,proto3" json:"takeId,omitempty"`
-	OuterNo              string   `protobuf:"bytes,3,opt,name=outerNo,proto3" json:"outerNo,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	TakeId               int64    `protobuf:"zigzag64,2,opt,name=takeId,proto3" json:"takeId"`
+	OuterNo              string   `protobuf:"bytes,3,opt,name=outerNo,proto3" json:"outerNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -919,19 +919,19 @@ func (m *FinishTakeOutRequest) GetOuterNo() string {
 
 type RequestWithdrawalRequest struct {
 	// 钱包编号
-	WalletId int64 `protobuf:"varint,1,opt,name=WalletId,proto3" json:"WalletId,omitempty"`
+	WalletId int64 `protobuf:"varint,1,opt,name=WalletId,proto3" json:"WalletId"`
 	// 金额
-	Amount int32 `protobuf:"varint,2,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount int32 `protobuf:"varint,2,opt,name=Amount,proto3" json:"Amount"`
 	// 手续费
-	TradeFee int32 `protobuf:"varint,3,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
+	TradeFee int32 `protobuf:"varint,3,opt,name=TradeFee,proto3" json:"TradeFee"`
 	// 提现方式
-	Kind int32 `protobuf:"zigzag32,4,opt,name=Kind,proto3" json:"Kind,omitempty"`
+	Kind int32 `protobuf:"zigzag32,4,opt,name=Kind,proto3" json:"Kind"`
 	// 银行名称
-	BankName string `protobuf:"bytes,5,opt,name=BankName,proto3" json:"BankName,omitempty"`
+	BankName string `protobuf:"bytes,5,opt,name=BankName,proto3" json:"BankName"`
 	// 银行账号
-	BankAccountNo string `protobuf:"bytes,6,opt,name=BankAccountNo,proto3" json:"BankAccountNo,omitempty"`
+	BankAccountNo string `protobuf:"bytes,6,opt,name=BankAccountNo,proto3" json:"BankAccountNo"`
 	// 银行账户
-	BankAccountName      string   `protobuf:"bytes,7,opt,name=BankAccountName,proto3" json:"BankAccountName,omitempty"`
+	BankAccountName      string   `protobuf:"bytes,7,opt,name=BankAccountName,proto3" json:"BankAccountName"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1011,12 +1011,12 @@ func (m *RequestWithdrawalRequest) GetBankAccountName() string {
 }
 
 type ReviewTakeOutRequest struct {
-	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId,omitempty"`
-	TakeId               int64    `protobuf:"zigzag64,2,opt,name=takeId,proto3" json:"takeId,omitempty"`
-	ReviewPass           bool     `protobuf:"varint,3,opt,name=reviewPass,proto3" json:"reviewPass,omitempty"`
-	Remark               string   `protobuf:"bytes,4,opt,name=remark,proto3" json:"remark,omitempty"`
-	OprUid               int32    `protobuf:"zigzag32,5,opt,name=oprUid,proto3" json:"oprUid,omitempty"`
-	OprName              string   `protobuf:"bytes,6,opt,name=oprName,proto3" json:"oprName,omitempty"`
+	WalletId             int64    `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
+	TakeId               int64    `protobuf:"zigzag64,2,opt,name=takeId,proto3" json:"takeId"`
+	ReviewPass           bool     `protobuf:"varint,3,opt,name=reviewPass,proto3" json:"reviewPass"`
+	Remark               string   `protobuf:"bytes,4,opt,name=remark,proto3" json:"remark"`
+	OprUid               int32    `protobuf:"zigzag32,5,opt,name=oprUid,proto3" json:"oprUid"`
+	OprName              string   `protobuf:"bytes,6,opt,name=oprName,proto3" json:"oprName"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1091,43 +1091,43 @@ func (m *ReviewTakeOutRequest) GetOprName() string {
 // * 钱包
 type SWallet struct {
 	// * 钱包编号
-	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID"`
 	// * 哈希值
-	HashCode string `protobuf:"bytes,2,opt,name=HashCode,proto3" json:"HashCode,omitempty"`
+	HashCode string `protobuf:"bytes,2,opt,name=HashCode,proto3" json:"HashCode"`
 	// * 节点编号
-	NodeId int32 `protobuf:"zigzag32,3,opt,name=NodeId,proto3" json:"NodeId,omitempty"`
+	NodeId int32 `protobuf:"zigzag32,3,opt,name=NodeId,proto3" json:"NodeId"`
 	// * 用户编号
-	UserId int64 `protobuf:"zigzag64,4,opt,name=UserId,proto3" json:"UserId,omitempty"`
+	UserId int64 `protobuf:"zigzag64,4,opt,name=UserId,proto3" json:"UserId"`
 	// 钱包名称
-	WalletName string `protobuf:"bytes,5,opt,name=WalletName,proto3" json:"WalletName,omitempty"`
+	WalletName string `protobuf:"bytes,5,opt,name=WalletName,proto3" json:"WalletName"`
 	// * 钱包类型
-	WalletType int32 `protobuf:"zigzag32,6,opt,name=WalletType,proto3" json:"WalletType,omitempty"`
+	WalletType int32 `protobuf:"zigzag32,6,opt,name=WalletType,proto3" json:"WalletType"`
 	// * 钱包标志
-	WalletFlag int32 `protobuf:"zigzag32,7,opt,name=WalletFlag,proto3" json:"WalletFlag,omitempty"`
+	WalletFlag int32 `protobuf:"zigzag32,7,opt,name=WalletFlag,proto3" json:"WalletFlag"`
 	// * 余额
-	Balance int32 `protobuf:"zigzag32,8,opt,name=Balance,proto3" json:"Balance,omitempty"`
+	Balance int32 `protobuf:"zigzag32,8,opt,name=Balance,proto3" json:"Balance"`
 	// * 赠送余额
-	PresentBalance int32 `protobuf:"zigzag32,9,opt,name=PresentBalance,proto3" json:"PresentBalance,omitempty"`
+	PresentBalance int32 `protobuf:"zigzag32,9,opt,name=PresentBalance,proto3" json:"PresentBalance"`
 	// * 调整金额
-	AdjustAmount int32 `protobuf:"zigzag32,10,opt,name=AdjustAmount,proto3" json:"AdjustAmount,omitempty"`
+	AdjustAmount int32 `protobuf:"zigzag32,10,opt,name=AdjustAmount,proto3" json:"AdjustAmount"`
 	// * 冻结余额
-	FreezeAmount int32 `protobuf:"zigzag32,11,opt,name=FreezeAmount,proto3" json:"FreezeAmount,omitempty"`
+	FreezeAmount int32 `protobuf:"zigzag32,11,opt,name=FreezeAmount,proto3" json:"FreezeAmount"`
 	// * 结余金额
-	LatestAmount int32 `protobuf:"zigzag32,12,opt,name=LatestAmount,proto3" json:"LatestAmount,omitempty"`
+	LatestAmount int32 `protobuf:"zigzag32,12,opt,name=LatestAmount,proto3" json:"LatestAmount"`
 	// * 失效账户余额
-	ExpiredAmount int32 `protobuf:"zigzag32,13,opt,name=ExpiredAmount,proto3" json:"ExpiredAmount,omitempty"`
+	ExpiredAmount int32 `protobuf:"zigzag32,13,opt,name=ExpiredAmount,proto3" json:"ExpiredAmount"`
 	// * 总充值金额
-	TotalCharge int32 `protobuf:"zigzag32,14,opt,name=TotalCharge,proto3" json:"TotalCharge,omitempty"`
+	TotalCharge int32 `protobuf:"zigzag32,14,opt,name=TotalCharge,proto3" json:"TotalCharge"`
 	// * 累计赠送金额
-	TotalPresent int32 `protobuf:"zigzag32,15,opt,name=TotalPresent,proto3" json:"TotalPresent,omitempty"`
+	TotalPresent int32 `protobuf:"zigzag32,15,opt,name=TotalPresent,proto3" json:"TotalPresent"`
 	// * 总支付额
-	TotalPay int32 `protobuf:"zigzag32,16,opt,name=TotalPay,proto3" json:"TotalPay,omitempty"`
+	TotalPay int32 `protobuf:"zigzag32,16,opt,name=TotalPay,proto3" json:"TotalPay"`
 	// * 状态
-	State int32 `protobuf:"zigzag32,17,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"zigzag32,17,opt,name=State,proto3" json:"State"`
 	// * 创建时间
-	CreateTime int64 `protobuf:"zigzag64,18,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"zigzag64,18,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// * 更新时间
-	UpdateTime           int64    `protobuf:"zigzag64,19,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"zigzag64,19,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1293,39 +1293,39 @@ func (m *SWallet) GetUpdateTime() int64 {
 // * 钱包日志
 type SWalletLog struct {
 	// * 编号
-	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID"`
 	// * 钱包编号
-	WalletId int64 `protobuf:"zigzag64,2,opt,name=WalletId,proto3" json:"WalletId,omitempty"`
+	WalletId int64 `protobuf:"zigzag64,2,opt,name=WalletId,proto3" json:"WalletId"`
 	// * 业务类型
-	Kind int32 `protobuf:"zigzag32,3,opt,name=Kind,proto3" json:"Kind,omitempty"`
+	Kind int32 `protobuf:"zigzag32,3,opt,name=Kind,proto3" json:"Kind"`
 	// * 标题
-	Title string `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title"`
 	// * 外部通道
-	OuterChan string `protobuf:"bytes,5,opt,name=OuterChan,proto3" json:"OuterChan,omitempty"`
+	OuterChan string `protobuf:"bytes,5,opt,name=OuterChan,proto3" json:"OuterChan"`
 	// * 外部订单号
-	OuterNo string `protobuf:"bytes,6,opt,name=OuterNo,proto3" json:"OuterNo,omitempty"`
+	OuterNo string `protobuf:"bytes,6,opt,name=OuterNo,proto3" json:"OuterNo"`
 	// * 变动金额
-	Value int32 `protobuf:"zigzag32,7,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value int32 `protobuf:"zigzag32,7,opt,name=Value,proto3" json:"Value"`
 	// * 余额
-	Balance int32 `protobuf:"zigzag32,8,opt,name=Balance,proto3" json:"Balance,omitempty"`
+	Balance int32 `protobuf:"zigzag32,8,opt,name=Balance,proto3" json:"Balance"`
 	// * 交易手续费
-	TradeFee int32 `protobuf:"zigzag32,9,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
+	TradeFee int32 `protobuf:"zigzag32,9,opt,name=TradeFee,proto3" json:"TradeFee"`
 	// * 操作人员用户编号
-	OperatorId int32 `protobuf:"zigzag32,10,opt,name=OperatorId,proto3" json:"OperatorId,omitempty"`
+	OperatorId int32 `protobuf:"zigzag32,10,opt,name=OperatorId,proto3" json:"OperatorId"`
 	// * 操作人员名称
-	OperatorName string `protobuf:"bytes,11,opt,name=OperatorName,proto3" json:"OperatorName,omitempty"`
+	OperatorName string `protobuf:"bytes,11,opt,name=OperatorName,proto3" json:"OperatorName"`
 	// * 备注
-	Remark string `protobuf:"bytes,12,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark string `protobuf:"bytes,12,opt,name=Remark,proto3" json:"Remark"`
 	// * 审核状态
-	ReviewState int32 `protobuf:"zigzag32,13,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
+	ReviewState int32 `protobuf:"zigzag32,13,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// * 审核备注
-	ReviewRemark string `protobuf:"bytes,14,opt,name=ReviewRemark,proto3" json:"ReviewRemark,omitempty"`
+	ReviewRemark string `protobuf:"bytes,14,opt,name=ReviewRemark,proto3" json:"ReviewRemark"`
 	// * 审核时间
-	ReviewTime int64 `protobuf:"zigzag64,15,opt,name=ReviewTime,proto3" json:"ReviewTime,omitempty"`
+	ReviewTime int64 `protobuf:"zigzag64,15,opt,name=ReviewTime,proto3" json:"ReviewTime"`
 	// * 创建时间
-	CreateTime int64 `protobuf:"zigzag64,16,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"zigzag64,16,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// * 更新时间
-	UpdateTime           int64    `protobuf:"zigzag64,17,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"zigzag64,17,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

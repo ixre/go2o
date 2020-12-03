@@ -219,3 +219,311 @@ func (p *rbacServiceImpl) PagingPermJob(_ context.Context, r *proto.PermJobPagin
 	}
 	return ret, nil
 }
+
+
+// 保存系统用户
+func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserRequest) (*proto.SavePermUserResponse, error) {
+	var dst *model.PermUser
+	if r.Id > 0 {
+		dst = p.dao.GetPermUser(r.Id)
+	} else {
+		dst = &model.PermUser{}
+		dst.CreateTime = time.Now().Unix()
+	}
+
+	dst.User = r.User
+	dst.Pwd = r.Pwd
+	dst.Flag = int(r.Flag)
+	dst.Avatar = r.Avatar
+	dst.NickName = r.NickName
+	dst.Sex = r.Sex
+	dst.Email = r.Email
+	dst.Phone = r.Phone
+	dst.DeptId = r.DeptId
+	dst.JobId = r.JobId
+	dst.Enabled = int16(r.Enabled)
+	dst.LastLogin = r.LastLogin
+
+	id, err := p.dao.SavePermUser(dst)
+	ret := &proto.SavePermUserResponse{
+		Id: int64(id),
+	}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
+}
+
+func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
+	return &proto.SPermUser{
+		Id:         v.Id,
+		User:       v.User,
+		Pwd:        v.Pwd,
+		Flag:       int32(v.Flag),
+		Avatar:     v.Avatar,
+		NickName:   v.NickName,
+		Sex:        v.Sex,
+		Email:      v.Email,
+		Phone:      v.Phone,
+		DeptId:     v.DeptId,
+		JobId:      v.JobId,
+		Enabled:    int32(v.Enabled),
+		LastLogin:  v.LastLogin,
+		CreateTime: v.CreateTime,
+	}
+}
+
+// 获取系统用户
+func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (*proto.SPermUser, error) {
+	v := p.dao.GetPermUser(id.Value)
+	if v == nil {
+		return nil, nil
+	}
+	return p.parsePermUser(v), nil
+}
+
+// 获取系统用户列表
+func (p *rbacServiceImpl) QueryPermUserList(_ context.Context, r *proto.QueryPermUserRequest) (*proto.QueryPermUserResponse, error) {
+	arr := p.dao.SelectPermUser("1=1")
+	ret := &proto.QueryPermUserResponse{
+		List: make([]*proto.SPermUser, len(arr)),
+	}
+	for i, v := range arr {
+		ret.List[i] = p.parsePermUser(v)
+	}
+	return ret, nil
+}
+
+func (p *rbacServiceImpl) DeletePermUser(_ context.Context, id *proto.PermUserId) (*proto.Result, error) {
+	err := p.dao.DeletePermUser(id.Value)
+	return p.error(err), nil
+}
+
+func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPagingRequest) (*proto.PermUserPagingResponse, error) {
+	total, rows := p.dao.PagingQueryPermUser(int(r.Params.Begin),
+		int(r.Params.End),
+		r.Params.Where,
+		r.Params.SortBy)
+	ret := &proto.PermUserPagingResponse{
+		Total: int64(total),
+		Value: make([]*proto.PagingPermUser, len(rows)),
+	}
+	for i, v := range rows {
+		ret.Value[i] = &proto.PagingPermUser{
+			Id:         int64(typeconv.MustInt(v["id"])),
+			User:       typeconv.Stringify(v["user"]),
+			Pwd:        typeconv.Stringify(v["pwd"]),
+			Flag:       int32(typeconv.MustInt(v["flag"])),
+			Avatar:     typeconv.Stringify(v["avatar"]),
+			NickName:   typeconv.Stringify(v["nick_name"]),
+			Sex:        typeconv.Stringify(v["sex"]),
+			Email:      typeconv.Stringify(v["email"]),
+			Phone:      typeconv.Stringify(v["phone"]),
+			DeptId:     int64(typeconv.MustInt(v["dept_id"])),
+			JobId:      int64(typeconv.MustInt(v["job_id"])),
+			Enabled:    int32(typeconv.MustInt(v["enabled"])),
+			LastLogin:  int64(typeconv.MustInt(v["last_login"])),
+			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+		}
+	}
+	return ret, nil
+}
+
+
+// 保存角色
+func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SavePermRoleRequest) (*proto.SavePermRoleResponse, error) {
+	var dst *model.PermRole
+	if r.Id > 0 {
+		dst = p.dao.GetPermRole(r.Id)
+	} else {
+		dst = &model.PermRole{}
+		dst.CreateTime = time.Now().Unix()
+	}
+
+	dst.Name = r.Name
+	dst.Level = int(r.Level)
+	dst.DataScope = r.DataScope
+	dst.Permission = r.Permission
+	dst.Remark = r.Remark
+
+	id, err := p.dao.SavePermRole(dst)
+	ret := &proto.SavePermRoleResponse{
+		Id: int64(id),
+	}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
+}
+
+func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SPermRole {
+	return &proto.SPermRole{
+		Id:         v.Id,
+		Name:       v.Name,
+		Level:      int32(v.Level),
+		DataScope:  v.DataScope,
+		Permission: v.Permission,
+		Remark:     v.Remark,
+		CreateTime: v.CreateTime,
+	}
+}
+
+// 获取角色
+func (p *rbacServiceImpl) GetPermRole(_ context.Context, id *proto.PermRoleId) (*proto.SPermRole, error) {
+	v := p.dao.GetPermRole(id.Value)
+	if v == nil {
+		return nil, nil
+	}
+	return p.parsePermRole(v), nil
+}
+
+// 获取角色列表
+func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryPermRoleRequest) (*proto.QueryPermRoleResponse, error) {
+	arr := p.dao.SelectPermRole("1=1")
+	ret := &proto.QueryPermRoleResponse{
+		List: make([]*proto.SPermRole, len(arr)),
+	}
+	for i, v := range arr {
+		ret.List[i] = p.parsePermRole(v)
+	}
+	return ret, nil
+}
+
+func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.PermRoleId) (*proto.Result, error) {
+	err := p.dao.DeletePermRole(id.Value)
+	return p.error(err), nil
+}
+
+func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.PermRolePagingRequest) (*proto.PermRolePagingResponse, error) {
+	total, rows := p.dao.PagingQueryPermRole(int(r.Params.Begin),
+		int(r.Params.End),
+		r.Params.Where,
+		r.Params.SortBy)
+	ret := &proto.PermRolePagingResponse{
+		Total: int64(total),
+		Value: make([]*proto.PagingPermRole, len(rows)),
+	}
+	for i, v := range rows {
+		ret.Value[i] = &proto.PagingPermRole{
+			Id:         int64(typeconv.MustInt(v["id"])),
+			Name:       typeconv.Stringify(v["name"]),
+			Level:      int32(typeconv.MustInt(v["level"])),
+			DataScope:  typeconv.Stringify(v["data_scope"]),
+			Permission: typeconv.Stringify(v["permission"]),
+			Remark:     typeconv.Stringify(v["remark"]),
+			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+		}
+	}
+	return ret, nil
+}
+
+// 保存PermRes
+func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResRequest) (*proto.SavePermResResponse, error) {
+	var dst *model.PermRes
+	if r.Id > 0 {
+		dst = p.dao.GetPermRes(r.Id)
+	} else {
+		dst = &model.PermRes{}
+		dst.CreateTime = time.Now().Unix()
+	}
+
+	dst.Name = r.Name
+	dst.ResType = int16(r.ResType)
+	dst.Pid = r.Pid
+	dst.Key = r.Key
+	dst.Path = r.Path
+	dst.Icon = r.Icon
+	dst.Permission = r.Permission
+	dst.SortNum = int(r.SortNum)
+	dst.IsExternal = int16(r.IsExternal)
+	dst.IsHidden = int16(r.IsHidden)
+	dst.ComponentName = r.ComponentName
+	dst.Cache = r.Cache
+
+	id, err := p.dao.SavePermRes(dst)
+	ret := &proto.SavePermResResponse{
+		Id: int64(id),
+	}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
+}
+
+func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
+	return &proto.SPermRes{
+		Id:            v.Id,
+		Name:          v.Name,
+		ResType:       int32(v.ResType),
+		Pid:           v.Pid,
+		Key:           v.Key,
+		Path:          v.Path,
+		Icon:          v.Icon,
+		Permission:    v.Permission,
+		SortNum:       int32(v.SortNum),
+		IsExternal:    int32(v.IsExternal),
+		IsHidden:      int32(v.IsHidden),
+		CreateTime:    v.CreateTime,
+		ComponentName: v.ComponentName,
+		Cache:         v.Cache,
+	}
+}
+
+// 获取PermRes
+func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*proto.SPermRes, error) {
+	v := p.dao.GetPermRes(id.Value)
+	if v == nil {
+		return nil, nil
+	}
+	return p.parsePermRes(v), nil
+}
+
+// 获取PermRes列表
+func (p *rbacServiceImpl) QueryPermResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
+	arr := p.dao.SelectPermRes("1=1")
+	ret := &proto.QueryPermResResponse{
+		List: make([]*proto.SPermRes, len(arr)),
+	}
+	for i, v := range arr {
+		ret.List[i] = p.parsePermRes(v)
+	}
+	return ret, nil
+}
+
+func (p *rbacServiceImpl) DeletePermRes(_ context.Context, id *proto.PermResId) (*proto.Result, error) {
+	err := p.dao.DeletePermRes(id.Value)
+	return p.error(err), nil
+}
+
+func (p *rbacServiceImpl) PagingPermRes(_ context.Context, r *proto.PermResPagingRequest) (*proto.PermResPagingResponse, error) {
+	total, rows := p.dao.PagingQueryPermRes(int(r.Params.Begin),
+		int(r.Params.End),
+		r.Params.Where,
+		r.Params.SortBy)
+	ret := &proto.PermResPagingResponse{
+		Total: int64(total),
+		Value: make([]*proto.PagingPermRes, len(rows)),
+	}
+	for i, v := range rows {
+		ret.Value[i] = &proto.PagingPermRes{
+			Id:            int64(typeconv.MustInt(v["id"])),
+			Name:          typeconv.Stringify(v["name"]),
+			ResType:       int32(typeconv.MustInt(v["res_type"])),
+			Pid:           int64(typeconv.MustInt(v["pid"])),
+			Key:           typeconv.Stringify(v["key"]),
+			Path:          typeconv.Stringify(v["path"]),
+			Icon:          typeconv.Stringify(v["icon"]),
+			Permission:    typeconv.Stringify(v["permission"]),
+			SortNum:       int32(typeconv.MustInt(v["sort_num"])),
+			IsExternal:    int32(typeconv.MustInt(v["is_external"])),
+			IsHidden:      int32(typeconv.MustInt(v["is_hidden"])),
+			CreateTime:    int64(typeconv.MustInt(v["create_time"])),
+			ComponentName: typeconv.Stringify(v["component_name"]),
+			Cache:         typeconv.Stringify(v["cache_"]),
+		}
+	}
+	return ret, nil
+}

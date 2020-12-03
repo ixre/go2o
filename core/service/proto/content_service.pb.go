@@ -24,9 +24,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type PagingArticleRequest struct {
-	CategoryName         string   `protobuf:"bytes,1,opt,name=CategoryName,proto3" json:"CategoryName,omitempty"`
-	Begin                int32    `protobuf:"zigzag32,2,opt,name=Begin,proto3" json:"Begin,omitempty"`
-	Size                 int32    `protobuf:"zigzag32,3,opt,name=Size,proto3" json:"Size,omitempty"`
+	CategoryName         string   `protobuf:"bytes,1,opt,name=CategoryName,proto3" json:"CategoryName"`
+	Begin                int32    `protobuf:"zigzag32,2,opt,name=Begin,proto3" json:"Begin"`
+	Size                 int32    `protobuf:"zigzag32,3,opt,name=Size,proto3" json:"Size"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -78,8 +78,8 @@ func (m *PagingArticleRequest) GetSize() int32 {
 }
 
 type ArticleListResponse struct {
-	Total                int64       `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*SArticle `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	Total                int64       `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SArticle `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -126,25 +126,25 @@ func (m *ArticleListResponse) GetData() []*SArticle {
 // 栏目
 type SArticleCategory struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 父类编号,如为一级栏目则为0
-	ParentId int64 `protobuf:"varint,2,opt,name=ParentId,proto3" json:"ParentId,omitempty"`
+	ParentId int64 `protobuf:"varint,2,opt,name=ParentId,proto3" json:"ParentId"`
 	// 浏览权限
-	PermFlag int32 `protobuf:"varint,3,opt,name=PermFlag,proto3" json:"PermFlag,omitempty"`
+	PermFlag int32 `protobuf:"varint,3,opt,name=PermFlag,proto3" json:"PermFlag"`
 	// 名称(唯一)
-	Name string `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name"`
 	// 别名
-	Alias string `protobuf:"bytes,5,opt,name=Alias,proto3" json:"Alias,omitempty"`
+	Alias string `protobuf:"bytes,5,opt,name=Alias,proto3" json:"Alias"`
 	// 排序编号
-	SortNum int32 `protobuf:"varint,6,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum int32 `protobuf:"varint,6,opt,name=SortNum,proto3" json:"SortNum"`
 	// 定位路径（打开栏目页定位到的路径）
-	Location string `protobuf:"bytes,7,opt,name=Location,proto3" json:"Location,omitempty"`
+	Location string `protobuf:"bytes,7,opt,name=Location,proto3" json:"Location"`
 	// 页面标题
-	Title string `protobuf:"bytes,8,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,8,opt,name=Title,proto3" json:"Title"`
 	// 关键字
-	Keywords string `protobuf:"bytes,9,opt,name=Keywords,proto3" json:"Keywords,omitempty"`
+	Keywords string `protobuf:"bytes,9,opt,name=Keywords,proto3" json:"Keywords"`
 	// 描述
-	Description          string   `protobuf:"bytes,10,opt,name=Description,proto3" json:"Description,omitempty"`
+	Description          string   `protobuf:"bytes,10,opt,name=Description,proto3" json:"Description"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -247,35 +247,35 @@ func (m *SArticleCategory) GetDescription() string {
 // * 文章
 type SArticle struct {
 	// * 编号
-	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id"`
 	// * 栏目编号
-	CategoryId int64 `protobuf:"zigzag64,2,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
+	CategoryId int64 `protobuf:"zigzag64,2,opt,name=CategoryId,proto3" json:"CategoryId"`
 	// * 标题
-	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
 	// * 小标题
-	SmallTitle string `protobuf:"bytes,4,opt,name=SmallTitle,proto3" json:"SmallTitle,omitempty"`
+	SmallTitle string `protobuf:"bytes,4,opt,name=SmallTitle,proto3" json:"SmallTitle"`
 	// * 文章附图
-	Thumbnail string `protobuf:"bytes,5,opt,name=Thumbnail,proto3" json:"Thumbnail,omitempty"`
+	Thumbnail string `protobuf:"bytes,5,opt,name=Thumbnail,proto3" json:"Thumbnail"`
 	// * 重定向URL
-	PublisherId int64 `protobuf:"zigzag64,6,opt,name=PublisherId,proto3" json:"PublisherId,omitempty"`
+	PublisherId int64 `protobuf:"zigzag64,6,opt,name=PublisherId,proto3" json:"PublisherId"`
 	// * 重定向URL
-	Location string `protobuf:"bytes,7,opt,name=Location,proto3" json:"Location,omitempty"`
+	Location string `protobuf:"bytes,7,opt,name=Location,proto3" json:"Location"`
 	// * 优先级,优先级越高，则置顶
-	Priority int32 `protobuf:"zigzag32,8,opt,name=Priority,proto3" json:"Priority,omitempty"`
+	Priority int32 `protobuf:"zigzag32,8,opt,name=Priority,proto3" json:"Priority"`
 	// * 浏览钥匙
-	AccessKey string `protobuf:"bytes,9,opt,name=AccessKey,proto3" json:"AccessKey,omitempty"`
+	AccessKey string `protobuf:"bytes,9,opt,name=AccessKey,proto3" json:"AccessKey"`
 	// * 文档内容
-	Content string `protobuf:"bytes,10,opt,name=Content,proto3" json:"Content,omitempty"`
+	Content string `protobuf:"bytes,10,opt,name=Content,proto3" json:"Content"`
 	// * 标签（关键词）
-	Tags string `protobuf:"bytes,11,opt,name=Tags,proto3" json:"Tags,omitempty"`
+	Tags string `protobuf:"bytes,11,opt,name=Tags,proto3" json:"Tags"`
 	// * 显示次数
-	ViewCount int32 `protobuf:"zigzag32,12,opt,name=ViewCount,proto3" json:"ViewCount,omitempty"`
+	ViewCount int32 `protobuf:"zigzag32,12,opt,name=ViewCount,proto3" json:"ViewCount"`
 	// * 排序序号
-	SortNum int32 `protobuf:"zigzag32,13,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum int32 `protobuf:"zigzag32,13,opt,name=SortNum,proto3" json:"SortNum"`
 	// * 创建时间
-	CreateTime int64 `protobuf:"zigzag64,14,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"zigzag64,14,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// * 最后修改时间
-	UpdateTime           int64    `protobuf:"zigzag64,15,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"zigzag64,15,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -412,29 +412,29 @@ func (m *SArticle) GetUpdateTime() int64 {
 
 type SPage struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 商户编号
-	UserId int64 `protobuf:"varint,2,opt,name=UserId,proto3" json:"UserId,omitempty"`
+	UserId int64 `protobuf:"varint,2,opt,name=UserId,proto3" json:"UserId"`
 	// 标题
-	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
 	// 字符标识
-	StrIndent string `protobuf:"bytes,4,opt,name=StrIndent,proto3" json:"StrIndent,omitempty"`
+	StrIndent string `protobuf:"bytes,4,opt,name=StrIndent,proto3" json:"StrIndent"`
 	// 浏览权限
-	PermFlag int32 `protobuf:"varint,5,opt,name=PermFlag,proto3" json:"PermFlag,omitempty"`
+	PermFlag int32 `protobuf:"varint,5,opt,name=PermFlag,proto3" json:"PermFlag"`
 	// 浏览钥匙
-	AccessKey string `protobuf:"bytes,6,opt,name=AccessKey,proto3" json:"AccessKey,omitempty"`
+	AccessKey string `protobuf:"bytes,6,opt,name=AccessKey,proto3" json:"AccessKey"`
 	// 关键词
-	KeyWord string `protobuf:"bytes,7,opt,name=KeyWord,proto3" json:"KeyWord,omitempty"`
+	KeyWord string `protobuf:"bytes,7,opt,name=KeyWord,proto3" json:"KeyWord"`
 	// 描述
-	Description string `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
+	Description string `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description"`
 	// 样式表地址
-	CssPath string `protobuf:"bytes,9,opt,name=CssPath,proto3" json:"CssPath,omitempty"`
+	CssPath string `protobuf:"bytes,9,opt,name=CssPath,proto3" json:"CssPath"`
 	// 内容
-	Body string `protobuf:"bytes,10,opt,name=Body,proto3" json:"Body,omitempty"`
+	Body string `protobuf:"bytes,10,opt,name=Body,proto3" json:"Body"`
 	// 修改时间
-	UpdateTime int64 `protobuf:"varint,11,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime int64 `protobuf:"varint,11,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,12,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled              bool     `protobuf:"varint,12,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -549,7 +549,7 @@ func (m *SPage) GetEnabled() bool {
 }
 
 type ArticleCategoriesResponse struct {
-	Value                []*SArticleCategory `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SArticleCategory `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`

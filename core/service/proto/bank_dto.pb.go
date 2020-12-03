@@ -19,8 +19,8 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type BankCardAddRequest struct {
-	OwnerId              int64          `protobuf:"zigzag64,1,opt,name=OwnerId,proto3" json:"OwnerId,omitempty"`
-	Value                *SBankCardInfo `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	OwnerId              int64          `protobuf:"zigzag64,1,opt,name=OwnerId,proto3" json:"OwnerId"`
+	Value                *SBankCardInfo `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -65,8 +65,8 @@ func (m *BankCardAddRequest) GetValue() *SBankCardInfo {
 }
 
 type BankCardRequest struct {
-	OwnerId              int64    `protobuf:"varint,1,opt,name=OwnerId,proto3" json:"OwnerId,omitempty"`
-	BankCardNo           string   `protobuf:"bytes,2,opt,name=BankCardNo,proto3" json:"BankCardNo,omitempty"`
+	OwnerId              int64    `protobuf:"varint,1,opt,name=OwnerId,proto3" json:"OwnerId"`
+	BankCardNo           string   `protobuf:"bytes,2,opt,name=BankCardNo,proto3" json:"BankCardNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -111,8 +111,8 @@ func (m *BankCardRequest) GetBankCardNo() string {
 }
 
 type BankCardListResponse struct {
-	OwnerId              int64            `protobuf:"zigzag64,1,opt,name=OwnerId,proto3" json:"OwnerId,omitempty"`
-	Value                []*SBankCardInfo `protobuf:"bytes,2,rep,name=Value,proto3" json:"Value,omitempty"`
+	OwnerId              int64            `protobuf:"zigzag64,1,opt,name=OwnerId,proto3" json:"OwnerId"`
+	Value                []*SBankCardInfo `protobuf:"bytes,2,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -159,23 +159,23 @@ func (m *BankCardListResponse) GetValue() []*SBankCardInfo {
 // * 会员银行卡
 type SBankCardInfo struct {
 	// * 银行名称
-	BankName string `protobuf:"bytes,2,opt,name=BankName,proto3" json:"BankName,omitempty"`
+	BankName string `protobuf:"bytes,2,opt,name=BankName,proto3" json:"BankName"`
 	// * 账户名
-	AccountName string `protobuf:"bytes,3,opt,name=AccountName,proto3" json:"AccountName,omitempty"`
+	AccountName string `protobuf:"bytes,3,opt,name=AccountName,proto3" json:"AccountName"`
 	// * 账号
-	AccountNo string `protobuf:"bytes,4,opt,name=AccountNo,proto3" json:"AccountNo,omitempty"`
+	AccountNo string `protobuf:"bytes,4,opt,name=AccountNo,proto3" json:"AccountNo"`
 	// 银行编号
-	BankId int32 `protobuf:"varint,5,opt,name=BankId,proto3" json:"BankId,omitempty"`
+	BankId int32 `protobuf:"varint,5,opt,name=BankId,proto3" json:"BankId"`
 	// 银行卡代码
-	BankCode string `protobuf:"bytes,6,opt,name=BankCode,proto3" json:"BankCode,omitempty"`
+	BankCode string `protobuf:"bytes,6,opt,name=BankCode,proto3" json:"BankCode"`
 	// 快捷支付授权码
-	AuthCode string `protobuf:"bytes,7,opt,name=AuthCode,proto3" json:"AuthCode,omitempty"`
+	AuthCode string `protobuf:"bytes,7,opt,name=AuthCode,proto3" json:"AuthCode"`
 	// * 网点名称
-	Network string `protobuf:"bytes,8,opt,name=Network,proto3" json:"Network,omitempty"`
+	Network string `protobuf:"bytes,8,opt,name=Network,proto3" json:"Network"`
 	// * 状态
-	State int32 `protobuf:"zigzag32,9,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"zigzag32,9,opt,name=State,proto3" json:"State"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"zigzag64,10,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"zigzag64,10,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

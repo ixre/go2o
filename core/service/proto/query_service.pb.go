@@ -24,10 +24,10 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type FavoriteQueryRequest struct {
-	MemberId             int64    `protobuf:"varint,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Begin                int64    `protobuf:"varint,2,opt,name=begin,proto3" json:"begin,omitempty"`
-	End                  int64    `protobuf:"varint,3,opt,name=end,proto3" json:"end,omitempty"`
-	Where                string   `protobuf:"bytes,4,opt,name=where,proto3" json:"where,omitempty"`
+	MemberId             int64    `protobuf:"varint,1,opt,name=memberId,proto3" json:"memberId"`
+	Begin                int64    `protobuf:"varint,2,opt,name=begin,proto3" json:"begin"`
+	End                  int64    `protobuf:"varint,3,opt,name=end,proto3" json:"end"`
+	Where                string   `protobuf:"bytes,4,opt,name=where,proto3" json:"where"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -86,8 +86,8 @@ func (m *FavoriteQueryRequest) GetWhere() string {
 }
 
 type PagingShopFavoriteResponse struct {
-	Total                int64                  `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*SPagingShopFavorite `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	Total                int64                  `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SPagingShopFavorite `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
 	XXX_unrecognized     []byte                 `json:"-"`
 	XXX_sizecache        int32                  `json:"-"`
@@ -132,11 +132,11 @@ func (m *PagingShopFavoriteResponse) GetData() []*SPagingShopFavorite {
 }
 
 type SPagingShopFavorite struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	ShopId               int64    `protobuf:"varint,2,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
-	ShopName             string   `protobuf:"bytes,3,opt,name=ShopName,proto3" json:"ShopName,omitempty"`
-	Logo                 string   `protobuf:"bytes,4,opt,name=Logo,proto3" json:"Logo,omitempty"`
-	UpdateTime           int64    `protobuf:"varint,5,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	ShopId               int64    `protobuf:"varint,2,opt,name=ShopId,proto3" json:"ShopId"`
+	ShopName             string   `protobuf:"bytes,3,opt,name=ShopName,proto3" json:"ShopName"`
+	Logo                 string   `protobuf:"bytes,4,opt,name=Logo,proto3" json:"Logo"`
+	UpdateTime           int64    `protobuf:"varint,5,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -202,8 +202,8 @@ func (m *SPagingShopFavorite) GetUpdateTime() int64 {
 }
 
 type PagingGoodsFavoriteResponse struct {
-	Total                int64                   `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*SPagingGoodsFavorite `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	Total                int64                   `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SPagingGoodsFavorite `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
 	XXX_unrecognized     []byte                  `json:"-"`
 	XXX_sizecache        int32                   `json:"-"`
@@ -248,14 +248,14 @@ func (m *PagingGoodsFavoriteResponse) GetData() []*SPagingGoodsFavorite {
 }
 
 type SPagingGoodsFavorite struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	SkuId                int64    `protobuf:"varint,2,opt,name=SkuId,proto3" json:"SkuId,omitempty"`
-	GoodsName            string   `protobuf:"bytes,3,opt,name=GoodsName,proto3" json:"GoodsName,omitempty"`
-	Image                string   `protobuf:"bytes,4,opt,name=Image,proto3" json:"Image,omitempty"`
-	OnShelves            bool     `protobuf:"varint,5,opt,name=OnShelves,proto3" json:"OnShelves,omitempty"`
-	StockNum             int32    `protobuf:"varint,6,opt,name=StockNum,proto3" json:"StockNum,omitempty"`
-	SalePrice            string   `protobuf:"bytes,7,opt,name=SalePrice,proto3" json:"SalePrice,omitempty"`
-	UpdateTime           int64    `protobuf:"varint,8,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	SkuId                int64    `protobuf:"varint,2,opt,name=SkuId,proto3" json:"SkuId"`
+	GoodsName            string   `protobuf:"bytes,3,opt,name=GoodsName,proto3" json:"GoodsName"`
+	Image                string   `protobuf:"bytes,4,opt,name=Image,proto3" json:"Image"`
+	OnShelves            bool     `protobuf:"varint,5,opt,name=OnShelves,proto3" json:"OnShelves"`
+	StockNum             int32    `protobuf:"varint,6,opt,name=StockNum,proto3" json:"StockNum"`
+	SalePrice            string   `protobuf:"bytes,7,opt,name=SalePrice,proto3" json:"SalePrice"`
+	UpdateTime           int64    `protobuf:"varint,8,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -343,9 +343,9 @@ func (m *SPagingGoodsFavorite) GetUpdateTime() int64 {
 
 type QueryPagingShopRequest struct {
 	// 参数
-	Params *SPagingParams `protobuf:"bytes,1,opt,name=Params,proto3" json:"Params,omitempty"`
+	Params *SPagingParams `protobuf:"bytes,1,opt,name=Params,proto3" json:"Params"`
 	// 是否只查询营业中的店铺
-	OnlyBusiness         bool     `protobuf:"varint,2,opt,name=OnlyBusiness,proto3" json:"OnlyBusiness,omitempty"`
+	OnlyBusiness         bool     `protobuf:"varint,2,opt,name=OnlyBusiness,proto3" json:"OnlyBusiness"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -390,8 +390,8 @@ func (m *QueryPagingShopRequest) GetOnlyBusiness() bool {
 }
 
 type QueryPagingShopsResponse struct {
-	Total                int64              `protobuf:"zigzag64,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Value                []*QueryPagingShop `protobuf:"bytes,2,rep,name=Value,proto3" json:"Value,omitempty"`
+	Total                int64              `protobuf:"zigzag64,1,opt,name=Total,proto3" json:"Total"`
+	Value                []*QueryPagingShop `protobuf:"bytes,2,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -436,12 +436,12 @@ func (m *QueryPagingShopsResponse) GetValue() []*QueryPagingShop {
 }
 
 type QueryPagingShop struct {
-	Id                   int64    `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	Alias                string   `protobuf:"bytes,3,opt,name=Alias,proto3" json:"Alias,omitempty"`
-	Host                 string   `protobuf:"bytes,4,opt,name=Host,proto3" json:"Host,omitempty"`
-	Logo                 string   `protobuf:"bytes,5,opt,name=Logo,proto3" json:"Logo,omitempty"`
-	CreateTime           int64    `protobuf:"zigzag64,6,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	Id                   int64    `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	Alias                string   `protobuf:"bytes,3,opt,name=Alias,proto3" json:"Alias"`
+	Host                 string   `protobuf:"bytes,4,opt,name=Host,proto3" json:"Host"`
+	Logo                 string   `protobuf:"bytes,5,opt,name=Logo,proto3" json:"Logo"`
+	CreateTime           int64    `protobuf:"zigzag64,6,opt,name=CreateTime,proto3" json:"CreateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -514,8 +514,8 @@ func (m *QueryPagingShop) GetCreateTime() int64 {
 }
 
 type MemberOrderPagingRequest struct {
-	MemberId             int64          `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,2,opt,name=Params,proto3" json:"Params,omitempty"`
+	MemberId             int64          `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	Params               *SPagingParams `protobuf:"bytes,2,opt,name=Params,proto3" json:"Params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -560,8 +560,8 @@ func (m *MemberOrderPagingRequest) GetParams() *SPagingParams {
 }
 
 type MemberOrderPagingResponse struct {
-	Total                int64                  `protobuf:"zigzag64,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Value                []*PagedMemberSubOrder `protobuf:"bytes,2,rep,name=Value,proto3" json:"Value,omitempty"`
+	Total                int64                  `protobuf:"zigzag64,1,opt,name=Total,proto3" json:"Total"`
+	Value                []*PagedMemberSubOrder `protobuf:"bytes,2,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
 	XXX_unrecognized     []byte                 `json:"-"`
 	XXX_sizecache        int32                  `json:"-"`
@@ -606,22 +606,22 @@ func (m *MemberOrderPagingResponse) GetValue() []*PagedMemberSubOrder {
 }
 
 type PagedMemberSubOrder struct {
-	OrderId              int64         `protobuf:"zigzag64,1,opt,name=OrderId,proto3" json:"OrderId,omitempty"`
-	OrderNo              string        `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
-	ParentNo             string        `protobuf:"bytes,3,opt,name=ParentNo,proto3" json:"ParentNo,omitempty"`
-	VendorId             int64         `protobuf:"zigzag64,4,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
-	ShopId               int64         `protobuf:"zigzag64,5,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
-	ShopName             string        `protobuf:"bytes,6,opt,name=ShopName,proto3" json:"ShopName,omitempty"`
-	ItemAmount           float64       `protobuf:"fixed64,7,opt,name=ItemAmount,proto3" json:"ItemAmount,omitempty"`
-	DiscountAmount       float64       `protobuf:"fixed64,8,opt,name=DiscountAmount,proto3" json:"DiscountAmount,omitempty"`
-	ExpressFee           float64       `protobuf:"fixed64,9,opt,name=ExpressFee,proto3" json:"ExpressFee,omitempty"`
-	PackageFee           float64       `protobuf:"fixed64,10,opt,name=PackageFee,proto3" json:"PackageFee,omitempty"`
-	IsPaid               bool          `protobuf:"varint,11,opt,name=IsPaid,proto3" json:"IsPaid,omitempty"`
-	FinalAmount          float64       `protobuf:"fixed64,12,opt,name=FinalAmount,proto3" json:"FinalAmount,omitempty"`
-	State                int32         `protobuf:"zigzag32,13,opt,name=State,proto3" json:"State,omitempty"`
-	StateText            string        `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText,omitempty"`
-	CreateTime           int64         `protobuf:"zigzag64,15,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
-	Items                []*SOrderItem `protobuf:"bytes,16,rep,name=Items,proto3" json:"Items,omitempty"`
+	OrderId              int64         `protobuf:"zigzag64,1,opt,name=OrderId,proto3" json:"OrderId"`
+	OrderNo              string        `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo"`
+	ParentNo             string        `protobuf:"bytes,3,opt,name=ParentNo,proto3" json:"ParentNo"`
+	VendorId             int64         `protobuf:"zigzag64,4,opt,name=VendorId,proto3" json:"VendorId"`
+	ShopId               int64         `protobuf:"zigzag64,5,opt,name=ShopId,proto3" json:"ShopId"`
+	ShopName             string        `protobuf:"bytes,6,opt,name=ShopName,proto3" json:"ShopName"`
+	ItemAmount           float64       `protobuf:"fixed64,7,opt,name=ItemAmount,proto3" json:"ItemAmount"`
+	DiscountAmount       float64       `protobuf:"fixed64,8,opt,name=DiscountAmount,proto3" json:"DiscountAmount"`
+	ExpressFee           float64       `protobuf:"fixed64,9,opt,name=ExpressFee,proto3" json:"ExpressFee"`
+	PackageFee           float64       `protobuf:"fixed64,10,opt,name=PackageFee,proto3" json:"PackageFee"`
+	IsPaid               bool          `protobuf:"varint,11,opt,name=IsPaid,proto3" json:"IsPaid"`
+	FinalAmount          float64       `protobuf:"fixed64,12,opt,name=FinalAmount,proto3" json:"FinalAmount"`
+	State                int32         `protobuf:"zigzag32,13,opt,name=State,proto3" json:"State"`
+	StateText            string        `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText"`
+	CreateTime           int64         `protobuf:"zigzag64,15,opt,name=CreateTime,proto3" json:"CreateTime"`
+	Items                []*SOrderItem `protobuf:"bytes,16,rep,name=Items,proto3" json:"Items"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
 	XXX_unrecognized     []byte        `json:"-"`
 	XXX_sizecache        int32         `json:"-"`
@@ -764,7 +764,7 @@ func (m *PagedMemberSubOrder) GetItems() []*SOrderItem {
 }
 
 type MemberListRequest struct {
-	IdList               []int64  `protobuf:"varint,1,rep,packed,name=IdList,proto3" json:"IdList,omitempty"`
+	IdList               []int64  `protobuf:"varint,1,rep,packed,name=IdList,proto3" json:"IdList"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -803,7 +803,7 @@ func (m *MemberListRequest) GetIdList() []int64 {
 
 type MemberSearchRequest struct {
 	// 手机号/邮箱/用户名关键词
-	Keyword              string   `protobuf:"bytes,1,opt,name=Keyword,proto3" json:"Keyword,omitempty"`
+	Keyword              string   `protobuf:"bytes,1,opt,name=Keyword,proto3" json:"Keyword"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -841,7 +841,7 @@ func (m *MemberSearchRequest) GetKeyword() string {
 }
 
 type MemberListResponse struct {
-	Value                []*MemberListSingle `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*MemberListSingle `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -881,21 +881,21 @@ func (m *MemberListResponse) GetValue() []*MemberListSingle {
 // 会员概览信息
 type MemberListSingle struct {
 	// 会员编号
-	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId"`
 	// 用户名
-	User string `protobuf:"bytes,2,opt,name=User,proto3" json:"User,omitempty"`
+	User string `protobuf:"bytes,2,opt,name=User,proto3" json:"User"`
 	// 昵称
-	NickName string `protobuf:"bytes,3,opt,name=NickName,proto3" json:"NickName,omitempty"`
+	NickName string `protobuf:"bytes,3,opt,name=NickName,proto3" json:"NickName"`
 	// 头像
-	Avatar string `protobuf:"bytes,4,opt,name=Avatar,proto3" json:"Avatar,omitempty"`
+	Avatar string `protobuf:"bytes,4,opt,name=Avatar,proto3" json:"Avatar"`
 	// 等级
-	Level int32 `protobuf:"varint,5,opt,name=Level,proto3" json:"Level,omitempty"`
+	Level int32 `protobuf:"varint,5,opt,name=Level,proto3" json:"Level"`
 	// 积分
-	Integral int64 `protobuf:"varint,6,opt,name=Integral,proto3" json:"Integral,omitempty"`
+	Integral int64 `protobuf:"varint,6,opt,name=Integral,proto3" json:"Integral"`
 	// 账户余额
-	Balance float64 `protobuf:"fixed64,7,opt,name=Balance,proto3" json:"Balance,omitempty"`
+	Balance float64 `protobuf:"fixed64,7,opt,name=Balance,proto3" json:"Balance"`
 	// 钱包余额
-	WalletBalance        float64  `protobuf:"fixed64,8,opt,name=WalletBalance,proto3" json:"WalletBalance,omitempty"`
+	WalletBalance        float64  `protobuf:"fixed64,8,opt,name=WalletBalance,proto3" json:"WalletBalance"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

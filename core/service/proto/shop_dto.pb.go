@@ -21,21 +21,21 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 // 店铺
 type SShop struct {
 	// * 店铺编号
-	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id"`
 	// * 商户编号
-	MerchantId int64 `protobuf:"zigzag64,2,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	MerchantId int64 `protobuf:"zigzag64,2,opt,name=MerchantId,proto3" json:"MerchantId"`
 	// * 店铺名称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// 店铺标题
-	ShopTitle string `protobuf:"bytes,4,opt,name=ShopTitle,proto3" json:"ShopTitle,omitempty"`
+	ShopTitle string `protobuf:"bytes,4,opt,name=ShopTitle,proto3" json:"ShopTitle"`
 	// 店铺公告
-	ShopNotice string `protobuf:"bytes,5,opt,name=ShopNotice,proto3" json:"ShopNotice,omitempty"`
+	ShopNotice string `protobuf:"bytes,5,opt,name=ShopNotice,proto3" json:"ShopNotice"`
 	// 标志
-	Flag int32 `protobuf:"zigzag32,6,opt,name=Flag,proto3" json:"Flag,omitempty"`
+	Flag int32 `protobuf:"zigzag32,6,opt,name=Flag,proto3" json:"Flag"`
 	// 店铺设置
-	Config *SShopConfig `protobuf:"bytes,7,opt,name=Config,proto3" json:"Config,omitempty"`
+	Config *SShopConfig `protobuf:"bytes,7,opt,name=Config,proto3" json:"Config"`
 	// * 状态
-	State                int32    `protobuf:"zigzag32,8,opt,name=State,proto3" json:"State,omitempty"`
+	State                int32    `protobuf:"zigzag32,8,opt,name=State,proto3" json:"State"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -124,13 +124,13 @@ func (m *SShop) GetState() int32 {
 // 店铺设置
 type SShopConfig struct {
 	// * 店铺标志
-	Logo string `protobuf:"bytes,4,opt,name=Logo,proto3" json:"Logo,omitempty"`
+	Logo string `protobuf:"bytes,4,opt,name=Logo,proto3" json:"Logo"`
 	// * 自定义 域名
-	Host string `protobuf:"bytes,5,opt,name=Host,proto3" json:"Host,omitempty"`
+	Host string `protobuf:"bytes,5,opt,name=Host,proto3" json:"Host"`
 	// * 个性化域名
-	Alias string `protobuf:"bytes,6,opt,name=Alias,proto3" json:"Alias,omitempty"`
+	Alias string `protobuf:"bytes,6,opt,name=Alias,proto3" json:"Alias"`
 	// * 电话
-	Tel                  string   `protobuf:"bytes,7,opt,name=Tel,proto3" json:"Tel,omitempty"`
+	Tel                  string   `protobuf:"bytes,7,opt,name=Tel,proto3" json:"Tel"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -190,7 +190,7 @@ func (m *SShopConfig) GetTel() string {
 
 // 店铺编号
 type ShopId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -229,7 +229,7 @@ func (m *ShopId) GetValue() int64 {
 
 // 门店编号
 type StoreId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -268,29 +268,29 @@ func (m *StoreId) GetValue() int64 {
 
 // 店铺
 type SStore struct {
-	Id           int64  `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	MerchantId   int64  `protobuf:"zigzag64,2,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	Name         string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
-	Alias        string `protobuf:"bytes,4,opt,name=Alias,proto3" json:"Alias,omitempty"`
-	State        int32  `protobuf:"zigzag32,5,opt,name=State,proto3" json:"State,omitempty"`
-	OpeningState int32  `protobuf:"zigzag32,8,opt,name=OpeningState,proto3" json:"OpeningState,omitempty"`
-	StorePhone   string `protobuf:"bytes,9,opt,name=StorePhone,proto3" json:"StorePhone,omitempty"`
-	StoreNotice  string `protobuf:"bytes,11,opt,name=StoreNotice,proto3" json:"StoreNotice,omitempty"`
-	Province     int32  `protobuf:"varint,12,opt,name=Province,proto3" json:"Province,omitempty"`
-	City         int32  `protobuf:"varint,13,opt,name=City,proto3" json:"City,omitempty"`
-	District     int32  `protobuf:"varint,14,opt,name=District,proto3" json:"District,omitempty"`
+	Id           int64  `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id"`
+	MerchantId   int64  `protobuf:"zigzag64,2,opt,name=MerchantId,proto3" json:"MerchantId"`
+	Name         string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
+	Alias        string `protobuf:"bytes,4,opt,name=Alias,proto3" json:"Alias"`
+	State        int32  `protobuf:"zigzag32,5,opt,name=State,proto3" json:"State"`
+	OpeningState int32  `protobuf:"zigzag32,8,opt,name=OpeningState,proto3" json:"OpeningState"`
+	StorePhone   string `protobuf:"bytes,9,opt,name=StorePhone,proto3" json:"StorePhone"`
+	StoreNotice  string `protobuf:"bytes,11,opt,name=StoreNotice,proto3" json:"StoreNotice"`
+	Province     int32  `protobuf:"varint,12,opt,name=Province,proto3" json:"Province"`
+	City         int32  `protobuf:"varint,13,opt,name=City,proto3" json:"City"`
+	District     int32  `protobuf:"varint,14,opt,name=District,proto3" json:"District"`
 	// 地区名称
-	Address string `protobuf:"bytes,15,opt,name=Address,proto3" json:"Address,omitempty"`
+	Address string `protobuf:"bytes,15,opt,name=Address,proto3" json:"Address"`
 	// 详细地址
-	DetailAddress string `protobuf:"bytes,16,opt,name=DetailAddress,proto3" json:"DetailAddress,omitempty"`
+	DetailAddress string `protobuf:"bytes,16,opt,name=DetailAddress,proto3" json:"DetailAddress"`
 	// 纬度
-	Lat float64 `protobuf:"fixed64,17,opt,name=Lat,proto3" json:"Lat,omitempty"`
+	Lat float64 `protobuf:"fixed64,17,opt,name=Lat,proto3" json:"Lat"`
 	// 经度
-	Lng float64 `protobuf:"fixed64,18,opt,name=Lng,proto3" json:"Lng,omitempty"`
+	Lng float64 `protobuf:"fixed64,18,opt,name=Lng,proto3" json:"Lng"`
 	// 覆盖范围(公里)
-	CoverRadius int32 `protobuf:"varint,19,opt,name=CoverRadius,proto3" json:"CoverRadius,omitempty"`
+	CoverRadius int32 `protobuf:"varint,19,opt,name=CoverRadius,proto3" json:"CoverRadius"`
 	// 序号
-	SortNum              int32    `protobuf:"varint,20,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum              int32    `protobuf:"varint,20,opt,name=SortNum,proto3" json:"SortNum"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -441,10 +441,10 @@ func (m *SStore) GetSortNum() int32 {
 
 // 检查店铺结果
 type CheckShopResponse struct {
-	ShopId int64 `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
+	ShopId int64 `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId"`
 	// 店铺开通状态,0:未开通 1:已开通 2:待审核 3:审核不通过
-	Status               int32    `protobuf:"varint,2,opt,name=Status,proto3" json:"Status,omitempty"`
-	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Status               int32    `protobuf:"varint,2,opt,name=Status,proto3" json:"Status"`
+	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

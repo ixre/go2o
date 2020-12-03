@@ -20,11 +20,11 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 // 广告分组
 type SAdGroup struct {
-	Id   int64  `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Id   int64  `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// 是否开放给外部
-	Opened               bool     `protobuf:"varint,3,opt,name=Opened,proto3" json:"Opened,omitempty"`
-	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Opened               bool     `protobuf:"varint,3,opt,name=Opened,proto3" json:"Opened"`
+	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -84,8 +84,8 @@ func (m *SAdGroup) GetEnabled() bool {
 
 // 广告位编号
 type AdPositionId struct {
-	GroupId              int64    `protobuf:"varint,1,opt,name=GroupId,proto3" json:"GroupId,omitempty"`
-	PositionId           int64    `protobuf:"varint,2,opt,name=PositionId,proto3" json:"PositionId,omitempty"`
+	GroupId              int64    `protobuf:"varint,1,opt,name=GroupId,proto3" json:"GroupId"`
+	PositionId           int64    `protobuf:"varint,2,opt,name=PositionId,proto3" json:"PositionId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -130,7 +130,7 @@ func (m *AdPositionId) GetPositionId() int64 {
 }
 
 type AdGroupListResponse struct {
-	Value                []*SAdGroup `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SAdGroup `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -170,22 +170,22 @@ func (m *AdGroupListResponse) GetValue() []*SAdGroup {
 // 广告位
 type SAdPosition struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 分组编号
-	GroupId int64 `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId,omitempty"`
+	GroupId int64 `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
 	// 引用键
-	Key string `protobuf:"bytes,3,opt,name=Key,proto3" json:"Key,omitempty"`
+	Key string `protobuf:"bytes,3,opt,name=Key,proto3" json:"Key"`
 	// 名称
-	Name string `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name"`
 	// todo:广告位类型限制
 	// 广告类型限制,0为无限制
-	TypeLimit int32 `protobuf:"varint,5,opt,name=TypeLimit,proto3" json:"TypeLimit,omitempty"`
+	TypeLimit int32 `protobuf:"varint,5,opt,name=TypeLimit,proto3" json:"TypeLimit"`
 	// 是否开放给外部
-	Opened bool `protobuf:"varint,6,opt,name=Opened,proto3" json:"Opened,omitempty"`
+	Opened bool `protobuf:"varint,6,opt,name=Opened,proto3" json:"Opened"`
 	// 是否启用
-	Enabled bool `protobuf:"varint,7,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled bool `protobuf:"varint,7,opt,name=Enabled,proto3" json:"Enabled"`
 	// 默认广告编号
-	DefaultId            int64    `protobuf:"varint,8,opt,name=DefaultId,proto3" json:"DefaultId,omitempty"`
+	DefaultId            int64    `protobuf:"varint,8,opt,name=DefaultId,proto3" json:"DefaultId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -274,13 +274,13 @@ func (m *SAdPosition) GetDefaultId() int64 {
 // 广告用户设置
 type SAdUserSet struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 广告位编号
-	PosId int64 `protobuf:"varint,2,opt,name=PosId,proto3" json:"PosId,omitempty"`
+	PosId int64 `protobuf:"varint,2,opt,name=PosId,proto3" json:"PosId"`
 	// 广告用户编号
-	AdUserId int64 `protobuf:"varint,3,opt,name=AdUserId,proto3" json:"AdUserId,omitempty"`
+	AdUserId int64 `protobuf:"varint,3,opt,name=AdUserId,proto3" json:"AdUserId"`
 	// 广告编号
-	AdId                 int64    `protobuf:"varint,4,opt,name=AdId,proto3" json:"AdId,omitempty"`
+	AdId                 int64    `protobuf:"varint,4,opt,name=AdId,proto3" json:"AdId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -341,21 +341,21 @@ func (m *SAdUserSet) GetAdId() int64 {
 // 广告
 type SAd struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 广告用户编号
-	UserId int64 `protobuf:"varint,2,opt,name=UserId,proto3" json:"UserId,omitempty"`
+	UserId int64 `protobuf:"varint,2,opt,name=UserId,proto3" json:"UserId"`
 	// 名称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// 广告类型
-	Type int32 `protobuf:"varint,4,opt,name=Type,proto3" json:"Type,omitempty"`
+	Type int32 `protobuf:"varint,4,opt,name=Type,proto3" json:"Type"`
 	// 展现次数
-	ShowTimes int32 `protobuf:"varint,5,opt,name=ShowTimes,proto3" json:"ShowTimes,omitempty"`
+	ShowTimes int32 `protobuf:"varint,5,opt,name=ShowTimes,proto3" json:"ShowTimes"`
 	// 点击次数
-	ClickTimes int32 `protobuf:"varint,6,opt,name=ClickTimes,proto3" json:"ClickTimes,omitempty"`
+	ClickTimes int32 `protobuf:"varint,6,opt,name=ClickTimes,proto3" json:"ClickTimes"`
 	// 展现天数
-	ShowDays int32 `protobuf:"varint,7,opt,name=ShowDays,proto3" json:"ShowDays,omitempty"`
+	ShowDays int32 `protobuf:"varint,7,opt,name=ShowDays,proto3" json:"ShowDays"`
 	// 修改时间
-	UpdateTime           int64    `protobuf:"varint,8,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"varint,8,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -443,9 +443,9 @@ func (m *SAd) GetUpdateTime() int64 {
 
 // 广告数据传输对象
 type SAdDto struct {
-	Id                   int64             `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	AdType               int32             `protobuf:"varint,2,opt,name=AdType,proto3" json:"AdType,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,3,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Id                   int64             `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	AdType               int32             `protobuf:"varint,2,opt,name=AdType,proto3" json:"AdType"`
+	Data                 map[string]string `protobuf:"bytes,3,rep,name=Data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -498,10 +498,10 @@ func (m *SAdDto) GetData() map[string]string {
 
 //  超链接
 type SHyperLink struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId,omitempty"`
-	Title                string   `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
-	LinkUrl              string   `protobuf:"bytes,4,opt,name=LinkUrl,proto3" json:"LinkUrl,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
+	Title                string   `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
+	LinkUrl              string   `protobuf:"bytes,4,opt,name=LinkUrl,proto3" json:"LinkUrl"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -562,19 +562,19 @@ func (m *SHyperLink) GetLinkUrl() string {
 // 广告图片
 type SImage struct {
 	// 图片编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 广告编号
-	AdId int64 `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId,omitempty"`
+	AdId int64 `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
 	// 图片标题
-	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
 	// 链接
-	LinkUrl string `protobuf:"bytes,4,opt,name=LinkUrl,proto3" json:"LinkUrl,omitempty"`
+	LinkUrl string `protobuf:"bytes,4,opt,name=LinkUrl,proto3" json:"LinkUrl"`
 	// 图片地址
-	ImageUrl string `protobuf:"bytes,5,opt,name=ImageUrl,proto3" json:"ImageUrl,omitempty"`
+	ImageUrl string `protobuf:"bytes,5,opt,name=ImageUrl,proto3" json:"ImageUrl"`
 	// 排列序号
-	SortNum int32 `protobuf:"varint,6,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum int32 `protobuf:"varint,6,opt,name=SortNum,proto3" json:"SortNum"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,7,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled              bool     `protobuf:"varint,7,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -654,9 +654,9 @@ func (m *SImage) GetEnabled() bool {
 }
 
 type SetDefaultAdRequest struct {
-	GroupId              int64    `protobuf:"varint,1,opt,name=GroupId,proto3" json:"GroupId,omitempty"`
-	PosId                int64    `protobuf:"varint,2,opt,name=PosId,proto3" json:"PosId,omitempty"`
-	AdId                 int64    `protobuf:"varint,3,opt,name=AdId,proto3" json:"AdId,omitempty"`
+	GroupId              int64    `protobuf:"varint,1,opt,name=GroupId,proto3" json:"GroupId"`
+	PosId                int64    `protobuf:"varint,2,opt,name=PosId,proto3" json:"PosId"`
+	AdId                 int64    `protobuf:"varint,3,opt,name=AdId,proto3" json:"AdId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -708,9 +708,9 @@ func (m *SetDefaultAdRequest) GetAdId() int64 {
 }
 
 type SetUserAdRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId,omitempty"`
-	PosId                int64    `protobuf:"varint,2,opt,name=PosId,proto3" json:"PosId,omitempty"`
-	AdId                 int64    `protobuf:"varint,3,opt,name=AdId,proto3" json:"AdId,omitempty"`
+	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	PosId                int64    `protobuf:"varint,2,opt,name=PosId,proto3" json:"PosId"`
+	AdId                 int64    `protobuf:"varint,3,opt,name=AdId,proto3" json:"AdId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -762,8 +762,8 @@ func (m *SetUserAdRequest) GetAdId() int64 {
 }
 
 type AdIdRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId,omitempty"`
-	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId,omitempty"`
+	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -808,8 +808,8 @@ func (m *AdIdRequest) GetAdId() int64 {
 }
 
 type AdKeyRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId,omitempty"`
-	AdPosKey             string   `protobuf:"bytes,2,opt,name=AdPosKey,proto3" json:"AdPosKey,omitempty"`
+	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	AdPosKey             string   `protobuf:"bytes,2,opt,name=AdPosKey,proto3" json:"AdPosKey"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -854,8 +854,8 @@ func (m *AdKeyRequest) GetAdPosKey() string {
 }
 
 type SaveAdRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId,omitempty"`
-	Value                *SAd     `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	Value                *SAd     `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -900,9 +900,9 @@ func (m *SaveAdRequest) GetValue() *SAd {
 }
 
 type SaveLinkAdRequest struct {
-	AdUserId             int64       `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId,omitempty"`
-	AdId                 int64       `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId,omitempty"`
-	Value                *SHyperLink `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value,omitempty"`
+	AdUserId             int64       `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	AdId                 int64       `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
+	Value                *SHyperLink `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -954,9 +954,9 @@ func (m *SaveLinkAdRequest) GetValue() *SHyperLink {
 }
 
 type SaveImageAdRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId,omitempty"`
-	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId,omitempty"`
-	Value                *SImage  `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value,omitempty"`
+	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
+	Value                *SImage  `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1008,9 +1008,9 @@ func (m *SaveImageAdRequest) GetValue() *SImage {
 }
 
 type ImageAdIdRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId,omitempty"`
-	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId,omitempty"`
-	ImageId              int64    `protobuf:"varint,3,opt,name=ImageId,proto3" json:"ImageId,omitempty"`
+	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
+	ImageId              int64    `protobuf:"varint,3,opt,name=ImageId,proto3" json:"ImageId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

@@ -47,10 +47,10 @@ func (EState) EnumDescriptor() ([]byte, []int) {
 }
 
 type User1 struct {
-	Name                 string            `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	GroupId              int64             `protobuf:"zigzag64,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
-	Extra                map[string]string `protobuf:"bytes,3,rep,name=extra,proto3" json:"extra,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	Roles                []string          `protobuf:"bytes,4,rep,name=roles,proto3" json:"roles,omitempty"`
+	Name                 string            `protobuf:"bytes,1,opt,name=name,proto3" json:"name"`
+	GroupId              int64             `protobuf:"zigzag64,2,opt,name=group_id,json=groupId,proto3" json:"group_id"`
+	Extra                map[string]string `protobuf:"bytes,3,rep,name=extra,proto3" json:"extra" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Roles                []string          `protobuf:"bytes,4,rep,name=roles,proto3" json:"roles"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -109,8 +109,8 @@ func (m *User1) GetRoles() []string {
 }
 
 type UserResponse struct {
-	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	State                EState   `protobuf:"varint,2,opt,name=state,proto3,enum=EState" json:"state,omitempty"`
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name"`
+	State                EState   `protobuf:"varint,2,opt,name=state,proto3,enum=EState" json:"state"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

@@ -74,9 +74,9 @@ func (EMessageUserType) EnumDescriptor() ([]byte, []int) {
 }
 
 type SendMessageRequest struct {
-	Account              string            `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	Message              string            `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Account              string            `protobuf:"bytes,1,opt,name=account,proto3" json:"account"`
+	Message              string            `protobuf:"bytes,2,opt,name=message,proto3" json:"message"`
+	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -128,7 +128,7 @@ func (m *SendMessageRequest) GetData() map[string]string {
 }
 
 type NotifyItemListResponse struct {
-	Value                []*SNotifyItem `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SNotifyItem `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -168,17 +168,17 @@ func (m *NotifyItemListResponse) GetValue() []*SNotifyItem {
 // * 通知项
 type SNotifyItem struct {
 	// * 键
-	Key string `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key,omitempty"`
+	Key string `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key"`
 	// * 发送方式
-	NotifyBy int32 `protobuf:"zigzag32,2,opt,name=NotifyBy,proto3" json:"NotifyBy,omitempty"`
+	NotifyBy int32 `protobuf:"zigzag32,2,opt,name=NotifyBy,proto3" json:"NotifyBy"`
 	// * 不允许修改发送方式
-	ReadonlyBy bool `protobuf:"varint,3,opt,name=ReadonlyBy,proto3" json:"ReadonlyBy,omitempty"`
+	ReadonlyBy bool `protobuf:"varint,3,opt,name=ReadonlyBy,proto3" json:"ReadonlyBy"`
 	// * 模板编号
-	TplId int32 `protobuf:"zigzag32,4,opt,name=TplId,proto3" json:"TplId,omitempty"`
+	TplId int32 `protobuf:"zigzag32,4,opt,name=TplId,proto3" json:"TplId"`
 	// * 内容
-	Content string `protobuf:"bytes,5,opt,name=Content,proto3" json:"Content,omitempty"`
+	Content string `protobuf:"bytes,5,opt,name=Content,proto3" json:"Content"`
 	// * 模板包含的标签
-	Tags                 map[string]string `protobuf:"bytes,6,rep,name=Tags,proto3" json:"Tags,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Tags                 map[string]string `protobuf:"bytes,6,rep,name=Tags,proto3" json:"Tags" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -253,17 +253,17 @@ func (m *SNotifyItem) GetTags() map[string]string {
 // 邮件模版
 type SMailTemplate struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 商户编号
-	MerchantId int64 `protobuf:"varint,2,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	MerchantId int64 `protobuf:"varint,2,opt,name=MerchantId,proto3" json:"MerchantId"`
 	// 名称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// 主题
-	Subject string `protobuf:"bytes,4,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	Subject string `protobuf:"bytes,4,opt,name=Subject,proto3" json:"Subject"`
 	// 内容
-	Body string `protobuf:"bytes,5,opt,name=Body,proto3" json:"Body,omitempty"`
+	Body string `protobuf:"bytes,5,opt,name=Body,proto3" json:"Body"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,6,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled              bool     `protobuf:"varint,6,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -336,7 +336,7 @@ func (m *SMailTemplate) GetEnabled() bool {
 }
 
 type MailTemplateListResponse struct {
-	Value                []*SMailTemplate `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SMailTemplate `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -376,9 +376,9 @@ func (m *MailTemplateListResponse) GetValue() []*SMailTemplate {
 // 站内信
 type SSiteMessage struct {
 	// 主题
-	Subject string `protobuf:"bytes,1,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	Subject string `protobuf:"bytes,1,opt,name=Subject,proto3" json:"Subject"`
 	// 信息内容
-	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -423,11 +423,11 @@ func (m *SSiteMessage) GetMessage() string {
 }
 
 type SendSiteMessageRequest struct {
-	SenderId             int64            `protobuf:"varint,1,opt,name=SenderId,proto3" json:"SenderId,omitempty"`
-	ReceiverType         EMessageUserType `protobuf:"varint,2,opt,name=ReceiverType,proto3,enum=EMessageUserType" json:"ReceiverType,omitempty"`
-	ReceiverId           int64            `protobuf:"varint,3,opt,name=ReceiverId,proto3" json:"ReceiverId,omitempty"`
-	SendNow              bool             `protobuf:"varint,4,opt,name=SendNow,proto3" json:"SendNow,omitempty"`
-	Msg                  *SSiteMessage    `protobuf:"bytes,5,opt,name=Msg,proto3" json:"Msg,omitempty"`
+	SenderId             int64            `protobuf:"varint,1,opt,name=SenderId,proto3" json:"SenderId"`
+	ReceiverType         EMessageUserType `protobuf:"varint,2,opt,name=ReceiverType,proto3,enum=EMessageUserType" json:"ReceiverType"`
+	ReceiverId           int64            `protobuf:"varint,3,opt,name=ReceiverId,proto3" json:"ReceiverId"`
+	SendNow              bool             `protobuf:"varint,4,opt,name=SendNow,proto3" json:"SendNow"`
+	Msg                  *SSiteMessage    `protobuf:"bytes,5,opt,name=Msg,proto3" json:"Msg"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
