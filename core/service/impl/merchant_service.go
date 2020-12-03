@@ -12,6 +12,7 @@ package impl
 import (
 	"context"
 	"github.com/ixre/gof/types"
+	"github.com/ixre/gof/types/typeconv"
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -545,7 +546,7 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwd) (*p
 	if err != nil {
 		return m.errorCodeResult(int(code), err), nil
 	}
-	return m.success(map[string]string{"mch_id": types.Stringify(id)}), nil
+	return m.success(map[string]string{"mch_id": typeconv.Stringify(id)}), nil
 }
 
 func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*proto.SMerchant, error) {

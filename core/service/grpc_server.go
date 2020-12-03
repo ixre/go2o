@@ -55,7 +55,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int, domain string) {
 	// standalone service
 	proto.RegisterQuickPayServiceServer(s, grpc2.QuickPayService)
 	proto.RegisterAppServiceServer(s, grpc2.AppService)
-	proto.RegisterRBACServiceServer(s,grpc2.RbacService)
+	proto.RegisterRBACServiceServer(s, grpc2.RbacService)
 	initRegistry(cfg, port)
 	if err = s.Serve(l); err != nil {
 		ch <- false

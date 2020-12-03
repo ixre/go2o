@@ -23,7 +23,6 @@ import (
 	"context"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"go2o/core/dao"
 	"go2o/core/dao/impl"
@@ -136,7 +135,6 @@ func (p *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
 	}
 }
 
-
 // 保存岗位
 func (p *rbacServiceImpl) SavePermJob(_ context.Context, r *proto.SavePermJobRequest) (*proto.SavePermJobResponse, error) {
 	var dst *model.PermJob
@@ -212,7 +210,7 @@ func (p *rbacServiceImpl) PagingPermJob(_ context.Context, r *proto.PermJobPagin
 	for i, v := range rows {
 		ret.Value[i] = &proto.PagingPermJob{
 			Id:         int64(typeconv.MustInt(v["id"])),
-			Name:       types.Stringify(v["name"]),
+			Name:       typeconv.Stringify(v["name"]),
 			Enabled:    int32(typeconv.MustInt(v["enabled"])),
 			Sort:       int32(typeconv.MustInt(v["sort"])),
 			DeptId:     int64(typeconv.MustInt(v["dept_id"])),
@@ -221,4 +219,3 @@ func (p *rbacServiceImpl) PagingPermJob(_ context.Context, r *proto.PermJobPagin
 	}
 	return ret, nil
 }
-

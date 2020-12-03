@@ -122,7 +122,7 @@ func (a *{{$structName}}) Paging{{$title}}(_ context.Context, r *proto.{{$title}
              {{else if eq $goType "bool"}}{{$c.Prop}} : typeconv.MustBool(v["{{$c.Name}}"]),\
              {{else if eq $goType "float32"}}{{$c.Prop}} : float32(typeconv.MustFloat64(v["{{$c.Name}}"])),\
              {{else if eq $goType "float64"}}{{$c.Prop}} : typeconv.MustFloat64(v["{{$c.Name}}"]),\
-             {{else}}{{$c.Prop}} : types.Stringify(v["{{$c.Name}}"]),{{end}}{{end}}
+             {{else}}{{$c.Prop}} : typeconv.Stringify(v["{{$c.Name}}"]),{{end}}{{end}}
 		}
 	}
 	return ret,nil
