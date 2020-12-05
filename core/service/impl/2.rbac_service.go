@@ -481,14 +481,25 @@ func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*p
 	return p.parsePermRes(v), nil
 }
 
+func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes) {
+	root.Children = []*proto.SPermRes{}
+	for _, v := range arr {
+		if v.Pid == root.Id {
+			c := p.parsePermRes(v)
+			c.Children = make([]*proto.SPermRes, 0)
+			root.Children = append(root.Children, c)
+			p.walkPermRes(c, arr)
+		}
+	}
+}
+
 // 获取PermRes列表
 func (p *rbacServiceImpl) QueryPermResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
 	arr := p.dao.SelectPermRes("1=1")
+	root :=proto.SPermRes{}
+	p.walkPermRes(&root,arr)
 	ret := &proto.QueryPermResResponse{
-		List: make([]*proto.SPermRes, len(arr)),
-	}
-	for i, v := range arr {
-		ret.List[i] = p.parsePermRes(v)
+		List: root.Children,
 	}
 	return ret, nil
 }

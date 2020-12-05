@@ -72,7 +72,7 @@ service RBACService {
     // 获取PermRes
     rpc GetPermRes (PermResId) returns (SPermRes) {
     }
-    // 获取PermRes列表
+    // 获取资源树形数据
     rpc QueryPermResList (QueryPermResRequest) returns (QueryPermResResponse) {
     }
     // 删除PermRes
@@ -487,6 +487,8 @@ message SPermRes{
     string ComponentName = 13;
     /** 缓存 */
     string Cache = 14;
+    /** 子资源 */
+    repeated SPermRes Children = 15;
 }
 
 message QueryPermResRequest{
