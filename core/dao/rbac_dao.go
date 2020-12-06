@@ -139,4 +139,7 @@ type IRbacDao interface {
 	BatchDeletePermRoleRes(where string, v ...interface{}) (int64, error)
 	// Query paging data
 	PagingQueryPermRoleRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
+
+	// 获取角色关联的资源列表
+	GetRoleResList(roleId int64) []int64
 }

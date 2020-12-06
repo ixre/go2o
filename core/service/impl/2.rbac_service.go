@@ -21,9 +21,11 @@ package impl
 
 import (
 	"context"
+	"fmt"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/util"
 	"go2o/core/dao"
 	"go2o/core/dao/impl"
 	"go2o/core/dao/model"
@@ -220,7 +222,6 @@ func (p *rbacServiceImpl) PagingPermJob(_ context.Context, r *proto.PermJobPagin
 	return ret, nil
 }
 
-
 // 保存系统用户
 func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserRequest) (*proto.SavePermUserResponse, error) {
 	var dst *model.PermUser
@@ -330,7 +331,6 @@ func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPag
 	return ret, nil
 }
 
-
 // 保存角色
 func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SavePermRoleRequest) (*proto.SavePermRoleResponse, error) {
 	var dst *model.PermRole
@@ -358,6 +358,33 @@ func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SavePermRoleR
 	return ret, nil
 }
 
+// 更新角色资源
+func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateRoleResRequest) (*proto.Result, error) {
+	dataList := p.dao.SelectPermRoleRes("role_id=$1", r.RoleId)
+	old := make([]int, len(dataList))
+	arr := typeconv.Int64Array(r.Resources)
+	mp := make(map[int]*model.PermRoleRes, 0)
+	// 旧数组
+	for i, v := range dataList {
+		old[i] = int(v.ResId)
+		mp[int(v.ResId)] = v
+	}
+	_, deleted := util.IntArrayDiff(old, arr, func(v int, add bool) {
+		if add {
+			p.dao.SavePermRoleRes(&model.PermRoleRes{
+				ResId:  int64(v),
+				RoleId: r.RoleId,
+			})
+		}
+	})
+	if len(deleted) > 0 {
+		p.dao.BatchDeletePermRoleRes(
+			fmt.Sprintf("role_id = %d AND res_id IN (%s)",
+				r.RoleId, util.JoinIntArray(deleted, ",")))
+	}
+	return p.error(nil), nil
+}
+
 func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SPermRole {
 	return &proto.SPermRole{
 		Id:         v.Id,
@@ -376,7 +403,10 @@ func (p *rbacServiceImpl) GetPermRole(_ context.Context, id *proto.PermRoleId) (
 	if v == nil {
 		return nil, nil
 	}
-	return p.parsePermRole(v), nil
+	dst := p.parsePermRole(v)
+	// 绑定资源ID
+	dst.RelatedResIdList = p.dao.GetRoleResList(v.Id)
+	return dst, nil
 }
 
 // 获取角色列表
@@ -439,7 +469,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	dst.SortNum = int(r.SortNum)
 	dst.IsExternal = int16(r.IsExternal)
 	dst.IsHidden = int16(r.IsHidden)
-	dst.ComponentName = r.ComponentName
+	dst.ComponentPath = r.ComponentPath
 	dst.Cache = r.Cache
 
 	id, err := p.dao.SavePermRes(dst)
@@ -467,7 +497,7 @@ func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 		IsExternal:    int32(v.IsExternal),
 		IsHidden:      int32(v.IsHidden),
 		CreateTime:    v.CreateTime,
-		ComponentName: v.ComponentName,
+		ComponentPath: v.ComponentPath,
 		Cache:         v.Cache,
 	}
 }
@@ -495,9 +525,14 @@ func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes
 
 // 获取PermRes列表
 func (p *rbacServiceImpl) QueryPermResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
-	arr := p.dao.SelectPermRes("1=1")
-	root :=proto.SPermRes{}
-	p.walkPermRes(&root,arr)
+	var where string
+	if r.Keyword != "" {
+		where = "name LIKE '%" + r.Keyword + "%'"
+	}
+	//todo: 搜索结果不为pid
+	arr := p.dao.SelectPermRes(where)
+	root := proto.SPermRes{}
+	p.walkPermRes(&root, arr)
 	ret := &proto.QueryPermResResponse{
 		List: root.Children,
 	}
@@ -532,7 +567,7 @@ func (p *rbacServiceImpl) PagingPermRes(_ context.Context, r *proto.PermResPagin
 			IsExternal:    int32(typeconv.MustInt(v["is_external"])),
 			IsHidden:      int32(typeconv.MustInt(v["is_hidden"])),
 			CreateTime:    int64(typeconv.MustInt(v["create_time"])),
-			ComponentName: typeconv.Stringify(v["component_name"]),
+			ComponentPath: typeconv.Stringify(v["component_path"]),
 			Cache:         typeconv.Stringify(v["cache_"]),
 		}
 	}

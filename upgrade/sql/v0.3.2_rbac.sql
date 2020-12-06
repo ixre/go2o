@@ -1,9 +1,9 @@
 CREATE TABLE "public".perm_res (
                                    id             bigserial NOT NULL,
-                                   name           varchar(255) NOT NULL,
+                                   name           varchar(20) NOT NULL,
                                    res_type       int2 NOT NULL,
                                    pid            int8 NOT NULL,
-                                   "key"          varchar(256) NOT NULL,
+                                   "key"          varchar(120) NOT NULL,
                                    path           varchar(256) NOT NULL,
                                    icon           varchar(120) NOT NULL,
                                    permission     varchar(120) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE "public".perm_res (
                                    is_external    int2 NOT NULL,
                                    is_hidden      int2 DEFAULT 0 NOT NULL,
                                    create_time    int8 NOT NULL,
-                                   component_name varchar(20) NOT NULL,
+                                   component_path varchar(120) NOT NULL,
                                    cache_         varchar(20) DEFAULT ''::character varying NOT NULL,
                                    CONSTRAINT perm_res_pkey
                                        PRIMARY KEY (id));
@@ -27,8 +27,9 @@ COMMENT ON COLUMN "public".perm_res.sort_num IS '排序';
 COMMENT ON COLUMN "public".perm_res.is_external IS '是否外部';
 COMMENT ON COLUMN "public".perm_res.is_hidden IS '是否隐藏';
 COMMENT ON COLUMN "public".perm_res.create_time IS '创建日期';
-COMMENT ON COLUMN "public".perm_res.component_name IS '组件名称';
+COMMENT ON COLUMN "public".perm_res.component_path IS '组件路径';
 COMMENT ON COLUMN "public".perm_res.cache_ IS '缓存';
+
 CREATE TABLE "public".perm_dict (
                                     id          bigserial NOT NULL,
                                     name        varchar(255) NOT NULL,

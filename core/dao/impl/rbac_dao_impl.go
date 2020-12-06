@@ -37,6 +37,16 @@ func NewRbacDao(o orm.Orm) dao.IRbacDao {
 	}
 }
 
+func (p *rbacDaoImpl) GetRoleResList(roleId int64) []int64 {
+	// 绑定资源ID
+	roles := p.SelectPermRoleRes("role_id=$1", roleId)
+	arr := make([]int64, len(roles))
+	for i, v := range roles {
+		arr[i] = v.Id
+	}
+	return arr
+}
+
 // Get 部门
 func (p *rbacDaoImpl) GetPermDept(primary interface{}) *model.PermDept {
 	e := model.PermDept{}
@@ -190,15 +200,14 @@ func (p *rbacDaoImpl) PagingQueryPermJob(begin, end int, where, orderBy string) 
 		err := p._orm.Connector().Query(s, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
 		}, begin, end-begin)
-		if err != nil{
-			log.Println(fmt.Sprintf("[ dao][ error]: %s (table:perm_job) ",err.Error()))
+		if err != nil {
+			log.Println(fmt.Sprintf("[ dao][ error]: %s (table:perm_job) ", err.Error()))
 		}
 	} else {
 		rows = make([]map[string]interface{}, 0)
 	}
 	return total, rows
 }
-
 
 // Get 系统用户
 func (p *rbacDaoImpl) GetPermUser(primary interface{}) *model.PermUser {
@@ -294,7 +303,6 @@ func (p *rbacDaoImpl) PagingQueryPermUser(begin, end int, where, orderBy string)
 	return total, rows
 }
 
-
 // Get 角色
 func (p *rbacDaoImpl) GetPermRole(primary interface{}) *model.PermRole {
 	e := model.PermRole{}
@@ -389,7 +397,6 @@ func (p *rbacDaoImpl) PagingQueryPermRole(begin, end int, where, orderBy string)
 	return total, rows
 }
 
-
 // Get PermRes
 func (p *rbacDaoImpl) GetPermRes(primary interface{}) *model.PermRes {
 	e := model.PermRes{}
@@ -483,7 +490,6 @@ func (p *rbacDaoImpl) PagingQueryPermRes(begin, end int, where, orderBy string) 
 	}
 	return total, rows
 }
-
 
 // Get 用户角色关联
 func (p *rbacDaoImpl) GetPermUserRole(primary interface{}) *model.PermUserRole {
@@ -672,7 +678,6 @@ func (p *rbacDaoImpl) PagingQueryPermRoleRes(begin, end int, where, orderBy stri
 	}
 	return total, rows
 }
-
 
 // Get 角色部门关联
 func (p *rbacDaoImpl) GetPermRoleDept(primary interface{}) *model.PermRoleDept {

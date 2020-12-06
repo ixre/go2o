@@ -54,6 +54,9 @@ service RBACService {
     // 保存角色
     rpc SavePermRole (SavePermRoleRequest) returns (SavePermRoleResponse) {
     }
+    // 保存角色
+    rpc UpdateRoleResource (UpdateRoleResRequest) returns (Result) {
+    }
     // 获取角色
     rpc GetPermRole (PermRoleId) returns (SPermRole) {
     }
@@ -354,6 +357,11 @@ message SavePermRoleRequest{
     int64 CreateTime = 7;
 }
 
+// 更新角色资源请求
+message UpdateRoleResRequest{
+    int64 RoleId = 1;
+    repeated int64 Resources = 2;
+}
 message SavePermRoleResponse{
     int64 ErrCode = 1;
     string ErrMsg = 2;
@@ -379,6 +387,8 @@ message SPermRole{
     string Remark = 6;
     /** 创建日期 */
     int64 CreateTime = 7;
+    /** 关联的资源ID列表 */
+    repeated int64 RelatedResIdList = 8;
 }
 
 message QueryPermRoleRequest{
@@ -443,7 +453,7 @@ message SavePermResRequest{
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */
-    string ComponentName = 13;
+    string ComponentPath = 13;
     /** 缓存 */
     string Cache = 14;
 }
@@ -484,7 +494,7 @@ message SPermRes{
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */
-    string ComponentName = 13;
+    string ComponentPath = 13;
     /** 缓存 */
     string Cache = 14;
     /** 子资源 */
@@ -492,7 +502,7 @@ message SPermRes{
 }
 
 message QueryPermResRequest{
-    /** 自定义参数 */
+    string Keyword = 1;
 }
 
 message QueryPermResResponse{
@@ -525,7 +535,7 @@ message PagingPermRes{
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */
-    string ComponentName = 13;
+    string ComponentPath = 13;
     /** 缓存 */
     string Cache = 14;
 }

@@ -9,17 +9,14 @@
 package format
 
 import (
+	"github.com/ixre/gof/util"
 	"strconv"
 	"strings"
 )
 
 // 获取栏目编号字符串
 func IntArrStrJoin(ids []int) string {
-	var strIds = make([]string, len(ids))
-	for i, v := range ids {
-		strIds[i] = strconv.Itoa(v)
-	}
-	return strings.Join(strIds, ",")
+	return util.JoinIntArray(ids, ",")
 }
 
 func I32ArrStrJoin(ids []int32) string {
