@@ -126,8 +126,9 @@ COMMENT ON COLUMN "public".perm_role_res.res_id IS '菜单ID';
 COMMENT ON COLUMN "public".perm_role_res.role_id IS '角色ID';
 CREATE TABLE "public".perm_user (
                                     id          bigserial NOT NULL,
-                                    "user"      varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    usr      varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
                                     pwd         varchar(40) DEFAULT 'NULL::character varying' NOT NULL,
+                                    salt        varchar(10) NOT NULL,
                                     flag        int4 NOT NULL,
                                     avatar      varchar(256) NOT NULL,
                                     nick_name   varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
@@ -143,11 +144,13 @@ CREATE TABLE "public".perm_user (
                                         PRIMARY KEY (id));
 COMMENT ON TABLE "public".perm_user IS '系统用户';
 COMMENT ON COLUMN "public".perm_user.id IS 'ID';
-COMMENT ON COLUMN "public".perm_user."user" IS '用户名';
+COMMENT ON COLUMN "public".perm_user.usr IS '用户名';
 COMMENT ON COLUMN "public".perm_user.pwd IS '密码';
+COMMENT ON COLUMN "public".perm_user.salt IS '加密盐';
 COMMENT ON COLUMN "public".perm_user.flag IS '标志';
 COMMENT ON COLUMN "public".perm_user.avatar IS '头像';
 COMMENT ON COLUMN "public".perm_user.nick_name IS '姓名';
+COMMENT ON COLUMN "public".perm_user.sex IS '性别';
 COMMENT ON COLUMN "public".perm_user.email IS '邮箱';
 COMMENT ON COLUMN "public".perm_user.phone IS '手机号码';
 COMMENT ON COLUMN "public".perm_user.dept_id IS '部门编号';
@@ -168,3 +171,4 @@ COMMENT ON COLUMN "public".perm_user_role.user_id IS '用户ID';
 COMMENT ON COLUMN "public".perm_user_role.role_id IS '角色ID';
 CREATE INDEX perm_dict_detail_dict_id_idx
     ON "public".perm_dict_detail (dict_id);
+

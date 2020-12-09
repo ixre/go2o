@@ -486,7 +486,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 					"StateText":   order.OrderState(e.State).String(),
 					"CashPay":     strconv.Itoa(cashPay),
 					"TicketImage": ticket,
-					"User":        user,
+					"Usr":        user,
 					"CreateTime":  format.UnixTimeStr(e.CreateTime),
 				}
 				orderList = append(orderList, e)

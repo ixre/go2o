@@ -22,6 +22,7 @@ package impl
 import (
 	"context"
 	"fmt"
+	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types/typeconv"
@@ -40,6 +41,71 @@ type rbacServiceImpl struct {
 	dao dao.IRbacDao
 	s   storage.Interface
 	serviceUtil
+}
+
+
+func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest) (*proto.RbacLoginResponse, error) {
+	if len(r.Pwd) != 32 {
+		return &proto.RbacLoginResponse{
+			ErrCode: 1,
+			ErrMsg:  "密码无效",
+		}, nil
+	}
+	usr := p.dao.GetPermUserBy("usr=$1", r.Usr)
+	if usr == nil {
+		return &proto.RbacLoginResponse{
+			ErrCode: 2,
+			ErrMsg:  "用户不存在",
+		}, nil
+	}
+	decPwd := crypto.Sha1([]byte(r.Pwd + usr.Salt))
+	if usr.Pwd != decPwd {
+		return &proto.RbacLoginResponse{
+			ErrCode: 3,
+			ErrMsg:  "密码不正确",
+		}, nil
+	}
+	if usr.Enabled != 1 {
+		return &proto.RbacLoginResponse{
+			ErrCode: 4,
+			ErrMsg:  "用户已停用",
+		}, nil
+	}
+	return &proto.RbacLoginResponse{
+		UserId: usr.Id,
+	}, nil
+}
+
+
+func (p *rbacServiceImpl) GetUserInfo(_ context.Context, id *proto.UserId) (*proto.RbacUserInfoResponse, error) {
+	usr := p.dao.GetPermUser(id.Value)
+	if usr == nil{
+		return nil,nil
+	}
+	dst := &proto.RbacUserInfoResponse{
+		Usr:   usr.Usr,
+		UserFlag: int32(usr.Flag),
+		NickName: usr.NickName,
+		Avatar:   usr.Avatar,
+		RolesId:  nil,
+		Roles:    nil,
+	}
+	userRoles := p.dao.GetUserRoles(usr.Id)
+	// 绑定角色ID
+	dst.RolesId = make([]int64, len(userRoles))
+	roleList := make([]int, len(userRoles))
+	for i, v := range userRoles {
+		dst.RolesId[i] = v.RoleId
+		roleList[i] = int(v.RoleId)
+	}
+	// 获取角色的权限
+	roles := p.dao.SelectPermRole(
+		fmt.Sprintf("id IN (%s)", util.JoinIntArray(roleList, ",")))
+	dst.Roles = make([]string, len(roles))
+	for i, v := range roles {
+		dst.Roles[i] = v.Permission
+	}
+	return dst, nil
 }
 
 func walkDepartTree(node *proto.RbacTree, nodeList []*model.PermDept) {
@@ -235,13 +301,26 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 	var dst *model.PermUser
 	if r.Id > 0 {
 		dst = p.dao.GetPermUser(r.Id)
+		if dst == nil {
+			return &proto.SavePermUserResponse{
+				ErrCode: 2,
+				ErrMsg:  "no such record",
+			}, nil
+		}
 	} else {
 		dst = &model.PermUser{}
+		dst.Salt = util.RandString(4)
 		dst.CreateTime = time.Now().Unix()
 	}
-
-	dst.User = r.User
-	dst.Pwd = r.Pwd
+	if l:= len(r.Pwd);l>0{
+		if l != 32{
+			return &proto.SavePermUserResponse{
+				ErrCode:              1,
+				ErrMsg:               "非32位md5密码",
+			},nil
+		}
+		dst.Pwd = crypto.Sha1([]byte(r.Pwd+dst.Salt))
+	}
 	dst.Flag = int(r.Flag)
 	dst.Avatar = r.Avatar
 	dst.NickName = r.NickName
@@ -252,10 +331,12 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 	dst.JobId = r.JobId
 	dst.Enabled = int16(r.Enabled)
 	dst.LastLogin = r.LastLogin
-
 	id, err := p.dao.SavePermUser(dst)
 	ret := &proto.SavePermUserResponse{
 		Id: int64(id),
+	}
+	if err == nil{
+		err = p.updateUserRoles(int64(id),r.Roles)
 	}
 	if err != nil {
 		ret.ErrCode = 1
@@ -267,7 +348,7 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
 	return &proto.SPermUser{
 		Id:         v.Id,
-		User:       v.User,
+		Usr:       v.Usr,
 		Pwd:        v.Pwd,
 		Flag:       int32(v.Flag),
 		Avatar:     v.Avatar,
@@ -289,7 +370,13 @@ func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (
 	if v == nil {
 		return nil, nil
 	}
-	return p.parsePermUser(v), nil
+	dst := p.parsePermUser(v)
+	arr := p.dao.GetUserRoles(v.Id)
+	dst.Roles = make([]int64,len(arr))
+	for i, v:=  range arr{
+		dst.Roles[i] = v.RoleId
+	}
+	return dst, nil
 }
 
 // 获取系统用户列表
@@ -343,7 +430,7 @@ func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPag
 	for i, v := range rows {
 		ret.Value[i] = &proto.PagingPermUser{
 			Id:         int64(typeconv.MustInt(v["id"])),
-			User:       typeconv.Stringify(v["user"]),
+			Usr:       typeconv.Stringify(v["usr"]),
 			Pwd:        typeconv.Stringify(v["pwd"]),
 			Flag:       int32(typeconv.MustInt(v["flag"])),
 			Avatar:     typeconv.Stringify(v["avatar"]),
@@ -602,4 +689,31 @@ func (p *rbacServiceImpl) PagingPermRes(_ context.Context, r *proto.PermResPagin
 		}
 	}
 	return ret, nil
+}
+
+func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
+	dataList := p.dao.GetUserRoles(userId)
+	old := make([]int, len(dataList))
+	arr := make([]int, len(roles))
+	// 旧数组
+	for i, v := range dataList {
+		old[i] = int(v.RoleId)
+	}
+	for i,v := range roles{
+		arr[i] = int(v)
+	}
+	_, deleted := util.IntArrayDiff(old, arr, func(v int, add bool) {
+		if add {
+			p.dao.SavePermUserRole(&model.PermUserRole{
+				RoleId:  int64(v),
+				UserId: userId,
+			})
+		}
+	})
+	if len(deleted) > 0 {
+		p.dao.BatchDeletePermUserRole(
+			fmt.Sprintf("user_id = %d AND role_id IN (%s)",
+				userId, util.JoinIntArray(deleted, ",")))
+	}
+	return nil
 }

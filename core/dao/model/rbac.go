@@ -133,9 +133,11 @@ type PermUser struct {
 	// ID
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 用户名
-	User string `db:"user"`
+	Usr string `db:"usr"`
 	// 密码
 	Pwd string `db:"pwd"`
+	// 加密盐
+	Salt string `db:"salt"`
 	// 标志
 	Flag int `db:"flag"`
 	// 头像

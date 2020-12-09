@@ -16,6 +16,7 @@ type rbacDaoImpl struct {
 	_orm orm.Orm
 }
 
+
 var rbacDaoImplMapped = false
 
 // Create new PermDeptDao
@@ -771,4 +772,8 @@ func (p *rbacDaoImpl) PagingQueryPermRoleDept(begin, end int, where, orderBy str
 		rows = make([]map[string]interface{}, 0)
 	}
 	return total, rows
+}
+
+func (p *rbacDaoImpl) GetUserRoles(id int64) []*model.PermUserRole {
+	return p.SelectPermUserRole("user_id = $1",id)
 }

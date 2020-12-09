@@ -642,7 +642,7 @@ func (m *memberImpl) prepare() (err error) {
 	m.value.RealName = strings.TrimSpace(m.value.RealName)
 	//如果未设置昵称,则默认为用户名
 	if len(m.value.Name) == 0 {
-		m.value.Name = "User" + m.value.User
+		m.value.Name = "Usr" + m.value.User
 	}
 	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
 	if len(m.value.Avatar) == 0 {
