@@ -126,14 +126,14 @@ COMMENT ON COLUMN "public".perm_role_res.res_id IS '菜单ID';
 COMMENT ON COLUMN "public".perm_role_res.role_id IS '角色ID';
 CREATE TABLE "public".perm_user (
                                     id          bigserial NOT NULL,
-                                    "user"      varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
-                                    pwd         varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
+                                    "user"      varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    pwd         varchar(40) DEFAULT 'NULL::character varying' NOT NULL,
                                     flag        int4 NOT NULL,
                                     avatar      varchar(256) NOT NULL,
-                                    nick_name   varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
-                                    sex         varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
-                                    email       varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
-                                    phone       varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
+                                    nick_name   varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    sex         varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    email       varchar(64) DEFAULT 'NULL::character varying' NOT NULL,
+                                    phone       varchar(11) DEFAULT 'NULL::character varying' NOT NULL,
                                     dept_id     int8 NOT NULL,
                                     job_id      int8 NOT NULL,
                                     enabled     int2 NOT NULL,
@@ -147,6 +147,7 @@ COMMENT ON COLUMN "public".perm_user."user" IS '用户名';
 COMMENT ON COLUMN "public".perm_user.pwd IS '密码';
 COMMENT ON COLUMN "public".perm_user.flag IS '标志';
 COMMENT ON COLUMN "public".perm_user.avatar IS '头像';
+COMMENT ON COLUMN "public".perm_user.nick_name IS '姓名';
 COMMENT ON COLUMN "public".perm_user.email IS '邮箱';
 COMMENT ON COLUMN "public".perm_user.phone IS '手机号码';
 COMMENT ON COLUMN "public".perm_user.dept_id IS '部门编号';
@@ -154,6 +155,7 @@ COMMENT ON COLUMN "public".perm_user.job_id IS '岗位编号';
 COMMENT ON COLUMN "public".perm_user.enabled IS '状态：1启用、0禁用';
 COMMENT ON COLUMN "public".perm_user.last_login IS '最后登录的日期';
 COMMENT ON COLUMN "public".perm_user.create_time IS '创建日期';
+
 CREATE TABLE "public".perm_user_role (
                                          id       BIGSERIAL NOT NULL,
                                          user_id int8 NOT NULL,

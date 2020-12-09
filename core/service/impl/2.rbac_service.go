@@ -117,7 +117,7 @@ func (p *rbacServiceImpl) DeletePermDept(_ context.Context, id *proto.PermDeptId
 
 // 获取部门列表
 func (p *rbacServiceImpl) QueryPermDeptList(_ context.Context, r *proto.QueryPermDeptRequest) (*proto.QueryPermDeptResponse, error) {
-	arr := p.dao.SelectPermDept("1=1")
+	arr := p.dao.SelectPermDept("")
 	ret := &proto.QueryPermDeptResponse{
 		List: make([]*proto.SPermDept, len(arr)),
 	}
@@ -185,7 +185,15 @@ func (p *rbacServiceImpl) GetPermJob(_ context.Context, id *proto.PermJobId) (*p
 
 // 获取岗位列表
 func (p *rbacServiceImpl) QueryPermJobList(_ context.Context, r *proto.QueryPermJobRequest) (*proto.QueryPermJobResponse, error) {
-	arr := p.dao.SelectPermJob("1=1")
+	where := ""
+	if r.DepartId > 0 {
+		arr := p.walkDepartArray(int(r.DepartId))
+		if len(where) > 0 {
+			where += " AND "
+		}
+		where += " dept_id IN (" + util.JoinIntArray(arr, ",") + ")"
+	}
+	arr := p.dao.SelectPermJob(where)
 	ret := &proto.QueryPermJobResponse{
 		List: make([]*proto.SPermJob, len(arr)),
 	}
@@ -286,7 +294,7 @@ func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (
 
 // 获取系统用户列表
 func (p *rbacServiceImpl) QueryPermUserList(_ context.Context, r *proto.QueryPermUserRequest) (*proto.QueryPermUserResponse, error) {
-	arr := p.dao.SelectPermUser("1=1")
+	arr := p.dao.SelectPermUser("")
 	ret := &proto.QueryPermUserResponse{
 		List: make([]*proto.SPermUser, len(arr)),
 	}
@@ -301,7 +309,29 @@ func (p *rbacServiceImpl) DeletePermUser(_ context.Context, id *proto.PermUserId
 	return p.error(err), nil
 }
 
+func (p *rbacServiceImpl) walkDepartArray(pid int)[]int {
+	var arr = make([]int, 0)
+	if pid > 0 {
+		var f func(pid int, arr *[]int)
+		f = func(pid int, arr *[]int) {
+			*arr = append(*arr, pid)
+			for _, v := range p.dao.SelectPermDept("pid = $1", pid) {
+				f(int(v.Id), arr)
+			}
+		}
+		f(pid, &arr)
+	}
+	return arr
+}
+
 func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPagingRequest) (*proto.PermUserPagingResponse, error) {
+	if r.DepartId > 0 {
+        arr := p.walkDepartArray(int(r.DepartId))
+		if len(r.Params.Where) > 0 {
+			r.Params.Where += " AND "
+		}
+		r.Params.Where += " dept_id IN (" + util.JoinIntArray(arr, ",") + ")"
+	}
 	total, rows := p.dao.PagingQueryPermUser(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
@@ -411,7 +441,7 @@ func (p *rbacServiceImpl) GetPermRole(_ context.Context, id *proto.PermRoleId) (
 
 // 获取角色列表
 func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryPermRoleRequest) (*proto.QueryPermRoleResponse, error) {
-	arr := p.dao.SelectPermRole("1=1")
+	arr := p.dao.SelectPermRole("")
 	ret := &proto.QueryPermRoleResponse{
 		List: make([]*proto.SPermRole, len(arr)),
 	}

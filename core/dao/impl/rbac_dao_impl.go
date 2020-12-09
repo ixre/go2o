@@ -42,7 +42,7 @@ func (p *rbacDaoImpl) GetRoleResList(roleId int64) []int64 {
 	roles := p.SelectPermRoleRes("role_id=$1", roleId)
 	arr := make([]int64, len(roles))
 	for i, v := range roles {
-		arr[i] = v.Id
+		arr[i] = v.ResId
 	}
 	return arr
 }

@@ -184,7 +184,8 @@ message SPermJob{
 }
 
 message QueryPermJobRequest{
-    /** 自定义参数 */
+    // 部门编号,默认为0. 该部门下的岗位也会查询出来
+    int64 DepartId = 1;
 }
 
 message QueryPermJobResponse{
@@ -330,8 +331,10 @@ message PagingPermUser{
 }
 
 message PermUserPagingRequest{
+    // 部门编号,默认为0. 该部门下的用户也会查询出来
+    int64 DepartId = 1;
     // 分页参数
-    SPagingParams Params = 1;
+    SPagingParams Params = 2;
 }
 
 message PermUserPagingResponse {
