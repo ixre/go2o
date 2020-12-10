@@ -43,7 +43,6 @@ type rbacServiceImpl struct {
 	serviceUtil
 }
 
-
 func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest) (*proto.RbacLoginResponse, error) {
 	if len(r.Pwd) != 32 {
 		return &proto.RbacLoginResponse{
@@ -71,40 +70,79 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			ErrMsg:  "用户已停用",
 		}, nil
 	}
-	return &proto.RbacLoginResponse{
+	dst := &proto.RbacLoginResponse{
 		UserId: usr.Id,
-	}, nil
+	}
+	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
+	return dst, nil
 }
 
-
-func (p *rbacServiceImpl) GetUserInfo(_ context.Context, id *proto.UserId) (*proto.RbacUserInfoResponse, error) {
-	usr := p.dao.GetPermUser(id.Value)
-	if usr == nil{
-		return nil,nil
-	}
-	dst := &proto.RbacUserInfoResponse{
-		Usr:   usr.Usr,
-		UserFlag: int32(usr.Flag),
-		NickName: usr.NickName,
-		Avatar:   usr.Avatar,
-		RolesId:  nil,
-		Roles:    nil,
-	}
-	userRoles := p.dao.GetUserRoles(usr.Id)
+// 获取用户的角色和权限
+func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
+	userRoles := p.dao.GetUserRoles(userId)
 	// 绑定角色ID
-	dst.RolesId = make([]int64, len(userRoles))
+	roles := make([]int64, len(userRoles))
 	roleList := make([]int, len(userRoles))
 	for i, v := range userRoles {
-		dst.RolesId[i] = v.RoleId
+		roles[i] = v.RoleId
 		roleList[i] = int(v.RoleId)
 	}
 	// 获取角色的权限
-	roles := p.dao.SelectPermRole(
+	rolesList := p.dao.SelectPermRole(
 		fmt.Sprintf("id IN (%s)", util.JoinIntArray(roleList, ",")))
-	dst.Roles = make([]string, len(roles))
-	for i, v := range roles {
-		dst.Roles[i] = v.Permission
+	permissions := make([]string, len(roles))
+	for i, v := range rolesList {
+		permissions[i] = v.Permission
 	}
+	return roles, permissions
+}
+
+func (p *rbacServiceImpl) GetUserResource(_ context.Context, id *proto.PermUserId) (*proto.RbacUserResourceResponse, error) {
+	dst := &proto.RbacUserResourceResponse{}
+	var resList []*model.PermRes
+	if id.Value <= 0 { // 管理员
+		dst.Roles = []int64{}
+		dst.Permissions = []string{"master", "admin"}
+		resList = p.dao.SelectPermRes("")
+	} else {
+		dst.Roles, dst.Permissions = p.getUserRolesPerm(id.Value)
+		usr := p.dao.GetPermUser(id.Value)
+		if usr == nil {
+			return nil, nil
+		}
+		roleList := make([]int, len(dst.Roles))
+		for i, v := range dst.Roles {
+			roleList[i] = int(v)
+		}
+		resList = p.dao.GetRoleResources(roleList)
+	}
+	root := proto.SUserRes{}
+
+	var f func(root *proto.SUserRes, arr []*model.PermRes)
+	f = func(root *proto.SUserRes, arr []*model.PermRes) {
+		root.Children = []*proto.SUserRes{}
+		for _, v := range arr {
+			if v.Pid == root.Id {
+				c := &proto.SUserRes{
+					Id:            v.Id,
+					Key:           v.Key,
+					Name:          v.Name,
+					ResType:       int32(v.ResType),
+					Path:          v.Path,
+					Icon:          v.Icon,
+					Permission:    v.Permission,
+					SortNum:       int32(v.SortNum),
+					IsHidden:      v.IsHidden == 1,
+					ComponentPath: v.ComponentPath,
+				}
+				c.Children = make([]*proto.SUserRes, 0)
+				root.Children = append(root.Children, c)
+				f(c, arr)
+			}
+		}
+	}
+	f(&root, resList)
+	dst.Resources = root.Children
 	return dst, nil
 }
 
@@ -312,14 +350,14 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 		dst.Salt = util.RandString(4)
 		dst.CreateTime = time.Now().Unix()
 	}
-	if l:= len(r.Pwd);l>0{
-		if l != 32{
+	if l := len(r.Pwd); l > 0 {
+		if l != 32 {
 			return &proto.SavePermUserResponse{
-				ErrCode:              1,
-				ErrMsg:               "非32位md5密码",
-			},nil
+				ErrCode: 1,
+				ErrMsg:  "非32位md5密码",
+			}, nil
 		}
-		dst.Pwd = crypto.Sha1([]byte(r.Pwd+dst.Salt))
+		dst.Pwd = crypto.Sha1([]byte(r.Pwd + dst.Salt))
 	}
 	dst.Flag = int(r.Flag)
 	dst.Avatar = r.Avatar
@@ -335,8 +373,8 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 	ret := &proto.SavePermUserResponse{
 		Id: int64(id),
 	}
-	if err == nil{
-		err = p.updateUserRoles(int64(id),r.Roles)
+	if err == nil {
+		err = p.updateUserRoles(int64(id), r.Roles)
 	}
 	if err != nil {
 		ret.ErrCode = 1
@@ -348,7 +386,7 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
 	return &proto.SPermUser{
 		Id:         v.Id,
-		Usr:       v.Usr,
+		Usr:        v.Usr,
 		Pwd:        v.Pwd,
 		Flag:       int32(v.Flag),
 		Avatar:     v.Avatar,
@@ -371,11 +409,7 @@ func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (
 		return nil, nil
 	}
 	dst := p.parsePermUser(v)
-	arr := p.dao.GetUserRoles(v.Id)
-	dst.Roles = make([]int64,len(arr))
-	for i, v:=  range arr{
-		dst.Roles[i] = v.RoleId
-	}
+	dst.Roles, dst.Permissions = p.getUserRolesPerm(v.Id)
 	return dst, nil
 }
 
@@ -396,7 +430,7 @@ func (p *rbacServiceImpl) DeletePermUser(_ context.Context, id *proto.PermUserId
 	return p.error(err), nil
 }
 
-func (p *rbacServiceImpl) walkDepartArray(pid int)[]int {
+func (p *rbacServiceImpl) walkDepartArray(pid int) []int {
 	var arr = make([]int, 0)
 	if pid > 0 {
 		var f func(pid int, arr *[]int)
@@ -413,7 +447,7 @@ func (p *rbacServiceImpl) walkDepartArray(pid int)[]int {
 
 func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPagingRequest) (*proto.PermUserPagingResponse, error) {
 	if r.DepartId > 0 {
-        arr := p.walkDepartArray(int(r.DepartId))
+		arr := p.walkDepartArray(int(r.DepartId))
 		if len(r.Params.Where) > 0 {
 			r.Params.Where += " AND "
 		}
@@ -430,7 +464,7 @@ func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPag
 	for i, v := range rows {
 		ret.Value[i] = &proto.PagingPermUser{
 			Id:         int64(typeconv.MustInt(v["id"])),
-			Usr:       typeconv.Stringify(v["usr"]),
+			Usr:        typeconv.Stringify(v["usr"]),
 			Pwd:        typeconv.Stringify(v["pwd"]),
 			Flag:       int32(typeconv.MustInt(v["flag"])),
 			Avatar:     typeconv.Stringify(v["avatar"]),
@@ -699,13 +733,13 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 	for i, v := range dataList {
 		old[i] = int(v.RoleId)
 	}
-	for i,v := range roles{
+	for i, v := range roles {
 		arr[i] = int(v)
 	}
 	_, deleted := util.IntArrayDiff(old, arr, func(v int, add bool) {
 		if add {
 			p.dao.SavePermUserRole(&model.PermUserRole{
-				RoleId:  int64(v),
+				RoleId: int64(v),
 				UserId: userId,
 			})
 		}

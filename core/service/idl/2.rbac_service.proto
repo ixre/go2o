@@ -42,10 +42,11 @@ service RBACService {
     // 获取系统用户
     rpc GetPermUser (PermUserId) returns (SPermUser) {
     }
+
     // 用户登录
     rpc UserLogin(RbacLoginRequest)returns(RbacLoginResponse){}
     // 获取用户的信息
-    rpc GetUserInfo(UserId)returns(RbacUserInfoResponse){}
+    rpc GetUserResource(PermUserId)returns(RbacUserResourceResponse){}
 
     // 获取系统用户列表
     rpc QueryPermUserList (QueryPermUserRequest) returns (QueryPermUserResponse) {
@@ -106,22 +107,46 @@ message RbacLoginResponse{
     string ErrMsg = 2;
     // 用户编号
     int64 UserId = 3;
+    // 角色标志
+    repeated string Permissions = 4;
+    // 角色编号
+    repeated int64 Roles = 5;
 }
 
-// 用户信息
-message RbacUserInfoResponse{
-    // 用户名
-    string Usr = 1;
-    // 用户标志
-    int32 UserFlag = 2;
-    // 昵称
-    string NickName = 3;
-    // 头像
-    string Avatar = 4;
+// 用户资源响应,如果无用户则默认为超级管理员
+message RbacUserResourceResponse{
     // 角色编号
-    repeated int64 RolesId = 5;
-    // 角色标志
-    repeated string Roles = 6;
+    repeated int64 Roles = 1;
+    // 权限标志
+    repeated string Permissions = 2;
+    // 菜单
+    repeated SUserRes Resources = 3;
+}
+
+
+message SUserRes{
+    /** ID */
+    int64 Id = 1;
+    /** 资源键 */
+    string Key = 2;
+    /** 资源名称 */
+    string Name = 3;
+    /** 资源类型, 0: 资源　 1: 菜单 2:　 按钮 */
+    int32 ResType = 4;
+    /** 资源路径 */
+    string Path = 5;
+    /** 图标 */
+    string Icon = 6;
+    /** 权限,多个值用|分隔 */
+    string Permission = 7;
+    /** 排序 */
+    int32 SortNum = 8;
+    /** 是否隐藏 */
+    bool IsHidden = 9;
+    /** 组件名称 */
+    string ComponentPath = 10;
+    /** 子资源 */
+    repeated SUserRes Children = 11;
 }
 
 message RoleId {
@@ -332,6 +357,8 @@ message SPermUser{
     int64 CreateTime = 14;
     // 用户角色
     repeated int64 Roles = 15;
+    // 权限
+    repeated string Permissions = 16;
 }
 
 message QueryPermUserRequest{

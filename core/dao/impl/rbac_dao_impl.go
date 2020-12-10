@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/util"
 	"go2o/core/dao"
 	"go2o/core/dao/model"
 	"log"
@@ -15,7 +16,6 @@ var _ dao.IRbacDao = new(rbacDaoImpl)
 type rbacDaoImpl struct {
 	_orm orm.Orm
 }
-
 
 var rbacDaoImplMapped = false
 
@@ -775,5 +775,17 @@ func (p *rbacDaoImpl) PagingQueryPermRoleDept(begin, end int, where, orderBy str
 }
 
 func (p *rbacDaoImpl) GetUserRoles(id int64) []*model.PermUserRole {
-	return p.SelectPermUserRole("user_id = $1",id)
+	return p.SelectPermUserRole("user_id = $1", id)
+}
+
+func (p *rbacDaoImpl) GetRoleResources(roles []int) []*model.PermRes {
+	where := fmt.Sprintf("role_id IN (%s)", util.JoinIntArray(roles, ","))
+	var arr []*model.PermRes
+	err := p._orm.SelectByQuery(&arr, `SELECT * FROM perm_res 
+			INNER JOIN perm_role_res ON perm_role_res.res_id = perm_res.id
+			WHERE `+where)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
+	}
+	return arr
 }

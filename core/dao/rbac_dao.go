@@ -144,4 +144,6 @@ type IRbacDao interface {
 	GetRoleResList(roleId int64) []int64
 	// 获取用户的角色
 	GetUserRoles(id int64) []*model.PermUserRole
+	// 获取角色关联系
+	GetRoleResources(roles []int) []*model.PermRes
 }
