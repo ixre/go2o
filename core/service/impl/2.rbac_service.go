@@ -219,18 +219,6 @@ func (p *rbacServiceImpl) DeletePermDept(_ context.Context, id *proto.PermDeptId
 	return p.error(err), nil
 }
 
-// 获取部门列表
-func (p *rbacServiceImpl) QueryPermDeptList(_ context.Context, r *proto.QueryPermDeptRequest) (*proto.QueryPermDeptResponse, error) {
-	arr := p.dao.SelectPermDept("")
-	ret := &proto.QueryPermDeptResponse{
-		List: make([]*proto.SPermDept, len(arr)),
-	}
-	for i, v := range arr {
-		ret.List[i] = p.parsePermDept(v)
-	}
-	return ret, nil
-}
-
 func (p *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
 	return &proto.SPermDept{
 		Id:         v.Id,
@@ -411,18 +399,6 @@ func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (
 	dst := p.parsePermUser(v)
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(v.Id)
 	return dst, nil
-}
-
-// 获取系统用户列表
-func (p *rbacServiceImpl) QueryPermUserList(_ context.Context, r *proto.QueryPermUserRequest) (*proto.QueryPermUserResponse, error) {
-	arr := p.dao.SelectPermUser("")
-	ret := &proto.QueryPermUserResponse{
-		List: make([]*proto.SPermUser, len(arr)),
-	}
-	for i, v := range arr {
-		ret.List[i] = p.parsePermUser(v)
-	}
-	return ret, nil
 }
 
 func (p *rbacServiceImpl) DeletePermUser(_ context.Context, id *proto.PermUserId) (*proto.Result, error) {

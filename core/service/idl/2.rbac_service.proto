@@ -17,10 +17,6 @@ service RBACService {
     // 删除部门
     rpc DeletePermDept (PermDeptId) returns (Result) {
     }
-    // 获取部门列表
-    rpc QueryPermDeptList (QueryPermDeptRequest) returns (QueryPermDeptResponse) {
-    }
-
     // 保存岗位
     rpc SavePermJob (SavePermJobRequest) returns (SavePermJobResponse) {
     }
@@ -48,9 +44,6 @@ service RBACService {
     // 获取用户的信息
     rpc GetUserResource(PermUserId)returns(RbacUserResourceResponse){}
 
-    // 获取系统用户列表
-    rpc QueryPermUserList (QueryPermUserRequest) returns (QueryPermUserResponse) {
-    }
     // 删除系统用户
     rpc DeletePermUser (PermUserId) returns (Result) {
     }
