@@ -26,14 +26,16 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.10.0
+	github.com/ixre/gof v1.10.1
 	github.com/ixre/tto v0.3.20
 	github.com/labstack/echo v3.3.10+incompatible
+	github.com/labstack/echo/v4 v4.1.17
 	github.com/labstack/gommon v0.3.0 // indirect
+	github.com/lib/pq v1.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-plugins v1.5.1
-	github.com/nats-io/jwt v1.2.0 // indirect
+	github.com/nats-io/jwt v1.2.2 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.8 // indirect
 	github.com/nats-io/nats.go v1.10.0
 	github.com/pelletier/go-toml v1.8.1 // indirect
@@ -44,11 +46,11 @@ require (
 	go.etcd.io/etcd v3.3.25+incompatible
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0 // indirect
-	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
-	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
+	golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c // indirect
+	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
+	golang.org/x/sys v0.0.0-20201204225414-ed752295db88 // indirect
 	golang.org/x/text v0.3.4
-	google.golang.org/genproto v0.0.0-20201119123407-9b1e624d6bc4 // indirect
-	google.golang.org/grpc v1.33.2
+	google.golang.org/genproto v0.0.0-20201204160425-06b3db808446 // indirect
+	google.golang.org/grpc v1.34.0
 	google.golang.org/protobuf v1.25.0 // indirect
 )

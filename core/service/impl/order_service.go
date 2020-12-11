@@ -12,7 +12,7 @@ package impl
 import (
 	"bytes"
 	"context"
-	"github.com/ixre/gof/types"
+	"github.com/ixre/gof/types/typeconv"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -149,21 +149,21 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.P
 	data := make(map[string]string)
 
 	//　取消优惠券
-	data["totalFee"] = types.Stringify(v.ItemAmount)
-	data["fee"] = types.Stringify(v.ItemAmount)
-	data["payFee"] = types.Stringify(v.FinalAmount)
-	data["discountFee"] = types.Stringify(discountFee)
-	data["expressFee"] = types.Stringify(v.ExpressFee)
+	data["totalFee"] = typeconv.Stringify(v.ItemAmount)
+	data["fee"] = typeconv.Stringify(v.ItemAmount)
+	data["payFee"] = typeconv.Stringify(v.FinalAmount)
+	data["discountFee"] = typeconv.Stringify(discountFee)
+	data["expressFee"] = typeconv.Stringify(v.ExpressFee)
 
 	// 设置优惠券的信息
 	if r.CartCode != "" {
 		// 优惠券没有减金额
 		if v.DiscountAmount == 0 {
-			data["result"] = types.Stringify(v.DiscountAmount != 0)
+			data["result"] = typeconv.Stringify(v.DiscountAmount != 0)
 			data["message"] = "优惠券无效"
 		} else {
 			// 成功应用优惠券
-			data["couponFee"] = types.Stringify(v.DiscountAmount)
+			data["couponFee"] = typeconv.Stringify(v.DiscountAmount)
 			data["couponDescribe"] = buf.String()
 		}
 	}

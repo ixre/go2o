@@ -24,7 +24,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type AppId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -62,7 +62,7 @@ func (m *AppId) GetValue() int64 {
 }
 
 type AppVersionId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -102,11 +102,11 @@ func (m *AppVersionId) GetValue() int64 {
 // 检查版本请求
 type CheckVersionRequest struct {
 	// 版本号
-	AppId int64 `protobuf:"varint,1,opt,name=AppId,proto3" json:"AppId,omitempty"`
+	AppId int64 `protobuf:"varint,1,opt,name=AppId,proto3" json:"AppId"`
 	// 更新通道, stable|beta|nightly
-	Channel string `protobuf:"bytes,2,opt,name=Channel,proto3" json:"Channel,omitempty"`
+	Channel string `protobuf:"bytes,2,opt,name=Channel,proto3" json:"Channel"`
 	// 当前版本
-	Version              string   `protobuf:"bytes,3,opt,name=Version,proto3" json:"Version,omitempty"`
+	Version              string   `protobuf:"bytes,3,opt,name=Version,proto3" json:"Version"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -160,19 +160,19 @@ func (m *CheckVersionRequest) GetVersion() string {
 // 检测版本响应结果
 type CheckVersionResponse struct {
 	// 最新版本号
-	LatestVersion string `protobuf:"bytes,1,opt,name=LatestVersion,proto3" json:"LatestVersion,omitempty"`
+	LatestVersion string `protobuf:"bytes,1,opt,name=LatestVersion,proto3" json:"LatestVersion"`
 	// App更新资源地址
-	AppPkgURL string `protobuf:"bytes,2,opt,name=AppPkgURL,proto3" json:"AppPkgURL,omitempty"`
+	AppPkgURL string `protobuf:"bytes,2,opt,name=AppPkgURL,proto3" json:"AppPkgURL"`
 	// 版本信息
-	VersionInfo string `protobuf:"bytes,3,opt,name=VersionInfo,proto3" json:"VersionInfo,omitempty"`
+	VersionInfo string `protobuf:"bytes,3,opt,name=VersionInfo,proto3" json:"VersionInfo"`
 	// 是否为最新版本
-	IsLatest bool `protobuf:"varint,4,opt,name=IsLatest,proto3" json:"IsLatest,omitempty"`
+	IsLatest bool `protobuf:"varint,4,opt,name=IsLatest,proto3" json:"IsLatest"`
 	// 是否强制升级
-	ForceUpdate bool `protobuf:"varint,5,opt,name=ForceUpdate,proto3" json:"ForceUpdate,omitempty"`
+	ForceUpdate bool `protobuf:"varint,5,opt,name=ForceUpdate,proto3" json:"ForceUpdate"`
 	// 更新文件类型,如APK,EXE,ZIP等
-	UpdateType string `protobuf:"bytes,6,opt,name=UpdateType,proto3" json:"UpdateType,omitempty"`
+	UpdateType string `protobuf:"bytes,6,opt,name=UpdateType,proto3" json:"UpdateType"`
 	// 发布时间
-	ReleaseTime          int64    `protobuf:"varint,7,opt,name=ReleaseTime,proto3" json:"ReleaseTime,omitempty"`
+	ReleaseTime          int64    `protobuf:"varint,7,opt,name=ReleaseTime,proto3" json:"ReleaseTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -254,23 +254,23 @@ func (m *CheckVersionResponse) GetReleaseTime() int64 {
 // APP产品
 type AppProdRequest struct {
 	// 产品编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 产品名称
-	ProdName string `protobuf:"bytes,2,opt,name=ProdName,proto3" json:"ProdName,omitempty"`
+	ProdName string `protobuf:"bytes,2,opt,name=ProdName,proto3" json:"ProdName"`
 	// 产品描述
-	ProdDes string `protobuf:"bytes,3,opt,name=ProdDes,proto3" json:"ProdDes,omitempty"`
+	ProdDes string `protobuf:"bytes,3,opt,name=ProdDes,proto3" json:"ProdDes"`
 	// Icon
-	Icon string `protobuf:"bytes,4,opt,name=Icon,proto3" json:"Icon,omitempty"`
+	Icon string `protobuf:"bytes,4,opt,name=Icon,proto3" json:"Icon"`
 	// 发布下载页面地址
-	PublishUrl string `protobuf:"bytes,5,opt,name=PublishUrl,proto3" json:"PublishUrl,omitempty"`
+	PublishUrl string `protobuf:"bytes,5,opt,name=PublishUrl,proto3" json:"PublishUrl"`
 	// 正式版文件地址
-	StableFileUrl string `protobuf:"bytes,6,opt,name=StableFileUrl,proto3" json:"StableFileUrl,omitempty"`
+	StableFileUrl string `protobuf:"bytes,6,opt,name=StableFileUrl,proto3" json:"StableFileUrl"`
 	// 内测版文件地址
-	AlphaFileUrl string `protobuf:"bytes,8,opt,name=AlphaFileUrl,proto3" json:"AlphaFileUrl,omitempty"`
+	AlphaFileUrl string `protobuf:"bytes,8,opt,name=AlphaFileUrl,proto3" json:"AlphaFileUrl"`
 	// 每夜版文件地址
-	NightlyFileUrl string `protobuf:"bytes,10,opt,name=NightlyFileUrl,proto3" json:"NightlyFileUrl,omitempty"`
+	NightlyFileUrl string `protobuf:"bytes,10,opt,name=NightlyFileUrl,proto3" json:"NightlyFileUrl"`
 	// 更新方式,比如APK, EXE等
-	UpdateType           string   `protobuf:"bytes,11,opt,name=UpdateType,proto3" json:"UpdateType,omitempty"`
+	UpdateType           string   `protobuf:"bytes,11,opt,name=UpdateType,proto3" json:"UpdateType"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -366,17 +366,17 @@ func (m *AppProdRequest) GetUpdateType() string {
 // APP版本
 type AppVersionRequest struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 产品
-	ProductId int64 `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
+	ProductId int64 `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId"`
 	// 更新通道, stable:0|alpha:1|nightly:2
-	Channel int32 `protobuf:"varint,3,opt,name=Channel,proto3" json:"Channel,omitempty"`
+	Channel int32 `protobuf:"varint,3,opt,name=Channel,proto3" json:"Channel"`
 	// 版本号
-	Version string `protobuf:"bytes,4,opt,name=Version,proto3" json:"Version,omitempty"`
+	Version string `protobuf:"bytes,4,opt,name=Version,proto3" json:"Version"`
 	// 是否强制升级
-	ForceUpdate bool `protobuf:"varint,5,opt,name=ForceUpdate,proto3" json:"ForceUpdate,omitempty"`
+	ForceUpdate bool `protobuf:"varint,5,opt,name=ForceUpdate,proto3" json:"ForceUpdate"`
 	// 更新内容
-	UpdateContent        string   `protobuf:"bytes,6,opt,name=UpdateContent,proto3" json:"UpdateContent,omitempty"`
+	UpdateContent        string   `protobuf:"bytes,6,opt,name=UpdateContent,proto3" json:"UpdateContent"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -451,27 +451,27 @@ func (m *AppVersionRequest) GetUpdateContent() string {
 // APP产品
 type SAppProd struct {
 	// 产品编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 产品名称
-	ProdName string `protobuf:"bytes,2,opt,name=ProdName,proto3" json:"ProdName,omitempty"`
+	ProdName string `protobuf:"bytes,2,opt,name=ProdName,proto3" json:"ProdName"`
 	// 产品描述
-	ProdDes string `protobuf:"bytes,3,opt,name=ProdDes,proto3" json:"ProdDes,omitempty"`
+	ProdDes string `protobuf:"bytes,3,opt,name=ProdDes,proto3" json:"ProdDes"`
 	// 最新的版本ID
-	LatestVid int64 `protobuf:"varint,4,opt,name=LatestVid,proto3" json:"LatestVid,omitempty"`
+	LatestVid int64 `protobuf:"varint,4,opt,name=LatestVid,proto3" json:"LatestVid"`
 	// 正式版文件hash值
-	Md5Hash string `protobuf:"bytes,5,opt,name=Md5Hash,proto3" json:"Md5Hash,omitempty"`
+	Md5Hash string `protobuf:"bytes,5,opt,name=Md5Hash,proto3" json:"Md5Hash"`
 	// 发布下载页面地址
-	PublishUrl string `protobuf:"bytes,6,opt,name=PublishUrl,proto3" json:"PublishUrl,omitempty"`
+	PublishUrl string `protobuf:"bytes,6,opt,name=PublishUrl,proto3" json:"PublishUrl"`
 	// 正式版文件地址
-	StableFileUrl string `protobuf:"bytes,7,opt,name=StableFileUrl,proto3" json:"StableFileUrl,omitempty"`
+	StableFileUrl string `protobuf:"bytes,7,opt,name=StableFileUrl,proto3" json:"StableFileUrl"`
 	// 内测版文件地址
-	AlphaFileUrl string `protobuf:"bytes,8,opt,name=AlphaFileUrl,proto3" json:"AlphaFileUrl,omitempty"`
+	AlphaFileUrl string `protobuf:"bytes,8,opt,name=AlphaFileUrl,proto3" json:"AlphaFileUrl"`
 	// 每夜版文件地址
-	NightlyFileUrl string `protobuf:"bytes,9,opt,name=NightlyFileUrl,proto3" json:"NightlyFileUrl,omitempty"`
+	NightlyFileUrl string `protobuf:"bytes,9,opt,name=NightlyFileUrl,proto3" json:"NightlyFileUrl"`
 	// 更新方式,比如APK, EXE等
-	UpdateType string `protobuf:"bytes,10,opt,name=UpdateType,proto3" json:"UpdateType,omitempty"`
+	UpdateType string `protobuf:"bytes,10,opt,name=UpdateType,proto3" json:"UpdateType"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"varint,11,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"varint,11,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -581,21 +581,21 @@ func (m *SAppProd) GetUpdateTime() int64 {
 // APP版本
 type SAppVersion struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 产品
-	ProductId int64 `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
+	ProductId int64 `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId"`
 	// 更新通道, 0:stable|1:beta|2:nightly
-	Channel int32 `protobuf:"varint,3,opt,name=Channel,proto3" json:"Channel,omitempty"`
+	Channel int32 `protobuf:"varint,3,opt,name=Channel,proto3" json:"Channel"`
 	// 版本号
-	Version string `protobuf:"bytes,4,opt,name=Version,proto3" json:"Version,omitempty"`
+	Version string `protobuf:"bytes,4,opt,name=Version,proto3" json:"Version"`
 	// 数字版本
-	VersionCode int32 `protobuf:"varint,5,opt,name=VersionCode,proto3" json:"VersionCode,omitempty"`
+	VersionCode int32 `protobuf:"varint,5,opt,name=VersionCode,proto3" json:"VersionCode"`
 	// 是否强制升级
-	ForceUpdate bool `protobuf:"varint,6,opt,name=ForceUpdate,proto3" json:"ForceUpdate,omitempty"`
+	ForceUpdate bool `protobuf:"varint,6,opt,name=ForceUpdate,proto3" json:"ForceUpdate"`
 	// 更新内容
-	UpdateContent string `protobuf:"bytes,7,opt,name=UpdateContent,proto3" json:"UpdateContent,omitempty"`
+	UpdateContent string `protobuf:"bytes,7,opt,name=UpdateContent,proto3" json:"UpdateContent"`
 	// 发布时间
-	CreateTime           int64    `protobuf:"varint,8,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime           int64    `protobuf:"varint,8,opt,name=CreateTime,proto3" json:"CreateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

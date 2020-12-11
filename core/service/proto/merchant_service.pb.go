@@ -25,11 +25,11 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type MerchantOrderRequest struct {
 	// 　商户编号
-	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
 	// 是否分页
-	Pagination bool `protobuf:"varint,2,opt,name=Pagination,proto3" json:"Pagination,omitempty"`
+	Pagination bool `protobuf:"varint,2,opt,name=Pagination,proto3" json:"Pagination"`
 	// 　分页参数
-	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params,omitempty"`
+	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -81,8 +81,8 @@ func (m *MerchantOrderRequest) GetParams() *SPagingParams {
 }
 
 type PagingMerchantOrderListResponse struct {
-	Total                int64             `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*SMerchantOrder `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	Total                int64             `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SMerchantOrder `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -127,24 +127,24 @@ func (m *PagingMerchantOrderListResponse) GetData() []*SMerchantOrder {
 }
 
 type SMerchantOrder struct {
-	OrderId   int64  `protobuf:"varint,1,opt,name=OrderId,proto3" json:"OrderId,omitempty"`
-	OrderNo   string `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
-	ParentNo  string `protobuf:"bytes,3,opt,name=ParentNo,proto3" json:"ParentNo,omitempty"`
-	BuyerId   int64  `protobuf:"varint,4,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
-	BuyerName string `protobuf:"bytes,5,opt,name=BuyerName,proto3" json:"BuyerName,omitempty"`
+	OrderId   int64  `protobuf:"varint,1,opt,name=OrderId,proto3" json:"OrderId"`
+	OrderNo   string `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo"`
+	ParentNo  string `protobuf:"bytes,3,opt,name=ParentNo,proto3" json:"ParentNo"`
+	BuyerId   int64  `protobuf:"varint,4,opt,name=BuyerId,proto3" json:"BuyerId"`
+	BuyerName string `protobuf:"bytes,5,opt,name=BuyerName,proto3" json:"BuyerName"`
 	// 订单详情,主要描述订单的内容
-	Details              string            `protobuf:"bytes,6,opt,name=Details,proto3" json:"Details,omitempty"`
-	ItemAmount           float64           `protobuf:"fixed64,7,opt,name=ItemAmount,proto3" json:"ItemAmount,omitempty"`
-	DiscountAmount       float64           `protobuf:"fixed64,8,opt,name=DiscountAmount,proto3" json:"DiscountAmount,omitempty"`
-	ExpressFee           float64           `protobuf:"fixed64,9,opt,name=ExpressFee,proto3" json:"ExpressFee,omitempty"`
-	PackageFee           float64           `protobuf:"fixed64,10,opt,name=PackageFee,proto3" json:"PackageFee,omitempty"`
-	IsPaid               bool              `protobuf:"varint,11,opt,name=IsPaid,proto3" json:"IsPaid,omitempty"`
-	FinalAmount          float64           `protobuf:"fixed64,12,opt,name=FinalAmount,proto3" json:"FinalAmount,omitempty"`
-	State                int32             `protobuf:"varint,13,opt,name=State,proto3" json:"State,omitempty"`
-	StateText            string            `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText,omitempty"`
-	CreateTime           int64             `protobuf:"varint,15,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
-	Items                []*SOrderItem     `protobuf:"bytes,16,rep,name=Items,proto3" json:"Items,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,17,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Details              string            `protobuf:"bytes,6,opt,name=Details,proto3" json:"Details"`
+	ItemAmount           float64           `protobuf:"fixed64,7,opt,name=ItemAmount,proto3" json:"ItemAmount"`
+	DiscountAmount       float64           `protobuf:"fixed64,8,opt,name=DiscountAmount,proto3" json:"DiscountAmount"`
+	ExpressFee           float64           `protobuf:"fixed64,9,opt,name=ExpressFee,proto3" json:"ExpressFee"`
+	PackageFee           float64           `protobuf:"fixed64,10,opt,name=PackageFee,proto3" json:"PackageFee"`
+	IsPaid               bool              `protobuf:"varint,11,opt,name=IsPaid,proto3" json:"IsPaid"`
+	FinalAmount          float64           `protobuf:"fixed64,12,opt,name=FinalAmount,proto3" json:"FinalAmount"`
+	State                int32             `protobuf:"varint,13,opt,name=State,proto3" json:"State"`
+	StateText            string            `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText"`
+	CreateTime           int64             `protobuf:"varint,15,opt,name=CreateTime,proto3" json:"CreateTime"`
+	Items                []*SOrderItem     `protobuf:"bytes,16,rep,name=Items,proto3" json:"Items"`
+	Data                 map[string]string `protobuf:"bytes,17,rep,name=Data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`

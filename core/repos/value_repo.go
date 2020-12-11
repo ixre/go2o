@@ -17,7 +17,7 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types"
+	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/valueobject"
 	"log"
@@ -164,7 +164,7 @@ func (r *valueRepo) SetValue(key string, v interface{}) error {
 	kv := &valueobject.SysKeyValue{
 		ID:         id,
 		Key:        key,
-		Value:      types.Stringify(v),
+		Value:      typeconv.Stringify(v),
 		UpdateTime: time.Now().Unix(),
 	}
 	id2, err := orm.Save(r.o, kv, int(kv.ID))
@@ -287,7 +287,7 @@ func (r *valueRepo) getsRegistryNew(keys []string) []string {
 	mp := make([]string, len(keys))
 	for i, k := range keys {
 		v := r.confRegistry.Get(k)
-		mp[i] = types.Stringify(v)
+		mp[i] = typeconv.Stringify(v)
 	}
 	return mp
 }
@@ -295,7 +295,7 @@ func (r *valueRepo) getsRegistryMapNew(keys []string) map[string]string {
 	mp := map[string]string{}
 	for _, k := range keys {
 		v := r.confRegistry.Get(k)
-		mp[k] = types.Stringify(v)
+		mp[k] = typeconv.Stringify(v)
 	}
 	return mp
 }

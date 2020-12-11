@@ -24,8 +24,8 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type ItemDetailRequest struct {
-	ItemId               int64    `protobuf:"zigzag64,1,opt,name=itemId,proto3" json:"itemId,omitempty"`
-	IType                int32    `protobuf:"zigzag32,2,opt,name=iType,proto3" json:"iType,omitempty"`
+	ItemId               int64    `protobuf:"zigzag64,1,opt,name=itemId,proto3" json:"itemId"`
+	IType                int32    `protobuf:"zigzag32,2,opt,name=iType,proto3" json:"iType"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -70,12 +70,12 @@ func (m *ItemDetailRequest) GetIType() int32 {
 }
 
 type PagingGoodsRequest struct {
-	ItemType   EItemSalesType `protobuf:"varint,1,opt,name=ItemType,proto3,enum=EItemSalesType" json:"ItemType,omitempty"`
-	SellerId   int64          `protobuf:"varint,2,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
-	CategoryId int64          `protobuf:"varint,3,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
+	ItemType   EItemSalesType `protobuf:"varint,1,opt,name=ItemType,proto3,enum=EItemSalesType" json:"ItemType"`
+	SellerId   int64          `protobuf:"varint,2,opt,name=SellerId,proto3" json:"SellerId"`
+	CategoryId int64          `protobuf:"varint,3,opt,name=CategoryId,proto3" json:"CategoryId"`
 	// 关键词
-	Keyword              string         `protobuf:"bytes,4,opt,name=Keyword,proto3" json:"Keyword,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,5,opt,name=Params,proto3" json:"Params,omitempty"`
+	Keyword              string         `protobuf:"bytes,4,opt,name=Keyword,proto3" json:"Keyword"`
+	Params               *SPagingParams `protobuf:"bytes,5,opt,name=Params,proto3" json:"Params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -141,9 +141,9 @@ func (m *PagingGoodsRequest) GetParams() *SPagingParams {
 }
 
 type PagingShopGoodsRequest struct {
-	ShopId               int64          `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
-	CategoryId           int64          `protobuf:"varint,2,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params,omitempty"`
+	ShopId               int64          `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId"`
+	CategoryId           int64          `protobuf:"varint,2,opt,name=CategoryId,proto3" json:"CategoryId"`
+	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -195,9 +195,9 @@ func (m *PagingShopGoodsRequest) GetParams() *SPagingParams {
 }
 
 type SaleLabelItemsRequest_ struct {
-	ShopId               int64          `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
-	LabelId              int32          `protobuf:"varint,2,opt,name=LabelId,proto3" json:"LabelId,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params,omitempty"`
+	ShopId               int64          `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId"`
+	LabelId              int32          `protobuf:"varint,2,opt,name=LabelId,proto3" json:"LabelId"`
+	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`

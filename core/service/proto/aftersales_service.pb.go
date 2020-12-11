@@ -62,7 +62,7 @@ func (EAfterSalesType) EnumDescriptor() ([]byte, []int) {
 
 // 原实际销售的订单编号
 type OriginOrderIdRequest struct {
-	OrderId              int64    `protobuf:"varint,1,opt,name=OrderId,proto3" json:"OrderId,omitempty"`
+	OrderId              int64    `protobuf:"varint,1,opt,name=OrderId,proto3" json:"OrderId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -100,12 +100,12 @@ func (m *OriginOrderIdRequest) GetOrderId() int64 {
 }
 
 type SubmitAfterSalesOrderRequest struct {
-	OrderId              int64           `protobuf:"varint,1,opt,name=OrderId,proto3" json:"OrderId,omitempty"`
-	AfterSalesType       EAfterSalesType `protobuf:"varint,2,opt,name=AfterSalesType,proto3,enum=EAfterSalesType" json:"AfterSalesType,omitempty"`
-	ItemSnapshotId       int64           `protobuf:"varint,3,opt,name=ItemSnapshotId,proto3" json:"ItemSnapshotId,omitempty"`
-	Quantity             int64           `protobuf:"varint,4,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
-	Reason               string          `protobuf:"bytes,5,opt,name=Reason,proto3" json:"Reason,omitempty"`
-	ImageUrl             string          `protobuf:"bytes,6,opt,name=ImageUrl,proto3" json:"ImageUrl,omitempty"`
+	OrderId              int64           `protobuf:"varint,1,opt,name=OrderId,proto3" json:"OrderId"`
+	AfterSalesType       EAfterSalesType `protobuf:"varint,2,opt,name=AfterSalesType,proto3,enum=EAfterSalesType" json:"AfterSalesType"`
+	ItemSnapshotId       int64           `protobuf:"varint,3,opt,name=ItemSnapshotId,proto3" json:"ItemSnapshotId"`
+	Quantity             int64           `protobuf:"varint,4,opt,name=Quantity,proto3" json:"Quantity"`
+	Reason               string          `protobuf:"bytes,5,opt,name=Reason,proto3" json:"Reason"`
+	ImageUrl             string          `protobuf:"bytes,6,opt,name=ImageUrl,proto3" json:"ImageUrl"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
@@ -178,9 +178,9 @@ func (m *SubmitAfterSalesOrderRequest) GetImageUrl() string {
 }
 
 type SubmitAfterSalesOrderResponse struct {
-	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	AfterSalesOrderId    int64    `protobuf:"varint,3,opt,name=AfterSalesOrderId,proto3" json:"AfterSalesOrderId,omitempty"`
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	AfterSalesOrderId    int64    `protobuf:"varint,3,opt,name=AfterSalesOrderId,proto3" json:"AfterSalesOrderId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -232,7 +232,7 @@ func (m *SubmitAfterSalesOrderResponse) GetAfterSalesOrderId() int64 {
 }
 
 type AfterSalesOrderListResponse struct {
-	Value                []*SAfterSalesOrder `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SAfterSalesOrder `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -270,8 +270,8 @@ func (m *AfterSalesOrderListResponse) GetValue() []*SAfterSalesOrder {
 }
 
 type PagingBuyerOrdersRequest struct {
-	BuyerId              int64          `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,2,opt,name=Params,proto3" json:"Params,omitempty"`
+	BuyerId              int64          `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId"`
+	Params               *SPagingParams `protobuf:"bytes,2,opt,name=Params,proto3" json:"Params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -316,8 +316,8 @@ func (m *PagingBuyerOrdersRequest) GetParams() *SPagingParams {
 }
 
 type PagingSellerOrdersRequest struct {
-	SellerId             int64          `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,2,opt,name=Params,proto3" json:"Params,omitempty"`
+	SellerId             int64          `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId"`
+	Params               *SPagingParams `protobuf:"bytes,2,opt,name=Params,proto3" json:"Params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -362,8 +362,8 @@ func (m *PagingSellerOrdersRequest) GetParams() *SPagingParams {
 }
 
 type PagingBuyerAfterSalesOrderListResponse struct {
-	Total                int64                          `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*SPagingBuyerAfterSalesOrder `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	Total                int64                          `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SPagingBuyerAfterSalesOrder `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}                       `json:"-"`
 	XXX_unrecognized     []byte                         `json:"-"`
 	XXX_sizecache        int32                          `json:"-"`
@@ -410,8 +410,8 @@ func (m *PagingBuyerAfterSalesOrderListResponse) GetData() []*SPagingBuyerAfterS
 }
 
 type PagingSellerAfterSalesOrderListResponse struct {
-	Total                int64                           `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*SPagingSellerAfterSalesOrder `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	Total                int64                           `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SPagingSellerAfterSalesOrder `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}                        `json:"-"`
 	XXX_unrecognized     []byte                          `json:"-"`
 	XXX_sizecache        int32                           `json:"-"`
@@ -460,45 +460,45 @@ func (m *PagingSellerAfterSalesOrderListResponse) GetData() []*SPagingSellerAfte
 // 售后单
 type SAfterSalesOrder struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 订单编号
-	RelateOrderId int64 `protobuf:"varint,2,opt,name=RelateOrderId,proto3" json:"RelateOrderId,omitempty"`
+	RelateOrderId int64 `protobuf:"varint,2,opt,name=RelateOrderId,proto3" json:"RelateOrderId"`
 	// 运营商编号
-	VendorId int64 `protobuf:"varint,3,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
+	VendorId int64 `protobuf:"varint,3,opt,name=VendorId,proto3" json:"VendorId"`
 	// 购买者编号
-	BuyerId int64 `protobuf:"varint,4,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
+	BuyerId int64 `protobuf:"varint,4,opt,name=BuyerId,proto3" json:"BuyerId"`
 	// 类型，退货、换货、维修
-	AfterSalesType int32 `protobuf:"varint,5,opt,name=AfterSalesType,proto3" json:"AfterSalesType,omitempty"`
+	AfterSalesType int32 `protobuf:"varint,5,opt,name=AfterSalesType,proto3" json:"AfterSalesType"`
 	// 退货的商品项编号
-	SnapshotId int64 `protobuf:"varint,6,opt,name=SnapshotId,proto3" json:"SnapshotId,omitempty"`
+	SnapshotId int64 `protobuf:"varint,6,opt,name=SnapshotId,proto3" json:"SnapshotId"`
 	// 商品数量
-	Quantity int32 `protobuf:"varint,7,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
+	Quantity int32 `protobuf:"varint,7,opt,name=Quantity,proto3" json:"Quantity"`
 	// 售后原因
-	Reason string `protobuf:"bytes,8,opt,name=Reason,proto3" json:"Reason,omitempty"`
+	Reason string `protobuf:"bytes,8,opt,name=Reason,proto3" json:"Reason"`
 	// 商品售后图片凭证
-	ImageUrl string `protobuf:"bytes,9,opt,name=ImageUrl,proto3" json:"ImageUrl,omitempty"`
+	ImageUrl string `protobuf:"bytes,9,opt,name=ImageUrl,proto3" json:"ImageUrl"`
 	// 联系人
-	PersonName string `protobuf:"bytes,10,opt,name=PersonName,proto3" json:"PersonName,omitempty"`
+	PersonName string `protobuf:"bytes,10,opt,name=PersonName,proto3" json:"PersonName"`
 	// 联系电话
-	PersonPhone string `protobuf:"bytes,11,opt,name=PersonPhone,proto3" json:"PersonPhone,omitempty"`
+	PersonPhone string `protobuf:"bytes,11,opt,name=PersonPhone,proto3" json:"PersonPhone"`
 	// 退货的快递服务商编号
-	ReturnSpName string `protobuf:"bytes,12,opt,name=ReturnSpName,proto3" json:"ReturnSpName,omitempty"`
+	ReturnSpName string `protobuf:"bytes,12,opt,name=ReturnSpName,proto3" json:"ReturnSpName"`
 	// 退货的快递单号
-	ReturnSpOrder string `protobuf:"bytes,13,opt,name=ReturnSpOrder,proto3" json:"ReturnSpOrder,omitempty"`
+	ReturnSpOrder string `protobuf:"bytes,13,opt,name=ReturnSpOrder,proto3" json:"ReturnSpOrder"`
 	// 退货凭证
-	ReturnSpImage string `protobuf:"bytes,14,opt,name=ReturnSpImage,proto3" json:"ReturnSpImage,omitempty"`
+	ReturnSpImage string `protobuf:"bytes,14,opt,name=ReturnSpImage,proto3" json:"ReturnSpImage"`
 	// 备注(系统)
-	Remark string `protobuf:"bytes,15,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark string `protobuf:"bytes,15,opt,name=Remark,proto3" json:"Remark"`
 	// 运营商备注
-	VendorRemark string `protobuf:"bytes,16,opt,name=VendorRemark,proto3" json:"VendorRemark,omitempty"`
+	VendorRemark string `protobuf:"bytes,16,opt,name=VendorRemark,proto3" json:"VendorRemark"`
 	// 售后单状态
-	State int32 `protobuf:"varint,17,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"varint,17,opt,name=State,proto3" json:"State"`
 	// 提交时间
-	CreateTime int64 `protobuf:"varint,18,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"varint,18,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// 更新时间
-	UpdateTime int64 `protobuf:"varint,19,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime int64 `protobuf:"varint,19,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	// 订单状态
-	StateText            string   `protobuf:"bytes,20,opt,name=StateText,proto3" json:"StateText,omitempty"`
+	StateText            string   `protobuf:"bytes,20,opt,name=StateText,proto3" json:"StateText"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -670,30 +670,30 @@ func (m *SAfterSalesOrder) GetStateText() string {
 
 type SPagingBuyerAfterSalesOrder struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 订单编号
-	OrderNo string `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
+	OrderNo string `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// 运营商编号
-	VendorId int64 `protobuf:"varint,3,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
+	VendorId int64 `protobuf:"varint,3,opt,name=VendorId,proto3" json:"VendorId"`
 	// 运营商名称
-	SellerName string `protobuf:"bytes,4,opt,name=SellerName,proto3" json:"SellerName,omitempty"`
+	SellerName string `protobuf:"bytes,4,opt,name=SellerName,proto3" json:"SellerName"`
 	// 类型，退货、换货、维修
-	AfterSalesType int32 `protobuf:"varint,5,opt,name=AfterSalesType,proto3" json:"AfterSalesType,omitempty"`
+	AfterSalesType int32 `protobuf:"varint,5,opt,name=AfterSalesType,proto3" json:"AfterSalesType"`
 	// 退货的商品项编号
-	SnapshotId int64 `protobuf:"varint,6,opt,name=SnapshotId,proto3" json:"SnapshotId,omitempty"`
+	SnapshotId int64 `protobuf:"varint,6,opt,name=SnapshotId,proto3" json:"SnapshotId"`
 	// 商品数量
-	Quantity  int32  `protobuf:"varint,7,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
-	SkuId     int64  `protobuf:"varint,8,opt,name=SkuId,proto3" json:"SkuId,omitempty"`
-	ItemTitle string `protobuf:"bytes,9,opt,name=ItemTitle,proto3" json:"ItemTitle,omitempty"`
-	ItemImage string `protobuf:"bytes,10,opt,name=ItemImage,proto3" json:"ItemImage,omitempty"`
+	Quantity  int32  `protobuf:"varint,7,opt,name=Quantity,proto3" json:"Quantity"`
+	SkuId     int64  `protobuf:"varint,8,opt,name=SkuId,proto3" json:"SkuId"`
+	ItemTitle string `protobuf:"bytes,9,opt,name=ItemTitle,proto3" json:"ItemTitle"`
+	ItemImage string `protobuf:"bytes,10,opt,name=ItemImage,proto3" json:"ItemImage"`
 	// 售后单状态
-	State int32 `protobuf:"varint,11,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"varint,11,opt,name=State,proto3" json:"State"`
 	// 提交时间
-	CreateTime int64 `protobuf:"varint,12,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"varint,12,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// 更新时间
-	UpdateTime int64 `protobuf:"varint,13,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime int64 `protobuf:"varint,13,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	// 订单状态
-	StateText            string   `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText,omitempty"`
+	StateText            string   `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -824,30 +824,30 @@ func (m *SPagingBuyerAfterSalesOrder) GetStateText() string {
 // 分页商户售后单
 type SPagingSellerAfterSalesOrder struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 订单编号
-	OrderNo string `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
+	OrderNo string `protobuf:"bytes,2,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// 会员编号
-	BuyerId int64 `protobuf:"varint,3,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
+	BuyerId int64 `protobuf:"varint,3,opt,name=BuyerId,proto3" json:"BuyerId"`
 	// 会员名称
-	BuyerName string `protobuf:"bytes,4,opt,name=BuyerName,proto3" json:"BuyerName,omitempty"`
+	BuyerName string `protobuf:"bytes,4,opt,name=BuyerName,proto3" json:"BuyerName"`
 	// 类型，退货、换货、维修
-	AfterSalesType int32 `protobuf:"varint,5,opt,name=AfterSalesType,proto3" json:"AfterSalesType,omitempty"`
+	AfterSalesType int32 `protobuf:"varint,5,opt,name=AfterSalesType,proto3" json:"AfterSalesType"`
 	// 退货的商品项编号
-	SnapshotId int64 `protobuf:"varint,6,opt,name=SnapshotId,proto3" json:"SnapshotId,omitempty"`
+	SnapshotId int64 `protobuf:"varint,6,opt,name=SnapshotId,proto3" json:"SnapshotId"`
 	// 商品数量
-	Quantity  int32  `protobuf:"varint,7,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
-	SkuId     int64  `protobuf:"varint,8,opt,name=SkuId,proto3" json:"SkuId,omitempty"`
-	ItemTitle string `protobuf:"bytes,9,opt,name=ItemTitle,proto3" json:"ItemTitle,omitempty"`
-	ItemImage string `protobuf:"bytes,10,opt,name=ItemImage,proto3" json:"ItemImage,omitempty"`
+	Quantity  int32  `protobuf:"varint,7,opt,name=Quantity,proto3" json:"Quantity"`
+	SkuId     int64  `protobuf:"varint,8,opt,name=SkuId,proto3" json:"SkuId"`
+	ItemTitle string `protobuf:"bytes,9,opt,name=ItemTitle,proto3" json:"ItemTitle"`
+	ItemImage string `protobuf:"bytes,10,opt,name=ItemImage,proto3" json:"ItemImage"`
 	// 售后单状态
-	State int32 `protobuf:"varint,11,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"varint,11,opt,name=State,proto3" json:"State"`
 	// 提交时间
-	CreateTime int64 `protobuf:"varint,12,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"varint,12,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// 更新时间
-	UpdateTime int64 `protobuf:"varint,13,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime int64 `protobuf:"varint,13,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	// 订单状态
-	StateText            string   `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText,omitempty"`
+	StateText            string   `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -976,9 +976,9 @@ func (m *SPagingSellerAfterSalesOrder) GetStateText() string {
 }
 
 type ExchangeShipmentRequest struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	SpName               string   `protobuf:"bytes,2,opt,name=SpName,proto3" json:"SpName,omitempty"`
-	SpOrder              string   `protobuf:"bytes,3,opt,name=SpOrder,proto3" json:"SpOrder,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	SpName               string   `protobuf:"bytes,2,opt,name=SpName,proto3" json:"SpName"`
+	SpOrder              string   `protobuf:"bytes,3,opt,name=SpOrder,proto3" json:"SpOrder"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

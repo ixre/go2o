@@ -19,8 +19,8 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type DeleteProductRequest struct {
-	SellerId             int64    `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
-	ProductId            int64    `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
+	SellerId             int64    `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId"`
+	ProductId            int64    `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -65,7 +65,7 @@ func (m *DeleteProductRequest) GetProductId() int64 {
 }
 
 type ProductId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -103,7 +103,7 @@ func (m *ProductId) GetValue() int64 {
 }
 
 type ProductModelId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -141,7 +141,7 @@ func (m *ProductModelId) GetValue() int64 {
 }
 
 type ProductAttrId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -179,7 +179,7 @@ func (m *ProductAttrId) GetValue() int64 {
 }
 
 type ProductAttrItemId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -217,7 +217,7 @@ func (m *ProductAttrItemId) GetValue() int64 {
 }
 
 type ProductModelListResponse struct {
-	Value                []*SProductModel `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SProductModel `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -257,21 +257,21 @@ func (m *ProductModelListResponse) GetValue() []*SProductModel {
 // 产品模型
 type SProductModel struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// 属性字符
-	AttrStr string `protobuf:"bytes,3,opt,name=AttrStr,proto3" json:"AttrStr,omitempty"`
+	AttrStr string `protobuf:"bytes,3,opt,name=AttrStr,proto3" json:"AttrStr"`
 	// 规格字符
-	SpecStr string `protobuf:"bytes,4,opt,name=SpecStr,proto3" json:"SpecStr,omitempty"`
+	SpecStr string `protobuf:"bytes,4,opt,name=SpecStr,proto3" json:"SpecStr"`
 	// 属性
-	Attrs []*SProductAttr `protobuf:"bytes,5,rep,name=Attrs,proto3" json:"Attrs,omitempty"`
+	Attrs []*SProductAttr `protobuf:"bytes,5,rep,name=Attrs,proto3" json:"Attrs"`
 	// 规格
-	Specs []*SProductSpec `protobuf:"bytes,6,rep,name=Specs,proto3" json:"Specs,omitempty"`
+	Specs []*SProductSpec `protobuf:"bytes,6,rep,name=Specs,proto3" json:"Specs"`
 	// 关联品牌
-	Brands []*SProductBrand `protobuf:"bytes,7,rep,name=Brands,proto3" json:"Brands,omitempty"`
+	Brands []*SProductBrand `protobuf:"bytes,7,rep,name=Brands,proto3" json:"Brands"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,8,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled              bool     `protobuf:"varint,8,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -360,19 +360,19 @@ func (m *SProductModel) GetEnabled() bool {
 // 产品模型属性
 type SProductAttr struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 属性名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// 是否作为筛选条件
-	IsFilter bool `protobuf:"varint,3,opt,name=IsFilter,proto3" json:"IsFilter,omitempty"`
+	IsFilter bool `protobuf:"varint,3,opt,name=IsFilter,proto3" json:"IsFilter"`
 	// 是否多选
-	MultiCheck bool `protobuf:"varint,4,opt,name=MultiCheck,proto3" json:"MultiCheck,omitempty"`
+	MultiCheck bool `protobuf:"varint,4,opt,name=MultiCheck,proto3" json:"MultiCheck"`
 	// 排列序号
-	SortNum int32 `protobuf:"varint,5,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum int32 `protobuf:"varint,5,opt,name=SortNum,proto3" json:"SortNum"`
 	// 属性项值
-	ItemValues string `protobuf:"bytes,6,opt,name=ItemValues,proto3" json:"ItemValues,omitempty"`
+	ItemValues string `protobuf:"bytes,6,opt,name=ItemValues,proto3" json:"ItemValues"`
 	// 属性项
-	Items                []*SProductAttrItem `protobuf:"bytes,7,rep,name=Items,proto3" json:"Items,omitempty"`
+	Items                []*SProductAttrItem `protobuf:"bytes,7,rep,name=Items,proto3" json:"Items"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -454,11 +454,11 @@ func (m *SProductAttr) GetItems() []*SProductAttrItem {
 // 产品模型属性项
 type SProductAttrItem struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 属性值
-	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	// 排列序号
-	SortNum              int32    `protobuf:"varint,3,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum              int32    `protobuf:"varint,3,opt,name=SortNum,proto3" json:"SortNum"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -512,15 +512,15 @@ func (m *SProductAttrItem) GetSortNum() int32 {
 // 产品属性值
 type SProductAttrValue struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 属性编号
-	AttrId int64 `protobuf:"varint,2,opt,name=AttrId,proto3" json:"AttrId,omitempty"`
+	AttrId int64 `protobuf:"varint,2,opt,name=AttrId,proto3" json:"AttrId"`
 	// 属性名称
-	AttrName string `protobuf:"bytes,3,opt,name=AttrName,proto3" json:"AttrName,omitempty"`
+	AttrName string `protobuf:"bytes,3,opt,name=AttrName,proto3" json:"AttrName"`
 	// 属性值
-	AttrData string `protobuf:"bytes,4,opt,name=AttrData,proto3" json:"AttrData,omitempty"`
+	AttrData string `protobuf:"bytes,4,opt,name=AttrData,proto3" json:"AttrData"`
 	// 属性文本
-	AttrWord             string   `protobuf:"bytes,5,opt,name=AttrWord,proto3" json:"AttrWord,omitempty"`
+	AttrWord             string   `protobuf:"bytes,5,opt,name=AttrWord,proto3" json:"AttrWord"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -588,15 +588,15 @@ func (m *SProductAttrValue) GetAttrWord() string {
 // 产品模型规格
 type SProductSpec struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 规格名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// 排列序号
-	SortNum int32 `protobuf:"varint,3,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum int32 `protobuf:"varint,3,opt,name=SortNum,proto3" json:"SortNum"`
 	// 规格项值
-	ItemValues string `protobuf:"bytes,4,opt,name=ItemValues,proto3" json:"ItemValues,omitempty"`
+	ItemValues string `protobuf:"bytes,4,opt,name=ItemValues,proto3" json:"ItemValues"`
 	// 规格项
-	Items                []*SProductSpecItem `protobuf:"bytes,5,rep,name=Items,proto3" json:"Items,omitempty"`
+	Items                []*SProductSpecItem `protobuf:"bytes,5,rep,name=Items,proto3" json:"Items"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -664,13 +664,13 @@ func (m *SProductSpec) GetItems() []*SProductSpecItem {
 // 规格项
 type SProductSpecItem struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 规格项值
-	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	// 规格项颜色
-	Color string `protobuf:"bytes,3,opt,name=Color,proto3" json:"Color,omitempty"`
+	Color string `protobuf:"bytes,3,opt,name=Color,proto3" json:"Color"`
 	// 排列序号
-	SortNum              int32    `protobuf:"varint,4,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum              int32    `protobuf:"varint,4,opt,name=SortNum,proto3" json:"SortNum"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -729,7 +729,7 @@ func (m *SProductSpecItem) GetSortNum() int32 {
 }
 
 type ProductBrandListResponse struct {
-	Value                []*SProductBrand `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SProductBrand `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -769,19 +769,19 @@ func (m *ProductBrandListResponse) GetValue() []*SProductBrand {
 // 品牌
 type SProductBrand struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 品牌名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// 品牌图片
-	Image string `protobuf:"bytes,3,opt,name=Image,proto3" json:"Image,omitempty"`
+	Image string `protobuf:"bytes,3,opt,name=Image,proto3" json:"Image"`
 	// 品牌网址
-	SiteUrl string `protobuf:"bytes,4,opt,name=SiteUrl,proto3" json:"SiteUrl,omitempty"`
+	SiteUrl string `protobuf:"bytes,4,opt,name=SiteUrl,proto3" json:"SiteUrl"`
 	// 介绍
-	Introduce string `protobuf:"bytes,5,opt,name=Introduce,proto3" json:"Introduce,omitempty"`
+	Introduce string `protobuf:"bytes,5,opt,name=Introduce,proto3" json:"Introduce"`
 	// 是否审核
-	ReviewState int32 `protobuf:"varint,6,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
+	ReviewState int32 `protobuf:"varint,6,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// 加入时间
-	CreateTime           int64    `protobuf:"varint,7,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime           int64    `protobuf:"varint,7,opt,name=CreateTime,proto3" json:"CreateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -861,7 +861,7 @@ func (m *SProductBrand) GetCreateTime() int64 {
 }
 
 type ProductCategoriesResponse struct {
-	Value                []*SProductCategory `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SProductCategory `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -899,7 +899,7 @@ func (m *ProductCategoriesResponse) GetValue() []*SProductCategory {
 }
 
 type CategoryParentId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -939,39 +939,39 @@ func (m *CategoryParentId) GetValue() int64 {
 // 商品分类
 type SProductCategory struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 上级分类
-	ParentId int64 `protobuf:"varint,2,opt,name=ParentId,proto3" json:"ParentId,omitempty"`
+	ParentId int64 `protobuf:"varint,2,opt,name=ParentId,proto3" json:"ParentId"`
 	// 产品模型
-	ModelId int64 `protobuf:"varint,3,opt,name=ModelId,proto3" json:"ModelId,omitempty"`
+	ModelId int64 `protobuf:"varint,3,opt,name=ModelId,proto3" json:"ModelId"`
 	// 优先级
-	Priority int32 `protobuf:"varint,4,opt,name=Priority,proto3" json:"Priority,omitempty"`
+	Priority int32 `protobuf:"varint,4,opt,name=Priority,proto3" json:"Priority"`
 	// 分类名称
-	Name string `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name"`
 	// * 是否为虚拟分类
-	IsVirtual bool `protobuf:"varint,6,opt,name=IsVirtual,proto3" json:"IsVirtual,omitempty"`
+	IsVirtual bool `protobuf:"varint,6,opt,name=IsVirtual,proto3" json:"IsVirtual"`
 	// * 分类链接地址
-	CategoryUrl string `protobuf:"bytes,7,opt,name=CategoryUrl,proto3" json:"CategoryUrl,omitempty"`
+	CategoryUrl string `protobuf:"bytes,7,opt,name=CategoryUrl,proto3" json:"CategoryUrl"`
 	// * 图标
-	Icon string `protobuf:"bytes,8,opt,name=Icon,proto3" json:"Icon,omitempty"`
+	Icon string `protobuf:"bytes,8,opt,name=Icon,proto3" json:"Icon"`
 	// * 图标坐标
-	IconPoint string `protobuf:"bytes,9,opt,name=IconPoint,proto3" json:"IconPoint,omitempty"`
+	IconPoint string `protobuf:"bytes,9,opt,name=IconPoint,proto3" json:"IconPoint"`
 	// * 分类层级
-	Level int32 `protobuf:"varint,10,opt,name=Level,proto3" json:"Level,omitempty"`
+	Level int32 `protobuf:"varint,10,opt,name=Level,proto3" json:"Level"`
 	// * 序号
-	SortNum int32 `protobuf:"varint,11,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum int32 `protobuf:"varint,11,opt,name=SortNum,proto3" json:"SortNum"`
 	// * 是否楼层显示
-	FloorShow bool `protobuf:"varint,12,opt,name=FloorShow,proto3" json:"FloorShow,omitempty"`
+	FloorShow bool `protobuf:"varint,12,opt,name=FloorShow,proto3" json:"FloorShow"`
 	// * 是否启用
-	Enabled bool `protobuf:"varint,13,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled bool `protobuf:"varint,13,opt,name=Enabled,proto3" json:"Enabled"`
 	// * 创建时间
-	CreateTime int64 `protobuf:"varint,14,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"varint,14,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// 选项参数
-	Options map[string]string `protobuf:"bytes,15,rep,name=Options,proto3" json:"Options,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Options map[string]string `protobuf:"bytes,15,rep,name=Options,proto3" json:"Options" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// 关联品牌
-	Brands []*SProductBrand `protobuf:"bytes,16,rep,name=Brands,proto3" json:"Brands,omitempty"`
+	Brands []*SProductBrand `protobuf:"bytes,16,rep,name=Brands,proto3" json:"Brands"`
 	// * 子分类
-	Children             []*SProductCategory `protobuf:"bytes,17,rep,name=Children,proto3" json:"Children,omitempty"`
+	Children             []*SProductCategory `protobuf:"bytes,17,rep,name=Children,proto3" json:"Children"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -1123,33 +1123,33 @@ func (m *SProductCategory) GetChildren() []*SProductCategory {
 // 产品
 type SProduct struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 分类
-	CategoryId int64 `protobuf:"varint,2,opt,name=CategoryId,proto3" json:"CategoryId,omitempty"`
+	CategoryId int64 `protobuf:"varint,2,opt,name=CategoryId,proto3" json:"CategoryId"`
 	// 名称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// 供应商编号(暂时同mch_id)
-	VendorId int64 `protobuf:"varint,4,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
+	VendorId int64 `protobuf:"varint,4,opt,name=VendorId,proto3" json:"VendorId"`
 	// 品牌编号
-	BrandId int64 `protobuf:"varint,5,opt,name=BrandId,proto3" json:"BrandId,omitempty"`
+	BrandId int64 `protobuf:"varint,5,opt,name=BrandId,proto3" json:"BrandId"`
 	// 商家编码
-	Code string `protobuf:"bytes,6,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,6,opt,name=Code,proto3" json:"Code"`
 	// 图片
-	Image string `protobuf:"bytes,7,opt,name=Image,proto3" json:"Image,omitempty"`
+	Image string `protobuf:"bytes,7,opt,name=Image,proto3" json:"Image"`
 	// 描述
-	Description string `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
+	Description string `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description"`
 	// 备注
-	Remark string `protobuf:"bytes,9,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark string `protobuf:"bytes,9,opt,name=Remark,proto3" json:"Remark"`
 	// 状态
-	State int32 `protobuf:"varint,10,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"varint,10,opt,name=State,proto3" json:"State"`
 	// 排序编号
-	SortNum int32 `protobuf:"varint,11,opt,name=SortNum,proto3" json:"SortNum,omitempty"`
+	SortNum int32 `protobuf:"varint,11,opt,name=SortNum,proto3" json:"SortNum"`
 	// 产品属性
-	Attrs []*SProductAttrValue `protobuf:"bytes,12,rep,name=Attrs,proto3" json:"Attrs,omitempty"`
+	Attrs []*SProductAttrValue `protobuf:"bytes,12,rep,name=Attrs,proto3" json:"Attrs"`
 	// 创建时间
-	CreateTime int64 `protobuf:"varint,13,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"varint,13,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"varint,14,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"varint,14,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1278,8 +1278,8 @@ func (m *SProduct) GetUpdateTime() int64 {
 }
 
 type ProductInfoRequest struct {
-	ProductId            int64    `protobuf:"varint,1,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
-	Info                 string   `protobuf:"bytes,2,opt,name=Info,proto3" json:"Info,omitempty"`
+	ProductId            int64    `protobuf:"varint,1,opt,name=ProductId,proto3" json:"ProductId"`
+	Info                 string   `protobuf:"bytes,2,opt,name=Info,proto3" json:"Info"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1324,9 +1324,9 @@ func (m *ProductInfoRequest) GetInfo() string {
 }
 
 type SaveProductResponse struct {
-	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	ProductId            int64    `protobuf:"varint,3,opt,name=ProductId,proto3" json:"ProductId,omitempty"`
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	ProductId            int64    `protobuf:"varint,3,opt,name=ProductId,proto3" json:"ProductId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

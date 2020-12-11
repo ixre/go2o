@@ -19,9 +19,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type WsCartRequest struct {
-	MemberId             int64             `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Action               string            `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	MemberId             int64             `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Action               string            `protobuf:"bytes,2,opt,name=action,proto3" json:"action"`
+	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -73,9 +73,9 @@ func (m *WsCartRequest) GetData() map[string]string {
 }
 
 type NormalCartRequest struct {
-	MemberId             int64             `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Action               string            `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	MemberId             int64             `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Action               string            `protobuf:"bytes,2,opt,name=action,proto3" json:"action"`
+	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -129,11 +129,11 @@ func (m *NormalCartRequest) GetData() map[string]string {
 // 购物车
 type SShoppingCart struct {
 	// 编号
-	CartId int32 `protobuf:"zigzag32,1,opt,name=CartId,proto3" json:"CartId,omitempty"`
+	CartId int32 `protobuf:"zigzag32,1,opt,name=CartId,proto3" json:"CartId"`
 	// 购物车KEY
-	Code string `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code"`
 	// 店铺分组
-	Shops                []*SShoppingCartGroup `protobuf:"bytes,3,rep,name=Shops,proto3" json:"Shops,omitempty"`
+	Shops                []*SShoppingCartGroup `protobuf:"bytes,3,rep,name=Shops,proto3" json:"Shops"`
 	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
 	XXX_unrecognized     []byte                `json:"-"`
 	XXX_sizecache        int32                 `json:"-"`
@@ -187,15 +187,15 @@ func (m *SShoppingCart) GetShops() []*SShoppingCartGroup {
 // 购物车店铺分组
 type SShoppingCartGroup struct {
 	// 店铺编号
-	ShopId int64 `protobuf:"zigzag64,1,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
+	ShopId int64 `protobuf:"zigzag64,1,opt,name=ShopId,proto3" json:"ShopId"`
 	// 供货商编号
-	VendorId int64 `protobuf:"zigzag64,2,opt,name=VendorId,proto3" json:"VendorId,omitempty"`
+	VendorId int64 `protobuf:"zigzag64,2,opt,name=VendorId,proto3" json:"VendorId"`
 	// 店铺名称
-	ShopName string `protobuf:"bytes,3,opt,name=ShopName,proto3" json:"ShopName,omitempty"`
+	ShopName string `protobuf:"bytes,3,opt,name=ShopName,proto3" json:"ShopName"`
 	// 是否结算
-	Checked bool `protobuf:"varint,4,opt,name=Checked,proto3" json:"Checked,omitempty"`
+	Checked bool `protobuf:"varint,4,opt,name=Checked,proto3" json:"Checked"`
 	// 商品
-	Items                []*SShoppingCartItem `protobuf:"bytes,5,rep,name=Items,proto3" json:"Items,omitempty"`
+	Items                []*SShoppingCartItem `protobuf:"bytes,5,rep,name=Items,proto3" json:"Items"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -263,11 +263,11 @@ func (m *SShoppingCartGroup) GetItems() []*SShoppingCartItem {
 // 购物车商品勾选
 type SCheckCartItem struct {
 	// 商品编号
-	ItemId int64 `protobuf:"zigzag64,1,opt,name=ItemId,proto3" json:"ItemId,omitempty"`
+	ItemId int64 `protobuf:"zigzag64,1,opt,name=ItemId,proto3" json:"ItemId"`
 	// SKU编号
-	SkuId int64 `protobuf:"zigzag64,2,opt,name=SkuId,proto3" json:"SkuId,omitempty"`
+	SkuId int64 `protobuf:"zigzag64,2,opt,name=SkuId,proto3" json:"SkuId"`
 	// 是否勾选
-	Checked              bool     `protobuf:"varint,3,opt,name=Checked,proto3" json:"Checked,omitempty"`
+	Checked              bool     `protobuf:"varint,3,opt,name=Checked,proto3" json:"Checked"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -320,9 +320,9 @@ func (m *SCheckCartItem) GetChecked() bool {
 
 // 购物车商品操作响应
 type CartItemResponse struct {
-	ErrCode              int64              `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
-	ErrMsg               string             `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	Item                 *SShoppingCartItem `protobuf:"bytes,3,opt,name=Item,proto3" json:"Item,omitempty"`
+	ErrCode              int64              `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string             `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	Item                 *SShoppingCartItem `protobuf:"bytes,3,opt,name=Item,proto3" json:"Item"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -376,29 +376,29 @@ func (m *CartItemResponse) GetItem() *SShoppingCartItem {
 // 购物车商品
 type SShoppingCartItem struct {
 	// 商品编号
-	ItemId int64 `protobuf:"zigzag64,1,opt,name=ItemId,proto3" json:"ItemId,omitempty"`
+	ItemId int64 `protobuf:"zigzag64,1,opt,name=ItemId,proto3" json:"ItemId"`
 	// SKU编号
-	SkuId int64 `protobuf:"zigzag64,2,opt,name=SkuId,proto3" json:"SkuId,omitempty"`
+	SkuId int64 `protobuf:"zigzag64,2,opt,name=SkuId,proto3" json:"SkuId"`
 	// 商品标题
-	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
 	// 商品图片
-	Image string `protobuf:"bytes,4,opt,name=Image,proto3" json:"Image,omitempty"`
+	Image string `protobuf:"bytes,4,opt,name=Image,proto3" json:"Image"`
 	// 规格文本
-	SpecWord string `protobuf:"bytes,5,opt,name=SpecWord,proto3" json:"SpecWord,omitempty"`
+	SpecWord string `protobuf:"bytes,5,opt,name=SpecWord,proto3" json:"SpecWord"`
 	// 商品编码
-	Code string `protobuf:"bytes,6,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,6,opt,name=Code,proto3" json:"Code"`
 	// 零售价
-	RetailPrice float64 `protobuf:"fixed64,7,opt,name=RetailPrice,proto3" json:"RetailPrice,omitempty"`
+	RetailPrice float64 `protobuf:"fixed64,7,opt,name=RetailPrice,proto3" json:"RetailPrice"`
 	// 销售价
-	Price float64 `protobuf:"fixed64,8,opt,name=Price,proto3" json:"Price,omitempty"`
+	Price float64 `protobuf:"fixed64,8,opt,name=Price,proto3" json:"Price"`
 	// 数量
-	Quantity int32 `protobuf:"zigzag32,9,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
+	Quantity int32 `protobuf:"zigzag32,9,opt,name=Quantity,proto3" json:"Quantity"`
 	// 是否结算
-	Checked bool `protobuf:"varint,10,opt,name=Checked,proto3" json:"Checked,omitempty"`
+	Checked bool `protobuf:"varint,10,opt,name=Checked,proto3" json:"Checked"`
 	// 库存文本
-	StockText string `protobuf:"bytes,11,opt,name=StockText,proto3" json:"StockText,omitempty"`
+	StockText string `protobuf:"bytes,11,opt,name=StockText,proto3" json:"StockText"`
 	// 店铺编号
-	ShopId               int64    `protobuf:"zigzag64,12,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
+	ShopId               int64    `protobuf:"zigzag64,12,opt,name=ShopId,proto3" json:"ShopId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

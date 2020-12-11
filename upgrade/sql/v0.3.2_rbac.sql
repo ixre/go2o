@@ -1,9 +1,9 @@
 CREATE TABLE "public".perm_res (
                                    id             bigserial NOT NULL,
-                                   name           varchar(255) NOT NULL,
+                                   name           varchar(20) NOT NULL,
                                    res_type       int2 NOT NULL,
                                    pid            int8 NOT NULL,
-                                   "key"          varchar(256) NOT NULL,
+                                   "key"          varchar(120) NOT NULL,
                                    path           varchar(256) NOT NULL,
                                    icon           varchar(120) NOT NULL,
                                    permission     varchar(120) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE "public".perm_res (
                                    is_external    int2 NOT NULL,
                                    is_hidden      int2 DEFAULT 0 NOT NULL,
                                    create_time    int8 NOT NULL,
-                                   component_name varchar(20) NOT NULL,
+                                   component_path varchar(120) NOT NULL,
                                    cache_         varchar(20) DEFAULT ''::character varying NOT NULL,
                                    CONSTRAINT perm_res_pkey
                                        PRIMARY KEY (id));
@@ -27,8 +27,9 @@ COMMENT ON COLUMN "public".perm_res.sort_num IS '排序';
 COMMENT ON COLUMN "public".perm_res.is_external IS '是否外部';
 COMMENT ON COLUMN "public".perm_res.is_hidden IS '是否隐藏';
 COMMENT ON COLUMN "public".perm_res.create_time IS '创建日期';
-COMMENT ON COLUMN "public".perm_res.component_name IS '组件名称';
+COMMENT ON COLUMN "public".perm_res.component_path IS '组件路径';
 COMMENT ON COLUMN "public".perm_res.cache_ IS '缓存';
+
 CREATE TABLE "public".perm_dict (
                                     id          bigserial NOT NULL,
                                     name        varchar(255) NOT NULL,
@@ -125,14 +126,15 @@ COMMENT ON COLUMN "public".perm_role_res.res_id IS '菜单ID';
 COMMENT ON COLUMN "public".perm_role_res.role_id IS '角色ID';
 CREATE TABLE "public".perm_user (
                                     id          bigserial NOT NULL,
-                                    "user"      varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
-                                    pwd         varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
+                                    usr      varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    pwd         varchar(40) DEFAULT 'NULL::character varying' NOT NULL,
+                                    salt        varchar(10) NOT NULL,
                                     flag        int4 NOT NULL,
                                     avatar      varchar(256) NOT NULL,
-                                    nick_name   varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
-                                    sex         varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
-                                    email       varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
-                                    phone       varchar(255) DEFAULT 'NULL::character varying' NOT NULL,
+                                    nick_name   varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    sex         varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    email       varchar(64) DEFAULT 'NULL::character varying' NOT NULL,
+                                    phone       varchar(11) DEFAULT 'NULL::character varying' NOT NULL,
                                     dept_id     int8 NOT NULL,
                                     job_id      int8 NOT NULL,
                                     enabled     int2 NOT NULL,
@@ -142,10 +144,13 @@ CREATE TABLE "public".perm_user (
                                         PRIMARY KEY (id));
 COMMENT ON TABLE "public".perm_user IS '系统用户';
 COMMENT ON COLUMN "public".perm_user.id IS 'ID';
-COMMENT ON COLUMN "public".perm_user."user" IS '用户名';
+COMMENT ON COLUMN "public".perm_user.usr IS '用户名';
 COMMENT ON COLUMN "public".perm_user.pwd IS '密码';
+COMMENT ON COLUMN "public".perm_user.salt IS '加密盐';
 COMMENT ON COLUMN "public".perm_user.flag IS '标志';
 COMMENT ON COLUMN "public".perm_user.avatar IS '头像';
+COMMENT ON COLUMN "public".perm_user.nick_name IS '姓名';
+COMMENT ON COLUMN "public".perm_user.sex IS '性别';
 COMMENT ON COLUMN "public".perm_user.email IS '邮箱';
 COMMENT ON COLUMN "public".perm_user.phone IS '手机号码';
 COMMENT ON COLUMN "public".perm_user.dept_id IS '部门编号';
@@ -153,6 +158,7 @@ COMMENT ON COLUMN "public".perm_user.job_id IS '岗位编号';
 COMMENT ON COLUMN "public".perm_user.enabled IS '状态：1启用、0禁用';
 COMMENT ON COLUMN "public".perm_user.last_login IS '最后登录的日期';
 COMMENT ON COLUMN "public".perm_user.create_time IS '创建日期';
+
 CREATE TABLE "public".perm_user_role (
                                          id       BIGSERIAL NOT NULL,
                                          user_id int8 NOT NULL,
@@ -165,3 +171,4 @@ COMMENT ON COLUMN "public".perm_user_role.user_id IS '用户ID';
 COMMENT ON COLUMN "public".perm_user_role.role_id IS '角色ID';
 CREATE INDEX perm_dict_detail_dict_id_idx
     ON "public".perm_dict_detail (dict_id);
+

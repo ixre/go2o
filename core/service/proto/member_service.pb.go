@@ -24,7 +24,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type MemberIdListResponse struct {
-	Value                []int64  `protobuf:"zigzag64,1,rep,packed,name=Value,proto3" json:"Value,omitempty"`
+	Value                []int64  `protobuf:"zigzag64,1,rep,packed,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

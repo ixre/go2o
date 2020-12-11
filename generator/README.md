@@ -131,7 +131,7 @@ Usage of tto:
 字符组合,如以下语句将输出:`1,2,3`
 ```
 {{join "," "1","2","3"}}
-{{$api := join "/" .global.url_prefix (name_path .table.Name)}}
+{{$api := join "/" .global.base_path (name_path .table.Name)}}
 ```
 
 包含函数
@@ -213,11 +213,11 @@ generate time {{.global.time}}
 用户可以通过在配置文件的节点`[global]`中进行添加变量,如:
 ```
 [global]
-url_prefix="/api"
+base_path="/api"
 ```
 使用以下语法读取变量
 ```
-{{.global.url_prefix}}
+{{.global.base_path}}
 ```
 
 ### table 数据表对象

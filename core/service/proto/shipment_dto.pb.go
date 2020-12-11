@@ -20,13 +20,13 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 // 覆盖区域
 type SCoverageValue struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	Lng                  float64  `protobuf:"fixed64,3,opt,name=Lng,proto3" json:"Lng,omitempty"`
-	Lat                  float64  `protobuf:"fixed64,4,opt,name=Lat,proto3" json:"Lat,omitempty"`
-	Radius               int32    `protobuf:"varint,5,opt,name=Radius,proto3" json:"Radius,omitempty"`
-	Address              string   `protobuf:"bytes,6,opt,name=Address,proto3" json:"Address,omitempty"`
-	AreaId               int64    `protobuf:"varint,7,opt,name=AreaId,proto3" json:"AreaId,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	Lng                  float64  `protobuf:"fixed64,3,opt,name=Lng,proto3" json:"Lng"`
+	Lat                  float64  `protobuf:"fixed64,4,opt,name=Lat,proto3" json:"Lat"`
+	Radius               int32    `protobuf:"varint,5,opt,name=Radius,proto3" json:"Radius"`
+	Address              string   `protobuf:"bytes,6,opt,name=Address,proto3" json:"Address"`
+	AreaId               int64    `protobuf:"varint,7,opt,name=AreaId,proto3" json:"AreaId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -106,7 +106,7 @@ func (m *SCoverageValue) GetAreaId() int64 {
 }
 
 type ShipmentOrderListResponse struct {
-	Value                []*SShipmentOrder `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SShipmentOrder `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -146,29 +146,29 @@ func (m *ShipmentOrderListResponse) GetValue() []*SShipmentOrder {
 // 发货单
 type SShipmentOrder struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 订单编号
-	OrderId int64 `protobuf:"varint,2,opt,name=OrderId,proto3" json:"OrderId,omitempty"`
+	OrderId int64 `protobuf:"varint,2,opt,name=OrderId,proto3" json:"OrderId"`
 	// 子订单编号
-	SubOrderId int64 `protobuf:"varint,3,opt,name=SubOrderId,proto3" json:"SubOrderId,omitempty"`
+	SubOrderId int64 `protobuf:"varint,3,opt,name=SubOrderId,proto3" json:"SubOrderId"`
 	// 快递SP编号
-	ExpressSpId int64 `protobuf:"varint,4,opt,name=ExpressSpId,proto3" json:"ExpressSpId,omitempty"`
+	ExpressSpId int64 `protobuf:"varint,4,opt,name=ExpressSpId,proto3" json:"ExpressSpId"`
 	// 快递SP单号
-	ShipOrderNo string `protobuf:"bytes,5,opt,name=ShipOrderNo,proto3" json:"ShipOrderNo,omitempty"`
+	ShipOrderNo string `protobuf:"bytes,5,opt,name=ShipOrderNo,proto3" json:"ShipOrderNo"`
 	// 物流日志
-	ShipmentLog string `protobuf:"bytes,6,opt,name=ShipmentLog,proto3" json:"ShipmentLog,omitempty"`
+	ShipmentLog string `protobuf:"bytes,6,opt,name=ShipmentLog,proto3" json:"ShipmentLog"`
 	// 运费
-	Amount float64 `protobuf:"fixed64,7,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount float64 `protobuf:"fixed64,7,opt,name=Amount,proto3" json:"Amount"`
 	// 实际运费
-	FinalAmount float64 `protobuf:"fixed64,8,opt,name=FinalAmount,proto3" json:"FinalAmount,omitempty"`
+	FinalAmount float64 `protobuf:"fixed64,8,opt,name=FinalAmount,proto3" json:"FinalAmount"`
 	// 发货时间
-	ShipTime int64 `protobuf:"varint,9,opt,name=ShipTime,proto3" json:"ShipTime,omitempty"`
+	ShipTime int64 `protobuf:"varint,9,opt,name=ShipTime,proto3" json:"ShipTime"`
 	// 状态
-	State int32 `protobuf:"varint,10,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"varint,10,opt,name=State,proto3" json:"State"`
 	// 更新时间
-	UpdateTime int64 `protobuf:"varint,11,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime int64 `protobuf:"varint,11,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	// 配送项目
-	Items                []*SShipmentItem `protobuf:"bytes,12,rep,name=Items,proto3" json:"Items,omitempty"`
+	Items                []*SShipmentItem `protobuf:"bytes,12,rep,name=Items,proto3" json:"Items"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -285,15 +285,15 @@ func (m *SShipmentOrder) GetItems() []*SShipmentItem {
 // 发货单详情
 type SShipmentItem struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 商品交易快照编号
-	SnapshotId int64 `protobuf:"varint,2,opt,name=SnapshotId,proto3" json:"SnapshotId,omitempty"`
+	SnapshotId int64 `protobuf:"varint,2,opt,name=SnapshotId,proto3" json:"SnapshotId"`
 	// 商品数量
-	Quantity int32 `protobuf:"varint,3,opt,name=Quantity,proto3" json:"Quantity,omitempty"`
+	Quantity int32 `protobuf:"varint,3,opt,name=Quantity,proto3" json:"Quantity"`
 	// 运费
-	Amount float64 `protobuf:"fixed64,4,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount float64 `protobuf:"fixed64,4,opt,name=Amount,proto3" json:"Amount"`
 	// 实际运费
-	FinalAmount          float64  `protobuf:"fixed64,5,opt,name=FinalAmount,proto3" json:"FinalAmount,omitempty"`
+	FinalAmount          float64  `protobuf:"fixed64,5,opt,name=FinalAmount,proto3" json:"FinalAmount"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -359,9 +359,9 @@ func (m *SShipmentItem) GetFinalAmount() float64 {
 }
 
 type LogisticFlowTrackRequest struct {
-	ShipperCode          string   `protobuf:"bytes,1,opt,name=shipperCode,proto3" json:"shipperCode,omitempty"`
-	LogisticCode         string   `protobuf:"bytes,2,opt,name=logisticCode,proto3" json:"logisticCode,omitempty"`
-	Invert               bool     `protobuf:"varint,3,opt,name=invert,proto3" json:"invert,omitempty"`
+	ShipperCode          string   `protobuf:"bytes,1,opt,name=shipperCode,proto3" json:"shipperCode"`
+	LogisticCode         string   `protobuf:"bytes,2,opt,name=logisticCode,proto3" json:"logisticCode"`
+	Invert               bool     `protobuf:"varint,3,opt,name=invert,proto3" json:"invert"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -413,8 +413,8 @@ func (m *LogisticFlowTrackRequest) GetInvert() bool {
 }
 
 type OrderLogisticTrackRequest struct {
-	ShipOrderId          int64    `protobuf:"zigzag64,1,opt,name=shipOrderId,proto3" json:"shipOrderId,omitempty"`
-	Invert               bool     `protobuf:"varint,2,opt,name=invert,proto3" json:"invert,omitempty"`
+	ShipOrderId          int64    `protobuf:"zigzag64,1,opt,name=shipOrderId,proto3" json:"shipOrderId"`
+	Invert               bool     `protobuf:"varint,2,opt,name=invert,proto3" json:"invert"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -461,21 +461,21 @@ func (m *OrderLogisticTrackRequest) GetInvert() bool {
 // 发货单追踪
 type SShipOrderTrack struct {
 	// 返回状态码
-	Code int32 `protobuf:"zigzag32,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code int32 `protobuf:"zigzag32,1,opt,name=Code,proto3" json:"Code"`
 	// 返回错误信息
-	Message string `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Message string `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message"`
 	// 物流单号
-	LogisticCode string `protobuf:"bytes,3,opt,name=LogisticCode,proto3" json:"LogisticCode,omitempty"`
+	LogisticCode string `protobuf:"bytes,3,opt,name=LogisticCode,proto3" json:"LogisticCode"`
 	// 承运商代码
-	ShipperCode string `protobuf:"bytes,4,opt,name=ShipperCode,proto3" json:"ShipperCode,omitempty"`
+	ShipperCode string `protobuf:"bytes,4,opt,name=ShipperCode,proto3" json:"ShipperCode"`
 	// * 承运商名称
-	ShipperName string `protobuf:"bytes,5,opt,name=ShipperName,proto3" json:"ShipperName,omitempty"`
+	ShipperName string `protobuf:"bytes,5,opt,name=ShipperName,proto3" json:"ShipperName"`
 	// 发货状态
-	ShipState string `protobuf:"bytes,6,opt,name=ShipState,proto3" json:"ShipState,omitempty"`
+	ShipState string `protobuf:"bytes,6,opt,name=ShipState,proto3" json:"ShipState"`
 	// 更新时间
-	UpdateTime int64 `protobuf:"zigzag64,7,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime int64 `protobuf:"zigzag64,7,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	// 包含发货单流
-	Flows                []*SShipFlow `protobuf:"bytes,8,rep,name=Flows,proto3" json:"Flows,omitempty"`
+	Flows                []*SShipFlow `protobuf:"bytes,8,rep,name=Flows,proto3" json:"Flows"`
 	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
 	XXX_unrecognized     []byte       `json:"-"`
 	XXX_sizecache        int32        `json:"-"`
@@ -564,11 +564,11 @@ func (m *SShipOrderTrack) GetFlows() []*SShipFlow {
 // 发货流
 type SShipFlow struct {
 	// 记录标题
-	Subject string `protobuf:"bytes,1,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	Subject string `protobuf:"bytes,1,opt,name=Subject,proto3" json:"Subject"`
 	// 记录时间
-	CreateTime string `protobuf:"bytes,2,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime string `protobuf:"bytes,2,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// 备注
-	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

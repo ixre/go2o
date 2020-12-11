@@ -48,8 +48,8 @@ func (PaymentAccountType) EnumDescriptor() ([]byte, []int) {
 }
 
 type PayPriorityRequest struct {
-	OwnerId              int64              `protobuf:"zigzag64,1,opt,name=OwnerId,proto3" json:"OwnerId,omitempty"`
-	Account              PaymentAccountType `protobuf:"varint,2,opt,name=Account,proto3,enum=PaymentAccountType" json:"Account,omitempty"`
+	OwnerId              int64              `protobuf:"zigzag64,1,opt,name=OwnerId,proto3" json:"OwnerId"`
+	Account              PaymentAccountType `protobuf:"varint,2,opt,name=Account,proto3,enum=PaymentAccountType" json:"Account"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`

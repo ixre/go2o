@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"go2o/core/service/proto"
 	"net/http"
 )

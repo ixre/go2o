@@ -28,7 +28,7 @@ import (
 	"{{.global.pkg}}/dao"
 	"{{.global.pkg}}/dao/impl"
 	"{{.global.pkg}}/dao/model"
-	"{{.global.pkg}}/proto"
+	"{{.global.pkg}}/service/proto"
 	"time"
 )
 
@@ -102,7 +102,7 @@ func (a *{{$structName}}) Delete{{$title}}(_ context.Context, id *proto.{{$pkTyp
 	return a.error(err), nil
 }
 
-func (a *{{$structName}}) PagingShops(_ context.Context, r *proto.{{$title}}PagingRequest) (*proto.{{$title}}PagingResponse, error) {
+func (a *{{$structName}}) Paging{{$title}}(_ context.Context, r *proto.{{$title}}PagingRequest) (*proto.{{$title}}PagingResponse, error) {
 	total, rows := a.dao.PagingQuery(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
@@ -122,7 +122,7 @@ func (a *{{$structName}}) PagingShops(_ context.Context, r *proto.{{$title}}Pagi
              {{else if eq $goType "bool"}}{{$c.Prop}} : typeconv.MustBool(v["{{$c.Name}}"]),\
              {{else if eq $goType "float32"}}{{$c.Prop}} : float32(typeconv.MustFloat64(v["{{$c.Name}}"])),\
              {{else if eq $goType "float64"}}{{$c.Prop}} : typeconv.MustFloat64(v["{{$c.Name}}"]),\
-             {{else}}{{$c.Prop}} : types.Stringify(v["{{$c.Name}}"]),{{end}}{{end}}
+             {{else}}{{$c.Prop}} : typeconv.Stringify(v["{{$c.Name}}"]),{{end}}{{end}}
 		}
 	}
 	return ret,nil

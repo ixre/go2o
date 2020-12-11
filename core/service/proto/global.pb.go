@@ -145,7 +145,7 @@ func (m *Empty) XXX_DiscardUnknown() {
 var xxx_messageInfo_Empty proto.InternalMessageInfo
 
 type String struct {
-	Value                string   `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                string   `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -183,7 +183,7 @@ func (m *String) GetValue() string {
 }
 
 type Int64 struct {
-	Value                int64    `protobuf:"zigzag64,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"zigzag64,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -221,7 +221,7 @@ func (m *Int64) GetValue() int64 {
 }
 
 type Int32 struct {
-	Value                int32    `protobuf:"zigzag32,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int32    `protobuf:"zigzag32,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -259,7 +259,7 @@ func (m *Int32) GetValue() int32 {
 }
 
 type Bool struct {
-	Value                bool     `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                bool     `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -297,7 +297,7 @@ func (m *Bool) GetValue() bool {
 }
 
 type StringMap struct {
-	Value                map[string]string `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Value                map[string]string `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -335,7 +335,7 @@ func (m *StringMap) GetValue() map[string]string {
 }
 
 type StringArray struct {
-	Value                []string `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []string `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -375,11 +375,11 @@ func (m *StringArray) GetValue() []string {
 // 传输结果对象
 type Result struct {
 	// 状态码,如为0表示成功
-	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
+	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	// 消息
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// * 数据字典
-	Data                 map[string]string `protobuf:"bytes,3,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Data                 map[string]string `protobuf:"bytes,3,rep,name=Data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -432,8 +432,8 @@ func (m *Result) GetData() map[string]string {
 
 // 键值对
 type Pair struct {
-	Key                  string   `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key,omitempty"`
-	Value                string   `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	Key                  string   `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key"`
+	Value                string   `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -478,8 +478,8 @@ func (m *Pair) GetValue() string {
 }
 
 type IdOrName struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -524,8 +524,8 @@ func (m *IdOrName) GetName() string {
 }
 
 type IdAndRemark struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	Remark               string   `protobuf:"bytes,2,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Remark               string   `protobuf:"bytes,2,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -572,15 +572,15 @@ func (m *IdAndRemark) GetRemark() string {
 // * 分页参数
 type SPagingParams struct {
 	// 开始记录数
-	Begin int64 `protobuf:"zigzag64,1,opt,name=Begin,proto3" json:"Begin,omitempty"`
+	Begin int64 `protobuf:"zigzag64,1,opt,name=Begin,proto3" json:"Begin"`
 	// 结束记录数
-	End int64 `protobuf:"zigzag64,2,opt,name=End,proto3" json:"End,omitempty"`
+	End int64 `protobuf:"zigzag64,2,opt,name=End,proto3" json:"End"`
 	// 条件
-	Where string `protobuf:"bytes,3,opt,name=Where,proto3" json:"Where,omitempty"`
+	Where string `protobuf:"bytes,3,opt,name=Where,proto3" json:"Where"`
 	// 排序字段
-	SortBy string `protobuf:"bytes,4,opt,name=SortBy,proto3" json:"SortBy,omitempty"`
+	SortBy string `protobuf:"bytes,4,opt,name=SortBy,proto3" json:"SortBy"`
 	// 参数
-	Parameters           map[string]string `protobuf:"bytes,5,rep,name=Parameters,proto3" json:"Parameters,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Parameters           map[string]string `protobuf:"bytes,5,rep,name=Parameters,proto3" json:"Parameters" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -648,15 +648,15 @@ func (m *SPagingParams) GetParameters() map[string]string {
 // * 分页结果
 type SPagingResult struct {
 	// * 代码
-	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
+	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	// * 消息
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// * 总数
-	Count int32 `protobuf:"zigzag32,3,opt,name=Count,proto3" json:"Count,omitempty"`
+	Count int32 `protobuf:"zigzag32,3,opt,name=Count,proto3" json:"Count"`
 	// * 数据
-	Data string `protobuf:"bytes,4,opt,name=Data,proto3" json:"Data,omitempty"`
+	Data string `protobuf:"bytes,4,opt,name=Data,proto3" json:"Data"`
 	// * 额外的数据
-	Extras               map[string]string `protobuf:"bytes,5,rep,name=Extras,proto3" json:"Extras,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Extras               map[string]string `protobuf:"bytes,5,rep,name=Extras,proto3" json:"Extras" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -724,23 +724,23 @@ func (m *SPagingResult) GetExtras() map[string]string {
 // 树形节点
 type STreeNode struct {
 	// 文本
-	Title string `protobuf:"bytes,1,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,1,opt,name=Title,proto3" json:"Title"`
 	// 值
-	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	// 图标,icon与JS树形控件冲突
-	Icon string `protobuf:"bytes,3,opt,name=Icon,proto3" json:"Icon,omitempty"`
+	Icon string `protobuf:"bytes,3,opt,name=Icon,proto3" json:"Icon"`
 	// 是否展开
-	Expand bool `protobuf:"varint,4,opt,name=Expand,proto3" json:"Expand,omitempty"`
+	Expand bool `protobuf:"varint,4,opt,name=Expand,proto3" json:"Expand"`
 	// 延迟加载
-	Lazy bool `protobuf:"varint,5,opt,name=Lazy,proto3" json:"Lazy,omitempty"`
+	Lazy bool `protobuf:"varint,5,opt,name=Lazy,proto3" json:"Lazy"`
 	// 其他数据
-	Data map[string]string `protobuf:"bytes,6,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Data map[string]string `protobuf:"bytes,6,rep,name=Data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// 子节点
-	Children []*STreeNode `protobuf:"bytes,7,rep,name=Children,proto3" json:"Children,omitempty"`
+	Children []*STreeNode `protobuf:"bytes,7,rep,name=Children,proto3" json:"Children"`
 	// 子节点编号
-	Id int64 `protobuf:"varint,8,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,8,opt,name=Id,proto3" json:"Id"`
 	// 是否目录，通常Children有元素,则为true
-	Folder               bool     `protobuf:"varint,10,opt,name=Folder,proto3" json:"Folder,omitempty"`
+	Folder               bool     `protobuf:"varint,10,opt,name=Folder,proto3" json:"Folder"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -834,7 +834,7 @@ func (m *STreeNode) GetFolder() bool {
 }
 
 type Id struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -872,7 +872,7 @@ func (m *Id) GetValue() int64 {
 }
 
 type MemberId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -910,7 +910,7 @@ func (m *MemberId) GetValue() int64 {
 }
 
 type MerchantId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -948,7 +948,7 @@ func (m *MerchantId) GetValue() int64 {
 }
 
 type SellerId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -986,7 +986,7 @@ func (m *SellerId) GetValue() int64 {
 }
 
 type BuyerId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

@@ -24,7 +24,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type ExpressProviderListResponse struct {
-	Value                []*SExpressProvider `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SExpressProvider `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -64,17 +64,17 @@ func (m *ExpressProviderListResponse) GetValue() []*SExpressProvider {
 // 快递服务商
 type SExpressProvider struct {
 	// 快递公司编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 快递名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// 首字母，用于索引分组
-	Letter string `protobuf:"bytes,3,opt,name=Letter,proto3" json:"Letter,omitempty"`
+	Letter string `protobuf:"bytes,3,opt,name=Letter,proto3" json:"Letter"`
 	// 分组,多个组,用","隔开
-	GroupFlag string `protobuf:"bytes,4,opt,name=GroupFlag,proto3" json:"GroupFlag,omitempty"`
+	GroupFlag string `protobuf:"bytes,4,opt,name=GroupFlag,proto3" json:"GroupFlag"`
 	// 快递公司编码
-	Code string `protobuf:"bytes,5,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,5,opt,name=Code,proto3" json:"Code"`
 	// 接口编码
-	ApiCode              string   `protobuf:"bytes,6,opt,name=ApiCode,proto3" json:"ApiCode,omitempty"`
+	ApiCode              string   `protobuf:"bytes,6,opt,name=ApiCode,proto3" json:"ApiCode"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -149,25 +149,25 @@ func (m *SExpressProvider) GetApiCode() string {
 // 快递模板
 type SExpressTemplate struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 运营商编号
-	SellerId int64 `protobuf:"varint,2,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
+	SellerId int64 `protobuf:"varint,2,opt,name=SellerId,proto3" json:"SellerId"`
 	// 运费模板名称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// 是否卖价承担运费
-	IsFree bool `protobuf:"varint,4,opt,name=IsFree,proto3" json:"IsFree,omitempty"`
+	IsFree bool `protobuf:"varint,4,opt,name=IsFree,proto3" json:"IsFree"`
 	// 运费计价依据
-	Basis int32 `protobuf:"varint,5,opt,name=Basis,proto3" json:"Basis,omitempty"`
+	Basis int32 `protobuf:"varint,5,opt,name=Basis,proto3" json:"Basis"`
 	// 首次计价单位,如首重为2kg
-	FirstUnit int32 `protobuf:"varint,6,opt,name=FirstUnit,proto3" json:"FirstUnit,omitempty"`
+	FirstUnit int32 `protobuf:"varint,6,opt,name=FirstUnit,proto3" json:"FirstUnit"`
 	// 首次计价单价,如续重1kg
-	FirstFee float64 `protobuf:"fixed64,7,opt,name=FirstFee,proto3" json:"FirstFee,omitempty"`
+	FirstFee float64 `protobuf:"fixed64,7,opt,name=FirstFee,proto3" json:"FirstFee"`
 	// 超过首次计价计算单位,如续重1kg
-	AddUnit int32 `protobuf:"varint,8,opt,name=AddUnit,proto3" json:"AddUnit,omitempty"`
+	AddUnit int32 `protobuf:"varint,8,opt,name=AddUnit,proto3" json:"AddUnit"`
 	// 超过首次计价单价，如续重1kg
-	AddFee float64 `protobuf:"fixed64,9,opt,name=AddFee,proto3" json:"AddFee,omitempty"`
+	AddFee float64 `protobuf:"fixed64,9,opt,name=AddFee,proto3" json:"AddFee"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,10,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled              bool     `protobuf:"varint,10,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -268,8 +268,8 @@ func (m *SExpressTemplate) GetEnabled() bool {
 }
 
 type ExpressTemplateId struct {
-	SellerId             int64    `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
-	TemplateId           int64    `protobuf:"varint,2,opt,name=TemplateId,proto3" json:"TemplateId,omitempty"`
+	SellerId             int64    `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId"`
+	TemplateId           int64    `protobuf:"varint,2,opt,name=TemplateId,proto3" json:"TemplateId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -314,9 +314,9 @@ func (m *ExpressTemplateId) GetTemplateId() int64 {
 }
 
 type GetTemplatesRequest struct {
-	SellerId int64 `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
+	SellerId int64 `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId"`
 	// 仅返回已启用的模板
-	OnlyEnabled          bool     `protobuf:"varint,2,opt,name=OnlyEnabled,proto3" json:"OnlyEnabled,omitempty"`
+	OnlyEnabled          bool     `protobuf:"varint,2,opt,name=OnlyEnabled,proto3" json:"OnlyEnabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -361,7 +361,7 @@ func (m *GetTemplatesRequest) GetOnlyEnabled() bool {
 }
 
 type ExpressTemplateListResponse struct {
-	Value                []*SExpressTemplate `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SExpressTemplate `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -401,19 +401,19 @@ func (m *ExpressTemplateListResponse) GetValue() []*SExpressTemplate {
 // 快递地区模板
 type SExpressAreaTemplate struct {
 	// 模板编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 地区编号列表，通常精确到省即可
-	CodeList string `protobuf:"bytes,2,opt,name=CodeList,proto3" json:"CodeList,omitempty"`
+	CodeList string `protobuf:"bytes,2,opt,name=CodeList,proto3" json:"CodeList"`
 	// 地区名称列表
-	NameList string `protobuf:"bytes,3,opt,name=NameList,proto3" json:"NameList,omitempty"`
+	NameList string `protobuf:"bytes,3,opt,name=NameList,proto3" json:"NameList"`
 	// 首次数值，如 首重为2kg
-	FirstUnit int32 `protobuf:"varint,4,opt,name=FirstUnit,proto3" json:"FirstUnit,omitempty"`
+	FirstUnit int32 `protobuf:"varint,4,opt,name=FirstUnit,proto3" json:"FirstUnit"`
 	// 首次金额，如首重10元
-	FirstFee float64 `protobuf:"fixed64,5,opt,name=FirstFee,proto3" json:"FirstFee,omitempty"`
+	FirstFee float64 `protobuf:"fixed64,5,opt,name=FirstFee,proto3" json:"FirstFee"`
 	// 增加数值，如续重1kg
-	AddUnit int32 `protobuf:"varint,6,opt,name=AddUnit,proto3" json:"AddUnit,omitempty"`
+	AddUnit int32 `protobuf:"varint,6,opt,name=AddUnit,proto3" json:"AddUnit"`
 	// 增加产生费用，如续重1kg 10元
-	AddFee               float64  `protobuf:"fixed64,7,opt,name=AddFee,proto3" json:"AddFee,omitempty"`
+	AddFee               float64  `protobuf:"fixed64,7,opt,name=AddFee,proto3" json:"AddFee"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -493,9 +493,9 @@ func (m *SExpressAreaTemplate) GetAddFee() float64 {
 }
 
 type SaveAreaExpTemplateRequest struct {
-	SellerId             int64                 `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
-	TemplateId           int64                 `protobuf:"varint,2,opt,name=TemplateId,proto3" json:"TemplateId,omitempty"`
-	Value                *SExpressAreaTemplate `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value,omitempty"`
+	SellerId             int64                 `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId"`
+	TemplateId           int64                 `protobuf:"varint,2,opt,name=TemplateId,proto3" json:"TemplateId"`
+	Value                *SExpressAreaTemplate `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
 	XXX_unrecognized     []byte                `json:"-"`
 	XXX_sizecache        int32                 `json:"-"`
@@ -547,9 +547,9 @@ func (m *SaveAreaExpTemplateRequest) GetValue() *SExpressAreaTemplate {
 }
 
 type AreaTemplateId struct {
-	SellerId             int64    `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
-	TemplateId           int64    `protobuf:"varint,2,opt,name=TemplateId,proto3" json:"TemplateId,omitempty"`
-	AreaTemplateId       int64    `protobuf:"varint,3,opt,name=AreaTemplateId,proto3" json:"AreaTemplateId,omitempty"`
+	SellerId             int64    `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId"`
+	TemplateId           int64    `protobuf:"varint,2,opt,name=TemplateId,proto3" json:"TemplateId"`
+	AreaTemplateId       int64    `protobuf:"varint,3,opt,name=AreaTemplateId,proto3" json:"AreaTemplateId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -601,9 +601,9 @@ func (m *AreaTemplateId) GetAreaTemplateId() int64 {
 }
 
 type SaveTemplateResponse struct {
-	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	TemplateId           int64    `protobuf:"varint,3,opt,name=TemplateId,proto3" json:"TemplateId,omitempty"`
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	TemplateId           int64    `protobuf:"varint,3,opt,name=TemplateId,proto3" json:"TemplateId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

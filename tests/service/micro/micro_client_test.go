@@ -29,7 +29,7 @@ func TestMicroClient(t *testing.T) {
 	//greeter := proto.NewGreeterService("Greeter",service.Client())
 	//
 	//// 远程调用 Greeter 服务的 Hello 方法
-	//ret, err := greeter.Hello(context.TODO(), &proto.User{
+	//ret, err := greeter.Hello(context.TODO(), &proto.Usr{
 	//	Name:    "jarry",
 	//	GroupId: 0,
 	//	Extra:   map[string]string{},

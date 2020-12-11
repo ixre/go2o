@@ -174,23 +174,23 @@ func (FavoriteType) EnumDescriptor() ([]byte, []int) {
 
 type RegisterMemberRequest struct {
 	// 　用户名
-	User string `protobuf:"bytes,1,opt,name=User,proto3" json:"User,omitempty"`
+	User string `protobuf:"bytes,1,opt,name=User,proto3" json:"User"`
 	// 密码(md5)
-	Pwd string `protobuf:"bytes,2,opt,name=Pwd,proto3" json:"Pwd,omitempty"`
+	Pwd string `protobuf:"bytes,2,opt,name=Pwd,proto3" json:"Pwd"`
 	// 昵称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// 　手机
-	Phone string `protobuf:"bytes,4,opt,name=Phone,proto3" json:"Phone,omitempty"`
+	Phone string `protobuf:"bytes,4,opt,name=Phone,proto3" json:"Phone"`
 	// 邮箱
-	Email string `protobuf:"bytes,5,opt,name=Email,proto3" json:"Email,omitempty"`
+	Email string `protobuf:"bytes,5,opt,name=Email,proto3" json:"Email"`
 	// 　用户标志
-	Flag int32 `protobuf:"varint,6,opt,name=Flag,proto3" json:"Flag,omitempty"`
+	Flag int32 `protobuf:"varint,6,opt,name=Flag,proto3" json:"Flag"`
 	// 邀请码
-	InviterCode string `protobuf:"bytes,7,opt,name=InviterCode,proto3" json:"InviterCode,omitempty"`
+	InviterCode string `protobuf:"bytes,7,opt,name=InviterCode,proto3" json:"InviterCode"`
 	// 注册IP
-	RegIp string `protobuf:"bytes,8,opt,name=RegIp,proto3" json:"RegIp,omitempty"`
+	RegIp string `protobuf:"bytes,8,opt,name=RegIp,proto3" json:"RegIp"`
 	// 注册来源
-	RegFrom              string   `protobuf:"bytes,9,opt,name=RegFrom,proto3" json:"RegFrom,omitempty"`
+	RegFrom              string   `protobuf:"bytes,9,opt,name=RegFrom,proto3" json:"RegFrom"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -284,9 +284,9 @@ func (m *RegisterMemberRequest) GetRegFrom() string {
 }
 
 type LoginRequest struct {
-	User                 string   `protobuf:"bytes,1,opt,name=User,proto3" json:"User,omitempty"`
-	Pwd                  string   `protobuf:"bytes,2,opt,name=Pwd,proto3" json:"Pwd,omitempty"`
-	Update               bool     `protobuf:"varint,3,opt,name=Update,proto3" json:"Update,omitempty"`
+	User                 string   `protobuf:"bytes,1,opt,name=User,proto3" json:"User"`
+	Pwd                  string   `protobuf:"bytes,2,opt,name=Pwd,proto3" json:"Pwd"`
+	Update               bool     `protobuf:"varint,3,opt,name=Update,proto3" json:"Update"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -340,11 +340,11 @@ func (m *LoginRequest) GetUpdate() bool {
 // 注册结果
 type RegisterResponse struct {
 	// 状态码,如为0表示成功
-	ErrCode int32 `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
+	ErrCode int32 `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	// 　消息
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 会员编号
-	MemberId             int64    `protobuf:"varint,3,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId             int64    `protobuf:"varint,3,opt,name=MemberId,proto3" json:"MemberId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -397,8 +397,8 @@ func (m *RegisterResponse) GetMemberId() int64 {
 
 // 密码验证请求
 type PwdVerifyRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	Pwd                  string   `protobuf:"bytes,2,opt,name=Pwd,proto3" json:"Pwd,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	Pwd                  string   `protobuf:"bytes,2,opt,name=Pwd,proto3" json:"Pwd"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -443,8 +443,8 @@ func (m *PwdVerifyRequest) GetPwd() string {
 }
 
 type SwapMemberRequest struct {
-	Cred                 ECredentials `protobuf:"varint,1,opt,name=cred,proto3,enum=ECredentials" json:"cred,omitempty"`
-	Value                string       `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	Cred                 ECredentials `protobuf:"varint,1,opt,name=cred,proto3,enum=ECredentials" json:"cred"`
+	Value                string       `protobuf:"bytes,2,opt,name=value,proto3" json:"value"`
 	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
 	XXX_unrecognized     []byte       `json:"-"`
 	XXX_sizecache        int32        `json:"-"`
@@ -489,7 +489,7 @@ func (m *SwapMemberRequest) GetValue() string {
 }
 
 type SMemberLevelListResponse struct {
-	Value                []*SMemberLevel `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SMemberLevel `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
@@ -527,8 +527,8 @@ func (m *SMemberLevelListResponse) GetValue() []*SMemberLevel {
 }
 
 type SubmitTrustInfoRequest struct {
-	MemberId             int64         `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Info                 *STrustedInfo `protobuf:"bytes,2,opt,name=info,proto3" json:"info,omitempty"`
+	MemberId             int64         `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Info                 *STrustedInfo `protobuf:"bytes,2,opt,name=info,proto3" json:"info"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
 	XXX_unrecognized     []byte        `json:"-"`
 	XXX_sizecache        int32         `json:"-"`
@@ -573,9 +573,9 @@ func (m *SubmitTrustInfoRequest) GetInfo() *STrustedInfo {
 }
 
 type ReviewTrustInfoRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	ReviewPass           bool     `protobuf:"varint,2,opt,name=reviewPass,proto3" json:"reviewPass,omitempty"`
-	Remark               string   `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	ReviewPass           bool     `protobuf:"varint,2,opt,name=reviewPass,proto3" json:"reviewPass"`
+	Remark               string   `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -627,9 +627,9 @@ func (m *ReviewTrustInfoRequest) GetRemark() string {
 }
 
 type LockRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Minutes              int32    `protobuf:"zigzag32,2,opt,name=minutes,proto3" json:"minutes,omitempty"`
-	Remark               string   `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Minutes              int32    `protobuf:"zigzag32,2,opt,name=minutes,proto3" json:"minutes"`
+	Remark               string   `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -681,8 +681,8 @@ func (m *LockRequest) GetRemark() string {
 }
 
 type GrantFlagRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Flag                 int32    `protobuf:"zigzag32,2,opt,name=flag,proto3" json:"flag,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Flag                 int32    `protobuf:"zigzag32,2,opt,name=flag,proto3" json:"flag"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -727,9 +727,9 @@ func (m *GrantFlagRequest) GetFlag() int32 {
 }
 
 type SendCodeRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Operation            string   `protobuf:"bytes,2,opt,name=operation,proto3" json:"operation,omitempty"`
-	MsgType              int32    `protobuf:"varint,3,opt,name=msgType,proto3" json:"msgType,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Operation            string   `protobuf:"bytes,2,opt,name=operation,proto3" json:"operation"`
+	MsgType              int32    `protobuf:"varint,3,opt,name=msgType,proto3" json:"msgType"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -781,8 +781,8 @@ func (m *SendCodeRequest) GetMsgType() int32 {
 }
 
 type CompareCodeRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Code                 string   `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Code                 string   `protobuf:"bytes,2,opt,name=code,proto3" json:"code"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -827,7 +827,7 @@ func (m *CompareCodeRequest) GetCode() string {
 }
 
 type SReceiptsCodeListResponse struct {
-	Value                []*SReceiptsCode `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SReceiptsCode `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -865,8 +865,8 @@ func (m *SReceiptsCodeListResponse) GetValue() []*SReceiptsCode {
 }
 
 type ReceiptsCodeSaveRequest struct {
-	MemberId             int64          `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Code                 *SReceiptsCode `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	MemberId             int64          `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Code                 *SReceiptsCode `protobuf:"bytes,2,opt,name=code,proto3" json:"code"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -911,10 +911,10 @@ func (m *ReceiptsCodeSaveRequest) GetCode() *SReceiptsCode {
 }
 
 type UpdateLevelRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Level                int32    `protobuf:"zigzag32,2,opt,name=level,proto3" json:"level,omitempty"`
-	Review               bool     `protobuf:"varint,3,opt,name=review,proto3" json:"review,omitempty"`
-	PaymentOrderId       int64    `protobuf:"zigzag64,4,opt,name=paymentOrderId,proto3" json:"paymentOrderId,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Level                int32    `protobuf:"zigzag32,2,opt,name=level,proto3" json:"level"`
+	Review               bool     `protobuf:"varint,3,opt,name=review,proto3" json:"review"`
+	PaymentOrderId       int64    `protobuf:"zigzag64,4,opt,name=paymentOrderId,proto3" json:"paymentOrderId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -973,8 +973,8 @@ func (m *UpdateLevelRequest) GetPaymentOrderId() int64 {
 }
 
 type ChangePhoneRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Phone                string   `protobuf:"bytes,2,opt,name=phone,proto3" json:"phone,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Phone                string   `protobuf:"bytes,2,opt,name=phone,proto3" json:"phone"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1019,8 +1019,8 @@ func (m *ChangePhoneRequest) GetPhone() string {
 }
 
 type ChangeUserRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	User                 string   `protobuf:"bytes,2,opt,name=User,proto3" json:"User,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	User                 string   `protobuf:"bytes,2,opt,name=User,proto3" json:"User"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1065,9 +1065,9 @@ func (m *ChangeUserRequest) GetUser() string {
 }
 
 type ModifyPwdRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	OriginPwd            string   `protobuf:"bytes,2,opt,name=OriginPwd,proto3" json:"OriginPwd,omitempty"`
-	NewPwd               string   `protobuf:"bytes,3,opt,name=NewPwd,proto3" json:"NewPwd,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	OriginPwd            string   `protobuf:"bytes,2,opt,name=OriginPwd,proto3" json:"OriginPwd"`
+	NewPwd               string   `protobuf:"bytes,3,opt,name=NewPwd,proto3" json:"NewPwd"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1119,8 +1119,8 @@ func (m *ModifyPwdRequest) GetNewPwd() string {
 }
 
 type ChangeInviterRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	InviterId            int64    `protobuf:"zigzag64,2,opt,name=inviterId,proto3" json:"inviterId,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	InviterId            int64    `protobuf:"zigzag64,2,opt,name=inviterId,proto3" json:"inviterId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1165,7 +1165,7 @@ func (m *ChangeInviterRequest) GetInviterId() int64 {
 }
 
 type OrderQuantityMapResponse struct {
-	Data                 map[int32]int32 `protobuf:"bytes,1,rep,name=Data,proto3" json:"Data,omitempty" protobuf_key:"zigzag32,1,opt,name=key,proto3" protobuf_val:"zigzag32,2,opt,name=value,proto3"`
+	Data                 map[int32]int32 `protobuf:"bytes,1,rep,name=Data,proto3" json:"Data" protobuf_key:"zigzag32,1,opt,name=key,proto3" protobuf_val:"zigzag32,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
@@ -1203,8 +1203,8 @@ func (m *OrderQuantityMapResponse) GetData() map[int32]int32 {
 }
 
 type GetTokenRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Reset_               bool     `protobuf:"varint,2,opt,name=reset,proto3" json:"reset,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Reset_               bool     `protobuf:"varint,2,opt,name=reset,proto3" json:"reset"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1249,9 +1249,9 @@ func (m *GetTokenRequest) GetReset_() bool {
 }
 
 type PremiumRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	V                    int32    `protobuf:"zigzag32,2,opt,name=v,proto3" json:"v,omitempty"`
-	Expires              int64    `protobuf:"zigzag64,3,opt,name=expires,proto3" json:"expires,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	V                    int32    `protobuf:"zigzag32,2,opt,name=v,proto3" json:"v"`
+	Expires              int64    `protobuf:"zigzag64,3,opt,name=expires,proto3" json:"expires"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1303,8 +1303,8 @@ func (m *PremiumRequest) GetExpires() int64 {
 }
 
 type CheckTokenRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Token                string   `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Token                string   `protobuf:"bytes,2,opt,name=token,proto3" json:"token"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1349,7 +1349,7 @@ func (m *CheckTokenRequest) GetToken() string {
 }
 
 type AddressListResponse struct {
-	Value                []*SAddress `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SAddress `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -1387,8 +1387,8 @@ func (m *AddressListResponse) GetValue() []*SAddress {
 }
 
 type SaveAddressRequest struct {
-	MemberId             int64     `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	Value                *SAddress `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	MemberId             int64     `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	Value                *SAddress `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
 	XXX_unrecognized     []byte    `json:"-"`
 	XXX_sizecache        int32     `json:"-"`
@@ -1435,11 +1435,11 @@ func (m *SaveAddressRequest) GetValue() *SAddress {
 // 保存地址响应
 type SaveAddressResponse struct {
 	// 状态码,如为0表示成功
-	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
+	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	// 消息
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 地址编号
-	AddressId            int64    `protobuf:"varint,3,opt,name=AddressId,proto3" json:"AddressId,omitempty"`
+	AddressId            int64    `protobuf:"varint,3,opt,name=AddressId,proto3" json:"AddressId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1491,8 +1491,8 @@ func (m *SaveAddressResponse) GetAddressId() int64 {
 }
 
 type GetAddressRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	AddrId               int64    `protobuf:"zigzag64,2,opt,name=addrId,proto3" json:"addrId,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	AddrId               int64    `protobuf:"zigzag64,2,opt,name=addrId,proto3" json:"addrId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1539,17 +1539,17 @@ func (m *GetAddressRequest) GetAddrId() int64 {
 // 　账户资产变动请求
 type AccountChangeRequest struct {
 	// 会员编号
-	MemberId int64 `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
 	// 　账户类型
-	AccountType int32 `protobuf:"zigzag32,2,opt,name=AccountType,proto3" json:"AccountType,omitempty"`
+	AccountType int32 `protobuf:"zigzag32,2,opt,name=AccountType,proto3" json:"AccountType"`
 	// 　明细标题
-	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
 	// 　金额
-	Amount int32 `protobuf:"zigzag32,4,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount int32 `protobuf:"zigzag32,4,opt,name=Amount,proto3" json:"Amount"`
 	// 　外部校译号
-	OuterNo string `protobuf:"bytes,5,opt,name=OuterNo,proto3" json:"OuterNo,omitempty"`
+	OuterNo string `protobuf:"bytes,5,opt,name=OuterNo,proto3" json:"OuterNo"`
 	// 备注
-	Remark               string   `protobuf:"bytes,6,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark               string   `protobuf:"bytes,6,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1622,11 +1622,11 @@ func (m *AccountChangeRequest) GetRemark() string {
 }
 
 type AccountAdjustRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Account              int32    `protobuf:"zigzag32,2,opt,name=account,proto3" json:"account,omitempty"`
-	Value                int32    `protobuf:"zigzag32,3,opt,name=value,proto3" json:"value,omitempty"`
-	RelateUser           int64    `protobuf:"zigzag64,4,opt,name=relateUser,proto3" json:"relateUser,omitempty"`
-	Remark               string   `protobuf:"bytes,5,opt,name=remark,proto3" json:"remark,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Account              int32    `protobuf:"zigzag32,2,opt,name=account,proto3" json:"account"`
+	Value                int32    `protobuf:"zigzag32,3,opt,name=value,proto3" json:"value"`
+	RelateUser           int64    `protobuf:"zigzag64,4,opt,name=relateUser,proto3" json:"relateUser"`
+	Remark               string   `protobuf:"bytes,5,opt,name=remark,proto3" json:"remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1692,9 +1692,9 @@ func (m *AccountAdjustRequest) GetRemark() string {
 }
 
 type B4EAuthRequest struct {
-	MemberId             int64             `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Action               string            `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	MemberId             int64             `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Action               string            `protobuf:"bytes,2,opt,name=action,proto3" json:"action"`
+	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -1746,9 +1746,9 @@ func (m *B4EAuthRequest) GetData() map[string]string {
 }
 
 type PagingAccountInfoRequest struct {
-	MemberId             int64          `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	AccountType          int32          `protobuf:"zigzag32,2,opt,name=accountType,proto3" json:"accountType,omitempty"`
-	Params               *SPagingParams `protobuf:"bytes,3,opt,name=params,proto3" json:"params,omitempty"`
+	MemberId             int64          `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	AccountType          int32          `protobuf:"zigzag32,2,opt,name=accountType,proto3" json:"accountType"`
+	Params               *SPagingParams `protobuf:"bytes,3,opt,name=params,proto3" json:"params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -1801,13 +1801,13 @@ func (m *PagingAccountInfoRequest) GetParams() *SPagingParams {
 
 // * 等级
 type SMemberLevel struct {
-	ID                   int32    `protobuf:"zigzag32,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	RequireExp           int32    `protobuf:"zigzag32,3,opt,name=RequireExp,proto3" json:"RequireExp,omitempty"`
-	ProgramSignal        string   `protobuf:"bytes,4,opt,name=ProgramSignal,proto3" json:"ProgramSignal,omitempty"`
-	IsOfficial           int32    `protobuf:"zigzag32,5,opt,name=IsOfficial,proto3" json:"IsOfficial,omitempty"`
-	Enabled              int32    `protobuf:"zigzag32,6,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
-	AllowUpgrade         int32    `protobuf:"zigzag32,7,opt,name=AllowUpgrade,proto3" json:"AllowUpgrade,omitempty"`
+	ID                   int32    `protobuf:"zigzag32,1,opt,name=ID,proto3" json:"ID"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	RequireExp           int32    `protobuf:"zigzag32,3,opt,name=RequireExp,proto3" json:"RequireExp"`
+	ProgramSignal        string   `protobuf:"bytes,4,opt,name=ProgramSignal,proto3" json:"ProgramSignal"`
+	IsOfficial           int32    `protobuf:"zigzag32,5,opt,name=IsOfficial,proto3" json:"IsOfficial"`
+	Enabled              int32    `protobuf:"zigzag32,6,opt,name=Enabled,proto3" json:"Enabled"`
+	AllowUpgrade         int32    `protobuf:"zigzag32,7,opt,name=AllowUpgrade,proto3" json:"AllowUpgrade"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1887,8 +1887,8 @@ func (m *SMemberLevel) GetAllowUpgrade() int32 {
 }
 
 type AvatarRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	AvatarUrl            string   `protobuf:"bytes,2,opt,name=AvatarUrl,proto3" json:"AvatarUrl,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	AvatarUrl            string   `protobuf:"bytes,2,opt,name=AvatarUrl,proto3" json:"AvatarUrl"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1935,49 +1935,49 @@ func (m *AvatarRequest) GetAvatarUrl() string {
 // * 会员
 type SMember struct {
 	// *
-	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id"`
 	// * 用户名
-	User string `protobuf:"bytes,2,opt,name=User,proto3" json:"User,omitempty"`
+	User string `protobuf:"bytes,2,opt,name=User,proto3" json:"User"`
 	// *
-	Pwd string `protobuf:"bytes,3,opt,name=Pwd,proto3" json:"Pwd,omitempty"`
+	Pwd string `protobuf:"bytes,3,opt,name=Pwd,proto3" json:"Pwd"`
 	// *
-	TradePwd string `protobuf:"bytes,4,opt,name=TradePwd,proto3" json:"TradePwd,omitempty"`
+	TradePwd string `protobuf:"bytes,4,opt,name=TradePwd,proto3" json:"TradePwd"`
 	// *
-	Exp int64 `protobuf:"zigzag64,5,opt,name=Exp,proto3" json:"Exp,omitempty"`
+	Exp int64 `protobuf:"zigzag64,5,opt,name=Exp,proto3" json:"Exp"`
 	// *
-	Level int32 `protobuf:"zigzag32,6,opt,name=Level,proto3" json:"Level,omitempty"`
+	Level int32 `protobuf:"zigzag32,6,opt,name=Level,proto3" json:"Level"`
 	// * 高级用户级别
-	PremiumUser int32 `protobuf:"zigzag32,7,opt,name=PremiumUser,proto3" json:"PremiumUser,omitempty"`
+	PremiumUser int32 `protobuf:"zigzag32,7,opt,name=PremiumUser,proto3" json:"PremiumUser"`
 	// * 高级用户过期时间
-	PremiumExpires int64 `protobuf:"zigzag64,8,opt,name=PremiumExpires,proto3" json:"PremiumExpires,omitempty"`
+	PremiumExpires int64 `protobuf:"zigzag64,8,opt,name=PremiumExpires,proto3" json:"PremiumExpires"`
 	// *
-	InviteCode string `protobuf:"bytes,9,opt,name=InviteCode,proto3" json:"InviteCode,omitempty"`
+	InviteCode string `protobuf:"bytes,9,opt,name=InviteCode,proto3" json:"InviteCode"`
 	// *
-	RegIp string `protobuf:"bytes,10,opt,name=RegIp,proto3" json:"RegIp,omitempty"`
+	RegIp string `protobuf:"bytes,10,opt,name=RegIp,proto3" json:"RegIp"`
 	// *
-	RegFrom string `protobuf:"bytes,11,opt,name=RegFrom,proto3" json:"RegFrom,omitempty"`
+	RegFrom string `protobuf:"bytes,11,opt,name=RegFrom,proto3" json:"RegFrom"`
 	// *
-	State int32 `protobuf:"zigzag32,12,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"zigzag32,12,opt,name=State,proto3" json:"State"`
 	// * 会员标志
-	Flag int32 `protobuf:"zigzag32,13,opt,name=Flag,proto3" json:"Flag,omitempty"`
+	Flag int32 `protobuf:"zigzag32,13,opt,name=Flag,proto3" json:"Flag"`
 	// *
-	Code string `protobuf:"bytes,14,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,14,opt,name=Code,proto3" json:"Code"`
 	// *
-	Avatar string `protobuf:"bytes,15,opt,name=Avatar,proto3" json:"Avatar,omitempty"`
+	Avatar string `protobuf:"bytes,15,opt,name=Avatar,proto3" json:"Avatar"`
 	// *
-	Phone string `protobuf:"bytes,16,opt,name=Phone,proto3" json:"Phone,omitempty"`
+	Phone string `protobuf:"bytes,16,opt,name=Phone,proto3" json:"Phone"`
 	// *
-	Email string `protobuf:"bytes,17,opt,name=Email,proto3" json:"Email,omitempty"`
+	Email string `protobuf:"bytes,17,opt,name=Email,proto3" json:"Email"`
 	// * 昵称
-	Name string `protobuf:"bytes,18,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,18,opt,name=Name,proto3" json:"Name"`
 	// * 真实姓名
-	RealName string `protobuf:"bytes,19,opt,name=RealName,proto3" json:"RealName,omitempty"`
+	RealName string `protobuf:"bytes,19,opt,name=RealName,proto3" json:"RealName"`
 	// 用户会员密钥
-	DynamicToken string `protobuf:"bytes,20,opt,name=DynamicToken,proto3" json:"DynamicToken,omitempty"`
+	DynamicToken string `protobuf:"bytes,20,opt,name=DynamicToken,proto3" json:"DynamicToken"`
 	// * 注册时间
-	RegTime int64 `protobuf:"zigzag64,21,opt,name=RegTime,proto3" json:"RegTime,omitempty"`
+	RegTime int64 `protobuf:"zigzag64,21,opt,name=RegTime,proto3" json:"RegTime"`
 	// * 最后登录时间
-	LastLoginTime        int64    `protobuf:"zigzag64,22,opt,name=LastLoginTime,proto3" json:"LastLoginTime,omitempty"`
+	LastLoginTime        int64    `protobuf:"zigzag64,22,opt,name=LastLoginTime,proto3" json:"LastLoginTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2163,26 +2163,26 @@ func (m *SMember) GetLastLoginTime() int64 {
 
 // * 资料
 type SProfile struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	Avatar               string   `protobuf:"bytes,3,opt,name=Avatar,proto3" json:"Avatar,omitempty"`
-	Sex                  int32    `protobuf:"zigzag32,4,opt,name=Sex,proto3" json:"Sex,omitempty"`
-	BirthDay             string   `protobuf:"bytes,5,opt,name=BirthDay,proto3" json:"BirthDay,omitempty"`
-	Phone                string   `protobuf:"bytes,6,opt,name=Phone,proto3" json:"Phone,omitempty"`
-	Address              string   `protobuf:"bytes,7,opt,name=Address,proto3" json:"Address,omitempty"`
-	Im                   string   `protobuf:"bytes,8,opt,name=Im,proto3" json:"Im,omitempty"`
-	Email                string   `protobuf:"bytes,9,opt,name=Email,proto3" json:"Email,omitempty"`
-	Province             int32    `protobuf:"zigzag32,10,opt,name=Province,proto3" json:"Province,omitempty"`
-	City                 int32    `protobuf:"zigzag32,11,opt,name=City,proto3" json:"City,omitempty"`
-	District             int32    `protobuf:"zigzag32,12,opt,name=District,proto3" json:"District,omitempty"`
-	Remark               string   `protobuf:"bytes,13,opt,name=Remark,proto3" json:"Remark,omitempty"`
-	Ext1                 string   `protobuf:"bytes,14,opt,name=Ext1,proto3" json:"Ext1,omitempty"`
-	Ext2                 string   `protobuf:"bytes,15,opt,name=Ext2,proto3" json:"Ext2,omitempty"`
-	Ext3                 string   `protobuf:"bytes,16,opt,name=Ext3,proto3" json:"Ext3,omitempty"`
-	Ext4                 string   `protobuf:"bytes,17,opt,name=Ext4,proto3" json:"Ext4,omitempty"`
-	Ext5                 string   `protobuf:"bytes,18,opt,name=Ext5,proto3" json:"Ext5,omitempty"`
-	Ext6                 string   `protobuf:"bytes,19,opt,name=Ext6,proto3" json:"Ext6,omitempty"`
-	UpdateTime           int64    `protobuf:"zigzag64,20,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	Avatar               string   `protobuf:"bytes,3,opt,name=Avatar,proto3" json:"Avatar"`
+	Sex                  int32    `protobuf:"zigzag32,4,opt,name=Sex,proto3" json:"Sex"`
+	BirthDay             string   `protobuf:"bytes,5,opt,name=BirthDay,proto3" json:"BirthDay"`
+	Phone                string   `protobuf:"bytes,6,opt,name=Phone,proto3" json:"Phone"`
+	Address              string   `protobuf:"bytes,7,opt,name=Address,proto3" json:"Address"`
+	Im                   string   `protobuf:"bytes,8,opt,name=Im,proto3" json:"Im"`
+	Email                string   `protobuf:"bytes,9,opt,name=Email,proto3" json:"Email"`
+	Province             int32    `protobuf:"zigzag32,10,opt,name=Province,proto3" json:"Province"`
+	City                 int32    `protobuf:"zigzag32,11,opt,name=City,proto3" json:"City"`
+	District             int32    `protobuf:"zigzag32,12,opt,name=District,proto3" json:"District"`
+	Remark               string   `protobuf:"bytes,13,opt,name=Remark,proto3" json:"Remark"`
+	Ext1                 string   `protobuf:"bytes,14,opt,name=Ext1,proto3" json:"Ext1"`
+	Ext2                 string   `protobuf:"bytes,15,opt,name=Ext2,proto3" json:"Ext2"`
+	Ext3                 string   `protobuf:"bytes,16,opt,name=Ext3,proto3" json:"Ext3"`
+	Ext4                 string   `protobuf:"bytes,17,opt,name=Ext4,proto3" json:"Ext4"`
+	Ext5                 string   `protobuf:"bytes,18,opt,name=Ext5,proto3" json:"Ext5"`
+	Ext6                 string   `protobuf:"bytes,19,opt,name=Ext6,proto3" json:"Ext6"`
+	UpdateTime           int64    `protobuf:"zigzag64,20,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2354,26 +2354,26 @@ func (m *SProfile) GetUpdateTime() int64 {
 
 // * 账户
 type SAccount struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	Integral             int64    `protobuf:"zigzag64,2,opt,name=Integral,proto3" json:"Integral,omitempty"`
-	FreezeIntegral       int64    `protobuf:"zigzag64,3,opt,name=FreezeIntegral,proto3" json:"FreezeIntegral,omitempty"`
-	Balance              float64  `protobuf:"fixed64,4,opt,name=Balance,proto3" json:"Balance,omitempty"`
-	FreezeBalance        float64  `protobuf:"fixed64,5,opt,name=FreezeBalance,proto3" json:"FreezeBalance,omitempty"`
-	ExpiredBalance       float64  `protobuf:"fixed64,6,opt,name=ExpiredBalance,proto3" json:"ExpiredBalance,omitempty"`
-	WalletBalance        float64  `protobuf:"fixed64,7,opt,name=WalletBalance,proto3" json:"WalletBalance,omitempty"`
-	FreezeWallet         float64  `protobuf:"fixed64,8,opt,name=FreezeWallet,proto3" json:"FreezeWallet,omitempty"`
-	ExpiredWallet        float64  `protobuf:"fixed64,9,opt,name=ExpiredWallet,proto3" json:"ExpiredWallet,omitempty"`
-	TotalWalletAmount    float64  `protobuf:"fixed64,10,opt,name=TotalWalletAmount,proto3" json:"TotalWalletAmount,omitempty"`
-	FlowBalance          float64  `protobuf:"fixed64,11,opt,name=FlowBalance,proto3" json:"FlowBalance,omitempty"`
-	GrowBalance          float64  `protobuf:"fixed64,12,opt,name=GrowBalance,proto3" json:"GrowBalance,omitempty"`
-	GrowAmount           float64  `protobuf:"fixed64,13,opt,name=GrowAmount,proto3" json:"GrowAmount,omitempty"`
-	GrowEarnings         float64  `protobuf:"fixed64,14,opt,name=GrowEarnings,proto3" json:"GrowEarnings,omitempty"`
-	GrowTotalEarnings    float64  `protobuf:"fixed64,15,opt,name=GrowTotalEarnings,proto3" json:"GrowTotalEarnings,omitempty"`
-	TotalExpense         float64  `protobuf:"fixed64,16,opt,name=TotalExpense,proto3" json:"TotalExpense,omitempty"`
-	TotalCharge          float64  `protobuf:"fixed64,17,opt,name=TotalCharge,proto3" json:"TotalCharge,omitempty"`
-	TotalPay             float64  `protobuf:"fixed64,18,opt,name=TotalPay,proto3" json:"TotalPay,omitempty"`
-	PriorityPay          int64    `protobuf:"zigzag64,19,opt,name=PriorityPay,proto3" json:"PriorityPay,omitempty"`
-	UpdateTime           int64    `protobuf:"zigzag64,20,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	Integral             int64    `protobuf:"zigzag64,2,opt,name=Integral,proto3" json:"Integral"`
+	FreezeIntegral       int64    `protobuf:"zigzag64,3,opt,name=FreezeIntegral,proto3" json:"FreezeIntegral"`
+	Balance              float64  `protobuf:"fixed64,4,opt,name=Balance,proto3" json:"Balance"`
+	FreezeBalance        float64  `protobuf:"fixed64,5,opt,name=FreezeBalance,proto3" json:"FreezeBalance"`
+	ExpiredBalance       float64  `protobuf:"fixed64,6,opt,name=ExpiredBalance,proto3" json:"ExpiredBalance"`
+	WalletBalance        float64  `protobuf:"fixed64,7,opt,name=WalletBalance,proto3" json:"WalletBalance"`
+	FreezeWallet         float64  `protobuf:"fixed64,8,opt,name=FreezeWallet,proto3" json:"FreezeWallet"`
+	ExpiredWallet        float64  `protobuf:"fixed64,9,opt,name=ExpiredWallet,proto3" json:"ExpiredWallet"`
+	TotalWalletAmount    float64  `protobuf:"fixed64,10,opt,name=TotalWalletAmount,proto3" json:"TotalWalletAmount"`
+	FlowBalance          float64  `protobuf:"fixed64,11,opt,name=FlowBalance,proto3" json:"FlowBalance"`
+	GrowBalance          float64  `protobuf:"fixed64,12,opt,name=GrowBalance,proto3" json:"GrowBalance"`
+	GrowAmount           float64  `protobuf:"fixed64,13,opt,name=GrowAmount,proto3" json:"GrowAmount"`
+	GrowEarnings         float64  `protobuf:"fixed64,14,opt,name=GrowEarnings,proto3" json:"GrowEarnings"`
+	GrowTotalEarnings    float64  `protobuf:"fixed64,15,opt,name=GrowTotalEarnings,proto3" json:"GrowTotalEarnings"`
+	TotalExpense         float64  `protobuf:"fixed64,16,opt,name=TotalExpense,proto3" json:"TotalExpense"`
+	TotalCharge          float64  `protobuf:"fixed64,17,opt,name=TotalCharge,proto3" json:"TotalCharge"`
+	TotalPay             float64  `protobuf:"fixed64,18,opt,name=TotalPay,proto3" json:"TotalPay"`
+	PriorityPay          int64    `protobuf:"zigzag64,19,opt,name=PriorityPay,proto3" json:"PriorityPay"`
+	UpdateTime           int64    `protobuf:"zigzag64,20,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2544,19 +2544,19 @@ func (m *SAccount) GetUpdateTime() int64 {
 }
 
 type SComplexMember struct {
-	Name           string `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
-	Avatar         string `protobuf:"bytes,2,opt,name=Avatar,proto3" json:"Avatar,omitempty"`
-	Phone          string `protobuf:"bytes,3,opt,name=Phone,proto3" json:"Phone,omitempty"`
-	Exp            int32  `protobuf:"zigzag32,4,opt,name=Exp,proto3" json:"Exp,omitempty"`
-	Level          int32  `protobuf:"zigzag32,5,opt,name=Level,proto3" json:"Level,omitempty"`
-	LevelName      string `protobuf:"bytes,6,opt,name=LevelName,proto3" json:"LevelName,omitempty"`
-	InviteCode     string `protobuf:"bytes,7,opt,name=InviteCode,proto3" json:"InviteCode,omitempty"`
-	TrustAuthState int32  `protobuf:"zigzag32,8,opt,name=TrustAuthState,proto3" json:"TrustAuthState,omitempty"`
-	PremiumUser    int32  `protobuf:"zigzag32,9,opt,name=PremiumUser,proto3" json:"PremiumUser,omitempty"`
-	Flag           int32  `protobuf:"zigzag32,10,opt,name=Flag,proto3" json:"Flag,omitempty"`
-	UpdateTime     int64  `protobuf:"zigzag64,11,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	Name           string `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name"`
+	Avatar         string `protobuf:"bytes,2,opt,name=Avatar,proto3" json:"Avatar"`
+	Phone          string `protobuf:"bytes,3,opt,name=Phone,proto3" json:"Phone"`
+	Exp            int32  `protobuf:"zigzag32,4,opt,name=Exp,proto3" json:"Exp"`
+	Level          int32  `protobuf:"zigzag32,5,opt,name=Level,proto3" json:"Level"`
+	LevelName      string `protobuf:"bytes,6,opt,name=LevelName,proto3" json:"LevelName"`
+	InviteCode     string `protobuf:"bytes,7,opt,name=InviteCode,proto3" json:"InviteCode"`
+	TrustAuthState int32  `protobuf:"zigzag32,8,opt,name=TrustAuthState,proto3" json:"TrustAuthState"`
+	PremiumUser    int32  `protobuf:"zigzag32,9,opt,name=PremiumUser,proto3" json:"PremiumUser"`
+	Flag           int32  `protobuf:"zigzag32,10,opt,name=Flag,proto3" json:"Flag"`
+	UpdateTime     int64  `protobuf:"zigzag64,11,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	// * 交易密码是否已设置
-	TradePwdHasSet       bool     `protobuf:"varint,12,opt,name=TradePwdHasSet,proto3" json:"TradePwdHasSet,omitempty"`
+	TradePwdHasSet       bool     `protobuf:"varint,12,opt,name=TradePwdHasSet,proto3" json:"TradePwdHasSet"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2671,11 +2671,11 @@ func (m *SComplexMember) GetTradePwdHasSet() bool {
 }
 
 type SMemberRelation struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	CardId               string   `protobuf:"bytes,2,opt,name=CardId,proto3" json:"CardId,omitempty"`
-	InviterId            int64    `protobuf:"zigzag64,3,opt,name=InviterId,proto3" json:"InviterId,omitempty"`
-	InviterStr           string   `protobuf:"bytes,4,opt,name=InviterStr,proto3" json:"InviterStr,omitempty"`
-	RegisterMchId        int32    `protobuf:"zigzag32,5,opt,name=RegisterMchId,proto3" json:"RegisterMchId,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	CardId               string   `protobuf:"bytes,2,opt,name=CardId,proto3" json:"CardId"`
+	InviterId            int64    `protobuf:"zigzag64,3,opt,name=InviterId,proto3" json:"InviterId"`
+	InviterStr           string   `protobuf:"bytes,4,opt,name=InviterStr,proto3" json:"InviterStr"`
+	RegisterMchId        int32    `protobuf:"zigzag32,5,opt,name=RegisterMchId,proto3" json:"RegisterMchId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2743,27 +2743,27 @@ func (m *SMemberRelation) GetRegisterMchId() int32 {
 // * 实名认证信息
 type STrustedInfo struct {
 	// * 真实姓名
-	RealName string `protobuf:"bytes,1,opt,name=RealName,proto3" json:"RealName,omitempty"`
+	RealName string `protobuf:"bytes,1,opt,name=RealName,proto3" json:"RealName"`
 	// * 国家代码,如:CN
-	CountryCode string `protobuf:"bytes,2,opt,name=CountryCode,proto3" json:"CountryCode,omitempty"`
+	CountryCode string `protobuf:"bytes,2,opt,name=CountryCode,proto3" json:"CountryCode"`
 	// * 证件类型
-	CardType int32 `protobuf:"zigzag32,3,opt,name=CardType,proto3" json:"CardType,omitempty"`
+	CardType int32 `protobuf:"zigzag32,3,opt,name=CardType,proto3" json:"CardType"`
 	// * 证件号码
-	CardId string `protobuf:"bytes,4,opt,name=CardId,proto3" json:"CardId,omitempty"`
+	CardId string `protobuf:"bytes,4,opt,name=CardId,proto3" json:"CardId"`
 	// * 证件正面照
-	CardImage string `protobuf:"bytes,5,opt,name=CardImage,proto3" json:"CardImage,omitempty"`
+	CardImage string `protobuf:"bytes,5,opt,name=CardImage,proto3" json:"CardImage"`
 	// * 证件反面照
-	CardReverseImage string `protobuf:"bytes,6,opt,name=CardReverseImage,proto3" json:"CardReverseImage,omitempty"`
+	CardReverseImage string `protobuf:"bytes,6,opt,name=CardReverseImage,proto3" json:"CardReverseImage"`
 	// * 认证人脸照
-	TrustImage string `protobuf:"bytes,7,opt,name=TrustImage,proto3" json:"TrustImage,omitempty"`
+	TrustImage string `protobuf:"bytes,7,opt,name=TrustImage,proto3" json:"TrustImage"`
 	// * 是否人工审核
-	ManualReview int32 `protobuf:"zigzag32,8,opt,name=ManualReview,proto3" json:"ManualReview,omitempty"`
+	ManualReview int32 `protobuf:"zigzag32,8,opt,name=ManualReview,proto3" json:"ManualReview"`
 	// * 审核状态
-	ReviewState int32 `protobuf:"zigzag32,9,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
+	ReviewState int32 `protobuf:"zigzag32,9,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// * 审核时间
-	ReviewTime int64 `protobuf:"zigzag64,10,opt,name=ReviewTime,proto3" json:"ReviewTime,omitempty"`
+	ReviewTime int64 `protobuf:"zigzag64,10,opt,name=ReviewTime,proto3" json:"ReviewTime"`
 	// * 备注
-	Remark               string   `protobuf:"bytes,11,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark               string   `protobuf:"bytes,11,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2871,17 +2871,17 @@ func (m *STrustedInfo) GetRemark() string {
 }
 
 type SAddress struct {
-	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID int64 `protobuf:"zigzag64,1,opt,name=ID,proto3" json:"ID"`
 	// * 收货人姓名
-	ConsigneeName string `protobuf:"bytes,2,opt,name=ConsigneeName,proto3" json:"ConsigneeName,omitempty"`
+	ConsigneeName string `protobuf:"bytes,2,opt,name=ConsigneeName,proto3" json:"ConsigneeName"`
 	// * 收货人电话
-	ConsigneePhone       string   `protobuf:"bytes,3,opt,name=ConsigneePhone,proto3" json:"ConsigneePhone,omitempty"`
-	Province             int32    `protobuf:"zigzag32,4,opt,name=Province,proto3" json:"Province,omitempty"`
-	City                 int32    `protobuf:"zigzag32,5,opt,name=City,proto3" json:"City,omitempty"`
-	District             int32    `protobuf:"zigzag32,6,opt,name=District,proto3" json:"District,omitempty"`
-	Area                 string   `protobuf:"bytes,7,opt,name=Area,proto3" json:"Area,omitempty"`
-	DetailAddress        string   `protobuf:"bytes,8,opt,name=DetailAddress,proto3" json:"DetailAddress,omitempty"`
-	IsDefault            int32    `protobuf:"zigzag32,9,opt,name=IsDefault,proto3" json:"IsDefault,omitempty"`
+	ConsigneePhone       string   `protobuf:"bytes,3,opt,name=ConsigneePhone,proto3" json:"ConsigneePhone"`
+	Province             int32    `protobuf:"zigzag32,4,opt,name=Province,proto3" json:"Province"`
+	City                 int32    `protobuf:"zigzag32,5,opt,name=City,proto3" json:"City"`
+	District             int32    `protobuf:"zigzag32,6,opt,name=District,proto3" json:"District"`
+	Area                 string   `protobuf:"bytes,7,opt,name=Area,proto3" json:"Area"`
+	DetailAddress        string   `protobuf:"bytes,8,opt,name=DetailAddress,proto3" json:"DetailAddress"`
+	IsDefault            int32    `protobuf:"zigzag32,9,opt,name=IsDefault,proto3" json:"IsDefault"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2975,8 +2975,8 @@ func (m *SAddress) GetIsDefault() int32 {
 }
 
 type AddressIdRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	AddressId            int64    `protobuf:"zigzag64,2,opt,name=AddressId,proto3" json:"AddressId,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	AddressId            int64    `protobuf:"zigzag64,2,opt,name=AddressId,proto3" json:"AddressId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3023,15 +3023,15 @@ func (m *AddressIdRequest) GetAddressId() int64 {
 // * 收款码
 type SReceiptsCode struct {
 	// * 账户标识,如:alipay
-	Identity string `protobuf:"bytes,1,opt,name=Identity,proto3" json:"Identity,omitempty"`
+	Identity string `protobuf:"bytes,1,opt,name=Identity,proto3" json:"Identity"`
 	// * 账户名称
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// * 账号
-	AccountId string `protobuf:"bytes,3,opt,name=AccountId,proto3" json:"AccountId,omitempty"`
+	AccountId string `protobuf:"bytes,3,opt,name=AccountId,proto3" json:"AccountId"`
 	// * 收款码地址
-	CodeUrl string `protobuf:"bytes,4,opt,name=CodeUrl,proto3" json:"CodeUrl,omitempty"`
+	CodeUrl string `protobuf:"bytes,4,opt,name=CodeUrl,proto3" json:"CodeUrl"`
 	// * 是否启用
-	State                int32    `protobuf:"zigzag32,5,opt,name=State,proto3" json:"State,omitempty"`
+	State                int32    `protobuf:"zigzag32,5,opt,name=State,proto3" json:"State"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3099,21 +3099,21 @@ func (m *SReceiptsCode) GetState() int32 {
 // 会员等级信息
 type SMemberLevelInfo struct {
 	// * 等级
-	Level int32 `protobuf:"zigzag32,1,opt,name=Level,proto3" json:"Level,omitempty"`
+	Level int32 `protobuf:"zigzag32,1,opt,name=Level,proto3" json:"Level"`
 	// * 等级名称
-	LevelName string `protobuf:"bytes,2,opt,name=LevelName,proto3" json:"LevelName,omitempty"`
+	LevelName string `protobuf:"bytes,2,opt,name=LevelName,proto3" json:"LevelName"`
 	// * 经验值
-	Exp int32 `protobuf:"zigzag32,3,opt,name=Exp,proto3" json:"Exp,omitempty"`
+	Exp int32 `protobuf:"zigzag32,3,opt,name=Exp,proto3" json:"Exp"`
 	// * 编程符号
-	ProgramSignal string `protobuf:"bytes,4,opt,name=ProgramSignal,proto3" json:"ProgramSignal,omitempty"`
+	ProgramSignal string `protobuf:"bytes,4,opt,name=ProgramSignal,proto3" json:"ProgramSignal"`
 	// * 下一级等级,返回-1表示最高级别
-	NextLevel int32 `protobuf:"zigzag32,5,opt,name=NextLevel,proto3" json:"NextLevel,omitempty"`
+	NextLevel int32 `protobuf:"zigzag32,5,opt,name=NextLevel,proto3" json:"NextLevel"`
 	// * 下一等级名称
-	NextLevelName string `protobuf:"bytes,6,opt,name=NextLevelName,proto3" json:"NextLevelName,omitempty"`
+	NextLevelName string `protobuf:"bytes,6,opt,name=NextLevelName,proto3" json:"NextLevelName"`
 	// * 编程符号
-	NextProgramSignal string `protobuf:"bytes,7,opt,name=NextProgramSignal,proto3" json:"NextProgramSignal,omitempty"`
+	NextProgramSignal string `protobuf:"bytes,7,opt,name=NextProgramSignal,proto3" json:"NextProgramSignal"`
 	// * 需要经验值
-	RequireExp           int32    `protobuf:"zigzag32,8,opt,name=RequireExp,proto3" json:"RequireExp,omitempty"`
+	RequireExp           int32    `protobuf:"zigzag32,8,opt,name=RequireExp,proto3" json:"RequireExp"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3202,13 +3202,13 @@ func (m *SMemberLevelInfo) GetRequireExp() int32 {
 // * 订单汇总信息
 type SMemberOrderSummary struct {
 	// * 待付款订单数量
-	AwaitPayment int32 `protobuf:"zigzag32,1,opt,name=AwaitPayment,proto3" json:"AwaitPayment,omitempty"`
+	AwaitPayment int32 `protobuf:"zigzag32,1,opt,name=AwaitPayment,proto3" json:"AwaitPayment"`
 	// * 待发货订单数量
-	AwaitShipment int32 `protobuf:"zigzag32,2,opt,name=AwaitShipment,proto3" json:"AwaitShipment,omitempty"`
+	AwaitShipment int32 `protobuf:"zigzag32,2,opt,name=AwaitShipment,proto3" json:"AwaitShipment"`
 	// * 待收货订单数量
-	AwaitReceive int32 `protobuf:"zigzag32,3,opt,name=AwaitReceive,proto3" json:"AwaitReceive,omitempty"`
+	AwaitReceive int32 `protobuf:"zigzag32,3,opt,name=AwaitReceive,proto3" json:"AwaitReceive"`
 	// * 已完成订单数量
-	Completed            int32    `protobuf:"zigzag32,4,opt,name=Completed,proto3" json:"Completed,omitempty"`
+	Completed            int32    `protobuf:"zigzag32,4,opt,name=Completed,proto3" json:"Completed"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3268,11 +3268,11 @@ func (m *SMemberOrderSummary) GetCompleted() int32 {
 
 type MemberRelationResponse struct {
 	// 邀请人（会员）
-	InviterId int64 `protobuf:"zigzag64,1,opt,name=InviterId,proto3" json:"InviterId,omitempty"`
+	InviterId int64 `protobuf:"zigzag64,1,opt,name=InviterId,proto3" json:"InviterId"`
 	// 邀请会员编号(depth2)
-	InviterD2 int64 `protobuf:"zigzag64,2,opt,name=InviterD2,proto3" json:"InviterD2,omitempty"`
+	InviterD2 int64 `protobuf:"zigzag64,2,opt,name=InviterD2,proto3" json:"InviterD2"`
 	// 邀请会员编号(depth3)
-	InviterD3            int64    `protobuf:"zigzag64,3,opt,name=InviterD3,proto3" json:"InviterD3,omitempty"`
+	InviterD3            int64    `protobuf:"zigzag64,3,opt,name=InviterD3,proto3" json:"InviterD3"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3324,8 +3324,8 @@ func (m *MemberRelationResponse) GetInviterD3() int64 {
 }
 
 type WalletLogRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	LogId                int64    `protobuf:"zigzag64,2,opt,name=LogId,proto3" json:"LogId,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	LogId                int64    `protobuf:"zigzag64,2,opt,name=LogId,proto3" json:"LogId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3372,29 +3372,29 @@ func (m *WalletLogRequest) GetLogId() int64 {
 // 钱包账户日志
 type WalletLogResponse struct {
 	// 日志编号
-	LogId int64 `protobuf:"zigzag64,1,opt,name=LogId,proto3" json:"LogId,omitempty"`
+	LogId int64 `protobuf:"zigzag64,1,opt,name=LogId,proto3" json:"LogId"`
 	// 会员编号
-	MemberId int64 `protobuf:"zigzag64,2,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"zigzag64,2,opt,name=MemberId,proto3" json:"MemberId"`
 	// 外部单号
-	OuterNo string `protobuf:"bytes,3,opt,name=OuterNo,proto3" json:"OuterNo,omitempty"`
+	OuterNo string `protobuf:"bytes,3,opt,name=OuterNo,proto3" json:"OuterNo"`
 	// 业务类型
-	Kind int32 `protobuf:"zigzag32,4,opt,name=Kind,proto3" json:"Kind,omitempty"`
+	Kind int32 `protobuf:"zigzag32,4,opt,name=Kind,proto3" json:"Kind"`
 	// 标题
-	Title string `protobuf:"bytes,5,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,5,opt,name=Title,proto3" json:"Title"`
 	// 金额
-	Amount float64 `protobuf:"fixed64,6,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount float64 `protobuf:"fixed64,6,opt,name=Amount,proto3" json:"Amount"`
 	// 手续费
-	CsnFee float64 `protobuf:"fixed64,7,opt,name=CsnFee,proto3" json:"CsnFee,omitempty"`
+	CsnFee float64 `protobuf:"fixed64,7,opt,name=CsnFee,proto3" json:"CsnFee"`
 	// 状态
-	ReviewState int32 `protobuf:"zigzag32,8,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
+	ReviewState int32 `protobuf:"zigzag32,8,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// 备注
-	Remark string `protobuf:"bytes,9,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark string `protobuf:"bytes,9,opt,name=Remark,proto3" json:"Remark"`
 	// 创建时间
-	CreateTime int64 `protobuf:"zigzag64,10,opt,name=CreateTime,proto3" json:"CreateTime,omitempty"`
+	CreateTime int64 `protobuf:"zigzag64,10,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// 更新时间
-	UpdateTime int64 `protobuf:"zigzag64,11,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime int64 `protobuf:"zigzag64,11,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	// 关联操作人,仅在客服操作时,记录操作人
-	RelateUser           int64    `protobuf:"zigzag64,12,opt,name=RelateUser,proto3" json:"RelateUser,omitempty"`
+	RelateUser           int64    `protobuf:"zigzag64,12,opt,name=RelateUser,proto3" json:"RelateUser"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3510,12 +3510,12 @@ func (m *WalletLogResponse) GetRelateUser() int64 {
 
 // 账户转账请求
 type AccountTransferRequest struct {
-	TransferAccount      TransferAccountType `protobuf:"varint,1,opt,name=TransferAccount,proto3,enum=TransferAccountType" json:"TransferAccount,omitempty"`
-	FromMemberId         int64               `protobuf:"zigzag64,2,opt,name=FromMemberId,proto3" json:"FromMemberId,omitempty"`
-	ToMemberId           int64               `protobuf:"zigzag64,3,opt,name=ToMemberId,proto3" json:"ToMemberId,omitempty"`
-	Amount               int32               `protobuf:"zigzag32,4,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	TradeFee             int32               `protobuf:"zigzag32,5,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
-	Remark               string              `protobuf:"bytes,6,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	TransferAccount      TransferAccountType `protobuf:"varint,1,opt,name=TransferAccount,proto3,enum=TransferAccountType" json:"TransferAccount"`
+	FromMemberId         int64               `protobuf:"zigzag64,2,opt,name=FromMemberId,proto3" json:"FromMemberId"`
+	ToMemberId           int64               `protobuf:"zigzag64,3,opt,name=ToMemberId,proto3" json:"ToMemberId"`
+	Amount               int32               `protobuf:"zigzag32,4,opt,name=Amount,proto3" json:"Amount"`
+	TradeFee             int32               `protobuf:"zigzag32,5,opt,name=TradeFee,proto3" json:"TradeFee"`
+	Remark               string              `protobuf:"bytes,6,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -3589,15 +3589,15 @@ func (m *AccountTransferRequest) GetRemark() string {
 
 // 提现申请
 type WithdrawRequest struct {
-	MemberId int64 `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
 	// 提现金额
-	Amount int32 `protobuf:"varint,2,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount int32 `protobuf:"varint,2,opt,name=Amount,proto3" json:"Amount"`
 	// 手续费
-	TradeFee int32 `protobuf:"varint,3,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
+	TradeFee int32 `protobuf:"varint,3,opt,name=TradeFee,proto3" json:"TradeFee"`
 	// 提现方式,1:银行卡 2:第三方钱包
-	DrawToBank bool `protobuf:"varint,4,opt,name=DrawToBank,proto3" json:"DrawToBank,omitempty"`
+	DrawToBank bool `protobuf:"varint,4,opt,name=DrawToBank,proto3" json:"DrawToBank"`
 	// 银行账号或第三方支付钱包
-	AccountNo            string   `protobuf:"bytes,5,opt,name=AccountNo,proto3" json:"AccountNo,omitempty"`
+	AccountNo            string   `protobuf:"bytes,5,opt,name=AccountNo,proto3" json:"AccountNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3663,10 +3663,10 @@ func (m *WithdrawRequest) GetAccountNo() string {
 }
 
 type WithdrawalResponse struct {
-	ErrCode              int64    `protobuf:"zigzag64,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
-	TradeNo              string   `protobuf:"bytes,3,opt,name=TradeNo,proto3" json:"TradeNo,omitempty"`
-	LogId                int64    `protobuf:"zigzag64,4,opt,name=LogId,proto3" json:"LogId,omitempty"`
+	ErrCode              int64    `protobuf:"zigzag64,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	TradeNo              string   `protobuf:"bytes,3,opt,name=TradeNo,proto3" json:"TradeNo"`
+	LogId                int64    `protobuf:"zigzag64,4,opt,name=LogId,proto3" json:"LogId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3727,11 +3727,11 @@ func (m *WithdrawalResponse) GetLogId() int64 {
 // 获取提现记录
 type WithdrawalLogRequest struct {
 	// 　会员编号
-	MemberId int64 `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
 	// 　数量
-	Number int32 `protobuf:"zigzag32,2,opt,name=Number,proto3" json:"Number,omitempty"`
+	Number int32 `protobuf:"zigzag32,2,opt,name=Number,proto3" json:"Number"`
 	// 　仅返回完成的提现
-	OnlyFinished         bool     `protobuf:"varint,3,opt,name=OnlyFinished,proto3" json:"OnlyFinished,omitempty"`
+	OnlyFinished         bool     `protobuf:"varint,3,opt,name=OnlyFinished,proto3" json:"OnlyFinished"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3783,8 +3783,8 @@ func (m *WithdrawalLogRequest) GetOnlyFinished() bool {
 }
 
 type WithdrawalLogsResponse struct {
-	MemberId             int64            `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	Data                 []*WithdrawalLog `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	MemberId             int64            `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	Data                 []*WithdrawalLog `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -3830,27 +3830,27 @@ func (m *WithdrawalLogsResponse) GetData() []*WithdrawalLog {
 
 // 提现日志
 type WithdrawalLog struct {
-	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id"`
 	// 外部单号
-	OuterNo string `protobuf:"bytes,2,opt,name=OuterNo,proto3" json:"OuterNo,omitempty"`
+	OuterNo string `protobuf:"bytes,2,opt,name=OuterNo,proto3" json:"OuterNo"`
 	// 业务类型
-	Kind int32 `protobuf:"zigzag32,3,opt,name=Kind,proto3" json:"Kind,omitempty"`
+	Kind int32 `protobuf:"zigzag32,3,opt,name=Kind,proto3" json:"Kind"`
 	// 标题
-	Title string `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title"`
 	// 金额
-	Amount int32 `protobuf:"zigzag32,5,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount int32 `protobuf:"zigzag32,5,opt,name=Amount,proto3" json:"Amount"`
 	// 手续费
-	TradeFee int32 `protobuf:"zigzag32,6,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
+	TradeFee int32 `protobuf:"zigzag32,6,opt,name=TradeFee,proto3" json:"TradeFee"`
 	// 关联操作人,仅在客服操作时,记录操作人
-	RelateUser int64 `protobuf:"zigzag64,7,opt,name=RelateUser,proto3" json:"RelateUser,omitempty"`
+	RelateUser int64 `protobuf:"zigzag64,7,opt,name=RelateUser,proto3" json:"RelateUser"`
 	// 状态
-	ReviewState int32 `protobuf:"zigzag32,8,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
+	ReviewState int32 `protobuf:"zigzag32,8,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// 备注
-	Remark string `protobuf:"bytes,9,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark string `protobuf:"bytes,9,opt,name=Remark,proto3" json:"Remark"`
 	// 创建时间
-	SubmitTime int64 `protobuf:"zigzag64,10,opt,name=SubmitTime,proto3" json:"SubmitTime,omitempty"`
+	SubmitTime int64 `protobuf:"zigzag64,10,opt,name=SubmitTime,proto3" json:"SubmitTime"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"zigzag64,11,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"zigzag64,11,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3959,10 +3959,10 @@ func (m *WithdrawalLog) GetUpdateTime() int64 {
 
 // 申请提现请求
 type ReviewWithdrawalRequest struct {
-	MemberId             int64    `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	InfoId               int64    `protobuf:"varint,2,opt,name=InfoId,proto3" json:"InfoId,omitempty"`
-	Pass                 bool     `protobuf:"varint,3,opt,name=Pass,proto3" json:"Pass,omitempty"`
-	Remark               string   `protobuf:"bytes,4,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	MemberId             int64    `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId"`
+	InfoId               int64    `protobuf:"varint,2,opt,name=InfoId,proto3" json:"InfoId"`
+	Pass                 bool     `protobuf:"varint,3,opt,name=Pass,proto3" json:"Pass"`
+	Remark               string   `protobuf:"bytes,4,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -4021,11 +4021,11 @@ func (m *ReviewWithdrawalRequest) GetRemark() string {
 }
 
 type FinishWithdrawalRequest struct {
-	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId"`
 	// 　提现记录编号
-	InfoId int64 `protobuf:"varint,2,opt,name=InfoId,proto3" json:"InfoId,omitempty"`
+	InfoId int64 `protobuf:"varint,2,opt,name=InfoId,proto3" json:"InfoId"`
 	// 汇款/交易单号
-	TradeNo              string   `protobuf:"bytes,3,opt,name=TradeNo,proto3" json:"TradeNo,omitempty"`
+	TradeNo              string   `protobuf:"bytes,3,opt,name=TradeNo,proto3" json:"TradeNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -4077,9 +4077,9 @@ func (m *FinishWithdrawalRequest) GetTradeNo() string {
 }
 
 type MemberInvitationPagingRequest struct {
-	MemberId             int64    `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	Begin                int64    `protobuf:"varint,2,opt,name=Begin,proto3" json:"Begin,omitempty"`
-	End                  int64    `protobuf:"varint,3,opt,name=End,proto3" json:"End,omitempty"`
+	MemberId             int64    `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId"`
+	Begin                int64    `protobuf:"varint,2,opt,name=Begin,proto3" json:"Begin"`
+	End                  int64    `protobuf:"varint,3,opt,name=End,proto3" json:"End"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -4131,8 +4131,8 @@ func (m *MemberInvitationPagingRequest) GetEnd() int64 {
 }
 
 type MemberInvitationPagingResponse struct {
-	Total                int64                `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*SInvitationMember `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	Total                int64                `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SInvitationMember `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -4179,21 +4179,21 @@ func (m *MemberInvitationPagingResponse) GetData() []*SInvitationMember {
 // 邀请会员数据
 type SInvitationMember struct {
 	// 会员编号
-	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId"`
 	// 用户名
-	User string `protobuf:"bytes,2,opt,name=User,proto3" json:"User,omitempty"`
+	User string `protobuf:"bytes,2,opt,name=User,proto3" json:"User"`
 	// 等级
-	Level int32 `protobuf:"varint,3,opt,name=Level,proto3" json:"Level,omitempty"`
+	Level int32 `protobuf:"varint,3,opt,name=Level,proto3" json:"Level"`
 	// 头像
-	Avatar string `protobuf:"bytes,4,opt,name=Avatar,proto3" json:"Avatar,omitempty"`
+	Avatar string `protobuf:"bytes,4,opt,name=Avatar,proto3" json:"Avatar"`
 	// 昵称
-	NickName string `protobuf:"bytes,5,opt,name=NickName,proto3" json:"NickName,omitempty"`
+	NickName string `protobuf:"bytes,5,opt,name=NickName,proto3" json:"NickName"`
 	// 电话
-	Phone string `protobuf:"bytes,6,opt,name=Phone,proto3" json:"Phone,omitempty"`
+	Phone string `protobuf:"bytes,6,opt,name=Phone,proto3" json:"Phone"`
 	// 即时通讯
-	Im string `protobuf:"bytes,9,opt,name=Im,proto3" json:"Im,omitempty"`
+	Im string `protobuf:"bytes,9,opt,name=Im,proto3" json:"Im"`
 	// 邀请人数
-	InvitationNum        int32    `protobuf:"varint,10,opt,name=InvitationNum,proto3" json:"InvitationNum,omitempty"`
+	InvitationNum        int32    `protobuf:"varint,10,opt,name=InvitationNum,proto3" json:"InvitationNum"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -4281,9 +4281,9 @@ func (m *SInvitationMember) GetInvitationNum() int32 {
 
 type IsInvitationRequest struct {
 	// 会员编号
-	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId"`
 	// 邀请人会员编号
-	InviterId            int64    `protobuf:"varint,2,opt,name=InviterId,proto3" json:"InviterId,omitempty"`
+	InviterId            int64    `protobuf:"varint,2,opt,name=InviterId,proto3" json:"InviterId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -4328,11 +4328,11 @@ func (m *IsInvitationRequest) GetInviterId() int64 {
 }
 
 type MemberCouponPagingRequest struct {
-	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId"`
 	// 状态,-1为全部
-	State                PagingCouponState `protobuf:"varint,2,opt,name=State,proto3,enum=PagingCouponState" json:"State,omitempty"`
-	Begin                int64             `protobuf:"varint,3,opt,name=Begin,proto3" json:"Begin,omitempty"`
-	End                  int64             `protobuf:"varint,4,opt,name=End,proto3" json:"End,omitempty"`
+	State                PagingCouponState `protobuf:"varint,2,opt,name=State,proto3,enum=PagingCouponState" json:"State"`
+	Begin                int64             `protobuf:"varint,3,opt,name=Begin,proto3" json:"Begin"`
+	End                  int64             `protobuf:"varint,4,opt,name=End,proto3" json:"End"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -4391,8 +4391,8 @@ func (m *MemberCouponPagingRequest) GetEnd() int64 {
 }
 
 type MemberCouponListResponse struct {
-	Total                int64            `protobuf:"varint,1,opt,name=Total,proto3" json:"Total,omitempty"`
-	Data                 []*SMemberCoupon `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data,omitempty"`
+	Total                int64            `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SMemberCoupon `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -4438,23 +4438,23 @@ func (m *MemberCouponListResponse) GetData() []*SMemberCoupon {
 
 type SMemberCoupon struct {
 	// 优惠券编号
-	CouponId int64 `protobuf:"varint,1,opt,name=CouponId,proto3" json:"CouponId,omitempty"`
+	CouponId int64 `protobuf:"varint,1,opt,name=CouponId,proto3" json:"CouponId"`
 	// 数量
-	Number int32 `protobuf:"varint,2,opt,name=Number,proto3" json:"Number,omitempty"`
+	Number int32 `protobuf:"varint,2,opt,name=Number,proto3" json:"Number"`
 	// 优惠券标题
-	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title,omitempty"`
+	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
 	// 优惠码
-	Code string `protobuf:"bytes,4,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,4,opt,name=Code,proto3" json:"Code"`
 	// 优惠金额
-	DiscountFee int32 `protobuf:"varint,5,opt,name=DiscountFee,proto3" json:"DiscountFee,omitempty"`
+	DiscountFee int32 `protobuf:"varint,5,opt,name=DiscountFee,proto3" json:"DiscountFee"`
 	// 订单折扣(不打折为100)
-	Discount int32 `protobuf:"varint,6,opt,name=Discount,proto3" json:"Discount,omitempty"`
+	Discount int32 `protobuf:"varint,6,opt,name=Discount,proto3" json:"Discount"`
 	// 是否使用
-	IsUsed bool `protobuf:"varint,7,opt,name=IsUsed,proto3" json:"IsUsed,omitempty"`
+	IsUsed bool `protobuf:"varint,7,opt,name=IsUsed,proto3" json:"IsUsed"`
 	// 获得时间
-	GetTime int64 `protobuf:"varint,8,opt,name=GetTime,proto3" json:"GetTime,omitempty"`
+	GetTime int64 `protobuf:"varint,8,opt,name=GetTime,proto3" json:"GetTime"`
 	// 结束日期
-	OverTime             int64    `protobuf:"varint,9,opt,name=OverTime,proto3" json:"OverTime,omitempty"`
+	OverTime             int64    `protobuf:"varint,9,opt,name=OverTime,proto3" json:"OverTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -4548,9 +4548,9 @@ func (m *SMemberCoupon) GetOverTime() int64 {
 }
 
 type FavoriteRequest struct {
-	MemberId             int64        `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
-	FavoriteType         FavoriteType `protobuf:"varint,2,opt,name=FavoriteType,proto3,enum=FavoriteType" json:"FavoriteType,omitempty"`
-	ReferId              int64        `protobuf:"zigzag64,3,opt,name=ReferId,proto3" json:"ReferId,omitempty"`
+	MemberId             int64        `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
+	FavoriteType         FavoriteType `protobuf:"varint,2,opt,name=FavoriteType,proto3,enum=FavoriteType" json:"FavoriteType"`
+	ReferId              int64        `protobuf:"zigzag64,3,opt,name=ReferId,proto3" json:"ReferId"`
 	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
 	XXX_unrecognized     []byte       `json:"-"`
 	XXX_sizecache        int32        `json:"-"`
@@ -4602,8 +4602,8 @@ func (m *FavoriteRequest) GetReferId() int64 {
 }
 
 type DepthRequest struct {
-	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Depth                int32    `protobuf:"zigzag32,2,opt,name=depth,proto3" json:"depth,omitempty"`
+	MemberId             int64    `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Depth                int32    `protobuf:"zigzag32,2,opt,name=depth,proto3" json:"depth"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -4648,7 +4648,7 @@ func (m *DepthRequest) GetDepth() int32 {
 }
 
 type InviterIdListResponse struct {
-	Value                []int64  `protobuf:"zigzag64,1,rep,packed,name=Value,proto3" json:"Value,omitempty"`
+	Value                []int64  `protobuf:"zigzag64,1,rep,packed,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -4686,8 +4686,8 @@ func (m *InviterIdListResponse) GetValue() []int64 {
 }
 
 type InviteQuantityRequest struct {
-	MemberId             int64             `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	MemberId             int64             `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
+	Data                 map[string]string `protobuf:"bytes,2,rep,name=data,proto3" json:"data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`

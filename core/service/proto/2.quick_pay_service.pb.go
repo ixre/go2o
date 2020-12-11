@@ -25,7 +25,7 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 // 银行卡号
 type BankCardNo struct {
-	CardNo               string   `protobuf:"bytes,1,opt,name=CardNo,proto3" json:"CardNo,omitempty"`
+	CardNo               string   `protobuf:"bytes,1,opt,name=CardNo,proto3" json:"CardNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -65,17 +65,17 @@ func (m *BankCardNo) GetCardNo() string {
 // 银行卡查询结果
 type CardBinQueryResponse struct {
 	// 错误信息
-	ErrMsg string `protobuf:"bytes,1,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,1,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 银行名称
-	BankName string `protobuf:"bytes,2,opt,name=BankName,proto3" json:"BankName,omitempty"`
+	BankName string `protobuf:"bytes,2,opt,name=BankName,proto3" json:"BankName"`
 	// 用户银行卡号
-	BankCardNo string `protobuf:"bytes,3,opt,name=BankCardNo,proto3" json:"BankCardNo,omitempty"`
+	BankCardNo string `protobuf:"bytes,3,opt,name=BankCardNo,proto3" json:"BankCardNo"`
 	// 返回的银行代号
-	BankCode string `protobuf:"bytes,4,opt,name=BankCode,proto3" json:"BankCode,omitempty"`
+	BankCode string `protobuf:"bytes,4,opt,name=BankCode,proto3" json:"BankCode"`
 	// 银行卡类型（0=储蓄卡,1=信用卡）
-	CardType int32 `protobuf:"varint,5,opt,name=CardType,proto3" json:"CardType,omitempty"`
+	CardType int32 `protobuf:"varint,5,opt,name=CardType,proto3" json:"CardType"`
 	// 是否需要银行端授权,如果否,则直接使用短信既可授权
-	RequireBankSideAuth  bool     `protobuf:"varint,6,opt,name=RequireBankSideAuth,proto3" json:"RequireBankSideAuth,omitempty"`
+	RequireBankSideAuth  bool     `protobuf:"varint,6,opt,name=RequireBankSideAuth,proto3" json:"RequireBankSideAuth"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -149,15 +149,15 @@ func (m *CardBinQueryResponse) GetRequireBankSideAuth() bool {
 
 type BankAuthRequest struct {
 	// 随机Id,用于查询授权结果,并防止重复提起申请
-	NonceId string `protobuf:"bytes,1,opt,name=NonceId,proto3" json:"NonceId,omitempty"`
+	NonceId string `protobuf:"bytes,1,opt,name=NonceId,proto3" json:"NonceId"`
 	// 用户银行卡号,如：620000000000000000
-	BankCardNo string `protobuf:"bytes,2,opt,name=BankCardNo,proto3" json:"BankCardNo,omitempty"`
+	BankCardNo string `protobuf:"bytes,2,opt,name=BankCardNo,proto3" json:"BankCardNo"`
 	// 姓名,如：张三
-	BankAccountName string `protobuf:"bytes,3,opt,name=BankAccountName,proto3" json:"BankAccountName,omitempty"`
+	BankAccountName string `protobuf:"bytes,3,opt,name=BankAccountName,proto3" json:"BankAccountName"`
 	// 用户银行绑定的手机号
-	Mobile string `protobuf:"bytes,4,opt,name=Mobile,proto3" json:"Mobile,omitempty"`
+	Mobile string `protobuf:"bytes,4,opt,name=Mobile,proto3" json:"Mobile"`
 	// 用户身份证号码,如：100100052000000000
-	IdCardNo             string   `protobuf:"bytes,5,opt,name=IdCardNo,proto3" json:"IdCardNo,omitempty"`
+	IdCardNo             string   `protobuf:"bytes,5,opt,name=IdCardNo,proto3" json:"IdCardNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -225,13 +225,13 @@ func (m *BankAuthRequest) GetIdCardNo() string {
 // 申请认证返回结果,通常直接使用返回的表单提交获取银行的授权, 并再查询授权
 type BankAuthResponse struct {
 	// 随机Id
-	NonceId string `protobuf:"bytes,1,opt,name=NonceId,proto3" json:"NonceId,omitempty"`
+	NonceId string `protobuf:"bytes,1,opt,name=NonceId,proto3" json:"NonceId"`
 	// 错误消息
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 认证的Form表单
-	AuthForm string `protobuf:"bytes,3,opt,name=AuthForm,proto3" json:"AuthForm,omitempty"`
+	AuthForm string `protobuf:"bytes,3,opt,name=AuthForm,proto3" json:"AuthForm"`
 	// 认证需要的其他数据
-	AuthData             map[string]string `protobuf:"bytes,4,rep,name=AuthData,proto3" json:"AuthData,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	AuthData             map[string]string `protobuf:"bytes,4,rep,name=AuthData,proto3" json:"AuthData" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -292,9 +292,9 @@ func (m *BankAuthResponse) GetAuthData() map[string]string {
 // 银行授权查询请求
 type BankAuthQueryRequest struct {
 	// 申请认证的随机Id,如果传递空,则必须传入BankCardNo
-	NonceId string `protobuf:"bytes,1,opt,name=NonceId,proto3" json:"NonceId,omitempty"`
+	NonceId string `protobuf:"bytes,1,opt,name=NonceId,proto3" json:"NonceId"`
 	// 用户银行卡号,如：620000000000000000
-	BankCardNo           string   `protobuf:"bytes,2,opt,name=BankCardNo,proto3" json:"BankCardNo,omitempty"`
+	BankCardNo           string   `protobuf:"bytes,2,opt,name=BankCardNo,proto3" json:"BankCardNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -341,11 +341,11 @@ func (m *BankAuthQueryRequest) GetBankCardNo() string {
 // 银行授权查询响应
 type BankAuthQueryResponse struct {
 	// 状态码，0表示成功,1: 表示处理中 2:处理失败
-	Code int32 `protobuf:"varint,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code int32 `protobuf:"varint,1,opt,name=Code,proto3" json:"Code"`
 	// 错误信息,成功返回空
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 银行授权认证返回的Token,未处理授权时为空
-	BankAuthToken        string   `protobuf:"bytes,3,opt,name=BankAuthToken,proto3" json:"BankAuthToken,omitempty"`
+	BankAuthToken        string   `protobuf:"bytes,3,opt,name=BankAuthToken,proto3" json:"BankAuthToken"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -399,23 +399,23 @@ func (m *BankAuthQueryResponse) GetBankAuthToken() string {
 // 直接支付请求
 type QPaymentRequest struct {
 	// 商户订单号
-	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
+	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// 支付金额,实际金额*100,无小数
-	TradeFee int32 `protobuf:"varint,2,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
+	TradeFee int32 `protobuf:"varint,2,opt,name=TradeFee,proto3" json:"TradeFee"`
 	// 支付商品名称
-	Subject string `protobuf:"bytes,3,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	Subject string `protobuf:"bytes,3,opt,name=Subject,proto3" json:"Subject"`
 	// 银行授权码
-	BankAuthToken string `protobuf:"bytes,4,opt,name=BankAuthToken,proto3" json:"BankAuthToken,omitempty"`
+	BankAuthToken string `protobuf:"bytes,4,opt,name=BankAuthToken,proto3" json:"BankAuthToken"`
 	// 交易用户IP
-	TradeUserIp string `protobuf:"bytes,5,opt,name=TradeUserIp,proto3" json:"TradeUserIp,omitempty"`
+	TradeUserIp string `protobuf:"bytes,5,opt,name=TradeUserIp,proto3" json:"TradeUserIp"`
 	// 异步通知地址,非必填
-	NotifyUrl string `protobuf:"bytes,6,opt,name=NotifyUrl,proto3" json:"NotifyUrl,omitempty"`
+	NotifyUrl string `protobuf:"bytes,6,opt,name=NotifyUrl,proto3" json:"NotifyUrl"`
 	// 同步返回地址,非必填
-	ReturnUrl string `protobuf:"bytes,7,opt,name=ReturnUrl,proto3" json:"ReturnUrl,omitempty"`
+	ReturnUrl string `protobuf:"bytes,7,opt,name=ReturnUrl,proto3" json:"ReturnUrl"`
 	// 自定义数据
-	Nonce string `protobuf:"bytes,8,opt,name=Nonce,proto3" json:"Nonce,omitempty"`
+	Nonce string `protobuf:"bytes,8,opt,name=Nonce,proto3" json:"Nonce"`
 	// 安全码+随机内容md5后的字符串
-	SafeSign             string   `protobuf:"bytes,9,opt,name=SafeSign,proto3" json:"SafeSign,omitempty"`
+	SafeSign             string   `protobuf:"bytes,9,opt,name=SafeSign,proto3" json:"SafeSign"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -511,13 +511,13 @@ func (m *QPaymentRequest) GetSafeSign() string {
 // 支付申请响应
 type QPaymentResponse struct {
 	// 状态码，0表示成功
-	Code string `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code"`
 	// 错误信息,成功返回空
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 随机ID
-	NonceId string `protobuf:"bytes,8,opt,name=NonceId,proto3" json:"NonceId,omitempty"`
+	NonceId string `protobuf:"bytes,8,opt,name=NonceId,proto3" json:"NonceId"`
 	// 第三方支单据号
-	BillNo               string   `protobuf:"bytes,3,opt,name=BillNo,proto3" json:"BillNo,omitempty"`
+	BillNo               string   `protobuf:"bytes,3,opt,name=BillNo,proto3" json:"BillNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -578,9 +578,9 @@ func (m *QPaymentResponse) GetBillNo() string {
 // 查询支付结果请求
 type QPaymentQueryRequest struct {
 	// 商户订单号
-	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
+	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// 查询需要的其他参数(可选)
-	Options              map[string]string `protobuf:"bytes,3,rep,name=Options,proto3" json:"Options,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Options              map[string]string `protobuf:"bytes,3,rep,name=Options,proto3" json:"Options" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -627,11 +627,11 @@ func (m *QPaymentQueryRequest) GetOptions() map[string]string {
 // 查询支付结果响应
 type QPaymentQueryResponse struct {
 	// 状态码，0表示成功
-	Code int32 `protobuf:"varint,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code int32 `protobuf:"varint,1,opt,name=Code,proto3" json:"Code"`
 	// 错误信息,成功返回空
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 第三方支单据号
-	BillNo               string   `protobuf:"bytes,3,opt,name=BillNo,proto3" json:"BillNo,omitempty"`
+	BillNo               string   `protobuf:"bytes,3,opt,name=BillNo,proto3" json:"BillNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -685,11 +685,11 @@ func (m *QPaymentQueryResponse) GetBillNo() string {
 // 检查签名请求
 type CheckQPaySignRequest struct {
 	// 签名类型
-	SignType string `protobuf:"bytes,1,opt,name=SignType,proto3" json:"SignType,omitempty"`
+	SignType string `protobuf:"bytes,1,opt,name=SignType,proto3" json:"SignType"`
 	// 签名
-	Sign string `protobuf:"bytes,2,opt,name=Sign,proto3" json:"Sign,omitempty"`
+	Sign string `protobuf:"bytes,2,opt,name=Sign,proto3" json:"Sign"`
 	// 参数
-	Params               map[string]string `protobuf:"bytes,3,rep,name=Params,proto3" json:"Params,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Params               map[string]string `protobuf:"bytes,3,rep,name=Params,proto3" json:"Params" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -742,7 +742,7 @@ func (m *CheckQPaySignRequest) GetParams() map[string]string {
 
 // 检查签名响应
 type CheckQPaySignResponse struct {
-	SignOk               bool     `protobuf:"varint,1,opt,name=SignOk,proto3" json:"SignOk,omitempty"`
+	SignOk               bool     `protobuf:"varint,1,opt,name=SignOk,proto3" json:"SignOk"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -782,25 +782,25 @@ func (m *CheckQPaySignResponse) GetSignOk() bool {
 // 付款请求
 type CardTransferRequest struct {
 	// 商户订单号
-	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
+	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// 银行编号
-	BankCode string `protobuf:"bytes,2,opt,name=BankCode,proto3" json:"BankCode,omitempty"`
+	BankCode string `protobuf:"bytes,2,opt,name=BankCode,proto3" json:"BankCode"`
 	// 是否为对私转账
-	PersonTransfer bool `protobuf:"varint,3,opt,name=PersonTransfer,proto3" json:"PersonTransfer,omitempty"`
+	PersonTransfer bool `protobuf:"varint,3,opt,name=PersonTransfer,proto3" json:"PersonTransfer"`
 	// 付款金额,实际金额*100,无小数
-	TradeFee int32 `protobuf:"varint,4,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
+	TradeFee int32 `protobuf:"varint,4,opt,name=TradeFee,proto3" json:"TradeFee"`
 	// 银行账户
-	BankCardNo string `protobuf:"bytes,5,opt,name=BankCardNo,proto3" json:"BankCardNo,omitempty"`
+	BankCardNo string `protobuf:"bytes,5,opt,name=BankCardNo,proto3" json:"BankCardNo"`
 	// 收款人姓名,如：张三
-	BankAccountName string `protobuf:"bytes,6,opt,name=BankAccountName,proto3" json:"BankAccountName,omitempty"`
+	BankAccountName string `protobuf:"bytes,6,opt,name=BankAccountName,proto3" json:"BankAccountName"`
 	// 付款事由
-	Subject string `protobuf:"bytes,7,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	Subject string `protobuf:"bytes,7,opt,name=Subject,proto3" json:"Subject"`
 	// 省份
-	Province string `protobuf:"bytes,8,opt,name=Province,proto3" json:"Province,omitempty"`
+	Province string `protobuf:"bytes,8,opt,name=Province,proto3" json:"Province"`
 	// 城市
-	City string `protobuf:"bytes,9,opt,name=City,proto3" json:"City,omitempty"`
+	City string `protobuf:"bytes,9,opt,name=City,proto3" json:"City"`
 	// 支行信息
-	StoreName            string   `protobuf:"bytes,10,opt,name=StoreName,proto3" json:"StoreName,omitempty"`
+	StoreName            string   `protobuf:"bytes,10,opt,name=StoreName,proto3" json:"StoreName"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -903,19 +903,19 @@ func (m *CardTransferRequest) GetStoreName() string {
 // 批量付款请求
 type BatchTransferRequest struct {
 	// 批量付款订单号（要保证唯一）,最大长度50个字符，最小长度10个字符
-	BatchTradeNo string `protobuf:"bytes,1,opt,name=BatchTradeNo,proto3" json:"BatchTradeNo,omitempty"`
+	BatchTradeNo string `protobuf:"bytes,1,opt,name=BatchTradeNo,proto3" json:"BatchTradeNo"`
 	// 付款总金额,实际金额*100,无小数
-	BatchTradeFee int32 `protobuf:"varint,2,opt,name=BatchTradeFee,proto3" json:"BatchTradeFee,omitempty"`
+	BatchTradeFee int32 `protobuf:"varint,2,opt,name=BatchTradeFee,proto3" json:"BatchTradeFee"`
 	// 交易用户IP
-	TradeUserIp string `protobuf:"bytes,3,opt,name=TradeUserIp,proto3" json:"TradeUserIp,omitempty"`
+	TradeUserIp string `protobuf:"bytes,3,opt,name=TradeUserIp,proto3" json:"TradeUserIp"`
 	// 批量付款记录
-	BatchList []*CardTransferRequest `protobuf:"bytes,4,rep,name=BatchList,proto3" json:"BatchList,omitempty"`
+	BatchList []*CardTransferRequest `protobuf:"bytes,4,rep,name=BatchList,proto3" json:"BatchList"`
 	// 异步通知地址,非必填
-	NotifyUrl string `protobuf:"bytes,5,opt,name=NotifyUrl,proto3" json:"NotifyUrl,omitempty"`
+	NotifyUrl string `protobuf:"bytes,5,opt,name=NotifyUrl,proto3" json:"NotifyUrl"`
 	// 自定义数据
-	Nonce string `protobuf:"bytes,6,opt,name=Nonce,proto3" json:"Nonce,omitempty"`
+	Nonce string `protobuf:"bytes,6,opt,name=Nonce,proto3" json:"Nonce"`
 	// 安全码+随机内容md5后的字符串
-	SafeSign             string   `protobuf:"bytes,7,opt,name=SafeSign,proto3" json:"SafeSign,omitempty"`
+	SafeSign             string   `protobuf:"bytes,7,opt,name=SafeSign,proto3" json:"SafeSign"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -997,11 +997,11 @@ func (m *BatchTransferRequest) GetSafeSign() string {
 // 批量付款响应
 type BatchTransferResponse struct {
 	// 状态码，0表示成功
-	Code string `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code"`
 	// 错误信息,成功返回空
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 随机ID
-	NonceId              string   `protobuf:"bytes,3,opt,name=NonceId,proto3" json:"NonceId,omitempty"`
+	NonceId              string   `protobuf:"bytes,3,opt,name=NonceId,proto3" json:"NonceId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

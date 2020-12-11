@@ -20,8 +20,7 @@ func SignalNotify(c chan bool, fn func()) {
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGKILL)
 	for {
-		sig := <-ch
-		switch sig {
+		switch <-ch {
 		case syscall.SIGHUP, syscall.SIGKILL, syscall.SIGTERM: // 退出时
 			log.Println("[ OS][ TERM] - program has exit !")
 			fn()

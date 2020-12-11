@@ -25,12 +25,12 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type SettlePersistRequest struct {
 	// 买家编号
-	BuyerId int64 `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
+	BuyerId int64 `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId"`
 	// 店铺编号
-	ShopId               int64    `protobuf:"varint,2,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
-	PaymentOpt           int64    `protobuf:"varint,3,opt,name=PaymentOpt,proto3" json:"PaymentOpt,omitempty"`
-	DeliverOpt           int64    `protobuf:"varint,4,opt,name=DeliverOpt,proto3" json:"DeliverOpt,omitempty"`
-	AddressId            int64    `protobuf:"varint,5,opt,name=AddressId,proto3" json:"AddressId,omitempty"`
+	ShopId               int64    `protobuf:"varint,2,opt,name=ShopId,proto3" json:"ShopId"`
+	PaymentOpt           int64    `protobuf:"varint,3,opt,name=PaymentOpt,proto3" json:"PaymentOpt"`
+	DeliverOpt           int64    `protobuf:"varint,4,opt,name=DeliverOpt,proto3" json:"DeliverOpt"`
+	AddressId            int64    `protobuf:"varint,5,opt,name=AddressId,proto3" json:"AddressId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -97,15 +97,15 @@ func (m *SettlePersistRequest) GetAddressId() int64 {
 
 type CartItemRequest struct {
 	// 买家编号
-	BuyerId int64 `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
+	BuyerId int64 `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId"`
 	// 购物车编码
-	CartCode string `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode,omitempty"`
+	CartCode string `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode"`
 	// 商品编号
-	ItemId int64 `protobuf:"zigzag64,3,opt,name=ItemId,proto3" json:"ItemId,omitempty"`
+	ItemId int64 `protobuf:"zigzag64,3,opt,name=ItemId,proto3" json:"ItemId"`
 	// SKU编号
-	SkuId int64 `protobuf:"zigzag64,4,opt,name=SkuId,proto3" json:"SkuId,omitempty"`
+	SkuId int64 `protobuf:"zigzag64,4,opt,name=SkuId,proto3" json:"SkuId"`
 	// 数量
-	Quantity             int32    `protobuf:"varint,5,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Quantity             int32    `protobuf:"varint,5,opt,name=quantity,proto3" json:"quantity"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -171,9 +171,9 @@ func (m *CartItemRequest) GetQuantity() int32 {
 }
 
 type CheckSignRequest struct {
-	BuyerId              int64             `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
-	CartCode             string            `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode,omitempty"`
-	Items                []*SCheckCartItem `protobuf:"bytes,3,rep,name=Items,proto3" json:"Items,omitempty"`
+	BuyerId              int64             `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId"`
+	CartCode             string            `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode"`
+	Items                []*SCheckCartItem `protobuf:"bytes,3,rep,name=Items,proto3" json:"Items"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -225,8 +225,8 @@ func (m *CheckSignRequest) GetItems() []*SCheckCartItem {
 }
 
 type CartCode struct {
-	BuyerId              int64    `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
-	CartCode             string   `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode,omitempty"`
+	BuyerId              int64    `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId"`
+	CartCode             string   `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -271,10 +271,10 @@ func (m *CartCode) GetCartCode() string {
 }
 
 type SettleMeta_ struct {
-	PaymentOpt           int64               `protobuf:"varint,1,opt,name=PaymentOpt,proto3" json:"PaymentOpt,omitempty"`
-	DeliverOpt           int64               `protobuf:"varint,2,opt,name=DeliverOpt,proto3" json:"DeliverOpt,omitempty"`
-	Shop                 *SettleShopMeta_    `protobuf:"bytes,3,opt,name=Shop,proto3" json:"Shop,omitempty"`
-	Deliver              *SettleDeliverMeta_ `protobuf:"bytes,4,opt,name=Deliver,proto3" json:"Deliver,omitempty"`
+	PaymentOpt           int64               `protobuf:"varint,1,opt,name=PaymentOpt,proto3" json:"PaymentOpt"`
+	DeliverOpt           int64               `protobuf:"varint,2,opt,name=DeliverOpt,proto3" json:"DeliverOpt"`
+	Shop                 *SettleShopMeta_    `protobuf:"bytes,3,opt,name=Shop,proto3" json:"Shop"`
+	Deliver              *SettleDeliverMeta_ `protobuf:"bytes,4,opt,name=Deliver,proto3" json:"Deliver"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -333,9 +333,9 @@ func (m *SettleMeta_) GetDeliver() *SettleDeliverMeta_ {
 }
 
 type SettleShopMeta_ struct {
-	ShopId               int64    `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId,omitempty"`
-	ShopName             string   `protobuf:"bytes,2,opt,name=ShopName,proto3" json:"ShopName,omitempty"`
-	Telephone            string   `protobuf:"bytes,3,opt,name=Telephone,proto3" json:"Telephone,omitempty"`
+	ShopId               int64    `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId"`
+	ShopName             string   `protobuf:"bytes,2,opt,name=ShopName,proto3" json:"ShopName"`
+	Telephone            string   `protobuf:"bytes,3,opt,name=Telephone,proto3" json:"Telephone"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -387,10 +387,10 @@ func (m *SettleShopMeta_) GetTelephone() string {
 }
 
 type SettleDeliverMeta_ struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	ConsigneeName        string   `protobuf:"bytes,2,opt,name=ConsigneeName,proto3" json:"ConsigneeName,omitempty"`
-	ConsigneePhone       string   `protobuf:"bytes,3,opt,name=ConsigneePhone,proto3" json:"ConsigneePhone,omitempty"`
-	Address              string   `protobuf:"bytes,4,opt,name=Address,proto3" json:"Address,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	ConsigneeName        string   `protobuf:"bytes,2,opt,name=ConsigneeName,proto3" json:"ConsigneeName"`
+	ConsigneePhone       string   `protobuf:"bytes,3,opt,name=ConsigneePhone,proto3" json:"ConsigneePhone"`
+	Address              string   `protobuf:"bytes,4,opt,name=Address,proto3" json:"Address"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

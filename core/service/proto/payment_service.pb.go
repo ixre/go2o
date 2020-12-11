@@ -85,8 +85,8 @@ func (EPayMethod) EnumDescriptor() ([]byte, []int) {
 }
 
 type AdjustOrderRequest struct {
-	PaymentNo            string   `protobuf:"bytes,1,opt,name=paymentNo,proto3" json:"paymentNo,omitempty"`
-	Amount               float64  `protobuf:"fixed64,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	PaymentNo            string   `protobuf:"bytes,1,opt,name=paymentNo,proto3" json:"paymentNo"`
+	Amount               float64  `protobuf:"fixed64,2,opt,name=amount,proto3" json:"amount"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -131,8 +131,8 @@ func (m *AdjustOrderRequest) GetAmount() float64 {
 }
 
 type DiscountBalanceRequest struct {
-	OrderId              int32    `protobuf:"zigzag32,1,opt,name=orderId,proto3" json:"orderId,omitempty"`
-	Remark               string   `protobuf:"bytes,2,opt,name=remark,proto3" json:"remark,omitempty"`
+	OrderId              int32    `protobuf:"zigzag32,1,opt,name=orderId,proto3" json:"orderId"`
+	Remark               string   `protobuf:"bytes,2,opt,name=remark,proto3" json:"remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -177,9 +177,9 @@ func (m *DiscountBalanceRequest) GetRemark() string {
 }
 
 type DiscountIntegralRequest struct {
-	OrderId              int32    `protobuf:"zigzag32,1,opt,name=orderId,proto3" json:"orderId,omitempty"`
-	Integral             int64    `protobuf:"zigzag64,2,opt,name=integral,proto3" json:"integral,omitempty"`
-	IgnoreOut            bool     `protobuf:"varint,3,opt,name=ignoreOut,proto3" json:"ignoreOut,omitempty"`
+	OrderId              int32    `protobuf:"zigzag32,1,opt,name=orderId,proto3" json:"orderId"`
+	Integral             int64    `protobuf:"zigzag64,2,opt,name=integral,proto3" json:"integral"`
+	IgnoreOut            bool     `protobuf:"varint,3,opt,name=ignoreOut,proto3" json:"ignoreOut"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -231,9 +231,9 @@ func (m *DiscountIntegralRequest) GetIgnoreOut() bool {
 }
 
 type WalletPaymentRequest struct {
-	TradeNo              string   `protobuf:"bytes,1,opt,name=tradeNo,proto3" json:"tradeNo,omitempty"`
-	MergePay             bool     `protobuf:"varint,2,opt,name=mergePay,proto3" json:"mergePay,omitempty"`
-	Remark               string   `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark,omitempty"`
+	TradeNo              string   `protobuf:"bytes,1,opt,name=tradeNo,proto3" json:"tradeNo"`
+	MergePay             bool     `protobuf:"varint,2,opt,name=mergePay,proto3" json:"mergePay"`
+	Remark               string   `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -285,8 +285,8 @@ func (m *WalletPaymentRequest) GetRemark() string {
 }
 
 type HyperPaymentRequest struct {
-	OrderId              int32    `protobuf:"zigzag32,1,opt,name=orderId,proto3" json:"orderId,omitempty"`
-	Remark               string   `protobuf:"bytes,2,opt,name=remark,proto3" json:"remark,omitempty"`
+	OrderId              int32    `protobuf:"zigzag32,1,opt,name=orderId,proto3" json:"orderId"`
+	Remark               string   `protobuf:"bytes,2,opt,name=remark,proto3" json:"remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -331,9 +331,9 @@ func (m *HyperPaymentRequest) GetRemark() string {
 }
 
 type FinishPaymentRequest struct {
-	TradeNo              string   `protobuf:"bytes,1,opt,name=tradeNo,proto3" json:"tradeNo,omitempty"`
-	SpName               string   `protobuf:"bytes,2,opt,name=spName,proto3" json:"spName,omitempty"`
-	OuterNo              string   `protobuf:"bytes,3,opt,name=outerNo,proto3" json:"outerNo,omitempty"`
+	TradeNo              string   `protobuf:"bytes,1,opt,name=tradeNo,proto3" json:"tradeNo"`
+	SpName               string   `protobuf:"bytes,2,opt,name=spName,proto3" json:"spName"`
+	OuterNo              string   `protobuf:"bytes,3,opt,name=outerNo,proto3" json:"outerNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -385,8 +385,8 @@ func (m *FinishPaymentRequest) GetOuterNo() string {
 }
 
 type OrderInfoRequest struct {
-	TradeNo              string   `protobuf:"bytes,1,opt,name=tradeNo,proto3" json:"tradeNo,omitempty"`
-	MergePay             bool     `protobuf:"varint,2,opt,name=mergePay,proto3" json:"mergePay,omitempty"`
+	TradeNo              string   `protobuf:"bytes,1,opt,name=tradeNo,proto3" json:"tradeNo"`
+	MergePay             bool     `protobuf:"varint,2,opt,name=mergePay,proto3" json:"mergePay"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -431,8 +431,8 @@ func (m *OrderInfoRequest) GetMergePay() bool {
 }
 
 type MixedPaymentRequest struct {
-	TradeNo              string             `protobuf:"bytes,1,opt,name=tradeNo,proto3" json:"tradeNo,omitempty"`
-	Data                 []*SRequestPayData `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	TradeNo              string             `protobuf:"bytes,1,opt,name=tradeNo,proto3" json:"tradeNo"`
+	Data                 []*SRequestPayData `protobuf:"bytes,2,rep,name=data,proto3" json:"data"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -477,9 +477,9 @@ func (m *MixedPaymentRequest) GetData() []*SRequestPayData {
 }
 
 type PayGatewayRequest struct {
-	Action               string            `protobuf:"bytes,1,opt,name=action,proto3" json:"action,omitempty"`
-	UserId               int64             `protobuf:"zigzag64,2,opt,name=userId,proto3" json:"userId,omitempty"`
-	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Action               string            `protobuf:"bytes,1,opt,name=action,proto3" json:"action"`
+	UserId               int64             `protobuf:"zigzag64,2,opt,name=userId,proto3" json:"userId"`
+	Data                 map[string]string `protobuf:"bytes,3,rep,name=data,proto3" json:"data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -533,59 +533,59 @@ func (m *PayGatewayRequest) GetData() map[string]string {
 // * 支付单
 type SPaymentOrder struct {
 	// * 交易号
-	TradeNo string `protobuf:"bytes,1,opt,name=TradeNo,proto3" json:"TradeNo,omitempty"`
+	TradeNo string `protobuf:"bytes,1,opt,name=TradeNo,proto3" json:"TradeNo"`
 	// * 卖家编号
-	SellerId int32 `protobuf:"zigzag32,2,opt,name=SellerId,proto3" json:"SellerId,omitempty"`
+	SellerId int32 `protobuf:"zigzag32,2,opt,name=SellerId,proto3" json:"SellerId"`
 	// * 交易类型
-	TradeType string `protobuf:"bytes,3,opt,name=TradeType,proto3" json:"TradeType,omitempty"`
+	TradeType string `protobuf:"bytes,3,opt,name=TradeType,proto3" json:"TradeType"`
 	// * 合并支付交单单号
-	MergeTradeNo string `protobuf:"bytes,4,opt,name=MergeTradeNo,proto3" json:"MergeTradeNo,omitempty"`
+	MergeTradeNo string `protobuf:"bytes,4,opt,name=MergeTradeNo,proto3" json:"MergeTradeNo"`
 	// * 支付单详情
-	Subject string `protobuf:"bytes,5,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	Subject string `protobuf:"bytes,5,opt,name=Subject,proto3" json:"Subject"`
 	// * 是否为子订单
-	SubOrder bool `protobuf:"varint,6,opt,name=SubOrder,proto3" json:"SubOrder,omitempty"`
+	SubOrder bool `protobuf:"varint,6,opt,name=SubOrder,proto3" json:"SubOrder"`
 	// * 支付单的类型，如购物或其他
-	OrderType int32 `protobuf:"zigzag32,7,opt,name=OrderType,proto3" json:"OrderType,omitempty"`
+	OrderType int32 `protobuf:"zigzag32,7,opt,name=OrderType,proto3" json:"OrderType"`
 	// * 外部订单号
-	OutOrderNo string `protobuf:"bytes,8,opt,name=OutOrderNo,proto3" json:"OutOrderNo,omitempty"`
+	OutOrderNo string `protobuf:"bytes,8,opt,name=OutOrderNo,proto3" json:"OutOrderNo"`
 	// * 买家编号
-	BuyerId int32 `protobuf:"zigzag32,9,opt,name=BuyerId,proto3" json:"BuyerId,omitempty"`
+	BuyerId int32 `protobuf:"zigzag32,9,opt,name=BuyerId,proto3" json:"BuyerId"`
 	// * 支付用户编号
-	PayUid int32 `protobuf:"zigzag32,10,opt,name=PayUid,proto3" json:"PayUid,omitempty"`
+	PayUid int32 `protobuf:"zigzag32,10,opt,name=PayUid,proto3" json:"PayUid"`
 	// * 商品金额
-	ItemAmount int32 `protobuf:"zigzag32,11,opt,name=ItemAmount,proto3" json:"ItemAmount,omitempty"`
+	ItemAmount int32 `protobuf:"zigzag32,11,opt,name=ItemAmount,proto3" json:"ItemAmount"`
 	// * 优惠金额
-	DiscountAmount int32 `protobuf:"zigzag32,12,opt,name=DiscountAmount,proto3" json:"DiscountAmount,omitempty"`
+	DiscountAmount int32 `protobuf:"zigzag32,12,opt,name=DiscountAmount,proto3" json:"DiscountAmount"`
 	// * 调整金额
-	AdjustAmount int32 `protobuf:"zigzag32,13,opt,name=AdjustAmount,proto3" json:"AdjustAmount,omitempty"`
+	AdjustAmount int32 `protobuf:"zigzag32,13,opt,name=AdjustAmount,proto3" json:"AdjustAmount"`
 	// * 抵扣金额
-	DeductAmount int32 `protobuf:"zigzag32,14,opt,name=DeductAmount,proto3" json:"DeductAmount,omitempty"`
+	DeductAmount int32 `protobuf:"zigzag32,14,opt,name=DeductAmount,proto3" json:"DeductAmount"`
 	// * 共计金额
-	TotalAmount int32 `protobuf:"zigzag32,15,opt,name=TotalAmount,proto3" json:"TotalAmount,omitempty"`
+	TotalAmount int32 `protobuf:"zigzag32,15,opt,name=TotalAmount,proto3" json:"TotalAmount"`
 	// * 手续费
-	ProcedureFee int32 `protobuf:"zigzag32,16,opt,name=ProcedureFee,proto3" json:"ProcedureFee,omitempty"`
+	ProcedureFee int32 `protobuf:"zigzag32,16,opt,name=ProcedureFee,proto3" json:"ProcedureFee"`
 	// * 实付金额
-	PaidFee int32 `protobuf:"zigzag32,17,opt,name=PaidFee,proto3" json:"PaidFee,omitempty"`
+	PaidFee int32 `protobuf:"zigzag32,17,opt,name=PaidFee,proto3" json:"PaidFee"`
 	// * 最终应付金额
-	FinalFee int32 `protobuf:"zigzag32,18,opt,name=FinalFee,proto3" json:"FinalFee,omitempty"`
+	FinalFee int32 `protobuf:"zigzag32,18,opt,name=FinalFee,proto3" json:"FinalFee"`
 	// * 可⽤支付方式
-	PayFlag int32 `protobuf:"zigzag32,19,opt,name=PayFlag,proto3" json:"PayFlag,omitempty"`
+	PayFlag int32 `protobuf:"zigzag32,19,opt,name=PayFlag,proto3" json:"PayFlag"`
 	// * 实际使用支付方式
-	FinalFlag int32 `protobuf:"zigzag32,20,opt,name=FinalFlag,proto3" json:"FinalFlag,omitempty"`
+	FinalFlag int32 `protobuf:"zigzag32,20,opt,name=FinalFlag,proto3" json:"FinalFlag"`
 	// * 其他支付信息
-	ExtraData string `protobuf:"bytes,21,opt,name=ExtraData,proto3" json:"ExtraData,omitempty"`
+	ExtraData string `protobuf:"bytes,21,opt,name=ExtraData,proto3" json:"ExtraData"`
 	// * 订单状态
-	State int32 `protobuf:"zigzag32,22,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"zigzag32,22,opt,name=State,proto3" json:"State"`
 	// * 提交时间
-	SubmitTime int64 `protobuf:"zigzag64,23,opt,name=SubmitTime,proto3" json:"SubmitTime,omitempty"`
+	SubmitTime int64 `protobuf:"zigzag64,23,opt,name=SubmitTime,proto3" json:"SubmitTime"`
 	// * 过期时间
-	ExpiresTime int64 `protobuf:"zigzag64,24,opt,name=ExpiresTime,proto3" json:"ExpiresTime,omitempty"`
+	ExpiresTime int64 `protobuf:"zigzag64,24,opt,name=ExpiresTime,proto3" json:"ExpiresTime"`
 	// * 支付时间
-	PaidTime int64 `protobuf:"zigzag64,25,opt,name=PaidTime,proto3" json:"PaidTime,omitempty"`
+	PaidTime int64 `protobuf:"zigzag64,25,opt,name=PaidTime,proto3" json:"PaidTime"`
 	// * 交易数据
-	TradeData []*STradeMethodData `protobuf:"bytes,26,rep,name=TradeData,proto3" json:"TradeData,omitempty"`
+	TradeData []*STradeMethodData `protobuf:"bytes,26,rep,name=TradeData,proto3" json:"TradeData"`
 	// * 编号
-	ID                   int32    `protobuf:"zigzag32,27,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID                   int32    `protobuf:"zigzag32,27,opt,name=ID,proto3" json:"ID"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -807,11 +807,11 @@ func (m *SPaymentOrder) GetID() int32 {
 // * 请求支付数据
 type SRequestPayData struct {
 	// * 支付方式
-	Method int32 `protobuf:"zigzag32,1,opt,name=Method,proto3" json:"Method,omitempty"`
+	Method int32 `protobuf:"zigzag32,1,opt,name=Method,proto3" json:"Method"`
 	// * 支付方式代码
-	Code string `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code"`
 	// * 支付金额
-	Amount               int32    `protobuf:"zigzag32,3,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount               int32    `protobuf:"zigzag32,3,opt,name=Amount,proto3" json:"Amount"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -865,17 +865,17 @@ func (m *SRequestPayData) GetAmount() int32 {
 // * 交易方式数据
 type STradeMethodData struct {
 	// * 支付途径
-	Method int32 `protobuf:"zigzag32,1,opt,name=Method,proto3" json:"Method,omitempty"`
+	Method int32 `protobuf:"zigzag32,1,opt,name=Method,proto3" json:"Method"`
 	// * 交易代码
-	Code string `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code,omitempty"`
+	Code string `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code"`
 	// * 支付金额
-	Amount int32 `protobuf:"zigzag32,3,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Amount int32 `protobuf:"zigzag32,3,opt,name=Amount,proto3" json:"Amount"`
 	// * 是否为内置支付途径
-	Internal int32 `protobuf:"zigzag32,4,opt,name=Internal,proto3" json:"Internal,omitempty"`
+	Internal int32 `protobuf:"zigzag32,4,opt,name=Internal,proto3" json:"Internal"`
 	// * 外部交易单号
-	OutTradeNo string `protobuf:"bytes,5,opt,name=OutTradeNo,proto3" json:"OutTradeNo,omitempty"`
+	OutTradeNo string `protobuf:"bytes,5,opt,name=OutTradeNo,proto3" json:"OutTradeNo"`
 	// * 支付时间
-	PayTime              int64    `protobuf:"zigzag64,6,opt,name=PayTime,proto3" json:"PayTime,omitempty"`
+	PayTime              int64    `protobuf:"zigzag64,6,opt,name=PayTime,proto3" json:"PayTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -950,23 +950,23 @@ func (m *STradeMethodData) GetPayTime() int64 {
 // * 支付单预交易数据
 type SPrepareTradeData struct {
 	// * 错误码
-	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode,omitempty"`
+	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	// * 错误消息
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg,omitempty"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// * 交易号
-	TradeNo string `protobuf:"bytes,3,opt,name=TradeNo,proto3" json:"TradeNo,omitempty"`
+	TradeNo string `protobuf:"bytes,3,opt,name=TradeNo,proto3" json:"TradeNo"`
 	// * 支付标志
-	PayFlag int32 `protobuf:"zigzag32,4,opt,name=PayFlag,proto3" json:"PayFlag,omitempty"`
+	PayFlag int32 `protobuf:"zigzag32,4,opt,name=PayFlag,proto3" json:"PayFlag"`
 	// * 交易状态
-	TradeState int32 `protobuf:"zigzag32,5,opt,name=TradeState,proto3" json:"TradeState,omitempty"`
+	TradeState int32 `protobuf:"zigzag32,5,opt,name=TradeState,proto3" json:"TradeState"`
 	// * 交易订单
-	TradeOrders []*SPaymentOrderData `protobuf:"bytes,6,rep,name=TradeOrders,proto3" json:"TradeOrders,omitempty"`
+	TradeOrders []*SPaymentOrderData `protobuf:"bytes,6,rep,name=TradeOrders,proto3" json:"TradeOrders"`
 	// * 累计金额
-	TotalAmount int32 `protobuf:"zigzag32,7,opt,name=TotalAmount,proto3" json:"TotalAmount,omitempty"`
+	TotalAmount int32 `protobuf:"zigzag32,7,opt,name=TotalAmount,proto3" json:"TotalAmount"`
 	// * 手续费
-	ProcedureFee int32 `protobuf:"zigzag32,8,opt,name=ProcedureFee,proto3" json:"ProcedureFee,omitempty"`
+	ProcedureFee int32 `protobuf:"zigzag32,8,opt,name=ProcedureFee,proto3" json:"ProcedureFee"`
 	// * 最终支付金额
-	FinalFee             int32    `protobuf:"zigzag32,9,opt,name=FinalFee,proto3" json:"FinalFee,omitempty"`
+	FinalFee             int32    `protobuf:"zigzag32,9,opt,name=FinalFee,proto3" json:"FinalFee"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1062,17 +1062,17 @@ func (m *SPrepareTradeData) GetFinalFee() int32 {
 // * 支付单数据
 type SPaymentOrderData struct {
 	// * 交易订单号
-	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo,omitempty"`
+	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// * 标题
-	Subject string `protobuf:"bytes,2,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	Subject string `protobuf:"bytes,2,opt,name=Subject,proto3" json:"Subject"`
 	// * 交易类型
-	TradeType string `protobuf:"bytes,3,opt,name=TradeType,proto3" json:"TradeType,omitempty"`
+	TradeType string `protobuf:"bytes,3,opt,name=TradeType,proto3" json:"TradeType"`
 	// * 状态
-	State int32 `protobuf:"zigzag32,4,opt,name=State,proto3" json:"State,omitempty"`
+	State int32 `protobuf:"zigzag32,4,opt,name=State,proto3" json:"State"`
 	// * 手续费
-	ProcedureFee int32 `protobuf:"zigzag32,5,opt,name=ProcedureFee,proto3" json:"ProcedureFee,omitempty"`
+	ProcedureFee int32 `protobuf:"zigzag32,5,opt,name=ProcedureFee,proto3" json:"ProcedureFee"`
 	// * 最终支付金额
-	FinalFee             int32    `protobuf:"zigzag32,6,opt,name=FinalFee,proto3" json:"FinalFee,omitempty"`
+	FinalFee             int32    `protobuf:"zigzag32,6,opt,name=FinalFee,proto3" json:"FinalFee"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

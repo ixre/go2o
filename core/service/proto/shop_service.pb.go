@@ -24,9 +24,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type TurnShopRequest struct {
-	ShopId               int64    `protobuf:"zigzag64,1,opt,name=shopId,proto3" json:"shopId,omitempty"`
-	On                   bool     `protobuf:"varint,2,opt,name=on,proto3" json:"on,omitempty"`
-	Reason               string   `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
+	ShopId               int64    `protobuf:"zigzag64,1,opt,name=shopId,proto3" json:"shopId"`
+	On                   bool     `protobuf:"varint,2,opt,name=on,proto3" json:"on"`
+	Reason               string   `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

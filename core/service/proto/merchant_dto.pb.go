@@ -21,35 +21,35 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 // 商家
 type SMerchant struct {
 	// * 编号
-	Id int32 `protobuf:"zigzag32,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int32 `protobuf:"zigzag32,1,opt,name=Id,proto3" json:"Id"`
 	// * 会员编号
-	MemberId int64 `protobuf:"zigzag64,2,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"zigzag64,2,opt,name=MemberId,proto3" json:"MemberId"`
 	// * 登录用户
-	LoginUser string `protobuf:"bytes,3,opt,name=LoginUser,proto3" json:"LoginUser,omitempty"`
+	LoginUser string `protobuf:"bytes,3,opt,name=LoginUser,proto3" json:"LoginUser"`
 	// * 登录密码
-	LoginPwd string `protobuf:"bytes,4,opt,name=LoginPwd,proto3" json:"LoginPwd,omitempty"`
+	LoginPwd string `protobuf:"bytes,4,opt,name=LoginPwd,proto3" json:"LoginPwd"`
 	// * 名称
-	Name string `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name"`
 	// * 公司名称
-	CompanyName string `protobuf:"bytes,6,opt,name=CompanyName,proto3" json:"CompanyName,omitempty"`
+	CompanyName string `protobuf:"bytes,6,opt,name=CompanyName,proto3" json:"CompanyName"`
 	// * 是否字营
-	SelfSales int32 `protobuf:"zigzag32,7,opt,name=SelfSales,proto3" json:"SelfSales,omitempty"`
+	SelfSales int32 `protobuf:"zigzag32,7,opt,name=SelfSales,proto3" json:"SelfSales"`
 	// * 商户等级
-	Level int32 `protobuf:"zigzag32,8,opt,name=Level,proto3" json:"Level,omitempty"`
+	Level int32 `protobuf:"zigzag32,8,opt,name=Level,proto3" json:"Level"`
 	// * 标志
-	Logo string `protobuf:"bytes,9,opt,name=Logo,proto3" json:"Logo,omitempty"`
+	Logo string `protobuf:"bytes,9,opt,name=Logo,proto3" json:"Logo"`
 	// * 省
-	Province int32 `protobuf:"zigzag32,10,opt,name=Province,proto3" json:"Province,omitempty"`
+	Province int32 `protobuf:"zigzag32,10,opt,name=Province,proto3" json:"Province"`
 	// * 市
-	City int32 `protobuf:"zigzag32,11,opt,name=City,proto3" json:"City,omitempty"`
+	City int32 `protobuf:"zigzag32,11,opt,name=City,proto3" json:"City"`
 	// * 区
-	District int32 `protobuf:"zigzag32,12,opt,name=District,proto3" json:"District,omitempty"`
+	District int32 `protobuf:"zigzag32,12,opt,name=District,proto3" json:"District"`
 	// * 标志
-	Flag int32 `protobuf:"zigzag32,13,opt,name=Flag,proto3" json:"Flag,omitempty"`
+	Flag int32 `protobuf:"zigzag32,13,opt,name=Flag,proto3" json:"Flag"`
 	// * 是否启用
-	Enabled int32 `protobuf:"zigzag32,14,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled int32 `protobuf:"zigzag32,14,opt,name=Enabled,proto3" json:"Enabled"`
 	// * 最后登录时间
-	LastLoginTime        int32    `protobuf:"zigzag32,15,opt,name=LastLoginTime,proto3" json:"LastLoginTime,omitempty"`
+	LastLoginTime        int32    `protobuf:"zigzag32,15,opt,name=LastLoginTime,proto3" json:"LastLoginTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -187,21 +187,21 @@ func (m *SMerchant) GetLastLoginTime() int32 {
 // 商家
 type SMerchantPack struct {
 	// * 登录用户
-	LoginUser string `protobuf:"bytes,1,opt,name=LoginUser,proto3" json:"LoginUser,omitempty"`
+	LoginUser string `protobuf:"bytes,1,opt,name=LoginUser,proto3" json:"LoginUser"`
 	// * 登录密码
-	LoginPwd string `protobuf:"bytes,2,opt,name=LoginPwd,proto3" json:"LoginPwd,omitempty"`
+	LoginPwd string `protobuf:"bytes,2,opt,name=LoginPwd,proto3" json:"LoginPwd"`
 	// * 名称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// * 是否字营
-	SelfSales int32 `protobuf:"zigzag32,4,opt,name=SelfSales,proto3" json:"SelfSales,omitempty"`
+	SelfSales int32 `protobuf:"zigzag32,4,opt,name=SelfSales,proto3" json:"SelfSales"`
 	// * 店铺名称
-	ShopName string `protobuf:"bytes,5,opt,name=ShopName,proto3" json:"ShopName,omitempty"`
+	ShopName string `protobuf:"bytes,5,opt,name=ShopName,proto3" json:"ShopName"`
 	// * 标志
-	ShopLogo string `protobuf:"bytes,6,opt,name=ShopLogo,proto3" json:"ShopLogo,omitempty"`
+	ShopLogo string `protobuf:"bytes,6,opt,name=ShopLogo,proto3" json:"ShopLogo"`
 	// * 电话
-	Tel string `protobuf:"bytes,7,opt,name=Tel,proto3" json:"Tel,omitempty"`
+	Tel string `protobuf:"bytes,7,opt,name=Tel,proto3" json:"Tel"`
 	// * 地址
-	Addr                 string   `protobuf:"bytes,8,opt,name=Addr,proto3" json:"Addr,omitempty"`
+	Addr                 string   `protobuf:"bytes,8,opt,name=Addr,proto3" json:"Addr"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -288,8 +288,8 @@ func (m *SMerchantPack) GetAddr() string {
 }
 
 type MerchantCreateRequest struct {
-	Mch                  *SMerchantPack `protobuf:"bytes,1,opt,name=mch,proto3" json:"mch,omitempty"`
-	RelMemberId          int64          `protobuf:"zigzag64,2,opt,name=relMemberId,proto3" json:"relMemberId,omitempty"`
+	Mch                  *SMerchantPack `protobuf:"bytes,1,opt,name=mch,proto3" json:"mch"`
+	RelMemberId          int64          `protobuf:"zigzag64,2,opt,name=relMemberId,proto3" json:"relMemberId"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -334,8 +334,8 @@ func (m *MerchantCreateRequest) GetRelMemberId() int64 {
 }
 
 type MchUserPwd struct {
-	User                 string   `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	Pwd                  string   `protobuf:"bytes,2,opt,name=pwd,proto3" json:"pwd,omitempty"`
+	User                 string   `protobuf:"bytes,1,opt,name=user,proto3" json:"user"`
+	Pwd                  string   `protobuf:"bytes,2,opt,name=pwd,proto3" json:"pwd"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -380,7 +380,7 @@ func (m *MchUserPwd) GetPwd() string {
 }
 
 type SyncWSItemsResponse struct {
-	Value                map[string]int32 `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"zigzag32,2,opt,name=value,proto3"`
+	Value                map[string]int32 `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"zigzag32,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -418,7 +418,7 @@ func (m *SyncWSItemsResponse) GetValue() map[string]int32 {
 }
 
 type STradeConfListResponse struct {
-	Value                []*STradeConf_ `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*STradeConf_ `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -456,8 +456,8 @@ func (m *STradeConfListResponse) GetValue() []*STradeConf_ {
 }
 
 type TradeConfRequest struct {
-	MchId                int32    `protobuf:"zigzag32,1,opt,name=mchId,proto3" json:"mchId,omitempty"`
-	TradeType            int32    `protobuf:"zigzag32,2,opt,name=tradeType,proto3" json:"tradeType,omitempty"`
+	MchId                int32    `protobuf:"zigzag32,1,opt,name=mchId,proto3" json:"mchId"`
+	TradeType            int32    `protobuf:"zigzag32,2,opt,name=tradeType,proto3" json:"tradeType"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -502,8 +502,8 @@ func (m *TradeConfRequest) GetTradeType() int32 {
 }
 
 type TradeConfSaveRequest struct {
-	MchId                int32          `protobuf:"zigzag32,1,opt,name=mchId,proto3" json:"mchId,omitempty"`
-	Arr                  []*STradeConf_ `protobuf:"bytes,2,rep,name=arr,proto3" json:"arr,omitempty"`
+	MchId                int32          `protobuf:"zigzag32,1,opt,name=mchId,proto3" json:"mchId"`
+	Arr                  []*STradeConf_ `protobuf:"bytes,2,rep,name=arr,proto3" json:"arr"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -580,49 +580,49 @@ var xxx_messageInfo_STradeConf_ proto.InternalMessageInfo
 
 // 商户申请信息
 type SMchSignUp struct {
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 申请单号
-	SignNo string `protobuf:"bytes,2,opt,name=SignNo,proto3" json:"SignNo,omitempty"`
+	SignNo string `protobuf:"bytes,2,opt,name=SignNo,proto3" json:"SignNo"`
 	// 会员编号
-	MemberId int64 `protobuf:"varint,3,opt,name=MemberId,proto3" json:"MemberId,omitempty"`
+	MemberId int64 `protobuf:"varint,3,opt,name=MemberId,proto3" json:"MemberId"`
 	// 用户名
-	User string `protobuf:"bytes,4,opt,name=User,proto3" json:"User,omitempty"`
+	User string `protobuf:"bytes,4,opt,name=User,proto3" json:"User"`
 	// 密码
-	Pwd string `protobuf:"bytes,5,opt,name=Pwd,proto3" json:"Pwd,omitempty"`
+	Pwd string `protobuf:"bytes,5,opt,name=Pwd,proto3" json:"Pwd"`
 	// 商户名称号
-	MchName string `protobuf:"bytes,6,opt,name=MchName,proto3" json:"MchName,omitempty"`
+	MchName string `protobuf:"bytes,6,opt,name=MchName,proto3" json:"MchName"`
 	// 省
-	Province int32 `protobuf:"varint,7,opt,name=Province,proto3" json:"Province,omitempty"`
+	Province int32 `protobuf:"varint,7,opt,name=Province,proto3" json:"Province"`
 	// 市
-	City int32 `protobuf:"varint,8,opt,name=City,proto3" json:"City,omitempty"`
+	City int32 `protobuf:"varint,8,opt,name=City,proto3" json:"City"`
 	// 区
-	District int32 `protobuf:"varint,9,opt,name=District,proto3" json:"District,omitempty"`
+	District int32 `protobuf:"varint,9,opt,name=District,proto3" json:"District"`
 	// 详细地址
-	Address string `protobuf:"bytes,10,opt,name=Address,proto3" json:"Address,omitempty"`
+	Address string `protobuf:"bytes,10,opt,name=Address,proto3" json:"Address"`
 	// 店铺店铺
-	ShopName string `protobuf:"bytes,11,opt,name=ShopName,proto3" json:"ShopName,omitempty"`
+	ShopName string `protobuf:"bytes,11,opt,name=ShopName,proto3" json:"ShopName"`
 	// 公司名称
-	CompanyName string `protobuf:"bytes,12,opt,name=CompanyName,proto3" json:"CompanyName,omitempty"`
+	CompanyName string `protobuf:"bytes,12,opt,name=CompanyName,proto3" json:"CompanyName"`
 	// 营业执照编号
-	CompanyNo string `protobuf:"bytes,13,opt,name=CompanyNo,proto3" json:"CompanyNo,omitempty"`
+	CompanyNo string `protobuf:"bytes,13,opt,name=CompanyNo,proto3" json:"CompanyNo"`
 	// 法人
-	PersonName string `protobuf:"bytes,14,opt,name=PersonName,proto3" json:"PersonName,omitempty"`
+	PersonName string `protobuf:"bytes,14,opt,name=PersonName,proto3" json:"PersonName"`
 	// 法人身份证
-	PersonId string `protobuf:"bytes,15,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
+	PersonId string `protobuf:"bytes,15,opt,name=PersonId,proto3" json:"PersonId"`
 	// 法人身份证
-	PersonImage string `protobuf:"bytes,16,opt,name=PersonImage,proto3" json:"PersonImage,omitempty"`
+	PersonImage string `protobuf:"bytes,16,opt,name=PersonImage,proto3" json:"PersonImage"`
 	// 联系电话
-	Phone string `protobuf:"bytes,17,opt,name=Phone,proto3" json:"Phone,omitempty"`
+	Phone string `protobuf:"bytes,17,opt,name=Phone,proto3" json:"Phone"`
 	// 营业执照图片
-	CompanyImage string `protobuf:"bytes,18,opt,name=CompanyImage,proto3" json:"CompanyImage,omitempty"`
+	CompanyImage string `protobuf:"bytes,18,opt,name=CompanyImage,proto3" json:"CompanyImage"`
 	// 委托书
-	AuthDoc string `protobuf:"bytes,19,opt,name=AuthDoc,proto3" json:"AuthDoc,omitempty"`
+	AuthDoc string `protobuf:"bytes,19,opt,name=AuthDoc,proto3" json:"AuthDoc"`
 	// 备注
-	Remark string `protobuf:"bytes,20,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	Remark string `protobuf:"bytes,20,opt,name=Remark,proto3" json:"Remark"`
 	// 是否通过
-	ReviewState int32 `protobuf:"varint,22,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
+	ReviewState int32 `protobuf:"varint,22,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// 提交时间
-	SubmitTime           int64    `protobuf:"varint,21,opt,name=SubmitTime,proto3" json:"SubmitTime,omitempty"`
+	SubmitTime           int64    `protobuf:"varint,21,opt,name=SubmitTime,proto3" json:"SubmitTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -807,9 +807,9 @@ func (m *SMchSignUp) GetSubmitTime() int64 {
 }
 
 type MchReviewRequest struct {
-	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	Pass                 bool     `protobuf:"varint,2,opt,name=Pass,proto3" json:"Pass,omitempty"`
-	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark,omitempty"`
+	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	Pass                 bool     `protobuf:"varint,2,opt,name=Pass,proto3" json:"Pass"`
+	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -863,43 +863,43 @@ func (m *MchReviewRequest) GetRemark() string {
 // 企业信息
 type SEnterpriseInfo struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 商户编号
-	MerchantId int64 `protobuf:"varint,2,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	MerchantId int64 `protobuf:"varint,2,opt,name=MerchantId,proto3" json:"MerchantId"`
 	// 公司名称
-	CompanyName string `protobuf:"bytes,3,opt,name=CompanyName,proto3" json:"CompanyName,omitempty"`
+	CompanyName string `protobuf:"bytes,3,opt,name=CompanyName,proto3" json:"CompanyName"`
 	// 公司营业执照编号
-	CompanyNo string `protobuf:"bytes,4,opt,name=CompanyNo,proto3" json:"CompanyNo,omitempty"`
+	CompanyNo string `protobuf:"bytes,4,opt,name=CompanyNo,proto3" json:"CompanyNo"`
 	// 法人
-	PersonName string `protobuf:"bytes,5,opt,name=PersonName,proto3" json:"PersonName,omitempty"`
+	PersonName string `protobuf:"bytes,5,opt,name=PersonName,proto3" json:"PersonName"`
 	// 法人身份证编号
-	PersonIdNo string `protobuf:"bytes,6,opt,name=PersonIdNo,proto3" json:"PersonIdNo,omitempty"`
+	PersonIdNo string `protobuf:"bytes,6,opt,name=PersonIdNo,proto3" json:"PersonIdNo"`
 	// 身份证验证图片(人捧身份证照相)
-	PersonImage string `protobuf:"bytes,7,opt,name=PersonImage,proto3" json:"PersonImage,omitempty"`
+	PersonImage string `protobuf:"bytes,7,opt,name=PersonImage,proto3" json:"PersonImage"`
 	// 公司电话
-	Telephone string `protobuf:"bytes,8,opt,name=Telephone,proto3" json:"Telephone,omitempty"`
+	Telephone string `protobuf:"bytes,8,opt,name=Telephone,proto3" json:"Telephone"`
 	// 省
-	Province int32 `protobuf:"varint,9,opt,name=Province,proto3" json:"Province,omitempty"`
+	Province int32 `protobuf:"varint,9,opt,name=Province,proto3" json:"Province"`
 	// 市
-	City int32 `protobuf:"varint,10,opt,name=City,proto3" json:"City,omitempty"`
+	City int32 `protobuf:"varint,10,opt,name=City,proto3" json:"City"`
 	// 区
-	District int32 `protobuf:"varint,11,opt,name=District,proto3" json:"District,omitempty"`
+	District int32 `protobuf:"varint,11,opt,name=District,proto3" json:"District"`
 	// 省+市+区字符串表示
-	Location string `protobuf:"bytes,12,opt,name=Location,proto3" json:"Location,omitempty"`
+	Location string `protobuf:"bytes,12,opt,name=Location,proto3" json:"Location"`
 	// 公司地址
-	Address string `protobuf:"bytes,13,opt,name=Address,proto3" json:"Address,omitempty"`
+	Address string `protobuf:"bytes,13,opt,name=Address,proto3" json:"Address"`
 	// 营业执照图片
-	CompanyImage string `protobuf:"bytes,14,opt,name=CompanyImage,proto3" json:"CompanyImage,omitempty"`
+	CompanyImage string `protobuf:"bytes,14,opt,name=CompanyImage,proto3" json:"CompanyImage"`
 	// 授权书
-	AuthDoc string `protobuf:"bytes,15,opt,name=AuthDoc,proto3" json:"AuthDoc,omitempty"`
+	AuthDoc string `protobuf:"bytes,15,opt,name=AuthDoc,proto3" json:"AuthDoc"`
 	// 是否已审核
-	ReviewState int32 `protobuf:"varint,16,opt,name=ReviewState,proto3" json:"ReviewState,omitempty"`
+	ReviewState int32 `protobuf:"varint,16,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// 审核时间
-	ReviewTime int64 `protobuf:"varint,17,opt,name=ReviewTime,proto3" json:"ReviewTime,omitempty"`
+	ReviewTime int64 `protobuf:"varint,17,opt,name=ReviewTime,proto3" json:"ReviewTime"`
 	// 审核备注
-	ReviewRemark string `protobuf:"bytes,18,opt,name=ReviewRemark,proto3" json:"ReviewRemark,omitempty"`
+	ReviewRemark string `protobuf:"bytes,18,opt,name=ReviewRemark,proto3" json:"ReviewRemark"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"varint,19,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"varint,19,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1064,8 +1064,8 @@ func (m *SEnterpriseInfo) GetUpdateTime() int64 {
 
 type SaveEnterpriseRequest struct {
 	// 商户编号
-	MerchantId           int64            `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	Value                *SEnterpriseInfo `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	MerchantId           int64            `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	Value                *SEnterpriseInfo `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -1112,23 +1112,23 @@ func (m *SaveEnterpriseRequest) GetValue() *SEnterpriseInfo {
 // 　商户账户
 type SMerchantAccount struct {
 	// 余额
-	Balance float64 `protobuf:"fixed64,1,opt,name=Balance,proto3" json:"Balance,omitempty"`
+	Balance float64 `protobuf:"fixed64,1,opt,name=Balance,proto3" json:"Balance"`
 	// 冻结金额
-	FreezeAmount float64 `protobuf:"fixed64,2,opt,name=FreezeAmount,proto3" json:"FreezeAmount,omitempty"`
+	FreezeAmount float64 `protobuf:"fixed64,2,opt,name=FreezeAmount,proto3" json:"FreezeAmount"`
 	// 待入账金额
-	AwaitAmount float64 `protobuf:"fixed64,3,opt,name=AwaitAmount,proto3" json:"AwaitAmount,omitempty"`
+	AwaitAmount float64 `protobuf:"fixed64,3,opt,name=AwaitAmount,proto3" json:"AwaitAmount"`
 	// 平台赠送金额
-	PresentAmount float64 `protobuf:"fixed64,4,opt,name=PresentAmount,proto3" json:"PresentAmount,omitempty"`
+	PresentAmount float64 `protobuf:"fixed64,4,opt,name=PresentAmount,proto3" json:"PresentAmount"`
 	// 累计销售总额
-	SalesAmount float64 `protobuf:"fixed64,5,opt,name=SalesAmount,proto3" json:"SalesAmount,omitempty"`
+	SalesAmount float64 `protobuf:"fixed64,5,opt,name=SalesAmount,proto3" json:"SalesAmount"`
 	// 累计退款金额
-	RefundAmount float64 `protobuf:"fixed64,6,opt,name=RefundAmount,proto3" json:"RefundAmount,omitempty"`
+	RefundAmount float64 `protobuf:"fixed64,6,opt,name=RefundAmount,proto3" json:"RefundAmount"`
 	// 已提取金额
-	TakeAmount float64 `protobuf:"fixed64,7,opt,name=TakeAmount,proto3" json:"TakeAmount,omitempty"`
+	TakeAmount float64 `protobuf:"fixed64,7,opt,name=TakeAmount,proto3" json:"TakeAmount"`
 	// 线下销售金额
-	OfflineSales float64 `protobuf:"fixed64,8,opt,name=OfflineSales,proto3" json:"OfflineSales,omitempty"`
+	OfflineSales float64 `protobuf:"fixed64,8,opt,name=OfflineSales,proto3" json:"OfflineSales"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"varint,9,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"varint,9,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1223,9 +1223,9 @@ func (m *SMerchantAccount) GetUpdateTime() int64 {
 
 type MerchantDisableRequest struct {
 	// 商户编号
-	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,2,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled              bool     `protobuf:"varint,2,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1272,25 +1272,25 @@ func (m *MerchantDisableRequest) GetEnabled() bool {
 // 销售设置
 type SMerchantSaleConf struct {
 	// 合作商编号
-	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
 	// 是否启用分销模式
-	FxSalesEnabled bool `protobuf:"varint,2,opt,name=FxSalesEnabled,proto3" json:"FxSalesEnabled,omitempty"`
+	FxSalesEnabled bool `protobuf:"varint,2,opt,name=FxSalesEnabled,proto3" json:"FxSalesEnabled"`
 	// 返现比例,0则不返现
-	CashBackPercent float64 `protobuf:"fixed64,3,opt,name=CashBackPercent,proto3" json:"CashBackPercent,omitempty"`
+	CashBackPercent float64 `protobuf:"fixed64,3,opt,name=CashBackPercent,proto3" json:"CashBackPercent"`
 	// 一级比例
-	CashBackTg1Percent float64 `protobuf:"fixed64,4,opt,name=CashBackTg1Percent,proto3" json:"CashBackTg1Percent,omitempty"`
+	CashBackTg1Percent float64 `protobuf:"fixed64,4,opt,name=CashBackTg1Percent,proto3" json:"CashBackTg1Percent"`
 	// 二级比例
-	CashBackTg2Percent float64 `protobuf:"fixed64,5,opt,name=CashBackTg2Percent,proto3" json:"CashBackTg2Percent,omitempty"`
+	CashBackTg2Percent float64 `protobuf:"fixed64,5,opt,name=CashBackTg2Percent,proto3" json:"CashBackTg2Percent"`
 	// 会员比例
-	CashBackMemberPercent float64 `protobuf:"fixed64,6,opt,name=CashBackMemberPercent,proto3" json:"CashBackMemberPercent,omitempty"`
+	CashBackMemberPercent float64 `protobuf:"fixed64,6,opt,name=CashBackMemberPercent,proto3" json:"CashBackMemberPercent"`
 	// 自动设置订单
-	AutoSetupOrder bool `protobuf:"varint,7,opt,name=AutoSetupOrder,proto3" json:"AutoSetupOrder,omitempty"`
+	AutoSetupOrder bool `protobuf:"varint,7,opt,name=AutoSetupOrder,proto3" json:"AutoSetupOrder"`
 	// 订单超时分钟数
-	OrderTimeOutMinute int32 `protobuf:"varint,8,opt,name=OrderTimeOutMinute,proto3" json:"OrderTimeOutMinute,omitempty"`
+	OrderTimeOutMinute int32 `protobuf:"varint,8,opt,name=OrderTimeOutMinute,proto3" json:"OrderTimeOutMinute"`
 	// 订单自动确认时间
-	OrderConfirmAfterMinute int32 `protobuf:"varint,9,opt,name=OrderConfirmAfterMinute,proto3" json:"OrderConfirmAfterMinute,omitempty"`
+	OrderConfirmAfterMinute int32 `protobuf:"varint,9,opt,name=OrderConfirmAfterMinute,proto3" json:"OrderConfirmAfterMinute"`
 	// 订单超时自动收货
-	OrderTimeOutReceiveHour int32    `protobuf:"varint,10,opt,name=OrderTimeOutReceiveHour,proto3" json:"OrderTimeOutReceiveHour,omitempty"`
+	OrderTimeOutReceiveHour int32    `protobuf:"varint,10,opt,name=OrderTimeOutReceiveHour,proto3" json:"OrderTimeOutReceiveHour"`
 	XXX_NoUnkeyedLiteral    struct{} `json:"-"`
 	XXX_unrecognized        []byte   `json:"-"`
 	XXX_sizecache           int32    `json:"-"`
@@ -1391,8 +1391,8 @@ func (m *SMerchantSaleConf) GetOrderTimeOutReceiveHour() int32 {
 }
 
 type SaveMerchantSaleConfRequest struct {
-	MerchantId           int64              `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	Value                *SMerchantSaleConf `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	MerchantId           int64              `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	Value                *SMerchantSaleConf `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -1437,10 +1437,10 @@ func (m *SaveMerchantSaleConfRequest) GetValue() *SMerchantSaleConf {
 }
 
 type ModifyMerchantPasswordRequest struct {
-	MerchantId int64  `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	Origin     string `protobuf:"bytes,2,opt,name=Origin,proto3" json:"Origin,omitempty"`
+	MerchantId int64  `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	Origin     string `protobuf:"bytes,2,opt,name=Origin,proto3" json:"Origin"`
 	// Md5编码后的密码
-	Password             string   `protobuf:"bytes,3,opt,name=Password,proto3" json:"Password,omitempty"`
+	Password             string   `protobuf:"bytes,3,opt,name=Password,proto3" json:"Password"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1494,13 +1494,13 @@ func (m *ModifyMerchantPasswordRequest) GetPassword() string {
 // 商户接口信息
 type SMerchantApiInfo struct {
 	// 商户接口编号
-	ApiId string `protobuf:"bytes,1,opt,name=ApiId,proto3" json:"ApiId,omitempty"`
+	ApiId string `protobuf:"bytes,1,opt,name=ApiId,proto3" json:"ApiId"`
 	// 密钥
-	ApiSecret string `protobuf:"bytes,2,opt,name=ApiSecret,proto3" json:"ApiSecret,omitempty"`
+	ApiSecret string `protobuf:"bytes,2,opt,name=ApiSecret,proto3" json:"ApiSecret"`
 	// IP白名单
-	WhiteList []string `protobuf:"bytes,3,rep,name=WhiteList,proto3" json:"WhiteList,omitempty"`
+	WhiteList []string `protobuf:"bytes,3,rep,name=WhiteList,proto3" json:"WhiteList"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1559,9 +1559,9 @@ func (m *SMerchantApiInfo) GetEnabled() bool {
 }
 
 type MerchantApiPermRequest struct {
-	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled,omitempty"`
+	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1606,8 +1606,8 @@ func (m *MerchantApiPermRequest) GetEnabled() bool {
 }
 
 type WithdrawToMemberAccountRequest struct {
-	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	Amount               float64  `protobuf:"fixed64,2,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	Amount               float64  `protobuf:"fixed64,2,opt,name=Amount,proto3" json:"Amount"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1652,12 +1652,12 @@ func (m *WithdrawToMemberAccountRequest) GetAmount() float64 {
 }
 
 type MerchantChargeRequest struct {
-	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	Kind                 int32    `protobuf:"varint,2,opt,name=Kind,proto3" json:"Kind,omitempty"`
-	Amount               float64  `protobuf:"fixed64,3,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	Title                string   `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title,omitempty"`
-	OuterNo              string   `protobuf:"bytes,5,opt,name=OuterNo,proto3" json:"OuterNo,omitempty"`
-	RelateUserId         int64    `protobuf:"varint,6,opt,name=RelateUserId,proto3" json:"RelateUserId,omitempty"`
+	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	Kind                 int32    `protobuf:"varint,2,opt,name=Kind,proto3" json:"Kind"`
+	Amount               float64  `protobuf:"fixed64,3,opt,name=Amount,proto3" json:"Amount"`
+	Title                string   `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title"`
+	OuterNo              string   `protobuf:"bytes,5,opt,name=OuterNo,proto3" json:"OuterNo"`
+	RelateUserId         int64    `protobuf:"varint,6,opt,name=RelateUserId,proto3" json:"RelateUserId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1730,8 +1730,8 @@ func (m *MerchantChargeRequest) GetRelateUserId() int64 {
 }
 
 type MerchantBuyerGroupId struct {
-	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	GroupId              int64    `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId,omitempty"`
+	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	GroupId              int64    `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1776,8 +1776,8 @@ func (m *MerchantBuyerGroupId) GetGroupId() int64 {
 }
 
 type SaveMerchantBuyerGroupRequest struct {
-	MerchantId           int64                `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	Value                *SMerchantBuyerGroup `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value,omitempty"`
+	MerchantId           int64                `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	Value                *SMerchantBuyerGroup `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -1822,7 +1822,7 @@ func (m *SaveMerchantBuyerGroupRequest) GetValue() *SMerchantBuyerGroup {
 }
 
 type MerchantBuyerGroupListResponse struct {
-	Value                []*SMerchantBuyerGroup `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SMerchantBuyerGroup `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
 	XXX_unrecognized     []byte                 `json:"-"`
 	XXX_sizecache        int32                  `json:"-"`
@@ -1862,17 +1862,17 @@ func (m *MerchantBuyerGroupListResponse) GetValue() []*SMerchantBuyerGroup {
 // 商户客户分组
 type SMerchantBuyerGroup struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 客户分组编号
-	GroupId int64 `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId,omitempty"`
+	GroupId int64 `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
 	// 分组别名
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// 是否启用零售
-	EnableRetail bool `protobuf:"varint,4,opt,name=EnableRetail,proto3" json:"EnableRetail,omitempty"`
+	EnableRetail bool `protobuf:"varint,4,opt,name=EnableRetail,proto3" json:"EnableRetail"`
 	// 是否启用批发
-	EnableWholesale bool `protobuf:"varint,5,opt,name=EnableWholesale,proto3" json:"EnableWholesale,omitempty"`
+	EnableWholesale bool `protobuf:"varint,5,opt,name=EnableWholesale,proto3" json:"EnableWholesale"`
 	// 批发返点周期(天)
-	RebatePeriod         int32    `protobuf:"varint,6,opt,name=RebatePeriod,proto3" json:"RebatePeriod,omitempty"`
+	RebatePeriod         int32    `protobuf:"varint,6,opt,name=RebatePeriod,proto3" json:"RebatePeriod"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1945,9 +1945,9 @@ func (m *SMerchantBuyerGroup) GetRebatePeriod() int32 {
 }
 
 type SaveWholesaleRebateRateRequest struct {
-	MerchantId           int64                   `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId,omitempty"`
-	GroupId              int64                   `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId,omitempty"`
-	Value                []*SWholesaleRebateRate `protobuf:"bytes,3,rep,name=Value,proto3" json:"Value,omitempty"`
+	MerchantId           int64                   `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	GroupId              int64                   `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
+	Value                []*SWholesaleRebateRate `protobuf:"bytes,3,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
 	XXX_unrecognized     []byte                  `json:"-"`
 	XXX_sizecache        int32                   `json:"-"`
@@ -1999,7 +1999,7 @@ func (m *SaveWholesaleRebateRateRequest) GetValue() []*SWholesaleRebateRate {
 }
 
 type WholesaleRebateRateListResponse struct {
-	Value                []*SWholesaleRebateRate `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value,omitempty"`
+	Value                []*SWholesaleRebateRate `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
 	XXX_unrecognized     []byte                  `json:"-"`
 	XXX_sizecache        int32                   `json:"-"`
@@ -2039,15 +2039,15 @@ func (m *WholesaleRebateRateListResponse) GetValue() []*SWholesaleRebateRate {
 // 批发客户分组返点比例设置
 type SWholesaleRebateRate struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 批发商编号
-	WsId int64 `protobuf:"varint,2,opt,name=WsId,proto3" json:"WsId,omitempty"`
+	WsId int64 `protobuf:"varint,2,opt,name=WsId,proto3" json:"WsId"`
 	// 客户分组编号
-	BuyerGroupId int64 `protobuf:"varint,3,opt,name=BuyerGroupId,proto3" json:"BuyerGroupId,omitempty"`
+	BuyerGroupId int64 `protobuf:"varint,3,opt,name=BuyerGroupId,proto3" json:"BuyerGroupId"`
 	// 下限金额
-	RequireAmount int32 `protobuf:"varint,4,opt,name=RequireAmount,proto3" json:"RequireAmount,omitempty"`
+	RequireAmount int32 `protobuf:"varint,4,opt,name=RequireAmount,proto3" json:"RequireAmount"`
 	// 返点率
-	RebateRate           float64  `protobuf:"fixed64,5,opt,name=RebateRate,proto3" json:"RebateRate,omitempty"`
+	RebateRate           float64  `protobuf:"fixed64,5,opt,name=RebateRate,proto3" json:"RebateRate"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

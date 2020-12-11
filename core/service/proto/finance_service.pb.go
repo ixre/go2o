@@ -24,9 +24,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type TransferInRequest struct {
-	PersonId             int64    `protobuf:"zigzag64,1,opt,name=personId,proto3" json:"personId,omitempty"`
-	TransferWith         int32    `protobuf:"zigzag32,2,opt,name=transferWith,proto3" json:"transferWith,omitempty"`
-	Amount               float64  `protobuf:"fixed64,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	PersonId             int64    `protobuf:"zigzag64,1,opt,name=personId,proto3" json:"personId"`
+	TransferWith         int32    `protobuf:"zigzag32,2,opt,name=transferWith,proto3" json:"transferWith"`
+	Amount               float64  `protobuf:"fixed64,3,opt,name=amount,proto3" json:"amount"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -78,7 +78,7 @@ func (m *TransferInRequest) GetAmount() float64 {
 }
 
 type PersonId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -118,23 +118,23 @@ func (m *PersonId) GetValue() int64 {
 // 收益总记录
 type SRiseInfo struct {
 	// 人员编号
-	PersonId int64 `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
+	PersonId int64 `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId"`
 	// 本金及收益的余额
-	Balance float64 `protobuf:"fixed64,2,opt,name=Balance,proto3" json:"Balance,omitempty"`
+	Balance float64 `protobuf:"fixed64,2,opt,name=Balance,proto3" json:"Balance"`
 	// 　结算金额
-	SettlementAmount float64 `protobuf:"fixed64,3,opt,name=SettlementAmount,proto3" json:"SettlementAmount,omitempty"`
+	SettlementAmount float64 `protobuf:"fixed64,3,opt,name=SettlementAmount,proto3" json:"SettlementAmount"`
 	// 当前的收益
-	Rise float64 `protobuf:"fixed64,4,opt,name=Rise,proto3" json:"Rise,omitempty"`
+	Rise float64 `protobuf:"fixed64,4,opt,name=Rise,proto3" json:"Rise"`
 	// 今日转入
-	TransferIn float64 `protobuf:"fixed64,5,opt,name=TransferIn,proto3" json:"TransferIn,omitempty"`
+	TransferIn float64 `protobuf:"fixed64,5,opt,name=TransferIn,proto3" json:"TransferIn"`
 	// 总金额
-	TotalAmount float64 `protobuf:"fixed64,6,opt,name=TotalAmount,proto3" json:"TotalAmount,omitempty"`
+	TotalAmount float64 `protobuf:"fixed64,6,opt,name=TotalAmount,proto3" json:"TotalAmount"`
 	// 总收益
-	TotalRise float64 `protobuf:"fixed64,7,opt,name=TotalRise,proto3" json:"TotalRise,omitempty"`
+	TotalRise float64 `protobuf:"fixed64,7,opt,name=TotalRise,proto3" json:"TotalRise"`
 	// 结算日期,用于筛选需要结算的数据
-	SettledDate int64 `protobuf:"varint,8,opt,name=SettledDate,proto3" json:"SettledDate,omitempty"`
+	SettledDate int64 `protobuf:"varint,8,opt,name=SettledDate,proto3" json:"SettledDate"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"varint,9,opt,name=UpdateTime,proto3" json:"UpdateTime,omitempty"`
+	UpdateTime           int64    `protobuf:"varint,9,opt,name=UpdateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -228,9 +228,9 @@ func (m *SRiseInfo) GetUpdateTime() int64 {
 }
 
 type RiseSettleRequest struct {
-	PersonId             int64    `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
-	SettleDay            int64    `protobuf:"varint,2,opt,name=SettleDay,proto3" json:"SettleDay,omitempty"`
-	Ratio                float64  `protobuf:"fixed64,3,opt,name=Ratio,proto3" json:"Ratio,omitempty"`
+	PersonId             int64    `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId"`
+	SettleDay            int64    `protobuf:"varint,2,opt,name=SettleDay,proto3" json:"SettleDay"`
+	Ratio                float64  `protobuf:"fixed64,3,opt,name=Ratio,proto3" json:"Ratio"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -282,11 +282,11 @@ func (m *RiseSettleRequest) GetRatio() float64 {
 }
 
 type RiseTransferOutRequest struct {
-	PersonId     int64   `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
-	TransferWith int64   `protobuf:"varint,2,opt,name=TransferWith,proto3" json:"TransferWith,omitempty"`
-	Amount       float64 `protobuf:"fixed64,3,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	PersonId     int64   `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId"`
+	TransferWith int64   `protobuf:"varint,2,opt,name=TransferWith,proto3" json:"TransferWith"`
+	Amount       float64 `protobuf:"fixed64,3,opt,name=Amount,proto3" json:"Amount"`
 	// 提现银行账号
-	BankAccountNo        string   `protobuf:"bytes,4,opt,name=BankAccountNo,proto3" json:"BankAccountNo,omitempty"`
+	BankAccountNo        string   `protobuf:"bytes,4,opt,name=BankAccountNo,proto3" json:"BankAccountNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -345,8 +345,8 @@ func (m *RiseTransferOutRequest) GetBankAccountNo() string {
 }
 
 type CommitTransferRequest struct {
-	PersonId             int64    `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId,omitempty"`
-	LogId                int64    `protobuf:"varint,2,opt,name=LogId,proto3" json:"LogId,omitempty"`
+	PersonId             int64    `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId"`
+	LogId                int64    `protobuf:"varint,2,opt,name=LogId,proto3" json:"LogId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
