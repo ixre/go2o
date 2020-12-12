@@ -16,7 +16,6 @@ import (
 	"github.com/ixre/gof/web"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
-	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
 	"go2o/core/msq"
@@ -135,7 +134,8 @@ func main() {
 	go service.ServeRPC(ch, &cfg, port)
 	service.ConfigureClient(cfg) // initial service client
 	if runDaemon {
-		go daemon.Run(newApp)
+		//todo: daemon需重构
+		//go daemon.Run(newApp)
 	}
 	// 运行REST API
 	go restapi.Run(ch, newApp, apiPort)
