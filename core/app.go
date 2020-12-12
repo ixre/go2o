@@ -36,13 +36,6 @@ const (
 	DbUsr     = "db_user"
 	DbPwd     = "db_pwd"
 	DbCharset = "db_charset"
-	//REDIS配置
-	RedisHost        = "redis_host"
-	RedisDb          = "redis_db"
-	RedisPort        = "redis_port"
-	RedisAuth        = "redis_auth"
-	RedisMaxIdle     = "redis_maxIdle"
-	RedisIdleTimeOut = "redis_idleTimeout"
 )
 
 // application context
@@ -50,7 +43,6 @@ type AppImpl struct {
 	Loaded       bool
 	_confFile    string
 	_config      *gof.Config
-	_redis       *redis.Pool
 	_dbConnector db.Connector
 	_debugMode   bool
 	_logger      log.ILogger
@@ -123,13 +115,6 @@ func (a *AppImpl) Log() log.ILogger {
 	return a._logger
 }
 
-func (a *AppImpl) Redis() *redis.Pool {
-	if a._redis == nil {
-		a._redis = CreateRedisPool(a.Config())
-	}
-	return a._redis
-}
-
 func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	//数据库连接字符串
 	//root@tcp(127.0.0.1:3306)/db_name?charset=utf8
@@ -169,16 +154,6 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	}
 	log.Fatalln("[ Go2o][ Connector]:" + err.Error())
 	return nil
-}
-
-func CreateRedisPool(c *gof.Config) *redis.Pool {
-	host := c.GetString(RedisHost)
-	db := c.GetInt(RedisDb)
-	port := c.GetInt(RedisPort)
-	auth := c.GetString(RedisAuth)
-	maxIdle := c.GetInt(RedisMaxIdle)
-	idleTimeout := c.GetInt(RedisIdleTimeOut)
-	return storage.NewRedisPool(host, port, db, auth, maxIdle, idleTimeout)
 }
 
 // 获取Redis连接池

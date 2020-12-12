@@ -2,11 +2,8 @@ package service
 
 import (
 	"github.com/ixre/gof"
-	"github.com/ixre/gof/crypto"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/service/impl"
-	"strconv"
-	"time"
 )
 
 /**
@@ -36,10 +33,8 @@ func prepareRpcServer(ctx gof.App) {
 	//prefix := repo.Get(registry.DomainPrefixImage)
 	//format.GlobalImageServer = fmt.Sprintf("%s://%s%s", protocol, prefix, domain)
 
-	hash := gf("url_hash")
-	if hash == "" {
-		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
-	}
+	//hash := crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
+
 	//mp[variable.DEnabledSSL] = gf("ssl_enabled")
 	//mp[consts.DStaticPath] = gf("static_server")
 	//mp[variable.DImageServer] = gf("image_server")

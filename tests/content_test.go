@@ -9,13 +9,12 @@
 package tests
 
 import (
-	"go2o/core/repos"
 	"go2o/tests/ti"
 	"testing"
 )
 
 func TestContentGetAllCategory(t *testing.T) {
-	rep := repos.NewContentRepo(ti.GetApp().Db())
+	rep := ti.Factory.GetContentRepo()
 	u := rep.GetContent(0)
 	list := u.ArticleManager().GetAllCategory()
 	for i, c := range list {
