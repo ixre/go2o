@@ -55,7 +55,6 @@ Email: jarrysix#gmail.com
 func main() {
 	var (
 		ch            = make(chan bool)
-		domain        string
 		confFile      string
 		etcdEndPoints gof.ArrayFlags
 		port          int
@@ -74,7 +73,6 @@ func main() {
 	if len(defaultMqAddr) == 0 {
 		defaultMqAddr = "127.0.0.1:4222"
 	}
-	flag.StringVar(&domain, "domain", "http+go2o-dev.56x.net:14190", "protocols and domain,like https+baidu.com:8080")
 	flag.IntVar(&port, "port", 1427, "thrift service port")
 	flag.IntVar(&apiPort, "apiport", 1428, "api service port")
 	flag.Var(&etcdEndPoints, "endpoint", "")
@@ -87,7 +85,7 @@ func main() {
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
-	confFile = "./app_dev.conf"
+	//confFile = "./app_dev.conf"
 	if runDaemon {
 		appFlag = appFlag | app.FlagDaemon
 	}
@@ -134,13 +132,13 @@ func main() {
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
-	go service.ServeRPC(ch, &cfg, port, domain)
+	go service.ServeRPC(ch, &cfg, port)
 	service.ConfigureClient(cfg) // initial service client
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
 	// 运行REST API
-	go restapi.Run(ch, newApp, domain, apiPort)
+	go restapi.Run(ch, newApp, apiPort)
 	<-ch
 }
 

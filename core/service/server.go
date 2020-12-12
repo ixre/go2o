@@ -1,13 +1,10 @@
 package service
 
 import (
-	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
 	"go2o/core/domain/interface/registry"
-	"go2o/core/infrastructure/format"
 	"go2o/core/service/impl"
-	"regexp"
 	"strconv"
 	"time"
 )
@@ -23,13 +20,9 @@ import (
  */
 
 // RPC服务初始化
-func prepareRpcServer(ctx gof.App, domain string) {
+func prepareRpcServer(ctx gof.App) {
 	gf := ctx.Config().GetString
-	// like: http+go2o-dev.56x.net:14190
-	re, _ := regexp.Compile("((https|http)\\+)*([^:]+:*\\d*)")
-	matches := re.FindStringSubmatch(domain)
-	protocol := matches[2]
-	domain = matches[3]
+
 	//ssl := gf("ssl_enabled")
 	//prefix := "http://"
 	//if ssl == "true" || ssl == "1" {
@@ -37,13 +30,11 @@ func prepareRpcServer(ctx gof.App, domain string) {
 	//}
 	repo := impl.Repos.GetRegistryRepo()
 	update := repo.UpdateValue
-	update(registry.HttpProtocols, protocol)
-	update(registry.Domain, domain)
 	update(registry.ApiRequireVersion, gf("api_require_version"))
 
 	// 更新静态服务器的地址(解偶合)
-	prefix := repo.Get(registry.DomainPrefixImage)
-	format.GlobalImageServer = fmt.Sprintf("%s://%s%s", protocol, prefix, domain)
+	//prefix := repo.Get(registry.DomainPrefixImage)
+	//format.GlobalImageServer = fmt.Sprintf("%s://%s%s", protocol, prefix, domain)
 
 	hash := gf("url_hash")
 	if hash == "" {

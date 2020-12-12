@@ -23,20 +23,6 @@ var (
 
 var GlobalImageServer = ""
 
-//func getImageServe() string {
-//	repo :=
-//	ctx := context.TODO()
-//	fn := func(k string)string{
-//		ret,_ := cli.GetValue(ctx,&proto.String{Value:k})
-//		return ret.Value
-//	}
-//	protocol := fn(registry.HttpProtocols)
-//	domain := fn(registry.Domain)
-//	prefix := fn(registry.DomainPrefixImage)
-//	trans.Close()
-//	return fmt.Sprintf("%s://%s%s",protocol,prefix,domain)
-//}
-
 // 获取无图片地址
 func GetNoPicPath() string {
 	if len(_noPicUrl) == 0 {
