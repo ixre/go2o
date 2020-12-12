@@ -9,8 +9,6 @@
 package format
 
 import (
-	"go2o/core/infrastructure"
-	"go2o/core/variable"
 	"strings"
 )
 
@@ -26,8 +24,7 @@ var GlobalImageServer = ""
 // 获取无图片地址
 func GetNoPicPath() string {
 	if len(_noPicUrl) == 0 {
-		ctx := infrastructure.GetApp()
-		_noPicUrl = ctx.Config().GetString(variable.NoPicPath)
+		_noPicUrl = "res/nopic.gif"
 	}
 	return _noPicUrl
 }
@@ -49,13 +46,12 @@ func GetResUrlPrefix() string {
 // 获取商品图片地址
 func GetGoodsImageUrl(image string) string {
 	if !picCfgLoaded {
-		ctx := infrastructure.GetApp()
 		if len(imageServe) == 0 {
 			imageServe = GlobalImageServer
 		}
 
 		if len(noPicUrl) == 0 {
-			noPicUrl = imageServe + "/" + ctx.Config().GetString(variable.NoPicPath)
+			noPicUrl = imageServe + "/res/nopic.gif"
 		}
 		picCfgLoaded = true
 	}
@@ -73,13 +69,12 @@ func GetGoodsImageUrl(image string) string {
 // 获取资源地址
 func GetResUrl(image string) string {
 	if !picCfgLoaded {
-		ctx := infrastructure.GetApp()
 		if len(imageServe) == 0 {
 			imageServe = GlobalImageServer
 		}
 
 		if len(noPicUrl) == 0 {
-			noPicUrl = imageServe + "/" + ctx.Config().GetString(variable.NoPicPath)
+			noPicUrl = imageServe + "/res/nopic.gif"
 		}
 		picCfgLoaded = true
 	}

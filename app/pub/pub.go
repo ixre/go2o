@@ -11,7 +11,6 @@ package pub
 
 import (
 	"github.com/ixre/gof"
-	"go2o/core/variable"
 	"log"
 	"net/http"
 )
@@ -43,7 +42,7 @@ func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//	http.ServeFile(w, r, "static"+path)
 	//} else {
 	if len(i.upSaveDir) == 0 {
-		i.upSaveDir = i.app.Config().GetString(variable.UploadSaveDir)
+		i.upSaveDir = "uploads/"
 	}
 	http.ServeFile(w, r, i.upSaveDir+path)
 
