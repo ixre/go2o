@@ -34,7 +34,7 @@ import (
 	"time"
 )
 
-var _ proto.RBACServiceServer = new(rbacServiceImpl)
+var _ proto.RbacServiceServer = new(rbacServiceImpl)
 
 // 基于角色的权限服务
 type rbacServiceImpl struct {
