@@ -55,12 +55,15 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterAppServiceServer(s, grpc2.AppService)
 	proto.RegisterRbacServiceServer(s, grpc2.RbacService)
 	registerServiceDiscovery(cfg, port)
-	log.Println("[ Go2o][ RPC]: server discovery register success")
+	go serveRPC(ch,s, port)
+}
+
+func serveRPC(ch chan bool, s *grpc.Server, port int) {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		panic(err)
 	}
-	log.Println("[ Go2o][ API]: grpc node serve on port :"+strconv.Itoa(port))
+	log.Println("[ Go2o][ API]: grpc node serve on port :" + strconv.Itoa(port))
 	if err = s.Serve(l); err != nil {
 		ch <- false
 		panic(err)

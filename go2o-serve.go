@@ -130,7 +130,7 @@ func main() {
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
-	go service.ServeRPC(ch, &cfg, port)
+	service.ServeRPC(ch, &cfg, port)
 	service.ConfigureClient(cfg) // initial service client
 	if runDaemon {
 		//todo: daemon需重构

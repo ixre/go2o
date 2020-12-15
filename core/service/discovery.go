@@ -1,8 +1,11 @@
 package service
 
 import (
+	"fmt"
+	"github.com/ixre/gof/log"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/core/etcd"
+	"net"
 )
 
 /**
@@ -24,8 +27,27 @@ func registerServiceDiscovery(cfg *clientv3.Config, port int) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = r.Register(port)
+	ip := resolveIp()
+	_, err = r.Register(ip,port)
 	if err != nil {
 		panic(err)
 	}
+	log.Println(fmt.Sprintf("[ Go2o][ RPC]: server discovery register success. node: %s:%d",ip,port))
+}
+
+
+func  resolveIp() string {
+	addrList, err := net.InterfaceAddrs()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	for _, address := range addrList {
+		// 检查ip地址判断是否回环地址
+		if i, ok := address.(*net.IPNet); ok && !i.IP.IsLoopback() {
+			if i.IP.To4() != nil {
+				return i.IP.String()
+			}
+		}
+	}
+	return "127.0.0.1"
 }
