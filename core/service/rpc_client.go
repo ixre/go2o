@@ -38,12 +38,12 @@ func ConfigureClient(c clientv3.Config) {
 // 尝试连接服务,如果连接不成功,则退出
 func tryConnect(retryTimes int) {
 	for i := 0; i < retryTimes; i++ {
+		log.Println("try ",i)
 		trans, _, err := StatusServiceClient()
 		if err == nil {
 			trans.Close()
 			break
 		}
-		log.Println("try ",i)
 		time.Sleep(time.Second)
 		if i >= retryTimes-1 {
 			log.Println("[ Go2o][ Fatal]: Can not connect go2o rpc server")
