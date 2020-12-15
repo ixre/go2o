@@ -31,7 +31,7 @@ func ConfigureClient(c clientv3.Config) {
 		os.Exit(1)
 	}
 	selector = s
-	tryConnect(30)
+	tryConnect(10)
 }
 
 // 尝试连接服务,如果连接不成功,则退出
@@ -42,11 +42,12 @@ func tryConnect(retryTimes int) {
 			trans.Close()
 			break
 		}
-		if i > retryTimes-1 {
-			log.Println("[ Go2o][ RPC]: can't connect go2o rpc server! ", err.Error())
+		log.Println("try ",i)
+		time.Sleep(time.Second)
+		if i >= retryTimes-1 {
+			log.Println("[ Go2o][ Fatal]: Can not connect go2o rpc server")
 			os.Exit(1)
 		}
-		time.Sleep(time.Second)
 	}
 }
 
