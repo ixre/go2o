@@ -21,7 +21,7 @@ import (
 //var cfg  clientv3.Config
 var selector etcd.Selector
 
-// 设置Thrift地址
+// 设置RPC地址
 func ConfigureClient(c clientv3.Config) {
 	//cfg = c
 	log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
@@ -31,22 +31,22 @@ func ConfigureClient(c clientv3.Config) {
 		os.Exit(1)
 	}
 	selector = s
-	go tryConnect(10)
+	tryConnect(30)
 }
 
 // 尝试连接服务,如果连接不成功,则退出
 func tryConnect(retryTimes int) {
-	time.Sleep(time.Second)
 	for i := 0; i < retryTimes; i++ {
 		trans, _, err := StatusServiceClient()
 		if err == nil {
 			trans.Close()
 			break
-		} else if i == retryTimes-1 {
+		}
+		if i > retryTimes-1 {
 			log.Println("[ Go2o][ RPC]: can't connect go2o rpc server! ", err.Error())
 			os.Exit(1)
 		}
-		time.Sleep(time.Second * 2)
+		time.Sleep(time.Second)
 	}
 }
 
