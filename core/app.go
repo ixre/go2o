@@ -51,13 +51,13 @@ type AppImpl struct {
 }
 
 func NewApp(confPath string, cfg *clientv3.Config) *AppImpl {
-	log.Println(`
- ####   ###   ###   ###
- #     #  ##    #  #  ##
-#     #    #    # #    #
-#     #  #   #   ##  #   #
-#     #  #   #  #    #   #
- #####   ###   ###   ###
+	fmt.Println(`      
+	 ####   ####  #######  ####  
+	#    # #    #       # #    # 
+	#      #    #  #####  #    # 
+	#  ### #    # #       #    # 
+	#    # #    # #       #    # 
+	 ####   ####  #######  #### 
 	`)
 	s, err := infrastructure.NewEtcdStorage(*cfg)
 	if err != nil {
