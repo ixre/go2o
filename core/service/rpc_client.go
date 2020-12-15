@@ -43,6 +43,8 @@ func tryConnect(retryTimes int) {
 		if err == nil {
 			trans.Close()
 			break
+		}else{
+			log.Println(err.Error())
 		}
 		time.Sleep(time.Second)
 		if i >= retryTimes-1 {
