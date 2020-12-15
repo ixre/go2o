@@ -29,12 +29,12 @@ import (
 
 var _ = `
 
-  ###   ###   ###   ###
- #     #  ##    #  #  ##
-#     #    #    # #    #
-#  #  #   #   ##  #   #
-#  #  #   #  #    #   #
- ###   ###   ###   ###
+	 ####   ####  #######  ####  
+	#    # #    #       # #    # 
+	#      #    #  #####  #    # 
+	#  ### #    # #       #    # 
+	#    # #    # #       #    # 
+	 ####   ####  #######  #### 
 
 
 Go2o is Google Go language binding domain-driven design (DDD) O2O open source implementation. Support Online Store

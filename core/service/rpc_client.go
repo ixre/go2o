@@ -60,6 +60,7 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Println("addr:",next.Addr)
 	return grpc.Dial(next.Addr, grpc.WithInsecure(), grpc.WithBlock())
 }
 
