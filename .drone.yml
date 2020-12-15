@@ -4,6 +4,7 @@ name: default
 steps:
   - name: docker
     image: plugins/docker
+    pull: if-not-exists
     settings:
       repo: docker-base.56x.net:5020/go2o
       tags: latest
