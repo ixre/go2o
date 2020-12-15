@@ -32,6 +32,7 @@ func ConfigureClient(c clientv3.Config) {
 	}
 	selector = s
 	tryConnect(10)
+	log.Println("[ Go2o][ API]: try times limit")
 }
 
 // 尝试连接服务,如果连接不成功,则退出

@@ -51,9 +51,16 @@ type AppImpl struct {
 }
 
 func NewApp(confPath string, cfg *clientv3.Config) *AppImpl {
+	log.Println(`
+ ####   ###   ###   ###
+ #     #  ##    #  #  ##
+#     #    #    # #    #
+#     #  #   #   ##  #   #
+#     #  #   #  #    #   #
+ #####   ###   ###   ###
+	`)
 	s, err := infrastructure.NewEtcdStorage(*cfg)
 	if err != nil {
-		println(len(cfg.Endpoints))
 		panic("[ go2o][ init]: " + err.Error())
 	}
 	return &AppImpl{
