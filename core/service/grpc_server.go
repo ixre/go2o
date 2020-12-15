@@ -3,11 +3,13 @@ package service
 import (
 	"fmt"
 	"github.com/ixre/gof"
+	"github.com/ixre/gof/log"
 	"go.etcd.io/etcd/clientv3"
 	grpc2 "go2o/core/service/impl"
 	"go2o/core/service/proto"
 	"google.golang.org/grpc"
 	"net"
+	"strconv"
 )
 
 /**
@@ -27,10 +29,6 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	sysInit()
 	// 启动RPC服务
 	s := grpc.NewServer()
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
-	if err != nil {
-		panic(err)
-	}
 	proto.RegisterGreeterServiceServer(s, &grpc2.TestServiceImpl{})
 	proto.RegisterStatusServiceServer(s, grpc2.StatusService)
 	proto.RegisterRegistryServiceServer(s, grpc2.RegistryService)
@@ -56,7 +54,13 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterQuickPayServiceServer(s, grpc2.QuickPayService)
 	proto.RegisterAppServiceServer(s, grpc2.AppService)
 	proto.RegisterRbacServiceServer(s, grpc2.RbacService)
-	initRegistry(cfg, port)
+	registerServiceDiscovery(cfg, port)
+	log.Println("[ Go2o][ RPC]: server discovery register success")
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	if err != nil {
+		panic(err)
+	}
+	log.Println("[ Go2o][ API]: grpc node serve on port :"+strconv.Itoa(port))
 	if err = s.Serve(l); err != nil {
 		ch <- false
 		panic(err)

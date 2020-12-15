@@ -112,16 +112,15 @@ func main() {
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
-
 	newApp = core.NewApp(confFile, &cfg)
 	if debug {
 		go app.AutoInstall()
 	}
+	gof.CurrentApp = newApp
 	if !core.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
 	go core.SignalNotify(ch, core.AppDispose)
-	gof.CurrentApp = newApp
 	web.Initialize(web.Options{
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,

@@ -19,7 +19,7 @@ var service = "Go2oService"
 var ttl int64 = 10
 
 // 注册服务发现
-func initRegistry(cfg *clientv3.Config, port int) {
+func registerServiceDiscovery(cfg *clientv3.Config, port int) {
 	r, err := etcd.NewRegistry(service, ttl, *cfg)
 	if err != nil {
 		panic(err)
