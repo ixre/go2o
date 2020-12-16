@@ -9,6 +9,7 @@
 package service
 
 import (
+	"context"
 	"github.com/ixre/gof/log"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/core/etcd"
@@ -18,12 +19,10 @@ import (
 	"time"
 )
 
-//var cfg  clientv3.Config
 var selector etcd.Selector
 
 // 设置RPC地址
 func ConfigureClient(c clientv3.Config) {
-	//cfg = c
 	log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
 	s, err := etcd.NewSelector(service, c, etcd.AlgRoundRobin)
 	if err != nil {
@@ -32,19 +31,15 @@ func ConfigureClient(c clientv3.Config) {
 	}
 	selector = s
 	tryConnect(10)
-	log.Println("[ Go2o][ API]: try times limit")
 }
 
 // 尝试连接服务,如果连接不成功,则退出
 func tryConnect(retryTimes int) {
 	for i := 0; i < retryTimes; i++ {
-		log.Println("try ",i)
 		trans, _, err := StatusServiceClient()
 		if err == nil {
 			trans.Close()
 			break
-		}else{
-			log.Println(err.Error())
 		}
 		time.Sleep(time.Second)
 		if i >= retryTimes-1 {
@@ -60,8 +55,10 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println("addr:",next.Addr)
-	return grpc.Dial(next.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	conn, err := grpc.DialContext(ctx, next.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	cancel()
+	return conn, err
 }
 
 // 状态客户端
