@@ -16,7 +16,7 @@ import (
 	"github.com/ixre/gof/api"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
-	"log"
+	"github.com/ixre/gof/log"
 	"net/http"
 	"net/url"
 	"time"

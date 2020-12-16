@@ -16,7 +16,6 @@ import (
 	"github.com/ixre/gof/web"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
-	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
 	"go2o/core/msq"
@@ -30,12 +29,12 @@ import (
 
 var _ = `
 
-  ###   ###   ###   ###
- #     #  ##    #  #  ##
-#     #    #    # #    #
-#  #  #   #   ##  #   #
-#  #  #   #  #    #   #
- ###   ###   ###   ###
+	 ####   ####  #######  ####  
+	#    # #    #       # #    # 
+	#      #    #  #####  #    # 
+	#  ### #    # #       #    # 
+	#    # #    # #       #    # 
+	 ####   ####  #######  #### 
 
 
 Go2o is Google Go language binding domain-driven design (DDD) O2O open source implementation. Support Online Store
@@ -55,7 +54,6 @@ Email: jarrysix#gmail.com
 func main() {
 	var (
 		ch            = make(chan bool)
-		domain        string
 		confFile      string
 		etcdEndPoints gof.ArrayFlags
 		port          int
@@ -74,7 +72,6 @@ func main() {
 	if len(defaultMqAddr) == 0 {
 		defaultMqAddr = "127.0.0.1:4222"
 	}
-	flag.StringVar(&domain, "domain", "http+go2o-dev.56x.net:14190", "protocols and domain,like https+baidu.com:8080")
 	flag.IntVar(&port, "port", 1427, "thrift service port")
 	flag.IntVar(&apiPort, "apiport", 1428, "api service port")
 	flag.Var(&etcdEndPoints, "endpoint", "")
@@ -87,7 +84,7 @@ func main() {
 	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
-	confFile = "./app_dev.conf"
+	//confFile = "./app_dev.conf"
 	if runDaemon {
 		appFlag = appFlag | app.FlagDaemon
 	}
@@ -106,22 +103,24 @@ func main() {
 
 	// 默认的ETCD端点
 	if len(etcdEndPoints) == 0 {
-		etcdEndPoints = []string{"http://127.0.0.1:2379"}
+		etcdEndPoints = strings.Split(os.Getenv("GO2O_ETCD_ADDR"),",")
+		if len(etcdEndPoints) == 0  || etcdEndPoints[0] ==""{
+			etcdEndPoints = []string{"http://127.0.0.1:2379"}
+		}
 	}
 	cfg := clientv3.Config{
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
-
 	newApp = core.NewApp(confFile, &cfg)
 	if debug {
 		go app.AutoInstall()
 	}
+	gof.CurrentApp = newApp
 	if !core.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
 	go core.SignalNotify(ch, core.AppDispose)
-	gof.CurrentApp = newApp
 	web.Initialize(web.Options{
 		Storage:    newApp.Storage(),
 		XSRFCookie: true,
@@ -131,13 +130,14 @@ func main() {
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
-	go service.ServeRPC(ch, &cfg, port, domain)
+	service.ServeRPC(ch, &cfg, port)
 	service.ConfigureClient(cfg) // initial service client
 	if runDaemon {
-		go daemon.Run(newApp)
+		//todo: daemon需重构
+		//go daemon.Run(newApp)
 	}
 	// 运行REST API
-	go restapi.Run(ch, newApp, domain, apiPort)
+	go restapi.Run(ch, newApp, apiPort)
 	<-ch
 }
 

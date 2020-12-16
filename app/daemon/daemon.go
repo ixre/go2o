@@ -354,7 +354,7 @@ func Run(ctx gof.App) {
 		appCtx = core.NewApp("app.conf", nil)
 	}
 	conn = appCtx.Db()
-	sMail := appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
+	sMail := true // appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
 	//sMail := cnf.GetString(variable.)
 
 	s := &defaultService{

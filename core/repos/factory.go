@@ -64,9 +64,11 @@ type RepoFactory struct {
 	asRepo            afterSales.IAfterSalesRepo
 
 	walletRepo wallet.IWalletRepo
+	_orm      orm.Orm
 }
 
 func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
+	r._orm = o
 	Repo = r
 
 	/** Repository **/
@@ -109,6 +111,10 @@ func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
 	// 初始化数据
 	r.memberRepo.GetManager().GetAllBuyerGroups()
 	return r
+}
+
+func (r *RepoFactory) GetOrm()orm.Orm{
+	return r._orm
 }
 
 func (r *RepoFactory) GetProModelRepo() promodel.IProductModelRepo {

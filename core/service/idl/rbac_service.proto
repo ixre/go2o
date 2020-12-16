@@ -5,7 +5,7 @@ option java_package = "com.github.go2o.rpc";
 import "global.proto";
 
 // RBAC服务
-service RBACService {
+service RbacService {
     // 部门树形数据
     rpc DepartTree(Empty)returns(RbacTree){}
     // 保存部门

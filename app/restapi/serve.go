@@ -15,7 +15,7 @@ import (
 	mw "github.com/labstack/echo/v4/middleware"
 	"go2o/app/api"
 	"go2o/core/variable"
-	"log"
+	"github.com/ixre/gof/log"
 	"net/http"
 	"os"
 	"strconv"
@@ -61,13 +61,11 @@ func registerNewApi(s *echo.Echo, config *gof.Config, store storage.Interface) {
 	})
 }
 
-func Run(ch chan bool, app gof.App, domain string, port int) {
+func Run(ch chan bool, app gof.App, port int) {
 	store = app.Storage()
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	handler := newServe(app.Config(), store)
-	log.Println("** [ Go2o][ Info]: domain : ", domain)
-	log.Println("** [ Go2o][ API]: Api server running on port " +
-		strconv.Itoa(port))
+	log.Println("[ Go2o][ API]: api gateway serve on port :"+strconv.Itoa(port))
 
 	err := http.ListenAndServe(":"+strconv.Itoa(port), handler)
 

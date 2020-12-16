@@ -9,6 +9,7 @@
 package service
 
 import (
+	"context"
 	"github.com/ixre/gof/log"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/core/etcd"
@@ -18,12 +19,10 @@ import (
 	"time"
 )
 
-//var cfg  clientv3.Config
 var selector etcd.Selector
 
-// 设置Thrift地址
+// 设置RPC地址
 func ConfigureClient(c clientv3.Config) {
-	//cfg = c
 	log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
 	s, err := etcd.NewSelector(service, c, etcd.AlgRoundRobin)
 	if err != nil {
@@ -31,22 +30,22 @@ func ConfigureClient(c clientv3.Config) {
 		os.Exit(1)
 	}
 	selector = s
-	go tryConnect(10)
+	tryConnect(10)
 }
 
 // 尝试连接服务,如果连接不成功,则退出
 func tryConnect(retryTimes int) {
-	time.Sleep(time.Second)
 	for i := 0; i < retryTimes; i++ {
 		trans, _, err := StatusServiceClient()
 		if err == nil {
 			trans.Close()
 			break
-		} else if i == retryTimes-1 {
-			log.Println("[ Go2o][ RPC]: can't connect go2o rpc server! ", err.Error())
+		}
+		time.Sleep(time.Second)
+		if i >= retryTimes-1 {
+			log.Println("[ Go2o][ Fatal]: Can not connect go2o rpc server")
 			os.Exit(1)
 		}
-		time.Sleep(time.Second * 2)
 	}
 }
 
@@ -54,10 +53,12 @@ func tryConnect(retryTimes int) {
 func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 	next, err := selector.Next()
 	if err != nil {
-		log.Printf("[ Go2o][ Error]: %s\n", err.Error())
 		return nil, err
 	}
-	return grpc.Dial(next.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	conn, err := grpc.DialContext(ctx, next.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	cancel()
+	return conn, err
 }
 
 // 状态客户端
@@ -259,10 +260,10 @@ func AppServiceClient() (*grpc.ClientConn, proto.AppServiceClient, error) {
 }
 
 // RBAC服务
-func RbacServiceClient() (*grpc.ClientConn, proto.RBACServiceClient, error) {
+func RbacServiceClient() (*grpc.ClientConn, proto.RbacServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
-		return conn, proto.NewRBACServiceClient(conn), err
+		return conn, proto.NewRbacServiceClient(conn), err
 	}
 	return conn, nil, err
 }
