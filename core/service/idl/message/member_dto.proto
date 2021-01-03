@@ -269,7 +269,7 @@ message SProfile {
     sint64 MemberId = 1;
     string Name = 2;
     string Avatar = 3;
-    sint32 Sex = 4;
+    sint32 Gender = 4;
     string BirthDay = 5;
     string Phone = 6;
     string Address = 7;

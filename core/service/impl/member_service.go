@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/util"
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
@@ -465,9 +466,11 @@ func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMem
 			ErrMsg:  de.ErrNotMD5Format.Error(),
 		}, nil
 	}
+	salt := util.RandString(6)
 	v := &member.Member{
 		User:     r.User,
-		Pwd:      domain.Sha1Pwd(r.Pwd),
+		Salt:     salt,
+		Pwd:      domain.Sha1Pwd(r.Pwd, salt),
 		Name:     r.Name,
 		RealName: "",
 		Avatar:   "", //todo: default avatar
@@ -496,7 +499,7 @@ func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMem
 		//m := s.repo.CreateMember(v) //创建会员
 		//id, err := m.Save()
 		//if err == nil {
-		//	pro.Sex = 1
+		//	pro.Gender = 1
 		//	pro.MemberId = id
 		//	//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
 		//	if err = m.Profile().SaveProfile(pro); err != nil {
@@ -599,17 +602,18 @@ func (s *memberService) ModifyPwd(_ context.Context, r *proto.ModifyPwdRequest) 
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
+	v := m.GetValue()
 	pwd := r.NewPwd
 	old := r.OriginPwd
 	if l := len(r.NewPwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		pwd = domain.MemberSha1Pwd(pwd)
+		pwd = domain.MemberSha1Pwd(pwd,v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		old = domain.MemberSha1Pwd(old)
+		old = domain.MemberSha1Pwd(old,v.Salt)
 	}
 	err := m.Profile().ModifyPassword(pwd, old)
 	if err != nil {
@@ -625,15 +629,16 @@ func (s *memberService) ModifyTradePwd(_ context.Context, r *proto.ModifyPwdRequ
 		return s.error(member.ErrNoSuchMember), nil
 	}
 	pwd, old := r.NewPwd, r.OriginPwd
+	v := m.GetValue()
 	if l := len(pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		pwd = domain.TradePwd(pwd)
+		pwd = domain.TradePwd(pwd,v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		old = domain.TradePwd(old)
+		old = domain.TradePwd(old,v.Salt)
 	}
 	err := m.Profile().ModifyTradePassword(pwd, old)
 	if err != nil {
@@ -656,7 +661,7 @@ func (s *memberService) tryLogin(user string, pwd string) (id int64, errCode int
 		return 0, 2, member.ErrNoSuchMember
 	}
 	val := s.repo.GetMember(memberId).GetValue()
-	if val.Pwd != domain.Sha1Pwd(pwd) {
+	if val.Pwd != domain.Sha1Pwd(pwd,val.Salt) {
 		return 0, 1, de.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
@@ -701,7 +706,7 @@ func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.PwdVerifyRequ
 	if len(r.Pwd) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	if encPwd := domain.TradePwd(r.Pwd); mv.TradePwd != encPwd {
+	if encPwd := domain.TradePwd(r.Pwd,mv.Salt); mv.TradePwd != encPwd {
 		return s.error(member.ErrIncorrectTradePwd), nil
 	}
 	return s.success(nil), nil
@@ -1531,7 +1536,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 		MemberId:   src.MemberId,
 		Name:       src.Name,
 		Avatar:     src.Avatar,
-		Sex:        src.Sex,
+		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,
@@ -1637,7 +1642,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 		MemberId:   src.MemberId,
 		Name:       src.Name,
 		Avatar:     src.Avatar,
-		Sex:        src.Sex,
+		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,

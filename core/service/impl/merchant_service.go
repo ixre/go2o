@@ -422,7 +422,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 	mch := r.Mch
 	v := &merchant.Merchant{
 		LoginUser:   mch.LoginUser,
-		LoginPwd:    domain.MerchantSha1Pwd(mch.LoginPwd),
+		LoginPwd:    domain.MerchantSha1Pwd(mch.LoginPwd,""),
 		Name:        mch.Name,
 		SelfSales:   int16(mch.SelfSales),
 		MemberId:    r.RelMemberId,
@@ -521,7 +521,7 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 	if mch == nil {
 		// 使用会员身份登录
 		var id int64
-		id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd))
+		id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd,""))
 		if err != nil {
 			return 0, 2, err
 		}
@@ -532,7 +532,7 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 		return 0, 2, merchant.ErrNoSuchMerchant
 	}
 	mv := mch.GetValue()
-	if pwd := domain.MerchantSha1Pwd(pwd); pwd != mv.LoginPwd {
+	if pwd := domain.MerchantSha1Pwd(pwd,""); pwd != mv.LoginPwd {
 		return 0, 1, de.ErrCredential
 	}
 	return mch.GetAggregateRootId(), 0, nil

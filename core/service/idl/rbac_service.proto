@@ -289,8 +289,8 @@ message SavePermUserRequest{
     string Avatar = 5;
     /** NickName */
     string NickName = 6;
-    /** Sex */
-    string Sex = 7;
+    /** Gender */
+    string Gender = 7;
     /** 邮箱 */
     string Email = 8;
     /** 手机号码 */
@@ -332,8 +332,8 @@ message SPermUser{
     string Avatar = 5;
     /** NickName */
     string NickName = 6;
-    /** Sex */
-    string Sex = 7;
+    /** Gender */
+    string Gender = 7;
     /** 邮箱 */
     string Email = 8;
     /** 手机号码 */
@@ -375,8 +375,8 @@ message PagingPermUser{
     string Avatar = 5;
     /** NickName */
     string NickName = 6;
-    /** Sex */
-    string Sex = 7;
+    /** Gender */
+    string Gender = 7;
     /** 邮箱 */
     string Email = 8;
     /** 手机号码 */

@@ -131,7 +131,7 @@ func (s *foundationService) SuperValidate(_ context.Context, user *proto.UserPwd
 			ErrCode: 2}, nil
 	}
 	superPwd, _ := s.registryRepo.GetValue(registry.SysSuperLoginToken)
-	encPwd := domain.Sha1Pwd(user.User + user.Pwd)
+	encPwd := domain.Sha1Pwd(user.User + user.Pwd,"")
 	if superPwd != encPwd {
 		return &proto.SuperLoginResponse{
 			ErrMsg:  de.ErrCredential.Error(),
@@ -148,7 +148,7 @@ func (s *foundationService) FlushSuperPwd(_ context.Context, user *proto.UserPwd
 	if len(user.Pwd) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	encPwd := domain.Sha1Pwd(user.User + user.Pwd)
+	encPwd := domain.Sha1Pwd(user.User + user.Pwd,"")
 	err := s.registryRepo.UpdateValue(registry.SysSuperLoginToken,
 		encPwd)
 	return s.error(err), nil

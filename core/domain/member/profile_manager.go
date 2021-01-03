@@ -178,7 +178,7 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 		dst.Phone = v.Phone
 	}
 	dst.Name = v.Name
-	dst.Sex = v.Sex
+	dst.Gender = v.Gender
 	dst.Remark = v.Remark
 	dst.Ext1 = v.Ext1
 	dst.Ext2 = v.Ext2
@@ -195,7 +195,7 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 func (p *profileManagerImpl) ProfileCompleted() bool {
 	v := p.GetProfile()
 	r := len(v.Name) != 0 &&
-		len(v.BirthDay) != 0 && len(v.Address) != 0 && v.Sex != 0 &&
+		len(v.BirthDay) != 0 && len(v.Address) != 0 && v.Gender != 0 &&
 		v.Province != 0 && v.City != 0 && v.District != 0
 	if r {
 		imRequire := p.registryRepo.Get(registry.MemberImRequired).BoolValue()

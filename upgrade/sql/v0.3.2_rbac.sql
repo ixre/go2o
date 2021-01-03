@@ -132,7 +132,7 @@ CREATE TABLE "public".perm_user (
                                     flag        int4 NOT NULL,
                                     avatar      varchar(256) NOT NULL,
                                     nick_name   varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
-                                    sex         varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    gender         varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
                                     email       varchar(64) DEFAULT 'NULL::character varying' NOT NULL,
                                     phone       varchar(11) DEFAULT 'NULL::character varying' NOT NULL,
                                     dept_id     int8 NOT NULL,
@@ -150,7 +150,7 @@ COMMENT ON COLUMN "public".perm_user.salt IS '加密盐';
 COMMENT ON COLUMN "public".perm_user.flag IS '标志';
 COMMENT ON COLUMN "public".perm_user.avatar IS '头像';
 COMMENT ON COLUMN "public".perm_user.nick_name IS '姓名';
-COMMENT ON COLUMN "public".perm_user.sex IS '性别';
+COMMENT ON COLUMN "public".perm_user.gender IS '性别';
 COMMENT ON COLUMN "public".perm_user.email IS '邮箱';
 COMMENT ON COLUMN "public".perm_user.phone IS '手机号码';
 COMMENT ON COLUMN "public".perm_user.dept_id IS '部门编号';

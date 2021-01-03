@@ -144,8 +144,8 @@ type PermUser struct {
 	Avatar string `db:"avatar"`
 	// NickName
 	NickName string `db:"nick_name"`
-	// Sex
-	Sex string `db:"sex"`
+	// Gender
+	Gender string `db:"gender"`
 	// 邮箱
 	Email string `db:"email"`
 	// 手机号码
