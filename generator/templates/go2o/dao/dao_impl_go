@@ -2,8 +2,10 @@ package impl
 
 #!type:0#!lang:go
 #!target:{{.global.pkg}}/dao/impl/{{.table.Name}}_dao_impl.go
+{{$title := .table.Title}}
+{{$shortTitle := .table.ShortTitle}}
+{{$p := substr .table.Name 0 1 }}
 {{$structName := join (lower_title $title) "DaoImpl"}}
-{{$title := $title}}
 import(
 	"database/sql"
 	"fmt"
@@ -32,9 +34,9 @@ func New{{$title}}Dao(o orm.Orm) dao.I{{$title}}Dao{
     }
 }
 // Get {{.table.Comment}}
-func (t *{{$structName}}) Get(primary interface{})*model.{{$title}}{
+func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(primary interface{})*model.{{$title}}{
     e := model.{{$title}}{}
-    err := t._orm.Get(primary,&e)
+    err := {{$p}}._orm.Get(primary,&e)
     if err == nil{
         return &e
     }
@@ -45,9 +47,9 @@ func (t *{{$structName}}) Get(primary interface{})*model.{{$title}}{
 }
 
 // GetBy {{.table.Comment}}
-func (t *{{$structName}}) GetBy(where string,v ...interface{})*model.{{$title}}{
+func ({{$p}} *{{$structName}}) Get{{$shortTitle}}By(where string,v ...interface{})*model.{{$title}}{
     e := model.{{$title}}{}
-    err := t._orm.GetBy(&e,where,v...)
+    err := {{$p}}._orm.GetBy(&e,where,v...)
     if err == nil{
         return &e
     }
@@ -58,14 +60,14 @@ func (t *{{$structName}}) GetBy(where string,v ...interface{})*model.{{$title}}{
 }
 
 // Count {{.table.Comment}} by condition
-func (t *{{$structName}}) Count(where string,v ...interface{})(int,error){
-   return t._orm.Count(model.{{$title}}{},where,v...)
+func ({{$p}} *{{$structName}}) Count{{$shortTitle}}(where string,v ...interface{})(int,error){
+   return {{$p}}._orm.Count(model.{{$title}}{},where,v...)
 }
 
 // Select {{.table.Comment}}
-func (t *{{$structName}}) Select(where string,v ...interface{})[]*model.{{$title}} {
+func ({{$p}} *{{$structName}}) Select{{$shortTitle}}(where string,v ...interface{})[]*model.{{$title}} {
     list := make([]*model.{{$title}},0)
-    err := t._orm.Select(&list,where,v...)
+    err := {{$p}}._orm.Select(&list,where,v...)
     if err != nil && err != sql.ErrNoRows{
       log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
@@ -73,8 +75,8 @@ func (t *{{$structName}}) Select(where string,v ...interface{})[]*model.{{$title
 }
 
 // Save {{.table.Comment}}
-func (t *{{$structName}}) Save(v *model.{{$title}})(int,error){
-    id,err := orm.Save(t._orm,v,int(v.{{title .table.Pk}}))
+func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(v *model.{{$title}})(int,error){
+    id,err := orm.Save({{$p}}._orm,v,int(v.{{title .table.Pk}}))
     if err != nil && err != sql.ErrNoRows{
       log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
@@ -82,8 +84,8 @@ func (t *{{$structName}}) Save(v *model.{{$title}})(int,error){
 }
 
 // Delete {{.table.Comment}}
-func (t *{{$structName}}) Delete(primary interface{}) error {
-    err := t._orm.DeleteByPk(model.{{$title}}{}, primary)
+func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(primary interface{}) error {
+    err := {{$p}}._orm.DeleteByPk(model.{{$title}}{}, primary)
     if err != nil && err != sql.ErrNoRows{
       log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
@@ -91,8 +93,8 @@ func (t *{{$structName}}) Delete(primary interface{}) error {
 }
 
 // Batch Delete {{.table.Comment}}
-func (t *{{$structName}}) BatchDelete(where string,v ...interface{})(int64,error) {
-    r,err := t._orm.Delete(model.{{$title}}{},where,v...)
+func ({{$p}} *{{$structName}}) BatchDelete{{$shortTitle}}(where string,v ...interface{})(int64,error) {
+    r,err := {{$p}}._orm.Delete(model.{{$title}}{},where,v...)
     if err != nil && err != sql.ErrNoRows{
       log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
     }
@@ -100,7 +102,7 @@ func (t *{{$structName}}) BatchDelete(where string,v ...interface{})(int64,error
 }
 
 // Query paging data
-func (t *{{$structName}}) PagingQuery(begin, end int,where, orderBy string) (total int, rows []map[string]interface{}) {
+func ({{$p}} *{{$structName}}) PagingQuery{{$shortTitle}}(begin, end int,where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -108,14 +110,17 @@ func (t *{{$structName}}) PagingQuery(begin, end int,where, orderBy string) (tot
 	    where = "1=1"
 	}
 	s := fmt.Sprintf(`SELECT COUNT(0) FROM {{.table.Name}} WHERE %s`, where)
-	t._orm.Connector().ExecScalar(s,&total)
+	_ = {{$p}}._orm.Connector().ExecScalar(s,&total)
 	if total > 0{
 	    s = fmt.Sprintf(`SELECT * FROM {{.table.Name}} WHERE %s %s
 	        {{if eq .global.db "pgsql"}}LIMIT $2 OFFSET $1{{else}}LIMIT $1,$2{{end}}`,
             where, orderBy)
-        t._orm.Connector().Query(s, func(_rows *sql.Rows) {
+        err := {{$p}}._orm.Connector().Query(s, func(_rows *sql.Rows) {
             rows = db.RowsToMarshalMap(_rows)
         }, begin, end-begin)
+        if err != nil{
+            log.Println(fmt.Sprintf("[ Orm][ Error]: %s (table:{{.table.Name}})", err.Error()))
+        }
 	}else{
 	    rows = make([]map[string]interface{},0)
 	}

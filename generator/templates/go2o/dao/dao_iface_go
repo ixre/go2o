@@ -1,28 +1,28 @@
 package dao
 #!type:0#!lang:go
 #!target:{{.global.pkg}}/dao/{{.table.Name}}_dao.go
-{{$title := $title}}
+{{$title := .table.Title}}
+{{$shortTitle := .table.ShortTitle}}
 
 import(
     "{{pkg "go" .global.pkg}}/dao/model"
 )
 
 type I{{$title}}Dao interface{
-    // auto generate by gof
     // Get {{.table.Comment}}
-    Get{{$title}}(primary interface{})*model.{{$title}}
+    Get{{$shortTitle}}(primary interface{})*model.{{$title}}
     // GetBy {{.table.Comment}}
-    Get{{$title}}By(where string,v ...interface{})*model.{{$title}}
+    Get{{$shortTitle}}By(where string,v ...interface{})*model.{{$title}}
     // Count {{.table.Comment}} by condition
-    Count{{$title}}(where string,v ...interface{})(int,error)
+    Count{{$shortTitle}}(where string,v ...interface{})(int,error)
     // Select {{.table.Comment}}
-    Select{{$title}}(where string,v ...interface{})[]*model.{{$title}}
+    Select{{$shortTitle}}(where string,v ...interface{})[]*model.{{$title}}
     // Save {{.table.Comment}}
-    Save{{$title}}(v *model.{{$title}})(int,error)
+    Save{{$shortTitle}}(v *model.{{$title}})(int,error)
     // Delete {{.table.Comment}}
-    Delete{{$title}}(primary interface{}) error
+    Delete{{$shortTitle}}(primary interface{}) error
     // Batch Delete {{.table.Comment}}
-    BatchDelete{{$title}}(where string,v ...interface{})(int64,error)
+    BatchDelete{{$shortTitle}}(where string,v ...interface{})(int64,error)
     // Query paging data
-    PagingQuery{{$title}}(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
+    PagingQuery{{$shortTitle}}(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 }
