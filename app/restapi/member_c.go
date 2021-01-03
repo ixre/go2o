@@ -14,7 +14,6 @@ import (
 	"github.com/ixre/gof"
 	"github.com/labstack/echo/v4"
 	"go2o/core/dto"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/service"
 	"go2o/core/service/proto"
 	"go2o/core/variable"
@@ -44,10 +43,9 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.ErrMsg = "网络连接失败"
 	} else {
 		defer trans.Close()
-		encPwd := domain.MemberSha1Pwd(pwd)
 		r, _ := cli.CheckLogin(context.TODO(), &proto.LoginRequest{
 			User:   user,
-			Pwd:    encPwd,
+			Pwd:    pwd,
 			Update: true,
 		})
 		result.ErrMsg = r.ErrMsg
