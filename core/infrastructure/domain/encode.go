@@ -20,7 +20,7 @@ var (
 )
 
 // 密码SHA1加密
-func Sha1Pwd(pwd string,salt string) string {
+func Sha1Pwd(pwd string, salt string) string {
 	if pwd == "" {
 		return ""
 	}
@@ -48,24 +48,24 @@ func Sha1(s string) string {
 
 // 加密会员密码,因为可能会使用手机号码登录，
 // 所以密码不能依据用户名作为生成凭据
-func MemberSha1Pwd(pwd string,salt string) string {
-	return Sha1Pwd(pwd,salt)
+func MemberSha1Pwd(pwd string, salt string) string {
+	return Sha1Pwd(pwd, salt)
 }
 
 // 交易密码
-func TradePwd(pwd string,salt string) string {
+func TradePwd(pwd string, salt string) string {
 	if pwd == "" {
 		return ""
 	}
-	return Sha1Pwd(pwd,salt)
+	return Sha1Pwd(pwd, salt)
 }
 
 //加密合作商密码
-func MerchantSha1Pwd(pwd string,salt string) string {
+func MerchantSha1Pwd(pwd string, salt string) string {
 	if pwd == "" {
 		return ""
 	}
-	return Sha1Pwd(pwd,salt)
+	return Sha1Pwd(pwd, salt)
 }
 
 // 密码Md5加密

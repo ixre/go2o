@@ -599,12 +599,12 @@ func (s *memberService) ModifyPwd(_ context.Context, r *proto.ModifyPwdRequest) 
 	if l := len(r.NewPwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		pwd = domain.MemberSha1Pwd(pwd,v.Salt)
+		pwd = domain.MemberSha1Pwd(pwd, v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		old = domain.MemberSha1Pwd(old,v.Salt)
+		old = domain.MemberSha1Pwd(old, v.Salt)
 	}
 	err := m.Profile().ModifyPassword(pwd, old)
 	if err != nil {
@@ -624,12 +624,12 @@ func (s *memberService) ModifyTradePwd(_ context.Context, r *proto.ModifyPwdRequ
 	if l := len(pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		pwd = domain.TradePwd(pwd,v.Salt)
+		pwd = domain.TradePwd(pwd, v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		old = domain.TradePwd(old,v.Salt)
+		old = domain.TradePwd(old, v.Salt)
 	}
 	err := m.Profile().ModifyTradePassword(pwd, old)
 	if err != nil {
@@ -652,7 +652,7 @@ func (s *memberService) tryLogin(user string, pwd string) (id int64, errCode int
 		return 0, 2, member.ErrNoSuchMember
 	}
 	val := s.repo.GetMember(memberId).GetValue()
-	if val.Pwd != domain.Sha1Pwd(pwd,val.Salt) {
+	if val.Pwd != domain.Sha1Pwd(pwd, val.Salt) {
 		return 0, 1, de.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
@@ -697,7 +697,7 @@ func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.PwdVerifyRequ
 	if len(r.Pwd) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	if encPwd := domain.TradePwd(r.Pwd,mv.Salt); mv.TradePwd != encPwd {
+	if encPwd := domain.TradePwd(r.Pwd, mv.Salt); mv.TradePwd != encPwd {
 		return s.error(member.ErrIncorrectTradePwd), nil
 	}
 	return s.success(nil), nil

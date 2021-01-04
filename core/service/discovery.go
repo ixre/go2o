@@ -28,15 +28,14 @@ func registerServiceDiscovery(cfg *clientv3.Config, port int) {
 		panic(err)
 	}
 	ip := resolveIp()
-	_, err = r.Register(ip,port)
+	_, err = r.Register(ip, port)
 	if err != nil {
 		panic(err)
 	}
-	log.Println(fmt.Sprintf("[ Go2o][ RPC]: server discovery register success. node: %s:%d",ip,port))
+	log.Println(fmt.Sprintf("[ Go2o][ RPC]: server discovery register success. node: %s:%d", ip, port))
 }
 
-
-func  resolveIp() string {
+func resolveIp() string {
 	addrList, err := net.InterfaceAddrs()
 	if err != nil {
 		log.Fatalln(err.Error())
