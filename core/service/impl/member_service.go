@@ -45,7 +45,7 @@ type memberService struct {
 }
 
 // 交换会员编号
-func (s *memberService) SwapMemberId(_ context.Context, r *proto.SwapMemberRequest) (*proto.Int64, error) {
+func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest) (*proto.Int64, error) {
 	var memberId int64
 	switch r.Cred {
 	default:
@@ -110,15 +110,6 @@ func (s *memberService) getMemberValue(memberId int64) *member.Member {
 // 根据会员编号获取会员
 func (s *memberService) GetMember(_ context.Context, id *proto.Int64) (*proto.SMember, error) {
 	v := s.getMemberValue(id.Value)
-	if v != nil {
-		return s.parseMemberDto(v), nil
-	}
-	return nil, nil
-}
-
-// 根据用户名获取会员
-func (s *memberService) GetMemberByUser(_ context.Context, user *proto.String) (*proto.SMember, error) {
-	v := s.repo.GetMemberByUser(user.Value)
 	if v != nil {
 		return s.parseMemberDto(v), nil
 	}
@@ -459,7 +450,7 @@ func (s *memberService) updateMember(v *proto.SMember) (int64, error) {
 }
 
 // 注册会员
-func (s *memberService) RegisterMemberV2(_ context.Context, r *proto.RegisterMemberRequest) (*proto.RegisterResponse, error) {
+func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberRequest) (*proto.RegisterResponse, error) {
 	if len(r.Pwd) != 32 {
 		return &proto.RegisterResponse{
 			ErrCode: 1,

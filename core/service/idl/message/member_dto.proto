@@ -4,6 +4,18 @@ option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 
+// 会员标志
+enum EMemberFlag{
+    // 已创建的会员
+    MemberCreated = 0;
+    // 已激活
+    Active = 1;
+	// 已锁定的
+	Locked =2;
+    // 已认证的
+    Trusted = 4;
+}
+
 message RegisterMemberRequest {
     //　用户名
     string User = 1;
@@ -47,9 +59,11 @@ message PwdVerifyRequest {
     string Pwd = 2;
 }
 
-message SwapMemberRequest {
-    ECredentials cred = 1;
-    string value = 2;
+message FindMemberRequest {
+    // 凭据类型
+    ECredentials Cred = 1;
+    // 凭据的值
+    string Value = 2;
 }
 
 message SMemberLevelListResponse {
@@ -689,3 +703,8 @@ message InviteQuantityRequest {
     sint64 memberId = 1;
     map<string, string> data = 2;
 }
+
+message MemberIdListResponse {
+    repeated sint64 Value = 1;
+}
+

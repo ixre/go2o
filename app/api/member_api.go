@@ -33,8 +33,8 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 	if len(code) > 0 {
 		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
-		v, _ := cli.SwapMemberId(context.TODO(),
-			&proto.SwapMemberRequest{
+		v, _ := cli.FindMember(context.TODO(),
+			&proto.FindMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,
 			})
@@ -111,7 +111,7 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(), &proto.FindMemberRequest{
 			Cred:  proto.ECredentials_Code,
 			Value: code,
 		})
@@ -133,8 +133,8 @@ func (m MemberApi) complex(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(),
-			&proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(),
+			&proto.FindMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,
 			})
@@ -153,8 +153,8 @@ func (m MemberApi) bankcard(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(),
-			&proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(),
+			&proto.FindMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,
 			})
@@ -173,8 +173,8 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(),
-			&proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(),
+			&proto.FindMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,
 			})
@@ -197,8 +197,8 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(),
-			&proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(),
+			&proto.FindMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,
 			})
@@ -224,8 +224,8 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(),
-			&proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(),
+			&proto.FindMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,
 			})
@@ -242,8 +242,8 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
-	memberId, _ := cli.SwapMemberId(context.TODO(),
-		&proto.SwapMemberRequest{
+	memberId, _ := cli.FindMember(context.TODO(),
+		&proto.FindMemberRequest{
 			Cred:  proto.ECredentials_Code,
 			Value: code,
 		})
@@ -265,8 +265,8 @@ func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
 	if _, ok := provider[c.Identity]; !ok {
 		return api.NewErrorResponse("不支持的收款码")
 	}
-	memberId, _ := cli.SwapMemberId(context.TODO(),
-		&proto.SwapMemberRequest{
+	memberId, _ := cli.FindMember(context.TODO(),
+		&proto.FindMemberRequest{
 			Cred:  proto.ECredentials_Code,
 			Value: code,
 		})
@@ -282,8 +282,8 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 	defer trans.Close()
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	identity := ctx.Form().GetString("identity")
-	memberId, _ := cli.SwapMemberId(context.TODO(),
-		&proto.SwapMemberRequest{
+	memberId, _ := cli.FindMember(context.TODO(),
+		&proto.FindMemberRequest{
 			Cred:  proto.ECredentials_Code,
 			Value: code,
 		})

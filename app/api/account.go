@@ -24,8 +24,8 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	if len(code) > 0 {
 		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
-		v, _ := cli.SwapMemberId(context.TODO(),
-			&proto.SwapMemberRequest{
+		v, _ := cli.FindMember(context.TODO(),
+			&proto.FindMemberRequest{
 				Cred:  proto.ECredentials_Code,
 				Value: code,
 			})

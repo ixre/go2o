@@ -20,7 +20,7 @@ service MemberService {
      * @param extend 扩展数据
      * @return 注册结果，返回user_code
      */
-    rpc RegisterMemberV2 (RegisterMemberRequest) returns (RegisterResponse) {
+    rpc Register (RegisterMemberRequest) returns (RegisterResponse) {
     }
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
@@ -28,9 +28,6 @@ service MemberService {
     }
     /** 验证交易密码 */
     rpc VerifyTradePwd (PwdVerifyRequest) returns (Result) {
-    }
-    /** 交换会员编号 */
-    rpc SwapMemberId (SwapMemberRequest) returns (Int64) {
     }
     /** 等级列表 */
     rpc GetLevels (Empty) returns (SMemberLevelListResponse) {
@@ -59,8 +56,8 @@ service MemberService {
     // 根据会员编号获取会员信息
     rpc GetMember (Int64) returns (SMember) {
     }
-    // 根据用户名获取会员信息
-    rpc GetMemberByUser (String) returns (SMember) {
+    /** 查找交换会员编号 */
+    rpc FindMember (FindMemberRequest) returns (Int64) {
     }
     // 根据会员编号获取会员资料
     rpc GetProfile (Int64) returns (SProfile) {
@@ -239,8 +236,4 @@ service MemberService {
     // 查询优惠券
     rpc QueryCoupons (MemberCouponPagingRequest) returns (MemberCouponListResponse) {
     }
-}
-
-message MemberIdListResponse {
-    repeated sint64 Value = 1;
 }

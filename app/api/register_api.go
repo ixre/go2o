@@ -75,7 +75,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.RegisterMemberV2(context.TODO(), &proto.RegisterMemberRequest{
+		r, _ := cli.Register(context.TODO(), &proto.RegisterMemberRequest{
 			User:        user,
 			Pwd:         pwd,
 			Flag:        0,
@@ -226,8 +226,8 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 	if err == nil {
 		// 检查手机号码是否被其他人使用
 		trans, cli, _ := service.MemberServiceClient()
-		memberId, _ := cli.SwapMemberId(context.TODO(),
-			&proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(),
+			&proto.FindMemberRequest{
 				Cred:  proto.ECredentials_Phone,
 				Value: phone,
 			})
