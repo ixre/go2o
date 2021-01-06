@@ -97,16 +97,16 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 	return roles, permissions
 }
 
-func (p *rbacServiceImpl) GetUserResource(_ context.Context, id *proto.PermUserId) (*proto.RbacUserResourceResponse, error) {
+func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserResRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
 	var resList []*model.PermRes
-	if id.Value <= 0 { // 管理员
+	if r.UserId <= 0 { // 管理员
 		dst.Roles = []int64{}
 		dst.Permissions = []string{"master", "admin"}
 		resList = p.dao.SelectPermRes("")
 	} else {
-		dst.Roles, dst.Permissions = p.getUserRolesPerm(id.Value)
-		usr := p.dao.GetPermUser(id.Value)
+		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
+		usr := p.dao.GetPermUser(r.UserId)
 		if usr == nil {
 			return nil, nil
 		}
@@ -122,6 +122,9 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, id *proto.PermUserI
 	f = func(root *proto.SUserRes, arr []*model.PermRes) {
 		root.Children = []*proto.SUserRes{}
 		for _, v := range arr {
+			if r.OnlyMenu && (v.ResType == 0 || v.ResType ==2){
+				continue // 只显示菜单
+			}
 			if v.Pid == root.Id {
 				c := &proto.SUserRes{
 					Id:            v.Id,
@@ -652,9 +655,12 @@ func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes
 
 // 获取PermRes列表
 func (p *rbacServiceImpl) QueryPermResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
-	var where string
+	var where string = "1=1"
 	if r.Keyword != "" {
-		where = "name LIKE '%" + r.Keyword + "%'"
+		where += " AND name LIKE '%" + r.Keyword + "%'"
+	}
+	if r.OnlyMenu {
+		where += " AND res_type IN(0,2)"
 	}
 	//todo: 搜索结果不为pid
 	arr := p.dao.SelectPermRes(where)
@@ -669,36 +675,6 @@ func (p *rbacServiceImpl) QueryPermResList(_ context.Context, r *proto.QueryPerm
 func (p *rbacServiceImpl) DeletePermRes(_ context.Context, id *proto.PermResId) (*proto.Result, error) {
 	err := p.dao.DeletePermRes(id.Value)
 	return p.error(err), nil
-}
-
-func (p *rbacServiceImpl) PagingPermRes(_ context.Context, r *proto.PermResPagingRequest) (*proto.PermResPagingResponse, error) {
-	total, rows := p.dao.PagingQueryPermRes(int(r.Params.Begin),
-		int(r.Params.End),
-		r.Params.Where,
-		r.Params.SortBy)
-	ret := &proto.PermResPagingResponse{
-		Total: int64(total),
-		Value: make([]*proto.PagingPermRes, len(rows)),
-	}
-	for i, v := range rows {
-		ret.Value[i] = &proto.PagingPermRes{
-			Id:            int64(typeconv.MustInt(v["id"])),
-			Name:          typeconv.Stringify(v["name"]),
-			ResType:       int32(typeconv.MustInt(v["res_type"])),
-			Pid:           int64(typeconv.MustInt(v["pid"])),
-			Key:           typeconv.Stringify(v["key"]),
-			Path:          typeconv.Stringify(v["path"]),
-			Icon:          typeconv.Stringify(v["icon"]),
-			Permission:    typeconv.Stringify(v["permission"]),
-			SortNum:       int32(typeconv.MustInt(v["sort_num"])),
-			IsExternal:    int32(typeconv.MustInt(v["is_external"])),
-			IsHidden:      int32(typeconv.MustInt(v["is_hidden"])),
-			CreateTime:    int64(typeconv.MustInt(v["create_time"])),
-			ComponentPath: typeconv.Stringify(v["component_path"]),
-			Cache:         typeconv.Stringify(v["cache_"]),
-		}
-	}
-	return ret, nil
 }
 
 func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {

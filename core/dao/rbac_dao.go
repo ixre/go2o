@@ -86,8 +86,6 @@ type IRbacDao interface {
 	DeletePermRes(primary interface{}) error
 	// Batch Delete PermRes
 	BatchDeletePermRes(where string, v ...interface{}) (int64, error)
-	// Query paging data
-	PagingQueryPermRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 用户角色关联
 	GetPermUserRole(primary interface{}) *model.PermUserRole

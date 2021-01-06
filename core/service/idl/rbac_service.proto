@@ -42,7 +42,7 @@ service RbacService {
     // 用户登录
     rpc UserLogin(RbacLoginRequest)returns(RbacLoginResponse){}
     // 获取用户的信息
-    rpc GetUserResource(PermUserId)returns(RbacUserResourceResponse){}
+    rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse){}
 
     // 删除系统用户
     rpc DeletePermUser (PermUserId) returns (Result) {
@@ -80,8 +80,6 @@ service RbacService {
     // 删除PermRes
     rpc DeletePermRes (PermResId) returns (Result) {
     }
-    // 获取PermRes分页数据
-    rpc PagingPermRes (PermResPagingRequest) returns (PermResPagingResponse);
 }
 
 // 用户登录
@@ -124,7 +122,7 @@ message SUserRes{
     string Key = 2;
     /** 资源名称 */
     string Name = 3;
-    /** 资源类型, 0: 资源　 1: 菜单 2:　 按钮 */
+    /** 资源类型,0: 目录 1: 资源　2: 菜单 3: 按钮 */
     int32 ResType = 4;
     /** 资源路径 */
     string Path = 5;
@@ -498,7 +496,7 @@ message SavePermResRequest{
     int64 Id = 1;
     /** 资源名称 */
     string Name = 2;
-    /** 资源类型, 0: 资源　 1: 菜单  2:　 按钮 */
+    /** 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮 */
     int32 ResType = 3;
     /** 上级菜单ID */
     int64 Pid = 4;
@@ -539,7 +537,7 @@ message SPermRes{
     int64 Id = 1;
     /** 资源名称 */
     string Name = 2;
-    /** 资源类型, 0: 资源　 1: 菜单  2:　 按钮 */
+    /** 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮 */
     int32 ResType = 3;
     /** 上级菜单ID */
     int64 Pid = 4;
@@ -567,8 +565,18 @@ message SPermRes{
     repeated SPermRes Children = 15;
 }
 
+message GetUserResRequest{
+    /** 用户编号 */
+    int64 UserId = 1;
+    /** 是否只显示菜单 */
+    bool OnlyMenu = 2;
+}
+
 message QueryPermResRequest{
+    /** 关键词 */
     string Keyword = 1;
+    /** 是否只显示菜单 */
+    bool OnlyMenu = 2;
 }
 
 message QueryPermResResponse{
@@ -580,7 +588,7 @@ message PagingPermRes{
     int64 Id = 1;
     /** 资源名称 */
     string Name = 2;
-    /** 资源类型, 0: 资源　 1: 菜单  2:　 按钮 */
+    /** 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮 */
     int32 ResType = 3;
     /** 上级菜单ID */
     int64 Pid = 4;

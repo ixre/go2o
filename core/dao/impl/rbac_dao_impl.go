@@ -466,31 +466,6 @@ func (p *rbacDaoImpl) BatchDeletePermRes(where string, v ...interface{}) (int64,
 	return r, err
 }
 
-// Query paging data
-func (p *rbacDaoImpl) PagingQueryPermRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
-	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
-	}
-	if where == "" {
-		where = "1=1"
-	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM perm_res WHERE %s`, where)
-	p._orm.Connector().ExecScalar(s, &total)
-	if total > 0 {
-		s = fmt.Sprintf(`SELECT * FROM perm_res WHERE %s %s
-	        LIMIT $2 OFFSET $1`,
-			where, orderBy)
-		err := p._orm.Connector().Query(s, func(_rows *sql.Rows) {
-			rows = db.RowsToMarshalMap(_rows)
-		}, begin, end-begin)
-		if err != nil {
-			log.Println(fmt.Sprintf("[ Orm][ Error]: %s (table:perm_res)", err.Error()))
-		}
-	} else {
-		rows = make([]map[string]interface{}, 0)
-	}
-	return total, rows
-}
 
 // Get 用户角色关联
 func (p *rbacDaoImpl) GetPermUserRole(primary interface{}) *model.PermUserRole {

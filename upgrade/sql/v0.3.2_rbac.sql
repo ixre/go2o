@@ -1,6 +1,6 @@
 CREATE TABLE "public".perm_res (
                                    id             bigserial NOT NULL,
-                                   name           varchar(20) NOT NULL,
+                                   name           varchar(40) NOT NULL,
                                    res_type       int2 NOT NULL,
                                    pid            int8 NOT NULL,
                                    "key"          varchar(120) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE "public".perm_res (
                                        PRIMARY KEY (id));
 COMMENT ON COLUMN "public".perm_res.id IS '资源ID';
 COMMENT ON COLUMN "public".perm_res.name IS '资源名称';
-COMMENT ON COLUMN "public".perm_res.res_type IS '资源类型, 0: 资源　 1: 菜单  2:　 按钮';
+COMMENT ON COLUMN "public".perm_res.res_type IS '资源类型, 0: 目录 1: 资源　2: 菜单 3:　 按钮';
 COMMENT ON COLUMN "public".perm_res.pid IS '上级菜单ID';
 COMMENT ON COLUMN "public".perm_res."key" IS '资源键';
 COMMENT ON COLUMN "public".perm_res.path IS '资源路径';
