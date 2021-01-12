@@ -38,7 +38,7 @@ func (m *RbacLoginRequest) Reset()         { *m = RbacLoginRequest{} }
 func (m *RbacLoginRequest) String() string { return proto.CompactTextString(m) }
 func (*RbacLoginRequest) ProtoMessage()    {}
 func (*RbacLoginRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{0}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{0}
 }
 func (m *RbacLoginRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RbacLoginRequest.Unmarshal(m, b)
@@ -93,7 +93,7 @@ func (m *RbacLoginResponse) Reset()         { *m = RbacLoginResponse{} }
 func (m *RbacLoginResponse) String() string { return proto.CompactTextString(m) }
 func (*RbacLoginResponse) ProtoMessage()    {}
 func (*RbacLoginResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{1}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{1}
 }
 func (m *RbacLoginResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RbacLoginResponse.Unmarshal(m, b)
@@ -165,7 +165,7 @@ func (m *RbacUserResourceResponse) Reset()         { *m = RbacUserResourceRespon
 func (m *RbacUserResourceResponse) String() string { return proto.CompactTextString(m) }
 func (*RbacUserResourceResponse) ProtoMessage()    {}
 func (*RbacUserResourceResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{2}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{2}
 }
 func (m *RbacUserResourceResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RbacUserResourceResponse.Unmarshal(m, b)
@@ -213,7 +213,7 @@ type SUserRes struct {
 	Key string `protobuf:"bytes,2,opt,name=Key,proto3" json:"Key"`
 	// * 资源名称
 	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮
+	// * 资源类型,0: 目录 1: 资源　2: 菜单 3: 按钮
 	ResType int32 `protobuf:"varint,4,opt,name=ResType,proto3" json:"ResType"`
 	// * 资源路径
 	Path string `protobuf:"bytes,5,opt,name=Path,proto3" json:"Path"`
@@ -226,7 +226,7 @@ type SUserRes struct {
 	// * 是否隐藏
 	IsHidden bool `protobuf:"varint,9,opt,name=IsHidden,proto3" json:"IsHidden"`
 	// * 组件名称
-	ComponentPath string `protobuf:"bytes,10,opt,name=ComponentPath,proto3" json:"ComponentPath"`
+	ComponentName string `protobuf:"bytes,10,opt,name=ComponentName,proto3" json:"ComponentName"`
 	// * 子资源
 	Children             []*SUserRes `protobuf:"bytes,11,rep,name=Children,proto3" json:"Children"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
@@ -238,7 +238,7 @@ func (m *SUserRes) Reset()         { *m = SUserRes{} }
 func (m *SUserRes) String() string { return proto.CompactTextString(m) }
 func (*SUserRes) ProtoMessage()    {}
 func (*SUserRes) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{3}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{3}
 }
 func (m *SUserRes) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SUserRes.Unmarshal(m, b)
@@ -321,9 +321,9 @@ func (m *SUserRes) GetIsHidden() bool {
 	return false
 }
 
-func (m *SUserRes) GetComponentPath() string {
+func (m *SUserRes) GetComponentName() string {
 	if m != nil {
-		return m.ComponentPath
+		return m.ComponentName
 	}
 	return ""
 }
@@ -346,7 +346,7 @@ func (m *RoleId) Reset()         { *m = RoleId{} }
 func (m *RoleId) String() string { return proto.CompactTextString(m) }
 func (*RoleId) ProtoMessage()    {}
 func (*RoleId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{4}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{4}
 }
 func (m *RoleId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RoleId.Unmarshal(m, b)
@@ -384,7 +384,7 @@ func (m *UserId) Reset()         { *m = UserId{} }
 func (m *UserId) String() string { return proto.CompactTextString(m) }
 func (*UserId) ProtoMessage()    {}
 func (*UserId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{5}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{5}
 }
 func (m *UserId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserId.Unmarshal(m, b)
@@ -424,7 +424,7 @@ func (m *RbacTree) Reset()         { *m = RbacTree{} }
 func (m *RbacTree) String() string { return proto.CompactTextString(m) }
 func (*RbacTree) ProtoMessage()    {}
 func (*RbacTree) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{6}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{6}
 }
 func (m *RbacTree) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RbacTree.Unmarshal(m, b)
@@ -485,7 +485,7 @@ func (m *SavePermDeptRequest) Reset()         { *m = SavePermDeptRequest{} }
 func (m *SavePermDeptRequest) String() string { return proto.CompactTextString(m) }
 func (*SavePermDeptRequest) ProtoMessage()    {}
 func (*SavePermDeptRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{7}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{7}
 }
 func (m *SavePermDeptRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermDeptRequest.Unmarshal(m, b)
@@ -553,7 +553,7 @@ func (m *SavePermDeptResponse) Reset()         { *m = SavePermDeptResponse{} }
 func (m *SavePermDeptResponse) String() string { return proto.CompactTextString(m) }
 func (*SavePermDeptResponse) ProtoMessage()    {}
 func (*SavePermDeptResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{8}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{8}
 }
 func (m *SavePermDeptResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermDeptResponse.Unmarshal(m, b)
@@ -605,7 +605,7 @@ func (m *PermDeptId) Reset()         { *m = PermDeptId{} }
 func (m *PermDeptId) String() string { return proto.CompactTextString(m) }
 func (*PermDeptId) ProtoMessage()    {}
 func (*PermDeptId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{9}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{9}
 }
 func (m *PermDeptId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermDeptId.Unmarshal(m, b)
@@ -652,7 +652,7 @@ func (m *SPermDept) Reset()         { *m = SPermDept{} }
 func (m *SPermDept) String() string { return proto.CompactTextString(m) }
 func (*SPermDept) ProtoMessage()    {}
 func (*SPermDept) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{10}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{10}
 }
 func (m *SPermDept) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPermDept.Unmarshal(m, b)
@@ -717,7 +717,7 @@ func (m *QueryPermDeptRequest) Reset()         { *m = QueryPermDeptRequest{} }
 func (m *QueryPermDeptRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPermDeptRequest) ProtoMessage()    {}
 func (*QueryPermDeptRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{11}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{11}
 }
 func (m *QueryPermDeptRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermDeptRequest.Unmarshal(m, b)
@@ -748,7 +748,7 @@ func (m *QueryPermDeptResponse) Reset()         { *m = QueryPermDeptResponse{} }
 func (m *QueryPermDeptResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPermDeptResponse) ProtoMessage()    {}
 func (*QueryPermDeptResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{12}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{12}
 }
 func (m *QueryPermDeptResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermDeptResponse.Unmarshal(m, b)
@@ -797,7 +797,7 @@ func (m *SavePermJobRequest) Reset()         { *m = SavePermJobRequest{} }
 func (m *SavePermJobRequest) String() string { return proto.CompactTextString(m) }
 func (*SavePermJobRequest) ProtoMessage()    {}
 func (*SavePermJobRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{13}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{13}
 }
 func (m *SavePermJobRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermJobRequest.Unmarshal(m, b)
@@ -872,7 +872,7 @@ func (m *SavePermJobResponse) Reset()         { *m = SavePermJobResponse{} }
 func (m *SavePermJobResponse) String() string { return proto.CompactTextString(m) }
 func (*SavePermJobResponse) ProtoMessage()    {}
 func (*SavePermJobResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{14}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{14}
 }
 func (m *SavePermJobResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermJobResponse.Unmarshal(m, b)
@@ -924,7 +924,7 @@ func (m *PermJobId) Reset()         { *m = PermJobId{} }
 func (m *PermJobId) String() string { return proto.CompactTextString(m) }
 func (*PermJobId) ProtoMessage()    {}
 func (*PermJobId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{15}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{15}
 }
 func (m *PermJobId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermJobId.Unmarshal(m, b)
@@ -973,7 +973,7 @@ func (m *SPermJob) Reset()         { *m = SPermJob{} }
 func (m *SPermJob) String() string { return proto.CompactTextString(m) }
 func (*SPermJob) ProtoMessage()    {}
 func (*SPermJob) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{16}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{16}
 }
 func (m *SPermJob) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPermJob.Unmarshal(m, b)
@@ -1047,7 +1047,7 @@ func (m *QueryPermJobRequest) Reset()         { *m = QueryPermJobRequest{} }
 func (m *QueryPermJobRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPermJobRequest) ProtoMessage()    {}
 func (*QueryPermJobRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{17}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{17}
 }
 func (m *QueryPermJobRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermJobRequest.Unmarshal(m, b)
@@ -1085,7 +1085,7 @@ func (m *QueryPermJobResponse) Reset()         { *m = QueryPermJobResponse{} }
 func (m *QueryPermJobResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPermJobResponse) ProtoMessage()    {}
 func (*QueryPermJobResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{18}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{18}
 }
 func (m *QueryPermJobResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermJobResponse.Unmarshal(m, b)
@@ -1134,7 +1134,7 @@ func (m *PagingPermJob) Reset()         { *m = PagingPermJob{} }
 func (m *PagingPermJob) String() string { return proto.CompactTextString(m) }
 func (*PagingPermJob) ProtoMessage()    {}
 func (*PagingPermJob) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{19}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{19}
 }
 func (m *PagingPermJob) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingPermJob.Unmarshal(m, b)
@@ -1208,7 +1208,7 @@ func (m *PermJobPagingRequest) Reset()         { *m = PermJobPagingRequest{} }
 func (m *PermJobPagingRequest) String() string { return proto.CompactTextString(m) }
 func (*PermJobPagingRequest) ProtoMessage()    {}
 func (*PermJobPagingRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{20}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{20}
 }
 func (m *PermJobPagingRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermJobPagingRequest.Unmarshal(m, b)
@@ -1247,7 +1247,7 @@ func (m *PermJobPagingResponse) Reset()         { *m = PermJobPagingResponse{} }
 func (m *PermJobPagingResponse) String() string { return proto.CompactTextString(m) }
 func (*PermJobPagingResponse) ProtoMessage()    {}
 func (*PermJobPagingResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{21}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{21}
 }
 func (m *PermJobPagingResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermJobPagingResponse.Unmarshal(m, b)
@@ -1321,7 +1321,7 @@ func (m *SavePermUserRequest) Reset()         { *m = SavePermUserRequest{} }
 func (m *SavePermUserRequest) String() string { return proto.CompactTextString(m) }
 func (*SavePermUserRequest) ProtoMessage()    {}
 func (*SavePermUserRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{22}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{22}
 }
 func (m *SavePermUserRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermUserRequest.Unmarshal(m, b)
@@ -1459,7 +1459,7 @@ func (m *SavePermUserResponse) Reset()         { *m = SavePermUserResponse{} }
 func (m *SavePermUserResponse) String() string { return proto.CompactTextString(m) }
 func (*SavePermUserResponse) ProtoMessage()    {}
 func (*SavePermUserResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{23}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{23}
 }
 func (m *SavePermUserResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermUserResponse.Unmarshal(m, b)
@@ -1511,7 +1511,7 @@ func (m *PermUserId) Reset()         { *m = PermUserId{} }
 func (m *PermUserId) String() string { return proto.CompactTextString(m) }
 func (*PermUserId) ProtoMessage()    {}
 func (*PermUserId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{24}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{24}
 }
 func (m *PermUserId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermUserId.Unmarshal(m, b)
@@ -1580,7 +1580,7 @@ func (m *SPermUser) Reset()         { *m = SPermUser{} }
 func (m *SPermUser) String() string { return proto.CompactTextString(m) }
 func (*SPermUser) ProtoMessage()    {}
 func (*SPermUser) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{25}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{25}
 }
 func (m *SPermUser) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPermUser.Unmarshal(m, b)
@@ -1722,7 +1722,7 @@ func (m *QueryPermUserRequest) Reset()         { *m = QueryPermUserRequest{} }
 func (m *QueryPermUserRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPermUserRequest) ProtoMessage()    {}
 func (*QueryPermUserRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{26}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{26}
 }
 func (m *QueryPermUserRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermUserRequest.Unmarshal(m, b)
@@ -1753,7 +1753,7 @@ func (m *QueryPermUserResponse) Reset()         { *m = QueryPermUserResponse{} }
 func (m *QueryPermUserResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPermUserResponse) ProtoMessage()    {}
 func (*QueryPermUserResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{27}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{27}
 }
 func (m *QueryPermUserResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermUserResponse.Unmarshal(m, b)
@@ -1818,7 +1818,7 @@ func (m *PagingPermUser) Reset()         { *m = PagingPermUser{} }
 func (m *PagingPermUser) String() string { return proto.CompactTextString(m) }
 func (*PagingPermUser) ProtoMessage()    {}
 func (*PagingPermUser) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{28}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{28}
 }
 func (m *PagingPermUser) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingPermUser.Unmarshal(m, b)
@@ -1950,7 +1950,7 @@ func (m *PermUserPagingRequest) Reset()         { *m = PermUserPagingRequest{} }
 func (m *PermUserPagingRequest) String() string { return proto.CompactTextString(m) }
 func (*PermUserPagingRequest) ProtoMessage()    {}
 func (*PermUserPagingRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{29}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{29}
 }
 func (m *PermUserPagingRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermUserPagingRequest.Unmarshal(m, b)
@@ -1996,7 +1996,7 @@ func (m *PermUserPagingResponse) Reset()         { *m = PermUserPagingResponse{}
 func (m *PermUserPagingResponse) String() string { return proto.CompactTextString(m) }
 func (*PermUserPagingResponse) ProtoMessage()    {}
 func (*PermUserPagingResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{30}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{30}
 }
 func (m *PermUserPagingResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermUserPagingResponse.Unmarshal(m, b)
@@ -2054,7 +2054,7 @@ func (m *SavePermRoleRequest) Reset()         { *m = SavePermRoleRequest{} }
 func (m *SavePermRoleRequest) String() string { return proto.CompactTextString(m) }
 func (*SavePermRoleRequest) ProtoMessage()    {}
 func (*SavePermRoleRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{31}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{31}
 }
 func (m *SavePermRoleRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermRoleRequest.Unmarshal(m, b)
@@ -2136,7 +2136,7 @@ func (m *UpdateRoleResRequest) Reset()         { *m = UpdateRoleResRequest{} }
 func (m *UpdateRoleResRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateRoleResRequest) ProtoMessage()    {}
 func (*UpdateRoleResRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{32}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{32}
 }
 func (m *UpdateRoleResRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UpdateRoleResRequest.Unmarshal(m, b)
@@ -2183,7 +2183,7 @@ func (m *SavePermRoleResponse) Reset()         { *m = SavePermRoleResponse{} }
 func (m *SavePermRoleResponse) String() string { return proto.CompactTextString(m) }
 func (*SavePermRoleResponse) ProtoMessage()    {}
 func (*SavePermRoleResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{33}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{33}
 }
 func (m *SavePermRoleResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermRoleResponse.Unmarshal(m, b)
@@ -2235,7 +2235,7 @@ func (m *PermRoleId) Reset()         { *m = PermRoleId{} }
 func (m *PermRoleId) String() string { return proto.CompactTextString(m) }
 func (*PermRoleId) ProtoMessage()    {}
 func (*PermRoleId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{34}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{34}
 }
 func (m *PermRoleId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermRoleId.Unmarshal(m, b)
@@ -2288,7 +2288,7 @@ func (m *SPermRole) Reset()         { *m = SPermRole{} }
 func (m *SPermRole) String() string { return proto.CompactTextString(m) }
 func (*SPermRole) ProtoMessage()    {}
 func (*SPermRole) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{35}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{35}
 }
 func (m *SPermRole) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPermRole.Unmarshal(m, b)
@@ -2374,7 +2374,7 @@ func (m *QueryPermRoleRequest) Reset()         { *m = QueryPermRoleRequest{} }
 func (m *QueryPermRoleRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPermRoleRequest) ProtoMessage()    {}
 func (*QueryPermRoleRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{36}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{36}
 }
 func (m *QueryPermRoleRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermRoleRequest.Unmarshal(m, b)
@@ -2405,7 +2405,7 @@ func (m *QueryPermRoleResponse) Reset()         { *m = QueryPermRoleResponse{} }
 func (m *QueryPermRoleResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPermRoleResponse) ProtoMessage()    {}
 func (*QueryPermRoleResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{37}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{37}
 }
 func (m *QueryPermRoleResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermRoleResponse.Unmarshal(m, b)
@@ -2456,7 +2456,7 @@ func (m *PagingPermRole) Reset()         { *m = PagingPermRole{} }
 func (m *PagingPermRole) String() string { return proto.CompactTextString(m) }
 func (*PagingPermRole) ProtoMessage()    {}
 func (*PagingPermRole) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{38}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{38}
 }
 func (m *PagingPermRole) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingPermRole.Unmarshal(m, b)
@@ -2537,7 +2537,7 @@ func (m *PermRolePagingRequest) Reset()         { *m = PermRolePagingRequest{} }
 func (m *PermRolePagingRequest) String() string { return proto.CompactTextString(m) }
 func (*PermRolePagingRequest) ProtoMessage()    {}
 func (*PermRolePagingRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{39}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{39}
 }
 func (m *PermRolePagingRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermRolePagingRequest.Unmarshal(m, b)
@@ -2576,7 +2576,7 @@ func (m *PermRolePagingResponse) Reset()         { *m = PermRolePagingResponse{}
 func (m *PermRolePagingResponse) String() string { return proto.CompactTextString(m) }
 func (*PermRolePagingResponse) ProtoMessage()    {}
 func (*PermRolePagingResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{40}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{40}
 }
 func (m *PermRolePagingResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermRolePagingResponse.Unmarshal(m, b)
@@ -2615,7 +2615,7 @@ type SavePermResRequest struct {
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 资源名称
 	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　 按钮
+	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮
 	ResType int32 `protobuf:"varint,3,opt,name=ResType,proto3" json:"ResType"`
 	// * 上级菜单ID
 	Pid int64 `protobuf:"varint,4,opt,name=Pid,proto3" json:"Pid"`
@@ -2636,7 +2636,7 @@ type SavePermResRequest struct {
 	// * 创建日期
 	CreateTime int64 `protobuf:"varint,12,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// * 组件名称
-	ComponentPath string `protobuf:"bytes,13,opt,name=ComponentPath,proto3" json:"ComponentPath"`
+	ComponentName string `protobuf:"bytes,13,opt,name=ComponentName,proto3" json:"ComponentName"`
 	// * 缓存
 	Cache                string   `protobuf:"bytes,14,opt,name=Cache,proto3" json:"Cache"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -2648,7 +2648,7 @@ func (m *SavePermResRequest) Reset()         { *m = SavePermResRequest{} }
 func (m *SavePermResRequest) String() string { return proto.CompactTextString(m) }
 func (*SavePermResRequest) ProtoMessage()    {}
 func (*SavePermResRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{41}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{41}
 }
 func (m *SavePermResRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermResRequest.Unmarshal(m, b)
@@ -2752,9 +2752,9 @@ func (m *SavePermResRequest) GetCreateTime() int64 {
 	return 0
 }
 
-func (m *SavePermResRequest) GetComponentPath() string {
+func (m *SavePermResRequest) GetComponentName() string {
 	if m != nil {
-		return m.ComponentPath
+		return m.ComponentName
 	}
 	return ""
 }
@@ -2779,7 +2779,7 @@ func (m *SavePermResResponse) Reset()         { *m = SavePermResResponse{} }
 func (m *SavePermResResponse) String() string { return proto.CompactTextString(m) }
 func (*SavePermResResponse) ProtoMessage()    {}
 func (*SavePermResResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{42}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{42}
 }
 func (m *SavePermResResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SavePermResResponse.Unmarshal(m, b)
@@ -2831,7 +2831,7 @@ func (m *PermResId) Reset()         { *m = PermResId{} }
 func (m *PermResId) String() string { return proto.CompactTextString(m) }
 func (*PermResId) ProtoMessage()    {}
 func (*PermResId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{43}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{43}
 }
 func (m *PermResId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermResId.Unmarshal(m, b)
@@ -2863,7 +2863,7 @@ type SPermRes struct {
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 资源名称
 	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　 按钮
+	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮
 	ResType int32 `protobuf:"varint,3,opt,name=ResType,proto3" json:"ResType"`
 	// * 上级菜单ID
 	Pid int64 `protobuf:"varint,4,opt,name=Pid,proto3" json:"Pid"`
@@ -2884,7 +2884,7 @@ type SPermRes struct {
 	// * 创建日期
 	CreateTime int64 `protobuf:"varint,12,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// * 组件名称
-	ComponentPath string `protobuf:"bytes,13,opt,name=ComponentPath,proto3" json:"ComponentPath"`
+	ComponentName string `protobuf:"bytes,13,opt,name=ComponentName,proto3" json:"ComponentName"`
 	// * 缓存
 	Cache string `protobuf:"bytes,14,opt,name=Cache,proto3" json:"Cache"`
 	// * 子资源
@@ -2898,7 +2898,7 @@ func (m *SPermRes) Reset()         { *m = SPermRes{} }
 func (m *SPermRes) String() string { return proto.CompactTextString(m) }
 func (*SPermRes) ProtoMessage()    {}
 func (*SPermRes) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{44}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{44}
 }
 func (m *SPermRes) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPermRes.Unmarshal(m, b)
@@ -3002,9 +3002,9 @@ func (m *SPermRes) GetCreateTime() int64 {
 	return 0
 }
 
-func (m *SPermRes) GetComponentPath() string {
+func (m *SPermRes) GetComponentName() string {
 	if m != nil {
-		return m.ComponentPath
+		return m.ComponentName
 	}
 	return ""
 }
@@ -3037,7 +3037,7 @@ func (m *GetUserResRequest) Reset()         { *m = GetUserResRequest{} }
 func (m *GetUserResRequest) String() string { return proto.CompactTextString(m) }
 func (*GetUserResRequest) ProtoMessage()    {}
 func (*GetUserResRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{45}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{45}
 }
 func (m *GetUserResRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetUserResRequest.Unmarshal(m, b)
@@ -3085,7 +3085,7 @@ func (m *QueryPermResRequest) Reset()         { *m = QueryPermResRequest{} }
 func (m *QueryPermResRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryPermResRequest) ProtoMessage()    {}
 func (*QueryPermResRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{46}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{46}
 }
 func (m *QueryPermResRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermResRequest.Unmarshal(m, b)
@@ -3130,7 +3130,7 @@ func (m *QueryPermResResponse) Reset()         { *m = QueryPermResResponse{} }
 func (m *QueryPermResResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryPermResResponse) ProtoMessage()    {}
 func (*QueryPermResResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{47}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{47}
 }
 func (m *QueryPermResResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryPermResResponse.Unmarshal(m, b)
@@ -3162,7 +3162,7 @@ type PagingPermRes struct {
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 资源名称
 	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　 按钮
+	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮
 	ResType int32 `protobuf:"varint,3,opt,name=ResType,proto3" json:"ResType"`
 	// * 上级菜单ID
 	Pid int64 `protobuf:"varint,4,opt,name=Pid,proto3" json:"Pid"`
@@ -3183,7 +3183,7 @@ type PagingPermRes struct {
 	// * 创建日期
 	CreateTime int64 `protobuf:"varint,12,opt,name=CreateTime,proto3" json:"CreateTime"`
 	// * 组件名称
-	ComponentPath string `protobuf:"bytes,13,opt,name=ComponentPath,proto3" json:"ComponentPath"`
+	ComponentName string `protobuf:"bytes,13,opt,name=ComponentName,proto3" json:"ComponentName"`
 	// * 缓存
 	Cache                string   `protobuf:"bytes,14,opt,name=Cache,proto3" json:"Cache"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -3195,7 +3195,7 @@ func (m *PagingPermRes) Reset()         { *m = PagingPermRes{} }
 func (m *PagingPermRes) String() string { return proto.CompactTextString(m) }
 func (*PagingPermRes) ProtoMessage()    {}
 func (*PagingPermRes) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{48}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{48}
 }
 func (m *PagingPermRes) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingPermRes.Unmarshal(m, b)
@@ -3299,9 +3299,9 @@ func (m *PagingPermRes) GetCreateTime() int64 {
 	return 0
 }
 
-func (m *PagingPermRes) GetComponentPath() string {
+func (m *PagingPermRes) GetComponentName() string {
 	if m != nil {
-		return m.ComponentPath
+		return m.ComponentName
 	}
 	return ""
 }
@@ -3325,7 +3325,7 @@ func (m *PermResPagingRequest) Reset()         { *m = PermResPagingRequest{} }
 func (m *PermResPagingRequest) String() string { return proto.CompactTextString(m) }
 func (*PermResPagingRequest) ProtoMessage()    {}
 func (*PermResPagingRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{49}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{49}
 }
 func (m *PermResPagingRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermResPagingRequest.Unmarshal(m, b)
@@ -3364,7 +3364,7 @@ func (m *PermResPagingResponse) Reset()         { *m = PermResPagingResponse{} }
 func (m *PermResPagingResponse) String() string { return proto.CompactTextString(m) }
 func (*PermResPagingResponse) ProtoMessage()    {}
 func (*PermResPagingResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_rbac_service_a4ba9b375cc1fe22, []int{50}
+	return fileDescriptor_rbac_service_fd946065f66608e2, []int{50}
 }
 func (m *PermResPagingResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermResPagingResponse.Unmarshal(m, b)
@@ -4366,9 +4366,9 @@ var _RbacService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "rbac_service.proto",
 }
 
-func init() { proto.RegisterFile("rbac_service.proto", fileDescriptor_rbac_service_a4ba9b375cc1fe22) }
+func init() { proto.RegisterFile("rbac_service.proto", fileDescriptor_rbac_service_fd946065f66608e2) }
 
-var fileDescriptor_rbac_service_a4ba9b375cc1fe22 = []byte{
+var fileDescriptor_rbac_service_fd946065f66608e2 = []byte{
 	// 1755 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x59, 0x4d, 0x6f, 0xdc, 0x44,
 	0x18, 0xde, 0x8f, 0xec, 0x66, 0xfd, 0x6e, 0x3e, 0x27, 0x9b, 0xc5, 0x58, 0x25, 0x4a, 0xad, 0xb6,
@@ -4395,7 +4395,7 @@ var fileDescriptor_rbac_service_a4ba9b375cc1fe22 = []byte{
 	0xe9, 0x07, 0xbe, 0x59, 0x17, 0x63, 0xec, 0x19, 0xad, 0x01, 0xa4, 0x87, 0x37, 0x67, 0xf9, 0x1b,
 	0x65, 0x84, 0x7d, 0xa1, 0x1b, 0x84, 0xf1, 0x83, 0xc9, 0xc8, 0x6c, 0x88, 0x2f, 0x48, 0x11, 0x59,
 	0xd0, 0xe8, 0x44, 0x1f, 0x0e, 0x5d, 0x97, 0xfa, 0xa6, 0xb1, 0x5e, 0xde, 0x68, 0x90, 0xa9, 0x8c,
-	0x6e, 0xc0, 0xfc, 0x56, 0x30, 0x1a, 0x07, 0x3e, 0xf5, 0x63, 0x7e, 0x0c, 0xe0, 0x1b, 0xeb, 0x83,
+	0x6e, 0xc0, 0xfc, 0x56, 0x30, 0x1a, 0x07, 0x3e, 0xf5, 0x63, 0x7e, 0x68, 0xe0, 0x1b, 0xeb, 0x83,
 	0xe8, 0x26, 0x34, 0xb6, 0x8e, 0x87, 0x9e, 0x1b, 0x52, 0xdf, 0x6c, 0x66, 0x81, 0x9a, 0xbe, 0xb2,
 	0xd7, 0xa0, 0xce, 0xb0, 0xef, 0xb8, 0x4c, 0x25, 0x9f, 0x3a, 0xde, 0x24, 0x31, 0x17, 0x21, 0xb0,
 	0xf7, 0xd2, 0x0c, 0x8a, 0xdf, 0x3f, 0x84, 0x06, 0x53, 0xf2, 0x61, 0x48, 0x69, 0x0e, 0xe6, 0x16,
@@ -4443,7 +4443,7 @@ var fileDescriptor_rbac_service_a4ba9b375cc1fe22 = []byte{
 	0xfb, 0x22, 0x8a, 0xb0, 0xb3, 0x5f, 0xac, 0x06, 0x94, 0x91, 0x42, 0xdd, 0xe0, 0xa2, 0x91, 0x82,
 	0x23, 0x2b, 0xad, 0xf2, 0xaf, 0x4a, 0xda, 0x54, 0x29, 0x0e, 0xf6, 0x2f, 0x6b, 0xe7, 0x84, 0xe1,
 	0xa8, 0xea, 0x0c, 0x87, 0x6c, 0x23, 0x67, 0xd2, 0x36, 0x52, 0x72, 0x26, 0x35, 0x8d, 0x33, 0xe1,
-	0xf4, 0x43, 0xbd, 0x80, 0x05, 0x99, 0x3d, 0x93, 0x05, 0x69, 0x9c, 0xc7, 0x82, 0x18, 0x3a, 0x0b,
+	0x2c, 0x48, 0xbd, 0x80, 0x05, 0x99, 0x3d, 0x93, 0x05, 0x69, 0x9c, 0xc7, 0x82, 0x18, 0x3a, 0x0b,
 	0xb2, 0x06, 0xd0, 0x89, 0x76, 0xbe, 0x8e, 0x69, 0xe8, 0x3b, 0x1e, 0x4f, 0x21, 0x35, 0xa2, 0x8c,
 	0x68, 0x2c, 0x49, 0x93, 0xbf, 0x4d, 0x59, 0x12, 0x5d, 0x9d, 0x73, 0x39, 0x77, 0xc8, 0xb1, 0x28,
 	0xf3, 0x45, 0x2c, 0x4a, 0x0b, 0x6a, 0x5b, 0x4e, 0xff, 0x58, 0x64, 0x15, 0x83, 0x08, 0x41, 0x6d,
@@ -4479,5 +4479,5 @@ var fileDescriptor_rbac_service_a4ba9b375cc1fe22 = []byte{
 	0x58, 0xe5, 0x43, 0xab, 0xb8, 0x28, 0x7b, 0x66, 0x3d, 0x36, 0xfb, 0xb1, 0x14, 0x90, 0x7b, 0x6b,
 	0xb0, 0xd2, 0x0f, 0x46, 0x78, 0x30, 0x8c, 0x8f, 0x27, 0x3d, 0x3c, 0x08, 0x36, 0x03, 0x1c, 0x8e,
 	0xfb, 0x9f, 0xcf, 0xe2, 0x77, 0xf9, 0x7f, 0xbd, 0xbd, 0x3a, 0xff, 0x79, 0xe3, 0x9f, 0x00, 0x00,
-	0x00, 0xff, 0xff, 0x86, 0x9c, 0x4b, 0x20, 0x16, 0x1e, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0xf1, 0x3f, 0xea, 0xc1, 0x16, 0x1e, 0x00, 0x00,
 }

@@ -139,7 +139,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 					Permission:    v.Permission,
 					SortNum:       int32(v.SortNum),
 					IsHidden:      v.IsHidden == 1,
-					ComponentPath: v.ComponentPath,
+					ComponentName: v.ComponentName,
 				}
 				c.Children = make([]*proto.SUserRes, 0)
 				root.Children = append(root.Children, c)
@@ -602,7 +602,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	dst.SortNum = int(r.SortNum)
 	dst.IsExternal = int16(r.IsExternal)
 	dst.IsHidden = int16(r.IsHidden)
-	dst.ComponentPath = r.ComponentPath
+	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
 
 	id, err := p.dao.SavePermRes(dst)
@@ -630,7 +630,7 @@ func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 		IsExternal:    int32(v.IsExternal),
 		IsHidden:      int32(v.IsHidden),
 		CreateTime:    v.CreateTime,
-		ComponentPath: v.ComponentPath,
+		ComponentName: v.ComponentName,
 		Cache:         v.Cache,
 	}
 }

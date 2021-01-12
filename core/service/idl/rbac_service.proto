@@ -135,7 +135,7 @@ message SUserRes{
     /** 是否隐藏 */
     bool IsHidden = 9;
     /** 组件名称 */
-    string ComponentPath = 10;
+    string ComponentName = 10;
     /** 子资源 */
     repeated SUserRes Children = 11;
 }
@@ -517,7 +517,7 @@ message SavePermResRequest{
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */
-    string ComponentPath = 13;
+    string ComponentName = 13;
     /** 缓存 */
     string Cache = 14;
 }
@@ -558,7 +558,7 @@ message SPermRes{
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */
-    string ComponentPath = 13;
+    string ComponentName = 13;
     /** 缓存 */
     string Cache = 14;
     /** 子资源 */
@@ -609,7 +609,7 @@ message PagingPermRes{
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */
-    string ComponentPath = 13;
+    string ComponentName = 13;
     /** 缓存 */
     string Cache = 14;
 }

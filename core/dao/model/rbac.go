@@ -85,7 +85,7 @@ type PermRes struct {
 	// 创建日期
 	CreateTime int64 `db:"create_time"`
 	// 组件名称
-	ComponentPath string `db:"component_path"`
+	ComponentName string `db:"component_name"`
 	// 缓存
 	Cache string `db:"cache_"`
 }
