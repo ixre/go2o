@@ -213,7 +213,7 @@ type SUserRes struct {
 	Key string `protobuf:"bytes,2,opt,name=Key,proto3" json:"Key"`
 	// * 资源名称
 	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型, 0: 资源　 1: 菜单 2:　 按钮
+	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮
 	ResType int32 `protobuf:"varint,4,opt,name=ResType,proto3" json:"ResType"`
 	// * 资源路径
 	Path string `protobuf:"bytes,5,opt,name=Path,proto3" json:"Path"`

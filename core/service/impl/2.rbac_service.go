@@ -104,6 +104,10 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		dst.Roles = []int64{}
 		dst.Permissions = []string{"master", "admin"}
 		resList = p.dao.SelectPermRes("")
+		// 获取管理员
+		for _,v := range resList{
+			v.Permission = "master,admin"
+		}
 	} else {
 		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
 		usr := p.dao.GetPermUser(r.UserId)
@@ -117,12 +121,11 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		resList = p.dao.GetRoleResources(roleList)
 	}
 	root := proto.SUserRes{}
-
 	var f func(root *proto.SUserRes, arr []*model.PermRes)
 	f = func(root *proto.SUserRes, arr []*model.PermRes) {
 		root.Children = []*proto.SUserRes{}
 		for _, v := range arr {
-			if r.OnlyMenu && (v.ResType == 0 || v.ResType ==2){
+			if r.OnlyMenu && (v.ResType != 0 && v.ResType != 2){
 				continue // 只显示菜单
 			}
 			if v.Pid == root.Id {
