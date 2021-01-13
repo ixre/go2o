@@ -6,6 +6,13 @@ import "global.proto";
 
 // RBAC服务
 service RbacService {
+    // 用户登录
+    rpc UserLogin(RbacLoginRequest)returns(RbacLoginResponse){}
+    // 获取JWT密钥
+    rpc GetJwtToken(Empty)returns(String){}
+    // 获取用户的信息
+    rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse){}
+
     // 部门树形数据
     rpc DepartTree(Empty)returns(RbacTree){}
     // 保存部门
@@ -38,11 +45,6 @@ service RbacService {
     // 获取系统用户
     rpc GetPermUser (PermUserId) returns (SPermUser) {
     }
-
-    // 用户登录
-    rpc UserLogin(RbacLoginRequest)returns(RbacLoginResponse){}
-    // 获取用户的信息
-    rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse){}
 
     // 删除系统用户
     rpc DeletePermUser (PermUserId) returns (Result) {
@@ -85,9 +87,11 @@ service RbacService {
 // 用户登录
 message RbacLoginRequest{
     // 用户名
-    string Usr = 1;
+    string User = 1;
     // md5密码
     string Pwd = 2;
+    // 令牌的过期时间(单位：秒)
+    int32 Expires = 3;
 }
 
 // 用户登录响应
@@ -98,10 +102,12 @@ message RbacLoginResponse{
     string ErrMsg = 2;
     // 用户编号
     int64 UserId = 3;
+    // 访问令牌
+    string AccessToken = 4;
     // 角色标志
-    repeated string Permissions = 4;
+    repeated string Permissions = 5;
     // 角色编号
-    repeated int64 Roles = 5;
+    repeated int64 Roles = 6;
 }
 
 // 用户资源响应,如果无用户则默认为超级管理员
