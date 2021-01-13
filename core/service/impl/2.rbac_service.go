@@ -132,7 +132,7 @@ func (p *rbacServiceImpl) createAccessToken(userId int64,userName string,perm st
 }
 
 // 获取JWT密钥
-func (p *rbacServiceImpl) GetJwtToken(c interface{}, empty *proto.Empty) (*proto.String, error) {
+func (p *rbacServiceImpl) GetJwtToken(_ context.Context, empty *proto.Empty) (*proto.String, error) {
 	key, _ := p.registryRepo.GetValue(registry.SysJWTSecret)
 	return &proto.String{Value:key},nil
 }
