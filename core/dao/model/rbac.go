@@ -68,6 +68,8 @@ type PermRes struct {
 	ResType int16 `db:"res_type"`
 	// 上级菜单ID
 	Pid int64 `db:"pid"`
+	// 深度/层级
+	Depth int16 `db:"depth"`
 	// 资源键
 	Key string `db:"key"`
 	// 资源路径

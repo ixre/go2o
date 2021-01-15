@@ -13,6 +13,14 @@ service RbacService {
     // 获取用户的信息
     rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse){}
 
+
+
+    // 获取资源树形数据
+    rpc QueryResList (QueryPermResRequest) returns (QueryPermResResponse) {
+    }
+    // 移动资源顺序
+    rpc MoveResOrdinal(MoveResOrdinalRequest) returns (Result){}
+
     // 部门树形数据
     rpc DepartTree(Empty)returns(RbacTree){}
     // 保存部门
@@ -76,9 +84,6 @@ service RbacService {
     // 获取PermRes
     rpc GetPermRes (PermResId) returns (SPermRes) {
     }
-    // 获取资源树形数据
-    rpc QueryPermResList (QueryPermResRequest) returns (QueryPermResResponse) {
-    }
     // 删除PermRes
     rpc DeletePermRes (PermResId) returns (Result) {
     }
@@ -130,20 +135,22 @@ message SUserRes{
     string Name = 3;
     /** 资源类型,0: 目录 1: 资源　2: 菜单 3: 按钮 */
     int32 ResType = 4;
+    /** 深度/层级 */
+    int32 Depth = 5;
     /** 资源路径 */
-    string Path = 5;
+    string Path = 6;
     /** 图标 */
-    string Icon = 6;
+    string Icon = 7;
     /** 权限,多个值用|分隔 */
-    string Permission = 7;
+    string Permission = 8;
     /** 排序 */
-    int32 SortNum = 8;
+    int32 SortNum = 9;
     /** 是否隐藏 */
-    bool IsHidden = 9;
+    bool IsHidden = 10;
     /** 组件名称 */
-    string ComponentName = 10;
+    string ComponentName = 11;
     /** 子资源 */
-    repeated SUserRes Children = 11;
+    repeated SUserRes Children = 12;
 }
 
 message RoleId {
@@ -547,28 +554,30 @@ message SPermRes{
     int32 ResType = 3;
     /** 上级菜单ID */
     int64 Pid = 4;
+    /** 深度/层级 */
+    int32 Depth = 5;
     /** 资源键 */
-    string Key = 5;
+    string Key = 6;
     /** 资源路径 */
-    string Path = 6;
+    string Path = 7;
     /** 图标 */
-    string Icon = 7;
+    string Icon = 8;
     /** 权限,多个值用|分隔 */
-    string Permission = 8;
+    string Permission = 9;
     /** 排序 */
-    int32 SortNum = 9;
+    int32 SortNum = 10;
     /** 是否外部 */
-    bool IsExternal = 10;
+    bool IsExternal = 11;
     /** 是否隐藏 */
-    bool IsHidden = 11;
+    bool IsHidden = 12;
     /** 创建日期 */
-    int64 CreateTime = 12;
+    int64 CreateTime = 13;
     /** 组件名称 */
-    string ComponentName = 13;
+    string ComponentName = 14;
     /** 缓存 */
-    string Cache = 14;
+    string Cache = 15;
     /** 子资源 */
-    repeated SPermRes Children = 15;
+    repeated SPermRes Children = 16;
 }
 
 message GetUserResRequest{
@@ -628,4 +637,12 @@ message PermResPagingRequest{
 message PermResPagingResponse {
     int64 Total = 1;
     repeated PagingPermRes Value = 2;
+}
+
+// 移动资源顺序
+message MoveResOrdinalRequest {
+    /** 资源编号 */
+    int64 ResourceId = 1;
+    /** 移动方向,0:向上移,1:向下移 */
+    int32 Direction = 2;
 }

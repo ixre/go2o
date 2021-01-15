@@ -12,6 +12,7 @@ package impl
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ixre/gof/crypto"
@@ -34,17 +35,18 @@ var _ proto.RbacServiceServer = new(rbacServiceImpl)
 
 // 基于角色的权限服务
 type rbacServiceImpl struct {
-	dao dao.IRbacDao
+	dao          dao.IRbacDao
 	registryRepo registry.IRegistryRepo
-	s   storage.Interface
+	s            storage.Interface
 	serviceUtil
 }
 
-func NewRbacService(s storage.Interface,o orm.Orm,	registryRepo registry.IRegistryRepo) *rbacServiceImpl {
+
+func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegistryRepo) *rbacServiceImpl {
 	return &rbacServiceImpl{
-		s:   s,
+		s:            s,
 		registryRepo: registryRepo,
-		dao: impl.NewRbacDao(o),
+		dao:          impl.NewRbacDao(o),
 	}
 }
 
@@ -96,11 +98,11 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		UserId: usr.Id,
 	}
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
-	return p.withAccessToken(usr.Id,usr.Usr, dst, r.Expires)
+	return p.withAccessToken(usr.Id, usr.Usr, dst, r.Expires)
 }
 
 // 返回带有令牌的结果
-func (p *rbacServiceImpl) withAccessToken(userId int64,userName string,
+func (p *rbacServiceImpl) withAccessToken(userId int64, userName string,
 	dst *proto.RbacLoginResponse, expires int32) (*proto.RbacLoginResponse, error) {
 	accessToken, err := p.createAccessToken(userId, userName,
 		strings.Join(dst.Permissions, ","), expires)
@@ -113,8 +115,8 @@ func (p *rbacServiceImpl) withAccessToken(userId int64,userName string,
 }
 
 // 创建令牌
-func (p *rbacServiceImpl) createAccessToken(userId int64,userName string,perm string,exp int32) (string, error) {
-	if exp <= 0{
+func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm string, exp int32) (string, error) {
+	if exp <= 0 {
 		exp = int32((time.Hour * 24 * 365).Seconds())
 	}
 	var claims = jwt.MapClaims{
@@ -135,9 +137,8 @@ func (p *rbacServiceImpl) createAccessToken(userId int64,userName string,perm st
 // 获取JWT密钥
 func (p *rbacServiceImpl) GetJwtToken(_ context.Context, empty *proto.Empty) (*proto.String, error) {
 	key, _ := p.registryRepo.GetValue(registry.SysJWTSecret)
-	return &proto.String{Value:key},nil
+	return &proto.String{Value: key}, nil
 }
-
 
 // 获取用户的角色和权限
 func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
@@ -159,6 +160,34 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 	return roles, permissions
 }
 
+
+// 移动资源顺序
+func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context,r *proto.MoveResOrdinalRequest) (*proto.Result, error) {
+	res := p.dao.GetPermRes(r.ResourceId)
+	if res == nil {
+		return p.error(errors.New("no such data")), nil
+	}
+	// 获取交换的对象
+	var s = ""
+	if r.Direction == 0 { // 向上移,获取上一个
+		s = "sort_num < $1"
+	} else {
+		s = "sort_num > $1"
+	}
+	swapRes := p.dao.GetPermResBy(s+" AND pid = $2 AND depth=$3 AND res_type=$4 ORDER BY sort_num ASC",
+		res.SortNum,res.Pid, res.Depth, res.ResType)
+	// 交换顺序
+	if swapRes != nil {
+		sortNum := swapRes.SortNum
+		swapRes.SortNum = res.SortNum
+		res.SortNum = sortNum
+		p.dao.SavePermRes(res)
+		p.dao.SavePermRes(swapRes)
+	}
+	return p.success(nil),nil
+}
+
+
 func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserResRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
 	var resList []*model.PermRes
@@ -167,7 +196,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		dst.Permissions = []string{"master", "admin"}
 		resList = p.dao.SelectPermRes("")
 		// 获取管理员
-		for _,v := range resList{
+		for _, v := range resList {
 			v.Permission = "master,admin"
 		}
 	} else {
@@ -187,7 +216,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	f = func(root *proto.SUserRes, arr []*model.PermRes) {
 		root.Children = []*proto.SUserRes{}
 		for _, v := range arr {
-			if r.OnlyMenu && (v.ResType != 0 && v.ResType != 2){
+			if r.OnlyMenu && (v.ResType != 0 && v.ResType != 2) {
 				continue // 只显示菜单
 			}
 			if v.Pid == root.Id {
@@ -240,8 +269,6 @@ func (p *rbacServiceImpl) DepartTree(_ context.Context, empty *proto.Empty) (*pr
 	walkDepartTree(root, list)
 	return root, nil
 }
-
-
 
 // 保存部门
 func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptRequest) (*proto.SavePermDeptResponse, error) {
@@ -643,16 +670,23 @@ func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.PermRolePag
 func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResRequest) (*proto.SavePermResResponse, error) {
 	var dst *model.PermRes
 	if r.Id > 0 {
-		dst = p.dao.GetPermRes(r.Id)
+		if dst = p.dao.GetPermRes(r.Id); dst == nil {
+			return &proto.SavePermResResponse{
+				ErrCode: 2,
+				ErrMsg:  "no such data",
+			}, nil
+		}
 	} else {
 		dst = &model.PermRes{}
 		dst.CreateTime = time.Now().Unix()
+		dst.Depth = 0
 		// 如果首次没有填写ResKey, 则默认通过Path生成
-		if r.Key == ""{
-			r.Key = strings.Replace(r.Path,"/",":",-1)
+		if r.Key == "" {
+			r.Key = strings.Replace(r.Path, "/", ":", -1)
 		}
 	}
-
+	// 上级是否改变
+	var parentChanged = dst.Pid != r.Pid || (r.Pid !=0 && dst.Depth ==0)
 	dst.Name = r.Name
 	dst.ResType = int16(r.ResType)
 	dst.Pid = r.Pid
@@ -661,8 +695,8 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	dst.Icon = r.Icon
 	dst.Permission = r.Permission
 	dst.SortNum = int(r.SortNum)
-	dst.IsExternal = int16(types.IntCond(r.IsExternal, 1,0))
-	dst.IsHidden = int16(types.IntCond(r.IsHidden, 1,0))
+	dst.IsExternal = int16(types.IntCond(r.IsExternal, 1, 0))
+	dst.IsHidden = int16(types.IntCond(r.IsHidden, 1, 0))
 	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
 
@@ -673,6 +707,11 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()
+	}else{
+		if parentChanged{
+			depth := p.getResDepth(dst.Pid)
+			p.updateResDepth(dst,int16(depth))
+		}
 	}
 	return ret, nil
 }
@@ -718,7 +757,7 @@ func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes
 }
 
 // 获取PermRes列表
-func (p *rbacServiceImpl) QueryPermResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
+func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
 	var where string = "1=1"
 	if r.Keyword != "" {
 		where += " AND name LIKE '%" + r.Keyword + "%'"
@@ -727,7 +766,7 @@ func (p *rbacServiceImpl) QueryPermResList(_ context.Context, r *proto.QueryPerm
 		where += " AND res_type IN(0,2)"
 	}
 	//todo: 搜索结果不为pid
-	arr := p.dao.SelectPermRes(where)
+	arr := p.dao.SelectPermRes(where+ " ORDER BY sort_num ASC,id ASC")
 	root := proto.SPermRes{}
 	p.walkPermRes(&root, arr)
 	ret := &proto.QueryPermResResponse{
@@ -766,4 +805,27 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 				userId, util.JoinIntArray(deleted, ",")))
 	}
 	return nil
+}
+
+// 获取资源的深度
+func (p *rbacServiceImpl) getResDepth(pid int64) int {
+	depth := 0
+	for pid > 0{
+		v := p.dao.GetPermResBy("id=$1",pid)
+		if v != nil{
+			pid = v.Pid
+			depth ++
+		}
+	}
+	return depth
+}
+
+// 更新资源及下级资源的深度
+func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int16) {
+	dst.Depth = depth
+	_, _ = p.dao.SavePermRes(dst)
+	list := p.dao.SelectPermRes("pid=$1", dst.Id)
+	for _, v := range list {
+		p.updateResDepth(v, depth+1)
+	}
 }
