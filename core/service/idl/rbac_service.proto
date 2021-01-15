@@ -517,9 +517,9 @@ message SavePermResRequest{
     /** 排序 */
     int32 SortNum = 9;
     /** 是否外部 */
-    int32 IsExternal = 10;
+    bool IsExternal = 10;
     /** 是否隐藏 */
-    int32 IsHidden = 11;
+    bool IsHidden = 11;
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */
@@ -558,9 +558,9 @@ message SPermRes{
     /** 排序 */
     int32 SortNum = 9;
     /** 是否外部 */
-    int32 IsExternal = 10;
+    bool IsExternal = 10;
     /** 是否隐藏 */
-    int32 IsHidden = 11;
+    bool IsHidden = 11;
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */
@@ -609,9 +609,9 @@ message PagingPermRes{
     /** 排序 */
     int32 SortNum = 9;
     /** 是否外部 */
-    int32 IsExternal = 10;
+    bool IsExternal = 10;
     /** 是否隐藏 */
-    int32 IsHidden = 11;
+    bool IsHidden = 11;
     /** 创建日期 */
     int64 CreateTime = 12;
     /** 组件名称 */

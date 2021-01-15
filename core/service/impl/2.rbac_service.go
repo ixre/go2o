@@ -17,6 +17,7 @@ import (
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 	"go2o/core/dao"
@@ -646,6 +647,10 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	} else {
 		dst = &model.PermRes{}
 		dst.CreateTime = time.Now().Unix()
+		// 如果首次没有填写ResKey, 则默认通过Path生成
+		if r.Key == ""{
+			r.Key = strings.Replace(r.Path,"/",":",-1)
+		}
 	}
 
 	dst.Name = r.Name
@@ -656,8 +661,8 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	dst.Icon = r.Icon
 	dst.Permission = r.Permission
 	dst.SortNum = int(r.SortNum)
-	dst.IsExternal = int16(r.IsExternal)
-	dst.IsHidden = int16(r.IsHidden)
+	dst.IsExternal = int16(types.IntCond(r.IsExternal, 1,0))
+	dst.IsHidden = int16(types.IntCond(r.IsHidden, 1,0))
 	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
 
@@ -683,8 +688,8 @@ func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 		Icon:          v.Icon,
 		Permission:    v.Permission,
 		SortNum:       int32(v.SortNum),
-		IsExternal:    int32(v.IsExternal),
-		IsHidden:      int32(v.IsHidden),
+		IsExternal:    v.IsExternal == 1,
+		IsHidden:      v.IsHidden == 1,
 		CreateTime:    v.CreateTime,
 		ComponentName: v.ComponentName,
 		Cache:         v.Cache,
