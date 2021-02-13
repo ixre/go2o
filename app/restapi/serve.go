@@ -10,12 +10,12 @@ package restapi
 
 import (
 	"github.com/ixre/gof"
+	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"github.com/labstack/echo/v4"
 	mw "github.com/labstack/echo/v4/middleware"
 	"go2o/app/api"
 	"go2o/core/variable"
-	"github.com/ixre/gof/log"
 	"net/http"
 	"os"
 	"strconv"
@@ -65,7 +65,7 @@ func Run(ch chan bool, app gof.App, port int) {
 	store = app.Storage()
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	handler := newServe(app.Config(), store)
-	log.Println("[ Go2o][ API]: api gateway serve on port :"+strconv.Itoa(port))
+	log.Println("[ Go2o][ API]: api gateway serve on port :" + strconv.Itoa(port))
 
 	err := http.ListenAndServe(":"+strconv.Itoa(port), handler)
 

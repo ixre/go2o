@@ -41,7 +41,6 @@ type rbacServiceImpl struct {
 	serviceUtil
 }
 
-
 func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegistryRepo) *rbacServiceImpl {
 	return &rbacServiceImpl{
 		s:            s,
@@ -160,9 +159,8 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 	return roles, permissions
 }
 
-
 // 移动资源顺序
-func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context,r *proto.MoveResOrdinalRequest) (*proto.Result, error) {
+func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context, r *proto.MoveResOrdinalRequest) (*proto.Result, error) {
 	res := p.dao.GetPermRes(r.ResourceId)
 	if res == nil {
 		return p.error(errors.New("no such data")), nil
@@ -175,7 +173,7 @@ func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context,r *proto.MoveResOrdin
 		s = "sort_num > $1"
 	}
 	swapRes := p.dao.GetPermResBy(s+" AND pid = $2 AND depth=$3 AND res_type=$4 ORDER BY sort_num ASC",
-		res.SortNum,res.Pid, res.Depth, res.ResType)
+		res.SortNum, res.Pid, res.Depth, res.ResType)
 	// 交换顺序
 	if swapRes != nil {
 		sortNum := swapRes.SortNum
@@ -184,9 +182,8 @@ func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context,r *proto.MoveResOrdin
 		p.dao.SavePermRes(res)
 		p.dao.SavePermRes(swapRes)
 	}
-	return p.success(nil),nil
+	return p.success(nil), nil
 }
-
 
 func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserResRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
@@ -686,7 +683,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 		}
 	}
 	// 上级是否改变
-	var parentChanged = dst.Pid != r.Pid || (r.Pid !=0 && dst.Depth ==0)
+	var parentChanged = dst.Pid != r.Pid || (r.Pid != 0 && dst.Depth == 0)
 	dst.Name = r.Name
 	dst.ResType = int16(r.ResType)
 	dst.Pid = r.Pid
@@ -707,10 +704,10 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()
-	}else{
-		if parentChanged{
+	} else {
+		if parentChanged {
 			depth := p.getResDepth(dst.Pid)
-			p.updateResDepth(dst,int16(depth))
+			p.updateResDepth(dst, int16(depth))
 		}
 	}
 	return ret, nil
@@ -766,7 +763,7 @@ func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResR
 		where += " AND res_type IN(0,2)"
 	}
 	//todo: 搜索结果不为pid
-	arr := p.dao.SelectPermRes(where+ " ORDER BY sort_num ASC,id ASC")
+	arr := p.dao.SelectPermRes(where + " ORDER BY sort_num ASC,id ASC")
 	root := proto.SPermRes{}
 	p.walkPermRes(&root, arr)
 	ret := &proto.QueryPermResResponse{
@@ -810,11 +807,11 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 // 获取资源的深度
 func (p *rbacServiceImpl) getResDepth(pid int64) int {
 	depth := 0
-	for pid > 0{
-		v := p.dao.GetPermResBy("id=$1",pid)
-		if v != nil{
+	for pid > 0 {
+		v := p.dao.GetPermResBy("id=$1", pid)
+		if v != nil {
 			pid = v.Pid
-			depth ++
+			depth++
 		}
 	}
 	return depth

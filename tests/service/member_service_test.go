@@ -54,7 +54,7 @@ func TestCheckTradePwd(t *testing.T) {
 	r, _ := impl.MemberService.VerifyTradePwd(context.TODO(),
 		&proto.PwdVerifyRequest{
 			MemberId: int64(memberId),
-			Pwd: pwd,
+			Pwd:      pwd,
 		})
 	t.Logf("%#v", r)
 }

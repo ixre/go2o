@@ -17,11 +17,11 @@ import (
  * history :
  */
 
-func TestCheckSensitive (t *testing.T)  {
-	ret,_ := impl.FoundationService.ReplaceSensitive(context.TODO(),
+func TestCheckSensitive(t *testing.T) {
+	ret, _ := impl.FoundationService.ReplaceSensitive(context.TODO(),
 		&proto.ReplaceSensitiveRequest{
-			Word:                 "共产党是我们唯一的领导政府",
-			Replacement:          "",
+			Word:        "我自愿加入中国共产党,坚持党的领导,守护我们的长城",
+			Replacement: "*",
 		})
 	t.Log(ret.Value)
 }

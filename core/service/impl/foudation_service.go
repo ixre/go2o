@@ -21,7 +21,6 @@ import (
 	"go2o/core/module"
 	"go2o/core/module/bank"
 	"go2o/core/service/proto"
-	"strings"
 )
 
 var _ proto.FoundationServiceServer = new(foundationService)
@@ -36,18 +35,14 @@ type foundationService struct {
 
 // 检测是否包含敏感词
 func (s *foundationService) CheckSensitive(_ context.Context, r *proto.String) (*proto.Bool, error) {
-	_,b := sensitive.Singleton().CheckSensitive(r.Value)
-	return &proto.Bool{Value: b},nil
+	_, b := sensitive.Singleton().CheckSensitive(r.Value)
+	return &proto.Bool{Value: b}, nil
 }
 
 // 替换敏感词
-func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.ReplaceSensitiveRequest) ( *proto.String, error) {
-	mp := sensitive.Singleton().FindAllSensitive(r.Word)
-	word := r.Word
-	for k, _ := range mp {
-		word = strings.Replace(word, k, r.Replacement, -1)
-	}
-	return &proto.String{Value: word}, nil
+func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.ReplaceSensitiveRequest) (*proto.String, error) {
+	v := sensitive.Singleton().ReplaceAll(r.Word,r.Replacement)
+	return &proto.String{Value: v}, nil
 }
 
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {

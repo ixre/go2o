@@ -466,7 +466,6 @@ func (p *rbacDaoImpl) BatchDeletePermRes(where string, v ...interface{}) (int64,
 	return r, err
 }
 
-
 // Get 用户角色关联
 func (p *rbacDaoImpl) GetPermUserRole(primary interface{}) *model.PermUserRole {
 	e := model.PermUserRole{}

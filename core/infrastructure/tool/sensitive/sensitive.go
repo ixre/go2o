@@ -21,7 +21,6 @@ func Singleton() *SensitiveMap {
 	return s
 }
 
-
 // 初始化敏感词词典，根据DFA算法构建trie
 func initDictionary(dictionaryPath string) *SensitiveMap {
 	s := &SensitiveMap{
@@ -148,4 +147,13 @@ func (s *SensitiveMap) FindAllSensitive(text string) map[string]*Target {
 		}
 	}
 	return ta
+}
+
+func (s *SensitiveMap) ReplaceAll(text string,replacement string)string{
+	match := s.FindAllSensitive(text)
+	word := text
+	for k, v := range match {
+		word = strings.Replace(word, k, strings.Repeat(replacement, v.Len), -1)
+	}
+	return word
 }
