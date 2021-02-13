@@ -36,7 +36,9 @@ func init() {
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
-	app := core.NewApp("../app_dev.conf", &cfg)
+	confPath := "app.conf"
+
+	app := core.NewApp(confPath, &cfg)
 	gof.CurrentApp = app
 	core.Init(app, false, false)
 	conn := app.Db()

@@ -7,6 +7,12 @@ import "message/foundation_dto.proto";
 
 // 基础服务
 service FoundationService {
+    /** 检测是否包含敏感词 */
+    rpc CheckSensitive(String)returns(Bool){}
+
+    /** 替换敏感词 */
+    rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String){}
+
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
     rpc GetSmsApi (String) returns (SSmsApi) {
     }
@@ -77,4 +83,10 @@ service FoundationService {
     // 保存全局商户销售设置
     rpc SaveGlobMchSaleConf_ (SGlobMchSaleConf) returns (Result) {
     }
+}
+
+/** 替换敏感词请求 */
+message ReplaceSensitiveRequest{
+    string Word = 1;
+    string Replacement = 2;
 }

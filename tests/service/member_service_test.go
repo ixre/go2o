@@ -52,9 +52,9 @@ func TestCheckTradePwd(t *testing.T) {
 	//t.Logf("%#v", r2)
 
 	r, _ := impl.MemberService.VerifyTradePwd(context.TODO(),
-		&proto.CheckTradePwdRequest{
+		&proto.PwdVerifyRequest{
 			MemberId: int64(memberId),
-			TradePwd: pwd,
+			Pwd: pwd,
 		})
 	t.Logf("%#v", r)
 }
