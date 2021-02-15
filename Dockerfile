@@ -10,7 +10,7 @@ COPY ./core ./core
 COPY ./assets ./assets
 COPY ./*.go go.mod LICENSE README.md app.conf ./
 
-ENV GOPROXY=https://goproxy.io
+ENV GOPROXY=https://goproxy.io,direct
 RUN rm -rf go.sum && sed -i 's/replace github.com\/ixre/\/\/replace  github.com\/ixre/g' go.mod && \
     go mod tidy && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -o go2o go2o-serve.go && \
