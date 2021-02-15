@@ -7,7 +7,6 @@ FROM golang:latest AS build
 ENV GOPATH=/gobuild
 COPY ./app ./app
 COPY ./core ./core
-COPY ./assets ./assets
 COPY ./*.go go.mod LICENSE README.md app.conf ./
 
 ENV GOPROXY=https://goproxy.cn,direct
@@ -26,6 +25,7 @@ ENV GO2O_NATS_ADDR=172.17.0.1:4222
 
 WORKDIR /app
 COPY --from=build /opt/go2o/dist/* /app/
+COPY ./assets ./assets
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && \
 	apk --update add tzdata ca-certificates && \
