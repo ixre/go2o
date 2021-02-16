@@ -33,7 +33,7 @@ func (a AccessTokenApi) createAccessToken(ctx api.Context) *api.Response {
 	apiUser := cfg.GetString("api_user")
 	apiSecret := cfg.GetString("api_secret")
 
-	if apiUser != "tmp_0606" {
+	if ownerKey != "tmp_0606" {
 		if apiUser != ownerKey || md5Secret != crypto.Md5([]byte(apiSecret)) {
 			return api.ResponseWithCode(4, "用户或密钥不正确")
 		}
