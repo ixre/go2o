@@ -184,7 +184,7 @@ func (p *rbacDaoImpl) BatchDeletePermJob(where string, v ...interface{}) (int64,
 	return r, err
 }
 
-// Query paging data
+// Params paging data
 func (p *rbacDaoImpl) PagingQueryPermJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -278,7 +278,7 @@ func (p *rbacDaoImpl) BatchDeletePermUser(where string, v ...interface{}) (int64
 	return r, err
 }
 
-// Query paging data
+// Params paging data
 func (p *rbacDaoImpl) PagingQueryPermUser(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -372,7 +372,7 @@ func (p *rbacDaoImpl) BatchDeletePermRole(where string, v ...interface{}) (int64
 	return r, err
 }
 
-// Query paging data
+// Params paging data
 func (p *rbacDaoImpl) PagingQueryPermRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -534,7 +534,7 @@ func (p *rbacDaoImpl) BatchDeletePermUserRole(where string, v ...interface{}) (i
 	return r, err
 }
 
-// Query paging data
+// Params paging data
 func (p *rbacDaoImpl) PagingQueryPermUserRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -628,7 +628,7 @@ func (p *rbacDaoImpl) BatchDeletePermRoleRes(where string, v ...interface{}) (in
 	return r, err
 }
 
-// Query paging data
+// Params paging data
 func (p *rbacDaoImpl) PagingQueryPermRoleRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -722,7 +722,7 @@ func (p *rbacDaoImpl) BatchDeletePermRoleDept(where string, v ...interface{}) (i
 	return r, err
 }
 
-// Query paging data
+// Params paging data
 func (p *rbacDaoImpl) PagingQueryPermRoleDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy

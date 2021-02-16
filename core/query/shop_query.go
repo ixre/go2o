@@ -105,7 +105,7 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
 		err = s.o.SelectByQuery(&e, sql, begin, end-begin)
 	}
 	if err != nil {
-		log.Println("[ Go2o][ Query][ Error]:", err.Error())
+		log.Println("[ Go2o][ Params][ Error]:", err.Error())
 	}
 	return total, e
 }

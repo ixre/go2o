@@ -16,7 +16,7 @@ import (
 	"github.com/ixre/gof/web"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
-	"go2o/app/restapi"
+	"go2o/app/v1/restapi"
 	"go2o/core"
 	"go2o/core/msq"
 	"go2o/core/service"

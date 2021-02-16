@@ -44,7 +44,7 @@ const cardBinQueryURL = "https://Pay.heepay.com/API/PayTransit/QueryBankCardInfo
 const applyBankAuthFormURL = "https://Pay.Heepay.com/WithholdAuthPay/ApplyBankAuthForm.aspx"
 const bankAuthQueryURL = "https://Pay.Heepay.com/WithholdAuthPay/BankAuthQuery.aspx"
 const redirectPaymentURL = "https://Pay.Heepay.com/WithholdAuthPay/SubmitPay.aspx"
-const paymentQueryURL = "https://query.heepay.com/Payment/Query.aspx"
+const paymentQueryURL = "https://query.heepay.com/Payment/Params.aspx"
 const smallAmountTransferURL = "https://Pay.heepay.com/API/PayTransit/PayTransferWithSmallAll.aspx"
 const largeAmountTransferURL = "https://Pay.heepay.com/API/PayTransit/PayTransferWithLargeWork.aspx"
 

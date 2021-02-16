@@ -131,7 +131,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	paymentRepo := Repos.GetPaymentRepo()
 	asRepo := Repos.GetAfterSalesRepo()
 	notifyRepo := Repos.GetNotifyRepo()
-	/** Query **/
+	/** Params **/
 	memberQue := query.NewMemberQuery(orm)
 	mchQuery := query.NewMerchantQuery(ctx)
 	contentQue := query.NewContentQuery(orm)
