@@ -24,7 +24,10 @@ func (a AccessTokenApi) createAccessToken(ctx api.Context) *api.Response {
 	ownerKey := ctx.Request().Params.GetString("key")
 	md5Secret := ctx.Request().Params.GetString("secret")
 	if len(ownerKey) == 0 || len(md5Secret) == 0 {
-		return api.ResponseWithCode(1, "require params key and md5_secret")
+		return api.ResponseWithCode(1, "require params key and secret")
+	}
+	if len(md5Secret) != 32 {
+		return api.ResponseWithCode(2, "secret must be md5 crypte string")
 	}
 	cfg := gof.CurrentApp.Config()
 	apiUser := cfg.GetString("api_user")
