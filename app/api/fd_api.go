@@ -184,8 +184,10 @@ func (r fdApi) checkSensitive(ctx api.Context) *api.Response {
 }
 
 func (r fdApi) replaceSensitive(ctx api.Context) *api.Response {
-	text := ctx.Request().Params.GetString("text")
-	replacement := ctx.Request().Params.GetString("replacement")
+	mp := map[string]string{}
+	ctx.Request().Bind(&mp)
+	text := mp["text"]
+	replacement := mp["replacement"]
 	trans, cli, err := service.FoundationServiceClient()
 	if err == nil {
 		defer trans.Close()

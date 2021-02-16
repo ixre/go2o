@@ -11,10 +11,18 @@ import "testing"
  * history :
  */
 
-func TestAdApi(t *testing.T) {
+func TestCheckSensitive(t *testing.T) {
 	mp := map[string]string{
 		"text":        "共产党是中华人民共和国的执政党",
 		"replacement": "*",
 	}
-	testGET(t, "/fd/replace_sensitive", mp)
+	testGET(t, "/fd/check_sensitive", mp)
+}
+
+func TestReplaceSensitive(t *testing.T) {
+	mp := map[string]string{
+		"text":        "共产党是中华人民共和国的执政党",
+		"replacement": "*",
+	}
+	testPost(t, "/fd/replace_sensitive", mp)
 }

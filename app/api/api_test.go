@@ -72,6 +72,18 @@ func testPost(t *testing.T, apiName string, params map[string]string) ([]byte, e
 }
 
 // 测试提交
+func testPostForm(t *testing.T, apiName string, params map[string]string) ([]byte, error) {
+	params["version"] = "1.0.0"
+	rsp, err := tc.Post(apiName, params)
+	t.Log("[ Response]:", string(rsp))
+	if err != nil {
+		t.Error(err)
+		//t.FailNow()
+	}
+	return rsp, err
+}
+
+// 测试提交
 func testGET(t *testing.T, apiName string, params map[string]string) ([]byte, error) {
 	params["version"] = "1.0.0"
 	query := http2.ParseUrlValues(params).Encode()
