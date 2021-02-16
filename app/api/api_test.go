@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/ixre/gof/crypto"
 	api "github.com/ixre/gof/jwt-api"
@@ -44,7 +45,9 @@ func init() {
 			return ""
 		}
 		bytes, _ := ioutil.ReadAll(r.Body)
-		return string(bytes)
+		rsp := api.Response{}
+		json.Unmarshal(bytes,&rsp)
+		return rsp.Data.(string)
 	}, 30000)
 	tc.HandleError(func(code int, message string) error {
 		switch code {
@@ -61,7 +64,6 @@ func init() {
 
 // 测试提交
 func testPost(t *testing.T, apiName string, params map[string]string) ([]byte, error) {
-	params["version"] = "1.0.0"
 	rsp, err := tc.Post(apiName, params)
 	t.Log("[ Response]:", string(rsp))
 	if err != nil {
