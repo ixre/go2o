@@ -16,7 +16,7 @@ import (
 	"github.com/ixre/gof/web"
 	"go.etcd.io/etcd/clientv3"
 	"go2o/app"
-	"go2o/app/restapi"
+	"go2o/app/v1/restapi"
 	"go2o/core"
 	"go2o/core/msq"
 	"go2o/core/service"
@@ -103,8 +103,8 @@ func main() {
 
 	// 默认的ETCD端点
 	if len(etcdEndPoints) == 0 {
-		etcdEndPoints = strings.Split(os.Getenv("GO2O_ETCD_ADDR"),",")
-		if len(etcdEndPoints) == 0  || etcdEndPoints[0] ==""{
+		etcdEndPoints = strings.Split(os.Getenv("GO2O_ETCD_ADDR"), ",")
+		if len(etcdEndPoints) == 0 || etcdEndPoints[0] == "" {
 			etcdEndPoints = []string{"http://127.0.0.1:2379"}
 		}
 	}

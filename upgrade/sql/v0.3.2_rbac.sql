@@ -1,24 +1,26 @@
 CREATE TABLE "public".perm_res (
-                                   id             bigserial NOT NULL,
-                                   name           varchar(20) NOT NULL,
-                                   res_type       int2 NOT NULL,
-                                   pid            int8 NOT NULL,
-                                   "key"          varchar(120) NOT NULL,
-                                   path           varchar(256) NOT NULL,
-                                   icon           varchar(120) NOT NULL,
-                                   permission     varchar(120) NOT NULL,
-                                   sort_num       int4 NOT NULL,
-                                   is_external    int2 NOT NULL,
-                                   is_hidden      int2 DEFAULT 0 NOT NULL,
-                                   create_time    int8 NOT NULL,
-                                   component_path varchar(120) NOT NULL,
-                                   cache_         varchar(20) DEFAULT ''::character varying NOT NULL,
-                                   CONSTRAINT perm_res_pkey
-                                       PRIMARY KEY (id));
+   id             bigserial NOT NULL,
+   name           varchar(20) NOT NULL,
+   res_type       int2 NOT NULL,
+   pid            int8 NOT NULL,
+   depth          int2 NOT NULL,
+   "key"          varchar(120) NOT NULL,
+   path           varchar(256) NOT NULL,
+   icon           varchar(120) NOT NULL,
+   permission     varchar(120) NOT NULL,
+   sort_num       int4 NOT NULL,
+   is_external    int2 NOT NULL,
+   is_hidden      int2 DEFAULT 0 NOT NULL,
+   create_time    int8 NOT NULL,
+   component_path varchar(120) NOT NULL,
+   cache_         varchar(20) DEFAULT ''::character varying NOT NULL,
+   CONSTRAINT perm_res_pkey
+       PRIMARY KEY (id));
 COMMENT ON COLUMN "public".perm_res.id IS '资源ID';
 COMMENT ON COLUMN "public".perm_res.name IS '资源名称';
 COMMENT ON COLUMN "public".perm_res.res_type IS '资源类型, 0: 资源　 1: 菜单  2:　 按钮';
 COMMENT ON COLUMN "public".perm_res.pid IS '上级菜单ID';
+COMMENT ON COLUMN "public".perm_res.depth IS '深度/层级';
 COMMENT ON COLUMN "public".perm_res."key" IS '资源键';
 COMMENT ON COLUMN "public".perm_res.path IS '资源路径';
 COMMENT ON COLUMN "public".perm_res.icon IS '图标';
@@ -29,6 +31,7 @@ COMMENT ON COLUMN "public".perm_res.is_hidden IS '是否隐藏';
 COMMENT ON COLUMN "public".perm_res.create_time IS '创建日期';
 COMMENT ON COLUMN "public".perm_res.component_path IS '组件路径';
 COMMENT ON COLUMN "public".perm_res.cache_ IS '缓存';
+
 
 CREATE TABLE "public".perm_dict (
                                     id          bigserial NOT NULL,
@@ -132,7 +135,7 @@ CREATE TABLE "public".perm_user (
                                     flag        int4 NOT NULL,
                                     avatar      varchar(256) NOT NULL,
                                     nick_name   varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
-                                    sex         varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
+                                    gender         varchar(20) DEFAULT 'NULL::character varying' NOT NULL,
                                     email       varchar(64) DEFAULT 'NULL::character varying' NOT NULL,
                                     phone       varchar(11) DEFAULT 'NULL::character varying' NOT NULL,
                                     dept_id     int8 NOT NULL,
@@ -150,7 +153,7 @@ COMMENT ON COLUMN "public".perm_user.salt IS '加密盐';
 COMMENT ON COLUMN "public".perm_user.flag IS '标志';
 COMMENT ON COLUMN "public".perm_user.avatar IS '头像';
 COMMENT ON COLUMN "public".perm_user.nick_name IS '姓名';
-COMMENT ON COLUMN "public".perm_user.sex IS '性别';
+COMMENT ON COLUMN "public".perm_user.gender IS '性别';
 COMMENT ON COLUMN "public".perm_user.email IS '邮箱';
 COMMENT ON COLUMN "public".perm_user.phone IS '手机号码';
 COMMENT ON COLUMN "public".perm_user.dept_id IS '部门编号';

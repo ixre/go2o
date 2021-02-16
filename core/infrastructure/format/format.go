@@ -9,8 +9,8 @@
 package format
 
 // 获取性别
-func GetSex(sex int32) string {
-	switch sex {
+func GetGender(gender int32) string {
+	switch gender {
 	case 1:
 		return "男性"
 	case 2:

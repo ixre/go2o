@@ -162,7 +162,7 @@ func (h PassportApi) sendCode(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(), &proto.FindMemberRequest{
 			Cred:  credType,
 			Value: account,
 		})
@@ -228,7 +228,7 @@ func (h PassportApi) compareCode(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		memberId, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
+		memberId, _ := cli.FindMember(context.TODO(), &proto.FindMemberRequest{
 			Cred:  credType,
 			Value: account,
 		})
@@ -511,7 +511,7 @@ func (m PassportApi) checkMemberMatch(account string, credType proto.ECredential
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		mid, _ := cli.SwapMemberId(context.TODO(), &proto.SwapMemberRequest{
+		mid, _ := cli.FindMember(context.TODO(), &proto.FindMemberRequest{
 			Cred:  credType,
 			Value: account,
 		})

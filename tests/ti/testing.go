@@ -15,6 +15,7 @@ import (
 	"go2o/core"
 	"go2o/core/repos"
 	"go2o/core/service/impl"
+	"os"
 	"time"
 )
 
@@ -36,12 +37,20 @@ func init() {
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
-	app := core.NewApp("../app_dev.conf", &cfg)
+	confPath := "app.conf"
+	for {
+		_, err := os.Stat(confPath)
+		if err == nil {
+			break
+		}
+		confPath = "../" + confPath
+	}
+	app := core.NewApp(confPath, &cfg)
 	gof.CurrentApp = app
 	core.Init(app, false, false)
 	conn := app.Db()
 	sto := app.Storage()
 	o := orm.NewOrm(conn.Driver(), conn.Raw())
-	Factory = (&repos.RepoFactory{}).Init(o, sto)
 	impl.InitTestService(app, conn, o, sto)
+	Factory = (&repos.RepoFactory{}).Init(o, sto)
 }

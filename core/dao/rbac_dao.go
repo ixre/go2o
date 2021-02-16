@@ -35,7 +35,7 @@ type IRbacDao interface {
 	DeletePermJob(primary interface{}) error
 	// Batch Delete 岗位
 	BatchDeletePermJob(where string, v ...interface{}) (int64, error)
-	// Query paging data
+	// Params paging data
 	PagingQueryPermJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 系统用户
@@ -52,7 +52,7 @@ type IRbacDao interface {
 	DeletePermUser(primary interface{}) error
 	// Batch Delete 系统用户
 	BatchDeletePermUser(where string, v ...interface{}) (int64, error)
-	// Query paging data
+	// Params paging data
 	PagingQueryPermUser(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色
@@ -69,7 +69,7 @@ type IRbacDao interface {
 	DeletePermRole(primary interface{}) error
 	// Batch Delete 角色
 	BatchDeletePermRole(where string, v ...interface{}) (int64, error)
-	// Query paging data
+	// Params paging data
 	PagingQueryPermRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get PermRes
@@ -86,8 +86,6 @@ type IRbacDao interface {
 	DeletePermRes(primary interface{}) error
 	// Batch Delete PermRes
 	BatchDeletePermRes(where string, v ...interface{}) (int64, error)
-	// Query paging data
-	PagingQueryPermRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 用户角色关联
 	GetPermUserRole(primary interface{}) *model.PermUserRole
@@ -103,7 +101,7 @@ type IRbacDao interface {
 	DeletePermUserRole(primary interface{}) error
 	// Batch Delete 用户角色关联
 	BatchDeletePermUserRole(where string, v ...interface{}) (int64, error)
-	// Query paging data
+	// Params paging data
 	PagingQueryPermUserRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色部门关联
@@ -120,7 +118,7 @@ type IRbacDao interface {
 	DeletePermRoleDept(primary interface{}) error
 	// Batch Delete 角色部门关联
 	BatchDeletePermRoleDept(where string, v ...interface{}) (int64, error)
-	// Query paging data
+	// Params paging data
 	PagingQueryPermRoleDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色菜单关联
@@ -137,7 +135,7 @@ type IRbacDao interface {
 	DeletePermRoleRes(primary interface{}) error
 	// Batch Delete 角色菜单关联
 	BatchDeletePermRoleRes(where string, v ...interface{}) (int64, error)
-	// Query paging data
+	// Params paging data
 	PagingQueryPermRoleRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// 获取角色关联的资源列表

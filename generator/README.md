@@ -66,7 +66,7 @@ Usage of tto:
 - \#!lang: 指定当前生成代码的语言
 如:
 ```
-#!target:java/{{.global.pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:java/{{.global.pkg}}/pojo/{{.table.Title}}{{.global.entity_suffix}}.java
 ```
 多个预定义表达式可以放在一行
 ```
@@ -264,7 +264,7 @@ base_path="/api"
 以下代码用于生成Java的Pojo对象, 更多示例点击[这里](templates)
 
 ```
-#!target:{{.global.pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:{{.global.pkg}}/pojo/{{.table.Title}}{{.global.entity_suffix}}.java
 package {{pkg "java" .global.pkg}}.pojo;
 
 import javax.persistence.Basic;
@@ -278,7 +278,7 @@ import javax.persistence.GeneratedValue;
 /** {{.table.Comment}} */
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
-public class {{.table.Title}}Entity {
+public class {{.table.Title}}{{.global.entity_suffix}} {
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
     private {{$type}} {{$c.Name}}
     public void set{{$c.Prop}}({{$type}} {{$c.Name}}){

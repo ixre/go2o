@@ -17,20 +17,18 @@ replace github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
 
 exclude github.com/coreos/etcd v3.3.18+incompatible
 
-//exclude github.com/coreos/etcd v3.3.19+incompatible
+replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.5
 
 require (
 	github.com/coreos/etcd v3.3.25+incompatible // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.10.1
-	github.com/ixre/tto v0.3.20
-	github.com/labstack/echo v3.3.10+incompatible
+	github.com/ixre/gof v1.10.5
 	github.com/labstack/echo/v4 v4.1.17
-	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/micro/go-micro v1.18.0
@@ -42,7 +40,6 @@ require (
 	github.com/prometheus/client_golang v1.7.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/smartwalle/resize v1.0.0
-	github.com/valyala/fasttemplate v1.2.1 // indirect
 	go.etcd.io/etcd v3.3.25+incompatible
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0 // indirect

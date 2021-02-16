@@ -1,6 +1,8 @@
 #!type:1
 #!target:{{.global.pkg}}/service/{{.table.Name}}_service.go
 {{$title := .table.Title}}
+{{$shortTitle := .table.ShortTitle}}
+{{$p := substr .table.Name 0 1 }}
 {{$pkName := .table.Pk}}
 {{$comment := .table.Comment}}
 /** #! 主键对象类型 */
@@ -23,12 +25,11 @@ import (
 	"context"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"{{.global.pkg}}/dao"
 	"{{.global.pkg}}/dao/impl"
 	"{{.global.pkg}}/dao/model"
-	"{{.global.pkg}}/service/proto"
+	"{{.global.pkg}}/proto"
 	"time"
 )
 
@@ -38,6 +39,8 @@ type {{$structName}} struct {
 	dao dao.I{{.table.Title}}Dao
 	s   storage.Interface
 	serviceUtil
+
+
 }
 
 func New{{$title}}Service(s storage.Interface, o orm.Orm) *{{$structName}} {
@@ -48,14 +51,19 @@ func New{{$title}}Service(s storage.Interface, o orm.Orm) *{{$structName}} {
 }
 
 // 保存{{$comment}}
-func (a *{{$structName}}) Save{{$title}}(_ context.Context, r *proto.Save{{$title}}Request) (*proto.Save{{$title}}Response, error) {
+func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.Save{{$title}}Request) (*proto.Save{{$title}}Response, error) {
 	var dst *model.{{$title}}
     {{if equal_any .table.PkType 3 4 5}}\
     if r.{{.table.PkProp}} > 0 {
     {{else}}
     if r.{{.table.PkProp}} != "" {
     {{end}}
-        dst = a.dao.Get(r.{{.table.PkProp}})
+        if dst = {{$p}}.dao.Get{{$shortTitle}}(r.{{.table.PkProp}}); dst == nil{
+            return &proto.Save{{$shortTitle}}Response{
+                ErrCode: 2,
+                ErrMsg:  "no such record",
+            }, nil
+        }
     } else {
         dst = &model.{{$title}}{}
         {{$c := try_get .columns "create_time"}} \
@@ -71,8 +79,8 @@ func (a *{{$structName}}) Save{{$title}}(_ context.Context, r *proto.Save{{$titl
 
     {{$c := try_get .columns "update_time"}}
     {{if $c}}dst.UpdateTime = time.Now().Unix(){{end}}\
-	id, err := a.dao.Save(dst)
-    ret := &proto.Save{{$title}}Response{
+	id, err := {{$p}}.dao.Save{{$shortTitle}}(dst)
+    ret := &proto.Save{{$shortTitle}}Response{
         {{.table.PkProp}}: {{type "go" .table.PkType}}(id),
     }
     if err != nil{
@@ -82,38 +90,54 @@ func (a *{{$structName}}) Save{{$title}}(_ context.Context, r *proto.Save{{$titl
     return ret,nil
 }
 
+func ({{$p}} *{{$structName}}) parse{{$shortTitle}}(v *model.{{$title}}) *proto.S{{$title}} {
+	return &proto.S{{$shortTitle}}{
+	 {{range $i,$c :=  .columns }}
+     {{ $goType := type "go" $c.Type}}\
+     {{if eq $goType "int"}}{{$c.Prop}} : int32(v.{{$c.Prop}}),\
+     {{else if eq $goType "int16"}}{{$c.Prop}} : int32(v.{{$c.Prop}}),\
+     {{else}}{{$c.Prop}} : v.{{$c.Prop}},{{end}}{{end}}
+	}
+}
+
 // 获取{{$comment}}
-func (a *{{$structName}}) Get{{$title}}(_ context.Context, id *proto.{{$pkType}}) (*proto.S{{$title}}, error) {
-	v := a.dao.Get(id.Value)
+func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{{$pkType}}) (*proto.S{{$title}}, error) {
+	v := {{$p}}.dao.Get{{$shortTitle}}(id.Value)
 	if v == nil {
 		return nil, nil
 	}
-	return &proto.S{{$title}}{
-		 {{range $i,$c :=  .columns }}
-		 {{ $goType := type "go" $c.Type}}\
-         {{if eq $goType "int"}}{{$c.Prop}} : int32(v.{{$c.Prop}}),\
-         {{else if eq $goType "int16"}}{{$c.Prop}} : int32(v.{{$c.Prop}}),\
-         {{else}}{{$c.Prop}} : v.{{$c.Prop}},{{end}}{{end}}
-	}, nil
+	return {{$p}}.parse{{$shortTitle}}(v), nil
 }
 
-func (a *{{$structName}}) Delete{{$title}}(_ context.Context, id *proto.{{$pkType}}) (*proto.Result, error) {
-	err := a.dao.Delete(id.Value)
-	return a.error(err), nil
+// 获取{{$comment}}列表
+func ({{$p}} *{{$structName}}) Query{{$shortTitle}}List(_ context.Context, r *proto.Query{{$title}}Request) (*proto.Query{{$title}}Response, error) {
+	arr := {{$p}}.dao.Select{{$shortTitle}}("")
+	ret := &proto.Query{{$shortTitle}}Response{
+		List:make([]*proto.S{{$shortTitle}},len(arr)),
+	}
+	for i,v := range arr{
+		ret.List[i] = {{$p}}.parse{{$shortTitle}}(v)
+	}
+	return ret,nil
 }
 
-func (a *{{$structName}}) Paging{{$title}}(_ context.Context, r *proto.{{$title}}PagingRequest) (*proto.{{$title}}PagingResponse, error) {
-	total, rows := a.dao.PagingQuery(int(r.Params.Begin),
+func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(_ context.Context, id *proto.{{$pkType}}) (*proto.Result, error) {
+	err := {{$p}}.dao.Delete{{$shortTitle}}(id.Value)
+	return {{$p}}.error(err), nil
+}
+
+func ({{$p}} *{{$structName}}) Paging{{$shortTitle}}(_ context.Context, r *proto.{{$title}}PagingRequest) (*proto.{{$title}}PagingResponse, error) {
+	total, rows := {{$p}}.dao.PagingQuery{{$shortTitle}}(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
-	ret := &proto.{{$title}}PagingResponse{
+	ret := &proto.{{$shortTitle}}PagingResponse{
 		Total:                int64(total),
-		Value:                make([]*proto.Paging{{$title}},len(rows)),
+		Value:                make([]*proto.Paging{{$shortTitle}},len(rows)),
 	}
 	for i,v := range rows{
 	    /** #! 直接将数据库字端转换值 */
-		ret.Value[i] = &proto.Paging{{$title}}{
+		ret.Value[i] = &proto.Paging{{$shortTitle}}{
 	         {{range $i,$c := .columns }}
     		 {{ $goType := type "go" $c.Type}}\
              {{if eq $goType "int"}}{{$c.Prop}} : int32(typeconv.MustInt(v["{{$c.Name}}"])),\

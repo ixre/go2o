@@ -9,8 +9,7 @@ COPY ./app ./app
 COPY ./core ./core
 COPY ./*.go go.mod LICENSE README.md app.conf ./
 
-#ENV GO111MODULE=on
-ENV GOPROXY=https://goproxy.io
+ENV GOPROXY=https://goproxy.cn,direct
 RUN rm -rf go.sum && sed -i 's/replace github.com\/ixre/\/\/replace  github.com\/ixre/g' go.mod && \
     go mod tidy && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -o go2o go2o-serve.go && \
@@ -26,6 +25,7 @@ ENV GO2O_NATS_ADDR=172.17.0.1:4222
 
 WORKDIR /app
 COPY --from=build /opt/go2o/dist/* /app/
+COPY ./assets ./assets
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && \
 	apk --update add tzdata ca-certificates && \

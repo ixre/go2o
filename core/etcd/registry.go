@@ -26,7 +26,7 @@ var prefix = "/registry/server/"
 
 type Registry interface {
 	// 创建租期/注册节点,返回租期ID和错误, 如果IP为空,则默认为第一个网卡首个IP
-	Register(ip string,port int) (int64, error)
+	Register(ip string, port int) (int64, error)
 	// 撤销租期/注销节点
 	Revoke(LeaseID int64) error
 	UnRegister()
@@ -72,7 +72,7 @@ func (s *registryServer) resolveIp() string {
 	}
 	return "127.0.0.1"
 }
-func (s *registryServer) Register(ip string,port int) (leaseId int64, err error) {
+func (s *registryServer) Register(ip string, port int) (leaseId int64, err error) {
 	if s.isRegistry {
 		panic("only one nodes can be registered")
 	}

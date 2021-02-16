@@ -64,10 +64,12 @@ type PermRes struct {
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 资源名称
 	Name string `db:"name"`
-	// 资源类型, 0: 资源　 1: 菜单  2:　 按钮
+	// 资源类型, 0: 目录 1: 资源　2: 菜单 3:　 按钮
 	ResType int16 `db:"res_type"`
 	// 上级菜单ID
 	Pid int64 `db:"pid"`
+	// 深度/层级
+	Depth int16 `db:"depth"`
 	// 资源键
 	Key string `db:"key"`
 	// 资源路径
@@ -85,7 +87,7 @@ type PermRes struct {
 	// 创建日期
 	CreateTime int64 `db:"create_time"`
 	// 组件名称
-	ComponentPath string `db:"component_path"`
+	ComponentName string `db:"component_name"`
 	// 缓存
 	Cache string `db:"cache_"`
 }
@@ -144,8 +146,8 @@ type PermUser struct {
 	Avatar string `db:"avatar"`
 	// NickName
 	NickName string `db:"nick_name"`
-	// Sex
-	Sex string `db:"sex"`
+	// Gender
+	Gender string `db:"gender"`
 	// 邮箱
 	Email string `db:"email"`
 	// 手机号码

@@ -89,7 +89,7 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64, sortB
 			rows = db.RowsToMarshalMap(_rows)
 		}, memberId, begin, over-begin)
 		if err != nil {
-			log.Println("[ Go2o][ Query]: query error ", err.Error())
+			log.Println("[ Go2o][ Params]: query error ", err.Error())
 		}
 	} else {
 		rows = []map[string]interface{}{}
@@ -342,7 +342,7 @@ func (m *MemberQuery) InviteMembersQuantity(memberId int64, where string) int {
 	total := 0
 	err := m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE `+where, &total)
 	if err != nil {
-		log.Printf("[ Query][ Error]: invite member quantity error:%s", err.Error())
+		log.Printf("[ Params][ Error]: invite member quantity error:%s", err.Error())
 	}
 	return total
 }

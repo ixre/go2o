@@ -10,12 +10,13 @@ package restapi
 
 import (
 	"github.com/ixre/gof"
+	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"github.com/labstack/echo/v4"
 	mw "github.com/labstack/echo/v4/middleware"
-	"go2o/app/api"
+	apiv2 "go2o/app/api"
+	"go2o/app/v1/api"
 	"go2o/core/variable"
-	"github.com/ixre/gof/log"
 	"net/http"
 	"os"
 	"strconv"
@@ -39,7 +40,24 @@ func newServe(config *gof.Config, store storage.Interface) *echo.Echo {
 	//serve.Hook(splitPath) // 获取新的路径,在请求之前发生
 	registerRoutes(serve)
 	registerNewApi(serve, config, store)
+	registerApiV2(serve, store)
 	return serve
+}
+
+func registerApiV2(s *echo.Echo, store storage.Interface) {
+	prefix := "/a/v2"
+	h := apiv2.ServeApiV2(store, prefix, false, "", "", "")
+	hf := func(c echo.Context) error {
+		h.ServeHTTP(c.Response(), c.Request())
+		return nil
+	}
+	route := prefix + "/*"
+	s.POST(route, hf)
+	s.GET(route, hf)
+	s.PUT(route, hf)
+	s.PATCH(route, hf)
+	s.DELETE(route, hf)
+	s.OPTIONS(route, hf)
 }
 
 // 注册新的服务接口
@@ -65,7 +83,7 @@ func Run(ch chan bool, app gof.App, port int) {
 	store = app.Storage()
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	handler := newServe(app.Config(), store)
-	log.Println("[ Go2o][ API]: api gateway serve on port :"+strconv.Itoa(port))
+	log.Println("[ Go2o][ API]: api gateway serve on port :" + strconv.Itoa(port))
 
 	err := http.ListenAndServe(":"+strconv.Itoa(port), handler)
 
@@ -103,6 +121,10 @@ func beforeRequest() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			host := c.Request().URL.Host
 			path := c.Request().URL.Path
+			// note: 新接口
+			if strings.HasPrefix(path, "/a/v2") {
+				return h(c)
+			}
 			if path == "/api" {
 				return h(c)
 			}

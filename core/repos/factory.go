@@ -64,7 +64,7 @@ type RepoFactory struct {
 	asRepo            afterSales.IAfterSalesRepo
 
 	walletRepo wallet.IWalletRepo
-	_orm      orm.Orm
+	_orm       orm.Orm
 }
 
 func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
@@ -113,7 +113,7 @@ func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
 	return r
 }
 
-func (r *RepoFactory) GetOrm()orm.Orm{
+func (r *RepoFactory) GetOrm() orm.Orm {
 	return r._orm
 }
 

@@ -1,5 +1,3 @@
-# protobuf模板
-
 global.proto
 ```
 syntax = "proto3";

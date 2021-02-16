@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"go2o/core/infrastructure/tool/sensitive"
 	"go2o/core/module"
 	"go2o/core/module/bank"
 	"go2o/core/service/proto"
@@ -30,6 +31,18 @@ type foundationService struct {
 	registryRepo registry.IRegistryRepo
 	notifyRepo   notify.INotifyRepo
 	serviceUtil
+}
+
+// 检测是否包含敏感词
+func (s *foundationService) CheckSensitive(_ context.Context, r *proto.String) (*proto.Bool, error) {
+	_, b := sensitive.Singleton().CheckSensitive(r.Value)
+	return &proto.Bool{Value: b}, nil
+}
+
+// 替换敏感词
+func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.ReplaceSensitiveRequest) (*proto.String, error) {
+	v := sensitive.Singleton().ReplaceAll(r.Text,r.Replacement)
+	return &proto.String{Value: v}, nil
 }
 
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
@@ -131,7 +144,7 @@ func (s *foundationService) SuperValidate(_ context.Context, user *proto.UserPwd
 			ErrCode: 2}, nil
 	}
 	superPwd, _ := s.registryRepo.GetValue(registry.SysSuperLoginToken)
-	encPwd := domain.Sha1Pwd(user.User + user.Pwd)
+	encPwd := domain.Sha1Pwd(user.User+user.Pwd, "")
 	if superPwd != encPwd {
 		return &proto.SuperLoginResponse{
 			ErrMsg:  de.ErrCredential.Error(),
@@ -148,7 +161,7 @@ func (s *foundationService) FlushSuperPwd(_ context.Context, user *proto.UserPwd
 	if len(user.Pwd) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	encPwd := domain.Sha1Pwd(user.User + user.Pwd)
+	encPwd := domain.Sha1Pwd(user.User+user.Pwd, "")
 	err := s.registryRepo.UpdateValue(registry.SysSuperLoginToken,
 		encPwd)
 	return s.error(err), nil

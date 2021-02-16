@@ -55,7 +55,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterAppServiceServer(s, grpc2.AppService)
 	proto.RegisterRbacServiceServer(s, grpc2.RbacService)
 	registerServiceDiscovery(cfg, port)
-	go serveRPC(ch,s, port)
+	go serveRPC(ch, s, port)
 }
 
 func serveRPC(ch chan bool, s *grpc.Server, port int) {

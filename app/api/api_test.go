@@ -2,87 +2,98 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/ixre/gof/api"
+	"errors"
+	"github.com/ixre/gof/crypto"
+	api "github.com/ixre/gof/jwt-api"
+	http2 "github.com/ixre/gof/util/http"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"testing"
-	"time"
 )
 
-/**
- * Copyright 2009-2019 @ to2.net
- * name : api_test.go.go
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2019-07-30 10:47
- * description :
- * history :
- */
+var (
+	tc *api.Client
+)
 
-var serverUrl = "http://localhost:1428/api"
+var (
+	RInternalError = &api.Response{
+		Code:    api.RCInternalError,
+		Message: "内部服务器出错",
+	}
+	RAccessDenied = &api.Response{
+		Code:    api.RCAccessDenied,
+		Message: "没有权限访问该接口",
+	}
+	RIncorrectApiParams = &api.Response{
+		Code:    api.RCNotAuthorized,
+		Message: "缺少接口参数，请联系技术人员解决",
+	}
+	RUndefinedApi = &api.Response{
+		Code:    api.RCUndefinedApi,
+		Message: "调用的API名称不正确",
+	}
+)
 
-func testApi(t *testing.T, apiName string, paramsMap map[string]string, abortOnFail bool) {
-	key := "go2o"
-	secret := "123456"
-	signType := "sha1"
-	params := url.Values{}
-	params["key"] = []string{key}
-	params["api"] = []string{apiName}
-	params["key"] = []string{key}
-	params["sign_type"] = []string{signType}
-	params["version"] = []string{"1.0.15"}
-	for k, v := range paramsMap {
-		params[k] = []string{v}
-	}
-	sign := api.Sign(signType, params, secret)
-	//t.Log("-- Sign:", sign)
-	params["sign"] = []string{sign}
-	cli := http.Client{}
-	rsp, err := cli.PostForm(serverUrl, params)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	data, _ := ioutil.ReadAll(rsp.Body)
-	rsp1 := api.Response{}
-	json.Unmarshal(data, &rsp1)
-	if rsp1.Code != api.RSuccessCode {
-		println("请求失败：code:", rsp1.Code, "; message:", rsp1.Message)
-		println("接口响应：", string(data))
-		if abortOnFail {
-			t.FailNow()
+func init() {
+	server := "http://localhost:1428/a/v2"
+	md5Secret := string(crypto.Md5([]byte("123456")))
+	tc = api.NewClient(server, "go2o", md5Secret)
+	tc.UseToken(func(key, secret string) string {
+		r, err1 := http.Get(server + "/access_token?key=" + key + "&secret=" + secret)
+		if err1 != nil {
+			println("---获取accessToken失败", err1.Error())
+			return ""
 		}
-	}
-	println("接口响应：", string(data))
+		bytes, _ := ioutil.ReadAll(r.Body)
+		rsp := api.Response{}
+		json.Unmarshal(bytes,&rsp)
+		return rsp.Data.(string)
+	}, 30000)
+	tc.HandleError(func(code int, message string) error {
+		switch code {
+		case api.RCAccessDenied:
+			message = RAccessDenied.Message
+		case api.RCNotAuthorized:
+			message = RIncorrectApiParams.Message
+		case api.RCUndefinedApi:
+			message = RUndefinedApi.Message
+		}
+		return errors.New(message)
+	})
 }
 
-// 测试请求限制
-func TestRequestLimit(t *testing.T) {
-	mp := map[string]string{}
-	mp["prod_type"] = "android"
-	mp["prod_version"] = "1.0.0"
-	for {
-		for i := 0; i < 100; i++ {
-			testApi(t, "app.check", mp, false)
-		}
-		time.Sleep(time.Second)
-	}
-}
-
-func TestSign(t *testing.T) {
-	params := "api=member.login&key=go2o&product=app&pwd=c4ca4238a0b923820dcc509a6f75849b&user=18666398028&version=1.0.0&sign_type=sha1&sign=2933eaffccf9fe49a0ad9a97fe311a41afb6e3b2"
-	values, _ := url.ParseQuery(params)
-	sign := api.Sign("sha1", values, "131409")
-	if sign2 := values.Get("sign"); sign2 != sign {
-		println(sign, "/", sign2)
-		t.Failed()
-	}
-	cli := http.Client{}
-	rsp, err := cli.PostForm("http://localhost:1428/api", values)
+// 测试提交
+func testPost(t *testing.T, apiName string, params map[string]string) ([]byte, error) {
+	rsp, err := tc.Post(apiName, params)
+	t.Log("[ Response]:", string(rsp))
 	if err != nil {
 		t.Error(err)
-		t.FailNow()
+		//t.FailNow()
 	}
-	data, _ := ioutil.ReadAll(rsp.Body)
-	println(string(data))
+	return rsp, err
+}
+
+// 测试提交
+func testPostForm(t *testing.T, apiName string, params map[string]string) ([]byte, error) {
+	params["version"] = "1.0.0"
+	rsp, err := tc.Post(apiName, params)
+	t.Log("[ Response]:", string(rsp))
+	if err != nil {
+		t.Error(err)
+		//t.FailNow()
+	}
+	return rsp, err
+}
+
+// 测试提交
+func testGET(t *testing.T, apiName string, params map[string]string) ([]byte, error) {
+	params["version"] = "1.0.0"
+	query := http2.ParseUrlValues(params).Encode()
+	rsp, err := tc.Get(apiName+"?"+query, nil)
+	t.Log("[ Response]:", string(rsp))
+	if err != nil {
+		t.Error(err)
+		//t.FailNow()
+	}
+	return rsp, err
 }

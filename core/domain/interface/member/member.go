@@ -221,7 +221,9 @@ type (
 		// 真实姓名
 		RealName string `db:"real_name"`
 		// 用户名
-		User string `db:"\"user\""`
+		User string `db:"user"`
+		// 加密盐
+		Salt string `db:"salt"`
 		// 密码
 		Pwd string `db:"pwd"`
 		// 头像
@@ -277,7 +279,7 @@ type (
 		//头像
 		Avatar string `db:"avatar"`
 		//性别
-		Sex int32 `db:"sex"`
+		Gender int32 `db:"gender"`
 		//生日
 		BirthDay string `db:"birthday"`
 		//电话
