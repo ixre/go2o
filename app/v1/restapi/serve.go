@@ -14,8 +14,8 @@ import (
 	"github.com/ixre/gof/storage"
 	"github.com/labstack/echo/v4"
 	mw "github.com/labstack/echo/v4/middleware"
-	"go2o/app/v1/api"
 	apiv2 "go2o/app/api"
+	"go2o/app/v1/api"
 	"go2o/core/variable"
 	"net/http"
 	"os"
@@ -40,7 +40,7 @@ func newServe(config *gof.Config, store storage.Interface) *echo.Echo {
 	//serve.Hook(splitPath) // 获取新的路径,在请求之前发生
 	registerRoutes(serve)
 	registerNewApi(serve, config, store)
-	registerApiV2(serve,store)
+	registerApiV2(serve, store)
 	return serve
 }
 
@@ -51,7 +51,7 @@ func registerApiV2(s *echo.Echo, store storage.Interface) {
 		h.ServeHTTP(c.Response(), c.Request())
 		return nil
 	}
-	route := prefix + "/:api"
+	route := prefix + "/*"
 	s.POST(route, hf)
 	s.GET(route, hf)
 	s.PUT(route, hf)
@@ -122,7 +122,7 @@ func beforeRequest() echo.MiddlewareFunc {
 			host := c.Request().URL.Host
 			path := c.Request().URL.Path
 			// note: 新接口
-			if strings.HasPrefix(path,"/a/v2"){
+			if strings.HasPrefix(path, "/a/v2") {
 				return h(c)
 			}
 			if path == "/api" {

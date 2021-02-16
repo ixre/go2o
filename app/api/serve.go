@@ -10,6 +10,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,6 +18,9 @@ import (
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
+	"go2o/core/domain/interface/registry"
+	"go2o/core/service"
+	"go2o/core/service/proto"
 	"net/http"
 	"time"
 )
@@ -28,22 +32,18 @@ var (
 )
 
 // 接口2.0
-func ServeApiV2(store storage.Interface,prefix string, debug bool, requireVer string,
+func ServeApiV2(store storage.Interface, prefix string, debug bool, requireVer string,
 	apiUser string, apiSecret string) http.Handler {
 	RequireVersion = requireVer
 	// 请求限制
 	rl := util.NewRequestLimit(store, 100, 10, 600)
 	// 创建服务
-	s := api.NewServerMux(swapApiKeyFunc, nil, prefix,true)
+	s := api.NewServerMux(swapApiKeyFunc, prefix, true)
 	// 注册中间键
-	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", debug,rl)
+	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", debug, rl)
 	// 注册处理器
-	//s.Handle(&AppApi{})
-	//s.Handle(&DeptApi{})
-	//s.Handle(&RoleApi{})
-	//s.Handle(&ResApi{})
-	//s.Handle(&UserApi{})
-	//s.HandlePublic(&AccessTokenApi{}))
+	s.HandlePublic(AccessTokenApi{})
+	s.Handle(&fdApi{})
 	return s
 }
 
@@ -116,7 +116,21 @@ func serviceMiddleware(s api.Server, prefix string, debug bool, rl *util.Request
 }
 
 // 交换接口用户凭据
-func swapApiKeyFunc(ctx api.Context) (privateKey string, err error) {
-	return "", errors.New("")
+func swapApiKeyFunc(ctx api.Context) (privateKey []byte, err error) {
+	return getJWTSecret(), nil
 }
 
+var jwtSecret = []byte("")
+
+func getJWTSecret() []byte {
+	if len(jwtSecret) == 0 {
+		trans, cli, _ := service.RegistryServiceClient()
+		defer trans.Close()
+		value, _ := cli.GetValue(context.TODO(), &proto.String{Value: registry.SysJWTSecret})
+		if len(value.Value) == 0 {
+			log.Println("[ Go2o][ Warning]: jwt secret is empty")
+		}
+		jwtSecret = []byte(value.Value)
+	}
+	return jwtSecret
+}
