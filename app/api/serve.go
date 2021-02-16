@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
+	"go2o/app/api/member"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/service"
 	"go2o/core/service/proto"
@@ -43,7 +44,8 @@ func ServeApiV2(store storage.Interface, prefix string, debug bool, requireVer s
 	serviceMiddleware(s, "[ Go2o][ API][ Log]: ", debug, rl)
 	// 注册处理器
 	s.HandlePublic(AccessTokenApi{})
-	s.Handle(&fdApi{})
+	s.Handle(&fdApi{})             // 基础
+	s.Handle(member.ComplainApi{}) // 投诉
 	return s
 }
 
@@ -60,7 +62,7 @@ func serviceMiddleware(s api.Server, prefix string, debug bool, rl *util.Request
 		return nil
 	})
 	//// 校验版本
-	//s.Use(func(ctx api.Context) error {
+	//s.Use(func(ctx api.Context) Error {
 	//	//prod := ctx.StoredValues().GetString("product"
 	//	prodVer := ctx.Params().GetString("version")
 	//	if api.CompareVersion(prodVer, RequireVersion) < 0 {
@@ -97,9 +99,9 @@ func serviceMiddleware(s api.Server, prefix string, debug bool, rl *util.Request
 			}
 			reqTime := int64(form.GetInt("$rpc_begin_time"))
 			elapsed := float32(time.Now().UnixNano()-reqTime) / 1000000000
-			log.Println(prefix, "response : ", rsp.Code, rsp.Message,
+			log.Println(prefix, "Response : ", rsp.Code, rsp.Message,
 				fmt.Sprintf("; elapsed time ：%.4fs ; ", elapsed),
-				"result = [", data, "]",
+				"Result = [", data, "]",
 			)
 			//if rsp.Code == api.RAccessDenied.Code {
 			//	data, _ := url.QueryUnescape(ctx.Request().Form.Encode())

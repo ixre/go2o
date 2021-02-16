@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/jwt-api"
+	"go2o/app/api/util"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/gen"
@@ -29,7 +30,7 @@ var _ api.Handler = new(fdApi)
 
 // 基础接口
 type fdApi struct {
-	utils
+	util.Utils
 }
 
 func (r fdApi) Group() string {
@@ -102,7 +103,7 @@ func (r fdApi) adApi(ctx api.Context) *api.Response {
 		seconds, _ = strconv.Atoi(mp.Value[regArr[0]])
 		return result
 	}, int64(seconds))
-	return r.utils.success(result)
+	return r.Utils.Success(result)
 }
 
 /**
@@ -138,7 +139,7 @@ func (r fdApi) geoLocation(ctx api.Context) *api.Response {
 		"ip":      ip,
 		"address": addr,
 	}
-	return r.utils.success(mp)
+	return r.Utils.Success(mp)
 }
 
 /**
@@ -168,7 +169,7 @@ func (r fdApi) childArea(ctx api.Context) *api.Response {
 			}
 		}
 	}
-	return r.success(areas)
+	return r.Success(areas)
 }
 
 // 检查是否包含敏感词
@@ -178,9 +179,9 @@ func (r fdApi) checkSensitive(ctx api.Context) *api.Response {
 	if err == nil {
 		defer trans.Close()
 		ret, _ := cli.CheckSensitive(context.TODO(), &proto.String{Value: text})
-		return r.success(ret.Value)
+		return r.Success(ret.Value)
 	}
-	return r.error(err)
+	return r.Error(err)
 }
 
 func (r fdApi) replaceSensitive(ctx api.Context) *api.Response {
@@ -195,7 +196,7 @@ func (r fdApi) replaceSensitive(ctx api.Context) *api.Response {
 			Text:        text,
 			Replacement: replacement,
 		})
-		return r.success(ret.Value)
+		return r.Success(ret.Value)
 	}
-	return r.error(err)
+	return r.Error(err)
 }
