@@ -19,20 +19,21 @@ services:
       --listen-peer-urls http://0.0.0.0:2380
       --initial-cluster-token etcd-cluster-token
       --initial-cluster "etcd1=http://etcd:2380"
+      --initial-advertise-peer-urls "http://etcd:2380"
       --initial-cluster-state new
     volumes:
       - ./etcd-data:/data
     ports:
       - 2379:2379
   postgres:
-    image: postgres:11.2-alpine
+    image: postgres:13-alpine
     restart: always
     ports:
       - "15432:5432"
     volumes:
-      - ./postgres:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql/data:z
     environment:
-      - POSTGRES_PASSWORD:123456
+      - POSTGRES_PASSWORD=123456
   go2o:
     image: docker-base.56x.net:5020/go2o
     depends_on:
