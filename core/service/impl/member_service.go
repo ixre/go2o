@@ -276,7 +276,7 @@ func (s *memberService) GetMemberLevel(_ context.Context, i *proto.Int32) (*prot
 // 保存会员等级信息
 func (s *memberService) SaveMemberLevel(_ context.Context, level *proto.SMemberLevel) (*proto.Result, error) {
 	lv := &member.Level{
-		ID:            int(level.ID),
+		ID:            int(level.Id),
 		Name:          level.Name,
 		RequireExp:    int(level.RequireExp),
 		ProgramSignal: level.ProgramSignal,
@@ -1486,7 +1486,7 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 
 func (s *memberService) parseLevelDto(src *member.Level) *proto.SMemberLevel {
 	return &proto.SMemberLevel{
-		ID:            int32(src.ID),
+		Id:            int32(src.ID),
 		Name:          src.Name,
 		RequireExp:    int32(src.RequireExp),
 		ProgramSignal: src.ProgramSignal,

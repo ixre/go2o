@@ -1,6 +1,6 @@
 module go2o
 
-go 1.15
+go 1.16
 
 replace github.com/ixre/gof => ../github.com/ixre/gof
 

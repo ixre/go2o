@@ -216,7 +216,7 @@ message PagingAccountInfoRequest {
 
 /** 等级 */
 message SMemberLevel {
-    sint32 ID = 1;
+    sint32 Id = 1;
     string Name = 2;
     sint32 RequireExp = 3;
     string ProgramSignal = 4;
