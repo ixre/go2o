@@ -248,8 +248,9 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
 	if err := m.storage.Get(key, &e); err != nil {
-		//log.Println("-- mm",err)
-		if m.o.Get(memberId, e) != nil {
+		//log.("-- mm",err)
+		err = m.o.Get(memberId, e)
+		if err != nil {
 			return nil
 		}
 		m.storage.SetExpire(key, *e, DefaultCacheSeconds*3)
