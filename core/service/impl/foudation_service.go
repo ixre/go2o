@@ -41,7 +41,7 @@ func (s *foundationService) CheckSensitive(_ context.Context, r *proto.String) (
 
 // 替换敏感词
 func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.ReplaceSensitiveRequest) (*proto.String, error) {
-	v := sensitive.Singleton().ReplaceAll(r.Text,r.Replacement)
+	v := sensitive.Singleton().ReplaceAll(r.Text, r.Replacement)
 	return &proto.String{Value: v}, nil
 }
 

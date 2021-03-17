@@ -310,20 +310,21 @@ message SAccount {
   double Balance = 4;
   double FreezeBalance = 5;
   double ExpiredBalance = 6;
-  double WalletBalance = 7;
-  double FreezeWallet = 8;
-  double ExpiredWallet = 9;
-  double TotalWalletAmount = 10;
-  double FlowBalance = 11;
-  double GrowBalance = 12;
-  double GrowAmount = 13;
-  double GrowEarnings = 14;
-  double GrowTotalEarnings = 15;
-  double TotalExpense = 16;
-  double TotalCharge = 17;
-  double TotalPay = 18;
-  sint64 PriorityPay = 19;
-  sint64 UpdateTime = 20;
+  string WalletCode = 7;
+  double WalletBalance = 8;
+  double FreezeWallet = 9;
+  double ExpiredWallet = 10;
+  double TotalWalletAmount = 11;
+  double FlowBalance = 12;
+  double GrowBalance = 13;
+  double GrowAmount = 14;
+  double GrowEarnings = 15;
+  double GrowTotalEarnings = 16;
+  double TotalExpense = 17;
+  double TotalCharge = 18;
+  double TotalPay = 19;
+  sint64 PriorityPay = 20;
+  sint64 UpdateTime = 21;
 }
 
 message SComplexMember {

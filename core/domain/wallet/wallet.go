@@ -200,13 +200,15 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 }
 
 // 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
-func (w *WalletImpl) Adjust(value int, title, outerNo string, oprUid int, oprName string) error {
+func (w *WalletImpl) Adjust(value int, title, outerNo string,
+	remark string, oprUid int, oprName string) error {
 	err := w.checkValueOpu(value, true, oprUid, oprName)
 	if err == nil {
 		w._value.AdjustAmount += value
 		w._value.Balance += value
 		l := w.createWalletLog(wallet.KAdjust, value, title, oprUid, oprName)
 		l.OuterNo = outerNo
+		l.Remark = remark
 		l.Balance = w._value.Balance
 		err = w.saveWalletLog(l)
 		if err == nil {

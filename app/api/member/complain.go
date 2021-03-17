@@ -16,6 +16,7 @@ import (
  */
 
 var _ api.Handler = new(ComplainApi)
+
 type ComplainApi struct {
 	util.Utils
 }

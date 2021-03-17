@@ -26,38 +26,39 @@ message WalletLogIDRequest {
     sint64 id = 2;
 }
 message AdjustRequest {
-    sint64 walletId = 1;
-    sint32 value = 2;
-    string title = 3;
-    string outerNo = 4;
-    sint32 oprUid = 5;
-    string oprName = 6;
+    sint64 WalletId = 1;
+    sint32 Value = 2;
+    string Title = 3;
+    string OuterNo = 4;
+    string Remark = 5;
+    sint32 OprUid = 6;
+    string OprName = 7;
 }
 
 message DiscountRequest {
-    sint64 walletId = 1;
-    sint32 value = 2;
-    string title = 3;
-    string outerNo = 4;
-    bool must = 5;
+    sint64 WalletId = 1;
+    sint32 Value = 2;
+    string Title = 3;
+    string OuterNo = 4;
+    bool Must = 5;
 }
 
 message FreezeRequest {
-    sint64 walletId = 1;
-    sint32 value = 2;
-    string title = 3;
-    string outerNo = 4;
-    sint32 oprUid = 5;
-    string oprName = 6;
+    sint64 WalletId = 1;
+    sint32 Value = 2;
+    string Title = 3;
+    string OuterNo = 4;
+    sint32 OprUid = 5;
+    string OprName = 6;
 }
 
 message UnfreezeRequest {
-    sint64 walletId = 1;
-    sint32 value = 2;
-    string title = 3;
-    string outerNo = 4;
-    sint32 oprUid = 5;
-    string oprName = 6;
+    sint64 WalletId = 1;
+    sint32 Value = 2;
+    string Title = 3;
+    string OuterNo = 4;
+    sint32 OprUid = 5;
+    string OprName = 6;
 }
 
 message ChargeRequest {
@@ -89,6 +90,9 @@ service WalletService {
     /** 获取钱包账户,传入walletId */
     rpc GetWallet (Int64) returns (SWallet) {
     }
+
+    /** 获取钱包账户,传入walletCode */
+    rpc GetWalletByCode(String)returns(SWallet){}
 
     /** 获取钱包日志 */
     rpc GetWalletLog (WalletLogIDRequest) returns (SWalletLog) {

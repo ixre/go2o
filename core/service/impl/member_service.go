@@ -1586,6 +1586,7 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 		Balance:           round(src.Balance, 2),
 		FreezeBalance:     round(src.FreezeBalance, 2),
 		ExpiredBalance:    round(src.ExpiredBalance, 2),
+		WalletCode:        src.WalletCode,
 		WalletBalance:     round(src.WalletBalance, 2),
 		FreezeWallet:      round(src.FreezeWallet, 2),
 		ExpiredWallet:     round(src.ExpiredWallet, 2),

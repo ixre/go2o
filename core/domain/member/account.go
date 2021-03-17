@@ -504,8 +504,8 @@ func (a *accountImpl) walletRefund(kind int, title string,
 }
 
 // 调整钱包余额
-func (a *accountImpl) walletAdjust(title string, amount int, outerNo string, relateUser int64) error {
-	err := a.wallet.Adjust(amount, title, outerNo, int(relateUser), "")
+func (a *accountImpl) walletAdjust(title string, amount int, remark string, relateUser int64) error {
+	err := a.wallet.Adjust(amount, title, "-", remark, int(relateUser), "-")
 	if err == nil {
 		err = a.asyncWallet()
 	}

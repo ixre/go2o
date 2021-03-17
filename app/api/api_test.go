@@ -46,7 +46,7 @@ func init() {
 		}
 		bytes, _ := ioutil.ReadAll(r.Body)
 		rsp := api.Response{}
-		json.Unmarshal(bytes,&rsp)
+		json.Unmarshal(bytes, &rsp)
 		return rsp.Data.(string)
 	}, 30000)
 	tc.HandleError(func(code int, message string) error {

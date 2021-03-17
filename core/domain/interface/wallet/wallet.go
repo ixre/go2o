@@ -145,7 +145,7 @@ type (
 		Save() (int64, error)
 
 		// 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
-		Adjust(value int, title, outerNo string, oprUid int, oprName string) error
+		Adjust(value int, title, outerNo string, remark string, oprUid int, oprName string) error
 
 		// 消费
 		Consume(amount int, title string, outerNo string) error

@@ -42,6 +42,15 @@ func (w *walletServiceImpl) GetWallet(_ context.Context, walletId *proto.Int64) 
 	return nil, nil
 }
 
+/** 获取钱包账户,传入walletCode */
+func (w *walletServiceImpl) GetWalletByCode(_ context.Context, walletCode *proto.String) (*proto.SWallet, error) {
+	iw := w._repo.GetWalletByCode(walletCode.Value)
+	if iw != nil {
+		return w.parseWallet(iw.Get()), nil
+	}
+	return nil, nil
+}
+
 func (w *walletServiceImpl) GetWalletLog(_ context.Context, r *proto.WalletLogIDRequest) (*proto.SWalletLog, error) {
 	iw := w._repo.GetWallet(r.WalletId)
 	if iw != nil {
@@ -56,7 +65,7 @@ func (w *walletServiceImpl) Adjust(_ context.Context, r *proto.AdjustRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, int(r.OprUid), r.OprName)
+		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, r.Remark, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }
