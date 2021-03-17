@@ -106,7 +106,7 @@ func (w *walletServiceImpl) Charge(_ context.Context, r *proto.ChargeRequest) (r
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
 		err = iw.Charge(int(r.Value), int(r.By), r.Title,
-			r.OuterNo, int(r.OprUid), r.OprName)
+			r.OuterNo, r.Remark,int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }

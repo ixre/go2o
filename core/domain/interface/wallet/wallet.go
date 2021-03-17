@@ -166,7 +166,7 @@ type (
 		Income(amount int, tradeFee int, title, outerNo string) error
 
 		// 充值,kind: 业务类型
-		Charge(value int, kind int, title, outerNo string, oprUid int, oprName string) error
+		Charge(value int, kind int, title, outerNo string,remark string, oprUid int, oprName string) error
 
 		// 退款,kind: 业务类型
 		Refund(value int, kind int, title, outerNo string, oprUid int, oprName string) error
