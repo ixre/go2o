@@ -417,6 +417,8 @@ func (a *accountImpl) adjustFlowAccount(title string, amount float32, remark str
 func (a *accountImpl) adjustIntegralAccount(title string, value int, remark string, relateUser int64) error {
 	l, err := a.createIntegralLog(member.KindAdjust, title, value, "", false)
 	if err == nil {
+		l.Remark = remark
+		l.RelateUser = int(relateUser)
 		err = a.rep.SaveIntegralLog(l)
 		if err == nil {
 			a.value.Integral += value
