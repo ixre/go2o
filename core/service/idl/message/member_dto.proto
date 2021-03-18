@@ -76,9 +76,9 @@ message SubmitTrustInfoRequest {
 }
 
 message ReviewTrustInfoRequest {
-  sint64 memberId = 1;
-  bool reviewPass = 2;
-  string remark = 3;
+  int64 MemberId = 1;
+  bool ReviewPass = 2;
+  string Remark = 3;
 }
 
 message LockRequest {

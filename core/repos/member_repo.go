@@ -561,7 +561,7 @@ func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
 }
 
 // 获取会员升级记录
-func (m *MemberRepoImpl) GetLevelUpLog(id int32) *member.LevelUpLog {
+func (m *MemberRepoImpl) GetLevelUpLog(id int) *member.LevelUpLog {
 	e := member.LevelUpLog{}
 	if m.o.Get(id, &e) == nil {
 		return &e

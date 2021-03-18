@@ -116,6 +116,12 @@ service MemberService {
     // 更改会员等级
     rpc UpdateLevel (UpdateLevelRequest) returns (Result) {
     }
+    // 审核升级申请
+    rpc ReviewLevelUpRequest (LevelUpReviewRequest) returns (Result) {
+    }
+    // 确认升级申请
+    rpc ConfirmLevelUpRequest (LevelUpConfirmRequest) returns (Result) {
+    }
     /* 更改手机号码，不验证手机格式 */
     rpc ChangePhone (ChangePhoneRequest) returns (Result) {
     }
@@ -236,4 +242,16 @@ service MemberService {
     // 查询优惠券
     rpc QueryCoupons (MemberCouponPagingRequest) returns (MemberCouponListResponse) {
     }
+}
+
+message LevelUpReviewRequest {
+    int64 MemberId = 1;
+    int64 RequestId = 2;
+    bool ReviewPass = 3;
+    string Remark = 4;
+}
+
+message LevelUpConfirmRequest {
+    int64 MemberId = 1;
+    int64 RequestId = 2;
 }

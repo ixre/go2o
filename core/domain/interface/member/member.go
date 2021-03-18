@@ -109,7 +109,7 @@ type (
 		ReviewLevelUp(id int, pass bool) error
 
 		// 标记已经处理升级
-		ConfirmLevelUp(id int32) error
+		ConfirmLevelUp(id int) error
 
 		// 更换用户名
 		ChangeUser(string) error

@@ -362,7 +362,7 @@ func (m *memberImpl) GrantFlag(flag int) error {
 
 // 审核升级请求
 func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
-	l := m.repo.GetLevelUpLog(int32(id))
+	l := m.repo.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
 		if l.ReviewState == int(enum.ReviewPass) {
 			return member.ErrLevelUpPass
@@ -398,7 +398,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 }
 
 // 标记已经处理升级
-func (m *memberImpl) ConfirmLevelUp(id int32) error {
+func (m *memberImpl) ConfirmLevelUp(id int) error {
 	l := m.repo.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
 		if l.ReviewState == int(enum.ReviewConfirm) {

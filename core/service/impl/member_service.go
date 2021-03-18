@@ -424,6 +424,30 @@ func (s *memberService) UpdateLevel(_ context.Context, r *proto.UpdateLevelReque
 	return s.result(err), nil
 }
 
+
+func (s *memberService) ReviewLevelUpRequest(_ context.Context, r *proto.LevelUpReviewRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
+	var err error
+	if m == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		err = m.ReviewLevelUp(int(r.RequestId),r.ReviewPass)
+	}
+	return s.result(err), nil
+}
+
+func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelUpConfirmRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
+	var err error
+	if m == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		err = m.ConfirmLevelUp(int(r.RequestId))
+	}
+	return s.result(err), nil
+}
+
+
 // 上传会员头像
 func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)

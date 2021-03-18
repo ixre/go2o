@@ -123,7 +123,7 @@ type IMemberRepo interface {
 	GetLevelValueByExp(mchId int64, exp int64) int
 
 	// 获取会员升级记录
-	GetLevelUpLog(id int32) *LevelUpLog
+	GetLevelUpLog(id int) *LevelUpLog
 
 	// 保存会员升级记录
 	SaveLevelUpLog(l *LevelUpLog) (int32, error)
