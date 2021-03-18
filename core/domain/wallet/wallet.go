@@ -350,7 +350,7 @@ func (w *WalletImpl) Income(value int, tradeFee int, title, outerNo string) erro
 	return err
 }
 
-func (w *WalletImpl) Charge(value int, by int, title, outerNo string,remark string, oprUid int, oprName string) error {
+func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, oprUid int, oprName string) error {
 	needOprUid := by == wallet.CServiceAgentCharge
 	err := w.checkValueOpu(value, needOprUid, oprUid, oprName)
 	if err == nil {

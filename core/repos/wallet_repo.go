@@ -24,9 +24,12 @@ type WalletRepoImpl struct {
 	_conn db.Connector
 }
 
-func (w *WalletRepoImpl) CreateWallet(userId int64, walletType int, walletName string, flag int) wallet.IWallet {
+func (w *WalletRepoImpl) CreateWallet(userId int64,
+	userName string, walletType int,
+	walletName string, flag int) wallet.IWallet {
 	return w.createWallet1(&wallet.Wallet{
 		UserId:     userId,
+		UserName:   userName,
 		WalletType: walletType,
 		WalletName: walletName,
 		WalletFlag: flag,

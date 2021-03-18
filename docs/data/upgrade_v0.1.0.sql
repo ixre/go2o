@@ -1508,6 +1508,11 @@ CREATE TABLE wal_wallet (
 )
   comment ='钱包';
 
+ALTER TABLE public.wal_wallet
+    ADD COLUMN user_name character varying(20) NOT NULL DEFAULT '' ;
+COMMENT ON COLUMN public.wal_wallet.user_name
+    IS '用户名';
+
 CREATE TABLE wal_wallet_log (
   id            int(11)      NOT NULL AUTO_INCREMENT
   comment '编号',

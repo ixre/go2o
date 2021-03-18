@@ -8,12 +8,14 @@ import "global.proto";
 message CreateWalletRequest {
     // 用户编号
     int64 UserId = 1;
+    // 用户名
+    string UserName = 2;
+    // 钱包类型
+    int32 walletType = 3;
     // 钱包名称
     string WalletName = 4;
-    // 钱包类型
-    int32 walletType = 2;
     // 钱包标志
-    int32 WalletFlag = 3;
+    int32 WalletFlag = 5;
 }
 
 message GetWalletRequest {
@@ -254,36 +256,38 @@ message SWallet {
     sint32 NodeId = 3;
     /** 用户编号 */
     sint64 UserId = 4;
+    /** 用户名 */
+    string UserName = 5;
     // 钱包名称
-    string WalletName = 5;
+    string WalletName = 6;
     /** 钱包类型 */
-    sint32 WalletType = 6;
+    sint32 WalletType = 7;
     /** 钱包标志 */
-    sint32 WalletFlag = 7;
+    sint32 WalletFlag = 8;
     /** 余额 */
-    sint32 Balance = 8;
+    sint32 Balance = 9;
     /** 赠送余额 */
-    sint32 PresentBalance = 9;
+    sint32 PresentBalance = 10;
     /** 调整金额 */
-    sint32 AdjustAmount = 10;
+    sint32 AdjustAmount = 11;
     /** 冻结余额 */
-    sint32 FreezeAmount = 11;
+    sint32 FreezeAmount = 12;
     /** 结余金额 */
-    sint32 LatestAmount = 12;
+    sint32 LatestAmount = 13;
     /** 失效账户余额 */
-    sint32 ExpiredAmount = 13;
+    sint32 ExpiredAmount = 14;
     /** 总充值金额 */
-    sint32 TotalCharge = 14;
+    sint32 TotalCharge = 15;
     /** 累计赠送金额 */
-    sint32 TotalPresent = 15;
+    sint32 TotalPresent = 16;
     /** 总支付额 */
-    sint32 TotalPay = 16;
+    sint32 TotalPay = 17;
     /** 状态 */
-    sint32 State = 17;
+    sint32 State = 18;
     /** 创建时间 */
-    sint64 CreateTime = 18;
+    sint64 CreateTime = 19;
     /** 更新时间 */
-    sint64 UpdateTime = 19;
+    sint64 UpdateTime = 20;
 }
 
 /** 钱包日志 */

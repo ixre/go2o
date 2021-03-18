@@ -62,7 +62,10 @@ func NewAccount(m *memberImpl, value *member.Account,
 
 func (a *accountImpl) createWallet() {
 	flag := wallet.FlagCharge | wallet.FlagDiscount
-	a.wallet = a.walletRepo.CreateWallet(a.member.GetAggregateRootId(), 1, "MemberWallet", flag)
+	a.wallet = a.walletRepo.CreateWallet(
+		a.member.GetAggregateRootId(),
+		a.member.value.User,
+		1, "MemberWallet", flag)
 	a.wallet.Save()
 	// 绑定钱包
 	a.value.WalletCode = a.wallet.Get().HashCode
@@ -454,7 +457,7 @@ func (a *accountImpl) chargeWallet(title string, amount int, outerNo string, rem
 		title = "钱包账户入账"
 	}
 	err := a.wallet.Charge(amount, member.KindCharge,
-		title, outerNo,remark, 1, "")
+		title, outerNo, remark, 1, "")
 	if err == nil {
 		a.value.TotalWalletAmount += float32(amount) / 100
 		err = a.asyncWallet()

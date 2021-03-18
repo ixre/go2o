@@ -21,7 +21,9 @@ type walletServiceImpl struct {
 }
 
 func (w *walletServiceImpl) CreateWallet(_ context.Context, r *proto.CreateWalletRequest) (*proto.Result, error) {
-	iw := w._repo.CreateWallet(r.UserId, int(r.WalletType), r.WalletName, int(r.WalletFlag))
+	iw := w._repo.CreateWallet(r.UserId,
+		r.UserName,
+		int(r.WalletType), r.WalletName, int(r.WalletFlag))
 	_, err := iw.Save()
 	return w.result(err), nil
 }
@@ -106,7 +108,7 @@ func (w *walletServiceImpl) Charge(_ context.Context, r *proto.ChargeRequest) (r
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
 		err = iw.Charge(int(r.Value), int(r.By), r.Title,
-			r.OuterNo, r.Remark,int(r.OprUid), r.OprName)
+			r.OuterNo, r.Remark, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }
@@ -181,6 +183,7 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 		HashCode:       v.HashCode,
 		NodeId:         int32(v.NodeId),
 		UserId:         v.UserId,
+		UserName:       v.UserName,
 		WalletType:     int32(v.WalletType),
 		WalletFlag:     int32(v.WalletFlag),
 		WalletName:     v.WalletName,

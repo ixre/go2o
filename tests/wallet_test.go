@@ -14,7 +14,7 @@ func TestCreateWallet(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	if wlt == nil {
-		wlt = repo.CreateWallet(1, wallet.TMerchant, "商户钱包", wallet.FlagCharge|wallet.FlagDiscount)
+		wlt = repo.CreateWallet(1, "", wallet.TMerchant, "商户钱包", wallet.FlagCharge|wallet.FlagDiscount)
 	}
 	id, err := wlt.Save()
 	if err != nil {
@@ -29,12 +29,14 @@ func TestChargeWallet(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	totalCharge := wlt.Get().TotalCharge
-	err := wlt.Charge(100000, wallet.CServiceAgentCharge, "客服充值", "1234", 1, "洛洛")
+	err := wlt.Charge(100000, wallet.CServiceAgentCharge,
+		"客服充值", "", "1234", 1, "洛洛")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = wlt.Charge(50000, wallet.CUserCharge, "用户充值", "-", 0, "洛洛")
+	err = wlt.Charge(50000, wallet.CUserCharge,
+		"用户充值", "-", "", 0, "洛洛")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -103,12 +105,14 @@ func TestAdjustWallet(t *testing.T) {
 	repo := ti.Factory.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	adjust := wlt.Get().AdjustAmount
-	err := wlt.Adjust(1000, "客服调整", "", 2, "TOM")
+	err := wlt.Adjust(1000, "客服调整",
+		"-", "", 2, "TOM")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = wlt.Adjust(-1000, "客服取消调整", "", 2, "TOM")
+	err = wlt.Adjust(-1000, "客服取消调整",
+		"-", "", 2, "TOM")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

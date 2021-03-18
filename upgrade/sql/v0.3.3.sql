@@ -114,3 +114,9 @@ COMMENT ON COLUMN public.mm_member.email
 
 COMMENT ON TABLE public.mm_level
   IS '会员等级';
+
+ALTER TABLE public.wal_wallet
+    ADD COLUMN user_name character varying(20) NOT NULL DEFAULT '';
+
+COMMENT ON COLUMN public.wal_wallet.user_name
+    IS '用户名';

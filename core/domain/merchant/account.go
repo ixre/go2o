@@ -154,6 +154,7 @@ func (a *accountImpl) getWallet() wallet.IWallet {
 	iw := a.walletRepo.GetWalletByUserId(a.GetValue().MchId, wallet.TMerchant)
 	if iw == nil {
 		iw = a.walletRepo.CreateWallet(a.GetValue().MchId,
+			a.mchImpl._value.LoginUser,
 			wallet.TMerchant,
 			"MchWallet",
 			wallet.FlagCharge|wallet.FlagDiscount)
