@@ -12,9 +12,6 @@ service RbacService {
     rpc GetJwtToken(Empty)returns(String){}
     // 获取用户的信息
     rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse){}
-
-
-
     // 获取资源树形数据
     rpc QueryResList (QueryPermResRequest) returns (QueryPermResResponse) {
     }
