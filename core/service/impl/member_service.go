@@ -318,24 +318,21 @@ func (s *memberService) GetHighestLevel() member.Level {
 
 func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogRequest) (*proto.WalletLogResponse, error) {
 	m := s.repo.GetMember(r.MemberId)
-	v := m.GetAccount().GetWalletLog(int32(r.LogId))
-	if v != nil {
-		return &proto.WalletLogResponse{
-			LogId:       v.Id,
-			MemberId:    v.MemberId,
-			OuterNo:     v.OuterNo,
-			Kind:        int32(v.Kind),
-			Title:       v.Title,
-			Amount:      float64(v.Amount),
-			CsnFee:      float64(v.CsnFee),
-			ReviewState: v.ReviewState,
-			Remark:      v.Remark,
-			CreateTime:  v.CreateTime,
-			UpdateTime:  v.UpdateTime,
-			RelateUser:  v.RelateUser,
-		}, nil
-	}
-	return &proto.WalletLogResponse{}, nil
+	v := m.GetAccount().GetWalletLog(r.LogId)
+	return &proto.WalletLogResponse{
+		LogId:       v.Id,
+		MemberId:    r.MemberId,
+		OuterNo:     v.OuterNo,
+		Kind:        int32(v.Kind),
+		Title:       v.Title,
+		Amount:      float64(v.Value),
+		CsnFee:      float64(v.TradeFee),
+		ReviewState: int32(v.ReviewState),
+		Remark:      v.Remark,
+		CreateTime:  v.CreateTime,
+		UpdateTime:  v.UpdateTime,
+		RelateUser:  int64(v.OprUid),
+	}, nil
 }
 
 func (s *memberService) getMember(memberId int64) (

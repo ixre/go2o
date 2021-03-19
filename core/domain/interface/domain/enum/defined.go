@@ -33,7 +33,7 @@ const (
 var ReviewTextMap = map[int32]string{
 	ReviewNotSet:   "未提交",
 	ReviewAwaiting: "待审核",
-	ReviewReject:   "审核不通过",
+	ReviewReject:   "审核未通过",
 	ReviewPass:     "审核通过",
 	ReviewConfirm:  "已确认",
 	ReviewAbort:    "已取消",

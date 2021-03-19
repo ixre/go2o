@@ -143,7 +143,7 @@ type (
 		UnfreezesIntegral(title string, value int) error
 
 		// 获取钱包账户日志
-		GetWalletLog(id int32) *WalletAccountLog
+		GetWalletLog(id int64) wallet.WalletLog
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
 		RequestWithdrawal(takeKind int, title string, amount int,

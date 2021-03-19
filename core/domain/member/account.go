@@ -15,7 +15,6 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/wallet"
-	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/msq"
@@ -534,12 +533,8 @@ func (a *accountImpl) asyncWallet() error {
 }
 
 // 根据编号获取余额变动信息
-func (a *accountImpl) GetWalletLog(id int32) *member.WalletAccountLog {
-	e := member.WalletAccountLog{}
-	if tmp.Orm.Get(id, &e) == nil {
-		return &e
-	}
-	return nil
+func (a *accountImpl) GetWalletLog(id int64) wallet.WalletLog {
+	return a.wallet.GetLog(id)
 }
 
 // 冻结余额

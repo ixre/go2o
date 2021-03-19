@@ -442,7 +442,7 @@ func (m *SStore) GetSortNum() int32 {
 // 检查店铺结果
 type CheckShopResponse struct {
 	ShopId int64 `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId"`
-	// 店铺开通状态,0:未开通 1:已开通 2:待审核 3:审核不通过
+	// 店铺开通状态,0:未开通 1:已开通 2:待审核 3:审核未通过
 	Status               int32    `protobuf:"varint,2,opt,name=Status,proto3" json:"Status"`
 	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
