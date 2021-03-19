@@ -394,7 +394,7 @@ func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, oprUid i
 		}
 		if !(kind == wallet.KPaymentOrderRefund ||
 			kind == wallet.KTransferRefund ||
-			kind == wallet.KTakeOutRefund) {
+			kind == wallet.KWithdrawRefund) {
 			panic("not support refund kind")
 		}
 		switch kind {
@@ -478,8 +478,8 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	if amount < 0 {
 		amount = -amount
 	}
-	if kind != wallet.KTakeOutToBankCard &&
-		kind != wallet.KTakeOutToThirdPart && kind < 20 {
+	if kind != wallet.KWithdrawToBankCard &&
+		kind != wallet.KWithdrawToThirdPart && kind < 20 {
 		return 0, "", wallet.ErrNotSupportTakeOutBusinessKind
 	}
 	// 判断是否暂停提现
@@ -532,7 +532,7 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 	} else {
 		l.ReviewRemark = remark
 		l.ReviewState = wallet.ReviewReject
-		err := w.Refund(-(l.TradeFee + l.Value), wallet.KTakeOutRefund, "提现退回",
+		err := w.Refund(-(l.TradeFee + l.Value), wallet.KWithdrawRefund, "提现退回",
 			l.OuterNo, 0, "")
 		if err != nil {
 			return err

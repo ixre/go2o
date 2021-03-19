@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -1268,14 +1269,17 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	kind := member.KindWalletTakeOutToThirdPart
-	title := "充值到第三方账户"
-	if r.DrawToBank {
-		kind = member.KindWalletTakeOutToBankCard
+	title := ""
+	switch int(r.WithdrawKind) {
+	case wallet.KWithdrawToThirdPart:
+		title = "充值到第三方账户"
+	case wallet.KWithdrawToBankCard:
 		title = "提现到银行卡"
+	case wallet.KWithdrawExchange:
+		title = "提现到余额"
 	}
 	acc := m.GetAccount()
-	_, tradeNo, err := acc.RequestWithdrawal(kind, title,
+	_, tradeNo, err := acc.RequestWithdrawal(int(r.WithdrawKind), title,
 		int(r.Amount), int(r.TradeFee), r.AccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
@@ -1290,7 +1294,7 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogsResponse, error) {
 	//todo: 这里只返回了一条
 	latestApplyInfo := s.query.GetLatestWalletLogByKind(r.MemberId,
-		member.KindWalletTakeOutToBankCard)
+		wallet.KWithdrawToBankCard)
 	//if latestApplyInfo != nil {
 	//	var sText string
 	//	switch latestApplyInfo.ReviewState {

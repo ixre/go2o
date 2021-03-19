@@ -130,7 +130,7 @@ func TestTakeOutWalletFail(t *testing.T) {
 	var amount = 10000
 	balance := wlt.Get().Balance
 	id, _, err := wlt.RequestWithdrawal(-amount, 200,
-		wallet.KTakeOutToBankCard, "提现到银行卡",
+		wallet.KWithdrawToBankCard, "提现到银行卡",
 		"6226220285888888", "", "")
 	if err != nil {
 		t.Error(err)
@@ -158,7 +158,7 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 	var amount = 10000
 	balance := wlt.Get().Balance
 	id, _, err := wlt.RequestWithdrawal(-amount, 200,
-		wallet.KTakeOutToBankCard, "提现到银行卡",
+		wallet.KWithdrawToBankCard, "提现到银行卡",
 		"", "", "")
 	if err != nil {
 		t.Error(err)

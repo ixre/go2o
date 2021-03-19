@@ -786,9 +786,9 @@ func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	amount int, tradeFee int, accountNo string) (int64, string, error) {
-	if takeKind != member.KindWalletTakeOutToBalance &&
-		takeKind != member.KindWalletTakeOutToBankCard &&
-		takeKind != member.KindWalletTakeOutToThirdPart {
+	if takeKind != wallet.KWithdrawExchange &&
+		takeKind != wallet.KWithdrawToBankCard &&
+		takeKind != wallet.KWithdrawToThirdPart {
 		return 0, "", member.ErrNotSupportTakeOutBusinessKind
 	}
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -842,7 +842,7 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	// 检测银行卡
 	accountName := ""
 	bankName := ""
-	if takeKind == member.KindWalletTakeOutToBankCard {
+	if takeKind == wallet.KWithdrawToBankCard {
 		if len(accountNo) == 0 {
 			return 0, "", errors.New("未指定提现的银行卡号")
 		}

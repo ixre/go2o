@@ -535,8 +535,8 @@ message WithdrawRequest {
   int32 Amount = 2;
   // 手续费
   int32 TradeFee = 3;
-  // 提现方式,1:银行卡 2:第三方钱包
-  bool DrawToBank = 4;
+  // 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
+  int32 WithdrawKind = 4;
   // 银行账号或第三方支付钱包
   string AccountNo = 5;
 }

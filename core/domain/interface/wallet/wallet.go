@@ -91,14 +91,16 @@ const (
 	// 转账退款
 	KTransferRefund = 11
 	// 提现退还到银行卡
-	KTakeOutRefund = 12
+	KWithdrawRefund = 12
 	// 支付单退款
 	KPaymentOrderRefund = 13
 
+	// 提现并兑换到余额
+	KWithdrawExchange int = 21
 	// 提现到银行卡(人工提现)
-	KTakeOutToBankCard = 14
+	KWithdrawToBankCard = 22
 	// 提现到第三方
-	KTakeOutToThirdPart = 15
+	KWithdrawToThirdPart = 23
 )
 
 var (
