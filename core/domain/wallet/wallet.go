@@ -524,7 +524,7 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 		return wallet.ErrNoSuchTakeOutLog
 	}
 	if l.ReviewState != wallet.ReviewAwaiting {
-		return wallet.ErrTakeOutState
+		return wallet.ErrWithdrawState
 	}
 	l.ReviewTime = time.Now().Unix()
 	if pass {
@@ -550,7 +550,7 @@ func (w *WalletImpl) FinishWithdrawal(takeId int64, outerNo string) error {
 		return wallet.ErrNoSuchTakeOutLog
 	}
 	if l.ReviewState != wallet.ReviewPass {
-		return wallet.ErrTakeOutState
+		return wallet.ErrWithdrawState
 	}
 	l.OuterNo = outerNo
 	l.ReviewState = wallet.ReviewConfirm

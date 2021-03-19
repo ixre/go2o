@@ -119,7 +119,7 @@ var (
 	ErrLessThanMinTakeAmount         = domain.NewError("err_wallet_less_than_min_take_amount", "低于最低提现金额")
 	ErrMoreThanMinTakeAmount         = domain.NewError("err_wallet_more_than_min_take_amount", "超过最大提现金额")
 	ErrNoSuchTakeOutLog              = domain.NewError("err_wallet_no_such_take_out_log", "提现记录不存在")
-	ErrTakeOutState                  = domain.NewError("err_wallet_member_take_out_state", "提现申请状态错误")
+	ErrWithdrawState                 = domain.NewError("err_wallet_member_take_out_state", "提现申请状态错误")
 )
 
 type (
