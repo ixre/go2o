@@ -17,6 +17,7 @@ type rbacDaoImpl struct {
 	_orm orm.Orm
 }
 
+
 var rbacDaoImplMapped = false
 
 // Create new PermDeptDao
@@ -437,6 +438,15 @@ func (p *rbacDaoImpl) SelectPermRes(where string, v ...interface{}) []*model.Per
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
 	}
 	return list
+}
+
+
+func (p *rbacDaoImpl) GetMaxResourceSortNum(parentId int) int {
+	var i int
+	p._orm.Connector().ExecScalar(
+		`SELECT MAX(sort_num) FROM perm_res
+ 		  WHERE pid = $1`, &i, parentId)
+	return i
 }
 
 // Save PermRes
