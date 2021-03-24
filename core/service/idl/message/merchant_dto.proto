@@ -33,7 +33,7 @@ message SMerchant {
     /** 是否启用 */
     sint32 Enabled = 14;
     /** 最后登录时间 */
-    sint32 LastLoginTime = 15;
+    int64 LastLoginTime = 15;
 }
 
 // 商家

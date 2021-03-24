@@ -225,7 +225,7 @@ func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerch
 		} else if len(r.Password) != 32 {
 			err = de.ErrNotMD5Format
 		} else {
-			err = mch.ProfileManager().ModifyPassword(r.Origin, r.Password)
+			err = mch.ProfileManager().ModifyPassword(r.Password, r.Origin)
 		}
 	}
 	return m.error(err), nil
@@ -862,7 +862,7 @@ func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto
 		City:          src.City,
 		District:      src.District,
 		Enabled:       src.Enabled,
-		LastLoginTime: int32(src.LastLoginTime),
+		LastLoginTime: src.LastLoginTime,
 	}
 }
 

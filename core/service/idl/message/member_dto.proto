@@ -273,9 +273,9 @@ message SMember {
   /* 用户会员密钥 */
   string DynamicToken = 20;
   /** 注册时间 */
-  sint64 RegTime = 21;
+  int64 RegTime = 21;
   /** 最后登录时间 */
-  sint64 LastLoginTime = 22;
+  int64 LastLoginTime = 22;
 }
 
 /** 资料 */
