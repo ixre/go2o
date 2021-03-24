@@ -170,7 +170,7 @@ func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context, r *proto.MoveResOrdi
 	if r.Direction == 0 { // 向上移,获取上一个
 		swapRes = p.dao.GetPermResBy(
 			`sort_num < $1 AND pid = $2 AND depth=$3 ORDER BY sort_num DESC`,
-			res.SortNum, res.Pid, res.Depth, res.ResType)
+			res.SortNum, res.Pid, res.Depth)
 	} else {
 		swapRes = p.dao.GetPermResBy(
 			`sort_num > $1 AND pid = $2 AND depth=$3 ORDER BY sort_num ASC`,

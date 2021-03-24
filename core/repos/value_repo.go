@@ -201,6 +201,7 @@ func (r *valueRepo) DeleteValue(key string) error {
 // 获取微信接口配置
 func (r *valueRepo) GetWxApiConfig() valueobject.WxApiConfig {
 	r.checkReload()
+	defer recover()
 	if r.wxConf == nil {
 		r.wxConf = &valueobject.WxApiConfig{}
 		r.wxGob.Unmarshal(r.wxConf)

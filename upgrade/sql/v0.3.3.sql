@@ -120,3 +120,12 @@ ALTER TABLE public.wal_wallet
 
 COMMENT ON COLUMN public.wal_wallet.user_name
     IS '用户名';
+
+COMMENT ON COLUMN public.mch_merchant.id
+    IS '编号';
+
+COMMENT ON COLUMN public.mch_sign_up.submit_time
+    IS '申请时间';
+
+COMMENT ON COLUMN public.mch_sign_up.update_time
+    IS '更新时间';
