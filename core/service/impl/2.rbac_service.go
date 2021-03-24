@@ -169,14 +169,12 @@ func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context, r *proto.MoveResOrdi
 	var swapRes *model.PermRes
 	if r.Direction == 0 { // 向上移,获取上一个
 		swapRes = p.dao.GetPermResBy(
-			`sort_num < $1 AND pid = $2 AND depth=$3 
-			AND res_type=$4 ORDER BY sort_num DESC`,
+			`sort_num < $1 AND pid = $2 AND depth=$3 ORDER BY sort_num DESC`,
 			res.SortNum, res.Pid, res.Depth, res.ResType)
 	} else {
 		swapRes = p.dao.GetPermResBy(
-			`sort_num > $1 AND pid = $2 AND depth=$3 
-			AND res_type=$4 ORDER BY sort_num ASC`,
-			res.SortNum, res.Pid, res.Depth, res.ResType)
+			`sort_num > $1 AND pid = $2 AND depth=$3 ORDER BY sort_num ASC`,
+			res.SortNum, res.Pid, res.Depth)
 	}
 	// 交换顺序
 	if swapRes != nil {
@@ -723,7 +721,8 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	dst.IsHidden = int16(types.IntCond(r.IsHidden, 1, 0))
 	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
-	if dst.SortNum <= 0{
+	// 如果未设置排列序号,或者更改了上级,则需系统自动编号
+	if dst.SortNum <= 0 || parentChanged{
 		dst.SortNum = p.dao.GetMaxResourceSortNum(int(dst.Pid)) + 1
 	}
 	id, err := p.dao.SavePermRes(dst)
