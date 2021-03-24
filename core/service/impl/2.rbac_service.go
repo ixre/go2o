@@ -686,6 +686,29 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 			r.Key = strings.Replace(r.Path, "/", ":", -1)
 		}
 	}
+	if r.Pid > 0 {
+		// 检测上级是否为自己
+		if dst.Id == r.Pid {
+			return &proto.SavePermResResponse{
+				ErrCode: 2,
+				ErrMsg:  "不能将自己指定为上级资源",
+			}, nil
+		}
+		// 检测上级是否为下级
+		if dst.Id > 0 {
+			var parent *model.PermRes = p.dao.GetPermRes(r.Pid)
+			for parent != nil && parent.Pid > 0 {
+				parent = p.dao.GetPermRes(parent.Pid)
+				if parent != nil && parent.Id == r.Id {
+					return &proto.SavePermResResponse{
+						ErrCode: 2,
+						ErrMsg:  "不能选择下级作为上级资源",
+					}, nil
+				}
+			}
+		}
+	}
+
 	// 上级是否改变
 	var parentChanged = dst.Pid != r.Pid || (r.Pid != 0 && dst.Depth == 0)
 	dst.Name = r.Name
