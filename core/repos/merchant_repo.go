@@ -182,6 +182,15 @@ func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 	return row > 0
 }
 
+// 验证会员是否绑定商户
+func (m *merchantRepo) CheckMemberBind(memberId int64) bool {
+	var row int
+	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_merchant
+		WHERE member_id = $1`,
+		&row, memberId)
+	return row > 0
+}
+
 // 保存
 func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int, error) {
 	id, err := orm.I64(orm.Save(m.o, v, int(v.Id)))

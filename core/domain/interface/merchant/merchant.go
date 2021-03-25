@@ -244,7 +244,7 @@ type (
 		Name string `db:"name"`
 		// 公司名称
 		CompanyName string `db:"company_name"`
-		// 是否字营
+		// 是否自营
 		SelfSales int16 `db:"self_sales"`
 		// 商户等级
 		Level int `db:"level"`

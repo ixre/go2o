@@ -24,7 +24,6 @@ import (
 	"go2o/core/query"
 	"go2o/core/service/parser"
 	"go2o/core/service/proto"
-	"strconv"
 	"strings"
 )
 
@@ -418,7 +417,7 @@ func (m *merchantService) GetAllTradeConf_(_ context.Context, i *proto.Int64) (*
 	}, nil
 }
 
-func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCreateRequest) (*proto.Result, error) {
+func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCreateRequest) (*proto.MerchantCreateResponse, error) {
 	mch := r.Mch
 	v := &merchant.Merchant{
 		LoginUser:   mch.LoginUser,
@@ -432,6 +431,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 		Province:    0,
 		City:        0,
 		District:    0,
+		ExpiresTime: r.ExpiresTime,
 	}
 	im := m._mchRepo.CreateMerchant(v)
 	err := im.SetValue(v)
@@ -451,12 +451,14 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 			_, err = im.ShopManager().CreateOnlineShop(&o)
 		}
 	}
+	rsp := &proto.MerchantCreateResponse{}
 	if err == nil {
-		return m.success(map[string]string{
-			"mch_id": strconv.Itoa(int(im.GetAggregateRootId())),
-		}), nil
+		rsp.Id = im.GetAggregateRootId()
+	} else {
+		rsp.ErrCode = 1
+		rsp.ErrMsg = err.Error()
 	}
-	return m.result(err), nil
+	return rsp, nil
 }
 
 func (m *merchantService) GetTradeConf(_ context.Context, r *proto.TradeConfRequest) (*proto.STradeConf_, error) {
@@ -558,28 +560,22 @@ func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*prot
 	return nil, nil
 }
 
-func (m *merchantService) SaveMerchant(mchId int64, v *merchant.Merchant) (int64, error) {
-	var mch merchant.IMerchant
-	var err error
-	var isCreate bool
-	v.Id = mchId
-	if mchId > 0 {
-		mch = m._mchRepo.GetMerchant(int(mchId))
-	} else {
-		isCreate = true
-		mch = m._mchRepo.CreateMerchant(v)
-	}
+func (m *merchantService) SaveMerchant(_ context.Context, r *proto.SaveMerchantRequest) (*proto.Result, error) {
+	mch := m._mchRepo.GetMerchant(int(r.Id))
 	if mch == nil {
-		return 0, merchant.ErrNoSuchMerchant
+		return m.error(merchant.ErrNoSuchMerchant), nil
 	}
-	err = mch.SetValue(v)
+	v := mch.GetValue()
+	v.Name = r.Name
+	v.ExpiresTime = r.ExpiresTime
+	v.SelfSales = int16(r.SelfSales)
+	v.Logo = r.Logo
+	v.Level = int(r.Level)
+	err := mch.SetValue(&v)
 	if err == nil {
-		mchId, err = mch.Save()
-		if isCreate {
-			m.initializeMerchant(mchId)
-		}
+		_, err = mch.Save()
 	}
-	return mchId, err
+	return m.result(err), nil
 }
 
 func (m *merchantService) initializeMerchant(mchId int64) {
@@ -849,7 +845,7 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.SMerchant {
 	return &proto.SMerchant{
-		Id:            src.Id,
+		Id:            int64(src.Id),
 		MemberId:      src.MemberId,
 		LoginUser:     src.Usr,
 		LoginPwd:      src.Pwd,
@@ -862,6 +858,7 @@ func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto
 		City:          src.City,
 		District:      src.District,
 		Enabled:       src.Enabled,
+		ExpiresTime:   src.ExpiresTime,
 		LastLoginTime: src.LastLoginTime,
 	}
 }

@@ -81,7 +81,7 @@ type IRbacDao interface {
 	// Select PermRes
 	SelectPermRes(where string, v ...interface{}) []*model.PermRes
 	// 获取最大的排列序号
-	GetMaxResourceSortNum(parentId int)int
+	GetMaxResourceSortNum(parentId int) int
 	// Save PermRes
 	SavePermRes(v *model.PermRes) (int, error)
 	// Delete PermRes

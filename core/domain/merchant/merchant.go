@@ -352,6 +352,11 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 	if v.LoginPwd != "" {
 		tv.LoginPwd = v.LoginPwd
 	}
+	if m.GetAggregateRootId() <= 0 {
+		m._value.MemberId = v.MemberId
+	}
+	tv.SelfSales = v.SelfSales
+	tv.ExpiresTime = v.ExpiresTime
 	tv.UpdateTime = time.Now().Unix()
 	return nil
 }
@@ -360,7 +365,7 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 func (m *merchantImpl) Save() (int64, error) {
 	id := m.GetAggregateRootId()
 	if id > 0 {
-		m.checkSelfSales()
+		//m.checkSelfSales() //todo: 平台可能有多个自营店铺
 		id, err := m._repo.SaveMerchant(m._value)
 		return int64(id), err
 	}
@@ -378,7 +383,7 @@ func (m *merchantImpl) checkSelfSales() bool {
 			return true
 		}
 	} else if m.GetAggregateRootId() != 1 {
-		//为自营,但ID不为0,异常数据
+		//为自营,但ID不为1,异常数据
 		m._value.SelfSales = 0
 		m._value.Enabled = 0
 		return true
@@ -467,7 +472,7 @@ func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 
 // 创建商户
 func (m *merchantImpl) createMerchant() (int64, error) {
-	m.checkSelfSales()
+	//m.checkSelfSales()
 	unix := time.Now().Unix()
 	m._value.ExpiresTime = unix + 3600*24*365
 	m._value.UpdateTime = unix
@@ -482,6 +487,11 @@ func (m *merchantImpl) createMerchant() (int64, error) {
 		}
 		if m._repo.CheckUserExists(m._value.LoginUser, 0) {
 			return 0, merchant.ErrMerchantUserExists
+		}
+	}
+	if m._value.MemberId > 0 {
+		if m._repo.CheckMemberBind(m._value.MemberId) {
+			return 0, merchant.ErrExistMember
 		}
 	}
 	id, err := m._repo.SaveMerchant(m._value)

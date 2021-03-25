@@ -722,7 +722,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
 	// 如果未设置排列序号,或者更改了上级,则需系统自动编号
-	if dst.SortNum <= 0 || parentChanged{
+	if dst.SortNum <= 0 || parentChanged {
 		dst.SortNum = p.dao.GetMaxResourceSortNum(int(dst.Pid)) + 1
 	}
 	id, err := p.dao.SavePermRes(dst)

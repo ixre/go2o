@@ -17,7 +17,6 @@ type rbacDaoImpl struct {
 	_orm orm.Orm
 }
 
-
 var rbacDaoImplMapped = false
 
 // Create new PermDeptDao
@@ -439,7 +438,6 @@ func (p *rbacDaoImpl) SelectPermRes(where string, v ...interface{}) []*model.Per
 	}
 	return list
 }
-
 
 func (p *rbacDaoImpl) GetMaxResourceSortNum(parentId int) int {
 	var i int

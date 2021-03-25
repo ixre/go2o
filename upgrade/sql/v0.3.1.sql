@@ -212,7 +212,7 @@ COMMENT ON COLUMN "public".mch_merchant.login_user IS '登录用户';
 COMMENT ON COLUMN "public".mch_merchant.login_pwd IS '登录密码';
 COMMENT ON COLUMN "public".mch_merchant.name IS '名称';
 COMMENT ON COLUMN "public".mch_merchant.company_name IS '公司名称';
-COMMENT ON COLUMN "public".mch_merchant.self_sales IS '是否字营';
+COMMENT ON COLUMN "public".mch_merchant.self_sales IS '是否自营';
 COMMENT ON COLUMN "public".mch_merchant.level IS '商户等级';
 COMMENT ON COLUMN "public".mch_merchant.logo IS '标志';
 COMMENT ON COLUMN "public".mch_merchant.province IS '省';
