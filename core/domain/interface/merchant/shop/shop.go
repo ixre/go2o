@@ -119,6 +119,7 @@ var (
 
 type (
 	IShop interface {
+		// 获取编号
 		GetDomainId() int
 		// 商店类型
 		Type() int32
@@ -147,6 +148,10 @@ type (
 		SetShopValue(*OnlineShop) error
 		// 获取值
 		GetShopValue() OnlineShop
+		// 获取分配的域名
+		GetLocateDomain()string
+		// 绑定自定义域名
+		BindDomain(domain string)error
 	}
 
 	// 线下商店

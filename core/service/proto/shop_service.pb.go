@@ -634,7 +634,7 @@ func NewShopServiceClient(cc *grpc.ClientConn) ShopServiceClient {
 
 func (c *shopServiceClient) GetShop(ctx context.Context, in *ShopId, opts ...grpc.CallOption) (*SShop, error) {
 	out := new(SShop)
-	err := c.cc.Invoke(ctx, "/ShopService/GetShop", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ShopService/GetStore", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -741,7 +741,7 @@ func _ShopService_GetShop_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ShopService/GetShop",
+		FullMethod: "/ShopService/GetStore",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ShopServiceServer).GetShop(ctx, req.(*ShopId))
@@ -880,7 +880,7 @@ var _ShopService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*ShopServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetShop",
+			MethodName: "GetStore",
 			Handler:    _ShopService_GetShop_Handler,
 		},
 		{
