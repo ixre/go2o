@@ -75,11 +75,11 @@ func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.ShopId) (*pr
 		iop := sp.(shop.IOnlineShop)
 		iv := iop.GetShopValue()
 		ret := si.parseShopDto(iv)
-		ret.ShopTitle = ret.Name
-		ret.Config.Host = iv.Host
-		ret.Config.Logo = iv.Logo
-		ret.Config.Alias = iv.Alias
-		ret.Config.Tel = iv.Tel
+		ret.ShopTitle = ret.ShopName
+		ret.Host = iv.Host
+		ret.Logo = iv.Logo
+		ret.Alias = iv.Alias
+		ret.Telephone = iv.Tel
 		return ret, nil
 	}
 	return nil, nil
@@ -233,7 +233,7 @@ func (si *shopServiceImpl) DeleteShop(mchId, shopId int32) error {
 func (si *shopServiceImpl) parse2OnlineShop(s *proto.SShop) (*shop.Shop, *shop.OnlineShop) {
 	sv := &shop.Shop{
 		Id:           s.Id,
-		Name:         s.Name,
+		Name:         s.ShopName,
 		VendorId:     s.MerchantId,
 		ShopType:     shop.TypeOnlineShop,
 		State:        s.State,
@@ -242,9 +242,9 @@ func (si *shopServiceImpl) parse2OnlineShop(s *proto.SShop) (*shop.Shop, *shop.O
 	ov := &shop.OnlineShop{}
 	ov.Id = s.Id
 	ov.Addr = "" //todo:???去调
-	ov.ShopName = s.Name
-	ov.Tel = s.Config.Tel
-	ov.Logo = s.Config.Logo
+	ov.ShopName = s.ShopName
+	ov.Tel = s.Telephone
+	ov.Logo = s.Logo
 	ov.ShopNotice = s.ShopNotice
 	ov.ShopTitle = s.ShopTitle
 	return sv, ov
@@ -276,11 +276,10 @@ func (si *shopServiceImpl) parseShopDto(v shop.OnlineShop) *proto.SShop {
 	return &proto.SShop{
 		Id:         v.Id,
 		MerchantId: v.VendorId,
-		Name:       v.ShopName,
+		ShopName:       v.ShopName,
 		ShopTitle:  v.ShopTitle,
 		ShopNotice: v.ShopNotice,
 		Flag:       int32(v.Flag),
-		Config:     &proto.SShopConfig{},
 		State:      int32(v.State),
 	}
 }

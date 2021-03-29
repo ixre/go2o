@@ -3,7 +3,6 @@ option go_package = ".;proto";
 option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
-import "message/shop_dto.proto";
 
 // 商店服务
 service ShopService {
@@ -42,4 +41,87 @@ message TurnShopRequest {
     sint64 shopId = 1;
     bool on = 2;
     string reason = 3;
+}
+
+
+// 店铺
+message SShop {
+    /** 店铺编号 */
+    int64 Id = 1;
+    /** 商户编号 */
+    int64 MerchantId = 2;
+    /** 店铺名称 */
+    string ShopName = 3;
+    // 店铺标题
+    string ShopTitle = 4;
+    // 店铺公告
+    string ShopNotice = 5;
+    // 标志
+    int32 Flag = 6;
+    /** 店铺标志 */
+    string Logo = 7;
+    /** 个性化域名 */
+    string Alias = 8;
+    /** 自定义 域名 */
+    string Host = 9;
+    /** 电话 */
+    string Telephone = 10;
+    /** 状态 */
+    int32 State = 11;
+}
+
+// 店铺设置
+message SShopConfig {
+    /** 店铺标志 */
+    string Logo = 4;
+    /** 自定义 域名 */
+    string Host = 5;
+    /** 个性化域名 */
+    string Alias = 6;
+    /** 电话 */
+    string Tel = 7;
+}
+
+// 店铺编号
+message ShopId {
+    int64 Value = 1;
+}
+// 门店编号
+message StoreId {
+    int64 Value = 1;
+}
+
+// 店铺
+message SStore {
+    sint64 Id = 1;
+    sint64 MerchantId = 2;
+    string Name = 3;
+    string Alias = 4;
+    sint32 State = 5;
+    sint32 OpeningState = 8;
+    string StorePhone = 9;
+    string StoreNotice = 11;
+    int32 Province = 12;
+    int32 City = 13;
+    int32 District = 14;
+    // 地区名称
+    string Address = 15;
+    // 详细地址
+    string DetailAddress = 16;
+    // 纬度
+    double Lat = 17;
+    // 经度
+    double Lng = 18;
+    // 覆盖范围(公里)
+    int32 CoverRadius = 19;
+    // 序号
+    int32 SortNum = 20;
+}
+
+// 检查店铺结果
+message CheckShopResponse {
+    int64 ShopId = 1;
+    // 店铺开通状态,0:未开通 1:已开通 2:待审核 3:审核未通过
+    int32 Status = 2;
+    string Remark = 3;
 }
