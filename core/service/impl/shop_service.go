@@ -202,12 +202,12 @@ func (si *shopServiceImpl) SaveShop(_ context.Context, s *proto.SShop) (*proto.R
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
-		_, v1 := si.parse2OnlineShop(s)
+		v1 := si.parse2OnlineShop(s)
 		mgr := mch.ShopManager()
 		sp := mgr.GetOnlineShop()
-		if sp == nil{
+		if sp == nil {
 			err = merchant.ErrNoSuchShop
-		}else {
+		} else {
 			ofs := sp.(shop.IOnlineShop)
 			err := ofs.SetShopValue(v1)
 			if err == nil {
@@ -226,24 +226,18 @@ func (si *shopServiceImpl) DeleteShop(mchId, shopId int32) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-func (si *shopServiceImpl) parse2OnlineShop(s *proto.SShop) (*shop.Shop, *shop.OnlineShop) {
-	sv := &shop.Shop{
-		Id:           s.Id,
-		Name:         s.ShopName,
-		VendorId:     s.MerchantId,
-		ShopType:     shop.TypeOnlineShop,
-		State:        s.State,
-		OpeningState: 1,
+func (si *shopServiceImpl) parse2OnlineShop(s *proto.SShop) *shop.OnlineShop {
+	return &shop.OnlineShop{
+		Id:         s.Id,
+		VendorId:   s.MerchantId,
+		ShopName:   s.ShopName,
+		Logo:       s.Logo,
+		Host:       s.Host,
+		Tel:        s.Telephone,
+		ShopTitle:  s.ShopTitle,
+		ShopNotice: s.ShopNotice,
+		State:      int16(s.State),
 	}
-	ov := &shop.OnlineShop{}
-	ov.Id = s.Id
-	ov.Addr = "" //todo:???去调
-	ov.ShopName = s.ShopName
-	ov.Tel = s.Telephone
-	ov.Logo = s.Logo
-	ov.ShopNotice = s.ShopNotice
-	ov.ShopTitle = s.ShopTitle
-	return sv, ov
 }
 
 func (si *shopServiceImpl) parseOfflineShop(r *proto.SStore) (*shop.Shop, *shop.OfflineShop) {
@@ -272,7 +266,7 @@ func (si *shopServiceImpl) parseShopDto(v shop.OnlineShop) *proto.SShop {
 	return &proto.SShop{
 		Id:         v.Id,
 		MerchantId: v.VendorId,
-		ShopName:       v.ShopName,
+		ShopName:   v.ShopName,
 		ShopTitle:  v.ShopTitle,
 		ShopNotice: v.ShopNotice,
 		Flag:       int32(v.Flag),

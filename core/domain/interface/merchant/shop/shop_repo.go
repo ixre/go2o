@@ -26,8 +26,6 @@ type (
 		ShopAliasExists(alias string, shopId int) bool
 		// 获取商店值
 		GetValueShop(shopId int64) *Shop
-		// 获取线上商店
-		GetOnlineShop(shopId int) *OnlineShop
 		// 获取线下商店
 		GetOfflineShop(shopId int) *OfflineShop
 

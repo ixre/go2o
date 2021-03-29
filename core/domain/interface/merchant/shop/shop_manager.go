@@ -27,8 +27,6 @@ type (
 		// 获取营业中的商店
 		GetBusinessInShops() []IShop
 
-
-
 		// 根据名称获取商店
 		GetShopByName(name string) IShop
 

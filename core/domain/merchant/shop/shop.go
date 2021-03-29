@@ -26,7 +26,6 @@ var (
 	shopAliasRegexp = regexp.MustCompile("^[A-Za-z0-9-]{3,11}$")
 )
 
-
 func NewShop(v *shop.OnlineShop, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShop {
 	return &onlineShopImpl{
@@ -40,16 +39,15 @@ var _ shop.IShop = new(onlineShopImpl)
 var _ shop.IOnlineShop = new(onlineShopImpl)
 
 type onlineShopImpl struct {
-	_shopVal *shop.OnlineShop
-	valRepo  valueobject.IValueRepo
-	shopRepo shop.IShopRepo
-	value        *shop.Shop
+	_shopVal     *shop.OnlineShop
+	valRepo      valueobject.IValueRepo
+	shopRepo     shop.IShopRepo
 	valueRepo    valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 }
 
 func (s *onlineShopImpl) GetDomainId() int {
-	return int(s.value.Id)
+	return int(s._shopVal.Id)
 }
 
 func (s *onlineShopImpl) check(v *shop.Shop) error {
@@ -66,7 +64,6 @@ func (s *onlineShopImpl) checkNameExists(v *shop.Shop) bool {
 		v.Name, v.Id)
 	return i > 0
 }
-
 
 func (s *onlineShopImpl) Type() int32 {
 	return shop.TypeOnlineShop
@@ -123,8 +120,8 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	v.Logo = strings.TrimSpace(v.Logo)
 	dst := s._shopVal
-	unix := time.Now().Unix()
 	if s.GetDomainId() <= 0 {
+		unix := time.Now().Unix()
 		if v.VendorId <= 0 {
 			panic("vendor id not right")
 		}
@@ -136,17 +133,16 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	if len(v.Logo) > 0 {
 		dst.Logo = v.Logo
 	}
-	if len(v.Host) > 0 {
-		dst.Host = v.Host
-	}
 	if len(v.Alias) > 0 && v.Alias != dst.Alias {
 		err = s.checkShopAlias(v.Alias)
 		if err == nil {
 			dst.Alias = v.Alias
 		}
 	}
+	dst.Host = v.Host
 	dst.Tel = v.Tel
 	dst.Addr = v.Addr
+	dst.State = v.State
 	dst.ShopTitle = v.ShopTitle
 	dst.ShopNotice = v.ShopNotice
 	return err
@@ -212,7 +208,6 @@ func (s *onlineShopImpl) Data() *shop.ComplexShop {
 	return v
 }
 
-
 func (s *onlineShopImpl) GetLocateDomain() string {
 	panic("implement me")
 }
@@ -220,4 +215,3 @@ func (s *onlineShopImpl) GetLocateDomain() string {
 func (s *onlineShopImpl) BindDomain(domain string) error {
 	panic("implement me")
 }
-

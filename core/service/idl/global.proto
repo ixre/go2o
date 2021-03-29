@@ -5,143 +5,143 @@ option java_package = "com.github.go2o.rpc";
 message Empty {
 }
 message String {
-    string Value = 1;
+  string Value = 1;
 }
 message Int64 {
-    sint64 Value = 1;
+  sint64 Value = 1;
 }
 message Int32 {
-    sint32 Value = 1;
+  sint32 Value = 1;
 }
 message Bool {
-    bool Value = 1;
+  bool Value = 1;
 }
 message StringMap {
-    map<string, string> Value = 1;
+  map<string, string> Value = 1;
 }
 message StringArray {
-    repeated string Value = 1;
+  repeated string Value = 1;
 }
 //传输结果对象
 message Result {
-    /* 状态码,如为0表示成功 */
-    sint32 ErrCode = 1;
-    /* 消息 */
-    string ErrMsg = 2;
-    /** 数据字典 */
-    map<string, string> Data = 3;
+  /* 状态码,如为0表示成功 */
+  sint32 ErrCode = 1;
+  /* 消息 */
+  string ErrMsg = 2;
+  /** 数据字典 */
+  map<string, string> Data = 3;
 }
 
 // 键值对
 message Pair {
-    string Key = 1;
-    string Value = 2;
+  string Key = 1;
+  string Value = 2;
 }
 
 message IdOrName {
-    int64 Id = 1;
-    string Name = 2;
+  int64 Id = 1;
+  string Name = 2;
 }
 message IdAndRemark {
-    int64 Id = 1;
-    string Remark = 2;
+  int64 Id = 1;
+  string Remark = 2;
 }
 
 /** 设置依据 */
 enum ESettingBasis {
-    /** 未设置 */
-    None = 0;
-    /** 使用全局 */
-    Global = 1;
-    /** 自定义 */
-    Custom = 2;
+  /** 未设置 */
+  None = 0;
+  /** 使用全局 */
+  Global = 1;
+  /** 自定义 */
+  Custom = 2;
 }
 
 /** 价格计算方式 */
 enum EPriceBasis {
-    _Unused = 0;
-    /** 原价 */
-    Original = 1;
-    /** 会员折扣价 */
-    Discount = 2;
-    /** 自定义价格 */
-    CustomBasis = 3;
+  _Unused = 0;
+  /** 原价 */
+  Original = 1;
+  /** 会员折扣价 */
+  Discount = 2;
+  /** 自定义价格 */
+  CustomBasis = 3;
 }
 
 /** 金额/提成依据 */
 enum EAmountBasis {
-    _12 = 0;
-    /** 未设置 */
-    NotSet = 1;
-    /** 按金额 */
-    Amount = 2;
-    /** 按百分比 */
-    Percent = 3;
+  _12 = 0;
+  /** 未设置 */
+  NotSet = 1;
+  /** 按金额 */
+  Amount = 2;
+  /** 按百分比 */
+  Percent = 3;
 }
 
 /** 分页参数 */
 message SPagingParams {
-    // 开始记录数
-    sint64 Begin = 1;
-    // 结束记录数
-    sint64 End = 2;
-    // 条件
-    string Where = 3;
-    // 排序字段
-    string SortBy = 4;
-    // 参数
-    map<string, string> Parameters = 5;
+  // 开始记录数
+  sint64 Begin = 1;
+  // 结束记录数
+  sint64 End = 2;
+  // 条件
+  string Where = 3;
+  // 排序字段
+  string SortBy = 4;
+  // 参数
+  map<string, string> Parameters = 5;
 }
 
 /** 分页结果 */
 message SPagingResult {
-    /** 代码 */
-    sint32 ErrCode = 1;
-    /** 消息 */
-    string ErrMsg = 2;
-    /** 总数 */
-    sint32 Count = 3;
-    /** 数据 */
-    string Data = 4;
-    /** 额外的数据 */
-    map<string, string> Extras = 5;
+  /** 代码 */
+  sint32 ErrCode = 1;
+  /** 消息 */
+  string ErrMsg = 2;
+  /** 总数 */
+  sint32 Count = 3;
+  /** 数据 */
+  string Data = 4;
+  /** 额外的数据 */
+  map<string, string> Extras = 5;
 }
 
 // 树形节点
 message STreeNode {
-    // 文本
-    string Title = 1;
-    // 值
-    string Value = 2;
-    // 图标,icon与JS树形控件冲突
-    string Icon = 3;
-    // 是否展开
-    bool Expand = 4;
-    // 延迟加载
-    bool Lazy = 5;
-    // 其他数据
-    map<string, string> Data = 6;
-    // 子节点
-    repeated STreeNode Children = 7;
-    // 子节点编号
-    int64 Id = 8;
-    // 是否目录，通常Children有元素,则为true
-    bool Folder = 10;
+  // 文本
+  string Title = 1;
+  // 值
+  string Value = 2;
+  // 图标,icon与JS树形控件冲突
+  string Icon = 3;
+  // 是否展开
+  bool Expand = 4;
+  // 延迟加载
+  bool Lazy = 5;
+  // 其他数据
+  map<string, string> Data = 6;
+  // 子节点
+  repeated STreeNode Children = 7;
+  // 子节点编号
+  int64 Id = 8;
+  // 是否目录，通常Children有元素,则为true
+  bool Folder = 10;
 }
 
 
 message Id {
-    int64 Value = 1;
+  int64 Value = 1;
 }
 message MemberId {
-    int64 Value = 1;
+  int64 Value = 1;
 }
 message MerchantId {
-    int64 Value = 1;
+  int64 Value = 1;
 }
 message SellerId {
-    int64 Value = 1;
+  int64 Value = 1;
 }
 message BuyerId {
-    int64 Value = 1;
+  int64 Value = 1;
 }

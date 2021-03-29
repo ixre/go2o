@@ -149,9 +149,9 @@ type (
 		// 获取值
 		GetShopValue() OnlineShop
 		// 获取分配的域名
-		GetLocateDomain()string
+		GetLocateDomain() string
 		// 绑定自定义域名
-		BindDomain(domain string)error
+		BindDomain(domain string) error
 	}
 
 	// 线下商店

@@ -105,12 +105,7 @@ func (s *shopManagerImpl) GetStore(shopId int) shop.IShop {
 
 // 获取店铺
 func (s *shopManagerImpl) GetOnlineShop() shop.IShop {
-	for _, v := range s.GetShops() {
-		if v.Type() == shop.TypeOnlineShop {
-			return v
-		}
-	}
-	return nil
+	return s.repo.GetOnlineShopOfMerchant(int(s.merchant.GetAggregateRootId()))
 }
 
 // 删除门店
