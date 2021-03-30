@@ -277,7 +277,7 @@ func (p *productService) GetModelAttrsHtml(_ context.Context, id *proto.ProductM
 }
 
 // 保存产品模型
-func (p *productService) SaveProductModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
+func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
 	var pm promodel.IProductModel
 	v := p.parseProductModel(r)
 	if v.ID > 0 {
@@ -285,25 +285,23 @@ func (p *productService) SaveProductModel(_ context.Context, r *proto.SProductMo
 		if pm == nil {
 			return p.error(errors.New("模型不存在")), nil
 		}
-		// todo: 应新增启用/停用产品模型的方法
-		if r.Enabled {
-			pm.Value().Enabled = 1
-		}
 	} else {
 		pm = p.pmRepo.CreateModel(v)
 	}
-	var err error
-	// 保存属性
-	if v.Attrs != nil {
-		err = pm.SetAttrs(v.Attrs)
-	}
-	// 保存规格
-	if err == nil && v.Specs != nil {
-		err = pm.SetSpecs(v.Specs)
-	}
-	// 保存品牌
-	if err == nil && v.BrandArray != nil {
-		err = pm.SetBrands(v.BrandArray)
+	err := pm.SetValue(v)
+	if err == nil {
+		// 保存属性
+		if v.Attrs != nil {
+			err = pm.SetAttrs(v.Attrs)
+		}
+		// 保存规格
+		if err == nil && v.Specs != nil {
+			err = pm.SetSpecs(v.Specs)
+		}
+		// 保存品牌
+		if err == nil && v.BrandArray != nil {
+			err = pm.SetBrands(v.BrandArray)
+		}
 	}
 	// 保存模型
 	if err == nil {
@@ -313,7 +311,7 @@ func (p *productService) SaveProductModel(_ context.Context, r *proto.SProductMo
 }
 
 // 删除产品模型
-func (p *productService) DeleteProductModel_(_ context.Context, id *proto.ProductModelId) (*proto.Result, error) {
+func (p *productService) DeleteModel_(_ context.Context, id *proto.ProductModelId) (*proto.Result, error) {
 	//err := p.pmRepo.DeleteProModel(id)
 	//todo: 暂时不允许删除模型
 	return p.result(errors.New("暂时不允许删除模型")), nil
@@ -488,7 +486,7 @@ func (p *productService) parseModelDto(v *promodel.ProductModel) *proto.SProduct
 		Attrs:   nil,
 		Specs:   nil,
 		Brands:  nil,
-		Enabled: v.Enabled == 1,
+		Enabled: int32(v.Enabled),
 	}
 	return ret
 }
@@ -612,7 +610,7 @@ func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.Pro
 	ret := &promodel.ProductModel{
 		ID:      int32(v.Id),
 		Name:    v.Name,
-		Enabled: types.IntCond(v.Enabled, 1, 0),
+		Enabled: int(v.Enabled),
 	}
 	if v.Attrs != nil {
 		ret.Attrs = make([]*promodel.Attr, len(v.Attrs))

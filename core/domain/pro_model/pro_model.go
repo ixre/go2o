@@ -1,6 +1,7 @@
 package promodel
 
 import (
+	"errors"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/infrastructure/format"
 )
@@ -35,6 +36,17 @@ func (m *modelImpl) GetAggregateRootId() int32 {
 // 获取值
 func (m *modelImpl) Value() *promodel.ProductModel {
 	return m.value
+}
+
+
+// 是否启用
+func (m *modelImpl) SetValue(model *promodel.ProductModel) error {
+	if len(model.Name) == 0{
+		return errors.New("model name length")
+	}
+	 m.value.Enabled = model.Enabled
+	 m.value.Name = model.Name
+	 return nil
 }
 
 // 获取属性
@@ -235,7 +247,3 @@ func (m *modelImpl) saveModelBrand(brandIds []int32) (err error) {
 	return nil
 }
 
-// 是否启用
-func (m *modelImpl) Enabled() bool {
-	return m.value.Enabled == 1
-}

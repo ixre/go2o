@@ -23,10 +23,10 @@ service ProductService {
   rpc GetModelAttrsHtml (ProductModelId) returns (String) {
   }
   // 保存产品模型
-  rpc SaveProductModel (SProductModel) returns (Result) {
+  rpc SaveModel (SProductModel) returns (Result) {
   }
   // 删除产品模型
-  rpc DeleteProductModel_ (ProductModelId) returns (Result) {
+  rpc DeleteModel_ (ProductModelId) returns (Result) {
   }
 
   /***** 品牌  *****/
@@ -128,7 +128,7 @@ message SProductModel {
   // 关联品牌
   repeated SProductBrand Brands = 7;
   // 是否启用
-  bool Enabled = 8;
+  int32 Enabled = 8;
 }
 
 // 产品模型属性
