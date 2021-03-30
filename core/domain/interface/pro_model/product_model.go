@@ -37,7 +37,7 @@ type IProductModel interface {
 	// 获取值
 	Value() *ProductModel
 	// 是否启用
-	SetValue(model *ProductModel)error
+	SetValue(model *ProductModel) error
 	// 获取属性
 	Attrs() []*Attr
 	// 获取规格

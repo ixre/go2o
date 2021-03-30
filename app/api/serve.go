@@ -134,8 +134,8 @@ func getJWTSecret() []byte {
 				log.Println("[ Go2o][ Warning]: jwt secret is empty")
 			}
 			jwtSecret = []byte(value.Value)
-		}else{
-			log.Println("[ Go2o][ Warning]: get jwt secret error: ",err.Error())
+		} else {
+			log.Println("[ Go2o][ Warning]: get jwt secret error: ", err.Error())
 		}
 	}
 	return jwtSecret
