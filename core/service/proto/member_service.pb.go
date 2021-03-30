@@ -37,7 +37,7 @@ func (m *LevelUpReviewRequest) Reset()         { *m = LevelUpReviewRequest{} }
 func (m *LevelUpReviewRequest) String() string { return proto.CompactTextString(m) }
 func (*LevelUpReviewRequest) ProtoMessage()    {}
 func (*LevelUpReviewRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_e8480bb121e3fe37, []int{0}
+	return fileDescriptor_member_service_4824c5ee7f44a735, []int{0}
 }
 func (m *LevelUpReviewRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LevelUpReviewRequest.Unmarshal(m, b)
@@ -97,7 +97,7 @@ func (m *LevelUpConfirmRequest) Reset()         { *m = LevelUpConfirmRequest{} }
 func (m *LevelUpConfirmRequest) String() string { return proto.CompactTextString(m) }
 func (*LevelUpConfirmRequest) ProtoMessage()    {}
 func (*LevelUpConfirmRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_member_service_e8480bb121e3fe37, []int{1}
+	return fileDescriptor_member_service_4824c5ee7f44a735, []int{1}
 }
 func (m *LevelUpConfirmRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LevelUpConfirmRequest.Unmarshal(m, b)
@@ -2786,10 +2786,10 @@ var _MemberService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("member_service.proto", fileDescriptor_member_service_e8480bb121e3fe37)
+	proto.RegisterFile("member_service.proto", fileDescriptor_member_service_4824c5ee7f44a735)
 }
 
-var fileDescriptor_member_service_e8480bb121e3fe37 = []byte{
+var fileDescriptor_member_service_4824c5ee7f44a735 = []byte{
 	// 1391 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x57, 0x6d, 0x73, 0xdb, 0x36,
 	0x12, 0xb6, 0x2f, 0x39, 0xdb, 0x82, 0x6d, 0xbd, 0x40, 0x96, 0xdf, 0x92, 0x49, 0x72, 0xba, 0xbb,

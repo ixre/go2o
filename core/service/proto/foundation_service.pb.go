@@ -36,7 +36,7 @@ func (m *ReplaceSensitiveRequest) Reset()         { *m = ReplaceSensitiveRequest
 func (m *ReplaceSensitiveRequest) String() string { return proto.CompactTextString(m) }
 func (*ReplaceSensitiveRequest) ProtoMessage()    {}
 func (*ReplaceSensitiveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_service_498d0e7906d4f30a, []int{0}
+	return fileDescriptor_foundation_service_6c2a41fd5fca7596, []int{0}
 }
 func (m *ReplaceSensitiveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReplaceSensitiveRequest.Unmarshal(m, b)
@@ -902,10 +902,10 @@ var _FoundationService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("foundation_service.proto", fileDescriptor_foundation_service_498d0e7906d4f30a)
+	proto.RegisterFile("foundation_service.proto", fileDescriptor_foundation_service_6c2a41fd5fca7596)
 }
 
-var fileDescriptor_foundation_service_498d0e7906d4f30a = []byte{
+var fileDescriptor_foundation_service_6c2a41fd5fca7596 = []byte{
 	// 578 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x54, 0xdf, 0x6f, 0xd3, 0x3a,
 	0x14, 0xce, 0xae, 0x2e, 0xdd, 0x66, 0xd6, 0x8d, 0x79, 0x43, 0x54, 0x15, 0xa0, 0x11, 0x81, 0x04,

@@ -129,3 +129,23 @@ COMMENT ON COLUMN public.mch_sign_up.submit_time
 
 COMMENT ON COLUMN public.mch_sign_up.update_time
     IS '更新时间';
+
+
+
+
+/** 2021-03-30 */
+ALTER TABLE public.product_brand
+    ADD COLUMN review_remark character varying(120);
+
+COMMENT ON COLUMN public.product_brand.review_state
+    IS '审核状态';
+COMMENT ON COLUMN public.product_brand.review_remark
+    IS '审核意见';
+
+ALTER TABLE public.product_brand
+    ADD COLUMN enabled integer;
+
+COMMENT ON COLUMN public.product_brand.enabled
+    IS '是否启用';
+ALTER TABLE public.product_brand
+    RENAME intro TO introduce;

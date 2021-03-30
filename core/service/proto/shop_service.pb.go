@@ -36,7 +36,7 @@ func (m *TurnShopRequest) Reset()         { *m = TurnShopRequest{} }
 func (m *TurnShopRequest) String() string { return proto.CompactTextString(m) }
 func (*TurnShopRequest) ProtoMessage()    {}
 func (*TurnShopRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_684ecfc76f7798c0, []int{0}
+	return fileDescriptor_shop_service_f0a62d9ece38a627, []int{0}
 }
 func (m *TurnShopRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TurnShopRequest.Unmarshal(m, b)
@@ -110,7 +110,7 @@ func (m *SShop) Reset()         { *m = SShop{} }
 func (m *SShop) String() string { return proto.CompactTextString(m) }
 func (*SShop) ProtoMessage()    {}
 func (*SShop) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_684ecfc76f7798c0, []int{1}
+	return fileDescriptor_shop_service_f0a62d9ece38a627, []int{1}
 }
 func (m *SShop) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShop.Unmarshal(m, b)
@@ -226,7 +226,7 @@ func (m *SShopConfig) Reset()         { *m = SShopConfig{} }
 func (m *SShopConfig) String() string { return proto.CompactTextString(m) }
 func (*SShopConfig) ProtoMessage()    {}
 func (*SShopConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_684ecfc76f7798c0, []int{2}
+	return fileDescriptor_shop_service_f0a62d9ece38a627, []int{2}
 }
 func (m *SShopConfig) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SShopConfig.Unmarshal(m, b)
@@ -286,7 +286,7 @@ func (m *ShopId) Reset()         { *m = ShopId{} }
 func (m *ShopId) String() string { return proto.CompactTextString(m) }
 func (*ShopId) ProtoMessage()    {}
 func (*ShopId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_684ecfc76f7798c0, []int{3}
+	return fileDescriptor_shop_service_f0a62d9ece38a627, []int{3}
 }
 func (m *ShopId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ShopId.Unmarshal(m, b)
@@ -325,7 +325,7 @@ func (m *StoreId) Reset()         { *m = StoreId{} }
 func (m *StoreId) String() string { return proto.CompactTextString(m) }
 func (*StoreId) ProtoMessage()    {}
 func (*StoreId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_684ecfc76f7798c0, []int{4}
+	return fileDescriptor_shop_service_f0a62d9ece38a627, []int{4}
 }
 func (m *StoreId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StoreId.Unmarshal(m, b)
@@ -386,7 +386,7 @@ func (m *SStore) Reset()         { *m = SStore{} }
 func (m *SStore) String() string { return proto.CompactTextString(m) }
 func (*SStore) ProtoMessage()    {}
 func (*SStore) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_684ecfc76f7798c0, []int{5}
+	return fileDescriptor_shop_service_f0a62d9ece38a627, []int{5}
 }
 func (m *SStore) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SStore.Unmarshal(m, b)
@@ -540,7 +540,7 @@ func (m *CheckShopResponse) Reset()         { *m = CheckShopResponse{} }
 func (m *CheckShopResponse) String() string { return proto.CompactTextString(m) }
 func (*CheckShopResponse) ProtoMessage()    {}
 func (*CheckShopResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_shop_service_684ecfc76f7798c0, []int{6}
+	return fileDescriptor_shop_service_f0a62d9ece38a627, []int{6}
 }
 func (m *CheckShopResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CheckShopResponse.Unmarshal(m, b)
@@ -916,9 +916,9 @@ var _ShopService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "shop_service.proto",
 }
 
-func init() { proto.RegisterFile("shop_service.proto", fileDescriptor_shop_service_684ecfc76f7798c0) }
+func init() { proto.RegisterFile("shop_service.proto", fileDescriptor_shop_service_f0a62d9ece38a627) }
 
-var fileDescriptor_shop_service_684ecfc76f7798c0 = []byte{
+var fileDescriptor_shop_service_f0a62d9ece38a627 = []byte{
 	// 743 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x54, 0x5d, 0x4f, 0xeb, 0x46,
 	0x10, 0xcd, 0xa7, 0xed, 0x4c, 0x80, 0xc0, 0x82, 0xd0, 0x2a, 0xa2, 0x10, 0x59, 0x54, 0xcd, 0x93,

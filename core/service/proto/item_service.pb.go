@@ -35,7 +35,7 @@ func (m *ItemDetailRequest) Reset()         { *m = ItemDetailRequest{} }
 func (m *ItemDetailRequest) String() string { return proto.CompactTextString(m) }
 func (*ItemDetailRequest) ProtoMessage()    {}
 func (*ItemDetailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_30a5f79cea6dd5a3, []int{0}
+	return fileDescriptor_item_service_1bdee9be6ad2192f, []int{0}
 }
 func (m *ItemDetailRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ItemDetailRequest.Unmarshal(m, b)
@@ -85,7 +85,7 @@ func (m *PagingGoodsRequest) Reset()         { *m = PagingGoodsRequest{} }
 func (m *PagingGoodsRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingGoodsRequest) ProtoMessage()    {}
 func (*PagingGoodsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_30a5f79cea6dd5a3, []int{1}
+	return fileDescriptor_item_service_1bdee9be6ad2192f, []int{1}
 }
 func (m *PagingGoodsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingGoodsRequest.Unmarshal(m, b)
@@ -153,7 +153,7 @@ func (m *PagingShopGoodsRequest) Reset()         { *m = PagingShopGoodsRequest{}
 func (m *PagingShopGoodsRequest) String() string { return proto.CompactTextString(m) }
 func (*PagingShopGoodsRequest) ProtoMessage()    {}
 func (*PagingShopGoodsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_30a5f79cea6dd5a3, []int{2}
+	return fileDescriptor_item_service_1bdee9be6ad2192f, []int{2}
 }
 func (m *PagingShopGoodsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingShopGoodsRequest.Unmarshal(m, b)
@@ -207,7 +207,7 @@ func (m *SaleLabelItemsRequest_) Reset()         { *m = SaleLabelItemsRequest_{}
 func (m *SaleLabelItemsRequest_) String() string { return proto.CompactTextString(m) }
 func (*SaleLabelItemsRequest_) ProtoMessage()    {}
 func (*SaleLabelItemsRequest_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_service_30a5f79cea6dd5a3, []int{3}
+	return fileDescriptor_item_service_1bdee9be6ad2192f, []int{3}
 }
 func (m *SaleLabelItemsRequest_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaleLabelItemsRequest_.Unmarshal(m, b)
@@ -1134,9 +1134,9 @@ var _ItemService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "item_service.proto",
 }
 
-func init() { proto.RegisterFile("item_service.proto", fileDescriptor_item_service_30a5f79cea6dd5a3) }
+func init() { proto.RegisterFile("item_service.proto", fileDescriptor_item_service_1bdee9be6ad2192f) }
 
-var fileDescriptor_item_service_30a5f79cea6dd5a3 = []byte{
+var fileDescriptor_item_service_1bdee9be6ad2192f = []byte{
 	// 834 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x55, 0xdf, 0x6f, 0xdb, 0x36,
 	0x10, 0xb6, 0x9b, 0xc5, 0x4e, 0x2f, 0x6d, 0x5c, 0x33, 0x8d, 0xa3, 0x0a, 0x43, 0x10, 0x08, 0x43,

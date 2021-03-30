@@ -110,12 +110,6 @@ func (p *productService) GetAttrItem(_ context.Context, id *proto.ProductAttrIte
 	return nil, nil
 }
 
-// 删除产品品牌
-func (p *productService) DeleteProductBrand_(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	err := p.pmRepo.BrandService().DeleteBrand(int32(id.Value))
-	return p.result(err), nil
-}
-
 // 获取所有产品品牌
 func (p *productService) GetBrands(_ context.Context, _ *proto.Empty) (*proto.ProductBrandListResponse, error) {
 	list := p.pmRepo.BrandService().AllBrands()
@@ -326,7 +320,7 @@ func (p *productService) DeleteProductModel_(_ context.Context, id *proto.Produc
 }
 
 // 获取产品品牌
-func (p *productService) GetProductBrand_(_ context.Context, id *proto.Int64) (*proto.SProductBrand, error) {
+func (p *productService) GetBrand(_ context.Context, id *proto.Int64) (*proto.SProductBrand, error) {
 	brand := p.pmRepo.BrandService().Get(int32(id.Value))
 	if brand != nil {
 		return p.parseBrandDto(brand), nil
@@ -335,9 +329,15 @@ func (p *productService) GetProductBrand_(_ context.Context, id *proto.Int64) (*
 }
 
 // Save 产品品牌
-func (p *productService) SaveProductBrand_(_ context.Context, brand *proto.SProductBrand) (*proto.Result, error) {
+func (p *productService) SaveBrand(_ context.Context, brand *proto.SProductBrand) (*proto.Result, error) {
 	v := p.parseBrand(brand)
 	_, err := p.pmRepo.BrandService().SaveBrand(v)
+	return p.result(err), nil
+}
+
+// 删除产品品牌
+func (p *productService) DeleteBrand(_ context.Context, id *proto.Int64) (*proto.Result, error) {
+	err := p.pmRepo.BrandService().DeleteBrand(int32(id.Value))
 	return p.result(err), nil
 }
 
@@ -515,13 +515,15 @@ func (p *productService) parseProductAttrItemDto(v *promodel.AttrItem) *proto.SP
 
 func (p *productService) parseBrandDto(v *promodel.ProductBrand) *proto.SProductBrand {
 	return &proto.SProductBrand{
-		Id:          int64(v.ID),
-		Name:        v.Name,
-		Image:       v.Image,
-		SiteUrl:     v.SiteUrl,
-		Introduce:   v.Intro,
-		ReviewState: v.ReviewState,
-		CreateTime:  v.CreateTime,
+		Id:           int64(v.ID),
+		Name:         v.Name,
+		Image:        v.Image,
+		SiteUrl:      v.SiteUrl,
+		Introduce:    v.Introduce,
+		ReviewState:  v.ReviewState,
+		ReviewRemark: v.ReviewRemark,
+		Enabled:      int32(v.Enabled),
+		CreateTime:   v.CreateTime,
 	}
 }
 
@@ -635,13 +637,15 @@ func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.Pro
 
 func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProductBrand {
 	return &promodel.ProductBrand{
-		ID:          int32(v.Id),
-		Name:        v.Name,
-		Image:       v.Image,
-		SiteUrl:     v.SiteUrl,
-		Intro:       v.Introduce,
-		ReviewState: v.ReviewState,
-		CreateTime:  v.CreateTime,
+		ID:           int32(v.Id),
+		Name:         v.Name,
+		Image:        v.Image,
+		SiteUrl:      v.SiteUrl,
+		Introduce:    v.Introduce,
+		ReviewState:  v.ReviewState,
+		ReviewRemark: v.ReviewRemark,
+		Enabled:      int(v.Enabled),
+		CreateTime:   v.CreateTime,
 	}
 }
 

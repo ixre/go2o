@@ -12,9 +12,13 @@ type (
 		// 品牌网址
 		SiteUrl string `db:"site_url"`
 		// 介绍
-		Intro string `db:"intro"`
+		Introduce string `db:"introduce"`
 		// 是否审核
 		ReviewState int32 `db:"review_state"`
+		// 审核意见
+		ReviewRemark string `db:"review_remark"`
+		// 是否启用
+		Enabled int `db:"enabled"`
 		// 加入时间
 		CreateTime int64 `db:"create_time"`
 	}
