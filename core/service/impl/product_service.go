@@ -495,8 +495,8 @@ func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAt
 	return &proto.SProductAttr{
 		Id:         int64(v.Id),
 		Name:       v.Name,
-		IsFilter:   v.IsFilter == 1,
-		MultiCheck: v.MultiChk == 1,
+		IsFilter:   v.IsFilter,
+		MultiCheck: v.MultiChk,
 		SortNum:    v.SortNum,
 		ItemValues: v.ItemValues,
 		Items:      nil,
@@ -651,8 +651,8 @@ func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr 
 	ret := &promodel.Attr{
 		Id:         int32(v.Id),
 		Name:       v.Name,
-		IsFilter:   int32(types.IntCond(v.IsFilter, 1, 0)),
-		MultiChk:   int32(types.IntCond(v.MultiCheck, 1, 0)),
+		IsFilter:   v.IsFilter,
+		MultiChk:   v.MultiCheck,
 		ItemValues: "",
 		SortNum:    v.SortNum,
 	}

@@ -138,9 +138,9 @@ message SProductAttr {
   // 属性名称
   string Name = 2;
   // 是否作为筛选条件
-  bool IsFilter = 3;
+  int32 IsFilter = 3;
   // 是否多选
-  bool MultiCheck = 4;
+  int32 MultiCheck = 4;
   // 排列序号
   int32 SortNum = 5;
   // 属性项值
