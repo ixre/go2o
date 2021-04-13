@@ -9,7 +9,6 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/proto"
 	"golang.org/x/net/context"
-	"strconv"
 )
 
 var _ proto.ProductServiceServer = new(productService)
@@ -402,17 +401,17 @@ func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int,
 	node.Children = []*proto.STreeNode{}
 	// 遍历子分类
 	for _, v := range categories {
-		cate := v.GetValue()
-		if cate.ParentId == parentId &&
-			p.testWalkCondition(req, cate,depth) {
+		cat := v.GetValue()
+		if cat.ParentId == parentId &&
+			p.testWalkCondition(req, cat,depth) {
 			cNode := &proto.STreeNode{
-				Title:    cate.Name,
-				Value:    strconv.Itoa(cate.Id),
+				Id: int64(cat.Id),
+				Title:    cat.Name,
 				Icon:     "",
 				Expand:   false,
 				Children: nil}
 			node.Children = append(node.Children, cNode)
-			p.walkCategoryTree(cNode, cate.Id, categories, depth+1, req)
+			p.walkCategoryTree(cNode, cat.Id, categories, depth+1, req)
 		}
 	}
 }
