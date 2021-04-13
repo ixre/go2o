@@ -32,7 +32,7 @@ func NewProductService(pmRepo promodel.IProductModelRepo,
 	}
 }
 
-// 获取产品模型
+// GetModel 获取产品模型
 func (p *productService) GetModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
 	im := p.pmRepo.GetModel(int32(id.Value))
 	if im != nil {
@@ -78,7 +78,7 @@ func (p *productService) appendSpecItems(spec *proto.SProductSpec, items promode
 	return spec
 }
 
-// 获取产品模型
+// GetModels 获取产品模型
 func (p *productService) GetModels(_ context.Context, _ *proto.Empty) (*proto.ProductModelListResponse, error) {
 	list := p.pmRepo.SelectProModel("")
 	arr := make([]*proto.SProductModel, len(list))
@@ -90,7 +90,7 @@ func (p *productService) GetModels(_ context.Context, _ *proto.Empty) (*proto.Pr
 	}, nil
 }
 
-// 获取属性
+// GetAttr 获取属性
 func (p *productService) GetAttr(_ context.Context, id *proto.ProductAttrId) (*proto.SProductAttr, error) {
 	v := p.pmRepo.AttrService().GetAttr(int32(id.Value))
 	if v != nil {
@@ -358,8 +358,8 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 	return m.Specs()
 }
 
-/***** 分类 *****/
-func (p *productService) GetCategoryTreeNode(_ context.Context, _ *proto.Empty) (*proto.STreeNode, error) {
+// GetCategoryTreeNode 分类
+func (p *productService) GetCategoryTreeNode(_ context.Context, req *proto.CategoryTreeRequest) (*proto.STreeNode, error) {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	rootNode := &proto.STreeNode{
 		Title:    "根节点",
@@ -367,13 +367,8 @@ func (p *productService) GetCategoryTreeNode(_ context.Context, _ *proto.Empty) 
 		Icon:     "",
 		Expand:   true,
 		Children: nil}
-	p.walkCategoryTree(rootNode, 0, cats)
+	p.walkCategoryTree(rootNode, 0, cats,0, req)
 	return rootNode, nil
-}
-
-// 分类树形
-func (p *productService) CategoryTree(parentId int32) *product.Category {
-	return p.catRepo.GlobCatService().CategoryTree(int(parentId))
 }
 
 // 获取分类关联的品牌
@@ -385,11 +380,31 @@ func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 	return arr
 }
 
-func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int, categories []product.ICategory) {
+// 排除分类
+func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category, depth int) bool {
+	if req.Depth > 0 && int(req.Depth) < depth +1 {
+		return false
+	}
+	if req.ExcludeIdList == nil {
+		return true
+	}
+	for _, v := range req.ExcludeIdList {
+		if v == int64(cat.Id) {
+			return false
+		}
+	}
+	return true
+}
+
+func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int,
+	categories []product.ICategory, depth int,
+	req *proto.CategoryTreeRequest) {
 	node.Children = []*proto.STreeNode{}
+	// 遍历子分类
 	for _, v := range categories {
 		cate := v.GetValue()
-		if cate.ParentId == parentId {
+		if cate.ParentId == parentId &&
+			p.testWalkCondition(req, cate,depth) {
 			cNode := &proto.STreeNode{
 				Title:    cate.Name,
 				Value:    strconv.Itoa(cate.Id),
@@ -397,7 +412,7 @@ func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int, c
 				Expand:   false,
 				Children: nil}
 			node.Children = append(node.Children, cNode)
-			p.walkCategoryTree(cNode, cate.Id, categories)
+			p.walkCategoryTree(cNode, cate.Id, categories, depth+1, req)
 		}
 	}
 }

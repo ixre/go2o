@@ -158,7 +158,6 @@ func (c *categoryImpl) setCategoryLevel() {
 	var mchId = 0
 	list := c._repo.GetCategories(mchId)
 	c.parentWalk(list, mchId, &c.value.Level)
-	//todo: 未实现
 }
 
 func (c *categoryImpl) parentWalk(list []*product.Category,
