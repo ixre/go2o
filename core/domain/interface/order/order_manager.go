@@ -15,7 +15,7 @@ import (
 )
 
 type (
-	//　订单服务
+	// 订单服务
 	IOrderManager interface {
 		// 统一调用
 		Unified(orderNo string, sub bool) IUnifiedOrderAdapter

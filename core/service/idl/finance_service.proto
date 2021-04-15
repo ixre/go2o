@@ -42,7 +42,7 @@ message SRiseInfo {
   int64 PersonId = 1;
   // 本金及收益的余额
   double Balance = 2;
-  //　结算金额
+  // 结算金额
   double SettlementAmount = 3;
   // 当前的收益
   double Rise = 4;

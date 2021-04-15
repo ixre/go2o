@@ -21,7 +21,7 @@ type IDelivery interface {
 	// 根据地址获取地区(可能会有重复的区名)
 	GetArea(addr string) ([]*AreaValue, error)
 
-	//　获取覆盖区域
+	// 获取覆盖区域
 	GetCoverageArea(id int32) ICoverageArea
 
 	// 查看单个所在的区域

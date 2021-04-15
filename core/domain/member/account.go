@@ -318,7 +318,7 @@ func (a *accountImpl) createFlowAccountLog(kind int, title string, amount float3
 
 }
 
-//　充值积分
+// 充值积分
 func (a *accountImpl) integralCharge(title string, value int, outerNo string, remark string) error {
 	if value <= 0 {
 		return member.ErrIncorrectAmount
@@ -1256,7 +1256,7 @@ func (a *accountImpl) TransferFlowTo(memberId int64, kind int,
 	return err
 }
 
-//　充值积分
+// 充值积分
 func (a *accountImpl) integralConsume(title string, value int, outerNo string, remark string) error {
 	if a.value.Integral < value {
 		return member.ErrNoSuchIntegral
@@ -1337,7 +1337,7 @@ func (a *accountImpl) discountBalance(title string, amount float32, outerNo stri
 	return err
 }
 
-//　充值积分
+// 充值积分
 func (a *accountImpl) integralRefund(title string, outerNo string,
 	value int, remark string) error {
 	if value <= 0 {

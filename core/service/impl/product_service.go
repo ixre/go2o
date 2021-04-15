@@ -43,7 +43,7 @@ func (p *productService) GetModel(_ context.Context, id *proto.ProductModelId) (
 			attr := p.appendAttrItems(p.parseProductAttrDto(v), v.Items)
 			ret.Attrs[i] = attr
 		}
-		//　绑定规格
+		// 绑定规格
 		specList := im.Specs()
 		ret.Specs = make([]*proto.SProductSpec, len(specList))
 		for i, v := range specList {
@@ -366,7 +366,7 @@ func (p *productService) GetCategoryTreeNode(_ context.Context, req *proto.Categ
 		Icon:     "",
 		Expand:   true,
 		Children: nil}
-	p.walkCategoryTree(rootNode, 0, cats,0, req)
+	p.walkCategoryTree(rootNode, 0, cats, 0, req)
 	return rootNode, nil
 }
 
@@ -381,7 +381,7 @@ func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 
 // 排除分类
 func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category, depth int) bool {
-	if req.Depth > 0 && int(req.Depth) < depth +1 {
+	if req.Depth > 0 && int(req.Depth) < depth+1 {
 		return false
 	}
 	if req.ExcludeIdList == nil {
@@ -403,9 +403,9 @@ func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int,
 	for _, v := range categories {
 		cat := v.GetValue()
 		if cat.ParentId == parentId &&
-			p.testWalkCondition(req, cat,depth) {
+			p.testWalkCondition(req, cat, depth) {
 			cNode := &proto.STreeNode{
-				Id: int64(cat.Id),
+				Id:       int64(cat.Id),
 				Title:    cat.Name,
 				Icon:     "",
 				Expand:   false,

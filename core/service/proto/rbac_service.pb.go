@@ -231,7 +231,7 @@ type SUserRes struct {
 	Key string `protobuf:"bytes,2,opt,name=Key,proto3" json:"Key"`
 	// * 资源名称
 	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型,0: 目录 1: 资源　2: 菜单 3: 按钮
+	// * 资源类型,0: 目录 1: 资源 2: 菜单 3: 按钮
 	ResType int32 `protobuf:"varint,4,opt,name=ResType,proto3" json:"ResType"`
 	// * 深度/层级
 	Depth int32 `protobuf:"varint,5,opt,name=Depth,proto3" json:"Depth"`
@@ -2642,7 +2642,7 @@ type SavePermResRequest struct {
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 资源名称
 	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮
+	// * 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮
 	ResType int32 `protobuf:"varint,3,opt,name=ResType,proto3" json:"ResType"`
 	// * 上级菜单ID
 	Pid int64 `protobuf:"varint,4,opt,name=Pid,proto3" json:"Pid"`
@@ -2890,7 +2890,7 @@ type SPermRes struct {
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 资源名称
 	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮
+	// * 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮
 	ResType int32 `protobuf:"varint,3,opt,name=ResType,proto3" json:"ResType"`
 	// * 上级菜单ID
 	Pid int64 `protobuf:"varint,4,opt,name=Pid,proto3" json:"Pid"`
@@ -3198,7 +3198,7 @@ type PagingPermRes struct {
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 资源名称
 	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
-	// * 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮
+	// * 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮
 	ResType int32 `protobuf:"varint,3,opt,name=ResType,proto3" json:"ResType"`
 	// * 上级菜单ID
 	Pid int64 `protobuf:"varint,4,opt,name=Pid,proto3" json:"Pid"`

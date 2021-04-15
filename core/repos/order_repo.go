@@ -129,7 +129,7 @@ func (o *OrderRepImpl) GetFreeOrderNo(vendorId int64) string {
 	return orderNo
 }
 
-//　保存订单优惠券绑定
+// 保存订单优惠券绑定
 func (o *OrderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 	_, _, err := o.o.Save(nil, val)
 	return err

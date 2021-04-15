@@ -17,17 +17,17 @@ enum EMemberFlag{
 }
 
 message RegisterMemberRequest {
-  //　用户名
+  // 用户名
   string User = 1;
   // 密码(md5)
   string Pwd = 2;
   // 昵称
   string Name = 3;
-  //　手机
+  // 手机
   string Phone = 4;
   // 邮箱
   string Email = 5;
-  //　用户标志
+  // 用户标志
   int32 Flag = 6;
   // 邀请码
   string InviterCode = 7;
@@ -47,7 +47,7 @@ message LoginRequest {
 message RegisterResponse {
   // 状态码,如为0表示成功
   int32 ErrCode = 1;
-  //　消息
+  // 消息
   string ErrMsg = 2;
   // 会员编号
   int64 MemberId = 3;
@@ -179,17 +179,17 @@ message GetAddressRequest {
   sint64 addrId = 2;
 }
 
-//　账户资产变动请求
+// 账户资产变动请求
 message AccountChangeRequest {
   // 会员编号
   sint64 MemberId = 1;
-  //　账户类型
+  // 账户类型
   sint32 AccountType = 2;
-  //　明细标题
+  // 明细标题
   string Title = 3;
-  //　金额
+  // 金额
   sint32 Amount = 4;
-  //　外部校译号
+  // 外部校译号
   string OuterNo = 5;
   // 备注
   string Remark = 6;
@@ -232,7 +232,7 @@ message AvatarRequest {
 
 /** 会员 */
 message SMember {
-  /**　编号  */
+  /** 编号  */
   sint64 Id = 1;
   /** 用户名 */
   string User = 2;
@@ -242,7 +242,7 @@ message SMember {
   string TradePwd = 4;
   /** 经验值 */
   sint64 Exp = 5;
-  /**　等级  */
+  /** 等级  */
   sint32 Level = 6;
   /** 高级用户级别 */
   sint32 PremiumUser = 7;
@@ -260,9 +260,9 @@ message SMember {
   sint32 Flag = 13;
   /** 会员编码  */
   string Code = 14;
-  /**　会员头像 */
+  /** 会员头像 */
   string Avatar = 15;
-  /**　手机号  */
+  /** 手机号  */
   string Phone = 16;
   /** 电子邮箱 */
   string Email = 17;
@@ -549,11 +549,11 @@ message WithdrawalResponse {
 
 // 获取提现记录
 message WithdrawalLogRequest {
-  //　会员编号
+  // 会员编号
   sint64 MemberId = 1;
-  //　数量
+  // 数量
   sint32 Number = 2;
-  //　仅返回完成的提现
+  // 仅返回完成的提现
   bool OnlyFinished = 3;
 }
 
@@ -597,7 +597,7 @@ message ReviewWithdrawalRequest {
 
 message FinishWithdrawalRequest {
   int64 MemberId = 1;
-  //　提现记录编号
+  // 提现记录编号
   int64 InfoId = 2;
   // 汇款/交易单号
   string TradeNo = 3;

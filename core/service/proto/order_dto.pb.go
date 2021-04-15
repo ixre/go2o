@@ -1054,9 +1054,9 @@ func (m *OrderId) GetValue() int64 {
 	return 0
 }
 
-// 　订单号
+//  订单号
 type OrderNo struct {
-	// 　订单号
+	//  订单号
 	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// 是否为子订单
 	Sub                  bool     `protobuf:"varint,2,opt,name=Sub,proto3" json:"Sub"`
@@ -1103,7 +1103,7 @@ func (m *OrderNo) GetSub() bool {
 	return false
 }
 
-// 　订单号
+//  订单号
 type OrderNoV2 struct {
 	Value                string   `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1191,7 +1191,7 @@ func (m *OrderIdOrNo) GetOrderNo() string {
 }
 
 type CancelOrderRequest struct {
-	// 　订单号
+	//  订单号
 	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// 是否为子订单
 	Sub bool `protobuf:"varint,2,opt,name=Sub,proto3" json:"Sub"`
@@ -1248,13 +1248,13 @@ func (m *CancelOrderRequest) GetReason() string {
 }
 
 type OrderShipmentRequest struct {
-	// 　订单号
+	//  订单号
 	OrderNo string `protobuf:"bytes,1,opt,name=OrderNo,proto3" json:"OrderNo"`
 	// 是否为子订单
 	Sub bool `protobuf:"varint,2,opt,name=Sub,proto3" json:"Sub"`
 	// 快递编号
 	ProviderId int64 `protobuf:"varint,3,opt,name=ProviderId,proto3" json:"ProviderId"`
-	// 　发货单号
+	//  发货单号
 	ShipOrderNo          string   `protobuf:"bytes,4,opt,name=ShipOrderNo,proto3" json:"ShipOrderNo"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`

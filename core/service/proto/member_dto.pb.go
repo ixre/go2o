@@ -207,17 +207,17 @@ func (FavoriteType) EnumDescriptor() ([]byte, []int) {
 }
 
 type RegisterMemberRequest struct {
-	// 　用户名
+	//  用户名
 	User string `protobuf:"bytes,1,opt,name=User,proto3" json:"User"`
 	// 密码(md5)
 	Pwd string `protobuf:"bytes,2,opt,name=Pwd,proto3" json:"Pwd"`
 	// 昵称
 	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
-	// 　手机
+	//  手机
 	Phone string `protobuf:"bytes,4,opt,name=Phone,proto3" json:"Phone"`
 	// 邮箱
 	Email string `protobuf:"bytes,5,opt,name=Email,proto3" json:"Email"`
-	// 　用户标志
+	//  用户标志
 	Flag int32 `protobuf:"varint,6,opt,name=Flag,proto3" json:"Flag"`
 	// 邀请码
 	InviterCode string `protobuf:"bytes,7,opt,name=InviterCode,proto3" json:"InviterCode"`
@@ -375,7 +375,7 @@ func (m *LoginRequest) GetUpdate() bool {
 type RegisterResponse struct {
 	// 状态码,如为0表示成功
 	ErrCode int32 `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
-	// 　消息
+	//  消息
 	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 会员编号
 	MemberId             int64    `protobuf:"varint,3,opt,name=MemberId,proto3" json:"MemberId"`
@@ -1572,17 +1572,17 @@ func (m *GetAddressRequest) GetAddrId() int64 {
 	return 0
 }
 
-// 　账户资产变动请求
+//  账户资产变动请求
 type AccountChangeRequest struct {
 	// 会员编号
 	MemberId int64 `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
-	// 　账户类型
+	//  账户类型
 	AccountType int32 `protobuf:"zigzag32,2,opt,name=AccountType,proto3" json:"AccountType"`
-	// 　明细标题
+	//  明细标题
 	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
-	// 　金额
+	//  金额
 	Amount int32 `protobuf:"zigzag32,4,opt,name=Amount,proto3" json:"Amount"`
-	// 　外部校译号
+	//  外部校译号
 	OuterNo string `protobuf:"bytes,5,opt,name=OuterNo,proto3" json:"OuterNo"`
 	// 备注
 	Remark               string   `protobuf:"bytes,6,opt,name=Remark,proto3" json:"Remark"`
@@ -1970,7 +1970,7 @@ func (m *AvatarRequest) GetAvatarUrl() string {
 
 // * 会员
 type SMember struct {
-	// *　编号
+	// * 编号
 	Id int64 `protobuf:"zigzag64,1,opt,name=Id,proto3" json:"Id"`
 	// * 用户名
 	User string `protobuf:"bytes,2,opt,name=User,proto3" json:"User"`
@@ -1980,7 +1980,7 @@ type SMember struct {
 	TradePwd string `protobuf:"bytes,4,opt,name=TradePwd,proto3" json:"TradePwd"`
 	// * 经验值
 	Exp int64 `protobuf:"zigzag64,5,opt,name=Exp,proto3" json:"Exp"`
-	// *　等级
+	// * 等级
 	Level int32 `protobuf:"zigzag32,6,opt,name=Level,proto3" json:"Level"`
 	// * 高级用户级别
 	PremiumUser int32 `protobuf:"zigzag32,7,opt,name=PremiumUser,proto3" json:"PremiumUser"`
@@ -1998,9 +1998,9 @@ type SMember struct {
 	Flag int32 `protobuf:"zigzag32,13,opt,name=Flag,proto3" json:"Flag"`
 	// * 会员编码
 	Code string `protobuf:"bytes,14,opt,name=Code,proto3" json:"Code"`
-	// *　会员头像
+	// * 会员头像
 	Avatar string `protobuf:"bytes,15,opt,name=Avatar,proto3" json:"Avatar"`
-	// *　手机号
+	// * 手机号
 	Phone string `protobuf:"bytes,16,opt,name=Phone,proto3" json:"Phone"`
 	// * 电子邮箱
 	Email string `protobuf:"bytes,17,opt,name=Email,proto3" json:"Email"`
@@ -3770,11 +3770,11 @@ func (m *WithdrawalResponse) GetLogId() int64 {
 
 // 获取提现记录
 type WithdrawalLogRequest struct {
-	// 　会员编号
+	//  会员编号
 	MemberId int64 `protobuf:"zigzag64,1,opt,name=MemberId,proto3" json:"MemberId"`
-	// 　数量
+	//  数量
 	Number int32 `protobuf:"zigzag32,2,opt,name=Number,proto3" json:"Number"`
-	// 　仅返回完成的提现
+	//  仅返回完成的提现
 	OnlyFinished         bool     `protobuf:"varint,3,opt,name=OnlyFinished,proto3" json:"OnlyFinished"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -4066,7 +4066,7 @@ func (m *ReviewWithdrawalRequest) GetRemark() string {
 
 type FinishWithdrawalRequest struct {
 	MemberId int64 `protobuf:"varint,1,opt,name=MemberId,proto3" json:"MemberId"`
-	// 　提现记录编号
+	//  提现记录编号
 	InfoId int64 `protobuf:"varint,2,opt,name=InfoId,proto3" json:"InfoId"`
 	// 汇款/交易单号
 	TradeNo              string   `protobuf:"bytes,3,opt,name=TradeNo,proto3" json:"TradeNo"`

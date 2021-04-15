@@ -506,7 +506,7 @@ func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
 	return &e
 }
 
-//　获取会员邀请的会员编号列表
+// 获取会员邀请的会员编号列表
 func (m *MemberRepoImpl) GetInviteChildren(id int64) []int64 {
 	arr := make([]int64, 0)
 	var d int64

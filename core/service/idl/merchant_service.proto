@@ -135,11 +135,11 @@ service MerchantService {
 
 
 message MerchantOrderRequest {
-  //　商户编号
+  // 商户编号
   int64 MerchantId = 1;
   // 是否分页
   bool Pagination = 2;
-  //　分页参数
+  // 分页参数
   SPagingParams Params = 3;
 }
 

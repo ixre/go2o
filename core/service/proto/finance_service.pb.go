@@ -121,7 +121,7 @@ type SRiseInfo struct {
 	PersonId int64 `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId"`
 	// 本金及收益的余额
 	Balance float64 `protobuf:"fixed64,2,opt,name=Balance,proto3" json:"Balance"`
-	// 　结算金额
+	//  结算金额
 	SettlementAmount float64 `protobuf:"fixed64,3,opt,name=SettlementAmount,proto3" json:"SettlementAmount"`
 	// 当前的收益
 	Rise float64 `protobuf:"fixed64,4,opt,name=Rise,proto3" json:"Rise"`

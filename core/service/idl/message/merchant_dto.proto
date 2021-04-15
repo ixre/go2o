@@ -223,7 +223,7 @@ message SaveEnterpriseRequest {
   SEnterpriseInfo Value = 2;
 }
 
-//　商户账户
+// 商户账户
 message SMerchantAccount {
   // 余额
   double Balance = 1;

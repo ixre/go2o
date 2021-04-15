@@ -247,7 +247,7 @@ type GetItemsRequest struct {
 	CategoryId int64 `protobuf:"varint,1,opt,name=CategoryId,proto3" json:"CategoryId"`
 	Begin      int64 `protobuf:"varint,2,opt,name=Begin,proto3" json:"Begin"`
 	End        int64 `protobuf:"varint,3,opt,name=End,proto3" json:"End"`
-	// 　是否随机
+	//  是否随机
 	Random               bool     `protobuf:"varint,4,opt,name=Random,proto3" json:"Random"`
 	Where                string   `protobuf:"bytes,5,opt,name=Where,proto3" json:"Where"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1331,7 +1331,7 @@ func (m *SItemLabel) GetEnabled() bool {
 	return false
 }
 
-// 　商品库存数据
+//  商品库存数据
 type SItemStock struct {
 	// 库存数量
 	StockNum int32 `protobuf:"varint,1,opt,name=StockNum,proto3" json:"StockNum"`
@@ -1428,7 +1428,7 @@ type SItemSnapshot struct {
 	SkuArray []*SSku `protobuf:"bytes,21,rep,name=SkuArray,proto3" json:"SkuArray"`
 	// 会员价
 	LevelPrices []*SLevelPrice `protobuf:"bytes,22,rep,name=LevelPrices,proto3" json:"LevelPrices"`
-	// 　显示数据
+	//  显示数据
 	ViewData             *SItemViewData `protobuf:"bytes,23,opt,name=ViewData,proto3" json:"ViewData"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
@@ -1761,13 +1761,13 @@ func (m *STradeSnapshot) GetCreateTime() int64 {
 	return 0
 }
 
-// 　会员价
+//  会员价
 type SLevelPrice struct {
-	// 　编号
+	//  编号
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
-	// 　等级
+	//  等级
 	Level int32 `protobuf:"varint,2,opt,name=Level,proto3" json:"Level"`
-	// 　价格
+	//  价格
 	Price int64 `protobuf:"varint,3,opt,name=Price,proto3" json:"Price"`
 	// 限购数量,-1为不限制
 	MaxNumber int32 `protobuf:"varint,4,opt,name=MaxNumber,proto3" json:"MaxNumber"`
@@ -2288,7 +2288,7 @@ func (m *SWsItemDiscountListResponse) GetValue() []*SWsItemDiscount {
 }
 
 type GetWsDiscountRequest struct {
-	// 　商品编号
+	//  商品编号
 	ItemId int64 `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
 	// 买家分组编号
 	GroupId              int64    `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`

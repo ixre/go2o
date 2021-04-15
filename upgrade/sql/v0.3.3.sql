@@ -23,7 +23,7 @@ COMMENT ON COLUMN "public".mm_member.real_name IS '真实姓名';
 COMMENT ON COLUMN "public".mm_member.salt IS '加密盐';
 
 COMMENT ON COLUMN public.perm_res.res_type
-    IS '资源类型, 0: 目录 1: 资源　2: 菜单  3:　 按钮';
+    IS '资源类型, 0: 目录 1: 资源 2: 菜单  3:  按钮';
 
 
 /* 2021-03-11 */

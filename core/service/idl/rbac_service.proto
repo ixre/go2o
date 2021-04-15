@@ -130,7 +130,7 @@ message SUserRes{
   string Key = 2;
   /** 资源名称 */
   string Name = 3;
-  /** 资源类型,0: 目录 1: 资源　2: 菜单 3: 按钮 */
+  /** 资源类型,0: 目录 1: 资源 2: 菜单 3: 按钮 */
   int32 ResType = 4;
   /** 深度/层级 */
   int32 Depth = 5;
@@ -506,7 +506,7 @@ message SavePermResRequest{
   int64 Id = 1;
   /** 资源名称 */
   string Name = 2;
-  /** 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮 */
+  /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
   int32 ResType = 3;
   /** 上级菜单ID */
   int64 Pid = 4;
@@ -547,7 +547,7 @@ message SPermRes{
   int64 Id = 1;
   /** 资源名称 */
   string Name = 2;
-  /** 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮 */
+  /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
   int32 ResType = 3;
   /** 上级菜单ID */
   int64 Pid = 4;
@@ -600,7 +600,7 @@ message PagingPermRes{
   int64 Id = 1;
   /** 资源名称 */
   string Name = 2;
-  /** 资源类型, 0: 目录 1: 资源　2: 菜单 3:　按钮 */
+  /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
   int32 ResType = 3;
   /** 上级菜单ID */
   int64 Pid = 4;

@@ -35,7 +35,7 @@ message GetItemsRequest {
   int64 CategoryId = 1;
   int64 Begin = 2;
   int64 End = 3;
-  //　是否随机
+  // 是否随机
   bool Random = 4;
   string Where = 5;
 }
@@ -198,7 +198,7 @@ message SItemLabel {
   bool Enabled = 4;
 }
 
-//　商品库存数据
+// 商品库存数据
 message SItemStock {
   // 库存数量
   int32 StockNum = 1;
@@ -261,7 +261,7 @@ message SItemSnapshot {
   repeated SSku SkuArray = 21;
   // 会员价
   repeated SLevelPrice LevelPrices = 22;
-  //　显示数据
+  // 显示数据
   SItemViewData ViewData = 23;
 }
 
@@ -295,13 +295,13 @@ message STradeSnapshot {
   int64 CreateTime = 12;
 }
 
-//　会员价
+// 会员价
 message SLevelPrice {
-  //　编号
+  // 编号
   int64 Id = 1;
-  //　等级
+  // 等级
   int32 Level = 2;
-  //　价格
+  // 价格
   int64 Price = 3;
   // 限购数量,-1为不限制
   int32 MaxNumber = 4;
@@ -362,7 +362,7 @@ message SWsItemDiscountListResponse {
   repeated SWsItemDiscount Value = 1;
 }
 message GetWsDiscountRequest {
-  //　商品编号
+  // 商品编号
   int64 ItemId = 1;
   // 买家分组编号
   int64 GroupId = 2;

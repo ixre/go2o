@@ -108,7 +108,7 @@ Usage of tto:
 ```
 {{equal (3%2) 1}
 ```
-是否与任意值相等,　如表的主键是否为int类型
+是否与任意值相等, 如表的主键是否为int类型
 ```
 {{equal_any .table.PkType 3 4 5}}
 ```
@@ -242,7 +242,7 @@ base_path="/api"
 数据列对象存储表的数据列数组, 并且可遍历. 每个数据列都包含如下属性:
 
 - Name: 列名
-- Prop: 列名首字大写,　通常用作属性
+- Prop: 列名首字大写, 通常用作属性
 - IsPk: 是否主键(bool)
 - IsAuto:  是否自动生成(bool)
 - NotNull: 是否不能为空(bool)

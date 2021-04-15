@@ -1274,7 +1274,7 @@ func (m *SaveEnterpriseRequest) GetValue() *SEnterpriseInfo {
 	return nil
 }
 
-// 　商户账户
+//  商户账户
 type SMerchantAccount struct {
 	// 余额
 	Balance float64 `protobuf:"fixed64,1,opt,name=Balance,proto3" json:"Balance"`

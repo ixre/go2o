@@ -24,11 +24,11 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type MerchantOrderRequest struct {
-	// 　商户编号
+	//  商户编号
 	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
 	// 是否分页
 	Pagination bool `protobuf:"varint,2,opt,name=Pagination,proto3" json:"Pagination"`
-	// 　分页参数
+	//  分页参数
 	Params               *SPagingParams `protobuf:"bytes,3,opt,name=Params,proto3" json:"Params"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`

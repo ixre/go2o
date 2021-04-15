@@ -223,15 +223,15 @@ message OrderId {
   int64 Value = 1;
 }
 
-//　订单号
+// 订单号
 message OrderNo {
-  //　订单号
+  // 订单号
   string OrderNo = 1;
   // 是否为子订单
   bool Sub = 2;
 }
 
-//　订单号
+// 订单号
 message OrderNoV2 {
   string Value = 1;
 }
@@ -245,7 +245,7 @@ message OrderIdOrNo {
 }
 
 message CancelOrderRequest {
-  //　订单号
+  // 订单号
   string OrderNo = 1;
   // 是否为子订单
   bool Sub = 2;
@@ -254,13 +254,13 @@ message CancelOrderRequest {
 }
 
 message OrderShipmentRequest {
-  //　订单号
+  // 订单号
   string OrderNo = 1;
   // 是否为子订单
   bool Sub = 2;
   // 快递编号
   int64 ProviderId = 3;
-  //　发货单号
+  // 发货单号
   string ShipOrderNo = 4;
 }
 

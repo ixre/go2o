@@ -95,7 +95,7 @@ func (s *registryServer) Register(ip string, port int) (leaseId int64, err error
 	if err != nil {
 		return -1, err
 	}
-	//　存储键值,注册服务
+	// 存储键值,注册服务
 	_, err = s.cli.Put(ctx, s.GetKey(node), nodeVal, clientv3.WithLease(grant.ID))
 	if err != nil {
 		return -1, err
@@ -129,7 +129,7 @@ func (s *registryServer) revoke(leaseID clientv3.LeaseID) error {
 
 // 续租/监听服务
 func (s *registryServer) KeepAlive() error {
-	//　续租
+	// 续租
 	keepAliveCh, err := s.cli.KeepAlive(context.TODO(), s.leaseID)
 	if err != nil {
 		log.Printf("[KeepAlive] err : %s", err.Error())

@@ -148,7 +148,7 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.P
 	discountFee := v.ItemAmount - v.FinalAmount + v.DiscountAmount
 	data := make(map[string]string)
 
-	//　取消优惠券
+	// 取消优惠券
 	data["totalFee"] = typeconv.Stringify(v.ItemAmount)
 	data["fee"] = typeconv.Stringify(v.ItemAmount)
 	data["payFee"] = typeconv.Stringify(v.FinalAmount)

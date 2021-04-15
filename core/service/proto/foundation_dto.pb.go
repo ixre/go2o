@@ -64,7 +64,7 @@ func (m *SmsApiSaveRequest) GetApi() *SSmsApi {
 	return nil
 }
 
-// 　 登录结果
+//   登录结果
 type SuperLoginResponse struct {
 	ErrCode              int32    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`

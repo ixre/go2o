@@ -177,6 +177,6 @@ type IMemberRepo interface {
 	DeleteLockInfos(memberId int64) error
 	// 注册解锁任务
 	RegisterUnlockJob(info *MmLockInfo)
-	//　获取会员邀请的会员编号列表
+	// 获取会员邀请的会员编号列表
 	GetInviteChildren(id int64) []int64
 }
