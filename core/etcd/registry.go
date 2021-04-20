@@ -25,9 +25,9 @@ import (
 var prefix = "/registry/server/"
 
 type Registry interface {
-	// 创建租期/注册节点,返回租期ID和错误, 如果IP为空,则默认为第一个网卡首个IP
+	// Register 创建租期/注册节点,返回租期ID和错误, 如果IP为空,则默认为第一个网卡首个IP
 	Register(ip string, port int) (int64, error)
-	// 撤销租期/注销节点
+	// Revoke 撤销租期/注销节点
 	Revoke(LeaseID int64) error
 	UnRegister()
 }

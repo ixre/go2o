@@ -28,7 +28,7 @@ func TestRegisterService(t *testing.T) {
 	arr := make([]Registry, 0)
 	for i := 0; i < 3; i++ {
 		r, _ := NewRegistry(service, ttl, cfg)
-		_, _ = r.Register(10 + i)
+		_, _ = r.Register("",10 + i)
 		arr = append(arr, r)
 	}
 	time.Sleep(15 * time.Second)
