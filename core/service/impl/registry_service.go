@@ -118,7 +118,7 @@ func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCre
 	return s.success(nil), nil
 }
 
-// 更新注册表数据
+// UpdateValues 更新注册表数据
 func (s *registryService) UpdateValues(_ context.Context, registries *proto.StringMap) (*proto.Result, error) {
 	for k, v := range registries.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {
