@@ -7,7 +7,7 @@ FROM golang:latest AS build
 ENV GOPATH=/gobuild
 COPY ./app ./app
 COPY ./core ./core
-COPY ./*.go go.mod LICENSE README.md app.conf ./
+COPY ./*.go go.mod LICENSE README.md ./container/app.conf ./
 
 ENV GOPROXY=https://goproxy.cn,direct
 RUN rm -rf go.sum && sed -i 's/replace github.com\/ixre/\/\/replace  github.com\/ixre/g' go.mod && \
