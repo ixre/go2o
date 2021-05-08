@@ -70,7 +70,7 @@ func (a AppApi) check(ctx api.Context) interface{} {
 }
 
 func (a *AppApi) init() *AppApi {
-	time.Sleep(time.Second * 5) // 等待RPC服务启动5秒
+	time.Sleep(time.Second * 15) // 等待RPC服务启动5秒
 	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		defer trans.Close()
