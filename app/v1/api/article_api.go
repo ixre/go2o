@@ -49,6 +49,9 @@ func (a ArticleApi) list(ctx api.Context) interface{} {
 				Begin:        int32(begin),
 				Size:         int32(size),
 			})
+		if r.Data == nil {
+			r.Data = make([]*proto.SArticle, 0)
+		}
 		return r
 	}
 	return map[string]interface{}{
