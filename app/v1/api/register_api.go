@@ -69,9 +69,17 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 	if len(token) == 0 || !m.checkRegToken(token) {
 		return api.ResponseWithCode(6, "非法注册请求")
 	}
-	if b := m.compareCheckCode(token, phone, checkCode); !b {
-		return api.ResponseWithCode(7, "注册校验码不正确")
+	// 验证手机
+	trans2, cli2, _ := service.RegistryServiceClient()
+	mp1, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.MemberRegisterNeedPhone})
+	mp2, _ := cli2.GetValue(context.TODO(), &proto.String{Value: registry.MemberRegisterMustBindPhone})
+	trans2.Close()
+	if mp1.Value == "true" && mp2.Value == "true" {
+		if b := m.compareCheckCode(token, phone, checkCode); !b {
+			return api.ResponseWithCode(7, "注册校验码不正确")
+		}
 	}
+	// 注册
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
@@ -107,7 +115,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 func (m RegisterApi) getToken(ctx api.Context) interface{} {
 	rd := util.RandString(10)
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", rd)
-	m.st.SetExpire(key, 0, 600)
+	_ = m.st.SetExpire(key, 0, 600)
 	return rd
 }
 
@@ -136,9 +144,6 @@ func (m RegisterApi) checkCodeDuration(token, phone string) error {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
 	nowUnix := time.Now().Unix()
 	unix, err := m.st.GetInt64(key)
-
-	log.Println("---", nowUnix, unix, key)
-
 	if err == nil {
 		if nowUnix-unix < m.getDurationSecond() {
 			return errors.New("请勿在短时间内获取短信验证码!")
@@ -151,8 +156,7 @@ func (m RegisterApi) checkCodeDuration(token, phone string) error {
 func (m RegisterApi) signCheckCodeSendOk(token string) {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:last-time", token)
 	unix := time.Now().Unix()
-	log.Println("----save code:", unix)
-	m.st.SetExpire(key, unix, 600)
+	_ = m.st.SetExpire(key, unix, 600)
 }
 
 // 验证注册令牌是否正确
@@ -171,8 +175,8 @@ func (m RegisterApi) signCheckTokenExpires(token string) {
 func (m RegisterApi) saveCheckCodeData(token string, phone string, code string) {
 	key := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_code", token)
 	key1 := fmt.Sprintf("sys:go2o:reg:token:%s:reg_check_phone", token)
-	m.st.SetExpire(key, code, 600)
-	m.st.SetExpire(key1, phone, 600)
+	_ = m.st.SetExpire(key, code, 600)
+	_ = m.st.SetExpire(key1, phone, 600)
 }
 
 // 获取校验结果
