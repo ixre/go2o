@@ -61,7 +61,7 @@ func (m *SMerchant) Reset()         { *m = SMerchant{} }
 func (m *SMerchant) String() string { return proto.CompactTextString(m) }
 func (*SMerchant) ProtoMessage()    {}
 func (*SMerchant) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{0}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{0}
 }
 func (m *SMerchant) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchant.Unmarshal(m, b)
@@ -220,7 +220,7 @@ func (m *SMerchantPack) Reset()         { *m = SMerchantPack{} }
 func (m *SMerchantPack) String() string { return proto.CompactTextString(m) }
 func (*SMerchantPack) ProtoMessage()    {}
 func (*SMerchantPack) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{1}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{1}
 }
 func (m *SMerchantPack) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantPack.Unmarshal(m, b)
@@ -310,7 +310,7 @@ func (m *MerchantCreateRequest) Reset()         { *m = MerchantCreateRequest{} }
 func (m *MerchantCreateRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantCreateRequest) ProtoMessage()    {}
 func (*MerchantCreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{2}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{2}
 }
 func (m *MerchantCreateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantCreateRequest.Unmarshal(m, b)
@@ -364,7 +364,7 @@ func (m *MerchantCreateResponse) Reset()         { *m = MerchantCreateResponse{}
 func (m *MerchantCreateResponse) String() string { return proto.CompactTextString(m) }
 func (*MerchantCreateResponse) ProtoMessage()    {}
 func (*MerchantCreateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{3}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{3}
 }
 func (m *MerchantCreateResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantCreateResponse.Unmarshal(m, b)
@@ -429,7 +429,7 @@ func (m *SaveMerchantRequest) Reset()         { *m = SaveMerchantRequest{} }
 func (m *SaveMerchantRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveMerchantRequest) ProtoMessage()    {}
 func (*SaveMerchantRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{4}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{4}
 }
 func (m *SaveMerchantRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveMerchantRequest.Unmarshal(m, b)
@@ -510,7 +510,7 @@ func (m *MchUserPwd) Reset()         { *m = MchUserPwd{} }
 func (m *MchUserPwd) String() string { return proto.CompactTextString(m) }
 func (*MchUserPwd) ProtoMessage()    {}
 func (*MchUserPwd) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{5}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{5}
 }
 func (m *MchUserPwd) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MchUserPwd.Unmarshal(m, b)
@@ -555,7 +555,7 @@ func (m *SyncWSItemsResponse) Reset()         { *m = SyncWSItemsResponse{} }
 func (m *SyncWSItemsResponse) String() string { return proto.CompactTextString(m) }
 func (*SyncWSItemsResponse) ProtoMessage()    {}
 func (*SyncWSItemsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{6}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{6}
 }
 func (m *SyncWSItemsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SyncWSItemsResponse.Unmarshal(m, b)
@@ -593,7 +593,7 @@ func (m *STradeConfListResponse) Reset()         { *m = STradeConfListResponse{}
 func (m *STradeConfListResponse) String() string { return proto.CompactTextString(m) }
 func (*STradeConfListResponse) ProtoMessage()    {}
 func (*STradeConfListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{7}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{7}
 }
 func (m *STradeConfListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_STradeConfListResponse.Unmarshal(m, b)
@@ -632,7 +632,7 @@ func (m *TradeConfRequest) Reset()         { *m = TradeConfRequest{} }
 func (m *TradeConfRequest) String() string { return proto.CompactTextString(m) }
 func (*TradeConfRequest) ProtoMessage()    {}
 func (*TradeConfRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{8}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{8}
 }
 func (m *TradeConfRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TradeConfRequest.Unmarshal(m, b)
@@ -678,7 +678,7 @@ func (m *TradeConfSaveRequest) Reset()         { *m = TradeConfSaveRequest{} }
 func (m *TradeConfSaveRequest) String() string { return proto.CompactTextString(m) }
 func (*TradeConfSaveRequest) ProtoMessage()    {}
 func (*TradeConfSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{9}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{9}
 }
 func (m *TradeConfSaveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TradeConfSaveRequest.Unmarshal(m, b)
@@ -723,7 +723,7 @@ func (m *STradeConf_) Reset()         { *m = STradeConf_{} }
 func (m *STradeConf_) String() string { return proto.CompactTextString(m) }
 func (*STradeConf_) ProtoMessage()    {}
 func (*STradeConf_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{10}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{10}
 }
 func (m *STradeConf_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_STradeConf_.Unmarshal(m, b)
@@ -797,7 +797,7 @@ func (m *SMchSignUp) Reset()         { *m = SMchSignUp{} }
 func (m *SMchSignUp) String() string { return proto.CompactTextString(m) }
 func (*SMchSignUp) ProtoMessage()    {}
 func (*SMchSignUp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{11}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{11}
 }
 func (m *SMchSignUp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMchSignUp.Unmarshal(m, b)
@@ -984,7 +984,7 @@ func (m *MchReviewRequest) Reset()         { *m = MchReviewRequest{} }
 func (m *MchReviewRequest) String() string { return proto.CompactTextString(m) }
 func (*MchReviewRequest) ProtoMessage()    {}
 func (*MchReviewRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{12}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{12}
 }
 func (m *MchReviewRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MchReviewRequest.Unmarshal(m, b)
@@ -1074,7 +1074,7 @@ func (m *SEnterpriseInfo) Reset()         { *m = SEnterpriseInfo{} }
 func (m *SEnterpriseInfo) String() string { return proto.CompactTextString(m) }
 func (*SEnterpriseInfo) ProtoMessage()    {}
 func (*SEnterpriseInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{13}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{13}
 }
 func (m *SEnterpriseInfo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SEnterpriseInfo.Unmarshal(m, b)
@@ -1240,7 +1240,7 @@ func (m *SaveEnterpriseRequest) Reset()         { *m = SaveEnterpriseRequest{} }
 func (m *SaveEnterpriseRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveEnterpriseRequest) ProtoMessage()    {}
 func (*SaveEnterpriseRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{14}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{14}
 }
 func (m *SaveEnterpriseRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveEnterpriseRequest.Unmarshal(m, b)
@@ -1274,7 +1274,7 @@ func (m *SaveEnterpriseRequest) GetValue() *SEnterpriseInfo {
 	return nil
 }
 
-//  商户账户
+// 商户账户
 type SMerchantAccount struct {
 	// 余额
 	Balance float64 `protobuf:"fixed64,1,opt,name=Balance,proto3" json:"Balance"`
@@ -1303,7 +1303,7 @@ func (m *SMerchantAccount) Reset()         { *m = SMerchantAccount{} }
 func (m *SMerchantAccount) String() string { return proto.CompactTextString(m) }
 func (*SMerchantAccount) ProtoMessage()    {}
 func (*SMerchantAccount) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{15}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{15}
 }
 func (m *SMerchantAccount) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantAccount.Unmarshal(m, b)
@@ -1400,7 +1400,7 @@ func (m *MerchantDisableRequest) Reset()         { *m = MerchantDisableRequest{}
 func (m *MerchantDisableRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantDisableRequest) ProtoMessage()    {}
 func (*MerchantDisableRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{16}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{16}
 }
 func (m *MerchantDisableRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantDisableRequest.Unmarshal(m, b)
@@ -1465,7 +1465,7 @@ func (m *SMerchantSaleConf) Reset()         { *m = SMerchantSaleConf{} }
 func (m *SMerchantSaleConf) String() string { return proto.CompactTextString(m) }
 func (*SMerchantSaleConf) ProtoMessage()    {}
 func (*SMerchantSaleConf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{17}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{17}
 }
 func (m *SMerchantSaleConf) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantSaleConf.Unmarshal(m, b)
@@ -1567,7 +1567,7 @@ func (m *SaveMerchantSaleConfRequest) Reset()         { *m = SaveMerchantSaleCon
 func (m *SaveMerchantSaleConfRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveMerchantSaleConfRequest) ProtoMessage()    {}
 func (*SaveMerchantSaleConfRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{18}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{18}
 }
 func (m *SaveMerchantSaleConfRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveMerchantSaleConfRequest.Unmarshal(m, b)
@@ -1615,7 +1615,7 @@ func (m *ModifyMerchantPasswordRequest) Reset()         { *m = ModifyMerchantPas
 func (m *ModifyMerchantPasswordRequest) String() string { return proto.CompactTextString(m) }
 func (*ModifyMerchantPasswordRequest) ProtoMessage()    {}
 func (*ModifyMerchantPasswordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{19}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{19}
 }
 func (m *ModifyMerchantPasswordRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ModifyMerchantPasswordRequest.Unmarshal(m, b)
@@ -1675,7 +1675,7 @@ func (m *SMerchantApiInfo) Reset()         { *m = SMerchantApiInfo{} }
 func (m *SMerchantApiInfo) String() string { return proto.CompactTextString(m) }
 func (*SMerchantApiInfo) ProtoMessage()    {}
 func (*SMerchantApiInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{20}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{20}
 }
 func (m *SMerchantApiInfo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantApiInfo.Unmarshal(m, b)
@@ -1736,7 +1736,7 @@ func (m *MerchantApiPermRequest) Reset()         { *m = MerchantApiPermRequest{}
 func (m *MerchantApiPermRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantApiPermRequest) ProtoMessage()    {}
 func (*MerchantApiPermRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{21}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{21}
 }
 func (m *MerchantApiPermRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantApiPermRequest.Unmarshal(m, b)
@@ -1782,7 +1782,7 @@ func (m *WithdrawToMemberAccountRequest) Reset()         { *m = WithdrawToMember
 func (m *WithdrawToMemberAccountRequest) String() string { return proto.CompactTextString(m) }
 func (*WithdrawToMemberAccountRequest) ProtoMessage()    {}
 func (*WithdrawToMemberAccountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{22}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{22}
 }
 func (m *WithdrawToMemberAccountRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_WithdrawToMemberAccountRequest.Unmarshal(m, b)
@@ -1832,7 +1832,7 @@ func (m *MerchantChargeRequest) Reset()         { *m = MerchantChargeRequest{} }
 func (m *MerchantChargeRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantChargeRequest) ProtoMessage()    {}
 func (*MerchantChargeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{23}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{23}
 }
 func (m *MerchantChargeRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantChargeRequest.Unmarshal(m, b)
@@ -1906,7 +1906,7 @@ func (m *MerchantBuyerGroupId) Reset()         { *m = MerchantBuyerGroupId{} }
 func (m *MerchantBuyerGroupId) String() string { return proto.CompactTextString(m) }
 func (*MerchantBuyerGroupId) ProtoMessage()    {}
 func (*MerchantBuyerGroupId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{24}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{24}
 }
 func (m *MerchantBuyerGroupId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantBuyerGroupId.Unmarshal(m, b)
@@ -1952,7 +1952,7 @@ func (m *SaveMerchantBuyerGroupRequest) Reset()         { *m = SaveMerchantBuyer
 func (m *SaveMerchantBuyerGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveMerchantBuyerGroupRequest) ProtoMessage()    {}
 func (*SaveMerchantBuyerGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{25}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{25}
 }
 func (m *SaveMerchantBuyerGroupRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveMerchantBuyerGroupRequest.Unmarshal(m, b)
@@ -1997,7 +1997,7 @@ func (m *MerchantBuyerGroupListResponse) Reset()         { *m = MerchantBuyerGro
 func (m *MerchantBuyerGroupListResponse) String() string { return proto.CompactTextString(m) }
 func (*MerchantBuyerGroupListResponse) ProtoMessage()    {}
 func (*MerchantBuyerGroupListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{26}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{26}
 }
 func (m *MerchantBuyerGroupListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantBuyerGroupListResponse.Unmarshal(m, b)
@@ -2047,7 +2047,7 @@ func (m *SMerchantBuyerGroup) Reset()         { *m = SMerchantBuyerGroup{} }
 func (m *SMerchantBuyerGroup) String() string { return proto.CompactTextString(m) }
 func (*SMerchantBuyerGroup) ProtoMessage()    {}
 func (*SMerchantBuyerGroup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{27}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{27}
 }
 func (m *SMerchantBuyerGroup) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantBuyerGroup.Unmarshal(m, b)
@@ -2122,7 +2122,7 @@ func (m *SaveWholesaleRebateRateRequest) Reset()         { *m = SaveWholesaleReb
 func (m *SaveWholesaleRebateRateRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveWholesaleRebateRateRequest) ProtoMessage()    {}
 func (*SaveWholesaleRebateRateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{28}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{28}
 }
 func (m *SaveWholesaleRebateRateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveWholesaleRebateRateRequest.Unmarshal(m, b)
@@ -2174,7 +2174,7 @@ func (m *WholesaleRebateRateListResponse) Reset()         { *m = WholesaleRebate
 func (m *WholesaleRebateRateListResponse) String() string { return proto.CompactTextString(m) }
 func (*WholesaleRebateRateListResponse) ProtoMessage()    {}
 func (*WholesaleRebateRateListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{29}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{29}
 }
 func (m *WholesaleRebateRateListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_WholesaleRebateRateListResponse.Unmarshal(m, b)
@@ -2222,7 +2222,7 @@ func (m *SWholesaleRebateRate) Reset()         { *m = SWholesaleRebateRate{} }
 func (m *SWholesaleRebateRate) String() string { return proto.CompactTextString(m) }
 func (*SWholesaleRebateRate) ProtoMessage()    {}
 func (*SWholesaleRebateRate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_51637d4462ff7209, []int{30}
+	return fileDescriptor_merchant_dto_ce7e0af3b6068f17, []int{30}
 }
 func (m *SWholesaleRebateRate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SWholesaleRebateRate.Unmarshal(m, b)
@@ -2313,10 +2313,10 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("message/merchant_dto.proto", fileDescriptor_merchant_dto_51637d4462ff7209)
+	proto.RegisterFile("message/merchant_dto.proto", fileDescriptor_merchant_dto_ce7e0af3b6068f17)
 }
 
-var fileDescriptor_merchant_dto_51637d4462ff7209 = []byte{
+var fileDescriptor_merchant_dto_ce7e0af3b6068f17 = []byte{
 	// 1788 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x58, 0x4f, 0x6f, 0xe4, 0x4a,
 	0x11, 0xd7, 0x8c, 0x33, 0x49, 0xa6, 0xf3, 0x67, 0x13, 0x6f, 0x12, 0xac, 0xe5, 0xbd, 0xbc, 0xc8,

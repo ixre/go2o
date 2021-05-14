@@ -15,6 +15,9 @@ service RegistryService {
   /** 获取键值存储数据字典,keys */
   rpc GetValues (StringArray) returns (StringMap) {
   }
+  /** 搜索键值 */
+  rpc Search(RegistrySearchRequest)returns(StringMap){}
+
   /** 按键前缀获取键数据,prefix*/
   rpc FindRegistries (String) returns (StringMap) {
   }
@@ -47,6 +50,10 @@ message RegistryCreateRequest {
   string key = 1;
   string defaultValue = 2;
   string description = 3;
+}
+
+message RegistrySearchRequest{
+  string key = 1;
 }
 
 /** 注册表 */

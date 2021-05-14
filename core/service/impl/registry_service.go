@@ -26,6 +26,7 @@ type registryService struct {
 	serviceUtil
 }
 
+
 func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *registryService {
 	return &registryService{
 		_rep:         rep,
@@ -65,6 +66,15 @@ func (s *registryService) GetValues(_ context.Context, array *proto.StringArray)
 		} else {
 			mp[k] = ""
 		}
+	}
+	return &proto.StringMap{Value: mp}, nil
+}
+
+// Search 搜索键值
+func (s *registryService) Search(_ context.Context, r *proto.RegistrySearchRequest) (*proto.StringMap, error) {
+	mp := make(map[string]string)
+	for _, v := range s.registryRepo.SearchRegistry(r.Key) {
+		mp[v.Key] = v.Value
 	}
 	return &proto.StringMap{Value: mp}, nil
 }
