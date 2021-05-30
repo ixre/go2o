@@ -1219,7 +1219,7 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(int(r.AccountType), r.Title, int(r.AccountType), r.OuterNo, r.Remark)
+		err = acc.Refund(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
