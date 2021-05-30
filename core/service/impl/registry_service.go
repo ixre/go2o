@@ -26,7 +26,6 @@ type registryService struct {
 	serviceUtil
 }
 
-
 func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *registryService {
 	return &registryService{
 		_rep:         rep,
