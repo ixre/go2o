@@ -548,6 +548,8 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 		Name:        v.Name,
 		IsVirtual:   v.VirtualCat == 1,
 		CategoryUrl: v.CatUrl,
+		// 虚拟分类跳转地址
+		RedirectUrl:v.RedirectUrl,
 		Icon:        v.Icon,
 		IconPoint:   v.IconPoint,
 		Level:       int32(v.Level),
@@ -570,6 +572,7 @@ func (p *productService) parseCategory(v *proto.SProductCategory) *product.Categ
 		Name:       v.Name,
 		VirtualCat: types.IntCond(v.IsVirtual, 1, 0),
 		CatUrl:     v.CategoryUrl,
+		RedirectUrl: v.RedirectUrl,
 		Icon:       v.Icon,
 		IconPoint:  v.IconPoint,
 		Level:      int(v.Level),

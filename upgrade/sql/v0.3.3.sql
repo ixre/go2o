@@ -149,3 +149,10 @@ COMMENT ON COLUMN public.product_brand.enabled
     IS '是否启用';
 ALTER TABLE public.product_brand
     RENAME intro TO introduce;
+
+/** 2021-06-10 */
+ALTER TABLE public.product_category
+    ADD COLUMN redirect_url character varying(120) NOT NULL DEFAULT '' ;
+
+COMMENT ON COLUMN public.product_category.redirect_url
+    IS '虚拟分类跳转地址';

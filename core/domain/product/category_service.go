@@ -19,7 +19,6 @@ import (
 	"go2o/core/infrastructure/domain"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -107,15 +106,16 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 		if c.GetDomainId() > 0 && val.VirtualCat != v.VirtualCat {
 			return product.ErrIncorrectCategoryType
 		}
-		// 检测虚拟分类是否设置URL
-		if val.VirtualCat == 1 {
-			u := strings.TrimSpace(v.CatUrl)
-			if u == "" {
-				return product.ErrVirtualCatNoUrl
-			} else {
-				val.CatUrl = u
-			}
-		}
+		//// 检测虚拟分类是否设置URL
+		//if val.VirtualCat == 1 {
+		//	u := strings.TrimSpace(v.CatUrl)
+		//	if u == "" {
+		//		return product.ErrVirtualCatNoUrl
+		//	} else {
+		//		val.CatUrl = u
+		//	}
+		//}
+		val.RedirectUrl = v.RedirectUrl
 		val.VirtualCat = v.VirtualCat
 		val.FloorShow = v.FloorShow
 		if v.FloorShow == 1 && v.ParentId != 0 {
