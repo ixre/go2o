@@ -23,6 +23,1466 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+type DeleteProductRequest struct {
+	SellerId             int64    `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId"`
+	ProductId            int64    `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteProductRequest) Reset()         { *m = DeleteProductRequest{} }
+func (m *DeleteProductRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteProductRequest) ProtoMessage()    {}
+func (*DeleteProductRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{0}
+}
+func (m *DeleteProductRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteProductRequest.Unmarshal(m, b)
+}
+func (m *DeleteProductRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteProductRequest.Marshal(b, m, deterministic)
+}
+func (dst *DeleteProductRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteProductRequest.Merge(dst, src)
+}
+func (m *DeleteProductRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteProductRequest.Size(m)
+}
+func (m *DeleteProductRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteProductRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteProductRequest proto.InternalMessageInfo
+
+func (m *DeleteProductRequest) GetSellerId() int64 {
+	if m != nil {
+		return m.SellerId
+	}
+	return 0
+}
+
+func (m *DeleteProductRequest) GetProductId() int64 {
+	if m != nil {
+		return m.ProductId
+	}
+	return 0
+}
+
+type ProductId struct {
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ProductId) Reset()         { *m = ProductId{} }
+func (m *ProductId) String() string { return proto.CompactTextString(m) }
+func (*ProductId) ProtoMessage()    {}
+func (*ProductId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{1}
+}
+func (m *ProductId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ProductId.Unmarshal(m, b)
+}
+func (m *ProductId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ProductId.Marshal(b, m, deterministic)
+}
+func (dst *ProductId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProductId.Merge(dst, src)
+}
+func (m *ProductId) XXX_Size() int {
+	return xxx_messageInfo_ProductId.Size(m)
+}
+func (m *ProductId) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProductId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProductId proto.InternalMessageInfo
+
+func (m *ProductId) GetValue() int64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+type ProductModelId struct {
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ProductModelId) Reset()         { *m = ProductModelId{} }
+func (m *ProductModelId) String() string { return proto.CompactTextString(m) }
+func (*ProductModelId) ProtoMessage()    {}
+func (*ProductModelId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{2}
+}
+func (m *ProductModelId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ProductModelId.Unmarshal(m, b)
+}
+func (m *ProductModelId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ProductModelId.Marshal(b, m, deterministic)
+}
+func (dst *ProductModelId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProductModelId.Merge(dst, src)
+}
+func (m *ProductModelId) XXX_Size() int {
+	return xxx_messageInfo_ProductModelId.Size(m)
+}
+func (m *ProductModelId) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProductModelId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProductModelId proto.InternalMessageInfo
+
+func (m *ProductModelId) GetValue() int64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+type ProductAttrId struct {
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ProductAttrId) Reset()         { *m = ProductAttrId{} }
+func (m *ProductAttrId) String() string { return proto.CompactTextString(m) }
+func (*ProductAttrId) ProtoMessage()    {}
+func (*ProductAttrId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{3}
+}
+func (m *ProductAttrId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ProductAttrId.Unmarshal(m, b)
+}
+func (m *ProductAttrId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ProductAttrId.Marshal(b, m, deterministic)
+}
+func (dst *ProductAttrId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProductAttrId.Merge(dst, src)
+}
+func (m *ProductAttrId) XXX_Size() int {
+	return xxx_messageInfo_ProductAttrId.Size(m)
+}
+func (m *ProductAttrId) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProductAttrId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProductAttrId proto.InternalMessageInfo
+
+func (m *ProductAttrId) GetValue() int64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+type ProductAttrItemId struct {
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ProductAttrItemId) Reset()         { *m = ProductAttrItemId{} }
+func (m *ProductAttrItemId) String() string { return proto.CompactTextString(m) }
+func (*ProductAttrItemId) ProtoMessage()    {}
+func (*ProductAttrItemId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{4}
+}
+func (m *ProductAttrItemId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ProductAttrItemId.Unmarshal(m, b)
+}
+func (m *ProductAttrItemId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ProductAttrItemId.Marshal(b, m, deterministic)
+}
+func (dst *ProductAttrItemId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProductAttrItemId.Merge(dst, src)
+}
+func (m *ProductAttrItemId) XXX_Size() int {
+	return xxx_messageInfo_ProductAttrItemId.Size(m)
+}
+func (m *ProductAttrItemId) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProductAttrItemId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProductAttrItemId proto.InternalMessageInfo
+
+func (m *ProductAttrItemId) GetValue() int64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+type ProductModelListResponse struct {
+	Value                []*SProductModel `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ProductModelListResponse) Reset()         { *m = ProductModelListResponse{} }
+func (m *ProductModelListResponse) String() string { return proto.CompactTextString(m) }
+func (*ProductModelListResponse) ProtoMessage()    {}
+func (*ProductModelListResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{5}
+}
+func (m *ProductModelListResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ProductModelListResponse.Unmarshal(m, b)
+}
+func (m *ProductModelListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ProductModelListResponse.Marshal(b, m, deterministic)
+}
+func (dst *ProductModelListResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProductModelListResponse.Merge(dst, src)
+}
+func (m *ProductModelListResponse) XXX_Size() int {
+	return xxx_messageInfo_ProductModelListResponse.Size(m)
+}
+func (m *ProductModelListResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProductModelListResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProductModelListResponse proto.InternalMessageInfo
+
+func (m *ProductModelListResponse) GetValue() []*SProductModel {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+// 产品模型
+type SProductModel struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 名称
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	// 属性字符
+	AttrStr string `protobuf:"bytes,3,opt,name=AttrStr,proto3" json:"AttrStr"`
+	// 规格字符
+	SpecStr string `protobuf:"bytes,4,opt,name=SpecStr,proto3" json:"SpecStr"`
+	// 属性
+	Attrs []*SProductAttr `protobuf:"bytes,5,rep,name=Attrs,proto3" json:"Attrs"`
+	// 规格
+	Specs []*SProductSpec `protobuf:"bytes,6,rep,name=Specs,proto3" json:"Specs"`
+	// 关联品牌
+	Brands []*SProductBrand `protobuf:"bytes,7,rep,name=Brands,proto3" json:"Brands"`
+	// 是否启用
+	Enabled              int32    `protobuf:"varint,8,opt,name=Enabled,proto3" json:"Enabled"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SProductModel) Reset()         { *m = SProductModel{} }
+func (m *SProductModel) String() string { return proto.CompactTextString(m) }
+func (*SProductModel) ProtoMessage()    {}
+func (*SProductModel) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{6}
+}
+func (m *SProductModel) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProductModel.Unmarshal(m, b)
+}
+func (m *SProductModel) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProductModel.Marshal(b, m, deterministic)
+}
+func (dst *SProductModel) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProductModel.Merge(dst, src)
+}
+func (m *SProductModel) XXX_Size() int {
+	return xxx_messageInfo_SProductModel.Size(m)
+}
+func (m *SProductModel) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProductModel.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProductModel proto.InternalMessageInfo
+
+func (m *SProductModel) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProductModel) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *SProductModel) GetAttrStr() string {
+	if m != nil {
+		return m.AttrStr
+	}
+	return ""
+}
+
+func (m *SProductModel) GetSpecStr() string {
+	if m != nil {
+		return m.SpecStr
+	}
+	return ""
+}
+
+func (m *SProductModel) GetAttrs() []*SProductAttr {
+	if m != nil {
+		return m.Attrs
+	}
+	return nil
+}
+
+func (m *SProductModel) GetSpecs() []*SProductSpec {
+	if m != nil {
+		return m.Specs
+	}
+	return nil
+}
+
+func (m *SProductModel) GetBrands() []*SProductBrand {
+	if m != nil {
+		return m.Brands
+	}
+	return nil
+}
+
+func (m *SProductModel) GetEnabled() int32 {
+	if m != nil {
+		return m.Enabled
+	}
+	return 0
+}
+
+// 产品模型属性
+type SProductAttr struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 属性名称
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	// 是否作为筛选条件
+	IsFilter int32 `protobuf:"varint,3,opt,name=IsFilter,proto3" json:"IsFilter"`
+	// 是否多选
+	MultiCheck int32 `protobuf:"varint,4,opt,name=MultiCheck,proto3" json:"MultiCheck"`
+	// 排列序号
+	SortNum int32 `protobuf:"varint,5,opt,name=SortNum,proto3" json:"SortNum"`
+	// 属性项值
+	ItemValues string `protobuf:"bytes,6,opt,name=ItemValues,proto3" json:"ItemValues"`
+	// 属性项
+	Items                []*SProductAttrItem `protobuf:"bytes,7,rep,name=Items,proto3" json:"Items"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *SProductAttr) Reset()         { *m = SProductAttr{} }
+func (m *SProductAttr) String() string { return proto.CompactTextString(m) }
+func (*SProductAttr) ProtoMessage()    {}
+func (*SProductAttr) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{7}
+}
+func (m *SProductAttr) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProductAttr.Unmarshal(m, b)
+}
+func (m *SProductAttr) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProductAttr.Marshal(b, m, deterministic)
+}
+func (dst *SProductAttr) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProductAttr.Merge(dst, src)
+}
+func (m *SProductAttr) XXX_Size() int {
+	return xxx_messageInfo_SProductAttr.Size(m)
+}
+func (m *SProductAttr) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProductAttr.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProductAttr proto.InternalMessageInfo
+
+func (m *SProductAttr) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProductAttr) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *SProductAttr) GetIsFilter() int32 {
+	if m != nil {
+		return m.IsFilter
+	}
+	return 0
+}
+
+func (m *SProductAttr) GetMultiCheck() int32 {
+	if m != nil {
+		return m.MultiCheck
+	}
+	return 0
+}
+
+func (m *SProductAttr) GetSortNum() int32 {
+	if m != nil {
+		return m.SortNum
+	}
+	return 0
+}
+
+func (m *SProductAttr) GetItemValues() string {
+	if m != nil {
+		return m.ItemValues
+	}
+	return ""
+}
+
+func (m *SProductAttr) GetItems() []*SProductAttrItem {
+	if m != nil {
+		return m.Items
+	}
+	return nil
+}
+
+// 产品模型属性项
+type SProductAttrItem struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 属性值
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
+	// 排列序号
+	SortNum              int32    `protobuf:"varint,3,opt,name=SortNum,proto3" json:"SortNum"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SProductAttrItem) Reset()         { *m = SProductAttrItem{} }
+func (m *SProductAttrItem) String() string { return proto.CompactTextString(m) }
+func (*SProductAttrItem) ProtoMessage()    {}
+func (*SProductAttrItem) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{8}
+}
+func (m *SProductAttrItem) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProductAttrItem.Unmarshal(m, b)
+}
+func (m *SProductAttrItem) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProductAttrItem.Marshal(b, m, deterministic)
+}
+func (dst *SProductAttrItem) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProductAttrItem.Merge(dst, src)
+}
+func (m *SProductAttrItem) XXX_Size() int {
+	return xxx_messageInfo_SProductAttrItem.Size(m)
+}
+func (m *SProductAttrItem) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProductAttrItem.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProductAttrItem proto.InternalMessageInfo
+
+func (m *SProductAttrItem) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProductAttrItem) GetValue() string {
+	if m != nil {
+		return m.Value
+	}
+	return ""
+}
+
+func (m *SProductAttrItem) GetSortNum() int32 {
+	if m != nil {
+		return m.SortNum
+	}
+	return 0
+}
+
+// 产品属性值
+type SProductAttrValue struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 属性编号
+	AttrId int64 `protobuf:"varint,2,opt,name=AttrId,proto3" json:"AttrId"`
+	// 属性名称
+	AttrName string `protobuf:"bytes,3,opt,name=AttrName,proto3" json:"AttrName"`
+	// 属性值
+	AttrData string `protobuf:"bytes,4,opt,name=AttrData,proto3" json:"AttrData"`
+	// 属性文本
+	AttrWord             string   `protobuf:"bytes,5,opt,name=AttrWord,proto3" json:"AttrWord"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SProductAttrValue) Reset()         { *m = SProductAttrValue{} }
+func (m *SProductAttrValue) String() string { return proto.CompactTextString(m) }
+func (*SProductAttrValue) ProtoMessage()    {}
+func (*SProductAttrValue) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{9}
+}
+func (m *SProductAttrValue) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProductAttrValue.Unmarshal(m, b)
+}
+func (m *SProductAttrValue) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProductAttrValue.Marshal(b, m, deterministic)
+}
+func (dst *SProductAttrValue) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProductAttrValue.Merge(dst, src)
+}
+func (m *SProductAttrValue) XXX_Size() int {
+	return xxx_messageInfo_SProductAttrValue.Size(m)
+}
+func (m *SProductAttrValue) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProductAttrValue.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProductAttrValue proto.InternalMessageInfo
+
+func (m *SProductAttrValue) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProductAttrValue) GetAttrId() int64 {
+	if m != nil {
+		return m.AttrId
+	}
+	return 0
+}
+
+func (m *SProductAttrValue) GetAttrName() string {
+	if m != nil {
+		return m.AttrName
+	}
+	return ""
+}
+
+func (m *SProductAttrValue) GetAttrData() string {
+	if m != nil {
+		return m.AttrData
+	}
+	return ""
+}
+
+func (m *SProductAttrValue) GetAttrWord() string {
+	if m != nil {
+		return m.AttrWord
+	}
+	return ""
+}
+
+// 产品模型规格
+type SProductSpec struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 规格名称
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	// 排列序号
+	SortNum int32 `protobuf:"varint,3,opt,name=SortNum,proto3" json:"SortNum"`
+	// 规格项值
+	ItemValues string `protobuf:"bytes,4,opt,name=ItemValues,proto3" json:"ItemValues"`
+	// 规格项
+	Items                []*SProductSpecItem `protobuf:"bytes,5,rep,name=Items,proto3" json:"Items"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *SProductSpec) Reset()         { *m = SProductSpec{} }
+func (m *SProductSpec) String() string { return proto.CompactTextString(m) }
+func (*SProductSpec) ProtoMessage()    {}
+func (*SProductSpec) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{10}
+}
+func (m *SProductSpec) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProductSpec.Unmarshal(m, b)
+}
+func (m *SProductSpec) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProductSpec.Marshal(b, m, deterministic)
+}
+func (dst *SProductSpec) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProductSpec.Merge(dst, src)
+}
+func (m *SProductSpec) XXX_Size() int {
+	return xxx_messageInfo_SProductSpec.Size(m)
+}
+func (m *SProductSpec) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProductSpec.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProductSpec proto.InternalMessageInfo
+
+func (m *SProductSpec) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProductSpec) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *SProductSpec) GetSortNum() int32 {
+	if m != nil {
+		return m.SortNum
+	}
+	return 0
+}
+
+func (m *SProductSpec) GetItemValues() string {
+	if m != nil {
+		return m.ItemValues
+	}
+	return ""
+}
+
+func (m *SProductSpec) GetItems() []*SProductSpecItem {
+	if m != nil {
+		return m.Items
+	}
+	return nil
+}
+
+// 规格项
+type SProductSpecItem struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 规格项值
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
+	// 规格项颜色
+	Color string `protobuf:"bytes,3,opt,name=Color,proto3" json:"Color"`
+	// 排列序号
+	SortNum              int32    `protobuf:"varint,4,opt,name=SortNum,proto3" json:"SortNum"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SProductSpecItem) Reset()         { *m = SProductSpecItem{} }
+func (m *SProductSpecItem) String() string { return proto.CompactTextString(m) }
+func (*SProductSpecItem) ProtoMessage()    {}
+func (*SProductSpecItem) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{11}
+}
+func (m *SProductSpecItem) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProductSpecItem.Unmarshal(m, b)
+}
+func (m *SProductSpecItem) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProductSpecItem.Marshal(b, m, deterministic)
+}
+func (dst *SProductSpecItem) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProductSpecItem.Merge(dst, src)
+}
+func (m *SProductSpecItem) XXX_Size() int {
+	return xxx_messageInfo_SProductSpecItem.Size(m)
+}
+func (m *SProductSpecItem) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProductSpecItem.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProductSpecItem proto.InternalMessageInfo
+
+func (m *SProductSpecItem) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProductSpecItem) GetValue() string {
+	if m != nil {
+		return m.Value
+	}
+	return ""
+}
+
+func (m *SProductSpecItem) GetColor() string {
+	if m != nil {
+		return m.Color
+	}
+	return ""
+}
+
+func (m *SProductSpecItem) GetSortNum() int32 {
+	if m != nil {
+		return m.SortNum
+	}
+	return 0
+}
+
+type ProductBrandListResponse struct {
+	Value                []*SProductBrand `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ProductBrandListResponse) Reset()         { *m = ProductBrandListResponse{} }
+func (m *ProductBrandListResponse) String() string { return proto.CompactTextString(m) }
+func (*ProductBrandListResponse) ProtoMessage()    {}
+func (*ProductBrandListResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{12}
+}
+func (m *ProductBrandListResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ProductBrandListResponse.Unmarshal(m, b)
+}
+func (m *ProductBrandListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ProductBrandListResponse.Marshal(b, m, deterministic)
+}
+func (dst *ProductBrandListResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProductBrandListResponse.Merge(dst, src)
+}
+func (m *ProductBrandListResponse) XXX_Size() int {
+	return xxx_messageInfo_ProductBrandListResponse.Size(m)
+}
+func (m *ProductBrandListResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProductBrandListResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProductBrandListResponse proto.InternalMessageInfo
+
+func (m *ProductBrandListResponse) GetValue() []*SProductBrand {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+// 品牌
+type SProductBrand struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 品牌名称
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	// 品牌图片
+	Image string `protobuf:"bytes,3,opt,name=Image,proto3" json:"Image"`
+	// 品牌网址
+	SiteUrl string `protobuf:"bytes,4,opt,name=SiteUrl,proto3" json:"SiteUrl"`
+	// 介绍
+	Introduce string `protobuf:"bytes,5,opt,name=Introduce,proto3" json:"Introduce"`
+	// 是否审核
+	ReviewState int32 `protobuf:"varint,6,opt,name=ReviewState,proto3" json:"ReviewState"`
+	// 审核意见
+	ReviewRemark string `protobuf:"bytes,7,opt,name=ReviewRemark,proto3" json:"ReviewRemark"`
+	// 是否启用
+	Enabled int32 `protobuf:"varint,8,opt,name=Enabled,proto3" json:"Enabled"`
+	// 加入时间
+	CreateTime           int64    `protobuf:"varint,9,opt,name=CreateTime,proto3" json:"CreateTime"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SProductBrand) Reset()         { *m = SProductBrand{} }
+func (m *SProductBrand) String() string { return proto.CompactTextString(m) }
+func (*SProductBrand) ProtoMessage()    {}
+func (*SProductBrand) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{13}
+}
+func (m *SProductBrand) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProductBrand.Unmarshal(m, b)
+}
+func (m *SProductBrand) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProductBrand.Marshal(b, m, deterministic)
+}
+func (dst *SProductBrand) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProductBrand.Merge(dst, src)
+}
+func (m *SProductBrand) XXX_Size() int {
+	return xxx_messageInfo_SProductBrand.Size(m)
+}
+func (m *SProductBrand) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProductBrand.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProductBrand proto.InternalMessageInfo
+
+func (m *SProductBrand) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProductBrand) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *SProductBrand) GetImage() string {
+	if m != nil {
+		return m.Image
+	}
+	return ""
+}
+
+func (m *SProductBrand) GetSiteUrl() string {
+	if m != nil {
+		return m.SiteUrl
+	}
+	return ""
+}
+
+func (m *SProductBrand) GetIntroduce() string {
+	if m != nil {
+		return m.Introduce
+	}
+	return ""
+}
+
+func (m *SProductBrand) GetReviewState() int32 {
+	if m != nil {
+		return m.ReviewState
+	}
+	return 0
+}
+
+func (m *SProductBrand) GetReviewRemark() string {
+	if m != nil {
+		return m.ReviewRemark
+	}
+	return ""
+}
+
+func (m *SProductBrand) GetEnabled() int32 {
+	if m != nil {
+		return m.Enabled
+	}
+	return 0
+}
+
+func (m *SProductBrand) GetCreateTime() int64 {
+	if m != nil {
+		return m.CreateTime
+	}
+	return 0
+}
+
+type ProductCategoriesResponse struct {
+	Value                []*SProductCategory `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *ProductCategoriesResponse) Reset()         { *m = ProductCategoriesResponse{} }
+func (m *ProductCategoriesResponse) String() string { return proto.CompactTextString(m) }
+func (*ProductCategoriesResponse) ProtoMessage()    {}
+func (*ProductCategoriesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{14}
+}
+func (m *ProductCategoriesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ProductCategoriesResponse.Unmarshal(m, b)
+}
+func (m *ProductCategoriesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ProductCategoriesResponse.Marshal(b, m, deterministic)
+}
+func (dst *ProductCategoriesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProductCategoriesResponse.Merge(dst, src)
+}
+func (m *ProductCategoriesResponse) XXX_Size() int {
+	return xxx_messageInfo_ProductCategoriesResponse.Size(m)
+}
+func (m *ProductCategoriesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProductCategoriesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProductCategoriesResponse proto.InternalMessageInfo
+
+func (m *ProductCategoriesResponse) GetValue() []*SProductCategory {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+type CategoryParentId struct {
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CategoryParentId) Reset()         { *m = CategoryParentId{} }
+func (m *CategoryParentId) String() string { return proto.CompactTextString(m) }
+func (*CategoryParentId) ProtoMessage()    {}
+func (*CategoryParentId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{15}
+}
+func (m *CategoryParentId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CategoryParentId.Unmarshal(m, b)
+}
+func (m *CategoryParentId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CategoryParentId.Marshal(b, m, deterministic)
+}
+func (dst *CategoryParentId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CategoryParentId.Merge(dst, src)
+}
+func (m *CategoryParentId) XXX_Size() int {
+	return xxx_messageInfo_CategoryParentId.Size(m)
+}
+func (m *CategoryParentId) XXX_DiscardUnknown() {
+	xxx_messageInfo_CategoryParentId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CategoryParentId proto.InternalMessageInfo
+
+func (m *CategoryParentId) GetValue() int64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+// 商品分类
+type SProductCategory struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 上级分类
+	ParentId int64 `protobuf:"varint,2,opt,name=ParentId,proto3" json:"ParentId"`
+	// 产品模型
+	ModelId int64 `protobuf:"varint,3,opt,name=ModelId,proto3" json:"ModelId"`
+	// 优先级
+	Priority int32 `protobuf:"varint,4,opt,name=Priority,proto3" json:"Priority"`
+	// 分类名称
+	Name string `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name"`
+	// * 是否为虚拟分类
+	IsVirtual bool `protobuf:"varint,6,opt,name=IsVirtual,proto3" json:"IsVirtual"`
+	// * 分类链接地址
+	CategoryUrl string `protobuf:"bytes,7,opt,name=CategoryUrl,proto3" json:"CategoryUrl"`
+	// 虚拟分类跳转地址
+	RedirectUrl string `protobuf:"bytes,18,opt,name=RedirectUrl,proto3" json:"RedirectUrl"`
+	// * 图标
+	Icon string `protobuf:"bytes,8,opt,name=Icon,proto3" json:"Icon"`
+	// * 图标坐标
+	IconPoint string `protobuf:"bytes,9,opt,name=IconPoint,proto3" json:"IconPoint"`
+	// * 分类层级
+	Level int32 `protobuf:"varint,10,opt,name=Level,proto3" json:"Level"`
+	// * 序号
+	SortNum int32 `protobuf:"varint,11,opt,name=SortNum,proto3" json:"SortNum"`
+	// * 是否楼层显示
+	FloorShow bool `protobuf:"varint,12,opt,name=FloorShow,proto3" json:"FloorShow"`
+	// * 是否启用
+	Enabled bool `protobuf:"varint,13,opt,name=Enabled,proto3" json:"Enabled"`
+	// * 创建时间
+	CreateTime int64 `protobuf:"varint,14,opt,name=CreateTime,proto3" json:"CreateTime"`
+	// 选项参数
+	Options map[string]string `protobuf:"bytes,15,rep,name=Options,proto3" json:"Options" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// 关联品牌
+	Brands []*SProductBrand `protobuf:"bytes,16,rep,name=Brands,proto3" json:"Brands"`
+	// * 子分类
+	Children             []*SProductCategory `protobuf:"bytes,17,rep,name=Children,proto3" json:"Children"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *SProductCategory) Reset()         { *m = SProductCategory{} }
+func (m *SProductCategory) String() string { return proto.CompactTextString(m) }
+func (*SProductCategory) ProtoMessage()    {}
+func (*SProductCategory) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{16}
+}
+func (m *SProductCategory) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProductCategory.Unmarshal(m, b)
+}
+func (m *SProductCategory) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProductCategory.Marshal(b, m, deterministic)
+}
+func (dst *SProductCategory) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProductCategory.Merge(dst, src)
+}
+func (m *SProductCategory) XXX_Size() int {
+	return xxx_messageInfo_SProductCategory.Size(m)
+}
+func (m *SProductCategory) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProductCategory.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProductCategory proto.InternalMessageInfo
+
+func (m *SProductCategory) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProductCategory) GetParentId() int64 {
+	if m != nil {
+		return m.ParentId
+	}
+	return 0
+}
+
+func (m *SProductCategory) GetModelId() int64 {
+	if m != nil {
+		return m.ModelId
+	}
+	return 0
+}
+
+func (m *SProductCategory) GetPriority() int32 {
+	if m != nil {
+		return m.Priority
+	}
+	return 0
+}
+
+func (m *SProductCategory) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *SProductCategory) GetIsVirtual() bool {
+	if m != nil {
+		return m.IsVirtual
+	}
+	return false
+}
+
+func (m *SProductCategory) GetCategoryUrl() string {
+	if m != nil {
+		return m.CategoryUrl
+	}
+	return ""
+}
+
+func (m *SProductCategory) GetRedirectUrl() string {
+	if m != nil {
+		return m.RedirectUrl
+	}
+	return ""
+}
+
+func (m *SProductCategory) GetIcon() string {
+	if m != nil {
+		return m.Icon
+	}
+	return ""
+}
+
+func (m *SProductCategory) GetIconPoint() string {
+	if m != nil {
+		return m.IconPoint
+	}
+	return ""
+}
+
+func (m *SProductCategory) GetLevel() int32 {
+	if m != nil {
+		return m.Level
+	}
+	return 0
+}
+
+func (m *SProductCategory) GetSortNum() int32 {
+	if m != nil {
+		return m.SortNum
+	}
+	return 0
+}
+
+func (m *SProductCategory) GetFloorShow() bool {
+	if m != nil {
+		return m.FloorShow
+	}
+	return false
+}
+
+func (m *SProductCategory) GetEnabled() bool {
+	if m != nil {
+		return m.Enabled
+	}
+	return false
+}
+
+func (m *SProductCategory) GetCreateTime() int64 {
+	if m != nil {
+		return m.CreateTime
+	}
+	return 0
+}
+
+func (m *SProductCategory) GetOptions() map[string]string {
+	if m != nil {
+		return m.Options
+	}
+	return nil
+}
+
+func (m *SProductCategory) GetBrands() []*SProductBrand {
+	if m != nil {
+		return m.Brands
+	}
+	return nil
+}
+
+func (m *SProductCategory) GetChildren() []*SProductCategory {
+	if m != nil {
+		return m.Children
+	}
+	return nil
+}
+
+// 分类树形请求
+type CategoryTreeRequest struct {
+	// 排除分类编号
+	ExcludeIdList []int64 `protobuf:"varint,1,rep,packed,name=ExcludeIdList,proto3" json:"ExcludeIdList"`
+	// 层级显示,小于等于0不限制
+	Depth                int32    `protobuf:"varint,2,opt,name=Depth,proto3" json:"Depth"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CategoryTreeRequest) Reset()         { *m = CategoryTreeRequest{} }
+func (m *CategoryTreeRequest) String() string { return proto.CompactTextString(m) }
+func (*CategoryTreeRequest) ProtoMessage()    {}
+func (*CategoryTreeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{17}
+}
+func (m *CategoryTreeRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CategoryTreeRequest.Unmarshal(m, b)
+}
+func (m *CategoryTreeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CategoryTreeRequest.Marshal(b, m, deterministic)
+}
+func (dst *CategoryTreeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CategoryTreeRequest.Merge(dst, src)
+}
+func (m *CategoryTreeRequest) XXX_Size() int {
+	return xxx_messageInfo_CategoryTreeRequest.Size(m)
+}
+func (m *CategoryTreeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CategoryTreeRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CategoryTreeRequest proto.InternalMessageInfo
+
+func (m *CategoryTreeRequest) GetExcludeIdList() []int64 {
+	if m != nil {
+		return m.ExcludeIdList
+	}
+	return nil
+}
+
+func (m *CategoryTreeRequest) GetDepth() int32 {
+	if m != nil {
+		return m.Depth
+	}
+	return 0
+}
+
+// 产品
+type SProduct struct {
+	// 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 分类
+	CategoryId int64 `protobuf:"varint,2,opt,name=CategoryId,proto3" json:"CategoryId"`
+	// 名称
+	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
+	// 供应商编号(暂时同mch_id)
+	VendorId int64 `protobuf:"varint,4,opt,name=VendorId,proto3" json:"VendorId"`
+	// 品牌编号
+	BrandId int64 `protobuf:"varint,5,opt,name=BrandId,proto3" json:"BrandId"`
+	// 商家编码
+	Code string `protobuf:"bytes,6,opt,name=Code,proto3" json:"Code"`
+	// 图片
+	Image string `protobuf:"bytes,7,opt,name=Image,proto3" json:"Image"`
+	// 描述
+	Description string `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description"`
+	// 备注
+	Remark string `protobuf:"bytes,9,opt,name=Remark,proto3" json:"Remark"`
+	// 状态
+	State int32 `protobuf:"varint,10,opt,name=State,proto3" json:"State"`
+	// 排序编号
+	SortNum int32 `protobuf:"varint,11,opt,name=SortNum,proto3" json:"SortNum"`
+	// 产品属性
+	Attrs []*SProductAttrValue `protobuf:"bytes,12,rep,name=Attrs,proto3" json:"Attrs"`
+	// 创建时间
+	CreateTime int64 `protobuf:"varint,13,opt,name=CreateTime,proto3" json:"CreateTime"`
+	// 更新时间
+	UpdateTime           int64    `protobuf:"varint,14,opt,name=UpdateTime,proto3" json:"UpdateTime"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SProduct) Reset()         { *m = SProduct{} }
+func (m *SProduct) String() string { return proto.CompactTextString(m) }
+func (*SProduct) ProtoMessage()    {}
+func (*SProduct) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{18}
+}
+func (m *SProduct) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SProduct.Unmarshal(m, b)
+}
+func (m *SProduct) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SProduct.Marshal(b, m, deterministic)
+}
+func (dst *SProduct) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SProduct.Merge(dst, src)
+}
+func (m *SProduct) XXX_Size() int {
+	return xxx_messageInfo_SProduct.Size(m)
+}
+func (m *SProduct) XXX_DiscardUnknown() {
+	xxx_messageInfo_SProduct.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SProduct proto.InternalMessageInfo
+
+func (m *SProduct) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SProduct) GetCategoryId() int64 {
+	if m != nil {
+		return m.CategoryId
+	}
+	return 0
+}
+
+func (m *SProduct) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *SProduct) GetVendorId() int64 {
+	if m != nil {
+		return m.VendorId
+	}
+	return 0
+}
+
+func (m *SProduct) GetBrandId() int64 {
+	if m != nil {
+		return m.BrandId
+	}
+	return 0
+}
+
+func (m *SProduct) GetCode() string {
+	if m != nil {
+		return m.Code
+	}
+	return ""
+}
+
+func (m *SProduct) GetImage() string {
+	if m != nil {
+		return m.Image
+	}
+	return ""
+}
+
+func (m *SProduct) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *SProduct) GetRemark() string {
+	if m != nil {
+		return m.Remark
+	}
+	return ""
+}
+
+func (m *SProduct) GetState() int32 {
+	if m != nil {
+		return m.State
+	}
+	return 0
+}
+
+func (m *SProduct) GetSortNum() int32 {
+	if m != nil {
+		return m.SortNum
+	}
+	return 0
+}
+
+func (m *SProduct) GetAttrs() []*SProductAttrValue {
+	if m != nil {
+		return m.Attrs
+	}
+	return nil
+}
+
+func (m *SProduct) GetCreateTime() int64 {
+	if m != nil {
+		return m.CreateTime
+	}
+	return 0
+}
+
+func (m *SProduct) GetUpdateTime() int64 {
+	if m != nil {
+		return m.UpdateTime
+	}
+	return 0
+}
+
+type ProductInfoRequest struct {
+	ProductId            int64    `protobuf:"varint,1,opt,name=ProductId,proto3" json:"ProductId"`
+	Info                 string   `protobuf:"bytes,2,opt,name=Info,proto3" json:"Info"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ProductInfoRequest) Reset()         { *m = ProductInfoRequest{} }
+func (m *ProductInfoRequest) String() string { return proto.CompactTextString(m) }
+func (*ProductInfoRequest) ProtoMessage()    {}
+func (*ProductInfoRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{19}
+}
+func (m *ProductInfoRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ProductInfoRequest.Unmarshal(m, b)
+}
+func (m *ProductInfoRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ProductInfoRequest.Marshal(b, m, deterministic)
+}
+func (dst *ProductInfoRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProductInfoRequest.Merge(dst, src)
+}
+func (m *ProductInfoRequest) XXX_Size() int {
+	return xxx_messageInfo_ProductInfoRequest.Size(m)
+}
+func (m *ProductInfoRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProductInfoRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProductInfoRequest proto.InternalMessageInfo
+
+func (m *ProductInfoRequest) GetProductId() int64 {
+	if m != nil {
+		return m.ProductId
+	}
+	return 0
+}
+
+func (m *ProductInfoRequest) GetInfo() string {
+	if m != nil {
+		return m.Info
+	}
+	return ""
+}
+
+type SaveProductResponse struct {
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	ProductId            int64    `protobuf:"varint,3,opt,name=ProductId,proto3" json:"ProductId"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SaveProductResponse) Reset()         { *m = SaveProductResponse{} }
+func (m *SaveProductResponse) String() string { return proto.CompactTextString(m) }
+func (*SaveProductResponse) ProtoMessage()    {}
+func (*SaveProductResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_product_service_59a1060f58cb1c9b, []int{20}
+}
+func (m *SaveProductResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveProductResponse.Unmarshal(m, b)
+}
+func (m *SaveProductResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveProductResponse.Marshal(b, m, deterministic)
+}
+func (dst *SaveProductResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveProductResponse.Merge(dst, src)
+}
+func (m *SaveProductResponse) XXX_Size() int {
+	return xxx_messageInfo_SaveProductResponse.Size(m)
+}
+func (m *SaveProductResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveProductResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveProductResponse proto.InternalMessageInfo
+
+func (m *SaveProductResponse) GetErrCode() int64 {
+	if m != nil {
+		return m.ErrCode
+	}
+	return 0
+}
+
+func (m *SaveProductResponse) GetErrMsg() string {
+	if m != nil {
+		return m.ErrMsg
+	}
+	return ""
+}
+
+func (m *SaveProductResponse) GetProductId() int64 {
+	if m != nil {
+		return m.ProductId
+	}
+	return 0
+}
+
+func init() {
+	proto.RegisterType((*DeleteProductRequest)(nil), "DeleteProductRequest")
+	proto.RegisterType((*ProductId)(nil), "ProductId")
+	proto.RegisterType((*ProductModelId)(nil), "ProductModelId")
+	proto.RegisterType((*ProductAttrId)(nil), "ProductAttrId")
+	proto.RegisterType((*ProductAttrItemId)(nil), "ProductAttrItemId")
+	proto.RegisterType((*ProductModelListResponse)(nil), "ProductModelListResponse")
+	proto.RegisterType((*SProductModel)(nil), "SProductModel")
+	proto.RegisterType((*SProductAttr)(nil), "SProductAttr")
+	proto.RegisterType((*SProductAttrItem)(nil), "SProductAttrItem")
+	proto.RegisterType((*SProductAttrValue)(nil), "SProductAttrValue")
+	proto.RegisterType((*SProductSpec)(nil), "SProductSpec")
+	proto.RegisterType((*SProductSpecItem)(nil), "SProductSpecItem")
+	proto.RegisterType((*ProductBrandListResponse)(nil), "ProductBrandListResponse")
+	proto.RegisterType((*SProductBrand)(nil), "SProductBrand")
+	proto.RegisterType((*ProductCategoriesResponse)(nil), "ProductCategoriesResponse")
+	proto.RegisterType((*CategoryParentId)(nil), "CategoryParentId")
+	proto.RegisterType((*SProductCategory)(nil), "SProductCategory")
+	proto.RegisterMapType((map[string]string)(nil), "SProductCategory.OptionsEntry")
+	proto.RegisterType((*CategoryTreeRequest)(nil), "CategoryTreeRequest")
+	proto.RegisterType((*SProduct)(nil), "SProduct")
+	proto.RegisterType((*ProductInfoRequest)(nil), "ProductInfoRequest")
+	proto.RegisterType((*SaveProductResponse)(nil), "SaveProductResponse")
+}
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpc.ClientConn
@@ -46,15 +1506,15 @@ type ProductServiceClient interface {
 	// 获取模型属性Html
 	GetModelAttrsHtml(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*String, error)
 	// 保存产品模型
-	SaveProductModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error)
+	SaveModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error)
 	// 删除产品模型
-	DeleteProductModel_(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*Result, error)
+	DeleteModel_(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*Result, error)
 	// Get 产品品牌
-	GetProductBrand_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductBrand, error)
+	GetBrand(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductBrand, error)
 	// Save 产品品牌
-	SaveProductBrand_(ctx context.Context, in *SProductBrand, opts ...grpc.CallOption) (*Result, error)
+	SaveBrand(ctx context.Context, in *SProductBrand, opts ...grpc.CallOption) (*Result, error)
 	// Delete 产品品牌
-	DeleteProductBrand_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	DeleteBrand(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 获取所有产品品牌
 	GetBrands(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductBrandListResponse, error)
 	// 获取全部分类
@@ -67,7 +1527,8 @@ type ProductServiceClient interface {
 	DeleteCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 保存产品分类
 	SaveCategory(ctx context.Context, in *SProductCategory, opts ...grpc.CallOption) (*Result, error)
-	GetCategoryTreeNode(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*STreeNode, error)
+	// 获取分类树形数据
+	GetCategoryTreeNode(ctx context.Context, in *CategoryTreeRequest, opts ...grpc.CallOption) (*STreeNode, error)
 	// 根据上级编号获取分类列表
 	GetChildren(ctx context.Context, in *CategoryParentId, opts ...grpc.CallOption) (*ProductCategoriesResponse, error)
 	// 获取产品值
@@ -133,45 +1594,45 @@ func (c *productServiceClient) GetModelAttrsHtml(ctx context.Context, in *Produc
 	return out, nil
 }
 
-func (c *productServiceClient) SaveProductModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error) {
+func (c *productServiceClient) SaveModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/ProductService/SaveProductModel", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ProductService/SaveModel", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productServiceClient) DeleteProductModel_(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*Result, error) {
+func (c *productServiceClient) DeleteModel_(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/ProductService/DeleteProductModel_", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ProductService/DeleteModel_", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productServiceClient) GetProductBrand_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductBrand, error) {
+func (c *productServiceClient) GetBrand(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SProductBrand, error) {
 	out := new(SProductBrand)
-	err := c.cc.Invoke(ctx, "/ProductService/GetProductBrand_", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ProductService/GetBrand", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productServiceClient) SaveProductBrand_(ctx context.Context, in *SProductBrand, opts ...grpc.CallOption) (*Result, error) {
+func (c *productServiceClient) SaveBrand(ctx context.Context, in *SProductBrand, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/ProductService/SaveProductBrand_", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ProductService/SaveBrand", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productServiceClient) DeleteProductBrand_(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
+func (c *productServiceClient) DeleteBrand(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/ProductService/DeleteProductBrand_", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ProductService/DeleteBrand", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +1684,7 @@ func (c *productServiceClient) SaveCategory(ctx context.Context, in *SProductCat
 	return out, nil
 }
 
-func (c *productServiceClient) GetCategoryTreeNode(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*STreeNode, error) {
+func (c *productServiceClient) GetCategoryTreeNode(ctx context.Context, in *CategoryTreeRequest, opts ...grpc.CallOption) (*STreeNode, error) {
 	out := new(STreeNode)
 	err := c.cc.Invoke(ctx, "/ProductService/GetCategoryTreeNode", in, out, opts...)
 	if err != nil {
@@ -290,15 +1751,15 @@ type ProductServiceServer interface {
 	// 获取模型属性Html
 	GetModelAttrsHtml(context.Context, *ProductModelId) (*String, error)
 	// 保存产品模型
-	SaveProductModel(context.Context, *SProductModel) (*Result, error)
+	SaveModel(context.Context, *SProductModel) (*Result, error)
 	// 删除产品模型
-	DeleteProductModel_(context.Context, *ProductModelId) (*Result, error)
+	DeleteModel_(context.Context, *ProductModelId) (*Result, error)
 	// Get 产品品牌
-	GetProductBrand_(context.Context, *Int64) (*SProductBrand, error)
+	GetBrand(context.Context, *Int64) (*SProductBrand, error)
 	// Save 产品品牌
-	SaveProductBrand_(context.Context, *SProductBrand) (*Result, error)
+	SaveBrand(context.Context, *SProductBrand) (*Result, error)
 	// Delete 产品品牌
-	DeleteProductBrand_(context.Context, *Int64) (*Result, error)
+	DeleteBrand(context.Context, *Int64) (*Result, error)
 	// 获取所有产品品牌
 	GetBrands(context.Context, *Empty) (*ProductBrandListResponse, error)
 	// 获取全部分类
@@ -311,7 +1772,8 @@ type ProductServiceServer interface {
 	DeleteCategory(context.Context, *Int64) (*Result, error)
 	// 保存产品分类
 	SaveCategory(context.Context, *SProductCategory) (*Result, error)
-	GetCategoryTreeNode(context.Context, *Empty) (*STreeNode, error)
+	// 获取分类树形数据
+	GetCategoryTreeNode(context.Context, *CategoryTreeRequest) (*STreeNode, error)
 	// 根据上级编号获取分类列表
 	GetChildren(context.Context, *CategoryParentId) (*ProductCategoriesResponse, error)
 	// 获取产品值
@@ -418,92 +1880,92 @@ func _ProductService_GetModelAttrsHtml_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_SaveProductModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductService_SaveModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SProductModel)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).SaveProductModel(ctx, in)
+		return srv.(ProductServiceServer).SaveModel(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ProductService/SaveProductModel",
+		FullMethod: "/ProductService/SaveModel",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).SaveProductModel(ctx, req.(*SProductModel))
+		return srv.(ProductServiceServer).SaveModel(ctx, req.(*SProductModel))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_DeleteProductModel__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductService_DeleteModel__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ProductModelId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).DeleteProductModel_(ctx, in)
+		return srv.(ProductServiceServer).DeleteModel_(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ProductService/DeleteProductModel_",
+		FullMethod: "/ProductService/DeleteModel_",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).DeleteProductModel_(ctx, req.(*ProductModelId))
+		return srv.(ProductServiceServer).DeleteModel_(ctx, req.(*ProductModelId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_GetProductBrand__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductService_GetBrand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Int64)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).GetProductBrand_(ctx, in)
+		return srv.(ProductServiceServer).GetBrand(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ProductService/GetProductBrand_",
+		FullMethod: "/ProductService/GetBrand",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).GetProductBrand_(ctx, req.(*Int64))
+		return srv.(ProductServiceServer).GetBrand(ctx, req.(*Int64))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_SaveProductBrand__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductService_SaveBrand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SProductBrand)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).SaveProductBrand_(ctx, in)
+		return srv.(ProductServiceServer).SaveBrand(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ProductService/SaveProductBrand_",
+		FullMethod: "/ProductService/SaveBrand",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).SaveProductBrand_(ctx, req.(*SProductBrand))
+		return srv.(ProductServiceServer).SaveBrand(ctx, req.(*SProductBrand))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_DeleteProductBrand__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductService_DeleteBrand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Int64)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).DeleteProductBrand_(ctx, in)
+		return srv.(ProductServiceServer).DeleteBrand(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ProductService/DeleteProductBrand_",
+		FullMethod: "/ProductService/DeleteBrand",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).DeleteProductBrand_(ctx, req.(*Int64))
+		return srv.(ProductServiceServer).DeleteBrand(ctx, req.(*Int64))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -599,7 +2061,7 @@ func _ProductService_SaveCategory_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _ProductService_GetCategoryTreeNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(CategoryTreeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -611,7 +2073,7 @@ func _ProductService_GetCategoryTreeNode_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/ProductService/GetCategoryTreeNode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).GetCategoryTreeNode(ctx, req.(*Empty))
+		return srv.(ProductServiceServer).GetCategoryTreeNode(ctx, req.(*CategoryTreeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -731,24 +2193,24 @@ var _ProductService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _ProductService_GetModelAttrsHtml_Handler,
 		},
 		{
-			MethodName: "SaveProductModel",
-			Handler:    _ProductService_SaveProductModel_Handler,
+			MethodName: "SaveModel",
+			Handler:    _ProductService_SaveModel_Handler,
 		},
 		{
-			MethodName: "DeleteProductModel_",
-			Handler:    _ProductService_DeleteProductModel__Handler,
+			MethodName: "DeleteModel_",
+			Handler:    _ProductService_DeleteModel__Handler,
 		},
 		{
-			MethodName: "GetProductBrand_",
-			Handler:    _ProductService_GetProductBrand__Handler,
+			MethodName: "GetBrand",
+			Handler:    _ProductService_GetBrand_Handler,
 		},
 		{
-			MethodName: "SaveProductBrand_",
-			Handler:    _ProductService_SaveProductBrand__Handler,
+			MethodName: "SaveBrand",
+			Handler:    _ProductService_SaveBrand_Handler,
 		},
 		{
-			MethodName: "DeleteProductBrand_",
-			Handler:    _ProductService_DeleteProductBrand__Handler,
+			MethodName: "DeleteBrand",
+			Handler:    _ProductService_DeleteBrand_Handler,
 		},
 		{
 			MethodName: "GetBrands",
@@ -800,39 +2262,98 @@ var _ProductService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("product_service.proto", fileDescriptor_product_service_d5b60c3bb1bbc42b)
+	proto.RegisterFile("product_service.proto", fileDescriptor_product_service_59a1060f58cb1c9b)
 }
 
-var fileDescriptor_product_service_d5b60c3bb1bbc42b = []byte{
-	// 479 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0xf5, 0x29, 0x69, 0x27, 0x4d, 0xda, 0x4c, 0xe8, 0xa1, 0x3e, 0x70, 0x30, 0x42, 0x42, 0x40,
-	0xb7, 0xb4, 0x40, 0x2f, 0x48, 0x48, 0x14, 0x50, 0xb0, 0x04, 0xa8, 0x4a, 0x38, 0x71, 0x89, 0x9c,
-	0xec, 0xe0, 0x5a, 0xb2, 0xbd, 0x66, 0x77, 0x52, 0xa9, 0x77, 0x7e, 0x38, 0xf2, 0xf7, 0xda, 0x89,
-	0xd4, 0x53, 0x34, 0xef, 0x63, 0xf6, 0xed, 0xbe, 0xc8, 0x70, 0x9a, 0x69, 0x25, 0xb7, 0x1b, 0x5e,
-	0x19, 0xd2, 0xf7, 0xd1, 0x86, 0x44, 0xa6, 0x15, 0x2b, 0xf7, 0x28, 0x8c, 0xd5, 0x3a, 0x88, 0xab,
-	0xe9, 0x2c, 0x21, 0x63, 0x82, 0x90, 0x2e, 0x6a, 0xb1, 0x64, 0x55, 0x52, 0x57, 0xff, 0x0e, 0x60,
-	0x72, 0x5b, 0xa2, 0xcb, 0x72, 0x03, 0x9e, 0xc3, 0xc1, 0x9c, 0xf8, 0x87, 0x92, 0x14, 0xe3, 0xb1,
-	0xa8, 0xc8, 0x62, 0xf4, 0xa5, 0x3b, 0x11, 0x4b, 0x1b, 0xf1, 0x1c, 0x7c, 0x03, 0x87, 0xb5, 0xdc,
-	0xe0, 0x40, 0x7c, 0x4d, 0x32, 0x7e, 0x70, 0xcf, 0x3a, 0xbe, 0xef, 0x91, 0xe1, 0x05, 0x99, 0x4c,
-	0xa5, 0x86, 0x3c, 0x07, 0x5f, 0xc2, 0x70, 0x4e, 0xfc, 0x89, 0x59, 0xe3, 0xa4, 0xd6, 0xe5, 0x93,
-	0x2f, 0xdd, 0x71, 0xb3, 0x3e, 0x07, 0x3c, 0x07, 0xaf, 0x61, 0x54, 0x69, 0x7d, 0xa6, 0x04, 0xb1,
-	0xa3, 0x67, 0x4a, 0x7c, 0xe9, 0x4e, 0x3b, 0x9e, 0x1c, 0xf4, 0x1c, 0xbc, 0x80, 0x69, 0x9d, 0x2a,
-	0x47, 0xcd, 0x37, 0x4e, 0xf6, 0xdc, 0x66, 0x28, 0x96, 0xac, 0xa3, 0x34, 0xf4, 0x1c, 0x3c, 0x87,
-	0x93, 0x65, 0x70, 0x4f, 0xb6, 0x00, 0x7b, 0x97, 0x75, 0x87, 0x62, 0x41, 0x66, 0x1b, 0xb3, 0xe7,
-	0xe0, 0x25, 0xcc, 0xbe, 0x50, 0x4c, 0xdc, 0x31, 0xac, 0xf6, 0x9d, 0xd0, 0x58, 0x5e, 0xc3, 0xc9,
-	0x9c, 0xb8, 0xe2, 0x6f, 0x74, 0x90, 0xca, 0x15, 0x0e, 0x84, 0x9f, 0xf2, 0xf5, 0x3b, 0xeb, 0x59,
-	0x0b, 0xc2, 0x73, 0x50, 0xc0, 0xd4, 0xca, 0x53, 0xc9, 0x7b, 0x32, 0x7b, 0xfb, 0x8b, 0x5e, 0xa0,
-	0xde, 0x01, 0x96, 0xb2, 0x2c, 0xac, 0xe0, 0xf7, 0x14, 0x56, 0xe0, 0xbd, 0xc2, 0xde, 0xc3, 0x78,
-	0x4e, 0xfc, 0x39, 0x60, 0x0a, 0x95, 0x8e, 0xa8, 0x75, 0xb9, 0xb5, 0xab, 0xe5, 0x3a, 0x3d, 0x8f,
-	0x5a, 0xdb, 0x43, 0x13, 0xa5, 0xed, 0xab, 0xa6, 0x3c, 0x07, 0x9f, 0xc1, 0xa4, 0x8c, 0xbf, 0x23,
-	0xef, 0xbc, 0xe0, 0x51, 0xfe, 0x26, 0x8d, 0x64, 0x77, 0x93, 0xad, 0x7e, 0x05, 0x33, 0xeb, 0xf8,
-	0x5f, 0x9a, 0xe8, 0xa7, 0x92, 0xd4, 0x64, 0x07, 0xb1, 0xac, 0x31, 0xcf, 0xc1, 0x8f, 0x65, 0xd6,
-	0xbb, 0x28, 0x96, 0x9a, 0x52, 0x9c, 0x8a, 0xda, 0x77, 0x1b, 0x68, 0x4a, 0xd9, 0x97, 0x8f, 0xdc,
-	0xf5, 0x39, 0x40, 0x5b, 0x2e, 0x42, 0xad, 0xf5, 0xa5, 0x7b, 0xd8, 0x84, 0x2c, 0xde, 0x7e, 0x64,
-	0xb5, 0x8a, 0x2d, 0xe7, 0x3e, 0x11, 0x16, 0x61, 0x2d, 0xbe, 0x84, 0x71, 0xa7, 0x57, 0x3c, 0x15,
-	0x9d, 0x79, 0x41, 0x7f, 0xb7, 0x64, 0xb8, 0xfb, 0xdf, 0x3c, 0xb6, 0x76, 0xf9, 0xe9, 0x1f, 0x85,
-	0x33, 0x61, 0x4d, 0xbb, 0x96, 0x9b, 0xa7, 0x30, 0xdb, 0xa8, 0x44, 0x84, 0x11, 0xdf, 0x6d, 0xd7,
-	0x22, 0x54, 0x57, 0x4a, 0xe8, 0x6c, 0xf3, 0x7b, 0x28, 0x3e, 0x14, 0x9f, 0x89, 0xf5, 0xa0, 0xf8,
-	0x79, 0xfb, 0x3f, 0x00, 0x00, 0xff, 0xff, 0xca, 0x92, 0xd4, 0x9a, 0x6f, 0x04, 0x00, 0x00,
+var fileDescriptor_product_service_59a1060f58cb1c9b = []byte{
+	// 1412 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x57, 0x5f, 0x73, 0xdb, 0x44,
+	0x10, 0xb7, 0xe3, 0x28, 0xb6, 0xd7, 0x76, 0x9a, 0x5c, 0x52, 0x46, 0xd5, 0x74, 0x32, 0x41, 0xfd,
+	0x17, 0x18, 0x10, 0xb4, 0x40, 0xa7, 0x94, 0x19, 0x06, 0x9a, 0xa4, 0xc1, 0x33, 0x6d, 0x09, 0x72,
+	0x5b, 0x66, 0x78, 0xe9, 0x28, 0xd6, 0xd5, 0xd1, 0x44, 0xd6, 0x99, 0xd3, 0x39, 0x25, 0x8f, 0xf0,
+	0x05, 0x78, 0xe2, 0x83, 0xf1, 0x3d, 0x78, 0x61, 0xf8, 0x02, 0xcc, 0xed, 0xdd, 0x49, 0x27, 0x2b,
+	0x86, 0x3c, 0x59, 0xfb, 0xe7, 0xf6, 0x76, 0x7f, 0xfb, 0xe7, 0xd6, 0x70, 0x7d, 0xc6, 0x59, 0x3c,
+	0x1f, 0x8b, 0x37, 0x39, 0xe5, 0xe7, 0xc9, 0x98, 0x06, 0x33, 0xce, 0x04, 0xf3, 0xfa, 0x93, 0x94,
+	0x9d, 0x44, 0xa9, 0xa2, 0xfc, 0x63, 0xd8, 0x3e, 0xa0, 0x29, 0x15, 0xf4, 0x58, 0x29, 0x87, 0xf4,
+	0xe7, 0x39, 0xcd, 0x05, 0xf1, 0xa0, 0x33, 0xa2, 0x69, 0x4a, 0xf9, 0x30, 0x76, 0x9b, 0xbb, 0xcd,
+	0xbd, 0x56, 0x58, 0xd0, 0xe4, 0x26, 0x74, 0xb5, 0xf6, 0x30, 0x76, 0x57, 0x50, 0x58, 0x32, 0xfc,
+	0xf7, 0x2d, 0x29, 0xd9, 0x06, 0xe7, 0x75, 0x94, 0xce, 0xa9, 0xb6, 0xa1, 0x08, 0xff, 0x2e, 0xac,
+	0x6b, 0x95, 0xe7, 0x2c, 0xa6, 0xe9, 0x52, 0xbd, 0x3b, 0x30, 0xd0, 0x7a, 0xdf, 0x0a, 0xc1, 0x97,
+	0xaa, 0x7d, 0x00, 0x9b, 0xb6, 0x9a, 0xa0, 0xd3, 0xa5, 0xaa, 0xdf, 0x80, 0x6b, 0xdf, 0xfc, 0x2c,
+	0xc9, 0x45, 0x48, 0xf3, 0x19, 0xcb, 0x72, 0x4a, 0x6e, 0x97, 0x27, 0x5a, 0x7b, 0xbd, 0x07, 0xeb,
+	0xc1, 0xc8, 0x56, 0x35, 0x16, 0xfe, 0x69, 0xc2, 0xa0, 0x22, 0x20, 0xeb, 0xb0, 0x52, 0x80, 0xb4,
+	0x32, 0x8c, 0x09, 0x81, 0xd5, 0x17, 0xd1, 0x94, 0x22, 0x32, 0xdd, 0x10, 0xbf, 0x89, 0x0b, 0x6d,
+	0xe9, 0xdb, 0x48, 0x70, 0xb7, 0x85, 0x6c, 0x43, 0x4a, 0xc9, 0x68, 0x46, 0xc7, 0x52, 0xb2, 0xaa,
+	0x24, 0x9a, 0x24, 0xb7, 0xc0, 0x91, 0x4a, 0xb9, 0xeb, 0xa0, 0x3f, 0x83, 0xc2, 0x1f, 0xc9, 0x0d,
+	0x95, 0x4c, 0x2a, 0x49, 0xfd, 0xdc, 0x5d, 0x5b, 0x50, 0x92, 0xdc, 0x50, 0xc9, 0xc8, 0x5d, 0x58,
+	0x7b, 0xc2, 0xa3, 0x2c, 0xce, 0xdd, 0xf6, 0x42, 0x68, 0xc8, 0x0e, 0xb5, 0x54, 0xfa, 0x72, 0x98,
+	0x45, 0x27, 0x29, 0x8d, 0xdd, 0xce, 0x6e, 0x73, 0xcf, 0x09, 0x0d, 0xe9, 0xff, 0xd9, 0x84, 0xbe,
+	0x7d, 0xfd, 0x95, 0x82, 0xf6, 0xa0, 0x33, 0xcc, 0x9f, 0x26, 0xa9, 0xa0, 0x2a, 0x6a, 0x27, 0x2c,
+	0x68, 0xb2, 0x03, 0xf0, 0x7c, 0x9e, 0x8a, 0x64, 0xff, 0x94, 0x8e, 0xcf, 0x30, 0x72, 0x27, 0xb4,
+	0x38, 0x08, 0x0b, 0xe3, 0xe2, 0xc5, 0x7c, 0xea, 0x3a, 0xca, 0x15, 0x4d, 0xca, 0x93, 0x32, 0xc5,
+	0x98, 0x0d, 0x19, 0xb6, 0xbc, 0xcf, 0xe2, 0x90, 0x7b, 0xe0, 0x48, 0xca, 0xc4, 0xba, 0x59, 0x81,
+	0x4d, 0x4a, 0x42, 0x25, 0xf7, 0x43, 0xd8, 0x58, 0x14, 0xd5, 0xc2, 0x2a, 0xaa, 0x48, 0xc5, 0xa5,
+	0x08, 0xdb, 0xb9, 0x56, 0xc5, 0x39, 0xff, 0xf7, 0x26, 0x6c, 0xda, 0x46, 0x95, 0xfe, 0xa2, 0xd5,
+	0xf7, 0x60, 0x4d, 0x15, 0xb4, 0xee, 0x1e, 0x4d, 0x49, 0xc0, 0xe4, 0x17, 0x02, 0xa9, 0xca, 0xa4,
+	0xa0, 0x8d, 0xec, 0x20, 0x12, 0x91, 0x2e, 0x94, 0x82, 0x36, 0xb2, 0x1f, 0x19, 0x8f, 0x11, 0x2d,
+	0x2d, 0x93, 0xb4, 0xff, 0x87, 0x95, 0x39, 0x59, 0x0d, 0x57, 0x2d, 0xd7, 0xcb, 0x03, 0x5c, 0x40,
+	0x7f, 0x75, 0x39, 0xfa, 0xce, 0x02, 0xfa, 0xf2, 0x6e, 0x1b, 0xfd, 0xd3, 0x12, 0x7d, 0x23, 0xba,
+	0x22, 0xfa, 0xdb, 0xe0, 0xec, 0xb3, 0x94, 0x99, 0x4e, 0x52, 0x84, 0xed, 0xf2, 0x6a, 0x35, 0x27,
+	0x65, 0xcf, 0x63, 0x99, 0x5f, 0xad, 0xe7, 0x55, 0x63, 0xe8, 0x9e, 0xff, 0x75, 0xa5, 0xec, 0x79,
+	0x14, 0x5c, 0x09, 0xc4, 0x6d, 0x70, 0x86, 0xd3, 0x68, 0x62, 0x52, 0xa9, 0x08, 0xf4, 0x33, 0x11,
+	0xf4, 0x15, 0x4f, 0x8b, 0x7e, 0x57, 0xa4, 0x1c, 0xab, 0xc3, 0x4c, 0xe0, 0x2d, 0x54, 0xa7, 0xb1,
+	0x64, 0x90, 0x5d, 0xe8, 0x85, 0xf4, 0x3c, 0xa1, 0xef, 0x46, 0x22, 0x12, 0x14, 0xeb, 0xde, 0x09,
+	0x6d, 0x16, 0xf1, 0xa1, 0xaf, 0xc8, 0x90, 0x4e, 0x23, 0x7e, 0xe6, 0xb6, 0xd1, 0x44, 0x85, 0xb7,
+	0xbc, 0xc3, 0x65, 0x62, 0xf7, 0x39, 0x8d, 0x04, 0x7d, 0x99, 0x4c, 0xa9, 0xdb, 0xc5, 0xc8, 0x2c,
+	0x8e, 0x7f, 0x00, 0x37, 0x34, 0x02, 0xfb, 0x91, 0xa0, 0x13, 0xc6, 0x13, 0x9a, 0x17, 0x30, 0xde,
+	0xab, 0xc2, 0x58, 0x66, 0x5d, 0xeb, 0x5e, 0x18, 0x24, 0xf7, 0x60, 0xc3, 0xb0, 0x8e, 0x23, 0x4e,
+	0xb3, 0xe5, 0x6f, 0xc4, 0xdf, 0xab, 0x65, 0x81, 0x98, 0x23, 0x35, 0xd8, 0x3d, 0xe8, 0x18, 0x33,
+	0xba, 0x95, 0x0a, 0x5a, 0x86, 0xaa, 0x5f, 0x17, 0x4c, 0x40, 0x2b, 0x34, 0x24, 0x9e, 0xe2, 0x09,
+	0xe3, 0x89, 0xb8, 0xd0, 0xb5, 0x52, 0xd0, 0x45, 0x22, 0x1d, 0x2b, 0x91, 0x32, 0x31, 0xf9, 0xeb,
+	0x84, 0x8b, 0x79, 0x94, 0x22, 0xf0, 0x9d, 0xb0, 0x64, 0xc8, 0xc4, 0x18, 0xff, 0x64, 0x52, 0x15,
+	0xea, 0x36, 0x4b, 0xa5, 0x2e, 0x4e, 0x38, 0x1d, 0x0b, 0xa9, 0x41, 0x94, 0x86, 0xc5, 0x92, 0xb7,
+	0x0e, 0xc7, 0x2c, 0xc3, 0x9c, 0x74, 0x43, 0xfc, 0xc6, 0x5b, 0xc7, 0x2c, 0x3b, 0x66, 0x49, 0x26,
+	0x30, 0x1f, 0xb2, 0x1c, 0x0c, 0x43, 0x82, 0xf6, 0x8c, 0x9e, 0xd3, 0xd4, 0x05, 0x0c, 0x40, 0x11,
+	0x76, 0x13, 0xf4, 0xaa, 0x7d, 0x7b, 0x13, 0xba, 0x4f, 0x53, 0xc6, 0xf8, 0xe8, 0x94, 0xbd, 0x73,
+	0xfb, 0x2a, 0x86, 0x82, 0x61, 0x97, 0xc5, 0x00, 0x65, 0x4b, 0xca, 0x62, 0x7d, 0xb1, 0x2c, 0xc8,
+	0x23, 0x68, 0x7f, 0x3f, 0x13, 0x09, 0xcb, 0x72, 0xf7, 0x1a, 0xe6, 0x7e, 0xa7, 0x96, 0xfb, 0x40,
+	0x2b, 0x1c, 0x66, 0x82, 0x5f, 0x84, 0x46, 0xdd, 0x7a, 0x94, 0x36, 0xfe, 0xf3, 0x51, 0xfa, 0x18,
+	0x3a, 0xfb, 0xa7, 0x49, 0x1a, 0x73, 0x9a, 0xb9, 0x9b, 0xcb, 0xca, 0xab, 0x50, 0xf1, 0x1e, 0x43,
+	0xdf, 0xbe, 0x8f, 0x6c, 0x40, 0xeb, 0x8c, 0x5e, 0x60, 0xcd, 0x74, 0x43, 0xf9, 0x29, 0xa1, 0x3b,
+	0xb7, 0xa7, 0x0a, 0x12, 0x8f, 0x57, 0x1e, 0x35, 0xfd, 0x1f, 0x60, 0xcb, 0x58, 0x7c, 0xc9, 0x29,
+	0x35, 0xbb, 0xd0, 0x6d, 0x18, 0x1c, 0xfe, 0x32, 0x4e, 0xe7, 0x31, 0x1d, 0xe2, 0xf4, 0xc0, 0x2a,
+	0x6f, 0x85, 0x55, 0xa6, 0x34, 0x7b, 0x40, 0x67, 0xe2, 0x14, 0xcd, 0x3a, 0xa1, 0x22, 0xfc, 0xdf,
+	0x5a, 0xd0, 0x31, 0xde, 0xd6, 0xca, 0x57, 0x82, 0xab, 0xef, 0x2b, 0x0a, 0xd8, 0xe2, 0x14, 0xc5,
+	0xd8, 0xaa, 0x3e, 0xaa, 0xaf, 0x69, 0x16, 0x33, 0xf9, 0x7a, 0xac, 0xaa, 0x92, 0x37, 0xb4, 0x4c,
+	0x23, 0x82, 0x36, 0x54, 0xcf, 0x40, 0x2b, 0x34, 0xa4, 0xb4, 0xb4, 0xcf, 0x62, 0xaa, 0x9f, 0x4b,
+	0xfc, 0x2e, 0xe7, 0x53, 0xdb, 0x9e, 0x4f, 0xbb, 0xd0, 0x3b, 0xa0, 0xf9, 0x98, 0x27, 0x08, 0xa2,
+	0xae, 0x48, 0x9b, 0x25, 0x5f, 0x2f, 0x3d, 0x61, 0x54, 0x55, 0x6a, 0x4a, 0xda, 0x53, 0xb3, 0x49,
+	0x97, 0xa4, 0x9a, 0x4a, 0xcb, 0x4b, 0x72, 0xcf, 0xec, 0x37, 0x7d, 0xcc, 0x2a, 0x09, 0x6a, 0x0f,
+	0xa7, 0x59, 0x72, 0xaa, 0x45, 0x38, 0xa8, 0x15, 0xe1, 0x0e, 0xc0, 0xab, 0x59, 0xbc, 0x50, 0xa4,
+	0x25, 0xc7, 0x7f, 0x0a, 0xc4, 0xac, 0xa4, 0xd9, 0x5b, 0x66, 0xd2, 0x5a, 0x59, 0x63, 0x9b, 0x0b,
+	0x6b, 0x2c, 0xb6, 0x64, 0xf6, 0x96, 0x99, 0x89, 0x2e, 0xbf, 0x7d, 0x0a, 0x5b, 0xa3, 0xe8, 0xbc,
+	0x5c, 0x95, 0xf5, 0xf4, 0x93, 0xdd, 0xc3, 0x39, 0xe2, 0xab, 0xcc, 0x18, 0x52, 0x42, 0x75, 0xc8,
+	0xf9, 0xf3, 0x7c, 0xa2, 0xcd, 0x68, 0xaa, 0x7a, 0x75, 0x6b, 0xe1, 0xea, 0x07, 0x7f, 0xb5, 0x8b,
+	0xfd, 0x78, 0xa4, 0x56, 0x77, 0xd9, 0x04, 0x47, 0x54, 0xef, 0x9b, 0xd7, 0x82, 0xea, 0xf2, 0xec,
+	0x2d, 0x6c, 0xaa, 0x7e, 0x83, 0x7c, 0x0a, 0x5d, 0xa3, 0x9e, 0x93, 0xb5, 0xe0, 0x70, 0x3a, 0x13,
+	0x17, 0xde, 0x8d, 0x60, 0xd9, 0xea, 0xeb, 0x37, 0xc8, 0x87, 0xd0, 0x3e, 0xa2, 0x7a, 0xb5, 0x0b,
+	0x2a, 0x4b, 0xb7, 0x57, 0x5d, 0x3c, 0xfd, 0x06, 0x79, 0x08, 0x3d, 0xad, 0x8b, 0xaf, 0x36, 0x09,
+	0x6a, 0xdb, 0xb7, 0x57, 0xdf, 0xba, 0xfc, 0x06, 0xf9, 0x04, 0x36, 0x8d, 0x57, 0x98, 0xd7, 0xef,
+	0xc4, 0xf4, 0x92, 0x68, 0xda, 0xc1, 0x48, 0xf0, 0x24, 0x9b, 0xf8, 0x0d, 0x72, 0x17, 0xba, 0x12,
+	0x6f, 0xbd, 0x66, 0x57, 0xa3, 0xf4, 0xda, 0x41, 0x48, 0xf3, 0x79, 0x2a, 0xd0, 0xf9, 0xbe, 0xfa,
+	0x13, 0x83, 0x92, 0x37, 0x97, 0xd9, 0x2c, 0x74, 0x6f, 0x23, 0x92, 0xea, 0x15, 0x5f, 0x0b, 0x86,
+	0x99, 0x78, 0xf8, 0xb9, 0xb7, 0x30, 0x7a, 0xca, 0x9b, 0xf5, 0x63, 0x5f, 0x15, 0xdb, 0xd6, 0xb0,
+	0x5b, 0xe4, 0xcd, 0x55, 0x83, 0x96, 0x86, 0x4a, 0x85, 0x9e, 0x65, 0xb5, 0x54, 0xd4, 0x36, 0x12,
+	0xbf, 0x41, 0xbe, 0x80, 0xc1, 0x11, 0xb5, 0x5e, 0xd9, 0xe2, 0x94, 0x17, 0x2c, 0x7d, 0x81, 0x11,
+	0x84, 0x5e, 0x79, 0xec, 0xa2, 0x70, 0xa5, 0x3e, 0x2c, 0xfd, 0x06, 0xb9, 0x05, 0xeb, 0xca, 0xed,
+	0x9a, 0xba, 0xe5, 0xf9, 0x47, 0xd0, 0x97, 0x18, 0x14, 0x2a, 0x75, 0x4b, 0xb6, 0xf6, 0x97, 0xb0,
+	0x65, 0x5d, 0x2f, 0xc7, 0xe7, 0x0b, 0x1c, 0x32, 0xc1, 0x25, 0x13, 0xd5, 0x83, 0x60, 0x64, 0x34,
+	0xfc, 0x06, 0xf9, 0x5a, 0x79, 0xae, 0x27, 0x38, 0xd9, 0x0c, 0x16, 0x57, 0x84, 0xff, 0x89, 0xfc,
+	0x0e, 0xc0, 0x11, 0x15, 0x66, 0xc8, 0x42, 0x50, 0x74, 0x92, 0xd7, 0x2d, 0x5c, 0xc6, 0x4c, 0xf4,
+	0xac, 0xee, 0x25, 0xa5, 0xcc, 0xdb, 0x0e, 0x2e, 0x69, 0x6b, 0xbf, 0x41, 0xee, 0xc3, 0xa0, 0xf2,
+	0xe7, 0x98, 0x5c, 0x0f, 0x2e, 0xfb, 0xb3, 0x6c, 0xc3, 0x70, 0x1f, 0xae, 0x59, 0xb6, 0xe4, 0xd4,
+	0x20, 0x5b, 0x41, 0x7d, 0xf8, 0x58, 0x47, 0x9e, 0xec, 0xc0, 0xd6, 0x98, 0x4d, 0x83, 0x49, 0x22,
+	0x4e, 0xe7, 0x27, 0xc1, 0x84, 0x3d, 0x60, 0x01, 0x9f, 0x8d, 0x7f, 0x6a, 0x07, 0x5f, 0xe1, 0x5f,
+	0xf4, 0x93, 0x35, 0xfc, 0xf9, 0xec, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x14, 0x63, 0xde, 0x12,
+	0xd0, 0x0f, 0x00, 0x00,
 }

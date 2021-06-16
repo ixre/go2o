@@ -126,13 +126,17 @@ var jwtSecret = []byte("")
 
 func getJWTSecret() []byte {
 	if len(jwtSecret) == 0 {
-		trans, cli, _ := service.RegistryServiceClient()
-		defer trans.Close()
-		value, _ := cli.GetValue(context.TODO(), &proto.String{Value: registry.SysJWTSecret})
-		if len(value.Value) == 0 {
-			log.Println("[ Go2o][ Warning]: jwt secret is empty")
+		trans, cli, err := service.RegistryServiceClient()
+		if err == nil {
+			defer trans.Close()
+			value, _ := cli.GetValue(context.TODO(), &proto.String{Value: registry.SysJWTSecret})
+			if len(value.Value) == 0 {
+				log.Println("[ Go2o][ Warning]: jwt secret is empty")
+			}
+			jwtSecret = []byte(value.Value)
+		} else {
+			log.Println("[ Go2o][ Warning]: get jwt secret error: ", err.Error())
 		}
-		jwtSecret = []byte(value.Value)
 	}
 	return jwtSecret
 }

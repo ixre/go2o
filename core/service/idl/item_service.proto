@@ -7,108 +7,108 @@ import "message/item_dto.proto";
 
 
 message ItemDetailRequest {
-    sint64 itemId = 1;
-    sint32 iType = 2;
+  sint64 itemId = 1;
+  sint32 iType = 2;
 }
 
 // 商品服务
 service ItemService {
-    // 获取商品
-    rpc GetItem (Int64) returns (SUnifiedViewItem) {
-    }
-    // 保存商品
-    rpc SaveItem (SUnifiedViewItem) returns (Result) {
-    }
-    // 根据SKU获取商品
-    rpc GetItemBySku (ItemBySkuRequest) returns (SUnifiedViewItem) {
-    }
-    // 获取商品用于销售的快照和信息
-    rpc GetItemSnapshot (Int64) returns (SItemSnapshot) {
-    }
-    // 获取商品交易快照,参数传递:snapshotId
-    rpc GetTradeSnapshot (Int64) returns (STradeSnapshot) {
-    }
-    // 获取SKU
-    rpc GetSku (SkuId) returns (SSku) {
-    }
-    // 设置商品货架状态
-    rpc ReviewItem (ItemReviewRequest) returns (Result) {
-    }
-    // 保存商品的会员价
-    rpc SaveLevelPrices (SaveLevelPriceRequest) returns (Result) {
-    }
-    // 商品标记为违规
-    rpc SignAsIllegal (ItemIllegalRequest) returns (Result) {
-    }
-    // 设置商品货架状态
-    rpc SetShelveState (ShelveStateRequest) returns (Result) {
-    }
-    // 获取商品详细数据
-    rpc GetItemDetailData (ItemDetailRequest) returns (String) {
-    }
-    // 根据销售标签获取指定数目的商品
-    rpc GetValueGoodsBySaleLabel (GetItemsByLabelRequest) returns (PagingShopGoodsResponse) {
-    }
-    // 获取店铺分页上架的商品
-    rpc GetShopPagedOnShelvesGoods (PagingShopGoodsRequest) returns (PagingShopGoodsResponse) {
-    }
-    // 获取上架商品数据（分页）
-    rpc GetPagedOnShelvesItem (PagingGoodsRequest) returns (PagingGoodsResponse) {
-    }
-    // 获取上架商品数据
-    rpc GetItems (GetItemsRequest) returns (PagingGoodsResponse) {
-    }
+  // 获取商品
+  rpc GetItem (Int64) returns (SUnifiedViewItem) {
+  }
+  // 保存商品
+  rpc SaveItem (SUnifiedViewItem) returns (Result) {
+  }
+  // 根据SKU获取商品
+  rpc GetItemBySku (ItemBySkuRequest) returns (SUnifiedViewItem) {
+  }
+  // 获取商品用于销售的快照和信息
+  rpc GetItemSnapshot (Int64) returns (SItemSnapshot) {
+  }
+  // 获取商品交易快照,参数传递:snapshotId
+  rpc GetTradeSnapshot (Int64) returns (STradeSnapshot) {
+  }
+  // 获取SKU
+  rpc GetSku (SkuId) returns (SSku) {
+  }
+  // 设置商品货架状态
+  rpc ReviewItem (ItemReviewRequest) returns (Result) {
+  }
+  // 保存商品的会员价
+  rpc SaveLevelPrices (SaveLevelPriceRequest) returns (Result) {
+  }
+  // 商品标记为违规
+  rpc SignAsIllegal (ItemIllegalRequest) returns (Result) {
+  }
+  // 设置商品货架状态
+  rpc SetShelveState (ShelveStateRequest) returns (Result) {
+  }
+  // 获取商品详细数据
+  rpc GetItemDetailData (ItemDetailRequest) returns (String) {
+  }
+  // 根据销售标签获取指定数目的商品
+  rpc GetValueGoodsBySaleLabel (GetItemsByLabelRequest) returns (PagingShopGoodsResponse) {
+  }
+  // 获取店铺分页上架的商品
+  rpc GetShopPagedOnShelvesGoods (PagingShopGoodsRequest) returns (PagingShopGoodsResponse) {
+  }
+  // 获取上架商品数据（分页）
+  rpc GetPagedOnShelvesItem (PagingGoodsRequest) returns (PagingGoodsResponse) {
+  }
+  // 获取上架商品数据
+  rpc GetItems (GetItemsRequest) returns (PagingGoodsResponse) {
+  }
 
-    // 获取批发价格数组
-    rpc GetWholesalePriceArray (SkuId) returns (SWsSkuPriceListResponse) {
-    }
-    // 保存批发价格
-    rpc SaveWholesalePrice (SaveSkuPricesRequest) returns (Result) {
-    }
-    // 获取批发折扣数组
-    rpc GetWholesaleDiscountArray (GetWsDiscountRequest) returns (SWsItemDiscountListResponse) {
-    }
-    // 保存批发折扣
-    rpc SaveWholesaleDiscount (SaveItemDiscountRequest) returns (Result) {
-    }
+  // 获取批发价格数组
+  rpc GetWholesalePriceArray (SkuId) returns (SWsSkuPriceListResponse) {
+  }
+  // 保存批发价格
+  rpc SaveWholesalePrice (SaveSkuPricesRequest) returns (Result) {
+  }
+  // 获取批发折扣数组
+  rpc GetWholesaleDiscountArray (GetWsDiscountRequest) returns (SWsItemDiscountListResponse) {
+  }
+  // 保存批发折扣
+  rpc SaveWholesaleDiscount (SaveItemDiscountRequest) returns (Result) {
+  }
 
-    // 获取所有的商品标签
-    rpc GetAllSaleLabels (Empty) returns (ItemLabelListResponse) {
-    }
-    // 获取销售标签
-    rpc GetSaleLabel (IdOrName) returns (SItemLabel) {
-    }
-    // 保存销售标签
-    rpc SaveSaleLabel (SItemLabel) returns (Result) {
-    }
-    // 删除销售标签
-    rpc DeleteSaleLabel (Int64) returns (Result) {
-    }
+  // 获取所有的商品标签
+  rpc GetAllSaleLabels (Empty) returns (ItemLabelListResponse) {
+  }
+  // 获取销售标签
+  rpc GetSaleLabel (IdOrName) returns (SItemLabel) {
+  }
+  // 保存销售标签
+  rpc SaveSaleLabel (SItemLabel) returns (Result) {
+  }
+  // 删除销售标签
+  rpc DeleteSaleLabel (Int64) returns (Result) {
+  }
 
-    // 根据分页销售标签获取指定数目的商品
-    rpc GetPagedValueGoodsBySaleLabel_ (SaleLabelItemsRequest_) returns (PagingGoodsResponse) {
-    }
+  // 根据分页销售标签获取指定数目的商品
+  rpc GetPagedValueGoodsBySaleLabel_ (SaleLabelItemsRequest_) returns (PagingGoodsResponse) {
+  }
 }
 
 
 message PagingGoodsRequest {
-    EItemSalesType ItemType = 1;
-    int64 SellerId = 2;
-    int64 CategoryId = 3;
-    // 关键词
-    string Keyword = 4;
-    SPagingParams Params = 5;
+  EItemSalesType ItemType = 1;
+  int64 SellerId = 2;
+  int64 CategoryId = 3;
+  // 关键词
+  string Keyword = 4;
+  SPagingParams Params = 5;
 }
 
 message PagingShopGoodsRequest {
-    int64 ShopId = 1;
-    int64 CategoryId = 2;
-    SPagingParams Params = 3;
+  int64 ShopId = 1;
+  int64 CategoryId = 2;
+  SPagingParams Params = 3;
 }
 
 message SaleLabelItemsRequest_ {
-    int64 ShopId = 1;
-    int32 LabelId = 2;
-    SPagingParams Params = 3;
+  int64 ShopId = 1;
+  int32 LabelId = 2;
+  SPagingParams Params = 3;
 }
 

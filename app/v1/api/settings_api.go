@@ -36,7 +36,7 @@ func (a SettingsApi) registerSettings(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		mp, _ := cli.FindRegistries(context.TODO(), &proto.String{Value: "member_register"})
-		return mp
+		return mp.Value
 	}
 	return api.ResponseWithCode(1, "no register settings")
 }

@@ -30,7 +30,7 @@ func ConfigureClient(c clientv3.Config) {
 		os.Exit(1)
 	}
 	selector = s
-	tryConnect(10)
+	tryConnect(30)
 }
 
 // 尝试连接服务,如果连接不成功,则退出

@@ -74,7 +74,7 @@ QQ群：**338164725**
 
 ## Deploy by docker-compose
 
-[docker-compose.yaml](./docker/docker-compose.yaml)
+[docker-compose.yaml](container/docker-compose.yaml)
 
 ## Deploy
 ### 1. Import database

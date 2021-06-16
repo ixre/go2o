@@ -123,7 +123,7 @@ type IMemberRepo interface {
 	GetLevelValueByExp(mchId int64, exp int64) int
 
 	// 获取会员升级记录
-	GetLevelUpLog(id int32) *LevelUpLog
+	GetLevelUpLog(id int) *LevelUpLog
 
 	// 保存会员升级记录
 	SaveLevelUpLog(l *LevelUpLog) (int32, error)
@@ -177,6 +177,6 @@ type IMemberRepo interface {
 	DeleteLockInfos(memberId int64) error
 	// 注册解锁任务
 	RegisterUnlockJob(info *MmLockInfo)
-	//　获取会员邀请的会员编号列表
+	// 获取会员邀请的会员编号列表
 	GetInviteChildren(id int64) []int64
 }

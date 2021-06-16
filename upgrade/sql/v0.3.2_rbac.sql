@@ -18,7 +18,7 @@ CREATE TABLE "public".perm_res (
        PRIMARY KEY (id));
 COMMENT ON COLUMN "public".perm_res.id IS '资源ID';
 COMMENT ON COLUMN "public".perm_res.name IS '资源名称';
-COMMENT ON COLUMN "public".perm_res.res_type IS '资源类型, 0: 资源　 1: 菜单  2:　 按钮';
+COMMENT ON COLUMN "public".perm_res.res_type IS '资源类型, 0: 资源  1: 菜单  2:  按钮';
 COMMENT ON COLUMN "public".perm_res.pid IS '上级菜单ID';
 COMMENT ON COLUMN "public".perm_res.depth IS '深度/层级';
 COMMENT ON COLUMN "public".perm_res."key" IS '资源键';

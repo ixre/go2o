@@ -30,7 +30,7 @@ func (m *SmsApiSaveRequest) Reset()         { *m = SmsApiSaveRequest{} }
 func (m *SmsApiSaveRequest) String() string { return proto.CompactTextString(m) }
 func (*SmsApiSaveRequest) ProtoMessage()    {}
 func (*SmsApiSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{0}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{0}
 }
 func (m *SmsApiSaveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SmsApiSaveRequest.Unmarshal(m, b)
@@ -64,7 +64,7 @@ func (m *SmsApiSaveRequest) GetApi() *SSmsApi {
 	return nil
 }
 
-// 　 登录结果
+//  登录结果
 type SuperLoginResponse struct {
 	ErrCode              int32    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
@@ -78,7 +78,7 @@ func (m *SuperLoginResponse) Reset()         { *m = SuperLoginResponse{} }
 func (m *SuperLoginResponse) String() string { return proto.CompactTextString(m) }
 func (*SuperLoginResponse) ProtoMessage()    {}
 func (*SuperLoginResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{1}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{1}
 }
 func (m *SuperLoginResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SuperLoginResponse.Unmarshal(m, b)
@@ -131,7 +131,7 @@ func (m *BoardHookSaveRequest) Reset()         { *m = BoardHookSaveRequest{} }
 func (m *BoardHookSaveRequest) String() string { return proto.CompactTextString(m) }
 func (*BoardHookSaveRequest) ProtoMessage()    {}
 func (*BoardHookSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{2}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{2}
 }
 func (m *BoardHookSaveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BoardHookSaveRequest.Unmarshal(m, b)
@@ -178,7 +178,7 @@ func (m *AreaStringRequest) Reset()         { *m = AreaStringRequest{} }
 func (m *AreaStringRequest) String() string { return proto.CompactTextString(m) }
 func (*AreaStringRequest) ProtoMessage()    {}
 func (*AreaStringRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{3}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{3}
 }
 func (m *AreaStringRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AreaStringRequest.Unmarshal(m, b)
@@ -230,7 +230,7 @@ func (m *AreaListResponse) Reset()         { *m = AreaListResponse{} }
 func (m *AreaListResponse) String() string { return proto.CompactTextString(m) }
 func (*AreaListResponse) ProtoMessage()    {}
 func (*AreaListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{4}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{4}
 }
 func (m *AreaListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AreaListResponse.Unmarshal(m, b)
@@ -268,7 +268,7 @@ func (m *StringListResponse) Reset()         { *m = StringListResponse{} }
 func (m *StringListResponse) String() string { return proto.CompactTextString(m) }
 func (*StringListResponse) ProtoMessage()    {}
 func (*StringListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{5}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{5}
 }
 func (m *StringListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StringListResponse.Unmarshal(m, b)
@@ -306,7 +306,7 @@ func (m *GetAreaNamesRequest) Reset()         { *m = GetAreaNamesRequest{} }
 func (m *GetAreaNamesRequest) String() string { return proto.CompactTextString(m) }
 func (*GetAreaNamesRequest) ProtoMessage()    {}
 func (*GetAreaNamesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{6}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{6}
 }
 func (m *GetAreaNamesRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetAreaNamesRequest.Unmarshal(m, b)
@@ -345,7 +345,7 @@ func (m *UserPwd) Reset()         { *m = UserPwd{} }
 func (m *UserPwd) String() string { return proto.CompactTextString(m) }
 func (*UserPwd) ProtoMessage()    {}
 func (*UserPwd) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{7}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{7}
 }
 func (m *UserPwd) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserPwd.Unmarshal(m, b)
@@ -398,7 +398,7 @@ func (m *SSsoApp) Reset()         { *m = SSsoApp{} }
 func (m *SSsoApp) String() string { return proto.CompactTextString(m) }
 func (*SSsoApp) ProtoMessage()    {}
 func (*SSsoApp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{8}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{8}
 }
 func (m *SSsoApp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSsoApp.Unmarshal(m, b)
@@ -460,7 +460,7 @@ func (m *SArea) Reset()         { *m = SArea{} }
 func (m *SArea) String() string { return proto.CompactTextString(m) }
 func (*SArea) ProtoMessage()    {}
 func (*SArea) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{9}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{9}
 }
 func (m *SArea) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SArea.Unmarshal(m, b)
@@ -528,7 +528,7 @@ func (m *SSmsApi) Reset()         { *m = SSmsApi{} }
 func (m *SSmsApi) String() string { return proto.CompactTextString(m) }
 func (*SSmsApi) ProtoMessage()    {}
 func (*SSmsApi) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{10}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{10}
 }
 func (m *SSmsApi) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSmsApi.Unmarshal(m, b)
@@ -631,7 +631,7 @@ func (m *SMobileAppConfig) Reset()         { *m = SMobileAppConfig{} }
 func (m *SMobileAppConfig) String() string { return proto.CompactTextString(m) }
 func (*SMobileAppConfig) ProtoMessage()    {}
 func (*SMobileAppConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{11}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{11}
 }
 func (m *SMobileAppConfig) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMobileAppConfig.Unmarshal(m, b)
@@ -741,7 +741,7 @@ func (m *SWxApiConfig) Reset()         { *m = SWxApiConfig{} }
 func (m *SWxApiConfig) String() string { return proto.CompactTextString(m) }
 func (*SWxApiConfig) ProtoMessage()    {}
 func (*SWxApiConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{12}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{12}
 }
 func (m *SWxApiConfig) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SWxApiConfig.Unmarshal(m, b)
@@ -856,7 +856,7 @@ func (m *PaymentPlatformResponse) Reset()         { *m = PaymentPlatformResponse
 func (m *PaymentPlatformResponse) String() string { return proto.CompactTextString(m) }
 func (*PaymentPlatformResponse) ProtoMessage()    {}
 func (*PaymentPlatformResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{13}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{13}
 }
 func (m *PaymentPlatformResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PaymentPlatformResponse.Unmarshal(m, b)
@@ -897,7 +897,7 @@ func (m *PaymentPlatform) Reset()         { *m = PaymentPlatform{} }
 func (m *PaymentPlatform) String() string { return proto.CompactTextString(m) }
 func (*PaymentPlatform) ProtoMessage()    {}
 func (*PaymentPlatform) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{14}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{14}
 }
 func (m *PaymentPlatform) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PaymentPlatform.Unmarshal(m, b)
@@ -961,7 +961,7 @@ func (m *BankItem) Reset()         { *m = BankItem{} }
 func (m *BankItem) String() string { return proto.CompactTextString(m) }
 func (*BankItem) ProtoMessage()    {}
 func (*BankItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{15}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{15}
 }
 func (m *BankItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BankItem.Unmarshal(m, b)
@@ -1037,7 +1037,7 @@ func (m *SGlobMchSaleConf) Reset()         { *m = SGlobMchSaleConf{} }
 func (m *SGlobMchSaleConf) String() string { return proto.CompactTextString(m) }
 func (*SGlobMchSaleConf) ProtoMessage()    {}
 func (*SGlobMchSaleConf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_foundation_dto_4bc94988eefe1884, []int{16}
+	return fileDescriptor_foundation_dto_51b56777882e85a9, []int{16}
 }
 func (m *SGlobMchSaleConf) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SGlobMchSaleConf.Unmarshal(m, b)
@@ -1141,10 +1141,10 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("message/foundation_dto.proto", fileDescriptor_foundation_dto_4bc94988eefe1884)
+	proto.RegisterFile("message/foundation_dto.proto", fileDescriptor_foundation_dto_51b56777882e85a9)
 }
 
-var fileDescriptor_foundation_dto_4bc94988eefe1884 = []byte{
+var fileDescriptor_foundation_dto_51b56777882e85a9 = []byte{
 	// 1072 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x56, 0xdd, 0x6e, 0x1a, 0x47,
 	0x14, 0x16, 0xc6, 0x18, 0x18, 0xa7, 0x09, 0x4c, 0xdc, 0x06, 0x45, 0x56, 0xea, 0xae, 0xaa, 0x08,

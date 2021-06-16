@@ -25,5 +25,5 @@ go.sum
 output
 tmp
 api_docs
-docker/data
+container/data
 *.iml

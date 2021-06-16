@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -276,7 +277,7 @@ func (s *memberService) GetMemberLevel(_ context.Context, i *proto.Int32) (*prot
 // 保存会员等级信息
 func (s *memberService) SaveMemberLevel(_ context.Context, level *proto.SMemberLevel) (*proto.Result, error) {
 	lv := &member.Level{
-		ID:            int(level.ID),
+		ID:            int(level.Id),
 		Name:          level.Name,
 		RequireExp:    int(level.RequireExp),
 		ProgramSignal: level.ProgramSignal,
@@ -317,24 +318,21 @@ func (s *memberService) GetHighestLevel() member.Level {
 
 func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogRequest) (*proto.WalletLogResponse, error) {
 	m := s.repo.GetMember(r.MemberId)
-	v := m.GetAccount().GetWalletLog(int32(r.LogId))
-	if v != nil {
-		return &proto.WalletLogResponse{
-			LogId:       v.Id,
-			MemberId:    v.MemberId,
-			OuterNo:     v.OuterNo,
-			Kind:        int32(v.Kind),
-			Title:       v.Title,
-			Amount:      float64(v.Amount),
-			CsnFee:      float64(v.CsnFee),
-			ReviewState: v.ReviewState,
-			Remark:      v.Remark,
-			CreateTime:  v.CreateTime,
-			UpdateTime:  v.UpdateTime,
-			RelateUser:  v.RelateUser,
-		}, nil
-	}
-	return &proto.WalletLogResponse{}, nil
+	v := m.GetAccount().GetWalletLog(r.LogId)
+	return &proto.WalletLogResponse{
+		LogId:       v.Id,
+		MemberId:    r.MemberId,
+		OuterNo:     v.OuterNo,
+		Kind:        int32(v.Kind),
+		Title:       v.Title,
+		Amount:      float64(v.Value),
+		CsnFee:      float64(v.TradeFee),
+		ReviewState: int32(v.ReviewState),
+		Remark:      v.Remark,
+		CreateTime:  v.CreateTime,
+		UpdateTime:  v.UpdateTime,
+		RelateUser:  int64(v.OprUid),
+	}, nil
 }
 
 func (s *memberService) getMember(memberId int64) (
@@ -420,6 +418,28 @@ func (s *memberService) UpdateLevel(_ context.Context, r *proto.UpdateLevelReque
 		err = member.ErrNoSuchMember
 	} else {
 		err = m.ChangeLevel(int(r.Level), int(r.PaymentOrderId), r.Review)
+	}
+	return s.result(err), nil
+}
+
+func (s *memberService) ReviewLevelUpRequest(_ context.Context, r *proto.LevelUpReviewRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
+	var err error
+	if m == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		err = m.ReviewLevelUp(int(r.RequestId), r.ReviewPass)
+	}
+	return s.result(err), nil
+}
+
+func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelUpConfirmRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
+	var err error
+	if m == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		err = m.ConfirmLevelUp(int(r.RequestId))
 	}
 	return s.result(err), nil
 }
@@ -1199,7 +1219,7 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(int(r.AccountType), r.Title, int(r.AccountType), r.OuterNo, r.Remark)
+		err = acc.Refund(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1246,14 +1266,17 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	kind := member.KindWalletTakeOutToThirdPart
-	title := "充值到第三方账户"
-	if r.DrawToBank {
-		kind = member.KindWalletTakeOutToBankCard
+	title := ""
+	switch int(r.WithdrawKind) {
+	case wallet.KWithdrawToThirdPart:
+		title = "充值到第三方账户"
+	case wallet.KWithdrawToBankCard:
 		title = "提现到银行卡"
+	case wallet.KWithdrawExchange:
+		title = "提现到余额"
 	}
 	acc := m.GetAccount()
-	_, tradeNo, err := acc.RequestWithdrawal(kind, title,
+	_, tradeNo, err := acc.RequestWithdrawal(int(r.WithdrawKind), title,
 		int(r.Amount), int(r.TradeFee), r.AccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
@@ -1268,7 +1291,7 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogsResponse, error) {
 	//todo: 这里只返回了一条
 	latestApplyInfo := s.query.GetLatestWalletLogByKind(r.MemberId,
-		member.KindWalletTakeOutToBankCard)
+		wallet.KWithdrawToBankCard)
 	//if latestApplyInfo != nil {
 	//	var sText string
 	//	switch latestApplyInfo.ReviewState {
@@ -1486,7 +1509,7 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 
 func (s *memberService) parseLevelDto(src *member.Level) *proto.SMemberLevel {
 	return &proto.SMemberLevel{
-		ID:            int32(src.ID),
+		Id:            int32(src.ID),
 		Name:          src.Name,
 		RequireExp:    int32(src.RequireExp),
 		ProgramSignal: src.ProgramSignal,
@@ -1586,6 +1609,7 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 		Balance:           round(src.Balance, 2),
 		FreezeBalance:     round(src.FreezeBalance, 2),
 		ExpiredBalance:    round(src.ExpiredBalance, 2),
+		WalletCode:        src.WalletCode,
 		WalletBalance:     round(src.WalletBalance, 2),
 		FreezeWallet:      round(src.FreezeWallet, 2),
 		ExpiredWallet:     round(src.ExpiredWallet, 2),

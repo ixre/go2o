@@ -248,8 +248,9 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
 	if err := m.storage.Get(key, &e); err != nil {
-		//log.Println("-- mm",err)
-		if m.o.Get(memberId, e) != nil {
+		//log.("-- mm",err)
+		err = m.o.Get(memberId, e)
+		if err != nil {
 			return nil
 		}
 		m.storage.SetExpire(key, *e, DefaultCacheSeconds*3)
@@ -480,8 +481,8 @@ func (m *MemberRepoImpl) GetTodayTakeOutTimes(memberId int64) int {
 	b, e := tool.GetStartEndUnix(time.Now())
 	err := m.ExecScalar(`SELECT COUNT(0) FROM mm_wallet_log WHERE
         member_id= $1 AND kind IN($2,$3) AND create_time BETWEEN $4 AND $5`, &total,
-		memberId, member.KindWalletTakeOutToBankCard,
-		member.KindWalletTakeOutToThirdPart, b, e)
+		memberId, wallet.KWithdrawToBankCard,
+		wallet.KWithdrawToThirdPart, b, e)
 	if err != nil {
 		handleError(err)
 	}
@@ -505,7 +506,7 @@ func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
 	return &e
 }
 
-//　获取会员邀请的会员编号列表
+// 获取会员邀请的会员编号列表
 func (m *MemberRepoImpl) GetInviteChildren(id int64) []int64 {
 	arr := make([]int64, 0)
 	var d int64
@@ -560,7 +561,7 @@ func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
 }
 
 // 获取会员升级记录
-func (m *MemberRepoImpl) GetLevelUpLog(id int32) *member.LevelUpLog {
+func (m *MemberRepoImpl) GetLevelUpLog(id int) *member.LevelUpLog {
 	e := member.LevelUpLog{}
 	if m.o.Get(id, &e) == nil {
 		return &e

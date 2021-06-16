@@ -16,18 +16,16 @@ type (
 		//todo: will be removed
 		// 新建商店
 		CreateShop(*Shop) IShop
+		// 获取店铺
+		GetOnlineShop() IShop
+		// 获取门店
+		GetStore(id int) IShop
 
 		// 获取所有商店
 		GetShops() []IShop
 
 		// 获取营业中的商店
 		GetBusinessInShops() []IShop
-
-		// 获取店铺
-		GetOnlineShop() IShop
-
-		// 获取商店
-		GetShop(id int) IShop
 
 		// 根据名称获取商店
 		GetShopByName(name string) IShop

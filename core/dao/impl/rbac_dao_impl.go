@@ -439,6 +439,14 @@ func (p *rbacDaoImpl) SelectPermRes(where string, v ...interface{}) []*model.Per
 	return list
 }
 
+func (p *rbacDaoImpl) GetMaxResourceSortNum(parentId int) int {
+	var i int
+	p._orm.Connector().ExecScalar(
+		`SELECT MAX(sort_num) FROM perm_res
+ 		  WHERE pid = $1`, &i, parentId)
+	return i
+}
+
 // Save PermRes
 func (p *rbacDaoImpl) SavePermRes(v *model.PermRes) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))

@@ -6,6 +6,7 @@ import (
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"math"
@@ -91,7 +92,7 @@ func (a *accountImpl) walletRefund_(kind int, title string,
 	if err == nil {
 		a.value.WalletBalance += amount
 		// 退款不能加入到累计赠送金额
-		if kind != member.KindWalletTakeOutRefund &&
+		if kind != wallet.KWithdrawRefund &&
 			kind != member.KindRefund &&
 			amount > 0 {
 			a.value.TotalWalletAmount += amount
@@ -120,9 +121,9 @@ func (a *accountImpl) walletDiscount_(title string, amount float32, outerNo stri
 func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	amount2 int, tradeFee int, bankAccountNo string) (int32, string, error) {
 	amount := float32(amount2) / 100
-	if takeKind != member.KindWalletTakeOutToBalance &&
-		takeKind != member.KindWalletTakeOutToBankCard &&
-		takeKind != member.KindWalletTakeOutToThirdPart {
+	if takeKind != wallet.KWithdrawExchange &&
+		takeKind != wallet.KWithdrawToBankCard &&
+		takeKind != wallet.KWithdrawToThirdPart {
 		return 0, "", member.ErrNotSupportTakeOutBusinessKind
 	}
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -196,7 +197,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	}
 
 	// 提现至余额
-	if takeKind == member.KindWalletTakeOutToBalance {
+	if takeKind == wallet.KWithdrawExchange {
 		a.value.Balance += amount
 		v.ReviewState = enum.ReviewPass
 	}

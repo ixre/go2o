@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+const appName = "app_name"
 const appVersion = "app_version"
 const appAndroidVersion = "app_android_version"
 const appIOSVersion = "app_ios_version"
@@ -70,41 +71,47 @@ func (a AppApi) check(ctx api.Context) interface{} {
 }
 
 func (a *AppApi) init() *AppApi {
-	time.Sleep(time.Second * 5) // 等待RPC服务启动5秒
+	time.Sleep(time.Second * 15) // 等待RPC服务启动5秒
 	trans, cli, err := service.RegistryServiceClient()
 	if err == nil {
 		defer trans.Close()
-		cli.CreateRegistry(context.TODO(),
+		_, _ = cli.CreateRegistry(context.TODO(),
+			&proto.RegistryCreateRequest{
+				Key:          appName,
+				DefaultValue: "APP",
+				Description:  "APP名称",
+			})
+		_, _ = cli.CreateRegistry(context.TODO(),
 			&proto.RegistryCreateRequest{
 				Key:          appVersion,
 				DefaultValue: "1.0.0",
 				Description:  "APP版本号",
 			})
-		cli.CreateRegistry(context.TODO(),
+		_, _ = cli.CreateRegistry(context.TODO(),
 			&proto.RegistryCreateRequest{
 				Key:          appAndroidVersion,
 				DefaultValue: "1.0.0",
 				Description:  "安卓APP版本号",
 			})
-		cli.CreateRegistry(context.TODO(),
+		_, _ = cli.CreateRegistry(context.TODO(),
 			&proto.RegistryCreateRequest{
 				Key:          appIOSVersion,
 				DefaultValue: "1.0.0",
 				Description:  "苹果APP版本号",
 			})
-		cli.CreateRegistry(context.TODO(),
+		_, _ = cli.CreateRegistry(context.TODO(),
 			&proto.RegistryCreateRequest{
 				Key:          appReleaseInfo,
 				DefaultValue: "修复已知BUG\n界面调整",
 				Description:  "版本发布日志",
 			})
-		cli.CreateRegistry(context.TODO(),
+		_, _ = cli.CreateRegistry(context.TODO(),
 			&proto.RegistryCreateRequest{
 				Key:          appApkFileUrl,
 				DefaultValue: "",
 				Description:  "安卓APK文件下载地址",
 			})
-		cli.CreateRegistry(context.TODO(),
+		_, _ = cli.CreateRegistry(context.TODO(),
 			&proto.RegistryCreateRequest{
 				Key:          appIOSFileUrl,
 				DefaultValue: "",

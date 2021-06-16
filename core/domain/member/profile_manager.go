@@ -460,7 +460,7 @@ func (p *profileManagerImpl) checkBank(v *member.BankCard) error {
 	return nil
 }
 
-//　移除银行卡
+// 移除银行卡
 func (p *profileManagerImpl) RemoveBankCard(cardNo string) error {
 	if p.bankCardIsExists(cardNo) {
 		err := p.repo.RemoveBankCard(p.memberId, cardNo)

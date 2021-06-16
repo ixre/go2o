@@ -93,7 +93,7 @@ func (s *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 }
 
 // 获取商店
-func (s *shopManagerImpl) GetShop(shopId int) shop.IShop {
+func (s *shopManagerImpl) GetStore(shopId int) shop.IShop {
 	shops := s.GetShops()
 	for _, v := range shops {
 		if int(v.GetValue().Id) == shopId {
@@ -105,19 +105,14 @@ func (s *shopManagerImpl) GetShop(shopId int) shop.IShop {
 
 // 获取店铺
 func (s *shopManagerImpl) GetOnlineShop() shop.IShop {
-	for _, v := range s.GetShops() {
-		if v.Type() == shop.TypeOnlineShop {
-			return v
-		}
-	}
-	return nil
+	return s.repo.GetOnlineShopOfMerchant(int(s.merchant.GetAggregateRootId()))
 }
 
 // 删除门店
 func (s *shopManagerImpl) DeleteShop(shopId int32) error {
 	//todo : 检测订单数量
 	mchId := s.merchant.GetAggregateRootId()
-	sp := s.GetShop(int(shopId))
+	sp := s.GetStore(int(shopId))
 	if sp != nil {
 		switch sp.Type() {
 		case shop.TypeOfflineShop:

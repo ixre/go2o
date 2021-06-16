@@ -82,7 +82,7 @@ func (s *serverSelector) Next() (Node, error) {
 }
 
 func (s *serverSelector) Watch() {
-	//　监听变化,并动态处理节点
+	// 监听变化,并动态处理节点
 	ch := s.cli.Watch(context.TODO(), prefix, clientv3.WithPrefix())
 	for {
 		select {

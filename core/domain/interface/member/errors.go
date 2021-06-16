@@ -205,7 +205,7 @@ var (
 
 	ErrAccountNotEnoughAmount = domain.NewError("err_not_enough_amount", "账户余额不足")
 
-	ErrTakeOutState = domain.NewError("err_member_take_out_state", "提现申请状态错误")
+	ErrWithdrawState = domain.NewError("err_member_take_out_state", "提现申请状态错误")
 
 	ErrNotSupportTakeOutBusinessKind = domain.NewError("err_not_support_take_out_business_kind", "不支持的提现业务类型")
 

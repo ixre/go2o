@@ -64,7 +64,7 @@ type PermRes struct {
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 资源名称
 	Name string `db:"name"`
-	// 资源类型, 0: 目录 1: 资源　2: 菜单 3:　 按钮
+	// 资源类型, 0: 目录 1: 资源 2: 菜单 3:  按钮
 	ResType int16 `db:"res_type"`
 	// 上级菜单ID
 	Pid int64 `db:"pid"`

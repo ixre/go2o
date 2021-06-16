@@ -134,7 +134,7 @@ func (s *itemService) GetItemSnapshot(_ context.Context, id *proto.Int64) (*prot
 		ret := parser.ParseItemSnapshotDto(sn)
 		ret.Stock.SaleNum = item.GetValue().SaleNum
 		ret.Stock.StockNum = item.GetValue().StockNum
-		//　获取SKU和详情等
+		// 获取SKU和详情等
 		skuArr := item.SkuArray()
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		specArr := item.SpecArray()

@@ -26,15 +26,13 @@ var cfg = clientv3.Config{
 
 func TestRegisterService(t *testing.T) {
 	arr := make([]Registry, 0)
+	r, _ := NewRegistry(service, ttl, cfg)
 	for i := 0; i < 3; i++ {
-		r, _ := NewRegistry(service, ttl, cfg)
-		_, _ = r.Register(10 + i)
+		_, _ = r.Register("", 10+i)
 		arr = append(arr, r)
 	}
 	time.Sleep(15 * time.Second)
-	for _, v := range arr {
-		v.UnRegister()
-	}
+	r.Stop()
 }
 
 func TestSelector(t *testing.T) {
@@ -46,6 +44,6 @@ func TestSelector(t *testing.T) {
 		} else {
 			t.Log("selected:" + next.Addr)
 		}
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 3)
 	}
 }

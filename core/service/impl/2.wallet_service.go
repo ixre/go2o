@@ -21,7 +21,9 @@ type walletServiceImpl struct {
 }
 
 func (w *walletServiceImpl) CreateWallet(_ context.Context, r *proto.CreateWalletRequest) (*proto.Result, error) {
-	iw := w._repo.CreateWallet(r.UserId, int(r.WalletType), r.WalletName, int(r.WalletFlag))
+	iw := w._repo.CreateWallet(r.UserId,
+		r.UserName,
+		int(r.WalletType), r.WalletName, int(r.WalletFlag))
 	_, err := iw.Save()
 	return w.result(err), nil
 }
@@ -42,6 +44,15 @@ func (w *walletServiceImpl) GetWallet(_ context.Context, walletId *proto.Int64) 
 	return nil, nil
 }
 
+/** 获取钱包账户,传入walletCode */
+func (w *walletServiceImpl) GetWalletByCode(_ context.Context, walletCode *proto.String) (*proto.SWallet, error) {
+	iw := w._repo.GetWalletByCode(walletCode.Value)
+	if iw != nil {
+		return w.parseWallet(iw.Get()), nil
+	}
+	return nil, nil
+}
+
 func (w *walletServiceImpl) GetWalletLog(_ context.Context, r *proto.WalletLogIDRequest) (*proto.SWalletLog, error) {
 	iw := w._repo.GetWallet(r.WalletId)
 	if iw != nil {
@@ -56,7 +67,7 @@ func (w *walletServiceImpl) Adjust(_ context.Context, r *proto.AdjustRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, int(r.OprUid), r.OprName)
+		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, r.Remark, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }
@@ -97,7 +108,7 @@ func (w *walletServiceImpl) Charge(_ context.Context, r *proto.ChargeRequest) (r
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
 		err = iw.Charge(int(r.Value), int(r.By), r.Title,
-			r.OuterNo, int(r.OprUid), r.OprName)
+			r.OuterNo, r.Remark, int(r.OprUid), r.OprName)
 	}
 	return w.result(err), nil
 }
@@ -172,6 +183,7 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 		HashCode:       v.HashCode,
 		NodeId:         int32(v.NodeId),
 		UserId:         v.UserId,
+		UserName:       v.UserName,
 		WalletType:     int32(v.WalletType),
 		WalletFlag:     int32(v.WalletFlag),
 		WalletName:     v.WalletName,

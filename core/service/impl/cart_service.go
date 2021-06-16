@@ -283,9 +283,10 @@ func (s *cartServiceImpl) GetShoppingCart_(_ context.Context, r *proto.CartCode)
 func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 	dto := parser.ParseToDtoCart(c)
 	for _, v := range dto.Shops {
-		is := s.shopRepo.GetOnlineShop(int(v.ShopId))
+		is := s.shopRepo.GetShop(v.ShopId)
 		if is != nil {
-			v.ShopName = is.ShopName
+			io := is.(shop.IOnlineShop)
+			v.ShopName = io.GetShopValue().ShopName
 		} else {
 			for _, it := range v.Items {
 				c.Remove(it.ItemId, it.SkuId, it.Quantity)

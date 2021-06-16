@@ -51,17 +51,6 @@ const (
 )
 
 const (
-	// 提现到余额
-	KindWalletTakeOutToBalance int = 21
-	// 提现到银行卡(人工提现)
-	KindWalletTakeOutToBankCard int = 22
-	// 提现到第三方
-	KindWalletTakeOutToThirdPart int = 23
-	// 提现退还
-	KindWalletTakeOutRefund int = 24
-)
-
-const (
 	//KindCommission = 9 // 手续费
 
 	// 赠送
@@ -154,7 +143,7 @@ type (
 		UnfreezesIntegral(title string, value int) error
 
 		// 获取钱包账户日志
-		GetWalletLog(id int32) *WalletAccountLog
+		GetWalletLog(id int64) wallet.WalletLog
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
 		RequestWithdrawal(takeKind int, title string, amount int,

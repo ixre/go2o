@@ -46,7 +46,7 @@ func (d *Delivery) GetArea(addr string) ([]*delivery.AreaValue, error) {
 	return d.rep.GetAreaByArea(name), nil
 }
 
-//　获取覆盖区域
+// 获取覆盖区域
 func (d *Delivery) GetCoverageArea(id int32) delivery.ICoverageArea {
 	val := d.rep.GetCoverageArea(d.id, id)
 	return newCoverageArea(val, d.rep)

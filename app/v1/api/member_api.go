@@ -249,7 +249,7 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 		})
 	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
 	mp := map[string]interface{}{
-		"list":     arr,
+		"list":     arr.Value,
 		"provider": provider,
 	}
 	return mp

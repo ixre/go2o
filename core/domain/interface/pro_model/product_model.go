@@ -36,6 +36,8 @@ type IProductModel interface {
 	GetAggregateRootId() int32
 	// 获取值
 	Value() *ProductModel
+	// 是否启用
+	SetValue(model *ProductModel) error
 	// 获取属性
 	Attrs() []*Attr
 	// 获取规格
@@ -50,8 +52,6 @@ type IProductModel interface {
 	SetBrands(brandId []int32) error
 	// 保存
 	Save() (int32, error)
-	// 是否启用
-	Enabled() bool
 }
 
 type IProductModelRepo interface {

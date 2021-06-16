@@ -166,14 +166,16 @@ func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context, r *proto.MoveResOrdi
 		return p.error(errors.New("no such data")), nil
 	}
 	// 获取交换的对象
-	var s = ""
+	var swapRes *model.PermRes
 	if r.Direction == 0 { // 向上移,获取上一个
-		s = "sort_num < $1"
+		swapRes = p.dao.GetPermResBy(
+			`sort_num < $1 AND pid = $2 AND depth=$3 ORDER BY sort_num DESC`,
+			res.SortNum, res.Pid, res.Depth)
 	} else {
-		s = "sort_num > $1"
+		swapRes = p.dao.GetPermResBy(
+			`sort_num > $1 AND pid = $2 AND depth=$3 ORDER BY sort_num ASC`,
+			res.SortNum, res.Pid, res.Depth)
 	}
-	swapRes := p.dao.GetPermResBy(s+" AND pid = $2 AND depth=$3 AND res_type=$4 ORDER BY sort_num ASC",
-		res.SortNum, res.Pid, res.Depth, res.ResType)
 	// 交换顺序
 	if swapRes != nil {
 		sortNum := swapRes.SortNum
@@ -682,6 +684,29 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 			r.Key = strings.Replace(r.Path, "/", ":", -1)
 		}
 	}
+	if r.Pid > 0 {
+		// 检测上级是否为自己
+		if dst.Id == r.Pid {
+			return &proto.SavePermResResponse{
+				ErrCode: 2,
+				ErrMsg:  "不能将自己指定为上级资源",
+			}, nil
+		}
+		// 检测上级是否为下级
+		if dst.Id > 0 {
+			var parent *model.PermRes = p.dao.GetPermRes(r.Pid)
+			for parent != nil && parent.Pid > 0 {
+				parent = p.dao.GetPermRes(parent.Pid)
+				if parent != nil && parent.Id == r.Id {
+					return &proto.SavePermResResponse{
+						ErrCode: 2,
+						ErrMsg:  "不能选择下级作为上级资源",
+					}, nil
+				}
+			}
+		}
+	}
+
 	// 上级是否改变
 	var parentChanged = dst.Pid != r.Pid || (r.Pid != 0 && dst.Depth == 0)
 	dst.Name = r.Name
@@ -696,7 +721,10 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	dst.IsHidden = int16(types.IntCond(r.IsHidden, 1, 0))
 	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
-
+	// 如果未设置排列序号,或者更改了上级,则需系统自动编号
+	if dst.SortNum <= 0 || parentChanged {
+		dst.SortNum = p.dao.GetMaxResourceSortNum(int(dst.Pid)) + 1
+	}
 	id, err := p.dao.SavePermRes(dst)
 	ret := &proto.SavePermResResponse{
 		Id: int64(id),
@@ -763,7 +791,7 @@ func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResR
 		where += " AND res_type IN(0,2)"
 	}
 	//todo: 搜索结果不为pid
-	arr := p.dao.SelectPermRes(where + " ORDER BY sort_num ASC,id ASC")
+	arr := p.dao.SelectPermRes(where + " ORDER BY sort_num ASC")
 	root := proto.SPermRes{}
 	p.walkPermRes(&root, arr)
 	ret := &proto.QueryPermResResponse{

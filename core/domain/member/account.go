@@ -15,7 +15,6 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
 	"go2o/core/domain/interface/wallet"
-	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/msq"
@@ -62,7 +61,10 @@ func NewAccount(m *memberImpl, value *member.Account,
 
 func (a *accountImpl) createWallet() {
 	flag := wallet.FlagCharge | wallet.FlagDiscount
-	a.wallet = a.walletRepo.CreateWallet(a.member.GetAggregateRootId(), 1, "MemberWallet", flag)
+	a.wallet = a.walletRepo.CreateWallet(
+		a.member.GetAggregateRootId(),
+		a.member.value.User,
+		1, "MemberWallet", flag)
 	a.wallet.Save()
 	// 绑定钱包
 	a.value.WalletCode = a.wallet.Get().HashCode
@@ -316,7 +318,7 @@ func (a *accountImpl) createFlowAccountLog(kind int, title string, amount float3
 
 }
 
-//　充值积分
+// 充值积分
 func (a *accountImpl) integralCharge(title string, value int, outerNo string, remark string) error {
 	if value <= 0 {
 		return member.ErrIncorrectAmount
@@ -417,6 +419,8 @@ func (a *accountImpl) adjustFlowAccount(title string, amount float32, remark str
 func (a *accountImpl) adjustIntegralAccount(title string, value int, remark string, relateUser int64) error {
 	l, err := a.createIntegralLog(member.KindAdjust, title, value, "", false)
 	if err == nil {
+		l.Remark = remark
+		l.RelateUser = int(relateUser)
 		err = a.rep.SaveIntegralLog(l)
 		if err == nil {
 			a.value.Integral += value
@@ -452,7 +456,7 @@ func (a *accountImpl) chargeWallet(title string, amount int, outerNo string, rem
 		title = "钱包账户入账"
 	}
 	err := a.wallet.Charge(amount, member.KindCharge,
-		title, outerNo, 1, "")
+		title, outerNo, remark, 1, "")
 	if err == nil {
 		a.value.TotalWalletAmount += float32(amount) / 100
 		err = a.asyncWallet()
@@ -502,8 +506,8 @@ func (a *accountImpl) walletRefund(kind int, title string,
 }
 
 // 调整钱包余额
-func (a *accountImpl) walletAdjust(title string, amount int, outerNo string, relateUser int64) error {
-	err := a.wallet.Adjust(amount, title, outerNo, int(relateUser), "")
+func (a *accountImpl) walletAdjust(title string, amount int, remark string, relateUser int64) error {
+	err := a.wallet.Adjust(amount, title, "-", remark, int(relateUser), "-")
 	if err == nil {
 		err = a.asyncWallet()
 	}
@@ -529,12 +533,8 @@ func (a *accountImpl) asyncWallet() error {
 }
 
 // 根据编号获取余额变动信息
-func (a *accountImpl) GetWalletLog(id int32) *member.WalletAccountLog {
-	e := member.WalletAccountLog{}
-	if tmp.Orm.Get(id, &e) == nil {
-		return &e
-	}
-	return nil
+func (a *accountImpl) GetWalletLog(id int64) wallet.WalletLog {
+	return a.wallet.GetLog(id)
 }
 
 // 冻结余额
@@ -781,9 +781,9 @@ func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	amount int, tradeFee int, accountNo string) (int64, string, error) {
-	if takeKind != member.KindWalletTakeOutToBalance &&
-		takeKind != member.KindWalletTakeOutToBankCard &&
-		takeKind != member.KindWalletTakeOutToThirdPart {
+	if takeKind != wallet.KWithdrawExchange &&
+		takeKind != wallet.KWithdrawToBankCard &&
+		takeKind != wallet.KWithdrawToThirdPart {
 		return 0, "", member.ErrNotSupportTakeOutBusinessKind
 	}
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -837,7 +837,7 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	// 检测银行卡
 	accountName := ""
 	bankName := ""
-	if takeKind == member.KindWalletTakeOutToBankCard {
+	if takeKind == wallet.KWithdrawToBankCard {
 		if len(accountNo) == 0 {
 			return 0, "", errors.New("未指定提现的银行卡号")
 		}
@@ -1256,7 +1256,7 @@ func (a *accountImpl) TransferFlowTo(memberId int64, kind int,
 	return err
 }
 
-//　充值积分
+// 充值积分
 func (a *accountImpl) integralConsume(title string, value int, outerNo string, remark string) error {
 	if a.value.Integral < value {
 		return member.ErrNoSuchIntegral
@@ -1337,7 +1337,7 @@ func (a *accountImpl) discountBalance(title string, amount float32, outerNo stri
 	return err
 }
 
-//　充值积分
+// 充值积分
 func (a *accountImpl) integralRefund(title string, outerNo string,
 	value int, remark string) error {
 	if value <= 0 {

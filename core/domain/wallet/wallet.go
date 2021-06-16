@@ -200,13 +200,15 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 }
 
 // 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
-func (w *WalletImpl) Adjust(value int, title, outerNo string, oprUid int, oprName string) error {
+func (w *WalletImpl) Adjust(value int, title, outerNo string,
+	remark string, oprUid int, oprName string) error {
 	err := w.checkValueOpu(value, true, oprUid, oprName)
 	if err == nil {
 		w._value.AdjustAmount += value
 		w._value.Balance += value
 		l := w.createWalletLog(wallet.KAdjust, value, title, oprUid, oprName)
 		l.OuterNo = outerNo
+		l.Remark = remark
 		l.Balance = w._value.Balance
 		err = w.saveWalletLog(l)
 		if err == nil {
@@ -348,7 +350,7 @@ func (w *WalletImpl) Income(value int, tradeFee int, title, outerNo string) erro
 	return err
 }
 
-func (w *WalletImpl) Charge(value int, by int, title, outerNo string, oprUid int, oprName string) error {
+func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, oprUid int, oprName string) error {
 	needOprUid := by == wallet.CServiceAgentCharge
 	err := w.checkValueOpu(value, needOprUid, oprUid, oprName)
 	if err == nil {
@@ -374,6 +376,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, oprUid int
 		// 保存日志
 		l := w.createWalletLog(kind, value, title, oprUid, oprName)
 		l.OuterNo = outerNo
+		l.Remark = remark
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
 		if err == nil {
@@ -391,7 +394,7 @@ func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, oprUid i
 		}
 		if !(kind == wallet.KPaymentOrderRefund ||
 			kind == wallet.KTransferRefund ||
-			kind == wallet.KTakeOutRefund) {
+			kind == wallet.KWithdrawRefund) {
 			panic("not support refund kind")
 		}
 		switch kind {
@@ -475,8 +478,8 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	if amount < 0 {
 		amount = -amount
 	}
-	if kind != wallet.KTakeOutToBankCard &&
-		kind != wallet.KTakeOutToThirdPart && kind < 20 {
+	if kind != wallet.KWithdrawToBankCard &&
+		kind != wallet.KWithdrawToThirdPart && kind < 20 {
 		return 0, "", wallet.ErrNotSupportTakeOutBusinessKind
 	}
 	// 判断是否暂停提现
@@ -521,7 +524,7 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 		return wallet.ErrNoSuchTakeOutLog
 	}
 	if l.ReviewState != wallet.ReviewAwaiting {
-		return wallet.ErrTakeOutState
+		return wallet.ErrWithdrawState
 	}
 	l.ReviewTime = time.Now().Unix()
 	if pass {
@@ -529,7 +532,7 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 	} else {
 		l.ReviewRemark = remark
 		l.ReviewState = wallet.ReviewReject
-		err := w.Refund(-(l.TradeFee + l.Value), wallet.KTakeOutRefund, "提现退回",
+		err := w.Refund(-(l.TradeFee + l.Value), wallet.KWithdrawRefund, "提现退回",
 			l.OuterNo, 0, "")
 		if err != nil {
 			return err
@@ -547,7 +550,7 @@ func (w *WalletImpl) FinishWithdrawal(takeId int64, outerNo string) error {
 		return wallet.ErrNoSuchTakeOutLog
 	}
 	if l.ReviewState != wallet.ReviewPass {
-		return wallet.ErrTakeOutState
+		return wallet.ErrWithdrawState
 	}
 	l.OuterNo = outerNo
 	l.ReviewState = wallet.ReviewConfirm

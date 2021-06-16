@@ -75,6 +75,8 @@ type (
 		VirtualCat int `db:"virtual_cat"`
 		// 分类链接地址
 		CatUrl string `db:"cat_url"`
+		// 虚拟分类跳转地址
+		RedirectUrl string `db:"redirect_url"`
 		// 图标
 		Icon string `db:"icon"`
 		// 图标坐标

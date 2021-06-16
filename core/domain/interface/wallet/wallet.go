@@ -91,14 +91,16 @@ const (
 	// 转账退款
 	KTransferRefund = 11
 	// 提现退还到银行卡
-	KTakeOutRefund = 12
+	KWithdrawRefund = 12
 	// 支付单退款
 	KPaymentOrderRefund = 13
 
+	// 提现并兑换到余额
+	KWithdrawExchange int = 21
 	// 提现到银行卡(人工提现)
-	KTakeOutToBankCard = 14
+	KWithdrawToBankCard = 22
 	// 提现到第三方
-	KTakeOutToThirdPart = 15
+	KWithdrawToThirdPart = 23
 )
 
 var (
@@ -117,7 +119,7 @@ var (
 	ErrLessThanMinTakeAmount         = domain.NewError("err_wallet_less_than_min_take_amount", "低于最低提现金额")
 	ErrMoreThanMinTakeAmount         = domain.NewError("err_wallet_more_than_min_take_amount", "超过最大提现金额")
 	ErrNoSuchTakeOutLog              = domain.NewError("err_wallet_no_such_take_out_log", "提现记录不存在")
-	ErrTakeOutState                  = domain.NewError("err_wallet_member_take_out_state", "提现申请状态错误")
+	ErrWithdrawState                 = domain.NewError("err_wallet_member_take_out_state", "提现申请状态错误")
 )
 
 type (
@@ -145,7 +147,7 @@ type (
 		Save() (int64, error)
 
 		// 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
-		Adjust(value int, title, outerNo string, oprUid int, oprName string) error
+		Adjust(value int, title, outerNo string, remark string, oprUid int, oprName string) error
 
 		// 消费
 		Consume(amount int, title string, outerNo string) error
@@ -166,7 +168,7 @@ type (
 		Income(amount int, tradeFee int, title, outerNo string) error
 
 		// 充值,kind: 业务类型
-		Charge(value int, kind int, title, outerNo string, oprUid int, oprName string) error
+		Charge(value int, kind int, title, outerNo string, remark string, oprUid int, oprName string) error
 
 		// 退款,kind: 业务类型
 		Refund(value int, kind int, title, outerNo string, oprUid int, oprName string) error
@@ -194,7 +196,7 @@ type (
 	// 钱包仓储
 	IWalletRepo interface {
 		// 创建钱包
-		CreateWallet(userId int64, walletType int, walletName string, flag int) IWallet
+		CreateWallet(userId int64, userName string, walletType int, walletName string, flag int) IWallet
 		// 获取钱包账户
 		GetWallet(walletId int64) IWallet
 		// 根据用户编号获取钱包账户
@@ -243,6 +245,8 @@ type (
 		NodeId int `db:"node_id"`
 		// 用户编号
 		UserId int64 `db:"user_id"`
+		// 用户名,方便查询数据
+		UserName string `db:"user_name"`
 		// 钱包类型
 		WalletType int `db:"wallet_type"`
 		// 钱包标志

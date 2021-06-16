@@ -36,7 +36,7 @@ func (m *TransferInRequest) Reset()         { *m = TransferInRequest{} }
 func (m *TransferInRequest) String() string { return proto.CompactTextString(m) }
 func (*TransferInRequest) ProtoMessage()    {}
 func (*TransferInRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_6754bb6a9c7247f0, []int{0}
+	return fileDescriptor_finance_service_34830e3378fa6716, []int{0}
 }
 func (m *TransferInRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TransferInRequest.Unmarshal(m, b)
@@ -88,7 +88,7 @@ func (m *PersonId) Reset()         { *m = PersonId{} }
 func (m *PersonId) String() string { return proto.CompactTextString(m) }
 func (*PersonId) ProtoMessage()    {}
 func (*PersonId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_6754bb6a9c7247f0, []int{1}
+	return fileDescriptor_finance_service_34830e3378fa6716, []int{1}
 }
 func (m *PersonId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PersonId.Unmarshal(m, b)
@@ -121,7 +121,7 @@ type SRiseInfo struct {
 	PersonId int64 `protobuf:"varint,1,opt,name=PersonId,proto3" json:"PersonId"`
 	// 本金及收益的余额
 	Balance float64 `protobuf:"fixed64,2,opt,name=Balance,proto3" json:"Balance"`
-	// 　结算金额
+	// 结算金额
 	SettlementAmount float64 `protobuf:"fixed64,3,opt,name=SettlementAmount,proto3" json:"SettlementAmount"`
 	// 当前的收益
 	Rise float64 `protobuf:"fixed64,4,opt,name=Rise,proto3" json:"Rise"`
@@ -144,7 +144,7 @@ func (m *SRiseInfo) Reset()         { *m = SRiseInfo{} }
 func (m *SRiseInfo) String() string { return proto.CompactTextString(m) }
 func (*SRiseInfo) ProtoMessage()    {}
 func (*SRiseInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_6754bb6a9c7247f0, []int{2}
+	return fileDescriptor_finance_service_34830e3378fa6716, []int{2}
 }
 func (m *SRiseInfo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SRiseInfo.Unmarshal(m, b)
@@ -240,7 +240,7 @@ func (m *RiseSettleRequest) Reset()         { *m = RiseSettleRequest{} }
 func (m *RiseSettleRequest) String() string { return proto.CompactTextString(m) }
 func (*RiseSettleRequest) ProtoMessage()    {}
 func (*RiseSettleRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_6754bb6a9c7247f0, []int{3}
+	return fileDescriptor_finance_service_34830e3378fa6716, []int{3}
 }
 func (m *RiseSettleRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RiseSettleRequest.Unmarshal(m, b)
@@ -296,7 +296,7 @@ func (m *RiseTransferOutRequest) Reset()         { *m = RiseTransferOutRequest{}
 func (m *RiseTransferOutRequest) String() string { return proto.CompactTextString(m) }
 func (*RiseTransferOutRequest) ProtoMessage()    {}
 func (*RiseTransferOutRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_6754bb6a9c7247f0, []int{4}
+	return fileDescriptor_finance_service_34830e3378fa6716, []int{4}
 }
 func (m *RiseTransferOutRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RiseTransferOutRequest.Unmarshal(m, b)
@@ -356,7 +356,7 @@ func (m *CommitTransferRequest) Reset()         { *m = CommitTransferRequest{} }
 func (m *CommitTransferRequest) String() string { return proto.CompactTextString(m) }
 func (*CommitTransferRequest) ProtoMessage()    {}
 func (*CommitTransferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_finance_service_6754bb6a9c7247f0, []int{5}
+	return fileDescriptor_finance_service_34830e3378fa6716, []int{5}
 }
 func (m *CommitTransferRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CommitTransferRequest.Unmarshal(m, b)
@@ -649,10 +649,10 @@ var _FinanceService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("finance_service.proto", fileDescriptor_finance_service_6754bb6a9c7247f0)
+	proto.RegisterFile("finance_service.proto", fileDescriptor_finance_service_34830e3378fa6716)
 }
 
-var fileDescriptor_finance_service_6754bb6a9c7247f0 = []byte{
+var fileDescriptor_finance_service_34830e3378fa6716 = []byte{
 	// 533 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xdf, 0x6e, 0xd3, 0x3e,
 	0x18, 0x5d, 0xda, 0xf5, 0x4f, 0xbe, 0xf5, 0xd7, 0xfd, 0x6a, 0xb6, 0x12, 0x55, 0xd3, 0x54, 0x59,

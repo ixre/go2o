@@ -13,7 +13,7 @@ import (
 
 /**
  * Copyright 2009-2019 @ to2.net
- * name : shop.go
+ * name : store.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-12-09 11:27
  * description :

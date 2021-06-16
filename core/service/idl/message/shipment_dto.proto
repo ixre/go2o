@@ -4,94 +4,94 @@ option java_package = "com.github.go2o.rpc";
 
 // 覆盖区域
 message SCoverageValue {
-    int64 Id = 1;
-    string Name = 2;
-    double Lng = 3;
-    double Lat = 4;
-    int32 Radius = 5;
-    string Address = 6;
-    int64 AreaId = 7;
+  int64 Id = 1;
+  string Name = 2;
+  double Lng = 3;
+  double Lat = 4;
+  int32 Radius = 5;
+  string Address = 6;
+  int64 AreaId = 7;
 }
 
 message ShipmentOrderListResponse {
-    repeated SShipmentOrder Value = 1;
+  repeated SShipmentOrder Value = 1;
 }
 // 发货单
 message SShipmentOrder {
-    // 编号
-    int64 Id = 1;
-    // 订单编号
-    int64 OrderId = 2;
-    // 子订单编号
-    int64 SubOrderId = 3;
-    // 快递SP编号
-    int64 ExpressSpId = 4;
-    // 快递SP单号
-    string ShipOrderNo = 5;
-    // 物流日志
-    string ShipmentLog = 6;
-    // 运费
-    double Amount = 7;
-    // 实际运费
-    double FinalAmount = 8;
-    // 发货时间
-    int64 ShipTime = 9;
-    // 状态
-    int32 State = 10;
-    // 更新时间
-    int64 UpdateTime = 11;
-    // 配送项目
-    repeated SShipmentItem Items = 12;
+  // 编号
+  int64 Id = 1;
+  // 订单编号
+  int64 OrderId = 2;
+  // 子订单编号
+  int64 SubOrderId = 3;
+  // 快递SP编号
+  int64 ExpressSpId = 4;
+  // 快递SP单号
+  string ShipOrderNo = 5;
+  // 物流日志
+  string ShipmentLog = 6;
+  // 运费
+  double Amount = 7;
+  // 实际运费
+  double FinalAmount = 8;
+  // 发货时间
+  int64 ShipTime = 9;
+  // 状态
+  int32 State = 10;
+  // 更新时间
+  int64 UpdateTime = 11;
+  // 配送项目
+  repeated SShipmentItem Items = 12;
 }
 
 // 发货单详情
 message SShipmentItem {
-    // 编号
-    int64 Id = 1;
-    // 商品交易快照编号
-    int64 SnapshotId = 2;
-    // 商品数量
-    int32 Quantity = 3;
-    // 运费
-    double Amount = 4;
-    // 实际运费
-    double FinalAmount = 5;
+  // 编号
+  int64 Id = 1;
+  // 商品交易快照编号
+  int64 SnapshotId = 2;
+  // 商品数量
+  int32 Quantity = 3;
+  // 运费
+  double Amount = 4;
+  // 实际运费
+  double FinalAmount = 5;
 }
 
 message LogisticFlowTrackRequest {
-    string shipperCode = 1;
-    string logisticCode = 2;
-    bool invert = 3;
+  string shipperCode = 1;
+  string logisticCode = 2;
+  bool invert = 3;
 }
 message OrderLogisticTrackRequest {
-    sint64 shipOrderId = 1;
-    bool invert = 2;
+  sint64 shipOrderId = 1;
+  bool invert = 2;
 }
 // 发货单追踪
 message SShipOrderTrack {
-    // 返回状态码
-    sint32 Code = 1;
-    // 返回错误信息
-    string Message = 2;
-    // 物流单号
-    string LogisticCode = 3;
-    // 承运商代码
-    string ShipperCode = 4;
-    /** 承运商名称 */
-    string ShipperName = 5;
-    // 发货状态
-    string ShipState = 6;
-    // 更新时间
-    sint64 UpdateTime = 7;
-    // 包含发货单流
-    repeated SShipFlow Flows = 8;
+  // 返回状态码
+  sint32 Code = 1;
+  // 返回错误信息
+  string Message = 2;
+  // 物流单号
+  string LogisticCode = 3;
+  // 承运商代码
+  string ShipperCode = 4;
+  /** 承运商名称 */
+  string ShipperName = 5;
+  // 发货状态
+  string ShipState = 6;
+  // 更新时间
+  sint64 UpdateTime = 7;
+  // 包含发货单流
+  repeated SShipFlow Flows = 8;
 }
 // 发货流
 message SShipFlow {
-    // 记录标题
-    string Subject = 1;
-    // 记录时间
-    string CreateTime = 2;
-    // 备注
-    string Remark = 3;
+  // 记录标题
+  string Subject = 1;
+  // 记录时间
+  string CreateTime = 2;
+  // 备注
+  string Remark = 3;
 }

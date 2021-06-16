@@ -67,23 +67,11 @@ func NewShopRepo(o orm.Orm, storage storage.Interface,
 
 // 获取商店
 func (s *shopRepo) GetShop(shopId int64) shop.IShop {
-	//todo: mch_shop表不用了?
-	v1 := s.GetOnlineShop(int(shopId))
-	if v1 != nil {
-		return shopImpl.NewShop(v1, s, s.valueRepo, s.registryRepo)
+	e := shop.OnlineShop{}
+	if s.o.Get(shopId, &e) != nil {
+		return nil
 	}
-	/*
-		v := s.GetValueShop(shopId)
-		if v != nil {
-			if v.ShopType == shop.TypeOnlineShop {
-				v1 := s.GetOnlineShop(int(shopId))
-				return shopImpl.NewShop(v1, s, s.valueRepo, s.registryRepo)
-			}
-			//todo: 兼容
-			return s.GetStore(shopId)
-		}
-	*/
-	return nil
+	return s.CreateShop(&e)
 }
 
 // 获取门店
@@ -98,15 +86,6 @@ func (s *shopRepo) ShopAliasExists(alias string, shopId int) bool {
 	s.Connector.ExecScalar(`SELECT id FROM mch_online_shop WHERE
 		alias= $1 AND shop_id<> $2 LIMIT 1`, &id, alias, shopId)
 	return id > 0
-}
-
-// 获取线上商店
-func (s *shopRepo) GetOnlineShop(shopId int) *shop.OnlineShop {
-	e := shop.OnlineShop{}
-	if s.o.Get(shopId, &e) != nil {
-		return nil
-	}
-	return &e
 }
 
 // 保存线上商店

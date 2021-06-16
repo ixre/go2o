@@ -69,6 +69,15 @@ func (s *registryService) GetValues(_ context.Context, array *proto.StringArray)
 	return &proto.StringMap{Value: mp}, nil
 }
 
+// Search 搜索键值
+func (s *registryService) Search(_ context.Context, r *proto.RegistrySearchRequest) (*proto.StringMap, error) {
+	mp := make(map[string]string)
+	for _, v := range s.registryRepo.SearchRegistry(r.Key) {
+		mp[v.Key] = v.Value
+	}
+	return &proto.StringMap{Value: mp}, nil
+}
+
 // 按键前缀获取键数据
 func (s *registryService) FindRegistries(_ context.Context, prefix *proto.String) (*proto.StringMap, error) {
 	mp := make(map[string]string)
@@ -118,7 +127,7 @@ func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCre
 	return s.success(nil), nil
 }
 
-// 更新注册表数据
+// UpdateValues 更新注册表数据
 func (s *registryService) UpdateValues(_ context.Context, registries *proto.StringMap) (*proto.Result, error) {
 	for k, v := range registries.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {

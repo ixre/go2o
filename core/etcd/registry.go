@@ -25,22 +25,28 @@ import (
 var prefix = "/registry/server/"
 
 type Registry interface {
-	// 创建租期/注册节点,返回租期ID和错误, 如果IP为空,则默认为第一个网卡首个IP
-	Register(ip string, port int) (int64, error)
-	// 撤销租期/注销节点
+	// Register 创建租期/注册节点,返回租期ID和错误, 如果IP为空,则默认为第一个网卡首个IP
+	Register(ip string, port int) (clientv3.LeaseID, error)
+	// Revoke 撤销租期/注销节点
 	Revoke(LeaseID int64) error
-	UnRegister()
+	Stop()
+}
+
+
+type endpoint struct {
+	ip   string
+	port int
 }
 
 var _ Registry = new(registryServer)
 
 type registryServer struct {
-	cli        *clientv3.Client
-	stop       chan bool
-	isRegistry bool
-	leaseID    clientv3.LeaseID // 租约ID
-	service    string
-	ttl        int64 // 租约时间
+	cli    *clientv3.Client
+	leases map[clientv3.LeaseID]*endpoint
+	stop   chan bool
+	//isRegistry bool
+	service string
+	ttl     int64 // 租约时间
 }
 
 // 创建服务注册, ttl租约时间
@@ -50,11 +56,12 @@ func NewRegistry(service string, ttl int64, config clientv3.Config) (Registry, e
 		return nil, err
 	}
 	return &registryServer{
-		service:    service,
-		ttl:        ttl,
-		stop:       make(chan bool),
-		isRegistry: false,
-		cli:        cli,
+		service: service,
+		ttl:     ttl,
+		stop:    make(chan bool),
+		leases:  map[clientv3.LeaseID]*endpoint{},
+		//isRegistry: false,
+		cli: cli,
 	}, nil
 }
 func (s *registryServer) resolveIp() string {
@@ -72,12 +79,13 @@ func (s *registryServer) resolveIp() string {
 	}
 	return "127.0.0.1"
 }
-func (s *registryServer) Register(ip string, port int) (leaseId int64, err error) {
-	if s.isRegistry {
-		panic("only one nodes can be registered")
+func (s *registryServer) Register(ip string, port int) (leaseId clientv3.LeaseID, err error) {
+	//if s.isRegistry {
+	//	panic("only one nodes can be registered")
+	//}
+	c := &endpoint{
+		ip: ip, port: port,
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.ttl)*time.Second)
-	defer cancel()
 	if len(strings.TrimSpace(ip)) == 0 {
 		ip = s.resolveIp()
 	}
@@ -95,23 +103,26 @@ func (s *registryServer) Register(ip string, port int) (leaseId int64, err error
 	if err != nil {
 		return -1, err
 	}
-	//　存储键值,注册服务
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.ttl)*time.Second)
+	defer cancel()
+	// 存储键值,注册服务
 	_, err = s.cli.Put(ctx, s.GetKey(node), nodeVal, clientv3.WithLease(grant.ID))
 	if err != nil {
 		return -1, err
 	}
-	s.leaseID = grant.ID
-	s.isRegistry = true
-	go s.KeepAlive()
-	return int64(s.leaseID), nil
+	leaseId = grant.ID
+	s.leases[leaseId] = c
+	//s.isRegistry = true
+	go s.keepAlive(leaseId)
+	return leaseId, nil
 }
-func (s *registryServer) UnRegister() {
-	if s.isRegistry {
-		s.stop <- true
-	}
+func (s *registryServer) Stop() {
+	//if s.isRegistry {
+	s.stop <- true
+	//}
 }
 
-// 注销服务
+// Revoke 注销服务
 func (s *registryServer) Revoke(leaseId int64) error {
 	return s.revoke(clientv3.LeaseID(leaseId))
 }
@@ -123,14 +134,14 @@ func (s *registryServer) revoke(leaseID clientv3.LeaseID) error {
 	if err != nil {
 		log.Printf("[Revoke] err : %s", err.Error())
 	}
-	s.isRegistry = false
+	//s.isRegistry = false
 	return err
 }
 
-// 续租/监听服务
-func (s *registryServer) KeepAlive() error {
-	//　续租
-	keepAliveCh, err := s.cli.KeepAlive(context.TODO(), s.leaseID)
+// KeepAlive 续租/监听服务
+func (s *registryServer) keepAlive(leaseId clientv3.LeaseID) error {
+	// 续租
+	keepAliveCh, err := s.cli.KeepAlive(context.TODO(), leaseId)
 	if err != nil {
 		log.Printf("[KeepAlive] err : %s", err.Error())
 		return err
@@ -138,12 +149,13 @@ func (s *registryServer) KeepAlive() error {
 	for {
 		select {
 		case <-s.stop:
-			_ = s.revoke(s.leaseID)
+			_ = s.revoke(leaseId)
 			return nil
 		case _, ok := <-keepAliveCh:
 			if !ok {
-				_ = s.revoke(s.leaseID)
-				return nil
+				_ = s.revoke(leaseId)
+				_,err = s.retryRegister(leaseId) // 非正常断开,则每15秒尝试重连
+				return err
 			}
 		}
 	}
@@ -157,4 +169,22 @@ func (s *registryServer) GetVal(node Node) (string, error) {
 }
 func (s *registryServer) HashKey(addr string) uint32 {
 	return crc32.ChecksumIEEE([]byte(addr))
+}
+
+func (s *registryServer) retryRegister(leaseId clientv3.LeaseID) (clientv3.LeaseID, error) {
+	endpoint := s.leases[leaseId]
+	tryTimes := 0
+	for {
+		newLeaseId, err := s.Register(endpoint.ip, endpoint.port)
+		if err == nil {
+			delete(s.leases, leaseId)
+			return newLeaseId, err
+		}
+		tryTimes++
+		if tryTimes > 10 {
+			return 0, err
+		}
+		time.Sleep(time.Second * 15)
+		log.Println(fmt.Sprintf("[ etcd][ info]: retry register node %s:%d the %dth", endpoint.ip, endpoint.port, tryTimes))
+	}
 }
