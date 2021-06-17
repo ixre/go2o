@@ -43,7 +43,6 @@ TRUNCATE TABLE "mm_lock_history";
 
 
 
-
 TRUNCATE TABLE "sale_order";
 TRUNCATE TABLE "sale_sub_order";
 TRUNCATE TABLE "sale_order_item";

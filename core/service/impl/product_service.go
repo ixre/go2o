@@ -549,7 +549,7 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 		IsVirtual:   v.VirtualCat == 1,
 		CategoryUrl: v.CatUrl,
 		// 虚拟分类跳转地址
-		RedirectUrl:v.RedirectUrl,
+		RedirectUrl: v.RedirectUrl,
 		Icon:        v.Icon,
 		IconPoint:   v.IconPoint,
 		Level:       int32(v.Level),
@@ -565,20 +565,20 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 
 func (p *productService) parseCategory(v *proto.SProductCategory) *product.Category {
 	return &product.Category{
-		Id:         int(v.Id),
-		ParentId:   int(v.ParentId),
-		ModelId:    int(v.ModelId),
-		Priority:   int(v.Priority),
-		Name:       v.Name,
-		VirtualCat: types.IntCond(v.IsVirtual, 1, 0),
-		CatUrl:     v.CategoryUrl,
+		Id:          int(v.Id),
+		ParentId:    int(v.ParentId),
+		ModelId:     int(v.ModelId),
+		Priority:    int(v.Priority),
+		Name:        v.Name,
+		VirtualCat:  types.IntCond(v.IsVirtual, 1, 0),
+		CatUrl:      v.CategoryUrl,
 		RedirectUrl: v.RedirectUrl,
-		Icon:       v.Icon,
-		IconPoint:  v.IconPoint,
-		Level:      int(v.Level),
-		SortNum:    int(v.SortNum),
-		FloorShow:  types.IntCond(v.FloorShow, 1, 0),
-		Enabled:    types.IntCond(v.Enabled, 1, 0),
+		Icon:        v.Icon,
+		IconPoint:   v.IconPoint,
+		Level:       int(v.Level),
+		SortNum:     int(v.SortNum),
+		FloorShow:   types.IntCond(v.FloorShow, 1, 0),
+		Enabled:     types.IntCond(v.Enabled, 1, 0),
 	}
 }
 

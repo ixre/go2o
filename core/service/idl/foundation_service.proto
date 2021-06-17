@@ -1,92 +1,93 @@
 syntax = "proto3";
-option go_package = ".;proto";
-option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 import "message/foundation_dto.proto";
 
+option go_package = ".;proto";
+option java_package = "com.github.go2o.rpc";
+
 // 基础服务
 service FoundationService {
-  /** 检测是否包含敏感词 */
-  rpc CheckSensitive(String)returns(Bool){}
+    /** 检测是否包含敏感词 */
+    rpc CheckSensitive(String)returns(Bool) {}
 
-  /** 替换敏感词 */
-  rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String){}
+    /** 替换敏感词 */
+    rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String) {}
 
-  /** 获取短信API凭据, provider 短信服务商, 默认:http */
-  rpc GetSmsApi (String) returns (SSmsApi) {
-  }
-  /** 保存短信API凭据,@provider 短信服务商, 默认:http */
-  rpc SaveSmsApi (SmsApiSaveRequest) returns (Result) {
-  }
-  /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
-  rpc SaveBoardHook (BoardHookSaveRequest) returns (Result) {
-  }
+    /** 获取短信API凭据, provider 短信服务商, 默认:http */
+    rpc GetSmsApi (String) returns (SSmsApi) {
+    }
+    /** 保存短信API凭据,@provider 短信服务商, 默认:http */
+    rpc SaveSmsApi (SmsApiSaveRequest) returns (Result) {
+    }
+    /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
+    rpc SaveBoardHook (BoardHookSaveRequest) returns (Result) {
+    }
 
-  // 格式化资源地址并返回
-  rpc ResourceUrl (String) returns (String) {
-  }
-  // 设置键值
-  //rpc SetValue (Pair) returns (Result){}
-  // 删除值,key
-  //rpc DeleteValue (String) returns (Result){}
-  // 根据前缀获取值,prefix
-  //rpc GetValuesByPrefix (String) returns (StringMap){}
-  // 注册单点登录应用,返回值：
-  //   -  1. 成功，并返回token
-  //   - -1. 接口地址不正确
-  //   - -2. 已经注册
-  rpc RegisterApp (SSsoApp) returns (String) {
-  }
-  // 获取应用信息,name
-  rpc GetApp (String) returns (SSsoApp) {
-  }
-  // 获取单点登录应用
-  rpc GetAllSsoApp (Empty) returns (StringListResponse) {
-  }
-  // 验证超级用户账号和密码
-  rpc SuperValidate (UserPwd) returns (SuperLoginResponse) {
-  }
-  // 保存超级用户账号和密码
-  rpc FlushSuperPwd (UserPwd) returns (Result) {
-  }
-  // 创建同步登录的地址,returnUrl
-  rpc GetSyncLoginUrl (String) returns (String) {
-  }
-  // 获取地区名称
-  rpc GetAreaNames (GetAreaNamesRequest) returns (StringListResponse) {
-  }
-  // 获取省市区字符串
-  rpc GetAreaString (AreaStringRequest) returns (String) {
-  }
-  // 获取下级区域,code
-  rpc GetChildAreas (Int32) returns (AreaListResponse) {
-  }
-  // 获取移动应用设置
-  rpc GetMoAppConf (Empty) returns (SMobileAppConfig) {
-  }
-  // 保存移动应用设置
-  rpc SaveMoAppConf (SMobileAppConfig) returns (Result) {
-  }
-  // 获取微信接口配置
-  rpc GetWxApiConfig (Empty) returns (SWxApiConfig) {
-  }
-  // 保存微信接口配置
-  rpc SaveWxApiConfig (SWxApiConfig) returns (Result) {
-  }
-  // 获取支付平台
-  rpc GetPayPlatform (Empty) returns (PaymentPlatformResponse) {
-  }
-  // 获取全局商户销售设置
-  rpc GetGlobMchSaleConf_ (Empty) returns (SGlobMchSaleConf) {
-  }
-  // 保存全局商户销售设置
-  rpc SaveGlobMchSaleConf_ (SGlobMchSaleConf) returns (Result) {
-  }
+    // 格式化资源地址并返回
+    rpc ResourceUrl (String) returns (String) {
+    }
+    // 设置键值
+    //rpc SetValue (Pair) returns (Result){}
+    // 删除值,key
+    //rpc DeleteValue (String) returns (Result){}
+    // 根据前缀获取值,prefix
+    //rpc GetValuesByPrefix (String) returns (StringMap){}
+    // 注册单点登录应用,返回值：
+    //   -  1. 成功，并返回token
+    //   - -1. 接口地址不正确
+    //   - -2. 已经注册
+    rpc RegisterApp (SSsoApp) returns (String) {
+    }
+    // 获取应用信息,name
+    rpc GetApp (String) returns (SSsoApp) {
+    }
+    // 获取单点登录应用
+    rpc GetAllSsoApp (Empty) returns (StringListResponse) {
+    }
+    // 验证超级用户账号和密码
+    rpc SuperValidate (UserPwd) returns (SuperLoginResponse) {
+    }
+    // 保存超级用户账号和密码
+    rpc FlushSuperPwd (UserPwd) returns (Result) {
+    }
+    // 创建同步登录的地址,returnUrl
+    rpc GetSyncLoginUrl (String) returns (String) {
+    }
+    // 获取地区名称
+    rpc GetAreaNames (GetAreaNamesRequest) returns (StringListResponse) {
+    }
+    // 获取省市区字符串
+    rpc GetAreaString (AreaStringRequest) returns (String) {
+    }
+    // 获取下级区域,code
+    rpc GetChildAreas (Int32) returns (AreaListResponse) {
+    }
+    // 获取移动应用设置
+    rpc GetMoAppConf (Empty) returns (SMobileAppConfig) {
+    }
+    // 保存移动应用设置
+    rpc SaveMoAppConf (SMobileAppConfig) returns (Result) {
+    }
+    // 获取微信接口配置
+    rpc GetWxApiConfig (Empty) returns (SWxApiConfig) {
+    }
+    // 保存微信接口配置
+    rpc SaveWxApiConfig (SWxApiConfig) returns (Result) {
+    }
+    // 获取支付平台
+    rpc GetPayPlatform (Empty) returns (PaymentPlatformResponse) {
+    }
+    // 获取全局商户销售设置
+    rpc GetGlobMchSaleConf_ (Empty) returns (SGlobMchSaleConf) {
+    }
+    // 保存全局商户销售设置
+    rpc SaveGlobMchSaleConf_ (SGlobMchSaleConf) returns (Result) {
+    }
 }
 
 /** 替换敏感词请求 */
-message ReplaceSensitiveRequest{
-  string Text = 1;
-  string Replacement = 2;
+message ReplaceSensitiveRequest {
+    string Text = 1;
+    string Replacement = 2;
 }

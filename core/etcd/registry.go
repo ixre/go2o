@@ -32,7 +32,6 @@ type Registry interface {
 	Stop()
 }
 
-
 type endpoint struct {
 	ip   string
 	port int
@@ -154,7 +153,7 @@ func (s *registryServer) keepAlive(leaseId clientv3.LeaseID) error {
 		case _, ok := <-keepAliveCh:
 			if !ok {
 				_ = s.revoke(leaseId)
-				_,err = s.retryRegister(leaseId) // 非正常断开,则每15秒尝试重连
+				_, err = s.retryRegister(leaseId) // 非正常断开,则每15秒尝试重连
 				return err
 			}
 		}

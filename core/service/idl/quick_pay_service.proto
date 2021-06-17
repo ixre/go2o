@@ -1,211 +1,212 @@
 syntax = "proto3";
+
 option go_package = ".;proto";
 option java_package = "com.github.go2o.rpc";
 
 // 快捷支付服务(请勿直接暴露给外部调用)
 service QuickPayService {
-  // 银行卡信息查询
-  rpc QueryCardBin (BankCardNo) returns (CardBinQueryResponse) {
-  }
-  // 检查签名,用于回调时判断参数正确
-  rpc CheckSign (CheckQPaySignRequest) returns (CheckQPaySignResponse) {
-  }
-  // 申请银行侧认证授权(某些银行需跳转到银行页面进行授权)
-  rpc RequestBankSideAuth (BankAuthRequest) returns (BankAuthResponse) {
-  }
-  // 查询银行认证授权结果(根据申请认证的随机Id或者银行卡号)
-  rpc QueryBankAuthResult (BankAuthQueryRequest) returns (BankAuthQueryResponse) {
-  }
-  // 直接支付
-  rpc DirectPayment (QPaymentRequest) returns (QPaymentResponse) {
-  }
-  // 查询支付状态
-  rpc QueryPaymentStatus (QPaymentQueryRequest) returns (QPaymentQueryResponse) {
-  }
-  // 批量付款
-  rpc BatchTransfer (BatchTransferRequest) returns (BatchTransferResponse) {
-  }
+    // 银行卡信息查询
+    rpc QueryCardBin (BankCardNo) returns (CardBinQueryResponse) {
+    }
+    // 检查签名,用于回调时判断参数正确
+    rpc CheckSign (CheckQPaySignRequest) returns (CheckQPaySignResponse) {
+    }
+    // 申请银行侧认证授权(某些银行需跳转到银行页面进行授权)
+    rpc RequestBankSideAuth (BankAuthRequest) returns (BankAuthResponse) {
+    }
+    // 查询银行认证授权结果(根据申请认证的随机Id或者银行卡号)
+    rpc QueryBankAuthResult (BankAuthQueryRequest) returns (BankAuthQueryResponse) {
+    }
+    // 直接支付
+    rpc DirectPayment (QPaymentRequest) returns (QPaymentResponse) {
+    }
+    // 查询支付状态
+    rpc QueryPaymentStatus (QPaymentQueryRequest) returns (QPaymentQueryResponse) {
+    }
+    // 批量付款
+    rpc BatchTransfer (BatchTransferRequest) returns (BatchTransferResponse) {
+    }
 }
 
 // 银行卡号
 message BankCardNo {
-  string CardNo = 1;
+    string CardNo = 1;
 }
 
 // 银行卡查询结果
 message CardBinQueryResponse {
-  // 错误信息
-  string ErrMsg = 1;
-  // 银行名称
-  string BankName = 2;
-  // 用户银行卡号
-  string BankCardNo = 3;
-  // 返回的银行代号
-  string BankCode = 4;
-  // 银行卡类型（0=储蓄卡,1=信用卡）
-  int32 CardType = 5;
-  // 是否需要银行端授权,如果否,则直接使用短信既可授权
-  bool RequireBankSideAuth = 6;
+    // 错误信息
+    string ErrMsg = 1;
+    // 银行名称
+    string BankName = 2;
+    // 用户银行卡号
+    string BankCardNo = 3;
+    // 返回的银行代号
+    string BankCode = 4;
+    // 银行卡类型（0=储蓄卡,1=信用卡）
+    int32 CardType = 5;
+    // 是否需要银行端授权,如果否,则直接使用短信既可授权
+    bool RequireBankSideAuth = 6;
 }
 
 message BankAuthRequest {
-  // 随机Id,用于查询授权结果,并防止重复提起申请
-  string NonceId = 1;
-  // 用户银行卡号,如：620000000000000000
-  string BankCardNo = 2;
-  // 姓名,如：张三
-  string BankAccountName = 3;
-  // 用户银行绑定的手机号
-  string Mobile = 4;
-  // 用户身份证号码,如：100100052000000000
-  string IdCardNo = 5;
+    // 随机Id,用于查询授权结果,并防止重复提起申请
+    string NonceId = 1;
+    // 用户银行卡号,如：620000000000000000
+    string BankCardNo = 2;
+    // 姓名,如：张三
+    string BankAccountName = 3;
+    // 用户银行绑定的手机号
+    string Mobile = 4;
+    // 用户身份证号码,如：100100052000000000
+    string IdCardNo = 5;
 }
 
 // 申请认证返回结果,通常直接使用返回的表单提交获取银行的授权, 并再查询授权
 message BankAuthResponse {
-  // 随机Id
-  string NonceId = 1;
-  // 错误消息
-  string ErrMsg = 2;
-  // 认证的Form表单
-  string AuthForm = 3;
-  // 认证需要的其他数据
-  map<string, string> AuthData = 4;
+    // 随机Id
+    string NonceId = 1;
+    // 错误消息
+    string ErrMsg = 2;
+    // 认证的Form表单
+    string AuthForm = 3;
+    // 认证需要的其他数据
+    map<string, string> AuthData = 4;
 }
 
 // 银行授权查询请求
 message BankAuthQueryRequest {
-  // 申请认证的随机Id,如果传递空,则必须传入BankCardNo
-  string NonceId = 1;
-  // 用户银行卡号,如：620000000000000000
-  string BankCardNo = 2;
+    // 申请认证的随机Id,如果传递空,则必须传入BankCardNo
+    string NonceId = 1;
+    // 用户银行卡号,如：620000000000000000
+    string BankCardNo = 2;
 }
 
 // 银行授权查询响应
 message BankAuthQueryResponse {
-  // 状态码，0表示成功,1: 表示处理中 2:处理失败
-  int32 Code = 1;
-  // 错误信息,成功返回空
-  string ErrMsg = 2;
-  // 银行授权认证返回的Token,未处理授权时为空
-  string BankAuthToken = 3;
+    // 状态码，0表示成功,1: 表示处理中 2:处理失败
+    int32 Code = 1;
+    // 错误信息,成功返回空
+    string ErrMsg = 2;
+    // 银行授权认证返回的Token,未处理授权时为空
+    string BankAuthToken = 3;
 }
 
 // 直接支付请求
 message QPaymentRequest {
-  // 商户订单号
-  string OrderNo = 1;
-  // 支付金额,实际金额*100,无小数
-  int32 TradeFee = 2;
-  // 支付商品名称
-  string Subject = 3;
-  // 银行授权码
-  string BankAuthToken = 4;
-  // 交易用户IP
-  string TradeUserIp = 5;
-  // 异步通知地址,非必填
-  string NotifyUrl = 6;
-  // 同步返回地址,非必填
-  string ReturnUrl = 7;
-  // 自定义数据
-  string Nonce = 8;
-  // 安全码+随机内容md5后的字符串
-  string SafeSign = 9;
+    // 商户订单号
+    string OrderNo = 1;
+    // 支付金额,实际金额*100,无小数
+    int32 TradeFee = 2;
+    // 支付商品名称
+    string Subject = 3;
+    // 银行授权码
+    string BankAuthToken = 4;
+    // 交易用户IP
+    string TradeUserIp = 5;
+    // 异步通知地址,非必填
+    string NotifyUrl = 6;
+    // 同步返回地址,非必填
+    string ReturnUrl = 7;
+    // 自定义数据
+    string Nonce = 8;
+    // 安全码+随机内容md5后的字符串
+    string SafeSign = 9;
 }
 
 // 支付申请响应
 message QPaymentResponse {
-  // 状态码，0表示成功
-  string Code = 1;
-  // 错误信息,成功返回空
-  string ErrMsg = 2;
-  // 随机ID
-  string NonceId = 8;
-  // 第三方支单据号
-  string BillNo = 3;
+    // 状态码，0表示成功
+    string Code = 1;
+    // 错误信息,成功返回空
+    string ErrMsg = 2;
+    // 随机ID
+    string NonceId = 8;
+    // 第三方支单据号
+    string BillNo = 3;
 }
 
 // 查询支付结果请求
 message QPaymentQueryRequest {
-  // 商户订单号
-  string OrderNo = 1;
-  // 查询需要的其他参数(可选)
-  map<string, string> Options = 3;
+    // 商户订单号
+    string OrderNo = 1;
+    // 查询需要的其他参数(可选)
+    map<string, string> Options = 3;
 }
 
 // 查询支付结果响应
 message QPaymentQueryResponse {
-  // 状态码，0表示成功
-  int32 Code = 1;
-  // 错误信息,成功返回空
-  string ErrMsg = 2;
-  // 第三方支单据号
-  string BillNo = 3;
+    // 状态码，0表示成功
+    int32 Code = 1;
+    // 错误信息,成功返回空
+    string ErrMsg = 2;
+    // 第三方支单据号
+    string BillNo = 3;
 }
 
 // 检查签名请求
 message CheckQPaySignRequest {
-  // 签名类型
-  string SignType = 1;
-  // 签名
-  string Sign = 2;
-  // 参数
-  map<string, string> Params = 3;
+    // 签名类型
+    string SignType = 1;
+    // 签名
+    string Sign = 2;
+    // 参数
+    map<string, string> Params = 3;
 }
 
 // 检查签名响应
 message CheckQPaySignResponse {
-  bool SignOk = 1;
+    bool SignOk = 1;
 }
 
 // 付款请求
 message CardTransferRequest {
-  // 商户订单号
-  string OrderNo = 1;
-  // 银行编号
-  string BankCode = 2;
-  // 是否为对私转账
-  bool PersonTransfer = 3;
-  // 付款金额,实际金额*100,无小数
-  int32 TradeFee = 4;
-  // 银行账户
-  string BankCardNo = 5;
-  // 收款人姓名,如：张三
-  string BankAccountName = 6;
-  // 付款事由
-  string Subject = 7;
-  // 省份
-  string Province = 8;
-  // 城市
-  string City = 9;
-  // 支行信息
-  string StoreName = 10;
+    // 商户订单号
+    string OrderNo = 1;
+    // 银行编号
+    string BankCode = 2;
+    // 是否为对私转账
+    bool PersonTransfer = 3;
+    // 付款金额,实际金额*100,无小数
+    int32 TradeFee = 4;
+    // 银行账户
+    string BankCardNo = 5;
+    // 收款人姓名,如：张三
+    string BankAccountName = 6;
+    // 付款事由
+    string Subject = 7;
+    // 省份
+    string Province = 8;
+    // 城市
+    string City = 9;
+    // 支行信息
+    string StoreName = 10;
 }
 
 // 批量付款请求
 message BatchTransferRequest {
-  // 批量付款订单号（要保证唯一）,最大长度50个字符，最小长度10个字符
-  string BatchTradeNo = 1;
-  // 付款总金额,实际金额*100,无小数
-  int32 BatchTradeFee = 2;
-  // 交易用户IP
-  string TradeUserIp = 3;
-  // 批量付款记录
-  repeated CardTransferRequest BatchList = 4;
-  // 异步通知地址,非必填
-  string NotifyUrl = 5;
-  // 自定义数据
-  string Nonce = 6;
-  // 安全码+随机内容md5后的字符串
-  string SafeSign = 7;
+    // 批量付款订单号（要保证唯一）,最大长度50个字符，最小长度10个字符
+    string BatchTradeNo = 1;
+    // 付款总金额,实际金额*100,无小数
+    int32 BatchTradeFee = 2;
+    // 交易用户IP
+    string TradeUserIp = 3;
+    // 批量付款记录
+    repeated CardTransferRequest BatchList = 4;
+    // 异步通知地址,非必填
+    string NotifyUrl = 5;
+    // 自定义数据
+    string Nonce = 6;
+    // 安全码+随机内容md5后的字符串
+    string SafeSign = 7;
 }
 
 // 批量付款响应
 message BatchTransferResponse {
-  // 状态码，0表示成功
-  string Code = 1;
-  // 错误信息,成功返回空
-  string ErrMsg = 2;
-  // 随机ID
-  string NonceId = 3;
+    // 状态码，0表示成功
+    string Code = 1;
+    // 错误信息,成功返回空
+    string ErrMsg = 2;
+    // 随机ID
+    string NonceId = 3;
 }

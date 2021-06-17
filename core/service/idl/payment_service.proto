@@ -1,253 +1,254 @@
 syntax = "proto3";
-option go_package = ".;proto";
-option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 
+option go_package = ".;proto";
+option java_package = "com.github.go2o.rpc";
+
 
 message AdjustOrderRequest {
-  string paymentNo = 1;
-  double amount = 2;
+    string paymentNo = 1;
+    double amount = 2;
 }
 
 message DiscountBalanceRequest {
-  sint32 orderId = 1;
-  string remark = 2;
+    sint32 orderId = 1;
+    string remark = 2;
 }
 
 message DiscountIntegralRequest {
-  sint32 orderId = 1;
-  sint64 integral = 2;
-  bool ignoreOut = 3;
+    sint32 orderId = 1;
+    sint64 integral = 2;
+    bool ignoreOut = 3;
 }
 
 message WalletPaymentRequest {
-  string tradeNo = 1;
-  bool mergePay = 2;
-  string remark = 3;
+    string tradeNo = 1;
+    bool mergePay = 2;
+    string remark = 3;
 }
 
 message HyperPaymentRequest {
-  sint32 orderId = 1;
-  string remark = 2;
+    sint32 orderId = 1;
+    string remark = 2;
 }
 
 message FinishPaymentRequest {
-  string tradeNo = 1;
-  string spName = 2;
-  string outerNo = 3;
+    string tradeNo = 1;
+    string spName = 2;
+    string outerNo = 3;
 }
 
 // 支付服务
 service PaymentService {
-  // 创建支付单并提交
-  rpc SubmitPaymentOrder (SPaymentOrder) returns (Result) {
-  }
-  // 根据支付单号获取支付单,orderNo
-  rpc GetPaymentOrder (String) returns (SPaymentOrder) {
-  }
-  // 根据交易号获取支付单编号,tradeNo
-  rpc GetPaymentOrderId (String) returns (Int32) {
-  }
-  // 根据编号获取支付单
-  rpc GetPaymentOrderById (Int32) returns (SPaymentOrder) {
-  }
-  // 调整支付单金额
-  rpc AdjustOrder (AdjustOrderRequest) returns (Result) {
-  }
-  // 余额抵扣
-  rpc DiscountByBalance (DiscountBalanceRequest) returns (Result) {
-  }
-  // 积分抵扣支付单
-  rpc DiscountByIntegral (DiscountIntegralRequest) returns (Result) {
-  }
-  // 钱包账户支付
-  rpc PaymentByWallet (WalletPaymentRequest) returns (Result) {
-  }
-  // 余额钱包混合支付，优先扣除余额。
-  rpc HybridPayment (HyperPaymentRequest) returns (Result) {
-  }
-  // 完成支付单支付，并传入支付方式及外部订单号
-  rpc FinishPayment (FinishPaymentRequest) returns (Result) {
-  }
+    // 创建支付单并提交
+    rpc SubmitPaymentOrder (SPaymentOrder) returns (Result) {
+    }
+    // 根据支付单号获取支付单,orderNo
+    rpc GetPaymentOrder (String) returns (SPaymentOrder) {
+    }
+    // 根据交易号获取支付单编号,tradeNo
+    rpc GetPaymentOrderId (String) returns (Int32) {
+    }
+    // 根据编号获取支付单
+    rpc GetPaymentOrderById (Int32) returns (SPaymentOrder) {
+    }
+    // 调整支付单金额
+    rpc AdjustOrder (AdjustOrderRequest) returns (Result) {
+    }
+    // 余额抵扣
+    rpc DiscountByBalance (DiscountBalanceRequest) returns (Result) {
+    }
+    // 积分抵扣支付单
+    rpc DiscountByIntegral (DiscountIntegralRequest) returns (Result) {
+    }
+    // 钱包账户支付
+    rpc PaymentByWallet (WalletPaymentRequest) returns (Result) {
+    }
+    // 余额钱包混合支付，优先扣除余额。
+    rpc HybridPayment (HyperPaymentRequest) returns (Result) {
+    }
+    // 完成支付单支付，并传入支付方式及外部订单号
+    rpc FinishPayment (FinishPaymentRequest) returns (Result) {
+    }
 
-  // 支付网关
-  rpc GatewayV1 (PayGatewayRequest) returns (Result) {
-  }
-  // 获取支付预交易数据
-  rpc GetPaymentOrderInfo (OrderInfoRequest) returns (SPrepareTradeData) {
-  }
+    // 支付网关
+    rpc GatewayV1 (PayGatewayRequest) returns (Result) {
+    }
+    // 获取支付预交易数据
+    rpc GetPaymentOrderInfo (OrderInfoRequest) returns (SPrepareTradeData) {
+    }
 
-  /**
-   * 支付单混合支付
-   *
-   * @param storeCode 店铺编号
-   * @param tradeNo   交易号
-   * @param data  支付数据
-   * @return 支付结果,返回:order_state
-   */
-  rpc MixedPayment (MixedPaymentRequest) returns (Result) {
-  }
+    /**
+     * 支付单混合支付
+     *
+     * @param storeCode 店铺编号
+     * @param tradeNo   交易号
+     * @param data  支付数据
+     * @return 支付结果,返回:order_state
+     */
+    rpc MixedPayment (MixedPaymentRequest) returns (Result) {
+    }
 }
 
 message OrderInfoRequest {
-  string tradeNo = 1;
-  bool mergePay = 2;
+    string tradeNo = 1;
+    bool mergePay = 2;
 }
 
 message MixedPaymentRequest {
-  string tradeNo = 1;
-  repeated SRequestPayData data = 2;
+    string tradeNo = 1;
+    repeated SRequestPayData data = 2;
 }
 
 message PayGatewayRequest {
-  string action = 1;
-  sint64 userId = 2;
-  map<string, string> data = 3;
+    string action = 1;
+    sint64 userId = 2;
+    map<string, string> data = 3;
 }
 
 /** 支付方式的位值 */
 enum EPayMethod {
-  _4 = 0;
-  /** 余额抵扣 */
-  Balance = 1;
-  /** 钱包支付 */
-  Wallet = 2;
-  /** 积分兑换 */
-  Integral = 4;
-  /** 用户卡 */
-  UserCard = 8;
-  /** 用户券 */
-  UserCoupon = 16;
-  /** 现金支付 */
-  Cash = 32;
-  /** 银行卡支付 */
-  BankCard = 64;
-  /** 第三方支付,如支付宝等 */
-  PaySP = 128;
-  /** 卖家支付通道 */
-  SellerPay = 256;
-  /** 系统支付通道 */
-  SystemPay = 512;
+    _4 = 0;
+    /** 余额抵扣 */
+    Balance = 1;
+    /** 钱包支付 */
+    Wallet = 2;
+    /** 积分兑换 */
+    Integral = 4;
+    /** 用户卡 */
+    UserCard = 8;
+    /** 用户券 */
+    UserCoupon = 16;
+    /** 现金支付 */
+    Cash = 32;
+    /** 银行卡支付 */
+    BankCard = 64;
+    /** 第三方支付,如支付宝等 */
+    PaySP = 128;
+    /** 卖家支付通道 */
+    SellerPay = 256;
+    /** 系统支付通道 */
+    SystemPay = 512;
 }
 /** 支付单 */
 message SPaymentOrder {
-  /** 交易号 */
-  string TradeNo = 1;
-  /** 卖家编号 */
-  sint32 SellerId = 2;
-  /** 交易类型 */
-  string TradeType = 3;
-  /** 合并支付交单单号 */
-  string MergeTradeNo = 4;
-  /** 支付单详情 */
-  string Subject = 5;
-  /** 是否为子订单 */
-  bool SubOrder = 6;
-  /** 支付单的类型，如购物或其他 */
-  sint32 OrderType = 7;
-  /** 外部订单号 */
-  string OutOrderNo = 8;
-  /** 买家编号 */
-  sint32 BuyerId = 9;
-  /** 支付用户编号 */
-  sint32 PayUid = 10;
-  /** 商品金额 */
-  sint32 ItemAmount = 11;
-  /** 优惠金额  */
-  sint32 DiscountAmount = 12;
-  /** 调整金额 */
-  sint32 AdjustAmount = 13;
-  /** 抵扣金额  */
-  sint32 DeductAmount = 14;
-  /** 共计金额 */
-  sint32 TotalAmount = 15;
-  /** 手续费 */
-  sint32 ProcedureFee = 16;
-  /** 实付金额 */
-  sint32 PaidFee = 17;
-  /** 最终应付金额 */
-  sint32 FinalFee = 18;
-  /** 可⽤支付方式  */
-  sint32 PayFlag = 19;
-  /** 实际使用支付方式 */
-  sint32 FinalFlag = 20;
-  /** 其他支付信息 */
-  string ExtraData = 21;
-  /** 订单状态 */
-  sint32 State = 22;
-  /** 提交时间 */
-  sint64 SubmitTime = 23;
-  /** 过期时间 */
-  sint64 ExpiresTime = 24;
-  /** 支付时间 */
-  sint64 PaidTime = 25;
-  /** 交易数据 */
-  repeated STradeMethodData TradeData = 26;
-  /** 编号 */
-  sint32 ID = 27;
+    /** 交易号 */
+    string TradeNo = 1;
+    /** 卖家编号 */
+    sint32 SellerId = 2;
+    /** 交易类型 */
+    string TradeType = 3;
+    /** 合并支付交单单号 */
+    string MergeTradeNo = 4;
+    /** 支付单详情 */
+    string Subject = 5;
+    /** 是否为子订单 */
+    bool SubOrder = 6;
+    /** 支付单的类型，如购物或其他 */
+    sint32 OrderType = 7;
+    /** 外部订单号 */
+    string OutOrderNo = 8;
+    /** 买家编号 */
+    sint32 BuyerId = 9;
+    /** 支付用户编号 */
+    sint32 PayUid = 10;
+    /** 商品金额 */
+    sint32 ItemAmount = 11;
+    /** 优惠金额  */
+    sint32 DiscountAmount = 12;
+    /** 调整金额 */
+    sint32 AdjustAmount = 13;
+    /** 抵扣金额  */
+    sint32 DeductAmount = 14;
+    /** 共计金额 */
+    sint32 TotalAmount = 15;
+    /** 手续费 */
+    sint32 ProcedureFee = 16;
+    /** 实付金额 */
+    sint32 PaidFee = 17;
+    /** 最终应付金额 */
+    sint32 FinalFee = 18;
+    /** 可⽤支付方式  */
+    sint32 PayFlag = 19;
+    /** 实际使用支付方式 */
+    sint32 FinalFlag = 20;
+    /** 其他支付信息 */
+    string ExtraData = 21;
+    /** 订单状态 */
+    sint32 State = 22;
+    /** 提交时间 */
+    sint64 SubmitTime = 23;
+    /** 过期时间 */
+    sint64 ExpiresTime = 24;
+    /** 支付时间 */
+    sint64 PaidTime = 25;
+    /** 交易数据 */
+    repeated STradeMethodData TradeData = 26;
+    /** 编号 */
+    sint32 ID = 27;
 }
 
 /** 请求支付数据 */
 message SRequestPayData {
-  /** 支付方式 */
-  sint32 Method = 1;
-  /** 支付方式代码 */
-  string Code = 2;
-  /** 支付金额 */
-  sint32 Amount = 3;
+    /** 支付方式 */
+    sint32 Method = 1;
+    /** 支付方式代码 */
+    string Code = 2;
+    /** 支付金额 */
+    sint32 Amount = 3;
 }
 
 /** 交易方式数据 */
 message STradeMethodData {
-  /** 支付途径 */
-  sint32 Method = 1;
-  /** 交易代码 */
-  string Code = 2;
-  /** 支付金额 */
-  sint32 Amount = 3;
-  /** 是否为内置支付途径 */
-  sint32 Internal = 4;
-  /** 外部交易单号 */
-  string OutTradeNo = 5;
-  /** 支付时间 */
-  sint64 PayTime = 6;
+    /** 支付途径 */
+    sint32 Method = 1;
+    /** 交易代码 */
+    string Code = 2;
+    /** 支付金额 */
+    sint32 Amount = 3;
+    /** 是否为内置支付途径 */
+    sint32 Internal = 4;
+    /** 外部交易单号 */
+    string OutTradeNo = 5;
+    /** 支付时间 */
+    sint64 PayTime = 6;
 }
 
 /** 支付单预交易数据 */
 message SPrepareTradeData {
-  /** 错误码 */
-  sint32 ErrCode = 1;
-  /** 错误消息 */
-  string ErrMsg = 2;
-  /** 交易号 */
-  string TradeNo = 3;
-  /** 支付标志 */
-  sint32 PayFlag = 4;
-  /** 交易状态 */
-  sint32 TradeState = 5;
-  /** 交易订单 */
-  repeated SPaymentOrderData TradeOrders = 6;
-  /** 累计金额 */
-  sint32 TotalAmount = 7;
-  /** 手续费 */
-  sint32 ProcedureFee = 8;
-  /** 最终支付金额 */
-  sint32 FinalFee = 9;
+    /** 错误码 */
+    sint32 ErrCode = 1;
+    /** 错误消息 */
+    string ErrMsg = 2;
+    /** 交易号 */
+    string TradeNo = 3;
+    /** 支付标志 */
+    sint32 PayFlag = 4;
+    /** 交易状态 */
+    sint32 TradeState = 5;
+    /** 交易订单 */
+    repeated SPaymentOrderData TradeOrders = 6;
+    /** 累计金额 */
+    sint32 TotalAmount = 7;
+    /** 手续费 */
+    sint32 ProcedureFee = 8;
+    /** 最终支付金额 */
+    sint32 FinalFee = 9;
 }
 
 /** 支付单数据 */
 message SPaymentOrderData {
-  /** 交易订单号 */
-  string OrderNo = 1;
-  /** 标题 */
-  string Subject = 2;
-  /** 交易类型 */
-  string TradeType = 3;
-  /** 状态 */
-  sint32 State = 4;
-  /** 手续费 */
-  sint32 ProcedureFee = 5;
-  /** 最终支付金额 */
-  sint32 FinalFee = 6;
+    /** 交易订单号 */
+    string OrderNo = 1;
+    /** 标题 */
+    string Subject = 2;
+    /** 交易类型 */
+    string TradeType = 3;
+    /** 状态 */
+    sint32 State = 4;
+    /** 手续费 */
+    sint32 ProcedureFee = 5;
+    /** 最终支付金额 */
+    sint32 FinalFee = 6;
 }

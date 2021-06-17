@@ -1,23 +1,24 @@
 syntax = "proto3";
+
 option go_package = ".;proto";
 option java_package = "com.github.go2o.rpc";
 
 
 enum EState {
-  Stopped = 0;
-  Normal = 1;
+    Stopped = 0;
+    Normal = 1;
 }
 message User1 {
-  string name = 1;
-  sint64 group_id = 2;
-  map<string, string> extra = 3;
-  repeated string roles = 4;
+    string name = 1;
+    sint64 group_id = 2;
+    map<string, string> extra = 3;
+    repeated string roles = 4;
 }
 message UserResponse {
-  string name = 1;
-  EState state = 2;
+    string name = 1;
+    EState state = 2;
 }
 service GreeterService {
-  rpc Hello (User1) returns (UserResponse) {
-  }
+    rpc Hello (User1) returns (UserResponse) {
+    }
 }

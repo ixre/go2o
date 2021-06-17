@@ -1,57 +1,58 @@
 syntax = "proto3";
-option go_package = ".;proto";
-option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 import "message/advertisement_dto.proto";
 
-service AdvertisementService {
-  rpc GetAdGroupById (Int64) returns (SAdGroup) {
-  }
-  rpc DelAdGroup (Int64) returns (Result) {
-  }
-  rpc SaveAdGroup (SAdGroup) returns (Result) {
-  }
-  rpc GetGroups (Empty) returns (AdGroupListResponse) {
-  }
-  rpc GetPosition (AdPositionId) returns (SAdPosition) {
-  }
-  rpc SaveAdPosition (SAdPosition) returns (Result) {
-  }
-  rpc DelAdPosition (AdPositionId) returns (Result) {
-  }
-  // 设置广告位的默认广告
-  rpc SetDefaultAd (SetDefaultAdRequest) returns (Result) {
-  }
-  // 用户投放广告
-  rpc SetUserAd (SetUserAdRequest) returns (Result) {
-  }
-  // 获取广告
-  rpc GetAdvertisement (AdIdRequest) returns (SAd) {
-  }
+option go_package = ".;proto";
+option java_package = "com.github.go2o.rpc";
 
-  // 获取广告及广告数据, 用于展示关高
-  rpc GetAdAndDataByKey (AdKeyRequest) returns (SAdDto) {
-  }
-  // 获取广告数据传输对象
-  rpc GetAdDto_ (AdIdRequest) returns (SAdDto) {
-  }
-  // 保存广告,更新时不允许修改类型
-  rpc SaveAd (SaveAdRequest) returns (Result) {
-  }
-  // 删除广告
-  rpc DeleteAd (AdIdRequest) returns (Result) {
-  }
-  // 保存图片广告
-  rpc SaveHyperLinkAd (SaveLinkAdRequest) returns (Result) {
-  }
-  // 保存图片广告
-  rpc SaveImagOfAd (SaveImageAdRequest) returns (Result) {
-  }
-  // 获取广告图片
-  rpc GetValueAdImage (ImageAdIdRequest) returns (SImage) {
-  }
-  // 删除广告图片
-  rpc DelAdImage (ImageAdIdRequest) returns (Result) {
-  }
+service AdvertisementService {
+    rpc GetAdGroupById (Int64) returns (SAdGroup) {
+    }
+    rpc DelAdGroup (Int64) returns (Result) {
+    }
+    rpc SaveAdGroup (SAdGroup) returns (Result) {
+    }
+    rpc GetGroups (Empty) returns (AdGroupListResponse) {
+    }
+    rpc GetPosition (AdPositionId) returns (SAdPosition) {
+    }
+    rpc SaveAdPosition (SAdPosition) returns (Result) {
+    }
+    rpc DelAdPosition (AdPositionId) returns (Result) {
+    }
+    // 设置广告位的默认广告
+    rpc SetDefaultAd (SetDefaultAdRequest) returns (Result) {
+    }
+    // 用户投放广告
+    rpc SetUserAd (SetUserAdRequest) returns (Result) {
+    }
+    // 获取广告
+    rpc GetAdvertisement (AdIdRequest) returns (SAd) {
+    }
+
+    // 获取广告及广告数据, 用于展示关高
+    rpc GetAdAndDataByKey (AdKeyRequest) returns (SAdDto) {
+    }
+    // 获取广告数据传输对象
+    rpc GetAdDto_ (AdIdRequest) returns (SAdDto) {
+    }
+    // 保存广告,更新时不允许修改类型
+    rpc SaveAd (SaveAdRequest) returns (Result) {
+    }
+    // 删除广告
+    rpc DeleteAd (AdIdRequest) returns (Result) {
+    }
+    // 保存图片广告
+    rpc SaveHyperLinkAd (SaveLinkAdRequest) returns (Result) {
+    }
+    // 保存图片广告
+    rpc SaveImagOfAd (SaveImageAdRequest) returns (Result) {
+    }
+    // 获取广告图片
+    rpc GetValueAdImage (ImageAdIdRequest) returns (SImage) {
+    }
+    // 删除广告图片
+    rpc DelAdImage (ImageAdIdRequest) returns (Result) {
+    }
 }

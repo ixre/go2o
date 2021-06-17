@@ -1,4 +1,5 @@
 global.proto
+
 ```
 syntax = "proto3";
 option go_package = ".;proto";
