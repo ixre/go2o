@@ -6,9 +6,9 @@ steps:
     image: plugins/docker
     pull: if-not-exists
     settings:
-      repo: docker-base.xiangruigd.com:5020/go2o
+      repo: docker-base.56x.net:5020/go2o
       tags: latest
-      registry: docker-base.xiangruigd.com:5020
+      registry: docker-base.56x.net:5020
       insecure: true
       username:
         from_secret: docker_username
