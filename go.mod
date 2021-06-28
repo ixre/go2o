@@ -29,27 +29,30 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.10.8
+	github.com/ixre/gof v1.10.11
 	github.com/labstack/echo/v4 v4.3.0
-	github.com/lib/pq v1.10.1 // indirect
+	github.com/lib/pq v1.10.2 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
+	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-plugins v1.5.1
 	github.com/nats-io/jwt v1.2.2 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.8 // indirect
 	github.com/nats-io/nats.go v1.11.0
-	github.com/pelletier/go-toml v1.9.1 // indirect
+	github.com/pelletier/go-toml v1.9.3 // indirect
 	github.com/prometheus/client_golang v1.7.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/smartwalle/resize v1.0.0
 	go.etcd.io/etcd v3.3.25+incompatible
+	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
-	go.uber.org/zap v1.16.0 // indirect
-	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf // indirect
-	golang.org/x/net v0.0.0-20210510120150-4163338589ed
-	golang.org/x/sys v0.0.0-20210511113859-b0526f3d8744 // indirect
+	go.uber.org/zap v1.18.1 // indirect
+	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 	golang.org/x/text v0.3.6
-	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
-	google.golang.org/genproto v0.0.0-20210510173355-fb37daa5cd7a // indirect
-	google.golang.org/grpc v1.37.0
+	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
+	google.golang.org/genproto v0.0.0-20210624195500-8bfb893ecb84 // indirect
+	google.golang.org/grpc v1.38.0
+	google.golang.org/protobuf v1.27.1 // indirect
 )
