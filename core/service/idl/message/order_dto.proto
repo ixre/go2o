@@ -67,7 +67,7 @@ message SOrderItem {
     // 退货数量
     int32 ReturnQuantity = 10;
     // 商品总金额
-    double Amount = 11;
+    double amount = 11;
     // 商品实际总金额
     double FinalAmount = 12;
     // 是否已发货
@@ -85,7 +85,7 @@ message SOrderItem {
 //    sint64 Snapshot_id = 5;
 //    sint32 Quantity = 6;
 //    sint32 ReturnQuantity = 7;
-//    double Amount = 8;
+//    double amount = 8;
 //    double FinalAmount = 9;
 //    sint32 IsShipped = 10;
 //    map<string, string> data = 11;

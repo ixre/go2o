@@ -49,7 +49,7 @@ message SGoods {
     int64 Shop_id = 4;
     int32 Category_id = 5;
     // 标题
-    string Title = 6;
+    string title = 6;
     string ShortTitle = 7;
     // 货号
     string GoodsNo = 8;
@@ -78,7 +78,7 @@ message SSku {
     sint64 Sku_id = 1;
     sint64 Item_id = 2;
     sint64 Product_id = 3;
-    string Title = 4;
+    string title = 4;
     string Image = 5;
     string SpecData = 6;
     string SpecWord = 7;
@@ -99,7 +99,7 @@ message SUnifiedViewItem {
     sint64 Category_id = 3;
     sint64 Vendor_id = 4;
     sint64 Brand_id = 5;
-    string Title = 6;
+    string title = 6;
     string Code = 7;
     int64 Sku_id = 8;
     string Image = 9;
@@ -156,7 +156,7 @@ message SOldItem {
     sint64 Shop_id = 7;
     sint32 ShopCat_id = 8;
     sint32 ExpressTid = 9;
-    string Title = 10;
+    string title = 10;
     string ShortTitle = 11;
     string Code = 12;
     string Image = 13;
@@ -228,7 +228,7 @@ message SItemSnapshot {
     // 运费模板
     int64 ExpressTid = 9;
     // 商品标题
-    string Title = 10;
+    string title = 10;
     // 短标题
     string ShortTitle = 11;
     // 产品编码
@@ -281,7 +281,7 @@ message STradeSnapshot {
     // 卖家名称
     string SellerName = 6;
     //商品标题
-    string Title = 7;
+    string title = 7;
     //货号
     // GoodsNo string `db:"goods_no"`
     // 产品编码
@@ -317,13 +317,13 @@ message ItemBySkuRequest {
 
 message ItemIllegalRequest {
     int64 Item_id = 1;
-    string Remark = 2;
+    string remark = 2;
 }
 
 message ItemReviewRequest {
     int64 Item_id = 1;
     bool Pass = 2;
-    string Remark = 3;
+    string remark = 3;
 }
 
 message SaveLevelPriceRequest {
@@ -336,7 +336,7 @@ message ShelveStateRequest {
     EItemSalesType itemType = 3;
     int64 Item_id = 2;
     bool ShelveOn = 4;
-    string Remark = 5;
+    string remark = 5;
 }
 
 message SWsSkuPriceListResponse {

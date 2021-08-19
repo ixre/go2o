@@ -31,9 +31,9 @@ message WalletLogIDRequest {
 message AdjustRequest {
     sint64 Wallet_id = 1;
     sint32 value =  2;
-    string Title = 3;
-    string OuterNo = 4;
-    string Remark = 5;
+    string title = 3;
+    string outer_no = 4;
+    string remark = 5;
     sint32 OprUid = 6;
     string OprName = 7;
 }
@@ -41,16 +41,16 @@ message AdjustRequest {
 message DiscountRequest {
     sint64 Wallet_id = 1;
     sint32 value =  2;
-    string Title = 3;
-    string OuterNo = 4;
+    string title = 3;
+    string outer_no = 4;
     bool Must = 5;
 }
 
 message FreezeRequest {
     sint64 Wallet_id = 1;
     sint32 value =  2;
-    string Title = 3;
-    string OuterNo = 4;
+    string title = 3;
+    string outer_no = 4;
     sint32 OprUid = 5;
     string OprName = 6;
 }
@@ -58,8 +58,8 @@ message FreezeRequest {
 message UnfreezeRequest {
     sint64 Wallet_id = 1;
     sint32 value =  2;
-    string Title = 3;
-    string OuterNo = 4;
+    string title = 3;
+    string outer_no = 4;
     sint32 OprUid = 5;
     string OprName = 6;
 }
@@ -68,9 +68,9 @@ message ChargeRequest {
     int64 Wallet_id = 1;
     int32 value =  2;
     int32 By = 3;
-    string Title = 4;
-    string OuterNo = 5;
-    string Remark = 6;
+    string title = 4;
+    string outer_no = 5;
+    string remark = 6;
     int32 OprUid = 7;
     string OprName = 8;
 }
@@ -157,7 +157,7 @@ message RequestWithdrawalRequest {
     // 钱包编号
     int64 Wallet_id = 1;
     // 金额
-    int32 Amount = 2;
+    int32 amount = 2;
     // 手续费
     int32 TradeFee = 3;
     // 提现方式
@@ -300,11 +300,11 @@ message SWalletLog {
     /** 业务类型 */
     sint32 Kind = 3;
     /** 标题 */
-    string Title = 4;
+    string title = 4;
     /** 外部通道 */
     string OuterChan = 5;
     /** 外部订单号 */
-    string OuterNo = 6;
+    string outer_no = 6;
     /** 变动金额 */
     sint32 value =  7;
     /** 余额 */
@@ -316,7 +316,7 @@ message SWalletLog {
     /** 操作人员名称 */
     string OperatorName = 11;
     /** 备注 */
-    string Remark = 12;
+    string remark = 12;
     /** 审核状态 */
     sint32 ReviewState = 13;
     /** 审核备注 */

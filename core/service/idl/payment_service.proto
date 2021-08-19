@@ -196,7 +196,7 @@ message SRequestPayData {
     /** 支付方式代码 */
     string Code = 2;
     /** 支付金额 */
-    sint32 Amount = 3;
+    sint32 amount = 3;
 }
 
 /** 交易方式数据 */
@@ -206,7 +206,7 @@ message STradeMethodData {
     /** 交易代码 */
     string Code = 2;
     /** 支付金额 */
-    sint32 Amount = 3;
+    sint32 amount = 3;
     /** 是否为内置支付途径 */
     sint32 Internal = 4;
     /** 外部交易单号 */

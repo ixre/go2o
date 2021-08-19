@@ -67,7 +67,7 @@ message RiseSettleRequest {
 message RiseTransferOutRequest {
     int64 Person_id = 1;
     int64 TransferWith = 2;
-    double Amount = 3;
+    double amount = 3;
     // 提现银行账号
     string BankAccountNo = 4;
 }

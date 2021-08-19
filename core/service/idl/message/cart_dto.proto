@@ -62,7 +62,7 @@ message SShoppingCartItem {
     //SKU编号
     sint64 Sku_id = 2;
     //商品标题
-    string Title = 3;
+    string title = 3;
     //商品图片
     string Image = 4;
     //规格文本

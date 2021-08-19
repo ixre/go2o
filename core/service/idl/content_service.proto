@@ -74,7 +74,7 @@ message SArticleCategory {
     // 定位路径（打开栏目页定位到的路径）
     string Location = 7;
     // 页面标题
-    string Title = 8;
+    string title = 8;
     // 关键字
     string Keywords = 9;
     // 描述
@@ -88,7 +88,7 @@ message SArticle {
     /** 栏目编号 */
     sint64 Category_id = 2;
     /** 标题 */
-    string Title = 3;
+    string title = 3;
     /** 小标题 */
     string SmallTitle = 4;
     /** 文章附图 */
@@ -121,7 +121,7 @@ message SPage {
     // 商户编号
     int64 User_id = 2;
     // 标题
-    string Title = 3;
+    string title = 3;
     // 字符标识
     string StrIndent = 4;
     // 浏览权限

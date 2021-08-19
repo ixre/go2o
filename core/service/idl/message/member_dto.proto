@@ -172,7 +172,7 @@ message SaveAddressResponse {
     /* 消息 */
     string ErrMsg = 2;
     // 地址编号
-    int64 Address_id = 3;
+    int64 address_id = 3;
 }
 
 message GetAddressRequest {
@@ -185,21 +185,21 @@ message AccountChangeRequest {
     // 会员编号
     sint64 member_id = 1;
     // 账户类型
-    sint32 AccountType = 2;
+    sint32 account_type = 2;
     // 明细标题
-    string Title = 3;
+    string title = 3;
     // 金额
-    sint32 Amount = 4;
+    sint32 amount = 4;
     // 外部校译号
-    string OuterNo = 5;
+    string outer_no = 5;
     // 备注
-    string Remark = 6;
+    string remark = 6;
 }
 message AccountAdjustRequest {
     sint64 member_id = 1;
     sint32 account = 2;
     sint32 value = 3;
-    sint64 relateUser = 4;
+    sint64 relate_user = 4;
     string remark = 5;
 }
 
@@ -211,7 +211,7 @@ message B4EAuthRequest {
 
 message PagingAccountInfoRequest {
     sint64 member_id = 1;
-    sint32 accountType = 2;
+    sint32 account_type = 2;
     SPagingParams params = 3;
 }
 
@@ -228,7 +228,7 @@ message SMemberLevel {
 
 message AvatarRequest {
     sint64 member_id = 1;
-    string AvatarUrl = 2;
+    string avatar_url = 2;
 }
 
 /** 会员 */
@@ -238,7 +238,7 @@ message SMember {
     /** 用户名 */
     string user =  2;
     /** 密码 */
-    string Pwd = 3;
+    string pwd = 3;
     /** 交易密码 */
     string TradePwd = 4;
     /** 经验值 */
@@ -293,7 +293,7 @@ message SProfile {
     sint32 Province = 10;
     sint32 City = 11;
     sint32 District = 12;
-    string Remark = 13;
+    string remark = 13;
     string Ext1 = 14;
     string Ext2 = 15;
     string Ext3 = 16;
@@ -375,7 +375,7 @@ message STrustedInfo {
     /** 审核时间 */
     sint64 ReviewTime = 10;
     /** 备注 */
-    string Remark = 11;
+    string remark = 11;
 }
 
 message SAddress {
@@ -479,19 +479,19 @@ message WalletLogResponse {
     // 会员编号
     sint64 member_id = 2;
     // 外部单号
-    string OuterNo = 3;
+    string outer_no = 3;
     // 业务类型
     sint32 Kind = 4;
     // 标题
-    string Title = 5;
+    string title = 5;
     // 金额
-    double Amount = 6;
+    double amount = 6;
     // 手续费
     double CsnFee = 7;
     // 状态
     sint32 ReviewState = 8;
     // 备注
-    string Remark = 9;
+    string remark = 9;
     // 创建时间
     sint64 CreateTime = 10;
     // 更新时间
@@ -524,16 +524,16 @@ message AccountTransferRequest {
     TransferAccountType TransferAccount = 1;
     sint64 from_member_id = 2;
     sint64 to_member_id = 3;
-    sint32 Amount = 4;
+    sint32 amount = 4;
     sint32 TradeFee = 5;
-    string Remark = 6;
+    string remark = 6;
 }
 
 // 提现申请
 message WithdrawRequest {
     sint64 member_id = 1;
     // 提现金额
-    int32 Amount = 2;
+    int32 amount = 2;
     // 手续费
     int32 TradeFee = 3;
     // 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
@@ -567,13 +567,13 @@ message WithdrawalLogsResponse {
 message WithdrawalLog {
     sint64 id = 1;
     // 外部单号
-    string OuterNo = 2;
+    string outer_no = 2;
     // 业务类型
     sint32 Kind = 3;
     // 标题
-    string Title = 4;
+    string title = 4;
     // 金额
-    sint32 Amount = 5;
+    sint32 amount = 5;
     // 手续费
     sint32 TradeFee = 6;
     // 关联操作人,仅在客服操作时,记录操作人
@@ -581,7 +581,7 @@ message WithdrawalLog {
     // 状态
     sint32 ReviewState = 8;
     // 备注
-    string Remark = 9;
+    string remark = 9;
     // 创建时间
     sint64 SubmitTime = 10;
     // 更新时间
@@ -593,7 +593,7 @@ message ReviewWithdrawalRequest {
     int64 member_id = 1;
     int64 Info_id = 2;
     bool Pass = 3;
-    string Remark = 4;
+    string remark = 4;
 }
 
 message FinishWithdrawalRequest {
@@ -666,7 +666,7 @@ message SMemberCoupon {
     // 数量
     int32 Number = 2;
     // 优惠券标题
-    string Title = 3;
+    string title = 3;
     //优惠码
     string Code = 4;
     //优惠金额

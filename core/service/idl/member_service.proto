@@ -249,7 +249,7 @@ message LevelUpReviewRequest {
     int64 member_id = 1;
     int64 Request_id = 2;
     bool ReviewPass = 3;
-    string Remark = 4;
+    string remark = 4;
 }
 
 message LevelUpConfirmRequest {

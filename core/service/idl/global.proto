@@ -45,7 +45,7 @@ message IdOrName {
 }
 message IdAndRemark {
     int64 id = 1;
-    string Remark = 2;
+    string remark = 2;
 }
 
 /** 设置依据 */
@@ -75,7 +75,7 @@ enum EAmountBasis {
     /** 未设置 */
     NotSet = 1;
     /** 按金额 */
-    Amount = 2;
+    amount = 2;
     /** 按百分比 */
     Percent = 3;
 }
@@ -111,7 +111,7 @@ message SPagingResult {
 // 树形节点
 message STreeNode {
     // 文本
-    string Title = 1;
+    string title = 1;
     // 值
     string value =  2;
     // 图标,icon与JS树形控件冲突

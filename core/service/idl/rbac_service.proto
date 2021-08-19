@@ -92,7 +92,7 @@ message RbacLoginRequest {
     // 用户名
     string user =  1;
     // md5密码
-    string Pwd = 2;
+    string pwd = 2;
     // 令牌的过期时间(单位：秒)
     int32 Expires = 3;
 }
@@ -291,7 +291,7 @@ message SavePermUserRequest {
     /** 用户名 */
     string Usr = 2;
     /** 密码 */
-    string Pwd = 3;
+    string pwd = 3;
     /** 标志 */
     int32 Flag = 4;
     /** 头像 */
@@ -334,7 +334,7 @@ message SPermUser {
     /** 用户名 */
     string Usr = 2;
     /** 密码 */
-    string Pwd = 3;
+    string pwd = 3;
     /** 标志 */
     int32 Flag = 4;
     /** 头像 */
@@ -377,7 +377,7 @@ message PagingPermUser {
     /** 用户名 */
     string Usr = 2;
     /** 密码 */
-    string Pwd = 3;
+    string pwd = 3;
     /** 标志 */
     int32 Flag = 4;
     /** 头像 */
@@ -427,7 +427,7 @@ message SavePermRoleRequest {
     /** 功能权限 */
     string Permission = 5;
     /** 备注 */
-    string Remark = 6;
+    string remark = 6;
     /** 创建日期 */
     int64 CreateTime = 7;
 }
@@ -459,7 +459,7 @@ message SPermRole {
     /** 功能权限 */
     string Permission = 5;
     /** 备注 */
-    string Remark = 6;
+    string remark = 6;
     /** 创建日期 */
     int64 CreateTime = 7;
     /** 关联的资源ID列表 */
@@ -486,7 +486,7 @@ message PagingPermRole {
     /** 功能权限 */
     string Permission = 5;
     /** 备注 */
-    string Remark = 6;
+    string remark = 6;
     /** 创建日期 */
     int64 CreateTime = 7;
 }
