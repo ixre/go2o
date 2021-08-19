@@ -10,8 +10,8 @@ enum EItemSalesType {
 }
 
 message SkuId {
-    int64 ItemId = 1;
-    int64 SkuId = 2;
+    int64 Item_id = 1;
+    int64 Sku_id = 2;
 }
 
 message GetItemsByLabelRequest {
@@ -23,17 +23,17 @@ message GetItemsByLabelRequest {
 
 message PagingShopGoodsResponse {
     int64 Total = 1;
-    repeated SGoods Data = 2;
+    repeated SGoods data = 2;
 }
 
 message PagingGoodsResponse {
     int64 Total = 1;
-    repeated SUnifiedViewItem Data = 2;
+    repeated SUnifiedViewItem data = 2;
 }
 
 // 获取商品请求
 message GetItemsRequest {
-    int64 CategoryId = 1;
+    int64 Category_id = 1;
     int64 Begin = 2;
     int64 End = 3;
     // 是否随机
@@ -43,11 +43,11 @@ message GetItemsRequest {
 
 // 简单的商品信息
 message SGoods {
-    int64 ItemId = 1;
-    int64 ProductId = 2;
-    int64 VendorId = 3;
-    int64 ShopId = 4;
-    int32 CategoryId = 5;
+    int64 Item_id = 1;
+    int64 Product_id = 2;
+    int64 Vendor_id = 3;
+    int64 Shop_id = 4;
+    int32 Category_id = 5;
     // 标题
     string Title = 6;
     string ShortTitle = 7;
@@ -62,8 +62,8 @@ message SGoods {
     double PromPrice = 12;
     // 价格区间
     string PriceRange = 13;
-    int64 GoodsId = 14;
-    int64 SkuId = 15;
+    int64 Goods_id = 14;
+    int64 Sku_id = 15;
     bool IsPresent = 16;
     // 促销标志
     int32 PromotionFlag = 17;
@@ -75,9 +75,9 @@ message SGoods {
 
 /** SKU */
 message SSku {
-    sint64 SkuId = 1;
-    sint64 ItemId = 2;
-    sint64 ProductId = 3;
+    sint64 Sku_id = 1;
+    sint64 Item_id = 2;
+    sint64 Product_id = 3;
     string Title = 4;
     string Image = 5;
     string SpecData = 6;
@@ -94,14 +94,14 @@ message SSku {
 
 // 统一的商品显示对象
 message SUnifiedViewItem {
-    sint64 ItemId = 1;
-    sint64 ProductId = 2;
-    sint64 CategoryId = 3;
-    sint64 VendorId = 4;
-    sint64 BrandId = 5;
+    sint64 Item_id = 1;
+    sint64 Product_id = 2;
+    sint64 Category_id = 3;
+    sint64 Vendor_id = 4;
+    sint64 Brand_id = 5;
     string Title = 6;
     string Code = 7;
-    int64 SkuId = 8;
+    int64 Sku_id = 8;
     string Image = 9;
     double Price = 10;
     string PriceRange = 11;
@@ -113,7 +113,7 @@ message SUnifiedViewItem {
     repeated SSku SkuArray = 17;
     repeated SLevelPrice LevelPrices = 18;
     SItemViewData ViewData = 19;
-    map<string, string> Data = 20;
+    map<string, string> data = 20;
     // 3: sint32 PromFlag
     // 7: sint32 ShopId
     // 8: sint32 ShopCatId
@@ -147,14 +147,14 @@ message SItemViewData {
 
 // 完整的商品信息
 message SOldItem {
-    sint64 ItemId = 1;
-    sint64 ProductId = 2;
+    sint64 Item_id = 1;
+    sint64 Product_id = 2;
     sint32 PromFlag = 3;
-    sint32 CatId = 4;
-    sint64 VendorId = 5;
-    sint32 BrandId = 6;
-    sint64 ShopId = 7;
-    sint32 ShopCatId = 8;
+    sint32 Cat_id = 4;
+    sint64 Vendor_id = 5;
+    sint32 Brand_id = 6;
+    sint64 Shop_id = 7;
+    sint32 ShopCat_id = 8;
     sint32 ExpressTid = 9;
     string Title = 10;
     string ShortTitle = 11;
@@ -165,7 +165,7 @@ message SOldItem {
     sint32 StockNum = 16;
     sint32 SaleNum = 17;
     sint32 SkuNum = 18;
-    sint64 SkuId = 19;
+    sint64 Sku_id = 19;
     double Cost = 20;
     double Price = 21;
     double RetailPrice = 22;
@@ -179,16 +179,16 @@ message SOldItem {
     sint64 UpdateTime = 30;
     double PromPrice = 31;
     repeated SSku SkuArray = 32;
-    map<string, string> Data = 33;
+    map<string, string> data = 33;
 }
 
 message ItemLabelListResponse {
-    repeated SItemLabel Value = 1;
+    repeated SItemLabel value =  1;
 }
 
 // 销售标签
 message SItemLabel {
-    int32 Id = 1;
+    int32 id = 1;
     // 标签名
     string Name = 2;
     // 标签代码
@@ -210,21 +210,21 @@ message SItemStock {
 // 商品快照(针对商品)
 message SItemSnapshot {
     // 商品编号
-    int64 ItemId = 1;
+    int64 Item_id = 1;
     // 产品编号
-    int64 ProductId = 2;
+    int64 Product_id = 2;
     // 快照编码
     string Key = 3;
     // 分类编号
-    int64 CategoryId = 4;
+    int64 Category_id = 4;
     // 供货商编号
-    int64 VendorId = 5;
+    int64 Vendor_id = 5;
     // 编号
-    int64 BrandId = 6;
+    int64 Brand_id = 6;
     // 店铺编号
-    int64 ShopId = 7;
+    int64 Shop_id = 7;
     // 编号分类编号
-    int64 ShopCatId = 8;
+    int64 ShopCat_id = 8;
     // 运费模板
     int64 ExpressTid = 9;
     // 商品标题
@@ -240,7 +240,7 @@ message SItemSnapshot {
     // 价格区间
     string PriceRange = 15;
     // 默认SKU
-    int64 SkuId = 16;
+    int64 Sku_id = 16;
     // 成本
     //Cost float32 `db:"cost"`
     // 售价
@@ -269,15 +269,15 @@ message SItemSnapshot {
 // 商品交易快照(针对商品)
 message STradeSnapshot {
     //快照编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商品编号
-    int64 ItemId = 2;
+    int64 Item_id = 2;
     //商品SKU编号
-    int64 SkuId = 3;
+    int64 Sku_id = 3;
     //快照编码: 商户编号+g商品编号+快照时间戳
     string SnapshotKey = 4;
     // 卖家编号
-    int64 SellerId = 5;
+    int64 Seller_id = 5;
     // 卖家名称
     string SellerName = 6;
     //商品标题
@@ -299,7 +299,7 @@ message STradeSnapshot {
 // 会员价
 message SLevelPrice {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 等级
     int32 Level = 2;
     // 价格
@@ -311,48 +311,48 @@ message SLevelPrice {
 }
 
 message ItemBySkuRequest {
-    int64 ProductId = 1;
-    int64 SkuId = 2;
+    int64 Product_id = 1;
+    int64 Sku_id = 2;
 }
 
 message ItemIllegalRequest {
-    int64 ItemId = 1;
+    int64 Item_id = 1;
     string Remark = 2;
 }
 
 message ItemReviewRequest {
-    int64 ItemId = 1;
+    int64 Item_id = 1;
     bool Pass = 2;
     string Remark = 3;
 }
 
 message SaveLevelPriceRequest {
-    int64 ItemId = 1;
-    repeated SLevelPrice Value = 2;
+    int64 Item_id = 1;
+    repeated SLevelPrice value =  2;
 }
 
 message ShelveStateRequest {
-    int64 SellerId = 1;
+    int64 Seller_id = 1;
     EItemSalesType itemType = 3;
-    int64 ItemId = 2;
+    int64 Item_id = 2;
     bool ShelveOn = 4;
     string Remark = 5;
 }
 
 message SWsSkuPriceListResponse {
-    repeated SWsSkuPrice Value = 1;
+    repeated SWsSkuPrice value =  1;
 }
 
 message SaveSkuPricesRequest {
-    int64 ItemId = 1;
-    int64 SkuId = 2;
-    repeated SWsSkuPrice Value = 3;
+    int64 Item_id = 1;
+    int64 Sku_id = 2;
+    repeated SWsSkuPrice value =  3;
 }
 
 // 商品批发价
 message SWsSkuPrice {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 需要数量以上
     int32 RequireNum = 2;
     // 批发价
@@ -360,26 +360,26 @@ message SWsSkuPrice {
 }
 
 message SWsItemDiscountListResponse {
-    repeated SWsItemDiscount Value = 1;
+    repeated SWsItemDiscount value =  1;
 }
 message GetWsDiscountRequest {
     // 商品编号
-    int64 ItemId = 1;
+    int64 Item_id = 1;
     // 买家分组编号
-    int64 GroupId = 2;
+    int64 Group_id = 2;
 }
 
 message SaveItemDiscountRequest {
-    int64 ItemId = 1;
-    int64 GroupId = 2;
-    repeated SWsItemDiscount Value = 3;
+    int64 Item_id = 1;
+    int64 Group_id = 2;
+    repeated SWsItemDiscount value =  3;
 }
 // 批发商品折扣
 message SWsItemDiscount {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 客户分组
-    int64 BuyerGroupId = 2;
+    int64 BuyerGroup_id = 2;
     // 要求金额，默认为0
     int64 RequireAmount = 3;
     // 折扣率

@@ -6,9 +6,9 @@ option java_package = "com.github.go2o.rpc";
 // 商家
 message SMerchant {
     /** 编号 */
-    int64 Id = 1;
+    int64 id = 1;
     /** 会员编号 */
-    int64 MemberId = 2;
+    int64 member_id = 2;
     /** 登录用户 */
     string LoginUser = 3;
     /** 登录密码 */
@@ -61,7 +61,7 @@ message SMerchantPack {
 
 message MerchantCreateRequest {
     SMerchantPack Mch = 1;
-    int64 RelMemberId = 2;
+    int64 rel_member_id = 2;
     /** 过期时间,0表示永远不过期 */
     int64 ExpiresTime = 3;
 }
@@ -69,14 +69,14 @@ message MerchantCreateRequest {
 message MerchantCreateResponse {
     int64 ErrCode = 1;
     string ErrMsg = 2;
-    int64 Id = 3;
+    int64 id = 3;
 }
 
 message SaveMerchantRequest {
     /** 编号 */
-    int64 Id = 1;
+    int64 id = 1;
     /** 会员编号 */
-    int64 MemberId = 2;
+    int64 member_id = 2;
     /** 名称 */
     string Name = 3;
     /** 是否自营 */
@@ -96,27 +96,27 @@ message MchUserPwd {
 }
 
 message SyncWSItemsResponse {
-    map<string, sint32> Value = 1;
+    map<string, sint32> value =  1;
 }
 
 message STradeConfListResponse {
-    repeated STradeConf_ Value = 1;
+    repeated STradeConf_ value =  1;
 }
 
 message TradeConfRequest {
-    sint32 mchId = 1;
+    sint32 mch_id = 1;
     sint32 tradeType = 2;
 }
 message TradeConfSaveRequest {
-    sint32 mchId = 1;
+    sint32 mch_id = 1;
     repeated STradeConf_ arr = 2;
 }
 
 // 商户交易设置
 message STradeConf_ {
-    // 商户编号  sint64 MchId = 1;
+    // 商户编号  sint64 Mch_id = 1;
     // 交易类型  sint32 TradeType = 2;
-    // 交易方案，根据方案来自动调整比例  sint64 PlanId = 3;
+    // 交易方案，根据方案来自动调整比例  sint64 Plan_id = 3;
     // 交易标志  sint32 Flag = 4;
     // 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
     // 交易费，按单笔收取  sint32 TradeFee = 6;
@@ -125,13 +125,13 @@ message STradeConf_ {
 
 // 商户申请信息
 message SMchSignUp {
-    int64 Id = 1;
+    int64 id = 1;
     // 申请单号
     string SignNo = 2;
     // 会员编号
-    int64 MemberId = 3;
+    int64 member_id = 3;
     // 用户名
-    string User = 4;
+    string user =  4;
     // 密码
     string Pwd = 5;
     // 商户名称号
@@ -153,7 +153,7 @@ message SMchSignUp {
     // 法人
     string PersonName = 14;
     // 法人身份证
-    string PersonId = 15;
+    string Person_id = 15;
     // 法人身份证
     string PersonImage = 16;
     // 联系电话
@@ -171,7 +171,7 @@ message SMchSignUp {
 }
 
 message MchReviewRequest {
-    int64 MerchantId = 1;
+    int64 Merchant_id = 1;
     bool Pass = 2;
     string Remark = 3;
 }
@@ -179,9 +179,9 @@ message MchReviewRequest {
 // 企业信息
 message SEnterpriseInfo {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商户编号
-    int64 MerchantId = 2;
+    int64 Merchant_id = 2;
     // 公司名称
     string CompanyName = 3;
     // 公司营业执照编号
@@ -220,8 +220,8 @@ message SEnterpriseInfo {
 
 message SaveEnterpriseRequest {
     // 商户编号
-    int64 MerchantId = 1;
-    SEnterpriseInfo Value = 2;
+    int64 Merchant_id = 1;
+    SEnterpriseInfo value =  2;
 }
 
 // 商户账户
@@ -248,7 +248,7 @@ message SMerchantAccount {
 
 message MerchantDisableRequest {
     // 商户编号
-    int64 MerchantId = 1;
+    int64 Merchant_id = 1;
     // 是否启用
     bool Enabled = 2;
 }
@@ -256,7 +256,7 @@ message MerchantDisableRequest {
 // 销售设置
 message SMerchantSaleConf {
     // 合作商编号
-    int64 MerchantId = 1;
+    int64 Merchant_id = 1;
     // 是否启用分销模式
     bool FxSalesEnabled = 2;
     // 返现比例,0则不返现
@@ -278,12 +278,12 @@ message SMerchantSaleConf {
 }
 
 message SaveMerchantSaleConfRequest {
-    int64 MerchantId = 1;
-    SMerchantSaleConf Value = 2;
+    int64 Merchant_id = 1;
+    SMerchantSaleConf value =  2;
 }
 
 message ModifyMerchantPasswordRequest {
-    int64 MerchantId = 1;
+    int64 Merchant_id = 1;
     string Origin = 2;
     // Md5编码后的密码
     string Password = 3;
@@ -292,7 +292,7 @@ message ModifyMerchantPasswordRequest {
 // 商户接口信息
 message SMerchantApiInfo {
     // 商户接口编号
-    string ApiId = 1;
+    string Api_id = 1;
     // 密钥
     string ApiSecret = 2;
     // IP白名单
@@ -302,45 +302,45 @@ message SMerchantApiInfo {
 }
 
 message MerchantApiPermRequest {
-    int64 MerchantId = 1;
+    int64 Merchant_id = 1;
     // 是否启用
     bool Enabled = 4;
 }
 
 message WithdrawToMemberAccountRequest {
-    int64 MerchantId = 1;
+    int64 Merchant_id = 1;
     double Amount = 2;
 }
 
 message MerchantChargeRequest {
-    int64 MerchantId = 1;
+    int64 Merchant_id = 1;
     int32 Kind = 2;
     double Amount = 3;
     string Title = 4;
     string OuterNo = 5;
-    int64 RelateUserId = 6;
+    int64 RelateUser_id = 6;
 }
 
 message MerchantBuyerGroupId {
-    int64 MerchantId = 1;
-    int64 GroupId = 2;
+    int64 Merchant_id = 1;
+    int64 Group_id = 2;
 }
 
 message SaveMerchantBuyerGroupRequest {
-    int64 MerchantId = 1;
-    SMerchantBuyerGroup Value = 2;
+    int64 Merchant_id = 1;
+    SMerchantBuyerGroup value =  2;
 }
 
 message MerchantBuyerGroupListResponse {
-    repeated SMerchantBuyerGroup Value = 1;
+    repeated SMerchantBuyerGroup value =  1;
 }
 
 // 商户客户分组
 message SMerchantBuyerGroup {
     //编号
-    int64 Id = 1;
+    int64 id = 1;
     //客户分组编号
-    int64 GroupId = 2;
+    int64 Group_id = 2;
     //分组别名
     string Name = 3;
     // 是否启用零售
@@ -352,23 +352,23 @@ message SMerchantBuyerGroup {
 }
 
 message SaveWholesaleRebateRateRequest {
-    int64 MerchantId = 1;
-    int64 GroupId = 2;
-    repeated SWholesaleRebateRate Value = 3;
+    int64 Merchant_id = 1;
+    int64 Group_id = 2;
+    repeated SWholesaleRebateRate value =  3;
 }
 
 message WholesaleRebateRateListResponse {
-    repeated SWholesaleRebateRate Value = 1;
+    repeated SWholesaleRebateRate value =  1;
 }
 
 // 批发客户分组返点比例设置
 message SWholesaleRebateRate {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 批发商编号
-    int64 WsId = 2;
+    int64 Ws_id = 2;
     // 客户分组编号
-    int64 BuyerGroupId = 3;
+    int64 BuyerGroup_id = 3;
     // 下限金额
     int32 RequireAmount = 4;
     // 返点率

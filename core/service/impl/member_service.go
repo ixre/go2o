@@ -50,7 +50,7 @@ func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest
 	var memberId int64
 	switch r.Cred {
 	default:
-	case proto.ECredentials_User:
+	case proto.ECredentials_USER:
 		memberId = s.repo.GetMemberIdByUser(r.Value)
 	case proto.ECredentials_Code:
 		memberId = s.repo.GetMemberIdByCode(r.Value)

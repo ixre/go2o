@@ -47,13 +47,13 @@ enum EOrderState {
 // 订单商品项
 message SOrderItem {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商品快照编号
-    int64 SnapshotId = 2;
+    int64 Snapshot_id = 2;
     // Sku编号
-    int64 SkuId = 3;
+    int64 Sku_id = 3;
     // 商品编号
-    int64 ItemId = 4;
+    int64 Item_id = 4;
     // 商品标题
     string ItemTitle = 5;
     // 商品图片
@@ -73,27 +73,27 @@ message SOrderItem {
     // 是否已发货
     bool IsShipped = 13;
     // 其他信息
-    map<string, string> Data = 14;
+    map<string, string> data = 14;
 }
 
 // 订单项
 //message SComplexItem {
 //    sint64 ID = 1;
-//    sint64 OrderId = 2;
-//    sint64 ItemId = 3;
-//    sint64 SkuId = 4;
-//    sint64 SnapshotId = 5;
+//    sint64 Order_id = 2;
+//    sint64 Item_id = 3;
+//    sint64 Sku_id = 4;
+//    sint64 Snapshot_id = 5;
 //    sint32 Quantity = 6;
 //    sint32 ReturnQuantity = 7;
 //    double Amount = 8;
 //    double FinalAmount = 9;
 //    sint32 IsShipped = 10;
-//    map<string, string> Data = 11;
+//    map<string, string> data = 11;
 //}
 
 message SParentOrder {
     // 订单编号
-    int64 OrderId = 1;
+    int64 Order_id = 1;
     // 订单号
     string OrderNo = 3;
     // 订单类型
@@ -105,20 +105,20 @@ message SParentOrder {
 // 子订单
 message SSingleOrder {
     // 订单编号
-    int64 OrderId = 1;
+    int64 Order_id = 1;
     // 父订单编号
-    int64 ParentOrderId = 2;
+    int64 ParentOrder_id = 2;
     // 订单号
     string OrderNo = 3;
     // 订单类型
     int32 OrderType = 4;
     // 买家编号
-    int64 BuyerId = 5;
+    int64 Buyer_id = 5;
     // 卖家编号
-    int64 SellerId = 6;
+    int64 Seller_id = 6;
     // 店铺编号
-    int64 ShopId = 7;
-    //int64 SubOrderId = 2;
+    int64 Shop_id = 7;
+    //int64 SubOrder_id = 2;
     // 订单标题
     string Subject = 8;
     // 商品总金额
@@ -150,7 +150,7 @@ message SSingleOrder {
     //sint64 UpdateTime = 21;
     repeated SOrderItem Items = 22;
     // 扩展信息
-    map<string, string> Data = 23;
+    map<string, string> data = 23;
     // 更新时间
     int64 UpdateTime = 24;
     // 是否为子订单
@@ -169,16 +169,16 @@ message SConsigneeInfo {
 
 //todo: 批发的参数改为属性而不是map
 message SubmitOrderRequest {
-    sint64 buyerId = 1;
+    sint64 buyer_id = 1;
     sint32 cartType = 2;
     map<string, string> data = 3;
 }
 
 // 提交订单请求
 message SubmitNormalOrderV2Request {
-    int64 BuyerId = 1;
+    int64 Buyer_id = 1;
     string CartCode = 2;
-    int64 AddressId = 3;
+    int64 Address_id = 3;
     string Subject = 4;
     string CouponCode = 5;
     bool BalanceDiscount = 6;
@@ -211,17 +211,17 @@ message TradeOrderSubmitRequest {
 }
 
 message TradeOrderTicketRequest {
-    sint64 OrderId = 1;
+    sint64 Order_id = 1;
     string Img = 2;
 }
 
 message ComplexItemsResponse {
-    repeated SOrderItem Value = 1;
+    repeated SOrderItem value =  1;
 }
 
 // 订单编号
 message OrderId {
-    int64 Value = 1;
+    int64 value =  1;
 }
 
 // 订单号
@@ -234,13 +234,13 @@ message OrderNo {
 
 // 订单号
 message OrderNoV2 {
-    string Value = 1;
+    string value =  1;
 }
 
 
 message OrderIdOrNo {
     // 订单编号
-    int64 Id = 1;
+    int64 id = 1;
     // 订单号
     string OrderNo = 2;
 }
@@ -260,15 +260,15 @@ message OrderShipmentRequest {
     // 是否为子订单
     bool Sub = 2;
     // 快递编号
-    int64 ProviderId = 3;
+    int64 Provider_id = 3;
     // 发货单号
     string ShipOrderNo = 4;
 }
 
 message PrepareOrderRequest {
-    int64 BuyerId = 1;
+    int64 Buyer_id = 1;
     string CartCode = 2;
-    int64 AddressId = 3;
+    int64 Address_id = 3;
     string Subject = 4;
     string CouponCode = 5;
 }

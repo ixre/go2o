@@ -39,7 +39,7 @@ service ShopService {
 }
 
 message TurnShopRequest {
-    sint64 shopId = 1;
+    sint64 shop_id = 1;
     bool on = 2;
     string reason = 3;
 }
@@ -48,9 +48,9 @@ message TurnShopRequest {
 // 店铺
 message SShop {
     /** 店铺编号 */
-    int64 Id = 1;
+    int64 id = 1;
     /** 商户编号 */
-    int64 MerchantId = 2;
+    int64 Merchant_id = 2;
     /** 店铺名称 */
     string ShopName = 3;
     // 店铺标题
@@ -85,17 +85,17 @@ message SShopConfig {
 
 // 店铺编号
 message ShopId {
-    int64 Value = 1;
+    int64 value =  1;
 }
 // 门店编号
 message StoreId {
-    int64 Value = 1;
+    int64 value =  1;
 }
 
 // 店铺
 message SStore {
-    sint64 Id = 1;
-    sint64 MerchantId = 2;
+    sint64 id = 1;
+    sint64 Merchant_id = 2;
     string Name = 3;
     string Alias = 4;
     sint32 State = 5;
@@ -121,7 +121,7 @@ message SStore {
 
 // 检查店铺结果
 message CheckShopResponse {
-    int64 ShopId = 1;
+    int64 Shop_id = 1;
     // 店铺开通状态,0:未开通 1:已开通 2:待审核 3:审核未通过
     int32 Status = 2;
     string Remark = 3;

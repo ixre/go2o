@@ -18,7 +18,7 @@ enum EMessageChannel {
 }
 
 message NotifyItemListResponse {
-    repeated SNotifyItem Value = 1;
+    repeated SNotifyItem value =  1;
 }
 
 /** 通知项 */
@@ -30,7 +30,7 @@ message SNotifyItem {
     /** 不允许修改发送方式 */
     bool ReadonlyBy = 3;
     /** 模板编号 */
-    sint32 TplId = 4;
+    sint32 Tpl_id = 4;
     /** 内容 */
     string Content = 5;
     /** 模板包含的标签 */
@@ -40,9 +40,9 @@ message SNotifyItem {
 // 邮件模版
 message SMailTemplate {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商户编号
-    int64 MerchantId = 2;
+    int64 Merchant_id = 2;
     // 名称
     string Name = 3;
     // 主题
@@ -54,7 +54,7 @@ message SMailTemplate {
 }
 
 message MailTemplateListResponse {
-    repeated SMailTemplate Value = 1;
+    repeated SMailTemplate value =  1;
 }
 
 // 站内信
@@ -73,9 +73,9 @@ enum EMessageUserType {
 }
 
 message SendSiteMessageRequest {
-    int64 SenderId = 1;
+    int64 Sender_id = 1;
     EMessageUserType ReceiverType = 2;
-    int64 ReceiverId = 3;
+    int64 Receiver_id = 3;
     bool SendNow = 4;
     SSiteMessage Msg = 5;
 }

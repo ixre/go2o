@@ -8,7 +8,7 @@ option java_package = "com.github.go2o.rpc";
 
 message CreateWalletRequest {
     // 用户编号
-    int64 UserId = 1;
+    int64 User_id = 1;
     // 用户名
     string UserName = 2;
     // 钱包类型
@@ -20,17 +20,17 @@ message CreateWalletRequest {
 }
 
 message GetWalletRequest {
-    sint64 userId = 1;
+    sint64 user_id = 1;
     sint32 walletType = 2;
 }
 
 message WalletLogIDRequest {
-    sint64 walletId = 1;
+    sint64 wallet_id = 1;
     sint64 id = 2;
 }
 message AdjustRequest {
-    sint64 WalletId = 1;
-    sint32 Value = 2;
+    sint64 Wallet_id = 1;
+    sint32 value =  2;
     string Title = 3;
     string OuterNo = 4;
     string Remark = 5;
@@ -39,16 +39,16 @@ message AdjustRequest {
 }
 
 message DiscountRequest {
-    sint64 WalletId = 1;
-    sint32 Value = 2;
+    sint64 Wallet_id = 1;
+    sint32 value =  2;
     string Title = 3;
     string OuterNo = 4;
     bool Must = 5;
 }
 
 message FreezeRequest {
-    sint64 WalletId = 1;
-    sint32 Value = 2;
+    sint64 Wallet_id = 1;
+    sint32 value =  2;
     string Title = 3;
     string OuterNo = 4;
     sint32 OprUid = 5;
@@ -56,8 +56,8 @@ message FreezeRequest {
 }
 
 message UnfreezeRequest {
-    sint64 WalletId = 1;
-    sint32 Value = 2;
+    sint64 Wallet_id = 1;
+    sint32 value =  2;
     string Title = 3;
     string OuterNo = 4;
     sint32 OprUid = 5;
@@ -65,8 +65,8 @@ message UnfreezeRequest {
 }
 
 message ChargeRequest {
-    int64 WalletId = 1;
-    int32 Value = 2;
+    int64 Wallet_id = 1;
+    int32 value =  2;
     int32 By = 3;
     string Title = 4;
     string OuterNo = 5;
@@ -76,8 +76,8 @@ message ChargeRequest {
 }
 
 message TransferRequest {
-    sint64 walletId = 1;
-    sint64 toWalletId = 2;
+    sint64 wallet_id = 1;
+    sint64 toWallet_id = 2;
     sint32 value = 3;
     sint32 tradeFee = 4;
     string remark = 5;
@@ -144,18 +144,18 @@ service WalletService {
 }
 
 message PagingWalletLogRequest {
-    sint64 walletId = 1;
+    sint64 wallet_id = 1;
     SPagingParams params = 2;
 }
 message FinishTakeOutRequest {
-    sint64 walletId = 1;
-    sint64 takeId = 2;
+    sint64 wallet_id = 1;
+    sint64 take_id = 2;
     string outerNo = 3;
 }
 
 message RequestWithdrawalRequest {
     // 钱包编号
-    int64 WalletId = 1;
+    int64 Wallet_id = 1;
     // 金额
     int32 Amount = 2;
     // 手续费
@@ -171,8 +171,8 @@ message RequestWithdrawalRequest {
 }
 
 message ReviewTakeOutRequest {
-    sint64 walletId = 1;
-    sint64 takeId = 2;
+    sint64 wallet_id = 1;
+    sint64 take_id = 2;
     bool reviewPass = 3;
     string remark = 4;
     sint32 oprUid = 5;
@@ -254,9 +254,9 @@ message SWallet {
     /** 哈希值 */
     string HashCode = 2;
     /** 节点编号 */
-    sint32 NodeId = 3;
+    sint32 Node_id = 3;
     /** 用户编号 */
-    sint64 UserId = 4;
+    sint64 User_id = 4;
     /** 用户名 */
     string UserName = 5;
     // 钱包名称
@@ -296,7 +296,7 @@ message SWalletLog {
     /** 编号 */
     sint64 ID = 1;
     /** 钱包编号 */
-    sint64 WalletId = 2;
+    sint64 Wallet_id = 2;
     /** 业务类型 */
     sint32 Kind = 3;
     /** 标题 */
@@ -306,13 +306,13 @@ message SWalletLog {
     /** 外部订单号 */
     string OuterNo = 6;
     /** 变动金额 */
-    sint32 Value = 7;
+    sint32 value =  7;
     /** 余额 */
     sint32 Balance = 8;
     /** 交易手续费 */
     sint32 TradeFee = 9;
     /** 操作人员用户编号 */
-    sint32 OperatorId = 10;
+    sint32 Operator_id = 10;
     /** 操作人员名称 */
     string OperatorName = 11;
     /** 备注 */

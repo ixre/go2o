@@ -55,7 +55,7 @@ func (m PassportApi) checkMemberBasis(ctx api.Context) (string, proto.ECredentia
 	acc := strings.TrimSpace(ctx.Form().GetString("account"))          //账号、手机或邮箱
 	credTypeId, err := strconv.Atoi(ctx.Form().GetString("cred_type")) //账号类型
 	if err != nil {
-		return acc, proto.ECredentials_User, err
+		return acc, proto.ECredentials_USER, err
 	}
 	credType := proto.ECredentials(credTypeId)
 	if len(acc) == 0 {

@@ -12,12 +12,12 @@ message AdjustOrderRequest {
 }
 
 message DiscountBalanceRequest {
-    sint32 orderId = 1;
+    sint32 order_id = 1;
     string remark = 2;
 }
 
 message DiscountIntegralRequest {
-    sint32 orderId = 1;
+    sint32 order_id = 1;
     sint64 integral = 2;
     bool ignoreOut = 3;
 }
@@ -29,7 +29,7 @@ message WalletPaymentRequest {
 }
 
 message HyperPaymentRequest {
-    sint32 orderId = 1;
+    sint32 order_id = 1;
     string remark = 2;
 }
 
@@ -103,7 +103,7 @@ message MixedPaymentRequest {
 
 message PayGatewayRequest {
     string action = 1;
-    sint64 userId = 2;
+    sint64 user_id = 2;
     map<string, string> data = 3;
 }
 
@@ -136,7 +136,7 @@ message SPaymentOrder {
     /** 交易号 */
     string TradeNo = 1;
     /** 卖家编号 */
-    sint32 SellerId = 2;
+    sint32 Seller_id = 2;
     /** 交易类型 */
     string TradeType = 3;
     /** 合并支付交单单号 */
@@ -150,7 +150,7 @@ message SPaymentOrder {
     /** 外部订单号 */
     string OutOrderNo = 8;
     /** 买家编号 */
-    sint32 BuyerId = 9;
+    sint32 Buyer_id = 9;
     /** 支付用户编号 */
     sint32 PayUid = 10;
     /** 商品金额 */

@@ -47,12 +47,12 @@ service ExpressService {
 }
 
 message ExpressProviderListResponse {
-    repeated SExpressProvider Value = 1;
+    repeated SExpressProvider value =  1;
 }
 // 快递服务商
 message SExpressProvider {
     // 快递公司编号
-    int64 Id = 1;
+    int64 id = 1;
     // 快递名称
     string Name = 2;
     // 首字母，用于索引分组
@@ -68,9 +68,9 @@ message SExpressProvider {
 // 快递模板
 message SExpressTemplate {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 运营商编号
-    int64 SellerId = 2;
+    int64 Seller_id = 2;
     // 运费模板名称
     string Name = 3;
     // 是否卖价承担运费
@@ -90,22 +90,22 @@ message SExpressTemplate {
 }
 
 message ExpressTemplateId {
-    int64 SellerId = 1;
-    int64 TemplateId = 2;
+    int64 Seller_id = 1;
+    int64 Template_id = 2;
 }
 message GetTemplatesRequest {
-    int64 SellerId = 1;
+    int64 Seller_id = 1;
     // 仅返回已启用的模板
     bool OnlyEnabled = 2;
 }
 message ExpressTemplateListResponse {
-    repeated SExpressTemplate Value = 1;
+    repeated SExpressTemplate value =  1;
 }
 
 // 快递地区模板
 message SExpressAreaTemplate {
     // 模板编号
-    int64 Id = 1;
+    int64 id = 1;
     // 地区编号列表，通常精确到省即可
     string CodeList = 2;
     // 地区名称列表
@@ -121,19 +121,19 @@ message SExpressAreaTemplate {
 }
 
 message SaveAreaExpTemplateRequest {
-    int64 SellerId = 1;
-    int64 TemplateId = 2;
-    SExpressAreaTemplate Value = 3;
+    int64 Seller_id = 1;
+    int64 Template_id = 2;
+    SExpressAreaTemplate value =  3;
 }
 
 message AreaTemplateId {
-    int64 SellerId = 1;
-    int64 TemplateId = 2;
-    int64 AreaTemplateId = 3;
+    int64 Seller_id = 1;
+    int64 Template_id = 2;
+    int64 AreaTemplate_id = 3;
 }
 
 message SaveTemplateResponse {
     int64 ErrCode = 1;
     string ErrMsg = 2;
-    int64 TemplateId = 3;
+    int64 Template_id = 3;
 }

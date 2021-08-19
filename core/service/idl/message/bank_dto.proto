@@ -4,18 +4,18 @@ option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 message BankCardAddRequest {
-    sint64 OwnerId = 1;
-    SBankCardInfo Value = 2;
+    sint64 Owner_id = 1;
+    SBankCardInfo value =  2;
 }
 
 message BankCardRequest {
-    int64 OwnerId = 1;
+    int64 Owner_id = 1;
     string BankCardNo = 2;
 }
 
 message BankCardListResponse {
-    sint64 OwnerId = 1;
-    repeated SBankCardInfo Value = 2;
+    sint64 Owner_id = 1;
+    repeated SBankCardInfo value =  2;
 }
 
 /** 会员银行卡 */
@@ -27,7 +27,7 @@ message SBankCardInfo {
     /** 账号 */
     string AccountNo = 4;
     // 银行编号
-    int32 BankId = 5;
+    int32 Bank_id = 5;
     // 银行卡代码
     string BankCode = 6;
     // 快捷支付授权码

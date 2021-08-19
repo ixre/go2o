@@ -34,22 +34,22 @@ service RegistryService {
 }
 
 message RegistriesResponse {
-    repeated SRegistry Value = 1;
+    repeated SRegistry value =  1;
 }
 
 message RegistryPair {
     string Key = 1;
-    string Value = 2;
+    string value =  2;
 }
 
 message RegistryValueResponse {
-    string Value = 1;
+    string value =  1;
     string ErrorMsg = 2;
 }
 
 message RegistryCreateRequest {
     string key = 1;
-    string defaultValue = 2;
+    string default_value =  2;
     string description = 3;
 }
 
@@ -62,7 +62,7 @@ message SRegistry {
     /** 键 */
     string Key = 1;
     /** 值 */
-    string Value = 2;
+    string value =  2;
     /** 默认值 */
     string Default = 3;
     /** 可选值 */

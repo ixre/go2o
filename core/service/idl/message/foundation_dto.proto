@@ -27,13 +27,13 @@ message AreaStringRequest {
     int32 District = 3;
 }
 message AreaListResponse {
-    repeated SArea Value = 1;
+    repeated SArea value =  1;
 }
 message StringListResponse {
-    repeated string Value = 1;
+    repeated string value =  1;
 }
 message GetAreaNamesRequest {
-    repeated sint32 Value = 1;
+    repeated sint32 value =  1;
 }
 
 message UserPwd {
@@ -102,7 +102,7 @@ message SMobileAppConfig {
 
 message SWxApiConfig {
     //APP ID
-    string AppId = 1;
+    string App_id = 1;
     //APP 密钥
     string AppSecret = 2;
     //通信密钥
@@ -110,12 +110,12 @@ message SWxApiConfig {
     //通信AES KEY
     string MpAesKey = 4;
     //原始ID
-    string OriId = 5;
+    string Ori_id = 5;
 
     /**===== 用于微信支付 =====**/
 
     //商户编号
-    string MchId = 6;
+    string Mch_id = 6;
     //商户接口密钥
     string MchApiKey = 7;
     //微信支付的证书路径(上传)
@@ -131,11 +131,11 @@ message SWxApiConfig {
 }
 
 message PaymentPlatformResponse {
-    repeated PaymentPlatform Value = 1;
+    repeated PaymentPlatform value =  1;
 }
 
 message PaymentPlatform {
-    string Id = 1;
+    string id = 1;
     string Name = 2;
     string Sign = 3;
     repeated BankItem Items = 4;
@@ -143,7 +143,7 @@ message PaymentPlatform {
 
 message BankItem {
     //标识
-    string Id = 1;
+    string id = 1;
     //名称
     string Name = 2;
     //签名/别名

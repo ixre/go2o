@@ -51,7 +51,7 @@ message CardBinQueryResponse {
 
 message BankAuthRequest {
     // 随机Id,用于查询授权结果,并防止重复提起申请
-    string NonceId = 1;
+    string Nonce_id = 1;
     // 用户银行卡号,如：620000000000000000
     string BankCardNo = 2;
     // 姓名,如：张三
@@ -65,7 +65,7 @@ message BankAuthRequest {
 // 申请认证返回结果,通常直接使用返回的表单提交获取银行的授权, 并再查询授权
 message BankAuthResponse {
     // 随机Id
-    string NonceId = 1;
+    string Nonce_id = 1;
     // 错误消息
     string ErrMsg = 2;
     // 认证的Form表单
@@ -77,7 +77,7 @@ message BankAuthResponse {
 // 银行授权查询请求
 message BankAuthQueryRequest {
     // 申请认证的随机Id,如果传递空,则必须传入BankCardNo
-    string NonceId = 1;
+    string Nonce_id = 1;
     // 用户银行卡号,如：620000000000000000
     string BankCardNo = 2;
 }
@@ -121,7 +121,7 @@ message QPaymentResponse {
     // 错误信息,成功返回空
     string ErrMsg = 2;
     // 随机ID
-    string NonceId = 8;
+    string Nonce_id = 8;
     // 第三方支单据号
     string BillNo = 3;
 }
@@ -208,5 +208,5 @@ message BatchTransferResponse {
     // 错误信息,成功返回空
     string ErrMsg = 2;
     // 随机ID
-    string NonceId = 3;
+    string Nonce_id = 3;
 }

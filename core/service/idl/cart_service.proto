@@ -37,34 +37,34 @@ service CartService {
 
 message SettlePersistRequest {
     // 买家编号
-    int64 BuyerId = 1;
+    int64 Buyer_id = 1;
     // 店铺编号
-    int64 ShopId = 2;
+    int64 Shop_id = 2;
     int64 PaymentOpt = 3;
     int64 DeliverOpt = 4;
-    int64 AddressId = 5;
+    int64 Address_id = 5;
 }
 message CartItemRequest {
     // 买家编号
-    int64 BuyerId = 1;
+    int64 Buyer_id = 1;
     // 购物车编码
     string CartCode = 2;
     //商品编号
-    sint64 ItemId = 3;
+    sint64 Item_id = 3;
     //SKU编号
-    sint64 SkuId = 4;
+    sint64 Sku_id = 4;
     // 数量
     int32 quantity = 5;
 }
 
 message CheckSignRequest {
-    int64 BuyerId = 1;
+    int64 Buyer_id = 1;
     string CartCode = 2;
     repeated SCheckCartItem Items = 3;
 }
 
 message CartCode {
-    int64 BuyerId = 1;
+    int64 Buyer_id = 1;
     string CartCode = 2;
 }
 
@@ -76,14 +76,14 @@ message SettleMeta_ {
 }
 
 message SettleShopMeta_ {
-    int64 ShopId = 1;
+    int64 Shop_id = 1;
     string ShopName = 2;
     string Telephone = 3;
 }
 
 
 message SettleDeliverMeta_ {
-    int64 Id = 1;
+    int64 id = 1;
     string ConsigneeName = 2;
     string ConsigneePhone = 3;
     string Address = 4;

@@ -5,12 +5,12 @@ option java_package = "com.github.go2o.rpc";
 
 
 message WsCartRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     string action = 2;
     map<string, string> data = 3;
 }
 message NormalCartRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     string action = 2;
     map<string, string> data = 3;
 }
@@ -18,7 +18,7 @@ message NormalCartRequest {
 // 购物车
 message SShoppingCart {
     //编号
-    sint32 CartId = 1;
+    sint32 Cart_id = 1;
     //购物车KEY
     string Code = 2;
     //店铺分组
@@ -27,9 +27,9 @@ message SShoppingCart {
 // 购物车店铺分组
 message SShoppingCartGroup {
     //店铺编号
-    sint64 ShopId = 1;
+    sint64 Shop_id = 1;
     //供货商编号
-    sint64 VendorId = 2;
+    sint64 Vendor_id = 2;
     //店铺名称
     string ShopName = 3;
     //是否结算
@@ -41,9 +41,9 @@ message SShoppingCartGroup {
 // 购物车商品勾选
 message SCheckCartItem {
     //商品编号
-    sint64 ItemId = 1;
+    sint64 Item_id = 1;
     //SKU编号
-    sint64 SkuId = 2;
+    sint64 Sku_id = 2;
     // 是否勾选
     bool Checked = 3;
 }
@@ -58,9 +58,9 @@ message CartItemResponse {
 // 购物车商品
 message SShoppingCartItem {
     //商品编号
-    sint64 ItemId = 1;
+    sint64 Item_id = 1;
     //SKU编号
-    sint64 SkuId = 2;
+    sint64 Sku_id = 2;
     //商品标题
     string Title = 3;
     //商品图片
@@ -80,5 +80,5 @@ message SShoppingCartItem {
     //库存文本
     string StockText = 11;
     //店铺编号
-    sint64 ShopId = 12;
+    sint64 Shop_id = 12;
 }

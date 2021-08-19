@@ -8,161 +8,161 @@ option java_package = "com.github.go2o.rpc";
 // 会员标志
 enum EMemberFlag {
     // 已创建的会员
-    MemberCreated = 0;
+    MEMBER_CREATED = 0;
     // 已激活
-    Active = 1;
+    ACTIVE = 1;
     // 已锁定的
-    Locked = 2;
+    LOCKED = 2;
     // 已认证的
-    Trusted = 4;
+    TRUSTED = 4;
 }
 
 message RegisterMemberRequest {
     // 用户名
-    string User = 1;
+    string user = 1;
     // 密码(md5)
-    string Pwd = 2;
+    string pwd = 2;
     // 昵称
-    string Name = 3;
+    string name = 3;
     // 手机
-    string Phone = 4;
+    string phone = 4;
     // 邮箱
-    string Email = 5;
+    string email = 5;
     // 用户标志
-    int32 Flag = 6;
+    int32 flag = 6;
     // 邀请码
-    string InviterCode = 7;
+    string inviter_code = 7;
     // 注册IP
-    string RegIp = 8;
+    string reg_ip = 8;
     // 注册来源
-    string RegFrom = 9;
+    string reg_from = 9;
     //map<string, string> Extend = 10;
 }
 
 message LoginRequest {
-    string User = 1;
-    string Pwd = 2;
-    bool Update = 3;
+    string user = 1;
+    string pwd = 2;
+    bool update = 3;
 }
 // 注册结果
 message RegisterResponse {
     // 状态码,如为0表示成功
-    int32 ErrCode = 1;
+    int32 err_code = 1;
     // 消息
-    string ErrMsg = 2;
+    string err_msg = 2;
     // 会员编号
-    int64 MemberId = 3;
+    int64 member_id = 3;
 }
 
 // 密码验证请求
 message PwdVerifyRequest {
-    sint64 MemberId = 1;
-    string Pwd = 2;
+    sint64 member_id = 1;
+    string pwd = 2;
 }
 
 message FindMemberRequest {
     // 凭据类型
-    ECredentials Cred = 1;
+    ECredentials cred = 1;
     // 凭据的值
-    string Value = 2;
+    string value = 2;
 }
 
 message SMemberLevelListResponse {
-    repeated SMemberLevel Value = 1;
+    repeated SMemberLevel value = 1;
 }
 
 message SubmitTrustInfoRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     STrustedInfo info = 2;
 }
 
 message ReviewTrustInfoRequest {
-    int64 MemberId = 1;
-    bool ReviewPass = 2;
-    string Remark = 3;
+    int64 member_id = 1;
+    bool review_pass = 2;
+    string remark = 3;
 }
 
 message LockRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     sint32 minutes = 2;
     string remark = 3;
 }
 message GrantFlagRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     sint32 flag = 2;
 }
 
 message SendCodeRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     string operation = 2;
-    int32 msgType = 3;
+    int32 msg_type = 3;
 }
 
 message CompareCodeRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     string code = 2;
 }
 
 message SReceiptsCodeListResponse {
-    repeated SReceiptsCode Value = 1;
+    repeated SReceiptsCode value =  1;
 }
 message ReceiptsCodeSaveRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     SReceiptsCode code = 2;
 }
 
 
 message UpdateLevelRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     sint32 level = 2;
     bool review = 3;
-    sint64 paymentOrderId = 4;
+    sint64 payment_order_id = 4;
 }
 
 message ChangePhoneRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     string phone = 2;
 }
 message ChangeUserRequest {
-    sint64 MemberId = 1;
-    string User = 2;
+    sint64 member_id = 1;
+    string user =  2;
 }
 message ModifyPwdRequest {
-    sint64 MemberId = 1;
-    string OriginPwd = 2;
-    string NewPwd = 3;
+    sint64 member_id = 1;
+    string origin_pwd = 2;
+    string new_pwd = 3;
 }
 message ChangeInviterRequest {
-    sint64 memberId = 1;
-    sint64 inviterId = 2;
+    sint64 member_id = 1;
+    sint64 inviter_id = 2;
 }
 
 message OrderQuantityMapResponse {
-    map<sint32, sint32> Data = 1;
+    map<sint32, sint32> data = 1;
 }
 
 message GetTokenRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     bool reset = 2;
 }
 
 message PremiumRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     sint32 v = 2;
     sint64 expires = 3;
 }
 
 message CheckTokenRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     string token = 2;
 }
 
 message AddressListResponse {
-    repeated SAddress Value = 1;
+    repeated SAddress value =  1;
 }
 message SaveAddressRequest {
-    sint64 MemberId = 1;
-    SAddress Value = 2;
+    sint64 member_id = 1;
+    SAddress value =  2;
 }
 
 // 保存地址响应
@@ -172,18 +172,18 @@ message SaveAddressResponse {
     /* 消息 */
     string ErrMsg = 2;
     // 地址编号
-    int64 AddressId = 3;
+    int64 Address_id = 3;
 }
 
 message GetAddressRequest {
-    sint64 memberId = 1;
-    sint64 addrId = 2;
+    sint64 member_id = 1;
+    sint64 addr_id = 2;
 }
 
 // 账户资产变动请求
 message AccountChangeRequest {
     // 会员编号
-    sint64 MemberId = 1;
+    sint64 member_id = 1;
     // 账户类型
     sint32 AccountType = 2;
     // 明细标题
@@ -196,7 +196,7 @@ message AccountChangeRequest {
     string Remark = 6;
 }
 message AccountAdjustRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     sint32 account = 2;
     sint32 value = 3;
     sint64 relateUser = 4;
@@ -204,20 +204,20 @@ message AccountAdjustRequest {
 }
 
 message B4EAuthRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     string action = 2;
     map<string, string> data = 3;
 }
 
 message PagingAccountInfoRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     sint32 accountType = 2;
     SPagingParams params = 3;
 }
 
 /** 等级 */
 message SMemberLevel {
-    sint32 Id = 1;
+    sint32 id = 1;
     string Name = 2;
     sint32 RequireExp = 3;
     string ProgramSignal = 4;
@@ -227,16 +227,16 @@ message SMemberLevel {
 }
 
 message AvatarRequest {
-    sint64 MemberId = 1;
+    sint64 member_id = 1;
     string AvatarUrl = 2;
 }
 
 /** 会员 */
 message SMember {
     /** 编号  */
-    sint64 Id = 1;
+    sint64 id = 1;
     /** 用户名 */
-    string User = 2;
+    string user =  2;
     /** 密码 */
     string Pwd = 3;
     /** 交易密码 */
@@ -281,7 +281,7 @@ message SMember {
 
 /** 资料 */
 message SProfile {
-    sint64 MemberId = 1;
+    sint64 member_id = 1;
     string Name = 2;
     string Avatar = 3;
     sint32 Gender = 4;
@@ -305,7 +305,7 @@ message SProfile {
 
 /** 账户 */
 message SAccount {
-    sint64 MemberId = 1;
+    sint64 member_id = 1;
     sint64 Integral = 2;
     sint64 FreezeIntegral = 3;
     double Balance = 4;
@@ -345,11 +345,11 @@ message SComplexMember {
 }
 
 message SMemberRelation {
-    sint64 MemberId = 1;
-    string CardId = 2;
-    sint64 InviterId = 3;
+    sint64 member_id = 1;
+    string Card_id = 2;
+    sint64 Inviter_id = 3;
     string InviterStr = 4;
-    sint32 RegisterMchId = 5;
+    sint32 RegisterMch_id = 5;
 }
 
 /** 实名认证信息 */
@@ -361,7 +361,7 @@ message STrustedInfo {
     /** 证件类型 */
     sint32 CardType = 3;
     /** 证件号码 */
-    string CardId = 4;
+    string Card_id = 4;
     /** 证件正面照 */
     string CardImage = 5;
     /** 证件反面照 */
@@ -393,8 +393,8 @@ message SAddress {
 }
 
 message AddressIdRequest {
-    sint64 MemberId = 1;
-    sint64 AddressId = 2;
+    sint64 member_id = 1;
+    sint64 Address_id = 2;
 }
 
 /** 收款码 */
@@ -404,7 +404,7 @@ message SReceiptsCode {
     /** 账户名称 */
     string Name = 2;
     /** 账号 */
-    string AccountId = 3;
+    string Account_id = 3;
     /** 收款码地址 */
     string CodeUrl = 4;
     /** 是否启用 */
@@ -445,7 +445,7 @@ message SMemberOrderSummary {
 
 message MemberRelationResponse {
     // 邀请人（会员）
-    sint64 InviterId = 1;
+    sint64 Inviter_id = 1;
     // 邀请会员编号(depth2)
     sint64 InviterD2 = 2;
     // 邀请会员编号(depth3)
@@ -456,7 +456,7 @@ message MemberRelationResponse {
 enum ECredentials {
     _1 = 0;
     /** 用户名 */
-    User = 1;
+    USER = 1;
     /** 用户代码 */
     Code = 2;
     /** 邮箱 */
@@ -468,16 +468,16 @@ enum ECredentials {
 }
 
 message WalletLogRequest {
-    sint64 MemberId = 1;
-    sint64 LogId = 2;
+    sint64 member_id = 1;
+    sint64 Log_id = 2;
 }
 
 // 钱包账户日志
 message WalletLogResponse {
     // 日志编号
-    sint64 LogId = 1;
+    sint64 Log_id = 1;
     // 会员编号
-    sint64 MemberId = 2;
+    sint64 member_id = 2;
     // 外部单号
     string OuterNo = 3;
     // 业务类型
@@ -522,8 +522,8 @@ enum TransferAccountType {
 // 账户转账请求
 message AccountTransferRequest {
     TransferAccountType TransferAccount = 1;
-    sint64 FromMemberId = 2;
-    sint64 ToMemberId = 3;
+    sint64 from_member_id = 2;
+    sint64 to_member_id = 3;
     sint32 Amount = 4;
     sint32 TradeFee = 5;
     string Remark = 6;
@@ -531,7 +531,7 @@ message AccountTransferRequest {
 
 // 提现申请
 message WithdrawRequest {
-    sint64 MemberId = 1;
+    sint64 member_id = 1;
     // 提现金额
     int32 Amount = 2;
     // 手续费
@@ -545,13 +545,13 @@ message WithdrawalResponse {
     sint64 ErrCode = 1;
     string ErrMsg = 2;
     string TradeNo = 3;
-    sint64 LogId = 4;
+    sint64 Log_id = 4;
 }
 
 // 获取提现记录
 message WithdrawalLogRequest {
     // 会员编号
-    sint64 MemberId = 1;
+    sint64 member_id = 1;
     // 数量
     sint32 Number = 2;
     // 仅返回完成的提现
@@ -559,13 +559,13 @@ message WithdrawalLogRequest {
 }
 
 message WithdrawalLogsResponse {
-    sint64 MemberId = 1;
-    repeated WithdrawalLog Data = 2;
+    sint64 member_id = 1;
+    repeated WithdrawalLog data = 2;
 }
 
 // 提现日志
 message WithdrawalLog {
-    sint64 Id = 1;
+    sint64 id = 1;
     // 外部单号
     string OuterNo = 2;
     // 业务类型
@@ -590,22 +590,22 @@ message WithdrawalLog {
 
 // 申请提现请求
 message ReviewWithdrawalRequest {
-    int64 MemberId = 1;
-    int64 InfoId = 2;
+    int64 member_id = 1;
+    int64 Info_id = 2;
     bool Pass = 3;
     string Remark = 4;
 }
 
 message FinishWithdrawalRequest {
-    int64 MemberId = 1;
+    int64 member_id = 1;
     // 提现记录编号
-    int64 InfoId = 2;
+    int64 Info_id = 2;
     // 汇款/交易单号
     string TradeNo = 3;
 }
 
 message MemberInvitationPagingRequest {
-    int64 MemberId = 1;
+    int64 member_id = 1;
     int64 Begin = 2;
     int64 End = 3;
 }
@@ -613,15 +613,15 @@ message MemberInvitationPagingRequest {
 
 message MemberInvitationPagingResponse {
     int64 Total = 1;
-    repeated SInvitationMember Data = 2;
+    repeated SInvitationMember data = 2;
 }
 
 // 邀请会员数据
 message SInvitationMember {
     // 会员编号
-    int64 MemberId = 1;
+    int64 member_id = 1;
     // 用户名
-    string User = 2;
+    string user =  2;
     // 等级
     int32 Level = 3;
     // 头像
@@ -637,9 +637,9 @@ message SInvitationMember {
 }
 message IsInvitationRequest {
     // 会员编号
-    int64 MemberId = 1;
+    int64 member_id = 1;
     // 邀请人会员编号
-    int64 InviterId = 2;
+    int64 Inviter_id = 2;
 }
 
 enum PagingCouponState {
@@ -649,7 +649,7 @@ enum PagingCouponState {
 }
 
 message MemberCouponPagingRequest {
-    int64 MemberId = 1;
+    int64 member_id = 1;
     // 状态,-1为全部
     PagingCouponState State = 2;
     int64 Begin = 3;
@@ -658,11 +658,11 @@ message MemberCouponPagingRequest {
 
 message MemberCouponListResponse {
     int64 Total = 1;
-    repeated SMemberCoupon Data = 2;
+    repeated SMemberCoupon data = 2;
 }
 message SMemberCoupon {
     // 优惠券编号
-    int64 CouponId = 1;
+    int64 Coupon_id = 1;
     // 数量
     int32 Number = 2;
     // 优惠券标题
@@ -689,24 +689,24 @@ enum FavoriteType {
 }
 
 message FavoriteRequest {
-    sint64 MemberId = 1;
+    sint64 member_id = 1;
     FavoriteType FavoriteType = 2;
-    sint64 ReferId = 3;
+    sint64 Refer_id = 3;
 }
 message DepthRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     sint32 depth = 2;
 }
 message InviterIdListResponse {
-    repeated sint64 Value = 1;
+    repeated sint64 value =  1;
 
 }
 message InviteQuantityRequest {
-    sint64 memberId = 1;
+    sint64 member_id = 1;
     map<string, string> data = 2;
 }
 
 message MemberIdListResponse {
-    repeated sint64 Value = 1;
+    repeated sint64 value =  1;
 }
 

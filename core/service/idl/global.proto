@@ -6,22 +6,22 @@ option java_package = "com.github.go2o.rpc";
 message Empty {
 }
 message String {
-    string Value = 1;
+    string value =  1;
 }
 message Int64 {
-    sint64 Value = 1;
+    sint64 value =  1;
 }
 message Int32 {
-    sint32 Value = 1;
+    sint32 value =  1;
 }
 message Bool {
-    bool Value = 1;
+    bool value =  1;
 }
 message StringMap {
-    map<string, string> Value = 1;
+    map<string, string> value =  1;
 }
 message StringArray {
-    repeated string Value = 1;
+    repeated string value =  1;
 }
 //传输结果对象
 message Result {
@@ -30,21 +30,21 @@ message Result {
     /* 消息 */
     string ErrMsg = 2;
     /** 数据字典 */
-    map<string, string> Data = 3;
+    map<string, string> data = 3;
 }
 
 // 键值对
 message Pair {
     string Key = 1;
-    string Value = 2;
+    string value =  2;
 }
 
 message IdOrName {
-    int64 Id = 1;
+    int64 id = 1;
     string Name = 2;
 }
 message IdAndRemark {
-    int64 Id = 1;
+    int64 id = 1;
     string Remark = 2;
 }
 
@@ -103,7 +103,7 @@ message SPagingResult {
     /** 总数 */
     sint32 Count = 3;
     /** 数据 */
-    string Data = 4;
+    string data = 4;
     /** 额外的数据 */
     map<string, string> Extras = 5;
 }
@@ -113,7 +113,7 @@ message STreeNode {
     // 文本
     string Title = 1;
     // 值
-    string Value = 2;
+    string value =  2;
     // 图标,icon与JS树形控件冲突
     string Icon = 3;
     // 是否展开
@@ -121,28 +121,28 @@ message STreeNode {
     // 延迟加载
     bool Lazy = 5;
     // 其他数据
-    map<string, string> Data = 6;
+    map<string, string> data = 6;
     // 子节点
     repeated STreeNode Children = 7;
     // 子节点编号
-    int64 Id = 8;
+    int64 id = 8;
     // 是否目录，通常Children有元素,则为true
     bool Folder = 10;
 }
 
 
 message Id {
-    int64 Value = 1;
+    int64 value =  1;
 }
 message MemberId {
-    int64 Value = 1;
+    int64 value =  1;
 }
 message MerchantId {
-    int64 Value = 1;
+    int64 value =  1;
 }
 message SellerId {
-    int64 Value = 1;
+    int64 value =  1;
 }
 message BuyerId {
-    int64 Value = 1;
+    int64 value =  1;
 }

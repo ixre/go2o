@@ -5,28 +5,28 @@ option java_package = "com.github.go2o.rpc";
 
 // 覆盖区域
 message SCoverageValue {
-    int64 Id = 1;
+    int64 id = 1;
     string Name = 2;
     double Lng = 3;
     double Lat = 4;
     int32 Radius = 5;
     string Address = 6;
-    int64 AreaId = 7;
+    int64 Area_id = 7;
 }
 
 message ShipmentOrderListResponse {
-    repeated SShipmentOrder Value = 1;
+    repeated SShipmentOrder value =  1;
 }
 // 发货单
 message SShipmentOrder {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 订单编号
-    int64 OrderId = 2;
+    int64 Order_id = 2;
     // 子订单编号
-    int64 SubOrderId = 3;
+    int64 SubOrder_id = 3;
     // 快递SP编号
-    int64 ExpressSpId = 4;
+    int64 ExpressSp_id = 4;
     // 快递SP单号
     string ShipOrderNo = 5;
     // 物流日志
@@ -48,9 +48,9 @@ message SShipmentOrder {
 // 发货单详情
 message SShipmentItem {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商品交易快照编号
-    int64 SnapshotId = 2;
+    int64 Snapshot_id = 2;
     // 商品数量
     int32 Quantity = 3;
     // 运费
@@ -65,7 +65,7 @@ message LogisticFlowTrackRequest {
     bool invert = 3;
 }
 message OrderLogisticTrackRequest {
-    sint64 shipOrderId = 1;
+    sint64 shipOrder_id = 1;
     bool invert = 2;
 }
 // 发货单追踪
