@@ -4,7 +4,7 @@ import "global.proto";
 import "message/merchant_dto.proto";
 import "message/order_dto.proto";
 
-option go_package = ".;proto";
+option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 //商家服务

@@ -3,7 +3,7 @@ syntax = "proto3";
 import "global.proto";
 import "message/advertisement_dto.proto";
 
-option go_package = ".;proto";
+option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 service AdvertisementService {
