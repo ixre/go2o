@@ -70,7 +70,7 @@ message SExpressTemplate {
     // 编号
     int64 id = 1;
     // 运营商编号
-    int64 Seller_id = 2;
+    int64 seller_id = 2;
     // 运费模板名称
     string name = 3;
     // 是否卖价承担运费
@@ -90,11 +90,11 @@ message SExpressTemplate {
 }
 
 message ExpressTemplateId {
-    int64 Seller_id = 1;
+    int64 seller_id = 1;
     int64 Template_id = 2;
 }
 message GetTemplatesRequest {
-    int64 Seller_id = 1;
+    int64 seller_id = 1;
     // 仅返回已启用的模板
     bool OnlyEnabled = 2;
 }
@@ -121,13 +121,13 @@ message SExpressAreaTemplate {
 }
 
 message SaveAreaExpTemplateRequest {
-    int64 Seller_id = 1;
+    int64 seller_id = 1;
     int64 Template_id = 2;
     SExpressAreaTemplate value =  3;
 }
 
 message AreaTemplateId {
-    int64 Seller_id = 1;
+    int64 seller_id = 1;
     int64 Template_id = 2;
     int64 AreaTemplate_id = 3;
 }

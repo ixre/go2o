@@ -44,7 +44,7 @@ type paymentOrderImpl struct {
 }
 
 func (p *paymentOrderImpl) GetAggregateRootId() int {
-	return p.value.ID
+	return p.value.Id
 }
 
 func (p *paymentOrderImpl) Get() payment.Order {
@@ -524,7 +524,7 @@ func (p *paymentOrderImpl) saveOrder() error {
 	err := p.checkOrderFinalFee()
 	if err == nil {
 		p.value.UpdateTime = time.Now().Unix()
-		p.value.ID, err = p.repo.SavePaymentOrder(p.value)
+		p.value.Id, err = p.repo.SavePaymentOrder(p.value)
 	}
 	//保存支付单后,通知支付成功。只通知一次
 	if err == nil && p.firstFinishPayment {

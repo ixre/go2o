@@ -175,7 +175,7 @@ message SavePermDeptRequest {
     /** 状态 */
     int32 enabled = 4;
     /** 创建日期 */
-    int64 CreateTime = 5;
+    int64 create_time = 5;
 }
 
 message SavePermDeptResponse {
@@ -197,7 +197,7 @@ message SPermDept {
     /** 状态 */
     int32 enabled = 4;
     /** 创建日期 */
-    int64 CreateTime = 5;
+    int64 create_time = 5;
 }
 
 message QueryPermDeptRequest {
@@ -221,7 +221,7 @@ message SavePermJobRequest {
     /** 部门ID */
     int64 Dept_id = 5;
     /** 创建日期 */
-    int64 CreateTime = 6;
+    int64 create_time = 6;
 }
 
 message SavePermJobResponse {
@@ -246,7 +246,7 @@ message SPermJob {
     /** 部门ID */
     int64 Dept_id = 5;
     /** 创建日期 */
-    int64 CreateTime = 6;
+    int64 create_time = 6;
 }
 
 message QueryPermJobRequest {
@@ -270,7 +270,7 @@ message PagingPermJob {
     /** 部门ID */
     int64 Dept_id = 5;
     /** 创建日期 */
-    int64 CreateTime = 6;
+    int64 create_time = 6;
 }
 
 message PermJobPagingRequest {
@@ -313,7 +313,7 @@ message SavePermUserRequest {
     /** 最后登录的日期 */
     int64 LastLogin = 13;
     /** 创建日期 */
-    int64 CreateTime = 14;
+    int64 create_time = 14;
     // 用户角色
     repeated int64 Roles = 15;
 }
@@ -356,7 +356,7 @@ message SPermUser {
     /** 最后登录的日期 */
     int64 LastLogin = 13;
     /** 创建日期 */
-    int64 CreateTime = 14;
+    int64 create_time = 14;
     // 用户角色
     repeated int64 Roles = 15;
     // 权限
@@ -399,7 +399,7 @@ message PagingPermUser {
     /** 最后登录的日期 */
     int64 LastLogin = 13;
     /** 创建日期 */
-    int64 CreateTime = 14;
+    int64 create_time = 14;
 }
 
 message PermUserPagingRequest {
@@ -429,7 +429,7 @@ message SavePermRoleRequest {
     /** 备注 */
     string remark = 6;
     /** 创建日期 */
-    int64 CreateTime = 7;
+    int64 create_time = 7;
 }
 
 // 更新角色资源请求
@@ -461,7 +461,7 @@ message SPermRole {
     /** 备注 */
     string remark = 6;
     /** 创建日期 */
-    int64 CreateTime = 7;
+    int64 create_time = 7;
     /** 关联的资源ID列表 */
     repeated int64 RelatedResIdList = 8;
 }
@@ -488,7 +488,7 @@ message PagingPermRole {
     /** 备注 */
     string remark = 6;
     /** 创建日期 */
-    int64 CreateTime = 7;
+    int64 create_time = 7;
 }
 
 message PermRolePagingRequest {
@@ -526,7 +526,7 @@ message SavePermResRequest {
     /** 是否隐藏 */
     bool IsHidden = 11;
     /** 创建日期 */
-    int64 CreateTime = 12;
+    int64 create_time = 12;
     /** 组件名称 */
     string ComponentName = 13;
     /** 缓存 */
@@ -569,7 +569,7 @@ message SPermRes {
     /** 是否隐藏 */
     bool IsHidden = 12;
     /** 创建日期 */
-    int64 CreateTime = 13;
+    int64 create_time = 13;
     /** 组件名称 */
     string ComponentName = 14;
     /** 缓存 */
@@ -620,7 +620,7 @@ message PagingPermRes {
     /** 是否隐藏 */
     bool IsHidden = 11;
     /** 创建日期 */
-    int64 CreateTime = 12;
+    int64 create_time = 12;
     /** 组件名称 */
     string ComponentName = 13;
     /** 缓存 */

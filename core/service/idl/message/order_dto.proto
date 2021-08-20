@@ -115,40 +115,40 @@ message SSingleOrder {
     // 买家编号
     int64 buyer_id = 5;
     // 卖家编号
-    int64 Seller_id = 6;
+    int64 seller_id = 6;
     // 店铺编号
-    int64 Shop_id = 7;
+    int64 shop_id = 7;
     //int64 SubOrder_id = 2;
     // 订单标题
     string subject = 8;
     // 商品总金额
-    double Item_amount = 9;
+    double item_amount = 9;
     // 优惠金额
-    double Discount_amount = 10;
+    double discount_amount = 10;
     // 抵扣金额
-    int32 Deduct_amount = 11;
+    int32 deduct_amount = 11;
     // 调整金额
-    int32 Adjust_amount = 12;
+    int32 adjust_amount = 12;
     // 配送费
-    double ExpressFee = 13;
+    double express_fee = 13;
     // 包装费
-    double PackageFee = 14;
+    double package_fee = 14;
     // 手续费
-    int32 ProcedureFee = 15;
+    int32 procedure_fee = 15;
     // 订单总金额
-    int32 Total_amount = 16;
+    int32 total_amount = 16;
     // 最终金额
     double final_amount = 17;
     // 收货人
-    SConsigneeInfo Consignee = 18;
+    SConsigneeInfo consignee = 18;
     // 买家留言
-    string BuyerComment = 19;
+    string buyer_comment = 19;
     //sint32 IsBreak = 18;
-    sint32 State = 20;
+    sint32 state = 20;
     // 下单时间
     sint64 submit_time = 21;
     //sint64 update_time = 21;
-    repeated SOrderItem Items = 22;
+    repeated SOrderItem items = 22;
     // 扩展信息
     map<string, string> data = 23;
     // 更新时间
@@ -160,11 +160,11 @@ message SSingleOrder {
 // 收货人信息
 message SConsigneeInfo {
     // 收货人
-    string ConsigneePerson = 14;
+    string consignee_person = 14;
     // 收货电话
-    string ConsigneePhone = 15;
+    string consignee_phone = 15;
     // 配送地址
-    string ShippingAddress = 16;
+    string shipping_address = 16;
 }
 
 //todo: 批发的参数改为属性而不是map
@@ -177,11 +177,11 @@ message SubmitOrderRequest {
 // 提交订单请求
 message SubmitNormalOrderV2Request {
     int64 buyer_id = 1;
-    string CartCode = 2;
-    int64 Address_id = 3;
+    string cart_code = 2;
+    int64 address_id = 3;
     string subject = 4;
-    string CouponCode = 5;
-    bool BalanceDiscount = 6;
+    string coupon_code = 5;
+    bool balance_discount = 6;
 }
 
 // 订单提交返回数据
@@ -193,11 +193,11 @@ message NormalOrderSubmitResponse {
     // 订单号，多个订单号，用","分割
     string order_no =  3;
     // 合并支付
-    bool MergePay = 4;
+    bool merge_pay = 4;
     // 交易号
     string trade_no = 5;
     // 交易金额
-    int64 Trade_amount = 6;
+    int64 trade_amount = 6;
 }
 
 message GetOrderRequest {
@@ -206,13 +206,13 @@ message GetOrderRequest {
 }
 
 message TradeOrderSubmitRequest {
-    SSingleOrder Order = 1;
-    double Rate = 2;
+    SSingleOrder order = 1;
+    double rate = 2;
 }
 
 message TradeOrderTicketRequest {
     sint64 order_id = 1;
-    string Img = 2;
+    string img = 2;
 }
 
 message ComplexItemsResponse {
@@ -229,7 +229,7 @@ message OrderNo {
     // 订单号
     string order_no =  1;
     // 是否为子订单
-    bool Sub = 2;
+    bool sub = 2;
 }
 
 // 订单号
@@ -249,26 +249,26 @@ message CancelOrderRequest {
     // 订单号
     string order_no =  1;
     // 是否为子订单
-    bool Sub = 2;
+    bool sub = 2;
     // 取消原因
-    string Reason = 3;
+    string reason = 3;
 }
 
 message OrderShipmentRequest {
     // 订单号
     string order_no =  1;
     // 是否为子订单
-    bool Sub = 2;
+    bool sub = 2;
     // 快递编号
-    int64 Provider_id = 3;
+    int64 provider_id = 3;
     // 发货单号
-    string ShipOrderNo = 4;
+    string ship_order_no = 4;
 }
 
 message PrepareOrderRequest {
     int64 buyer_id = 1;
-    string CartCode = 2;
-    int64 Address_id = 3;
+    string cart_code = 2;
+    int64 address_id = 3;
     string subject = 4;
-    string CouponCode = 5;
+    string coupon_code = 5;
 }

@@ -67,9 +67,9 @@ func (m PassportApi) checkMemberBasis(ctx api.Context) (string, proto.ECredentia
 // 根据发送的校验码类型获取用户凭据类型
 func (h PassportApi) parseMessageChannel(credType proto.ECredentials) proto.EMessageChannel {
 	if credType == proto.ECredentials_EMAIL {
-		return proto.EMessageChannel_EmailMessage
+		return proto.EMessageChannel_EMAIL_MESSAGE
 	}
-	return proto.EMessageChannel_SmsMessage
+	return proto.EMessageChannel_SMS_MESSAGE
 }
 
 // 标记验证码发送时间

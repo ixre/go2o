@@ -39,7 +39,7 @@ message SettlePersistRequest {
     // 买家编号
     int64 buyer_id = 1;
     // 店铺编号
-    int64 Shop_id = 2;
+    int64 shop_id = 2;
     int64 PaymentOpt = 3;
     int64 DeliverOpt = 4;
     int64 Address_id = 5;
@@ -76,7 +76,7 @@ message SettleMeta_ {
 }
 
 message SettleShopMeta_ {
-    int64 Shop_id = 1;
+    int64 shop_id = 1;
     string ShopName = 2;
     string Telephone = 3;
 }

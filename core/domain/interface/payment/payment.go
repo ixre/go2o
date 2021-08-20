@@ -198,7 +198,7 @@ type (
 	// 支付单
 	Order struct {
 		// 编号
-		ID int `db:"id" pk:"yes" auto:"yes"`
+		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 卖家编号
 		SellerId int `db:"seller_id"`
 		// 交易类型

@@ -46,7 +46,7 @@ message PagingShopFavoriteResponse {
 
 message SPagingShopFavorite {
     int64 id = 1;
-    int64 Shop_id = 2;
+    int64 shop_id = 2;
     string ShopName = 3;
     string logo = 4;
     int64 update_time = 5;
@@ -84,7 +84,7 @@ message QueryPagingShop {
     string Alias = 3;
     string Host = 4;
     string logo = 5;
-    sint64 CreateTime = 6;
+    sint64 create_time = 6;
 }
 
 message MemberOrderPagingRequest {
@@ -100,17 +100,17 @@ message PagedMemberSubOrder {
     string order_no =  2;
     string ParentNo = 3;
     sint64 Vendor_id = 4;
-    sint64 Shop_id = 5;
+    sint64 shop_id = 5;
     string ShopName = 6;
     double Item_amount = 7;
     double Discount_amount = 8;
-    double ExpressFee = 9;
-    double PackageFee = 10;
+    double express_fee = 9;
+    double package_fee = 10;
     bool IsPaid = 11;
     double final_amount = 12;
     sint32 State = 13;
     string StateText = 14;
-    sint64 CreateTime = 15;
+    sint64 create_time = 15;
     repeated SOrderItem Items = 16;
 }
 

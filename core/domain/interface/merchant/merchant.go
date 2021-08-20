@@ -289,7 +289,7 @@ type (
 		// 累计退款金额
 		RefundAmount float32 `db:"refund_amount"`
 		// 已提取金额
-		TakeAmount float32 `db:"take_amount"`
+		WithdrawAmount float32 `db:"take_amount"`
 		// 线下销售金额
 		OfflineSales float32 `db:"offline_sales"`
 		// 更新时间

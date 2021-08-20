@@ -88,7 +88,7 @@ message SubmitAfterSalesOrderRequest {
     EAfterSalesType AfterSales_type= 2;
     int64 ItemSnapshot_id = 3;
     int64 quantity = 4;
-    string Reason = 5;
+    string reason = 5;
     string ImageUrl = 6;
 }
 
@@ -108,7 +108,7 @@ message PagingBuyerOrdersRequest {
 }
 
 message PagingSellerOrdersRequest {
-    int64 Seller_id = 1;
+    int64 seller_id = 1;
     SPagingParams Params = 2;
 }
 
@@ -139,7 +139,7 @@ message SAfterSalesOrder {
     // 商品数量
     int32 quantity = 7;
     // 售后原因
-    string Reason = 8;
+    string reason = 8;
     // 商品售后图片凭证
     string ImageUrl = 9;
     // 联系人
@@ -159,7 +159,7 @@ message SAfterSalesOrder {
     // 售后单状态
     int32 State = 17;
     // 提交时间
-    int64 CreateTime = 18;
+    int64 create_time = 18;
     // 更新时间
     int64 update_time = 19;
     // 订单状态
@@ -187,7 +187,7 @@ message SPagingBuyerAfterSalesOrder {
     // 售后单状态
     int32 State = 11;
     // 提交时间
-    int64 CreateTime = 12;
+    int64 create_time = 12;
     // 更新时间
     int64 update_time = 13;
     // 订单状态
@@ -216,7 +216,7 @@ message SPagingSellerAfterSalesOrder {
     // 售后单状态
     int32 State = 11;
     // 提交时间
-    int64 CreateTime = 12;
+    int64 create_time = 12;
     // 更新时间
     int64 update_time = 13;
     // 订单状态

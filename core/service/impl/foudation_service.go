@@ -105,7 +105,7 @@ func (s *foundationService) GetSmsApi(_ context.Context, provider *proto.String)
 func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.BoardHookSaveRequest) (*proto.Result, error) {
 
 	mp := map[string]string{
-		registry.BoardHookURL:   request.HookURL,
+		registry.BoardHookURL:   request.HookUrl,
 		registry.BoardHookToken: request.Token,
 	}
 	for k, v := range mp {

@@ -25,7 +25,7 @@ service MerchantService {
     rpc Stat (Int64) returns (Result) {
     }
     // 同步批发商品,mchId
-    rpc SyncWholesaleItem (Int64) returns (SyncWSItemsResponse) {
+    rpc SyncWholesaleItem (Int64) returns (SyncWsItemsResponse) {
     }
     // 获取所有的交易设置,mchId
     rpc GetAllTradeConf_ (Int64) returns (STradeConfListResponse) {
@@ -161,13 +161,13 @@ message SMerchantOrder {
     string Details = 6;
     double Item_amount = 7;
     double Discount_amount = 8;
-    double ExpressFee = 9;
-    double PackageFee = 10;
+    double express_fee = 9;
+    double package_fee = 10;
     bool IsPaid = 11;
     double final_amount = 12;
     int32 State = 13;
     string StateText = 14;
-    int64 CreateTime = 15;
+    int64 create_time = 15;
     repeated SOrderItem Items = 16;
     map<string, string> data = 17;
 }

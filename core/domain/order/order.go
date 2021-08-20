@@ -170,7 +170,7 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 	buyerId := o.Buyer().GetAggregateRootId()
 	unix := time.Now().Unix()
 	v2 := &payment.Order{
-		ID:             0,
+		Id:             0,
 		SellerId:       0,
 		TradeType:      "",
 		TradeNo:        o.OrderNo(),

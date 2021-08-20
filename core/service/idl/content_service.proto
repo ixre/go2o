@@ -110,7 +110,7 @@ message SArticle {
     /** 排序序号 */
     sint32 SortNum = 13;
     /** 创建时间 */
-    sint64 CreateTime = 14;
+    sint64 create_time = 14;
     /** 最后修改时间 */
     sint64 update_time = 15;
 }

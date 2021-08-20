@@ -254,7 +254,7 @@ func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRe
 
 func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Order {
 	dst := &payment.Order{
-		ID:             int(src.ID),
+		Id:             int(src.Id),
 		SellerId:       int(src.SellerId),
 		TradeType:      src.TradeType,
 		TradeNo:        src.TradeNo,
@@ -288,7 +288,7 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 
 func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymentOrder {
 	return &proto.SPaymentOrder{
-		ID:             int32(src.ID),
+		Id:             int32(src.Id),
 		SellerId:       int32(src.SellerId),
 		TradeType:      src.TradeType,
 		TradeNo:        src.TradeNo,

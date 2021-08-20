@@ -93,7 +93,7 @@ service ProductService {
 
 
 message DeleteProductRequest {
-    int64 Seller_id = 1;
+    int64 seller_id = 1;
     int64 Product_id = 2;
 }
 message ProductId {
@@ -224,7 +224,7 @@ message SProductBrand {
     // 是否启用
     int32 enabled = 8;
     // 加入时间
-    int64 CreateTime = 9;
+    int64 create_time = 9;
 }
 
 message ProductCategoriesResponse {
@@ -266,7 +266,7 @@ message SProductCategory {
     /** 是否启用 */
     bool enabled = 13;
     /** 创建时间 */
-    int64 CreateTime = 14;
+    int64 create_time = 14;
     // 选项参数
     map<string, string> Options = 15;
     // 关联品牌
@@ -310,7 +310,7 @@ message SProduct {
     // 产品属性
     repeated SProductAttrValue Attrs = 12;
     // 创建时间
-    int64 CreateTime = 13;
+    int64 create_time = 13;
     // 更新时间
     int64 update_time = 14;
 }

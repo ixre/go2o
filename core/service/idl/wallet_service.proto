@@ -286,7 +286,7 @@ message SWallet {
     /** 状态 */
     sint32 State = 18;
     /** 创建时间 */
-    sint64 CreateTime = 19;
+    sint64 create_time = 19;
     /** 更新时间 */
     sint64 update_time = 20;
 }
@@ -324,7 +324,7 @@ message SWalletLog {
     /** 审核时间 */
     sint64 review_time = 15;
     /** 创建时间 */
-    sint64 CreateTime = 16;
+    sint64 create_time = 16;
     /** 更新时间 */
     sint64 update_time = 17;
 }

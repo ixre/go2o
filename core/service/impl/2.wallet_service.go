@@ -179,7 +179,7 @@ func (w *walletServiceImpl) PagingWalletLog(_ context.Context, r *proto.PagingWa
 
 func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 	return &proto.SWallet{
-		ID:             v.Id,
+		Id:             v.Id,
 		HashCode:       v.HashCode,
 		NodeId:         int32(v.NodeId),
 		UserId:         v.UserId,
@@ -203,7 +203,7 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 }
 func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog {
 	return &proto.SWalletLog{
-		ID:           l.Id,
+		Id:           l.Id,
 		WalletId:     l.WalletId,
 		Kind:         int32(l.Kind),
 		Title:        l.Title,

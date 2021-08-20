@@ -146,5 +146,5 @@ message SAppVersion {
     // 更新内容
     string UpdateContent = 7;
     // 发布时间
-    int64 CreateTime = 8;
+    int64 create_time = 8;
 }

@@ -195,7 +195,7 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 			return err
 		}
 		a.value.Balance -= amount
-		a.value.TakeAmount += amount
+		a.value.WithdrawAmount += amount
 		a.value.UpdateTime = time.Now().Unix()
 		err = a.Save()
 		if err != nil {
@@ -240,7 +240,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 			return err
 		}
 		a.value.Balance -= amount
-		a.value.TakeAmount += amount
+		a.value.WithdrawAmount += amount
 		a.value.UpdateTime = time.Now().Unix()
 		err = a.Save()
 		if err != nil {

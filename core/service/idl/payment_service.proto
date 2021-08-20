@@ -136,7 +136,7 @@ message SPaymentOrder {
     /** 交易号 */
     string trade_no = 1;
     /** 卖家编号 */
-    sint32 Seller_id = 2;
+    sint32 seller_id = 2;
     /** 交易类型 */
     string Trade_type= 3;
     /** 合并支付交单单号 */
@@ -164,7 +164,7 @@ message SPaymentOrder {
     /** 共计金额 */
     sint32 Total_amount = 15;
     /** 手续费 */
-    sint32 ProcedureFee = 16;
+    sint32 procedure_fee = 16;
     /** 实付金额 */
     sint32 PaidFee = 17;
     /** 最终应付金额 */
@@ -232,7 +232,7 @@ message SPrepareTradeData {
     /** 累计金额 */
     sint32 Total_amount = 7;
     /** 手续费 */
-    sint32 ProcedureFee = 8;
+    sint32 procedure_fee = 8;
     /** 最终支付金额 */
     sint32 FinalFee = 9;
 }
@@ -248,7 +248,7 @@ message SPaymentOrderData {
     /** 状态 */
     sint32 State = 4;
     /** 手续费 */
-    sint32 ProcedureFee = 5;
+    sint32 procedure_fee = 5;
     /** 最终支付金额 */
     sint32 FinalFee = 6;
 }

@@ -832,7 +832,7 @@ func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) 
 // 获取
 
 // 同步批发商品
-func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.Int64) (*proto.SyncWSItemsResponse, error) {
+func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.Int64) (*proto.SyncWsItemsResponse, error) {
 	mch := m._mchRepo.GetMerchant(int(vendorId.Value))
 	var mp = map[string]int32{
 		"add": 0, "del": 0,
@@ -840,7 +840,7 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 	if mch != nil {
 		mp = mch.Wholesaler().SyncItems(true)
 	}
-	return &proto.SyncWSItemsResponse{Value: mp}, nil
+	return &proto.SyncWsItemsResponse{Value: mp}, nil
 }
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.SMerchant {
@@ -997,7 +997,7 @@ func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantA
 		PresentAmount: float64(v.PresentAmount),
 		SalesAmount:   float64(v.SalesAmount),
 		RefundAmount:  float64(v.RefundAmount),
-		TakeAmount:    float64(v.TakeAmount),
+		WithdrawAmount:    float64(v.WithdrawAmount),
 		OfflineSales:  float64(v.OfflineSales),
 		UpdateTime:    v.UpdateTime,
 	}
