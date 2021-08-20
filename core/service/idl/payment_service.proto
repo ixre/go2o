@@ -134,11 +134,11 @@ enum EPayMethod {
 /** 支付单 */
 message SPaymentOrder {
     /** 交易号 */
-    string TradeNo = 1;
+    string trade_no = 1;
     /** 卖家编号 */
     sint32 Seller_id = 2;
     /** 交易类型 */
-    string TradeType = 3;
+    string Trade_type= 3;
     /** 合并支付交单单号 */
     string MergeTradeNo = 4;
     /** 支付单详情 */
@@ -146,7 +146,7 @@ message SPaymentOrder {
     /** 是否为子订单 */
     bool SubOrder = 6;
     /** 支付单的类型，如购物或其他 */
-    sint32 OrderType = 7;
+    sint32 Order_type= 7;
     /** 外部订单号 */
     string OutOrderNo = 8;
     /** 买家编号 */
@@ -178,7 +178,7 @@ message SPaymentOrder {
     /** 订单状态 */
     sint32 State = 22;
     /** 提交时间 */
-    sint64 SubmitTime = 23;
+    sint64 submit_time = 23;
     /** 过期时间 */
     sint64 ExpiresTime = 24;
     /** 支付时间 */
@@ -218,11 +218,11 @@ message STradeMethodData {
 /** 支付单预交易数据 */
 message SPrepareTradeData {
     /** 错误码 */
-    sint32 ErrCode = 1;
+    sint32 err_code = 1;
     /** 错误消息 */
-    string ErrMsg = 2;
+    string err_msg = 2;
     /** 交易号 */
-    string TradeNo = 3;
+    string trade_no = 3;
     /** 支付标志 */
     sint32 PayFlag = 4;
     /** 交易状态 */
@@ -244,7 +244,7 @@ message SPaymentOrderData {
     /** 标题 */
     string Subject = 2;
     /** 交易类型 */
-    string TradeType = 3;
+    string Trade_type= 3;
     /** 状态 */
     sint32 State = 4;
     /** 手续费 */

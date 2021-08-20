@@ -50,8 +50,8 @@ message SCheckCartItem {
 
 // 购物车商品操作响应
 message CartItemResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     SShoppingCartItem Item = 3;
 }
 

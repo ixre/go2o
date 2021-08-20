@@ -44,7 +44,7 @@ message SMailTemplate {
     // 商户编号
     int64 Merchant_id = 2;
     // 名称
-    string Name = 3;
+    string name = 3;
     // 主题
     string Subject = 4;
     // 内容
@@ -74,7 +74,7 @@ enum EMessageUserType {
 
 message SendSiteMessageRequest {
     int64 Sender_id = 1;
-    EMessageUserType ReceiverType = 2;
+    EMessageUserType Receiver_type= 2;
     int64 Receiver_id = 3;
     bool SendNow = 4;
     SSiteMessage Msg = 5;

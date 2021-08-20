@@ -232,7 +232,7 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 		trans, cli, _ := service.MemberServiceClient()
 		memberId, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Phone,
+				Cred:  proto.ECredentials_PHONE,
 				Value: phone,
 			})
 		trans.Close()

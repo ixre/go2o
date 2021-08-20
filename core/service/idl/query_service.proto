@@ -40,7 +40,7 @@ message FavoriteQueryRequest {
 }
 
 message PagingShopFavoriteResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated SPagingShopFavorite data = 2;
 }
 
@@ -49,10 +49,10 @@ message SPagingShopFavorite {
     int64 Shop_id = 2;
     string ShopName = 3;
     string Logo = 4;
-    int64 UpdateTime = 5;
+    int64 update_time = 5;
 }
 message PagingGoodsFavoriteResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated SPagingGoodsFavorite data = 2;
 }
 message SPagingGoodsFavorite {
@@ -63,7 +63,7 @@ message SPagingGoodsFavorite {
     bool OnShelves = 5;
     int32 StockNum = 6;
     string SalePrice = 7;
-    int64 UpdateTime = 8;
+    int64 update_time = 8;
 }
 
 message QueryPagingShopRequest {
@@ -74,13 +74,13 @@ message QueryPagingShopRequest {
 }
 
 message QueryPagingShopsResponse {
-    sint64 Total = 1;
+    sint64 total = 1;
     repeated QueryPagingShop value =  2;
 }
 
 message QueryPagingShop {
     sint64 id = 1;
-    string Name = 2;
+    string name = 2;
     string Alias = 3;
     string Host = 4;
     string Logo = 5;
@@ -92,7 +92,7 @@ message MemberOrderPagingRequest {
     SPagingParams Params = 2;
 }
 message MemberOrderPagingResponse {
-    sint64 Total = 1;
+    sint64 total = 1;
     repeated PagedMemberSubOrder value =  2;
 }
 message PagedMemberSubOrder {

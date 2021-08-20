@@ -11,8 +11,8 @@ message SmsApiSaveRequest {
 
 //  登录结果
 message SuperLoginResponse {
-    int32 ErrCode = 1;
-    string ErrMsg = 2;
+    int32 err_code = 1;
+    string err_msg = 2;
     int32 Role = 3;
 }
 message BoardHookSaveRequest {
@@ -46,7 +46,7 @@ message SSsoApp {
     // 编号
     sint32 ID = 1;
     // 应用名称
-    string Name = 2;
+    string name = 2;
     // API地址
     string ApiUrl = 3;
     // 密钥
@@ -57,7 +57,7 @@ message SSsoApp {
 message SArea {
     sint32 Code = 1;
     sint32 Parent = 2;
-    string Name = 3;
+    string name = 3;
 }
 
 /** 短信接口信息 */
@@ -136,7 +136,7 @@ message PaymentPlatformResponse {
 
 message PaymentPlatform {
     string id = 1;
-    string Name = 2;
+    string name = 2;
     string Sign = 3;
     repeated BankItem Items = 4;
 }
@@ -145,7 +145,7 @@ message BankItem {
     //标识
     string id = 1;
     //名称
-    string Name = 2;
+    string name = 2;
     //签名/别名
     string Sign = 3;
 }

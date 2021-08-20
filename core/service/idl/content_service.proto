@@ -48,12 +48,12 @@ service ContentService {
 
 message PagingArticleRequest {
     string CategoryName = 1;
-    sint32 Begin = 2;
+    sint32 begin = 2;
     sint32 Size = 3;
 }
 
 message ArticleListResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated SArticle data = 2;
 }
 
@@ -66,7 +66,7 @@ message SArticleCategory {
     // 浏览权限
     int32 PermFlag = 3;
     // 名称(唯一)
-    string Name = 4;
+    string name = 4;
     // 别名
     string Alias = 5;
     // 排序编号
@@ -112,7 +112,7 @@ message SArticle {
     /** 创建时间 */
     sint64 CreateTime = 14;
     /** 最后修改时间 */
-    sint64 UpdateTime = 15;
+    sint64 update_time = 15;
 }
 
 message SPage {
@@ -137,7 +137,7 @@ message SPage {
     // 内容
     string Body = 10;
     // 修改时间
-    int64 UpdateTime = 11;
+    int64 update_time = 11;
     // 是否启用
     bool Enabled = 12;
 }

@@ -97,7 +97,7 @@ message SParentOrder {
     // 订单号
     string OrderNo = 3;
     // 订单类型
-    int32 OrderType = 4;
+    int32 Order_type= 4;
     // 子订单
     SSingleOrder Children = 5;
 }
@@ -111,7 +111,7 @@ message SSingleOrder {
     // 订单号
     string OrderNo = 3;
     // 订单类型
-    int32 OrderType = 4;
+    int32 Order_type= 4;
     // 买家编号
     int64 Buyer_id = 5;
     // 卖家编号
@@ -146,13 +146,13 @@ message SSingleOrder {
     //sint32 IsBreak = 18;
     sint32 State = 20;
     // 下单时间
-    sint64 SubmitTime = 21;
-    //sint64 UpdateTime = 21;
+    sint64 submit_time = 21;
+    //sint64 update_time = 21;
     repeated SOrderItem Items = 22;
     // 扩展信息
     map<string, string> data = 23;
     // 更新时间
-    int64 UpdateTime = 24;
+    int64 update_time = 24;
     // 是否为子订单
     //bool SubOrder = 24;
 }
@@ -170,7 +170,7 @@ message SConsigneeInfo {
 //todo: 批发的参数改为属性而不是map
 message SubmitOrderRequest {
     sint64 buyer_id = 1;
-    sint32 cartType = 2;
+    sint32 cart_type= 2;
     map<string, string> data = 3;
 }
 
@@ -187,15 +187,15 @@ message SubmitNormalOrderV2Request {
 // 订单提交返回数据
 message NormalOrderSubmitResponse {
     // 错误码
-    int64 ErrCode = 1;
+    int64 err_code = 1;
     // 错误信息
-    string ErrMsg = 2;
+    string err_msg = 2;
     // 订单号，多个订单号，用","分割
     string OrderNo = 3;
     // 合并支付
     bool MergePay = 4;
     // 交易号
-    string TradeNo = 5;
+    string trade_no = 5;
     // 交易金额
     int64 TradeAmount = 6;
 }

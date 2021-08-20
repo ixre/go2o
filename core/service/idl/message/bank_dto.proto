@@ -38,5 +38,5 @@ message SBankCardInfo {
     /** 状态 */
     sint32 State = 9;
     //更新时间
-    sint64 UpdateTime = 10;
+    sint64 update_time = 10;
 }

@@ -96,7 +96,7 @@ message StoreId {
 message SStore {
     sint64 id = 1;
     sint64 Merchant_id = 2;
-    string Name = 3;
+    string name = 3;
     string Alias = 4;
     sint32 State = 5;
     sint32 OpeningState = 8;

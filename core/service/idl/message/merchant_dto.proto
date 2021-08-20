@@ -14,7 +14,7 @@ message SMerchant {
     /** 登录密码 */
     string LoginPwd = 4;
     /** 名称 */
-    string Name = 5;
+    string name = 5;
     /** 公司名称 */
     string CompanyName = 6;
     /** 是否自营 */
@@ -46,7 +46,7 @@ message SMerchantPack {
     /** 登录密码 */
     string LoginPwd = 2;
     /** 名称 */
-    string Name = 3;
+    string name = 3;
     /** 是否自营 */
     sint32 SelfSales = 4;
     /** 店铺名称 */
@@ -67,8 +67,8 @@ message MerchantCreateRequest {
 }
 
 message MerchantCreateResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     int64 id = 3;
 }
 
@@ -78,7 +78,7 @@ message SaveMerchantRequest {
     /** 会员编号 */
     int64 member_id = 2;
     /** 名称 */
-    string Name = 3;
+    string name = 3;
     /** 是否自营 */
     int32 SelfSales = 4;
     /** 商户等级 */
@@ -105,7 +105,7 @@ message STradeConfListResponse {
 
 message TradeConfRequest {
     sint32 mch_id = 1;
-    sint32 tradeType = 2;
+    sint32 trade_type= 2;
 }
 message TradeConfSaveRequest {
     sint32 mch_id = 1;
@@ -115,11 +115,11 @@ message TradeConfSaveRequest {
 // 商户交易设置
 message STradeConf_ {
     // 商户编号  sint64 Mch_id = 1;
-    // 交易类型  sint32 TradeType = 2;
+    // 交易类型  sint32 Trade_type= 2;
     // 交易方案，根据方案来自动调整比例  sint64 Plan_id = 3;
     // 交易标志  sint32 Flag = 4;
     // 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
-    // 交易费，按单笔收取  sint32 TradeFee = 6;
+    // 交易费，按单笔收取  sint32 trade_fee = 6;
     // 交易手续费比例  sint32 TradeRate = 7;
 }
 
@@ -165,9 +165,9 @@ message SMchSignUp {
     // 备注
     string remark = 20;
     // 是否通过
-    int32 ReviewState = 22;
+    int32 review_state = 22;
     // 提交时间
-    int64 SubmitTime = 21;
+    int64 submit_time = 21;
 }
 
 message MchReviewRequest {
@@ -209,13 +209,13 @@ message SEnterpriseInfo {
     // 授权书
     string AuthDoc = 15;
     //是否已审核
-    int32 ReviewState = 16;
+    int32 review_state = 16;
     // 审核时间
     int64 ReviewTime = 17;
     // 审核备注
     string ReviewRemark = 18;
     //更新时间
-    int64 UpdateTime = 19;
+    int64 update_time = 19;
 }
 
 message SaveEnterpriseRequest {
@@ -243,7 +243,7 @@ message SMerchantAccount {
     // 线下销售金额
     double OfflineSales = 8;
     // 更新时间
-    int64 UpdateTime = 9;
+    int64 update_time = 9;
 }
 
 message MerchantDisableRequest {
@@ -314,7 +314,7 @@ message WithdrawToMemberAccountRequest {
 
 message MerchantChargeRequest {
     int64 Merchant_id = 1;
-    int32 Kind = 2;
+    int32 kind = 2;
     double amount = 3;
     string title = 4;
     string outer_no = 5;
@@ -342,7 +342,7 @@ message SMerchantBuyerGroup {
     //客户分组编号
     int64 Group_id = 2;
     //分组别名
-    string Name = 3;
+    string name = 3;
     // 是否启用零售
     bool EnableRetail = 4;
     // 是否启用批发

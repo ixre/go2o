@@ -147,7 +147,7 @@ message MerchantOrderRequest {
 
 
 message PagingMerchantOrderListResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated SMerchantOrder data = 2;
 }
 

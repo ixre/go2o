@@ -85,7 +85,7 @@ message OriginOrderIdRequest {
 
 message SubmitAfterSalesOrderRequest {
     int64 Order_id = 1;
-    EAfterSalesType AfterSalesType = 2;
+    EAfterSalesType AfterSales_type= 2;
     int64 ItemSnapshot_id = 3;
     int64 Quantity = 4;
     string Reason = 5;
@@ -93,8 +93,8 @@ message SubmitAfterSalesOrderRequest {
 }
 
 message SubmitAfterSalesOrderResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     int64 AfterSalesOrder_id = 3;
 }
 
@@ -113,12 +113,12 @@ message PagingSellerOrdersRequest {
 }
 
 message PagingBuyerAfterSalesOrderListResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated SPagingBuyerAfterSalesOrder data = 2;
 }
 
 message PagingSellerAfterSalesOrderListResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated SPagingSellerAfterSalesOrder data = 2;
 }
 
@@ -133,7 +133,7 @@ message SAfterSalesOrder {
     // 购买者编号
     int64 Buyer_id = 4;
     // 类型，退货、换货、维修
-    int32 AfterSalesType = 5;
+    int32 AfterSales_type= 5;
     // 退货的商品项编号
     int64 Snapshot_id = 6;
     // 商品数量
@@ -161,7 +161,7 @@ message SAfterSalesOrder {
     // 提交时间
     int64 CreateTime = 18;
     // 更新时间
-    int64 UpdateTime = 19;
+    int64 update_time = 19;
     // 订单状态
     string StateText = 20;
 }
@@ -176,7 +176,7 @@ message SPagingBuyerAfterSalesOrder {
     // 运营商名称
     string SellerName = 4;
     // 类型，退货、换货、维修
-    int32 AfterSalesType = 5;
+    int32 AfterSales_type= 5;
     // 退货的商品项编号
     int64 Snapshot_id = 6;
     // 商品数量
@@ -189,7 +189,7 @@ message SPagingBuyerAfterSalesOrder {
     // 提交时间
     int64 CreateTime = 12;
     // 更新时间
-    int64 UpdateTime = 13;
+    int64 update_time = 13;
     // 订单状态
     string StateText = 14;
 }
@@ -205,7 +205,7 @@ message SPagingSellerAfterSalesOrder {
     // 会员名称
     string BuyerName = 4;
     // 类型，退货、换货、维修
-    int32 AfterSalesType = 5;
+    int32 AfterSales_type= 5;
     // 退货的商品项编号
     int64 Snapshot_id = 6;
     // 商品数量
@@ -218,7 +218,7 @@ message SPagingSellerAfterSalesOrder {
     // 提交时间
     int64 CreateTime = 12;
     // 更新时间
-    int64 UpdateTime = 13;
+    int64 update_time = 13;
     // 订单状态
     string StateText = 14;
 }

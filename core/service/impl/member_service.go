@@ -52,13 +52,13 @@ func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest
 	default:
 	case proto.ECredentials_USER:
 		memberId = s.repo.GetMemberIdByUser(r.Value)
-	case proto.ECredentials_Code:
+	case proto.ECredentials_CODE:
 		memberId = s.repo.GetMemberIdByCode(r.Value)
-	case proto.ECredentials_Phone:
+	case proto.ECredentials_PHONE:
 		memberId = s.repo.GetMemberIdByPhone(r.Value)
-	case proto.ECredentials_Email:
+	case proto.ECredentials_EMAIL:
 		memberId = s.repo.GetMemberIdByEmail(r.Value)
-	case proto.ECredentials_InviteCode:
+	case proto.ECredentials_INVITE_CODE:
 		memberId = s.repo.GetMemberIdByInviteCode(r.Value)
 	}
 	return &proto.Int64{Value: memberId}, nil
@@ -201,9 +201,9 @@ func (s *memberService) ChangeInviterId(_ context.Context, r *proto.ChangeInvite
 func (s *memberService) RemoveFavorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result, err error) {
 	f := s.repo.CreateMemberById(r.MemberId).Favorite()
 	switch r.FavoriteType {
-	case proto.FavoriteType_Shop:
+	case proto.FavoriteType_SHOP:
 		err = f.Cancel(member.FavTypeShop, r.ReferId)
-	case proto.FavoriteType_Goods:
+	case proto.FavoriteType_GOOGS:
 		err = f.Cancel(member.FavTypeGoods, r.ReferId)
 	}
 	if err != nil {
@@ -215,9 +215,9 @@ func (s *memberService) RemoveFavorite(_ context.Context, r *proto.FavoriteReque
 func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result, err error) {
 	f := s.repo.CreateMemberById(r.MemberId).Favorite()
 	switch r.FavoriteType {
-	case proto.FavoriteType_Shop:
+	case proto.FavoriteType_SHOP:
 		err = f.Favorite(member.FavTypeShop, r.ReferId)
-	case proto.FavoriteType_Goods:
+	case proto.FavoriteType_GOOGS:
 		err = f.Favorite(member.FavTypeGoods, r.ReferId)
 	}
 	if err != nil {
@@ -231,9 +231,9 @@ func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (
 	f := s.repo.CreateMemberById(r.MemberId).Favorite()
 	t := member.FavTypeGoods
 	switch r.FavoriteType {
-	case proto.FavoriteType_Shop:
+	case proto.FavoriteType_SHOP:
 		t = member.FavTypeShop
-	case proto.FavoriteType_Goods:
+	case proto.FavoriteType_GOOGS:
 		t = member.FavTypeGoods
 	}
 	b := f.Favored(t, r.ReferId)
@@ -326,7 +326,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Kind:        int32(v.Kind),
 		Title:       v.Title,
 		Amount:      float64(v.Value),
-		CsnFee:      float64(v.TradeFee),
+		TradeFee:      float64(v.TradeFee),
 		ReviewState: int32(v.ReviewState),
 		Remark:      v.Remark,
 		CreateTime:  v.CreateTime,
@@ -1471,9 +1471,9 @@ func (s *memberService) QueryCoupons(_ context.Context, r *proto.MemberCouponPag
 	var total int
 	var list []*dto.SimpleCoupon
 	switch r.State {
-	case proto.PagingCouponState_CS_Available:
+	case proto.PagingCouponState_CS_AVAILABLE:
 		total, list = cp.PagedAvailableCoupon(begin, end)
-	case proto.PagingCouponState_CS_Expired:
+	case proto.PagingCouponState_CS_EXPIRED:
 		total, list = cp.PagedExpiresCoupon(begin, end)
 	default:
 		total, list = cp.PagedAllCoupon(begin, end)
@@ -1587,7 +1587,7 @@ func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.
 
 func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAddress {
 	return &proto.SAddress{
-		ID:             src.Id,
+		Id:             src.Id,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,
@@ -1679,7 +1679,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 
 func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddress {
 	return &member.ConsigneeAddress{
-		Id:             src.ID,
+		Id:             src.Id,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,

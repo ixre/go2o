@@ -100,9 +100,9 @@ message RbacLoginRequest {
 // 用户登录响应
 message RbacLoginResponse {
     // 错误编码,0为成功
-    int64 ErrCode = 1;
+    int64 err_code = 1;
     // 错误消息
-    string ErrMsg = 2;
+    string err_msg = 2;
     // 用户编号
     int64 User_id = 3;
     // 访问令牌
@@ -130,9 +130,9 @@ message SUserRes {
     /** 资源键 */
     string Key = 2;
     /** 资源名称 */
-    string Name = 3;
+    string name = 3;
     /** 资源类型,0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 ResType = 4;
+    int32 Res_type= 4;
     /** 深度/层级 */
     int32 Depth = 5;
     /** 资源路径 */
@@ -169,7 +169,7 @@ message SavePermDeptRequest {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 上级部门 */
     int64 Pid = 3;
     /** 状态 */
@@ -179,8 +179,8 @@ message SavePermDeptRequest {
 }
 
 message SavePermDeptResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     int64 id = 3;
 }
 
@@ -191,7 +191,7 @@ message SPermDept {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 上级部门 */
     int64 Pid = 3;
     /** 状态 */
@@ -213,7 +213,7 @@ message SavePermJobRequest {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
-    string Name = 2;
+    string name = 2;
     /** 岗位状态 */
     int32 Enabled = 3;
     /** 岗位排序 */
@@ -225,8 +225,8 @@ message SavePermJobRequest {
 }
 
 message SavePermJobResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     int64 id = 3;
 }
 
@@ -238,7 +238,7 @@ message SPermJob {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
-    string Name = 2;
+    string name = 2;
     /** 岗位状态 */
     int32 Enabled = 3;
     /** 岗位排序 */
@@ -262,7 +262,7 @@ message PagingPermJob {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
-    string Name = 2;
+    string name = 2;
     /** 岗位状态 */
     int32 Enabled = 3;
     /** 岗位排序 */
@@ -279,7 +279,7 @@ message PermJobPagingRequest {
 }
 
 message PermJobPagingResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated PagingPermJob value =  2;
 }
 
@@ -319,8 +319,8 @@ message SavePermUserRequest {
 }
 
 message SavePermUserResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     int64 id = 3;
 }
 
@@ -410,7 +410,7 @@ message PermUserPagingRequest {
 }
 
 message PermUserPagingResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated PagingPermUser value =  2;
 }
 
@@ -419,7 +419,7 @@ message SavePermRoleRequest {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 角色级别 */
     int32 Level = 3;
     /** 数据权限 */
@@ -438,8 +438,8 @@ message UpdateRoleResRequest {
     repeated int64 Resources = 2;
 }
 message SavePermRoleResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     int64 id = 3;
 }
 
@@ -451,7 +451,7 @@ message SPermRole {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 角色级别 */
     int32 Level = 3;
     /** 数据权限 */
@@ -478,7 +478,7 @@ message PagingPermRole {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 角色级别 */
     int32 Level = 3;
     /** 数据权限 */
@@ -497,7 +497,7 @@ message PermRolePagingRequest {
 }
 
 message PermRolePagingResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated PagingPermRole value =  2;
 }
 
@@ -506,9 +506,9 @@ message SavePermResRequest {
     /** 资源ID */
     int64 id = 1;
     /** 资源名称 */
-    string Name = 2;
+    string name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 ResType = 3;
+    int32 Res_type= 3;
     /** 上级菜单ID */
     int64 Pid = 4;
     /** 资源键 */
@@ -534,8 +534,8 @@ message SavePermResRequest {
 }
 
 message SavePermResResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     int64 id = 3;
 }
 
@@ -547,9 +547,9 @@ message SPermRes {
     /** 资源ID */
     int64 id = 1;
     /** 资源名称 */
-    string Name = 2;
+    string name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 ResType = 3;
+    int32 Res_type= 3;
     /** 上级菜单ID */
     int64 Pid = 4;
     /** 深度/层级 */
@@ -600,9 +600,9 @@ message PagingPermRes {
     /** 资源ID */
     int64 id = 1;
     /** 资源名称 */
-    string Name = 2;
+    string name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 ResType = 3;
+    int32 Res_type= 3;
     /** 上级菜单ID */
     int64 Pid = 4;
     /** 资源键 */
@@ -633,7 +633,7 @@ message PermResPagingRequest {
 }
 
 message PermResPagingResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated PagingPermRes value =  2;
 }
 

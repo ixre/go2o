@@ -54,7 +54,7 @@ message SExpressProvider {
     // 快递公司编号
     int64 id = 1;
     // 快递名称
-    string Name = 2;
+    string name = 2;
     // 首字母，用于索引分组
     string Letter = 3;
     // 分组,多个组,用","隔开
@@ -72,7 +72,7 @@ message SExpressTemplate {
     // 运营商编号
     int64 Seller_id = 2;
     // 运费模板名称
-    string Name = 3;
+    string name = 3;
     // 是否卖价承担运费
     bool IsFree = 4;
     // 运费计价依据
@@ -133,7 +133,7 @@ message AreaTemplateId {
 }
 
 message SaveTemplateResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
+    int64 err_code = 1;
+    string err_msg = 2;
     int64 Template_id = 3;
 }

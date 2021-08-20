@@ -17,25 +17,25 @@ message SkuId {
 message GetItemsByLabelRequest {
     string Label = 1;
     string SortBy = 2;
-    int64 Begin = 3;
-    int64 End = 4;
+    int64 begin = 3;
+    int64 end = 4;
 }
 
 message PagingShopGoodsResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated SGoods data = 2;
 }
 
 message PagingGoodsResponse {
-    int64 Total = 1;
+    int64 total = 1;
     repeated SUnifiedViewItem data = 2;
 }
 
 // 获取商品请求
 message GetItemsRequest {
     int64 Category_id = 1;
-    int64 Begin = 2;
-    int64 End = 3;
+    int64 begin = 2;
+    int64 end = 3;
     // 是否随机
     bool Random = 4;
     string Where = 5;
@@ -108,8 +108,8 @@ message SUnifiedViewItem {
     int32 StockNum = 12;
     int64 ExpressTid = 13;
     sint32 ShelveState = 14;
-    sint32 ReviewState = 15;
-    sint64 UpdateTime = 16;
+    sint32 review_state = 15;
+    sint64 update_time = 16;
     repeated SSku SkuArray = 17;
     repeated SLevelPrice LevelPrices = 18;
     SItemViewData ViewData = 19;
@@ -172,11 +172,11 @@ message SOldItem {
     sint32 Weight = 23;
     sint32 Bulk = 24;
     sint32 ShelveState = 25;
-    sint32 ReviewState = 26;
+    sint32 review_state = 26;
     string ReviewRemark = 27;
     sint32 SortNum = 28;
     sint64 CreateTime = 29;
-    sint64 UpdateTime = 30;
+    sint64 update_time = 30;
     double PromPrice = 31;
     repeated SSku SkuArray = 32;
     map<string, string> data = 33;
@@ -190,7 +190,7 @@ message ItemLabelListResponse {
 message SItemLabel {
     int32 id = 1;
     // 标签名
-    string Name = 2;
+    string name = 2;
     // 标签代码
     string TagCode = 5;
     // 商品的遮盖图
@@ -255,7 +255,7 @@ message SItemSnapshot {
     //LevelSales int32
 
     // 更新时间
-    int64 UpdateTime = 19;
+    int64 update_time = 19;
     // 库存
     SItemStock Stock = 20;
     // SKU
@@ -333,7 +333,7 @@ message SaveLevelPriceRequest {
 
 message ShelveStateRequest {
     int64 Seller_id = 1;
-    EItemSalesType itemType = 3;
+    EItemSalesType item_type= 3;
     int64 Item_id = 2;
     bool ShelveOn = 4;
     string remark = 5;

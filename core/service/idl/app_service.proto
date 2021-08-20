@@ -60,7 +60,7 @@ message CheckVersionResponse {
     // 是否强制升级
     bool ForceUpdate = 5;
     // 更新文件类型,如APK,EXE,ZIP等
-    string UpdateType = 6;
+    string Update_type= 6;
     // 发布时间
     int64 ReleaseTime = 7;
 }
@@ -84,7 +84,7 @@ message AppProdRequest {
     // 每夜版文件地址
     string NightlyFileUrl = 10;
     // 更新方式,比如APK, EXE等
-    string UpdateType = 11;
+    string Update_type= 11;
 }
 
 // APP版本
@@ -124,9 +124,9 @@ message SAppProd {
     // 每夜版文件地址
     string NightlyFileUrl = 9;
     // 更新方式,比如APK, EXE等
-    string UpdateType = 10;
+    string Update_type= 10;
     // 更新时间
-    int64 UpdateTime = 11;
+    int64 update_time = 11;
 }
 
 // APP版本

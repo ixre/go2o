@@ -26,9 +26,9 @@ message StringArray {
 //传输结果对象
 message Result {
     /* 状态码,如为0表示成功 */
-    sint32 ErrCode = 1;
+    sint32 err_code = 1;
     /* 消息 */
-    string ErrMsg = 2;
+    string err_msg = 2;
     /** 数据字典 */
     map<string, string> data = 3;
 }
@@ -41,7 +41,7 @@ message Pair {
 
 message IdOrName {
     int64 id = 1;
-    string Name = 2;
+    string name = 2;
 }
 message IdAndRemark {
     int64 id = 1;
@@ -83,9 +83,9 @@ enum EAmountBasis {
 /** 分页参数 */
 message SPagingParams {
     // 开始记录数
-    sint64 Begin = 1;
+    sint64 begin = 1;
     // 结束记录数
-    sint64 End = 2;
+    sint64 end = 2;
     // 条件
     string Where = 3;
     // 排序字段
@@ -97,9 +97,9 @@ message SPagingParams {
 /** 分页结果 */
 message SPagingResult {
     /** 代码 */
-    sint32 ErrCode = 1;
+    sint32 err_code = 1;
     /** 消息 */
-    string ErrMsg = 2;
+    string err_msg = 2;
     /** 总数 */
     sint32 Count = 3;
     /** 数据 */

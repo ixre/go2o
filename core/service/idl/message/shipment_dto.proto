@@ -6,7 +6,7 @@ option java_package = "com.github.go2o.rpc";
 // 覆盖区域
 message SCoverageValue {
     int64 id = 1;
-    string Name = 2;
+    string name = 2;
     double Lng = 3;
     double Lat = 4;
     int32 Radius = 5;
@@ -40,7 +40,7 @@ message SShipmentOrder {
     // 状态
     int32 State = 10;
     // 更新时间
-    int64 UpdateTime = 11;
+    int64 update_time = 11;
     // 配送项目
     repeated SShipmentItem Items = 12;
 }
@@ -83,7 +83,7 @@ message SShipOrderTrack {
     // 发货状态
     string ShipState = 6;
     // 更新时间
-    sint64 UpdateTime = 7;
+    sint64 update_time = 7;
     // 包含发货单流
     repeated SShipFlow Flows = 8;
 }
