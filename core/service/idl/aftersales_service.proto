@@ -85,17 +85,17 @@ message OriginOrderIdRequest {
 
 message SubmitAfterSalesOrderRequest {
     int64 order_id = 1;
-    EAfterSalesType AfterSales_type= 2;
-    int64 ItemSnapshot_id = 3;
+    EAfterSalesType after_sales_type= 2;
+    int64 item_snapshot_id = 3;
     int64 quantity = 4;
     string reason = 5;
-    string ImageUrl = 6;
+    string image_url = 6;
 }
 
 message SubmitAfterSalesOrderResponse {
     int64 err_code = 1;
     string err_msg = 2;
-    int64 AfterSalesOrder_id = 3;
+    int64 after_sales_order_id = 3;
 }
 
 message AfterSalesOrderListResponse {
@@ -104,12 +104,12 @@ message AfterSalesOrderListResponse {
 
 message PagingBuyerOrdersRequest {
     int64 buyer_id = 1;
-    SPagingParams Params = 2;
+    SPagingParams params = 2;
 }
 
 message PagingSellerOrdersRequest {
     int64 seller_id = 1;
-    SPagingParams Params = 2;
+    SPagingParams params = 2;
 }
 
 message PagingBuyerAfterSalesOrderListResponse {
@@ -127,43 +127,43 @@ message SAfterSalesOrder {
     // 编号
     int64 id = 1;
     // 订单编号
-    int64 RelateOrder_id = 2;
+    int64 relate_order_id = 2;
     // 运营商编号
-    int64 Vendor_id = 3;
+    int64 vendor_id = 3;
     // 购买者编号
     int64 buyer_id = 4;
     // 类型，退货、换货、维修
-    int32 AfterSales_type= 5;
+    int32 after_sales_type= 5;
     // 退货的商品项编号
-    int64 Snapshot_id = 6;
+    int64 snapshot_id = 6;
     // 商品数量
     int32 quantity = 7;
     // 售后原因
     string reason = 8;
     // 商品售后图片凭证
-    string ImageUrl = 9;
+    string image_url = 9;
     // 联系人
-    string PersonName = 10;
+    string person_name = 10;
     // 联系电话
-    string PersonPhone = 11;
+    string person_phone = 11;
     // 退货的快递服务商编号
-    string ReturnSpName = 12;
+    string return_sp_name = 12;
     // 退货的快递单号
-    string ReturnSpOrder = 13;
+    string return_sp_order = 13;
     // 退货凭证
-    string ReturnSpImage = 14;
+    string return_sp_image = 14;
     // 备注(系统)
     string remark = 15;
     // 运营商备注
-    string VendorRemark = 16;
+    string vendor_remark = 16;
     // 售后单状态
-    int32 State = 17;
+    int32 state = 17;
     // 提交时间
     int64 create_time = 18;
     // 更新时间
     int64 update_time = 19;
     // 订单状态
-    string StateText = 20;
+    string state_text = 20;
 }
 
 message SPagingBuyerAfterSalesOrder {
@@ -172,26 +172,26 @@ message SPagingBuyerAfterSalesOrder {
     // 订单编号
     string order_no =  2;
     // 运营商编号
-    int64 Vendor_id = 3;
+    int64 vendor_id = 3;
     // 运营商名称
-    string SellerName = 4;
+    string seller_name = 4;
     // 类型，退货、换货、维修
-    int32 AfterSales_type= 5;
+    int32 after_sales_type= 5;
     // 退货的商品项编号
-    int64 Snapshot_id = 6;
+    int64 snapshot_id = 6;
     // 商品数量
     int32 quantity = 7;
     int64 sku_id = 8;
     string item_title = 9;
-    string ItemImage = 10;
+    string item_image = 10;
     // 售后单状态
-    int32 State = 11;
+    int32 state = 11;
     // 提交时间
     int64 create_time = 12;
     // 更新时间
     int64 update_time = 13;
     // 订单状态
-    string StateText = 14;
+    string state_text = 14;
 }
 
 // 分页商户售后单
@@ -203,28 +203,28 @@ message SPagingSellerAfterSalesOrder {
     // 会员编号
     int64 buyer_id = 3;
     // 会员名称
-    string BuyerName = 4;
+    string buyer_name = 4;
     // 类型，退货、换货、维修
-    int32 AfterSales_type= 5;
+    int32 after_sales_type= 5;
     // 退货的商品项编号
-    int64 Snapshot_id = 6;
+    int64 snapshot_id = 6;
     // 商品数量
     int32 quantity = 7;
     int64 sku_id = 8;
     string item_title = 9;
-    string ItemImage = 10;
+    string item_image = 10;
     // 售后单状态
-    int32 State = 11;
+    int32 state = 11;
     // 提交时间
     int64 create_time = 12;
     // 更新时间
     int64 update_time = 13;
     // 订单状态
-    string StateText = 14;
+    string state_text = 14;
 }
 
 message ExchangeShipmentRequest {
     int64 id = 1;
-    string SpName = 2;
-    string SpOrder = 3;
+    string sp_name = 2;
+    string sp_order = 3;
 }

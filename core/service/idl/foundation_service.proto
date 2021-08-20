@@ -88,6 +88,6 @@ service FoundationService {
 
 /** 替换敏感词请求 */
 message ReplaceSensitiveRequest {
-    string Text = 1;
-    string Replacement = 2;
+    string text = 1;
+    string replacement = 2;
 }

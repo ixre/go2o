@@ -94,7 +94,7 @@ service ProductService {
 
 message DeleteProductRequest {
     int64 seller_id = 1;
-    int64 Product_id = 2;
+    int64 product_id = 2;
 }
 message ProductId {
     int64 value =  1;
@@ -288,13 +288,13 @@ message SProduct {
     // 编号
     int64 id = 1;
     // 分类
-    int64 Category_id = 2;
+    int64 category_id = 2;
     // 名称
     string name = 3;
     //供应商编号(暂时同mch_id)
-    int64 Vendor_id = 4;
+    int64 vendor_id = 4;
     // 品牌编号
-    int64 Brand_id = 5;
+    int64 brand_id = 5;
     // 商家编码
     string code = 6;
     // 图片
@@ -304,7 +304,7 @@ message SProduct {
     // 备注
     string remark = 9;
     // 状态
-    int32 State = 10;
+    int32 state = 10;
     // 排序编号
     int32 SortNum = 11;
     // 产品属性
@@ -316,12 +316,12 @@ message SProduct {
 }
 
 message ProductInfoRequest {
-    int64 Product_id = 1;
+    int64 product_id = 1;
     string Info = 2;
 }
 
 message SaveProductResponse {
     int64 err_code = 1;
     string err_msg = 2;
-    int64 Product_id = 3;
+    int64 product_id = 3;
 }

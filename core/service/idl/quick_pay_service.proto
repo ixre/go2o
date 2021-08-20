@@ -151,7 +151,7 @@ message CheckQPaySignRequest {
     // 签名
     string Sign = 2;
     // 参数
-    map<string, string> Params = 3;
+    map<string, string> params = 3;
 }
 
 // 检查签名响应

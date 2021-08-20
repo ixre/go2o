@@ -284,7 +284,7 @@ message SWallet {
     /** 总支付额 */
     sint32 TotalPay = 17;
     /** 状态 */
-    sint32 State = 18;
+    sint32 state = 18;
     /** 创建时间 */
     sint64 create_time = 19;
     /** 更新时间 */

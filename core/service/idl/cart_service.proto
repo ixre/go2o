@@ -40,15 +40,15 @@ message SettlePersistRequest {
     int64 buyer_id = 1;
     // 店铺编号
     int64 shop_id = 2;
-    int64 PaymentOpt = 3;
-    int64 DeliverOpt = 4;
-    int64 Address_id = 5;
+    int64 payment_opt = 3;
+    int64 deliver_opt = 4;
+    int64 address_id = 5;
 }
 message CartItemRequest {
     // 买家编号
     int64 buyer_id = 1;
     // 购物车编码
-    string CartCode = 2;
+    string cart_code = 2;
     //商品编号
     sint64 item_id = 3;
     //SKU编号
@@ -59,32 +59,32 @@ message CartItemRequest {
 
 message CheckSignRequest {
     int64 buyer_id = 1;
-    string CartCode = 2;
-    repeated SCheckCartItem Items = 3;
+    string cart_code = 2;
+    repeated SCheckCartItem items = 3;
 }
 
 message CartCode {
     int64 buyer_id = 1;
-    string CartCode = 2;
+    string cart_code = 2;
 }
 
 message SettleMeta_ {
-    int64 PaymentOpt = 1;
-    int64 DeliverOpt = 2;
-    SettleShopMeta_ Shop = 3;
-    SettleDeliverMeta_ Deliver = 4;
+    int64 payment_opt = 1;
+    int64 deliver_opt = 2;
+    SettleShopMeta_ shop = 3;
+    SettleDeliverMeta_ deliver = 4;
 }
 
 message SettleShopMeta_ {
     int64 shop_id = 1;
-    string ShopName = 2;
-    string Telephone = 3;
+    string shop_name = 2;
+    string telephone = 3;
 }
 
 
 message SettleDeliverMeta_ {
     int64 id = 1;
-    string ConsigneeName = 2;
-    string ConsigneePhone = 3;
-    string Address = 4;
+    string consignee_name = 2;
+    string consignee_phone = 3;
+    string address = 4;
 }

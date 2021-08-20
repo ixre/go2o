@@ -275,7 +275,7 @@ message PagingPermJob {
 
 message PermJobPagingRequest {
     // 分页参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
 }
 
 message PermJobPagingResponse {
@@ -406,7 +406,7 @@ message PermUserPagingRequest {
     // 部门编号,默认为0. 该部门下的用户也会查询出来
     int64 Depart_id = 1;
     // 分页参数
-    SPagingParams Params = 2;
+    SPagingParams params = 2;
 }
 
 message PermUserPagingResponse {
@@ -493,7 +493,7 @@ message PagingPermRole {
 
 message PermRolePagingRequest {
     // 分页参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
 }
 
 message PermRolePagingResponse {
@@ -629,7 +629,7 @@ message PagingPermRes {
 
 message PermResPagingRequest {
     // 分页参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
 }
 
 message PermResPagingResponse {

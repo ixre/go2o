@@ -61,14 +61,14 @@ message SPagingGoodsFavorite {
     string GoodsName = 3;
     string image = 4;
     bool OnShelves = 5;
-    int32 StockNum = 6;
+    int32 stock_num = 6;
     string SalePrice = 7;
     int64 update_time = 8;
 }
 
 message QueryPagingShopRequest {
     // 参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
     // 是否只查询营业中的店铺
     bool OnlyBusiness = 2;
 }
@@ -89,7 +89,7 @@ message QueryPagingShop {
 
 message MemberOrderPagingRequest {
     sint64 member_id = 1;
-    SPagingParams Params = 2;
+    SPagingParams params = 2;
 }
 message MemberOrderPagingResponse {
     sint64 total = 1;
@@ -99,7 +99,7 @@ message PagedMemberSubOrder {
     sint64 order_id = 1;
     string order_no =  2;
     string ParentNo = 3;
-    sint64 Vendor_id = 4;
+    sint64 vendor_id = 4;
     sint64 shop_id = 5;
     string ShopName = 6;
     double Item_amount = 7;
@@ -108,7 +108,7 @@ message PagedMemberSubOrder {
     double package_fee = 10;
     bool IsPaid = 11;
     double final_amount = 12;
-    sint32 State = 13;
+    sint32 state = 13;
     string StateText = 14;
     sint64 create_time = 15;
     repeated SOrderItem Items = 16;

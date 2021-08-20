@@ -68,7 +68,7 @@ message SShop {
     /** 电话 */
     string Telephone = 10;
     /** 状态 */
-    int32 State = 11;
+    int32 state = 11;
 }
 
 // 店铺设置
@@ -98,7 +98,7 @@ message SStore {
     sint64 merchant_id = 2;
     string name = 3;
     string Alias = 4;
-    sint32 State = 5;
+    sint32 state = 5;
     sint32 OpeningState = 8;
     string StorePhone = 9;
     string StoreNotice = 11;

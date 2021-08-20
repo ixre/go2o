@@ -247,12 +247,12 @@ service MemberService {
 
 message LevelUpReviewRequest {
     int64 member_id = 1;
-    int64 Request_id = 2;
-    bool ReviewPass = 3;
+    int64 request_id = 2;
+    bool review_pass = 3;
     string remark = 4;
 }
 
 message LevelUpConfirmRequest {
     int64 member_id = 1;
-    int64 Request_id = 2;
+    int64 request_id = 2;
 }

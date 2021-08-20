@@ -86,7 +86,7 @@ message SArticle {
     /** 编号  */
     sint64 id = 1;
     /** 栏目编号 */
-    sint64 Category_id = 2;
+    sint64 category_id = 2;
     /** 标题 */
     string title = 3;
     /** 小标题 */

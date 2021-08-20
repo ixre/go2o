@@ -142,7 +142,7 @@ message MerchantOrderRequest {
     // 是否分页
     bool Pagination = 2;
     // 分页参数
-    SPagingParams Params = 3;
+    SPagingParams params = 3;
 }
 
 
@@ -165,7 +165,7 @@ message SMerchantOrder {
     double package_fee = 10;
     bool IsPaid = 11;
     double final_amount = 12;
-    int32 State = 13;
+    int32 state = 13;
     string StateText = 14;
     int64 create_time = 15;
     repeated SOrderItem Items = 16;

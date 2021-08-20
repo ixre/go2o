@@ -7,7 +7,7 @@ option java_package = "com.github.go2o.rpc";
 
 message TransferInRequest {
     sint64 person_id = 1;
-    sint32 transferWith = 2;
+    sint32 transfer_with = 2;
     double amount = 3;
 }
 
@@ -40,36 +40,36 @@ message PersonId {
 // 收益总记录
 message SRiseInfo {
     // 人员编号
-    int64 Person_id = 1;
+    int64 person_id = 1;
     // 本金及收益的余额
     double balance = 2;
     // 结算金额
-    double Settlement_amount = 3;
+    double settlement_amount = 3;
     // 当前的收益
-    double Rise = 4;
+    double rise = 4;
     // 今日转入
-    double TransferIn = 5;
+    double transfer_in = 5;
     // 总金额
-    double Total_amount = 6;
+    double total_amount = 6;
     // 总收益
-    double TotalRise = 7;
+    double total_rise = 7;
     // 结算日期,用于筛选需要结算的数据
-    int64 SettledDate = 8;
+    int64 settled_date = 8;
     // 更新时间
     int64 update_time = 9;
 }
 
 message RiseSettleRequest {
-    int64 Person_id = 1;
-    int64 SettleDay = 2;
-    double Ratio = 3;
+    int64 person_id = 1;
+    int64 settle_day = 2;
+    double ratio = 3;
 }
 message RiseTransferOutRequest {
-    int64 Person_id = 1;
-    int64 TransferWith = 2;
+    int64 person_id = 1;
+    int64 transfer_with = 2;
     double amount = 3;
     // 提现银行账号
-    string BankAccountNo = 4;
+    string bank_account_no = 4;
 }
 
 message CommitTransferRequest {

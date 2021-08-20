@@ -95,21 +95,21 @@ service ItemService {
 message PagingGoodsRequest {
     EItemSalesType Item_type= 1;
     int64 seller_id = 2;
-    int64 Category_id = 3;
+    int64 category_id = 3;
     // 关键词
-    string Keyword = 4;
-    SPagingParams Params = 5;
+    string keyword = 4;
+    SPagingParams params = 5;
 }
 
 message PagingShopGoodsRequest {
     int64 shop_id = 1;
-    int64 Category_id = 2;
-    SPagingParams Params = 3;
+    int64 category_id = 2;
+    SPagingParams params = 3;
 }
 
 message SaleLabelItemsRequest_ {
     int64 shop_id = 1;
-    int32 Label_id = 2;
-    SPagingParams Params = 3;
+    int32 label_id = 2;
+    SPagingParams params = 3;
 }
 

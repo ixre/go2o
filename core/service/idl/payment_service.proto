@@ -176,7 +176,7 @@ message SPaymentOrder {
     /** 其他支付信息 */
     string ExtraData = 21;
     /** 订单状态 */
-    sint32 State = 22;
+    sint32 state = 22;
     /** 提交时间 */
     sint64 submit_time = 23;
     /** 过期时间 */
@@ -246,7 +246,7 @@ message SPaymentOrderData {
     /** 交易类型 */
     string Trade_type= 3;
     /** 状态 */
-    sint32 State = 4;
+    sint32 state = 4;
     /** 手续费 */
     sint32 procedure_fee = 5;
     /** 最终支付金额 */

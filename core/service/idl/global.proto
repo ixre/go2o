@@ -89,9 +89,9 @@ message SPagingParams {
     // 条件
     string Where = 3;
     // 排序字段
-    string SortBy = 4;
+    string sort_by = 4;
     // 参数
-    map<string, string> Parameters = 5;
+    map<string, string> parameters = 5;
 }
 
 /** 分页结果 */
@@ -101,11 +101,11 @@ message SPagingResult {
     /** 消息 */
     string err_msg = 2;
     /** 总数 */
-    sint32 Count = 3;
+    sint32 count = 3;
     /** 数据 */
     string data = 4;
     /** 额外的数据 */
-    map<string, string> Extras = 5;
+    map<string, string> extras = 5;
 }
 
 // 树形节点
@@ -115,19 +115,19 @@ message STreeNode {
     // 值
     string value =  2;
     // 图标,icon与JS树形控件冲突
-    string Icon = 3;
+    string icon = 3;
     // 是否展开
-    bool Expand = 4;
+    bool expand = 4;
     // 延迟加载
-    bool Lazy = 5;
+    bool lazy = 5;
     // 其他数据
     map<string, string> data = 6;
     // 子节点
-    repeated STreeNode Children = 7;
+    repeated STreeNode children = 7;
     // 子节点编号
     int64 id = 8;
     // 是否目录，通常Children有元素,则为true
-    bool Folder = 10;
+    bool folder = 10;
 }
 
 
