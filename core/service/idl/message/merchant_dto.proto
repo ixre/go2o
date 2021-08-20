@@ -10,60 +10,60 @@ message SMerchant {
     /** 会员编号 */
     int64 member_id = 2;
     /** 登录用户 */
-    string LoginUser = 3;
+    string login_user = 3;
     /** 登录密码 */
-    string LoginPwd = 4;
+    string login_pwd = 4;
     /** 名称 */
     string name = 5;
     /** 公司名称 */
-    string CompanyName = 6;
+    string company_name = 6;
     /** 是否自营 */
-    int32 SelfSales = 7;
+    int32 self_sales = 7;
     /** 商户等级 */
-    int32 Level = 8;
+    int32 level = 8;
     /** 标志 */
-    string Logo = 9;
+    string logo = 9;
     /** 省 */
-    int32 Province = 10;
+    int32 province = 10;
     /** 市 */
-    int32 City = 11;
+    int32 city = 11;
     /** 区 */
-    int32 District = 12;
+    int32 district = 12;
     /** 标志 */
-    int32 Flag = 13;
+    int32 flag = 13;
     /** 是否启用 */
-    int32 Enabled = 14;
+    int32 enabled = 14;
     /** 过期时间 */
-    int64 ExpiresTime = 15;
+    int64 expires_time = 15;
     /** 最后登录时间 */
-    int64 LastLoginTime = 16;
+    int64 last_login_time = 16;
 }
 
 // 商家
 message SMerchantPack {
     /** 登录用户 */
-    string LoginUser = 1;
+    string login_user = 1;
     /** 登录密码 */
-    string LoginPwd = 2;
+    string login_pwd = 2;
     /** 名称 */
     string name = 3;
     /** 是否自营 */
-    sint32 SelfSales = 4;
+    sint32 self_sales = 4;
     /** 店铺名称 */
-    string ShopName = 5;
+    string shop_name = 5;
     /** 标志 */
-    string ShopLogo = 6;
+    string shop_logo = 6;
     /** 电话 */
-    string Tel = 7;
+    string tel = 7;
     /** 地址 */
-    string Addr = 8;
+    string addr = 8;
 }
 
 message MerchantCreateRequest {
-    SMerchantPack Mch = 1;
+    SMerchantPack mch = 1;
     int64 rel_member_id = 2;
     /** 过期时间,0表示永远不过期 */
-    int64 ExpiresTime = 3;
+    int64 expires_time = 3;
 }
 
 message MerchantCreateResponse {
@@ -80,13 +80,13 @@ message SaveMerchantRequest {
     /** 名称 */
     string name = 3;
     /** 是否自营 */
-    int32 SelfSales = 4;
+    int32 self_sales = 4;
     /** 商户等级 */
-    int32 Level = 5;
+    int32 level = 5;
     /** 标志 */
-    string Logo = 6;
+    string logo = 6;
     /** 过期时间 */
-    int64 ExpiresTime = 7;
+    int64 expires_time = 7;
 }
 
 
@@ -95,7 +95,7 @@ message MchUserPwd {
     string pwd = 2;
 }
 
-message SyncWSItemsResponse {
+message SyncWsItemsResponse {
     map<string, sint32> value =  1;
 }
 
@@ -127,7 +127,7 @@ message STradeConf_ {
 message SMchSignUp {
     int64 id = 1;
     // 申请单号
-    string SignNo = 2;
+    string sign_no = 2;
     // 会员编号
     int64 member_id = 3;
     // 用户名
@@ -135,33 +135,33 @@ message SMchSignUp {
     // 密码
     string pwd = 5;
     // 商户名称号
-    string MchName = 6;
+    string mch_name = 6;
     // 省
-    int32 Province = 7;
+    int32 province = 7;
     // 市
-    int32 City = 8;
+    int32 city = 8;
     // 区
-    int32 District = 9;
+    int32 district = 9;
     // 详细地址
-    string Address = 10;
+    string address = 10;
     // 店铺店铺
-    string ShopName = 11;
+    string shop_name = 11;
     // 公司名称
-    string CompanyName = 12;
+    string company_name = 12;
     // 营业执照编号
-    string CompanyNo = 13;
+    string company_no = 13;
     // 法人
-    string PersonName = 14;
+    string person_name = 14;
     // 法人身份证
-    string Person_id = 15;
+    string person_id = 15;
     // 法人身份证
-    string PersonImage = 16;
+    string person_image = 16;
     // 联系电话
-    string Phone = 17;
+    string phone = 17;
     // 营业执照图片
-    string CompanyImage = 18;
+    string company_image = 18;
     // 委托书
-    string AuthDoc = 19;
+    string auth_doc = 19;
     // 备注
     string remark = 20;
     // 是否通过
@@ -171,8 +171,8 @@ message SMchSignUp {
 }
 
 message MchReviewRequest {
-    int64 Merchant_id = 1;
-    bool Pass = 2;
+    int64 merchant_id = 1;
+    bool pass = 2;
     string remark = 3;
 }
 
@@ -181,153 +181,153 @@ message SEnterpriseInfo {
     // 编号
     int64 id = 1;
     // 商户编号
-    int64 Merchant_id = 2;
+    int64 merchant_id = 2;
     // 公司名称
-    string CompanyName = 3;
+    string company_name = 3;
     // 公司营业执照编号
-    string CompanyNo = 4;
+    string company_no = 4;
     // 法人
-    string PersonName = 5;
+    string person_name = 5;
     // 法人身份证编号
-    string PersonIdNo = 6;
+    string person_id_no = 6;
     // 身份证验证图片(人捧身份证照相)
-    string PersonImage = 7;
+    string person_image = 7;
     // 公司电话
-    string Telephone = 8;
+    string telephone = 8;
     // 省
-    int32 Province = 9;
+    int32 province = 9;
     // 市
-    int32 City = 10;
+    int32 city = 10;
     // 区
-    int32 District = 11;
+    int32 district = 11;
     // 省+市+区字符串表示
-    string Location = 12;
+    string location = 12;
     // 公司地址
-    string Address = 13;
+    string address = 13;
     // 营业执照图片
-    string CompanyImage = 14;
+    string company_image = 14;
     // 授权书
-    string AuthDoc = 15;
+    string auth_doc = 15;
     //是否已审核
     int32 review_state = 16;
     // 审核时间
-    int64 ReviewTime = 17;
+    int64 review_time = 17;
     // 审核备注
-    string ReviewRemark = 18;
+    string review_remark = 18;
     //更新时间
     int64 update_time = 19;
 }
 
 message SaveEnterpriseRequest {
     // 商户编号
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     SEnterpriseInfo value =  2;
 }
 
 // 商户账户
 message SMerchantAccount {
     // 余额
-    double Balance = 1;
+    double balance = 1;
     // 冻结金额
-    double FreezeAmount = 2;
+    double freeze_amount = 2;
     // 待入账金额
-    double AwaitAmount = 3;
+    double await_amount = 3;
     // 平台赠送金额
-    double PresentAmount = 4;
+    double present_amount = 4;
     // 累计销售总额
-    double SalesAmount = 5;
+    double sales_amount = 5;
     // 累计退款金额
-    double RefundAmount = 6;
+    double refund_amount = 6;
     // 已提取金额
-    double TakeAmount = 7;
+    double withdraw_amount = 7;
     // 线下销售金额
-    double OfflineSales = 8;
+    double offline_sales = 8;
     // 更新时间
     int64 update_time = 9;
 }
 
 message MerchantDisableRequest {
     // 商户编号
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     // 是否启用
-    bool Enabled = 2;
+    bool enabled = 2;
 }
 
 // 销售设置
 message SMerchantSaleConf {
     // 合作商编号
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     // 是否启用分销模式
-    bool FxSalesEnabled = 2;
+    bool fx_sales_enabled = 2;
     // 返现比例,0则不返现
-    double CashBackPercent = 3;
+    double cash_back_percent = 3;
     // 一级比例
-    double CashBackTg1Percent = 4;
+    double cash_back_tg1_percent = 4;
     // 二级比例
-    double CashBackTg2Percent = 5;
+    double cash_back_tg2_percent = 5;
     // 会员比例
-    double CashBackMemberPercent = 6;
+    double cash_back_member_percent = 6;
     // 自动设置订单
-    bool AutoSetupOrder = 7;
+    bool auto_setup_order = 7;
     // 订单超时分钟数
-    int32 OrderTimeOutMinute = 8;
+    int32 order_time_out_minute = 8;
     // 订单自动确认时间
-    int32 OrderConfirmAfterMinute = 9;
+    int32 order_confirm_after_minute = 9;
     // 订单超时自动收货
-    int32 OrderTimeOutReceiveHour = 10;
+    int32 order_time_out_receive_hour = 10;
 }
 
 message SaveMerchantSaleConfRequest {
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     SMerchantSaleConf value =  2;
 }
 
 message ModifyMerchantPasswordRequest {
-    int64 Merchant_id = 1;
-    string Origin = 2;
+    int64 merchant_id = 1;
+    string origin = 2;
     // Md5编码后的密码
-    string Password = 3;
+    string password = 3;
 }
 
 // 商户接口信息
 message SMerchantApiInfo {
     // 商户接口编号
-    string Api_id = 1;
+    string api_id = 1;
     // 密钥
-    string ApiSecret = 2;
+    string api_secret = 2;
     // IP白名单
-    repeated string WhiteList = 3;
+    repeated string white_list = 3;
     // 是否启用
-    bool Enabled = 4;
+    bool enabled = 4;
 }
 
 message MerchantApiPermRequest {
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     // 是否启用
-    bool Enabled = 4;
+    bool enabled = 4;
 }
 
 message WithdrawToMemberAccountRequest {
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     double amount = 2;
 }
 
 message MerchantChargeRequest {
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     int32 kind = 2;
     double amount = 3;
     string title = 4;
     string outer_no = 5;
-    int64 RelateUser_id = 6;
+    int64 relate_user_id = 6;
 }
 
 message MerchantBuyerGroupId {
-    int64 Merchant_id = 1;
-    int64 Group_id = 2;
+    int64 merchant_id = 1;
+    int64 group_id = 2;
 }
 
 message SaveMerchantBuyerGroupRequest {
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     SMerchantBuyerGroup value =  2;
 }
 
@@ -340,20 +340,20 @@ message SMerchantBuyerGroup {
     //编号
     int64 id = 1;
     //客户分组编号
-    int64 Group_id = 2;
+    int64 group_id = 2;
     //分组别名
     string name = 3;
     // 是否启用零售
-    bool EnableRetail = 4;
+    bool enable_retail = 4;
     // 是否启用批发
-    bool EnableWholesale = 5;
+    bool enable_wholesale = 5;
     // 批发返点周期(天)
-    int32 RebatePeriod = 6;
+    int32 rebate_period = 6;
 }
 
 message SaveWholesaleRebateRateRequest {
-    int64 Merchant_id = 1;
-    int64 Group_id = 2;
+    int64 merchant_id = 1;
+    int64 group_id = 2;
     repeated SWholesaleRebateRate value =  3;
 }
 
@@ -366,11 +366,11 @@ message SWholesaleRebateRate {
     // 编号
     int64 id = 1;
     // 批发商编号
-    int64 Ws_id = 2;
+    int64 ws_id = 2;
     // 客户分组编号
-    int64 BuyerGroup_id = 3;
+    int64 buyer_group_id = 3;
     // 下限金额
-    int32 RequireAmount = 4;
+    int32 require_amount = 4;
     // 返点率
-    double RebateRate = 5;
+    double rebate_rate = 5;
 }

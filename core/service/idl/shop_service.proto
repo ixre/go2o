@@ -50,7 +50,7 @@ message SShop {
     /** 店铺编号 */
     int64 id = 1;
     /** 商户编号 */
-    int64 Merchant_id = 2;
+    int64 merchant_id = 2;
     /** 店铺名称 */
     string ShopName = 3;
     // 店铺标题
@@ -60,7 +60,7 @@ message SShop {
     // 标志
     int32 Flag = 6;
     /** 店铺标志 */
-    string Logo = 7;
+    string logo = 7;
     /** 个性化域名 */
     string Alias = 8;
     /** 自定义 域名 */
@@ -74,7 +74,7 @@ message SShop {
 // 店铺设置
 message SShopConfig {
     /** 店铺标志 */
-    string Logo = 4;
+    string logo = 4;
     /** 自定义 域名 */
     string Host = 5;
     /** 个性化域名 */
@@ -95,14 +95,14 @@ message StoreId {
 // 店铺
 message SStore {
     sint64 id = 1;
-    sint64 Merchant_id = 2;
+    sint64 merchant_id = 2;
     string name = 3;
     string Alias = 4;
     sint32 State = 5;
     sint32 OpeningState = 8;
     string StorePhone = 9;
     string StoreNotice = 11;
-    int32 Province = 12;
+    int32 province = 12;
     int32 City = 13;
     int32 District = 14;
     // 地区名称

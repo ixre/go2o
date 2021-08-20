@@ -4,39 +4,39 @@ option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 message BankCardAddRequest {
-    sint64 Owner_id = 1;
+    sint64 owner_id = 1;
     SBankCardInfo value =  2;
 }
 
 message BankCardRequest {
-    int64 Owner_id = 1;
-    string BankCardNo = 2;
+    int64 owner_id = 1;
+    string bank_card_no = 2;
 }
 
 message BankCardListResponse {
-    sint64 Owner_id = 1;
+    sint64 owner_id = 1;
     repeated SBankCardInfo value =  2;
 }
 
 /** 会员银行卡 */
 message SBankCardInfo {
     /** 银行名称 */
-    string BankName = 2;
+    string bank_name = 2;
     /** 账户名 */
-    string AccountName = 3;
+    string account_name = 3;
     /** 账号 */
-    string AccountNo = 4;
+    string account_no = 4;
     // 银行编号
-    int32 Bank_id = 5;
+    int32 bank_id = 5;
     // 银行卡代码
-    string BankCode = 6;
+    string bank_code = 6;
     // 快捷支付授权码
-    string AuthCode = 7;
+    string auth_code = 7;
 
     /** 网点名称 */
-    string Network = 8;
+    string network = 8;
     /** 状态 */
-    sint32 State = 9;
+    sint32 state = 9;
     //更新时间
     sint64 update_time = 10;
 }

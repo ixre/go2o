@@ -8,7 +8,7 @@ option java_package = "com.github.go2o.rpc";
 
 message CreateWalletRequest {
     // 用户编号
-    int64 User_id = 1;
+    int64 user_id = 1;
     // 用户名
     string UserName = 2;
     // 钱包类型
@@ -250,13 +250,13 @@ enum EWalletLogKind {
 /** 钱包 */
 message SWallet {
     /** 钱包编号 */
-    sint64 ID = 1;
+    sint64 id = 1;
     /** 哈希值 */
     string HashCode = 2;
     /** 节点编号 */
     sint32 Node_id = 3;
     /** 用户编号 */
-    sint64 User_id = 4;
+    sint64 user_id = 4;
     /** 用户名 */
     string UserName = 5;
     // 钱包名称
@@ -266,17 +266,17 @@ message SWallet {
     /** 钱包标志 */
     sint32 WalletFlag = 8;
     /** 余额 */
-    sint32 Balance = 9;
+    sint32 balance = 9;
     /** 赠送余额 */
     sint32 PresentBalance = 10;
     /** 调整金额 */
-    sint32 AdjustAmount = 11;
+    sint32 Adjust_amount = 11;
     /** 冻结余额 */
-    sint32 FreezeAmount = 12;
+    sint32 freeze_amount = 12;
     /** 结余金额 */
-    sint32 LatestAmount = 13;
+    sint32 Latest_amount = 13;
     /** 失效账户余额 */
-    sint32 ExpiredAmount = 14;
+    sint32 Expired_amount = 14;
     /** 总充值金额 */
     sint32 TotalCharge = 15;
     /** 累计赠送金额 */
@@ -294,7 +294,7 @@ message SWallet {
 /** 钱包日志 */
 message SWalletLog {
     /** 编号 */
-    sint64 ID = 1;
+    sint64 id = 1;
     /** 钱包编号 */
     sint64 Wallet_id = 2;
     /** 业务类型 */
@@ -308,7 +308,7 @@ message SWalletLog {
     /** 变动金额 */
     sint32 value =  7;
     /** 余额 */
-    sint32 Balance = 8;
+    sint32 balance = 8;
     /** 交易手续费 */
     sint32 trade_fee = 9;
     /** 操作人员用户编号 */
@@ -322,7 +322,7 @@ message SWalletLog {
     /** 审核备注 */
     string ReviewRemark = 14;
     /** 审核时间 */
-    sint64 ReviewTime = 15;
+    sint64 review_time = 15;
     /** 创建时间 */
     sint64 CreateTime = 16;
     /** 更新时间 */

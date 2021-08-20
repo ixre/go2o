@@ -37,7 +37,7 @@ service CartService {
 
 message SettlePersistRequest {
     // 买家编号
-    int64 Buyer_id = 1;
+    int64 buyer_id = 1;
     // 店铺编号
     int64 Shop_id = 2;
     int64 PaymentOpt = 3;
@@ -46,25 +46,25 @@ message SettlePersistRequest {
 }
 message CartItemRequest {
     // 买家编号
-    int64 Buyer_id = 1;
+    int64 buyer_id = 1;
     // 购物车编码
     string CartCode = 2;
     //商品编号
-    sint64 Item_id = 3;
+    sint64 item_id = 3;
     //SKU编号
-    sint64 Sku_id = 4;
+    sint64 sku_id = 4;
     // 数量
     int32 quantity = 5;
 }
 
 message CheckSignRequest {
-    int64 Buyer_id = 1;
+    int64 buyer_id = 1;
     string CartCode = 2;
     repeated SCheckCartItem Items = 3;
 }
 
 message CartCode {
-    int64 Buyer_id = 1;
+    int64 buyer_id = 1;
     string CartCode = 2;
 }
 

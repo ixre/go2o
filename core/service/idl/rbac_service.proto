@@ -104,7 +104,7 @@ message RbacLoginResponse {
     // 错误消息
     string err_msg = 2;
     // 用户编号
-    int64 User_id = 3;
+    int64 user_id = 3;
     // 访问令牌
     string AccessToken = 4;
     // 角色标志
@@ -128,7 +128,7 @@ message SUserRes {
     /** ID */
     int64 id = 1;
     /** 资源键 */
-    string Key = 2;
+    string key = 2;
     /** 资源名称 */
     string name = 3;
     /** 资源类型,0: 目录 1: 资源 2: 菜单 3: 按钮 */
@@ -173,7 +173,7 @@ message SavePermDeptRequest {
     /** 上级部门 */
     int64 Pid = 3;
     /** 状态 */
-    int32 Enabled = 4;
+    int32 enabled = 4;
     /** 创建日期 */
     int64 CreateTime = 5;
 }
@@ -195,7 +195,7 @@ message SPermDept {
     /** 上级部门 */
     int64 Pid = 3;
     /** 状态 */
-    int32 Enabled = 4;
+    int32 enabled = 4;
     /** 创建日期 */
     int64 CreateTime = 5;
 }
@@ -215,7 +215,7 @@ message SavePermJobRequest {
     /** 岗位名称 */
     string name = 2;
     /** 岗位状态 */
-    int32 Enabled = 3;
+    int32 enabled = 3;
     /** 岗位排序 */
     int32 Sort = 4;
     /** 部门ID */
@@ -240,7 +240,7 @@ message SPermJob {
     /** 岗位名称 */
     string name = 2;
     /** 岗位状态 */
-    int32 Enabled = 3;
+    int32 enabled = 3;
     /** 岗位排序 */
     int32 Sort = 4;
     /** 部门ID */
@@ -264,7 +264,7 @@ message PagingPermJob {
     /** 岗位名称 */
     string name = 2;
     /** 岗位状态 */
-    int32 Enabled = 3;
+    int32 enabled = 3;
     /** 岗位排序 */
     int32 Sort = 4;
     /** 部门ID */
@@ -309,7 +309,7 @@ message SavePermUserRequest {
     /** 岗位编号 */
     int64 Job_id = 11;
     /** 状态：1启用、0禁用 */
-    int32 Enabled = 12;
+    int32 enabled = 12;
     /** 最后登录的日期 */
     int64 LastLogin = 13;
     /** 创建日期 */
@@ -352,7 +352,7 @@ message SPermUser {
     /** 岗位编号 */
     int64 Job_id = 11;
     /** 状态：1启用、0禁用 */
-    int32 Enabled = 12;
+    int32 enabled = 12;
     /** 最后登录的日期 */
     int64 LastLogin = 13;
     /** 创建日期 */
@@ -395,7 +395,7 @@ message PagingPermUser {
     /** 岗位编号 */
     int64 Job_id = 11;
     /** 状态：1启用、0禁用 */
-    int32 Enabled = 12;
+    int32 enabled = 12;
     /** 最后登录的日期 */
     int64 LastLogin = 13;
     /** 创建日期 */
@@ -421,7 +421,7 @@ message SavePermRoleRequest {
     /** 名称 */
     string name = 2;
     /** 角色级别 */
-    int32 Level = 3;
+    int32 level = 3;
     /** 数据权限 */
     string DataScope = 4;
     /** 功能权限 */
@@ -453,7 +453,7 @@ message SPermRole {
     /** 名称 */
     string name = 2;
     /** 角色级别 */
-    int32 Level = 3;
+    int32 level = 3;
     /** 数据权限 */
     string DataScope = 4;
     /** 功能权限 */
@@ -480,7 +480,7 @@ message PagingPermRole {
     /** 名称 */
     string name = 2;
     /** 角色级别 */
-    int32 Level = 3;
+    int32 level = 3;
     /** 数据权限 */
     string DataScope = 4;
     /** 功能权限 */
@@ -512,7 +512,7 @@ message SavePermResRequest {
     /** 上级菜单ID */
     int64 Pid = 4;
     /** 资源键 */
-    string Key = 5;
+    string key = 5;
     /** 资源路径 */
     string Path = 6;
     /** 图标 */
@@ -555,7 +555,7 @@ message SPermRes {
     /** 深度/层级 */
     int32 Depth = 5;
     /** 资源键 */
-    string Key = 6;
+    string key = 6;
     /** 资源路径 */
     string Path = 7;
     /** 图标 */
@@ -580,7 +580,7 @@ message SPermRes {
 
 message GetUserResRequest {
     /** 用户编号 */
-    int64 User_id = 1;
+    int64 user_id = 1;
     /** 是否只显示菜单 */
     bool OnlyMenu = 2;
 }
@@ -606,7 +606,7 @@ message PagingPermRes {
     /** 上级菜单ID */
     int64 Pid = 4;
     /** 资源键 */
-    string Key = 5;
+    string key = 5;
     /** 资源路径 */
     string Path = 6;
     /** 图标 */

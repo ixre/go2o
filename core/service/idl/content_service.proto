@@ -119,7 +119,7 @@ message SPage {
     // 编号
     int64 id = 1;
     // 商户编号
-    int64 User_id = 2;
+    int64 user_id = 2;
     // 标题
     string title = 3;
     // 字符标识
@@ -133,13 +133,13 @@ message SPage {
     // 描述
     string Description = 8;
     // 样式表地址
-    string CssPath = 9;
+    string css_path = 9;
     // 内容
-    string Body = 10;
+    string body = 10;
     // 修改时间
     int64 update_time = 11;
     // 是否启用
-    bool Enabled = 12;
+    bool enabled = 12;
 }
 
 message ArticleCategoriesResponse {

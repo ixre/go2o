@@ -60,7 +60,7 @@ message SExpressProvider {
     // 分组,多个组,用","隔开
     string GroupFlag = 4;
     // 快递公司编码
-    string Code = 5;
+    string code = 5;
     // 接口编码
     string ApiCode = 6;
 }
@@ -86,7 +86,7 @@ message SExpressTemplate {
     // 超过首次计价单价，如续重1kg
     double AddFee = 9;
     // 是否启用
-    bool Enabled = 10;
+    bool enabled = 10;
 }
 
 message ExpressTemplateId {

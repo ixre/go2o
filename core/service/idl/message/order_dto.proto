@@ -49,86 +49,86 @@ message SOrderItem {
     // 编号
     int64 id = 1;
     // 商品快照编号
-    int64 Snapshot_id = 2;
+    int64 snapshot_id = 2;
     // Sku编号
-    int64 Sku_id = 3;
+    int64 sku_id = 3;
     // 商品编号
-    int64 Item_id = 4;
+    int64 item_id = 4;
     // 商品标题
-    string ItemTitle = 5;
+    string item_title = 5;
     // 商品图片
-    string Image = 6;
+    string image = 6;
     // 商品单价
-    double Price = 7;
+    double price = 7;
     // 商品实际单价
-    double FinalPrice = 8;
+    double final_price = 8;
     // 商品数量
-    int32 Quantity = 9;
+    int32 quantity = 9;
     // 退货数量
-    int32 ReturnQuantity = 10;
+    int32 return_quantity = 10;
     // 商品总金额
     double amount = 11;
     // 商品实际总金额
-    double FinalAmount = 12;
+    double final_amount = 12;
     // 是否已发货
-    bool IsShipped = 13;
+    bool is_shipped = 13;
     // 其他信息
     map<string, string> data = 14;
 }
 
 // 订单项
 //message SComplexItem {
-//    sint64 ID = 1;
-//    sint64 Order_id = 2;
-//    sint64 Item_id = 3;
-//    sint64 Sku_id = 4;
+//    sint64 id = 1;
+//    sint64 order_id = 2;
+//    sint64 item_id = 3;
+//    sint64 sku_id = 4;
 //    sint64 Snapshot_id = 5;
-//    sint32 Quantity = 6;
+//    sint32 quantity = 6;
 //    sint32 ReturnQuantity = 7;
 //    double amount = 8;
-//    double FinalAmount = 9;
+//    double final_amount = 9;
 //    sint32 IsShipped = 10;
 //    map<string, string> data = 11;
 //}
 
 message SParentOrder {
     // 订单编号
-    int64 Order_id = 1;
+    int64 order_id = 1;
     // 订单号
-    string OrderNo = 3;
+    string order_no =  3;
     // 订单类型
-    int32 Order_type= 4;
+    int32 order_type = 4;
     // 子订单
-    SSingleOrder Children = 5;
+    SSingleOrder children = 5;
 }
 
 // 子订单
 message SSingleOrder {
     // 订单编号
-    int64 Order_id = 1;
+    int64 order_id = 1;
     // 父订单编号
-    int64 ParentOrder_id = 2;
+    int64 parent_order_id = 2;
     // 订单号
-    string OrderNo = 3;
+    string order_no =  3;
     // 订单类型
-    int32 Order_type= 4;
+    int32 order_type = 4;
     // 买家编号
-    int64 Buyer_id = 5;
+    int64 buyer_id = 5;
     // 卖家编号
     int64 Seller_id = 6;
     // 店铺编号
     int64 Shop_id = 7;
     //int64 SubOrder_id = 2;
     // 订单标题
-    string Subject = 8;
+    string subject = 8;
     // 商品总金额
-    double ItemAmount = 9;
+    double Item_amount = 9;
     // 优惠金额
-    double DiscountAmount = 10;
+    double Discount_amount = 10;
     // 抵扣金额
-    int32 DeductAmount = 11;
+    int32 Deduct_amount = 11;
     // 调整金额
-    int32 AdjustAmount = 12;
+    int32 Adjust_amount = 12;
     // 配送费
     double ExpressFee = 13;
     // 包装费
@@ -136,9 +136,9 @@ message SSingleOrder {
     // 手续费
     int32 ProcedureFee = 15;
     // 订单总金额
-    int32 TotalAmount = 16;
+    int32 Total_amount = 16;
     // 最终金额
-    double FinalAmount = 17;
+    double final_amount = 17;
     // 收货人
     SConsigneeInfo Consignee = 18;
     // 买家留言
@@ -176,10 +176,10 @@ message SubmitOrderRequest {
 
 // 提交订单请求
 message SubmitNormalOrderV2Request {
-    int64 Buyer_id = 1;
+    int64 buyer_id = 1;
     string CartCode = 2;
     int64 Address_id = 3;
-    string Subject = 4;
+    string subject = 4;
     string CouponCode = 5;
     bool BalanceDiscount = 6;
 }
@@ -191,13 +191,13 @@ message NormalOrderSubmitResponse {
     // 错误信息
     string err_msg = 2;
     // 订单号，多个订单号，用","分割
-    string OrderNo = 3;
+    string order_no =  3;
     // 合并支付
     bool MergePay = 4;
     // 交易号
     string trade_no = 5;
     // 交易金额
-    int64 TradeAmount = 6;
+    int64 Trade_amount = 6;
 }
 
 message GetOrderRequest {
@@ -211,7 +211,7 @@ message TradeOrderSubmitRequest {
 }
 
 message TradeOrderTicketRequest {
-    sint64 Order_id = 1;
+    sint64 order_id = 1;
     string Img = 2;
 }
 
@@ -227,7 +227,7 @@ message OrderId {
 // 订单号
 message OrderNo {
     // 订单号
-    string OrderNo = 1;
+    string order_no =  1;
     // 是否为子订单
     bool Sub = 2;
 }
@@ -242,12 +242,12 @@ message OrderIdOrNo {
     // 订单编号
     int64 id = 1;
     // 订单号
-    string OrderNo = 2;
+    string order_no =  2;
 }
 
 message CancelOrderRequest {
     // 订单号
-    string OrderNo = 1;
+    string order_no =  1;
     // 是否为子订单
     bool Sub = 2;
     // 取消原因
@@ -256,7 +256,7 @@ message CancelOrderRequest {
 
 message OrderShipmentRequest {
     // 订单号
-    string OrderNo = 1;
+    string order_no =  1;
     // 是否为子订单
     bool Sub = 2;
     // 快递编号
@@ -266,9 +266,9 @@ message OrderShipmentRequest {
 }
 
 message PrepareOrderRequest {
-    int64 Buyer_id = 1;
+    int64 buyer_id = 1;
     string CartCode = 2;
     int64 Address_id = 3;
-    string Subject = 4;
+    string subject = 4;
     string CouponCode = 5;
 }

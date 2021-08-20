@@ -80,14 +80,14 @@ enum EAfterSalesType {
 
 // 原实际销售的订单编号
 message OriginOrderIdRequest {
-    int64 Order_id = 1;
+    int64 order_id = 1;
 }
 
 message SubmitAfterSalesOrderRequest {
-    int64 Order_id = 1;
+    int64 order_id = 1;
     EAfterSalesType AfterSales_type= 2;
     int64 ItemSnapshot_id = 3;
-    int64 Quantity = 4;
+    int64 quantity = 4;
     string Reason = 5;
     string ImageUrl = 6;
 }
@@ -103,7 +103,7 @@ message AfterSalesOrderListResponse {
 }
 
 message PagingBuyerOrdersRequest {
-    int64 Buyer_id = 1;
+    int64 buyer_id = 1;
     SPagingParams Params = 2;
 }
 
@@ -131,13 +131,13 @@ message SAfterSalesOrder {
     // 运营商编号
     int64 Vendor_id = 3;
     // 购买者编号
-    int64 Buyer_id = 4;
+    int64 buyer_id = 4;
     // 类型，退货、换货、维修
     int32 AfterSales_type= 5;
     // 退货的商品项编号
     int64 Snapshot_id = 6;
     // 商品数量
-    int32 Quantity = 7;
+    int32 quantity = 7;
     // 售后原因
     string Reason = 8;
     // 商品售后图片凭证
@@ -170,7 +170,7 @@ message SPagingBuyerAfterSalesOrder {
     // 编号
     int64 id = 1;
     // 订单编号
-    string OrderNo = 2;
+    string order_no =  2;
     // 运营商编号
     int64 Vendor_id = 3;
     // 运营商名称
@@ -180,9 +180,9 @@ message SPagingBuyerAfterSalesOrder {
     // 退货的商品项编号
     int64 Snapshot_id = 6;
     // 商品数量
-    int32 Quantity = 7;
-    int64 Sku_id = 8;
-    string ItemTitle = 9;
+    int32 quantity = 7;
+    int64 sku_id = 8;
+    string item_title = 9;
     string ItemImage = 10;
     // 售后单状态
     int32 State = 11;
@@ -199,9 +199,9 @@ message SPagingSellerAfterSalesOrder {
     // 编号
     int64 id = 1;
     // 订单编号
-    string OrderNo = 2;
+    string order_no =  2;
     // 会员编号
-    int64 Buyer_id = 3;
+    int64 buyer_id = 3;
     // 会员名称
     string BuyerName = 4;
     // 类型，退货、换货、维修
@@ -209,9 +209,9 @@ message SPagingSellerAfterSalesOrder {
     // 退货的商品项编号
     int64 Snapshot_id = 6;
     // 商品数量
-    int32 Quantity = 7;
-    int64 Sku_id = 8;
-    string ItemTitle = 9;
+    int32 quantity = 7;
+    int64 sku_id = 8;
+    string item_title = 9;
     string ItemImage = 10;
     // 售后单状态
     int32 State = 11;

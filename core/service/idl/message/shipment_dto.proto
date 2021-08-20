@@ -22,7 +22,7 @@ message SShipmentOrder {
     // 编号
     int64 id = 1;
     // 订单编号
-    int64 Order_id = 2;
+    int64 order_id = 2;
     // 子订单编号
     int64 SubOrder_id = 3;
     // 快递SP编号
@@ -34,7 +34,7 @@ message SShipmentOrder {
     // 运费
     double amount = 7;
     // 实际运费
-    double FinalAmount = 8;
+    double final_amount = 8;
     // 发货时间
     int64 ShipTime = 9;
     // 状态
@@ -52,11 +52,11 @@ message SShipmentItem {
     // 商品交易快照编号
     int64 Snapshot_id = 2;
     // 商品数量
-    int32 Quantity = 3;
+    int32 quantity = 3;
     // 运费
     double amount = 4;
     // 实际运费
-    double FinalAmount = 5;
+    double final_amount = 5;
 }
 
 message LogisticFlowTrackRequest {
@@ -71,7 +71,7 @@ message OrderLogisticTrackRequest {
 // 发货单追踪
 message SShipOrderTrack {
     // 返回状态码
-    sint32 Code = 1;
+    sint32 code = 1;
     // 返回错误信息
     string Message = 2;
     // 物流单号
@@ -90,7 +90,7 @@ message SShipOrderTrack {
 // 发货流
 message SShipFlow {
     // 记录标题
-    string Subject = 1;
+    string subject = 1;
     // 记录时间
     string CreateTime = 2;
     // 备注

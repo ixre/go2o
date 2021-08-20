@@ -85,7 +85,7 @@ message BankAuthQueryRequest {
 // 银行授权查询响应
 message BankAuthQueryResponse {
     // 状态码，0表示成功,1: 表示处理中 2:处理失败
-    int32 Code = 1;
+    int32 code = 1;
     // 错误信息,成功返回空
     string err_msg = 2;
     // 银行授权认证返回的Token,未处理授权时为空
@@ -95,11 +95,11 @@ message BankAuthQueryResponse {
 // 直接支付请求
 message QPaymentRequest {
     // 商户订单号
-    string OrderNo = 1;
+    string order_no =  1;
     // 支付金额,实际金额*100,无小数
     int32 trade_fee = 2;
     // 支付商品名称
-    string Subject = 3;
+    string subject = 3;
     // 银行授权码
     string BankAuthToken = 4;
     // 交易用户IP
@@ -117,7 +117,7 @@ message QPaymentRequest {
 // 支付申请响应
 message QPaymentResponse {
     // 状态码，0表示成功
-    string Code = 1;
+    string code = 1;
     // 错误信息,成功返回空
     string err_msg = 2;
     // 随机ID
@@ -129,7 +129,7 @@ message QPaymentResponse {
 // 查询支付结果请求
 message QPaymentQueryRequest {
     // 商户订单号
-    string OrderNo = 1;
+    string order_no =  1;
     // 查询需要的其他参数(可选)
     map<string, string> Options = 3;
 }
@@ -137,7 +137,7 @@ message QPaymentQueryRequest {
 // 查询支付结果响应
 message QPaymentQueryResponse {
     // 状态码，0表示成功
-    int32 Code = 1;
+    int32 code = 1;
     // 错误信息,成功返回空
     string err_msg = 2;
     // 第三方支单据号
@@ -162,7 +162,7 @@ message CheckQPaySignResponse {
 // 付款请求
 message CardTransferRequest {
     // 商户订单号
-    string OrderNo = 1;
+    string order_no =  1;
     // 银行编号
     string BankCode = 2;
     // 是否为对私转账
@@ -174,9 +174,9 @@ message CardTransferRequest {
     // 收款人姓名,如：张三
     string BankAccountName = 6;
     // 付款事由
-    string Subject = 7;
+    string subject = 7;
     // 省份
-    string Province = 8;
+    string province = 8;
     // 城市
     string City = 9;
     // 支行信息
@@ -204,7 +204,7 @@ message BatchTransferRequest {
 // 批量付款响应
 message BatchTransferResponse {
     // 状态码，0表示成功
-    string Code = 1;
+    string code = 1;
     // 错误信息,成功返回空
     string err_msg = 2;
     // 随机ID

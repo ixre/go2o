@@ -35,7 +35,7 @@ message Result {
 
 // 键值对
 message Pair {
-    string Key = 1;
+    string key = 1;
     string value =  2;
 }
 

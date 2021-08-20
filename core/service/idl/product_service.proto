@@ -130,7 +130,7 @@ message SProductModel {
     // 关联品牌
     repeated SProductBrand Brands = 7;
     // 是否启用
-    int32 Enabled = 8;
+    int32 enabled = 8;
 }
 
 // 产品模型属性
@@ -212,7 +212,7 @@ message SProductBrand {
     // 品牌名称
     string name = 2;
     // 品牌图片
-    string Image = 3;
+    string image = 3;
     // 品牌网址
     string SiteUrl = 4;
     // 介绍
@@ -222,7 +222,7 @@ message SProductBrand {
     // 审核意见
     string ReviewRemark = 7;
     // 是否启用
-    int32 Enabled = 8;
+    int32 enabled = 8;
     // 加入时间
     int64 CreateTime = 9;
 }
@@ -258,13 +258,13 @@ message SProductCategory {
     /** 图标坐标 */
     string IconPoint = 9;
     /** 分类层级 */
-    int32 Level = 10;
+    int32 level = 10;
     /** 序号 */
     int32 SortNum = 11;
     /** 是否楼层显示 */
     bool FloorShow = 12;
     /** 是否启用 */
-    bool Enabled = 13;
+    bool enabled = 13;
     /** 创建时间 */
     int64 CreateTime = 14;
     // 选项参数
@@ -296,9 +296,9 @@ message SProduct {
     // 品牌编号
     int64 Brand_id = 5;
     // 商家编码
-    string Code = 6;
+    string code = 6;
     // 图片
-    string Image = 7;
+    string image = 7;
     // 描述
     string Description = 8;
     // 备注

@@ -138,7 +138,7 @@ service MerchantService {
 
 message MerchantOrderRequest {
     // 商户编号
-    int64 Merchant_id = 1;
+    int64 merchant_id = 1;
     // 是否分页
     bool Pagination = 2;
     // 分页参数
@@ -152,19 +152,19 @@ message PagingMerchantOrderListResponse {
 }
 
 message SMerchantOrder {
-    int64 Order_id = 1;
-    string OrderNo = 2;
+    int64 order_id = 1;
+    string order_no =  2;
     string ParentNo = 3;
-    int64 Buyer_id = 4;
+    int64 buyer_id = 4;
     string BuyerName = 5;
     // 订单详情,主要描述订单的内容
     string Details = 6;
-    double ItemAmount = 7;
-    double DiscountAmount = 8;
+    double Item_amount = 7;
+    double Discount_amount = 8;
     double ExpressFee = 9;
     double PackageFee = 10;
     bool IsPaid = 11;
-    double FinalAmount = 12;
+    double final_amount = 12;
     int32 State = 13;
     string StateText = 14;
     int64 CreateTime = 15;

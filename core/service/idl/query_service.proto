@@ -48,7 +48,7 @@ message SPagingShopFavorite {
     int64 id = 1;
     int64 Shop_id = 2;
     string ShopName = 3;
-    string Logo = 4;
+    string logo = 4;
     int64 update_time = 5;
 }
 message PagingGoodsFavoriteResponse {
@@ -57,9 +57,9 @@ message PagingGoodsFavoriteResponse {
 }
 message SPagingGoodsFavorite {
     int64 id = 1;
-    int64 Sku_id = 2;
+    int64 sku_id = 2;
     string GoodsName = 3;
-    string Image = 4;
+    string image = 4;
     bool OnShelves = 5;
     int32 StockNum = 6;
     string SalePrice = 7;
@@ -83,7 +83,7 @@ message QueryPagingShop {
     string name = 2;
     string Alias = 3;
     string Host = 4;
-    string Logo = 5;
+    string logo = 5;
     sint64 CreateTime = 6;
 }
 
@@ -96,18 +96,18 @@ message MemberOrderPagingResponse {
     repeated PagedMemberSubOrder value =  2;
 }
 message PagedMemberSubOrder {
-    sint64 Order_id = 1;
-    string OrderNo = 2;
+    sint64 order_id = 1;
+    string order_no =  2;
     string ParentNo = 3;
     sint64 Vendor_id = 4;
     sint64 Shop_id = 5;
     string ShopName = 6;
-    double ItemAmount = 7;
-    double DiscountAmount = 8;
+    double Item_amount = 7;
+    double Discount_amount = 8;
     double ExpressFee = 9;
     double PackageFee = 10;
     bool IsPaid = 11;
-    double FinalAmount = 12;
+    double final_amount = 12;
     sint32 State = 13;
     string StateText = 14;
     sint64 CreateTime = 15;
@@ -136,11 +136,11 @@ message MemberListSingle {
     // 头像
     string Avatar = 4;
     // 等级
-    int32 Level = 5;
+    int32 level = 5;
     // 积分
     int64 Integral = 6;
     // 账户余额
-    double Balance = 7;
+    double balance = 7;
     // 钱包余额
     double WalletBalance = 8;
     //    GrowBalance       float32 `db:"grow_balance"`
