@@ -44,7 +44,7 @@ message RegistryPair {
 
 message RegistryValueResponse {
     string value =  1;
-    string ErrorMsg = 2;
+    string err_msg = 2;
 }
 
 message RegistryCreateRequest {
@@ -64,11 +64,11 @@ message SRegistry {
     /** 值 */
     string value =  2;
     /** 默认值 */
-    string Default = 3;
+    string default_value = 3;
     /** 可选值 */
-    string Options = 4;
+    string options = 4;
     /** 标志 */
-    sint32 Flag = 5;
+    sint32 flag = 5;
     /** 描述 */
-    string Description = 6;
+    string description = 6;
 }

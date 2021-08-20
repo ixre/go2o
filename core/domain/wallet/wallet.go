@@ -169,8 +169,8 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, oprUid i
 		OuterChan:    "",
 		OuterNo:      "",
 		Value:        value,
-		OprUid:       oprUid,
-		OprName:      strings.TrimSpace(oprName),
+		OperatorUid:  oprUid,
+		OperatorName: strings.TrimSpace(oprName),
 		Remark:       "",
 		ReviewState:  wallet.ReviewPass,
 		ReviewRemark: "",
@@ -538,8 +538,8 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 			return err
 		}
 	}
-	l.OprUid = oprUid
-	l.OprName = oprName
+	l.OperatorUid = oprUid
+	l.OperatorName = oprName
 	l.UpdateTime = time.Now().Unix()
 	return w.saveWalletLog(l)
 }

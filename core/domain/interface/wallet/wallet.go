@@ -300,9 +300,9 @@ type (
 		// 交易手续费
 		TradeFee int `db:"trade_fee"`
 		// 操作人员用户编号
-		OprUid int `db:"opr_uid"`
+		OperatorUid int `db:"opr_uid"`
 		// 操作人员名称
-		OprName string `db:"opr_name"`
+		OperatorName string `db:"opr_name"`
 		// 提现账号
 		AccountNo string `db:"account_no"`
 		// 提现账户名称

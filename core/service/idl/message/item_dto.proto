@@ -89,7 +89,7 @@ message SSku {
     sint32 weight = 12;
     sint32 bulk = 13;
     sint32 stock = 14;
-    sint32 sale_um = 15;
+    sint32 sale_num = 15;
 }
 
 // 统一的商品显示对象

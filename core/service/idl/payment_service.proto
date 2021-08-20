@@ -7,7 +7,7 @@ option java_package = "com.github.go2o.rpc";
 
 
 message AdjustOrderRequest {
-    string paymentNo = 1;
+    string payment_no = 1;
     double amount = 2;
 }
 
@@ -19,12 +19,12 @@ message DiscountBalanceRequest {
 message DiscountIntegralRequest {
     sint32 order_id = 1;
     sint64 integral = 2;
-    bool ignoreOut = 3;
+    bool ignore_out = 3;
 }
 
 message WalletPaymentRequest {
-    string tradeNo = 1;
-    bool mergePay = 2;
+    string trade_no = 1;
+    bool merge_pay = 2;
     string remark = 3;
 }
 
@@ -34,9 +34,9 @@ message HyperPaymentRequest {
 }
 
 message FinishPaymentRequest {
-    string tradeNo = 1;
-    string spName = 2;
-    string outerNo = 3;
+    string trade_no = 1;
+    string sp_name = 2;
+    string outer_no = 3;
 }
 
 // 支付服务
@@ -92,12 +92,12 @@ service PaymentService {
 }
 
 message OrderInfoRequest {
-    string tradeNo = 1;
-    bool mergePay = 2;
+    string trade_no = 1;
+    bool merge_pay = 2;
 }
 
 message MixedPaymentRequest {
-    string tradeNo = 1;
+    string trade_no = 1;
     repeated SRequestPayData data = 2;
 }
 
@@ -138,43 +138,43 @@ message SPaymentOrder {
     /** 卖家编号 */
     sint32 seller_id = 2;
     /** 交易类型 */
-    string Trade_type= 3;
+    string trade_type= 3;
     /** 合并支付交单单号 */
-    string MergeTradeNo = 4;
+    string merge_trade_no = 4;
     /** 支付单详情 */
     string subject = 5;
     /** 是否为子订单 */
-    bool SubOrder = 6;
+    bool sub_order = 6;
     /** 支付单的类型，如购物或其他 */
     sint32 order_type = 7;
     /** 外部订单号 */
-    string OutOrderNo = 8;
+    string out_order_no = 8;
     /** 买家编号 */
     sint32 buyer_id = 9;
     /** 支付用户编号 */
-    sint32 PayUid = 10;
+    sint32 pay_uid = 10;
     /** 商品金额 */
-    sint32 Item_amount = 11;
+    sint32 item_amount = 11;
     /** 优惠金额  */
-    sint32 Discount_amount = 12;
+    sint32 discount_amount = 12;
     /** 调整金额 */
-    sint32 Adjust_amount = 13;
+    sint32 adjust_amount = 13;
     /** 抵扣金额  */
-    sint32 Deduct_amount = 14;
+    sint32 deduct_amount = 14;
     /** 共计金额 */
-    sint32 Total_amount = 15;
+    sint32 total_amount = 15;
     /** 手续费 */
     sint32 procedure_fee = 16;
     /** 实付金额 */
-    sint32 PaidFee = 17;
+    sint32 paid_fee = 17;
     /** 最终应付金额 */
-    sint32 FinalFee = 18;
+    sint32 final_fee = 18;
     /** 可⽤支付方式  */
-    sint32 PayFlag = 19;
+    sint32 pay_flag = 19;
     /** 实际使用支付方式 */
-    sint32 FinalFlag = 20;
+    sint32 final_flag = 20;
     /** 其他支付信息 */
-    string ExtraData = 21;
+    string extra_data = 21;
     /** 订单状态 */
     sint32 state = 22;
     /** 提交时间 */
@@ -182,9 +182,9 @@ message SPaymentOrder {
     /** 过期时间 */
     sint64 expires_time = 24;
     /** 支付时间 */
-    sint64 PaidTime = 25;
+    sint64 paid_time = 25;
     /** 交易数据 */
-    repeated STradeMethodData TradeData = 26;
+    repeated STradeMethodData trade_data = 26;
     /** 编号 */
     sint32 id = 27;
 }
@@ -192,7 +192,7 @@ message SPaymentOrder {
 /** 请求支付数据 */
 message SRequestPayData {
     /** 支付方式 */
-    sint32 Method = 1;
+    sint32 method = 1;
     /** 支付方式代码 */
     string code = 2;
     /** 支付金额 */
@@ -202,17 +202,17 @@ message SRequestPayData {
 /** 交易方式数据 */
 message STradeMethodData {
     /** 支付途径 */
-    sint32 Method = 1;
+    sint32 method = 1;
     /** 交易代码 */
     string code = 2;
     /** 支付金额 */
     sint32 amount = 3;
     /** 是否为内置支付途径 */
-    sint32 Internal = 4;
+    sint32 internal = 4;
     /** 外部交易单号 */
-    string OutTradeNo = 5;
+    string out_trade_no = 5;
     /** 支付时间 */
-    sint64 PayTime = 6;
+    sint64 pay_time = 6;
 }
 
 /** 支付单预交易数据 */
@@ -224,17 +224,17 @@ message SPrepareTradeData {
     /** 交易号 */
     string trade_no = 3;
     /** 支付标志 */
-    sint32 PayFlag = 4;
+    sint32 pay_flag = 4;
     /** 交易状态 */
-    sint32 TradeState = 5;
+    sint32 trade_state = 5;
     /** 交易订单 */
-    repeated SPaymentOrderData TradeOrders = 6;
+    repeated SPaymentOrderData trade_orders = 6;
     /** 累计金额 */
-    sint32 Total_amount = 7;
+    sint32 total_amount = 7;
     /** 手续费 */
     sint32 procedure_fee = 8;
     /** 最终支付金额 */
-    sint32 FinalFee = 9;
+    sint32 final_fee = 9;
 }
 
 /** 支付单数据 */
@@ -244,11 +244,11 @@ message SPaymentOrderData {
     /** 标题 */
     string subject = 2;
     /** 交易类型 */
-    string Trade_type= 3;
+    string trade_type= 3;
     /** 状态 */
     sint32 state = 4;
     /** 手续费 */
     sint32 procedure_fee = 5;
     /** 最终支付金额 */
-    sint32 FinalFee = 6;
+    sint32 final_fee = 6;
 }

@@ -331,7 +331,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Remark:      v.Remark,
 		CreateTime:  v.CreateTime,
 		UpdateTime:  v.UpdateTime,
-		RelateUser:  int64(v.OprUid),
+		RelateUser:  int64(v.OperatorUid),
 	}, nil
 }
 
@@ -1085,11 +1085,11 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 	}
 	var accountTid = 0
 	switch r.Account {
-	case proto.PaymentAccountType_PA_Balance:
+	case proto.PaymentAccountType_PA_BALANCE:
 		accountTid = member.AccountBalance
-	case proto.PaymentAccountType_PA_Wallet:
+	case proto.PaymentAccountType_PA_WALLET:
 		accountTid = member.AccountWallet
-	case proto.PaymentAccountType_PA_QuickPay:
+	case proto.PaymentAccountType_PA_QUICK_PAY:
 		return s.error(errors.New("暂时不支持")), nil
 	}
 	err := m.GetAccount().SetPriorityPay(accountTid, true)

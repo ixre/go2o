@@ -67,7 +67,7 @@ func (w *walletServiceImpl) Adjust(_ context.Context, r *proto.AdjustRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, r.Remark, int(r.OprUid), r.OprName)
+		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, r.Remark, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
@@ -87,7 +87,7 @@ func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Freeze(int(r.Value), r.Title, r.OuterNo, int(r.OprUid), r.OprName)
+		err = iw.Freeze(int(r.Value), r.Title, r.OuterNo, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
@@ -97,7 +97,7 @@ func (w *walletServiceImpl) Unfreeze(_ context.Context, r *proto.UnfreezeRequest
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Unfreeze(int(r.Value), r.Title, r.OuterNo, int(r.OprUid), r.OprName)
+		err = iw.Unfreeze(int(r.Value), r.Title, r.OuterNo, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
@@ -108,7 +108,7 @@ func (w *walletServiceImpl) Charge(_ context.Context, r *proto.ChargeRequest) (r
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
 		err = iw.Charge(int(r.Value), int(r.By), r.Title,
-			r.OuterNo, r.Remark, int(r.OprUid), r.OprName)
+			r.OuterNo, r.Remark, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
@@ -151,7 +151,7 @@ func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewTake
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.ReviewWithdrawal(r.TakeId, r.ReviewPass, r.Remark, int(r.OprUid), r.OprName)
+		err = iw.ReviewWithdrawal(r.TakeId, r.ReviewPass, r.Remark, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
@@ -212,8 +212,8 @@ func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog
 		Value:        int32(l.Value),
 		Balance:      int32(l.Balance),
 		TradeFee:     int32(l.TradeFee),
-		OperatorId:   int32(l.OprUid),
-		OperatorName: l.OprName,
+		OperatorUid:   int32(l.OperatorUid),
+		OperatorName: l.OperatorName,
 		Remark:       l.Remark,
 		ReviewState:  int32(l.ReviewState),
 		ReviewRemark: l.ReviewRemark,

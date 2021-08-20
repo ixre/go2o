@@ -54,7 +54,7 @@ message SMerchantPack {
     /** 标志 */
     string shop_logo = 6;
     /** 电话 */
-    string tel = 7;
+    string telephone = 7;
     /** 地址 */
     string addr = 8;
 }
@@ -117,7 +117,7 @@ message STradeConf_ {
     // 商户编号  sint64 Mch_id = 1;
     // 交易类型  sint32 Trade_type= 2;
     // 交易方案，根据方案来自动调整比例  sint64 Plan_id = 3;
-    // 交易标志  sint32 Flag = 4;
+    // 交易标志  sint32 flag = 4;
     // 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
     // 交易费，按单笔收取  sint32 trade_fee = 6;
     // 交易手续费比例  sint32 TradeRate = 7;

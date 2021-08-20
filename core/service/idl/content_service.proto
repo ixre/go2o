@@ -68,9 +68,9 @@ message SArticleCategory {
     // 名称(唯一)
     string name = 4;
     // 别名
-    string Alias = 5;
+    string alias = 5;
     // 排序编号
-    int32 SortNum = 6;
+    int32 sort_num = 6;
     // 定位路径（打开栏目页定位到的路径）
     string Location = 7;
     // 页面标题
@@ -108,7 +108,7 @@ message SArticle {
     /** 显示次数 */
     sint32 ViewCount = 12;
     /** 排序序号 */
-    sint32 SortNum = 13;
+    sint32 sort_num = 13;
     /** 创建时间 */
     sint64 create_time = 14;
     /** 最后修改时间 */

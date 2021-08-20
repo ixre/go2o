@@ -197,7 +197,7 @@ func (a *appServiceImpl) CheckVersion(_ context.Context, r *proto.CheckVersionRe
 
 	return &proto.CheckVersionResponse{
 		LatestVersion: r.Version,
-		AppPkgURL:     a.getVersionPkgURL(prod, r.Channel, r.Version),
+		AppPkgUrl:     a.getVersionPkgURL(prod, r.Channel, r.Version),
 		VersionInfo:   v.UpdateContent,
 		IsLatest:      false,
 		ForceUpdate:   v.ForceUpdate == 1,

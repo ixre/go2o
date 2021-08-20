@@ -140,7 +140,7 @@ message MerchantOrderRequest {
     // 商户编号
     int64 merchant_id = 1;
     // 是否分页
-    bool Pagination = 2;
+    bool pagination = 2;
     // 分页参数
     SPagingParams params = 3;
 }
@@ -154,20 +154,20 @@ message PagingMerchantOrderListResponse {
 message SMerchantOrder {
     int64 order_id = 1;
     string order_no =  2;
-    string ParentNo = 3;
+    string parent_no = 3;
     int64 buyer_id = 4;
-    string BuyerName = 5;
+    string buyer_name = 5;
     // 订单详情,主要描述订单的内容
-    string Details = 6;
-    double Item_amount = 7;
-    double Discount_amount = 8;
+    string details = 6;
+    double item_amount = 7;
+    double discount_amount = 8;
     double express_fee = 9;
     double package_fee = 10;
-    bool IsPaid = 11;
+    bool is_paid = 11;
     double final_amount = 12;
     int32 state = 13;
-    string StateText = 14;
+    string state_text = 14;
     int64 create_time = 15;
-    repeated SOrderItem Items = 16;
+    repeated SOrderItem items = 16;
     map<string, string> data = 17;
 }
