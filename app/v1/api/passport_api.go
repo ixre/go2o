@@ -453,8 +453,8 @@ func (m PassportApi) getDurationSecond() int64 {
 	if err == nil {
 		rsp, _ := cli.GetValue(context.TODO(), &proto.String{Value: registry.SmsSendDuration})
 		trans.Close()
-		if rsp.ErrorMsg == "" {
-			log.Println("[ app][ warning]: parse value error:", rsp.ErrorMsg)
+		if rsp.ErrMsg == "" {
+			log.Println("[ app][ warning]: parse value error:", rsp.ErrMsg)
 		}
 		i, err := strconv.Atoi(rsp.Value)
 		if err != nil {

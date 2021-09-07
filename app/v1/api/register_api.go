@@ -127,8 +127,8 @@ func (m RegisterApi) getDurationSecond() int64 {
 			Value: registry.SmsSendDuration,
 		})
 		trans.Close()
-		if rsp.ErrorMsg == "" {
-			log.Println("[ app][ warning]: parse value error:", rsp.ErrorMsg)
+		if rsp.ErrMsg == "" {
+			log.Println("[ app][ warning]: parse value error:", rsp.ErrMsg)
 		}
 		i, err := strconv.Atoi(rsp.Value)
 		if err != nil {
