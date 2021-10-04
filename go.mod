@@ -16,19 +16,19 @@ replace github.com/gomodule/redigo/redis => github.com/gomodule/redigo v1.8.2
 replace github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
 
 exclude github.com/coreos/etcd v3.3.18+incompatible
+
 replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.5
 
 require (
 	github.com/coreos/etcd v3.3.25+incompatible // indirect
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.10.11
+	github.com/ixre/gof v1.11.0
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/lib/pq v1.10.2 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
