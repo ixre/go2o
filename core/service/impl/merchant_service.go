@@ -997,7 +997,7 @@ func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantA
 		PresentAmount: float64(v.PresentAmount),
 		SalesAmount:   float64(v.SalesAmount),
 		RefundAmount:  float64(v.RefundAmount),
-		TakeAmount:    float64(v.TakeAmount),
+		WithdrawAmount:    float64(v.WithdrawAmount),
 		OfflineSales:  float64(v.OfflineSales),
 		UpdateTime:    v.UpdateTime,
 	}

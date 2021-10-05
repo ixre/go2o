@@ -5,7 +5,7 @@
 {{$shortTitle := .table.ShortTitle}}
 {{$pkType := join .table.Title .table.PkProp ""}}
 syntax = "proto3";
-option go_package = ".;proto";
+option go_package = "./;proto";
 option java_package = "{{replace .global.pkg "/" "."}}.rpc";
 
 import "global.proto";

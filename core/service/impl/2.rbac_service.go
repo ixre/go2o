@@ -14,7 +14,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"

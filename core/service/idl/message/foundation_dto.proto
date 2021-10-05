@@ -1,179 +1,180 @@
 syntax = "proto3";
-option go_package = ".;proto";
+
+option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 
 message SmsApiSaveRequest {
-  string provider = 1;
-  SSmsApi api = 2;
+    string Provider = 1;
+    SSmsApi Api = 2;
 }
 
 //  登录结果
 message SuperLoginResponse {
-  int32 ErrCode = 1;
-  string ErrMsg = 2;
-  int32 Role = 3;
+    int32 ErrCode = 1;
+    string ErrMsg = 2;
+    int32 Role = 3;
 }
 message BoardHookSaveRequest {
-  string hookURL = 1;
-  string token = 2;
+    string HookURL = 1;
+    string Token = 2;
 }
 
 
 message AreaStringRequest {
-  int32 Province = 1;
-  int32 City = 2;
-  int32 District = 3;
+    int32 Province = 1;
+    int32 City = 2;
+    int32 District = 3;
 }
 message AreaListResponse {
-  repeated SArea Value = 1;
+    repeated SArea value =  1;
 }
 message StringListResponse {
-  repeated string Value = 1;
+    repeated string value =  1;
 }
 message GetAreaNamesRequest {
-  repeated sint32 Value = 1;
+    repeated sint32 value =  1;
 }
 
 message UserPwd {
-  string user = 1;
-  string pwd = 2;
+    string user = 1;
+    string Pwd = 2;
 }
 
 // 单点登录应用
 message SSsoApp {
-  // 编号
-  sint32 ID = 1;
-  // 应用名称
-  string Name = 2;
-  // API地址
-  string ApiUrl = 3;
-  // 密钥
-  string Token = 4;
+    // 编号
+    sint32 Id = 1;
+    // 应用名称
+    string Name = 2;
+    // API地址
+    string ApiUrl = 3;
+    // 密钥
+    string Token = 4;
 }
 
 /** 行政区域 */
 message SArea {
-  sint32 Code = 1;
-  sint32 Parent = 2;
-  string Name = 3;
+    sint32 Code = 1;
+    sint32 Parent = 2;
+    string Name = 3;
 }
 
 /** 短信接口信息 */
 message SSmsApi {
-  /** 接口地址 */
-  string ApiUrl = 1;
-  /** 接口KEY */
-  string Key = 2;
-  /** 接口密钥 */
-  string Secret = 3;
-  /** 请求数据,如: phone={phone}&content={content}*/
-  string Params = 4;
-  /** 请求方式, GET或POST */
-  string Method = 5;
-  /** 编码 */
-  string Charset = 6;
-  /** 签名 */
-  string Signature = 7;
-  /** 发送成功，包含的字符，用于检测是否发送成功 */
-  string SuccessChar = 8;
+    /** 接口地址 */
+    string ApiUrl = 1;
+    /** 接口KEY */
+    string Key = 2;
+    /** 接口密钥 */
+    string Secret = 3;
+    /** 请求数据,如: phone={phone}&content={content}*/
+    string Params = 4;
+    /** 请求方式, GET或POST */
+    string Method = 5;
+    /** 编码 */
+    string Charset = 6;
+    /** 签名 */
+    string Signature = 7;
+    /** 发送成功，包含的字符，用于检测是否发送成功 */
+    string SuccessChar = 8;
 }
 
 // 移动应用配置
 message SMobileAppConfig {
-  // 应用名称
-  string AppName = 1;
-  // APP图标地址
-  string AppIcon = 2;
-  // 描述
-  string Description = 3;
-  // 安卓APP版本
-  string AndroidVersion = 4;
-  // 安卓APP版发布地址
-  string AndroidReleaseUrl = 5;
-  // 苹果APP版本
-  string IosVersion = 6;
-  // 苹果APP版发布地址
-  string IosReleaseUrl = 7;
-  // 模板文件
-  string ShowTplPath_ = 8;
+    // 应用名称
+    string AppName = 1;
+    // APP图标地址
+    string AppIcon = 2;
+    // 描述
+    string Description = 3;
+    // 安卓APP版本
+    string AndroidVersion = 4;
+    // 安卓APP版发布地址
+    string AndroidReleaseUrl = 5;
+    // 苹果APP版本
+    string IosVersion = 6;
+    // 苹果APP版发布地址
+    string IosReleaseUrl = 7;
+    // 模板文件
+    string ShowTplPath_ = 8;
 }
 
 message SWxApiConfig {
-  //APP ID
-  string AppId = 1;
-  //APP 密钥
-  string AppSecret = 2;
-  //通信密钥
-  string MpToken = 3;
-  //通信AES KEY
-  string MpAesKey = 4;
-  //原始ID
-  string OriId = 5;
+    //APP ID
+    string AppId = 1;
+    //APP 密钥
+    string AppSecret = 2;
+    //通信密钥
+    string MpToken = 3;
+    //通信AES KEY
+    string MpAesKey = 4;
+    //原始ID
+    string OriId = 5;
 
-  /**===== 用于微信支付 =====**/
+    /**===== 用于微信支付 =====**/
 
-  //商户编号
-  string MchId = 6;
-  //商户接口密钥
-  string MchApiKey = 7;
-  //微信支付的证书路径(上传)
-  string MchCertPath = 8;
-  //微信支付的证书公钥路径(上传)
-  string MchCertKeyPath = 9;
-  //是否启用红包功能
-  bool RedPackEnabled = 10;
-  //红包金额限制
-  double RedPackAmountLimit = 11;
-  //红包每日数量限制
-  int32 RedPackDayTimeLimit = 12;
+    //商户编号
+    string MchId = 6;
+    //商户接口密钥
+    string MchApiKey = 7;
+    //微信支付的证书路径(上传)
+    string MchCertPath = 8;
+    //微信支付的证书公钥路径(上传)
+    string MchCertKeyPath = 9;
+    //是否启用红包功能
+    bool RedPackEnabled = 10;
+    //红包金额限制
+    double RedPackAmountLimit = 11;
+    //红包每日数量限制
+    int32 RedPackDayTimeLimit = 12;
 }
 
 message PaymentPlatformResponse {
-  repeated PaymentPlatform Value = 1;
+    repeated PaymentPlatform value =  1;
 }
 
 message PaymentPlatform {
-  string Id = 1;
-  string Name = 2;
-  string Sign = 3;
-  repeated BankItem Items = 4;
+    string id = 1;
+    string Name = 2;
+    string Sign = 3;
+    repeated BankItem Items = 4;
 }
 
 message BankItem {
-  //标识
-  string Id = 1;
-  //名称
-  string Name = 2;
-  //签名/别名
-  string Sign = 3;
+    //标识
+    string id = 1;
+    //名称
+    string Name = 2;
+    //签名/别名
+    string Sign = 3;
 }
 
 // 全局商户销售设置
 message SGlobMchSaleConf {
-  // !商户订单结算模式
-  //MchOrderSettleMode enum.MchSettleMode
-  // !商户订单结算比例
-  //MchOrderSettleRate float32
-  // 商户交易单是否需上传发票
-  //TradeOrderRequireTicket bool
-  // 是否启用分销模式
-  bool FxSalesEnabled = 1;
-  // 返现比例,0则不返现
-  double CashBackPercent = 2;
-  // 一级比例
-  double CashBackTg1Percent = 3;
-  // 二级比例
-  double CashBackTg2Percent = 4;
-  // 会员比例
-  double CashBackMemberPercent = 5;
+    // !商户订单结算模式
+    //MchOrderSettleMode enum.MchSettleMode
+    // !商户订单结算比例
+    //MchOrderSettleRate float32
+    // 商户交易单是否需上传发票
+    //TradeOrderRequireTicket bool
+    // 是否启用分销模式
+    bool FxSalesEnabled = 1;
+    // 返现比例,0则不返现
+    double CashBackPercent = 2;
+    // 一级比例
+    double CashBackTg1Percent = 3;
+    // 二级比例
+    double CashBackTg2Percent = 4;
+    // 会员比例
+    double CashBackMemberPercent = 5;
 
-  // 自动设置订单
-  int32 AutoSetupOrder = 6;
-  // 订单超时分钟数
-  int32 OrderTimeOutMinute = 7;
-  // 订单自动确认时间
-  int32 OrderConfirmAfterMinute = 8;
-  // 订单超时自动收货
-  int32 OrderTimeOutReceiveHour = 9;
+    // 自动设置订单
+    int32 AutoSetupOrder = 6;
+    // 订单超时分钟数
+    int32 OrderTimeOutMinute = 7;
+    // 订单自动确认时间
+    int32 OrderConfirmAfterMinute = 8;
+    // 订单超时自动收货
+    int32 OrderTimeOutReceiveHour = 9;
 }

@@ -147,7 +147,7 @@ type (
 		Save() (int64, error)
 
 		// 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
-		Adjust(value int, title, outerNo string, remark string, oprUid int, oprName string) error
+		Adjust(value int, title, outerNo string, remark string, operatorUid int, operatorName string) error
 
 		// 消费
 		Consume(amount int, title string, outerNo string) error
@@ -156,10 +156,10 @@ type (
 		Discount(amount int, title, outerNo string, must bool) error
 
 		// 冻结余额
-		Freeze(amount int, title, outerNo string, oprUid int, oprName string) error
+		Freeze(amount int, title, outerNo string, operatorUid int, operatorName string) error
 
 		// 解冻金额
-		Unfreeze(amount int, title, outerNo string, oprUid int, oprName string) error
+		Unfreeze(amount int, title, outerNo string, operatorUid int, operatorName string) error
 
 		// 将冻结金额标记为失效
 		FreezeExpired(amount int, remark string) error
@@ -168,10 +168,10 @@ type (
 		Income(amount int, tradeFee int, title, outerNo string) error
 
 		// 充值,kind: 业务类型
-		Charge(value int, kind int, title, outerNo string, remark string, oprUid int, oprName string) error
+		Charge(value int, kind int, title, outerNo string, remark string, operatorUid int, operatorName string) error
 
 		// 退款,kind: 业务类型
-		Refund(value int, kind int, title, outerNo string, oprUid int, oprName string) error
+		Refund(value int, kind int, title, outerNo string, operatorUid int, operatorName string) error
 
 		// 转账,title如:转账给xxx， toTitle: 转账收款xxx
 		Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error
@@ -184,7 +184,7 @@ type (
 			accountNo string, accountName string, bankName string) (int64, string, error)
 
 		// 确认提现
-		ReviewWithdrawal(takeId int64, pass bool, remark string, oprUid int, oprName string) error
+		ReviewWithdrawal(takeId int64, pass bool, remark string, operatorUid int, operatorName string) error
 
 		// 完成提现
 		FinishWithdrawal(takeId int64, outerNo string) error
@@ -300,9 +300,9 @@ type (
 		// 交易手续费
 		TradeFee int `db:"trade_fee"`
 		// 操作人员用户编号
-		OprUid int `db:"opr_uid"`
+		OperatorUid int `db:"opr_uid"`
 		// 操作人员名称
-		OprName string `db:"opr_name"`
+		OperatorName string `db:"opr_name"`
 		// 提现账号
 		AccountNo string `db:"account_no"`
 		// 提现账户名称

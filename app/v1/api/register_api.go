@@ -127,8 +127,8 @@ func (m RegisterApi) getDurationSecond() int64 {
 			Value: registry.SmsSendDuration,
 		})
 		trans.Close()
-		if rsp.ErrorMsg == "" {
-			log.Println("[ app][ warning]: parse value error:", rsp.ErrorMsg)
+		if rsp.ErrMsg == "" {
+			log.Println("[ app][ warning]: parse value error:", rsp.ErrMsg)
 		}
 		i, err := strconv.Atoi(rsp.Value)
 		if err != nil {
@@ -232,7 +232,7 @@ func (m RegisterApi) sendRegisterCode(ctx api.Context) interface{} {
 		trans, cli, _ := service.MemberServiceClient()
 		memberId, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Phone,
+				Cred:  proto.ECredentials_PHONE,
 				Value: phone,
 			})
 		trans.Close()

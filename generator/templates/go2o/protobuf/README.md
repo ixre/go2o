@@ -1,7 +1,8 @@
 global.proto
+
 ```
 syntax = "proto3";
-option go_package = ".;proto";
+option go_package = "./;proto";
 option java_package="com.github.go2o.rpc";
 
 message Empty {

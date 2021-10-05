@@ -35,7 +35,7 @@ func (m MemberApi) Process(fn string, ctx api.Context) *api.Response {
 		defer trans.Close()
 		v, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Code,
+				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
 		memberId = v.Value
@@ -112,7 +112,7 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 	if err == nil {
 		defer trans.Close()
 		memberId, _ := cli.FindMember(context.TODO(), &proto.FindMemberRequest{
-			Cred:  proto.ECredentials_Code,
+			Cred:  proto.ECredentials_CODE,
 			Value: code,
 		})
 		r, err1 := cli.GetAccount(context.TODO(), memberId)
@@ -135,7 +135,7 @@ func (m MemberApi) complex(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Code,
+				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
 		r, _ := cli.Complex(context.TODO(), memberId)
@@ -155,7 +155,7 @@ func (m MemberApi) bankcard(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Code,
+				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
 		r, _ := cli.GetBankCards(context.TODO(), memberId)
@@ -175,7 +175,7 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Code,
+				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
 		r, err1 := cli.GetMember(context.TODO(), memberId)
@@ -199,7 +199,7 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Code,
+				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
 		r, err1 := cli.CheckToken(context.TODO(),
@@ -226,7 +226,7 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 		defer trans.Close()
 		memberId, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Code,
+				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
 		if memberId.Value <= 0 {
@@ -244,7 +244,7 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	memberId, _ := cli.FindMember(context.TODO(),
 		&proto.FindMemberRequest{
-			Cred:  proto.ECredentials_Code,
+			Cred:  proto.ECredentials_CODE,
 			Value: code,
 		})
 	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
@@ -267,7 +267,7 @@ func (m MemberApi) saveReceiptsCode(ctx api.Context) interface{} {
 	}
 	memberId, _ := cli.FindMember(context.TODO(),
 		&proto.FindMemberRequest{
-			Cred:  proto.ECredentials_Code,
+			Cred:  proto.ECredentials_CODE,
 			Value: code,
 		})
 	r, _ := cli.SaveReceiptsCode(context.TODO(), &proto.ReceiptsCodeSaveRequest{
@@ -284,7 +284,7 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 	identity := ctx.Form().GetString("identity")
 	memberId, _ := cli.FindMember(context.TODO(),
 		&proto.FindMemberRequest{
-			Cred:  proto.ECredentials_Code,
+			Cred:  proto.ECredentials_CODE,
 			Value: code,
 		})
 	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
@@ -415,7 +415,7 @@ func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
 func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 	form := ctx.Form()
 	var e = proto.SAddress{
-		ID:             int64(form.GetInt("address_id")),
+		Id:             int64(form.GetInt("address_id")),
 		ConsigneeName:  form.GetString("consignee_name"),
 		ConsigneePhone: form.GetString("consignee_phone"),
 		Province:       int32(form.GetInt("province")),

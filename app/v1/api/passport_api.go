@@ -55,7 +55,7 @@ func (m PassportApi) checkMemberBasis(ctx api.Context) (string, proto.ECredentia
 	acc := strings.TrimSpace(ctx.Form().GetString("account"))          //账号、手机或邮箱
 	credTypeId, err := strconv.Atoi(ctx.Form().GetString("cred_type")) //账号类型
 	if err != nil {
-		return acc, proto.ECredentials_User, err
+		return acc, proto.ECredentials_USER, err
 	}
 	credType := proto.ECredentials(credTypeId)
 	if len(acc) == 0 {
@@ -66,10 +66,10 @@ func (m PassportApi) checkMemberBasis(ctx api.Context) (string, proto.ECredentia
 
 // 根据发送的校验码类型获取用户凭据类型
 func (h PassportApi) parseMessageChannel(credType proto.ECredentials) proto.EMessageChannel {
-	if credType == proto.ECredentials_Email {
-		return proto.EMessageChannel_EmailMessage
+	if credType == proto.ECredentials_EMAIL {
+		return proto.EMessageChannel_EMAIL_MESSAGE
 	}
-	return proto.EMessageChannel_SmsMessage
+	return proto.EMessageChannel_SMS_MESSAGE
 }
 
 // 标记验证码发送时间
@@ -453,8 +453,8 @@ func (m PassportApi) getDurationSecond() int64 {
 	if err == nil {
 		rsp, _ := cli.GetValue(context.TODO(), &proto.String{Value: registry.SmsSendDuration})
 		trans.Close()
-		if rsp.ErrorMsg == "" {
-			log.Println("[ app][ warning]: parse value error:", rsp.ErrorMsg)
+		if rsp.ErrMsg == "" {
+			log.Println("[ app][ warning]: parse value error:", rsp.ErrMsg)
 		}
 		i, err := strconv.Atoi(rsp.Value)
 		if err != nil {

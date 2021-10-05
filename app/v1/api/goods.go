@@ -149,7 +149,7 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 	trans, cli, _ := service.MemberServiceClient()
 	r, err := cli.Favorite(context.TODO(), &proto.FavoriteRequest{
 		MemberId:     int64(memberId),
-		FavoriteType: proto.FavoriteType_Goods,
+		FavoriteType: proto.FavoriteType_GOOGS,
 		ReferId:      int64(id),
 	})
 	trans.Close()

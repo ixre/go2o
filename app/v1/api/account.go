@@ -26,7 +26,7 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 		defer trans.Close()
 		v, _ := cli.FindMember(context.TODO(),
 			&proto.FindMemberRequest{
-				Cred:  proto.ECredentials_Code,
+				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
 		memberId = v.Value

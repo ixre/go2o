@@ -1,12 +1,13 @@
 syntax = "proto3";
-option go_package = ".;proto";
-option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
 /** 状态服务 */
 service StatusService {
-  /** 尝试连接 */
-  rpc Ping (Empty) returns (String) {
-  }
+    /** 尝试连接 */
+    rpc Ping (Empty) returns (String) {
+    }
 }

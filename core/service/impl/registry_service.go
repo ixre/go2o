@@ -38,7 +38,7 @@ func (s *registryService) GetValue(_ context.Context, key *proto.String) (*proto
 	v, err := s.registryRepo.GetValue(key.Value)
 	rsp := &proto.RegistryValueResponse{Value: v}
 	if err != nil {
-		rsp.ErrorMsg = err.Error()
+		rsp.ErrMsg = err.Error()
 	}
 	return rsp, nil
 }
@@ -97,7 +97,7 @@ func (s *registryService) SearchRegistry(_ context.Context, key *proto.String) (
 		list[i] = &proto.SRegistry{
 			Key:         a.Key,
 			Value:       a.Value,
-			Default:     a.DefaultValue,
+			DefaultValue:     a.DefaultValue,
 			Options:     a.Options,
 			Flag:        int32(a.Flag),
 			Description: a.Description,

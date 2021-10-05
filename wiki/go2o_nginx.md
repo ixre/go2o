@@ -1,4 +1,5 @@
 创建配置文件
+
 ```
 server {
     listen  80;
@@ -65,9 +66,11 @@ server {
     }
 }
 ```
+
 _注:将xxx.com替换为你的域名,包括证书_
 
 可以添加以下配置, 强制重定向到HTTPS
+
 ```
 server{
     listen          80;
