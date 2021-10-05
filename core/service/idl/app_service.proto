@@ -31,16 +31,16 @@ service AppService {
 }
 
 message AppId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 message AppVersionId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 
 // 检查版本请求
 message CheckVersionRequest {
     // 版本号
-    int64 app_id = 1;
+    int64 appId = 1;
     // 更新通道, stable|beta|nightly
     string channel = 2;
     // 当前版本
@@ -68,7 +68,7 @@ message CheckVersionResponse {
 // APP产品
 message AppProdRequest {
     // 产品编号
-    int64 id = 1;
+    int64 Id = 1;
     // 产品名称
     string prod_name = 2;
     // 产品描述
@@ -90,9 +90,9 @@ message AppProdRequest {
 // APP版本
 message AppVersionRequest {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 产品
-    int64 product_id = 2;
+    int64 productId = 2;
     // 更新通道, stable:0|alpha:1|nightly:2
     int32 channel = 3;
     // 版本号
@@ -106,7 +106,7 @@ message AppVersionRequest {
 // APP产品
 message SAppProd {
     // 产品编号
-    int64 id = 1;
+    int64 Id = 1;
     // 产品名称
     string prod_name = 2;
     // 产品描述
@@ -126,15 +126,15 @@ message SAppProd {
     // 更新方式,比如APK, EXE等
     string update_type= 10;
     // 更新时间
-    int64 update_time = 11;
+    int64 UpdateTime = 11;
 }
 
 // APP版本
 message SAppVersion {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 产品
-    int64 product_id = 2;
+    int64 productId = 2;
     // 更新通道, 0:stable|1:beta|2:nightly
     int32 channel = 3;
     // 版本号

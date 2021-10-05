@@ -52,51 +52,51 @@ message ExpressProviderListResponse {
 // 快递服务商
 message SExpressProvider {
     // 快递公司编号
-    int64 id = 1;
+    int64 Id = 1;
     // 快递名称
-    string name = 2;
+    string Name = 2;
     // 首字母，用于索引分组
-    string letter = 3;
+    string Letter = 3;
     // 分组,多个组,用","隔开
-    string group_flag = 4;
+    string GroupFlag = 4;
     // 快递公司编码
-    string code = 5;
+    string Code = 5;
     // 接口编码
-    string api_code = 6;
+    string ApiCode = 6;
 }
 
 // 快递模板
 message SExpressTemplate {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 运营商编号
-    int64 seller_id = 2;
+    int64 SellerId = 2;
     // 运费模板名称
-    string name = 3;
+    string Name = 3;
     // 是否卖价承担运费
-    bool is_free = 4;
+    bool IsFree = 4;
     // 运费计价依据
-    int32 basis = 5;
+    int32 Basis = 5;
     // 首次计价单位,如首重为2kg
-    int32 first_unit = 6;
+    int32 FirstUnit = 6;
     // 首次计价单价,如续重1kg
-    double first_fee = 7;
+    double FirstFee = 7;
     // 超过首次计价计算单位,如续重1kg
-    int32 add_unit = 8;
+    int32 AddUnit = 8;
     // 超过首次计价单价，如续重1kg
-    double add_fee = 9;
+    double AddFee = 9;
     // 是否启用
-    bool enabled = 10;
+    bool Enabled = 10;
 }
 
 message ExpressTemplateId {
-    int64 seller_id = 1;
-    int64 template_id = 2;
+    int64 SellerId = 1;
+    int64 TemplateId = 2;
 }
 message GetTemplatesRequest {
-    int64 seller_id = 1;
+    int64 SellerId = 1;
     // 仅返回已启用的模板
-    bool only_enabled = 2;
+    bool OnlyEnabled = 2;
 }
 message ExpressTemplateListResponse {
     repeated SExpressTemplate value =  1;
@@ -105,35 +105,35 @@ message ExpressTemplateListResponse {
 // 快递地区模板
 message SExpressAreaTemplate {
     // 模板编号
-    int64 id = 1;
+    int64 Id = 1;
     // 地区编号列表，通常精确到省即可
-    string code_list = 2;
+    string CodeList = 2;
     // 地区名称列表
-    string name_list = 3;
+    string NameList = 3;
     // 首次数值，如 首重为2kg
-    int32 first_unit = 4;
+    int32 FirstUnit = 4;
     // 首次金额，如首重10元
-    double first_fee = 5;
+    double FirstFee = 5;
     // 增加数值，如续重1kg
-    int32 add_unit = 6;
+    int32 AddUnit = 6;
     // 增加产生费用，如续重1kg 10元
-    double add_fee = 7;
+    double AddFee = 7;
 }
 
 message SaveAreaExpTemplateRequest {
-    int64 seller_id = 1;
-    int64 template_id = 2;
+    int64 SellerId = 1;
+    int64 TemplateId = 2;
     SExpressAreaTemplate value =  3;
 }
 
 message AreaTemplateId {
-    int64 seller_id = 1;
-    int64 template_id = 2;
-    int64 area_template_id = 3;
+    int64 SellerId = 1;
+    int64 TemplateId = 2;
+    int64 AreaTemplateId = 3;
 }
 
 message SaveTemplateResponse {
     int64 err_code = 1;
     string err_msg = 2;
-    int64 template_id = 3;
+    int64 TemplateId = 3;
 }

@@ -60,17 +60,17 @@ message ArticleListResponse {
 //栏目
 message SArticleCategory {
     //编号
-    int64 id = 1;
+    int64 Id = 1;
     //父类编号,如为一级栏目则为0
-    int64 Parent_id = 2;
+    int64 ParentId = 2;
     // 浏览权限
     int32 PermFlag = 3;
     // 名称(唯一)
-    string name = 4;
+    string Name = 4;
     // 别名
-    string alias = 5;
+    string Alias = 5;
     // 排序编号
-    int32 sort_num = 6;
+    int32 SortNum = 6;
     // 定位路径（打开栏目页定位到的路径）
     string Location = 7;
     // 页面标题
@@ -84,9 +84,9 @@ message SArticleCategory {
 /** 文章 */
 message SArticle {
     /** 编号  */
-    sint64 id = 1;
+    sint64 Id = 1;
     /** 栏目编号 */
-    sint64 category_id = 2;
+    sint64 CategoryId = 2;
     /** 标题 */
     string title = 3;
     /** 小标题 */
@@ -94,7 +94,7 @@ message SArticle {
     /** 文章附图 */
     string Thumbnail = 5;
     /** 重定向URL */
-    sint64 Publisher_id = 6;
+    sint64 PublisherId = 6;
     /** 重定向URL */
     string Location = 7;
     /** 优先级,优先级越高，则置顶 */
@@ -108,18 +108,18 @@ message SArticle {
     /** 显示次数 */
     sint32 ViewCount = 12;
     /** 排序序号 */
-    sint32 sort_num = 13;
+    sint32 SortNum = 13;
     /** 创建时间 */
-    sint64 create_time = 14;
+    sint64 CreateTime = 14;
     /** 最后修改时间 */
-    sint64 update_time = 15;
+    sint64 UpdateTime = 15;
 }
 
 message SPage {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 商户编号
-    int64 user_id = 2;
+    int64 UserId = 2;
     // 标题
     string title = 3;
     // 字符标识
@@ -133,13 +133,13 @@ message SPage {
     // 描述
     string Description = 8;
     // 样式表地址
-    string css_path = 9;
+    string CssPath = 9;
     // 内容
-    string body = 10;
+    string Body = 10;
     // 修改时间
-    int64 update_time = 11;
+    int64 UpdateTime = 11;
     // 是否启用
-    bool enabled = 12;
+    bool Enabled = 12;
 }
 
 message ArticleCategoriesResponse {

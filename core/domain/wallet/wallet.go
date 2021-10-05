@@ -123,11 +123,11 @@ func (w *WalletImpl) checkWallet() error {
 }
 
 // 检查数值、操作人员信息
-func (w *WalletImpl) checkValueOpu(value int, checkOpu bool, oprUid int, oprName string) error {
+func (w *WalletImpl) checkValueOpu(value int, checkOpu bool, operatorUid int, operatorName string) error {
 	if value == 0 {
 		return wallet.ErrAmountZero
 	}
-	if checkOpu && (oprUid <= 0 || len(oprName) == 0) {
+	if checkOpu && (operatorUid <= 0 || len(operatorName) == 0) {
 		return wallet.ErrMissingOperator
 	}
 	return w.checkWalletState(w, false)
@@ -159,8 +159,8 @@ func (w *WalletImpl) checkWalletState(iw wallet.IWallet, target bool) error {
 }
 
 // 创建钱包日志
-func (w *WalletImpl) createWalletLog(kind int, value int, title string, oprUid int,
-	oprName string) *wallet.WalletLog {
+func (w *WalletImpl) createWalletLog(kind int, value int, title string, operatorUid int,
+	operatorName string) *wallet.WalletLog {
 	unix := time.Now().Unix()
 	return &wallet.WalletLog{
 		WalletId:     w.GetAggregateRootId(),
@@ -169,8 +169,8 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, oprUid i
 		OuterChan:    "",
 		OuterNo:      "",
 		Value:        value,
-		OperatorUid:  oprUid,
-		OperatorName: strings.TrimSpace(oprName),
+		OperatorUid:  operatorUid,
+		OperatorName: strings.TrimSpace(operatorName),
 		Remark:       "",
 		ReviewState:  wallet.ReviewPass,
 		ReviewRemark: "",
@@ -201,12 +201,12 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 
 // 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
 func (w *WalletImpl) Adjust(value int, title, outerNo string,
-	remark string, oprUid int, oprName string) error {
-	err := w.checkValueOpu(value, true, oprUid, oprName)
+	remark string, operatorUid int, operatorName string) error {
+	err := w.checkValueOpu(value, true, operatorUid, operatorName)
 	if err == nil {
 		w._value.AdjustAmount += value
 		w._value.Balance += value
-		l := w.createWalletLog(wallet.KAdjust, value, title, oprUid, oprName)
+		l := w.createWalletLog(wallet.KAdjust, value, title, operatorUid, operatorName)
 		l.OuterNo = outerNo
 		l.Remark = remark
 		l.Balance = w._value.Balance
@@ -261,8 +261,8 @@ func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error
 	return err
 }
 
-func (w *WalletImpl) Freeze(value int, title, outerNo string, oprUid int, oprName string) error {
-	err := w.checkValueOpu(value, false, oprUid, oprName)
+func (w *WalletImpl) Freeze(value int, title, outerNo string, operatorUid int, operatorName string) error {
+	err := w.checkValueOpu(value, false, operatorUid, operatorName)
 	if err == nil {
 		if value > 0 {
 			value = -value
@@ -272,7 +272,7 @@ func (w *WalletImpl) Freeze(value int, title, outerNo string, oprUid int, oprNam
 		}
 		w._value.Balance += value
 		w._value.FreezeAmount += -value
-		l := w.createWalletLog(wallet.KFreeze, value, title, oprUid, oprName)
+		l := w.createWalletLog(wallet.KFreeze, value, title, operatorUid, operatorName)
 		l.OuterNo = outerNo
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
@@ -283,8 +283,8 @@ func (w *WalletImpl) Freeze(value int, title, outerNo string, oprUid int, oprNam
 	return err
 }
 
-func (w *WalletImpl) Unfreeze(value int, title, outerNo string, oprUid int, oprName string) error {
-	err := w.checkValueOpu(value, false, oprUid, oprName)
+func (w *WalletImpl) Unfreeze(value int, title, outerNo string, operatorUid int, operatorName string) error {
+	err := w.checkValueOpu(value, false, operatorUid, operatorName)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -294,7 +294,7 @@ func (w *WalletImpl) Unfreeze(value int, title, outerNo string, oprUid int, oprN
 		}
 		w._value.Balance += value
 		w._value.FreezeAmount += -value
-		l := w.createWalletLog(wallet.KUnfreeze, value, title, oprUid, oprName)
+		l := w.createWalletLog(wallet.KUnfreeze, value, title, operatorUid, operatorName)
 		l.OuterNo = outerNo
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
@@ -350,9 +350,9 @@ func (w *WalletImpl) Income(value int, tradeFee int, title, outerNo string) erro
 	return err
 }
 
-func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, oprUid int, oprName string) error {
+func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, operatorUid int, operatorName string) error {
 	needOprUid := by == wallet.CServiceAgentCharge
-	err := w.checkValueOpu(value, needOprUid, oprUid, oprName)
+	err := w.checkValueOpu(value, needOprUid, operatorUid, operatorName)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -374,7 +374,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark str
 		}
 		w._value.Balance += value
 		// 保存日志
-		l := w.createWalletLog(kind, value, title, oprUid, oprName)
+		l := w.createWalletLog(kind, value, title, operatorUid, operatorName)
 		l.OuterNo = outerNo
 		l.Remark = remark
 		l.Balance = w._value.Balance
@@ -386,8 +386,8 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark str
 	return err
 }
 
-func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, oprUid int, oprName string) error {
-	err := w.checkValueOpu(value, false, oprUid, oprName)
+func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, operatorUid int, operatorName string) error {
+	err := w.checkValueOpu(value, false, operatorUid, operatorName)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -404,7 +404,7 @@ func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, oprUid i
 		}
 		w._value.Balance += value
 		// 保存日志
-		l := w.createWalletLog(kind, value, title, oprUid, oprName)
+		l := w.createWalletLog(kind, value, title, operatorUid, operatorName)
 		l.OuterNo = outerNo
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
@@ -515,8 +515,8 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	return l.Id, l.OuterNo, err
 }
 
-func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, oprUid int, oprName string) error {
-	if err := w.checkValueOpu(1, true, oprUid, oprName); err != nil {
+func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, operatorUid int, operatorName string) error {
+	if err := w.checkValueOpu(1, true, operatorUid, operatorName); err != nil {
 		return err
 	}
 	l := w.getLog(takeId)
@@ -538,8 +538,8 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 			return err
 		}
 	}
-	l.OperatorUid = oprUid
-	l.OperatorName = oprName
+	l.OperatorUid = operatorUid
+	l.OperatorName = operatorName
 	l.UpdateTime = time.Now().Unix()
 	return w.saveWalletLog(l)
 }
@@ -606,14 +606,14 @@ func (w *WalletImpl) PagingLog(begin int, over int, opt map[string]string, sort 
 		}
 	}
 	// 添加操作人员筛选
-	if oprName, ok := opt["op_name"]; ok {
+	if operatorName, ok := opt["op_name"]; ok {
 		where.WriteString(" AND op_name='")
-		where.WriteString(oprName)
+		where.WriteString(operatorName)
 		where.WriteString("'")
 	}
-	if oprUid, ok := opt["op_uid"]; ok {
+	if operatorUid, ok := opt["op_uid"]; ok {
 		where.WriteString(" AND op_uid='")
-		where.WriteString(oprUid)
+		where.WriteString(operatorUid)
 	}
 	return w._repo.PagingWalletLog(w.GetAggregateRootId(), w.NodeId(),
 		begin, over, where.String(), sort)

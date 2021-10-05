@@ -40,11 +40,11 @@ message Pair {
 }
 
 message IdOrName {
-    int64 id = 1;
-    string name = 2;
+    int64 Id = 1;
+    string Name = 2;
 }
 message IdAndRemark {
-    int64 id = 1;
+    int64 Id = 1;
     string remark = 2;
 }
 
@@ -125,24 +125,24 @@ message STreeNode {
     // 子节点
     repeated STreeNode children = 7;
     // 子节点编号
-    int64 id = 8;
+    int64 Id = 8;
     // 是否目录，通常Children有元素,则为true
     bool folder = 10;
 }
 
 
 message Id {
-    int64 value =  1;
+    int64 Value =  1;
 }
 message MemberId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 message MerchantId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 message SellerId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 message BuyerId {
-    int64 value =  1;
+    int64 Value =  1;
 }

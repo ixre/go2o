@@ -8,7 +8,7 @@ option java_package = "com.github.go2o.rpc";
 
 
 message ItemDetailRequest {
-    sint64 item_id = 1;
+    sint64 itemId = 1;
     sint32 i_type= 2;
 }
 
@@ -94,22 +94,22 @@ service ItemService {
 
 message PagingGoodsRequest {
     EItemSalesType Item_type= 1;
-    int64 seller_id = 2;
-    int64 category_id = 3;
+    int64 sellerId = 2;
+    int64 categoryId = 3;
     // 关键词
     string keyword = 4;
     SPagingParams params = 5;
 }
 
 message PagingShopGoodsRequest {
-    int64 shop_id = 1;
-    int64 category_id = 2;
+    int64 shopId = 1;
+    int64 categoryId = 2;
     SPagingParams params = 3;
 }
 
 message SaleLabelItemsRequest_ {
-    int64 shop_id = 1;
-    int32 label_id = 2;
+    int64 shopId = 1;
+    int32 labelId = 2;
     SPagingParams params = 3;
 }
 

@@ -93,20 +93,20 @@ service ProductService {
 
 
 message DeleteProductRequest {
-    int64 seller_id = 1;
-    int64 product_id = 2;
+    int64 SellerId = 1;
+    int64 ProductId = 2;
 }
 message ProductId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 message ProductModelId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 message ProductAttrId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 message ProductAttrItemId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 
 message ProductModelListResponse {
@@ -116,89 +116,89 @@ message ProductModelListResponse {
 // 产品模型
 message SProductModel {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 名称
-    string name = 2;
+    string Name = 2;
     // 属性字符
-    string attr_str = 3;
+    string AttrStr = 3;
     // 规格字符
-    string spec_str = 4;
+    string SpecStr = 4;
     // 属性
-    repeated SProductAttr attrs = 5;
+    repeated SProductAttr Attrs = 5;
     // 规格
-    repeated SProductSpec specs = 6;
+    repeated SProductSpec Specs = 6;
     // 关联品牌
-    repeated SProductBrand brands = 7;
+    repeated SProductBrand Brands = 7;
     // 是否启用
-    int32 enabled = 8;
+    int32 Enabled = 8;
 }
 
 // 产品模型属性
 message SProductAttr {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 属性名称
-    string name = 2;
+    string Name = 2;
     // 是否作为筛选条件
-    int32 is_filter = 3;
+    int32 IsFilter = 3;
     // 是否多选
-    int32 multi_check = 4;
+    int32 MultiCheck = 4;
     // 排列序号
-    int32 sort_num = 5;
+    int32 SortNum = 5;
     // 属性项值
-    string item_values = 6;
+    string ItemValues = 6;
     // 属性项
-    repeated SProductAttrItem items = 7;
+    repeated SProductAttrItem Items = 7;
 }
 
 // 产品模型属性项
 message SProductAttrItem {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 属性值
     string value =  2;
     // 排列序号
-    int32 sort_num = 3;
+    int32 SortNum = 3;
 }
 
 // 产品属性值
 message SProductAttrValue {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 属性编号
-    int64 attr_id = 2;
+    int64 AttrId = 2;
     // 属性名称
-    string attr_name = 3;
+    string AttrName = 3;
     // 属性值
-    string attr_data = 4;
+    string AttrData = 4;
     // 属性文本
-    string attr_word = 5;
+    string AttrWord = 5;
 }
 
 // 产品模型规格
 message SProductSpec {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 规格名称
-    string name = 2;
+    string Name = 2;
     // 排列序号
-    int32 sort_num = 3;
+    int32 SortNum = 3;
     // 规格项值
-    string item_values = 4;
+    string ItemValues = 4;
     // 规格项
-    repeated SProductSpecItem items = 5;
+    repeated SProductSpecItem Items = 5;
 }
 
 // 规格项
 message SProductSpecItem {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 规格项值
     string value =  2;
     // 规格项颜色
-    string color = 3;
+    string Color = 3;
     // 排列序号
-    int32 sort_num = 4;
+    int32 SortNum = 4;
 }
 
 message ProductBrandListResponse {
@@ -208,23 +208,23 @@ message ProductBrandListResponse {
 // 品牌
 message SProductBrand {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 品牌名称
-    string name = 2;
+    string Name = 2;
     // 品牌图片
-    string image = 3;
+    string Image = 3;
     // 品牌网址
-    string site_url = 4;
+    string SiteUrl = 4;
     // 介绍
-    string introduce = 5;
+    string Introduce = 5;
     // 是否审核
-    int32 review_state = 6;
+    int32 ReviewState = 6;
     // 审核意见
-    string review_remark = 7;
+    string ReviewRemark = 7;
     // 是否启用
-    int32 enabled = 8;
+    int32 Enabled = 8;
     // 加入时间
-    int64 create_time = 9;
+    int64 CreateTime = 9;
 }
 
 message ProductCategoriesResponse {
@@ -232,96 +232,96 @@ message ProductCategoriesResponse {
 }
 
 message CategoryParentId {
-    int64 value =  1;
+    int64 Value =  1;
 }
 
 // 商品分类
 message SProductCategory {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 上级分类
-    int64 parent_id = 2;
+    int64 ParentId = 2;
     // 产品模型
-    int64 model_id = 3;
+    int64 ModelId = 3;
     // 优先级
-    int32 priority = 4;
+    int32 Priority = 4;
     // 分类名称
-    string name = 5;
+    string Name = 5;
     /** 是否为虚拟分类 */
-    bool is_virtual = 6;
+    bool IsVirtual = 6;
     /** 分类链接地址 */
-    string category_url = 7;
+    string CategoryUrl = 7;
     // 虚拟分类跳转地址
-    string redirect_url = 18;
+    string RedirectUrl = 18;
     /** 图标 */
-    string icon = 8;
+    string Icon = 8;
     /** 图标坐标 */
-    string icon_point = 9;
+    string IconPoint = 9;
     /** 分类层级 */
-    int32 level = 10;
+    int32 Level = 10;
     /** 序号 */
-    int32 sort_num = 11;
+    int32 SortNum = 11;
     /** 是否楼层显示 */
-    bool floor_show = 12;
+    bool FloorShow = 12;
     /** 是否启用 */
-    bool enabled = 13;
+    bool Enabled = 13;
     /** 创建时间 */
-    int64 create_time = 14;
+    int64 CreateTime = 14;
     // 选项参数
-    map<string, string> options = 15;
+    map<string, string> Options = 15;
     // 关联品牌
-    repeated SProductBrand brands = 16;
+    repeated SProductBrand Brands = 16;
     /** 子分类 */
-    repeated SProductCategory children = 17;
+    repeated SProductCategory Children = 17;
 }
 
 // 分类树形请求
 message CategoryTreeRequest {
     // 排除分类编号
-    repeated int64 exclude_id_list = 1;
+    repeated int64 ExcludeIdList = 1;
     // 层级显示,小于等于0不限制
-    int32 depth = 2;
+    int32 Depth = 2;
 }
 
 // 产品
 message SProduct {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 分类
-    int64 category_id = 2;
+    int64 CategoryId = 2;
     // 名称
-    string name = 3;
+    string Name = 3;
     //供应商编号(暂时同mch_id)
-    int64 vendor_id = 4;
+    int64 VendorId = 4;
     // 品牌编号
-    int64 brand_id = 5;
+    int64 BrandId = 5;
     // 商家编码
-    string code = 6;
+    string Code = 6;
     // 图片
-    string image = 7;
+    string Image = 7;
     // 描述
-    string description = 8;
+    string Description = 8;
     // 备注
     string remark = 9;
     // 状态
-    int32 state = 10;
+    int32 State = 10;
     // 排序编号
-    int32 sort_num = 11;
+    int32 SortNum = 11;
     // 产品属性
-    repeated SProductAttrValue attrs = 12;
+    repeated SProductAttrValue Attrs = 12;
     // 创建时间
-    int64 create_time = 13;
+    int64 CreateTime = 13;
     // 更新时间
-    int64 update_time = 14;
+    int64 UpdateTime = 14;
 }
 
 message ProductInfoRequest {
-    int64 product_id = 1;
-    string info = 2;
+    int64 ProductId = 1;
+    string Info = 2;
 }
 
 message SaveProductResponse {
     int64 err_code = 1;
     string err_msg = 2;
-    int64 product_id = 3;
+    int64 ProductId = 3;
 }

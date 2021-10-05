@@ -5,8 +5,8 @@ option java_package = "com.github.go2o.rpc";
 
 // 广告分组
 message SAdGroup {
-    int64 id = 1;
-    string name = 2;
+    int64 Id = 1;
+    string Name = 2;
     // 是否开放给外部
     bool opened = 3;
     bool enabled = 4;
@@ -14,8 +14,8 @@ message SAdGroup {
 
 // 广告位编号
 message AdPositionId {
-    int64 group_id = 1;
-    int64 position_id = 2;
+    int64 groupId = 1;
+    int64 positionId = 2;
 }
 
 message AdGroupListResponse {
@@ -25,13 +25,13 @@ message AdGroupListResponse {
 // 广告位
 message SAdPosition {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 分组编号
-    int64 group_id = 2;
+    int64 groupId = 2;
     // 引用键
     string key = 3;
     // 名称
-    string name = 4;
+    string Name = 4;
     //todo:广告位类型限制
     // 广告类型限制,0为无限制
     int32 type_limit = 5;
@@ -40,29 +40,29 @@ message SAdPosition {
     // 是否启用
     bool enabled = 7;
     // 默认广告编号
-    int64 default_id = 8;
+    int64 defaultId = 8;
 }
 
 // 广告用户设置
 message SAdUserSet {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 广告位编号
-    int64 pos_id = 2;
+    int64 posId = 2;
     //广告用户编号
-    int64 ad_user_id = 3;
+    int64 ad_userId = 3;
     // 广告编号
-    int64 ad_id = 4;
+    int64 adId = 4;
 }
 
 // 广告
 message SAd {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     //广告用户编号
-    int64 user_id = 2;
+    int64 userId = 2;
     // 名称
-    string name = 3;
+    string Name = 3;
     // 广告类型
     int32 type = 4;
     // 展现次数
@@ -72,20 +72,20 @@ message SAd {
     // 展现天数
     int32 show_days = 7;
     // 修改时间
-    int64 update_time = 8;
+    int64 UpdateTime = 8;
 }
 
 // 广告数据传输对象
 message SAdDto {
-    int64 id = 1;
-    int32 ad_type = 2;
-    map<string, string> data = 3;
+    int64 Id = 1;
+    int32 AdType = 2;
+    map<string, string> Data = 3;
 }
 
 //  超链接
 message SHyperLink {
-    int64 id = 1;
-    int64 ad_id = 2;
+    int64 Id = 1;
+    int64 adId = 2;
     string title = 3;
     string link_url = 4;
 }
@@ -93,9 +93,9 @@ message SHyperLink {
 // 广告图片
 message SImage {
     // 图片编号
-    int64 id = 1;
+    int64 Id = 1;
     // 广告编号
-    int64 ad_id = 2;
+    int64 adId = 2;
     // 图片标题
     string title = 3;
     // 链接
@@ -109,46 +109,46 @@ message SImage {
 }
 
 message SetDefaultAdRequest {
-    int64 group_id = 1;
-    int64 pos_id = 2;
-    int64 ad_id = 3;
+    int64 groupId = 1;
+    int64 posId = 2;
+    int64 adId = 3;
 }
 message SetUserAdRequest {
-    int64 ad_user_id = 1;
-    int64 pos_id = 2;
-    int64 ad_id = 3;
+    int64 ad_userId = 1;
+    int64 posId = 2;
+    int64 adId = 3;
 }
 message AdIdRequest {
-    int64 ad_user_id = 1;
-    int64 ad_id = 2;
+    int64 ad_userId = 1;
+    int64 adId = 2;
 }
 
 message AdKeyRequest {
-    int64 ad_user_id = 1;
+    int64 ad_userId = 1;
     string ad_pos_key = 2;
 }
 
 message SaveAdRequest {
-    int64 ad_user_id = 1;
+    int64 ad_userId = 1;
     SAd value = 2;
 }
 
 message SaveLinkAdRequest {
-    int64 ad_user_id = 1;
-    int64 ad_id = 2;
+    int64 ad_userId = 1;
+    int64 adId = 2;
     SHyperLink value = 3;
 }
 
 message SaveImageAdRequest {
     int64 ad_user_id  = 1;
-    int64 ad_id = 2;
+    int64 adId = 2;
     SImage value = 3;
 }
 
 message ImageAdIdRequest {
     int64 ad_user_id  = 1;
     int64 ad_id  = 2;
-    int64 image_id = 3;
+    int64 imageId = 3;
 }
 
 

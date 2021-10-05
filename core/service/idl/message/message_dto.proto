@@ -24,33 +24,33 @@ message NotifyItemListResponse {
 /** 通知项 */
 message SNotifyItem {
     /** 键 */
-    string key = 1;
+    string Key = 1;
     /** 发送方式 */
-    sint32 notify_by = 2;
+    sint32 NotifyBy = 2;
     /** 不允许修改发送方式 */
-    bool readonly_by = 3;
+    bool ReadonlyBy = 3;
     /** 模板编号 */
-    sint32 tpl_id = 4;
+    sint32 TplId = 4;
     /** 内容 */
-    string content = 5;
+    string Content = 5;
     /** 模板包含的标签 */
-    map<string, string> tags = 6;
+    map<string, string> Tags = 6;
 }
 
 // 邮件模版
 message SMailTemplate {
     // 编号
-    int64 id = 1;
+    int64 Id = 1;
     // 商户编号
-    int64 merchant_id = 2;
+    int64 MerchantId = 2;
     // 名称
-    string name = 3;
+    string Name = 3;
     // 主题
-    string subject = 4;
+    string Subject = 4;
     // 内容
-    string body = 5;
+    string Body = 5;
     // 是否启用
-    bool enabled = 6;
+    bool Enabled = 6;
 }
 
 message MailTemplateListResponse {
@@ -60,9 +60,9 @@ message MailTemplateListResponse {
 // 站内信
 message SSiteMessage {
     // 主题
-    string subject = 1;
+    string Subject = 1;
     // 信息内容
-    string message = 2;
+    string Message = 2;
 }
 
 // 站内信用户类型
@@ -73,9 +73,9 @@ enum EMessageUserType {
 }
 
 message SendSiteMessageRequest {
-    int64 sender_id = 1;
-    EMessageUserType receiver_type= 2;
-    int64 receiver_id = 3;
-    bool send_now = 4;
-    SSiteMessage msg = 5;
+    int64 SenderId = 1;
+    EMessageUserType Receiver_type= 2;
+    int64 ReceiverId = 3;
+    bool SendNow = 4;
+    SSiteMessage Msg = 5;
 }

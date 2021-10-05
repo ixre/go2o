@@ -34,41 +34,41 @@ service RegistryService {
 }
 
 message RegistriesResponse {
-    repeated SRegistry value =  1;
+    repeated SRegistry Value =  1;
 }
 
 message RegistryPair {
-    string key = 1;
-    string value =  2;
+    string Key = 1;
+    string Value =  2;
 }
 
 message RegistryValueResponse {
-    string value =  1;
-    string err_msg = 2;
+    string Value =  1;
+    string ErrMsg = 2;
 }
 
 message RegistryCreateRequest {
-    string key = 1;
-    string default_value =  2;
-    string description = 3;
+    string Key = 1;
+    string DefaultValue =  2;
+    string Description = 3;
 }
 
 message RegistrySearchRequest {
-    string key = 1;
+    string Key = 1;
 }
 
 /** 注册表 */
 message SRegistry {
     /** 键 */
-    string key = 1;
+    string Key = 1;
     /** 值 */
-    string value =  2;
+    string Value =  2;
     /** 默认值 */
-    string default_value = 3;
+    string DefaultValue = 3;
     /** 可选值 */
-    string options = 4;
+    string Options = 4;
     /** 标志 */
-    sint32 flag = 5;
+    sint32 Flag = 5;
     /** 描述 */
-    string description = 6;
+    string Description = 6;
 }

@@ -33,7 +33,7 @@ service QueryService {
 }
 
 message FavoriteQueryRequest {
-    int64 member_id = 1;
+    int64 memberId = 1;
     int64 begin = 2;
     int64 end = 3;
     string where = 4;
@@ -45,32 +45,32 @@ message PagingShopFavoriteResponse {
 }
 
 message SPagingShopFavorite {
-    int64 id = 1;
-    int64 shop_id = 2;
-    string shop_name = 3;
-    string logo = 4;
-    int64 update_time = 5;
+    int64 Id = 1;
+    int64 ShopId = 2;
+    string ShopName = 3;
+    string Logo = 4;
+    int64 UpdateTime = 5;
 }
 message PagingGoodsFavoriteResponse {
     int64 total = 1;
     repeated SPagingGoodsFavorite data = 2;
 }
 message SPagingGoodsFavorite {
-    int64 id = 1;
-    int64 sku_id = 2;
-    string goods_name = 3;
-    string image = 4;
-    bool on_shelves = 5;
-    int32 stock_num = 6;
-    string sale_price = 7;
-    int64 update_time = 8;
+    int64 Id = 1;
+    int64 SkuId = 2;
+    string GoodsName = 3;
+    string Image = 4;
+    bool OnShelves = 5;
+    int32 StockNum = 6;
+    string SalePrice = 7;
+    int64 UpdateTime = 8;
 }
 
 message QueryPagingShopRequest {
     // 参数
-    SPagingParams params = 1;
+    SPagingParams Params = 1;
     // 是否只查询营业中的店铺
-    bool only_business = 2;
+    bool OnlyBusiness = 2;
 }
 
 message QueryPagingShopsResponse {
@@ -79,48 +79,48 @@ message QueryPagingShopsResponse {
 }
 
 message QueryPagingShop {
-    sint64 id = 1;
-    string name = 2;
-    string alias = 3;
-    string host = 4;
-    string logo = 5;
-    sint64 create_time = 6;
+    sint64 Id = 1;
+    string Name = 2;
+    string Alias = 3;
+    string Host = 4;
+    string Logo = 5;
+    sint64 CreateTime = 6;
 }
 
 message MemberOrderPagingRequest {
-    sint64 member_id = 1;
-    SPagingParams params = 2;
+    sint64 memberId = 1;
+    SPagingParams Params = 2;
 }
 message MemberOrderPagingResponse {
     sint64 total = 1;
     repeated PagedMemberSubOrder value =  2;
 }
 message PagedMemberSubOrder {
-    sint64 order_id = 1;
-    string order_no =  2;
-    string parent_no = 3;
-    sint64 vendor_id = 4;
-    sint64 shop_id = 5;
-    string shop_name = 6;
-    double item_amount = 7;
-    double discount_amount = 8;
-    double express_fee = 9;
-    double package_fee = 10;
-    bool is_paid = 11;
-    double final_amount = 12;
-    sint32 state = 13;
-    string state_text = 14;
-    sint64 create_time = 15;
-    repeated SOrderItem items = 16;
+    sint64 OrderId = 1;
+    string OrderNo = 2;
+    string ParentNo = 3;
+    sint64 VendorId = 4;
+    sint64 ShopId = 5;
+    string ShopName = 6;
+    double ItemAmount = 7;
+    double DiscountAmount = 8;
+    double ExpressFee = 9;
+    double PackageFee = 10;
+    bool IsPaid = 11;
+    double FinalAmount = 12;
+    sint32 State = 13;
+    string StateText = 14;
+    sint64 CreateTime = 15;
+    repeated SOrderItem Items = 16;
 }
 
 message MemberListRequest {
-    repeated int64 id_list = 1;
+    repeated int64 IdList = 1;
 }
 
 message MemberSearchRequest {
     // 手机号/邮箱/用户名关键词
-    string keyword = 1;
+    string Keyword = 1;
 }
 message MemberListResponse {
     repeated MemberListSingle value =  1;
@@ -128,21 +128,21 @@ message MemberListResponse {
 // 会员概览信息
 message MemberListSingle {
     // 会员编号
-    int64 member_id = 1;
+    int64 memberId = 1;
     // 用户名
     string user =  2;
     // 昵称
-    string nick_name = 3;
+    string NickName = 3;
     // 头像
-    string avatar = 4;
+    string Avatar = 4;
     // 等级
-    int32 level = 5;
+    int32 Level = 5;
     // 积分
-    int64 integral = 6;
+    int64 Integral = 6;
     // 账户余额
-    double balance = 7;
+    double Balance = 7;
     // 钱包余额
-    double wallet_balance = 8;
+    double WalletBalance = 8;
     //    GrowBalance       float32 `db:"grow_balance"`
     //    GrowAmount        float32 `db:"grow_amount"`         // 理财总投资金额,不含收益
     //    GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额
