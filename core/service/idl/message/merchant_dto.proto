@@ -91,7 +91,7 @@ message SaveMerchantRequest {
 
 
 message MchUserPwd {
-    string user = 1;
+    string User = 1;
     string Pwd = 2;
 }
 
@@ -100,26 +100,26 @@ message SyncWSItemsResponse {
 }
 
 message STradeConfListResponse {
-    repeated STradeConf_ value =  1;
+    repeated STradeConf_ Value =  1;
 }
 
 message TradeConfRequest {
-    sint32 mchId = 1;
-    sint32 trade_type= 2;
+    sint32 MchId = 1;
+    sint32 TradeType= 2;
 }
 message TradeConfSaveRequest {
-    sint32 mchId = 1;
-    repeated STradeConf_ arr = 2;
+    sint32 MchId = 1;
+    repeated STradeConf_ Arr = 2;
 }
 
 // 商户交易设置
 message STradeConf_ {
     // 商户编号  sint64 MchId = 1;
-    // 交易类型  sint32 Trade_type= 2;
+    // 交易类型  sint32 TradeType = 2;
     // 交易方案，根据方案来自动调整比例  sint64 PlanId = 3;
     // 交易标志  sint32 Flag = 4;
     // 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
-    // 交易费，按单笔收取  sint32 trade_fee = 6;
+    // 交易费，按单笔收取  sint32 tradeFee = 6;
     // 交易手续费比例  sint32 TradeRate = 7;
 }
 
@@ -129,9 +129,9 @@ message SMchSignUp {
     // 申请单号
     string SignNo = 2;
     // 会员编号
-    int64 memberId = 3;
+    int64 MemberId = 3;
     // 用户名
-    string user =  4;
+    string User =  4;
     // 密码
     string Pwd = 5;
     // 商户名称号
@@ -163,17 +163,17 @@ message SMchSignUp {
     // 委托书
     string AuthDoc = 19;
     // 备注
-    string remark = 20;
+    string Remark = 20;
     // 是否通过
     int32 ReviewState = 22;
     // 提交时间
-    int64 submit_time = 21;
+    int64 SubmitTime = 21;
 }
 
 message MchReviewRequest {
     int64 MerchantId = 1;
     bool Pass = 2;
-    string remark = 3;
+    string Remark = 3;
 }
 
 // 企业信息
@@ -221,7 +221,7 @@ message SEnterpriseInfo {
 message SaveEnterpriseRequest {
     // 商户编号
     int64 MerchantId = 1;
-    SEnterpriseInfo value =  2;
+    SEnterpriseInfo Value =  2;
 }
 
 // 商户账户
@@ -279,7 +279,7 @@ message SMerchantSaleConf {
 
 message SaveMerchantSaleConfRequest {
     int64 MerchantId = 1;
-    SMerchantSaleConf value =  2;
+    SMerchantSaleConf Value =  2;
 }
 
 message ModifyMerchantPasswordRequest {
@@ -309,15 +309,15 @@ message MerchantApiPermRequest {
 
 message WithdrawToMemberAccountRequest {
     int64 MerchantId = 1;
-    double amount = 2;
+    double Amount = 2;
 }
 
 message MerchantChargeRequest {
     int64 MerchantId = 1;
-    int32 kind = 2;
-    double amount = 3;
-    string title = 4;
-    string outerNo = 5;
+    int32 Kind = 2;
+    double Amount = 3;
+    string Title = 4;
+    string OuterNo = 5;
     int64 RelateUserId = 6;
 }
 
@@ -328,11 +328,11 @@ message MerchantBuyerGroupId {
 
 message SaveMerchantBuyerGroupRequest {
     int64 MerchantId = 1;
-    SMerchantBuyerGroup value =  2;
+    SMerchantBuyerGroup Value =  2;
 }
 
 message MerchantBuyerGroupListResponse {
-    repeated SMerchantBuyerGroup value =  1;
+    repeated SMerchantBuyerGroup Value =  1;
 }
 
 // 商户客户分组
@@ -354,11 +354,11 @@ message SMerchantBuyerGroup {
 message SaveWholesaleRebateRateRequest {
     int64 MerchantId = 1;
     int64 GroupId = 2;
-    repeated SWholesaleRebateRate value =  3;
+    repeated SWholesaleRebateRate Value =  3;
 }
 
 message WholesaleRebateRateListResponse {
-    repeated SWholesaleRebateRate value =  1;
+    repeated SWholesaleRebateRate Value =  1;
 }
 
 // 批发客户分组返点比例设置

@@ -159,7 +159,7 @@ message RequestWithdrawalRequest {
     // 金额
     int32 amount = 2;
     // 手续费
-    int32 trade_fee = 3;
+    int32 tradeFee = 3;
     // 提现方式
     sint32 kind = 4;
     // 银行名称
@@ -262,7 +262,7 @@ message SWallet {
     // 钱包名称
     string WalletName = 6;
     /** 钱包类型 */
-    sint32 Wallet_type= 7;
+    sint32 WalletType = 7;
     /** 钱包标志 */
     sint32 WalletFlag = 8;
     /** 余额 */

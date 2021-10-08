@@ -6,29 +6,29 @@ option java_package = "com.github.go2o.rpc";
 message Empty {
 }
 message String {
-    string value =  1;
+    string Value =  1;
 }
 message Int64 {
-    sint64 value =  1;
+    sint64 Value =  1;
 }
 message Int32 {
-    sint32 value =  1;
+    sint32 Value =  1;
 }
 message Bool {
-    bool value =  1;
+    bool Value =  1;
 }
 message StringMap {
-    map<string, string> value =  1;
+    map<string, string> Value =  1;
 }
 message StringArray {
-    repeated string value =  1;
+    repeated string Value =  1;
 }
 //传输结果对象
 message Result {
     /* 状态码,如为0表示成功 */
-    sint32 err_code = 1;
+    sint32 ErrCode = 1;
     /* 消息 */
-    string err_msg = 2;
+    string ErrMsg = 2;
     /** 数据字典 */
     map<string, string> data = 3;
 }
@@ -36,7 +36,7 @@ message Result {
 // 键值对
 message Pair {
     string key = 1;
-    string value =  2;
+    string Value =  2;
 }
 
 message IdOrName {
@@ -45,7 +45,7 @@ message IdOrName {
 }
 message IdAndRemark {
     int64 Id = 1;
-    string remark = 2;
+    string Remark = 2;
 }
 
 /** 设置依据 */
@@ -75,7 +75,7 @@ enum EAmountBasis {
     /** 未设置 */
     NotSet = 1;
     /** 按金额 */
-    amount = 2;
+    Amount = 2;
     /** 按百分比 */
     Percent = 3;
 }
@@ -83,29 +83,29 @@ enum EAmountBasis {
 /** 分页参数 */
 message SPagingParams {
     // 开始记录数
-    sint64 begin = 1;
+    sint64 Begin = 1;
     // 结束记录数
-    sint64 end = 2;
+    sint64 End = 2;
     // 条件
     string Where = 3;
     // 排序字段
-    string sort_by = 4;
+    string SortBy = 4;
     // 参数
-    map<string, string> parameters = 5;
+    map<string, string> Parameters = 5;
 }
 
 /** 分页结果 */
 message SPagingResult {
     /** 代码 */
-    sint32 err_code = 1;
+    sint32 ErrCode = 1;
     /** 消息 */
-    string err_msg = 2;
+    string ErrMsg = 2;
     /** 总数 */
-    sint32 count = 3;
+    sint32 Count = 3;
     /** 数据 */
-    string data = 4;
+    string Data = 4;
     /** 额外的数据 */
-    map<string, string> extras = 5;
+    map<string, string> Extras = 5;
 }
 
 // 树形节点
@@ -113,21 +113,21 @@ message STreeNode {
     // 文本
     string title = 1;
     // 值
-    string value =  2;
+    string Value =  2;
     // 图标,icon与JS树形控件冲突
-    string icon = 3;
+    string Icon = 3;
     // 是否展开
-    bool expand = 4;
+    bool Expand = 4;
     // 延迟加载
-    bool lazy = 5;
+    bool Lazy = 5;
     // 其他数据
-    map<string, string> data = 6;
+    map<string, string> Data = 6;
     // 子节点
-    repeated STreeNode children = 7;
+    repeated STreeNode Children = 7;
     // 子节点编号
     int64 Id = 8;
     // 是否目录，通常Children有元素,则为true
-    bool folder = 10;
+    bool Folder = 10;
 }
 
 

@@ -33,7 +33,7 @@ service QueryService {
 }
 
 message FavoriteQueryRequest {
-    int64 memberId = 1;
+    int64 MemberId = 1;
     int64 begin = 2;
     int64 end = 3;
     string where = 4;
@@ -75,7 +75,7 @@ message QueryPagingShopRequest {
 
 message QueryPagingShopsResponse {
     sint64 total = 1;
-    repeated QueryPagingShop value =  2;
+    repeated QueryPagingShop Value =  2;
 }
 
 message QueryPagingShop {
@@ -88,12 +88,12 @@ message QueryPagingShop {
 }
 
 message MemberOrderPagingRequest {
-    sint64 memberId = 1;
+    sint64 MemberId = 1;
     SPagingParams Params = 2;
 }
 message MemberOrderPagingResponse {
     sint64 total = 1;
-    repeated PagedMemberSubOrder value =  2;
+    repeated PagedMemberSubOrder Value =  2;
 }
 message PagedMemberSubOrder {
     sint64 OrderId = 1;
@@ -123,12 +123,12 @@ message MemberSearchRequest {
     string Keyword = 1;
 }
 message MemberListResponse {
-    repeated MemberListSingle value =  1;
+    repeated MemberListSingle Value =  1;
 }
 // 会员概览信息
 message MemberListSingle {
     // 会员编号
-    int64 memberId = 1;
+    int64 MemberId = 1;
     // 用户名
     string user =  2;
     // 昵称

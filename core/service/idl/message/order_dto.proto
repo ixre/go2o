@@ -73,7 +73,7 @@ message SOrderItem {
     // 是否已发货
     bool IsShipped = 13;
     // 其他信息
-    map<string, string> data = 14;
+    map<string, string> Data = 14;
 }
 
 // 订单项
@@ -97,7 +97,7 @@ message SParentOrder {
     // 订单号
     string OrderNo = 3;
     // 订单类型
-    int32 Order_type= 4;
+    int32 OrderType = 4;
     // 子订单
     SSingleOrder Children = 5;
 }
@@ -111,7 +111,7 @@ message SSingleOrder {
     // 订单号
     string OrderNo = 3;
     // 订单类型
-    int32 Order_type= 4;
+    int32 OrderType = 4;
     // 买家编号
     int64 BuyerId = 5;
     // 卖家编号
@@ -146,11 +146,11 @@ message SSingleOrder {
     //sint32 IsBreak = 18;
     sint32 State = 20;
     // 下单时间
-    sint64 submit_time = 21;
+    sint64 SubmitTime = 21;
     //sint64 UpdateTime = 21;
     repeated SOrderItem Items = 22;
     // 扩展信息
-    map<string, string> data = 23;
+    map<string, string> Data = 23;
     // 更新时间
     int64 UpdateTime = 24;
     // 是否为子订单
@@ -169,9 +169,9 @@ message SConsigneeInfo {
 
 //todo: 批发的参数改为属性而不是map
 message SubmitOrderRequest {
-    sint64 buyerId = 1;
-    sint32 cart_type= 2;
-    map<string, string> data = 3;
+    sint64 BuyerId = 1;
+    sint32 CartType = 2;
+    map<string, string> Data = 3;
 }
 
 // 提交订单请求
@@ -187,22 +187,22 @@ message SubmitNormalOrderV2Request {
 // 订单提交返回数据
 message NormalOrderSubmitResponse {
     // 错误码
-    int64 err_code = 1;
+    int64 ErrCode = 1;
     // 错误信息
-    string err_msg = 2;
+    string ErrMsg = 2;
     // 订单号，多个订单号，用","分割
     string OrderNo = 3;
     // 合并支付
     bool MergePay = 4;
     // 交易号
-    string tradeNo = 5;
+    string TradeNo = 5;
     // 交易金额
     int64 TradeAmount = 6;
 }
 
 message GetOrderRequest {
-    string orderNo = 1;
-    bool sub_order = 2;
+    string OrderNo = 1;
+    bool SubOrder = 2;
 }
 
 message TradeOrderSubmitRequest {
@@ -216,7 +216,7 @@ message TradeOrderTicketRequest {
 }
 
 message ComplexItemsResponse {
-    repeated SOrderItem value =  1;
+    repeated SOrderItem Value =  1;
 }
 
 // 订单编号
@@ -234,7 +234,7 @@ message OrderNo {
 
 // 订单号
 message OrderNoV2 {
-    string value =  1;
+    string Value =  1;
 }
 
 

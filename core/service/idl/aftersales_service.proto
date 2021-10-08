@@ -85,7 +85,7 @@ message OriginOrderIdRequest {
 
 message SubmitAfterSalesOrderRequest {
     int64 OrderId = 1;
-    EAfterSalesType AfterSales_type= 2;
+    EAfterSalesType AfterSalesType = 2;
     int64 ItemSnapshotId = 3;
     int64 Quantity = 4;
     string Reason = 5;
@@ -93,13 +93,13 @@ message SubmitAfterSalesOrderRequest {
 }
 
 message SubmitAfterSalesOrderResponse {
-    int64 err_code = 1;
-    string err_msg = 2;
+    int64 errCode = 1;
+    string ErrMsg = 2;
     int64 AfterSalesOrderId = 3;
 }
 
 message AfterSalesOrderListResponse {
-    repeated SAfterSalesOrder value =  1;
+    repeated SAfterSalesOrder Value =  1;
 }
 
 message PagingBuyerOrdersRequest {
@@ -133,7 +133,7 @@ message SAfterSalesOrder {
     // 购买者编号
     int64 BuyerId = 4;
     // 类型，退货、换货、维修
-    int32 AfterSales_type= 5;
+    int32 AfterSalesType = 5;
     // 退货的商品项编号
     int64 SnapshotId = 6;
     // 商品数量
@@ -153,7 +153,7 @@ message SAfterSalesOrder {
     // 退货凭证
     string ReturnSpImage = 14;
     // 备注(系统)
-    string remark = 15;
+    string Remark = 15;
     // 运营商备注
     string VendorRemark = 16;
     // 售后单状态
@@ -176,7 +176,7 @@ message SPagingBuyerAfterSalesOrder {
     // 运营商名称
     string SellerName = 4;
     // 类型，退货、换货、维修
-    int32 AfterSales_type= 5;
+    int32 AfterSalesType = 5;
     // 退货的商品项编号
     int64 SnapshotId = 6;
     // 商品数量
@@ -205,7 +205,7 @@ message SPagingSellerAfterSalesOrder {
     // 会员名称
     string BuyerName = 4;
     // 类型，退货、换货、维修
-    int32 AfterSales_type= 5;
+    int32 AfterSalesType = 5;
     // 退货的商品项编号
     int64 SnapshotId = 6;
     // 商品数量

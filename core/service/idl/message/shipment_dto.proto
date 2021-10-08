@@ -15,7 +15,7 @@ message SCoverageValue {
 }
 
 message ShipmentOrderListResponse {
-    repeated SShipmentOrder value =  1;
+    repeated SShipmentOrder Value =  1;
 }
 // 发货单
 message SShipmentOrder {

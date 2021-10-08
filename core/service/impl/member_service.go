@@ -450,7 +450,7 @@ func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) 
 	if m != nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	err := m.Profile().ChangeAvatar(r.AvatarUrl)
+	err := m.Profile().ChangeAvatar(r.AvatarURL)
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -862,7 +862,7 @@ func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.Int64) (*prot
 			Identity:  v.Identity,
 			Name:      v.Name,
 			AccountId: v.AccountId,
-			CodeUrl:   v.CodeUrl,
+			CodeURL:   v.CodeUrl,
 			State:     int32(v.State),
 		}
 	}
@@ -879,7 +879,7 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 		Identity:  r.Code.Identity,
 		Name:      r.Code.Name,
 		AccountId: r.Code.AccountId,
-		CodeUrl:   r.Code.CodeUrl,
+		CodeUrl:   r.Code.CodeURL,
 		State:     int(r.Code.State),
 	}
 	if err := m.Profile().SaveReceiptsCode(v); err != nil {
@@ -1127,7 +1127,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 				Avatar:        rows[i].Avatar,
 				NickName:      rows[i].NickName,
 				Phone:         rows[i].Phone,
-				Im:            rows[i].Im,
+				IM:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
 			}
 		}
@@ -1554,7 +1554,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,
-		Im:         src.Im,
+		IM:         src.Im,
 		Email:      src.Email,
 		Province:   src.Province,
 		City:       src.City,
@@ -1661,7 +1661,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,
-		Im:         src.Im,
+		Im:         src.IM,
 		Email:      src.Email,
 		Province:   src.Province,
 		City:       src.City,

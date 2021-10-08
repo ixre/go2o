@@ -27,13 +27,13 @@ message AreaStringRequest {
     int32 District = 3;
 }
 message AreaListResponse {
-    repeated SArea value =  1;
+    repeated SArea Value =  1;
 }
 message StringListResponse {
-    repeated string value =  1;
+    repeated string Value =  1;
 }
 message GetAreaNamesRequest {
-    repeated sint32 value =  1;
+    repeated sint32 Value =  1;
 }
 
 message UserPwd {
@@ -131,11 +131,11 @@ message SWxApiConfig {
 }
 
 message PaymentPlatformResponse {
-    repeated PaymentPlatform value =  1;
+    repeated PaymentPlatform Value =  1;
 }
 
 message PaymentPlatform {
-    string id = 1;
+    string Id = 1;
     string Name = 2;
     string Sign = 3;
     repeated BankItem Items = 4;

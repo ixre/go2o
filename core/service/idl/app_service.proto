@@ -52,7 +52,7 @@ message CheckVersionResponse {
     // 最新版本号
     string latest_version = 1;
     // App更新资源地址
-    string app_pkg_url = 2;
+    string app_pkgURL = 2;
     // 版本信息
     string version_info = 3;
     // 是否为最新版本
@@ -60,9 +60,9 @@ message CheckVersionResponse {
     // 是否强制升级
     bool force_update = 5;
     // 更新文件类型,如APK,EXE,ZIP等
-    string update_type= 6;
+    string updateType = 6;
     // 发布时间
-    int64 release_time = 7;
+    int64 releaseTime = 7;
 }
 
 // APP产品
@@ -70,21 +70,21 @@ message AppProdRequest {
     // 产品编号
     int64 Id = 1;
     // 产品名称
-    string prod_name = 2;
+    string ProdName = 2;
     // 产品描述
-    string prod_des = 3;
+    string ProdDes = 3;
     // Icon
-    string icon = 4;
+    string Icon = 4;
     // 发布下载页面地址
-    string publish_url = 5;
+    string PublishURL = 5;
     // 正式版文件地址
-    string stable_file_url = 6;
+    string StableFileURL = 6;
     // 内测版文件地址
-    string alpha_file_url = 8;
+    string AlphaFileURL = 8;
     // 每夜版文件地址
-    string nightly_file_url = 10;
+    string NightlyFileURL = 10;
     // 更新方式,比如APK, EXE等
-    string update_type= 11;
+    string UpdateType = 11;
 }
 
 // APP版本
@@ -92,15 +92,15 @@ message AppVersionRequest {
     // 编号
     int64 Id = 1;
     // 产品
-    int64 productId = 2;
+    int64 ProductId = 2;
     // 更新通道, stable:0|alpha:1|nightly:2
-    int32 channel = 3;
+    int32 Channel = 3;
     // 版本号
-    string version = 4;
+    string Version = 4;
     // 是否强制升级
-    bool force_update = 5;
+    bool ForceUpdate = 5;
     // 更新内容
-    string update_content = 6;
+    string UpdateContent = 6;
 }
 
 // APP产品
@@ -108,23 +108,23 @@ message SAppProd {
     // 产品编号
     int64 Id = 1;
     // 产品名称
-    string prod_name = 2;
+    string ProdName = 2;
     // 产品描述
-    string prod_des = 3;
+    string ProdDes = 3;
     // 最新的版本ID
-    int64 latest_vid = 4;
+    int64 LatestVid = 4;
     // 正式版文件hash值
-    string md5_hash = 5;
+    string Md5Hash = 5;
     // 发布下载页面地址
-    string publish_url = 6;
+    string PublishURL = 6;
     // 正式版文件地址
-    string stable_file_url = 7;
+    string StableFileURL = 7;
     // 内测版文件地址
-    string alpha_file_url = 8;
+    string AlphaFileURL = 8;
     // 每夜版文件地址
-    string nightly_file_url = 9;
+    string NightlyFileURL = 9;
     // 更新方式,比如APK, EXE等
-    string update_type= 10;
+    string UpdateType = 10;
     // 更新时间
     int64 UpdateTime = 11;
 }
@@ -134,17 +134,17 @@ message SAppVersion {
     // 编号
     int64 Id = 1;
     // 产品
-    int64 productId = 2;
+    int64 ProductId = 2;
     // 更新通道, 0:stable|1:beta|2:nightly
-    int32 channel = 3;
+    int32 Channel = 3;
     // 版本号
-    string version = 4;
+    string Version = 4;
     // 数字版本
-    int32 version_code = 5;
+    int32 VersionCode = 5;
     // 是否强制升级
-    bool force_update = 6;
+    bool ForceUpdate = 6;
     // 更新内容
-    string update_content = 7;
+    string UpdateContent = 7;
     // 发布时间
-    int64 create_time = 8;
+    int64 CreateTime = 8;
 }

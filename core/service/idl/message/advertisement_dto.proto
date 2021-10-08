@@ -19,7 +19,7 @@ message AdPositionId {
 }
 
 message AdGroupListResponse {
-    repeated SAdGroup value = 1;
+    repeated SAdGroup Value = 1;
 }
 
 // 广告位
@@ -50,7 +50,7 @@ message SAdUserSet {
     // 广告位编号
     int64 posId = 2;
     //广告用户编号
-    int64 ad_userId = 3;
+    int64 adUserId = 3;
     // 广告编号
     int64 adId = 4;
 }
@@ -85,9 +85,9 @@ message SAdDto {
 //  超链接
 message SHyperLink {
     int64 Id = 1;
-    int64 adId = 2;
-    string title = 3;
-    string link_url = 4;
+    int64 AdId = 2;
+    string Title = 3;
+    string LinkURL = 4;
 }
 
 // 广告图片
@@ -95,60 +95,60 @@ message SImage {
     // 图片编号
     int64 Id = 1;
     // 广告编号
-    int64 adId = 2;
+    int64 AdId = 2;
     // 图片标题
-    string title = 3;
+    string Title = 3;
     // 链接
-    string link_url = 4;
+    string LinkURL = 4;
     // 图片地址
-    string image_url = 5;
+    string ImageURL = 5;
     // 排列序号
-    int32 sort_num = 6;
+    int32 SortNum = 6;
     // 是否启用
-    bool enabled = 7;
+    bool Enabled = 7;
 }
 
 message SetDefaultAdRequest {
-    int64 groupId = 1;
-    int64 posId = 2;
-    int64 adId = 3;
+    int64 GroupId = 1;
+    int64 PosId = 2;
+    int64 AdId = 3;
 }
 message SetUserAdRequest {
-    int64 ad_userId = 1;
-    int64 posId = 2;
-    int64 adId = 3;
+    int64 AdUserId = 1;
+    int64 PosId = 2;
+    int64 AdId = 3;
 }
 message AdIdRequest {
-    int64 ad_userId = 1;
-    int64 adId = 2;
+    int64 AdUserId = 1;
+    int64 AdId = 2;
 }
 
 message AdKeyRequest {
-    int64 ad_userId = 1;
-    string ad_pos_key = 2;
+    int64 AdUserId = 1;
+    string AdPosKey = 2;
 }
 
 message SaveAdRequest {
-    int64 ad_userId = 1;
-    SAd value = 2;
+    int64 AdUserId = 1;
+    SAd Value = 2;
 }
 
 message SaveLinkAdRequest {
-    int64 ad_userId = 1;
-    int64 adId = 2;
-    SHyperLink value = 3;
+    int64 AdUserId = 1;
+    int64 AdId = 2;
+    SHyperLink Value = 3;
 }
 
 message SaveImageAdRequest {
-    int64 ad_user_id  = 1;
-    int64 adId = 2;
-    SImage value = 3;
+    int64 AdUserId = 1;
+    int64 AdId = 2;
+    SImage Value = 3;
 }
 
 message ImageAdIdRequest {
-    int64 ad_user_id  = 1;
-    int64 ad_id  = 2;
-    int64 imageId = 3;
+    int64 AdUserId = 1;
+    int64 AdId = 2;
+    int64 ImageId = 3;
 }
 
 
