@@ -85,8 +85,6 @@ Usage of go2o-serve:
   -v    print version
 ```
 
-### 使用docker-compose运行
-
 推荐使用[docker-compose](container/docker-compose.yaml)一键运行
 ```
 docker-compose up -f container/docker-compose.yaml
