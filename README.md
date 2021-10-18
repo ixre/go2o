@@ -28,43 +28,33 @@ Go2o使用领域驱动设计对业务深度抽象，支持常见的O2O应用场�
 
 使用Rpc服务可以扩展子系统。
 
-![Go2o](https://raw.githubusercontent.com/jsix/go2o/master/snapshot/merchant.png "GO2O-Merchant")
-
-更多系统截图见:#snapshot#目录
-
-## 项目说明 ##
-
-__最后提交时间: 2016-12-20 __
-
-__代码已重构完毕,见develop分支, 新的代码库不在包含UI, UI见分支v0.1.1__
+![Go2o](https://raw.githubusercontent.com/jsix/go2o/master/snapshot/dashboard.png "GO2O-DASHBOARD")
 
 
-
-------------------------
 贡献代码请看： [todo list](https://github.com/ixre/go2o/tree/master/docs/dev/todo.md) |
-[bug list](https://github.com/atnet/go2o/tree/master/docs/dev/bug.md)
+[bug list](https://github.com/ixre/go2o/tree/master/docs/dev/bug.md)
 
-请支持开源，不做伸手党，不拿来主意！
 
 ========================================
 
 感谢以下哥们和匿名捐助的朋友：
 
-*巍 zhu***@126.com 职业码农 奋斗富三代
+- *巍
+- zhu***@126.com 
+- 职业码农 
+- 奋斗富三代
 
 QQ群：**338164725**
 
 **特别感谢: 领域驱动设计的专家-(腾讯)王立老师,我的良师益友;没有他,就没有这个项目!
 
-#### MAC下运行请先设置最大连接数:
 
-    sudo sysctl -w kern.ipc.somaxconn=4096
+## Deploy
 
-## Deploy by docker-compose
+### Deploy by docker-compose
 
 [docker-compose.yaml](container/docker-compose.yaml)
 
-## Deploy
 
 ### 1. Import database
 
@@ -175,4 +165,9 @@ u.ts.com
 
 go2o.ts.com
 
+
+
+#### MAC下运行请先设置最大连接数:
+
+sudo sysctl -w kern.ipc.somaxconn=4096
 
