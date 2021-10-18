@@ -20,7 +20,7 @@ exclude github.com/coreos/etcd v3.3.18+incompatible
 replace github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.5
 
 require (
-	github.com/coreos/etcd v3.3.26+incompatible // indirect
+	github.com/coreos/etcd v3.3.27+incompatible // indirect
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -35,12 +35,12 @@ require (
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-plugins v1.5.1
 	github.com/nats-io/nats-server/v2 v2.2.0 // indirect
-	github.com/nats-io/nats.go v1.12.3
+	github.com/nats-io/nats.go v1.13.0
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/prometheus/client_golang v1.7.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/smartwalle/resize v1.0.0
-	go.etcd.io/etcd v3.3.26+incompatible
+	go.etcd.io/etcd v3.3.27+incompatible
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.19.1 // indirect
@@ -49,7 +49,7 @@ require (
 	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
-	google.golang.org/genproto v0.0.0-20211007155348-82e027067bd4 // indirect
+	google.golang.org/genproto v0.0.0-20211016002631-37fc39342514 // indirect
 	google.golang.org/grpc v1.41.0
 )
 
@@ -71,7 +71,7 @@ require (
 	github.com/lucas-clemente/quic-go v0.13.1 // indirect
 	github.com/marten-seemann/chacha20 v0.2.0 // indirect
 	github.com/marten-seemann/qtls v0.4.1 // indirect
-	github.com/mattn/go-colorable v0.1.8 // indirect
+	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/micro/cli v0.2.0 // indirect
 	github.com/micro/mdns v0.3.0 // indirect
