@@ -9,7 +9,7 @@ option java_package = "com.github.go2o.rpc";
 
 message ItemDetailRequest {
     sint64 itemId = 1;
-    sint32 i_type= 2;
+    sint32 iType = 2;
 }
 
 // 商品服务
@@ -93,7 +93,7 @@ service ItemService {
 
 
 message PagingGoodsRequest {
-    EItemSalesType Item_type= 1;
+    EItemSalesType ItemType = 1;
     int64 sellerId = 2;
     int64 categoryId = 3;
     // 关键词

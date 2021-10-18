@@ -47,7 +47,7 @@ service ExpressService {
 }
 
 message ExpressProviderListResponse {
-    repeated SExpressProvider value =  1;
+    repeated SExpressProvider Value =  1;
 }
 // 快递服务商
 message SExpressProvider {
@@ -99,7 +99,7 @@ message GetTemplatesRequest {
     bool OnlyEnabled = 2;
 }
 message ExpressTemplateListResponse {
-    repeated SExpressTemplate value =  1;
+    repeated SExpressTemplate Value =  1;
 }
 
 // 快递地区模板
@@ -123,7 +123,7 @@ message SExpressAreaTemplate {
 message SaveAreaExpTemplateRequest {
     int64 SellerId = 1;
     int64 TemplateId = 2;
-    SExpressAreaTemplate value =  3;
+    SExpressAreaTemplate Value =  3;
 }
 
 message AreaTemplateId {
@@ -133,7 +133,7 @@ message AreaTemplateId {
 }
 
 message SaveTemplateResponse {
-    int64 err_code = 1;
-    string err_msg = 2;
+    int64 errCode = 1;
+    string ErrMsg = 2;
     int64 TemplateId = 3;
 }

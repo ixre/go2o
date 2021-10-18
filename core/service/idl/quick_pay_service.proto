@@ -36,7 +36,7 @@ message BankCardNo {
 // 银行卡查询结果
 message CardBinQueryResponse {
     // 错误信息
-    string err_msg = 1;
+    string ErrMsg = 1;
     // 银行名称
     string BankName = 2;
     // 用户银行卡号
@@ -44,7 +44,7 @@ message CardBinQueryResponse {
     // 返回的银行代号
     string BankCode = 4;
     // 银行卡类型（0=储蓄卡,1=信用卡）
-    int32 Card_type= 5;
+    int32 CardType = 5;
     // 是否需要银行端授权,如果否,则直接使用短信既可授权
     bool RequireBankSideAuth = 6;
 }
@@ -67,7 +67,7 @@ message BankAuthResponse {
     // 随机Id
     string NonceId = 1;
     // 错误消息
-    string err_msg = 2;
+    string ErrMsg = 2;
     // 认证的Form表单
     string AuthForm = 3;
     // 认证需要的其他数据
@@ -87,7 +87,7 @@ message BankAuthQueryResponse {
     // 状态码，0表示成功,1: 表示处理中 2:处理失败
     int32 Code = 1;
     // 错误信息,成功返回空
-    string err_msg = 2;
+    string ErrMsg = 2;
     // 银行授权认证返回的Token,未处理授权时为空
     string BankAuthToken = 3;
 }
@@ -97,7 +97,7 @@ message QPaymentRequest {
     // 商户订单号
     string OrderNo = 1;
     // 支付金额,实际金额*100,无小数
-    int32 trade_fee = 2;
+    int32 tradeFee = 2;
     // 支付商品名称
     string Subject = 3;
     // 银行授权码
@@ -119,7 +119,7 @@ message QPaymentResponse {
     // 状态码，0表示成功
     string Code = 1;
     // 错误信息,成功返回空
-    string err_msg = 2;
+    string ErrMsg = 2;
     // 随机ID
     string NonceId = 8;
     // 第三方支单据号
@@ -139,7 +139,7 @@ message QPaymentQueryResponse {
     // 状态码，0表示成功
     int32 Code = 1;
     // 错误信息,成功返回空
-    string err_msg = 2;
+    string ErrMsg = 2;
     // 第三方支单据号
     string BillNo = 3;
 }
@@ -147,7 +147,7 @@ message QPaymentQueryResponse {
 // 检查签名请求
 message CheckQPaySignRequest {
     // 签名类型
-    string Sign_type= 1;
+    string SignType = 1;
     // 签名
     string Sign = 2;
     // 参数
@@ -168,7 +168,7 @@ message CardTransferRequest {
     // 是否为对私转账
     bool PersonTransfer = 3;
     // 付款金额,实际金额*100,无小数
-    int32 trade_fee = 4;
+    int32 tradeFee = 4;
     // 银行账户
     string BankCardNo = 5;
     // 收款人姓名,如：张三
@@ -206,7 +206,7 @@ message BatchTransferResponse {
     // 状态码，0表示成功
     string Code = 1;
     // 错误信息,成功返回空
-    string err_msg = 2;
+    string ErrMsg = 2;
     // 随机ID
     string NonceId = 3;
 }

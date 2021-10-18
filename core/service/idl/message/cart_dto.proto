@@ -5,14 +5,14 @@ option java_package = "com.github.go2o.rpc";
 
 
 message WsCartRequest {
-    sint64 memberId = 1;
-    string action = 2;
-    map<string, string> data = 3;
+    sint64 MemberId = 1;
+    string Action = 2;
+    map<string, string> Data = 3;
 }
 message NormalCartRequest {
-    sint64 memberId = 1;
-    string action = 2;
-    map<string, string> data = 3;
+    sint64 MemberId = 1;
+    string Action = 2;
+    map<string, string> Data = 3;
 }
 
 // 购物车
@@ -50,8 +50,8 @@ message SCheckCartItem {
 
 // 购物车商品操作响应
 message CartItemResponse {
-    int64 err_code = 1;
-    string err_msg = 2;
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
     SShoppingCartItem Item = 3;
 }
 
@@ -62,7 +62,7 @@ message SShoppingCartItem {
     //SKU编号
     sint64 SkuId = 2;
     //商品标题
-    string title = 3;
+    string Title = 3;
     //商品图片
     string Image = 4;
     //规格文本

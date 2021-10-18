@@ -357,7 +357,7 @@ func (a *adService) parseHyperLinkAd(v *proto.SHyperLink) *ad.HyperLink {
 		Id:      v.Id,
 		AdId:    v.AdId,
 		Title:   v.Title,
-		LinkUrl: v.LinkUrl,
+		LinkUrl: v.LinkURL,
 	}
 }
 
@@ -366,8 +366,8 @@ func (a *adService) parseAdImageDto(v *ad.Image) *proto.SImage {
 		Id:       v.Id,
 		AdId:     v.AdId,
 		Title:    v.Title,
-		LinkUrl:  v.LinkUrl,
-		ImageUrl: v.ImageUrl,
+		LinkURL:  v.LinkUrl,
+		ImageURL: v.ImageUrl,
 		SortNum:  int32(v.SortNum),
 		Enabled:  v.Enabled == 1,
 	}
@@ -378,8 +378,8 @@ func (a *adService) parseAdImage(v *proto.SImage) *ad.Image {
 		Id:       v.Id,
 		AdId:     v.AdId,
 		Title:    v.Title,
-		LinkUrl:  v.LinkUrl,
-		ImageUrl: v.ImageUrl,
+		LinkUrl:  v.LinkURL,
+		ImageUrl: v.ImageURL,
 		SortNum:  int(v.SortNum),
 		Enabled:  types.IntCond(v.Enabled, 1, 0),
 	}

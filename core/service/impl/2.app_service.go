@@ -67,10 +67,10 @@ func (a *appServiceImpl) SaveProd(_ context.Context, r *proto.AppProdRequest) (*
 	}
 	dst.ProdName = r.ProdName
 	dst.ProdDes = r.ProdDes
-	dst.PublishUrl = r.PublishUrl
-	dst.StableFileUrl = r.StableFileUrl
-	dst.AlphaFileUrl = r.AlphaFileUrl
-	dst.NightlyFileUrl = r.NightlyFileUrl
+	dst.PublishUrl = r.PublishURL
+	dst.StableFileUrl = r.StableFileURL
+	dst.AlphaFileUrl = r.AlphaFileURL
+	dst.NightlyFileUrl = r.NightlyFileURL
 	dst.UpdateType = r.UpdateType
 	dst.UpdateTime = time.Now().Unix()
 	_, err := a.dao.Save(dst)
@@ -134,10 +134,10 @@ func (a *appServiceImpl) GetProd(_ context.Context, id *proto.AppId) (*proto.SAp
 		ProdDes:        v.ProdDes,
 		LatestVid:      v.LatestVid,
 		Md5Hash:        v.Md5Hash,
-		PublishUrl:     v.PublishUrl,
-		StableFileUrl:  v.StableFileUrl,
-		AlphaFileUrl:   v.AlphaFileUrl,
-		NightlyFileUrl: v.NightlyFileUrl,
+		PublishURL:     v.PublishUrl,
+		StableFileURL:  v.StableFileUrl,
+		AlphaFileURL:   v.AlphaFileUrl,
+		NightlyFileURL: v.NightlyFileUrl,
 		UpdateType:     v.UpdateType,
 		UpdateTime:     v.UpdateTime,
 	}, nil
@@ -197,7 +197,7 @@ func (a *appServiceImpl) CheckVersion(_ context.Context, r *proto.CheckVersionRe
 
 	return &proto.CheckVersionResponse{
 		LatestVersion: r.Version,
-		AppPkgUrl:     a.getVersionPkgURL(prod, r.Channel, r.Version),
+		AppPkgURL:     a.getVersionPkgURL(prod, r.Channel, r.Version),
 		VersionInfo:   v.UpdateContent,
 		IsLatest:      false,
 		ForceUpdate:   v.ForceUpdate == 1,

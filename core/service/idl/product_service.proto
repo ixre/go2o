@@ -110,7 +110,7 @@ message ProductAttrItemId {
 }
 
 message ProductModelListResponse {
-    repeated SProductModel value =  1;
+    repeated SProductModel Value =  1;
 }
 
 // 产品模型
@@ -156,7 +156,7 @@ message SProductAttrItem {
     // 编号
     int64 Id = 1;
     // 属性值
-    string value =  2;
+    string Value =  2;
     // 排列序号
     int32 SortNum = 3;
 }
@@ -194,7 +194,7 @@ message SProductSpecItem {
     // 编号
     int64 Id = 1;
     // 规格项值
-    string value =  2;
+    string Value =  2;
     // 规格项颜色
     string Color = 3;
     // 排列序号
@@ -202,7 +202,7 @@ message SProductSpecItem {
 }
 
 message ProductBrandListResponse {
-    repeated SProductBrand value =  1;
+    repeated SProductBrand Value =  1;
 }
 
 // 品牌
@@ -228,7 +228,7 @@ message SProductBrand {
 }
 
 message ProductCategoriesResponse {
-    repeated SProductCategory value =  1;
+    repeated SProductCategory Value =  1;
 }
 
 message CategoryParentId {
@@ -302,7 +302,7 @@ message SProduct {
     // 描述
     string Description = 8;
     // 备注
-    string remark = 9;
+    string Remark = 9;
     // 状态
     int32 State = 10;
     // 排序编号
@@ -321,7 +321,7 @@ message ProductInfoRequest {
 }
 
 message SaveProductResponse {
-    int64 err_code = 1;
-    string err_msg = 2;
+    int64 errCode = 1;
+    string ErrMsg = 2;
     int64 ProductId = 3;
 }

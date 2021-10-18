@@ -143,5 +143,5 @@ message SPage {
 }
 
 message ArticleCategoriesResponse {
-    repeated SArticleCategory value =  1;
+    repeated SArticleCategory Value =  1;
 }

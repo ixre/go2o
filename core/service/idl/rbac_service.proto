@@ -427,7 +427,7 @@ message SavePermRoleRequest {
     /** 功能权限 */
     string Permission = 5;
     /** 备注 */
-    string remark = 6;
+    string Remark = 6;
     /** 创建日期 */
     int64 CreateTime = 7;
 }
@@ -634,7 +634,7 @@ message PermResPagingRequest {
 
 message PermResPagingResponse {
     int64 total = 1;
-    repeated PagingPermRes value =  2;
+    repeated PagingPermRes Value =  2;
 }
 
 // 移动资源顺序

@@ -183,7 +183,7 @@ message SOldItem {
 }
 
 message ItemLabelListResponse {
-    repeated SItemLabel value =  1;
+    repeated SItemLabel Value =  1;
 }
 
 // 销售标签
@@ -317,36 +317,36 @@ message ItemBySkuRequest {
 
 message ItemIllegalRequest {
     int64 ItemId = 1;
-    string remark = 2;
+    string Remark = 2;
 }
 
 message ItemReviewRequest {
     int64 ItemId = 1;
     bool Pass = 2;
-    string remark = 3;
+    string Remark = 3;
 }
 
 message SaveLevelPriceRequest {
     int64 ItemId = 1;
-    repeated SLevelPrice value =  2;
+    repeated SLevelPrice Value =  2;
 }
 
 message ShelveStateRequest {
     int64 SellerId = 1;
-    EItemSalesType item_type= 3;
+    EItemSalesType itemType = 3;
     int64 ItemId = 2;
     bool ShelveOn = 4;
-    string remark = 5;
+    string Remark = 5;
 }
 
 message SWsSkuPriceListResponse {
-    repeated SWsSkuPrice value =  1;
+    repeated SWsSkuPrice Value =  1;
 }
 
 message SaveSkuPricesRequest {
     int64 ItemId = 1;
     int64 SkuId = 2;
-    repeated SWsSkuPrice value =  3;
+    repeated SWsSkuPrice Value =  3;
 }
 
 // 商品批发价
@@ -360,7 +360,7 @@ message SWsSkuPrice {
 }
 
 message SWsItemDiscountListResponse {
-    repeated SWsItemDiscount value =  1;
+    repeated SWsItemDiscount Value =  1;
 }
 message GetWsDiscountRequest {
     // 商品编号
@@ -372,7 +372,7 @@ message GetWsDiscountRequest {
 message SaveItemDiscountRequest {
     int64 ItemId = 1;
     int64 GroupId = 2;
-    repeated SWsItemDiscount value =  3;
+    repeated SWsItemDiscount Value =  3;
 }
 // 批发商品折扣
 message SWsItemDiscount {

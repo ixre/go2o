@@ -18,7 +18,7 @@ enum EMessageChannel {
 }
 
 message NotifyItemListResponse {
-    repeated SNotifyItem value =  1;
+    repeated SNotifyItem Value =  1;
 }
 
 /** 通知项 */
@@ -54,7 +54,7 @@ message SMailTemplate {
 }
 
 message MailTemplateListResponse {
-    repeated SMailTemplate value =  1;
+    repeated SMailTemplate Value =  1;
 }
 
 // 站内信
@@ -74,7 +74,7 @@ enum EMessageUserType {
 
 message SendSiteMessageRequest {
     int64 SenderId = 1;
-    EMessageUserType Receiver_type= 2;
+    EMessageUserType ReceiverType = 2;
     int64 ReceiverId = 3;
     bool SendNow = 4;
     SSiteMessage Msg = 5;
