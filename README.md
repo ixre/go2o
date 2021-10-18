@@ -1,4 +1,4 @@
-![Go2o](https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif "GO2O")
+![Go2o](https://raw.githubusercontent.com/ixre/go2o/master/docs/mark.gif "GO2O")
 
 [![Build Status](https://cloud.drone.io/api/badges/ixre/cms/status.svg)](https://cloud.drone.io/ixre/cms)
 
@@ -26,9 +26,9 @@ Go2o是使用Golang语言结合领域驱动设计（DDD)的O2O实现。支持线
 
 Go2o使用领域驱动设计对业务深度抽象，支持常见的O2O应用场景。通过Socket服务,可以开发安卓和IOS,
 
-使用Rpc服务可以扩展子系统。
+使用RPC服务可以方便与其他系统进行集成。
 
-![Go2o](https://raw.githubusercontent.com/jsix/go2o/master/snapshot/dashboard.png "GO2O-DASHBOARD")
+![Go2o](https://raw.githubusercontent.com/ixre/go2o/master/snapshot/dashboard.png "GO2O-DASHBOARD")
 
 
 贡献代码请看： [todo list](https://github.com/ixre/go2o/tree/master/docs/dev/todo.md) |
@@ -49,125 +49,47 @@ QQ群：**338164725**
 **特别感谢: 领域驱动设计的专家-(腾讯)王立老师,我的良师益友;没有他,就没有这个项目!
 
 
-## Deploy
+## 运行 
 
-### Deploy by docker-compose
+### 准备运行环境
 
-[docker-compose.yaml](container/docker-compose.yaml)
+- 安装`PostgreSQL`并创建名为`go2o`的数据库, 下载数据备份文件:[go2o.sql](https://github.com/ixre/go2o/blob/master/docs/data/go2o.sql)进行还原
+- 安装nats
+- 安装etcd,单机创建单节点既可
 
-
-### 1. Import database
-
-> Create new mysql db instance named "go2o"
-and import data use mysql utility. Database backup file is here : [go2o.sql](https://github.com/ixre/go2o/blob/master/docs/data/go2o.sql)
-
-### 2.Complied
-
+###　编译运行
 ```
-git clone https://github.com/ixre/go2o.git /home/usr/go/src/go2o
-export GOPATH=$GOPATH:/home/usr/go/
-cd /home/usr/go/src/go2o
-go build go2o-serve.go
-go build go2o-daemon.go
-go build go2o-tcpserve.go
+git clone https://github.com/ixre/go2o.git ./go2o
+cd go2o && go mod tidy 
+go run go2o-serve.go
 ```
-
-### 2.Running Service
-
+指定参数,请参考:
 ```
-Usage of ./go2o-serve:
-     -conf string
-             (default "app.conf")
-       -d	
-            run daemon
-       -r   
-            run rpc server
-       -debug
-            enable debug
-       -trace
-            enable trace
-       -help
-            command usage
-       -port int
-            web server port (default 14190)
-       -restport int
-            rest api port (default 1419)
-
-Usage of ./go2o-daemon:
-    -debug = false : enable debug
-
-Usage of ./go2o-tcpserve:
+Usage of go2o-serve:
+  -apiport int
+        api service port (default 1428)
   -conf string
          (default "app.conf")
-  -l	log output
+  -d    run daemon
+  -debug
+        enable debug
+  -endpoint etcd endpoints
+  -help
+        command usage
+  -mqs string
+        mq cluster address, like: 192.168.1.1:4222,192.168.1.2:4222 (default "127.0.0.1:4222")
   -port int
-         (default 14197)
+        gRPC service port (default 1427)
+  -trace
+        enable trace
+  -v    print version
 ```
 
-### 3.Add http proxy pass for nginx
+### 使用docker-compose运行
 
+推荐使用[docker-compose](container/docker-compose.yaml)一键运行
 ```
-server {
-        listen          80;
-        server_name     static.ts.com;
-        root    /home/usr/go/src/go2o/static;
-    location ~* \.(eot|ttf|woff|woff2|svg)$ {
-            add_header Access-Control-Allow-Origin *;
-    }
-}
-
-server {
-        listen          80;
-        server_name     img.ts.com;
-        root            /home/usr/go/src/go2o/uploads;
-    location ~* \.(eot|ttf|woff|woff2|svg)$ {
-            add_header Access-Control-Allow-Origin *;
-    }
-}
-
-server {
-        listen          80;
-        server_name     *.ts.com;
-        client_max_body_size    10m;  
-        location / {
-                proxy_pass   http://localhost:14190;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header Host $host;
-                proxy_redirect   off;
-        }
-}
+docker-compose up -f container/docker-compose.yaml
 ```
 
-### 4.Add test hosts
-
-> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com hapi.ts.com u.ts.com mu.ts.com passport.ts.com mpp.ts.com master.ts.com zy.ts.com whs.ts.com >> /etc/hosts
-
-## Access Entry
-
-### WebMaster
-
-master.ts.com
-
-account: go2o / 123456
-
-### Merchant Management
-
-mch.ts.com
-
-account: go2o / 123456
-
-### Member Center
-
-u.ts.com
-
-### Merchant Sales
-
-go2o.ts.com
-
-
-
-#### MAC下运行请先设置最大连接数:
-
-sudo sysctl -w kern.ipc.somaxconn=4096
 

@@ -62,9 +62,9 @@ func main() {
 		debug         bool
 		trace         bool
 		runDaemon     bool // 运行daemon
-		help          bool
-		showVer       bool
-		newApp        *core.AppImpl
+		help        bool
+		showVersion bool
+		newApp      *core.AppImpl
 		appFlag       = app.FlagWebApp
 	)
 
@@ -72,17 +72,17 @@ func main() {
 	if len(defaultMqAddr) == 0 {
 		defaultMqAddr = "127.0.0.1:4222"
 	}
-	flag.IntVar(&port, "port", 1427, "thrift service port")
+	flag.StringVar(&confFile, "conf", "app.conf", "")
+	flag.Var(&etcdEndPoints, "endpoint", "etcd endpoints")
+	flag.StringVar(&mqAddr, "mqs", defaultMqAddr,
+		"nats cluster address, like: 192.168.1.1:4222,192.168.1.2:4222")
+	flag.BoolVar(&runDaemon, "d", false, "run daemon")
+	flag.IntVar(&port, "port", 1427, "gRPC service port")
 	flag.IntVar(&apiPort, "apiport", 1428, "api service port")
-	flag.Var(&etcdEndPoints, "endpoint", "")
+	flag.BoolVar(&showVersion, "v", false, "print version")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
-	flag.StringVar(&confFile, "conf", "app.conf", "")
-	flag.StringVar(&mqAddr, "mqs", defaultMqAddr,
-		"mq cluster address, like: 192.168.1.1:4222,192.168.1.2:4222")
-	flag.BoolVar(&runDaemon, "d", false, "run daemon")
-	flag.BoolVar(&showVer, "v", false, "print version")
 	flag.Parse()
 	//confFile = "./app_dev.conf"
 	if runDaemon {
@@ -93,7 +93,7 @@ func main() {
 		flag.Usage()
 		return
 	}
-	if showVer {
+	if showVersion {
 		fmt.Println(fmt.Sprintf("go2o version v%s", core.Version))
 		return
 	}
