@@ -361,8 +361,8 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 func (p *productService) GetCategoryTreeNode(_ context.Context, req *proto.CategoryTreeRequest) (*proto.STreeNode, error) {
 	cats := p.catRepo.GlobCatService().GetCategories()
 	rootNode := &proto.STreeNode{
-		Title:    "根节点",
-		Value:    "",
+		Label:    "根节点",
+		Id:    "",
 		Icon:     "",
 		Expand:   true,
 		Children: nil}
@@ -405,8 +405,8 @@ func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int,
 		if cat.ParentId == parentId &&
 			p.testWalkCondition(req, cat, depth) {
 			cNode := &proto.STreeNode{
-				Id:       int64(cat.Id),
-				Title:    cat.Name,
+				Id:       string(cat.Id),
+				Label:    cat.Name,
 				Icon:     "",
 				Expand:   false,
 				Children: nil}

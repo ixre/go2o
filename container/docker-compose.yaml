@@ -26,7 +26,7 @@ services:
     ports:
       - 2379:2379
   postgres:
-    image: postgres:13-alpine
+    image: postgres:14-alpine
     restart: always
     ports:
       - "15432:5432"
