@@ -9,6 +9,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/proto"
 	"golang.org/x/net/context"
+	"strconv"
 )
 
 var _ proto.ProductServiceServer = new(productService)
@@ -405,9 +406,8 @@ func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int,
 		if cat.ParentId == parentId &&
 			p.testWalkCondition(req, cat, depth) {
 			cNode := &proto.STreeNode{
-				Id:       string(cat.Id),
+				Id:       strconv.Itoa(cat.Id),
 				Label:    cat.Name,
-				Icon:     "",
 				Expand:   false,
 				Children: nil}
 			node.Children = append(node.Children, cNode)
