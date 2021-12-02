@@ -43,6 +43,11 @@ func DecimalToString(f float64) string {
 	return fmt.Sprintf("%.2f", f)
 }
 
+// FormatIntAmount 格式化int类型的金额为字符串
+func FormatIntAmount(amount int64)string{
+	return FormatFloat64(float64(amount)/100)
+}
+
 func ToDiscountStr(discount int) string {
 	if discount == 0 || discount == 100 {
 		return ""

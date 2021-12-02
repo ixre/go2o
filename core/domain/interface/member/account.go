@@ -188,37 +188,37 @@ type (
 		// 不可用积分
 		FreezeIntegral int `db:"freeze_integral"`
 		// 余额
-		Balance float32 `db:"balance"`
+		Balance int64 `db:"balance"`
 		// 不可用余额
-		FreezeBalance float32 `db:"freeze_balance"`
+		FreezeBalance int64 `db:"freeze_balance"`
 		// 失效的账户余额
-		ExpiredBalance float32 `db:"expired_balance"`
+		ExpiredBalance int64 `db:"expired_balance"`
 		// 钱包代码
 		WalletCode string `db:"wallet_code"`
 		//奖金账户余额
-		WalletBalance float32 `db:"wallet_balance"`
+		WalletBalance int64 `db:"wallet_balance"`
 		//冻结赠送金额
-		FreezeWallet float32 `db:"freeze_wallet"`
+		FreezeWallet int64 `db:"freeze_wallet"`
 		//失效的赠送金额
-		ExpiredWallet float32 `db:"expired_wallet"`
+		ExpiredWallet int64 `db:"expired_wallet"`
 		//总赠送金额
-		TotalWalletAmount float32 `db:"total_wallet_amount"`
+		TotalWalletAmount int64 `db:"total_wallet_amount"`
 		//流动账户余额
-		FlowBalance float32 `db:"flow_balance"`
+		FlowBalance int64 `db:"flow_balance"`
 		//当前理财账户余额
-		GrowBalance float32 `db:"grow_balance"`
+		GrowBalance int64 `db:"grow_balance"`
 		//理财总投资金额,不含收益
-		GrowAmount float32 `db:"grow_amount"`
+		GrowAmount int64 `db:"grow_amount"`
 		//当前收益金额
-		GrowEarnings float32 `db:"grow_earnings"`
+		GrowEarnings int64 `db:"grow_earnings"`
 		//累积收益金额
-		GrowTotalEarnings float32 `db:"grow_total_earnings"`
+		GrowTotalEarnings int64 `db:"grow_total_earnings"`
 		//总消费金额
-		TotalExpense float32 `db:"total_expense"`
+		TotalExpense int64 `db:"total_expense"`
 		//总充值金额
-		TotalCharge float32 `db:"total_charge"`
+		TotalCharge int64 `db:"total_charge"`
 		//总支付额
-		TotalPay float32 `db:"total_pay"`
+		TotalPay int64 `db:"total_pay"`
 		// 优先(默认)支付选项
 		PriorityPay int `db:"priority_pay"`
 		//更新时间

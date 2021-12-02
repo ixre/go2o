@@ -102,7 +102,7 @@ func (w *wholesalerImpl) syncSingleItem(itemId int64, syncPrice bool) error {
 					ItemId:          itemId,
 					SkuId:           v.ID,
 					RequireQuantity: 1,
-					WholesalePrice:  float64(v.Price),
+					WholesalePrice:  v.Price,
 				},
 			})
 			if err != nil {

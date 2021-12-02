@@ -60,7 +60,7 @@ type normalOrderImpl struct {
 	// 运营商商品映射,用于整理购物车
 	vendorItemsMap map[int][]*order.SubOrderItem
 	// 运营商与邮费的MAP
-	vendorExpressMap map[int]float64
+	vendorExpressMap map[int]int64
 	// 是否为内部挂起
 	internalSuspend bool
 	_list           []order.ISubOrder
@@ -150,7 +150,7 @@ func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 		// 标题
 		Title: coupon.GetDescribe(),
 		// 节省金额
-		SaveFee: coupon.GetCouponFee(o.value.ItemAmount),
+		SaveFee: coupon.GetCouponFee(float32(o.value.ItemAmount)/100),
 		// 赠送积分
 		PresentIntegral: 0, //todo;/////
 		// 是否应用
@@ -282,10 +282,10 @@ func (o *normalOrderImpl) addItemToExpressCalculator(ue express.IUserExpress,
 }
 
 // 更新订单金额,并返回运费
-func (o *normalOrderImpl) updateOrderFee(mp map[int][]*order.SubOrderItem) map[int]float64 {
+func (o *normalOrderImpl) updateOrderFee(mp map[int][]*order.SubOrderItem) map[int]int64 {
 	o.value.ItemAmount = 0
 	expCul := make(map[int]express.IExpressCalculator)
-	expressMap := make(map[int]float64)
+	expressMap := make(map[int]int64)
 	for k, v := range mp {
 		userExpress := o.expressRepo.GetUserExpress(k)
 		expCul[k] = userExpress.CreateCalculator()
@@ -301,7 +301,7 @@ func (o *normalOrderImpl) updateOrderFee(mp map[int][]*order.SubOrderItem) map[i
 		expCul[k].Calculate("") //todo: 传入城市地区编号
 		expressMap[k] = expCul[k].Total()
 		//叠加运费
-		o.value.ExpressFee += float32(expressMap[k])
+		o.value.ExpressFee += expressMap[k]
 	}
 	o.value.PackageFee = 0
 	//计算最终金额
@@ -312,7 +312,7 @@ func (o *normalOrderImpl) updateOrderFee(mp map[int][]*order.SubOrderItem) map[i
 
 // 根据运营商获取商品和运费信息,限未生成的订单
 func (o *normalOrderImpl) GetByVendor() (items map[int][]*order.SubOrderItem,
-	expressFeeMap map[int]float64) {
+	expressFeeMap map[int]int64) {
 	if o.vendorItemsMap == nil {
 		panic("订单尚未读取购物车!")
 	}
@@ -374,7 +374,7 @@ func (o *normalOrderImpl) parseCartToOrderItem(c *cart.NormalCartItem) *order.Su
 		return nil
 	}
 
-	fee := c.Sku.Price * float32(c.Quantity)
+	fee := c.Sku.Price * int64(c.Quantity)
 	return &order.SubOrderItem{
 		ID:          0,
 		VendorId:    c.VendorId,
@@ -436,7 +436,7 @@ func (o *normalOrderImpl) Submit() error {
 	// 判断商品的优惠促销,如返现等
 	proms, fee := o.applyCartPromotionOnSubmit(v, o.cart)
 	if len(proms) != 0 {
-		v.DiscountAmount += float32(fee)
+		v.DiscountAmount += int64(fee)
 		v.FinalAmount = v.ItemAmount - v.DiscountAmount
 		if v.FinalAmount < 0 {
 			// 如果出现优惠券多余的金额也一并使用
@@ -569,7 +569,7 @@ func (o *normalOrderImpl) bindPromotionOnSubmit(orderNo string,
 	prom promotion.IPromotion) (int32, error) {
 	var title string
 	var integral int
-	var fee int
+	var fee int64
 
 	//todo: 需要重构,其他促销
 	if prom.Type() == promotion.TypeFlagCashBack {
@@ -652,7 +652,7 @@ func (o *normalOrderImpl) bindCouponOnSubmit(orderNo string) {
 	var oc = new(order.OrderCoupon)
 	for _, c := range o.GetCoupons() {
 		o.cloneCoupon(oc, c, int32(o.GetAggregateRootId()),
-			o.value.FinalAmount)
+			float32(o.value.FinalAmount)/100)
 		o.orderRepo.SaveOrderCouponBind(oc)
 		// 绑定促销
 		o.bindPromotionOnSubmit(orderNo, c.(promotion.IPromotion))
@@ -685,7 +685,7 @@ func (o *normalOrderImpl) applyCouponOnSubmit(v *order.NormalOrder) error {
 }
 
 // 应用余额支付
-func (o *normalOrderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
+func (o *normalOrderImpl) getBalanceDiscountFee(acc member.IAccount) int64 {
 	if o.value.FinalAmount <= 0 || math.IsNaN(float64(o.value.FinalAmount)) {
 		return 0
 	}
@@ -769,7 +769,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		v.DiscountAmount += item.Amount - item.FinalAmount
 	}
 	// 设置运费
-	v.ExpressFee = float32(o.vendorExpressMap[int(vendorId)])
+	v.ExpressFee = o.vendorExpressMap[vendorId]
 	// 设置包装费
 	v.PackageFee = 0
 	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费
@@ -861,7 +861,7 @@ func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int64, quantity int32) er
 
 // 更新返现到会员账户
 func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
-	m member.IMember, fee float32, unixTime int64) error {
+	m member.IMember, fee int64, unixTime int64) error {
 	if fee == 0 {
 		return nil
 	}
@@ -905,7 +905,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
 
 	//更新账户
-	bFee := float32(cpv.BackFee)
+	bFee := cpv.BackFee
 	acc := m.GetAccount()
 	acv := acc.GetValue()
 	acv.WalletBalance += bFee // 更新赠送余额
@@ -1026,8 +1026,8 @@ func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexIte
 		FinalPrice:     0,
 		Quantity:       i.Quantity,
 		ReturnQuantity: i.ReturnQuantity,
-		Amount:         float64(i.Amount),
-		FinalAmount:    float64(i.FinalAmount),
+		Amount:         i.Amount,
+		FinalAmount:    i.FinalAmount,
 		IsShipped:      i.IsShipped,
 		Data:           make(map[string]string),
 	}
@@ -1339,11 +1339,11 @@ func (o *subOrderImpl) BuyerReceived() error {
 	return err
 }
 
-func (o *subOrderImpl) getOrderAmount() (amount float32, refund float32) {
+func (o *subOrderImpl) getOrderAmount() (amount int64, refund int64) {
 	items := o.Items()
 	for _, item := range items {
 		if item.ReturnQuantity > 0 {
-			a := item.Amount / float32(item.Quantity) * float32(item.ReturnQuantity)
+			a := item.Amount / int64(item.Quantity) * int64(item.ReturnQuantity)
 			if item.ReturnQuantity != item.Quantity {
 				amount += item.Amount - a
 			}
@@ -1360,12 +1360,12 @@ func (o *subOrderImpl) getOrderAmount() (amount float32, refund float32) {
 }
 
 // 获取订单的成本
-func (o *subOrderImpl) getOrderCost() float32 {
-	var cost float32
+func (o *subOrderImpl) getOrderCost() int64 {
+	var cost int64
 	items := o.Items()
 	for _, item := range items {
 		snap := o.itemRepo.GetSalesSnapshot(item.SnapshotId)
-		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
+		cost += snap.Cost * int64(item.Quantity-item.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if cost > 0 {
@@ -1396,8 +1396,8 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 	_, refund := o.getOrderAmount()
 	sAmount := o.getOrderCost()
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
-		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
+		totalAmount := int64(float32(sAmount) * float32(enum.RATE_AMOUNT))
+		refundAmount := int64(float32(refund) * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
@@ -1410,10 +1410,10 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant) error {
 	rate := o.registryRepo.Get(registry.MchOrderSettleRate).FloatValue()
 	amount, refund := o.getOrderAmount()
-	sAmount := amount * float32(rate)
+	sAmount := int64(float64(amount) * rate)
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
-		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
+		totalAmount := int64(float32(sAmount) * float32(enum.RATE_AMOUNT))
+		refundAmount := int64(float32(refund) * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
@@ -1426,8 +1426,8 @@ func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchant) er
 	fee := o.registryRepo.Get(registry.MchSingleOrderServiceFee).FloatValue()
 	amount, refund := o.getOrderAmount()
 	if fee > 0 {
-		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
-		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
+		totalAmount := int64(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
+		refundAmount := int64(float32(refund) * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
@@ -1685,7 +1685,7 @@ func (o *subOrderImpl) onOrderComplete() error {
 
 // 更新返现到会员账户
 func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
-	m member.IMember, fee float32, unixTime int64) error {
+	m member.IMember, fee int64, unixTime int64) error {
 	if fee <= 0 || math.IsNaN(float64(fee)) {
 		return nil
 	}

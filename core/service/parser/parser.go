@@ -216,7 +216,7 @@ func Item(src *proto.SOldItem) *item.GoodsItem {
 		SortNum:      src.SortNum,
 		CreateTime:   src.CreateTime,
 		UpdateTime:   src.UpdateTime,
-		PromPrice:    float32(src.PromPrice),
+		PromPrice:    src.PromPrice,
 	}
 	if src.SkuArray != nil {
 		it.SkuArray = make([]*item.Sku, len(src.SkuArray))

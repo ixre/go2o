@@ -2,7 +2,6 @@ package item
 
 import (
 	"fmt"
-	"github.com/ixre/gof/math"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"strconv"
@@ -39,9 +38,9 @@ type skuJdo struct {
 	// 商品编码
 	Code string
 	// 价格
-	Price float64
+	Price int64
 	// 折扣价
-	DiscountPrice float64
+	DiscountPrice int64
 	// 可售数量
 	CanSalesQuantity int32
 	// 已售数量
@@ -52,7 +51,7 @@ type skuJdo struct {
 
 type skuPriceJdo struct {
 	Quantity int32
-	Price    float64
+	Price   int64
 }
 
 type itemJsonUtil struct {
@@ -83,8 +82,8 @@ func (s *itemJsonUtil) getSkuJdo(skuArr []*item.Sku) []skuJdo {
 			SkuId:         strconv.Itoa(int(v.ID)),
 			SpecData:      v.SpecData,
 			SpecWord:      v.SpecWord,
-			Price:         math.Round(float64(v.Price), 2),
-			DiscountPrice: math.Round(float64(v.Price), 2),
+			Price:         v.Price,
+			DiscountPrice: v.Price,
 			PriceArray:    []skuPriceJdo{},
 		}
 	}

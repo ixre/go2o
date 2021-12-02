@@ -351,11 +351,11 @@ type (
 		// 抵扣金额
 		DiscountAmount float32 `db:"discount_amount"`
 		// 运费
-		ExpressFee float32 `db:"express_fee"`
+		ExpressFee int64 `db:"express_fee"`
 		// 包装费
-		PackageFee float32 `db:"package_fee"`
+		PackageFee int64 `db:"package_fee"`
 		// 订单最终金额
-		FinalAmount float32 `db:"final_amount"`
+		FinalAmount int64 `db:"final_amount"`
 		// 收货人姓名
 		ConsigneePerson string `db:"consignee_person"`
 		// 收货人电话

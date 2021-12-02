@@ -213,7 +213,7 @@ type (
 		Id      int     `db:"id" pk:"yes" auto:"yes"`
 		GoodsId int64   `db:"goods_id"`
 		Level   int     `db:"level"`
-		Price   float32 `db:"price"`
+		Price   int64 `db:"price"`
 		// 限购数量
 		MaxQuota int `db:"max_quota"`
 		Enabled  int `db:"enabled"`
@@ -250,9 +250,9 @@ type (
 		// 获取促销信息
 		GetPromotions() []promotion.IPromotion
 		// 获取促销价
-		GetPromotionPrice(level int) float32
+		GetPromotionPrice(level int) int64
 		// 获取会员价销价,返回是否有会原价及价格
-		GetLevelPrice(level int) (bool, float32)
+		GetLevelPrice(level int) (bool, int64)
 		// 获取促销描述
 		GetPromotionDescribe() map[string]string
 		// 获取会员价
@@ -314,7 +314,7 @@ type (
 		SaveItemDiscount(groupId int32, arr []*WsItemDiscount) error
 
 		// 获取批发价格
-		GetWholesalePrice(skuId int64, quantity int32) float64
+		GetWholesalePrice(skuId int64, quantity int32) int64
 		// 根据SKU获取价格设置
 		GetSkuPrice(skuId int64) []*WsSkuPrice
 		// 保存批发SKU价格设置
@@ -365,7 +365,7 @@ type (
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// 价格
-		Price float64 `db:"price"`
+		Price int64 `db:"price"`
 		// 价格区间
 		PriceRange string `db:"price_range"`
 		// 上架状态

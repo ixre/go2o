@@ -34,7 +34,7 @@ type wCartQuickSkuJdo struct {
 	// 数量
 	Quantity int32
 	// 价格
-	Price float64
+	Price int64
 }
 
 type wholesaleCartImpl struct {
@@ -605,7 +605,7 @@ func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 	for _, v := range prArr {
 		priceRange = append(priceRange, []string{
 			strconv.Itoa(int(v.RequireQuantity)),
-			format.DecimalToString(v.WholesalePrice),
+			format.FormatIntAmount(v.WholesalePrice),
 		})
 	}
 	sku.Price = price
@@ -667,26 +667,26 @@ func (c *wholesaleCartImpl) JdoData(checkout bool, checked map[int64][]int64) *c
 
 // 附加结算数据
 func (c *wholesaleCartImpl) checkoutJdoData(jdo *cart.WCartJdo) {
-	var totalAmount float64
-	sellerAmountMap := map[int64]float64{}
+	var totalAmount int64
+	sellerAmountMap := map[int64]int64{}
 	for _, s := range jdo.Seller {
 		for _, i := range s.Item {
 			for _, sku := range i.Sku {
 				v := sellerAmountMap[s.SellerId]
-				v += sku.Price * float64(sku.Quantity)
+				v += sku.Price * int64(sku.Quantity)
 				sellerAmountMap[s.SellerId] = v
 			}
 		}
 		sellerAmount := sellerAmountMap[s.SellerId]
 		totalAmount += sellerAmount
 		//卖家汇总
-		s.Data["ItemAmount"] = format.DecimalToString(sellerAmount)
+		s.Data["ItemAmount"] = format.FormatIntAmount(sellerAmount)
 		s.Data["ExpressAmount"] = format.DecimalToString(0)
 	}
 	//总计
 	jdo.Data["TotalExpressAmount"] = format.DecimalToString(0)
-	jdo.Data["TotalItemAmount"] = format.DecimalToString(totalAmount)
-	jdo.Data["FinalFee"] = format.DecimalToString(totalAmount)
+	jdo.Data["TotalItemAmount"] = format.FormatIntAmount(totalAmount)
+	jdo.Data["FinalFee"] = format.FormatIntAmount(totalAmount)
 }
 
 // 简单Jdo数据,max为最多数量

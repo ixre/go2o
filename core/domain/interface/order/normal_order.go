@@ -12,7 +12,7 @@ type (
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
-		GetByVendor() (items map[int][]*SubOrderItem, expressFee map[int]float64)
+		GetByVendor() (items map[int][]*SubOrderItem, expressFee map[int]int64)
 		// 在线支付交易完成
 		OnlinePaymentTradeFinish() error
 		// 设置配送地址
@@ -88,15 +88,15 @@ type (
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 商品金额
-		ItemAmount float32 `db:"item_amount"`
+		ItemAmount int64 `db:"item_amount"`
 		// 优惠减免金额
-		DiscountAmount float32 `db:"discount_amount" json:"discountFee"`
+		DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
 		// 运费
-		ExpressFee float32 `db:"express_fee"`
+		ExpressFee int64 `db:"express_fee"`
 		// 包装费用
-		PackageFee float32 `db:"package_fee"`
+		PackageFee int64 `db:"package_fee"`
 		// 实际金额
-		FinalAmount float32 `db:"final_amount" json:"fee"`
+		FinalAmount int64 `db:"final_amount" json:"fee"`
 		// 收货人
 		ConsigneePerson string `db:"consignee_person" json:"deliverName"`
 		// 收货人联系电话
@@ -126,15 +126,15 @@ type (
 		// 订单标题
 		Subject string `db:"subject" json:"subject"`
 		// 商品金额
-		ItemAmount float32 `db:"item_amount"`
+		ItemAmount int64 `db:"item_amount"`
 		// 优惠减免金额
-		DiscountAmount float32 `db:"discount_amount" json:"discountFee"`
+		DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
 		// 运费
-		ExpressFee float32 `db:"express_fee"`
+		ExpressFee int64 `db:"express_fee"`
 		// 包装费用
-		PackageFee float32 `db:"package_fee"`
+		PackageFee int64 `db:"package_fee"`
 		// 实际金额
-		FinalAmount float32 `db:"final_amount" json:"fee"`
+		FinalAmount int64 `db:"final_amount" json:"fee"`
 		// 是否支付
 		IsPaid int `db:"is_paid"`
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
@@ -170,11 +170,11 @@ type (
 		// 退回数量(退货)
 		ReturnQuantity int32 `db:"return_quantity"`
 		// 商品销售价格(不含优惠抵扣)
-		Price float32 `db:"-"` //todo
+		Price int64 `db:"-"` //todo
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 最终金额, 可能会有优惠均摊抵扣的金额
-		FinalAmount float32 `db:"final_amount"`
+		FinalAmount int64 `db:"final_amount"`
 		// 是否发货
 		IsShipped int32 `db:"is_shipped"`
 		// 更新时间

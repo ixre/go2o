@@ -62,11 +62,11 @@ type (
 		// 默认SKU
 		SkuId int64 `db:"sku_id"`
 		// 成本
-		Cost float32 `db:"cost"`
+		Cost int64 `db:"cost"`
 		// 售价
-		Price float32 `db:"price"`
+		Price int64 `db:"price"`
 		// 零售价
-		RetailPrice float32 `db:"retail_price"`
+		RetailPrice int64 `db:"retail_price"`
 		// 重量(g)
 		Weight int32 `db:"weight"`
 		// 体积(ml)
@@ -106,9 +106,9 @@ type (
 		//图片
 		Image string `db:"img"`
 		// 供货价
-		Cost float32 `db:"cost"`
+		Cost int64 `db:"cost"`
 		//销售价
-		Price float32 `db:"price"`
+		Price int64 `db:"price"`
 		// 快照时间
 		CreateTime int64 `db:"create_time"`
 	}

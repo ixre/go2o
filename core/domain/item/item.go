@@ -183,7 +183,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.Bulk = v.Bulk
 		//设置默认的价格区间
 		if i.value.PriceRange == "0" || i.value.PriceRange == "" {
-			i.value.PriceRange = format.FormatFloat(v.Price)
+			i.value.PriceRange = format.FormatFloat64(float64(v.Price)/100)
 		}
 		if i.value.CreateTime == 0 {
 			i.value.CreateTime = time.Now().Unix()
@@ -404,7 +404,7 @@ func (i *itemImpl) GetPromotions() []promotion.IPromotion {
 }
 
 // 获取会员价销价
-func (i *itemImpl) GetLevelPrice(level int) (bool, float32) {
+func (i *itemImpl) GetLevelPrice(level int) (bool, int64) {
 	lvp := i.GetLevelPrices()
 	for _, v := range lvp {
 		if level == v.Level && v.Price < i.value.Price {
@@ -415,7 +415,7 @@ func (i *itemImpl) GetLevelPrice(level int) (bool, float32) {
 }
 
 // 获取促销价
-func (i *itemImpl) GetPromotionPrice(level int) float32 {
+func (i *itemImpl) GetPromotionPrice(level int) int64 {
 	b, price := i.GetLevelPrice(level)
 	if b {
 		return price

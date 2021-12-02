@@ -94,7 +94,7 @@ func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 		it.StockNum = 0
 		//更新销售数量
 		it.SaleNum = 0
-		var pl, ph float32
+		var pl, ph int64
 		for i := 0; i < len(arr); i++ {
 			it.StockNum += arr[i].Stock
 			it.SaleNum += arr[i].SaleNum
@@ -109,10 +109,10 @@ func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 		//更新价格区间
 		it.Price = pl
 		if pl == ph {
-			it.PriceRange = format.FormatFloat(pl)
+			it.PriceRange = format.FormatFloat64(float64(pl) / 100)
 		} else {
-			it.PriceRange = format.FormatFloat(pl) +
-				"~" + format.FormatFloat(ph)
+			it.PriceRange = format.FormatFloat64(float64(pl)/100) +
+				"~" + format.FormatFloat64(float64(ph)/100)
 		}
 	}
 	return nil

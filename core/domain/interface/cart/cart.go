@@ -302,9 +302,9 @@ type (
 		// 数量
 		Quantity int32
 		// 价格
-		Price float64
+		Price int64
 		// 折扣价
-		DiscountPrice float64
+		DiscountPrice int64
 		// 可售数量
 		CanSalesQuantity int32
 		// 数据JSON表示

@@ -47,3 +47,97 @@ ALTER COLUMN cost TYPE bigint;
 
 ALTER TABLE public.item_trade_snapshot
 ALTER COLUMN price TYPE bigint;
+
+ALTER TABLE public.gs_member_price
+ALTER COLUMN price TYPE bigint;
+
+ALTER TABLE public.ws_item
+ALTER COLUMN price TYPE bigint;
+
+
+ALTER TABLE public.sale_order
+ALTER COLUMN item_amount TYPE bigint;
+
+ALTER TABLE public.sale_order
+ALTER COLUMN discount_amount TYPE bigint;
+
+ALTER TABLE public.sale_order
+ALTER COLUMN express_fee TYPE bigint;
+
+ALTER TABLE public.sale_order
+ALTER COLUMN package_fee TYPE bigint;
+
+ALTER TABLE public.sale_order
+ALTER COLUMN final_amount TYPE bigint;
+
+ALTER TABLE public.sale_order_item
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.sale_order_item
+ALTER COLUMN final_amount TYPE bigint;
+
+ALTER TABLE public.sale_sub_order
+ALTER COLUMN discount_amount TYPE bigint;
+
+ALTER TABLE public.sale_sub_order
+ALTER COLUMN express_fee TYPE bigint;
+
+ALTER TABLE public.sale_sub_order
+ALTER COLUMN package_fee TYPE bigint;
+
+ALTER TABLE public.sale_sub_order
+ALTER COLUMN final_amount TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN balance TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN freeze_balance TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN expired_balance TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN wallet_balance TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN freeze_wallet TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN expired_wallet TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN total_wallet_amount TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN flow_balance TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN grow_balance TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN grow_amount TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN grow_earnings TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN grow_total_earnings TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN total_charge TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN total_pay TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN total_expense TYPE bigint;
+
+ALTER TABLE public.mm_account
+ALTER COLUMN priority_pay TYPE integer;
+
+ALTER TABLE public.express_area_set
+ALTER COLUMN first_fee TYPE bigint;
+
+ALTER TABLE public.express_area_set
+ALTER COLUMN add_fee TYPE bigint;

@@ -682,12 +682,12 @@ func (o *wholesaleOrderImpl) getOrderAmount() (amount float32, refund float32) {
 }
 
 // 获取订单的成本
-func (o *wholesaleOrderImpl) getOrderCost() float32 {
-	var cost float32
+func (o *wholesaleOrderImpl) getOrderCost() int64 {
+	var cost int64
 	items := o.Items()
 	for _, it := range items {
 		snap := o.itemRepo.GetSalesSnapshot(it.SnapshotId)
-		cost += snap.Cost * float32(it.Quantity-it.ReturnQuantity)
+		cost += snap.Cost * int64(it.Quantity-it.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if cost > 0 {
