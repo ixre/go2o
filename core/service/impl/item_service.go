@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-23 23:15
@@ -512,7 +512,7 @@ func (s *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequ
 	if it == nil || it.GetValue().VendorId != r.SellerId {
 		err = item.ErrNoSuchItem
 	} else {
-		state := int32(types.IntCond(r.ShelveOn,
+		state := int32(types.ElseInt(r.ShelveOn,
 			int(item.ShelvesOn),
 			int(item.ShelvesDown)))
 		switch r.ItemType {

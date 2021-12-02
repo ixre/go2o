@@ -1,7 +1,7 @@
 package impl
 
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : content_service
  * author : jarryliu
  * date : -- :
@@ -230,7 +230,7 @@ func (c *contentService) parsePage(v *proto.SPage) *content.Page {
 		CssPath:     v.CssPath,
 		Body:        v.Body,
 		UpdateTime:  v.UpdateTime,
-		Enabled:     types.IntCond(v.Enabled, 1, 0),
+		Enabled:     types.ElseInt(v.Enabled, 1, 0),
 	}
 }
 

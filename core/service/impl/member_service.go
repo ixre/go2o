@@ -1,7 +1,7 @@
 package impl
 
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2020-09-05 20:14
@@ -326,7 +326,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Kind:        int32(v.Kind),
 		Title:       v.Title,
 		Amount:      float64(v.Value),
-		TradeFee:      float64(v.TradeFee),
+		TradeFee:    float64(v.TradeFee),
 		ReviewState: int32(v.ReviewState),
 		Remark:      v.Remark,
 		CreateTime:  v.CreateTime,

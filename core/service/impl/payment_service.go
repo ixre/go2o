@@ -1,7 +1,7 @@
 package impl
 
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : payment_service.go
  * author : jarryliu
  * date : 2016-07-03 13:24

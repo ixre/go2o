@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : defer.go
  * author : jarryliu
  * date : 2016-01-06 17:43

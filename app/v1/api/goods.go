@@ -9,7 +9,7 @@ import (
 )
 
 /**
- * Copyright 2009-2019 @ to2.net
+ * Copyright 2009-2019 @ 56x.net
  * name : goods.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-12-06 10:13

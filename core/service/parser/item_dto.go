@@ -38,7 +38,7 @@ func FromSaleLabelDto(src *proto.SItemLabel) *item.Label {
 		TagCode:    src.TagCode,
 		TagName:    src.Name,
 		LabelImage: src.LabelImage,
-		Enabled:    types.IntCond(src.Enabled, 1, 0),
+		Enabled:    types.ElseInt(src.Enabled, 1, 0),
 	}
 }
 
@@ -66,7 +66,7 @@ func ParseLevelPrice(src *proto.SLevelPrice) *item.MemberPrice {
 		Level:    int(src.Level),
 		Price:    float32(src.Price) / 100,
 		MaxQuota: int(src.MaxNumber),
-		Enabled:  types.IntCond(src.Enabled, 1, 0),
+		Enabled:  types.ElseInt(src.Enabled, 1, 0),
 	}
 }
 

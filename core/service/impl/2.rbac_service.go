@@ -717,8 +717,8 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	dst.Icon = r.Icon
 	dst.Permission = r.Permission
 	dst.SortNum = int(r.SortNum)
-	dst.IsExternal = int16(types.IntCond(r.IsExternal, 1, 0))
-	dst.IsHidden = int16(types.IntCond(r.IsHidden, 1, 0))
+	dst.IsExternal = int16(types.ElseInt(r.IsExternal, 1, 0))
+	dst.IsHidden = int16(types.ElseInt(r.IsHidden, 1, 0))
 	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
 	// 如果未设置排列序号,或者更改了上级,则需系统自动编号

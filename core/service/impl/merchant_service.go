@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-19 22:49
@@ -991,27 +991,27 @@ func (m *merchantService) parseEnterpriseInfo(v *proto.SEnterpriseInfo) *merchan
 
 func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantAccount {
 	return &proto.SMerchantAccount{
-		Balance:       float64(v.Balance),
-		FreezeAmount:  float64(v.FreezeAmount),
-		AwaitAmount:   float64(v.AwaitAmount),
-		PresentAmount: float64(v.PresentAmount),
-		SalesAmount:   float64(v.SalesAmount),
-		RefundAmount:  float64(v.RefundAmount),
-		WithdrawAmount:    float64(v.WithdrawAmount),
-		OfflineSales:  float64(v.OfflineSales),
-		UpdateTime:    v.UpdateTime,
+		Balance:        float64(v.Balance),
+		FreezeAmount:   float64(v.FreezeAmount),
+		AwaitAmount:    float64(v.AwaitAmount),
+		PresentAmount:  float64(v.PresentAmount),
+		SalesAmount:    float64(v.SalesAmount),
+		RefundAmount:   float64(v.RefundAmount),
+		WithdrawAmount: float64(v.WithdrawAmount),
+		OfflineSales:   float64(v.OfflineSales),
+		UpdateTime:     v.UpdateTime,
 	}
 }
 
 func (m *merchantService) parseSaleConf(v *proto.SMerchantSaleConf) *merchant.SaleConf {
 	return &merchant.SaleConf{
 		MerchantId:              v.MerchantId,
-		FxSalesEnabled:          types.IntCond(v.FxSalesEnabled, 1, 0),
+		FxSalesEnabled:          types.ElseInt(v.FxSalesEnabled, 1, 0),
 		CashBackPercent:         float32(v.CashBackPercent),
 		CashBackTg1Percent:      float32(v.CashBackTg1Percent),
 		CashBackTg2Percent:      float32(v.CashBackTg2Percent),
 		CashBackMemberPercent:   float32(v.CashBackMemberPercent),
-		AutoSetupOrder:          types.IntCond(v.AutoSetupOrder, 1, 0),
+		AutoSetupOrder:          types.ElseInt(v.AutoSetupOrder, 1, 0),
 		OrderTimeOutMinute:      int(v.OrderTimeOutMinute),
 		OrderConfirmAfterMinute: int(v.OrderConfirmAfterMinute),
 		OrderTimeOutReceiveHour: int(v.OrderTimeOutReceiveHour),
@@ -1062,8 +1062,8 @@ func (m *merchantService) parseGroup(v *proto.SMerchantBuyerGroup) *merchant.Mch
 		ID:              int32(v.Id),
 		Alias:           v.Name,
 		GroupId:         v.GroupId,
-		EnableRetail:    int32(types.IntCond(v.EnableRetail, 1, 0)),
-		EnableWholesale: int32(types.IntCond(v.EnableWholesale, 1, 0)),
+		EnableRetail:    int32(types.ElseInt(v.EnableRetail, 1, 0)),
+		EnableWholesale: int32(types.ElseInt(v.EnableWholesale, 1, 0)),
 		RebatePeriod:    v.RebatePeriod,
 	}
 }

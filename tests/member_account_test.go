@@ -7,7 +7,7 @@ import (
 )
 
 /**
- * Copyright 2009-2019 @ to2.net
+ * Copyright 2009-2019 @ 56x.net
  * name : member_account_test.go.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-06-25 07:25

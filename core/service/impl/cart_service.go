@@ -346,7 +346,7 @@ func (s *cartServiceImpl) CheckSign_(_ context.Context, r *proto.CheckSignReques
 		items[i] = &cart.ItemPair{
 			ItemId:  v.ItemId,
 			SkuId:   v.SkuId,
-			Checked: int32(types.IntCond(v.Checked, 1, 0)),
+			Checked: int32(types.ElseInt(v.Checked, 1, 0)),
 		}
 	}
 	err := c.SignItemChecked(items)

@@ -363,7 +363,7 @@ func (p *productService) GetCategoryTreeNode(_ context.Context, req *proto.Categ
 	cats := p.catRepo.GlobCatService().GetCategories()
 	rootNode := &proto.STreeNode{
 		Label:    "根节点",
-		Id:    "",
+		Id:       "",
 		Icon:     "",
 		Expand:   true,
 		Children: nil}
@@ -570,15 +570,15 @@ func (p *productService) parseCategory(v *proto.SProductCategory) *product.Categ
 		ModelId:     int(v.ModelId),
 		Priority:    int(v.Priority),
 		Name:        v.Name,
-		VirtualCat:  types.IntCond(v.IsVirtual, 1, 0),
+		VirtualCat:  types.ElseInt(v.IsVirtual, 1, 0),
 		CatUrl:      v.CategoryUrl,
 		RedirectUrl: v.RedirectUrl,
 		Icon:        v.Icon,
 		IconPoint:   v.IconPoint,
 		Level:       int(v.Level),
 		SortNum:     int(v.SortNum),
-		FloorShow:   types.IntCond(v.FloorShow, 1, 0),
-		Enabled:     types.IntCond(v.Enabled, 1, 0),
+		FloorShow:   types.ElseInt(v.FloorShow, 1, 0),
+		Enabled:     types.ElseInt(v.Enabled, 1, 0),
 	}
 }
 

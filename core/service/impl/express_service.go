@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : express_service.go
  * author : jarryliu
  * date : 2016-07-05 18:57
@@ -213,6 +213,7 @@ func (e *expressService) parseProviderDto(v *express.Provider) *proto.SExpressPr
 		GroupFlag: v.GroupFlag,
 		Code:      v.Code,
 		ApiCode:   v.ApiCode,
+		Enabled:   v.Enabled == 1,
 	}
 }
 
@@ -224,7 +225,7 @@ func (e *expressService) parseProvider(r *proto.SExpressProvider) *express.Provi
 		GroupFlag:   r.GroupFlag,
 		Code:        r.Code,
 		ApiCode:     r.ApiCode,
-		Enabled:     1,
+		Enabled:     types.ElseInt(r.Enabled, 1, 0),
 	}
 }
 
@@ -233,13 +234,13 @@ func (e *expressService) parseExpressTemplate(r *proto.SExpressTemplate) *expres
 		Id:        int(r.Id),
 		VendorId:  int(r.SellerId),
 		Name:      r.Name,
-		IsFree:    types.IntCond(r.IsFree, 1, 0),
+		IsFree:    types.ElseInt(r.IsFree, 1, 0),
 		Basis:     int(r.Basis),
 		FirstUnit: int(r.FirstUnit),
 		FirstFee:  r.FirstFee,
 		AddUnit:   int(r.AddUnit),
 		AddFee:    r.AddFee,
-		Enabled:   types.IntCond(r.Enabled, 1, 0),
+		Enabled:   types.ElseInt(r.Enabled, 1, 0),
 	}
 }
 

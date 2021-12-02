@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : shop_manager.go
  * author : jarryliu
  * date : 2016-05-28 12:13

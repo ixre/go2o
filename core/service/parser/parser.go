@@ -311,7 +311,7 @@ func OrderItem(src *proto.SOrderItem) *order.ComplexItem {
 		ReturnQuantity: src.ReturnQuantity,
 		Amount:         src.Amount,
 		FinalAmount:    src.FinalAmount,
-		IsShipped:      int32(types.IntCond(src.IsShipped, 1, 0)),
+		IsShipped:      int32(types.ElseInt(src.IsShipped, 1, 0)),
 		Data:           src.Data,
 	}
 }

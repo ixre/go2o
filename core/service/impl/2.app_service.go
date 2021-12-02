@@ -88,7 +88,7 @@ func (a *appServiceImpl) SaveVersion(_ context.Context, r *proto.AppVersionReque
 		Channel:       int16(r.Channel),
 		Version:       r.Version,
 		VersionCode:   IntVersion(r.Version),
-		ForceUpdate:   int16(types.IntCond(r.ForceUpdate, 1, 0)),
+		ForceUpdate:   int16(types.ElseInt(r.ForceUpdate, 1, 0)),
 		UpdateContent: r.UpdateContent,
 	}
 	if r.Id <= 0 {

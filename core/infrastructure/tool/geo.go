@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name : geo.go
  * author : jarryliu
  * date : 2013-12-02 21:34

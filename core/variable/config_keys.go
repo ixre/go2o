@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -43,5 +43,5 @@ const (
 
 var (
 	// 域名
-	Domain = "go2o.to2.net"
+	Domain = "go2o.56x.net"
 )

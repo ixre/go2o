@@ -8,7 +8,7 @@ import (
 )
 
 /**
- * Copyright 2009-2019 @ to2.net
+ * Copyright 2009-2019 @ 56x.net
  * name : passport_api_test.go.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-07-30 17:38

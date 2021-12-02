@@ -342,7 +342,7 @@ func (h *hfbImpl) QueryPaymentStatus(orderNo string, options map[string]string) 
 	for _, v := range arr {
 		switch v[1] {
 		case "result":
-			qp.Code = types.IntCond(v[2] == "1", 1, 0)
+			qp.Code = types.ElseInt(v[2] == "1", 1, 0)
 		case "third_bill_no":
 			qp.BillNo = v[2]
 		case "detail_error_message":
@@ -481,7 +481,7 @@ func (h *hfbImpl) QueryCardBin(bankCardNo string) *qpay.CardBinQueryResult {
 		BankName:            ret.BankName,
 		BankCardNo:          ret.BankCardNo,
 		BankCode:            strconv.Itoa(ret.BankType),
-		CardType:            types.IntCond(ret.BankCardType == "1", 1, 0),
+		CardType:            types.ElseInt(ret.BankCardType == "1", 1, 0),
 		RequireBankSideAuth: true,
 	}
 }

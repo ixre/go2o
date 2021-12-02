@@ -1,7 +1,7 @@
 package payment
 
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : payment
  * author : jarryliu
  * date : 2016-07-03 09:25
@@ -636,7 +636,7 @@ type RepoBase struct {
 }
 
 func (p *RepoBase) CreatePaymentOrder(v *payment.
-Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
+	Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
 	orderManager order.IOrderManager, registryRepo registry.IRegistryRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		repo:         repo,

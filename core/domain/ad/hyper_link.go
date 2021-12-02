@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : hyper_link.go
  * author : jarryliu
  * date : 2016-05-25 10:50
