@@ -218,21 +218,21 @@ type (
 		// 支付用户编号
 		PayUid int64 `db:"pay_uid"`
 		// 商品金额
-		ItemAmount int `db:"item_amount"`
+		ItemAmount int64 `db:"item_amount"`
 		// 优惠金额
-		DiscountAmount int `db:"discount_amount"`
+		DiscountAmount int64 `db:"discount_amount"`
 		// 调整金额
-		AdjustAmount int `db:"adjust_amount"`
+		AdjustAmount int64 `db:"adjust_amount"`
 		// 共计金额，包含抵扣金额
-		TotalAmount int `db:"total_amount"`
+		TotalAmount int64 `db:"total_amount"`
 		// 抵扣金额
-		DeductAmount int `db:"deduct_amount"`
+		DeductAmount int64 `db:"deduct_amount"`
 		// 手续费
-		ProcedureFee int `db:"procedure_fee"`
+		ProcedureFee int64 `db:"procedure_fee"`
 		// 最终支付金额，包含手续费，不包含抵扣金额
-		FinalFee int `db:"final_fee"`
+		FinalFee int64 `db:"final_fee"`
 		// 实付金额
-		PaidFee int `db:"paid_fee"`
+		PaidFee int64 `db:"paid_fee"`
 		// 可⽤支付方式
 		PayFlag int `db:"pay_flag"`
 		// 实际支付方式
@@ -272,7 +272,7 @@ type (
 		// 是否为内置支付途径
 		Internal int `db:"internal"`
 		// 支付金额
-		Amount int `db:"pay_amount"`
+		Amount int64 `db:"pay_amount"`
 		// 外部交易单号
 		OutTradeNo string `db:"out_trade_no"`
 		// 支付时间

@@ -36,7 +36,7 @@ type ICouponPromotion interface {
 	GetDescribe() string
 
 	// 获取优惠的金额
-	GetCouponFee(orderFee float32) float32
+	GetCouponFee(orderFee int) int
 
 	// 是否可用,传递会员及订单金额
 	// error返回不适用的详细信息

@@ -114,8 +114,8 @@ func (r *returnOrderImpl) submitReturnOrder() (err error) {
 	o := r.GetOrder()
 	for _, v := range o.Items() {
 		if v.SnapshotId == r.value.SnapshotId {
-			price := v.FinalAmount / float32(v.Quantity) // 计算单价
-			r.refValue.Amount = price * float32(r.value.Quantity)
+			price := v.FinalAmount / int64(v.Quantity) // 计算单价
+			r.refValue.Amount = price * int64(r.value.Quantity)
 			break
 		}
 	}
@@ -167,13 +167,13 @@ func (r *returnOrderImpl) handleReturn() error {
 	v.IsRefund = 1
 	err := r.saveReturnOrder()
 	if err == nil {
-		err = r.backAmount(v.Amount)
+		err = r.backAmount(int(v.Amount))
 	}
 	return err
 }
 
 // 退款
-func (r *returnOrderImpl) backAmount(amount float32) error {
+func (r *returnOrderImpl) backAmount(amount int) error {
 	o := r.GetOrder().GetValue()
 	mm := r.memberRepo.GetMember(r.value.BuyerId)
 	if mm == nil {

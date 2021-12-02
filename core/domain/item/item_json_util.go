@@ -51,7 +51,7 @@ type skuJdo struct {
 
 type skuPriceJdo struct {
 	Quantity int32
-	Price   int64
+	Price    int64
 }
 
 type itemJsonUtil struct {

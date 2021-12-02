@@ -141,3 +141,66 @@ ALTER COLUMN first_fee TYPE bigint;
 
 ALTER TABLE public.express_area_set
 ALTER COLUMN add_fee TYPE bigint;
+
+ALTER TABLE public.mch_balance_log
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.mch_balance_log
+ALTER COLUMN csn_amount TYPE bigint;
+
+ALTER TABLE public.mm_balance_info
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.mm_balance_info
+ALTER COLUMN csn_amount TYPE bigint;
+
+ALTER TABLE public.mm_balance_log
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.mm_balance_log
+ALTER COLUMN csn_fee TYPE bigint;
+
+ALTER TABLE public.mm_flow_log
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.mm_flow_log
+ALTER COLUMN csn_fee TYPE bigint;
+
+ALTER TABLE public.mm_wallet_log
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.mm_wallet_log
+ALTER COLUMN csn_fee TYPE bigint;
+
+ALTER TABLE public.order_wholesale_order
+ALTER COLUMN item_amount TYPE bigint;
+
+ALTER TABLE public.order_wholesale_order
+ALTER COLUMN discount_amount TYPE bigint;
+
+ALTER TABLE public.order_wholesale_order
+ALTER COLUMN express_fee TYPE bigint;
+
+ALTER TABLE public.order_wholesale_order
+ALTER COLUMN package_fee TYPE bigint;
+
+ALTER TABLE public.order_wholesale_order
+ALTER COLUMN final_amount TYPE bigint;
+
+ALTER TABLE public.order_wholesale_item
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.order_wholesale_item
+ALTER COLUMN final_amount TYPE bigint;
+
+ALTER TABLE public.order_trade_order
+ALTER COLUMN order_amount TYPE bigint;
+
+ALTER TABLE public.order_trade_order
+ALTER COLUMN discount_amount TYPE bigint;
+
+ALTER TABLE public.order_trade_order
+ALTER COLUMN final_amount TYPE bigint;
+
+ALTER TABLE public.order_trade_order
+ALTER COLUMN trade_rate TYPE bigint;

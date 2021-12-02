@@ -115,8 +115,8 @@ func (r *refundOrderImpl) submitRefundOrder() (err error) {
 	o := r.GetOrder()
 	for _, v := range o.Items() {
 		if v.SnapshotId == r.value.SnapshotId {
-			price := v.FinalAmount / float32(v.Quantity) // 计算单价
-			r.refValue.Amount = price * float32(r.value.Quantity)
+			price := v.FinalAmount / int64(v.Quantity) // 计算单价
+			r.refValue.Amount = price * int64(r.value.Quantity)
 			break
 		}
 	}
@@ -165,13 +165,13 @@ func (r *refundOrderImpl) handleReturn() error {
 	v.IsRefund = 1
 	err := r.saveRefundOrder()
 	if err == nil {
-		err = r.backAmount(v.Amount)
+		err = r.backAmount(int(v.Amount))
 	}
 	return err
 }
 
 // 退款
-func (r *refundOrderImpl) backAmount(amount float32) error {
+func (r *refundOrderImpl) backAmount(amount int) error {
 	o := r.GetOrder().GetValue()
 	mm := r.memberRepo.GetMember(r.value.BuyerId)
 	if mm == nil {
@@ -180,7 +180,7 @@ func (r *refundOrderImpl) backAmount(amount float32) error {
 
 	//支付单与父订单关联。多个子订单合并付款
 	po := r.paymentRepo.GetPaymentBySalesOrderId(o.OrderId)
-	return po.Refund(int(amount * 100))
+	return po.Refund(amount)
 
 	/*
 		 *  重构支付单时已经更改

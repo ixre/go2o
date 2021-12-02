@@ -162,12 +162,12 @@ func ParseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 		ItemId:         int64(v.ItemId),
 		ItemTitle:      v.GoodsTitle,
 		Image:          v.Image,
-		Price:          float64(v.Price),
-		FinalPrice:     float64(v.FinalPrice),
+		Price:          v.Price,
+		FinalPrice:     v.FinalPrice,
 		Quantity:       int32(v.Quantity),
 		ReturnQuantity: int32(v.ReturnQuantity),
-		Amount:         float64(v.Amount),
-		FinalAmount:    float64(v.FinalAmount),
+		Amount:         v.Amount,
+		FinalAmount:    v.FinalAmount,
 		IsShipped:      v.IsShipped == 1,
 	}
 }

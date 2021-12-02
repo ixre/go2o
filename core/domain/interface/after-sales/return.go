@@ -19,7 +19,7 @@ type (
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"no"`
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 是否已退款
 		IsRefund int `db:"is_refund"`
 	}

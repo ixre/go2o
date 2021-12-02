@@ -323,7 +323,7 @@ func (m *merchantService) WithdrawToMemberAccount(_ context.Context, r *proto.Wi
 		err = merchant.ErrNoSuchMerchant
 	} else {
 		acc := mch.Account()
-		err = acc.TransferToMember(float32(r.Amount))
+		err = acc.TransferToMember(int(r.Amount))
 	}
 	return m.error(err), nil
 }
@@ -335,7 +335,7 @@ func (m *merchantService) ChargeAccount(_ context.Context, r *proto.MerchantChar
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
-		err = mch.Account().Charge(r.Kind, r.Amount, r.Title, r.OuterNo, r.RelateUserId)
+		err = mch.Account().Charge(r.Kind, int(r.Amount), r.Title, r.OuterNo, r.RelateUserId)
 	}
 	return m.error(err), nil
 }
@@ -993,14 +993,14 @@ func (m *merchantService) parseEnterpriseInfo(v *proto.SEnterpriseInfo) *merchan
 
 func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantAccount {
 	return &proto.SMerchantAccount{
-		Balance:        float64(v.Balance),
-		FreezeAmount:   float64(v.FreezeAmount),
-		AwaitAmount:    float64(v.AwaitAmount),
-		PresentAmount:  float64(v.PresentAmount),
-		SalesAmount:    float64(v.SalesAmount),
-		RefundAmount:   float64(v.RefundAmount),
-		WithdrawAmount: float64(v.WithdrawAmount),
-		OfflineSales:   float64(v.OfflineSales),
+		Balance:        v.Balance,
+		FreezeAmount:   v.FreezeAmount,
+		AwaitAmount:    v.AwaitAmount,
+		PresentAmount:  v.PresentAmount,
+		SalesAmount:    v.SalesAmount,
+		RefundAmount:   v.RefundAmount,
+		WithdrawAmount: v.WithdrawAmount,
+		OfflineSales:   v.OfflineSales,
 		UpdateTime:     v.UpdateTime,
 	}
 }

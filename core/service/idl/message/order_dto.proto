@@ -59,17 +59,17 @@ message SOrderItem {
     // 商品图片
     string Image = 6;
     // 商品单价
-    double Price = 7;
+    int64 Price = 7;
     // 商品实际单价
-    double FinalPrice = 8;
+    int64 FinalPrice = 8;
     // 商品数量
     int32 Quantity = 9;
     // 退货数量
     int32 ReturnQuantity = 10;
     // 商品总金额
-    double amount = 11;
+    int64 amount = 11;
     // 商品实际总金额
-    double FinalAmount = 12;
+    int64 FinalAmount = 12;
     // 是否已发货
     bool IsShipped = 13;
     // 其他信息
@@ -85,8 +85,8 @@ message SOrderItem {
 //    sint64 SnapshotId = 5;
 //    sint32 Quantity = 6;
 //    sint32 ReturnQuantity = 7;
-//    double amount = 8;
-//    double FinalAmount = 9;
+//    int64 amount = 8;
+//    int64 FinalAmount = 9;
 //    sint32 IsShipped = 10;
 //    map<string, string> data = 11;
 //}
@@ -122,23 +122,23 @@ message SSingleOrder {
     // 订单标题
     string Subject = 8;
     // 商品总金额
-    double ItemAmount = 9;
+    int64 ItemAmount = 9;
     // 优惠金额
-    double DiscountAmount = 10;
+    int64 DiscountAmount = 10;
     // 抵扣金额
     int32 DeductAmount = 11;
     // 调整金额
     int32 AdjustAmount = 12;
     // 配送费
-    double ExpressFee = 13;
+    int64 ExpressFee = 13;
     // 包装费
-    double PackageFee = 14;
+    int64 PackageFee = 14;
     // 手续费
     int32 ProcedureFee = 15;
     // 订单总金额
     int32 TotalAmount = 16;
     // 最终金额
-    double FinalAmount = 17;
+    int64 FinalAmount = 17;
     // 收货人
     SConsigneeInfo Consignee = 18;
     // 买家留言

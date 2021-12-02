@@ -112,11 +112,11 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 		ConsigneePhone:  v.ConsigneePhone,
 		ShippingAddress: v.ShippingAddress,
 	}
-	co.DiscountAmount = float64(v.DiscountAmount)
-	co.ItemAmount = float64(v.ItemAmount)
-	co.ExpressFee = float64(v.ExpressFee)
-	co.PackageFee = float64(v.PackageFee)
-	co.FinalAmount = float64(v.FinalAmount)
+	co.DiscountAmount = v.DiscountAmount
+	co.ItemAmount = v.ItemAmount
+	co.ExpressFee = v.ExpressFee
+	co.PackageFee = v.PackageFee
+	co.FinalAmount = v.FinalAmount
 	co.IsBreak = v.IsBreak
 	co.UpdateTime = v.UpdateTime
 	return co
@@ -150,7 +150,7 @@ func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 		// 标题
 		Title: coupon.GetDescribe(),
 		// 节省金额
-		SaveFee: coupon.GetCouponFee(float32(o.value.ItemAmount)/100),
+		SaveFee: int64(coupon.GetCouponFee(int(o.value.ItemAmount))),
 		// 赠送积分
 		PresentIntegral: 0, //todo;/////
 		// 是否应用
@@ -526,9 +526,9 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 	orders := o.GetSubOrders()
 	for _, iso := range orders {
 		v := iso.GetValue()
-		itemAmount := int(v.ItemAmount * 100)
-		finalAmount := int(v.FinalAmount * 100)
-		disAmount := int(v.DiscountAmount * 100)
+		itemAmount := v.ItemAmount
+		finalAmount := v.FinalAmount
+		disAmount := v.DiscountAmount
 		po := &payment.Order{
 			SellerId:       int(v.VendorId),
 			TradeNo:        v.OrderNo,
@@ -582,7 +582,7 @@ func (o *normalOrderImpl) bindPromotionOnSubmit(orderNo string,
 		PromotionType:   prom.Type(),
 		OrderId:         int32(o.GetAggregateRootId()),
 		Title:           title,
-		SaveFee:         float32(fee),
+		SaveFee:         fee,
 		PresentIntegral: integral,
 		IsConfirm:       1,
 		IsApply:         0,
@@ -636,12 +636,12 @@ func (o *normalOrderImpl) applyCartPromotionOnSubmit(vo *order.NormalOrder,
 }
 
 func (o *normalOrderImpl) cloneCoupon(src *order.OrderCoupon, coupon promotion.ICouponPromotion,
-	orderId int32, orderFee float32) *order.OrderCoupon {
+	orderId int32, orderFee int) *order.OrderCoupon {
 	v := coupon.GetDetailsValue()
 	src.CouponCode = v.Code
 	src.CouponId = v.Id
 	src.OrderId = orderId
-	src.Fee = coupon.GetCouponFee(orderFee)
+	src.Fee = int64(coupon.GetCouponFee(orderFee))
 	src.Describe = coupon.GetDescribe()
 	src.SendIntegral = v.Integral
 	return src
@@ -652,7 +652,7 @@ func (o *normalOrderImpl) bindCouponOnSubmit(orderNo string) {
 	var oc = new(order.OrderCoupon)
 	for _, c := range o.GetCoupons() {
 		o.cloneCoupon(oc, c, int32(o.GetAggregateRootId()),
-			float32(o.value.FinalAmount)/100)
+			int(o.value.FinalAmount))
 		o.orderRepo.SaveOrderCouponBind(oc)
 		// 绑定促销
 		o.bindPromotionOnSubmit(orderNo, c.(promotion.IPromotion))
@@ -997,11 +997,11 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	co.OrderNo = o.value.OrderNo
 	co.Subject = v.Subject
 	co.SubOrderId = o.GetDomainId()
-	co.DiscountAmount = float64(v.DiscountAmount)
-	co.ItemAmount = float64(v.ItemAmount)
-	co.ExpressFee = float64(v.ExpressFee)
-	co.PackageFee = float64(v.PackageFee)
-	co.FinalAmount = float64(v.FinalAmount)
+	co.DiscountAmount = v.DiscountAmount
+	co.ItemAmount = v.ItemAmount
+	co.ExpressFee = v.ExpressFee
+	co.PackageFee = v.PackageFee
+	co.FinalAmount = v.FinalAmount
 	co.UpdateTime = v.UpdateTime
 	co.State = v.State
 	co.Items = []*order.ComplexItem{}
@@ -1396,8 +1396,8 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 	_, refund := o.getOrderAmount()
 	sAmount := o.getOrderCost()
 	if sAmount > 0 {
-		totalAmount := int64(float32(sAmount) * float32(enum.RATE_AMOUNT))
-		refundAmount := int64(float32(refund) * float32(enum.RATE_AMOUNT))
+		totalAmount := int(float32(sAmount) * float32(enum.RATE_AMOUNT))
+		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
@@ -1412,8 +1412,8 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant) error {
 	amount, refund := o.getOrderAmount()
 	sAmount := int64(float64(amount) * rate)
 	if sAmount > 0 {
-		totalAmount := int64(float32(sAmount) * float32(enum.RATE_AMOUNT))
-		refundAmount := int64(float32(refund) * float32(enum.RATE_AMOUNT))
+		totalAmount := int(float32(sAmount) * float32(enum.RATE_AMOUNT))
+		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
@@ -1426,8 +1426,8 @@ func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchant) er
 	fee := o.registryRepo.Get(registry.MchSingleOrderServiceFee).FloatValue()
 	amount, refund := o.getOrderAmount()
 	if fee > 0 {
-		totalAmount := int64(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
-		refundAmount := int64(float32(refund) * float32(enum.RATE_AMOUNT))
+		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
+		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,

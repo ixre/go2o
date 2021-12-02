@@ -8,7 +8,7 @@ option java_package = "com.github.go2o.rpc";
 
 message AdjustOrderRequest {
     string paymentNo = 1;
-    double amount = 2;
+    int64 amount = 2;
 }
 
 message DiscountBalanceRequest {
@@ -150,27 +150,27 @@ message SPaymentOrder {
     /** 外部订单号 */
     string OutOrderNo = 8;
     /** 买家编号 */
-    sint32 BuyerId = 9;
+    int64 BuyerId = 9;
     /** 支付用户编号 */
-    sint32 PayUid = 10;
+    int64 PayUid = 10;
     /** 商品金额 */
-    sint32 ItemAmount = 11;
+    int64 ItemAmount = 11;
     /** 优惠金额  */
-    sint32 DiscountAmount = 12;
+    int64 DiscountAmount = 12;
     /** 调整金额 */
-    sint32 AdjustAmount = 13;
+    int64 AdjustAmount = 13;
     /** 抵扣金额  */
-    sint32 DeductAmount = 14;
+    int64 DeductAmount = 14;
     /** 共计金额 */
-    sint32 TotalAmount = 15;
+    int64 TotalAmount = 15;
     /** 手续费 */
-    sint32 ProcedureFee = 16;
+    int64 ProcedureFee = 16;
     /** 实付金额 */
-    sint32 PaidFee = 17;
+    int64 PaidFee = 17;
     /** 最终应付金额 */
-    sint32 FinalFee = 18;
+    int64 FinalFee = 18;
     /** 可⽤支付方式  */
-    sint32 PayFlag = 19;
+    int32 PayFlag = 19;
     /** 实际使用支付方式 */
     sint32 FinalFlag = 20;
     /** 其他支付信息 */

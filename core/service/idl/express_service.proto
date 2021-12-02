@@ -82,11 +82,11 @@ message SExpressTemplate {
   // 首次计价单位,如首重为2kg
   int32 FirstUnit = 6;
   // 首次计价单价,如续重1kg
-  double FirstFee = 7;
+  int64 FirstFee = 7;
   // 超过首次计价计算单位,如续重1kg
   int32 AddUnit = 8;
   // 超过首次计价单价，如续重1kg
-  double AddFee = 9;
+  int64 AddFee = 9;
   // 是否启用
   bool Enabled = 10;
 }
@@ -115,11 +115,11 @@ message SExpressAreaTemplate {
   // 首次数值，如 首重为2kg
   int32 FirstUnit = 4;
   // 首次金额，如首重10元
-  double FirstFee = 5;
+  int64 FirstFee = 5;
   // 增加数值，如续重1kg
   int32 AddUnit = 6;
   // 增加产生费用，如续重1kg 10元
-  double AddFee = 7;
+  int64 AddFee = 7;
 }
 
 message SaveAreaExpTemplateRequest {

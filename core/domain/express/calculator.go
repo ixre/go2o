@@ -87,7 +87,7 @@ func (e *expressCalculatorImpl) calculate(tpl express.IExpressTemplate,
 		areaSet := tpl.GetAreaExpressTemplateByAreaCode(areaCode)
 		if areaSet != nil {
 			return e.mathFee(v.Basis, finalUnit, int(areaSet.FirstUnit),
-				areaSet.FirstFee, int(areaSet.AddUnit), float64(areaSet.AddFee))
+				areaSet.FirstFee, int(areaSet.AddUnit), areaSet.AddFee)
 		}
 	}
 	//根据默认规则计算运费
@@ -118,7 +118,7 @@ func (e *expressCalculatorImpl) getExpressFee(unit, firstUnit int,
 
 // 获取累计运费
 func (e *expressCalculatorImpl) Total() int64 {
-	var total float64 = 0
+	var total int64 = 0
 	feeMap := e.Fee()
 	for _, v := range feeMap {
 		total += v

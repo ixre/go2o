@@ -32,11 +32,11 @@ type MemberSummary struct {
 	// 积分
 	Integral int64 `db:"integral"`
 	// 账户余额
-	Balance           float32 `db:"balance"`
-	WalletBalance     float32 `db:"wallet_balance"`
-	GrowBalance       float32 `db:"grow_balance"`
-	GrowAmount        float32 `db:"grow_amount"`         // 理财总投资金额,不含收益
-	GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额
-	GrowTotalEarnings float32 `db:"grow_total_earnings"` // 累积收益金额
-	UpdateTime        int64   `db:"update_time"`
+	Balance           int64 `db:"balance"`
+	WalletBalance     int64 `db:"wallet_balance"`
+	GrowBalance       int64 `db:"grow_balance"`
+	GrowAmount        int64 `db:"grow_amount"`         // 理财总投资金额,不含收益
+	GrowEarnings      int64 `db:"grow_earnings"`       // 当前收益金额
+	GrowTotalEarnings int64 `db:"grow_total_earnings"` // 累积收益金额
+	UpdateTime        int64 `db:"update_time"`
 }

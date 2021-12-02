@@ -265,8 +265,8 @@ func (e *expressService) parseAreaTemplate(v *proto.SExpressAreaTemplate) *expre
 		CodeList:  v.CodeList,
 		NameList:  v.NameList,
 		FirstUnit: v.FirstUnit,
-		FirstFee:  float32(v.FirstFee),
+		FirstFee:  v.FirstFee,
 		AddUnit:   v.AddUnit,
-		AddFee:    float32(v.AddFee),
+		AddFee:    v.AddFee,
 	}
 }

@@ -96,25 +96,25 @@ type (
 		// 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int32, error)
 		// 订单结账
-		SettleOrder(orderNo string, amount int64, tradeFee int64, refundAmount int64, remark string) error
+		SettleOrder(orderNo string, amount int, tradeFee int, refundAmount int, remark string) error
 		// 支出
-		TakePayment(outerNo string, amount float64, csn float64, remark string) error
+		TakePayment(outerNo string, amount int, csn int, remark string) error
 
 		// 提现
 		//todo:???
 
 		//todo: 以下需要重构或移除
 		// 转到会员账户
-		TransferToMember(amount float32) error
+		TransferToMember(amount int) error
 
 		//商户积分转会员积分
 		TransferToMember1(amount float32) error
 
 		// 赠送
-		Present(amount float32, remark string) error
+		Present(amount int, remark string) error
 
 		// 充值
-		Charge(kind int32, amount float64, title, outerNo string,
+		Charge(kind int32, amount int, title, outerNo string,
 			relateUser int64) error
 	}
 
@@ -281,21 +281,21 @@ type (
 		// 商户编号
 		MchId int64 `db:"mch_id" pk:"yes"`
 		// 余额
-		Balance float32 `db:"balance"`
+		Balance int64 `db:"balance"`
 		// 冻结金额
-		FreezeAmount float32 `db:"freeze_amount"`
+		FreezeAmount int64 `db:"freeze_amount"`
 		// 待入账金额
-		AwaitAmount float32 `db:"await_amount"`
+		AwaitAmount int64 `db:"await_amount"`
 		// 平台赠送金额
-		PresentAmount float32 `db:"present_amount"`
+		PresentAmount int64 `db:"present_amount"`
 		// 累计销售总额
-		SalesAmount float32 `db:"sales_amount"`
+		SalesAmount int64 `db:"sales_amount"`
 		// 累计退款金额
-		RefundAmount float32 `db:"refund_amount"`
+		RefundAmount int64 `db:"refund_amount"`
 		// 已提取金额
-		WithdrawAmount float32 `db:"take_amount"`
+		WithdrawAmount int64 `db:"take_amount"`
 		// 线下销售金额
-		OfflineSales float32 `db:"offline_sales"`
+		OfflineSales int64 `db:"offline_sales"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
@@ -313,9 +313,9 @@ type (
 		// 外部订单号
 		OuterNo string `db:"outer_no"`
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 手续费
-		CsnAmount float32 `db:"csn_amount"`
+		CsnAmount int64 `db:"csn_amount"`
 		// 状态
 		State int `db:"state"`
 		// 创建时间

@@ -32,15 +32,15 @@ type (
 		// 订单标题
 		Subject string
 		// 商品金额
-		ItemAmount float64
+		ItemAmount int64
 		// 优惠减免金额
-		DiscountAmount float64
+		DiscountAmount int64
 		// 运费
-		ExpressFee float64
+		ExpressFee int64
 		// 包装费用
-		PackageFee float64
+		PackageFee int64
 		// 实际金额
-		FinalAmount float64
+		FinalAmount int64
 		// 买家留言
 		BuyerComment string
 		// 收货人信息

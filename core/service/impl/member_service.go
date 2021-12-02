@@ -1351,56 +1351,6 @@ func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithd
 	return s.error(err), nil
 }
 
-// 冻结余额
-func (s *memberService) Freeze(memberId int64, title string,
-	tradeNo string, amount float32, referId int64) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().Freeze(title, tradeNo, amount, referId)
-}
-
-// 解冻金额
-func (s *memberService) Unfreeze(memberId int64, title string,
-	tradeNo string, amount float32, referId int64) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().Unfreeze(title, tradeNo, amount, referId)
-}
-
-// 冻结赠送金额
-func (s *memberService) FreezeWallet(memberId int64, title string,
-	tradeNo string, amount float32, referId int64) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().FreezeWallet(title, tradeNo, amount, referId)
-}
-
-// 解冻赠送金额
-func (s *memberService) UnfreezeWallet(memberId int64, title string,
-	tradeNo string, amount float32, referId int64) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().UnfreezeWallet(title, tradeNo, amount, referId)
-}
-
-// 将冻结金额标记为失效
-func (s *memberService) FreezeExpired(memberId int64, accountKind int, amount float32,
-	remark string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().FreezeExpired(accountKind, amount, remark)
-}
-
 // 转账余额到其他账户
 func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTransferRequest) (*proto.Result, error) {
 	var err error
@@ -1419,40 +1369,6 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 			int(r.Amount), int(r.TradeFee), r.Remark)
 	}
 	return s.error(err), nil
-}
-
-// 转账余额到其他账户
-func (s *memberService) TransferBalance(memberId int64, kind int32, amount float32, tradeNo string,
-	toTitle, fromTitle string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().TransferBalance(int(kind), amount, tradeNo, toTitle, fromTitle)
-}
-
-// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
-// commission手续费
-func (s *memberService) TransferFlow(memberId int64, kind int32, amount float32,
-	commission float32, tradeNo string, toTitle string, fromTitle string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().TransferFlow(int(kind), amount, commission, tradeNo,
-		toTitle, fromTitle)
-}
-
-// 将活动金转给其他人
-func (s *memberService) TransferFlowTo(memberId int64, toMemberId int64, kind int32,
-	amount float32, commission float32, tradeNo string, toTitle string,
-	fromTitle string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().TransferFlowTo(toMemberId, int(kind), amount,
-		commission, tradeNo, toTitle, fromTitle)
 }
 
 // 会员推广排名
@@ -1606,22 +1522,22 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 		MemberId:          src.MemberId,
 		Integral:          int64(src.Integral),
 		FreezeIntegral:    int64(src.FreezeIntegral),
-		Balance:           round(src.Balance, 2),
-		FreezeBalance:     round(src.FreezeBalance, 2),
-		ExpiredBalance:    round(src.ExpiredBalance, 2),
+		Balance:           src.Balance,
+		FreezeBalance:     src.FreezeBalance,
+		ExpiredBalance:    src.ExpiredBalance,
 		WalletCode:        src.WalletCode,
-		WalletBalance:     round(src.WalletBalance, 2),
-		FreezeWallet:      round(src.FreezeWallet, 2),
-		ExpiredWallet:     round(src.ExpiredWallet, 2),
-		TotalWalletAmount: round(src.TotalWalletAmount, 2),
-		FlowBalance:       round(src.FlowBalance, 2),
-		GrowBalance:       round(src.GrowBalance, 2),
-		GrowAmount:        round(src.GrowAmount, 2),
-		GrowEarnings:      round(src.GrowEarnings, 2),
-		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
-		TotalExpense:      round(src.TotalExpense, 2),
-		TotalCharge:       round(src.TotalCharge, 2),
-		TotalPay:          round(src.TotalPay, 2),
+		WalletBalance:     src.WalletBalance,
+		FreezeWallet:      src.FreezeWallet,
+		ExpiredWallet:     src.ExpiredWallet,
+		TotalWalletAmount: src.TotalWalletAmount,
+		FlowBalance:       src.FlowBalance,
+		GrowBalance:       src.GrowBalance,
+		GrowAmount:        src.GrowAmount,
+		GrowEarnings:      src.GrowEarnings,
+		GrowTotalEarnings: src.GrowTotalEarnings,
+		TotalExpense:      src.TotalExpense,
+		TotalCharge:       src.TotalCharge,
+		TotalPay:          src.TotalPay,
 		PriorityPay:       int64(src.PriorityPay),
 		UpdateTime:        src.UpdateTime,
 	}

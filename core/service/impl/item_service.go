@@ -12,7 +12,6 @@ package impl
 import (
 	"context"
 	"errors"
-	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/domain/enum"
@@ -614,9 +613,9 @@ func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 		SpecData:    sku.SpecData,
 		SpecWord:    sku.SpecWord,
 		Code:        sku.Code,
-		RetailPrice: math.Round(float64(sku.RetailPrice), 2),
-		Price:       math.Round(float64(sku.Price), 2),
-		Cost:        math.Round(float64(sku.Cost), 2),
+		RetailPrice: sku.RetailPrice,
+		Price:       sku.Price,
+		Cost:        sku.Cost,
 		Weight:      sku.Weight,
 		Bulk:        sku.Bulk,
 		Stock:       sku.Stock,
@@ -635,9 +634,9 @@ func (s *itemService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 		ShortTitle:    v.ShortTitle,
 		GoodsNo:       v.GoodsNo,
 		Image:         v.Image,
-		RetailPrice:   float64(v.RetailPrice),
-		Price:         float64(v.ProductId),
-		PromPrice:     float64(v.PromPrice),
+		RetailPrice:   v.RetailPrice,
+		Price:         v.ProductId,
+		PromPrice:     v.PromPrice,
 		PriceRange:    v.PriceRange,
 		GoodsId:       v.GoodsId,
 		SkuId:         v.SkuId,

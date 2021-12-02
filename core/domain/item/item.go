@@ -183,7 +183,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.Bulk = v.Bulk
 		//设置默认的价格区间
 		if i.value.PriceRange == "0" || i.value.PriceRange == "" {
-			i.value.PriceRange = format.FormatFloat64(float64(v.Price)/100)
+			i.value.PriceRange = format.FormatFloat64(float64(v.Price) / 100)
 		}
 		if i.value.CreateTime == 0 {
 			i.value.CreateTime = time.Now().Unix()

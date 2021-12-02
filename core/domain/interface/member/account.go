@@ -122,19 +122,19 @@ type (
 		//IntegralDiscount(title string, outerNo string, value int) error
 
 		// 冻结余额
-		Freeze(title string, outerNo string, amount float32, relateUser int64) error
+		Freeze(title string, outerNo string, amount int, relateUser int64) error
 
 		// 解冻金额
-		Unfreeze(title string, outerNo string, amount float32, relateUser int64) error
+		Unfreeze(title string, outerNo string, amount int, relateUser int64) error
 
 		// 冻结赠送金额
-		FreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
+		FreezeWallet(title string, outerNo string, amount int, relateUser int64) error
 
 		// 解冻赠送金额
-		UnfreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
+		UnfreezeWallet(title string, outerNo string, amount int, relateUser int64) error
 
 		// 支付单抵扣消费,tradeNo为支付单单号
-		PaymentDiscount(tradeNo string, amount float32, remark string) error
+		PaymentDiscount(tradeNo string, amount int, remark string) error
 
 		// 冻结积分,当new为true不扣除积分,反之扣除积分
 		FreezesIntegral(title string, value int, new bool, relateUser int64) error
@@ -156,7 +156,7 @@ type (
 		FinishWithdrawal(id int64, tradeNo string) error
 
 		// 将冻结金额标记为失效
-		FreezeExpired(accountKind int, amount float32, remark string) error
+		FreezeExpired(accountKind int, amount int, remark string) error
 
 		// 转账
 		TransferAccount(accountKind int, toMember int64, amount int,
@@ -164,18 +164,18 @@ type (
 
 		// 接收转账
 		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
-			amount float32, remark string) error
+			amount int, remark string) error
 
 		// 转账余额到其他账户
-		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
+		TransferBalance(kind int, amount int, tradeNo string, toTitle, fromTitle string) error
 
 		// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
-		TransferFlow(kind int, amount float32, commission float32, tradeNo string,
+		TransferFlow(kind int, amount int, commission float32, tradeNo string,
 			toTitle string, fromTitle string) error
 
 		// 将活动金转给其他人
-		TransferFlowTo(memberId int64, kind int, amount float32, commission float32,
+		TransferFlowTo(memberId int64, kind int, amount int, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 
@@ -261,9 +261,9 @@ type (
 
 		Title string `db:"title"`
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 手续费
-		CsnFee float32 `db:"csn_fee"`
+		CsnFee int64 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态
@@ -288,9 +288,9 @@ type (
 		// 标题
 		Title string `db:"title"`
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 手续费
-		CsnFee float32 `db:"csn_fee"`
+		CsnFee int64 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态
@@ -315,9 +315,9 @@ type (
 		// 标题
 		Title string `db:"title"`
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 手续费
-		CsnFee float32 `db:"csn_fee"`
+		CsnFee int64 `db:"csn_fee"`
 		// 引用编号
 		RelateUser int64 `db:"rel_user"`
 		// 审核状态

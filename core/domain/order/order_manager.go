@@ -298,7 +298,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 	}
 	//println("----", len(arr), "个订单已合并", fee, mergeTradeNo)
 	rd.MergePay = true
-	rd.TradeAmount = fee
+	rd.TradeAmount = int64(fee)
 	rd.TradeNo = mergeTradeNo
 	for i, v := range arr {
 		if i > 0 { // 拼接订单号

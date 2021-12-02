@@ -93,21 +93,21 @@ message MemberOrderPagingRequest {
 }
 message MemberOrderPagingResponse {
     sint64 total = 1;
-    repeated PagedMemberSubOrder Value =  2;
+    repeated SPagedMemberSubOrder Value =  2;
 }
-message PagedMemberSubOrder {
+message SPagedMemberSubOrder {
     sint64 OrderId = 1;
     string OrderNo = 2;
     string ParentNo = 3;
     sint64 VendorId = 4;
     sint64 ShopId = 5;
     string ShopName = 6;
-    double ItemAmount = 7;
-    double DiscountAmount = 8;
-    double ExpressFee = 9;
-    double PackageFee = 10;
+    int64 ItemAmount = 7;
+    int64 DiscountAmount = 8;
+    int64 ExpressFee = 9;
+    int64 PackageFee = 10;
     bool IsPaid = 11;
-    double FinalAmount = 12;
+    int64 FinalAmount = 12;
     sint32 State = 13;
     string StateText = 14;
     sint64 CreateTime = 15;
@@ -140,12 +140,12 @@ message MemberListSingle {
     // 积分
     int64 Integral = 6;
     // 账户余额
-    double Balance = 7;
+    int64 Balance = 7;
     // 钱包余额
-    double WalletBalance = 8;
-    //    GrowBalance       float32 `db:"grow_balance"`
-    //    GrowAmount        float32 `db:"grow_amount"`         // 理财总投资金额,不含收益
-    //    GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额
-    //    GrowTotalEarnings float32 `db:"grow_total_earnings"` // 累积收益金额
+    int64 WalletBalance = 8;
+    //    GrowBalance       int64 `db:"grow_balance"`
+    //    GrowAmount        int64 `db:"grow_amount"`         // 理财总投资金额,不含收益
+    //    GrowEarnings      int64 `db:"grow_earnings"`       // 当前收益金额
+    //    GrowTotalEarnings int64 `db:"grow_total_earnings"` // 累积收益金额
     //    UpdateTime        int64   `db:"update_time"`
 }

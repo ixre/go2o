@@ -233,21 +233,21 @@ message SaveEnterpriseRequest {
 // 商户账户
 message SMerchantAccount {
   // 余额
-  double Balance = 1;
+  int64 Balance = 1;
   // 冻结金额
-  double FreezeAmount = 2;
+  int64 FreezeAmount = 2;
   // 待入账金额
-  double AwaitAmount = 3;
+  int64 AwaitAmount = 3;
   // 平台赠送金额
-  double PresentAmount = 4;
+  int64 PresentAmount = 4;
   // 累计销售总额
-  double SalesAmount = 5;
+  int64 SalesAmount = 5;
   // 累计退款金额
-  double RefundAmount = 6;
+  int64 RefundAmount = 6;
   // 已提取金额
-  double WithdrawAmount = 7;
+  int64 WithdrawAmount = 7;
   // 线下销售金额
-  double OfflineSales = 8;
+  int64 OfflineSales = 8;
   // 更新时间
   int64 UpdateTime = 9;
 }
@@ -315,13 +315,13 @@ message MerchantApiPermRequest {
 
 message WithdrawToMemberAccountRequest {
   int64 MerchantId = 1;
-  double Amount = 2;
+  int64 Amount = 2;
 }
 
 message MerchantChargeRequest {
   int64 MerchantId = 1;
   int32 Kind = 2;
-  double Amount = 3;
+  int64 Amount = 3;
   string Title = 4;
   string OuterNo = 5;
   int64 RelateUserId = 6;

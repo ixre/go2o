@@ -281,7 +281,7 @@ func (o *OrderRepImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int
             ON sn.id=si.snap_id WHERE si.order_id = $1 AND si.snap_id= $2`, func(rs *sql.Row) error {
 		err := rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.SkuId, &e.GoodsTitle,
 			&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
-		e.FinalPrice = e.FinalAmount / float32(e.Quantity)
+		e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
 		return err
 	}, orderId, snapshotId)
 	if err == nil {
