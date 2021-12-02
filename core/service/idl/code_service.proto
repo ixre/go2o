@@ -10,7 +10,7 @@
  * name : template_service.proto
  * author : jarrysix
  * date : 2021/12/02 10:37:45
- * description : 模板服务
+ * description : 条码服务
  * history :
  */
 
@@ -24,26 +24,21 @@ option java_package = "com.github.go2o.rpc";
 import "global.proto";
 
 // CommQrTemplate服务
-service TemplateService {
+service CodeService {
   // 保存CommQrTemplate
   rpc SaveQrTemplate (SaveQrTemplateRequest) returns (SaveQrTemplateResponse) {
   }
   // 获取CommQrTemplate
   rpc GetQrTemplate (CommQrTemplateId) returns (SQrTemplate) {
   }
-  // 获取CommQrTemplate列表
-  rpc QueryQrTemplateList (QueryQrTemplateRequest) returns (QueryQrTemplateResponse) {
-  }
   // 删除CommQrTemplate
   rpc DeleteQrTemplate (CommQrTemplateId) returns (Result) {
   }
-  // 获取CommQrTemplate分页数据
-  rpc PagingQrTemplate (QrTemplatePagingRequest) returns (QrTemplatePagingResponse);
 }
 
 message SaveQrTemplateRequest{
   /** 编号 */
-  int32 Id = 1;
+  int64 Id = 1;
   /** 模板标题 */
   string Title = 2;
   /** 背景图片 */
@@ -63,16 +58,16 @@ message SaveQrTemplateRequest{
 message SaveQrTemplateResponse{
   int64 ErrCode = 1;
   string ErrMsg = 2;
-  int32 Id = 3;
+  int64 Id = 3;
 }
 
 message CommQrTemplateId{
-  int32 Value = 1;
+  int64 Value = 1;
 }
 
 message SQrTemplate{
   /** 编号 */
-  int32 Id = 1;
+  int64 Id = 1;
   /** 模板标题 */
   string Title = 2;
   /** 背景图片 */
@@ -89,39 +84,4 @@ message SQrTemplate{
   int32 Enabled = 8;
 }
 
-message QueryQrTemplateRequest{
-  /** 自定义参数 */
-}
 
-message QueryQrTemplateResponse{
-  repeated SQrTemplate List = 1;
-}
-
-message PagingQrTemplate{
-  /** 编号 */
-  int32 Id = 1;
-  /** 模板标题 */
-  string Title = 2;
-  /** 背景图片 */
-  string BgImage = 3;
-  /** 垂直偏离量 */
-  int32 OffsetX = 4;
-  /** 垂直偏移量 */
-  int32 OffsetY = 5;
-  /** 二维码模板文本 */
-  string Comment = 6;
-  /** 回调地址 */
-  string CallbackUrl = 7;
-  /** 是否启用 */
-  int32 Enabled = 8;
-}
-
-message QrTemplatePagingRequest{
-  // 分页参数
-  SPagingParams Params = 1;
-}
-
-message QrTemplatePagingResponse {
-  int64 Total = 1;
-  repeated PagingQrTemplate Value = 2;
-}

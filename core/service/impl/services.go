@@ -15,7 +15,7 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"go2o/core/dao"
+	"go2o/core/dao/impl"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
@@ -72,10 +72,13 @@ var (
 	// 查询服务
 	QueryService *queryService
 
-	CommonDao *dao.CommonDao
-	// APP服务
-	AppService  *appServiceImpl
+	CommonDao *impl.CommonDao
+	// AppService APP服务
+	AppService *appServiceImpl
+	// RbacService 权限服务
 	RbacService *rbacServiceImpl
+	// CodeService 条码服务
+	CodeService *codeServiceImpl
 )
 
 // 处理错误
@@ -165,11 +168,12 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 
 	WalletService = NewWalletService(Repos.GetWalletRepo())
 
-	CommonDao = dao.NewCommDao(orm, sto, adRepo, catRepo)
+	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
 	PortalService = NewPortalService(CommonDao)
 	QueryService = NewQueryService(orm, sto)
 	AppService = NewAppService(sto, orm)
 	RbacService = NewRbacService(sto, orm, registryRepo)
+	CodeService = NewCodeService(sto, orm)
 }
 
 // 服务工具类，实现的服务组合此类,可直接调用其方法

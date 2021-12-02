@@ -23,9 +23,9 @@ type (
 		NavType int32 `db:"nav_type"`
 	}
 	// 二维码模板
-	CommQrTemplate struct {
+	QrTemplate struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 模板标题
 		Title string `db:"title"`
 		// 背景图片

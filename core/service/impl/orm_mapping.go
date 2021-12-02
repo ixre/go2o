@@ -183,7 +183,7 @@ func OrmMapping(orm orm.Orm) {
 	orm.Mapping(personfinance.RiseLog{}, "pf_riselog")
 
 	// 通用模块
-	orm.Mapping(model.CommQrTemplate{}, "comm_qr_template")
+	orm.Mapping(model.QrTemplate{}, "comm_qr_template")
 	orm.Mapping(model.PortalNav{}, "portal_nav")
 	orm.Mapping(model.PortalNavType{}, "portal_nav_type")
 	orm.Mapping(model.PortalFloorAd{}, "portal_floor_ad")

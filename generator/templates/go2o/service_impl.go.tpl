@@ -43,7 +43,7 @@ type {{$structName}} struct {
 
 }
 
-func New{{$title}}Service(s storage.Interface, o orm.Orm) *{{$structName}} {
+func New{{$shortTitle}}Service(s storage.Interface, o orm.Orm) *{{$structName}} {
 	return &{{$structName}}{
 		s:   s,
 		dao: impl.New{{.table.Title}}Dao(o),
@@ -51,8 +51,8 @@ func New{{$title}}Service(s storage.Interface, o orm.Orm) *{{$structName}} {
 }
 
 // 保存{{$comment}}
-func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.Save{{$title}}Request) (*proto.Save{{$title}}Response, error) {
-	var dst *model.{{$title}}
+func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.Save{{$shortTitle}}Request) (*proto.Save{{$shortTitle}}Response, error) {
+	var dst *model.{{$shortTitle}}
     {{if equal_any .table.PkType 3 4 5}}\
     if r.{{.table.PkProp}} > 0 {
     {{else}}
@@ -65,7 +65,7 @@ func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.S
             }, nil
         }
     } else {
-        dst = &model.{{$title}}{}
+        dst = &model.{{$shortTitle}}{}
         {{$c := try_get .columns "create_time"}} \
         {{if $c}}dst.CreateTime = time.Now().Unix(){{end}}
     }
@@ -90,7 +90,7 @@ func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.S
     return ret,nil
 }
 
-func ({{$p}} *{{$structName}}) parse{{$shortTitle}}(v *model.{{$title}}) *proto.S{{$title}} {
+func ({{$p}} *{{$structName}}) parse{{$shortTitle}}(v *model.{{$shortTitle}}) *proto.S{{$shortTitle}} {
 	return &proto.S{{$shortTitle}}{
 	 {{range $i,$c :=  .columns }}
      {{ $goType := type "go" $c.Type}}\
@@ -101,7 +101,7 @@ func ({{$p}} *{{$structName}}) parse{{$shortTitle}}(v *model.{{$title}}) *proto.
 }
 
 // 获取{{$comment}}
-func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{{$pkType}}) (*proto.S{{$title}}, error) {
+func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{{$pkType}}) (*proto.S{{$shortTitle}}, error) {
 	v := {{$p}}.dao.Get{{$shortTitle}}(id.Value)
 	if v == nil {
 		return nil, nil
@@ -110,7 +110,7 @@ func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{
 }
 
 // 获取{{$comment}}列表
-func ({{$p}} *{{$structName}}) Query{{$shortTitle}}List(_ context.Context, r *proto.Query{{$title}}Request) (*proto.Query{{$title}}Response, error) {
+func ({{$p}} *{{$structName}}) Query{{$shortTitle}}List(_ context.Context, r *proto.Query{{$shortTitle}}Request) (*proto.Query{{$shortTitle}}Response, error) {
 	arr := {{$p}}.dao.Select{{$shortTitle}}("")
 	ret := &proto.Query{{$shortTitle}}Response{
 		List:make([]*proto.S{{$shortTitle}},len(arr)),
@@ -126,7 +126,7 @@ func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(_ context.Context, id *prot
 	return {{$p}}.error(err), nil
 }
 
-func ({{$p}} *{{$structName}}) Paging{{$shortTitle}}(_ context.Context, r *proto.{{$title}}PagingRequest) (*proto.{{$title}}PagingResponse, error) {
+func ({{$p}} *{{$structName}}) Paging{{$shortTitle}}(_ context.Context, r *proto.{{$shortTitle}}PagingRequest) (*proto.{{$shortTitle}}PagingResponse, error) {
 	total, rows := {{$p}}.dao.PagingQuery{{$shortTitle}}(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,

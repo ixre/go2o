@@ -1,17 +1,17 @@
 package impl
 
 import (
-	"go2o/core/dao"
+	"go2o/core/dao/impl"
 	"go2o/core/dao/model"
 	"go2o/core/service/proto"
 )
 
 type portalService struct {
-	repo *dao.CommonDao
+	repo *impl.CommonDao
 	serviceUtil
 }
 
-func NewPortalService(d *dao.CommonDao) *portalService {
+func NewPortalService(d *impl.CommonDao) *portalService {
 	return &portalService{
 		repo: d,
 	}
