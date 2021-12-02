@@ -225,8 +225,8 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			Subject:      iv.Subject,
 			TradeType:    iv.TradeType,
 			State:        int32(iv.State),
-			ProcedureFee: int32(iv.ProcedureFee),
-			FinalFee:     int32(iv.FinalFee),
+			ProcedureFee: iv.ProcedureFee,
+			FinalFee:     iv.FinalFee,
 		}
 		// 更新支付状态
 		if so.State != payment.StateAwaitingPayment {
@@ -240,7 +240,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		d.TradeOrders = append(d.TradeOrders, so)
 		d.ProcedureFee += so.ProcedureFee      // 手续费
 		d.FinalFee += so.FinalFee              // 最终金额
-		d.TotalAmount += int32(iv.TotalAmount) // 累计金额
+		d.TotalAmount += iv.TotalAmount // 累计金额
 	}
 	d.ErrCode = 0
 	d.TradeNo = tradeNo // 交易单号
@@ -321,7 +321,7 @@ func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *
 	return &proto.STradeMethodData{
 		Method:     int32(src.Method),
 		Code:       src.Code,
-		Amount:     int32(src.Amount),
+		Amount:     src.Amount,
 		Internal:   int32(src.Internal),
 		OutTradeNo: src.OutTradeNo,
 		PayTime:    src.PayTime,

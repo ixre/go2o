@@ -92,19 +92,19 @@ service PaymentService {
 }
 
 message OrderInfoRequest {
-    string tradeNo = 1;
-    bool mergePay = 2;
+    string TradeNo = 1;
+    bool MergePay = 2;
 }
 
 message MixedPaymentRequest {
-    string tradeNo = 1;
-    repeated SRequestPayData data = 2;
+    string TradeNo = 1;
+    repeated SRequestPayData Data = 2;
 }
 
 message PayGatewayRequest {
     string action = 1;
     sint64 userId = 2;
-    map<string, string> data = 3;
+    map<string, string> Data = 3;
 }
 
 /** 支付方式的位值 */
@@ -134,7 +134,7 @@ enum EPayMethod {
 /** 支付单 */
 message SPaymentOrder {
     /** 交易号 */
-    string tradeNo = 1;
+    string TradeNo = 1;
     /** 卖家编号 */
     sint32 SellerId = 2;
     /** 交易类型 */
@@ -196,7 +196,7 @@ message SRequestPayData {
     /** 支付方式代码 */
     string Code = 2;
     /** 支付金额 */
-    sint32 amount = 3;
+    int64 Amount = 3;
 }
 
 /** 交易方式数据 */
@@ -206,7 +206,7 @@ message STradeMethodData {
     /** 交易代码 */
     string Code = 2;
     /** 支付金额 */
-    sint32 amount = 3;
+    int64 Amount = 3;
     /** 是否为内置支付途径 */
     sint32 Internal = 4;
     /** 外部交易单号 */
@@ -230,11 +230,11 @@ message SPrepareTradeData {
     /** 交易订单 */
     repeated SPaymentOrderData TradeOrders = 6;
     /** 累计金额 */
-    sint32 TotalAmount = 7;
+    int64 TotalAmount = 7;
     /** 手续费 */
-    sint32 ProcedureFee = 8;
+    int64 ProcedureFee = 8;
     /** 最终支付金额 */
-    sint32 FinalFee = 9;
+    int64 FinalFee = 9;
 }
 
 /** 支付单数据 */
@@ -248,7 +248,7 @@ message SPaymentOrderData {
     /** 状态 */
     sint32 State = 4;
     /** 手续费 */
-    sint32 ProcedureFee = 5;
+    int64 ProcedureFee = 5;
     /** 最终支付金额 */
-    sint32 FinalFee = 6;
+    int64 FinalFee = 6;
 }

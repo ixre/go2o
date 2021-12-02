@@ -82,7 +82,7 @@ func TradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeMethodData {
 	return &proto.STradeMethodData{
 		Method:     int32(src.Method),
 		Code:       src.Code,
-		Amount:     int32(src.Amount),
+		Amount:     src.Amount,
 		Internal:   int32(src.Internal),
 		OutTradeNo: src.OutTradeNo,
 		PayTime:    src.PayTime,
