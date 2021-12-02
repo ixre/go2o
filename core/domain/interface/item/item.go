@@ -181,11 +181,11 @@ type (
 		// 默认SKU编号
 		SkuId int64 `db:"sku_id"`
 		// 成本价
-		Cost float32 `db:"cost"`
+		Cost int64 `db:"cost"`
 		// 销售价
-		Price float32 `db:"price"`
+		Price int64 `db:"price"`
 		// 零售价
-		RetailPrice float32 `db:"retail_price"`
+		RetailPrice int64 `db:"retail_price"`
 		// 重量:克(g)
 		Weight int32 `db:"weight"`
 		// 体积:毫升(ml)
@@ -203,7 +203,7 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 促销价
-		PromPrice float32 `db:"-"`
+		PromPrice int64 `db:"-"`
 
 		SkuArray []*Sku `db:"-"`
 	}
@@ -387,7 +387,7 @@ type (
 		// 需要数量以上
 		RequireQuantity int32 `db:"require_quantity"`
 		// 批发价
-		WholesalePrice float64 `db:"wholesale_price"`
+		WholesalePrice int64 `db:"wholesale_price"`
 	}
 
 	// 批发商品折扣

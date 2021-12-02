@@ -17,25 +17,25 @@ message SkuId {
 message GetItemsByLabelRequest {
     string Label = 1;
     string SortBy = 2;
-    int64 begin = 3;
-    int64 end = 4;
+    int64 Begin = 3;
+    int64 End = 4;
 }
 
 message PagingShopGoodsResponse {
-    int64 total = 1;
-    repeated SGoods data = 2;
+    int64 Total = 1;
+    repeated SGoods Data = 2;
 }
 
 message PagingGoodsResponse {
-    int64 total = 1;
-    repeated SUnifiedViewItem data = 2;
+    int64 Total = 1;
+    repeated SUnifiedViewItem Data = 2;
 }
 
 // 获取商品请求
 message GetItemsRequest {
     int64 CategoryId = 1;
-    int64 begin = 2;
-    int64 end = 3;
+    int64 Begin = 2;
+    int64 End = 3;
     // 是否随机
     bool Random = 4;
     string Where = 5;
@@ -49,17 +49,17 @@ message SGoods {
     int64 ShopId = 4;
     int32 CategoryId = 5;
     // 标题
-    string title = 6;
+    string Title = 6;
     string ShortTitle = 7;
     // 货号
     string GoodsNo = 8;
     string Image = 9;
     //定价
-    double RetailPrice = 10;
+    int64 RetailPrice = 10;
     //销售价
-    double Price = 11;
+    int64 Price = 11;
     // 促销价
-    double PromPrice = 12;
+    int64 PromPrice = 12;
     // 价格区间
     string PriceRange = 13;
     int64 GoodsId = 14;
@@ -78,14 +78,14 @@ message SSku {
     sint64 SkuId = 1;
     sint64 ItemId = 2;
     sint64 ProductId = 3;
-    string title = 4;
+    string Title = 4;
     string Image = 5;
     string SpecData = 6;
     string SpecWord = 7;
     string Code = 8;
-    double RetailPrice = 9;
-    double Price = 10;
-    double Cost = 11;
+    int64 RetailPrice = 9;
+    int64 Price = 10;
+    int64 Cost = 11;
     sint32 Weight = 12;
     sint32 Bulk = 13;
     sint32 Stock = 14;
@@ -99,11 +99,11 @@ message SUnifiedViewItem {
     sint64 CategoryId = 3;
     sint64 VendorId = 4;
     sint64 BrandId = 5;
-    string title = 6;
+    string Title = 6;
     string Code = 7;
     int64 SkuId = 8;
     string Image = 9;
-    double Price = 10;
+    int64 Price = 10;
     string PriceRange = 11;
     int32 StockNum = 12;
     int64 ExpressTid = 13;
@@ -113,7 +113,7 @@ message SUnifiedViewItem {
     repeated SSku SkuArray = 17;
     repeated SLevelPrice LevelPrices = 18;
     SItemViewData ViewData = 19;
-    map<string, string> data = 20;
+    map<string, string> Data = 20;
     // 3: sint32 PromFlag
     // 7: sint32 ShopId
     // 8: sint32 ShopCatId
@@ -156,7 +156,7 @@ message SOldItem {
     sint64 ShopId = 7;
     sint32 ShopCatId = 8;
     sint32 ExpressTid = 9;
-    string title = 10;
+    string Title = 10;
     string ShortTitle = 11;
     string Code = 12;
     string Image = 13;
@@ -166,9 +166,9 @@ message SOldItem {
     sint32 SaleNum = 17;
     sint32 SkuNum = 18;
     sint64 SkuId = 19;
-    double Cost = 20;
-    double Price = 21;
-    double RetailPrice = 22;
+    int64 Cost = 20;
+    int64 Price = 21;
+    int64 RetailPrice = 22;
     sint32 Weight = 23;
     sint32 Bulk = 24;
     sint32 ShelveState = 25;
@@ -177,9 +177,9 @@ message SOldItem {
     sint32 SortNum = 28;
     sint64 CreateTime = 29;
     sint64 UpdateTime = 30;
-    double PromPrice = 31;
+    int64 PromPrice = 31;
     repeated SSku SkuArray = 32;
-    map<string, string> data = 33;
+    map<string, string> Data = 33;
 }
 
 message ItemLabelListResponse {
@@ -188,7 +188,7 @@ message ItemLabelListResponse {
 
 // 销售标签
 message SItemLabel {
-    int32 id = 1;
+    int32 Id = 1;
     // 标签名
     string Name = 2;
     // 标签代码
@@ -228,7 +228,7 @@ message SItemSnapshot {
     // 运费模板
     int64 ExpressTid = 9;
     // 商品标题
-    string title = 10;
+    string Title = 10;
     // 短标题
     string ShortTitle = 11;
     // 产品编码
@@ -241,12 +241,10 @@ message SItemSnapshot {
     string PriceRange = 15;
     // 默认SKU
     int64 SkuId = 16;
-    // 成本
-    //Cost float32 `db:"cost"`
     // 售价
-    int32 Price = 17;
+    int64 Price = 17;
     // 零售价
-    int32 RetailPrice = 18;
+    int64 RetailPrice = 18;
     // 重量(g)
     //int32 Weight = 19;
     // 体积(ml)
@@ -281,7 +279,7 @@ message STradeSnapshot {
     // 卖家名称
     string SellerName = 6;
     //商品标题
-    string title = 7;
+    string Title = 7;
     //货号
     // GoodsNo string `db:"goods_no"`
     // 产品编码
@@ -291,7 +289,7 @@ message STradeSnapshot {
     //图片
     string Image = 10;
     //销售价
-    int32 Price = 11;
+    int64 Price = 11;
     // 快照时间
     int64 CreateTime = 12;
 }
@@ -356,7 +354,7 @@ message SWsSkuPrice {
     // 需要数量以上
     int32 RequireNum = 2;
     // 批发价
-    double WholesalePrice = 3;
+    int64 WholesalePrice = 3;
 }
 
 message SWsItemDiscountListResponse {

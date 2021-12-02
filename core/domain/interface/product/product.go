@@ -119,10 +119,6 @@ type (
 		Image string `db:"img"`
 		// 描述
 		Description string `db:"description"`
-		// 上架状态
-		//ShelveState int32 `db:"-"`
-		// 审核状态
-		//ReviewState int32 `db:"-"`
 		// 备注
 		Remark string `db:"remark"`
 		// 状态
