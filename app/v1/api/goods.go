@@ -10,7 +10,7 @@ import (
 
 /**
  * Copyright 2009-2019 @ 56x.net
- * name : goods.go
+ * name : goods.g
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-12-06 10:13
  * description :

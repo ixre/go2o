@@ -16,7 +16,7 @@ import (
 
 // 按模板生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
-	tablePrefix := "comm_"
+	tablePrefix := "item_"
 	_, output, err := shell.Run("tto -m go -conf tto.conf -table " + tablePrefix + " -clean")
 	if err != nil {
 		if strings.Index(err.Error(), "not found") != -1 {

@@ -204,3 +204,96 @@ ALTER COLUMN final_amount TYPE bigint;
 
 ALTER TABLE public.order_trade_order
 ALTER COLUMN trade_rate TYPE bigint;
+
+COMMENT ON TABLE public.item_info
+  IS '商品信息';
+
+COMMENT ON COLUMN public.item_info.id
+    IS '编号';
+
+COMMENT ON COLUMN public.item_info.product_id
+    IS '产品编号';
+
+COMMENT ON COLUMN public.item_info.prom_flag
+    IS '营销标志';
+
+COMMENT ON COLUMN public.item_info.cat_id
+    IS '分类编号';
+
+COMMENT ON COLUMN public.item_info.vendor_id
+    IS '供应商编号';
+
+COMMENT ON COLUMN public.item_info.brand_id
+    IS '品牌编号';
+
+COMMENT ON COLUMN public.item_info.shop_id
+    IS '店铺编号';
+
+COMMENT ON COLUMN public.item_info.shop_cat_id
+    IS '店铺分类编号';
+
+COMMENT ON COLUMN public.item_info.express_tid
+    IS '快递模板';
+
+COMMENT ON COLUMN public.item_info.title
+    IS '商品标题';
+
+COMMENT ON COLUMN public.item_info.short_title
+    IS '商品小标题';
+
+COMMENT ON COLUMN public.item_info.code
+    IS '商品编码';
+
+COMMENT ON COLUMN public.item_info.image
+    IS '商品主图';
+
+COMMENT ON COLUMN public.item_info.is_present
+    IS '是否为赠品';
+
+COMMENT ON COLUMN public.item_info.price_range
+    IS '价格区间';
+
+COMMENT ON COLUMN public.item_info.stock_num
+    IS '库存数量';
+
+COMMENT ON COLUMN public.item_info.sale_num
+    IS '销售数量';
+
+COMMENT ON COLUMN public.item_info.sku_num
+    IS '规格数量';
+
+COMMENT ON COLUMN public.item_info.sku_id
+    IS 'SKU编号';
+
+COMMENT ON COLUMN public.item_info.cost
+    IS '成本价';
+
+COMMENT ON COLUMN public.item_info.price
+    IS '销售价';
+
+COMMENT ON COLUMN public.item_info.retail_price
+    IS '零售价';
+
+COMMENT ON COLUMN public.item_info.weight
+    IS '重量';
+
+COMMENT ON COLUMN public.item_info.bulk
+    IS '容积';
+
+COMMENT ON COLUMN public.item_info.shelve_state
+    IS '上架状态';
+
+COMMENT ON COLUMN public.item_info.review_state
+    IS '审核状态';
+
+COMMENT ON COLUMN public.item_info.review_remark
+    IS '审核意见';
+
+COMMENT ON COLUMN public.item_info.sort_num
+    IS '排列序号';
+
+COMMENT ON COLUMN public.item_info.create_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.item_info.update_time
+    IS '更新时间';
