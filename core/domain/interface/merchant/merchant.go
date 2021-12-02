@@ -152,9 +152,11 @@ type (
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 用户名
-		Usr string `db:"user"`
+		User string `db:"user"`
 		// 密码
 		Pwd string `db:"pwd"`
+		// 盐
+		Salt string `db:"salt"`
 		// 商户名称号
 		MchName string `db:"mch_name"`
 		// 省
@@ -240,6 +242,8 @@ type (
 		LoginUser string `db:"login_user"`
 		// 登录密码
 		LoginPwd string `db:"login_pwd"`
+		// 加密盐
+		Salt string `db:"salt"`
 		// 名称
 		Name string `db:"name"`
 		// 公司名称

@@ -3,6 +3,7 @@ package tests
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/infrastructure/domain"
 	"go2o/tests/ti"
 	"testing"
@@ -184,11 +185,11 @@ func TestMemberWalletOperate(t *testing.T) {
 	amount := iw.Get().Balance
 	assertError(t, ic.Charge(member.AccountWallet, "钱包充值",
 		100000, "-", "测试"))
-	id, _, err := ic.RequestWithdrawal(member.KindWalletTakeOutToBankCard,
+	id, _, err := ic.RequestWithdrawal(wallet.KWithdrawToBankCard,
 		"提现到银行卡", 70000, 0, "")
 	assertError(t, err)
 	ic.ReviewWithdrawal(id, true, "")
-	id, _, err = ic.RequestWithdrawal(member.KindWalletTakeOutToBankCard,
+	id, _, err = ic.RequestWithdrawal(wallet.KWithdrawToBankCard,
 		"提现到银行卡", 30000, 0, "")
 	assertError(t, err)
 	assertError(t, ic.ReviewWithdrawal(id, false, "退回提现"))

@@ -32,6 +32,7 @@ func TestMemberPwd(t *testing.T) {
 func TestMerchantPwd(t *testing.T) {
 	//user := "zy"
 	pwd := "123456"
-	encPwd := domain.MerchantSha1Pwd(pwd)
+	salt := ""
+	encPwd := domain.MerchantSha1Pwd(domain.Md5(pwd), salt)
 	t.Log(encPwd)
 }

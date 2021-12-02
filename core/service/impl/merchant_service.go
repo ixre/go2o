@@ -534,7 +534,7 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 		return 0, 2, merchant.ErrNoSuchMerchant
 	}
 	mv := mch.GetValue()
-	if pwd := domain.MerchantSha1Pwd(pwd, ""); pwd != mv.LoginPwd {
+	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.LoginPwd {
 		return 0, 1, de.ErrCredential
 	}
 	return mch.GetAggregateRootId(), 0, nil
@@ -892,8 +892,9 @@ func (m *merchantService) parseMchSignUp(v *proto.SMchSignUp) *merchant.MchSignU
 		Id:           int32(v.Id),
 		SignNo:       v.SignNo,
 		MemberId:     v.MemberId,
-		Usr:          v.User,
+		User:         v.User,
 		Pwd:          v.Pwd,
+		Salt:         v.Salt,
 		MchName:      v.MchName,
 		Province:     v.Province,
 		City:         v.City,
@@ -919,8 +920,9 @@ func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSi
 		Id:           int64(v.Id),
 		SignNo:       v.SignNo,
 		MemberId:     v.MemberId,
-		User:         v.Usr,
+		User:         v.User,
 		Pwd:          v.Pwd,
+		Salt:         v.Salt,
 		MchName:      v.MchName,
 		Province:     v.Province,
 		City:         v.City,

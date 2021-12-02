@@ -406,7 +406,7 @@ func (m *merchantImpl) Stat() error {
 	if m._value.Enabled == 0 {
 		return merchant.ErrMerchantDisabled
 	}
-	if m._value.ExpiresTime < time.Now().Unix() {
+	if m._value.ExpiresTime > 0 && m._value.ExpiresTime < time.Now().Unix() {
 		return merchant.ErrMerchantExpires
 	}
 	return nil
