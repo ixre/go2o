@@ -79,7 +79,7 @@ func (s *itemJsonUtil) getSkuJdo(skuArr []*item.Sku) []skuJdo {
 	arr := make([]skuJdo, len(skuArr))
 	for i, v := range skuArr {
 		arr[i] = skuJdo{
-			SkuId:         strconv.Itoa(int(v.ID)),
+			SkuId:         strconv.Itoa(int(v.Id)),
 			SpecData:      v.SpecData,
 			SpecWord:      v.SpecWord,
 			Price:         v.Price,

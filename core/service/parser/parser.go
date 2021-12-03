@@ -229,7 +229,7 @@ func Item(src *proto.SOldItem) *item.GoodsItem {
 
 func SkuDto(src *item.Sku) *proto.SSku {
 	return &proto.SSku{
-		SkuId:       src.ID,
+		SkuId:       src.Id,
 		ProductId:   src.ProductId,
 		ItemId:      src.ItemId,
 		Title:       src.Title,
@@ -249,7 +249,7 @@ func SkuDto(src *item.Sku) *proto.SSku {
 
 func Sku(src *proto.SSku) *item.Sku {
 	return &item.Sku{
-		ID:          src.SkuId,
+		Id:          src.SkuId,
 		ProductId:   src.ProductId,
 		ItemId:      src.ItemId,
 		Title:       src.Title,

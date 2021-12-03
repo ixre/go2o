@@ -468,7 +468,7 @@ func (o *normalOrderImpl) Submit() error {
 		// 拆单
 		o.breakUpByVendor()
 		// 生成支付单
-		o.createPaymentForOrder()
+		err = o.createPaymentForOrder()
 		// 记录余额支付记录
 		//todo: 扣减余额
 		//if v.BalanceDiscount > 0 {
@@ -831,8 +831,8 @@ func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
 		panic(order.ErrNoYetCreated)
 	}
 	if o._list == nil {
-		_list := o.orderRepo.GetNormalSubOrders(orderId)
-		for _, v := range _list {
+		list := o.orderRepo.GetNormalSubOrders(orderId)
+		for _, v := range list {
 			sub := o.repo.CreateNormalSubOrder(v)
 			o._list = append(o._list, sub)
 		}
@@ -1565,7 +1565,11 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
-	return o.GetPaymentOrder().Cancel()
+	ip :=  o.GetPaymentOrder()
+	if ip != nil {
+		return ip.Cancel()
+	}
+	return nil
 }
 
 // 退回商品

@@ -297,3 +297,6 @@ COMMENT ON COLUMN public.item_info.create_time
 
 COMMENT ON COLUMN public.item_info.update_time
     IS '更新时间';
+
+ALTER TABLE public.sale_sub_order
+ALTER COLUMN item_amount TYPE bigint;

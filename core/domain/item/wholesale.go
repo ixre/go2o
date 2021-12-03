@@ -260,13 +260,13 @@ func (w *wholesaleItemImpl) GetJsonDetailData() []byte {
 	okSkuArr := []*item.Sku{}
 	skuJdoArr := []skuJdo{}
 	for _, v := range skuArr {
-		pArr := w.GetSkuPrice(v.ID)
+		pArr := w.GetSkuPrice(v.Id)
 		if len(pArr) == 0 {
 			continue
 		}
 		okSkuArr = append(okSkuArr, v)
 		jdo := skuJdo{
-			SkuId:            strconv.Itoa(int(v.ID)),
+			SkuId:            strconv.Itoa(int(v.Id)),
 			SpecData:         v.SpecData,
 			SpecWord:         v.SpecWord,
 			Price:            v.Price,

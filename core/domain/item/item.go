@@ -221,12 +221,12 @@ func (i *itemImpl) saveItemSku(arrPtr *[]*item.Sku) (err error) {
 		var delList []int64
 		currMap := make(map[int64]*item.Sku, len(arr))
 		for _, v := range arr {
-			currMap[v.ID] = v
+			currMap[v.Id] = v
 		}
 		// 筛选出要删除的项
 		for _, v := range old {
-			if currMap[v.ID] == nil {
-				delList = append(delList, v.ID)
+			if currMap[v.Id] == nil {
+				delList = append(delList, v.Id)
 			}
 		}
 		// 删除项
@@ -242,7 +242,7 @@ func (i *itemImpl) saveItemSku(arrPtr *[]*item.Sku) (err error) {
 				v.ProductId = proId
 			}
 			if v.ItemId == pk {
-				v.ID, err = util.I64Err(i.repo.SaveItemSku(v))
+				v.Id, err = util.I64Err(i.repo.SaveItemSku(v))
 			}
 		}
 	}
@@ -267,7 +267,7 @@ func (i *itemImpl) SpecArray() promodel.SpecList {
 func (i *itemImpl) GetSku(skuId int64) *item.Sku {
 	if i.value.SkuArray != nil {
 		for _, v := range i.value.SkuArray {
-			if v.ID == skuId {
+			if v.Id == skuId {
 				return v
 			}
 		}
@@ -373,7 +373,7 @@ func (i *itemImpl) Save() (_ int64, err error) {
 				// 设置默认SKU
 				i.value.SkuId = 0
 				if l := len(i.value.SkuArray); l > 0 && err == nil {
-					i.value.SkuId = i.value.SkuArray[0].ID
+					i.value.SkuId = i.value.SkuArray[0].Id
 				}
 			}
 		}
@@ -580,8 +580,8 @@ func (i *itemImpl) TakeStock(skuId int64, quantity int32) error {
 }
 
 func (i *itemImpl) saveSku(sku *item.Sku) (_ int64, err error) {
-	sku.ID, err = util.I64Err(i.repo.SaveItemSku(sku))
-	return sku.ID, err
+	sku.Id, err = util.I64Err(i.repo.SaveItemSku(sku))
+	return sku.Id, err
 }
 
 // 释放库存

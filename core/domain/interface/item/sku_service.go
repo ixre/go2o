@@ -29,7 +29,7 @@ type (
 	// 商品SKU
 	Sku struct {
 		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
 		ProductId int64 `db:"product_id"`
 		// 商品编号

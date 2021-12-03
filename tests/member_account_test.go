@@ -33,7 +33,7 @@ func TestFlowAccount(t *testing.T) {
 	}
 	nowBalance := repo.GetMember(m.GetAggregateRootId()).GetAccount().GetValue().FlowBalance
 	if nowBalance != balance {
-		t.Logf("before:%.2f  now:%.2f", balance, nowBalance)
+		t.Logf("before:%.2f  now:%.2f", float64(balance)/100, float64(nowBalance)/100)
 		t.FailNow()
 	}
 }

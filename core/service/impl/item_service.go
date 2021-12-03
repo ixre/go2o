@@ -605,7 +605,7 @@ func (s *itemService) SaveWholesaleDiscount(_ context.Context, r *proto.SaveItem
 
 func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 	return &proto.SSku{
-		SkuId:       sku.ID,
+		SkuId:       sku.Id,
 		ProductId:   sku.ProductId,
 		ItemId:      sku.ItemId,
 		Title:       sku.Title,

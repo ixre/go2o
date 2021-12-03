@@ -183,9 +183,9 @@ func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.Submit
 		ret.OrderNo = rd.OrderNo
 		ret.MergePay = rd.MergePay
 		ret.TradeNo = rd.TradeNo
-		ret.TradeAmount = int64(rd.TradeAmount)
+		ret.TradeAmount = rd.TradeAmount
 	}
-	return ret, err
+	return ret,nil
 }
 
 // 根据编号获取订单

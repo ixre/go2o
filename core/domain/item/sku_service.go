@@ -131,8 +131,8 @@ func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 	for _, v := range dst {
 		if fs, ok := fromMap[v.SpecData]; ok {
 			//log.Println("SKU MERGE > dst: ",v.Id,"; src:",fs.Id)
-			if v.ID == 0 {
-				v.ID = fs.ID
+			if v.Id == 0 {
+				v.Id = fs.Id
 			}
 		}
 	}
