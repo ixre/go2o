@@ -41,7 +41,7 @@ func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
             ORDER BY si.id ASC`, idArr), func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.OrderItem{}
-				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.GoodsTitle,
+				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
 					&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 				e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
 				e.Image = format.GetGoodsImageUrl(e.Image)
@@ -126,7 +126,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId, begin, size int64, pagination boo
             ORDER BY si.id ASC`, idArr), func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.OrderItem{}
-				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.GoodsTitle,
+				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
 					&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity,
 					&e.Amount, &e.FinalAmount, &e.IsShipped)
 				e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
@@ -204,7 +204,7 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int64, begin, size int, p
             ORDER BY si.id ASC`, idBuf.String()), func(rs *sql.Rows) {
 		for rs.Next() {
 			e := &dto.OrderItem{}
-			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.GoodsTitle,
+			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
 				&e.Image, &e.Price, &e.Quantity, &e.Amount, &e.FinalAmount)
 			e.Image = format.GetResUrl(e.Image)
 			e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
@@ -286,7 +286,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pag
             WHERE oi.order_id IN(%s) ORDER BY oi.id ASC`, idArr), func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.OrderItem{}
-				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.GoodsTitle,
+				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
 					&e.Image, &e.Quantity, &e.ReturnQuantity,
 					&e.Amount, &e.FinalAmount, &e.IsShipped)
 				e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
@@ -368,7 +368,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int
 		for rs.Next() {
 			e := &dto.OrderItem{}
 			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId,
-				&e.GoodsTitle, &e.Image, &e.Quantity,
+				&e.ItemTitle, &e.Image, &e.Quantity,
 				&e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 			e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
 			e.Image = format.GetResUrl(e.Image)

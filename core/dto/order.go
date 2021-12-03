@@ -77,7 +77,7 @@ type (
 		// 商品编号
 		ItemId int32
 		// 商品标题
-		GoodsTitle string
+		ItemTitle string
 		// 商品图片
 		Image string
 		// 商品单价

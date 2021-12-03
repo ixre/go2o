@@ -136,8 +136,8 @@ func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
 
 // 绑定商品信息
 func (o *baseOrderImpl) bindItemInfo(i *order.ComplexItem) {
-	unitPrice := float64(i.FinalAmount) / float64(i.Quantity)
-	i.Data["UnitPrice"] = format.DecimalToString(unitPrice)
+	unitPrice := float64(i.FinalAmount) / float64(i.Quantity) / 100
+	i.Data["UnitPrice"] = format.FormatFloat64(unitPrice)
 	it := o.itemRepo.GetSalesSnapshot(i.SnapshotId)
 	i.Data["ItemImage"] = it.Image
 	i.Data["ItemName"] = it.GoodsTitle

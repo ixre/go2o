@@ -300,3 +300,12 @@ COMMENT ON COLUMN public.item_info.update_time
 
 ALTER TABLE public.sale_sub_order
 ALTER COLUMN item_amount TYPE bigint;
+
+ALTER TABLE public.sale_return
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.sale_refund
+ALTER COLUMN amount TYPE bigint;
+
+ALTER TABLE public.sale_after_order
+ALTER COLUMN type TYPE smallint USING type::text::smallint;

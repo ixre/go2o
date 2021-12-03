@@ -279,7 +279,7 @@ func (o *OrderRepImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
             si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
             ON sn.id=si.snap_id WHERE si.order_id = $1 AND si.snap_id= $2`, func(rs *sql.Row) error {
-		err := rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.SkuId, &e.GoodsTitle,
+		err := rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.SkuId, &e.ItemTitle,
 			&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 		e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
 		return err

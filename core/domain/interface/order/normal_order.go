@@ -169,8 +169,6 @@ type (
 		Quantity int32 `db:"quantity"`
 		// 退回数量(退货)
 		ReturnQuantity int32 `db:"return_quantity"`
-		// 商品销售价格(不含优惠抵扣)
-		Price int64 `db:"-"` //todo
 		// 金额
 		Amount int64 `db:"amount"`
 		// 最终金额, 可能会有优惠均摊抵扣的金额

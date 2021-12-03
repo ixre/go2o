@@ -322,7 +322,7 @@ func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 		SnapshotId:           src.SnapshotId,
 		SkuId:                src.SkuId,
 		ItemId:               src.ItemId,
-		ItemTitle:            "", //todo: 没有显示图片
+		ItemTitle:            "",
 		Image:                "",
 		Price:                0,
 		FinalPrice:           0,
@@ -375,13 +375,13 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 
 func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 	return &proto.SOrderItem{
-		SnapshotId: src.SnapshotId,
-		SkuId:      src.SkuId,
-		ItemId:     src.ItemId,
-		ItemTitle:  src.ItemTitle,
-		Image:      src.MainImage,
-		Price:      src.Price,
-		//FinalPrice:           0,
+		SnapshotId:           src.SnapshotId,
+		SkuId:                src.SkuId,
+		ItemId:               src.ItemId,
+		ItemTitle:            src.ItemTitle,
+		Image:                src.MainImage,
+		Price:                src.Price,
+		FinalPrice:           src.FinalPrice,
 		Quantity:             src.Quantity,
 		ReturnQuantity:       src.ReturnQuantity,
 		Amount:               src.Amount,

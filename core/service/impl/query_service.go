@@ -155,7 +155,7 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 		SnapshotId:     int64(v.SnapshotId),
 		SkuId:          int64(v.SkuId),
 		ItemId:         int64(v.ItemId),
-		ItemTitle:      v.GoodsTitle,
+		ItemTitle:      v.ItemTitle,
 		Image:          v.Image,
 		Price:          v.Price,
 		FinalPrice:     v.FinalPrice,
