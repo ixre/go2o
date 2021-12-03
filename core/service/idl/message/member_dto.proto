@@ -19,7 +19,7 @@ enum EMemberFlag {
 
 message RegisterMemberRequest {
     // 用户名
-    string user = 1;
+    string User = 1;
     // 密码(md5)
     string Pwd = 2;
     // 昵称
@@ -236,7 +236,7 @@ message SMember {
     /** 编号  */
     sint64 Id = 1;
     /** 用户名 */
-    string user =  2;
+    string User =  2;
     /** 密码 */
     string Pwd = 3;
     /** 交易密码 */

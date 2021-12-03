@@ -510,12 +510,12 @@ func (i *itemImpl) Incorrect(remark string) error {
 func (i *itemImpl) Review(pass bool, remark string) error {
 	if pass {
 		i.value.ReviewState = enum.ReviewPass
-
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
+		i.value.ShelveState = item.ShelvesDown
 		i.value.ReviewState = enum.ReviewReject
 	}
 	i.value.ReviewRemark = remark
