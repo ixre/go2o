@@ -10,17 +10,19 @@ package member
 
 import "go2o/core/domain/interface/wallet"
 
+type AccountType int
+
 const (
 	// 余额账户
-	AccountBalance = 1
+	AccountBalance AccountType = 1
 	// 积分账户
-	AccountIntegral = 2
+	AccountIntegral AccountType = 2
 	// 钱包账户
-	AccountWallet = 3
+	AccountWallet AccountType = 3
 	// 流通金账户
-	AccountFlow = 4
+	AccountFlow AccountType = 4
 	// 增长金账户
-	AccountGrow = 7
+	AccountGrow AccountType = 7
 )
 
 const (
@@ -94,22 +96,22 @@ type (
 		Wallet() wallet.IWallet
 
 		// 设置优先(默认)支付方式, account 为账户类型
-		SetPriorityPay(account int, enabled bool) error
+		SetPriorityPay(account AccountType, enabled bool) error
 
 		// 退款
-		Refund(accountKind int, title string, amount int, outerNo string, remark string) error
+		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 充值,金额放大100倍
-		Charge(account int32, title string, amount int, outerNo string, remark string) error
+		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 客服调整
-		Adjust(account int, title string, amount int, remark string, relateUser int64) error
+		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
 
 		// 消耗
-		Consume(account int, title string, amount int, outerNo string, remark string) error
+		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
-		Discount(account int, title string, amount int, outerNo string, remark string) error
+		Discount(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 扣减余额
 		//DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
@@ -156,18 +158,18 @@ type (
 		FinishWithdrawal(id int64, tradeNo string) error
 
 		// 将冻结金额标记为失效
-		FreezeExpired(accountKind int, amount int, remark string) error
+		FreezeExpired(account AccountType, amount int, remark string) error
 
 		// 转账
-		TransferAccount(accountKind int, toMember int64, amount int,
+		TransferAccount(account AccountType, toMember int64, amount int,
 			tradeFee int, remark string) error
 
 		// 接收转账
-		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
+		ReceiveTransfer(account AccountType, fromMember int64, tradeNo string,
 			amount int, remark string) error
 
 		// 转账余额到其他账户
-		TransferBalance(kind int, amount int, tradeNo string, toTitle, fromTitle string) error
+		TransferBalance(account AccountType, amount int, tradeNo string, toTitle, fromTitle string) error
 
 		// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费

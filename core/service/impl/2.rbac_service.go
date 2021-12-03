@@ -706,11 +706,11 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 			}
 		}
 		// 限制下级资源路径不能以'/'开头,以避免无法找到资源的情况
-		if len(r.Path) > 0 && r.Path[0] == '/'{
+		if len(r.Path) > 0 && r.Path[0] == '/' {
 			return &proto.SavePermResResponse{
-				ErrCode:              3,
-				ErrMsg:               "该资源(包含上级资源)路径不能以'/'开头",
-			},nil
+				ErrCode: 3,
+				ErrMsg:  "该资源(包含上级资源)路径不能以'/'开头",
+			}, nil
 		}
 	}
 

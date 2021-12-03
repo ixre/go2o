@@ -142,33 +142,18 @@ func TestCancelOrder(t *testing.T) {
 		}
 		t.Logf("支付单信息：%#v", pv)
 	}
-	//t.Log("调价：",py.Adjust(-0.1))
-	//t.Log(py.Cancel())
 
 	no := o.(order.INormalOrder)
 	for _, v := range no.GetSubOrders() {
-		err = v.Cancel("取消")
+		err = v.Cancel("买多了，不想要了")
 		if err != nil {
 			t.Log("取消失败：", err.Error())
 			t.FailNow()
 		}
 	}
-	//return
-	time.Sleep(time.Second * 2)
-
-	return
-
-	io := o.(order.INormalOrder)
-
-	subs := io.GetSubOrders()
-	for _, v := range subs {
-		err = v.Cancel("买多了，不想要了!")
-		if err != nil {
-			t.Error(err)
-			t.Fail()
-		}
+	if err == nil {
+		t.Log("订单取消成功")
 	}
-	t.Log("退货成功")
 }
 
 // 测试提交普通订单,并完成付款

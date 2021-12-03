@@ -988,7 +988,7 @@ func (s *memberService) ReviewTrustedInfo(_ context.Context, r *proto.ReviewTrus
 func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {
 	var total int
 	var rows []map[string]interface{}
-	switch r.AccountType {
+	switch member.AccountType(r.AccountType) {
 	case member.AccountIntegral:
 		total, rows = s.query.PagedIntegralAccountLog(
 			r.MemberId, r.Params.Begin,
@@ -1083,7 +1083,7 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	var accountTid = 0
+	var accountTid member.AccountType
 	switch r.Account {
 	case proto.PaymentAccountType_PA_BALANCE:
 		accountTid = member.AccountBalance
@@ -1189,7 +1189,7 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(r.AccountType, r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Charge(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1199,7 +1199,7 @@ func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChang
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Discount(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Discount(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1209,7 +1209,7 @@ func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChange
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Consume(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Consume(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1219,7 +1219,7 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Refund(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1233,7 +1233,7 @@ func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustR
 			tit = "[KF]系统充值"
 		}
 		acc := m.GetAccount()
-		err = acc.Adjust(int(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
+		err = acc.Adjust(member.AccountType(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
 	}
 	return s.result(err), nil
 }
@@ -1358,14 +1358,14 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		var kind = 0
+		var account member.AccountType
 		switch r.TransferAccount {
 		case proto.TransferAccountType_TA_BALANCE:
-			kind = member.AccountBalance
+			account = member.AccountBalance
 		case proto.TransferAccountType_TA_WALLET:
-			kind = member.AccountWallet
+			account = member.AccountWallet
 		}
-		err = m.GetAccount().TransferAccount(kind, r.ToMemberId,
+		err = m.GetAccount().TransferAccount(account, r.ToMemberId,
 			int(r.Amount), int(r.TradeFee), r.Remark)
 	}
 	return s.error(err), nil

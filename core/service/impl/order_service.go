@@ -185,7 +185,7 @@ func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.Submit
 		ret.TradeNo = rd.TradeNo
 		ret.TradeAmount = rd.TradeAmount
 	}
-	return ret,nil
+	return ret, nil
 }
 
 // 根据编号获取订单

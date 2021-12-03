@@ -343,7 +343,7 @@ func (i *itemImpl) checkItemValue(v *item.GoodsItem) error {
 
 // 判断价格是否正确
 func (i *itemImpl) checkPrice(v *item.GoodsItem) error {
-	if v.Price == 0{
+	if v.Price == 0 {
 		return nil
 	}
 	rate := (v.Price - v.Cost) / v.Price

@@ -238,9 +238,9 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		}
 		// 更新支付金额
 		d.TradeOrders = append(d.TradeOrders, so)
-		d.ProcedureFee += so.ProcedureFee      // 手续费
-		d.FinalFee += so.FinalFee              // 最终金额
-		d.TotalAmount += iv.TotalAmount // 累计金额
+		d.ProcedureFee += so.ProcedureFee // 手续费
+		d.FinalFee += so.FinalFee         // 最终金额
+		d.TotalAmount += iv.TotalAmount   // 累计金额
 	}
 	d.ErrCode = 0
 	d.TradeNo = tradeNo // 交易单号

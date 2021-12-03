@@ -145,7 +145,7 @@ var (
 		"err_member_incorrent_quote", "金额/数量错误")
 
 	ErrOutOfBalance = domain.NewError(
-		"err_out_of_balance", "超出金额")
+		"err_out_of_balance", "余额不足")
 
 	ErrAccountOutOfTakeOutTimes = domain.NewError(
 		"err_account_out_of_take_out_times", "今日已达到提现次数上限")

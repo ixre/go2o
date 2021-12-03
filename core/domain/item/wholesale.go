@@ -238,10 +238,10 @@ func (w *wholesaleItemImpl) SaveSkuPrice(skuId int64, arr []*item.WsSkuPrice) er
 	if min > 0 && max > 0 {
 		w.value.Price = min
 		if min == max {
-			w.value.PriceRange = format.FormatIntAmount(min)
+			w.value.PriceRange = format.FormatIntMoney(min)
 		} else {
-			w.value.PriceRange = format.FormatIntAmount(min) +
-				"~" + format.FormatIntAmount(max)
+			w.value.PriceRange = format.FormatIntMoney(min) +
+				"~" + format.FormatIntMoney(max)
 		}
 		_, err := w.Save()
 		return err

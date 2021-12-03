@@ -609,7 +609,7 @@ func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 	for _, v := range prArr {
 		priceRange = append(priceRange, []string{
 			strconv.Itoa(int(v.RequireQuantity)),
-			format.FormatIntAmount(v.WholesalePrice),
+			format.FormatIntMoney(v.WholesalePrice),
 		})
 	}
 	sku.Price = price
@@ -684,13 +684,13 @@ func (c *wholesaleCartImpl) checkoutJdoData(jdo *cart.WCartJdo) {
 		sellerAmount := sellerAmountMap[s.SellerId]
 		totalAmount += sellerAmount
 		//卖家汇总
-		s.Data["ItemAmount"] = format.FormatIntAmount(sellerAmount)
+		s.Data["ItemAmount"] = format.FormatIntMoney(sellerAmount)
 		s.Data["ExpressAmount"] = format.DecimalToString(0)
 	}
 	//总计
 	jdo.Data["TotalExpressAmount"] = format.DecimalToString(0)
-	jdo.Data["TotalItemAmount"] = format.FormatIntAmount(totalAmount)
-	jdo.Data["FinalFee"] = format.FormatIntAmount(totalAmount)
+	jdo.Data["TotalItemAmount"] = format.FormatIntMoney(totalAmount)
+	jdo.Data["FinalFee"] = format.FormatIntMoney(totalAmount)
 }
 
 // 简单Jdo数据,max为最多数量

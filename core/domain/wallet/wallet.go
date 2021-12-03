@@ -219,7 +219,7 @@ func (w *WalletImpl) Adjust(value int, title, outerNo string,
 }
 
 // 消费
-func (w *WalletImpl) Consume(amount int, title string, outerNo string) error {
+func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark string) error {
 	if amount > 0 {
 		amount = -amount
 	}
@@ -231,6 +231,7 @@ func (w *WalletImpl) Consume(amount int, title string, outerNo string) error {
 	l := w.createWalletLog(wallet.KConsume, amount, title, 0, "")
 	l.OuterNo = outerNo
 	l.Balance = w._value.Balance
+	l.Remark = remark
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()

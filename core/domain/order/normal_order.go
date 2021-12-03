@@ -1565,7 +1565,7 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
-	ip :=  o.GetPaymentOrder()
+	ip := o.GetPaymentOrder()
 	if ip != nil {
 		return ip.Cancel()
 	}

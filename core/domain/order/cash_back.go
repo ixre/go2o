@@ -205,7 +205,7 @@ func backCashForMember(m member.IMember, o order.IOrder,
 	if err == nil {
 		orderNo := o.OrderNo()
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
-			format.FormatIntAmount(bFee), orderNo, refName)
+			format.FormatIntMoney(bFee), orderNo, refName)
 		err = acc.Charge(member.AccountWallet, tit,
 			fee*100, orderNo, "sys")
 	}
