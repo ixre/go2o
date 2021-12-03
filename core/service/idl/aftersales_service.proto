@@ -114,12 +114,12 @@ message PagingSellerOrdersRequest {
 
 message PagingBuyerAfterSalesOrderListResponse {
     int64 total = 1;
-    repeated SPagingBuyerAfterSalesOrder data = 2;
+    repeated SPagingBuyerAfterSalesOrder Data = 2;
 }
 
 message PagingSellerAfterSalesOrderListResponse {
     int64 total = 1;
-    repeated SPagingSellerAfterSalesOrder data = 2;
+    repeated SPagingSellerAfterSalesOrder Data = 2;
 }
 
 // 售后单

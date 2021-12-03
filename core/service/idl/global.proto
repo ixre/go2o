@@ -30,7 +30,7 @@ message Result {
     /* 消息 */
     string ErrMsg = 2;
     /** 数据字典 */
-    map<string, string> data = 3;
+    map<string, string> Data = 3;
 }
 
 // 键值对

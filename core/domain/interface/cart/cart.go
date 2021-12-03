@@ -34,6 +34,9 @@ var (
 
 	ErrItemNoSku = domain.NewError(
 		"err_cart_item_no_sku", "请选择商品规格")
+
+	ErrNoMatchItem = domain.NewError(
+		"err_cart_no_match_item", "购物车不存在该商品")
 )
 
 const (

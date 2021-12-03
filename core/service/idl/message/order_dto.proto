@@ -88,7 +88,7 @@ message SOrderItem {
 //    int64 amount = 8;
 //    int64 FinalAmount = 9;
 //    sint32 IsShipped = 10;
-//    map<string, string> data = 11;
+//    map<string, string> Data = 11;
 //}
 
 message SParentOrder {

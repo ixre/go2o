@@ -41,7 +41,7 @@ message FavoriteQueryRequest {
 
 message PagingShopFavoriteResponse {
     int64 total = 1;
-    repeated SPagingShopFavorite data = 2;
+    repeated SPagingShopFavorite Data = 2;
 }
 
 message SPagingShopFavorite {
@@ -53,7 +53,7 @@ message SPagingShopFavorite {
 }
 message PagingGoodsFavoriteResponse {
     int64 total = 1;
-    repeated SPagingGoodsFavorite data = 2;
+    repeated SPagingGoodsFavorite Data = 2;
 }
 message SPagingGoodsFavorite {
     int64 Id = 1;

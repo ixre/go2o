@@ -367,6 +367,7 @@ func (c *wholesaleCartImpl) Remove(itemId, skuId int64, quantity int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
+	exists := false
 	// 删除数量
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
@@ -375,12 +376,15 @@ func (c *wholesaleCartImpl) Remove(itemId, skuId int64, quantity int32) error {
 			} else {
 				v.Quantity = newNum
 			}
+			exists = true
 			break
 		}
 	}
-	c.snapMap = nil //clean
-
-	return nil
+	if exists {
+		c.snapMap = nil //clean
+		return nil
+	}
+	return cart.ErrNoMatchItem
 }
 
 // 获取购物车编码

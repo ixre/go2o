@@ -84,7 +84,7 @@ service PaymentService {
      *
      * @param storeCode 店铺编号
      * @param tradeNo   交易号
-     * @param data  支付数据
+     * @param Data  支付数据
      * @return 支付结果,返回:order_state
      */
     rpc MixedPayment (MixedPaymentRequest) returns (Result) {
