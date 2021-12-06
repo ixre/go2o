@@ -136,7 +136,7 @@ service MemberService {
     rpc ModifyPassword (ModifyPasswordRequest) returns (Result) {
     }
     /** 更改交易密码 */
-    rpc ModifyTradePasswd (ModifyPasswordRequest) returns (Result) {
+    rpc ModifyTradePassword (ModifyPasswordRequest) returns (Result) {
     }
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {

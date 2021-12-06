@@ -634,7 +634,7 @@ func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswor
 }
 
 // 更改交易密码
-func (s *memberService) ModifyTradePasswd(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
+func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil

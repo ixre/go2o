@@ -385,7 +385,7 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyTradePasswd(context.TODO(), &proto.ModifyPasswordRequest{
+		r, _ := cli.ModifyTradePassword(context.TODO(), &proto.ModifyPasswordRequest{
 			MemberId:  memberId,
 			OriginPwd: oldPwd,
 			NewPwd:    pwd,
@@ -434,7 +434,7 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyTradePasswd(context.TODO(), &proto.ModifyPasswordRequest{
+		r, _ := cli.ModifyTradePassword(context.TODO(), &proto.ModifyPasswordRequest{
 			MemberId:  memberId,
 			OriginPwd: "",
 			NewPwd:    pwd,

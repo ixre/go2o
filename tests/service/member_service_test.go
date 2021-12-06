@@ -48,7 +48,7 @@ func TestPagingWalletLog(t *testing.T) {
 func TestCheckTradePwd(t *testing.T) {
 	memberId := 22149
 	pwd := domain.Md5("123456")
-	//r2,_ := impl.MemberService.ModifyTradePasswd(context.TODO(),int64(memberId),"",pwd)
+	//r2,_ := impl.MemberService.ModifyTradePassword(context.TODO(),int64(memberId),"",pwd)
 	//t.Logf("%#v", r2)
 
 	r, _ := impl.MemberService.VerifyTradePwd(context.TODO(),
