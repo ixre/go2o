@@ -55,7 +55,7 @@ func TestPassportApi_ResetPwd(t *testing.T) {
 	testApi(t, "passport.reset_pwd", mp, true)
 }
 
-func TestPassportApi_ModifyPwd(t *testing.T) {
+func TestPassportApi_ModifyPassword(t *testing.T) {
 	mp := map[string]string{
 		"account":   phone2,
 		"cred_type": strconv.Itoa(int(proto.ECredentials_PHONE)),

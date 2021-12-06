@@ -608,7 +608,7 @@ func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.Int64)
 }
 
 // 更改密码
-func (s *memberService) ModifyPwd(_ context.Context, r *proto.ModifyPwdRequest) (*proto.Result, error) {
+func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
@@ -634,7 +634,7 @@ func (s *memberService) ModifyPwd(_ context.Context, r *proto.ModifyPwdRequest) 
 }
 
 // 更改交易密码
-func (s *memberService) ModifyTradePwd(_ context.Context, r *proto.ModifyPwdRequest) (*proto.Result, error) {
+func (s *memberService) ModifyTradePasswd(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil

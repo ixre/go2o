@@ -127,7 +127,7 @@ message ChangeUserRequest {
     sint64 MemberId = 1;
     string User =  2;
 }
-message ModifyPwdRequest {
+message ModifyPasswordRequest {
     sint64 MemberId = 1;
     string OriginPwd = 2;
     string NewPwd = 3;

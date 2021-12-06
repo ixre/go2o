@@ -85,7 +85,7 @@ func TestGetMember(t *testing.T) {
 	t.Logf("%#v", m.GetValue())
 }
 
-func TestModifyPwd(t *testing.T) {
+func TestModifyPassword(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(2)
 	newPwd := domain.MemberSha1Pwd(domain.Md5("13268240456"), m.GetValue().Salt)

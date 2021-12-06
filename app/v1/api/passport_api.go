@@ -43,7 +43,7 @@ func (m PassportApi) Process(fn string, ctx api.Context) *api.Response {
 		"get_token":       m.getToken,
 		"send_code":       m.sendCode,
 		"compare_code":    m.compareCode,
-		"modify_pwd":      m.modifyPwd,
+		"modify_pwd":      m.ModifyPassword,
 		"reset_pwd":       m.resetPwd,
 		"trade_pwd":       m.tradePwd,
 		"reset_trade_pwd": m.resetTradePwd,
@@ -283,7 +283,7 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyPwd(context.TODO(), &proto.ModifyPwdRequest{
+		r, _ := cli.ModifyPassword(context.TODO(), &proto.ModifyPasswordRequest{
 			MemberId:  memberId,
 			OriginPwd: "",
 			NewPwd:    pwd,
@@ -311,7 +311,7 @@ func (h PassportApi) resetPwd(ctx api.Context) interface{} {
  * {"code":1,"message":"api not defined"}
  *
  */
-func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
+func (h PassportApi) ModifyPassword(ctx api.Context) interface{} {
 	token := strings.TrimSpace(ctx.Form().GetString("token"))
 	pwd := strings.TrimSpace(ctx.Form().GetString("pwd"))
 	oldPwd := strings.TrimSpace(ctx.Form().GetString("old_pwd"))
@@ -334,7 +334,7 @@ func (h PassportApi) modifyPwd(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyPwd(context.TODO(), &proto.ModifyPwdRequest{
+		r, _ := cli.ModifyPassword(context.TODO(), &proto.ModifyPasswordRequest{
 			MemberId:  memberId,
 			OriginPwd: oldPwd,
 			NewPwd:    pwd,
@@ -385,7 +385,7 @@ func (h PassportApi) tradePwd(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyTradePwd(context.TODO(), &proto.ModifyPwdRequest{
+		r, _ := cli.ModifyTradePasswd(context.TODO(), &proto.ModifyPasswordRequest{
 			MemberId:  memberId,
 			OriginPwd: oldPwd,
 			NewPwd:    pwd,
@@ -434,7 +434,7 @@ func (h PassportApi) resetTradePwd(ctx api.Context) interface{} {
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
-		r, _ := cli.ModifyTradePwd(context.TODO(), &proto.ModifyPwdRequest{
+		r, _ := cli.ModifyTradePasswd(context.TODO(), &proto.ModifyPasswordRequest{
 			MemberId:  memberId,
 			OriginPwd: "",
 			NewPwd:    pwd,

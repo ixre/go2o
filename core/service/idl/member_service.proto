@@ -133,10 +133,10 @@ service MemberService {
     rpc ChangeAvatar (AvatarRequest) returns (Result) {
     }
     /** 更改密码 */
-    rpc ModifyPwd (ModifyPwdRequest) returns (Result) {
+    rpc ModifyPassword (ModifyPasswordRequest) returns (Result) {
     }
     /** 更改交易密码 */
-    rpc ModifyTradePwd (ModifyPwdRequest) returns (Result) {
+    rpc ModifyTradePasswd (ModifyPasswordRequest) returns (Result) {
     }
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {
