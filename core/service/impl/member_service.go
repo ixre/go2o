@@ -471,7 +471,7 @@ func (s *memberService) updateMember(v *proto.SMember) (int64, error) {
 
 // 注册会员
 func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberRequest) (*proto.RegisterResponse, error) {
-	if len(r.Pwd) != 32 {
+	if len(r.Password) != 32 {
 		return &proto.RegisterResponse{
 			ErrCode: 1,
 			ErrMsg:  de.ErrNotMD5Format.Error(),
@@ -481,7 +481,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	v := &member.Member{
 		User:     r.User,
 		Salt:     salt,
-		Pwd:      domain.Sha1Pwd(r.Pwd, salt),
+		Pwd:      domain.Sha1Pwd(r.Password, salt),
 		Name:     r.Name,
 		RealName: "",
 		Avatar:   "", //todo: default avatar
@@ -614,9 +614,9 @@ func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswor
 		return s.error(member.ErrNoSuchMember), nil
 	}
 	v := m.GetValue()
-	pwd := r.NewPwd
-	old := r.OriginPwd
-	if l := len(r.NewPwd); l != 32 {
+	pwd := r.NewPassword
+	old := r.OriginPassword
+	if l := len(r.NewPassword); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.MemberSha1Pwd(pwd, v.Salt)
@@ -639,17 +639,17 @@ func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPa
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	pwd, old := r.NewPwd, r.OriginPwd
+	pwd, old := r.NewPassword, r.OriginPassword
 	v := m.GetValue()
 	if l := len(pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		pwd = domain.TradePwd(pwd, v.Salt)
+		pwd = domain.TradePassword(pwd, v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		old = domain.TradePwd(old, v.Salt)
+		old = domain.TradePassword(old, v.Salt)
 	}
 	err := m.Profile().ModifyTradePassword(pwd, old)
 	if err != nil {
@@ -685,7 +685,7 @@ func (s *memberService) tryLogin(user string, pwd string) (id int64, errCode int
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.Result, error) {
-	id, code, err := s.tryLogin(r.User, r.Pwd)
+	id, code, err := s.tryLogin(r.User, r.Password)
 	if err != nil {
 		r := s.error(err)
 		r.ErrCode = code
@@ -705,20 +705,20 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 }
 
 // 检查交易密码
-func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.PwdVerifyRequest) (*proto.Result, error) {
+func (s *memberService) VerifyTradePassword(_ context.Context, r *proto.VerifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
 	mv := m.GetValue()
-	if mv.TradePwd == "" {
-		return s.error(member.ErrNotSetTradePwd), nil
+	if mv.TradePassword == "" {
+		return s.error(member.ErrNotSetTradePassword), nil
 	}
-	if len(r.Pwd) != 32 {
+	if len(r.Password) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	if encPwd := domain.TradePwd(r.Pwd, mv.Salt); mv.TradePwd != encPwd {
-		return s.error(member.ErrIncorrectTradePwd), nil
+	if encPwd := domain.TradePassword(r.Password, mv.Salt); mv.TradePassword != encPwd {
+		return s.error(member.ErrIncorrectTradePassword), nil
 	}
 	return s.success(nil), nil
 }
@@ -1439,8 +1439,8 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Id:             src.Id,
 		User:           src.User,
 		Code:           src.Code,
-		Pwd:            src.Pwd,
-		TradePwd:       src.TradePwd,
+		Password:       src.Pwd,
+		TradePassword:  src.TradePassword,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
@@ -1488,16 +1488,16 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 
 func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
-		Name:           src.Name,
-		Avatar:         src.Avatar,
-		Exp:            int32(src.Exp),
-		Level:          int32(src.Level),
-		LevelName:      src.LevelName,
-		PremiumUser:    int32(src.PremiumUser),
-		InviteCode:     src.InviteCode,
-		TrustAuthState: int32(src.TrustAuthState),
-		TradePwdHasSet: src.TradePwdHasSet,
-		UpdateTime:     src.UpdateTime,
+		Name:                src.Name,
+		Avatar:              src.Avatar,
+		Exp:                 int32(src.Exp),
+		Level:               int32(src.Level),
+		LevelName:           src.LevelName,
+		PremiumUser:         int32(src.PremiumUser),
+		InviteCode:          src.InviteCode,
+		TrustAuthState:      int32(src.TrustAuthState),
+		TradePasswordHasSet: src.TradePasswordHasSet,
+		UpdateTime:          src.UpdateTime,
 	}
 }
 
@@ -1545,14 +1545,14 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 
 func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 	return &member.Member{
-		Id:             int64(src.Id),
+		Id:             src.Id,
 		Code:           src.Code,
 		Name:           src.Name,
 		RealName:       src.RealName,
 		User:           src.User,
-		Pwd:            src.Pwd,
+		Pwd:            src.Password,
 		Avatar:         src.Avatar,
-		TradePwd:       src.TradePwd,
+		TradePassword:  src.TradePassword,
 		Exp:            int(src.Exp),
 		Level:          int(src.Level),
 		InviteCode:     src.InviteCode,

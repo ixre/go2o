@@ -21,7 +21,7 @@ message RegisterMemberRequest {
     // 用户名
     string User = 1;
     // 密码(md5)
-    string Pwd = 2;
+    string Password = 2;
     // 昵称
     string Name = 3;
     // 手机
@@ -41,7 +41,7 @@ message RegisterMemberRequest {
 
 message LoginRequest {
     string User = 1;
-    string Pwd = 2;
+    string Password = 2;
     bool Update = 3;
 }
 // 注册结果
@@ -55,9 +55,9 @@ message RegisterResponse {
 }
 
 // 密码验证请求
-message PwdVerifyRequest {
+message VerifyPasswordRequest {
     sint64 MemberId = 1;
-    string Pwd = 2;
+    string Password = 2;
 }
 
 message FindMemberRequest {
@@ -129,8 +129,8 @@ message ChangeUserRequest {
 }
 message ModifyPasswordRequest {
     sint64 MemberId = 1;
-    string OriginPwd = 2;
-    string NewPwd = 3;
+    string OriginPassword = 2;
+    string NewPassword = 3;
 }
 message ChangeInviterRequest {
     sint64 MemberId = 1;
@@ -238,9 +238,9 @@ message SMember {
     /** 用户名 */
     string User =  2;
     /** 密码 */
-    string Pwd = 3;
+    string Password = 3;
     /** 交易密码 */
-    string TradePwd = 4;
+    string TradePassword = 4;
     /** 经验值 */
     sint64 Exp = 5;
     /** 等级  */
@@ -341,7 +341,7 @@ message SComplexMember {
     sint32 Flag = 10;
     sint64 UpdateTime = 11;
     /** 交易密码是否已设置 */
-    bool TradePwdHasSet = 12;
+    bool TradePasswordHasSet = 12;
 }
 
 message SMemberRelation {

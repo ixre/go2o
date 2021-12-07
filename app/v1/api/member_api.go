@@ -84,9 +84,9 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 	}
 	defer trans.Close()
 	r, _ := cli.CheckLogin(context.TODO(), &proto.LoginRequest{
-		User:   user,
-		Pwd:    pwd,
-		Update: true,
+		User:     user,
+		Password: pwd,
+		Update:   true,
 	})
 	if r.ErrCode == 0 {
 		memberId, _ := strconv.Atoi(r.Data["id"])

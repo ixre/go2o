@@ -85,7 +85,7 @@ func (m RegisterApi) submit(ctx api.Context) interface{} {
 		defer trans.Close()
 		r, _ := cli.Register(context.TODO(), &proto.RegisterMemberRequest{
 			User:        user,
-			Pwd:         pwd,
+			Password:    pwd,
 			Flag:        0,
 			Name:        "",
 			Phone:       phone,

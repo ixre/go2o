@@ -136,9 +136,9 @@ type (
 		// 检查资料是否完善
 		CheckProfileComplete() error
 		// 修改密码,旧密码可为空; 传入原始密码。密码均为密文
-		ModifyPassword(newPwd, oldPwd string) error
+		ModifyPassword(NewPassword, oldPwd string) error
 		// 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
-		ModifyTradePassword(newPwd, oldPwd string) error
+		ModifyTradePassword(NewPassword, oldPwd string) error
 		// 获取提现银行信息
 		GetBankCards() []BankCard
 		// 获取绑定的银行卡
@@ -202,7 +202,7 @@ type (
 		// 实名认证状态
 		TrustAuthState int
 		// 交易密码是否已设置
-		TradePwdHasSet bool
+		TradePasswordHasSet bool
 		// 高级会员类型
 		PremiumUser int
 		// 会员标志
@@ -229,7 +229,7 @@ type (
 		// 头像
 		Avatar string `db:"avatar"`
 		// 交易密码
-		TradePwd string `db:"trade_pwd"`
+		TradePassword string `db:"trade_pwd"`
 		// 经验值
 		Exp int `db:"exp"`
 		// 等级

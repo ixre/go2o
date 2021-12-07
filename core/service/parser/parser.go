@@ -23,8 +23,8 @@ func MemberDto(src *member.Member) *proto.SMember {
 		Id:             src.Id,
 		User:           src.User,
 		Code:           src.Code,
-		Pwd:            src.Pwd,
-		TradePwd:       src.TradePwd,
+		Password:       src.Pwd,
+		TradePassword:  src.TradePassword,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
@@ -47,16 +47,16 @@ func MemberDto(src *member.Member) *proto.SMember {
 
 func ComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
-		Name:           src.Name,
-		Avatar:         src.Avatar,
-		Exp:            int32(src.Exp),
-		Level:          int32(src.Level),
-		LevelName:      src.LevelName,
-		PremiumUser:    int32(src.PremiumUser),
-		InviteCode:     src.InviteCode,
-		TrustAuthState: int32(src.TrustAuthState),
-		TradePwdHasSet: src.TradePwdHasSet,
-		UpdateTime:     src.UpdateTime,
+		Name:                src.Name,
+		Avatar:              src.Avatar,
+		Exp:                 int32(src.Exp),
+		Level:               int32(src.Level),
+		LevelName:           src.LevelName,
+		PremiumUser:         int32(src.PremiumUser),
+		InviteCode:          src.InviteCode,
+		TrustAuthState:      int32(src.TrustAuthState),
+		TradePasswordHasSet: src.TradePasswordHasSet,
+		UpdateTime:          src.UpdateTime,
 	}
 }
 

@@ -196,9 +196,9 @@ var (
 	ErrQqValidErr = domain.NewError(
 		"err_qq_valid_err", "QQ号码不正确")
 
-	ErrNotSetTradePwd = domain.NewError("err_not_set_trade_pwd", "交易密码未设置")
+	ErrNotSetTradePassword = domain.NewError("err_not_set_trade_pwd", "交易密码未设置")
 
-	ErrIncorrectTradePwd            = domain.NewError("err_incorrect_trade_pwd", "交易密码错误")
+	ErrIncorrectTradePassword       = domain.NewError("err_incorrect_trade_pwd", "交易密码错误")
 	ErrNoSuchLogTitleOrRemark       = domain.NewError("err_member_no_such_log_title_or_remark", "缺少账户变动的标题和备注")
 	ErrNotSupportAccountType        = domain.NewError("err_account_not_support", "账户类型不支持此操作")
 	ErrNotSupportPaymentAccountType = domain.NewError("err_account_not_support_payment", "不支持支付的账户类型")

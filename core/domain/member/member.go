@@ -83,18 +83,18 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	pf := m.Profile()
 	tr := pf.GetTrustedInfo()
 	s := &member.ComplexMember{
-		Name:           mv.Name,
-		RealName:       mv.RealName,
-		Avatar:         format.GetResUrl(mv.Avatar),
-		Exp:            mv.Exp,
-		Level:          mv.Level,
-		LevelName:      lv.Name,
-		InviteCode:     mv.InviteCode,
-		TrustAuthState: tr.ReviewState,
-		TradePwdHasSet: mv.TradePwd != "",
-		PremiumUser:    mv.PremiumUser,
-		Flag:           mv.Flag,
-		UpdateTime:     mv.UpdateTime,
+		Name:                mv.Name,
+		RealName:            mv.RealName,
+		Avatar:              format.GetResUrl(mv.Avatar),
+		Exp:                 mv.Exp,
+		Level:               mv.Level,
+		LevelName:           lv.Name,
+		InviteCode:          mv.InviteCode,
+		TrustAuthState:      tr.ReviewState,
+		TradePasswordHasSet: mv.TradePassword != "",
+		PremiumUser:         mv.PremiumUser,
+		Flag:                mv.Flag,
+		UpdateTime:          mv.UpdateTime,
 	}
 	return s
 }
@@ -156,8 +156,8 @@ func (m *memberImpl) SetValue(v *member.Member) error {
 	if v.Level > 0 {
 		m.value.Level = v.Level
 	}
-	if len(v.TradePwd) == 0 {
-		m.value.TradePwd = v.TradePwd
+	if len(v.TradePassword) == 0 {
+		m.value.TradePassword = v.TradePassword
 	}
 	return nil
 }

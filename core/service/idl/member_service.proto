@@ -28,7 +28,7 @@ service MemberService {
     rpc CheckLogin (LoginRequest) returns (Result) {
     }
     /** 验证交易密码 */
-    rpc VerifyTradePwd (PwdVerifyRequest) returns (Result) {
+    rpc VerifyTradePassword (VerifyPasswordRequest) returns (Result) {
     }
     /** 等级列表 */
     rpc GetLevels (Empty) returns (SMemberLevelListResponse) {

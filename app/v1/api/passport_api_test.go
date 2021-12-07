@@ -66,7 +66,7 @@ func TestPassportApi_ModifyPassword(t *testing.T) {
 	testApi(t, "passport.modify_pwd", mp, true)
 }
 
-func TestPassportApi_TradePwd(t *testing.T) {
+func TestPassportApi_TradePassword(t *testing.T) {
 	mp := map[string]string{
 		"account":   phone2,
 		"cred_type": strconv.Itoa(int(proto.ECredentials_PHONE)),

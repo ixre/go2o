@@ -350,36 +350,36 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 }
 
 // 修改密码,旧密码可为空
-func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
-	if b, err := dm.ChkPwdRight(newPwd); !b {
+func (p *profileManagerImpl) ModifyPassword(NewPassword, oldPwd string) error {
+	if b, err := dm.ChkPwdRight(NewPassword); !b {
 		return err
 	}
 	if len(oldPwd) != 0 {
-		if newPwd == oldPwd {
+		if NewPassword == oldPwd {
 			return domain.ErrPwdCannotSame
 		}
 		if oldPwd != p.member.value.Pwd {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p.member.value.Pwd = newPwd
+	p.member.value.Pwd = NewPassword
 	_, err := p.member.Save()
 	return err
 }
 
 // 修改交易密码，旧密码可为空
-func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
-	if newPwd == oldPwd {
+func (p *profileManagerImpl) ModifyTradePassword(NewPassword, oldPwd string) error {
+	if NewPassword == oldPwd {
 		return domain.ErrPwdCannotSame
 	}
-	if b, err := dm.ChkPwdRight(newPwd); !b {
+	if b, err := dm.ChkPwdRight(NewPassword); !b {
 		return err
 	}
 	// 已经设置过旧密码
-	if len(oldPwd) != 0 && p.member.value.TradePwd != oldPwd {
+	if len(oldPwd) != 0 && p.member.value.TradePassword != oldPwd {
 		return domain.ErrPwdOldPwdNotRight
 	}
-	p.member.value.TradePwd = newPwd
+	p.member.value.TradePassword = NewPassword
 	_, err := p.member.Save()
 	return err
 }

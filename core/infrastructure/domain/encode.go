@@ -53,7 +53,7 @@ func MemberSha1Pwd(pwd string, salt string) string {
 }
 
 // 交易密码
-func TradePwd(pwd string, salt string) string {
+func TradePassword(pwd string, salt string) string {
 	if pwd == "" {
 		return ""
 	}

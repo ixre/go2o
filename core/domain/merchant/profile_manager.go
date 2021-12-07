@@ -127,19 +127,19 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 }
 
 // 修改密码
-func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
-	if b, err := dm.ChkPwdRight(newPwd); !b {
+func (p *profileManagerImpl) ModifyPassword(NewPassword, oldPwd string) error {
+	if b, err := dm.ChkPwdRight(NewPassword); !b {
 		return err
 	}
 	if len(oldPwd) != 0 {
-		if newPwd == oldPwd {
+		if NewPassword == oldPwd {
 			return domain.ErrPwdCannotSame
 		}
 		if oldPwd != p._value.LoginPwd {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p._value.LoginPwd = newPwd
+	p._value.LoginPwd = NewPassword
 	_, err := p.Save()
 	return err
 }

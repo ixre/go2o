@@ -88,13 +88,13 @@ func TestGetMember(t *testing.T) {
 func TestModifyPassword(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(2)
-	newPwd := domain.MemberSha1Pwd(domain.Md5("13268240456"), m.GetValue().Salt)
-	err := m.Profile().ModifyPassword(newPwd, "")
+	NewPassword := domain.MemberSha1Pwd(domain.Md5("13268240456"), m.GetValue().Salt)
+	err := m.Profile().ModifyPassword(NewPassword, "")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	if o := m.GetValue().Pwd; o != newPwd {
+	if o := m.GetValue().Pwd; o != NewPassword {
 		t.Logf("登陆密码不正确")
 		t.FailNow()
 	}
