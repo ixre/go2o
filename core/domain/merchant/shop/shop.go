@@ -143,7 +143,9 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	dst.Tel = v.Tel
 	dst.Addr = v.Addr
 	dst.State = v.State
+	dst.Host = v.Host
 	dst.ShopTitle = v.ShopTitle
+	dst.ShopName = v.ShopName
 	dst.ShopNotice = v.ShopNotice
 	return err
 }
