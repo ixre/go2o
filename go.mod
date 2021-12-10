@@ -29,7 +29,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.11.2
+	github.com/ixre/gof v1.11.3
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/lib/pq v1.10.3 // indirect
 	github.com/micro/go-micro v1.18.0

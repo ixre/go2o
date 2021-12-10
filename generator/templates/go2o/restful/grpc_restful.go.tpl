@@ -11,7 +11,6 @@ package restful
 import (
   "context"
   "encoding/json"
-  "github.com/ixre/goex/echox"
   "github.com/ixre/gof/types/typeconv"
   "github.com/labstack/echo/v4"
   "{{pkg "go" .global.pkg}}/service"
@@ -25,7 +24,7 @@ var _ echox.GroupHandler = new({{$structName}});
 type {{$structName}} struct{
 }
 
-func ({{$p}} *{{$structName}}) Handle(g *echo.Group) {
+func ({{$p}} *{{$structName}}) Routes(g *echo.Group) {
   // {{.table.Name}} router
   g.GET("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
   g.GET("/{{$namePath}}/:id",{{$p}}.get{{$shortTitle}})

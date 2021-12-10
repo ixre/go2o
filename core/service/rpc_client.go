@@ -1,6 +1,6 @@
 /**
  * Copyright 2015 @ at3.net.
- * name : client.go
+ * name : restful_client.go
  * author : jarryliu
  * date : 2016-11-13 12:32
  * description :
