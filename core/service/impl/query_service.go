@@ -49,19 +49,19 @@ func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRe
 		Value: make([]*proto.QueryPagingShop, n),
 	}
 	if len(rows) > 0 {
-		for _, v := range rows {
+		for i, v := range rows {
 			v.Logo = format.GetResUrl(v.Logo)
 			if v.Host == "" {
 				v.Host = v.Alias + "." + variable.Domain
 			}
-			ret.Value = append(ret.Value, &proto.QueryPagingShop{
+			ret.Value[i] = &proto.QueryPagingShop{
 				Id:         v.Id,
 				Name:       v.Name,
 				Alias:      v.Alias,
 				Host:       v.Host,
 				Logo:       v.Logo,
 				CreateTime: v.CreateTime,
-			})
+			}
 		}
 	}
 	return ret, nil
