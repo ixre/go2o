@@ -37,6 +37,7 @@ var portalNavDaoImplMapped = false
 func NewPortalDao(o orm.Orm) dao.IPortalDao {
 	if !portalNavDaoImplMapped {
 		_ = o.Mapping(model.PortalNav{}, "portal_nav")
+		_ = o.Mapping(model.NavGroup{}, "portal_nav_group")
 		portalNavDaoImplMapped = true
 	}
 	return &portalNavDaoImpl{
@@ -136,4 +137,45 @@ func (p *portalNavDaoImpl) PagingQueryNav(begin, end int, where, orderBy string)
 		rows = make([]map[string]interface{}, 0)
 	}
 	return total, rows
+}
+
+// Get 导航分组
+func (p *portalNavDaoImpl) GetNavGroup(primary interface{}) *model.NavGroup {
+	e := model.NavGroup{}
+	err := p._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:NavGroup")
+	}
+	return nil
+}
+
+// Select 导航分组
+func (p *portalNavDaoImpl) SelectNavGroup(where string, v ...interface{}) []*model.NavGroup {
+	list := make([]*model.NavGroup, 0)
+	err := p._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:NavGroup")
+	}
+	return list
+}
+
+// Save 导航分组
+func (p *portalNavDaoImpl) SaveNavGroup(v *model.NavGroup) (int, error) {
+	id, err := orm.Save(p._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:NavGroup")
+	}
+	return id, err
+}
+
+// Delete 导航分组
+func (p *portalNavDaoImpl) DeleteNavGroup(primary interface{}) error {
+	err := p._orm.DeleteByPk(model.NavGroup{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:NavGroup")
+	}
+	return err
 }

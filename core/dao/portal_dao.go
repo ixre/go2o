@@ -34,4 +34,13 @@ type IPortalDao interface {
 	DeleteNav(primary interface{}) error
 	// Batch Delete 门户导航
 	BatchDeleteNav(where string, v ...interface{}) (int64, error)
+
+	// Get 导航分组
+	GetNavGroup(primary interface{}) *model.NavGroup
+	// Select 导航分组
+	SelectNavGroup(where string, v ...interface{}) []*model.NavGroup
+	// Save 导航分组
+	SaveNavGroup(v *model.NavGroup) (int, error)
+	// Delete 导航分组
+	DeleteNavGroup(primary interface{}) error
 }

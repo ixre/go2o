@@ -1,9 +1,9 @@
 package model
 #!target:{{.global.pkg}}/dao/model/{{.table.Name}}_model.go
-{{$structName := .table.Title}}
+{{$shortTitle := .table.ShortTitle}}
 
 // {{.table.Comment}}
-type {{$structName}} struct{
+type {{$shortTitle}} struct{
     {{range $i,$c := .columns}} \
     // {{$c.Comment}}
     {{$c.Prop}} {{type "go" $c.Type}} `db:"{{$c.Name}}"\

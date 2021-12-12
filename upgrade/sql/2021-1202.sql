@@ -313,3 +313,15 @@ ALTER COLUMN type TYPE smallint USING type::text::smallint;
 /** 2012-12-12 */
 COMMENT ON TABLE public.portal_nav
   IS '门户导航';
+
+ALTER TABLE IF EXISTS public.portal_nav_type
+    RENAME TO portal_nav_group;
+
+COMMENT ON TABLE public.portal_nav_group
+  IS '导航分组';
+
+ALTER TABLE IF EXISTS public.portal_nav
+    ADD COLUMN nav_group character varying(20) DEFAULT '' NOT NULL;
+
+COMMENT ON COLUMN public.portal_nav.nav_group
+    IS '导航分组';

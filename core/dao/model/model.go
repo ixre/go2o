@@ -21,6 +21,16 @@ type (
 		Image  string `db:"image"`
 		// 导航类型: 1为电脑，2为手机端
 		NavType int32 `db:"nav_type"`
+		// 分组
+		NavGroup string `db:"nav_group"`
+	}
+
+	// 导航分组
+	NavGroup struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 名称
+		Name string `db:"name"`
 	}
 	// 二维码模板
 	QrTemplate struct {

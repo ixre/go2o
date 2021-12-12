@@ -35,7 +35,9 @@ type SaveNavRequest struct {
 	// * 链接图片
 	Image string `protobuf:"bytes,5,opt,name=Image,proto3" json:"Image"`
 	// * 导航类型: 1为电脑，2为手机端
-	NavType              int32    `protobuf:"varint,6,opt,name=NavType,proto3" json:"NavType"`
+	NavType int32 `protobuf:"varint,6,opt,name=NavType,proto3" json:"NavType"`
+	// * 导航分组
+	NavGroup             string   `protobuf:"bytes,7,opt,name=NavGroup,proto3" json:"NavGroup"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -45,7 +47,7 @@ func (m *SaveNavRequest) Reset()         { *m = SaveNavRequest{} }
 func (m *SaveNavRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveNavRequest) ProtoMessage()    {}
 func (*SaveNavRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_ace962826c6b518d, []int{0}
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{0}
 }
 func (m *SaveNavRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavRequest.Unmarshal(m, b)
@@ -107,6 +109,61 @@ func (m *SaveNavRequest) GetNavType() int32 {
 	return 0
 }
 
+func (m *SaveNavRequest) GetNavGroup() string {
+	if m != nil {
+		return m.NavGroup
+	}
+	return ""
+}
+
+type SNavGroup struct {
+	// * 编号
+	Id int32 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// * 名称
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SNavGroup) Reset()         { *m = SNavGroup{} }
+func (m *SNavGroup) String() string { return proto.CompactTextString(m) }
+func (*SNavGroup) ProtoMessage()    {}
+func (*SNavGroup) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{1}
+}
+func (m *SNavGroup) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SNavGroup.Unmarshal(m, b)
+}
+func (m *SNavGroup) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SNavGroup.Marshal(b, m, deterministic)
+}
+func (dst *SNavGroup) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SNavGroup.Merge(dst, src)
+}
+func (m *SNavGroup) XXX_Size() int {
+	return xxx_messageInfo_SNavGroup.Size(m)
+}
+func (m *SNavGroup) XXX_DiscardUnknown() {
+	xxx_messageInfo_SNavGroup.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SNavGroup proto.InternalMessageInfo
+
+func (m *SNavGroup) GetId() int32 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SNavGroup) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
 type SaveNavResponse struct {
 	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
@@ -120,7 +177,7 @@ func (m *SaveNavResponse) Reset()         { *m = SaveNavResponse{} }
 func (m *SaveNavResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveNavResponse) ProtoMessage()    {}
 func (*SaveNavResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_ace962826c6b518d, []int{1}
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{2}
 }
 func (m *SaveNavResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavResponse.Unmarshal(m, b)
@@ -172,7 +229,7 @@ func (m *PortalNavId) Reset()         { *m = PortalNavId{} }
 func (m *PortalNavId) String() string { return proto.CompactTextString(m) }
 func (*PortalNavId) ProtoMessage()    {}
 func (*PortalNavId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_ace962826c6b518d, []int{2}
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{3}
 }
 func (m *PortalNavId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PortalNavId.Unmarshal(m, b)
@@ -211,7 +268,9 @@ type SNav struct {
 	// * 链接图片
 	Image string `protobuf:"bytes,5,opt,name=Image,proto3" json:"Image"`
 	// * 导航类型: 1为电脑，2为手机端
-	NavType              int32    `protobuf:"varint,6,opt,name=NavType,proto3" json:"NavType"`
+	NavType int32 `protobuf:"varint,6,opt,name=NavType,proto3" json:"NavType"`
+	// * 导航分组
+	NavGroup             string   `protobuf:"bytes,7,opt,name=NavGroup,proto3" json:"NavGroup"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -221,7 +280,7 @@ func (m *SNav) Reset()         { *m = SNav{} }
 func (m *SNav) String() string { return proto.CompactTextString(m) }
 func (*SNav) ProtoMessage()    {}
 func (*SNav) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_ace962826c6b518d, []int{3}
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{4}
 }
 func (m *SNav) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SNav.Unmarshal(m, b)
@@ -283,8 +342,18 @@ func (m *SNav) GetNavType() int32 {
 	return 0
 }
 
+func (m *SNav) GetNavGroup() string {
+	if m != nil {
+		return m.NavGroup
+	}
+	return ""
+}
+
 type QueryNavRequest struct {
 	NavType              int32    `protobuf:"varint,1,opt,name=NavType,proto3" json:"NavType"`
+	Group                string   `protobuf:"bytes,2,opt,name=Group,proto3" json:"Group"`
+	Begin                int32    `protobuf:"varint,3,opt,name=Begin,proto3" json:"Begin"`
+	Size                 int32    `protobuf:"varint,4,opt,name=Size,proto3" json:"Size"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -294,7 +363,7 @@ func (m *QueryNavRequest) Reset()         { *m = QueryNavRequest{} }
 func (m *QueryNavRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryNavRequest) ProtoMessage()    {}
 func (*QueryNavRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_ace962826c6b518d, []int{4}
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{5}
 }
 func (m *QueryNavRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavRequest.Unmarshal(m, b)
@@ -321,6 +390,27 @@ func (m *QueryNavRequest) GetNavType() int32 {
 	return 0
 }
 
+func (m *QueryNavRequest) GetGroup() string {
+	if m != nil {
+		return m.Group
+	}
+	return ""
+}
+
+func (m *QueryNavRequest) GetBegin() int32 {
+	if m != nil {
+		return m.Begin
+	}
+	return 0
+}
+
+func (m *QueryNavRequest) GetSize() int32 {
+	if m != nil {
+		return m.Size
+	}
+	return 0
+}
+
 type QueryNavResponse struct {
 	List                 []*SNav  `protobuf:"bytes,1,rep,name=List,proto3" json:"List"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -332,7 +422,7 @@ func (m *QueryNavResponse) Reset()         { *m = QueryNavResponse{} }
 func (m *QueryNavResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryNavResponse) ProtoMessage()    {}
 func (*QueryNavResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_ace962826c6b518d, []int{5}
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{6}
 }
 func (m *QueryNavResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavResponse.Unmarshal(m, b)
@@ -359,13 +449,227 @@ func (m *QueryNavResponse) GetList() []*SNav {
 	return nil
 }
 
+type QueryNavGroupRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryNavGroupRequest) Reset()         { *m = QueryNavGroupRequest{} }
+func (m *QueryNavGroupRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryNavGroupRequest) ProtoMessage()    {}
+func (*QueryNavGroupRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{7}
+}
+func (m *QueryNavGroupRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryNavGroupRequest.Unmarshal(m, b)
+}
+func (m *QueryNavGroupRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryNavGroupRequest.Marshal(b, m, deterministic)
+}
+func (dst *QueryNavGroupRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryNavGroupRequest.Merge(dst, src)
+}
+func (m *QueryNavGroupRequest) XXX_Size() int {
+	return xxx_messageInfo_QueryNavGroupRequest.Size(m)
+}
+func (m *QueryNavGroupRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryNavGroupRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryNavGroupRequest proto.InternalMessageInfo
+
+type QueryNavGroupResponse struct {
+	Value                []*SNavGroup `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *QueryNavGroupResponse) Reset()         { *m = QueryNavGroupResponse{} }
+func (m *QueryNavGroupResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryNavGroupResponse) ProtoMessage()    {}
+func (*QueryNavGroupResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{8}
+}
+func (m *QueryNavGroupResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryNavGroupResponse.Unmarshal(m, b)
+}
+func (m *QueryNavGroupResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryNavGroupResponse.Marshal(b, m, deterministic)
+}
+func (dst *QueryNavGroupResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryNavGroupResponse.Merge(dst, src)
+}
+func (m *QueryNavGroupResponse) XXX_Size() int {
+	return xxx_messageInfo_QueryNavGroupResponse.Size(m)
+}
+func (m *QueryNavGroupResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryNavGroupResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryNavGroupResponse proto.InternalMessageInfo
+
+func (m *QueryNavGroupResponse) GetValue() []*SNavGroup {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+type PortalNavGroupId struct {
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PortalNavGroupId) Reset()         { *m = PortalNavGroupId{} }
+func (m *PortalNavGroupId) String() string { return proto.CompactTextString(m) }
+func (*PortalNavGroupId) ProtoMessage()    {}
+func (*PortalNavGroupId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{9}
+}
+func (m *PortalNavGroupId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PortalNavGroupId.Unmarshal(m, b)
+}
+func (m *PortalNavGroupId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PortalNavGroupId.Marshal(b, m, deterministic)
+}
+func (dst *PortalNavGroupId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PortalNavGroupId.Merge(dst, src)
+}
+func (m *PortalNavGroupId) XXX_Size() int {
+	return xxx_messageInfo_PortalNavGroupId.Size(m)
+}
+func (m *PortalNavGroupId) XXX_DiscardUnknown() {
+	xxx_messageInfo_PortalNavGroupId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PortalNavGroupId proto.InternalMessageInfo
+
+func (m *PortalNavGroupId) GetValue() int64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+type SaveNavGroupRequest struct {
+	// * 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// * 名称
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SaveNavGroupRequest) Reset()         { *m = SaveNavGroupRequest{} }
+func (m *SaveNavGroupRequest) String() string { return proto.CompactTextString(m) }
+func (*SaveNavGroupRequest) ProtoMessage()    {}
+func (*SaveNavGroupRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{10}
+}
+func (m *SaveNavGroupRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveNavGroupRequest.Unmarshal(m, b)
+}
+func (m *SaveNavGroupRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveNavGroupRequest.Marshal(b, m, deterministic)
+}
+func (dst *SaveNavGroupRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveNavGroupRequest.Merge(dst, src)
+}
+func (m *SaveNavGroupRequest) XXX_Size() int {
+	return xxx_messageInfo_SaveNavGroupRequest.Size(m)
+}
+func (m *SaveNavGroupRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveNavGroupRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveNavGroupRequest proto.InternalMessageInfo
+
+func (m *SaveNavGroupRequest) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SaveNavGroupRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type SaveNavGroupResponse struct {
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	Id                   int64    `protobuf:"varint,3,opt,name=Id,proto3" json:"Id"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SaveNavGroupResponse) Reset()         { *m = SaveNavGroupResponse{} }
+func (m *SaveNavGroupResponse) String() string { return proto.CompactTextString(m) }
+func (*SaveNavGroupResponse) ProtoMessage()    {}
+func (*SaveNavGroupResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_e18d774665ea81c2, []int{11}
+}
+func (m *SaveNavGroupResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveNavGroupResponse.Unmarshal(m, b)
+}
+func (m *SaveNavGroupResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveNavGroupResponse.Marshal(b, m, deterministic)
+}
+func (dst *SaveNavGroupResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveNavGroupResponse.Merge(dst, src)
+}
+func (m *SaveNavGroupResponse) XXX_Size() int {
+	return xxx_messageInfo_SaveNavGroupResponse.Size(m)
+}
+func (m *SaveNavGroupResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveNavGroupResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveNavGroupResponse proto.InternalMessageInfo
+
+func (m *SaveNavGroupResponse) GetErrCode() int64 {
+	if m != nil {
+		return m.ErrCode
+	}
+	return 0
+}
+
+func (m *SaveNavGroupResponse) GetErrMsg() string {
+	if m != nil {
+		return m.ErrMsg
+	}
+	return ""
+}
+
+func (m *SaveNavGroupResponse) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*SaveNavRequest)(nil), "SaveNavRequest")
+	proto.RegisterType((*SNavGroup)(nil), "SNavGroup")
 	proto.RegisterType((*SaveNavResponse)(nil), "SaveNavResponse")
 	proto.RegisterType((*PortalNavId)(nil), "PortalNavId")
 	proto.RegisterType((*SNav)(nil), "SNav")
 	proto.RegisterType((*QueryNavRequest)(nil), "QueryNavRequest")
 	proto.RegisterType((*QueryNavResponse)(nil), "QueryNavResponse")
+	proto.RegisterType((*QueryNavGroupRequest)(nil), "QueryNavGroupRequest")
+	proto.RegisterType((*QueryNavGroupResponse)(nil), "QueryNavGroupResponse")
+	proto.RegisterType((*PortalNavGroupId)(nil), "PortalNavGroupId")
+	proto.RegisterType((*SaveNavGroupRequest)(nil), "SaveNavGroupRequest")
+	proto.RegisterType((*SaveNavGroupResponse)(nil), "SaveNavGroupResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -388,6 +692,12 @@ type PortalServiceClient interface {
 	QueryNavList(ctx context.Context, in *QueryNavRequest, opts ...grpc.CallOption) (*QueryNavResponse, error)
 	// 删除门户导航
 	DeleteNav(ctx context.Context, in *PortalNavId, opts ...grpc.CallOption) (*Result, error)
+	// 保存导航分组
+	SaveNavGroup(ctx context.Context, in *SaveNavGroupRequest, opts ...grpc.CallOption) (*SaveNavGroupResponse, error)
+	// 获取导航分组列表
+	QueryNavGroupList(ctx context.Context, in *QueryNavGroupRequest, opts ...grpc.CallOption) (*QueryNavGroupResponse, error)
+	// 删除导航分组
+	DeleteNavGroup(ctx context.Context, in *PortalNavGroupId, opts ...grpc.CallOption) (*Result, error)
 }
 
 type portalServiceClient struct {
@@ -434,6 +744,33 @@ func (c *portalServiceClient) DeleteNav(ctx context.Context, in *PortalNavId, op
 	return out, nil
 }
 
+func (c *portalServiceClient) SaveNavGroup(ctx context.Context, in *SaveNavGroupRequest, opts ...grpc.CallOption) (*SaveNavGroupResponse, error) {
+	out := new(SaveNavGroupResponse)
+	err := c.cc.Invoke(ctx, "/PortalService/SaveNavGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *portalServiceClient) QueryNavGroupList(ctx context.Context, in *QueryNavGroupRequest, opts ...grpc.CallOption) (*QueryNavGroupResponse, error) {
+	out := new(QueryNavGroupResponse)
+	err := c.cc.Invoke(ctx, "/PortalService/QueryNavGroupList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *portalServiceClient) DeleteNavGroup(ctx context.Context, in *PortalNavGroupId, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/PortalService/DeleteNavGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PortalServiceServer is the server API for PortalService service.
 type PortalServiceServer interface {
 	// 保存门户导航
@@ -444,6 +781,12 @@ type PortalServiceServer interface {
 	QueryNavList(context.Context, *QueryNavRequest) (*QueryNavResponse, error)
 	// 删除门户导航
 	DeleteNav(context.Context, *PortalNavId) (*Result, error)
+	// 保存导航分组
+	SaveNavGroup(context.Context, *SaveNavGroupRequest) (*SaveNavGroupResponse, error)
+	// 获取导航分组列表
+	QueryNavGroupList(context.Context, *QueryNavGroupRequest) (*QueryNavGroupResponse, error)
+	// 删除导航分组
+	DeleteNavGroup(context.Context, *PortalNavGroupId) (*Result, error)
 }
 
 func RegisterPortalServiceServer(s *grpc.Server, srv PortalServiceServer) {
@@ -522,6 +865,60 @@ func _PortalService_DeleteNav_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PortalService_SaveNavGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveNavGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PortalServiceServer).SaveNavGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PortalService/SaveNavGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PortalServiceServer).SaveNavGroup(ctx, req.(*SaveNavGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PortalService_QueryNavGroupList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryNavGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PortalServiceServer).QueryNavGroupList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PortalService/QueryNavGroupList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PortalServiceServer).QueryNavGroupList(ctx, req.(*QueryNavGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PortalService_DeleteNavGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PortalNavGroupId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PortalServiceServer).DeleteNavGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PortalService/DeleteNavGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PortalServiceServer).DeleteNavGroup(ctx, req.(*PortalNavGroupId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _PortalService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "PortalService",
 	HandlerType: (*PortalServiceServer)(nil),
@@ -542,40 +939,63 @@ var _PortalService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "DeleteNav",
 			Handler:    _PortalService_DeleteNav_Handler,
 		},
+		{
+			MethodName: "SaveNavGroup",
+			Handler:    _PortalService_SaveNavGroup_Handler,
+		},
+		{
+			MethodName: "QueryNavGroupList",
+			Handler:    _PortalService_QueryNavGroupList_Handler,
+		},
+		{
+			MethodName: "DeleteNavGroup",
+			Handler:    _PortalService_DeleteNavGroup_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "portal_service.proto",
 }
 
 func init() {
-	proto.RegisterFile("portal_service.proto", fileDescriptor_portal_service_ace962826c6b518d)
+	proto.RegisterFile("portal_service.proto", fileDescriptor_portal_service_e18d774665ea81c2)
 }
 
-var fileDescriptor_portal_service_ace962826c6b518d = []byte{
-	// 397 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x52, 0x4d, 0x8f, 0xd3, 0x30,
-	0x14, 0xac, 0x9b, 0x8f, 0xb2, 0x6f, 0xcb, 0x36, 0x98, 0x15, 0x32, 0xb9, 0x6c, 0x64, 0x38, 0x44,
-	0x42, 0x18, 0xa9, 0x88, 0x13, 0x37, 0x60, 0x85, 0x22, 0x41, 0x04, 0x49, 0xe1, 0xc0, 0x05, 0xb9,
-	0xcd, 0x53, 0xa8, 0x94, 0xc5, 0xc1, 0x71, 0x22, 0xf6, 0xce, 0x99, 0x7f, 0xc4, 0x7f, 0x43, 0x71,
-	0x12, 0xe8, 0x96, 0x1f, 0xc0, 0xc9, 0x9e, 0xd1, 0xc8, 0x6f, 0x66, 0xfc, 0xe0, 0xbc, 0x56, 0xda,
-	0xc8, 0xea, 0x73, 0x83, 0xba, 0xdb, 0xef, 0x50, 0xd4, 0x5a, 0x19, 0x15, 0x2e, 0xcb, 0x4a, 0x6d,
-	0x65, 0x35, 0x20, 0xfe, 0x93, 0xc0, 0x59, 0x2e, 0x3b, 0x4c, 0x65, 0x97, 0xe1, 0xb7, 0x16, 0x1b,
-	0x43, 0xcf, 0x60, 0x9e, 0x14, 0x8c, 0x44, 0x24, 0x76, 0xb2, 0x79, 0x52, 0x50, 0x0a, 0xee, 0x06,
-	0xbf, 0x1b, 0x36, 0x8f, 0x48, 0x7c, 0x92, 0xd9, 0x3b, 0x0d, 0xc0, 0xf9, 0xa0, 0x2b, 0xe6, 0x58,
-	0xaa, 0xbf, 0xd2, 0x7b, 0xe0, 0x6f, 0xa4, 0x2e, 0xd1, 0x30, 0xd7, 0x92, 0x23, 0xa2, 0xe7, 0xe0,
-	0x25, 0x57, 0xb2, 0x44, 0xe6, 0x59, 0x7a, 0x00, 0x94, 0xc1, 0x22, 0x95, 0xdd, 0xe6, 0xba, 0x46,
-	0xe6, 0x47, 0x24, 0xf6, 0xb2, 0x09, 0xf2, 0x1c, 0x56, 0x7f, 0xfc, 0x34, 0xb5, 0xfa, 0xda, 0x58,
-	0xf1, 0xa5, 0xd6, 0x2f, 0x55, 0x81, 0xa3, 0xab, 0x09, 0xf6, 0x43, 0x2f, 0xb5, 0x7e, 0xdb, 0x94,
-	0xa3, 0xb9, 0x11, 0x8d, 0x11, 0x9c, 0x29, 0x02, 0x7f, 0x00, 0xa7, 0xef, 0x6c, 0x17, 0xa9, 0xec,
-	0x92, 0xa2, 0xf7, 0xf4, 0x51, 0x56, 0xed, 0xf4, 0xdc, 0x00, 0xf8, 0x0f, 0x02, 0x6e, 0x9e, 0xca,
-	0xee, 0x3f, 0x17, 0xf0, 0x08, 0x56, 0xef, 0x5b, 0xd4, 0xd7, 0x07, 0x3f, 0x72, 0x20, 0x26, 0x37,
-	0xc5, 0x8f, 0x21, 0xf8, 0x2b, 0x1e, 0xeb, 0xba, 0x0f, 0xee, 0x9b, 0x7d, 0x63, 0x18, 0x89, 0x9c,
-	0xf8, 0x74, 0xed, 0x89, 0x3e, 0x53, 0x66, 0xa9, 0xf5, 0x2f, 0x02, 0xb7, 0x87, 0x22, 0xf2, 0x61,
-	0x27, 0xa8, 0x80, 0xc5, 0x58, 0x37, 0x5d, 0x89, 0x9b, 0x8b, 0x10, 0x06, 0xe2, 0xe8, 0x27, 0xf8,
-	0x8c, 0x5e, 0x80, 0xff, 0x1a, 0x4d, 0x2f, 0x5f, 0x8a, 0x83, 0x4a, 0xc3, 0x61, 0x0c, 0x9f, 0xd1,
-	0x67, 0xb0, 0x9c, 0x1c, 0xf5, 0x23, 0x69, 0x20, 0x8e, 0xd2, 0x84, 0x77, 0xc4, 0xb1, 0x65, 0x3e,
-	0xa3, 0x0f, 0xe1, 0xe4, 0x15, 0x56, 0x68, 0xf0, 0xdf, 0xa7, 0x17, 0x22, 0xc3, 0xa6, 0xad, 0x0c,
-	0x9f, 0xbd, 0xb8, 0x80, 0xbb, 0x3b, 0x75, 0x25, 0xca, 0xbd, 0xf9, 0xd2, 0x6e, 0x45, 0xa9, 0xd6,
-	0x4a, 0xe8, 0x7a, 0xf7, 0xe9, 0x96, 0x78, 0xf2, 0xdc, 0xae, 0xf3, 0xd6, 0xb7, 0xc7, 0xd3, 0xdf,
-	0x01, 0x00, 0x00, 0xff, 0xff, 0x68, 0x7d, 0x81, 0x54, 0xfb, 0x02, 0x00, 0x00,
+var fileDescriptor_portal_service_e18d774665ea81c2 = []byte{
+	// 564 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
+	0x10, 0xb5, 0x93, 0x38, 0x69, 0xa6, 0x21, 0x1f, 0x5b, 0x27, 0x32, 0xbe, 0x34, 0x5a, 0x38, 0xe4,
+	0xc2, 0x54, 0x0a, 0xe2, 0x50, 0x21, 0x2e, 0xa5, 0x55, 0x15, 0x09, 0x22, 0x70, 0x02, 0x42, 0x5c,
+	0xd0, 0x26, 0x59, 0x99, 0x08, 0xa7, 0x36, 0xeb, 0x0f, 0x51, 0x7e, 0x0d, 0x67, 0x7e, 0x1e, 0xbf,
+	0x00, 0xed, 0xae, 0x9d, 0x3a, 0x69, 0xb8, 0x71, 0xe8, 0x29, 0xfb, 0x26, 0xf6, 0xcc, 0x9b, 0xf7,
+	0xde, 0x1a, 0xec, 0x28, 0x14, 0x09, 0x0b, 0xbe, 0xc4, 0x5c, 0x64, 0xeb, 0x25, 0xc7, 0x48, 0x84,
+	0x49, 0xe8, 0xb6, 0xfc, 0x20, 0x5c, 0xb0, 0x40, 0x23, 0xfa, 0xdb, 0x84, 0xf6, 0x8c, 0x65, 0x7c,
+	0xca, 0x32, 0x8f, 0x7f, 0x4f, 0x79, 0x9c, 0x90, 0x36, 0x54, 0x26, 0x2b, 0xc7, 0x1c, 0x9a, 0xa3,
+	0xaa, 0x57, 0x99, 0xac, 0x08, 0x81, 0xda, 0x9c, 0xff, 0x48, 0x9c, 0xca, 0xd0, 0x1c, 0x35, 0x3d,
+	0x75, 0x26, 0x5d, 0xa8, 0x7e, 0x10, 0x81, 0x53, 0x55, 0x25, 0x79, 0x24, 0x03, 0xa8, 0xcf, 0x99,
+	0xf0, 0x79, 0xe2, 0xd4, 0x54, 0x31, 0x47, 0xc4, 0x06, 0x6b, 0xb2, 0x61, 0x3e, 0x77, 0x2c, 0x55,
+	0xd6, 0x80, 0x38, 0xd0, 0x98, 0xb2, 0x6c, 0x7e, 0x1b, 0x71, 0xa7, 0x3e, 0x34, 0x47, 0x96, 0x57,
+	0x40, 0xe2, 0xc2, 0xd1, 0x94, 0x65, 0xd7, 0x22, 0x4c, 0x23, 0xa7, 0xa1, 0x5e, 0xd9, 0x62, 0x7a,
+	0x06, 0xcd, 0x59, 0x01, 0x4a, 0x34, 0xad, 0x82, 0xe6, 0x94, 0x6d, 0x78, 0x41, 0x53, 0x9e, 0xe9,
+	0x0c, 0x3a, 0xdb, 0xe5, 0xe2, 0x28, 0xbc, 0x89, 0xd5, 0xe4, 0x2b, 0x21, 0x5e, 0x87, 0x2b, 0x9e,
+	0xaf, 0x58, 0x40, 0xb9, 0xc1, 0x95, 0x10, 0x6f, 0x63, 0x3f, 0x6f, 0x91, 0xa3, 0x7c, 0x50, 0xb5,
+	0xd0, 0x83, 0x3e, 0x81, 0xe3, 0x77, 0x4a, 0xd8, 0x29, 0xcb, 0x26, 0x2b, 0xb9, 0xe0, 0x47, 0x16,
+	0xa4, 0x45, 0x3b, 0x0d, 0xe8, 0x2f, 0x13, 0x6a, 0x92, 0xeb, 0x03, 0x56, 0xf3, 0x1b, 0x74, 0xde,
+	0xa7, 0x5c, 0xdc, 0x96, 0xac, 0x2f, 0x35, 0x32, 0x77, 0x1b, 0xd9, 0x60, 0xe9, 0x2e, 0x9a, 0xb7,
+	0x06, 0xb2, 0x7a, 0xc1, 0xfd, 0xf5, 0x8d, 0xa2, 0x6e, 0x79, 0x1a, 0xc8, 0x15, 0x67, 0xeb, 0x9f,
+	0x5c, 0x51, 0xb7, 0x3c, 0x75, 0xa6, 0xcf, 0xa0, 0x7b, 0x37, 0x2c, 0xb7, 0xe2, 0x31, 0xd4, 0xde,
+	0xac, 0xe3, 0xc4, 0x31, 0x87, 0xd5, 0xd1, 0xf1, 0xd8, 0x42, 0xa9, 0x97, 0xa7, 0x4a, 0x74, 0x00,
+	0x76, 0xf1, 0xb8, 0x9a, 0x94, 0x13, 0xa4, 0xe7, 0xd0, 0xdf, 0xab, 0xe7, 0xbd, 0x86, 0x77, 0x2e,
+	0xc8, 0x66, 0x80, 0xdb, 0xa0, 0x14, 0x8e, 0x8c, 0xa0, 0xbb, 0xb5, 0x4d, 0xfd, 0xf1, 0x4f, 0xef,
+	0xce, 0xe1, 0x24, 0x4f, 0x4d, 0x79, 0xf6, 0x21, 0x27, 0xef, 0x05, 0xee, 0x13, 0xd8, 0xbb, 0xaf,
+	0xfe, 0xaf, 0xd4, 0x8d, 0xff, 0x54, 0xe0, 0x91, 0xe6, 0x3f, 0xd3, 0xd7, 0x99, 0x20, 0x34, 0xf2,
+	0x59, 0xa4, 0x83, 0xbb, 0x77, 0xd8, 0xed, 0xe2, 0x5e, 0xee, 0xa9, 0x41, 0x4e, 0xa1, 0x7e, 0xcd,
+	0x13, 0xf9, 0x78, 0x0b, 0x4b, 0x01, 0x76, 0xb5, 0xf0, 0xd4, 0x20, 0x2f, 0xa0, 0x55, 0x88, 0x2b,
+	0x4d, 0x20, 0x5d, 0xdc, 0xcb, 0x87, 0xdb, 0xc3, 0x7d, 0x13, 0xa9, 0x41, 0x9e, 0x42, 0xf3, 0x92,
+	0x07, 0x3c, 0xe1, 0xf7, 0x5b, 0x37, 0xd0, 0xe3, 0x71, 0x1a, 0x24, 0xd4, 0x20, 0xaf, 0xa0, 0x55,
+	0x56, 0x86, 0xd8, 0x78, 0x40, 0x63, 0xb7, 0x8f, 0x87, 0xe4, 0xa3, 0x06, 0xb9, 0x84, 0xde, 0x8e,
+	0xf1, 0x8a, 0x60, 0x1f, 0x0f, 0x85, 0xc4, 0x1d, 0xe0, 0xc1, 0x8c, 0x50, 0x83, 0x20, 0xb4, 0xb7,
+	0x54, 0x35, 0x8d, 0x1e, 0xee, 0x87, 0xa2, 0x44, 0xfa, 0xe2, 0x14, 0x4e, 0x96, 0xe1, 0x06, 0xfd,
+	0x75, 0xf2, 0x35, 0x5d, 0xa0, 0x1f, 0x8e, 0x43, 0x14, 0xd1, 0xf2, 0xf3, 0x11, 0x9e, 0xbd, 0x54,
+	0x9f, 0xcf, 0x45, 0x5d, 0xfd, 0x3c, 0xff, 0x1b, 0x00, 0x00, 0xff, 0xff, 0xda, 0xb4, 0xcb, 0x48,
+	0x6b, 0x05, 0x00, 0x00,
 }

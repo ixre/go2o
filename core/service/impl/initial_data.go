@@ -6,12 +6,11 @@ import (
 	"go2o/core/dao/model"
 )
 
-func InitData(o orm.Orm){
+func InitData(o orm.Orm) {
 	(&dataInitializer{
-		o:o,
+		o: o,
 	}).init()
 }
-
 
 type dataInitializer struct {
 	o orm.Orm
@@ -19,12 +18,14 @@ type dataInitializer struct {
 
 func (i dataInitializer) init() {
 	i.initPortalNav()
+	i.initPortalNavGroup()
 }
 
+// 初始化导航数据
 func (i dataInitializer) initPortalNav() {
 	repo := impl.NewPortalDao(i.o)
 	nav := repo.SelectNav("")
-	if len(nav) == 0{
+	if len(nav) == 0 {
 		arr := []*model.PortalNav{
 			{
 				Text:    "超市",
@@ -73,7 +74,7 @@ func (i dataInitializer) initPortalNav() {
 				Url:     "#",
 				Image:   "http://m.360buyimg.com/mobilecms/s120x120_jfs/t1/186080/16/13681/8175/60ec0fcdE032af6cf/c5acd2f8454c40e1.png!q70.jpg.dpg",
 				NavType: 1,
-			},{
+			}, {
 
 				Text:    "点卡",
 				Url:     "#",
@@ -81,11 +82,25 @@ func (i dataInitializer) initPortalNav() {
 				NavType: 1,
 			},
 		}
-		for _,v := range arr{
+		for _, v := range arr {
 			repo.SaveNav(v)
 			v.NavType = 2
 			v.Id = 0
 			repo.SaveNav(v)
+		}
+	}
+}
+
+// 初始化导航分组
+func (i dataInitializer) initPortalNavGroup() {
+	repo := impl.NewPortalDao(i.o)
+	group := repo.SelectNavGroup("")
+	if len(group) == 0 {
+		arr := []string{"头部导航", "友情链接"}
+		for _, v := range arr {
+			repo.SaveNavGroup(&model.NavGroup{
+				Name: v,
+			})
 		}
 	}
 }

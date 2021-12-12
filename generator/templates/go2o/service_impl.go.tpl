@@ -113,10 +113,10 @@ func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{
 func ({{$p}} *{{$structName}}) Query{{$shortTitle}}List(_ context.Context, r *proto.Query{{$shortTitle}}Request) (*proto.Query{{$shortTitle}}Response, error) {
 	arr := {{$p}}.dao.Select{{$shortTitle}}("")
 	ret := &proto.Query{{$shortTitle}}Response{
-		List:make([]*proto.S{{$shortTitle}},len(arr)),
+		Value:make([]*proto.S{{$shortTitle}},len(arr)),
 	}
 	for i,v := range arr{
-		ret.List[i] = {{$p}}.parse{{$shortTitle}}(v)
+		ret.Value[i] = {{$p}}.parse{{$shortTitle}}(v)
 	}
 	return ret,nil
 }

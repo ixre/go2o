@@ -19,6 +19,16 @@ service PortalService {
     // 删除门户导航
     rpc DeleteNav (PortalNavId) returns (Result) {
     }
+
+    // 保存导航分组
+    rpc SaveNavGroup (SaveNavGroupRequest) returns (SaveNavGroupResponse) {
+    }
+    // 获取导航分组列表
+    rpc QueryNavGroupList (QueryNavGroupRequest) returns (QueryNavGroupResponse) {
+    }
+    // 删除导航分组
+    rpc DeleteNavGroup (PortalNavGroupId) returns (Result) {
+    }
 }
 
 message SaveNavRequest{
@@ -34,6 +44,15 @@ message SaveNavRequest{
     string Image = 5;
     /** 导航类型: 1为电脑，2为手机端 */
     int32 NavType = 6;
+    /** 导航分组 */
+    string NavGroup = 7;
+}
+
+message SNavGroup{
+    /** 编号 */
+    int32 Id = 1;
+    /** 名称 */
+    string Name = 2;
 }
 
 message SaveNavResponse{
@@ -59,12 +78,43 @@ message SNav{
     string Image = 5;
     /** 导航类型: 1为电脑，2为手机端 */
     int32 NavType = 6;
+    /** 导航分组 */
+    string NavGroup = 7;
 }
 
 message QueryNavRequest{
     int32 NavType = 1;
+    string Group = 2;
+    int32 Begin = 3;
+    int32 Size = 4;
 }
 
 message QueryNavResponse{
     repeated SNav List = 1;
+}
+
+message QueryNavGroupRequest{
+    /** 自定义参数 */
+}
+
+message QueryNavGroupResponse{
+    repeated SNavGroup Value = 1;
+}
+
+message PortalNavGroupId{
+    int64 Value = 1;
+}
+
+
+message SaveNavGroupRequest{
+    /** 编号 */
+    int64 Id = 1;
+    /** 名称 */
+    string Name = 2;
+}
+
+message SaveNavGroupResponse{
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    int64 Id = 3;
 }
