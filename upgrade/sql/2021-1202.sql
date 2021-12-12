@@ -309,3 +309,7 @@ ALTER COLUMN amount TYPE bigint;
 
 ALTER TABLE public.sale_after_order
 ALTER COLUMN type TYPE smallint USING type::text::smallint;
+
+/** 2012-12-12 */
+COMMENT ON TABLE public.portal_nav
+  IS '门户导航';

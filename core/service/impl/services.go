@@ -99,6 +99,8 @@ func Init(ctx gof.App) {
 	orm.CacheProxy(o, sto)
 	// 初始化服务
 	initService(ctx, db, o, sto)
+	// 初始化数据
+	InitData(o)
 }
 
 // 初始化测试服务
@@ -169,7 +171,8 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	WalletService = NewWalletService(Repos.GetWalletRepo())
 
 	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
-	PortalService = NewPortalService(CommonDao)
+	portalDao := impl.NewPortalDao(orm)
+	PortalService = NewPortalService(CommonDao, portalDao)
 	QueryService = NewQueryService(orm, sto)
 	AppService = NewAppService(sto, orm)
 	RbacService = NewRbacService(sto, orm, registryRepo)

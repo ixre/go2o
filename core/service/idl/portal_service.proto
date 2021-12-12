@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+import "global.proto";
+
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
+/** 门户服务 */
+service PortalService {
+    // 保存门户导航
+    rpc SaveNav (SaveNavRequest) returns (SaveNavResponse) {
+    }
+    // 获取门户导航
+    rpc GetNav (PortalNavId) returns (SNav) {
+    }
+    // 获取门户导航列表
+    rpc QueryNavList (QueryNavRequest) returns (QueryNavResponse) {
+    }
+    // 删除门户导航
+    rpc DeleteNav (PortalNavId) returns (Result) {
+    }
+}
+
+message SaveNavRequest{
+    /** 编号 */
+    int64 Id = 1;
+    /** 文本 */
+    string Text = 2;
+    /** 地址 */
+    string Url = 3;
+    /** 打开目标 */
+    string Target = 4;
+    /** 链接图片 */
+    string Image = 5;
+    /** 导航类型: 1为电脑，2为手机端 */
+    int32 NavType = 6;
+}
+
+message SaveNavResponse{
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    int64 Id = 3;
+}
+
+message PortalNavId{
+    int64 Value = 1;
+}
+
+message SNav{
+    /** 编号 */
+    int64 Id = 1;
+    /** 文本 */
+    string Text = 2;
+    /** 地址 */
+    string Url = 3;
+    /** 打开目标 */
+    string Target = 4;
+    /** 链接图片 */
+    string Image = 5;
+    /** 导航类型: 1为电脑，2为手机端 */
+    int32 NavType = 6;
+}
+
+message QueryNavRequest{
+    int32 NavType = 1;
+}
+
+message QueryNavResponse{
+    repeated SNav List = 1;
+}

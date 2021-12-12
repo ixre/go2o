@@ -18,13 +18,11 @@ import (
   "net/http"
 )
 
-var _ echox.GroupHandler = new({{$structName}});
-
 // {{.table.Comment}}
 type {{$structName}} struct{
 }
 
-func ({{$p}} *{{$structName}}) Routes(g *echo.Group) {
+func ({{$p}} {{$structName}}) Routes(g *echo.Group) {
   // {{.table.Name}} router
   g.GET("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
   g.GET("/{{$namePath}}/:id",{{$p}}.get{{$shortTitle}})

@@ -11,7 +11,7 @@ type (
 	// 门户导航
 	PortalNav struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 文本
 		Text string `db:"text"`
 		// 地址

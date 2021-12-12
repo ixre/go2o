@@ -23,7 +23,7 @@ import (
 type {{$structName}} struct{
 }
 
-func ({{$p}} *{{$structName}}) Routes(g *echo.Group) {
+func ({{$p}} {{$structName}}) Routes(g *echo.Group) {
   // {{.table.Name}} router
   g.GET("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
   g.GET("/{{$namePath}}/:id",{{$p}}.get{{$shortTitle}})
@@ -36,9 +36,9 @@ func ({{$p}} *{{$structName}}) Routes(g *echo.Group) {
 func ({{$p}} *{{$structName}}) paging{{$shortTitle}}(ctx echo.Context) error {
     /** #! 直接使用分页请求对象 */
     //dst := proto.{{$shortTitle}}PagingRequest{}
-    //ctx.Bind(&dst) \
+    //ctx.Bind(&dst)
     /** #! 使用分页参数(GET)来分页 */
-    bytes := GetExportDataV2(ctx, "/{{name_path .table.Name}}")
+    bytes := GetExportDataV2(ctx, "/{{name_path .table.Name}}", nil)
     return ctx.Blob(http.StatusOK, "application/json", bytes)
 }
 
