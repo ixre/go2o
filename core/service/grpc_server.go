@@ -50,6 +50,8 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterAfterSalesServiceServer(s, grpc2.AfterSalesService)
 	proto.RegisterExpressServiceServer(s, grpc2.ExpressService)
 	proto.RegisterAdvertisementServiceServer(s, grpc2.AdService)
+	proto.RegisterPortalServiceServer(s, grpc2.PortalService)
+
 	// standalone service
 	proto.RegisterQuickPayServiceServer(s, grpc2.QuickPayService)
 	proto.RegisterAppServiceServer(s, grpc2.AppService)

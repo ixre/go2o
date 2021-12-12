@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : profilemanager.go
  * author : jarryliu
  * date : 2016-05-26 21:19
@@ -63,6 +63,6 @@ type (
 		ReviewEnterpriseInfo(reviewed bool, message string) error
 
 		// 修改密码
-		ModifyPassword(newPwd, oldPwd string) error
+		ModifyPassword(NewPassword, oldPwd string) error
 	}
 )

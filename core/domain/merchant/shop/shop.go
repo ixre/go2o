@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-23 07:55
@@ -143,7 +143,9 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	dst.Tel = v.Tel
 	dst.Addr = v.Addr
 	dst.State = v.State
+	dst.Host = v.Host
 	dst.ShopTitle = v.ShopTitle
+	dst.ShopName = v.ShopName
 	dst.ShopNotice = v.ShopNotice
 	return err
 }

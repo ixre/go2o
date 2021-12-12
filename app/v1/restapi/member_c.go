@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : partner_c.go
  * author : jarryliu
  * date : -- :
@@ -44,9 +44,9 @@ func (mc *MemberC) Login(c echo.Context) error {
 	} else {
 		defer trans.Close()
 		r, _ := cli.CheckLogin(context.TODO(), &proto.LoginRequest{
-			User:   user,
-			Pwd:    pwd,
-			Update: true,
+			User:     user,
+			Password: pwd,
+			Update:   true,
 		})
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)

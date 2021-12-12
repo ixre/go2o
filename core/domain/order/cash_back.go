@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : cash_back
  * author : jarryliu
  * date : -- :
@@ -53,14 +53,14 @@ func (o *subOrderImpl) handleCashBack() error {
 		now := time.Now().Unix()
 
 		//******* 返现到账户  ************
-		var back_fee float32
+		var back_fee int64
 		saleConf := mch.ConfManager().GetSaleConf()
 
 		if saleConf.CashBackPercent > 0 {
-			back_fee = v.FinalAmount * saleConf.CashBackPercent
+			back_fee = int64(float32(v.FinalAmount) * saleConf.CashBackPercent)
 			//将此次消费记入会员账户
 			err = o.updateShoppingMemberBackFee(mch.GetValue().Name, buyer,
-				back_fee*saleConf.CashBackMemberPercent, now)
+				int64(float32(back_fee)*saleConf.CashBackMemberPercent), now)
 			domain.HandleError(err, "domain")
 
 		}
@@ -77,7 +77,7 @@ func (o *subOrderImpl) handleCashBack() error {
 }
 
 func (o *subOrderImpl) updateMemberAccount(m member.IMember,
-	ptName, mName string, fee float32, unixTime int64) error {
+	ptName, mName string, fee int64, unixTime int64) error {
 	if fee > 0 {
 		//更新账户
 		acc := m.GetAccount()
@@ -100,7 +100,7 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 
 // 三级返现
 func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
-	back_fee float32, unixTime int64) (err error) {
+	back_fee int64, unixTime int64) (err error) {
 	if back_fee > 0 {
 		i := 0
 		mName := m.Profile().GetProfile().Name
@@ -122,7 +122,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 			}
 
 			err = o.updateMemberAccount(m, mch.GetValue().Name, mName,
-				back_fee*percent, unixTime)
+				int64(float32(back_fee)*percent), unixTime)
 			if err != nil {
 				domain.HandleError(err, "domain")
 				break
@@ -196,7 +196,7 @@ func backCashForMember(m member.IMember, o order.IOrder,
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
-	bFee := float32(fee)
+	bFee := int64(fee)
 	acv.WalletBalance += bFee // 更新赠送余额
 	acv.TotalWalletAmount += bFee
 	acv.UpdateTime = time.Now().Unix()
@@ -205,7 +205,7 @@ func backCashForMember(m member.IMember, o order.IOrder,
 	if err == nil {
 		orderNo := o.OrderNo()
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
-			format.FormatFloat(bFee), orderNo, refName)
+			format.FormatIntMoney(bFee), orderNo, refName)
 		err = acc.Charge(member.AccountWallet, tit,
 			fee*100, orderNo, "sys")
 	}

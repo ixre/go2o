@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2014-02-05 20:12
@@ -145,7 +145,7 @@ var (
 		"err_member_incorrent_quote", "金额/数量错误")
 
 	ErrOutOfBalance = domain.NewError(
-		"err_out_of_balance", "超出金额")
+		"err_out_of_balance", "余额不足")
 
 	ErrAccountOutOfTakeOutTimes = domain.NewError(
 		"err_account_out_of_take_out_times", "今日已达到提现次数上限")
@@ -196,9 +196,9 @@ var (
 	ErrQqValidErr = domain.NewError(
 		"err_qq_valid_err", "QQ号码不正确")
 
-	ErrNotSetTradePwd = domain.NewError("err_not_set_trade_pwd", "交易密码未设置")
+	ErrNotSetTradePassword = domain.NewError("err_not_set_trade_pwd", "交易密码未设置")
 
-	ErrIncorrectTradePwd            = domain.NewError("err_incorrect_trade_pwd", "交易密码错误")
+	ErrIncorrectTradePassword       = domain.NewError("err_incorrect_trade_pwd", "交易密码错误")
 	ErrNoSuchLogTitleOrRemark       = domain.NewError("err_member_no_such_log_title_or_remark", "缺少账户变动的标题和备注")
 	ErrNotSupportAccountType        = domain.NewError("err_account_not_support", "账户类型不支持此操作")
 	ErrNotSupportPaymentAccountType = domain.NewError("err_account_not_support_payment", "不支持支付的账户类型")

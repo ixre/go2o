@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-23 23:15
@@ -12,7 +12,6 @@ package impl
 import (
 	"context"
 	"errors"
-	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/domain/enum"
@@ -512,7 +511,7 @@ func (s *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequ
 	if it == nil || it.GetValue().VendorId != r.SellerId {
 		err = item.ErrNoSuchItem
 	} else {
-		state := int32(types.IntCond(r.ShelveOn,
+		state := int32(types.ElseInt(r.ShelveOn,
 			int(item.ShelvesOn),
 			int(item.ShelvesDown)))
 		switch r.ItemType {
@@ -606,7 +605,7 @@ func (s *itemService) SaveWholesaleDiscount(_ context.Context, r *proto.SaveItem
 
 func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 	return &proto.SSku{
-		SkuId:       sku.ID,
+		SkuId:       sku.Id,
 		ProductId:   sku.ProductId,
 		ItemId:      sku.ItemId,
 		Title:       sku.Title,
@@ -614,9 +613,9 @@ func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 		SpecData:    sku.SpecData,
 		SpecWord:    sku.SpecWord,
 		Code:        sku.Code,
-		RetailPrice: math.Round(float64(sku.RetailPrice), 2),
-		Price:       math.Round(float64(sku.Price), 2),
-		Cost:        math.Round(float64(sku.Cost), 2),
+		RetailPrice: sku.RetailPrice,
+		Price:       sku.Price,
+		Cost:        sku.Cost,
 		Weight:      sku.Weight,
 		Bulk:        sku.Bulk,
 		Stock:       sku.Stock,
@@ -635,9 +634,9 @@ func (s *itemService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 		ShortTitle:    v.ShortTitle,
 		GoodsNo:       v.GoodsNo,
 		Image:         v.Image,
-		RetailPrice:   float64(v.RetailPrice),
-		Price:         float64(v.ProductId),
-		PromPrice:     float64(v.PromPrice),
+		RetailPrice:   v.RetailPrice,
+		Price:         v.ProductId,
+		PromPrice:     v.PromPrice,
 		PriceRange:    v.PriceRange,
 		GoodsId:       v.GoodsId,
 		SkuId:         v.SkuId,

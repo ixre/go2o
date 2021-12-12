@@ -3,7 +3,7 @@ package valueobject
 import "go2o/core/domain/interface/registry"
 
 /**
- * Copyright 2009-2019 @ to2.net
+ * Copyright 2009-2019 @ 56x.net
  * name : register_perm.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-07-01 10:25

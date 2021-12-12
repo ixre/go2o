@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : express
  * author : jarryliu
  * date : 2016-07-05 14:30
@@ -92,10 +92,10 @@ type (
 		Calculate(areaCode string)
 
 		// 获取累计运费
-		Total() float64
+		Total() int64
 
 		// 获取运费模板编号与费用的集合
-		Fee() map[int]float64
+		Fee() map[int]int64
 	}
 
 	// 物流快递
@@ -217,11 +217,11 @@ type (
 		// 首次计价单位,如首重为2kg
 		FirstUnit int `db:"first_unit"`
 		// 首次计价单价,如续重1kg
-		FirstFee float64 `db:"first_fee"`
+		FirstFee int64 `db:"first_fee"`
 		// 超过首次计价计算单位,如续重1kg
 		AddUnit int `db:"add_unit"`
 		// 超过首次计价单价，如续重1kg
-		AddFee float64 `db:"add_fee"`
+		AddFee int64 `db:"add_fee"`
 		// 是否启用
 		Enabled int `db:"enabled"`
 	}
@@ -239,11 +239,11 @@ type (
 		// 首次数值，如 首重为2kg
 		FirstUnit int32 `db:"first_unit"`
 		// 首次金额，如首重10元
-		FirstFee float32 `db:"first_fee"`
+		FirstFee int64 `db:"first_fee"`
 		// 增加数值，如续重1kg
 		AddUnit int32 `db:"add_unit"`
 		// 增加产生费用，如续重1kg 10元
-		AddFee float32 `db:"add_fee"`
+		AddFee int64 `db:"add_fee"`
 	}
 )
 

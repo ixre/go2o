@@ -45,7 +45,7 @@ func (w *itemWholesaleRepo) SelectWsItem(where string, v ...interface{}) []*item
 
 // Save WsItem
 func (w *itemWholesaleRepo) SaveWsItem(v *item.WsItem, create bool) (int, error) {
-	iid := types.IntCond(create, 0, int(v.ItemId))
+	iid := types.ElseInt(create, 0, int(v.ItemId))
 	id, err := orm.Save(w.o, v, iid)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsItem")

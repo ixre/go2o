@@ -34,8 +34,8 @@ func ParseItemSnapshotDto(src *item.Snapshot) *proto.SItemSnapshot {
 		PriceRange:  src.PriceRange,
 		SkuId:       src.SkuId,
 		Stock:       &proto.SItemStock{},
-		Price:       int32(src.Price * 100),
-		RetailPrice: int32(src.RetailPrice * 100),
+		Price:       src.Price,
+		RetailPrice: src.RetailPrice,
 		UpdateTime:  src.UpdateTime,
 		SkuArray:    nil,
 		ViewData:    nil,
@@ -54,7 +54,7 @@ func ParseTradeSnapshot(src *item.TradeSnapshot) *proto.STradeSnapshot {
 		ProductCode: src.GoodsNo,
 		Sku:         src.Sku,
 		Image:       src.Image,
-		Price:       int32(src.Price * 100),
+		Price:       src.Price,
 		CreateTime:  src.CreateTime,
 	}
 }

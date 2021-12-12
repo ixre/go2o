@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-19 22:49
@@ -323,7 +323,7 @@ func (m *merchantService) WithdrawToMemberAccount(_ context.Context, r *proto.Wi
 		err = merchant.ErrNoSuchMerchant
 	} else {
 		acc := mch.Account()
-		err = acc.TransferToMember(float32(r.Amount))
+		err = acc.TransferToMember(int(r.Amount))
 	}
 	return m.error(err), nil
 }
@@ -335,7 +335,7 @@ func (m *merchantService) ChargeAccount(_ context.Context, r *proto.MerchantChar
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
-		err = mch.Account().Charge(r.Kind, r.Amount, r.Title, r.OuterNo, r.RelateUserId)
+		err = mch.Account().Charge(r.Kind, int(r.Amount), r.Title, r.OuterNo, r.RelateUserId)
 	}
 	return m.error(err), nil
 }
@@ -534,7 +534,7 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 		return 0, 2, merchant.ErrNoSuchMerchant
 	}
 	mv := mch.GetValue()
-	if pwd := domain.MerchantSha1Pwd(pwd, ""); pwd != mv.LoginPwd {
+	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.LoginPwd {
 		return 0, 1, de.ErrCredential
 	}
 	return mch.GetAggregateRootId(), 0, nil
@@ -892,8 +892,9 @@ func (m *merchantService) parseMchSignUp(v *proto.SMchSignUp) *merchant.MchSignU
 		Id:           int32(v.Id),
 		SignNo:       v.SignNo,
 		MemberId:     v.MemberId,
-		Usr:          v.User,
+		User:         v.User,
 		Pwd:          v.Pwd,
+		Salt:         v.Salt,
 		MchName:      v.MchName,
 		Province:     v.Province,
 		City:         v.City,
@@ -919,8 +920,9 @@ func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSi
 		Id:           int64(v.Id),
 		SignNo:       v.SignNo,
 		MemberId:     v.MemberId,
-		User:         v.Usr,
+		User:         v.User,
 		Pwd:          v.Pwd,
+		Salt:         v.Salt,
 		MchName:      v.MchName,
 		Province:     v.Province,
 		City:         v.City,
@@ -991,27 +993,27 @@ func (m *merchantService) parseEnterpriseInfo(v *proto.SEnterpriseInfo) *merchan
 
 func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantAccount {
 	return &proto.SMerchantAccount{
-		Balance:       float64(v.Balance),
-		FreezeAmount:  float64(v.FreezeAmount),
-		AwaitAmount:   float64(v.AwaitAmount),
-		PresentAmount: float64(v.PresentAmount),
-		SalesAmount:   float64(v.SalesAmount),
-		RefundAmount:  float64(v.RefundAmount),
-		WithdrawAmount:    float64(v.WithdrawAmount),
-		OfflineSales:  float64(v.OfflineSales),
-		UpdateTime:    v.UpdateTime,
+		Balance:        v.Balance,
+		FreezeAmount:   v.FreezeAmount,
+		AwaitAmount:    v.AwaitAmount,
+		PresentAmount:  v.PresentAmount,
+		SalesAmount:    v.SalesAmount,
+		RefundAmount:   v.RefundAmount,
+		WithdrawAmount: v.WithdrawAmount,
+		OfflineSales:   v.OfflineSales,
+		UpdateTime:     v.UpdateTime,
 	}
 }
 
 func (m *merchantService) parseSaleConf(v *proto.SMerchantSaleConf) *merchant.SaleConf {
 	return &merchant.SaleConf{
 		MerchantId:              v.MerchantId,
-		FxSalesEnabled:          types.IntCond(v.FxSalesEnabled, 1, 0),
+		FxSalesEnabled:          types.ElseInt(v.FxSalesEnabled, 1, 0),
 		CashBackPercent:         float32(v.CashBackPercent),
 		CashBackTg1Percent:      float32(v.CashBackTg1Percent),
 		CashBackTg2Percent:      float32(v.CashBackTg2Percent),
 		CashBackMemberPercent:   float32(v.CashBackMemberPercent),
-		AutoSetupOrder:          types.IntCond(v.AutoSetupOrder, 1, 0),
+		AutoSetupOrder:          types.ElseInt(v.AutoSetupOrder, 1, 0),
 		OrderTimeOutMinute:      int(v.OrderTimeOutMinute),
 		OrderConfirmAfterMinute: int(v.OrderConfirmAfterMinute),
 		OrderTimeOutReceiveHour: int(v.OrderTimeOutReceiveHour),
@@ -1062,8 +1064,8 @@ func (m *merchantService) parseGroup(v *proto.SMerchantBuyerGroup) *merchant.Mch
 		ID:              int32(v.Id),
 		Alias:           v.Name,
 		GroupId:         v.GroupId,
-		EnableRetail:    int32(types.IntCond(v.EnableRetail, 1, 0)),
-		EnableWholesale: int32(types.IntCond(v.EnableWholesale, 1, 0)),
+		EnableRetail:    int32(types.ElseInt(v.EnableRetail, 1, 0)),
+		EnableWholesale: int32(types.ElseInt(v.EnableWholesale, 1, 0)),
 		RebatePeriod:    v.RebatePeriod,
 	}
 }

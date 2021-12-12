@@ -11,7 +11,6 @@ package restful
 import (
   "context"
   "encoding/json"
-  "github.com/ixre/goex/echox"
   "github.com/ixre/gof/types/typeconv"
   "github.com/labstack/echo/v4"
   "{{pkg "go" .global.pkg}}/service"
@@ -19,13 +18,11 @@ import (
   "net/http"
 )
 
-var _ echox.GroupHandler = new({{$structName}});
-
 // {{.table.Comment}}
 type {{$structName}} struct{
 }
 
-func ({{$p}} *{{$structName}}) Handle(g *echo.Group) {
+func ({{$p}} {{$structName}}) Routes(g *echo.Group) {
   // {{.table.Name}} router
   g.GET("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
   g.GET("/{{$namePath}}/:id",{{$p}}.get{{$shortTitle}})
@@ -138,5 +135,5 @@ func ({{$p}} *{{$structName}}) query{{$shortTitle}}(ctx echo.Context) error {
   trans, cli, _ := service.{{$title}}ServiceClient()
   defer trans.Close()
   ret, _ := cli.Query{{$shortTitle}}List(context.TODO(), dst)
-  return ctx.JSON(http.StatusOK,ret.List)
+  return ctx.JSON(http.StatusOK,ret.Value)
 }

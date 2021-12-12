@@ -79,14 +79,14 @@ func TestItemWholesaleSkuPrice(t *testing.T) {
 		arr := []*item.WsSkuPrice{
 			{
 				RequireQuantity: 2,
-				WholesalePrice:  float64(sku.Price - 0.1),
+				WholesalePrice:  sku.Price - 10,
 			},
 			{
 				RequireQuantity: 10,
-				WholesalePrice:  float64(sku.Price - 0.2),
+				WholesalePrice:  sku.Price - 20,
 			},
 		}
-		err := wsIt.SaveSkuPrice(sku.ID, arr)
+		err := wsIt.SaveSkuPrice(sku.Id, arr)
 		if err != nil {
 			t.Error(err)
 			t.Fail()
@@ -94,8 +94,8 @@ func TestItemWholesaleSkuPrice(t *testing.T) {
 	}
 
 	sku0 := it.SkuArray()[0]
-	skuId := sku0.ID
-	skuPrice := float64(sku0.Price)
+	skuId := sku0.Id
+	skuPrice := sku0.Price
 
 	//计算商品订单的折扣率
 	price1 := wsIt.GetWholesalePrice(skuId, 1)
@@ -104,12 +104,12 @@ func TestItemWholesaleSkuPrice(t *testing.T) {
 		t.Fail()
 	}
 	price2 := wsIt.GetWholesalePrice(skuId, 2)
-	if price2 != skuPrice-0.1 {
+	if price2 != skuPrice-10 {
 		t.Error("购买1件,价格不正确")
 		t.Fail()
 	}
 	price3 := wsIt.GetWholesalePrice(skuId, 11)
-	if price3 != skuPrice-0.2 {
+	if price3 != skuPrice-20 {
 		t.Error("购买1件,价格不正确")
 		t.Fail()
 	}

@@ -212,7 +212,7 @@ func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog
 		Value:        int32(l.Value),
 		Balance:      int32(l.Balance),
 		TradeFee:     int32(l.TradeFee),
-		OperatorUid:   int32(l.OperatorUid),
+		OperatorUid:  int32(l.OperatorUid),
 		OperatorName: l.OperatorName,
 		Remark:       l.Remark,
 		ReviewState:  int32(l.ReviewState),

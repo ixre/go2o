@@ -8,7 +8,7 @@ import (
 )
 
 /**
- * Copyright 2009-2019 @ to2.net
+ * Copyright 2009-2019 @ 56x.net
  * name : passport_api_test.go.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-07-30 17:38
@@ -55,7 +55,7 @@ func TestPassportApi_ResetPwd(t *testing.T) {
 	testApi(t, "passport.reset_pwd", mp, true)
 }
 
-func TestPassportApi_ModifyPwd(t *testing.T) {
+func TestPassportApi_ModifyPassword(t *testing.T) {
 	mp := map[string]string{
 		"account":   phone2,
 		"cred_type": strconv.Itoa(int(proto.ECredentials_PHONE)),
@@ -66,7 +66,7 @@ func TestPassportApi_ModifyPwd(t *testing.T) {
 	testApi(t, "passport.modify_pwd", mp, true)
 }
 
-func TestPassportApi_TradePwd(t *testing.T) {
+func TestPassportApi_TradePassword(t *testing.T) {
 	mp := map[string]string{
 		"account":   phone2,
 		"cred_type": strconv.Itoa(int(proto.ECredentials_PHONE)),

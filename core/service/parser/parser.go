@@ -23,8 +23,8 @@ func MemberDto(src *member.Member) *proto.SMember {
 		Id:             src.Id,
 		User:           src.User,
 		Code:           src.Code,
-		Pwd:            src.Pwd,
-		TradePwd:       src.TradePwd,
+		Password:       src.Pwd,
+		TradePassword:  src.TradePassword,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
@@ -47,16 +47,16 @@ func MemberDto(src *member.Member) *proto.SMember {
 
 func ComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
-		Name:           src.Name,
-		Avatar:         src.Avatar,
-		Exp:            int32(src.Exp),
-		Level:          int32(src.Level),
-		LevelName:      src.LevelName,
-		PremiumUser:    int32(src.PremiumUser),
-		InviteCode:     src.InviteCode,
-		TrustAuthState: int32(src.TrustAuthState),
-		TradePwdHasSet: src.TradePwdHasSet,
-		UpdateTime:     src.UpdateTime,
+		Name:                src.Name,
+		Avatar:              src.Avatar,
+		Exp:                 int32(src.Exp),
+		Level:               int32(src.Level),
+		LevelName:           src.LevelName,
+		PremiumUser:         int32(src.PremiumUser),
+		InviteCode:          src.InviteCode,
+		TrustAuthState:      int32(src.TrustAuthState),
+		TradePasswordHasSet: src.TradePasswordHasSet,
+		UpdateTime:          src.UpdateTime,
 	}
 }
 
@@ -82,7 +82,7 @@ func TradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeMethodData {
 	return &proto.STradeMethodData{
 		Method:     int32(src.Method),
 		Code:       src.Code,
-		Amount:     int32(src.Amount),
+		Amount:     src.Amount,
 		Internal:   int32(src.Internal),
 		OutTradeNo: src.OutTradeNo,
 		PayTime:    src.PayTime,
@@ -110,9 +110,9 @@ func ItemDto(src *item.GoodsItem) *proto.SOldItem {
 		SaleNum:      src.SaleNum,
 		SkuNum:       src.SkuNum,
 		SkuId:        src.SkuId,
-		Cost:         float64(src.Cost),
-		Price:        float64(src.Price),
-		RetailPrice:  float64(src.RetailPrice),
+		Cost:         src.Cost,
+		Price:        src.Price,
+		RetailPrice:  src.RetailPrice,
 		Weight:       src.Weight,
 		Bulk:         src.Bulk,
 		ShelveState:  src.ShelveState,
@@ -121,7 +121,7 @@ func ItemDto(src *item.GoodsItem) *proto.SOldItem {
 		SortNum:      src.SortNum,
 		CreateTime:   src.CreateTime,
 		UpdateTime:   src.UpdateTime,
-		PromPrice:    float64(src.PromPrice),
+		PromPrice:    src.PromPrice,
 	}
 	if src.SkuArray != nil {
 		it.SkuArray = make([]*proto.SSku, len(src.SkuArray))
@@ -152,7 +152,7 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//SkuNum:       src.SkuNum,
 		//SkuId:        src.SkuId,
 		//Cost:         float64(src.Cost),
-		Price: float64(src.Price),
+		Price: src.Price,
 		//IsPresent:    src.IsPresent,
 		PriceRange: src.PriceRange,
 		StockNum:   src.StockNum,
@@ -205,9 +205,9 @@ func Item(src *proto.SOldItem) *item.GoodsItem {
 		SaleNum:      src.SaleNum,
 		SkuNum:       src.SkuNum,
 		SkuId:        src.SkuId,
-		Cost:         float32(src.Cost),
-		Price:        float32(src.Price),
-		RetailPrice:  float32(src.RetailPrice),
+		Cost:         src.Cost,
+		Price:        src.Price,
+		RetailPrice:  src.RetailPrice,
 		Weight:       src.Weight,
 		Bulk:         src.Bulk,
 		ShelveState:  src.ShelveState,
@@ -216,7 +216,7 @@ func Item(src *proto.SOldItem) *item.GoodsItem {
 		SortNum:      src.SortNum,
 		CreateTime:   src.CreateTime,
 		UpdateTime:   src.UpdateTime,
-		PromPrice:    float32(src.PromPrice),
+		PromPrice:    src.PromPrice,
 	}
 	if src.SkuArray != nil {
 		it.SkuArray = make([]*item.Sku, len(src.SkuArray))
@@ -229,7 +229,7 @@ func Item(src *proto.SOldItem) *item.GoodsItem {
 
 func SkuDto(src *item.Sku) *proto.SSku {
 	return &proto.SSku{
-		SkuId:       src.ID,
+		SkuId:       src.Id,
 		ProductId:   src.ProductId,
 		ItemId:      src.ItemId,
 		Title:       src.Title,
@@ -237,9 +237,9 @@ func SkuDto(src *item.Sku) *proto.SSku {
 		SpecData:    src.SpecData,
 		SpecWord:    src.SpecWord,
 		Code:        src.Code,
-		RetailPrice: math.Round(float64(src.RetailPrice), 2),
-		Price:       math.Round(float64(src.Price), 2),
-		Cost:        math.Round(float64(src.Cost), 2),
+		RetailPrice: src.RetailPrice,
+		Price:       src.Price,
+		Cost:        src.Cost,
 		Weight:      src.Weight,
 		Bulk:        src.Bulk,
 		Stock:       src.Stock,
@@ -249,7 +249,7 @@ func SkuDto(src *item.Sku) *proto.SSku {
 
 func Sku(src *proto.SSku) *item.Sku {
 	return &item.Sku{
-		ID:          src.SkuId,
+		Id:          src.SkuId,
 		ProductId:   src.ProductId,
 		ItemId:      src.ItemId,
 		Title:       src.Title,
@@ -257,9 +257,9 @@ func Sku(src *proto.SSku) *item.Sku {
 		SpecData:    src.SpecData,
 		SpecWord:    src.SpecWord,
 		Code:        src.Code,
-		RetailPrice: float32(src.RetailPrice),
-		Price:       float32(src.Price),
-		Cost:        float32(src.Cost),
+		RetailPrice: src.RetailPrice,
+		Price:       src.Price,
+		Cost:        src.Cost,
 		Weight:      src.Weight,
 		Bulk:        src.Bulk,
 		Stock:       src.Stock,
@@ -311,7 +311,7 @@ func OrderItem(src *proto.SOrderItem) *order.ComplexItem {
 		ReturnQuantity: src.ReturnQuantity,
 		Amount:         src.Amount,
 		FinalAmount:    src.FinalAmount,
-		IsShipped:      int32(types.IntCond(src.IsShipped, 1, 0)),
+		IsShipped:      int32(types.ElseInt(src.IsShipped, 1, 0)),
 		Data:           src.Data,
 	}
 }
@@ -322,14 +322,14 @@ func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 		SnapshotId:           src.SnapshotId,
 		SkuId:                src.SkuId,
 		ItemId:               src.ItemId,
-		ItemTitle:            "", //todo: 没有显示图片
+		ItemTitle:            "",
 		Image:                "",
 		Price:                0,
 		FinalPrice:           0,
 		Quantity:             src.Quantity,
 		ReturnQuantity:       src.ReturnQuantity,
-		Amount:               float64(src.Amount),
-		FinalAmount:          float64(src.FinalAmount),
+		Amount:               src.Amount,
+		FinalAmount:          src.FinalAmount,
 		IsShipped:            src.IsShipped == 1,
 		Data:                 nil,
 		XXX_NoUnkeyedLiteral: struct{}{},
@@ -348,15 +348,15 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 		SellerId:       src.VendorId,
 		ShopId:         src.ShopId,
 		Subject:        src.Subject,
-		ItemAmount:     float64(src.ItemAmount),
-		DiscountAmount: float64(src.DiscountAmount),
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
 		DeductAmount:   0,
 		AdjustAmount:   0,
-		ExpressFee:     float64(src.ExpressFee),
-		PackageFee:     float64(src.PackageFee),
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
 		ProcedureFee:   0,
 		//TotalAmount:          src.ItemAmount,
-		FinalAmount: float64(src.FinalAmount),
+		FinalAmount: src.FinalAmount,
 		Consignee: &proto.SConsigneeInfo{
 			ConsigneePerson: "",
 			ConsigneePhone:  "",
@@ -375,13 +375,13 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 
 func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 	return &proto.SOrderItem{
-		SnapshotId: src.SnapshotId,
-		SkuId:      src.SkuId,
-		ItemId:     src.ItemId,
-		ItemTitle:  src.ItemTitle,
-		Image:      src.MainImage,
-		Price:      float64(src.Price),
-		//FinalPrice:           0,
+		SnapshotId:           src.SnapshotId,
+		SkuId:                src.SkuId,
+		ItemId:               src.ItemId,
+		ItemTitle:            src.ItemTitle,
+		Image:                src.MainImage,
+		Price:                src.Price,
+		FinalPrice:           src.FinalPrice,
 		Quantity:             src.Quantity,
 		ReturnQuantity:       src.ReturnQuantity,
 		Amount:               src.Amount,

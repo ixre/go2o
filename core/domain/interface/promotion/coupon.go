@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-03 21:04
@@ -36,7 +36,7 @@ type ICouponPromotion interface {
 	GetDescribe() string
 
 	// 获取优惠的金额
-	GetCouponFee(orderFee float32) float32
+	GetCouponFee(orderFee int) int
 
 	// 是否可用,传递会员及订单金额
 	// error返回不适用的详细信息

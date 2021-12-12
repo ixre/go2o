@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : payment_repo.go
  * author : jarryliu
  * date : 2016-07-03 12:52
@@ -115,19 +115,19 @@ func (p *paymentRepoImpl) CreatePaymentOrder(
 // 保存支付单
 func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 	stat := v.State
-	if  v.Id > 0 {
-		stat = p.GetPaymentOrderById( v.Id).Get().State
+	if v.Id > 0 {
+		stat = p.GetPaymentOrderById(v.Id).Get().State
 	}
-	id, err := orm.Save(p.o, v,  v.Id)
+	id, err := orm.Save(p.o, v, v.Id)
 	if err == nil {
-		 v.Id = id
+		v.Id = id
 		// 缓存订单
 		p.Storage.SetExpire(p.getPaymentOrderCk(id), *v, DefaultCacheSeconds)
 		// 缓存订单号与订单的关系
-		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo),  v.Id, DefaultCacheSeconds*10)
+		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
 		// 已经更改过状态,且为已成功,则推送到队列中
 		if stat != v.State && v.State == payment.StateFinished {
-			p.notifyPaymentFinish( v.Id)
+			p.notifyPaymentFinish(v.Id)
 		}
 	}
 	return id, err

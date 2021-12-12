@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-09 10:12
@@ -83,18 +83,18 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	pf := m.Profile()
 	tr := pf.GetTrustedInfo()
 	s := &member.ComplexMember{
-		Name:           mv.Name,
-		RealName:       mv.RealName,
-		Avatar:         format.GetResUrl(mv.Avatar),
-		Exp:            mv.Exp,
-		Level:          mv.Level,
-		LevelName:      lv.Name,
-		InviteCode:     mv.InviteCode,
-		TrustAuthState: tr.ReviewState,
-		TradePwdHasSet: mv.TradePwd != "",
-		PremiumUser:    mv.PremiumUser,
-		Flag:           mv.Flag,
-		UpdateTime:     mv.UpdateTime,
+		Name:                mv.Name,
+		RealName:            mv.RealName,
+		Avatar:              format.GetResUrl(mv.Avatar),
+		Exp:                 mv.Exp,
+		Level:               mv.Level,
+		LevelName:           lv.Name,
+		InviteCode:          mv.InviteCode,
+		TrustAuthState:      tr.ReviewState,
+		TradePasswordHasSet: mv.TradePassword != "",
+		PremiumUser:         mv.PremiumUser,
+		Flag:                mv.Flag,
+		UpdateTime:          mv.UpdateTime,
 	}
 	return s
 }
@@ -156,8 +156,8 @@ func (m *memberImpl) SetValue(v *member.Member) error {
 	if v.Level > 0 {
 		m.value.Level = v.Level
 	}
-	if len(v.TradePwd) == 0 {
-		m.value.TradePwd = v.TradePwd
+	if len(v.TradePassword) == 0 {
+		m.value.TradePassword = v.TradePassword
 	}
 	return nil
 }
@@ -642,7 +642,7 @@ func (m *memberImpl) prepare() (err error) {
 	m.value.RealName = strings.TrimSpace(m.value.RealName)
 	//如果未设置昵称,则默认为用户名
 	if len(m.value.Name) == 0 {
-		m.value.Name = "Usr" + m.value.User
+		m.value.Name = "User" + m.value.User
 	}
 	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
 	if len(m.value.Avatar) == 0 {

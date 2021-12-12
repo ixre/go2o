@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : message_result
  * author : jarryliu
  * date : -- :
@@ -138,10 +138,10 @@ type (
 	//	Child []Category
 	//}
 	ListOnlineShop struct {
-		Id         int64  `db:"sp.id"`
-		Name       string `db:"sp.name"`
+		Id         int64  `db:"id"`
+		Name       string `db:"shop_name"`
 		Alias      string `db:"alias"`
-		Host       string `db:"ol.host"`
+		Host       string `db:"host"`
 		Logo       string `db:"logo"`
 		CreateTime int64  `db:"sp.create_time" json:"-"`
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-10 21:16
@@ -53,7 +53,7 @@ func MemberSha1Pwd(pwd string, salt string) string {
 }
 
 // 交易密码
-func TradePwd(pwd string, salt string) string {
+func TradePassword(pwd string, salt string) string {
 	if pwd == "" {
 		return ""
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : content_service
  * author : jarryliu
  * date : -- :
@@ -286,8 +286,8 @@ func (a *adService) parseAdGroup(v *proto.SAdGroup) *ad.AdGroup {
 	return &ad.AdGroup{
 		ID:      v.Id,
 		Name:    v.Name,
-		Opened:  types.IntCond(v.Opened, 1, 0),
-		Enabled: types.IntCond(v.Enabled, 1, 0),
+		Opened:  types.ElseInt(v.Opened, 1, 0),
+		Enabled: types.ElseInt(v.Enabled, 1, 0),
 	}
 }
 
@@ -320,8 +320,8 @@ func (a *adService) parseAdPosition(v *proto.SAdPosition) *ad.AdPosition {
 		Key:       v.Key,
 		Name:      v.Name,
 		TypeLimit: int(v.TypeLimit),
-		Opened:    types.IntCond(v.Opened, 1, 0),
-		Enabled:   types.IntCond(v.Enabled, 1, 0),
+		Opened:    types.ElseInt(v.Opened, 1, 0),
+		Enabled:   types.ElseInt(v.Enabled, 1, 0),
 		DefaultId: v.DefaultId,
 	}
 }
@@ -381,6 +381,6 @@ func (a *adService) parseAdImage(v *proto.SImage) *ad.Image {
 		LinkUrl:  v.LinkURL,
 		ImageUrl: v.ImageURL,
 		SortNum:  int(v.SortNum),
-		Enabled:  types.IntCond(v.Enabled, 1, 0),
+		Enabled:  types.ElseInt(v.Enabled, 1, 0),
 	}
 }

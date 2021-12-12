@@ -1,7 +1,7 @@
 package impl
 
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : platform_service
  * author : jarryliu
  * date : 2020-09-05 15:30

@@ -150,7 +150,7 @@ type (
 		Adjust(value int, title, outerNo string, remark string, operatorUid int, operatorName string) error
 
 		// 消费
-		Consume(amount int, title string, outerNo string) error
+		Consume(amount int, title string, outerNo string, remark string) error
 
 		// 抵扣,must是否必须大于0
 		Discount(amount int, title, outerNo string, must bool) error

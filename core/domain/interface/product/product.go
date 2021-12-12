@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : item
  * author : jarryliu
  * date : 2016-06-29 09:31
@@ -119,10 +119,6 @@ type (
 		Image string `db:"img"`
 		// 描述
 		Description string `db:"description"`
-		// 上架状态
-		//ShelveState int32 `db:"-"`
-		// 审核状态
-		//ReviewState int32 `db:"-"`
 		// 备注
 		Remark string `db:"remark"`
 		// 状态

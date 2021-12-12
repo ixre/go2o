@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : refund
  * author : jarryliu
  * date : 2016-07-16 14:44
@@ -58,8 +58,8 @@ type (
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"no"`
 		// 金额
-		Amount float32 `db:"amount"`
-		// 退款方式：1.退回余额  2: 原路退回
+		Amount int64 `db:"amount"`
+		// 退款方式：1.退回余额 2: 原路退回
 		//RefundType int `db:"refund_type"`
 		// 是否为全部退款
 		//AllRefund int `db:"all_refund"`

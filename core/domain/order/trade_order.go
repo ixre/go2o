@@ -187,7 +187,7 @@ func (o *tradeOrderImpl) fixFinalAmount() {
 func (o *tradeOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.SellerId = int(o.value.VendorId)
-	v.ItemAmount = int(o.value.FinalAmount * 100)
+	v.ItemAmount = o.value.FinalAmount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
 	return o.paymentOrder.Submit()
 }
@@ -219,7 +219,7 @@ func (o *tradeOrderImpl) CashPay() error {
 	vp := (1 - v.TradeRate) * float64(pv.TotalAmount)
 	if vp > 0 {
 		va := o.mchRepo.GetMerchant(int(v.VendorId))
-		err := va.Account().TakePayment(o.OrderNo(), vp, 0,
+		err := va.Account().TakePayment(o.OrderNo(), int(vp), 0,
 			"交易费-"+o.value.Subject)
 		if err != nil {
 			return err
@@ -324,13 +324,13 @@ func (o *tradeOrderImpl) vendorSettle() error {
 // 根据比例进行商户结算
 func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float64) error {
 	v := o.getValue()
-	sAmount := float32(v.FinalAmount * rate)
+	sAmount := int64(float64(v.FinalAmount) * rate)
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
+		totalAmount := int64(float64(sAmount) * enum.RATE_AMOUNT)
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
-			merchant.TKWholesaleOrder, totalAmount)
+			merchant.TKWholesaleOrder, int(totalAmount))
 		return vendor.Account().SettleOrder(o.OrderNo(),
-			totalAmount, tradeFee, 0, "交易单结算-"+v.Subject)
+			int(totalAmount), tradeFee, 0, "交易单结算-"+v.Subject)
 	}
 	return nil
 }
@@ -350,7 +350,7 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 	expEnabled := o.registryRepo.Get(registry.ExperienceEnabled).BoolValue()
 	if expEnabled {
 		rate := o.registryRepo.Get(registry.ExperienceRateByTradeOrder).FloatValue()
-		if exp := int(amount * rate); exp > 0 {
+		if exp := int(float64(amount) * rate); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}
@@ -370,8 +370,8 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 		}
 	}
 	acv := acc.GetValue()
-	acv.TotalExpense += float32(ov.FinalAmount)
-	acv.TotalPay += float32(ov.FinalAmount)
+	acv.TotalExpense += ov.FinalAmount
+	acv.TotalPay += ov.FinalAmount
 	acv.UpdateTime = time.Now().Unix()
 	_, err = acc.Save()
 	return err

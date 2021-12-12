@@ -49,19 +49,19 @@ func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRe
 		Value: make([]*proto.QueryPagingShop, n),
 	}
 	if len(rows) > 0 {
-		for _, v := range rows {
+		for i, v := range rows {
 			v.Logo = format.GetResUrl(v.Logo)
 			if v.Host == "" {
 				v.Host = v.Alias + "." + variable.Domain
 			}
-			ret.Value = append(ret.Value, &proto.QueryPagingShop{
+			ret.Value[i] = &proto.QueryPagingShop{
 				Id:         v.Id,
 				Name:       v.Name,
 				Alias:      v.Alias,
 				Host:       v.Host,
 				Logo:       v.Logo,
 				CreateTime: v.CreateTime,
-			})
+			}
 		}
 	}
 	return ret, nil
@@ -78,7 +78,7 @@ func (q *queryService) MemberNormalOrders(_ context.Context, r *proto.MemberOrde
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.PagedMemberSubOrder, n),
+		Value: make([]*proto.SPagedMemberSubOrder, n),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseOrder(v)
@@ -97,7 +97,7 @@ func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOr
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.PagedMemberSubOrder, n),
+		Value: make([]*proto.SPagedMemberSubOrder, n),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseOrder(v)
@@ -116,7 +116,7 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.PagedMemberSubOrder, n),
+		Value: make([]*proto.SPagedMemberSubOrder, n),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseTradeOrder(v)
@@ -124,20 +124,20 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 	return ret, nil
 }
 
-func (q *queryService) parseOrder(src *dto.PagedMemberSubOrder) *proto.PagedMemberSubOrder {
-	dst := &proto.PagedMemberSubOrder{
+func (q *queryService) parseOrder(src *dto.PagedMemberSubOrder) *proto.SPagedMemberSubOrder {
+	dst := &proto.SPagedMemberSubOrder{
 		OrderId:        src.Id,
 		OrderNo:        src.OrderNo,
 		ParentNo:       src.ParentNo,
 		VendorId:       src.VendorId,
 		ShopId:         src.ShopId,
 		ShopName:       src.ShopName,
-		ItemAmount:     float64(src.ItemAmount),
-		DiscountAmount: float64(src.DiscountAmount),
-		ExpressFee:     float64(src.ExpressFee),
-		PackageFee:     float64(src.PackageFee),
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
 		IsPaid:         src.IsPaid,
-		FinalAmount:    float64(src.FinalAmount),
+		FinalAmount:    src.FinalAmount,
 		State:          int32(src.State),
 		StateText:      src.StateText,
 		CreateTime:     src.CreateTime,
@@ -155,21 +155,21 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 		SnapshotId:     int64(v.SnapshotId),
 		SkuId:          int64(v.SkuId),
 		ItemId:         int64(v.ItemId),
-		ItemTitle:      v.GoodsTitle,
+		ItemTitle:      v.ItemTitle,
 		Image:          v.Image,
-		Price:          float64(v.Price),
-		FinalPrice:     float64(v.FinalPrice),
+		Price:          v.Price,
+		FinalPrice:     v.FinalPrice,
 		Quantity:       int32(v.Quantity),
 		ReturnQuantity: int32(v.ReturnQuantity),
-		Amount:         float64(v.Amount),
-		FinalAmount:    float64(v.FinalAmount),
+		Amount:         v.Amount,
+		FinalAmount:    v.FinalAmount,
 		IsShipped:      v.IsShipped == 1,
 		Data:           nil,
 	}
 }
 
-func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.PagedMemberSubOrder {
-	return &proto.PagedMemberSubOrder{
+func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SPagedMemberSubOrder {
+	return &proto.SPagedMemberSubOrder{
 		OrderId:  src.OrderId,
 		OrderNo:  src.OrderNo,
 		VendorId: src.SellerId,
@@ -202,8 +202,8 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 			Avatar:        v.Avatar,
 			Level:         v.Level,
 			Integral:      v.Integral,
-			Balance:       float64(v.Balance),
-			WalletBalance: float64(v.WalletBalance),
+			Balance:       v.Balance,
+			WalletBalance: v.WalletBalance,
 		}
 	}
 	return rsp, nil

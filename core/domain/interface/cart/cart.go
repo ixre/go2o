@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-08 10:23
@@ -34,6 +34,9 @@ var (
 
 	ErrItemNoSku = domain.NewError(
 		"err_cart_item_no_sku", "请选择商品规格")
+
+	ErrNoMatchItem = domain.NewError(
+		"err_cart_no_match_item", "购物车不存在该商品")
 )
 
 const (
@@ -302,9 +305,9 @@ type (
 		// 数量
 		Quantity int32
 		// 价格
-		Price float64
+		Price int64
 		// 折扣价
-		DiscountPrice float64
+		DiscountPrice int64
 		// 可售数量
 		CanSalesQuantity int32
 		// 数据JSON表示

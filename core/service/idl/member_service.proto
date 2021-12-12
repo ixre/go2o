@@ -28,7 +28,7 @@ service MemberService {
     rpc CheckLogin (LoginRequest) returns (Result) {
     }
     /** 验证交易密码 */
-    rpc VerifyTradePwd (PwdVerifyRequest) returns (Result) {
+    rpc VerifyTradePassword (VerifyPasswordRequest) returns (Result) {
     }
     /** 等级列表 */
     rpc GetLevels (Empty) returns (SMemberLevelListResponse) {
@@ -133,10 +133,10 @@ service MemberService {
     rpc ChangeAvatar (AvatarRequest) returns (Result) {
     }
     /** 更改密码 */
-    rpc ModifyPwd (ModifyPwdRequest) returns (Result) {
+    rpc ModifyPassword (ModifyPasswordRequest) returns (Result) {
     }
     /** 更改交易密码 */
-    rpc ModifyTradePwd (ModifyPwdRequest) returns (Result) {
+    rpc ModifyTradePassword (ModifyPasswordRequest) returns (Result) {
     }
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {

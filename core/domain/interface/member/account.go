@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : account
  * author : jarryliu
  * date : 2015-07-24 08:48
@@ -10,17 +10,19 @@ package member
 
 import "go2o/core/domain/interface/wallet"
 
+type AccountType int
+
 const (
 	// 余额账户
-	AccountBalance = 1
+	AccountBalance AccountType = 1
 	// 积分账户
-	AccountIntegral = 2
+	AccountIntegral AccountType = 2
 	// 钱包账户
-	AccountWallet = 3
+	AccountWallet AccountType = 3
 	// 流通金账户
-	AccountFlow = 4
+	AccountFlow AccountType = 4
 	// 增长金账户
-	AccountGrow = 7
+	AccountGrow AccountType = 7
 )
 
 const (
@@ -94,22 +96,22 @@ type (
 		Wallet() wallet.IWallet
 
 		// 设置优先(默认)支付方式, account 为账户类型
-		SetPriorityPay(account int, enabled bool) error
+		SetPriorityPay(account AccountType, enabled bool) error
 
 		// 退款
-		Refund(accountKind int, title string, amount int, outerNo string, remark string) error
+		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 充值,金额放大100倍
-		Charge(account int32, title string, amount int, outerNo string, remark string) error
+		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 客服调整
-		Adjust(account int, title string, amount int, remark string, relateUser int64) error
+		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
 
 		// 消耗
-		Consume(account int, title string, amount int, outerNo string, remark string) error
+		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
-		Discount(account int, title string, amount int, outerNo string, remark string) error
+		Discount(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 扣减余额
 		//DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
@@ -122,19 +124,19 @@ type (
 		//IntegralDiscount(title string, outerNo string, value int) error
 
 		// 冻结余额
-		Freeze(title string, outerNo string, amount float32, relateUser int64) error
+		Freeze(title string, outerNo string, amount int, relateUser int64) error
 
 		// 解冻金额
-		Unfreeze(title string, outerNo string, amount float32, relateUser int64) error
+		Unfreeze(title string, outerNo string, amount int, relateUser int64) error
 
 		// 冻结赠送金额
-		FreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
+		FreezeWallet(title string, outerNo string, amount int, relateUser int64) error
 
 		// 解冻赠送金额
-		UnfreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
+		UnfreezeWallet(title string, outerNo string, amount int, relateUser int64) error
 
 		// 支付单抵扣消费,tradeNo为支付单单号
-		PaymentDiscount(tradeNo string, amount float32, remark string) error
+		PaymentDiscount(tradeNo string, amount int, remark string) error
 
 		// 冻结积分,当new为true不扣除积分,反之扣除积分
 		FreezesIntegral(title string, value int, new bool, relateUser int64) error
@@ -156,26 +158,26 @@ type (
 		FinishWithdrawal(id int64, tradeNo string) error
 
 		// 将冻结金额标记为失效
-		FreezeExpired(accountKind int, amount float32, remark string) error
+		FreezeExpired(account AccountType, amount int, remark string) error
 
 		// 转账
-		TransferAccount(accountKind int, toMember int64, amount int,
+		TransferAccount(account AccountType, toMember int64, amount int,
 			tradeFee int, remark string) error
 
 		// 接收转账
-		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
-			amount float32, remark string) error
+		ReceiveTransfer(account AccountType, fromMember int64, tradeNo string,
+			amount int, remark string) error
 
 		// 转账余额到其他账户
-		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
+		TransferBalance(account AccountType, amount int, tradeNo string, toTitle, fromTitle string) error
 
 		// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
-		TransferFlow(kind int, amount float32, commission float32, tradeNo string,
+		TransferFlow(kind int, amount int, commission float32, tradeNo string,
 			toTitle string, fromTitle string) error
 
 		// 将活动金转给其他人
-		TransferFlowTo(memberId int64, kind int, amount float32, commission float32,
+		TransferFlowTo(memberId int64, kind int, amount int, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 
@@ -188,37 +190,37 @@ type (
 		// 不可用积分
 		FreezeIntegral int `db:"freeze_integral"`
 		// 余额
-		Balance float32 `db:"balance"`
+		Balance int64 `db:"balance"`
 		// 不可用余额
-		FreezeBalance float32 `db:"freeze_balance"`
+		FreezeBalance int64 `db:"freeze_balance"`
 		// 失效的账户余额
-		ExpiredBalance float32 `db:"expired_balance"`
+		ExpiredBalance int64 `db:"expired_balance"`
 		// 钱包代码
 		WalletCode string `db:"wallet_code"`
 		//奖金账户余额
-		WalletBalance float32 `db:"wallet_balance"`
+		WalletBalance int64 `db:"wallet_balance"`
 		//冻结赠送金额
-		FreezeWallet float32 `db:"freeze_wallet"`
+		FreezeWallet int64 `db:"freeze_wallet"`
 		//失效的赠送金额
-		ExpiredWallet float32 `db:"expired_wallet"`
+		ExpiredWallet int64 `db:"expired_wallet"`
 		//总赠送金额
-		TotalWalletAmount float32 `db:"total_wallet_amount"`
+		TotalWalletAmount int64 `db:"total_wallet_amount"`
 		//流动账户余额
-		FlowBalance float32 `db:"flow_balance"`
+		FlowBalance int64 `db:"flow_balance"`
 		//当前理财账户余额
-		GrowBalance float32 `db:"grow_balance"`
+		GrowBalance int64 `db:"grow_balance"`
 		//理财总投资金额,不含收益
-		GrowAmount float32 `db:"grow_amount"`
+		GrowAmount int64 `db:"grow_amount"`
 		//当前收益金额
-		GrowEarnings float32 `db:"grow_earnings"`
+		GrowEarnings int64 `db:"grow_earnings"`
 		//累积收益金额
-		GrowTotalEarnings float32 `db:"grow_total_earnings"`
+		GrowTotalEarnings int64 `db:"grow_total_earnings"`
 		//总消费金额
-		TotalExpense float32 `db:"total_expense"`
+		TotalExpense int64 `db:"total_expense"`
 		//总充值金额
-		TotalCharge float32 `db:"total_charge"`
+		TotalCharge int64 `db:"total_charge"`
 		//总支付额
-		TotalPay float32 `db:"total_pay"`
+		TotalPay int64 `db:"total_pay"`
 		// 优先(默认)支付选项
 		PriorityPay int `db:"priority_pay"`
 		//更新时间
@@ -261,9 +263,9 @@ type (
 
 		Title string `db:"title"`
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 手续费
-		CsnFee float32 `db:"csn_fee"`
+		CsnFee int64 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态
@@ -288,9 +290,9 @@ type (
 		// 标题
 		Title string `db:"title"`
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 手续费
-		CsnFee float32 `db:"csn_fee"`
+		CsnFee int64 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态
@@ -315,9 +317,9 @@ type (
 		// 标题
 		Title string `db:"title"`
 		// 金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 手续费
-		CsnFee float32 `db:"csn_fee"`
+		CsnFee int64 `db:"csn_fee"`
 		// 引用编号
 		RelateUser int64 `db:"rel_user"`
 		// 审核状态

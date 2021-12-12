@@ -22,7 +22,7 @@ func TestPagingIntegralLog(t *testing.T) {
 	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
 			MemberId:    1,
-			AccountType: member.AccountWallet,
+			AccountType: int32(member.AccountWallet),
 			Params:      params,
 		})
 	t.Logf("%#v", r)
@@ -39,22 +39,22 @@ func TestPagingWalletLog(t *testing.T) {
 	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
 			MemberId:    int64(memberId),
-			AccountType: member.AccountWallet,
+			AccountType: int32(member.AccountWallet),
 			Params:      params,
 		})
 	t.Logf("%#v", r)
 }
 
-func TestCheckTradePwd(t *testing.T) {
+func TestCheckTradePassword(t *testing.T) {
 	memberId := 22149
 	pwd := domain.Md5("123456")
-	//r2,_ := impl.MemberService.ModifyTradePwd(context.TODO(),int64(memberId),"",pwd)
+	//r2,_ := impl.MemberService.ModifyTradePassword(context.TODO(),int64(memberId),"",pwd)
 	//t.Logf("%#v", r2)
 
-	r, _ := impl.MemberService.VerifyTradePwd(context.TODO(),
-		&proto.PwdVerifyRequest{
+	r, _ := impl.MemberService.VerifyTradePassword(context.TODO(),
+		&proto.VerifyPasswordRequest{
 			MemberId: int64(memberId),
-			Pwd:      pwd,
+			Password: pwd,
 		})
 	t.Logf("%#v", r)
 }

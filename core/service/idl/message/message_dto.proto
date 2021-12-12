@@ -6,7 +6,7 @@ option java_package = "com.github.go2o.rpc";
 message SendMessageRequest {
     string account = 1;
     string message = 2;
-    map<string, string> data = 3;
+    map<string, string> Data = 3;
 }
 
 /** 消息方式 */

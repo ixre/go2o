@@ -148,7 +148,7 @@ message MerchantOrderRequest {
 
 message PagingMerchantOrderListResponse {
     int64 total = 1;
-    repeated SMerchantOrder data = 2;
+    repeated SMerchantOrder Data = 2;
 }
 
 message SMerchantOrder {
@@ -169,5 +169,5 @@ message SMerchantOrder {
     string StateText = 14;
     int64 CreateTime = 15;
     repeated SOrderItem Items = 16;
-    map<string, string> data = 17;
+    map<string, string> Data = 17;
 }

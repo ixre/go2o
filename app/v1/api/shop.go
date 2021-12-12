@@ -12,7 +12,7 @@ import (
 )
 
 /**
- * Copyright 2009-2019 @ to2.net
+ * Copyright 2009-2019 @ 56x.net
  * name : store.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-12-09 11:27

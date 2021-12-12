@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : lang_test
  * author : jarryliu
  * date : 2016-07-18 12:26

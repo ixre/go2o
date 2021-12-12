@@ -36,11 +36,12 @@ type Selector interface {
 }
 
 type serverSelector struct {
-	cli   *clientv3.Client
-	nodes []Node
-	alg   SelectAlgorithm
-	last  int
-	name  string
+	cli             *clientv3.Client
+	nodes           []Node
+	alg             SelectAlgorithm
+	last            int
+	name            string
+	serverKeyPrefix string
 }
 
 func NewSelector(name string, config clientv3.Config, alg SelectAlgorithm) (Selector, error) {
@@ -49,17 +50,18 @@ func NewSelector(name string, config clientv3.Config, alg SelectAlgorithm) (Sele
 		return nil, err
 	}
 	var s = &serverSelector{
-		cli:  cli,
-		name: name,
-		alg:  alg,
-		last: -1,
+		cli:             cli,
+		name:            name,
+		serverKeyPrefix: prefix + name,
+		alg:             alg,
+		last:            -1,
 	}
 	s.loadNodes()
 	go s.Watch()
 	return s, nil
 }
 
-// 使用轮询算法
+// RoundRobin 使用轮询算法
 func (s *serverSelector) RoundRobin() {
 	s.alg = AlgRoundRobin
 }
@@ -83,7 +85,7 @@ func (s *serverSelector) Next() (Node, error) {
 
 func (s *serverSelector) Watch() {
 	// 监听变化,并动态处理节点
-	ch := s.cli.Watch(context.TODO(), prefix, clientv3.WithPrefix())
+	ch := s.cli.Watch(context.TODO(), s.serverKeyPrefix, clientv3.WithPrefix())
 	for {
 		select {
 		case c := <-ch:

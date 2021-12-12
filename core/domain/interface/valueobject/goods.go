@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : goods
  * author : jarryliu
  * date : -- :
@@ -28,13 +28,13 @@ type Goods struct {
 	Image   string `db:"image"`
 
 	//定价
-	RetailPrice float32 `db:"retail_price"`
+	RetailPrice int64 `db:"retail_price"`
 
 	//销售价
-	Price float32 `db:"price"`
+	Price int64 `db:"price"`
 
 	// 促销价
-	PromPrice float32 `db:"-"`
+	PromPrice int64 `db:"-"`
 	// 价格区间
 	PriceRange string `db:"price_range"`
 

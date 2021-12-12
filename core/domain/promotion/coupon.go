@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-02 21:34
@@ -13,7 +13,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
@@ -188,21 +187,21 @@ func (c *Coupon) GetDescribe() string {
 }
 
 // 获取优惠的金额(四舍五入)
-func (c *Coupon) GetCouponFee(orderFee float32) float32 {
-	if float32(c.detailsValue.MinFee) > orderFee {
+func (c *Coupon) GetCouponFee(orderFee int) int {
+	if c.detailsValue.MinFee > orderFee {
 		return 0
 	}
-	var couponFee float32
+	var couponFee int
 
 	if c.detailsValue.Fee != 0 {
-		couponFee = couponFee + float32(c.detailsValue.Fee)
+		couponFee = couponFee + c.detailsValue.Fee
 	}
 
 	if c.detailsValue.Discount != 100 {
-		couponFee = couponFee + orderFee*
-			(float32(100-c.detailsValue.Discount)/100)
+		couponFee = couponFee + int(float32(orderFee)*
+			(float32(100-c.detailsValue.Discount)/100))
 	}
-	return math.Round32(couponFee, 2)
+	return couponFee
 }
 
 // 是否可用

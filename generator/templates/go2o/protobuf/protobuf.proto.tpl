@@ -55,7 +55,7 @@ message Query{{$shortTitle}}Request{
 }
 
 message Query{{$shortTitle}}Response{
-    repeated S{{$shortTitle}} List = 1;
+    repeated S{{$shortTitle}} Value = 1;
 }
 
 message Paging{{$shortTitle}}{

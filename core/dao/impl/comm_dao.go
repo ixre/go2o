@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package dao
+package impl
 
 import (
 	"database/sql"
@@ -44,8 +44,8 @@ func NewCommDao(o orm.Orm, sto storage.Interface,
 }
 
 // 获取二维码所有模板
-func (c *CommonDao) GetQrTemplates() []*model.CommQrTemplate {
-	var list []*model.CommQrTemplate
+func (c *CommonDao) GetQrTemplates() []*model.QrTemplate {
+	var list []*model.QrTemplate
 	str, err := c.storage.GetString(qrStoKey)
 	if err == nil {
 		err = json.Unmarshal([]byte(str), &list)
@@ -61,9 +61,9 @@ func (c *CommonDao) GetQrTemplates() []*model.CommQrTemplate {
 }
 
 // 获取二维码模板
-func (c *CommonDao) GetQrTemplate(id int32) *model.CommQrTemplate {
+func (c *CommonDao) GetQrTemplate(id int32) *model.QrTemplate {
 	for _, v := range c.GetQrTemplates() {
-		if v.Id == id {
+		if v.Id == int64(id) {
 			return v
 		}
 	}
@@ -71,7 +71,7 @@ func (c *CommonDao) GetQrTemplate(id int32) *model.CommQrTemplate {
 }
 
 // 保存二维码模板
-func (c *CommonDao) SaveQrTemplate(q *model.CommQrTemplate) error {
+func (c *CommonDao) SaveQrTemplate(q *model.QrTemplate) error {
 	q.Title = strings.TrimSpace(q.Title)
 	q.Comment = strings.TrimSpace(q.Comment)
 	q.BgImage = strings.TrimSpace(q.BgImage)
@@ -90,7 +90,7 @@ func (c *CommonDao) SaveQrTemplate(q *model.CommQrTemplate) error {
 
 // 删除二维码模板
 func (c *CommonDao) DelQrTemplate(id int32) error {
-	err := c._orm.DeleteByPk(model.CommQrTemplate{}, id)
+	err := c._orm.DeleteByPk(model.QrTemplate{}, id)
 	if err == nil {
 		c.storage.Delete(qrStoKey)
 	}

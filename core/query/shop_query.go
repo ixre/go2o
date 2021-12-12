@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-03 23:20
@@ -97,9 +97,8 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
 
 	var e = make([]*dto.ListOnlineShop, 0)
 	if total > 0 && err == nil {
-		sql = fmt.Sprintf(`SELECT sp.id,sp.name,alias,host,ol.logo,sp.create_time
-        FROM mch_shop sp INNER JOIN mch_online_shop ol
-        ON ol.shop_id=sp.id INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
+		sql = fmt.Sprintf(`SELECT sp.id,sp.shop_name,alias,host,sp.logo,sp.create_time
+        FROM  mch_online_shop sp INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
         WHERE sp.state=%d AND mch.enabled = 1 %s %s LIMIT $2 OFFSET $1`,
 			shop.StateNormal, where, order)
 		err = s.o.SelectByQuery(&e, sql, begin, end-begin)

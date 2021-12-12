@@ -6,5 +6,5 @@ docker run -d --name go2o \
     -v $(pwd)/data:/data \
     -e "GO2O_NATS_ADDR:172.17.0.1:4222"
     --restart always \
-    docker-base.to2.net:5020/go2o
+    docker-base.56x.net:5020/go2o
 ```

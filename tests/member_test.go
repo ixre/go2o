@@ -3,6 +3,7 @@ package tests
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/registry"
+	"go2o/core/domain/interface/wallet"
 	"go2o/core/infrastructure/domain"
 	"go2o/tests/ti"
 	"testing"
@@ -84,16 +85,16 @@ func TestGetMember(t *testing.T) {
 	t.Logf("%#v", m.GetValue())
 }
 
-func TestModifyPwd(t *testing.T) {
+func TestModifyPassword(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(2)
-	newPwd := domain.MemberSha1Pwd(domain.Md5("13268240456"), m.GetValue().Salt)
-	err := m.Profile().ModifyPassword(newPwd, "")
+	NewPassword := domain.MemberSha1Pwd(domain.Md5("13268240456"), m.GetValue().Salt)
+	err := m.Profile().ModifyPassword(NewPassword, "")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	if o := m.GetValue().Pwd; o != newPwd {
+	if o := m.GetValue().Pwd; o != NewPassword {
 		t.Logf("登陆密码不正确")
 		t.FailNow()
 	}
@@ -184,11 +185,11 @@ func TestMemberWalletOperate(t *testing.T) {
 	amount := iw.Get().Balance
 	assertError(t, ic.Charge(member.AccountWallet, "钱包充值",
 		100000, "-", "测试"))
-	id, _, err := ic.RequestWithdrawal(member.KindWalletTakeOutToBankCard,
+	id, _, err := ic.RequestWithdrawal(wallet.KWithdrawToBankCard,
 		"提现到银行卡", 70000, 0, "")
 	assertError(t, err)
 	ic.ReviewWithdrawal(id, true, "")
-	id, _, err = ic.RequestWithdrawal(member.KindWalletTakeOutToBankCard,
+	id, _, err = ic.RequestWithdrawal(wallet.KWithdrawToBankCard,
 		"提现到银行卡", 30000, 0, "")
 	assertError(t, err)
 	assertError(t, ic.ReviewWithdrawal(id, false, "退回提现"))

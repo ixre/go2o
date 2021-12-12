@@ -10,15 +10,15 @@ import(
 
 type I{{$title}}Dao interface{
     // Get {{.table.Comment}}
-    Get{{$shortTitle}}(primary interface{})*model.{{$title}}
+    Get{{$shortTitle}}(primary interface{})*model.{{$shortTitle}}
     // GetBy {{.table.Comment}}
-    Get{{$shortTitle}}By(where string,v ...interface{})*model.{{$title}}
+    Get{{$shortTitle}}By(where string,v ...interface{})*model.{{$shortTitle}}
     // Count {{.table.Comment}} by condition
     Count{{$shortTitle}}(where string,v ...interface{})(int,error)
     // Select {{.table.Comment}}
-    Select{{$shortTitle}}(where string,v ...interface{})[]*model.{{$title}}
+    Select{{$shortTitle}}(where string,v ...interface{})[]*model.{{$shortTitle}}
     // Save {{.table.Comment}}
-    Save{{$shortTitle}}(v *model.{{$title}})(int,error)
+    Save{{$shortTitle}}(v *model.{{$shortTitle}})(int,error)
     // Delete {{.table.Comment}}
     Delete{{$shortTitle}}(primary interface{}) error
     // Batch Delete {{.table.Comment}}

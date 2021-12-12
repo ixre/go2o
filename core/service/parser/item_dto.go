@@ -38,7 +38,7 @@ func FromSaleLabelDto(src *proto.SItemLabel) *item.Label {
 		TagCode:    src.TagCode,
 		TagName:    src.Name,
 		LabelImage: src.LabelImage,
-		Enabled:    types.IntCond(src.Enabled, 1, 0),
+		Enabled:    types.ElseInt(src.Enabled, 1, 0),
 	}
 }
 
@@ -54,7 +54,7 @@ func LevelPriceDto(src *item.MemberPrice) *proto.SLevelPrice {
 	return &proto.SLevelPrice{
 		Id:        int64(src.Id),
 		Level:     int32(src.Level),
-		Price:     int64(src.Price * 100),
+		Price:     src.Price,
 		MaxNumber: int32(src.MaxQuota),
 		Enabled:   src.Enabled == 1,
 	}
@@ -64,9 +64,9 @@ func ParseLevelPrice(src *proto.SLevelPrice) *item.MemberPrice {
 	return &item.MemberPrice{
 		Id:       int(src.Id),
 		Level:    int(src.Level),
-		Price:    float32(src.Price) / 100,
+		Price:    src.Price,
 		MaxQuota: int(src.MaxNumber),
-		Enabled:  types.IntCond(src.Enabled, 1, 0),
+		Enabled:  types.ElseInt(src.Enabled, 1, 0),
 	}
 }
 
@@ -81,7 +81,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 		Code:        "",
 		SkuId:       src.SkuId,
 		Image:       src.Image,
-		Price:       float64(src.Price),
+		Price:       src.Price,
 		PriceRange:  src.PriceRange,
 		StockNum:    src.StockNum,
 		ShelveState: item.ShelvesOn,
@@ -160,14 +160,14 @@ func ParseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 		SnapshotId:     int64(v.SnapshotId),
 		SkuId:          int64(v.SkuId),
 		ItemId:         int64(v.ItemId),
-		ItemTitle:      v.GoodsTitle,
+		ItemTitle:      v.ItemTitle,
 		Image:          v.Image,
-		Price:          float64(v.Price),
-		FinalPrice:     float64(v.FinalPrice),
+		Price:          v.Price,
+		FinalPrice:     v.FinalPrice,
 		Quantity:       int32(v.Quantity),
 		ReturnQuantity: int32(v.ReturnQuantity),
-		Amount:         float64(v.Amount),
-		FinalAmount:    float64(v.FinalAmount),
+		Amount:         v.Amount,
+		FinalAmount:    v.FinalAmount,
 		IsShipped:      v.IsShipped == 1,
 	}
 }

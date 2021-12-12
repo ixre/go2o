@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : goods_rep
  * author : jarryliu
  * date : -- :
@@ -216,7 +216,7 @@ func (i *goodsRepo) GetOnShelvesGoods(mchId int64, start, end int, sortBy string
 
 // 保存快照
 func (i *goodsRepo) SaveSnapshot(v *item.Snapshot) (int64, error) {
-	r, _, err := i.o.Save(v.ItemId, v)
+	_, r, err := i.o.Save(v.ItemId, v)
 	if r == 0 {
 		_, _, err = i.o.Save(nil, v)
 	}
@@ -297,7 +297,7 @@ func (i *goodsRepo) SelectItemSku(where string, v ...interface{}) []*item.Sku {
 
 // Save ItemSku
 func (i *goodsRepo) SaveItemSku(v *item.Sku) (int, error) {
-	id, err := orm.Save(i.o, v, int(v.ID))
+	id, err := orm.Save(i.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-05 17:53
@@ -183,9 +183,9 @@ func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.Submit
 		ret.OrderNo = rd.OrderNo
 		ret.MergePay = rd.MergePay
 		ret.TradeNo = rd.TradeNo
-		ret.TradeAmount = int64(rd.TradeAmount)
+		ret.TradeAmount = rd.TradeAmount
 	}
-	return ret, err
+	return ret, nil
 }
 
 // 根据编号获取订单

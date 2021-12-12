@@ -161,16 +161,16 @@ func (g *Gateway) realSubmit(userId int64, data *wrapperData) error {
 }
 
 // 模拟支付
-func (g *Gateway) CheckAndPayment(userId int64, tradeNo string, tradePwd string) error {
+func (g *Gateway) CheckAndPayment(userId int64, tradeNo string, TradePassword string) error {
 	m := g.memberRepo.GetMember(userId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
 	mv := m.GetValue()
-	if mv.TradePwd == "" {
+	if mv.TradePassword == "" {
 		return errors.New("您还未设置交易密码")
 	}
-	if mv.TradePwd != tradePwd {
+	if mv.TradePassword != TradePassword {
 		return errors.New("交易密码不正确")
 	}
 	rk := g.getTradeKey(tradeNo)

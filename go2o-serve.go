@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-16 21:45
@@ -62,9 +62,9 @@ func main() {
 		debug         bool
 		trace         bool
 		runDaemon     bool // 运行daemon
-		help        bool
-		showVersion bool
-		newApp      *core.AppImpl
+		help          bool
+		showVersion   bool
+		newApp        *core.AppImpl
 		appFlag       = app.FlagWebApp
 	)
 

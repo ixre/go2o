@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : mail_queue
  * author : jarryliu
  * date : 2015-07-27 17:06

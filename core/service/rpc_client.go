@@ -1,6 +1,6 @@
 /**
  * Copyright 2015 @ at3.net.
- * name : client.go
+ * name : restful_client.go
  * author : jarryliu
  * date : 2016-11-13 12:32
  * description :
@@ -21,7 +21,7 @@ import (
 
 var selector etcd.Selector
 
-// 设置RPC地址
+// ConfigureClient 设置RPC地址
 func ConfigureClient(c clientv3.Config) {
 	log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
 	s, err := etcd.NewSelector(service, c, etcd.AlgRoundRobin)
@@ -61,7 +61,7 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 	return conn, err
 }
 
-// 状态客户端
+// StatusServiceClient 状态客户端
 func StatusServiceClient() (*grpc.ClientConn, proto.StatusServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -70,7 +70,7 @@ func StatusServiceClient() (*grpc.ClientConn, proto.StatusServiceClient, error) 
 	return conn, nil, err
 }
 
-// 基础服务
+// RegistryServiceClient 基础服务
 func RegistryServiceClient() (*grpc.ClientConn, proto.RegistryServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -79,7 +79,7 @@ func RegistryServiceClient() (*grpc.ClientConn, proto.RegistryServiceClient, err
 	return conn, nil, err
 }
 
-// 商户客户端
+// MerchantServiceClient 商户客户端
 func MerchantServiceClient() (*grpc.ClientConn, proto.MerchantServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -88,7 +88,7 @@ func MerchantServiceClient() (*grpc.ClientConn, proto.MerchantServiceClient, err
 	return conn, nil, err
 }
 
-// 会员客户端
+// MemberServiceClient 会员客户端
 func MemberServiceClient() (*grpc.ClientConn, proto.MemberServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -97,7 +97,7 @@ func MemberServiceClient() (*grpc.ClientConn, proto.MemberServiceClient, error) 
 	return conn, nil, err
 }
 
-// 基础服务
+// FoundationServiceClient 基础服务
 func FoundationServiceClient() (*grpc.ClientConn, proto.FoundationServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -106,7 +106,7 @@ func FoundationServiceClient() (*grpc.ClientConn, proto.FoundationServiceClient,
 	return conn, nil, err
 }
 
-// 消息客户端
+// MessageServiceClient 消息客户端
 func MessageServiceClient() (*grpc.ClientConn, proto.MessageServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -115,7 +115,7 @@ func MessageServiceClient() (*grpc.ClientConn, proto.MessageServiceClient, error
 	return conn, nil, err
 }
 
-// 消息客户端
+// ContentServiceClient 消息客户端
 func ContentServiceClient() (*grpc.ClientConn, proto.ContentServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -124,7 +124,7 @@ func ContentServiceClient() (*grpc.ClientConn, proto.ContentServiceClient, error
 	return conn, nil, err
 }
 
-// 支付服务
+// PaymentServiceClient 支付服务
 func PaymentServiceClient() (*grpc.ClientConn, proto.PaymentServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -133,7 +133,7 @@ func PaymentServiceClient() (*grpc.ClientConn, proto.PaymentServiceClient, error
 	return conn, nil, err
 }
 
-// 快捷支付服务
+// QuickPaymentServiceClient 快捷支付服务
 func QuickPaymentServiceClient() (*grpc.ClientConn, proto.QuickPayServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -142,7 +142,7 @@ func QuickPaymentServiceClient() (*grpc.ClientConn, proto.QuickPayServiceClient,
 	return conn, nil, err
 }
 
-// 钱包服务
+// WalletClient 钱包服务
 func WalletClient() (*grpc.ClientConn, proto.WalletServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -151,7 +151,7 @@ func WalletClient() (*grpc.ClientConn, proto.WalletServiceClient, error) {
 	return conn, nil, err
 }
 
-// 订单服务
+// OrderServiceClient 订单服务
 func OrderServiceClient() (*grpc.ClientConn, proto.OrderServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -160,7 +160,7 @@ func OrderServiceClient() (*grpc.ClientConn, proto.OrderServiceClient, error) {
 	return conn, nil, err
 }
 
-// 购物车服务
+// CartServiceClient 购物车服务
 func CartServiceClient() (*grpc.ClientConn, proto.CartServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -169,7 +169,7 @@ func CartServiceClient() (*grpc.ClientConn, proto.CartServiceClient, error) {
 	return conn, nil, err
 }
 
-// 快递服务
+// ExpressServiceClient 快递服务
 func ExpressServiceClient() (*grpc.ClientConn, proto.ExpressServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -178,7 +178,7 @@ func ExpressServiceClient() (*grpc.ClientConn, proto.ExpressServiceClient, error
 	return conn, nil, err
 }
 
-// 物流服务
+// ShipmentServiceClient 物流服务
 func ShipmentServiceClient() (*grpc.ClientConn, proto.ShipmentServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -187,7 +187,7 @@ func ShipmentServiceClient() (*grpc.ClientConn, proto.ShipmentServiceClient, err
 	return conn, nil, err
 }
 
-// 商品服务
+// ItemServiceClient 商品服务
 func ItemServiceClient() (*grpc.ClientConn, proto.ItemServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -196,7 +196,7 @@ func ItemServiceClient() (*grpc.ClientConn, proto.ItemServiceClient, error) {
 	return conn, nil, err
 }
 
-// 产品服务
+// ProductServiceClient 产品服务
 func ProductServiceClient() (*grpc.ClientConn, proto.ProductServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -205,7 +205,7 @@ func ProductServiceClient() (*grpc.ClientConn, proto.ProductServiceClient, error
 	return conn, nil, err
 }
 
-// 商店服务
+// ShopServiceClient 商店服务
 func ShopServiceClient() (*grpc.ClientConn, proto.ShopServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -214,7 +214,7 @@ func ShopServiceClient() (*grpc.ClientConn, proto.ShopServiceClient, error) {
 	return conn, nil, err
 }
 
-// 财务服务
+// FinanceServiceClient 财务服务
 func FinanceServiceClient() (*grpc.ClientConn, proto.FinanceServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -223,7 +223,7 @@ func FinanceServiceClient() (*grpc.ClientConn, proto.FinanceServiceClient, error
 	return conn, nil, err
 }
 
-// 查询服务
+// QueryServiceClient 查询服务
 func QueryServiceClient() (*grpc.ClientConn, proto.QueryServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -232,7 +232,7 @@ func QueryServiceClient() (*grpc.ClientConn, proto.QueryServiceClient, error) {
 	return conn, nil, err
 }
 
-// 售后服务
+// AfterSalesServiceClient 售后服务
 func AfterSalesServiceClient() (*grpc.ClientConn, proto.AfterSalesServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -241,7 +241,7 @@ func AfterSalesServiceClient() (*grpc.ClientConn, proto.AfterSalesServiceClient,
 	return conn, nil, err
 }
 
-// 广告服务
+// AdvertisementServiceClient 广告服务
 func AdvertisementServiceClient() (*grpc.ClientConn, proto.AdvertisementServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
@@ -250,7 +250,16 @@ func AdvertisementServiceClient() (*grpc.ClientConn, proto.AdvertisementServiceC
 	return conn, nil, err
 }
 
-// APP服务
+// PortalServiceClient 门户服务
+func PortalServiceClient() (*grpc.ClientConn, proto.PortalServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewPortalServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
+// AppServiceClient APP服务
 func AppServiceClient() (*grpc.ClientConn, proto.AppServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {

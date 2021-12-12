@@ -19,9 +19,9 @@ enum EMemberFlag {
 
 message RegisterMemberRequest {
     // 用户名
-    string user = 1;
+    string User = 1;
     // 密码(md5)
-    string Pwd = 2;
+    string Password = 2;
     // 昵称
     string Name = 3;
     // 手机
@@ -41,7 +41,7 @@ message RegisterMemberRequest {
 
 message LoginRequest {
     string User = 1;
-    string Pwd = 2;
+    string Password = 2;
     bool Update = 3;
 }
 // 注册结果
@@ -55,9 +55,9 @@ message RegisterResponse {
 }
 
 // 密码验证请求
-message PwdVerifyRequest {
+message VerifyPasswordRequest {
     sint64 MemberId = 1;
-    string Pwd = 2;
+    string Password = 2;
 }
 
 message FindMemberRequest {
@@ -127,10 +127,10 @@ message ChangeUserRequest {
     sint64 MemberId = 1;
     string User =  2;
 }
-message ModifyPwdRequest {
+message ModifyPasswordRequest {
     sint64 MemberId = 1;
-    string OriginPwd = 2;
-    string NewPwd = 3;
+    string OriginPassword = 2;
+    string NewPassword = 3;
 }
 message ChangeInviterRequest {
     sint64 MemberId = 1;
@@ -236,11 +236,11 @@ message SMember {
     /** 编号  */
     sint64 Id = 1;
     /** 用户名 */
-    string user =  2;
+    string User =  2;
     /** 密码 */
-    string Pwd = 3;
+    string Password = 3;
     /** 交易密码 */
-    string TradePwd = 4;
+    string TradePassword = 4;
     /** 经验值 */
     sint64 Exp = 5;
     /** 等级  */
@@ -308,22 +308,22 @@ message SAccount {
     sint64 MemberId = 1;
     sint64 Integral = 2;
     sint64 FreezeIntegral = 3;
-    double Balance = 4;
-    double FreezeBalance = 5;
-    double ExpiredBalance = 6;
+    int64 Balance = 4;
+    int64 FreezeBalance = 5;
+    int64 ExpiredBalance = 6;
     string WalletCode = 7;
-    double WalletBalance = 8;
-    double FreezeWallet = 9;
-    double ExpiredWallet = 10;
-    double TotalWalletAmount = 11;
-    double FlowBalance = 12;
-    double GrowBalance = 13;
-    double GrowAmount = 14;
-    double GrowEarnings = 15;
-    double GrowTotalEarnings = 16;
-    double TotalExpense = 17;
-    double TotalCharge = 18;
-    double TotalPay = 19;
+    int64 WalletBalance = 8;
+    int64 FreezeWallet = 9;
+    int64 ExpiredWallet = 10;
+    int64 TotalWalletAmount = 11;
+    int64 FlowBalance = 12;
+    int64 GrowBalance = 13;
+    int64 GrowAmount = 14;
+    int64 GrowEarnings = 15;
+    int64 GrowTotalEarnings = 16;
+    int64 TotalExpense = 17;
+    int64 TotalCharge = 18;
+    int64 TotalPay = 19;
     sint64 PriorityPay = 20;
     sint64 UpdateTime = 21;
 }
@@ -341,7 +341,7 @@ message SComplexMember {
     sint32 Flag = 10;
     sint64 UpdateTime = 11;
     /** 交易密码是否已设置 */
-    bool TradePwdHasSet = 12;
+    bool TradePasswordHasSet = 12;
 }
 
 message SMemberRelation {
@@ -533,9 +533,9 @@ message AccountTransferRequest {
 message WithdrawRequest {
     sint64 MemberId = 1;
     // 提现金额
-    int32 Amount = 2;
+    int64 Amount = 2;
     // 手续费
-    int32 TradeFee = 3;
+    int64 TradeFee = 3;
     // 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
     int32 WithdrawKind = 4;
     // 银行账号或第三方支付钱包
@@ -560,7 +560,7 @@ message WithdrawalLogRequest {
 
 message WithdrawalLogsResponse {
     sint64 MemberId = 1;
-    repeated WithdrawalLog data = 2;
+    repeated WithdrawalLog Data = 2;
 }
 
 // 提现日志

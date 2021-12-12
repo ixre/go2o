@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : platform_service
  * author : jarryliu
  * date : 2016-05-27 15:30
@@ -95,12 +95,12 @@ func (s *registryService) SearchRegistry(_ context.Context, key *proto.String) (
 	list := make([]*proto.SRegistry, len(arr))
 	for i, a := range arr {
 		list[i] = &proto.SRegistry{
-			Key:         a.Key,
-			Value:       a.Value,
-			DefaultValue:     a.DefaultValue,
-			Options:     a.Options,
-			Flag:        int32(a.Flag),
-			Description: a.Description,
+			Key:          a.Key,
+			Value:        a.Value,
+			DefaultValue: a.DefaultValue,
+			Options:      a.Options,
+			Flag:         int32(a.Flag),
+			Description:  a.Description,
 		}
 	}
 	return &proto.RegistriesResponse{Value: list}, nil

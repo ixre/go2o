@@ -29,7 +29,7 @@ type (
 	// 商品SKU
 	Sku struct {
 		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 产品编号
 		ProductId int64 `db:"product_id"`
 		// 商品编号
@@ -45,11 +45,11 @@ type (
 		// 产品编码
 		Code string `db:"code"`
 		// 参考价
-		RetailPrice float32 `db:"retail_price"`
+		RetailPrice int64 `db:"retail_price"`
 		// 价格（分)
-		Price float32 `db:"price"`
+		Price int64 `db:"price"`
 		// 成本（分)
-		Cost float32 `db:"cost"`
+		Cost int64 `db:"cost"`
 		// 重量(克)
 		Weight int32 `db:"weight"`
 		// 体积（毫升)
@@ -91,9 +91,9 @@ type (
 		// 产品编码
 		ItemCode string `db:"code"`
 		// 参考价
-		RetailPrice float32 `db:"retail_price"`
+		RetailPrice int64 `db:"retail_price"`
 		// 价格（分)
-		Price float32 `db:"price"`
+		Price int64 `db:"price"`
 		// 重量(克)
 		Weight int32 `db:"weight"`
 		// 体积（毫升)

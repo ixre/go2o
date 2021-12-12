@@ -125,7 +125,7 @@ func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 		o.appendToExpressCalculator(ue, it, ec)
 	}
 	ec.Calculate("") //todo:??暂不支持区域
-	o.value.ExpressFee = float32(ec.Total())
+	o.value.ExpressFee = ec.Total()
 	o.value.PackageFee = 0
 	//计算最终金额
 	o.fixFinalAmount()
@@ -148,7 +148,7 @@ func (o *wholesaleOrderImpl) createItem(i *cart.ItemPair) *orderItem {
 	// 计算价格
 	ws := it.Wholesale()
 	wsPrice := ws.GetWholesalePrice(i.SkuId, i.Quantity)
-	price := float32(wsPrice) * float32(i.Quantity)
+	price := int64(float32(wsPrice) * float32(i.Quantity))
 	// 计算重量及体积
 	weight := sku.Weight * i.Quantity
 	bulk := sku.Bulk * i.Quantity
@@ -207,8 +207,8 @@ func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.Com
 		FinalPrice:     0,
 		Quantity:       i.Quantity,
 		ReturnQuantity: i.ReturnQuantity,
-		Amount:         float64(i.Amount),
-		FinalAmount:    float64(i.FinalAmount),
+		Amount:         i.Amount,
+		FinalAmount:    i.FinalAmount,
 		IsShipped:      i.IsShipped,
 		Data:           make(map[string]string),
 	}
@@ -229,11 +229,11 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 		ConsigneePhone:  v.ConsigneePhone,
 		ShippingAddress: v.ShippingAddress,
 	}
-	co.DiscountAmount = float64(v.DiscountAmount)
-	co.ItemAmount = float64(v.ItemAmount)
-	co.ExpressFee = float64(v.ExpressFee)
-	co.PackageFee = float64(v.PackageFee)
-	co.FinalAmount = float64(v.FinalAmount)
+	co.DiscountAmount = v.DiscountAmount
+	co.ItemAmount = v.ItemAmount
+	co.ExpressFee = v.ExpressFee
+	co.PackageFee = v.PackageFee
+	co.FinalAmount = v.FinalAmount
 	co.BuyerComment = v.BuyerComment
 	co.IsBreak = 0
 	co.UpdateTime = v.UpdateTime
@@ -332,7 +332,7 @@ func (o *wholesaleOrderImpl) applyGroupDiscount() {
 		rate := ws.GetRebateRate(groupId, basisAmount)
 		disAmount := rate * float64(basisAmount)
 		if disAmount > 0 {
-			o.value.DiscountAmount += float32(disAmount)
+			o.value.DiscountAmount += int64(disAmount)
 			o.fixFinalAmount()
 		}
 	}
@@ -438,7 +438,7 @@ func (o *wholesaleOrderImpl) SetComment(comment string) {
 func (o *wholesaleOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.SellerId = int(o.value.VendorId)
-	v.ItemAmount = int(o.value.FinalAmount * 100)
+	v.ItemAmount = o.value.FinalAmount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
 	return o.paymentOrder.Submit()
 }
@@ -661,33 +661,33 @@ func (o *wholesaleOrderImpl) BuyerReceived() error {
 	return err
 }
 
-func (o *wholesaleOrderImpl) getOrderAmount() (amount float32, refund float32) {
+func (o *wholesaleOrderImpl) getOrderAmount() (amount int, refund int) {
 	items := o.Items()
 	for _, it := range items {
 		if it.ReturnQuantity > 0 {
-			a := it.Amount / float32(it.Quantity) * float32(it.ReturnQuantity)
+			a := int64(float32(it.Amount) / float32(it.Quantity) * float32(it.ReturnQuantity))
 			if it.ReturnQuantity != it.Quantity {
-				amount += it.Amount - a
+				amount += int(it.Amount - a)
 			}
-			refund += a
+			refund += int(a)
 		} else {
-			amount += it.Amount
+			amount += int(it.Amount)
 		}
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if amount > 0 {
-		amount += o.value.ExpressFee + o.value.PackageFee
+		amount += int(o.value.ExpressFee + o.value.PackageFee)
 	}
 	return amount, refund
 }
 
 // 获取订单的成本
-func (o *wholesaleOrderImpl) getOrderCost() float32 {
-	var cost float32
+func (o *wholesaleOrderImpl) getOrderCost() int64 {
+	var cost int64
 	items := o.Items()
 	for _, it := range items {
 		snap := o.itemRepo.GetSalesSnapshot(it.SnapshotId)
-		cost += snap.Cost * float32(it.Quantity-it.ReturnQuantity)
+		cost += snap.Cost * int64(it.Quantity-it.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if cost > 0 {
@@ -718,12 +718,12 @@ func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error
 	_, refund := o.getOrderAmount()
 	sAmount := o.getOrderCost()
 	if sAmount > 0 {
-		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
-		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
+		totalAmount := sAmount
+		refundAmount := refund
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
-			merchant.TKWholesaleOrder, totalAmount)
+			merchant.TKWholesaleOrder, int(totalAmount))
 		return vendor.Account().SettleOrder(o.OrderNo(),
-			totalAmount, tradeFee, refundAmount, "批发订单结算")
+			int(totalAmount), tradeFee, refundAmount, "批发订单结算")
 	}
 	return nil
 }
@@ -732,10 +732,10 @@ func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error
 func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchant) error {
 	rate := o.registryRepo.Get(registry.MchOrderSettleRate).FloatValue()
 	amount, refund := o.getOrderAmount()
-	sAmount := amount * float32(rate)
+	sAmount := float32(amount) * float32(rate)
 	if sAmount > 0 {
 		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
-		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
+		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKWholesaleOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.OrderNo(),
@@ -748,7 +748,7 @@ func (o *wholesaleOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMercha
 	amount, refund := o.getOrderAmount()
 	if fee > 0 {
 		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
-		refundAmount := int(refund * float32(enum.RATE_AMOUNT))
+		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		tradeFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKWholesaleOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,

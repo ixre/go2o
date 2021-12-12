@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : message_service.go
  * author : jarryliu
  * date : 2016-06-11 20:51
@@ -315,6 +315,6 @@ func (m *messageService) parseMailTemplate(v *proto.SMailTemplate) *mss.MailTemp
 		Name:       v.Name,
 		Subject:    v.Subject,
 		Body:       v.Body,
-		Enabled:    types.IntCond(v.Enabled, 1, 0),
+		Enabled:    types.ElseInt(v.Enabled, 1, 0),
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : shop
  * author : jarryliu
  * date : 2015-11-06 23:38

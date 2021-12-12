@@ -30,7 +30,7 @@ message Result {
     /* 消息 */
     string ErrMsg = 2;
     /** 数据字典 */
-    map<string, string> data = 3;
+    map<string, string> Data = 3;
 }
 
 // 键值对
@@ -110,10 +110,10 @@ message SPagingResult {
 
 // 树形节点
 message STreeNode {
-    // 文本
-    string title = 1;
     // 值
-    string Value =  2;
+    string Id =  1;
+    // 文本
+    string Label = 2;
     // 图标,icon与JS树形控件冲突
     string Icon = 3;
     // 是否展开
@@ -124,10 +124,8 @@ message STreeNode {
     map<string, string> Data = 6;
     // 子节点
     repeated STreeNode Children = 7;
-    // 子节点编号
-    int64 Id = 8;
     // 是否目录，通常Children有元素,则为true
-    bool Folder = 10;
+    bool Folder = 8;
 }
 
 

@@ -1,7 +1,7 @@
 package impl
 
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : payment_service.go
  * author : jarryliu
  * date : 2016-07-03 13:24
@@ -130,12 +130,12 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 	// 合并支付单
 	arr := p.repo.GetMergePayOrders(r.TradeNo)
 	payUid := arr[0].Get().PayUid
-	finalFee := 0
+	var finalFee int64 = 0
 	for _, v := range arr {
 		finalFee += v.Get().FinalFee
 	}
 	acc := p.memberRepo.GetAccount(payUid)
-	if int(acc.Balance*100) < finalFee {
+	if int64(acc.Balance*100) < finalFee {
 		err = member.ErrAccountBalanceNotEnough
 	} else {
 		for _, v := range arr {
@@ -225,8 +225,8 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			Subject:      iv.Subject,
 			TradeType:    iv.TradeType,
 			State:        int32(iv.State),
-			ProcedureFee: int32(iv.ProcedureFee),
-			FinalFee:     int32(iv.FinalFee),
+			ProcedureFee: iv.ProcedureFee,
+			FinalFee:     iv.FinalFee,
 		}
 		// 更新支付状态
 		if so.State != payment.StateAwaitingPayment {
@@ -238,9 +238,9 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		}
 		// 更新支付金额
 		d.TradeOrders = append(d.TradeOrders, so)
-		d.ProcedureFee += so.ProcedureFee      // 手续费
-		d.FinalFee += so.FinalFee              // 最终金额
-		d.TotalAmount += int32(iv.TotalAmount) // 累计金额
+		d.ProcedureFee += so.ProcedureFee // 手续费
+		d.FinalFee += so.FinalFee         // 最终金额
+		d.TotalAmount += iv.TotalAmount   // 累计金额
 	}
 	d.ErrCode = 0
 	d.TradeNo = tradeNo // 交易单号
@@ -261,16 +261,16 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 		OrderType:      int(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,
 		Subject:        src.Subject,
-		BuyerId:        int64(src.BuyerId),
-		PayUid:         int64(src.PayUid),
-		TotalAmount:    int(src.TotalAmount),
-		DiscountAmount: int(src.DiscountAmount),
-		DeductAmount:   int(src.DeductAmount),
-		AdjustAmount:   int(src.AdjustAmount),
-		ItemAmount:     int(src.ItemAmount),
-		ProcedureFee:   int(src.ProcedureFee),
-		FinalFee:       int(src.FinalFee),
-		PaidFee:        int(src.PaidFee),
+		BuyerId:        src.BuyerId,
+		PayUid:         src.PayUid,
+		TotalAmount:    src.TotalAmount,
+		DiscountAmount: src.DiscountAmount,
+		DeductAmount:   src.DeductAmount,
+		AdjustAmount:   src.AdjustAmount,
+		ItemAmount:     src.ItemAmount,
+		ProcedureFee:   src.ProcedureFee,
+		FinalFee:       src.FinalFee,
+		PaidFee:        src.PaidFee,
 		PayFlag:        int(src.PayFlag),
 		FinalFlag:      int(src.FinalFlag),
 		ExtraData:      src.ExtraData,
@@ -293,16 +293,16 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 		TradeType:      src.TradeType,
 		TradeNo:        src.TradeNo,
 		Subject:        src.Subject,
-		BuyerId:        int32(src.BuyerId),
-		PayUid:         int32(src.PayUid),
-		TotalAmount:    int32(src.TotalAmount),
-		DiscountAmount: int32(src.DiscountAmount),
-		DeductAmount:   int32(src.DeductAmount),
-		AdjustAmount:   int32(src.AdjustAmount),
-		ItemAmount:     int32(src.ItemAmount),
-		ProcedureFee:   int32(src.ProcedureFee),
-		FinalFee:       int32(src.FinalFee),
-		PaidFee:        int32(src.PaidFee),
+		BuyerId:        src.BuyerId,
+		PayUid:         src.PayUid,
+		TotalAmount:    src.TotalAmount,
+		DiscountAmount: src.DiscountAmount,
+		DeductAmount:   src.DeductAmount,
+		AdjustAmount:   src.AdjustAmount,
+		ItemAmount:     src.ItemAmount,
+		ProcedureFee:   src.ProcedureFee,
+		FinalFee:       src.FinalFee,
+		PaidFee:        src.PaidFee,
 		PayFlag:        int32(src.PayFlag),
 		FinalFlag:      int32(src.FinalFlag),
 		ExtraData:      src.ExtraData,
@@ -321,7 +321,7 @@ func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *
 	return &proto.STradeMethodData{
 		Method:     int32(src.Method),
 		Code:       src.Code,
-		Amount:     int32(src.Amount),
+		Amount:     src.Amount,
 		Internal:   int32(src.Internal),
 		OutTradeNo: src.OutTradeNo,
 		PayTime:    src.PayTime,

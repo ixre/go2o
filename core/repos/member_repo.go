@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-09 10:13
@@ -404,8 +404,10 @@ func (m *MemberRepoImpl) BankCards(memberId int64) []member.BankCard {
 
 // 保存银行信息
 func (m *MemberRepoImpl) SaveBankCard(v *member.BankCard) error {
-	var err error
-	_, _, err = m.o.Save(v.MemberId, v)
+	_, err := orm.Save(m.o, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmBankCard")
+	}
 	return err
 }
 

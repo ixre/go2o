@@ -2,7 +2,6 @@ package item
 
 import (
 	"encoding/json"
-	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/util"
 	"go2o/core/domain/interface/domain/enum"
 	"go2o/core/domain/interface/item"
@@ -39,7 +38,7 @@ func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 		v = &item.WsItem{
 			ItemId:      w.itemId,
 			VendorId:    iv.VendorId,
-			Price:       float64(iv.Price),
+			Price:       iv.Price,
 			PriceRange:  iv.PriceRange,
 			ShelveState: item.ShelvesInWarehouse,
 			ReviewState: iv.ReviewState,
@@ -167,8 +166,8 @@ func (w *wholesaleItemImpl) SaveItemDiscount(groupId int32, arr []*item.WsItemDi
 }
 
 // 获取批发价格
-func (w *wholesaleItemImpl) GetWholesalePrice(skuId int64, quantity int32) float64 {
-	var price float64 = 0
+func (w *wholesaleItemImpl) GetWholesalePrice(skuId int64, quantity int32) int64 {
+	var price int64 = 0
 	arr := w.GetSkuPrice(skuId)
 	if len(arr) > 0 {
 		var compare int32
@@ -215,7 +214,7 @@ func (w *wholesaleItemImpl) SaveSkuPrice(skuId int64, arr []*item.WsSkuPrice) er
 		w.repo.BatchDeleteWsSkuPrice("id= $1", v)
 	}
 	// 保存项
-	var min, max float64
+	var min, max int64
 	for _, v := range arr {
 		if min == 0 || max == 0 {
 			min = v.WholesalePrice
@@ -239,10 +238,10 @@ func (w *wholesaleItemImpl) SaveSkuPrice(skuId int64, arr []*item.WsSkuPrice) er
 	if min > 0 && max > 0 {
 		w.value.Price = min
 		if min == max {
-			w.value.PriceRange = format.DecimalToString(min)
+			w.value.PriceRange = format.FormatIntMoney(min)
 		} else {
-			w.value.PriceRange = format.DecimalToString(min) +
-				"~" + format.DecimalToString(max)
+			w.value.PriceRange = format.FormatIntMoney(min) +
+				"~" + format.FormatIntMoney(max)
 		}
 		_, err := w.Save()
 		return err
@@ -261,17 +260,17 @@ func (w *wholesaleItemImpl) GetJsonDetailData() []byte {
 	okSkuArr := []*item.Sku{}
 	skuJdoArr := []skuJdo{}
 	for _, v := range skuArr {
-		pArr := w.GetSkuPrice(v.ID)
+		pArr := w.GetSkuPrice(v.Id)
 		if len(pArr) == 0 {
 			continue
 		}
 		okSkuArr = append(okSkuArr, v)
 		jdo := skuJdo{
-			SkuId:            strconv.Itoa(int(v.ID)),
+			SkuId:            strconv.Itoa(int(v.Id)),
 			SpecData:         v.SpecData,
 			SpecWord:         v.SpecWord,
-			Price:            math.Round(float64(v.Price), 2),
-			DiscountPrice:    math.Round(float64(v.Price), 2),
+			Price:            v.Price,
+			DiscountPrice:    v.Price,
 			CanSalesQuantity: v.Stock,
 			SalesCount:       v.SaleNum,
 			PriceArray:       []skuPriceJdo{},

@@ -45,12 +45,12 @@ func TestCombineCart(t *testing.T) {
 }
 
 func joinItemsToCart(c cart.ICart, t *testing.T) error {
-	var itemId int64 = 66
-	itemId = 113
+	var itemId int64 = 1
+	itemId = 1
 	itemRepo := ti.Factory.GetItemRepo()
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
-	skuId := arr[0].ID
+	skuId := arr[0].Id
 	return c.Put(itemId, skuId, 1)
 }
 

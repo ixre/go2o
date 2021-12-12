@@ -37,9 +37,9 @@ type orderItem struct {
 	// SKU描述
 	//Sku string `db:"sku"`
 	// 金额
-	Amount float32
+	Amount int64
 	// 最终金额, 可能会有优惠均摊抵扣的金额
-	FinalAmount float32
+	FinalAmount int64
 	// 是否发货
 	IsShipped int
 	// 更新时间
@@ -136,8 +136,8 @@ func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
 
 // 绑定商品信息
 func (o *baseOrderImpl) bindItemInfo(i *order.ComplexItem) {
-	unitPrice := i.FinalAmount / float64(i.Quantity)
-	i.Data["UnitPrice"] = format.DecimalToString(unitPrice)
+	unitPrice := float64(i.FinalAmount) / float64(i.Quantity) / 100
+	i.Data["UnitPrice"] = format.FormatFloat64(unitPrice)
 	it := o.itemRepo.GetSalesSnapshot(i.SnapshotId)
 	i.Data["ItemImage"] = it.Image
 	i.Data["ItemName"] = it.GoodsTitle

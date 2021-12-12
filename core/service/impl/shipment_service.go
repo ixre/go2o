@@ -1,6 +1,6 @@
 /**
- * Copyright 2015 @ to2.net.
- * name : express_service.go
+ * Copyright 2015 @ 56x.net.
+ * name : 2.express_service.go
  * author : jarryliu
  * date : 2016-07-05 18:57
  * description :

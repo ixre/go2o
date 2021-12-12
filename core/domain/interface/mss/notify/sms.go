@@ -1,7 +1,7 @@
 package notify
 
 /**
- * Copyright 2009-2019 @ to2.net
+ * Copyright 2009-2019 @ 56x.net
  * name : sms.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-07-01 19:33

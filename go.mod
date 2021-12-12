@@ -29,7 +29,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.11.0
+	github.com/ixre/gof v1.11.3
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/lib/pq v1.10.3 // indirect
 	github.com/micro/go-micro v1.18.0
@@ -52,6 +52,8 @@ require (
 	google.golang.org/genproto v0.0.0-20211016002631-37fc39342514 // indirect
 	google.golang.org/grpc v1.41.0
 )
+
+require google.golang.org/protobuf v1.27.1 // indirect
 
 require (
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
@@ -87,5 +89,4 @@ require (
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
 )

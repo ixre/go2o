@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : goods
  * author : jarryliu
  * date : 2016-06-28 23:54
@@ -181,11 +181,11 @@ type (
 		// 默认SKU编号
 		SkuId int64 `db:"sku_id"`
 		// 成本价
-		Cost float32 `db:"cost"`
+		Cost int64 `db:"cost"`
 		// 销售价
-		Price float32 `db:"price"`
+		Price int64 `db:"price"`
 		// 零售价
-		RetailPrice float32 `db:"retail_price"`
+		RetailPrice int64 `db:"retail_price"`
 		// 重量:克(g)
 		Weight int32 `db:"weight"`
 		// 体积:毫升(ml)
@@ -203,17 +203,17 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 促销价
-		PromPrice float32 `db:"-"`
+		PromPrice int64 `db:"-"`
 
 		SkuArray []*Sku `db:"-"`
 	}
 
 	// 会员价
 	MemberPrice struct {
-		Id      int     `db:"id" pk:"yes" auto:"yes"`
-		GoodsId int64   `db:"goods_id"`
-		Level   int     `db:"level"`
-		Price   float32 `db:"price"`
+		Id      int   `db:"id" pk:"yes" auto:"yes"`
+		GoodsId int64 `db:"goods_id"`
+		Level   int   `db:"level"`
+		Price   int64 `db:"price"`
 		// 限购数量
 		MaxQuota int `db:"max_quota"`
 		Enabled  int `db:"enabled"`
@@ -250,9 +250,9 @@ type (
 		// 获取促销信息
 		GetPromotions() []promotion.IPromotion
 		// 获取促销价
-		GetPromotionPrice(level int) float32
+		GetPromotionPrice(level int) int64
 		// 获取会员价销价,返回是否有会原价及价格
-		GetLevelPrice(level int) (bool, float32)
+		GetLevelPrice(level int) (bool, int64)
 		// 获取促销描述
 		GetPromotionDescribe() map[string]string
 		// 获取会员价
@@ -314,7 +314,7 @@ type (
 		SaveItemDiscount(groupId int32, arr []*WsItemDiscount) error
 
 		// 获取批发价格
-		GetWholesalePrice(skuId int64, quantity int32) float64
+		GetWholesalePrice(skuId int64, quantity int32) int64
 		// 根据SKU获取价格设置
 		GetSkuPrice(skuId int64) []*WsSkuPrice
 		// 保存批发SKU价格设置
@@ -365,7 +365,7 @@ type (
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// 价格
-		Price float64 `db:"price"`
+		Price int64 `db:"price"`
 		// 价格区间
 		PriceRange string `db:"price_range"`
 		// 上架状态
@@ -387,7 +387,7 @@ type (
 		// 需要数量以上
 		RequireQuantity int32 `db:"require_quantity"`
 		// 批发价
-		WholesalePrice float64 `db:"wholesale_price"`
+		WholesalePrice int64 `db:"wholesale_price"`
 	}
 
 	// 批发商品折扣

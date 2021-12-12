@@ -42,7 +42,7 @@ func (a accountApi) Process(fn string, ctx api.Context) *api.Response {
 	return api.ResponseWithCode(-1, "api not defined")
 }
 
-func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *api.Response {
+func (a accountApi) accountLog(ctx api.Context, memberId int64, account member.AccountType) *api.Response {
 	begin := int64(ctx.Form().GetInt("begin"))
 	size := int64(ctx.Form().GetInt("size"))
 	p := &proto.SPagingParams{
@@ -54,7 +54,7 @@ func (a accountApi) accountLog(ctx api.Context, memberId int64, account int) *ap
 	defer trans.Close()
 	ret, _ := cli.PagingAccountLog(context.TODO(), &proto.PagingAccountInfoRequest{
 		MemberId:    memberId,
-		AccountType: member.AccountWallet,
+		AccountType: int32(member.AccountWallet),
 		Params:      p,
 	})
 	return api.NewResponse(ret)

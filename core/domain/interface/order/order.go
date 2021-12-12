@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2013-12-05 17:37
@@ -307,7 +307,7 @@ type (
 		// 交易号
 		TradeNo string
 		// 交易金额
-		TradeAmount int
+		TradeAmount int64
 	}
 
 	// 订单
@@ -347,15 +347,15 @@ type (
 		// 店铺编号
 		ShopId int64 `db:"shop_id"`
 		// 商品总价
-		ItemAmount float32 `db:"item_amount"`
+		ItemAmount int64 `db:"item_amount"`
 		// 抵扣金额
-		DiscountAmount float32 `db:"discount_amount"`
+		DiscountAmount int64 `db:"discount_amount"`
 		// 运费
-		ExpressFee float32 `db:"express_fee"`
+		ExpressFee int64 `db:"express_fee"`
 		// 包装费
-		PackageFee float32 `db:"package_fee"`
+		PackageFee int64 `db:"package_fee"`
 		// 订单最终金额
-		FinalAmount float32 `db:"final_amount"`
+		FinalAmount int64 `db:"final_amount"`
 		// 收货人姓名
 		ConsigneePerson string `db:"consignee_person"`
 		// 收货人电话
@@ -389,15 +389,15 @@ type (
 		// 商品快照编号
 		SnapshotId int64 `db:"snapshot_id"`
 		// 商品销售价格(不含优惠抵扣)
-		Price float32 `db:"-"` //todo
+		Price int64 `db:"-"` //todo
 		// 销售数量
 		Quantity int32 `db:"quantity"`
 		// 退货数量
 		ReturnQuantity int32 `db:"return_quantity"`
 		// 商品总金额
-		Amount float32 `db:"amount"`
+		Amount int64 `db:"amount"`
 		// 商品实际金额
-		FinalAmount float32 `db:"final_amount"`
+		FinalAmount int64 `db:"final_amount"`
 		// 是否已发货
 		IsShipped int32 `db:"is_shipped"`
 		// 更新时间
@@ -417,11 +417,11 @@ type (
 		// 订单标题
 		Subject string `db:"subject"`
 		// 订单金额
-		OrderAmount float64 `db:"order_amount"`
+		OrderAmount int64 `db:"order_amount"`
 		// 抵扣金额
-		DiscountAmount float64 `db:"discount_amount"`
+		DiscountAmount int64 `db:"discount_amount"`
 		// 订单最终金额
-		FinalAmount float64 `db:"final_amount"`
+		FinalAmount int64 `db:"final_amount"`
 		// 交易结算比例（商户)，允许为0和1
 		TradeRate float64 `db:"trade_rate"`
 		// 是否现金支付
@@ -460,7 +460,7 @@ type (
 		// 标题
 		Title string `db:"title"`
 		// 节省金额
-		SaveFee float32 `db:"save_fee"`
+		SaveFee int64 `db:"save_fee"`
 		// 赠送积分
 		PresentIntegral int `db:"present_integral"`
 		// 是否应用
@@ -471,11 +471,11 @@ type (
 
 	// 应用到订单的优惠券
 	OrderCoupon struct {
-		OrderId      int32   `db:"order_id"`
-		CouponId     int32   `db:"coupon_id"`
-		CouponCode   string  `db:"coupon_code"`
-		Fee          float32 `db:"coupon_fee"`
-		Describe     string  `db:"coupon_describe"`
-		SendIntegral int     `db:"send_integral"`
+		OrderId      int32  `db:"order_id"`
+		CouponId     int32  `db:"coupon_id"`
+		CouponCode   string `db:"coupon_code"`
+		Fee          int64  `db:"coupon_fee"`
+		Describe     string `db:"coupon_describe"`
+		SendIntegral int    `db:"send_integral"`
 	}
 )

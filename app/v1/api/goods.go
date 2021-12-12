@@ -9,8 +9,8 @@ import (
 )
 
 /**
- * Copyright 2009-2019 @ to2.net
- * name : goods.go
+ * Copyright 2009-2019 @ 56x.net
+ * name : goods.g
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2019-12-06 10:13
  * description :

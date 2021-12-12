@@ -1,7 +1,7 @@
 package impl
 
 /**
- * Copyright 2014 @ to2.net.
+ * Copyright 2014 @ 56x.net.
  * name :
  * author : jarryliu
  * date : 2020-09-05 20:14
@@ -326,7 +326,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Kind:        int32(v.Kind),
 		Title:       v.Title,
 		Amount:      float64(v.Value),
-		TradeFee:      float64(v.TradeFee),
+		TradeFee:    float64(v.TradeFee),
 		ReviewState: int32(v.ReviewState),
 		Remark:      v.Remark,
 		CreateTime:  v.CreateTime,
@@ -471,7 +471,7 @@ func (s *memberService) updateMember(v *proto.SMember) (int64, error) {
 
 // 注册会员
 func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberRequest) (*proto.RegisterResponse, error) {
-	if len(r.Pwd) != 32 {
+	if len(r.Password) != 32 {
 		return &proto.RegisterResponse{
 			ErrCode: 1,
 			ErrMsg:  de.ErrNotMD5Format.Error(),
@@ -481,7 +481,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	v := &member.Member{
 		User:     r.User,
 		Salt:     salt,
-		Pwd:      domain.Sha1Pwd(r.Pwd, salt),
+		Pwd:      domain.Sha1Pwd(r.Password, salt),
 		Name:     r.Name,
 		RealName: "",
 		Avatar:   "", //todo: default avatar
@@ -608,15 +608,15 @@ func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.Int64)
 }
 
 // 更改密码
-func (s *memberService) ModifyPwd(_ context.Context, r *proto.ModifyPwdRequest) (*proto.Result, error) {
+func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
 	v := m.GetValue()
-	pwd := r.NewPwd
-	old := r.OriginPwd
-	if l := len(r.NewPwd); l != 32 {
+	pwd := r.NewPassword
+	old := r.OriginPassword
+	if l := len(r.NewPassword); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.MemberSha1Pwd(pwd, v.Salt)
@@ -634,22 +634,22 @@ func (s *memberService) ModifyPwd(_ context.Context, r *proto.ModifyPwdRequest) 
 }
 
 // 更改交易密码
-func (s *memberService) ModifyTradePwd(_ context.Context, r *proto.ModifyPwdRequest) (*proto.Result, error) {
+func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	pwd, old := r.NewPwd, r.OriginPwd
+	pwd, old := r.NewPassword, r.OriginPassword
 	v := m.GetValue()
 	if l := len(pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		pwd = domain.TradePwd(pwd, v.Salt)
+		pwd = domain.TradePassword(pwd, v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
-		old = domain.TradePwd(old, v.Salt)
+		old = domain.TradePassword(old, v.Salt)
 	}
 	err := m.Profile().ModifyTradePassword(pwd, old)
 	if err != nil {
@@ -685,7 +685,7 @@ func (s *memberService) tryLogin(user string, pwd string) (id int64, errCode int
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.Result, error) {
-	id, code, err := s.tryLogin(r.User, r.Pwd)
+	id, code, err := s.tryLogin(r.User, r.Password)
 	if err != nil {
 		r := s.error(err)
 		r.ErrCode = code
@@ -705,20 +705,20 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 }
 
 // 检查交易密码
-func (s *memberService) VerifyTradePwd(_ context.Context, r *proto.PwdVerifyRequest) (*proto.Result, error) {
+func (s *memberService) VerifyTradePassword(_ context.Context, r *proto.VerifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
 	mv := m.GetValue()
-	if mv.TradePwd == "" {
-		return s.error(member.ErrNotSetTradePwd), nil
+	if mv.TradePassword == "" {
+		return s.error(member.ErrNotSetTradePassword), nil
 	}
-	if len(r.Pwd) != 32 {
+	if len(r.Password) != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	}
-	if encPwd := domain.TradePwd(r.Pwd, mv.Salt); mv.TradePwd != encPwd {
-		return s.error(member.ErrIncorrectTradePwd), nil
+	if encPwd := domain.TradePassword(r.Password, mv.Salt); mv.TradePassword != encPwd {
+		return s.error(member.ErrIncorrectTradePassword), nil
 	}
 	return s.success(nil), nil
 }
@@ -988,7 +988,7 @@ func (s *memberService) ReviewTrustedInfo(_ context.Context, r *proto.ReviewTrus
 func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {
 	var total int
 	var rows []map[string]interface{}
-	switch r.AccountType {
+	switch member.AccountType(r.AccountType) {
 	case member.AccountIntegral:
 		total, rows = s.query.PagedIntegralAccountLog(
 			r.MemberId, r.Params.Begin,
@@ -1083,7 +1083,7 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	var accountTid = 0
+	var accountTid member.AccountType
 	switch r.Account {
 	case proto.PaymentAccountType_PA_BALANCE:
 		accountTid = member.AccountBalance
@@ -1189,7 +1189,7 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(r.AccountType, r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Charge(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1199,7 +1199,7 @@ func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChang
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Discount(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Discount(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1209,7 +1209,7 @@ func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChange
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Consume(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Consume(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1219,7 +1219,7 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(int(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Refund(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
 }
@@ -1233,7 +1233,7 @@ func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustR
 			tit = "[KF]系统充值"
 		}
 		acc := m.GetAccount()
-		err = acc.Adjust(int(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
+		err = acc.Adjust(member.AccountType(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
 	}
 	return s.result(err), nil
 }
@@ -1351,56 +1351,6 @@ func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithd
 	return s.error(err), nil
 }
 
-// 冻结余额
-func (s *memberService) Freeze(memberId int64, title string,
-	tradeNo string, amount float32, referId int64) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().Freeze(title, tradeNo, amount, referId)
-}
-
-// 解冻金额
-func (s *memberService) Unfreeze(memberId int64, title string,
-	tradeNo string, amount float32, referId int64) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().Unfreeze(title, tradeNo, amount, referId)
-}
-
-// 冻结赠送金额
-func (s *memberService) FreezeWallet(memberId int64, title string,
-	tradeNo string, amount float32, referId int64) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().FreezeWallet(title, tradeNo, amount, referId)
-}
-
-// 解冻赠送金额
-func (s *memberService) UnfreezeWallet(memberId int64, title string,
-	tradeNo string, amount float32, referId int64) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().UnfreezeWallet(title, tradeNo, amount, referId)
-}
-
-// 将冻结金额标记为失效
-func (s *memberService) FreezeExpired(memberId int64, accountKind int, amount float32,
-	remark string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().FreezeExpired(accountKind, amount, remark)
-}
-
 // 转账余额到其他账户
 func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTransferRequest) (*proto.Result, error) {
 	var err error
@@ -1408,51 +1358,17 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		var kind = 0
+		var account member.AccountType
 		switch r.TransferAccount {
 		case proto.TransferAccountType_TA_BALANCE:
-			kind = member.AccountBalance
+			account = member.AccountBalance
 		case proto.TransferAccountType_TA_WALLET:
-			kind = member.AccountWallet
+			account = member.AccountWallet
 		}
-		err = m.GetAccount().TransferAccount(kind, r.ToMemberId,
+		err = m.GetAccount().TransferAccount(account, r.ToMemberId,
 			int(r.Amount), int(r.TradeFee), r.Remark)
 	}
 	return s.error(err), nil
-}
-
-// 转账余额到其他账户
-func (s *memberService) TransferBalance(memberId int64, kind int32, amount float32, tradeNo string,
-	toTitle, fromTitle string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().TransferBalance(int(kind), amount, tradeNo, toTitle, fromTitle)
-}
-
-// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
-// commission手续费
-func (s *memberService) TransferFlow(memberId int64, kind int32, amount float32,
-	commission float32, tradeNo string, toTitle string, fromTitle string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().TransferFlow(int(kind), amount, commission, tradeNo,
-		toTitle, fromTitle)
-}
-
-// 将活动金转给其他人
-func (s *memberService) TransferFlowTo(memberId int64, toMemberId int64, kind int32,
-	amount float32, commission float32, tradeNo string, toTitle string,
-	fromTitle string) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().TransferFlowTo(toMemberId, int(kind), amount,
-		commission, tradeNo, toTitle, fromTitle)
 }
 
 // 会员推广排名
@@ -1523,8 +1439,8 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Id:             src.Id,
 		User:           src.User,
 		Code:           src.Code,
-		Pwd:            src.Pwd,
-		TradePwd:       src.TradePwd,
+		Password:       src.Pwd,
+		TradePassword:  src.TradePassword,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
@@ -1572,16 +1488,16 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 
 func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
-		Name:           src.Name,
-		Avatar:         src.Avatar,
-		Exp:            int32(src.Exp),
-		Level:          int32(src.Level),
-		LevelName:      src.LevelName,
-		PremiumUser:    int32(src.PremiumUser),
-		InviteCode:     src.InviteCode,
-		TrustAuthState: int32(src.TrustAuthState),
-		TradePwdHasSet: src.TradePwdHasSet,
-		UpdateTime:     src.UpdateTime,
+		Name:                src.Name,
+		Avatar:              src.Avatar,
+		Exp:                 int32(src.Exp),
+		Level:               int32(src.Level),
+		LevelName:           src.LevelName,
+		PremiumUser:         int32(src.PremiumUser),
+		InviteCode:          src.InviteCode,
+		TrustAuthState:      int32(src.TrustAuthState),
+		TradePasswordHasSet: src.TradePasswordHasSet,
+		UpdateTime:          src.UpdateTime,
 	}
 }
 
@@ -1606,22 +1522,22 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 		MemberId:          src.MemberId,
 		Integral:          int64(src.Integral),
 		FreezeIntegral:    int64(src.FreezeIntegral),
-		Balance:           round(src.Balance, 2),
-		FreezeBalance:     round(src.FreezeBalance, 2),
-		ExpiredBalance:    round(src.ExpiredBalance, 2),
+		Balance:           src.Balance,
+		FreezeBalance:     src.FreezeBalance,
+		ExpiredBalance:    src.ExpiredBalance,
 		WalletCode:        src.WalletCode,
-		WalletBalance:     round(src.WalletBalance, 2),
-		FreezeWallet:      round(src.FreezeWallet, 2),
-		ExpiredWallet:     round(src.ExpiredWallet, 2),
-		TotalWalletAmount: round(src.TotalWalletAmount, 2),
-		FlowBalance:       round(src.FlowBalance, 2),
-		GrowBalance:       round(src.GrowBalance, 2),
-		GrowAmount:        round(src.GrowAmount, 2),
-		GrowEarnings:      round(src.GrowEarnings, 2),
-		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
-		TotalExpense:      round(src.TotalExpense, 2),
-		TotalCharge:       round(src.TotalCharge, 2),
-		TotalPay:          round(src.TotalPay, 2),
+		WalletBalance:     src.WalletBalance,
+		FreezeWallet:      src.FreezeWallet,
+		ExpiredWallet:     src.ExpiredWallet,
+		TotalWalletAmount: src.TotalWalletAmount,
+		FlowBalance:       src.FlowBalance,
+		GrowBalance:       src.GrowBalance,
+		GrowAmount:        src.GrowAmount,
+		GrowEarnings:      src.GrowEarnings,
+		GrowTotalEarnings: src.GrowTotalEarnings,
+		TotalExpense:      src.TotalExpense,
+		TotalCharge:       src.TotalCharge,
+		TotalPay:          src.TotalPay,
 		PriorityPay:       int64(src.PriorityPay),
 		UpdateTime:        src.UpdateTime,
 	}
@@ -1629,14 +1545,14 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 
 func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 	return &member.Member{
-		Id:             int64(src.Id),
+		Id:             src.Id,
 		Code:           src.Code,
 		Name:           src.Name,
 		RealName:       src.RealName,
 		User:           src.User,
-		Pwd:            src.Pwd,
+		Pwd:            src.Password,
 		Avatar:         src.Avatar,
-		TradePwd:       src.TradePwd,
+		TradePassword:  src.TradePassword,
 		Exp:            int(src.Exp),
 		Level:          int(src.Level),
 		InviteCode:     src.InviteCode,

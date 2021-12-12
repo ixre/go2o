@@ -94,20 +94,20 @@ func (w *wholesalerImpl) syncSingleItem(itemId int64, syncPrice bool) error {
 			return err
 		}
 		for _, v := range it.SkuArray() {
-			if v.ID <= 0 {
+			if v.Id <= 0 {
 				continue
 			}
-			err = ws.SaveSkuPrice(v.ID, []*item.WsSkuPrice{
+			err = ws.SaveSkuPrice(v.Id, []*item.WsSkuPrice{
 				{
 					ItemId:          itemId,
-					SkuId:           v.ID,
+					SkuId:           v.Id,
 					RequireQuantity: 1,
-					WholesalePrice:  float64(v.Price),
+					WholesalePrice:  v.Price,
 				},
 			})
 			if err != nil {
 				log.Println("[ Go2o][ Wholesale][ Sync]:", err.Error(),
-					"Id:", itemId, "; SkuId:", v.ID)
+					"Id:", itemId, "; SkuId:", v.Id)
 			}
 		}
 	}

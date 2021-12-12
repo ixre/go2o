@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ to2.net.
+ * Copyright 2015 @ 56x.net.
  * name : order
  * author : jarryliu
  * date : 2016-07-08 16:46
@@ -23,12 +23,12 @@ type (
 		VendorId       int64
 		ShopId         int64
 		ShopName       string
-		ItemAmount     float32
-		DiscountAmount float32
-		ExpressFee     float32
-		PackageFee     float32
+		ItemAmount     int64
+		DiscountAmount int64
+		ExpressFee     int64
+		PackageFee     int64
 		IsPaid         bool
-		FinalAmount    float32
+		FinalAmount    int64
 		State          int
 		StateText      string
 		CreateTime     int64
@@ -46,12 +46,12 @@ type (
 		//VendorId    int
 		//ShopId      int
 		//ShopName    string
-		ItemAmount     float32
-		DiscountAmount float32
-		ExpressFee     float32
-		PackageFee     float32
+		ItemAmount     int64
+		DiscountAmount int64
+		ExpressFee     int64
+		PackageFee     int64
 		IsPaid         bool
-		FinalAmount    float32
+		FinalAmount    int64
 		State          int
 		StateText      string
 		CreateTime     int64
@@ -77,49 +77,22 @@ type (
 		// 商品编号
 		ItemId int32
 		// 商品标题
-		GoodsTitle string
+		ItemTitle string
 		// 商品图片
 		Image string
 		// 商品单价
-		Price float32
+		Price int64
 		// 商品实际单价
-		FinalPrice float32
+		FinalPrice int64
 		// 商品数量
 		Quantity int
 		// 退货数量
 		ReturnQuantity int
 		// 商品总金额
-		Amount float32
+		Amount int64
 		// 商品实际总金额
-		FinalAmount float32
+		FinalAmount int64
 		// 是否已发货
 		IsShipped int
 	}
 )
-
-/*
-func ParseSubOrder(v *order.SubOrder) *SubOrder {
-    return &SubOrder{
-        Id:v.Id,
-        OrderNo:v.OrderNo,
-        ParentId:v.ParentId,
-        BuyerId:v.BuyerId,
-        VendorId:v.VendorId,
-        ShopId:v.ShopId,
-        Subject:v.Subject,
-        ItemsInfo:v.ItemsInfo,
-        ItemAmount:v.ItemAmount,
-        DiscountAmount:v.DiscountAmount,
-        ExpressFee:v.ExpressFee,
-        PackageFee:v.PackageFee,
-        FinalFee:v.FinalFee,
-        IsPaid:v.IsPaid,
-        IsSuspend:v.IsSuspend,
-        Note:v.BuyerComment,
-        Remark:v.Remark,
-        UpdateTime:v.UpdateTime,
-        State:v.State,
-        Items:v.Items,
-        StateText:order.OrderState(v.State).String(),
-    }
-}*/
