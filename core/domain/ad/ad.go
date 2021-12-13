@@ -27,12 +27,21 @@ type adManagerImpl struct {
 	cache     map[string]ad.IAd
 }
 
+// GetGroups 获取广告分组
+func (a *adManagerImpl) GetGroups() []string {
+	return a.rep.GetGroups()
+}
+
 func NewAdManager(rep ad.IAdRepo) ad.IAdManager {
 	a := &adManagerImpl{
 		rep: rep,
 	}
 	a.defaultAd = newUserAd(a, rep, 0)
 	return a
+}
+
+func (a *adManagerImpl) QueryAd(keyword string, size int) []*ad.Ad {
+	return a.rep.QueryAdList(keyword, size)
 }
 
 // 获取广告分组
@@ -82,8 +91,8 @@ func (a *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
 }
 
 // 根据编号获取广告位
-func (a *adManagerImpl) GetAdPositionById(id int64) *ad.AdPosition {
-	e := ad.AdPosition{}
+func (a *adManagerImpl) GetAdPositionById(id int64) *ad.Position {
+	e := ad.Position{}
 	if tmp.Orm.Get(id, &e) == nil {
 		return &e
 	}
@@ -91,7 +100,7 @@ func (a *adManagerImpl) GetAdPositionById(id int64) *ad.AdPosition {
 }
 
 // 根据KEY获取广告位
-func (a *adManagerImpl) GetAdPositionByKey(key string) *ad.AdPosition {
+func (a *adManagerImpl) GetAdPositionByKey(key string) *ad.Position {
 	return a.rep.GetAdPositionByKey(key)
 }
 
@@ -110,8 +119,8 @@ func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAd {
 	}
 
 	pos := a.GetAdPositionByKey(key)
-	if pos != nil && pos.DefaultId > 0 {
-		iv = a.defaultAd.GetById(pos.DefaultId)
+	if pos != nil && pos.PutAdId > 0 {
+		iv = a.defaultAd.GetById(pos.PutAdId)
 	}
 	if iv != nil {
 		a.cache[key] = iv
@@ -128,7 +137,7 @@ type AdGroupImpl struct {
 	_rep       ad.IAdRepo
 	_manager   *adManagerImpl
 	_value     *ad.AdGroup
-	_positions []*ad.AdPosition
+	_positions []*ad.Position
 }
 
 func newAdGroup(m *adManagerImpl, rep ad.IAdRepo, v *ad.AdGroup) ad.IAdGroup {
@@ -160,7 +169,7 @@ func (a *AdGroupImpl) SetValue(v *ad.AdGroup) error {
 }
 
 // 获取广告位
-func (a *AdGroupImpl) GetPositions() []*ad.AdPosition {
+func (a *AdGroupImpl) GetPositions() []*ad.Position {
 	if a._positions == nil {
 		a._positions = a._rep.GetAdPositionsByGroupId(a.GetDomainId())
 	}
@@ -168,9 +177,9 @@ func (a *AdGroupImpl) GetPositions() []*ad.AdPosition {
 }
 
 // 根据Id获取广告位
-func (a *AdGroupImpl) GetPosition(id int64) *ad.AdPosition {
+func (a *AdGroupImpl) GetPosition(id int64) *ad.Position {
 	for _, v := range a.GetPositions() {
-		if v.ID == id {
+		if v.Id == id {
 			return v
 		}
 	}
@@ -185,12 +194,12 @@ func (a *AdGroupImpl) DelPosition(id int64) error {
 	//}
 	a._positions = nil
 	a._manager.cache = nil
-	return a._rep.DelAdPosition(id)
+	return a._rep.DeleteAdPosition(id)
 }
 
 // 保存广告位
-func (ag *AdGroupImpl) SavePosition(a *ad.AdPosition) (int64, error) {
-	if pos := ag._manager.GetAdPositionByKey(a.Key); pos != nil && pos.ID != a.ID {
+func (ag *AdGroupImpl) SavePosition(a *ad.Position) (int64, error) {
+	if pos := ag._manager.GetAdPositionByKey(a.Key); pos != nil && pos.Id != a.Id {
 		return 0, ad.ErrKeyExists
 	}
 	a.GroupId = ag.GetDomainId()
@@ -233,7 +242,7 @@ func (a *AdGroupImpl) SetDefault(adPosId int64, adId int64) error {
 	if v := a.GetPosition(adPosId); v != nil {
 		// if a._rep.GetValueAdvertisement()
 		//todo: 检测广告是否存在
-		v.DefaultId = adId
+		v.PutAdId = adId
 		_, err := a.SavePosition(v)
 		a._manager.cache = nil
 		return err
@@ -272,11 +281,11 @@ func (a *userAdImpl) GetById(id int64) ad.IAd {
 }
 
 // 获取广告关联的广告位
-func (a *userAdImpl) GetAdPositionsByAdId(adId int64) []*ad.AdPosition {
-	var list []*ad.AdPosition
+func (a *userAdImpl) GetAdPositionsByAdId(adId int64) []*ad.Position {
+	var list []*ad.Position
 	for _, v := range a._manager.GetAdGroups() {
 		for _, p := range v.GetPositions() {
-			if p.DefaultId == adId {
+			if p.PutAdId == adId {
 				list = append(list, p)
 			}
 		}

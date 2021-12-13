@@ -15,15 +15,22 @@ service AdvertisementService {
     }
     rpc GetGroups (Empty) returns (AdGroupListResponse) {
     }
+
+    rpc GetGroupsV2 (Empty) returns (AdGroupResponse) {
+    }
+
     rpc GetPosition (AdPositionId) returns (SAdPosition) {
     }
     rpc SaveAdPosition (SAdPosition) returns (Result) {
     }
-    rpc DelAdPosition (AdPositionId) returns (Result) {
+    rpc DeleteAdPosition (AdPositionId) returns (Result) {
     }
     // 设置广告位的默认广告
     rpc SetDefaultAd (SetDefaultAdRequest) returns (Result) {
     }
+    // 查询广告
+    rpc QueryAd(QueryAdRequest) returns (QueryAdResponse){}
+
     // 用户投放广告
     rpc SetUserAd (SetUserAdRequest) returns (Result) {
     }

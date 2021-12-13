@@ -325,3 +325,58 @@ ALTER TABLE IF EXISTS public.portal_nav
 
 COMMENT ON COLUMN public.portal_nav.nav_group
     IS '导航分组';
+
+/** 2012-12-13 */
+
+COMMENT ON TABLE public.ad_group
+  IS '广告分组';
+
+COMMENT ON COLUMN public.ad_group.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_group.name
+    IS '名称';
+
+COMMENT ON COLUMN public.ad_group.opened
+    IS '是否开放';
+
+COMMENT ON COLUMN public.ad_group.enabled
+    IS '是否启用';
+
+ALTER TABLE IF EXISTS public.ad_group
+    ADD COLUMN flag integer NOT NULL DEFAULT 0;
+
+ALTER TABLE IF EXISTS public.ad_group
+    ADD COLUMN flag integer NOT NULL DEFAULT 0;
+
+ALTER TABLE IF EXISTS public.ad_position
+    ADD COLUMN flag integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.ad_position.flag
+    IS '标志';
+
+
+ALTER TABLE IF EXISTS public.ad_position
+    ADD COLUMN group_name character varying(20) NOT NULL DEFAULT '';
+
+COMMENT ON COLUMN public.ad_position.group_name
+    IS '分组名称';
+
+
+COMMENT ON TABLE public.ad_position
+  IS '广告位';
+
+COMMENT ON COLUMN public.ad_position.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_position.key
+    IS '广告位编码';
+
+COMMENT ON COLUMN public.ad_position.name
+    IS '广告位名称';
+
+ALTER TABLE IF EXISTS public.ad_position
+    RENAME default_id TO put_aid;
+
+COMMENT ON COLUMN public.ad_position.put_aid
+    IS '投放的广告编号';

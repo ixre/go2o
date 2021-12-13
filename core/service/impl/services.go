@@ -62,7 +62,7 @@ var (
 	// 内容服务
 	ContentService *contentService
 	// 广告服务
-	AdService *adService
+	AdService *advertisementService
 	// 钱包服务
 	WalletService *walletServiceImpl
 	// 个人金融服务

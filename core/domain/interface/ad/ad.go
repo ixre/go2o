@@ -31,13 +31,26 @@ type (
 		// 创建广告位分组
 		CreateAdGroup(name string) IAdGroup
 		// 根据编号获取广告位
-		GetAdPositionById(id int64) *AdPosition
+		GetAdPositionById(id int64) *Position
 		// 根据KEY获取广告位
-		GetAdPositionByKey(key string) *AdPosition
+		GetAdPositionByKey(key string) *Position
 		// 根据广告位KEY获取默认广告
 		GetAdByPositionKey(key string) IAd
 		// 获取用户的广告管理
 		GetUserAd(adUserId int64) IUserAd
+		// 获取广告分组
+		GetGroups() []string
+		// QueryAd 查询广告列表
+		QueryAd(keyword string, size int) []*Ad
+	}
+
+	// 广告位
+	IAdPosition interface {
+		GetAggregateRootId() int64
+		SetValue(v *Position) error
+		Save() error
+		// 设置广告
+		//PutAd(adId int64) error
 	}
 
 	// 广告分组
@@ -49,13 +62,13 @@ type (
 		// 设置值
 		SetValue(v *AdGroup) error
 		// 获取广告位
-		GetPositions() []*AdPosition
+		GetPositions() []*Position
 		// 根据Id获取广告位
-		GetPosition(id int64) *AdPosition
+		GetPosition(id int64) *Position
 		// 删除广告位
 		DelPosition(id int64) error
 		// 保存广告位
-		SavePosition(a *AdPosition) (int64, error)
+		SavePosition(a *Position) (int64, error)
 		// 保存,需调用Save()保存
 		Save() (int64, error)
 		// 开放,需调用Save()保存
@@ -77,7 +90,7 @@ type (
 		// 删除广告
 		DeleteAd(adId int64) error
 		//获取广告关联的广告位
-		GetAdPositionsByAdId(adId int64) []*AdPosition
+		GetAdPositionsByAdId(adId int64) []*Position
 		// 根据编号获取广告
 		GetById(id int64) IAd
 		// 根据KEY获取广告
@@ -116,31 +129,37 @@ type (
 
 	// 广告分组
 	AdGroup struct {
-		ID      int64  `db:"id" auto:"yes" pk:"yes"`
-		Name    string `db:"name"`
-		Opened  int    `db:"opened"`
-		Enabled int    `db:"enabled"`
+		ID   int64  `db:"id" auto:"yes" pk:"yes"`
+		Name string `db:"name"`
+		// 标志
+		Flag    int `db:"flag"`
+		Opened  int `db:"opened"`
+		Enabled int `db:"enabled"`
 	}
 
 	// 广告位
-	AdPosition struct {
+	Position struct {
 		// 编号
-		ID int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 分组编号
 		GroupId int64 `db:"group_id"`
 		// 引用键
 		Key string `db:"key"`
 		// 名称
 		Name string `db:"name"`
+		// 分组名称
+		GroupName string `db:"group_name"`
 		//todo:广告位类型限制
 		// 广告类型限制,0为无限制
 		TypeLimit int `db:"-"` //`db:"type_limit"`
+		// 标志
+		Flag int `db:"flag"`
 		// 是否开放给外部
 		Opened int `db:"opened"`
 		// 是否启用
 		Enabled int `db:"enabled"`
 		// 默认广告编号
-		DefaultId int64 `db:"default_id"`
+		PutAdId int64 `db:"put_aid"`
 	}
 
 	// 广告用户设置
@@ -198,25 +217,28 @@ type (
 		GetAdManager() IAdManager
 
 		// 获取广告分组
+		GetPosition(id int64) IAdPosition
+
+		// 获取广告分组
 		GetAdGroups() []*AdGroup
 
 		// 删除广告位分组
 		DelAdGroup(id int64) error
 
 		// 根据KEY获取广告位
-		GetAdPositionByKey(key string) *AdPosition
+		GetAdPositionByKey(key string) *Position
 
 		// 根据ID获取广告位
-		GetAdPositionById(adPosId int64) *AdPosition
+		GetAdPositionById(adPosId int64) *Position
 
 		// 获取广告位
-		GetAdPositionsByGroupId(adGroupId int64) []*AdPosition
+		GetAdPositionsByGroupId(adGroupId int64) []*Position
 
 		// 删除广告位
-		DelAdPosition(id int64) error
+		DeleteAdPosition(id int64) error
 
 		// 保存广告位
-		SaveAdPosition(a *AdPosition) (int64, error)
+		SaveAdPosition(a *Position) (int64, error)
 
 		// 保存
 		SaveAdGroup(value *AdGroup) (int64, error)
@@ -264,5 +286,10 @@ type (
 
 		// 删除广告的文字数据
 		DelTextDataForAdvertisement(adId int64) error
+
+		// GetGroups 获取广告分组
+		GetGroups() []string
+		CreateAdPosition(v *Position) IAdPosition
+		QueryAdList(keyword string, size int) []*Ad
 	}
 )

@@ -5,150 +5,166 @@ option java_package = "com.github.go2o.rpc";
 
 // 广告分组
 message SAdGroup {
-    int64 Id = 1;
-    string Name = 2;
-    // 是否开放给外部
-    bool opened = 3;
-    bool enabled = 4;
+  int64 Id = 1;
+  string Name = 2;
+  // 标志
+  int32 Flag = 3;
+  // 是否开放给外部
+  bool Opened = 4;
+  bool Enabled = 5;
 }
 
 // 广告位编号
 message AdPositionId {
-    int64 groupId = 1;
-    int64 positionId = 2;
+  int64 PositionId = 1;
 }
 
 message AdGroupListResponse {
-    repeated SAdGroup Value = 1;
+  repeated SAdGroup Value = 1;
 }
 
-// 广告位
-message SAdPosition {
-    // 编号
-    int64 Id = 1;
-    // 分组编号
-    int64 groupId = 2;
-    // 引用键
-    string key = 3;
-    // 名称
-    string Name = 4;
-    //todo:广告位类型限制
-    // 广告类型限制,0为无限制
-    int32 type_limit = 5;
-    // 是否开放给外部
-    bool opened = 6;
-    // 是否启用
-    bool enabled = 7;
-    // 默认广告编号
-    int64 defaultId = 8;
+message AdGroupResponse{
+  repeated string Value = 1;
+}
+
+message SAdPosition{
+  /** 编号 */
+  int64 Id = 1;
+  /** GroupId */
+  int64 GroupId = 2;
+  /** 广告位编码 */
+  string Key = 3;
+  /** 广告位名称 */
+  string Name = 4;
+  /** 投放的广告编号 */
+  int64 PutAid = 5;
+  /** Opened */
+  int32 Opened = 6;
+  /** Enabled */
+  int32 Enabled = 7;
+  /** 标志 */
+  int32 Flag = 8;
+  /** 分组名称 */
+  string GroupName = 9;
+}
+
+// 查询广告请求
+message QueryAdRequest{
+  string Keyword = 1;
+  int32 Size = 2;
+}
+
+// 查询广告响应
+message QueryAdResponse{
+  repeated SAd Value = 1;
 }
 
 // 广告用户设置
 message SAdUserSet {
-    // 编号
-    int64 Id = 1;
-    // 广告位编号
-    int64 posId = 2;
-    //广告用户编号
-    int64 adUserId = 3;
-    // 广告编号
-    int64 adId = 4;
+  // 编号
+  int64 Id = 1;
+  // 广告位编号
+  int64 PosId = 2;
+  //广告用户编号
+  int64 AdUserId = 3;
+  // 广告编号
+  int64 AdId = 4;
 }
 
 // 广告
 message SAd {
-    // 编号
-    int64 Id = 1;
-    //广告用户编号
-    int64 userId = 2;
-    // 名称
-    string Name = 3;
-    // 广告类型
-    int32 type = 4;
-    // 展现次数
-    int32 show_times = 5;
-    // 点击次数
-    int32 click_times = 6;
-    // 展现天数
-    int32 show_days = 7;
-    // 修改时间
-    int64 UpdateTime = 8;
+  // 编号
+  int64 Id = 1;
+  //广告用户编号
+  int64 UserId = 2;
+  // 名称
+  string Name = 3;
+  // 广告类型
+  int32 Type = 4;
+  // 展现次数
+  int32 ShowTimes = 5;
+  // 点击次数
+  int32 ClickTimes = 6;
+  // 展现天数
+  int32 ShowDays = 7;
+  // 修改时间
+  int64 UpdateTime = 8;
 }
 
 // 广告数据传输对象
 message SAdDto {
-    int64 Id = 1;
-    int32 AdType = 2;
-    map<string, string> Data = 3;
+  int64 Id = 1;
+  int32 AdType = 2;
+  map<string, string> Data = 3;
 }
 
 //  超链接
 message SHyperLink {
-    int64 Id = 1;
-    int64 AdId = 2;
-    string Title = 3;
-    string LinkURL = 4;
+  int64 Id = 1;
+  int64 AdId = 2;
+  string Title = 3;
+  string LinkURL = 4;
 }
 
 // 广告图片
 message SImage {
-    // 图片编号
-    int64 Id = 1;
-    // 广告编号
-    int64 AdId = 2;
-    // 图片标题
-    string Title = 3;
-    // 链接
-    string LinkURL = 4;
-    // 图片地址
-    string ImageURL = 5;
-    // 排列序号
-    int32 SortNum = 6;
-    // 是否启用
-    bool Enabled = 7;
+  // 图片编号
+  int64 Id = 1;
+  // 广告编号
+  int64 AdId = 2;
+  // 图片标题
+  string Title = 3;
+  // 链接
+  string LinkURL = 4;
+  // 图片地址
+  string ImageURL = 5;
+  // 排列序号
+  int32 SortNum = 6;
+  // 是否启用
+  bool Enabled = 7;
 }
 
 message SetDefaultAdRequest {
-    int64 GroupId = 1;
-    int64 PosId = 2;
-    int64 AdId = 3;
+  int64 GroupId = 1;
+  int64 PosId = 2;
+  int64 AdId = 3;
 }
 message SetUserAdRequest {
-    int64 AdUserId = 1;
-    int64 PosId = 2;
-    int64 AdId = 3;
+  int64 AdUserId = 1;
+  int64 PosId = 2;
+  int64 AdId = 3;
 }
 message AdIdRequest {
-    int64 AdUserId = 1;
-    int64 AdId = 2;
+  int64 AdUserId = 1;
+  int64 AdId = 2;
 }
 
 message AdKeyRequest {
-    int64 AdUserId = 1;
-    string AdPosKey = 2;
+  int64 AdUserId = 1;
+  string AdPosKey = 2;
 }
 
 message SaveAdRequest {
-    int64 AdUserId = 1;
-    SAd Value = 2;
+  int64 AdUserId = 1;
+  SAd Value = 2;
 }
 
 message SaveLinkAdRequest {
-    int64 AdUserId = 1;
-    int64 AdId = 2;
-    SHyperLink Value = 3;
+  int64 AdUserId = 1;
+  int64 AdId = 2;
+  SHyperLink Value = 3;
 }
 
 message SaveImageAdRequest {
-    int64 AdUserId = 1;
-    int64 AdId = 2;
-    SImage Value = 3;
+  int64 AdUserId = 1;
+  int64 AdId = 2;
+  SImage Value = 3;
 }
 
 message ImageAdIdRequest {
-    int64 AdUserId = 1;
-    int64 AdId = 2;
-    int64 ImageId = 3;
+  int64 AdUserId = 1;
+  int64 AdId = 2;
+  int64 ImageId = 3;
 }
 
 

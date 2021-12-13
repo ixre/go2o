@@ -2,7 +2,7 @@ package model
 
 // 部门
 type PermDept struct {
-	// ID
+	// Id
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 名称
 	Name string `db:"name"`
@@ -44,7 +44,7 @@ type PermDict struct {
 
 // 岗位
 type PermJob struct {
-	// ID
+	// Id
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 岗位名称
 	Name string `db:"name"`
@@ -104,7 +104,7 @@ type PermRoleDept struct {
 
 // 角色
 type PermRole struct {
-	// ID
+	// Id
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 名称
 	Name string `db:"name"`
@@ -132,7 +132,7 @@ type PermRoleRes struct {
 
 // 系统用户
 type PermUser struct {
-	// ID
+	// Id
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 用户名
 	Usr string `db:"usr"`
