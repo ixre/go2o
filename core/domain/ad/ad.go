@@ -344,13 +344,13 @@ func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAd {
 		_rep:   a._rep,
 		_value: v,
 	}
-	switch v.Type {
+	switch v.AdType {
 	case ad.TypeGallery:
 		// 轮播广告
 		return &GalleryAd{
 			adImpl: adv,
 		}
-	case ad.TypeHyperLink:
+	case ad.TypeText:
 		// 文本广告
 		return &HyperLinkAdImpl{
 			adImpl: adv,
@@ -416,7 +416,7 @@ func (a *adImpl) System() bool {
 
 // 广告类型
 func (a *adImpl) Type() int {
-	return a._value.Type
+	return a._value.AdType
 }
 
 // 广告名称
@@ -426,10 +426,10 @@ func (a *adImpl) Name() string {
 
 // 设置值
 func (a *adImpl) SetValue(v *ad.Ad) error {
-	if v.Type == 0 {
+	if v.AdType == 0 {
 		return ad.ErrAdType
 	}
-	if v.Type != a.Type() {
+	if v.AdType != a.Type() {
 		return ad.ErrDisallowModifyAdType
 	}
 	a._value.Name = v.Name
@@ -472,7 +472,7 @@ func (a *adImpl) AddShowDays(days int) error {
 // 转换为数据传输对象
 func (a *adImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   a.GetDomainId(),
-		Type: a.Type(),
+		Id:     a.GetDomainId(),
+		AdType: a.Type(),
 	}
 }

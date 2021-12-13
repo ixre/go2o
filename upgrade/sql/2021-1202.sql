@@ -380,3 +380,32 @@ ALTER TABLE IF EXISTS public.ad_position
 
 COMMENT ON COLUMN public.ad_position.put_aid
     IS '投放的广告编号';
+
+COMMENT ON TABLE public.ad_list
+  IS '广告列表';
+
+COMMENT ON COLUMN public.ad_list.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_list.user_id
+    IS '用户编号';
+
+COMMENT ON COLUMN public.ad_list.name
+    IS '广告名称';
+
+COMMENT ON COLUMN public.ad_list.type_id
+    IS '广告类型';
+
+COMMENT ON COLUMN public.ad_list.show_times
+    IS '展现次数';
+
+COMMENT ON COLUMN public.ad_list.click_times
+    IS '点击次数';
+
+COMMENT ON COLUMN public.ad_list.show_days
+    IS '显示天数';
+
+COMMENT ON COLUMN public.ad_list.update_time
+    IS '更新时间';
+
+

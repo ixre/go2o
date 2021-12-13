@@ -80,7 +80,7 @@ message SAd {
   // 名称
   string Name = 3;
   // 广告类型
-  int32 Type = 4;
+  int32 AdType = 4;
   // 展现次数
   int32 ShowTimes = 5;
   // 点击次数
@@ -92,36 +92,45 @@ message SAd {
 }
 
 // 广告数据传输对象
-message SAdDto {
+message SAdvertisementDto {
+  // 广告编号
   int64 Id = 1;
+  // 广告类型
   int32 AdType = 2;
-  map<string, string> Data = 3;
+  // 文本广告数据
+  STextAdData Text = 3;
+  // 图片广告数据
+  SImageAdData Image = 4;
+  // 轮播广告数据
+  SSwiperAdData Swiper = 5;
 }
 
-//  超链接
-message SHyperLink {
+// 文本广告数据
+message STextAdData {
   int64 Id = 1;
-  int64 AdId = 2;
-  string Title = 3;
-  string LinkURL = 4;
+  string Title = 2;
+  string LinkURL = 3;
 }
 
-// 广告图片
-message SImage {
+// 图片广告数据
+message SImageAdData {
   // 图片编号
   int64 Id = 1;
-  // 广告编号
-  int64 AdId = 2;
   // 图片标题
-  string Title = 3;
+  string Title = 2;
   // 链接
-  string LinkURL = 4;
+  string LinkURL = 3;
   // 图片地址
-  string ImageURL = 5;
+  string ImageURL = 4;
+  // 是否启用
+  bool Enabled = 5;
   // 排列序号
   int32 SortNum = 6;
-  // 是否启用
-  bool Enabled = 7;
+}
+
+// 轮播广告数据
+message SSwiperAdData{
+  repeated SImageAdData Images = 1;
 }
 
 message SetDefaultAdRequest {
@@ -137,6 +146,7 @@ message SetUserAdRequest {
 message AdIdRequest {
   int64 AdUserId = 1;
   int64 AdId = 2;
+  string AdKey = 3;
 }
 
 message AdKeyRequest {
@@ -152,13 +162,13 @@ message SaveAdRequest {
 message SaveLinkAdRequest {
   int64 AdUserId = 1;
   int64 AdId = 2;
-  SHyperLink Value = 3;
+  STextAdData Value = 3;
 }
 
 message SaveImageAdRequest {
   int64 AdUserId = 1;
   int64 AdId = 2;
-  SImage Value = 3;
+  SImageAdData Value = 3;
 }
 
 message ImageAdIdRequest {

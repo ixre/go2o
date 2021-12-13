@@ -39,10 +39,10 @@ service AdvertisementService {
     }
 
     // 获取广告及广告数据, 用于展示关高
-    rpc GetAdAndDataByKey (AdKeyRequest) returns (SAdDto) {
+    rpc GetAdAndDataByKey (AdKeyRequest) returns (SAdvertisementDto) {
     }
     // 获取广告数据传输对象
-    rpc GetAdDto_ (AdIdRequest) returns (SAdDto) {
+    rpc GetAdvertisementDto (AdIdRequest) returns (SAdvertisementDto) {
     }
     // 保存广告,更新时不允许修改类型
     rpc SaveAd (SaveAdRequest) returns (Result) {
@@ -57,7 +57,7 @@ service AdvertisementService {
     rpc SaveImagOfAd (SaveImageAdRequest) returns (Result) {
     }
     // 获取广告图片
-    rpc GetValueAdImage (ImageAdIdRequest) returns (SImage) {
+    rpc GetValueAdImage (ImageAdIdRequest) returns (SImageAdData) {
     }
     // 删除广告图片
     rpc DelAdImage (ImageAdIdRequest) returns (Result) {

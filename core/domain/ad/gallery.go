@@ -65,8 +65,8 @@ func (g *GalleryAd) DelImage(id int64) error {
 // 转换为数据传输对象
 func (g *GalleryAd) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   g.adImpl.GetDomainId(),
-		Type: g.adImpl.Type(),
-		Data: g.GetEnabledAdValue(),
+		Id:     g.adImpl.GetDomainId(),
+		AdType: g.adImpl.Type(),
+		Data:   g.GetEnabledAdValue(),
 	}
 }

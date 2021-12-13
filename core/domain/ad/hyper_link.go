@@ -56,8 +56,8 @@ func (h *HyperLinkAdImpl) Save() (int64, error) {
 // 转换为数据传输对象
 func (h *HyperLinkAdImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   h.adImpl.GetDomainId(),
-		Type: h.adImpl.Type(),
-		Data: h.getData(),
+		Id:     h.adImpl.GetDomainId(),
+		AdType: h.adImpl.Type(),
+		Data:   h.getData(),
 	}
 }

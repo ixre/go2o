@@ -64,7 +64,7 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 	userId := ctx.Form().GetInt("user_id")
 	namesParams := strings.TrimSpace(posKeys)
 	names := strings.Split(namesParams, "|")
-	result := make(map[string]*proto.SAdDto, len(names))
+	result := make(map[string]*proto.SAdvertisementDto, len(names))
 	key := fmt.Sprintf("go2o:repo:ad:%d:front:%s", userId,
 		domain.Md5(namesParams))
 	rds := gof.CurrentApp.Storage()

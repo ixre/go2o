@@ -149,9 +149,9 @@ func (a *advertisementService) GetAdvertisement(_ context.Context, r *proto.AdId
 }
 
 // 获取广告及广告数据, 用于展示关高
-func (a *advertisementService) GetAdAndDataByKey(_ context.Context, r *proto.AdKeyRequest) (*proto.SAdDto, error) {
+func (a *advertisementService) GetAdAndDataByKey(_ context.Context, r *proto.AdKeyRequest) (*proto.SAdvertisementDto, error) {
 	//if adv := a.getUserAd(adUserId).GetByPositionKey(key); adv != nil {
-	//	switch adv.Type() {
+	//	switch adv.AdType() {
 	//	case ad.TypeGallery:
 	//		dto := adv.Dto()
 	//		gallary := dto.Data.(ad.ValueGallery)
@@ -172,13 +172,25 @@ func (a *advertisementService) GetAdAndDataByKey(_ context.Context, r *proto.AdK
 	panic("not implement")
 }
 
-// 获取广告数据传输对象
-func (a *advertisementService) GetAdDto_(_ context.Context, r *proto.AdIdRequest) (*proto.SAdDto, error) {
+// GetAdvertisementDto 获取广告数据传输对象
+func (a *advertisementService) GetAdvertisementDto(_ context.Context, r *proto.AdIdRequest) (*proto.SAdvertisementDto, error) {
 	ua := a.getUserAd(r.AdUserId).GetById(r.AdId)
-	if ua != nil {
-		//return ua.Dto(),nil
+	if ua == nil {
+		return nil, nil
 	}
-	return nil, nil
+	dto :=  ua.Dto()
+	ret := &proto.SAdvertisementDto{Id: dto.Id,AdType: int32(dto.AdType),}
+	switch dto.AdType {
+	case ad.TypeText:
+		ret.Text = a.parseTextDto(dto)
+	case ad.TypeImage:
+		ret.Image = a.parseImageDto(dto)
+	case ad.TypeGallery:
+		ret.Swiper = a.parseSwiperDto(dto)
+	default:
+		panic("not support ad type")
+	}
+	return ret,nil
 }
 
 // 保存广告,更新时不允许修改类型
@@ -214,7 +226,7 @@ func (a *advertisementService) SaveHyperLinkAd(_ context.Context, r *proto.SaveL
 	if adv == nil {
 		err = ad.ErrNoSuchAd
 	} else {
-		if adv.Type() == ad.TypeHyperLink {
+		if adv.Type() == ad.TypeText {
 			g := adv.(ad.IHyperLinkAd)
 			v := a.parseHyperLinkAd(r.Value)
 			err = g.SetData(v)
@@ -264,7 +276,7 @@ func (a *advertisementService) SaveImage(adUserId int64, adId int64, v *ad.Image
 }
 
 // 获取广告图片
-func (a *advertisementService) GetValueAdImage(_ context.Context, r *proto.ImageAdIdRequest) (*proto.SImage, error) {
+func (a *advertisementService) GetValueAdImage(_ context.Context, r *proto.ImageAdIdRequest) (*proto.SImageAdData, error) {
 	ia := a.getUserAd(r.AdUserId).GetById(r.AdId)
 	if ia != nil {
 		if ia.Type() == ad.TypeGallery {
@@ -366,7 +378,7 @@ func (a *advertisementService) parseAdDto(v *ad.Ad) *proto.SAd {
 		Id:         v.Id,
 		UserId:     v.UserId,
 		Name:       v.Name,
-		Type:       int32(v.Type),
+		AdType:       int32(v.AdType),
 		ShowTimes:  int32(v.ShowTimes),
 		ClickTimes: int32(v.ClickTimes),
 		ShowDays:   int32(v.ShowDays),
@@ -379,7 +391,7 @@ func (a *advertisementService) parseAd(v *proto.SAd) *ad.Ad {
 		Id:         v.Id,
 		UserId:     v.UserId,
 		Name:       v.Name,
-		Type:       int(v.Type),
+		AdType:     int(v.AdType),
 		ShowTimes:  int(v.ShowTimes),
 		ClickTimes: int(v.ClickTimes),
 		ShowDays:   int(v.ShowDays),
@@ -387,19 +399,17 @@ func (a *advertisementService) parseAd(v *proto.SAd) *ad.Ad {
 	}
 }
 
-func (a *advertisementService) parseHyperLinkAd(v *proto.SHyperLink) *ad.HyperLink {
+func (a *advertisementService) parseHyperLinkAd(v *proto.STextAdData) *ad.HyperLink {
 	return &ad.HyperLink{
 		Id:      v.Id,
-		AdId:    v.AdId,
 		Title:   v.Title,
 		LinkUrl: v.LinkURL,
 	}
 }
 
-func (a *advertisementService) parseAdImageDto(v *ad.Image) *proto.SImage {
-	return &proto.SImage{
+func (a *advertisementService) parseAdImageDto(v *ad.Image) *proto.SImageAdData {
+	return &proto.SImageAdData{
 		Id:       v.Id,
-		AdId:     v.AdId,
 		Title:    v.Title,
 		LinkURL:  v.LinkUrl,
 		ImageURL: v.ImageUrl,
@@ -408,14 +418,47 @@ func (a *advertisementService) parseAdImageDto(v *ad.Image) *proto.SImage {
 	}
 }
 
-func (a *advertisementService) parseAdImage(v *proto.SImage) *ad.Image {
+func (a *advertisementService) parseAdImage(v *proto.SImageAdData) *ad.Image {
 	return &ad.Image{
 		Id:       v.Id,
-		AdId:     v.AdId,
 		Title:    v.Title,
 		LinkUrl:  v.LinkURL,
 		ImageUrl: v.ImageURL,
 		SortNum:  int(v.SortNum),
 		Enabled:  types.ElseInt(v.Enabled, 1, 0),
 	}
+}
+
+func (a *advertisementService) parseTextDto(dto *ad.AdDto) *proto.STextAdData {
+	v := dto.Data.(*ad.HyperLink)
+	return &proto.STextAdData{
+		Id:                   v.Id,
+		Title:                v.Title,
+		LinkURL:              v.LinkUrl,
+	}
+}
+
+func (a *advertisementService) parseImageDto(dto *ad.AdDto) *proto.SImageAdData {
+	v := dto.Data.(*ad.Image)
+	return a.parseSingleImageDto(v)
+}
+
+func (a *advertisementService) parseSingleImageDto(v *ad.Image) *proto.SImageAdData {
+	return &proto.SImageAdData{
+		Id:       v.Id,
+		Title:    v.Title,
+		LinkURL:  v.LinkUrl,
+		ImageURL: v.ImageUrl,
+		Enabled:  v.Enabled == 1,
+		SortNum:  int32(v.SortNum),
+	}
+}
+
+func (a *advertisementService) parseSwiperDto(dto *ad.AdDto) *proto.SSwiperAdData {
+	images := dto.Data.(ad.ValueGallery)
+	arr := make([]*proto.SImageAdData,len(images))
+	for i,v := range images{
+		arr[i] = a.parseSingleImageDto(v)
+	}
+	return &proto.SSwiperAdData{Images: arr}
 }

@@ -63,8 +63,8 @@ func (i *ImageAdImpl) Save() (int64, error) {
 // 转换为数据传输对象
 func (i *ImageAdImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   i.adImpl.GetDomainId(),
-		Type: i.adImpl.Type(),
-		Data: i.getData(),
+		Id:     i.adImpl.GetDomainId(),
+		AdType: i.adImpl.Type(),
+		Data:   i.getData(),
 	}
 }

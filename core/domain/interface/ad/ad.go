@@ -12,7 +12,7 @@ package ad
 
 const (
 	// 文字广告
-	TypeHyperLink = 1
+	TypeText = 1
 	// 图片广告
 	TypeImage = 2
 	// 图片轮播广告
@@ -189,7 +189,7 @@ type (
 		Name string `db:"name"`
 
 		// 广告类型
-		Type int `db:"type_id"`
+		AdType int `db:"type_id"`
 
 		// 展现次数
 		ShowTimes int `db:"show_times" json:"-"`
@@ -206,9 +206,9 @@ type (
 
 	// 广告数据传输对象
 	AdDto struct {
-		Id   int64       `json:"id"`
-		Type int         `json:"type"`
-		Data interface{} `json:"data"`
+		Id     int64       `json:"id"`
+		AdType int         `json:"type"`
+		Data   interface{} `json:"data"`
 	}
 
 	// 广告仓储
