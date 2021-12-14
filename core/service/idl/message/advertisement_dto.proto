@@ -120,7 +120,7 @@ message SSwiperAdData{
 }
 
 message SetDefaultAdRequest {
-  int64 PosId = 2;
+  int64 PositionId = 2;
   int64 AdId = 3;
 }
 message SetUserAdRequest {

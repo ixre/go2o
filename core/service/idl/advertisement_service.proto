@@ -15,8 +15,8 @@ service AdvertisementService {
     }
     rpc DeleteAdPosition (AdPositionId) returns (Result) {
     }
-    // 设置广告位的默认广告
-    rpc SetDefaultAd (SetDefaultAdRequest) returns (Result) {
+    // 投放广告位的默认广告
+    rpc PutDefaultAd (SetDefaultAdRequest) returns (Result) {
     }
     // 查询广告
     rpc QueryAd(QueryAdRequest) returns (QueryAdResponse){}

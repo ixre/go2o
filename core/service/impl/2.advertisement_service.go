@@ -81,9 +81,12 @@ func (a *advertisementService) QueryAd(_ context.Context, request *proto.QueryAd
 	return rsp, nil
 }
 
-// 设置广告位的默认广告
-func (a *advertisementService) SetDefaultAd(_ context.Context, r *proto.SetDefaultAdRequest) (*proto.Result, error) {
-	ig := a._rep.GetAdManager().GetPosition(r.PosId)
+// PutDefaultAd 设置广告位的默认广告
+func (a *advertisementService) PutDefaultAd(_ context.Context, r *proto.SetDefaultAdRequest) (*proto.Result, error) {
+	ig := a._rep.GetAdManager().GetPosition(r.PositionId)
+	if ig == nil {
+		return a.error(ad.ErrNoSuchAdPosition), nil
+	}
 	err := ig.PutAd(r.AdId)
 	return a.error(err), nil
 }
