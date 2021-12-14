@@ -56,10 +56,10 @@ type (
 	// 轮播广告
 	IGalleryAd interface {
 		// 获取广告数据
-		GetAdValue() ValueGallery
+		GetAdValue() SwiperAd
 
 		// 获取可用的广告数据
-		GetEnabledAdValue() ValueGallery
+		GetEnabledAdValue() SwiperAd
 
 		// 保存广告图片
 		SaveImage(v *Image) (int64, error)
@@ -68,27 +68,27 @@ type (
 		GetImage(id int64) *Image
 
 		// 删除图片项
-		DelImage(id int64) error
+		DeleteItem(id int64) error
 	}
 )
 
-var _ sort.Interface = ValueGallery{}
+var _ sort.Interface = SwiperAd{}
 
 // 轮播广告图片集合
-type ValueGallery []*Image
+type SwiperAd []*Image
 
-func (v ValueGallery) Len() int {
+func (v SwiperAd) Len() int {
 	return len(v)
 }
 
 // Less reports whether the element with
 // index i should sort before the element with index j.
-func (v ValueGallery) Less(i, j int) bool {
+func (v SwiperAd) Less(i, j int) bool {
 	return v[i].SortNum < v[j].SortNum || (v[i].SortNum == v[j].SortNum &&
 		v[i].Id < v[j].Id)
 }
 
 // Swap swaps the elements with indexes i and j.
-func (v ValueGallery) Swap(i, j int) {
+func (v SwiperAd) Swap(i, j int) {
 	v[i], v[j] = v[j], v[i]
 }

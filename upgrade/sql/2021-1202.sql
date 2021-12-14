@@ -408,4 +408,47 @@ COMMENT ON COLUMN public.ad_list.show_days
 COMMENT ON COLUMN public.ad_list.update_time
     IS '更新时间';
 
+/** 2021-12-14 */
+DROP TABLE IF EXISTS public.ad_image_ad;
+DROP TABLE IF EXISTS public.ad_group;
 
+COMMENT ON TABLE public.ad_image
+  IS '广告图片';
+
+COMMENT ON COLUMN public.ad_image.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_image.ad_id
+    IS '广告编号';
+
+COMMENT ON COLUMN public.ad_image.title
+    IS '标题';
+
+COMMENT ON COLUMN public.ad_image.link_url
+    IS '链接地址';
+
+COMMENT ON COLUMN public.ad_image.image_url
+    IS '图片地址';
+
+COMMENT ON COLUMN public.ad_image.sort_num
+    IS '排列序号';
+
+COMMENT ON COLUMN public.ad_image.enabled
+    IS '是否启用';
+
+COMMENT ON TABLE public.ad_hyperlink
+  IS '文本广告';
+
+COMMENT ON COLUMN public.ad_hyperlink.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_hyperlink.ad_id
+    IS '广告编号';
+
+COMMENT ON COLUMN public.ad_hyperlink.title
+    IS '标题';
+
+COMMENT ON COLUMN public.ad_hyperlink.link_url
+    IS '链接地址';
+
+ALTER TABLE IF EXISTS public.ad_position DROP COLUMN IF EXISTS group_id;

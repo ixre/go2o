@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/repos"
 	"go2o/core/service/proto"
@@ -28,49 +27,7 @@ type advertisementService struct {
 	serviceUtil
 }
 
-func (a *advertisementService) GetAdGroupById(_ context.Context, id *proto.Int64) (*proto.SAdGroup, error) {
-	ig := a._rep.GetAdManager().GetAdGroup(id.Value)
-	if ig != nil {
-		return a.parseAdGroupDto(ig.GetValue()), nil
-	}
-	return nil, nil
-}
-
-func (a *advertisementService) DelAdGroup(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	err := a._rep.GetAdManager().DelAdGroup(id.Value)
-	return a.error(err), nil
-}
-
-func (a *advertisementService) SaveAdGroup(_ context.Context, group *proto.SAdGroup) (*proto.Result, error) {
-	m := a._rep.GetAdManager()
-	var e ad.IAdGroup
-	v := a.parseAdGroup(group)
-	if v.ID > 0 {
-		e = m.GetAdGroup(v.ID)
-		if e == nil {
-			return a.error(ad.ErrNoSuchAdGroup), nil
-		}
-	} else {
-		e = m.CreateAdGroup(v.Name)
-	}
-	err := e.SetValue(v)
-	if err == nil {
-		_, err = e.Save()
-	}
-	return a.error(err), nil
-}
-
-func (a *advertisementService) GetGroups(_ context.Context, empty *proto.Empty) (*proto.AdGroupListResponse, error) {
-	m := a._rep.GetAdManager()
-	list := m.GetAdGroups()
-	arr := make([]*proto.SAdGroup, 0)
-	for _, v := range list {
-		arr = append(arr, a.parseAdGroupDto(v.GetValue()))
-	}
-	return &proto.AdGroupListResponse{Value: arr}, nil
-}
-
-func (a *advertisementService) GetGroupsV2(_ context.Context, empty *proto.Empty) (*proto.AdGroupResponse, error) {
+func (a *advertisementService) GetGroups(_ context.Context, empty *proto.Empty) (*proto.AdGroupResponse, error) {
 	repo := a._rep.GetAdManager()
 	var arr = repo.GetGroups()
 	return &proto.AdGroupResponse{Value: arr}, nil
@@ -113,10 +70,10 @@ func (a *advertisementService) QueryAd(_ context.Context, request *proto.QueryAd
 	}
 	ret := a._rep.GetAdManager().QueryAd(request.Keyword, int(request.Size))
 	rsp := &proto.QueryAdResponse{
-		Value: make([]*proto.SAd, len(ret)),
+		Value: make([]*proto.SAdDto, len(ret)),
 	}
 	for i, v := range ret {
-		rsp.Value[i] = &proto.SAd{
+		rsp.Value[i] = &proto.SAdDto{
 			Id:   v.Id,
 			Name: v.Name,
 		}
@@ -126,8 +83,8 @@ func (a *advertisementService) QueryAd(_ context.Context, request *proto.QueryAd
 
 // 设置广告位的默认广告
 func (a *advertisementService) SetDefaultAd(_ context.Context, r *proto.SetDefaultAdRequest) (*proto.Result, error) {
-	ig := a._rep.GetAdManager().GetAdGroup(r.GroupId)
-	err := ig.SetDefault(r.PosId, r.AdId)
+	ig := a._rep.GetAdManager().GetPosition(r.PosId)
+	err := ig.PutAd(r.AdId)
 	return a.error(err), nil
 }
 
@@ -140,57 +97,33 @@ func (a *advertisementService) SetUserAd(_ context.Context, r *proto.SetUserAdRe
 }
 
 // 获取广告
-func (a *advertisementService) GetAdvertisement(_ context.Context, r *proto.AdIdRequest) (*proto.SAd, error) {
-	ig := a.getUserAd(r.AdUserId).GetById(r.AdId)
-	if ig != nil {
-		return a.parseAdDto(ig.GetValue()), nil
+func (a *advertisementService) GetAdvertisement(_ context.Context, r *proto.AdIdRequest) (*proto.SAdDto, error) {
+	ia := a.getUserAd(r.AdUserId).GetById(r.AdId)
+	if ia != nil {
+		ret := a.parseAdDto(ia.GetValue())
+		if r.ReturnData {
+			ret.Data = a.getAdvertisementDto(ia)
+		}
+		return ret, nil
 	}
 	return nil, nil
 }
 
-// 获取广告及广告数据, 用于展示关高
-func (a *advertisementService) GetAdAndDataByKey(_ context.Context, r *proto.AdKeyRequest) (*proto.SAdvertisementDto, error) {
-	//if adv := a.getUserAd(adUserId).GetByPositionKey(key); adv != nil {
-	//	switch adv.AdType() {
-	//	case ad.TypeGallery:
-	//		dto := adv.Dto()
-	//		gallary := dto.Data.(ad.ValueGallery)
-	//		for _, v := range gallary {
-	//			v.ImageUrl = format.GetResUrl(v.ImageUrl)
-	//		}
-	//		dto.Data = gallary
-	//		return dto
-	//	case ad.TypeImage:
-	//		dto := adv.Dto()
-	//		img := dto.Data.(*ad.Image)
-	//		img.ImageUrl = format.GetResUrl(img.ImageUrl)
-	//		return dto
-	//	}
-	//	return adv.Dto()
-	//}
-	//return nil
-	panic("not implement")
-}
-
-// GetAdvertisementDto 获取广告数据传输对象
-func (a *advertisementService) GetAdvertisementDto(_ context.Context, r *proto.AdIdRequest) (*proto.SAdvertisementDto, error) {
-	ua := a.getUserAd(r.AdUserId).GetById(r.AdId)
-	if ua == nil {
-		return nil, nil
-	}
-	dto :=  ua.Dto()
-	ret := &proto.SAdvertisementDto{Id: dto.Id,AdType: int32(dto.AdType),}
+//  获取广告数据传输对象
+func (a *advertisementService) getAdvertisementDto(ia ad.IAd) *proto.SAdvertisementDto {
+	dto := ia.Dto()
+	ret := &proto.SAdvertisementDto{Id: dto.Id, AdType: int32(dto.AdType)}
 	switch dto.AdType {
 	case ad.TypeText:
 		ret.Text = a.parseTextDto(dto)
 	case ad.TypeImage:
 		ret.Image = a.parseImageDto(dto)
-	case ad.TypeGallery:
+	case ad.TypeSwiper:
 		ret.Swiper = a.parseSwiperDto(dto)
 	default:
 		panic("not support ad type")
 	}
-	return ret,nil
+	return ret
 }
 
 // 保存广告,更新时不允许修改类型
@@ -206,7 +139,10 @@ func (a *advertisementService) SaveAd(_ context.Context, r *proto.SaveAdRequest)
 	}
 	err := adv.SetValue(v)
 	if err == nil {
-		_, err = adv.Save()
+		if _, err = adv.Save(); err == nil {
+			err = a.updateAdData(adv, r.Data)
+		}
+
 	}
 	return a.error(err), nil
 }
@@ -218,68 +154,26 @@ func (a *advertisementService) DeleteAd(_ context.Context, r *proto.AdIdRequest)
 }
 
 // 保存图片广告
-func (a *advertisementService) SaveHyperLinkAd(_ context.Context, r *proto.SaveLinkAdRequest) (*proto.Result, error) {
-	defer a.cleanCache(r.AdUserId)
-	pa := a.getUserAd(r.AdUserId)
-	var adv = pa.GetById(r.AdId)
-	var err error
-	if adv == nil {
-		err = ad.ErrNoSuchAd
-	} else {
-		if adv.Type() == ad.TypeText {
-			g := adv.(ad.IHyperLinkAd)
-			v := a.parseHyperLinkAd(r.Value)
-			err = g.SetData(v)
-			if err == nil {
-				_, err = adv.Save()
-			}
-		}
-	}
-	return a.error(err), nil
-}
-
-// 保存图片广告
-func (a *advertisementService) SaveImagOfAd(_ context.Context, r *proto.SaveImageAdRequest) (*proto.Result, error) {
+func (a *advertisementService) SaveSwiperAdImage(_ context.Context, r *proto.SaveSwiperImageRequest) (*proto.Result, error) {
 	ia := a.getUserAd(r.AdUserId).GetById(r.AdId)
 	var err error
 	if ia == nil {
 		err = errors.New("no such ad image")
 	} else {
-		if ia.Type() == ad.TypeImage {
-			g := ia.(ad.IImageAd)
-			err = g.SetData(a.parseAdImage(r.Value))
-			if err == nil {
-				_, err = ia.Save()
-			}
+		if ia.Type() == ad.TypeSwiper {
+			gad := ia.(ad.IGalleryAd)
+			v := a.parseAdImage(r.Value)
+			_, err = gad.SaveImage(v)
 		}
 	}
 	return a.error(err), nil
 }
 
-// 保存广告图片
-func (a *advertisementService) SaveImage(adUserId int64, adId int64, v *ad.Image) (int64, error) {
-	defer a.cleanCache(adUserId)
-	pa := a.getUserAd(adUserId)
-	var adv = pa.GetById(adId)
-	if adv != nil {
-		switch adv.Type() {
-		case ad.TypeGallery:
-			gad := adv.(ad.IGalleryAd)
-			return gad.SaveImage(v)
-		case ad.TypeImage:
-			gad := adv.(ad.IImageAd)
-			gad.SetData(v)
-			return adv.Save()
-		}
-	}
-	return -1, ad.ErrNoSuchAd
-}
-
 // 获取广告图片
-func (a *advertisementService) GetValueAdImage(_ context.Context, r *proto.ImageAdIdRequest) (*proto.SImageAdData, error) {
+func (a *advertisementService) GetSwiperAdImage(_ context.Context, r *proto.ImageIdRequest) (*proto.SImageAdData, error) {
 	ia := a.getUserAd(r.AdUserId).GetById(r.AdId)
 	if ia != nil {
-		if ia.Type() == ad.TypeGallery {
+		if ia.Type() == ad.TypeSwiper {
 			gad := ia.(ad.IGalleryAd)
 			return a.parseAdImageDto(gad.GetImage(r.ImageId)), nil
 		}
@@ -287,8 +181,8 @@ func (a *advertisementService) GetValueAdImage(_ context.Context, r *proto.Image
 	return nil, nil
 }
 
-// 删除广告图片
-func (a *advertisementService) DelAdImage(_ context.Context, r *proto.ImageAdIdRequest) (*proto.Result, error) {
+// DeleteSwiperAdImage 删除广告图片
+func (a *advertisementService) DeleteSwiperAdImage(_ context.Context, r *proto.ImageIdRequest) (*proto.Result, error) {
 	defer a.cleanCache(r.AdUserId)
 	pa := a.getUserAd(r.AdUserId)
 	var adv = pa.GetById(r.AdId)
@@ -296,9 +190,9 @@ func (a *advertisementService) DelAdImage(_ context.Context, r *proto.ImageAdIdR
 	if adv == nil {
 		err = errors.New("no such ad image")
 	} else {
-		if adv.Type() == ad.TypeGallery {
+		if adv.Type() == ad.TypeSwiper {
 			gad := adv.(ad.IGalleryAd)
-			err = gad.DelImage(r.ImageId)
+			err = gad.DeleteItem(r.ImageId)
 		}
 	}
 	return a.error(err), nil
@@ -323,33 +217,12 @@ func (a *advertisementService) cleanCache(adUserId int64) error {
 	return repos.PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", adUserId))
 }
 
-func (a *advertisementService) parseAdGroup(v *proto.SAdGroup) *ad.AdGroup {
-	return &ad.AdGroup{
-		ID:      v.Id,
-		Name:    v.Name,
-		Flag:    int(v.Flag),
-		Opened:  types.ElseInt(v.Opened, 1, 0),
-		Enabled: types.ElseInt(v.Enabled, 1, 0),
-	}
-}
-
-func (a *advertisementService) parseAdGroupDto(v ad.AdGroup) *proto.SAdGroup {
-	return &proto.SAdGroup{
-		Id:      v.ID,
-		Name:    v.Name,
-		Flag:    int32(v.Flag),
-		Opened:  v.Opened == 1,
-		Enabled: v.Enabled == 1,
-	}
-}
-
 func (a *advertisementService) parseAdPositionDto(v *ad.Position) *proto.SAdPosition {
 	return &proto.SAdPosition{
-		Id:      v.Id,
-		GroupId: v.GroupId,
-		Key:     v.Key,
-		Name:    v.Name,
-		Flag:    int32(v.Flag),
+		Id:   v.Id,
+		Key:  v.Key,
+		Name: v.Name,
+		Flag: int32(v.Flag),
 		//TypeLimit: int32(v.TypeLimit),
 		Opened:    int32(v.Opened),
 		Enabled:   int32(v.Enabled),
@@ -360,11 +233,10 @@ func (a *advertisementService) parseAdPositionDto(v *ad.Position) *proto.SAdPosi
 
 func (a *advertisementService) parseAdPosition(v *proto.SAdPosition) *ad.Position {
 	return &ad.Position{
-		Id:      v.Id,
-		GroupId: v.GroupId,
-		Key:     v.Key,
-		Name:    v.Name,
-		Flag:    int(v.Flag),
+		Id:   v.Id,
+		Key:  v.Key,
+		Name: v.Name,
+		Flag: int(v.Flag),
 		//TypeLimit: int(v.TypeLimit),
 		Opened:    int(v.Opened),
 		Enabled:   int(v.Enabled),
@@ -373,12 +245,12 @@ func (a *advertisementService) parseAdPosition(v *proto.SAdPosition) *ad.Positio
 	}
 }
 
-func (a *advertisementService) parseAdDto(v *ad.Ad) *proto.SAd {
-	return &proto.SAd{
+func (a *advertisementService) parseAdDto(v *ad.Ad) *proto.SAdDto {
+	return &proto.SAdDto{
 		Id:         v.Id,
 		UserId:     v.UserId,
 		Name:       v.Name,
-		AdType:       int32(v.AdType),
+		AdType:     int32(v.AdType),
 		ShowTimes:  int32(v.ShowTimes),
 		ClickTimes: int32(v.ClickTimes),
 		ShowDays:   int32(v.ShowDays),
@@ -386,7 +258,7 @@ func (a *advertisementService) parseAdDto(v *ad.Ad) *proto.SAd {
 	}
 }
 
-func (a *advertisementService) parseAd(v *proto.SAd) *ad.Ad {
+func (a *advertisementService) parseAd(v *proto.SAdDto) *ad.Ad {
 	return &ad.Ad{
 		Id:         v.Id,
 		UserId:     v.UserId,
@@ -414,7 +286,7 @@ func (a *advertisementService) parseAdImageDto(v *ad.Image) *proto.SImageAdData 
 		LinkURL:  v.LinkUrl,
 		ImageURL: v.ImageUrl,
 		SortNum:  int32(v.SortNum),
-		Enabled:  v.Enabled == 1,
+		Enabled:  int32(v.Enabled),
 	}
 }
 
@@ -425,16 +297,16 @@ func (a *advertisementService) parseAdImage(v *proto.SImageAdData) *ad.Image {
 		LinkUrl:  v.LinkURL,
 		ImageUrl: v.ImageURL,
 		SortNum:  int(v.SortNum),
-		Enabled:  types.ElseInt(v.Enabled, 1, 0),
+		Enabled:  int(v.Enabled),
 	}
 }
 
 func (a *advertisementService) parseTextDto(dto *ad.AdDto) *proto.STextAdData {
 	v := dto.Data.(*ad.HyperLink)
 	return &proto.STextAdData{
-		Id:                   v.Id,
-		Title:                v.Title,
-		LinkURL:              v.LinkUrl,
+		Id:      v.Id,
+		Title:   v.Title,
+		LinkURL: v.LinkUrl,
 	}
 }
 
@@ -449,16 +321,44 @@ func (a *advertisementService) parseSingleImageDto(v *ad.Image) *proto.SImageAdD
 		Title:    v.Title,
 		LinkURL:  v.LinkUrl,
 		ImageURL: v.ImageUrl,
-		Enabled:  v.Enabled == 1,
+		Enabled:  int32(v.Enabled),
 		SortNum:  int32(v.SortNum),
 	}
 }
 
 func (a *advertisementService) parseSwiperDto(dto *ad.AdDto) *proto.SSwiperAdData {
-	images := dto.Data.(ad.ValueGallery)
-	arr := make([]*proto.SImageAdData,len(images))
-	for i,v := range images{
+	images := dto.Data.(ad.SwiperAd)
+	arr := make([]*proto.SImageAdData, len(images))
+	for i, v := range images {
 		arr[i] = a.parseSingleImageDto(v)
 	}
 	return &proto.SSwiperAdData{Images: arr}
+}
+
+// 更新广告数据
+func (a *advertisementService) updateAdData(ia ad.IAd, data *proto.SAdvertisementDto) error {
+	if data == nil {
+		return nil
+	}
+	if ia.Type() == ad.TypeText {
+		g := ia.(ad.IHyperLinkAd)
+		v := a.parseHyperLinkAd(data.Text)
+		err := g.SetData(v)
+		if err == nil {
+			_, err = ia.Save()
+		}
+		return err
+	}
+	if ia.Type() == ad.TypeImage {
+		g := ia.(ad.IImageAd)
+		err := g.SetData(a.parseAdImage(data.Image))
+		if err == nil {
+			_, err = ia.Save()
+		}
+		return err
+	}
+	if ia.Type() == ad.TypeSwiper {
+		return errors.New("please use SaveSwiperImage to update")
+	}
+	return nil
 }

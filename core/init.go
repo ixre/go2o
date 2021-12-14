@@ -58,7 +58,7 @@ func registerTypes() {
 
 func init2() {
 	gob.Register(map[string]map[string]interface{}{})
-	gob.Register(ad.ValueGallery{})
+	gob.Register(ad.SwiperAd{})
 	gob.Register(ad.Ad{})
 	gob.Register([]*valueobject.Goods{})
 	gob.Register(valueobject.Goods{})

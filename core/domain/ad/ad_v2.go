@@ -10,6 +10,27 @@ type adPositionImpl struct {
 	value *ad.Position
 }
 
+func NewAdPosition(repo ad.IAdRepo, v *ad.Position) ad.IAdPosition {
+	return &adPositionImpl{
+		repo:  repo,
+		value: v,
+	}
+}
+
+// PutAd 投放广告
+func (a adPositionImpl) PutAd(adId int64) error {
+	ia := a.repo.GetAd(adId)
+	if ia == nil {
+		return ad.ErrNoSuchAd
+	}
+	a.value.PutAdId = adId
+	return a.Save()
+}
+
+func (a adPositionImpl) GetValue() ad.Position {
+	return *a.value
+}
+
 func (a adPositionImpl) GetAggregateRootId() int64 {
 	return a.value.Id
 }
@@ -30,11 +51,4 @@ func (a adPositionImpl) Save() error {
 		a.value.Id = id
 	}
 	return err
-}
-
-func NewAdPosition(repo ad.IAdRepo, v *ad.Position) ad.IAdPosition {
-	return &adPositionImpl{
-		repo:  repo,
-		value: v,
-	}
 }

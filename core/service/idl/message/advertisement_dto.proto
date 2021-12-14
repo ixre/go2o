@@ -3,24 +3,10 @@ syntax = "proto3";
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
-// 广告分组
-message SAdGroup {
-  int64 Id = 1;
-  string Name = 2;
-  // 标志
-  int32 Flag = 3;
-  // 是否开放给外部
-  bool Opened = 4;
-  bool Enabled = 5;
-}
 
 // 广告位编号
 message AdPositionId {
   int64 PositionId = 1;
-}
-
-message AdGroupListResponse {
-  repeated SAdGroup Value = 1;
 }
 
 message AdGroupResponse{
@@ -30,10 +16,10 @@ message AdGroupResponse{
 message SAdPosition{
   /** 编号 */
   int64 Id = 1;
-  /** GroupId */
-  int64 GroupId = 2;
   /** 广告位编码 */
-  string Key = 3;
+  string Key = 2;
+  /** 分组名称 */
+  string GroupName = 3;
   /** 广告位名称 */
   string Name = 4;
   /** 投放的广告编号 */
@@ -44,8 +30,6 @@ message SAdPosition{
   int32 Enabled = 7;
   /** 标志 */
   int32 Flag = 8;
-  /** 分组名称 */
-  string GroupName = 9;
 }
 
 // 查询广告请求
@@ -56,7 +40,7 @@ message QueryAdRequest{
 
 // 查询广告响应
 message QueryAdResponse{
-  repeated SAd Value = 1;
+  repeated SAdDto Value = 1;
 }
 
 // 广告用户设置
@@ -72,7 +56,7 @@ message SAdUserSet {
 }
 
 // 广告
-message SAd {
+message SAdDto {
   // 编号
   int64 Id = 1;
   //广告用户编号
@@ -89,6 +73,8 @@ message SAd {
   int32 ShowDays = 7;
   // 修改时间
   int64 UpdateTime = 8;
+  // 广告数据
+  SAdvertisementDto Data = 9;
 }
 
 // 广告数据传输对象
@@ -123,7 +109,7 @@ message SImageAdData {
   // 图片地址
   string ImageURL = 4;
   // 是否启用
-  bool Enabled = 5;
+  int32 Enabled = 5;
   // 排列序号
   int32 SortNum = 6;
 }
@@ -134,7 +120,6 @@ message SSwiperAdData{
 }
 
 message SetDefaultAdRequest {
-  int64 GroupId = 1;
   int64 PosId = 2;
   int64 AdId = 3;
 }
@@ -144,34 +129,29 @@ message SetUserAdRequest {
   int64 AdId = 3;
 }
 message AdIdRequest {
+  // 广告用户编号
   int64 AdUserId = 1;
+  // 广告编号
   int64 AdId = 2;
+  // 广告位KEY
   string AdKey = 3;
-}
-
-message AdKeyRequest {
-  int64 AdUserId = 1;
-  string AdPosKey = 2;
+  // 是否返回数据
+  bool ReturnData = 4;
 }
 
 message SaveAdRequest {
   int64 AdUserId = 1;
-  SAd Value = 2;
+  SAdDto Value = 2;
+  SAdvertisementDto Data = 3;
 }
 
-message SaveLinkAdRequest {
-  int64 AdUserId = 1;
-  int64 AdId = 2;
-  STextAdData Value = 3;
-}
-
-message SaveImageAdRequest {
+message SaveSwiperImageRequest {
   int64 AdUserId = 1;
   int64 AdId = 2;
   SImageAdData Value = 3;
 }
 
-message ImageAdIdRequest {
+message ImageIdRequest {
   int64 AdUserId = 1;
   int64 AdId = 2;
   int64 ImageId = 3;

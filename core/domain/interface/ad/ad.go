@@ -16,24 +16,16 @@ const (
 	// 图片广告
 	TypeImage = 2
 	// 图片轮播广告
-	TypeGallery = 3
+	TypeSwiper = 3
 )
 
 type (
-	// 广告管理
-	IAdManager interface {
-		// 获取广告分组
-		GetAdGroups() []IAdGroup
-		// 获取单个广告分组
-		GetAdGroup(id int64) IAdGroup
-		// 删除广告位分组
-		DelAdGroup(id int64) error
-		// 创建广告位分组
-		CreateAdGroup(name string) IAdGroup
+	// IAdvertisementManager 广告管理
+	IAdvertisementManager interface {
 		// 根据编号获取广告位
-		GetAdPositionById(id int64) *Position
+		GetPosition(id int64) IAdPosition
 		// 根据KEY获取广告位
-		GetAdPositionByKey(key string) *Position
+		GetPositionByKey(key string) *Position
 		// 根据广告位KEY获取默认广告
 		GetAdByPositionKey(key string) IAd
 		// 获取用户的广告管理
@@ -44,46 +36,17 @@ type (
 		QueryAd(keyword string, size int) []*Ad
 	}
 
-	// 广告位
+	// IAdPosition 广告位
 	IAdPosition interface {
 		GetAggregateRootId() int64
 		SetValue(v *Position) error
 		Save() error
 		// 设置广告
-		//PutAd(adId int64) error
+		PutAd(adId int64) error
+		GetValue() Position
 	}
 
-	// 广告分组
-	IAdGroup interface {
-		// 获取领域编号
-		GetDomainId() int64
-		// 获取值
-		GetValue() AdGroup
-		// 设置值
-		SetValue(v *AdGroup) error
-		// 获取广告位
-		GetPositions() []*Position
-		// 根据Id获取广告位
-		GetPosition(id int64) *Position
-		// 删除广告位
-		DelPosition(id int64) error
-		// 保存广告位
-		SavePosition(a *Position) (int64, error)
-		// 保存,需调用Save()保存
-		Save() (int64, error)
-		// 开放,需调用Save()保存
-		Open() error
-		// 关闭,需调用Save()保存
-		Close() error
-		// 启用,需调用Save()保存
-		Enabled() error
-		// 禁用,需调用Save()保存
-		Disabled() error
-		// 设置默认广告
-		SetDefault(posId int64, adId int64) error
-	}
-
-	// 商户广告聚合根
+	// IUserAd 商户广告聚合根
 	IUserAd interface {
 		// 获取聚合根标识
 		GetAggregateRootId() int64
@@ -101,7 +64,7 @@ type (
 		SetAd(posId, adId int64) error
 	}
 
-	// 广告接口
+	// IAd 广告接口
 	IAd interface {
 		// 获取领域对象编号
 		GetDomainId() int64
@@ -127,22 +90,10 @@ type (
 		Dto() *AdDto
 	}
 
-	// 广告分组
-	AdGroup struct {
-		ID   int64  `db:"id" auto:"yes" pk:"yes"`
-		Name string `db:"name"`
-		// 标志
-		Flag    int `db:"flag"`
-		Opened  int `db:"opened"`
-		Enabled int `db:"enabled"`
-	}
-
-	// 广告位
+	// Position 广告位
 	Position struct {
 		// 编号
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
-		// 分组编号
-		GroupId int64 `db:"group_id"`
 		// 引用键
 		Key string `db:"key"`
 		// 名称
@@ -214,16 +165,10 @@ type (
 	// 广告仓储
 	IAdRepo interface {
 		// 获取广告管理器
-		GetAdManager() IAdManager
+		GetAdManager() IAdvertisementManager
 
 		// 获取广告分组
 		GetPosition(id int64) IAdPosition
-
-		// 获取广告分组
-		GetAdGroups() []*AdGroup
-
-		// 删除广告位分组
-		DelAdGroup(id int64) error
 
 		// 根据KEY获取广告位
 		GetAdPositionByKey(key string) *Position
@@ -240,9 +185,6 @@ type (
 		// 保存广告位
 		SaveAdPosition(a *Position) (int64, error)
 
-		// 保存
-		SaveAdGroup(value *AdGroup) (int64, error)
-
 		// 设置用户的广告
 		SetUserAd(adUserId, posId, adId int64) error
 
@@ -254,38 +196,38 @@ type (
 
 		/* ===============  广告类型 ================*/
 
-		// 获取超链接广告数据
-		GetHyperLinkData(adId int64) *HyperLink
+		// GetTextAdData  获取超链接广告数据
+		GetTextAdData(adId int64) *HyperLink
 
-		// 保存超链接广告数据
-		SaveHyperLinkData(value *HyperLink) (int64, error)
+		// SaveTextAdData  保存超链接广告数据
+		SaveTextAdData(value *HyperLink) (int64, error)
 
-		// 保存广告图片
-		SaveAdImageValue(*Image) (int64, error)
+		// SaveImageAdData  保存广告图片
+		SaveImageAdData(*Image) (int64, error)
 
-		// 获取广告
-		GetValueAd(id int64) *Ad
+		// GetAd  获取广告
+		GetAd(id int64) *Ad
 
-		// 根据KEY获取广告
-		GetAdByKey(userId int64, name string) *Ad
+		// GetAdByKey 根据KEY获取广告
+		GetAdByKey(userId int64, key string) *Ad
 
-		// 获取轮播广告
-		GetValueGallery(adId int64) ValueGallery
+		// GetSwiperAd 获取轮播广告
+		GetSwiperAd(adId int64) SwiperAd
 
-		// 获取图片项
-		GetValueAdImage(adId, id int64) *Image
+		// GetSwiperAdImage 获取图片项
+		GetSwiperAdImage(adId, id int64) *Image
 
-		// 删除图片项
-		DelAdImage(adId, id int64) error
+		// DeleteSwiperAdImage 删除图片项
+		DeleteSwiperAdImage(adId, id int64) error
 
-		// 删除广告
-		DelAd(mchId, adId int64) error
+		// DeleteAd 删除广告
+		DeleteAd(mchId, adId int64) error
 
-		// 删除广告的图片数据
-		DelImageDataForAdvertisement(adId int64) error
+		// DeleteImageAdData 删除广告的图片数据
+		DeleteImageAdData(adId int64) error
 
-		// 删除广告的文字数据
-		DelTextDataForAdvertisement(adId int64) error
+		// DeleteTextAdData 删除广告的文字数据
+		DeleteTextAdData(adId int64) error
 
 		// GetGroups 获取广告分组
 		GetGroups() []string

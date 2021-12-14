@@ -78,16 +78,17 @@ func (r resApi) adApi(ctx api.Context) *api.Response {
 		//从缓存中读取
 		for _, n := range names {
 			//分别绑定广告
-			dto, _ := cli.GetAdAndDataByKey(context.TODO(),
-				&proto.AdKeyRequest{
-					AdUserId: int64(userId),
-					AdPosKey: n,
+			dto, _ := cli.GetAdvertisement(context.TODO(),
+				&proto.AdIdRequest{
+					AdUserId:   int64(userId),
+					AdKey:      n,
+					ReturnData: true,
 				})
 			if dto == nil {
 				result[n] = nil
 				continue
 			}
-			result[n] = dto
+			result[n] = dto.Data
 		}
 		regArr := []string{registry.CacheAdMaxAge}
 		trans2, cli2, _ := service.RegistryServiceClient()

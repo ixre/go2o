@@ -23,7 +23,7 @@ type ImageAdImpl struct {
 // 获取链接广告值
 func (i *ImageAdImpl) getData() *ad.Image {
 	if i.extValue == nil {
-		gallery := i._rep.GetValueGallery(i.GetDomainId())
+		gallery := i._rep.GetSwiperAd(i.GetDomainId())
 		if gallery.Len() > 0 {
 			i.extValue = gallery[0]
 		}
@@ -55,7 +55,7 @@ func (i *ImageAdImpl) Save() (int64, error) {
 	if err == nil {
 		v := i.getData()
 		v.AdId = id
-		_, err = i._rep.SaveAdImageValue(v)
+		_, err = i._rep.SaveImageAdData(v)
 	}
 	return id, err
 }
