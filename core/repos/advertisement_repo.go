@@ -251,3 +251,12 @@ func (a *advertisementRepo) DeleteTextAdData(adId int64) error {
 	_, err := a.o.Delete(ad.HyperLink{}, "ad_id=$1", adId)
 	return err
 }
+
+func (a *advertisementRepo) GetPositions() []*ad.Position {
+	list := make([]*ad.Position,0)
+	err := a.o.Select(&list,"")
+	if err != nil && err != sql.ErrNoRows{
+		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:Position")
+	}
+	return list
+}

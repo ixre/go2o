@@ -217,3 +217,19 @@ func (r *registryRepo) flushToStorage(list []*registry.Registry) {
 		r.store.Set(r.getStorageKey(v.Key), v.Value)
 	}
 }
+
+
+// GetGroups 获取分组
+func (r *registryRepo) GetGroups() []string {
+	var arr []string
+	r._orm.Connector().Query("select distinct(group_name) from registry", func(rows *sql.Rows) {
+		var s = ""
+		for rows.Next() {
+			rows.Scan(&s)
+			if len(s) > 0 {
+				arr = append(arr, s)
+			}
+		}
+	})
+	return arr
+}

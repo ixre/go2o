@@ -21,6 +21,10 @@ service AdvertisementService {
     // 查询广告
     rpc QueryAd(QueryAdRequest) returns (QueryAdResponse){}
 
+    // 查询广告并返回广告数据
+    rpc QueryAdvertisementData(QueryAdvertisementDataRequest)returns(QueryAdvertisementDataResponse){
+    }
+
     // 用户投放广告
     rpc SetUserAd (SetUserAdRequest) returns (Result) {
     }

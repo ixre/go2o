@@ -129,6 +129,21 @@ func (a *advertisementService) getAdvertisementDto(ia ad.IAd) *proto.SAdvertisem
 	return ret
 }
 
+
+func (a *advertisementService) QueryAdvertisementData(_ context.Context, r *proto.QueryAdvertisementDataRequest) (*proto.QueryAdvertisementDataResponse, error) {
+	iu := a.getUserAd(r.AdUserId)
+	var list = iu.QueryAdvertisement(r.Keys)
+	arr := make(map[string]*proto.SAdvertisementDto,len(list))
+	for k,v := range list{
+		arr[k] = a.getAdvertisementDto(v)
+	}
+	return &proto.QueryAdvertisementDataResponse{
+		AdUserId:             r.AdUserId,
+		Value:                arr,
+	},nil
+}
+
+
 // 保存广告,更新时不允许修改类型
 func (a *advertisementService) SaveAd(_ context.Context, r *proto.SaveAdRequest) (*proto.Result, error) {
 	defer a.cleanCache(r.AdUserId)

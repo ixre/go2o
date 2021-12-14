@@ -125,6 +125,28 @@ func (a *userAdImpl) GetAdPositionsByAdId(adId int64) []*ad.Position {
 	return list
 }
 
+
+func (a *userAdImpl) QueryAdvertisement(keys []string) map[string]ad.IAd {
+	arr := a._rep.GetPositions()
+	keyMap := make(map[string]int,len(keys))
+	for _,v := range keys{
+		keyMap[v] = 0
+	}
+	mp := make(map[string]ad.IAd,0)
+	for _,v := range arr{
+		if _,ok := keyMap[v.Key];ok {
+			if v.PutAdId <= 0 {
+				continue
+			}
+			if ia := a.GetById(v.PutAdId); ia != nil {
+				mp[v.Key] = ia
+			}
+		}
+	}
+	return mp
+}
+
+
 // 删除广告
 func (a *userAdImpl) DeleteAd(adId int64) error {
 	adv := a.GetById(adId)
