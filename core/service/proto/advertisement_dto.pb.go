@@ -18,74 +18,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// 广告分组
-type SAdGroup struct {
-	Id   int64  `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
-	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
-	// 是否开放给外部
-	Opened               bool     `protobuf:"varint,3,opt,name=opened,proto3" json:"opened"`
-	Enabled              bool     `protobuf:"varint,4,opt,name=enabled,proto3" json:"enabled"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SAdGroup) Reset()         { *m = SAdGroup{} }
-func (m *SAdGroup) String() string { return proto.CompactTextString(m) }
-func (*SAdGroup) ProtoMessage()    {}
-func (*SAdGroup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{0}
-}
-func (m *SAdGroup) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SAdGroup.Unmarshal(m, b)
-}
-func (m *SAdGroup) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SAdGroup.Marshal(b, m, deterministic)
-}
-func (dst *SAdGroup) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SAdGroup.Merge(dst, src)
-}
-func (m *SAdGroup) XXX_Size() int {
-	return xxx_messageInfo_SAdGroup.Size(m)
-}
-func (m *SAdGroup) XXX_DiscardUnknown() {
-	xxx_messageInfo_SAdGroup.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SAdGroup proto.InternalMessageInfo
-
-func (m *SAdGroup) GetId() int64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *SAdGroup) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *SAdGroup) GetOpened() bool {
-	if m != nil {
-		return m.Opened
-	}
-	return false
-}
-
-func (m *SAdGroup) GetEnabled() bool {
-	if m != nil {
-		return m.Enabled
-	}
-	return false
-}
-
 // 广告位编号
 type AdPositionId struct {
-	GroupId              int64    `protobuf:"varint,1,opt,name=groupId,proto3" json:"groupId"`
-	PositionId           int64    `protobuf:"varint,2,opt,name=positionId,proto3" json:"positionId"`
+	PositionId           int64    `protobuf:"varint,1,opt,name=PositionId,proto3" json:"PositionId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -95,7 +30,7 @@ func (m *AdPositionId) Reset()         { *m = AdPositionId{} }
 func (m *AdPositionId) String() string { return proto.CompactTextString(m) }
 func (*AdPositionId) ProtoMessage()    {}
 func (*AdPositionId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{1}
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{0}
 }
 func (m *AdPositionId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AdPositionId.Unmarshal(m, b)
@@ -115,13 +50,6 @@ func (m *AdPositionId) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_AdPositionId proto.InternalMessageInfo
 
-func (m *AdPositionId) GetGroupId() int64 {
-	if m != nil {
-		return m.GroupId
-	}
-	return 0
-}
-
 func (m *AdPositionId) GetPositionId() int64 {
 	if m != nil {
 		return m.PositionId
@@ -129,63 +57,61 @@ func (m *AdPositionId) GetPositionId() int64 {
 	return 0
 }
 
-type AdGroupListResponse struct {
-	Value                []*SAdGroup `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+type AdGroupResponse struct {
+	Value                []string `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AdGroupListResponse) Reset()         { *m = AdGroupListResponse{} }
-func (m *AdGroupListResponse) String() string { return proto.CompactTextString(m) }
-func (*AdGroupListResponse) ProtoMessage()    {}
-func (*AdGroupListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{2}
+func (m *AdGroupResponse) Reset()         { *m = AdGroupResponse{} }
+func (m *AdGroupResponse) String() string { return proto.CompactTextString(m) }
+func (*AdGroupResponse) ProtoMessage()    {}
+func (*AdGroupResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{1}
 }
-func (m *AdGroupListResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AdGroupListResponse.Unmarshal(m, b)
+func (m *AdGroupResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AdGroupResponse.Unmarshal(m, b)
 }
-func (m *AdGroupListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AdGroupListResponse.Marshal(b, m, deterministic)
+func (m *AdGroupResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AdGroupResponse.Marshal(b, m, deterministic)
 }
-func (dst *AdGroupListResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AdGroupListResponse.Merge(dst, src)
+func (dst *AdGroupResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AdGroupResponse.Merge(dst, src)
 }
-func (m *AdGroupListResponse) XXX_Size() int {
-	return xxx_messageInfo_AdGroupListResponse.Size(m)
+func (m *AdGroupResponse) XXX_Size() int {
+	return xxx_messageInfo_AdGroupResponse.Size(m)
 }
-func (m *AdGroupListResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_AdGroupListResponse.DiscardUnknown(m)
+func (m *AdGroupResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AdGroupResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AdGroupListResponse proto.InternalMessageInfo
+var xxx_messageInfo_AdGroupResponse proto.InternalMessageInfo
 
-func (m *AdGroupListResponse) GetValue() []*SAdGroup {
+func (m *AdGroupResponse) GetValue() []string {
 	if m != nil {
 		return m.Value
 	}
 	return nil
 }
 
-// 广告位
 type SAdPosition struct {
-	// 编号
+	// * 编号
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
-	// 分组编号
-	GroupId int64 `protobuf:"varint,2,opt,name=groupId,proto3" json:"groupId"`
-	// 引用键
-	Key string `protobuf:"bytes,3,opt,name=key,proto3" json:"key"`
-	// 名称
+	// * 广告位编码
+	Key string `protobuf:"bytes,2,opt,name=Key,proto3" json:"Key"`
+	// * 分组名称
+	GroupName string `protobuf:"bytes,3,opt,name=GroupName,proto3" json:"GroupName"`
+	// * 广告位名称
 	Name string `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name"`
-	// todo:广告位类型限制
-	// 广告类型限制,0为无限制
-	TypeLimit int32 `protobuf:"varint,5,opt,name=type_limit,json=typeLimit,proto3" json:"type_limit"`
-	// 是否开放给外部
-	Opened bool `protobuf:"varint,6,opt,name=opened,proto3" json:"opened"`
-	// 是否启用
-	Enabled bool `protobuf:"varint,7,opt,name=enabled,proto3" json:"enabled"`
-	// 默认广告编号
-	DefaultId            int64    `protobuf:"varint,8,opt,name=defaultId,proto3" json:"defaultId"`
+	// * 投放的广告编号
+	PutAid int64 `protobuf:"varint,5,opt,name=PutAid,proto3" json:"PutAid"`
+	// * Opened
+	Opened int32 `protobuf:"varint,6,opt,name=Opened,proto3" json:"Opened"`
+	// * Enabled
+	Enabled int32 `protobuf:"varint,7,opt,name=Enabled,proto3" json:"Enabled"`
+	// * 标志
+	Flag                 int32    `protobuf:"varint,8,opt,name=Flag,proto3" json:"Flag"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -195,7 +121,7 @@ func (m *SAdPosition) Reset()         { *m = SAdPosition{} }
 func (m *SAdPosition) String() string { return proto.CompactTextString(m) }
 func (*SAdPosition) ProtoMessage()    {}
 func (*SAdPosition) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{3}
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{2}
 }
 func (m *SAdPosition) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAdPosition.Unmarshal(m, b)
@@ -222,16 +148,16 @@ func (m *SAdPosition) GetId() int64 {
 	return 0
 }
 
-func (m *SAdPosition) GetGroupId() int64 {
-	if m != nil {
-		return m.GroupId
-	}
-	return 0
-}
-
 func (m *SAdPosition) GetKey() string {
 	if m != nil {
 		return m.Key
+	}
+	return ""
+}
+
+func (m *SAdPosition) GetGroupName() string {
+	if m != nil {
+		return m.GroupName
 	}
 	return ""
 }
@@ -243,32 +169,118 @@ func (m *SAdPosition) GetName() string {
 	return ""
 }
 
-func (m *SAdPosition) GetTypeLimit() int32 {
+func (m *SAdPosition) GetPutAid() int64 {
 	if m != nil {
-		return m.TypeLimit
+		return m.PutAid
 	}
 	return 0
 }
 
-func (m *SAdPosition) GetOpened() bool {
+func (m *SAdPosition) GetOpened() int32 {
 	if m != nil {
 		return m.Opened
 	}
-	return false
+	return 0
 }
 
-func (m *SAdPosition) GetEnabled() bool {
+func (m *SAdPosition) GetEnabled() int32 {
 	if m != nil {
 		return m.Enabled
 	}
-	return false
+	return 0
 }
 
-func (m *SAdPosition) GetDefaultId() int64 {
+func (m *SAdPosition) GetFlag() int32 {
 	if m != nil {
-		return m.DefaultId
+		return m.Flag
 	}
 	return 0
+}
+
+// 查询广告请求
+type QueryAdRequest struct {
+	Keyword              string   `protobuf:"bytes,1,opt,name=Keyword,proto3" json:"Keyword"`
+	Size                 int32    `protobuf:"varint,2,opt,name=Size,proto3" json:"Size"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QueryAdRequest) Reset()         { *m = QueryAdRequest{} }
+func (m *QueryAdRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAdRequest) ProtoMessage()    {}
+func (*QueryAdRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{3}
+}
+func (m *QueryAdRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryAdRequest.Unmarshal(m, b)
+}
+func (m *QueryAdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryAdRequest.Marshal(b, m, deterministic)
+}
+func (dst *QueryAdRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAdRequest.Merge(dst, src)
+}
+func (m *QueryAdRequest) XXX_Size() int {
+	return xxx_messageInfo_QueryAdRequest.Size(m)
+}
+func (m *QueryAdRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAdRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAdRequest proto.InternalMessageInfo
+
+func (m *QueryAdRequest) GetKeyword() string {
+	if m != nil {
+		return m.Keyword
+	}
+	return ""
+}
+
+func (m *QueryAdRequest) GetSize() int32 {
+	if m != nil {
+		return m.Size
+	}
+	return 0
+}
+
+// 查询广告响应
+type QueryAdResponse struct {
+	Value                []*SAdDto `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
+}
+
+func (m *QueryAdResponse) Reset()         { *m = QueryAdResponse{} }
+func (m *QueryAdResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAdResponse) ProtoMessage()    {}
+func (*QueryAdResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{4}
+}
+func (m *QueryAdResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QueryAdResponse.Unmarshal(m, b)
+}
+func (m *QueryAdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QueryAdResponse.Marshal(b, m, deterministic)
+}
+func (dst *QueryAdResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAdResponse.Merge(dst, src)
+}
+func (m *QueryAdResponse) XXX_Size() int {
+	return xxx_messageInfo_QueryAdResponse.Size(m)
+}
+func (m *QueryAdResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAdResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAdResponse proto.InternalMessageInfo
+
+func (m *QueryAdResponse) GetValue() []*SAdDto {
+	if m != nil {
+		return m.Value
+	}
+	return nil
 }
 
 // 广告用户设置
@@ -276,11 +288,11 @@ type SAdUserSet struct {
 	// 编号
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 广告位编号
-	PosId int64 `protobuf:"varint,2,opt,name=posId,proto3" json:"posId"`
+	PosId int64 `protobuf:"varint,2,opt,name=PosId,proto3" json:"PosId"`
 	// 广告用户编号
-	AdUserId int64 `protobuf:"varint,3,opt,name=adUserId,proto3" json:"adUserId"`
+	AdUserId int64 `protobuf:"varint,3,opt,name=AdUserId,proto3" json:"AdUserId"`
 	// 广告编号
-	AdId                 int64    `protobuf:"varint,4,opt,name=adId,proto3" json:"adId"`
+	AdId                 int64    `protobuf:"varint,4,opt,name=AdId,proto3" json:"AdId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -290,7 +302,7 @@ func (m *SAdUserSet) Reset()         { *m = SAdUserSet{} }
 func (m *SAdUserSet) String() string { return proto.CompactTextString(m) }
 func (*SAdUserSet) ProtoMessage()    {}
 func (*SAdUserSet) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{4}
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{5}
 }
 func (m *SAdUserSet) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAdUserSet.Unmarshal(m, b)
@@ -339,123 +351,35 @@ func (m *SAdUserSet) GetAdId() int64 {
 }
 
 // 广告
-type SAd struct {
+type SAdDto struct {
 	// 编号
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 广告用户编号
-	UserId int64 `protobuf:"varint,2,opt,name=userId,proto3" json:"userId"`
+	UserId int64 `protobuf:"varint,2,opt,name=UserId,proto3" json:"UserId"`
 	// 名称
 	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
 	// 广告类型
-	Type int32 `protobuf:"varint,4,opt,name=type,proto3" json:"type"`
+	AdType int32 `protobuf:"varint,4,opt,name=AdType,proto3" json:"AdType"`
 	// 展现次数
-	ShowTimes int32 `protobuf:"varint,5,opt,name=show_times,json=showTimes,proto3" json:"show_times"`
+	ShowTimes int32 `protobuf:"varint,5,opt,name=ShowTimes,proto3" json:"ShowTimes"`
 	// 点击次数
-	ClickTimes int32 `protobuf:"varint,6,opt,name=click_times,json=clickTimes,proto3" json:"click_times"`
+	ClickTimes int32 `protobuf:"varint,6,opt,name=ClickTimes,proto3" json:"ClickTimes"`
 	// 展现天数
-	ShowDays int32 `protobuf:"varint,7,opt,name=show_days,json=showDays,proto3" json:"show_days"`
+	ShowDays int32 `protobuf:"varint,7,opt,name=ShowDays,proto3" json:"ShowDays"`
 	// 修改时间
-	UpdateTime           int64    `protobuf:"varint,8,opt,name=UpdateTime,proto3" json:"UpdateTime"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SAd) Reset()         { *m = SAd{} }
-func (m *SAd) String() string { return proto.CompactTextString(m) }
-func (*SAd) ProtoMessage()    {}
-func (*SAd) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{5}
-}
-func (m *SAd) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SAd.Unmarshal(m, b)
-}
-func (m *SAd) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SAd.Marshal(b, m, deterministic)
-}
-func (dst *SAd) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SAd.Merge(dst, src)
-}
-func (m *SAd) XXX_Size() int {
-	return xxx_messageInfo_SAd.Size(m)
-}
-func (m *SAd) XXX_DiscardUnknown() {
-	xxx_messageInfo_SAd.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SAd proto.InternalMessageInfo
-
-func (m *SAd) GetId() int64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *SAd) GetUserId() int64 {
-	if m != nil {
-		return m.UserId
-	}
-	return 0
-}
-
-func (m *SAd) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *SAd) GetType() int32 {
-	if m != nil {
-		return m.Type
-	}
-	return 0
-}
-
-func (m *SAd) GetShowTimes() int32 {
-	if m != nil {
-		return m.ShowTimes
-	}
-	return 0
-}
-
-func (m *SAd) GetClickTimes() int32 {
-	if m != nil {
-		return m.ClickTimes
-	}
-	return 0
-}
-
-func (m *SAd) GetShowDays() int32 {
-	if m != nil {
-		return m.ShowDays
-	}
-	return 0
-}
-
-func (m *SAd) GetUpdateTime() int64 {
-	if m != nil {
-		return m.UpdateTime
-	}
-	return 0
-}
-
-// 广告数据传输对象
-type SAdDto struct {
-	Id                   int64             `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
-	AdType               int32             `protobuf:"varint,2,opt,name=AdType,proto3" json:"AdType"`
-	Data                 map[string]string `protobuf:"bytes,3,rep,name=Data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+	UpdateTime int64 `protobuf:"varint,8,opt,name=UpdateTime,proto3" json:"UpdateTime"`
+	// 广告数据
+	Data                 *SAdvertisementDto `protobuf:"bytes,9,opt,name=Data,proto3" json:"Data"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
 }
 
 func (m *SAdDto) Reset()         { *m = SAdDto{} }
 func (m *SAdDto) String() string { return proto.CompactTextString(m) }
 func (*SAdDto) ProtoMessage()    {}
 func (*SAdDto) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{6}
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{6}
 }
 func (m *SAdDto) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SAdDto.Unmarshal(m, b)
@@ -482,6 +406,20 @@ func (m *SAdDto) GetId() int64 {
 	return 0
 }
 
+func (m *SAdDto) GetUserId() int64 {
+	if m != nil {
+		return m.UserId
+	}
+	return 0
+}
+
+func (m *SAdDto) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
 func (m *SAdDto) GetAdType() int32 {
 	if m != nil {
 		return m.AdType
@@ -489,173 +427,298 @@ func (m *SAdDto) GetAdType() int32 {
 	return 0
 }
 
-func (m *SAdDto) GetData() map[string]string {
+func (m *SAdDto) GetShowTimes() int32 {
+	if m != nil {
+		return m.ShowTimes
+	}
+	return 0
+}
+
+func (m *SAdDto) GetClickTimes() int32 {
+	if m != nil {
+		return m.ClickTimes
+	}
+	return 0
+}
+
+func (m *SAdDto) GetShowDays() int32 {
+	if m != nil {
+		return m.ShowDays
+	}
+	return 0
+}
+
+func (m *SAdDto) GetUpdateTime() int64 {
+	if m != nil {
+		return m.UpdateTime
+	}
+	return 0
+}
+
+func (m *SAdDto) GetData() *SAdvertisementDto {
 	if m != nil {
 		return m.Data
 	}
 	return nil
 }
 
-//  超链接
-type SHyperLink struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
-	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
-	Title                string   `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
-	LinkURL              string   `protobuf:"bytes,4,opt,name=LinkURL,proto3" json:"LinkURL"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+// 广告数据传输对象
+type SAdvertisementDto struct {
+	// 广告编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// 广告类型
+	AdType int32 `protobuf:"varint,2,opt,name=AdType,proto3" json:"AdType"`
+	// 文本广告数据
+	Text *STextAdData `protobuf:"bytes,3,opt,name=Text,proto3" json:"Text"`
+	// 图片广告数据
+	Image *SImageAdData `protobuf:"bytes,4,opt,name=Image,proto3" json:"Image"`
+	// 轮播广告数据
+	Swiper               *SSwiperAdData `protobuf:"bytes,5,opt,name=Swiper,proto3" json:"Swiper"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
 }
 
-func (m *SHyperLink) Reset()         { *m = SHyperLink{} }
-func (m *SHyperLink) String() string { return proto.CompactTextString(m) }
-func (*SHyperLink) ProtoMessage()    {}
-func (*SHyperLink) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{7}
+func (m *SAdvertisementDto) Reset()         { *m = SAdvertisementDto{} }
+func (m *SAdvertisementDto) String() string { return proto.CompactTextString(m) }
+func (*SAdvertisementDto) ProtoMessage()    {}
+func (*SAdvertisementDto) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{7}
 }
-func (m *SHyperLink) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SHyperLink.Unmarshal(m, b)
+func (m *SAdvertisementDto) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SAdvertisementDto.Unmarshal(m, b)
 }
-func (m *SHyperLink) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SHyperLink.Marshal(b, m, deterministic)
+func (m *SAdvertisementDto) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SAdvertisementDto.Marshal(b, m, deterministic)
 }
-func (dst *SHyperLink) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SHyperLink.Merge(dst, src)
+func (dst *SAdvertisementDto) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SAdvertisementDto.Merge(dst, src)
 }
-func (m *SHyperLink) XXX_Size() int {
-	return xxx_messageInfo_SHyperLink.Size(m)
+func (m *SAdvertisementDto) XXX_Size() int {
+	return xxx_messageInfo_SAdvertisementDto.Size(m)
 }
-func (m *SHyperLink) XXX_DiscardUnknown() {
-	xxx_messageInfo_SHyperLink.DiscardUnknown(m)
+func (m *SAdvertisementDto) XXX_DiscardUnknown() {
+	xxx_messageInfo_SAdvertisementDto.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SHyperLink proto.InternalMessageInfo
+var xxx_messageInfo_SAdvertisementDto proto.InternalMessageInfo
 
-func (m *SHyperLink) GetId() int64 {
+func (m *SAdvertisementDto) GetId() int64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *SHyperLink) GetAdId() int64 {
+func (m *SAdvertisementDto) GetAdType() int32 {
 	if m != nil {
-		return m.AdId
+		return m.AdType
 	}
 	return 0
 }
 
-func (m *SHyperLink) GetTitle() string {
+func (m *SAdvertisementDto) GetText() *STextAdData {
+	if m != nil {
+		return m.Text
+	}
+	return nil
+}
+
+func (m *SAdvertisementDto) GetImage() *SImageAdData {
+	if m != nil {
+		return m.Image
+	}
+	return nil
+}
+
+func (m *SAdvertisementDto) GetSwiper() *SSwiperAdData {
+	if m != nil {
+		return m.Swiper
+	}
+	return nil
+}
+
+// 文本广告数据
+type STextAdData struct {
+	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Title                string   `protobuf:"bytes,2,opt,name=Title,proto3" json:"Title"`
+	LinkURL              string   `protobuf:"bytes,3,opt,name=LinkURL,proto3" json:"LinkURL"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *STextAdData) Reset()         { *m = STextAdData{} }
+func (m *STextAdData) String() string { return proto.CompactTextString(m) }
+func (*STextAdData) ProtoMessage()    {}
+func (*STextAdData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{8}
+}
+func (m *STextAdData) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_STextAdData.Unmarshal(m, b)
+}
+func (m *STextAdData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_STextAdData.Marshal(b, m, deterministic)
+}
+func (dst *STextAdData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_STextAdData.Merge(dst, src)
+}
+func (m *STextAdData) XXX_Size() int {
+	return xxx_messageInfo_STextAdData.Size(m)
+}
+func (m *STextAdData) XXX_DiscardUnknown() {
+	xxx_messageInfo_STextAdData.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_STextAdData proto.InternalMessageInfo
+
+func (m *STextAdData) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *STextAdData) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *SHyperLink) GetLinkURL() string {
+func (m *STextAdData) GetLinkURL() string {
 	if m != nil {
 		return m.LinkURL
 	}
 	return ""
 }
 
-// 广告图片
-type SImage struct {
+// 图片广告数据
+type SImageAdData struct {
 	// 图片编号
 	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
-	// 广告编号
-	AdId int64 `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
 	// 图片标题
-	Title string `protobuf:"bytes,3,opt,name=Title,proto3" json:"Title"`
+	Title string `protobuf:"bytes,2,opt,name=Title,proto3" json:"Title"`
 	// 链接
-	LinkURL string `protobuf:"bytes,4,opt,name=LinkURL,proto3" json:"LinkURL"`
+	LinkURL string `protobuf:"bytes,3,opt,name=LinkURL,proto3" json:"LinkURL"`
 	// 图片地址
-	ImageURL string `protobuf:"bytes,5,opt,name=ImageURL,proto3" json:"ImageURL"`
-	// 排列序号
-	SortNum int32 `protobuf:"varint,6,opt,name=SortNum,proto3" json:"SortNum"`
+	ImageURL string `protobuf:"bytes,4,opt,name=ImageURL,proto3" json:"ImageURL"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,7,opt,name=Enabled,proto3" json:"Enabled"`
+	Enabled int32 `protobuf:"varint,5,opt,name=Enabled,proto3" json:"Enabled"`
+	// 排列序号
+	SortNum              int32    `protobuf:"varint,6,opt,name=SortNum,proto3" json:"SortNum"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SImage) Reset()         { *m = SImage{} }
-func (m *SImage) String() string { return proto.CompactTextString(m) }
-func (*SImage) ProtoMessage()    {}
-func (*SImage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{8}
+func (m *SImageAdData) Reset()         { *m = SImageAdData{} }
+func (m *SImageAdData) String() string { return proto.CompactTextString(m) }
+func (*SImageAdData) ProtoMessage()    {}
+func (*SImageAdData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{9}
 }
-func (m *SImage) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SImage.Unmarshal(m, b)
+func (m *SImageAdData) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SImageAdData.Unmarshal(m, b)
 }
-func (m *SImage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SImage.Marshal(b, m, deterministic)
+func (m *SImageAdData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SImageAdData.Marshal(b, m, deterministic)
 }
-func (dst *SImage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SImage.Merge(dst, src)
+func (dst *SImageAdData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SImageAdData.Merge(dst, src)
 }
-func (m *SImage) XXX_Size() int {
-	return xxx_messageInfo_SImage.Size(m)
+func (m *SImageAdData) XXX_Size() int {
+	return xxx_messageInfo_SImageAdData.Size(m)
 }
-func (m *SImage) XXX_DiscardUnknown() {
-	xxx_messageInfo_SImage.DiscardUnknown(m)
+func (m *SImageAdData) XXX_DiscardUnknown() {
+	xxx_messageInfo_SImageAdData.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SImage proto.InternalMessageInfo
+var xxx_messageInfo_SImageAdData proto.InternalMessageInfo
 
-func (m *SImage) GetId() int64 {
+func (m *SImageAdData) GetId() int64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *SImage) GetAdId() int64 {
-	if m != nil {
-		return m.AdId
-	}
-	return 0
-}
-
-func (m *SImage) GetTitle() string {
+func (m *SImageAdData) GetTitle() string {
 	if m != nil {
 		return m.Title
 	}
 	return ""
 }
 
-func (m *SImage) GetLinkURL() string {
+func (m *SImageAdData) GetLinkURL() string {
 	if m != nil {
 		return m.LinkURL
 	}
 	return ""
 }
 
-func (m *SImage) GetImageURL() string {
+func (m *SImageAdData) GetImageURL() string {
 	if m != nil {
 		return m.ImageURL
 	}
 	return ""
 }
 
-func (m *SImage) GetSortNum() int32 {
+func (m *SImageAdData) GetEnabled() int32 {
+	if m != nil {
+		return m.Enabled
+	}
+	return 0
+}
+
+func (m *SImageAdData) GetSortNum() int32 {
 	if m != nil {
 		return m.SortNum
 	}
 	return 0
 }
 
-func (m *SImage) GetEnabled() bool {
+// 轮播广告数据
+type SSwiperAdData struct {
+	Images               []*SImageAdData `protobuf:"bytes,1,rep,name=Images,proto3" json:"Images"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *SSwiperAdData) Reset()         { *m = SSwiperAdData{} }
+func (m *SSwiperAdData) String() string { return proto.CompactTextString(m) }
+func (*SSwiperAdData) ProtoMessage()    {}
+func (*SSwiperAdData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{10}
+}
+func (m *SSwiperAdData) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SSwiperAdData.Unmarshal(m, b)
+}
+func (m *SSwiperAdData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SSwiperAdData.Marshal(b, m, deterministic)
+}
+func (dst *SSwiperAdData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SSwiperAdData.Merge(dst, src)
+}
+func (m *SSwiperAdData) XXX_Size() int {
+	return xxx_messageInfo_SSwiperAdData.Size(m)
+}
+func (m *SSwiperAdData) XXX_DiscardUnknown() {
+	xxx_messageInfo_SSwiperAdData.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SSwiperAdData proto.InternalMessageInfo
+
+func (m *SSwiperAdData) GetImages() []*SImageAdData {
 	if m != nil {
-		return m.Enabled
+		return m.Images
 	}
-	return false
+	return nil
 }
 
 type SetDefaultAdRequest struct {
-	GroupId              int64    `protobuf:"varint,1,opt,name=GroupId,proto3" json:"GroupId"`
-	PosId                int64    `protobuf:"varint,2,opt,name=PosId,proto3" json:"PosId"`
+	PositionId           int64    `protobuf:"varint,2,opt,name=PositionId,proto3" json:"PositionId"`
 	AdId                 int64    `protobuf:"varint,3,opt,name=AdId,proto3" json:"AdId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -666,7 +729,7 @@ func (m *SetDefaultAdRequest) Reset()         { *m = SetDefaultAdRequest{} }
 func (m *SetDefaultAdRequest) String() string { return proto.CompactTextString(m) }
 func (*SetDefaultAdRequest) ProtoMessage()    {}
 func (*SetDefaultAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{9}
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{11}
 }
 func (m *SetDefaultAdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SetDefaultAdRequest.Unmarshal(m, b)
@@ -686,16 +749,9 @@ func (m *SetDefaultAdRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SetDefaultAdRequest proto.InternalMessageInfo
 
-func (m *SetDefaultAdRequest) GetGroupId() int64 {
+func (m *SetDefaultAdRequest) GetPositionId() int64 {
 	if m != nil {
-		return m.GroupId
-	}
-	return 0
-}
-
-func (m *SetDefaultAdRequest) GetPosId() int64 {
-	if m != nil {
-		return m.PosId
+		return m.PositionId
 	}
 	return 0
 }
@@ -720,7 +776,7 @@ func (m *SetUserAdRequest) Reset()         { *m = SetUserAdRequest{} }
 func (m *SetUserAdRequest) String() string { return proto.CompactTextString(m) }
 func (*SetUserAdRequest) ProtoMessage()    {}
 func (*SetUserAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{10}
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{12}
 }
 func (m *SetUserAdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SetUserAdRequest.Unmarshal(m, b)
@@ -762,8 +818,14 @@ func (m *SetUserAdRequest) GetAdId() int64 {
 }
 
 type AdIdRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
-	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
+	// 广告用户编号
+	AdUserId int64 `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	// 广告编号
+	AdId int64 `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
+	// 广告位KEY
+	AdKey string `protobuf:"bytes,3,opt,name=AdKey,proto3" json:"AdKey"`
+	// 是否返回数据
+	ReturnData           bool     `protobuf:"varint,4,opt,name=ReturnData,proto3" json:"ReturnData"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -773,7 +835,7 @@ func (m *AdIdRequest) Reset()         { *m = AdIdRequest{} }
 func (m *AdIdRequest) String() string { return proto.CompactTextString(m) }
 func (*AdIdRequest) ProtoMessage()    {}
 func (*AdIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{11}
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{13}
 }
 func (m *AdIdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AdIdRequest.Unmarshal(m, b)
@@ -807,65 +869,34 @@ func (m *AdIdRequest) GetAdId() int64 {
 	return 0
 }
 
-type AdKeyRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
-	AdPosKey             string   `protobuf:"bytes,2,opt,name=AdPosKey,proto3" json:"AdPosKey"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *AdKeyRequest) Reset()         { *m = AdKeyRequest{} }
-func (m *AdKeyRequest) String() string { return proto.CompactTextString(m) }
-func (*AdKeyRequest) ProtoMessage()    {}
-func (*AdKeyRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{12}
-}
-func (m *AdKeyRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AdKeyRequest.Unmarshal(m, b)
-}
-func (m *AdKeyRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AdKeyRequest.Marshal(b, m, deterministic)
-}
-func (dst *AdKeyRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AdKeyRequest.Merge(dst, src)
-}
-func (m *AdKeyRequest) XXX_Size() int {
-	return xxx_messageInfo_AdKeyRequest.Size(m)
-}
-func (m *AdKeyRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_AdKeyRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AdKeyRequest proto.InternalMessageInfo
-
-func (m *AdKeyRequest) GetAdUserId() int64 {
+func (m *AdIdRequest) GetAdKey() string {
 	if m != nil {
-		return m.AdUserId
-	}
-	return 0
-}
-
-func (m *AdKeyRequest) GetAdPosKey() string {
-	if m != nil {
-		return m.AdPosKey
+		return m.AdKey
 	}
 	return ""
 }
 
+func (m *AdIdRequest) GetReturnData() bool {
+	if m != nil {
+		return m.ReturnData
+	}
+	return false
+}
+
 type SaveAdRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
-	Value                *SAd     `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	AdUserId             int64              `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	Value                *SAdDto            `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
+	Data                 *SAdvertisementDto `protobuf:"bytes,3,opt,name=Data,proto3" json:"Data"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
 }
 
 func (m *SaveAdRequest) Reset()         { *m = SaveAdRequest{} }
 func (m *SaveAdRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveAdRequest) ProtoMessage()    {}
 func (*SaveAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{13}
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{14}
 }
 func (m *SaveAdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveAdRequest.Unmarshal(m, b)
@@ -892,122 +923,75 @@ func (m *SaveAdRequest) GetAdUserId() int64 {
 	return 0
 }
 
-func (m *SaveAdRequest) GetValue() *SAd {
+func (m *SaveAdRequest) GetValue() *SAdDto {
 	if m != nil {
 		return m.Value
 	}
 	return nil
 }
 
-type SaveLinkAdRequest struct {
-	AdUserId             int64       `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
-	AdId                 int64       `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
-	Value                *SHyperLink `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+func (m *SaveAdRequest) GetData() *SAdvertisementDto {
+	if m != nil {
+		return m.Data
+	}
+	return nil
 }
 
-func (m *SaveLinkAdRequest) Reset()         { *m = SaveLinkAdRequest{} }
-func (m *SaveLinkAdRequest) String() string { return proto.CompactTextString(m) }
-func (*SaveLinkAdRequest) ProtoMessage()    {}
-func (*SaveLinkAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{14}
-}
-func (m *SaveLinkAdRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SaveLinkAdRequest.Unmarshal(m, b)
-}
-func (m *SaveLinkAdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SaveLinkAdRequest.Marshal(b, m, deterministic)
-}
-func (dst *SaveLinkAdRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SaveLinkAdRequest.Merge(dst, src)
-}
-func (m *SaveLinkAdRequest) XXX_Size() int {
-	return xxx_messageInfo_SaveLinkAdRequest.Size(m)
-}
-func (m *SaveLinkAdRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SaveLinkAdRequest.DiscardUnknown(m)
+type SaveSwiperImageRequest struct {
+	AdUserId             int64         `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
+	AdId                 int64         `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
+	Value                *SImageAdData `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
 }
 
-var xxx_messageInfo_SaveLinkAdRequest proto.InternalMessageInfo
+func (m *SaveSwiperImageRequest) Reset()         { *m = SaveSwiperImageRequest{} }
+func (m *SaveSwiperImageRequest) String() string { return proto.CompactTextString(m) }
+func (*SaveSwiperImageRequest) ProtoMessage()    {}
+func (*SaveSwiperImageRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{15}
+}
+func (m *SaveSwiperImageRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveSwiperImageRequest.Unmarshal(m, b)
+}
+func (m *SaveSwiperImageRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveSwiperImageRequest.Marshal(b, m, deterministic)
+}
+func (dst *SaveSwiperImageRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveSwiperImageRequest.Merge(dst, src)
+}
+func (m *SaveSwiperImageRequest) XXX_Size() int {
+	return xxx_messageInfo_SaveSwiperImageRequest.Size(m)
+}
+func (m *SaveSwiperImageRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveSwiperImageRequest.DiscardUnknown(m)
+}
 
-func (m *SaveLinkAdRequest) GetAdUserId() int64 {
+var xxx_messageInfo_SaveSwiperImageRequest proto.InternalMessageInfo
+
+func (m *SaveSwiperImageRequest) GetAdUserId() int64 {
 	if m != nil {
 		return m.AdUserId
 	}
 	return 0
 }
 
-func (m *SaveLinkAdRequest) GetAdId() int64 {
+func (m *SaveSwiperImageRequest) GetAdId() int64 {
 	if m != nil {
 		return m.AdId
 	}
 	return 0
 }
 
-func (m *SaveLinkAdRequest) GetValue() *SHyperLink {
+func (m *SaveSwiperImageRequest) GetValue() *SImageAdData {
 	if m != nil {
 		return m.Value
 	}
 	return nil
 }
 
-type SaveImageAdRequest struct {
-	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
-	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
-	Value                *SImage  `protobuf:"bytes,3,opt,name=Value,proto3" json:"Value"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SaveImageAdRequest) Reset()         { *m = SaveImageAdRequest{} }
-func (m *SaveImageAdRequest) String() string { return proto.CompactTextString(m) }
-func (*SaveImageAdRequest) ProtoMessage()    {}
-func (*SaveImageAdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{15}
-}
-func (m *SaveImageAdRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SaveImageAdRequest.Unmarshal(m, b)
-}
-func (m *SaveImageAdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SaveImageAdRequest.Marshal(b, m, deterministic)
-}
-func (dst *SaveImageAdRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SaveImageAdRequest.Merge(dst, src)
-}
-func (m *SaveImageAdRequest) XXX_Size() int {
-	return xxx_messageInfo_SaveImageAdRequest.Size(m)
-}
-func (m *SaveImageAdRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SaveImageAdRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SaveImageAdRequest proto.InternalMessageInfo
-
-func (m *SaveImageAdRequest) GetAdUserId() int64 {
-	if m != nil {
-		return m.AdUserId
-	}
-	return 0
-}
-
-func (m *SaveImageAdRequest) GetAdId() int64 {
-	if m != nil {
-		return m.AdId
-	}
-	return 0
-}
-
-func (m *SaveImageAdRequest) GetValue() *SImage {
-	if m != nil {
-		return m.Value
-	}
-	return nil
-}
-
-type ImageAdIdRequest struct {
+type ImageIdRequest struct {
 	AdUserId             int64    `protobuf:"varint,1,opt,name=AdUserId,proto3" json:"AdUserId"`
 	AdId                 int64    `protobuf:"varint,2,opt,name=AdId,proto3" json:"AdId"`
 	ImageId              int64    `protobuf:"varint,3,opt,name=ImageId,proto3" json:"ImageId"`
@@ -1016,45 +1000,45 @@ type ImageAdIdRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ImageAdIdRequest) Reset()         { *m = ImageAdIdRequest{} }
-func (m *ImageAdIdRequest) String() string { return proto.CompactTextString(m) }
-func (*ImageAdIdRequest) ProtoMessage()    {}
-func (*ImageAdIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_advertisement_dto_42aa384c01d15873, []int{16}
+func (m *ImageIdRequest) Reset()         { *m = ImageIdRequest{} }
+func (m *ImageIdRequest) String() string { return proto.CompactTextString(m) }
+func (*ImageIdRequest) ProtoMessage()    {}
+func (*ImageIdRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_advertisement_dto_d42e93b259e8239f, []int{16}
 }
-func (m *ImageAdIdRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ImageAdIdRequest.Unmarshal(m, b)
+func (m *ImageIdRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ImageIdRequest.Unmarshal(m, b)
 }
-func (m *ImageAdIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ImageAdIdRequest.Marshal(b, m, deterministic)
+func (m *ImageIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ImageIdRequest.Marshal(b, m, deterministic)
 }
-func (dst *ImageAdIdRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ImageAdIdRequest.Merge(dst, src)
+func (dst *ImageIdRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ImageIdRequest.Merge(dst, src)
 }
-func (m *ImageAdIdRequest) XXX_Size() int {
-	return xxx_messageInfo_ImageAdIdRequest.Size(m)
+func (m *ImageIdRequest) XXX_Size() int {
+	return xxx_messageInfo_ImageIdRequest.Size(m)
 }
-func (m *ImageAdIdRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ImageAdIdRequest.DiscardUnknown(m)
+func (m *ImageIdRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ImageIdRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ImageAdIdRequest proto.InternalMessageInfo
+var xxx_messageInfo_ImageIdRequest proto.InternalMessageInfo
 
-func (m *ImageAdIdRequest) GetAdUserId() int64 {
+func (m *ImageIdRequest) GetAdUserId() int64 {
 	if m != nil {
 		return m.AdUserId
 	}
 	return 0
 }
 
-func (m *ImageAdIdRequest) GetAdId() int64 {
+func (m *ImageIdRequest) GetAdId() int64 {
 	if m != nil {
 		return m.AdId
 	}
 	return 0
 }
 
-func (m *ImageAdIdRequest) GetImageId() int64 {
+func (m *ImageIdRequest) GetImageId() int64 {
 	if m != nil {
 		return m.ImageId
 	}
@@ -1062,78 +1046,78 @@ func (m *ImageAdIdRequest) GetImageId() int64 {
 }
 
 func init() {
-	proto.RegisterType((*SAdGroup)(nil), "SAdGroup")
 	proto.RegisterType((*AdPositionId)(nil), "AdPositionId")
-	proto.RegisterType((*AdGroupListResponse)(nil), "AdGroupListResponse")
+	proto.RegisterType((*AdGroupResponse)(nil), "AdGroupResponse")
 	proto.RegisterType((*SAdPosition)(nil), "SAdPosition")
+	proto.RegisterType((*QueryAdRequest)(nil), "QueryAdRequest")
+	proto.RegisterType((*QueryAdResponse)(nil), "QueryAdResponse")
 	proto.RegisterType((*SAdUserSet)(nil), "SAdUserSet")
-	proto.RegisterType((*SAd)(nil), "SAd")
 	proto.RegisterType((*SAdDto)(nil), "SAdDto")
-	proto.RegisterMapType((map[string]string)(nil), "SAdDto.DataEntry")
-	proto.RegisterType((*SHyperLink)(nil), "SHyperLink")
-	proto.RegisterType((*SImage)(nil), "SImage")
+	proto.RegisterType((*SAdvertisementDto)(nil), "SAdvertisementDto")
+	proto.RegisterType((*STextAdData)(nil), "STextAdData")
+	proto.RegisterType((*SImageAdData)(nil), "SImageAdData")
+	proto.RegisterType((*SSwiperAdData)(nil), "SSwiperAdData")
 	proto.RegisterType((*SetDefaultAdRequest)(nil), "SetDefaultAdRequest")
 	proto.RegisterType((*SetUserAdRequest)(nil), "SetUserAdRequest")
 	proto.RegisterType((*AdIdRequest)(nil), "AdIdRequest")
-	proto.RegisterType((*AdKeyRequest)(nil), "AdKeyRequest")
 	proto.RegisterType((*SaveAdRequest)(nil), "SaveAdRequest")
-	proto.RegisterType((*SaveLinkAdRequest)(nil), "SaveLinkAdRequest")
-	proto.RegisterType((*SaveImageAdRequest)(nil), "SaveImageAdRequest")
-	proto.RegisterType((*ImageAdIdRequest)(nil), "ImageAdIdRequest")
+	proto.RegisterType((*SaveSwiperImageRequest)(nil), "SaveSwiperImageRequest")
+	proto.RegisterType((*ImageIdRequest)(nil), "ImageIdRequest")
 }
 
 func init() {
-	proto.RegisterFile("message/advertisement_dto.proto", fileDescriptor_advertisement_dto_42aa384c01d15873)
+	proto.RegisterFile("message/advertisement_dto.proto", fileDescriptor_advertisement_dto_d42e93b259e8239f)
 }
 
-var fileDescriptor_advertisement_dto_42aa384c01d15873 = []byte{
-	// 765 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0x61, 0x6b, 0xd3, 0x40,
-	0x18, 0x26, 0x4d, 0xd3, 0xb5, 0x6f, 0x55, 0xb6, 0x6c, 0x8c, 0x50, 0x9d, 0xad, 0x01, 0xa1, 0x9f,
-	0x32, 0x98, 0xa0, 0xa2, 0xf8, 0x21, 0xd2, 0xb9, 0x95, 0x95, 0x31, 0x92, 0x4d, 0x54, 0x84, 0xee,
-	0xda, 0xbb, 0x75, 0x61, 0x4d, 0x2f, 0xe6, 0xae, 0x93, 0xfc, 0x0b, 0x7f, 0x88, 0x3f, 0xc5, 0x4f,
-	0xfe, 0x22, 0x79, 0x2f, 0xb9, 0xb4, 0x65, 0x13, 0xe6, 0xc0, 0x4f, 0xbd, 0xe7, 0x7d, 0xef, 0x9e,
-	0xf7, 0x7d, 0x9f, 0x7b, 0x72, 0x85, 0x76, 0xcc, 0x84, 0x20, 0x13, 0xb6, 0x4b, 0xe8, 0x35, 0x4b,
-	0x65, 0x24, 0x58, 0xcc, 0x66, 0x72, 0x48, 0x25, 0xf7, 0x92, 0x94, 0x4b, 0xee, 0x9e, 0x43, 0x3d,
-	0xf4, 0xe9, 0x41, 0xca, 0xe7, 0x89, 0xfd, 0x08, 0x2a, 0x7d, 0xea, 0x18, 0x1d, 0xa3, 0x6b, 0x06,
-	0x95, 0x3e, 0xb5, 0x6d, 0xa8, 0x1e, 0x93, 0x98, 0x39, 0x95, 0x8e, 0xd1, 0x6d, 0x04, 0x6a, 0x6d,
-	0x6f, 0x43, 0x8d, 0x27, 0x6c, 0xc6, 0xa8, 0x63, 0x76, 0x8c, 0x6e, 0x3d, 0x28, 0x90, 0xed, 0xc0,
-	0x1a, 0x9b, 0x91, 0xd1, 0x94, 0x51, 0xa7, 0xaa, 0x12, 0x1a, 0xba, 0x87, 0xf0, 0xc0, 0xa7, 0x27,
-	0x5c, 0x44, 0x32, 0xe2, 0xb3, 0xbe, 0xda, 0x39, 0xc1, 0x72, 0x65, 0x29, 0x0d, 0xed, 0xa7, 0x00,
-	0x49, 0xb9, 0x4f, 0x55, 0x35, 0x83, 0xa5, 0x88, 0xfb, 0x12, 0x36, 0x8b, 0x56, 0x07, 0x91, 0x90,
-	0x01, 0x13, 0x09, 0x9f, 0x09, 0x66, 0xb7, 0xc1, 0xfa, 0x48, 0xa6, 0x73, 0xe6, 0x18, 0x1d, 0xb3,
-	0xdb, 0xdc, 0x6b, 0x78, 0x7a, 0xa0, 0x20, 0x8f, 0xbb, 0xbf, 0x0c, 0x68, 0x86, 0x8b, 0x1e, 0x6e,
-	0xcc, 0xb9, 0xd4, 0x51, 0x65, 0xb5, 0xa3, 0x75, 0x30, 0xaf, 0x58, 0xa6, 0x46, 0x6d, 0x04, 0xb8,
-	0x2c, 0x35, 0xa9, 0x2e, 0x69, 0xb2, 0x03, 0x20, 0xb3, 0x84, 0x0d, 0xa7, 0x51, 0x1c, 0x49, 0xc7,
-	0xea, 0x18, 0x5d, 0x2b, 0x68, 0x60, 0x64, 0x80, 0x81, 0x25, 0xc9, 0x6a, 0x7f, 0x93, 0x6c, 0x6d,
-	0x45, 0x32, 0xfb, 0x09, 0x34, 0x28, 0xbb, 0x20, 0xf3, 0xa9, 0xec, 0x53, 0xa7, 0xae, 0x5a, 0x5a,
-	0x04, 0xdc, 0x11, 0x40, 0xe8, 0xd3, 0x33, 0xc1, 0xd2, 0x90, 0xc9, 0x1b, 0xc3, 0x6c, 0x81, 0x95,
-	0x70, 0x51, 0x8e, 0x92, 0x03, 0xbb, 0x05, 0x75, 0xa2, 0x8e, 0xf4, 0xf3, 0x8b, 0x33, 0x83, 0x12,
-	0xe3, 0x48, 0x84, 0xf6, 0xf3, 0x7b, 0x33, 0x03, 0xb5, 0x76, 0x7f, 0x1b, 0x60, 0x86, 0x3e, 0xbd,
-	0xc1, 0xbe, 0x0d, 0xb5, 0x79, 0xce, 0x92, 0xd3, 0x17, 0xa8, 0x94, 0xc5, 0x5c, 0x92, 0xc5, 0x86,
-	0x2a, 0x8a, 0xa0, 0x78, 0xad, 0x40, 0xad, 0x51, 0x2a, 0x71, 0xc9, 0xbf, 0x0f, 0x65, 0x14, 0x33,
-	0xa1, 0xa5, 0xc2, 0xc8, 0x29, 0x06, 0xec, 0x36, 0x34, 0xc7, 0xd3, 0x68, 0x7c, 0x55, 0xe4, 0x6b,
-	0x2a, 0x0f, 0x2a, 0x94, 0x6f, 0x78, 0x0c, 0x6a, 0xf7, 0x90, 0x92, 0x4c, 0x28, 0xd5, 0xac, 0xa0,
-	0x8e, 0x81, 0x1e, 0xc9, 0x04, 0xfa, 0xe7, 0x2c, 0xa1, 0x44, 0x32, 0xdc, 0x5b, 0xe8, 0xb6, 0x14,
-	0x71, 0x7f, 0x18, 0x50, 0x0b, 0x7d, 0xda, 0x93, 0xfc, 0xb6, 0xb9, 0x7c, 0x7a, 0x8a, 0xdd, 0x56,
-	0x14, 0x69, 0x81, 0xec, 0xe7, 0x50, 0xed, 0x11, 0x49, 0x1c, 0x53, 0x59, 0x6b, 0xc3, 0xcb, 0x8f,
-	0x7b, 0x18, 0xdb, 0x9f, 0xc9, 0x34, 0x0b, 0x54, 0xba, 0xf5, 0x0a, 0x1a, 0x65, 0x48, 0x9b, 0xc6,
-	0x58, 0x98, 0x66, 0x0b, 0xac, 0x6b, 0xe5, 0xd0, 0xfc, 0x4b, 0xca, 0xc1, 0x9b, 0xca, 0x6b, 0xc3,
-	0x3d, 0x07, 0x08, 0x0f, 0xb3, 0x84, 0xa5, 0x83, 0x68, 0x76, 0x75, 0xdb, 0x07, 0xe8, 0xd3, 0x52,
-	0x6b, 0xb5, 0x46, 0xae, 0xd3, 0x48, 0x4e, 0xb5, 0xd4, 0x39, 0x40, 0x2f, 0x21, 0xc3, 0x59, 0x30,
-	0x28, 0x9c, 0xa9, 0xa1, 0xfb, 0x13, 0x87, 0xee, 0xc7, 0x64, 0xc2, 0xfe, 0x07, 0x3d, 0x1a, 0x4b,
-	0x91, 0x63, 0xca, 0x52, 0xa9, 0x12, 0xe3, 0xa9, 0x90, 0xa7, 0xf2, 0x78, 0x1e, 0x17, 0x37, 0xa9,
-	0x21, 0x66, 0xf6, 0x57, 0xad, 0x5f, 0x40, 0xf7, 0x33, 0x6c, 0x86, 0x4c, 0xf6, 0x72, 0xb3, 0xfb,
-	0x34, 0x60, 0xdf, 0xe6, 0x4c, 0x48, 0x3c, 0x70, 0xb0, 0xfa, 0x68, 0x14, 0x10, 0x1b, 0x3e, 0x59,
-	0xf6, 0xbb, 0x02, 0xe5, 0x68, 0xe6, 0x62, 0x34, 0xf7, 0x13, 0xac, 0x87, 0x4c, 0xa2, 0xe9, 0x17,
-	0xbc, 0x2d, 0xa8, 0xfb, 0xfa, 0xbb, 0xc8, 0x89, 0x4b, 0xfc, 0x0f, 0xcc, 0xef, 0xa0, 0x89, 0xbf,
-	0x77, 0x21, 0xbd, 0x45, 0x73, 0xf7, 0x03, 0xbe, 0x90, 0x47, 0x2c, 0xbb, 0xcb, 0x79, 0x95, 0x3b,
-	0xe1, 0xe2, 0x88, 0x65, 0x85, 0x9b, 0x4a, 0xec, 0x1e, 0xc0, 0xc3, 0x90, 0x5c, 0xb3, 0xbb, 0x4d,
-	0xd7, 0xd2, 0xaf, 0x26, 0xb2, 0x34, 0xf7, 0xaa, 0x68, 0x6d, 0xfd, 0x60, 0x5e, 0xc0, 0x06, 0x12,
-	0xe1, 0x1d, 0xfb, 0xf7, 0x9d, 0xca, 0x7e, 0xa6, 0x0b, 0x98, 0xaa, 0x40, 0xd3, 0x5b, 0x18, 0x5d,
-	0xd7, 0x19, 0x83, 0x8d, 0x75, 0x94, 0x61, 0xee, 0x5f, 0x68, 0x67, 0xb5, 0xd0, 0x9a, 0x97, 0xdb,
-	0x5d, 0x17, 0xf9, 0x0a, 0xeb, 0x45, 0x81, 0x7b, 0xdf, 0x10, 0xda, 0x4f, 0x71, 0x94, 0xf7, 0xae,
-	0xe1, 0xfb, 0x36, 0x6c, 0x8e, 0x79, 0xec, 0x4d, 0x22, 0x79, 0x39, 0x1f, 0x79, 0x13, 0xbe, 0xc7,
-	0xbd, 0x34, 0x19, 0x7f, 0xa9, 0x7b, 0xbb, 0x6f, 0xd5, 0x1f, 0xec, 0xa8, 0xa6, 0x7e, 0x5e, 0xfc,
-	0x09, 0x00, 0x00, 0xff, 0xff, 0x3d, 0xb2, 0x9b, 0x26, 0x8a, 0x07, 0x00, 0x00,
+var fileDescriptor_advertisement_dto_d42e93b259e8239f = []byte{
+	// 774 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x55, 0xdd, 0x6e, 0xd3, 0x48,
+	0x14, 0x96, 0xe3, 0xd8, 0x49, 0x8e, 0xdb, 0xb4, 0xeb, 0x56, 0x95, 0xb5, 0xda, 0xdd, 0x46, 0xae,
+	0xb6, 0x9b, 0x2b, 0x77, 0x15, 0x24, 0x6e, 0x90, 0x90, 0x0c, 0x01, 0x14, 0xb5, 0x94, 0x32, 0x4e,
+	0x11, 0xea, 0x0d, 0x72, 0x3a, 0x43, 0x6a, 0x35, 0xce, 0x18, 0x7b, 0xdc, 0x12, 0x1e, 0x86, 0x07,
+	0xe0, 0x25, 0x78, 0x33, 0x84, 0xe6, 0xc7, 0x3f, 0x49, 0x23, 0x51, 0x95, 0xab, 0xcc, 0x77, 0xce,
+	0xcc, 0x37, 0x3e, 0xdf, 0x39, 0xdf, 0x04, 0xf6, 0x63, 0x92, 0x65, 0xe1, 0x94, 0x1c, 0x85, 0xf8,
+	0x86, 0xa4, 0x2c, 0xca, 0x48, 0x4c, 0xe6, 0xec, 0x03, 0x66, 0xd4, 0x4b, 0x52, 0xca, 0xa8, 0xeb,
+	0xc1, 0x86, 0x8f, 0xcf, 0x68, 0x16, 0xb1, 0x88, 0xce, 0x47, 0xd8, 0xfe, 0x07, 0xa0, 0x42, 0x8e,
+	0xd6, 0xd3, 0xfa, 0x3a, 0xaa, 0x45, 0xdc, 0xff, 0x60, 0xcb, 0xc7, 0xaf, 0x52, 0x9a, 0x27, 0x88,
+	0x64, 0x09, 0x9d, 0x67, 0xc4, 0xde, 0x05, 0xe3, 0x5d, 0x38, 0xcb, 0x89, 0xa3, 0xf5, 0xf4, 0x7e,
+	0x07, 0x49, 0xe0, 0x7e, 0xd7, 0xc0, 0x0a, 0x2a, 0x6a, 0xbb, 0x0b, 0x8d, 0x92, 0xb0, 0x31, 0xc2,
+	0xf6, 0x36, 0xe8, 0xc7, 0x64, 0xe1, 0x34, 0x7a, 0x5a, 0xbf, 0x83, 0xf8, 0xd2, 0xfe, 0x0b, 0x3a,
+	0x82, 0xf8, 0x34, 0x8c, 0x89, 0xa3, 0x8b, 0x78, 0x15, 0xb0, 0x6d, 0x68, 0x8a, 0x44, 0x53, 0x24,
+	0xc4, 0xda, 0xde, 0x03, 0xf3, 0x2c, 0x67, 0x7e, 0x84, 0x1d, 0x43, 0xf0, 0x2a, 0xc4, 0xe3, 0x6f,
+	0x12, 0x32, 0x27, 0xd8, 0x31, 0x7b, 0x5a, 0xdf, 0x40, 0x0a, 0xd9, 0x0e, 0xb4, 0x5e, 0xcc, 0xc3,
+	0xc9, 0x8c, 0x60, 0xa7, 0x25, 0x12, 0x05, 0xe4, 0xec, 0x2f, 0x67, 0xe1, 0xd4, 0x69, 0x8b, 0xb0,
+	0x58, 0xbb, 0x4f, 0xa1, 0xfb, 0x36, 0x27, 0xe9, 0xc2, 0xc7, 0x88, 0x7c, 0xca, 0x49, 0xc6, 0xf8,
+	0xf9, 0x63, 0xb2, 0xb8, 0xa5, 0xa9, 0x2c, 0xa4, 0x83, 0x0a, 0xc8, 0xcf, 0x07, 0xd1, 0x17, 0x22,
+	0xca, 0x31, 0x90, 0x58, 0xbb, 0xff, 0xc3, 0x56, 0x79, 0x5e, 0x49, 0xf5, 0x77, 0x5d, 0x2a, 0x6b,
+	0xd0, 0xf2, 0x02, 0x1f, 0x0f, 0x19, 0x2d, 0x34, 0x9b, 0x00, 0x04, 0x3e, 0x3e, 0xcf, 0x48, 0x1a,
+	0x10, 0x76, 0x47, 0xb1, 0x5d, 0x30, 0xce, 0x68, 0x36, 0xc2, 0xe2, 0x12, 0x1d, 0x49, 0x60, 0xff,
+	0x09, 0x6d, 0x79, 0x64, 0x84, 0x85, 0x68, 0x3a, 0x2a, 0x31, 0xff, 0x2a, 0x1f, 0x8f, 0xb0, 0xd0,
+	0x4c, 0x47, 0x62, 0xed, 0xfe, 0xd0, 0xc0, 0x94, 0xb7, 0xde, 0xb9, 0x60, 0x0f, 0x4c, 0x45, 0x24,
+	0x6f, 0x30, 0x2b, 0x9a, 0x5a, 0x4f, 0x4a, 0xe9, 0x7d, 0x3c, 0x5e, 0x24, 0xb2, 0x21, 0x06, 0x52,
+	0x88, 0x37, 0x31, 0xb8, 0xa2, 0xb7, 0xe3, 0x28, 0x26, 0x99, 0xe8, 0x8a, 0x81, 0xaa, 0x00, 0x9f,
+	0xae, 0xe7, 0xb3, 0xe8, 0xf2, 0x5a, 0xa6, 0x65, 0x73, 0x6a, 0x11, 0x5e, 0x0c, 0xdf, 0x3c, 0x0c,
+	0x17, 0x99, 0xea, 0x50, 0x89, 0xf9, 0xd9, 0xf3, 0x04, 0x87, 0x8c, 0xf0, 0xad, 0xa2, 0x51, 0x3a,
+	0xaa, 0x45, 0xec, 0x43, 0x68, 0x0e, 0x43, 0x16, 0x3a, 0x9d, 0x9e, 0xd6, 0xb7, 0x06, 0x36, 0x97,
+	0xb6, 0x36, 0xf2, 0x5c, 0x65, 0x91, 0x77, 0xbf, 0x69, 0xf0, 0xc7, 0x9d, 0xdc, 0x3a, 0x2d, 0x54,
+	0x7d, 0x8d, 0xa5, 0xfa, 0x7a, 0xd0, 0x1c, 0x93, 0xcf, 0x4c, 0x68, 0x61, 0x0d, 0x36, 0xbc, 0x80,
+	0x23, 0x1f, 0x73, 0x66, 0x24, 0x32, 0xf6, 0x01, 0x18, 0xa3, 0x38, 0x9c, 0x4a, 0x61, 0xac, 0xc1,
+	0xa6, 0x17, 0x08, 0xa8, 0xf6, 0xc8, 0x9c, 0x7d, 0x08, 0x66, 0x70, 0x1b, 0x25, 0x24, 0x15, 0x1a,
+	0x59, 0x83, 0xae, 0x17, 0x48, 0xac, 0xb6, 0xa9, 0xac, 0xfb, 0x1a, 0xac, 0xda, 0x0d, 0xeb, 0x46,
+	0x62, 0x1c, 0xb1, 0x19, 0x51, 0x36, 0x92, 0x80, 0x8f, 0xe9, 0x49, 0x34, 0xbf, 0x3e, 0x47, 0x27,
+	0xaa, 0x65, 0x05, 0x74, 0xbf, 0x6a, 0xb0, 0x51, 0xff, 0x9c, 0xdf, 0x25, 0xe4, 0x0d, 0x13, 0x74,
+	0x3c, 0x25, 0x9d, 0x59, 0xe2, 0xba, 0xdb, 0x8c, 0x65, 0xb7, 0x39, 0xd0, 0x0a, 0x68, 0xca, 0x4e,
+	0xf3, 0x58, 0xcd, 0x40, 0x01, 0xdd, 0xc7, 0xb0, 0xb9, 0x24, 0x84, 0xfd, 0x2f, 0x98, 0x82, 0x30,
+	0x53, 0x96, 0x59, 0x91, 0x53, 0x25, 0xdd, 0x11, 0xec, 0x04, 0x84, 0x0d, 0xc9, 0xc7, 0x30, 0x9f,
+	0xb1, 0xca, 0xb0, 0xcb, 0xaf, 0x59, 0x63, 0xf5, 0x35, 0x2b, 0x0d, 0xa2, 0xd7, 0x0c, 0xf2, 0x1e,
+	0xb6, 0x03, 0xc2, 0xf8, 0xe8, 0x57, 0x3c, 0x75, 0x93, 0x69, 0x2b, 0x26, 0x5b, 0x6f, 0xcb, 0x75,
+	0xcc, 0x19, 0x58, 0xfc, 0xf7, 0x3e, 0xa4, 0xc5, 0xf1, 0x46, 0x75, 0x9c, 0x5f, 0xe4, 0x63, 0xfe,
+	0x66, 0xca, 0x1e, 0x48, 0xc0, 0x4b, 0x44, 0x84, 0xe5, 0xe9, 0x5c, 0x0c, 0x3f, 0xef, 0x41, 0x1b,
+	0xd5, 0x22, 0x6e, 0x0a, 0x9b, 0x41, 0x78, 0x43, 0xee, 0x57, 0x4b, 0xf9, 0x3e, 0x35, 0xc4, 0x54,
+	0xae, 0xbc, 0x4f, 0xa5, 0xc5, 0xf4, 0x5f, 0x58, 0x2c, 0x86, 0x3d, 0x7e, 0xa7, 0x6c, 0xa4, 0xe8,
+	0xd0, 0x43, 0x6b, 0x3e, 0x28, 0x3e, 0x48, 0x5f, 0x6b, 0x26, 0xf9, 0x6c, 0x5e, 0x40, 0x57, 0x44,
+	0x1f, 0x2e, 0xad, 0x03, 0x2d, 0xc5, 0xa0, 0x1a, 0x56, 0xc0, 0x67, 0xfb, 0xb0, 0x73, 0x49, 0x63,
+	0x6f, 0x1a, 0xb1, 0xab, 0x7c, 0xe2, 0x4d, 0xe9, 0x80, 0x7a, 0x69, 0x72, 0x79, 0xd1, 0xf6, 0x8e,
+	0x9e, 0x88, 0x3f, 0xd0, 0x89, 0x29, 0x7e, 0x1e, 0xfd, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x25, 0x78,
+	0xfe, 0x29, 0x6a, 0x07, 0x00, 0x00,
 }

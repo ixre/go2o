@@ -9,12 +9,14 @@
 package repos
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	adImpl "go2o/core/domain/ad"
 	"go2o/core/domain/interface/ad"
+	"log"
 	"sync"
 )
 
@@ -37,27 +39,41 @@ func NewAdvertisementRepo(o orm.Orm, storage storage.Interface) ad.IAdRepo {
 }
 
 // 获取广告管理器
-func (a *advertisementRepo) GetAdManager() ad.IAdManager {
+func (a *advertisementRepo) GetAdManager() ad.IAdvertisementManager {
 	return adImpl.NewAdManager(a)
 }
 
-// 获取广告分组
-func (a *advertisementRepo) GetAdGroups() []*ad.AdGroup {
-	var list []*ad.AdGroup
-	if err := a.o.Select(&list, ""); err != nil {
-		handleError(err)
-	}
-	return list
+// GetGroups 获取广告分组
+func (a *advertisementRepo) GetGroups() []string {
+	var arr []string
+	a.o.Connector().Query("select distinct(group_name) from ad_position", func(rows *sql.Rows) {
+		var s = ""
+		for rows.Next() {
+			rows.Scan(&s)
+			if len(s) > 0 {
+				arr = append(arr, s)
+			}
+		}
+	})
+	return arr
 }
 
-// 删除广告位分组
-func (a *advertisementRepo) DelAdGroup(id int64) error {
-	return a.o.DeleteByPk(&ad.AdGroup{}, id)
+func (a *advertisementRepo) GetPosition(id int64) ad.IAdPosition {
+	e := ad.Position{}
+	if err := a.o.Get(id, &e); err != nil {
+		handleError(err)
+		return nil
+	}
+	return a.CreateAdPosition(&e)
+}
+
+func (a *advertisementRepo) CreateAdPosition(v *ad.Position) ad.IAdPosition {
+	return adImpl.NewAdPosition(a, v)
 }
 
 // 根据KEY获取广告位
-func (a *advertisementRepo) GetAdPositionByKey(key string) *ad.AdPosition {
-	e := ad.AdPosition{}
+func (a *advertisementRepo) GetAdPositionByKey(key string) *ad.Position {
+	e := ad.Position{}
 	if err := a.o.GetBy(&e, "ad_position.key=$1", key); err != nil {
 		handleError(err)
 		return nil
@@ -66,8 +82,8 @@ func (a *advertisementRepo) GetAdPositionByKey(key string) *ad.AdPosition {
 }
 
 // 根据ID获取广告位
-func (a *advertisementRepo) GetAdPositionById(adPosId int64) *ad.AdPosition {
-	e := ad.AdPosition{}
+func (a *advertisementRepo) GetAdPositionById(adPosId int64) *ad.Position {
+	e := ad.Position{}
 	if err := a.o.Get(adPosId, &e); err != nil {
 		handleError(err)
 		return nil
@@ -76,8 +92,8 @@ func (a *advertisementRepo) GetAdPositionById(adPosId int64) *ad.AdPosition {
 }
 
 // 获取广告位
-func (a *advertisementRepo) GetAdPositionsByGroupId(adGroupId int64) []*ad.AdPosition {
-	var list []*ad.AdPosition
+func (a *advertisementRepo) GetAdPositionsByGroupId(adGroupId int64) []*ad.Position {
+	var list []*ad.Position
 	if err := a.o.Select(&list, "group_id=$1", adGroupId); err != nil {
 		handleError(err)
 	}
@@ -85,8 +101,8 @@ func (a *advertisementRepo) GetAdPositionsByGroupId(adGroupId int64) []*ad.AdPos
 }
 
 // 删除广告位
-func (a *advertisementRepo) DelAdPosition(id int64) error {
-	err := a.o.DeleteByPk(&ad.AdPosition{}, id)
+func (a *advertisementRepo) DeleteAdPosition(id int64) error {
+	err := a.o.DeleteByPk(&ad.Position{}, id)
 	if err == nil {
 		//更新用户的广告缓存
 		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", 0))
@@ -95,18 +111,13 @@ func (a *advertisementRepo) DelAdPosition(id int64) error {
 }
 
 // 保存广告位
-func (a *advertisementRepo) SaveAdPosition(v *ad.AdPosition) (int64, error) {
-	id, err := orm.I64(orm.Save(a.o, v, int(v.ID)))
+func (a *advertisementRepo) SaveAdPosition(v *ad.Position) (int64, error) {
+	id, err := orm.I64(orm.Save(a.o, v, int(v.Id)))
 	if err == nil {
 		//更新用户的广告缓存
 		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", 0))
 	}
 	return id, err
-}
-
-// 保存
-func (a *advertisementRepo) SaveAdGroup(v *ad.AdGroup) (int64, error) {
-	return orm.I64(orm.Save(a.o, v, int(v.ID)))
 }
 
 // 设置用户的广告
@@ -124,6 +135,15 @@ func (a *advertisementRepo) SetUserAd(adUserId, posId, adId int64) error {
 		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", adUserId))
 	}
 	return err
+}
+
+func (a *advertisementRepo) QueryAdList(keyword string, size int) []*ad.Ad {
+	var arr = make([]*ad.Ad, 0)
+	err := a.o.Select(&arr, " name LIKE '%"+keyword+"%' LIMIT $1", size)
+	if err != nil {
+		log.Println("QueryAdList error:", err.Error())
+	}
+	return arr
 }
 
 // 根据名称获取广告编号
@@ -145,7 +165,7 @@ func (a *advertisementRepo) SaveAdValue(v *ad.Ad) (int64, error) {
 }
 
 // 获取超链接广告数据
-func (a *advertisementRepo) GetHyperLinkData(adId int64) *ad.HyperLink {
+func (a *advertisementRepo) GetTextAdData(adId int64) *ad.HyperLink {
 	e := ad.HyperLink{}
 	if err := a.o.GetBy(&e, "ad_id=$1", adId); err != nil {
 		handleError(err)
@@ -155,17 +175,17 @@ func (a *advertisementRepo) GetHyperLinkData(adId int64) *ad.HyperLink {
 }
 
 // 保存超链接广告数据
-func (a *advertisementRepo) SaveHyperLinkData(v *ad.HyperLink) (int64, error) {
+func (a *advertisementRepo) SaveTextAdData(v *ad.HyperLink) (int64, error) {
 	return orm.I64(orm.Save(a.o, v, int(v.Id)))
 }
 
 // 保存广告图片
-func (a *advertisementRepo) SaveAdImageValue(v *ad.Image) (int64, error) {
+func (a *advertisementRepo) SaveImageAdData(v *ad.Image) (int64, error) {
 	return orm.I64(orm.Save(a.o, v, int(v.Id)))
 }
 
 // 获取广告
-func (a *advertisementRepo) GetValueAd(id int64) *ad.Ad {
+func (a *advertisementRepo) GetAd(id int64) *ad.Ad {
 	var e ad.Ad
 	if err := a.o.Get(id, &e); err == nil {
 		return &e
@@ -187,7 +207,7 @@ func (a *advertisementRepo) GetAdByKey(userId int64, key string) *ad.Ad {
 }
 
 // 获取轮播广告
-func (a *advertisementRepo) GetValueGallery(adId int64) ad.ValueGallery {
+func (a *advertisementRepo) GetSwiperAd(adId int64) ad.SwiperAd {
 	var list = []*ad.Image{}
 	if err := a.o.Select(&list, "ad_id=$1 ORDER BY sort_num ASC LIMIT 20", adId); err == nil {
 		return list
@@ -196,7 +216,7 @@ func (a *advertisementRepo) GetValueGallery(adId int64) ad.ValueGallery {
 }
 
 // 获取图片项
-func (a *advertisementRepo) GetValueAdImage(adId, id int64) *ad.Image {
+func (a *advertisementRepo) GetSwiperAdImage(adId, id int64) *ad.Image {
 	var e ad.Image
 	if err := a.o.GetBy(&e, "ad_id=$1 and id=$2", adId, id); err == nil {
 		return &e
@@ -205,13 +225,13 @@ func (a *advertisementRepo) GetValueAdImage(adId, id int64) *ad.Image {
 }
 
 // 删除图片项
-func (a *advertisementRepo) DelAdImage(adId, imgId int64) error {
+func (a *advertisementRepo) DeleteSwiperAdImage(adId, imgId int64) error {
 	_, err := a.o.Delete(ad.Image{}, "ad_id=$1 and id=$2", adId, imgId)
 	return err
 }
 
 // 删除广告
-func (a *advertisementRepo) DelAd(userId, adId int64) error {
+func (a *advertisementRepo) DeleteAd(userId, adId int64) error {
 	_, err := a.o.Delete(ad.Ad{}, "user_id=$1 AND id=$1", userId, adId)
 	if err == nil {
 		//更新用户的广告缓存
@@ -221,13 +241,13 @@ func (a *advertisementRepo) DelAd(userId, adId int64) error {
 }
 
 // 删除广告的图片数据
-func (a *advertisementRepo) DelImageDataForAdvertisement(adId int64) error {
+func (a *advertisementRepo) DeleteImageAdData(adId int64) error {
 	_, err := a.o.Delete(ad.Image{}, "ad_id=$1", adId)
 	return err
 }
 
 // 删除广告的文字数据
-func (a *advertisementRepo) DelTextDataForAdvertisement(adId int64) error {
+func (a *advertisementRepo) DeleteTextAdData(adId int64) error {
 	_, err := a.o.Delete(ad.HyperLink{}, "ad_id=$1", adId)
 	return err
 }

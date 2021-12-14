@@ -33,7 +33,7 @@ func SendMail(server, host, user, pwd, from string, subject string, to []string,
 	header["To"] = strings.Join(to, ";")
 	header["Subject"] = fmt.Sprintf("= ?UTF-8?B?%s?=", base64.StdEncoding.EncodeToString([]byte(subject)))
 	header["MIME-Version"] = "1.0"
-	header["Content-Type"] = "text/html; charset=utf-8"
+	header["Content-AdType"] = "text/html; charset=utf-8"
 	header["Content-Transfer-Charset"] = "base64"
 
 	message := ""

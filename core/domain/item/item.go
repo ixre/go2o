@@ -439,13 +439,13 @@ func (i *itemImpl) GetPromotionDescribe() map[string]string {
 				i.promDescribes[key] = txt + ";" + v.GetValue().ShortName
 			}
 
-			//			if v.Type() == promotion.TypeFlagCashBack {
+			//			if v.AdType() == promotion.TypeFlagCashBack {
 			//				if txt, ok := i._promDescribes[key]; !ok {
 			//					i._promDescribes[key] = v.Value().ShortName
 			//				} else {
 			//					i._promDescribes[key] = txt + ";" + v.Value().ShortName
 			//				}
-			//			} else if v.Type() == promotion.TypeFlagCoupon {
+			//			} else if v.AdType() == promotion.TypeFlagCoupon {
 			//				if txt, ok := i._promDescribes[key]; !ok {
 			//					i._promDescribes[key] = v.Value().ShortName
 			//				} else {

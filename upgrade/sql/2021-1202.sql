@@ -325,3 +325,130 @@ ALTER TABLE IF EXISTS public.portal_nav
 
 COMMENT ON COLUMN public.portal_nav.nav_group
     IS '导航分组';
+
+/** 2012-12-13 */
+
+COMMENT ON TABLE public.ad_group
+  IS '广告分组';
+
+COMMENT ON COLUMN public.ad_group.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_group.name
+    IS '名称';
+
+COMMENT ON COLUMN public.ad_group.opened
+    IS '是否开放';
+
+COMMENT ON COLUMN public.ad_group.enabled
+    IS '是否启用';
+
+ALTER TABLE IF EXISTS public.ad_group
+    ADD COLUMN flag integer NOT NULL DEFAULT 0;
+
+ALTER TABLE IF EXISTS public.ad_group
+    ADD COLUMN flag integer NOT NULL DEFAULT 0;
+
+ALTER TABLE IF EXISTS public.ad_position
+    ADD COLUMN flag integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.ad_position.flag
+    IS '标志';
+
+
+ALTER TABLE IF EXISTS public.ad_position
+    ADD COLUMN group_name character varying(20) NOT NULL DEFAULT '';
+
+COMMENT ON COLUMN public.ad_position.group_name
+    IS '分组名称';
+
+
+COMMENT ON TABLE public.ad_position
+  IS '广告位';
+
+COMMENT ON COLUMN public.ad_position.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_position.key
+    IS '广告位编码';
+
+COMMENT ON COLUMN public.ad_position.name
+    IS '广告位名称';
+
+ALTER TABLE IF EXISTS public.ad_position
+    RENAME default_id TO put_aid;
+
+COMMENT ON COLUMN public.ad_position.put_aid
+    IS '投放的广告编号';
+
+COMMENT ON TABLE public.ad_list
+  IS '广告列表';
+
+COMMENT ON COLUMN public.ad_list.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_list.user_id
+    IS '用户编号';
+
+COMMENT ON COLUMN public.ad_list.name
+    IS '广告名称';
+
+COMMENT ON COLUMN public.ad_list.type_id
+    IS '广告类型';
+
+COMMENT ON COLUMN public.ad_list.show_times
+    IS '展现次数';
+
+COMMENT ON COLUMN public.ad_list.click_times
+    IS '点击次数';
+
+COMMENT ON COLUMN public.ad_list.show_days
+    IS '显示天数';
+
+COMMENT ON COLUMN public.ad_list.update_time
+    IS '更新时间';
+
+/** 2021-12-14 */
+DROP TABLE IF EXISTS public.ad_image_ad;
+DROP TABLE IF EXISTS public.ad_group;
+
+COMMENT ON TABLE public.ad_image
+  IS '广告图片';
+
+COMMENT ON COLUMN public.ad_image.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_image.ad_id
+    IS '广告编号';
+
+COMMENT ON COLUMN public.ad_image.title
+    IS '标题';
+
+COMMENT ON COLUMN public.ad_image.link_url
+    IS '链接地址';
+
+COMMENT ON COLUMN public.ad_image.image_url
+    IS '图片地址';
+
+COMMENT ON COLUMN public.ad_image.sort_num
+    IS '排列序号';
+
+COMMENT ON COLUMN public.ad_image.enabled
+    IS '是否启用';
+
+COMMENT ON TABLE public.ad_hyperlink
+  IS '文本广告';
+
+COMMENT ON COLUMN public.ad_hyperlink.id
+    IS '编号';
+
+COMMENT ON COLUMN public.ad_hyperlink.ad_id
+    IS '广告编号';
+
+COMMENT ON COLUMN public.ad_hyperlink.title
+    IS '标题';
+
+COMMENT ON COLUMN public.ad_hyperlink.link_url
+    IS '链接地址';
+
+ALTER TABLE IF EXISTS public.ad_position DROP COLUMN IF EXISTS group_id;

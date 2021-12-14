@@ -46,8 +46,7 @@ func OrmMapping(orm orm.Orm) {
 	orm.Mapping(ad.Ad{}, "ad_list")
 	orm.Mapping(ad.Image{}, "ad_image")
 	orm.Mapping(ad.HyperLink{}, "ad_hyperlink")
-	orm.Mapping(ad.AdGroup{}, "ad_group")
-	orm.Mapping(ad.AdPosition{}, "ad_position")
+	orm.Mapping(ad.Position{}, "ad_position")
 	orm.Mapping(ad.AdUserSet{}, "ad_userset")
 
 	// MSS

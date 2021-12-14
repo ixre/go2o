@@ -16,18 +16,21 @@ import (
 )
 
 var _ ad.IUserAd = new(userAdImpl)
-var _ ad.IAdGroup = new(AdGroupImpl)
-var _ ad.IAdManager = new(adManagerImpl)
+var _ ad.IAdvertisementManager = new(adManagerImpl)
 
 type adManagerImpl struct {
 	rep       ad.IAdRepo
 	defaultAd ad.IUserAd
-	groups    []ad.IAdGroup
 	mux       sync.Mutex
 	cache     map[string]ad.IAd
 }
 
-func NewAdManager(rep ad.IAdRepo) ad.IAdManager {
+// GetGroups 获取广告分组
+func (a *adManagerImpl) GetGroups() []string {
+	return a.rep.GetGroups()
+}
+
+func NewAdManager(rep ad.IAdRepo) ad.IAdvertisementManager {
 	a := &adManagerImpl{
 		rep: rep,
 	}
@@ -35,63 +38,17 @@ func NewAdManager(rep ad.IAdRepo) ad.IAdManager {
 	return a
 }
 
-// 获取广告分组
-func (a *adManagerImpl) GetAdGroups() []ad.IAdGroup {
-	if a.groups == nil {
-		list := a.rep.GetAdGroups()
-		a.groups = make([]ad.IAdGroup, len(list))
-		for i, v := range list {
-			a.groups[i] = newAdGroup(a, a.rep, v)
-		}
-	}
-	return a.groups
-}
-
-// 获取单个广告分组
-func (a *adManagerImpl) GetAdGroup(id int64) ad.IAdGroup {
-	list := a.GetAdGroups()
-	for _, v := range list {
-		if v.GetDomainId() == id {
-			return v
-		}
-	}
-	return nil
-}
-
-// 删除广告位分组
-func (a *adManagerImpl) DelAdGroup(id int64) error {
-	g := a.GetAdGroup(id)
-	if g == nil {
-		return ad.ErrNoSuchAdGroup
-	}
-	if len(g.GetPositions()) > 0 {
-		return ad.ErrNotEmptyGroup
-	}
-	a.groups = nil
-	return a.rep.DelAdGroup(id)
-}
-
-// 创建广告位分组
-func (a *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
-	return newAdGroup(a, a.rep, &ad.AdGroup{
-		ID:      0,
-		Name:    name,
-		Opened:  1,
-		Enabled: 1,
-	})
+func (a *adManagerImpl) QueryAd(keyword string, size int) []*ad.Ad {
+	return a.rep.QueryAdList(keyword, size)
 }
 
 // 根据编号获取广告位
-func (a *adManagerImpl) GetAdPositionById(id int64) *ad.AdPosition {
-	e := ad.AdPosition{}
-	if tmp.Orm.Get(id, &e) == nil {
-		return &e
-	}
-	return nil
+func (a *adManagerImpl) GetPosition(id int64) ad.IAdPosition {
+	return a.rep.GetPosition(id)
 }
 
 // 根据KEY获取广告位
-func (a *adManagerImpl) GetAdPositionByKey(key string) *ad.AdPosition {
+func (a *adManagerImpl) GetPositionByKey(key string) *ad.Position {
 	return a.rep.GetAdPositionByKey(key)
 }
 
@@ -109,9 +66,9 @@ func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAd {
 		return iv
 	}
 
-	pos := a.GetAdPositionByKey(key)
-	if pos != nil && pos.DefaultId > 0 {
-		iv = a.defaultAd.GetById(pos.DefaultId)
+	pos := a.GetPositionByKey(key)
+	if pos != nil && pos.PutAdId > 0 {
+		iv = a.defaultAd.GetById(pos.PutAdId)
 	}
 	if iv != nil {
 		a.cache[key] = iv
@@ -124,132 +81,15 @@ func (a *adManagerImpl) GetUserAd(adUserId int64) ad.IUserAd {
 	return newUserAd(a, a.rep, adUserId)
 }
 
-type AdGroupImpl struct {
-	_rep       ad.IAdRepo
-	_manager   *adManagerImpl
-	_value     *ad.AdGroup
-	_positions []*ad.AdPosition
-}
-
-func newAdGroup(m *adManagerImpl, rep ad.IAdRepo, v *ad.AdGroup) ad.IAdGroup {
-	return &AdGroupImpl{
-		_rep:     rep,
-		_manager: m,
-		_value:   v,
-	}
-}
-
-// 获取领域编号
-func (a *AdGroupImpl) GetDomainId() int64 {
-	return a._value.ID
-}
-
-// 获取值
-func (a *AdGroupImpl) GetValue() ad.AdGroup {
-	return *a._value
-}
-
-// 设置值
-func (a *AdGroupImpl) SetValue(v *ad.AdGroup) error {
-	if v != nil {
-		a._value.Name = v.Name
-		a._value.Enabled = v.Enabled
-		a._value.Opened = v.Opened
-	}
-	return nil
-}
-
-// 获取广告位
-func (a *AdGroupImpl) GetPositions() []*ad.AdPosition {
-	if a._positions == nil {
-		a._positions = a._rep.GetAdPositionsByGroupId(a.GetDomainId())
-	}
-	return a._positions
-}
-
-// 根据Id获取广告位
-func (a *AdGroupImpl) GetPosition(id int64) *ad.AdPosition {
-	for _, v := range a.GetPositions() {
-		if v.ID == id {
-			return v
-		}
-	}
-	return nil
-}
-
-// 删除广告位
-func (a *AdGroupImpl) DelPosition(id int64) error {
-	//todo: 广告位已投放广告,不允许删除
-	//if a.getAdPositionBindNum(id) > 0{
-	//	return ad.err
-	//}
-	a._positions = nil
-	a._manager.cache = nil
-	return a._rep.DelAdPosition(id)
-}
-
-// 保存广告位
-func (ag *AdGroupImpl) SavePosition(a *ad.AdPosition) (int64, error) {
-	if pos := ag._manager.GetAdPositionByKey(a.Key); pos != nil && pos.ID != a.ID {
-		return 0, ad.ErrKeyExists
-	}
-	a.GroupId = ag.GetDomainId()
-	ag._positions = nil
-	ag._manager.cache = nil
-	return ag._rep.SaveAdPosition(a)
-}
-
-// 保存,需调用Save()保存
-func (a *AdGroupImpl) Save() (int64, error) {
-	return a._rep.SaveAdGroup(a._value)
-}
-
-// 开放,需调用Save()保存
-func (a *AdGroupImpl) Open() error {
-	a._value.Opened = 1
-	return nil
-}
-
-// 关闭,需调用Save()保存
-func (a *AdGroupImpl) Close() error {
-	a._value.Opened = 0
-	return nil
-}
-
-// 启用,需调用Save()保存
-func (a *AdGroupImpl) Enabled() error {
-	a._value.Enabled = 1
-	return nil
-}
-
-// 禁用,需调用Save()保存
-func (a *AdGroupImpl) Disabled() error {
-	a._value.Enabled = 0
-	return nil
-}
-
-// 设置默认广告
-func (a *AdGroupImpl) SetDefault(adPosId int64, adId int64) error {
-	if v := a.GetPosition(adPosId); v != nil {
-		// if a._rep.GetValueAdvertisement()
-		//todo: 检测广告是否存在
-		v.DefaultId = adId
-		_, err := a.SavePosition(v)
-		a._manager.cache = nil
-		return err
-	}
-	return ad.ErrNoSuchAd
-}
-
 type userAdImpl struct {
 	_rep      ad.IAdRepo
-	_manager  ad.IAdManager
+	_manager  ad.IAdvertisementManager
 	_adUserId int64
 	_cache    map[string]ad.IAd
 	_mux      sync.Mutex
 }
 
-func newUserAd(m ad.IAdManager, rep ad.IAdRepo, adUserId int64) ad.IUserAd {
+func newUserAd(m ad.IAdvertisementManager, rep ad.IAdRepo, adUserId int64) ad.IUserAd {
 	return &userAdImpl{
 		_rep:      rep,
 		_manager:  m,
@@ -264,7 +104,7 @@ func (a *userAdImpl) GetAggregateRootId() int64 {
 
 // 根据编号获取广告
 func (a *userAdImpl) GetById(id int64) ad.IAd {
-	v := a._rep.GetValueAd(id)
+	v := a._rep.GetAd(id)
 	if v != nil {
 		return a.CreateAd(v)
 	}
@@ -272,15 +112,16 @@ func (a *userAdImpl) GetById(id int64) ad.IAd {
 }
 
 // 获取广告关联的广告位
-func (a *userAdImpl) GetAdPositionsByAdId(adId int64) []*ad.AdPosition {
-	var list []*ad.AdPosition
-	for _, v := range a._manager.GetAdGroups() {
-		for _, p := range v.GetPositions() {
-			if p.DefaultId == adId {
-				list = append(list, p)
-			}
-		}
-	}
+func (a *userAdImpl) GetAdPositionsByAdId(adId int64) []*ad.Position {
+	var list []*ad.Position
+	//todo:
+	//for _, v := range a._manager.GetAdGroups() {
+	//	for _, p := range v.GetPositions() {
+	//		if p.PutAdId == adId {
+	//			list = append(list, p)
+	//		}
+	//	}
+	//}
 	return list
 }
 
@@ -291,9 +132,9 @@ func (a *userAdImpl) DeleteAd(adId int64) error {
 		if len(a.GetAdPositionsByAdId(adId)) > 0 {
 			return ad.ErrAdUsed
 		}
-		err := a._rep.DelAd(a._adUserId, adId)
-		a._rep.DelImageDataForAdvertisement(adId)
-		a._rep.DelTextDataForAdvertisement(adId)
+		err := a._rep.DeleteAd(a._adUserId, adId)
+		a._rep.DeleteImageAdData(adId)
+		a._rep.DeleteTextAdData(adId)
 		if err == nil {
 			a._cache = nil
 		}
@@ -335,13 +176,13 @@ func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAd {
 		_rep:   a._rep,
 		_value: v,
 	}
-	switch v.Type {
-	case ad.TypeGallery:
+	switch v.AdType {
+	case ad.TypeSwiper:
 		// 轮播广告
 		return &GalleryAd{
 			adImpl: adv,
 		}
-	case ad.TypeHyperLink:
+	case ad.TypeText:
 		// 文本广告
 		return &HyperLinkAdImpl{
 			adImpl: adv,
@@ -365,17 +206,17 @@ func (a *userAdImpl) checkPositionBind(posId int64, adId int64) bool {
 
 // 设置广告
 func (a *userAdImpl) SetAd(posId, adId int64) error {
-	ap := a._manager.GetAdPositionById(posId)
+	ap := a._manager.GetPosition(posId)
 	if ap == nil {
 		return ad.ErrNoSuchAdPosition
 	}
-	if ap.Opened == 0 {
+	if ap.GetValue().Opened == 0 {
 		return ad.ErrNotOpened
 	}
 	if !a.checkPositionBind(posId, adId) {
 		return ad.ErrUserPositionIsBind
 	}
-	if a._rep.GetValueAd(adId) == nil {
+	if a._rep.GetAd(adId) == nil {
 		return ad.ErrNoSuchAd
 	}
 	err := a._rep.SetUserAd(a.GetAggregateRootId(), posId, adId)
@@ -407,7 +248,7 @@ func (a *adImpl) System() bool {
 
 // 广告类型
 func (a *adImpl) Type() int {
-	return a._value.Type
+	return a._value.AdType
 }
 
 // 广告名称
@@ -417,10 +258,10 @@ func (a *adImpl) Name() string {
 
 // 设置值
 func (a *adImpl) SetValue(v *ad.Ad) error {
-	if v.Type == 0 {
+	if v.AdType == 0 {
 		return ad.ErrAdType
 	}
-	if v.Type != a.Type() {
+	if v.AdType != a.Type() {
 		return ad.ErrDisallowModifyAdType
 	}
 	a._value.Name = v.Name
@@ -463,7 +304,7 @@ func (a *adImpl) AddShowDays(days int) error {
 // 转换为数据传输对象
 func (a *adImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   a.GetDomainId(),
-		Type: a.Type(),
+		Id:     a.GetDomainId(),
+		AdType: a.Type(),
 	}
 }

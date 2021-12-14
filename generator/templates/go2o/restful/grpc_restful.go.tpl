@@ -10,7 +10,6 @@ package restful
 
 import (
   "context"
-  "encoding/json"
   "github.com/ixre/gof/types/typeconv"
   "github.com/labstack/echo/v4"
   "{{pkg "go" .global.pkg}}/service"

@@ -71,7 +71,7 @@ func (r fdApi) adApi(ctx api.Context) *api.Response {
 	userId := ctx.Request().Params.GetInt("user_id")
 	namesParams := strings.TrimSpace(posKeys)
 	names := strings.Split(namesParams, "|")
-	result := make(map[string]*proto.SAdDto, len(names))
+	result := make(map[string]*proto.SAdvertisementDto, len(names))
 	key := fmt.Sprintf("go2o:repo:ad:%d:front:%s", userId,
 		domain.Md5(namesParams))
 	rds := gof.CurrentApp.Storage()
@@ -85,16 +85,17 @@ func (r fdApi) adApi(ctx api.Context) *api.Response {
 		//从缓存中读取
 		for _, n := range names {
 			//分别绑定广告
-			dto, _ := cli.GetAdAndDataByKey(context.TODO(),
-				&proto.AdKeyRequest{
-					AdUserId: int64(userId),
-					AdPosKey: n,
+			dto, _ := cli.GetAdvertisement(context.TODO(),
+				&proto.AdIdRequest{
+					AdUserId:   int64(userId),
+					AdKey:      n,
+					ReturnData: true,
 				})
 			if dto == nil {
 				result[n] = nil
 				continue
 			}
-			result[n] = dto
+			result[n] = dto.Data
 		}
 		regArr := []string{registry.CacheAdMaxAge}
 		trans2, cli2, _ := service.RegistryServiceClient()

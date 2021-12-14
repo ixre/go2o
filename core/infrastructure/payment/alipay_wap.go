@@ -186,7 +186,7 @@ func (this *AliPayWap) CreateGateway(orderNo string, fee float32, subject,
 	sSign := this.sign(urls.Encode())
 	sHtml := `<html>
 		<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta http-equiv="Content-AdType" content="text/html; charset=utf-8">
 		</head>
 		<body>
 		<form id="alipaysubmit" name="alipaysubmit" enctype="multipart/form-data" action="`

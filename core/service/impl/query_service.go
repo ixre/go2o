@@ -38,7 +38,7 @@ func NewQueryService(o orm.Orm, s storage.Interface) *queryService {
 	}
 }
 
-// 获取分页店铺数据
+// PagingShops 获取分页店铺数据
 func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRequest) (*proto.QueryPagingShopsResponse, error) {
 	n, rows := q.shopQuery.PagedOnBusinessOnlineShops(
 		int(r.Params.Begin),
@@ -46,7 +46,7 @@ func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRe
 		"", r.Params.SortBy)
 	ret := &proto.QueryPagingShopsResponse{
 		Total: int64(n),
-		Value: make([]*proto.QueryPagingShop, n),
+		Value: make([]*proto.QueryPagingShop, len(rows)),
 	}
 	if len(rows) > 0 {
 		for i, v := range rows {
@@ -78,7 +78,7 @@ func (q *queryService) MemberNormalOrders(_ context.Context, r *proto.MemberOrde
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.SPagedMemberSubOrder, n),
+		Value: make([]*proto.SPagedMemberSubOrder, len(list)),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseOrder(v)
@@ -97,7 +97,7 @@ func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOr
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.SPagedMemberSubOrder, n),
+		Value: make([]*proto.SPagedMemberSubOrder, len(list)),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseOrder(v)
@@ -116,7 +116,7 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.SPagedMemberSubOrder, n),
+		Value: make([]*proto.SPagedMemberSubOrder, len(list)),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseTradeOrder(v)

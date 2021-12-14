@@ -35,35 +35,28 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AdvertisementServiceClient interface {
-	GetAdGroupById(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SAdGroup, error)
-	DelAdGroup(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
-	SaveAdGroup(ctx context.Context, in *SAdGroup, opts ...grpc.CallOption) (*Result, error)
-	GetGroups(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*AdGroupListResponse, error)
+	GetGroups(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*AdGroupResponse, error)
 	GetPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*SAdPosition, error)
 	SaveAdPosition(ctx context.Context, in *SAdPosition, opts ...grpc.CallOption) (*Result, error)
-	DelAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*Result, error)
-	// 设置广告位的默认广告
-	SetDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*Result, error)
+	DeleteAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*Result, error)
+	// 投放广告位的默认广告
+	PutDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*Result, error)
+	// 查询广告
+	QueryAd(ctx context.Context, in *QueryAdRequest, opts ...grpc.CallOption) (*QueryAdResponse, error)
 	// 用户投放广告
 	SetUserAd(ctx context.Context, in *SetUserAdRequest, opts ...grpc.CallOption) (*Result, error)
-	// 获取广告
-	GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAd, error)
-	// 获取广告及广告数据, 用于展示关高
-	GetAdAndDataByKey(ctx context.Context, in *AdKeyRequest, opts ...grpc.CallOption) (*SAdDto, error)
-	// 获取广告数据传输对象
-	GetAdDto_(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAdDto, error)
+	// 获取广告,returnData=true返回数据传输对象
+	GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAdDto, error)
 	// 保存广告,更新时不允许修改类型
 	SaveAd(ctx context.Context, in *SaveAdRequest, opts ...grpc.CallOption) (*Result, error)
 	// 删除广告
 	DeleteAd(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*Result, error)
 	// 保存图片广告
-	SaveHyperLinkAd(ctx context.Context, in *SaveLinkAdRequest, opts ...grpc.CallOption) (*Result, error)
-	// 保存图片广告
-	SaveImagOfAd(ctx context.Context, in *SaveImageAdRequest, opts ...grpc.CallOption) (*Result, error)
+	SaveSwiperAdImage(ctx context.Context, in *SaveSwiperImageRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取广告图片
-	GetValueAdImage(ctx context.Context, in *ImageAdIdRequest, opts ...grpc.CallOption) (*SImage, error)
+	GetSwiperAdImage(ctx context.Context, in *ImageIdRequest, opts ...grpc.CallOption) (*SImageAdData, error)
 	// 删除广告图片
-	DelAdImage(ctx context.Context, in *ImageAdIdRequest, opts ...grpc.CallOption) (*Result, error)
+	DeleteSwiperAdImage(ctx context.Context, in *ImageIdRequest, opts ...grpc.CallOption) (*Result, error)
 }
 
 type advertisementServiceClient struct {
@@ -74,35 +67,8 @@ func NewAdvertisementServiceClient(cc *grpc.ClientConn) AdvertisementServiceClie
 	return &advertisementServiceClient{cc}
 }
 
-func (c *advertisementServiceClient) GetAdGroupById(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SAdGroup, error) {
-	out := new(SAdGroup)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/GetAdGroupById", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *advertisementServiceClient) DelAdGroup(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/DelAdGroup", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *advertisementServiceClient) SaveAdGroup(ctx context.Context, in *SAdGroup, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/SaveAdGroup", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *advertisementServiceClient) GetGroups(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*AdGroupListResponse, error) {
-	out := new(AdGroupListResponse)
+func (c *advertisementServiceClient) GetGroups(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*AdGroupResponse, error) {
+	out := new(AdGroupResponse)
 	err := c.cc.Invoke(ctx, "/AdvertisementService/GetGroups", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -128,18 +94,27 @@ func (c *advertisementServiceClient) SaveAdPosition(ctx context.Context, in *SAd
 	return out, nil
 }
 
-func (c *advertisementServiceClient) DelAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*Result, error) {
+func (c *advertisementServiceClient) DeleteAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/DelAdPosition", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AdvertisementService/DeleteAdPosition", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *advertisementServiceClient) SetDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *advertisementServiceClient) PutDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/SetDefaultAd", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AdvertisementService/PutDefaultAd", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *advertisementServiceClient) QueryAd(ctx context.Context, in *QueryAdRequest, opts ...grpc.CallOption) (*QueryAdResponse, error) {
+	out := new(QueryAdResponse)
+	err := c.cc.Invoke(ctx, "/AdvertisementService/QueryAd", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -155,27 +130,9 @@ func (c *advertisementServiceClient) SetUserAd(ctx context.Context, in *SetUserA
 	return out, nil
 }
 
-func (c *advertisementServiceClient) GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAd, error) {
-	out := new(SAd)
+func (c *advertisementServiceClient) GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAdDto, error) {
+	out := new(SAdDto)
 	err := c.cc.Invoke(ctx, "/AdvertisementService/GetAdvertisement", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *advertisementServiceClient) GetAdAndDataByKey(ctx context.Context, in *AdKeyRequest, opts ...grpc.CallOption) (*SAdDto, error) {
-	out := new(SAdDto)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/GetAdAndDataByKey", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *advertisementServiceClient) GetAdDto_(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAdDto, error) {
-	out := new(SAdDto)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/GetAdDto_", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -200,36 +157,27 @@ func (c *advertisementServiceClient) DeleteAd(ctx context.Context, in *AdIdReque
 	return out, nil
 }
 
-func (c *advertisementServiceClient) SaveHyperLinkAd(ctx context.Context, in *SaveLinkAdRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *advertisementServiceClient) SaveSwiperAdImage(ctx context.Context, in *SaveSwiperImageRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/SaveHyperLinkAd", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AdvertisementService/SaveSwiperAdImage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *advertisementServiceClient) SaveImagOfAd(ctx context.Context, in *SaveImageAdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/SaveImagOfAd", in, out, opts...)
+func (c *advertisementServiceClient) GetSwiperAdImage(ctx context.Context, in *ImageIdRequest, opts ...grpc.CallOption) (*SImageAdData, error) {
+	out := new(SImageAdData)
+	err := c.cc.Invoke(ctx, "/AdvertisementService/GetSwiperAdImage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *advertisementServiceClient) GetValueAdImage(ctx context.Context, in *ImageAdIdRequest, opts ...grpc.CallOption) (*SImage, error) {
-	out := new(SImage)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/GetValueAdImage", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *advertisementServiceClient) DelAdImage(ctx context.Context, in *ImageAdIdRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *advertisementServiceClient) DeleteSwiperAdImage(ctx context.Context, in *ImageIdRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/AdvertisementService/DelAdImage", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/AdvertisementService/DeleteSwiperAdImage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -238,93 +186,32 @@ func (c *advertisementServiceClient) DelAdImage(ctx context.Context, in *ImageAd
 
 // AdvertisementServiceServer is the server API for AdvertisementService service.
 type AdvertisementServiceServer interface {
-	GetAdGroupById(context.Context, *Int64) (*SAdGroup, error)
-	DelAdGroup(context.Context, *Int64) (*Result, error)
-	SaveAdGroup(context.Context, *SAdGroup) (*Result, error)
-	GetGroups(context.Context, *Empty) (*AdGroupListResponse, error)
+	GetGroups(context.Context, *Empty) (*AdGroupResponse, error)
 	GetPosition(context.Context, *AdPositionId) (*SAdPosition, error)
 	SaveAdPosition(context.Context, *SAdPosition) (*Result, error)
-	DelAdPosition(context.Context, *AdPositionId) (*Result, error)
-	// 设置广告位的默认广告
-	SetDefaultAd(context.Context, *SetDefaultAdRequest) (*Result, error)
+	DeleteAdPosition(context.Context, *AdPositionId) (*Result, error)
+	// 投放广告位的默认广告
+	PutDefaultAd(context.Context, *SetDefaultAdRequest) (*Result, error)
+	// 查询广告
+	QueryAd(context.Context, *QueryAdRequest) (*QueryAdResponse, error)
 	// 用户投放广告
 	SetUserAd(context.Context, *SetUserAdRequest) (*Result, error)
-	// 获取广告
-	GetAdvertisement(context.Context, *AdIdRequest) (*SAd, error)
-	// 获取广告及广告数据, 用于展示关高
-	GetAdAndDataByKey(context.Context, *AdKeyRequest) (*SAdDto, error)
-	// 获取广告数据传输对象
-	GetAdDto_(context.Context, *AdIdRequest) (*SAdDto, error)
+	// 获取广告,returnData=true返回数据传输对象
+	GetAdvertisement(context.Context, *AdIdRequest) (*SAdDto, error)
 	// 保存广告,更新时不允许修改类型
 	SaveAd(context.Context, *SaveAdRequest) (*Result, error)
 	// 删除广告
 	DeleteAd(context.Context, *AdIdRequest) (*Result, error)
 	// 保存图片广告
-	SaveHyperLinkAd(context.Context, *SaveLinkAdRequest) (*Result, error)
-	// 保存图片广告
-	SaveImagOfAd(context.Context, *SaveImageAdRequest) (*Result, error)
+	SaveSwiperAdImage(context.Context, *SaveSwiperImageRequest) (*Result, error)
 	// 获取广告图片
-	GetValueAdImage(context.Context, *ImageAdIdRequest) (*SImage, error)
+	GetSwiperAdImage(context.Context, *ImageIdRequest) (*SImageAdData, error)
 	// 删除广告图片
-	DelAdImage(context.Context, *ImageAdIdRequest) (*Result, error)
+	DeleteSwiperAdImage(context.Context, *ImageIdRequest) (*Result, error)
 }
 
 func RegisterAdvertisementServiceServer(s *grpc.Server, srv AdvertisementServiceServer) {
 	s.RegisterService(&_AdvertisementService_serviceDesc, srv)
-}
-
-func _AdvertisementService_GetAdGroupById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int64)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).GetAdGroupById(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/AdvertisementService/GetAdGroupById",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).GetAdGroupById(ctx, req.(*Int64))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdvertisementService_DelAdGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int64)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).DelAdGroup(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/AdvertisementService/DelAdGroup",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).DelAdGroup(ctx, req.(*Int64))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdvertisementService_SaveAdGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SAdGroup)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).SaveAdGroup(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/AdvertisementService/SaveAdGroup",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).SaveAdGroup(ctx, req.(*SAdGroup))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _AdvertisementService_GetGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -381,38 +268,56 @@ func _AdvertisementService_SaveAdPosition_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdvertisementService_DelAdPosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AdvertisementService_DeleteAdPosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AdPositionId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).DelAdPosition(ctx, in)
+		return srv.(AdvertisementServiceServer).DeleteAdPosition(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AdvertisementService/DelAdPosition",
+		FullMethod: "/AdvertisementService/DeleteAdPosition",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).DelAdPosition(ctx, req.(*AdPositionId))
+		return srv.(AdvertisementServiceServer).DeleteAdPosition(ctx, req.(*AdPositionId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdvertisementService_SetDefaultAd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AdvertisementService_PutDefaultAd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetDefaultAdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).SetDefaultAd(ctx, in)
+		return srv.(AdvertisementServiceServer).PutDefaultAd(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AdvertisementService/SetDefaultAd",
+		FullMethod: "/AdvertisementService/PutDefaultAd",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).SetDefaultAd(ctx, req.(*SetDefaultAdRequest))
+		return srv.(AdvertisementServiceServer).PutDefaultAd(ctx, req.(*SetDefaultAdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdvertisementService_QueryAd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdvertisementServiceServer).QueryAd(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AdvertisementService/QueryAd",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdvertisementServiceServer).QueryAd(ctx, req.(*QueryAdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -453,42 +358,6 @@ func _AdvertisementService_GetAdvertisement_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdvertisementService_GetAdAndDataByKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AdKeyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).GetAdAndDataByKey(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/AdvertisementService/GetAdAndDataByKey",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).GetAdAndDataByKey(ctx, req.(*AdKeyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdvertisementService_GetAdDto__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AdIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).GetAdDto_(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/AdvertisementService/GetAdDto_",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).GetAdDto_(ctx, req.(*AdIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AdvertisementService_SaveAd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SaveAdRequest)
 	if err := dec(in); err != nil {
@@ -525,74 +394,56 @@ func _AdvertisementService_DeleteAd_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdvertisementService_SaveHyperLinkAd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveLinkAdRequest)
+func _AdvertisementService_SaveSwiperAdImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveSwiperImageRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).SaveHyperLinkAd(ctx, in)
+		return srv.(AdvertisementServiceServer).SaveSwiperAdImage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AdvertisementService/SaveHyperLinkAd",
+		FullMethod: "/AdvertisementService/SaveSwiperAdImage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).SaveHyperLinkAd(ctx, req.(*SaveLinkAdRequest))
+		return srv.(AdvertisementServiceServer).SaveSwiperAdImage(ctx, req.(*SaveSwiperImageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdvertisementService_SaveImagOfAd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveImageAdRequest)
+func _AdvertisementService_GetSwiperAdImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImageIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).SaveImagOfAd(ctx, in)
+		return srv.(AdvertisementServiceServer).GetSwiperAdImage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AdvertisementService/SaveImagOfAd",
+		FullMethod: "/AdvertisementService/GetSwiperAdImage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).SaveImagOfAd(ctx, req.(*SaveImageAdRequest))
+		return srv.(AdvertisementServiceServer).GetSwiperAdImage(ctx, req.(*ImageIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdvertisementService_GetValueAdImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ImageAdIdRequest)
+func _AdvertisementService_DeleteSwiperAdImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImageIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).GetValueAdImage(ctx, in)
+		return srv.(AdvertisementServiceServer).DeleteSwiperAdImage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AdvertisementService/GetValueAdImage",
+		FullMethod: "/AdvertisementService/DeleteSwiperAdImage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).GetValueAdImage(ctx, req.(*ImageAdIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdvertisementService_DelAdImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ImageAdIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).DelAdImage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/AdvertisementService/DelAdImage",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).DelAdImage(ctx, req.(*ImageAdIdRequest))
+		return srv.(AdvertisementServiceServer).DeleteSwiperAdImage(ctx, req.(*ImageIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -601,18 +452,6 @@ var _AdvertisementService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "AdvertisementService",
 	HandlerType: (*AdvertisementServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetAdGroupById",
-			Handler:    _AdvertisementService_GetAdGroupById_Handler,
-		},
-		{
-			MethodName: "DelAdGroup",
-			Handler:    _AdvertisementService_DelAdGroup_Handler,
-		},
-		{
-			MethodName: "SaveAdGroup",
-			Handler:    _AdvertisementService_SaveAdGroup_Handler,
-		},
 		{
 			MethodName: "GetGroups",
 			Handler:    _AdvertisementService_GetGroups_Handler,
@@ -626,12 +465,16 @@ var _AdvertisementService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AdvertisementService_SaveAdPosition_Handler,
 		},
 		{
-			MethodName: "DelAdPosition",
-			Handler:    _AdvertisementService_DelAdPosition_Handler,
+			MethodName: "DeleteAdPosition",
+			Handler:    _AdvertisementService_DeleteAdPosition_Handler,
 		},
 		{
-			MethodName: "SetDefaultAd",
-			Handler:    _AdvertisementService_SetDefaultAd_Handler,
+			MethodName: "PutDefaultAd",
+			Handler:    _AdvertisementService_PutDefaultAd_Handler,
+		},
+		{
+			MethodName: "QueryAd",
+			Handler:    _AdvertisementService_QueryAd_Handler,
 		},
 		{
 			MethodName: "SetUserAd",
@@ -642,14 +485,6 @@ var _AdvertisementService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AdvertisementService_GetAdvertisement_Handler,
 		},
 		{
-			MethodName: "GetAdAndDataByKey",
-			Handler:    _AdvertisementService_GetAdAndDataByKey_Handler,
-		},
-		{
-			MethodName: "GetAdDto_",
-			Handler:    _AdvertisementService_GetAdDto__Handler,
-		},
-		{
 			MethodName: "SaveAd",
 			Handler:    _AdvertisementService_SaveAd_Handler,
 		},
@@ -658,20 +493,16 @@ var _AdvertisementService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AdvertisementService_DeleteAd_Handler,
 		},
 		{
-			MethodName: "SaveHyperLinkAd",
-			Handler:    _AdvertisementService_SaveHyperLinkAd_Handler,
+			MethodName: "SaveSwiperAdImage",
+			Handler:    _AdvertisementService_SaveSwiperAdImage_Handler,
 		},
 		{
-			MethodName: "SaveImagOfAd",
-			Handler:    _AdvertisementService_SaveImagOfAd_Handler,
+			MethodName: "GetSwiperAdImage",
+			Handler:    _AdvertisementService_GetSwiperAdImage_Handler,
 		},
 		{
-			MethodName: "GetValueAdImage",
-			Handler:    _AdvertisementService_GetValueAdImage_Handler,
-		},
-		{
-			MethodName: "DelAdImage",
-			Handler:    _AdvertisementService_DelAdImage_Handler,
+			MethodName: "DeleteSwiperAdImage",
+			Handler:    _AdvertisementService_DeleteSwiperAdImage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -679,38 +510,33 @@ var _AdvertisementService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("advertisement_service.proto", fileDescriptor_advertisement_service_b08f84db199304e9)
+	proto.RegisterFile("advertisement_service.proto", fileDescriptor_advertisement_service_ef0f03617071ce7e)
 }
 
-var fileDescriptor_advertisement_service_b08f84db199304e9 = []byte{
-	// 454 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x93, 0x4b, 0x6f, 0xd3, 0x40,
-	0x10, 0xc7, 0x7d, 0x40, 0xa1, 0xd9, 0xba, 0x29, 0x99, 0xe6, 0x14, 0x0e, 0x91, 0x1c, 0x90, 0x28,
-	0x8f, 0x0d, 0x2a, 0x88, 0x0b, 0xa7, 0x8d, 0x8c, 0x8c, 0xd5, 0x4a, 0xa0, 0x58, 0x70, 0xe0, 0x52,
-	0x39, 0xd9, 0xa9, 0xb1, 0xb0, 0xbd, 0xc6, 0x3b, 0x8e, 0xe4, 0x6f, 0xc2, 0xc7, 0x45, 0x5e, 0x3f,
-	0xea, 0x54, 0x81, 0x93, 0xf7, 0x3f, 0xfb, 0x9b, 0xff, 0x3c, 0x6c, 0xb3, 0xa7, 0xa1, 0xdc, 0x63,
-	0x41, 0xb1, 0xc6, 0x14, 0x33, 0xba, 0xd5, 0x58, 0xec, 0xe3, 0x1d, 0xf2, 0xbc, 0x50, 0xa4, 0xe6,
-	0x76, 0x94, 0xa8, 0x6d, 0x98, 0xb4, 0x6a, 0x91, 0xa2, 0xd6, 0x61, 0x84, 0xab, 0xc3, 0x14, 0x49,
-	0xaa, 0x01, 0xae, 0xfe, 0x8c, 0xd8, 0x4c, 0x0c, 0xef, 0x82, 0xc6, 0x0d, 0x9e, 0xb3, 0x89, 0x87,
-	0x24, 0xa4, 0x57, 0xa8, 0x32, 0x5f, 0x57, 0xbe, 0x84, 0x11, 0xf7, 0x33, 0xfa, 0xf0, 0x7e, 0x3e,
-	0xe6, 0x41, 0x1b, 0x76, 0x2c, 0x58, 0x30, 0xe6, 0x62, 0xd2, 0xea, 0x1e, 0x79, 0xcc, 0x37, 0xa8,
-	0xcb, 0x84, 0x1c, 0x0b, 0x96, 0xec, 0x34, 0x08, 0xf7, 0xd8, 0x11, 0xf7, 0xc9, 0x43, 0xe8, 0x15,
-	0x1b, 0x7b, 0x48, 0x26, 0xac, 0x61, 0xc4, 0x3f, 0xa5, 0x39, 0x55, 0xf3, 0x19, 0x6f, 0xc9, 0x9b,
-	0x58, 0xd3, 0x06, 0x75, 0xae, 0x32, 0x8d, 0x8e, 0x05, 0xaf, 0xd9, 0xa9, 0x87, 0xf4, 0x55, 0xe9,
-	0x98, 0x62, 0x95, 0xc1, 0x19, 0x17, 0xb2, 0x13, 0xbe, 0x9c, 0xdb, 0x75, 0x81, 0x4e, 0x3b, 0x16,
-	0x5c, 0xb2, 0x49, 0x53, 0xbf, 0x4f, 0x38, 0x20, 0x86, 0x5d, 0x5c, 0xb2, 0x33, 0x33, 0xcb, 0xbf,
-	0xac, 0x07, 0xe8, 0x8a, 0xd9, 0x01, 0x92, 0x8b, 0x77, 0x61, 0x99, 0x90, 0x90, 0x30, 0xe3, 0x43,
-	0xb9, 0xc1, 0xdf, 0x25, 0x6a, 0x3a, 0xf4, 0x1e, 0x07, 0x48, 0xdf, 0x34, 0x16, 0x42, 0xc2, 0x94,
-	0xf7, 0xe7, 0x23, 0xe8, 0x0b, 0xf6, 0xc4, 0x6c, 0x7e, 0xf0, 0x52, 0xc0, 0xe6, 0x42, 0xfa, 0x3d,
-	0xfc, 0xa8, 0x9e, 0xc0, 0xb1, 0xe0, 0x0d, 0x9b, 0x1a, 0x52, 0x64, 0xd2, 0x0d, 0x29, 0x5c, 0x57,
-	0xd7, 0x58, 0x99, 0xa6, 0xaf, 0xb1, 0xba, 0x37, 0x0e, 0x84, 0x74, 0x49, 0x39, 0x16, 0x3c, 0x33,
-	0x5b, 0x36, 0xea, 0xf6, 0x81, 0xe3, 0x80, 0x5a, 0xb2, 0x51, 0xb3, 0x30, 0x98, 0xf0, 0xe6, 0x70,
-	0xa4, 0xc7, 0x25, 0x3b, 0x71, 0x31, 0x41, 0xaa, 0xb1, 0x87, 0x4e, 0x3d, 0xf4, 0x96, 0x9d, 0xd7,
-	0x06, 0x9f, 0xab, 0x1c, 0x8b, 0x9b, 0x38, 0xfb, 0x25, 0x24, 0x80, 0xb1, 0x6c, 0xc4, 0x91, 0x0c,
-	0xce, 0xec, 0xfa, 0xde, 0x4f, 0xc3, 0xe8, 0xcb, 0x9d, 0x90, 0x70, 0xc1, 0x3b, 0x79, 0xbc, 0x8d,
-	0x15, 0x3b, 0xf7, 0x90, 0xbe, 0x87, 0x49, 0x89, 0x42, 0x1a, 0x0c, 0xa6, 0xbc, 0xc5, 0x0f, 0x86,
-	0x33, 0x31, 0xc7, 0x82, 0x97, 0xed, 0xe7, 0xfa, 0x1f, 0xb6, 0x33, 0x5f, 0x2f, 0xd8, 0xc5, 0x4e,
-	0xa5, 0x3c, 0x8a, 0xe9, 0x67, 0xb9, 0xe5, 0x91, 0xba, 0x52, 0xbc, 0xc8, 0x77, 0x3f, 0x4e, 0xf8,
-	0xea, 0xa3, 0xf9, 0x77, 0xb6, 0x23, 0xf3, 0x78, 0xf7, 0x37, 0x00, 0x00, 0xff, 0xff, 0x10, 0x2a,
-	0x5a, 0xf6, 0x90, 0x03, 0x00, 0x00,
+var fileDescriptor_advertisement_service_ef0f03617071ce7e = []byte{
+	// 379 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x52, 0x41, 0xab, 0xd3, 0x40,
+	0x10, 0xce, 0x41, 0xfa, 0xde, 0x5b, 0xf3, 0xde, 0x4b, 0xb7, 0x05, 0x21, 0x1e, 0x0a, 0xe9, 0x41,
+	0x8a, 0x32, 0xc5, 0x2a, 0x78, 0xf0, 0xb4, 0x12, 0x09, 0xbd, 0xd5, 0x2e, 0x5e, 0xbc, 0xc8, 0xb6,
+	0x3b, 0xc6, 0x40, 0xd2, 0x8d, 0xd9, 0x49, 0xa5, 0xbf, 0xd9, 0x3f, 0x21, 0xdd, 0xb4, 0x4d, 0xa2,
+	0x85, 0x77, 0x9a, 0xf9, 0xbe, 0x7c, 0xdf, 0x37, 0x93, 0x61, 0xd9, 0x4b, 0xa5, 0xf7, 0x58, 0x51,
+	0x66, 0xb1, 0xc0, 0x1d, 0x7d, 0xb7, 0x58, 0xed, 0xb3, 0x2d, 0x42, 0x59, 0x19, 0x32, 0xa1, 0x9f,
+	0xe6, 0x66, 0xa3, 0xf2, 0x13, 0x9a, 0x14, 0x68, 0xad, 0x4a, 0x71, 0xde, 0xb7, 0x68, 0x32, 0x8d,
+	0x60, 0xf1, 0xe7, 0x19, 0x1b, 0x8b, 0xee, 0x37, 0xd9, 0xa4, 0xf1, 0x57, 0xec, 0x2e, 0x41, 0x4a,
+	0x2a, 0x53, 0x97, 0x96, 0x0f, 0xe0, 0x73, 0x51, 0xd2, 0x21, 0x0c, 0x40, 0x68, 0x47, 0xad, 0xd1,
+	0x96, 0x66, 0x67, 0x31, 0xf2, 0xf8, 0x1b, 0xf6, 0x3c, 0x41, 0x5a, 0x19, 0x9b, 0x51, 0x66, 0x76,
+	0xfc, 0x1e, 0x84, 0x3e, 0x83, 0xa5, 0x0e, 0x7d, 0x90, 0x2d, 0x8e, 0x3c, 0x3e, 0x63, 0x0f, 0x52,
+	0xed, 0xb1, 0xe5, 0x78, 0x4f, 0x11, 0xde, 0xc0, 0x1a, 0x6d, 0x9d, 0x93, 0x0b, 0x0e, 0x62, 0xcc,
+	0x91, 0xba, 0xe2, 0x7f, 0xd2, 0x3b, 0xea, 0x39, 0xf3, 0x57, 0x35, 0xc5, 0xf8, 0x43, 0xd5, 0x39,
+	0x09, 0xcd, 0xc7, 0x20, 0xb1, 0x85, 0x6b, 0xfc, 0x55, 0xa3, 0xa5, 0xae, 0x01, 0xd8, 0xcd, 0x97,
+	0x1a, 0xab, 0x83, 0xd0, 0xfc, 0x11, 0x4e, 0xdd, 0x59, 0x16, 0xb4, 0xc4, 0xe5, 0x3f, 0x67, 0xec,
+	0x4e, 0x22, 0x7d, 0xb5, 0x58, 0x09, 0xcd, 0x87, 0x70, 0xe9, 0xaf, 0x44, 0xbf, 0x66, 0x41, 0x82,
+	0xd4, 0x3b, 0x2b, 0xf7, 0x41, 0xe8, 0x65, 0x47, 0x2c, 0x85, 0x8e, 0xc9, 0x44, 0x1e, 0x9f, 0xb2,
+	0x41, 0x73, 0x11, 0xfe, 0x00, 0x4d, 0x73, 0x25, 0x71, 0xca, 0x6e, 0xcf, 0xb7, 0xf8, 0x2f, 0xe9,
+	0x22, 0xfa, 0xc0, 0x86, 0xc7, 0x00, 0xf9, 0x3b, 0x2b, 0x8f, 0x8b, 0x2d, 0x0b, 0x95, 0x22, 0x7f,
+	0x01, 0x2d, 0xe7, 0x98, 0x2b, 0xc6, 0xf7, 0x6e, 0xdf, 0xbe, 0xef, 0x11, 0x5c, 0x6d, 0x07, 0xdd,
+	0x83, 0x74, 0x8c, 0xd0, 0xb1, 0x22, 0x15, 0x79, 0xfc, 0x2d, 0x1b, 0x35, 0x3b, 0x3d, 0x61, 0x6c,
+	0x07, 0x7d, 0x9a, 0xb0, 0xd1, 0xd6, 0x14, 0x90, 0x66, 0xf4, 0xb3, 0xde, 0x40, 0x6a, 0x16, 0x06,
+	0xaa, 0x72, 0xfb, 0xed, 0x16, 0xe6, 0x1f, 0xdd, 0x73, 0xdc, 0x0c, 0x5c, 0x79, 0xf7, 0x37, 0x00,
+	0x00, 0xff, 0xff, 0xca, 0x9c, 0x72, 0x76, 0xe3, 0x02, 0x00, 0x00,
 }

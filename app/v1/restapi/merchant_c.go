@@ -26,13 +26,14 @@ func (m *merchantC) Get_ad(c echo.Context) error {
 	trans, cli, _ := service.AdvertisementServiceClient()
 	defer trans.Close()
 	adName := c.Request().FormValue("ad_name")
-	dto, _ := cli.GetAdAndDataByKey(context.TODO(),
-		&proto.AdKeyRequest{
-			AdUserId: mchId,
-			AdPosKey: adName,
+	dto, _ := cli.GetAdvertisement(context.TODO(),
+		&proto.AdIdRequest{
+			AdUserId:   mchId,
+			AdKey:      adName,
+			ReturnData: true,
 		})
 	if dto != nil {
-		return c.JSON(http.StatusOK, dto)
+		return c.JSON(http.StatusOK, dto.Data)
 	}
 	return c.JSON(http.StatusOK,
 		gof.Result{ErrCode: 1, ErrMsg: "没有广告数据"})
