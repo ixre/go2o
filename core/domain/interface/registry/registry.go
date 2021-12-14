@@ -78,7 +78,7 @@ type IRegistryRepo interface {
 	// 搜索注册表
 	SearchRegistry(key string) []Registry
 	// 获取分组
-	GetGroups()[]string
+	GetGroups() []string
 }
 
 func KeyFormat(s string) string {

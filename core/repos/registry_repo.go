@@ -218,7 +218,6 @@ func (r *registryRepo) flushToStorage(list []*registry.Registry) {
 	}
 }
 
-
 // GetGroups 获取分组
 func (r *registryRepo) GetGroups() []string {
 	var arr []string

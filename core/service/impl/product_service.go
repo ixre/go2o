@@ -469,7 +469,7 @@ func (p *productService) GetItemSaleLabels(mchId int64, itemId int64) []*item.La
 	var list = make([]*item.Label, 0)
 	//todo: refactor
 
-	//sl := s._rep.GetSale(mchId)
+	//sl := _s._rep.GetSale(mchId)
 	//if goods := sl.ItemManager().GetItem(itemId); goods != nil {
 	//	list = goods.GetSaleLabels()
 	//}
@@ -482,7 +482,7 @@ func (p *productService) SaveItemSaleLabels(mchId, itemId int64, tagIds []int) e
 
 	//todo: refactor
 
-	//sl := s._rep.GetSale(mchId)
+	//sl := _s._rep.GetSale(mchId)
 	//if goods := sl.ItemManager().GetItem(itemId); goods != nil {
 	//	err = goods.SaveSaleLabels(tagIds)
 	//} else {

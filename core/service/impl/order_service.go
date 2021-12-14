@@ -190,7 +190,7 @@ func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.Submit
 
 // 根据编号获取订单
 func (s *orderServiceImpl) GetParentOrder(c context.Context, id *proto.OrderNoV2) (*proto.SParentOrder, error) {
-	//c := s.manager.Unified(id.Value,false).Complex()
+	//c := _s.manager.Unified(id.Value,false).Complex()
 	//if c != nil {
 	//	return parser.OrderDto(c), nil
 	//}
@@ -206,8 +206,8 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2)
 	return nil, nil
 
 	/*
-		orderId := s.repo.GetOrderId(id.Value, true)
-		o := s.repo.GetSubOrder(orderId)
+		orderId := _s.repo.GetOrderId(id.Value, true)
+		o := _s.repo.GetSubOrder(orderId)
 		if o != nil {
 			return parser.SubOrderDto(o), nil
 		}
@@ -221,15 +221,15 @@ func (s *orderServiceImpl) GetSubOrderByNo_(_ context.Context, orderNo *proto.St
 		Value: orderNo.Value,
 	})
 	/*
-		c := s.manager.Unified(orderNo.Value, true).Complex()
+		c := _s.manager.Unified(orderNo.Value, true).Complex()
 				if c != nil {
 					return parser.OrderDto(c), nil
 				}
 				return nil, nil
 
 
-		orderId := s.repo.GetOrderId(orderNo.Value, true)
-		o := s.repo.GetSubOrder(orderId)
+		orderId := _s.repo.GetOrderId(orderNo.Value, true)
+		o := _s.repo.GetSubOrder(orderId)
 		if o != nil {
 			return parser.SubOrderDto(o), nil
 		}
@@ -379,11 +379,11 @@ func (s *orderServiceImpl) LogBytes(_ context.Context, r *proto.OrderNo) (*proto
 
 //
 //// 根据商品快照获取订单项
-//func (s *orderServiceImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
-//	return s.repo.GetOrderItemBySnapshotId(orderId, snapshotId)
+//func (_s *orderServiceImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
+//	return _s.repo.GetOrderItemBySnapshotId(orderId, snapshotId)
 //}
 
 //// 根据商品快照获取订单项数据传输对象
-//func (s *orderServiceImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
-//	return s.repo.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
+//func (_s *orderServiceImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
+//	return _s.repo.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 //}

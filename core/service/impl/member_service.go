@@ -74,26 +74,26 @@ func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 		valRepo:    valRepo,
 	}
 	return s
-	//return s.init()
+	//return _s.init()
 }
 
-//func (s *memberService) init() *memberService {
+//func (_s *memberService) init() *memberService {
 //	db := gof.CurrentApp.Db()
 //	var list []*member.Member
 //	db.o.Select(&list, "")
 //	for _, v := range list {
-//		im := s.repo.CreateMember(v)
+//		im := _s.repo.CreateMember(v)
 //		if rl := im.GetRelation(); rl != nil {
 //			im.BindInviter(rl.InviterId, true)
 //		}
 //		//if len(v.InviteCode) < 6 {
-//		//	im := s.repo.CreateMember(v)
-//		//	v.InviteCode = s.generateInviteCode()
+//		//	im := _s.repo.CreateMember(v)
+//		//	v.InviteCode = _s.generateInviteCode()
 //		//	im.SetValue(v)
 //		//	im.Save()
 //		//}
 //	}
-//	return s
+//	return _s
 //}
 
 // 根据会员编号获取会员
@@ -507,14 +507,14 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	if err == nil {
 		// 保存关联信息
 		err = m.BindInviter(inviterId, true)
-		//m := s.repo.CreateMember(v) //创建会员
+		//m := _s.repo.CreateMember(v) //创建会员
 		//id, err := m.Save()
 		//if err == nil {
 		//	pro.Gender = 1
 		//	pro.MemberId = id
 		//	//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
 		//	if err = m.Profile().SaveProfile(pro); err != nil {
-		//		s.repo.DeleteMember(id)
+		//		_s.repo.DeleteMember(id)
 		//}
 	}
 	ret := &proto.RegisterResponse{MemberId: id}
@@ -724,11 +724,11 @@ func (s *memberService) VerifyTradePassword(_ context.Context, r *proto.VerifyPa
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
-//func (s *memberService) CheckUser(user string, memberId int64) error {
+//func (_s *memberService) CheckUser(user string, memberId int64) error {
 //	if len(user) < 6 {
 //		return member.ErrUserLength
 //	}
-//	if s.repo.CheckUserExist(user, memberId) {
+//	if _s.repo.CheckUserExist(user, memberId) {
 //		return member.ErrUserExist
 //	}
 //	return nil
@@ -1307,7 +1307,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	//	if latestApplyInfo.Amount < 0 {
 	//		latestApplyInfo.Amount = -latestApplyInfo.Amount
 	//	}
-	//	latestInfo := fmt.Sprintf(`<b>最近提现：</b>%s&nbsp;申请提现%s ，状态：<span class="status">%s</span>。`,
+	//	latestInfo := fmt.Sprintf(`<b>最近提现：</b>%_s&nbsp;申请提现%_s ，状态：<span class="status">%_s</span>。`,
 	//		time.Unix(latestApplyInfo.CreateTime, 0).Format("2006-01-02 15:04"),
 	//		format.FormatFloat(latestApplyInfo.Amount),
 	//		sText)

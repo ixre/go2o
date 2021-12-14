@@ -253,10 +253,10 @@ func (a *advertisementRepo) DeleteTextAdData(adId int64) error {
 }
 
 func (a *advertisementRepo) GetPositions() []*ad.Position {
-	list := make([]*ad.Position,0)
-	err := a.o.Select(&list,"")
-	if err != nil && err != sql.ErrNoRows{
-		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:Position")
+	list := make([]*ad.Position, 0)
+	err := a.o.Select(&list, "")
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Position")
 	}
 	return list
 }

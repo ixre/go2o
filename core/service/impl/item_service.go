@@ -335,20 +335,20 @@ func (s *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
 // 获取上架商品数据
 func (s *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*proto.PagingGoodsResponse, error) {
 	/*
-		hash := fmt.Sprintf("%d-%d-%s", catId, quantity, where)
+		hash := fmt.Sprintf("%d-%d-%_s", catId, quantity, where)
 			hash = crypto.Md5([]byte(hash))
 			key := "go2o:shopQuery:cache:rd-item:" + hash
 			var arr []*proto.SOldItem
 
 			fn := func() interface{} {
-				list := s.itemQuery.GetRandomItem(catId, quantity, where)
+				list := _s.itemQuery.GetRandomItem(catId, quantity, where)
 				for _, v := range list {
 					v.Image = format.GetGoodsImageUrl(v.Image)
 					arr = append(arr, parser.ItemDto(v))
 				}
 				return arr
 			}
-			s.sto.RWJson(key, &arr, fn, 600)
+			_s.sto.RWJson(key, &arr, fn, 600)
 			return arr
 	*/
 	c := s.cateRepo.GlobCatService().GetCategory(int(r.CategoryId))

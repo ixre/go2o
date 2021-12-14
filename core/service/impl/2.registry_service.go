@@ -26,7 +26,6 @@ type registryService struct {
 	serviceUtil
 }
 
-
 func (s *registryService) GetGroups(c context.Context, empty *proto.Empty) (*proto.RegistryGroupResponse, error) {
 	var arr = s.registryRepo.GetGroups()
 	return &proto.RegistryGroupResponse{Value: arr}, nil
@@ -84,7 +83,6 @@ func (s *registryService) Search(_ context.Context, r *proto.RegistrySearchReque
 	return &proto.StringMap{Value: mp}, nil
 }
 
-
 func (s *registryService) GetRegistry(_ context.Context, key *proto.String) (*proto.SRegistry, error) {
 	it := s.registryRepo.Get(key.Value)
 	if it != nil {
@@ -118,7 +116,7 @@ func (s *registryService) parseRegistryDto(a registry.Registry) *proto.SRegistry
 	return &proto.SRegistry{
 		Key:          a.Key,
 		Value:        a.Value,
-		Group:		  a.Group,
+		Group:        a.Group,
 		DefaultValue: a.DefaultValue,
 		Options:      a.Options,
 		Flag:         int32(a.Flag),
@@ -135,7 +133,7 @@ func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCre
 		Key:          r.Key,
 		Value:        r.DefaultValue,
 		DefaultValue: r.DefaultValue,
-		Group: 		  "自定义",
+		Group:        "自定义",
 		Options:      "",
 		Flag:         registry.FlagUserDefine,
 		Description:  r.Description,
