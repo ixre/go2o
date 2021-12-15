@@ -62,11 +62,11 @@ func (p *productImpl) checkValue(v *product.Product) error {
 		return product.ErrItemNameLength
 	}
 
-	// 检测品牌
-	if v.BrandId <= 0 {
-		//todo: 检测是否有效，与模型是否匹配
-		return product.ErrNoBrand
-	}
+	//// 检测品牌
+	//if v.BrandId <= 0 {
+	//	//todo: 检测是否有效，与模型是否匹配
+	//	return product.ErrNoBrand
+	//}
 	return nil
 
 }
