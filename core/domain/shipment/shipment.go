@@ -10,10 +10,10 @@ package shipment
 
 import (
 	"errors"
+	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/gof/util"
-	"go2o/core/domain/interface/express"
-	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/domain/interface/shipment"
 	"time"
 )
 

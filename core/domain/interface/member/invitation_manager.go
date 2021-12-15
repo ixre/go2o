@@ -8,7 +8,7 @@
  */
 package member
 
-import "go2o/core/dto"
+import "github.com/ixre/go2o/core/dto"
 
 type IInvitationManager interface {
 	// 获取邀请人数组

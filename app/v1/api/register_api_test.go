@@ -1,7 +1,7 @@
 package api
 
 import (
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"testing"
 )
 

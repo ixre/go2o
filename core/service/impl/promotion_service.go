@@ -10,9 +10,9 @@
 package impl
 
 import (
-	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/promotion"
-	promImpl "go2o/core/domain/promotion"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/promotion"
+	promImpl "github.com/ixre/go2o/core/domain/promotion"
 )
 
 type promotionService struct {

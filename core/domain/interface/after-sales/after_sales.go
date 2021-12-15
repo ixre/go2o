@@ -9,8 +9,8 @@
 package afterSales
 
 import (
-	"go2o/core/domain/interface/order"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 const (

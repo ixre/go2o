@@ -2,11 +2,11 @@ package service
 
 import (
 	"fmt"
+	grpc2 "github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/log"
 	"go.etcd.io/etcd/clientv3"
-	grpc2 "go2o/core/service/impl"
-	"go2o/core/service/proto"
 	"google.golang.org/grpc"
 	"net"
 	"strconv"

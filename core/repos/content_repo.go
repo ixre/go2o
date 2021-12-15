@@ -9,10 +9,10 @@
 package repos
 
 import (
+	contentImpl "github.com/ixre/go2o/core/domain/content"
+	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	contentImpl "go2o/core/domain/content"
-	"go2o/core/domain/interface/content"
 )
 
 var _ content.IContentRepo = new(contentRepo)

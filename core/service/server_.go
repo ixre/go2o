@@ -1,9 +1,9 @@
 package service
 
 import (
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
-	"go2o/core/domain/interface/registry"
-	"go2o/core/service/impl"
 )
 
 /**

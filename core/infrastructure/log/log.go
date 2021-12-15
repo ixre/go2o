@@ -2,7 +2,7 @@ package log
 
 import (
 	"fmt"
-	"go2o/core/infrastructure"
+	"github.com/ixre/go2o/core/infrastructure"
 	"runtime"
 )
 

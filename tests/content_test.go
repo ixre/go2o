@@ -9,7 +9,7 @@
 package tests
 
 import (
-	"go2o/tests/ti"
+	"github.com/ixre/go2o/tests/ti"
 	"testing"
 )
 

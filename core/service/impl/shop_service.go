@@ -10,10 +10,10 @@ package impl
 
 import (
 	"context"
-	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/query"
-	"go2o/core/service/proto"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/query"
+	"github.com/ixre/go2o/core/service/proto"
 )
 
 var _ proto.ShopServiceServer = new(shopServiceImpl)

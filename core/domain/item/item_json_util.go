@@ -2,8 +2,8 @@ package item
 
 import (
 	"fmt"
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/pro_model"
 	"strconv"
 )
 

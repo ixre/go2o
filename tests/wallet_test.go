@@ -2,8 +2,8 @@
 package tests
 
 import (
-	"go2o/core/domain/interface/wallet"
-	"go2o/tests/ti"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/tests/ti"
 	"testing"
 )
 

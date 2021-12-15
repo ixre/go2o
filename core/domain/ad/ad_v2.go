@@ -2,7 +2,7 @@ package ad
 
 import (
 	"errors"
-	"go2o/core/domain/interface/ad"
+	"github.com/ixre/go2o/core/domain/interface/ad"
 )
 
 type adPositionImpl struct {

@@ -2,10 +2,10 @@ package repos
 
 import (
 	"database/sql"
+	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	pmImpl "github.com/ixre/go2o/core/domain/pro_model"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"go2o/core/domain/interface/pro_model"
-	pmImpl "go2o/core/domain/pro_model"
 	"log"
 )
 

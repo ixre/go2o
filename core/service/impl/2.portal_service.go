@@ -1,10 +1,10 @@
 package impl
 
 import (
-	"go2o/core/dao"
-	"go2o/core/dao/impl"
-	"go2o/core/dao/model"
-	"go2o/core/service/proto"
+	"github.com/ixre/go2o/core/dao"
+	"github.com/ixre/go2o/core/dao/impl"
+	"github.com/ixre/go2o/core/dao/model"
+	"github.com/ixre/go2o/core/service/proto"
 	"golang.org/x/net/context"
 )
 

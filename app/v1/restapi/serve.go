@@ -9,14 +9,14 @@
 package restapi
 
 import (
+	apiv2 "github.com/ixre/go2o/app/api"
+	"github.com/ixre/go2o/app/v1/api"
+	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"github.com/labstack/echo/v4"
 	mw "github.com/labstack/echo/v4/middleware"
-	apiv2 "go2o/app/api"
-	"go2o/app/v1/api"
-	"go2o/core/variable"
 	"net/http"
 	"os"
 	"strconv"

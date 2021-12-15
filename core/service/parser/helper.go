@@ -10,7 +10,7 @@ package parser
 
 import (
 	"encoding/json"
-	"go2o/core/service/proto"
+	"github.com/ixre/go2o/core/service/proto"
 )
 
 func PagingResult(total int, data interface{}, err error) *proto.SPagingResult {

@@ -9,8 +9,8 @@
 package util
 
 import (
+	"github.com/ixre/go2o/core/infrastructure/gen"
 	"github.com/ixre/gof/web"
-	"go2o/core/infrastructure/gen"
 	"net/http"
 	"net/url"
 )

@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"go2o/core/service/impl"
-	"go2o/core/service/proto"
+	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/service/proto"
 	"testing"
 )
 

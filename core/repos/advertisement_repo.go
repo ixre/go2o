@@ -11,11 +11,11 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	adImpl "github.com/ixre/go2o/core/domain/ad"
+	"github.com/ixre/go2o/core/domain/interface/ad"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	adImpl "go2o/core/domain/ad"
-	"go2o/core/domain/interface/ad"
 	"log"
 	"sync"
 )

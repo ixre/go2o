@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	"go2o/core/domain/interface/member"
-	"go2o/core/infrastructure/domain"
-	"go2o/core/service/impl"
-	"go2o/core/service/proto"
-	"go2o/tests/ti"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/go2o/tests/ti"
 	"testing"
 )
 

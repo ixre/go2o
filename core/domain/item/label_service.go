@@ -9,8 +9,8 @@
 package item
 
 import (
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
 )
 
 var _ item.ISaleLabel = new(saleLabelImpl)

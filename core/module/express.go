@@ -2,9 +2,9 @@ package module
 
 import (
 	"errors"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
+	"github.com/ixre/go2o/core/module/express/kdniao"
 	"github.com/ixre/gof"
-	"go2o/core/domain/interface/shipment"
-	"go2o/core/module/express/kdniao"
 )
 
 var _ Module = new(ExpressModule)

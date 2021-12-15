@@ -10,8 +10,8 @@ package mss
 
 import (
 	"encoding/json"
-	"go2o/core/domain/interface/mss"
-	"go2o/core/domain/interface/mss/notify"
+	"github.com/ixre/go2o/core/domain/interface/mss"
+	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"regexp"
 	"strconv"
 	"time"

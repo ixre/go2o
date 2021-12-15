@@ -10,12 +10,12 @@ package impl
 
 import (
 	"context"
+	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/query"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/db"
-	"go2o/core/domain/interface/after-sales"
-	"go2o/core/domain/interface/order"
-	"go2o/core/infrastructure/format"
-	"go2o/core/query"
-	"go2o/core/service/proto"
 )
 
 var _ proto.AfterSalesServiceServer = new(afterSalesService)

@@ -9,7 +9,7 @@ package qr
 
 import (
 	"errors"
-	"go2o/core/infrastructure/gen/rsc/qr/coding"
+	"github.com/ixre/go2o/core/infrastructure/gen/rsc/qr/coding"
 	"image"
 	"image/color"
 )

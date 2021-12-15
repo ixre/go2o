@@ -11,11 +11,11 @@ package personfinance
 import (
 	"errors"
 	"fmt"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/personfinance"
-	"go2o/core/infrastructure/domain"
-	"go2o/core/infrastructure/format"
-	"go2o/core/infrastructure/tool"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/personfinance"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/infrastructure/tool"
 	"math"
 	"time"
 )

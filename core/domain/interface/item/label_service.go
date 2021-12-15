@@ -8,7 +8,7 @@
  */
 package item
 
-import "go2o/core/domain/interface/valueobject"
+import "github.com/ixre/go2o/core/domain/interface/valueobject"
 
 type (
 	// 销售标签

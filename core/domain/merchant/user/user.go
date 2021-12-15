@@ -9,7 +9,7 @@
 package user
 
 import (
-	"go2o/core/domain/interface/merchant/user"
+	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 )
 
 var _ user.IUser = new(User)

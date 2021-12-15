@@ -2,7 +2,7 @@ package impl
 
 import (
 	"context"
-	"go2o/core/service/proto"
+	"github.com/ixre/go2o/core/service/proto"
 )
 
 var _ proto.GreeterServiceServer = new(TestServiceImpl)

@@ -9,12 +9,12 @@
 package repos
 
 import (
+	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	impl "github.com/ixre/go2o/core/domain/mss/notify"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
-	"go2o/core/domain/interface/mss/notify"
-	"go2o/core/domain/interface/registry"
-	impl "go2o/core/domain/mss/notify"
 )
 
 var _ notify.INotifyRepo = new(notifyRepImpl)

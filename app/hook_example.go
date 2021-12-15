@@ -11,8 +11,8 @@ package app
 /*
 import (
 	"github.com/ixre/gof"
-	"go2o/core/repository"
-	"go2o/core/variable"
+	"github.com/ixre/go2o/core/repository"
+	"github.com/ixre/go2o/core/variable"
 )
 
 // 参数参数自定义设置

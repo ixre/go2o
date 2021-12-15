@@ -1,6 +1,6 @@
 package promodel
 
-import "go2o/core/infrastructure/domain"
+import "github.com/ixre/go2o/core/infrastructure/domain"
 
 var (
 	ErrEmptyAttrArray = domain.NewError(

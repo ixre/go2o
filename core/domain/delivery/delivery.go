@@ -9,8 +9,8 @@
 package delivery
 
 import (
-	"go2o/core/domain/interface/delivery"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/delivery"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 var _ delivery.IDelivery = new(Delivery)

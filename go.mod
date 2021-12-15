@@ -1,4 +1,4 @@
-module go2o
+module github.com/ixre/go2o
 
 go 1.17
 

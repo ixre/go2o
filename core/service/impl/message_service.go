@@ -10,11 +10,11 @@ package impl
 
 import (
 	"context"
+	"github.com/ixre/go2o/core/domain/interface/mss"
+	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
-	"go2o/core/domain/interface/mss"
-	"go2o/core/domain/interface/mss/notify"
-	"go2o/core/dto"
-	"go2o/core/service/proto"
 )
 
 var _ proto.MessageServiceServer = new(messageService)

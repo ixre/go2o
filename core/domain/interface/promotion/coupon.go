@@ -10,7 +10,7 @@
 package promotion
 
 import (
-	"go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/member"
 )
 
 // 优惠券促销

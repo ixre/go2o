@@ -11,11 +11,11 @@ package notify
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/tool/sms"
 	"github.com/ixre/gof/log"
-	"go2o/core/domain/interface/mss/notify"
-	"go2o/core/domain/interface/registry"
-	"go2o/core/domain/interface/valueobject"
-	"go2o/core/infrastructure/tool/sms"
 )
 
 var _ notify.INotifyManager = new(notifyManagerImpl)

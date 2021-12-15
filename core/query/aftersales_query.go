@@ -10,10 +10,10 @@ package query
 
 import (
 	"database/sql"
+	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/db"
-	"go2o/core/domain/interface/after-sales"
-	"go2o/core/dto"
-	"go2o/core/infrastructure/format"
 )
 
 type AfterSalesQuery struct {

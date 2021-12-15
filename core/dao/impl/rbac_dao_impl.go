@@ -3,11 +3,11 @@ package impl
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ixre/go2o/core/dao"
+	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
-	"go2o/core/dao"
-	"go2o/core/dao/model"
 	"log"
 )
 

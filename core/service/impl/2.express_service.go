@@ -10,9 +10,9 @@ package impl
 
 import (
 	"context"
+	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
-	"go2o/core/domain/interface/express"
-	"go2o/core/service/proto"
 )
 
 var _ proto.ExpressServiceServer = new(expressService)

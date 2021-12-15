@@ -11,10 +11,10 @@ package tcpserve
 import (
 	"context"
 	"errors"
+	"github.com/ixre/go2o/core/service"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/net/nc"
 	"github.com/ixre/gof/util"
-	"go2o/core/service"
-	"go2o/core/service/proto"
 	"net"
 	"strconv"
 	"strings"

@@ -9,11 +9,11 @@
 package repos
 
 import (
+	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
+	shipImpl "github.com/ixre/go2o/core/domain/shipment"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"go2o/core/domain/interface/express"
-	"go2o/core/domain/interface/shipment"
-	shipImpl "go2o/core/domain/shipment"
 )
 
 var _ shipment.IShipmentRepo = new(shipmentRepo)

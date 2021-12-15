@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"go2o/tests/ti"
+	"github.com/ixre/go2o/tests/ti"
 	"testing"
 )
 

@@ -11,10 +11,10 @@ package impl
 
 import (
 	"context"
+	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/query"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
-	"go2o/core/domain/interface/content"
-	"go2o/core/query"
-	"go2o/core/service/proto"
 )
 
 var _ proto.ContentServiceServer = new(contentService)

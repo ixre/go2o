@@ -12,10 +12,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ixre/go2o/core/domain/interface/ad"
+	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/storage"
-	"go2o/core/domain/interface/ad"
-	"go2o/core/repos"
-	"go2o/core/service/proto"
 )
 
 var _ proto.AdvertisementServiceServer = new(advertisementService)

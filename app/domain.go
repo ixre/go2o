@@ -3,10 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/service"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
-	"go2o/core/domain/interface/registry"
-	"go2o/core/service"
-	"go2o/core/service/proto"
 	"log"
 	"os"
 )

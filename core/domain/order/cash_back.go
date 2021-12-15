@@ -10,12 +10,12 @@ package order
 
 import (
 	"fmt"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/promotion"
-	"go2o/core/infrastructure/domain"
-	"go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/promotion"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/format"
 	"strconv"
 	"strings"
 	"time"

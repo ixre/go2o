@@ -9,8 +9,8 @@
 package util
 
 import (
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/algorithm/iterator"
-	"go2o/core/service/proto"
 )
 
 type CategoryFormatFunc func(c *proto.SProductCategory, level int)

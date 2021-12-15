@@ -1,10 +1,10 @@
 package api
 
 import (
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/api"
 	"github.com/labstack/echo/v4"
-	"go2o/core/service/proto"
 	"net/http"
 )
 

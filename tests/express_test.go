@@ -9,9 +9,9 @@
 package tests
 
 import (
-	expressImpl "go2o/core/domain/express"
-	"go2o/core/domain/interface/express"
-	"go2o/tests/ti"
+	expressImpl "github.com/ixre/go2o/core/domain/express"
+	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/tests/ti"
 	"testing"
 )
 

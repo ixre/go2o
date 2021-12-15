@@ -9,12 +9,12 @@
 package ti
 
 import (
+	"github.com/ixre/go2o/core"
+	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db/orm"
 	"go.etcd.io/etcd/clientv3"
-	"go2o/core"
-	"go2o/core/repos"
-	"go2o/core/service/impl"
 	"os"
 	"time"
 )
