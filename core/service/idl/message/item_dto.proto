@@ -145,6 +145,17 @@ message SItemViewData {
     string SkuJson = 5;
 }
 
+
+message SaveItemResponse {
+    // 错误状态码,如为0表示成功
+    sint32 ErrCode = 1;
+    // 消息
+    string ErrMsg = 2;
+    // 商品编号
+    int64 ItemId = 3;
+}
+
+
 // 完整的商品信息
 message SOldItem {
     sint64 ItemId = 1;

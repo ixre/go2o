@@ -8,8 +8,8 @@ option java_package = "com.github.go2o.rpc";
 
 
 message ItemDetailRequest {
-    sint64 itemId = 1;
-    sint32 iType = 2;
+    sint64 ItemId = 1;
+    sint32 ItemType = 2;
 }
 
 // 商品服务
@@ -18,7 +18,7 @@ service ItemService {
     rpc GetItem (Int64) returns (SUnifiedViewItem) {
     }
     // 保存商品
-    rpc SaveItem (SUnifiedViewItem) returns (Result) {
+    rpc SaveItem (SUnifiedViewItem) returns (SaveItemResponse) {
     }
     // 根据SKU获取商品
     rpc GetItemBySku (ItemBySkuRequest) returns (SUnifiedViewItem) {

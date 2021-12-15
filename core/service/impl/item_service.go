@@ -67,14 +67,17 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifi
 }
 
 // 保存商品
-func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.Result, error) {
+func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.SaveItemResponse, error) {
 	var gi item.IGoodsItem
 	it := parser.ParseGoodsItem(r)
 	var err error
 	if it.Id > 0 {
 		gi = s.itemRepo.GetItem(it.Id)
 		if gi == nil || gi.GetValue().VendorId != r.VendorId {
-			return s.error(item.ErrNoSuchItem), nil
+			return &proto.SaveItemResponse{
+				ErrCode: 1,
+				ErrMsg:  item.ErrNoSuchItem.Error(),
+			}, nil
 		}
 	} else {
 		gi = s.itemRepo.CreateItem(it)
@@ -86,13 +89,16 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 			it.Id, err = gi.Save()
 		}
 	}
-	ret := s.error(err)
-	if err == nil {
-		r.Data = map[string]string{
-			"ItemId": strconv.Itoa(int(it.Id)),
-		}
+	if err != nil {
+		return &proto.SaveItemResponse{
+			ErrCode: 1,
+			ErrMsg:  err.Error(),
+		}, nil
 	}
-	return ret, nil
+	return &proto.SaveItemResponse{
+		ErrCode: 0,
+		ItemId:  it.Id,
+	}, nil
 }
 
 // 附加商品的信息
@@ -174,7 +180,7 @@ func (s *itemService) GetSku(_ context.Context, request *proto.SkuId) (*proto.SS
 // 获取商品详细数据
 func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDetailRequest) (*proto.String, error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: request.ItemId})
-	switch request.IType {
+	switch request.ItemType {
 	case item.ItemWholesale:
 		data := it.Wholesale().GetJsonDetailData()
 		return &proto.String{Value: string(data)}, nil
