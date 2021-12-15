@@ -9,9 +9,9 @@
 package repos
 
 import (
+	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"go2o/core/domain/interface/merchant/user"
 )
 
 var _ user.IUserRepo = new(userRepo)

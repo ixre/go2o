@@ -1,8 +1,8 @@
 package api
 
 import (
-	"go2o/core/infrastructure/domain"
-	"go2o/core/service/proto"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/service/proto"
 	"strconv"
 	"testing"
 )

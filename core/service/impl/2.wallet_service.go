@@ -2,9 +2,9 @@ package impl
 
 import (
 	"context"
-	"go2o/core/domain/interface/wallet"
-	"go2o/core/service/parser"
-	"go2o/core/service/proto"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/service/parser"
+	"github.com/ixre/go2o/core/service/proto"
 )
 
 var _ proto.WalletServiceServer = new(walletServiceImpl)

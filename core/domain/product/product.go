@@ -11,11 +11,11 @@ package product
 
 import (
 	"fmt"
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/gof/util"
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/pro_model"
-	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/valueobject"
 	"strconv"
 	"strings"
 	"time"

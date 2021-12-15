@@ -3,8 +3,8 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
-	"go2o/core/domain/interface/cart"
-	"go2o/tests/ti"
+	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/tests/ti"
 	"log"
 	"strconv"
 	"testing"

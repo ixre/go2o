@@ -13,10 +13,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/promotion"
+	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/promotion"
-	"go2o/core/infrastructure/format"
 	"strconv"
 	"time"
 )

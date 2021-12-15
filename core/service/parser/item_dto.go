@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/valueobject"
-	"go2o/core/dto"
-	"go2o/core/service/proto"
 )
 
 /**

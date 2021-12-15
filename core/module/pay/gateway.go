@@ -3,10 +3,10 @@ package pay
 import (
 	"errors"
 	"fmt"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/storage"
-	"go2o/core/domain/interface/member"
-	"go2o/core/repos"
 	"io/ioutil"
 	"log"
 	"net/http"

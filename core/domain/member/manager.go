@@ -11,12 +11,12 @@ package member
 import (
 	"errors"
 	"fmt"
+	de "github.com/ixre/go2o/core/domain/interface/domain"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/util"
-	de "go2o/core/domain/interface/domain"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/registry"
-	"go2o/core/domain/interface/valueobject"
-	"go2o/core/variable"
 	"sort"
 	"strings"
 )

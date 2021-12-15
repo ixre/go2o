@@ -9,8 +9,8 @@
 package mss
 
 import (
-	"go2o/core/domain/interface/mss/notify"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 //todo: waiting refactor

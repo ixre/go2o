@@ -9,7 +9,7 @@
 package merchant
 
 import (
-	"go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"strconv"
 	"time"
 )

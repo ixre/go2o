@@ -16,7 +16,7 @@
 package dao
 
 import (
-	"go2o/core/dao/model"
+	"github.com/ixre/go2o/core/dao/model"
 )
 
 type IPortalDao interface {

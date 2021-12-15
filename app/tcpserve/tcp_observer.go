@@ -11,9 +11,9 @@ package tcpserve
 import (
 	"encoding/json"
 	"github.com/gomodule/redigo/redis"
+	"github.com/ixre/go2o/core"
+	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/net/nc"
-	"go2o/core"
-	"go2o/core/variable"
 	"net"
 	"strconv"
 )

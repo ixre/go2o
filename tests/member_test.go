@@ -1,11 +1,11 @@
 package tests
 
 import (
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/registry"
-	"go2o/core/domain/interface/wallet"
-	"go2o/core/infrastructure/domain"
-	"go2o/tests/ti"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/tests/ti"
 	"testing"
 	"time"
 )

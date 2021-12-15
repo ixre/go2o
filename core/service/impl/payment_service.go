@@ -10,11 +10,11 @@ package impl
  */
 import (
 	"context"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/payment"
-	"go2o/core/module"
-	"go2o/core/service/proto"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/payment"
+	"github.com/ixre/go2o/core/module"
+	"github.com/ixre/go2o/core/service/proto"
 	"strconv"
 )
 

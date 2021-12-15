@@ -1,8 +1,8 @@
 package member
 
 import (
+	"github.com/ixre/go2o/app/api/util"
 	api "github.com/ixre/gof/jwt-api"
-	"go2o/app/api/util"
 )
 
 /**

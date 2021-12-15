@@ -10,12 +10,12 @@ package impl
 
 import (
 	"context"
+	"github.com/ixre/go2o/core/domain/interface/delivery"
+	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
+	"github.com/ixre/go2o/core/module"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/log"
-	"go2o/core/domain/interface/delivery"
-	"go2o/core/domain/interface/express"
-	"go2o/core/domain/interface/shipment"
-	"go2o/core/module"
-	"go2o/core/service/proto"
 )
 
 var _ proto.ShipmentServiceServer = new(shipmentServiceImpl)

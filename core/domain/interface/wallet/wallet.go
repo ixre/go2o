@@ -1,7 +1,7 @@
 // create for src 29/11/2017 ( jarrysix@gmail.com )
 package wallet
 
-import "go2o/core/infrastructure/domain"
+import "github.com/ixre/go2o/core/infrastructure/domain"
 
 var (
 	// 别名

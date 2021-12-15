@@ -10,7 +10,7 @@ package merchant
 
 import (
 	"errors"
-	"go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 )
 
 //todo: 这里引用IMemberRep似乎有问题

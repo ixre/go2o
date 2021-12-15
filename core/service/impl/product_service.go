@@ -2,12 +2,12 @@ package impl
 
 import (
 	"errors"
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/pro_model"
-	"go2o/core/domain/interface/product"
-	"go2o/core/infrastructure/format"
-	"go2o/core/service/proto"
 	"golang.org/x/net/context"
 	"strconv"
 )

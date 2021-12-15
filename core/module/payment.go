@@ -1,10 +1,10 @@
 package module
 
 import (
+	"github.com/ixre/go2o/core/module/bank"
+	"github.com/ixre/go2o/core/module/pay"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
-	"go2o/core/module/bank"
-	"go2o/core/module/pay"
 )
 
 type PaymentModule struct {

@@ -9,8 +9,8 @@
 package ad
 
 import (
-	"go2o/core/domain/interface/ad"
-	"go2o/core/domain/tmp"
+	"github.com/ixre/go2o/core/domain/interface/ad"
+	"github.com/ixre/go2o/core/domain/tmp"
 	"sync"
 	"time"
 )

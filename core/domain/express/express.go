@@ -9,9 +9,9 @@
 package express
 
 import (
-	"go2o/core/domain/interface/express"
-	"go2o/core/domain/interface/valueobject"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"math"
 	"strconv"
 	"strings"

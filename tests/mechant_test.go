@@ -2,11 +2,11 @@ package tests
 
 import (
 	"errors"
-	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/domain/interface/merchant/wholesaler"
-	"go2o/core/infrastructure/domain"
-	"go2o/tests/ti"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/tests/ti"
 	"testing"
 )
 

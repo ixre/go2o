@@ -10,9 +10,9 @@ package query
 
 import (
 	"fmt"
+	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"go2o/core/domain/interface/content"
 )
 
 type ContentQuery struct {

@@ -10,8 +10,8 @@ package personfinance
 
 import (
 	"errors"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/personfinance"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/personfinance"
 	"time"
 )
 

@@ -10,8 +10,8 @@ package delivery
 
 import (
 	"errors"
-	"go2o/core/domain/interface/delivery"
-	"go2o/core/infrastructure/lbs"
+	"github.com/ixre/go2o/core/domain/interface/delivery"
+	"github.com/ixre/go2o/core/infrastructure/lbs"
 )
 
 var _ delivery.ICoverageArea = new(CoverageArea)

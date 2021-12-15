@@ -10,11 +10,11 @@ package shop
 
 import (
 	"errors"
-	"go2o/core/domain/interface/domain/enum"
-	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/domain/interface/registry"
-	"go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/domain/interface/domain/enum"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"strings"
 	"time"
 )

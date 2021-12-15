@@ -9,10 +9,10 @@
 package repos
 
 import (
+	deliverImpl "github.com/ixre/go2o/core/domain/delivery"
+	"github.com/ixre/go2o/core/domain/interface/delivery"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	deliverImpl "go2o/core/domain/delivery"
-	"go2o/core/domain/interface/delivery"
 )
 
 var _ delivery.IDeliveryRepo = new(deliveryRepo)

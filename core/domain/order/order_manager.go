@@ -11,19 +11,19 @@ package order
 
 import (
 	"errors"
-	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/delivery"
-	"go2o/core/domain/interface/express"
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/payment"
-	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/shipment"
-	"go2o/core/domain/interface/valueobject"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/delivery"
+	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/payment"
+	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/domain/interface/promotion"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 var _ order.IOrderManager = new(orderManagerImpl)

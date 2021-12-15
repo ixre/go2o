@@ -1,7 +1,7 @@
 package item
 
 import (
-	"go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/pro_model"
 )
 
 type (

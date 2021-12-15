@@ -9,8 +9,8 @@
 package shipment
 
 import (
-	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 const (

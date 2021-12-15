@@ -1,7 +1,7 @@
 package kdniao
 
 import (
-	"go2o/core/domain/interface/shipment"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
 )
 
 func Parse(shipperCode, logisticCode string, v *TraceResult, invert bool) *shipment.ShipOrderTrack {

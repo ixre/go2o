@@ -9,9 +9,9 @@
 package personfinance
 
 import (
-	"go2o/core/domain/interface/member"
-	"go2o/core/infrastructure/domain"
-	"go2o/core/variable"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/variable"
 )
 
 var (

@@ -9,9 +9,9 @@
 package member
 
 import (
-	"go2o/core/domain/interface/member"
-	"go2o/core/dto"
-	"go2o/core/msq"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/msq"
 	"strconv"
 	"time"
 )

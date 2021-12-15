@@ -11,8 +11,8 @@
 package payment
 
 import (
-	"go2o/core/domain/interface/promotion"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/promotion"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 // 支付通道

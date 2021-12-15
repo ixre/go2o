@@ -3,10 +3,10 @@ package hfb
 import (
 	"bytes"
 	"encoding/hex"
+	"github.com/ixre/go2o/core/infrastructure"
+	"github.com/ixre/go2o/core/infrastructure/qpay"
 	"github.com/ixre/gof/crypto"
 	"go.etcd.io/etcd/clientv3"
-	"go2o/core/infrastructure"
-	"go2o/core/infrastructure/qpay"
 	"io/ioutil"
 	"net/http"
 	"net/url"

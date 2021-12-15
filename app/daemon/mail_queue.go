@@ -10,10 +10,10 @@ package daemon
 
 import (
 	"github.com/gomodule/redigo/redis"
-	"go2o/core"
-	"go2o/core/domain/interface/mss"
-	mssIns "go2o/core/infrastructure/mss"
-	"go2o/core/variable"
+	"github.com/ixre/go2o/core"
+	"github.com/ixre/go2o/core/domain/interface/mss"
+	mssIns "github.com/ixre/go2o/core/infrastructure/mss"
+	"github.com/ixre/go2o/core/variable"
 	"strconv"
 	"time"
 )

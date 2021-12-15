@@ -1,9 +1,9 @@
 package order
 
 import (
-	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/payment"
-	"go2o/core/domain/interface/promotion"
+	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/payment"
+	"github.com/ixre/go2o/core/domain/interface/promotion"
 )
 
 type (

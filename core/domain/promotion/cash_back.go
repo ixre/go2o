@@ -10,8 +10,8 @@ package promotion
 
 import (
 	"errors"
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/promotion"
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"regexp"
 )
 

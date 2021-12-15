@@ -3,9 +3,9 @@ package api
 import (
 	"context"
 	"errors"
+	"github.com/ixre/go2o/core/service"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/api"
-	"go2o/core/service"
-	"go2o/core/service/proto"
 )
 
 /**

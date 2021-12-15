@@ -7,7 +7,7 @@ package coding
 
 import (
 	"fmt"
-	"go2o/core/infrastructure/gen/rsc/gf256"
+	"github.com/ixre/go2o/core/infrastructure/gen/rsc/gf256"
 	"strconv"
 	"strings"
 )

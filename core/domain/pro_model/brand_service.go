@@ -1,6 +1,6 @@
 package promodel
 
-import "go2o/core/domain/interface/pro_model"
+import "github.com/ixre/go2o/core/domain/interface/pro_model"
 
 var _ promodel.IBrandService = new(brandServiceImpl)
 

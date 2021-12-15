@@ -2,11 +2,11 @@ package cart
 
 import (
 	"errors"
-	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"time"
 )
 

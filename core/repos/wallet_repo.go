@@ -3,10 +3,10 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
+	wi "github.com/ixre/go2o/core/domain/wallet"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"go2o/core/domain/interface/wallet"
-	wi "go2o/core/domain/wallet"
 	"log"
 )
 

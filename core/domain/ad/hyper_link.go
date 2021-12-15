@@ -9,7 +9,7 @@
 package ad
 
 import (
-	"go2o/core/domain/interface/ad"
+	"github.com/ixre/go2o/core/domain/interface/ad"
 )
 
 var _ ad.IHyperLinkAd = new(HyperLinkAdImpl)

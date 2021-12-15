@@ -10,10 +10,10 @@
 package order
 
 import (
-	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/payment"
-	"go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/payment"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 // 自动拆单应在下单前完成

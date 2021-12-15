@@ -9,11 +9,11 @@
 package query
 
 import (
+	"github.com/ixre/go2o/core/infrastructure"
+	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/storage"
-	"go2o/core/infrastructure"
-	"go2o/core/variable"
 	"regexp"
 )
 
