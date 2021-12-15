@@ -62,6 +62,7 @@ type (
 		CreateAd(*Ad) IAd
 		// 设置广告
 		SetAd(posId, adId int64) error
+		QueryAdvertisement(keys []string) map[string]IAd
 	}
 
 	// IAd 广告接口
@@ -233,5 +234,7 @@ type (
 		GetGroups() []string
 		CreateAdPosition(v *Position) IAdPosition
 		QueryAdList(keyword string, size int) []*Ad
+		// GetPositions 获取所有广告位
+		GetPositions() []*Position
 	}
 )

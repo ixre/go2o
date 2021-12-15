@@ -151,7 +151,7 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 	}
 	// 获取角色的权限
 	rolesList := p.dao.SelectPermRole(
-		fmt.Sprintf("id IN (%s)", util.JoinIntArray(roleList, ",")))
+		fmt.Sprintf("id IN (%_s)", util.JoinIntArray(roleList, ",")))
 	permissions := make([]string, len(roles))
 	for i, v := range rolesList {
 		permissions[i] = v.Permission
@@ -595,7 +595,7 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 	})
 	if len(deleted) > 0 {
 		p.dao.BatchDeletePermRoleRes(
-			fmt.Sprintf("role_id = %d AND res_id IN (%s)",
+			fmt.Sprintf("role_id = %d AND res_id IN (%_s)",
 				r.RoleId, util.JoinIntArray(deleted, ",")))
 	}
 	return p.error(nil), nil
@@ -833,7 +833,7 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 	})
 	if len(deleted) > 0 {
 		p.dao.BatchDeletePermUserRole(
-			fmt.Sprintf("user_id = %d AND role_id IN (%s)",
+			fmt.Sprintf("user_id = %d AND role_id IN (%_s)",
 				userId, util.JoinIntArray(deleted, ",")))
 	}
 	return nil

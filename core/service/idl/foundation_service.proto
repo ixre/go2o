@@ -14,6 +14,9 @@ service FoundationService {
     /** 替换敏感词 */
     rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String) {}
 
+    /** 清除缓存 */
+    rpc CleanCache(CleanCacheRequest) returns (CleanCacheResponse){}
+
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
     rpc GetSmsApi (String) returns (SSmsApi) {
     }

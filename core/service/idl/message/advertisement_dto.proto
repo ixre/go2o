@@ -157,5 +157,19 @@ message ImageIdRequest {
   int64 ImageId = 3;
 }
 
+// 查询广告数据
+message QueryAdvertisementDataRequest{
+  // 广告用户编号
+  int64 AdUserId = 1;
+  //　广告位键
+  repeated string Keys = 2;
+}
 
+// 查询广告数据
+message QueryAdvertisementDataResponse{
+  // 广告用户编号
+  int64 AdUserId = 1;
+  //　广告位键
+  map<string,SAdvertisementDto> Value = 2;
+}
 

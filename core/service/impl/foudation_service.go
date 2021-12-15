@@ -11,6 +11,7 @@ package impl
 
 import (
 	"context"
+	"github.com/ixre/gof/storage"
 	de "go2o/core/domain/interface/domain"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/registry"
@@ -30,7 +31,17 @@ type foundationService struct {
 	_rep         valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 	notifyRepo   notify.INotifyRepo
+	_s           storage.Interface
 	serviceUtil
+}
+
+func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo notify.INotifyRepo) *foundationService {
+	return &foundationService{
+		_rep:         rep,
+		_s:           s,
+		notifyRepo:   notifyRepo,
+		registryRepo: registryRepo,
+	}
 }
 
 // 检测是否包含敏感词
@@ -45,12 +56,17 @@ func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.Replace
 	return &proto.String{Value: v}, nil
 }
 
-func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, notifyRepo notify.INotifyRepo) *foundationService {
-	return &foundationService{
-		_rep:         rep,
-		notifyRepo:   notifyRepo,
-		registryRepo: registryRepo,
+func (s *foundationService) CleanCache(_ context.Context, request *proto.CleanCacheRequest) (*proto.CleanCacheResponse, error) {
+	var count = 0
+	if len(request.Prefix) > 0 {
+		count, _ = s._s.DeleteWith(request.Prefix)
+	} else if len(request.Key) > 0 {
+		s._s.Delete(request.Key)
+		count = 1
 	}
+	return &proto.CleanCacheResponse{
+		Count: int32(count),
+	}, nil
 }
 
 // 保存短信API凭据
@@ -124,15 +140,15 @@ func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.Boar
 
 //
 //// 删除值
-//func (s *foundationService) DeleteValue(_ context.Context, s2 *proto.String) (*proto.Result, error) {
-//	err := s._rep.DeleteValue(s2.Value)
-//	return s.result(err), nil
+//func (_s *foundationService) DeleteValue(_ context.Context, s2 *proto.String) (*proto.Result, error) {
+//	err := _s._rep.DeleteValue(s2.Value)
+//	return _s.result(err), nil
 //}
 //
 //// 根据前缀获取值
-//func (s *foundationService) GetValuesByPrefix(_ context.Context, s2 *proto.String) (*proto.StringMap, error) {
+//func (_s *foundationService) GetValuesByPrefix(_ context.Context, s2 *proto.String) (*proto.StringMap, error) {
 //	return &proto.StringMap{
-//		Value: s._rep.GetValues(s2.Value),
+//		Value: _s._rep.GetValues(s2.Value),
 //	}, nil
 //}
 
@@ -201,7 +217,7 @@ func (s *foundationService) GetAllSsoApp(_ context.Context, _ *proto.Empty) (*pr
 // 创建同步登录的地址
 func (s *foundationService) GetSyncLoginUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
 	panic("not implement")
-	//return fmt.Sprintf("%s://%s%s/auth?return_url=%s",
+	//return fmt.Sprintf("%_s://%_s%_s/auth?return_url=%_s",
 	//	consts.DOMAIN_PASSPORT_PROTO, consts.DOMAIN_PREFIX_PASSPORT,
 	//	variable.Domain, returnUrl), nil
 }
@@ -285,7 +301,7 @@ func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*p
 
 // 获取短信设置
 func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
-	//return s._rep.GetSmsApiSet()
+	//return _s._rep.GetSmsApiSet()
 	//todo: will remove
 	return notify.SmsApiSet{}
 }

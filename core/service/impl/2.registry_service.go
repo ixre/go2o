@@ -26,6 +26,11 @@ type registryService struct {
 	serviceUtil
 }
 
+func (s *registryService) GetGroups(c context.Context, empty *proto.Empty) (*proto.RegistryGroupResponse, error) {
+	var arr = s.registryRepo.GetGroups()
+	return &proto.RegistryGroupResponse{Value: arr}, nil
+}
+
 func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *registryService {
 	return &registryService{
 		_rep:         rep,
@@ -78,7 +83,15 @@ func (s *registryService) Search(_ context.Context, r *proto.RegistrySearchReque
 	return &proto.StringMap{Value: mp}, nil
 }
 
-// 按键前缀获取键数据
+func (s *registryService) GetRegistry(_ context.Context, key *proto.String) (*proto.SRegistry, error) {
+	it := s.registryRepo.Get(key.Value)
+	if it != nil {
+		return s.parseRegistryDto(it.Value()), nil
+	}
+	return nil, nil
+}
+
+// FindRegistries 按键前缀获取键数据
 func (s *registryService) FindRegistries(_ context.Context, prefix *proto.String) (*proto.StringMap, error) {
 	mp := make(map[string]string)
 	for _, k := range s.registryRepo.SearchRegistry(prefix.Value) {
@@ -94,16 +107,21 @@ func (s *registryService) SearchRegistry(_ context.Context, key *proto.String) (
 	arr := s.registryRepo.SearchRegistry(key.Value)
 	list := make([]*proto.SRegistry, len(arr))
 	for i, a := range arr {
-		list[i] = &proto.SRegistry{
-			Key:          a.Key,
-			Value:        a.Value,
-			DefaultValue: a.DefaultValue,
-			Options:      a.Options,
-			Flag:         int32(a.Flag),
-			Description:  a.Description,
-		}
+		list[i] = s.parseRegistryDto(a)
 	}
 	return &proto.RegistriesResponse{Value: list}, nil
+}
+
+func (s *registryService) parseRegistryDto(a registry.Registry) *proto.SRegistry {
+	return &proto.SRegistry{
+		Key:          a.Key,
+		Value:        a.Value,
+		Group:        a.Group,
+		DefaultValue: a.DefaultValue,
+		Options:      a.Options,
+		Flag:         int32(a.Flag),
+		Description:  a.Description,
+	}
 }
 
 // 创建用户自定义注册项
@@ -115,6 +133,7 @@ func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCre
 		Key:          r.Key,
 		Value:        r.DefaultValue,
 		DefaultValue: r.DefaultValue,
+		Group:        "自定义",
 		Options:      "",
 		Flag:         registry.FlagUserDefine,
 		Description:  r.Description,

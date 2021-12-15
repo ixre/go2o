@@ -4,6 +4,17 @@ option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 
+// 清除缓存请求
+message CleanCacheRequest{
+    string Prefix = 1;
+    string Key = 2;
+}
+
+// 清除缓存响应
+message CleanCacheResponse{
+    int32 Count = 1;
+}
+
 message SmsApiSaveRequest {
     string Provider = 1;
     SSmsApi Api = 2;

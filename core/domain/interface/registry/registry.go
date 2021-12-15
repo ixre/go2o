@@ -22,6 +22,8 @@ type Registry struct {
 	DefaultValue string `db:"default_value"`
 	// 可选值
 	Options string `db:"options"`
+	// 分组
+	Group string `db:"group_name"`
 	// 是否用户定义,0:否,1:是
 	Flag int `db:"flag"`
 	// 描述
@@ -75,6 +77,8 @@ type IRegistryRepo interface {
 	Merge(registries []*Registry) error
 	// 搜索注册表
 	SearchRegistry(key string) []Registry
+	// 获取分组
+	GetGroups() []string
 }
 
 func KeyFormat(s string) string {

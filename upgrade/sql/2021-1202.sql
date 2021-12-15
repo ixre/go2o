@@ -452,3 +452,10 @@ COMMENT ON COLUMN public.ad_hyperlink.link_url
     IS '链接地址';
 
 ALTER TABLE IF EXISTS public.ad_position DROP COLUMN IF EXISTS group_id;
+
+
+ALTER TABLE IF EXISTS public.registry
+    ADD COLUMN group_name character varying(20) DEFAULT '' NOT NULL;
+
+COMMENT ON COLUMN public.registry.group_name
+    IS '分组名称';

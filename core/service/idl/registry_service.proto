@@ -7,68 +7,91 @@ option java_package = "com.github.go2o.rpc";
 
 // 基础服务
 service RegistryService {
-    /** 获取注册表键值,key */
-    rpc GetValue (String) returns (RegistryValueResponse) {
-    }
-    /** 更新注册表值 */
-    rpc UpdateValue (RegistryPair) returns (Result) {
-    }
-    /** 获取键值存储数据字典,keys */
-    rpc GetValues (StringArray) returns (StringMap) {
-    }
-    /** 搜索键值 */
-    rpc Search(RegistrySearchRequest)returns(StringMap) {}
+  /* 获取分组 */
+  rpc GetGroups (Empty) returns (RegistryGroupResponse) {
+  }
 
-    /** 按键前缀获取键数据,prefix*/
-    rpc FindRegistries (String) returns (StringMap) {
-    }
-    /** 更新注册表键值 */
-    rpc UpdateValues (StringMap) returns (Result) {
-    }
-    /** 搜索注册表,keyword */
-    rpc SearchRegistry (String) returns (RegistriesResponse) {
-    }
-    /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
-    rpc CreateRegistry (RegistryCreateRequest) returns (Result) {
-    }
+  /** 获取注册项 */
+  rpc GetRegistry(String) returns (SRegistry){
+  }
+
+  /** 获取注册表键值,key */
+  rpc GetValue (String) returns (RegistryValueResponse) {
+  }
+
+  /** 更新注册表值 */
+  rpc UpdateValue (RegistryPair) returns (Result) {
+  }
+
+  /** 获取键值存储数据字典,keys */
+  rpc GetValues (StringArray) returns (StringMap) {
+  }
+
+  /** 更新注册表键值 */
+  rpc UpdateValues (StringMap) returns (Result) {
+  }
+
+  /** 搜索键值 */
+  rpc Search(RegistrySearchRequest)returns(StringMap) {}
+
+  /** 按键前缀获取键数据,prefix*/
+  rpc FindRegistries (String) returns (StringMap) {
+  }
+  /** 搜索注册表,keyword */
+  rpc SearchRegistry (String) returns (RegistriesResponse) {
+  }
+  /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
+  rpc CreateRegistry (RegistryCreateRequest) returns (Result) {
+  }
 }
 
 message RegistriesResponse {
-    repeated SRegistry Value =  1;
+  repeated SRegistry Value = 1;
 }
 
 message RegistryPair {
-    string Key = 1;
-    string Value =  2;
+  string Key = 1;
+  string Value = 2;
 }
 
 message RegistryValueResponse {
-    string Value =  1;
-    string ErrMsg = 2;
+  string Value = 1;
+  string ErrMsg = 2;
 }
 
 message RegistryCreateRequest {
-    string Key = 1;
-    string DefaultValue =  2;
-    string Description = 3;
+  // 键
+  string Key = 1;
+  // 分组
+  string Group = 2;
+  // 默认值
+  string DefaultValue = 3;
+  // 描述
+  string Description = 4;
 }
 
 message RegistrySearchRequest {
-    string Key = 1;
+  string Key = 1;
 }
 
 /** 注册表 */
 message SRegistry {
-    /** 键 */
-    string Key = 1;
-    /** 值 */
-    string Value =  2;
-    /** 默认值 */
-    string DefaultValue = 3;
-    /** 可选值 */
-    string Options = 4;
-    /** 标志 */
-    sint32 Flag = 5;
-    /** 描述 */
-    string Description = 6;
+  /** 键 */
+  string Key = 1;
+  /** 值 */
+  string Value = 2;
+  /** 分组 */
+  string Group = 3;
+  /** 默认值 */
+  string DefaultValue = 4;
+  /** 可选值 */
+  string Options = 5;
+  /** 标志 */
+  sint32 Flag = 6;
+  /** 描述 */
+  string Description = 7;
+}
+
+message RegistryGroupResponse{
+  repeated string Value = 1;
 }

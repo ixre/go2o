@@ -34,7 +34,7 @@ func (m *RegistriesResponse) Reset()         { *m = RegistriesResponse{} }
 func (m *RegistriesResponse) String() string { return proto.CompactTextString(m) }
 func (*RegistriesResponse) ProtoMessage()    {}
 func (*RegistriesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_687a3459877a4baa, []int{0}
+	return fileDescriptor_registry_service_61169b50d6b90b36, []int{0}
 }
 func (m *RegistriesResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistriesResponse.Unmarshal(m, b)
@@ -73,7 +73,7 @@ func (m *RegistryPair) Reset()         { *m = RegistryPair{} }
 func (m *RegistryPair) String() string { return proto.CompactTextString(m) }
 func (*RegistryPair) ProtoMessage()    {}
 func (*RegistryPair) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_687a3459877a4baa, []int{1}
+	return fileDescriptor_registry_service_61169b50d6b90b36, []int{1}
 }
 func (m *RegistryPair) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistryPair.Unmarshal(m, b)
@@ -119,7 +119,7 @@ func (m *RegistryValueResponse) Reset()         { *m = RegistryValueResponse{} }
 func (m *RegistryValueResponse) String() string { return proto.CompactTextString(m) }
 func (*RegistryValueResponse) ProtoMessage()    {}
 func (*RegistryValueResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_687a3459877a4baa, []int{2}
+	return fileDescriptor_registry_service_61169b50d6b90b36, []int{2}
 }
 func (m *RegistryValueResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistryValueResponse.Unmarshal(m, b)
@@ -154,9 +154,14 @@ func (m *RegistryValueResponse) GetErrMsg() string {
 }
 
 type RegistryCreateRequest struct {
-	Key                  string   `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key"`
-	DefaultValue         string   `protobuf:"bytes,2,opt,name=DefaultValue,proto3" json:"DefaultValue"`
-	Description          string   `protobuf:"bytes,3,opt,name=Description,proto3" json:"Description"`
+	// 键
+	Key string `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key"`
+	// 分组
+	Group string `protobuf:"bytes,2,opt,name=Group,proto3" json:"Group"`
+	// 默认值
+	DefaultValue string `protobuf:"bytes,3,opt,name=DefaultValue,proto3" json:"DefaultValue"`
+	// 描述
+	Description          string   `protobuf:"bytes,4,opt,name=Description,proto3" json:"Description"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -166,7 +171,7 @@ func (m *RegistryCreateRequest) Reset()         { *m = RegistryCreateRequest{} }
 func (m *RegistryCreateRequest) String() string { return proto.CompactTextString(m) }
 func (*RegistryCreateRequest) ProtoMessage()    {}
 func (*RegistryCreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_687a3459877a4baa, []int{3}
+	return fileDescriptor_registry_service_61169b50d6b90b36, []int{3}
 }
 func (m *RegistryCreateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistryCreateRequest.Unmarshal(m, b)
@@ -189,6 +194,13 @@ var xxx_messageInfo_RegistryCreateRequest proto.InternalMessageInfo
 func (m *RegistryCreateRequest) GetKey() string {
 	if m != nil {
 		return m.Key
+	}
+	return ""
+}
+
+func (m *RegistryCreateRequest) GetGroup() string {
+	if m != nil {
+		return m.Group
 	}
 	return ""
 }
@@ -218,7 +230,7 @@ func (m *RegistrySearchRequest) Reset()         { *m = RegistrySearchRequest{} }
 func (m *RegistrySearchRequest) String() string { return proto.CompactTextString(m) }
 func (*RegistrySearchRequest) ProtoMessage()    {}
 func (*RegistrySearchRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_687a3459877a4baa, []int{4}
+	return fileDescriptor_registry_service_61169b50d6b90b36, []int{4}
 }
 func (m *RegistrySearchRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegistrySearchRequest.Unmarshal(m, b)
@@ -251,14 +263,16 @@ type SRegistry struct {
 	Key string `protobuf:"bytes,1,opt,name=Key,proto3" json:"Key"`
 	// * 值
 	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
+	// * 分组
+	Group string `protobuf:"bytes,3,opt,name=Group,proto3" json:"Group"`
 	// * 默认值
-	DefaultValue string `protobuf:"bytes,3,opt,name=DefaultValue,proto3" json:"DefaultValue"`
+	DefaultValue string `protobuf:"bytes,4,opt,name=DefaultValue,proto3" json:"DefaultValue"`
 	// * 可选值
-	Options string `protobuf:"bytes,4,opt,name=Options,proto3" json:"Options"`
+	Options string `protobuf:"bytes,5,opt,name=Options,proto3" json:"Options"`
 	// * 标志
-	Flag int32 `protobuf:"zigzag32,5,opt,name=Flag,proto3" json:"Flag"`
+	Flag int32 `protobuf:"zigzag32,6,opt,name=Flag,proto3" json:"Flag"`
 	// * 描述
-	Description          string   `protobuf:"bytes,6,opt,name=Description,proto3" json:"Description"`
+	Description          string   `protobuf:"bytes,7,opt,name=Description,proto3" json:"Description"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -268,7 +282,7 @@ func (m *SRegistry) Reset()         { *m = SRegistry{} }
 func (m *SRegistry) String() string { return proto.CompactTextString(m) }
 func (*SRegistry) ProtoMessage()    {}
 func (*SRegistry) Descriptor() ([]byte, []int) {
-	return fileDescriptor_registry_service_687a3459877a4baa, []int{5}
+	return fileDescriptor_registry_service_61169b50d6b90b36, []int{5}
 }
 func (m *SRegistry) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SRegistry.Unmarshal(m, b)
@@ -302,6 +316,13 @@ func (m *SRegistry) GetValue() string {
 	return ""
 }
 
+func (m *SRegistry) GetGroup() string {
+	if m != nil {
+		return m.Group
+	}
+	return ""
+}
+
 func (m *SRegistry) GetDefaultValue() string {
 	if m != nil {
 		return m.DefaultValue
@@ -330,6 +351,44 @@ func (m *SRegistry) GetDescription() string {
 	return ""
 }
 
+type RegistryGroupResponse struct {
+	Value                []string `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RegistryGroupResponse) Reset()         { *m = RegistryGroupResponse{} }
+func (m *RegistryGroupResponse) String() string { return proto.CompactTextString(m) }
+func (*RegistryGroupResponse) ProtoMessage()    {}
+func (*RegistryGroupResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_registry_service_61169b50d6b90b36, []int{6}
+}
+func (m *RegistryGroupResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RegistryGroupResponse.Unmarshal(m, b)
+}
+func (m *RegistryGroupResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RegistryGroupResponse.Marshal(b, m, deterministic)
+}
+func (dst *RegistryGroupResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegistryGroupResponse.Merge(dst, src)
+}
+func (m *RegistryGroupResponse) XXX_Size() int {
+	return xxx_messageInfo_RegistryGroupResponse.Size(m)
+}
+func (m *RegistryGroupResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegistryGroupResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RegistryGroupResponse proto.InternalMessageInfo
+
+func (m *RegistryGroupResponse) GetValue() []string {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*RegistriesResponse)(nil), "RegistriesResponse")
 	proto.RegisterType((*RegistryPair)(nil), "RegistryPair")
@@ -337,6 +396,7 @@ func init() {
 	proto.RegisterType((*RegistryCreateRequest)(nil), "RegistryCreateRequest")
 	proto.RegisterType((*RegistrySearchRequest)(nil), "RegistrySearchRequest")
 	proto.RegisterType((*SRegistry)(nil), "SRegistry")
+	proto.RegisterType((*RegistryGroupResponse)(nil), "RegistryGroupResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -351,18 +411,22 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type RegistryServiceClient interface {
+	// 获取分组
+	GetGroups(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RegistryGroupResponse, error)
+	// * 获取注册项
+	GetRegistry(ctx context.Context, in *String, opts ...grpc.CallOption) (*SRegistry, error)
 	// * 获取注册表键值,key
 	GetValue(ctx context.Context, in *String, opts ...grpc.CallOption) (*RegistryValueResponse, error)
 	// * 更新注册表值
 	UpdateValue(ctx context.Context, in *RegistryPair, opts ...grpc.CallOption) (*Result, error)
 	// * 获取键值存储数据字典,keys
 	GetValues(ctx context.Context, in *StringArray, opts ...grpc.CallOption) (*StringMap, error)
+	// * 更新注册表键值
+	UpdateValues(ctx context.Context, in *StringMap, opts ...grpc.CallOption) (*Result, error)
 	// * 搜索键值
 	Search(ctx context.Context, in *RegistrySearchRequest, opts ...grpc.CallOption) (*StringMap, error)
 	// * 按键前缀获取键数据,prefix
 	FindRegistries(ctx context.Context, in *String, opts ...grpc.CallOption) (*StringMap, error)
-	// * 更新注册表键值
-	UpdateValues(ctx context.Context, in *StringMap, opts ...grpc.CallOption) (*Result, error)
 	// * 搜索注册表,keyword
 	SearchRegistry(ctx context.Context, in *String, opts ...grpc.CallOption) (*RegistriesResponse, error)
 	// * 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法
@@ -375,6 +439,24 @@ type registryServiceClient struct {
 
 func NewRegistryServiceClient(cc *grpc.ClientConn) RegistryServiceClient {
 	return &registryServiceClient{cc}
+}
+
+func (c *registryServiceClient) GetGroups(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RegistryGroupResponse, error) {
+	out := new(RegistryGroupResponse)
+	err := c.cc.Invoke(ctx, "/RegistryService/GetGroups", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registryServiceClient) GetRegistry(ctx context.Context, in *String, opts ...grpc.CallOption) (*SRegistry, error) {
+	out := new(SRegistry)
+	err := c.cc.Invoke(ctx, "/RegistryService/GetRegistry", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *registryServiceClient) GetValue(ctx context.Context, in *String, opts ...grpc.CallOption) (*RegistryValueResponse, error) {
@@ -404,6 +486,15 @@ func (c *registryServiceClient) GetValues(ctx context.Context, in *StringArray, 
 	return out, nil
 }
 
+func (c *registryServiceClient) UpdateValues(ctx context.Context, in *StringMap, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/RegistryService/UpdateValues", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *registryServiceClient) Search(ctx context.Context, in *RegistrySearchRequest, opts ...grpc.CallOption) (*StringMap, error) {
 	out := new(StringMap)
 	err := c.cc.Invoke(ctx, "/RegistryService/Search", in, out, opts...)
@@ -416,15 +507,6 @@ func (c *registryServiceClient) Search(ctx context.Context, in *RegistrySearchRe
 func (c *registryServiceClient) FindRegistries(ctx context.Context, in *String, opts ...grpc.CallOption) (*StringMap, error) {
 	out := new(StringMap)
 	err := c.cc.Invoke(ctx, "/RegistryService/FindRegistries", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *registryServiceClient) UpdateValues(ctx context.Context, in *StringMap, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, "/RegistryService/UpdateValues", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -451,18 +533,22 @@ func (c *registryServiceClient) CreateRegistry(ctx context.Context, in *Registry
 
 // RegistryServiceServer is the server API for RegistryService service.
 type RegistryServiceServer interface {
+	// 获取分组
+	GetGroups(context.Context, *Empty) (*RegistryGroupResponse, error)
+	// * 获取注册项
+	GetRegistry(context.Context, *String) (*SRegistry, error)
 	// * 获取注册表键值,key
 	GetValue(context.Context, *String) (*RegistryValueResponse, error)
 	// * 更新注册表值
 	UpdateValue(context.Context, *RegistryPair) (*Result, error)
 	// * 获取键值存储数据字典,keys
 	GetValues(context.Context, *StringArray) (*StringMap, error)
+	// * 更新注册表键值
+	UpdateValues(context.Context, *StringMap) (*Result, error)
 	// * 搜索键值
 	Search(context.Context, *RegistrySearchRequest) (*StringMap, error)
 	// * 按键前缀获取键数据,prefix
 	FindRegistries(context.Context, *String) (*StringMap, error)
-	// * 更新注册表键值
-	UpdateValues(context.Context, *StringMap) (*Result, error)
 	// * 搜索注册表,keyword
 	SearchRegistry(context.Context, *String) (*RegistriesResponse, error)
 	// * 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法
@@ -471,6 +557,42 @@ type RegistryServiceServer interface {
 
 func RegisterRegistryServiceServer(s *grpc.Server, srv RegistryServiceServer) {
 	s.RegisterService(&_RegistryService_serviceDesc, srv)
+}
+
+func _RegistryService_GetGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServiceServer).GetGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/RegistryService/GetGroups",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServiceServer).GetGroups(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RegistryService_GetRegistry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(String)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServiceServer).GetRegistry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/RegistryService/GetRegistry",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServiceServer).GetRegistry(ctx, req.(*String))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _RegistryService_GetValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -527,6 +649,24 @@ func _RegistryService_GetValues_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RegistryService_UpdateValues_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StringMap)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServiceServer).UpdateValues(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/RegistryService/UpdateValues",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServiceServer).UpdateValues(ctx, req.(*StringMap))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RegistryService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegistrySearchRequest)
 	if err := dec(in); err != nil {
@@ -559,24 +699,6 @@ func _RegistryService_FindRegistries_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RegistryServiceServer).FindRegistries(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RegistryService_UpdateValues_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StringMap)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RegistryServiceServer).UpdateValues(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/RegistryService/UpdateValues",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistryServiceServer).UpdateValues(ctx, req.(*StringMap))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -622,6 +744,14 @@ var _RegistryService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*RegistryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "GetGroups",
+			Handler:    _RegistryService_GetGroups_Handler,
+		},
+		{
+			MethodName: "GetRegistry",
+			Handler:    _RegistryService_GetRegistry_Handler,
+		},
+		{
 			MethodName: "GetValue",
 			Handler:    _RegistryService_GetValue_Handler,
 		},
@@ -634,16 +764,16 @@ var _RegistryService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _RegistryService_GetValues_Handler,
 		},
 		{
+			MethodName: "UpdateValues",
+			Handler:    _RegistryService_UpdateValues_Handler,
+		},
+		{
 			MethodName: "Search",
 			Handler:    _RegistryService_Search_Handler,
 		},
 		{
 			MethodName: "FindRegistries",
 			Handler:    _RegistryService_FindRegistries_Handler,
-		},
-		{
-			MethodName: "UpdateValues",
-			Handler:    _RegistryService_UpdateValues_Handler,
 		},
 		{
 			MethodName: "SearchRegistry",
@@ -659,37 +789,41 @@ var _RegistryService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("registry_service.proto", fileDescriptor_registry_service_687a3459877a4baa)
+	proto.RegisterFile("registry_service.proto", fileDescriptor_registry_service_61169b50d6b90b36)
 }
 
-var fileDescriptor_registry_service_687a3459877a4baa = []byte{
-	// 444 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0x41, 0x6f, 0xd3, 0x30,
-	0x14, 0x6e, 0xd6, 0xad, 0x5d, 0x5f, 0x43, 0x01, 0x6f, 0x54, 0x51, 0x2f, 0x44, 0x96, 0xd0, 0xca,
-	0x01, 0x83, 0x3a, 0x69, 0x17, 0x4e, 0xc0, 0x36, 0x0e, 0x68, 0x02, 0xa5, 0x82, 0x03, 0x17, 0xe4,
-	0x66, 0x8f, 0xcc, 0x52, 0xa8, 0x83, 0xed, 0x20, 0xe5, 0x17, 0xf1, 0x1b, 0xb9, 0x21, 0x1c, 0xa7,
-	0x4e, 0xda, 0x22, 0xed, 0x94, 0xbc, 0xe7, 0xef, 0x7d, 0xdf, 0xf7, 0x9e, 0x9f, 0x61, 0xaa, 0x30,
-	0x13, 0xda, 0xa8, 0xea, 0x9b, 0x46, 0xf5, 0x4b, 0xa4, 0xc8, 0x0a, 0x25, 0x8d, 0x9c, 0x85, 0x59,
-	0x2e, 0x57, 0x3c, 0xaf, 0x23, 0x7a, 0x01, 0x24, 0xa9, 0x71, 0x02, 0x75, 0x82, 0xba, 0x90, 0x6b,
-	0x8d, 0x24, 0x86, 0xa3, 0x2f, 0x3c, 0x2f, 0x31, 0x0a, 0xe2, 0xfe, 0x7c, 0xbc, 0x00, 0xb6, 0x74,
-	0xa0, 0x2a, 0xa9, 0x0f, 0xe8, 0x05, 0x84, 0x4d, 0xea, 0x13, 0x17, 0x8a, 0x3c, 0x82, 0xfe, 0x07,
-	0xac, 0xa2, 0x20, 0x0e, 0xe6, 0xa3, 0xe4, 0xdf, 0x2f, 0x39, 0x6d, 0x38, 0x0e, 0x6c, 0xce, 0xd5,
-	0x5d, 0xc1, 0x93, 0xa6, 0xce, 0x26, 0x36, 0x92, 0xa7, 0x5e, 0xd2, 0xc3, 0xc9, 0x14, 0x06, 0x57,
-	0x4a, 0xdd, 0xe8, 0xcc, 0xb1, 0xb8, 0x88, 0x4a, 0x4f, 0xf3, 0x4e, 0x21, 0x37, 0x98, 0xe0, 0xcf,
-	0x12, 0xb5, 0xd9, 0xe3, 0x83, 0x42, 0x78, 0x89, 0xdf, 0x79, 0x99, 0x9b, 0xb6, 0x9d, 0x4e, 0x8e,
-	0xc4, 0x30, 0xbe, 0x44, 0x9d, 0x2a, 0x51, 0x18, 0x21, 0xd7, 0x51, 0xdf, 0x42, 0xda, 0x29, 0xfa,
-	0xdc, 0x0b, 0x2e, 0x91, 0xab, 0xf4, 0xee, 0xbf, 0x82, 0xf4, 0x77, 0x00, 0xa3, 0xcd, 0xbc, 0xee,
-	0x3b, 0x98, 0x1d, 0x9b, 0xfd, 0x3d, 0x36, 0x23, 0x18, 0x7e, 0xb4, 0x76, 0x74, 0x74, 0x68, 0x8f,
-	0x9b, 0x90, 0x10, 0x38, 0xbc, 0xce, 0x79, 0x16, 0x1d, 0xc5, 0xc1, 0xfc, 0x71, 0x62, 0xff, 0xb7,
-	0x9b, 0x1a, 0xec, 0x34, 0xb5, 0xf8, 0x73, 0x00, 0x0f, 0x7d, 0x57, 0x76, 0x49, 0xc8, 0x0b, 0x38,
-	0x7e, 0x8f, 0x4e, 0x6f, 0xc8, 0x96, 0x46, 0x89, 0x75, 0x36, 0x9b, 0xb2, 0xbd, 0x97, 0x46, 0x7b,
-	0xe4, 0x0c, 0xc6, 0x9f, 0x8b, 0x5b, 0x6e, 0xb0, 0xae, 0x78, 0xc0, 0xda, 0x5b, 0x31, 0x1b, 0xb2,
-	0x04, 0x75, 0x99, 0x1b, 0x0b, 0x1c, 0x35, 0xbc, 0x9a, 0x84, 0x8e, 0xf8, 0x8d, 0x52, 0xbc, 0x9a,
-	0x81, 0x8b, 0x6e, 0x78, 0x41, 0x7b, 0x84, 0xc1, 0xa0, 0x9e, 0x30, 0xf1, 0xaa, 0x9d, 0x91, 0x6f,
-	0xe1, 0xcf, 0x60, 0x72, 0x2d, 0xd6, 0xb7, 0x7e, 0x8b, 0xbd, 0xed, 0x2e, 0xf0, 0x19, 0x84, 0x2d,
-	0xab, 0x9a, 0xb4, 0x4e, 0xdb, 0x46, 0x5f, 0xc1, 0xa4, 0x91, 0x73, 0x57, 0xb8, 0xe1, 0x3b, 0x61,
-	0xbb, 0x6f, 0x85, 0xf6, 0xc8, 0x39, 0x4c, 0x9a, 0x25, 0x74, 0x15, 0xde, 0x79, 0x67, 0x3b, 0x5b,
-	0x32, 0x6f, 0x9f, 0xc2, 0x49, 0x2a, 0x7f, 0xb0, 0x4c, 0x98, 0xbb, 0x72, 0xc5, 0x32, 0xb9, 0x90,
-	0x4c, 0x15, 0xe9, 0xd7, 0x63, 0xf6, 0xf2, 0xb5, 0x7d, 0x99, 0xab, 0x81, 0xfd, 0x9c, 0xff, 0x0d,
-	0x00, 0x00, 0xff, 0xff, 0xc1, 0xa6, 0xb4, 0xc8, 0xc8, 0x03, 0x00, 0x00,
+var fileDescriptor_registry_service_61169b50d6b90b36 = []byte{
+	// 505 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x94, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0xc7, 0x63, 0x9c, 0x3a, 0xcd, 0xc4, 0x04, 0xd8, 0x96, 0xc8, 0xca, 0x05, 0x6b, 0x05, 0x6a,
+	0x38, 0x64, 0x41, 0xa9, 0xd4, 0x0b, 0x27, 0xa0, 0x69, 0x0e, 0xa8, 0x02, 0x39, 0x82, 0x03, 0x17,
+	0xb4, 0x71, 0x07, 0xd7, 0x92, 0x1b, 0x9b, 0xdd, 0x35, 0x92, 0x1f, 0x80, 0xc7, 0xe2, 0x15, 0x78,
+	0x26, 0xd4, 0xf5, 0xc7, 0xda, 0x69, 0x40, 0x3d, 0x65, 0x67, 0x76, 0xe6, 0xbf, 0xbf, 0x99, 0xcc,
+	0x18, 0x26, 0x02, 0xa3, 0x58, 0x2a, 0x51, 0x7c, 0x93, 0x28, 0x7e, 0xc6, 0x21, 0xb2, 0x4c, 0xa4,
+	0x2a, 0x9d, 0xba, 0x51, 0x92, 0x6e, 0x78, 0x52, 0x5a, 0xf4, 0x0c, 0x48, 0x50, 0xc6, 0xc5, 0x28,
+	0x03, 0x94, 0x59, 0xba, 0x95, 0x48, 0x7c, 0x38, 0xf8, 0xc2, 0x93, 0x1c, 0x3d, 0xcb, 0xb7, 0x67,
+	0xa3, 0x05, 0xb0, 0x75, 0x15, 0x54, 0x04, 0xe5, 0x05, 0x3d, 0x03, 0xb7, 0x76, 0x7d, 0xe2, 0xb1,
+	0x20, 0x8f, 0xc1, 0xfe, 0x80, 0x85, 0x67, 0xf9, 0xd6, 0x6c, 0x18, 0xdc, 0x1e, 0xc9, 0x71, 0xad,
+	0xf1, 0x40, 0xfb, 0xaa, 0xbc, 0x25, 0x3c, 0xad, 0xf3, 0xb4, 0xa3, 0x79, 0xf2, 0xd8, 0x3c, 0x69,
+	0xc2, 0xc9, 0x04, 0x9c, 0xa5, 0x10, 0x97, 0x32, 0xaa, 0x54, 0x2a, 0x8b, 0xfe, 0xb2, 0x8c, 0xce,
+	0x7b, 0x81, 0x5c, 0x61, 0x80, 0x3f, 0x72, 0x94, 0x6a, 0x3f, 0xc8, 0x4a, 0xa4, 0x79, 0x56, 0x83,
+	0x68, 0x83, 0x50, 0x70, 0xcf, 0xf1, 0x3b, 0xcf, 0x13, 0x55, 0x3e, 0x6b, 0xeb, 0xcb, 0x8e, 0x8f,
+	0xf8, 0x30, 0x3a, 0x47, 0x19, 0x8a, 0x38, 0x53, 0x71, 0xba, 0xf5, 0xfa, 0x3a, 0xa4, 0xed, 0xa2,
+	0x2f, 0x0d, 0xc6, 0x1a, 0xb9, 0x08, 0xaf, 0xff, 0x89, 0x41, 0x7f, 0x5b, 0x30, 0x6c, 0xda, 0x78,
+	0xdf, 0x7e, 0x19, 0x78, 0xfb, 0x7f, 0xf0, 0xfd, 0x3d, 0xf0, 0x1e, 0x0c, 0x3e, 0x6a, 0x48, 0xe9,
+	0x1d, 0xe8, 0xeb, 0xda, 0x24, 0x04, 0xfa, 0x17, 0x09, 0x8f, 0x3c, 0xc7, 0xb7, 0x66, 0x4f, 0x02,
+	0x7d, 0xde, 0x2d, 0x75, 0x70, 0xb7, 0xd4, 0xb9, 0x29, 0x55, 0x43, 0xec, 0xfb, 0xe7, 0xec, 0x06,
+	0x7c, 0xf1, 0xc7, 0x86, 0x47, 0xa6, 0x35, 0x7a, 0x00, 0xc9, 0x1c, 0x86, 0x2b, 0x54, 0x3a, 0x5b,
+	0x12, 0x87, 0x2d, 0x6f, 0x32, 0x55, 0x4c, 0x27, 0x6c, 0xaf, 0x2c, 0xed, 0x91, 0xe7, 0x30, 0x5a,
+	0xa1, 0x6a, 0x5a, 0x36, 0x60, 0x6b, 0x25, 0xe2, 0x6d, 0x34, 0x6d, 0x8d, 0x23, 0xed, 0x91, 0x39,
+	0x1c, 0xae, 0xb0, 0xaa, 0xb9, 0x09, 0x31, 0xa2, 0x9d, 0x29, 0xa3, 0x3d, 0x72, 0x02, 0xa3, 0xcf,
+	0xd9, 0x15, 0x57, 0x58, 0x66, 0x3c, 0x64, 0xed, 0x31, 0x9e, 0x0e, 0x58, 0x80, 0x32, 0x4f, 0x94,
+	0x0e, 0x1c, 0xd6, 0xba, 0x92, 0xb8, 0x95, 0xf0, 0x5b, 0x21, 0x78, 0x71, 0x0b, 0xa0, 0xad, 0x4b,
+	0x9e, 0xd1, 0x1e, 0x79, 0x01, 0x6e, 0x4b, 0x51, 0x92, 0xd6, 0x6d, 0x5b, 0x8f, 0x81, 0x53, 0x8e,
+	0x08, 0x31, 0x70, 0x9d, 0x99, 0xd9, 0x91, 0x3d, 0x81, 0xf1, 0x45, 0xbc, 0xbd, 0x32, 0xdb, 0xd9,
+	0x69, 0x40, 0x2b, 0xf0, 0x35, 0x8c, 0x6b, 0x9d, 0xdd, 0x4e, 0x1d, 0xb1, 0xbb, 0xcb, 0x4d, 0x7b,
+	0xe4, 0x14, 0xc6, 0xf5, 0xd2, 0x54, 0x19, 0x06, 0xa9, 0xb3, 0x4d, 0x2d, 0xfe, 0x77, 0xcf, 0xe0,
+	0x28, 0x4c, 0x6f, 0x58, 0x14, 0xab, 0xeb, 0x7c, 0xc3, 0xa2, 0x74, 0x91, 0x32, 0x91, 0x85, 0x5f,
+	0x0f, 0xd9, 0xab, 0x37, 0xfa, 0x53, 0xb2, 0x71, 0xf4, 0xcf, 0xe9, 0xdf, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x4d, 0xd9, 0xa1, 0xf2, 0x79, 0x04, 0x00, 0x00,
 }
