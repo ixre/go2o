@@ -199,7 +199,7 @@ func createHttpRequest(api *SmsApi, body string) (*http.Request, error) {
 	var err error
 	if api.Method == "POST" {
 		req, err = http.NewRequest(api.Method, api.ApiUrl, strings.NewReader(body))
-		req.Header.Set("Content-AdType", "application/x-www-form-urlencoded")
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	} else {
 		url := api.ApiUrl
 		if strings.Index(api.ApiUrl, "?") == -1 {
