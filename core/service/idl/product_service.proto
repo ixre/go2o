@@ -56,7 +56,7 @@ service ProductService {
     rpc DeleteCategory (Int64) returns (Result) {
     }
     // 保存产品分类
-    rpc SaveCategory (SProductCategory) returns (Result) {
+    rpc SaveCategory (SaveProductCategoryRequest) returns (SaveProductCategoryResponse) {
     }
     // 获取分类树形数据
     rpc GetCategoryTreeNode (CategoryTreeRequest) returns (STreeNode) {
@@ -273,6 +273,42 @@ message SProductCategory {
     repeated SProductBrand Brands = 16;
     /** 子分类 */
     repeated SProductCategory Children = 17;
+}
+
+// 保存分类请求
+message SaveProductCategoryRequest{
+    // 编号
+    int64 Id = 1;
+    // 上级分类
+    int64 ParentId = 2;
+    // 产品模型
+    int64 ModelId = 3;
+    // 优先级
+    int32 Priority = 4;
+    // 分类名称
+    string Name = 5;
+    /** 是否为虚拟分类 */
+    bool IsVirtual = 6;
+    /** 分类链接地址 */
+    string CategoryUrl = 7;
+    // 虚拟分类跳转地址
+    string RedirectUrl = 18;
+    /** 图标 */
+    string Icon = 8;
+    /** 图标坐标 */
+    string IconPoint = 9;
+    /** 序号 */
+    int32 SortNum = 11;
+    /** 是否楼层显示 */
+    bool FloorShow = 12;
+    /** 是否启用 */
+    bool Enabled = 13;
+}
+
+// 保存分类响应
+message SaveProductCategoryResponse{
+    string Error = 1;
+    int64 CategoryId = 2;
 }
 
 // 分类树形请求

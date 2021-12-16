@@ -165,7 +165,7 @@ func (p *productService) DeleteCategory(_ context.Context, id *proto.Int64) (*pr
 }
 
 // 保存分类
-func (p *productService) SaveCategory(_ context.Context, category *proto.SProductCategory) (*proto.Result, error) {
+func (p *productService) SaveCategory(_ context.Context, category *proto.SaveProductCategoryRequest) (*proto.SaveProductCategoryResponse, error) {
 	sl := p.catRepo.GlobCatService()
 	var ca product.ICategory
 	v := p.parseCategory(category)
@@ -178,7 +178,10 @@ func (p *productService) SaveCategory(_ context.Context, category *proto.SProduc
 	if err == nil {
 		_, err = ca.Save()
 	}
-	return p.error(err), nil
+	if err != nil{
+		return &proto.SaveProductCategoryResponse{Error: err.Error()},nil
+	}
+	return &proto.SaveProductCategoryResponse{CategoryId:int64(ca.GetDomainId())},nil
 }
 
 // 根据上级编号获取分类列表
@@ -563,7 +566,7 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 	}
 }
 
-func (p *productService) parseCategory(v *proto.SProductCategory) *product.Category {
+func (p *productService) parseCategory(v *proto.SaveProductCategoryRequest) *product.Category {
 	return &product.Category{
 		Id:          int(v.Id),
 		ParentId:    int(v.ParentId),
@@ -575,7 +578,6 @@ func (p *productService) parseCategory(v *proto.SProductCategory) *product.Categ
 		RedirectUrl: v.RedirectUrl,
 		Icon:        v.Icon,
 		IconPoint:   v.IconPoint,
-		Level:       int(v.Level),
 		SortNum:     int(v.SortNum),
 		FloorShow:   types.ElseInt(v.FloorShow, 1, 0),
 		Enabled:     types.ElseInt(v.Enabled, 1, 0),
