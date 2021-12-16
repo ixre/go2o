@@ -143,7 +143,7 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 	return nil
 }
 
-// 获取子栏目的编号
+// GetChildes 获取子栏目的编号
 func (c *categoryImpl) GetChildes() []int {
 	if c.childIdArr == nil {
 		childCats := c.getChildCategories(c.GetDomainId())
