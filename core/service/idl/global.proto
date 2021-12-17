@@ -124,8 +124,8 @@ message STreeNode {
     map<string, string> Data = 6;
     // 子节点
     repeated STreeNode Children = 7;
-    // 是否目录，通常Children有元素,则为true
-    bool Folder = 8;
+    // 是否为叶子节点(下级无节点)
+    bool IsLeaf = 8;
 }
 
 

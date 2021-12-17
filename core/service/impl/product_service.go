@@ -361,24 +361,49 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 	return m.Specs()
 }
 
-// GetCategoryTreeNode 分类
-func (p *productService) GetCategoryTreeNode(_ context.Context, req *proto.CategoryTreeRequest) (*proto.STreeNode, error) {
-	cats := p.catRepo.GlobCatService().GetCategories()
-	rootNode := &proto.STreeNode{
-		Label:    "根节点",
-		Id:       "",
-		Icon:     "",
-		Expand:   true,
-		Children: nil}
-	p.walkCategoryTree(rootNode, 0, cats, 0, req)
-	return rootNode, nil
-}
-
 // 获取分类关联的品牌
 func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 	arr := p.catRepo.GlobCatService().RelationBrands(int(catId))
 	for _, v := range arr {
 		v.Image = format.GetResUrl(v.Image)
+	}
+	return arr
+}
+
+// GetCategoryTreeNode 分类
+func (p *productService) GetCategoryTreeNode(_ context.Context, req *proto.CategoryTreeRequest) (*proto.CategoryTreeResponse, error) {
+	cats := p.catRepo.GlobCatService().GetCategories()
+	nodes := p.loadChildrenNodes(int(req.ParentId), cats, 0, req)
+	return &proto.CategoryTreeResponse{Value: nodes}, nil
+}
+
+func (p *productService) testHasChildren(parentId int, categories []product.ICategory,depth int, req *proto.CategoryTreeRequest)bool{
+	// 遍历子分类
+	for _, v := range categories {
+		cat := v.GetValue()
+		if cat.ParentId == parentId && p.testWalkCondition(req, cat, depth) {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *productService) loadChildrenNodes(parentId int, categories []product.ICategory,
+	depth int, req *proto.CategoryTreeRequest) []*proto.STreeNode {
+	var arr []*proto.STreeNode
+	// 遍历子分类
+	for _, v := range categories {
+		cat := v.GetValue()
+		if cat.ParentId == parentId &&
+			p.testWalkCondition(req, cat, depth) {
+			cNode := &proto.STreeNode{
+				Id:       strconv.Itoa(cat.Id),
+				Label:    cat.Name,
+				Expand:   false,
+				IsLeaf: !p.testHasChildren(cat.Id,categories,depth+1,req),
+			}
+			arr = append(arr, cNode)
+		}
 	}
 	return arr
 }
@@ -398,6 +423,7 @@ func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *
 	}
 	return true
 }
+
 
 func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int,
 	categories []product.ICategory, depth int,

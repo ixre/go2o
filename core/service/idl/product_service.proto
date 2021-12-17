@@ -59,7 +59,7 @@ service ProductService {
     rpc SaveCategory (SaveProductCategoryRequest) returns (SaveProductCategoryResponse) {
     }
     // 获取分类树形数据
-    rpc GetCategoryTreeNode (CategoryTreeRequest) returns (STreeNode) {
+    rpc GetCategoryTreeNode (CategoryTreeRequest) returns (CategoryTreeResponse) {
     }
     // 分类树形
     //rpc CategoryTree(CategoryParentId)returns(SProductCategory){}
@@ -313,10 +313,17 @@ message SaveProductCategoryResponse{
 
 // 分类树形请求
 message CategoryTreeRequest {
+    // 上级编号
+    int64 ParentId = 1;
     // 排除分类编号
-    repeated int64 ExcludeIdList = 1;
+    repeated int64 ExcludeIdList = 2;
     // 层级显示,小于等于0不限制
-    int32 Depth = 2;
+    int32 Depth = 3;
+}
+
+// 分类树形结果
+message CategoryTreeResponse{
+    repeated STreeNode Value = 1;
 }
 
 // 产品
