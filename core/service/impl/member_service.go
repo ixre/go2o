@@ -669,7 +669,7 @@ func (s *memberService) tryLogin(user string, pwd string) (id int64, errCode int
 	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
-		return 0, 2, member.ErrNoSuchMember
+		return 0, 2, de.ErrCredential  // 用户不存在,也返回用户或密码不正确
 	}
 	val := s.repo.GetMember(memberId).GetValue()
 	if val.Pwd != domain.Sha1Pwd(pwd, val.Salt) {
