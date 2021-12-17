@@ -26,7 +26,7 @@ import (
 )
 
 var _ product.ICategoryRepo = new(categoryRepo)
-var categoryPrefix = "go2o:gb:repo:cat:list_"
+var categoryPrefix = "go2o:repo:cat:list_"
 
 type categoryRepo struct {
 	db.Connector
@@ -58,7 +58,7 @@ func (c *categoryRepo) getCategoryCacheKey(id int) string {
 }
 
 func (c *categoryRepo) SaveCategory(v *product.Category) (int, error) {
-	id, err := orm.Save(c.o, v, int(v.Id))
+	id, err := orm.Save(c.o, v, v.Id)
 	// 清理缓存
 	if err == nil {
 		c.storage.Delete(c.getCategoryCacheKey(id))

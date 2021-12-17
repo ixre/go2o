@@ -9,7 +9,6 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 	"golang.org/x/net/context"
-	"strconv"
 )
 
 var _ proto.ProductServiceServer = new(productService)
@@ -361,7 +360,7 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 	return m.Specs()
 }
 
-// 获取分类关联的品牌
+// GetCatBrands 获取分类关联的品牌
 func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 	arr := p.catRepo.GlobCatService().RelationBrands(int(catId))
 	for _, v := range arr {
@@ -371,21 +370,46 @@ func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 }
 
 // GetCategoryTreeNode 分类
-func (p *productService) GetCategoryTreeNode(_ context.Context, req *proto.CategoryTreeRequest) (*proto.CategoryTreeResponse, error) {
-	cats := p.catRepo.GlobCatService().GetCategories()
-	nodes := p.loadChildrenNodes(int(req.ParentId), cats, 0, req)
-	return &proto.CategoryTreeResponse{Value: nodes}, nil
+func (p *productService) GetCategoryTreeNode(_ context.Context, r *proto.CategoryTreeRequest) (*proto.CategoryTreeResponse, error) {
+	arr := p.catRepo.GlobCatService().GetCategories()
+	roots := p.loadChildrenNodes(int(r.ParentId), arr, 0, r)
+	initial := make([]int64,0)
+	// 初始化已选择的节点
+	if r.ParentId <=0 && r.InitialId > 0 {
+		findParent := func(pid int64, arr []product.ICategory) int64 {
+			for _, it := range arr {
+				v := it.GetValue()
+				if v.Id == int(pid) && v.ParentId > 0 {
+					return int64(v.ParentId)
+				}
+			}
+			return pid
+		}
+
+		for pid := r.InitialId;pid > 0;{
+			id := findParent(pid, arr)
+			if id == pid {
+				break
+			}
+			initial = append([]int64{id},initial...)
+			pid = id
+		}
+	}
+	return &proto.CategoryTreeResponse{
+		Value: roots,
+		InitialList: initial,
+	}, nil
 }
 
-func (p *productService) testHasChildren(parentId int, categories []product.ICategory,depth int, req *proto.CategoryTreeRequest)bool{
+func (p *productService) testIsLeaf(parentId int, categories []product.ICategory,depth int, req *proto.CategoryTreeRequest)bool{
 	// 遍历子分类
 	for _, v := range categories {
 		cat := v.GetValue()
 		if cat.ParentId == parentId && p.testWalkCondition(req, cat, depth) {
-			return true
+			return false
 		}
 	}
-	return false
+	return true
 }
 
 func (p *productService) loadChildrenNodes(parentId int, categories []product.ICategory,
@@ -397,10 +421,10 @@ func (p *productService) loadChildrenNodes(parentId int, categories []product.IC
 		if cat.ParentId == parentId &&
 			p.testWalkCondition(req, cat, depth) {
 			cNode := &proto.STreeNode{
-				Id:       strconv.Itoa(cat.Id),
+				Id:       int64(cat.Id),
 				Label:    cat.Name,
 				Expand:   false,
-				IsLeaf: !p.testHasChildren(cat.Id,categories,depth+1,req),
+				IsLeaf:  p.testIsLeaf(cat.Id,categories,depth+1,req),
 			}
 			arr = append(arr, cNode)
 		}
@@ -425,22 +449,22 @@ func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *
 }
 
 
-func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int,
-	categories []product.ICategory, depth int,
+func (p *productService) walkCategoryTree(node *proto.STreeNode, categories []product.ICategory, depth int,
 	req *proto.CategoryTreeRequest) {
+	//node.IsLeaf = true
 	node.Children = []*proto.STreeNode{}
 	// 遍历子分类
 	for _, v := range categories {
 		cat := v.GetValue()
-		if cat.ParentId == parentId &&
+		if cat.ParentId == int(node.Id) &&
 			p.testWalkCondition(req, cat, depth) {
 			cNode := &proto.STreeNode{
-				Id:       strconv.Itoa(cat.Id),
+				Id:       int64(cat.Id),
 				Label:    cat.Name,
 				Expand:   false,
-				Children: nil}
+			}
 			node.Children = append(node.Children, cNode)
-			p.walkCategoryTree(cNode, cat.Id, categories, depth+1, req)
+			p.walkCategoryTree(cNode, categories, depth+1, req)
 		}
 	}
 }

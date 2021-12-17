@@ -111,7 +111,7 @@ message SPagingResult {
 // 树形节点
 message STreeNode {
     // 值
-    string Id =  1;
+    int64 Id =  1;
     // 文本
     string Label = 2;
     // 图标,icon与JS树形控件冲突

@@ -319,11 +319,15 @@ message CategoryTreeRequest {
     repeated int64 ExcludeIdList = 2;
     // 层级显示,小于等于0不限制
     int32 Depth = 3;
+    // 初始化数据ID
+    int64 InitialId = 4;
 }
 
 // 分类树形结果
 message CategoryTreeResponse{
     repeated STreeNode Value = 1;
+    // 返回初始化上级ID列表
+    repeated int64 InitialList = 2;
 }
 
 // 产品

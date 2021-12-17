@@ -574,8 +574,10 @@ message SPermRes {
     string ComponentName = 14;
     /** 缓存 */
     string Cache = 15;
+    /** 是否为叶子节点 */
+    bool IsLeaf = 16;
     /** 子资源 */
-    repeated SPermRes Children = 16;
+    repeated SPermRes Children = 17;
 }
 
 message GetUserResRequest {
@@ -590,10 +592,16 @@ message QueryPermResRequest {
     string Keyword = 1;
     /** 是否只显示菜单 */
     bool OnlyMenu = 2;
+    /** 上级编号 */
+    int64 ParentId = 3;
+    /** 初始化数据ID */
+    int64 InitialId = 4;
 }
 
 message QueryPermResResponse {
     repeated SPermRes List = 1;
+    // 返回初始化上级ID列表
+    repeated int64 InitialList = 2;
 }
 
 message PagingPermRes {

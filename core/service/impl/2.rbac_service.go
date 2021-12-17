@@ -776,18 +776,6 @@ func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*p
 	return p.parsePermRes(v), nil
 }
 
-func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes) {
-	root.Children = []*proto.SPermRes{}
-	for _, v := range arr {
-		if v.Pid == root.Id {
-			c := p.parsePermRes(v)
-			c.Children = make([]*proto.SPermRes, 0)
-			root.Children = append(root.Children, c)
-			p.walkPermRes(c, arr)
-		}
-	}
-}
-
 // 获取PermRes列表
 func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
 	var where string = "1=1"
@@ -797,15 +785,69 @@ func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResR
 	if r.OnlyMenu {
 		where += " AND res_type IN(0,2)"
 	}
-	//todo: 搜索结果不为pid
 	arr := p.dao.SelectPermRes(where + " ORDER BY sort_num ASC")
-	root := proto.SPermRes{}
-	p.walkPermRes(&root, arr)
+	// 获取第一级分类
+	roots := p.queryResChildren(r.ParentId, arr)
+	initial := make([]int64,0)
+
+	// 初始化已选择的节点
+	if r.ParentId <=0 && r.InitialId > 0 {
+		findParent := func(pid int64, arr []*model.PermRes) int64 {
+			for _, v := range arr {
+				if v.Id == pid && v.Pid > 0 {
+					return v.Pid
+				}
+			}
+			return pid
+		}
+		for pid := r.InitialId;pid > 0;{
+			id := findParent(pid, arr)
+			if id == pid {
+				break
+			}
+			initial = append([]int64{int64(id)},initial...)
+			pid = id
+		}
+	}
 	ret := &proto.QueryPermResResponse{
-		List: root.Children,
+		List: roots,
+		InitialList: initial,
 	}
 	return ret, nil
 }
+
+func (p *rbacServiceImpl) queryResChildren(parentId int64, arr []*model.PermRes)[]*proto.SPermRes {
+	var list []*proto.SPermRes
+	for _, v := range arr {
+		if v.Pid != parentId {
+			continue
+		}
+		c := p.parsePermRes(v)
+		c.IsLeaf = true
+		for _, r := range arr {
+			if r.Pid == v.Id {
+				c.IsLeaf = false
+				break
+			}
+		}
+		list = append(list, c)
+	}
+	return list
+}
+
+func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes) {
+	root.IsLeaf = true  // 已经加载子项, 不再懒加载
+	root.Children = []*proto.SPermRes{}
+	for _, v := range arr {
+		if v.Pid == root.Id {
+			c := p.parsePermRes(v)
+			root.Children = append(root.Children, c)
+			p.walkPermRes(c, arr)
+		}
+	}
+}
+
+
 
 func (p *rbacServiceImpl) DeletePermRes(_ context.Context, id *proto.PermResId) (*proto.Result, error) {
 	err := p.dao.DeletePermRes(id.Value)
