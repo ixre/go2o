@@ -183,7 +183,7 @@ func (p *productService) SaveCategory(_ context.Context, category *proto.SavePro
 	return &proto.SaveProductCategoryResponse{CategoryId: int64(ca.GetDomainId())}, nil
 }
 
-// 根据上级编号获取分类列表
+// GetChildren 根据上级编号获取分类列表
 func (p *productService) GetChildren(_ context.Context, id *proto.CategoryParentId) (*proto.ProductCategoriesResponse, error) {
 	ic := p.catRepo.GlobCatService()
 	cats := ic.GetCategories()
@@ -404,59 +404,69 @@ func (p *productService) GetSourceCategories(c context.Context, request *proto.C
 // GetCategoryTreeNode 分类
 func (p *productService) GetCategoryTreeNode(_ context.Context, r *proto.CategoryTreeRequest) (*proto.CategoryTreeResponse, error) {
 	arr := p.catRepo.GlobCatService().GetCategories()
-	roots := p.loadChildrenNodes(int(r.ParentId), arr, 0, r)
-	initial := make([]int64, 0)
-	// 初始化已选择的节点
-	if r.ParentId <= 0 && r.InitialId > 0 {
-		findParent := func(pid int64, arr []product.ICategory) int64 {
-			for _, it := range arr {
-				v := it.GetValue()
-				if v.Id == int(pid) && v.ParentId > 0 {
-					return int64(v.ParentId)
-				}
-			}
-			return pid
-		}
-
-		for pid := r.InitialId; pid > 0; {
-			id := findParent(pid, arr)
-			if id == pid {
-				break
-			}
-			initial = append([]int64{id}, initial...)
-			pid = id
-		}
+	// 懒加载,只加载一级,并设置IsLeaf
+	if r.Lazy {
+		roots := p.lazyLoadChildren(int(r.ParentId), arr,  r)
+		return &proto.CategoryTreeResponse{
+			Value:       roots,
+		}, nil
 	}
+	root := &proto.SCategoryTree{}
+	p.walkLoadCategory(root,arr,r)
+	//initial := make([]int64, 0) //todo: 使用GetSourceCategories代替
+	//// 初始化已选择的节点
+	//if r.ParentId <= 0 && r.InitialId > 0 {
+	//	findParent := func(pid int64, arr []product.ICategory) int64 {
+	//		for _, it := range arr {
+	//			v := it.GetValue()
+	//			if v.Id == int(pid) && v.ParentId > 0 {
+	//				return int64(v.ParentId)
+	//			}
+	//		}
+	//		return pid
+	//	}
+	//
+	//	for pid := r.InitialId; pid > 0; {
+	//		id := findParent(pid, arr)
+	//		if id == pid {
+	//			break
+	//		}
+	//		initial = append([]int64{id}, initial...)
+	//		pid = id
+	//	}
+	//}
 	return &proto.CategoryTreeResponse{
-		Value:       roots,
-		InitialList: initial,
+		Value:       root.Children,
 	}, nil
 }
 
-func (p *productService) testIsLeaf(parentId int, categories []product.ICategory, depth int, req *proto.CategoryTreeRequest) bool {
+// 是否为叶子节点
+func (p *productService) testIsLeaf(parentId int, categories []product.ICategory, req *proto.CategoryTreeRequest) bool {
 	// 遍历子分类
 	for _, v := range categories {
 		cat := v.GetValue()
-		if cat.ParentId == parentId && p.testWalkCondition(req, cat, depth) {
+		if cat.ParentId == parentId && p.testWalkCondition(req, cat) {
 			return false
 		}
 	}
 	return true
 }
 
-func (p *productService) loadChildrenNodes(parentId int, categories []product.ICategory,
-	depth int, req *proto.CategoryTreeRequest) []*proto.STreeNode {
-	var arr []*proto.STreeNode
+// 懒加载下级分类
+func (p *productService) lazyLoadChildren(parentId int, categories []product.ICategory,
+	 req *proto.CategoryTreeRequest) []*proto.SCategoryTree {
+	var arr []*proto.SCategoryTree
 	// 遍历子分类
 	for _, v := range categories {
 		cat := v.GetValue()
 		if cat.ParentId == parentId &&
-			p.testWalkCondition(req, cat, depth) {
-			cNode := &proto.STreeNode{
+			p.testWalkCondition(req, cat) {
+			cNode := &proto.SCategoryTree{
 				Id:     int64(cat.Id),
-				Label:  cat.Name,
-				Expand: false,
-				IsLeaf: p.testIsLeaf(cat.Id, categories, depth+1, req),
+				Name:  cat.Name,
+				Url:cat.CatUrl,
+				Image: cat.Icon,
+				IsLeaf: p.testIsLeaf(cat.Id, categories, req),
 			}
 			arr = append(arr, cNode)
 		}
@@ -465,10 +475,7 @@ func (p *productService) loadChildrenNodes(parentId int, categories []product.IC
 }
 
 // 排除分类
-func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category, depth int) bool {
-	if req.Depth > 0 && int(req.Depth) < depth+1 {
-		return false
-	}
+func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category) bool {
 	if req.ExcludeIdList == nil {
 		return true
 	}
@@ -480,22 +487,23 @@ func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *
 	return true
 }
 
-func (p *productService) walkCategoryTree(node *proto.STreeNode, categories []product.ICategory, depth int,
+// 遍历加载下级分类
+func (p *productService) walkLoadCategory(node *proto.SCategoryTree, categories []product.ICategory,
 	req *proto.CategoryTreeRequest) {
-	//node.IsLeaf = true
-	node.Children = []*proto.STreeNode{}
+	node.Children = []*proto.SCategoryTree{}
 	// 遍历子分类
 	for _, v := range categories {
 		cat := v.GetValue()
 		if cat.ParentId == int(node.Id) &&
-			p.testWalkCondition(req, cat, depth) {
-			cNode := &proto.STreeNode{
-				Id:     int64(cat.Id),
-				Label:  cat.Name,
-				Expand: false,
+			p.testWalkCondition(req, cat) {
+			cNode := &proto.SCategoryTree{
+				Id:    int64(cat.Id),
+				Name: cat.Name,
+				Url:   cat.CatUrl,
+				Image: cat.Icon,
 			}
 			node.Children = append(node.Children, cNode)
-			p.walkCategoryTree(cNode, categories, depth+1, req)
+			p.walkLoadCategory(cNode, categories,req)
 		}
 	}
 }

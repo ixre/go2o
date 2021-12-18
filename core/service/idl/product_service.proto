@@ -314,21 +314,36 @@ message SaveProductCategoryResponse{
     int64 CategoryId = 2;
 }
 
+// 分类树
+message SCategoryTree {
+    // 值
+    int64 Id =  1;
+    // 文本
+    string Name = 2;
+    // 图标,icon与JS树形控件冲突
+    string Image = 3;
+    // 是否展开
+    string Url = 4;
+    // 是否为叶子节点(下级无节点)
+    bool IsLeaf = 5;
+    // 子节点
+    repeated SCategoryTree Children = 6;
+}
+
 // 分类树形请求
 message CategoryTreeRequest {
     // 上级编号
     int64 ParentId = 1;
+    // 是否懒加载
+    bool Lazy = 2;
     // 排除分类编号
-    repeated int64 ExcludeIdList = 2;
-    // 层级显示,小于等于0不限制
-    int32 Depth = 3;
-    // 初始化数据ID
-    int64 InitialId = 4;
+    repeated int64 ExcludeIdList = 3;
 }
+
 
 // 分类树形结果
 message CategoryTreeResponse{
-    repeated STreeNode Value = 1;
+    repeated SCategoryTree Value = 1;
     // 返回初始化上级ID列表
     repeated int64 InitialList = 2;
 }
