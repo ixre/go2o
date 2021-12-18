@@ -344,8 +344,6 @@ message CategoryTreeRequest {
 // 分类树形结果
 message CategoryTreeResponse{
     repeated SCategoryTree Value = 1;
-    // 返回初始化上级ID列表
-    repeated int64 InitialList = 2;
 }
 
 // 分类来源响应

@@ -411,30 +411,10 @@ func (p *productService) GetCategoryTreeNode(_ context.Context, r *proto.Categor
 			Value:       roots,
 		}, nil
 	}
-	root := &proto.SCategoryTree{}
+	root := &proto.SCategoryTree{
+		Id: r.ParentId,
+	}
 	p.walkLoadCategory(root,arr,r)
-	//initial := make([]int64, 0) //todo: 使用GetSourceCategories代替
-	//// 初始化已选择的节点
-	//if r.ParentId <= 0 && r.InitialId > 0 {
-	//	findParent := func(pid int64, arr []product.ICategory) int64 {
-	//		for _, it := range arr {
-	//			v := it.GetValue()
-	//			if v.Id == int(pid) && v.ParentId > 0 {
-	//				return int64(v.ParentId)
-	//			}
-	//		}
-	//		return pid
-	//	}
-	//
-	//	for pid := r.InitialId; pid > 0; {
-	//		id := findParent(pid, arr)
-	//		if id == pid {
-	//			break
-	//		}
-	//		initial = append([]int64{id}, initial...)
-	//		pid = id
-	//	}
-	//}
 	return &proto.CategoryTreeResponse{
 		Value:       root.Children,
 	}, nil
