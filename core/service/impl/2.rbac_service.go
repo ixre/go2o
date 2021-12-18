@@ -788,10 +788,10 @@ func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResR
 	arr := p.dao.SelectPermRes(where + " ORDER BY sort_num ASC")
 	// 获取第一级分类
 	roots := p.queryResChildren(r.ParentId, arr)
-	initial := make([]int64,0)
+	initial := make([]int64, 0)
 
 	// 初始化已选择的节点
-	if r.ParentId <=0 && r.InitialId > 0 {
+	if r.ParentId <= 0 && r.InitialId > 0 {
 		findParent := func(pid int64, arr []*model.PermRes) int64 {
 			for _, v := range arr {
 				if v.Id == pid && v.Pid > 0 {
@@ -800,23 +800,23 @@ func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResR
 			}
 			return pid
 		}
-		for pid := r.InitialId;pid > 0;{
+		for pid := r.InitialId; pid > 0; {
 			id := findParent(pid, arr)
 			if id == pid {
 				break
 			}
-			initial = append([]int64{int64(id)},initial...)
+			initial = append([]int64{int64(id)}, initial...)
 			pid = id
 		}
 	}
 	ret := &proto.QueryPermResResponse{
-		List: roots,
+		List:        roots,
 		InitialList: initial,
 	}
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) queryResChildren(parentId int64, arr []*model.PermRes)[]*proto.SPermRes {
+func (p *rbacServiceImpl) queryResChildren(parentId int64, arr []*model.PermRes) []*proto.SPermRes {
 	var list []*proto.SPermRes
 	for _, v := range arr {
 		if v.Pid != parentId {
@@ -836,7 +836,7 @@ func (p *rbacServiceImpl) queryResChildren(parentId int64, arr []*model.PermRes)
 }
 
 func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes) {
-	root.IsLeaf = true  // 已经加载子项, 不再懒加载
+	root.IsLeaf = true // 已经加载子项, 不再懒加载
 	root.Children = []*proto.SPermRes{}
 	for _, v := range arr {
 		if v.Pid == root.Id {
@@ -846,8 +846,6 @@ func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes
 		}
 	}
 }
-
-
 
 func (p *rbacServiceImpl) DeletePermRes(_ context.Context, id *proto.PermResId) (*proto.Result, error) {
 	err := p.dao.DeletePermRes(id.Value)

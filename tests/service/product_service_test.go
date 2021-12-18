@@ -33,3 +33,14 @@ func TestCategoryInitialTreeNode(t *testing.T) {
 	bytes, _ := json.Marshal(list.Value)
 	t.Log(string(bytes))
 }
+
+func TestSourceCategories(t *testing.T) {
+	list, err := impl.ProductService.GetSourceCategories(context.TODO(), &proto.CategoryIdRequest{
+		Id: 2174,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	bytes, _ := json.Marshal(list.List)
+	t.Log(string(bytes))
+}

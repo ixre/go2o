@@ -61,6 +61,7 @@ service ProductService {
     // 获取分类树形数据
     rpc GetCategoryTreeNode (CategoryTreeRequest) returns (CategoryTreeResponse) {
     }
+    rpc GetSourceCategories(CategoryIdRequest) returns(SourceCategoriesResponse) {}
     // 分类树形
     //rpc CategoryTree(CategoryParentId)returns(SProductCategory){}
     // 获取分类关联的品牌
@@ -90,7 +91,9 @@ service ProductService {
     //rpc GetAttrArray_(productId int64) []*product.Attr
 }
 
-
+message CategoryIdRequest{
+    int64 Id = 1;
+}
 
 message DeleteProductRequest {
     int64 SellerId = 1;
@@ -328,6 +331,11 @@ message CategoryTreeResponse{
     repeated STreeNode Value = 1;
     // 返回初始化上级ID列表
     repeated int64 InitialList = 2;
+}
+
+// 分类来源响应
+message SourceCategoriesResponse{
+    repeated SProductCategory List = 1;
 }
 
 // 产品

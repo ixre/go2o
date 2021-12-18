@@ -1,4 +1,4 @@
-package tests
+package domain
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/item"
@@ -112,5 +112,27 @@ func TestItemWholesaleSkuPrice(t *testing.T) {
 	if price3 != skuPrice-20 {
 		t.Error("购买1件,价格不正确")
 		t.Fail()
+	}
+}
+
+// 测试修改非SKU商品价格
+func TestUpdateItemNoSkuPrice(t *testing.T) {
+	var itemId int64 = 50
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	if it == nil {
+		t.Error(item.ErrNoSuchItem)
+		t.Failed()
+	}
+	v := it.GetValue()
+	t.Log(v.Price)
+	v.Price += 100
+	err := it.SetValue(v)
+	if err == nil {
+		_, err = it.Save()
+	}
+	if err != nil {
+		t.Error(err)
+		t.Failed()
 	}
 }
