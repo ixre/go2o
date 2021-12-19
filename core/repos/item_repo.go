@@ -173,27 +173,26 @@ func (i *goodsRepo) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 			format.IntArrStrJoin(catIds))
 	}
 
-	if len(where) != 0 {
-		where = " AND " + where
-	}
-	if len(orderBy) != 0 {
-		orderBy += ","
-	}
-
 	var list = make([]*valueobject.Goods, 0)
-	err := i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
-	  INNER JOIN product_category cat ON it.cat_id=cat.id
-		 WHERE ($1 <=0 OR it.shop_id = $2) AND it.review_state= $3
-		  AND it.shelve_state= $4  %s %s`,
-		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
+	//err := i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+	//  INNER JOIN product_category cat ON item_info.cat_id=cat.id
+	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) AND item_info.review_state= $3
+	//	  AND item_info.shelve_state= $4  %s %s`,
+	//	catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
+	//
+	//if total > 0 {
+	//s = fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
+	//	 ON item_info.cat_id=cat.id
+	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) %s AND item_info.review_state= $3 AND item_info.shelve_state= $4
+	//	  %s ORDER BY %s item_info.sort_num DESC,item_info.update_time DESC LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
 
-	if total > 0 {
-		s = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN product_category cat ON it.cat_id=cat.id
-		 WHERE ($1 <=0 OR it.shop_id = $2) %s AND it.review_state= $3 AND it.shelve_state= $4
-		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
-		err = i.o.SelectByQuery(&list, s, shopId, shopId,
-			enum.ReviewPass, item.ShelvesOn, start, end-start)
-	}
+	s = fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
+		 ON item_info.cat_id=cat.id
+		 WHERE ($1 <=0 OR item_info.shop_id = $2) %s AND item_info.review_state= $3 AND item_info.shelve_state= $4
+		  %s ORDER BY %s LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
+	err := i.o.SelectByQuery(&list, s, shopId, shopId,
+		enum.ReviewPass, item.ShelvesOn, start, end-start)
+	//}
 	if err != nil {
 		log.Println("[ Go2o][ Repo][ Error]:", err.Error())
 	}

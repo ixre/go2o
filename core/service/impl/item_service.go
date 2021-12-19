@@ -25,6 +25,7 @@ import (
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
 	"strconv"
+	"strings"
 )
 
 var _ proto.ItemServiceServer = new(itemService)
@@ -397,6 +398,9 @@ func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.Pag
 		ids = cat.GetChildes()
 		ids = append(ids, int(r.CategoryId))
 
+	}
+	if len(strings.TrimSpace(r.Params.SortBy)) == 0 {
+		r.Params.SortBy = "item_info.sort_num DESC,item_info.update_time DESC"
 	}
 	total, list = s.itemRepo.GetPagedOnShelvesGoods(
 		r.ShopId, ids,
