@@ -13,7 +13,6 @@ func TestProductCategoryTree(t *testing.T) {
 	node, err := impl.ProductService.GetCategoryTreeNode(context.TODO(), &proto.CategoryTreeRequest{
 		ParentId:      int64(parentId),
 		ExcludeIdList: nil,
-		Depth:         0,
 	})
 	if err != nil {
 		t.Error(err)
@@ -23,13 +22,11 @@ func TestProductCategoryTree(t *testing.T) {
 
 func TestCategoryInitialTreeNode(t *testing.T) {
 	list, err := impl.ProductService.GetCategoryTreeNode(context.TODO(), &proto.CategoryTreeRequest{
-		ParentId:  0,
-		InitialId: 3,
+		ParentId: 0,
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(list.InitialList)
 	bytes, _ := json.Marshal(list.Value)
 	t.Log(string(bytes))
 }

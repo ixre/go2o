@@ -376,20 +376,7 @@ func (c *categoryManagerImpl) DeleteCategory(id int) error {
 // 递归获取下级分类
 func (c *categoryManagerImpl) CategoryTree(parentId int) *product.Category {
 	list := c.repo.GetCategories(0)
-	var cat *product.Category
-	if parentId == 0 {
-		cat = &product.Category{Id: parentId}
-	} else {
-		for _, v := range list {
-			if v.Id == parentId {
-				cat = v
-				break
-			}
-		}
-		if cat == nil {
-			return nil
-		}
-	}
+	var cat = &product.Category{Id: parentId}
 	c.walkCategoryTree(cat, list)
 	return cat
 }
@@ -405,7 +392,7 @@ func (c *categoryManagerImpl) walkCategoryTree(node *product.Category,
 	}
 }
 
-// 获取分类关联的品牌
+// RelationBrands 获取分类关联的品牌
 func (c *categoryManagerImpl) RelationBrands(catId int) []*promodel.ProductBrand {
 	p := c.GetCategory(catId)
 	if p != nil {

@@ -380,7 +380,7 @@ func (s *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	}, nil
 }
 
-// 获取分页上架的商品
+// GetShopPagedOnShelvesGoods 获取分页上架的商品
 func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
 	ret := &proto.PagingShopGoodsResponse{
 		Total: 0,

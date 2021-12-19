@@ -328,6 +328,8 @@ message SCategoryTree {
     bool IsLeaf = 5;
     // 子节点
     repeated SCategoryTree Children = 6;
+    // 是否在楼层显示
+    bool OnFloorShow = 7;
 }
 
 // 分类树形请求
@@ -336,8 +338,10 @@ message CategoryTreeRequest {
     int64 ParentId = 1;
     // 是否懒加载
     bool Lazy = 2;
+    // 是否仅返回已经启用的分类
+    bool LoadEnabled = 3;
     // 排除分类编号
-    repeated int64 ExcludeIdList = 3;
+    repeated int64 ExcludeIdList = 4;
 }
 
 

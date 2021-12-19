@@ -406,17 +406,17 @@ func (p *productService) GetCategoryTreeNode(_ context.Context, r *proto.Categor
 	arr := p.catRepo.GlobCatService().GetCategories()
 	// 懒加载,只加载一级,并设置IsLeaf
 	if r.Lazy {
-		roots := p.lazyLoadChildren(int(r.ParentId), arr,  r)
+		roots := p.lazyLoadChildren(int(r.ParentId), arr, r)
 		return &proto.CategoryTreeResponse{
-			Value:       roots,
+			Value: roots,
 		}, nil
 	}
 	root := &proto.SCategoryTree{
 		Id: r.ParentId,
 	}
-	p.walkLoadCategory(root,arr,r)
+	p.walkLoadCategory(root, arr, r)
 	return &proto.CategoryTreeResponse{
-		Value:       root.Children,
+		Value: root.Children,
 	}, nil
 }
 
@@ -434,7 +434,7 @@ func (p *productService) testIsLeaf(parentId int, categories []product.ICategory
 
 // 懒加载下级分类
 func (p *productService) lazyLoadChildren(parentId int, categories []product.ICategory,
-	 req *proto.CategoryTreeRequest) []*proto.SCategoryTree {
+	req *proto.CategoryTreeRequest) []*proto.SCategoryTree {
 	var arr []*proto.SCategoryTree
 	// 遍历子分类
 	for _, v := range categories {
@@ -443,9 +443,9 @@ func (p *productService) lazyLoadChildren(parentId int, categories []product.ICa
 			p.testWalkCondition(req, cat) {
 			cNode := &proto.SCategoryTree{
 				Id:     int64(cat.Id),
-				Name:  cat.Name,
-				Url:cat.CatUrl,
-				Image: cat.Icon,
+				Name:   cat.Name,
+				Url:    cat.CatUrl,
+				Image:  cat.Icon,
 				IsLeaf: p.testIsLeaf(cat.Id, categories, req),
 			}
 			arr = append(arr, cNode)
@@ -478,12 +478,12 @@ func (p *productService) walkLoadCategory(node *proto.SCategoryTree, categories 
 			p.testWalkCondition(req, cat) {
 			cNode := &proto.SCategoryTree{
 				Id:    int64(cat.Id),
-				Name: cat.Name,
+				Name:  cat.Name,
 				Url:   cat.CatUrl,
 				Image: cat.Icon,
 			}
 			node.Children = append(node.Children, cNode)
-			p.walkLoadCategory(cNode, categories,req)
+			p.walkLoadCategory(cNode, categories, req)
 		}
 	}
 }
