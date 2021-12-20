@@ -17,7 +17,6 @@ import (
 
 func ParseItemSnapshotDto(src *item.Snapshot) *proto.ItemSnapshotResponse {
 	return &proto.ItemSnapshotResponse{
-		Key:         src.Key,
 		ItemId:      src.ItemId,
 		ProductId:   src.ProductId,
 		CategoryId:  int64(src.CatId),
@@ -26,22 +25,18 @@ func ParseItemSnapshotDto(src *item.Snapshot) *proto.ItemSnapshotResponse {
 		ShopId:      src.ShopId,
 		ShopCatId:   int64(src.ShopCatId),
 		ExpressTid:  int64(src.ExpressTid),
-		Item: &proto.SMinifyItemInfoPackage{
-			Title:       src.Title,
-			ShortTitle:  src.ShortTitle,
-			ProductCode: src.Code,
-			Images:   []string{src.Image},
-			IsPresent:   src.IsPresent == 1,
-			PriceRange:  src.PriceRange,
-			SkuId:       src.SkuId,
-			StockNum:    0,
-			SaleNum: 0,
-			Price:       src.Price,
-			RetailPrice: src.RetailPrice,
-			UpdateTime:  src.UpdateTime,
-		},
+		Title:       src.Title,
+		ShortTitle:  src.ShortTitle,
+		ProductCode: src.Code,
+		Images:      []string{src.Image},
+		IsPresent:   src.IsPresent == 1,
+		PriceRange:  src.PriceRange,
+		SkuId:       src.SkuId,
+		StockNum:    0,
+		SaleNum:     0,
+		Price:       src.Price,
+		RetailPrice: src.RetailPrice,
 		SkuArray:    nil,
-		ViewData:    nil,
 	}
 }
 

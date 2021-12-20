@@ -134,44 +134,6 @@ message SUnifiedViewItem {
     // 17: sint32 SaleNum
 }
 
-// 简洁的商品信息对象
-message SMinifyItemInfoPackage {
-    // 商品编码
-    string Code = 2;
-    // 商品标题
-    string Title = 10;
-    // 短标题
-    string ShortTitle = 11;
-    // 产品编码
-    string ProductCode = 12;
-    // 商品图片
-    repeated string Images = 13;
-    // 是否为赠品
-    bool IsPresent = 14;
-    // 价格区间
-    string PriceRange = 15;
-    // 默认SKU
-    int64 SkuId = 16;
-    // 售价
-    int64 Price = 17;
-    // 零售价
-    int64 RetailPrice = 18;
-    // 更新时间
-    int64 UpdateTime = 19;
-    // 库存数量
-    int32 StockNum = 20;
-    // 已销售数量
-    int32 SaleNum = 21;
-    // SKU
-    repeated SSku SkuArray = 22;
-    // 会员价
-    repeated SLevelPrice LevelPrices = 28;
-    // 显示数据
-    SItemViewData ViewData = 23;
-    sint32 ShelveState = 24;
-    sint32 ReviewState = 25;
-    map<string, string> Data = 26;
-}
 
 message SItemViewData {
     // 商品详情
@@ -257,14 +219,18 @@ message GetItemAndSnapshotRequest{
     int64 ItemId = 1;
     // 是否请求快照
     bool Snapshot = 2;
+    // 是否选择
+    bool ReturnSkuHtml = 3;
+    // 是否返回SkuJson
+    bool ReturnSkuJson = 4;
 }
 
 // 商品快照(针对商品)
 message ItemSnapshotResponse {
     // 商品编号
     int64 ItemId = 1;
-    // 快照编码
-    string Key = 2;
+    // 商品编码
+    string Code = 2;
     // 产品编号
     int64 ProductId = 3;
     // 分类编号
@@ -279,14 +245,60 @@ message ItemSnapshotResponse {
     int64 ShopCatId = 8;
     // 运费模板
     int64 ExpressTid = 9;
-    // 商品
-    SMinifyItemInfoPackage Item = 10;
+    // 商品标题
+    string Title = 11;
+    // 短标题
+    string ShortTitle = 12;
+    // 产品编码
+    string ProductCode = 13;
+    // 商品图片
+    repeated string Images = 14;
+    // 是否为赠品
+    bool IsPresent = 15;
+    // 价格区间
+    string PriceRange = 16;
+    // 默认SKU
+    int64 SkuId = 17;
+    // 售价
+    int64 Price = 18;
+    // 零售价
+    int64 RetailPrice = 19;
+    // 库存数量
+    int32 StockNum = 20;
+    // 已销售数量
+    int32 SaleNum = 21;
+    // 商品详情
+    string Description = 23;
     // SKU
-    repeated SSku SkuArray = 21;
+    repeated SSku SkuArray = 22;
+    // 规格
+    repeated SSpecOption SpecOptions = 24;
+    // 返回Sku-HTML
+    string SkuHtml = 26;
+    // SkuJson
+    string SkuJson = 25;
     // 会员价
-    repeated SLevelPrice LevelPrices = 22;
-    // 显示数据
-    SItemViewData ViewData = 23;
+    repeated SLevelPrice LevelPrices = 28;
+}
+
+// 商品模型规格
+message SSpecOption {
+    // 编号
+    int64 Id = 1;
+    // 规格名称
+    string Name = 2;
+    // 规格项
+    repeated SSpecOptionItem Items = 5;
+}
+
+// 商品规格项
+message SSpecOptionItem {
+    // 编号
+    int64 Id = 1;
+    // 规格项值
+    string Value = 2;
+    // 规格项颜色
+    string Color = 3;
 }
 
 // 商品交易快照(针对商品)

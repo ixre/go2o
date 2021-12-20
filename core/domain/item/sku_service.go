@@ -243,7 +243,7 @@ func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 	return nil
 }
 
-// GetSpecArray 获取商品的规格(从SKU中读取)
+// GetItemSpecArray 获取商品的规格(从SKU中读取)
 func (s *skuServiceImpl) GetItemSpecArray(skuArr []*item.Sku) (
 	specArr promodel.SpecList) {
 	sa, ia := s.GetSpecItemArray(skuArr) //规格与规格项编号的数组

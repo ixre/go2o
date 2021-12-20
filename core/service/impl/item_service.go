@@ -138,19 +138,22 @@ func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndS
 		sn := item.Snapshot()
 		// 基础数据及其销售数量
 		ret := parser.ParseItemSnapshotDto(sn)
-		ret.Item.SaleNum = item.GetValue().SaleNum
-		ret.Item.StockNum = item.GetValue().StockNum
+		ret.SaleNum = item.GetValue().SaleNum
+		ret.StockNum = item.GetValue().StockNum
 		// 获取SKU和详情等
 		skuArr := item.SkuArray()
-		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		specArr := item.SpecArray()
+		ret.SkuArray = parser.SkuArrayDto(skuArr)
+		ret.SpecOptions = parser.SpecOptionsDto(specArr)
+		// 产品详情
 		prod := item.Product()
-		ret.ViewData = &proto.SItemViewData{
-			Details: prod.GetValue().Description,
-			Thumbs:  nil, //todo:??
-			Images:  nil, //todo:??
-			SkuHtml: skuService.GetSpecHtml(specArr),
-			SkuJson: string(skuService.GetItemSkuJson(skuArr)),	 //todo: 是否可以去掉
+		ret.Description = prod.GetValue().Description
+		// 返回SKU的HTML选择器
+		if r.ReturnSkuHtml{
+			ret.SkuHtml = skuService.GetSpecHtml(specArr)
+		}
+		if r.ReturnSkuJson{
+			ret.SkuJson = string(skuService.GetItemSkuJson(skuArr)) //todo: 是否可以去掉
 		}
 		return ret, nil
 	}
