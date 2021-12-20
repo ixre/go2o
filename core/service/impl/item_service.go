@@ -115,7 +115,7 @@ func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedVie
 		Thumbs:  nil, //todo:??
 		Images:  nil, //todo:??
 		SkuHtml: skuService.GetSpecHtml(specArr),
-		SkuJson: string(skuService.GetSkuJson(skuArr)),
+		SkuJson: string(skuService.GetItemSkuJson(skuArr)),
 	}
 	return ret
 }
@@ -130,16 +130,16 @@ func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest)
 	return nil, nil
 }
 
-// 获取商品用于销售的快照和信息
-func (s *itemService) GetItemSnapshot(_ context.Context, id *proto.Int64) (*proto.SItemSnapshot, error) {
-	item := s.itemRepo.GetItem(id.Value)
+// GetItemSnapshot 获取商品用于销售的快照和信息
+func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndSnapshotRequest) (*proto.ItemSnapshotResponse, error) {
+	item := s.itemRepo.GetItem(r.GetItemId())
 	if item != nil {
 		skuService := s.itemRepo.SkuService()
 		sn := item.Snapshot()
 		// 基础数据及其销售数量
 		ret := parser.ParseItemSnapshotDto(sn)
-		ret.Stock.SaleNum = item.GetValue().SaleNum
-		ret.Stock.StockNum = item.GetValue().StockNum
+		ret.Item.SaleNum = item.GetValue().SaleNum
+		ret.Item.StockNum = item.GetValue().StockNum
 		// 获取SKU和详情等
 		skuArr := item.SkuArray()
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
@@ -150,7 +150,7 @@ func (s *itemService) GetItemSnapshot(_ context.Context, id *proto.Int64) (*prot
 			Thumbs:  nil, //todo:??
 			Images:  nil, //todo:??
 			SkuHtml: skuService.GetSpecHtml(specArr),
-			SkuJson: string(skuService.GetSkuJson(skuArr)),
+			SkuJson: string(skuService.GetItemSkuJson(skuArr)),	 //todo: 是否可以去掉
 		}
 		return ret, nil
 	}
@@ -440,7 +440,7 @@ func (s *itemService) GetSaleLabel(_ context.Context, id *proto.IdOrName) (*prot
 	return nil, nil
 }
 
-// 保存销售标签
+// SaveSaleLabel 保存销售标签
 func (s *itemService) SaveSaleLabel(_ context.Context, v *proto.SItemLabel) (*proto.Result, error) {
 	ls := s.labelRepo.LabelService()
 	var value = parser.FromSaleLabelDto(v)

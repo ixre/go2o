@@ -1,14 +1,14 @@
 package model
 
 type (
-	// 导航类型
+	// PortalNavType 导航类型
 	PortalNavType struct {
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 名称
 		Name string `db:"name"`
 	}
-	// 门户导航
+	// PortalNav 门户导航
 	PortalNav struct {
 		// 编号
 		Id int64 `db:"id" pk:"yes" auto:"yes"`
@@ -18,6 +18,7 @@ type (
 		Url string `db:"url"`
 		// 打开目标
 		Target string `db:"target"`
+		// 图片
 		Image  string `db:"image"`
 		// 导航类型: 1为电脑，2为手机端
 		NavType int32 `db:"nav_type"`
@@ -25,7 +26,7 @@ type (
 		NavGroup string `db:"nav_group"`
 	}
 
-	// 导航分组
+	// NavGroup 导航分组
 	NavGroup struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`

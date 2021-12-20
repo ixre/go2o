@@ -64,7 +64,7 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 				Begin:  int64(begin),
 				End:    int64(begin + size),
 				Where:  "",
-				SortBy: "it.id DESC",
+				SortBy: "item_info.id DESC",
 			},
 		})
 	return ret
@@ -98,7 +98,7 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 				Begin:  int64(begin),
 				End:    int64(begin + size),
 				Where:  "",
-				SortBy: "it.sale_num DESC",
+				SortBy: "item_info.sale_num DESC",
 			},
 		})
 	return ret
@@ -181,7 +181,7 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //					-1, begin, begin+size, "it.id DESC")
 //			case "hot-sales":
 //				_, result[p] = ss.GetShopPagedOnShelvesGoods(mchId,
-//					-1, begin, begin+size, "it.sale_num DESC")
+//					-1, begin, begin+size, "item_info.sale_num DESC")
 //			}
 //		}
 //		sto.SetExpire(key, result, maxSeconds)

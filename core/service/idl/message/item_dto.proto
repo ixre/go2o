@@ -92,6 +92,8 @@ message SSku {
     sint32 SaleNum = 15;
 }
 
+
+
 // 统一的商品显示对象
 message SUnifiedViewItem {
     sint64 ItemId = 1;
@@ -132,6 +134,45 @@ message SUnifiedViewItem {
     // 17: sint32 SaleNum
 }
 
+// 简洁的商品信息对象
+message SMinifyItemInfoPackage {
+    // 商品编码
+    string Code = 2;
+    // 商品标题
+    string Title = 10;
+    // 短标题
+    string ShortTitle = 11;
+    // 产品编码
+    string ProductCode = 12;
+    // 商品图片
+    repeated string Images = 13;
+    // 是否为赠品
+    bool IsPresent = 14;
+    // 价格区间
+    string PriceRange = 15;
+    // 默认SKU
+    int64 SkuId = 16;
+    // 售价
+    int64 Price = 17;
+    // 零售价
+    int64 RetailPrice = 18;
+    // 更新时间
+    int64 UpdateTime = 19;
+    // 库存数量
+    int32 StockNum = 20;
+    // 已销售数量
+    int32 SaleNum = 21;
+    // SKU
+    repeated SSku SkuArray = 22;
+    // 会员价
+    repeated SLevelPrice LevelPrices = 28;
+    // 显示数据
+    SItemViewData ViewData = 23;
+    sint32 ShelveState = 24;
+    sint32 ReviewState = 25;
+    map<string, string> Data = 26;
+}
+
 message SItemViewData {
     // 商品详情
     string Details = 1;
@@ -142,7 +183,7 @@ message SItemViewData {
     // SKU选择HTML
     string SkuHtml = 4;
     // SKU JSON数据
-    string SkuJson = 5;
+    string SkuJson = 5; //todo: 删除?
 }
 
 
@@ -210,63 +251,36 @@ message SItemLabel {
     bool Enabled = 4;
 }
 
-// 商品库存数据
-message SItemStock {
-    // 库存数量
-    int32 StockNum = 1;
-    // 已销售数量
-    int32 SaleNum = 19;
+// 商品和快照请求
+message GetItemAndSnapshotRequest{
+    // 商品编号
+    int64 ItemId = 1;
+    // 是否请求快照
+    bool Snapshot = 2;
 }
 
 // 商品快照(针对商品)
-message SItemSnapshot {
+message ItemSnapshotResponse {
     // 商品编号
     int64 ItemId = 1;
-    // 产品编号
-    int64 ProductId = 2;
     // 快照编码
-    string Key = 3;
+    string Key = 2;
+    // 产品编号
+    int64 ProductId = 3;
     // 分类编号
     int64 CategoryId = 4;
     // 供货商编号
     int64 VendorId = 5;
-    // 编号
-    int64 BrandId = 6;
     // 店铺编号
     int64 ShopId = 7;
+    // 编号
+    int64 BrandId = 6;
     // 编号分类编号
     int64 ShopCatId = 8;
     // 运费模板
     int64 ExpressTid = 9;
-    // 商品标题
-    string Title = 10;
-    // 短标题
-    string ShortTitle = 11;
-    // 产品编码
-    string ProductCode = 12;
-    // 商品图片
-    string MainImage = 13;
-    // 是否为赠品
-    bool IsPresent = 14;
-    // 价格区间
-    string PriceRange = 15;
-    // 默认SKU
-    int64 SkuId = 16;
-    // 售价
-    int64 Price = 17;
-    // 零售价
-    int64 RetailPrice = 18;
-    // 重量(g)
-    //int32 Weight = 19;
-    // 体积(ml)
-    //Bulk int32 `db:"bulk"`
-    // 会员价
-    //LevelSales int32
-
-    // 更新时间
-    int64 UpdateTime = 19;
-    // 库存
-    SItemStock Stock = 20;
+    // 商品
+    SMinifyItemInfoPackage Item = 10;
     // SKU
     repeated SSku SkuArray = 21;
     // 会员价
