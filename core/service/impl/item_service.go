@@ -149,10 +149,10 @@ func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndS
 		prod := item.Product()
 		ret.Description = prod.GetValue().Description
 		// 返回SKU的HTML选择器
-		if r.ReturnSkuHtml{
+		if r.ReturnSkuHtml {
 			ret.SkuHtml = skuService.GetSpecHtml(specArr)
 		}
-		if r.ReturnSkuJson{
+		if r.ReturnSkuJson {
 			ret.SkuJson = string(skuService.GetItemSkuJson(skuArr)) //todo: 是否可以去掉
 		}
 		return ret, nil

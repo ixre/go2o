@@ -9,6 +9,7 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
@@ -185,14 +186,14 @@ func SkuArrayDto(src []*item.Sku) []*proto.SSku {
 	return dst
 }
 
-func SpecOptionsDto(list promodel.SpecList)[]*proto.SSpecOption {
+func SpecOptionsDto(list promodel.SpecList) []*proto.SSpecOption {
 	arr := make([]*proto.SSpecOption, len(list))
-	s := func(l promodel.SpecItemList) []*proto.SSpecOptionItem {
-		arr := make([]*proto.SSpecOptionItem, len(l))
-		for i, v := range l {
+	s := func(l *promodel.Spec) []*proto.SSpecOptionItem {
+		arr := make([]*proto.SSpecOptionItem, len(l.Items))
+		for i, v := range l.Items {
 			arr[i] = &proto.SSpecOptionItem{
-				Id:    int64(v.Id),
-				Value: v.Value,
+				Value: fmt.Sprintf("%d:%d", l.Id, v.Id),
+				Label: v.Value,
 				Color: v.Color,
 			}
 		}
@@ -200,9 +201,8 @@ func SpecOptionsDto(list promodel.SpecList)[]*proto.SSpecOption {
 	}
 	for i, v := range list {
 		arr[i] = &proto.SSpecOption{
-			Id:         int64(v.Id),
-			Name:       v.Name,
-			Items:      s(v.Items),
+			Name:  v.Name,
+			Items: s(v),
 		}
 	}
 	return arr

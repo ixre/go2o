@@ -19,7 +19,7 @@ type (
 		// 打开目标
 		Target string `db:"target"`
 		// 图片
-		Image  string `db:"image"`
+		Image string `db:"image"`
 		// 导航类型: 1为电脑，2为手机端
 		NavType int32 `db:"nav_type"`
 		// 分组

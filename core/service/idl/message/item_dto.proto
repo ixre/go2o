@@ -283,18 +283,15 @@ message ItemSnapshotResponse {
 
 // 商品模型规格
 message SSpecOption {
-    // 编号
-    int64 Id = 1;
     // 规格名称
-    string Name = 2;
+    string Name = 1;
     // 规格项
-    repeated SSpecOptionItem Items = 5;
+    repeated SSpecOptionItem Items = 2;
 }
 
 // 商品规格项
 message SSpecOptionItem {
-    // 编号
-    int64 Id = 1;
+    string Label = 1;
     // 规格项值
     string Value = 2;
     // 规格项颜色
