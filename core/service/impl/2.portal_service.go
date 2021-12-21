@@ -23,7 +23,7 @@ func NewPortalService(d *impl.CommonDao, portalDao dao.IPortalDao) *portalServic
 	}
 }
 
-func (p *portalService) SaveNav(context context.Context, r *proto.SaveNavRequest) (*proto.SaveNavResponse, error) {
+func (p *portalService) SaveNav(_ context.Context, r *proto.SaveNavRequest) (*proto.SaveNavResponse, error) {
 	var dst *model.PortalNav
 	if r.Id > 0 {
 		if dst = p.dao.GetNav(r.Id); dst == nil {
@@ -62,7 +62,7 @@ func (p *portalService) GetNav(context context.Context, id *proto.PortalNavId) (
 }
 
 func (p *portalService) QueryNavList(context context.Context, r *proto.QueryNavRequest) (*proto.QueryNavResponse, error) {
-	arr := p.dao.SelectNav("nav_type= $1 AND nav_group = $2 LIMIT $3 OFFSET $4", r.NavType, r.Group, r.Size, r.Begin)
+	arr := p.dao.SelectNav("nav_type= $1 AND nav_group = $2  order by id ASC LIMIT $3 OFFSET $4", r.NavType, r.Group, r.Size, r.Begin)
 	ret := &proto.QueryNavResponse{
 		List: make([]*proto.SNav, len(arr)),
 	}

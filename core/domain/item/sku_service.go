@@ -243,8 +243,8 @@ func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 	return nil
 }
 
-// 获取商品的规格(从SKU中读取)
-func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
+// GetItemSpecArray 获取商品的规格(从SKU中读取)
+func (s *skuServiceImpl) GetItemSpecArray(skuArr []*item.Sku) (
 	specArr promodel.SpecList) {
 	sa, ia := s.GetSpecItemArray(skuArr) //规格与规格项编号的数组
 	if l := len(sa); l > 0 {
@@ -293,20 +293,20 @@ func (s *skuServiceImpl) sortSpecArray(arr promodel.SpecList) {
 	sort.Sort(arr)
 }
 
-// 获取规格选择HTML
+// GetSpecHtml 获取规格选择HTML
 func (s *skuServiceImpl) GetSpecHtml(spec promodel.SpecList) string {
 	return s.su.GetSpecHtml(spec)
 }
 
-// 获取规格JSON数据
+// GetSpecJson 获取规格JSON数据
 func (s *skuServiceImpl) GetSpecJson(spec promodel.SpecList) []byte {
 	arr := iJsonUtil.getSpecJdo(spec)
 	data, _ := json.Marshal(arr)
 	return data
 }
 
-// 获取SKU的JSON字符串
-func (s *skuServiceImpl) GetSkuJson(skuArr []*item.Sku) []byte {
+// GetSkuJson 获取SKU的JSON字符串
+func (s *skuServiceImpl) GetItemSkuJson(skuArr []*item.Sku) []byte {
 	arr := iJsonUtil.getSkuJdo(skuArr)
 	b, _ := json.Marshal(arr)
 	return b

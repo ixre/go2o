@@ -90,8 +90,10 @@ message SPagingParams {
     string Where = 3;
     // 排序字段
     string SortBy = 4;
+    // 是否统计总数
+    bool CountTotal = 5;
     // 参数
-    map<string, string> Parameters = 5;
+    map<string, string> Parameters = 6;
 }
 
 /** 分页结果 */
@@ -111,7 +113,7 @@ message SPagingResult {
 // 树形节点
 message STreeNode {
     // 值
-    string Id =  1;
+    int64 Id =  1;
     // 文本
     string Label = 2;
     // 图标,icon与JS树形控件冲突
@@ -124,8 +126,8 @@ message STreeNode {
     map<string, string> Data = 6;
     // 子节点
     repeated STreeNode Children = 7;
-    // 是否目录，通常Children有元素,则为true
-    bool Folder = 8;
+    // 是否为叶子节点(下级无节点)
+    bool IsLeaf = 8;
 }
 
 

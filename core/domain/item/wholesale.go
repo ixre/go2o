@@ -292,7 +292,7 @@ func (w *wholesaleItemImpl) GetJsonDetailData() []byte {
 		skuJdoArr = append(skuJdoArr, jdo)
 	}
 
-	spec := w.itemRepo.SkuService().GetSpecArray(okSkuArr)
+	spec := w.itemRepo.SkuService().GetItemSpecArray(okSkuArr)
 
 	i := &itemDetailData{
 		SpecArray: iJsonUtil.getSpecJdo(spec),

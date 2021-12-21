@@ -249,7 +249,7 @@ func (i *itemImpl) saveItemSku(arrPtr *[]*item.Sku) (err error) {
 	return err
 }
 
-// 获取SKU数组
+// SkuArray 获取SKU数组
 func (i *itemImpl) SkuArray() []*item.Sku {
 	if i.value.SkuArray == nil {
 		i.value.SkuArray = i.repo.SelectItemSku("item_id= $1",
@@ -258,12 +258,12 @@ func (i *itemImpl) SkuArray() []*item.Sku {
 	return i.value.SkuArray
 }
 
-// 获取商品的规格
+// SpecArray 获取商品的规格
 func (i *itemImpl) SpecArray() promodel.SpecList {
-	return i.repo.SkuService().GetSpecArray(i.SkuArray())
+	return i.repo.SkuService().GetItemSpecArray(i.SkuArray())
 }
 
-// 获取SKU
+// GetSku 获取SKU
 func (i *itemImpl) GetSku(skuId int64) *item.Sku {
 	if i.value.SkuArray != nil {
 		for _, v := range i.value.SkuArray {

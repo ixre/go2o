@@ -459,3 +459,9 @@ ALTER TABLE IF EXISTS public.registry
 
 COMMENT ON COLUMN public.registry.group_name
     IS '分组名称';
+
+/* 2021-12-21 */
+COMMENT ON TABLE public.sale_cart
+  IS '购物车';
+ALTER TABLE public.sale_cart
+ALTER COLUMN code TYPE character varying(40) COLLATE pg_catalog."default";

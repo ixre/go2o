@@ -92,6 +92,8 @@ message SSku {
     sint32 SaleNum = 15;
 }
 
+
+
 // 统一的商品显示对象
 message SUnifiedViewItem {
     sint64 ItemId = 1;
@@ -132,6 +134,7 @@ message SUnifiedViewItem {
     // 17: sint32 SaleNum
 }
 
+
 message SItemViewData {
     // 商品详情
     string Details = 1;
@@ -142,8 +145,19 @@ message SItemViewData {
     // SKU选择HTML
     string SkuHtml = 4;
     // SKU JSON数据
-    string SkuJson = 5;
+    string SkuJson = 5; //todo: 删除?
 }
+
+
+message SaveItemResponse {
+    // 错误状态码,如为0表示成功
+    sint32 ErrCode = 1;
+    // 消息
+    string ErrMsg = 2;
+    // 商品编号
+    int64 ItemId = 3;
+}
+
 
 // 完整的商品信息
 message SOldItem {
@@ -199,69 +213,89 @@ message SItemLabel {
     bool Enabled = 4;
 }
 
-// 商品库存数据
-message SItemStock {
-    // 库存数量
-    int32 StockNum = 1;
-    // 已销售数量
-    int32 SaleNum = 19;
+// 商品和快照请求
+message GetItemAndSnapshotRequest{
+    // 商品编号
+    int64 ItemId = 1;
+    // 是否请求快照
+    bool Snapshot = 2;
+    // 是否选择
+    bool ReturnSkuHtml = 3;
+    // 是否返回SkuJson
+    bool ReturnSkuJson = 4;
 }
 
 // 商品快照(针对商品)
-message SItemSnapshot {
+message ItemSnapshotResponse {
     // 商品编号
     int64 ItemId = 1;
+    // 商品编码
+    string Code = 2;
     // 产品编号
-    int64 ProductId = 2;
-    // 快照编码
-    string Key = 3;
+    int64 ProductId = 3;
     // 分类编号
     int64 CategoryId = 4;
     // 供货商编号
     int64 VendorId = 5;
-    // 编号
-    int64 BrandId = 6;
     // 店铺编号
     int64 ShopId = 7;
+    // 编号
+    int64 BrandId = 6;
     // 编号分类编号
     int64 ShopCatId = 8;
     // 运费模板
     int64 ExpressTid = 9;
     // 商品标题
-    string Title = 10;
+    string Title = 11;
     // 短标题
-    string ShortTitle = 11;
+    string ShortTitle = 12;
     // 产品编码
-    string ProductCode = 12;
+    string ProductCode = 13;
     // 商品图片
-    string MainImage = 13;
+    repeated string Images = 14;
     // 是否为赠品
-    bool IsPresent = 14;
+    bool IsPresent = 15;
     // 价格区间
-    string PriceRange = 15;
+    string PriceRange = 16;
     // 默认SKU
-    int64 SkuId = 16;
+    int64 SkuId = 17;
     // 售价
-    int64 Price = 17;
+    int64 Price = 18;
     // 零售价
-    int64 RetailPrice = 18;
-    // 重量(g)
-    //int32 Weight = 19;
-    // 体积(ml)
-    //Bulk int32 `db:"bulk"`
-    // 会员价
-    //LevelSales int32
-
-    // 更新时间
-    int64 UpdateTime = 19;
-    // 库存
-    SItemStock Stock = 20;
+    int64 RetailPrice = 19;
+    // 库存数量
+    int32 StockNum = 20;
+    // 已销售数量
+    int32 SaleNum = 21;
+    // 商品详情
+    string Description = 23;
     // SKU
-    repeated SSku SkuArray = 21;
+    repeated SSku SkuArray = 22;
+    // 规格
+    repeated SSpecOption SpecOptions = 24;
+    // 返回Sku-HTML
+    string SkuHtml = 26;
+    // SkuJson
+    string SkuJson = 25;
     // 会员价
-    repeated SLevelPrice LevelPrices = 22;
-    // 显示数据
-    SItemViewData ViewData = 23;
+    repeated SLevelPrice LevelPrices = 28;
+}
+
+// 商品模型规格
+message SSpecOption {
+    // 规格名称
+    string Name = 1;
+    // 规格项
+    repeated SSpecOptionItem Items = 2;
+}
+
+// 商品规格项
+message SSpecOptionItem {
+    string Label = 1;
+    // 规格项值
+    string Value = 2;
+    // 规格项颜色
+    string Color = 3;
 }
 
 // 商品交易快照(针对商品)

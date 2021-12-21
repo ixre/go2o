@@ -34,7 +34,7 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	//m, _ := impl.MemberService.GetMember(context.TODO(), memberId)
 	//if m != nil {
 	//	query := "return_url=" + targetUrl
-	//	c.Response().Header().Add("Content-AdType", "Image/Jpeg")
+	//	c.Response().Header().Add("Content-Type", "Image/Jpeg")
 	//	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%s.jpg", m.InviteCode))
 	//	c.Response().Write(autil.GenerateInvitationQr(domain, m.InviteCode, query))
 	//}
@@ -48,7 +48,7 @@ func (g *getC) GenQr(c echo.Context) error {
 	t := sha1.New()
 	io.WriteString(t, link)
 	hash := string(t.Sum(nil))
-	c.Response().Header().Add("Content-AdType", "Image/Jpeg")
+	c.Response().Header().Add("Content-Type", "Image/Jpeg")
 	c.Response().Header().Set("Content-Disposition",
 		fmt.Sprintf("attachment;filename=%s.jpg", hash))
 	c.Response().Write(qrBytes)

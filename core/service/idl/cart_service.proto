@@ -11,23 +11,20 @@ service CartService {
     // 批发购物车接口
     rpc WholesaleCartV1 (WsCartRequest) returns (Result) {
     }
-    // 普通购物车接口
-    rpc NormalCartV1 (NormalCartRequest) returns (Result) {
-    }
     // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-    rpc GetShoppingCart_ (CartCode) returns (SShoppingCart) {
+    rpc GetShoppingCart (ShoppingCartId) returns (SShoppingCart) {
     }
     // 放入购物车
-    rpc PutInCart_ (CartItemRequest) returns (CartItemResponse) {
+    rpc PutInCart(CartItemRequest) returns (CartItemResponse) {
     }
     // 从购物车里删除指定数量商品
-    rpc SubCartItem_ (CartItemRequest) returns (CartItemResponse) {
+    rpc ReduceCartItem(CartItemRequest) returns (CartItemResponse) {
     }
     // 获取购物车结算信息
-    rpc GetCartSettle_ (CartCode) returns (SettleMeta_) {
+    rpc GetCartSettle_ (ShoppingCartId) returns (SettleMeta_) {
     }
     // 勾选商品结算
-    rpc CheckSign_ (CheckSignRequest) returns (Result) {
+    rpc CheckCart (CheckCartRequest) returns (Result) {
     }
     // 更新购物车结算
     rpc PrepareSettlePersist_ (SettlePersistRequest) returns (Result) {
@@ -46,26 +43,28 @@ message SettlePersistRequest {
 }
 message CartItemRequest {
     // 买家编号
-    int64 BuyerId = 1;
-    // 购物车编码
-    string CartCode = 2;
+    ShoppingCartId Id = 1;
     //商品编号
-    sint64 ItemId = 3;
+    sint64 ItemId = 2;
     //SKU编号
-    sint64 SkuId = 4;
+    sint64 SkuId = 3;
     // 数量
-    int32 quantity = 5;
+    int32 quantity = 4;
 }
 
-message CheckSignRequest {
-    int64 BuyerId = 1;
-    string CartCode = 2;
-    repeated SCheckCartItem Items = 3;
+message CheckCartRequest {
+    ShoppingCartId Id = 1;
+    repeated SCheckCartItem Items = 2;
 }
 
-message CartCode {
-    int64 BuyerId = 1;
+// 购物车编号
+message ShoppingCartId{
+    // 会员/用户编号
+    sint64 UserId = 1;
+    // 购物车标识,当未指定用户时候使用
     string CartCode = 2;
+    // 是否为批发销售的购物车
+    bool IsWholesale = 3;
 }
 
 message SettleMeta_ {

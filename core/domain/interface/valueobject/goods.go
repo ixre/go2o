@@ -38,7 +38,7 @@ type Goods struct {
 	// 价格区间
 	PriceRange string `db:"price_range"`
 
-	GoodsId   int64 `db:"it.id"`
+	GoodsId   int64 `db:"item_info.id"`
 	SkuId     int64 `db:"sku_id"`
 	IsPresent int32 `db:"is_present"`
 

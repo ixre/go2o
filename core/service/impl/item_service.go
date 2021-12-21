@@ -25,6 +25,7 @@ import (
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
 	"strconv"
+	"strings"
 )
 
 var _ proto.ItemServiceServer = new(itemService)
@@ -67,14 +68,17 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifi
 }
 
 // 保存商品
-func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.Result, error) {
+func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.SaveItemResponse, error) {
 	var gi item.IGoodsItem
 	it := parser.ParseGoodsItem(r)
 	var err error
 	if it.Id > 0 {
 		gi = s.itemRepo.GetItem(it.Id)
 		if gi == nil || gi.GetValue().VendorId != r.VendorId {
-			return s.error(item.ErrNoSuchItem), nil
+			return &proto.SaveItemResponse{
+				ErrCode: 1,
+				ErrMsg:  item.ErrNoSuchItem.Error(),
+			}, nil
 		}
 	} else {
 		gi = s.itemRepo.CreateItem(it)
@@ -86,13 +90,16 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 			it.Id, err = gi.Save()
 		}
 	}
-	ret := s.error(err)
-	if err == nil {
-		r.Data = map[string]string{
-			"ItemId": strconv.Itoa(int(it.Id)),
-		}
+	if err != nil {
+		return &proto.SaveItemResponse{
+			ErrCode: 1,
+			ErrMsg:  err.Error(),
+		}, nil
 	}
-	return ret, nil
+	return &proto.SaveItemResponse{
+		ErrCode: 0,
+		ItemId:  it.Id,
+	}, nil
 }
 
 // 附加商品的信息
@@ -108,7 +115,7 @@ func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedVie
 		Thumbs:  nil, //todo:??
 		Images:  nil, //todo:??
 		SkuHtml: skuService.GetSpecHtml(specArr),
-		SkuJson: string(skuService.GetSkuJson(skuArr)),
+		SkuJson: string(skuService.GetItemSkuJson(skuArr)),
 	}
 	return ret
 }
@@ -123,27 +130,30 @@ func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest)
 	return nil, nil
 }
 
-// 获取商品用于销售的快照和信息
-func (s *itemService) GetItemSnapshot(_ context.Context, id *proto.Int64) (*proto.SItemSnapshot, error) {
-	item := s.itemRepo.GetItem(id.Value)
+// GetItemSnapshot 获取商品用于销售的快照和信息
+func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndSnapshotRequest) (*proto.ItemSnapshotResponse, error) {
+	item := s.itemRepo.GetItem(r.GetItemId())
 	if item != nil {
 		skuService := s.itemRepo.SkuService()
 		sn := item.Snapshot()
 		// 基础数据及其销售数量
 		ret := parser.ParseItemSnapshotDto(sn)
-		ret.Stock.SaleNum = item.GetValue().SaleNum
-		ret.Stock.StockNum = item.GetValue().StockNum
+		ret.SaleNum = item.GetValue().SaleNum
+		ret.StockNum = item.GetValue().StockNum
 		// 获取SKU和详情等
 		skuArr := item.SkuArray()
-		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		specArr := item.SpecArray()
+		ret.SkuArray = parser.SkuArrayDto(skuArr)
+		ret.SpecOptions = parser.SpecOptionsDto(specArr)
+		// 产品详情
 		prod := item.Product()
-		ret.ViewData = &proto.SItemViewData{
-			Details: prod.GetValue().Description,
-			Thumbs:  nil, //todo:??
-			Images:  nil, //todo:??
-			SkuHtml: skuService.GetSpecHtml(specArr),
-			SkuJson: string(skuService.GetSkuJson(skuArr)),
+		ret.Description = prod.GetValue().Description
+		// 返回SKU的HTML选择器
+		if r.ReturnSkuHtml {
+			ret.SkuHtml = skuService.GetSpecHtml(specArr)
+		}
+		if r.ReturnSkuJson {
+			ret.SkuJson = string(skuService.GetItemSkuJson(skuArr)) //todo: 是否可以去掉
 		}
 		return ret, nil
 	}
@@ -174,7 +184,7 @@ func (s *itemService) GetSku(_ context.Context, request *proto.SkuId) (*proto.SS
 // 获取商品详细数据
 func (s *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDetailRequest) (*proto.String, error) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: request.ItemId})
-	switch request.IType {
+	switch request.ItemType {
 	case item.ItemWholesale:
 		data := it.Wholesale().GetJsonDetailData()
 		return &proto.String{Value: string(data)}, nil
@@ -374,7 +384,7 @@ func (s *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	}, nil
 }
 
-// 获取分页上架的商品
+// GetShopPagedOnShelvesGoods 获取分页上架的商品
 func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
 	ret := &proto.PagingShopGoodsResponse{
 		Total: 0,
@@ -391,6 +401,9 @@ func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.Pag
 		ids = cat.GetChildes()
 		ids = append(ids, int(r.CategoryId))
 
+	}
+	if len(strings.TrimSpace(r.Params.SortBy)) == 0 {
+		r.Params.SortBy = "item_info.sort_num DESC,item_info.update_time DESC"
 	}
 	total, list = s.itemRepo.GetPagedOnShelvesGoods(
 		r.ShopId, ids,
@@ -430,7 +443,7 @@ func (s *itemService) GetSaleLabel(_ context.Context, id *proto.IdOrName) (*prot
 	return nil, nil
 }
 
-// 保存销售标签
+// SaveSaleLabel 保存销售标签
 func (s *itemService) SaveSaleLabel(_ context.Context, v *proto.SItemLabel) (*proto.Result, error) {
 	ls := s.labelRepo.LabelService()
 	var value = parser.FromSaleLabelDto(v)

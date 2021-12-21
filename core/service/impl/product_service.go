@@ -9,7 +9,6 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 	"golang.org/x/net/context"
-	"strconv"
 )
 
 var _ proto.ProductServiceServer = new(productService)
@@ -165,7 +164,7 @@ func (p *productService) DeleteCategory(_ context.Context, id *proto.Int64) (*pr
 }
 
 // 保存分类
-func (p *productService) SaveCategory(_ context.Context, category *proto.SProductCategory) (*proto.Result, error) {
+func (p *productService) SaveCategory(_ context.Context, category *proto.SaveProductCategoryRequest) (*proto.SaveProductCategoryResponse, error) {
 	sl := p.catRepo.GlobCatService()
 	var ca product.ICategory
 	v := p.parseCategory(category)
@@ -178,10 +177,13 @@ func (p *productService) SaveCategory(_ context.Context, category *proto.SProduc
 	if err == nil {
 		_, err = ca.Save()
 	}
-	return p.error(err), nil
+	if err != nil {
+		return &proto.SaveProductCategoryResponse{Error: err.Error()}, nil
+	}
+	return &proto.SaveProductCategoryResponse{CategoryId: int64(ca.GetDomainId())}, nil
 }
 
-// 根据上级编号获取分类列表
+// GetChildren 根据上级编号获取分类列表
 func (p *productService) GetChildren(_ context.Context, id *proto.CategoryParentId) (*proto.ProductCategoriesResponse, error) {
 	ic := p.catRepo.GlobCatService()
 	cats := ic.GetCategories()
@@ -358,20 +360,7 @@ func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 	return m.Specs()
 }
 
-// GetCategoryTreeNode 分类
-func (p *productService) GetCategoryTreeNode(_ context.Context, req *proto.CategoryTreeRequest) (*proto.STreeNode, error) {
-	cats := p.catRepo.GlobCatService().GetCategories()
-	rootNode := &proto.STreeNode{
-		Label:    "根节点",
-		Id:       "",
-		Icon:     "",
-		Expand:   true,
-		Children: nil}
-	p.walkCategoryTree(rootNode, 0, cats, 0, req)
-	return rootNode, nil
-}
-
-// 获取分类关联的品牌
+// GetCatBrands 获取分类关联的品牌
 func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 	arr := p.catRepo.GlobCatService().RelationBrands(int(catId))
 	for _, v := range arr {
@@ -380,11 +369,93 @@ func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
 	return arr
 }
 
-// 排除分类
-func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category, depth int) bool {
-	if req.Depth > 0 && int(req.Depth) < depth+1 {
-		return false
+// GetSourceCategories 获取分类包括所有的上级
+func (p *productService) GetSourceCategories(c context.Context, request *proto.CategoryIdRequest) (*proto.SourceCategoriesResponse, error) {
+	s := p.catRepo.GlobCatService()
+	list := s.GetCategories()
+	cat := s.GetCategory(int(request.Id))
+	arr := make([]*proto.SProductCategory, 0)
+	if cat != nil {
+		findParent := func(pid int64, arr []product.ICategory) int64 {
+			for _, it := range arr {
+				v := it.GetValue()
+				if v.Id == int(pid) && v.ParentId > 0 {
+					return int64(v.ParentId)
+				}
+			}
+			return pid
+		}
+
+		for pid := request.Id; pid > 0; {
+			id := findParent(pid, list)
+			if id == pid {
+				break
+			}
+			arr = append([]*proto.SProductCategory{
+				p.parseCategoryDto(s.GetCategory(int(id)).GetValue()),
+			}, arr...)
+			pid = id
+		}
+		arr = append(arr, p.parseCategoryDto(cat.GetValue()))
 	}
+	return &proto.SourceCategoriesResponse{List: arr}, nil
+}
+
+// GetCategoryTreeNode 分类
+func (p *productService) GetCategoryTreeNode(_ context.Context, r *proto.CategoryTreeRequest) (*proto.CategoryTreeResponse, error) {
+	arr := p.catRepo.GlobCatService().GetCategories()
+	// 懒加载,只加载一级,并设置IsLeaf
+	if r.Lazy {
+		roots := p.lazyLoadChildren(int(r.ParentId), arr, r)
+		return &proto.CategoryTreeResponse{
+			Value: roots,
+		}, nil
+	}
+	root := &proto.SCategoryTree{
+		Id: r.ParentId,
+	}
+	p.walkLoadCategory(root, arr, r)
+	return &proto.CategoryTreeResponse{
+		Value: root.Children,
+	}, nil
+}
+
+// 是否为叶子节点
+func (p *productService) testIsLeaf(parentId int, categories []product.ICategory, req *proto.CategoryTreeRequest) bool {
+	// 遍历子分类
+	for _, v := range categories {
+		cat := v.GetValue()
+		if cat.ParentId == parentId && p.testWalkCondition(req, cat) {
+			return false
+		}
+	}
+	return true
+}
+
+// 懒加载下级分类
+func (p *productService) lazyLoadChildren(parentId int, categories []product.ICategory,
+	req *proto.CategoryTreeRequest) []*proto.SCategoryTree {
+	var arr []*proto.SCategoryTree
+	// 遍历子分类
+	for _, v := range categories {
+		cat := v.GetValue()
+		if cat.ParentId == parentId &&
+			p.testWalkCondition(req, cat) {
+			cNode := &proto.SCategoryTree{
+				Id:     int64(cat.Id),
+				Name:   cat.Name,
+				Url:    cat.CatUrl,
+				Image:  cat.Icon,
+				IsLeaf: p.testIsLeaf(cat.Id, categories, req),
+			}
+			arr = append(arr, cNode)
+		}
+	}
+	return arr
+}
+
+// 排除分类
+func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category) bool {
 	if req.ExcludeIdList == nil {
 		return true
 	}
@@ -396,22 +467,23 @@ func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *
 	return true
 }
 
-func (p *productService) walkCategoryTree(node *proto.STreeNode, parentId int,
-	categories []product.ICategory, depth int,
+// 遍历加载下级分类
+func (p *productService) walkLoadCategory(node *proto.SCategoryTree, categories []product.ICategory,
 	req *proto.CategoryTreeRequest) {
-	node.Children = []*proto.STreeNode{}
+	node.Children = []*proto.SCategoryTree{}
 	// 遍历子分类
 	for _, v := range categories {
 		cat := v.GetValue()
-		if cat.ParentId == parentId &&
-			p.testWalkCondition(req, cat, depth) {
-			cNode := &proto.STreeNode{
-				Id:       strconv.Itoa(cat.Id),
-				Label:    cat.Name,
-				Expand:   false,
-				Children: nil}
+		if cat.ParentId == int(node.Id) &&
+			p.testWalkCondition(req, cat) {
+			cNode := &proto.SCategoryTree{
+				Id:    int64(cat.Id),
+				Name:  cat.Name,
+				Url:   cat.CatUrl,
+				Image: cat.Icon,
+			}
 			node.Children = append(node.Children, cNode)
-			p.walkCategoryTree(cNode, cat.Id, categories, depth+1, req)
+			p.walkLoadCategory(cNode, categories, req)
 		}
 	}
 }
@@ -563,7 +635,7 @@ func (p *productService) parseCategoryDto(v *product.Category) *proto.SProductCa
 	}
 }
 
-func (p *productService) parseCategory(v *proto.SProductCategory) *product.Category {
+func (p *productService) parseCategory(v *proto.SaveProductCategoryRequest) *product.Category {
 	return &product.Category{
 		Id:          int(v.Id),
 		ParentId:    int(v.ParentId),
@@ -575,7 +647,6 @@ func (p *productService) parseCategory(v *proto.SProductCategory) *product.Categ
 		RedirectUrl: v.RedirectUrl,
 		Icon:        v.Icon,
 		IconPoint:   v.IconPoint,
-		Level:       int(v.Level),
 		SortNum:     int(v.SortNum),
 		FloorShow:   types.ElseInt(v.FloorShow, 1, 0),
 		Enabled:     types.ElseInt(v.Enabled, 1, 0),

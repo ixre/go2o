@@ -15,11 +15,10 @@ import (
  * history :
  */
 
-func ParseItemSnapshotDto(src *item.Snapshot) *proto.SItemSnapshot {
-	return &proto.SItemSnapshot{
+func ParseItemSnapshotDto(src *item.Snapshot) *proto.ItemSnapshotResponse {
+	return &proto.ItemSnapshotResponse{
 		ItemId:      src.ItemId,
 		ProductId:   src.ProductId,
-		Key:         src.Key,
 		CategoryId:  int64(src.CatId),
 		VendorId:    src.VendorId,
 		BrandId:     int64(src.BrandId),
@@ -29,16 +28,15 @@ func ParseItemSnapshotDto(src *item.Snapshot) *proto.SItemSnapshot {
 		Title:       src.Title,
 		ShortTitle:  src.ShortTitle,
 		ProductCode: src.Code,
-		MainImage:   src.Image,
+		Images:      []string{src.Image},
 		IsPresent:   src.IsPresent == 1,
 		PriceRange:  src.PriceRange,
 		SkuId:       src.SkuId,
-		Stock:       &proto.SItemStock{},
+		StockNum:    0,
+		SaleNum:     0,
 		Price:       src.Price,
 		RetailPrice: src.RetailPrice,
-		UpdateTime:  src.UpdateTime,
 		SkuArray:    nil,
-		ViewData:    nil,
 	}
 }
 

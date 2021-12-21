@@ -56,11 +56,12 @@ service ProductService {
     rpc DeleteCategory (Int64) returns (Result) {
     }
     // 保存产品分类
-    rpc SaveCategory (SProductCategory) returns (Result) {
+    rpc SaveCategory (SaveProductCategoryRequest) returns (SaveProductCategoryResponse) {
     }
     // 获取分类树形数据
-    rpc GetCategoryTreeNode (CategoryTreeRequest) returns (STreeNode) {
+    rpc GetCategoryTreeNode (CategoryTreeRequest) returns (CategoryTreeResponse) {
     }
+    rpc GetSourceCategories(CategoryIdRequest) returns(SourceCategoriesResponse) {}
     // 分类树形
     //rpc CategoryTree(CategoryParentId)returns(SProductCategory){}
     // 获取分类关联的品牌
@@ -90,7 +91,9 @@ service ProductService {
     //rpc GetAttrArray_(productId int64) []*product.Attr
 }
 
-
+message CategoryIdRequest{
+    int64 Id = 1;
+}
 
 message DeleteProductRequest {
     int64 SellerId = 1;
@@ -275,12 +278,81 @@ message SProductCategory {
     repeated SProductCategory Children = 17;
 }
 
+// 保存分类请求
+message SaveProductCategoryRequest{
+    // 编号
+    int64 Id = 1;
+    // 上级分类
+    int64 ParentId = 2;
+    // 产品模型
+    int64 ModelId = 3;
+    // 优先级
+    int32 Priority = 4;
+    // 分类名称
+    string Name = 5;
+    /** 是否为虚拟分类 */
+    bool IsVirtual = 6;
+    /** 分类链接地址 */
+    string CategoryUrl = 7;
+    // 虚拟分类跳转地址
+    string RedirectUrl = 18;
+    /** 图标 */
+    string Icon = 8;
+    /** 图标坐标 */
+    string IconPoint = 9;
+    /** 序号 */
+    int32 SortNum = 11;
+    /** 是否楼层显示 */
+    bool FloorShow = 12;
+    /** 是否启用 */
+    bool Enabled = 13;
+}
+
+// 保存分类响应
+message SaveProductCategoryResponse{
+    string Error = 1;
+    int64 CategoryId = 2;
+}
+
+// 分类树
+message SCategoryTree {
+    // 值
+    int64 Id =  1;
+    // 文本
+    string Name = 2;
+    // 图标,icon与JS树形控件冲突
+    string Image = 3;
+    // 是否展开
+    string Url = 4;
+    // 是否为叶子节点(下级无节点)
+    bool IsLeaf = 5;
+    // 子节点
+    repeated SCategoryTree Children = 6;
+    // 是否在楼层显示
+    bool OnFloorShow = 7;
+}
+
 // 分类树形请求
 message CategoryTreeRequest {
+    // 上级编号
+    int64 ParentId = 1;
+    // 是否懒加载
+    bool Lazy = 2;
+    // 是否仅返回已经启用的分类
+    bool LoadEnabled = 3;
     // 排除分类编号
-    repeated int64 ExcludeIdList = 1;
-    // 层级显示,小于等于0不限制
-    int32 Depth = 2;
+    repeated int64 ExcludeIdList = 4;
+}
+
+
+// 分类树形结果
+message CategoryTreeResponse{
+    repeated SCategoryTree Value = 1;
+}
+
+// 分类来源响应
+message SourceCategoriesResponse{
+    repeated SProductCategory List = 1;
 }
 
 // 产品

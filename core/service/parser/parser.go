@@ -9,10 +9,12 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
+	"github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/types"
@@ -184,47 +186,26 @@ func SkuArrayDto(src []*item.Sku) []*proto.SSku {
 	return dst
 }
 
-func Item(src *proto.SOldItem) *item.GoodsItem {
-	it := &item.GoodsItem{
-		Id:           src.ItemId,
-		ProductId:    src.ProductId,
-		PromFlag:     src.PromFlag,
-		CategoryId:   src.CatId,
-		VendorId:     src.VendorId,
-		BrandId:      src.BrandId,
-		ShopId:       src.ShopId,
-		ShopCatId:    src.ShopCatId,
-		ExpressTid:   src.ExpressTid,
-		Title:        src.Title,
-		ShortTitle:   src.ShortTitle,
-		Code:         src.Code,
-		Image:        src.Image,
-		IsPresent:    src.IsPresent,
-		PriceRange:   src.PriceRange,
-		StockNum:     src.StockNum,
-		SaleNum:      src.SaleNum,
-		SkuNum:       src.SkuNum,
-		SkuId:        src.SkuId,
-		Cost:         src.Cost,
-		Price:        src.Price,
-		RetailPrice:  src.RetailPrice,
-		Weight:       src.Weight,
-		Bulk:         src.Bulk,
-		ShelveState:  src.ShelveState,
-		ReviewState:  src.ReviewState,
-		ReviewRemark: src.ReviewRemark,
-		SortNum:      src.SortNum,
-		CreateTime:   src.CreateTime,
-		UpdateTime:   src.UpdateTime,
-		PromPrice:    src.PromPrice,
+func SpecOptionsDto(list promodel.SpecList) []*proto.SSpecOption {
+	arr := make([]*proto.SSpecOption, len(list))
+	s := func(l *promodel.Spec) []*proto.SSpecOptionItem {
+		arr := make([]*proto.SSpecOptionItem, len(l.Items))
+		for i, v := range l.Items {
+			arr[i] = &proto.SSpecOptionItem{
+				Value: fmt.Sprintf("%d:%d", l.Id, v.Id),
+				Label: v.Value,
+				Color: v.Color,
+			}
+		}
+		return arr
 	}
-	if src.SkuArray != nil {
-		it.SkuArray = make([]*item.Sku, len(src.SkuArray))
-		for i, v := range src.SkuArray {
-			it.SkuArray[i] = Sku(v)
+	for i, v := range list {
+		arr[i] = &proto.SSpecOption{
+			Name:  v.Name,
+			Items: s(v),
 		}
 	}
-	return it
+	return arr
 }
 
 func SkuDto(src *item.Sku) *proto.SSku {

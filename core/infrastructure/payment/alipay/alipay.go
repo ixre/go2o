@@ -136,7 +136,7 @@ func alipayRequest_Wap(sTrade_no string, sSubject string, sTotalAmount string) s
 	sSign := alipayMd5Sign(urls.Encode())
 	sHtml := `<html>
 		<head>
-		<meta http-equiv="Content-AdType" content="text/html; charset=utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		</head>
 		<body>
 		<form id="alipaysubmit" name="alipaysubmit" enctype="multipart/form-data" action="`
@@ -159,7 +159,7 @@ func alipayRequest_Wap(sTrade_no string, sSubject string, sTotalAmount string) s
 }
 
 func AlipayHandler_Wap(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-AdType", "text/html; charset=utf-8")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	sSubject := r.FormValue("subject")
 	sFee := r.FormValue("fee")
 	if sSubject == "" {
@@ -191,7 +191,7 @@ func alipayRefundRequest(sTrade_no string, sDesc string, sFee string) string {
 	sSign := alipayMd5Sign(urls.Encode())
 	sHtml := `<html>
 		<head>
-		<meta http-equiv="Content-AdType" content="text/html; charset=utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		</head>
 		<body>
 		<form id="alipaysubmit" name="alipaysubmit" enctype="multipart/form-data" action="`
@@ -219,7 +219,7 @@ func alipayRefundRequest(sTrade_no string, sDesc string, sFee string) string {
 
 //trade_no 交易号 , fee 退还金额, desc 退还说明
 func Alipay_Refund_Handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-AdType", "text/html; charset=utf-8")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	sTradeNo := r.FormValue("trade_no")
 	sFee := r.FormValue("fee")
 	sDesc := r.FormValue("desc")
@@ -245,7 +245,7 @@ func Alipay_Web_CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	vals := r.Form
 	vals.Del("sign")
 	vals.Del("sign_type")
-	w.Header().Set("Content-AdType", "text/plain")
+	w.Header().Set("Content-Type", "text/plain")
 	if sSign != alipayMd5Sign(vals.Encode()) {
 		w.Write([]byte("通知信息错误，校验失败"))
 		return
@@ -261,7 +261,7 @@ func Alipay_Wap_CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	vals := r.Form
 	vals.Del("sign")
 	vals.Del("sign_type")
-	w.Header().Set("Content-AdType", "text/plain")
+	w.Header().Set("Content-Type", "text/plain")
 	if sSign != alipayMd5Sign(vals.Encode()) {
 		w.Write([]byte("通知信息错误，校验失败"))
 		return
@@ -284,7 +284,7 @@ func Alipay_Web_NotifyHandler(w http.ResponseWriter, r *http.Request) {
 	sSign := vals.Get("sign")
 	vals.Del("sign")
 	vals.Del("sign_type")
-	w.Header().Set("Content-AdType", "text/plain")
+	w.Header().Set("Content-Type", "text/plain")
 	if sSign != alipayMd5Sign(vals.Encode()) {
 		w.Write([]byte("fail"))
 		return
@@ -313,7 +313,7 @@ func Alipay_Wap_NotifyHandler(w http.ResponseWriter, r *http.Request) {
 	sFormat := vals.Get("v")
 	sData := vals.Get("notify_data")
 	sStr := "service=" + sService + "&v=" + sFormat + "&sec_id=" + sSignType + "&notify_data=" + sData
-	w.Header().Set("Content-AdType", "text/plain")
+	w.Header().Set("Content-Type", "text/plain")
 	if sSign != alipayMd5Sign(sStr) {
 		w.Write([]byte("fail"))
 		return
@@ -370,7 +370,7 @@ func Alipay_Refund_NotifyHandler(w http.ResponseWriter, r *http.Request) {
 	sSign := vals.Get("sign")
 	vals.Del("sign")
 	vals.Del("sign_type")
-	w.Header().Set("Content-AdType", "text/plain")
+	w.Header().Set("Content-Type", "text/plain")
 	if sSign != alipayMd5Sign(vals.Encode()) {
 		w.Write([]byte("fail"))
 		return
@@ -432,7 +432,7 @@ type AlipayLogResult struct {
 //		result.Errcode	=global.ERRCODE_SERVER
 //		result.ErrMsg	=err.Error()
 //	}
-//	w.Header().Set("Content-AdType", "application/json")
+//	w.Header().Set("Content-Type", "application/json")
 //	w.Header().Set("Access-Control-Allow-Origin", "*")
 //	json.NewEncoder(w).Encode(&result)
 //}

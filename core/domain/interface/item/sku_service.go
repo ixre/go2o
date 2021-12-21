@@ -6,23 +6,23 @@ import (
 
 type (
 	ISkuService interface {
-		// 将SKU字符串转为字典,如: 1:2;2:3
+		// SpecDataToMap 将SKU字符串转为字典,如: 1:2;2:3
 		SpecDataToMap(specData string) map[int]int
-		// 获取规格和项的数组
+		// GetSpecItemArray 获取规格和项的数组
 		GetSpecItemArray(sku []*Sku) ([]int, []int)
-		// 合并SKU数组；主要是SKU编号的复制
+		// Merge 合并SKU数组；主要是SKU编号的复制
 		Merge(from []*Sku, to *[]*Sku)
-		// 重建SKU数组，将信息附加
+		// RebuildSkuArray 重建SKU数组，将信息附加
 		RebuildSkuArray(sku *[]*Sku, it *GoodsItem) error
-		// 根据SKU更新商品的信息
+		// UpgradeBySku 根据SKU更新商品的信息
 		UpgradeBySku(it *GoodsItem, arr []*Sku) error
-		// 获取SKU的JSON字符串
-		GetSkuJson(skuArr []*Sku) []byte
-		// 获取商品的规格(从SKU中读取)
-		GetSpecArray(skuArr []*Sku) promodel.SpecList
-		// 获取规格选择HTML
+		// GetItemSkuJson 获取商品SKU的JSON字符串
+		GetItemSkuJson(skuArr []*Sku) []byte
+		// GetItemSpecArray 获取商品的规格(从SKU中读取)
+		GetItemSpecArray(skuArr []*Sku) promodel.SpecList
+		// GetSpecHtml 获取规格选择HTML
 		GetSpecHtml(spec promodel.SpecList) string
-		// 获取规格JSON数据
+		// GetSpecJson 获取规格JSON数据
 		GetSpecJson(spec promodel.SpecList) []byte
 	}
 
