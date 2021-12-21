@@ -40,7 +40,7 @@ func (m *SettlePersistRequest) Reset()         { *m = SettlePersistRequest{} }
 func (m *SettlePersistRequest) String() string { return proto.CompactTextString(m) }
 func (*SettlePersistRequest) ProtoMessage()    {}
 func (*SettlePersistRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_e735419c19728bf2, []int{0}
+	return fileDescriptor_cart_service_e4a312d7fef09cb2, []int{0}
 }
 func (m *SettlePersistRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SettlePersistRequest.Unmarshal(m, b)
@@ -97,15 +97,13 @@ func (m *SettlePersistRequest) GetAddressId() int64 {
 
 type CartItemRequest struct {
 	// 买家编号
-	BuyerId int64 `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId"`
-	// 购物车编码
-	CartCode string `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode"`
+	Id *ShoppingCartId `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id"`
 	// 商品编号
-	ItemId int64 `protobuf:"zigzag64,3,opt,name=ItemId,proto3" json:"ItemId"`
+	ItemId int64 `protobuf:"zigzag64,2,opt,name=ItemId,proto3" json:"ItemId"`
 	// SKU编号
-	SkuId int64 `protobuf:"zigzag64,4,opt,name=SkuId,proto3" json:"SkuId"`
+	SkuId int64 `protobuf:"zigzag64,3,opt,name=SkuId,proto3" json:"SkuId"`
 	// 数量
-	Quantity             int32    `protobuf:"varint,5,opt,name=quantity,proto3" json:"quantity"`
+	Quantity             int32    `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -115,7 +113,7 @@ func (m *CartItemRequest) Reset()         { *m = CartItemRequest{} }
 func (m *CartItemRequest) String() string { return proto.CompactTextString(m) }
 func (*CartItemRequest) ProtoMessage()    {}
 func (*CartItemRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_e735419c19728bf2, []int{1}
+	return fileDescriptor_cart_service_e4a312d7fef09cb2, []int{1}
 }
 func (m *CartItemRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CartItemRequest.Unmarshal(m, b)
@@ -135,18 +133,11 @@ func (m *CartItemRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CartItemRequest proto.InternalMessageInfo
 
-func (m *CartItemRequest) GetBuyerId() int64 {
+func (m *CartItemRequest) GetId() *ShoppingCartId {
 	if m != nil {
-		return m.BuyerId
+		return m.Id
 	}
-	return 0
-}
-
-func (m *CartItemRequest) GetCartCode() string {
-	if m != nil {
-		return m.CartCode
-	}
-	return ""
+	return nil
 }
 
 func (m *CartItemRequest) GetItemId() int64 {
@@ -183,7 +174,7 @@ func (m *CheckSignRequest) Reset()         { *m = CheckSignRequest{} }
 func (m *CheckSignRequest) String() string { return proto.CompactTextString(m) }
 func (*CheckSignRequest) ProtoMessage()    {}
 func (*CheckSignRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_e735419c19728bf2, []int{2}
+	return fileDescriptor_cart_service_e4a312d7fef09cb2, []int{2}
 }
 func (m *CheckSignRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CheckSignRequest.Unmarshal(m, b)
@@ -224,50 +215,62 @@ func (m *CheckSignRequest) GetItems() []*SCheckCartItem {
 	return nil
 }
 
-type CartCode struct {
-	BuyerId              int64    `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId"`
-	CartCode             string   `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode"`
+// 购物车编号
+type ShoppingCartId struct {
+	// 会员/用户编号
+	UserId int64 `protobuf:"zigzag64,1,opt,name=UserId,proto3" json:"UserId"`
+	// 购物车标识,当未指定用户时候使用
+	CartCode string `protobuf:"bytes,2,opt,name=CartCode,proto3" json:"CartCode"`
+	// 是否为批发销售的购物车
+	IsWholesale          bool     `protobuf:"varint,3,opt,name=IsWholesale,proto3" json:"IsWholesale"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CartCode) Reset()         { *m = CartCode{} }
-func (m *CartCode) String() string { return proto.CompactTextString(m) }
-func (*CartCode) ProtoMessage()    {}
-func (*CartCode) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_e735419c19728bf2, []int{3}
+func (m *ShoppingCartId) Reset()         { *m = ShoppingCartId{} }
+func (m *ShoppingCartId) String() string { return proto.CompactTextString(m) }
+func (*ShoppingCartId) ProtoMessage()    {}
+func (*ShoppingCartId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cart_service_e4a312d7fef09cb2, []int{3}
 }
-func (m *CartCode) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CartCode.Unmarshal(m, b)
+func (m *ShoppingCartId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ShoppingCartId.Unmarshal(m, b)
 }
-func (m *CartCode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CartCode.Marshal(b, m, deterministic)
+func (m *ShoppingCartId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ShoppingCartId.Marshal(b, m, deterministic)
 }
-func (dst *CartCode) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CartCode.Merge(dst, src)
+func (dst *ShoppingCartId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ShoppingCartId.Merge(dst, src)
 }
-func (m *CartCode) XXX_Size() int {
-	return xxx_messageInfo_CartCode.Size(m)
+func (m *ShoppingCartId) XXX_Size() int {
+	return xxx_messageInfo_ShoppingCartId.Size(m)
 }
-func (m *CartCode) XXX_DiscardUnknown() {
-	xxx_messageInfo_CartCode.DiscardUnknown(m)
+func (m *ShoppingCartId) XXX_DiscardUnknown() {
+	xxx_messageInfo_ShoppingCartId.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CartCode proto.InternalMessageInfo
+var xxx_messageInfo_ShoppingCartId proto.InternalMessageInfo
 
-func (m *CartCode) GetBuyerId() int64 {
+func (m *ShoppingCartId) GetUserId() int64 {
 	if m != nil {
-		return m.BuyerId
+		return m.UserId
 	}
 	return 0
 }
 
-func (m *CartCode) GetCartCode() string {
+func (m *ShoppingCartId) GetCartCode() string {
 	if m != nil {
 		return m.CartCode
 	}
 	return ""
+}
+
+func (m *ShoppingCartId) GetIsWholesale() bool {
+	if m != nil {
+		return m.IsWholesale
+	}
+	return false
 }
 
 type SettleMeta_ struct {
@@ -284,7 +287,7 @@ func (m *SettleMeta_) Reset()         { *m = SettleMeta_{} }
 func (m *SettleMeta_) String() string { return proto.CompactTextString(m) }
 func (*SettleMeta_) ProtoMessage()    {}
 func (*SettleMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_e735419c19728bf2, []int{4}
+	return fileDescriptor_cart_service_e4a312d7fef09cb2, []int{4}
 }
 func (m *SettleMeta_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SettleMeta_.Unmarshal(m, b)
@@ -345,7 +348,7 @@ func (m *SettleShopMeta_) Reset()         { *m = SettleShopMeta_{} }
 func (m *SettleShopMeta_) String() string { return proto.CompactTextString(m) }
 func (*SettleShopMeta_) ProtoMessage()    {}
 func (*SettleShopMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_e735419c19728bf2, []int{5}
+	return fileDescriptor_cart_service_e4a312d7fef09cb2, []int{5}
 }
 func (m *SettleShopMeta_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SettleShopMeta_.Unmarshal(m, b)
@@ -400,7 +403,7 @@ func (m *SettleDeliverMeta_) Reset()         { *m = SettleDeliverMeta_{} }
 func (m *SettleDeliverMeta_) String() string { return proto.CompactTextString(m) }
 func (*SettleDeliverMeta_) ProtoMessage()    {}
 func (*SettleDeliverMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_e735419c19728bf2, []int{6}
+	return fileDescriptor_cart_service_e4a312d7fef09cb2, []int{6}
 }
 func (m *SettleDeliverMeta_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SettleDeliverMeta_.Unmarshal(m, b)
@@ -452,7 +455,7 @@ func init() {
 	proto.RegisterType((*SettlePersistRequest)(nil), "SettlePersistRequest")
 	proto.RegisterType((*CartItemRequest)(nil), "CartItemRequest")
 	proto.RegisterType((*CheckSignRequest)(nil), "CheckSignRequest")
-	proto.RegisterType((*CartCode)(nil), "CartCode")
+	proto.RegisterType((*ShoppingCartId)(nil), "ShoppingCartId")
 	proto.RegisterType((*SettleMeta_)(nil), "SettleMeta_")
 	proto.RegisterType((*SettleShopMeta_)(nil), "SettleShopMeta_")
 	proto.RegisterType((*SettleDeliverMeta_)(nil), "SettleDeliverMeta_")
@@ -472,16 +475,14 @@ const _ = grpc.SupportPackageIsVersion4
 type CartServiceClient interface {
 	// 批发购物车接口
 	WholesaleCartV1(ctx context.Context, in *WsCartRequest, opts ...grpc.CallOption) (*Result, error)
-	// 普通购物车接口
-	NormalCartV1(ctx context.Context, in *NormalCartRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-	GetShoppingCart_(ctx context.Context, in *CartCode, opts ...grpc.CallOption) (*SShoppingCart, error)
+	GetShoppingCart(ctx context.Context, in *ShoppingCartId, opts ...grpc.CallOption) (*SShoppingCart, error)
 	// 放入购物车
-	PutInCart_(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
+	PutInCart(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 从购物车里删除指定数量商品
-	SubCartItem_(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
+	SubCartItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 获取购物车结算信息
-	GetCartSettle_(ctx context.Context, in *CartCode, opts ...grpc.CallOption) (*SettleMeta_, error)
+	GetCartSettle_(ctx context.Context, in *ShoppingCartId, opts ...grpc.CallOption) (*SettleMeta_, error)
 	// 勾选商品结算
 	CheckSign_(ctx context.Context, in *CheckSignRequest, opts ...grpc.CallOption) (*Result, error)
 	// 更新购物车结算
@@ -505,43 +506,34 @@ func (c *cartServiceClient) WholesaleCartV1(ctx context.Context, in *WsCartReque
 	return out, nil
 }
 
-func (c *cartServiceClient) NormalCartV1(ctx context.Context, in *NormalCartRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, "/CartService/NormalCartV1", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *cartServiceClient) GetShoppingCart_(ctx context.Context, in *CartCode, opts ...grpc.CallOption) (*SShoppingCart, error) {
+func (c *cartServiceClient) GetShoppingCart(ctx context.Context, in *ShoppingCartId, opts ...grpc.CallOption) (*SShoppingCart, error) {
 	out := new(SShoppingCart)
-	err := c.cc.Invoke(ctx, "/CartService/GetShoppingCart_", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/CartService/GetShoppingCart", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *cartServiceClient) PutInCart_(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
+func (c *cartServiceClient) PutInCart(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
 	out := new(CartItemResponse)
-	err := c.cc.Invoke(ctx, "/CartService/PutInCart_", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/CartService/PutInCart", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *cartServiceClient) SubCartItem_(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
+func (c *cartServiceClient) SubCartItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
 	out := new(CartItemResponse)
-	err := c.cc.Invoke(ctx, "/CartService/SubCartItem_", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/CartService/SubCartItem", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *cartServiceClient) GetCartSettle_(ctx context.Context, in *CartCode, opts ...grpc.CallOption) (*SettleMeta_, error) {
+func (c *cartServiceClient) GetCartSettle_(ctx context.Context, in *ShoppingCartId, opts ...grpc.CallOption) (*SettleMeta_, error) {
 	out := new(SettleMeta_)
 	err := c.cc.Invoke(ctx, "/CartService/GetCartSettle_", in, out, opts...)
 	if err != nil {
@@ -572,16 +564,14 @@ func (c *cartServiceClient) PrepareSettlePersist_(ctx context.Context, in *Settl
 type CartServiceServer interface {
 	// 批发购物车接口
 	WholesaleCartV1(context.Context, *WsCartRequest) (*Result, error)
-	// 普通购物车接口
-	NormalCartV1(context.Context, *NormalCartRequest) (*Result, error)
 	// 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-	GetShoppingCart_(context.Context, *CartCode) (*SShoppingCart, error)
+	GetShoppingCart(context.Context, *ShoppingCartId) (*SShoppingCart, error)
 	// 放入购物车
-	PutInCart_(context.Context, *CartItemRequest) (*CartItemResponse, error)
+	PutInCart(context.Context, *CartItemRequest) (*CartItemResponse, error)
 	// 从购物车里删除指定数量商品
-	SubCartItem_(context.Context, *CartItemRequest) (*CartItemResponse, error)
+	SubCartItem(context.Context, *CartItemRequest) (*CartItemResponse, error)
 	// 获取购物车结算信息
-	GetCartSettle_(context.Context, *CartCode) (*SettleMeta_, error)
+	GetCartSettle_(context.Context, *ShoppingCartId) (*SettleMeta_, error)
 	// 勾选商品结算
 	CheckSign_(context.Context, *CheckSignRequest) (*Result, error)
 	// 更新购物车结算
@@ -610,80 +600,62 @@ func _CartService_WholesaleCartV1_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CartService_NormalCartV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NormalCartRequest)
+func _CartService_GetShoppingCart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShoppingCartId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CartServiceServer).NormalCartV1(ctx, in)
+		return srv.(CartServiceServer).GetShoppingCart(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CartService/NormalCartV1",
+		FullMethod: "/CartService/GetShoppingCart",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).NormalCartV1(ctx, req.(*NormalCartRequest))
+		return srv.(CartServiceServer).GetShoppingCart(ctx, req.(*ShoppingCartId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CartService_GetShoppingCart__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CartCode)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CartServiceServer).GetShoppingCart_(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/CartService/GetShoppingCart_",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).GetShoppingCart_(ctx, req.(*CartCode))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CartService_PutInCart__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CartService_PutInCart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CartItemRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CartServiceServer).PutInCart_(ctx, in)
+		return srv.(CartServiceServer).PutInCart(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CartService/PutInCart_",
+		FullMethod: "/CartService/PutInCart",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).PutInCart_(ctx, req.(*CartItemRequest))
+		return srv.(CartServiceServer).PutInCart(ctx, req.(*CartItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CartService_SubCartItem__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CartService_SubCartItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CartItemRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CartServiceServer).SubCartItem_(ctx, in)
+		return srv.(CartServiceServer).SubCartItem(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CartService/SubCartItem_",
+		FullMethod: "/CartService/SubCartItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).SubCartItem_(ctx, req.(*CartItemRequest))
+		return srv.(CartServiceServer).SubCartItem(ctx, req.(*CartItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CartService_GetCartSettle__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CartCode)
+	in := new(ShoppingCartId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -695,7 +667,7 @@ func _CartService_GetCartSettle__Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/CartService/GetCartSettle_",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).GetCartSettle_(ctx, req.(*CartCode))
+		return srv.(CartServiceServer).GetCartSettle_(ctx, req.(*ShoppingCartId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -745,20 +717,16 @@ var _CartService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _CartService_WholesaleCartV1_Handler,
 		},
 		{
-			MethodName: "NormalCartV1",
-			Handler:    _CartService_NormalCartV1_Handler,
+			MethodName: "GetShoppingCart",
+			Handler:    _CartService_GetShoppingCart_Handler,
 		},
 		{
-			MethodName: "GetShoppingCart_",
-			Handler:    _CartService_GetShoppingCart__Handler,
+			MethodName: "PutInCart",
+			Handler:    _CartService_PutInCart_Handler,
 		},
 		{
-			MethodName: "PutInCart_",
-			Handler:    _CartService_PutInCart__Handler,
-		},
-		{
-			MethodName: "SubCartItem_",
-			Handler:    _CartService_SubCartItem__Handler,
+			MethodName: "SubCartItem",
+			Handler:    _CartService_SubCartItem_Handler,
 		},
 		{
 			MethodName: "GetCartSettle_",
@@ -777,48 +745,48 @@ var _CartService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "cart_service.proto",
 }
 
-func init() { proto.RegisterFile("cart_service.proto", fileDescriptor_cart_service_e735419c19728bf2) }
+func init() { proto.RegisterFile("cart_service.proto", fileDescriptor_cart_service_e4a312d7fef09cb2) }
 
-var fileDescriptor_cart_service_e735419c19728bf2 = []byte{
-	// 628 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0x8d, 0x93, 0xa6, 0x6d, 0x26, 0x21, 0x49, 0xb7, 0x1f, 0x8a, 0x22, 0x04, 0x95, 0x55, 0x50,
-	0x05, 0x74, 0x2b, 0x52, 0x71, 0x40, 0x5c, 0xa0, 0x41, 0xaa, 0x7c, 0xa0, 0x44, 0x36, 0xa2, 0x12,
-	0x97, 0xc8, 0x89, 0x47, 0x8e, 0x55, 0xc7, 0xeb, 0xee, 0xae, 0x2b, 0xe5, 0x3f, 0x70, 0xe1, 0xcc,
-	0x8d, 0x03, 0xbf, 0x13, 0xed, 0xfa, 0x23, 0x4e, 0x5a, 0xa9, 0x08, 0x4e, 0xf6, 0x7b, 0x6f, 0x76,
-	0xf6, 0xed, 0xcc, 0xec, 0x02, 0x99, 0xba, 0x5c, 0x8e, 0x05, 0xf2, 0xdb, 0x60, 0x8a, 0x34, 0xe6,
-	0x4c, 0xb2, 0x7e, 0xcb, 0x0f, 0xd9, 0xc4, 0x0d, 0x33, 0x74, 0x30, 0x47, 0x21, 0x5c, 0x1f, 0x4f,
-	0x75, 0xa4, 0x27, 0x59, 0xca, 0x9b, 0xbf, 0x0d, 0xd8, 0x73, 0x50, 0xca, 0x10, 0x47, 0xc8, 0x45,
-	0x20, 0xa4, 0x8d, 0x37, 0x09, 0x0a, 0x49, 0x7a, 0xb0, 0x75, 0x9e, 0x2c, 0x90, 0x5b, 0x5e, 0xcf,
-	0x38, 0x34, 0x8e, 0x6b, 0x76, 0x0e, 0xc9, 0x01, 0x6c, 0x3a, 0x33, 0x16, 0x5b, 0x5e, 0xaf, 0xaa,
-	0x85, 0x0c, 0x91, 0x27, 0x00, 0x23, 0x77, 0x31, 0xc7, 0x48, 0x7e, 0x8e, 0x65, 0xaf, 0xa6, 0xb5,
-	0x12, 0xa3, 0xf4, 0x8f, 0x18, 0x06, 0xb7, 0xc8, 0x95, 0xbe, 0x91, 0xea, 0x4b, 0x86, 0x3c, 0x86,
-	0xc6, 0x07, 0xcf, 0xe3, 0x28, 0x84, 0xe5, 0xf5, 0xea, 0x5a, 0x5e, 0x12, 0xe6, 0x0f, 0x03, 0x3a,
-	0x43, 0x97, 0x4b, 0x4b, 0xe2, 0xfc, 0x61, 0x8f, 0x7d, 0xd8, 0x56, 0xc1, 0x43, 0xe6, 0xa1, 0x76,
-	0xd9, 0xb0, 0x0b, 0xac, 0xfc, 0xab, 0x24, 0x96, 0xa7, 0x3d, 0x12, 0x3b, 0x43, 0x64, 0x0f, 0xea,
-	0xce, 0x75, 0x62, 0x79, 0xda, 0x1a, 0xb1, 0x53, 0xa0, 0x32, 0xdd, 0x24, 0x6e, 0x24, 0x03, 0xb9,
-	0xd0, 0xa6, 0xea, 0x76, 0x81, 0x4d, 0x06, 0xdd, 0xe1, 0x0c, 0xa7, 0xd7, 0x4e, 0xe0, 0x47, 0xff,
-	0xe7, 0xe9, 0x19, 0xd4, 0x95, 0x0b, 0xd1, 0xab, 0x1d, 0xd6, 0x8e, 0x9b, 0x83, 0x0e, 0x75, 0x74,
-	0xe2, 0xe2, 0xc0, 0xa9, 0x6a, 0xbe, 0x5f, 0xa6, 0xf8, 0xb7, 0x8d, 0xcc, 0x5f, 0x06, 0x34, 0xd3,
-	0x7e, 0x7f, 0x42, 0xe9, 0x8e, 0xd7, 0x9a, 0x66, 0x3c, 0xd0, 0xb4, 0xea, 0x9d, 0xa6, 0x1d, 0xc1,
-	0x86, 0x6a, 0xbf, 0x2e, 0x65, 0x73, 0xd0, 0xa5, 0x69, 0x6e, 0x45, 0xe9, 0xfc, 0xb6, 0x56, 0xc9,
-	0x09, 0x6c, 0x65, 0x6b, 0x74, 0x71, 0x9b, 0x83, 0xdd, 0x2c, 0x30, 0x63, 0xd3, 0xd8, 0x3c, 0xc6,
-	0x9c, 0x42, 0x67, 0x2d, 0x4f, 0x69, 0xe8, 0x8c, 0x95, 0xa1, 0xeb, 0xc3, 0xb6, 0xfa, 0xbb, 0x74,
-	0xe7, 0xc5, 0x59, 0x73, 0xac, 0x06, 0xea, 0x0b, 0x86, 0x18, 0xcf, 0x58, 0x84, 0xda, 0x60, 0xc3,
-	0x5e, 0x12, 0xe6, 0x77, 0x03, 0xc8, 0x5d, 0x13, 0xa4, 0x0d, 0xd5, 0x62, 0x93, 0xaa, 0xe5, 0x91,
-	0x23, 0x78, 0x34, 0x64, 0x91, 0x08, 0xfc, 0x08, 0xb1, 0xb4, 0xcb, 0x2a, 0x49, 0x9e, 0x43, 0xbb,
-	0x20, 0x46, 0xa5, 0xfd, 0xd6, 0x58, 0xd5, 0xb4, 0x6c, 0xa4, 0x75, 0x21, 0x1a, 0x76, 0x0e, 0x07,
-	0x3f, 0x6b, 0xd0, 0x54, 0x5d, 0x72, 0xd2, 0x4b, 0x4c, 0x5e, 0x41, 0xe7, 0x6a, 0xc6, 0x42, 0x14,
-	0x6e, 0x88, 0x8a, 0xff, 0xfa, 0x9a, 0xb4, 0xe9, 0x95, 0x50, 0xbf, 0xd9, 0xa8, 0xf5, 0xb7, 0xa8,
-	0x8d, 0x22, 0x09, 0xa5, 0x59, 0x21, 0x27, 0xd0, 0xba, 0x64, 0x7c, 0xee, 0x86, 0x59, 0x28, 0xa1,
-	0x4b, 0x78, 0x4f, 0xf8, 0x29, 0x74, 0x2f, 0x50, 0xaa, 0x42, 0xc5, 0x41, 0xe4, 0xab, 0xa0, 0x31,
-	0x69, 0xd0, 0x7c, 0x48, 0xfa, 0x6d, 0xea, 0x94, 0x35, 0xb3, 0x42, 0xce, 0x00, 0x46, 0x89, 0xb4,
-	0xa2, 0x34, 0xb4, 0x4b, 0xd7, 0x6e, 0x62, 0x7f, 0xa7, 0xc4, 0x88, 0x98, 0x45, 0x02, 0xcd, 0x0a,
-	0x79, 0x03, 0x2d, 0x27, 0x99, 0xe4, 0xc2, 0x5f, 0x2f, 0x7b, 0x09, 0xed, 0x0b, 0x94, 0x69, 0x2d,
-	0x54, 0x7b, 0x56, 0xac, 0xb5, 0x68, 0x69, 0x7a, 0xcd, 0x0a, 0x79, 0x01, 0x50, 0x5c, 0xc1, 0x31,
-	0xd9, 0xa1, 0xeb, 0xf7, 0xb1, 0x7c, 0xea, 0xb7, 0xb0, 0x3f, 0xe2, 0x18, 0xbb, 0x1c, 0x57, 0x5e,
-	0xbc, 0x31, 0xd9, 0xa7, 0xf7, 0x3d, 0x81, 0xa5, 0xa5, 0xe7, 0x4f, 0x61, 0x77, 0xca, 0xe6, 0xd4,
-	0x0f, 0xe4, 0x2c, 0x99, 0x50, 0x9f, 0x0d, 0x18, 0xe5, 0xf1, 0xf4, 0xdb, 0x36, 0x3d, 0x7d, 0xa7,
-	0xdf, 0xd1, 0xc9, 0xa6, 0xfe, 0x9c, 0xfd, 0x09, 0x00, 0x00, 0xff, 0xff, 0xbc, 0xd3, 0x8d, 0x09,
-	0x8a, 0x05, 0x00, 0x00,
+var fileDescriptor_cart_service_e4a312d7fef09cb2 = []byte{
+	// 637 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0xae, 0x93, 0xa6, 0x4d, 0xc6, 0x25, 0x69, 0xb7, 0x3f, 0x8a, 0x2c, 0x44, 0x2b, 0xab, 0x20,
+	0x84, 0x60, 0xab, 0x06, 0x2e, 0x88, 0x13, 0x0d, 0x52, 0xe5, 0x03, 0x10, 0xad, 0x81, 0x4a, 0x5c,
+	0x22, 0x27, 0x1e, 0x1c, 0xab, 0x8e, 0xd7, 0xf5, 0xae, 0x2b, 0x55, 0xe2, 0x11, 0x78, 0x0a, 0x0e,
+	0xbc, 0x21, 0x77, 0xb4, 0xbb, 0x8e, 0xeb, 0xa4, 0x88, 0x72, 0xb2, 0xe7, 0x9b, 0xd9, 0x9d, 0x6f,
+	0x66, 0xbe, 0x59, 0x20, 0xd3, 0x20, 0x97, 0x63, 0x81, 0xf9, 0x75, 0x3c, 0x45, 0x9a, 0xe5, 0x5c,
+	0x72, 0x67, 0x2b, 0x4a, 0xf8, 0x24, 0x48, 0x4a, 0xeb, 0x60, 0x8e, 0x42, 0x04, 0x11, 0x9e, 0xe8,
+	0xc8, 0x50, 0x72, 0x83, 0xbb, 0xbf, 0x2c, 0xd8, 0xf3, 0x51, 0xca, 0x04, 0x47, 0x98, 0x8b, 0x58,
+	0x48, 0x86, 0x57, 0x05, 0x0a, 0x49, 0xfa, 0xb0, 0x79, 0x56, 0xdc, 0x60, 0xee, 0x85, 0x7d, 0xeb,
+	0xc8, 0x7a, 0xda, 0x64, 0x0b, 0x93, 0x1c, 0xc0, 0x86, 0x3f, 0xe3, 0x99, 0x17, 0xf6, 0x1b, 0xda,
+	0x51, 0x5a, 0xe4, 0x11, 0xc0, 0x28, 0xb8, 0x99, 0x63, 0x2a, 0x3f, 0x66, 0xb2, 0xdf, 0xd4, 0xbe,
+	0x1a, 0xa2, 0xfc, 0xef, 0x30, 0x89, 0xaf, 0x31, 0x57, 0xfe, 0x75, 0xe3, 0xbf, 0x45, 0xc8, 0x43,
+	0xe8, 0xbc, 0x0d, 0xc3, 0x1c, 0x85, 0xf0, 0xc2, 0x7e, 0x4b, 0xbb, 0x6f, 0x01, 0xf7, 0x3b, 0xf4,
+	0x86, 0x41, 0x2e, 0x3d, 0x89, 0xf3, 0x05, 0xc5, 0x43, 0x68, 0x94, 0xec, 0xec, 0x41, 0x8f, 0x2a,
+	0x16, 0x59, 0x9c, 0x46, 0x3a, 0x2a, 0x64, 0x0d, 0xc3, 0x54, 0xc5, 0x97, 0x4c, 0x09, 0x2b, 0x2d,
+	0xb2, 0x07, 0x2d, 0xff, 0xb2, 0xf0, 0x42, 0x4d, 0x92, 0x30, 0x63, 0x10, 0x07, 0xda, 0x57, 0x45,
+	0x90, 0xca, 0x58, 0xde, 0x68, 0x76, 0x2d, 0x56, 0xd9, 0x2e, 0x87, 0xed, 0xe1, 0x0c, 0xa7, 0x97,
+	0x7e, 0x1c, 0xa5, 0xf7, 0x77, 0xc8, 0x81, 0xb6, 0x62, 0x31, 0xe4, 0x21, 0xea, 0xcc, 0x1d, 0x56,
+	0xd9, 0xe4, 0x31, 0xb4, 0x14, 0x0b, 0xd1, 0x6f, 0x1e, 0x35, 0x0d, 0x6f, 0x7d, 0x71, 0x55, 0x9b,
+	0xf1, 0xba, 0xdf, 0xa0, 0xbb, 0x5c, 0x90, 0x2a, 0xe6, 0xb3, 0xa8, 0xb2, 0x11, 0x56, 0x5a, 0xff,
+	0x4c, 0x76, 0x04, 0xb6, 0x27, 0x2e, 0x66, 0x3c, 0x41, 0x11, 0x24, 0xa8, 0xcb, 0x6d, 0xb3, 0x3a,
+	0xe4, 0xfe, 0xb4, 0xc0, 0x36, 0xf3, 0x7f, 0x8f, 0x32, 0x18, 0xaf, 0x0c, 0xd1, 0xba, 0x67, 0x88,
+	0x8d, 0x3b, 0x43, 0x3c, 0x86, 0x75, 0xc5, 0x5b, 0xa7, 0xb2, 0x07, 0xdb, 0xd4, 0xdc, 0xad, 0x20,
+	0x7d, 0x3f, 0xd3, 0x5e, 0xf2, 0x02, 0x36, 0xcb, 0x33, 0xba, 0xd3, 0xf6, 0x60, 0xb7, 0x0c, 0x2c,
+	0x51, 0x13, 0xbb, 0x88, 0x71, 0xa7, 0xd0, 0x5b, 0xb9, 0xa7, 0x26, 0x42, 0x6b, 0x49, 0x84, 0x0e,
+	0xb4, 0xd5, 0xdf, 0x87, 0x60, 0x5e, 0x75, 0x63, 0x61, 0x2b, 0x81, 0x7d, 0xc2, 0x04, 0xb3, 0x19,
+	0x4f, 0x4d, 0x2f, 0x3a, 0xec, 0x16, 0x70, 0x7f, 0x58, 0x40, 0xee, 0x92, 0x20, 0xdd, 0x4a, 0x64,
+	0x4d, 0xad, 0xa9, 0x63, 0x78, 0x30, 0xe4, 0xa9, 0x88, 0xa3, 0x14, 0xb1, 0x96, 0x65, 0x19, 0x24,
+	0x4f, 0xa0, 0x5b, 0x01, 0xa3, 0x5a, 0xbe, 0x15, 0x54, 0x69, 0xa8, 0x94, 0xb8, 0x6e, 0x44, 0x87,
+	0x2d, 0xcc, 0xc1, 0xef, 0x06, 0xd8, 0x6a, 0x8e, 0xbe, 0x59, 0x6a, 0xf2, 0x1c, 0x7a, 0xd5, 0xd4,
+	0x14, 0xfe, 0xe5, 0x94, 0x74, 0xe9, 0x85, 0x50, 0xbf, 0xa5, 0x20, 0x9d, 0x4d, 0xca, 0x50, 0x14,
+	0x89, 0x74, 0xd7, 0xc8, 0x2b, 0xe8, 0x9d, 0xa3, 0xac, 0x2b, 0x88, 0xac, 0x6e, 0x88, 0xd3, 0xa5,
+	0x7e, 0x1d, 0x71, 0xd7, 0xc8, 0x00, 0x3a, 0xa3, 0x42, 0x7a, 0xa9, 0x8e, 0xdf, 0xa6, 0x2b, 0xfb,
+	0xe6, 0xec, 0xd4, 0x10, 0x91, 0xf1, 0x54, 0xa0, 0xce, 0x64, 0xfb, 0xc5, 0x64, 0xe1, 0xf8, 0xdf,
+	0x53, 0xa7, 0xd0, 0x3d, 0x47, 0x69, 0xea, 0x53, 0x2d, 0x1f, 0xdf, 0xa5, 0xb7, 0x45, 0x6b, 0xba,
+	0x74, 0xd7, 0xc8, 0x33, 0x80, 0x6a, 0x05, 0xc7, 0x64, 0x87, 0xae, 0xee, 0x63, 0xbd, 0xfc, 0xd7,
+	0xb0, 0x3f, 0xca, 0x31, 0x0b, 0x72, 0x5c, 0x7a, 0xdb, 0xc6, 0x64, 0x9f, 0xfe, 0xed, 0xb1, 0xab,
+	0x1d, 0x3d, 0x3b, 0x84, 0xdd, 0x29, 0x9f, 0xd3, 0x28, 0x96, 0xb3, 0x62, 0x42, 0x23, 0x3e, 0xe0,
+	0x34, 0xcf, 0xa6, 0x5f, 0xdb, 0xf4, 0xe4, 0x8d, 0x7e, 0x31, 0x27, 0x1b, 0xfa, 0xf3, 0xf2, 0x4f,
+	0x00, 0x00, 0x00, 0xff, 0xff, 0xd2, 0x29, 0x03, 0x5e, 0x74, 0x05, 0x00, 0x00,
 }
