@@ -18,13 +18,13 @@ service CartService {
     rpc PutInCart(CartItemRequest) returns (CartItemResponse) {
     }
     // 从购物车里删除指定数量商品
-    rpc SubCartItem(CartItemRequest) returns (CartItemResponse) {
+    rpc ReduceCartItem(CartItemRequest) returns (CartItemResponse) {
     }
     // 获取购物车结算信息
     rpc GetCartSettle_ (ShoppingCartId) returns (SettleMeta_) {
     }
     // 勾选商品结算
-    rpc CheckSign_ (CheckSignRequest) returns (Result) {
+    rpc CheckCart (CheckCartRequest) returns (Result) {
     }
     // 更新购物车结算
     rpc PrepareSettlePersist_ (SettlePersistRequest) returns (Result) {
@@ -52,10 +52,9 @@ message CartItemRequest {
     int32 quantity = 4;
 }
 
-message CheckSignRequest {
-    int64 BuyerId = 1;
-    string CartCode = 2;
-    repeated SCheckCartItem Items = 3;
+message CheckCartRequest {
+    ShoppingCartId Id = 1;
+    repeated SCheckCartItem Items = 2;
 }
 
 // 购物车编号

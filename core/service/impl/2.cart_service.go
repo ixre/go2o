@@ -274,7 +274,7 @@ func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 	return dto
 }
 
-// 放入购物车
+// PutInCart 放入购物车
 func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
 	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
 	if c == nil {
@@ -293,7 +293,7 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 	return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 }
 
-func (s *cartServiceImpl) SubCartItem(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
+func (s *cartServiceImpl) ReduceCartItem(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
 	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
 	var err error
 	if c == nil {
@@ -314,10 +314,9 @@ func (s *cartServiceImpl) SubCartItem(_ context.Context, r *proto.CartItemReques
 	return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 }
 
-// 勾选商品结算
-
-func (s *cartServiceImpl) CheckSign_(_ context.Context, r *proto.CheckSignRequest) (*proto.Result, error) {
-	c := s.getShoppingCart(r.BuyerId, r.CartCode)
+// CheckCart 勾选商品结算
+func (s *cartServiceImpl) CheckCart(_ context.Context, r *proto.CheckCartRequest) (*proto.Result, error) {
+	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
 	items := make([]*cart.ItemPair, len(r.Items))
 	for i, v := range r.Items {
 		items[i] = &cart.ItemPair{
@@ -366,7 +365,7 @@ func (s *cartServiceImpl) GetCartSettle_(_ context.Context, code *proto.Shopping
 	return st, nil
 }
 
-// 更新购物车结算
+// PrepareSettlePersist_ 更新购物车结算
 func (s *cartServiceImpl) PrepareSettlePersist_(_ context.Context, r *proto.SettlePersistRequest) (*proto.Result, error) {
 	var cart = s.getShoppingCart(r.BuyerId, "")
 	err := cart.SettlePersist(int32(r.ShopId), int32(r.PaymentOpt),
