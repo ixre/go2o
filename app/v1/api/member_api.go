@@ -217,10 +217,7 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 
 // 获取会员信息
 func (m MemberApi) getMember(ctx api.Context) interface{} {
-	code := strings.TrimSpace(ctx.Form().GetString("code"))
-	if len(code) == 0 {
-		return api.NewErrorResponse("missing params: code")
-	}
+	memberId, _ := m.utils.getUser(ctx)
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
