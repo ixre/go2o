@@ -14,9 +14,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/golang-jwt/jwt"
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/dto"
@@ -26,26 +28,47 @@ import (
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
+	api "github.com/ixre/gof/jwt-api"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
+	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var _ proto.MemberServiceServer = new(memberService)
 
 type memberService struct {
-	repo       member.IMemberRepo
-	mchService *merchantService
-	query      *query.MemberQuery
-	orderQuery *query.OrderQuery
-	valRepo    valueobject.IValueRepo
+	repo         member.IMemberRepo
+	registryRepo registry.IRegistryRepo
+	mchService   *merchantService
+	query        *query.MemberQuery
+	orderQuery   *query.OrderQuery
+	valRepo      valueobject.IValueRepo
 	serviceUtil
 	sto storage.Interface
 }
 
-// 交换会员编号
+func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
+	registryRepo registry.IRegistryRepo,
+	q *query.MemberQuery, oq *query.OrderQuery,
+	valRepo valueobject.IValueRepo) *memberService {
+	s := &memberService{
+		repo:         repo,
+		registryRepo: registryRepo,
+		query:        q,
+		mchService:   mchService,
+		orderQuery:   oq,
+		valRepo:      valRepo,
+	}
+	return s
+	//return _s.init()
+}
+
+// FindMember 交换会员编号
 func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest) (*proto.Int64, error) {
 	var memberId int64
 	switch r.Cred {
@@ -62,19 +85,6 @@ func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest
 		memberId = s.repo.GetMemberIdByInviteCode(r.Value)
 	}
 	return &proto.Int64{Value: memberId}, nil
-}
-
-func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
-	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
-	s := &memberService{
-		repo:       repo,
-		query:      q,
-		mchService: mchService,
-		orderQuery: oq,
-		valRepo:    valRepo,
-	}
-	return s
-	//return _s.init()
 }
 
 //func (_s *memberService) init() *memberService {
@@ -660,48 +670,120 @@ func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPa
 
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) tryLogin(user string, pwd string) (id int64, errCode int32, err error) {
+func (s *memberService) tryLogin(user string, pwd string, update bool) (v *member.Member, errCode int32, err error) {
 	user = strings.ToLower(user)
-	memberId := s.repo.GetMemberIdByUser(user)
 	if len(pwd) != 32 {
-		return -1, 4, de.ErrNotMD5Format
+		return nil, 4, de.ErrNotMD5Format
 	}
+	memberId := s.repo.GetMemberIdByUser(user)
 	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
-		return 0, 2, de.ErrCredential // 用户不存在,也返回用户或密码不正确
+		return nil, 2, de.ErrCredential // 用户不存在,也返回用户或密码不正确
 	}
-	val := s.repo.GetMember(memberId).GetValue()
+	im := s.repo.GetMember(memberId)
+	val := im.GetValue()
 	if val.Pwd != domain.Sha1Pwd(pwd, val.Salt) {
-		return 0, 1, de.ErrCredential
+		return nil, 1, de.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
-		return 0, 3, member.ErrMemberLocked
+		return nil, 3, member.ErrMemberLocked
 	}
-
-	return val.Id, 0, nil
+	if update {
+		go im.UpdateLoginTime()
+	}
+	return &val, 0, nil
 }
 
-// 登录，返回结果(Result_)和会员编号(Id);
+// CheckLogin 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.Result, error) {
-	id, code, err := s.tryLogin(r.User, r.Password)
+func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.LoginResponse, error) {
+	v, code, err := s.tryLogin(r.User, r.Password, r.Update)
+	ret := &proto.LoginResponse{
+		ErrCode: code,
+	}
 	if err != nil {
-		r := s.error(err)
-		r.ErrCode = code
-		return r, nil
+		ret.ErrMsg = err.Error()
+		return ret, nil
+	} else {
+		ret.MemberId = v.Id
+		ret.UserCode = v.Code
 	}
-	var memberCode = ""
-	if r.Update {
-		m := s.repo.GetMember(id)
-		memberCode = m.GetValue().Code
-		go m.UpdateLoginTime()
+	return ret, nil
+}
+
+// GrantAccessToken 发放访问令牌
+func (s *memberService) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
+	if request.Expire <= 0 {
+		return &proto.GrantAccessTokenResponse{Error: "令牌有效时间错误"}, nil
 	}
-	mp := map[string]string{
-		"id":   strconv.Itoa(int(id)),
-		"code": memberCode,
+	im := s.repo.GetMember(request.MemberId)
+	if im == nil {
+		return &proto.GrantAccessTokenResponse{Error: member.ErrNoSuchMember.Error()}, nil
 	}
-	return s.success(mp), nil
+	if im.TestFlag(member.FlagLocked) {
+		return &proto.GrantAccessTokenResponse{Error: member.ErrMemberLocked.Error()}, nil
+	}
+	expiresTime := time.Now().Unix() + request.Expire
+	// 创建token并返回
+	claims := api.CreateClaims(strconv.Itoa(int(request.MemberId)), "go2o",
+		"go2o-api-jwt", expiresTime).(jwt.MapClaims)
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
+	if err != nil {
+		log.Println("[ go2o][ error]: grant access token error ", err.Error())
+		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
+	}
+	token, err := api.AccessToken(claims, []byte(jwtSecret))
+	if err != nil {
+		log.Println("[ go2o][ error]: grant access token error ", err.Error())
+		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
+	}
+	return &proto.GrantAccessTokenResponse{
+		AccessToken: token,
+		UserCode:    im.GetValue().Code,
+	}, nil
+}
+
+// CheckAccessToken 检查令牌是否有效
+func (s *memberService) CheckAccessToken(c context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
+	if len(request.AccessToken) == 0 {
+		return &proto.CheckAccessTokenResponse{Error: "令牌不能为空"}, nil
+	}
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
+	if err != nil {
+		log.Println("[ go2o][ error]: check access token error ", err.Error())
+		return &proto.CheckAccessTokenResponse{Error: err.Error()}, nil
+	}
+
+	if strings.HasPrefix(request.AccessToken, "Bearer") {
+		request.AccessToken = request.AccessToken[7:]
+	}
+	// 转换token
+	dstClaims := jwt.MapClaims{} // 可以用实现了Claim接口的自定义结构
+	tk, err := jwt.ParseWithClaims(request.AccessToken, &dstClaims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	})
+	if tk == nil {
+		return &proto.CheckAccessTokenResponse{Error: "令牌无效"}, nil
+	}
+	// 判断是否有效
+	if !tk.Valid {
+		ve, _ := err.(*jwt.ValidationError)
+		if ve.Errors&jwt.ValidationErrorExpired != 0 {
+			return &proto.CheckAccessTokenResponse{Error: "令牌已过期", IsExpires: true}, nil
+		}
+		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
+	}
+	if request.ExpiresTime > 0 && !dstClaims.VerifyNotBefore(request.ExpiresTime, true) {
+		return &proto.CheckAccessTokenResponse{Error: "令牌超过有效期", IsExpires: true}, nil
+	}
+	if !dstClaims.VerifyIssuer("go2o", true) ||
+		dstClaims["sub"] != "go2o-api-jwt" {
+		return &proto.CheckAccessTokenResponse{Error: "未知颁发者的令牌"}, nil
+	}
+	return &proto.CheckAccessTokenResponse{
+		MemberId: int64(typeconv.MustInt(dstClaims["aud"])),
+	}, nil
 }
 
 // 检查交易密码

@@ -11,7 +11,6 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/api"
 	"github.com/ixre/gof/types"
-	"strconv"
 	"strings"
 )
 
@@ -89,14 +88,15 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 		Update:   true,
 	})
 	if r.ErrCode == 0 {
-		memberId, _ := strconv.Atoi(r.Data["id"])
 		token, _ := cli.GetToken(context.TODO(),
 			&proto.GetTokenRequest{
-				MemberId: int64(memberId),
+				MemberId: r.MemberId,
 				Reset_:   true,
 			})
-		r.Data["token"] = token.Value
-		return r
+		return map[string]interface{}{
+			"memberId": r.MemberId,
+			"token":    token.Value,
+		}
 	} else {
 		return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 	}

@@ -51,14 +51,14 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)
 		if r.ErrCode == 0 {
-			memberId, _ := strconv.Atoi(r.Data["member_id"])
+
 			token, _ := cli.GetToken(context.TODO(),
 				&proto.GetTokenRequest{
-					MemberId: int64(memberId),
+					MemberId: r.MemberId,
 					Reset_:   false,
 				})
 			result.Member = &dto.LoginMember{
-				ID:         memberId,
+				ID:         r.MemberId,
 				Token:      token.Value,
 				UpdateTime: time.Now().Unix(),
 			}

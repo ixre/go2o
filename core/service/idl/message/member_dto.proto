@@ -39,11 +39,65 @@ message RegisterMemberRequest {
     //map<string, string> extend = 10;
 }
 
+// 登录请求
 message LoginRequest {
+    // 用户
     string User = 1;
+    // 密码
     string Password = 2;
+    // 是否更新用户登录时间
     bool Update = 3;
 }
+
+// 用户登录响应
+message LoginResponse{
+    // 错误码
+    int32 ErrCode = 1;
+    // 错误消息
+    string ErrMsg = 2;
+    // 会员编号
+    int64 MemberId = 3;
+    // 用户代码
+    string UserCode = 4;
+}
+
+
+// 请求访问令牌
+message GrantAccessTokenRequest{
+    // 会员编号
+    int64 MemberId = 1;
+    // 有效时间(单位:s)
+    int64 Expire = 2;
+}
+
+// 发放访问令牌响应
+message GrantAccessTokenResponse{
+    // 错误信息
+    string Error = 1;
+    // 用户代码
+    string UserCode = 4;
+    // 访问令牌
+    string AccessToken = 5;
+}
+
+// 检查令牌请求
+message CheckAccessTokenRequest{
+    // 访问令牌
+    string AccessToken = 1;
+    // 是否在有效期内有效, 如果传入0,不限制时间
+    int64 ExpiresTime = 2;
+}
+
+// 检查令牌响应
+message CheckAccessTokenResponse{
+    // 错误信息
+    string Error = 1;
+    // 是否过期
+    bool IsExpires = 2;
+    // 会员编号
+    int64 MemberId = 3;
+}
+
 // 注册结果
 message RegisterResponse {
     // 状态码,如为0表示成功
