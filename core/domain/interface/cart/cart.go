@@ -11,8 +11,6 @@ package cart
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
@@ -49,67 +47,59 @@ const (
 )
 
 const (
-	// 手工创建
+	// FlagManualCreate 手工创建
 	FlagManualCreate = 1
-	// 是否可改价
+	// FlagPriceEditable 是否可改价
 	FlagPriceEditable = 2
 )
 
 type (
-	// 购物车类型
+	// Kind 购物车类型
 	Kind int
-	// 购物车
+	// ICart 购物车
 	ICart interface {
-		// 获取聚合根编号
+		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int32
-		// 购物车种类
+		// Kind 购物车种类
 		Kind() Kind
-		// 克隆
+		// Clone 克隆
 		Clone() ICart
-		// 获取购物车编码
+		// Code 获取购物车编码
 		Code() string
-		// 获取买家编号
+		// BuyerId 获取买家编号
 		BuyerId() int64
-		// 预先准备购物车
+		// Prepare 预先准备购物车
 		Prepare() error
-		// 标记商品结算
+		// SignItemChecked 标记商品结算
 		SignItemChecked(items []*ItemPair) error
-		// 获取勾选的商品,checked:为商品与商品SKU数据
+		// CheckedItems 获取勾选的商品,checked:为商品与商品SKU数据
 		CheckedItems(checked map[int64][]int64) []*ItemPair
 
-		// 添加商品到购物车,如商品没有SKU,则skuId传入0
+		// Put 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
 		// 暂时以店铺区分,2017-02-28考虑单独的购物车或子系统
 		Put(itemId, skuId int64, quantity int32) error
-		// 更新商品数量，如数量为0，则删除
+		// Update 更新商品数量，如数量为0，则删除
 		Update(itemId, skuId int64, quantity int32) error
-		// 移出项
+		// Remove 移出项
 		Remove(itemId, skuId int64, quantity int32) error
-		// 保存购物车
+		// Save 保存购物车
 		Save() (int32, error)
-		// 释放购物车,如果购物车的商品全部结算,则返回true
+		// Release 释放购物车,如果购物车的商品全部结算,则返回true
 		Release(checked map[int64][]int64) bool
-		// 销毁购物车
+		// Destroy 销毁购物车
 		Destroy() error
-
-		// 结算数据持久化
-		SettlePersist(shopId, paymentOpt, deliverOpt int32, addressId int64) error
-		// 获取结算数据
-		GetSettleData() (s shop.IShop, d member.IDeliverAddress, paymentOpt int32)
-
-		// 设置购买会员收货地址
-		SetBuyerAddress(addressId int64) error
 	}
 
-	//商品普通购物车,未登陆时以code标识，登陆后以买家编号标识
+	// INormalCart 商品普通购物车,未登陆时以code标识，登陆后以买家编号标识
 	INormalCart interface {
-		// 获取购物车值
+		// Value 获取购物车值
 		Value() NormalCart
-		// 获取商品集合
+		// Items 获取商品集合
 		Items() []*NormalCartItem
-		// 合并购物车，并返回新的购物车
+		// Combine 合并购物车，并返回新的购物车
 		Combine(ICart) ICart
-		// 获取项
+		// GetItem 获取项
 		GetItem(itemId, skuId int64) *NormalCartItem
 	}
 

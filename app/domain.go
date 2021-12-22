@@ -39,8 +39,8 @@ func getDomain(prefixKey string) string {
 	return fmt.Sprintf("%s://%s%s", protocol, prefix, domain)
 }
 
-func GetDomain()string{
-	trans, cli,_  := service.RegistryServiceClient()
+func GetDomain() string {
+	trans, cli, _ := service.RegistryServiceClient()
 	domain := reFn(cli, registry.Domain)
 	trans.Close()
 	return domain

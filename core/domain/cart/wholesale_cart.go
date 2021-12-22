@@ -419,64 +419,6 @@ func (c *wholesaleCartImpl) SignItemChecked(items []*cart.ItemPair) error {
 	panic("not support")
 }
 
-// 结算数据持久化
-func (c *wholesaleCartImpl) SettlePersist(shopId, paymentOpt, deliverOpt int32,
-	addressId int64) error {
-	//var shop shop.IShop
-	var deliver member.IDeliverAddress
-	var err error
-
-	if shopId > 0 {
-		//var mch merchant.IMerchant
-		//mch, err = c._partnerRepo.GetMerchant(c._mchId)
-		//if err != nil {
-		//	return err
-		//}
-		//shop = mch.ShopManager().GetShopByVendorId(shopId)
-		//if shop == nil {
-		//	return merchant.ErrNoSuchShop
-		//}
-		//c._shop = shop
-		//c._value.ShopId = shopId
-
-		//todo: not implement
-		return err
-	}
-
-	if c.value.BuyerId > 0 && addressId > 0 {
-		m := c.memberRepo.GetMember(c.value.BuyerId)
-		if m == nil {
-			return member.ErrNoSuchMember
-		}
-		deliver = m.Profile().GetAddress(addressId)
-		if deliver == nil {
-			return member.ErrInvalidSession
-		}
-		c.deliver = deliver
-		c.value.DeliverId = addressId
-	}
-
-	return nil
-}
-
-// 获取结算数据
-func (c *wholesaleCartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
-	paymentOpt int32) {
-
-	if c.deliver == nil {
-		pm := c.memberRepo.GetMember(c.value.BuyerId).Profile()
-		if c.value.DeliverId > 0 {
-			c.deliver = pm.GetAddress(c.value.DeliverId)
-		} else {
-			c.deliver = pm.GetDefaultAddress()
-			if c.deliver != nil {
-				c.setBuyerAddress(c.deliver.GetDomainId())
-			}
-		}
-	}
-	return c.shop, c.deliver, -1
-}
-
 // 保存购物车
 func (c *wholesaleCartImpl) Save() (int32, error) {
 	c.value.UpdateTime = time.Now().Unix()

@@ -23,78 +23,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type SettlePersistRequest struct {
-	// 买家编号
-	BuyerId int64 `protobuf:"varint,1,opt,name=BuyerId,proto3" json:"BuyerId"`
-	// 店铺编号
-	ShopId               int64    `protobuf:"varint,2,opt,name=ShopId,proto3" json:"ShopId"`
-	PaymentOpt           int64    `protobuf:"varint,3,opt,name=PaymentOpt,proto3" json:"PaymentOpt"`
-	DeliverOpt           int64    `protobuf:"varint,4,opt,name=DeliverOpt,proto3" json:"DeliverOpt"`
-	AddressId            int64    `protobuf:"varint,5,opt,name=AddressId,proto3" json:"AddressId"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SettlePersistRequest) Reset()         { *m = SettlePersistRequest{} }
-func (m *SettlePersistRequest) String() string { return proto.CompactTextString(m) }
-func (*SettlePersistRequest) ProtoMessage()    {}
-func (*SettlePersistRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_b199d548362733a8, []int{0}
-}
-func (m *SettlePersistRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SettlePersistRequest.Unmarshal(m, b)
-}
-func (m *SettlePersistRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SettlePersistRequest.Marshal(b, m, deterministic)
-}
-func (dst *SettlePersistRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SettlePersistRequest.Merge(dst, src)
-}
-func (m *SettlePersistRequest) XXX_Size() int {
-	return xxx_messageInfo_SettlePersistRequest.Size(m)
-}
-func (m *SettlePersistRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SettlePersistRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SettlePersistRequest proto.InternalMessageInfo
-
-func (m *SettlePersistRequest) GetBuyerId() int64 {
-	if m != nil {
-		return m.BuyerId
-	}
-	return 0
-}
-
-func (m *SettlePersistRequest) GetShopId() int64 {
-	if m != nil {
-		return m.ShopId
-	}
-	return 0
-}
-
-func (m *SettlePersistRequest) GetPaymentOpt() int64 {
-	if m != nil {
-		return m.PaymentOpt
-	}
-	return 0
-}
-
-func (m *SettlePersistRequest) GetDeliverOpt() int64 {
-	if m != nil {
-		return m.DeliverOpt
-	}
-	return 0
-}
-
-func (m *SettlePersistRequest) GetAddressId() int64 {
-	if m != nil {
-		return m.AddressId
-	}
-	return 0
-}
-
 type CartItemRequest struct {
 	// 买家编号
 	Id *ShoppingCartId `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id"`
@@ -113,7 +41,7 @@ func (m *CartItemRequest) Reset()         { *m = CartItemRequest{} }
 func (m *CartItemRequest) String() string { return proto.CompactTextString(m) }
 func (*CartItemRequest) ProtoMessage()    {}
 func (*CartItemRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_b199d548362733a8, []int{1}
+	return fileDescriptor_cart_service_2a432d02f268b796, []int{0}
 }
 func (m *CartItemRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CartItemRequest.Unmarshal(m, b)
@@ -173,7 +101,7 @@ func (m *CheckCartRequest) Reset()         { *m = CheckCartRequest{} }
 func (m *CheckCartRequest) String() string { return proto.CompactTextString(m) }
 func (*CheckCartRequest) ProtoMessage()    {}
 func (*CheckCartRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_b199d548362733a8, []int{2}
+	return fileDescriptor_cart_service_2a432d02f268b796, []int{1}
 }
 func (m *CheckCartRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CheckCartRequest.Unmarshal(m, b)
@@ -224,7 +152,7 @@ func (m *ShoppingCartId) Reset()         { *m = ShoppingCartId{} }
 func (m *ShoppingCartId) String() string { return proto.CompactTextString(m) }
 func (*ShoppingCartId) ProtoMessage()    {}
 func (*ShoppingCartId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_b199d548362733a8, []int{3}
+	return fileDescriptor_cart_service_2a432d02f268b796, []int{2}
 }
 func (m *ShoppingCartId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ShoppingCartId.Unmarshal(m, b)
@@ -265,192 +193,10 @@ func (m *ShoppingCartId) GetIsWholesale() bool {
 	return false
 }
 
-type SettleMeta_ struct {
-	PaymentOpt           int64               `protobuf:"varint,1,opt,name=PaymentOpt,proto3" json:"PaymentOpt"`
-	DeliverOpt           int64               `protobuf:"varint,2,opt,name=DeliverOpt,proto3" json:"DeliverOpt"`
-	Shop                 *SettleShopMeta_    `protobuf:"bytes,3,opt,name=Shop,proto3" json:"Shop"`
-	Deliver              *SettleDeliverMeta_ `protobuf:"bytes,4,opt,name=Deliver,proto3" json:"Deliver"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *SettleMeta_) Reset()         { *m = SettleMeta_{} }
-func (m *SettleMeta_) String() string { return proto.CompactTextString(m) }
-func (*SettleMeta_) ProtoMessage()    {}
-func (*SettleMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_b199d548362733a8, []int{4}
-}
-func (m *SettleMeta_) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SettleMeta_.Unmarshal(m, b)
-}
-func (m *SettleMeta_) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SettleMeta_.Marshal(b, m, deterministic)
-}
-func (dst *SettleMeta_) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SettleMeta_.Merge(dst, src)
-}
-func (m *SettleMeta_) XXX_Size() int {
-	return xxx_messageInfo_SettleMeta_.Size(m)
-}
-func (m *SettleMeta_) XXX_DiscardUnknown() {
-	xxx_messageInfo_SettleMeta_.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SettleMeta_ proto.InternalMessageInfo
-
-func (m *SettleMeta_) GetPaymentOpt() int64 {
-	if m != nil {
-		return m.PaymentOpt
-	}
-	return 0
-}
-
-func (m *SettleMeta_) GetDeliverOpt() int64 {
-	if m != nil {
-		return m.DeliverOpt
-	}
-	return 0
-}
-
-func (m *SettleMeta_) GetShop() *SettleShopMeta_ {
-	if m != nil {
-		return m.Shop
-	}
-	return nil
-}
-
-func (m *SettleMeta_) GetDeliver() *SettleDeliverMeta_ {
-	if m != nil {
-		return m.Deliver
-	}
-	return nil
-}
-
-type SettleShopMeta_ struct {
-	ShopId               int64    `protobuf:"varint,1,opt,name=ShopId,proto3" json:"ShopId"`
-	ShopName             string   `protobuf:"bytes,2,opt,name=ShopName,proto3" json:"ShopName"`
-	Telephone            string   `protobuf:"bytes,3,opt,name=Telephone,proto3" json:"Telephone"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SettleShopMeta_) Reset()         { *m = SettleShopMeta_{} }
-func (m *SettleShopMeta_) String() string { return proto.CompactTextString(m) }
-func (*SettleShopMeta_) ProtoMessage()    {}
-func (*SettleShopMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_b199d548362733a8, []int{5}
-}
-func (m *SettleShopMeta_) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SettleShopMeta_.Unmarshal(m, b)
-}
-func (m *SettleShopMeta_) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SettleShopMeta_.Marshal(b, m, deterministic)
-}
-func (dst *SettleShopMeta_) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SettleShopMeta_.Merge(dst, src)
-}
-func (m *SettleShopMeta_) XXX_Size() int {
-	return xxx_messageInfo_SettleShopMeta_.Size(m)
-}
-func (m *SettleShopMeta_) XXX_DiscardUnknown() {
-	xxx_messageInfo_SettleShopMeta_.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SettleShopMeta_ proto.InternalMessageInfo
-
-func (m *SettleShopMeta_) GetShopId() int64 {
-	if m != nil {
-		return m.ShopId
-	}
-	return 0
-}
-
-func (m *SettleShopMeta_) GetShopName() string {
-	if m != nil {
-		return m.ShopName
-	}
-	return ""
-}
-
-func (m *SettleShopMeta_) GetTelephone() string {
-	if m != nil {
-		return m.Telephone
-	}
-	return ""
-}
-
-type SettleDeliverMeta_ struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
-	ConsigneeName        string   `protobuf:"bytes,2,opt,name=ConsigneeName,proto3" json:"ConsigneeName"`
-	ConsigneePhone       string   `protobuf:"bytes,3,opt,name=ConsigneePhone,proto3" json:"ConsigneePhone"`
-	Address              string   `protobuf:"bytes,4,opt,name=Address,proto3" json:"Address"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SettleDeliverMeta_) Reset()         { *m = SettleDeliverMeta_{} }
-func (m *SettleDeliverMeta_) String() string { return proto.CompactTextString(m) }
-func (*SettleDeliverMeta_) ProtoMessage()    {}
-func (*SettleDeliverMeta_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cart_service_b199d548362733a8, []int{6}
-}
-func (m *SettleDeliverMeta_) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SettleDeliverMeta_.Unmarshal(m, b)
-}
-func (m *SettleDeliverMeta_) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SettleDeliverMeta_.Marshal(b, m, deterministic)
-}
-func (dst *SettleDeliverMeta_) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SettleDeliverMeta_.Merge(dst, src)
-}
-func (m *SettleDeliverMeta_) XXX_Size() int {
-	return xxx_messageInfo_SettleDeliverMeta_.Size(m)
-}
-func (m *SettleDeliverMeta_) XXX_DiscardUnknown() {
-	xxx_messageInfo_SettleDeliverMeta_.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SettleDeliverMeta_ proto.InternalMessageInfo
-
-func (m *SettleDeliverMeta_) GetId() int64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *SettleDeliverMeta_) GetConsigneeName() string {
-	if m != nil {
-		return m.ConsigneeName
-	}
-	return ""
-}
-
-func (m *SettleDeliverMeta_) GetConsigneePhone() string {
-	if m != nil {
-		return m.ConsigneePhone
-	}
-	return ""
-}
-
-func (m *SettleDeliverMeta_) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
 func init() {
-	proto.RegisterType((*SettlePersistRequest)(nil), "SettlePersistRequest")
 	proto.RegisterType((*CartItemRequest)(nil), "CartItemRequest")
 	proto.RegisterType((*CheckCartRequest)(nil), "CheckCartRequest")
 	proto.RegisterType((*ShoppingCartId)(nil), "ShoppingCartId")
-	proto.RegisterType((*SettleMeta_)(nil), "SettleMeta_")
-	proto.RegisterType((*SettleShopMeta_)(nil), "SettleShopMeta_")
-	proto.RegisterType((*SettleDeliverMeta_)(nil), "SettleDeliverMeta_")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -473,12 +219,8 @@ type CartServiceClient interface {
 	PutInCart(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 从购物车里删除指定数量商品
 	ReduceCartItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
-	// 获取购物车结算信息
-	GetCartSettle_(ctx context.Context, in *ShoppingCartId, opts ...grpc.CallOption) (*SettleMeta_, error)
 	// 勾选商品结算
 	CheckCart(ctx context.Context, in *CheckCartRequest, opts ...grpc.CallOption) (*Result, error)
-	// 更新购物车结算
-	PrepareSettlePersist_(ctx context.Context, in *SettlePersistRequest, opts ...grpc.CallOption) (*Result, error)
 }
 
 type cartServiceClient struct {
@@ -525,27 +267,9 @@ func (c *cartServiceClient) ReduceCartItem(ctx context.Context, in *CartItemRequ
 	return out, nil
 }
 
-func (c *cartServiceClient) GetCartSettle_(ctx context.Context, in *ShoppingCartId, opts ...grpc.CallOption) (*SettleMeta_, error) {
-	out := new(SettleMeta_)
-	err := c.cc.Invoke(ctx, "/CartService/GetCartSettle_", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *cartServiceClient) CheckCart(ctx context.Context, in *CheckCartRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/CartService/CheckCart", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *cartServiceClient) PrepareSettlePersist_(ctx context.Context, in *SettlePersistRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, "/CartService/PrepareSettlePersist_", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -562,12 +286,8 @@ type CartServiceServer interface {
 	PutInCart(context.Context, *CartItemRequest) (*CartItemResponse, error)
 	// 从购物车里删除指定数量商品
 	ReduceCartItem(context.Context, *CartItemRequest) (*CartItemResponse, error)
-	// 获取购物车结算信息
-	GetCartSettle_(context.Context, *ShoppingCartId) (*SettleMeta_, error)
 	// 勾选商品结算
 	CheckCart(context.Context, *CheckCartRequest) (*Result, error)
-	// 更新购物车结算
-	PrepareSettlePersist_(context.Context, *SettlePersistRequest) (*Result, error)
 }
 
 func RegisterCartServiceServer(s *grpc.Server, srv CartServiceServer) {
@@ -646,24 +366,6 @@ func _CartService_ReduceCartItem_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CartService_GetCartSettle__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ShoppingCartId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CartServiceServer).GetCartSettle_(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/CartService/GetCartSettle_",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).GetCartSettle_(ctx, req.(*ShoppingCartId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _CartService_CheckCart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckCartRequest)
 	if err := dec(in); err != nil {
@@ -678,24 +380,6 @@ func _CartService_CheckCart_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CartServiceServer).CheckCart(ctx, req.(*CheckCartRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CartService_PrepareSettlePersist__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SettlePersistRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CartServiceServer).PrepareSettlePersist_(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/CartService/PrepareSettlePersist_",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).PrepareSettlePersist_(ctx, req.(*SettlePersistRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -721,64 +405,40 @@ var _CartService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _CartService_ReduceCartItem_Handler,
 		},
 		{
-			MethodName: "GetCartSettle_",
-			Handler:    _CartService_GetCartSettle__Handler,
-		},
-		{
 			MethodName: "CheckCart",
 			Handler:    _CartService_CheckCart_Handler,
-		},
-		{
-			MethodName: "PrepareSettlePersist_",
-			Handler:    _CartService_PrepareSettlePersist__Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "cart_service.proto",
 }
 
-func init() { proto.RegisterFile("cart_service.proto", fileDescriptor_cart_service_b199d548362733a8) }
+func init() { proto.RegisterFile("cart_service.proto", fileDescriptor_cart_service_2a432d02f268b796) }
 
-var fileDescriptor_cart_service_b199d548362733a8 = []byte{
-	// 636 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x4d, 0x6f, 0xd3, 0x4c,
-	0x10, 0x8e, 0x93, 0xa6, 0x4d, 0x26, 0x7d, 0x9d, 0x76, 0xfa, 0xa1, 0x28, 0x7a, 0x45, 0x2b, 0xab,
-	0x20, 0x90, 0x60, 0xab, 0x06, 0x24, 0x84, 0x38, 0xd1, 0x20, 0x55, 0x3e, 0x00, 0xd1, 0x06, 0xa8,
-	0xd4, 0x4b, 0xe4, 0xda, 0x43, 0x62, 0xd5, 0xf1, 0xba, 0xde, 0x75, 0xa5, 0x4a, 0xfc, 0x04, 0x7e,
-	0x05, 0x07, 0xfe, 0x22, 0x57, 0xb4, 0x6b, 0xc7, 0x75, 0x52, 0x24, 0x7a, 0xb2, 0x9f, 0x67, 0x66,
-	0x67, 0x9e, 0x9d, 0x8f, 0x05, 0xf4, 0xbd, 0x54, 0x4d, 0x24, 0xa5, 0x37, 0xa1, 0x4f, 0x2c, 0x49,
-	0x85, 0x12, 0xfd, 0xcd, 0x69, 0x24, 0x2e, 0xbd, 0xa8, 0x40, 0xfb, 0x73, 0x92, 0xd2, 0x9b, 0xd2,
-	0xb1, 0xf1, 0x0c, 0x94, 0xc8, 0x79, 0xe7, 0x97, 0x05, 0xbb, 0x63, 0x52, 0x2a, 0xa2, 0x11, 0xa5,
-	0x32, 0x94, 0x8a, 0xd3, 0x75, 0x46, 0x52, 0x61, 0x0f, 0x36, 0x4e, 0xb3, 0x5b, 0x4a, 0xdd, 0xa0,
-	0x67, 0x1d, 0x5a, 0x4f, 0x1b, 0x7c, 0x01, 0x71, 0x1f, 0xd6, 0xc7, 0x33, 0x91, 0xb8, 0x41, 0xaf,
-	0x6e, 0x0c, 0x05, 0xc2, 0x47, 0x00, 0x23, 0xef, 0x76, 0x4e, 0xb1, 0xfa, 0x94, 0xa8, 0x5e, 0xc3,
-	0xd8, 0x2a, 0x8c, 0xb6, 0xbf, 0xa7, 0x28, 0xbc, 0xa1, 0x54, 0xdb, 0xd7, 0x72, 0xfb, 0x1d, 0x83,
-	0xff, 0x43, 0xfb, 0x5d, 0x10, 0xa4, 0x24, 0xa5, 0x1b, 0xf4, 0x9a, 0xc6, 0x7c, 0x47, 0x38, 0xdf,
-	0xa1, 0x3b, 0xf4, 0x52, 0xe5, 0x2a, 0x9a, 0x2f, 0x24, 0x1e, 0x40, 0xbd, 0x50, 0xd7, 0x19, 0x74,
-	0x99, 0x56, 0x91, 0x84, 0xf1, 0xd4, 0x78, 0x05, 0xbc, 0x9e, 0x2b, 0xd5, 0xfe, 0x85, 0x52, 0xe4,
-	0x05, 0xc2, 0x5d, 0x68, 0x8e, 0xaf, 0x32, 0x37, 0x30, 0x22, 0x91, 0xe7, 0x00, 0xfb, 0xd0, 0xba,
-	0xce, 0xbc, 0x58, 0x85, 0xea, 0xd6, 0xa8, 0x6b, 0xf2, 0x12, 0x3b, 0x17, 0xb0, 0x35, 0x9c, 0x91,
-	0x7f, 0xa5, 0x83, 0x3f, 0x38, 0xfd, 0x63, 0x68, 0xea, 0x84, 0xb2, 0x57, 0x3f, 0x6c, 0xe4, 0x3e,
-	0x65, 0x0c, 0x73, 0x8d, 0xdc, 0xea, 0x7c, 0x03, 0x7b, 0xf9, 0xb0, 0xd6, 0xfd, 0x45, 0x96, 0xa5,
-	0x47, 0x5e, 0x20, 0xad, 0x50, 0x7b, 0x0c, 0x45, 0x40, 0xe6, 0x46, 0x6d, 0x5e, 0x62, 0x3c, 0x84,
-	0x8e, 0x2b, 0xcf, 0x67, 0x22, 0x22, 0xe9, 0x45, 0x64, 0x6e, 0xd6, 0xe2, 0x55, 0xca, 0xf9, 0x69,
-	0x41, 0x27, 0x6f, 0xf5, 0x07, 0x52, 0xde, 0x64, 0xa5, 0x5f, 0xd6, 0x3f, 0xfa, 0x55, 0xbf, 0xd7,
-	0xaf, 0x23, 0x58, 0xd3, 0xba, 0x4d, 0xaa, 0xce, 0x60, 0x8b, 0xe5, 0xb1, 0x35, 0x65, 0xe2, 0x73,
-	0x63, 0xc5, 0x17, 0xb0, 0x51, 0x9c, 0x31, 0x45, 0xed, 0x0c, 0x76, 0x0a, 0xc7, 0x82, 0xcd, 0x7d,
-	0x17, 0x3e, 0x8e, 0x0f, 0xdd, 0x95, 0x38, 0x95, 0x79, 0xb3, 0x96, 0xe6, 0xad, 0x0f, 0x2d, 0xfd,
-	0xf7, 0xd1, 0x9b, 0x97, 0xd5, 0x58, 0x60, 0x3d, 0x4b, 0x9f, 0x29, 0xa2, 0x64, 0x26, 0xe2, 0xbc,
-	0x16, 0x6d, 0x7e, 0x47, 0x38, 0x3f, 0x2c, 0xc0, 0xfb, 0x22, 0xd0, 0x2e, 0x1b, 0xda, 0x30, 0xfd,
-	0x3b, 0x82, 0xff, 0x86, 0x22, 0x96, 0xe1, 0x34, 0x26, 0xaa, 0x64, 0x59, 0x26, 0xf1, 0x09, 0xd8,
-	0x25, 0x31, 0xaa, 0xe4, 0x5b, 0x61, 0xf5, 0x42, 0x15, 0xd3, 0x6c, 0x0a, 0xd1, 0xe6, 0x0b, 0x38,
-	0xf8, 0x5d, 0x87, 0x8e, 0xee, 0xe3, 0x38, 0xdf, 0x5f, 0x7c, 0x0e, 0xdd, 0xb2, 0x6b, 0x9a, 0xff,
-	0x7a, 0x82, 0x36, 0x3b, 0x97, 0x95, 0xd9, 0xeb, 0x6f, 0x30, 0x4e, 0x32, 0x8b, 0x94, 0x53, 0xc3,
-	0x57, 0xd0, 0x3d, 0x23, 0x55, 0x9d, 0x20, 0x5c, 0x9d, 0xc6, 0xbe, 0xcd, 0xc6, 0x55, 0xc6, 0xa9,
-	0xe1, 0x00, 0xda, 0xa3, 0x4c, 0xb9, 0xb1, 0xf1, 0xdf, 0x62, 0x2b, 0xab, 0xd5, 0xdf, 0xae, 0x30,
-	0x32, 0x11, 0xb1, 0x24, 0xa7, 0x86, 0xaf, 0xc1, 0xe6, 0x14, 0x64, 0x3e, 0x2d, 0x6c, 0x0f, 0x3d,
-	0x78, 0x02, 0xf6, 0x19, 0xa9, 0xfc, 0x8a, 0xba, 0xea, 0x93, 0xfb, 0x0a, 0x37, 0x59, 0x65, 0x34,
-	0x9d, 0x1a, 0x3e, 0x83, 0x76, 0xb9, 0x2c, 0xb8, 0xcd, 0x56, 0x97, 0xaf, 0x5a, 0x80, 0x37, 0xb0,
-	0x37, 0x4a, 0x29, 0xf1, 0x52, 0x5a, 0x7a, 0xc8, 0x26, 0xb8, 0xc7, 0xfe, 0xf6, 0xb2, 0x55, 0x8e,
-	0x9e, 0x1e, 0xc0, 0x8e, 0x2f, 0xe6, 0x6c, 0x1a, 0xaa, 0x59, 0x76, 0xc9, 0xa6, 0x62, 0x20, 0x58,
-	0x9a, 0xf8, 0x17, 0x2d, 0x76, 0xfc, 0xd6, 0x3c, 0x8f, 0x97, 0xeb, 0xe6, 0xf3, 0xf2, 0x4f, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x05, 0x37, 0xaf, 0x2f, 0x61, 0x05, 0x00, 0x00,
+var fileDescriptor_cart_service_2a432d02f268b796 = []byte{
+	// 381 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xcf, 0x8b, 0xd3, 0x40,
+	0x14, 0x6e, 0xb2, 0x76, 0x6d, 0x5f, 0x25, 0xd9, 0x1d, 0x65, 0x09, 0xb9, 0x6c, 0x08, 0x08, 0x15,
+	0x64, 0x8a, 0x51, 0xf0, 0xe0, 0xcd, 0x1e, 0x24, 0x37, 0x99, 0xa0, 0x85, 0x5e, 0x24, 0xcd, 0x3c,
+	0x93, 0xd0, 0x34, 0x93, 0x66, 0x26, 0x82, 0xe0, 0x3f, 0xe0, 0x7f, 0x2d, 0x33, 0x89, 0x21, 0xdb,
+	0x53, 0x4f, 0xc3, 0xf7, 0xbd, 0xef, 0xfd, 0xf8, 0xde, 0x1b, 0x20, 0x59, 0xda, 0xaa, 0x1f, 0x12,
+	0xdb, 0x5f, 0x65, 0x86, 0xb4, 0x69, 0x85, 0x12, 0xfe, 0x8b, 0xbc, 0x12, 0x87, 0xb4, 0x1a, 0xd0,
+	0xc3, 0x09, 0xa5, 0x4c, 0x73, 0xdc, 0x18, 0x25, 0x57, 0xa2, 0xe7, 0xc3, 0x3f, 0xe0, 0x6e, 0xd3,
+	0x56, 0xc5, 0x0a, 0x4f, 0x0c, 0xcf, 0x1d, 0x4a, 0x45, 0x1e, 0xc1, 0x8e, 0xb9, 0x67, 0x05, 0xd6,
+	0x7a, 0x15, 0xb9, 0x34, 0x29, 0x44, 0xd3, 0x94, 0x75, 0x6e, 0x54, 0x9c, 0xd9, 0x31, 0x27, 0x0f,
+	0x70, 0xab, 0xf5, 0x31, 0xf7, 0xec, 0xc0, 0x5a, 0x13, 0x36, 0x20, 0xf2, 0x0a, 0xe6, 0xc9, 0xb1,
+	0x8b, 0xb9, 0x77, 0x63, 0xe8, 0x1e, 0x10, 0x1f, 0x16, 0xe7, 0x2e, 0xad, 0x55, 0xa9, 0x7e, 0x7b,
+	0xcf, 0x02, 0x6b, 0x3d, 0x67, 0x23, 0x0e, 0xf7, 0x70, 0xb7, 0x2d, 0x30, 0x3b, 0xea, 0xe2, 0x57,
+	0xb7, 0x7f, 0x0d, 0x73, 0xdd, 0x50, 0x7a, 0x76, 0x70, 0xd3, 0x6b, 0xc6, 0x1a, 0xc6, 0x46, 0x1f,
+	0x0d, 0x7f, 0x82, 0xf3, 0x34, 0x59, 0xcf, 0xfd, 0x4d, 0x62, 0x3b, 0x54, 0x27, 0x6c, 0x40, 0x7a,
+	0x42, 0xad, 0xd8, 0x0a, 0x8e, 0xc6, 0xd1, 0x92, 0x8d, 0x98, 0x04, 0xb0, 0x8a, 0xe5, 0xae, 0x10,
+	0x15, 0xca, 0xb4, 0x42, 0xe3, 0x6c, 0xc1, 0xa6, 0x54, 0xf4, 0xd7, 0x86, 0x95, 0x96, 0x27, 0xfd,
+	0xf6, 0xc9, 0x5b, 0x70, 0xc7, 0xa0, 0xe6, 0xbf, 0xbf, 0x23, 0x0e, 0xdd, 0xc9, 0x89, 0x45, 0xff,
+	0x39, 0x65, 0x28, 0xbb, 0x4a, 0x85, 0x33, 0xf2, 0x01, 0xdc, 0x2f, 0xa8, 0xa6, 0x83, 0x92, 0x4b,
+	0xd3, 0xbe, 0x43, 0x93, 0x29, 0x13, 0xce, 0x48, 0x04, 0xcb, 0xaf, 0x9d, 0x8a, 0x6b, 0xa3, 0xbf,
+	0xa3, 0x17, 0x17, 0xf4, 0xef, 0x27, 0x8c, 0x6c, 0x44, 0x2d, 0x31, 0x9c, 0x91, 0x8f, 0xe0, 0x30,
+	0xe4, 0x5d, 0x86, 0xff, 0x63, 0xd7, 0x26, 0xbe, 0x81, 0xe5, 0xb8, 0x60, 0x72, 0x4f, 0x2f, 0x0f,
+	0x36, 0x71, 0xf3, 0xf9, 0x11, 0x5e, 0x66, 0xe2, 0x44, 0xf3, 0x52, 0x15, 0xdd, 0x81, 0xe6, 0x22,
+	0x12, 0xb4, 0x6d, 0xb2, 0xfd, 0x82, 0x6e, 0x3e, 0x99, 0xef, 0x76, 0xb8, 0x35, 0xcf, 0xfb, 0x7f,
+	0x01, 0x00, 0x00, 0xff, 0xff, 0x7b, 0x9d, 0x11, 0xff, 0xb1, 0x02, 0x00, 0x00,
 }
