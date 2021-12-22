@@ -78,6 +78,8 @@ message GrantAccessTokenResponse{
     string UserCode = 4;
     // 访问令牌
     string AccessToken = 5;
+    // 令牌过期时间
+    int64 ExpiresTime = 6;
 }
 
 // 检查令牌请求

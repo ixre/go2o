@@ -332,7 +332,7 @@ func (s *cartServiceImpl) CheckCart(_ context.Context, r *proto.CheckCartRequest
 	return s.error(err), nil
 }
 
-func (s *cartServiceImpl) SetBuyerAddress(buyerId int64, cartCode string, addressId int64) error {
+func (s *cartServiceImpl) setBuyerAddress(buyerId int64, cartCode string, addressId int64) error {
 	cart := s.getShoppingCart(buyerId, cartCode)
 	return cart.SetBuyerAddress(addressId)
 }

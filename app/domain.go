@@ -39,12 +39,19 @@ func getDomain(prefixKey string) string {
 	return fmt.Sprintf("%s://%s%s", protocol, prefix, domain)
 }
 
-// 获取资源URI
+func GetDomain()string{
+	trans, cli,_  := service.RegistryServiceClient()
+	domain := reFn(cli, registry.Domain)
+	trans.Close()
+	return domain
+}
+
+// GetImageURL 获取资源URI
 func GetImageURL() string {
 	return getDomain(registry.DomainPrefixImage)
 }
 
-// 获取会员URL
+// GetMemberURL 获取会员URL
 func GetMemberURL(mobile bool) string {
 	key := types.StringCond(mobile,
 		registry.DomainPrefixMobileMember,
@@ -52,7 +59,7 @@ func GetMemberURL(mobile bool) string {
 	return getDomain(key)
 }
 
-// 获取通行证URL
+// GetPassportURL 获取通行证URL
 func GetPassportURL(mobile bool) string {
 	key := types.StringCond(mobile,
 		registry.DomainPrefixMobilePassport,
@@ -60,7 +67,7 @@ func GetPassportURL(mobile bool) string {
 	return getDomain(key)
 }
 
-// 获取门户URL
+// GetPortalURL 获取门户URL
 func GetPortalURL(mobile bool) string {
 	key := types.StringCond(mobile,
 		registry.DomainPrefixMobilePortal,

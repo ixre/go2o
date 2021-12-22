@@ -741,6 +741,7 @@ func (s *memberService) GrantAccessToken(_ context.Context, request *proto.Grant
 	return &proto.GrantAccessTokenResponse{
 		AccessToken: token,
 		UserCode:    im.GetValue().Code,
+		ExpiresTime: expiresTime,
 	}, nil
 }
 
