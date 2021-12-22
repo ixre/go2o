@@ -61,8 +61,7 @@ func (s shopApi) shopCat(ctx api.Context) interface{} {
 			ret, _ := cli.GetChildren(context.TODO(), &proto.CategoryParentId{})
 			list = ret.Value
 		} else {
-			ret, _ := cli.GetCategory(context.TODO(),
-				&proto.Int64{Value: int64(parentId)})
+			ret, _ := cli.GetCategory(context.TODO(), &proto.Int64{Value: int64(parentId)})
 			list = ret.Children
 		}
 		var d []byte
@@ -144,6 +143,6 @@ func (s shopApi) addressList(ctx api.Context) interface{} {
 	memberId := getMemberId(ctx)
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	address, _ := cli.GetAddressList(context.TODO(), &proto.Int64{Value: int64(memberId)})
+	address, _ := cli.GetAddressList(context.TODO(), &proto.MemberIdRequest{MemberId: int64(memberId)})
 	return address
 }

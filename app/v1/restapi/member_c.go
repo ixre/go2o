@@ -93,7 +93,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	if kvAut == 0 {
 		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
-		acc, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
+		acc, _ := cli.GetAccount(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 		kvAut = int(acc.UpdateTime)
 		store.Set(autKey, kvAut)
 	}
@@ -108,7 +108,7 @@ func (mc *MemberC) Get(c echo.Context) error {
 	memberId := GetMemberId(c)
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: memberId})
+	m, _ := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 	tk, _ := cli.GetToken(context.TODO(),
 		&proto.GetTokenRequest{
 			MemberId: memberId,
@@ -124,7 +124,7 @@ func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	v, _ := cli.Complex(context.TODO(), &proto.Int64{Value: memberId})
+	v, _ := cli.Complex(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 	return c.JSON(http.StatusOK, v)
 }
 
@@ -133,7 +133,7 @@ func (mc *MemberC) Account(c echo.Context) error {
 	memberId := GetMemberId(c)
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	m, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
+	m, _ := cli.GetAccount(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 	return c.JSON(http.StatusOK, m)
 }
 

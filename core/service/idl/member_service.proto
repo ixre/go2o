@@ -41,7 +41,7 @@ service MemberService {
     rpc GetLevels (Empty) returns (SMemberLevelListResponse) {
     }
     /* 获取实名信息,memberId */
-    rpc GetTrustInfo (Int64) returns (STrustedInfo) {
+    rpc GetTrustInfo (MemberIdRequest) returns (STrustedInfo) {
     }
     /** 提交实名信息 */
     rpc SubmitTrustInfo (SubmitTrustInfoRequest) returns (Result) {
@@ -62,22 +62,22 @@ service MemberService {
     rpc DeleteMemberLevel (Int64) returns (Result) {
     }
     // 根据会员编号获取会员信息
-    rpc GetMember (Int64) returns (SMember) {
+    rpc GetMember (MemberIdRequest) returns (SMember) {
     }
     /** 查找交换会员编号 */
     rpc FindMember (FindMemberRequest) returns (Int64) {
     }
     // 根据会员编号获取会员资料
-    rpc GetProfile (Int64) returns (SProfile) {
+    rpc GetProfile (MemberIdRequest) returns (SProfile) {
     }
     // 保存资料
     rpc SaveProfile (SProfile) returns (Result) {
     }
     // 获取会员邀请关系
-    rpc GetRelation (Int64) returns (MemberRelationResponse) {
+    rpc GetRelation (MemberIdRequest) returns (MemberRelationResponse) {
     }
     // 获取会员绑定银行卡信息
-    rpc GetBankCards (Int64) returns (BankCardListResponse) {
+    rpc GetBankCards (MemberIdRequest) returns (BankCardListResponse) {
     }
     // 添加银行卡
     rpc AddBankCard (BankCardAddRequest) returns (Result) {
@@ -86,19 +86,19 @@ service MemberService {
     rpc RemoveBankCard (BankCardRequest) returns (Result) {
     }
     /** 激活会员,memberId */
-    rpc Active (Int64) returns (Result) {
+    rpc Active (MemberIdRequest) returns (Result) {
     }
     /** 锁定,minutes锁定分钟数,默认:-1永久锁定 */
     rpc Lock (LockRequest) returns (Result) {
     }
     /** 解锁会员 */
-    rpc Unlock (Int64) returns (Result) {
+    rpc Unlock (MemberIdRequest) returns (Result) {
     }
     /** 标志赋值, 如果flag小于零, 则异或运算 */
     rpc GrantFlag (GrantFlagRequest) returns (Result) {
     }
     /** 获取会员汇总信息,memberId */
-    rpc Complex (Int64) returns (SComplexMember) {
+    rpc Complex (MemberIdRequest) returns (SComplexMember) {
     }
     /** 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取 */
     rpc SendCode (SendCodeRequest) returns (Result) {
@@ -107,7 +107,7 @@ service MemberService {
     rpc CompareCode (CompareCodeRequest) returns (Result) {
     }
     /** 获取收款码 */
-    rpc ReceiptsCodes (Int64) returns (SReceiptsCodeListResponse) {
+    rpc ReceiptsCodes (MemberIdRequest) returns (SReceiptsCodeListResponse) {
     }
     /** 保存收款码 */
     rpc SaveReceiptsCode (ReceiptsCodeSaveRequest) returns (Result) {
@@ -116,10 +116,10 @@ service MemberService {
     rpc SetPayPriority (PayPriorityRequest) returns (Result) {
     }
     // 检查资料是否完成
-    rpc CheckProfileComplete (Int64) returns (Result) {
+    rpc CheckProfileComplete (MemberIdRequest) returns (Result) {
     }
     /** 获取会员等级信息 */
-    rpc MemberLevelInfo (Int64) returns (SMemberLevelInfo) {
+    rpc MemberLevelInfo (MemberIdRequest) returns (SMemberLevelInfo) {
     }
     // 更改会员等级
     rpc UpdateLevel (UpdateLevelRequest) returns (Result) {
@@ -152,7 +152,7 @@ service MemberService {
     rpc ChangeInviterId (ChangeInviterRequest) returns (Result) {
     }
     /** 获取会员的订单状态及其数量 */
-    rpc OrdersQuantity (Int64) returns (OrderQuantityMapResponse) {
+    rpc OrdersQuantity (MemberIdRequest) returns (OrderQuantityMapResponse) {
     }
 
     // 升级为高级会员
@@ -165,10 +165,10 @@ service MemberService {
     rpc CheckToken (CheckTokenRequest) returns (Bool) {
     }
     // 移除会员的Token,memberId
-    rpc RemoveToken (Int64) returns (Empty) {
+    rpc RemoveToken (MemberIdRequest) returns (Empty) {
     }
     // 获取会员的收货地址,memberId
-    rpc GetAddressList (Int64) returns (AddressListResponse) {
+    rpc GetAddressList (MemberIdRequest) returns (AddressListResponse) {
     }
     // 保存会员的收货地址
     rpc SaveAddress (SaveAddressRequest) returns (SaveAddressResponse) {
@@ -180,7 +180,7 @@ service MemberService {
     rpc DeleteAddress (AddressIdRequest) returns (Result) {
     }
     // 获取会员账户信息,memberId
-    rpc GetAccount (Int64) returns (SAccount) {
+    rpc GetAccount (MemberIdRequest) returns (SAccount) {
     }
     //判断会员是否由指定会员邀请推荐的
     rpc IsInvitation (IsInvitationRequest) returns (Bool) {

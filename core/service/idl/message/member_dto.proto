@@ -112,8 +112,13 @@ message RegisterResponse {
 
 // 密码验证请求
 message VerifyPasswordRequest {
-    sint64 MemberId = 1;
+    int64 MemberId = 1;
     string Password = 2;
+}
+
+// 会员编号
+message MemberIdRequest{
+    int64 MemberId = 1;
 }
 
 message FindMemberRequest {

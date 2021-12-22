@@ -83,6 +83,6 @@ func TestCheckTradePassword(t *testing.T) {
 
 func TestGetMember(t *testing.T) {
 	memberId := 22149
-	r, _ := impl.MemberService.GetMember(context.TODO(), &proto.Int64{Value: int64(memberId)})
+	r, _ := impl.MemberService.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: int64(memberId)})
 	t.Logf("%#v", r)
 }

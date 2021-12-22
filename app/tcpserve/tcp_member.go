@@ -23,7 +23,7 @@ import (
 func GetMemberSummary(memberId int64, updateTime int) *proto.SComplexMember {
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	v, _ := cli.Complex(context.TODO(), &proto.Int64{Value: int64(memberId)})
+	v, _ := cli.Complex(context.TODO(), &proto.MemberIdRequest{MemberId: int64(memberId)})
 	if v != nil {
 		return v
 	}
@@ -34,7 +34,7 @@ func getMemberAccount(memberId int64, updateTime int) *proto.SAccount {
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	v, _ := cli.GetAccount(context.TODO(),
-		&proto.Int64{Value: memberId})
+		&proto.MemberIdRequest{MemberId: memberId})
 	return v
 }
 
