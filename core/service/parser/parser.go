@@ -16,7 +16,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/types"
 )
 
@@ -59,24 +58,6 @@ func ComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 		TrustAuthState:      int32(src.TrustAuthState),
 		TradePasswordHasSet: src.TradePasswordHasSet,
 		UpdateTime:          src.UpdateTime,
-	}
-}
-
-func round(f float32, n int) float64 {
-	return math.Round(float64(f), n)
-}
-
-func Address(src *proto.SAddress) *member.ConsigneeAddress {
-	return &member.ConsigneeAddress{
-		Id:             src.Id,
-		ConsigneeName:  src.ConsigneeName,
-		ConsigneePhone: src.ConsigneePhone,
-		Province:       src.Province,
-		City:           src.City,
-		District:       src.District,
-		Area:           src.Area,
-		DetailAddress:  src.DetailAddress,
-		IsDefault:      int(src.IsDefault),
 	}
 }
 

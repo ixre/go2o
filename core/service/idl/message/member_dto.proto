@@ -439,18 +439,26 @@ message STrustedInfo {
     string Remark = 11;
 }
 
+// 用户收货地址
 message SAddress {
-    sint64 Id = 1;
+    // 编号
+    int64 AddressId = 1;
     /** 收货人姓名 */
     string ConsigneeName = 2;
     /** 收货人电话 */
     string ConsigneePhone = 3;
-    sint32 Province = 4;
-    sint32 City = 5;
-    sint32 District = 6;
+    // 省
+    int32 Province = 4;
+    // 市
+    int32 City = 5;
+    // 区
+    int32 District = 6;
+    // 区域
     string Area = 7;
+    // 详细地址
     string DetailAddress = 8;
-    sint32 IsDefault = 9;
+    // 是否默认
+    bool IsDefault = 9;
 }
 
 message AddressIdRequest {

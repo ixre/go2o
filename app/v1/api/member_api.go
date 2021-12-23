@@ -217,7 +217,7 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 
 // 获取会员信息
 func (m MemberApi) getMember(ctx api.Context) interface{} {
-	memberId, _ := m.utils.getUser(ctx)
+	code := strings.TrimSpace(ctx.Form().GetString("code"))
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
@@ -412,14 +412,14 @@ func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
 func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 	form := ctx.Form()
 	var e = proto.SAddress{
-		Id:             int64(form.GetInt("address_id")),
+		AddressId:             int64(form.GetInt("address_id")),
 		ConsigneeName:  form.GetString("consignee_name"),
 		ConsigneePhone: form.GetString("consignee_phone"),
 		Province:       int32(form.GetInt("province")),
 		City:           int32(form.GetInt("city")),
 		District:       int32(form.GetInt("district")),
 		DetailAddress:  form.GetString("detail_address"),
-		IsDefault:      int32(form.GetInt("is_default")),
+		IsDefault:      form.GetInt("is_default") == 1,
 	}
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()

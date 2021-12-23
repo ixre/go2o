@@ -31,6 +31,7 @@ import (
 	api "github.com/ixre/gof/jwt-api"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 	"log"
@@ -1098,7 +1099,7 @@ func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccou
 
 /*********** 收货地址 ***********/
 
-// 获取会员的收货地址
+// GetAddressList 获取会员的收货地址
 func (s *memberService) GetAddressList(_ context.Context, id *proto.MemberIdRequest) (*proto.AddressListResponse, error) {
 	src := s.repo.GetDeliverAddress(id.MemberId)
 	var arr []*proto.SAddress
@@ -1108,7 +1109,7 @@ func (s *memberService) GetAddressList(_ context.Context, id *proto.MemberIdRequ
 	return &proto.AddressListResponse{Value: arr}, nil
 }
 
-//获取配送地址
+// GetAddress 获取配送地址
 func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest) (*proto.SAddress, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	pro := m.Profile()
@@ -1128,9 +1129,13 @@ func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest
 	return nil, nil
 }
 
-//保存配送地址
+// SaveAddress 保存配送地址
 func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressRequest) (*proto.SaveAddressResponse, error) {
 	e := s.parseAddress(r.Value)
+	e.MemberId = r.MemberId
+	if r.MemberId <= 0{
+		return &proto.SaveAddressResponse{ErrCode:1,ErrMsg:member.ErrNoSuchMember.Error()},nil
+	}
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v member.IDeliverAddress
 	ret := &proto.SaveAddressResponse{}
@@ -1586,7 +1591,7 @@ func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.
 
 func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAddress {
 	return &proto.SAddress{
-		Id:             src.Id,
+		AddressId:             src.Id,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,
@@ -1594,7 +1599,7 @@ func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAd
 		District:       src.District,
 		Area:           src.Area,
 		DetailAddress:  src.DetailAddress,
-		IsDefault:      int32(src.IsDefault),
+		IsDefault:      src.IsDefault == 1,
 	}
 }
 func round(f float32, n int) float64 {
@@ -1678,7 +1683,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 
 func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddress {
 	return &member.ConsigneeAddress{
-		Id:             src.Id,
+		Id:             src.AddressId,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,
@@ -1686,6 +1691,6 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddre
 		District:       src.District,
 		Area:           src.Area,
 		DetailAddress:  src.DetailAddress,
-		IsDefault:      int(src.IsDefault),
+		IsDefault:      types.ElseInt(src.IsDefault,1,0),
 	}
 }
