@@ -51,7 +51,7 @@ func NewCartService(cartRepo cart.ICartRepo,
 
 /*---------------- 批发购物车 ----------------*/
 
-// 批发购物车接口
+// WholesaleCartV1 批发购物车接口
 func (s *cartServiceImpl) WholesaleCartV1(_ context.Context, r *proto.WsCartRequest) (*proto.Result, error) {
 	//todo: check member
 	c := s.cartRepo.GetMyCart(r.MemberId, cart.KWholesale)

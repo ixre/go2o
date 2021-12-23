@@ -412,7 +412,7 @@ func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
 func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 	form := ctx.Form()
 	var e = proto.SAddress{
-		AddressId:             int64(form.GetInt("address_id")),
+		AddressId:      int64(form.GetInt("address_id")),
 		ConsigneeName:  form.GetString("consignee_name"),
 		ConsigneePhone: form.GetString("consignee_phone"),
 		Province:       int32(form.GetInt("province")),

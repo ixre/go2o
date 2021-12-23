@@ -64,7 +64,7 @@ type (
 	// 收货人信息
 	ComplexConsignee struct {
 		// 收货人
-		ConsigneePerson string
+		ConsigneeName string
 		// 收货人联系电话
 		ConsigneePhone string
 		// 收货地址

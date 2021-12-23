@@ -1133,8 +1133,8 @@ func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest
 func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressRequest) (*proto.SaveAddressResponse, error) {
 	e := s.parseAddress(r.Value)
 	e.MemberId = r.MemberId
-	if r.MemberId <= 0{
-		return &proto.SaveAddressResponse{ErrCode:1,ErrMsg:member.ErrNoSuchMember.Error()},nil
+	if r.MemberId <= 0 {
+		return &proto.SaveAddressResponse{ErrCode: 1, ErrMsg: member.ErrNoSuchMember.Error()}, nil
 	}
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v member.IDeliverAddress
@@ -1591,7 +1591,7 @@ func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.
 
 func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAddress {
 	return &proto.SAddress{
-		AddressId:             src.Id,
+		AddressId:      src.Id,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,
@@ -1691,6 +1691,6 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddre
 		District:       src.District,
 		Area:           src.Area,
 		DetailAddress:  src.DetailAddress,
-		IsDefault:      types.ElseInt(src.IsDefault,1,0),
+		IsDefault:      types.ElseInt(src.IsDefault, 1, 0),
 	}
 }

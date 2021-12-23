@@ -7,7 +7,7 @@
  * history :
  */
 
-// 支付单,不限于订单,可以生成支付单,即一个支付请求
+// Package payment 支付单,不限于订单,可以生成支付单,即一个支付请求
 package payment
 
 import (
@@ -17,41 +17,41 @@ import (
 
 // 支付通道
 const (
-	// 余额抵扣通道
+	// MBalance 余额抵扣通道
 	MBalance = 1 << 0
-	// 钱包支付通道
+	// MWallet 钱包支付通道
 	MWallet = 1 << 1
-	// 积分兑换通道
+	// MIntegral 积分兑换通道
 	MIntegral = 1 << 2
-	// 用户卡通道
+	// MUserCard 用户卡通道
 	MUserCard = 1 << 3
-	// 用户券通道
+	// MUserCoupon 用户券通道
 	MUserCoupon = 1 << 4
-	// 现金支付通道
+	// MCash 现金支付通道
 	MCash = 1 << 5
-	// 银行卡支付通道
+	// MBankCard 银行卡支付通道
 	MBankCard = 1 << 6
-	// 第三方支付
+	// MPaySP 第三方支付
 	MPaySP = 1 << 7
-	// 卖家支付通道
+	// MSellerPay 卖家支付通道
 	MSellerPay = 1 << 8
-	// 系统支付通道
+	// MSystemPay 系统支付通道
 	MSystemPay = 1 << 9
 )
 
-// 所有支付方式
+// PAllFlag 所有支付方式
 const PAllFlag = MBalance | MWallet | MIntegral | MUserCard |
 	MUserCoupon | MCash | MBankCard | MPaySP | MSellerPay | MSystemPay
 
 // 支付单状态
 const (
-	// 待支付
+	// StateAwaitingPayment 待支付
 	StateAwaitingPayment = 1
-	// 已支付
+	// StateFinished 已支付
 	StateFinished = 2
-	// 已取消
+	// StateCancelled 已取消
 	StateCancelled = 3
-	// 已终止（超时关闭）
+	// StateAborted 已终止（超时关闭）
 	StateAborted = 4
 )
 

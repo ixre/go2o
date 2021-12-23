@@ -98,7 +98,7 @@ type (
 		// 实际金额
 		FinalAmount int64 `db:"final_amount" json:"fee"`
 		// 收货人
-		ConsigneePerson string `db:"consignee_person" json:"deliverName"`
+		ConsigneeName string `db:"consignee_person" json:"deliverName"`
 		// 收货人联系电话
 		ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
 		// 收货地址

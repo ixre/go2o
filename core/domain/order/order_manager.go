@@ -69,11 +69,11 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 	}
 }
 
-// 统一调用
-func (o *orderManagerImpl) Unified(orderNo string, sub bool) order.IUnifiedOrderAdapter {
+// Unified 统一调用
+func (t *orderManagerImpl) Unified(orderNo string, sub bool) order.IUnifiedOrderAdapter {
 	u := &unifiedOrderAdapterImpl{
-		repo:    o.repo,
-		manager: o,
+		repo:    t.repo,
+		manager: t,
 	}
 	return u.adapter(orderNo, sub)
 }
@@ -86,7 +86,7 @@ func (t *orderManagerImpl) checkCartForOrder(c cart.ICart) error {
 	return c.Prepare()
 }
 
-// 预创建普通订单
+// PrepareNormalOrder 预创建普通订单
 func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error) {
 	err := t.checkCartForOrder(c)
 	if err != nil {
@@ -115,16 +115,16 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	return o, err
 }
 
-// 预创建批发订单
-func (o *orderManagerImpl) PrepareWholesaleOrder(c cart.ICart) ([]order.IOrder, error) {
+// PrepareWholesaleOrder 预创建批发订单
+func (t *orderManagerImpl) PrepareWholesaleOrder(c cart.ICart) ([]order.IOrder, error) {
 	if c.Kind() != cart.KWholesale {
 		return nil, cart.ErrKindNotMatch
 	}
-	return o.breaker.BreakUp(c, nil)
+	return t.breaker.BreakUp(c, nil)
 }
 
-// 提交批发订单
-func (o *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
+// SubmitWholesaleOrder 提交批发订单
+func (t *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
 	data order.IPostedData) (map[string]string, error) {
 	if c.Kind() != cart.KWholesale {
 		return nil, cart.ErrKindNotMatch
@@ -138,13 +138,13 @@ func (o *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
 		"error": "",
 	}
 
-	list, err := o.breaker.BreakUp(c, data)
+	list, err := t.breaker.BreakUp(c, data)
 	for i, v := range list {
-		err = o.submitSellerWholesaleOrder(v)
+		err = t.submitSellerWholesaleOrder(v)
 		if err != nil {
 			return map[string]string{}, err
 		}
-		okOrder := o.GetOrderById(v.GetAggregateRootId())
+		okOrder := t.GetOrderById(v.GetAggregateRootId())
 		//返回订单号
 		if i > 0 {
 			rd["order_no"] += ","
@@ -160,7 +160,7 @@ func (o *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
 	return rd, err
 }
 
-func (o *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
+func (t *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
 	err := v.Submit()
 	if err == nil {
 		//todo:???
@@ -173,7 +173,7 @@ func (o *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
 	return err
 }
 
-// 提交交易类订单
+// SubmitTradeOrder 提交交易类订单
 func (t *orderManagerImpl) SubmitTradeOrder(c *order.ComplexOrder,
 	tradeRate float64) (order.IOrder, error) {
 	val := &order.Order{

@@ -76,3 +76,49 @@ func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
 	}
 	return c
 }
+
+func ParsePrepareOrderGroups(ic cart.ICart) []*proto.SPrepareOrderGroup {
+	arr := make([]*proto.SPrepareOrderGroup, 0)
+	if ic.Kind() != cart.KNormal {
+		panic("购物车类型非零售")
+	}
+	rc := ic.(cart.INormalCart)
+	items := rc.Items()
+	if items != nil && len(items) > 0 {
+		mp := make(map[int64]*proto.SPrepareOrderGroup, 0) //保存运营商到map
+		for _, v := range items {
+			if v.Checked != 1 {
+				continue
+			}
+			vendor, ok := mp[v.ShopId]
+			if !ok {
+				vendor = &proto.SPrepareOrderGroup{
+					VendorId: v.VendorId,
+					ShopId:   v.ShopId,
+					Items:    []*proto.SPrepareOrderItem{},
+				}
+				mp[v.ShopId] = vendor
+				arr = append(arr, vendor)
+			}
+			vendor.Items = append(vendor.Items, parsePrepareOrderItem(v))
+		}
+	}
+	return arr
+}
+
+func parsePrepareOrderItem(item *cart.NormalCartItem) *proto.SPrepareOrderItem {
+	i := &proto.SPrepareOrderItem{
+		ItemId:   item.ItemId,
+		SkuId:    item.SkuId,
+		Quantity: item.Quantity,
+	}
+	if item.Sku != nil {
+		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
+		i.Price = math.Round(float64(item.Sku.Price), 2)
+		i.SpecWord = item.Sku.SpecWord
+		if i.Title == "" {
+			i.Title = item.Sku.Title
+		}
+	}
+	return i
+}

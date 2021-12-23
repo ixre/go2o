@@ -357,7 +357,7 @@ type (
 		// 订单最终金额
 		FinalAmount int64 `db:"final_amount"`
 		// 收货人姓名
-		ConsigneePerson string `db:"consignee_person"`
+		ConsigneeName string `db:"consignee_person"`
 		// 收货人电话
 		ConsigneePhone string `db:"consignee_phone"`
 		// 收货人地址

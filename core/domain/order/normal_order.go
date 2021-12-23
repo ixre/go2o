@@ -100,7 +100,7 @@ func (o *normalOrderImpl) getValue() *order.NormalOrder {
 	return o.value
 }
 
-// 复合的订单信息
+// Complex 复合的订单信息
 func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
@@ -108,7 +108,7 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	co.ShopId = 0
 	co.SubOrderId = 0
 	co.Consignee = &order.ComplexConsignee{
-		ConsigneePerson: v.ConsigneePerson,
+		ConsigneeName:   v.ConsigneeName,
 		ConsigneePhone:  v.ConsigneePhone,
 		ShippingAddress: v.ShippingAddress,
 	}
@@ -122,7 +122,7 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	return co
 }
 
-// 应用优惠券
+// ApplyCoupon 应用优惠券
 func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	//if o._coupons == nil {
 	//	o._coupons = []promotion.ICouponPromotion{}
@@ -173,7 +173,7 @@ func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 //	return o._value.PayFee - o._value.CouponFee
 //}
 
-// 获取应用的优惠券
+// GetCoupons 获取应用的优惠券
 func (o *normalOrderImpl) GetCoupons() []promotion.ICouponPromotion {
 	if o.coupons == nil {
 		return make([]promotion.ICouponPromotion, 0)
@@ -181,7 +181,7 @@ func (o *normalOrderImpl) GetCoupons() []promotion.ICouponPromotion {
 	return o.coupons
 }
 
-// 获取可用的促销,不包含优惠券
+// GetAvailableOrderPromotions 获取可用的促销,不包含优惠券
 func (o *normalOrderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 	if o.availPromotions == nil {
 		//mchId := o._cart.VendorId
@@ -198,7 +198,7 @@ func (o *normalOrderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 	return o.availPromotions
 }
 
-// 获取促销绑定
+// GetPromotionBinds 获取促销绑定
 func (o *normalOrderImpl) GetPromotionBinds() []*order.OrderPromotionBind {
 	if o.orderPbs == nil {
 		orderNo := o.OrderNo()
@@ -207,13 +207,13 @@ func (o *normalOrderImpl) GetPromotionBinds() []*order.OrderPromotionBind {
 	return o.orderPbs
 }
 
-// 获取最省的促销
+// GetBestSavePromotion 获取最省的促销
 func (o *normalOrderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int) {
 	//todo: not implement
 	return nil, 0, 0
 }
 
-// 设置配送地址
+// SetAddress 设置配送地址
 func (o *normalOrderImpl) SetAddress(addressId int64) error {
 	if addressId <= 0 {
 		return order.ErrNoSuchAddress
@@ -228,14 +228,14 @@ func (o *normalOrderImpl) SetAddress(addressId int64) error {
 	}
 	d := addr.GetValue()
 	o.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.DetailAddress
-	o.value.ConsigneePerson = d.ConsigneeName
+	o.value.ConsigneeName = d.ConsigneeName
 	o.value.ConsigneePhone = d.ConsigneePhone
 	return nil
 }
 
 //************* 订单提交 ***************//
 
-// 读取购物车数据,用于预生成订单
+// RequireCart 读取购物车数据,用于预生成订单
 func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
 	if o.GetAggregateRootId() > 0 || o.cart != nil {
 		return order.ErrRequireCart
@@ -310,7 +310,7 @@ func (o *normalOrderImpl) updateOrderFee(mp map[int][]*order.SubOrderItem) map[i
 	return expressMap
 }
 
-// 根据运营商获取商品和运费信息,限未生成的订单
+// GetByVendor 根据运营商获取商品和运费信息,限未生成的订单
 func (o *normalOrderImpl) GetByVendor() (items map[int][]*order.SubOrderItem,
 	expressFeeMap map[int]int64) {
 	if o.vendorItemsMap == nil {
@@ -406,13 +406,13 @@ func (o *normalOrderImpl) checkBuyer() error {
 	}
 	if o.value.ShippingAddress == "" ||
 		o.value.ConsigneePhone == "" ||
-		o.value.ConsigneePerson == "" {
+		o.value.ConsigneeName == "" {
 		return order.ErrMissingShipAddress
 	}
 	return nil
 }
 
-// 提交订单，返回订单号。如有错误则返回
+// Submit 提交订单，返回订单号。如有错误则返回
 func (o *normalOrderImpl) Submit() error {
 	if o.GetAggregateRootId() > 0 {
 		return errors.New("订单不允许重复提交")
@@ -478,7 +478,7 @@ func (o *normalOrderImpl) Submit() error {
 	return err
 }
 
-// 通过订单创建购物车
+// BuildCart 通过订单创建购物车
 func (o *normalOrderImpl) BuildCart() cart.ICart {
 	bv := o.baseOrderImpl.baseValue
 	//v := o.value
