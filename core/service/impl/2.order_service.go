@@ -90,7 +90,7 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 	return c
 }
 
-// 提交订单
+// SubmitOrderV1 提交订单
 func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
 	c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
 	iData := orderImpl.NewPostedData(r.Data)
@@ -103,7 +103,8 @@ func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrder
 	return &proto.StringMap{Value: rd}, nil
 }
 
-func (s *orderServiceImpl) PrepareOrder_(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
+// PrepareOrder 预生成订单
+func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
 	ic := s.getShoppingCart(r.BuyerId, r.CouponCode)
 	o, err := s.manager.PrepareNormalOrder(ic)
 	if err == nil {

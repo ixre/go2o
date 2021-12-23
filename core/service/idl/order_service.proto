@@ -13,7 +13,7 @@ service OrderService {
     }
 
     // 预生成订单
-    rpc PrepareOrder_ (PrepareOrderRequest) returns (PrepareOrderResponse) {
+    rpc PrepareOrder (PrepareOrderRequest) returns (PrepareOrderResponse) {
     }
     // 提交普通订单
     rpc SubmitNormalOrder_ (SubmitNormalOrderV2Request) returns (NormalOrderSubmitResponse) {
