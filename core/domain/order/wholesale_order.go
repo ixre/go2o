@@ -216,7 +216,7 @@ func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.Com
 	return it
 }
 
-// 复合的订单信息
+// Complex 复合的订单信息
 func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
@@ -225,7 +225,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	co.ShopId = v.ShopId
 	co.Subject = ""
 	co.Consignee = &order.ComplexConsignee{
-		ConsigneePerson: v.ConsigneePerson,
+		ConsigneeName:   v.ConsigneeName,
 		ConsigneePhone:  v.ConsigneePhone,
 		ShippingAddress: v.ShippingAddress,
 	}
@@ -244,7 +244,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	return co
 }
 
-// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+// Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 func (o *wholesaleOrderImpl) Submit() error {
 	if o.GetAggregateRootId() > 0 {
 		return errors.New("订单不允许重复提交")
@@ -289,7 +289,7 @@ func (o *wholesaleOrderImpl) checkBuyer() error {
 	}
 	if o.value.ShippingAddress == "" ||
 		o.value.ConsigneePhone == "" ||
-		o.value.ConsigneePerson == "" {
+		o.value.ConsigneeName == "" {
 		return order.ErrMissingShipAddress
 	}
 	return nil
@@ -393,9 +393,9 @@ func (o *wholesaleOrderImpl) parseOrderItem(i *orderItem) *order.WholesaleItem {
 	return &order.WholesaleItem{
 		ID:             0,
 		OrderId:        i.OrderId,
-		ItemId:         int64(i.ItemId),
-		SkuId:          int64(i.SkuId),
-		SnapshotId:     int64(i.SnapshotId),
+		ItemId:         i.ItemId,
+		SkuId:          i.SkuId,
+		SnapshotId:     i.SnapshotId,
 		Quantity:       i.Quantity,
 		ReturnQuantity: i.ReturnQuantity,
 		Amount:         i.Amount,
@@ -405,7 +405,7 @@ func (o *wholesaleOrderImpl) parseOrderItem(i *orderItem) *order.WholesaleItem {
 	}
 }
 
-// 设置配送地址
+// SetAddress 设置配送地址
 func (o *wholesaleOrderImpl) SetAddress(addressId int64) error {
 	if addressId <= 0 {
 		return order.ErrNoSuchAddress
@@ -420,12 +420,12 @@ func (o *wholesaleOrderImpl) SetAddress(addressId int64) error {
 	}
 	d := addr.GetValue()
 	o.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.DetailAddress
-	o.value.ConsigneePerson = d.ConsigneeName
+	o.value.ConsigneeName = d.ConsigneeName
 	o.value.ConsigneePhone = d.ConsigneePhone
 	return nil
 }
 
-// 设置或添加买家留言，如已经提交订单，将在原留言后附加
+// SetComment 设置或添加买家留言，如已经提交订单，将在原留言后附加
 func (o *wholesaleOrderImpl) SetComment(comment string) {
 	if o.GetAggregateRootId() > 0 {
 		o.value.BuyerComment += "$break$" + comment
@@ -443,7 +443,7 @@ func (o *wholesaleOrderImpl) createPaymentForOrder() error {
 	return o.paymentOrder.Submit()
 }
 
-// 获取商品项
+// Items 获取商品项
 func (o *wholesaleOrderImpl) Items() []*order.WholesaleItem {
 	if o.realItems == nil {
 		id := o.GetAggregateRootId()
@@ -452,7 +452,7 @@ func (o *wholesaleOrderImpl) Items() []*order.WholesaleItem {
 	return o.realItems
 }
 
-// 在线支付交易完成
+// OnlinePaymentTradeFinish 在线支付交易完成
 func (o *wholesaleOrderImpl) OnlinePaymentTradeFinish() error {
 	if o.value.IsPaid == 1 {
 		return order.ErrOrderPayed
@@ -469,7 +469,7 @@ func (o *wholesaleOrderImpl) OnlinePaymentTradeFinish() error {
 	return order.ErrUnusualOrderStat
 }
 
-// 记录订单日志
+// AppendLog 记录订单日志
 func (o *wholesaleOrderImpl) AppendLog(logType order.LogType,
 	system bool, message string) error {
 	return nil
@@ -494,7 +494,7 @@ func (o *wholesaleOrderImpl) AppendLog(logType order.LogType,
 	return o.repo.SaveNormalSubOrderLog(l)
 }
 
-// 添加备注
+// AddRemark 添加备注
 func (o *wholesaleOrderImpl) AddRemark(remark string) {
 	o.value.BuyerComment = remark
 }
@@ -520,7 +520,7 @@ func (o *wholesaleOrderImpl) syncOrderState() {
 	}
 }
 
-// 确认订单
+// Confirm 确认订单
 func (o *wholesaleOrderImpl) Confirm() error {
 	if o.value.State < order.StatAwaitingConfirm {
 		return order.ErrOrderNotPayed
@@ -601,7 +601,7 @@ func (o *wholesaleOrderImpl) createShipmentOrder(items []*order.WholesaleItem) s
 	return o.shipRepo.CreateShipmentOrder(so)
 }
 
-// 发货
+// Ship 发货
 func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
 	if o.value.State < order.StatAwaitingShipment {
 		return order.ErrOrderNotPickUp
@@ -636,7 +636,7 @@ func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
 	return err
 }
 
-// 已收货
+// BuyerReceived 已收货
 func (o *wholesaleOrderImpl) BuyerReceived() error {
 	if o.value.State < order.StatShipped {
 		return order.ErrOrderNotShipped
@@ -818,7 +818,7 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	return err
 }
 
-// 获取订单的日志
+// LogBytes 获取订单的日志
 func (o *wholesaleOrderImpl) LogBytes() []byte {
 	buf := bytes.NewBufferString("")
 	orderId := o.GetAggregateRootId()
@@ -855,7 +855,7 @@ func (o *wholesaleOrderImpl) getLogStringByStat(stat int) string {
 	return ""
 }
 
-// 取消订单/退款
+// Cancel 取消订单/退款
 func (o *wholesaleOrderImpl) Cancel(reason string) error {
 	if o.value.State == order.StatCancelled {
 		return order.ErrOrderCancelled
@@ -899,7 +899,7 @@ func (o *wholesaleOrderImpl) cancelGoods() error {
 	return nil
 }
 
-// 获取支付单
+// GetPaymentOrder 获取支付单
 func (o *wholesaleOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
 	if o.paymentOrder == nil {
 		id := o.GetAggregateRootId()
@@ -920,7 +920,7 @@ func (o *wholesaleOrderImpl) cancelPaymentOrder() error {
 	return nil
 }
 
-// 谢绝订单
+// Decline 谢绝订单
 func (o *wholesaleOrderImpl) Decline(reason string) error {
 	if o.value.State == order.StatAwaitingPayment {
 		return o.Cancel("商户取消,原因:" + reason)

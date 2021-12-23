@@ -349,28 +349,6 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 	return c
 }
 
-// 设置购买会员收货地址
-func (c *cartImpl) SetBuyerAddress(addressId int64) error {
-	if c.value.BuyerId < 0 {
-		return cart.ErrCartNoBuyer
-	}
-	m := c.memberRepo.GetMember(c.value.BuyerId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	addr := m.Profile().GetAddress(addressId)
-	if addr == nil {
-		return member.ErrNoSuchAddress
-	}
-	return c.setBuyerAddress(addressId)
-}
-
-func (c *cartImpl) setBuyerAddress(addressId int64) error {
-	c.value.DeliverId = addressId
-	_, err := c.Save()
-	return err
-}
-
 // 标记商品结算
 func (c *cartImpl) SignItemChecked(items []*cart.ItemPair) error {
 	mp := c.getItems()
@@ -386,64 +364,6 @@ func (c *cartImpl) SignItemChecked(items []*cart.ItemPair) error {
 		}
 	}
 	return c.check()
-}
-
-// 结算数据持久化
-func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt int32, addressId int64) error {
-	//var shop shop.IShop
-	var deliver member.IDeliverAddress
-	var err error
-
-	if shopId > 0 {
-		//var mch merchant.IMerchant
-		//mch, err = c._partnerRepo.GetMerchant(c._mchId)
-		//if err != nil {
-		//	return err
-		//}
-		//shop = mch.ShopManager().GetShopByVendorId(shopId)
-		//if shop == nil {
-		//	return merchant.ErrNoSuchShop
-		//}
-		//c._shop = shop
-		//c._value.ShopId = shopId
-
-		//todo: not implement
-		return err
-	}
-
-	if c.value.BuyerId > 0 && addressId > 0 {
-		m := c.memberRepo.GetMember(c.value.BuyerId)
-		if m == nil {
-			return member.ErrNoSuchMember
-		}
-		deliver = m.Profile().GetAddress(addressId)
-		if deliver == nil {
-			return member.ErrInvalidSession
-		}
-		c.deliver = deliver
-		c.value.DeliverId = addressId
-	}
-
-	c.value.PaymentOpt = paymentOpt
-	return nil
-}
-
-// 获取结算数据
-func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
-	paymentOpt int32) {
-
-	if c.deliver == nil {
-		pm := c.memberRepo.GetMember(c.value.BuyerId).Profile()
-		if c.value.DeliverId > 0 {
-			c.deliver = pm.GetAddress(c.value.DeliverId)
-		} else {
-			c.deliver = pm.GetDefaultAddress()
-			if c.deliver != nil {
-				c.setBuyerAddress(c.deliver.GetDomainId())
-			}
-		}
-	}
-	return c.shop, c.deliver, c.value.PaymentOpt
 }
 
 // 保存购物车

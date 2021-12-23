@@ -571,24 +571,24 @@ func (m *MemberRepoImpl) GetLevelUpLog(id int) *member.LevelUpLog {
 	return nil
 }
 
-// 保存会员升级记录
+// SaveLevelUpLog 保存会员升级记录
 func (m *MemberRepoImpl) SaveLevelUpLog(v *member.LevelUpLog) (int32, error) {
 	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
-// 保存地址
+// SaveDeliver 保存地址
 func (m *MemberRepoImpl) SaveDeliver(v *member.ConsigneeAddress) (int64, error) {
 	return orm.I64(orm.Save(m.o, v, int(v.Id)))
 }
 
-// 获取全部配送地址
+// GetDeliverAddress 获取全部配送地址
 func (m *MemberRepoImpl) GetDeliverAddress(memberId int64) []*member.ConsigneeAddress {
-	addresses := []*member.ConsigneeAddress{}
-	m.o.Select(&addresses, "member_id= $1", memberId)
+	var addresses []*member.ConsigneeAddress
+	m.o.Select(&addresses, "member_id= $1 ORDER BY id ASC", memberId)
 	return addresses
 }
 
-// 获取配送地址
+// GetSingleDeliverAddress 获取配送地址
 func (m *MemberRepoImpl) GetSingleDeliverAddress(memberId, deliverId int64) *member.ConsigneeAddress {
 	var address member.ConsigneeAddress
 	err := m.o.Get(deliverId, &address)
@@ -599,7 +599,7 @@ func (m *MemberRepoImpl) GetSingleDeliverAddress(memberId, deliverId int64) *mem
 	return nil
 }
 
-// 删除配送地址
+// DeleteAddress 删除配送地址
 func (m *MemberRepoImpl) DeleteAddress(memberId, deliverId int64) error {
 	_, err := m.Connector.ExecNonQuery(
 		"DELETE FROM mm_deliver_addr WHERE member_id= $1 AND id= $2",
@@ -607,10 +607,10 @@ func (m *MemberRepoImpl) DeleteAddress(memberId, deliverId int64) error {
 	return err
 }
 
-// 邀请
+// GetMyInvitationMembers 邀请
 func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) (
 	total int, rows []*dto.InvitationMember) {
-	arr := []*dto.InvitationMember{}
+	var arr []*dto.InvitationMember
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {

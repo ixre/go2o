@@ -160,7 +160,7 @@ message SSingleOrder {
 // 收货人信息
 message SConsigneeInfo {
     // 收货人
-    string ConsigneePerson = 14;
+    string ConsigneeName = 14;
     // 收货电话
     string ConsigneePhone = 15;
     // 配送地址
@@ -265,10 +265,79 @@ message OrderShipmentRequest {
     string ShipOrderNo = 4;
 }
 
+/** 预生成订单请求 */
 message PrepareOrderRequest {
+    /** 买家编号 */
     int64 BuyerId = 1;
+    /** 购物车编码 */
     string CartCode = 2;
+    /** 收货地址 */
     int64 AddressId = 3;
-    string Subject = 4;
+    /** 优惠券 */
     string CouponCode = 5;
+    /** 支付方式 */
+    int32 PaymentFlag = 6;
+    /** 使用余额 */
+    string Subject = 4;
+}
+/** 预生成订单响应 */
+message PrepareOrderResponse{
+    // 错误信息
+    string Error = 1;
+    // 订单类型
+    int32 OrderType = 2;
+    // 商品总金额
+    int64 ItemAmount = 3;
+    // 优惠金额
+    int64 DiscountAmount = 4;
+    // 抵扣金额
+    int32 DeductAmount = 5;
+    // 调整金额
+    int32 AdjustAmount = 6;
+    // 配送费
+    int64 ExpressFee = 7;
+    // 包装费
+    int64 PackageFee = 8;
+    // 手续费
+    int32 ProcedureFee = 9;
+    // 订单总金额
+    int32 TotalAmount = 10;
+    // 最终金额
+    int64 FinalAmount = 11;
+    // 收货人
+    SConsigneeInfo Consignee = 12;
+    // 订单项目
+    repeated SPrepareOrderGroup Groups = 13;
+    // 买家留言
+    string BuyerComment = 14;
+}
+
+// 预生成订单店铺分组
+message SPrepareOrderGroup {
+    //店铺编号
+    sint64 ShopId = 1;
+    //供货商编号
+    sint64 VendorId = 2;
+    //店铺名称
+    string ShopName = 3;
+    //商品
+    repeated SPrepareOrderItem Items = 5;
+}
+
+// 预生成订单店铺商品
+message SPrepareOrderItem {
+    //商品编号
+    sint64 ItemId = 1;
+    //SKU编号
+    sint64 SkuId = 2;
+    //商品标题
+    string Title = 3;
+    //商品图片
+    string Image = 4;
+    //规格文本
+    string SpecWord = 5;
+    //销售价
+    double Price = 8;
+    //数量
+    sint32 Quantity = 9;
 }

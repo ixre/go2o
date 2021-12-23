@@ -294,26 +294,26 @@ func (s *foundationService) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApi
 	return s.error(err), nil
 }
 
-// 获取资源地址
+// ResourceUrl 获取资源地址
 func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
 	return &proto.String{Value: format.GetResUrl(s2.Value)}, nil
 }
 
-// 获取短信设置
+// GetSmsApiSet 获取短信设置
 func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
 	//return _s._rep.GetSmsApiSet()
 	//todo: will remove
 	return notify.SmsApiSet{}
 }
 
-// 获取下级区域
+// GetChildAreas 获取下级区域
 func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) (*proto.AreaListResponse, error) {
 	var arr []*proto.SArea
 	for _, v := range s._rep.GetChildAreas(code.Value) {
 		arr = append(arr, &proto.SArea{
-			Code:   int32(v.Code),
-			Parent: int32(v.Parent),
-			Name:   v.Name,
+			Id:       v.Code,
+			ParentId: v.Parent,
+			Name:     v.Name,
 		})
 	}
 	return &proto.AreaListResponse{
@@ -321,14 +321,14 @@ func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) 
 	}, nil
 }
 
-// 获取地区名称
+// GetAreaNames 获取地区名称
 func (s *foundationService) GetAreaNames(_ context.Context, request *proto.GetAreaNamesRequest) (*proto.StringListResponse, error) {
 	return &proto.StringListResponse{
 		Value: s._rep.GetAreaNames(request.Value),
 	}, nil
 }
 
-// 获取省市区字符串
+// GetAreaString 获取省市区字符串
 func (s *foundationService) GetAreaString(_ context.Context, r *proto.AreaStringRequest) (*proto.String, error) {
 	if r.Province == 0 || r.City == 0 || r.District == 0 {
 		return &proto.String{Value: ""}, nil
@@ -337,7 +337,7 @@ func (s *foundationService) GetAreaString(_ context.Context, r *proto.AreaString
 	return &proto.String{Value: str}, nil
 }
 
-// 获取支付平台
+// GetPayPlatform 获取支付平台
 func (s *foundationService) GetPayPlatform(_ context.Context, r *proto.Empty) (*proto.PaymentPlatformResponse, error) {
 	m := module.Get(module.PAY).(*module.PaymentModule)
 	pf := m.GetPayPlatform()
@@ -350,7 +350,7 @@ func (s *foundationService) GetPayPlatform(_ context.Context, r *proto.Empty) (*
 	return ret, nil
 }
 
-// 获取全局商户销售设置
+// GetGlobMchSaleConf_ 获取全局商户销售设置
 func (s *foundationService) GetGlobMchSaleConf_(_ context.Context, r *proto.Empty) (*proto.SGlobMchSaleConf, error) {
 	c := s._rep.GetGlobMchSaleConf()
 	return &proto.SGlobMchSaleConf{

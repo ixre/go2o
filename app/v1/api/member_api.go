@@ -11,7 +11,6 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/api"
 	"github.com/ixre/gof/types"
-	"strconv"
 	"strings"
 )
 
@@ -89,14 +88,15 @@ func (m MemberApi) login(ctx api.Context) interface{} {
 		Update:   true,
 	})
 	if r.ErrCode == 0 {
-		memberId, _ := strconv.Atoi(r.Data["id"])
 		token, _ := cli.GetToken(context.TODO(),
 			&proto.GetTokenRequest{
-				MemberId: int64(memberId),
+				MemberId: r.MemberId,
 				Reset_:   true,
 			})
-		r.Data["token"] = token.Value
-		return r
+		return map[string]interface{}{
+			"memberId": r.MemberId,
+			"token":    token.Value,
+		}
 	} else {
 		return api.ResponseWithCode(int(r.ErrCode), r.ErrMsg)
 	}
@@ -115,7 +115,7 @@ func (m MemberApi) account(ctx api.Context) interface{} {
 			Cred:  proto.ECredentials_CODE,
 			Value: code,
 		})
-		r, err1 := cli.GetAccount(context.TODO(), memberId)
+		r, err1 := cli.GetAccount(context.TODO(), &proto.MemberIdRequest{MemberId: memberId.Value})
 		if err1 == nil {
 			return r
 		}
@@ -138,7 +138,7 @@ func (m MemberApi) complex(ctx api.Context) interface{} {
 				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
-		r, _ := cli.Complex(context.TODO(), memberId)
+		r, _ := cli.Complex(context.TODO(), &proto.MemberIdRequest{MemberId: memberId.Value})
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
@@ -158,7 +158,7 @@ func (m MemberApi) bankcard(ctx api.Context) interface{} {
 				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
-		r, _ := cli.GetBankCards(context.TODO(), memberId)
+		r, _ := cli.GetBankCards(context.TODO(), &proto.MemberIdRequest{MemberId: memberId.Value})
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
@@ -178,7 +178,7 @@ func (m MemberApi) profile(ctx api.Context) interface{} {
 				Cred:  proto.ECredentials_CODE,
 				Value: code,
 			})
-		r, err1 := cli.GetMember(context.TODO(), memberId)
+		r, err1 := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: memberId.Value})
 		if err1 == nil {
 			return r
 		}
@@ -218,9 +218,6 @@ func (m MemberApi) checkToken(ctx api.Context) interface{} {
 // 获取会员信息
 func (m MemberApi) getMember(ctx api.Context) interface{} {
 	code := strings.TrimSpace(ctx.Form().GetString("code"))
-	if len(code) == 0 {
-		return api.NewErrorResponse("missing params: code")
-	}
 	trans, cli, err := service.MemberServiceClient()
 	if err == nil {
 		defer trans.Close()
@@ -232,7 +229,7 @@ func (m MemberApi) getMember(ctx api.Context) interface{} {
 		if memberId.Value <= 0 {
 			return api.NewErrorResponse("no such member")
 		}
-		r, _ := cli.GetMember(context.TODO(), memberId)
+		r, _ := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: memberId.Value})
 		return r
 	}
 	return api.NewErrorResponse(err.Error())
@@ -247,7 +244,7 @@ func (m MemberApi) receiptsCode(ctx api.Context) interface{} {
 			Cred:  proto.ECredentials_CODE,
 			Value: code,
 		})
-	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
+	arr, _ := cli.ReceiptsCodes(context.TODO(), &proto.MemberIdRequest{MemberId: memberId.Value})
 	mp := map[string]interface{}{
 		"list":     arr.Value,
 		"provider": provider,
@@ -287,7 +284,7 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
 			Cred:  proto.ECredentials_CODE,
 			Value: code,
 		})
-	arr, _ := cli.ReceiptsCodes(context.TODO(), memberId)
+	arr, _ := cli.ReceiptsCodes(context.TODO(), &proto.MemberIdRequest{MemberId: memberId.Value})
 	for _, v := range arr.Value {
 		if v.Identity == identity {
 			v.State = 1 - v.State
@@ -313,7 +310,7 @@ func (m MemberApi) toggleReceipts(ctx api.Context) interface{} {
  */
 func (m *MemberApi) invites(ctx api.Context, memberId int64) *api.Response {
 	trans, cli, _ := service.MemberServiceClient()
-	member, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: memberId})
+	member, _ := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 	trans.Close()
 	trans2, cli2, _ := service.RegistryServiceClient()
 	defer trans2.Close()
@@ -365,7 +362,7 @@ func (m MemberApi) orderSummary(ctx api.Context, memberId int64) *api.Response {
 func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	mp, _ := cli.OrdersQuantity(context.TODO(), &proto.Int64{Value: id})
+	mp, _ := cli.OrdersQuantity(context.TODO(), &proto.MemberIdRequest{MemberId: id})
 	ret := map[string]int32{
 		/** 待付款订单数量 */
 		"AwaitPayment": mp.Data[int32(order.StatAwaitingPayment)],
@@ -391,7 +388,7 @@ func (m MemberApi) ordersQuantity(ctx api.Context, id int64) *api.Response {
 func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	address, _ := cli.GetAddressList(context.TODO(), &proto.Int64{Value: memberId})
+	address, _ := cli.GetAddressList(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 	return m.utils.success(address)
 }
 
@@ -415,14 +412,14 @@ func (m MemberApi) address(ctx api.Context, memberId int64) *api.Response {
 func (m MemberApi) saveAddress(ctx api.Context, memberId int64) *api.Response {
 	form := ctx.Form()
 	var e = proto.SAddress{
-		Id:             int64(form.GetInt("address_id")),
+		AddressId:      int64(form.GetInt("address_id")),
 		ConsigneeName:  form.GetString("consignee_name"),
 		ConsigneePhone: form.GetString("consignee_phone"),
 		Province:       int32(form.GetInt("province")),
 		City:           int32(form.GetInt("city")),
 		District:       int32(form.GetInt("district")),
 		DetailAddress:  form.GetString("detail_address"),
-		IsDefault:      int32(form.GetInt("is_default")),
+		IsDefault:      form.GetInt("is_default") == 1,
 	}
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()

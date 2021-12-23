@@ -217,7 +217,7 @@ type (
 		ItemsInfo       string `db:"items_info"`
 		BuyerName       string `db:"name"`
 		BuyerId         string `db:"user"`
-		ConsigneePerson string `db:"consignee_person"` //收货人
+		ConsigneeName   string `db:"consignee_person"` //收货人
 		ConsigneePhone  string `db:"consignee_phone"`  //电话
 		ShippingAddress string `db:"shipping_address"` //地址
 		ItemAmount      int    `db:"item_amount"`

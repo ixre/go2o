@@ -16,7 +16,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/types"
 )
 
@@ -59,24 +58,6 @@ func ComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 		TrustAuthState:      int32(src.TrustAuthState),
 		TradePasswordHasSet: src.TradePasswordHasSet,
 		UpdateTime:          src.UpdateTime,
-	}
-}
-
-func round(f float32, n int) float64 {
-	return math.Round(float64(f), n)
-}
-
-func Address(src *proto.SAddress) *member.ConsigneeAddress {
-	return &member.ConsigneeAddress{
-		Id:             src.Id,
-		ConsigneeName:  src.ConsigneeName,
-		ConsigneePhone: src.ConsigneePhone,
-		Province:       src.Province,
-		City:           src.City,
-		District:       src.District,
-		Area:           src.Area,
-		DetailAddress:  src.DetailAddress,
-		IsDefault:      int(src.IsDefault),
 	}
 }
 
@@ -264,7 +245,7 @@ func Order(src *proto.SSingleOrder) *order.ComplexOrder {
 		FinalAmount:    src.FinalAmount,
 
 		Consignee: &order.ComplexConsignee{
-			ConsigneePerson: src.Consignee.ConsigneePerson,
+			ConsigneeName:   src.Consignee.ConsigneeName,
 			ConsigneePhone:  src.Consignee.ConsigneePhone,
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
@@ -339,7 +320,7 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 		//TotalAmount:          src.ItemAmount,
 		FinalAmount: src.FinalAmount,
 		Consignee: &proto.SConsigneeInfo{
-			ConsigneePerson: "",
+			ConsigneeName:   "",
 			ConsigneePhone:  "",
 			ShippingAddress: "",
 		},
@@ -391,7 +372,7 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 		PackageFee:     src.PackageFee,
 		FinalAmount:    src.FinalAmount,
 		Consignee: &proto.SConsigneeInfo{
-			ConsigneePerson: src.Consignee.ConsigneePerson,
+			ConsigneeName:   src.Consignee.ConsigneeName,
 			ConsigneePhone:  src.Consignee.ConsigneePhone,
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
@@ -405,6 +386,25 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 		for i, v := range src.Items {
 			o.Items[i] = OrderItemDto(v)
 		}
+	}
+	return o
+}
+
+// PrepareOrderDto 转换为预生成订单
+func PrepareOrderDto(src *order.ComplexOrder) *proto.PrepareOrderResponse {
+	o := &proto.PrepareOrderResponse{
+		OrderType:      src.OrderType,
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
+		FinalAmount:    src.FinalAmount,
+		Consignee: &proto.SConsigneeInfo{
+			ConsigneeName:   src.Consignee.ConsigneeName,
+			ConsigneePhone:  src.Consignee.ConsigneePhone,
+			ShippingAddress: src.Consignee.ShippingAddress,
+		},
+		BuyerComment: src.BuyerComment,
 	}
 	return o
 }

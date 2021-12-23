@@ -66,8 +66,11 @@ message SSsoApp {
 
 /** 行政区域 */
 message SArea {
-    sint32 Code = 1;
-    sint32 Parent = 2;
+    /** 编号 **/
+    int64 Id = 1;
+    /** 上级编号 */
+    int64 ParentId = 2;
+    /** 区域名称 */
     string Name = 3;
 }
 

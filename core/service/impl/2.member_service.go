@@ -14,9 +14,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/golang-jwt/jwt"
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/dto"
@@ -26,26 +28,48 @@ import (
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
+	api "github.com/ixre/gof/jwt-api"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types"
+	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
+	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var _ proto.MemberServiceServer = new(memberService)
 
 type memberService struct {
-	repo       member.IMemberRepo
-	mchService *merchantService
-	query      *query.MemberQuery
-	orderQuery *query.OrderQuery
-	valRepo    valueobject.IValueRepo
+	repo         member.IMemberRepo
+	registryRepo registry.IRegistryRepo
+	mchService   *merchantService
+	query        *query.MemberQuery
+	orderQuery   *query.OrderQuery
+	valRepo      valueobject.IValueRepo
 	serviceUtil
 	sto storage.Interface
 }
 
-// 交换会员编号
+func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
+	registryRepo registry.IRegistryRepo,
+	q *query.MemberQuery, oq *query.OrderQuery,
+	valRepo valueobject.IValueRepo) *memberService {
+	s := &memberService{
+		repo:         repo,
+		registryRepo: registryRepo,
+		query:        q,
+		mchService:   mchService,
+		orderQuery:   oq,
+		valRepo:      valRepo,
+	}
+	return s
+	//return _s.init()
+}
+
+// FindMember 交换会员编号
 func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest) (*proto.Int64, error) {
 	var memberId int64
 	switch r.Cred {
@@ -62,19 +86,6 @@ func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest
 		memberId = s.repo.GetMemberIdByInviteCode(r.Value)
 	}
 	return &proto.Int64{Value: memberId}, nil
-}
-
-func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
-	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
-	s := &memberService{
-		repo:       repo,
-		query:      q,
-		mchService: mchService,
-		orderQuery: oq,
-		valRepo:    valRepo,
-	}
-	return s
-	//return _s.init()
 }
 
 //func (_s *memberService) init() *memberService {
@@ -109,8 +120,8 @@ func (s *memberService) getMemberValue(memberId int64) *member.Member {
 }
 
 // 根据会员编号获取会员
-func (s *memberService) GetMember(_ context.Context, id *proto.Int64) (*proto.SMember, error) {
-	v := s.getMemberValue(id.Value)
+func (s *memberService) GetMember(_ context.Context, id *proto.MemberIdRequest) (*proto.SMember, error) {
+	v := s.getMemberValue(id.MemberId)
 	if v != nil {
 		return s.parseMemberDto(v), nil
 	}
@@ -118,8 +129,8 @@ func (s *memberService) GetMember(_ context.Context, id *proto.Int64) (*proto.SM
 }
 
 // 获取资料
-func (s *memberService) GetProfile(_ context.Context, i *proto.Int64) (*proto.SProfile, error) {
-	m := s.repo.GetMember(i.Value)
+func (s *memberService) GetProfile(_ context.Context, id *proto.MemberIdRequest) (*proto.SProfile, error) {
+	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
 		v := m.Profile().GetProfile()
 		return s.parseMemberProfile(&v), nil
@@ -175,9 +186,9 @@ func (s *memberService) GetToken(_ context.Context, r *proto.GetTokenRequest) (*
 }
 
 // 移除会员的Token
-func (s *memberService) RemoveToken(_ context.Context, id *proto.Int64) (*proto.Empty, error) {
+func (s *memberService) RemoveToken(_ context.Context, id *proto.MemberIdRequest) (*proto.Empty, error) {
 	md := module.Get(module.MM).(*module.MemberModule)
-	md.RemoveToken(id.Value)
+	md.RemoveToken(id.MemberId)
 	return &proto.Empty{}, nil
 }
 
@@ -241,9 +252,9 @@ func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (
 }
 
 // 获取会员的订单状态及其数量
-func (s *memberService) OrdersQuantity(_ context.Context, id *proto.Int64) (*proto.OrderQuantityMapResponse, error) {
+func (s *memberService) OrdersQuantity(_ context.Context, id *proto.MemberIdRequest) (*proto.OrderQuantityMapResponse, error) {
 	ret := make(map[int32]int32, 0)
-	for k, v := range s.query.OrdersQuantity(id.Value) {
+	for k, v := range s.query.OrdersQuantity(id.MemberId) {
 		ret[int32(k)] = int32(v)
 	}
 	return &proto.OrderQuantityMapResponse{Data: ret}, nil
@@ -387,9 +398,9 @@ func (s *memberService) ChangeUser(_ context.Context, r *proto.ChangeUserRequest
 }
 
 // 获取会员等级信息
-func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.Int64) (*proto.SMemberLevelInfo, error) {
+func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdRequest) (*proto.SMemberLevelInfo, error) {
 	level := &proto.SMemberLevelInfo{Level: -1}
-	im := s.repo.GetMember(id.Value)
+	im := s.repo.GetMember(id.MemberId)
 	if im != nil {
 		v := im.GetValue()
 		level.Exp = int32(v.Exp)
@@ -526,8 +537,8 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 }
 
 // 获取会员邀请关系
-func (s *memberService) GetRelation(_ context.Context, id *proto.Int64) (*proto.MemberRelationResponse, error) {
-	r := s.repo.GetRelation(id.Value)
+func (s *memberService) GetRelation(_ context.Context, id *proto.MemberIdRequest) (*proto.MemberRelationResponse, error) {
+	r := s.repo.GetRelation(id.MemberId)
 	if r != nil {
 		return &proto.MemberRelationResponse{
 			InviterId: r.InviterId,
@@ -539,8 +550,8 @@ func (s *memberService) GetRelation(_ context.Context, id *proto.Int64) (*proto.
 }
 
 // 激活会员
-func (s *memberService) Active(_ context.Context, i *proto.Int64) (*proto.Result, error) {
-	m := s.repo.GetMember(i.Value)
+func (s *memberService) Active(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(id.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
@@ -563,8 +574,8 @@ func (s *memberService) Lock(_ context.Context, r *proto.LockRequest) (*proto.Re
 }
 
 // 解锁会员
-func (s *memberService) Unlock(_ context.Context, i *proto.Int64) (*proto.Result, error) {
-	m := s.repo.GetMember(i.Value)
+func (s *memberService) Unlock(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(id.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
@@ -584,8 +595,8 @@ func (s *memberService) CheckProfileCompleted(_ context.Context, memberId *proto
 }
 
 // 判断资料是否完善
-func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	m := s.repo.GetMember(id.Value)
+func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(id.MemberId)
 	var err error
 	if m == nil {
 		err = member.ErrNoSuchMember
@@ -660,48 +671,121 @@ func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPa
 
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) tryLogin(user string, pwd string) (id int64, errCode int32, err error) {
+func (s *memberService) tryLogin(user string, pwd string, update bool) (v *member.Member, errCode int32, err error) {
 	user = strings.ToLower(user)
-	memberId := s.repo.GetMemberIdByUser(user)
 	if len(pwd) != 32 {
-		return -1, 4, de.ErrNotMD5Format
+		return nil, 4, de.ErrNotMD5Format
 	}
+	memberId := s.repo.GetMemberIdByUser(user)
 	if memberId <= 0 {
 		//todo: 界面加上使用手机号码登陆
 		//val = m.repo.GetMemberValueByPhone(user)
-		return 0, 2, de.ErrCredential // 用户不存在,也返回用户或密码不正确
+		return nil, 2, de.ErrCredential // 用户不存在,也返回用户或密码不正确
 	}
-	val := s.repo.GetMember(memberId).GetValue()
+	im := s.repo.GetMember(memberId)
+	val := im.GetValue()
 	if val.Pwd != domain.Sha1Pwd(pwd, val.Salt) {
-		return 0, 1, de.ErrCredential
+		return nil, 1, de.ErrCredential
 	}
 	if val.Flag&member.FlagLocked == member.FlagLocked {
-		return 0, 3, member.ErrMemberLocked
+		return nil, 3, member.ErrMemberLocked
 	}
-
-	return val.Id, 0, nil
+	if update {
+		go im.UpdateLoginTime()
+	}
+	return &val, 0, nil
 }
 
-// 登录，返回结果(Result_)和会员编号(Id);
+// CheckLogin 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.Result, error) {
-	id, code, err := s.tryLogin(r.User, r.Password)
+func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.LoginResponse, error) {
+	v, code, err := s.tryLogin(r.User, r.Password, r.Update)
+	ret := &proto.LoginResponse{
+		ErrCode: code,
+	}
 	if err != nil {
-		r := s.error(err)
-		r.ErrCode = code
-		return r, nil
+		ret.ErrMsg = err.Error()
+		return ret, nil
+	} else {
+		ret.MemberId = v.Id
+		ret.UserCode = v.Code
 	}
-	var memberCode = ""
-	if r.Update {
-		m := s.repo.GetMember(id)
-		memberCode = m.GetValue().Code
-		go m.UpdateLoginTime()
+	return ret, nil
+}
+
+// GrantAccessToken 发放访问令牌
+func (s *memberService) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
+	if request.Expire <= 0 {
+		return &proto.GrantAccessTokenResponse{Error: "令牌有效时间错误"}, nil
 	}
-	mp := map[string]string{
-		"id":   strconv.Itoa(int(id)),
-		"code": memberCode,
+	im := s.repo.GetMember(request.MemberId)
+	if im == nil {
+		return &proto.GrantAccessTokenResponse{Error: member.ErrNoSuchMember.Error()}, nil
 	}
-	return s.success(mp), nil
+	if im.TestFlag(member.FlagLocked) {
+		return &proto.GrantAccessTokenResponse{Error: member.ErrMemberLocked.Error()}, nil
+	}
+	expiresTime := time.Now().Unix() + request.Expire
+	// 创建token并返回
+	claims := api.CreateClaims(strconv.Itoa(int(request.MemberId)), "go2o",
+		"go2o-api-jwt", expiresTime).(jwt.MapClaims)
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
+	if err != nil {
+		log.Println("[ go2o][ error]: grant access token error ", err.Error())
+		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
+	}
+	token, err := api.AccessToken(claims, []byte(jwtSecret))
+	if err != nil {
+		log.Println("[ go2o][ error]: grant access token error ", err.Error())
+		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
+	}
+	return &proto.GrantAccessTokenResponse{
+		AccessToken: token,
+		UserCode:    im.GetValue().Code,
+		ExpiresTime: expiresTime,
+	}, nil
+}
+
+// CheckAccessToken 检查令牌是否有效
+func (s *memberService) CheckAccessToken(c context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
+	if len(request.AccessToken) == 0 {
+		return &proto.CheckAccessTokenResponse{Error: "令牌不能为空"}, nil
+	}
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
+	if err != nil {
+		log.Println("[ go2o][ error]: check access token error ", err.Error())
+		return &proto.CheckAccessTokenResponse{Error: err.Error()}, nil
+	}
+
+	if strings.HasPrefix(request.AccessToken, "Bearer") {
+		request.AccessToken = request.AccessToken[7:]
+	}
+	// 转换token
+	dstClaims := jwt.MapClaims{} // 可以用实现了Claim接口的自定义结构
+	tk, err := jwt.ParseWithClaims(request.AccessToken, &dstClaims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	})
+	if tk == nil {
+		return &proto.CheckAccessTokenResponse{Error: "令牌无效"}, nil
+	}
+	// 判断是否有效
+	if !tk.Valid {
+		ve, _ := err.(*jwt.ValidationError)
+		if ve.Errors&jwt.ValidationErrorExpired != 0 {
+			return &proto.CheckAccessTokenResponse{Error: "令牌已过期", IsExpires: true}, nil
+		}
+		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
+	}
+	if request.ExpiresTime > 0 && !dstClaims.VerifyNotBefore(request.ExpiresTime, true) {
+		return &proto.CheckAccessTokenResponse{Error: "令牌超过有效期", IsExpires: true}, nil
+	}
+	if !dstClaims.VerifyIssuer("go2o", true) ||
+		dstClaims["sub"] != "go2o-api-jwt" {
+		return &proto.CheckAccessTokenResponse{Error: "未知颁发者的令牌"}, nil
+	}
+	return &proto.CheckAccessTokenResponse{
+		MemberId: int64(typeconv.MustInt(dstClaims["aud"])),
+	}, nil
 }
 
 // 检查交易密码
@@ -735,8 +819,8 @@ func (s *memberService) VerifyTradePassword(_ context.Context, r *proto.VerifyPa
 //}
 
 // 获取会员账户
-func (s *memberService) GetAccount(_ context.Context, id *proto.Int64) (*proto.SAccount, error) {
-	m := s.repo.CreateMember(&member.Member{Id: id.Value})
+func (s *memberService) GetAccount(_ context.Context, id *proto.MemberIdRequest) (*proto.SAccount, error) {
+	m := s.repo.CreateMember(&member.Member{Id: id.MemberId})
 	acc := m.GetAccount()
 	if acc != nil {
 		return s.parseAccountDto(acc.GetValue()), nil
@@ -848,8 +932,8 @@ func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardReque
 }
 
 // 获取收款码
-func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.Int64) (*proto.SReceiptsCodeListResponse, error) {
-	m := s.repo.GetMember(id.Value)
+func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.MemberIdRequest) (*proto.SReceiptsCodeListResponse, error) {
+	m := s.repo.GetMember(id.MemberId)
 	if m == nil {
 		return &proto.SReceiptsCodeListResponse{
 			Value: make([]*proto.SReceiptsCode, 0),
@@ -889,8 +973,8 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 }
 
 // 获取银行卡
-func (s *memberService) GetBankCards(_ context.Context, id *proto.Int64) (*proto.BankCardListResponse, error) {
-	m := s.repo.CreateMember(&member.Member{Id: id.Value})
+func (s *memberService) GetBankCards(_ context.Context, id *proto.MemberIdRequest) (*proto.BankCardListResponse, error) {
+	m := s.repo.CreateMember(&member.Member{Id: id.MemberId})
 	b := m.Profile().GetBankCards()
 	arr := make([]*proto.SBankCardInfo, len(b))
 	for i, v := range b {
@@ -930,9 +1014,9 @@ func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddReque
 }
 
 // 实名认证信息
-func (s *memberService) GetTrustInfo(_ context.Context, i *proto.Int64) (*proto.STrustedInfo, error) {
+func (s *memberService) GetTrustInfo(_ context.Context, id *proto.MemberIdRequest) (*proto.STrustedInfo, error) {
 	t := member.TrustedInfo{}
-	m := s.repo.GetMember(i.Value)
+	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
 		t = m.Profile().GetTrustedInfo()
 	}
@@ -1015,9 +1099,9 @@ func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccou
 
 /*********** 收货地址 ***********/
 
-// 获取会员的收货地址
-func (s *memberService) GetAddressList(_ context.Context, id *proto.Int64) (*proto.AddressListResponse, error) {
-	src := s.repo.GetDeliverAddress(id.Value)
+// GetAddressList 获取会员的收货地址
+func (s *memberService) GetAddressList(_ context.Context, id *proto.MemberIdRequest) (*proto.AddressListResponse, error) {
+	src := s.repo.GetDeliverAddress(id.MemberId)
 	var arr []*proto.SAddress
 	for _, v := range src {
 		arr = append(arr, s.parseAddressDto(v))
@@ -1025,7 +1109,7 @@ func (s *memberService) GetAddressList(_ context.Context, id *proto.Int64) (*pro
 	return &proto.AddressListResponse{Value: arr}, nil
 }
 
-//获取配送地址
+// GetAddress 获取配送地址
 func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest) (*proto.SAddress, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	pro := m.Profile()
@@ -1045,9 +1129,13 @@ func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest
 	return nil, nil
 }
 
-//保存配送地址
+// SaveAddress 保存配送地址
 func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressRequest) (*proto.SaveAddressResponse, error) {
 	e := s.parseAddress(r.Value)
+	e.MemberId = r.MemberId
+	if r.MemberId <= 0 {
+		return &proto.SaveAddressResponse{ErrCode: 1, ErrMsg: member.ErrNoSuchMember.Error()}, nil
+	}
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v member.IDeliverAddress
 	ret := &proto.SaveAddressResponse{}
@@ -1153,8 +1241,8 @@ func (s *memberService) GrantFlag(_ context.Context, r *proto.GrantFlagRequest) 
 }
 
 // 获取会员汇总信息
-func (s *memberService) Complex(_ context.Context, id *proto.Int64) (*proto.SComplexMember, error) {
-	m := s.repo.GetMember(id.Value)
+func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*proto.SComplexMember, error) {
+	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
 		x := m.Complex()
 		return s.parseComplexMemberDto(x), nil
@@ -1503,7 +1591,7 @@ func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.
 
 func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAddress {
 	return &proto.SAddress{
-		Id:             src.Id,
+		AddressId:      src.Id,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,
@@ -1511,7 +1599,7 @@ func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAd
 		District:       src.District,
 		Area:           src.Area,
 		DetailAddress:  src.DetailAddress,
-		IsDefault:      int32(src.IsDefault),
+		IsDefault:      src.IsDefault == 1,
 	}
 }
 func round(f float32, n int) float64 {
@@ -1595,7 +1683,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 
 func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddress {
 	return &member.ConsigneeAddress{
-		Id:             src.Id,
+		Id:             src.AddressId,
 		ConsigneeName:  src.ConsigneeName,
 		ConsigneePhone: src.ConsigneePhone,
 		Province:       src.Province,
@@ -1603,6 +1691,6 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddre
 		District:       src.District,
 		Area:           src.Area,
 		DetailAddress:  src.DetailAddress,
-		IsDefault:      int(src.IsDefault),
+		IsDefault:      types.ElseInt(src.IsDefault, 1, 0),
 	}
 }

@@ -76,7 +76,7 @@ func superviseMemberUpdate(ss []Service) {
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	notify := func(id int64, action string, ss []Service) {
-		m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: id})
+		m, _ := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: id})
 		if m != nil {
 			for _, v := range ss {
 				if !v.MemberObs(m, action == "create") {
@@ -170,7 +170,7 @@ func memberAutoUnlock() {
 			for _, oKey := range list {
 				memberId, _ := redis.Int64(conn.Do("GET", oKey))
 				if memberId > 0 {
-					cli.Unlock(context.TODO(), &proto.Int64{Value: memberId})
+					cli.Unlock(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 				}
 				conn.Do("DEL", oKey)
 			}

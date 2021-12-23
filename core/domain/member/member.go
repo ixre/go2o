@@ -335,7 +335,7 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	return err
 }
 
-// 标志赋值, 如果flag小于零, 则异或运算
+// GrantFlag 标志赋值, 如果flag小于零, 则异或运算
 func (m *memberImpl) GrantFlag(flag int) error {
 	f := int(math.Abs(float64(flag)))
 	if f&(f-1) != 0 {
@@ -345,12 +345,12 @@ func (m *memberImpl) GrantFlag(flag int) error {
 		return errors.New("disallow grant system flag, flag must large than or equals 128")
 	}
 	own := m.value.Flag&f == f
-	if flag > 0 {
+	if flag > 0 { // 添加标志
 		if own {
 			return errors.New("member has granted flag:" + strconv.Itoa(flag))
 		}
 		m.value.Flag |= flag
-	} else {
+	} else { // 去除标志
 		if !own {
 			return errors.New("member not grant flag:" + strconv.Itoa(flag))
 		}
@@ -358,6 +358,14 @@ func (m *memberImpl) GrantFlag(flag int) error {
 	}
 	_, err := m.Save()
 	return err
+}
+
+func (m *memberImpl) TestFlag(flag int) bool {
+	f := int(math.Abs(float64(flag)))
+	if f&(f-1) != 0 {
+		return false
+	}
+	return m.value.Flag&f == f
 }
 
 // 审核升级请求

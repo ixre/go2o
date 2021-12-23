@@ -51,7 +51,7 @@ func NewCartService(cartRepo cart.ICartRepo,
 
 /*---------------- 批发购物车 ----------------*/
 
-// 批发购物车接口
+// WholesaleCartV1 批发购物车接口
 func (s *cartServiceImpl) WholesaleCartV1(_ context.Context, r *proto.WsCartRequest) (*proto.Result, error) {
 	//todo: check member
 	c := s.cartRepo.GetMyCart(r.MemberId, cart.KWholesale)
@@ -328,50 +328,6 @@ func (s *cartServiceImpl) CheckCart(_ context.Context, r *proto.CheckCartRequest
 	err := c.SignItemChecked(items)
 	if err == nil {
 		_, err = c.Save()
-	}
-	return s.error(err), nil
-}
-
-func (s *cartServiceImpl) SetBuyerAddress(buyerId int64, cartCode string, addressId int64) error {
-	cart := s.getShoppingCart(buyerId, cartCode)
-	return cart.SetBuyerAddress(addressId)
-}
-
-func (s *cartServiceImpl) GetCartSettle_(_ context.Context, code *proto.ShoppingCartId) (*proto.SettleMeta_, error) {
-	cart := s.getShoppingCart(code.UserId, code.CartCode)
-	sp, deliver, payOpt := cart.GetSettleData()
-	st := new(proto.SettleMeta_)
-	st.PaymentOpt = int64(payOpt)
-	if sp != nil {
-		v := sp.GetValue()
-		ols := sp.(shop.IOnlineShop)
-		st.Shop = &proto.SettleShopMeta_{
-			ShopId:    v.Id,
-			ShopName:  v.Name,
-			Telephone: ols.GetShopValue().Tel,
-		}
-	}
-
-	if deliver != nil {
-		v := deliver.GetValue()
-		st.Deliver = &proto.SettleDeliverMeta_{
-			Id:             v.Id,
-			ConsigneeName:  v.ConsigneeName,
-			ConsigneePhone: v.ConsigneePhone,
-			Address:        strings.Replace(v.Area, " ", "", -1) + v.DetailAddress,
-		}
-	}
-
-	return st, nil
-}
-
-// PrepareSettlePersist_ 更新购物车结算
-func (s *cartServiceImpl) PrepareSettlePersist_(_ context.Context, r *proto.SettlePersistRequest) (*proto.Result, error) {
-	var cart = s.getShoppingCart(r.BuyerId, "")
-	err := cart.SettlePersist(int32(r.ShopId), int32(r.PaymentOpt),
-		int32(r.DeliverOpt), r.AddressId)
-	if err == nil {
-		_, err = cart.Save()
 	}
 	return s.error(err), nil
 }

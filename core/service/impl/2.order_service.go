@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	orderImpl "github.com/ixre/go2o/core/domain/order"
 	"github.com/ixre/go2o/core/dto"
@@ -89,7 +90,7 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 	return c
 }
 
-// 提交订单
+// SubmitOrderV1 提交订单
 func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
 	c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
 	iData := orderImpl.NewPostedData(r.Data)
@@ -102,28 +103,68 @@ func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrder
 	return &proto.StringMap{Value: rd}, nil
 }
 
-func (s *orderServiceImpl) PrepareOrder_(_ context.Context, r *proto.PrepareOrderRequest) (*proto.SSingleOrder, error) {
+// PrepareOrder 预生成订单
+func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
 	ic := s.getShoppingCart(r.BuyerId, r.CouponCode)
 	o, err := s.manager.PrepareNormalOrder(ic)
 	if err == nil {
-		no := o.(order.INormalOrder)
+		io := o.(order.INormalOrder)
+		// 设置收货地址
 		if r.AddressId > 0 {
-			err = no.SetAddress(r.AddressId)
+			err = io.SetAddress(r.AddressId)
 		} else {
 			arr := s.memberRepo.GetDeliverAddress(r.BuyerId)
 			if len(arr) > 0 {
-				err = no.SetAddress(arr[0].Id)
+				err = io.SetAddress(arr[0].Id)
+			}
+		}
+		// 使用优惠券
+		// todo:
+		//io.ApplyCoupon()
+
+	}
+	if err != nil {
+		return &proto.PrepareOrderResponse{
+			Error: err.Error(),
+		}, nil
+	}
+	ov := o.Complex()
+
+	// 使用余额
+	if r.PaymentFlag&payment.MBalance == payment.MBalance {
+		acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
+		balance := acc.GetValue().Balance
+		if balance >= ov.FinalAmount {
+			ov.DiscountAmount = ov.FinalAmount
+			ov.FinalAmount = 0
+		} else {
+			ov.DiscountAmount = balance
+			ov.FinalAmount -= balance
+		}
+	}
+	rsp := parser.PrepareOrderDto(ov)
+	rsp.Groups = s.parsePrepareItemsFromCart(ic)
+	return rsp, err
+}
+
+// 转换购物车数据
+func (s *orderServiceImpl) parsePrepareItemsFromCart(c cart.ICart) []*proto.SPrepareOrderGroup {
+	arr := parser.ParsePrepareOrderGroups(c)
+	for _, v := range arr {
+		is := s.shopRepo.GetShop(v.ShopId)
+		if is != nil {
+			io := is.(shop.IOnlineShop)
+			v.ShopName = io.GetShopValue().ShopName
+		} else {
+			for _, it := range v.Items {
+				c.Remove(it.ItemId, it.SkuId, it.Quantity)
 			}
 		}
 	}
-	if err == nil {
-		//log.Println("-------",o == nil,err)
-		return parser.OrderDto(o.Complex()), err
-	}
-	return nil, err
+	return arr
 }
 
-// 预生成订单，使用优惠券
+// PrepareOrderWithCoupon_ 预生成订单，使用优惠券
 func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.PrepareOrderRequest) (*proto.StringMap, error) {
 	cart := s.getShoppingCart(r.BuyerId, r.CartCode)
 	o, err := s.manager.PrepareNormalOrder(cart)

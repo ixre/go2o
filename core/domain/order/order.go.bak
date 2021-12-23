@@ -209,7 +209,7 @@ func (o *orderImpl) setAddress(addressId int32) error {
 	d := addr.GetValue()
 	v := o.value
 	v.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.Address
-	v.ConsigneePerson = d.RealName
+	v.ConsigneeName = d.RealName
 	v.ConsigneePhone = d.Phone
 	return nil
 }

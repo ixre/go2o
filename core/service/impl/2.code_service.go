@@ -25,7 +25,7 @@ func NewCodeService(sto storage.Interface, o orm.Orm) *codeServiceImpl {
 	}
 }
 
-// 保存CommQrTemplate
+// SaveQrTemplate 保存CommQrTemplate
 func (c *codeServiceImpl) SaveQrTemplate(_ context.Context, r *proto.SaveQrTemplateRequest) (*proto.SaveQrTemplateResponse, error) {
 	var dst *model.QrTemplate
 	if r.Id > 0 {
@@ -39,7 +39,6 @@ func (c *codeServiceImpl) SaveQrTemplate(_ context.Context, r *proto.SaveQrTempl
 		dst = &model.QrTemplate{}
 
 	}
-
 	dst.Title = r.Title
 	dst.BgImage = r.BgImage
 	dst.OffsetX = int(r.OffsetX)

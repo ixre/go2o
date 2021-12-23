@@ -8,9 +8,9 @@
  */
 package dto
 
-// 登录的会员信息
+// LoginMember 登录的会员信息
 type LoginMember struct {
-	ID         int
+	ID         int64
 	Code       string
 	Token      string
 	UpdateTime int64

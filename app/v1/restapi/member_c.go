@@ -51,14 +51,14 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.ErrMsg = r.ErrMsg
 		result.ErrCode = int(r.ErrCode)
 		if r.ErrCode == 0 {
-			memberId, _ := strconv.Atoi(r.Data["member_id"])
+
 			token, _ := cli.GetToken(context.TODO(),
 				&proto.GetTokenRequest{
-					MemberId: int64(memberId),
+					MemberId: r.MemberId,
 					Reset_:   false,
 				})
 			result.Member = &dto.LoginMember{
-				ID:         memberId,
+				ID:         r.MemberId,
 				Token:      token.Value,
 				UpdateTime: time.Now().Unix(),
 			}
@@ -93,7 +93,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	if kvAut == 0 {
 		trans, cli, _ := service.MemberServiceClient()
 		defer trans.Close()
-		acc, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
+		acc, _ := cli.GetAccount(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 		kvAut = int(acc.UpdateTime)
 		store.Set(autKey, kvAut)
 	}
@@ -108,7 +108,7 @@ func (mc *MemberC) Get(c echo.Context) error {
 	memberId := GetMemberId(c)
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	m, _ := cli.GetMember(context.TODO(), &proto.Int64{Value: memberId})
+	m, _ := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 	tk, _ := cli.GetToken(context.TODO(),
 		&proto.GetTokenRequest{
 			MemberId: memberId,
@@ -124,7 +124,7 @@ func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	v, _ := cli.Complex(context.TODO(), &proto.Int64{Value: memberId})
+	v, _ := cli.Complex(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 	return c.JSON(http.StatusOK, v)
 }
 
@@ -133,7 +133,7 @@ func (mc *MemberC) Account(c echo.Context) error {
 	memberId := GetMemberId(c)
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	m, _ := cli.GetAccount(context.TODO(), &proto.Int64{Value: memberId})
+	m, _ := cli.GetAccount(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 	return c.JSON(http.StatusOK, m)
 }
 
