@@ -160,11 +160,11 @@ message SSingleOrder {
 // 收货人信息
 message SConsigneeInfo {
     // 收货人
-    string ConsigneeName = 14;
+    string ConsigneeName = 1;
     // 收货电话
-    string ConsigneePhone = 15;
+    string ConsigneePhone = 12;
     // 配送地址
-    string ShippingAddress = 16;
+    string ShippingAddress = 13;
 }
 
 //todo: 批发的参数改为属性而不是map
