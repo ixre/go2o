@@ -40,17 +40,17 @@ type wrapperData struct {
 }
 
 const (
-	// 仅验证密码
+	// FlagOnlyCheck 仅验证密码
 	FlagOnlyCheck = 1 << iota
-	// 余额抵扣
+	// FlagBalanceDiscount 余额抵扣
 	FlagBalanceDiscount
-	// 积分抵扣
+	// FlagIntegralDiscount 积分抵扣
 	FlagIntegralDiscount
-	// 钱包支付
+	// FlagWalletPayment 钱包支付
 	FlagWalletPayment
 )
 
-// 支付网关
+// Gateway 支付网关
 type Gateway struct {
 	s          storage.Interface
 	memberRepo member.IMemberRepo
@@ -63,7 +63,7 @@ func NewGateway(s storage.Interface) *Gateway {
 	}
 }
 
-// 生成支付网关提交令牌,5分钟内有效
+// CreatePostToken 生成支付网关提交令牌,5分钟内有效
 func (g *Gateway) CreatePostToken(userId int64) string {
 	unix := time.Now().UnixNano()
 	str := fmt.Sprintf("%d-%d", unix, userId)
@@ -93,7 +93,7 @@ func (g *Gateway) getTradeKey(tradeNo string) string {
 	return "go2o:pay:gateway:trade-" + tradeNo
 }
 
-// 提交到网关
+// Submit 提交到网关
 func (g *Gateway) Submit(userId int64, data map[string]string) error {
 	amount, err := strconv.Atoi(data["amount"])
 	if err != nil {
@@ -107,7 +107,6 @@ func (g *Gateway) Submit(userId int64, data map[string]string) error {
 	if err2 != nil {
 		flag = FlagOnlyCheck
 	}
-
 	d := &wrapperData{
 		TradeNo:      data["trade_no"],
 		Amount:       amount,
@@ -160,7 +159,7 @@ func (g *Gateway) realSubmit(userId int64, data *wrapperData) error {
 	return err
 }
 
-// 模拟支付
+// CheckAndPayment 模拟支付
 func (g *Gateway) CheckAndPayment(userId int64, tradeNo string, TradePassword string) error {
 	m := g.memberRepo.GetMember(userId)
 	if m == nil {

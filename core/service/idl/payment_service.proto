@@ -76,7 +76,7 @@ service PaymentService {
     rpc GatewayV1 (PayGatewayRequest) returns (Result) {
     }
     // 获取支付预交易数据
-    rpc GetPaymentOrderInfo (OrderInfoRequest) returns (SPrepareTradeData) {
+    rpc GetPreparePaymentInfo (OrderInfoRequest) returns (SPrepareTradeData) {
     }
 
     /**

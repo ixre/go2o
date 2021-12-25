@@ -1198,7 +1198,7 @@ type PaymentServiceClient interface {
 	// 支付网关
 	GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取支付预交易数据
-	GetPaymentOrderInfo(ctx context.Context, in *OrderInfoRequest, opts ...grpc.CallOption) (*SPrepareTradeData, error)
+	GetPreparePaymentInfo(ctx context.Context, in *OrderInfoRequest, opts ...grpc.CallOption) (*SPrepareTradeData, error)
 	// *
 	// 支付单混合支付
 	//
@@ -1316,9 +1316,9 @@ func (c *paymentServiceClient) GatewayV1(ctx context.Context, in *PayGatewayRequ
 	return out, nil
 }
 
-func (c *paymentServiceClient) GetPaymentOrderInfo(ctx context.Context, in *OrderInfoRequest, opts ...grpc.CallOption) (*SPrepareTradeData, error) {
+func (c *paymentServiceClient) GetPreparePaymentInfo(ctx context.Context, in *OrderInfoRequest, opts ...grpc.CallOption) (*SPrepareTradeData, error) {
 	out := new(SPrepareTradeData)
-	err := c.cc.Invoke(ctx, "/PaymentService/GetPaymentOrderInfo", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/PaymentService/GetPreparePaymentInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1359,7 +1359,7 @@ type PaymentServiceServer interface {
 	// 支付网关
 	GatewayV1(context.Context, *PayGatewayRequest) (*Result, error)
 	// 获取支付预交易数据
-	GetPaymentOrderInfo(context.Context, *OrderInfoRequest) (*SPrepareTradeData, error)
+	GetPreparePaymentInfo(context.Context, *OrderInfoRequest) (*SPrepareTradeData, error)
 	// *
 	// 支付单混合支付
 	//
@@ -1572,20 +1572,20 @@ func _PaymentService_GatewayV1_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PaymentService_GetPaymentOrderInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PaymentService_GetPreparePaymentInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(OrderInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PaymentServiceServer).GetPaymentOrderInfo(ctx, in)
+		return srv.(PaymentServiceServer).GetPreparePaymentInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/PaymentService/GetPaymentOrderInfo",
+		FullMethod: "/PaymentService/GetPreparePaymentInfo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentServiceServer).GetPaymentOrderInfo(ctx, req.(*OrderInfoRequest))
+		return srv.(PaymentServiceServer).GetPreparePaymentInfo(ctx, req.(*OrderInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1657,8 +1657,8 @@ var _PaymentService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _PaymentService_GatewayV1_Handler,
 		},
 		{
-			MethodName: "GetPaymentOrderInfo",
-			Handler:    _PaymentService_GetPaymentOrderInfo_Handler,
+			MethodName: "GetPreparePaymentInfo",
+			Handler:    _PaymentService_GetPreparePaymentInfo_Handler,
 		},
 		{
 			MethodName: "MixedPayment",
