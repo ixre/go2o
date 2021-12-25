@@ -29,9 +29,9 @@ const (
 	MUserCoupon = 1 << 4
 	// MCash 现金支付通道
 	MCash = 1 << 5
-	// MBankCard 银行卡支付通道
+	// MBankCard 银行卡支付通道(64)
 	MBankCard = 1 << 6
-	// MPaySP 第三方支付
+	// MPaySP 第三方支付(128)
 	MPaySP = 1 << 7
 	// MSellerPay 卖家支付通道
 	MSellerPay = 1 << 8

@@ -15,6 +15,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/service/proto"
+	context2 "golang.org/x/net/context"
 	"strconv"
 )
 
@@ -135,7 +136,7 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 		finalFee += v.Get().FinalFee
 	}
 	acc := p.memberRepo.GetAccount(payUid)
-	if int64(acc.Balance*100) < finalFee {
+	if acc.Balance*100 < finalFee {
 		err = member.ErrAccountBalanceNotEnough
 	} else {
 		for _, v := range arr {
@@ -245,6 +246,39 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 	d.ErrCode = 0
 	d.TradeNo = tradeNo // 交易单号
 	return d, nil
+}
+
+// GatewayV2 支付网关V2
+func (p *paymentService) GatewayV2(_ context2.Context, r *proto.PayGatewayV2Request) (*proto.PayGatewayResponse, error) {
+	var arr []payment.IPaymentOrder
+	if r.MergePay {
+		arr = p.repo.GetMergePayOrders(r.TradeNo)
+	} else {
+		ip := p.repo.GetPaymentOrder(r.TradeNo)
+		if ip != nil {
+			arr = []payment.IPaymentOrder{ip}
+		}
+	}
+	if len(arr) == 0 {
+		return &proto.PayGatewayResponse{ErrCode: 1,
+			ErrMsg: "支付单不存在"}, nil
+	}
+	for _, ip := range arr {
+		if err := ip.CheckPaymentState(); err != nil {
+			return &proto.PayGatewayResponse{ErrCode: 2,
+				ErrMsg: err.Error()}, nil
+		}
+	}
+	ret := proto.PayGatewayResponse{
+		TradeNo: r.TradeNo,
+	}
+	for _, ip := range arr {
+		iv := ip.Get()
+		ret.ProcedureFee += iv.ProcedureFee // 手续费
+		ret.FinalFee += iv.FinalFee         // 最终金额
+		ret.TotalAmount += iv.TotalAmount   // 累计金额
+	}
+	return &ret, nil
 }
 
 // MixedPayment 混合支付
