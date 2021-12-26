@@ -81,7 +81,7 @@ func (x EPayMethod) String() string {
 	return proto.EnumName(EPayMethod_name, int32(x))
 }
 func (EPayMethod) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{0}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{0}
 }
 
 type AdjustOrderRequest struct {
@@ -96,7 +96,7 @@ func (m *AdjustOrderRequest) Reset()         { *m = AdjustOrderRequest{} }
 func (m *AdjustOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*AdjustOrderRequest) ProtoMessage()    {}
 func (*AdjustOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{0}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{0}
 }
 func (m *AdjustOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AdjustOrderRequest.Unmarshal(m, b)
@@ -142,7 +142,7 @@ func (m *DiscountBalanceRequest) Reset()         { *m = DiscountBalanceRequest{}
 func (m *DiscountBalanceRequest) String() string { return proto.CompactTextString(m) }
 func (*DiscountBalanceRequest) ProtoMessage()    {}
 func (*DiscountBalanceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{1}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{1}
 }
 func (m *DiscountBalanceRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DiscountBalanceRequest.Unmarshal(m, b)
@@ -189,7 +189,7 @@ func (m *DiscountIntegralRequest) Reset()         { *m = DiscountIntegralRequest
 func (m *DiscountIntegralRequest) String() string { return proto.CompactTextString(m) }
 func (*DiscountIntegralRequest) ProtoMessage()    {}
 func (*DiscountIntegralRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{2}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{2}
 }
 func (m *DiscountIntegralRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DiscountIntegralRequest.Unmarshal(m, b)
@@ -243,7 +243,7 @@ func (m *WalletPaymentRequest) Reset()         { *m = WalletPaymentRequest{} }
 func (m *WalletPaymentRequest) String() string { return proto.CompactTextString(m) }
 func (*WalletPaymentRequest) ProtoMessage()    {}
 func (*WalletPaymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{3}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{3}
 }
 func (m *WalletPaymentRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_WalletPaymentRequest.Unmarshal(m, b)
@@ -296,7 +296,7 @@ func (m *HyperPaymentRequest) Reset()         { *m = HyperPaymentRequest{} }
 func (m *HyperPaymentRequest) String() string { return proto.CompactTextString(m) }
 func (*HyperPaymentRequest) ProtoMessage()    {}
 func (*HyperPaymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{4}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{4}
 }
 func (m *HyperPaymentRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_HyperPaymentRequest.Unmarshal(m, b)
@@ -343,7 +343,7 @@ func (m *FinishPaymentRequest) Reset()         { *m = FinishPaymentRequest{} }
 func (m *FinishPaymentRequest) String() string { return proto.CompactTextString(m) }
 func (*FinishPaymentRequest) ProtoMessage()    {}
 func (*FinishPaymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{5}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{5}
 }
 func (m *FinishPaymentRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_FinishPaymentRequest.Unmarshal(m, b)
@@ -405,7 +405,7 @@ func (m *PayGatewayV2Request) Reset()         { *m = PayGatewayV2Request{} }
 func (m *PayGatewayV2Request) String() string { return proto.CompactTextString(m) }
 func (*PayGatewayV2Request) ProtoMessage()    {}
 func (*PayGatewayV2Request) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{6}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{6}
 }
 func (m *PayGatewayV2Request) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PayGatewayV2Request.Unmarshal(m, b)
@@ -487,7 +487,7 @@ func (m *PayGatewayResponse) Reset()         { *m = PayGatewayResponse{} }
 func (m *PayGatewayResponse) String() string { return proto.CompactTextString(m) }
 func (*PayGatewayResponse) ProtoMessage()    {}
 func (*PayGatewayResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{7}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{7}
 }
 func (m *PayGatewayResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PayGatewayResponse.Unmarshal(m, b)
@@ -575,7 +575,7 @@ func (m *OrderInfoRequest) Reset()         { *m = OrderInfoRequest{} }
 func (m *OrderInfoRequest) String() string { return proto.CompactTextString(m) }
 func (*OrderInfoRequest) ProtoMessage()    {}
 func (*OrderInfoRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{8}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{8}
 }
 func (m *OrderInfoRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OrderInfoRequest.Unmarshal(m, b)
@@ -621,7 +621,7 @@ func (m *MixedPaymentRequest) Reset()         { *m = MixedPaymentRequest{} }
 func (m *MixedPaymentRequest) String() string { return proto.CompactTextString(m) }
 func (*MixedPaymentRequest) ProtoMessage()    {}
 func (*MixedPaymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{9}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{9}
 }
 func (m *MixedPaymentRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MixedPaymentRequest.Unmarshal(m, b)
@@ -668,7 +668,7 @@ func (m *PayGatewayRequest) Reset()         { *m = PayGatewayRequest{} }
 func (m *PayGatewayRequest) String() string { return proto.CompactTextString(m) }
 func (*PayGatewayRequest) ProtoMessage()    {}
 func (*PayGatewayRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{10}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{10}
 }
 func (m *PayGatewayRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PayGatewayRequest.Unmarshal(m, b)
@@ -774,7 +774,7 @@ func (m *SPaymentOrder) Reset()         { *m = SPaymentOrder{} }
 func (m *SPaymentOrder) String() string { return proto.CompactTextString(m) }
 func (*SPaymentOrder) ProtoMessage()    {}
 func (*SPaymentOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{11}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{11}
 }
 func (m *SPaymentOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPaymentOrder.Unmarshal(m, b)
@@ -1000,7 +1000,7 @@ func (m *SRequestPayData) Reset()         { *m = SRequestPayData{} }
 func (m *SRequestPayData) String() string { return proto.CompactTextString(m) }
 func (*SRequestPayData) ProtoMessage()    {}
 func (*SRequestPayData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{12}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{12}
 }
 func (m *SRequestPayData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SRequestPayData.Unmarshal(m, b)
@@ -1064,7 +1064,7 @@ func (m *STradeMethodData) Reset()         { *m = STradeMethodData{} }
 func (m *STradeMethodData) String() string { return proto.CompactTextString(m) }
 func (*STradeMethodData) ProtoMessage()    {}
 func (*STradeMethodData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{13}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{13}
 }
 func (m *STradeMethodData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_STradeMethodData.Unmarshal(m, b)
@@ -1155,7 +1155,7 @@ func (m *SPrepareTradeData) Reset()         { *m = SPrepareTradeData{} }
 func (m *SPrepareTradeData) String() string { return proto.CompactTextString(m) }
 func (*SPrepareTradeData) ProtoMessage()    {}
 func (*SPrepareTradeData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{14}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{14}
 }
 func (m *SPrepareTradeData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPrepareTradeData.Unmarshal(m, b)
@@ -1261,7 +1261,7 @@ func (m *SPaymentOrderData) Reset()         { *m = SPaymentOrderData{} }
 func (m *SPaymentOrderData) String() string { return proto.CompactTextString(m) }
 func (*SPaymentOrderData) ProtoMessage()    {}
 func (*SPaymentOrderData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_payment_service_f631c778b6275a7f, []int{15}
+	return fileDescriptor_payment_service_3ab8ba39248ad7e3, []int{15}
 }
 func (m *SPaymentOrderData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SPaymentOrderData.Unmarshal(m, b)
@@ -1376,7 +1376,7 @@ type PaymentServiceClient interface {
 	HybridPayment(ctx context.Context, in *HyperPaymentRequest, opts ...grpc.CallOption) (*Result, error)
 	// 完成支付单支付，并传入支付方式及外部订单号
 	FinishPayment(ctx context.Context, in *FinishPaymentRequest, opts ...grpc.CallOption) (*Result, error)
-	// 支付网关
+	// 支付网关(仅交易单使用)
 	GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取支付预交易数据
 	GetPreparePaymentInfo(ctx context.Context, in *OrderInfoRequest, opts ...grpc.CallOption) (*SPrepareTradeData, error)
@@ -1548,7 +1548,7 @@ type PaymentServiceServer interface {
 	HybridPayment(context.Context, *HyperPaymentRequest) (*Result, error)
 	// 完成支付单支付，并传入支付方式及外部订单号
 	FinishPayment(context.Context, *FinishPaymentRequest) (*Result, error)
-	// 支付网关
+	// 支付网关(仅交易单使用)
 	GatewayV1(context.Context, *PayGatewayRequest) (*Result, error)
 	// 获取支付预交易数据
 	GetPreparePaymentInfo(context.Context, *OrderInfoRequest) (*SPrepareTradeData, error)
@@ -1886,10 +1886,10 @@ var _PaymentService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("payment_service.proto", fileDescriptor_payment_service_f631c778b6275a7f)
+	proto.RegisterFile("payment_service.proto", fileDescriptor_payment_service_3ab8ba39248ad7e3)
 }
 
-var fileDescriptor_payment_service_f631c778b6275a7f = []byte{
+var fileDescriptor_payment_service_3ab8ba39248ad7e3 = []byte{
 	// 1451 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x57, 0x5f, 0x6f, 0xdb, 0x46,
 	0x12, 0xb7, 0xfe, 0x4b, 0xe3, 0x7f, 0xd4, 0xca, 0x76, 0x78, 0xba, 0x20, 0x67, 0x10, 0x87, 0xc0,

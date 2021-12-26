@@ -126,7 +126,6 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 
 func (q *queryService) parseOrder(src *dto.PagedMemberSubOrder) *proto.SPagedMemberSubOrder {
 	dst := &proto.SPagedMemberSubOrder{
-		OrderId:        src.Id,
 		OrderNo:        src.OrderNo,
 		ParentNo:       src.ParentNo,
 		VendorId:       src.VendorId,
@@ -137,7 +136,7 @@ func (q *queryService) parseOrder(src *dto.PagedMemberSubOrder) *proto.SPagedMem
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
 		IsPaid:         src.IsPaid,
-		FinalAmount:    src.FinalAmount,
+		FinalFee:       src.FinalFee,
 		State:          int32(src.State),
 		StateText:      src.StateText,
 		CreateTime:     src.CreateTime,
@@ -170,7 +169,6 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 
 func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SPagedMemberSubOrder {
 	return &proto.SPagedMemberSubOrder{
-		OrderId:  src.OrderId,
 		OrderNo:  src.OrderNo,
 		VendorId: src.SellerId,
 		ShopId:   src.ShopId,
@@ -180,8 +178,8 @@ func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SPagedMem
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
 		//IsPaid:         src.IsPaid,
-		FinalAmount: src.FinalAmount,
-		State:       int32(src.State),
+		FinalFee: src.FinalAmount,
+		State:    int32(src.State),
 		//StateText:      src.StateText,
 		CreateTime: src.SubmitTime,
 		Items:      make([]*proto.SOrderItem, 0),

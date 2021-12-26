@@ -28,7 +28,7 @@ type (
 		ExpressFee     int64
 		PackageFee     int64
 		IsPaid         bool
-		FinalAmount    int64
+		FinalFee       int64
 		State          int
 		StateText      string
 		CreateTime     int64

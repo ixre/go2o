@@ -160,7 +160,7 @@ type SShipmentOrder struct {
 	// 运费
 	Amount float64 `protobuf:"fixed64,7,opt,name=Amount,proto3" json:"Amount"`
 	// 实际运费
-	FinalAmount float64 `protobuf:"fixed64,8,opt,name=FinalAmount,proto3" json:"FinalAmount"`
+	FinalAmount float64 `protobuf:"fixed64,8,opt,name=FinalFee,proto3" json:"FinalFee"`
 	// 发货时间
 	ShipTime int64 `protobuf:"varint,9,opt,name=ShipTime,proto3" json:"ShipTime"`
 	// 状态
@@ -293,7 +293,7 @@ type SShipmentItem struct {
 	// 运费
 	Amount float64 `protobuf:"fixed64,4,opt,name=Amount,proto3" json:"Amount"`
 	// 实际运费
-	FinalAmount          float64  `protobuf:"fixed64,5,opt,name=FinalAmount,proto3" json:"FinalAmount"`
+	FinalAmount          float64  `protobuf:"fixed64,5,opt,name=FinalFee,proto3" json:"FinalFee"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

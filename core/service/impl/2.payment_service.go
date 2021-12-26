@@ -118,8 +118,9 @@ func (p *paymentService) DiscountByBalance(_ context.Context, r *proto.DiscountB
 
 // PaymentByWallet 钱包账户支付
 func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPaymentRequest) (rs *proto.Result, err error) {
-	// 单个支付订单支付
-	if !r.MergePay {
+	arr := p.repo.GetMergePayOrders(r.TradeNo)
+	if len(arr) == 0 {
+		// 单个订单支付
 		ip := p.repo.GetPaymentOrder(r.TradeNo)
 		if ip == nil {
 			err = payment.ErrNoSuchPaymentOrder
@@ -128,8 +129,7 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 		}
 		return p.result(err), nil
 	}
-	// 合并支付单
-	arr := p.repo.GetMergePayOrders(r.TradeNo)
+	// 合并支付单支付
 	payUid := arr[0].Get().PayUid
 	var finalFee int64 = 0
 	for _, v := range arr {

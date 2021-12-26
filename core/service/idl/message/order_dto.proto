@@ -67,7 +67,7 @@ message SOrderItem {
     // 退货数量
     int32 ReturnQuantity = 10;
     // 商品总金额
-    int64 amount = 11;
+    int64 Amount = 11;
     // 商品实际总金额
     int64 FinalAmount = 12;
     // 是否已发货

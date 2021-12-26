@@ -497,7 +497,7 @@ type (
 		CreateTime int64 `db:"create_time"`
 	}
 
-	// 会员锁定记录
+	// MmLockInfo 会员锁定记录
 	MmLockInfo struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
@@ -511,7 +511,7 @@ type (
 		Remark string `db:"remark"`
 	}
 
-	// 会员锁定历史
+	// MmLockHistory 会员锁定历史
 	MmLockHistory struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
@@ -532,6 +532,7 @@ func (b BankCard) Right() bool {
 }
 
 func (b BankCard) Locked() bool {
-	panic("remove")
+	return false
+	//panic(errors.New("Not Implemented"))
 	//return b.IsLocked == BankLocked
 }

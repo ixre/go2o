@@ -139,7 +139,7 @@ type SMerchantOrder struct {
 	ExpressFee           float64           `protobuf:"fixed64,9,opt,name=ExpressFee,proto3" json:"ExpressFee"`
 	PackageFee           float64           `protobuf:"fixed64,10,opt,name=PackageFee,proto3" json:"PackageFee"`
 	IsPaid               bool              `protobuf:"varint,11,opt,name=IsPaid,proto3" json:"IsPaid"`
-	FinalAmount          float64           `protobuf:"fixed64,12,opt,name=FinalAmount,proto3" json:"FinalAmount"`
+	FinalAmount          float64           `protobuf:"fixed64,12,opt,name=FinalFee,proto3" json:"FinalFee"`
 	State                int32             `protobuf:"varint,13,opt,name=State,proto3" json:"State"`
 	StateText            string            `protobuf:"bytes,14,opt,name=StateText,proto3" json:"StateText"`
 	CreateTime           int64             `protobuf:"varint,15,opt,name=CreateTime,proto3" json:"CreateTime"`
