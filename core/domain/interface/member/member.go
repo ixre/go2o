@@ -10,7 +10,7 @@
 package member
 
 const (
-	// 默认操作用户
+	// DefaultRelateUser 默认操作用户
 	DefaultRelateUser int64 = 0
 )
 const (
@@ -21,84 +21,84 @@ const (
 )
 
 const (
-	// 收藏店铺
+	// FavTypeShop 收藏店铺
 	FavTypeShop = iota + 1
-	// 收藏商品
+	// FavTypeGoods 收藏商品
 	FavTypeGoods
 )
 
 const (
-	// 普通会员
+	// PremiumNormal 普通会员
 	PremiumNormal int = 0
-	// 金会员
+	// PremiumGold 金会员
 	PremiumGold int = 1
-	// 白金会员
+	// PremiumWhiteGold 白金会员
 	PremiumWhiteGold int = 2
-	// 黑钻会员
+	// PremiumSuper 黑钻会员
 	PremiumSuper int = 3
 )
 
 const (
-	// 自动升级
+	// LAutoUpgrade 自动升级
 	LAutoUpgrade = 1
-	// 客服更改
+	// LServiceAgentUpgrade 客服更改
 	LServiceAgentUpgrade = 2
-	// 程序升级，todo: 暂时未对其进行区分
+	// LProgramUpgrade 程序升级，todo: 暂时未对其进行区分
 	LProgramUpgrade = 3
 )
 
 const (
-	// 已激活
+	// FlagActive 已激活(1)
 	FlagActive = 1 << iota
-	// 已锁定的
-	FlagLocked = 2
-	// 已认证的
-	FlagTrusted = 4
-	// 已完善的资料
-	FlagProfileCompleted = 8
+	// FlagLocked 已锁定的(2)
+	FlagLocked
+	// FlagTrusted 已认证的(4)
+	FlagTrusted
+	// FlagNoTradePasswd 交易密码未设置(8)
+	FlagNoTradePasswd = 64
+	// FlagProfileCompleted 已完善的资料(16)
+	FlagProfileCompleted = 128
 )
 
 type (
 	IMember interface {
-		// 获取聚合根编号
+		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int64
-		// 会员汇总信息
+		// Complex 会员汇总信息
 		Complex() *ComplexMember
-		// 会员资料服务
+		// Profile 会员资料服务
 		Profile() IProfileManager
-		// 会员收藏服务
+		// Favorite 会员收藏服务
 		Favorite() IFavoriteManager
-		// 礼品卡服务
+		// GiftCard 礼品卡服务
 		GiftCard() IGiftCardManager
-		// 邀请管理
+		// Invitation 邀请管理
 		Invitation() IInvitationManager
-		// 获取值
+		// GetValue 获取值
 		GetValue() Member
-		// 设置值
-		SetValue(*Member) error
-		// 获取账户
+		// GetAccount 获取账户
 		GetAccount() IAccount
-		// 发送验证码,传入操作及消息类型,并返回验证码,及错误
+		// SendCheckCode 发送验证码,传入操作及消息类型,并返回验证码,及错误
 		SendCheckCode(operation string, mssType int) (string, error)
-		// 对比验证码
+		// CompareCode 对比验证码
 		CompareCode(code string) error
-		// 激活
+		// Active 激活
 		Active() error
-		// 锁定会员,如miniutes为-1, 则永久锁定
+		// Lock 锁定会员,如minutes为-1, 则永久锁定
 		Lock(minutes int, remark string) error
-		// 解锁会员
+		// Unlock 解锁会员
 		Unlock() error
-		// 判断是否包含标志
+		// ContainFlag 判断是否包含标志
 		ContainFlag(f int) bool
-		// 获取关联的会员
+		// GetRelation 获取关联的会员
 		GetRelation() *InviteRelation
-		// 绑定邀请人,如果已邀请,force为true时更新
+		// BindInviter 绑定邀请人,如果已邀请,force为true时更新
 		BindInviter(memberId int64, force bool) error
-		// 增加经验值
+		// AddExp 增加经验值
 		AddExp(exp int) error
-		// 升级为高级会员
+		// Premium 升级为高级会员
 		Premium(v int, expires int64) error
-		// 获取等级
+		// GetLevel 获取等级
 		GetLevel() *Level
 
 		// GrantFlag 标志赋值, 如果flag小于零, 则异或运算(去除)
@@ -107,86 +107,86 @@ type (
 		// TestFlag 是否包含标志
 		TestFlag(flag int) bool
 
-		// 更改会员等级,@paymentId:支付单编号,@review:是否需要审核
+		// ChangeLevel 更改会员等级,@paymentId:支付单编号,@review:是否需要审核
 		ChangeLevel(level int, paymentId int, review bool) error
 
-		// 审核升级请求
+		// ReviewLevelUp 审核升级请求
 		ReviewLevelUp(id int, pass bool) error
 
-		// 标记已经处理升级
+		// ConfirmLevelUp 标记已经处理升级
 		ConfirmLevelUp(id int) error
 
-		// 更换用户名
+		// ChangeUser 更换用户名
 		ChangeUser(string) error
 
-		// 更新登录时间
+		// UpdateLoginTime 更新登录时间
 		UpdateLoginTime() error
 
-		// 保存
+		// Save 保存
 		Save() (int64, error)
 	}
 
-	// 会员资料服务
+	// IProfileManager 会员资料服务
 	IProfileManager interface {
-		// 获取资料
+		// GetProfile 获取资料
 		GetProfile() Profile
-		// 保存资料
+		// SaveProfile 保存资料
 		SaveProfile(v *Profile) error
-		// 更改手机号码,不验证手机格式
+		// ChangePhone 更改手机号码,不验证手机格式
 		ChangePhone(string) error
-		// 设置头像
+		// ChangeAvatar 设置头像
 		ChangeAvatar(string) error
-		// 资料是否完善
+		// ProfileCompleted 资料是否完善
 		ProfileCompleted() bool
-		// 检查资料是否完善
+		// CheckProfileComplete 检查资料是否完善
 		CheckProfileComplete() error
-		// 修改密码,旧密码可为空; 传入原始密码。密码均为密文
+		// ModifyPassword 修改密码,旧密码可为空; 传入原始密码。密码均为密文
 		ModifyPassword(NewPassword, oldPwd string) error
-		// 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
+		// ModifyTradePassword 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
 		ModifyTradePassword(NewPassword, oldPwd string) error
-		// 获取提现银行信息
+		// GetBankCards 获取提现银行信息
 		GetBankCards() []BankCard
-		// 获取绑定的银行卡
+		// GetBankCard 获取绑定的银行卡
 		GetBankCard(cardNo string) *BankCard
-		// 添加银行卡
+		// AddBankCard 添加银行卡
 		AddBankCard(*BankCard) error
-		// 移除银行卡
+		// RemoveBankCard 移除银行卡
 		RemoveBankCard(cardNo string) error
-		// 获取收款码
+		// ReceiptsCodes 获取收款码
 		ReceiptsCodes() []ReceiptsCode
-		// 保存收款码
+		// SaveReceiptsCode 保存收款码
 		SaveReceiptsCode(c *ReceiptsCode) error
-		// 实名认证信息
+		// GetTrustedInfo 实名认证信息
 		GetTrustedInfo() TrustedInfo
-		// 保存实名认证信息
+		// SaveTrustedInfo 保存实名认证信息
 		SaveTrustedInfo(v *TrustedInfo) error
-		// 审核实名认证,若重复审核将返回错误
+		// ReviewTrustedInfo 审核实名认证,若重复审核将返回错误
 		ReviewTrustedInfo(pass bool, remark string) error
-		// 创建配送地址
+		// CreateDeliver 创建配送地址
 		CreateDeliver(*ConsigneeAddress) IDeliverAddress
-		// 获取配送地址
+		// GetDeliverAddress 获取配送地址
 		GetDeliverAddress() []IDeliverAddress
-		// 获取配送地址
+		// GetAddress 获取配送地址
 		GetAddress(addressId int64) IDeliverAddress
-		// 设置默认地址
+		// SetDefaultAddress 设置默认地址
 		SetDefaultAddress(addressId int64) error
-		// 获取默认收货地址
+		// GetDefaultAddress 获取默认收货地址
 		GetDefaultAddress() IDeliverAddress
-		// 删除配送地址
+		// DeleteAddress 删除配送地址
 		DeleteAddress(addressId int64) error
 	}
 
-	// 收藏服务
+	// IFavoriteManager 收藏服务
 	IFavoriteManager interface {
-		// 收藏
+		// Favorite 收藏
 		Favorite(favType int, referId int64) error
-		// 是否已收藏
+		// Favored 是否已收藏
 		Favored(favType int, referId int64) bool
-		// 取消收藏
+		// Cancel 取消收藏
 		Cancel(favType int, referId int64) error
 	}
 
-	// 会员概览信息
+	// ComplexMember 会员概览信息
 	ComplexMember struct {
 		// 昵称
 		Name string
@@ -269,8 +269,6 @@ type (
 		LastLoginTime int64 `db:"last_login_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
-		// 动态令牌，用于登录或API调用
-		DynamicToken string `db:"-"`
 		// 超时时间
 		TimeoutTime int64 `db:"-"`
 	}

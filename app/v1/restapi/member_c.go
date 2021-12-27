@@ -109,12 +109,12 @@ func (mc *MemberC) Get(c echo.Context) error {
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
 	m, _ := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
-	tk, _ := cli.GetToken(context.TODO(),
-		&proto.GetTokenRequest{
-			MemberId: memberId,
-			Reset_:   false,
-		})
-	m.DynamicToken = tk.Value
+	//tk, _ := cli.GetToken(context.TODO(),
+	//	&proto.GetTokenRequest{
+	//		MemberId: memberId,
+	//		Reset_:   false,
+	//	})
+	//m.DynamicToken = tk.Value
 
 	return c.JSON(http.StatusOK, m)
 }

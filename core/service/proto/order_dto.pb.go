@@ -116,7 +116,7 @@ type SOrderItem struct {
 	// 商品总金额
 	Amount int64 `protobuf:"varint,11,opt,name=Amount,proto3" json:"Amount"`
 	// 商品实际总金额
-	FinalAmount int64 `protobuf:"varint,12,opt,name=FinalFee,proto3" json:"FinalFee"`
+	FinalAmount int64 `protobuf:"varint,12,opt,name=FinalAmount,proto3" json:"FinalAmount"`
 	// 是否已发货
 	IsShipped bool `protobuf:"varint,13,opt,name=IsShipped,proto3" json:"IsShipped"`
 	// 其他信息
@@ -350,7 +350,7 @@ type SSingleOrder struct {
 	// 订单总金额
 	TotalAmount int32 `protobuf:"varint,16,opt,name=TotalAmount,proto3" json:"TotalAmount"`
 	// 最终金额
-	FinalAmount int64 `protobuf:"varint,17,opt,name=FinalFee,proto3" json:"FinalFee"`
+	FinalAmount int64 `protobuf:"varint,17,opt,name=FinalAmount,proto3" json:"FinalAmount"`
 	// 收货人
 	Consignee *SConsigneeInfo `protobuf:"bytes,18,opt,name=Consignee,proto3" json:"Consignee"`
 	// 买家留言
@@ -1421,7 +1421,7 @@ type PrepareOrderResponse struct {
 	// 订单总金额
 	TotalAmount int32 `protobuf:"varint,10,opt,name=TotalAmount,proto3" json:"TotalAmount"`
 	// 最终金额
-	FinalAmount int64 `protobuf:"varint,11,opt,name=FinalFee,proto3" json:"FinalFee"`
+	FinalAmount int64 `protobuf:"varint,11,opt,name=FinalAmount,proto3" json:"FinalAmount"`
 	// 收货人
 	Consignee *SConsigneeInfo `protobuf:"bytes,12,opt,name=Consignee,proto3" json:"Consignee"`
 	// 订单项目

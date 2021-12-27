@@ -11,66 +11,11 @@ package parser
 import (
 	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 )
-
-func MemberDto(src *member.Member) *proto.SMember {
-	return &proto.SMember{
-		Id:             src.Id,
-		User:           src.User,
-		Code:           src.Code,
-		Password:       src.Pwd,
-		TradePassword:  src.TradePassword,
-		Exp:            int64(src.Exp),
-		Level:          int32(src.Level),
-		PremiumUser:    int32(src.PremiumUser),
-		PremiumExpires: src.PremiumExpires,
-		InviteCode:     src.InviteCode,
-		RegIp:          src.RegIp,
-		RegFrom:        src.RegFrom,
-		State:          int32(src.State),
-		Flag:           int32(src.Flag),
-		Avatar:         src.Avatar,
-		Phone:          src.Phone,
-		Email:          src.Email,
-		Name:           src.Name,
-		RealName:       src.RealName,
-		DynamicToken:   src.DynamicToken,
-		RegTime:        src.RegTime,
-		LastLoginTime:  src.LastLoginTime,
-	}
-}
-
-func ComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
-	return &proto.SComplexMember{
-		Name:                src.Name,
-		Avatar:              src.Avatar,
-		Exp:                 int32(src.Exp),
-		Level:               int32(src.Level),
-		LevelName:           src.LevelName,
-		PremiumUser:         int32(src.PremiumUser),
-		InviteCode:          src.InviteCode,
-		TrustAuthState:      int32(src.TrustAuthState),
-		TradePasswordHasSet: src.TradePasswordHasSet,
-		UpdateTime:          src.UpdateTime,
-	}
-}
-
-func TradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeMethodData {
-	return &proto.STradeMethodData{
-		Method:     int32(src.Method),
-		Code:       src.Code,
-		Amount:     src.Amount,
-		Internal:   int32(src.Internal),
-		OutTradeNo: src.OutTradeNo,
-		PayTime:    src.PayTime,
-	}
-}
 
 func ItemDto(src *item.GoodsItem) *proto.SOldItem {
 	it := &proto.SOldItem{

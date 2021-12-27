@@ -349,7 +349,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	return errors.New("no such email template")
 }
 
-// 修改密码,旧密码可为空
+// ModifyPassword 修改密码,旧密码可为空
 func (p *profileManagerImpl) ModifyPassword(NewPassword, oldPwd string) error {
 	if b, err := dm.ChkPwdRight(NewPassword); !b {
 		return err
@@ -367,7 +367,7 @@ func (p *profileManagerImpl) ModifyPassword(NewPassword, oldPwd string) error {
 	return err
 }
 
-// 修改交易密码，旧密码可为空
+// ModifyTradePassword 修改交易密码，旧密码可为空
 func (p *profileManagerImpl) ModifyTradePassword(NewPassword, oldPwd string) error {
 	if NewPassword == oldPwd {
 		return domain.ErrPwdCannotSame
@@ -380,11 +380,12 @@ func (p *profileManagerImpl) ModifyTradePassword(NewPassword, oldPwd string) err
 		return domain.ErrPwdOldPwdNotRight
 	}
 	p.member.value.TradePassword = NewPassword
+	p.member.value.Flag ^= member.FlagNoTradePasswd
 	_, err := p.member.Save()
 	return err
 }
 
-// 获取提现银行信息
+// GetBankCards 获取提现银行信息
 func (p *profileManagerImpl) GetBankCards() []member.BankCard {
 	if p.bankCards == nil {
 		p.bankCards = p.repo.BankCards(p.memberId)

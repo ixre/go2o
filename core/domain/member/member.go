@@ -76,7 +76,7 @@ func (m *memberImpl) GetAggregateRootId() int64 {
 	return m.value.Id
 }
 
-// 会员汇总信息
+// Complex 会员汇总信息
 func (m *memberImpl) Complex() *member.ComplexMember {
 	mv := m.GetValue()
 	lv := m.GetLevel()
@@ -99,7 +99,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	return s
 }
 
-// 会员资料服务
+// Profile 会员资料服务
 func (m *memberImpl) Profile() member.IProfileManager {
 	if m.profileManager == nil {
 		m.profileManager = newProfileManagerImpl(m,
@@ -108,7 +108,7 @@ func (m *memberImpl) Profile() member.IProfileManager {
 	return m.profileManager
 }
 
-// 会员收藏服务
+// Favorite 会员收藏服务
 func (m *memberImpl) Favorite() member.IFavoriteManager {
 	if m.favoriteManager == nil {
 		m.favoriteManager = newFavoriteManagerImpl(
@@ -117,7 +117,7 @@ func (m *memberImpl) Favorite() member.IFavoriteManager {
 	return m.favoriteManager
 }
 
-// 礼品卡服务
+// GiftCard 礼品卡服务
 func (m *memberImpl) GiftCard() member.IGiftCardManager {
 	if m.giftCardManager == nil {
 		m.giftCardManager = newGiftCardManagerImpl(
@@ -126,7 +126,7 @@ func (m *memberImpl) GiftCard() member.IGiftCardManager {
 	return m.giftCardManager
 }
 
-// 邀请管理
+// Invitation 邀请管理
 func (m *memberImpl) Invitation() member.IInvitationManager {
 	if m.invitation == nil {
 		m.invitation = &invitationManager{
@@ -136,7 +136,7 @@ func (m *memberImpl) Invitation() member.IInvitationManager {
 	return m.invitation
 }
 
-// 获取值
+// GetValue 获取值
 func (m *memberImpl) GetValue() member.Member {
 	return *m.value
 }
@@ -147,22 +147,7 @@ var (
 	phoneRegex = regexp.MustCompile("^(13[0-9]|14[5|6|7]|15[0-9]|16[5|6|7|8]|18[0-9]|17[0|1|2|3|4|5|6|7|8]|19[1|8|9])(\\d{8})$")
 )
 
-// 设置值
-func (m *memberImpl) SetValue(v *member.Member) error {
-	v.User = m.value.User
-	if len(m.value.InviteCode) == 0 {
-		m.value.InviteCode = v.InviteCode
-	}
-	if v.Level > 0 {
-		m.value.Level = v.Level
-	}
-	if len(v.TradePassword) == 0 {
-		m.value.TradePassword = v.TradePassword
-	}
-	return nil
-}
-
-// 发送验证码,并返回验证码
+// SendCheckCode 发送验证码,并返回验证码
 func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error) {
 	const expiresMinutes = 10 //10分钟生效
 	code := domain.NewCheckCode()
@@ -200,7 +185,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 	return code, err
 }
 
-// 对比验证码
+// CompareCode 对比验证码
 func (m *memberImpl) CompareCode(code string) error {
 	if m.value.CheckCode != strings.TrimSpace(code) {
 		return de.ErrCheckCodeError
@@ -211,7 +196,7 @@ func (m *memberImpl) CompareCode(code string) error {
 	return nil
 }
 
-// 获取账户
+// GetAccount 获取账户
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m.account == nil {
 		v := m.repo.GetAccount(m.value.Id)
@@ -225,7 +210,7 @@ func (m *memberImpl) GetAccount() member.IAccount {
 	return m.account
 }
 
-// 增加经验值
+// AddExp 增加经验值
 func (m *memberImpl) AddExp(exp int) error {
 	m.value.Exp += exp
 	_, err := m.Save()
@@ -234,7 +219,6 @@ func (m *memberImpl) AddExp(exp int) error {
 }
 
 // 升级为高级会员
-
 func (m *memberImpl) Premium(v int, expires int64) error {
 	switch v {
 	case member.PremiumNormal:
@@ -250,7 +234,7 @@ func (m *memberImpl) Premium(v int, expires int64) error {
 	return err
 }
 
-// 获取等级
+// GetLevel 获取等级
 func (m *memberImpl) GetLevel() *member.Level {
 	if m.level == nil {
 		m.level = m.manager.LevelManager().
@@ -297,7 +281,7 @@ func (m *memberImpl) checkLevelUp() bool {
 	return true
 }
 
-// 更改会员等级
+// ChangeLevel 更改会员等级
 func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	lg := m.manager.LevelManager()
 	lv := lg.GetLevelById(level)
@@ -368,7 +352,7 @@ func (m *memberImpl) TestFlag(flag int) bool {
 	return m.value.Flag&f == f
 }
 
-// 审核升级请求
+// ReviewLevelUp 审核升级请求
 func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 	l := m.repo.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
@@ -405,7 +389,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 
 }
 
-// 标记已经处理升级
+// ConfirmLevelUp 标记已经处理升级
 func (m *memberImpl) ConfirmLevelUp(id int) error {
 	l := m.repo.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
@@ -422,7 +406,7 @@ func (m *memberImpl) ConfirmLevelUp(id int) error {
 	return member.ErrNoSuchLevelUpLog
 }
 
-// 获取会员关联
+// GetRelation 获取会员关联
 func (m *memberImpl) GetRelation() *member.InviteRelation {
 	if m.relation == nil {
 		rel := m.repo.GetRelation(m.GetAggregateRootId())
@@ -453,7 +437,7 @@ func (m *memberImpl) ChangeUser(user string) error {
 	return err
 }
 
-// 更新登录时间
+// UpdateLoginTime 更新登录时间
 func (m *memberImpl) UpdateLoginTime() error {
 	unix := time.Now().Unix()
 	m.value.LastLoginTime = m.value.LoginTime
@@ -463,7 +447,7 @@ func (m *memberImpl) UpdateLoginTime() error {
 	return err
 }
 
-// 保存
+// Save 保存
 func (m *memberImpl) Save() (int64, error) {
 	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
@@ -472,7 +456,7 @@ func (m *memberImpl) Save() (int64, error) {
 	return m.create(m.value)
 }
 
-// 激活
+// Active 激活
 func (m *memberImpl) Active() error {
 	if m.ContainFlag(member.FlagActive) {
 		return member.ErrMemberHasActive
@@ -485,7 +469,7 @@ func (m *memberImpl) Active() error {
 	return err
 }
 
-// 锁定会员
+// Lock 锁定会员
 func (m *memberImpl) Lock(minutes int, remark string) error {
 	if m.ContainFlag(member.FlagLocked) {
 		return nil
@@ -523,7 +507,7 @@ func (m *memberImpl) Lock(minutes int, remark string) error {
 	return err
 }
 
-// 解锁会员
+// Unlock 解锁会员
 func (m *memberImpl) Unlock() error {
 	if !m.ContainFlag(member.FlagLocked) {
 		return nil
@@ -546,9 +530,12 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		v.LastLoginTime = unix
 		v.Level = 1
 		v.Exp = 0
-		v.DynamicToken = ""
 		if len(v.RegFrom) == 0 {
 			v.RegFrom = ""
+		}
+		// 添加未设置交易密码的标志
+		if len(v.TradePassword) == 0 {
+			v.Flag |= member.FlagNoTradePasswd
 		}
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
@@ -718,7 +705,7 @@ func newFavoriteManagerImpl(memberId int64,
 	rep member.IMemberRepo) member.IFavoriteManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
-		panic(errors.New("member not exists"))
+		panic("member not exists")
 	}
 	return &favoriteManagerImpl{
 		_memberId: memberId,
