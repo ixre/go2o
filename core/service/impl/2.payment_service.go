@@ -2,7 +2,7 @@ package impl
 
 /**
  * Copyright 2015 @ 56x.net.
- * name : payment_service.go
+ * name : 2.payment_service.go
  * author : jarryliu
  * date : 2016-07-03 13:24
  * description :
@@ -15,6 +15,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/service/proto"
+	context2 "golang.org/x/net/context"
 	"strconv"
 )
 
@@ -36,7 +37,7 @@ func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
 	}
 }
 
-// 根据编号获取支付单
+// GetPaymentOrderById 根据编号获取支付单
 func (p *paymentService) GetPaymentOrderById(_ context.Context, id *proto.Int32) (*proto.SPaymentOrder, error) {
 	po := p.repo.GetPaymentOrderById(int(id.Value))
 	if po != nil {
@@ -46,7 +47,7 @@ func (p *paymentService) GetPaymentOrderById(_ context.Context, id *proto.Int32)
 	return nil, nil
 }
 
-// 根据交易号获取支付单编号
+// GetPaymentOrderId 根据交易号获取支付单编号
 func (p *paymentService) GetPaymentOrderId(_ context.Context, tradeNo *proto.String) (*proto.Int32, error) {
 	po := p.repo.GetPaymentOrder(tradeNo.Value)
 	if po != nil {
@@ -55,7 +56,7 @@ func (p *paymentService) GetPaymentOrderId(_ context.Context, tradeNo *proto.Str
 	return &proto.Int32{Value: 0}, nil
 }
 
-// 根据支付单号获取支付单
+// GetPaymentOrder 根据支付单号获取支付单
 func (p *paymentService) GetPaymentOrder(_ context.Context, paymentNo *proto.String) (*proto.SPaymentOrder, error) {
 	if po := p.repo.GetPaymentOrder(paymentNo.Value); po != nil {
 		v := po.Get()
@@ -68,7 +69,7 @@ func (p *paymentService) GetPaymentOrder(_ context.Context, paymentNo *proto.Str
 	return nil, nil
 }
 
-// 创建支付单
+// SubmitPaymentOrder 创建支付单
 func (p *paymentService) SubmitPaymentOrder(_ context.Context, order *proto.SPaymentOrder) (*proto.Result, error) {
 	v := p.parsePaymentOrder(order)
 	o := p.repo.CreatePaymentOrder(v)
@@ -76,7 +77,7 @@ func (p *paymentService) SubmitPaymentOrder(_ context.Context, order *proto.SPay
 	return p.result(err), nil
 }
 
-// 调整支付单金额
+// AdjustOrder 调整支付单金额
 func (p *paymentService) AdjustOrder(_ context.Context, r *proto.AdjustOrderRequest) (*proto.Result, error) {
 	var err error
 	o := p.repo.GetPaymentOrder(r.PaymentNo)
@@ -88,7 +89,7 @@ func (p *paymentService) AdjustOrder(_ context.Context, r *proto.AdjustOrderRequ
 	return p.result(err), nil
 }
 
-// 积分抵扣支付单
+// DiscountByIntegral 积分抵扣支付单
 func (p *paymentService) DiscountByIntegral(_ context.Context, r *proto.DiscountIntegralRequest) (*proto.Result, error) {
 	var amount int
 	var err error
@@ -103,7 +104,7 @@ func (p *paymentService) DiscountByIntegral(_ context.Context, r *proto.Discount
 	return rs, nil
 }
 
-// 余额抵扣
+// DiscountByBalance 余额抵扣
 func (p *paymentService) DiscountByBalance(_ context.Context, r *proto.DiscountBalanceRequest) (*proto.Result, error) {
 	var err error
 	o := p.repo.GetPaymentOrderById(int(r.OrderId))
@@ -115,10 +116,11 @@ func (p *paymentService) DiscountByBalance(_ context.Context, r *proto.DiscountB
 	return p.result(err), nil
 }
 
-// 钱包账户支付
+// PaymentByWallet 钱包账户支付
 func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPaymentRequest) (rs *proto.Result, err error) {
-	// 单个支付订单支付
-	if !r.MergePay {
+	arr := p.repo.GetMergePayOrders(r.TradeNo)
+	if len(arr) == 0 {
+		// 单个订单支付
 		ip := p.repo.GetPaymentOrder(r.TradeNo)
 		if ip == nil {
 			err = payment.ErrNoSuchPaymentOrder
@@ -127,15 +129,14 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 		}
 		return p.result(err), nil
 	}
-	// 合并支付单
-	arr := p.repo.GetMergePayOrders(r.TradeNo)
+	// 合并支付单支付
 	payUid := arr[0].Get().PayUid
 	var finalFee int64 = 0
 	for _, v := range arr {
 		finalFee += v.Get().FinalFee
 	}
 	acc := p.memberRepo.GetAccount(payUid)
-	if int64(acc.Balance*100) < finalFee {
+	if acc.Balance*100 < finalFee {
 		err = member.ErrAccountBalanceNotEnough
 	} else {
 		for _, v := range arr {
@@ -147,7 +148,7 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 	return p.result(err), nil
 }
 
-// 余额钱包混合支付，优先扣除余额。
+// HybridPayment 余额钱包混合支付，优先扣除余额。
 func (p *paymentService) HybridPayment(_ context.Context, r *proto.HyperPaymentRequest) (rs *proto.Result, err error) {
 	o := p.repo.GetPaymentOrderById(int(r.OrderId))
 	if o == nil {
@@ -158,7 +159,7 @@ func (p *paymentService) HybridPayment(_ context.Context, r *proto.HyperPaymentR
 	return p.result(err), nil
 }
 
-// 完成支付单支付，并传入支付方式及外部订单号
+// FinishPayment 完成支付单支付，并传入支付方式及外部订单号
 func (p *paymentService) FinishPayment(_ context.Context, r *proto.FinishPaymentRequest) (rs *proto.Result, err error) {
 	o := p.repo.GetPaymentOrder(r.TradeNo)
 	if o == nil {
@@ -169,7 +170,7 @@ func (p *paymentService) FinishPayment(_ context.Context, r *proto.FinishPayment
 	return p.result(err), nil
 }
 
-// 支付网关
+// GatewayV1 支付网关
 func (p *paymentService) GatewayV1(_ context.Context, r *proto.PayGatewayRequest) (rs *proto.Result, err error) {
 	mod := module.Get(module.PAY).(*module.PaymentModule)
 	// 获取令牌
@@ -188,8 +189,8 @@ func (p *paymentService) GatewayV1(_ context.Context, r *proto.PayGatewayRequest
 	return p.result(err), nil
 }
 
-// 获取支付预交易数据
-func (p *paymentService) GetPaymentOrderInfo(_ context.Context, r *proto.OrderInfoRequest) (*proto.SPrepareTradeData, error) {
+// GetPreparePaymentInfo 获取支付预交易数据
+func (p *paymentService) GetPreparePaymentInfo(_ context.Context, r *proto.OrderInfoRequest) (*proto.SPrepareTradeData, error) {
 	var arr []payment.IPaymentOrder
 	if r.MergePay {
 		arr = p.repo.GetMergePayOrders(r.TradeNo)
@@ -247,7 +248,40 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 	return d, nil
 }
 
-// 混合支付
+// GatewayV2 支付网关V2
+func (p *paymentService) GatewayV2(_ context2.Context, r *proto.PayGatewayV2Request) (*proto.PayGatewayResponse, error) {
+	var arr []payment.IPaymentOrder
+	if r.MergePay {
+		arr = p.repo.GetMergePayOrders(r.TradeNo)
+	} else {
+		ip := p.repo.GetPaymentOrder(r.TradeNo)
+		if ip != nil {
+			arr = []payment.IPaymentOrder{ip}
+		}
+	}
+	if len(arr) == 0 {
+		return &proto.PayGatewayResponse{ErrCode: 1,
+			ErrMsg: "支付单不存在"}, nil
+	}
+	for _, ip := range arr {
+		if err := ip.CheckPaymentState(); err != nil {
+			return &proto.PayGatewayResponse{ErrCode: 2,
+				ErrMsg: err.Error()}, nil
+		}
+	}
+	ret := proto.PayGatewayResponse{
+		TradeNo: r.TradeNo,
+	}
+	for _, ip := range arr {
+		iv := ip.Get()
+		ret.ProcedureFee += iv.ProcedureFee // 手续费
+		ret.FinalFee += iv.FinalFee         // 最终金额
+		ret.TotalAmount += iv.TotalAmount   // 累计金额
+	}
+	return &ret, nil
+}
+
+// MixedPayment 混合支付
 func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRequest) (*proto.Result, error) {
 	return nil, nil
 }

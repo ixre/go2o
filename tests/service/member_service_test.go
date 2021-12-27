@@ -67,11 +67,16 @@ func TestPagingWalletLog(t *testing.T) {
 	t.Logf("%#v", r)
 }
 
+// 测试检查交易密码
 func TestCheckTradePassword(t *testing.T) {
-	memberId := 22149
+	memberId := 1
 	pwd := domain.Md5("123456")
-	//r2,_ := impl.MemberService.ModifyTradePassword(context.TODO(),int64(memberId),"",pwd)
-	//t.Logf("%#v", r2)
+	r2, _ := impl.MemberService.ModifyTradePassword(context.TODO(),
+		&proto.ModifyPasswordRequest{
+			MemberId:    int64(memberId),
+			NewPassword: pwd,
+		})
+	t.Logf("%#v", r2)
 
 	r, _ := impl.MemberService.VerifyTradePassword(context.TODO(),
 		&proto.VerifyPasswordRequest{

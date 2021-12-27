@@ -119,16 +119,20 @@ func (s *memberService) getMemberValue(memberId int64) *member.Member {
 	return nil
 }
 
-// 根据会员编号获取会员
+// GetMember 根据会员编号获取会员
 func (s *memberService) GetMember(_ context.Context, id *proto.MemberIdRequest) (*proto.SMember, error) {
-	v := s.getMemberValue(id.MemberId)
-	if v != nil {
-		return s.parseMemberDto(v), nil
+	iv := s.repo.GetMember(id.MemberId)
+	if iv != nil {
+		v := iv.GetValue()
+		if len(v.TradePassword) == 0 {
+			v.Flag |= member.FlagNoTradePasswd
+		}
+		return s.parseMemberDto(&v), nil
 	}
 	return nil, nil
 }
 
-// 获取资料
+// GetProfile 获取资料
 func (s *memberService) GetProfile(_ context.Context, id *proto.MemberIdRequest) (*proto.SProfile, error) {
 	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
@@ -138,7 +142,7 @@ func (s *memberService) GetProfile(_ context.Context, id *proto.MemberIdRequest)
 	return nil, nil
 }
 
-// 保存资料
+// SaveProfile 保存资料
 func (s *memberService) SaveProfile(_ context.Context, v *proto.SProfile) (*proto.Result, error) {
 	if v.MemberId > 0 {
 		v2 := s.parseMemberProfile2(v)
@@ -151,7 +155,7 @@ func (s *memberService) SaveProfile(_ context.Context, v *proto.SProfile) (*prot
 	return s.error(member.ErrNoSuchMember), nil
 }
 
-// 升级为高级会员
+// Premium 升级为高级会员
 func (s *memberService) Premium(_ context.Context, r *proto.PremiumRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -161,7 +165,7 @@ func (s *memberService) Premium(_ context.Context, r *proto.PremiumRequest) (*pr
 	return s.result(err), nil
 }
 
-// 检查会员的会话Token是否正确
+// CheckToken 检查会员的会话Token是否正确
 func (s *memberService) CheckToken(_ context.Context, r *proto.CheckTokenRequest) (*proto.Bool, error) {
 	md := module.Get(module.MM).(*module.MemberModule)
 	return &proto.Bool{
@@ -169,7 +173,7 @@ func (s *memberService) CheckToken(_ context.Context, r *proto.CheckTokenRequest
 	}, nil
 }
 
-// 获取会员的会员Token,reset表示是否重置会员的token
+// GetToken 获取会员的会员Token,reset表示是否重置会员的token
 func (s *memberService) GetToken(_ context.Context, r *proto.GetTokenRequest) (*proto.String, error) {
 	pubToken := ""
 	md := module.Get(module.MM).(*module.MemberModule)
@@ -185,20 +189,20 @@ func (s *memberService) GetToken(_ context.Context, r *proto.GetTokenRequest) (*
 	return &proto.String{Value: pubToken}, nil
 }
 
-// 移除会员的Token
+// RemoveToken 移除会员的Token
 func (s *memberService) RemoveToken(_ context.Context, id *proto.MemberIdRequest) (*proto.Empty, error) {
 	md := module.Get(module.MM).(*module.MemberModule)
 	md.RemoveToken(id.MemberId)
 	return &proto.Empty{}, nil
 }
 
-// 更改手机号码，不验证手机格式
+// ChangePhone 更改手机号码，不验证手机格式
 func (s *memberService) ChangePhone(_ context.Context, r *proto.ChangePhoneRequest) (*proto.Result, error) {
 	err := s.changePhone(r.MemberId, r.Phone)
 	return s.result(err), nil
 }
 
-// 更改邀请人
+// ChangeInviterId 更改邀请人
 func (s *memberService) ChangeInviterId(_ context.Context, r *proto.ChangeInviterRequest) (*proto.Result, error) {
 	im := s.repo.GetMember(r.MemberId)
 	if im == nil {
@@ -208,7 +212,7 @@ func (s *memberService) ChangeInviterId(_ context.Context, r *proto.ChangeInvite
 	return s.result(err), nil
 }
 
-// 取消收藏
+// RemoveFavorite 取消收藏
 func (s *memberService) RemoveFavorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result, err error) {
 	f := s.repo.CreateMemberById(r.MemberId).Favorite()
 	switch r.FavoriteType {
@@ -237,7 +241,7 @@ func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (r
 	return s.success(nil), nil
 }
 
-// 是否已收藏
+// IsFavored 是否已收藏
 func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (*proto.Bool, error) {
 	f := s.repo.CreateMemberById(r.MemberId).Favorite()
 	t := member.FavTypeGoods
@@ -251,7 +255,7 @@ func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (
 	return &proto.Bool{Value: b}, nil
 }
 
-// 获取会员的订单状态及其数量
+// OrdersQuantity 获取会员的订单状态及其数量
 func (s *memberService) OrdersQuantity(_ context.Context, id *proto.MemberIdRequest) (*proto.OrderQuantityMapResponse, error) {
 	ret := make(map[int32]int32, 0)
 	for k, v := range s.query.OrdersQuantity(id.MemberId) {
@@ -260,13 +264,12 @@ func (s *memberService) OrdersQuantity(_ context.Context, id *proto.MemberIdRequ
 	return &proto.OrderQuantityMapResponse{Data: ret}, nil
 }
 
-/**================ 会员等级 ==================**/
 // 获取所有会员等级
 func (s *memberService) GetMemberLevels() []*member.Level {
 	return s.repo.GetManager().LevelManager().GetLevelSet()
 }
 
-// 等级列表
+// GetLevels 等级列表
 func (s *memberService) GetLevels(_ context.Context, empty *proto.Empty) (*proto.SMemberLevelListResponse, error) {
 	var arr []*proto.SMemberLevel
 	list := s.repo.GetManager().LevelManager().GetLevelSet()
@@ -276,7 +279,7 @@ func (s *memberService) GetLevels(_ context.Context, empty *proto.Empty) (*proto
 	return &proto.SMemberLevelListResponse{Value: arr}, nil
 }
 
-// 根据编号获取会员等级信息
+// GetMemberLevel 根据编号获取会员等级信息
 func (s *memberService) GetMemberLevel(_ context.Context, i *proto.Int32) (*proto.SMemberLevel, error) {
 	lv := s.repo.GetManager().LevelManager().GetLevelById(int(i.Value))
 	if lv != nil {
@@ -285,7 +288,7 @@ func (s *memberService) GetMemberLevel(_ context.Context, i *proto.Int32) (*prot
 	return nil, nil
 }
 
-// 保存会员等级信息
+// SaveMemberLevel 保存会员等级信息
 func (s *memberService) SaveMemberLevel(_ context.Context, level *proto.SMemberLevel) (*proto.Result, error) {
 	lv := &member.Level{
 		ID:            int(level.Id),
@@ -303,7 +306,7 @@ func (s *memberService) SaveMemberLevel(_ context.Context, level *proto.SMemberL
 	return s.success(nil), nil
 }
 
-// 根据SIGN获取等级
+// GetLevelBySign 根据SIGN获取等级
 func (s *memberService) GetLevelBySign(_ context.Context, sign *proto.String) (*proto.SMemberLevel, error) {
 	lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(sign.Value)
 	if lv != nil {
@@ -312,13 +315,13 @@ func (s *memberService) GetLevelBySign(_ context.Context, sign *proto.String) (*
 	return nil, nil
 }
 
-// 删除会员等级
+// DeleteMemberLevel 删除会员等级
 func (s *memberService) DeleteMemberLevel(_ context.Context, levelId *proto.Int64) (*proto.Result, error) {
 	err := s.repo.GetManager().LevelManager().DeleteLevel(int(levelId.Value))
 	return s.result(err), nil
 }
 
-// 获取启用中的最大等级,用于判断是否可以升级
+// GetHighestLevel 获取启用中的最大等级,用于判断是否可以升级
 func (s *memberService) GetHighestLevel() member.Level {
 	lv := s.repo.GetManager().LevelManager().GetHighestLevel()
 	if lv != nil {
@@ -358,7 +361,7 @@ func (s *memberService) getMember(memberId int64) (
 	return m, nil
 }
 
-// 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
+// SendCode 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
 func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -371,7 +374,7 @@ func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*
 	return s.success(map[string]string{"code": code}), nil
 }
 
-// 比较验证码是否正确
+// CompareCode 比较验证码是否正确
 func (s *memberService) CompareCode(_ context.Context, r *proto.CompareCodeRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -383,7 +386,7 @@ func (s *memberService) CompareCode(_ context.Context, r *proto.CompareCodeReque
 	return s.success(nil), nil
 }
 
-// 更改会员用户名
+// ChangeUser 更改会员用户名
 func (s *memberService) ChangeUser(_ context.Context, r *proto.ChangeUserRequest) (*proto.Result, error) {
 	var err error
 	m := s.repo.GetMember(int64(r.MemberId))
@@ -397,7 +400,7 @@ func (s *memberService) ChangeUser(_ context.Context, r *proto.ChangeUserRequest
 	return s.result(err), nil
 }
 
-// 获取会员等级信息
+// MemberLevelInfo 获取会员等级信息
 func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdRequest) (*proto.SMemberLevelInfo, error) {
 	level := &proto.SMemberLevelInfo{Level: -1}
 	im := s.repo.GetMember(id.MemberId)
@@ -421,7 +424,7 @@ func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdReq
 	return level, nil
 }
 
-// 更改会员等级
+// UpdateLevel 更改会员等级
 func (s *memberService) UpdateLevel(_ context.Context, r *proto.UpdateLevelRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	var err error
@@ -455,7 +458,7 @@ func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelU
 	return s.result(err), nil
 }
 
-// 上传会员头像
+// ChangeAvatar 上传会员头像
 func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m != nil {
@@ -468,19 +471,7 @@ func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) 
 	return s.success(nil), nil
 }
 
-func (s *memberService) updateMember(v *proto.SMember) (int64, error) {
-	m := s.repo.GetMember(v.Id)
-	if m == nil {
-		return -1, member.ErrNoSuchMember
-	}
-	mv := s.parseMember(v)
-	if err := m.SetValue(mv); err != nil {
-		return m.GetAggregateRootId(), err
-	}
-	return m.Save()
-}
-
-// 注册会员
+// Register 注册会员
 func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberRequest) (*proto.RegisterResponse, error) {
 	if len(r.Password) != 32 {
 		return &proto.RegisterResponse{
@@ -536,7 +527,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	return ret, nil
 }
 
-// 获取会员邀请关系
+// GetRelation 获取会员邀请关系
 func (s *memberService) GetRelation(_ context.Context, id *proto.MemberIdRequest) (*proto.MemberRelationResponse, error) {
 	r := s.repo.GetRelation(id.MemberId)
 	if r != nil {
@@ -549,7 +540,7 @@ func (s *memberService) GetRelation(_ context.Context, id *proto.MemberIdRequest
 	return &proto.MemberRelationResponse{}, nil
 }
 
-// 激活会员
+// Active 激活会员
 func (s *memberService) Active(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(id.MemberId)
 	if m == nil {
@@ -561,7 +552,7 @@ func (s *memberService) Active(_ context.Context, id *proto.MemberIdRequest) (*p
 	return s.success(nil), nil
 }
 
-// 锁定/解锁会员
+// Lock 锁定/解锁会员
 func (s *memberService) Lock(_ context.Context, r *proto.LockRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -585,7 +576,7 @@ func (s *memberService) Unlock(_ context.Context, id *proto.MemberIdRequest) (*p
 	return s.success(nil), nil
 }
 
-// 判断资料是否完善
+// CheckProfileCompleted 判断资料是否完善
 func (s *memberService) CheckProfileCompleted(_ context.Context, memberId *proto.Int64) (*proto.Bool, error) {
 	m := s.repo.GetMember(memberId.Value)
 	if m != nil {
@@ -594,7 +585,7 @@ func (s *memberService) CheckProfileCompleted(_ context.Context, memberId *proto
 	return &proto.Bool{}, nil
 }
 
-// 判断资料是否完善
+// CheckProfileComplete 判断资料是否完善
 func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(id.MemberId)
 	var err error
@@ -618,7 +609,7 @@ func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.Member
 	return s.result(err), nil
 }
 
-// 更改密码
+// ModifyPassword 更改密码
 func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -644,7 +635,7 @@ func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswor
 	return s.success(nil), nil
 }
 
-// 更改交易密码
+// ModifyTradePassword 更改交易密码
 func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -788,7 +779,7 @@ func (s *memberService) CheckAccessToken(c context.Context, request *proto.Check
 	}, nil
 }
 
-// 检查交易密码
+// VerifyTradePassword 检查交易密码
 func (s *memberService) VerifyTradePassword(_ context.Context, r *proto.VerifyPasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -818,7 +809,7 @@ func (s *memberService) VerifyTradePassword(_ context.Context, r *proto.VerifyPa
 //	return nil
 //}
 
-// 获取会员账户
+// GetAccount 获取会员账户
 func (s *memberService) GetAccount(_ context.Context, id *proto.MemberIdRequest) (*proto.SAccount, error) {
 	m := s.repo.CreateMember(&member.Member{Id: id.MemberId})
 	acc := m.GetAccount()
@@ -1240,7 +1231,7 @@ func (s *memberService) GrantFlag(_ context.Context, r *proto.GrantFlagRequest) 
 	return s.success(nil), nil
 }
 
-// 获取会员汇总信息
+// Complex 获取会员汇总信息
 func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*proto.SComplexMember, error) {
 	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
@@ -1526,9 +1517,8 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 	return &proto.SMember{
 		Id:             src.Id,
 		User:           src.User,
-		Code:           src.Code,
+		UserCode:       src.Code,
 		Password:       src.Pwd,
-		TradePassword:  src.TradePassword,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
@@ -1543,7 +1533,6 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Email:          src.Email,
 		Name:           src.Name,
 		RealName:       src.RealName,
-		DynamicToken:   src.DynamicToken,
 		RegTime:        src.RegTime,
 		LastLoginTime:  src.LastLoginTime,
 	}
@@ -1634,13 +1623,12 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 	return &member.Member{
 		Id:             src.Id,
-		Code:           src.Code,
+		Code:           src.UserCode,
 		Name:           src.Name,
 		RealName:       src.RealName,
 		User:           src.User,
 		Pwd:            src.Password,
 		Avatar:         src.Avatar,
-		TradePassword:  src.TradePassword,
 		Exp:            int(src.Exp),
 		Level:          int(src.Level),
 		InviteCode:     src.InviteCode,
@@ -1652,7 +1640,6 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 		RegIp:          src.RegIp,
 		Flag:           int(src.Flag),
 		State:          int(src.State),
-		DynamicToken:   src.DynamicToken,
 	}
 }
 

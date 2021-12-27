@@ -72,11 +72,14 @@ service PaymentService {
     rpc FinishPayment (FinishPaymentRequest) returns (Result) {
     }
 
-    // 支付网关
+    // 支付网关(仅交易单使用)
     rpc GatewayV1 (PayGatewayRequest) returns (Result) {
     }
     // 获取支付预交易数据
-    rpc GetPaymentOrderInfo (OrderInfoRequest) returns (SPrepareTradeData) {
+    rpc GetPreparePaymentInfo (OrderInfoRequest) returns (SPrepareTradeData) {
+    }
+    // 支付网关V2
+    rpc GatewayV2(PayGatewayV2Request) returns(PayGatewayResponse){
     }
 
     /**
@@ -89,6 +92,40 @@ service PaymentService {
      */
     rpc MixedPayment (MixedPaymentRequest) returns (Result) {
     }
+}
+
+/** 支付网关请求 */
+message PayGatewayV2Request{
+    /** 交易号 */
+    string TradeNo = 1;
+    /** 是否合并支付 */
+    bool MergePay = 2;
+    /** 钱包抵扣 */
+    bool WalletDiscount = 3;
+    /** 支付方式 */
+    int32 PayMethod = 4;
+    /** 支付SP */
+    string SpName = 5;
+}
+
+/** 支付网关响应 */
+message PayGatewayResponse{
+    /** 代码 */
+    int32 ErrCode = 1;
+    /** 消息 */
+    string ErrMsg = 2;
+    /** 交易单号 */
+    string TradeNo = 3;
+    // 是否已完成交易
+    bool IsFinished = 4;
+    // 总金额
+    int64 TotalAmount = 5;
+    // 交易费用
+    int64 ProcedureFee = 6;
+    // 金额
+    int64 FinalFee = 7;
+    // 支付表单
+    string PaymentForm = 8;
 }
 
 message OrderInfoRequest {

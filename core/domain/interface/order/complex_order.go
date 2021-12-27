@@ -61,7 +61,7 @@ type (
 		Data map[string]string
 	}
 
-	// 收货人信息
+	// ComplexConsignee 收货人信息
 	ComplexConsignee struct {
 		// 收货人
 		ConsigneeName string

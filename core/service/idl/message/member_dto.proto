@@ -15,6 +15,8 @@ enum EMemberFlag {
     LOCKED = 2;
     // 已认证的
     TRUSTED = 4;
+    /** 未设置交易密码 */
+    NO_TRADE_PASSWD = 64;
 }
 
 message RegisterMemberRequest {
@@ -300,16 +302,16 @@ message SMember {
     string User =  2;
     /** 密码 */
     string Password = 3;
-    /** 交易密码 */
-    string TradePassword = 4;
+    /** 会员标志 */
+    sint32 Flag = 4;
     /** 经验值 */
     sint64 Exp = 5;
     /** 等级  */
     sint32 Level = 6;
-    /** 高级用户级别 */
-    sint32 PremiumUser = 7;
-    /** 高级用户过期时间 */
-    sint64 PremiumExpires = 8;
+    /** 会员编码  */
+    string UserCode = 7;
+    /** 会员头像 */
+    string Avatar = 8;
     /** 邀请码 */
     string InviteCode = 9;
     /** 注册IP */
@@ -318,26 +320,22 @@ message SMember {
     string RegFrom = 11;
     /** 状态 */
     sint32 State = 12;
-    /** 会员标志 */
-    sint32 Flag = 13;
-    /** 会员编码  */
-    string Code = 14;
-    /** 会员头像 */
-    string Avatar = 15;
     /** 手机号  */
-    string Phone = 16;
+    string Phone = 13;
     /** 电子邮箱 */
-    string Email = 17;
+    string Email = 14;
     /** 昵称 */
-    string Name = 18;
+    string Name = 15;
     /** 真实姓名 */
-    string RealName = 19;
-    /* 用户会员密钥 */
-    string DynamicToken = 20;
+    string RealName = 16;
+    /** 高级用户级别 */
+    sint32 PremiumUser = 17;
+    /** 高级用户过期时间 */
+    sint64 PremiumExpires = 18;
     /** 注册时间 */
-    int64 RegTime = 21;
+    int64 RegTime = 19;
     /** 最后登录时间 */
-    int64 LastLoginTime = 22;
+    int64 LastLoginTime = 20;
 }
 
 /** 资料 */
