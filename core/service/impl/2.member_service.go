@@ -125,8 +125,7 @@ func (s *memberService) GetMember(_ context.Context, id *proto.MemberIdRequest) 
 	if iv != nil {
 		v := iv.GetValue()
 		if len(v.TradePassword) == 0 {
-			iv.GrantFlag(member.FlagNoTradePasswd)
-			v.Flag = iv.GetValue().Flag
+			v.Flag |= member.FlagNoTradePasswd
 		}
 		return s.parseMemberDto(&v), nil
 	}
@@ -1518,7 +1517,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 	return &proto.SMember{
 		Id:             src.Id,
 		User:           src.User,
-		UserCode:           src.Code,
+		UserCode:       src.Code,
 		Password:       src.Pwd,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
