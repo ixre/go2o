@@ -36,7 +36,7 @@ func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 	}
 }
 
-// 保存门店
+// SaveOfflineShop 保存门店
 func (si *shopServiceImpl) SaveOfflineShop(_ context.Context, r *proto.SStore) (*proto.Result, error) {
 	mch := si.mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
@@ -80,6 +80,11 @@ func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.ShopId) (*pr
 		ret.Logo = iv.Logo
 		ret.Alias = iv.Alias
 		ret.Telephone = iv.Tel
+		// 返回SellerMid
+		im := si.mchRepo.GetMerchant(int(iv.VendorId))
+		if im != nil {
+			ret.SellerMid = im.GetValue().MemberId
+		}
 		return ret, nil
 	}
 	return nil, nil

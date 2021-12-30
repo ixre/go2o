@@ -51,24 +51,26 @@ message SShop {
     int64 Id = 1;
     /** 商户编号 */
     int64 MerchantId = 2;
+    /** 卖家会员编号 */
+    int64 SellerMid = 3;
     /** 店铺名称 */
-    string ShopName = 3;
+    string ShopName = 4;
     // 店铺标题
-    string ShopTitle = 4;
+    string ShopTitle = 5;
     // 店铺公告
-    string ShopNotice = 5;
+    string ShopNotice = 6;
     // 标志
-    int32 Flag = 6;
+    int32 Flag = 7;
     /** 店铺标志 */
-    string Logo = 7;
+    string Logo = 8;
     /** 个性化域名 */
-    string Alias = 8;
+    string Alias = 9;
     /** 自定义 域名 */
-    string Host = 9;
+    string Host = 10;
     /** 电话 */
-    string Telephone = 10;
+    string Telephone = 11;
     /** 状态 */
-    int32 State = 11;
+    int32 State = 12;
 }
 
 // 店铺设置

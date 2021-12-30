@@ -465,3 +465,8 @@ COMMENT ON TABLE public.sale_cart
   IS '购物车';
 ALTER TABLE public.sale_cart
 ALTER COLUMN code TYPE character varying(40) COLLATE pg_catalog."default";
+
+/** 2021-12-30 */
+ALTER TABLE public.portal_nav
+ALTER COLUMN image TYPE character varying(160) COLLATE pg_catalog."default";
+update portal_nav set image=replace(image,'http://','https://')
