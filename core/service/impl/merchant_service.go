@@ -52,7 +52,7 @@ func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 // ChangeMemberBind 更换会员绑定
 func (m *merchantService) ChangeMemberBind(_ context2.Context, r *proto.ChangeMemberBindRequest) (*proto.Result, error) {
 	im := m._mchRepo.GetMerchant(int(r.MerchantId))
-	if im != nil{
+	if im == nil{
 		return m.error(merchant.ErrNoSuchMerchant),nil
 	}
 	mem := m._memberRepo.GetMemberByUser(r.UserName)
