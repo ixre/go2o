@@ -98,8 +98,8 @@ message SaveMerchantRequest {
 message ChangeMemberBindRequest{
   /** 商户编号 */
   int64 MerchantId = 1;
-  /** 会员编号 */
-  int64 MemberId = 2;
+  /** 会员用户名 */
+  string UserName = 2;
 }
 
 message MchUserPwd {

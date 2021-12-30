@@ -713,7 +713,7 @@ func newFavoriteManagerImpl(memberId int64,
 	}
 }
 
-// 收藏
+// Favorite 收藏
 func (m *favoriteManagerImpl) Favorite(favType int, referId int64) error {
 	if m.Favored(favType, referId) {
 		return member.ErrFavored
