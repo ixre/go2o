@@ -24,6 +24,7 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
+	context2 "golang.org/x/net/context"
 	"strings"
 )
 
@@ -37,6 +38,7 @@ type merchantService struct {
 	serviceUtil
 }
 
+
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
 	return &merchantService{
@@ -45,6 +47,19 @@ func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 		_query:      q,
 		_orderQuery: orderQuery,
 	}
+}
+
+// ChangeMemberBind 更换会员绑定
+func (m *merchantService) ChangeMemberBind(_ context2.Context, r *proto.ChangeMemberBindRequest) (*proto.Result, error) {
+	im := m._mchRepo.GetMerchant(int(r.MerchantId))
+	if im != nil{
+		return m.error(merchant.ErrNoSuchMerchant),nil
+	}
+	err := im.BindMember(int(r.MemberId))
+	if err != nil{
+		return m.error(err),nil
+	}
+	return m.success(nil),nil
 }
 
 // 创建会员申请商户密钥
@@ -435,6 +450,9 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 	}
 	im := m._mchRepo.CreateMerchant(v)
 	err := im.SetValue(v)
+	if err == nil && r.RelMemberId > 0{
+		err = im.BindMember(int(r.RelMemberId))
+	}
 	if err == nil {
 		_, err = im.Save()
 		if err == nil {

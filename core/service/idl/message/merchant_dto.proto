@@ -94,6 +94,14 @@ message SaveMerchantRequest {
 }
 
 
+/** 更换会员绑定请求 */
+message ChangeMemberBindRequest{
+  /** 商户编号 */
+  int64 MerchantId = 1;
+  /** 会员编号 */
+  int64 MemberId = 2;
+}
+
 message MchUserPwd {
   string User = 1;
   string Pwd = 2;

@@ -17,6 +17,8 @@ enum EMemberFlag {
     TRUSTED = 4;
     /** 未设置交易密码 */
     NO_TRADE_PASSWD = 64;
+    /** 商户 */
+    FlagSeller = 128;
 }
 
 message RegisterMemberRequest {

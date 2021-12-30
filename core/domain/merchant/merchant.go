@@ -270,7 +270,9 @@ type merchantImpl struct {
 	_shopManager    shop.IShopManager
 	_walletRepo     wallet.IWalletRepo
 	_registryRepo   registry.IRegistryRepo
+	_lastBindMemberId int64  //  之前绑定的会员编号
 }
+
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
@@ -299,7 +301,7 @@ func (m *merchantImpl) GetAggregateRootId() int64 {
 	return m._value.Id
 }
 
-// 获取符合的商家信息
+// Complex 获取符合的商家信息
 func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 	src := m.GetValue()
 	return &merchant.ComplexMerchant{
@@ -361,7 +363,50 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 	return nil
 }
 
-// 保存
+
+
+func (m *merchantImpl) BindMember(memberId int) error {
+	if m._value.MemberId == int64(memberId) {
+		return merchant.ErrMemberBindExists
+	}
+	exist := m._repo.CheckMemberBind(int64(memberId), m.GetAggregateRootId())
+	if exist {
+		return merchant.ErrBindAnotherMerchant
+	}
+	m._lastBindMemberId = m._value.MemberId
+	m._value.MemberId = int64(memberId)
+	if m.GetAggregateRootId() > 0 {
+		err := m.applyBindMember()
+		if err == nil {
+			_, err = m.Save()
+		}
+		return err
+	}
+	return nil
+}
+
+
+func (m *merchantImpl) applyBindMember() error {
+	// 解绑
+	if m._lastBindMemberId > 0 {
+		origin := m._memberRepo.GetMember(m._lastBindMemberId)
+		if origin != nil{
+			_ = origin.GrantFlag(-member.FlagSeller)
+		}
+	}
+	// 添加商户标志
+	im := m._memberRepo.GetMember(m._value.MemberId)
+	if im == nil{
+		return member.ErrNoSuchMember
+	}
+	err := im.GrantFlag(member.FlagSeller)
+	if err == nil{
+		m._lastBindMemberId = m._value.MemberId
+	}
+	return err
+}
+
+// Save 保存
 func (m *merchantImpl) Save() (int64, error) {
 	id := m.GetAggregateRootId()
 	if id > 0 {
@@ -489,16 +534,16 @@ func (m *merchantImpl) createMerchant() (int64, error) {
 			return 0, merchant.ErrMerchantUserExists
 		}
 	}
-	if m._value.MemberId > 0 {
-		if m._repo.CheckMemberBind(m._value.MemberId) {
-			return 0, merchant.ErrExistMember
-		}
-	}
+
 	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
 		return int64(id), err
 	}
 	m._value.Id = int64(id)
+	// 绑定会员
+	if m._value.MemberId > 0 {
+		err = m.applyBindMember()
+	}
 	// 创建API
 	api := &merchant.ApiInfo{
 		ApiId:     domain.NewApiId(int(id)),
@@ -603,3 +648,4 @@ func (m *merchantImpl) ShopManager() shop.IShopManager {
 	}
 	return m._shopManager
 }
+

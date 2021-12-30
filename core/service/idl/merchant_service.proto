@@ -60,6 +60,10 @@ service MerchantService {
     // 根据会员号获取商户编号
     rpc GetMerchantIdByMember (MemberId) returns (Int64) {
     }
+    /** 更换会员绑定 */
+    rpc ChangeMemberBind(ChangeMemberBindRequest)returns(Result){
+
+    }
     // 获取企业信息,并返回是否为提交的信息
     rpc GetEnterpriseInfo (MerchantId) returns (SEnterpriseInfo) {
     }

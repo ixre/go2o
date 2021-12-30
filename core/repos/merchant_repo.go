@@ -182,12 +182,12 @@ func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 	return row > 0
 }
 
-// 验证会员是否绑定商户
-func (m *merchantRepo) CheckMemberBind(memberId int64) bool {
+// CheckMemberBind 验证会员是否绑定商户
+func (m *merchantRepo) CheckMemberBind(memberId int64,mchId int64) bool {
 	var row int
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_merchant
-		WHERE member_id = $1`,
-		&row, memberId)
+		WHERE member_id = $1 AND id <> $2`,
+		&row, memberId,mchId)
 	return row > 0
 }
 
