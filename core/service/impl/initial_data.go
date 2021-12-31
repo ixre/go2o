@@ -3,7 +3,10 @@ package impl
 import (
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
+	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/gof/db/orm"
+	"time"
 )
 
 func InitData(o orm.Orm) {
@@ -19,6 +22,7 @@ type dataInitializer struct {
 func (i dataInitializer) init() {
 	i.initPortalNav()
 	i.initPortalNavGroup()
+	i.initPages()
 }
 
 // 初始化导航数据
@@ -101,6 +105,42 @@ func (i dataInitializer) initPortalNavGroup() {
 			repo.SaveNavGroup(&model.NavGroup{
 				Name: v,
 			})
+		}
+	}
+}
+
+// 初始化内置页面
+func (i dataInitializer) initPages() {
+	repo := repos.Repo.GetContentRepo()
+	ip := repo.GetPageByCode(0, "privacy")
+	if ip == nil{
+		pages := []*content.Page{
+			{
+				Title:       "隐私政策",
+				Code:        "privacy",
+				Content:     "",
+			},
+			{
+				Title:       "用户服务协议",
+				Code:        "protocol",
+				Content:     "",
+			},
+			{
+				Title:       "关于平台",
+				Code:        "about",
+				Content:     "",
+			},
+			{
+				Title:       "联系我们",
+				Code:        "contact",
+				Content:     "",
+			},
+		}
+		for _,v := range pages{
+			v.Flag |= content.FlagInternal
+			v.Enabled = 1
+			v.UpdateTime = time.Now().Unix()
+			repo.SavePage(0,v)
 		}
 	}
 }

@@ -57,7 +57,7 @@ type RepoFactory struct {
 	cartRepo          cart.ICartRepo
 	personFinanceRepo personfinance.IPersonFinanceRepository
 	deliveryRepo      delivery.IDeliveryRepo
-	contentRepo       content.IContentRepo
+	contentRepo       content.IArchiveRepo
 	adRepo            ad.IAdRepo
 	orderRepo         order.IOrderRepo
 	paymentRepo       payment.IPaymentRepo
@@ -178,7 +178,7 @@ func (r *RepoFactory) GetPersonFinanceRepository() personfinance.IPersonFinanceR
 func (r *RepoFactory) GetDeliveryRepo() delivery.IDeliveryRepo {
 	return r.deliveryRepo
 }
-func (r *RepoFactory) GetContentRepo() content.IContentRepo {
+func (r *RepoFactory) GetContentRepo() content.IArchiveRepo {
 	return r.contentRepo
 }
 func (r *RepoFactory) GetAdRepo() ad.IAdRepo {

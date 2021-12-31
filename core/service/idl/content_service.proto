@@ -16,6 +16,7 @@ service ContentService {
     // 删除页面
     rpc DeletePage (Int64) returns (Result) {
     }
+
     // 获取所有栏目
     rpc GetArticleCategories (Empty) returns (ArticleCategoriesResponse) {
     }
@@ -121,11 +122,11 @@ message SPage {
     // 商户编号
     int64 UserId = 2;
     // 标题
-    string title = 3;
+    string Title = 3;
     // 字符标识
-    string StrIndent = 4;
+    string Code = 4;
     // 浏览权限
-    int32 PermFlag = 5;
+    int32 Flag = 5;
     // 浏览钥匙
     string AccessKey = 6;
     // 关键词
@@ -135,7 +136,7 @@ message SPage {
     // 样式表地址
     string CssPath = 9;
     // 内容
-    string Body = 10;
+    string Content = 10;
     // 修改时间
     int64 UpdateTime = 11;
     // 是否启用

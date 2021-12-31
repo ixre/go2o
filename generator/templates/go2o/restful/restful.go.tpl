@@ -38,7 +38,7 @@ func ({{$p}} *{{$structName}}) paging{{$shortTitle}}(ctx echo.Context) error {
     //dst := proto.{{$shortTitle}}PagingRequest{}
     //ctx.Bind(&dst)
     /** #! 使用分页参数(GET)来分页 */
-    bytes := GetExportDataV2(ctx, "/{{name_path .table.Name}}", nil)
+    bytes := GetExportDataV2(ctx, "/{{name_path .table.Name}}.xml", nil)
     return ctx.Blob(http.StatusOK, "application/json", bytes)
 }
 
