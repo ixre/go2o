@@ -195,7 +195,6 @@ func (si *shopServiceImpl) SaveShop(_ context.Context, s *proto.SShop) (*proto.R
 	return si.error(err), nil
 }
 
-
 func (si *shopServiceImpl) parse2OnlineShop(s *proto.SShop) *shop.OnlineShop {
 	return &shop.OnlineShop{
 		Id:         s.Id,

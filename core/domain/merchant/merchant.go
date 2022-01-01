@@ -265,14 +265,13 @@ type merchantImpl struct {
 	_memberKvManager merchant.IKvManager
 	//_mssManager      mss.IMssManager
 	//_mssRepo          mss.IMssRepo
-	_profileManager merchant.IProfileManager
-	_apiManager     merchant.IApiManager
-	_shopManager    shop.IShopManager
-	_walletRepo     wallet.IWalletRepo
-	_registryRepo   registry.IRegistryRepo
-	_lastBindMemberId int64  //  之前绑定的会员编号
+	_profileManager   merchant.IProfileManager
+	_apiManager       merchant.IApiManager
+	_shopManager      shop.IShopManager
+	_walletRepo       wallet.IWalletRepo
+	_registryRepo     registry.IRegistryRepo
+	_lastBindMemberId int64 //  之前绑定的会员编号
 }
-
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
@@ -363,8 +362,6 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 	return nil
 }
 
-
-
 func (m *merchantImpl) BindMember(memberId int) error {
 	if m._value.MemberId == int64(memberId) {
 		return merchant.ErrMemberBindExists
@@ -385,22 +382,21 @@ func (m *merchantImpl) BindMember(memberId int) error {
 	return nil
 }
 
-
 func (m *merchantImpl) applyBindMember() error {
 	// 解绑
 	if m._lastBindMemberId > 0 {
 		origin := m._memberRepo.GetMember(m._lastBindMemberId)
-		if origin != nil{
+		if origin != nil {
 			_ = origin.GrantFlag(-member.FlagSeller)
 		}
 	}
 	// 添加商户标志
 	im := m._memberRepo.GetMember(m._value.MemberId)
-	if im == nil{
+	if im == nil {
 		return member.ErrNoSuchMember
 	}
 	err := im.GrantFlag(member.FlagSeller)
-	if err == nil{
+	if err == nil {
 		m._lastBindMemberId = m._value.MemberId
 	}
 	return err
@@ -648,4 +644,3 @@ func (m *merchantImpl) ShopManager() shop.IShopManager {
 	}
 	return m._shopManager
 }
-

@@ -55,8 +55,8 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 	if p.value.UserId != v.UserId {
 		return content.ErrUserNotMatch
 	}
-	if p.value.Flag & content.FlagInternal == content.FlagInternal {
-		if p.value.Code != v.Code{
+	if p.value.Flag&content.FlagInternal == content.FlagInternal {
+		if p.value.Code != v.Code {
 			return content.ErrInternalPage
 		}
 	}

@@ -64,10 +64,10 @@ func (c *Content) GetPageByCode(indent string) content.IPage {
 // DeletePage 删除页面
 func (c *Content) DeletePage(id int32) error {
 	ip := c.GetPage(id)
-	if ip == nil{
+	if ip == nil {
 		return content.ErrNoSuchPage
 	}
-	if ip.GetValue().Flag & content.FlagInternal == content.FlagInternal{
+	if ip.GetValue().Flag&content.FlagInternal == content.FlagInternal {
 		return content.ErrInternalPage
 	}
 	return c.contentRepo.DeletePage(int32(c.GetAggregateRootId()), id)

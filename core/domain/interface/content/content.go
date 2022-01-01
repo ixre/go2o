@@ -27,10 +27,10 @@ var (
 		"err_content_user_not_match", "用户不匹配")
 
 	ErrNoSuchPage = domain.NewError(
-		"err_no_such_page","页面不存在")
+		"err_no_such_page", "页面不存在")
 
 	ErrInternalPage = domain.NewError(
-		"err_internal_page","不允许操作内置页面")
+		"err_internal_page", "不允许操作内置页面")
 )
 
 const (
@@ -46,8 +46,7 @@ const (
 	FlagVendor
 )
 
-const (
-)
+const ()
 
 type (
 	IContent interface {
