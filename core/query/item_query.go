@@ -32,7 +32,7 @@ func NewItemQuery(o orm.Orm) *ItemQuery {
 	}
 }
 
-//根据关键词搜索上架的商品
+// GetPagedOnShelvesItem 根据关键词搜索上架的商品
 func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 	start, end int32, where, orderBy string) (int32, []*item.GoodsItem) {
 	var sql string
@@ -41,27 +41,29 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 	if len(orderBy) != 0 {
 		orderBy += ","
 	}
-
+	if catId > 0{
+		where += fmt.Sprintf(" AND item_info.cat_id= %d",catId)
+	}
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.cat_id= $1 AND item_info.review_state= $2
-		 AND item_info.shelve_state= $3 %s`, where), &total,
-		catId, enum.ReviewPass, item.ShelvesOn)
+		 WHERE item_info.review_state= $1
+		 AND item_info.shelve_state= $2 %s`, where), &total,
+		 enum.ReviewPass, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.cat_id= $1 AND item_info.review_state= $2
-		 AND item_info.shelve_state= $3 %s
-		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
+		 WHERE item_info.review_state= $1
+		 AND item_info.shelve_state= $2 %s
+		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.o.SelectByQuery(&list, sql,
-			catId, enum.ReviewPass, item.ShelvesOn, start, end-start)
+			 enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
 
-//根据关键词搜索上架的商品
+// GetPagedOnShelvesItemForWholesale 根据关键词搜索上架的商品
 func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 	start, end int32, where, orderBy string) (int32, []*item.GoodsItem) {
 	var sql string
@@ -70,29 +72,31 @@ func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 	if len(orderBy) != 0 {
 		orderBy += ","
 	}
-
+	if catId > 0{
+		where += fmt.Sprintf(" AND item_info.cat_id= %d",catId)
+	}
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.cat_id= $1 AND ws_item.review_state= $2
-		 AND ws_item.shelve_state= $3 %s`, where), &total,
-		catId, enum.ReviewPass, item.ShelvesOn)
+		 WHERE ws_item.review_state= $1
+		 AND ws_item.shelve_state= $2 %s`, where), &total,
+		enum.ReviewPass, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM  ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.cat_id= $1 AND ws_item.review_state= $2
-		 AND ws_item.shelve_state= $3 %s
-		 ORDER BY %s item_info.update_time DESC LIMIT $5 OFFSET $4`,
+		 WHERE ws_item.review_state= $1
+		 AND ws_item.shelve_state= $2 %s
+		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.o.SelectByQuery(&list, sql,
-			catId, enum.ReviewPass, item.ShelvesOn, start, end-start)
+			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
 
-//根据关键词搜索上架的商品
+// SearchOnShelvesItem 根据关键词搜索上架的商品
 func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 	where, orderBy string) (int32, []*item.GoodsItem) {
 	var sql string

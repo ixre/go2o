@@ -198,6 +198,11 @@ func (s *itemService) GetPagedOnShelvesItem(_ context.Context, r *proto.PagingGo
 		Total: 0,
 		Data:  make([]*proto.SUnifiedViewItem, 0),
 	}
+	where := r.Params.Where
+	if wd := strings.TrimSpace(r.Keyword); len(wd) > 0{
+		where += " AND item_info.title LIKE '%"+r.Keyword+"%'"
+	}
+
 	var total int32
 	var list []*proto.SUnifiedViewItem
 	switch r.ItemType {
@@ -206,14 +211,14 @@ func (s *itemService) GetPagedOnShelvesItem(_ context.Context, r *proto.PagingGo
 			int32(r.CategoryId),
 			int32(r.Params.Begin),
 			int32(r.Params.End),
-			r.Params.Where,
+			where,
 			r.Params.SortBy)
 	case proto.EItemSalesType_IT_WHOLESALE:
 		total, list = s.getPagedOnShelvesItemForWholesale(
 			int32(r.CategoryId),
 			int32(r.Params.Begin),
 			int32(r.Params.End),
-			r.Params.Where,
+			where,
 			r.Params.SortBy)
 	}
 	ret.Total = int64(total)
