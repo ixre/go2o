@@ -71,6 +71,10 @@ message SGoods {
     int32 StockNum = 18;
     // 已售件数
     int32 SaleNum = 19;
+    // 品牌编号
+    int64 BrandId = 20;
+    // 商品编码
+    string Code = 21;
 }
 
 /** SKU */
@@ -96,42 +100,47 @@ message SSku {
 
 // 统一的商品显示对象
 message SUnifiedViewItem {
-    sint64 ItemId = 1;
-    sint64 ProductId = 2;
-    sint64 CategoryId = 3;
-    sint64 VendorId = 4;
-    sint64 BrandId = 5;
+    int64 ItemId = 1;
+    int64 ProductId = 2;
+    int64 VendorId = 3;
+    int64 ShopId = 4;
+    int64 CategoryId = 5;
+    // 标题
     string Title = 6;
-    string Code = 7;
-    int64 SkuId = 8;
+    string ShortTitle = 7;
+    // 货号
+    string GoodsNo = 8;
     string Image = 9;
-    int64 Price = 10;
-    string PriceRange = 11;
-    int32 StockNum = 12;
-    int64 ExpressTid = 13;
-    sint32 ShelveState = 14;
-    sint32 ReviewState = 15;
-    sint64 UpdateTime = 16;
-    repeated SSku SkuArray = 17;
-    repeated SLevelPrice LevelPrices = 18;
-    SItemViewData ViewData = 19;
-    map<string, string> Data = 20;
-    // 3: sint32 PromFlag
-    // 7: sint32 ShopId
-    // 8: sint32 ShopCatId
-    // 9: s
-    // 11: string ShortTitle
-    // 14: sint32 IsPresent
-    // 23: sint32 Weight
-    // 24: sint32 Bulk
-    // 18: sint32 SkuNum
-    // 28: sint32 SortNum
-    // 29: sint64 CreateTime
-    // 31: double PromPrice
-    // 22: double RetailPrice
-    //
-    // 20: double Cost
-    // 17: sint32 SaleNum
+    //定价
+    int64 RetailPrice = 10;
+    //销售价
+    int64 Price = 11;
+    // 促销价
+    int64 PromPrice = 12;
+    // 价格区间
+    string PriceRange = 13;
+    int64 GoodsId = 14;
+    int64 SkuId = 15;
+    bool IsPresent = 16;
+    // 促销标志
+    int32 PromotionFlag = 17;
+    // 库存
+    int32 StockNum = 18;
+    // 已售件数
+    int32 SaleNum = 19;
+
+    //todo: 对比SGoods多出的字段
+    sint64 BrandId = 20;
+    string Code = 21;
+    int64 ExpressTid = 22;
+    sint32 ShelveState = 23;
+    sint32 ReviewState = 24;
+    sint64 UpdateTime = 25;
+    repeated SSku SkuArray = 26;
+    repeated SLevelPrice LevelPrices = 27;
+    SItemViewData ViewData = 28;
+    map<string, string> Data = 29;
+
 }
 
 
