@@ -703,9 +703,8 @@ type favoriteManagerImpl struct {
 
 func newFavoriteManagerImpl(memberId int64,
 	rep member.IMemberRepo) member.IFavoriteManager {
-	if memberId == 0 {
-		//如果会员不存在,则不应创建服务
-		panic("member not exists")
+	if memberId <= 0 {
+		return nil
 	}
 	return &favoriteManagerImpl{
 		_memberId: memberId,

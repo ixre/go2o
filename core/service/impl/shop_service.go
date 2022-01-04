@@ -12,8 +12,11 @@ import (
 	"context"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
+	context2 "golang.org/x/net/context"
+	"regexp"
 )
 
 var _ proto.ShopServiceServer = new(shopServiceImpl)
@@ -23,14 +26,16 @@ type shopServiceImpl struct {
 	mchRepo  merchant.IMerchantRepo
 	shopRepo shop.IShopRepo
 	query    *query.ShopQuery
+	registryRepo registry.IRegistryRepo
 	serviceUtil
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
-	shopRepo shop.IShopRepo, query *query.ShopQuery) *shopServiceImpl {
+	shopRepo shop.IShopRepo,	registryRepo registry.IRegistryRepo,query *query.ShopQuery) *shopServiceImpl {
 	return &shopServiceImpl{
 		repo:     rep,
 		mchRepo:  mchRepo,
+		registryRepo: registryRepo,
 		shopRepo: shopRepo,
 		query:    query,
 	}
@@ -69,17 +74,22 @@ func (si *shopServiceImpl) DeleteStore(_ context.Context, id *proto.StoreId) (*p
 	panic("implement me")
 }
 
-func (si *shopServiceImpl) GetShop(_ context.Context, shopId *proto.ShopId) (*proto.SShop, error) {
-	sp := si.shopRepo.GetShop(shopId.Value)
-	if sp != nil {
-		iop := sp.(shop.IOnlineShop)
+func (si *shopServiceImpl) QueryShopId(c context2.Context, req *proto.ShopAliasRequest) (*proto.Int64, error) {
+		shopId := si.shopRepo.GetShopIdByAlias(req.ShopAlias)
+		return &proto.Int64{Value:shopId},nil
+}
+
+func (si *shopServiceImpl) GetShop(_ context.Context, req *proto.GetShopIdRequest) (*proto.SShop, error) {
+	is := si.shopRepo.GetShop(req.ShopId)
+	if is != nil {
+		iop := is.(shop.IOnlineShop)
 		iv := iop.GetShopValue()
 		ret := si.parseShopDto(iv)
 		ret.ShopTitle = ret.ShopName
 		ret.Host = iv.Host
 		ret.Logo = iv.Logo
 		ret.Alias = iv.Alias
-		ret.Telephone = iv.Tel
+		ret.Telephone = iv.Telephone
 		// 返回SellerMid
 		im := si.mchRepo.GetMerchant(int(iv.VendorId))
 		if im != nil {
@@ -104,9 +114,20 @@ func (si *shopServiceImpl) CheckMerchantShopState(_ context.Context, id *proto.M
 	return ret, nil
 }
 
+var shopHostRegexp *regexp.Regexp
+
 // QueryShopByHost 根据主机头获取店铺编号
 func (si *shopServiceImpl) QueryShopByHost(_ context.Context, host *proto.String) (*proto.Int64, error) {
-	_, shopId := si.query.QueryShopIdByHost(host.Value)
+	if shopHostRegexp == nil {
+		domain,_ := si.registryRepo.GetValue(registry.Domain)
+		shopHostRegexp = regexp.MustCompile("([^\\.]+)." +domain)
+	}
+	userHost := host.Value
+	if shopHostRegexp.MatchString(userHost) {
+		matches := shopHostRegexp.FindAllStringSubmatch(host.Value, 1)
+		userHost = matches[0][1]
+	}
+	 shopId := si.query.QueryShopIdByHost(userHost)
 	return &proto.Int64{Value: shopId}, nil
 }
 
@@ -202,7 +223,7 @@ func (si *shopServiceImpl) parse2OnlineShop(s *proto.SShop) *shop.OnlineShop {
 		ShopName:   s.ShopName,
 		Logo:       s.Logo,
 		Host:       s.Host,
-		Tel:        s.Telephone,
+		Telephone:  s.Telephone,
 		ShopTitle:  s.ShopTitle,
 		ShopNotice: s.ShopNotice,
 		State:      int16(s.State),
@@ -233,12 +254,17 @@ func (si *shopServiceImpl) parseOfflineShop(r *proto.SStore) (*shop.Shop, *shop.
 
 func (si *shopServiceImpl) parseShopDto(v shop.OnlineShop) *proto.SShop {
 	return &proto.SShop{
-		Id:         v.Id,
-		MerchantId: v.VendorId,
-		ShopName:   v.ShopName,
-		ShopTitle:  v.ShopTitle,
-		ShopNotice: v.ShopNotice,
-		Flag:       int32(v.Flag),
-		State:      int32(v.State),
+		Id:                   v.Id,
+		MerchantId:           v.VendorId,
+		SellerMid:            0,
+		ShopName:             v.ShopName,
+		ShopTitle:            v.ShopTitle,
+		ShopNotice:           v.ShopNotice,
+		Flag:                 int32(v.Flag),
+		Logo:                 v.Logo,
+		Alias:                v.Alias,
+		Host:                 v.Host,
+		Telephone:            v.Telephone,
+		State:                int32(v.State),
 	}
 }

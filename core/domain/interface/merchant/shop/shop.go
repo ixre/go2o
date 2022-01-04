@@ -90,7 +90,7 @@ var (
 		// 通讯地址
 		Addr: "",
 		// 联系电话
-		Tel: "",
+		Telephone: "",
 		//别名,用于在商店域名
 		Alias: "",
 		//域名
@@ -220,7 +220,7 @@ type (
 		// 个性化域名
 		Alias string `db:"alias"`
 		// 电话
-		Tel string `db:"tel"`
+		Telephone string `db:"tel"`
 		// 地址
 		Addr string `db:"addr"`
 		// 店铺标题

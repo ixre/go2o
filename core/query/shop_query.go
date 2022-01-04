@@ -9,13 +9,9 @@
 package query
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/dto"
-	"github.com/ixre/go2o/core/infrastructure"
-	"github.com/ixre/go2o/core/variable"
-	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -38,48 +34,25 @@ func NewShopQuery(o orm.Orm, s storage.Interface) *ShopQuery {
 	}
 }
 
-func (s *ShopQuery) getHostRegexp() *regexp.Regexp {
-	if s.commHostRegexp == nil {
-		s.commHostRegexp = regexp.MustCompile("([^\\.]+)." +
-			infrastructure.GetApp().Config().GetString(variable.ServerDomain))
-	}
-	return s.commHostRegexp
-}
 
-// 根据主机查询商店编号
-func (s *ShopQuery) QueryShopIdByHost(host string) (vendorId int64, shopId int64) {
-	//  $ 获取合作商ID
-	// $ hostname : 域名
-	// *.wdian.net  二级域名
-	// www.dc1.com  顶级域名
-
-	var err error
-	reg := s.getHostRegexp()
-	if reg.MatchString(host) {
-		matches := reg.FindAllStringSubmatch(host, 1)
-		user := matches[0][1]
-		err = s.Connector.QueryRow(`SELECT s.vendor_id,o.shop_id FROM mch_online_shop o
-		    INNER JOIN mch_shop s ON s.id=o.shop_id WHERE o.alias= $1`, func(row *sql.Row) error {
-			return row.Scan(&vendorId, &shopId)
-		}, user)
-	} else {
-		err = s.Connector.ExecScalar(`SELECT shop_id FROM mch_online_shop WHERE host= $1`,
-			&shopId, host)
-	}
+// QueryShopIdByHost 根据主机查询商店编号
+func (s *ShopQuery) QueryShopIdByHost(host string) (shopId int64) {
+	err := s.Connector.ExecScalar(`SELECT id FROM mch_online_shop WHERE (host= $1 OR alias = $1)`,
+		&shopId, host)
 	if err != nil {
-		gof.CurrentApp.Log().Error(err)
+		log.Println(err.Error())
 	}
-	return vendorId, shopId
+	return shopId
 }
 
-// 获取商户编号
+// GetMerchantId 获取商户编号
 func (s *ShopQuery) GetMerchantId(shopId int64) int64 {
 	var vendorId int64
 	s.Connector.ExecScalar(`SELECT vendor_id FROM mch_shop WHERE id= $1`, &vendorId, shopId)
 	return vendorId
 }
 
-// 获取营业中的店铺列表
+// PagedOnBusinessOnlineShops 获取营业中的店铺列表
 func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
 	order string) (int, []*dto.ListOnlineShop) {
 	var sql string

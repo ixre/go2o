@@ -46,5 +46,8 @@ type (
 
 		// 保存线下商店
 		SaveOfflineShop(v *OfflineShop, create bool) error
+
+		// GetShopIdByAlias 根据alias获取店铺编号
+		GetShopIdByAlias(alias string) int64
 	}
 )

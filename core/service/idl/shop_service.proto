@@ -8,8 +8,12 @@ option java_package = "com.github.go2o.rpc";
 // 商店服务
 service ShopService {
     /** 获取店铺,shopId */
-    rpc GetShop (ShopId) returns (SShop) {
+    rpc GetShop (GetShopIdRequest) returns (SShop) {
     }
+
+    /** 根据别名查询店铺编号　*/
+    rpc QueryShopId(ShopAliasRequest)returns(Int64){}
+
     /** 获取商户的店铺,vendorId */
     //rpc GetVendorShop_ (Int64) returns (SShop) {}
     // 检查商户是否开通店铺
@@ -85,9 +89,16 @@ message SShopConfig {
     string Tel = 7;
 }
 
-// 店铺编号
-message ShopId {
-    int64 Value =  1;
+// 获取店铺
+message GetShopIdRequest {
+    // 店铺编号
+    int64 ShopId =  1;
+}
+
+/** 店铺别名请求 */
+message ShopAliasRequest{
+    // 店铺别名
+    string ShopAlias = 1;
 }
 // 门店编号
 message StoreId {

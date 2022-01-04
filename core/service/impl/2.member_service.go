@@ -243,7 +243,11 @@ func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (r
 
 // IsFavored 是否已收藏
 func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (*proto.Bool, error) {
-	f := s.repo.CreateMemberById(r.MemberId).Favorite()
+	m :=s.repo.CreateMemberById(r.MemberId)
+	if m == nil{
+		return &proto.Bool{},nil
+	}
+	f := m.Favorite()
 	t := member.FavTypeGoods
 	switch r.FavoriteType {
 	case proto.FavoriteType_SHOP:

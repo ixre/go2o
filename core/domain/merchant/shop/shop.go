@@ -140,7 +140,7 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 		}
 	}
 	dst.Host = v.Host
-	dst.Tel = v.Tel
+	dst.Telephone = v.Telephone
 	dst.Addr = v.Addr
 	dst.State = v.State
 	dst.Host = v.Host
@@ -150,14 +150,17 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	return err
 }
 
-// 获取值
+// GetShopValue 获取值
 func (s *onlineShopImpl) GetShopValue() shop.OnlineShop {
 	return *s._shopVal
 }
 
-// 保存
+// Save 保存
 func (s *onlineShopImpl) Save() error {
 	if s.GetDomainId() > 0 {
+		if len(s._shopVal.Alias) == 0{
+			s._shopVal.Alias = s.generateShopAlias()
+		}
 		_, err := s.shopRepo.SaveOnlineShop(s._shopVal)
 		return err
 	}
@@ -193,7 +196,7 @@ func (s *onlineShopImpl) generateShopAlias() string {
 	return ""
 }
 
-// 获取商店信息
+// Data 获取商店信息
 func (s *onlineShopImpl) Data() *shop.ComplexShop {
 	ov := s._shopVal
 	v := &shop.ComplexShop{
@@ -206,7 +209,7 @@ func (s *onlineShopImpl) Data() *shop.ComplexShop {
 	}
 	v.Data["Host"] = ov.Host
 	v.Data["Logo"] = ov.Logo
-	v.Data["ServiceTel"] = ov.Tel
+	v.Data["ServiceTel"] = ov.Telephone
 	return v
 }
 

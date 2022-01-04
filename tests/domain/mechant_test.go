@@ -41,7 +41,7 @@ func TestCreateMerchant(t *testing.T) {
 				Logo:       "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
 				Host:       "",
 				Alias:      "zy",
-				Tel:        "",
+				Telephone:  "",
 				Addr:       "",
 				ShopTitle:  "",
 				ShopNotice: "",

@@ -464,7 +464,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 				Logo:       mch.ShopLogo,
 				Host:       "",
 				Alias:      "",
-				Tel:        "",
+				Telephone:  "",
 				Addr:       "",
 				ShopTitle:  "",
 				ShopNotice: "",

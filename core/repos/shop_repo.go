@@ -34,6 +34,14 @@ type shopRepo struct {
 	o            orm.Orm
 }
 
+func (s *shopRepo) GetShopIdByAlias(alias string) int64 {
+	e := shop.OnlineShop{}
+	if s.o.GetBy(&e,"alias = $1 LIMIT 1",alias) != nil {
+		return 0
+	}
+	return e.Id
+}
+
 // 创建电子商城
 func (s *shopRepo) CreateShop(v *shop.OnlineShop) shop.IShop {
 	return shopImpl.NewShop(v, s, s.valueRepo, s.registryRepo)

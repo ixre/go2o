@@ -156,7 +156,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	CartService = NewCartService(cartRepo, itemRepo, mchRepo, shopRepo)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
-	ShopService = NewShopService(shopRepo, mchRepo, shopRepo, shopQuery)
+	ShopService = NewShopService(shopRepo, mchRepo, shopRepo, registryRepo,shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, registryRepo, memberQue, orderQuery, valueRepo)
 	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)

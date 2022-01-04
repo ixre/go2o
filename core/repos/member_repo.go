@@ -344,6 +344,9 @@ func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
 
 // 创建会员,仅作为某些操作使用,不保存
 func (m *MemberRepoImpl) CreateMemberById(memberId int64) member.IMember {
+	if memberId <= 0{
+		return nil
+	}
 	return m.CreateMember(&member.Member{Id: memberId})
 }
 

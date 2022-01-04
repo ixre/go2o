@@ -230,7 +230,7 @@ func (s *offlineShopImpl) Data() *shop.ComplexShop {
 	}
 	address := s.valueRepo.AreaString(ov.Province, ov.City, ov.District, ov.Address)
 	v.Data["Address"] = address
-	v.Data["Tel"] = ov.Tel
+	v.Data["Telephone"] = ov.Tel
 	v.Data["CoverRadius"] = strconv.Itoa(int(ov.CoverRadius))
 	v.Data["Lat"] = strconv.FormatFloat(float64(ov.Lat), 'g', 2, 32)
 	v.Data["Lng"] = strconv.FormatFloat(float64(ov.Lng), 'g', 2, 32)
