@@ -228,7 +228,11 @@ func (s *memberService) RemoveFavorite(_ context.Context, r *proto.FavoriteReque
 }
 
 func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result, err error) {
-	f := s.repo.CreateMemberById(r.MemberId).Favorite()
+	m :=s.repo.CreateMemberById(r.MemberId)
+	if m == nil{
+		return s.error(member.ErrNoSuchMember),nil
+	}
+	f := m.Favorite()
 	switch r.FavoriteType {
 	case proto.FavoriteType_SHOP:
 		err = f.Favorite(member.FavTypeShop, r.ReferId)
