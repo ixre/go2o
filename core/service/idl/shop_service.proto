@@ -42,6 +42,13 @@ service ShopService {
     }
 }
 
+/** 店铺标志 */
+enum EShopFlag{
+    _ = 0;
+    /** 自营 */
+    SelfSale = 1;
+}
+
 message TurnShopRequest {
     sint64 ShopId = 1;
     bool On = 2;

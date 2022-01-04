@@ -42,12 +42,12 @@ func (s *shopRepo) GetShopIdByAlias(alias string) int64 {
 	return e.Id
 }
 
-// 创建电子商城
+// CreateShop 创建店铺
 func (s *shopRepo) CreateShop(v *shop.OnlineShop) shop.IShop {
 	return shopImpl.NewShop(v, s, s.valueRepo, s.registryRepo)
 }
 
-// 检查商户商城是否存在(创建)
+// CheckShopExists 检查商户商城是否存在(创建)
 func (s *shopRepo) CheckShopExists(vendorId int64) bool {
 	num := 0
 	s.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_online_shop WHERE
@@ -168,11 +168,11 @@ func (s *shopRepo) getShopCacheKey(mchId int64) string {
 	return fmt.Sprintf("go2o:repo:shop:%d:shops", mchId)
 }
 
-func (s *shopRepo) GetOnlineShopOfMerchant(vendorId int) shop.IShop {
+func (s *shopRepo) GetOnlineShopOfMerchant(vendorId int) *shop.OnlineShop {
 	v := shop.OnlineShop{}
 	err := s.o.GetBy(&v, "vendor_id= $1 LIMIT 1", vendorId)
 	if err == nil {
-		return s.CreateShop(&v)
+		return &v
 	}
 	return nil
 }

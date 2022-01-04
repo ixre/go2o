@@ -107,7 +107,7 @@ func (si *shopServiceImpl) CheckMerchantShopState(_ context.Context, id *proto.M
 	if sp != nil {
 		ret.Status = 1
 		ret.Remark = "已开通"
-		ret.ShopId = int64(sp.GetDomainId())
+		ret.ShopId = sp.Id
 	} else {
 		//todo: 返回审核中状态
 	}
@@ -207,7 +207,7 @@ func (si *shopServiceImpl) SaveShop(_ context.Context, s *proto.SShop) (*proto.R
 			err = merchant.ErrNoSuchShop
 		} else {
 			ofs := sp.(shop.IOnlineShop)
-			err := ofs.SetShopValue(v1)
+			err = ofs.SetShopValue(v1)
 			if err == nil {
 				err = sp.Save()
 			}

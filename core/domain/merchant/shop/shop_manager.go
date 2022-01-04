@@ -28,20 +28,6 @@ type shopManagerImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
-// 创建线上店铺
-func (s *shopManagerImpl) CreateOnlineShop(o *shop.OnlineShop) (shop.IShop, error) {
-	o.VendorId = s.merchant.GetAggregateRootId()
-	if o.ShopName == "" {
-		o.ShopName = s.merchant.GetValue().Name
-	}
-	is := s.repo.CreateShop(o)
-	io := is.(shop.IOnlineShop)
-	err := io.SetShopValue(o)
-	if err == nil {
-		err = is.Save()
-	}
-	return is, err
-}
 
 func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShopManager {
@@ -53,14 +39,35 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 	}
 }
 
-// 新建商店
+// CreateOnlineShop 创建线上店铺
+func (s *shopManagerImpl) CreateOnlineShop(o *shop.OnlineShop) (shop.IShop, error) {
+	o.VendorId = s.merchant.GetAggregateRootId()
+	if o.ShopName == "" {
+		o.ShopName = s.merchant.GetValue().Name
+	}
+	var is shop.IShop = &onlineShopImpl{
+		_shopVal: o,
+		valRepo:  s.valueRepo,
+		shopRepo: s.repo,
+		registryRepo: s.registryRepo,
+		_mch: s.merchant,
+	}
+	io := is.(shop.IOnlineShop)
+	err := io.SetShopValue(o)
+	if err == nil {
+		err = is.Save()
+	}
+	return is, err
+}
+
+// CreateShop 新建商店
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
 	v.VendorId = s.merchant.GetAggregateRootId()
 	return NewStore(v, s.repo, s.valueRepo, s.registryRepo)
 }
 
-// 获取所有商店
+// GetShops 获取所有商店
 func (s *shopManagerImpl) GetShops() []shop.IShop {
 	shopList := s.repo.GetShopId(s.merchant.GetAggregateRootId())
 	shops := make([]shop.IShop, len(shopList))
@@ -70,7 +77,7 @@ func (s *shopManagerImpl) GetShops() []shop.IShop {
 	return shops
 }
 
-// 根据名称获取商店
+// GetShopByName 根据名称获取商店
 func (s *shopManagerImpl) GetShopByName(name string) shop.IShop {
 	name = strings.TrimSpace(name)
 	for _, v := range s.GetShops() {
@@ -81,7 +88,7 @@ func (s *shopManagerImpl) GetShopByName(name string) shop.IShop {
 	return nil
 }
 
-// 获取营业中的商店
+// GetBusinessInShops 获取营业中的商店
 func (s *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 	list := make([]shop.IShop, 0)
 	for _, v := range s.GetShops() {
@@ -92,7 +99,7 @@ func (s *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 	return list
 }
 
-// 获取商店
+// GetStore 获取商店
 func (s *shopManagerImpl) GetStore(shopId int) shop.IShop {
 	shops := s.GetShops()
 	for _, v := range shops {
@@ -103,9 +110,19 @@ func (s *shopManagerImpl) GetStore(shopId int) shop.IShop {
 	return nil
 }
 
-// 获取店铺
+// GetOnlineShop 获取店铺
 func (s *shopManagerImpl) GetOnlineShop() shop.IShop {
-	return s.repo.GetOnlineShopOfMerchant(int(s.merchant.GetAggregateRootId()))
+	v := s.repo.GetOnlineShopOfMerchant(int(s.merchant.GetAggregateRootId()))
+	if v  != nil {
+		return  &onlineShopImpl{
+			_shopVal: v,
+			valRepo:  s.valueRepo,
+			shopRepo: s.repo,
+			registryRepo: s.registryRepo,
+			_mch: s.merchant,
+		}
+	}
+	return nil
 }
 
 // 删除门店

@@ -30,7 +30,7 @@ type (
 		GetOfflineShop(shopId int) *OfflineShop
 
 		// 获取商户的店铺
-		GetOnlineShopOfMerchant(vendorId int) IShop
+		GetOnlineShopOfMerchant(vendorId int) *OnlineShop
 
 		// 获取商户所有商店
 		GetShopId(mchId int64) []Shop

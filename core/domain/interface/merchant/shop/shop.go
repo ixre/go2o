@@ -14,6 +14,11 @@ import (
 	"strconv"
 )
 
+const (
+	// FlagSelfSale 自营
+	FlagSelfSale = 1 <<iota
+)
+
 var (
 	ErrNoSuchShop = domain.NewError(
 		"err_shop_no_such_shop", "未指定店铺")
@@ -35,22 +40,22 @@ var (
 )
 
 const (
-	// 线上商店
+	// TypeOnlineShop 线上商店
 	TypeOnlineShop int32 = 1
-	// 线下实体店
+	// TypeOfflineShop 线下实体店
 	TypeOfflineShop int32 = 2
 )
 
 const (
-	// 待初始化
+	// StateAwaitInitial 待初始化
 	StateAwaitInitial = 0
-	// 正常状态
+	// StateNormal 正常状态
 	StateNormal int32 = 1
-	// 停用状态
+	// StateStopped 停用状态
 	StateStopped int32 = 2
-	// 营业状态-正常
+	// OStateNormal 营业状态-正常
 	OStateNormal int32 = 1
-	// 营业状态-暂停营业
+	// OStatePause 营业状态-暂停营业
 	OStatePause int32 = 2
 )
 
@@ -142,39 +147,39 @@ type (
 		Data() *ComplexShop
 	}
 
-	// 线上商城
+	// IOnlineShop 线上商城
 	IOnlineShop interface {
-		// 设置值
+		// SetShopValue 设置值
 		SetShopValue(*OnlineShop) error
-		// 获取值
+		// GetShopValue 获取值
 		GetShopValue() OnlineShop
-		// 获取分配的域名
+		// GetLocateDomain 获取分配的域名
 		GetLocateDomain() string
-		// 绑定自定义域名
+		// BindDomain 绑定自定义域名
 		BindDomain(domain string) error
 	}
 
-	// 线下商店
+	// IOfflineShop 线下商店
 	IOfflineShop interface {
-		// 设置值
+		// SetShopValue 设置值
 		SetShopValue(*OfflineShop) error
 
-		// 获取值
+		// GetShopValue 获取值
 		GetShopValue() OfflineShop
 
-		// 获取经维度
+		// GetLngLat 获取经维度
 		GetLngLat() (float64, float64)
 
-		// 是否可以配送
+		// CanDeliver 是否可以配送
 		// 返回是否可以配送，以及距离(米)
 		CanDeliver(lng, lat float64) (bool, int)
 
-		// 是否可以配送
+		// CanDeliverTo 是否可以配送
 		// 返回是否可以配送，以及距离(米)
 		CanDeliverTo(address string) (bool, int)
 	}
 
-	// 商店
+	// Shop 商店
 	Shop struct {
 		//商店编号
 		Id int64 `db:"id" pk:"yes" auto:"yes"`
@@ -194,7 +199,7 @@ type (
 		CreateTime int64 `db:"create_time"`
 	}
 
-	// 商店数据传输对象
+	// ComplexShop 商店数据传输对象
 	ComplexShop struct {
 		ID       int64
 		VendorId int64
