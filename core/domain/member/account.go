@@ -70,17 +70,17 @@ func (a *accountImpl) createWallet() {
 	a.value.WalletCode = a.wallet.Get().HashCode
 }
 
-// 获取领域对象编号
+// GetDomainId 获取领域对象编号
 func (a *accountImpl) GetDomainId() int64 {
 	return a.value.MemberId
 }
 
-// 获取账户值
+// GetValue 获取账户值
 func (a *accountImpl) GetValue() *member.Account {
 	return a.value
 }
 
-// 保存
+// Save 保存
 func (a *accountImpl) Save() (int64, error) {
 	// 判断是否新建账号
 	origin := a.rep.GetAccount(a.member.GetAggregateRootId())
@@ -107,7 +107,7 @@ func (a *accountImpl) Wallet() wallet.IWallet {
 	return a.wallet
 }
 
-// 设置优先(默认)支付方式, account 为账户类型
+// SetPriorityPay 设置优先(默认)支付方式, account 为账户类型
 func (a *accountImpl) SetPriorityPay(account member.AccountType, enabled bool) error {
 	if enabled {
 		support := false
@@ -131,7 +131,7 @@ func (a *accountImpl) SetPriorityPay(account member.AccountType, enabled bool) e
 	return err
 }
 
-// 充值
+// Charge 充值
 func (a *accountImpl) Charge(account member.AccountType, title string,
 	amount int, outerNo string, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {

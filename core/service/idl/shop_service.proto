@@ -44,7 +44,7 @@ service ShopService {
 
 /** 店铺标志 */
 enum EShopFlag{
-    _ = 0;
+    _5 = 0;
     /** 自营 */
     SelfSale = 1;
 }
