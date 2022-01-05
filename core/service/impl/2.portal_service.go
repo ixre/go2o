@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"fmt"
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
@@ -228,7 +229,7 @@ func (p *portalService) GetSearchWord(_ context.Context, id *proto.SysSearchWord
 
 // QuerySearchWordList 获取热搜词列表
 func (p *portalService) QuerySearchWordList(_ context.Context, r *proto.QuerySearchWordRequest) (*proto.QuerySearchWordResponse, error) {
-	arr := p.searchWordDao.SelectSearchWord("")
+	arr := p.searchWordDao.SelectSearchWord(fmt.Sprintf(" 1=1 LIMIT %d",r.Size))
 	ret := &proto.QuerySearchWordResponse{
 		Value: make([]*proto.SSearchWord, len(arr)),
 	}

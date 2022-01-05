@@ -174,7 +174,7 @@ message SSearchWord{
 
 /** 查询热搜词请求 */
 message QuerySearchWordRequest{
-    /** 自定义参数 */
+   int32 Size = 1;
 }
 
 /** 查询热搜词响应 */

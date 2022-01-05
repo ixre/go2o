@@ -84,7 +84,7 @@ type (
 // SearchWord 热搜词
 type SearchWord struct {
 	// 编号
-	Id int64 `db:"id" pk:"yes"`
+	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// Word
 	Word string `db:"word"`
 	// 搜索次数

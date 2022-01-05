@@ -4,11 +4,10 @@
 
 CREATE TABLE IF NOT EXISTS public.sys_search_word
 (
-    id bigint NOT NULL,
+    id serial NOT NULL,
     word character varying(20) COLLATE pg_catalog."default" NOT NULL,
     search_count integer NOT NULL,
-    flag integer NOT NULL,
-    CONSTRAINT sys_search_word_pkey PRIMARY KEY (id)
+    flag integer NOT NULL
     )
 
     TABLESPACE pg_default;
