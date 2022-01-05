@@ -1154,7 +1154,7 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 	return ret, nil
 }
 
-//删除配送地址
+// DeleteAddress 删除配送地址
 func (s *memberService) DeleteAddress(_ context.Context, r *proto.AddressIdRequest) (*proto.Result, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	err := m.Profile().DeleteAddress(r.AddressId)
@@ -1164,7 +1164,7 @@ func (s *memberService) DeleteAddress(_ context.Context, r *proto.AddressIdReque
 	return s.success(nil), nil
 }
 
-//设置余额优先支付
+// SetPayPriority 设置余额优先支付
 func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.OwnerId)
 	if m == nil {
@@ -1183,14 +1183,14 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 	return s.error(err), nil
 }
 
-//判断会员是否由指定会员邀请推荐的
+// IsInvitation 判断会员是否由指定会员邀请推荐的
 func (s *memberService) IsInvitation(c context.Context, r *proto.IsInvitationRequest) (*proto.Bool, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	b := m.Invitation().InvitationBy(r.InviterId)
 	return &proto.Bool{Value: b}, nil
 }
 
-// 获取我邀请的会员及会员邀请的人数
+// GetMyPagedInvitationMembers 获取我邀请的会员及会员邀请的人数
 func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.MemberInvitationPagingRequest) (*proto.MemberInvitationPagingResponse, error) {
 	iv := s.repo.CreateMember(&member.Member{Id: r.MemberId}).Invitation()
 	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
@@ -1222,12 +1222,12 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 	return ret, nil
 }
 
-// 获取会员最后更新时间
+// GetMemberLatestUpdateTime 获取会员最后更新时间
 func (s *memberService) GetMemberLatestUpdateTime(memberId int64) int64 {
 	return s.repo.GetMemberLatestUpdateTime(memberId)
 }
 
-// 标志赋值, 如果flag小于零, 则异或运算
+// GrantFlag 标志赋值, 如果flag小于零, 则异或运算
 func (s *memberService) GrantFlag(_ context.Context, r *proto.GrantFlagRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -1249,7 +1249,7 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 	return nil, nil
 }
 
-// 冻结积分,当new为true不扣除积分,反之扣除积分
+// FreezesIntegral 冻结积分,当new为true不扣除积分,反之扣除积分
 func (s *memberService) FreezesIntegral(memberId int64, title string, value int64,
 	new bool) error {
 	m := s.repo.GetMember(memberId)
@@ -1259,7 +1259,7 @@ func (s *memberService) FreezesIntegral(memberId int64, title string, value int6
 	return m.GetAccount().FreezesIntegral(title, int(value), new, 0)
 }
 
-// 解冻积分
+// UnfreezesIntegral 解冻积分
 func (s *memberService) UnfreezesIntegral(memberId int64, title string, value int64) error {
 	m := s.repo.GetMember(memberId)
 	if m == nil {
@@ -1268,7 +1268,7 @@ func (s *memberService) UnfreezesIntegral(memberId int64, title string, value in
 	return m.GetAccount().UnfreezesIntegral(title, int(value))
 }
 
-// 充值,account为账户类型,kind为业务类型
+// AccountCharge 充值,account为账户类型,kind为业务类型
 func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
 	var err error
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
@@ -1281,7 +1281,7 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 	return s.result(err), nil
 }
 
-// 账户抵扣
+// AccountDiscount 账户抵扣
 func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
@@ -1291,7 +1291,7 @@ func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChang
 	return s.result(err), nil
 }
 
-// 账户消耗
+// AccountConsume 账户消耗
 func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
@@ -1301,7 +1301,7 @@ func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChange
 	return s.result(err), nil
 }
 
-// 账户消耗
+// AccountRefund 账户退款
 func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
@@ -1311,7 +1311,7 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 	return s.result(err), nil
 }
 
-// 调整账户
+// AccountAdjust 调整账户
 func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
@@ -1325,7 +1325,7 @@ func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustR
 	return s.result(err), nil
 }
 
-// !银行四要素认证
+// B4EAuth !银行四要素认证
 func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*proto.Result, error) {
 	mod := module.Get(module.B4E).(*module.Bank4E)
 	if r.Action == "get" {

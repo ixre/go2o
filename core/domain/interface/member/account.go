@@ -13,104 +13,92 @@ import "github.com/ixre/go2o/core/domain/interface/wallet"
 type AccountType int
 
 const (
-	// 余额账户
+	// AccountBalance 余额账户
 	AccountBalance AccountType = 1
-	// 积分账户
+	// AccountIntegral 积分账户
 	AccountIntegral AccountType = 2
-	// 钱包账户
+	// AccountWallet 钱包账户
 	AccountWallet AccountType = 3
-	// 流通金账户
+	// AccountFlow 流通金账户
 	AccountFlow AccountType = 4
-	// 增长金账户
+	// AccountGrow 增长金账户
 	AccountGrow AccountType = 7
 )
 
 const (
-	// 自定义的业务类型
-	KindMine int = 30
-	// 会员充值
+	// KindCustom 自定义的业务类型
+	KindCustom int = 30
+	// KindCharge 会员充值
 	KindCharge = 1
-	// 消耗
+	// KindConsume 消耗
 	KindConsume = 2
-	// 客服调整
+	// KindAdjust 客服调整
 	KindAdjust = 3
-	// 支付抵扣
+	// KindDiscount 支付抵扣
 	KindDiscount = 4
-	// 退款
+	// KindRefund 退款
 	KindRefund int = 5
-	// 兑换充值, 比如将钱包充值到余额
+	// KindExchange 兑换充值, 比如将钱包充值到余额
 	KindExchange int = 6
-	// 转入
+	// KindTransferIn 转入
 	KindTransferIn int = 7
-	// 转出
+	// KindTransferOut 转出
 	KindTransferOut int = 8
-	// 失效
+	// KindExpired 失效
 	KindExpired int = 9
-	// 冻结
+	// KindFreeze 冻结
 	KindFreeze int = 10
-	// 解冻
+	// KindUnfreeze 解冻
 	KindUnfreeze int = 11
 )
 
 const (
-	//KindCommission = 9 // 手续费
-
-	// 赠送
-	//KindBalancePresent = 3
-
-	// 流通账户
-	//KindBalanceFlow int = 4 // 账户流通
-
-	// 提现
-	//KindBalanceApplyCash = 11
-	// 转账
-	KindBalanceTransfer int = 12
 	StatusOK                = 1
 )
 
 const (
-	// 赠送
+	// TypeIntegralPresent 赠送
 	TypeIntegralPresent = 1
-	// 积分冻结
+	// TypeIntegralFreeze 积分冻结
 	TypeIntegralFreeze = 3
-	// 积分解冻
+	// TypeIntegralUnfreeze 积分解冻
 	TypeIntegralUnfreeze = 4
-	// 购物赠送
+	// TypeIntegralShoppingPresent 购物赠送
 	TypeIntegralShoppingPresent = 5
-	// 支付抵扣
+	// TypeIntegralPaymentDiscount 支付抵扣
 	TypeIntegralPaymentDiscount = 6
 )
 
 type (
 	IAccount interface {
-		// 获取领域对象编号
+		// GetDomainId 获取领域对象编号
 		GetDomainId() int64
 
-		// 获取账户值
+		// GetValue 获取账户值
 		GetValue() *Account
 
-		// 保存
+		// Save 保存
 		Save() (int64, error)
 
-		// 电子钱包
+		// Wallet 电子钱包
 		Wallet() wallet.IWallet
 
-		// 设置优先(默认)支付方式, account 为账户类型
+		// SetPriorityPay 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account AccountType, enabled bool) error
 
-		// 退款
+		// Refund 退款
 		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// 充值,金额放大100倍
+		// Charge 充值,金额放大100倍
 		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// 客服调整
+		// Adjust 客服调整
 		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
 
-		// 消耗
+		// Consume 消耗
 		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
+		// Discount 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
 		Discount(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// 扣减余额
@@ -123,65 +111,65 @@ type (
 		// 积分抵扣
 		//IntegralDiscount(title string, outerNo string, value int) error
 
-		// 冻结余额
+		// Freeze 冻结余额
 		Freeze(title string, outerNo string, amount int, relateUser int64) error
 
-		// 解冻金额
+		// Unfreeze 解冻金额
 		Unfreeze(title string, outerNo string, amount int, relateUser int64) error
 
-		// 冻结赠送金额
+		// FreezeWallet 冻结赠送金额
 		FreezeWallet(title string, outerNo string, amount int, relateUser int64) error
 
-		// 解冻赠送金额
+		// UnfreezeWallet 解冻赠送金额
 		UnfreezeWallet(title string, outerNo string, amount int, relateUser int64) error
 
-		// 支付单抵扣消费,tradeNo为支付单单号
+		// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
 		PaymentDiscount(tradeNo string, amount int, remark string) error
 
-		// 冻结积分,当new为true不扣除积分,反之扣除积分
+		// FreezesIntegral 冻结积分,当new为true不扣除积分,反之扣除积分
 		FreezesIntegral(title string, value int, new bool, relateUser int64) error
 
-		// 解冻积分
+		// UnfreezesIntegral 解冻积分
 		UnfreezesIntegral(title string, value int) error
 
-		// 获取钱包账户日志
+		// GetWalletLog 获取钱包账户日志
 		GetWalletLog(id int64) wallet.WalletLog
 
-		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
+		// RequestWithdrawal 申请提现,applyType：提现方式,返回info_id,交易号 及错误
 		RequestWithdrawal(takeKind int, title string, amount int,
 			tradeFee int, bankAccountNo string) (int64, string, error)
 
-		// 确认提现
+		// ReviewWithdrawal 确认提现
 		ReviewWithdrawal(id int64, pass bool, remark string) error
 
-		// 完成提现
+		// FinishWithdrawal 完成提现
 		FinishWithdrawal(id int64, tradeNo string) error
 
-		// 将冻结金额标记为失效
+		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(account AccountType, amount int, remark string) error
 
-		// 转账
+		// TransferAccount 转账
 		TransferAccount(account AccountType, toMember int64, amount int,
 			tradeFee int, remark string) error
 
-		// 接收转账
+		// ReceiveTransfer 接收转账
 		ReceiveTransfer(account AccountType, fromMember int64, tradeNo string,
 			amount int, remark string) error
 
-		// 转账余额到其他账户
+		// TransferBalance 转账余额到其他账户
 		TransferBalance(account AccountType, amount int, tradeNo string, toTitle, fromTitle string) error
 
-		// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
+		// TransferFlow 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
 		TransferFlow(kind int, amount int, commission float32, tradeNo string,
 			toTitle string, fromTitle string) error
 
-		// 将活动金转给其他人
+		// TransferFlowTo 将活动金转给其他人
 		TransferFlowTo(memberId int64, kind int, amount int, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 
-	// 账户值对象
+	// Account 账户值对象
 	Account struct {
 		// 会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
@@ -227,7 +215,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 积分记录
+	// IntegralLog 积分记录
 	IntegralLog struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
@@ -253,7 +241,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 余额日志
+	// BalanceLog 余额日志
 	BalanceLog struct {
 		Id       int64  `db:"id" auto:"yes" pk:"yes"`
 		MemberId int64  `db:"member_id"`
@@ -278,7 +266,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 钱包账户日志
+	// WalletAccountLog 钱包账户日志
 	WalletAccountLog struct {
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号
@@ -305,7 +293,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 活动账户日志信息(todo: 活动账户还在用,暂时不删除)
+	// FlowAccountLog 活动账户日志信息(todo: 活动账户还在用,暂时不删除)
 	FlowAccountLog struct {
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号

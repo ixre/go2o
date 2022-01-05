@@ -526,12 +526,12 @@ func (a *accountImpl) asyncWallet() error {
 	return err
 }
 
-// 根据编号获取余额变动信息
+// GetWalletLog 根据编号获取余额变动信息
 func (a *accountImpl) GetWalletLog(id int64) wallet.WalletLog {
 	return a.wallet.GetLog(id)
 }
 
-// 冻结余额
+// Freeze 冻结余额
 func (a *accountImpl) Freeze(title string, outerNo string, amount int, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -563,7 +563,7 @@ func (a *accountImpl) Freeze(title string, outerNo string, amount int, relateUse
 	return err
 }
 
-// 解冻金额
+// Unfreeze 解冻金额
 func (a *accountImpl) Unfreeze(title string, outerNo string, amount int, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -596,7 +596,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string, amount int, relateU
 
 }
 
-// 冻结赠送金额
+// FreezeWallet 冻结赠送金额
 func (a *accountImpl) FreezeWallet(title string, outerNo string, amount int, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -628,7 +628,7 @@ func (a *accountImpl) FreezeWallet(title string, outerNo string, amount int, rel
 	return err
 }
 
-// 解冻赠送金额
+// UnfreezeWallet 解冻赠送金额
 func (a *accountImpl) UnfreezeWallet(title string, outerNo string,
 	amount int, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -678,7 +678,7 @@ func (a *accountImpl) chargeFlow(title string, amount int, outerNo string, remar
 	return err
 }
 
-// 支付单抵扣消费,tradeNo为支付单单号
+// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
 func (a *accountImpl) PaymentDiscount(tradeNo string, amount int, remark string) error {
 	if amount < 0 || len(tradeNo) == 0 {
 		return errors.New("amount error or missing trade no")
@@ -710,7 +710,7 @@ func (a *accountImpl) PaymentDiscount(tradeNo string, amount int, remark string)
 	return err
 }
 
-// 冻结积分,当new为true不扣除积分,反之扣除积分
+// FreezesIntegral 冻结积分,当new为true不扣除积分,反之扣除积分
 func (a *accountImpl) FreezesIntegral(title string, value int, new bool, relateUser int64) error {
 	if !new {
 		if a.value.Integral < value {
@@ -740,7 +740,7 @@ func (a *accountImpl) FreezesIntegral(title string, value int, new bool, relateU
 	return err
 }
 
-// 解冻积分
+// UnfreezesIntegral 解冻积分
 func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 	if a.value.FreezeIntegral < value {
 		return member.ErrNoSuchIntegral
@@ -768,7 +768,7 @@ func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
 	return err
 }
 
-// 请求提现,返回info_id,交易号及错误
+// RequestWithdrawal 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	amount int, tradeFee int, accountNo string) (int64, string, error) {
 	if takeKind != wallet.KWithdrawExchange &&
@@ -854,7 +854,7 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	return id, tradeNo, err
 }
 
-// 确认提现
+// ReviewWithdrawal 确认提现
 func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error {
 	//todo: opr_uid
 	err := a.wallet.ReviewWithdrawal(id, pass, remark, 1, "系统")
@@ -864,7 +864,7 @@ func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error
 	return err
 }
 
-// 完成提现
+// FinishWithdrawal 完成提现
 func (a *accountImpl) FinishWithdrawal(id int64, tradeNo string) error {
 	//todo: opr_uid
 	err := a.wallet.FinishWithdrawal(id, tradeNo)
@@ -874,7 +874,7 @@ func (a *accountImpl) FinishWithdrawal(id int64, tradeNo string) error {
 	return err
 }
 
-// 将冻结金额标记为失效
+// FreezeExpired 将冻结金额标记为失效
 func (a *accountImpl) FreezeExpired(account member.AccountType, amount int, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -883,7 +883,7 @@ func (a *accountImpl) FreezeExpired(account member.AccountType, amount int, rema
 	case member.AccountBalance:
 		return a.balanceFreezeExpired(amount, remark)
 	case member.AccountWallet:
-		return a.presentFreezeExpired(amount, remark)
+		return a.walletFreezeExpired(amount, remark)
 	}
 	panic("not support account type")
 }
@@ -916,7 +916,7 @@ func (a *accountImpl) balanceFreezeExpired(amount int, remark string) error {
 	return err
 }
 
-func (a *accountImpl) presentFreezeExpired(amount int, remark string) error {
+func (a *accountImpl) walletFreezeExpired(amount int, remark string) error {
 	if a.value.FreezeWallet < int64(amount) {
 		return member.ErrIncorrectAmount
 	}
@@ -954,7 +954,7 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 	}
 }
 
-// 转账
+// TransferAccount 转账
 func (a *accountImpl) TransferAccount(account member.AccountType, toMember int64, amount int,
 	tradeFee int, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -1061,7 +1061,7 @@ func (a *accountImpl) transferWalletAccount(tm member.IMember, tradeNo string,
 	return err
 }
 
-// 接收转账
+// ReceiveTransfer 接收转账
 func (a *accountImpl) ReceiveTransfer(account member.AccountType, fromMember int64,
 	tradeNo string, amount int, remark string) error {
 	switch account {
@@ -1129,7 +1129,7 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int64, tradeNo string,
 	return err
 }
 
-// 转账余额到其他账户
+// TransferBalance 转账余额到其他账户
 func (a *accountImpl) TransferBalance(account member.AccountType, amount int,
 	tradeNo string, toTitle, fromTitle string) error {
 	var err error
@@ -1161,7 +1161,7 @@ func (a *accountImpl) TransferBalance(account member.AccountType, amount int,
 	return member.ErrNotSupportTransfer
 }
 
-// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
+// TransferFlow TransferFlow 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
 func (a *accountImpl) TransferFlow(kind int, amount int, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
@@ -1199,7 +1199,7 @@ func (a *accountImpl) TransferFlow(kind int, amount int, commission float32,
 	return err
 }
 
-// 将活动金转给其他人
+// TransferFlowTo 将活动金转给其他人
 func (a *accountImpl) TransferFlowTo(memberId int64, kind int,
 	amount int, commission float32, tradeNo string,
 	toTitle string, fromTitle string) error {
