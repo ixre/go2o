@@ -1,4 +1,4 @@
-TRUNCATE TABLE "mm_member";
+
 TRUNCATE TABLE "ad_list";
 TRUNCATE TABLE "ad_userset";
 TRUNCATE TABLE "article_category";
@@ -23,7 +23,6 @@ TRUNCATE TABLE "mch_offline_shop";
 
 
 TRUNCATE TABLE "mm_member";
-TRUNCATE TABLE "mm_member";
 TRUNCATE TABLE "mm_profile";
 TRUNCATE TABLE "mm_integral_log";
 TRUNCATE TABLE "mm_balance_log";
@@ -41,7 +40,8 @@ TRUNCATE TABLE "mm_buyer_group";
 TRUNCATE TABLE "mm_lock_info";
 TRUNCATE TABLE "mm_lock_history";
 
-
+TRUNCATE TABLE "wal_wallet";
+TRUNCATE TABLE "wal_wallet_log";
 
 TRUNCATE TABLE "sale_order";
 TRUNCATE TABLE "sale_sub_order";
@@ -144,8 +144,6 @@ TRUNCATE TABLE "portal_nav";
 TRUNCATE TABLE "portal_nav_type";
 TRUNCATE TABLE "portal_floor_ad";
 TRUNCATE TABLE "portal_floor_link";
-TRUNCATE TABLE "wal_wallet";
-TRUNCATE TABLE "wal_wallet_log";
 TRUNCATE TABLE "sys_kv";
 
 
