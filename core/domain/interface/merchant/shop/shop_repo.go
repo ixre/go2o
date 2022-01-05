@@ -30,7 +30,7 @@ type (
 		GetOfflineShop(shopId int) *OfflineShop
 
 		// 获取商户的店铺
-		GetOnlineShopOfMerchant(vendorId int) IShop
+		GetOnlineShopOfMerchant(vendorId int) *OnlineShop
 
 		// 获取商户所有商店
 		GetShopId(mchId int64) []Shop
@@ -46,5 +46,8 @@ type (
 
 		// 保存线下商店
 		SaveOfflineShop(v *OfflineShop, create bool) error
+
+		// GetShopIdByAlias 根据alias获取店铺编号
+		GetShopIdByAlias(alias string) int64
 	}
 )

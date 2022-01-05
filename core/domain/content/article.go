@@ -17,13 +17,13 @@ import (
 var _ content.ICategory = new(categoryImpl)
 
 type categoryImpl struct {
-	contentRepo content.IContentRepo
+	contentRepo content.IArchiveRepo
 	value       *content.ArticleCategory
 	manager     *articleManagerImpl
 }
 
 func NewCategory(v *content.ArticleCategory, m *articleManagerImpl,
-	rep content.IContentRepo) content.ICategory {
+	rep content.IArchiveRepo) content.ICategory {
 	return &categoryImpl{
 		contentRepo: rep,
 		value:       v,
@@ -66,7 +66,7 @@ func (c *categoryImpl) SetValue(v *content.ArticleCategory) error {
 		c.value.PermFlag = v.PermFlag
 	}
 	if c.value.PermFlag <= 0 {
-		c.value.PermFlag = content.PermAll
+		c.value.PermFlag = content.FlagAll
 	}
 	return nil
 }
@@ -84,14 +84,14 @@ func (c *categoryImpl) Save() (int32, error) {
 var _ content.IArticle = new(articleImpl)
 
 type articleImpl struct {
-	_rep      content.IContentRepo
+	_rep      content.IArchiveRepo
 	_value    *content.Article
 	_category content.ICategory
 	_manager  content.IArticleManager
 }
 
 func NewArticle(v *content.Article, m content.IArticleManager,
-	rep content.IContentRepo) content.IArticle {
+	rep content.IArchiveRepo) content.IArticle {
 	return &articleImpl{
 		_rep:     rep,
 		_value:   v,
@@ -109,7 +109,7 @@ func (a *articleImpl) GetValue() content.Article {
 	return *a._value
 }
 
-// 设置值
+// SetValue 设置值
 func (a *articleImpl) SetValue(v *content.Article) error {
 	a._value.Title = v.Title
 	a._value.SmallTitle = v.SmallTitle
@@ -131,7 +131,7 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 	return nil
 }
 
-// 栏目
+// Category 栏目
 func (a *articleImpl) Category() content.ICategory {
 	if a._category == nil {
 		a._category = a._manager.GetCategory(a._value.CatId)
@@ -139,7 +139,7 @@ func (a *articleImpl) Category() content.ICategory {
 	return a._category
 }
 
-// 保存文章
+// Save 保存文章
 func (a *articleImpl) Save() (int32, error) {
 	if a.Category() == nil {
 		return a.GetDomainId(), content.NotSetCategory
@@ -152,18 +152,18 @@ func (a *articleImpl) Save() (int32, error) {
 var _ content.IArticleManager = new(articleManagerImpl)
 
 type articleManagerImpl struct {
-	_rep    content.IContentRepo
+	_rep    content.IArchiveRepo
 	_userId int64
 }
 
-func newArticleManagerImpl(userId int64, rep content.IContentRepo) content.IArticleManager {
+func newArticleManagerImpl(userId int64, rep content.IArchiveRepo) content.IArticleManager {
 	return &articleManagerImpl{
 		_rep:    rep,
 		_userId: userId,
 	}
 }
 
-// 获取所有的栏目
+// GetAllCategory 获取所有的栏目
 func (a *articleManagerImpl) GetAllCategory() []content.ICategory {
 	list := a._rep.GetAllArticleCategory()
 	l := len(list)
@@ -187,49 +187,49 @@ func (a *articleManagerImpl) initSystemCategory() {
 			ID:       0,
 			Alias:    "news",
 			Name:     "商城公告",
-			PermFlag: content.PermAll,
+			PermFlag: content.FlagInternal | content.FlagAll,
 		},
 		{
 			ID:       0,
 			Alias:    "about",
 			Name:     "关于商城",
-			PermFlag: content.PermAll,
+			PermFlag: content.FlagInternal | content.FlagAll,
 		},
 		{
 			ID:       0,
 			Alias:    "wholesale",
 			Name:     "批发公告",
-			PermFlag: content.PermAll,
+			PermFlag: content.FlagInternal | content.FlagAll,
 		},
 		{
 			ID:       0,
 			Alias:    "member",
 			Name:     "会员公告",
-			PermFlag: content.PermMember,
+			PermFlag: content.FlagInternal | content.FlagMember,
 		},
 		{
 			ID:       0,
 			Alias:    "merchant",
 			Name:     "商户公告",
-			PermFlag: content.PermVendor,
+			PermFlag: content.FlagInternal | content.FlagVendor,
 		},
 		{
 			ID:       0,
 			Alias:    "service",
 			Name:     "客户服务",
-			PermFlag: content.PermAll,
+			PermFlag: content.FlagInternal | content.FlagAll,
 		},
 		{
 			ID:       0,
 			Alias:    "help",
 			Name:     "帮助中心",
-			PermFlag: content.PermAll,
+			PermFlag: content.FlagInternal | content.FlagAll,
 		},
 		{
 			ID:       0,
 			Alias:    "notification",
 			Name:     "系统通知",
-			PermFlag: content.PermMember,
+			PermFlag: content.FlagInternal | content.FlagMember,
 		},
 	}
 	for _, v := range list {
@@ -256,7 +256,7 @@ func (a *articleManagerImpl) CreateCategory(v *content.ArticleCategory) content.
 	return NewCategory(v, a, a._rep)
 }
 
-// 根据标识获取文章栏目
+// GetCategoryByAlias 根据标识获取文章栏目
 func (a *articleManagerImpl) GetCategoryByAlias(alias string) content.ICategory {
 	list := a.GetAllCategory()
 	for _, v := range list {
@@ -268,7 +268,7 @@ func (a *articleManagerImpl) GetCategoryByAlias(alias string) content.ICategory 
 	return nil
 }
 
-// 删除栏目
+// DelCategory 删除栏目
 func (a *articleManagerImpl) DelCategory(id int32) error {
 	c := a.GetCategory(id)
 	if c != nil {
@@ -281,12 +281,12 @@ func (a *articleManagerImpl) DelCategory(id int32) error {
 
 }
 
-// 创建文章
+// CreateArticle 创建文章
 func (a *articleManagerImpl) CreateArticle(v *content.Article) content.IArticle {
 	return NewArticle(v, a, a._rep)
 }
 
-// 获取文章
+// GetArticle 获取文章
 func (a *articleManagerImpl) GetArticle(id int32) content.IArticle {
 	v := a._rep.GetArticleById(id)
 	if v != nil {
@@ -295,13 +295,13 @@ func (a *articleManagerImpl) GetArticle(id int32) content.IArticle {
 	return nil
 }
 
-// 获取文章列表
+// GetArticleList 获取文章列表
 func (a *articleManagerImpl) GetArticleList(categoryId int32,
 	begin, end int) []*content.Article {
 	return a._rep.GetArticleList(categoryId, begin, end)
 }
 
-// 删除文章
+// DeleteArticle 删除文章
 func (a *articleManagerImpl) DeleteArticle(id int32) error {
 	return a._rep.DeleteArticle(id)
 }

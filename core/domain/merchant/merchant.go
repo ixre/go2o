@@ -50,17 +50,17 @@ func NewMerchantManager(rep merchant.IMerchantRepo,
 	}
 }
 
-// 创建会员申请商户密钥
+// CreateSignUpToken 创建会员申请商户密钥
 func (m *merchantManagerImpl) CreateSignUpToken(memberId int64) string {
 	return m.rep.CreateSignUpToken(memberId)
 }
 
-// 根据商户申请密钥获取会员编号
+// GetMemberFromSignUpToken 根据商户申请密钥获取会员编号
 func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int64 {
 	return m.rep.GetMemberFromSignUpToken(token)
 }
 
-// 删除会员的商户申请资料
+// RemoveSignUp 删除会员的商户申请资料
 func (m *merchantManagerImpl) RemoveSignUp(memberId int64) error {
 	_, err := tmp.Orm.Delete(merchant.MchSignUp{}, "member_id= $1", memberId)
 	return err
@@ -109,7 +109,7 @@ func (m *merchantManagerImpl) checkSignUpInfo(v *merchant.MchSignUp) error {
 	return nil
 }
 
-// 提交商户注册信息
+// CommitSignUpInfo 提交商户注册信息
 func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int32, error) {
 	err := m.checkSignUpInfo(v)
 	if err != nil {
@@ -120,7 +120,7 @@ func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int32, er
 	return m.saveSignUpInfo(v)
 }
 
-// 审核商户注册信息
+// ReviewMchSignUp 审核商户注册信息
 func (m *merchantManagerImpl) ReviewMchSignUp(id int32, pass bool, remark string) error {
 	var err error
 	v := m.GetSignUpInfo(id)
@@ -216,7 +216,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 	return err
 }
 
-// 获取商户申请信息
+// GetSignUpInfo 获取商户申请信息
 func (m *merchantManagerImpl) GetSignUpInfo(id int32) *merchant.MchSignUp {
 	v := merchant.MchSignUp{}
 	if tmp.Orm.Get(id, &v) != nil {
@@ -225,7 +225,7 @@ func (m *merchantManagerImpl) GetSignUpInfo(id int32) *merchant.MchSignUp {
 	return &v
 }
 
-// 获取会员申请的商户信息
+// GetSignUpInfoByMemberId 获取会员申请的商户信息
 func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
 	v := merchant.MchSignUp{}
 	if tmp.Orm.GetBy(&v, "member_id= $1", memberId) != nil {
@@ -234,7 +234,7 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int64) *merchant.
 	return &v
 }
 
-// 获取会员关联的商户
+// GetMerchantByMemberId 获取会员关联的商户
 func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int64) merchant.IMerchant {
 	v := merchant.Merchant{}
 	if tmp.Orm.GetBy(&v, "member_id= $1", memberId) == nil {
@@ -265,11 +265,12 @@ type merchantImpl struct {
 	_memberKvManager merchant.IKvManager
 	//_mssManager      mss.IMssManager
 	//_mssRepo          mss.IMssRepo
-	_profileManager merchant.IProfileManager
-	_apiManager     merchant.IApiManager
-	_shopManager    shop.IShopManager
-	_walletRepo     wallet.IWalletRepo
-	_registryRepo   registry.IRegistryRepo
+	_profileManager   merchant.IProfileManager
+	_apiManager       merchant.IApiManager
+	_shopManager      shop.IShopManager
+	_walletRepo       wallet.IWalletRepo
+	_registryRepo     registry.IRegistryRepo
+	_lastBindMemberId int64 //  之前绑定的会员编号
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
@@ -299,7 +300,7 @@ func (m *merchantImpl) GetAggregateRootId() int64 {
 	return m._value.Id
 }
 
-// 获取符合的商家信息
+// Complex 获取符合的商家信息
 func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 	src := m.GetValue()
 	return &merchant.ComplexMerchant{
@@ -361,43 +362,63 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 	return nil
 }
 
-// 保存
+func (m *merchantImpl) BindMember(memberId int) error {
+	if m._value.MemberId == int64(memberId) {
+		return merchant.ErrMemberBindExists
+	}
+	exist := m._repo.CheckMemberBind(int64(memberId), m.GetAggregateRootId())
+	if exist {
+		return merchant.ErrBindAnotherMerchant
+	}
+	m._lastBindMemberId = m._value.MemberId
+	m._value.MemberId = int64(memberId)
+	if m.GetAggregateRootId() > 0 {
+		err := m.applyBindMember()
+		if err == nil {
+			_, err = m.Save()
+		}
+		return err
+	}
+	return nil
+}
+
+func (m *merchantImpl) applyBindMember() error {
+	// 解绑
+	if m._lastBindMemberId > 0 {
+		origin := m._memberRepo.GetMember(m._lastBindMemberId)
+		if origin != nil {
+			_ = origin.GrantFlag(-member.FlagSeller)
+		}
+	}
+	// 添加商户标志
+	im := m._memberRepo.GetMember(m._value.MemberId)
+	if im == nil {
+		return member.ErrNoSuchMember
+	}
+	err := im.GrantFlag(member.FlagSeller)
+	if err == nil {
+		m._lastBindMemberId = m._value.MemberId
+	}
+	return err
+}
+
+// Save 保存
 func (m *merchantImpl) Save() (int64, error) {
 	id := m.GetAggregateRootId()
 	if id > 0 {
-		//m.checkSelfSales() //todo: 平台可能有多个自营店铺
 		id, err := m._repo.SaveMerchant(m._value)
 		return int64(id), err
 	}
 	return m.createMerchant()
 }
 
-// 自营检测,并返回是否需要保存
-func (m *merchantImpl) checkSelfSales() bool {
-	if m._value.SelfSales == 0 {
-		//不为自营,但编号为1的商户
-		if m.GetAggregateRootId() == 1 {
-			m._value.SelfSales = 1
-			m._value.LoginUser = "-"
-			m._value.LoginPwd = "-"
-			return true
-		}
-	} else if m.GetAggregateRootId() != 1 {
-		//为自营,但ID不为1,异常数据
-		m._value.SelfSales = 0
-		m._value.Enabled = 0
-		return true
-	}
-	return false
-}
-
-// 是否自营
+// SelfSales 是否自营
 func (m *merchantImpl) SelfSales() bool {
 	return m._value.SelfSales == 1 ||
 		m.GetAggregateRootId() == 1
 }
 
-// 获取商户的状态,判断 过期时间、判断是否停用。
+// Stat 获取商户的状态,判断 过期时间、判断是否停用。
 // 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
 func (m *merchantImpl) Stat() error {
 	if m._value == nil {
@@ -412,7 +433,7 @@ func (m *merchantImpl) Stat() error {
 	return nil
 }
 
-// 设置商户启用或停用
+// SetEnabled 设置商户启用或停用
 func (m *merchantImpl) SetEnabled(enabled bool) error {
 	if enabled {
 		m._value.Enabled = 1
@@ -423,12 +444,12 @@ func (m *merchantImpl) SetEnabled(enabled bool) error {
 	return err
 }
 
-// 返回对应的会员编号
+// Member 返回对应的会员编号
 func (m *merchantImpl) Member() int64 {
 	return m.GetValue().MemberId
 }
 
-// 获取商户账户
+// Account 获取商户账户
 func (m *merchantImpl) Account() merchant.IAccount {
 	if m._account == nil {
 		v := m._repo.GetAccount(int(m.GetAggregateRootId()))
@@ -437,7 +458,7 @@ func (m *merchantImpl) Account() merchant.IAccount {
 	return m._account
 }
 
-// 获取批发商实例
+// Wholesaler 获取批发商实例
 func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
 	if m._wholesaler == nil {
 		mchId := m.GetAggregateRootId()
@@ -450,7 +471,7 @@ func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
 	return m._wholesaler
 }
 
-// 启用批发
+// EnableWholesale 启用批发
 func (m *merchantImpl) EnableWholesale() error {
 	if m.Wholesaler() != nil {
 		return errors.New("wholesale for merchant enabled!")
@@ -461,7 +482,7 @@ func (m *merchantImpl) EnableWholesale() error {
 
 func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 	v := &wholesaler.WsWholesaler{
-		MchId:       int64(m.GetAggregateRootId()),
+		MchId:       m.GetAggregateRootId(),
 		Rate:        1,
 		ReviewState: enum.ReviewPass,
 		//ReviewState: enum.ReviewAwaiting,
@@ -472,7 +493,6 @@ func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 
 // 创建商户
 func (m *merchantImpl) createMerchant() (int64, error) {
-	//m.checkSelfSales()
 	unix := time.Now().Unix()
 	m._value.ExpiresTime = unix + 3600*24*365
 	m._value.UpdateTime = unix
@@ -489,16 +509,16 @@ func (m *merchantImpl) createMerchant() (int64, error) {
 			return 0, merchant.ErrMerchantUserExists
 		}
 	}
-	if m._value.MemberId > 0 {
-		if m._repo.CheckMemberBind(m._value.MemberId) {
-			return 0, merchant.ErrExistMember
-		}
-	}
+
 	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
 		return int64(id), err
 	}
 	m._value.Id = int64(id)
+	// 绑定会员
+	if m._value.MemberId > 0 {
+		err = m.applyBindMember()
+	}
 	// 创建API
 	api := &merchant.ApiInfo{
 		ApiId:     domain.NewApiId(int(id)),
@@ -510,7 +530,7 @@ func (m *merchantImpl) createMerchant() (int64, error) {
 	return int64(id), err
 }
 
-// 获取商户的域名
+// GetMajorHost 获取商户的域名
 func (m *merchantImpl) GetMajorHost() string {
 	if len(m._host) == 0 {
 		host := m._repo.GetMerchantMajorHost(int(m.GetAggregateRootId()))
@@ -523,7 +543,7 @@ func (m *merchantImpl) GetMajorHost() string {
 	return m._host
 }
 
-// 返回用户服务
+// UserManager 返回用户服务
 func (m *merchantImpl) UserManager() user.IUserManager {
 	if m._userManager == nil {
 		m._userManager = userImpl.NewUserManager(m.GetAggregateRootId(), m._userRepo)
@@ -531,7 +551,7 @@ func (m *merchantImpl) UserManager() user.IUserManager {
 	return m._userManager
 }
 
-// 获取会员管理服务
+// LevelManager 获取会员管理服务
 func (m *merchantImpl) LevelManager() merchant.ILevelManager {
 	if m._levelManager == nil {
 		m._levelManager = NewLevelManager(int64(m.GetAggregateRootId()), m._repo)
@@ -539,7 +559,7 @@ func (m *merchantImpl) LevelManager() merchant.ILevelManager {
 	return m._levelManager
 }
 
-// 获取键值管理器
+// KvManager 获取键值管理器
 func (m *merchantImpl) KvManager() merchant.IKvManager {
 	if m._kvManager == nil {
 		m._kvManager = newKvManager(m, "kvset")
@@ -547,7 +567,7 @@ func (m *merchantImpl) KvManager() merchant.IKvManager {
 	return m._kvManager
 }
 
-// 获取用户键值管理器
+// MemberKvManager 获取用户键值管理器
 func (m *merchantImpl) MemberKvManager() merchant.IKvManager {
 	if m._memberKvManager == nil {
 		m._memberKvManager = newKvManager(m, "kvset_member")
@@ -563,7 +583,7 @@ func (m *merchantImpl) MemberKvManager() merchant.IKvManager {
 //	return m._mssManager
 //}
 
-// 返回设置服务
+// ConfManager 返回设置服务
 func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	if m._confManager == nil {
 		m._confManager = newConfigManagerImpl(int(m.GetAggregateRootId()),
@@ -572,7 +592,7 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	return m._confManager
 }
 
-// 销售服务
+// SaleManager 销售服务
 func (m *merchantImpl) SaleManager() merchant.ISaleManager {
 	if m._saleManager == nil {
 		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()), m)
@@ -580,7 +600,7 @@ func (m *merchantImpl) SaleManager() merchant.ISaleManager {
 	return m._saleManager
 }
 
-// 企业资料管理器
+// ProfileManager 企业资料管理器
 func (m *merchantImpl) ProfileManager() merchant.IProfileManager {
 	if m._profileManager == nil {
 		m._profileManager = newProfileManager(m, m._valRepo)
@@ -588,7 +608,7 @@ func (m *merchantImpl) ProfileManager() merchant.IProfileManager {
 	return m._profileManager
 }
 
-// API服务
+// ApiManager API服务
 func (m *merchantImpl) ApiManager() merchant.IApiManager {
 	if m._apiManager == nil {
 		m._apiManager = newApiManagerImpl(m)
@@ -596,7 +616,7 @@ func (m *merchantImpl) ApiManager() merchant.IApiManager {
 	return m._apiManager
 }
 
-// 商店服务
+// ShopManager 商店服务
 func (m *merchantImpl) ShopManager() shop.IShopManager {
 	if m._shopManager == nil {
 		m._shopManager = si.NewShopManagerImpl(m, m._shopRepo, m._valRepo, m._registryRepo)

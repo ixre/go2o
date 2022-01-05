@@ -22,129 +22,130 @@ const (
 	KindAccountTakePayment      = 4
 	KindAccountTransferToMember = 5
 
-	//商户提现
+	// KindＭachTakeOutToBankCard 商户提现
 	KindＭachTakeOutToBankCard = 100
-	//商户提现失败返还给会员
+	// KindＭachTakOutRefund 商户提现失败返还给会员
 	KindＭachTakOutRefund = 101
 )
 
 type (
-	// 商户接口
+	// IMerchant 商户接口
 	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
-		// 获取编号
+		// GetAggregateRootId 获取编号
 		GetAggregateRootId() int64
 		GetValue() Merchant
-		// 获取符合的商家信息
+		// Complex 获取符合的商家信息
 		Complex() *ComplexMerchant
-		// 设置值
+		// SetValue 设置值
 		SetValue(*Merchant) error
-		// 获取商户的状态,判断 过期时间、判断是否停用。
+		// Stat 获取商户的状态,判断 过期时间、判断是否停用。
 		// 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
 		Stat() error
-		// 设置商户启用或停用
+		// SetEnabled 设置商户启用或停用
 		SetEnabled(enabled bool) error
-		// 是否自营
+		// SelfSales 是否自营
 		SelfSales() bool
-		// 返回对应的会员编号
+		// Member 返回对应的会员编号
 		Member() int64
-		// 保存
+		// Save 保存
 		Save() (int64, error)
-		// 获取商户的域名
+		// GetMajorHost 获取商户的域名
 		GetMajorHost() string
-		// 获取商户账户
+		// BindMember 绑定会员号
+		BindMember(memberId int) error
+		// Account 获取商户账户
 		Account() IAccount
-		// 启用批发
+		// EnableWholesale 启用批发
 		EnableWholesale() error
-		// 获取批发商实例
+		// Wholesaler 获取批发商实例
 		Wholesaler() wholesaler.IWholesaler
-		// 返回用户服务
+		// UserManager 返回用户服务
 		UserManager() user.IUserManager
-		// 返回设置服务
+		// ConfManager 返回设置服务
 		ConfManager() IConfManager
-		// 销售服务
+		// SaleManager 销售服务
 		SaleManager() ISaleManager
-		// 获取会员等级服务
+		// LevelManager 获取会员等级服务
 		LevelManager() ILevelManager
-		// 获取键值管理器
+		// KvManager 获取键值管理器
 		KvManager() IKvManager
-		// 企业资料服务
+		// ProfileManager 企业资料服务
 		ProfileManager() IProfileManager
-		// API服务
+		// ApiManager API服务
 		ApiManager() IApiManager
-		// 商店服务
+		// ShopManager 商店服务
 		ShopManager() shop.IShopManager
-		// 获取会员键值管理器
+		// MemberKvManager 获取会员键值管理器
 		MemberKvManager() IKvManager
-
 		// 消息系统管理器
 		//MssManager() mss.IMssManager
 	}
 
-	// 账户
+	// IAccount 账户
 	IAccount interface {
-		// 获取领域对象编号
+		// GetDomainId 获取领域对象编号
 		GetDomainId() int64
-		// 获取账户值
+		// GetValue 获取账户值
 		GetValue() *Account
-		// 保存
+		// Save 保存
 		Save() error
-		// 根据编号获取余额变动信息
+		// GetBalanceLog 根据编号获取余额变动信息
 		GetBalanceLog(id int32) *BalanceLog
-		// 根据号码获取余额变动信息
+		// GetBalanceLogByOuterNo 根据号码获取余额变动信息
 		GetBalanceLogByOuterNo(outerNo string) *BalanceLog
-		// 保存余额变动信息
+		// SaveBalanceLog 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int32, error)
-		// 订单结账
+		// SettleOrder 订单结账
 		SettleOrder(orderNo string, amount int, tradeFee int, refundAmount int, remark string) error
-		// 支出
+		// TakePayment 支出
 		TakePayment(outerNo string, amount int, csn int, remark string) error
 
 		// 提现
 		//todo:???
 
-		//todo: 以下需要重构或移除
+		// TransferToMember todo: 以下需要重构或移除
 		// 转到会员账户
 		TransferToMember(amount int) error
 
-		//商户积分转会员积分
+		// TransferToMember1 商户积分转会员积分
 		TransferToMember1(amount float32) error
 
-		// 赠送
+		// Present 赠送
 		Present(amount int, remark string) error
 
-		// 充值
+		// Charge 充值
 		Charge(kind int32, amount int, title, outerNo string,
 			relateUser int64) error
 	}
 
 	IMerchantManager interface {
-		// 创建会员申请商户密钥
+		// CreateSignUpToken 创建会员申请商户密钥
 		CreateSignUpToken(memberId int64) string
 
-		// 根据商户申请密钥获取会员编号
+		// GetMemberFromSignUpToken 根据商户申请密钥获取会员编号
 		GetMemberFromSignUpToken(token string) int64
 
-		// 提交商户注册信息
+		// CommitSignUpInfo 提交商户注册信息
 		CommitSignUpInfo(*MchSignUp) (int32, error)
 
-		// 审核商户注册信息
+		// ReviewMchSignUp 审核商户注册信息
 		ReviewMchSignUp(id int32, pass bool, remark string) error
 
-		// 获取商户申请信息
+		// GetSignUpInfo 获取商户申请信息
 		GetSignUpInfo(id int32) *MchSignUp
 
-		// 获取会员申请的商户信息
+		// GetSignUpInfoByMemberId 获取会员申请的商户信息
 		GetSignUpInfoByMemberId(memberId int64) *MchSignUp
 
-		// 获取会员关联的商户
+		// GetMerchantByMemberId 获取会员关联的商户
 		GetMerchantByMemberId(memberId int64) IMerchant
 
-		// 删除会员的商户申请资料
+		// RemoveSignUp 删除会员的商户申请资料
 		RemoveSignUp(memberId int64) error
 	}
 
-	// 商户申请信息
+	// MchSignUp 商户申请信息
 	MchSignUp struct {
 		Id int32 `db:"id" pk:"yes" auth:"yes"`
 		// 申请单号

@@ -56,8 +56,10 @@ const (
 	FlagTrusted
 	// FlagNoTradePasswd 交易密码未设置(8)
 	FlagNoTradePasswd = 64
+	// FlagSeller 商户(64)
+	FlagSeller = 128
 	// FlagProfileCompleted 已完善的资料(16)
-	FlagProfileCompleted = 128
+	FlagProfileCompleted = 256
 )
 
 type (

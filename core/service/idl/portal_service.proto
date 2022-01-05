@@ -29,6 +29,21 @@ service PortalService {
     // 删除导航分组
     rpc DeleteNavGroup (PortalNavGroupId) returns (Result) {
     }
+
+
+    /** 保存热搜词 */
+    rpc SaveSearchWord (SaveSearchWordRequest) returns (SaveSearchWordResponse) {
+    }
+    /** 获取热搜词 */
+    rpc GetSearchWord (SysSearchWordId) returns (SSearchWord) {
+    }
+    /** 获取热搜词列表 */
+    rpc QuerySearchWordList (QuerySearchWordRequest) returns (QuerySearchWordResponse) {
+    }
+    /** 删除热搜词 */
+    rpc DeleteSearchWord (SysSearchWordId) returns (Result) {
+    }
+
 }
 
 message SaveNavRequest{
@@ -117,4 +132,52 @@ message SaveNavGroupResponse{
     int64 ErrCode = 1;
     string ErrMsg = 2;
     int64 Id = 3;
+}
+
+
+
+/** 保存热搜词请求 */
+message SaveSearchWordRequest{
+    /** 编号 */
+    int64 Id = 1;
+    /** Word */
+    string Word = 2;
+    /** 搜索次数 */
+    int32 SearchCount = 3;
+    /** 1:启用　2:特殊显示 4: 手动创建 */
+    int32 Flag = 4;
+}
+
+/** 保存热搜词响应 */
+message SaveSearchWordResponse{
+    int64 ErrCode = 1;
+    string ErrMsg = 2;
+    int64 Id = 3;
+}
+
+/** 热搜词编号 */
+message SysSearchWordId{
+    int64 Value = 1;
+}
+
+/** 热搜词 */
+message SSearchWord{
+    /** 编号 */
+    int64 Id = 1;
+    /** Word */
+    string Word = 2;
+    /** 搜索次数 */
+    int32 SearchCount = 3;
+    /** 1:启用　2:特殊显示 4: 手动创建 */
+    int32 Flag = 4;
+}
+
+/** 查询热搜词请求 */
+message QuerySearchWordRequest{
+   int32 Size = 1;
+}
+
+/** 查询热搜词响应 */
+message QuerySearchWordResponse{
+    repeated SSearchWord Value = 1;
 }

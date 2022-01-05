@@ -15,7 +15,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 )
 
-var _ content.IContentRepo = new(contentRepo)
+var _ content.IArchiveRepo = new(contentRepo)
 
 type contentRepo struct {
 	db.Connector
@@ -23,7 +23,7 @@ type contentRepo struct {
 }
 
 // 内容仓储
-func NewContentRepo(o orm.Orm) content.IContentRepo {
+func NewContentRepo(o orm.Orm) content.IArchiveRepo {
 	return &contentRepo{
 		Connector: o.Connector(),
 		o:         o,
@@ -38,16 +38,16 @@ func (c *contentRepo) GetContent(userId int64) content.IContent {
 // 根据编号获取页面
 func (c *contentRepo) GetPageById(mchId, id int32) *content.Page {
 	var e content.Page
-	if err := c.o.Get(id, &e); err == nil && e.UserId == int64(mchId) {
+	if err := c.o.Get(id, &e); err == nil && e.UserId == int(mchId) {
 		return &e
 	}
 	return nil
 }
 
 // 根据标识获取页面
-func (c *contentRepo) GetPageByStringIndent(userId int32, indent string) *content.Page {
+func (c *contentRepo) GetPageByCode(userId int, code string) *content.Page {
 	var e content.Page
-	if err := c.o.GetBy(&e, "user_id= $1 and str_indent= $2", userId, indent); err == nil {
+	if err := c.o.GetBy(&e, "user_id= $1 and code= $2", userId, code); err == nil {
 		return &e
 	}
 	return nil

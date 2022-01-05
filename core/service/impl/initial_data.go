@@ -3,7 +3,10 @@ package impl
 import (
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
+	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/gof/db/orm"
+	"time"
 )
 
 func InitData(o orm.Orm) {
@@ -19,6 +22,7 @@ type dataInitializer struct {
 func (i dataInitializer) init() {
 	i.initPortalNav()
 	i.initPortalNavGroup()
+	i.initPages()
 }
 
 // 初始化导航数据
@@ -101,6 +105,44 @@ func (i dataInitializer) initPortalNavGroup() {
 			repo.SaveNavGroup(&model.NavGroup{
 				Name: v,
 			})
+		}
+	}
+}
+
+// 初始化内置页面
+func (i dataInitializer) initPages() {
+	repo := repos.Repo.GetContentRepo()
+	ip := repo.GetPageByCode(0, "privacy")
+	if ip == nil {
+		pages := []*content.Page{
+			{
+				Title: "隐私政策",
+				Code:  "privacy",
+				Content: "请您务必审慎阅读,并充分理解\"服务协议\"和\"隐私政策\"各条款，为了向您提供相关服务，我们需要收集你您的设备信息、操作日志等个人信息。" +
+					"您可以在\"设置\"中查看、变更和删除个人信息并管理您的授权。您可阅读《服务协议》和《隐私政策》了解详细信息。" +
+					"如果您同意，请点击“同意”开始使用我们的服务。",
+			},
+			{
+				Title:   "用户服务协议",
+				Code:    "protocol",
+				Content: "",
+			},
+			{
+				Title:   "关于平台",
+				Code:    "about",
+				Content: "",
+			},
+			{
+				Title:   "联系我们",
+				Code:    "contact",
+				Content: "",
+			},
+		}
+		for _, v := range pages {
+			v.Flag |= content.FlagInternal
+			v.Enabled = 1
+			v.UpdateTime = time.Now().Unix()
+			repo.SavePage(0, v)
 		}
 	}
 }

@@ -17,6 +17,8 @@ enum EMemberFlag {
     TRUSTED = 4;
     /** 未设置交易密码 */
     NO_TRADE_PASSWD = 64;
+    /** 商户 */
+    FlagSeller = 128;
 }
 
 message RegisterMemberRequest {
@@ -248,7 +250,7 @@ message AccountChangeRequest {
     // 会员编号
     sint64 MemberId = 1;
     // 账户类型
-    sint32 AccountType = 2;
+    EAccountType AccountType = 2;
     // 明细标题
     string Title = 3;
     // 金额

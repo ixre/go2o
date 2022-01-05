@@ -26,8 +26,11 @@ var (
 	ErrMissingMerchantUser = domain.NewError(
 		"err_missing_merchant_user", "未设置商户用户")
 
-	ErrExistMember = domain.NewError(
-		"err_exist_member", "会员已绑定其他商户")
+	ErrBindAnotherMerchant = domain.NewError(
+		"err_bind_another_merchant", "会员已绑定其他商户")
+
+	ErrMemberBindExists = domain.NewError(
+		"err_member_bind_exist", "当前已绑定该会员")
 
 	ErrMerchantUserExists = domain.NewError(
 		"err_merchant_user_exists", "商户已存在")

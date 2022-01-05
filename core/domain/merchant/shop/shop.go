@@ -11,6 +11,7 @@ package shop
 
 import (
 	"errors"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -29,9 +30,10 @@ var (
 func NewShop(v *shop.OnlineShop, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShop {
 	return &onlineShopImpl{
-		_shopVal: v,
-		valRepo:  valRepo,
-		shopRepo: shopRepo,
+		_shopVal:     v,
+		valRepo:      valRepo,
+		shopRepo:     shopRepo,
+		registryRepo: registryRepo,
 	}
 }
 
@@ -39,6 +41,7 @@ var _ shop.IShop = new(onlineShopImpl)
 var _ shop.IOnlineShop = new(onlineShopImpl)
 
 type onlineShopImpl struct {
+	_mch         merchant.IMerchant
 	_shopVal     *shop.OnlineShop
 	valRepo      valueobject.IValueRepo
 	shopRepo     shop.IShopRepo
@@ -116,14 +119,15 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 	return nil
 }
 
-// 设置值
+// SetShopValue 设置值
 func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
+	mv := s._mch.GetValue()
 	v.Logo = strings.TrimSpace(v.Logo)
 	dst := s._shopVal
 	if s.GetDomainId() <= 0 {
 		unix := time.Now().Unix()
 		if v.VendorId <= 0 {
-			panic("vendor id not right")
+			return merchant.ErrNoSuchMerchant
 		}
 		dst.Logo = shop.DefaultOnlineShop.Logo
 		dst.CreateTime = unix
@@ -139,8 +143,14 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 			dst.Alias = v.Alias
 		}
 	}
+	// 判断自营
+	if mv.SelfSales == 1 {
+		dst.Flag |= shop.FlagSelfSale
+	} else {
+		dst.Flag ^= shop.FlagSelfSale
+	}
 	dst.Host = v.Host
-	dst.Tel = v.Tel
+	dst.Telephone = v.Telephone
 	dst.Addr = v.Addr
 	dst.State = v.State
 	dst.Host = v.Host
@@ -150,14 +160,17 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	return err
 }
 
-// 获取值
+// GetShopValue 获取值
 func (s *onlineShopImpl) GetShopValue() shop.OnlineShop {
 	return *s._shopVal
 }
 
-// 保存
+// Save 保存
 func (s *onlineShopImpl) Save() error {
 	if s.GetDomainId() > 0 {
+		if len(s._shopVal.Alias) == 0 {
+			s._shopVal.Alias = s.generateShopAlias()
+		}
 		_, err := s.shopRepo.SaveOnlineShop(s._shopVal)
 		return err
 	}
@@ -193,7 +206,7 @@ func (s *onlineShopImpl) generateShopAlias() string {
 	return ""
 }
 
-// 获取商店信息
+// Data 获取商店信息
 func (s *onlineShopImpl) Data() *shop.ComplexShop {
 	ov := s._shopVal
 	v := &shop.ComplexShop{
@@ -206,7 +219,7 @@ func (s *onlineShopImpl) Data() *shop.ComplexShop {
 	}
 	v.Data["Host"] = ov.Host
 	v.Data["Logo"] = ov.Logo
-	v.Data["ServiceTel"] = ov.Tel
+	v.Data["ServiceTel"] = ov.Telephone
 	return v
 }
 

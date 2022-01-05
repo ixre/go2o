@@ -321,7 +321,7 @@ func (i *itemImpl) checkItemValue(v *item.GoodsItem) error {
 		if isp == nil {
 			return shop.ErrNoSuchShop
 		}
-		i.value.ShopId = int64(isp.GetDomainId())
+		i.value.ShopId = isp.Id
 	}
 
 	// 检测运费模板

@@ -465,3 +465,64 @@ COMMENT ON TABLE public.sale_cart
   IS '购物车';
 ALTER TABLE public.sale_cart
 ALTER COLUMN code TYPE character varying(40) COLLATE pg_catalog."default";
+
+/** 2021-12-30 */
+ALTER TABLE public.portal_nav
+ALTER COLUMN image TYPE character varying(160) COLLATE pg_catalog."default";
+update portal_nav set image=replace(image,'http://','https://')
+
+/** 2021-12-31 */
+ALTER TABLE IF EXISTS public.ex_page
+    RENAME TO arc_page;
+
+COMMENT ON TABLE public.arc_page
+  IS '单页';
+
+ALTER TABLE public.arc_page
+ALTER COLUMN id TYPE bigint;
+COMMENT ON COLUMN public.arc_page.id
+    IS '编号';
+
+ALTER TABLE public.arc_page
+ALTER COLUMN user_id TYPE bigint;
+COMMENT ON COLUMN public.arc_page.user_id
+    IS '用户编号,系统为0';
+
+COMMENT ON COLUMN public.arc_page.title
+    IS '标题';
+
+ALTER TABLE IF EXISTS public.arc_page
+    RENAME perm_flag TO flag;
+
+COMMENT ON COLUMN public.arc_page.flag
+    IS '标志';
+
+COMMENT ON COLUMN public.arc_page.access_key
+    IS '访问钥匙';
+
+ALTER TABLE IF EXISTS public.arc_page
+    RENAME str_indent TO code;
+
+COMMENT ON COLUMN public.arc_page.code
+    IS '页面代码';
+
+COMMENT ON COLUMN public.arc_page.keyword
+    IS '关键词';
+
+COMMENT ON COLUMN public.arc_page.description
+    IS '描述';
+
+COMMENT ON COLUMN public.arc_page.css_path
+    IS '样式表路径';
+
+COMMENT ON COLUMN public.arc_page.enabled
+    IS '是否启用';
+
+ALTER TABLE IF EXISTS public.arc_page
+    RENAME body TO content;
+
+COMMENT ON COLUMN public.arc_page.content
+    IS '内容';
+
+COMMENT ON COLUMN public.arc_page.update_time
+    IS '更新时间';

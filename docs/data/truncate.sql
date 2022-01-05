@@ -5,7 +5,7 @@ TRUNCATE TABLE "article_category";
 TRUNCATE TABLE "article_list";
 TRUNCATE TABLE "comm_qr_template";
 TRUNCATE TABLE "dlv_merchant_bind";
-TRUNCATE TABLE "ex_page";
+TRUNCATE TABLE "arc_page";
 TRUNCATE TABLE "gs_member_price";
 TRUNCATE TABLE "item_sku";
 TRUNCATE TABLE "item_info";

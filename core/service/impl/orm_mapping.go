@@ -56,7 +56,7 @@ func OrmMapping(orm orm.Orm) {
 	orm.Mapping(mss.Replay{}, "msg_replay")
 
 	// 内容
-	orm.Mapping(content.Page{}, "ex_page")
+	orm.Mapping(content.Page{}, "arc_page")
 	orm.Mapping(content.Article{}, "article_list")
 	orm.Mapping(content.ArticleCategory{}, "article_category")
 

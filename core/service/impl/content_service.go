@@ -20,13 +20,13 @@ import (
 var _ proto.ContentServiceServer = new(contentService)
 
 type contentService struct {
-	_contentRepo content.IContentRepo
+	_contentRepo content.IArchiveRepo
 	_query       *query.ContentQuery
 	_sysContent  content.IContent
 	serviceUtil
 }
 
-func NewContentService(rep content.IContentRepo, q *query.ContentQuery) *contentService {
+func NewContentService(rep content.IArchiveRepo, q *query.ContentQuery) *contentService {
 	return &contentService{
 		_contentRepo: rep,
 		_query:       q,
@@ -41,7 +41,7 @@ func (c *contentService) GetPage(_ context.Context, id *proto.IdOrName) (*proto.
 	if id.Id > 0 {
 		ia = ic.GetPage(int32(id.Id))
 	} else {
-		ia = ic.GetPageByStringIndent(id.Name)
+		ia = ic.GetPageByCode(id.Name)
 	}
 	if ia != nil {
 		return c.parsePageDto(ia.GetValue()), nil
@@ -123,7 +123,7 @@ func (c *contentService) DeleteArticleCategory(_ context.Context, id *proto.Int6
 	return c.error(err), nil
 }
 
-// 获取文章
+// GetArticle 获取文章
 func (c *contentService) GetArticle(_ context.Context, id *proto.IdOrName) (*proto.SArticle, error) {
 	m := c._sysContent.ArticleManager()
 	var ia content.IArticle
@@ -139,13 +139,13 @@ func (c *contentService) GetArticle(_ context.Context, id *proto.IdOrName) (*pro
 	return nil, nil
 }
 
-// 删除文章
+// DeleteArticle 删除文章
 func (c *contentService) DeleteArticle(_ context.Context, id *proto.Int64) (*proto.Result, error) {
 	err := c._sysContent.ArticleManager().DeleteArticle(int32(id.Value))
 	return c.error(err), nil
 }
 
-// 保存文章
+// SaveArticle 保存文章
 func (c *contentService) SaveArticle(_ context.Context, r *proto.SArticle) (*proto.Result, error) {
 	m := c._sysContent.ArticleManager()
 	v := c.parseArticle(r)
@@ -203,15 +203,15 @@ func (c *contentService) QueryTopArticles(_ context.Context, cat *proto.IdOrName
 func (c *contentService) parsePageDto(src *content.Page) *proto.SPage {
 	return &proto.SPage{
 		Id:          int64(src.Id),
-		UserId:      src.UserId,
+		UserId:      int64(src.UserId),
 		Title:       src.Title,
-		StrIndent:   src.StrIndent,
-		PermFlag:    int32(src.PermFlag),
+		Code:        src.Code,
+		Flag:        int32(src.Flag),
 		AccessKey:   src.AccessKey,
 		KeyWord:     src.KeyWord,
 		Description: src.Description,
 		CssPath:     src.CssPath,
-		Body:        src.Body,
+		Content:     src.Content,
 		UpdateTime:  src.UpdateTime,
 		Enabled:     src.Enabled == 1,
 	}
@@ -219,16 +219,16 @@ func (c *contentService) parsePageDto(src *content.Page) *proto.SPage {
 
 func (c *contentService) parsePage(v *proto.SPage) *content.Page {
 	return &content.Page{
-		Id:          int32(v.Id),
-		UserId:      v.UserId,
+		Id:          int(v.Id),
+		UserId:      int(v.UserId),
 		Title:       v.Title,
-		StrIndent:   v.StrIndent,
-		PermFlag:    int(v.PermFlag),
+		Code:        v.Code,
+		Flag:        int(v.Flag),
 		AccessKey:   v.AccessKey,
 		KeyWord:     v.KeyWord,
 		Description: v.Description,
 		CssPath:     v.CssPath,
-		Body:        v.Body,
+		Content:     v.Content,
 		UpdateTime:  v.UpdateTime,
 		Enabled:     types.ElseInt(v.Enabled, 1, 0),
 	}

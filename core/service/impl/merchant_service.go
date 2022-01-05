@@ -24,6 +24,7 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
+	context2 "golang.org/x/net/context"
 	"strings"
 )
 
@@ -47,26 +48,43 @@ func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 	}
 }
 
-// 创建会员申请商户密钥
+// ChangeMemberBind 更换会员绑定
+func (m *merchantService) ChangeMemberBind(_ context2.Context, r *proto.ChangeMemberBindRequest) (*proto.Result, error) {
+	im := m._mchRepo.GetMerchant(int(r.MerchantId))
+	if im == nil {
+		return m.error(merchant.ErrNoSuchMerchant), nil
+	}
+	mem := m._memberRepo.GetMemberByUser(r.UserName)
+	if mem == nil {
+		return m.error(member.ErrNoSuchMember), nil
+	}
+	err := im.BindMember(int(mem.Id))
+	if err != nil {
+		return m.error(err), nil
+	}
+	return m.success(nil), nil
+}
+
+// CreateSignUpToken 创建会员申请商户密钥
 func (m *merchantService) CreateSignUpToken(_ context.Context, id *proto.MemberId) (*proto.String, error) {
 	s := m._mchRepo.CreateSignUpToken(id.Value)
 	return &proto.String{Value: s}, nil
 }
 
-// 根据商户申请密钥获取会员编号
+// GetMemberFromSignUpToken 根据商户申请密钥获取会员编号
 func (m *merchantService) GetMemberFromSignUpToken(_ context.Context, s *proto.String) (*proto.Int64, error) {
 	i := m._mchRepo.GetMemberFromSignUpToken(s.Value)
 	return &proto.Int64{Value: i}, nil
 }
 
-// 提交注册信息
+// SignUp 提交注册信息
 func (m *merchantService) SignUp(_ context.Context, up *proto.SMchSignUp) (*proto.Result, error) {
 	im := m._mchRepo.GetManager()
 	_, err := im.CommitSignUpInfo(m.parseMchSignUp(up))
 	return m.error(err), nil
 }
 
-// 获取会员商户申请信息
+// GetMchSignUpId 获取会员商户申请信息
 func (m *merchantService) GetMchSignUpId(_ context.Context, id *proto.MemberId) (*proto.Int64, error) {
 	v := m._mchRepo.GetManager().GetSignUpInfoByMemberId(id.Value)
 	if v != nil {
@@ -75,7 +93,7 @@ func (m *merchantService) GetMchSignUpId(_ context.Context, id *proto.MemberId) 
 	return &proto.Int64{}, nil
 }
 
-// 获取商户申请信息
+// GetSignUp 获取商户申请信息
 func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.SMchSignUp, error) {
 	im := m._mchRepo.GetManager()
 	v := im.GetSignUpInfo(int32(id.Value))
@@ -85,14 +103,14 @@ func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.
 	return nil, nil
 }
 
-// 审核商户申请信息
+// ReviewSignUp 审核商户申请信息
 func (m *merchantService) ReviewSignUp(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
 	im := m._mchRepo.GetManager()
 	err := im.ReviewMchSignUp(int32(r.MerchantId), r.Pass, r.Remark)
 	return m.error(err), nil
 }
 
-// 删除会员的商户申请资料
+// RemoveMerchantSignUp 删除会员的商户申请资料
 func (m *merchantService) RemoveMerchantSignUp(_ context.Context, id *proto.MemberId) (*proto.Result, error) {
 	err := m._mchRepo.GetManager().RemoveSignUp(id.Value)
 	return m.error(err), nil
@@ -106,7 +124,7 @@ func (m *merchantService) GetMerchantIdByMember(_ context.Context, id *proto.Mem
 	return &proto.Int64{}, nil
 }
 
-// 获取企业信息,并返回是否为提交的信息
+// GetEnterpriseInfo 获取企业信息,并返回是否为提交的信息
 func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.MerchantId) (*proto.SEnterpriseInfo, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
@@ -118,7 +136,7 @@ func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.Merchan
 	return nil, nil
 }
 
-// 保存企业信息
+// SaveEnterpriseInfo 保存企业信息
 func (m *merchantService) SaveEnterpriseInfo(_ context.Context, r *proto.SaveEnterpriseRequest) (*proto.Result, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
@@ -131,7 +149,7 @@ func (m *merchantService) SaveEnterpriseInfo(_ context.Context, r *proto.SaveEnt
 	return m.error(err), nil
 }
 
-// 审核企业信息
+// ReviewEnterpriseInfo 审核企业信息
 func (m *merchantService) ReviewEnterpriseInfo(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
@@ -144,7 +162,7 @@ func (m *merchantService) ReviewEnterpriseInfo(_ context.Context, r *proto.MchRe
 	return m.error(err), nil
 }
 
-// 获取商户账户
+// GetAccount 获取商户账户
 func (m *merchantService) GetAccount(_ context.Context, id *proto.MerchantId) (*proto.SMerchantAccount, error) {
 	v := m._mchRepo.GetAccount(int(id.Value))
 	if v != nil {
@@ -153,7 +171,7 @@ func (m *merchantService) GetAccount(_ context.Context, id *proto.MerchantId) (*
 	return nil, nil
 }
 
-// 设置商户启用或停用
+// SetEnabled 设置商户启用或停用
 func (m *merchantService) SetEnabled(_ context.Context, r *proto.MerchantDisableRequest) (*proto.Result, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
@@ -165,13 +183,13 @@ func (m *merchantService) SetEnabled(_ context.Context, r *proto.MerchantDisable
 	return m.error(err), nil
 }
 
-// 根据主机查询商户编号
+// GetMerchantIdByHost 根据主机查询商户编号
 func (m *merchantService) GetMerchantIdByHost(_ context.Context, host *proto.String) (*proto.Int64, error) {
 	id := m._query.QueryMerchantIdByHost(host.Value)
 	return &proto.Int64{Value: id}, nil
 }
 
-// 获取商户的域名
+// GetMerchantMajorHost 获取商户的域名
 func (m *merchantService) GetMerchantMajorHost(_ context.Context, id *proto.MerchantId) (*proto.String, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
@@ -435,6 +453,9 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 	}
 	im := m._mchRepo.CreateMerchant(v)
 	err := im.SetValue(v)
+	if err == nil && r.RelMemberId > 0 {
+		err = im.BindMember(int(r.RelMemberId))
+	}
 	if err == nil {
 		_, err = im.Save()
 		if err == nil {
@@ -443,7 +464,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 				Logo:       mch.ShopLogo,
 				Host:       "",
 				Alias:      "",
-				Tel:        "",
+				Telephone:  "",
 				Addr:       "",
 				ShopTitle:  "",
 				ShopNotice: "",

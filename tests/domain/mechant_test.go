@@ -1,4 +1,4 @@
-package tests
+package domain
 
 import (
 	"errors"
@@ -41,7 +41,7 @@ func TestCreateMerchant(t *testing.T) {
 				Logo:       "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
 				Host:       "",
 				Alias:      "zy",
-				Tel:        "",
+				Telephone:  "",
 				Addr:       "",
 				ShopTitle:  "",
 				ShopNotice: "",
@@ -51,6 +51,28 @@ func TestCreateMerchant(t *testing.T) {
 	}
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
+	}
+}
+
+// 测试更改绑定会员
+func TestBindMember(t *testing.T) {
+	var mchId = 1
+	var memberId = 4
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(mchId)
+	err := mch.BindMember(memberId)
+	if err == nil {
+		err = mch.BindMember(memberId + 1)
+		if err == nil {
+			err = mch.BindMember(memberId)
+		}
+	}
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if mch.GetValue().MemberId != int64(memberId) {
+		t.Log("now bind member id is ", mch.GetValue().MemberId)
 		t.FailNow()
 	}
 }
