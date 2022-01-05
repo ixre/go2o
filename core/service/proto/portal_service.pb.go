@@ -47,7 +47,7 @@ func (m *SaveNavRequest) Reset()         { *m = SaveNavRequest{} }
 func (m *SaveNavRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveNavRequest) ProtoMessage()    {}
 func (*SaveNavRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{0}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{0}
 }
 func (m *SaveNavRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavRequest.Unmarshal(m, b)
@@ -130,7 +130,7 @@ func (m *SNavGroup) Reset()         { *m = SNavGroup{} }
 func (m *SNavGroup) String() string { return proto.CompactTextString(m) }
 func (*SNavGroup) ProtoMessage()    {}
 func (*SNavGroup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{1}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{1}
 }
 func (m *SNavGroup) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SNavGroup.Unmarshal(m, b)
@@ -177,7 +177,7 @@ func (m *SaveNavResponse) Reset()         { *m = SaveNavResponse{} }
 func (m *SaveNavResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveNavResponse) ProtoMessage()    {}
 func (*SaveNavResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{2}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{2}
 }
 func (m *SaveNavResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavResponse.Unmarshal(m, b)
@@ -229,7 +229,7 @@ func (m *PortalNavId) Reset()         { *m = PortalNavId{} }
 func (m *PortalNavId) String() string { return proto.CompactTextString(m) }
 func (*PortalNavId) ProtoMessage()    {}
 func (*PortalNavId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{3}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{3}
 }
 func (m *PortalNavId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PortalNavId.Unmarshal(m, b)
@@ -280,7 +280,7 @@ func (m *SNav) Reset()         { *m = SNav{} }
 func (m *SNav) String() string { return proto.CompactTextString(m) }
 func (*SNav) ProtoMessage()    {}
 func (*SNav) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{4}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{4}
 }
 func (m *SNav) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SNav.Unmarshal(m, b)
@@ -363,7 +363,7 @@ func (m *QueryNavRequest) Reset()         { *m = QueryNavRequest{} }
 func (m *QueryNavRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryNavRequest) ProtoMessage()    {}
 func (*QueryNavRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{5}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{5}
 }
 func (m *QueryNavRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavRequest.Unmarshal(m, b)
@@ -422,7 +422,7 @@ func (m *QueryNavResponse) Reset()         { *m = QueryNavResponse{} }
 func (m *QueryNavResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryNavResponse) ProtoMessage()    {}
 func (*QueryNavResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{6}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{6}
 }
 func (m *QueryNavResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavResponse.Unmarshal(m, b)
@@ -459,7 +459,7 @@ func (m *QueryNavGroupRequest) Reset()         { *m = QueryNavGroupRequest{} }
 func (m *QueryNavGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryNavGroupRequest) ProtoMessage()    {}
 func (*QueryNavGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{7}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{7}
 }
 func (m *QueryNavGroupRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavGroupRequest.Unmarshal(m, b)
@@ -490,7 +490,7 @@ func (m *QueryNavGroupResponse) Reset()         { *m = QueryNavGroupResponse{} }
 func (m *QueryNavGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryNavGroupResponse) ProtoMessage()    {}
 func (*QueryNavGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{8}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{8}
 }
 func (m *QueryNavGroupResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavGroupResponse.Unmarshal(m, b)
@@ -528,7 +528,7 @@ func (m *PortalNavGroupId) Reset()         { *m = PortalNavGroupId{} }
 func (m *PortalNavGroupId) String() string { return proto.CompactTextString(m) }
 func (*PortalNavGroupId) ProtoMessage()    {}
 func (*PortalNavGroupId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{9}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{9}
 }
 func (m *PortalNavGroupId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PortalNavGroupId.Unmarshal(m, b)
@@ -569,7 +569,7 @@ func (m *SaveNavGroupRequest) Reset()         { *m = SaveNavGroupRequest{} }
 func (m *SaveNavGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveNavGroupRequest) ProtoMessage()    {}
 func (*SaveNavGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{10}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{10}
 }
 func (m *SaveNavGroupRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavGroupRequest.Unmarshal(m, b)
@@ -616,7 +616,7 @@ func (m *SaveNavGroupResponse) Reset()         { *m = SaveNavGroupResponse{} }
 func (m *SaveNavGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveNavGroupResponse) ProtoMessage()    {}
 func (*SaveNavGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_e18d774665ea81c2, []int{11}
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{11}
 }
 func (m *SaveNavGroupResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavGroupResponse.Unmarshal(m, b)
@@ -657,6 +657,304 @@ func (m *SaveNavGroupResponse) GetId() int64 {
 	return 0
 }
 
+// * 保存热搜词请求
+type SaveSearchWordRequest struct {
+	// * 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// * Word
+	Word string `protobuf:"bytes,2,opt,name=Word,proto3" json:"Word"`
+	// * 搜索次数
+	SearchCount int32 `protobuf:"varint,3,opt,name=SearchCount,proto3" json:"SearchCount"`
+	// * 1:启用　2:特殊显示 4: 手动创建
+	Flag                 int32    `protobuf:"varint,4,opt,name=Flag,proto3" json:"Flag"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SaveSearchWordRequest) Reset()         { *m = SaveSearchWordRequest{} }
+func (m *SaveSearchWordRequest) String() string { return proto.CompactTextString(m) }
+func (*SaveSearchWordRequest) ProtoMessage()    {}
+func (*SaveSearchWordRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{12}
+}
+func (m *SaveSearchWordRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveSearchWordRequest.Unmarshal(m, b)
+}
+func (m *SaveSearchWordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveSearchWordRequest.Marshal(b, m, deterministic)
+}
+func (dst *SaveSearchWordRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveSearchWordRequest.Merge(dst, src)
+}
+func (m *SaveSearchWordRequest) XXX_Size() int {
+	return xxx_messageInfo_SaveSearchWordRequest.Size(m)
+}
+func (m *SaveSearchWordRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveSearchWordRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveSearchWordRequest proto.InternalMessageInfo
+
+func (m *SaveSearchWordRequest) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SaveSearchWordRequest) GetWord() string {
+	if m != nil {
+		return m.Word
+	}
+	return ""
+}
+
+func (m *SaveSearchWordRequest) GetSearchCount() int32 {
+	if m != nil {
+		return m.SearchCount
+	}
+	return 0
+}
+
+func (m *SaveSearchWordRequest) GetFlag() int32 {
+	if m != nil {
+		return m.Flag
+	}
+	return 0
+}
+
+// * 保存热搜词响应
+type SaveSearchWordResponse struct {
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	Id                   int64    `protobuf:"varint,3,opt,name=Id,proto3" json:"Id"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SaveSearchWordResponse) Reset()         { *m = SaveSearchWordResponse{} }
+func (m *SaveSearchWordResponse) String() string { return proto.CompactTextString(m) }
+func (*SaveSearchWordResponse) ProtoMessage()    {}
+func (*SaveSearchWordResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{13}
+}
+func (m *SaveSearchWordResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveSearchWordResponse.Unmarshal(m, b)
+}
+func (m *SaveSearchWordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveSearchWordResponse.Marshal(b, m, deterministic)
+}
+func (dst *SaveSearchWordResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveSearchWordResponse.Merge(dst, src)
+}
+func (m *SaveSearchWordResponse) XXX_Size() int {
+	return xxx_messageInfo_SaveSearchWordResponse.Size(m)
+}
+func (m *SaveSearchWordResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveSearchWordResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveSearchWordResponse proto.InternalMessageInfo
+
+func (m *SaveSearchWordResponse) GetErrCode() int64 {
+	if m != nil {
+		return m.ErrCode
+	}
+	return 0
+}
+
+func (m *SaveSearchWordResponse) GetErrMsg() string {
+	if m != nil {
+		return m.ErrMsg
+	}
+	return ""
+}
+
+func (m *SaveSearchWordResponse) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+// * 热搜词编号
+type SysSearchWordId struct {
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SysSearchWordId) Reset()         { *m = SysSearchWordId{} }
+func (m *SysSearchWordId) String() string { return proto.CompactTextString(m) }
+func (*SysSearchWordId) ProtoMessage()    {}
+func (*SysSearchWordId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{14}
+}
+func (m *SysSearchWordId) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SysSearchWordId.Unmarshal(m, b)
+}
+func (m *SysSearchWordId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SysSearchWordId.Marshal(b, m, deterministic)
+}
+func (dst *SysSearchWordId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SysSearchWordId.Merge(dst, src)
+}
+func (m *SysSearchWordId) XXX_Size() int {
+	return xxx_messageInfo_SysSearchWordId.Size(m)
+}
+func (m *SysSearchWordId) XXX_DiscardUnknown() {
+	xxx_messageInfo_SysSearchWordId.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SysSearchWordId proto.InternalMessageInfo
+
+func (m *SysSearchWordId) GetValue() int64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+// * 热搜词
+type SSearchWord struct {
+	// * 编号
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	// * Word
+	Word string `protobuf:"bytes,2,opt,name=Word,proto3" json:"Word"`
+	// * 搜索次数
+	SearchCount int32 `protobuf:"varint,3,opt,name=SearchCount,proto3" json:"SearchCount"`
+	// * 1:启用　2:特殊显示 4: 手动创建
+	Flag                 int32    `protobuf:"varint,4,opt,name=Flag,proto3" json:"Flag"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SSearchWord) Reset()         { *m = SSearchWord{} }
+func (m *SSearchWord) String() string { return proto.CompactTextString(m) }
+func (*SSearchWord) ProtoMessage()    {}
+func (*SSearchWord) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{15}
+}
+func (m *SSearchWord) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SSearchWord.Unmarshal(m, b)
+}
+func (m *SSearchWord) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SSearchWord.Marshal(b, m, deterministic)
+}
+func (dst *SSearchWord) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SSearchWord.Merge(dst, src)
+}
+func (m *SSearchWord) XXX_Size() int {
+	return xxx_messageInfo_SSearchWord.Size(m)
+}
+func (m *SSearchWord) XXX_DiscardUnknown() {
+	xxx_messageInfo_SSearchWord.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SSearchWord proto.InternalMessageInfo
+
+func (m *SSearchWord) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SSearchWord) GetWord() string {
+	if m != nil {
+		return m.Word
+	}
+	return ""
+}
+
+func (m *SSearchWord) GetSearchCount() int32 {
+	if m != nil {
+		return m.SearchCount
+	}
+	return 0
+}
+
+func (m *SSearchWord) GetFlag() int32 {
+	if m != nil {
+		return m.Flag
+	}
+	return 0
+}
+
+// * 查询热搜词请求
+type QuerySearchWordRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *QuerySearchWordRequest) Reset()         { *m = QuerySearchWordRequest{} }
+func (m *QuerySearchWordRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySearchWordRequest) ProtoMessage()    {}
+func (*QuerySearchWordRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{16}
+}
+func (m *QuerySearchWordRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QuerySearchWordRequest.Unmarshal(m, b)
+}
+func (m *QuerySearchWordRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QuerySearchWordRequest.Marshal(b, m, deterministic)
+}
+func (dst *QuerySearchWordRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySearchWordRequest.Merge(dst, src)
+}
+func (m *QuerySearchWordRequest) XXX_Size() int {
+	return xxx_messageInfo_QuerySearchWordRequest.Size(m)
+}
+func (m *QuerySearchWordRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySearchWordRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySearchWordRequest proto.InternalMessageInfo
+
+// * 查询热搜词响应
+type QuerySearchWordResponse struct {
+	Value                []*SSearchWord `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *QuerySearchWordResponse) Reset()         { *m = QuerySearchWordResponse{} }
+func (m *QuerySearchWordResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySearchWordResponse) ProtoMessage()    {}
+func (*QuerySearchWordResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_portal_service_037840a18fe477b7, []int{17}
+}
+func (m *QuerySearchWordResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_QuerySearchWordResponse.Unmarshal(m, b)
+}
+func (m *QuerySearchWordResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_QuerySearchWordResponse.Marshal(b, m, deterministic)
+}
+func (dst *QuerySearchWordResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySearchWordResponse.Merge(dst, src)
+}
+func (m *QuerySearchWordResponse) XXX_Size() int {
+	return xxx_messageInfo_QuerySearchWordResponse.Size(m)
+}
+func (m *QuerySearchWordResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySearchWordResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySearchWordResponse proto.InternalMessageInfo
+
+func (m *QuerySearchWordResponse) GetValue() []*SSearchWord {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*SaveNavRequest)(nil), "SaveNavRequest")
 	proto.RegisterType((*SNavGroup)(nil), "SNavGroup")
@@ -670,6 +968,12 @@ func init() {
 	proto.RegisterType((*PortalNavGroupId)(nil), "PortalNavGroupId")
 	proto.RegisterType((*SaveNavGroupRequest)(nil), "SaveNavGroupRequest")
 	proto.RegisterType((*SaveNavGroupResponse)(nil), "SaveNavGroupResponse")
+	proto.RegisterType((*SaveSearchWordRequest)(nil), "SaveSearchWordRequest")
+	proto.RegisterType((*SaveSearchWordResponse)(nil), "SaveSearchWordResponse")
+	proto.RegisterType((*SysSearchWordId)(nil), "SysSearchWordId")
+	proto.RegisterType((*SSearchWord)(nil), "SSearchWord")
+	proto.RegisterType((*QuerySearchWordRequest)(nil), "QuerySearchWordRequest")
+	proto.RegisterType((*QuerySearchWordResponse)(nil), "QuerySearchWordResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -698,6 +1002,14 @@ type PortalServiceClient interface {
 	QueryNavGroupList(ctx context.Context, in *QueryNavGroupRequest, opts ...grpc.CallOption) (*QueryNavGroupResponse, error)
 	// 删除导航分组
 	DeleteNavGroup(ctx context.Context, in *PortalNavGroupId, opts ...grpc.CallOption) (*Result, error)
+	// * 保存热搜词
+	SaveSearchWord(ctx context.Context, in *SaveSearchWordRequest, opts ...grpc.CallOption) (*SaveSearchWordResponse, error)
+	// * 获取热搜词
+	GetSearchWord(ctx context.Context, in *SysSearchWordId, opts ...grpc.CallOption) (*SSearchWord, error)
+	// * 获取热搜词列表
+	QuerySearchWordList(ctx context.Context, in *QuerySearchWordRequest, opts ...grpc.CallOption) (*QuerySearchWordResponse, error)
+	// * 删除热搜词
+	DeleteSearchWord(ctx context.Context, in *SysSearchWordId, opts ...grpc.CallOption) (*Result, error)
 }
 
 type portalServiceClient struct {
@@ -771,6 +1083,42 @@ func (c *portalServiceClient) DeleteNavGroup(ctx context.Context, in *PortalNavG
 	return out, nil
 }
 
+func (c *portalServiceClient) SaveSearchWord(ctx context.Context, in *SaveSearchWordRequest, opts ...grpc.CallOption) (*SaveSearchWordResponse, error) {
+	out := new(SaveSearchWordResponse)
+	err := c.cc.Invoke(ctx, "/PortalService/SaveSearchWord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *portalServiceClient) GetSearchWord(ctx context.Context, in *SysSearchWordId, opts ...grpc.CallOption) (*SSearchWord, error) {
+	out := new(SSearchWord)
+	err := c.cc.Invoke(ctx, "/PortalService/GetSearchWord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *portalServiceClient) QuerySearchWordList(ctx context.Context, in *QuerySearchWordRequest, opts ...grpc.CallOption) (*QuerySearchWordResponse, error) {
+	out := new(QuerySearchWordResponse)
+	err := c.cc.Invoke(ctx, "/PortalService/QuerySearchWordList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *portalServiceClient) DeleteSearchWord(ctx context.Context, in *SysSearchWordId, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/PortalService/DeleteSearchWord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PortalServiceServer is the server API for PortalService service.
 type PortalServiceServer interface {
 	// 保存门户导航
@@ -787,6 +1135,14 @@ type PortalServiceServer interface {
 	QueryNavGroupList(context.Context, *QueryNavGroupRequest) (*QueryNavGroupResponse, error)
 	// 删除导航分组
 	DeleteNavGroup(context.Context, *PortalNavGroupId) (*Result, error)
+	// * 保存热搜词
+	SaveSearchWord(context.Context, *SaveSearchWordRequest) (*SaveSearchWordResponse, error)
+	// * 获取热搜词
+	GetSearchWord(context.Context, *SysSearchWordId) (*SSearchWord, error)
+	// * 获取热搜词列表
+	QuerySearchWordList(context.Context, *QuerySearchWordRequest) (*QuerySearchWordResponse, error)
+	// * 删除热搜词
+	DeleteSearchWord(context.Context, *SysSearchWordId) (*Result, error)
 }
 
 func RegisterPortalServiceServer(s *grpc.Server, srv PortalServiceServer) {
@@ -919,6 +1275,78 @@ func _PortalService_DeleteNavGroup_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PortalService_SaveSearchWord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveSearchWordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PortalServiceServer).SaveSearchWord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PortalService/SaveSearchWord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PortalServiceServer).SaveSearchWord(ctx, req.(*SaveSearchWordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PortalService_GetSearchWord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SysSearchWordId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PortalServiceServer).GetSearchWord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PortalService/GetSearchWord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PortalServiceServer).GetSearchWord(ctx, req.(*SysSearchWordId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PortalService_QuerySearchWordList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySearchWordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PortalServiceServer).QuerySearchWordList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PortalService/QuerySearchWordList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PortalServiceServer).QuerySearchWordList(ctx, req.(*QuerySearchWordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PortalService_DeleteSearchWord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SysSearchWordId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PortalServiceServer).DeleteSearchWord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PortalService/DeleteSearchWord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PortalServiceServer).DeleteSearchWord(ctx, req.(*SysSearchWordId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _PortalService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "PortalService",
 	HandlerType: (*PortalServiceServer)(nil),
@@ -951,51 +1379,77 @@ var _PortalService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "DeleteNavGroup",
 			Handler:    _PortalService_DeleteNavGroup_Handler,
 		},
+		{
+			MethodName: "SaveSearchWord",
+			Handler:    _PortalService_SaveSearchWord_Handler,
+		},
+		{
+			MethodName: "GetSearchWord",
+			Handler:    _PortalService_GetSearchWord_Handler,
+		},
+		{
+			MethodName: "QuerySearchWordList",
+			Handler:    _PortalService_QuerySearchWordList_Handler,
+		},
+		{
+			MethodName: "DeleteSearchWord",
+			Handler:    _PortalService_DeleteSearchWord_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "portal_service.proto",
 }
 
 func init() {
-	proto.RegisterFile("portal_service.proto", fileDescriptor_portal_service_e18d774665ea81c2)
+	proto.RegisterFile("portal_service.proto", fileDescriptor_portal_service_037840a18fe477b7)
 }
 
-var fileDescriptor_portal_service_e18d774665ea81c2 = []byte{
-	// 564 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0xb5, 0x93, 0x38, 0x69, 0xa6, 0x21, 0x1f, 0x5b, 0x27, 0x32, 0xbe, 0x34, 0x5a, 0x38, 0xe4,
-	0xc2, 0x54, 0x0a, 0xe2, 0x50, 0x21, 0x2e, 0xa5, 0x55, 0x15, 0x09, 0x22, 0x70, 0x02, 0x42, 0x5c,
-	0xd0, 0x26, 0x59, 0x99, 0x08, 0xa7, 0x36, 0xeb, 0x0f, 0x51, 0x7e, 0x0d, 0x67, 0x7e, 0x1e, 0xbf,
-	0x00, 0xed, 0xae, 0x9d, 0x3a, 0x69, 0xb8, 0x71, 0xe8, 0x29, 0xfb, 0x26, 0xf6, 0xcc, 0x9b, 0xf7,
-	0xde, 0x1a, 0xec, 0x28, 0x14, 0x09, 0x0b, 0xbe, 0xc4, 0x5c, 0x64, 0xeb, 0x25, 0xc7, 0x48, 0x84,
-	0x49, 0xe8, 0xb6, 0xfc, 0x20, 0x5c, 0xb0, 0x40, 0x23, 0xfa, 0xdb, 0x84, 0xf6, 0x8c, 0x65, 0x7c,
-	0xca, 0x32, 0x8f, 0x7f, 0x4f, 0x79, 0x9c, 0x90, 0x36, 0x54, 0x26, 0x2b, 0xc7, 0x1c, 0x9a, 0xa3,
-	0xaa, 0x57, 0x99, 0xac, 0x08, 0x81, 0xda, 0x9c, 0xff, 0x48, 0x9c, 0xca, 0xd0, 0x1c, 0x35, 0x3d,
-	0x75, 0x26, 0x5d, 0xa8, 0x7e, 0x10, 0x81, 0x53, 0x55, 0x25, 0x79, 0x24, 0x03, 0xa8, 0xcf, 0x99,
-	0xf0, 0x79, 0xe2, 0xd4, 0x54, 0x31, 0x47, 0xc4, 0x06, 0x6b, 0xb2, 0x61, 0x3e, 0x77, 0x2c, 0x55,
-	0xd6, 0x80, 0x38, 0xd0, 0x98, 0xb2, 0x6c, 0x7e, 0x1b, 0x71, 0xa7, 0x3e, 0x34, 0x47, 0x96, 0x57,
-	0x40, 0xe2, 0xc2, 0xd1, 0x94, 0x65, 0xd7, 0x22, 0x4c, 0x23, 0xa7, 0xa1, 0x5e, 0xd9, 0x62, 0x7a,
-	0x06, 0xcd, 0x59, 0x01, 0x4a, 0x34, 0xad, 0x82, 0xe6, 0x94, 0x6d, 0x78, 0x41, 0x53, 0x9e, 0xe9,
-	0x0c, 0x3a, 0xdb, 0xe5, 0xe2, 0x28, 0xbc, 0x89, 0xd5, 0xe4, 0x2b, 0x21, 0x5e, 0x87, 0x2b, 0x9e,
-	0xaf, 0x58, 0x40, 0xb9, 0xc1, 0x95, 0x10, 0x6f, 0x63, 0x3f, 0x6f, 0x91, 0xa3, 0x7c, 0x50, 0xb5,
-	0xd0, 0x83, 0x3e, 0x81, 0xe3, 0x77, 0x4a, 0xd8, 0x29, 0xcb, 0x26, 0x2b, 0xb9, 0xe0, 0x47, 0x16,
-	0xa4, 0x45, 0x3b, 0x0d, 0xe8, 0x2f, 0x13, 0x6a, 0x92, 0xeb, 0x03, 0x56, 0xf3, 0x1b, 0x74, 0xde,
-	0xa7, 0x5c, 0xdc, 0x96, 0xac, 0x2f, 0x35, 0x32, 0x77, 0x1b, 0xd9, 0x60, 0xe9, 0x2e, 0x9a, 0xb7,
-	0x06, 0xb2, 0x7a, 0xc1, 0xfd, 0xf5, 0x8d, 0xa2, 0x6e, 0x79, 0x1a, 0xc8, 0x15, 0x67, 0xeb, 0x9f,
-	0x5c, 0x51, 0xb7, 0x3c, 0x75, 0xa6, 0xcf, 0xa0, 0x7b, 0x37, 0x2c, 0xb7, 0xe2, 0x31, 0xd4, 0xde,
-	0xac, 0xe3, 0xc4, 0x31, 0x87, 0xd5, 0xd1, 0xf1, 0xd8, 0x42, 0xa9, 0x97, 0xa7, 0x4a, 0x74, 0x00,
-	0x76, 0xf1, 0xb8, 0x9a, 0x94, 0x13, 0xa4, 0xe7, 0xd0, 0xdf, 0xab, 0xe7, 0xbd, 0x86, 0x77, 0x2e,
-	0xc8, 0x66, 0x80, 0xdb, 0xa0, 0x14, 0x8e, 0x8c, 0xa0, 0xbb, 0xb5, 0x4d, 0xfd, 0xf1, 0x4f, 0xef,
-	0xce, 0xe1, 0x24, 0x4f, 0x4d, 0x79, 0xf6, 0x21, 0x27, 0xef, 0x05, 0xee, 0x13, 0xd8, 0xbb, 0xaf,
-	0xfe, 0xaf, 0xd4, 0x8d, 0xff, 0x54, 0xe0, 0x91, 0xe6, 0x3f, 0xd3, 0xd7, 0x99, 0x20, 0x34, 0xf2,
-	0x59, 0xa4, 0x83, 0xbb, 0x77, 0xd8, 0xed, 0xe2, 0x5e, 0xee, 0xa9, 0x41, 0x4e, 0xa1, 0x7e, 0xcd,
-	0x13, 0xf9, 0x78, 0x0b, 0x4b, 0x01, 0x76, 0xb5, 0xf0, 0xd4, 0x20, 0x2f, 0xa0, 0x55, 0x88, 0x2b,
-	0x4d, 0x20, 0x5d, 0xdc, 0xcb, 0x87, 0xdb, 0xc3, 0x7d, 0x13, 0xa9, 0x41, 0x9e, 0x42, 0xf3, 0x92,
-	0x07, 0x3c, 0xe1, 0xf7, 0x5b, 0x37, 0xd0, 0xe3, 0x71, 0x1a, 0x24, 0xd4, 0x20, 0xaf, 0xa0, 0x55,
-	0x56, 0x86, 0xd8, 0x78, 0x40, 0x63, 0xb7, 0x8f, 0x87, 0xe4, 0xa3, 0x06, 0xb9, 0x84, 0xde, 0x8e,
-	0xf1, 0x8a, 0x60, 0x1f, 0x0f, 0x85, 0xc4, 0x1d, 0xe0, 0xc1, 0x8c, 0x50, 0x83, 0x20, 0xb4, 0xb7,
-	0x54, 0x35, 0x8d, 0x1e, 0xee, 0x87, 0xa2, 0x44, 0xfa, 0xe2, 0x14, 0x4e, 0x96, 0xe1, 0x06, 0xfd,
-	0x75, 0xf2, 0x35, 0x5d, 0xa0, 0x1f, 0x8e, 0x43, 0x14, 0xd1, 0xf2, 0xf3, 0x11, 0x9e, 0xbd, 0x54,
-	0x9f, 0xcf, 0x45, 0x5d, 0xfd, 0x3c, 0xff, 0x1b, 0x00, 0x00, 0xff, 0xff, 0xda, 0xb4, 0xcb, 0x48,
-	0x6b, 0x05, 0x00, 0x00,
+var fileDescriptor_portal_service_037840a18fe477b7 = []byte{
+	// 722 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x55, 0x4f, 0x4f, 0xdb, 0x4a,
+	0x10, 0xb7, 0x49, 0x9c, 0xc0, 0x24, 0x10, 0xb3, 0x24, 0xc1, 0xcf, 0x17, 0xa2, 0x7d, 0x4f, 0x7a,
+	0xb9, 0xbc, 0x41, 0x8f, 0xaa, 0x07, 0x54, 0x71, 0xe1, 0x4f, 0x51, 0xaa, 0x36, 0x6a, 0x6d, 0xfa,
+	0x47, 0x5c, 0x2a, 0x93, 0xac, 0x4c, 0x54, 0x83, 0xc3, 0xda, 0x8e, 0x4a, 0x3f, 0x4d, 0xcf, 0xfd,
+	0x62, 0xfd, 0x1a, 0xd5, 0xee, 0xda, 0x89, 0xe3, 0x18, 0x4e, 0x54, 0xea, 0x29, 0x33, 0xe3, 0xdd,
+	0x99, 0xdf, 0xcc, 0xfc, 0x7e, 0x1b, 0x68, 0x4f, 0x43, 0x1e, 0x7b, 0xc1, 0xe7, 0x88, 0xf1, 0xd9,
+	0x64, 0xc4, 0x70, 0xca, 0xc3, 0x38, 0xb4, 0x9b, 0x7e, 0x10, 0x5e, 0x79, 0x81, 0xf2, 0xe8, 0x0f,
+	0x1d, 0xb6, 0x5c, 0x6f, 0xc6, 0x86, 0xde, 0xcc, 0x61, 0x77, 0x09, 0x8b, 0x62, 0xb2, 0x05, 0x6b,
+	0x83, 0xb1, 0xa5, 0xf7, 0xf4, 0x7e, 0xc5, 0x59, 0x1b, 0x8c, 0x09, 0x81, 0xea, 0x05, 0xfb, 0x1a,
+	0x5b, 0x6b, 0x3d, 0xbd, 0xbf, 0xe1, 0x48, 0x9b, 0x98, 0x50, 0x79, 0xcf, 0x03, 0xab, 0x22, 0x43,
+	0xc2, 0x24, 0x5d, 0xa8, 0x5d, 0x78, 0xdc, 0x67, 0xb1, 0x55, 0x95, 0xc1, 0xd4, 0x23, 0x6d, 0x30,
+	0x06, 0x37, 0x9e, 0xcf, 0x2c, 0x43, 0x86, 0x95, 0x43, 0x2c, 0xa8, 0x0f, 0xbd, 0xd9, 0xc5, 0xfd,
+	0x94, 0x59, 0xb5, 0x9e, 0xde, 0x37, 0x9c, 0xcc, 0x25, 0x36, 0xac, 0x0f, 0xbd, 0xd9, 0x39, 0x0f,
+	0x93, 0xa9, 0x55, 0x97, 0x57, 0xe6, 0x3e, 0xdd, 0x87, 0x0d, 0x37, 0x73, 0x72, 0x30, 0x8d, 0x0c,
+	0xe6, 0xd0, 0xbb, 0x61, 0x19, 0x4c, 0x61, 0x53, 0x17, 0x5a, 0xf3, 0xe6, 0xa2, 0x69, 0x78, 0x1b,
+	0xc9, 0xca, 0x67, 0x9c, 0x9f, 0x84, 0x63, 0x96, 0xb6, 0x98, 0xb9, 0xa2, 0x83, 0x33, 0xce, 0xdf,
+	0x44, 0x7e, 0x9a, 0x22, 0xf5, 0xd2, 0x42, 0x95, 0x6c, 0x1e, 0xf4, 0x6f, 0x68, 0xbc, 0x95, 0x83,
+	0x1d, 0x7a, 0xb3, 0xc1, 0x58, 0x34, 0xf8, 0xc1, 0x0b, 0x92, 0x2c, 0x9d, 0x72, 0xe8, 0x77, 0x1d,
+	0xaa, 0x02, 0xeb, 0x1f, 0x3c, 0xcd, 0x2f, 0xd0, 0x7a, 0x97, 0x30, 0x7e, 0x9f, 0x5b, 0x7d, 0x2e,
+	0x91, 0xbe, 0x9c, 0xa8, 0x0d, 0x86, 0xca, 0xa2, 0x70, 0x2b, 0x47, 0x44, 0x8f, 0x99, 0x3f, 0xb9,
+	0x95, 0xd0, 0x0d, 0x47, 0x39, 0xa2, 0x45, 0x77, 0xf2, 0x8d, 0x49, 0xe8, 0x86, 0x23, 0x6d, 0xfa,
+	0x1f, 0x98, 0x8b, 0x62, 0xe9, 0x2a, 0xfe, 0x82, 0xea, 0xeb, 0x49, 0x14, 0x5b, 0x7a, 0xaf, 0xd2,
+	0x6f, 0x1c, 0x18, 0x28, 0xe6, 0xe5, 0xc8, 0x10, 0xed, 0x42, 0x3b, 0x3b, 0x2e, 0x2b, 0xa5, 0x00,
+	0xe9, 0x21, 0x74, 0x0a, 0xf1, 0x34, 0x57, 0x6f, 0xb1, 0x05, 0x91, 0x0c, 0x70, 0x4e, 0x94, 0x6c,
+	0x23, 0x7d, 0x30, 0xe7, 0x6b, 0x93, 0x1f, 0x1e, 0xdc, 0xdd, 0x21, 0xec, 0xa4, 0xac, 0xc9, 0xd7,
+	0x2e, 0xdb, 0xe4, 0x0a, 0xe1, 0x3e, 0x41, 0x7b, 0xf9, 0xea, 0x93, 0xb1, 0xee, 0x0e, 0x3a, 0x22,
+	0xb3, 0xcb, 0x3c, 0x3e, 0xba, 0xfe, 0x18, 0xf2, 0xf1, 0x23, 0xb0, 0xc4, 0xe7, 0x0c, 0x96, 0xb0,
+	0x49, 0x0f, 0x1a, 0xea, 0xe2, 0x49, 0x98, 0xdc, 0xc6, 0xe9, 0xb6, 0xf2, 0x21, 0x71, 0xeb, 0x65,
+	0xe0, 0xf9, 0xd9, 0xce, 0x84, 0x4d, 0x2f, 0xa1, 0x5b, 0x2c, 0xf9, 0x64, 0xed, 0xfc, 0x0b, 0x2d,
+	0xf7, 0x3e, 0x5a, 0xa4, 0x7e, 0x70, 0x19, 0x3e, 0x34, 0xdc, 0xc5, 0xb1, 0xdf, 0xd8, 0xad, 0x05,
+	0x5d, 0x49, 0xad, 0x95, 0x09, 0xd3, 0x23, 0xd8, 0x5d, 0xf9, 0x92, 0x0e, 0x82, 0x2e, 0xd3, 0xae,
+	0x89, 0x39, 0xac, 0x69, 0x07, 0x07, 0x3f, 0xab, 0xb0, 0xa9, 0x98, 0xe7, 0xaa, 0x87, 0x98, 0x20,
+	0xd4, 0x53, 0x96, 0x90, 0x16, 0x2e, 0xbf, 0xbe, 0xb6, 0x89, 0x85, 0x17, 0x8b, 0x6a, 0x64, 0x0f,
+	0x6a, 0xe7, 0x2c, 0x16, 0xc7, 0x9b, 0x98, 0x7b, 0x7a, 0x6c, 0x25, 0x19, 0xaa, 0x91, 0xe7, 0xd0,
+	0xcc, 0x64, 0x21, 0xe4, 0x43, 0x4c, 0x2c, 0x28, 0xdb, 0xde, 0xc6, 0xa2, 0xfc, 0xa8, 0x46, 0xfe,
+	0x81, 0x8d, 0x53, 0x16, 0xb0, 0x98, 0xad, 0xa6, 0xae, 0xa3, 0xc3, 0xa2, 0x24, 0x88, 0xa9, 0x46,
+	0x8e, 0xa0, 0x99, 0xe7, 0x34, 0x69, 0x63, 0x89, 0x3a, 0xec, 0x0e, 0x96, 0x11, 0x9f, 0x6a, 0xe4,
+	0x14, 0xb6, 0x97, 0x24, 0x2b, 0x01, 0x76, 0xb0, 0x4c, 0xde, 0x76, 0x17, 0x4b, 0xd5, 0x4d, 0x35,
+	0x82, 0xb0, 0x35, 0x87, 0xaa, 0x60, 0x6c, 0x63, 0x51, 0xce, 0x79, 0xd0, 0x27, 0xea, 0x6f, 0x2d,
+	0xc7, 0x9c, 0x2e, 0x96, 0xea, 0xc7, 0xde, 0xc5, 0x72, 0x92, 0x53, 0x8d, 0xfc, 0x0f, 0x9b, 0xe7,
+	0x2c, 0xce, 0xe5, 0x30, 0xb1, 0x40, 0x5a, 0x7b, 0x69, 0xe3, 0x54, 0x23, 0xaf, 0x60, 0xa7, 0xc0,
+	0x15, 0xd9, 0xef, 0x2e, 0x96, 0x73, 0xcb, 0xb6, 0xf0, 0x01, 0x6a, 0x51, 0x8d, 0xec, 0x83, 0xa9,
+	0x7a, 0x7e, 0x14, 0xc1, 0xa2, 0xe9, 0xe3, 0x3d, 0xd8, 0x19, 0x85, 0x37, 0xe8, 0x4f, 0xe2, 0xeb,
+	0xe4, 0x0a, 0xfd, 0xf0, 0x20, 0x44, 0x3e, 0x1d, 0x5d, 0xae, 0xe3, 0xfe, 0x0b, 0xf9, 0x6f, 0x7f,
+	0x55, 0x93, 0x3f, 0xcf, 0x7e, 0x05, 0x00, 0x00, 0xff, 0xff, 0xb5, 0x1f, 0xb3, 0x16, 0x1a, 0x08,
+	0x00, 0x00,
 }

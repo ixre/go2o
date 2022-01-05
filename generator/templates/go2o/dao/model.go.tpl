@@ -2,7 +2,7 @@ package model
 #!target:{{.global.pkg}}/dao/model/{{.table.Name}}_model.go
 {{$shortTitle := .table.ShortTitle}}
 
-// {{.table.Comment}}
+// {{$shortTitle}} {{.table.Comment}}
 type {{$shortTitle}} struct{
     {{range $i,$c := .columns}} \
     // {{$c.Comment}}

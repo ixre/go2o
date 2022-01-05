@@ -16,7 +16,7 @@ import (
 
 const (
 	// FlagSelfSale 自营
-	FlagSelfSale = 1 <<iota
+	FlagSelfSale = 1 << iota
 )
 
 var (

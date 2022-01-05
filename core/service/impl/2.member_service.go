@@ -228,9 +228,9 @@ func (s *memberService) RemoveFavorite(_ context.Context, r *proto.FavoriteReque
 }
 
 func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (rs *proto.Result, err error) {
-	m :=s.repo.CreateMemberById(r.MemberId)
-	if m == nil{
-		return s.error(member.ErrNoSuchMember),nil
+	m := s.repo.CreateMemberById(r.MemberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
 	}
 	f := m.Favorite()
 	switch r.FavoriteType {
@@ -247,9 +247,9 @@ func (s *memberService) Favorite(_ context.Context, r *proto.FavoriteRequest) (r
 
 // IsFavored 是否已收藏
 func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (*proto.Bool, error) {
-	m :=s.repo.CreateMemberById(r.MemberId)
-	if m == nil{
-		return &proto.Bool{},nil
+	m := s.repo.CreateMemberById(r.MemberId)
+	if m == nil {
+		return &proto.Bool{}, nil
 	}
 	f := m.Favorite()
 	t := member.FavTypeGoods

@@ -5,21 +5,24 @@ import (
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/gof/db/orm"
 	"golang.org/x/net/context"
 )
 
 var _ proto.PortalServiceServer = new(portalService)
 
 type portalService struct {
-	repo *impl.CommonDao
-	dao  dao.IPortalDao
+	repo          *impl.CommonDao
+	dao           dao.IPortalDao
+	searchWordDao dao.ISysSearchWordDao
 	serviceUtil
 }
 
-func NewPortalService(d *impl.CommonDao, portalDao dao.IPortalDao) *portalService {
+func NewPortalService(o orm.Orm, d *impl.CommonDao, portalDao dao.IPortalDao) *portalService {
 	return &portalService{
-		repo: d,
-		dao:  portalDao,
+		repo:          d,
+		dao:           portalDao,
+		searchWordDao: impl.NewSysSearchWordDao(o),
 	}
 }
 
@@ -172,5 +175,71 @@ func (p *portalService) QueryNavGroupList(c context.Context, r *proto.QueryNavGr
 
 func (p *portalService) DeleteNavGroup(c context.Context, id *proto.PortalNavGroupId) (*proto.Result, error) {
 	err := p.dao.DeleteNavGroup(id.Value)
+	return p.error(err), nil
+}
+
+// SaveSearchWord 保存热搜词
+func (p *portalService) SaveSearchWord(_ context.Context, r *proto.SaveSearchWordRequest) (*proto.SaveSearchWordResponse, error) {
+	var dst *model.SearchWord
+	if r.Id > 0 {
+		if dst = p.searchWordDao.GetSearchWord(r.Id); dst == nil {
+			return &proto.SaveSearchWordResponse{
+				ErrCode: 2,
+				ErrMsg:  "no such record",
+			}, nil
+		}
+	} else {
+		dst = &model.SearchWord{}
+
+	}
+
+	dst.Word = r.Word
+	dst.SearchCount = int(r.SearchCount)
+	dst.Flag = int(r.Flag)
+
+	id, err := p.searchWordDao.SaveSearchWord(dst)
+	ret := &proto.SaveSearchWordResponse{
+		Id: int64(id),
+	}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
+}
+
+func (p *portalService) parseSearchWord(v *model.SearchWord) *proto.SSearchWord {
+	return &proto.SSearchWord{
+		Id:          v.Id,
+		Word:        v.Word,
+		SearchCount: int32(v.SearchCount),
+		Flag:        int32(v.Flag),
+	}
+}
+
+// GetSearchWord 获取热搜词
+func (p *portalService) GetSearchWord(_ context.Context, id *proto.SysSearchWordId) (*proto.SSearchWord, error) {
+	v := p.searchWordDao.GetSearchWord(id.Value)
+	if v == nil {
+		return nil, nil
+	}
+	return p.parseSearchWord(v), nil
+}
+
+// QuerySearchWordList 获取热搜词列表
+func (p *portalService) QuerySearchWordList(_ context.Context, r *proto.QuerySearchWordRequest) (*proto.QuerySearchWordResponse, error) {
+	arr := p.searchWordDao.SelectSearchWord("")
+	ret := &proto.QuerySearchWordResponse{
+		Value: make([]*proto.SSearchWord, len(arr)),
+	}
+	for i, v := range arr {
+		ret.Value[i] = p.parseSearchWord(v)
+	}
+	return ret, nil
+}
+
+// DeleteSearchWord 删除热搜词
+func (p *portalService) DeleteSearchWord(_ context.Context, id *proto.SysSearchWordId) (*proto.Result, error) {
+	err := p.searchWordDao.DeleteSearchWord(id.Value)
 	return p.error(err), nil
 }

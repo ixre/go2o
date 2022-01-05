@@ -156,7 +156,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	CartService = NewCartService(cartRepo, itemRepo, mchRepo, shopRepo)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
-	ShopService = NewShopService(shopRepo, mchRepo, shopRepo, registryRepo,shopQuery)
+	ShopService = NewShopService(shopRepo, mchRepo, shopRepo, registryRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, registryRepo, memberQue, orderQuery, valueRepo)
 	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
@@ -172,7 +172,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 
 	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
 	portalDao := impl.NewPortalDao(orm)
-	PortalService = NewPortalService(CommonDao, portalDao)
+	PortalService = NewPortalService(orm, CommonDao, portalDao)
 	QueryService = NewQueryService(orm, sto)
 	AppService = NewAppService(sto, orm)
 	RbacService = NewRbacService(sto, orm, registryRepo)

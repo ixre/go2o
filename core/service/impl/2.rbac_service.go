@@ -715,7 +715,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	}
 
 	// 上级是否改变
-	var parentChanged = dst.Pid != r.Pid || (r.Pid != 0 && dst.Depth == 0)
+	var parentChanged = r.Id > 0 && (dst.Pid != r.Pid || (r.Pid > 0 && dst.Depth == 0))
 	dst.Name = r.Name
 	dst.ResType = int16(r.ResType)
 	dst.Pid = r.Pid

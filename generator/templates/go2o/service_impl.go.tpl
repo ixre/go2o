@@ -11,16 +11,6 @@
 {{$structName := join (lower_title .table.Title) "ServiceImpl"}}
 package impl
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : {{.table.Name}}_service.go
- * author : jarrysix (jarrysix#gmail.com)
- * date : {{.global.time}}
- * description :
- * history :
- */
-
 import (
 	"context"
 	"github.com/ixre/gof/db/orm"
@@ -50,7 +40,7 @@ func New{{$shortTitle}}Service(s storage.Interface, o orm.Orm) *{{$structName}} 
 	}
 }
 
-// 保存{{$comment}}
+// Save{{$shortTitle}} 保存{{$comment}}
 func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.Save{{$shortTitle}}Request) (*proto.Save{{$shortTitle}}Response, error) {
 	var dst *model.{{$shortTitle}}
     {{if equal_any .table.PkType 3 4 5}}\
@@ -100,7 +90,7 @@ func ({{$p}} *{{$structName}}) parse{{$shortTitle}}(v *model.{{$shortTitle}}) *p
 	}
 }
 
-// 获取{{$comment}}
+// Get{{$shortTitle}} 获取{{$comment}}
 func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{{$pkType}}) (*proto.S{{$shortTitle}}, error) {
 	v := {{$p}}.dao.Get{{$shortTitle}}(id.Value)
 	if v == nil {
@@ -109,7 +99,7 @@ func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{
 	return {{$p}}.parse{{$shortTitle}}(v), nil
 }
 
-// 获取{{$comment}}列表
+// Query{{$shortTitle}}List 获取{{$comment}}列表
 func ({{$p}} *{{$structName}}) Query{{$shortTitle}}List(_ context.Context, r *proto.Query{{$shortTitle}}Request) (*proto.Query{{$shortTitle}}Response, error) {
 	arr := {{$p}}.dao.Select{{$shortTitle}}("")
 	ret := &proto.Query{{$shortTitle}}Response{
@@ -121,11 +111,13 @@ func ({{$p}} *{{$structName}}) Query{{$shortTitle}}List(_ context.Context, r *pr
 	return ret,nil
 }
 
+// Delete{{$shortTitle}} 删除{{$comment}}
 func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(_ context.Context, id *proto.{{$pkType}}) (*proto.Result, error) {
 	err := {{$p}}.dao.Delete{{$shortTitle}}(id.Value)
 	return {{$p}}.error(err), nil
 }
 
+// Paging{{$shortTitle}} 获取{{$comment}}分页数据
 func ({{$p}} *{{$structName}}) Paging{{$shortTitle}}(_ context.Context, r *proto.{{$shortTitle}}PagingRequest) (*proto.{{$shortTitle}}PagingResponse, error) {
 	total, rows := {{$p}}.dao.PagingQuery{{$shortTitle}}(int(r.Params.Begin),
 		int(r.Params.End),

@@ -80,3 +80,15 @@ type (
 		SortNum int32 `db:"sort_num"`
 	}
 )
+
+// SearchWord 热搜词
+type SearchWord struct {
+	// 编号
+	Id int64 `db:"id" pk:"yes"`
+	// Word
+	Word string `db:"word"`
+	// 搜索次数
+	SearchCount int `db:"search_count"`
+	// 1:启用　2:特殊显示 4: 手动创建
+	Flag int `db:"flag"`
+}

@@ -30,9 +30,9 @@ var (
 func NewShop(v *shop.OnlineShop, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShop {
 	return &onlineShopImpl{
-		_shopVal: v,
-		valRepo:  valRepo,
-		shopRepo: shopRepo,
+		_shopVal:     v,
+		valRepo:      valRepo,
+		shopRepo:     shopRepo,
 		registryRepo: registryRepo,
 	}
 }
@@ -41,7 +41,7 @@ var _ shop.IShop = new(onlineShopImpl)
 var _ shop.IOnlineShop = new(onlineShopImpl)
 
 type onlineShopImpl struct {
-	_mch merchant.IMerchant
+	_mch         merchant.IMerchant
 	_shopVal     *shop.OnlineShop
 	valRepo      valueobject.IValueRepo
 	shopRepo     shop.IShopRepo
@@ -144,9 +144,9 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 		}
 	}
 	// 判断自营
-	if mv.SelfSales == 1{
+	if mv.SelfSales == 1 {
 		dst.Flag |= shop.FlagSelfSale
-	}else{
+	} else {
 		dst.Flag ^= shop.FlagSelfSale
 	}
 	dst.Host = v.Host
@@ -168,7 +168,7 @@ func (s *onlineShopImpl) GetShopValue() shop.OnlineShop {
 // Save 保存
 func (s *onlineShopImpl) Save() error {
 	if s.GetDomainId() > 0 {
-		if len(s._shopVal.Alias) == 0{
+		if len(s._shopVal.Alias) == 0 {
 			s._shopVal.Alias = s.generateShopAlias()
 		}
 		_, err := s.shopRepo.SaveOnlineShop(s._shopVal)

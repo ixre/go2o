@@ -28,7 +28,6 @@ type shopManagerImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
-
 func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShopManager {
 	return &shopManagerImpl{
@@ -46,11 +45,11 @@ func (s *shopManagerImpl) CreateOnlineShop(o *shop.OnlineShop) (shop.IShop, erro
 		o.ShopName = s.merchant.GetValue().Name
 	}
 	var is shop.IShop = &onlineShopImpl{
-		_shopVal: o,
-		valRepo:  s.valueRepo,
-		shopRepo: s.repo,
+		_shopVal:     o,
+		valRepo:      s.valueRepo,
+		shopRepo:     s.repo,
 		registryRepo: s.registryRepo,
-		_mch: s.merchant,
+		_mch:         s.merchant,
 	}
 	io := is.(shop.IOnlineShop)
 	err := io.SetShopValue(o)
@@ -113,13 +112,13 @@ func (s *shopManagerImpl) GetStore(shopId int) shop.IShop {
 // GetOnlineShop 获取店铺
 func (s *shopManagerImpl) GetOnlineShop() shop.IShop {
 	v := s.repo.GetOnlineShopOfMerchant(int(s.merchant.GetAggregateRootId()))
-	if v  != nil {
-		return  &onlineShopImpl{
-			_shopVal: v,
-			valRepo:  s.valueRepo,
-			shopRepo: s.repo,
+	if v != nil {
+		return &onlineShopImpl{
+			_shopVal:     v,
+			valRepo:      s.valueRepo,
+			shopRepo:     s.repo,
 			registryRepo: s.registryRepo,
-			_mch: s.merchant,
+			_mch:         s.merchant,
 		}
 	}
 	return nil

@@ -36,7 +36,7 @@ type shopRepo struct {
 
 func (s *shopRepo) GetShopIdByAlias(alias string) int64 {
 	e := shop.OnlineShop{}
-	if s.o.GetBy(&e,"alias = $1 LIMIT 1",alias) != nil {
+	if s.o.GetBy(&e, "alias = $1 LIMIT 1", alias) != nil {
 		return 0
 	}
 	return e.Id

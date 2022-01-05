@@ -199,8 +199,8 @@ func (s *itemService) GetPagedOnShelvesItem(_ context.Context, r *proto.PagingGo
 		Data:  make([]*proto.SUnifiedViewItem, 0),
 	}
 	where := r.Params.Where
-	if wd := strings.TrimSpace(r.Keyword); len(wd) > 0{
-		where += " AND item_info.title LIKE '%"+r.Keyword+"%'"
+	if wd := strings.TrimSpace(r.Keyword); len(wd) > 0 {
+		where += " AND item_info.title LIKE '%" + r.Keyword + "%'"
 	}
 
 	var total int32

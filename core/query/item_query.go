@@ -41,14 +41,14 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 	if len(orderBy) != 0 {
 		orderBy += ","
 	}
-	if catId > 0{
-		where += fmt.Sprintf(" AND item_info.cat_id= %d",catId)
+	if catId > 0 {
+		where += fmt.Sprintf(" AND item_info.cat_id= %d", catId)
 	}
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
 		 WHERE item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s`, where), &total,
-		 enum.ReviewPass, item.ShelvesOn)
+		enum.ReviewPass, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
@@ -58,7 +58,7 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.o.SelectByQuery(&list, sql,
-			 enum.ReviewPass, item.ShelvesOn, start, end-start)
+			enum.ReviewPass, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
@@ -72,8 +72,8 @@ func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 	if len(orderBy) != 0 {
 		orderBy += ","
 	}
-	if catId > 0{
-		where += fmt.Sprintf(" AND item_info.cat_id= %d",catId)
+	if catId > 0 {
+		where += fmt.Sprintf(" AND item_info.cat_id= %d", catId)
 	}
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id

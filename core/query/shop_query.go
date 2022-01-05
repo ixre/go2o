@@ -34,7 +34,6 @@ func NewShopQuery(o orm.Orm, s storage.Interface) *ShopQuery {
 	}
 }
 
-
 // QueryShopIdByHost 根据主机查询商店编号
 func (s *ShopQuery) QueryShopIdByHost(host string) (shopId int64) {
 	err := s.Connector.ExecScalar(`SELECT id FROM mch_online_shop WHERE (host= $1 OR alias = $1)`,
