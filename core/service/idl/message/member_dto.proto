@@ -262,7 +262,7 @@ message AccountChangeRequest {
 }
 message AccountAdjustRequest {
     sint64 MemberId = 1;
-    sint32 Account = 2;
+    EAccountType Account = 2;
     sint32 Value = 3;
     sint64 RelateUser = 4;
     string Remark = 5;
@@ -582,15 +582,9 @@ enum EAccountType {
     AccountFlow = 4;
 }
 
-// 转账账户类型
-enum TransferAccountType {
-    TA_BALANCE = 0;
-    TA_WALLET = 1;
-}
-
 // 账户转账请求
 message AccountTransferRequest {
-    TransferAccountType TransferAccount = 1;
+    EAccountType TransferAccount = 1;
     sint64 FromMemberId = 2;
     sint64 ToMemberId = 3;
     sint32 Amount = 4;

@@ -1447,10 +1447,12 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 	} else {
 		var account member.AccountType
 		switch r.TransferAccount {
-		case proto.TransferAccountType_TA_BALANCE:
+		case proto.EAccountType_AccountBalance:
 			account = member.AccountBalance
-		case proto.TransferAccountType_TA_WALLET:
+		case proto.EAccountType_AccountWallet:
 			account = member.AccountWallet
+		case proto.EAccountType_AccountIntegral:
+			account = member.AccountIntegral
 		}
 		err = m.GetAccount().TransferAccount(account, r.ToMemberId,
 			int(r.Amount), int(r.TradeFee), r.Remark)
