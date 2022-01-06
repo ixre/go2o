@@ -167,7 +167,7 @@ func TestUpdateInviter(t *testing.T) {
 
 // 测试钱包
 func TestMemberWallet(t *testing.T) {
-	var memberId int64 = 1
+	var memberId int64 = 16
 	m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	if int(ic.GetValue().WalletBalance*100) != ic.Wallet().Get().Balance {

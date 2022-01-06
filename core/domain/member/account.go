@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/msq"
+	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -36,7 +37,7 @@ type accountImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
-func NewAccount(m *memberImpl, value *member.Account,
+func newAccount(m *memberImpl, value *member.Account,
 	rep member.IMemberRepo, mm member.IMemberManager,
 	walletRepo wallet.IWalletRepo,
 	registryRepo registry.IRegistryRepo) member.IAccount {
@@ -54,20 +55,29 @@ func NewAccount(m *memberImpl, value *member.Account,
 		registryRepo: registryRepo,
 	}
 	if value.MemberId > 0 && wal == nil {
-		impl.createWallet()
+		impl.initWallet()
 	}
 	return impl
 }
 
-func (a *accountImpl) createWallet() {
+func (a *accountImpl) initWallet() {
 	flag := wallet.FlagCharge | wallet.FlagDiscount
+	// 存在钱包,但关联失败
+	a.wallet = a.walletRepo.GetWalletByUserId(a.member.GetAggregateRootId(), 1)
+	if a.wallet != nil {
+		a.value.WalletCode = a.wallet.Get().HashCode
+		a.Save()
+		return
+	}
+	//　创建新的钱包
 	a.wallet = a.walletRepo.CreateWallet(
 		a.member.GetAggregateRootId(),
 		a.member.value.User,
 		1, "MemberWallet", flag)
-	a.wallet.Save()
-	// 绑定钱包
-	a.value.WalletCode = a.wallet.Get().HashCode
+	if _, err := a.wallet.Save(); err != nil {
+		log.Println("[ go2o][ member]: create wallet failed,error", err.Error())
+	}
+	a.value.WalletCode = a.wallet.Get().HashCode 		// 绑定钱包
 }
 
 // GetDomainId 获取领域对象编号
@@ -92,7 +102,7 @@ func (a *accountImpl) Save() (int64, error) {
 	if err == nil {
 		// 创建钱包
 		if isCreate {
-			a.createWallet()
+			a.initWallet()
 			a.rep.SaveAccount(a.value)
 		}
 		// 推送钱包更新消息

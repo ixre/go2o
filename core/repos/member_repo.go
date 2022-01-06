@@ -358,7 +358,7 @@ func (m *MemberRepoImpl) GetMemberLatestUpdateTime(memberId int64) int64 {
 	return updateTime
 }
 
-// 获取账户
+// GetAccount 获取账户
 func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 	e := &member.Account{}
 	key := m.getAccountCk(memberId)
@@ -371,7 +371,7 @@ func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 	return e
 }
 
-// 保存账户，传入会员编号
+// SaveAccount 保存账户，传入会员编号
 func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
 	var err error
 	if m.GetAccount(v.MemberId) == nil {

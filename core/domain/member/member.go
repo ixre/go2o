@@ -205,7 +205,7 @@ func (m *memberImpl) GetAccount() member.IAccount {
 				MemberId: m.GetAggregateRootId(),
 			}
 		}
-		return NewAccount(m, v, m.repo, m.manager, m.walletRepo, m.registryRepo)
+		return newAccount(m, v, m.repo, m.manager, m.walletRepo, m.registryRepo)
 	}
 	return m.account
 }
@@ -572,7 +572,7 @@ func (m *memberImpl) checkUser(user string) error {
 // 会员初始化
 func (m *memberImpl) memberInit() error {
 	// 创建账户
-	m.account = NewAccount(m, &member.Account{},
+	m.account = newAccount(m, &member.Account{},
 		m.repo, m.manager, m.walletRepo, m.registryRepo)
 	if _, err := m.account.Save(); err != nil {
 		return err
