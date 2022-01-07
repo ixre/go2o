@@ -880,7 +880,13 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 		orderNo := o.OrderNo()
 		//给自己返现
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.Name, fee)
-		err = acc.Charge(member.AccountWallet, tit, int(fee*100), orderNo, "sys")
+		_, err = acc.CarryTo(member.AccountWallet,
+			member.AccountOperateData{
+				Title:   tit,
+				Amount:  int(fee * 100),
+				OuterNo: orderNo,
+				Remark:  "sys",
+			}, false, 0)
 	}
 	return err
 }
@@ -928,7 +934,12 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
-		err = acc.Charge(member.AccountWallet, tit, int(cpv.BackFee*100), orderNo, "sys")
+		_, err = acc.CarryTo(member.AccountWallet, member.AccountOperateData{
+			Title:   tit,
+			Amount:  int(cpv.BackFee * 100),
+			OuterNo: orderNo,
+			Remark:  "sys",
+		}, false, 0)
 	}
 	return err
 }
@@ -1500,8 +1511,13 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	integral := int(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
-		err = m.GetAccount().Charge(member.AccountIntegral,
-			"购物消费赠送积分", integral, o.value.OrderNo, "sys")
+		_, err = m.GetAccount().CarryTo(member.AccountIntegral,
+			member.AccountOperateData{
+				Title:   "购物消费赠送积分",
+				Amount:  integral,
+				OuterNo: o.value.OrderNo,
+				Remark:  "sys",
+			}, false, 0)
 		if err != nil {
 			return err
 		}
@@ -1697,15 +1713,14 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 
 	//更新账户
 	acc := m.GetAccount()
-	acv := acc.GetValue()
-	//acc.TotalAmount += o._value.Fee
-	//acc.TotalPay += o._value.PayFee
-	acv.WalletBalance += fee // 更新赠送余额
-	acv.TotalWalletAmount += fee
-	acv.UpdateTime = unixTime
-	acc.Save()
-
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
-	return acc.Charge(member.AccountWallet, tit, int(fee*100), v.OrderNo, "sys")
+	_, err := acc.CarryTo(member.AccountWallet,
+		member.AccountOperateData{
+			Title:   tit,
+			Amount:  int(fee * 100),
+			OuterNo: o.value.OrderNo,
+			Remark:  "sys",
+		}, false, 0)
+	return err
 }

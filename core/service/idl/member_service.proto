@@ -203,12 +203,22 @@ service MemberService {
     // 账户充值,amount精确到分
     rpc AccountCharge (AccountChangeRequest) returns (Result) {
     }
+    // 账户入账
+    rpc AccountCarryTo(AccountCarryRequest) returns (AccountCarryResponse){
+    }
     // 账户消耗,amount精确到分
     rpc AccountConsume (AccountChangeRequest) returns (Result) {
     }
     // 账户抵扣,amount精确到分
     rpc AccountDiscount (AccountChangeRequest) returns (Result) {
     }
+    /** 账户冻结 */
+    rpc Freeze (AccountFreezeRequest) returns (AccountFreezeResponse) {
+    }
+    /** 账户解冻 */
+    rpc Unfreeze (AccountUnfreezeRequest) returns (Result) {
+    }
+
     // 账户退款,amount精确到分
     rpc AccountRefund (AccountChangeRequest) returns (Result) {
     }

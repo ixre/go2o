@@ -95,17 +95,17 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员实名是否需要人相图片", MemberTrustRequirePeopleImage, "true", "")
 
 	// 会员提现
-	mergeAdd("会员提现开关", MemberTakeOutOn, "true", "")
-	mergeAdd("会员提现提示", MemberTakeOutMessage, "提现功能暂不可用", "")
-	mergeAdd("会员提现是否必须实名制认证", MemberWithdrawalMustTrust, "true", "")
-	mergeAdd("会员最低提现金额", MemberMinTakeOutAmount, "0.01", "")
-	mergeAdd("会员单笔最高提现金额", MemberMaxTakeOutAmount, "5000.00", "")
-	mergeAdd("会员提现手续费费率", MemberTakeOutCsn, "0.00", "")
-	mergeAdd("会员每日提现上限", MemberMaxTakeOutTimesOfDay, "0", "")
+	mergeAdd("启用会员提现", MemberWithdrawEnabled, "true", "")
+	mergeAdd("会员提现提示", MemberWithdrawMessage, "提现功能暂不可用", "")
+	mergeAdd("会员提现是否必须实名制认证", MemberWithdrawalMustVerification, "true", "")
+	mergeAdd("会员最低提现金额", MemberWithdrawMinAmount, "0.01", "")
+	mergeAdd("会员单笔最高提现金额", MemberWithdrawMaxAmount, "5000.00", "")
+	mergeAdd("会员提现手续费费率", MemberWithdrawProcedureRate, "0.00", "")
+	mergeAdd("会员每日提现上限", MemberWithdrawMaxTimeOfDay, "0", "")
 	// 会员转账
-	mergeAdd("会员转账开关", MemberTransferAccountsOn, "true", "")
-	mergeAdd("会员转账提示信息", MemberTransferAccountsMessage, "平台仅提供转账功能，请尽量当面交易以保证安全！", "")
-	mergeAdd("会员转账手续费费率", MemberTransferCsn, "0.00", "")
+	mergeAdd("启用会员转账", MemberAccountTransferEnabled, "true", "")
+	mergeAdd("会员转账提示信息", MemberAccountTransferMessage, "平台仅提供转账功能，请尽量当面交易以保证安全！", "")
+	mergeAdd("会员转账手续费费率", MemberAccountTransferProcedureRate, "0.00", "")
 	mergeAdd("活动账户转为赠送可提现奖金手续费费率", MemberFlowAccountConvertCsn, "0.20", "")
 	// 经验值
 	mergeAdd("是否启用会员经验值功能", ExperienceEnabled, "true", "")

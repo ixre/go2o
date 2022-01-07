@@ -82,14 +82,24 @@ func (w *walletServiceImpl) Discount(_ context.Context, r *proto.DiscountRequest
 	return w.result(err), nil
 }
 
-func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (ro *proto.Result, err error) {
+func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (ro *proto.FreezeResponse, err error) {
 	iw := w._repo.GetWallet(r.WalletId)
 	if iw == nil {
-		err = wallet.ErrNoSuchWalletAccount
-	} else {
-		err = iw.Freeze(int(r.Value), r.Title, r.OuterNo, int(r.OperatorUid), r.OperatorName)
+		return &proto.FreezeResponse{ErrCode: 1, ErrMsg: wallet.ErrNoSuchWalletAccount.Error()}, nil
 	}
-	return w.result(err), nil
+	id, err := iw.Freeze(wallet.OperateData{
+		Title:   r.Title,
+		Amount:  int(r.Value),
+		OuterNo: r.OuterNo,
+		Remark:  "",
+	}, wallet.Operator{
+		OperatorUid:  int(r.OperatorUid),
+		OperatorName: r.OperatorName,
+	})
+	if err != nil {
+		return &proto.FreezeResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+	}
+	return &proto.FreezeResponse{LogId: int64(id)}, nil
 }
 
 func (w *walletServiceImpl) Unfreeze(_ context.Context, r *proto.UnfreezeRequest) (ro *proto.Result, err error) {

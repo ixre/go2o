@@ -262,26 +262,27 @@ func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error
 	return err
 }
 
-func (w *WalletImpl) Freeze(value int, title, outerNo string, operatorUid int, operatorName string) error {
-	err := w.checkValueOpu(value, false, operatorUid, operatorName)
+func (w *WalletImpl) Freeze(data wallet.OperateData, operator wallet.Operator) (int, error) {
+	err := w.checkValueOpu(data.Amount, false, operator.OperatorUid, operator.OperatorName)
 	if err == nil {
-		if value > 0 {
-			value = -value
+		if data.Amount > 0 {
+			data.Amount = -data.Amount
 		}
-		if w._value.Balance < -value {
-			return wallet.ErrOutOfAmount
+		if w._value.Balance < -data.Amount {
+			return 0, wallet.ErrOutOfAmount
 		}
-		w._value.Balance += value
-		w._value.FreezeAmount += -value
-		l := w.createWalletLog(wallet.KFreeze, value, title, operatorUid, operatorName)
-		l.OuterNo = outerNo
+		w._value.Balance += data.Amount
+		w._value.FreezeAmount += -data.Amount
+		l := w.createWalletLog(wallet.KFreeze, data.Amount, data.Title, operator.OperatorUid, operator.OperatorName)
+		l.OuterNo = data.OuterNo
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
 		if err == nil {
 			_, err = w.Save()
 		}
+		return int(l.Id), err
 	}
-	return err
+	return 0, err
 }
 
 func (w *WalletImpl) Unfreeze(value int, title, outerNo string, operatorUid int, operatorName string) error {
@@ -326,20 +327,26 @@ func (w *WalletImpl) FreezeExpired(value int, remark string) error {
 	return err
 }
 
-func (w *WalletImpl) Income(value int, tradeFee int, title, outerNo string) error {
-	err := w.checkValueOpu(value, false, 0, "")
+func (w *WalletImpl) CarryTo(d wallet.OperateData, freeze bool, procedureFee int) (int, error) {
+	err := w.checkValueOpu(d.Amount, false, 0, "")
 	if err == nil {
-		if value < 0 {
-			value = -value
+		if d.Amount < 0 {
+			d.Amount = -d.Amount
 		}
-		if tradeFee < 0 {
-			tradeFee = -tradeFee
+		if procedureFee < 0 {
+			procedureFee = -procedureFee
 		}
-		w._value.Balance += value
+		k := wallet.KCarry
+		if freeze {
+			k = wallet.KFreeze
+			w._value.FreezeAmount += d.Amount
+		} else {
+			w._value.Balance += d.Amount
+		}
 		// 保存日志
-		l := w.createWalletLog(wallet.KIncome, value, title, 0, "")
-		l.OuterNo = outerNo
-		l.TradeFee = -tradeFee
+		l := w.createWalletLog(k, d.Amount, d.Title, 0, "")
+		l.OuterNo = d.OuterNo
+		l.TradeFee = -procedureFee
 		l.ReviewState = wallet.ReviewPass
 		l.ReviewTime = time.Now().Unix()
 		l.Balance = w._value.Balance
@@ -347,8 +354,9 @@ func (w *WalletImpl) Income(value int, tradeFee int, title, outerNo string) erro
 		if err == nil {
 			_, err = w.Save()
 		}
+		return int(l.Id), err
 	}
-	return err
+	return 0, err
 }
 
 func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, operatorUid int, operatorName string) error {
@@ -365,7 +373,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark str
 			kind = wallet.KCharge
 			w._value.TotalCharge += value
 		case wallet.CSystemCharge:
-			kind = wallet.KIncome
+			kind = wallet.KCarry
 		case wallet.CRefundCharge:
 			kind = wallet.KPaymentOrderRefund
 		default:

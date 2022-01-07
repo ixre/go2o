@@ -30,30 +30,32 @@ const (
 	KindCustom int = 30
 	// KindCharge 会员充值
 	KindCharge = 1
+	// KindCarry 入账
+	KindCarry = 2
 	// KindConsume 消耗
-	KindConsume = 2
+	KindConsume = 3
 	// KindAdjust 客服调整
-	KindAdjust = 3
+	KindAdjust = 4
 	// KindDiscount 支付抵扣
-	KindDiscount = 4
+	KindDiscount = 5
 	// KindRefund 退款
-	KindRefund int = 5
+	KindRefund int = 6
 	// KindExchange 兑换充值, 比如将钱包充值到余额
-	KindExchange int = 6
+	KindExchange int = 7
 	// KindTransferIn 转入
-	KindTransferIn int = 7
+	KindTransferIn int = 8
 	// KindTransferOut 转出
-	KindTransferOut int = 8
+	KindTransferOut int = 9
 	// KindExpired 失效
-	KindExpired int = 9
+	KindExpired int = 10
 	// KindFreeze 冻结
-	KindFreeze int = 10
+	KindFreeze int = 11
 	// KindUnfreeze 解冻
-	KindUnfreeze int = 11
+	KindUnfreeze int = 12
 )
 
 const (
-	StatusOK                = 1
+	StatusOK = 1
 )
 
 const (
@@ -86,51 +88,35 @@ type (
 		// SetPriorityPay 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account AccountType, enabled bool) error
 
-		// Refund 退款
-		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
-
-		// Charge 充值,金额放大100倍
+		// Charge 用户充值,金额放大100倍（应只充值钱包）
 		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// Adjust 客服调整
-		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
+		// CarryTo 入账,freeze是否先冻结, procedureFee手续费; 返回日志ID
+		CarryTo(account AccountType, d AccountOperateData, freeze bool, procedureFee int) (int, error)
 
 		// Consume 消耗
 		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// Discount 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
+		// Adjust 客服调整
+		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
+
+		// Discount 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣(内部,购物时需要抵扣一部分)
 		Discount(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// 扣减余额
-		//DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
+		// Refund 退款
+		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
-		//DiscountWallet(title string, outerNo string, amount float32,
-		//	relateUser int64, mustLargeZero bool) error
+		// Freeze 账户冻结
+		Freeze(account AccountType, p AccountOperateData, relateUser int64) (int, error)
 
-		// 积分抵扣
-		//IntegralDiscount(title string, outerNo string, value int) error
-
-		// Freeze 冻结余额
-		Freeze(title string, outerNo string, amount int, relateUser int64) error
-
-		// Unfreeze 解冻金额
-		Unfreeze(title string, outerNo string, amount int, relateUser int64) error
-
-		// FreezeWallet 冻结赠送金额
-		FreezeWallet(title string, outerNo string, amount int, relateUser int64) error
-
-		// UnfreezeWallet 解冻赠送金额
-		UnfreezeWallet(title string, outerNo string, amount int, relateUser int64) error
+		// Unfreeze 账户解冻
+		Unfreeze(account AccountType, p AccountOperateData, relateUser int64) error
 
 		// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
 		PaymentDiscount(tradeNo string, amount int, remark string) error
 
-		// FreezesIntegral 冻结积分,当new为true不扣除积分,反之扣除积分
-		FreezesIntegral(title string, value int, new bool, relateUser int64) error
-
-		// UnfreezesIntegral 解冻积分
-		UnfreezesIntegral(title string, value int) error
+		// FreezeExpired 将冻结金额标记为失效
+		FreezeExpired(account AccountType, amount int, remark string) error
 
 		// GetWalletLog 获取钱包账户日志
 		GetWalletLog(id int64) wallet.WalletLog
@@ -144,9 +130,6 @@ type (
 
 		// FinishWithdrawal 完成提现
 		FinishWithdrawal(id int64, tradeNo string) error
-
-		// FreezeExpired 将冻结金额标记为失效
-		FreezeExpired(account AccountType, amount int, remark string) error
 
 		// TransferAccount 转账
 		TransferAccount(account AccountType, toMember int64, amount int,
@@ -215,6 +198,13 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
+	AccountOperateData struct {
+		Title   string
+		Amount  int
+		OuterNo string
+		Remark  string
+	}
+
 	// IntegralLog 积分记录
 	IntegralLog struct {
 		// 编号
@@ -229,6 +219,8 @@ type (
 		OuterNo string `db:"outer_no"`
 		// 积分值
 		Value int `db:"value"`
+		// 余额
+		Balance int `db:"-"`
 		// 备注
 		Remark string `db:"remark"`
 		// 关联用户
@@ -252,8 +244,10 @@ type (
 		Title string `db:"title"`
 		// 金额
 		Amount int64 `db:"amount"`
+		// 余额
+		Balance int `db:"-"`
 		// 手续费
-		CsnFee int64 `db:"csn_fee"`
+		ProcedureFee int64 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态

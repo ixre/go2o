@@ -758,7 +758,7 @@ func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) 
 //		OuterNo:      "00000000",
 //		Title:        "商户提现到银行卡",
 //		Amount:       amount * (-1),
-//		CsnFee:       0,
+//		ProcedureFee:       0,
 //		State:        1,
 //		CreateTime:   time.Now().Unix(),
 //		UpdateTime:   time.Now().Unix(),

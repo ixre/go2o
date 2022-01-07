@@ -145,31 +145,32 @@ var (
 	MemberTrustRequirePeopleImage = KeyFormat("MemberTrustRequirePeopleImage")
 
 	/*会员提现*/
-	// 会员提现开关
-	MemberTakeOutOn = KeyFormat("MemberTakeOutOn")
-	// 会员提现提示
-	MemberTakeOutMessage = KeyFormat("MemberTakeOutMessage")
-	// 会员提现是否必须实名制认证
-	MemberWithdrawalMustTrust = KeyFormat("MemberWithdrawalMustTrust")
-	// 会员最低提现金额
-	MemberMinTakeOutAmount = KeyFormat("MemberMinTakeOutAmount")
-	// 会员单笔最高提现金额
-	MemberMaxTakeOutAmount = KeyFormat("MemberMaxTakeOutAmount")
-	// 会员提现手续费费率
-	MemberTakeOutCsn = KeyFormat("MemberTakeOutCsn")
-	// 会员每日提现上限
-	MemberMaxTakeOutTimesOfDay = KeyFormat("MemberMaxTakeOutTimesOfDay")
+
+	// MemberWithdrawEnabled  会员提现开关
+	MemberWithdrawEnabled = KeyFormat("MemberWithdrawEnabled")
+	// MemberWithdrawMessage 会员提现提示
+	MemberWithdrawMessage = KeyFormat("MemberWithdrawMessage")
+	// MemberWithdrawalMustVerification 会员提现是否必须实名制认证
+	MemberWithdrawalMustVerification = KeyFormat("MemberWithdrawalMustVerification")
+	// MemberWithdrawMinAmount 会员最低提现金额
+	MemberWithdrawMinAmount = KeyFormat("MemberWithdrawMinAmount")
+	// MemberWithdrawMaxAmount 会员单笔最高提现金额
+	MemberWithdrawMaxAmount = KeyFormat("MemberWithdrawMaxAmount")
+	// MemberWithdrawProcedureRate 会员提现手续费费率
+	MemberWithdrawProcedureRate = KeyFormat("MemberWithdrawProcedureRate")
+	// MemberWithdrawMaxTimeOfDay 会员每日提现上限
+	MemberWithdrawMaxTimeOfDay = KeyFormat("MemberWithdrawMaxTimeOfDay")
 
 	/*会员转账*/
-	// 会员转账开关
-	MemberTransferAccountsOn = KeyFormat("MemberTransferAccountsOn")
-	// 会员转账提示信息
-	MemberTransferAccountsMessage = KeyFormat("MemberTransferAccountsMessage")
-	// 会员转账手续费费率
-	MemberTransferCsn = KeyFormat("MemberTransferCsn")
+	// MemberAccountTransferEnabled 会员转账开关
+	MemberAccountTransferEnabled = KeyFormat("MemberAccountTransferEnabled")
+	// MemberAccountTransferMessage 会员转账提示信息
+	MemberAccountTransferMessage = KeyFormat("MemberAccountTransferMessage")
+	// MemberAccountTransferProcedureRate 会员转账手续费费率
+	MemberAccountTransferProcedureRate = KeyFormat("MemberAccountTransferProcedureRate")
+
 	// 活动账户转为赠送可提现奖金手续费费率
 	MemberFlowAccountConvertCsn = KeyFormat("MemberFlowAccountConvertCsn")
-
 	/* 经验值 */
 	// 是否启用会员经验值功能
 	ExperienceEnabled = KeyFormat("ExperienceEnabled")

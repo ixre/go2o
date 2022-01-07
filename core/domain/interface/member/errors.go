@@ -124,7 +124,7 @@ var (
 		"err_member_bank_network", "开户银行支行不正确")
 
 	ErrBankNoSuchCard = domain.NewError(
-		"err_bank_no_such_card", "银行卡未绑定")
+		"err_bank_no_such_card", "该银行卡号未绑定")
 
 	ErrIncorrectAmount = domain.NewError(
 		"err_balance_amount", "金额错误")
