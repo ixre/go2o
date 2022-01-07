@@ -790,13 +790,13 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		return 0, "", member.ErrIncorrectAmount
 	}
 	// 检测是否开启提现
-	takOutOn := a.registryRepo.Get(registry.MemberTakeOutOn).BoolValue()
+	takOutOn := a.registryRepo.Get(registry.MemberWithdrawEnabled).BoolValue()
 	if !takOutOn {
-		msg, _ := a.registryRepo.GetValue(registry.MemberTakeOutMessage)
+		msg, _ := a.registryRepo.GetValue(registry.MemberWithdrawMessage)
 		return 0, "", errors.New(msg)
 	}
 	// 检测是否实名
-	mustTrust, _ := a.registryRepo.GetValue(registry.MemberWithdrawalMustTrust)
+	mustTrust, _ := a.registryRepo.GetValue(registry.MemberWithdrawalMustVerification)
 	if mustTrust == "true" {
 		trust := a.member.Profile().GetTrustedInfo()
 		if trust.ReviewState != int(enum.ReviewPass) {
@@ -814,20 +814,20 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制
-	minAmountStr, _ := a.registryRepo.GetValue(registry.MemberMinTakeOutAmount)
+	minAmountStr, _ := a.registryRepo.GetValue(registry.MemberWithdrawMinAmount)
 	minAmount, err := strconv.Atoi(minAmountStr)
 	if amount < minAmount*100 {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
 			format.FormatFloat(float32(minAmount))))
 	}
-	maxAmountStr, _ := a.registryRepo.GetValue(registry.MemberMaxTakeOutAmount)
+	maxAmountStr, _ := a.registryRepo.GetValue(registry.MemberWithdrawMaxAmount)
 	maxAmount, err := strconv.Atoi(maxAmountStr)
 	if maxAmount > 0 && amount > maxAmount*100 {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
 			format.FormatFloat(float32(maxAmount))))
 	}
 	// 检测是否超过限制
-	maxTimes := a.registryRepo.Get(registry.MemberMaxTakeOutTimesOfDay).IntValue()
+	maxTimes := a.registryRepo.Get(registry.MemberWithdrawMaxTimeOfDay).IntValue()
 	if maxTimes > 0 {
 		takeTimes := a.rep.GetTodayTakeOutTimes(a.GetDomainId())
 		if takeTimes >= maxTimes {
@@ -978,9 +978,9 @@ func (a *accountImpl) TransferAccount(account member.AccountType, toMember int64
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
 
 	// 检测是否开启转账
-	transferOn := a.registryRepo.Get(registry.MemberTransferAccountsOn).BoolValue()
+	transferOn := a.registryRepo.Get(registry.MemberAccountTransferEnabled).BoolValue()
 	if !transferOn {
-		msg := a.registryRepo.Get(registry.MemberTransferAccountsMessage).StringValue()
+		msg := a.registryRepo.Get(registry.MemberAccountTransferMessage).StringValue()
 		return errors.New(msg)
 	}
 

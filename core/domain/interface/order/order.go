@@ -286,7 +286,7 @@ type (
 	ITradeOrder interface {
 		// 从订单信息中拷贝相应的数据,并设置订单结算比例
 		Set(o *ComplexOrder, rate float64) error
-		// 现金支付
+		// CashPay 现金支付
 		CashPay() error
 		// 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
@@ -298,7 +298,7 @@ type (
 )
 
 type (
-	// 订单提交返回数据
+	// SubmitReturnData 订单提交返回数据
 	SubmitReturnData struct {
 		// 订单号，多个订单号，用","分割
 		OrderNo string
