@@ -89,8 +89,8 @@ type (
 		// Charge 用户充值,金额放大100倍（应只充值钱包）
 		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// CarryTo 入账,freeze表示是否先冻结
-		CarryTo(account AccountType,d AccountOperateData,freeze bool,procedureFee int)error
+		// CarryTo 入账,freeze是否先冻结, procedureFee手续费; 返回日志ID
+		CarryTo(account AccountType,d AccountOperateData,freeze bool,procedureFee int)(int,error)
 
 		// Consume 消耗
 		Consume(account AccountType, title string, amount int, outerNo string, remark string) error

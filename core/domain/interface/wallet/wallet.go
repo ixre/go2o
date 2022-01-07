@@ -176,8 +176,8 @@ type (
 		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(amount int, remark string) error
 
-		// CarryTo 收入/入账, freeze是否先冻结, procedureFee手续费
-		CarryTo(d OperateData,freeze bool,procedureFee int) error
+		// CarryTo 收入/入账, freeze是否先冻结, procedureFee手续费; 返回日志ID
+		CarryTo(d OperateData,freeze bool,procedureFee int) (int,error)
 
 		// Charge 充值,kind: 业务类型
 		Charge(value int, kind int, title, outerNo string, remark string, operatorUid int, operatorName string) error

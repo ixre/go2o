@@ -804,7 +804,7 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	integral := int(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
-		err = acc.CarryTo(member.AccountIntegral,
+		_,err = acc.CarryTo(member.AccountIntegral,
 			member.AccountOperateData{
 				Title:   "购物消费赠送积分",
 				Amount:  integral,

@@ -166,31 +166,35 @@ func (a *accountImpl) Charge(account member.AccountType, title string,
 }
 
 
-func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool,procedureFee int) error {
+func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool,procedureFee int) (int,error) {
 	if d.Amount <= 0 || math.IsNaN(float64(d.Amount)) {
-		return member.ErrIncorrectQuota
+		return 0,member.ErrIncorrectQuota
 	}
 	switch account {
 	case member.AccountIntegral:
-		return a.integralCharge(d.Title, d.Amount, d.OuterNo, d.Remark)
+		return 0,a.integralCharge(d.Title, d.Amount, d.OuterNo, d.Remark)
 	case member.AccountBalance:
-		return a.chargeBalance(d.Title, d.Amount, d.OuterNo, d.Remark)
+		return 0,a.chargeBalance(d.Title, d.Amount, d.OuterNo, d.Remark)
 	case member.AccountWallet:
 		return a.carryToWallet(d,freeze,procedureFee)
 	case member.AccountFlow:
-		return a.chargeFlow(d.Title, d.Amount, d.OuterNo, d.Remark)
+		return 0,a.chargeFlow(d.Title, d.Amount, d.OuterNo, d.Remark)
 	}
-	return member.ErrNotSupportAccountType
+	return 0,member.ErrNotSupportAccountType
 }
 
 
-func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, procedureFee int) error {
-	return a.wallet.CarryTo(wallet.OperateData{
+func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, procedureFee int) (int,error) {
+	id,err := a.wallet.CarryTo(wallet.OperateData{
 		Title:   d.Title,
 		Amount:  d.Amount,
 		OuterNo: d.OuterNo,
 		Remark:  d.Remark,
 	},freeze, procedureFee)
+	if err == nil{
+		err = a.asyncWallet()
+	}
+	return id,err
 }
 
 
@@ -566,6 +570,7 @@ func (a *accountImpl) checkTradeLog(amount int, outerNo string) error {
 // 同步到账户余额
 func (a *accountImpl) asyncWallet() error {
 	a.value.WalletBalance = int64(a.wallet.Get().Balance)
+	a.value.FreezeWallet = int64(a.wallet.Get().FreezeAmount)
 	_, err := a.Save()
 	return err
 }

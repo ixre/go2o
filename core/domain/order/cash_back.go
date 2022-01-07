@@ -90,7 +90,7 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 			//给自己返现
 			tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
 				o.value.OrderNo, ptName, mName, fee)
-			err = acc.CarryTo(member.AccountWallet,member.AccountOperateData{
+			_,err = acc.CarryTo(member.AccountWallet,member.AccountOperateData{
 				Title:  tit,
 				Amount:  int(fee*100),
 				OuterNo: o.value.OrderNo,
@@ -210,7 +210,7 @@ func backCashForMember(m member.IMember, o order.IOrder,
 		orderNo := o.OrderNo()
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
 			format.FormatIntMoney(bFee), orderNo, refName)
-		err = acc.CarryTo(member.AccountWallet,member.AccountOperateData{
+		_,err = acc.CarryTo(member.AccountWallet,member.AccountOperateData{
 			Title:  tit,
 			Amount:  fee*100,
 			OuterNo: orderNo,
