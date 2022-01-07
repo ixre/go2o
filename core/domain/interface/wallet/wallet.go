@@ -69,7 +69,7 @@ const (
 	// 赠送金额
 	KCharge = 1
 	// 钱包收入
-	KIncome = 2
+	KCarry = 2
 	// 失效
 	KExpired = 3
 	// 客服调整

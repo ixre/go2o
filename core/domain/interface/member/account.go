@@ -30,26 +30,28 @@ const (
 	KindCustom int = 30
 	// KindCharge 会员充值
 	KindCharge = 1
+	// KindCarry 入账
+	KindCarry = 2
 	// KindConsume 消耗
-	KindConsume = 2
+	KindConsume = 3
 	// KindAdjust 客服调整
-	KindAdjust = 3
+	KindAdjust = 4
 	// KindDiscount 支付抵扣
-	KindDiscount = 4
+	KindDiscount = 5
 	// KindRefund 退款
-	KindRefund int = 5
+	KindRefund int = 6
 	// KindExchange 兑换充值, 比如将钱包充值到余额
-	KindExchange int = 6
+	KindExchange int = 7
 	// KindTransferIn 转入
-	KindTransferIn int = 7
+	KindTransferIn int = 8
 	// KindTransferOut 转出
-	KindTransferOut int = 8
+	KindTransferOut int = 9
 	// KindExpired 失效
-	KindExpired int = 9
+	KindExpired int = 10
 	// KindFreeze 冻结
-	KindFreeze int = 10
+	KindFreeze int = 11
 	// KindUnfreeze 解冻
-	KindUnfreeze int = 11
+	KindUnfreeze int = 12
 )
 
 const (
@@ -248,7 +250,7 @@ type (
 		// 金额
 		Amount int64 `db:"amount"`
 		// 手续费
-		CsnFee int64 `db:"csn_fee"`
+		ProcedureFee int64 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态

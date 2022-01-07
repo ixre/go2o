@@ -335,7 +335,7 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData,freeze bool,procedureFee int) 
 		if procedureFee < 0 {
 			procedureFee = -procedureFee
 		}
-		k := wallet.KIncome
+		k := wallet.KCarry
 		if freeze {
 			k = wallet.KFreeze
 			w._value.FreezeAmount += d.Amount
@@ -372,7 +372,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark str
 			kind = wallet.KCharge
 			w._value.TotalCharge += value
 		case wallet.CSystemCharge:
-			kind = wallet.KIncome
+			kind = wallet.KCarry
 		case wallet.CRefundCharge:
 			kind = wallet.KPaymentOrderRefund
 		default:

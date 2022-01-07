@@ -53,6 +53,7 @@ type memberService struct {
 	sto storage.Interface
 }
 
+
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	registryRepo registry.IRegistryRepo,
 	q *query.MemberQuery, oq *query.OrderQuery,
@@ -1279,6 +1280,34 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 		err = acc.Charge(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
 	}
 	return s.result(err), nil
+}
+
+// 账户入账
+func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryRequest) (*proto.AccountCarryResponse, error) {
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	acc := m.GetAccount()
+	if acc == nil {
+		return &proto.AccountCarryResponse{
+			ErrCode: 1,
+			ErrMsg:  member.ErrNoSuchMember.Error(),
+		}, nil
+	}
+	id, err := acc.CarryTo(member.AccountType(r.AccountType),
+		member.AccountOperateData{
+			Title:   r.Title,
+			Amount:  int(r.Amount),
+			OuterNo: r.OuterNo,
+			Remark:  r.Remark,
+		}, r.Freeze, int(r.ProcedureFee))
+	if err != nil {
+		return &proto.AccountCarryResponse{
+			ErrCode: 1,
+			ErrMsg:  err.Error(),
+		}, nil
+	}
+	return &proto.AccountCarryResponse{
+		LogId: int64(id),
+	}, nil
 }
 
 // AccountDiscount 账户抵扣

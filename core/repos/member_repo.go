@@ -437,15 +437,22 @@ func (m *MemberRepoImpl) SaveReceiptsCode(v *member.ReceiptsCode, memberId int64
 	return id, err
 }
 
-// 保存积分记录
+// SaveIntegralLog 保存积分记录
 func (m *MemberRepoImpl) SaveIntegralLog(v *member.IntegralLog) error {
-	_, err := orm.Save(m.o, v, int(v.Id))
+	id, err := orm.Save(m.o, v, int(v.Id))
+	if err == nil{
+		v.Id = id
+	}
 	return err
 }
 
-// 保存余额日志
+// SaveBalanceLog 保存余额日志
 func (m *MemberRepoImpl) SaveBalanceLog(v *member.BalanceLog) (int32, error) {
-	return orm.I32(orm.Save(m.o, v, int(v.Id)))
+	id, err := orm.Save(m.o, v, int(v.Id))
+	if err == nil{
+		v.Id = int64(id)
+	}
+	return int32(id),err
 }
 
 // 保存钱包账户日志

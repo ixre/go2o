@@ -203,6 +203,9 @@ service MemberService {
     // 账户充值,amount精确到分
     rpc AccountCharge (AccountChangeRequest) returns (Result) {
     }
+    // 账户入账
+    rpc AccountCarryTo(AccountCarryRequest) returns (AccountCarryResponse){
+    }
     // 账户消耗,amount精确到分
     rpc AccountConsume (AccountChangeRequest) returns (Result) {
     }
