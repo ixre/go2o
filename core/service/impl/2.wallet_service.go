@@ -87,7 +87,15 @@ func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Freeze(int(r.Value), r.Title, r.OuterNo, int(r.OperatorUid), r.OperatorName)
+		err = iw.Freeze(wallet.OperateData{
+			Title:   r.Title,
+			Amount: int(r.Value) ,
+			OuterNo:  r.OuterNo,
+			Remark:  "",
+		},wallet.Operator{
+			OperatorUid: int(r.OperatorUid),
+			OperatorName: r.OperatorName,
+		})
 	}
 	return w.result(err), nil
 }

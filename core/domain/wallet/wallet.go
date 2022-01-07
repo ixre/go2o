@@ -262,19 +262,19 @@ func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error
 	return err
 }
 
-func (w *WalletImpl) Freeze(value int, title, outerNo string, operatorUid int, operatorName string) error {
-	err := w.checkValueOpu(value, false, operatorUid, operatorName)
+func (w *WalletImpl) Freeze(data wallet.OperateData,operator wallet.Operator) error {
+	err := w.checkValueOpu(data.Amount, false, operator.OperatorUid, operator.OperatorName)
 	if err == nil {
-		if value > 0 {
-			value = -value
+		if data.Amount > 0 {
+			data.Amount = -data.Amount
 		}
-		if w._value.Balance < -value {
+		if w._value.Balance < -data.Amount {
 			return wallet.ErrOutOfAmount
 		}
-		w._value.Balance += value
-		w._value.FreezeAmount += -value
-		l := w.createWalletLog(wallet.KFreeze, value, title, operatorUid, operatorName)
-		l.OuterNo = outerNo
+		w._value.Balance += data.Amount
+		w._value.FreezeAmount += -data.Amount
+		l := w.createWalletLog(wallet.KFreeze, data.Amount, data.Title, operator.OperatorUid, operator.OperatorName)
+		l.OuterNo = data.OuterNo
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
 		if err == nil {

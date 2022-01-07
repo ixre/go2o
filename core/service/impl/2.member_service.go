@@ -1250,14 +1250,14 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 }
 
 // FreezesIntegral 冻结积分,当new为true不扣除积分,反之扣除积分
-func (s *memberService) FreezesIntegral(memberId int64, title string, value int64,
-	new bool) error {
-	m := s.repo.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	return m.GetAccount().FreezesIntegral(title, int(value), new, 0)
-}
+//func (s *memberService) FreezesIntegral(memberId int64, title string, value int64,
+//	new bool) error {
+//	m := s.repo.GetMember(memberId)
+//	if m == nil {
+//		return member.ErrNoSuchMember
+//	}
+//	return m.GetAccount().FreezesIntegral(title, int(value), new, 0)
+//}
 
 // UnfreezesIntegral 解冻积分
 func (s *memberService) UnfreezesIntegral(memberId int64, title string, value int64) error {

@@ -123,73 +123,85 @@ var (
 )
 
 type (
-	// 钱包
+	// OperateData 操作钱包的数据
+	OperateData struct {
+		Title   string
+		Amount  int
+		OuterNo string
+		Remark  string
+	}
+	Operator struct{
+		OperatorUid int
+		OperatorName string
+	}
+
+	// IWallet 钱包
 	IWallet interface {
-		// 获取聚合根编号
+		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int64
 
-		// 哈希值
+		// Hash 哈希值
 		Hash() string
 
-		// 节点编号
+		// NodeId 节点编号
 		NodeId() int
 
-		// 获取
+		// Get 获取
 		Get() Wallet
 
-		// 状态
+		// State 状态
 		State() int
 
-		//  获取日志
+		// GetLog 获取日志
 		GetLog(logId int64) WalletLog
 
-		// 保存
+		// Save 保存
 		Save() (int64, error)
 
-		// 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
+		// Adjust 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
 		Adjust(value int, title, outerNo string, remark string, operatorUid int, operatorName string) error
 
-		// 消费
+		// Consume 消费
 		Consume(amount int, title string, outerNo string, remark string) error
 
-		// 抵扣,must是否必须大于0
+		// Discount 抵扣,must是否必须大于0
 		Discount(amount int, title, outerNo string, must bool) error
 
-		// 冻结余额
-		Freeze(amount int, title, outerNo string, operatorUid int, operatorName string) error
+		// Freeze 冻结余额
+		Freeze(data OperateData,operator Operator) error
 
-		// 解冻金额
+		// Unfreeze 解冻金额
 		Unfreeze(amount int, title, outerNo string, operatorUid int, operatorName string) error
 
-		// 将冻结金额标记为失效
+		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(amount int, remark string) error
 
-		// 收入
+		// Income 收入
 		Income(amount int, tradeFee int, title, outerNo string) error
 
-		// 充值,kind: 业务类型
+		// Charge 充值,kind: 业务类型
 		Charge(value int, kind int, title, outerNo string, remark string, operatorUid int, operatorName string) error
 
-		// 退款,kind: 业务类型
+		// Refund 退款,kind: 业务类型
 		Refund(value int, kind int, title, outerNo string, operatorUid int, operatorName string) error
 
-		// 转账,title如:转账给xxx， toTitle: 转账收款xxx
+		// Transfer 转账,title如:转账给xxx， toTitle: 转账收款xxx
 		Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error
 
-		// 接收转账
+		// ReceiveTransfer 接收转账
 		ReceiveTransfer(fromWalletId int64, value int, tradeNo, title, remark string) error
 
-		// 申请提现,kind：提现方式,返回info_id,交易号 及错误,amount为提现金额,tradeFee为手续费
+		// RequestWithdrawal 申请提现,kind：提现方式,返回info_id,交易号 及错误,amount为提现金额,tradeFee为手续费
 		RequestWithdrawal(amount int, tradeFee int, kind int, title string,
 			accountNo string, accountName string, bankName string) (int64, string, error)
 
-		// 确认提现
+		// ReviewWithdrawal 确认提现
 		ReviewWithdrawal(takeId int64, pass bool, remark string, operatorUid int, operatorName string) error
 
-		// 完成提现
+		// FinishWithdrawal 完成提现
 		FinishWithdrawal(takeId int64, outerNo string) error
 
-		// 分页钱包日志
+		// PagingLog 分页钱包日志
 		PagingLog(begin int, over int, opt map[string]string, sort string) (int, []*WalletLog)
 	}
 

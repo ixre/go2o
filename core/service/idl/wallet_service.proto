@@ -51,8 +51,9 @@ message FreezeRequest {
     sint32 Value =  2;
     string Title = 3;
     string OuterNo = 4;
-    sint32 OperatorUid = 5;
-    string OperatorName = 6;
+    string Remark = 5;
+    sint32 OperatorUid = 6;
+    string OperatorName = 7;
 }
 
 message UnfreezeRequest {
@@ -60,8 +61,9 @@ message UnfreezeRequest {
     sint32 Value =  2;
     string Title = 3;
     string OuterNo = 4;
-    sint32 OperatorUid = 5;
-    string OperatorName = 6;
+    string Remark = 5;
+    sint32 OperatorUid = 6;
+    string OperatorName = 7;
 }
 
 message ChargeRequest {

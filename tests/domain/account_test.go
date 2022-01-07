@@ -48,20 +48,50 @@ func TestMemberWalletOperate(t *testing.T) {
 	ic := m.GetAccount()
 	iw := ic.Wallet()
 	amount := iw.Get().Balance
+
+	// 获取第一张银行卡
+	cards := m.Profile().GetBankCards()
+	bankCardNo := cards[0].BankAccount
 	assertError(t, ic.Charge(member.AccountWallet, "钱包充值",
 		100000, "-", "测试"))
 	id, _, err := ic.RequestWithdrawal(wallet.KWithdrawToBankCard,
-		"提现到银行卡", 70000, 0, "")
+		"提现到银行卡", 70000, 0, bankCardNo)
 	assertError(t, err)
 	ic.ReviewWithdrawal(id, true, "")
 	id, _, err = ic.RequestWithdrawal(wallet.KWithdrawToBankCard,
-		"提现到银行卡", 30000, 0, "123456789")
+		"提现到银行卡", 30000, 0, bankCardNo)
 	assertError(t, err)
 	assertError(t, ic.ReviewWithdrawal(id, false, "退回提现"))
 	assertError(t, ic.Discount(member.AccountWallet, "钱包抵扣",
 		30000, "-", "测试"))
-	if final := int(ic.GetValue().Balance * 100); final != amount {
+	if final := int(ic.GetValue().WalletBalance); final != amount {
 		t.Log("want ", amount, " final ", final)
 		t.FailNow()
 	}
+}
+
+func TestMemberFreeWallet(t *testing.T){
+	var memberId int64 = 1
+	m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	ic := m.GetAccount()
+	err := ic.Freeze(member.AccountWallet, member.AccountOperateData{
+		Title:   "测试冻结1元",
+		Amount:  100,
+		OuterNo: "-",
+		Remark:  "",
+	}, 0)
+	if err != nil{
+		t.Error(err)
+	}
+}
+
+func TestMemberRedPack(t *testing.T){
+	//var memberId int64 = 1
+	//m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	//ic := m.GetAccount()
+	//iw := ic.Wallet()
+	//amount := iw.Get().Balance
+	//err := ic.Freeze("发送红包", "-", 100, 0)
+	//if err ==nil{
+	//}
 }

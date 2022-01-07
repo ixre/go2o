@@ -111,14 +111,11 @@ type (
 		// 积分抵扣
 		//IntegralDiscount(title string, outerNo string, value int) error
 
-		// Freeze 冻结余额
-		Freeze(title string, outerNo string, amount int, relateUser int64) error
+		// Freeze 冻结账户
+		Freeze(account AccountType, p AccountOperateData, relateUser int64) error
 
 		// Unfreeze 解冻金额
 		Unfreeze(title string, outerNo string, amount int, relateUser int64) error
-
-		// FreezeWallet 冻结赠送金额
-		FreezeWallet(title string, outerNo string, amount int, relateUser int64) error
 
 		// UnfreezeWallet 解冻赠送金额
 		UnfreezeWallet(title string, outerNo string, amount int, relateUser int64) error
@@ -126,11 +123,12 @@ type (
 		// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
 		PaymentDiscount(tradeNo string, amount int, remark string) error
 
-		// FreezesIntegral 冻结积分,当new为true不扣除积分,反之扣除积分
-		FreezesIntegral(title string, value int, new bool, relateUser int64) error
-
 		// UnfreezesIntegral 解冻积分
 		UnfreezesIntegral(title string, value int) error
+
+		// FreezeExpired 将冻结金额标记为失效
+		FreezeExpired(account AccountType, amount int, remark string) error
+
 
 		// GetWalletLog 获取钱包账户日志
 		GetWalletLog(id int64) wallet.WalletLog
@@ -144,9 +142,6 @@ type (
 
 		// FinishWithdrawal 完成提现
 		FinishWithdrawal(id int64, tradeNo string) error
-
-		// FreezeExpired 将冻结金额标记为失效
-		FreezeExpired(account AccountType, amount int, remark string) error
 
 		// TransferAccount 转账
 		TransferAccount(account AccountType, toMember int64, amount int,
@@ -213,6 +208,13 @@ type (
 		PriorityPay int `db:"priority_pay"`
 		//更新时间
 		UpdateTime int64 `db:"update_time"`
+	}
+
+	AccountOperateData struct {
+		Title   string
+		Amount  int
+		OuterNo string
+		Remark  string
 	}
 
 	// IntegralLog 积分记录
