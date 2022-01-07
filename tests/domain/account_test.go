@@ -40,7 +40,6 @@ func TestFlowAccount(t *testing.T) {
 	}
 }
 
-
 func TestMemberWalletOperate(t *testing.T) {
 	var memberId int64 = 1
 	ti.Factory.GetRegistryRepo().UpdateValue(registry.MemberWithdrawalMustVerification, "false")
@@ -70,22 +69,31 @@ func TestMemberWalletOperate(t *testing.T) {
 	}
 }
 
-func TestMemberFreeWallet(t *testing.T){
+func TestMemberFreeWallet(t *testing.T) {
 	var memberId int64 = 1
 	m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
-	err := ic.Freeze(member.AccountWallet, member.AccountOperateData{
+	_, err := ic.CarryTo(member.AccountWallet, member.AccountOperateData{
 		Title:   "测试冻结1元",
 		Amount:  100,
 		OuterNo: "-",
 		Remark:  "",
-	}, 0)
-	if err != nil{
+	}, true, 0)
+	if err == nil {
+		err = ic.Unfreeze(member.AccountWallet, member.AccountOperateData{
+			Title:   "解冻",
+			Amount:  100,
+			OuterNo: "",
+			Remark:  "",
+		}, 0)
+	}
+	if err != nil {
 		t.Error(err)
 	}
+
 }
 
-func TestMemberRedPack(t *testing.T){
+func TestMemberRedPack(t *testing.T) {
 	//var memberId int64 = 1
 	//m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	//ic := m.GetAccount()

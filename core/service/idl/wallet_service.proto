@@ -46,23 +46,47 @@ message DiscountRequest {
     bool Must = 5;
 }
 
+/** 冻结请求 */
 message FreezeRequest {
-    sint64 WalletId = 1;
-    sint32 Value =  2;
+    /** 钱包编号 */
+    int64 WalletId = 1;
+    /** 冻结金额 */
+    int32 Value =  2;
+    /** 标题 */
     string Title = 3;
+    /** 外部关联订单号 */
     string OuterNo = 4;
+    /** 备注 */
     string Remark = 5;
+    /** 操作人员编号 */
     sint32 OperatorUid = 6;
+    /** 操作人员名称 */
     string OperatorName = 7;
 }
-
+/** 冻结响应 */
+message FreezeResponse{
+    /** 错误码 */
+    int32 ErrCode = 1;
+    /** 错误消息 */
+    string ErrMsg = 2;
+    /** 日志ID */
+    int64 LogId = 3;
+}
+/** 解冻请求 */
 message UnfreezeRequest {
+    /** 钱包编号 */
     sint64 WalletId = 1;
-    sint32 Value =  2;
+    /** 冻结金额 */
+    int32 Value =  2;
+    /** 标题 */
     string Title = 3;
+    /** 外部关联订单号 */
     string OuterNo = 4;
+    /** 备注 */
     string Remark = 5;
+    /** 操作人员编号 */
     sint32 OperatorUid = 6;
+    /** 操作人员名称 */
     string OperatorName = 7;
 }
 
@@ -113,7 +137,7 @@ service WalletService {
     }
 
     /** 冻结余额 */
-    rpc Freeze (FreezeRequest) returns (Result) {
+    rpc Freeze (FreezeRequest) returns (FreezeResponse) {
     }
 
     /** 解冻金额 */

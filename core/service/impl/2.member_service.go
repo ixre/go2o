@@ -34,6 +34,7 @@ import (
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
+	context2 "golang.org/x/net/context"
 	"log"
 	"strconv"
 	"strings"
@@ -52,7 +53,6 @@ type memberService struct {
 	serviceUtil
 	sto storage.Interface
 }
-
 
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	registryRepo registry.IRegistryRepo,
@@ -1250,23 +1250,40 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 	return nil, nil
 }
 
-// FreezesIntegral 冻结积分,当new为true不扣除积分,反之扣除积分
-//func (s *memberService) FreezesIntegral(memberId int64, title string, value int64,
-//	new bool) error {
-//	m := s.repo.GetMember(memberId)
-//	if m == nil {
-//		return member.ErrNoSuchMember
-//	}
-//	return m.GetAccount().FreezesIntegral(title, int(value), new, 0)
-//}
-
-// UnfreezesIntegral 解冻积分
-func (s *memberService) UnfreezesIntegral(memberId int64, title string, value int64) error {
-	m := s.repo.GetMember(memberId)
+func (s *memberService) Freeze(_ context2.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {
+	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return member.ErrNoSuchMember
+		return &proto.AccountFreezeResponse{ErrCode: 1, ErrMsg: member.ErrNoSuchMember.Error()}, nil
 	}
-	return m.GetAccount().UnfreezesIntegral(title, int(value))
+	id, err := m.GetAccount().Freeze(member.AccountType(r.AccountType),
+		member.AccountOperateData{
+			Title:   r.Title,
+			Amount:  int(r.Amount),
+			OuterNo: r.OuterNo,
+			Remark:  r.Remark,
+		}, 0)
+	if err != nil {
+		return &proto.AccountFreezeResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+	}
+	return &proto.AccountFreezeResponse{LogId: int64(id)}, nil
+}
+
+func (s *memberService) Unfreeze(_ context2.Context, r *proto.AccountUnfreezeRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(r.MemberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	err := m.GetAccount().Unfreeze(member.AccountType(r.AccountType),
+		member.AccountOperateData{
+			Title:   r.Title,
+			Amount:  int(r.Amount),
+			OuterNo: r.OuterNo,
+			Remark:  r.Remark,
+		}, 0)
+	if err != nil {
+		return s.error(err), nil
+	}
+	return s.success(nil), nil
 }
 
 // AccountCharge 充值,account为账户类型,kind为业务类型
@@ -1282,7 +1299,7 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 	return s.result(err), nil
 }
 
-// 账户入账
+// AccountCarryTo 账户入账
 func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryRequest) (*proto.AccountCarryResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	acc := m.GetAccount()

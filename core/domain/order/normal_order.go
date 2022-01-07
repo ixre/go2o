@@ -880,13 +880,13 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 		orderNo := o.OrderNo()
 		//给自己返现
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.Name, fee)
-		_,err = acc.CarryTo(member.AccountWallet,
+		_, err = acc.CarryTo(member.AccountWallet,
 			member.AccountOperateData{
 				Title:   tit,
-				Amount:  int(fee*100),
+				Amount:  int(fee * 100),
 				OuterNo: orderNo,
 				Remark:  "sys",
-			},false,0)
+			}, false, 0)
 	}
 	return err
 }
@@ -934,12 +934,12 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
-		_,err = acc.CarryTo(member.AccountWallet,member.AccountOperateData{
-			Title:  tit,
-			Amount:  int(cpv.BackFee*100),
+		_, err = acc.CarryTo(member.AccountWallet, member.AccountOperateData{
+			Title:   tit,
+			Amount:  int(cpv.BackFee * 100),
 			OuterNo: orderNo,
 			Remark:  "sys",
-		},false,0)
+		}, false, 0)
 	}
 	return err
 }
@@ -1511,13 +1511,13 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	integral := int(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
-		_,err = m.GetAccount().CarryTo(member.AccountIntegral,
+		_, err = m.GetAccount().CarryTo(member.AccountIntegral,
 			member.AccountOperateData{
 				Title:   "购物消费赠送积分",
 				Amount:  integral,
 				OuterNo: o.value.OrderNo,
 				Remark:  "sys",
-			},false,0)
+			}, false, 0)
 		if err != nil {
 			return err
 		}
@@ -1715,12 +1715,12 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	acc := m.GetAccount()
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
-	_,err:= acc.CarryTo(member.AccountWallet,
+	_, err := acc.CarryTo(member.AccountWallet,
 		member.AccountOperateData{
 			Title:   tit,
-			Amount:  int(fee*100),
+			Amount:  int(fee * 100),
 			OuterNo: o.value.OrderNo,
 			Remark:  "sys",
-		},false,0)
+		}, false, 0)
 	return err
 }

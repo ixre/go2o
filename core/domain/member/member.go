@@ -580,12 +580,12 @@ func (m *memberImpl) memberInit() error {
 	// 注册后赠送积分
 	regPresent := m.registryRepo.Get(registry.MemberRegisterPresentIntegral).IntValue()
 	if regPresent > 0 {
-		go m.GetAccount().CarryTo(member.AccountIntegral,  member.AccountOperateData{
+		go m.GetAccount().CarryTo(member.AccountIntegral, member.AccountOperateData{
 			Title:   "新会员注册赠送积分",
 			Amount:  regPresent,
 			OuterNo: "-",
 			Remark:  "sys",
-		},false,0)
+		}, false, 0)
 	}
 	return nil
 }

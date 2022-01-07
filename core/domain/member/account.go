@@ -77,7 +77,7 @@ func (a *accountImpl) initWallet() {
 	if _, err := a.wallet.Save(); err != nil {
 		log.Println("[ go2o][ member]: create wallet failed,error", err.Error())
 	}
-	a.value.WalletCode = a.wallet.Get().HashCode 		// 绑定钱包
+	a.value.WalletCode = a.wallet.Get().HashCode // 绑定钱包
 }
 
 // GetDomainId 获取领域对象编号
@@ -147,7 +147,7 @@ func (a *accountImpl) Charge(account member.AccountType, title string,
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectQuota
 	}
-	if account != member.AccountWallet{
+	if account != member.AccountWallet {
 		return errors.New("只支持钱包充值")
 	}
 	return a.chargeWallet(title, amount, outerNo, remark)
@@ -165,38 +165,35 @@ func (a *accountImpl) Charge(account member.AccountType, title string,
 	//return member.ErrNotSupportAccountType
 }
 
-
-func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool,procedureFee int) (int,error) {
+func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool, procedureFee int) (int, error) {
 	if d.Amount <= 0 || math.IsNaN(float64(d.Amount)) {
-		return 0,member.ErrIncorrectQuota
+		return 0, member.ErrIncorrectQuota
 	}
 	switch account {
 	case member.AccountIntegral:
-		return 0,a.carryToIntegral(d,freeze)
+		return 0, a.carryToIntegral(d, freeze)
 	case member.AccountBalance:
-		return 0,a.carryToBalance(d,freeze,procedureFee)
+		return 0, a.carryToBalance(d, freeze, procedureFee)
 	case member.AccountWallet:
-		return a.carryToWallet(d,freeze,procedureFee)
+		return a.carryToWallet(d, freeze, procedureFee)
 	case member.AccountFlow:
-		return 0,a.chargeFlow(d)
+		return 0, a.chargeFlow(d)
 	}
-	return 0,member.ErrNotSupportAccountType
+	return 0, member.ErrNotSupportAccountType
 }
 
-
-func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, procedureFee int) (int,error) {
-	id,err := a.wallet.CarryTo(wallet.OperateData{
+func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, procedureFee int) (int, error) {
+	id, err := a.wallet.CarryTo(wallet.OperateData{
 		Title:   d.Title,
 		Amount:  d.Amount,
 		OuterNo: d.OuterNo,
 		Remark:  d.Remark,
-	},freeze, procedureFee)
-	if err == nil{
+	}, freeze, procedureFee)
+	if err == nil {
 		err = a.asyncWallet()
 	}
-	return id,err
+	return id, err
 }
-
 
 func (a *accountImpl) Adjust(account member.AccountType, title string, amount int, remark string, relateUser int64) error {
 	if amount == 0 || math.IsNaN(float64(amount)) {
@@ -368,18 +365,17 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, p
 	k := member.KindCarry
 	if freeze {
 		k = member.KindFreeze
+		a.value.FreezeBalance += int64(d.Amount)
+	} else {
+		a.value.Balance += int64(d.Amount)
 	}
 	l, err := a.createBalanceLog(k, d.Title, d.Amount, d.OuterNo, true)
 	if err == nil {
 		l.Remark = d.Remark
 		l.ProcedureFee = int64(procedureFee)
+		l.Balance = int(a.value.Balance)
 		_, err = a.rep.SaveBalanceLog(l)
 		if err == nil {
-			if freeze {
-				a.value.FreezeBalance += int64(d.Amount)
-			} else {
-				a.value.Balance += int64(d.Amount)
-			}
 			_, err = a.Save()
 		}
 	}
@@ -392,20 +388,19 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 		return member.ErrIncorrectAmount
 	}
 	k := member.KindCarry
-	if freeze{
+	if freeze {
 		k = member.KindFreeze
+		a.value.FreezeIntegral += d.Amount
+	} else {
+		a.value.Integral += d.Amount
 	}
 	l, err := a.createIntegralLog(k, d.Title, d.Amount, d.OuterNo, true)
 	if err == nil {
 		l.Remark = d.Remark
+		l.Balance = a.value.Integral
 		//l.ProcedureFee = procedureFee
 		err = a.rep.SaveIntegralLog(l)
 		if err == nil {
-			if freeze {
-				a.value.FreezeIntegral += d.Amount
-			}else{
-				a.value.Integral += d.Amount
-			}
 			_, err = a.Save()
 		}
 	}
@@ -419,16 +414,15 @@ func (a *accountImpl) chargeFlow(d member.AccountOperateData) error {
 	}
 	l, err := a.createFlowAccountLog(member.KindCharge, d.Title, d.Amount, d.OuterNo, true)
 	if err == nil {
-		l.Remark =d.Remark
+		l.Remark = d.Remark
 		_, err = a.rep.SaveFlowAccountInfo(l)
 		if err == nil {
-				a.value.FlowBalance += int64(d.Amount)
+			a.value.FlowBalance += int64(d.Amount)
 			_, err = a.Save()
 		}
 	}
 	return err
 }
-
 
 // 调整账户余额
 func (a *accountImpl) adjustBalanceAccount(title string, amount int, remark string, relateUser int64) error {
@@ -617,26 +611,25 @@ func (a *accountImpl) GetWalletLog(id int64) wallet.WalletLog {
 }
 
 // Freeze 冻结余额
-func (a *accountImpl) Freeze(account member.AccountType,p member.AccountOperateData, relateUser int64) error {
+func (a *accountImpl) Freeze(account member.AccountType, p member.AccountOperateData, relateUser int64) (int, error) {
 	switch account {
 	case member.AccountBalance:
-		return a.freezeBalance(p,relateUser)
+		return a.freezeBalance(p, relateUser)
 	case member.AccountWallet:
-		return a.freezeWallet(p,relateUser)
+		return a.freezeWallet(p, relateUser)
 	case member.AccountIntegral:
-		return a.freezesIntegral(p,relateUser)
+		return a.freezesIntegral(p, relateUser)
 	}
 	panic("not support account type")
 }
 
-
 // Freeze 冻结余额
-func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int64) error {
+func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int64) (int, error) {
 	if p.Amount <= 0 || math.IsNaN(float64(p.Amount)) {
-		return member.ErrIncorrectAmount
+		return 0, member.ErrIncorrectAmount
 	}
 	if a.value.Balance < int64(p.Amount) {
-		return member.ErrAccountNotEnoughAmount
+		return 0, member.ErrAccountNotEnoughAmount
 	}
 	if len(p.Title) == 0 {
 		p.Title = "资金冻结"
@@ -649,7 +642,7 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 		Amount:      -int64(p.Amount),
 		OuterNo:     p.OuterNo,
 		RelateUser:  relateUser,
-		Remark: p.Remark,
+		Remark:      p.Remark,
 		ReviewState: enum.ReviewPass,
 		CreateTime:  unix,
 		UpdateTime:  unix,
@@ -660,23 +653,24 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 	if err == nil {
 		_, err = a.rep.SaveBalanceLog(v)
 	}
-	return err
+	return int(v.Id), err
 }
+
 // FreezeWallet 冻结钱包
-func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64) error {
-	err := a.wallet.Freeze(wallet.OperateData{
-		Title:  p.Title,
+func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64) (int, error) {
+	id, err := a.wallet.Freeze(wallet.OperateData{
+		Title:   p.Title,
 		Amount:  p.Amount,
 		OuterNo: p.OuterNo,
 		Remark:  p.Remark,
-	},wallet.Operator{
+	}, wallet.Operator{
 		OperatorUid:  int(relateUser),
 		OperatorName: "",
 	})
-	if err == nil{
+	if err == nil {
 		err = a.asyncWallet()
 	}
-	return err
+	return id, err
 
 	//if p.Amount <= 0 || math.IsNaN(float64(p.Amount)) {
 	//	return member.ErrIncorrectAmount
@@ -708,8 +702,9 @@ func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64
 	//}
 	//return err
 }
+
 // 冻结余额
-func (a *accountImpl) freezesIntegral(p member.AccountOperateData, relateUser int64) error {
+func (a *accountImpl) freezesIntegral(p member.AccountOperateData, relateUser int64) (int, error) {
 	//if !new {
 	//	if a.value.Integral < value {
 	//		return member.ErrNoSuchIntegral
@@ -717,52 +712,68 @@ func (a *accountImpl) freezesIntegral(p member.AccountOperateData, relateUser in
 	//	a.value.Integral -= value
 	//}
 	a.value.FreezeIntegral += p.Amount
-	_, err := a.Save()
-	if err == nil {
-		unix := time.Now().Unix()
-		l := &member.IntegralLog{
-			Id:          0,
-			MemberId:    int(a.value.MemberId),
-			Kind:        member.TypeIntegralFreeze,
-			Title:       p.Title,
-			OuterNo:     p.OuterNo,
-			Value:       -p.Amount,
-			Remark:      p.Remark,
-			RelateUser:  int(relateUser),
-			ReviewState: int16(enum.ReviewPass),
-			CreateTime:  unix,
-			UpdateTime:  unix,
-		}
-		err = a.rep.SaveIntegralLog(l)
-	}
-	return err
-}
-
-// Unfreeze 解冻金额
-func (a *accountImpl) Unfreeze(title string, outerNo string, amount int, relateUser int64) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return member.ErrIncorrectAmount
-	}
-	if a.value.FreezeBalance < int64(amount) {
-		return member.ErrAccountNotEnoughAmount
-	}
-	if len(title) == 0 {
-		title = "资金解结"
-	}
 	unix := time.Now().Unix()
-	v := &member.BalanceLog{
-		MemberId:    a.GetDomainId(),
-		Kind:        member.KindUnfreeze,
-		Title:       title,
-		RelateUser:  relateUser,
-		Amount:      int64(amount),
-		OuterNo:     outerNo,
-		ReviewState: enum.ReviewPass,
+	l := &member.IntegralLog{
+		Id:          0,
+		MemberId:    int(a.value.MemberId),
+		Kind:        member.TypeIntegralFreeze,
+		Title:       p.Title,
+		OuterNo:     p.OuterNo,
+		Value:       -p.Amount,
+		Remark:      p.Remark,
+		Balance:     a.value.Integral,
+		RelateUser:  int(relateUser),
+		ReviewState: int16(enum.ReviewPass),
 		CreateTime:  unix,
 		UpdateTime:  unix,
 	}
-	a.value.Balance += int64(amount)
-	a.value.FreezeBalance -= int64(amount)
+	_, err := a.Save()
+	if err == nil {
+		err = a.rep.SaveIntegralLog(l)
+	}
+	return l.Id, err
+}
+
+// Unfreeze 解冻金额
+
+func (a *accountImpl) Unfreeze(account member.AccountType, d member.AccountOperateData, relateUser int64) error {
+	if d.Amount <= 0 || math.IsNaN(float64(d.Amount)) {
+		return member.ErrIncorrectAmount
+	}
+	switch account {
+	case member.AccountBalance:
+		return a.unfreezeBalance(d, relateUser)
+	case member.AccountWallet:
+		return a.unfreezeWallet(d, relateUser)
+	case member.AccountIntegral:
+		return a.unfreezesIntegral(d, relateUser)
+	}
+	panic("not support account type")
+}
+
+func (a *accountImpl) unfreezeBalance(d member.AccountOperateData, relateUser int64) error {
+	if a.value.FreezeBalance < int64(d.Amount) {
+		return member.ErrAccountNotEnoughAmount
+	}
+	if len(d.Title) == 0 {
+		d.Title = "资金解结"
+	}
+	a.value.FreezeBalance -= int64(d.Amount)
+	a.value.Balance += int64(d.Amount)
+	unix := time.Now().Unix()
+	v := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		Kind:         member.KindUnfreeze,
+		Title:        d.Title,
+		RelateUser:   relateUser,
+		Amount:       int64(d.Amount),
+		OuterNo:      d.OuterNo,
+		Balance:      int(a.value.Balance),
+		ProcedureFee: 0,
+		ReviewState:  enum.ReviewPass,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
 	_, err := a.Save()
 	if err == nil {
 		_, err = a.rep.SaveBalanceLog(v)
@@ -771,40 +782,39 @@ func (a *accountImpl) Unfreeze(title string, outerNo string, amount int, relateU
 
 }
 
-
 // UnfreezeWallet 解冻赠送金额
-func (a *accountImpl) UnfreezeWallet(title string, outerNo string,
-	amount int, relateUser int64) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return member.ErrIncorrectAmount
-	}
-	if a.value.FreezeWallet < int64(amount) {
-		return member.ErrAccountNotEnoughAmount
-	}
-	if len(title) == 0 {
-		title = "(赠送)资金解冻"
-	}
-	unix := time.Now().Unix()
-	v := &member.WalletAccountLog{
-		MemberId:    a.GetDomainId(),
-		Kind:        member.KindUnfreeze,
-		Title:       title,
-		RelateUser:  relateUser,
-		Amount:      int64(amount),
-		OuterNo:     outerNo,
-		ReviewState: enum.ReviewPass,
-		CreateTime:  unix,
-		UpdateTime:  unix,
-	}
-	a.value.WalletBalance += int64(amount)
-	a.value.FreezeWallet -= int64(amount)
-	_, err := a.Save()
+func (a *accountImpl) unfreezeWallet(d member.AccountOperateData, relateUser int64) error {
+	err := a.wallet.Unfreeze(d.Amount, d.Title, d.OuterNo, int(relateUser), "")
 	if err == nil {
-		_, err = a.rep.SaveWalletAccountLog(v)
+		err = a.asyncWallet()
 	}
 	return err
+	//if a.value.FreezeWallet < int64(amount) {
+	//	return member.ErrAccountNotEnoughAmount
+	//}
+	//if len(title) == 0 {
+	//	title = "(赠送)资金解冻"
+	//}
+	//unix := time.Now().Unix()
+	//v := &member.WalletAccountLog{
+	//	MemberId:    a.GetDomainId(),
+	//	Kind:        member.KindUnfreeze,
+	//	Title:       title,
+	//	RelateUser:  relateUser,
+	//	Amount:      int64(amount),
+	//	OuterNo:     outerNo,
+	//	ReviewState: enum.ReviewPass,
+	//	CreateTime:  unix,
+	//	UpdateTime:  unix,
+	//}
+	//a.value.WalletBalance += int64(amount)
+	//a.value.FreezeWallet -= int64(amount)
+	//_, err := a.Save()
+	//if err == nil {
+	//	_, err = a.rep.SaveWalletAccountLog(v)
+	//}
+	//return err
 }
-
 
 // PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
 func (a *accountImpl) PaymentDiscount(tradeNo string, amount int, remark string) error {
@@ -839,28 +849,29 @@ func (a *accountImpl) PaymentDiscount(tradeNo string, amount int, remark string)
 }
 
 // UnfreezesIntegral 解冻积分
-func (a *accountImpl) UnfreezesIntegral(title string, value int) error {
-	if a.value.FreezeIntegral < value {
+func (a *accountImpl) unfreezesIntegral(d member.AccountOperateData, relateUser int64) error {
+	if a.value.FreezeIntegral < d.Amount {
 		return member.ErrNoSuchIntegral
 	}
-	a.value.FreezeIntegral -= value
-	a.value.Integral += value
+	a.value.FreezeIntegral -= d.Amount
+	a.value.Integral += d.Amount
+	unix := time.Now().Unix()
+	var l = &member.IntegralLog{
+		Id:          0,
+		MemberId:    int(a.value.MemberId),
+		Kind:        member.TypeIntegralUnfreeze,
+		Title:       d.Title,
+		OuterNo:     d.OuterNo,
+		Value:       d.Amount,
+		Remark:      d.Remark,
+		Balance:     a.value.Integral,
+		RelateUser:  int(relateUser),
+		ReviewState: int16(enum.ReviewPass),
+		CreateTime:  unix,
+		UpdateTime:  unix,
+	}
 	_, err := a.Save()
 	if err == nil {
-		unix := time.Now().Unix()
-		var l = &member.IntegralLog{
-			Id:          0,
-			MemberId:    int(a.value.MemberId),
-			Kind:        member.TypeIntegralUnfreeze,
-			Title:       title,
-			OuterNo:     "",
-			Value:       value,
-			Remark:      "",
-			RelateUser:  0,
-			ReviewState: int16(enum.ReviewPass),
-			CreateTime:  unix,
-			UpdateTime:  unix,
-		}
 		err = a.rep.SaveIntegralLog(l)
 	}
 	return err

@@ -262,14 +262,14 @@ func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error
 	return err
 }
 
-func (w *WalletImpl) Freeze(data wallet.OperateData,operator wallet.Operator) error {
+func (w *WalletImpl) Freeze(data wallet.OperateData, operator wallet.Operator) (int, error) {
 	err := w.checkValueOpu(data.Amount, false, operator.OperatorUid, operator.OperatorName)
 	if err == nil {
 		if data.Amount > 0 {
 			data.Amount = -data.Amount
 		}
 		if w._value.Balance < -data.Amount {
-			return wallet.ErrOutOfAmount
+			return 0, wallet.ErrOutOfAmount
 		}
 		w._value.Balance += data.Amount
 		w._value.FreezeAmount += -data.Amount
@@ -280,8 +280,9 @@ func (w *WalletImpl) Freeze(data wallet.OperateData,operator wallet.Operator) er
 		if err == nil {
 			_, err = w.Save()
 		}
+		return int(l.Id), err
 	}
-	return err
+	return 0, err
 }
 
 func (w *WalletImpl) Unfreeze(value int, title, outerNo string, operatorUid int, operatorName string) error {
@@ -326,7 +327,7 @@ func (w *WalletImpl) FreezeExpired(value int, remark string) error {
 	return err
 }
 
-func (w *WalletImpl) CarryTo(d wallet.OperateData,freeze bool,procedureFee int) (int,error) {
+func (w *WalletImpl) CarryTo(d wallet.OperateData, freeze bool, procedureFee int) (int, error) {
 	err := w.checkValueOpu(d.Amount, false, 0, "")
 	if err == nil {
 		if d.Amount < 0 {
@@ -339,7 +340,7 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData,freeze bool,procedureFee int) 
 		if freeze {
 			k = wallet.KFreeze
 			w._value.FreezeAmount += d.Amount
-		}else{
+		} else {
 			w._value.Balance += d.Amount
 		}
 		// 保存日志
@@ -353,9 +354,9 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData,freeze bool,procedureFee int) 
 		if err == nil {
 			_, err = w.Save()
 		}
-		return int(l.Id),err
+		return int(l.Id), err
 	}
-	return 0,err
+	return 0, err
 }
 
 func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, operatorUid int, operatorName string) error {

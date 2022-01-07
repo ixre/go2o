@@ -169,7 +169,6 @@ var (
 	// MemberAccountTransferProcedureRate 会员转账手续费费率
 	MemberAccountTransferProcedureRate = KeyFormat("MemberAccountTransferProcedureRate")
 
-
 	// 活动账户转为赠送可提现奖金手续费费率
 	MemberFlowAccountConvertCsn = KeyFormat("MemberFlowAccountConvertCsn")
 	/* 经验值 */

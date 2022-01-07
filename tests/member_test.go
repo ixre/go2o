@@ -173,4 +173,3 @@ func TestMemberWallet(t *testing.T) {
 		t.FailNow()
 	}
 }
-

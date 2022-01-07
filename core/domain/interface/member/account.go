@@ -55,7 +55,7 @@ const (
 )
 
 const (
-	StatusOK                = 1
+	StatusOK = 1
 )
 
 const (
@@ -92,7 +92,7 @@ type (
 		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// CarryTo 入账,freeze是否先冻结, procedureFee手续费; 返回日志ID
-		CarryTo(account AccountType,d AccountOperateData,freeze bool,procedureFee int)(int,error)
+		CarryTo(account AccountType, d AccountOperateData, freeze bool, procedureFee int) (int, error)
 
 		// Consume 消耗
 		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
@@ -106,24 +106,17 @@ type (
 		// Refund 退款
 		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// Freeze 冻结账户
-		Freeze(account AccountType, p AccountOperateData, relateUser int64) error
+		// Freeze 账户冻结
+		Freeze(account AccountType, p AccountOperateData, relateUser int64) (int, error)
 
-		// Unfreeze 解冻金额
-		Unfreeze(title string, outerNo string, amount int, relateUser int64) error
-
-		// UnfreezeWallet 解冻赠送金额
-		UnfreezeWallet(title string, outerNo string, amount int, relateUser int64) error
+		// Unfreeze 账户解冻
+		Unfreeze(account AccountType, p AccountOperateData, relateUser int64) error
 
 		// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
 		PaymentDiscount(tradeNo string, amount int, remark string) error
 
-		// UnfreezesIntegral 解冻积分
-		UnfreezesIntegral(title string, value int) error
-
 		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(account AccountType, amount int, remark string) error
-
 
 		// GetWalletLog 获取钱包账户日志
 		GetWalletLog(id int64) wallet.WalletLog
@@ -226,6 +219,8 @@ type (
 		OuterNo string `db:"outer_no"`
 		// 积分值
 		Value int `db:"value"`
+		// 余额
+		Balance int `db:"-"`
 		// 备注
 		Remark string `db:"remark"`
 		// 关联用户
@@ -249,6 +244,8 @@ type (
 		Title string `db:"title"`
 		// 金额
 		Amount int64 `db:"amount"`
+		// 余额
+		Balance int `db:"-"`
 		// 手续费
 		ProcedureFee int64 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
