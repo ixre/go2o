@@ -86,30 +86,23 @@ type (
 		// SetPriorityPay 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account AccountType, enabled bool) error
 
-		// Refund 退款
-		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
-
-		// Charge 充值,金额放大100倍
+		// Charge 用户充值,金额放大100倍（应只充值钱包）
 		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// Adjust 客服调整
-		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
+		// CarryTo 入账,freeze表示是否先冻结
+		CarryTo(account AccountType,d AccountOperateData,freeze bool,procedureFee int)error
 
 		// Consume 消耗
 		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// Discount 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣
+		// Adjust 客服调整
+		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
+
+		// Discount 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣(内部,购物时需要抵扣一部分)
 		Discount(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// 扣减余额
-		//DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
-
-		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
-		//DiscountWallet(title string, outerNo string, amount float32,
-		//	relateUser int64, mustLargeZero bool) error
-
-		// 积分抵扣
-		//IntegralDiscount(title string, outerNo string, value int) error
+		// Refund 退款
+		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
 
 		// Freeze 冻结账户
 		Freeze(account AccountType, p AccountOperateData, relateUser int64) error

@@ -363,8 +363,13 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 	integral := int(float64(amount) * rate)
 	// 赠送积分
 	if integral > 0 {
-		err = m.GetAccount().Charge(member.AccountIntegral,
-			"购物消费赠送积分", integral, o.OrderNo(), "sys")
+		err = acc.CarryTo(member.AccountIntegral,
+			member.AccountOperateData{
+				Title:   "购物消费赠送积分",
+				Amount:  integral,
+				OuterNo: o.OrderNo(),
+				Remark:  "sys",
+			},false,0)
 		if err != nil {
 			return err
 		}

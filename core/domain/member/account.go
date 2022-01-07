@@ -37,7 +37,6 @@ type accountImpl struct {
 	registryRepo registry.IRegistryRepo
 }
 
-
 func newAccount(m *memberImpl, value *member.Account,
 	rep member.IMemberRepo, mm member.IMemberManager,
 	walletRepo wallet.IWalletRepo,
@@ -148,18 +147,52 @@ func (a *accountImpl) Charge(account member.AccountType, title string,
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectQuota
 	}
+	if account != member.AccountWallet{
+		return errors.New("只支持钱包充值")
+	}
+	return a.chargeWallet(title, amount, outerNo, remark)
+	//
+	//switch account {
+	//case member.AccountIntegral:
+	//	return a.integralCharge(title, amount, outerNo, remark)
+	//case member.AccountBalance:
+	//	return a.chargeBalance(title, amount, outerNo, remark)
+	//case member.AccountWallet:
+	//	return a.chargeWallet(title, amount, outerNo, remark)
+	//case member.AccountFlow:
+	//	return a.chargeFlow(title, amount, outerNo, remark)
+	//}
+	//return member.ErrNotSupportAccountType
+}
+
+
+func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool,procedureFee int) error {
+	if d.Amount <= 0 || math.IsNaN(float64(d.Amount)) {
+		return member.ErrIncorrectQuota
+	}
 	switch account {
 	case member.AccountIntegral:
-		return a.integralCharge(title, amount, outerNo, remark)
+		return a.integralCharge(d.Title, d.Amount, d.OuterNo, d.Remark)
 	case member.AccountBalance:
-		return a.chargeBalance(title, amount, outerNo, remark)
+		return a.chargeBalance(d.Title, d.Amount, d.OuterNo, d.Remark)
 	case member.AccountWallet:
-		return a.chargeWallet(title, amount, outerNo, remark)
+		return a.carryToWallet(d,freeze,procedureFee)
 	case member.AccountFlow:
-		return a.chargeFlow(title, amount, outerNo, remark)
+		return a.chargeFlow(d.Title, d.Amount, d.OuterNo, d.Remark)
 	}
 	return member.ErrNotSupportAccountType
 }
+
+
+func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, procedureFee int) error {
+	return a.wallet.CarryTo(wallet.OperateData{
+		Title:   d.Title,
+		Amount:  d.Amount,
+		OuterNo: d.OuterNo,
+		Remark:  d.Remark,
+	},freeze, procedureFee)
+}
+
 
 func (a *accountImpl) Adjust(account member.AccountType, title string, amount int, remark string, relateUser int64) error {
 	if amount == 0 || math.IsNaN(float64(amount)) {

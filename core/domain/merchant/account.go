@@ -141,7 +141,9 @@ func (a *accountImpl) SettleOrder(orderNo string, amount int, tradeFee int,
 	err := a.Save()
 	if err == nil {
 		iw := a.getWallet()
-		err = iw.Income(amount-tradeFee, tradeFee, remark, orderNo)
+		err = iw.CarryTo(wallet.OperateData{
+			Title: "订单结算",
+			Amount: amount-tradeFee, OuterNo: orderNo, Remark: remark},false,tradeFee)
 		// 记录旧日志,todo:可能去掉
 		l := a.createBalanceLog(merchant.KindAccountSettleOrder,
 			remark, orderNo, fAmount, fTradeFee, 1)
@@ -188,9 +190,13 @@ func (a *accountImpl) TransferToMember(amount int) error {
 		"提取到会员"+variable.AliasWalletAccount, "", -int64(amount), 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		err = m.GetAccount().Charge(member.AccountWallet,
-			variable.AliasMerchantBalanceAccount+
-				"提现", int(amount*100), "-", "sys")
+		err = m.GetAccount().CarryTo(member.AccountWallet,
+			member.AccountOperateData{
+				Title:   variable.AliasMerchantBalanceAccount+"提现",
+				Amount:  amount*100,
+				OuterNo: "",
+				Remark:  "sys",
+			},false,0)
 		if err != nil {
 			return err
 		}
@@ -207,8 +213,13 @@ func (a *accountImpl) TransferToMember(amount int) error {
 			takeRate := a.mchImpl._registryRepo.Get(registry.MerchantTakeOutCsn).FloatValue()
 			if takeRate > 0 {
 				csn := float64(amount) * takeRate
-				err = m.GetAccount().Charge(member.AccountWallet, "返还商户提现手续费",
-					int(csn*100), "-", "")
+				err = m.GetAccount().CarryTo(member.AccountWallet,
+					member.AccountOperateData{
+						Title:   "返还商户提现手续费",
+						Amount: int(csn*100),
+						OuterNo: "",
+						Remark:  "",
+					},false,0)
 			}
 		}
 	}
@@ -234,8 +245,13 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 		"提取到会员"+variable.AliasWalletAccount, "", -int64(amount), 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		err = m.GetAccount().Charge(member.AccountWallet, variable.AliasMerchantBalanceAccount+
-			"提现", int(amount*100), "-", "sys")
+		err = m.GetAccount().CarryTo(member.AccountWallet,
+			member.AccountOperateData{
+				Title:   variable.AliasMerchantBalanceAccount+"提现",
+				Amount:  int(amount*100),
+				OuterNo: "",
+				Remark:  "sys",
+			},false,0)
 		if err != nil {
 			return err
 		}
@@ -253,8 +269,13 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 			rate := a.mchImpl._registryRepo.Get(registry.MerchantTakeOutCsn).FloatValue()
 			if rate > 0 {
 				csn := float32(float32(rate) * amount)
-				err = m.GetAccount().Charge(member.AccountWallet, "返还商户提现手续费",
-					int(csn*100), "-", "sys")
+				err = m.GetAccount().CarryTo(member.AccountWallet,
+					member.AccountOperateData{
+						Title:   "返还商户提现手续费",
+						Amount: int(csn*100),
+						OuterNo: "",
+						Remark:  "",
+					},false,0)
 			}
 		}
 	}

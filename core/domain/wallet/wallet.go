@@ -326,20 +326,20 @@ func (w *WalletImpl) FreezeExpired(value int, remark string) error {
 	return err
 }
 
-func (w *WalletImpl) Income(value int, tradeFee int, title, outerNo string) error {
-	err := w.checkValueOpu(value, false, 0, "")
+func (w *WalletImpl) CarryTo(d wallet.OperateData,freeze bool,procedureFee int) error {
+	err := w.checkValueOpu(d.Amount, false, 0, "")
 	if err == nil {
-		if value < 0 {
-			value = -value
+		if d.Amount < 0 {
+			d.Amount = -d.Amount
 		}
-		if tradeFee < 0 {
-			tradeFee = -tradeFee
+		if procedureFee < 0 {
+			procedureFee = -procedureFee
 		}
-		w._value.Balance += value
+		w._value.Balance +=d.Amount
 		// 保存日志
-		l := w.createWalletLog(wallet.KIncome, value, title, 0, "")
-		l.OuterNo = outerNo
-		l.TradeFee = -tradeFee
+		l := w.createWalletLog(wallet.KIncome, d.Amount, d.Title, 0, "")
+		l.OuterNo = d.OuterNo
+		l.TradeFee = -procedureFee
 		l.ReviewState = wallet.ReviewPass
 		l.ReviewTime = time.Now().Unix()
 		l.Balance = w._value.Balance
