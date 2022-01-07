@@ -26,3 +26,22 @@ COMMENT ON COLUMN public.sys_search_word.search_count
 
 COMMENT ON COLUMN public.sys_search_word.flag
     IS '1:启用　2:特殊显示 4: 手动创建';
+
+/** 2022-01-07 */
+ALTER TABLE public.mm_integral_log
+ALTER COLUMN value TYPE bigint;
+
+ALTER TABLE IF EXISTS public.mm_integral_log
+    ADD COLUMN balance bigint NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.mm_integral_log.balance
+    IS '变动后的余额';
+
+ALTER TABLE IF EXISTS public.mm_balance_log
+    ADD COLUMN balance bigint NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.mm_balance_log.balance
+    IS '变动后的余额';
+
+DROP TABLE public.mm_balance_info;
+DROP TABLE public.mm_income_log;
