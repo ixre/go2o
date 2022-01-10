@@ -260,12 +260,20 @@ message AccountChangeRequest {
   // 备注
   string Remark = 6;
 }
+/** 账户调整请求 */
 message AccountAdjustRequest {
-  sint64 MemberId = 1;
+  /** 会员编号 */
+  int64 MemberId = 1;
+  /** 账户类型 */
   EAccountType Account = 2;
-  sint32 Value = 3;
-  sint64 RelateUser = 4;
-  string Remark = 5;
+  /** 调整金额/数量 */
+  int32 Value = 3;
+  /** 是否人工调整 */
+  bool ManualAdjust = 4;
+  /** 关联用户 */
+  int64 RelateUser = 5;
+  /** 备注 */
+  string Remark = 6;
 }
 
 /** 账户入账请求 */

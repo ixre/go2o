@@ -1361,9 +1361,10 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		tit := "[KF]系统冲正"
-		if r.Value > 0 {
-			tit = "[KF]系统充值"
+		tit := "系统冲正"
+		// 人工冲正带[KF]字样
+		if r.ManualAdjust {
+			tit =  "[KF]系统冲正"
 		}
 		acc := m.GetAccount()
 		err = acc.Adjust(member.AccountType(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
