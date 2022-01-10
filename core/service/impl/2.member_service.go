@@ -1394,7 +1394,7 @@ func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*pr
 	return s.error(errors.New("未知操作")), nil
 }
 
-// 提现并返回提现编号,交易号以及错误信息
+// Withdraw 提现并返回提现编号,交易号以及错误信息
 func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*proto.WithdrawalResponse, error) {
 	m, err := s.getMember(r.MemberId)
 	if err != nil {
@@ -1465,7 +1465,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	return ret, nil
 }
 
-// 确认提现
+// ReviewWithdrawal 确认提现
 func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
@@ -1475,7 +1475,6 @@ func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithd
 }
 
 // 完成提现
-
 func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithdrawalRequest) (*proto.Result, error) {
 	var err error
 	m, err := s.getMember(r.MemberId)
@@ -1485,7 +1484,7 @@ func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithd
 	return s.error(err), nil
 }
 
-// 转账余额到其他账户
+// AccountTransfer 转账余额到其他账户
 func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTransferRequest) (*proto.Result, error) {
 	var err error
 	m := s.repo.GetMember(r.FromMemberId)
@@ -1507,7 +1506,7 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 	return s.error(err), nil
 }
 
-// 会员推广排名
+// GetMemberInviRank 会员推广排名
 func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 	levelComp string, level int, startTime int64, endTime int64,
 	num int) []*dto.RankMember {
@@ -1516,7 +1515,7 @@ func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 
 //********* 促销  **********//
 
-// 查询优惠券
+// QueryCoupons 查询优惠券
 func (s *memberService) QueryCoupons(_ context.Context, r *proto.MemberCouponPagingRequest) (*proto.MemberCouponListResponse, error) {
 	cp := s.repo.CreateMemberById(r.MemberId).GiftCard()
 	begin, end := int(r.Begin), int(r.End)

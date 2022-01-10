@@ -90,7 +90,7 @@ func (w *WalletRepoImpl) PagingWalletLog(walletId int64, nodeId int, begin int, 
 	return total, list
 }
 
-// Get WalletLog
+// GetWalletLog_ Get WalletLog
 func (w *WalletRepoImpl) GetWalletLog_(primary interface{}) *wallet.WalletLog {
 	e := wallet.WalletLog{}
 	err := w._orm.Get(primary, &e)
@@ -103,7 +103,7 @@ func (w *WalletRepoImpl) GetWalletLog_(primary interface{}) *wallet.WalletLog {
 	return nil
 }
 
-// GetBy WalletLog
+// GetWalletLogBy_ GetBy WalletLog
 func (w *WalletRepoImpl) GetWalletLogBy_(where string, v ...interface{}) *wallet.WalletLog {
 	e := wallet.WalletLog{}
 	err := w._orm.GetBy(&e, where, v...)
@@ -116,7 +116,7 @@ func (w *WalletRepoImpl) GetWalletLogBy_(where string, v ...interface{}) *wallet
 	return nil
 }
 
-// Select WalletLog
+// SelectWalletLog_ Select WalletLog
 func (w *WalletRepoImpl) SelectWalletLog_(where string, v ...interface{}) []*wallet.WalletLog {
 	list := []*wallet.WalletLog{}
 	err := w._orm.Select(&list, where, v...)
@@ -126,7 +126,7 @@ func (w *WalletRepoImpl) SelectWalletLog_(where string, v ...interface{}) []*wal
 	return list
 }
 
-// Save WalletLog
+// SaveWalletLog_ Save WalletLog
 func (w *WalletRepoImpl) SaveWalletLog_(v *wallet.WalletLog) (int, error) {
 	id, err := orm.Save(w._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {

@@ -2,9 +2,11 @@ package wallet
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/gof/algorithm"
 	"github.com/ixre/gof/util"
 	"strconv"
@@ -192,14 +194,28 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 	if l.Title == "" {
 		panic("wallet log title can't empty")
 	}
+	isUpdate := l.Id > 0
 	id, err := util.I64Err(w._repo.SaveWalletLog_(l))
 	if err == nil {
 		l.Id = id
 	}
+	// 将钱包变动订阅到消息队列
+	bytes, _ := json.Marshal(map[string]interface{}{
+		"id":            id,
+		"wallet_type":   w._value.WalletType,
+		"user_id":       w._value.UserId,
+		"update":        isUpdate,
+		"amount":        l.Value,
+		"procedure_fee": l.ProcedureFee,
+		"balance":       l.Balance,
+		"title":         l.Title,
+		"outer_no":      l.OuterNo,
+	})
+	msq.Push(msq.WalletLogTopic, string(bytes))
 	return err
 }
 
-// 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
+// Adjust 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
 func (w *WalletImpl) Adjust(value int, title, outerNo string,
 	remark string, operatorUid int, operatorName string) error {
 	err := w.checkValueOpu(value, true, operatorUid, operatorName)
@@ -218,7 +234,7 @@ func (w *WalletImpl) Adjust(value int, title, outerNo string,
 	return err
 }
 
-// 消费
+// Consume 消费
 func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark string) error {
 	if amount > 0 {
 		amount = -amount
@@ -239,7 +255,7 @@ func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark st
 	return err
 }
 
-// 支付抵扣,must是否必须大于0
+// Discount 支付抵扣,must是否必须大于0
 func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error {
 	err := w.checkValueOpu(value, false, 0, "")
 	if err == nil {
