@@ -266,9 +266,9 @@ type (
 		// 钱包名称
 		WalletName string `db:"wallet_name"`
 		// 余额
-		Balance int `db:"balance"`
+		Balance int64 `db:"balance"`
 		// 赠送余额
-		PresentBalance int `db:"present_balance"`
+		PresentBalance int64 `db:"present_balance"`
 		// 调整禁遏
 		AdjustAmount int `db:"adjust_amount"`
 		// 冻结金额
@@ -278,7 +278,7 @@ type (
 		// 失效账户余额
 		ExpiredAmount int `db:"expired_amount"`
 		// 总充值金额
-		TotalCharge int `db:"total_charge"`
+		TotalCharge int64 `db:"total_charge"`
 		// 累计赠送金额
 		TotalPresent int `db:"total_present"`
 		// 总支付额
@@ -306,11 +306,11 @@ type (
 		// 外部订单号
 		OuterNo string `db:"outer_no"`
 		// 变动金额
-		Value int `db:"value"`
+		Value int64 `db:"value"`
 		// 余额
-		Balance int `db:"balance"`
+		Balance int64 `db:"balance"`
 		// 交易手续费
-		TradeFee int `db:"trade_fee"`
+		ProcedureFee int `db:"trade_fee"`
 		// 操作人员用户编号
 		OperatorUid int `db:"opr_uid"`
 		// 操作人员名称

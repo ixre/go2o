@@ -254,7 +254,7 @@ message AccountChangeRequest {
   // 明细标题
   string Title = 3;
   // 金额
-  sint32 Amount = 4;
+  int64 Amount = 4;
   // 外部校译号
   string OuterNo = 5;
   // 备注
@@ -267,7 +267,7 @@ message AccountAdjustRequest {
   /** 账户类型 */
   EAccountType Account = 2;
   /** 调整金额/数量 */
-  int32 Value = 3;
+  int64 Value = 3;
   /** 是否人工调整 */
   bool ManualAdjust = 4;
   /** 关联用户 */
@@ -285,9 +285,9 @@ message AccountCarryRequest{
   // 明细标题
   string Title = 3;
   // 已扣除手续费的金额
-  int32 Amount = 4;
+  int64 Amount = 4;
   // 手续费
-  int32 ProcedureFee = 5;
+  int64 ProcedureFee = 5;
   // 外部校译号
   string OuterNo = 6;
   // 备注
@@ -305,7 +305,7 @@ message AccountFreezeRequest {
   /** 标题 */
   string Title = 3;
   /** 冻结金额 */
-  int32 Amount =  4;
+  int64 Amount =  4;
   // 外部校译号
   string OuterNo = 5;
   // 备注
@@ -331,7 +331,7 @@ message AccountUnfreezeRequest {
   /** 标题 */
   string Title = 3;
   /** 冻结金额 */
-  int32 Amount =  4;
+  int64 Amount =  4;
   // 外部校译号
   string OuterNo = 5;
   // 备注
@@ -667,8 +667,8 @@ message AccountTransferRequest {
   EAccountType TransferAccount = 1;
   sint64 FromMemberId = 2;
   sint64 ToMemberId = 3;
-  sint32 Amount = 4;
-  sint32 TradeFee = 5;
+  sint64 Amount = 4;
+  sint64 ProcedureFee = 5;
   string Remark = 6;
 }
 
@@ -678,7 +678,7 @@ message WithdrawRequest {
   // 提现金额
   int64 Amount = 2;
   // 手续费
-  int64 TradeFee = 3;
+  int64 ProcedureFee = 3;
   // 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
   int32 WithdrawKind = 4;
   // 银行账号或第三方支付钱包
@@ -716,9 +716,9 @@ message WithdrawalLog {
   // 标题
   string Title = 4;
   // 金额
-  sint32 Amount = 5;
+  int64 Amount = 5;
   // 手续费
-  sint32 TradeFee = 6;
+  int64 ProcedureFee = 6;
   // 关联操作人,仅在客服操作时,记录操作人
   sint64 RelateUser = 7;
   // 状态

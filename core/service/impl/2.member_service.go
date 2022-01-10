@@ -349,7 +349,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Kind:        int32(v.Kind),
 		Title:       v.Title,
 		Amount:      float64(v.Value),
-		TradeFee:    float64(v.TradeFee),
+		TradeFee:    float64(v.ProcedureFee),
 		ReviewState: int32(v.ReviewState),
 		Remark:      v.Remark,
 		CreateTime:  v.CreateTime,
@@ -1411,7 +1411,7 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	}
 	acc := m.GetAccount()
 	_, tradeNo, err := acc.RequestWithdrawal(int(r.WithdrawKind), title,
-		int(r.Amount), int(r.TradeFee), r.AccountNo)
+		int(r.Amount), int(r.ProcedureFee), r.AccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
@@ -1453,8 +1453,8 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 			OuterNo:     latestApplyInfo.OuterNo,
 			Kind:        int32(latestApplyInfo.Kind),
 			Title:       latestApplyInfo.Title,
-			Amount:      int32(latestApplyInfo.Amount * 100),
-			TradeFee:    int32(latestApplyInfo.CsnFee * 100),
+			Amount:      latestApplyInfo.Amount,
+			ProcedureFee:    latestApplyInfo.ProcedureFee,
 			RelateUser:  latestApplyInfo.RelateUser,
 			ReviewState: latestApplyInfo.ReviewState,
 			Remark:      latestApplyInfo.Remark,
@@ -1502,7 +1502,7 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 			account = member.AccountIntegral
 		}
 		err = m.GetAccount().TransferAccount(account, r.ToMemberId,
-			int(r.Amount), int(r.TradeFee), r.Remark)
+			int(r.Amount), int(r.ProcedureFee), r.Remark)
 	}
 	return s.error(err), nil
 }

@@ -45,3 +45,44 @@ COMMENT ON COLUMN public.mm_balance_log.balance
 
 DROP TABLE public.mm_balance_info;
 DROP TABLE public.mm_income_log;
+
+/** 2022-01-10 */
+ALTER TABLE public.wal_wallet_log
+ALTER COLUMN id TYPE bigint;
+
+ALTER TABLE public.wal_wallet_log
+ALTER COLUMN value TYPE bigint;
+
+ALTER TABLE public.wal_wallet_log
+ALTER COLUMN balance TYPE bigint;
+
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN id TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN balance TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN present_balance TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN latest_amount TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN total_charge TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN total_pay TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN adjust_amount TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN freeze_amount TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN expired_amount TYPE bigint;
+
+ALTER TABLE public.wal_wallet
+ALTER COLUMN total_present TYPE bigint;

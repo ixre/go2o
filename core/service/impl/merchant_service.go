@@ -891,7 +891,7 @@ func (m *merchantService) parseTradeConf(conf *proto.STradeConf_) *merchant.Trad
 		//PlanId:      conf.PlanId,
 		//Flag:        int(conf.Flag),
 		//AmountBasis: int(conf.AmountBasis),
-		//TradeFee:    int(conf.TradeFee),
+		//ProcedureFee:    int(conf.ProcedureFee),
 		//TradeRate:   int(conf.TradeRate),
 	}
 }
@@ -903,7 +903,7 @@ func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STr
 		//PlanId:      conf.PlanId,
 		//Flag:        int32(conf.Flag),
 		//AmountBasis: int32(conf.AmountBasis),
-		//TradeFee:    int32(conf.TradeFee),
+		//ProcedureFee:    int32(conf.ProcedureFee),
 		//TradeRate:   int32(conf.TradeRate),
 	}
 }

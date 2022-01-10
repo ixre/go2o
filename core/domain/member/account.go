@@ -538,7 +538,7 @@ func (a *accountImpl) chargeWallet(title string, amount int, outerNo string, rem
 
 // 钱包消费
 func (a *accountImpl) walletConsume(title string, amount int, outerNo string, remark string) error {
-	if a.wallet.Get().Balance < amount {
+	if a.wallet.Get().Balance < int64(amount) {
 		return member.ErrAccountNotEnoughAmount
 	}
 	err := a.wallet.Consume(-amount, title, outerNo, remark)
@@ -551,7 +551,7 @@ func (a *accountImpl) walletConsume(title string, amount int, outerNo string, re
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 func (a *accountImpl) walletDiscount(title string, amount int, outerNo string, remark string) error {
 	mustLargeZero := false
-	if mustLargeZero && a.wallet.Get().Balance < amount {
+	if mustLargeZero && a.wallet.Get().Balance < int64(amount) {
 		return member.ErrAccountNotEnoughAmount
 	}
 	err := a.wallet.Discount(-amount, title, outerNo, false)
@@ -909,7 +909,7 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 			member.ErrTakeOutLevelNoPerm.Error(), lv.Name))
 	}
 	// 检测余额
-	if a.wallet.Get().Balance < amount {
+	if a.wallet.Get().Balance < int64(amount) {
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制
@@ -1034,17 +1034,17 @@ func (a *accountImpl) walletFreezeExpired(amount int, remark string) error {
 	a.value.ExpiredWallet += int64(amount)
 	a.value.UpdateTime = unix
 	l := &member.WalletAccountLog{
-		MemberId:    a.GetDomainId(),
-		Kind:        member.KindExpired,
-		Title:       "过期失效",
-		OuterNo:     "",
-		Amount:      int64(amount),
-		CsnFee:      0,
-		ReviewState: enum.ReviewPass,
-		RelateUser:  member.DefaultRelateUser,
-		Remark:      remark,
-		CreateTime:  unix,
-		UpdateTime:  unix,
+		MemberId:     a.GetDomainId(),
+		Kind:         member.KindExpired,
+		Title:        "过期失效",
+		OuterNo:      "",
+		Amount:       int64(amount),
+		ProcedureFee: 0,
+		ReviewState:  enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
 	}
 	_, err := a.rep.SaveWalletAccountLog(l)
 	if err == nil {
@@ -1145,17 +1145,17 @@ func (a *accountImpl) transferWalletAccount(tm member.IMember, tradeNo string,
 	// 扣款
 	toName := a.getMemberName(tm)
 	l := &member.WalletAccountLog{
-		MemberId:    a.GetDomainId(),
-		Kind:        member.KindTransferOut,
-		Title:       "转账给" + toName,
-		OuterNo:     tradeNo,
-		Amount:      -int64(amount),
-		CsnFee:      int64(csnFee),
-		ReviewState: enum.ReviewPass,
-		RelateUser:  member.DefaultRelateUser,
-		Remark:      remark,
-		CreateTime:  unix,
-		UpdateTime:  unix,
+		MemberId:     a.GetDomainId(),
+		Kind:         member.KindTransferOut,
+		Title:        "转账给" + toName,
+		OuterNo:      tradeNo,
+		Amount:       -int64(amount),
+		ProcedureFee: int64(csnFee),
+		ReviewState:  enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
 	}
 	_, err := a.rep.SaveWalletAccountLog(l)
 	if err == nil {
@@ -1191,17 +1191,17 @@ func (a *accountImpl) receivePresentTransfer(fromMember int64, tradeNo string,
 	fromName := a.getMemberName(fm)
 	unix := time.Now().Unix()
 	tl := &member.WalletAccountLog{
-		MemberId:    a.GetDomainId(),
-		Kind:        member.KindTransferIn,
-		Title:       "转账收款（" + fromName + "）",
-		OuterNo:     tradeNo,
-		Amount:      int64(amount),
-		CsnFee:      0,
-		ReviewState: enum.ReviewPass,
-		RelateUser:  member.DefaultRelateUser,
-		Remark:      remark,
-		CreateTime:  unix,
-		UpdateTime:  unix,
+		MemberId:     a.GetDomainId(),
+		Kind:         member.KindTransferIn,
+		Title:        "转账收款（" + fromName + "）",
+		OuterNo:      tradeNo,
+		Amount:       int64(amount),
+		ProcedureFee: 0,
+		ReviewState:  enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
 	}
 	_, err := a.rep.SaveWalletAccountLog(tl)
 	if err == nil {
