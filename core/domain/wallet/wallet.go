@@ -3,6 +3,7 @@ package wallet
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -185,14 +186,14 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, operator
 // 保存钱包日志
 func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 	if l.Kind <= 0 {
-		panic("wallet log kind error")
+		return errors.New("wallet log kind error")
 	}
 	if l.Value == 0 {
-		panic("incorrect value")
+		return errors.New("incorrect value")
 	}
 	l.Title = strings.TrimSpace(l.Title)
 	if l.Title == "" {
-		panic("wallet log title can't empty")
+		return errors.New("wallet log title can't empty")
 	}
 	isUpdate := l.Id > 0
 	id, err := util.I64Err(w._repo.SaveWalletLog_(l))

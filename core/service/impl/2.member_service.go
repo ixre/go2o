@@ -1302,6 +1302,12 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 // AccountCarryTo 账户入账
 func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryRequest) (*proto.AccountCarryResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	if m == nil{
+		return &proto.AccountCarryResponse{
+			ErrCode: 1,
+			ErrMsg:  member.ErrNoSuchMember.Error(),
+		}, nil
+	}
 	acc := m.GetAccount()
 	if acc == nil {
 		return &proto.AccountCarryResponse{

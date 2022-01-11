@@ -63,7 +63,7 @@ func TestMemberWalletOperate(t *testing.T) {
 	assertError(t, ic.ReviewWithdrawal(id, false, "退回提现"))
 	assertError(t, ic.Discount(member.AccountWallet, "钱包抵扣",
 		30000, "-", "测试"))
-	if final := int(ic.GetValue().WalletBalance); final != amount {
+	if final := int(ic.GetValue().WalletBalance); int64(final) != amount {
 		t.Log("want ", amount, " final ", final)
 		t.FailNow()
 	}
@@ -102,4 +102,17 @@ func TestMemberRedPack(t *testing.T) {
 	//err := ic.Freeze("发送红包", "-", 100, 0)
 	//if err ==nil{
 	//}
+}
+
+func TestAccountAdjust(t *testing.T){
+	var memberId int64 = 7
+	m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	ic := m.GetAccount()
+	 err := ic.Adjust(member.AccountWallet,  "[KF]客服调整",
+		 100,
+		 "-",
+		 1)
+	if err != nil {
+		t.Error(err)
+	}
 }
