@@ -13,4 +13,6 @@ const (
 	MemberRelationUpdated = "go2o-member-relation-updated"
 	// WalletLogTopic 会员钱包日志订阅
 	WalletLogTopic = "go2o-wallet-log-topic"
+	// RegistryTopic 自定义键值变更订阅
+	RegistryTopic = "go2o-registry-topic"
 )
