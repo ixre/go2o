@@ -21,6 +21,8 @@ services:
       --initial-cluster "etcd1=http://etcd:2380"
       --initial-advertise-peer-urls "http://etcd:2380"
       --initial-cluster-state new
+      --auto-compaction-retention=1
+      --quota-backend-bytes=102400000
     volumes:
       - ./etcd-data:/data
     ports:
