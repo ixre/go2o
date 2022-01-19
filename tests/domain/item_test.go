@@ -136,3 +136,17 @@ func TestUpdateItemNoSkuPrice(t *testing.T) {
 		t.Failed()
 	}
 }
+
+func TestSaveItemSku(t *testing.T) {
+	var itemId int64 = 50
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	err := it.SetSku(it.SkuArray())
+	if err == nil {
+		_, err = it.Save()
+	}
+	if err != nil {
+		t.Error(err)
+		t.Failed()
+	}
+}

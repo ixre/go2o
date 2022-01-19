@@ -653,7 +653,7 @@ func (s *itemService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 		GoodsNo:       v.GoodsNo,
 		Image:         v.Image,
 		RetailPrice:   v.RetailPrice,
-		Price:         v.ProductId,
+		Price:         v.Price,
 		PromPrice:     v.PromPrice,
 		PriceRange:    v.PriceRange,
 		GoodsId:       v.GoodsId,

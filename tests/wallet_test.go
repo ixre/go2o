@@ -79,7 +79,12 @@ func TestFreezeWallet(t *testing.T) {
 	var value = 10000
 	var freeze = wlt.Get().FreezeAmount
 	var balance = wlt.Get().Balance
-	err := wlt.Freeze(value, "冻结金额", "", 0, "")
+	_, err := wlt.Freeze(wallet.OperateData{
+		Title:   "冻结金额",
+		Amount:  value,
+		OuterNo: "",
+		Remark:  "",
+	}, wallet.Operator{OperatorUid: 0})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -136,7 +141,7 @@ func TestTakeOutWalletFail(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if v := wlt.Get().Balance; v != balance-amount {
+	if v := wlt.Get().Balance; v != balance-int64(amount) {
 		t.Error("提现扣款不正确", balance, v)
 		t.FailNow()
 	}
@@ -164,7 +169,7 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if v := wlt.Get().Balance; v != balance-amount {
+	if v := wlt.Get().Balance; v != balance-int64(amount) {
 		t.Error("提现扣款不正确", balance, v)
 		t.FailNow()
 	}
@@ -174,7 +179,7 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 		t.FailNow()
 	}
 	err = wlt.FinishWithdrawal(id, "96699999999")
-	if v := wlt.Get().Balance; v != balance-amount {
+	if v := wlt.Get().Balance; v != balance-int64(amount) {
 		t.Error("提现退回后余额不正确", balance, v)
 		t.FailNow()
 	}
@@ -187,7 +192,7 @@ func TestTransferWallet(t *testing.T) {
 	var amount = 10000
 	var tradeFee = 1000
 	var toWalletId int64 = 2
-	var balance2 = 0
+	var balance2 int64 = 0
 	wlt2 := repo.GetWallet(toWalletId)
 	if wlt2 == nil {
 		t.Error("目标账户不存在")
@@ -201,13 +206,13 @@ func TestTransferWallet(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if v := wlt.Get().Balance; v != balance-amount-tradeFee {
-		t.Error("转账扣款不正确", balance-amount-tradeFee, v)
+	if v := wlt.Get().Balance; v != balance-int64(amount)-int64(tradeFee) {
+		t.Error("转账扣款不正确", balance-int64(amount)-int64(tradeFee), v)
 		t.FailNow()
 	}
 	wlt2 = repo.GetWallet(toWalletId)
-	if v := wlt2.Get().Balance; v-amount != balance2 {
-		t.Error("转账收款不正确", balance2, v-amount)
+	if v := wlt2.Get().Balance; v-int64(amount) != balance2 {
+		t.Error("转账收款不正确", balance2, v-int64(amount))
 	}
 
 }

@@ -81,12 +81,12 @@ func (i *itemImpl) init() item.IGoodsItem {
 	return i
 }
 
-//获取聚合根编号
+// GetAggregateRootId 获取聚合根编号
 func (i *itemImpl) GetAggregateRootId() int64 {
 	return i.value.Id
 }
 
-// 商品快照
+// Snapshot 商品快照
 func (i *itemImpl) Snapshot() *item.Snapshot {
 	if i.snapshot == nil {
 		i.snapshot = i.repo.SnapshotService().GetLatestSnapshot(
@@ -95,7 +95,7 @@ func (i *itemImpl) Snapshot() *item.Snapshot {
 	return i.snapshot
 }
 
-// 获取货品
+// Product 获取货品
 func (i *itemImpl) Product() product.IProduct {
 	if i.pro == nil && i.value.ProductId > 0 {
 		i.pro = i.productRepo.GetProduct(i.value.ProductId)
@@ -103,7 +103,7 @@ func (i *itemImpl) Product() product.IProduct {
 	return i.pro
 }
 
-// 批发
+// Wholesale 批发
 func (i *itemImpl) Wholesale() item.IWholesaleItem {
 	if i.wholesale == nil {
 		i.wholesale = newWholesaleItem(i.GetAggregateRootId(),
@@ -112,12 +112,12 @@ func (i *itemImpl) Wholesale() item.IWholesaleItem {
 	return i.wholesale
 }
 
-// 设置值
+// GetValue 获取值
 func (i *itemImpl) GetValue() *item.GoodsItem {
 	return i.value
 }
 
-// 获取包装过的商品信息
+// GetPackedValue 获取包装过的商品信息
 func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 	//item := i.GetItem().Value()
 	gv := i.GetValue()
@@ -141,7 +141,7 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 	return goods
 }
 
-// 设置值
+// SetValue 设置值
 func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 	err := i.checkItemValue(v)
 	if err == nil {
@@ -197,7 +197,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 	return err
 }
 
-// 设置SKU
+// SetSku 设置SKU
 func (i *itemImpl) SetSku(arr []*item.Sku) error {
 	i.value.SkuArray = arr
 	return nil
@@ -356,7 +356,7 @@ func (i *itemImpl) checkPrice(v *item.GoodsItem) error {
 	return nil
 }
 
-// 保存
+// Save 保存
 func (i *itemImpl) Save() (_ int64, err error) {
 	ss := i.repo.SkuService()
 	// 保存SKU
@@ -372,6 +372,7 @@ func (i *itemImpl) Save() (_ int64, err error) {
 				err = i.saveItemSku(&i.value.SkuArray)
 				// 设置默认SKU
 				i.value.SkuId = 0
+				// 如果SKU不为空
 				if l := len(i.value.SkuArray); l > 0 && err == nil {
 					i.value.SkuId = i.value.SkuArray[0].Id
 				}

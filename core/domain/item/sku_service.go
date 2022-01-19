@@ -83,42 +83,62 @@ func (s *skuServiceImpl) GetSpecItemArray(sku []*item.Sku) (
 	return sa, ia
 }
 
-// 根据SKU更新商品的信息
+// 将SKU最低的价格更新到商品
+func (i *itemImpl) updatePriceBySku(arr []*item.Sku) {
+	var sku *item.Sku
+	var stock int32 = 0
+	for _, v := range arr {
+		if sku == nil || v.Price < sku.Price {
+			sku = v
+		}
+		stock += sku.Stock
+	}
+	i.value.Price = sku.Price
+	i.value.RetailPrice = sku.RetailPrice
+	i.value.StockNum = stock
+}
+
+// UpgradeBySku 根据SKU更新商品的信息
 func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 	arr []*item.Sku) error {
 	//更新SKU数量
 	it.SkuNum = int32(len(arr))
 	//如果包含SKU，则更新库存和价格区间
 	if it.SkuNum > 0 {
+		var minPrice, maxPrice, retailPrice int64
+		var stockNum, saleNum int32
+		for _, v := range arr {
+			stockNum += v.Stock
+			saleNum += v.SaleNum
+			price := v.Price
+			if minPrice == 0 || price < minPrice {
+				minPrice = price
+				retailPrice = v.RetailPrice
+			}
+			if maxPrice == 0 || price > maxPrice {
+				maxPrice = price
+			}
+		}
+
 		//更新库存
 		it.StockNum = 0
 		//更新销售数量
 		it.SaleNum = 0
-		var pl, ph int64
-		for i := 0; i < len(arr); i++ {
-			it.StockNum += arr[i].Stock
-			it.SaleNum += arr[i].SaleNum
-			price := arr[i].Price
-			if price < pl || pl == 0 {
-				pl = price
-			}
-			if price > ph || ph == 0 {
-				ph = price
-			}
-		}
+		//更新价格
+		it.Price = minPrice
+		it.RetailPrice = retailPrice
 		//更新价格区间
-		it.Price = pl
-		if pl == ph {
-			it.PriceRange = format.FormatFloat64(float64(pl) / 100)
+		if minPrice == maxPrice {
+			it.PriceRange = format.FormatFloat64(float64(minPrice) / 100)
 		} else {
-			it.PriceRange = format.FormatFloat64(float64(pl)/100) +
-				"~" + format.FormatFloat64(float64(ph)/100)
+			it.PriceRange = format.FormatFloat64(float64(minPrice)/100) +
+				"~" + format.FormatFloat64(float64(maxPrice)/100)
 		}
 	}
 	return nil
 }
 
-// 合并SKU数组；主要是SKU编号的复制
+// Merge 合并SKU数组；主要是SKU编号的复制
 func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 	if to == nil || from == nil || len(from) == 0 || len(*to) == 0 {
 		return
