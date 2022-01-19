@@ -343,7 +343,7 @@ func PrepareOrderDto(src *order.ComplexOrder) *proto.PrepareOrderResponse {
 		DiscountAmount: src.DiscountAmount,
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
-		FinalAmount:    src.FinalAmount,
+		FinalFee:       src.FinalAmount,
 		Consignee: &proto.SConsigneeInfo{
 			ConsigneeName:   src.Consignee.ConsigneeName,
 			ConsigneePhone:  src.Consignee.ConsigneePhone,

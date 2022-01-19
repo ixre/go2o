@@ -4139,7 +4139,7 @@ type WalletLogResponse struct {
 	// 金额
 	Amount float64 `protobuf:"fixed64,6,opt,name=Amount,proto3" json:"Amount"`
 	// 手续费
-	TradeFee float64 `protobuf:"fixed64,7,opt,name=ProcedureFee,proto3" json:"ProcedureFee"`
+	TradeFee float64 `protobuf:"fixed64,7,opt,name=TradeFee,proto3" json:"TradeFee"`
 	// 状态
 	ReviewState int32 `protobuf:"zigzag32,8,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// 备注

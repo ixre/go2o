@@ -303,7 +303,7 @@ message PrepareOrderResponse{
     // 订单总金额
     int32 TotalAmount = 10;
     // 最终金额
-    int64 FinalAmount = 11;
+    int64 FinalFee = 11;
     // 收货人
     SConsigneeInfo Consignee = 12;
     // 订单项目

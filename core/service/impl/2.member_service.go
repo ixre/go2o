@@ -1302,7 +1302,7 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 // AccountCarryTo 账户入账
 func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryRequest) (*proto.AccountCarryResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
-	if m == nil{
+	if m == nil {
 		return &proto.AccountCarryResponse{
 			ErrCode: 1,
 			ErrMsg:  member.ErrNoSuchMember.Error(),
@@ -1370,7 +1370,7 @@ func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustR
 		tit := "系统冲正"
 		// 人工冲正带[KF]字样
 		if r.ManualAdjust {
-			tit =  "[KF]系统冲正"
+			tit = "[KF]系统冲正"
 		}
 		acc := m.GetAccount()
 		err = acc.Adjust(member.AccountType(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
@@ -1455,17 +1455,17 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	ret := &proto.WithdrawalLogsResponse{Data: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
 		ret.Data = append(ret.Data, &proto.WithdrawalLog{
-			Id:          latestApplyInfo.Id,
-			OuterNo:     latestApplyInfo.OuterNo,
-			Kind:        int32(latestApplyInfo.Kind),
-			Title:       latestApplyInfo.Title,
-			Amount:      latestApplyInfo.Amount,
-			ProcedureFee:    latestApplyInfo.ProcedureFee,
-			RelateUser:  latestApplyInfo.RelateUser,
-			ReviewState: latestApplyInfo.ReviewState,
-			Remark:      latestApplyInfo.Remark,
-			SubmitTime:  latestApplyInfo.CreateTime,
-			UpdateTime:  latestApplyInfo.UpdateTime,
+			Id:           latestApplyInfo.Id,
+			OuterNo:      latestApplyInfo.OuterNo,
+			Kind:         int32(latestApplyInfo.Kind),
+			Title:        latestApplyInfo.Title,
+			Amount:       latestApplyInfo.Amount,
+			ProcedureFee: latestApplyInfo.ProcedureFee,
+			RelateUser:   latestApplyInfo.RelateUser,
+			ReviewState:  latestApplyInfo.ReviewState,
+			Remark:       latestApplyInfo.Remark,
+			SubmitTime:   latestApplyInfo.CreateTime,
+			UpdateTime:   latestApplyInfo.UpdateTime,
 		})
 	}
 	return ret, nil

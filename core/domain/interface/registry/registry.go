@@ -182,9 +182,9 @@ func (r *registryImpl) Save() error {
 
 	}
 	// 推送用户自定义键值变更通知
-	if r.IsUser(){
-		bytes,_ := json.Marshal(r.value)
-		msq.Push(msq.RegistryTopic,string(bytes))
+	if r.IsUser() {
+		bytes, _ := json.Marshal(r.value)
+		msq.Push(msq.RegistryTopic, string(bytes))
 	}
 	return r.repo.Save(r)
 }

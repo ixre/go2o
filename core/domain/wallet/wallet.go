@@ -483,7 +483,7 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 	if value < 0 {
 		value = -value
 	}
-	w._value.Balance +=int64( value)
+	w._value.Balance += int64(value)
 	l := w.createWalletLog(wallet.KTransferIn, value, title, 0, "")
 	l.OuterNo = tradeNo
 	l.Remark = remark
