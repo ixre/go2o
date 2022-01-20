@@ -51,22 +51,22 @@ func (p *paymentOrderImpl) Get() payment.Order {
 	return *p.value
 }
 
-// 获取交易号
+// TradeNo 获取交易号
 func (p *paymentOrderImpl) TradeNo() string {
 	return p.value.TradeNo
 }
 
-// 支付单状态
+// State 支付单状态
 func (p *paymentOrderImpl) State() int {
 	return int(p.value.State)
 }
 
-// 支付标志
+// Flag 支付标志
 func (p *paymentOrderImpl) Flag() int {
 	return p.value.PayFlag
 }
 
-// 支付途径支付信息
+// TradeMethods 支付途径支付信息
 func (p *paymentOrderImpl) TradeMethods() []*payment.TradeMethodData {
 	if p.value.TradeMethods == nil {
 		if p.GetAggregateRootId() <= 0 {
@@ -77,7 +77,7 @@ func (p *paymentOrderImpl) TradeMethods() []*payment.TradeMethodData {
 	return p.value.TradeMethods
 }
 
-// 提交支付订单
+// Submit 提交支付订单
 func (p *paymentOrderImpl) Submit() error {
 	if id := p.GetAggregateRootId(); id > 0 {
 		return payment.ErrOrderCommitted
@@ -90,7 +90,7 @@ func (p *paymentOrderImpl) Submit() error {
 	return p.saveOrder()
 }
 
-// 合并支付
+// MergePay 合并支付
 func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeNo string, finalFee int, err error) {
 	if err := p.CheckPaymentState(); err != nil { // 验证支付单是否可以支付
 		return "", 0, err

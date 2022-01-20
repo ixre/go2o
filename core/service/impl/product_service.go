@@ -121,21 +121,6 @@ func (p *productService) GetBrands(_ context.Context, _ *proto.Empty) (*proto.Pr
 	}, nil
 }
 
-func (p *productService) GetCategories(_ context.Context, _ *proto.Empty) (*proto.ProductCategoriesResponse, error) {
-	ic := p.catRepo.GlobCatService()
-	cats := ic.GetCategories()
-	list := make([]*proto.SProductCategory, len(cats))
-	for i, v := range cats {
-		cat := p.parseCategoryDto(v.GetValue())
-		cat.Icon = format.GetResUrl(cat.Icon)
-		p.appendCategoryBrands(ic, v, cat)
-		list[i] = cat
-	}
-	return &proto.ProductCategoriesResponse{
-		Value: list,
-	}, nil
-}
-
 // 为分类绑定品牌
 func (p *productService) appendCategoryBrands(ic product.IGlobCatService, v product.ICategory, cat *proto.SProductCategory) {
 	brands := ic.RelationBrands(v.GetDomainId())
@@ -157,13 +142,13 @@ func (p *productService) GetCategory(_ context.Context, id *proto.Int64) (*proto
 	return nil, nil
 }
 
-// 删除分类
+// DeleteCategory 删除分类
 func (p *productService) DeleteCategory(_ context.Context, id *proto.Int64) (*proto.Result, error) {
 	err := p.catRepo.GlobCatService().DeleteCategory(int(id.Value))
 	return p.error(err), nil
 }
 
-// 保存分类
+// SaveCategory 保存分类
 func (p *productService) SaveCategory(_ context.Context, category *proto.SaveProductCategoryRequest) (*proto.SaveProductCategoryResponse, error) {
 	sl := p.catRepo.GlobCatService()
 	var ca product.ICategory
@@ -183,25 +168,7 @@ func (p *productService) SaveCategory(_ context.Context, category *proto.SavePro
 	return &proto.SaveProductCategoryResponse{CategoryId: int64(ca.GetDomainId())}, nil
 }
 
-// GetChildren 根据上级编号获取分类列表
-func (p *productService) GetChildren(_ context.Context, id *proto.CategoryParentId) (*proto.ProductCategoriesResponse, error) {
-	ic := p.catRepo.GlobCatService()
-	cats := ic.GetCategories()
-	var list = make([]*proto.SProductCategory, 0)
-	for _, v := range cats {
-		if vv := v.GetValue(); vv.ParentId == int(id.Value) && vv.Enabled == 1 {
-			cat := p.parseCategoryDto(v.GetValue())
-			cat.Icon = format.GetResUrl(cat.Icon)
-			p.appendCategoryBrands(ic, v, cat)
-			list = append(list, cat)
-		}
-	}
-	return &proto.ProductCategoriesResponse{
-		Value: list,
-	}, nil
-}
-
-// 获取产品值
+// GetProduct 获取产品值
 func (p *productService) GetProduct(_ context.Context, id *proto.ProductId) (*proto.SProduct, error) {
 	pro := p.productRepo.GetProduct(id.Value)
 	if pro != nil {
@@ -216,7 +183,7 @@ func (p *productService) GetProduct(_ context.Context, id *proto.ProductId) (*pr
 	return nil, nil
 }
 
-// 保存产品
+// SaveProduct 保存产品
 func (p *productService) SaveProduct(_ context.Context, r *proto.SProduct) (*proto.SaveProductResponse, error) {
 	var pro product.IProduct
 	v := p.parseProduct(r)
@@ -252,7 +219,7 @@ func (p *productService) SaveProduct(_ context.Context, r *proto.SProduct) (*pro
 	return ret, nil
 }
 
-// 保存货品描述
+// SaveProductInfo 保存货品描述
 func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfoRequest) (*proto.Result, error) {
 	pro := p.productRepo.GetProduct(r.ProductId)
 	var err error
@@ -264,13 +231,13 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 	return p.error(err), nil
 }
 
-// 获取模型属性
+// GetModelAttrs_ 获取模型属性
 func (p *productService) GetModelAttrs_(proModel int32) []*promodel.Attr {
 	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: proModel})
 	return m.Attrs()
 }
 
-// 获取模型属性Html
+// GetModelAttrsHtml 获取模型属性Html
 func (p *productService) GetModelAttrsHtml(_ context.Context, id *proto.ProductModelId) (*proto.String, error) {
 	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: int32(id.Value)})
 	attrs := m.Attrs()
@@ -278,7 +245,7 @@ func (p *productService) GetModelAttrsHtml(_ context.Context, id *proto.ProductM
 	return &proto.String{Value: s}, nil
 }
 
-// 保存产品模型
+// SaveModel 保存产品模型
 func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
 	var pm promodel.IProductModel
 	v := p.parseProductModel(r)

@@ -193,16 +193,18 @@ var (
 	// 抵扣1元所需要的积分个数
 	IntegralDiscountQuantity = KeyFormat("IntegralDiscountQuantity")
 
-	/* 商户订单 */
-	// 商户订单结算模式
+	//  /* 商户订单 */
+	// MchOrderSettleMode 商户订单结算模式
 	MchOrderSettleMode = KeyFormat("MchOrderSettleMode")
-	// 商户订单结算比例
+	// MchOrderSettleRate 商户订单结算比例
 	MchOrderSettleRate = KeyFormat("MchOrderSettleRate")
-	// 商户订单每单服务费(按单结算)
+	// MchSingleOrderServiceFee 商户订单每单服务费(按单结算)
 	MchSingleOrderServiceFee = KeyFormat("MchSingleOrderServiceFee")
-	// 商户订单每月免服务费订单数
+	// MchMonthFreeOrders 商户订单每月免服务费订单数
 	MchMonthFreeOrders = KeyFormat("MchMonthFreeOrders")
-	// 商户交易单是否需上传发票
+	// 是否必须认证后才可以继续操作
+	MchMustBeTrust = KeyFormat("MchMustBeTrust")
+	// MchOrderRequireTicket 商户交易单是否需上传发票
 	MchOrderRequireTicket = KeyFormat("MchOrderRequireTicket")
 
 	/* 商户 */

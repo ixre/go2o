@@ -23,7 +23,6 @@ import (
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
-	"github.com/ixre/gof/types/typeconv"
 	context2 "golang.org/x/net/context"
 	"strings"
 )
@@ -562,14 +561,19 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 }
 
 // CheckLogin 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwd) (*proto.Result, error) {
+func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdRequest) (*proto.MchLoginResponse, error) {
 	user := strings.ToLower(strings.TrimSpace(u.User))
 	pwd := strings.TrimSpace(u.Pwd)
 	id, code, err := m.testLogin(user, pwd)
 	if err != nil {
-		return m.errorCodeResult(int(code), err), nil
+		return &proto.MchLoginResponse{
+			ErrCode:              code,
+			ErrMsg:               err.Error(),
+		}, nil
 	}
-	return m.success(map[string]string{"mch_id": typeconv.Stringify(id)}), nil
+	return &proto.MchLoginResponse{
+		MerchantId: id,
+	}, nil
 }
 
 func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*proto.SMerchant, error) {

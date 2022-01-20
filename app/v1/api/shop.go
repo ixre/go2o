@@ -57,12 +57,15 @@ func (s shopApi) shopCat(ctx api.Context) interface{} {
 	trans, cli, _ := service.ProductServiceClient()
 	defer trans.Close()
 	if err := sto.Get(key, &list); err != nil {
-		if parentId == 0 {
-			ret, _ := cli.GetChildren(context.TODO(), &proto.CategoryParentId{})
-			list = ret.Value
-		} else {
-			ret, _ := cli.GetCategory(context.TODO(), &proto.Int64{Value: int64(parentId)})
-			list = ret.Children
+		ret, _ := cli.GetCategoryTreeNode(context.TODO(),
+			&proto.CategoryTreeRequest{
+				ParentId:  int64(parentId),
+				Lazy: true,
+				LoadEnabled: true,
+			})
+		list := ret.Value
+		if list == nil{
+			list = make([]*proto.SCategoryTree,0)
 		}
 		var d []byte
 		d, err = json.Marshal(list)
