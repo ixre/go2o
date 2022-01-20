@@ -86,3 +86,7 @@ ALTER COLUMN expired_amount TYPE bigint;
 
 ALTER TABLE public.wal_wallet
 ALTER COLUMN total_present TYPE bigint;
+
+/** 2022-01-19 */
+/** 更新商品价格 */
+update item_info set price=CAST(replace(price_range,'.','') AS integer) where price =0

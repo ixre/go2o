@@ -220,7 +220,7 @@ func (m *merchantService) GetSaleConf(_ context.Context, id *proto.MerchantId) (
 	return nil, nil
 }
 
-// 获取商户的店铺编号
+// GetShopId 获取商户的店铺编号
 func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*proto.Int64, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	shops := mch.ShopManager().GetShops()
@@ -230,7 +230,7 @@ func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*p
 	return &proto.Int64{}, nil
 }
 
-// 修改密码
+// ModifyPassword 修改密码
 func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
@@ -248,7 +248,7 @@ func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerch
 	return m.error(err), nil
 }
 
-// 获取API接口
+// GetApiInfo 获取API接口
 func (m *merchantService) GetApiInfo(_ context.Context, id *proto.MerchantId) (*proto.SMerchantApiInfo, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
@@ -561,7 +561,7 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 	return mch.GetAggregateRootId(), 0, nil
 }
 
-// 验证用户密码,并返回编号。可传入商户或会员的账号密码
+// CheckLogin 验证用户密码,并返回编号。可传入商户或会员的账号密码
 func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwd) (*proto.Result, error) {
 	user := strings.ToLower(strings.TrimSpace(u.User))
 	pwd := strings.TrimSpace(u.Pwd)
