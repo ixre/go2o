@@ -19,18 +19,22 @@ import (
 	"time"
 )
 
+var defaultAddr string
 var selector etcd.Selector
 
-// ConfigureClient 设置RPC地址
-func ConfigureClient(c clientv3.Config) {
-	log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
-	s, err := etcd.NewSelector(service, c, etcd.AlgRoundRobin)
-	if err != nil {
-		log.Println("[ Go2o][ RPC]: can't connect go2o rpc server! ", err.Error())
-		os.Exit(1)
+// ConfigureClient 设置RPC地址,defaultAddr为默认地址,当未指定clientv3.Config时使用
+func ConfigureClient(c *clientv3.Config,defaultAddr string) {
+	defaultAddr = defaultAddr
+	if c != nil {
+		log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
+		s, err := etcd.NewSelector(service, *c, etcd.AlgRoundRobin)
+		if err != nil {
+			log.Println("[ Go2o][ RPC]: can't connect go2o rpc server! ", err.Error())
+			os.Exit(1)
+		}
+		selector = s
+		tryConnect(30)
 	}
-	selector = s
-	tryConnect(30)
 }
 
 // 尝试连接服务,如果连接不成功,则退出
@@ -51,12 +55,16 @@ func tryConnect(retryTimes int) {
 
 // 获取连接
 func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
-	next, err := selector.Next()
-	if err != nil {
-		return nil, err
+	addr := defaultAddr
+	if selector != nil {
+		next, err := selector.Next()
+		if err != nil {
+			return nil, err
+		}
+		addr = next.Addr
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	conn, err := grpc.DialContext(ctx, next.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.DialContext(ctx,addr, grpc.WithInsecure(), grpc.WithBlock())
 	cancel()
 	return conn, err
 }
