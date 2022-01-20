@@ -44,7 +44,6 @@ service ProductService {
     // 获取所有产品品牌
     rpc GetBrands (Empty) returns (ProductBrandListResponse) {
     }
-
     // 获取商品分类
     rpc GetCategory (Int64) returns (SProductCategory) {
     }
