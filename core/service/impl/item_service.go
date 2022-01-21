@@ -58,7 +58,7 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	}
 }
 
-// 获取商品
+// GetItem 获取商品
 func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifiedViewItem, error) {
 	item := s.itemRepo.GetItem(id.Value)
 	if item != nil {
@@ -67,7 +67,7 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifi
 	return nil, nil
 }
 
-// 保存商品
+// SaveItem 保存商品
 func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.SaveItemResponse, error) {
 	var gi item.IGoodsItem
 	it := parser.ParseGoodsItem(r)

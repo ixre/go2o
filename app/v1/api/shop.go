@@ -59,13 +59,13 @@ func (s shopApi) shopCat(ctx api.Context) interface{} {
 	if err := sto.Get(key, &list); err != nil {
 		ret, _ := cli.GetCategoryTreeNode(context.TODO(),
 			&proto.CategoryTreeRequest{
-				ParentId:  int64(parentId),
-				Lazy: true,
+				ParentId:    int64(parentId),
+				Lazy:        true,
 				LoadEnabled: true,
 			})
 		list := ret.Value
-		if list == nil{
-			list = make([]*proto.SCategoryTree,0)
+		if list == nil {
+			list = make([]*proto.SCategoryTree, 0)
 		}
 		var d []byte
 		d, err = json.Marshal(list)

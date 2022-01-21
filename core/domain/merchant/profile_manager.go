@@ -135,12 +135,12 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 		if newPwd == oldPwd {
 			return domain.ErrPwdCannotSame
 		}
-		oldPwd = dm.MerchantSha1Pwd(oldPwd,p.merchantImpl.GetValue().Salt)
+		oldPwd = dm.MerchantSha1Pwd(oldPwd, p.merchantImpl.GetValue().Salt)
 		if oldPwd != p._value.LoginPwd {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p._value.LoginPwd =  dm.MerchantSha1Pwd(newPwd,p.merchantImpl.GetValue().Salt)
+	p._value.LoginPwd = dm.MerchantSha1Pwd(newPwd, p.merchantImpl.GetValue().Salt)
 	_, err := p.Save()
 	return err
 }

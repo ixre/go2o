@@ -567,8 +567,8 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdReque
 	id, code, err := m.testLogin(user, pwd)
 	if err != nil {
 		return &proto.MchLoginResponse{
-			ErrCode:              code,
-			ErrMsg:               err.Error(),
+			ErrCode: code,
+			ErrMsg:  err.Error(),
 		}, nil
 	}
 	return &proto.MchLoginResponse{
@@ -603,21 +603,7 @@ func (m *merchantService) SaveMerchant(_ context.Context, r *proto.SaveMerchantR
 	return m.result(err), nil
 }
 
-func (m *merchantService) initializeMerchant(mchId int64) {
-
-	// 初始化会员默认等级
-	// m._mchRepo.GetMerchant(int(mchId))
-
-	//conf := merchant.DefaultSaleConf
-	//conf.VendorId = mch.GetAggregateRootId()
-	// 保存销售设置
-	//mch.ConfManager().SaveSaleConf(&conf)
-
-	// 初始化销售标签
-	//m._saleRepo.GetSale(mchId).LabelManager().InitSaleLabels()
-}
-
-// 获取商户的状态
+// Stat 获取商户的状态
 func (m *merchantService) Stat(_ context.Context, mchId *proto.Int64) (r *proto.Result, err error) {
 	mch := m._mchRepo.GetMerchant(int(mchId.Value))
 	if mch == nil {
@@ -628,7 +614,7 @@ func (m *merchantService) Stat(_ context.Context, mchId *proto.Int64) (r *proto.
 	return m.result(err), nil
 }
 
-// 保存API信息
+// SaveApiInfo 保存API信息
 func (m *merchantService) SaveApiInfo(mchId int64, d *merchant.ApiInfo) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -637,7 +623,7 @@ func (m *merchantService) SaveApiInfo(mchId int64, d *merchant.ApiInfo) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-// 获取所有会员等级
+// GetMemberLevels_ 获取所有会员等级
 func (m *merchantService) GetMemberLevels_(mchId int64) []*merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -646,7 +632,7 @@ func (m *merchantService) GetMemberLevels_(mchId int64) []*merchant.MemberLevel 
 	return []*merchant.MemberLevel{}
 }
 
-// 根据编号获取会员等级信息
+// GetMemberLevelById_ 根据编号获取会员等级信息
 func (m *merchantService) GetMemberLevelById_(mchId, id int32) *merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -655,7 +641,7 @@ func (m *merchantService) GetMemberLevelById_(mchId, id int32) *merchant.MemberL
 	return nil
 }
 
-// 保存会员等级信息
+// SaveMemberLevel_ 保存会员等级信息
 func (m *merchantService) SaveMemberLevel_(mchId int64, v *merchant.MemberLevel) (int32, error) {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -664,7 +650,7 @@ func (m *merchantService) SaveMemberLevel_(mchId int64, v *merchant.MemberLevel)
 	return 0, merchant.ErrNoSuchMerchant
 }
 
-// 删除会员等级
+// DelMemberLevel_ 删除会员等级
 func (m *merchantService) DelMemberLevel_(mchId, levelId int32) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -673,7 +659,7 @@ func (m *merchantService) DelMemberLevel_(mchId, levelId int32) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-// 获取等级
+// GetLevel_ 获取等级
 func (m *merchantService) GetLevel_(mchId, level int32) *merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -692,7 +678,7 @@ func (m *merchantService) GetNextLevel_(mchId, levelValue int32) *merchant.Membe
 
 }
 
-// 获取键值字典
+// GetKeyMapsByKeyword_ 获取键值字典
 func (m *merchantService) GetKeyMapsByKeyword_(mchId int64, keyword string) map[string]string {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -701,7 +687,7 @@ func (m *merchantService) GetKeyMapsByKeyword_(mchId int64, keyword string) map[
 	return map[string]string{}
 }
 
-// 保存键值字典
+// SaveKeyMaps_ 保存键值字典
 func (m *merchantService) SaveKeyMaps_(mchId int64, data map[string]string) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -710,9 +696,7 @@ func (m *merchantService) SaveKeyMaps_(mchId int64, data map[string]string) erro
 	return merchant.ErrNoSuchMerchant
 }
 
-// 查询分页订单
-
-// 提到会员账户
+// WithdrawToMemberAccount1 提到会员账户
 func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {

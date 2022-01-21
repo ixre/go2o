@@ -131,7 +131,7 @@ func main() {
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
 	service.ServeRPC(ch, &cfg, port)
-	service.ConfigureClient(&cfg,"") // initial service client
+	service.ConfigureClient(&cfg, "") // initial service client
 	if runDaemon {
 		//todo: daemon需重构
 		//go daemon.Run(newApp)

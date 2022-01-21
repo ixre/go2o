@@ -140,7 +140,7 @@ type (
 		BatchDeleteItemSku(where string, v ...interface{}) (int64, error)
 	}
 
-	// 商品,临时改方便辨别
+	// GoodsItem 商品,临时改方便辨别
 	GoodsItem struct {
 		// 商品编号
 		Id int64 `db:"id" pk:"yes" auto:"yes"`

@@ -64,7 +64,7 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 		addr = next.Addr
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	conn, err := grpc.DialContext(ctx,addr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.DialContext(ctx, addr, grpc.WithInsecure(), grpc.WithBlock())
 	cancel()
 	return conn, err
 }
