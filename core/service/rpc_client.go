@@ -19,12 +19,12 @@ import (
 	"time"
 )
 
-var defaultAddr string
+var addr string
 var selector etcd.Selector
 
 // ConfigureClient 设置RPC地址,defaultAddr为默认地址,当未指定clientv3.Config时使用
-func ConfigureClient(c *clientv3.Config,defaultAddr string) {
-	defaultAddr = defaultAddr
+func ConfigureClient(c *clientv3.Config, defaultAddr string) {
+	addr = defaultAddr
 	if c != nil {
 		log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
 		s, err := etcd.NewSelector(service, *c, etcd.AlgRoundRobin)
@@ -55,7 +55,7 @@ func tryConnect(retryTimes int) {
 
 // 获取连接
 func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
-	addr := defaultAddr
+	addr := addr
 	if selector != nil {
 		next, err := selector.Next()
 		if err != nil {
