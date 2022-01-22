@@ -27,11 +27,12 @@ WORKDIR /app
 COPY --from=build /opt/go2o/dist/* /app/
 COPY ./assets ./assets
 
-#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && \
-RUN	apk --update add tzdata ca-certificates && \
-	cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && apk del tzdata && \
-	ln -s /app/go2o /bin && \
-    echo "if [ ! -f '/data/app.conf' ];then cp -r /app/app.conf /data;fi;"\
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories  \
+	&& apk --update add tzdata ca-certificates \
+	&& cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+	&& apk del tzdata \
+	&& ln -s /app/go2o /bin \
+    && echo "if [ ! -f '/data/app.conf' ];then cp -r /app/app.conf /data;fi;" \
     "go2o -conf /data/app.conf -d"> /docker-boot.sh
 VOLUME ["/data"]
 EXPOSE 1427 1428
