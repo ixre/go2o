@@ -18,10 +18,10 @@ import (
 var _ item.ISnapshotService = new(snapshotServiceImpl)
 
 type snapshotServiceImpl struct {
-	itemRepo item.IGoodsItemRepo
+	itemRepo item.IItemRepo
 }
 
-func NewSnapshotServiceImpl(repo item.IGoodsItemRepo) item.ISnapshotService {
+func NewSnapshotServiceImpl(repo item.IItemRepo) item.ISnapshotService {
 	return &snapshotServiceImpl{
 		itemRepo: repo,
 	}

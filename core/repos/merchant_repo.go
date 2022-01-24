@@ -41,7 +41,7 @@ type merchantRepo struct {
 	storage       storage.Interface
 	manager       merchant.IMerchantManager
 	_wsRepo       wholesaler.IWholesaleRepo
-	_itemRepo     item.IGoodsItemRepo
+	_itemRepo     item.IItemRepo
 	_userRepo     user.IUserRepo
 	_mssRepo      mss.IMssRepo
 	_shopRepo     shop.IShopRepo
@@ -53,7 +53,7 @@ type merchantRepo struct {
 }
 
 func NewMerchantRepo(o orm.Orm, storage storage.Interface,
-	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
+	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
 	return &merchantRepo{

@@ -90,3 +90,41 @@ ALTER COLUMN total_present TYPE bigint;
 /** 2022-01-19 */
 /** 更新商品价格 */
 update item_info set price=CAST(replace(price_range,'.','') AS integer) where price =0
+
+
+-- Table: public.item_image
+
+-- DROP TABLE IF EXISTS public.item_image;
+
+CREATE TABLE IF NOT EXISTS public.item_image
+(
+    id bigserial NOT NULL,
+    item_id bigint NOT NULL,
+    image_url character varying(180) COLLATE pg_catalog."default" NOT NULL,
+    sort_num integer NOT NULL,
+    create_time bigint NOT NULL,
+    CONSTRAINT item_image_pkey PRIMARY KEY (id)
+    )
+
+    TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.item_image
+    OWNER to postgres;
+
+COMMENT ON TABLE public.item_image
+    IS '产品图片';
+
+COMMENT ON COLUMN public.item_image.id
+    IS '图片编号';
+
+COMMENT ON COLUMN public.item_image.item_id
+    IS '商品编号';
+
+COMMENT ON COLUMN public.item_image.image_url
+    IS '图片地址';
+
+COMMENT ON COLUMN public.item_image.sort_num
+    IS '排列序号';
+
+COMMENT ON COLUMN public.item_image.create_time
+    IS '创建时间';

@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func FactoryPromotion(rep promotion.IPromotionRepo, goodsRepo item.IGoodsItemRepo, memRepo member.IMemberRepo,
+func FactoryPromotion(rep promotion.IPromotionRepo, goodsRepo item.IItemRepo, memRepo member.IMemberRepo,
 	v *promotion.PromotionInfo) promotion.IPromotion {
 	p := newPromotion(rep, goodsRepo, memRepo, v)
 

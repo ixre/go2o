@@ -47,7 +47,7 @@ type RepoFactory struct {
 	productRepo product.IProductRepo
 	itemWsRepo  item.IItemWholesaleRepo
 	catRepo     product.ICategoryRepo
-	itemRepo    item.IGoodsItemRepo
+	itemRepo    item.IItemRepo
 	tagSaleRepo item.ISaleLabelRepo
 	promRepo    promotion.IPromotionRepo
 
@@ -151,7 +151,7 @@ func (r *RepoFactory) GetItemWholesaleRepo() item.IItemWholesaleRepo {
 func (r *RepoFactory) GetCategoryRepo() product.ICategoryRepo {
 	return r.catRepo
 }
-func (r *RepoFactory) GetItemRepo() item.IGoodsItemRepo {
+func (r *RepoFactory) GetItemRepo() item.IItemRepo {
 	return r.itemRepo
 }
 func (r *RepoFactory) GetSaleLabelRepo() item.ISaleLabelRepo {

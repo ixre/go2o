@@ -40,7 +40,7 @@ type wCartQuickSkuJdo struct {
 type wholesaleCartImpl struct {
 	value      *cart.WsCart
 	rep        cart.ICartRepo
-	itemRepo   item.IGoodsItemRepo
+	itemRepo   item.IItemRepo
 	memberRepo member.IMemberRepo
 	mchRepo    merchant.IMerchantRepo
 	summary    string
@@ -51,7 +51,7 @@ type wholesaleCartImpl struct {
 
 func CreateWholesaleCart(val *cart.WsCart, rep cart.ICartRepo,
 	memberRepo member.IMemberRepo, mchRepo merchant.IMerchantRepo,
-	itemRepo item.IGoodsItemRepo) cart.ICart {
+	itemRepo item.IItemRepo) cart.ICart {
 	return (&wholesaleCartImpl{
 		value:      val,
 		rep:        rep,

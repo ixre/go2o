@@ -26,7 +26,7 @@ import (
 	"log"
 )
 
-var _ item.IGoodsItemRepo = new(itemRepoImpl)
+var _ item.IItemRepo = new(itemRepoImpl)
 
 type itemRepoImpl struct {
 	db.Connector
@@ -42,11 +42,17 @@ type itemRepoImpl struct {
 	shopRepo     shop.IShopRepo
 }
 
-// 商品仓储
+var ormMapped = false
+
+// NewGoodsItemRepo 商品仓储
 func NewGoodsItemRepo(o orm.Orm, catRepo product.ICategoryRepo,
 	proRepo product.IProductRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	registryRepo registry.IRegistryRepo, shopRepo shop.IShopRepo) *itemRepoImpl {
+	if !ormMapped {
+		_ = o.Mapping(item.Image{},"item_image")
+		ormMapped = true
+	}
 	return &itemRepoImpl{
 		Connector:    o.Connector(),
 		o:            o,
@@ -60,7 +66,7 @@ func NewGoodsItemRepo(o orm.Orm, catRepo product.ICategoryRepo,
 	}
 }
 
-// 获取SKU服务
+// SkuService 获取SKU服务
 func (i *itemRepoImpl) SkuService() item.ISkuService {
 	if i._skuService == nil {
 		i._skuService = itemImpl.NewSkuServiceImpl(i, i.proMRepo)
@@ -68,7 +74,7 @@ func (i *itemRepoImpl) SkuService() item.ISkuService {
 	return i._skuService
 }
 
-// 获取快照服务
+// SnapshotService 获取快照服务
 func (i *itemRepoImpl) SnapshotService() item.ISnapshotService {
 	if i._snapService == nil {
 		i._snapService = itemImpl.NewSnapshotServiceImpl(i)
@@ -76,7 +82,7 @@ func (i *itemRepoImpl) SnapshotService() item.ISnapshotService {
 	return i._snapService
 }
 
-// 创建商品
+// CreateItem 创建商品
 func (i *itemRepoImpl) CreateItem(v *item.GoodsItem) item.IGoodsItem {
 	return itemImpl.NewItem(i.proRepo, i.catRepo, nil, v, i.registryRepo, i,
 		i.proMRepo, i.itemWsRepo, i.expressRepo, i.shopRepo, nil)
@@ -107,6 +113,35 @@ func (i *itemRepoImpl) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
 		return e
 	}
 	return nil
+}
+
+// GetItemImages  获取商品图片
+func (i *itemRepoImpl) GetItemImages(itemId int64)[]*item.Image {
+	list := make([]*item.Image, 0)
+	err := i.o.Select(&list, "item_id=$1",itemId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemImage")
+	}
+	return list
+}
+
+
+// SaveItemImage 保存商品图片
+func (i *itemRepoImpl) SaveItemImage(v *item.Image)(int,error){
+	id,err := orm.Save(i.o,v,int(v.Id))
+	if err != nil && err != sql.ErrNoRows{
+		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:ItemImage")
+	}
+	return id,err
+}
+
+// DeleteItemImage 删除商品图片
+func (i *itemRepoImpl) DeleteItemImage(id int64) error {
+	err := i.o.DeleteByPk(item.Image{}, id)
+	if err != nil && err != sql.ErrNoRows{
+		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:ItemImage")
+	}
+	return err
 }
 
 // GetValueGoodsById 获取商品
@@ -199,7 +234,7 @@ func (i *itemRepoImpl) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 	return total, list
 }
 
-// 获取指定数量已上架的商品
+// GetOnShelvesGoods 获取指定数量已上架的商品
 func (i *itemRepoImpl) GetOnShelvesGoods(mchId int64, start, end int, sortBy string) []*valueobject.Goods {
 	var e []*valueobject.Goods
 	s := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN product ON product.id = item_info.product_id
@@ -213,7 +248,7 @@ func (i *itemRepoImpl) GetOnShelvesGoods(mchId int64, start, end int, sortBy str
 	return e
 }
 
-// 保存快照
+// SaveSnapshot 保存快照
 func (i *itemRepoImpl) SaveSnapshot(v *item.Snapshot) (int64, error) {
 	_, r, err := i.o.Save(v.ItemId, v)
 	if r == 0 {
@@ -222,7 +257,7 @@ func (i *itemRepoImpl) SaveSnapshot(v *item.Snapshot) (int64, error) {
 	return v.ItemId, err
 }
 
-// 获取最新的商品快照
+// GetLatestSnapshot 获取最新的商品快照
 func (i *itemRepoImpl) GetLatestSnapshot(itemId int64) *item.Snapshot {
 	e := &item.Snapshot{}
 	if i.o.Get(itemId, e) == nil {
@@ -231,7 +266,7 @@ func (i *itemRepoImpl) GetLatestSnapshot(itemId int64) *item.Snapshot {
 	return nil
 }
 
-// 根据指定商品快照
+// GetSnapshots 根据指定商品快照
 func (i *itemRepoImpl) GetSnapshots(skuIdArr []int64) []item.Snapshot {
 	var list []item.Snapshot
 	_ = i.o.Select(&list, `item_id IN (`+
@@ -239,7 +274,7 @@ func (i *itemRepoImpl) GetSnapshots(skuIdArr []int64) []item.Snapshot {
 	return list
 }
 
-// 获取最新的商品销售快照
+// GetLatestSalesSnapshot 获取最新的商品销售快照
 func (i *itemRepoImpl) GetLatestSalesSnapshot(skuId int64) *item.TradeSnapshot {
 	e := new(item.TradeSnapshot)
 	if i.o.GetBy(e, "sku_id= $1 ORDER BY id DESC", skuId) == nil {
@@ -248,7 +283,7 @@ func (i *itemRepoImpl) GetLatestSalesSnapshot(skuId int64) *item.TradeSnapshot {
 	return nil
 }
 
-// 获取指定的商品销售快照
+// GetSalesSnapshot 获取指定的商品销售快照
 func (i *itemRepoImpl) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 	e := new(item.TradeSnapshot)
 	if i.o.Get(id, e) == nil {
@@ -257,7 +292,7 @@ func (i *itemRepoImpl) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 	return nil
 }
 
-// 根据Key获取商品销售快照
+// GetSaleSnapshotByKey 根据Key获取商品销售快照
 func (i *itemRepoImpl) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
 	var e = new(item.TradeSnapshot)
 	if i.o.GetBy(e, "key= $1", key) == nil {

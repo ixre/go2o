@@ -17,12 +17,12 @@ import (
 var _ item.ISkuService = new(skuServiceImpl)
 
 type skuServiceImpl struct {
-	repo     item.IGoodsItemRepo
+	repo     item.IItemRepo
 	proMRepo promodel.IProductModelRepo
 	su       *skuServiceUtil
 }
 
-func NewSkuServiceImpl(repo item.IGoodsItemRepo,
+func NewSkuServiceImpl(repo item.IItemRepo,
 	proMRepo promodel.IProductModelRepo) item.ISkuService {
 	s := &skuServiceImpl{
 		repo:     repo,

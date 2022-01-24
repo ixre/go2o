@@ -34,7 +34,7 @@ func (m *CategoryIdRequest) Reset()         { *m = CategoryIdRequest{} }
 func (m *CategoryIdRequest) String() string { return proto.CompactTextString(m) }
 func (*CategoryIdRequest) ProtoMessage()    {}
 func (*CategoryIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{0}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{0}
 }
 func (m *CategoryIdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CategoryIdRequest.Unmarshal(m, b)
@@ -73,7 +73,7 @@ func (m *DeleteProductRequest) Reset()         { *m = DeleteProductRequest{} }
 func (m *DeleteProductRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteProductRequest) ProtoMessage()    {}
 func (*DeleteProductRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{1}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{1}
 }
 func (m *DeleteProductRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DeleteProductRequest.Unmarshal(m, b)
@@ -118,7 +118,7 @@ func (m *ProductId) Reset()         { *m = ProductId{} }
 func (m *ProductId) String() string { return proto.CompactTextString(m) }
 func (*ProductId) ProtoMessage()    {}
 func (*ProductId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{2}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{2}
 }
 func (m *ProductId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ProductId.Unmarshal(m, b)
@@ -156,7 +156,7 @@ func (m *ProductModelId) Reset()         { *m = ProductModelId{} }
 func (m *ProductModelId) String() string { return proto.CompactTextString(m) }
 func (*ProductModelId) ProtoMessage()    {}
 func (*ProductModelId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{3}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{3}
 }
 func (m *ProductModelId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ProductModelId.Unmarshal(m, b)
@@ -194,7 +194,7 @@ func (m *ProductAttrId) Reset()         { *m = ProductAttrId{} }
 func (m *ProductAttrId) String() string { return proto.CompactTextString(m) }
 func (*ProductAttrId) ProtoMessage()    {}
 func (*ProductAttrId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{4}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{4}
 }
 func (m *ProductAttrId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ProductAttrId.Unmarshal(m, b)
@@ -232,7 +232,7 @@ func (m *ProductAttrItemId) Reset()         { *m = ProductAttrItemId{} }
 func (m *ProductAttrItemId) String() string { return proto.CompactTextString(m) }
 func (*ProductAttrItemId) ProtoMessage()    {}
 func (*ProductAttrItemId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{5}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{5}
 }
 func (m *ProductAttrItemId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ProductAttrItemId.Unmarshal(m, b)
@@ -270,7 +270,7 @@ func (m *ProductModelListResponse) Reset()         { *m = ProductModelListRespon
 func (m *ProductModelListResponse) String() string { return proto.CompactTextString(m) }
 func (*ProductModelListResponse) ProtoMessage()    {}
 func (*ProductModelListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{6}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{6}
 }
 func (m *ProductModelListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ProductModelListResponse.Unmarshal(m, b)
@@ -324,7 +324,7 @@ func (m *SProductModel) Reset()         { *m = SProductModel{} }
 func (m *SProductModel) String() string { return proto.CompactTextString(m) }
 func (*SProductModel) ProtoMessage()    {}
 func (*SProductModel) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{7}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{7}
 }
 func (m *SProductModel) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProductModel.Unmarshal(m, b)
@@ -425,7 +425,7 @@ func (m *SProductAttr) Reset()         { *m = SProductAttr{} }
 func (m *SProductAttr) String() string { return proto.CompactTextString(m) }
 func (*SProductAttr) ProtoMessage()    {}
 func (*SProductAttr) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{8}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{8}
 }
 func (m *SProductAttr) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProductAttr.Unmarshal(m, b)
@@ -511,7 +511,7 @@ func (m *SProductAttrItem) Reset()         { *m = SProductAttrItem{} }
 func (m *SProductAttrItem) String() string { return proto.CompactTextString(m) }
 func (*SProductAttrItem) ProtoMessage()    {}
 func (*SProductAttrItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{9}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{9}
 }
 func (m *SProductAttrItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProductAttrItem.Unmarshal(m, b)
@@ -573,7 +573,7 @@ func (m *SProductAttrValue) Reset()         { *m = SProductAttrValue{} }
 func (m *SProductAttrValue) String() string { return proto.CompactTextString(m) }
 func (*SProductAttrValue) ProtoMessage()    {}
 func (*SProductAttrValue) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{10}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{10}
 }
 func (m *SProductAttrValue) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProductAttrValue.Unmarshal(m, b)
@@ -649,7 +649,7 @@ func (m *SProductSpec) Reset()         { *m = SProductSpec{} }
 func (m *SProductSpec) String() string { return proto.CompactTextString(m) }
 func (*SProductSpec) ProtoMessage()    {}
 func (*SProductSpec) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{11}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{11}
 }
 func (m *SProductSpec) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProductSpec.Unmarshal(m, b)
@@ -723,7 +723,7 @@ func (m *SProductSpecItem) Reset()         { *m = SProductSpecItem{} }
 func (m *SProductSpecItem) String() string { return proto.CompactTextString(m) }
 func (*SProductSpecItem) ProtoMessage()    {}
 func (*SProductSpecItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{12}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{12}
 }
 func (m *SProductSpecItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProductSpecItem.Unmarshal(m, b)
@@ -782,7 +782,7 @@ func (m *ProductBrandListResponse) Reset()         { *m = ProductBrandListRespon
 func (m *ProductBrandListResponse) String() string { return proto.CompactTextString(m) }
 func (*ProductBrandListResponse) ProtoMessage()    {}
 func (*ProductBrandListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{13}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{13}
 }
 func (m *ProductBrandListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ProductBrandListResponse.Unmarshal(m, b)
@@ -838,7 +838,7 @@ func (m *SProductBrand) Reset()         { *m = SProductBrand{} }
 func (m *SProductBrand) String() string { return proto.CompactTextString(m) }
 func (*SProductBrand) ProtoMessage()    {}
 func (*SProductBrand) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{14}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{14}
 }
 func (m *SProductBrand) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProductBrand.Unmarshal(m, b)
@@ -968,7 +968,7 @@ func (m *SProductCategory) Reset()         { *m = SProductCategory{} }
 func (m *SProductCategory) String() string { return proto.CompactTextString(m) }
 func (*SProductCategory) ProtoMessage()    {}
 func (*SProductCategory) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{15}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{15}
 }
 func (m *SProductCategory) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProductCategory.Unmarshal(m, b)
@@ -1151,7 +1151,7 @@ func (m *SaveProductCategoryRequest) Reset()         { *m = SaveProductCategoryR
 func (m *SaveProductCategoryRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveProductCategoryRequest) ProtoMessage()    {}
 func (*SaveProductCategoryRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{16}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{16}
 }
 func (m *SaveProductCategoryRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveProductCategoryRequest.Unmarshal(m, b)
@@ -1275,7 +1275,7 @@ func (m *SaveProductCategoryResponse) Reset()         { *m = SaveProductCategory
 func (m *SaveProductCategoryResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveProductCategoryResponse) ProtoMessage()    {}
 func (*SaveProductCategoryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{17}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{17}
 }
 func (m *SaveProductCategoryResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveProductCategoryResponse.Unmarshal(m, b)
@@ -1334,7 +1334,7 @@ func (m *SCategoryTree) Reset()         { *m = SCategoryTree{} }
 func (m *SCategoryTree) String() string { return proto.CompactTextString(m) }
 func (*SCategoryTree) ProtoMessage()    {}
 func (*SCategoryTree) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{18}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{18}
 }
 func (m *SCategoryTree) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SCategoryTree.Unmarshal(m, b)
@@ -1422,7 +1422,7 @@ func (m *CategoryTreeRequest) Reset()         { *m = CategoryTreeRequest{} }
 func (m *CategoryTreeRequest) String() string { return proto.CompactTextString(m) }
 func (*CategoryTreeRequest) ProtoMessage()    {}
 func (*CategoryTreeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{19}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{19}
 }
 func (m *CategoryTreeRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CategoryTreeRequest.Unmarshal(m, b)
@@ -1482,7 +1482,7 @@ func (m *CategoryTreeResponse) Reset()         { *m = CategoryTreeResponse{} }
 func (m *CategoryTreeResponse) String() string { return proto.CompactTextString(m) }
 func (*CategoryTreeResponse) ProtoMessage()    {}
 func (*CategoryTreeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{20}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{20}
 }
 func (m *CategoryTreeResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CategoryTreeResponse.Unmarshal(m, b)
@@ -1521,7 +1521,7 @@ func (m *SourceCategoriesResponse) Reset()         { *m = SourceCategoriesRespon
 func (m *SourceCategoriesResponse) String() string { return proto.CompactTextString(m) }
 func (*SourceCategoriesResponse) ProtoMessage()    {}
 func (*SourceCategoriesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{21}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{21}
 }
 func (m *SourceCategoriesResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SourceCategoriesResponse.Unmarshal(m, b)
@@ -1587,7 +1587,7 @@ func (m *SProduct) Reset()         { *m = SProduct{} }
 func (m *SProduct) String() string { return proto.CompactTextString(m) }
 func (*SProduct) ProtoMessage()    {}
 func (*SProduct) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{22}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{22}
 }
 func (m *SProduct) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SProduct.Unmarshal(m, b)
@@ -1717,7 +1717,7 @@ func (m *ProductInfoRequest) Reset()         { *m = ProductInfoRequest{} }
 func (m *ProductInfoRequest) String() string { return proto.CompactTextString(m) }
 func (*ProductInfoRequest) ProtoMessage()    {}
 func (*ProductInfoRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{23}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{23}
 }
 func (m *ProductInfoRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ProductInfoRequest.Unmarshal(m, b)
@@ -1764,7 +1764,7 @@ func (m *SaveProductResponse) Reset()         { *m = SaveProductResponse{} }
 func (m *SaveProductResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveProductResponse) ProtoMessage()    {}
 func (*SaveProductResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_product_service_3feb21dd12470bed, []int{24}
+	return fileDescriptor_product_service_2838a927172a4ab3, []int{24}
 }
 func (m *SaveProductResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveProductResponse.Unmarshal(m, b)
@@ -2576,10 +2576,10 @@ var _ProductService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("product_service.proto", fileDescriptor_product_service_3feb21dd12470bed)
+	proto.RegisterFile("product_service.proto", fileDescriptor_product_service_2838a927172a4ab3)
 }
 
-var fileDescriptor_product_service_3feb21dd12470bed = []byte{
+var fileDescriptor_product_service_2838a927172a4ab3 = []byte{
 	// 1553 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe4, 0x58, 0x4b, 0x6f, 0xdb, 0xc6,
 	0x13, 0x97, 0x2c, 0xc9, 0x92, 0xc6, 0xb2, 0x63, 0xaf, 0x9d, 0x3f, 0x18, 0x26, 0xc8, 0xdf, 0x65,

@@ -36,7 +36,7 @@ type itemImpl struct {
 	value         *item.GoodsItem
 	wholesale     item.IWholesaleItem
 	snapshot      *item.Snapshot
-	repo          item.IGoodsItemRepo
+	repo          item.IItemRepo
 	catRepo       product.ICategoryRepo
 	productRepo   product.IProductRepo
 	itemWsRepo    item.IItemWholesaleRepo
@@ -54,7 +54,7 @@ type itemImpl struct {
 func NewItem(
 	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
 	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
-	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProductModelRepo,
+	goodsRepo item.IItemRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	shopRepo shop.IShopRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
@@ -586,7 +586,7 @@ func (i *itemImpl) saveSku(sku *item.Sku) (_ int64, err error) {
 }
 
 // 释放库存
-func (i *itemImpl) FreeStock(skuId int64, quantity int32) error {
+func (i *itemImpl) ReleaseStock(skuId int64, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}

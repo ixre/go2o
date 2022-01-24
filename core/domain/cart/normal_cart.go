@@ -16,7 +16,7 @@ var _ cart.INormalCart = new(cartImpl)
 type cartImpl struct {
 	value      *cart.NormalCart
 	rep        cart.ICartRepo
-	goodsRepo  item.IGoodsItemRepo
+	goodsRepo  item.IItemRepo
 	memberRepo member.IMemberRepo
 	summary    string
 	shop       shop.IShop
@@ -25,7 +25,7 @@ type cartImpl struct {
 }
 
 func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
-	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
+	memberRepo member.IMemberRepo, goodsRepo item.IItemRepo) cart.ICart {
 	c := &cartImpl{
 		value:      val,
 		rep:        rep,
@@ -37,7 +37,7 @@ func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
 
 // 创建新的购物车
 func NewNormalCart(code string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
-	goodsRepo item.IGoodsItemRepo) cart.ICart {
+	goodsRepo item.IItemRepo) cart.ICart {
 	unix := time.Now().Unix()
 	if code == "" {
 		code = domain.GenerateCartCode(unix, time.Now().Nanosecond())

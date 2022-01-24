@@ -32,7 +32,7 @@ var _ proto.ItemServiceServer = new(itemService)
 
 type itemService struct {
 	serviceUtil
-	itemRepo  item.IGoodsItemRepo
+	itemRepo  item.IItemRepo
 	itemQuery *query.ItemQuery
 	cateRepo  product.ICategoryRepo
 	labelRepo item.ISaleLabelRepo
@@ -43,7 +43,7 @@ type itemService struct {
 }
 
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
-	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
+	goodsRepo item.IItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProductModelRepo,
 	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) *itemService {
 	return &itemService{

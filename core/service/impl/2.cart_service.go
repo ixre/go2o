@@ -30,7 +30,7 @@ import (
 var _ proto.CartServiceServer = new(cartServiceImpl)
 
 type cartServiceImpl struct {
-	itemRepo proItem.IGoodsItemRepo
+	itemRepo proItem.IItemRepo
 	cartRepo cart.ICartRepo
 	mchRepo  merchant.IMerchantRepo
 	shopRepo shop.IShopRepo
@@ -38,7 +38,7 @@ type cartServiceImpl struct {
 }
 
 func NewCartService(cartRepo cart.ICartRepo,
-	goodsRepo proItem.IGoodsItemRepo,
+	goodsRepo proItem.IItemRepo,
 	mchRepo merchant.IMerchantRepo,
 	shopRepo shop.IShopRepo) *cartServiceImpl {
 	return &cartServiceImpl{

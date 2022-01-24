@@ -41,7 +41,7 @@ type OrderRepImpl struct {
 	db.Connector
 	o             orm.Orm
 	_productRepo  product.IProductRepo
-	_goodsRepo    item.IGoodsItemRepo
+	_goodsRepo    item.IItemRepo
 	_promRepo     promotion.IPromotionRepo
 	_memberRepo   member.IMemberRepo
 	_mchRepo      merchant.IMerchantRepo
@@ -58,7 +58,7 @@ type OrderRepImpl struct {
 
 func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	mchRepo merchant.IMerchantRepo, payRepo payment.IPaymentRepo,
-	proRepo product.IProductRepo, cartRepo cart.ICartRepo, goodsRepo item.IGoodsItemRepo,
+	proRepo product.IProductRepo, cartRepo cart.ICartRepo, goodsRepo item.IItemRepo,
 	promRepo promotion.IPromotionRepo, memRepo member.IMemberRepo,
 	deliverRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo,
 	shipRepo shipment.IShipmentRepo,

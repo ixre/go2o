@@ -15,11 +15,11 @@ type wholesalerImpl struct {
 	mchId    int64
 	value    *wholesaler.WsWholesaler
 	repo     wholesaler.IWholesaleRepo
-	itemRepo item.IGoodsItemRepo
+	itemRepo item.IItemRepo
 }
 
 func NewWholesaler(mchId int64, v *wholesaler.WsWholesaler,
-	repo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo) wholesaler.IWholesaler {
+	repo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo) wholesaler.IWholesaler {
 	return &wholesalerImpl{
 		mchId:    mchId,
 		value:    v,

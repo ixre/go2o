@@ -51,7 +51,7 @@ type normalOrderImpl struct {
 	orderRepo       order.IOrderRepo
 	expressRepo     express.IExpressRepo
 	payRepo         payment.IPaymentRepo
-	goodsRepo       item.IGoodsItemRepo
+	goodsRepo       item.IItemRepo
 	productRepo     product.IProductRepo
 	promRepo        promotion.IPromotionRepo
 	registryRepo    registry.IRegistryRepo
@@ -67,7 +67,7 @@ type normalOrderImpl struct {
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
-	shoppingRepo order.IOrderRepo, goodsRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
+	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	cartRepo cart.ICartRepo, registryRepo registry.IRegistryRepo, valRepo valueobject.IValueRepo) order.IOrder {
 	return &normalOrderImpl{
@@ -958,7 +958,7 @@ type subOrderImpl struct {
 	paymentRepo     payment.IPaymentRepo
 	repo            order.IOrderRepo
 	memberRepo      member.IMemberRepo
-	itemRepo        item.IGoodsItemRepo
+	itemRepo        item.IItemRepo
 	productRepo     product.IProductRepo
 	manager         order.IOrderManager
 	shipRepo        shipment.IShipmentRepo
@@ -969,7 +969,7 @@ type subOrderImpl struct {
 
 func NewSubNormalOrder(v *order.NormalSubOrder,
 	manager order.IOrderManager, rep order.IOrderRepo,
-	mmRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo,
+	mmRepo member.IMemberRepo, goodsRepo item.IItemRepo,
 	shipRepo shipment.IShipmentRepo, productRepo product.IProductRepo,
 	paymentRepo payment.IPaymentRepo, valRepo valueobject.IValueRepo,
 	mchRepo merchant.IMerchantRepo, registryRepo registry.IRegistryRepo) order.ISubOrder {
@@ -1565,7 +1565,7 @@ func (o *subOrderImpl) cancelGoods() error {
 		gds := o.itemRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
-			gds.FreeStock(v.SkuId, v.Quantity)
+			gds.ReleaseStock(v.SkuId, v.Quantity)
 			// 如果订单已付款，则取消销售数量
 			if o.value.IsPaid == 1 {
 				gds.CancelSale(v.SkuId, v.Quantity, o.value.OrderNo)

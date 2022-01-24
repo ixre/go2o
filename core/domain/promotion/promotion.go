@@ -24,10 +24,10 @@ type promotionImpl struct {
 	mchId      int
 	promRepo   promotion.IPromotionRepo
 	value      *promotion.PromotionInfo
-	goodsRepo  item.IGoodsItemRepo
+	goodsRepo  item.IItemRepo
 }
 
-func newPromotion(rep promotion.IPromotionRepo, goodsRepo item.IGoodsItemRepo,
+func newPromotion(rep promotion.IPromotionRepo, goodsRepo item.IItemRepo,
 	memRepo member.IMemberRepo, v *promotion.PromotionInfo) *promotionImpl {
 	return &promotionImpl{
 		promRepo:   rep,

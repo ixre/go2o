@@ -36,14 +36,14 @@ type wholesaleOrderImpl struct {
 	expressRepo  express.IExpressRepo
 	payRepo      payment.IPaymentRepo
 	shipRepo     shipment.IShipmentRepo
-	itemRepo     item.IGoodsItemRepo
+	itemRepo     item.IItemRepo
 	mchRepo      merchant.IMerchantRepo
 	valueRepo    valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 }
 
 func newWholesaleOrder(base *baseOrderImpl,
-	shoppingRepo order.IOrderRepo, goodsRepo item.IGoodsItemRepo,
+	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo,
 	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	shipRepo shipment.IShipmentRepo, mchRepo merchant.IMerchantRepo,
 	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrder {
@@ -316,7 +316,7 @@ func (o *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
 		for i := 0; i < okIndex; i++ {
 			v := items[i]
 			it := o.itemRepo.GetItem(v.ItemId)
-			it.FreeStock(v.SkuId, v.Quantity)
+			it.ReleaseStock(v.SkuId, v.Quantity)
 		}
 	}
 	return err
@@ -894,7 +894,7 @@ func (o *wholesaleOrderImpl) cancelGoods() error {
 		gds := o.itemRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
-			gds.FreeStock(v.SkuId, v.Quantity)
+			gds.ReleaseStock(v.SkuId, v.Quantity)
 			// 如果订单已付款，则取消销售数量
 			if o.value.IsPaid == 1 {
 				gds.CancelSale(v.SkuId, v.Quantity, o.value.OrderNo)

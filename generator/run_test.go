@@ -15,7 +15,7 @@ import (
 
 // 按模板生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
-	tablePrefix := "sys_"
+	tablePrefix := "item_image"
 	_, output, err := shell.Run("bash tto.sh " + tablePrefix)
 	if err != nil {
 		t.Error(err)
