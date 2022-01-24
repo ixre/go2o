@@ -124,7 +124,11 @@ func WsItemDiscount(src *proto.SWsItemDiscount) *item.WsItemDiscount {
 	}
 }
 
-func ParseGoodsItem(src *proto.SUnifiedViewItem) *item.GoodsItem {
+func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
+	image := ""
+	if len(src.Images) > 0 {
+		image = src.Images[0]
+	}
 	dst := &item.GoodsItem{
 		Id:         src.ItemId,
 		ProductId:  src.ProductId,
@@ -137,7 +141,7 @@ func ParseGoodsItem(src *proto.SUnifiedViewItem) *item.GoodsItem {
 		Title:      src.Title,
 		ShortTitle: "", //src.Sho,
 		Code:       src.Code,
-		Image:      src.Image,
+		Image:      image,
 		IsPresent:  0, //todo:???
 		PriceRange: src.PriceRange,
 		StockNum:   src.StockNum,

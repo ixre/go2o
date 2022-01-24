@@ -257,6 +257,10 @@ type (
 		Save() (int64, error)
 		// Product 获取产品
 		Product() product.IProduct
+		// Images 获取商品图片
+		Images() []string
+		// SaveImages 保存商品图片
+		SaveImages(images []string) error
 		// Snapshot 商品快照
 		Snapshot() *Snapshot
 		// Wholesale 批发
@@ -321,62 +325,62 @@ type (
 		IsOnShelves() bool
 		// SetShelve 设置上架
 		SetShelve(state int32, remark string) error
-		// 审核
+		// Review 审核
 		Review(pass bool, remark string) error
-		// 标记为违规
+		// Incorrect 标记为违规
 		Incorrect(remark string) error
 
-		// 根据商品金额获取折扣
+		// GetWholesaleDiscount 根据商品金额获取折扣
 		GetWholesaleDiscount(groupId int32, amount int32) float64
-		// 获取全部批发折扣
+		// GetItemDiscount 获取全部批发折扣
 		GetItemDiscount(groupId int32) []*WsItemDiscount
-		// 保存批发折扣
+		// SaveItemDiscount 保存批发折扣
 		SaveItemDiscount(groupId int32, arr []*WsItemDiscount) error
 
-		// 获取批发价格
+		// GetWholesalePrice 获取批发价格
 		GetWholesalePrice(skuId int64, quantity int32) int64
-		// 根据SKU获取价格设置
+		// GetSkuPrice 根据SKU获取价格设置
 		GetSkuPrice(skuId int64) []*WsSkuPrice
-		// 保存批发SKU价格设置
+		// SaveSkuPrice 保存批发SKU价格设置
 		SaveSkuPrice(skuId int64, arr []*WsSkuPrice) error
 	}
 
 	IItemWholesaleRepo interface {
-		// Get WsItem
+		// GetWsItem Get WsItem
 		GetWsItem(primary interface{}) *WsItem
-		// Select WsItem
+		// SelectWsItem Select WsItem
 		SelectWsItem(where string, v ...interface{}) []*WsItem
-		// Save WsItem
+		// SaveWsItem Save WsItem
 		SaveWsItem(v *WsItem, create bool) (int, error)
-		// Delete WsItem
+		// DeleteWsItem Delete WsItem
 		DeleteWsItem(primary interface{}) error
-		// Batch Delete WsItem
+		// BatchDeleteWsItem Batch Delete WsItem
 		BatchDeleteWsItem(where string, v ...interface{}) (int64, error)
 
-		// Get WsSkuPrice
+		// GetWsSkuPrice Get WsSkuPrice
 		GetWsSkuPrice(primary interface{}) *WsSkuPrice
-		// Select WsSkuPrice
+		// SelectWsSkuPrice Select WsSkuPrice
 		SelectWsSkuPrice(where string, v ...interface{}) []*WsSkuPrice
-		// Save WsSkuPrice
+		// SaveWsSkuPrice Save WsSkuPrice
 		SaveWsSkuPrice(v *WsSkuPrice) (int, error)
-		// Delete WsSkuPrice
+		// DeleteWsSkuPrice Delete WsSkuPrice
 		DeleteWsSkuPrice(primary interface{}) error
-		// Batch Delete WsSkuPrice
+		// BatchDeleteWsSkuPrice Batch Delete WsSkuPrice
 		BatchDeleteWsSkuPrice(where string, v ...interface{}) (int64, error)
 
-		// Get WsItemDiscount
+		// GetWsItemDiscount Get WsItemDiscount
 		GetWsItemDiscount(primary interface{}) *WsItemDiscount
-		// Select WsItemDiscount
+		// SelectWsItemDiscount Select WsItemDiscount
 		SelectWsItemDiscount(where string, v ...interface{}) []*WsItemDiscount
-		// Save WsItemDiscount
+		// SaveWsItemDiscount Save WsItemDiscount
 		SaveWsItemDiscount(v *WsItemDiscount) (int, error)
-		// Delete WsItemDiscount
+		// DeleteWsItemDiscount Delete WsItemDiscount
 		DeleteWsItemDiscount(primary interface{}) error
-		// Batch Delete WsItemDiscount
+		// BatchDeleteWsItemDiscount Batch Delete WsItemDiscount
 		BatchDeleteWsItemDiscount(where string, v ...interface{}) (int64, error)
 	}
 
-	// 批发商品
+	// WsItem 批发商品
 	WsItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes"`

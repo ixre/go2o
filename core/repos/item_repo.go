@@ -50,7 +50,7 @@ func NewGoodsItemRepo(o orm.Orm, catRepo product.ICategoryRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	registryRepo registry.IRegistryRepo, shopRepo shop.IShopRepo) *itemRepoImpl {
 	if !ormMapped {
-		_ = o.Mapping(item.Image{},"item_image")
+		_ = o.Mapping(item.Image{}, "item_image")
 		ormMapped = true
 	}
 	return &itemRepoImpl{
@@ -116,30 +116,29 @@ func (i *itemRepoImpl) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
 }
 
 // GetItemImages  获取商品图片
-func (i *itemRepoImpl) GetItemImages(itemId int64)[]*item.Image {
+func (i *itemRepoImpl) GetItemImages(itemId int64) []*item.Image {
 	list := make([]*item.Image, 0)
-	err := i.o.Select(&list, "item_id=$1",itemId)
+	err := i.o.Select(&list, "item_id=$1", itemId)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemImage")
 	}
 	return list
 }
 
-
 // SaveItemImage 保存商品图片
-func (i *itemRepoImpl) SaveItemImage(v *item.Image)(int,error){
-	id,err := orm.Save(i.o,v,int(v.Id))
-	if err != nil && err != sql.ErrNoRows{
-		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:ItemImage")
+func (i *itemRepoImpl) SaveItemImage(v *item.Image) (int, error) {
+	id, err := orm.Save(i.o, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemImage")
 	}
-	return id,err
+	return id, err
 }
 
 // DeleteItemImage 删除商品图片
 func (i *itemRepoImpl) DeleteItemImage(id int64) error {
 	err := i.o.DeleteByPk(item.Image{}, id)
-	if err != nil && err != sql.ErrNoRows{
-		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:ItemImage")
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemImage")
 	}
 	return err
 }

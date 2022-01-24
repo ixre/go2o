@@ -18,7 +18,7 @@ service ItemService {
     rpc GetItem (Int64) returns (SUnifiedViewItem) {
     }
     // 保存商品的数据
-    rpc SaveItem (SUnifiedViewItem) returns (SaveItemResponse) {
+    rpc SaveItem (SaveItemRequest) returns (SaveItemResponse) {
     }
     // 根据SKU获取商品
     rpc GetItemBySku (ItemBySkuRequest) returns (SUnifiedViewItem) {

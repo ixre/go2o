@@ -68,7 +68,7 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifi
 }
 
 // SaveItem 保存商品
-func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.SaveItemResponse, error) {
+func (s *itemService) SaveItem(_ context.Context, r *proto.SaveItemRequest) (*proto.SaveItemResponse, error) {
 	var gi item.IGoodsItem
 	it := parser.ParseGoodsItem(r)
 	var err error
@@ -87,6 +87,9 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	if err == nil {
 		err = gi.SetSku(it.SkuArray)
 		if err == nil {
+			if r.Images != nil && len(r.Images) > 0 {
+				err = gi.SaveImages(r.Images)
+			}
 			it.Id, err = gi.Save()
 		}
 	}

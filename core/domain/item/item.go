@@ -23,6 +23,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -43,10 +44,62 @@ type itemImpl struct {
 	proMRepo      promodel.IProductModelRepo
 	promRepo      promotion.IPromotionRepo
 	levelPrices   []*item.MemberPrice
+	images        []string
 	promDescribes map[string]string
 	registryRepo  registry.IRegistryRepo
 	expressRepo   express.IExpressRepo
 	shopRepo      shop.IShopRepo
+}
+
+func (i *itemImpl) Images() []string {
+	if i.images == nil {
+		arr := i.repo.GetItemImages(i.GetAggregateRootId())
+		i.images = make([]string, len(arr))
+		for k, v := range arr {
+			i.images[k] = v.ImageUrl
+		}
+	}
+	return i.images
+}
+
+func (i *itemImpl) SaveImages(images []string) error {
+	if images == nil || len(images) == 0 {
+		return errors.New("images not set")
+	}
+	// 构造新数组并合并旧有数据
+	old := i.repo.GetItemImages(i.GetAggregateRootId())
+	oldMap := make(map[string]*item.Image, len(old))
+	delArr := make([]int64, 0)
+	for _, v := range old {
+		oldMap[v.ImageUrl] = v
+		if sort.SearchStrings(images, v.ImageUrl) == -1 {
+			delArr = append(delArr, v.Id)
+		}
+	}
+	arr := make([]*item.Image, len(images))
+	for k, v := range images {
+		arr[k] = &item.Image{
+			Id:         0,
+			ItemId:     i.GetAggregateRootId(),
+			ImageUrl:   v,
+			SortNum:    k,
+			CreateTime: time.Now().Unix(),
+		}
+		if it, ok := oldMap[v]; ok {
+			arr[k].Id = it.Id
+		}
+	}
+	// 删除项
+	for _, v := range delArr {
+		i.repo.DeleteItemImage(v)
+	}
+	// 保存项
+	for _, v := range arr {
+		i.repo.SaveItemImage(v)
+	}
+	// 清除图片数据
+	i.images = nil
+	return nil
 }
 
 //todo:??? 去掉依赖promotion.IPromotionRepo

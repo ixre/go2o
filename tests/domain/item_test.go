@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/tests/ti"
 	"testing"
@@ -137,11 +138,34 @@ func TestUpdateItemNoSkuPrice(t *testing.T) {
 	}
 }
 
+// 测试保存SKU
 func TestSaveItemSku(t *testing.T) {
 	var itemId int64 = 50
 	repo := ti.Factory.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.SetSku(it.SkuArray())
+	if err == nil {
+		_, err = it.Save()
+	}
+	if err != nil {
+		t.Error(err)
+		t.Failed()
+	}
+}
+
+// 测试保存商品图片
+func TestSaveItemImages(t *testing.T) {
+	var itemId int64 = 50
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	println(fmt.Sprintf("%#v", it.Images()))
+	images := make([]string, 0)
+	images = append(images, "https://img14.360buyimg.com/ceco/s300x300_jfs/t1/159722/38/5682/268261/601a43e3E78cbacb6/60bdf8c1c170c8ae.jpg!q70.jpg.webp#1")
+	images = append(images, "https://img14.360buyimg.com/ceco/s300x300_jfs/t1/159722/38/5682/268261/601a43e3E78cbacb6/60bdf8c1c170c8ae.jpg!q70.jpg.webp#2")
+	//images = append(images,"https://img14.360buyimg.com/ceco/s300x300_jfs/t1/159722/38/5682/268261/601a43e3E78cbacb6/60bdf8c1c170c8ae.jpg!q70.jpg.webp#3")
+	images = append(images, "https://img14.360buyimg.com/ceco/s300x300_jfs/t1/159722/38/5682/268261/601a43e3E78cbacb6/60bdf8c1c170c8ae.jpg!q70.jpg.webp#4")
+	images = append(images, "https://img14.360buyimg.com/ceco/s300x300_jfs/t1/159722/38/5682/268261/601a43e3E78cbacb6/60bdf8c1c170c8ae.jpg!q70.jpg.webp#5")
+	err := it.SaveImages(images)
 	if err == nil {
 		_, err = it.Save()
 	}

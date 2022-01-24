@@ -32,7 +32,7 @@ func NewSkuServiceImpl(repo item.IItemRepo,
 	return s
 }
 
-// 将SKU字符串转为字典,如: 1:2;2:3
+// SpecDataToMap 将SKU字符串转为字典,如: 1:2;2:3
 func (s *skuServiceImpl) SpecDataToMap(specData string) map[int]int {
 	arr := strings.Split(specData, ";")
 	l := len(arr)
@@ -158,7 +158,7 @@ func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 	}
 }
 
-// 根据SKU获取规格名称字典，多个SKU的规格名称是相同的
+// GetNameMap 根据SKU获取规格名称字典，多个SKU的规格名称是相同的
 func (s *skuServiceImpl) GetNameMap(skuArr []*item.Sku) (
 	specMap map[int32]string, itemMap map[int32]string) {
 	// 获取传入的规格信息,按传入规格名称SKU
@@ -196,7 +196,7 @@ func (s *skuServiceImpl) GetNameMap(skuArr []*item.Sku) (
 	return specMap, itemMap
 }
 
-// 重建SKU数组，将信息附加
+// RebuildSkuArray 重建SKU数组，将信息附加
 func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 	it *item.GoodsItem) (err error) {
 	skuArr := *sku
@@ -325,7 +325,7 @@ func (s *skuServiceImpl) GetSpecJson(spec promodel.SpecList) []byte {
 	return data
 }
 
-// GetSkuJson 获取SKU的JSON字符串
+// GetItemSkuJson GetSkuJson 获取SKU的JSON字符串
 func (s *skuServiceImpl) GetItemSkuJson(skuArr []*item.Sku) []byte {
 	arr := iJsonUtil.getSkuJdo(skuArr)
 	b, _ := json.Marshal(arr)
