@@ -23,7 +23,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -71,10 +70,17 @@ func (i *itemImpl) SaveImages(images []string) error {
 	oldMap := make(map[string]*item.Image, len(old))
 	delArr := make([]int64, 0)
 	for _, v := range old {
-		oldMap[v.ImageUrl] = v
-		if sort.SearchStrings(images, v.ImageUrl) == -1 {
-			delArr = append(delArr, v.Id)
+		exists := false
+		for _,v2 := range images{
+			if v2 == v.ImageUrl{
+				exists = true
+			}
 		}
+		if !exists {
+			delArr = append(delArr, v.Id)
+			continue
+		}
+		oldMap[v.ImageUrl] = v
 	}
 	arr := make([]*item.Image, len(images))
 	for k, v := range images {
@@ -96,6 +102,10 @@ func (i *itemImpl) SaveImages(images []string) error {
 	// 保存项
 	for _, v := range arr {
 		i.repo.SaveItemImage(v)
+	}
+	// 设置商品主图
+	if len(images) > 0 {
+		i.value.Image = images[0]
 	}
 	// 清除图片数据
 	i.images = nil
@@ -346,7 +356,7 @@ func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 	if i.value.Code == "" {
 		i.value.Code = pro.Code
 	}
-	i.value.Image = pro.Image
+	//i.value.Image = pro.Image
 	i.value.SortNum = pro.SortNum
 	i.value.CreateTime = pro.CreateTime
 	i.value.UpdateTime = pro.UpdateTime

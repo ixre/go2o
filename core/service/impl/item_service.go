@@ -64,6 +64,7 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemD
 	if item != nil {
 		ret := parser.ItemDataDto(item.GetValue())
 		skuArr := item.SkuArray()
+		ret.Images = item.Images()
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
 		//specArr := item.SpecArray()
