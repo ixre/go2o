@@ -104,6 +104,45 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	return it
 }
 
+func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
+	it := &proto.SItemDataResponse{
+		ItemId:    src.Id,
+		ProductId: src.ProductId,
+		//PromFlag:     src.PromFlag,
+		CategoryId: int64(src.CategoryId),
+		SkuId:      src.SkuId,
+		VendorId:   src.VendorId,
+		BrandId:    int64(src.BrandId),
+		//ShopId:       src.ShopId,
+		//ShopCatId:    src.ShopCatId,
+		ExpressTid: int64(src.ExpressTid),
+		Title:      src.Title,
+		//ShortTitle:   src.ShortTitle,
+		Code:  src.Code,
+		//SaleNum:      src.SaleNum,
+		//SkuNum:       src.SkuNum,
+		//SkuId:        src.SkuId,
+		//Cost:         float64(src.Cost),
+		Price: src.Price,
+		//IsPresent:    src.IsPresent,
+		PriceRange: src.PriceRange,
+		StockNum:   src.StockNum,
+		//RetailPrice:  float64(src.RetailPrice),
+		//Weight:       src.Weight,
+		//Bulk:         src.Bulk,
+		//ReviewRemark: src.ReviewRemark,
+		//SortNum:      src.SortNum,
+		//CreateTime:   src.CreateTime,
+	}
+	if src.SkuArray != nil {
+		it.SkuArray = make([]*proto.SSku, len(src.SkuArray))
+		for i, v := range src.SkuArray {
+			it.SkuArray[i] = SkuDto(v)
+		}
+	}
+	return it
+}
+
 func SkuArrayDto(src []*item.Sku) []*proto.SSku {
 	var dst = make([]*proto.SSku, len(src))
 	for i, v := range src {

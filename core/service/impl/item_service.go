@@ -59,10 +59,15 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 }
 
 // GetItem 获取商品
-func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifiedViewItem, error) {
+func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemDataResponse, error) {
 	item := s.itemRepo.GetItem(id.Value)
 	if item != nil {
-		return s.attachUnifiedItem(item), nil
+		ret := parser.ItemDataDto(item.GetValue())
+		skuArr := item.SkuArray()
+		ret.SkuArray = parser.SkuArrayDto(skuArr)
+		ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
+		//specArr := item.SpecArray()
+		return ret,nil
 	}
 	return nil, nil
 }

@@ -15,7 +15,7 @@ message ItemDetailRequest {
 // 商品服务
 service ItemService {
     // 获取商品的数据
-    rpc GetItem (Int64) returns (SUnifiedViewItem) {
+    rpc GetItem (Int64) returns (SItemDataResponse) {
     }
     // 保存商品的数据
     rpc SaveItem (SaveItemRequest) returns (SaveItemResponse) {

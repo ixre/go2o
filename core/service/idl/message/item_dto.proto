@@ -96,8 +96,48 @@ message SSku {
   sint32 SaleNum = 15;
 }
 
-// 统一的商品显示对象
+// 保存商品请求
 message SaveItemRequest {
+  int64 ItemId = 1;
+  int64 ProductId = 2;
+  int64 VendorId = 3;
+  int64 ShopId = 4;
+  int64 CategoryId = 5;
+  // 标题
+  string Title = 6;
+  string ShortTitle = 7;
+  // 货号
+  string GoodsNo = 8;
+  // 图片
+  repeated string Images = 9;
+  //定价
+  int64 RetailPrice = 10;
+  //销售价
+  int64 Price = 11;
+  // 促销价
+  int64 PromPrice = 12;
+  // 价格区间
+  string PriceRange = 13;
+  int64 GoodsId = 14;
+  int64 SkuId = 15;
+  bool IsPresent = 16;
+  // 促销标志
+  int32 PromotionFlag = 17;
+  // 库存
+  int32 StockNum = 18;
+  // 已售件数
+  int32 SaleNum = 19;
+
+  //todo: 对比SGoods多出的字段
+  sint64 BrandId = 20;
+  string Code = 21;
+  int64 ExpressTid = 22;
+  repeated SSku SkuArray = 26;
+  repeated SLevelPrice LevelPrices = 27;
+}
+
+// 商品数据响应
+message SItemDataResponse {
   int64 ItemId = 1;
   int64 ProductId = 2;
   int64 VendorId = 3;
@@ -150,10 +190,13 @@ message SUnifiedViewItem {
   string ShortTitle = 7;
   // 货号
   string GoodsNo = 8;
+  // 图片
   string Image = 9;
-  //定价
+  // 图片
+  repeated string Images = 30;
+  // 定价
   int64 RetailPrice = 10;
-  //销售价
+  // 销售价
   int64 Price = 11;
   // 促销价
   int64 PromPrice = 12;
