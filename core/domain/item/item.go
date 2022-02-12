@@ -71,8 +71,8 @@ func (i *itemImpl) SaveImages(images []string) error {
 	delArr := make([]int64, 0)
 	for _, v := range old {
 		exists := false
-		for _,v2 := range images{
-			if v2 == v.ImageUrl{
+		for _, v2 := range images {
+			if v2 == v.ImageUrl {
 				exists = true
 			}
 		}

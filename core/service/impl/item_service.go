@@ -68,7 +68,7 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemD
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
 		//specArr := item.SpecArray()
-		return ret,nil
+		return ret, nil
 	}
 	return nil, nil
 }
@@ -139,7 +139,7 @@ func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest)
 	return nil, nil
 }
 
-// GetItemSnapshot 获取商品用于销售的快照和信息
+// GetItemAndSnapshot 获取商品用于销售的快照和信息
 func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndSnapshotRequest) (*proto.ItemSnapshotResponse, error) {
 	item := s.itemRepo.GetItem(r.GetItemId())
 	if item != nil {
@@ -149,6 +149,11 @@ func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndS
 		ret := parser.ParseItemSnapshotDto(sn)
 		ret.SaleNum = item.GetValue().SaleNum
 		ret.StockNum = item.GetValue().StockNum
+		// 图片
+		ret.Images = ret.GetImages()
+		if len(ret.Images) == 0 && len(sn.Image) > 0 {
+			ret.Images = []string{sn.Image}
+		}
 		// 获取SKU和详情等
 		skuArr := item.SkuArray()
 		specArr := item.SpecArray()
