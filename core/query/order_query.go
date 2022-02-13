@@ -75,7 +75,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId, begin, size int64, pagination boo
 	}
 
 	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order o
+		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM sale_sub_order o
 		  INNER JOIN order_list po ON o.order_id = po.id WHERE o.buyer_id= $1 %s`,
 			where), &num, memberId)
 		if num == 0 {
@@ -158,7 +158,7 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int64, begin, size int, p
 	}
 
 	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order o
+		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM sale_sub_order o
 		  INNER JOIN order_list po ON po.id=o.order_id WHERE o.vendor_id= $1 %s`,
 			where), &num, vendorId)
 		if num == 0 {
@@ -233,7 +233,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pag
 	}
 
 	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
+		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM order_list o
 		 INNER JOIN order_wholesale_order wo ON wo.order_id = o.id
 		 WHERE o.buyer_id= $1 %s`,
 			where), &num, memberId)
@@ -318,7 +318,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int
 	}
 
 	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
+		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM order_list o
 		 INNER JOIN order_wholesale_order wo ON wo.order_id = o.id
 		 WHERE wo.vendor_id= $1 %s`, where), &num, vendorId)
 		if num == 0 {
@@ -398,7 +398,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, paginat
 	}
 
 	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
+		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM order_list o
 		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE o.buyer_id= $1 %s`,
 			where), &num, memberId)
 		if num == 0 {
@@ -457,7 +457,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 	}
 
 	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
+		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM order_list o
 		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE ot.vendor_id= $1 %s`,
 			where), &num, vendorId)
 		if num == 0 {

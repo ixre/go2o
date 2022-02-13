@@ -63,7 +63,7 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
 		order = "  ORDER BY " + order
 	}
 
-	err := s.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mch_online_shop sp
+	err := s.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mch_online_shop sp
  	INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
     WHERE sp.state=%d AND mch.enabled = 1 %s`, shop.StateNormal, where), &total)
 

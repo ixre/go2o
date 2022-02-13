@@ -34,7 +34,7 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId int64, begi
 	if len(where) > 0 {
 		where = " AND " + where
 	}
-	a.ExecScalar(`SELECT COUNT(0) FROM sale_after_order ao
+	a.ExecScalar(`SELECT COUNT(1) FROM sale_after_order ao
 	INNER JOIN sale_sub_order so ON so.id=ao.order_id
 	INNER JOIN mch_merchant mch ON so.vendor_id = mch.id
 	INNER JOIN item_trade_snapshot sn ON sn.id = ao.snap_id
@@ -69,7 +69,7 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId int64, begi
 	if len(where) > 0 {
 		where = " AND " + where
 	}
-	a.ExecScalar(`SELECT COUNT(0) FROM sale_after_order ao
+	a.ExecScalar(`SELECT COUNT(1) FROM sale_after_order ao
 	INNER JOIN sale_sub_order so ON so.id=ao.order_id
 	INNER JOIN mm_profile mp ON mp.member_id = so.buyer_id
 	INNER JOIN item_trade_snapshot sn ON sn.id = ao.snap_id

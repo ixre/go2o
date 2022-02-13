@@ -192,7 +192,7 @@ func (p *rbacDaoImpl) PagingQueryPermJob(begin, end int, where, orderBy string) 
 	if where == "" {
 		where = "1=1"
 	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM perm_job WHERE %s`, where)
+	s := fmt.Sprintf(`SELECT COUNT(1) FROM perm_job WHERE %s`, where)
 	p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
 		s = fmt.Sprintf(`SELECT * FROM perm_job WHERE %s %s
@@ -286,7 +286,7 @@ func (p *rbacDaoImpl) PagingQueryPermUser(begin, end int, where, orderBy string)
 	if where == "" {
 		where = "1=1"
 	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM perm_user WHERE %s`, where)
+	s := fmt.Sprintf(`SELECT COUNT(1) FROM perm_user WHERE %s`, where)
 	p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
 		s = fmt.Sprintf(`SELECT * FROM perm_user WHERE %s %s
@@ -380,7 +380,7 @@ func (p *rbacDaoImpl) PagingQueryPermRole(begin, end int, where, orderBy string)
 	if where == "" {
 		where = "1=1"
 	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM perm_role WHERE %s`, where)
+	s := fmt.Sprintf(`SELECT COUNT(1) FROM perm_role WHERE %s`, where)
 	p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
 		s = fmt.Sprintf(`SELECT * FROM perm_role WHERE %s %s
@@ -550,7 +550,7 @@ func (p *rbacDaoImpl) PagingQueryPermUserRole(begin, end int, where, orderBy str
 	if where == "" {
 		where = "1=1"
 	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM perm_user_role WHERE %s`, where)
+	s := fmt.Sprintf(`SELECT COUNT(1) FROM perm_user_role WHERE %s`, where)
 	p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
 		s = fmt.Sprintf(`SELECT * FROM perm_user_role WHERE %s %s
@@ -644,7 +644,7 @@ func (p *rbacDaoImpl) PagingQueryPermRoleRes(begin, end int, where, orderBy stri
 	if where == "" {
 		where = "1=1"
 	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM perm_role_res WHERE %s`, where)
+	s := fmt.Sprintf(`SELECT COUNT(1) FROM perm_role_res WHERE %s`, where)
 	p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
 		s = fmt.Sprintf(`SELECT * FROM perm_role_res WHERE %s %s
@@ -738,7 +738,7 @@ func (p *rbacDaoImpl) PagingQueryPermRoleDept(begin, end int, where, orderBy str
 	if where == "" {
 		where = "1=1"
 	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM perm_role_dept WHERE %s`, where)
+	s := fmt.Sprintf(`SELECT COUNT(1) FROM perm_role_dept WHERE %s`, where)
 	p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
 		s = fmt.Sprintf(`SELECT * FROM perm_role_dept WHERE %s %s

@@ -74,7 +74,7 @@ func (w *WalletRepoImpl) GetLog(walletId int64, logId int64) *wallet.WalletLog {
 func (w *WalletRepoImpl) PagingWalletLog(walletId int64, nodeId int, begin int, over int, where string, sort string) (total int, list []*wallet.WalletLog) {
 	list = []*wallet.WalletLog{}
 	table := "wal_wallet_log"
-	err := w._conn.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM %s WHERE wallet_id= $1 %s`,
+	err := w._conn.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM %s WHERE wallet_id= $1 %s`,
 		table, where), &total, walletId)
 	if total > 0 {
 		if len(sort) > 0 {

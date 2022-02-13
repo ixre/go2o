@@ -116,7 +116,7 @@ func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int64) er
 //是否已收藏
 func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int64) bool {
 	num := 0
-	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_favorite
+	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_favorite
 	WHERE member_id= $1 AND fav_type= $2 AND refer_id= $3`, &num,
 		memberId, favType, referId)
 	return num > 0
@@ -151,7 +151,7 @@ func (m *MemberRepoImpl) GetMemberLevels_New() []*member.Level {
 // 获取等级对应的会员数
 func (m *MemberRepoImpl) GetMemberNumByLevel_New(id int) int {
 	total := 0
-	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE level= $1", &total, id)
+	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member WHERE level= $1", &total, id)
 	return total
 }
 
@@ -301,7 +301,7 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 
 	// 更新会员数 todo: 考虑去掉
 	var total = 0
-	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member", &total)
+	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member", &total)
 	gof.CurrentApp.Storage().Set(variable.KvTotalMembers, total)
 
 	return v.Id, err
@@ -491,7 +491,7 @@ func (m *MemberRepoImpl) GetTodayTakeOutTimes(memberId int64) int {
 
 	total := 0
 	b, e := tool.GetStartEndUnix(time.Now())
-	err := m.ExecScalar(`SELECT COUNT(0) FROM mm_wallet_log WHERE
+	err := m.ExecScalar(`SELECT COUNT(1) FROM mm_wallet_log WHERE
         member_id= $1 AND kind IN($2,$3) AND create_time BETWEEN $4 AND $5`, &total,
 		memberId, wallet.KWithdrawToBankCard,
 		wallet.KWithdrawToThirdPart, b, e)
@@ -553,7 +553,7 @@ func (m *MemberRepoImpl) CheckUserExist(user string, memberId int64) bool {
 // 手机号码是否使用
 func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int64) bool {
 	var c int
-	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE phone= $1 AND id <> $2",
+	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member WHERE phone= $1 AND id <> $2",
 		&c, phone, memberId)
 	return c != 0
 }
@@ -621,7 +621,7 @@ func (m *MemberRepoImpl) DeleteAddress(memberId, deliverId int64) error {
 func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) (
 	total int, rows []*dto.InvitationMember) {
 	var arr []*dto.InvitationMember
-	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
+	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
 		m.Connector.Query(`SELECT m.id,m.user,m.level,p.avatar,p.name,p.phone,p.im FROM
@@ -647,7 +647,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 	memberIds := format.I32ArrStrJoin(memberIdArr)
 	var d = make(map[int32]int)
 	err := m.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
-		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.inviter_id=r1.member_id)"+
+		"(SELECT COUNT(1) FROM mm_relation r2 WHERE r2.inviter_id=r1.member_id)"+
 		"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
 		func(rows *sql.Rows) {
 			var id int32

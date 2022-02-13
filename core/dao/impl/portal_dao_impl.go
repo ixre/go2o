@@ -121,7 +121,7 @@ func (p *portalNavDaoImpl) PagingQueryNav(begin, end int, where, orderBy string)
 	if where == "" {
 		where = "1=1"
 	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM portal_nav WHERE %s`, where)
+	s := fmt.Sprintf(`SELECT COUNT(1) FROM portal_nav WHERE %s`, where)
 	_ = p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
 		s = fmt.Sprintf(`SELECT * FROM portal_nav WHERE %s %s

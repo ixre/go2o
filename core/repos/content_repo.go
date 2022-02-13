@@ -67,7 +67,7 @@ func (c *contentRepo) SavePage(userId int32, v *content.Page) (int32, error) {
 // 获取文章数量
 func (c *contentRepo) GetArticleNumByCategory(categoryId int32) int {
 	num := 0
-	c.Connector.ExecScalar("SELECT COUNT(0) FROM article_list WHERE cat_id= $1",
+	c.Connector.ExecScalar("SELECT COUNT(1) FROM article_list WHERE cat_id= $1",
 		&num, categoryId)
 	return num
 }
@@ -82,7 +82,7 @@ func (c *contentRepo) GetAllArticleCategory() []*content.ArticleCategory {
 // 判断栏目是否存在
 func (c *contentRepo) CategoryExists(alias string, id int32) bool {
 	num := 0
-	c.Connector.ExecScalar("SELECT COUNT(0) FROM article_category WHERE cat_alias= $1 and id <> $2",
+	c.Connector.ExecScalar("SELECT COUNT(1) FROM article_category WHERE cat_alias= $1 and id <> $2",
 		&num, alias, id)
 	return num > 0
 }

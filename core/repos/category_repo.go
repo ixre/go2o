@@ -71,7 +71,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int, error) {
 func (c *categoryRepo) CheckContainGoods(vendorId int64, catId int) bool {
 	num := 0
 	if vendorId <= 0 {
-		c.Connector.ExecScalar(`SELECT COUNT(0) FROM product WHERE cat_id= $1`, &num, catId)
+		c.Connector.ExecScalar(`SELECT COUNT(1) FROM product WHERE cat_id= $1`, &num, catId)
 	} else {
 		panic(errors.New("暂时不支持商户绑定分类"))
 	}

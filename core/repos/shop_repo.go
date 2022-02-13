@@ -50,14 +50,14 @@ func (s *shopRepo) CreateShop(v *shop.OnlineShop) shop.IShop {
 // CheckShopExists 检查商户商城是否存在(创建)
 func (s *shopRepo) CheckShopExists(vendorId int64) bool {
 	num := 0
-	s.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_online_shop WHERE
+	s.Connector.ExecScalar(`SELECT COUNT(1) FROM mch_online_shop WHERE
 	    vendor_id = $1 LIMIT 1`, &num, vendorId)
 	return num > 0
 }
 
 func (s *shopRepo) ShopCount(vendorId int64, shopType int32) int {
 	num := 0
-	s.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_shop WHERE
+	s.Connector.ExecScalar(`SELECT COUNT(1) FROM mch_shop WHERE
 	    vendor_id= $1 AND shop_type = $2`, &num, vendorId, shopType)
 	return num
 }

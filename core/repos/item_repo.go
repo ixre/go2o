@@ -208,7 +208,7 @@ func (i *itemRepoImpl) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 	}
 
 	var list = make([]*valueobject.Goods, 0)
-	//err := i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+	//err := i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
 	//  INNER JOIN product_category cat ON item_info.cat_id=cat.id
 	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) AND item_info.review_state= $3
 	//	  AND item_info.shelve_state= $4  %s %s`,
