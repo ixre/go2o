@@ -150,7 +150,7 @@ func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndS
 		ret.SaleNum = item.GetValue().SaleNum
 		ret.StockNum = item.GetValue().StockNum
 		// 图片
-		ret.Images = ret.GetImages()
+		ret.Images = item.Images()
 		if len(ret.Images) == 0 && len(sn.Image) > 0 {
 			ret.Images = []string{sn.Image}
 		}
