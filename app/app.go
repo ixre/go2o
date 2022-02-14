@@ -82,7 +82,7 @@ func AutoInstall() {
 }
 
 func execInstall() error {
-	_, _, err := shell.Run("go install .")
+	_, _, err := shell.Run("go install .",false)
 	if err != nil {
 		log.Println("[ Go2o][ Install]:", err)
 	}
