@@ -32,22 +32,23 @@ var _ item.IGoodsItem = new(itemImpl)
 
 // 商品实现
 type itemImpl struct {
-	pro           product.IProduct
-	value         *item.GoodsItem
-	wholesale     item.IWholesaleItem
-	snapshot      *item.Snapshot
-	repo          item.IItemRepo
-	catRepo       product.ICategoryRepo
-	productRepo   product.IProductRepo
-	itemWsRepo    item.IItemWholesaleRepo
-	proMRepo      promodel.IProductModelRepo
-	promRepo      promotion.IPromotionRepo
-	levelPrices   []*item.MemberPrice
-	images        []string
-	promDescribes map[string]string
-	registryRepo  registry.IRegistryRepo
-	expressRepo   express.IExpressRepo
-	shopRepo      shop.IShopRepo
+	pro             product.IProduct
+	value           *item.GoodsItem
+	wholesale       item.IWholesaleItem
+	snapshot        *item.Snapshot
+	repo            item.IItemRepo
+	catRepo         product.ICategoryRepo
+	productRepo     product.IProductRepo
+	itemWsRepo      item.IItemWholesaleRepo
+	proMRepo        promodel.IProductModelRepo
+	promRepo        promotion.IPromotionRepo
+	levelPrices     []*item.MemberPrice
+	images          []string
+	promDescribes   map[string]string
+	registryRepo    registry.IRegistryRepo
+	expressRepo     express.IExpressRepo
+	shopRepo        shop.IShopRepo
+	awaitSaveImages []*item.Image
 }
 
 func (i *itemImpl) Images() []string {
@@ -61,7 +62,7 @@ func (i *itemImpl) Images() []string {
 	return i.images
 }
 
-func (i *itemImpl) SaveImages(images []string) error {
+func (i *itemImpl) SetImages(images []string) error {
 	if images == nil || len(images) == 0 {
 		return errors.New("images not set")
 	}
@@ -99,14 +100,11 @@ func (i *itemImpl) SaveImages(images []string) error {
 	for _, v := range delArr {
 		i.repo.DeleteItemImage(v)
 	}
-	// 保存项
-	for _, v := range arr {
-		i.repo.SaveItemImage(v)
-	}
 	// 设置商品主图
 	if len(images) > 0 {
 		i.value.Image = images[0]
 	}
+	i.awaitSaveImages = arr
 	// 清除图片数据
 	i.images = nil
 	return nil
@@ -251,7 +249,6 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		if i.value.CreateTime == 0 {
 			i.value.CreateTime = time.Now().Unix()
 		}
-
 		//修改图片或标题后，要重新审核
 		if i.value.Image != v.Image || i.value.Title != v.Title {
 			i.resetReview()
@@ -452,6 +449,15 @@ func (i *itemImpl) Save() (_ int64, err error) {
 		i.snapshot = nil
 		// 保存商品快照
 		_, err = i.repo.SnapshotService().GenerateSnapshot(i.value)
+		if err == nil {
+			// 保存商品图片
+			if i.awaitSaveImages != nil {
+				for _, v := range i.awaitSaveImages {
+					v.ItemId = i.GetAggregateRootId()
+					i.repo.SaveItemImage(v)
+				}
+			}
+		}
 	}
 	return i.value.Id, err
 }

@@ -210,8 +210,10 @@ type (
 		UpdateTime int64 `db:"update_time"`
 		// 促销价
 		PromPrice int64 `db:"-"`
-
+		// 规格项
 		SkuArray []*Sku `db:"-"`
+		// 图片
+		Images []string `db:"-"`
 	}
 
 	// Image 产品图片
@@ -259,8 +261,8 @@ type (
 		Product() product.IProduct
 		// Images 获取商品图片
 		Images() []string
-		// SaveImages 保存商品图片
-		SaveImages(images []string) error
+		// SetImages 保存商品图片
+		SetImages(images []string) error
 		// Snapshot 商品快照
 		Snapshot() *Snapshot
 		// Wholesale 批发

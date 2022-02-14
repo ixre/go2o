@@ -142,6 +142,7 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 		ShortTitle: "", //src.Sho,
 		Code:       src.Code,
 		Image:      image,
+		Images:     src.Images,
 		IsPresent:  0, //todo:???
 		PriceRange: src.PriceRange,
 		StockNum:   src.StockNum,

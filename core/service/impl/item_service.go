@@ -94,7 +94,7 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SaveItemRequest) (*pr
 		err = gi.SetSku(it.SkuArray)
 		if err == nil {
 			if r.Images != nil && len(r.Images) > 0 {
-				err = gi.SaveImages(r.Images)
+				err = gi.SetImages(r.Images)
 			}
 			it.Id, err = gi.Save()
 		}
