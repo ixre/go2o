@@ -126,20 +126,21 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 	return err
 }
 
-// 修改密码
-func (p *profileManagerImpl) ModifyPassword(NewPassword, oldPwd string) error {
-	if b, err := dm.ChkPwdRight(NewPassword); !b {
-		return err
+// ModifyPassword 修改密码
+func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
+	if len(newPwd) != 32 {
+		return errors.New("密码必须32位Md5")
 	}
 	if len(oldPwd) != 0 {
-		if NewPassword == oldPwd {
+		if newPwd == oldPwd {
 			return domain.ErrPwdCannotSame
 		}
+		oldPwd = dm.MerchantSha1Pwd(oldPwd, p.merchantImpl.GetValue().Salt)
 		if oldPwd != p._value.LoginPwd {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p._value.LoginPwd = NewPassword
+	p._value.LoginPwd = dm.MerchantSha1Pwd(newPwd, p.merchantImpl.GetValue().Salt)
 	_, err := p.Save()
 	return err
 }

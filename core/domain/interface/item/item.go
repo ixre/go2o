@@ -58,89 +58,95 @@ var (
 )
 
 type (
-	// 商品仓储
-	IGoodsItemRepo interface {
-		// 获取SKU服务
+	// IItemRepo 商品仓储
+	IItemRepo interface {
+		// SkuService 获取SKU服务
 		SkuService() ISkuService
-		// 获取快照服务
+		// SnapshotService 获取快照服务
 		SnapshotService() ISnapshotService
 
-		// 创建商品
+		// CreateItem 创建商品
 		CreateItem(v *GoodsItem) IGoodsItem
 
-		// 获取商品
+		// GetItem 获取商品
 		GetItem(itemId int64) IGoodsItem
 
-		// 获取商品
+		// GetValueGoods 获取商品
 		GetValueGoods(itemId, skuId int64) *GoodsItem
 
+		// GetItemImages  获取商品图片
+		GetItemImages(itemId int64) []*Image
+		// SaveItemImage 保存商品图片
+		SaveItemImage(v *Image) (int, error)
+		// DeleteItemImage 删除商品图片
+		DeleteItemImage(id int64) error
 		// 根据SKU-ID获取商品,SKU-ID为商品ID
 		//todo: 循环引有,故为interface{}
 		GetItemBySkuId(skuId int64) interface{}
 
-		// 获取商品
+		// GetValueGoodsById 获取商品
 		GetValueGoodsById(goodsId int64) *GoodsItem
 
-		// 根据产品编号和SKU获取商品
+		// GetValueGoodsBySku 根据产品编号和SKU获取商品
 		GetValueGoodsBySku(productId, skuId int64) *GoodsItem
 
-		// 保存商品
+		// SaveValueGoods 保存商品
 		SaveValueGoods(*GoodsItem) (int64, error)
 
-		// 获取在货架上的商品
+		// GetOnShelvesGoods 获取在货架上的商品
 		GetOnShelvesGoods(mchId int64, start, end int,
 			sortBy string) []*valueobject.Goods
 
-		// 获取在货架上的商品
+		// GetPagedOnShelvesGoods 获取在货架上的商品
 		GetPagedOnShelvesGoods(mchId int64, catIds []int, start, end int,
 			where, orderBy string) (total int, goods []*valueobject.Goods)
 
-		// 根据编号获取商品
+		// GetGoodsByIds 根据编号获取商品
 		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
 
-		// 获取会员价
+		// GetGoodSMemberLevelPrice 获取会员价
 		GetGoodSMemberLevelPrice(goodsId int64) []*MemberPrice
 
-		// 保存会员价
+		// SaveGoodSMemberLevelPrice 保存会员价
 		SaveGoodSMemberLevelPrice(*MemberPrice) (int32, error)
 
-		// 移除会员价
+		// RemoveGoodSMemberLevelPrice 移除会员价
 		RemoveGoodSMemberLevelPrice(id int) error
 
-		// 保存快照
+		// SaveSnapshot 保存快照
 		SaveSnapshot(*Snapshot) (int64, error)
 
-		// 根据指定商品快照
+		// GetSnapshots 根据指定商品快照
 		GetSnapshots(skuIdArr []int64) []Snapshot
 
-		// 获取最新的商品快照
+		// GetLatestSnapshot 获取最新的商品快照
 		GetLatestSnapshot(itemId int64) *Snapshot
 
-		// 获取指定的商品快照
+		// GetSalesSnapshot 获取指定的商品快照
 		GetSalesSnapshot(id int64) *TradeSnapshot
 
-		// 根据Key获取商品快照
+		// GetSaleSnapshotByKey 根据Key获取商品快照
 		GetSaleSnapshotByKey(key string) *TradeSnapshot
 
-		// 获取最新的商品销售快照
+		// GetLatestSalesSnapshot 获取最新的商品销售快照
 		GetLatestSalesSnapshot(skuId int64) *TradeSnapshot
 
-		// 保存商品销售快照
+		// SaveSalesSnapshot 保存商品销售快照
 		SaveSalesSnapshot(*TradeSnapshot) (int64, error)
 
-		// Get ItemSku
+		// GetItemSku Get ItemSku
 		GetItemSku(primary interface{}) *Sku
-		// Select ItemSku
+		// SelectItemSku Select ItemSku
 		SelectItemSku(where string, v ...interface{}) []*Sku
-		// Save ItemSku
+		// SaveItemSku Save ItemSku
 		SaveItemSku(v *Sku) (int, error)
-		// Delete ItemSku
+		// DeleteItemSku Delete ItemSku
 		DeleteItemSku(primary interface{}) error
-		// Batch Delete ItemSku
+		// BatchDeleteItemSku Batch Delete ItemSku
 		BatchDeleteItemSku(where string, v ...interface{}) (int64, error)
 	}
 
-	// 商品,临时改方便辨别
+	// GoodsItem 商品,临时改方便辨别
 	GoodsItem struct {
 		// 商品编号
 		Id int64 `db:"id" pk:"yes" auto:"yes"`
@@ -204,11 +210,27 @@ type (
 		UpdateTime int64 `db:"update_time"`
 		// 促销价
 		PromPrice int64 `db:"-"`
-
+		// 规格项
 		SkuArray []*Sku `db:"-"`
+		// 图片
+		Images []string `db:"-"`
 	}
 
-	// 会员价
+	// Image 产品图片
+	Image struct {
+		// 图片编号
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		// 商品编号
+		ItemId int64 `db:"item_id"`
+		// 图片地址
+		ImageUrl string `db:"image_url"`
+		// 排列序号
+		SortNum int `db:"sort_num"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
+	}
+
+	// MemberPrice 会员价
 	MemberPrice struct {
 		Id      int   `db:"id" pk:"yes" auto:"yes"`
 		GoodsId int64 `db:"goods_id"`
@@ -221,142 +243,146 @@ type (
 )
 
 type (
-	// 商品
+	// IGoodsItem 商品
 	IGoodsItem interface {
-		// 获取聚合根编号
+		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int64
-		// 设置值
+		// GetValue 设置值
 		GetValue() *GoodsItem
-		// 获取包装过的商品信息
+		// GetPackedValue 获取包装过的商品信息
 		GetPackedValue() *valueobject.Goods
-		// 设置值
+		// SetValue 设置值
 		SetValue(*GoodsItem) error
-		// 设置SKU
+		// SetSku 设置SKU
 		SetSku(arr []*Sku) error
-		// 保存
+		// Save 保存
 		Save() (int64, error)
-		// 获取产品
+		// Product 获取产品
 		Product() product.IProduct
-		// 商品快照
+		// Images 获取商品图片
+		Images() []string
+		// SetImages 保存商品图片
+		SetImages(images []string) error
+		// Snapshot 商品快照
 		Snapshot() *Snapshot
-		// 批发
+		// Wholesale 批发
 		Wholesale() IWholesaleItem
-		// 获取SKU数组
+		// SkuArray 获取SKU数组
 		SkuArray() []*Sku
-		// 获取商品的规格
+		// SpecArray 获取商品的规格
 		SpecArray() promodel.SpecList
-		// 获取SKU
+		// GetSku 获取SKU
 		GetSku(skuId int64) *Sku
-		// 获取促销信息
+		// GetPromotions 获取促销信息
 		GetPromotions() []promotion.IPromotion
-		// 获取促销价
+		// GetPromotionPrice 获取促销价
 		GetPromotionPrice(level int) int64
-		// 获取会员价销价,返回是否有会原价及价格
+		// GetLevelPrice 获取会员价销价,返回是否有会原价及价格
 		GetLevelPrice(level int) (bool, int64)
-		// 获取促销描述
+		// GetPromotionDescribe 获取促销描述
 		GetPromotionDescribe() map[string]string
-		// 获取会员价
+		// GetLevelPrices 获取会员价
 		GetLevelPrices() []*MemberPrice
-		// 保存会员价
+		// SaveLevelPrice 保存会员价
 		SaveLevelPrice(*MemberPrice) (int32, error)
-		// 是否上架
+		// IsOnShelves 是否上架
 		IsOnShelves() bool
-		// 设置上架
+		// SetShelve 设置上架
 		SetShelve(state int32, remark string) error
-		// 审核
+		// Review 审核
 		Review(pass bool, remark string) error
-		// 标记为违规
+		// Incorrect 标记为违规
 		Incorrect(remark string) error
-		// 更新销售数量,扣减库存
+		// AddSalesNum 更新销售数量,扣减库存
 		AddSalesNum(skuId int64, quantity int32) error
-		// 取消销售
+		// CancelSale 取消销售
 		CancelSale(skuId int64, quantity int32, orderNo string) error
-		// 占用库存
+		// TakeStock 占用库存
 		TakeStock(skuId int64, quantity int32) error
-		// 释放库存
-		FreeStock(skuId int64, quantity int32) error
+		// ReleaseStock 释放库存
+		ReleaseStock(skuId int64, quantity int32) error
 		//// 生成快照
 		//GenerateSnapshot() (int64, error)
 		//
 		//// 获取最新的快照
 		//GetLatestSnapshot() *goods.GoodsSnapshot
 
-		// 删除商品
+		// Destroy 删除商品
 		Destroy() error
 	}
 
-	// 商品批发
+	// IWholesaleItem 商品批发
 	IWholesaleItem interface {
-		// 获取领域编号
+		// GetDomainId 获取领域编号
 		GetDomainId() int64
-		// 是否允许批发
+		// CanWholesale 是否允许批发
 		CanWholesale() bool
-		// 保存
+		// Save 保存
 		Save() (int32, error)
 
-		// 获取详细信息
+		// GetJsonDetailData 获取详细信息
 		GetJsonDetailData() []byte
 
-		// 是否上架
+		// IsOnShelves 是否上架
 		IsOnShelves() bool
-		// 设置上架
+		// SetShelve 设置上架
 		SetShelve(state int32, remark string) error
-		// 审核
+		// Review 审核
 		Review(pass bool, remark string) error
-		// 标记为违规
+		// Incorrect 标记为违规
 		Incorrect(remark string) error
 
-		// 根据商品金额获取折扣
+		// GetWholesaleDiscount 根据商品金额获取折扣
 		GetWholesaleDiscount(groupId int32, amount int32) float64
-		// 获取全部批发折扣
+		// GetItemDiscount 获取全部批发折扣
 		GetItemDiscount(groupId int32) []*WsItemDiscount
-		// 保存批发折扣
+		// SaveItemDiscount 保存批发折扣
 		SaveItemDiscount(groupId int32, arr []*WsItemDiscount) error
 
-		// 获取批发价格
+		// GetWholesalePrice 获取批发价格
 		GetWholesalePrice(skuId int64, quantity int32) int64
-		// 根据SKU获取价格设置
+		// GetSkuPrice 根据SKU获取价格设置
 		GetSkuPrice(skuId int64) []*WsSkuPrice
-		// 保存批发SKU价格设置
+		// SaveSkuPrice 保存批发SKU价格设置
 		SaveSkuPrice(skuId int64, arr []*WsSkuPrice) error
 	}
 
 	IItemWholesaleRepo interface {
-		// Get WsItem
+		// GetWsItem Get WsItem
 		GetWsItem(primary interface{}) *WsItem
-		// Select WsItem
+		// SelectWsItem Select WsItem
 		SelectWsItem(where string, v ...interface{}) []*WsItem
-		// Save WsItem
+		// SaveWsItem Save WsItem
 		SaveWsItem(v *WsItem, create bool) (int, error)
-		// Delete WsItem
+		// DeleteWsItem Delete WsItem
 		DeleteWsItem(primary interface{}) error
-		// Batch Delete WsItem
+		// BatchDeleteWsItem Batch Delete WsItem
 		BatchDeleteWsItem(where string, v ...interface{}) (int64, error)
 
-		// Get WsSkuPrice
+		// GetWsSkuPrice Get WsSkuPrice
 		GetWsSkuPrice(primary interface{}) *WsSkuPrice
-		// Select WsSkuPrice
+		// SelectWsSkuPrice Select WsSkuPrice
 		SelectWsSkuPrice(where string, v ...interface{}) []*WsSkuPrice
-		// Save WsSkuPrice
+		// SaveWsSkuPrice Save WsSkuPrice
 		SaveWsSkuPrice(v *WsSkuPrice) (int, error)
-		// Delete WsSkuPrice
+		// DeleteWsSkuPrice Delete WsSkuPrice
 		DeleteWsSkuPrice(primary interface{}) error
-		// Batch Delete WsSkuPrice
+		// BatchDeleteWsSkuPrice Batch Delete WsSkuPrice
 		BatchDeleteWsSkuPrice(where string, v ...interface{}) (int64, error)
 
-		// Get WsItemDiscount
+		// GetWsItemDiscount Get WsItemDiscount
 		GetWsItemDiscount(primary interface{}) *WsItemDiscount
-		// Select WsItemDiscount
+		// SelectWsItemDiscount Select WsItemDiscount
 		SelectWsItemDiscount(where string, v ...interface{}) []*WsItemDiscount
-		// Save WsItemDiscount
+		// SaveWsItemDiscount Save WsItemDiscount
 		SaveWsItemDiscount(v *WsItemDiscount) (int, error)
-		// Delete WsItemDiscount
+		// DeleteWsItemDiscount Delete WsItemDiscount
 		DeleteWsItemDiscount(primary interface{}) error
-		// Batch Delete WsItemDiscount
+		// BatchDeleteWsItemDiscount Batch Delete WsItemDiscount
 		BatchDeleteWsItemDiscount(where string, v ...interface{}) (int64, error)
 	}
 
-	// 批发商品
+	// WsItem 批发商品
 	WsItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes"`

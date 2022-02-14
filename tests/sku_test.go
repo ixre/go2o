@@ -115,6 +115,7 @@ func TestModelSaveSpecs(t *testing.T) {
 
 // 测试商品保存SKU
 func TestItemSaveSku(t *testing.T) {
+	var itemId int64 = 25
 	itemRepo := ti.Factory.GetItemRepo()
 	catRepo := ti.Factory.GetCategoryRepo()
 	proMRepo := ti.Factory.GetProModelRepo()
@@ -136,7 +137,7 @@ func TestItemSaveSku(t *testing.T) {
 	}
 	//组合SKU
 	dim := make([][]interface{}, len(specs))
-	result := [][]interface{}{}
+	var result [][]interface{}
 	for i, v := range specs {
 		dim[i] = make([]interface{}, len(v.Items))
 		for iv, vv := range v.Items {
@@ -144,7 +145,7 @@ func TestItemSaveSku(t *testing.T) {
 		}
 	}
 	algorithm.Descartes(dim, &result)
-	arr := []*item.Sku{}
+	var arr []*item.Sku
 	buf := bytes.NewBuffer(nil)
 	for _, v := range result {
 		for j, k := range v {

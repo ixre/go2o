@@ -34,7 +34,7 @@ var _ proto.OrderServiceServer = new(orderServiceImpl)
 type orderServiceImpl struct {
 	repo       order.IOrderRepo
 	prodRepo   product.IProductRepo
-	itemRepo   item.IGoodsItemRepo
+	itemRepo   item.IItemRepo
 	cartRepo   cart.ICartRepo
 	mchRepo    merchant.IMerchantRepo
 	shopRepo   shop.IShopRepo
@@ -46,7 +46,7 @@ type orderServiceImpl struct {
 
 func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo, memberRepo member.IMemberRepo,
-	prodRepo product.IProductRepo, goodsRepo item.IGoodsItemRepo,
+	prodRepo product.IProductRepo, goodsRepo item.IItemRepo,
 	mchRepo merchant.IMerchantRepo, shopRepo shop.IShopRepo,
 	orderQuery *query.OrderQuery) *orderServiceImpl {
 	return &orderServiceImpl{

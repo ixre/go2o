@@ -27,11 +27,11 @@ var _ promotion.IPromotionRepo = new(promotionRepo)
 type promotionRepo struct {
 	db.Connector
 	_memberRepo member.IMemberRepo
-	_goodsRepo  item.IGoodsItemRepo
+	_goodsRepo  item.IItemRepo
 	o           orm.Orm
 }
 
-func NewPromotionRepo(o orm.Orm, goodsRepo item.IGoodsItemRepo,
+func NewPromotionRepo(o orm.Orm, goodsRepo item.IItemRepo,
 	memberRepo member.IMemberRepo) promotion.IPromotionRepo {
 	return &promotionRepo{
 		Connector:   o.Connector(),

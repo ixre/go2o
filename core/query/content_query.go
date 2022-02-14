@@ -29,7 +29,7 @@ func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where str
 	if len(where) != 0 {
 		where = " AND " + where
 	}
-	cq.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM
+	cq.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM
 		article_list WHERE cat_id= $1 %s`, where), &total, catId)
 	rows = []*content.Article{}
 	if total > 0 {

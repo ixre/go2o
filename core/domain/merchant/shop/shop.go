@@ -63,7 +63,7 @@ func (s *onlineShopImpl) check(v *shop.Shop) error {
 
 func (s *onlineShopImpl) checkNameExists(v *shop.Shop) bool {
 	i := 0
-	tmp.Db().ExecScalar("SELECT COUNT(0) FROM mch_shop WHERE name= $1 AND id <> $2", &i,
+	tmp.Db().ExecScalar("SELECT COUNT(1) FROM mch_shop WHERE name= $1 AND id <> $2", &i,
 		v.Name, v.Id)
 	return i > 0
 }

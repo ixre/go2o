@@ -67,7 +67,7 @@ func (w *walletServiceImpl) Adjust(_ context.Context, r *proto.AdjustRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Adjust(int(r.Value), r.Title, r.OuterNo, r.Remark, int(r.OperatorUid), r.OperatorName)
+		err = iw.Adjust(int(r.Amount), r.Title, r.OuterNo, r.Remark, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
@@ -77,7 +77,7 @@ func (w *walletServiceImpl) Discount(_ context.Context, r *proto.DiscountRequest
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Discount(int(r.Value), r.Title, r.OuterNo, r.Must)
+		err = iw.Discount(int(r.Amount), r.Title, r.OuterNo, r.Must)
 	}
 	return w.result(err), nil
 }
@@ -89,7 +89,7 @@ func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (r
 	}
 	id, err := iw.Freeze(wallet.OperateData{
 		Title:   r.Title,
-		Amount:  int(r.Value),
+		Amount:  int(r.Amount),
 		OuterNo: r.OuterNo,
 		Remark:  "",
 	}, wallet.Operator{
@@ -107,7 +107,7 @@ func (w *walletServiceImpl) Unfreeze(_ context.Context, r *proto.UnfreezeRequest
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Unfreeze(int(r.Value), r.Title, r.OuterNo, int(r.OperatorUid), r.OperatorName)
+		err = iw.Unfreeze(int(r.Amount), r.Title, r.OuterNo, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
@@ -117,7 +117,7 @@ func (w *walletServiceImpl) Charge(_ context.Context, r *proto.ChargeRequest) (r
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Charge(int(r.Value), int(r.By), r.Title,
+		err = iw.Charge(int(r.Amount), int(r.By), r.Title,
 			r.OuterNo, r.Remark, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
@@ -131,8 +131,8 @@ func (w *walletServiceImpl) Transfer(_ context.Context, r *proto.TransferRequest
 		title := "钱包转账"
 		toTitle := "钱包收款"
 		//todo: title
-		err = iw.Transfer(r.ToWalletId, int(r.Value),
-			int(r.TradeFee), title, toTitle, r.Remark)
+		err = iw.Transfer(r.ToWalletId, int(r.Amount),
+			int(r.ProcedureFee), title, toTitle, r.Remark)
 	}
 	return w.result(err), nil
 }
@@ -143,7 +143,7 @@ func (w *walletServiceImpl) RequestWithdrawal(_ context.Context, r *proto.Reques
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
 		_, tradeNo, err1 := iw.RequestWithdrawal(int(r.Amount),
-			int(r.TradeFee), int(r.Kind), "提现到银行卡",
+			int(r.Amount), int(r.Kind), "提现到银行卡",
 			r.BankName, r.BankAccountName, r.BankAccountNo)
 		if err1 != nil {
 			err = err1
@@ -219,9 +219,9 @@ func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog
 		Title:        l.Title,
 		OuterChan:    l.OuterChan,
 		OuterNo:      l.OuterNo,
-		Value:        int32(l.Value),
-		Balance:      int32(l.Balance),
-		TradeFee:     int32(l.TradeFee),
+		Value:        l.Value,
+		Balance:      l.Balance,
+		ProcedureFee: int64(l.ProcedureFee),
 		OperatorUid:  int32(l.OperatorUid),
 		OperatorName: l.OperatorName,
 		Remark:       l.Remark,

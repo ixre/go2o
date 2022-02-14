@@ -32,21 +32,82 @@ var _ item.IGoodsItem = new(itemImpl)
 
 // 商品实现
 type itemImpl struct {
-	pro           product.IProduct
-	value         *item.GoodsItem
-	wholesale     item.IWholesaleItem
-	snapshot      *item.Snapshot
-	repo          item.IGoodsItemRepo
-	catRepo       product.ICategoryRepo
-	productRepo   product.IProductRepo
-	itemWsRepo    item.IItemWholesaleRepo
-	proMRepo      promodel.IProductModelRepo
-	promRepo      promotion.IPromotionRepo
-	levelPrices   []*item.MemberPrice
-	promDescribes map[string]string
-	registryRepo  registry.IRegistryRepo
-	expressRepo   express.IExpressRepo
-	shopRepo      shop.IShopRepo
+	pro             product.IProduct
+	value           *item.GoodsItem
+	wholesale       item.IWholesaleItem
+	snapshot        *item.Snapshot
+	repo            item.IItemRepo
+	catRepo         product.ICategoryRepo
+	productRepo     product.IProductRepo
+	itemWsRepo      item.IItemWholesaleRepo
+	proMRepo        promodel.IProductModelRepo
+	promRepo        promotion.IPromotionRepo
+	levelPrices     []*item.MemberPrice
+	images          []string
+	promDescribes   map[string]string
+	registryRepo    registry.IRegistryRepo
+	expressRepo     express.IExpressRepo
+	shopRepo        shop.IShopRepo
+	awaitSaveImages []*item.Image
+}
+
+func (i *itemImpl) Images() []string {
+	if i.images == nil {
+		arr := i.repo.GetItemImages(i.GetAggregateRootId())
+		i.images = make([]string, len(arr))
+		for k, v := range arr {
+			i.images[k] = v.ImageUrl
+		}
+	}
+	return i.images
+}
+
+func (i *itemImpl) SetImages(images []string) error {
+	if images == nil || len(images) == 0 {
+		return errors.New("images not set")
+	}
+	// 构造新数组并合并旧有数据
+	old := i.repo.GetItemImages(i.GetAggregateRootId())
+	oldMap := make(map[string]*item.Image, len(old))
+	delArr := make([]int64, 0)
+	for _, v := range old {
+		exists := false
+		for _, v2 := range images {
+			if v2 == v.ImageUrl {
+				exists = true
+			}
+		}
+		if !exists {
+			delArr = append(delArr, v.Id)
+			continue
+		}
+		oldMap[v.ImageUrl] = v
+	}
+	arr := make([]*item.Image, len(images))
+	for k, v := range images {
+		arr[k] = &item.Image{
+			Id:         0,
+			ItemId:     i.GetAggregateRootId(),
+			ImageUrl:   v,
+			SortNum:    k,
+			CreateTime: time.Now().Unix(),
+		}
+		if it, ok := oldMap[v]; ok {
+			arr[k].Id = it.Id
+		}
+	}
+	// 删除项
+	for _, v := range delArr {
+		i.repo.DeleteItemImage(v)
+	}
+	// 设置商品主图
+	if len(images) > 0 {
+		i.value.Image = images[0]
+	}
+	i.awaitSaveImages = arr
+	// 清除图片数据
+	i.images = nil
+	return nil
 }
 
 //todo:??? 去掉依赖promotion.IPromotionRepo
@@ -54,7 +115,7 @@ type itemImpl struct {
 func NewItem(
 	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
 	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
-	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProductModelRepo,
+	goodsRepo item.IItemRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	shopRepo shop.IShopRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
@@ -81,12 +142,12 @@ func (i *itemImpl) init() item.IGoodsItem {
 	return i
 }
 
-//获取聚合根编号
+// GetAggregateRootId 获取聚合根编号
 func (i *itemImpl) GetAggregateRootId() int64 {
 	return i.value.Id
 }
 
-// 商品快照
+// Snapshot 商品快照
 func (i *itemImpl) Snapshot() *item.Snapshot {
 	if i.snapshot == nil {
 		i.snapshot = i.repo.SnapshotService().GetLatestSnapshot(
@@ -95,7 +156,7 @@ func (i *itemImpl) Snapshot() *item.Snapshot {
 	return i.snapshot
 }
 
-// 获取货品
+// Product 获取货品
 func (i *itemImpl) Product() product.IProduct {
 	if i.pro == nil && i.value.ProductId > 0 {
 		i.pro = i.productRepo.GetProduct(i.value.ProductId)
@@ -103,7 +164,7 @@ func (i *itemImpl) Product() product.IProduct {
 	return i.pro
 }
 
-// 批发
+// Wholesale 批发
 func (i *itemImpl) Wholesale() item.IWholesaleItem {
 	if i.wholesale == nil {
 		i.wholesale = newWholesaleItem(i.GetAggregateRootId(),
@@ -112,12 +173,12 @@ func (i *itemImpl) Wholesale() item.IWholesaleItem {
 	return i.wholesale
 }
 
-// 设置值
+// GetValue 获取值
 func (i *itemImpl) GetValue() *item.GoodsItem {
 	return i.value
 }
 
-// 获取包装过的商品信息
+// GetPackedValue 获取包装过的商品信息
 func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 	//item := i.GetItem().Value()
 	gv := i.GetValue()
@@ -141,7 +202,7 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 	return goods
 }
 
-// 设置值
+// SetValue 设置值
 func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 	err := i.checkItemValue(v)
 	if err == nil {
@@ -182,13 +243,12 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.Weight = v.Weight
 		i.value.Bulk = v.Bulk
 		//设置默认的价格区间
-		if i.value.PriceRange == "0" || i.value.PriceRange == "" {
+		if len(i.SkuArray()) == 0 {
 			i.value.PriceRange = format.FormatFloat64(float64(v.Price) / 100)
 		}
 		if i.value.CreateTime == 0 {
 			i.value.CreateTime = time.Now().Unix()
 		}
-
 		//修改图片或标题后，要重新审核
 		if i.value.Image != v.Image || i.value.Title != v.Title {
 			i.resetReview()
@@ -197,7 +257,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 	return err
 }
 
-// 设置SKU
+// SetSku 设置SKU
 func (i *itemImpl) SetSku(arr []*item.Sku) error {
 	i.value.SkuArray = arr
 	return nil
@@ -293,7 +353,7 @@ func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 	if i.value.Code == "" {
 		i.value.Code = pro.Code
 	}
-	i.value.Image = pro.Image
+	//i.value.Image = pro.Image
 	i.value.SortNum = pro.SortNum
 	i.value.CreateTime = pro.CreateTime
 	i.value.UpdateTime = pro.UpdateTime
@@ -356,7 +416,7 @@ func (i *itemImpl) checkPrice(v *item.GoodsItem) error {
 	return nil
 }
 
-// 保存
+// Save 保存
 func (i *itemImpl) Save() (_ int64, err error) {
 	ss := i.repo.SkuService()
 	// 保存SKU
@@ -372,6 +432,7 @@ func (i *itemImpl) Save() (_ int64, err error) {
 				err = i.saveItemSku(&i.value.SkuArray)
 				// 设置默认SKU
 				i.value.SkuId = 0
+				// 如果SKU不为空
 				if l := len(i.value.SkuArray); l > 0 && err == nil {
 					i.value.SkuId = i.value.SkuArray[0].Id
 				}
@@ -388,6 +449,15 @@ func (i *itemImpl) Save() (_ int64, err error) {
 		i.snapshot = nil
 		// 保存商品快照
 		_, err = i.repo.SnapshotService().GenerateSnapshot(i.value)
+		if err == nil {
+			// 保存商品图片
+			if i.awaitSaveImages != nil {
+				for _, v := range i.awaitSaveImages {
+					v.ItemId = i.GetAggregateRootId()
+					i.repo.SaveItemImage(v)
+				}
+			}
+		}
 	}
 	return i.value.Id, err
 }
@@ -585,7 +655,7 @@ func (i *itemImpl) saveSku(sku *item.Sku) (_ int64, err error) {
 }
 
 // 释放库存
-func (i *itemImpl) FreeStock(skuId int64, quantity int32) error {
+func (i *itemImpl) ReleaseStock(skuId int64, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}

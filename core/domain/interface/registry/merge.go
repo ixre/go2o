@@ -120,6 +120,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("兑换1元所需要的积分(0不兑换)", IntegralExchangeQuantity, "1000", "")
 	mergeAdd("抵扣1元所需要的积分(0不抵扣)", IntegralDiscountQuantity, "1000", "")
 	// 商户订单
+	mergeAdd("是否必须认证后才可上传商品", MchMustBeTrust, "true", "")
 	mergeAdd("商户订单结算模式", MchOrderSettleMode, "1", "1:按供货价,2:按销售额,3:按单")
 	mergeAdd("商户订单结算比例", MchOrderSettleRate, "0.05", "")
 	mergeAdd("商户订单每单服务费(按单结算)", MchSingleOrderServiceFee, "1.00", "")

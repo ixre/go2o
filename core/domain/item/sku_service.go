@@ -17,12 +17,12 @@ import (
 var _ item.ISkuService = new(skuServiceImpl)
 
 type skuServiceImpl struct {
-	repo     item.IGoodsItemRepo
+	repo     item.IItemRepo
 	proMRepo promodel.IProductModelRepo
 	su       *skuServiceUtil
 }
 
-func NewSkuServiceImpl(repo item.IGoodsItemRepo,
+func NewSkuServiceImpl(repo item.IItemRepo,
 	proMRepo promodel.IProductModelRepo) item.ISkuService {
 	s := &skuServiceImpl{
 		repo:     repo,
@@ -32,7 +32,7 @@ func NewSkuServiceImpl(repo item.IGoodsItemRepo,
 	return s
 }
 
-// 将SKU字符串转为字典,如: 1:2;2:3
+// SpecDataToMap 将SKU字符串转为字典,如: 1:2;2:3
 func (s *skuServiceImpl) SpecDataToMap(specData string) map[int]int {
 	arr := strings.Split(specData, ";")
 	l := len(arr)
@@ -83,42 +83,62 @@ func (s *skuServiceImpl) GetSpecItemArray(sku []*item.Sku) (
 	return sa, ia
 }
 
-// 根据SKU更新商品的信息
+// 将SKU最低的价格更新到商品
+func (i *itemImpl) updatePriceBySku(arr []*item.Sku) {
+	var sku *item.Sku
+	var stock int32 = 0
+	for _, v := range arr {
+		if sku == nil || v.Price < sku.Price {
+			sku = v
+		}
+		stock += sku.Stock
+	}
+	i.value.Price = sku.Price
+	i.value.RetailPrice = sku.RetailPrice
+	i.value.StockNum = stock
+}
+
+// UpgradeBySku 根据SKU更新商品的信息
 func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 	arr []*item.Sku) error {
 	//更新SKU数量
 	it.SkuNum = int32(len(arr))
 	//如果包含SKU，则更新库存和价格区间
 	if it.SkuNum > 0 {
+		var minPrice, maxPrice, retailPrice int64
+		var stockNum, saleNum int32
+		for _, v := range arr {
+			stockNum += v.Stock
+			saleNum += v.SaleNum
+			price := v.Price
+			if minPrice == 0 || price < minPrice {
+				minPrice = price
+				retailPrice = v.RetailPrice
+			}
+			if maxPrice == 0 || price > maxPrice {
+				maxPrice = price
+			}
+		}
+
 		//更新库存
 		it.StockNum = 0
 		//更新销售数量
 		it.SaleNum = 0
-		var pl, ph int64
-		for i := 0; i < len(arr); i++ {
-			it.StockNum += arr[i].Stock
-			it.SaleNum += arr[i].SaleNum
-			price := arr[i].Price
-			if price < pl || pl == 0 {
-				pl = price
-			}
-			if price > ph || ph == 0 {
-				ph = price
-			}
-		}
+		//更新价格
+		it.Price = minPrice
+		it.RetailPrice = retailPrice
 		//更新价格区间
-		it.Price = pl
-		if pl == ph {
-			it.PriceRange = format.FormatFloat64(float64(pl) / 100)
+		if minPrice == maxPrice {
+			it.PriceRange = format.FormatFloat64(float64(minPrice) / 100)
 		} else {
-			it.PriceRange = format.FormatFloat64(float64(pl)/100) +
-				"~" + format.FormatFloat64(float64(ph)/100)
+			it.PriceRange = format.FormatFloat64(float64(minPrice)/100) +
+				"~" + format.FormatFloat64(float64(maxPrice)/100)
 		}
 	}
 	return nil
 }
 
-// 合并SKU数组；主要是SKU编号的复制
+// Merge 合并SKU数组；主要是SKU编号的复制
 func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 	if to == nil || from == nil || len(from) == 0 || len(*to) == 0 {
 		return
@@ -138,7 +158,7 @@ func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 	}
 }
 
-// 根据SKU获取规格名称字典，多个SKU的规格名称是相同的
+// GetNameMap 根据SKU获取规格名称字典，多个SKU的规格名称是相同的
 func (s *skuServiceImpl) GetNameMap(skuArr []*item.Sku) (
 	specMap map[int32]string, itemMap map[int32]string) {
 	// 获取传入的规格信息,按传入规格名称SKU
@@ -176,7 +196,7 @@ func (s *skuServiceImpl) GetNameMap(skuArr []*item.Sku) (
 	return specMap, itemMap
 }
 
-// 重建SKU数组，将信息附加
+// RebuildSkuArray 重建SKU数组，将信息附加
 func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 	it *item.GoodsItem) (err error) {
 	skuArr := *sku
@@ -305,7 +325,7 @@ func (s *skuServiceImpl) GetSpecJson(spec promodel.SpecList) []byte {
 	return data
 }
 
-// GetSkuJson 获取SKU的JSON字符串
+// GetItemSkuJson GetSkuJson 获取SKU的JSON字符串
 func (s *skuServiceImpl) GetItemSkuJson(skuArr []*item.Sku) []byte {
 	arr := iJsonUtil.getSkuJdo(skuArr)
 	b, _ := json.Marshal(arr)

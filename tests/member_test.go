@@ -168,7 +168,7 @@ func TestMemberWallet(t *testing.T) {
 	var memberId int64 = 16
 	m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
-	if int(ic.GetValue().WalletBalance*100) != ic.Wallet().Get().Balance {
+	if ic.GetValue().WalletBalance != ic.Wallet().Get().Balance {
 		t.Error("钱包金额不符合")
 		t.FailNow()
 	}

@@ -44,9 +44,6 @@ service ProductService {
     // 获取所有产品品牌
     rpc GetBrands (Empty) returns (ProductBrandListResponse) {
     }
-    // 获取全部分类
-    rpc GetCategories (Empty) returns (ProductCategoriesResponse) {
-    }
     // 获取商品分类
     rpc GetCategory (Int64) returns (SProductCategory) {
     }
@@ -66,10 +63,6 @@ service ProductService {
     //rpc CategoryTree(CategoryParentId)returns(SProductCategory){}
     // 获取分类关联的品牌
     //rpc GetCatBrands_(catId int32) []*promodel.ProBrand
-
-    // 根据上级编号获取分类列表
-    rpc GetChildren (CategoryParentId) returns (ProductCategoriesResponse) {
-    }
 
     //rpc GetBigCategories(mchId int64) []*proto.SProductCategory
     //rpc GetChildCategories(mchId int64, parentId int64) []*proto.SProductCategory
@@ -228,14 +221,6 @@ message SProductBrand {
     int32 Enabled = 8;
     // 加入时间
     int64 CreateTime = 9;
-}
-
-message ProductCategoriesResponse {
-    repeated SProductCategory Value =  1;
-}
-
-message CategoryParentId {
-    int64 Value =  1;
 }
 
 // 商品分类

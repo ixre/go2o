@@ -57,7 +57,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_log bi
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_balance_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE bi.member_id= $1 %s`, where), &num, memberId)
 	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_log bi
@@ -74,7 +74,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 // 获取账户余额分页记录
 func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64, sortBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_integral_log bi
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_integral_log bi
 	 	INNER JOIN mm_member m ON m.id = bi.member_id
 			WHERE bi.member_id= $1`), &num, memberId)
 	if num > 0 {
@@ -104,7 +104,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_wallet_log bi
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_wallet_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE bi.member_id= $1 %s`, where), &num, memberId)
 
@@ -201,15 +201,15 @@ func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp str
 	//{level_comp}{level_value}
 
 	m.Query(fmt.Sprintf(`SELECT id,user,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
- (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
+ (SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
 	AND r.reg_mchid=rl.reg_mchid  AND m1.reg_time BETWEEN
   $1 AND $2 ) as invi_num,
-	((SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
+	((SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
 	AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
   $3 AND $4 )+
- (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1
+ (SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1
   ON m1.id = r.member_id WHERE (m1.level%s) AND inviter_id IN
 	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id =
@@ -243,7 +243,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 	if len(where) > 0 {
 		where = " AND " + where
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_favorite f
 	INNER JOIN  mch_shop s ON f.refer_id =s.id
     INNER JOIN mch_online_shop o ON s.id = o.shop_id
     INNER JOIN mch_merchant mch ON mch.id = s.vendor_id
@@ -280,7 +280,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 	if len(where) > 0 {
 		where = " AND " + where
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_favorite f
     INNER JOIN item_info gs ON gs.id = f.refer_id
     INNER JOIN product product ON gs.product_id=product.id
     WHERE f.member_id= $1 AND f.fav_type= $2 %s`, where), &num,
@@ -313,7 +313,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 // 获取从指定时间到现在推荐指定等级会员的数量
 func (m *MemberQuery) GetInviteQuantity(memberId int64, where string) int32 {
 	var total int32
-	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_relation
+	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_relation
         INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
         LEFT JOIN mm_trusted_info mt ON mt.member_id=mm_member.id
         WHERE inviter_id = $1 `+where, &total, memberId)
@@ -340,7 +340,7 @@ func (m *MemberQuery) GetInviteArray(memberId int64, where string) []int64 {
 // 获取邀请会员数量
 func (m *MemberQuery) InviteMembersQuantity(memberId int64, where string) int {
 	total := 0
-	err := m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE `+where, &total)
+	err := m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_relation WHERE `+where, &total)
 	if err != nil {
 		log.Printf("[ Params][ Error]: invite member quantity error:%s", err.Error())
 	}

@@ -32,7 +32,7 @@ var _ proto.ItemServiceServer = new(itemService)
 
 type itemService struct {
 	serviceUtil
-	itemRepo  item.IGoodsItemRepo
+	itemRepo  item.IItemRepo
 	itemQuery *query.ItemQuery
 	cateRepo  product.ICategoryRepo
 	labelRepo item.ISaleLabelRepo
@@ -43,7 +43,7 @@ type itemService struct {
 }
 
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
-	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
+	goodsRepo item.IItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProductModelRepo,
 	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) *itemService {
 	return &itemService{
@@ -58,17 +58,23 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	}
 }
 
-// 获取商品
-func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SUnifiedViewItem, error) {
+// GetItem 获取商品
+func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemDataResponse, error) {
 	item := s.itemRepo.GetItem(id.Value)
 	if item != nil {
-		return s.attachUnifiedItem(item), nil
+		ret := parser.ItemDataDto(item.GetValue())
+		skuArr := item.SkuArray()
+		ret.Images = item.Images()
+		ret.SkuArray = parser.SkuArrayDto(skuArr)
+		ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
+		//specArr := item.SpecArray()
+		return ret, nil
 	}
 	return nil, nil
 }
 
-// 保存商品
-func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*proto.SaveItemResponse, error) {
+// SaveItem 保存商品
+func (s *itemService) SaveItem(_ context.Context, r *proto.SaveItemRequest) (*proto.SaveItemResponse, error) {
 	var gi item.IGoodsItem
 	it := parser.ParseGoodsItem(r)
 	var err error
@@ -87,6 +93,9 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SUnifiedViewItem) (*p
 	if err == nil {
 		err = gi.SetSku(it.SkuArray)
 		if err == nil {
+			if r.Images != nil && len(r.Images) > 0 {
+				err = gi.SetImages(r.Images)
+			}
 			it.Id, err = gi.Save()
 		}
 	}
@@ -130,7 +139,7 @@ func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest)
 	return nil, nil
 }
 
-// GetItemSnapshot 获取商品用于销售的快照和信息
+// GetItemAndSnapshot 获取商品用于销售的快照和信息
 func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndSnapshotRequest) (*proto.ItemSnapshotResponse, error) {
 	item := s.itemRepo.GetItem(r.GetItemId())
 	if item != nil {
@@ -140,6 +149,11 @@ func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndS
 		ret := parser.ParseItemSnapshotDto(sn)
 		ret.SaleNum = item.GetValue().SaleNum
 		ret.StockNum = item.GetValue().StockNum
+		// 图片
+		ret.Images = item.Images()
+		if len(ret.Images) == 0 && len(sn.Image) > 0 {
+			ret.Images = []string{sn.Image}
+		}
 		// 获取SKU和详情等
 		skuArr := item.SkuArray()
 		specArr := item.SpecArray()
@@ -653,7 +667,7 @@ func (s *itemService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 		GoodsNo:       v.GoodsNo,
 		Image:         v.Image,
 		RetailPrice:   v.RetailPrice,
-		Price:         v.ProductId,
+		Price:         v.Price,
 		PromPrice:     v.PromPrice,
 		PriceRange:    v.PriceRange,
 		GoodsId:       v.GoodsId,

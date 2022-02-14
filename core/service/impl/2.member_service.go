@@ -349,7 +349,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Kind:        int32(v.Kind),
 		Title:       v.Title,
 		Amount:      float64(v.Value),
-		TradeFee:    float64(v.TradeFee),
+		TradeFee:    float64(v.ProcedureFee),
 		ReviewState: int32(v.ReviewState),
 		Remark:      v.Remark,
 		CreateTime:  v.CreateTime,
@@ -1302,6 +1302,12 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 // AccountCarryTo 账户入账
 func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryRequest) (*proto.AccountCarryResponse, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	if m == nil {
+		return &proto.AccountCarryResponse{
+			ErrCode: 1,
+			ErrMsg:  member.ErrNoSuchMember.Error(),
+		}, nil
+	}
 	acc := m.GetAccount()
 	if acc == nil {
 		return &proto.AccountCarryResponse{
@@ -1361,9 +1367,10 @@ func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeR
 func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		tit := "[KF]系统冲正"
-		if r.Value > 0 {
-			tit = "[KF]系统充值"
+		tit := "系统冲正"
+		// 人工冲正带[KF]字样
+		if r.ManualAdjust {
+			tit = "[KF]系统冲正"
 		}
 		acc := m.GetAccount()
 		err = acc.Adjust(member.AccountType(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
@@ -1393,7 +1400,7 @@ func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*pr
 	return s.error(errors.New("未知操作")), nil
 }
 
-// 提现并返回提现编号,交易号以及错误信息
+// Withdraw 提现并返回提现编号,交易号以及错误信息
 func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*proto.WithdrawalResponse, error) {
 	m, err := s.getMember(r.MemberId)
 	if err != nil {
@@ -1410,7 +1417,7 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	}
 	acc := m.GetAccount()
 	_, tradeNo, err := acc.RequestWithdrawal(int(r.WithdrawKind), title,
-		int(r.Amount), int(r.TradeFee), r.AccountNo)
+		int(r.Amount), int(r.ProcedureFee), r.AccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
@@ -1448,23 +1455,23 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	ret := &proto.WithdrawalLogsResponse{Data: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
 		ret.Data = append(ret.Data, &proto.WithdrawalLog{
-			Id:          latestApplyInfo.Id,
-			OuterNo:     latestApplyInfo.OuterNo,
-			Kind:        int32(latestApplyInfo.Kind),
-			Title:       latestApplyInfo.Title,
-			Amount:      int32(latestApplyInfo.Amount * 100),
-			TradeFee:    int32(latestApplyInfo.CsnFee * 100),
-			RelateUser:  latestApplyInfo.RelateUser,
-			ReviewState: latestApplyInfo.ReviewState,
-			Remark:      latestApplyInfo.Remark,
-			SubmitTime:  latestApplyInfo.CreateTime,
-			UpdateTime:  latestApplyInfo.UpdateTime,
+			Id:           latestApplyInfo.Id,
+			OuterNo:      latestApplyInfo.OuterNo,
+			Kind:         int32(latestApplyInfo.Kind),
+			Title:        latestApplyInfo.Title,
+			Amount:       latestApplyInfo.Amount,
+			ProcedureFee: latestApplyInfo.ProcedureFee,
+			RelateUser:   latestApplyInfo.RelateUser,
+			ReviewState:  latestApplyInfo.ReviewState,
+			Remark:       latestApplyInfo.Remark,
+			SubmitTime:   latestApplyInfo.CreateTime,
+			UpdateTime:   latestApplyInfo.UpdateTime,
 		})
 	}
 	return ret, nil
 }
 
-// 确认提现
+// ReviewWithdrawal 确认提现
 func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
@@ -1474,7 +1481,6 @@ func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithd
 }
 
 // 完成提现
-
 func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithdrawalRequest) (*proto.Result, error) {
 	var err error
 	m, err := s.getMember(r.MemberId)
@@ -1484,7 +1490,7 @@ func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithd
 	return s.error(err), nil
 }
 
-// 转账余额到其他账户
+// AccountTransfer 转账余额到其他账户
 func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTransferRequest) (*proto.Result, error) {
 	var err error
 	m := s.repo.GetMember(r.FromMemberId)
@@ -1501,12 +1507,12 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 			account = member.AccountIntegral
 		}
 		err = m.GetAccount().TransferAccount(account, r.ToMemberId,
-			int(r.Amount), int(r.TradeFee), r.Remark)
+			int(r.Amount), int(r.ProcedureFee), r.Remark)
 	}
 	return s.error(err), nil
 }
 
-// 会员推广排名
+// GetMemberInviRank 会员推广排名
 func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 	levelComp string, level int, startTime int64, endTime int64,
 	num int) []*dto.RankMember {
@@ -1515,7 +1521,7 @@ func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 
 //********* 促销  **********//
 
-// 查询优惠券
+// QueryCoupons 查询优惠券
 func (s *memberService) QueryCoupons(_ context.Context, r *proto.MemberCouponPagingRequest) (*proto.MemberCouponListResponse, error) {
 	cp := s.repo.CreateMemberById(r.MemberId).GiftCard()
 	begin, end := int(r.Begin), int(r.End)

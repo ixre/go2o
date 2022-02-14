@@ -21,7 +21,7 @@ message CreateWalletRequest {
 
 message GetWalletRequest {
     sint64 UserId = 1;
-    sint32 walletType= 2;
+    sint32 WalletType= 2;
 }
 
 message WalletLogIDRequest {
@@ -30,7 +30,7 @@ message WalletLogIDRequest {
 }
 message AdjustRequest {
     sint64 WalletId = 1;
-    sint32 Value =  2;
+    int64 Amount =  2;
     string Title = 3;
     string OuterNo = 4;
     string Remark = 5;
@@ -40,7 +40,7 @@ message AdjustRequest {
 
 message DiscountRequest {
     sint64 WalletId = 1;
-    sint32 Value =  2;
+    sint64 Amount =  2;
     string Title = 3;
     string OuterNo = 4;
     bool Must = 5;
@@ -51,7 +51,7 @@ message FreezeRequest {
     /** 钱包编号 */
     int64 WalletId = 1;
     /** 冻结金额 */
-    int32 Value =  2;
+    int64 Amount =  2;
     /** 标题 */
     string Title = 3;
     /** 外部关联订单号 */
@@ -77,7 +77,7 @@ message UnfreezeRequest {
     /** 钱包编号 */
     sint64 WalletId = 1;
     /** 冻结金额 */
-    int32 Value =  2;
+    int64 Amount =  2;
     /** 标题 */
     string Title = 3;
     /** 外部关联订单号 */
@@ -91,8 +91,9 @@ message UnfreezeRequest {
 }
 
 message ChargeRequest {
+    /** 钱包ID */
     int64 WalletId = 1;
-    int32 Value =  2;
+    int64 Amount =  2;
     int32 By = 3;
     string Title = 4;
     string OuterNo = 5;
@@ -102,10 +103,15 @@ message ChargeRequest {
 }
 
 message TransferRequest {
+    /** 钱包ID */
     sint64 WalletId = 1;
+    /** 目标钱包ID */
     sint64 ToWalletId = 2;
-    sint32 Value = 3;
-    sint32 TradeFee = 4;
+    /** 转账金额 */
+    int64 Amount = 3;
+    /** 手续费 */
+    sint64 ProcedureFee = 4;
+    /** 备注 */
     string Remark = 5;
 }
 /** 钱包服务 */
@@ -183,11 +189,11 @@ message RequestWithdrawalRequest {
     // 钱包编号
     int64 WalletId = 1;
     // 金额
-    int32 amount = 2;
+    int64 Amount = 2;
     // 手续费
-    int32 tradeFee = 3;
+    int32 ProcedureFee = 3;
     // 提现方式
-    sint32 kind = 4;
+    sint32 Kind = 4;
     // 银行名称
     string BankName = 5;
     // 银行账号
@@ -331,11 +337,11 @@ message SWalletLog {
     /** 外部订单号 */
     string OuterNo = 6;
     /** 变动金额 */
-    sint32 Value =  7;
+    int64 Value =  7;
     /** 余额 */
-    sint32 Balance = 8;
+    int64 Balance = 8;
     /** 交易手续费 */
-    sint32 TradeFee = 9;
+    int64 ProcedureFee = 9;
     /** 操作人员用户编号 */
     sint32 OperatorUid = 10;
     /** 操作人员名称 */

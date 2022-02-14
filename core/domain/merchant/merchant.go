@@ -252,7 +252,7 @@ type merchantImpl struct {
 	_host            string
 	_repo            merchant.IMerchantRepo
 	_wsRepo          wholesaler.IWholesaleRepo
-	_itemRepo        item.IGoodsItemRepo
+	_itemRepo        item.IItemRepo
 	_shopRepo        shop.IShopRepo
 	_userRepo        user.IUserRepo
 	_valRepo         valueobject.IValueRepo
@@ -274,7 +274,7 @@ type merchantImpl struct {
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
-	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
+	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchant {
 	mch := &merchantImpl{

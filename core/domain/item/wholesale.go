@@ -17,12 +17,12 @@ type wholesaleItemImpl struct {
 	itemId   int64
 	value    *item.WsItem
 	it       item.IGoodsItem
-	itemRepo item.IGoodsItemRepo
+	itemRepo item.IItemRepo
 	repo     item.IItemWholesaleRepo
 }
 
 func newWholesaleItem(itemId int64, it item.IGoodsItem,
-	itemRepo item.IGoodsItemRepo, repo item.IItemWholesaleRepo) item.IWholesaleItem {
+	itemRepo item.IItemRepo, repo item.IItemWholesaleRepo) item.IWholesaleItem {
 	return (&wholesaleItemImpl{
 		itemId:   itemId,
 		it:       it,

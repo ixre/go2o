@@ -26,14 +26,14 @@ var _ cart.ICartRepo = new(cartRepo)
 type cartRepo struct {
 	db.Connector
 	o           orm.Orm
-	_itemRepo   item.IGoodsItemRepo
+	_itemRepo   item.IItemRepo
 	_memberRepo member.IMemberRepo
 	_mchRepo    merchant.IMerchantRepo
 }
 
 func NewCartRepo(o orm.Orm, memberRepo member.IMemberRepo,
 	_mchRepo merchant.IMerchantRepo,
-	itemRepo item.IGoodsItemRepo) cart.ICartRepo {
+	itemRepo item.IItemRepo) cart.ICartRepo {
 	return &cartRepo{
 		Connector:   o.Connector(),
 		o:           o,

@@ -41,7 +41,7 @@ type merchantRepo struct {
 	storage       storage.Interface
 	manager       merchant.IMerchantManager
 	_wsRepo       wholesaler.IWholesaleRepo
-	_itemRepo     item.IGoodsItemRepo
+	_itemRepo     item.IItemRepo
 	_userRepo     user.IUserRepo
 	_mssRepo      mss.IMssRepo
 	_shopRepo     shop.IShopRepo
@@ -53,7 +53,7 @@ type merchantRepo struct {
 }
 
 func NewMerchantRepo(o orm.Orm, storage storage.Interface,
-	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IGoodsItemRepo,
+	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
 	return &merchantRepo{
@@ -177,7 +177,7 @@ func (m *merchantRepo) GetMerchantMajorHost(mchId int) string {
 // 验证商户用户名是否存在
 func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 	var row int
-	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_merchant WHERE login_user= $1 AND id <> $2 LIMIT 1`,
+	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mch_merchant WHERE login_user= $1 AND id <> $2 LIMIT 1`,
 		&row, user, id)
 	return row > 0
 }
@@ -185,7 +185,7 @@ func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 // CheckMemberBind 验证会员是否绑定商户
 func (m *merchantRepo) CheckMemberBind(memberId int64, mchId int64) bool {
 	var row int
-	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_merchant
+	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mch_merchant
 		WHERE member_id = $1 AND id <> $2`,
 		&row, memberId, mchId)
 	return row > 0
@@ -302,7 +302,7 @@ func (m *merchantRepo) GetKeyMap(mchId int, indent string, k []string) map[strin
 // 检查是否包含值的键数量,keyStr为键模糊匹配
 func (m *merchantRepo) CheckKvContainValue(mchId int, indent string, value string, keyStr string) int {
 	var i int
-	err := m.Connector.ExecScalar("SELECT COUNT(0) FROM pt_"+indent+
+	err := m.Connector.ExecScalar("SELECT COUNT(1) FROM pt_"+indent+
 		" WHERE merchant_id= $1 AND value= $2 AND `key` LIKE '%"+
 		keyStr+"%'", &i, mchId, value)
 	if err != nil {

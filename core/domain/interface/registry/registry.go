@@ -1,8 +1,10 @@
 package registry
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ixre/go2o/core/msq"
 	"strconv"
 	"strings"
 	"unicode"
@@ -152,7 +154,7 @@ func (r *registryImpl) BoolValue() bool {
 }
 
 func (r *registryImpl) Remove() error {
-	if r.IsUser() {
+	if !r.IsUser() {
 		return errors.New("registry is not create by user, can't be removed")
 	}
 	return r.repo.Remove(r.Key())
@@ -177,6 +179,12 @@ func (r *registryImpl) Save() error {
 	r.value.Value = strings.TrimSpace(r.value.Value)
 	if len(r.value.Value) > 5120 {
 		return errors.New("value length out of 5120")
+
+	}
+	// 推送用户自定义键值变更通知
+	if r.IsUser() {
+		bytes, _ := json.Marshal(r.value)
+		msq.Push(msq.RegistryTopic, string(bytes))
 	}
 	return r.repo.Save(r)
 }

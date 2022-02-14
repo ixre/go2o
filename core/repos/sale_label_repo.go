@@ -117,7 +117,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
 	}
-	t.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+	t.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
 	    INNER JOIN product ON product.id = item_info.product_id
 		 WHERE product.review_state= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id

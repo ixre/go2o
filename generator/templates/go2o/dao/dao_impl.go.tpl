@@ -109,7 +109,7 @@ func ({{$p}} *{{$structName}}) PagingQuery{{$shortTitle}}(begin, end int,where, 
 	if where == "" {
 	    where = "1=1"
 	}
-	query := fmt.Sprintf(`SELECT COUNT(0) FROM {{.table.Name}} WHERE %s`, where)
+	query := fmt.Sprintf(`SELECT COUNT(1) FROM {{.table.Name}} WHERE %s`, where)
 	_ = {{$p}}._orm.Connector().ExecScalar(query,&total)
 	if total > 0{
 	    query = fmt.Sprintf(`SELECT * FROM {{.table.Name}} WHERE %s %s

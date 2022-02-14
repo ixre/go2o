@@ -113,7 +113,7 @@ func (p *productImpl) SetAttr(attrs []*product.AttrValue) error {
 	return nil
 }
 
-// 获取属性
+// Attr 获取属性
 func (p *productImpl) Attr() []*product.AttrValue {
 	if p.value.Attrs == nil {
 		p.value.Attrs = p.repo.SelectAttr("product_id = $1",
@@ -128,7 +128,7 @@ func (p *productImpl) Attr() []*product.AttrValue {
 	return p.value.Attrs
 }
 
-// 设置商品描述
+// SetDescribe 设置商品描述
 func (p *productImpl) SetDescribe(describe string) error {
 	if len(describe) < 20 {
 		return product.ErrDescribeLength

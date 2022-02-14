@@ -568,7 +568,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	mId := 0
-	tmp.Db().ExecScalar(`SELECT COUNT(0) FROM mm_trusted_info WHERE 
+	tmp.Db().ExecScalar(`SELECT COUNT(1) FROM mm_trusted_info WHERE 
 			review_state= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
 		&mId, enum.ReviewPass, cardId, memberId)
 	return mId == 0

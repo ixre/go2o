@@ -63,7 +63,7 @@ type baseOrderImpl struct {
 	buyer      member.IMember
 	repo       order.IOrderRepo
 	memberRepo member.IMemberRepo
-	itemRepo   item.IGoodsItemRepo
+	itemRepo   item.IItemRepo
 	manager    order.IOrderManager
 	complex    *order.ComplexOrder
 }
@@ -203,7 +203,7 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 // 工厂方法生成订单
 func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	repo order.IOrderRepo, mchRepo merchant.IMerchantRepo,
-	itemRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
+	itemRepo item.IItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	payRepo payment.IPaymentRepo, cartRepo cart.ICartRepo,

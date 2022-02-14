@@ -23,7 +23,6 @@ import (
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
-	"github.com/ixre/gof/types/typeconv"
 	context2 "golang.org/x/net/context"
 	"strings"
 )
@@ -220,7 +219,7 @@ func (m *merchantService) GetSaleConf(_ context.Context, id *proto.MerchantId) (
 	return nil, nil
 }
 
-// 获取商户的店铺编号
+// GetShopId 获取商户的店铺编号
 func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*proto.Int64, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	shops := mch.ShopManager().GetShops()
@@ -230,7 +229,7 @@ func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*p
 	return &proto.Int64{}, nil
 }
 
-// 修改密码
+// ModifyPassword 修改密码
 func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
@@ -248,7 +247,7 @@ func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerch
 	return m.error(err), nil
 }
 
-// 获取API接口
+// GetApiInfo 获取API接口
 func (m *merchantService) GetApiInfo(_ context.Context, id *proto.MerchantId) (*proto.SMerchantApiInfo, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
@@ -561,15 +560,20 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 	return mch.GetAggregateRootId(), 0, nil
 }
 
-// 验证用户密码,并返回编号。可传入商户或会员的账号密码
-func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwd) (*proto.Result, error) {
+// CheckLogin 验证用户密码,并返回编号。可传入商户或会员的账号密码
+func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdRequest) (*proto.MchLoginResponse, error) {
 	user := strings.ToLower(strings.TrimSpace(u.User))
 	pwd := strings.TrimSpace(u.Pwd)
 	id, code, err := m.testLogin(user, pwd)
 	if err != nil {
-		return m.errorCodeResult(int(code), err), nil
+		return &proto.MchLoginResponse{
+			ErrCode: code,
+			ErrMsg:  err.Error(),
+		}, nil
 	}
-	return m.success(map[string]string{"mch_id": typeconv.Stringify(id)}), nil
+	return &proto.MchLoginResponse{
+		MerchantId: id,
+	}, nil
 }
 
 func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*proto.SMerchant, error) {
@@ -599,21 +603,7 @@ func (m *merchantService) SaveMerchant(_ context.Context, r *proto.SaveMerchantR
 	return m.result(err), nil
 }
 
-func (m *merchantService) initializeMerchant(mchId int64) {
-
-	// 初始化会员默认等级
-	// m._mchRepo.GetMerchant(int(mchId))
-
-	//conf := merchant.DefaultSaleConf
-	//conf.VendorId = mch.GetAggregateRootId()
-	// 保存销售设置
-	//mch.ConfManager().SaveSaleConf(&conf)
-
-	// 初始化销售标签
-	//m._saleRepo.GetSale(mchId).LabelManager().InitSaleLabels()
-}
-
-// 获取商户的状态
+// Stat 获取商户的状态
 func (m *merchantService) Stat(_ context.Context, mchId *proto.Int64) (r *proto.Result, err error) {
 	mch := m._mchRepo.GetMerchant(int(mchId.Value))
 	if mch == nil {
@@ -624,7 +614,7 @@ func (m *merchantService) Stat(_ context.Context, mchId *proto.Int64) (r *proto.
 	return m.result(err), nil
 }
 
-// 保存API信息
+// SaveApiInfo 保存API信息
 func (m *merchantService) SaveApiInfo(mchId int64, d *merchant.ApiInfo) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -633,7 +623,7 @@ func (m *merchantService) SaveApiInfo(mchId int64, d *merchant.ApiInfo) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-// 获取所有会员等级
+// GetMemberLevels_ 获取所有会员等级
 func (m *merchantService) GetMemberLevels_(mchId int64) []*merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -642,7 +632,7 @@ func (m *merchantService) GetMemberLevels_(mchId int64) []*merchant.MemberLevel 
 	return []*merchant.MemberLevel{}
 }
 
-// 根据编号获取会员等级信息
+// GetMemberLevelById_ 根据编号获取会员等级信息
 func (m *merchantService) GetMemberLevelById_(mchId, id int32) *merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -651,7 +641,7 @@ func (m *merchantService) GetMemberLevelById_(mchId, id int32) *merchant.MemberL
 	return nil
 }
 
-// 保存会员等级信息
+// SaveMemberLevel_ 保存会员等级信息
 func (m *merchantService) SaveMemberLevel_(mchId int64, v *merchant.MemberLevel) (int32, error) {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -660,7 +650,7 @@ func (m *merchantService) SaveMemberLevel_(mchId int64, v *merchant.MemberLevel)
 	return 0, merchant.ErrNoSuchMerchant
 }
 
-// 删除会员等级
+// DelMemberLevel_ 删除会员等级
 func (m *merchantService) DelMemberLevel_(mchId, levelId int32) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -669,7 +659,7 @@ func (m *merchantService) DelMemberLevel_(mchId, levelId int32) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-// 获取等级
+// GetLevel_ 获取等级
 func (m *merchantService) GetLevel_(mchId, level int32) *merchant.MemberLevel {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -688,7 +678,7 @@ func (m *merchantService) GetNextLevel_(mchId, levelValue int32) *merchant.Membe
 
 }
 
-// 获取键值字典
+// GetKeyMapsByKeyword_ 获取键值字典
 func (m *merchantService) GetKeyMapsByKeyword_(mchId int64, keyword string) map[string]string {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -697,7 +687,7 @@ func (m *merchantService) GetKeyMapsByKeyword_(mchId int64, keyword string) map[
 	return map[string]string{}
 }
 
-// 保存键值字典
+// SaveKeyMaps_ 保存键值字典
 func (m *merchantService) SaveKeyMaps_(mchId int64, data map[string]string) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -706,9 +696,7 @@ func (m *merchantService) SaveKeyMaps_(mchId int64, data map[string]string) erro
 	return merchant.ErrNoSuchMerchant
 }
 
-// 查询分页订单
-
-// 提到会员账户
+// WithdrawToMemberAccount1 提到会员账户
 func (m *merchantService) WithdrawToMemberAccount1(mchId int64, amount float32) error {
 	mch := m._mchRepo.GetMerchant(int(mchId))
 	if mch != nil {
@@ -891,7 +879,7 @@ func (m *merchantService) parseTradeConf(conf *proto.STradeConf_) *merchant.Trad
 		//PlanId:      conf.PlanId,
 		//Flag:        int(conf.Flag),
 		//AmountBasis: int(conf.AmountBasis),
-		//TradeFee:    int(conf.TradeFee),
+		//ProcedureFee:    int(conf.ProcedureFee),
 		//TradeRate:   int(conf.TradeRate),
 	}
 }
@@ -903,7 +891,7 @@ func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STr
 		//PlanId:      conf.PlanId,
 		//Flag:        int32(conf.Flag),
 		//AmountBasis: int32(conf.AmountBasis),
-		//TradeFee:    int32(conf.TradeFee),
+		//ProcedureFee:    int32(conf.ProcedureFee),
 		//TradeRate:   int32(conf.TradeRate),
 	}
 }

@@ -26,9 +26,9 @@ import (
 	"log"
 )
 
-var _ item.IGoodsItemRepo = new(goodsRepo)
+var _ item.IItemRepo = new(itemRepoImpl)
 
-type goodsRepo struct {
+type itemRepoImpl struct {
 	db.Connector
 	o            orm.Orm
 	_skuService  item.ISkuService
@@ -42,12 +42,18 @@ type goodsRepo struct {
 	shopRepo     shop.IShopRepo
 }
 
-// 商品仓储
+var ormMapped = false
+
+// NewGoodsItemRepo 商品仓储
 func NewGoodsItemRepo(o orm.Orm, catRepo product.ICategoryRepo,
 	proRepo product.IProductRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
-	registryRepo registry.IRegistryRepo, shopRepo shop.IShopRepo) *goodsRepo {
-	return &goodsRepo{
+	registryRepo registry.IRegistryRepo, shopRepo shop.IShopRepo) *itemRepoImpl {
+	if !ormMapped {
+		_ = o.Mapping(item.Image{}, "item_image")
+		ormMapped = true
+	}
+	return &itemRepoImpl{
 		Connector:    o.Connector(),
 		o:            o,
 		catRepo:      catRepo,
@@ -60,30 +66,30 @@ func NewGoodsItemRepo(o orm.Orm, catRepo product.ICategoryRepo,
 	}
 }
 
-// 获取SKU服务
-func (i *goodsRepo) SkuService() item.ISkuService {
+// SkuService 获取SKU服务
+func (i *itemRepoImpl) SkuService() item.ISkuService {
 	if i._skuService == nil {
 		i._skuService = itemImpl.NewSkuServiceImpl(i, i.proMRepo)
 	}
 	return i._skuService
 }
 
-// 获取快照服务
-func (i *goodsRepo) SnapshotService() item.ISnapshotService {
+// SnapshotService 获取快照服务
+func (i *itemRepoImpl) SnapshotService() item.ISnapshotService {
 	if i._snapService == nil {
 		i._snapService = itemImpl.NewSnapshotServiceImpl(i)
 	}
 	return i._snapService
 }
 
-// 创建商品
-func (i *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
+// CreateItem 创建商品
+func (i *itemRepoImpl) CreateItem(v *item.GoodsItem) item.IGoodsItem {
 	return itemImpl.NewItem(i.proRepo, i.catRepo, nil, v, i.registryRepo, i,
 		i.proMRepo, i.itemWsRepo, i.expressRepo, i.shopRepo, nil)
 }
 
-// 获取商品
-func (i *goodsRepo) GetItem(itemId int64) item.IGoodsItem {
+// GetItem 获取商品
+func (i *itemRepoImpl) GetItem(itemId int64) item.IGoodsItem {
 	v := i.GetValueGoodsById(itemId)
 	if v != nil {
 		return i.CreateItem(v)
@@ -91,8 +97,8 @@ func (i *goodsRepo) GetItem(itemId int64) item.IGoodsItem {
 	return nil
 }
 
-// 根据SKU-ID获取商品,SKU-ID为商品ID
-func (i *goodsRepo) GetItemBySkuId(skuId int64) interface{} {
+// GetItemBySkuId 根据SKU-ID获取商品,SKU-ID为商品ID
+func (i *itemRepoImpl) GetItemBySkuId(skuId int64) interface{} {
 	snap := i.GetLatestSnapshot(skuId)
 	if snap != nil {
 		return i.GetItem(skuId)
@@ -100,8 +106,8 @@ func (i *goodsRepo) GetItemBySkuId(skuId int64) interface{} {
 	return nil
 }
 
-// 获取商品
-func (i *goodsRepo) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
+// GetValueGoods 获取商品
+func (i *itemRepoImpl) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
 	var e = new(item.GoodsItem)
 	if i.o.GetBy(e, "product_id= $1 AND sku_id= $2", itemId, skuId) == nil {
 		return e
@@ -109,8 +115,36 @@ func (i *goodsRepo) GetValueGoods(itemId, skuId int64) *item.GoodsItem {
 	return nil
 }
 
-// 获取商品
-func (i *goodsRepo) GetValueGoodsById(itemId int64) *item.GoodsItem {
+// GetItemImages  获取商品图片
+func (i *itemRepoImpl) GetItemImages(itemId int64) []*item.Image {
+	list := make([]*item.Image, 0)
+	err := i.o.Select(&list, "item_id=$1", itemId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemImage")
+	}
+	return list
+}
+
+// SaveItemImage 保存商品图片
+func (i *itemRepoImpl) SaveItemImage(v *item.Image) (int, error) {
+	id, err := orm.Save(i.o, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemImage")
+	}
+	return id, err
+}
+
+// DeleteItemImage 删除商品图片
+func (i *itemRepoImpl) DeleteItemImage(id int64) error {
+	err := i.o.DeleteByPk(item.Image{}, id)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemImage")
+	}
+	return err
+}
+
+// GetValueGoodsById 获取商品
+func (i *itemRepoImpl) GetValueGoodsById(itemId int64) *item.GoodsItem {
 	var e = new(item.GoodsItem)
 	if i.o.Get(itemId, e) == nil {
 		return e
@@ -118,8 +152,8 @@ func (i *goodsRepo) GetValueGoodsById(itemId int64) *item.GoodsItem {
 	return nil
 }
 
-// 根据SKU获取商品
-func (i *goodsRepo) GetValueGoodsBySku(productId, skuId int64) *item.GoodsItem {
+// GetValueGoodsBySku 根据SKU获取商品
+func (i *itemRepoImpl) GetValueGoodsBySku(productId, skuId int64) *item.GoodsItem {
 	var e = new(item.GoodsItem)
 	if i.o.GetBy(e, "product_id= $1 AND sku_id= $2", productId, skuId) == nil {
 		return e
@@ -127,8 +161,8 @@ func (i *goodsRepo) GetValueGoodsBySku(productId, skuId int64) *item.GoodsItem {
 	return nil
 }
 
-// 根据编号获取商品
-func (i *goodsRepo) GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error) {
+// GetGoodsByIds 根据编号获取商品
+func (i *itemRepoImpl) GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error) {
 	var items []*valueobject.Goods
 	err := i.o.SelectByQuery(&items,
 		`SELECT * FROM item_info INNER JOIN product ON item_info.product_id=product.id
@@ -137,8 +171,8 @@ func (i *goodsRepo) GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error) {
 	return items, err
 }
 
-// 获取会员价
-func (i *goodsRepo) GetGoodSMemberLevelPrice(goodsId int64) []*item.MemberPrice {
+// GetGoodSMemberLevelPrice 获取会员价
+func (i *itemRepoImpl) GetGoodSMemberLevelPrice(goodsId int64) []*item.MemberPrice {
 	var items []*item.MemberPrice
 	if i.o.SelectByQuery(&items,
 		`SELECT * FROM gs_member_price WHERE goods_id = $1`, goodsId) == nil {
@@ -147,23 +181,23 @@ func (i *goodsRepo) GetGoodSMemberLevelPrice(goodsId int64) []*item.MemberPrice 
 	return nil
 }
 
-// 保存会员价
-func (i *goodsRepo) SaveGoodSMemberLevelPrice(v *item.MemberPrice) (int32, error) {
+// SaveGoodSMemberLevelPrice 保存会员价
+func (i *itemRepoImpl) SaveGoodSMemberLevelPrice(v *item.MemberPrice) (int32, error) {
 	return orm.I32(orm.Save(i.o, v, v.Id))
 }
 
-// 移除会员价
-func (i *goodsRepo) RemoveGoodSMemberLevelPrice(id int) error {
+// RemoveGoodSMemberLevelPrice 移除会员价
+func (i *itemRepoImpl) RemoveGoodSMemberLevelPrice(id int) error {
 	return i.o.DeleteByPk(item.MemberPrice{}, id)
 }
 
-// 保存商品
-func (i *goodsRepo) SaveValueGoods(v *item.GoodsItem) (int64, error) {
+// SaveValueGoods 保存商品
+func (i *itemRepoImpl) SaveValueGoods(v *item.GoodsItem) (int64, error) {
 	return orm.I64(orm.Save(i.o, v, int(v.Id)))
 }
 
-// 获取已上架的商品
-func (i *goodsRepo) GetPagedOnShelvesGoods(shopId int64, catIds []int,
+// GetPagedOnShelvesGoods 获取已上架的商品
+func (i *itemRepoImpl) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 	start, end int, where, orderBy string) (int, []*valueobject.Goods) {
 	var s string
 	total := 0
@@ -174,7 +208,7 @@ func (i *goodsRepo) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 	}
 
 	var list = make([]*valueobject.Goods, 0)
-	//err := i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+	//err := i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
 	//  INNER JOIN product_category cat ON item_info.cat_id=cat.id
 	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) AND item_info.review_state= $3
 	//	  AND item_info.shelve_state= $4  %s %s`,
@@ -188,7 +222,7 @@ func (i *goodsRepo) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 
 	s = fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
 		 ON item_info.cat_id=cat.id
-		 WHERE ($1 <=0 OR item_info.shop_id = $2) %s AND item_info.review_state= $3 AND item_info.shelve_state= $4
+		 WHERE ($1 <= 0 OR item_info.shop_id = $2) %s AND item_info.review_state= $3 AND item_info.shelve_state= $4
 		  %s ORDER BY %s LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
 	err := i.o.SelectByQuery(&list, s, shopId, shopId,
 		enum.ReviewPass, item.ShelvesOn, start, end-start)
@@ -199,8 +233,8 @@ func (i *goodsRepo) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 	return total, list
 }
 
-// 获取指定数量已上架的商品
-func (i *goodsRepo) GetOnShelvesGoods(mchId int64, start, end int, sortBy string) []*valueobject.Goods {
+// GetOnShelvesGoods 获取指定数量已上架的商品
+func (i *itemRepoImpl) GetOnShelvesGoods(mchId int64, start, end int, sortBy string) []*valueobject.Goods {
 	var e []*valueobject.Goods
 	s := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN product ON product.id = item_info.product_id
 		 INNER JOIN product_category ON product.cat_id=product_category.id
@@ -213,8 +247,8 @@ func (i *goodsRepo) GetOnShelvesGoods(mchId int64, start, end int, sortBy string
 	return e
 }
 
-// 保存快照
-func (i *goodsRepo) SaveSnapshot(v *item.Snapshot) (int64, error) {
+// SaveSnapshot 保存快照
+func (i *itemRepoImpl) SaveSnapshot(v *item.Snapshot) (int64, error) {
 	_, r, err := i.o.Save(v.ItemId, v)
 	if r == 0 {
 		_, _, err = i.o.Save(nil, v)
@@ -222,8 +256,8 @@ func (i *goodsRepo) SaveSnapshot(v *item.Snapshot) (int64, error) {
 	return v.ItemId, err
 }
 
-// 获取最新的商品快照
-func (i *goodsRepo) GetLatestSnapshot(itemId int64) *item.Snapshot {
+// GetLatestSnapshot 获取最新的商品快照
+func (i *itemRepoImpl) GetLatestSnapshot(itemId int64) *item.Snapshot {
 	e := &item.Snapshot{}
 	if i.o.Get(itemId, e) == nil {
 		return e
@@ -231,16 +265,16 @@ func (i *goodsRepo) GetLatestSnapshot(itemId int64) *item.Snapshot {
 	return nil
 }
 
-// 根据指定商品快照
-func (i *goodsRepo) GetSnapshots(skuIdArr []int64) []item.Snapshot {
+// GetSnapshots 根据指定商品快照
+func (i *itemRepoImpl) GetSnapshots(skuIdArr []int64) []item.Snapshot {
 	var list []item.Snapshot
 	_ = i.o.Select(&list, `item_id IN (`+
 		format.I64ArrStrJoin(skuIdArr)+`)`)
 	return list
 }
 
-// 获取最新的商品销售快照
-func (i *goodsRepo) GetLatestSalesSnapshot(skuId int64) *item.TradeSnapshot {
+// GetLatestSalesSnapshot 获取最新的商品销售快照
+func (i *itemRepoImpl) GetLatestSalesSnapshot(skuId int64) *item.TradeSnapshot {
 	e := new(item.TradeSnapshot)
 	if i.o.GetBy(e, "sku_id= $1 ORDER BY id DESC", skuId) == nil {
 		return e
@@ -248,8 +282,8 @@ func (i *goodsRepo) GetLatestSalesSnapshot(skuId int64) *item.TradeSnapshot {
 	return nil
 }
 
-// 获取指定的商品销售快照
-func (i *goodsRepo) GetSalesSnapshot(id int64) *item.TradeSnapshot {
+// GetSalesSnapshot 获取指定的商品销售快照
+func (i *itemRepoImpl) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 	e := new(item.TradeSnapshot)
 	if i.o.Get(id, e) == nil {
 		return e
@@ -257,8 +291,8 @@ func (i *goodsRepo) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 	return nil
 }
 
-// 根据Key获取商品销售快照
-func (i *goodsRepo) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
+// GetSaleSnapshotByKey 根据Key获取商品销售快照
+func (i *itemRepoImpl) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
 	var e = new(item.TradeSnapshot)
 	if i.o.GetBy(e, "key= $1", key) == nil {
 		return e
@@ -267,12 +301,12 @@ func (i *goodsRepo) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
 }
 
 // 保存商品销售快照
-func (i *goodsRepo) SaveSalesSnapshot(v *item.TradeSnapshot) (int64, error) {
+func (i *itemRepoImpl) SaveSalesSnapshot(v *item.TradeSnapshot) (int64, error) {
 	return orm.I64(orm.Save(i.o, v, int(v.Id)))
 }
 
 // Get ItemSku
-func (i *goodsRepo) GetItemSku(primary interface{}) *item.Sku {
+func (i *itemRepoImpl) GetItemSku(primary interface{}) *item.Sku {
 	e := item.Sku{}
 	err := i.o.Get(primary, &e)
 	if err == nil {
@@ -285,7 +319,7 @@ func (i *goodsRepo) GetItemSku(primary interface{}) *item.Sku {
 }
 
 // Select ItemSku
-func (i *goodsRepo) SelectItemSku(where string, v ...interface{}) []*item.Sku {
+func (i *itemRepoImpl) SelectItemSku(where string, v ...interface{}) []*item.Sku {
 	var list []*item.Sku
 	err := i.o.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
@@ -295,7 +329,7 @@ func (i *goodsRepo) SelectItemSku(where string, v ...interface{}) []*item.Sku {
 }
 
 // Save ItemSku
-func (i *goodsRepo) SaveItemSku(v *item.Sku) (int, error) {
+func (i *itemRepoImpl) SaveItemSku(v *item.Sku) (int, error) {
 	id, err := orm.Save(i.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
@@ -304,7 +338,7 @@ func (i *goodsRepo) SaveItemSku(v *item.Sku) (int, error) {
 }
 
 // Delete ItemSku
-func (i *goodsRepo) DeleteItemSku(primary interface{}) error {
+func (i *itemRepoImpl) DeleteItemSku(primary interface{}) error {
 	err := i.o.DeleteByPk(item.Sku{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
@@ -313,7 +347,7 @@ func (i *goodsRepo) DeleteItemSku(primary interface{}) error {
 }
 
 // Batch Delete ItemSku
-func (i *goodsRepo) BatchDeleteItemSku(where string, v ...interface{}) (int64, error) {
+func (i *itemRepoImpl) BatchDeleteItemSku(where string, v ...interface{}) (int64, error) {
 	r, err := i.o.Delete(item.Sku{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")

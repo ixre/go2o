@@ -44,7 +44,7 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 	if catId > 0 {
 		where += fmt.Sprintf(" AND item_info.cat_id= %d", catId)
 	}
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
 		 WHERE item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s`, where), &total,
@@ -75,7 +75,7 @@ func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 	if catId > 0 {
 		where += fmt.Sprintf(" AND item_info.cat_id= %d", catId)
 	}
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN product ON product.id = item_info.product_id
 		 WHERE ws_item.review_state= $1
@@ -117,7 +117,7 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 	buf.WriteString(where)
 	where = buf.String()
 
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
 		 WHERE  item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s`, where), &total,
@@ -157,7 +157,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 	buf.WriteString(where)
 	where = buf.String()
 
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN product ON product.id = item_info.product_id
 		 WHERE ws_item.review_state= $1
@@ -257,7 +257,7 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
 		orderBy += ","
 	}
 
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
 		 INNER JOIN product_category ON product.cat_id=product_category.id
 		 WHERE product.review_state= $1 AND product.shelve_state= $2

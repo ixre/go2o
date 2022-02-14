@@ -102,9 +102,18 @@ message ChangeMemberBindRequest{
   string UserName = 2;
 }
 
-message MchUserPwd {
+message MchUserPwdRequest {
   string User = 1;
   string Pwd = 2;
+}
+// 用户登录响应
+message MchLoginResponse{
+  // 错误码
+  int32 ErrCode = 1;
+  // 错误消息
+  string ErrMsg = 2;
+  // 会员编号
+  int64 MerchantId = 3;
 }
 
 message SyncWSItemsResponse {

@@ -33,7 +33,7 @@ type orderManagerImpl struct {
 	caller       order.IUnifiedOrderAdapter
 	productRepo  product.IProductRepo
 	cartRepo     cart.ICartRepo
-	goodsRepo    item.IGoodsItemRepo
+	goodsRepo    item.IItemRepo
 	promRepo     promotion.IPromotionRepo
 	memberRepo   member.IMemberRepo
 	mchRepo      merchant.IMerchantRepo
@@ -48,7 +48,7 @@ type orderManagerImpl struct {
 
 func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 	repo order.IOrderRepo, payRepo payment.IPaymentRepo, productRepo product.IProductRepo,
-	goodsRepo item.IGoodsItemRepo, promRepo promotion.IPromotionRepo,
+	goodsRepo item.IItemRepo, promRepo promotion.IPromotionRepo,
 	memberRepo member.IMemberRepo, deliveryRepo delivery.IDeliveryRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	valRepo valueobject.IValueRepo) order.IOrderManager {

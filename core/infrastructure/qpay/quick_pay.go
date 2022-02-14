@@ -94,7 +94,7 @@ type CardTransferReq struct {
 	// 是否为对私转账
 	PersonTransfer bool `protobuf:"varint,3,opt,name=TransferToCompany,proto3" json:"TransferToCompany,omitempty"`
 	// 付款金额,实际金额*100,无小数
-	TradeFee int32 `protobuf:"varint,4,opt,name=TradeFee,proto3" json:"TradeFee,omitempty"`
+	TradeFee int32 `protobuf:"varint,4,opt,name=ProcedureFee,proto3" json:"ProcedureFee,omitempty"`
 	// 银行账户
 	BankCardNo string `protobuf:"bytes,5,opt,name=BankCardNo,proto3" json:"BankCardNo,omitempty"`
 	// 收款人姓名,如：张三

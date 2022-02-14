@@ -143,7 +143,7 @@ type (
 		// CheckProfileComplete 检查资料是否完善
 		CheckProfileComplete() error
 		// ModifyPassword 修改密码,旧密码可为空; 传入原始密码。密码均为密文
-		ModifyPassword(NewPassword, oldPwd string) error
+		ModifyPassword(newPwd, oldPwd string) error
 		// ModifyTradePassword 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
 		ModifyTradePassword(NewPassword, oldPwd string) error
 		// GetBankCards 获取提现银行信息
