@@ -111,6 +111,7 @@ func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Inte
 // 初始化服务
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 	OrmMapping(orm)
+	//[]string{"127.0.0.1:9000"}
 	Repos = (&repos.RepoFactory{}).Init(orm, sto)
 	registryRepo := Repos.GetRegistryRepo()
 	proMRepo := Repos.GetProModelRepo()
