@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/domain/tmp"
+	"github.com/ixre/go2o/core/event"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
@@ -99,11 +100,13 @@ func Init(ctx gof.App) {
 	orm.CacheProxy(o, sto)
 	// 初始化服务
 	initService(ctx, db, o, sto)
+	// 初始化事件
+	event.InitEvent()
 	// 初始化数据
 	InitData(o)
 }
 
-// 初始化测试服务
+// InitTestService 初始化测试服务
 func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 	initService(ctx, db, orm, sto)
 }

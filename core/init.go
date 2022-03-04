@@ -68,6 +68,8 @@ func init2() {
 
 func Init(a *AppImpl, debug, trace bool) bool {
 	a._debugMode = debug
+	// 初始化clickhouse
+	//clickhouse.Initialize(a)
 	// 初始化变量
 	variable.Domain = a.Config().GetString(variable.ServerDomain)
 	a.Loaded = true
@@ -80,6 +82,9 @@ func Init(a *AppImpl, debug, trace bool) bool {
 func AppDispose() {
 	//GetRedisPool().Close()
 	msq.Close()
+	//if clickhouse.ConnInstance != nil{
+	//	clickhouse.ConnInstance.Close()
+	//}
 }
 
 func InitialModules() {

@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	wi "github.com/ixre/go2o/core/domain/wallet"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/domain/eventbus"
 	"log"
 )
 
@@ -118,7 +120,7 @@ func (w *WalletRepoImpl) GetWalletLogBy_(where string, v ...interface{}) *wallet
 
 // SelectWalletLog_ Select WalletLog
 func (w *WalletRepoImpl) SelectWalletLog_(where string, v ...interface{}) []*wallet.WalletLog {
-	list := []*wallet.WalletLog{}
+	var list []*wallet.WalletLog
 	err := w._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WalletLog")
@@ -132,10 +134,15 @@ func (w *WalletRepoImpl) SaveWalletLog_(v *wallet.WalletLog) (int, error) {
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WalletLog")
 	}
+	if err == nil && v.Id <= 0 {
+		eventbus.Publish(&events.WalletLogClickhouseWriteEvent{
+			Data: v,
+		})
+	}
 	return id, err
 }
 
-// Delete WalletLog
+// DeleteWalletLog_ Delete WalletLog
 func (w *WalletRepoImpl) DeleteWalletLog_(primary interface{}) error {
 	err := w._orm.DeleteByPk(wallet.WalletLog{}, primary)
 	if err != nil && err != sql.ErrNoRows {
@@ -144,7 +151,7 @@ func (w *WalletRepoImpl) DeleteWalletLog_(primary interface{}) error {
 	return err
 }
 
-// Batch Delete WalletLog
+// BatchDeleteWalletLog_ Batch Delete WalletLog
 func (w *WalletRepoImpl) BatchDeleteWalletLog_(where string, v ...interface{}) (int64, error) {
 	r, err := w._orm.Delete(wallet.WalletLog{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
@@ -166,7 +173,7 @@ func (w *WalletRepoImpl) getWallet_(primary interface{}) *wallet.Wallet {
 	return nil
 }
 
-// GetBy Wallet
+// GetWalletBy_ GetBy Wallet
 func (w *WalletRepoImpl) GetWalletBy_(where string, v ...interface{}) *wallet.Wallet {
 	e := wallet.Wallet{}
 	err := w._orm.GetBy(&e, where, v...)
@@ -179,7 +186,7 @@ func (w *WalletRepoImpl) GetWalletBy_(where string, v ...interface{}) *wallet.Wa
 	return nil
 }
 
-// Select Wallet
+// SelectWallet_ Select Wallet
 func (w *WalletRepoImpl) SelectWallet_(where string, v ...interface{}) []*wallet.Wallet {
 	var list []*wallet.Wallet
 	err := w._orm.Select(&list, where, v...)
@@ -189,7 +196,7 @@ func (w *WalletRepoImpl) SelectWallet_(where string, v ...interface{}) []*wallet
 	return list
 }
 
-// Save Wallet
+// SaveWallet_ Save Wallet
 func (w *WalletRepoImpl) SaveWallet_(v *wallet.Wallet) (int, error) {
 	id, err := orm.Save(w._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
@@ -198,7 +205,7 @@ func (w *WalletRepoImpl) SaveWallet_(v *wallet.Wallet) (int, error) {
 	return id, err
 }
 
-// Delete Wallet
+// DeleteWallet_ Delete Wallet
 func (w *WalletRepoImpl) DeleteWallet_(primary interface{}) error {
 	err := w._orm.DeleteByPk(wallet.Wallet{}, primary)
 	if err != nil && err != sql.ErrNoRows {
@@ -207,7 +214,7 @@ func (w *WalletRepoImpl) DeleteWallet_(primary interface{}) error {
 	return err
 }
 
-// Batch Delete Wallet
+// BatchDeleteWallet_ Batch Delete Wallet
 func (w *WalletRepoImpl) BatchDeleteWallet_(where string, v ...interface{}) (int64, error) {
 	r, err := w._orm.Delete(wallet.Wallet{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
