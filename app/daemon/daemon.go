@@ -14,6 +14,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
+	"github.com/ixre/go2o/app/daemon/job"
 	"github.com/ixre/go2o/core"
 	"github.com/ixre/go2o/core/domain/interface/mss"
 	"github.com/ixre/go2o/core/domain/interface/order"
@@ -31,22 +32,22 @@ import (
 	"time"
 )
 
-// 守护进程执行的函数
+// Func 守护进程执行的函数
 type Func func(gof.App)
 
-// 守护进程服务
+// Service 守护进程服务
 type Service interface {
-	// 服务名称
+	// Name 服务名称
 	Name() string
-	// 启动服务,并传入APP上下文对象
+	// Start 启动服务,并传入APP上下文对象
 	Start(gof.App)
-	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
+	// OrderObs 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
 	OrderObs(singleOrder *proto.SSingleOrder) bool
-	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
+	// MemberObs 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
 	MemberObs(m *proto.SMember, create bool) bool
-	// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
+	// PaymentOrderObs 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
 	PaymentOrderObs(order *proto.SPaymentOrder) bool
-	// 处理邮件队列,返回布尔值,如果返回false,则不继续执行
+	// HandleMailQueue 处理邮件队列,返回布尔值,如果返回false,则不继续执行
 	HandleMailQueue([]*mss.MailTask) bool
 }
 
@@ -61,9 +62,10 @@ var (
 	cronTab          = cron.New()
 	ticker           = time.NewTicker(tickerDuration)
 	mux              sync.Mutex
+	ch = make(chan int,1)
 )
 
-// 注册服务
+// RegisterService 注册服务
 func RegisterService(s Service) {
 	mux.Lock()
 	defer mux.Unlock()
@@ -78,12 +80,12 @@ func RegisterService(s Service) {
 	services = append(services, s)
 }
 
-// 添加定时执行任务(默认5秒)
+// AddTickerFunc 添加定时执行任务(默认5秒)
 func AddTickerFunc(f Func) {
 	tickerInvokeFunc = append(tickerInvokeFunc, f)
 }
 
-// 启动守护进程
+// Start 启动守护进程
 func Start() {
 	defer func() {
 		cronTab.Stop()
@@ -95,7 +97,8 @@ func Start() {
 		go s.Start(appCtx)
 	}
 	startCronTab() // 运行计划任务
-	startTicker()  // 阻塞
+	<- ch
+	//startTicker()  // 阻塞
 }
 
 func startTicker() {
@@ -128,18 +131,21 @@ func signHandled(key string, unix int64) {
 	conn.Do("SET", key, unix)
 }
 
-// 比较最后运行的时间戳
+// CompareLastUnix 比较最后运行的时间戳
 func CompareLastUnix(key string, unix int64) bool {
 	return isHandled(key, unix)
 }
 
-// 设置最后运行的时间戳
+// SetLastUnix 设置最后运行的时间戳
 func SetLastUnix(key string, unix int64) {
 	signHandled(key, unix)
 }
 
 // 运行定时任务
 func startCronTab() {
+	cronTab.AddFunc("@every 2s",job.SyncWalletLogToClickHouse)
+	cronTab.Start()
+	return
 	//商户每日报表
 	cronTab.AddFunc("0 0 0 * * *", mchDayChart)
 	//个人金融结算,每天00:20更新数据
@@ -354,15 +360,15 @@ func Run(ctx gof.App) {
 		appCtx = core.NewApp("app.conf", nil)
 	}
 	conn = appCtx.Db()
-	sMail := true // appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
+	//sMail := true // appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
 	//sMail := cnf.GetString(variable.)
 
-	s := &defaultService{
-		sMember: true,
-		sOrder:  true,
-		sMail:   sMail,
-	}
-	s.init()
+	//s := &defaultService{
+	//	sMember: true,
+	//	sOrder:  true,
+	//	sMail:   sMail,
+	//}
+	//s.init()
 	Start()
 }
 
@@ -396,12 +402,12 @@ func FlagRun() {
 	//	}
 	// RegisterByName(serviceArr)
 
-	s := &defaultService{
-		sMember: true,
-		sOrder:  true,
-		sMail:   true,
-	}
-	s.init()
+	//s := &defaultService{
+	//	sMember: true,
+	//	sOrder:  true,
+	//	sMail:   true,
+	//}
+	//s.init()
 	Start()
 
 	<-ch

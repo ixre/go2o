@@ -15,11 +15,10 @@ import (
 
 // 按模板生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
-	tablePrefix := "item_image"
-	_, output, err := shell.Run("bash tto.sh " + tablePrefix)
+	tablePrefix := "job_"
+	_, _, err := shell.Run("bash tto.sh " + tablePrefix,true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	t.Log(output)
 }

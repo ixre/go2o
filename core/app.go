@@ -163,7 +163,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	return nil
 }
 
-// 获取Redis连接池
+// GetRedisPool 获取Redis连接池,will be remove
 func GetRedisPool() *redis.Pool {
 	if redisPool == nil {
 		app := gof.CurrentApp
