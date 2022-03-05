@@ -65,7 +65,7 @@ type RepoFactory struct {
 	asRepo            afterSales.IAfterSalesRepo
 
 	walletRepo wallet.IWalletRepo
-	jobRepo  job.IJobRepo
+	jobRepo    job.IJobRepo
 	_orm       orm.Orm
 }
 
@@ -107,7 +107,7 @@ func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
 		r.deliveryRepo, r.expressRepo, r.shipRepo, r.valueRepo, r.registryRepo)
 	r.paymentRepo = NewPaymentRepo(sto, o, r.memberRepo, r.orderRepo, r.registryRepo)
 	r.asRepo = NewAfterSalesRepo(o, r.orderRepo, r.memberRepo, r.paymentRepo)
-	r.jobRepo = NewJobRepository(o,sto)
+	r.jobRepo = NewJobRepository(o, sto)
 
 	// 解决依赖
 	r.orderRepo.(*OrderRepImpl).SetPaymentRepo(r.paymentRepo)
@@ -202,4 +202,8 @@ func (r *RepoFactory) GetWalletRepo() wallet.IWalletRepo {
 
 func (r *RepoFactory) GetRegistryRepo() registry.IRegistryRepo {
 	return r.registryRepo
+}
+
+func (r *RepoFactory) GetJobRepo() job.IJobRepo {
+	return r.jobRepo
 }

@@ -6,8 +6,7 @@ import (
 	"github.com/ixre/gof/domain/eventbus"
 )
 
-func InitEvent(){
-	h := &handler.EventHandler{
-	}
-	eventbus.SubscribeAsync(events.WalletLogClickhouseWriteEvent{},h.HandleWalletLogWriteEvent)
+func InitEvent() {
+	h := &handler.EventHandler{}
+	eventbus.SubscribeAsync(events.WalletLogClickhouseWriteEvent{}, h.HandleWalletLogWriteEvent)
 }

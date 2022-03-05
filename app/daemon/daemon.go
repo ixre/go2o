@@ -62,7 +62,7 @@ var (
 	cronTab          = cron.New()
 	ticker           = time.NewTicker(tickerDuration)
 	mux              sync.Mutex
-	ch = make(chan int,1)
+	ch               = make(chan int, 1)
 )
 
 // RegisterService 注册服务
@@ -97,7 +97,7 @@ func Start() {
 		go s.Start(appCtx)
 	}
 	startCronTab() // 运行计划任务
-	<- ch
+	<-ch
 	//startTicker()  // 阻塞
 }
 
@@ -143,7 +143,7 @@ func SetLastUnix(key string, unix int64) {
 
 // 运行定时任务
 func startCronTab() {
-	cronTab.AddFunc("@every 2s",job.SyncWalletLogToClickHouse)
+	cronTab.AddFunc("@every 2s", job.SyncWalletLogToClickHouse)
 	cronTab.Start()
 	return
 	//商户每日报表

@@ -7,11 +7,11 @@ import (
 )
 
 var _ job.IJobAggregate = new(jobImpl)
+
 type jobImpl struct {
-	repo job.IJobRepo
+	repo  job.IJobRepo
 	value *job.ExecData
 }
-
 
 func NewJobImpl(repo job.IJobRepo, value *job.ExecData) job.IJobAggregate {
 	return &jobImpl{
@@ -29,7 +29,7 @@ func (j jobImpl) GetValue() job.ExecData {
 }
 
 func (j jobImpl) SetValue(data job.ExecData) error {
-	if data.Id <= 0{
+	if data.Id <= 0 {
 		j.value.JobName = data.JobName
 	}
 	j.value.LastExecIndex = data.LastExecIndex
@@ -38,25 +38,25 @@ func (j jobImpl) SetValue(data job.ExecData) error {
 }
 
 func (j jobImpl) AddFail(recordId int) error {
-	if j.GetAggregateRootId() == 0{
+	if j.GetAggregateRootId() == 0 {
 		return errors.New("job not exists")
 	}
 	v := &job.ExecFail{
-		JobId:      j.GetAggregateRootId()	,
+		JobId:      j.GetAggregateRootId(),
 		JobDataId:  int64(recordId),
 		RetryCount: 0,
 		CreateTime: time.Now().Unix(),
 		RetryTime:  0,
 	}
-	id,err := j.repo.SaveExecFail(v)
-	if err == nil{
+	id, err := j.repo.SaveExecFail(v)
+	if err == nil {
 		v.Id = int64(id)
 	}
 	return err
 }
 
 func (j jobImpl) UpdateExecCursor(id int) error {
-	if id <= 0{
+	if id <= 0 {
 		return errors.New("id error")
 	}
 	j.value.LastExecIndex = int64(id)
@@ -65,8 +65,8 @@ func (j jobImpl) UpdateExecCursor(id int) error {
 }
 
 func (j jobImpl) Save() error {
-	id,err := j.repo.SaveExecData(j.value)
-	if j.GetAggregateRootId() == 0 && err == nil{
+	id, err := j.repo.SaveExecData(j.value)
+	if j.GetAggregateRootId() == 0 && err == nil {
 		j.value.Id = int64(id)
 	}
 	return err

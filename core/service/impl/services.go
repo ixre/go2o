@@ -73,6 +73,9 @@ var (
 	// 查询服务
 	QueryService *queryService
 
+	// ExecuteService 执行任务服务
+	ExecuteService *executeServiceImpl
+
 	CommonDao *impl.CommonDao
 	// AppService APP服务
 	AppService *appServiceImpl
@@ -140,6 +143,8 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	paymentRepo := Repos.GetPaymentRepo()
 	asRepo := Repos.GetAfterSalesRepo()
 	notifyRepo := Repos.GetNotifyRepo()
+	jobRepo := Repos.GetJobRepo()
+
 	/** Params **/
 	memberQue := query.NewMemberQuery(orm)
 	mchQuery := query.NewMerchantQuery(ctx)
@@ -173,6 +178,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
 
 	WalletService = NewWalletService(Repos.GetWalletRepo())
+	ExecuteService = NewExecDataService(sto, jobRepo)
 
 	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
 	portalDao := impl.NewPortalDao(orm)

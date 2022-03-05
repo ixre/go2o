@@ -3,37 +3,35 @@ package job
 // IJobAggregate 任务聚合
 type IJobAggregate interface {
 	// GetAggregateRootId 获取编号
-	GetAggregateRootId()int64
+	GetAggregateRootId() int64
 	// GetValue 获取值
-	GetValue()ExecData
+	GetValue() ExecData
 	// SetValue 设置值
-	SetValue(data ExecData)error
+	SetValue(data ExecData) error
 	// AddFail 添加失败计数
-	AddFail(recordId int)error
+	AddFail(recordId int) error
 	// UpdateExecCursor 更新执行游标位置
-	UpdateExecCursor(id int)error
+	UpdateExecCursor(id int) error
 	// Save 保存
-	Save()error
+	Save() error
 }
 
-
-type IJobRepo interface{
+type IJobRepo interface {
 	CreateJob(*ExecData) IJobAggregate
 	// GetExecData Get JobExecData
-	GetExecData(primary interface{})*ExecData
+	GetExecData(primary interface{}) *ExecData
 	// GetJobByName GetBy JobExecData
-	GetJobByName(name string)IJobAggregate
+	GetJobByName(name string) IJobAggregate
 	// SaveExecData Save JobExecData
-	SaveExecData(v *ExecData)(int,error)
+	SaveExecData(v *ExecData) (int, error)
 	// GetExecFailBy GetBy 任务执行失败
-	GetExecFailBy(where string,v ...interface{})*ExecFail
+	GetExecFailBy(where string, v ...interface{}) *ExecFail
 	// SaveExecFail Save 任务执行失败
-	SaveExecFail(v *ExecFail)(int,error)
+	SaveExecFail(v *ExecFail) (int, error)
 }
 
-
 // ExecData 任务执行数据
-type ExecData struct{
+type ExecData struct {
 	// 编号
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 任务名称
@@ -44,9 +42,8 @@ type ExecData struct{
 	LastExecTime int64 `db:"last_exec_time"`
 }
 
-
 // ExecFail 任务执行失败
-type ExecFail struct{
+type ExecFail struct {
 	// 编号
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 任务编号
@@ -60,4 +57,3 @@ type ExecFail struct{
 	// 重试时间
 	RetryTime int64 `db:"retry_time"`
 }
-

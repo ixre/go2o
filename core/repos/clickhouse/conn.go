@@ -13,21 +13,21 @@ import (
 var ConnInstance driver.Conn
 
 // Initialize 初始化clickhouse
-func Initialize(app gof.App){
+func Initialize(app gof.App) {
 	cfg := app.Config()
 	server := []string{cfg.GetString("clickhouse_server")}
-	database :=   cfg.GetString("clickhouse_database")
+	database := cfg.GetString("clickhouse_database")
 	password := cfg.GetString("clickhouse_password")
-	configure(server,database,password)
+	configure(server, database, password)
 }
 
-func configure(server []string,database string,password string){
+func configure(server []string, database string, password string) {
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: server,
 		Auth: clickhouse.Auth{
 			Database: database,
 			Username: "default",
-			Password:password,
+			Password: password,
 		},
 		//Debug:           true,
 		DialTimeout:     time.Second,
@@ -38,7 +38,7 @@ func configure(server []string,database string,password string){
 			Method: clickhouse.CompressionLZ4,
 		},
 	})
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 	ctx := clickhouse.Context(context.Background(), clickhouse.WithSettings(clickhouse.Settings{
