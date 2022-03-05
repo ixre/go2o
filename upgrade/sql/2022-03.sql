@@ -7,3 +7,5 @@ ALTER TABLE IF EXISTS public.wal_wallet_log
 
 COMMENT ON COLUMN public.wal_wallet_log.wallet_user
     IS '钱包用户';
+
+ALTER TABLE public.wal_wallet_log RENAME COLUMN trade_fee TO procedure_fee;

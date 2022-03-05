@@ -56,6 +56,7 @@ require (
 require google.golang.org/protobuf v1.27.1 // indirect
 
 require (
+	github.com/ClickHouse/clickhouse-go/v2 v2.0.12 // indirect
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect

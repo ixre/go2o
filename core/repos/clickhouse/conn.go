@@ -26,7 +26,7 @@ func configure(server []string,database string,password string){
 		Addr: server,
 		Auth: clickhouse.Auth{
 			Database: database,
-			//Username: "default",
+			Username: "default",
 			Password:password,
 		},
 		//Debug:           true,

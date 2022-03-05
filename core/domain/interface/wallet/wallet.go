@@ -312,7 +312,7 @@ type (
 		// 余额
 		Balance int64 `db:"balance"`
 		// 交易手续费
-		ProcedureFee int `db:"trade_fee"`
+		ProcedureFee int `db:"procedure_fee"`
 		// 操作人员用户编号
 		OperatorUid int `db:"opr_uid"`
 		// 操作人员名称

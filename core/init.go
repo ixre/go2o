@@ -21,6 +21,7 @@ import (
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/module/express/kdniao"
 	"github.com/ixre/go2o/core/msq"
+	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
@@ -69,7 +70,7 @@ func init2() {
 func Init(a *AppImpl, debug, trace bool) bool {
 	a._debugMode = debug
 	// 初始化clickhouse
-	//clickhouse.Initialize(a)
+	clickhouse.Initialize(a)
 	// 初始化变量
 	variable.Domain = a.Config().GetString(variable.ServerDomain)
 	a.Loaded = true

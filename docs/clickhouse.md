@@ -2,18 +2,19 @@
 CREATE DATABASE [IF NOT EXISTS] go2o;
 use go2o;
 
-CREATE TABLE IF NOT EXISTS wal_wallet_log
+CREATE TABLE IF NOT EXISTS go2o_wal_wallet_log
 (
     `id` Int64 COMMENT '编号',
     `wallet_id` Int64 COMMENT '钱包编号',
+    `wallet_user` String COMMENT '钱包用户名',
     `kind` Int32 COMMENT '业务类型',
     `title` String COMMENT '标题',
     `outer_chan` String COMMENT '外部通道',
     `outer_no` String COMMENT '外部订单号',
     `value` Int64 COMMENT '变动金额',
     `balance` Int64 COMMENT '余额',
-    `trade_fee` Int32 COMMENT '交易手续费',
-    `opr_uid` Int32 COMMENT '操作人员用户编号',
+    `procedure_fee` Int32 COMMENT '交易手续费',
+    `opr_uid` Int64 COMMENT '操作人员用户编号',
     `opr_name` String COMMENT '操作人员名称',
     `account_no` String COMMENT '提现账号',
     `account_name` String COMMENT '提现银行账户名称',
