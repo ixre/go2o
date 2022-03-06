@@ -13,9 +13,11 @@ import (
 	"encoding/json"
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/domain/tmp"
+	"github.com/ixre/go2o/core/event"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
@@ -72,6 +74,9 @@ var (
 	// 查询服务
 	QueryService *queryService
 
+	// ExecuteService 执行任务服务
+	ExecuteService *executeServiceImpl
+
 	CommonDao *impl.CommonDao
 	// AppService APP服务
 	AppService *appServiceImpl
@@ -97,13 +102,17 @@ func Init(ctx gof.App) {
 	o := orm.NewOrm(db.Driver(), db.Raw())
 	tmp.SetORM(o)
 	orm.CacheProxy(o, sto)
+	// 初始化clickhouse
+	clickhouse.Initialize(ctx)
 	// 初始化服务
 	initService(ctx, db, o, sto)
+	// 初始化事件
+	event.InitEvent()
 	// 初始化数据
 	InitData(o)
 }
 
-// 初始化测试服务
+// InitTestService 初始化测试服务
 func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 	initService(ctx, db, orm, sto)
 }
@@ -111,6 +120,7 @@ func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Inte
 // 初始化服务
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 	OrmMapping(orm)
+	//[]string{"127.0.0.1:9000"}
 	Repos = (&repos.RepoFactory{}).Init(orm, sto)
 	registryRepo := Repos.GetRegistryRepo()
 	proMRepo := Repos.GetProModelRepo()
@@ -136,6 +146,8 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	paymentRepo := Repos.GetPaymentRepo()
 	asRepo := Repos.GetAfterSalesRepo()
 	notifyRepo := Repos.GetNotifyRepo()
+	jobRepo := Repos.GetJobRepo()
+
 	/** Params **/
 	memberQue := query.NewMemberQuery(orm)
 	mchQuery := query.NewMerchantQuery(ctx)
@@ -169,6 +181,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
 
 	WalletService = NewWalletService(Repos.GetWalletRepo())
+	ExecuteService = NewExecDataService(sto, jobRepo)
 
 	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
 	portalDao := impl.NewPortalDao(orm)

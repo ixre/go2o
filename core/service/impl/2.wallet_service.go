@@ -215,6 +215,7 @@ func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog
 	return &proto.SWalletLog{
 		Id:           l.Id,
 		WalletId:     l.WalletId,
+		WalletUser:   l.WalletUser,
 		Kind:         int32(l.Kind),
 		Title:        l.Title,
 		OuterChan:    l.OuterChan,

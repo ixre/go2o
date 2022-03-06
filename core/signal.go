@@ -15,7 +15,7 @@ import (
 	"syscall"
 )
 
-// 监听进程信号,并执行操作。比如退出时应释放资源
+// SignalNotify 监听进程信号,并执行操作。比如退出时应释放资源
 func SignalNotify(c chan bool, fn func()) {
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGKILL)

@@ -328,34 +328,36 @@ message SWalletLog {
     sint64 Id = 1;
     /** 钱包编号 */
     sint64 WalletId = 2;
+    /** 钱包用户的用户名 */
+    string WalletUser = 3;
     /** 业务类型 */
-    sint32 Kind = 3;
+    sint32 Kind = 4;
     /** 标题 */
-    string Title = 4;
+    string Title = 5;
     /** 外部通道 */
-    string OuterChan = 5;
+    string OuterChan = 6;
     /** 外部订单号 */
-    string OuterNo = 6;
+    string OuterNo = 7;
     /** 变动金额 */
-    int64 Value =  7;
+    int64 Value =  8;
     /** 余额 */
-    int64 Balance = 8;
+    int64 Balance = 9;
     /** 交易手续费 */
-    int64 ProcedureFee = 9;
+    int64 ProcedureFee = 10;
     /** 操作人员用户编号 */
-    sint32 OperatorUid = 10;
+    sint32 OperatorUid = 11;
     /** 操作人员名称 */
-    string OperatorName = 11;
+    string OperatorName = 12;
     /** 备注 */
-    string Remark = 12;
+    string Remark = 13;
     /** 审核状态 */
-    sint32 ReviewState = 13;
+    sint32 ReviewState = 14;
     /** 审核备注 */
-    string ReviewRemark = 14;
+    string ReviewRemark = 15;
     /** 审核时间 */
-    sint64 ReviewTime = 15;
+    sint64 ReviewTime = 16;
     /** 创建时间 */
-    sint64 CreateTime = 16;
+    sint64 CreateTime = 17;
     /** 更新时间 */
-    sint64 UpdateTime = 17;
+    sint64 UpdateTime = 18;
 }

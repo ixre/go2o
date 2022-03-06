@@ -13,6 +13,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/ixre/go2o/app"
+	"github.com/ixre/go2o/app/daemon"
 	"github.com/ixre/go2o/app/v1/restapi"
 	"github.com/ixre/go2o/core"
 	"github.com/ixre/go2o/core/msq"
@@ -76,7 +77,7 @@ func main() {
 	flag.Var(&etcdEndPoints, "endpoint", "etcd endpoints")
 	flag.StringVar(&mqAddr, "mqs", defaultMqAddr,
 		"nats cluster address, like: 192.168.1.1:4222,192.168.1.2:4222")
-	flag.BoolVar(&runDaemon, "d", false, "run daemon")
+	flag.BoolVar(&runDaemon, "d", true, "run daemon")
 	flag.IntVar(&port, "port", 1427, "gRPC service port")
 	flag.IntVar(&apiPort, "apiport", 1428, "api service port")
 	flag.BoolVar(&showVersion, "v", false, "print version")
@@ -133,8 +134,7 @@ func main() {
 	service.ServeRPC(ch, &cfg, port)
 	service.ConfigureClient(&cfg, "") // initial service client
 	if runDaemon {
-		//todo: daemon需重构
-		//go daemon.Run(newApp)
+		go daemon.Run(newApp)
 	}
 	// 运行REST API
 	go restapi.Run(ch, newApp, apiPort)

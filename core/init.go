@@ -19,6 +19,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/module/express/kdniao"
 	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/go2o/core/service"
@@ -68,6 +69,8 @@ func init2() {
 
 func Init(a *AppImpl, debug, trace bool) bool {
 	a._debugMode = debug
+	// 初始化并发锁
+	locker.Configure(a.Storage())
 	// 初始化变量
 	variable.Domain = a.Config().GetString(variable.ServerDomain)
 	a.Loaded = true
@@ -80,6 +83,9 @@ func Init(a *AppImpl, debug, trace bool) bool {
 func AppDispose() {
 	//GetRedisPool().Close()
 	msq.Close()
+	//if clickhouse.connInstance != nil{
+	//	clickhouse.connInstance.Close()
+	//}
 }
 
 func InitialModules() {

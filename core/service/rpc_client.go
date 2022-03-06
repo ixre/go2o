@@ -267,6 +267,15 @@ func PortalServiceClient() (*grpc.ClientConn, proto.PortalServiceClient, error) 
 	return conn, nil, err
 }
 
+// ExecuteServiceClient 任务执行服务
+func ExecuteServiceClient() (*grpc.ClientConn, proto.ExecuteServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewExecuteServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
 // AppServiceClient APP服务
 func AppServiceClient() (*grpc.ClientConn, proto.AppServiceClient, error) {
 	conn, err := getConn(selector)
@@ -276,7 +285,7 @@ func AppServiceClient() (*grpc.ClientConn, proto.AppServiceClient, error) {
 	return conn, nil, err
 }
 
-// RBAC服务
+// RbacServiceClient RBAC服务
 func RbacServiceClient() (*grpc.ClientConn, proto.RbacServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {

@@ -291,12 +291,14 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 钱包日志
+	// WalletLog 钱包日志
 	WalletLog struct {
 		// 编号
 		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 钱包编号
 		WalletId int64 `db:"wallet_id"`
+		// 钱包用户名,冗余用于展示
+		WalletUser string `db:"wallet_user"`
 		// 业务类型
 		Kind int `db:"kind"`
 		// 标题
@@ -310,7 +312,7 @@ type (
 		// 余额
 		Balance int64 `db:"balance"`
 		// 交易手续费
-		ProcedureFee int `db:"trade_fee"`
+		ProcedureFee int `db:"procedure_fee"`
 		// 操作人员用户编号
 		OperatorUid int `db:"opr_uid"`
 		// 操作人员名称

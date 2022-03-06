@@ -167,6 +167,7 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, operator
 	unix := time.Now().Unix()
 	return &wallet.WalletLog{
 		WalletId:     w.GetAggregateRootId(),
+		WalletUser:   w._value.UserName,
 		Kind:         kind,
 		Title:        strings.TrimSpace(title),
 		OuterChan:    "",
