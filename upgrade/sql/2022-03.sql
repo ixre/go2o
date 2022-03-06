@@ -18,7 +18,7 @@ ALTER TABLE public.wal_wallet_log RENAME COLUMN trade_fee TO procedure_fee;
 CREATE TABLE IF NOT EXISTS public.job_exec_data
 (
     id bigserial NOT NULL,
-    job_name character varying(20) NOT NULL,
+    job_name character varying(40) NOT NULL,
     last_exec_index bigint NOT NULL,
     last_exec_time bigint,
     CONSTRAINT job_data_pkey PRIMARY KEY (id)

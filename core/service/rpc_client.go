@@ -285,7 +285,7 @@ func AppServiceClient() (*grpc.ClientConn, proto.AppServiceClient, error) {
 	return conn, nil, err
 }
 
-// RBAC服务
+// RbacServiceClient RBAC服务
 func RbacServiceClient() (*grpc.ClientConn, proto.RbacServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {

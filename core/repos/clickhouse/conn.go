@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var ConnInstance driver.Conn
+var connInstance driver.Conn
 
 // Initialize 初始化clickhouse
 func Initialize(app gof.App) {
@@ -19,6 +19,11 @@ func Initialize(app gof.App) {
 	database := cfg.GetString("clickhouse_database")
 	password := cfg.GetString("clickhouse_password")
 	configure(server, database, password)
+}
+
+
+func GetClickhouseConn()driver.Conn{
+	return connInstance
 }
 
 func configure(server []string, database string, password string) {
@@ -52,5 +57,5 @@ func configure(server []string, database string, password string) {
 		}
 		log.Fatal(err)
 	}
-	ConnInstance = conn
+	connInstance = conn
 }

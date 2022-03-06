@@ -12,7 +12,7 @@ type EventHandler struct {
 
 func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {
 	ld := data.(*events.WalletLogClickhouseWriteEvent)
-	conn := clickhouse.ConnInstance
+	conn := clickhouse.GetClickhouseConn()
 	batch, err := conn.PrepareBatch(context.TODO(),
 		`INSERT INTO go2o_wal_wallet_log (  
 id,wallet_id,wallet_user,kind,title,outer_chan,

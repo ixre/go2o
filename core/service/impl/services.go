@@ -17,6 +17,7 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
@@ -101,6 +102,8 @@ func Init(ctx gof.App) {
 	o := orm.NewOrm(db.Driver(), db.Raw())
 	tmp.SetORM(o)
 	orm.CacheProxy(o, sto)
+	// 初始化clickhouse
+	clickhouse.Initialize(ctx)
 	// 初始化服务
 	initService(ctx, db, o, sto)
 	// 初始化事件
