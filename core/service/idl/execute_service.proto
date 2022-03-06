@@ -19,7 +19,7 @@
 
 syntax = "proto3";
 option go_package = "./;proto";
-option java_package = "github.com.ixre.go2o.rpc";
+option java_package = "com.github.ixre.go2o.rpc";
 
 import "global.proto";
 

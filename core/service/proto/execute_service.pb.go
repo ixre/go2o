@@ -37,7 +37,7 @@ func (m *GetJobRequest) Reset()         { *m = GetJobRequest{} }
 func (m *GetJobRequest) String() string { return proto.CompactTextString(m) }
 func (*GetJobRequest) ProtoMessage()    {}
 func (*GetJobRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_execute_service_d6b14a680c3a845b, []int{0}
+	return fileDescriptor_execute_service_0bf2a36d18009366, []int{0}
 }
 func (m *GetJobRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetJobRequest.Unmarshal(m, b)
@@ -86,7 +86,7 @@ func (m *UpdateCursorRequest) Reset()         { *m = UpdateCursorRequest{} }
 func (m *UpdateCursorRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateCursorRequest) ProtoMessage()    {}
 func (*UpdateCursorRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_execute_service_d6b14a680c3a845b, []int{1}
+	return fileDescriptor_execute_service_0bf2a36d18009366, []int{1}
 }
 func (m *UpdateCursorRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UpdateCursorRequest.Unmarshal(m, b)
@@ -134,7 +134,7 @@ func (m *AddFailRequest) Reset()         { *m = AddFailRequest{} }
 func (m *AddFailRequest) String() string { return proto.CompactTextString(m) }
 func (*AddFailRequest) ProtoMessage()    {}
 func (*AddFailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_execute_service_d6b14a680c3a845b, []int{2}
+	return fileDescriptor_execute_service_0bf2a36d18009366, []int{2}
 }
 func (m *AddFailRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AddFailRequest.Unmarshal(m, b)
@@ -187,7 +187,7 @@ func (m *SExecData) Reset()         { *m = SExecData{} }
 func (m *SExecData) String() string { return proto.CompactTextString(m) }
 func (*SExecData) ProtoMessage()    {}
 func (*SExecData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_execute_service_d6b14a680c3a845b, []int{3}
+	return fileDescriptor_execute_service_0bf2a36d18009366, []int{3}
 }
 func (m *SExecData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SExecData.Unmarshal(m, b)
@@ -387,10 +387,10 @@ var _ExecuteService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("execute_service.proto", fileDescriptor_execute_service_d6b14a680c3a845b)
+	proto.RegisterFile("execute_service.proto", fileDescriptor_execute_service_0bf2a36d18009366)
 }
 
-var fileDescriptor_execute_service_d6b14a680c3a845b = []byte{
+var fileDescriptor_execute_service_0bf2a36d18009366 = []byte{
 	// 325 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x92, 0x4f, 0x4b, 0xfb, 0x30,
 	0x18, 0xc7, 0xd7, 0xee, 0xc7, 0xfe, 0x3c, 0x6c, 0xfd, 0x49, 0xfc, 0x43, 0xe9, 0x69, 0x94, 0x29,
@@ -409,8 +409,8 @@ var fileDescriptor_execute_service_d6b14a680c3a845b = []byte{
 	0x1b, 0x7e, 0x39, 0xe0, 0x4d, 0xed, 0x03, 0x2c, 0xac, 0x7f, 0x72, 0x01, 0x0d, 0xeb, 0x9a, 0x78,
 	0xb4, 0x22, 0x3d, 0x00, 0xba, 0xbf, 0x6c, 0x58, 0x23, 0x23, 0x38, 0xb2, 0x42, 0x37, 0x9d, 0x95,
 	0x4a, 0x4e, 0xe8, 0x0f, 0x8e, 0x83, 0x26, 0x65, 0x98, 0x17, 0x99, 0x0e, 0x6b, 0xe4, 0x1c, 0x9a,
-	0x5b, 0x71, 0xe4, 0x3f, 0xad, 0x2a, 0x3c, 0x18, 0xbb, 0xee, 0x83, 0xbf, 0x4c, 0xf5, 0x6b, 0x11,
-	0xd3, 0x44, 0xae, 0x68, 0x5a, 0x2a, 0xa4, 0x4b, 0x39, 0x94, 0x54, 0xad, 0x93, 0xe7, 0x16, 0xbd,
-	0xbc, 0x32, 0xbf, 0x22, 0x6e, 0x98, 0x63, 0xf4, 0x1d, 0x00, 0x00, 0xff, 0xff, 0xd7, 0x7d, 0xfb,
-	0x24, 0x43, 0x02, 0x00, 0x00,
+	0x5b, 0x71, 0xe4, 0x3f, 0xad, 0x2a, 0x3c, 0x18, 0xbb, 0xee, 0x83, 0x9f, 0xc8, 0x15, 0x5d, 0xa6,
+	0xfa, 0xb5, 0x88, 0x69, 0x5a, 0x2a, 0xa4, 0x4b, 0x39, 0x94, 0x54, 0xad, 0x93, 0xe7, 0x16, 0xbd,
+	0xbc, 0x32, 0xbf, 0x22, 0x6e, 0x98, 0x63, 0xf4, 0x1d, 0x00, 0x00, 0xff, 0xff, 0x3f, 0x23, 0xdd,
+	0xdd, 0x43, 0x02, 0x00, 0x00,
 }
