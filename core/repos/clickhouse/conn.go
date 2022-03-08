@@ -2,33 +2,29 @@ package clickhouse
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/ixre/gof"
 	"log"
 	"time"
 )
 
 var connInstance driver.Conn
 
-// Initialize 初始化clickhouse
-func Initialize(app gof.App) {
-	cfg := app.Config()
-	server := []string{cfg.GetString("clickhouse_server")}
-	database := cfg.GetString("clickhouse_database")
-	password := cfg.GetString("clickhouse_password")
-	configure(server, database, password)
-}
+// IsCluster 是否为集群模式
+var IsCluster bool
 
-
-func GetClickhouseConn()driver.Conn{
+// GetClickhouseConn 获取Clickhouse写入连接
+func GetClickhouseConn() driver.Conn {
 	return connInstance
 }
 
-func configure(server []string, database string, password string) {
+// Configure 配置clickhouse写入连接
+func Configure(servers []string, database string, password string) {
+	IsCluster = len(servers) > 1
 	conn, err := clickhouse.Open(&clickhouse.Options{
-		Addr: server,
+		Addr: servers,
 		Auth: clickhouse.Auth{
 			Database: database,
 			Username: "default",
@@ -58,4 +54,43 @@ func configure(server []string, database string, password string) {
 		log.Fatal(err)
 	}
 	connInstance = conn
+}
+
+var connDb *sql.DB
+
+func GetClickhouseDB() *sql.DB {
+	return connDb
+}
+
+// InitializeDB 初始化clickhouse查询连接
+func InitializeDB(servers []string, database string, password string) {
+	IsCluster = len(servers) > 1
+
+	// 初始化连接
+	conn := clickhouse.OpenDB(&clickhouse.Options{
+		Addr: servers,
+		Auth: clickhouse.Auth{
+			Database: database,
+			Username: "default",
+			Password: password,
+		},
+		Settings: clickhouse.Settings{
+			"max_execution_time": 60,
+		},
+		DialTimeout: 5 * time.Second,
+		Compression: &clickhouse.Compression{
+			Method: clickhouse.CompressionLZ4,
+		},
+		Debug: false,
+	})
+	conn.SetMaxIdleConns(5)
+	conn.SetMaxOpenConns(50)
+	conn.SetConnMaxLifetime(time.Hour)
+	if err := conn.Ping(); err != nil {
+		if exception, ok := err.(*clickhouse.Exception); ok {
+			fmt.Printf("Catch exception [%d] %s \n%s\n", exception.Code, exception.Message, exception.StackTrace)
+		}
+		log.Fatal(err)
+	}
+	connDb = conn
 }

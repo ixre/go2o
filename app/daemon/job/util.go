@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func getJob(jobName string)job.IJobAggregate {
+func getJob(jobName string) job.IJobAggregate {
 	jobRepo := repos.Repo.GetJobRepo()
 	j := jobRepo.GetJobByName(jobName)
 	if j == nil {

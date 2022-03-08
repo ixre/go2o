@@ -12,7 +12,7 @@ import (
 
 func SyncWalletLogToClickHouse() {
 	jobName := "SyncWalletLogClickHouse"
-	if !locker.Lock(jobName,600){
+	if !locker.Lock(jobName, 600) {
 		return
 	}
 	defer locker.Unlock(jobName)
@@ -33,7 +33,7 @@ func SyncWalletLogToClickHouse() {
 				continue
 			}
 			lastId = list[len(list)-1].Id
-			if err = job.UpdateExecCursor(int(lastId));err == nil {
+			if err = job.UpdateExecCursor(int(lastId)); err == nil {
 				err = job.Save()
 			}
 			if err != nil {
@@ -47,7 +47,7 @@ func SyncWalletLogToClickHouse() {
 	}
 }
 
-func writeWalletLogToClickHouse(list []*wallet.WalletLog) error{
+func writeWalletLogToClickHouse(list []*wallet.WalletLog) error {
 	conn := clickhouse.GetClickhouseConn()
 	batch, err := conn.PrepareBatch(context.TODO(),
 		`INSERT INTO go2o_wal_wallet_log (
@@ -60,7 +60,7 @@ update_time)`)
 	if err != nil {
 		return err
 	}
-	for _,l := range list {
+	for _, l := range list {
 		if err = batch.Append(
 			l.Id, l.WalletId, l.WalletUser,
 			int32(l.Kind),
