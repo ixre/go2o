@@ -36,17 +36,17 @@ services:
       - ./postgres:/var/lib/postgresql/data:z
     environment:
       - POSTGRES_PASSWORD=123456
-  clickhouse:
-    image: clickhouse/clickhouse-server
-    ports:
-      - "8123:8123"
-      - "9000:9000"
-    ulimits:
-      nofile: "262144:262144"
-    volumes:
-      - ./clickhouse/data:/var/lib/clickhouse
-      - ./clickhouse/config.xml:/etc/clickhouse-server/config.xml
-      - ./clickhouse/users.xml:/etc/clickhouse-server/users.xml
+#  clickhouse:
+#    image: clickhouse/clickhouse-server
+#    ports:
+#      - "8123:8123"
+#      - "9000:9000"
+#    ulimits:
+#      nofile: "262144:262144"
+#    volumes:
+#      - ./clickhouse/data:/var/lib/clickhouse
+#      - ./clickhouse/config.xml:/etc/clickhouse-server/config.xml
+#      - ./clickhouse/users.xml:/etc/clickhouse-server/users.xml
   go2o:
     image: docker-base.56x.net:5020/go2o
     depends_on:
