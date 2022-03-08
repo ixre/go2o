@@ -60,7 +60,7 @@ func (j *jobRepositoryImpl) GetExecDataBy(where string, v ...interface{}) *job.E
 }
 
 func (j *jobRepositoryImpl) GetJobByName(name string) job.IJobAggregate {
-	v := j.GetExecDataBy("job_name = $1", name)
+	v := j.GetExecDataBy("job_name = $1 ORDER BY id ASC limit 1", name)
 	if v != nil {
 		return j.CreateJob(v)
 	}

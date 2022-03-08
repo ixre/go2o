@@ -1,5 +1,6 @@
 ```sql
-CREATE DATABASE [IF NOT EXISTS] go2o ON CLUSTER cluster1;
+CREATE DATABASE IF NOT EXISTS go2o ON CLUSTER cluster1;
+
 use go2o;
 
 CREATE TABLE IF NOT EXISTS go2o_wal_wallet_log
@@ -27,8 +28,8 @@ ON CLUSTER cluster1
     `create_time` Int64 COMMENT '创建时间',
     `update_time` Int64 COMMENT '更新时间'
 ) ENGINE = ReplicatedMergeTree('/clickhouse/tables/replicated/{shard}/go2o/go2o_wal_wallet_log','{replica}')
-PARTITIONS BY toDate(toDateTime(create_time)) 
-ORDER BY id
+PARTITION BY toDate(toDateTime(create_time)) 
+ORDER BY (id,`value`)
 SETTINGS index_granularity= 8192 ;
 
 -- 创建分区表

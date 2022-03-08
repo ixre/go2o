@@ -11,7 +11,7 @@ import (
 )
 
 func SyncWalletLogToClickHouse() {
-	jobName := "SyncWalletLogClickHouse"
+	jobName := "SyncWalletLogToClickHouse"
 	if !locker.Lock(jobName, 600) {
 		return
 	}

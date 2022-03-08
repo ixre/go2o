@@ -134,8 +134,8 @@ func (w *WalletRepoImpl) SaveWalletLog_(v *wallet.WalletLog) (int, error) {
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WalletLog")
 	}
-	if err == nil && v.Id <= 0 {
-		eventbus.Publish(&events.WalletLogClickhouseWriteEvent{
+	if err == nil && v.Id > 0 {
+		eventbus.Publish(&events.WalletLogClickhouseUpdateEvent{
 			Data: v,
 		})
 	}
