@@ -8,13 +8,13 @@ import (
 
 func TestWalletLogUpdate(t *testing.T) {
 	id := 158113
-   repo :=	ti.Factory.GetWalletRepo()
+	repo := ti.Factory.GetWalletRepo()
 	l := repo.GetWalletLog_(id)
-	l.Title = l.Title+"_1"
-	_,err := repo.SaveWalletLog_(l)
-	if err != nil{
+	l.Title = l.Title + "_1"
+	_, err := repo.SaveWalletLog_(l)
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	time.Sleep(time.Second*2)
+	time.Sleep(time.Second * 2)
 }

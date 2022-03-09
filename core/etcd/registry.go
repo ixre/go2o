@@ -48,7 +48,7 @@ type registryServer struct {
 	ttl     int64 // 租约时间
 }
 
-// 创建服务注册, ttl租约时间
+// NewRegistry 创建服务注册, ttl租约时间
 func NewRegistry(service string, ttl int64, config clientv3.Config) (Registry, error) {
 	cli, err := clientv3.New(config)
 	if err != nil {

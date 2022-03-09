@@ -57,7 +57,6 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterQuickPayServiceServer(s, grpc2.QuickPayService)
 	proto.RegisterAppServiceServer(s, grpc2.AppService)
 	proto.RegisterRbacServiceServer(s, grpc2.RbacService)
-	registerServiceDiscovery(cfg, port)
 	go serveRPC(ch, s, port)
 }
 

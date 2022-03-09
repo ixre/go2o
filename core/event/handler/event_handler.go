@@ -13,7 +13,7 @@ type EventHandler struct {
 func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {
 	ld := data.(*events.WalletLogClickhouseUpdateEvent)
 	conn := clickhouse.GetClickhouseConn()
-	if ld == nil || conn == nil{
+	if ld == nil || conn == nil {
 		return
 	}
 	l := ld.Data

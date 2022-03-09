@@ -52,11 +52,14 @@ Email: jarrysix#gmail.com
 
 `
 
+// - GO2O_SERVER_HOST: 当前节点的主机头或IP,用于指定固定的服务发现IP
+
 func main() {
 	var (
 		ch            = make(chan bool)
 		confFile      string
 		etcdEndPoints gof.ArrayFlags
+		host          string
 		port          int
 		apiPort       int
 		mqAddr        string
@@ -109,6 +112,8 @@ func main() {
 			etcdEndPoints = []string{"http://127.0.0.1:2379"}
 		}
 	}
+	host = os.Getenv("GO2O_SERVER_HOST")
+
 	cfg := clientv3.Config{
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
@@ -132,6 +137,7 @@ func main() {
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 运行RPC服务
 	service.ServeRPC(ch, &cfg, port)
+	service.RegisterServiceDiscovery(&cfg, host, port)
 	service.ConfigureClient(&cfg, "") // initial service client
 	if runDaemon {
 		go daemon.Run(newApp)
