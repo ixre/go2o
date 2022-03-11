@@ -96,9 +96,6 @@ func (r *registryRepo) UpdateValue(key string, value string) error {
 	if e == nil {
 		return errors.New("no exists key")
 	}
-	// 更新etcd
-	k := r.getStorageKey(key)
-	_ = r.store.Set(k, value)
 	// 持久化
 	err := e.Update(value)
 	if err == nil {
@@ -156,7 +153,7 @@ func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 	return err
 }
 
-// 合并Registry
+// Merge 合并Registry
 func (r *registryRepo) Merge(registries []*registry.Registry) error {
 	if registries == nil || len(registries) == 0 {
 		return nil

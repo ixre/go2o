@@ -53,7 +53,9 @@ func (s *registryService) UpdateValue(_ context.Context, pair *proto.RegistryPai
 	if e == nil {
 		err = errors.New("not exists key")
 	} else {
-		err = s.registryRepo.UpdateValue(pair.Key, pair.Value)
+		if err = e.Update(pair.Value);err == nil{
+			err = e.Save()
+		}
 	}
 	if err != nil {
 		return s.error(err), nil

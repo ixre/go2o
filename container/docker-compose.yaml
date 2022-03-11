@@ -62,3 +62,5 @@ services:
     environment:
       GO2O_NATS_ADDR: nats:4222
       GO2O_ETCD_ADDR: etcd:2379
+      GO2O_SERVER_HOST:
+
