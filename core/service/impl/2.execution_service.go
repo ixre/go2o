@@ -55,6 +55,9 @@ func (j *executionServiceImpl) UpdateExecuteCursor(_ context.Context, request *p
 		return j.error(errors.New("no such job")), nil
 	}
 	err := ij.UpdateExecCursor(int(request.CursorId))
+	if err == nil{
+		err = ij.Save()
+	}
 	if err != nil {
 		return j.error(err), nil
 	}
