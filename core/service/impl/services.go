@@ -76,7 +76,7 @@ var (
 	QueryService *queryService
 
 	// ExecuteService 执行任务服务
-	ExecuteService *executeServiceImpl
+	ExecuteService *executionServiceImpl
 
 	CommonDao *impl.CommonDao
 	// AppService APP服务

@@ -51,7 +51,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterExpressServiceServer(s, grpc2.ExpressService)
 	proto.RegisterAdvertisementServiceServer(s, grpc2.AdService)
 	proto.RegisterPortalServiceServer(s, grpc2.PortalService)
-	proto.RegisterExecuteServiceServer(s, grpc2.ExecuteService)
+	proto.RegisterExecutionServiceServer(s, grpc2.ExecuteService)
 
 	// standalone service
 	proto.RegisterQuickPayServiceServer(s, grpc2.QuickPayService)

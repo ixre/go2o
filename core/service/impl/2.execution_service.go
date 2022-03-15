@@ -16,25 +16,24 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/job"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/storage"
-	context2 "golang.org/x/net/context"
 )
 
-var _ proto.ExecuteServiceServer = new(executeServiceImpl)
+var _ proto.ExecutionServiceServer = new(executionServiceImpl)
 
-type executeServiceImpl struct {
+type executionServiceImpl struct {
 	repo job.IJobRepo
 	s    storage.Interface
 	serviceUtil
 }
 
-func NewExecDataService(s storage.Interface, repo job.IJobRepo) *executeServiceImpl {
-	return &executeServiceImpl{
+func NewExecDataService(s storage.Interface, repo job.IJobRepo) *executionServiceImpl {
+	return &executionServiceImpl{
 		s:    s,
 		repo: repo,
 	}
 }
 
-func (j *executeServiceImpl) GetJob(_ context.Context, request *proto.GetJobRequest) (*proto.SExecData, error) {
+func (j *executionServiceImpl) GetJob(_ context.Context, request *proto.GetJobRequest) (*proto.SExecutionData, error) {
 	ij := j.repo.GetJobByName(request.JobName)
 	if ij == nil {
 		if !request.Create {
@@ -44,40 +43,41 @@ func (j *executeServiceImpl) GetJob(_ context.Context, request *proto.GetJobRequ
 			JobName:       request.JobName,
 			LastExecIndex: 0,
 		})
+		_ = ij.Save()
 	}
 	v := ij.GetValue()
 	return j.parseExecData(&v), nil
 }
 
-func (j *executeServiceImpl) UpdateExecCursor(_ context.Context, request *proto.UpdateCursorRequest) (*proto.Result, error) {
+func (j *executionServiceImpl) UpdateExecuteCursor(_ context.Context, request *proto.UpdateCursorRequest) (*proto.Result, error) {
 	ij := j.repo.GetJobByName(request.JobName)
 	if ij == nil {
 		return j.error(errors.New("no such job")), nil
 	}
-	err := ij.UpdateExecCursor(int(request.RecordId))
+	err := ij.UpdateExecCursor(int(request.CursorId))
 	if err != nil {
 		return j.error(err), nil
 	}
 	return j.success(nil), nil
 }
 
-func (j *executeServiceImpl) AddFail(_ context2.Context, request *proto.AddFailRequest) (*proto.Result, error) {
+func (j *executionServiceImpl) AddFail(_ context.Context, request *proto.AddFailRequest) (*proto.Result, error) {
 	ij := j.repo.GetJobByName(request.JobName)
 	if ij == nil {
 		return j.error(errors.New("no such job")), nil
 	}
-	err := ij.AddFail(int(request.RecordId))
+	err := ij.AddFail(int(request.CursorId))
 	if err != nil {
 		return j.error(err), nil
 	}
 	return j.success(nil), nil
 }
 
-func (j *executeServiceImpl) parseExecData(v *job.ExecData) *proto.SExecData {
-	return &proto.SExecData{
+func (j *executionServiceImpl) parseExecData(v *job.ExecData) *proto.SExecutionData {
+	return &proto.SExecutionData{
 		Id:            v.Id,
 		JobName:       v.JobName,
-		LastExecIndex: v.LastExecIndex,
-		LastExecTime:  v.LastExecTime,
+		LastExecuteCursorId: v.LastExecIndex,
+		LastExecteTime:  v.LastExecTime,
 	}
 }
