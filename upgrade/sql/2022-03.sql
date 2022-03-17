@@ -82,3 +82,40 @@ COMMENT ON COLUMN public.job_exec_fail.create_time
 
 COMMENT ON COLUMN public.job_exec_fail.retry_time
     IS '重试时间';
+
+/* 03-17 */
+-- Table: public.exec_re_queue
+
+-- DROP TABLE IF EXISTS public.exec_re_queue;
+
+CREATE TABLE IF NOT EXISTS public.exec_re_queue
+(
+    id bigserial NOT NULL,
+    queue_name character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    relate_id bigint NOT NULL,
+    relate_data text COLLATE pg_catalog."default" NOT NULL,
+    create_time bigint NOT NULL,
+    CONSTRAINT exec_re_queue_pkey PRIMARY KEY (id)
+    )
+
+    TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.exec_re_queue
+    OWNER to postgres;
+
+COMMENT ON TABLE public.exec_re_queue
+    IS '重新加入队列';
+
+COMMENT ON COLUMN public.exec_re_queue.queue_name
+    IS '队列名称';
+
+COMMENT ON COLUMN public.exec_re_queue.relate_id
+    IS '关联数据编号';
+
+COMMENT ON COLUMN public.exec_re_queue.relate_data
+    IS '数据';
+
+COMMENT ON COLUMN public.exec_re_queue.create_time
+    IS '创建时间';
+
+CREATE INDEX exec_re_queue_queue_name ON public.exec_re_queue (queue_name);

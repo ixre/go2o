@@ -81,6 +81,23 @@ func (j *executionServiceImpl) parseExecData(v *job.ExecData) *proto.SExecutionD
 		Id:            v.Id,
 		JobName:       v.JobName,
 		LastExecuteCursorId: v.LastExecIndex,
-		LastExecteTime:  v.LastExecTime,
+		LastExecuteTime:  v.LastExecTime,
 	}
+}
+
+
+// RejoinQueue 保存重新加入队列
+func (j *executionServiceImpl) RejoinQueue(_ context.Context, r *proto.RejoinQueueRequest) (*proto.RejoinQueueResponse, error) {
+	job := j.repo.CreateJob(&job.ExecData{
+		JobName: r.JobName,
+	})
+	id,err := job.RejoinQueue(r.RelateId,r.RelateData)
+	ret := &proto.RejoinQueueResponse{
+		QueueId: int64(id),
+	}
+	if err != nil{
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret,nil
 }
