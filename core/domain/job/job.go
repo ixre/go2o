@@ -83,7 +83,7 @@ func (j jobImpl) RejoinQueue(relateId int64, relateData string) (int,error){
 	}
 	v := &job.ExecRequeue{
 		Id:         0,
-		QueueName:  j.value.JobName,
+		BucketName: j.value.JobName,
 		RelateId:   relateId,
 		RelateData: relateData,
 		CreateTime: time.Now().Unix(),

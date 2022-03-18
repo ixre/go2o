@@ -89,7 +89,7 @@ func (j *executionServiceImpl) parseExecData(v *job.ExecData) *proto.SExecutionD
 // RejoinQueue 保存重新加入队列
 func (j *executionServiceImpl) RejoinQueue(_ context.Context, r *proto.RejoinQueueRequest) (*proto.RejoinQueueResponse, error) {
 	job := j.repo.CreateJob(&job.ExecData{
-		JobName: r.JobName,
+		JobName: r.BucketName,
 	})
 	id,err := job.RejoinQueue(r.RelateId,r.RelateData)
 	ret := &proto.RejoinQueueResponse{

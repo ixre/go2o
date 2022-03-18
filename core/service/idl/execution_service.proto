@@ -76,8 +76,8 @@ message SExecutionData{
 
 /** 重新加入队列请求 */
 message RejoinQueueRequest{
-  /** 队列名称 */
-  string JobName = 1;
+  /** 桶名称 */
+  string BucketName = 1;
   /** 关联数据编号 */
   int64 RelateId = 2;
   /** 数据 */

@@ -66,8 +66,8 @@ type ExecFail struct {
 type ExecRequeue struct{
 	// Id
 	Id int64 `db:"id" auto:"yes" pk:"yes"`
-	// 队列名称
-	QueueName string `db:"queue_name"`
+	// 桶名称
+	BucketName string `db:"bucket_name"`
 	// 关联数据编号
 	RelateId int64 `db:"relate_id"`
 	// 数据

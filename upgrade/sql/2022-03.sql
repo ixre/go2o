@@ -91,7 +91,7 @@ COMMENT ON COLUMN public.job_exec_fail.retry_time
 CREATE TABLE IF NOT EXISTS public.exec_re_queue
 (
     id bigserial NOT NULL,
-    queue_name character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    bucket_name character varying(40) COLLATE pg_catalog."default" NOT NULL,
     relate_id bigint NOT NULL,
     relate_data text COLLATE pg_catalog."default" NOT NULL,
     create_time bigint NOT NULL,
@@ -106,8 +106,8 @@ ALTER TABLE IF EXISTS public.exec_re_queue
 COMMENT ON TABLE public.exec_re_queue
     IS '重新加入队列';
 
-COMMENT ON COLUMN public.exec_re_queue.queue_name
-    IS '队列名称';
+COMMENT ON COLUMN public.exec_re_queue.bucket_name
+    IS '桶名称';
 
 COMMENT ON COLUMN public.exec_re_queue.relate_id
     IS '关联数据编号';
@@ -118,4 +118,4 @@ COMMENT ON COLUMN public.exec_re_queue.relate_data
 COMMENT ON COLUMN public.exec_re_queue.create_time
     IS '创建时间';
 
-CREATE INDEX exec_re_queue_queue_name ON public.exec_re_queue (queue_name);
+CREATE INDEX exec_re_queue_bucket_name ON public.exec_re_queue (bucket_name);
