@@ -103,8 +103,8 @@ func KeyFormat(s string) string {
 var _ IRegistry = new(registryImpl)
 
 type registryImpl struct {
-	value *Registry
-	repo  IRegistryRepo
+	value     *Registry
+	repo      IRegistryRepo
 	isChanged bool
 }
 

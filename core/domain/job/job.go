@@ -13,7 +13,6 @@ type jobImpl struct {
 	value *job.ExecData
 }
 
-
 func NewJobImpl(repo job.IJobRepo, value *job.ExecData) job.IJobAggregate {
 	return &jobImpl{
 		repo:  repo,
@@ -73,13 +72,12 @@ func (j jobImpl) Save() error {
 	return err
 }
 
-
-func (j jobImpl) RejoinQueue(relateId int64, relateData string) (int,error){
-	if j.value == nil || len(j.value.JobName) == 0{
-		return 0,errors.New("no such job")
+func (j jobImpl) RejoinQueue(relateId int64, relateData string) (int, error) {
+	if j.value == nil || len(j.value.JobName) == 0 {
+		return 0, errors.New("no such job")
 	}
-	if relateId <= 0 && len(relateData) ==  0{
-		return 0,errors.New("relate id or data is empty")
+	if relateId <= 0 && len(relateData) == 0 {
+		return 0, errors.New("relate id or data is empty")
 	}
 	v := &job.ExecRequeue{
 		Id:         0,

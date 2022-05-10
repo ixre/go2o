@@ -13,7 +13,7 @@ type IJobAggregate interface {
 	// UpdateExecCursor 更新执行游标位置
 	UpdateExecCursor(id int) error
 	// RejoinQueue 重新加入到队列
-	RejoinQueue(relateId int64,relateData string)(int,error)
+	RejoinQueue(relateId int64, relateData string) (int, error)
 	// Save 保存
 	Save() error
 }
@@ -31,7 +31,7 @@ type IJobRepo interface {
 	// SaveExecFail Save 任务执行失败
 	SaveExecFail(v *ExecFail) (int, error)
 	// SaveRequeue 重新加入队列
-	SaveRequeue(v *ExecRequeue)(int,error)
+	SaveRequeue(v *ExecRequeue) (int, error)
 }
 
 // ExecData 任务执行数据
@@ -63,7 +63,7 @@ type ExecFail struct {
 }
 
 // ExecRequeue 重新加入队列
-type ExecRequeue struct{
+type ExecRequeue struct {
 	// Id
 	Id int64 `db:"id" auto:"yes" pk:"yes"`
 	// 桶名称

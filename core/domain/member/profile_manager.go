@@ -380,7 +380,9 @@ func (p *profileManagerImpl) ModifyTradePassword(NewPassword, oldPwd string) err
 		return domain.ErrPwdOldPwdNotRight
 	}
 	p.member.value.TradePassword = NewPassword
-	p.member.value.Flag ^= member.FlagNoTradePasswd
+	if p.member.ContainFlag(member.FlagNoTradePasswd) {
+		p.member.value.Flag ^= member.FlagNoTradePasswd
+	}
 	_, err := p.member.Save()
 	return err
 }

@@ -146,7 +146,7 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	// 判断自营
 	if mv.SelfSales == 1 {
 		dst.Flag |= shop.FlagSelfSale
-	} else {
+	} else if dst.Flag&shop.FlagSelfSale == shop.FlagSelfSale {
 		dst.Flag ^= shop.FlagSelfSale
 	}
 	dst.Host = v.Host

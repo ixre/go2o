@@ -55,7 +55,7 @@ func (j *executionServiceImpl) UpdateExecuteCursor(_ context.Context, request *p
 		return j.error(errors.New("no such job")), nil
 	}
 	err := ij.UpdateExecCursor(int(request.CursorId))
-	if err == nil{
+	if err == nil {
 		err = ij.Save()
 	}
 	if err != nil {
@@ -78,26 +78,25 @@ func (j *executionServiceImpl) AddFail(_ context.Context, request *proto.AddFail
 
 func (j *executionServiceImpl) parseExecData(v *job.ExecData) *proto.SExecutionData {
 	return &proto.SExecutionData{
-		Id:            v.Id,
-		JobName:       v.JobName,
+		Id:                  v.Id,
+		JobName:             v.JobName,
 		LastExecuteCursorId: v.LastExecIndex,
-		LastExecuteTime:  v.LastExecTime,
+		LastExecuteTime:     v.LastExecTime,
 	}
 }
-
 
 // RejoinQueue 保存重新加入队列
 func (j *executionServiceImpl) RejoinQueue(_ context.Context, r *proto.RejoinQueueRequest) (*proto.RejoinQueueResponse, error) {
 	job := j.repo.CreateJob(&job.ExecData{
 		JobName: r.BucketName,
 	})
-	id,err := job.RejoinQueue(r.RelateId,r.RelateData)
+	id, err := job.RejoinQueue(r.RelateId, r.RelateData)
 	ret := &proto.RejoinQueueResponse{
 		QueueId: int64(id),
 	}
-	if err != nil{
+	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()
 	}
-	return ret,nil
+	return ret, nil
 }
