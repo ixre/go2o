@@ -370,6 +370,8 @@ func (p *paymentService) SaveIntegrateApp(_ context2.Context, app *proto.SIntegr
 		Enabled:       int(app.Enabled),
 		IntegrateType: int(app.IntegrateType),
 		SortNumber:    int(app.SortNumber),
+		Hint:          app.Hint,
+		Highlight:     int(app.Highlight),
 	})
 	return p.error(err), nil
 }
@@ -393,6 +395,8 @@ func (p *paymentService) parseIntegrateApp(v *payment.IntegrateApp) *proto.SInte
 		Enabled:       int32(v.Enabled),
 		IntegrateType: int32(v.IntegrateType),
 		SortNumber:    int32(v.SortNumber),
+		Hint:          v.Hint,
+		Highlight:     int32(v.Highlight),
 	}
 }
 func (p *paymentService) DeleteIntegrateApp(_ context2.Context, id *proto.PayIntegrateAppId) (*proto.Result, error) {

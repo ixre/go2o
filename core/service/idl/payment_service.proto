@@ -323,4 +323,8 @@ message SIntegrateApp{
     int32 SortNumber = 5;
     /** 是否启用 */
     int32 Enabled = 6;
+    /** 支付提示信息 */
+    string Hint = 7;
+    /** 是否高亮显示 */
+    int32 Highlight = 8;
 }

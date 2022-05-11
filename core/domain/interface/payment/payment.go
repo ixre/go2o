@@ -324,11 +324,15 @@ type (
 		AppName string `db:"app_name"`
 		// 支付应用接口
 		AppUrl string `db:"app_url"`
-		// 是否启用
-		Enabled int `db:"enabled"`
-		// 集成类型: 1:API调用 2: 跳转
+		// 集成方式: 1:API调用 2: 跳转
 		IntegrateType int `db:"integrate_type"`
 		// 显示顺序
 		SortNumber int `db:"sort_number"`
+		// 是否启用
+		Enabled int `db:"enabled"`
+		// 支付提示信息
+		Hint string `db:"hint"`
+		// 是否高亮显示
+		Highlight int `db:"highlight"`
 	}
 )

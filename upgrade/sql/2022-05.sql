@@ -37,3 +37,15 @@ COMMENT ON COLUMN public.pay_integrate_app.integrate_type
 
 COMMENT ON COLUMN public.pay_integrate_app.sort_number
     IS '显示顺序';
+
+ALTER TABLE IF EXISTS public.pay_integrate_app
+    ADD COLUMN hint character varying(30) NOT NULL DEFAULT '';
+
+COMMENT ON COLUMN public.pay_integrate_app.hint
+    IS '支付提示信息';
+
+ALTER TABLE IF EXISTS public.pay_integrate_app
+    ADD COLUMN highlight integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.pay_integrate_app.highlight
+    IS '是否高亮显示';
