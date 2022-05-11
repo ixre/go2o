@@ -92,6 +92,15 @@ service PaymentService {
      */
     rpc MixedPayment (MixedPaymentRequest) returns (Result) {
     }
+    /** 保存集成支付应用 */
+    rpc SaveIntegrateApp (SIntegrateApp) returns (Result) {
+    }
+    /** 获取集成支付应用列表 */
+    rpc QueryIntegrateAppList (Empty) returns (QueryIntegrateAppResponse) {
+    }
+    /** 删除集成支付应用 */
+    rpc DeleteIntegrateApp (PayIntegrateAppId) returns (Result) {
+    }
 }
 
 /** 支付网关请求 */
@@ -288,4 +297,30 @@ message SPaymentOrderData {
     int64 ProcedureFee = 5;
     /** 最终支付金额 */
     int64 FinalFee = 6;
+}
+
+/** 集成支付应用编号 */
+message PayIntegrateAppId{
+    int32 Value = 1;
+}
+
+/** 查询集成支付应用响应 */
+message QueryIntegrateAppResponse{
+    repeated SIntegrateApp Value = 1;
+}
+
+/** 集成支付应用 */
+message SIntegrateApp{
+    /** 编号 */
+    int32 Id = 1;
+    /** 支付应用名称 */
+    string AppName = 2;
+    /** 支付应用接口 */
+    string AppUrl = 3;
+    /** 集成类型: 1:API调用 2: 跳转 */
+    int32 IntegrateType = 4;
+    /** 显示顺序 */
+    int32 SortNumber = 5;
+    /** 是否启用 */
+    int32 Enabled = 6;
 }

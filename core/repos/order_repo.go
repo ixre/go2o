@@ -182,7 +182,7 @@ func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 		v.ID = int64(id)
 		// 缓存
 		o.Storage.SetExpire(o.getOrderCk(v.OrderId, false), *v, DefaultCacheSeconds*10)
-		//o.Storage.Set(o.getOrderCkByNo(v.OrderNo, false), v.Id)
+		//_orm.Storage.Set(_orm.getOrderCkByNo(v.OrderNo, false), v.Id)
 	}
 	return id, err
 }

@@ -93,7 +93,7 @@ func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
 	r.tagSaleRepo = NewTagSaleRepo(o, r.valueRepo)
 	r.promRepo = NewPromotionRepo(o, r.itemRepo, r.memberRepo)
 
-	//afterSalesRepo := repository.NewAfterSalesRepo(o)
+	//afterSalesRepo := repository.NewAfterSalesRepo(_orm)
 	r.wholesaleRepo = NewWholesaleRepo(o)
 	r.mchRepo = NewMerchantRepo(o, sto, r.wholesaleRepo,
 		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo, r.registryRepo)

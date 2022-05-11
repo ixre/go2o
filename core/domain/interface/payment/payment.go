@@ -104,88 +104,93 @@ var (
 )
 
 type (
-	// 支付单接口
+	// IPaymentOrder 支付单接口
 	IPaymentOrder interface {
-		// 获取聚合根编号
+		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int
-		// 获取支付单的值
+		// Get 获取支付单的值
 		Get() Order
-		// 获取交易号
+		// TradeNo 获取交易号
 		TradeNo() string
-		// 支付单状态
+		// State 支付单状态
 		State() int
-		// 支付方式
+		// Flag 支付方式
 		Flag() int
-		// 支付途径支付信息
+		// TradeMethods 支付途径支付信息
 		TradeMethods() []*TradeMethodData
-		// 在支付之前检查订单状态
+		// CheckPaymentState 在支付之前检查订单状态
 		CheckPaymentState() error
-		// 提交支付单
+		// Submit 提交支付单
 		Submit() error
-		// 合并支付
+		// MergePay 合并支付
 		MergePay(orders []IPaymentOrder) (mergeTradeNo string, finalFee int, err error)
-		// 取消支付
+		// Cancel 取消支付
 		Cancel() error
-		// 线下现金/刷卡支付,cash:现金,bank:刷卡金额,finalZero:是否金额必须为零
+		// OfflineDiscount 线下现金/刷卡支付,cash:现金,bank:刷卡金额,finalZero:是否金额必须为零
 		OfflineDiscount(cash int, bank int, finalZero bool) error
-		// 交易完成
+		// TradeFinish 交易完成
 		TradeFinish() error
-		// 支付完成并保存,传入第三名支付名称,以及外部的交易号
+		// PaymentFinish 支付完成并保存,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outTradeNo string) error
-		// 优惠券抵扣
+		// CouponDiscount 优惠券抵扣
 		CouponDiscount(coupon promotion.ICouponPromotion) (int, error)
-		// 使用会员的余额抵扣
+		// BalanceDiscount 使用会员的余额抵扣
 		BalanceDiscount(remark string) error
-		// 使用会员积分抵扣,返回抵扣的金额及错误,ignoreOut:是否忽略超出订单金额的积分
+		// IntegralDiscount 使用会员积分抵扣,返回抵扣的金额及错误,ignoreOut:是否忽略超出订单金额的积分
 		IntegralDiscount(integral int, ignoreOut bool) (amount int, err error)
-		// 系统支付金额
+		// SystemPayment SystemPayment 系统支付金额
 		SystemPayment(amount int) error
-		// 钱包账户支付
+		// PaymentByWallet PaymentByWallet 钱包账户支付
 		PaymentByWallet(remark string) error
-		// 使用会员卡支付,cardCode:会员卡编码,amount:支付金额
+		// PaymentWithCard 使用会员卡支付,cardCode:会员卡编码,amount:支付金额
 		PaymentWithCard(cardCode string, amount int) error
-		// 余额钱包混合支付，优先扣除余额。
+		// HybridPayment 余额钱包混合支付，优先扣除余额。
 		HybridPayment(remark string) error
-		// 设置支付方式
+		// SetTradeSP 设置支付方式
 		SetTradeSP(spName string) error
-
-		// 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
+		// Adjust 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
 		Adjust(amount int) error
-		// 退款
+		// Refund 退款
 		Refund(amount int) error
-		// 获取支付通道字符串
+		// ChanName 获取支付通道字符串
 		ChanName(method int) string
 	}
 
-	// 支付仓储
+	// IPaymentRepo 支付仓储
 	IPaymentRepo interface {
-		// 根据编号获取支付单
+		// GetPaymentOrderById 根据编号获取支付单
 		GetPaymentOrderById(id int) IPaymentOrder
-		// 根据支付单号获取支付单
+		// GetPaymentOrder 根据支付单号获取支付单
 		GetPaymentOrder(tradeNo string) IPaymentOrder
-		// 根据订单号获取支付单
+		// GetPaymentBySalesOrderId 根据订单号获取支付单
 		GetPaymentBySalesOrderId(orderId int64) IPaymentOrder
-		// 根据支付单号获取支付单
+		// GetPaymentOrderByOrderNo 根据支付单号获取支付单
 		GetPaymentOrderByOrderNo(orderType int, orderNo string) IPaymentOrder
-		// 创建支付单
+		// CreatePaymentOrder 创建支付单
 		CreatePaymentOrder(p *Order) IPaymentOrder
-		// 保存支付单
+		// SavePaymentOrder 保存支付单
 		SavePaymentOrder(v *Order) (int, error)
-		// 检查支付单号是否匹配
+		// CheckTradeNoMatch 检查支付单号是否匹配
 		CheckTradeNoMatch(tradeNo string, id int) bool
-		// 获取交易途径支付信息
+		// GetTradeChannelItems 获取交易途径支付信息
 		GetTradeChannelItems(tradeNo string) []*TradeMethodData
-		// 保存支付途径支付信息
+		// SavePaymentTradeChan 保存支付途径支付信息
 		SavePaymentTradeChan(tradeNo string, tradeChan *TradeMethodData) (int, error)
-		// 获取合并支付的订单
+		// GetMergePayOrders 获取合并支付的订单
 		GetMergePayOrders(mergeTradeNo string) []IPaymentOrder
-		// 清除欲合并的支付单
+		// ResetMergePaymentOrders 清除欲合并的支付单
 		ResetMergePaymentOrders(tradeNos []string) error
-		//  保存合并的支付单
+		// SaveMergePaymentOrders 保存合并的支付单
 		SaveMergePaymentOrders(s string, tradeNos []string) error
+		// FindAllIntegrateApp 集成支付应用
+		FindAllIntegrateApp()[]*IntegrateApp
+		// SaveIntegrateApp Save 集成支付应用
+		SaveIntegrateApp(v *IntegrateApp)(int,error)
+		// DeleteIntegrateApp Delete 集成支付应用
+		DeleteIntegrateApp(primary interface{}) error
 	}
 
-	// 请求支付数据
+	// RequestPayData 请求支付数据
 	RequestPayData struct {
 		// 支付方式
 		method int
@@ -195,7 +200,7 @@ type (
 		amount int
 	}
 
-	// 支付单
+	// Order 支付单
 	Order struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
@@ -259,7 +264,7 @@ type (
 		TradeMethods []*TradeMethodData `db:"-"`
 	}
 
-	// 支付单项
+	// TradeMethodData 支付单项
 	TradeMethodData struct {
 		// 编号
 		ID int `db:"id" pk:"yes" auto:"yes"`
@@ -279,7 +284,7 @@ type (
 		PayTime int64 `db:"pay_time"`
 	}
 
-	// 合并的支付单
+	// MergeOrder 合并的支付单
 	MergeOrder struct {
 		// 编号
 		ID int `db:"id"`
@@ -291,7 +296,7 @@ type (
 		SubmitTime int64 `db:"submit_time"`
 	}
 
-	// SP支付交易
+	// PaySpTrade SP支付交易
 	PaySpTrade struct {
 		// 编号
 		ID int `db:"id"`
@@ -309,5 +314,21 @@ type (
 		TradeRemark string `db:"trade_remark"`
 		// 交易时间
 		TradeTime int `db:"trade_time"`
+	}
+
+	// IntegrateApp 集成支付应用
+	IntegrateApp struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 支付应用名称
+		AppName string `db:"app_name"`
+		// 支付应用接口
+		AppUrl string `db:"app_url"`
+		// 是否启用
+		Enabled int `db:"enabled"`
+		// 集成类型: 1:API调用 2: 跳转
+		IntegrateType int `db:"integrate_type"`
+		// 显示顺序
+		SortNumber int `db:"sort_number"`
 	}
 )

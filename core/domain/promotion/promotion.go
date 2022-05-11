@@ -10,7 +10,6 @@
 package promotion
 
 import (
-	"errors"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
@@ -50,9 +49,9 @@ func (p *promotionImpl) GetValue() *promotion.PromotionInfo {
 	return p.value
 }
 
-// 获取相关的值
+// GetRelationValue 获取相关的值
 func (p *promotionImpl) GetRelationValue() interface{} {
-	panic(errors.New("not implement!"))
+	panic("not implement!")
 }
 
 // 设置值
@@ -87,7 +86,7 @@ func (p *promotionImpl) Type() int {
 
 // 促销类型
 func (p *promotionImpl) TypeName() string {
-	panic(errors.New("not implement"))
+	panic("not implement")
 }
 
 // 保存
