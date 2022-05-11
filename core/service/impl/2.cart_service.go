@@ -236,7 +236,7 @@ func (s *cartServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICart
 		if cc != nil {
 			rc := c.(cart.INormalCart)
 			rc.Combine(cc)
-			c.Save()
+			_, _ = c.Save()
 		}
 		return c
 	}
@@ -267,7 +267,7 @@ func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 			v.ShopName = io.GetShopValue().ShopName
 		} else {
 			for _, it := range v.Items {
-				c.Remove(it.ItemId, it.SkuId, it.Quantity)
+				_ = c.Remove(it.ItemId, it.SkuId, it.Quantity)
 			}
 		}
 	}
