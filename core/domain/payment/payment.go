@@ -96,7 +96,7 @@ func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeN
 		return "", 0, err
 	}
 	if len(orders) == 0 {
-		return "",0,errors.New("will be merge trade orders is nil")
+		return "", 0, errors.New("will be merge trade orders is nil")
 	}
 	finalFee = int(p.value.FinalFee)
 	tradeOrders := []string{p.TradeNo()}

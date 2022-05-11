@@ -28,8 +28,6 @@ type paymentService struct {
 	serviceUtil
 }
 
-
-
 func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
 	memberRepo member.IMemberRepo) *paymentService {
 	return &paymentService{
@@ -373,31 +371,31 @@ func (p *paymentService) SaveIntegrateApp(_ context2.Context, app *proto.SIntegr
 		IntegrateType: int(app.IntegrateType),
 		SortNumber:    int(app.SortNumber),
 	})
-	return p.error(err),nil
+	return p.error(err), nil
 }
 
 func (p *paymentService) QueryIntegrateAppList(_ context2.Context, _ *proto.Empty) (*proto.QueryIntegrateAppResponse, error) {
 	arr := p.repo.FindAllIntegrateApp()
 	ret := &proto.QueryIntegrateAppResponse{
-		Value:make([]*proto.SIntegrateApp,len(arr)),
+		Value: make([]*proto.SIntegrateApp, len(arr)),
 	}
-	for i,v := range arr{
+	for i, v := range arr {
 		ret.Value[i] = p.parseIntegrateApp(v)
 	}
-	return ret,nil
+	return ret, nil
 }
 
 func (p *paymentService) parseIntegrateApp(v *payment.IntegrateApp) *proto.SIntegrateApp {
 	return &proto.SIntegrateApp{
-		Id : int32(v.Id),
-		AppName : v.AppName,
-		AppUrl : v.AppUrl,
-		Enabled : int32(v.Enabled),
-		IntegrateType : int32(v.IntegrateType),
-		SortNumber : int32(v.SortNumber),
+		Id:            int32(v.Id),
+		AppName:       v.AppName,
+		AppUrl:        v.AppUrl,
+		Enabled:       int32(v.Enabled),
+		IntegrateType: int32(v.IntegrateType),
+		SortNumber:    int32(v.SortNumber),
 	}
 }
 func (p *paymentService) DeleteIntegrateApp(_ context2.Context, id *proto.PayIntegrateAppId) (*proto.Result, error) {
 	err := p.repo.DeleteIntegrateApp(id.Value)
-	return p.error(err),nil
+	return p.error(err), nil
 }

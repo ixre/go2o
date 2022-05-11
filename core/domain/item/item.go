@@ -243,10 +243,10 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.Weight = v.Weight
 		i.value.Bulk = v.Bulk
 		// 如果零售价和成本未填写,则默认等于价格
-		if i.value.RetailPrice == 0{
+		if i.value.RetailPrice == 0 {
 			i.value.RetailPrice = v.Price
 		}
-		if i.value.Cost == 0{
+		if i.value.Cost == 0 {
 			i.value.Cost = v.Price
 		}
 		//设置默认的价格区间
@@ -266,11 +266,11 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 
 // SetSku 设置SKU
 func (i *itemImpl) SetSku(arr []*item.Sku) error {
-	for _,v := range arr{
-		if v.RetailPrice == 0{
+	for _, v := range arr {
+		if v.RetailPrice == 0 {
 			v.RetailPrice = v.Price
 		}
-		if v.Cost == 0{
+		if v.Cost == 0 {
 			v.Cost = v.Price
 		}
 	}

@@ -183,9 +183,9 @@ type (
 		// SaveMergePaymentOrders 保存合并的支付单
 		SaveMergePaymentOrders(s string, tradeNos []string) error
 		// FindAllIntegrateApp 集成支付应用
-		FindAllIntegrateApp()[]*IntegrateApp
+		FindAllIntegrateApp() []*IntegrateApp
 		// SaveIntegrateApp Save 集成支付应用
-		SaveIntegrateApp(v *IntegrateApp)(int,error)
+		SaveIntegrateApp(v *IntegrateApp) (int, error)
 		// DeleteIntegrateApp Delete 集成支付应用
 		DeleteIntegrateApp(primary interface{}) error
 	}

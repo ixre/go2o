@@ -41,8 +41,8 @@ var payIntegrateAppDaoImplMapped = false
 
 func NewPaymentRepo(sto storage.Interface, o orm.Orm, mmRepo member.IMemberRepo,
 	orderRepo order.IOrderRepo, registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
-	if !payIntegrateAppDaoImplMapped{
-		_ = o.Mapping(payment.IntegrateApp{},"pay_integrate_app")
+	if !payIntegrateAppDaoImplMapped {
+		_ = o.Mapping(payment.IntegrateApp{}, "pay_integrate_app")
 		payIntegrateAppDaoImplMapped = true
 	}
 	return &paymentRepoImpl{
@@ -231,32 +231,30 @@ func (p *paymentRepoImpl) SaveMergePaymentOrders(mergeTradeNo string, tradeNos [
 	return nil
 }
 
-
-
 // FindAllIntegrateApp Select 集成支付应用
-func (p *paymentRepoImpl) FindAllIntegrateApp()[]*payment.IntegrateApp {
-	list := make([]*payment.IntegrateApp,0)
-	err := p._orm.Select(&list,"")
-	if err != nil && err != sql.ErrNoRows{
-		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:IntegrateApp")
+func (p *paymentRepoImpl) FindAllIntegrateApp() []*payment.IntegrateApp {
+	list := make([]*payment.IntegrateApp, 0)
+	err := p._orm.Select(&list, "1=1 ORDER BY sort_number")
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:IntegrateApp")
 	}
 	return list
 }
 
 // SaveIntegrateApp Save 集成支付应用
-func (p *paymentRepoImpl) SaveIntegrateApp(v *payment.IntegrateApp)(int,error){
-	id,err := orm.Save(p._orm,v,int(v.Id))
-	if err != nil && err != sql.ErrNoRows{
-		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:IntegrateApp")
+func (p *paymentRepoImpl) SaveIntegrateApp(v *payment.IntegrateApp) (int, error) {
+	id, err := orm.Save(p._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:IntegrateApp")
 	}
-	return id,err
+	return id, err
 }
 
 // DeleteIntegrateApp Delete 集成支付应用
 func (p *paymentRepoImpl) DeleteIntegrateApp(primary interface{}) error {
 	err := p._orm.DeleteByPk(payment.IntegrateApp{}, primary)
-	if err != nil && err != sql.ErrNoRows{
-		log.Println("[ Orm][ Error]:",err.Error(),"; Entity:IntegrateApp")
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:IntegrateApp")
 	}
 	return err
 }
