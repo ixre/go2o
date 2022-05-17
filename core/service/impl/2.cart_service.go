@@ -166,7 +166,7 @@ func (s *cartServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*prot
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
-		err = c.Put(itemId, v.SkuId, v.Quantity)
+		err = c.Put(itemId, v.SkuId, v.Quantity, false)
 		if err != nil {
 			break
 		}
@@ -280,7 +280,7 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
-	err := c.Put(r.ItemId, r.SkuId, r.Quantity)
+	err := c.Put(r.ItemId, r.SkuId, r.Quantity, r.CheckOnly)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
 			rc := c.(cart.INormalCart)

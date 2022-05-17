@@ -78,7 +78,7 @@ type (
 		// Put 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
 		// 暂时以店铺区分,2017-02-28考虑单独的购物车或子系统
-		Put(itemId, skuId int64, quantity int32) error
+		Put(itemId, skuId int64, quantity int32, checkOnly bool) error
 		// Update 更新商品数量，如数量为0，则删除
 		Update(itemId, skuId int64, quantity int32) error
 		// Remove 移出项

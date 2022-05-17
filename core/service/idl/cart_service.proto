@@ -25,6 +25,7 @@ service CartService {
     }
 }
 
+// 购物车加入商品请求
 message CartItemRequest {
     // 买家编号
     ShoppingCartId Id = 1;
@@ -33,7 +34,9 @@ message CartItemRequest {
     //SKU编号
     sint64 SkuId = 3;
     // 数量
-    int32 quantity = 4;
+    int32 Quantity = 4;
+    // 是否只勾选当前商品(直接购买)
+    bool CheckOnly = 5;
 }
 
 message CheckCartRequest {

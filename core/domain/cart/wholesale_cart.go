@@ -2,7 +2,6 @@ package cart
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -10,7 +9,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"log"
 	"strconv"
 	"time"
 )
@@ -39,7 +37,7 @@ type wCartQuickSkuJdo struct {
 
 type wholesaleCartImpl struct {
 	value      *cart.WsCart
-	rep        cart.ICartRepo
+	repo       cart.ICartRepo
 	itemRepo   item.IItemRepo
 	memberRepo member.IMemberRepo
 	mchRepo    merchant.IMerchantRepo
@@ -54,7 +52,7 @@ func CreateWholesaleCart(val *cart.WsCart, rep cart.ICartRepo,
 	itemRepo item.IItemRepo) cart.ICart {
 	return (&wholesaleCartImpl{
 		value:      val,
-		rep:        rep,
+		repo:       rep,
 		memberRepo: memberRepo,
 		itemRepo:   itemRepo,
 	}).init()
@@ -64,7 +62,7 @@ func (c *wholesaleCartImpl) init() cart.ICart {
 	// 获取购物车项
 	if c.GetAggregateRootId() > 0 {
 		if c.value.Items == nil {
-			c.value.Items = c.rep.SelectWsCartItem("cart_id= $1",
+			c.value.Items = c.repo.SelectWsCartItem("cart_id= $1",
 				c.GetAggregateRootId())
 		}
 	}
@@ -243,7 +241,7 @@ func (c *wholesaleCartImpl) getSkuItem(itemId, skuId int64) *cart.WsCartItem {
 }
 
 // 添加项
-func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32) (*cart.WsCartItem, error) {
+func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, checkOnly bool) (*cart.WsCartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.WsCartItem{}
@@ -290,6 +288,10 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32) (*cart.WsCa
 			}
 			v.Quantity += quantity
 			return v, err
+		} else {
+			if checkOnly {
+				//v.
+			}
 		}
 	}
 
@@ -351,18 +353,18 @@ func (c *wholesaleCartImpl) update(itemId, skuId int64, quantity int32) error {
 	return nil
 }
 
-// 添加项
-func (c *wholesaleCartImpl) Put(itemId, skuId int64, num int32) error {
-	_, err := c.put(itemId, skuId, num)
+// Put 添加项
+func (c *wholesaleCartImpl) Put(itemId, skuId int64, num int32, checkOnly bool) error {
+	_, err := c.put(itemId, skuId, num, checkOnly)
 	return err
 }
 
-// 更新商品数量，如数量为0，则删除
+// Update 更新商品数量，如数量为0，则删除
 func (c *wholesaleCartImpl) Update(itemId, skuId int64, quantity int32) error {
 	return c.update(itemId, skuId, quantity)
 }
 
-// 移出项
+// Remove 移出项
 func (c *wholesaleCartImpl) Remove(itemId, skuId int64, quantity int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
@@ -387,12 +389,12 @@ func (c *wholesaleCartImpl) Remove(itemId, skuId int64, quantity int32) error {
 	return cart.ErrNoMatchItem
 }
 
-// 获取购物车编码
+// Code 获取购物车编码
 func (c *wholesaleCartImpl) Code() string {
 	return c.value.Code
 }
 
-// 设置购买会员收货地址
+// SetBuyerAddress 设置购买会员收货地址
 func (c *wholesaleCartImpl) SetBuyerAddress(addressId int64) error {
 	if c.value.BuyerId < 0 {
 		return cart.ErrCartNoBuyer
@@ -414,42 +416,41 @@ func (c *wholesaleCartImpl) setBuyerAddress(addressId int64) error {
 	return err
 }
 
-// 标记商品结算
+// SignItemChecked 标记商品结算
 func (c *wholesaleCartImpl) SignItemChecked(items []*cart.ItemPair) error {
 	panic("not support")
 }
 
-// 保存购物车
+// Save 保存购物车
 func (c *wholesaleCartImpl) Save() (int32, error) {
 	c.value.UpdateTime = time.Now().Unix()
-	id, err := util.I32Err(c.rep.SaveWsCart(c.value))
+	id, err := util.I32Err(c.repo.SaveWsCart(c.value))
 	c.value.ID = id
 	if c.value.Items != nil {
 		for _, v := range c.value.Items {
 			if v.Quantity <= 0 {
-				//c.rep.RemoveCartItem(v.Id)
-				c.rep.BatchDeleteWsCartItem("id= $1", v.ID)
+				//c.repo.RemoveCartItem(v.Id)
+				_, _ = c.repo.BatchDeleteWsCartItem("id= $1", v.ID)
 			} else {
 				v.CartId = c.GetAggregateRootId()
-				v.ID, err = util.I32Err(c.rep.SaveWsCartItem(v))
+				v.ID, err = util.I32Err(c.repo.SaveWsCartItem(v))
 			}
 		}
 	}
 	return id, err
 }
 
-// 获取勾选的商品
+// CheckedItems 获取勾选的商品
 func (c *wholesaleCartImpl) CheckedItems(checked map[int64][]int64) []*cart.ItemPair {
-	items := []*cart.ItemPair{}
+	var items []*cart.ItemPair
 	if checked != nil {
 		for _, v := range c.value.Items {
-			arr, ok := checked[int64(v.ItemId)]
-			log.Println("---xxxx ", ok, fmt.Sprintf("%#v", v))
+			arr, ok := checked[v.ItemId]
 			if !ok {
 				continue
 			}
 			for _, skuId := range arr {
-				if skuId == int64(v.SkuId) {
+				if skuId == v.SkuId {
 					items = append(items, &cart.ItemPair{
 						ItemId:   int64(v.ItemId),
 						SkuId:    skuId,
@@ -463,7 +464,7 @@ func (c *wholesaleCartImpl) CheckedItems(checked map[int64][]int64) []*cart.Item
 	return items
 }
 
-// 释放购物车,如果购物车的商品全部结算,则返回true
+// Release 释放购物车,如果购物车的商品全部结算,则返回true
 func (c *wholesaleCartImpl) Release(checked map[int64][]int64) bool {
 	if checked == nil {
 		return true
@@ -482,7 +483,7 @@ func (c *wholesaleCartImpl) Release(checked map[int64][]int64) bool {
 			for _, skuId := range skuList {
 				if int64(v.SkuId) == skuId {
 					skuChecked = true
-					c.Remove(v.ItemId, v.SkuId, v.Quantity)
+					_ = c.Remove(v.ItemId, v.SkuId, v.Quantity)
 				}
 			}
 		}
@@ -490,15 +491,15 @@ func (c *wholesaleCartImpl) Release(checked map[int64][]int64) bool {
 			part = true
 		}
 	}
-	c.Save()
+	_, _ = c.Save()
 	return !part
 }
 
-// 销毁购物车
+// Destroy 销毁购物车
 func (c *wholesaleCartImpl) Destroy() (err error) {
 	c.snapMap = nil //clean
-	if err = c.rep.EmptyCartItems(c.GetAggregateRootId()); err == nil {
-		return c.rep.DeleteCart(c.GetAggregateRootId())
+	if err = c.repo.EmptyCartItems(c.GetAggregateRootId()); err == nil {
+		return c.repo.DeleteCart(c.GetAggregateRootId())
 	}
 	return err
 }
