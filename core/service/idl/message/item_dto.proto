@@ -112,28 +112,29 @@ message SaveItemRequest {
   repeated string Images = 9;
   //定价
   int64 RetailPrice = 10;
+  int64 Cost = 11;
   //销售价
-  int64 Price = 11;
+  int64 Price = 12;
   // 促销价
-  int64 PromPrice = 12;
+  int64 PromPrice = 13;
   // 价格区间
-  string PriceRange = 13;
-  int64 GoodsId = 14;
-  int64 SkuId = 15;
-  bool IsPresent = 16;
+  string PriceRange = 14;
+  int64 GoodsId = 15;
+  int64 SkuId = 16;
+  bool IsPresent = 17;
   // 促销标志
-  int32 PromotionFlag = 17;
+  int32 PromotionFlag = 18;
   // 库存
-  int32 StockNum = 18;
+  int32 StockNum = 19;
   // 已售件数
-  int32 SaleNum = 19;
+  int32 SaleNum = 20;
 
   //todo: 对比SGoods多出的字段
-  sint64 BrandId = 20;
-  string Code = 21;
-  int64 ExpressTid = 22;
-  repeated SSku SkuArray = 26;
-  repeated SLevelPrice LevelPrices = 27;
+  sint64 BrandId = 21;
+  string Code = 22;
+  int64 ExpressTid = 23;
+  repeated SSku SkuArray = 24;
+  repeated SLevelPrice LevelPrices = 25;
 }
 
 // 商品数据响应
@@ -169,13 +170,19 @@ message SItemDataResponse {
   int32 StockNum = 19;
   // 已售件数
   int32 SaleNum = 20;
+  // 上架状态
+  int32  ShelveState = 21;
+  // 审核状态
+  int32 ReviewState = 22;
+  // 审核意见
+  string ReviewRemark = 23;
 
   //todo: 对比SGoods多出的字段
-  sint64 BrandId = 21;
-  string Code = 22;
-  int64 ExpressTid = 23;
-  repeated SSku SkuArray = 26;
-  repeated SLevelPrice LevelPrices = 27;
+  sint64 BrandId = 24;
+  string Code = 25;
+  int64 ExpressTid = 26;
+  repeated SSku SkuArray = 27;
+  repeated SLevelPrice LevelPrices = 28;
 }
 
 

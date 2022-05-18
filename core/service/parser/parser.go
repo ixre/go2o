@@ -131,7 +131,9 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		//RetailPrice:  float64(src.RetailPrice),
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		//ReviewRemark: src.ReviewRemark,
+		ShelveState:  src.ShelveState,
+		ReviewState: src.ReviewState,
+		ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
 	}
