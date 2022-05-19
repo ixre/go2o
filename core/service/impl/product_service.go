@@ -131,12 +131,14 @@ func (p *productService) appendCategoryBrands(ic product.IGlobCatService, v prod
 }
 
 // GetCategory 获取商品分类
-func (p *productService) GetCategory(_ context.Context, id *proto.Int64) (*proto.SProductCategory, error) {
+func (p *productService) GetCategory(_ context.Context, id *proto.GetCategoryRequest) (*proto.SProductCategory, error) {
 	ic := p.catRepo.GlobCatService()
-	v := ic.GetCategory(int(id.Value))
+	v := ic.GetCategory(int(id.CategoryId))
 	if v != nil {
 		cat := p.parseCategoryDto(v.GetValue())
-		p.appendCategoryBrands(ic, v, cat)
+		if id.Brand {
+			p.appendCategoryBrands(ic, v, cat)
+		}
 		return cat, nil
 	}
 	return nil, nil
@@ -408,6 +410,9 @@ func (p *productService) lazyLoadChildren(parentId int, categories []product.ICa
 		cat := v.GetValue()
 		if cat.ParentId == parentId &&
 			p.testWalkCondition(req, cat) {
+			if req.LoadEnabled && cat.Enabled == 0 {
+				continue
+			}
 			cNode := &proto.SCategoryTree{
 				Id:     int64(cat.Id),
 				Name:   cat.Name,
@@ -423,6 +428,9 @@ func (p *productService) lazyLoadChildren(parentId int, categories []product.ICa
 
 // 排除分类
 func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category) bool {
+	if req.LoadEnabled && cat.Enabled == 0 {
+		return false
+	}
 	if req.ExcludeIdList == nil {
 		return true
 	}
