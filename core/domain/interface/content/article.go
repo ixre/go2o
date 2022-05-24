@@ -10,57 +10,57 @@ package content
 
 // 文章
 type (
-	// 文章
+	// IArticle 文章
 	IArticle interface {
-		// 获取领域编号
+		// GetDomainId 获取领域编号
 		GetDomainId() int32
-		// 获取值
+		// GetValue 获取值
 		GetValue() Article
-		// 设置值
+		// SetValue 设置值
 		SetValue(*Article) error
-		// 栏目
+		// Category 栏目
 		Category() ICategory
-		// 保存文章
+		// Save 保存文章
 		Save() (int32, error)
 	}
 
-	// 栏目
+	// ICategory 栏目
 	ICategory interface {
-		// 获取领域编号
+		// GetDomainId 获取领域编号
 		GetDomainId() int32
-		// 获取值
+		// GetValue 获取值
 		GetValue() ArticleCategory
-		// 获取文章数量
+		// ArticleNum 获取文章数量
 		ArticleNum() int
-		// 设置值
+		// SetValue 设置值
 		SetValue(*ArticleCategory) error
-		// 保存
+		// Save 保存
 		Save() (int32, error)
 	}
 
-	// 文章管理器
+	// IArticleManager 文章管理器
 	IArticleManager interface {
-		// 获取栏目
+		// GetCategory 获取栏目
 		GetCategory(id int32) ICategory
-		// 根据标识获取文章栏目
+		// GetCategoryByAlias 根据标识获取文章栏目
 		GetCategoryByAlias(alias string) ICategory
-		// 获取所有的栏目
+		// GetAllCategory 获取所有的栏目
 		GetAllCategory() []ICategory
-		// 创建栏目
+		// CreateCategory 创建栏目
 		CreateCategory(*ArticleCategory) ICategory
-		// 删除栏目
+		// DelCategory 删除栏目
 		DelCategory(id int32) error
-		// 创建文章
+		// CreateArticle 创建文章
 		CreateArticle(*Article) IArticle
-		// 获取文章
+		// GetArticle 获取文章
 		GetArticle(id int32) IArticle
-		// 获取文章列表
+		// GetArticleList 获取文章列表
 		GetArticleList(categoryId int32, begin, end int) []*Article
-		// 删除文章
+		// DeleteArticle 删除文章
 		DeleteArticle(id int32) error
 	}
 
-	//栏目
+	// ArticleCategory 栏目
 	ArticleCategory struct {
 		//编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
@@ -86,7 +86,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	//文章
+	// Article 文章
 	Article struct {
 		// 编号
 		ID int32 `db:"id" auto:"yes" pk:"yes"`
