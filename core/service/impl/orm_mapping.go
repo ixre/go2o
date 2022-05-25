@@ -81,7 +81,6 @@ func OrmMapping(orm orm.Orm) {
 	orm.Mapping(member.MmLockHistory{}, "mm_lock_history")
 
 	// ORDER
-	orm.Mapping(order.NormalOrder{}, "sale_order")
 	orm.Mapping(order.NormalSubOrder{}, "sale_sub_order")
 	orm.Mapping(order.SubOrderItem{}, "sale_order_item")
 	orm.Mapping(order.OrderCoupon{}, "pt_order_coupon")

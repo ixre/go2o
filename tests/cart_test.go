@@ -14,7 +14,7 @@ import (
 func TestNormalCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KNormal)
-	joinItemsToCart(c, t)
+	_ = joinItemsToCart(c, t)
 	if c.Kind() == cart.KNormal {
 		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
@@ -51,7 +51,7 @@ func joinItemsToCart(c cart.ICart, t *testing.T) error {
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
 	skuId := arr[0].Id
-	return c.Put(itemId, skuId, 1)
+	return c.Put(itemId, skuId, 1,false)
 }
 
 // 生成购物车全部结算的数据
@@ -88,7 +88,7 @@ func GetCartCheckedData(c cart.ICart) string {
 func TestWholesaleCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KWholesale)
-	joinItemsToCart(c, t)
+	_ = joinItemsToCart(c, t)
 	if c.Kind() == cart.KWholesale {
 		rc := c.(cart.IWholesaleCart)
 		t.Log("购物车如下:")

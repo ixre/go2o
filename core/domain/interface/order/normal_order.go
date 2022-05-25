@@ -81,33 +81,33 @@ type (
 		GetPaymentOrder() payment.IPaymentOrder
 	}
 
-	// 普通订单
-	NormalOrder struct {
-		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
-		// 订单编号
-		OrderId int64 `db:"order_id"`
-		// 商品金额
-		ItemAmount int64 `db:"item_amount"`
-		// 优惠减免金额
-		DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
-		// 运费
-		ExpressFee int64 `db:"express_fee"`
-		// 包装费用
-		PackageFee int64 `db:"package_fee"`
-		// 实际金额
-		FinalAmount int64 `db:"final_amount" json:"fee"`
-		// 收货人
-		ConsigneeName string `db:"consignee_person" json:"deliverName"`
-		// 收货人联系电话
-		ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
-		// 收货地址
-		ShippingAddress string `db:"shipping_address" json:"deliverAddress"`
-		// 订单是否拆分
-		IsBreak int32 `db:"is_break"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
-	}
+	//// 普通订单
+	//NormalOrder struct {
+	//	// 编号
+	//	ID int64 `db:"id" pk:"yes" auto:"yes"`
+	//	// 订单编号
+	//	OrderId int64 `db:"order_id"`
+	//	// 商品金额
+	//	ItemAmount int64 `db:"item_amount"`
+	//	// 优惠减免金额
+	//	DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
+	//	// 运费
+	//	ExpressFee int64 `db:"express_fee"`
+	//	// 包装费用
+	//	PackageFee int64 `db:"package_fee"`
+	//	// 实际金额
+	//	FinalAmount int64 `db:"final_amount" json:"fee"`
+	//	// 收货人
+	//	ConsigneeName string `db:"consignee_person" json:"deliverName"`
+	//	// 收货人联系电话
+	//	ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
+	//	// 收货地址
+	//	ShippingAddress string `db:"shipping_address" json:"deliverAddress"`
+	//	// 订单是否拆分
+	//	IsBreak int32 `db:"is_break"`
+	//	// 更新时间
+	//	UpdateTime int64 `db:"update_time" json:"updateTime"`
+	//}
 
 	// 子订单
 	NormalSubOrder struct {

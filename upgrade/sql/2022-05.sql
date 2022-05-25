@@ -49,3 +49,46 @@ ALTER TABLE IF EXISTS public.pay_integrate_app
 
 COMMENT ON COLUMN public.pay_integrate_app.highlight
     IS '是否高亮显示';
+
+
+/** 05-25 订单数据表调整　*/
+
+CREATE TABLE "public".order_list (
+     id               serial NOT NULL,
+     order_no         varchar(40) NOT NULL,
+     order_type       int4 NOT NULL,
+     subject          varchar(20) NOT NULL,
+     buyer_id         int4 NOT NULL,
+     buyer_user       varchar(20) NOT NULL,
+     item_amount      int8 NOT NULL,
+     discount_amount  int8 NOT NULL,
+     express_fee      int8 NOT NULL,
+     package_fee      int8 NOT NULL,
+     final_amount     int8 NOT NULL,
+     consignee_name varchar(45) NOT NULL,
+     consignee_phone  varchar(45) NOT NULL,
+     shipping_address varchar(120) NOT NULL,
+     is_break         int4 NOT NULL,
+     state            int4 NOT NULL,
+     create_time      int8 NOT NULL,
+     update_time      int8 NOT NULL,
+     CONSTRAINT order_list_pkey
+         PRIMARY KEY (id));
+COMMENT ON COLUMN "public".order_list.id IS '编号';
+COMMENT ON COLUMN "public".order_list.order_no IS '订单号';
+COMMENT ON COLUMN "public".order_list.order_type IS '订单类型1:普通 2:批发 3:线下';
+COMMENT ON COLUMN "public".order_list.subject IS '订单主题';
+COMMENT ON COLUMN "public".order_list.buyer_id IS '买家';
+COMMENT ON COLUMN "public".order_list.buyer_user IS '买家用户名';
+COMMENT ON COLUMN "public".order_list.item_amount IS '商品金额';
+COMMENT ON COLUMN "public".order_list.discount_amount IS '抵扣金额';
+COMMENT ON COLUMN "public".order_list.express_fee IS '物流费';
+COMMENT ON COLUMN "public".order_list.package_fee IS '包装费';
+COMMENT ON COLUMN "public".order_list.final_amount IS '订单最终金额';
+COMMENT ON COLUMN "public".order_list.consignee_name IS '收货人姓名';
+COMMENT ON COLUMN "public".order_list.consignee_phone IS '收货人电话';
+COMMENT ON COLUMN "public".order_list.shipping_address IS '收货人地址';
+COMMENT ON COLUMN "public".order_list.is_break IS '是否拆分';
+COMMENT ON COLUMN "public".order_list.state IS '订单状态';
+COMMENT ON COLUMN "public".order_list.create_time IS '创建时间';
+COMMENT ON COLUMN "public".order_list.update_time IS '更新时间';

@@ -135,18 +135,6 @@ func (o *OrderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 	return err
 }
 
-// 根据编号获取订单
-func (o *OrderRepImpl) GetNormalOrderById(orderId int64) *order.NormalOrder {
-	e := &order.NormalOrder{}
-	k := o.getOrderCk(orderId, false)
-	if o.Storage.Get(k, e) != nil {
-		if o.o.GetBy(e, "order_id= $1", orderId) != nil {
-			return nil
-		}
-		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
-	}
-	return e
-}
 
 // 保存订单日志
 func (o *OrderRepImpl) SaveNormalSubOrderLog(v *order.OrderLog) error {
@@ -176,16 +164,16 @@ func (o *OrderRepImpl) GetSubOrderItems(orderId int64) []*order.SubOrderItem {
 	return items
 }
 
-func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
-	id, err := orm.Save(o.o, v, int(v.ID))
-	if err == nil {
-		v.ID = int64(id)
-		// 缓存
-		o.Storage.SetExpire(o.getOrderCk(v.OrderId, false), *v, DefaultCacheSeconds*10)
-		//_orm.Storage.Set(_orm.getOrderCkByNo(v.OrderNo, false), v.Id)
-	}
-	return id, err
-}
+//func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
+//	id, err := orm.Save(o.o, v, int(v.ID))
+//	if err == nil {
+//		v.ID = int64(id)
+//		// 缓存
+//		o.Storage.SetExpire(o.getOrderCk(v.OrderId, false), *v, DefaultCacheSeconds*10)
+//		//_orm.Storage.Set(_orm.getOrderCkByNo(v.OrderNo, false), v.Id)
+//	}
+//	return id, err
+//}
 
 func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
 	var e = order.NormalSubOrder{}
@@ -197,7 +185,7 @@ func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
 	return o.CreateNormalSubOrder(&e)
 }
 
-// 获取订单的所有子订单
+// GetNormalSubOrders 获取订单的所有子订单
 func (o *OrderRepImpl) GetNormalSubOrders(orderId int64) []*order.NormalSubOrder {
 	list := make([]*order.NormalSubOrder, 0)
 	o.o.Select(&list, "order_id= $1", orderId)
@@ -319,7 +307,7 @@ func (o *OrderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 
 // Save OrderList
 func (o *OrderRepImpl) saveOrder(v *order.Order) (int, error) {
-	id, err := orm.Save(o.o, v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderList")
 	}
@@ -329,23 +317,23 @@ func (o *OrderRepImpl) saveOrder(v *order.Order) (int, error) {
 // Save OrderList
 func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 	// 零售订单或已拆单的订单不进行通知
-	if v.OrderType == int32(order.TRetail) ||
-		v.State == int32(order.StatBreak) {
+	if v.OrderType == int(order.TRetail) ||
+		v.State == order.StatBreak {
 		return o.saveOrder(v)
 	}
 	// 判断业务状态是否改变
 	statusIsChanged := true
-	if v.ID <= 0 {
+	if v.Id <= 0 {
 		statusIsChanged = true
 	} else {
-		origin := o.GetOrder("id= $1", v.ID)
+		origin := o.GetOrder("id= $1", v.Id)
 		statusIsChanged = origin.State != v.State
 	}
 	// log.Println("--- save order:", v.Id, "; state:",
 	// v.State, ";", statusIsChanged)
 	id, err := o.saveOrder(v)
 	if err == nil {
-		v.ID = int64(id)
+		v.Id = int64(id)
 		//如果业务状态已经发生改变,则提交到队列
 		if statusIsChanged {
 			o.pushOrderQueue(v.OrderNo, false)

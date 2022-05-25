@@ -184,13 +184,13 @@ func TestSubmitNormalOrder(t *testing.T) {
 	manager := orderRepo.Manager()
 	buyer := ti.Factory.GetMemberRepo().GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
-	o, _, err := manager.SubmitOrder(c, addressId, "", !true)
+	o, _, err := manager.SubmitOrder(c, addressId, "", true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	ro := o.(order.INormalOrder)
-	ro.OnlinePaymentTradeFinish()
+	_ = ro.OnlinePaymentTradeFinish()
 	time.Sleep(time.Second * 2)
 	t.Log("提交成功，订单号：", o.OrderNo())
 }

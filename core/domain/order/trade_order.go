@@ -113,7 +113,7 @@ func (o *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
 		DiscountAmount: v.DiscountAmount,
 		FinalAmount:    0,
 		TradeRate:      rate,
-		State:          o.baseValue.State,
+		State:          int32(o.baseValue.State),
 	}
 	//计算最终金额
 	o.fixFinalAmount()

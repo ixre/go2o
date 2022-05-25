@@ -93,19 +93,15 @@ type (
 		// 保存订单的促销绑定
 		SavePromotionBindForOrder(*OrderPromotionBind) (int32, error)
 
-		// 生成空白订单,并保存返回对象
+		// CreateNormalSubOrder 生成空白订单,并保存返回对象
 		CreateNormalSubOrder(*NormalSubOrder) ISubOrder
-		// 根据编号获取订单
-		GetNormalOrderById(orderId int64) *NormalOrder
-		// 保存订单,返回订单编号
-		SaveNormalOrder(v *NormalOrder) (int, error)
-		// 获取订单的所有子订单
+		// GetNormalSubOrders 获取订单的所有子订单
 		GetNormalSubOrders(orderId int64) []*NormalSubOrder
-		// 保存订单日志
+		// SaveNormalSubOrderLog 保存订单日志
 		SaveNormalSubOrderLog(*OrderLog) error
-		// 获取子订单,todo: 删除
+		// GetSubOrder 获取子订单,todo: 删除
 		GetSubOrder(id int64) *NormalSubOrder
-		// 根据子订单
+		// GetSubOrderByOrderNo 根据子订单
 		GetSubOrderByOrderNo(s string) ISubOrder
 		// 保存子订单
 		SaveSubOrder(value *NormalSubOrder) (int, error)

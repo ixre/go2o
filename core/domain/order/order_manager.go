@@ -103,7 +103,7 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	}
 	val := &order.Order{
 		BuyerId:   c.BuyerId(),
-		OrderType: int32(orderType),
+		OrderType: int(orderType),
 	}
 	o := t.repo.CreateOrder(val)
 	if o.Type() != order.TRetail {
@@ -178,7 +178,7 @@ func (t *orderManagerImpl) SubmitTradeOrder(c *order.ComplexOrder,
 	tradeRate float64) (order.IOrder, error) {
 	val := &order.Order{
 		BuyerId:   c.BuyerId,
-		OrderType: int32(order.TTrade),
+		OrderType: int(order.TTrade),
 	}
 	o := t.repo.CreateOrder(val)
 	io := o.(order.ITradeOrder)

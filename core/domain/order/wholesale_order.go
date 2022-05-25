@@ -74,7 +74,7 @@ func (o *wholesaleOrderImpl) init() order.IOrder {
 			ExpressFee:  0,
 			PackageFee:  0,
 			FinalAmount: 0,
-			State:       o.baseValue.State,
+			State:       int32(o.baseValue.State),
 		}
 	}
 	o.getValue()
