@@ -60,8 +60,7 @@ func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int64,
 	wo := o.(order.IWholesaleOrder)
 	wo.SetItems(items)
 	wo.SetComment(data.GetComment(sellerId))
-	_ = wo.SetAddress(data.AddressId())
-
+	_ = o.SetShipmentAddress(data.AddressId())
 	return o
 }
 

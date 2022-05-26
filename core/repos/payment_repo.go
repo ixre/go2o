@@ -149,7 +149,7 @@ func (p *paymentRepoImpl) notifyPaymentFinish(paymentOrderId int) error {
 	return nil
 }
 
-// 检查交易单号是否匹配
+// CheckTradeNoMatch 检查交易单号是否匹配
 func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 	i := 0
 	p.Connector.ExecScalar("SELECT id FROM pay_order WHERE trade_no= $1 AND id<> $2", &i, tradeNo, id)

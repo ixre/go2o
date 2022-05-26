@@ -11,12 +11,12 @@ package order
  */
 
 type (
-	// 订单复合信息
+	// ComplexOrder 订单复合信息
 	ComplexOrder struct {
 		// 订单编号
 		OrderId int64
-		// 子订单编号
-		SubOrderId int64
+		// 父订单编号
+		ParentOrderId int64
 		// 订单类型
 		OrderType int32
 		// 是否为子订单

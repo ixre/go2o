@@ -15,6 +15,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"strings"
 	"time"
 )
 
@@ -91,6 +92,27 @@ func (o *baseOrderImpl) Buyer() member.IMember {
 	return o.buyer
 }
 
+
+// SetShipmentAddress 设置配送地址
+func (o *baseOrderImpl) SetShipmentAddress(addressId int64) error {
+	if addressId <= 0 {
+		return order.ErrNoSuchAddress
+	}
+	buyer := o.Buyer()
+	if buyer == nil {
+		return member.ErrNoSuchMember
+	}
+	addr := buyer.Profile().GetAddress(addressId)
+	if addr == nil {
+		return order.ErrNoSuchAddress
+	}
+	d := addr.GetValue()
+	o.baseValue.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.DetailAddress
+	o.baseValue.ConsigneeName = d.ConsigneeName
+	o.baseValue.ConsigneePhone = d.ConsigneePhone
+	return nil
+}
+
 // Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 func (o *baseOrderImpl) Submit() error {
 	if o.GetAggregateRootId() > 0 {
@@ -102,6 +124,8 @@ func (o *baseOrderImpl) Submit() error {
 	if o.baseValue.State == 0 {
 		o.baseValue.State = order.StatAwaitingPayment
 	}
+	m := o.Buyer().GetValue()
+	o.baseValue.BuyerUser = m.User
 	o.baseValue.CreateTime = time.Now().Unix()
 	return o.saveOrder()
 }

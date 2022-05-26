@@ -14,7 +14,7 @@ import (
 func TestNormalCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KNormal)
-	_ = joinItemsToCart(c, t)
+	_ = joinItemsToCart(c)
 	if c.Kind() == cart.KNormal {
 		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
@@ -44,9 +44,9 @@ func TestCombineCart(t *testing.T) {
 	}
 }
 
-func joinItemsToCart(c cart.ICart, t *testing.T) error {
+func joinItemsToCart(c cart.ICart) error {
 	var itemId int64 = 1
-	itemId = 1
+	itemId = 2
 	itemRepo := ti.Factory.GetItemRepo()
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
@@ -88,7 +88,7 @@ func GetCartCheckedData(c cart.ICart) string {
 func TestWholesaleCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KWholesale)
-	_ = joinItemsToCart(c, t)
+	_ = joinItemsToCart(c)
 	if c.Kind() == cart.KWholesale {
 		rc := c.(cart.IWholesaleCart)
 		t.Log("购物车如下:")

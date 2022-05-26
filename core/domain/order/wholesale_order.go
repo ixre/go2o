@@ -19,7 +19,6 @@ import (
 	"log"
 	"math"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -64,17 +63,13 @@ func newWholesaleOrder(base *baseOrderImpl,
 func (o *wholesaleOrderImpl) init() order.IOrder {
 	if o.GetAggregateRootId() <= 0 {
 		o.value = &order.WholesaleOrder{
-			ID:          0,
+			Id:          0,
 			OrderNo:     "",
 			OrderId:     0,
 			BuyerId:     o.baseValue.BuyerId,
 			VendorId:    0,
 			ShopId:      0,
-			ItemAmount:  0,
-			ExpressFee:  0,
-			PackageFee:  0,
-			FinalAmount: 0,
-			State:       int32(o.baseValue.State),
+			State:       o.baseValue.State,
 		}
 	}
 	o.getValue()
@@ -120,13 +115,13 @@ func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 	ec := ue.CreateCalculator()
 	// 计算订单金额及运费
 	for _, it := range o.items {
-		o.value.ItemAmount += it.Amount
-		o.value.DiscountAmount += it.Amount - it.FinalAmount
+		o.baseValue.ItemAmount += it.Amount
+		o.baseValue.DiscountAmount += it.Amount - it.FinalAmount
 		o.appendToExpressCalculator(ue, it, ec)
 	}
 	ec.Calculate("") //todo:??暂不支持区域
-	o.value.ExpressFee = ec.Total()
-	o.value.PackageFee = 0
+	o.baseValue.ExpressFee = ec.Total()
+	o.baseValue.PackageFee = 0
 	//计算最终金额
 	o.fixFinalAmount()
 }
@@ -220,20 +215,20 @@ func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.Com
 func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
-	co.SubOrderId = 0
+	co.ParentOrderId = 0
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
 	co.Subject = ""
 	co.Consignee = &order.ComplexConsignee{
-		ConsigneeName:   v.ConsigneeName,
-		ConsigneePhone:  v.ConsigneePhone,
-		ShippingAddress: v.ShippingAddress,
+		ConsigneeName:   o.baseValue.ConsigneeName,
+		ConsigneePhone:  o.baseValue.ConsigneePhone,
+		ShippingAddress: o.baseValue.ShippingAddress,
 	}
-	co.DiscountAmount = v.DiscountAmount
-	co.ItemAmount = v.ItemAmount
-	co.ExpressFee = v.ExpressFee
-	co.PackageFee = v.PackageFee
-	co.FinalAmount = v.FinalAmount
+	co.DiscountAmount = o.baseValue.DiscountAmount
+	co.ItemAmount = o.baseValue.ItemAmount
+	co.ExpressFee = o.baseValue.ExpressFee
+	co.PackageFee = o.baseValue.PackageFee
+	co.FinalAmount = o.baseValue.FinalAmount
 	co.BuyerComment = v.BuyerComment
 	co.IsBreak = 0
 	co.UpdateTime = v.UpdateTime
@@ -262,11 +257,11 @@ func (o *wholesaleOrderImpl) Submit() error {
 		// 保存订单信息到常规订单
 		o.value.OrderId = o.GetAggregateRootId()
 		o.value.OrderNo = o.OrderNo()
-		o.value.State = int32(order.StatAwaitingPayment)
+		o.value.State = order.StatAwaitingPayment
 		o.value.CreateTime = o.baseValue.CreateTime
 		o.value.UpdateTime = o.baseValue.CreateTime
 		// 保存订单
-		o.value.ID, err = util.I64Err(o.repo.SaveWholesaleOrder(o.value))
+		o.value.Id, err = util.I64Err(o.repo.SaveWholesaleOrder(o.value))
 		if err == nil {
 			// 存储Items
 			err = o.saveOrderItemsOnSubmit()
@@ -287,9 +282,9 @@ func (o *wholesaleOrderImpl) checkBuyer() error {
 	if buyer.GetValue().State == 0 {
 		return member.ErrMemberLocked
 	}
-	if o.value.ShippingAddress == "" ||
-		o.value.ConsigneePhone == "" ||
-		o.value.ConsigneeName == "" {
+	if o.baseValue.ShippingAddress == "" ||
+		o.baseValue.ConsigneePhone == "" ||
+		o.baseValue.ConsigneeName == "" {
 		return order.ErrMissingShipAddress
 	}
 	return nil
@@ -327,12 +322,12 @@ func (o *wholesaleOrderImpl) applyGroupDiscount() {
 	var groupId int32 = 1
 	mch := o.mchRepo.GetMerchant(int(o.value.VendorId))
 	if mch != nil {
-		basisAmount := int32(o.value.ItemAmount)
+		basisAmount := int32(o.baseValue.ItemAmount)
 		ws := mch.Wholesaler()
 		rate := ws.GetRebateRate(groupId, basisAmount)
 		disAmount := rate * float64(basisAmount)
 		if disAmount > 0 {
-			o.value.DiscountAmount += int64(disAmount)
+			o.baseValue.DiscountAmount += int64(disAmount)
 			o.fixFinalAmount()
 		}
 	}
@@ -343,9 +338,9 @@ func (o *wholesaleOrderImpl) avgDiscountForItem() {
 	if o.items == nil {
 		panic(errors.New("仅能在下单时进行商品抵扣平均"))
 	}
-	if o.value.DiscountAmount > 0 {
-		totalFee := o.value.ItemAmount
-		disFee := o.value.DiscountAmount
+	if o.baseValue.DiscountAmount > 0 {
+		totalFee := o.baseValue.ItemAmount
+		disFee := o.baseValue.DiscountAmount
 		for _, v := range o.items {
 			b := v.Amount / totalFee
 			v.FinalAmount = v.Amount - b*disFee
@@ -355,8 +350,8 @@ func (o *wholesaleOrderImpl) avgDiscountForItem() {
 
 // 修正订单实际金额
 func (o *wholesaleOrderImpl) fixFinalAmount() {
-	o.value.FinalAmount = o.value.ItemAmount - o.value.DiscountAmount +
-		o.value.ExpressFee + o.value.PackageFee
+	o.baseValue.FinalAmount = o.baseValue.ItemAmount - o.baseValue.DiscountAmount +
+		o.baseValue.ExpressFee + o.baseValue.PackageFee
 }
 
 // 保存商品项
@@ -405,26 +400,6 @@ func (o *wholesaleOrderImpl) parseOrderItem(i *orderItem) *order.WholesaleItem {
 	}
 }
 
-// SetAddress 设置配送地址
-func (o *wholesaleOrderImpl) SetAddress(addressId int64) error {
-	if addressId <= 0 {
-		return order.ErrNoSuchAddress
-	}
-	buyer := o.Buyer()
-	if buyer == nil {
-		return member.ErrNoSuchMember
-	}
-	addr := buyer.Profile().GetAddress(addressId)
-	if addr == nil {
-		return order.ErrNoSuchAddress
-	}
-	d := addr.GetValue()
-	o.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.DetailAddress
-	o.value.ConsigneeName = d.ConsigneeName
-	o.value.ConsigneePhone = d.ConsigneePhone
-	return nil
-}
-
 // SetComment 设置或添加买家留言，如已经提交订单，将在原留言后附加
 func (o *wholesaleOrderImpl) SetComment(comment string) {
 	if o.GetAggregateRootId() > 0 {
@@ -438,7 +413,7 @@ func (o *wholesaleOrderImpl) SetComment(comment string) {
 func (o *wholesaleOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.SellerId = int(o.value.VendorId)
-	v.ItemAmount = o.value.FinalAmount
+	v.ItemAmount = o.baseValue.FinalAmount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
 	return o.paymentOrder.Submit()
 }
@@ -503,7 +478,7 @@ func (o *wholesaleOrderImpl) AddRemark(remark string) {
 func (o *wholesaleOrderImpl) saveWholesaleOrder() error {
 	unix := time.Now().Unix()
 	o.value.UpdateTime = unix
-	if o.getValue().ID <= 0 {
+	if o.getValue().Id <= 0 {
 		panic("please use Submit() to create new wholesale order!")
 	}
 	_, err := o.repo.SaveWholesaleOrder(o.value)
@@ -603,11 +578,15 @@ func (o *wholesaleOrderImpl) createShipmentOrder(items []*order.WholesaleItem) s
 
 // Ship 发货
 func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
-	if o.value.State < order.StatAwaitingShipment {
-		return order.ErrOrderNotPickUp
-	}
 	if o.value.State >= order.StatShipped {
 		return order.ErrOrderShipped
+	}
+	// 如果没有备货完成,则发货前自动完成备货
+	if o.value.State < order.StatAwaitingShipment {
+		o.value.State = order.StatAwaitingShipment
+		o.value.UpdateTime = time.Now().Unix()
+		_ = o.AppendLog(order.LogSetup, true, "{pickup}")
+		//return order.ErrOrderNotPickUp
 	}
 	id := o.GetAggregateRootId()
 	if list := o.shipRepo.GetShipOrders(id, false); len(list) > 0 {
@@ -630,7 +609,7 @@ func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
 		if err == nil {
 			// 保存商品的发货状态
 			err = o.saveOrderItems()
-			o.AppendLog(order.LogSetup, true, "{shipped}")
+			_ = o.AppendLog(order.LogSetup, true, "{shipped}")
 		}
 	}
 	return err
@@ -676,7 +655,7 @@ func (o *wholesaleOrderImpl) getOrderAmount() (amount int, refund int) {
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if amount > 0 {
-		amount += int(o.value.ExpressFee + o.value.PackageFee)
+		amount += int(o.baseValue.ExpressFee + o.baseValue.PackageFee)
 	}
 	return amount, refund
 }
@@ -691,7 +670,7 @@ func (o *wholesaleOrderImpl) getOrderCost() int64 {
 	}
 	//如果非全部退货、退款,则加上运费及包装费
 	if cost > 0 {
-		cost += o.value.ExpressFee + o.value.PackageFee
+		cost += o.baseValue.ExpressFee + o.baseValue.PackageFee
 	}
 	return cost
 }
@@ -783,7 +762,7 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	}
 	m := o.Buyer()
 	var err error
-	ov := o.value
+	ov := o.baseValue
 	amount := ov.FinalAmount
 	acc := m.GetAccount()
 

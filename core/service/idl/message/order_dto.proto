@@ -67,7 +67,7 @@ message SOrderItem {
     // 退货数量
     int32 ReturnQuantity = 10;
     // 商品总金额
-    int64 Amount = 11;
+    int64 ItemAmount = 11;
     // 商品实际总金额
     int64 FinalAmount = 12;
     // 是否已发货
@@ -75,21 +75,6 @@ message SOrderItem {
     // 其他信息
     map<string, string> Data = 14;
 }
-
-// 订单项
-//message SComplexItem {
-//    sint64 Id = 1;
-//    sint64 OrderId = 2;
-//    sint64 ItemId = 3;
-//    sint64 SkuId = 4;
-//    sint64 SnapshotId = 5;
-//    sint32 Quantity = 6;
-//    sint32 ReturnQuantity = 7;
-//    int64 amount = 8;
-//    int64 FinalAmount = 9;
-//    sint32 IsShipped = 10;
-//    map<string, string> Data = 11;
-//}
 
 message SParentOrder {
     // 订单编号

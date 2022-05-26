@@ -160,7 +160,7 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 		FinalPrice:     v.FinalPrice,
 		Quantity:       int32(v.Quantity),
 		ReturnQuantity: int32(v.ReturnQuantity),
-		Amount:         v.Amount,
+		ItemAmount:         v.Amount,
 		FinalAmount:    v.FinalAmount,
 		IsShipped:      v.IsShipped == 1,
 		Data:           nil,

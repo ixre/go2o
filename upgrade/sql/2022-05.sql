@@ -92,3 +92,36 @@ COMMENT ON COLUMN "public".order_list.is_break IS '是否拆分';
 COMMENT ON COLUMN "public".order_list.state IS '订单状态';
 COMMENT ON COLUMN "public".order_list.create_time IS '创建时间';
 COMMENT ON COLUMN "public".order_list.update_time IS '更新时间';
+
+
+DROP TABLE IF EXISTS "public".order_wholesale_order CASCADE;
+
+CREATE TABLE "public".order_wholesale_order (
+    id            bigserial NOT NULL,
+    order_no      varchar(20) NOT NULL,
+    order_id      int8 NOT NULL,
+    buyer_id      int8 NOT NULL,
+    vendor_id     int8 NOT NULL,
+    shop_id       int8 NOT NULL,
+    is_paid       int4 NOT NULL,
+    buyer_comment varchar(120) NOT NULL,
+    remark        varchar(120) NOT NULL,
+    state         int4 NOT NULL,
+    create_time   int8 NOT NULL,
+    update_time   int8 NOT NULL,
+    CONSTRAINT order_wholesale_order_pkey
+        PRIMARY KEY (id));
+COMMENT ON TABLE "public".order_wholesale_order IS '批发订单';
+COMMENT ON COLUMN "public".order_wholesale_order.id IS '编号';
+COMMENT ON COLUMN "public".order_wholesale_order.order_no IS '订单号';
+COMMENT ON COLUMN "public".order_wholesale_order.order_id IS '订单编号';
+COMMENT ON COLUMN "public".order_wholesale_order.buyer_id IS '买家';
+COMMENT ON COLUMN "public".order_wholesale_order.vendor_id IS '供货商';
+COMMENT ON COLUMN "public".order_wholesale_order.shop_id IS '店铺编号';
+COMMENT ON COLUMN "public".order_wholesale_order.is_paid IS '是否支付';
+COMMENT ON COLUMN "public".order_wholesale_order.buyer_comment IS '买家留言';
+COMMENT ON COLUMN "public".order_wholesale_order.remark IS '备注';
+COMMENT ON COLUMN "public".order_wholesale_order.state IS '订单状态';
+COMMENT ON COLUMN "public".order_wholesale_order.create_time IS '创建时间';
+COMMENT ON COLUMN "public".order_wholesale_order.update_time IS '更新时间';
+

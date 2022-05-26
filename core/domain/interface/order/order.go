@@ -178,9 +178,6 @@ var (
 	ErrOrderHasPickUp = domain.NewError(
 		"err_order_has_pick_up", "订单已经备货")
 
-	ErrOrderNotPickUp = domain.NewError(
-		"err_order_not_pick_up", "请等待商品备货")
-
 	ErrNoSuchAddress = domain.NewError(
 		"err_order_no_address", "请选择收货地址")
 
@@ -237,6 +234,8 @@ type (
 		State() OrderState
 		// Buyer 获取购买的会员
 		Buyer() member.IMember
+		// SetShipmentAddress 设置配送地址
+		SetShipmentAddress(addressId int64) error
 		// OrderNo 获取订单号
 		OrderNo() string
 		// Complex 复合的订单信息
@@ -251,8 +250,6 @@ type (
 	IWholesaleOrder interface {
 		// SetItems 设置商品项
 		SetItems(items []*cart.ItemPair)
-		// SetAddress 设置配送地址
-		SetAddress(addressId int64) error
 		// SetComment 设置或添加买家留言，如已经提交订单，将在原留言后附加
 		SetComment(comment string)
 		// Items 获取商品项
@@ -360,44 +357,28 @@ type (
 	// WholesaleOrder 批发订单
 	WholesaleOrder struct {
 		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
 		OrderId int64 `db:"order_id"`
-		// 买家编号
+		// 买家
 		BuyerId int64 `db:"buyer_id"`
-		// 商家编号
+		// 供货商
 		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
 		ShopId int64 `db:"shop_id"`
-		// 商品总价
-		ItemAmount int64 `db:"item_amount"`
-		// 抵扣金额
-		DiscountAmount int64 `db:"discount_amount"`
-		// 运费
-		ExpressFee int64 `db:"express_fee"`
-		// 包装费
-		PackageFee int64 `db:"package_fee"`
-		// 订单最终金额
-		FinalAmount int64 `db:"final_amount"`
-		// 收货人姓名
-		ConsigneeName string `db:"consignee_person"`
-		// 收货人电话
-		ConsigneePhone string `db:"consignee_phone"`
-		// 收货人地址
-		ShippingAddress string `db:"shipping_address"`
 		// 是否支付
-		IsPaid int32 `db:"is_paid"`
-		// 订单备注
-		Remark string `db:"remark"`
-		// 订单买家备注
+		IsPaid int `db:"is_paid"`
+		// 买家留言
 		BuyerComment string `db:"buyer_comment"`
+		// 备注
+		Remark string `db:"remark"`
 		// 订单状态
-		State int32 `db:"state"`
-		// 订单创建时间
+		State int `db:"state"`
+		// 创建时间
 		CreateTime int64 `db:"create_time"`
-		// 订单更新时间
+		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
 

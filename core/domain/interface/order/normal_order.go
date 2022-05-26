@@ -7,34 +7,32 @@ import (
 )
 
 type (
-	// 普通订单
+	// INormalOrder 普通订单
 	INormalOrder interface {
-		// 读取购物车数据,用于预生成订单
+		// RequireCart 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
-		// 根据运营商获取商品和运费信息,限未生成的订单
+		// GetByVendor 根据运营商获取商品和运费信息,限未生成的订单
 		GetByVendor() (items map[int][]*SubOrderItem, expressFee map[int]int64)
-		// 在线支付交易完成
+		// OnlinePaymentTradeFinish 在线支付交易完成
 		OnlinePaymentTradeFinish() error
-		// 设置配送地址
-		SetAddress(addressId int64) error
-		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		// Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
 
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)
 
-		// 获取子订单列表
+		// GetSubOrders 获取子订单列表
 		GetSubOrders() []ISubOrder
-		// 应用优惠券
+		// ApplyCoupon 应用优惠券
 		ApplyCoupon(coupon promotion.ICouponPromotion) error
-		// 获取应用的优惠券
+		// GetCoupons 获取应用的优惠券
 		GetCoupons() []promotion.ICouponPromotion
-		// 获取可用的促销,不包含优惠券
+		// GetAvailableOrderPromotions 获取可用的促销,不包含优惠券
 		GetAvailableOrderPromotions() []promotion.IPromotion
-		// 获取最省的促销
+		// GetBestSavePromotion 获取最省的促销
 		GetBestSavePromotion() (p promotion.IPromotion,
 			saveFee float32, integral int)
-		// 获取促销绑定
+		// GetPromotionBinds 获取促销绑定
 		GetPromotionBinds() []*OrderPromotionBind
 	}
 
@@ -84,7 +82,7 @@ type (
 	//// 普通订单
 	//NormalOrder struct {
 	//	// 编号
-	//	ID int64 `db:"id" pk:"yes" auto:"yes"`
+	//	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	//	// 订单编号
 	//	OrderId int64 `db:"order_id"`
 	//	// 商品金额
@@ -112,7 +110,7 @@ type (
 	// 子订单
 	NormalSubOrder struct {
 		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
@@ -120,25 +118,25 @@ type (
 		// 购买人编号(冗余,便于商户处理数据)
 		BuyerId int64 `db:"buyer_id"`
 		// 运营商编号
-		VendorId int64 `db:"vendor_id" json:"vendorId"`
+		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
-		ShopId int64 `db:"shop_id" json:"shopId"`
+		ShopId int64 `db:"shop_id"`
 		// 订单标题
-		Subject string `db:"subject" json:"subject"`
+		Subject string `db:"subject"`
 		// 商品金额
 		ItemAmount int64 `db:"item_amount"`
 		// 优惠减免金额
-		DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
+		DiscountAmount int64 `db:"discount_amount"`
 		// 运费
 		ExpressFee int64 `db:"express_fee"`
 		// 包装费用
 		PackageFee int64 `db:"package_fee"`
 		// 实际金额
-		FinalAmount int64 `db:"final_amount" json:"fee"`
+		FinalAmount int64 `db:"final_amount"`
 		// 是否支付
 		IsPaid int `db:"is_paid"`
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend int `db:"is_suspend" json:"is_suspend"`
+		IsSuspend int `db:"is_suspend"`
 		// 顾客备注
 		BuyerComment string `db:"buyer_comment"`
 		// 系统备注
@@ -148,7 +146,7 @@ type (
 		// 下单时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
+		UpdateTime int64 `db:"update_time"`
 		// 订单项
 		Items []*SubOrderItem `db:"-"`
 	}

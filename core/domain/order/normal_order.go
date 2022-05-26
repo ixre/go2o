@@ -31,7 +31,6 @@ import (
 	"log"
 	"math"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -95,7 +94,7 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	co := o.baseOrderImpl.Complex()
 	co.VendorId = 0
 	co.ShopId = 0
-	co.SubOrderId = 0
+	co.ParentOrderId = 0
 	co.Consignee = &order.ComplexConsignee{
 		ConsigneeName:   v.ConsigneeName,
 		ConsigneePhone:  v.ConsigneePhone,
@@ -200,26 +199,6 @@ func (o *normalOrderImpl) GetPromotionBinds() []*order.OrderPromotionBind {
 func (o *normalOrderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int) {
 	//todo: not implement
 	return nil, 0, 0
-}
-
-// SetAddress 设置配送地址
-func (o *normalOrderImpl) SetAddress(addressId int64) error {
-	if addressId <= 0 {
-		return order.ErrNoSuchAddress
-	}
-	buyer := o.Buyer()
-	if buyer == nil {
-		return member.ErrNoSuchMember
-	}
-	addr := buyer.Profile().GetAddress(addressId)
-	if addr == nil {
-		return order.ErrNoSuchAddress
-	}
-	d := addr.GetValue()
-	o.baseValue.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.DetailAddress
-	o.baseValue.ConsigneeName = d.ConsigneeName
-	o.baseValue.ConsigneePhone = d.ConsigneePhone
-	return nil
 }
 
 //************* 订单提交 ***************//
@@ -453,11 +432,6 @@ func (o *normalOrderImpl) Submit() error {
 		o.breakUpByVendor()
 		// 生成支付单
 		err = o.createPaymentForOrder()
-		// 记录余额支付记录
-		//todo: 扣减余额
-		//if v.BalanceDiscount > 0 {
-		//	err = acc.PaymentDiscount(v.OrderNo, v.BalanceDiscount)
-		//}
 	}
 	return err
 }
@@ -541,7 +515,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		}
 		ip := o.payRepo.CreatePaymentOrder(po)
 		if err := ip.Submit(); err != nil {
-			iso.Cancel("")
+			_ = iso.Cancel("")
 			return err
 		}
 	}
@@ -773,10 +747,12 @@ func (o *normalOrderImpl) breakUpByVendor() []order.ISubOrder {
 		//log.Println("----- vendor ", k, len(v),l)
 		list[i] = o.createSubOrderByVendor(parentOrderId, buyerId, k, l > 1, v)
 		if _, err := list[i].Submit(); err != nil {
-			domain.HandleError(err, "domain")
+			_ = domain.HandleError(err, "domain")
 		}
 		i++
 	}
+	// 设置已拆分的订单
+	o._list = list
 	// 设置订单为已拆分状态
 	if l > 1 {
 		o.saveOrderState(order.StatBreak)
@@ -800,7 +776,7 @@ func (o *normalOrderImpl) applyItemStock() {
 //	o._value.PaymentOpt = payment
 //}
 
-// 获取子订单列表
+// GetSubOrders 获取子订单列表
 func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
 	orderId := o.GetAggregateRootId()
 	if orderId <= 0 {
@@ -966,7 +942,7 @@ func NewSubNormalOrder(v *order.NormalSubOrder,
 
 // 获取领域对象编号
 func (o *subOrderImpl) GetDomainId() int64 {
-	return o.value.ID
+	return o.value.Id
 }
 
 // 获取值对象
@@ -974,16 +950,17 @@ func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 	return o.value
 }
 
-// 复合的订单信息
+// Complex 复合的订单信息
 func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	v := o.GetValue()
 	co := o.baseOrder().Complex()
+	co.OrderId =o.GetDomainId()
+	co.ParentOrderId =v.OrderId
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
 	co.SubOrder = true
 	co.OrderNo = o.value.OrderNo
 	co.Subject = v.Subject
-	co.SubOrderId = o.GetDomainId()
 	co.DiscountAmount = v.DiscountAmount
 	co.ItemAmount = v.ItemAmount
 	co.ExpressFee = v.ExpressFee
@@ -1076,7 +1053,7 @@ func (o *subOrderImpl) Submit() (int64, error) {
 	}
 	id, err := util.I64Err(o.repo.SaveSubOrder(o.value))
 	if err == nil {
-		o.value.ID = id
+		o.value.Id = id
 		err = o.saveOrderItems()
 		o.AppendLog(order.LogSetup, true, "{created}")
 	}
@@ -1211,7 +1188,7 @@ func (o *subOrderImpl) addItemSalesNum() {
 	}
 }
 
-// 捡货(备货)
+// PickUp 捡货(备货)
 func (o *subOrderImpl) PickUp() error {
 	if o.value.State < order.StatAwaitingPickup {
 		return order.ErrOrderNotConfirm
@@ -1228,17 +1205,20 @@ func (o *subOrderImpl) PickUp() error {
 	return err
 }
 
-// 发货
+// Ship 发货
 func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 	//so := o._shipRepo.GetOrders()
 	//todo: 可进行发货修改
-	if o.value.State < order.StatAwaitingShipment {
-		return order.ErrOrderNotPickUp
-	}
 	if o.value.State >= order.StatShipped {
 		return order.ErrOrderShipped
 	}
-
+	// 如果没有备货完成,则发货前自动完成备货
+	if o.value.State < order.StatAwaitingShipment {
+		o.value.State = order.StatAwaitingShipment
+		o.value.UpdateTime = time.Now().Unix()
+		_ = o.AppendLog(order.LogSetup, true, "{pickup}")
+		//return order.ErrOrderNotPickUp
+	}
 	if list := o.shipRepo.GetShipOrders(o.GetDomainId(), true); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
@@ -1259,7 +1239,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 		if err == nil {
 			// 保存商品的发货状态
 			err = o.saveOrderItems()
-			o.AppendLog(order.LogSetup, true, "{shipped}")
+			_ = o.AppendLog(order.LogSetup, true, "{shipped}")
 		}
 	}
 	return err

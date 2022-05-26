@@ -258,7 +258,7 @@ func OrderItem(src *proto.SOrderItem) *order.ComplexItem {
 		SnapshotId:     src.SnapshotId,
 		Quantity:       src.Quantity,
 		ReturnQuantity: src.ReturnQuantity,
-		Amount:         src.Amount,
+		Amount:         src.ItemAmount,
 		FinalAmount:    src.FinalAmount,
 		IsShipped:      int32(types.ElseInt(src.IsShipped, 1, 0)),
 		Data:           src.Data,
@@ -277,7 +277,7 @@ func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 		FinalPrice:           0,
 		Quantity:             src.Quantity,
 		ReturnQuantity:       src.ReturnQuantity,
-		Amount:               src.Amount,
+		ItemAmount:               src.Amount,
 		FinalAmount:          src.FinalAmount,
 		IsShipped:            src.IsShipped == 1,
 		Data:                 nil,
@@ -289,7 +289,7 @@ func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 
 func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 	o := &proto.SSingleOrder{
-		OrderId:       src.ID,
+		OrderId:       src.Id,
 		ParentOrderId: src.OrderId,
 		OrderNo:       src.OrderNo,
 		//OrderType:            src.,
@@ -333,7 +333,7 @@ func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 		FinalPrice:           src.FinalPrice,
 		Quantity:             src.Quantity,
 		ReturnQuantity:       src.ReturnQuantity,
-		Amount:               src.Amount,
+		ItemAmount:           src.Amount,
 		FinalAmount:          src.FinalAmount,
 		IsShipped:            src.IsShipped == 1,
 		Data:                 src.Data,
@@ -346,7 +346,7 @@ func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 	o := &proto.SSingleOrder{
 		OrderId: src.OrderId,
-		//SubOrderId:      src.SubOrderId,
+		ParentOrderId: src.ParentOrderId,
 		OrderType:      src.OrderType,
 		OrderNo:        src.OrderNo,
 		BuyerId:        src.BuyerId,

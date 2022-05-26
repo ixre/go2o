@@ -165,9 +165,9 @@ func (o *OrderRepImpl) GetSubOrderItems(orderId int64) []*order.SubOrderItem {
 }
 
 //func (o *OrderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
-//	id, err := orm.Save(o.o, v, int(v.ID))
+//	id, err := orm.Save(o.o, v, int(v.Id))
 //	if err == nil {
-//		v.ID = int64(id)
+//		v.Id = int64(id)
 //		// 缓存
 //		o.Storage.SetExpire(o.getOrderCk(v.OrderId, false), *v, DefaultCacheSeconds*10)
 //		//_orm.Storage.Set(_orm.getOrderCkByNo(v.OrderNo, false), v.Id)
@@ -314,7 +314,7 @@ func (o *OrderRepImpl) saveOrder(v *order.Order) (int, error) {
 	return id, err
 }
 
-// Save OrderList
+// SaveOrder Save OrderList
 func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 	// 零售订单或已拆单的订单不进行通知
 	if v.OrderType == int(order.TRetail) ||
@@ -343,33 +343,33 @@ func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 }
 
 func (o *OrderRepImpl) saveSubOrder(v *order.NormalSubOrder) (int, error) {
-	id, err := orm.Save(o.o, v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleSubOrder")
 	}
 	if err == nil {
-		v.ID = int64(id)
+		v.Id = int64(id)
 		// 缓存订单号
-		o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.ID)
+		o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.Id)
 		// 缓存订单
-		o.Storage.SetExpire(o.getOrderCk(v.ID, true), *v, DefaultCacheSeconds*10)
+		o.Storage.SetExpire(o.getOrderCk(v.Id, true), *v, DefaultCacheSeconds*10)
 	}
 	return id, err
 }
 
-// 保存子订单
+// SaveSubOrder 保存子订单
 func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 	// 判断业务状态是否改变
 	statusIsChanged := true
-	if v.ID <= 0 {
+	if v.Id <= 0 {
 		statusIsChanged = true
 	} else {
-		origin := o.GetSubOrder(v.ID)
+		origin := o.GetSubOrder(v.Id)
 		statusIsChanged = origin.State != v.State
 	}
 	id, err := o.saveSubOrder(v)
 	if err == nil {
-		v.ID = int64(id)
+		v.Id = int64(id)
 		//如果业务状态已经发生改变,则提交到队列
 		if statusIsChanged {
 			o.pushOrderQueue(v.OrderNo, true)
@@ -378,7 +378,7 @@ func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 	return id, err
 }
 
-// Get WholesaleOrder
+// GetWholesaleOrder Get WholesaleOrder
 func (o *OrderRepImpl) GetWholesaleOrder(where string, v ...interface{}) *order.WholesaleOrder {
 	e := order.WholesaleOrder{}
 	err := o.o.GetBy(&e, where, v...)
@@ -391,16 +391,16 @@ func (o *OrderRepImpl) GetWholesaleOrder(where string, v ...interface{}) *order.
 	return nil
 }
 
-// Save WholesaleOrder
+// SaveWholesaleOrder Save WholesaleOrder
 func (o *OrderRepImpl) SaveWholesaleOrder(v *order.WholesaleOrder) (int, error) {
-	id, err := orm.Save(o.o, v, int(v.ID))
+	id, err := orm.Save(o.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleOrder")
 	}
 	return id, err
 }
 
-// Select WholesaleItem
+// SelectWholesaleItem Select WholesaleItem
 func (o *OrderRepImpl) SelectWholesaleItem(where string, v ...interface{}) []*order.WholesaleItem {
 	list := make([]*order.WholesaleItem, 0)
 	err := o.o.Select(&list, where, v...)
