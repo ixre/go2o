@@ -227,7 +227,7 @@ func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.Submit
 	return ret, nil
 }
 
-// 根据编号获取订单
+// GetParentOrder 根据编号获取订单
 func (s *orderServiceImpl) GetParentOrder(c context.Context, id *proto.OrderNoV2) (*proto.SParentOrder, error) {
 	//c := _s.manager.Unified(id.Value,false).Complex()
 	//if c != nil {
@@ -257,7 +257,7 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2)
 	*/
 }
 
-// 提交订单
+// SubmitTradeOrder 提交订单
 func (s *orderServiceImpl) SubmitTradeOrder(_ context.Context, r *proto.TradeOrderSubmitRequest) (*proto.Result, error) {
 	if r.Order.ShopId <= 0 {
 		mch := s.mchRepo.GetMerchant(int(r.Order.SellerId))
@@ -284,7 +284,7 @@ func (s *orderServiceImpl) SubmitTradeOrder(_ context.Context, r *proto.TradeOrd
 	return rs, nil
 }
 
-// 交易单现金支付
+// TradeOrderCashPay 交易单现金支付
 func (s *orderServiceImpl) TradeOrderCashPay(_ context.Context, orderId *proto.Int64) (ro *proto.Result, err error) {
 	o := s.manager.GetOrderById(orderId.Value)
 	if o == nil || o.Type() != order.TTrade {
@@ -296,7 +296,7 @@ func (s *orderServiceImpl) TradeOrderCashPay(_ context.Context, orderId *proto.I
 	return s.result(err), nil
 }
 
-// 上传交易单发票
+// TradeOrderUpdateTicket 上传交易单发票
 func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.TradeOrderTicketRequest) (rs *proto.Result, err error) {
 	o := s.manager.GetOrderById(r.OrderId)
 	if o == nil || o.Type() != order.TTrade {
@@ -308,35 +308,35 @@ func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.Tr
 	return s.result(err), nil
 }
 
-// 取消订单
+// CancelOrder 取消订单
 func (s *orderServiceImpl) CancelOrder(_ context.Context, r *proto.CancelOrderRequest) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
 	err := c.Cancel(r.Reason)
 	return s.error(err), nil
 }
 
-// 确定订单
+// ConfirmOrder 确定订单
 func (s *orderServiceImpl) ConfirmOrder(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
 	err := c.Confirm()
 	return s.error(err), nil
 }
 
-// 备货完成
+// PickUp 备货完成
 func (s *orderServiceImpl) PickUp(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
 	err := c.PickUp()
 	return s.error(err), nil
 }
 
-// 订单发货,并记录配送服务商编号及单号
+// Ship 订单发货,并记录配送服务商编号及单号
 func (s *orderServiceImpl) Ship(_ context.Context, r *proto.OrderShipmentRequest) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
 	err := c.Ship(int32(r.ProviderId), r.ShipOrderNo)
 	return s.error(err), nil
 }
 
-// 买家收货
+// BuyerReceived 买家收货
 func (s *orderServiceImpl) BuyerReceived(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
 	err := c.BuyerReceived()

@@ -125,3 +125,113 @@ COMMENT ON COLUMN "public".order_wholesale_order.state IS '订单状态';
 COMMENT ON COLUMN "public".order_wholesale_order.create_time IS '创建时间';
 COMMENT ON COLUMN "public".order_wholesale_order.update_time IS '更新时间';
 
+-- Table: public.article_list
+
+-- DROP TABLE IF EXISTS public.article_list;
+
+CREATE TABLE IF NOT EXISTS public.article_list
+(
+    id bigserial NOT NULL ,
+    cat_id bigint NOT NULL,
+    title character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    small_title character varying(45) COLLATE pg_catalog."default" NOT NULL,
+    thumbnail character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    publisher_id integer NOT NULL,
+    location character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    priority integer NOT NULL,
+    access_key character varying(45) COLLATE pg_catalog."default" NOT NULL,
+    content text COLLATE pg_catalog."default" NOT NULL,
+    tags character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    view_count integer NOT NULL,
+    sort_num integer NOT NULL,
+    create_time bigint NOT NULL,
+    update_time bigint,
+    CONSTRAINT article_list_pkey PRIMARY KEY (id)
+    )
+
+    TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.article_list
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.article_list.id
+    IS '编号';
+
+COMMENT ON COLUMN public.article_list.cat_id
+    IS '分类编号';
+
+COMMENT ON COLUMN public.article_list.title
+    IS '标题';
+
+COMMENT ON COLUMN public.article_list.small_title
+    IS '小标题';
+
+COMMENT ON COLUMN public.article_list.thumbnail
+    IS '缩略图';
+
+COMMENT ON COLUMN public.article_list.publisher_id
+    IS '作者';
+
+COMMENT ON COLUMN public.article_list.location
+    IS '地址';
+
+COMMENT ON COLUMN public.article_list.priority
+    IS '优先级';
+
+COMMENT ON COLUMN public.article_list.access_key
+    IS '访问密钥';
+
+COMMENT ON COLUMN public.article_list.content
+    IS '内容';
+
+COMMENT ON COLUMN public.article_list.tags
+    IS '标签';
+
+COMMENT ON COLUMN public.article_list.view_count
+    IS '浏览次数';
+
+COMMENT ON COLUMN public.article_list.sort_num
+    IS '排列序号';
+
+COMMENT ON COLUMN public.article_list.create_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.article_list.update_time
+    IS '更新时间';
+
+
+ALTER TABLE IF EXISTS public.article_category
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.article_category.id
+    IS '编号';
+
+COMMENT ON COLUMN public.article_category.parent_id
+    IS '上级编号';
+
+COMMENT ON COLUMN public.article_category.perm_flag
+    IS '权限标志';
+
+COMMENT ON COLUMN public.article_category.name
+    IS '分类编号';
+
+COMMENT ON COLUMN public.article_category.cat_alias
+    IS '分类别名';
+
+COMMENT ON COLUMN public.article_category.title
+    IS '标题';
+
+COMMENT ON COLUMN public.article_category.keywords
+    IS '关键词';
+
+COMMENT ON COLUMN public.article_category.describe
+    IS '描述';
+
+COMMENT ON COLUMN public.article_category.sort_num
+    IS '排序编号';
+
+COMMENT ON COLUMN public.article_category.location
+    IS '地址';
+
+COMMENT ON COLUMN public.article_category.update_time
+    IS '更新时间';
