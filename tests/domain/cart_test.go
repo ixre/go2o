@@ -1,8 +1,7 @@
-package tests
+package domain
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/tests/ti"
 	"log"
@@ -14,7 +13,8 @@ import (
 func TestNormalCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KNormal)
-	_ = joinItemsToCart(c)
+	_ = joinItemsToCart(c,47)
+	_ = joinItemsToCart(c,51)
 	if c.Kind() == cart.KNormal {
 		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
@@ -44,13 +44,14 @@ func TestCombineCart(t *testing.T) {
 	}
 }
 
-func joinItemsToCart(c cart.ICart) error {
-	var itemId int64 = 1
-	itemId = 2
+func joinItemsToCart(c cart.ICart,itemId int64) error {
 	itemRepo := ti.Factory.GetItemRepo()
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
-	skuId := arr[0].Id
+	var skuId int64 = 0
+	if len(arr) > 0 {
+		skuId = arr[0].Id
+	}
 	return c.Put(itemId, skuId, 1,false)
 }
 
@@ -60,7 +61,6 @@ func GetCartCheckedData(c cart.ICart) string {
 	if c.Kind() == cart.KWholesale {
 		wc := c.(cart.IWholesaleCart)
 		for _, v := range wc.Items() {
-			log.Println("----", itemId, fmt.Sprintf("%#v", v))
 			id := strconv.Itoa(int(v.ItemId))
 			if _, ok := mp[id]; !ok {
 				mp[id] = []string{}
@@ -88,7 +88,7 @@ func GetCartCheckedData(c cart.ICart) string {
 func TestWholesaleCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KWholesale)
-	_ = joinItemsToCart(c)
+	_ = joinItemsToCart(c,1)
 	if c.Kind() == cart.KWholesale {
 		rc := c.(cart.IWholesaleCart)
 		t.Log("购物车如下:")

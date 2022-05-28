@@ -150,7 +150,7 @@ type SShipmentOrder struct {
 	// 订单编号
 	OrderId int64 `protobuf:"varint,2,opt,name=OrderId,proto3" json:"OrderId"`
 	// 子订单编号
-	SubOrderId int64 `protobuf:"varint,3,opt,name=ParentOrderId,proto3" json:"ParentOrderId"`
+	SubOrderId int64 `protobuf:"varint,3,opt,name=SubOrderId,proto3" json:"SubOrderId"`
 	// 快递SP编号
 	ExpressSpId int64 `protobuf:"varint,4,opt,name=ExpressSpId,proto3" json:"ExpressSpId"`
 	// 快递SP单号

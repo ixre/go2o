@@ -7,6 +7,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
@@ -231,7 +232,8 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	payRepo payment.IPaymentRepo, cartRepo cart.ICartRepo,
-	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrder {
+	shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo) order.IOrder {
 	b := &baseOrderImpl{
 		baseValue:  v,
 		repo:       repo,
@@ -244,10 +246,10 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	case order.TRetail:
 		return newNormalOrder(manager, b, repo, itemRepo,
 			productRepo, promRepo, expressRepo,
-			payRepo, cartRepo, registryRepo, valRepo)
+			payRepo, cartRepo,shopRepo, registryRepo, valRepo)
 	case order.TWholesale:
 		return newWholesaleOrder(b, repo, itemRepo,
-			expressRepo, payRepo, shipRepo, mchRepo, valRepo, registryRepo)
+			expressRepo, payRepo, shipRepo, mchRepo,shopRepo, valRepo, registryRepo)
 	case order.TTrade:
 		return newTradeOrder(b, payRepo, mchRepo, valRepo, registryRepo)
 	}

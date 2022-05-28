@@ -330,7 +330,7 @@ type SSingleOrder struct {
 	SellerId int64 `protobuf:"varint,6,opt,name=SellerId,proto3" json:"SellerId"`
 	// 店铺编号
 	ShopId int64 `protobuf:"varint,7,opt,name=ShopId,proto3" json:"ShopId"`
-	// int64 ParentOrderId = 2;
+	// int64 SubOrderId = 2;
 	// 订单标题
 	Subject string `protobuf:"bytes,8,opt,name=Subject,proto3" json:"Subject"`
 	// 商品总金额

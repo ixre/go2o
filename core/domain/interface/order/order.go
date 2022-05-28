@@ -321,6 +321,8 @@ type (
 		BuyerId int64 `db:"buyer_id"`
 		// 买家用户名
 		BuyerUser string `db:"buyer_user"`
+		// 商品数量
+		ItemCount int `db:"item_count"`
 		// 商品金额
 		ItemAmount int64 `db:"item_amount"`
 		// 抵扣金额
@@ -368,6 +370,8 @@ type (
 		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
 		ShopId int64 `db:"shop_id"`
+		// 店铺名称
+		ShopName string 	`db:"shop_name"`
 		// 是否支付
 		IsPaid int `db:"is_paid"`
 		// 买家留言

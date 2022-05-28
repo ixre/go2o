@@ -52,90 +52,100 @@ func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
 	return list
 }
 
-// 获取订单的商品项
+// QueryOrderItems 获取订单的商品项
 func (o *OrderQuery) QueryOrderItems(subOrderId int64) []*dto.OrderItem {
 	return o.queryOrderItems(strconv.Itoa(int(subOrderId)))
 }
 
-// 查询分页订单
-func (o *OrderQuery) QueryPagerOrder(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
+// QueryPagingNormalOrder 查询分页普通订单
+func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*dto.MemberPagingOrderDto) {
 	d := o.Connector
-	orderList := make([]*dto.PagedMemberSubOrder, 0)
+	orderList := make([]*dto.MemberPagingOrderDto, 0)
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
 	}
 	if where != "" {
-		where = "AND " + where
+		where = " order_type = 1 AND " + where
+	}else {
+		where = " order_type = 1"
+	}
+	if memberId > 0{
+		where = fmt.Sprintf(" AND buyer_id = %d",memberId)
 	}
 	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
+		orderBy = " ORDER BY " + orderBy
 	} else {
 		orderBy = " ORDER BY po.create_time desc "
 	}
 
 	if pagination {
-		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM sale_sub_order o
-		  INNER JOIN order_list po ON o.order_id = po.id WHERE o.buyer_id= $1 %s`,
-			where), &num, memberId)
+		err := d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM order_list WHERE %s`,
+			where), &num)
+		if err != nil {
+			log.Println("query order error",err.Error())
+			return 0, nil
+		}
 		if num == 0 {
 			return num, orderList
 		}
 	}
 
-	orderMap := make(map[int64]int) //存储订单编号和对象的索引
+	//orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	idBuf := bytes.NewBufferString("")
 	// 查询分页的订单
-	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
-        o.vendor_id,o.shop_id,s.shop_name,
-        o.item_amount,o.discount_amount,o.express_fee,
-        o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
-         FROM sale_sub_order o INNER JOIN order_list po ON o.order_id = po.id
-            INNER JOIN mch_online_shop s ON o.shop_id=s.id
-         WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
+	_ = d.Query(fmt.Sprintf(`select order_list.order_no,order_list.buyer_id,buyer_user,
+order_list.item_count,order_list.item_amount,order_list.discount_amount,
+order_list.express_fee,order_list.package_fee,order_list.final_amount,
+order_list.state,order_list.create_time,
+sale_sub_order.id as sub_order_id,sale_sub_order.order_no as sub_order_no,
+sale_sub_order.shop_id,sale_sub_order.shop_name,sale_sub_order.final_amount
+FROM order_list INNER JOIN sale_sub_order ON order_list.id=sale_sub_order.order_id
+         WHERE %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			i := 0
 			for rs.Next() {
-				e := &dto.PagedMemberSubOrder{
-					Items: []*dto.OrderItem{},
-				}
-				rs.Scan(&e.Id, &e.OrderNo, &e.ParentNo, &e.VendorId, &e.ShopId,
-					&e.ShopName, &e.ItemAmount, &e.DiscountAmount, &e.ExpressFee,
-					&e.PackageFee, &e.FinalFee, &e.IsPaid, &e.State, &e.CreateTime)
+				e := &dto.MemberPagingOrderDto{}
+				//{
+				//	Items: []*dto.OrderItem{},
+				//}
+				rs.Scan(&e.OrderNo, &e.BuyerId, &e.BuyerUser,&e.ItemCount, &e.ItemAmount,
+					&e.DiscountAmount, &e.ExpressFee, &e.PackageFee,
+					&e.FinalAmount, &e.State, &e.CreateTime)
 				e.StateText = order.OrderState(e.State).String()
 				orderList = append(orderList, e)
-				orderMap[e.Id] = i
+				//orderMap[e.Id] = i
 				if i != 0 {
 					idBuf.WriteString(",")
 				}
-				idBuf.WriteString(strconv.Itoa(int(e.Id)))
+				//idBuf.WriteString(strconv.Itoa(int(e.Id)))
 				i++
 			}
 			rs.Close()
 		}, memberId, begin, size)
 
-	// 查询分页订单的Item
-	idArr := idBuf.String()
-	if len(idArr) > 0 {
-		d.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
-            sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,
-            si.amount,si.final_amount,
-            si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
-            ON sn.id=si.snap_id WHERE si.order_id IN(%s)
-            ORDER BY si.id ASC`, idArr), func(rs *sql.Rows) {
-			for rs.Next() {
-				e := &dto.OrderItem{}
-				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
-					&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity,
-					&e.Amount, &e.FinalAmount, &e.IsShipped)
-				e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
-				e.Image = format.GetResUrl(e.Image)
-				orderList[orderMap[e.OrderId]].Items = append(
-					orderList[orderMap[e.OrderId]].Items, e)
-			}
-		})
-	}
+	//// 查询分页订单的Item
+	//idArr := idBuf.String()
+	//if len(idArr) > 0 {
+	//	d.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
+    //        sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,
+    //        si.amount,si.final_amount,
+    //        si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
+    //        ON sn.id=si.snap_id WHERE si.order_id IN(%s)
+    //        ORDER BY si.id ASC`, idArr), func(rs *sql.Rows) {
+	//		for rs.Next() {
+	//			e := &dto.OrderItem{}
+	//			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
+	//				&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity,
+	//				&e.Amount, &e.FinalAmount, &e.IsShipped)
+	//			e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
+	//			e.Image = format.GetResUrl(e.Image)
+	//			orderList[orderMap[e.OrderId]].Items = append(
+	//				orderList[orderMap[e.OrderId]].Items, e)
+	//		}
+	//	})
+	//}
 	return num, orderList
 }
 
@@ -216,9 +226,9 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int64, begin, size int, p
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
+func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*dto.MemberPagingOrderDto) {
 	d := o.Connector
-	var orderList []*dto.PagedMemberSubOrder
+	var orderList []*dto.MemberPagingOrderDto
 	num := 0
 	if size == 0 || begin < 0 {
 		return 0, orderList
@@ -242,8 +252,8 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pag
 		}
 	}
 
-	orderMap := make(map[int64]int) //存储订单编号和对象的索引
-	idBuf := bytes.NewBufferString("")
+	//orderMap := make(map[int64]int) //存储订单编号和对象的索引
+	//idBuf := bytes.NewBufferString("")
 
 	// 查询分页的订单
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,
@@ -255,47 +265,47 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pag
          WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
 		func(rs *sql.Rows) {
-			i := 0
+			//i := 0
 			for rs.Next() {
-				e := &dto.PagedMemberSubOrder{
-					Items: []*dto.OrderItem{},
-				}
-				rs.Scan(&e.Id, &e.OrderNo, &e.VendorId, &e.ShopId,
-					&e.ShopName, &e.ItemAmount, &e.DiscountAmount, &e.ExpressFee,
-					&e.PackageFee, &e.FinalFee, &e.IsPaid, &e.State,
-					&e.CreateTime)
-				e.StateText = order.OrderState(e.State).String()
-				orderList = append(orderList, e)
-				orderMap[e.Id] = i
-				if i != 0 {
-					idBuf.WriteString(",")
-				}
-				idBuf.WriteString(strconv.Itoa(int(e.Id)))
-				i++
+				//e := &dto.MemberPagingOrderDto{
+				//	//Items: []*dto.OrderItem{},
+				//}
+				//rs.Scan(&e.Id, &e.OrderNo, &e.VendorId, &e.ShopId,
+				//	&e.ShopName, &e.ItemAmount, &e.DiscountAmount, &e.ExpressFee,
+				//	&e.PackageFee, &e.FinalFee, &e.IsPaid, &e.State,
+				//	&e.CreateTime)
+				//e.StateText = order.OrderState(e.State).String()
+				//orderList = append(orderList, e)
+				//orderMap[e.Id] = i
+				//if i != 0 {
+				//	idBuf.WriteString(",")
+				//}
+				//idBuf.WriteString(strconv.Itoa(int(e.Id)))
+				//i++
 			}
 			rs.Close()
 		}, memberId, begin, size)
 
 	// 查询分页订单的Item
-	idArr := idBuf.String()
-	if idArr != "" {
-		d.Query(fmt.Sprintf(` SELECT oi.id,oi.order_id,oi.snapshot_id,sn.item_id,sn.sku_id,
-            sn.goods_title,sn.img,oi.quantity,oi.return_quantity,
-            oi.amount,oi.final_amount,oi.is_shipped FROM order_wholesale_item oi
-            INNER JOIN item_trade_snapshot sn ON sn.id=oi.snapshot_id
-            WHERE oi.order_id IN(%s) ORDER BY oi.id ASC`, idArr), func(rs *sql.Rows) {
-			for rs.Next() {
-				e := &dto.OrderItem{}
-				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
-					&e.Image, &e.Quantity, &e.ReturnQuantity,
-					&e.Amount, &e.FinalAmount, &e.IsShipped)
-				e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
-				e.Image = format.GetResUrl(e.Image)
-				orderList[orderMap[e.OrderId]].Items = append(
-					orderList[orderMap[e.OrderId]].Items, e)
-			}
-		})
-	}
+	//idArr := idBuf.String()
+	//if idArr != "" {
+	//	d.Query(fmt.Sprintf(` SELECT oi.id,oi.order_id,oi.snapshot_id,sn.item_id,sn.sku_id,
+    //        sn.goods_title,sn.img,oi.quantity,oi.return_quantity,
+    //        oi.amount,oi.final_amount,oi.is_shipped FROM order_wholesale_item oi
+    //        INNER JOIN item_trade_snapshot sn ON sn.id=oi.snapshot_id
+    //        WHERE oi.order_id IN(%s) ORDER BY oi.id ASC`, idArr), func(rs *sql.Rows) {
+	//		for rs.Next() {
+	//			e := &dto.OrderItem{}
+	//			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
+	//				&e.Image, &e.Quantity, &e.ReturnQuantity,
+	//				&e.Amount, &e.FinalAmount, &e.IsShipped)
+	//			e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
+	//			e.Image = format.GetResUrl(e.Image)
+	//			orderList[orderMap[e.OrderId]].Items = append(
+	//				orderList[orderMap[e.OrderId]].Items, e)
+	//		}
+	//	})
+	//}
 	return num, orderList
 }
 

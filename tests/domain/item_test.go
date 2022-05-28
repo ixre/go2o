@@ -165,7 +165,7 @@ func TestSaveItemImages(t *testing.T) {
 	//images = append(images,"https://img14.360buyimg.com/ceco/s300x300_jfs/t1/159722/38/5682/268261/601a43e3E78cbacb6/60bdf8c1c170c8ae.jpg!q70.jpg.webp#3")
 	images = append(images, "https://img14.360buyimg.com/ceco/s300x300_jfs/t1/159722/38/5682/268261/601a43e3E78cbacb6/60bdf8c1c170c8ae.jpg!q70.jpg.webp#4")
 	images = append(images, "https://img14.360buyimg.com/ceco/s300x300_jfs/t1/159722/38/5682/268261/601a43e3E78cbacb6/60bdf8c1c170c8ae.jpg!q70.jpg.webp#5")
-	err := it.SaveImages(images)
+	err := it.SetImages(images)
 	if err == nil {
 		_, err = it.Save()
 	}

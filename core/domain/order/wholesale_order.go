@@ -9,6 +9,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -38,6 +39,7 @@ type wholesaleOrderImpl struct {
 	itemRepo     item.IItemRepo
 	mchRepo      merchant.IMerchantRepo
 	valueRepo    valueobject.IValueRepo
+	shopRepo    shop.IShopRepo
 	registryRepo registry.IRegistryRepo
 }
 
@@ -45,7 +47,8 @@ func newWholesaleOrder(base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo,
 	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	shipRepo shipment.IShipmentRepo, mchRepo merchant.IMerchantRepo,
-	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrder {
+	shopRepo    shop.IShopRepo,valueRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo) order.IOrder {
 	o := &wholesaleOrderImpl{
 		baseOrderImpl: base,
 		orderRepo:     shoppingRepo,
@@ -54,6 +57,7 @@ func newWholesaleOrder(base *baseOrderImpl,
 		payRepo:       payRepo,
 		shipRepo:      shipRepo,
 		mchRepo:       mchRepo,
+		shopRepo: shopRepo,
 		valueRepo:     valueRepo,
 		registryRepo:  registryRepo,
 	}
@@ -110,11 +114,17 @@ func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 	// 获取运营商和店铺编号
 	o.value.VendorId = o.items[0].VendorId
 	o.value.ShopId = o.items[0].ShopId
+
+	// 店铺名称
+	isp := o.shopRepo.GetShop(o.items[0].ShopId)
+	o.value.ShopName = isp.GetValue().Name
+
 	// 运费计算器
 	ue := o.expressRepo.GetUserExpress(int(o.value.VendorId))
 	ec := ue.CreateCalculator()
 	// 计算订单金额及运费
 	for _, it := range o.items {
+		o.baseValue.ItemCount += int(it.Quantity)
 		o.baseValue.ItemAmount += it.Amount
 		o.baseValue.DiscountAmount += it.Amount - it.FinalAmount
 		o.appendToExpressCalculator(ue, it, ec)
@@ -225,6 +235,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 		ShippingAddress: o.baseValue.ShippingAddress,
 	}
 	co.DiscountAmount = o.baseValue.DiscountAmount
+	co.ItemCount = o.baseValue.ItemCount
 	co.ItemAmount = o.baseValue.ItemAmount
 	co.ExpressFee = o.baseValue.ExpressFee
 	co.PackageFee = o.baseValue.PackageFee

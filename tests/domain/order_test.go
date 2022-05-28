@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package tests
+package domain
 
 import (
 	"fmt"
@@ -104,7 +104,7 @@ func TestCancelOrder(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	var buyerId int64 = 1
 	c := repo.GetMyCart(buyerId, cart.KNormal)
-	joinItemsToCart(c)
+	_ = joinItemsToCart(c, 1)
 	if c.Kind() == cart.KNormal {
 		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
@@ -161,7 +161,8 @@ func TestSubmitNormalOrder(t *testing.T) {
 	var buyerId int64 = 1
 	cartRepo := ti.Factory.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KNormal)
-	err := joinItemsToCart(c)
+	_ = joinItemsToCart(c,47)
+	err := joinItemsToCart(c,51)
 	if err != nil {
 		t.Error("购物车加入失败:", err.Error())
 		t.FailNow()
@@ -243,7 +244,7 @@ func TestWholesaleOrder(t *testing.T) {
 	var buyerId int64 = 1
 	cartRepo := ti.Factory.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KWholesale)
-	joinItemsToCart(c)
+	_ = joinItemsToCart(c,1)
 	rc := c.(cart.IWholesaleCart)
 	if len(rc.GetValue().Items) == 0 {
 		t.Log("购物车是空的")

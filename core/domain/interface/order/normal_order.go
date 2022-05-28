@@ -36,46 +36,45 @@ type (
 		GetPromotionBinds() []*OrderPromotionBind
 	}
 
-	// 子订单(普通订单拆分)
+	// ISubOrder 子订单(普通订单拆分)
 	ISubOrder interface {
-		// 获取领域对象编号
+		// GetDomainId 获取领域对象编号
 		GetDomainId() int64
-		// 获取值对象
+		// GetValue 获取值对象
 		GetValue() *NormalSubOrder
-		// 复合的订单信息
+		// Complex 复合的订单信息
 		Complex() *ComplexOrder
-
-		// 获取商品项
+		// Items 获取商品项
 		Items() []*SubOrderItem
-		// 在线支付交易完成
+		// PaymentFinishByOnlineTrade 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
-		// 记录订单日志
+		// AppendLog 记录订单日志
 		AppendLog(logType LogType, system bool, message string) error
-		// 添加备注
+		// AddRemark 添加备注
 		AddRemark(string)
-		// 确认订单
+		// Confirm 确认订单
 		Confirm() error
-		// 捡货(备货)
+		// PickUp 捡货(备货)
 		PickUp() error
-		// 发货
+		// Ship 发货
 		Ship(spId int32, spOrder string) error
-		// 已收货
+		// BuyerReceived 已收货
 		BuyerReceived() error
-		// 获取订单的日志
+		// LogBytes 获取订单的日志
 		LogBytes() []byte
-		// 挂起
+		// Suspend 挂起
 		Suspend(reason string) error
-		// 取消订单/退款
+		// Cancel 取消订单/退款
 		Cancel(reason string) error
-		// 退回商品
+		// Return 退回商品
 		Return(snapshotId int64, quantity int32) error
-		// 撤销退回商品
+		// RevertReturn 撤销退回商品
 		RevertReturn(snapshotId int64, quantity int32) error
-		// 谢绝订单
+		// Decline 谢绝订单
 		Decline(reason string) error
-		// 提交子订单
+		// Submit 提交子订单
 		Submit() (int64, error)
-		// 获取支付单
+		// GetPaymentOrder 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
 	}
 
@@ -121,6 +120,8 @@ type (
 		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
 		ShopId int64 `db:"shop_id"`
+		// 店铺名称
+		ShopName string 	`db:"shop_name"`
 		// 订单标题
 		Subject string `db:"subject"`
 		// 商品金额
@@ -151,7 +152,7 @@ type (
 		Items []*SubOrderItem `db:"-"`
 	}
 
-	// 订单商品项
+	// SubOrderItem 订单商品项
 	SubOrderItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`

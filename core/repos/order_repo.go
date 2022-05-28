@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
@@ -54,6 +55,7 @@ type OrderRepImpl struct {
 	_expressRepo  express.IExpressRepo
 	_shipRepo     shipment.IShipmentRepo
 	_registryRepo registry.IRegistryRepo
+	_shopRepo     shop.IShopRepo
 }
 
 func NewOrderRepo(sto storage.Interface, o orm.Orm,
@@ -61,7 +63,7 @@ func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	proRepo product.IProductRepo, cartRepo cart.ICartRepo, goodsRepo item.IItemRepo,
 	promRepo promotion.IPromotionRepo, memRepo member.IMemberRepo,
 	deliverRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo,
-	shipRepo shipment.IShipmentRepo,
+	shipRepo shipment.IShipmentRepo,shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrderRepo {
 	return &OrderRepImpl{
 		Storage:       sto,
@@ -78,6 +80,7 @@ func NewOrderRepo(sto storage.Interface, o orm.Orm,
 		_valRepo:      valRepo,
 		_expressRepo:  expressRepo,
 		_shipRepo:     shipRepo,
+		_shopRepo:shopRepo,
 		_registryRepo: registryRepo,
 	}
 }
@@ -103,7 +106,7 @@ func (o *OrderRepImpl) Manager() order.IOrderManager {
 func (o *OrderRepImpl) CreateOrder(val *order.Order) order.IOrder {
 	return orderImpl.FactoryOrder(val, o.Manager(), o, o._mchRepo, o._goodsRepo,
 		o._productRepo, o._promRepo, o._memberRepo, o._expressRepo,
-		o._shipRepo, o._payRepo, o._cartRepo, o._valRepo, o._registryRepo)
+		o._shipRepo, o._payRepo, o._cartRepo,o._shopRepo, o._valRepo, o._registryRepo)
 }
 
 // 生成空白订单,并保存返回对象

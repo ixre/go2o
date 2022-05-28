@@ -19,6 +19,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
@@ -55,6 +56,7 @@ type normalOrderImpl struct {
 	registryRepo    registry.IRegistryRepo
 	valRepo         valueobject.IValueRepo
 	cartRepo        cart.ICartRepo
+	shopRepo    shop.IShopRepo
 	// 运营商商品映射,用于整理购物车
 	vendorItemsMap map[int][]*order.SubOrderItem
 	// 运营商与邮费的MAP
@@ -67,7 +69,8 @@ type normalOrderImpl struct {
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
-	cartRepo cart.ICartRepo, registryRepo registry.IRegistryRepo, valRepo valueobject.IValueRepo) order.IOrder {
+	cartRepo cart.ICartRepo,	shopRepo    shop.IShopRepo,registryRepo registry.IRegistryRepo,
+	valRepo valueobject.IValueRepo) order.IOrder {
 	return &normalOrderImpl{
 		baseOrderImpl: base,
 		manager:       shopping,
@@ -79,6 +82,7 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 		expressRepo:   expressRepo,
 		payRepo:       payRepo,
 		cartRepo:      cartRepo,
+		shopRepo: shopRepo,
 		registryRepo:  registryRepo,
 	}
 }
@@ -101,6 +105,7 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 		ShippingAddress: v.ShippingAddress,
 	}
 	co.DiscountAmount = v.DiscountAmount
+	co.ItemCount = v.ItemCount
 	co.ItemAmount = v.ItemAmount
 	co.ExpressFee = v.ExpressFee
 	co.PackageFee = v.PackageFee
@@ -255,13 +260,14 @@ func (o *normalOrderImpl) updateOrderFee(mp map[int][]*order.SubOrderItem) map[i
 	for k, v := range mp {
 		userExpress := o.expressRepo.GetUserExpress(k)
 		expCul[k] = userExpress.CreateCalculator()
-		for _, item := range v {
+		for _, it := range v {
+			o.baseValue.ItemCount += int(it.Quantity)
 			//计算商品总金额
-			o.baseValue.ItemAmount += item.Amount
+			o.baseValue.ItemAmount += it.Amount
 			//计算商品优惠金额
-			o.baseValue.DiscountAmount += item.Amount - item.FinalAmount
+			o.baseValue.DiscountAmount += it.Amount - it.FinalAmount
 			//加入运费计算器
-			o.addItemToExpressCalculator(userExpress, item, expCul[k])
+			o.addItemToExpressCalculator(userExpress, it, expCul[k])
 		}
 		//计算商户的运费
 		expCul[k].Calculate("") //todo: 传入城市地区编号
@@ -315,7 +321,7 @@ func (o *normalOrderImpl) buildVendorItemMap(items []*cart.NormalCartItem) map[i
 		if v.Checked == 1 {
 			item := o.parseCartToOrderItem(v)
 			if item == nil {
-				domain.HandleError(errors.New("转换购物车商品到订单商品时出错: 商品SKU"+
+				_ = domain.HandleError(errors.New("转换购物车商品到订单商品时出错: 商品SKU"+
 					strconv.Itoa(int(v.SkuId))), "domain")
 				continue
 			}
@@ -690,6 +696,9 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 			orderNo), "domain")
 		return nil
 	}
+
+	isp := o.shopRepo.GetShop(items[0].ShopId)
+	shopName := isp.GetValue().Name
 	v := &order.NormalSubOrder{
 		OrderNo:  orderNo,
 		BuyerId:  buyerId,
@@ -697,6 +706,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		OrderId:  o.GetAggregateRootId(),
 		Subject:  "子订单",
 		ShopId:   items[0].ShopId,
+		ShopName: shopName,
 		// 总金额
 		ItemAmount: 0,
 		// 减免金额(包含优惠券金额)
@@ -712,11 +722,11 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		Items:        items,
 	}
 	// 计算订单金额
-	for _, item := range items {
+	for _, iit := range items {
 		//计算商品金额
-		v.ItemAmount += item.Amount
+		v.ItemAmount += iit.Amount
 		//计算商品优惠金额
-		v.DiscountAmount += item.Amount - item.FinalAmount
+		v.DiscountAmount += iit.Amount - iit.FinalAmount
 	}
 	// 设置运费
 	v.ExpressFee = o.vendorExpressMap[vendorId]
@@ -940,12 +950,12 @@ func NewSubNormalOrder(v *order.NormalSubOrder,
 	}
 }
 
-// 获取领域对象编号
+// GetDomainId 获取领域对象编号
 func (o *subOrderImpl) GetDomainId() int64 {
 	return o.value.Id
 }
 
-// 获取值对象
+// GetValue 获取值对象
 func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 	return o.value
 }

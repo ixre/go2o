@@ -31,6 +31,8 @@ type (
 		ShopId int64
 		// 订单标题
 		Subject string
+		// 商品数量
+		ItemCount int
 		// 商品金额
 		ItemAmount int64
 		// 优惠减免金额
@@ -71,7 +73,7 @@ type (
 		ShippingAddress string
 	}
 
-	// 符合的订单项
+	// ComplexItem 符合的订单项
 	ComplexItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
