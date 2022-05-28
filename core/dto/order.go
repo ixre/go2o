@@ -18,6 +18,8 @@ type (
 
 	// MemberPagingOrderDto 会员订单分页对象
 	MemberPagingOrderDto struct {
+		// 订单编号
+		OrderId int64
 		// 买家
 		BuyerId int64
 		// 买家用户名
@@ -49,7 +51,8 @@ type (
 	}
 	// MemberPagingSubOrderDto 会员分页子订单
 	MemberPagingSubOrderDto struct {
-		Id             int64
+		OrderId             int64
+		ParentOrderId      int64
 		OrderNo        string
 		ParentNo       string
 		VendorId       int64
