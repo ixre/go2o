@@ -12,15 +12,16 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"log"
+	"sort"
+	"strconv"
+
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
-	"sort"
-	"strconv"
 )
 
 type OrderQuery struct {
@@ -113,7 +114,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 				if err != nil {
 					log.Println(" normal order list scan error:", err.Error())
 				}
-				e.SubOrders = make([]*dto.MemberPagingSubOrderDto,0)
+				e.SubOrders = make([]*dto.MemberPagingSubOrderDto, 0)
 				e.StateText = order.OrderState(e.State).String()
 				orderList = append(orderList, e)
 				//orderMap[e.Id] = i
@@ -136,14 +137,16 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 		begin := orderIdList[0]
 		end := orderIdList[len(orderIdList)-1]
 		subOrders := o.queryNormalSubOrd(begin, end)
-		if len(subOrders) > 0{
-			orderIdList = make([]int,0)
+		if len(subOrders) > 0 {
+			orderIdList = make([]int, 0)
 			subOrderMap := make(map[int64]*dto.MemberPagingSubOrderDto, 0)
 			// 将子订单绑定到父订单
 			for _, ord := range subOrders {
-				subOrderMap[ord.OrderId] = ord
-				orderIdList = append(orderIdList,int(ord.OrderId))
-				orderMap[ord.ParentOrderId].SubOrders = append(orderMap[ord.ParentOrderId].SubOrders,ord)
+				if _, ok := orderMap[ord.ParentOrderId]; ok {
+					subOrderMap[ord.OrderId] = ord
+					orderIdList = append(orderIdList, int(ord.OrderId))
+					orderMap[ord.ParentOrderId].SubOrders = append(orderMap[ord.ParentOrderId].SubOrders, ord)
+				}
 			}
 			// 获取商品
 			sort.Ints(orderIdList)
@@ -151,7 +154,9 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 			end = orderIdList[len(orderIdList)-1]
 			items := o.queryNormalOrderItems(begin, end)
 			for _, v := range items {
-				subOrderMap[v.OrderId].Items = append(subOrderMap[v.OrderId].Items,v)
+				if _, ok := subOrderMap[v.OrderId]; ok {
+					subOrderMap[v.OrderId].Items = append(subOrderMap[v.OrderId].Items, v)
+				}
 			}
 		}
 	}
@@ -165,12 +170,12 @@ func (o *OrderQuery) queryNormalSubOrd(begin int, end int) []*dto.MemberPagingSu
 		func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.MemberPagingSubOrderDto{}
-				err := rs.Scan(&e.OrderId,&e.ParentOrderId, &e.OrderNo,&e.ShopId, &e.ShopName, &e.State)
+				err := rs.Scan(&e.OrderId, &e.ParentOrderId, &e.OrderNo, &e.ShopId, &e.ShopName, &e.State)
 				if err != nil {
 					log.Println(" normal sub order list scan error:", err.Error())
 				}
 				e.StateText = order.OrderState(e.State).String()
-				e.Items = make([]*dto.OrderItem,0)
+				e.Items = make([]*dto.OrderItem, 0)
 				subOrderList = append(subOrderList, e)
 			}
 			_ = rs.Close()
@@ -320,10 +325,10 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pag
 	//idArr := idBuf.String()
 	//if idArr != "" {
 	//	d.Query(fmt.Sprintf(` SELECT oi.id,oi.order_id,oi.snapshot_id,sn.item_id,sn.sku_id,
-    //        sn.goods_title,sn.img,oi.quantity,oi.return_quantity,
-    //        oi.amount,oi.final_amount,oi.is_shipped FROM order_wholesale_item oi
-    //        INNER JOIN item_trade_snapshot sn ON sn.id=oi.snapshot_id
-    //        WHERE oi.order_id IN(%s) ORDER BY oi.id ASC`, idArr), func(rs *sql.Rows) {
+	//        sn.goods_title,sn.img,oi.quantity,oi.return_quantity,
+	//        oi.amount,oi.final_amount,oi.is_shipped FROM order_wholesale_item oi
+	//        INNER JOIN item_trade_snapshot sn ON sn.id=oi.snapshot_id
+	//        WHERE oi.order_id IN(%s) ORDER BY oi.id ASC`, idArr), func(rs *sql.Rows) {
 	//		for rs.Next() {
 	//			e := &dto.OrderItem{}
 	//			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
@@ -541,7 +546,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 }
 
 func (o *OrderQuery) queryNormalOrderItems(begin int, end int) []*dto.OrderItem {
-	list := make([]*dto.OrderItem,0)
+	list := make([]*dto.OrderItem, 0)
 	// 查询分页订单的Item
 	_ = o.Query(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
@@ -556,6 +561,6 @@ func (o *OrderQuery) queryNormalOrderItems(begin int, end int) []*dto.OrderItem 
 			e.Image = format.GetGoodsImageUrl(e.Image)
 			list = append(list, e)
 		}
-	},begin,end)
+	}, begin, end)
 	return list
 }
