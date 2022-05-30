@@ -1013,7 +1013,7 @@ func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexIte
 		ItemTitle:      snap.GoodsTitle,
 		MainImage:      snap.Image,
 		Price:          snap.Price,
-		FinalPrice:     0,
+		FinalPrice:     snap.Price,
 		Quantity:       i.Quantity,
 		ReturnQuantity: i.ReturnQuantity,
 		Amount:         i.Amount,
