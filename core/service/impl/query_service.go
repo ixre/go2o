@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
@@ -127,16 +128,46 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberPagingOrder {
 	dst := &proto.SMemberPagingOrder{
 		OrderNo:        src.OrderNo,
-
+		ItemCount:      int64(src.ItemCount),
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
-		FinalAmount:       src.FinalAmount,
+		FinalAmount:    src.FinalAmount,
 		State:          int32(src.State),
 		StateText:      src.StateText,
 		CreateTime:     src.CreateTime,
-		//SubOrders:          make([]*proto.SOrderItem, 0),
+		SubOrders:      make([]*proto.SMemberPagingSubOrder, 0),
+	}
+	for _, v := range src.SubOrders {
+		sub := &proto.SMemberPagingSubOrder{
+			OrderNo:     v.OrderNo,
+			ShopId:      v.ShopId,
+			ShopName:    v.ShopName,
+			FinalAmount: v.FinalAmount,
+			Items:       []*proto.SOrderItem{},
+			State:       int32(v.State),
+			StateText:   v.StateText,
+		}
+		for _, it := range v.Items {
+			sub.Items = append(sub.Items, &proto.SOrderItem{
+				Id:             int64(it.Id),
+				SnapshotId:     int64(it.SnapshotId),
+				SkuId:          int64(it.SkuId),
+				ItemId:         int64(it.ItemId),
+				ItemTitle:      it.ItemTitle,
+				Image:          it.Image,
+				Price:          it.Price,
+				FinalPrice:     it.FinalPrice,
+				Quantity:       int32(it.Quantity),
+				ReturnQuantity: int32(it.ReturnQuantity),
+				ItemAmount:     int64(it.FinalPrice * int64(it.Quantity)),
+				FinalAmount:    it.FinalAmount,
+				IsShipped:      it.IsShipped == 1,
+				Data:           map[string]string{},
+			})
+		}
+		dst.SubOrders = append(dst.SubOrders, sub)
 	}
 	//for _, v := range src.Items {
 	//	dst.Items = append(dst.Items, q.parseOrderItem(v))
@@ -156,7 +187,7 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 		FinalPrice:     v.FinalPrice,
 		Quantity:       int32(v.Quantity),
 		ReturnQuantity: int32(v.ReturnQuantity),
-		ItemAmount:         v.Amount,
+		ItemAmount:     v.Amount,
 		FinalAmount:    v.FinalAmount,
 		IsShipped:      v.IsShipped == 1,
 		Data:           nil,
@@ -165,7 +196,7 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 
 func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SMemberPagingOrder {
 	return &proto.SMemberPagingOrder{
-		OrderNo:  src.OrderNo,
+		OrderNo: src.OrderNo,
 		//ShopName:       src.,
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
@@ -173,7 +204,7 @@ func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SMemberPa
 		PackageFee:     src.PackageFee,
 		//IsPaid:         src.IsPaid,
 		FinalAmount: src.FinalAmount,
-		State:    int32(src.State),
+		State:       int32(src.State),
 		//StateText:      src.StateText,
 		CreateTime: src.SubmitTime,
 		//Items:      make([]*proto.SOrderItem, 0),

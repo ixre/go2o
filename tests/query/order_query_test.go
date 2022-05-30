@@ -10,7 +10,7 @@ import (
 
 func TestQueryMemberNormalOrderList(t *testing.T){
 	q := query.NewOrderQuery(ti.GetOrm())
-	count, orders := q.QueryPagingNormalOrder(1, 0, 5, false, "", "")
+	count, orders := q.QueryPagingNormalOrder(1, 0, 6, false, "", "")
 	t.Log("count:",count)
 	t.Log(fmt.Sprintf("orders:%#v",orders))
 	bytes,_ := json.Marshal(orders[0])

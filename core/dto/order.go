@@ -51,8 +51,8 @@ type (
 	}
 	// MemberPagingSubOrderDto 会员分页子订单
 	MemberPagingSubOrderDto struct {
-		OrderId             int64
-		ParentOrderId      int64
+		OrderId        int64
+		ParentOrderId  int64
 		OrderNo        string
 		ParentNo       string
 		VendorId       int64
@@ -63,7 +63,7 @@ type (
 		ExpressFee     int64
 		PackageFee     int64
 		IsPaid         bool
-		FinalFee       int64
+		FinalAmount    int64
 		State          int
 		StateText      string
 		CreateTime     int64

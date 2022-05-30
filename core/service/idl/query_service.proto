@@ -104,26 +104,28 @@ message SMemberPagingOrder{
     string BuyerUser = 2;
     // 订单号
     string OrderNo = 3;
+    // 商品
+    int64 ItemCount = 4;
     // 商品总金额
-    int64 ItemAmount = 4;
+    int64 ItemAmount = 5;
     // 抵扣金额
-    int64 DiscountAmount = 5;
+    int64 DiscountAmount = 6;
     // 优惠金额
-    int64 DeductAmount = 6;
+    int64 DeductAmount = 7;
     // 快递费
-    int64 ExpressFee = 7;
+    int64 ExpressFee = 8;
     // 包装费
-    int64 PackageFee = 8;
+    int64 PackageFee = 9;
     // 最终金额
-    int64 FinalAmount = 9;
+    int64 FinalAmount = 10;
     // 子订单
-    repeated SMemberPagingSubOrder SubOrders = 10;
+    repeated SMemberPagingSubOrder SubOrders = 11;
     // 状态
-    int32 State =11;
+    int32 State = 12;
     // 状态文本
-    string StateText = 12;
+    string StateText = 13;
     // 下单时间
-    sint64 CreateTime = 13;
+    sint64 CreateTime = 14;
 }
 
 // 分页会员订单信息
@@ -140,8 +142,10 @@ message SMemberPagingSubOrder {
     repeated SOrderItem Items = 5;
     // 状态
     sint32 State = 6;
+    // 状态文本
+    string StateText = 7;
     // 下单时间
-    sint64 CreateTime = 7;
+    sint64 CreateTime = 8;
 }
 
 message MemberListRequest {
