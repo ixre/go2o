@@ -65,6 +65,7 @@ type normalOrderImpl struct {
 	// 是否为内部挂起
 	internalSuspend bool
 	_list           []order.ISubOrder
+	_payOrder  payment.IPaymentOrder
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
@@ -225,7 +226,7 @@ func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
 	o.cart = c
 	// 将购物车的商品分类整理
 	o.vendorItemsMap = o.buildVendorItemMap(items)
-	if len(o.vendorItemsMap) == 0{
+	if len(o.vendorItemsMap) == 0 {
 		return cart.ErrEmptyShoppingCart
 	}
 	// 更新订单的金额
@@ -445,6 +446,20 @@ func (o *normalOrderImpl) Submit() error {
 	return err
 }
 
+
+// GetPaymentOrder implements order.IOrder
+func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+    if o._payOrder == nil {
+		if o.GetAggregateRootId() <= -1 {
+			panic(" Get payment order error ; because of order no yet created!")
+		}
+		o._payOrder = o.payRepo.GetPaymentOrderByOrderNo(
+			int(order.TRetail), o.OrderNo())
+	}
+	return o._payOrder	
+}
+
+
 // BuildCart 通过订单创建购物车
 func (o *normalOrderImpl) BuildCart() cart.ICart {
 	bv := o.baseOrderImpl.baseValue
@@ -490,45 +505,45 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 
 // 为所有子订单生成支付单
 func (o *normalOrderImpl) createPaymentForOrder() error {
-	orders := o.GetSubOrders()
-	for _, iso := range orders {
-		v := iso.GetValue()
-		itemAmount := v.ItemAmount
-		finalAmount := v.FinalAmount
-		disAmount := v.DiscountAmount
-		po := &payment.Order{
-			SellerId:       int(v.VendorId),
-			TradeNo:        v.OrderNo,
-			SubOrder:       1,
-			OrderType:      int(order.TRetail),
-			OutOrderNo:     v.OrderNo,
-			Subject:        v.Subject,
-			BuyerId:        v.BuyerId,
-			PayUid:         v.BuyerId,
-			ItemAmount:     itemAmount,
-			DiscountAmount: disAmount,
-			DeductAmount:   0,
-			AdjustAmount:   0,
-			FinalFee:       finalAmount,
-			PayFlag:        payment.PAllFlag,
-			TradeChannel:   0,
-			ExtraData:      "",
-			OutTradeSp:     "",
-			OutTradeNo:     "",
-			State:          payment.StateAwaitingPayment,
-			SubmitTime:     v.CreateTime,
-			ExpiresTime:    0,
-			PaidTime:       0,
-			UpdateTime:     v.CreateTime,
-			TradeMethods:   []*payment.TradeMethodData{},
-		}
-		ip := o.payRepo.CreatePaymentOrder(po)
-		if err := ip.Submit(); err != nil {
-			_ = iso.Cancel("")
-			return err
+	v := o.baseOrderImpl.baseValue
+	itemAmount := v.ItemAmount
+	finalAmount := v.FinalAmount
+	disAmount := v.DiscountAmount
+	po := &payment.Order{
+		SellerId:       0,
+		TradeNo:        v.OrderNo,
+		SubOrder:       1,
+		OrderType:      int(order.TRetail),
+		OutOrderNo:     v.OrderNo,
+		Subject:        v.Subject,
+		BuyerId:        v.BuyerId,
+		PayUid:         v.BuyerId,
+		ItemAmount:     itemAmount,
+		DiscountAmount: disAmount,
+		DeductAmount:   0,
+		AdjustAmount:   0,
+		FinalFee:       finalAmount,
+		PayFlag:        payment.PAllFlag,
+		TradeChannel:   0,
+		ExtraData:      "",
+		OutTradeSp:     "",
+		OutTradeNo:     "",
+		State:          payment.StateAwaitingPayment,
+		SubmitTime:     v.CreateTime,
+		ExpiresTime:    0,
+		PaidTime:       0,
+		UpdateTime:     v.CreateTime,
+		TradeMethods:   []*payment.TradeMethodData{},
+	}
+	o._payOrder = o.payRepo.CreatePaymentOrder(po)
+	err := o._payOrder.Submit()
+	if err != nil {
+		orders := o.GetSubOrders()
+		for _, it := range orders {
+			_ = it.Cancel("")
 		}
 	}
-	return nil
+	return err
 }
 
 // 绑定促销优惠
@@ -918,7 +933,6 @@ type subOrderImpl struct {
 	parent          order.IOrder
 	buyer           member.IMember
 	internalSuspend bool //内部挂起
-	paymentOrder    payment.IPaymentOrder
 	paymentRepo     payment.IPaymentRepo
 	repo            order.IOrderRepo
 	memberRepo      member.IMemberRepo
@@ -1084,17 +1098,6 @@ func (o *subOrderImpl) saveSubOrder() error {
 		o.syncOrderState()
 	}
 	return err
-}
-
-func (o *subOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
-	if o.paymentOrder == nil {
-		if o.GetDomainId() <= 0 {
-			panic(" Get payment order error ; because of order no yet created!")
-		}
-		o.paymentOrder = o.paymentRepo.GetPaymentOrderByOrderNo(
-			int(order.TRetail), o.value.OrderNo)
-	}
-	return o.paymentOrder
 }
 
 // 同步订单状态
@@ -1549,9 +1552,9 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
-	ip := o.GetPaymentOrder()
+	ip := od.GetPaymentOrder()
 	if ip != nil {
-		return ip.Cancel()
+		return ip.Cancel() //todo: there have a bug, when other order has shipmented. all sub order will be cancelled.
 	}
 	return nil
 }

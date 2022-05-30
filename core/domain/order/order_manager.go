@@ -112,7 +112,7 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	}
 	io := o.(order.INormalOrder)
 	err = io.RequireCart(c)
-	if err == nil{
+	if err == nil {
 		io.GetByVendor()
 	}
 	return o, err
@@ -251,60 +251,49 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 	} else {
 		_ = buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
 	}
-	io := o.(order.INormalOrder)
 	if err = o.Submit(); err != nil {
 		return o, rd, err
 	}
+
 	// 合并支付
-	iss := io.GetSubOrders()
-	arr := make([]payment.IPaymentOrder, 0)
-	for _, v := range iss {
-		ip := v.GetPaymentOrder()
-		if len(couponCode) != 0 { // 使用优惠码
-			if err = t.applyCoupon(buyer, o, ip, couponCode); err != nil {
-				return o, rd, err
-			}
-		}
-		// 使用余额抵扣,如果余额抵扣失败,仍然应该继续结算
-		if useBalanceDiscount {
-			_ = ip.BalanceDiscount("")
-		}
-		if ip.State() == payment.StateAwaitingPayment {
-			arr = append(arr, ip)
+	ip := o.GetPaymentOrder()
+	ipv := ip.Get()
+	if len(couponCode) != 0 { // 使用优惠码
+		if err = t.applyCoupon(buyer, o, ip, couponCode); err != nil {
+			return o, rd, err
 		}
 	}
-	l := len(arr)
+	// 使用余额抵扣,如果余额抵扣失败,仍然应该继续结算
+	if useBalanceDiscount {
+		_ = ip.BalanceDiscount("")
+	}
 	// 如果全部支付成功
-	if l == 0 {
-		ip := iss[0].GetPaymentOrder().Get()
-		rd.TradeNo = ip.TradeNo
-		rd.TradeAmount = ip.FinalFee
-		rd.OrderNo = ip.OutOrderNo
-		return o, rd, err
+
+	if ip.State() > payment.StateAwaitingPayment {
+
 	}
+
+	rd.TradeNo = ipv.TradeNo
+	rd.TradeAmount = ipv.FinalFee
+	rd.OrderNo = ipv.OutOrderNo
+	return o, rd, err
 	// 剩下单个订单未支付
-	if l == 1 {
-		ip := arr[0].Get()
-		rd.TradeNo = ip.TradeNo
-		rd.TradeAmount = ip.FinalFee
-		rd.OrderNo = ip.OutOrderNo
-		return o, rd, err
-	}
-	// 合并支付
-	mergeTradeNo, fee, err := arr[0].MergePay(arr[1:])
-	if err != nil {
-		return o, rd, err
-	}
-	//println("----", len(arr), "个订单已合并", fee, mergeTradeNo)
-	rd.MergePay = true
-	rd.TradeAmount = int64(fee)
-	rd.TradeNo = mergeTradeNo
-	for i, v := range arr {
-		if i > 0 { // 拼接订单号
-			rd.OrderNo += ","
-		}
-		rd.OrderNo += v.Get().OutOrderNo
-	}
+
+	// // 合并支付
+	// mergeTradeNo, fee, err := arr[0].MergePay(arr[1:])
+	// if err != nil {
+	// 	return o, rd, err
+	// }
+	// //println("----", len(arr), "个订单已合并", fee, mergeTradeNo)
+	// rd.MergePay = true
+	// rd.TradeAmount = int64(fee)
+	// rd.TradeNo = mergeTradeNo
+	// for i, v := range arr {
+	// 	if i > 0 { // 拼接订单号
+	// 		rd.OrderNo += ","
+	// 	}
+	// 	rd.OrderNo += v.Get().OutOrderNo
+	// }
 	return o, rd, err
 }
 

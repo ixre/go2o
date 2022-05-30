@@ -277,9 +277,8 @@ func (s *orderServiceImpl) SubmitTradeOrder(_ context.Context, r *proto.TradeOrd
 	}
 	if err == nil {
 		// 返回支付单号
-		ro := io.(order.ITradeOrder)
 		rs.Data["OrderNo"] = io.OrderNo()
-		rs.Data["PaymentOrderNo"] = ro.GetPaymentOrder().TradeNo()
+		rs.Data["PaymentOrderNo"] = io.GetPaymentOrder().TradeNo()
 	}
 	return rs, nil
 }

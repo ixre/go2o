@@ -93,7 +93,6 @@ func (o *baseOrderImpl) Buyer() member.IMember {
 	return o.buyer
 }
 
-
 // SetShipmentAddress 设置配送地址
 func (o *baseOrderImpl) SetShipmentAddress(addressId int64) error {
 	if addressId <= 0 {
@@ -112,6 +111,11 @@ func (o *baseOrderImpl) SetShipmentAddress(addressId int64) error {
 	o.baseValue.ConsigneeName = d.ConsigneeName
 	o.baseValue.ConsigneePhone = d.ConsigneePhone
 	return nil
+}
+
+// GetPaymentOrder implements order.IOrder
+func (*baseOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	panic("unimplemented")
 }
 
 // Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
@@ -246,10 +250,10 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	case order.TRetail:
 		return newNormalOrder(manager, b, repo, itemRepo,
 			productRepo, promRepo, expressRepo,
-			payRepo, cartRepo,shopRepo, registryRepo, valRepo)
+			payRepo, cartRepo, shopRepo, registryRepo, valRepo)
 	case order.TWholesale:
 		return newWholesaleOrder(b, repo, itemRepo,
-			expressRepo, payRepo, shipRepo, mchRepo,shopRepo, valRepo, registryRepo)
+			expressRepo, payRepo, shipRepo, mchRepo, shopRepo, valRepo, registryRepo)
 	case order.TTrade:
 		return newTradeOrder(b, payRepo, mchRepo, valRepo, registryRepo)
 	}
