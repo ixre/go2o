@@ -13,6 +13,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
+	"math"
+	"strconv"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -29,10 +34,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/util"
-	"log"
-	"math"
-	"strconv"
-	"time"
 )
 
 var _ order.IOrder = new(normalOrderImpl)
@@ -56,7 +57,7 @@ type normalOrderImpl struct {
 	registryRepo    registry.IRegistryRepo
 	valRepo         valueobject.IValueRepo
 	cartRepo        cart.ICartRepo
-	shopRepo    shop.IShopRepo
+	shopRepo        shop.IShopRepo
 	// 运营商商品映射,用于整理购物车
 	vendorItemsMap map[int][]*order.SubOrderItem
 	// 运营商与邮费的MAP
@@ -69,7 +70,7 @@ type normalOrderImpl struct {
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
-	cartRepo cart.ICartRepo,	shopRepo    shop.IShopRepo,registryRepo registry.IRegistryRepo,
+	cartRepo cart.ICartRepo, shopRepo shop.IShopRepo, registryRepo registry.IRegistryRepo,
 	valRepo valueobject.IValueRepo) order.IOrder {
 	return &normalOrderImpl{
 		baseOrderImpl: base,
@@ -82,7 +83,7 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 		expressRepo:   expressRepo,
 		payRepo:       payRepo,
 		cartRepo:      cartRepo,
-		shopRepo: shopRepo,
+		shopRepo:      shopRepo,
 		registryRepo:  registryRepo,
 	}
 }
@@ -90,7 +91,6 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 func (o *normalOrderImpl) getBaseOrder() *baseOrderImpl {
 	return o.baseOrderImpl
 }
-
 
 // Complex 复合的订单信息
 func (o *normalOrderImpl) Complex() *order.ComplexOrder {
@@ -225,6 +225,9 @@ func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
 	o.cart = c
 	// 将购物车的商品分类整理
 	o.vendorItemsMap = o.buildVendorItemMap(items)
+	if len(o.vendorItemsMap) == 0{
+		return cart.ErrEmptyShoppingCart
+	}
 	// 更新订单的金额
 	o.vendorExpressMap = o.updateOrderFee(o.vendorItemsMap)
 	return nil
@@ -430,7 +433,7 @@ func (o *normalOrderImpl) Submit() error {
 		o.bindCouponOnSubmit(orderNo)
 		// 绑定购物车商品的促销
 		for _, p := range proms {
-			_,_= o.bindPromotionOnSubmit(orderNo, p)
+			_, _ = o.bindPromotionOnSubmit(orderNo, p)
 		}
 		// 扣除库存
 		o.applyItemStock()
@@ -677,7 +680,7 @@ func (o *normalOrderImpl) getJsonItems() []byte {
 }
 
 // 释放购物车并销毁
-func (o *normalOrderImpl) destroyCart()error {
+func (o *normalOrderImpl) destroyCart() error {
 	if o.cart.Release(nil) {
 		return o.cart.Destroy()
 	}
@@ -696,9 +699,8 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 			orderNo), "domain")
 		return nil
 	}
-
-	isp := o.shopRepo.GetShop(items[0].ShopId)
-	shopName := isp.GetValue().Name
+	isp := o.shopRepo.GetShop(items[0].ShopId).(shop.IOnlineShop)
+	shopName := isp.GetShopValue().ShopName
 	v := &order.NormalSubOrder{
 		OrderNo:  orderNo,
 		BuyerId:  buyerId,
@@ -964,8 +966,8 @@ func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	v := o.GetValue()
 	co := o.baseOrder().Complex()
-	co.OrderId =o.GetDomainId()
-	co.ParentOrderId =v.OrderId
+	co.OrderId = o.GetDomainId()
+	co.ParentOrderId = v.OrderId
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
 	co.SubOrder = true

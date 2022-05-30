@@ -11,6 +11,7 @@ package order
 
 import (
 	"errors"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/delivery"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -99,7 +100,7 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	case cart.KWholesale:
 		orderType = order.TWholesale
 	default:
-		return nil,errors.New("not support cart kind parse to order")
+		return nil, errors.New("not support cart kind parse to order")
 	}
 	val := &order.Order{
 		BuyerId:   c.BuyerId(),
@@ -107,11 +108,13 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	}
 	o := t.repo.CreateOrder(val)
 	if o.Type() != order.TRetail {
-		return nil,errors.New("only support normal order")
+		return nil, errors.New("only support normal order")
 	}
 	io := o.(order.INormalOrder)
 	err = io.RequireCart(c)
-	io.GetByVendor()
+	if err == nil{
+		io.GetByVendor()
+	}
 	return o, err
 }
 
@@ -262,10 +265,9 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 				return o, rd, err
 			}
 		}
-		if useBalanceDiscount { // 使用余额抵扣
-			if err = ip.BalanceDiscount(""); err != nil {
-				return o, rd, err
-			}
+		// 使用余额抵扣,如果余额抵扣失败,仍然应该继续结算
+		if useBalanceDiscount {
+			_ = ip.BalanceDiscount("")
 		}
 		if ip.State() == payment.StateAwaitingPayment {
 			arr = append(arr, ip)
