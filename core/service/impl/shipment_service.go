@@ -44,7 +44,7 @@ func (s *shipmentServiceImpl) CreateCoverageArea_(_ context.Context, r *proto.SC
 	return s.error(err), nil
 }
 
-// 获取订单的发货单信息
+// GetShipOrderOfOrder 获取订单的发货单信息
 func (s *shipmentServiceImpl) GetShipOrderOfOrder(_ context.Context, r *proto.OrderId) (*proto.ShipmentOrderListResponse, error) {
 	list := s.repo.GetShipOrders(r.Value, true)
 	arr := make([]*proto.SShipmentOrder, len(list))

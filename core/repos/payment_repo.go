@@ -34,15 +34,21 @@ type paymentRepoImpl struct {
 	memberRepo   member.IMemberRepo
 	orderRepo    order.IOrderRepo
 	registryRepo registry.IRegistryRepo
-	o            orm.Orm
+	_orm         orm.Orm
 }
+
+var payIntegrateAppDaoImplMapped = false
 
 func NewPaymentRepo(sto storage.Interface, o orm.Orm, mmRepo member.IMemberRepo,
 	orderRepo order.IOrderRepo, registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
+	if !payIntegrateAppDaoImplMapped {
+		_ = o.Mapping(payment.IntegrateApp{}, "pay_integrate_app")
+		payIntegrateAppDaoImplMapped = true
+	}
 	return &paymentRepoImpl{
 		Storage:      sto,
 		Connector:    o.Connector(),
-		o:            o,
+		_orm:         o,
 		memberRepo:   mmRepo,
 		orderRepo:    orderRepo,
 		registryRepo: registryRepo,
@@ -52,7 +58,7 @@ func NewPaymentRepo(sto storage.Interface, o orm.Orm, mmRepo member.IMemberRepo,
 // 根据订单号获取支付单
 func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOrder {
 	e := &payment.Order{}
-	if p.o.GetBy(e, "order_id= $1", orderId) == nil {
+	if p._orm.GetBy(e, "order_id= $1", orderId) == nil {
 		return p.CreatePaymentOrder(e)
 	}
 	return nil
@@ -61,7 +67,7 @@ func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPayme
 // 根据订单号获取支付单
 func (p *paymentRepoImpl) GetPaymentOrderByOrderNo(orderType int, orderNo string) payment.IPaymentOrder {
 	e := &payment.Order{}
-	if p.o.GetBy(e, "out_order_no= $1 AND order_type= $2",
+	if p._orm.GetBy(e, "out_order_no= $1 AND order_type= $2",
 		orderNo, orderType) == nil {
 		return p.CreatePaymentOrder(e)
 	}
@@ -83,7 +89,7 @@ func (p *paymentRepoImpl) GetPaymentOrderById(id int) payment.IPaymentOrder {
 	e := &payment.Order{}
 	k := p.getPaymentOrderCk(id)
 	if err := p.Storage.Get(k, &e); err != nil {
-		if p.o.Get(id, e) != nil {
+		if p._orm.Get(id, e) != nil {
 			return nil
 		}
 		p.Storage.SetExpire(k, *e, DefaultCacheSeconds)
@@ -118,7 +124,7 @@ func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 	if v.Id > 0 {
 		stat = p.GetPaymentOrderById(v.Id).Get().State
 	}
-	id, err := orm.Save(p.o, v, v.Id)
+	id, err := orm.Save(p._orm, v, v.Id)
 	if err == nil {
 		v.Id = id
 		// 缓存订单
@@ -143,7 +149,7 @@ func (p *paymentRepoImpl) notifyPaymentFinish(paymentOrderId int) error {
 	return nil
 }
 
-// 检查交易单号是否匹配
+// CheckTradeNoMatch 检查交易单号是否匹配
 func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 	i := 0
 	p.Connector.ExecScalar("SELECT id FROM pay_order WHERE trade_no= $1 AND id<> $2", &i, tradeNo, id)
@@ -152,7 +158,7 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 
 func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeMethodData {
 	list := make([]*payment.TradeMethodData, 0)
-	err := p.o.Select(&list, "trade_no= $1 LIMIT $2", tradeNo, 10)
+	err := p._orm.Select(&list, "trade_no= $1 LIMIT $2", tradeNo, 10)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
 	}
@@ -161,7 +167,7 @@ func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeM
 
 func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeMethodData) (int, error) {
 	tradeChan.TradeNo = tradeNo
-	id, err := orm.Save(p.o, tradeChan, tradeChan.ID)
+	id, err := orm.Save(p._orm, tradeChan, tradeChan.ID)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
 	}
@@ -184,7 +190,7 @@ func (p *paymentRepoImpl) GetMergePayOrders(mergeTradeNo string) []payment.IPaym
 	// 查询支付单
 	if l := len(tradeNoArr); l > 0 {
 		list := make([]*payment.Order, 0)
-		p.o.Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
+		p._orm.Select(&list, "trade_no IN ("+strings.Join(tradeNoArr, ",")+
 			") LIMIT $1", len(tradeNoArr))
 		for _, v := range list {
 			arr = append(arr, p.CreatePaymentOrder(v))
@@ -204,14 +210,14 @@ func (p *paymentRepoImpl) ResetMergePaymentOrders(tradeNos []string) error {
 		buf.WriteString("'")
 	}
 	buf.WriteString(")")
-	_, err := p.o.Delete(&payment.MergeOrder{},
+	_, err := p._orm.Delete(&payment.MergeOrder{},
 		"order_trade_no in "+buf.String())
 	return err
 }
 
 func (p *paymentRepoImpl) SaveMergePaymentOrders(mergeTradeNo string, tradeNos []string) error {
 	unix := time.Now().Unix()
-	orm := p.o
+	orm := p._orm
 	for _, v := range tradeNos {
 		order := &payment.MergeOrder{
 			MergeTradeNo: mergeTradeNo,
@@ -223,4 +229,32 @@ func (p *paymentRepoImpl) SaveMergePaymentOrders(mergeTradeNo string, tradeNos [
 		}
 	}
 	return nil
+}
+
+// FindAllIntegrateApp Select 集成支付应用
+func (p *paymentRepoImpl) FindAllIntegrateApp() []*payment.IntegrateApp {
+	list := make([]*payment.IntegrateApp, 0)
+	err := p._orm.Select(&list, "1=1 ORDER BY sort_number")
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:IntegrateApp")
+	}
+	return list
+}
+
+// SaveIntegrateApp Save 集成支付应用
+func (p *paymentRepoImpl) SaveIntegrateApp(v *payment.IntegrateApp) (int, error) {
+	id, err := orm.Save(p._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:IntegrateApp")
+	}
+	return id, err
+}
+
+// DeleteIntegrateApp Delete 集成支付应用
+func (p *paymentRepoImpl) DeleteIntegrateApp(primary interface{}) error {
+	err := p._orm.DeleteByPk(payment.IntegrateApp{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:IntegrateApp")
+	}
+	return err
 }

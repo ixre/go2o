@@ -1,8 +1,10 @@
-```
-CREATE DATABASE [IF NOT EXISTS] go2o;
+```sql
+CREATE DATABASE IF NOT EXISTS go2o ON CLUSTER cluster1;
+
 use go2o;
 
-CREATE TABLE IF NOT EXISTS go2o_wal_wallet_log
+CREATE TABLE IF NOT EXISTS go2o.go2o_wal_wallet_log
+ON CLUSTER cluster1
 (
     `id` Int64 COMMENT '编号',
     `wallet_id` Int64 COMMENT '钱包编号',
@@ -25,8 +27,14 @@ CREATE TABLE IF NOT EXISTS go2o_wal_wallet_log
     `remark` String COMMENT '备注',
     `create_time` Int64 COMMENT '创建时间',
     `update_time` Int64 COMMENT '更新时间'
-) ENGINE = MergeTree
-ORDER BY id
+) ENGINE = ReplicatedMergeTree('/clickhouse/tables/replicated/{shard}/go2o/go2o_wal_wallet_log','{replica}')
+PARTITION BY toYYYYMMDD(toDateTime(create_time)) 
+ORDER BY (id,`value`)
 SETTINGS index_granularity= 8192 ;
+
+-- 创建分区表
+CREATE TABLE IF NOT EXISTS go2o.go2o_wal_wallet_log_all
+AS go2o.go2o_wal_wallet_log
+ENGINE = Distributed(cluster1,go2o,go2o_wal_wallet_log,intHash64(wallet_id));
 ```
 

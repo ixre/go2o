@@ -8,5 +8,5 @@ import (
 
 func InitEvent() {
 	h := &handler.EventHandler{}
-	eventbus.SubscribeAsync(events.WalletLogClickhouseWriteEvent{}, h.HandleWalletLogWriteEvent)
+	eventbus.SubscribeAsync(events.WalletLogClickhouseUpdateEvent{}, h.HandleWalletLogWriteEvent)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
@@ -15,6 +16,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"strings"
 	"time"
 )
 
@@ -68,22 +70,22 @@ type baseOrderImpl struct {
 	complex    *order.ComplexOrder
 }
 
-// 获取编号
+// GetAggregateRootId 获取编号
 func (o *baseOrderImpl) GetAggregateRootId() int64 {
-	return o.baseValue.ID
+	return o.baseValue.Id
 }
 
-// 订单类型
+// Type 订单类型
 func (o *baseOrderImpl) Type() order.OrderType {
 	return order.OrderType(o.baseValue.OrderType)
 }
 
-// 获取订单状态
+// State 获取订单状态
 func (o *baseOrderImpl) State() order.OrderState {
 	return order.OrderState(o.baseValue.State)
 }
 
-// 获取购买的会员
+// Buyer 获取购买的会员
 func (o *baseOrderImpl) Buyer() member.IMember {
 	if o.buyer == nil {
 		o.buyer = o.memberRepo.GetMember(o.baseValue.BuyerId)
@@ -91,7 +93,28 @@ func (o *baseOrderImpl) Buyer() member.IMember {
 	return o.buyer
 }
 
-// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+
+// SetShipmentAddress 设置配送地址
+func (o *baseOrderImpl) SetShipmentAddress(addressId int64) error {
+	if addressId <= 0 {
+		return order.ErrNoSuchAddress
+	}
+	buyer := o.Buyer()
+	if buyer == nil {
+		return member.ErrNoSuchMember
+	}
+	addr := buyer.Profile().GetAddress(addressId)
+	if addr == nil {
+		return order.ErrNoSuchAddress
+	}
+	d := addr.GetValue()
+	o.baseValue.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.DetailAddress
+	o.baseValue.ConsigneeName = d.ConsigneeName
+	o.baseValue.ConsigneePhone = d.ConsigneePhone
+	return nil
+}
+
+// Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 func (o *baseOrderImpl) Submit() error {
 	if o.GetAggregateRootId() > 0 {
 		return errors.New("订单不允许重复提交")
@@ -102,17 +125,19 @@ func (o *baseOrderImpl) Submit() error {
 	if o.baseValue.State == 0 {
 		o.baseValue.State = order.StatAwaitingPayment
 	}
+	m := o.Buyer().GetValue()
+	o.baseValue.BuyerUser = m.User
 	o.baseValue.CreateTime = time.Now().Unix()
 	return o.saveOrder()
 }
 
-// 通过订单创建购物车
+// BuildCart 通过订单创建购物车
 func (o *baseOrderImpl) BuildCart() cart.ICart {
 	//todo: 实现批发等订单的构造购物车
 	panic("implement in sub class")
 }
 
-// 获取订单号
+// OrderNo 获取订单号
 func (o *baseOrderImpl) OrderNo() string {
 	return o.baseValue.OrderNo
 }
@@ -121,16 +146,16 @@ func (o *baseOrderImpl) OrderNo() string {
 func (o *baseOrderImpl) saveOrder() error {
 	id, err := o.repo.SaveOrder(o.baseValue)
 	if err == nil {
-		o.baseValue.ID = int64(id)
+		o.baseValue.Id = int64(id)
 	}
 	return err
 }
 
 // 设置并订单状态
 func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
-	if o.baseValue.State != int32(order.StatBreak) {
-		o.baseValue.State = int32(state)
-		o.saveOrder()
+	if o.baseValue.State != order.StatBreak {
+		o.baseValue.State = int(state)
+		_ = o.saveOrder()
 	}
 }
 
@@ -145,15 +170,15 @@ func (o *baseOrderImpl) bindItemInfo(i *order.ComplexItem) {
 	//todo: ??  SKU货号，供打出订单
 }
 
-// 复合的订单信息
+// Complex 复合的订单信息
 func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 	if o.complex == nil {
 		o.complex = &order.ComplexOrder{
 			OrderId:    o.GetAggregateRootId(),
-			OrderType:  o.baseValue.OrderType,
+			OrderType:  int32(o.baseValue.OrderType),
 			OrderNo:    o.OrderNo(),
 			BuyerId:    o.baseValue.BuyerId,
-			State:      o.baseValue.State,
+			State:      int32(o.baseValue.State),
 			CreateTime: o.baseValue.CreateTime,
 			Data:       make(map[string]string),
 		}
@@ -200,14 +225,15 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 	return v2
 }
 
-// 工厂方法生成订单
+// FactoryOrder 工厂方法生成订单
 func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	repo order.IOrderRepo, mchRepo merchant.IMerchantRepo,
 	itemRepo item.IItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	payRepo payment.IPaymentRepo, cartRepo cart.ICartRepo,
-	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrder {
+	shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo) order.IOrder {
 	b := &baseOrderImpl{
 		baseValue:  v,
 		repo:       repo,
@@ -220,10 +246,10 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	case order.TRetail:
 		return newNormalOrder(manager, b, repo, itemRepo,
 			productRepo, promRepo, expressRepo,
-			payRepo, cartRepo, registryRepo, valRepo)
+			payRepo, cartRepo,shopRepo, registryRepo, valRepo)
 	case order.TWholesale:
 		return newWholesaleOrder(b, repo, itemRepo,
-			expressRepo, payRepo, shipRepo, mchRepo, valRepo, registryRepo)
+			expressRepo, payRepo, shipRepo, mchRepo,shopRepo, valRepo, registryRepo)
 	case order.TTrade:
 		return newTradeOrder(b, payRepo, mchRepo, valRepo, registryRepo)
 	}

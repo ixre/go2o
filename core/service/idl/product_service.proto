@@ -45,7 +45,7 @@ service ProductService {
     rpc GetBrands (Empty) returns (ProductBrandListResponse) {
     }
     // 获取商品分类
-    rpc GetCategory (Int64) returns (SProductCategory) {
+    rpc GetCategory (GetCategoryRequest) returns (SProductCategory) {
     }
     // 获取商品分类和选项
     //    rpc GetCategoryAndOptions(mchId int64, id int32) (*product.Category,
@@ -315,6 +315,13 @@ message SCategoryTree {
     repeated SCategoryTree Children = 6;
     // 是否在楼层显示
     bool OnFloorShow = 7;
+}
+// 获取分类请求
+message GetCategoryRequest{
+    // 编号
+    int64 CategoryId = 1;
+    // 是否加载品牌
+    bool Brand = 2;
 }
 
 // 分类树形请求

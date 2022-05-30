@@ -7,112 +7,109 @@ import (
 )
 
 type (
-	// 普通订单
+	// INormalOrder 普通订单
 	INormalOrder interface {
-		// 读取购物车数据,用于预生成订单
+		// RequireCart 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
-		// 根据运营商获取商品和运费信息,限未生成的订单
+		// GetByVendor 根据运营商获取商品和运费信息,限未生成的订单
 		GetByVendor() (items map[int][]*SubOrderItem, expressFee map[int]int64)
-		// 在线支付交易完成
+		// OnlinePaymentTradeFinish 在线支付交易完成
 		OnlinePaymentTradeFinish() error
-		// 设置配送地址
-		SetAddress(addressId int64) error
-		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		// Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
 
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)
 
-		// 获取子订单列表
+		// GetSubOrders 获取子订单列表
 		GetSubOrders() []ISubOrder
-		// 应用优惠券
+		// ApplyCoupon 应用优惠券
 		ApplyCoupon(coupon promotion.ICouponPromotion) error
-		// 获取应用的优惠券
+		// GetCoupons 获取应用的优惠券
 		GetCoupons() []promotion.ICouponPromotion
-		// 获取可用的促销,不包含优惠券
+		// GetAvailableOrderPromotions 获取可用的促销,不包含优惠券
 		GetAvailableOrderPromotions() []promotion.IPromotion
-		// 获取最省的促销
+		// GetBestSavePromotion 获取最省的促销
 		GetBestSavePromotion() (p promotion.IPromotion,
 			saveFee float32, integral int)
-		// 获取促销绑定
+		// GetPromotionBinds 获取促销绑定
 		GetPromotionBinds() []*OrderPromotionBind
 	}
 
-	// 子订单(普通订单拆分)
+	// ISubOrder 子订单(普通订单拆分)
 	ISubOrder interface {
-		// 获取领域对象编号
+		// GetDomainId 获取领域对象编号
 		GetDomainId() int64
-		// 获取值对象
+		// GetValue 获取值对象
 		GetValue() *NormalSubOrder
-		// 复合的订单信息
+		// Complex 复合的订单信息
 		Complex() *ComplexOrder
-
-		// 获取商品项
+		// Items 获取商品项
 		Items() []*SubOrderItem
-		// 在线支付交易完成
+		// PaymentFinishByOnlineTrade 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
-		// 记录订单日志
+		// AppendLog 记录订单日志
 		AppendLog(logType LogType, system bool, message string) error
-		// 添加备注
+		// AddRemark 添加备注
 		AddRemark(string)
-		// 确认订单
+		// Confirm 确认订单
 		Confirm() error
-		// 捡货(备货)
+		// PickUp 捡货(备货)
 		PickUp() error
-		// 发货
+		// Ship 发货
 		Ship(spId int32, spOrder string) error
-		// 已收货
+		// BuyerReceived 已收货
 		BuyerReceived() error
-		// 获取订单的日志
+		// LogBytes 获取订单的日志
 		LogBytes() []byte
-		// 挂起
+		// Suspend 挂起
 		Suspend(reason string) error
-		// 取消订单/退款
+		// Cancel 取消订单/退款
 		Cancel(reason string) error
-		// 退回商品
+		// Return 退回商品
 		Return(snapshotId int64, quantity int32) error
-		// 撤销退回商品
+		// RevertReturn 撤销退回商品
 		RevertReturn(snapshotId int64, quantity int32) error
-		// 谢绝订单
+		// Decline 谢绝订单
 		Decline(reason string) error
-		// 提交子订单
+		// Submit 提交子订单
 		Submit() (int64, error)
-		// 获取支付单
+		// GetPaymentOrder 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
 	}
 
-	// 普通订单
-	NormalOrder struct {
-		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
-		// 订单编号
-		OrderId int64 `db:"order_id"`
-		// 商品金额
-		ItemAmount int64 `db:"item_amount"`
-		// 优惠减免金额
-		DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
-		// 运费
-		ExpressFee int64 `db:"express_fee"`
-		// 包装费用
-		PackageFee int64 `db:"package_fee"`
-		// 实际金额
-		FinalAmount int64 `db:"final_amount" json:"fee"`
-		// 收货人
-		ConsigneeName string `db:"consignee_person" json:"deliverName"`
-		// 收货人联系电话
-		ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
-		// 收货地址
-		ShippingAddress string `db:"shipping_address" json:"deliverAddress"`
-		// 订单是否拆分
-		IsBreak int32 `db:"is_break"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
-	}
+	//// 普通订单
+	//NormalOrder struct {
+	//	// 编号
+	//	Id int64 `db:"id" pk:"yes" auto:"yes"`
+	//	// 订单编号
+	//	OrderId int64 `db:"order_id"`
+	//	// 商品金额
+	//	ItemAmount int64 `db:"item_amount"`
+	//	// 优惠减免金额
+	//	DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
+	//	// 运费
+	//	ExpressFee int64 `db:"express_fee"`
+	//	// 包装费用
+	//	PackageFee int64 `db:"package_fee"`
+	//	// 实际金额
+	//	FinalAmount int64 `db:"final_amount" json:"fee"`
+	//	// 收货人
+	//	ConsigneeName string `db:"consignee_person" json:"deliverName"`
+	//	// 收货人联系电话
+	//	ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
+	//	// 收货地址
+	//	ShippingAddress string `db:"shipping_address" json:"deliverAddress"`
+	//	// 订单是否拆分
+	//	IsBreak int32 `db:"is_break"`
+	//	// 更新时间
+	//	UpdateTime int64 `db:"update_time" json:"updateTime"`
+	//}
 
 	// 子订单
 	NormalSubOrder struct {
 		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
@@ -120,25 +117,27 @@ type (
 		// 购买人编号(冗余,便于商户处理数据)
 		BuyerId int64 `db:"buyer_id"`
 		// 运营商编号
-		VendorId int64 `db:"vendor_id" json:"vendorId"`
+		VendorId int64 `db:"vendor_id"`
 		// 店铺编号
-		ShopId int64 `db:"shop_id" json:"shopId"`
+		ShopId int64 `db:"shop_id"`
+		// 店铺名称
+		ShopName string 	`db:"shop_name"`
 		// 订单标题
-		Subject string `db:"subject" json:"subject"`
+		Subject string `db:"subject"`
 		// 商品金额
 		ItemAmount int64 `db:"item_amount"`
 		// 优惠减免金额
-		DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
+		DiscountAmount int64 `db:"discount_amount"`
 		// 运费
 		ExpressFee int64 `db:"express_fee"`
 		// 包装费用
 		PackageFee int64 `db:"package_fee"`
 		// 实际金额
-		FinalAmount int64 `db:"final_amount" json:"fee"`
+		FinalAmount int64 `db:"final_amount"`
 		// 是否支付
 		IsPaid int `db:"is_paid"`
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend int `db:"is_suspend" json:"is_suspend"`
+		IsSuspend int `db:"is_suspend"`
 		// 顾客备注
 		BuyerComment string `db:"buyer_comment"`
 		// 系统备注
@@ -148,12 +147,12 @@ type (
 		// 下单时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
+		UpdateTime int64 `db:"update_time"`
 		// 订单项
 		Items []*SubOrderItem `db:"-"`
 	}
 
-	// 订单商品项
+	// SubOrderItem 订单商品项
 	SubOrderItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`

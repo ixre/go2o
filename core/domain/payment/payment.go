@@ -96,7 +96,7 @@ func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeN
 		return "", 0, err
 	}
 	if len(orders) == 0 {
-		panic(errors.New("will be merge trade orders is nil"))
+		return "", 0, errors.New("will be merge trade orders is nil")
 	}
 	finalFee = int(p.value.FinalFee)
 	tradeOrders := []string{p.TradeNo()}
@@ -270,14 +270,13 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 
 // 更新订单状态, 需要注意,防止多次订单更新
 func (p *paymentOrderImpl) notifyPaymentFinish() {
-	if p.GetAggregateRootId() <= 0 {
-		panic(payment.ErrNoSuchPaymentOrder)
-	}
-	// 通知订单支付完成
-	if p.value.OutOrderNo != "" {
-		subOrder := p.value.SubOrder == 1
-		err := p.orderManager.NotifyOrderTradeSuccess(p.value.OutOrderNo, subOrder)
-		domain.HandleError(err, "domain")
+	if p.GetAggregateRootId() > 0 {
+		// 通知订单支付完成
+		if p.value.OutOrderNo != "" {
+			subOrder := p.value.SubOrder == 1
+			err := p.orderManager.NotifyOrderTradeSuccess(p.value.OutOrderNo, subOrder)
+			domain.HandleError(err, "domain")
+		}
 	}
 }
 
@@ -446,7 +445,7 @@ func (p *paymentOrderImpl) intAmount(a float32) int {
 	return int(a * float32(enum.RATE_AMOUNT))
 }
 
-// 余额钱包混合支付，优先扣除余额。
+// HybridPayment 余额钱包混合支付，优先扣除余额。
 func (p *paymentOrderImpl) HybridPayment(remark string) error {
 	buyer := p.getBuyer()
 	if buyer == nil {
@@ -477,7 +476,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 	return err
 }
 
-// 钱包账户支付
+// PaymentByWallet 钱包账户支付
 func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	if !p.andMethod(p.value.PayFlag, payment.MWallet) {
 		return payment.ErrNotSupportPaymentChannel
@@ -505,12 +504,12 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	return err
 }
 
-// 使用会员卡支付,cardCode:会员卡编码,amount:支付金额
+// PaymentWithCard 使用会员卡支付,cardCode:会员卡编码,amount:支付金额
 func (p *paymentOrderImpl) PaymentWithCard(cardCode string, amount int) error {
-	panic("not implement")
+	return errors.New("not support")
 }
 
-// 设置支付方式
+// SetTradeSP 设置支付方式
 func (p *paymentOrderImpl) SetTradeSP(spName string) error {
 	err := p.CheckPaymentState()
 	if err == nil {
@@ -627,9 +626,8 @@ func (p *paymentOrderImpl) ChanName(method int) string {
 		return "卖家"
 	case payment.MSystemPay:
 		return "系统"
-	default:
-		panic(fmt.Sprintf("未知的支付方式%d", method))
 	}
+	return fmt.Sprintf("未知的支付方式%d", method)
 }
 
 type RepoBase struct {

@@ -12,6 +12,8 @@ type IJobAggregate interface {
 	AddFail(recordId int) error
 	// UpdateExecCursor 更新执行游标位置
 	UpdateExecCursor(id int) error
+	// RejoinQueue 重新加入到队列
+	RejoinQueue(relateId int64, relateData string) (int, error)
 	// Save 保存
 	Save() error
 }
@@ -28,6 +30,8 @@ type IJobRepo interface {
 	GetExecFailBy(where string, v ...interface{}) *ExecFail
 	// SaveExecFail Save 任务执行失败
 	SaveExecFail(v *ExecFail) (int, error)
+	// SaveRequeue 重新加入队列
+	SaveRequeue(v *ExecRequeue) (int, error)
 }
 
 // ExecData 任务执行数据
@@ -56,4 +60,18 @@ type ExecFail struct {
 	CreateTime int64 `db:"create_time"`
 	// 重试时间
 	RetryTime int64 `db:"retry_time"`
+}
+
+// ExecRequeue 重新加入队列
+type ExecRequeue struct {
+	// Id
+	Id int64 `db:"id" auto:"yes" pk:"yes"`
+	// 桶名称
+	BucketName string `db:"bucket_name"`
+	// 关联数据编号
+	RelateId int64 `db:"relate_id"`
+	// 数据
+	RelateData string `db:"relate_data"`
+	// 创建时间
+	CreateTime int64 `db:"create_time"`
 }

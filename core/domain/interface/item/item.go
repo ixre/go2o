@@ -129,7 +129,7 @@ type (
 		GetSaleSnapshotByKey(key string) *TradeSnapshot
 
 		// GetLatestSalesSnapshot 获取最新的商品销售快照
-		GetLatestSalesSnapshot(skuId int64) *TradeSnapshot
+		GetLatestSalesSnapshot(itemId int64,skuId int64) *TradeSnapshot
 
 		// SaveSalesSnapshot 保存商品销售快照
 		SaveSalesSnapshot(*TradeSnapshot) (int64, error)

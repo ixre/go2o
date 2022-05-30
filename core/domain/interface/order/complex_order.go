@@ -11,12 +11,12 @@ package order
  */
 
 type (
-	// 订单复合信息
+	// ComplexOrder 订单复合信息
 	ComplexOrder struct {
 		// 订单编号
 		OrderId int64
-		// 子订单编号
-		SubOrderId int64
+		// 父订单编号
+		ParentOrderId int64
 		// 订单类型
 		OrderType int32
 		// 是否为子订单
@@ -31,6 +31,8 @@ type (
 		ShopId int64
 		// 订单标题
 		Subject string
+		// 商品数量
+		ItemCount int
 		// 商品金额
 		ItemAmount int64
 		// 优惠减免金额
@@ -71,7 +73,7 @@ type (
 		ShippingAddress string
 	}
 
-	// 符合的订单项
+	// ComplexItem 符合的订单项
 	ComplexItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`

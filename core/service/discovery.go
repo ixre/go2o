@@ -21,13 +21,16 @@ import (
 var service = "Go2oService"
 var ttl int64 = 10
 
-// 注册服务发现
-func registerServiceDiscovery(cfg *clientv3.Config, port int) {
+// RegisterServiceDiscovery 注册服务发现
+func RegisterServiceDiscovery(cfg *clientv3.Config, host string, port int) {
 	r, err := etcd.NewRegistry(service, ttl, *cfg)
 	if err != nil {
 		panic(err)
 	}
-	ip := resolveIp()
+	ip := host
+	if len(ip) == 0 {
+		ip = resolveIp()
+	}
 	_, err = r.Register(ip, port)
 	if err != nil {
 		panic(err)

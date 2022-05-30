@@ -43,40 +43,40 @@ const (
 const (
 	/****** 在履行前,订单可以取消申请退款  ******/
 
-	// 等待支付
+	// StatAwaitingPayment 等待支付
 	StatAwaitingPayment = 1
-	// 等待确认
+	// StatAwaitingConfirm 等待确认
 	StatAwaitingConfirm = 2
-	// 等待备货
+	// StatAwaitingPickup 等待备货
 	StatAwaitingPickup = 3
-	// 等待发货
+	// StatAwaitingShipment 等待发货
 	StatAwaitingShipment = 4
 
 	/****** 订单取消 ******/
 
-	// 系统取消
+	// StatCancelled 系统取消
 	StatCancelled = 11
-	// 买家申请取消,等待卖家确认
+	// StatAwaitingCancel 买家申请取消,等待卖家确认
 	StatAwaitingCancel = 12
-	// 卖家谢绝订单,由于无货等原因
+	// StatDeclined 卖家谢绝订单,由于无货等原因
 	StatDeclined = 13
-	// 已退款,完成取消
+	// StatRefunded 已退款,完成取消
 	StatRefunded = 14
 
 	/****** 履行后订单只能退货或换货 ******/
 
-	// 部分发货(将订单商品分多个包裹发货)
+	// PartiallyShipped 部分发货(将订单商品分多个包裹发货)
 	PartiallyShipped = 5
-	// 完成发货
+	// StatShipped 完成发货
 	StatShipped = 6
-	// 订单已拆分
+	// StatBreak 订单已拆分
 	StatBreak = 7
-	// 订单完成
+	// StatCompleted 订单完成
 	StatCompleted = 8
 
 	/****** 售后状态 ******/
 
-	// 已退货
+	// StatGoodsRefunded 已退货
 	StatGoodsRefunded = 15
 )
 
@@ -112,7 +112,7 @@ func (t OrderState) String() string {
 	return "Error State"
 }
 
-// 后端状态描述
+// BackEndString 后端状态描述
 func (t OrderState) BackEndString() string {
 	return t.String()
 }
@@ -178,9 +178,6 @@ var (
 	ErrOrderHasPickUp = domain.NewError(
 		"err_order_has_pick_up", "订单已经备货")
 
-	ErrOrderNotPickUp = domain.NewError(
-		"err_order_not_pick_up", "请等待商品备货")
-
 	ErrNoSuchAddress = domain.NewError(
 		"err_order_no_address", "请选择收货地址")
 
@@ -229,70 +226,70 @@ var (
 
 type (
 	IOrder interface {
-		// 获取编号
+		// GetAggregateRootId 获取编号
 		GetAggregateRootId() int64
-		// 订单类型
+		// Type 订单类型
 		Type() OrderType
-		// 获取订单状态
+		// State 获取订单状态
 		State() OrderState
-		// 获取购买的会员
+		// Buyer 获取购买的会员
 		Buyer() member.IMember
-		// 获取订单号
+		// SetShipmentAddress 设置配送地址
+		SetShipmentAddress(addressId int64) error
+		// OrderNo 获取订单号
 		OrderNo() string
-		// 复合的订单信息
+		// Complex 复合的订单信息
 		Complex() *ComplexOrder
-		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		// Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
-		// 通过订单创建购物车 */
+		// BuildCart 通过订单创建购物车 */
 		BuildCart() cart.ICart
 	}
 
-	// 批发订单
+	// IWholesaleOrder 批发订单
 	IWholesaleOrder interface {
-		// 设置商品项
+		// SetItems 设置商品项
 		SetItems(items []*cart.ItemPair)
-		// 设置配送地址
-		SetAddress(addressId int64) error
-		// 设置或添加买家留言，如已经提交订单，将在原留言后附加
+		// SetComment 设置或添加买家留言，如已经提交订单，将在原留言后附加
 		SetComment(comment string)
-		// 获取商品项
+		// Items 获取商品项
 		Items() []*WholesaleItem
-		// 获取支付单
+		// GetPaymentOrder 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
-		// 在线支付交易完成
+		// OnlinePaymentTradeFinish 在线支付交易完成
 		OnlinePaymentTradeFinish() error
 
-		// 记录订单日志
+		// AppendLog 记录订单日志
 		AppendLog(logType LogType, system bool, message string) error
-		// 添加备注
+		// AddRemark 添加备注
 		AddRemark(string)
-		// 确认订单
+		// Confirm 确认订单
 		Confirm() error
-		// 捡货(备货)
+		// PickUp 捡货(备货)
 		PickUp() error
-		// 发货
+		// Ship 发货
 		Ship(spId int32, spOrder string) error
-		// 已收货
+		// BuyerReceived 已收货
 		BuyerReceived() error
-		// 获取订单的日志
+		// LogBytes 获取订单的日志
 		LogBytes() []byte
-		// 取消订单/退款
+		// Cancel 取消订单/退款
 		Cancel(reason string) error
-		// 谢绝订单
+		// Decline 谢绝订单
 		Decline(reason string) error
 	}
 
-	// 交易订单
+	// ITradeOrder 交易订单
 	ITradeOrder interface {
-		// 从订单信息中拷贝相应的数据,并设置订单结算比例
+		// Set 从订单信息中拷贝相应的数据,并设置订单结算比例
 		Set(o *ComplexOrder, rate float64) error
 		// CashPay 现金支付
 		CashPay() error
-		// 获取支付单
+		// GetPaymentOrder 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
-		// 交易支付完成
+		// TradePaymentFinish 交易支付完成
 		TradePaymentFinish() error
-		// 更新发票数据
+		// UpdateTicket 更新发票数据
 		UpdateTicket(img string) error
 	}
 )
@@ -310,73 +307,86 @@ type (
 		TradeAmount int64
 	}
 
-	// 订单
+	// Order 订单
 	Order struct {
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
-		// 订单号
-		OrderNo string `db:"order_no"`
-		// 买家编号
-		BuyerId int64 `db:"buyer_id"`
-		// 订单类型
-		OrderType int32 `db:"order_type"`
-		// 订单状态
-		State int32 `db:"state"`
-		// 下单时间
-		CreateTime int64 `db:"create_time"`
-	}
-
-	// 订单商品项
-	MinifyItem struct {
-		ItemId   int32
-		SkuId    int32
-		Quantity int32
-	}
-
-	// 批发订单
-	WholesaleOrder struct {
 		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
-		// 订单编号
-		OrderId int64 `db:"order_id"`
-		// 买家编号
+		// 订单类型1:普通 2:批发 3:线下
+		OrderType int `db:"order_type"`
+		// 订单主题
+		Subject string `db:"subject"`
+		// 买家
 		BuyerId int64 `db:"buyer_id"`
-		// 商家编号
-		VendorId int64 `db:"vendor_id"`
-		// 店铺编号
-		ShopId int64 `db:"shop_id"`
-		// 商品总价
+		// 买家用户名
+		BuyerUser string `db:"buyer_user"`
+		// 商品数量
+		ItemCount int `db:"item_count"`
+		// 商品金额
 		ItemAmount int64 `db:"item_amount"`
 		// 抵扣金额
 		DiscountAmount int64 `db:"discount_amount"`
-		// 运费
+		// 物流费
 		ExpressFee int64 `db:"express_fee"`
 		// 包装费
 		PackageFee int64 `db:"package_fee"`
 		// 订单最终金额
 		FinalAmount int64 `db:"final_amount"`
 		// 收货人姓名
-		ConsigneeName string `db:"consignee_person"`
+		ConsigneeName string `db:"consignee_name"`
 		// 收货人电话
 		ConsigneePhone string `db:"consignee_phone"`
 		// 收货人地址
 		ShippingAddress string `db:"shipping_address"`
-		// 是否支付
-		IsPaid int32 `db:"is_paid"`
-		// 订单备注
-		Remark string `db:"remark"`
-		// 订单买家备注
-		BuyerComment string `db:"buyer_comment"`
+		// 是否拆分
+		IsBreak int `db:"is_break"`
 		// 订单状态
-		State int32 `db:"state"`
-		// 订单创建时间
+		State int `db:"state"`
+		// 创建时间
 		CreateTime int64 `db:"create_time"`
-		// 订单更新时间
+		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 批发订单商品
+	// MinifyItem 订单商品项
+	MinifyItem struct {
+		ItemId   int32
+		SkuId    int32
+		Quantity int32
+	}
+
+	// WholesaleOrder 批发订单
+	WholesaleOrder struct {
+		// 编号
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单号
+		OrderNo string `db:"order_no"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 买家
+		BuyerId int64 `db:"buyer_id"`
+		// 供货商
+		VendorId int64 `db:"vendor_id"`
+		// 店铺编号
+		ShopId int64 `db:"shop_id"`
+		// 店铺名称
+		ShopName string 	`db:"shop_name"`
+		// 是否支付
+		IsPaid int `db:"is_paid"`
+		// 买家留言
+		BuyerComment string `db:"buyer_comment"`
+		// 备注
+		Remark string `db:"remark"`
+		// 订单状态
+		State int `db:"state"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
+	}
+
+	// WholesaleItem 批发订单商品
 	WholesaleItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes"`
@@ -404,7 +414,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 交易类订单
+	// TradeOrder 交易类订单
 	TradeOrder struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes"`
@@ -438,6 +448,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
+	// OrderLog 订单变动日志
 	OrderLog struct {
 		Id      int32 `db:"id" auto:"yes" pk:"yes"`
 		OrderId int64 `db:"order_id"`
@@ -469,7 +480,7 @@ type (
 		IsConfirm int `db:"is_confirm"`
 	}
 
-	// 应用到订单的优惠券
+	// OrderCoupon 应用到订单的优惠券
 	OrderCoupon struct {
 		OrderId      int32  `db:"order_id"`
 		CouponId     int32  `db:"coupon_id"`

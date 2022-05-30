@@ -89,7 +89,7 @@ message SArticle {
     /** 栏目编号 */
     sint64 CategoryId = 2;
     /** 标题 */
-    string title = 3;
+    string Title = 3;
     /** 小标题 */
     string SmallTitle = 4;
     /** 文章附图 */

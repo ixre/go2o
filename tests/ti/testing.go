@@ -13,6 +13,7 @@ import (
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
+	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"go.etcd.io/etcd/clientv3"
 	"os"
@@ -21,6 +22,8 @@ import (
 
 var (
 	Factory *repos.RepoFactory
+	_conn db.Connector
+	_orm orm.Orm
 )
 var (
 	REDIS_DB = "1"
@@ -28,6 +31,14 @@ var (
 
 func GetApp() gof.App {
 	return gof.CurrentApp
+}
+
+func GetOrm()orm.Orm{
+	return _orm
+}
+
+func GetConnector()db.Connector{
+	return _conn
 }
 
 func init() {
@@ -48,9 +59,9 @@ func init() {
 	app := core.NewApp(confPath, &cfg)
 	gof.CurrentApp = app
 	core.Init(app, false, false)
-	conn := app.Db()
+	_conn = app.Db()
 	sto := app.Storage()
-	o := orm.NewOrm(conn.Driver(), conn.Raw())
-	impl.InitTestService(app, conn, o, sto)
-	Factory = (&repos.RepoFactory{}).Init(o, sto)
+	_orm = orm.NewOrm(_conn.Driver(), _conn.Raw())
+	impl.InitTestService(app, _conn, _orm, sto)
+	Factory = (&repos.RepoFactory{}).Init(_orm, sto)
 }

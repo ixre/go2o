@@ -61,7 +61,7 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
 	if v != nil {
-		co.SubOrderId = 0
+		co.ParentOrderId = 0
 		co.VendorId = v.VendorId
 		co.ShopId = v.ShopId
 		co.Subject = v.Subject
@@ -113,7 +113,7 @@ func (o *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
 		DiscountAmount: v.DiscountAmount,
 		FinalAmount:    0,
 		TradeRate:      rate,
-		State:          o.baseValue.State,
+		State:          int32(o.baseValue.State),
 	}
 	//计算最终金额
 	o.fixFinalAmount()

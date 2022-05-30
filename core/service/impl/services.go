@@ -23,6 +23,7 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
+	"strings"
 )
 
 var (
@@ -75,7 +76,7 @@ var (
 	QueryService *queryService
 
 	// ExecuteService 执行任务服务
-	ExecuteService *executeServiceImpl
+	ExecuteService *executionServiceImpl
 
 	CommonDao *impl.CommonDao
 	// AppService APP服务
@@ -103,7 +104,7 @@ func Init(ctx gof.App) {
 	tmp.SetORM(o)
 	orm.CacheProxy(o, sto)
 	// 初始化clickhouse
-	clickhouse.Initialize(ctx)
+	initializeClickhouse(ctx)
 	// 初始化服务
 	initService(ctx, db, o, sto)
 	// 初始化事件
@@ -115,6 +116,20 @@ func Init(ctx gof.App) {
 // InitTestService 初始化测试服务
 func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 	initService(ctx, db, orm, sto)
+	// 初始化clickhouse
+	initializeClickhouse(ctx)
+	// 初始化事件
+	event.InitEvent()
+}
+
+// InitializeClickhouse 初始化clickhouse查询连接
+func initializeClickhouse(app gof.App) {
+	cfg := app.Config()
+	server := cfg.GetString("clickhouse_server")
+	servers := strings.Split(server, ",")
+	database := cfg.GetString("clickhouse_database")
+	password := cfg.GetString("clickhouse_password")
+	clickhouse.Configure(servers, database, password)
 }
 
 // 初始化服务

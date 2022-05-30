@@ -103,8 +103,9 @@ func KeyFormat(s string) string {
 var _ IRegistry = new(registryImpl)
 
 type registryImpl struct {
-	value *Registry
-	repo  IRegistryRepo
+	value     *Registry
+	repo      IRegistryRepo
+	isChanged bool
 }
 
 func NewRegistry(r *Registry, repo IRegistryRepo) IRegistry {
@@ -167,6 +168,7 @@ func (r *registryImpl) Reset() error {
 func (r *registryImpl) Update(value string) error {
 	if r.value.Value != value {
 		r.value.Value = value
+		r.isChanged = true
 	}
 	return nil
 }
@@ -179,10 +181,10 @@ func (r *registryImpl) Save() error {
 	r.value.Value = strings.TrimSpace(r.value.Value)
 	if len(r.value.Value) > 5120 {
 		return errors.New("value length out of 5120")
-
 	}
 	// 推送用户自定义键值变更通知
-	if r.IsUser() {
+	if r.IsUser() && r.isChanged {
+		r.isChanged = false
 		bytes, _ := json.Marshal(r.value)
 		msq.Push(msq.RegistryTopic, string(bytes))
 	}

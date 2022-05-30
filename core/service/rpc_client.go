@@ -267,11 +267,11 @@ func PortalServiceClient() (*grpc.ClientConn, proto.PortalServiceClient, error) 
 	return conn, nil, err
 }
 
-// ExecuteServiceClient 任务执行服务
-func ExecuteServiceClient() (*grpc.ClientConn, proto.ExecuteServiceClient, error) {
+// ExecutionServiceClient 任务执行服务
+func ExecutionServiceClient() (*grpc.ClientConn, proto.ExecutionServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
-		return conn, proto.NewExecuteServiceClient(conn), err
+		return conn, proto.NewExecutionServiceClient(conn), err
 	}
 	return conn, nil, err
 }

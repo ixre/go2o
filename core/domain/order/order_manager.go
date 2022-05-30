@@ -99,15 +99,15 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	case cart.KWholesale:
 		orderType = order.TWholesale
 	default:
-		panic("not support cart kind parse to order")
+		return nil,errors.New("not support cart kind parse to order")
 	}
 	val := &order.Order{
 		BuyerId:   c.BuyerId(),
-		OrderType: int32(orderType),
+		OrderType: int(orderType),
 	}
 	o := t.repo.CreateOrder(val)
 	if o.Type() != order.TRetail {
-		panic("only support normal order")
+		return nil,errors.New("only support normal order")
 	}
 	io := o.(order.INormalOrder)
 	err = io.RequireCart(c)
@@ -178,7 +178,7 @@ func (t *orderManagerImpl) SubmitTradeOrder(c *order.ComplexOrder,
 	tradeRate float64) (order.IOrder, error) {
 	val := &order.Order{
 		BuyerId:   c.BuyerId,
-		OrderType: int32(order.TTrade),
+		OrderType: int(order.TTrade),
 	}
 	o := t.repo.CreateOrder(val)
 	io := o.(order.ITradeOrder)
@@ -241,17 +241,14 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 	if err != nil {
 		return nil, rd, err
 	}
-	if o.Type() != order.TRetail {
-		panic("only support retail cart!")
-	}
-	io := o.(order.INormalOrder)
 	buyer := o.Buyer()
 	// 设置收货地址
-	if err = io.SetAddress(addressId); err != nil {
+	if err = o.SetShipmentAddress(addressId); err != nil {
 		return o, rd, err
 	} else {
-		buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
+		_ = buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
 	}
+	io := o.(order.INormalOrder)
 	if err = o.Submit(); err != nil {
 		return o, rd, err
 	}
@@ -390,7 +387,7 @@ func (u *unifiedOrderAdapterImpl) check() error {
 	return nil
 }
 
-// 复合的订单信息
+// Complex 复合的订单信息
 func (u *unifiedOrderAdapterImpl) Complex() *order.ComplexOrder {
 	if err := u.check(); err == nil {
 		if u.sub {

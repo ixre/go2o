@@ -27,29 +27,20 @@ func NewSnapshotServiceImpl(repo item.IItemRepo) item.ISnapshotService {
 	}
 }
 
-// 获取最新的快照
+// GetLatestSnapshot 获取最新的快照
 func (s *snapshotServiceImpl) GetLatestSnapshot(itemId int64) *item.Snapshot {
 	return s.itemRepo.GetLatestSnapshot(itemId)
 }
 
-// 是否为新快照,与旧有快照进行数据对比
+// CompareSnapshot 是否为新快照,与旧有快照进行数据对比
 func (s *snapshotServiceImpl) CompareSnapshot(snap *item.Snapshot,
 	latest *item.Snapshot) bool {
 	if latest != nil {
-		return latest.Title != snap.Title ||
-			latest.ShortTitle != snap.ShortTitle ||
-			latest.CatId != snap.CatId ||
-			latest.Image != snap.Image ||
-			latest.Cost != snap.Cost ||
-			latest.RetailPrice != snap.RetailPrice ||
-			latest.Price != snap.Price ||
-			latest.ExpressTid != snap.ExpressTid ||
-			latest.Weight != snap.Weight ||
-			latest.Bulk != snap.Bulk ||
-			latest.PriceRange != snap.PriceRange ||
-			latest.ShopCatId != snap.ShopCatId ||
-			latest.ShortTitle != snap.ShortTitle ||
-			latest.ShopId != snap.ShopId ||
+		return latest.Title != snap.Title || latest.CatId != snap.CatId || latest.Image != snap.Image ||
+			latest.Cost != snap.Cost || latest.RetailPrice != snap.RetailPrice || latest.Price != snap.Price ||
+			latest.ExpressTid != snap.ExpressTid || latest.Weight != snap.Weight || latest.Bulk != snap.Bulk ||
+			latest.PriceRange != snap.PriceRange || latest.ShopCatId != snap.ShopCatId ||
+			latest.ShortTitle != snap.ShortTitle || latest.ShopId != snap.ShopId ||
 			latest.ProductId != snap.ProductId
 	}
 	return true
@@ -67,7 +58,7 @@ func (s *snapshotServiceImpl) checkSnapshot(snap *item.Snapshot, it *item.GoodsI
 	return err
 }
 
-// 更新快照, 通过审核后,才会更新快照
+// GenerateSnapshot 更新快照, 通过审核后,才会更新快照
 func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int64, error) {
 	if it.Id <= 0 || it == nil {
 		return -1, item.ErrNoSuchItem
@@ -124,19 +115,19 @@ func (s *snapshotServiceImpl) updateSnapshot(ls *item.Snapshot,
 	return snap.ItemId, nil
 }
 
-// 根据KEY获取已销售商品的快照
+// GetSaleSnapshotByKey 根据KEY获取已销售商品的快照
 func (s *snapshotServiceImpl) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
 	return s.itemRepo.GetSaleSnapshotByKey(key)
 }
 
-// 根据ID获取已销售商品的快照
+// GetSalesSnapshot 根据ID获取已销售商品的快照
 func (s *snapshotServiceImpl) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 	return s.itemRepo.GetSalesSnapshot(id)
 }
 
-// 获取最新的商品销售快照,如果商品有更新,则更新销售快照
+// GetLatestSalesSnapshot 获取最新的商品销售快照,如果商品有更新,则更新销售快照
 func (s *snapshotServiceImpl) GetLatestSalesSnapshot(itemId, skuId int64) *item.TradeSnapshot {
-	snap := s.itemRepo.GetLatestSalesSnapshot(skuId)
+	snap := s.itemRepo.GetLatestSalesSnapshot(itemId,skuId)
 	snapBasis := s.GetLatestSnapshot(itemId)
 	if snap == nil || snap.CreateTime != snapBasis.UpdateTime {
 		// 生成交易快照

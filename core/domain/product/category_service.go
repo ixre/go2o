@@ -17,6 +17,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/algorithm/iterator"
+	"github.com/ixre/gof/log"
 	"sort"
 	"strconv"
 	"time"
@@ -168,7 +169,8 @@ func (c *categoryImpl) parentWalk(list []*product.Category,
 	}
 	for _, v := range list {
 		if v.Id == v.ParentId {
-			panic(errors.New(fmt.Sprintf("Bad category , id is same of parent id , id:%s", v.Id)))
+			log.Error(errors.New(fmt.Sprintf("Bad category , id is same of parent id , id:%d", v.Id)))
+			continue
 		} else if v.Id == parentId {
 			c.parentWalk(list, v.ParentId, level)
 			break

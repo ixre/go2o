@@ -26,6 +26,7 @@ func NewJobRepository(o orm.Orm, sto storage.Interface) job.IJobRepo {
 	if !jobRepoImplMapped {
 		_ = o.Mapping(job.ExecData{}, "job_exec_data")
 		_ = o.Mapping(job.ExecFail{}, "job_exec_fail")
+		_ = o.Mapping(job.ExecRequeue{}, "exec_re_queue")
 		jobRepoImplMapped = true
 	}
 	return &jobRepositoryImpl{
@@ -60,7 +61,7 @@ func (j *jobRepositoryImpl) GetExecDataBy(where string, v ...interface{}) *job.E
 }
 
 func (j *jobRepositoryImpl) GetJobByName(name string) job.IJobAggregate {
-	v := j.GetExecDataBy("job_name = $1", name)
+	v := j.GetExecDataBy("job_name = $1 ORDER BY id ASC limit 1", name)
 	if v != nil {
 		return j.CreateJob(v)
 	}
@@ -94,6 +95,14 @@ func (j *jobRepositoryImpl) SaveExecFail(v *job.ExecFail) (int, error) {
 	id, err := orm.Save(j._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ExecFail")
+	}
+	return id, err
+}
+
+func (j *jobRepositoryImpl) SaveRequeue(v *job.ExecRequeue) (int, error) {
+	id, err := orm.Save(j._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ReQueue")
 	}
 	return id, err
 }

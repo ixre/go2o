@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
@@ -67,9 +68,9 @@ func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRe
 	return ret, nil
 }
 
-// 查询分页普通订单
+// MemberNormalOrders 查询分页普通订单
 func (q *queryService) MemberNormalOrders(_ context.Context, r *proto.MemberOrderPagingRequest) (*proto.MemberOrderPagingResponse, error) {
-	n, list := q.orderQuery.QueryPagerOrder(
+	n, list := q.orderQuery.QueryPagingNormalOrder(
 		r.MemberId,
 		r.Params.Begin,
 		r.Params.End,
@@ -78,7 +79,7 @@ func (q *queryService) MemberNormalOrders(_ context.Context, r *proto.MemberOrde
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.SPagedMemberSubOrder, len(list)),
+		Value: make([]*proto.SMemberPagingOrder, len(list)),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseOrder(v)
@@ -86,7 +87,7 @@ func (q *queryService) MemberNormalOrders(_ context.Context, r *proto.MemberOrde
 	return ret, nil
 }
 
-// 查询分页批发订单
+// QueryWholesaleOrders 查询分页批发订单
 func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOrderPagingRequest) (*proto.MemberOrderPagingResponse, error) {
 	n, list := q.orderQuery.PagedWholesaleOrderOfBuyer(
 		r.MemberId,
@@ -97,7 +98,7 @@ func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOr
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.SPagedMemberSubOrder, len(list)),
+		Value: make([]*proto.SMemberPagingOrder, len(list)),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseOrder(v)
@@ -105,7 +106,7 @@ func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOr
 	return ret, nil
 }
 
-// 查询分页交易/服务类订单
+// QueryTradeOrders 查询分页交易/服务类订单
 func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderPagingRequest) (*proto.MemberOrderPagingResponse, error) {
 	n, list := q.orderQuery.PagedTradeOrderOfBuyer(
 		r.MemberId,
@@ -116,7 +117,7 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 		r.Params.SortBy)
 	ret := &proto.MemberOrderPagingResponse{
 		Total: int64(n),
-		Value: make([]*proto.SPagedMemberSubOrder, len(list)),
+		Value: make([]*proto.SMemberPagingOrder, len(list)),
 	}
 	for i, v := range list {
 		ret.Value[i] = q.parseTradeOrder(v)
@@ -124,27 +125,53 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 	return ret, nil
 }
 
-func (q *queryService) parseOrder(src *dto.PagedMemberSubOrder) *proto.SPagedMemberSubOrder {
-	dst := &proto.SPagedMemberSubOrder{
+func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberPagingOrder {
+	dst := &proto.SMemberPagingOrder{
 		OrderNo:        src.OrderNo,
-		ParentNo:       src.ParentNo,
-		VendorId:       src.VendorId,
-		ShopId:         src.ShopId,
-		ShopName:       src.ShopName,
+		ItemCount:      int64(src.ItemCount),
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
-		IsPaid:         src.IsPaid,
-		FinalFee:       src.FinalFee,
+		FinalAmount:    src.FinalAmount,
 		State:          int32(src.State),
 		StateText:      src.StateText,
 		CreateTime:     src.CreateTime,
-		Items:          make([]*proto.SOrderItem, 0),
+		SubOrders:      make([]*proto.SMemberPagingSubOrder, 0),
 	}
-	for _, v := range src.Items {
-		dst.Items = append(dst.Items, q.parseOrderItem(v))
+	for _, v := range src.SubOrders {
+		sub := &proto.SMemberPagingSubOrder{
+			OrderNo:     v.OrderNo,
+			ShopId:      v.ShopId,
+			ShopName:    v.ShopName,
+			FinalAmount: v.FinalAmount,
+			Items:       []*proto.SOrderItem{},
+			State:       int32(v.State),
+			StateText:   v.StateText,
+		}
+		for _, it := range v.Items {
+			sub.Items = append(sub.Items, &proto.SOrderItem{
+				Id:             int64(it.Id),
+				SnapshotId:     int64(it.SnapshotId),
+				SkuId:          int64(it.SkuId),
+				ItemId:         int64(it.ItemId),
+				ItemTitle:      it.ItemTitle,
+				Image:          it.Image,
+				Price:          it.Price,
+				FinalPrice:     it.FinalPrice,
+				Quantity:       int32(it.Quantity),
+				ReturnQuantity: int32(it.ReturnQuantity),
+				ItemAmount:     int64(it.FinalPrice * int64(it.Quantity)),
+				FinalAmount:    it.FinalAmount,
+				IsShipped:      it.IsShipped == 1,
+				Data:           map[string]string{},
+			})
+		}
+		dst.SubOrders = append(dst.SubOrders, sub)
 	}
+	//for _, v := range src.Items {
+	//	dst.Items = append(dst.Items, q.parseOrderItem(v))
+	//}
 	return dst
 }
 
@@ -160,29 +187,27 @@ func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 		FinalPrice:     v.FinalPrice,
 		Quantity:       int32(v.Quantity),
 		ReturnQuantity: int32(v.ReturnQuantity),
-		Amount:         v.Amount,
+		ItemAmount:     v.Amount,
 		FinalAmount:    v.FinalAmount,
 		IsShipped:      v.IsShipped == 1,
 		Data:           nil,
 	}
 }
 
-func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SPagedMemberSubOrder {
-	return &proto.SPagedMemberSubOrder{
-		OrderNo:  src.OrderNo,
-		VendorId: src.SellerId,
-		ShopId:   src.ShopId,
+func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SMemberPagingOrder {
+	return &proto.SMemberPagingOrder{
+		OrderNo: src.OrderNo,
 		//ShopName:       src.,
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
 		//IsPaid:         src.IsPaid,
-		FinalFee: src.FinalAmount,
-		State:    int32(src.State),
+		FinalAmount: src.FinalAmount,
+		State:       int32(src.State),
 		//StateText:      src.StateText,
 		CreateTime: src.SubmitTime,
-		Items:      make([]*proto.SOrderItem, 0),
+		//Items:      make([]*proto.SOrderItem, 0),
 	}
 }
 
@@ -207,7 +232,7 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 	return rsp, nil
 }
 
-// 根据用户或手机筛选会员
+// SearchMembers 根据用户或手机筛选会员
 func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchRequest) (*proto.MemberListResponse, error) {
 	list := q.memberQuery.FilterMemberByUserOrPhone(r.Keyword)
 	ret := &proto.MemberListResponse{
@@ -244,7 +269,7 @@ func (q *queryService) QueryMemberFavoriteShops(_ context.Context, r *proto.Favo
 	return ret, nil
 }
 
-// 获取分页商品收藏
+// QueryMemberFavoriteGoods 获取分页商品收藏
 func (q *queryService) QueryMemberFavoriteGoods(_ context.Context, r *proto.FavoriteQueryRequest) (*proto.PagingGoodsFavoriteResponse, error) {
 	total, rows := q.memberQuery.PagedGoodsFav(r.MemberId, int(r.Begin), int(r.End), r.Where)
 	ret := &proto.PagingGoodsFavoriteResponse{

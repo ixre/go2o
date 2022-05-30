@@ -53,15 +53,14 @@ func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int64,
 	buyerId int64, items []*cart.ItemPair, data order.IPostedData) order.IOrder {
 	v := &order.Order{
 		BuyerId:   buyerId,
-		OrderType: int32(order.TWholesale),
-		State:     int32(order.StatAwaitingPayment),
+		OrderType: int(order.TWholesale),
+		State:     order.StatAwaitingPayment,
 	}
 	o := w.repo.CreateOrder(v)
 	wo := o.(order.IWholesaleOrder)
 	wo.SetItems(items)
 	wo.SetComment(data.GetComment(sellerId))
-	wo.SetAddress(data.AddressId())
-
+	_ = o.SetShipmentAddress(data.AddressId())
 	return o
 }
 

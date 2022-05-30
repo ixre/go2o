@@ -24,16 +24,18 @@ option java_package = "com.github.go2o.rpc";
 import "global.proto";
 
 /** JobExecData服务 */
-service ExecuteService {
+service ExecutionService {
   /** 获取JobExecData */
-  rpc GetJob (GetJobRequest) returns (SExecData) {
+  rpc GetJob (GetJobRequest) returns (SExecutionData) {
   }
   /** 更新任务执行游标 */
-  rpc UpdateExecCursor (UpdateCursorRequest) returns (Result) {
+  rpc UpdateExecuteCursor (UpdateCursorRequest) returns (Result) {
   }
 
   /** 记录失败 */
   rpc AddFail(AddFailRequest)returns(Result){}
+
+  rpc RejoinQueue(RejoinQueueRequest)returns(RejoinQueueResponse){}
 }
 
 message GetJobRequest{
@@ -48,24 +50,43 @@ message UpdateCursorRequest{
   /** 任务名称 */
   string JobName = 1;
   /** 记录编号　*/
-  int64 RecordId = 2;
+  int64 CursorId = 2;
 }
 
-message    AddFailRequest{
+message AddFailRequest{
   /** 任务名称 */
   string JobName = 1;
   /** 记录编号　*/
-  int64 RecordId = 2;
+  int64 CursorId = 2;
 }
 
+
 /** JobExecData */
-message SExecData{
+message SExecutionData{
   /** 编号 */
   int64 Id = 1;
   /** 任务名称 */
   string JobName = 2;
   /** 上次执行位置索引 */
-  int64 LastExecIndex = 3;
+  int64 LastExecuteCursorId = 3;
   /** 最后执行时间 */
-  int64 LastExecTime = 4;
+  int64 LastExecuteTime = 4;
+}
+
+
+/** 重新加入队列请求 */
+message RejoinQueueRequest{
+  /** 桶名称 */
+  string BucketName = 1;
+  /** 关联数据编号 */
+  int64 RelateId = 2;
+  /** 数据 */
+  string RelateData = 3;
+}
+
+/** 保存重新加入队列响应 */
+message RejoinQueueResponse{
+  int64 ErrCode = 1;
+  string ErrMsg = 2;
+  int64 QueueId = 3;
 }

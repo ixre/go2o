@@ -18,6 +18,8 @@ import (
 	"github.com/ixre/go2o/core"
 	"github.com/ixre/go2o/core/domain/interface/mss"
 	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/infrastructure/locker"
+	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
@@ -143,7 +145,7 @@ func SetLastUnix(key string, unix int64) {
 
 // 运行定时任务
 func startCronTab() {
-	cronTab.AddFunc("@every 2s", job.SyncWalletLogToClickHouse)
+	startClickhouseJob(cronTab)
 	cronTab.Start()
 	return
 	//商户每日报表
@@ -157,6 +159,16 @@ func startCronTab() {
 	// 自动解锁会员
 	cronTab.AddFunc("0 * * * * *", memberAutoUnlock)
 	cronTab.Start()
+}
+
+func startClickhouseJob(tab *cron.Cron) {
+	clickhouseSupport := clickhouse.GetClickhouseConn() != nil
+	if !clickhouseSupport {
+		return
+	}
+	// 删除分布式锁,会导致重启一直不执行任务
+	locker.Unlock("SyncWalletLogToClickHouse")
+	tab.AddFunc("@every 2s", job.SyncWalletLogToClickHouse)
 }
 
 // 添加定时任务

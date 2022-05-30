@@ -11,10 +11,10 @@ func Configure(s storage.Interface) {
 	lock = concurrent.NewDistributedLock(s)
 }
 
-func Lock(key string,expires int64)bool{
-	return lock.Lock(key,expires)
+func Lock(key string, expires int64) bool {
+	return lock.Lock(key, expires)
 }
 
-func Unlock(key string){
-	 lock.Unlock(key)
+func Unlock(key string) {
+	lock.Unlock(key)
 }

@@ -148,7 +148,7 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 		StockNum:   src.StockNum,
 		SaleNum:    0,
 		SkuId:      src.SkuId,
-		//Cost:        src.Cost,
+		Cost:        src.Cost,
 		Price: src.Price,
 		//RetailPrice: src.Price,
 		SkuArray: make([]*item.Sku, len(src.SkuArray)),
@@ -171,7 +171,7 @@ func ParseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
 		FinalPrice:     v.FinalPrice,
 		Quantity:       int32(v.Quantity),
 		ReturnQuantity: int32(v.ReturnQuantity),
-		Amount:         v.Amount,
+		ItemAmount:         v.Amount,
 		FinalAmount:    v.FinalAmount,
 		IsShipped:      v.IsShipped == 1,
 	}

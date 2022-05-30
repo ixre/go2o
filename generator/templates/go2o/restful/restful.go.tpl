@@ -49,8 +49,8 @@ func ({{$p}} *{{$structName}}) get{{$shortTitle}}(ctx echo.Context) error {
   {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
   {{else}}{{$pk}} := ctx.Param("id"){{end}}
   trans,cli,_ := service.{{$title}}ServiceClient()
-  defer trans.Close()
   ret, _ := cli.Get{{$shortTitle}}(context.TODO(), &proto.{{$pkType}}{Value:{{$pk}}})
+  _ = trans.Close()
   return ctx.JSON(http.StatusOK,ret)
 }
 
@@ -59,8 +59,8 @@ func ({{$p}} *{{$structName}}) create{{$shortTitle}}(ctx echo.Context) error {
   err := ctx.Bind(&dst)
   if err == nil{
     trans,cli,_ := service.{{$title}}ServiceClient()
-    defer trans.Close()
     ret, _ := cli.Save{{$shortTitle}}(context.TODO(), &dst)
+    _ = trans.Close()
     return ctx.JSON(http.StatusOK,ret)
   }
   return err
@@ -77,8 +77,8 @@ func ({{$p}} *{{$structName}}) update{{$shortTitle}}(ctx echo.Context) error {
     {{else}}{{$pk}} := ctx.Param("id"){{end}}
     dst.{{.table.PkProp}} = {{$pk}}
     trans, cli, _ := service.{{$title}}ServiceClient()
-    defer trans.Close()
     ret, _ := cli.Save{{$shortTitle}}(context.TODO(), &dst)
+    _ = trans.Close()
     return ctx.JSON(http.StatusOK, ret)
   }
   return err
@@ -91,16 +91,15 @@ func ({{$p}} *{{$structName}}) delete{{$shortTitle}}(ctx echo.Context) error {
     {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
     {{else}}{{$pk}} := ctx.Param("id"){{end}}
     trans, cli, _ := service.{{$title}}ServiceClient()
-    defer trans.Close()
     ret, _ := cli.Delete{{$shortTitle}}(context.TODO(), &proto.{{$pkType}}{Value: {{$pk}}})
+    _ = trans.Close()
     return ctx.JSON(http.StatusOK, ret)
 }
-
 
 func ({{$p}} *{{$structName}}) query{{$shortTitle}}(ctx echo.Context) error {
   dst := &proto.Query{{$shortTitle}}Request{}
   trans, cli, _ := service.{{$title}}ServiceClient()
-  defer trans.Close()
   ret, _ := cli.Query{{$shortTitle}}List(context.TODO(), dst)
+  _ = trans.Close()
   return ctx.JSON(http.StatusOK,ret.List)
 }

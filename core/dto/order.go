@@ -15,9 +15,44 @@ type (
 	       o.item_amount,o.discount_amount,o.express_fee,
 	       o.package_fee,o.final_fee,o.status
 	*/
-	// 会员分页子订单
-	PagedMemberSubOrder struct {
-		Id             int64
+
+	// MemberPagingOrderDto 会员订单分页对象
+	MemberPagingOrderDto struct {
+		// 订单编号
+		OrderId int64
+		// 买家
+		BuyerId int64
+		// 买家用户名
+		BuyerUser string
+		// 订单号
+		OrderNo string
+		// 商品数量
+		ItemCount int
+		// 商品总金额
+		ItemAmount int64
+		// 抵扣金额
+		DiscountAmount int64
+		// 优惠金额
+		DeductAmount int64
+		// 快递费
+		ExpressFee int64
+		// 包装费
+		PackageFee int64
+		// 最终金额
+		FinalAmount int64
+		// 子订单
+		SubOrders []*MemberPagingSubOrderDto
+		// 状态
+		State int32
+		// 状态文本
+		StateText string
+		// 下单时间
+		CreateTime int64
+	}
+	// MemberPagingSubOrderDto 会员分页子订单
+	MemberPagingSubOrderDto struct {
+		OrderId        int64
+		ParentOrderId  int64
 		OrderNo        string
 		ParentNo       string
 		VendorId       int64
@@ -28,7 +63,7 @@ type (
 		ExpressFee     int64
 		PackageFee     int64
 		IsPaid         bool
-		FinalFee       int64
+		FinalAmount    int64
 		State          int
 		StateText      string
 		CreateTime     int64
@@ -64,7 +99,7 @@ type (
 	           si.quantity,si.fee,si.final_fee
 	*/
 
-	// 订单商品项
+	// OrderItem 订单商品项
 	OrderItem struct {
 		// 编号
 		Id int

@@ -38,11 +38,11 @@ var (
 )
 
 const (
-	// 普通(B2C)购物车
+	// KNormal 普通(B2C)购物车
 	KNormal Kind = 1
-	// 零售(B2C-线下)购物车
+	// KRetail 零售(B2C-线下)购物车
 	KRetail Kind = 2
-	// 批发(B2B)购物车
+	// KWholesale 批发(B2B)购物车
 	KWholesale Kind = 3
 )
 
@@ -78,7 +78,7 @@ type (
 		// Put 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
 		// 暂时以店铺区分,2017-02-28考虑单独的购物车或子系统
-		Put(itemId, skuId int64, quantity int32) error
+		Put(itemId, skuId int64, quantity int32, checkOnly bool) error
 		// Update 更新商品数量，如数量为0，则删除
 		Update(itemId, skuId int64, quantity int32) error
 		// Remove 移出项
@@ -103,69 +103,69 @@ type (
 		GetItem(itemId, skuId int64) *NormalCartItem
 	}
 
-	//商品批发购物车
+	// IWholesaleCart 商品批发购物车
 	IWholesaleCart interface {
-		// 获取购物车值
+		// GetValue 获取购物车值
 		GetValue() WsCart
-		// 获取商品集合
+		// Items 获取商品集合
 		Items() []*WsCartItem
-		// Jdo数据
+		// JdoData Jdo数据
 		JdoData(checkout bool, checked map[int64][]int64) *WCartJdo
-		// 简单Jdo数据,max为最多数量
+		// QuickJdoData 简单Jdo数据,max为最多数量
 		QuickJdoData(max int) string
 	}
 
-	// 根据数据获取购物车,
+	// ICartRepo 根据数据获取购物车,
 	// 如果member的cart与key不一致，则合并购物车；
 	// 如果会员没有购物车，则绑定为key的购物车
 	// 如果都没有，则创建一个购物车
 	ICartRepo interface {
-		// 获取买家的购物车
+		// GetMyCart 获取买家的购物车
 		GetMyCart(buyerId int64, k Kind) ICart
-		// 创建一个购物车
+		// NewNormalCart 创建一个购物车
 		NewNormalCart(code string) ICart
-		// 创建一个普通购物车
+		// CreateNormalCart 创建一个普通购物车
 		CreateNormalCart(r *NormalCart) ICart
-		// 获取购物车
+		// GetNormalCart 获取购物车
 		GetNormalCart(id int32) ICart
 
-		// 获取购物车
+		// GetShoppingCartByKey 获取购物车
 		GetShoppingCartByKey(key string) ICart
-		// 获取购物车
+		// GetShoppingCart 获取购物车
 		GetShoppingCart(key string) *NormalCart
-		// 获取最新的购物车
+		// GetLatestCart 获取最新的购物车
 		GetLatestCart(buyerId int64) *NormalCart
-		// 保存购物车
+		// SaveShoppingCart 保存购物车
 		SaveShoppingCart(*NormalCart) (int32, error)
-		// 移出购物车项
+		// RemoveCartItem 移出购物车项
 		RemoveCartItem(id int32) error
-		// 保存购物车项
+		// SaveCartItem 保存购物车项
 		SaveCartItem(*NormalCartItem) (int32, error)
-		// 清空购物车项
+		// EmptyCartItems 清空购物车项
 		EmptyCartItems(cartId int32) error
-		// 删除购物车
+		// DeleteCart 删除购物车
 		DeleteCart(cartId int32) error
 
-		// Select SaleCartItem
+		// SelectNormalCartItem Select SaleCartItem
 		SelectNormalCartItem(where string, v ...interface{}) []*NormalCartItem
-		// Save SaleCart
+		// SaveNormalCart Save SaleCart
 		SaveNormalCart(v *NormalCart) (int, error)
-		// Delete SaleCart
+		// DeleteNormalCart Delete SaleCart
 		DeleteNormalCart(primary interface{}) error
 
-		// Save WsCart
+		// SaveWsCart Save WsCart
 		SaveWsCart(v *WsCart) (int, error)
-		// Delete WsCart
+		// DeleteWsCart Delete WsCart
 		DeleteWsCart(primary interface{}) error
-		// Select WsCartItem
+		// SelectWsCartItem Select WsCartItem
 		SelectWsCartItem(where string, v ...interface{}) []*WsCartItem
-		// Save WsCartItem
+		// SaveWsCartItem Save WsCartItem
 		SaveWsCartItem(v *WsCartItem) (int, error)
-		// Batch Delete WsCartItem
+		// BatchDeleteWsCartItem Batch Delete WsCartItem
 		BatchDeleteWsCartItem(where string, v ...interface{}) (int64, error)
 	}
 
-	// 购物车商品
+	// ItemPair 购物车商品
 	ItemPair struct {
 		// 商品编号
 		ItemId int64
@@ -179,7 +179,7 @@ type (
 		Checked int32
 	}
 
-	// 购物车
+	// NormalCart 购物车
 	NormalCart struct {
 		Id         int32  `db:"id" pk:"yes" auto:"yes"`
 		CartCode   string `db:"code"`
@@ -192,7 +192,7 @@ type (
 		Items      []*NormalCartItem `db:"-"`
 	}
 
-	// 购物车项
+	// NormalCartItem 购物车项
 	NormalCartItem struct {
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
@@ -214,7 +214,7 @@ type (
 		Sku *item.SkuMedia `db:"-"`
 	}
 
-	// 商品批发购物车
+	// WsCart 商品批发购物车
 	WsCart struct {
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
@@ -232,7 +232,7 @@ type (
 		Items []*WsCartItem `db:"-"`
 	}
 
-	// 批发购物车商品项
+	// WsCartItem 批发购物车商品项
 	WsCartItem struct {
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
@@ -252,13 +252,13 @@ type (
 		Sku *item.SkuMedia `db:"-"`
 	}
 
-	// 批发购物车JSON数据对象
+	// WCartJdo 批发购物车JSON数据对象
 	WCartJdo struct {
 		Seller []WCartSellerJdo
 		Data   map[string]string
 	}
 
-	// 批发购物车卖家JSON数据对象
+	// WCartSellerJdo 批发购物车卖家JSON数据对象
 	WCartSellerJdo struct {
 		// 运营商编号
 		SellerId int64
@@ -268,7 +268,7 @@ type (
 		Data map[string]string
 	}
 
-	// 批发购物车商品JSON数据对象
+	// WCartItemJdo 批发购物车商品JSON数据对象
 	WCartItemJdo struct {
 		// 商品编号
 		ItemId int64
@@ -282,7 +282,7 @@ type (
 		Data map[string]string
 	}
 
-	// 批发购物车规格JSON数据对象
+	// WCartSkuJdo 批发购物车规格JSON数据对象
 	WCartSkuJdo struct {
 		// SKU编号
 		SkuId int64

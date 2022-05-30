@@ -11,30 +11,30 @@ type EventHandler struct {
 }
 
 func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {
-	ld := data.(*events.WalletLogClickhouseWriteEvent)
+	ld := data.(*events.WalletLogClickhouseUpdateEvent)
 	conn := clickhouse.GetClickhouseConn()
-	batch, err := conn.PrepareBatch(context.TODO(),
-		`INSERT INTO go2o_wal_wallet_log (  
-id,wallet_id,wallet_user,kind,title,outer_chan,
-outer_no,value,balance,procedure_fee,
-opr_uid,opr_name,account_no,
-account_name,bank_name,review_state,
-review_remark,review_time,remark,create_time,
-update_time)`)
-	if err != nil {
-		log.Println("[ event]: handle wallet log write error", err.Error())
+	if ld == nil || conn == nil {
 		return
 	}
 	l := ld.Data
-	if err := batch.Append(
-		l.Id, l.WalletId, l.WalletUser,
-		int32(l.Kind),
+	if err := conn.Exec(context.TODO(),
+		`ALTER TABLE go2o_wal_wallet_log UPDATE 
+		title= $1, 
+		outer_no=$2,
+		opr_uid = $3,
+		opr_name = $4,
+		account_no = $5,
+		account_name = $6,
+		bank_name = $7,
+		review_state = $8,
+		review_remark = $9,
+		review_time = $10,
+		remark = $11,
+		update_time = $12 WHERE 
+		wallet_id = $13 AND id= $14
+	`,
 		l.Title,
-		l.OuterChan,
 		l.OuterNo,
-		l.Value,
-		l.Balance,
-		int32(l.ProcedureFee),
 		int64(l.OperatorUid),
 		l.OperatorName,
 		l.AccountNo,
@@ -44,14 +44,11 @@ update_time)`)
 		l.ReviewRemark,
 		l.ReviewTime,
 		l.Remark,
-		l.CreateTime,
 		l.UpdateTime,
+		l.WalletId,
+		l.Id,
 	); err != nil {
-		log.Println("[ event]: handle wallet log write error", err.Error())
-		return
-	}
-	if err := batch.Send(); err != nil {
-		log.Println("[ event]: handle wallet log write error", err.Error())
+		log.Println("[ event]: update wallet log error", err.Error())
 		return
 	}
 }

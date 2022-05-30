@@ -211,14 +211,14 @@ func (c *cartImpl) getItems() []*cart.NormalCartItem {
 	return c.value.Items
 }
 
-// 添加项
-func (c *cartImpl) Put(itemId, skuId int64, num int32) error {
-	_, err := c.put(itemId, skuId, num)
+// Put 添加项
+func (c *cartImpl) Put(itemId, skuId int64, num int32, checkOnly bool) error {
+	_, err := c.put(itemId, skuId, num, checkOnly)
 	return err
 }
 
 // 添加项
-func (c *cartImpl) put(itemId, skuId int64, num int32) (*cart.NormalCartItem, error) {
+func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.NormalCartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.NormalCartItem{}
@@ -254,12 +254,24 @@ func (c *cartImpl) put(itemId, skuId int64, num int32) (*cart.NormalCartItem, er
 	// 添加数量
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
-			if v.Quantity+num > stock {
-				return v, item.ErrOutOfStock // 库存不足
+			if checkOnly { // 立即购买
+				if v.Quantity > stock {
+					return v, item.ErrOutOfStock // 库存不足
+				}
+				v.Quantity = num
+			} else {
+				if v.Quantity+num > stock {
+					return v, item.ErrOutOfStock // 库存不足
+				}
+				v.Quantity += num
 			}
-			v.Quantity += num
 			return v, err
+		} else {
+			if checkOnly {
+				v.Checked = 0
+			}
 		}
+
 	}
 
 	c.snapMap = nil
@@ -311,7 +323,7 @@ func (c *cartImpl) Remove(itemId, skuId int64, quantity int32) error {
 	return cart.ErrNoMatchItem
 }
 
-// 获取项
+// GetItem 获取项
 func (c *cartImpl) GetItem(itemId, skuId int64) *cart.NormalCartItem {
 	if c.value != nil && c.value.Items != nil {
 		for _, v := range c.value.Items {
@@ -323,12 +335,12 @@ func (c *cartImpl) GetItem(itemId, skuId int64) *cart.NormalCartItem {
 	return nil
 }
 
-// 获取购物车编码
+// Code 获取购物车编码
 func (c *cartImpl) Code() string {
 	return c.value.CartCode
 }
 
-// 合并购物车，并返回新的购物车
+// Combine 合并购物车，并返回新的购物车
 func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 	if ic.Kind() != cart.KNormal {
 		panic("only retail cart can be combine!")
@@ -336,20 +348,20 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 	if id := ic.GetAggregateRootId(); id != c.GetAggregateRootId() {
 		rc := ic.(cart.INormalCart)
 		for _, v := range rc.Items() {
-			if item, err := c.put(v.ItemId,
-				v.SkuId, v.Quantity); err == nil {
+			if it, err := c.put(v.ItemId,
+				v.SkuId, v.Quantity, false); err == nil {
 				if v.Checked == 1 {
-					item.Checked = 1
+					it.Checked = 1
 				}
 			}
 		}
-		ic.Destroy() //合并后,需销毁购物车
+		_ = ic.Destroy() //合并后,需销毁购物车
 	}
 	c.snapMap = nil //clean
 	return c
 }
 
-// 标记商品结算
+// SignItemChecked 标记商品结算
 func (c *cartImpl) SignItemChecked(items []*cart.ItemPair) error {
 	mp := c.getItems()
 	// 遍历购物车商品，默认不结算。
@@ -366,7 +378,7 @@ func (c *cartImpl) SignItemChecked(items []*cart.ItemPair) error {
 	return c.check()
 }
 
-// 保存购物车
+// Save 保存购物车
 func (c *cartImpl) Save() (int32, error) {
 	c.value.UpdateTime = time.Now().Unix()
 	id, err := c.rep.SaveShoppingCart(c.value)
