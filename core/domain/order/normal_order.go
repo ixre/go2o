@@ -512,7 +512,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 	po := &payment.Order{
 		SellerId:       0,
 		TradeNo:        v.OrderNo,
-		SubOrder:       1,
+		SubOrder:       0,
 		OrderType:      int(order.TRetail),
 		OutOrderNo:     v.OrderNo,
 		Subject:        v.Subject,
