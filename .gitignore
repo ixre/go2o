@@ -27,3 +27,4 @@ tmp
 api_docs
 container/data
 *.iml
+.vscode
