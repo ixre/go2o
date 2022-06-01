@@ -224,30 +224,27 @@ func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.Com
 
 // Complex 复合的订单信息
 func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
-	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
-	co.ParentOrderId = 0
-	co.VendorId = v.VendorId
-	co.ShopId = v.ShopId
-	co.Subject = ""
-	co.Consignee = &order.ComplexConsignee{
-		ConsigneeName:   o.baseValue.ConsigneeName,
-		ConsigneePhone:  o.baseValue.ConsigneePhone,
-		ShippingAddress: o.baseValue.ShippingAddress,
+	dt := &order.ComplexOrderDetails{
+		Id:             o.GetAggregateRootId(),
+		OrderNo:        o.value.OrderNo,
+		ShopId:         o.value.ShopId,
+		ShopName:       o.value.ShopName,
+		ItemAmount:     co.ItemAmount,
+		DiscountAmount: co.DiscountAmount,
+		ExpressFee:     co.ExpressFee,
+		PackageFee:     co.PackageFee,
+		FinalAmount:    co.FinalAmount,
+		BuyerComment:   o.value.BuyerComment,
+		State:          int32(o.value.State),
+		StateText:      "",
+		Items:          []*order.ComplexItem{},
+		UpdateTime:     o.value.UpdateTime,
 	}
-	co.DiscountAmount = o.baseValue.DiscountAmount
-	co.ItemCount = o.baseValue.ItemCount
-	co.ItemAmount = o.baseValue.ItemAmount
-	co.ExpressFee = o.baseValue.ExpressFee
-	co.PackageFee = o.baseValue.PackageFee
-	co.FinalAmount = o.baseValue.FinalAmount
-	co.BuyerComment = v.BuyerComment
-	co.IsBreak = 0
-	co.UpdateTime = v.UpdateTime
-	co.Items = []*order.ComplexItem{}
 	for _, v := range o.Items() {
-		co.Items = append(co.Items, o.parseComplexItem(v))
+		dt.Items = append(dt.Items, o.parseComplexItem(v))
 	}
+	co.Details = append(co.Details,dt)
 	return co
 }
 

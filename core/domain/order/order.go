@@ -181,13 +181,30 @@ func (o *baseOrderImpl) bindItemInfo(i *order.ComplexItem) {
 func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 	if o.complex == nil {
 		o.complex = &order.ComplexOrder{
-			OrderId:    o.GetAggregateRootId(),
-			OrderType:  int32(o.baseValue.OrderType),
-			OrderNo:    o.OrderNo(),
-			BuyerId:    o.baseValue.BuyerId,
-			State:      int32(o.baseValue.State),
-			CreateTime: o.baseValue.CreateTime,
-			Data:       make(map[string]string),
+			OrderId:        o.GetAggregateRootId(),
+			OrderType:      int32(o.baseValue.OrderType),
+			OrderNo:        o.OrderNo(),
+			BuyerId:        o.baseValue.BuyerId,
+			BuyerUser:      o.baseValue.BuyerUser,
+			Subject:        o.baseValue.Subject,
+			ItemCount:      o.baseValue.ItemCount,
+			ItemAmount:     o.baseValue.ItemAmount,
+			DiscountAmount: o.baseValue.DiscountAmount,
+			ExpressFee:     o.baseValue.ExpressFee,
+			PackageFee:     o.baseValue.PackageFee,
+			FinalAmount:    o.baseValue.FinalAmount,
+			IsBreak:        int32(o.baseValue.IsBreak),
+			State:          int32(o.baseValue.State),
+			StateText:      "",
+			CreateTime:     o.baseValue.CreateTime,
+			UpdateTime:     o.baseValue.UpdateTime,
+			Data:           make(map[string]string),
+			Details:        []*order.ComplexOrderDetails{},
+			Consignee :&order.ComplexConsignee{
+				ConsigneeName:   o.baseValue.ConsigneeName,
+				ConsigneePhone:  o.baseValue.ConsigneePhone,
+				ShippingAddress: o.baseValue.ShippingAddress,
+			},
 		}
 	}
 	return o.complex

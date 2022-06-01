@@ -308,7 +308,7 @@ func (t *orderManagerImpl) GetOrderById(orderId int64) order.IOrder {
 
 // 根据订单号获取订单
 func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
-	val := t.repo.GetOrder("order_no= $1", orderNo)
+	val := t.repo.GetOrder("order_no = $1", orderNo)
 	if val != nil {
 		return t.repo.CreateOrder(val)
 	}

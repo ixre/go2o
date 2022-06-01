@@ -95,26 +95,15 @@ func (o *normalOrderImpl) getBaseOrder() *baseOrderImpl {
 
 // Complex 复合的订单信息
 func (o *normalOrderImpl) Complex() *order.ComplexOrder {
-	v := o.baseValue
 	co := o.baseOrderImpl.Complex()
-	co.VendorId = 0
-	co.ShopId = 0
-	co.ParentOrderId = 0
-	co.Consignee = &order.ComplexConsignee{
-		ConsigneeName:   v.ConsigneeName,
-		ConsigneePhone:  v.ConsigneePhone,
-		ShippingAddress: v.ShippingAddress,
+	subOrders := o.GetSubOrders()
+	for _,v := range subOrders {
+		co.Details = append(co.Details,parseDetailValue(v))
 	}
-	co.DiscountAmount = v.DiscountAmount
-	co.ItemCount = v.ItemCount
-	co.ItemAmount = v.ItemAmount
-	co.ExpressFee = v.ExpressFee
-	co.PackageFee = v.PackageFee
-	co.FinalAmount = v.FinalAmount
-	co.IsBreak = int32(v.IsBreak)
-	co.UpdateTime = v.UpdateTime
 	return co
 }
+
+
 
 // ApplyCoupon 应用优惠券
 func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
@@ -982,28 +971,35 @@ func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 	return o.value
 }
 
+func parseDetailValue(subOrder order.ISubOrder)*order.ComplexOrderDetails{
+    v := subOrder.GetValue()
+	dst := &order.ComplexOrderDetails{
+		Id:             subOrder.GetDomainId(),
+		OrderNo:        v.OrderNo,
+		ShopId:         v.ShopId,
+		ShopName:       v.ShopName,
+		ItemAmount:     v.ItemAmount,
+		DiscountAmount: v.DiscountAmount,
+		ExpressFee:     v.ExpressFee,
+		PackageFee:     v.PackageFee,
+		FinalAmount:    v.FinalAmount,
+		BuyerComment:   v.BuyerComment,
+		State:          v.State,
+		StateText:      "",
+		Items:          []*order.ComplexItem{},
+		UpdateTime:     v.UpdateTime,
+	}
+	impl  := subOrder.(*subOrderImpl)
+	for _, v := range subOrder.Items() {
+		dst.Items = append(dst.Items, impl.parseComplexItem(v))
+	}
+	return dst
+}
+
 // Complex 复合的订单信息
 func (o *subOrderImpl) Complex() *order.ComplexOrder {
-	v := o.GetValue()
 	co := o.baseOrder().Complex()
-	co.OrderId = o.GetDomainId()
-	co.ParentOrderId = v.OrderId
-	co.VendorId = v.VendorId
-	co.ShopId = v.ShopId
-	co.SubOrder = true
-	co.OrderNo = o.value.OrderNo
-	co.Subject = v.Subject
-	co.DiscountAmount = v.DiscountAmount
-	co.ItemAmount = v.ItemAmount
-	co.ExpressFee = v.ExpressFee
-	co.PackageFee = v.PackageFee
-	co.FinalAmount = v.FinalAmount
-	co.UpdateTime = v.UpdateTime
-	co.State = v.State
-	co.Items = []*order.ComplexItem{}
-	for _, v := range o.Items() {
-		co.Items = append(co.Items, o.parseComplexItem(v))
-	}
+	co.Details = []*order.ComplexOrderDetails{ parseDetailValue(o)}
 	return co
 }
 

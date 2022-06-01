@@ -228,12 +228,13 @@ func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.Submit
 }
 
 // GetParentOrder 根据编号获取订单
-func (s *orderServiceImpl) GetParentOrder(c context.Context, id *proto.OrderNoV2) (*proto.SParentOrder, error) {
-	//c := _s.manager.Unified(id.Value,false).Complex()
-	//if c != nil {
-	//	return parser.OrderDto(c), nil
-	//}
-	return nil, nil
+func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV2) (*proto.SParentOrder, error) {
+	io := s.manager.GetOrderByNo(req.Value)
+	if io == nil{
+		return nil,errors.New("no such order")
+	}
+	ord := io.Complex()
+	return parser.ParentOrderDto(ord),nil
 }
 
 // GetOrder 获取订单和商品项信息
