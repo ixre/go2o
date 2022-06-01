@@ -89,21 +89,17 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	}
 }
 
-func (o *normalOrderImpl) getBaseOrder() *baseOrderImpl {
-	return o.baseOrderImpl
-}
-
 // Complex 复合的订单信息
 func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	co := o.baseOrderImpl.Complex()
-	subOrders := o.GetSubOrders()
-	for _,v := range subOrders {
-		co.Details = append(co.Details,parseDetailValue(v))
+	if o.GetAggregateRootId() > 0 {
+		subOrders := o.GetSubOrders()
+		for _, v := range subOrders {
+			co.Details = append(co.Details, parseDetailValue(v))
+		}
 	}
 	return co
 }
-
-
 
 // ApplyCoupon 应用优惠券
 func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
@@ -971,8 +967,8 @@ func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 	return o.value
 }
 
-func parseDetailValue(subOrder order.ISubOrder)*order.ComplexOrderDetails{
-    v := subOrder.GetValue()
+func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
+	v := subOrder.GetValue()
 	dst := &order.ComplexOrderDetails{
 		Id:             subOrder.GetDomainId(),
 		OrderNo:        v.OrderNo,
@@ -989,7 +985,7 @@ func parseDetailValue(subOrder order.ISubOrder)*order.ComplexOrderDetails{
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     v.UpdateTime,
 	}
-	impl  := subOrder.(*subOrderImpl)
+	impl := subOrder.(*subOrderImpl)
 	for _, v := range subOrder.Items() {
 		dst.Items = append(dst.Items, impl.parseComplexItem(v))
 	}
@@ -999,7 +995,7 @@ func parseDetailValue(subOrder order.ISubOrder)*order.ComplexOrderDetails{
 // Complex 复合的订单信息
 func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	co := o.baseOrder().Complex()
-	co.Details = []*order.ComplexOrderDetails{ parseDetailValue(o)}
+	co.Details = []*order.ComplexOrderDetails{parseDetailValue(o)}
 	return co
 }
 
