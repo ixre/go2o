@@ -282,3 +282,16 @@ COMMENT ON COLUMN "public".order_wholesale_order.remark IS '备注';
 COMMENT ON COLUMN "public".order_wholesale_order.state IS '订单状态';
 COMMENT ON COLUMN "public".order_wholesale_order.create_time IS '创建时间';
 COMMENT ON COLUMN "public".order_wholesale_order.update_time IS '更新时间';
+
+CREATE TABLE "public".pay_merge_order (
+  id             serial NOT NULL, 
+  merge_trade_no varchar(40) NOT NULL, 
+  order_trade_no varchar(40) NOT NULL, 
+  submit_time    int8 NOT NULL, 
+  CONSTRAINT pay_merge_order_pkey 
+    PRIMARY KEY (id));
+COMMENT ON TABLE "public".pay_merge_order IS '合并支付单';
+COMMENT ON COLUMN "public".pay_merge_order.id IS '编号';
+COMMENT ON COLUMN "public".pay_merge_order.merge_trade_no IS '合并后的交易单号';
+COMMENT ON COLUMN "public".pay_merge_order.order_trade_no IS '关联交易单号';
+COMMENT ON COLUMN "public".pay_merge_order.submit_time IS '提交时间';

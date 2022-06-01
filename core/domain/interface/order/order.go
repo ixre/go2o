@@ -244,6 +244,8 @@ type (
 		Submit() error
 		// BuildCart 通过订单创建购物车 */
 		BuildCart() cart.ICart
+		// GetPaymentOrder 获取支付单
+		GetPaymentOrder() payment.IPaymentOrder
 	}
 
 	// IWholesaleOrder 批发订单
@@ -254,8 +256,6 @@ type (
 		SetComment(comment string)
 		// Items 获取商品项
 		Items() []*WholesaleItem
-		// GetPaymentOrder 获取支付单
-		GetPaymentOrder() payment.IPaymentOrder
 		// OnlinePaymentTradeFinish 在线支付交易完成
 		OnlinePaymentTradeFinish() error
 
@@ -285,8 +285,6 @@ type (
 		Set(o *ComplexOrder, rate float64) error
 		// CashPay 现金支付
 		CashPay() error
-		// GetPaymentOrder 获取支付单
-		GetPaymentOrder() payment.IPaymentOrder
 		// TradePaymentFinish 交易支付完成
 		TradePaymentFinish() error
 		// UpdateTicket 更新发票数据

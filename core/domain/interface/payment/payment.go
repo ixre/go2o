@@ -287,7 +287,7 @@ type (
 	// MergeOrder 合并的支付单
 	MergeOrder struct {
 		// 编号
-		ID int `db:"id"`
+		ID int `db:"id" pk:"yes" auto:"yes"`
 		// 合并交易单号
 		MergeTradeNo string `db:"merge_trade_no"`
 		// 交易号

@@ -11,6 +11,7 @@ package order
 
 import (
 	"errors"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/delivery"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -99,7 +100,7 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	case cart.KWholesale:
 		orderType = order.TWholesale
 	default:
-		return nil,errors.New("not support cart kind parse to order")
+		return nil, errors.New("not support cart kind parse to order")
 	}
 	val := &order.Order{
 		BuyerId:   c.BuyerId(),
@@ -107,11 +108,13 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 	}
 	o := t.repo.CreateOrder(val)
 	if o.Type() != order.TRetail {
-		return nil,errors.New("only support normal order")
+		return nil, errors.New("only support normal order")
 	}
 	io := o.(order.INormalOrder)
 	err = io.RequireCart(c)
-	io.GetByVendor()
+	if err == nil {
+		io.GetByVendor()
+	}
 	return o, err
 }
 
@@ -248,62 +251,50 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 	} else {
 		_ = buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
 	}
-	io := o.(order.INormalOrder)
 	if err = o.Submit(); err != nil {
 		return o, rd, err
 	}
+
 	// 合并支付
-	iss := io.GetSubOrders()
-	arr := make([]payment.IPaymentOrder, 0)
-	for _, v := range iss {
-		ip := v.GetPaymentOrder()
-		if len(couponCode) != 0 { // 使用优惠码
-			if err = t.applyCoupon(buyer, o, ip, couponCode); err != nil {
-				return o, rd, err
-			}
-		}
-		if useBalanceDiscount { // 使用余额抵扣
-			if err = ip.BalanceDiscount(""); err != nil {
-				return o, rd, err
-			}
-		}
-		if ip.State() == payment.StateAwaitingPayment {
-			arr = append(arr, ip)
+	ip := o.GetPaymentOrder()
+	ipv := ip.Get()
+	if len(couponCode) != 0 { // 使用优惠码
+		if err = t.applyCoupon(buyer, o, ip, couponCode); err != nil {
+			return o, rd, err
 		}
 	}
-	l := len(arr)
+	// 使用余额抵扣,如果余额抵扣失败,仍然应该继续结算
+	if useBalanceDiscount {
+		_ = ip.BalanceDiscount("")
+	}
 	// 如果全部支付成功
-	if l == 0 {
-		ip := iss[0].GetPaymentOrder().Get()
-		rd.TradeNo = ip.TradeNo
-		rd.TradeAmount = ip.FinalFee
-		rd.OrderNo = ip.OutOrderNo
-		return o, rd, err
+
+	if ip.State() > payment.StateAwaitingPayment {
+
 	}
-	// 剩下单个订单未支付
-	if l == 1 {
-		ip := arr[0].Get()
-		rd.TradeNo = ip.TradeNo
-		rd.TradeAmount = ip.FinalFee
-		rd.OrderNo = ip.OutOrderNo
-		return o, rd, err
-	}
-	// 合并支付
-	mergeTradeNo, fee, err := arr[0].MergePay(arr[1:])
-	if err != nil {
-		return o, rd, err
-	}
-	//println("----", len(arr), "个订单已合并", fee, mergeTradeNo)
-	rd.MergePay = true
-	rd.TradeAmount = int64(fee)
-	rd.TradeNo = mergeTradeNo
-	for i, v := range arr {
-		if i > 0 { // 拼接订单号
-			rd.OrderNo += ","
-		}
-		rd.OrderNo += v.Get().OutOrderNo
-	}
+
+	rd.TradeNo = ipv.TradeNo
+	rd.TradeAmount = ipv.FinalFee
+	rd.OrderNo = ipv.OutOrderNo
 	return o, rd, err
+	// 剩下单个订单未支付
+
+	// // 合并支付
+	// mergeTradeNo, fee, err := arr[0].MergePay(arr[1:])
+	// if err != nil {
+	// 	return o, rd, err
+	// }
+	// //println("----", len(arr), "个订单已合并", fee, mergeTradeNo)
+	// rd.MergePay = true
+	// rd.TradeAmount = int64(fee)
+	// rd.TradeNo = mergeTradeNo
+	// for i, v := range arr {
+	// 	if i > 0 { // 拼接订单号
+	// 		rd.OrderNo += ","
+	// 	}
+	// 	rd.OrderNo += v.Get().OutOrderNo
+	// }
+	//return o, rd, err
 }
 
 // 根据订单编号获取订单
@@ -317,7 +308,7 @@ func (t *orderManagerImpl) GetOrderById(orderId int64) order.IOrder {
 
 // 根据订单号获取订单
 func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
-	val := t.repo.GetOrder("order_no= $1", orderNo)
+	val := t.repo.GetOrder("order_no = $1", orderNo)
 	if val != nil {
 		return t.repo.CreateOrder(val)
 	}

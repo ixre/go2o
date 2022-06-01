@@ -2,7 +2,6 @@ package order
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/cart"
-	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 )
 
@@ -74,8 +73,6 @@ type (
 		Decline(reason string) error
 		// Submit 提交子订单
 		Submit() (int64, error)
-		// GetPaymentOrder 获取支付单
-		GetPaymentOrder() payment.IPaymentOrder
 	}
 
 	//// 普通订单

@@ -15,20 +15,14 @@ type (
 	ComplexOrder struct {
 		// 订单编号
 		OrderId int64
-		// 父订单编号
-		ParentOrderId int64
 		// 订单类型
 		OrderType int32
-		// 是否为子订单
-		SubOrder bool
 		// 订单号
 		OrderNo string
 		// 购买人编号
 		BuyerId int64
-		// 运营商编号
-		VendorId int64
-		// 店铺编号
-		ShopId int64
+		// 买家用户名
+		BuyerUser string
 		// 订单标题
 		Subject string
 		// 商品数量
@@ -43,8 +37,6 @@ type (
 		PackageFee int64
 		// 实际金额
 		FinalAmount int64
-		// 买家留言
-		BuyerComment string
 		// 收货人信息
 		Consignee *ComplexConsignee
 		// 订单是否拆分
@@ -57,10 +49,42 @@ type (
 		CreateTime int64
 		// 更新时间
 		UpdateTime int64
-		// 商品项
-		Items []*ComplexItem
 		// 扩展数据
 		Data map[string]string
+		// 订单详情
+		Details []*ComplexOrderDetails
+	}
+
+	// ComplexOrderDetails 订单详情
+	ComplexOrderDetails struct {
+		// 编号
+		Id int64
+		// 订单号
+		OrderNo string
+		// 店铺编号
+		ShopId int64
+		// 店铺名称
+		ShopName string
+		// 商品金额
+		ItemAmount int64
+		// 优惠减免金额
+		DiscountAmount int64
+		// 运费
+		ExpressFee int64
+		// 包装费用
+		PackageFee int64
+		// 实际金额
+		FinalAmount int64
+		// 买家留言
+		BuyerComment string
+		// 订单状态
+		State int32
+		// 状态文本
+		StateText string
+		// 商品项
+		Items []*ComplexItem
+		// 更新时间
+		UpdateTime int64
 	}
 
 	// ComplexConsignee 收货人信息

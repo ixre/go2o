@@ -13,6 +13,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
+	"math"
+	"strconv"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -29,10 +34,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/util"
-	"log"
-	"math"
-	"strconv"
-	"time"
 )
 
 var _ order.IOrder = new(normalOrderImpl)
@@ -56,7 +57,7 @@ type normalOrderImpl struct {
 	registryRepo    registry.IRegistryRepo
 	valRepo         valueobject.IValueRepo
 	cartRepo        cart.ICartRepo
-	shopRepo    shop.IShopRepo
+	shopRepo        shop.IShopRepo
 	// 运营商商品映射,用于整理购物车
 	vendorItemsMap map[int][]*order.SubOrderItem
 	// 运营商与邮费的MAP
@@ -64,12 +65,13 @@ type normalOrderImpl struct {
 	// 是否为内部挂起
 	internalSuspend bool
 	_list           []order.ISubOrder
+	_payOrder       payment.IPaymentOrder
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
-	cartRepo cart.ICartRepo,	shopRepo    shop.IShopRepo,registryRepo registry.IRegistryRepo,
+	cartRepo cart.ICartRepo, shopRepo shop.IShopRepo, registryRepo registry.IRegistryRepo,
 	valRepo valueobject.IValueRepo) order.IOrder {
 	return &normalOrderImpl{
 		baseOrderImpl: base,
@@ -82,7 +84,7 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 		expressRepo:   expressRepo,
 		payRepo:       payRepo,
 		cartRepo:      cartRepo,
-		shopRepo: shopRepo,
+		shopRepo:      shopRepo,
 		registryRepo:  registryRepo,
 	}
 }
@@ -91,29 +93,17 @@ func (o *normalOrderImpl) getBaseOrder() *baseOrderImpl {
 	return o.baseOrderImpl
 }
 
-
 // Complex 复合的订单信息
 func (o *normalOrderImpl) Complex() *order.ComplexOrder {
-	v := o.baseValue
 	co := o.baseOrderImpl.Complex()
-	co.VendorId = 0
-	co.ShopId = 0
-	co.ParentOrderId = 0
-	co.Consignee = &order.ComplexConsignee{
-		ConsigneeName:   v.ConsigneeName,
-		ConsigneePhone:  v.ConsigneePhone,
-		ShippingAddress: v.ShippingAddress,
+	subOrders := o.GetSubOrders()
+	for _,v := range subOrders {
+		co.Details = append(co.Details,parseDetailValue(v))
 	}
-	co.DiscountAmount = v.DiscountAmount
-	co.ItemCount = v.ItemCount
-	co.ItemAmount = v.ItemAmount
-	co.ExpressFee = v.ExpressFee
-	co.PackageFee = v.PackageFee
-	co.FinalAmount = v.FinalAmount
-	co.IsBreak = int32(v.IsBreak)
-	co.UpdateTime = v.UpdateTime
 	return co
 }
+
+
 
 // ApplyCoupon 应用优惠券
 func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
@@ -225,6 +215,9 @@ func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
 	o.cart = c
 	// 将购物车的商品分类整理
 	o.vendorItemsMap = o.buildVendorItemMap(items)
+	if len(o.vendorItemsMap) == 0 {
+		return cart.ErrEmptyShoppingCart
+	}
 	// 更新订单的金额
 	o.vendorExpressMap = o.updateOrderFee(o.vendorItemsMap)
 	return nil
@@ -345,6 +338,14 @@ func (o *normalOrderImpl) parseCartToOrderItem(c *cart.NormalCartItem) *order.Su
 			strconv.Itoa(int(c.SkuId))), "domain")
 		return nil
 	}
+	// 设置订单标题
+	if len(o.baseValue.Subject) == 0 {
+		if len(snap.GoodsTitle) > 16 {
+			o.baseValue.Subject = snap.GoodsTitle[:15] + "..."
+		} else {
+			o.baseValue.Subject = snap.GoodsTitle
+		}
+	}
 
 	fee := c.Sku.Price * int64(c.Quantity)
 	return &order.SubOrderItem{
@@ -430,7 +431,7 @@ func (o *normalOrderImpl) Submit() error {
 		o.bindCouponOnSubmit(orderNo)
 		// 绑定购物车商品的促销
 		for _, p := range proms {
-			_,_= o.bindPromotionOnSubmit(orderNo, p)
+			_, _ = o.bindPromotionOnSubmit(orderNo, p)
 		}
 		// 扣除库存
 		o.applyItemStock()
@@ -440,6 +441,18 @@ func (o *normalOrderImpl) Submit() error {
 		err = o.createPaymentForOrder()
 	}
 	return err
+}
+
+// GetPaymentOrder implements order.IOrder
+func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	if o._payOrder == nil {
+		if o.GetAggregateRootId() <= -1 {
+			panic(" Get payment order error ; because of order no yet created!")
+		}
+		o._payOrder = o.payRepo.GetPaymentOrderByOrderNo(
+			int(order.TRetail), o.OrderNo())
+	}
+	return o._payOrder
 }
 
 // BuildCart 通过订单创建购物车
@@ -487,45 +500,45 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 
 // 为所有子订单生成支付单
 func (o *normalOrderImpl) createPaymentForOrder() error {
-	orders := o.GetSubOrders()
-	for _, iso := range orders {
-		v := iso.GetValue()
-		itemAmount := v.ItemAmount
-		finalAmount := v.FinalAmount
-		disAmount := v.DiscountAmount
-		po := &payment.Order{
-			SellerId:       int(v.VendorId),
-			TradeNo:        v.OrderNo,
-			SubOrder:       1,
-			OrderType:      int(order.TRetail),
-			OutOrderNo:     v.OrderNo,
-			Subject:        v.Subject,
-			BuyerId:        v.BuyerId,
-			PayUid:         v.BuyerId,
-			ItemAmount:     itemAmount,
-			DiscountAmount: disAmount,
-			DeductAmount:   0,
-			AdjustAmount:   0,
-			FinalFee:       finalAmount,
-			PayFlag:        payment.PAllFlag,
-			TradeChannel:   0,
-			ExtraData:      "",
-			OutTradeSp:     "",
-			OutTradeNo:     "",
-			State:          payment.StateAwaitingPayment,
-			SubmitTime:     v.CreateTime,
-			ExpiresTime:    0,
-			PaidTime:       0,
-			UpdateTime:     v.CreateTime,
-			TradeMethods:   []*payment.TradeMethodData{},
-		}
-		ip := o.payRepo.CreatePaymentOrder(po)
-		if err := ip.Submit(); err != nil {
-			_ = iso.Cancel("")
-			return err
+	v := o.baseOrderImpl.baseValue
+	itemAmount := v.ItemAmount
+	finalAmount := v.FinalAmount
+	disAmount := v.DiscountAmount
+	po := &payment.Order{
+		SellerId:       0,
+		TradeNo:        v.OrderNo,
+		SubOrder:       0,
+		OrderType:      int(order.TRetail),
+		OutOrderNo:     v.OrderNo,
+		Subject:        v.Subject,
+		BuyerId:        v.BuyerId,
+		PayUid:         v.BuyerId,
+		ItemAmount:     itemAmount,
+		DiscountAmount: disAmount,
+		DeductAmount:   0,
+		AdjustAmount:   0,
+		FinalFee:       finalAmount,
+		PayFlag:        payment.PAllFlag,
+		TradeChannel:   0,
+		ExtraData:      "",
+		OutTradeSp:     "",
+		OutTradeNo:     "",
+		State:          payment.StateAwaitingPayment,
+		SubmitTime:     v.CreateTime,
+		ExpiresTime:    0,
+		PaidTime:       0,
+		UpdateTime:     v.CreateTime,
+		TradeMethods:   []*payment.TradeMethodData{},
+	}
+	o._payOrder = o.payRepo.CreatePaymentOrder(po)
+	err := o._payOrder.Submit()
+	if err != nil {
+		orders := o.GetSubOrders()
+		for _, it := range orders {
+			_ = it.Cancel("")
 		}
 	}
-	return nil
+	return err
 }
 
 // 绑定促销优惠
@@ -677,7 +690,7 @@ func (o *normalOrderImpl) getJsonItems() []byte {
 }
 
 // 释放购物车并销毁
-func (o *normalOrderImpl) destroyCart()error {
+func (o *normalOrderImpl) destroyCart() error {
 	if o.cart.Release(nil) {
 		return o.cart.Destroy()
 	}
@@ -696,9 +709,8 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 			orderNo), "domain")
 		return nil
 	}
-
-	isp := o.shopRepo.GetShop(items[0].ShopId)
-	shopName := isp.GetValue().Name
+	isp := o.shopRepo.GetShop(items[0].ShopId).(shop.IOnlineShop)
+	shopName := isp.GetShopValue().ShopName
 	v := &order.NormalSubOrder{
 		OrderNo:  orderNo,
 		BuyerId:  buyerId,
@@ -916,7 +928,6 @@ type subOrderImpl struct {
 	parent          order.IOrder
 	buyer           member.IMember
 	internalSuspend bool //内部挂起
-	paymentOrder    payment.IPaymentOrder
 	paymentRepo     payment.IPaymentRepo
 	repo            order.IOrderRepo
 	memberRepo      member.IMemberRepo
@@ -960,28 +971,35 @@ func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 	return o.value
 }
 
+func parseDetailValue(subOrder order.ISubOrder)*order.ComplexOrderDetails{
+    v := subOrder.GetValue()
+	dst := &order.ComplexOrderDetails{
+		Id:             subOrder.GetDomainId(),
+		OrderNo:        v.OrderNo,
+		ShopId:         v.ShopId,
+		ShopName:       v.ShopName,
+		ItemAmount:     v.ItemAmount,
+		DiscountAmount: v.DiscountAmount,
+		ExpressFee:     v.ExpressFee,
+		PackageFee:     v.PackageFee,
+		FinalAmount:    v.FinalAmount,
+		BuyerComment:   v.BuyerComment,
+		State:          v.State,
+		StateText:      "",
+		Items:          []*order.ComplexItem{},
+		UpdateTime:     v.UpdateTime,
+	}
+	impl  := subOrder.(*subOrderImpl)
+	for _, v := range subOrder.Items() {
+		dst.Items = append(dst.Items, impl.parseComplexItem(v))
+	}
+	return dst
+}
+
 // Complex 复合的订单信息
 func (o *subOrderImpl) Complex() *order.ComplexOrder {
-	v := o.GetValue()
 	co := o.baseOrder().Complex()
-	co.OrderId =o.GetDomainId()
-	co.ParentOrderId =v.OrderId
-	co.VendorId = v.VendorId
-	co.ShopId = v.ShopId
-	co.SubOrder = true
-	co.OrderNo = o.value.OrderNo
-	co.Subject = v.Subject
-	co.DiscountAmount = v.DiscountAmount
-	co.ItemAmount = v.ItemAmount
-	co.ExpressFee = v.ExpressFee
-	co.PackageFee = v.PackageFee
-	co.FinalAmount = v.FinalAmount
-	co.UpdateTime = v.UpdateTime
-	co.State = v.State
-	co.Items = []*order.ComplexItem{}
-	for _, v := range o.Items() {
-		co.Items = append(co.Items, o.parseComplexItem(v))
-	}
+	co.Details = []*order.ComplexOrderDetails{ parseDetailValue(o)}
 	return co
 }
 
@@ -997,7 +1015,7 @@ func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexIte
 		ItemTitle:      snap.GoodsTitle,
 		MainImage:      snap.Image,
 		Price:          snap.Price,
-		FinalPrice:     0,
+		FinalPrice:     snap.Price,
 		Quantity:       i.Quantity,
 		ReturnQuantity: i.ReturnQuantity,
 		Amount:         i.Amount,
@@ -1082,17 +1100,6 @@ func (o *subOrderImpl) saveSubOrder() error {
 		o.syncOrderState()
 	}
 	return err
-}
-
-func (o *subOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
-	if o.paymentOrder == nil {
-		if o.GetDomainId() <= 0 {
-			panic(" Get payment order error ; because of order no yet created!")
-		}
-		o.paymentOrder = o.paymentRepo.GetPaymentOrderByOrderNo(
-			int(order.TRetail), o.value.OrderNo)
-	}
-	return o.paymentOrder
 }
 
 // 同步订单状态
@@ -1547,9 +1554,9 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
-	ip := o.GetPaymentOrder()
+	ip := od.GetPaymentOrder()
 	if ip != nil {
-		return ip.Cancel()
+		return ip.Cancel() //todo: there have a bug, when other order has shipmented. all sub order will be cancelled.
 	}
 	return nil
 }

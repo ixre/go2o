@@ -2,18 +2,18 @@ package order
 
 import (
 	"errors"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/gof/util"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var _ order.IOrder = new(tradeOrderImpl)
@@ -60,20 +60,26 @@ func (o *tradeOrderImpl) getValue() *order.TradeOrder {
 func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
-	if v != nil {
-		co.ParentOrderId = 0
-		co.VendorId = v.VendorId
-		co.ShopId = v.ShopId
-		co.Subject = v.Subject
-		co.DiscountAmount = v.DiscountAmount
-		co.ItemAmount = v.OrderAmount
-		co.FinalAmount = v.FinalAmount
-		co.IsBreak = 0
-		co.UpdateTime = v.UpdateTime
-		co.Data["TicketImage"] = v.TicketImage
-		co.Data["TradeRate"] = strconv.FormatFloat(v.TradeRate, 'g', 2, 64)
-		co.Data["CashPay"] = strconv.FormatBool(v.CashPay == 1)
+	dt := &order.ComplexOrderDetails{
+		Id:             o.GetAggregateRootId(),
+		OrderNo:        co.OrderNo,
+		ShopId:         v.ShopId,
+		ShopName:       "",
+		ItemAmount:     co.ItemAmount,
+		DiscountAmount: v.DiscountAmount,
+		ExpressFee:     co.ExpressFee,
+		PackageFee:     co.PackageFee,
+		FinalAmount:    v.FinalAmount,
+		BuyerComment:   "",
+		State:          o.value.State,
+		StateText:      "",
+		Items:          []*order.ComplexItem{},
+		UpdateTime:     o.value.UpdateTime,
 	}
+	co.Details = append(co.Details, dt)
+	co.Data["TicketImage"] = v.TicketImage
+	co.Data["TradeRate"] = strconv.FormatFloat(v.TradeRate, 'g', 2, 64)
+	co.Data["CashPay"] = strconv.FormatBool(v.CashPay == 1)
 	return co
 }
 
@@ -91,12 +97,6 @@ func (o *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
 	if o.GetAggregateRootId() > 0 {
 		panic("trade order must copy before creating!")
 	}
-	if v.VendorId <= 0 {
-		return merchant.ErrNoSuchMerchant
-	}
-	if v.ShopId <= 0 {
-		return shop.ErrNoSuchShop
-	}
 	if v.Subject == "" {
 		return order.ErrMissingSubject
 	}
@@ -106,8 +106,8 @@ func (o *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
 	o.value = &order.TradeOrder{
 		ID:             0,
 		OrderId:        v.OrderId,
-		VendorId:       v.VendorId,
-		ShopId:         v.ShopId,
+		// VendorId:       v.VendorId,
+		// ShopId:         v.ShopId,
 		Subject:        v.Subject,
 		OrderAmount:    v.ItemAmount,
 		DiscountAmount: v.DiscountAmount,

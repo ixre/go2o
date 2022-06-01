@@ -10,9 +10,10 @@ package parser
 
 import (
 	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 )
@@ -132,7 +133,7 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
 		ShelveState:  src.ShelveState,
-		ReviewState: src.ReviewState,
+		ReviewState:  src.ReviewState,
 		ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
@@ -218,12 +219,12 @@ func Sku(src *proto.SSku) *item.Sku {
 
 func Order(src *proto.SSingleOrder) *order.ComplexOrder {
 	o := &order.ComplexOrder{
-		OrderId:        src.OrderId,
-		OrderType:      src.OrderType,
-		OrderNo:        src.OrderNo,
-		BuyerId:        src.BuyerId,
-		VendorId:       src.SellerId,
-		ShopId:         src.ShopId,
+		OrderId:   src.OrderId,
+		OrderType: src.OrderType,
+		OrderNo:   src.OrderNo,
+		BuyerId:   src.BuyerId,
+		//VendorId:       src.SellerId,
+		//ShopId:         src.ShopId,
 		Subject:        src.Subject,
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
@@ -236,17 +237,17 @@ func Order(src *proto.SSingleOrder) *order.ComplexOrder {
 			ConsigneePhone:  src.Consignee.ConsigneePhone,
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
-		BuyerComment: src.BuyerComment,
-		CreateTime:   src.SubmitTime,
-		State:        src.State,
-		Items:        make([]*order.ComplexItem, len(src.Items)),
-		Data:         src.Data,
+		//BuyerComment: src.BuyerComment,
+		CreateTime: src.SubmitTime,
+		State:      src.State,
+		//Items:        make([]*order.ComplexItem, len(src.Items)),
+		Data: src.Data,
 	}
-	if src.Items != nil {
-		for i, v := range src.Items {
-			o.Items[i] = OrderItem(v)
-		}
-	}
+	// if src.Items != nil {
+	// 	for i, v := range src.Items {
+	// 		o.Items[i] = OrderItem(v)
+	// 	}
+	// }
 	return o
 }
 
@@ -277,7 +278,7 @@ func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 		FinalPrice:           0,
 		Quantity:             src.Quantity,
 		ReturnQuantity:       src.ReturnQuantity,
-		ItemAmount:               src.Amount,
+		ItemAmount:           src.Amount,
 		FinalAmount:          src.FinalAmount,
 		IsShipped:            src.IsShipped == 1,
 		Data:                 nil,
@@ -324,34 +325,32 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 
 func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 	return &proto.SOrderItem{
-		SnapshotId:           src.SnapshotId,
-		SkuId:                src.SkuId,
-		ItemId:               src.ItemId,
-		ItemTitle:            src.ItemTitle,
-		Image:                src.MainImage,
-		Price:                src.Price,
-		FinalPrice:           src.FinalPrice,
-		Quantity:             src.Quantity,
-		ReturnQuantity:       src.ReturnQuantity,
-		ItemAmount:           src.Amount,
-		FinalAmount:          src.FinalAmount,
-		IsShipped:            src.IsShipped == 1,
-		Data:                 src.Data,
-		XXX_NoUnkeyedLiteral: struct{}{},
-		XXX_unrecognized:     nil,
-		XXX_sizecache:        0,
+		SnapshotId:     src.SnapshotId,
+		SkuId:          src.SkuId,
+		ItemId:         src.ItemId,
+		ItemTitle:      src.ItemTitle,
+		Image:          src.MainImage,
+		Price:          src.Price,
+		FinalPrice:     src.FinalPrice,
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		ItemAmount:     src.Amount,
+		FinalAmount:    src.FinalAmount,
+		IsShipped:      src.IsShipped == 1,
+		Data:           src.Data,
 	}
 }
 
 func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
+	d := src.Details[0]
 	o := &proto.SSingleOrder{
 		OrderId: src.OrderId,
-		ParentOrderId: src.ParentOrderId,
-		OrderType:      src.OrderType,
-		OrderNo:        src.OrderNo,
-		BuyerId:        src.BuyerId,
-		SellerId:       src.VendorId,
-		ShopId:         src.ShopId,
+		//ParentOrderId:  d.ParentOrderId,
+		OrderType: src.OrderType,
+		OrderNo:   src.OrderNo,
+		BuyerId:   src.BuyerId,
+		//SellerId:       src.VendorId,
+		ShopId:         d.ShopId,
 		Subject:        src.Subject,
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
@@ -363,16 +362,65 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 			ConsigneePhone:  src.Consignee.ConsigneePhone,
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
-		BuyerComment: src.BuyerComment,
+		BuyerComment: d.BuyerComment,
 		SubmitTime:   src.CreateTime,
 		State:        src.State,
-		Items:        make([]*proto.SOrderItem, len(src.Items)),
+		Items:        make([]*proto.SOrderItem, len(d.Items)),
 		Data:         src.Data,
 	}
-	if src.Items != nil {
-		for i, v := range src.Items {
+	if d.Items != nil {
+		for i, v := range d.Items {
 			o.Items[i] = OrderItemDto(v)
 		}
+	}
+	return o
+}
+
+func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
+	o := &proto.SParentOrder{
+		BuyerId:        src.BuyerId,
+		BuyerUser:      src.BuyerUser,
+		OrderNo:        src.OrderNo,
+		ItemCount:      int64(src.ItemCount),
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		DeductAmount:   0,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
+		FinalAmount:    src.FinalAmount,
+		Consignee: &proto.SConsigneeInfo{
+			ConsigneeName:   src.Consignee.ConsigneeName,
+			ConsigneePhone:  src.Consignee.ConsigneePhone,
+			ShippingAddress: src.Consignee.ShippingAddress,
+		},
+		SubOrders:  []*proto.SSubOrder{},
+		State:      src.State,
+		StateText:  order.OrderState(src.State).String(),
+		CreateTime: src.CreateTime,
+	}
+	for _, v := range src.Details {
+		d := &proto.SSubOrder{
+			OrderNo:        v.OrderNo,
+			ShopId:         v.ShopId,
+			ShopName:       v.ShopName,
+			ItemAmount:     v.ItemAmount,
+			DiscountAmount: v.DiscountAmount,
+			DeductAmount:   0, //v.DeductAmount,
+			AdjustAmount:   0, //v.AdjustAmount,
+			ExpressFee:     v.ExpressFee,
+			PackageFee:     v.PackageFee,
+			ProcedureFee:   0, //v.ProcedureFee,
+			TotalAmount:    0,
+			FinalAmount:    v.FinalAmount,
+			BuyerComment:   v.BuyerComment,
+			State:          v.State,
+			Items:          []*proto.SOrderItem{},
+			StateText:      order.OrderState(v.State).String(),
+		}
+		for _, it := range v.Items {
+			d.Items = append(d.Items, OrderItemDto(it))
+		}
+		o.SubOrders = append(o.SubOrders, d)
 	}
 	return o
 }
@@ -391,7 +439,7 @@ func PrepareOrderDto(src *order.ComplexOrder) *proto.PrepareOrderResponse {
 			ConsigneePhone:  src.Consignee.ConsigneePhone,
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
-		BuyerComment: src.BuyerComment,
+		BuyerComment: "", //src.BuyerComment,
 	}
 	return o
 }

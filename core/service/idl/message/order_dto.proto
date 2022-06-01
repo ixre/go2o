@@ -77,14 +77,71 @@ message SOrderItem {
 }
 
 message SParentOrder {
-    // 订单编号
-    int64 OrderId = 1;
+    // 买家
+    int64 BuyerId = 1;
+    // 买家用户名
+    string BuyerUser = 2;
     // 订单号
     string OrderNo = 3;
-    // 订单类型
-    int32 OrderType = 4;
+    // 商品
+    int64 ItemCount = 4;
+    // 商品总金额
+    int64 ItemAmount = 5;
+    // 抵扣金额
+    int64 DiscountAmount = 6;
+    // 优惠金额
+    int64 DeductAmount = 7;
+    // 快递费
+    int64 ExpressFee = 8;
+    // 包装费
+    int64 PackageFee = 9;
+    // 最终金额
+    int64 FinalAmount = 10;
+    // 收货人
+    SConsigneeInfo Consignee = 18;
     // 子订单
-    SSingleOrder Children = 5;
+    repeated SSubOrder SubOrders = 11;
+    // 状态
+    int32 State = 12;
+    // 状态文本
+    string StateText = 13;
+    // 下单时间
+    sint64 CreateTime = 14;
+}
+
+message SSubOrder{
+    // 订单号
+    string OrderNo = 1;
+    // 店铺编号
+    int64 ShopId = 2;
+    // 店铺名称
+    string ShopName = 3;
+     // 商品总金额
+    int64 ItemAmount = 4;
+    // 优惠金额
+    int64 DiscountAmount = 5;
+    // 抵扣金额
+    int64 DeductAmount = 6;
+    // 调整金额
+    int64 AdjustAmount = 7;
+    // 配送费
+    int64 ExpressFee = 8;
+    // 包装费
+    int64 PackageFee = 9;
+    // 手续费
+    int64 ProcedureFee = 10;
+    // 订单总金额
+    int64 TotalAmount = 11;
+    // 最终金额
+    int64 FinalAmount = 12;
+    // 买家留言
+    string BuyerComment = 13;
+    // 状态
+    int32 State = 14;
+    // 商品列表
+    repeated SOrderItem Items = 15;
+    // 状态文本
+    string StateText = 16;
 }
 
 // 子订单

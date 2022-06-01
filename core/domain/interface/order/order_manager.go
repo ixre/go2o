@@ -38,7 +38,6 @@ type (
 		GetOrderById(orderId int64) IOrder
 		// 根据订单号获取订单
 		GetOrderByNo(orderNo string) IOrder
-
 		// 获取子订单
 		GetSubOrder(id int64) ISubOrder
 	}

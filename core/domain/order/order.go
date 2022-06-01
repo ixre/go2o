@@ -93,7 +93,6 @@ func (o *baseOrderImpl) Buyer() member.IMember {
 	return o.buyer
 }
 
-
 // SetShipmentAddress 设置配送地址
 func (o *baseOrderImpl) SetShipmentAddress(addressId int64) error {
 	if addressId <= 0 {
@@ -112,6 +111,11 @@ func (o *baseOrderImpl) SetShipmentAddress(addressId int64) error {
 	o.baseValue.ConsigneeName = d.ConsigneeName
 	o.baseValue.ConsigneePhone = d.ConsigneePhone
 	return nil
+}
+
+// GetPaymentOrder implements order.IOrder
+func (*baseOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	panic("unimplemented")
 }
 
 // Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
@@ -153,7 +157,10 @@ func (o *baseOrderImpl) saveOrder() error {
 
 // 设置并订单状态
 func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
-	if o.baseValue.State != order.StatBreak {
+	if state == order.StatBreak{
+		o.baseValue.IsBreak = 1
+	}
+	if o.baseValue.State != int(state) {
 		o.baseValue.State = int(state)
 		_ = o.saveOrder()
 	}
@@ -174,13 +181,30 @@ func (o *baseOrderImpl) bindItemInfo(i *order.ComplexItem) {
 func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 	if o.complex == nil {
 		o.complex = &order.ComplexOrder{
-			OrderId:    o.GetAggregateRootId(),
-			OrderType:  int32(o.baseValue.OrderType),
-			OrderNo:    o.OrderNo(),
-			BuyerId:    o.baseValue.BuyerId,
-			State:      int32(o.baseValue.State),
-			CreateTime: o.baseValue.CreateTime,
-			Data:       make(map[string]string),
+			OrderId:        o.GetAggregateRootId(),
+			OrderType:      int32(o.baseValue.OrderType),
+			OrderNo:        o.OrderNo(),
+			BuyerId:        o.baseValue.BuyerId,
+			BuyerUser:      o.baseValue.BuyerUser,
+			Subject:        o.baseValue.Subject,
+			ItemCount:      o.baseValue.ItemCount,
+			ItemAmount:     o.baseValue.ItemAmount,
+			DiscountAmount: o.baseValue.DiscountAmount,
+			ExpressFee:     o.baseValue.ExpressFee,
+			PackageFee:     o.baseValue.PackageFee,
+			FinalAmount:    o.baseValue.FinalAmount,
+			IsBreak:        int32(o.baseValue.IsBreak),
+			State:          int32(o.baseValue.State),
+			StateText:      "",
+			CreateTime:     o.baseValue.CreateTime,
+			UpdateTime:     o.baseValue.UpdateTime,
+			Data:           make(map[string]string),
+			Details:        []*order.ComplexOrderDetails{},
+			Consignee :&order.ComplexConsignee{
+				ConsigneeName:   o.baseValue.ConsigneeName,
+				ConsigneePhone:  o.baseValue.ConsigneePhone,
+				ShippingAddress: o.baseValue.ShippingAddress,
+			},
 		}
 	}
 	return o.complex
@@ -246,10 +270,10 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	case order.TRetail:
 		return newNormalOrder(manager, b, repo, itemRepo,
 			productRepo, promRepo, expressRepo,
-			payRepo, cartRepo,shopRepo, registryRepo, valRepo)
+			payRepo, cartRepo, shopRepo, registryRepo, valRepo)
 	case order.TWholesale:
 		return newWholesaleOrder(b, repo, itemRepo,
-			expressRepo, payRepo, shipRepo, mchRepo,shopRepo, valRepo, registryRepo)
+			expressRepo, payRepo, shipRepo, mchRepo, shopRepo, valRepo, registryRepo)
 	case order.TTrade:
 		return newTradeOrder(b, payRepo, mchRepo, valRepo, registryRepo)
 	}

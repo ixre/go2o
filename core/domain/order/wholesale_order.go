@@ -3,6 +3,11 @@ package order
 import (
 	"bytes"
 	"errors"
+	"log"
+	"math"
+	"strconv"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -17,10 +22,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/util"
-	"log"
-	"math"
-	"strconv"
-	"time"
 )
 
 var _ order.IOrder = new(wholesaleOrderImpl)
@@ -39,7 +40,7 @@ type wholesaleOrderImpl struct {
 	itemRepo     item.IItemRepo
 	mchRepo      merchant.IMerchantRepo
 	valueRepo    valueobject.IValueRepo
-	shopRepo    shop.IShopRepo
+	shopRepo     shop.IShopRepo
 	registryRepo registry.IRegistryRepo
 }
 
@@ -47,7 +48,7 @@ func newWholesaleOrder(base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo,
 	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	shipRepo shipment.IShipmentRepo, mchRepo merchant.IMerchantRepo,
-	shopRepo    shop.IShopRepo,valueRepo valueobject.IValueRepo,
+	shopRepo shop.IShopRepo, valueRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo) order.IOrder {
 	o := &wholesaleOrderImpl{
 		baseOrderImpl: base,
@@ -57,7 +58,7 @@ func newWholesaleOrder(base *baseOrderImpl,
 		payRepo:       payRepo,
 		shipRepo:      shipRepo,
 		mchRepo:       mchRepo,
-		shopRepo: shopRepo,
+		shopRepo:      shopRepo,
 		valueRepo:     valueRepo,
 		registryRepo:  registryRepo,
 	}
@@ -67,13 +68,13 @@ func newWholesaleOrder(base *baseOrderImpl,
 func (o *wholesaleOrderImpl) init() order.IOrder {
 	if o.GetAggregateRootId() <= 0 {
 		o.value = &order.WholesaleOrder{
-			Id:          0,
-			OrderNo:     "",
-			OrderId:     0,
-			BuyerId:     o.baseValue.BuyerId,
-			VendorId:    0,
-			ShopId:      0,
-			State:       o.baseValue.State,
+			Id:       0,
+			OrderNo:  "",
+			OrderId:  0,
+			BuyerId:  o.baseValue.BuyerId,
+			VendorId: 0,
+			ShopId:   0,
+			State:    o.baseValue.State,
 		}
 	}
 	o.getValue()
@@ -116,8 +117,8 @@ func (o *wholesaleOrderImpl) parseOrder(items []*cart.ItemPair) {
 	o.value.ShopId = o.items[0].ShopId
 
 	// 店铺名称
-	isp := o.shopRepo.GetShop(o.items[0].ShopId)
-	o.value.ShopName = isp.GetValue().Name
+	isp := o.shopRepo.GetShop(o.items[0].ShopId).(shop.IOnlineShop)
+	o.value.ShopName = isp.GetShopValue().ShopName
 
 	// 运费计算器
 	ue := o.expressRepo.GetUserExpress(int(o.value.VendorId))
@@ -223,30 +224,27 @@ func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.Com
 
 // Complex 复合的订单信息
 func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
-	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
-	co.ParentOrderId = 0
-	co.VendorId = v.VendorId
-	co.ShopId = v.ShopId
-	co.Subject = ""
-	co.Consignee = &order.ComplexConsignee{
-		ConsigneeName:   o.baseValue.ConsigneeName,
-		ConsigneePhone:  o.baseValue.ConsigneePhone,
-		ShippingAddress: o.baseValue.ShippingAddress,
+	dt := &order.ComplexOrderDetails{
+		Id:             o.GetAggregateRootId(),
+		OrderNo:        o.value.OrderNo,
+		ShopId:         o.value.ShopId,
+		ShopName:       o.value.ShopName,
+		ItemAmount:     co.ItemAmount,
+		DiscountAmount: co.DiscountAmount,
+		ExpressFee:     co.ExpressFee,
+		PackageFee:     co.PackageFee,
+		FinalAmount:    co.FinalAmount,
+		BuyerComment:   o.value.BuyerComment,
+		State:          int32(o.value.State),
+		StateText:      "",
+		Items:          []*order.ComplexItem{},
+		UpdateTime:     o.value.UpdateTime,
 	}
-	co.DiscountAmount = o.baseValue.DiscountAmount
-	co.ItemCount = o.baseValue.ItemCount
-	co.ItemAmount = o.baseValue.ItemAmount
-	co.ExpressFee = o.baseValue.ExpressFee
-	co.PackageFee = o.baseValue.PackageFee
-	co.FinalAmount = o.baseValue.FinalAmount
-	co.BuyerComment = v.BuyerComment
-	co.IsBreak = 0
-	co.UpdateTime = v.UpdateTime
-	co.Items = []*order.ComplexItem{}
 	for _, v := range o.Items() {
-		co.Items = append(co.Items, o.parseComplexItem(v))
+		dt.Items = append(dt.Items, o.parseComplexItem(v))
 	}
+	co.Details = append(co.Details,dt)
 	return co
 }
 
