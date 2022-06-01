@@ -129,9 +129,7 @@ func TestCancelOrder(t *testing.T) {
 	}
 	t.Logf("订单金额为:%d", rd.TradeAmount)
 	o = manager.GetOrderById(o.GetAggregateRootId())
-	subOrders := o.(order.INormalOrder).GetSubOrders()
-	for _, so := range subOrders {
-		py := so.GetPaymentOrder()
+		py := o.GetPaymentOrder()
 		err = py.PaymentByWallet("支付订单")
 		pv := py.Get()
 		payState := pv.State
@@ -141,8 +139,7 @@ func TestCancelOrder(t *testing.T) {
 			t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.TradeNo())
 		}
 		t.Logf("支付单信息：%#v", pv)
-	}
-
+	
 	no := o.(order.INormalOrder)
 	for _, v := range no.GetSubOrders() {
 		err = v.Cancel("买多了，不想要了")
@@ -332,7 +329,7 @@ func TestTradeOrder(t *testing.T) {
 			t.FailNow()
 		}
 	} else {
-		py := io.GetPaymentOrder()
+		py := o.GetPaymentOrder()
 		err = py.PaymentByWallet("订单支付")
 		if err != nil {
 			t.Errorf("钱包支付错误：%s", err.Error())

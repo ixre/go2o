@@ -294,7 +294,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 	// 	}
 	// 	rd.OrderNo += v.Get().OutOrderNo
 	// }
-	return o, rd, err
+	//return o, rd, err
 }
 
 // 根据订单编号获取订单

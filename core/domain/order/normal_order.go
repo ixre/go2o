@@ -65,7 +65,7 @@ type normalOrderImpl struct {
 	// 是否为内部挂起
 	internalSuspend bool
 	_list           []order.ISubOrder
-	_payOrder  payment.IPaymentOrder
+	_payOrder       payment.IPaymentOrder
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
@@ -349,6 +349,14 @@ func (o *normalOrderImpl) parseCartToOrderItem(c *cart.NormalCartItem) *order.Su
 			strconv.Itoa(int(c.SkuId))), "domain")
 		return nil
 	}
+	// 设置订单标题
+	if len(o.baseValue.Subject) == 0 {
+		if len(snap.GoodsTitle) > 16 {
+			o.baseValue.Subject = snap.GoodsTitle[:15] + "..."
+		} else {
+			o.baseValue.Subject = snap.GoodsTitle
+		}
+	}
 
 	fee := c.Sku.Price * int64(c.Quantity)
 	return &order.SubOrderItem{
@@ -446,19 +454,17 @@ func (o *normalOrderImpl) Submit() error {
 	return err
 }
 
-
 // GetPaymentOrder implements order.IOrder
 func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
-    if o._payOrder == nil {
+	if o._payOrder == nil {
 		if o.GetAggregateRootId() <= -1 {
 			panic(" Get payment order error ; because of order no yet created!")
 		}
 		o._payOrder = o.payRepo.GetPaymentOrderByOrderNo(
 			int(order.TRetail), o.OrderNo())
 	}
-	return o._payOrder	
+	return o._payOrder
 }
-
 
 // BuildCart 通过订单创建购物车
 func (o *normalOrderImpl) BuildCart() cart.ICart {

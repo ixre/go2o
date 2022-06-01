@@ -157,7 +157,10 @@ func (o *baseOrderImpl) saveOrder() error {
 
 // 设置并订单状态
 func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
-	if o.baseValue.State != order.StatBreak {
+	if state == order.StatBreak{
+		o.baseValue.IsBreak = 1
+	}
+	if o.baseValue.State != int(state) {
 		o.baseValue.State = int(state)
 		_ = o.saveOrder()
 	}

@@ -74,7 +74,6 @@ type (
 		SignItemChecked(items []*ItemPair) error
 		// CheckedItems 获取勾选的商品,checked:为商品与商品SKU数据
 		CheckedItems(checked map[int64][]int64) []*ItemPair
-
 		// Put 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
 		// 暂时以店铺区分,2017-02-28考虑单独的购物车或子系统
