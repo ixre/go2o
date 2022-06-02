@@ -114,6 +114,8 @@ message MchLoginResponse{
   string ErrMsg = 2;
   // 会员编号
   int64 MerchantId = 3;
+  // 店铺编号
+  int64 ShopId = 4;
 }
 
 message SyncWSItemsResponse {

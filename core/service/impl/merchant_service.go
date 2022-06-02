@@ -11,6 +11,8 @@ package impl
 
 import (
 	"context"
+	"strings"
+
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -24,7 +26,6 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 	context2 "golang.org/x/net/context"
-	"strings"
 )
 
 var _ proto.MerchantServiceServer = new(merchantService)
@@ -531,12 +532,12 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode int32, err error) {
+func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMerchant, errCode int32, err error) {
 	if user == "" || pwd == "" {
-		return 0, 1, de.ErrCredential
+		return nil, 1, de.ErrCredential
 	}
 	if len(pwd) != 32 {
-		return -1, 4, de.ErrNotMD5Format
+		return nil, 4, de.ErrNotMD5Format
 	}
 	//尝试作为独立的商户账号登陆
 	mch := m._mchRepo.GetMerchantByLoginUser(user)
@@ -545,34 +546,37 @@ func (m *merchantService) testLogin(user string, pwd string) (id int64, errCode 
 		var id int64
 		id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd, ""))
 		if err != nil {
-			return 0, 2, err
+			return nil, 2, err
 		}
 		mchId, _ := m.GetMerchantIdByMember(context.TODO(), &proto.MemberId{Value: id})
 		if mchId.Value > 0 {
-			return mchId.Value, 0, nil
+			mch = m._mchRepo.GetMerchant(int(mchId.Value))
+			return mch, 0, nil
 		}
-		return 0, 2, merchant.ErrNoSuchMerchant
+		return nil, 2, merchant.ErrNoSuchMerchant
 	}
 	mv := mch.GetValue()
 	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.LoginPwd {
-		return 0, 1, de.ErrCredential
+		return nil, 1, de.ErrCredential
 	}
-	return mch.GetAggregateRootId(), 0, nil
+	return mch, 0, nil
 }
 
 // CheckLogin 验证用户密码,并返回编号。可传入商户或会员的账号密码
 func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdRequest) (*proto.MchLoginResponse, error) {
 	user := strings.ToLower(strings.TrimSpace(u.User))
 	pwd := strings.TrimSpace(u.Pwd)
-	id, code, err := m.testLogin(user, pwd)
+	mch, code, err := m.testLogin(user, pwd)
 	if err != nil {
 		return &proto.MchLoginResponse{
 			ErrCode: code,
 			ErrMsg:  err.Error(),
 		}, nil
 	}
+	shopId := mch.ShopManager().GetOnlineShop().GetDomainId()
 	return &proto.MchLoginResponse{
-		MerchantId: id,
+		MerchantId: mch.GetAggregateRootId(),
+		ShopId:     int64(shopId),
 	}, nil
 }
 
