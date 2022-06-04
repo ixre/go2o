@@ -282,7 +282,7 @@ type (
 	// ITradeOrder 交易订单
 	ITradeOrder interface {
 		// Set 从订单信息中拷贝相应的数据,并设置订单结算比例
-		Set(o *ComplexOrder, rate float64) error
+		Set(o *TradeOrderValue, rate float64) error
 		// CashPay 现金支付
 		CashPay() error
 		// TradePaymentFinish 交易支付完成

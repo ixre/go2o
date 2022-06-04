@@ -307,9 +307,9 @@ func TestTradeOrder(t *testing.T) {
 	if requireTicket {
 		//repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
 	}
-	c := &order.ComplexOrder{
-		VendorId:   104, //1,
-		ShopId:     1,
+	c := &order.TradeOrderValue{
+		MerchantId:   104, //1,
+		StoreId:     1,
 		BuyerId:    397, //1,
 		ItemAmount: 100,
 		Subject:    "万宁佛山祖庙店",

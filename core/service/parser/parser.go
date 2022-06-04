@@ -217,31 +217,29 @@ func Sku(src *proto.SSku) *item.Sku {
 	}
 }
 
-func Order(src *proto.SSingleOrder) *order.ComplexOrder {
-	o := &order.ComplexOrder{
-		OrderId:   src.OrderId,
-		OrderType: src.OrderType,
-		OrderNo:   src.OrderNo,
-		BuyerId:   src.BuyerId,
-		//VendorId:       src.SellerId,
-		//ShopId:         src.ShopId,
+func ParseTradeOrder(src *proto.SSingleOrder) *order.TradeOrderValue {
+	o := &order.TradeOrderValue{
+		//OrderNo:   src.OrderNo,
+		BuyerId:   int(src.BuyerId),
+		MerchantId:       int(src.SellerId),
+		StoreId:         int(src.ShopId),
 		Subject:        src.Subject,
-		ItemAmount:     src.ItemAmount,
-		DiscountAmount: src.DiscountAmount,
-		ExpressFee:     src.ExpressFee,
-		PackageFee:     src.PackageFee,
-		FinalAmount:    src.FinalAmount,
+		ItemAmount:     int(src.ItemAmount),
+		DiscountAmount: int(src.DiscountAmount),
+		//ExpressFee:     int(src.ExpressFee),
+		//PackageFee:     int(src.PackageFee),
+		//FinalAmount:    int(src.FinalAmount),
 
-		Consignee: &order.ComplexConsignee{
-			ConsigneeName:   src.Consignee.ConsigneeName,
-			ConsigneePhone:  src.Consignee.ConsigneePhone,
-			ShippingAddress: src.Consignee.ShippingAddress,
-		},
-		//BuyerComment: src.BuyerComment,
-		CreateTime: src.SubmitTime,
-		State:      src.State,
-		//Items:        make([]*order.ComplexItem, len(src.Items)),
-		Data: src.Data,
+		// Consignee: &order.ComplexConsignee{
+		// 	ConsigneeName:   src.Consignee.ConsigneeName,
+		// 	ConsigneePhone:  src.Consignee.ConsigneePhone,
+		// 	ShippingAddress: src.Consignee.ShippingAddress,
+		// },
+		// //BuyerComment: src.BuyerComment,
+		// CreateTime: src.SubmitTime,
+		// State:      src.State,
+		// //Items:        make([]*order.ComplexItem, len(src.Items)),
+		// Data: src.Data,
 	}
 	// if src.Items != nil {
 	// 	for i, v := range src.Items {

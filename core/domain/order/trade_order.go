@@ -84,7 +84,7 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 }
 
 // 从订单信息中拷贝相应的数据
-func (o *tradeOrderImpl) Set(v *order.ComplexOrder, rate float64) error {
+func (o *tradeOrderImpl) Set(v *order.TradeOrderValue, rate float64) error {
 	err := o.parseOrder(v, rate)
 	if err == nil {
 		err = o.checkRate()
@@ -93,7 +93,7 @@ func (o *tradeOrderImpl) Set(v *order.ComplexOrder, rate float64) error {
 }
 
 // 转换为订单相关对象
-func (o *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
+func (o *tradeOrderImpl) parseOrder(v *order.TradeOrderValue, rate float64) error {
 	if o.GetAggregateRootId() > 0 {
 		panic("trade order must copy before creating!")
 	}
@@ -105,12 +105,12 @@ func (o *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
 	}
 	o.value = &order.TradeOrder{
 		ID:             0,
-		OrderId:        v.OrderId,
-		// VendorId:       v.VendorId,
-		// ShopId:         v.ShopId,
+		OrderId:        o.baseValue.Id,
+		VendorId:       int64(v.MerchantId),
+		 ShopId:         int64(v.StoreId),
 		Subject:        v.Subject,
-		OrderAmount:    v.ItemAmount,
-		DiscountAmount: v.DiscountAmount,
+		OrderAmount:    int64(v.ItemAmount),
+		DiscountAmount: int64(v.DiscountAmount),
 		FinalAmount:    0,
 		TradeRate:      rate,
 		State:          int32(o.baseValue.State),

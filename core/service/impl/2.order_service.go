@@ -13,6 +13,8 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"strconv"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -26,7 +28,6 @@ import (
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
-	"strconv"
 )
 
 var _ proto.OrderServiceServer = new(orderServiceImpl)
@@ -230,17 +231,17 @@ func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.Submit
 // GetParentOrder 根据编号获取订单
 func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV2) (*proto.SParentOrder, error) {
 	io := s.manager.GetOrderByNo(req.Value)
-	if io == nil{
-		return nil,errors.New("no such order")
+	if io == nil {
+		return nil, errors.New("no such order")
 	}
 	ord := io.Complex()
-	return parser.ParentOrderDto(ord),nil
+	return parser.ParentOrderDto(ord), nil
 }
 
 // GetOrder 获取订单和商品项信息
 func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2) (*proto.SSingleOrder, error) {
-	if len(orderNo.Value) == 0{
-		return nil,errors.New("order no")
+	if len(orderNo.Value) == 0 {
+		return nil, errors.New("order no")
 	}
 	c := s.manager.Unified(orderNo.Value, true).Complex()
 	if c != nil {
@@ -271,7 +272,7 @@ func (s *orderServiceImpl) SubmitTradeOrder(_ context.Context, r *proto.TradeOrd
 			}
 		}
 	}
-	io, err := s.manager.SubmitTradeOrder(parser.Order(r.Order), r.Rate)
+	io, err := s.manager.SubmitTradeOrder(parser.ParseTradeOrder(r.Order), r.Rate)
 	rs := s.result(err)
 	rs.Data = map[string]string{
 		"OrderId": strconv.Itoa(int(io.GetAggregateRootId())),

@@ -177,10 +177,10 @@ func (t *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
 }
 
 // SubmitTradeOrder 提交交易类订单
-func (t *orderManagerImpl) SubmitTradeOrder(c *order.ComplexOrder,
+func (t *orderManagerImpl) SubmitTradeOrder(c *order.TradeOrderValue,
 	tradeRate float64) (order.IOrder, error) {
 	val := &order.Order{
-		BuyerId:   c.BuyerId,
+		BuyerId:   int64(c.BuyerId),
 		OrderType: int(order.TTrade),
 	}
 	o := t.repo.CreateOrder(val)

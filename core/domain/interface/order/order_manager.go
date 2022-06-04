@@ -26,7 +26,7 @@ type (
 		// 提交批发订单
 		SubmitWholesaleOrder(c cart.ICart, data IPostedData) (map[string]string, error)
 		// 提交交易类订单
-		SubmitTradeOrder(o *ComplexOrder, tradeRate float64) (IOrder, error)
+		SubmitTradeOrder(o *TradeOrderValue, tradeRate float64) (IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
 		NotifyOrderTradeSuccess(orderNo string, subOrder bool) error
 		// 提交订单
