@@ -220,9 +220,9 @@ func Sku(src *proto.SSku) *item.Sku {
 func ParseTradeOrder(src *proto.SSingleOrder) *order.TradeOrderValue {
 	o := &order.TradeOrderValue{
 		//OrderNo:   src.OrderNo,
-		BuyerId:   int(src.BuyerId),
-		MerchantId:       int(src.SellerId),
-		StoreId:         int(src.ShopId),
+		BuyerId:        int(src.BuyerId),
+		MerchantId:     int(src.SellerId),
+		StoreId:        int(src.ShopId),
 		Subject:        src.Subject,
 		ItemAmount:     int(src.ItemAmount),
 		DiscountAmount: int(src.DiscountAmount),
@@ -311,7 +311,7 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 			ShippingAddress: "",
 		},
 		BuyerComment: src.BuyerComment,
-		State:        src.State,
+		State:        src.Status,
 		SubmitTime:   src.CreateTime,
 		Items:        make([]*proto.SOrderItem, len(src.Items)),
 	}
@@ -345,7 +345,7 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 		OrderId: src.OrderId,
 		//ParentOrderId:  d.ParentOrderId,
 		OrderType: src.OrderType,
-		OrderNo:   src.OrderNo,
+		OrderNo:   d.OrderNo,
 		BuyerId:   src.BuyerId,
 		//SellerId:       src.VendorId,
 		ShopId:         d.ShopId,

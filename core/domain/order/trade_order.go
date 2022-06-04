@@ -71,7 +71,7 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 		PackageFee:     co.PackageFee,
 		FinalAmount:    v.FinalAmount,
 		BuyerComment:   "",
-		State:          o.value.State,
+		State:          o.value.Status,
 		StateText:      "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     o.value.UpdateTime,
@@ -107,13 +107,13 @@ func (o *tradeOrderImpl) parseOrder(v *order.TradeOrderValue, rate float64) erro
 		ID:             0,
 		OrderId:        o.baseValue.Id,
 		VendorId:       int64(v.MerchantId),
-		 ShopId:         int64(v.StoreId),
+		ShopId:         int64(v.StoreId),
 		Subject:        v.Subject,
 		OrderAmount:    int64(v.ItemAmount),
 		DiscountAmount: int64(v.DiscountAmount),
 		FinalAmount:    0,
 		TradeRate:      rate,
-		State:          int32(o.baseValue.State),
+		Status:          int32(o.baseValue.Status),
 	}
 	//计算最终金额
 	o.fixFinalAmount()
@@ -148,7 +148,7 @@ func (o *tradeOrderImpl) Submit() error {
 	if err == nil {
 		// 保存订单信息到常规订单
 		o.value.OrderId = o.GetAggregateRootId()
-		o.value.State = int32(order.StatAwaitingPayment)
+		o.value.Status = int32(order.StatAwaitingPayment)
 		o.value.CreateTime = o.baseValue.CreateTime
 		o.value.UpdateTime = o.baseValue.CreateTime
 		// 保存订单
@@ -237,14 +237,17 @@ func (o *tradeOrderImpl) CashPay() error {
 // 在线支付交易完成,交易单付款后直接完成
 func (o *tradeOrderImpl) TradePaymentFinish() error {
 	o.getValue()
-	if o.value.State == order.StatAwaitingPayment {
+	if o.value.Status == order.StatAwaitingPayment {
+		// 标记订单为已支付
+		o.baseValue.IsPaid = 1
+		o.baseOrderImpl.saveOrder()
 		// 如果交易单需要上传发票，则变为待确认。否则直接完成
 		needTicket := o.registryRepo.Get(registry.MchOrderRequireTicket).BoolValue()
 		if needTicket {
 			if o.value.TicketImage != "" {
 				return o.updateOrderComplete()
 			}
-			o.value.State = order.StatAwaitingConfirm
+			o.value.Status = order.StatAwaitingConfirm
 			return o.saveTradeOrder()
 		}
 		return o.updateOrderComplete()
@@ -268,7 +271,7 @@ func (o *tradeOrderImpl) UpdateTicket(img string) error {
 
 func (o *tradeOrderImpl) updateOrderComplete() (err error) {
 	if o.State() != order.StatCompleted {
-		o.value.State = order.StatCompleted
+		o.value.Status = order.StatCompleted
 		err := o.saveTradeOrder()
 		if err == nil {
 			err = o.onOrderComplete()
@@ -303,7 +306,7 @@ func (o *tradeOrderImpl) saveTradeOrder() error {
 // 同步订单状态
 func (o *tradeOrderImpl) syncOrderState() {
 	if o.State() != order.StatBreak {
-		o.saveOrderState(order.OrderState(o.value.State))
+		o.saveOrderState(order.OrderState(o.value.Status))
 	}
 }
 
@@ -337,7 +340,7 @@ func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate floa
 
 // 更新账户
 func (o *tradeOrderImpl) updateAccountForOrder() error {
-	if o.value.State != order.StatCompleted {
+	if o.value.Status != order.StatCompleted {
 		return order.ErrUnusualOrderStat
 	}
 	m := o.Buyer()

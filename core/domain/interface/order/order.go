@@ -339,8 +339,10 @@ type (
 		ShippingAddress string `db:"shipping_address"`
 		// 是否拆分
 		IsBreak int `db:"is_break"`
+		// 是否支付
+		IsPaid int `db:"is_paid"`
 		// 订单状态
-		State int `db:"state"`
+		Status int `db:"state"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -369,15 +371,13 @@ type (
 		// 店铺编号
 		ShopId int64 `db:"shop_id"`
 		// 店铺名称
-		ShopName string 	`db:"shop_name"`
-		// 是否支付
-		IsPaid int `db:"is_paid"`
+		ShopName string `db:"shop_name"`
 		// 买家留言
 		BuyerComment string `db:"buyer_comment"`
 		// 备注
 		Remark string `db:"remark"`
 		// 订单状态
-		State int `db:"state"`
+		Status int `db:"status"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -439,7 +439,7 @@ type (
 		// 订单备注
 		Remark string `db:"remark"`
 		// 订单状态
-		State int32 `db:"state"`
+		Status int32 `db:"status"`
 		// 订单创建时间
 		CreateTime int64 `db:"create_time"`
 		// 订单更新时间

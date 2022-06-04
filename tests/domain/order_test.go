@@ -10,6 +10,12 @@ package domain
 
 import (
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
@@ -17,11 +23,6 @@ import (
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/storage"
-	"log"
-	"strconv"
-	"strings"
-	"testing"
-	"time"
 )
 
 /*
@@ -61,34 +62,34 @@ func TestOrderSetup(t *testing.T) {
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
 
-	t.Log("-[ 订单状态为:" + order.OrderState(o.GetValue().State).String())
+	t.Log("-[ 订单状态为:" + order.OrderState(o.GetValue().Status).String())
 
 	err := o.PaymentFinishByOnlineTrade()
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().State).String())
+		t.Log(order.OrderState(o.GetValue().Status).String())
 	}
 
 	err = o.Confirm()
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().State).String())
+		t.Log(order.OrderState(o.GetValue().Status).String())
 	}
 
 	err = o.PickUp()
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().State).String())
+		t.Log(order.OrderState(o.GetValue().Status).String())
 	}
 
 	err = o.Ship(1, "100000")
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().State).String())
+		t.Log(order.OrderState(o.GetValue().Status).String())
 	}
 
 	return
@@ -96,7 +97,7 @@ func TestOrderSetup(t *testing.T) {
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().State).String())
+		t.Log(order.OrderState(o.GetValue().Status).String())
 	}
 }
 
@@ -129,17 +130,17 @@ func TestCancelOrder(t *testing.T) {
 	}
 	t.Logf("订单金额为:%d", rd.TradeAmount)
 	o = manager.GetOrderById(o.GetAggregateRootId())
-		py := o.GetPaymentOrder()
-		err = py.PaymentByWallet("支付订单")
-		pv := py.Get()
-		payState := pv.State
-		if payState == payment.StateFinished {
-			t.Logf("订单支付完成,金额：%d", pv.FinalFee)
-		} else {
-			t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.TradeNo())
-		}
-		t.Logf("支付单信息：%#v", pv)
-	
+	py := o.GetPaymentOrder()
+	err = py.PaymentByWallet("支付订单")
+	pv := py.Get()
+	payState := pv.State
+	if payState == payment.StateFinished {
+		t.Logf("订单支付完成,金额：%d", pv.FinalFee)
+	} else {
+		t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.TradeNo())
+	}
+	t.Logf("支付单信息：%#v", pv)
+
 	no := o.(order.INormalOrder)
 	for _, v := range no.GetSubOrders() {
 		err = v.Cancel("买多了，不想要了")
@@ -153,13 +154,25 @@ func TestCancelOrder(t *testing.T) {
 	}
 }
 
+func TestCancelSubOrderByOrderNo(t *testing.T) {
+	var orderId int64 = 117
+	orderRepo := ti.Factory.GetOrderRepo()
+	manager := orderRepo.Manager()
+	is := manager.GetSubOrder(orderId)
+	err := is.Cancel("不想要了")
+	if err != nil {
+		t.Log("取消失败：", err.Error())
+		t.FailNow()
+	}
+}
+
 // 测试提交普通订单,并完成付款
 func TestSubmitNormalOrder(t *testing.T) {
 	var buyerId int64 = 1
 	cartRepo := ti.Factory.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KNormal)
-	_ = joinItemsToCart(c,47)
-	err := joinItemsToCart(c,51)
+	_ = joinItemsToCart(c, 47)
+	err := joinItemsToCart(c, 51)
 	if err != nil {
 		t.Error("购物车加入失败:", err.Error())
 		t.FailNow()
@@ -241,7 +254,7 @@ func TestWholesaleOrder(t *testing.T) {
 	var buyerId int64 = 1
 	cartRepo := ti.Factory.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KWholesale)
-	_ = joinItemsToCart(c,1)
+	_ = joinItemsToCart(c, 1)
 	rc := c.(cart.IWholesaleCart)
 	if len(rc.GetValue().Items) == 0 {
 		t.Log("购物车是空的")
@@ -308,8 +321,8 @@ func TestTradeOrder(t *testing.T) {
 		//repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
 	}
 	c := &order.TradeOrderValue{
-		MerchantId:   104, //1,
-		StoreId:     1,
+		MerchantId: 104, //1,
+		StoreId:    1,
 		BuyerId:    397, //1,
 		ItemAmount: 100,
 		Subject:    "万宁佛山祖庙店",

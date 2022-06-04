@@ -2,6 +2,9 @@ package order
 
 import (
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/item"
@@ -16,8 +19,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"strings"
-	"time"
 )
 
 // 订单商品项(领域内部使用)
@@ -82,7 +83,7 @@ func (o *baseOrderImpl) Type() order.OrderType {
 
 // State 获取订单状态
 func (o *baseOrderImpl) State() order.OrderState {
-	return order.OrderState(o.baseValue.State)
+	return order.OrderState(o.baseValue.Status)
 }
 
 // Buyer 获取购买的会员
@@ -126,8 +127,8 @@ func (o *baseOrderImpl) Submit() error {
 	if o.baseValue.OrderNo == "" {
 		o.baseValue.OrderNo = o.manager.GetFreeOrderNo(0)
 	}
-	if o.baseValue.State == 0 {
-		o.baseValue.State = order.StatAwaitingPayment
+	if o.baseValue.Status == 0 {
+		o.baseValue.Status = order.StatAwaitingPayment
 	}
 	m := o.Buyer().GetValue()
 	o.baseValue.BuyerUser = m.User
@@ -157,11 +158,11 @@ func (o *baseOrderImpl) saveOrder() error {
 
 // 设置并订单状态
 func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
-	if state == order.StatBreak{
+	if state == order.StatBreak {
 		o.baseValue.IsBreak = 1
 	}
-	if o.baseValue.State != int(state) {
-		o.baseValue.State = int(state)
+	if o.baseValue.Status != int(state) {
+		o.baseValue.Status = int(state)
 		_ = o.saveOrder()
 	}
 }
@@ -194,13 +195,13 @@ func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 			PackageFee:     o.baseValue.PackageFee,
 			FinalAmount:    o.baseValue.FinalAmount,
 			IsBreak:        int32(o.baseValue.IsBreak),
-			State:          int32(o.baseValue.State),
+			State:          int32(o.baseValue.Status),
 			StateText:      "",
 			CreateTime:     o.baseValue.CreateTime,
 			UpdateTime:     o.baseValue.UpdateTime,
 			Data:           make(map[string]string),
 			Details:        []*order.ComplexOrderDetails{},
-			Consignee :&order.ComplexConsignee{
+			Consignee: &order.ComplexConsignee{
 				ConsigneeName:   o.baseValue.ConsigneeName,
 				ConsigneePhone:  o.baseValue.ConsigneePhone,
 				ShippingAddress: o.baseValue.ShippingAddress,

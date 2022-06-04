@@ -725,7 +725,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		IsSuspend:    0,
 		BuyerComment: "",
 		Remark:       "",
-		State:        order.StatAwaitingPayment,
+		Status:       order.StatAwaitingPayment,
 		UpdateTime:   o.baseValue.UpdateTime,
 		Items:        items,
 	}
@@ -817,6 +817,8 @@ func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 			return err
 		}
 	}
+	o.baseValue.IsPaid = 1
+	o.baseOrderImpl.saveOrder()
 	return nil
 }
 
@@ -980,7 +982,7 @@ func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
 		PackageFee:     v.PackageFee,
 		FinalAmount:    v.FinalAmount,
 		BuyerComment:   v.BuyerComment,
-		State:          v.State,
+		State:          v.Status,
 		StateText:      "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     v.UpdateTime,
@@ -994,9 +996,13 @@ func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
 
 // Complex 复合的订单信息
 func (o *subOrderImpl) Complex() *order.ComplexOrder {
-	co := o.baseOrder().Complex()
-	co.Details = []*order.ComplexOrderDetails{parseDetailValue(o)}
-	return co
+	bo := o.baseOrder()
+	if bo != nil {
+		co := o.baseOrder().Complex()
+		co.Details = []*order.ComplexOrderDetails{parseDetailValue(o)}
+		return co
+	}
+	return nil
 }
 
 // 转换订单商品
@@ -1103,7 +1109,7 @@ func (o *subOrderImpl) syncOrderState() {
 	if bo := o.baseOrder(); bo != nil {
 		oi := bo.(*normalOrderImpl).baseOrderImpl
 		if oi.State() != order.StatBreak {
-			oi.saveOrderState(order.OrderState(o.value.State))
+			oi.saveOrderState(order.OrderState(o.value.Status))
 		}
 	}
 
@@ -1111,12 +1117,11 @@ func (o *subOrderImpl) syncOrderState() {
 
 // 订单完成支付
 func (o *subOrderImpl) orderFinishPaid() error {
-	if o.value.IsPaid == 1 {
+	if o.value.Status > order.StatAwaitingPayment {
 		return order.ErrOrderPayed
 	}
-	if o.value.State == order.StatAwaitingPayment {
-		o.value.IsPaid = 1
-		o.value.State = order.StatAwaitingConfirm
+	if o.value.Status == order.StatAwaitingPayment {
+		o.value.Status = order.StatAwaitingPickup
 		err := o.AppendLog(order.LogSetup, true, "{finish_pay}")
 		if err == nil {
 			err = o.saveSubOrder()
@@ -1158,7 +1163,7 @@ func (o *subOrderImpl) AppendLog(logType order.LogType, system bool, message str
 		OrderId:    o.GetDomainId(),
 		Type:       int(logType),
 		IsSystem:   systemInt,
-		OrderState: int(o.value.State),
+		OrderState: int(o.value.Status),
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
@@ -1172,13 +1177,13 @@ func (o *subOrderImpl) Confirm() (err error) {
 	//o._value.IsPaid == enum.FALSE {
 	//    return order.ErrOrderNotPayed
 	//}
-	if o.value.State < order.StatAwaitingConfirm {
+	if o.value.Status < order.StatAwaitingConfirm {
 		return order.ErrOrderNotPayed
 	}
-	if o.value.State >= order.StatAwaitingPickup {
+	if o.value.Status >= order.StatAwaitingPickup {
 		return order.ErrOrderHasConfirm
 	}
-	o.value.State = order.StatAwaitingPickup
+	o.value.Status = order.StatAwaitingPickup
 	o.value.UpdateTime = time.Now().Unix()
 	err = o.saveSubOrder()
 	if err == nil {
@@ -1203,13 +1208,13 @@ func (o *subOrderImpl) addItemSalesNum() {
 
 // PickUp 捡货(备货)
 func (o *subOrderImpl) PickUp() error {
-	if o.value.State < order.StatAwaitingPickup {
+	if o.value.Status < order.StatAwaitingPickup {
 		return order.ErrOrderNotConfirm
 	}
-	if o.value.State >= order.StatAwaitingShipment {
+	if o.value.Status >= order.StatAwaitingShipment {
 		return order.ErrOrderHasPickUp
 	}
-	o.value.State = order.StatAwaitingShipment
+	o.value.Status = order.StatAwaitingShipment
 	o.value.UpdateTime = time.Now().Unix()
 	err := o.saveSubOrder()
 	if err == nil {
@@ -1222,12 +1227,12 @@ func (o *subOrderImpl) PickUp() error {
 func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 	//so := o._shipRepo.GetOrders()
 	//todo: 可进行发货修改
-	if o.value.State >= order.StatShipped {
+	if o.value.Status >= order.StatShipped {
 		return order.ErrOrderShipped
 	}
 	// 如果没有备货完成,则发货前自动完成备货
-	if o.value.State < order.StatAwaitingShipment {
-		o.value.State = order.StatAwaitingShipment
+	if o.value.Status < order.StatAwaitingShipment {
+		o.value.Status = order.StatAwaitingShipment
 		o.value.UpdateTime = time.Now().Unix()
 		_ = o.AppendLog(order.LogSetup, true, "{pickup}")
 		//return order.ErrOrderNotPickUp
@@ -1246,7 +1251,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 	// 生成发货单并发货
 	err := so.Ship(spId, spOrder)
 	if err == nil {
-		o.value.State = order.StatShipped
+		o.value.Status = order.StatShipped
 		o.value.UpdateTime = time.Now().Unix()
 		err = o.saveSubOrder()
 		if err == nil {
@@ -1295,14 +1300,14 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 
 // 已收货
 func (o *subOrderImpl) BuyerReceived() error {
-	if o.value.State < order.StatShipped {
+	if o.value.Status < order.StatShipped {
 		return order.ErrOrderNotShipped
 	}
-	if o.value.State >= order.StatCompleted {
+	if o.value.Status >= order.StatCompleted {
 		return order.ErrIsCompleted
 	}
 	dt := time.Now()
-	o.value.State = order.StatCompleted
+	o.value.Status = order.StatCompleted
 	o.value.UpdateTime = dt.Unix()
 	o.value.IsSuspend = 0
 	err := o.saveSubOrder()
@@ -1455,7 +1460,7 @@ func (o *subOrderImpl) getLogStringByStat(stat int) string {
 
 // 更新账户
 func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
-	if o.value.State != order.StatCompleted {
+	if o.value.Status != order.StatCompleted {
 		return order.ErrUnusualOrderStat
 	}
 	var err error
@@ -1501,15 +1506,15 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 
 // 取消订单
 func (o *subOrderImpl) Cancel(reason string) error {
-	if o.value.State == order.StatCancelled {
+	if o.value.Status == order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
 	// 已发货订单无法取消
-	if o.value.State >= order.StatShipped {
+	if o.value.Status >= order.StatShipped {
 		return order.ErrOrderShippedCancel
 	}
 
-	o.value.State = order.StatCancelled
+	o.value.Status = order.StatCancelled
 	o.value.UpdateTime = time.Now().Unix()
 	err := o.saveSubOrder()
 	if err == nil {
@@ -1536,7 +1541,7 @@ func (o *subOrderImpl) cancelGoods() error {
 			// 释放库存
 			gds.ReleaseStock(v.SkuId, v.Quantity)
 			// 如果订单已付款，则取消销售数量
-			if o.value.IsPaid == 1 {
+			if o.value.Status > order.StatAwaitingPayment {
 				gds.CancelSale(v.SkuId, v.Quantity, o.value.OrderNo)
 			}
 		}
@@ -1589,28 +1594,28 @@ func (o *subOrderImpl) RevertReturn(snapshotId int64, quantity int32) error {
 
 // 申请退款
 func (o *subOrderImpl) SubmitRefund(reason string) error {
-	if o.value.State == order.StatAwaitingPayment {
+	if o.value.Status == order.StatAwaitingPayment {
 		return o.Cancel("订单主动申请取消,原因:" + reason)
 	}
-	if o.value.State >= order.StatShipped ||
-		o.value.State >= order.StatCancelled {
+	if o.value.Status >= order.StatShipped ||
+		o.value.Status >= order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
-	o.value.State = order.StatAwaitingCancel
+	o.value.Status = order.StatAwaitingCancel
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }
 
 // 谢绝订单
 func (o *subOrderImpl) Decline(reason string) error {
-	if o.value.State == order.StatAwaitingPayment {
+	if o.value.Status == order.StatAwaitingPayment {
 		return o.Cancel("商户取消,原因:" + reason)
 	}
-	if o.value.State >= order.StatShipped ||
-		o.value.State >= order.StatCancelled {
+	if o.value.Status >= order.StatShipped ||
+		o.value.Status >= order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
-	o.value.State = order.StatDeclined
+	o.value.Status = order.StatDeclined
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }
@@ -1618,16 +1623,16 @@ func (o *subOrderImpl) Decline(reason string) error {
 // 退款 todo: will delete,代码供取消订单参考
 func (o *subOrderImpl) refund() error {
 	// 已退款
-	if o.value.State == order.StatRefunded ||
-		o.value.State == order.StatCancelled {
+	if o.value.Status == order.StatRefunded ||
+		o.value.Status == order.StatCancelled {
 		return order.ErrHasRefund
 	}
 	// 不允许退款
-	if o.value.State != order.StatAwaitingCancel &&
-		o.value.State != order.StatDeclined {
+	if o.value.Status != order.StatAwaitingCancel &&
+		o.value.Status != order.StatDeclined {
 		return order.ErrDisallowRefund
 	}
-	o.value.State = order.StatRefunded
+	o.value.Status = order.StatRefunded
 	o.value.UpdateTime = time.Now().Unix()
 	err := o.saveSubOrder()
 	if err == nil {
@@ -1638,10 +1643,10 @@ func (o *subOrderImpl) refund() error {
 
 // 取消退款申请
 func (o *subOrderImpl) CancelRefund() error {
-	if o.value.State != order.StatAwaitingCancel || o.value.IsPaid == 0 {
+	if o.value.Status != order.StatAwaitingCancel {
 		panic(errors.New("订单已经取消,不允许再退款"))
 	}
-	o.value.State = order.StatAwaitingConfirm
+	o.value.Status = order.StatAwaitingConfirm
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }

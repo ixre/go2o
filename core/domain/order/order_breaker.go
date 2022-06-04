@@ -2,6 +2,7 @@ package order
 
 import (
 	"errors"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/order"
 )
@@ -54,7 +55,7 @@ func (w *wholesaleOrderBreaker) createWholesaleOrder(sellerId int64,
 	v := &order.Order{
 		BuyerId:   buyerId,
 		OrderType: int(order.TWholesale),
-		State:     order.StatAwaitingPayment,
+		Status:    order.StatAwaitingPayment,
 	}
 	o := w.repo.CreateOrder(v)
 	wo := o.(order.IWholesaleOrder)

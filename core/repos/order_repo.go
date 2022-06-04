@@ -12,6 +12,8 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/delivery"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -32,7 +34,6 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
 )
 
 var _ order.IOrderRepo = new(OrderRepImpl)
@@ -63,7 +64,7 @@ func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	proRepo product.IProductRepo, cartRepo cart.ICartRepo, goodsRepo item.IItemRepo,
 	promRepo promotion.IPromotionRepo, memRepo member.IMemberRepo,
 	deliverRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo,
-	shipRepo shipment.IShipmentRepo,shopRepo shop.IShopRepo,
+	shipRepo shipment.IShipmentRepo, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrderRepo {
 	return &OrderRepImpl{
 		Storage:       sto,
@@ -80,7 +81,7 @@ func NewOrderRepo(sto storage.Interface, o orm.Orm,
 		_valRepo:      valRepo,
 		_expressRepo:  expressRepo,
 		_shipRepo:     shipRepo,
-		_shopRepo:shopRepo,
+		_shopRepo:     shopRepo,
 		_registryRepo: registryRepo,
 	}
 }
@@ -106,7 +107,7 @@ func (o *OrderRepImpl) Manager() order.IOrderManager {
 func (o *OrderRepImpl) CreateOrder(val *order.Order) order.IOrder {
 	return orderImpl.FactoryOrder(val, o.Manager(), o, o._mchRepo, o._goodsRepo,
 		o._productRepo, o._promRepo, o._memberRepo, o._expressRepo,
-		o._shipRepo, o._payRepo, o._cartRepo,o._shopRepo, o._valRepo, o._registryRepo)
+		o._shipRepo, o._payRepo, o._cartRepo, o._shopRepo, o._valRepo, o._registryRepo)
 }
 
 // 生成空白订单,并保存返回对象
@@ -137,7 +138,6 @@ func (o *OrderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 	_, _, err := o.o.Save(nil, val)
 	return err
 }
-
 
 // 保存订单日志
 func (o *OrderRepImpl) SaveNormalSubOrderLog(v *order.OrderLog) error {
@@ -181,7 +181,7 @@ func (o *OrderRepImpl) GetSubOrderItems(orderId int64) []*order.SubOrderItem {
 func (o *OrderRepImpl) GetSubOrderByOrderNo(orderNo string) order.ISubOrder {
 	var e = order.NormalSubOrder{}
 	err := o.o.GetBy(&e, "order_no= $1", orderNo)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:order_sub_order")
 		return nil
 	}
@@ -321,7 +321,7 @@ func (o *OrderRepImpl) saveOrder(v *order.Order) (int, error) {
 func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 	// 零售订单或已拆单的订单不进行通知
 	if v.OrderType == int(order.TRetail) ||
-		v.State == order.StatBreak {
+		v.Status == order.StatBreak {
 		return o.saveOrder(v)
 	}
 	// 判断业务状态是否改变
@@ -330,7 +330,7 @@ func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 		statusIsChanged = true
 	} else {
 		origin := o.GetOrder("id= $1", v.Id)
-		statusIsChanged = origin.State != v.State
+		statusIsChanged = origin.Status != v.Status
 	}
 	// log.Println("--- save order:", v.Id, "; state:",
 	// v.State, ";", statusIsChanged)
@@ -368,7 +368,7 @@ func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 		statusIsChanged = true
 	} else {
 		origin := o.GetSubOrder(v.Id)
-		statusIsChanged = origin.State != v.State
+		statusIsChanged = origin.Status != v.Status
 	}
 	id, err := o.saveSubOrder(v)
 	if err == nil {

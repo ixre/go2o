@@ -118,7 +118,7 @@ type (
 		// 店铺编号
 		ShopId int64 `db:"shop_id"`
 		// 店铺名称
-		ShopName string 	`db:"shop_name"`
+		ShopName string `db:"shop_name"`
 		// 订单标题
 		Subject string `db:"subject"`
 		// 商品金额
@@ -131,8 +131,6 @@ type (
 		PackageFee int64 `db:"package_fee"`
 		// 实际金额
 		FinalAmount int64 `db:"final_amount"`
-		// 是否支付
-		IsPaid int `db:"is_paid"`
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 		IsSuspend int `db:"is_suspend"`
 		// 顾客备注
@@ -140,7 +138,7 @@ type (
 		// 系统备注
 		Remark string `db:"remark" json:"remark"`
 		// 订单状态
-		State int32 `db:"state" json:"state"`
+		Status int32 `db:"status" json:"status"`
 		// 下单时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间

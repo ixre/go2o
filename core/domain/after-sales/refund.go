@@ -10,13 +10,14 @@ package afterSales
 
 import (
 	"errors"
-	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	"math"
+
+	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/gof/db/orm"
-	"math"
 )
 
 var _ afterSales.IRefundOrder = new(refundOrderImpl)
@@ -89,7 +90,7 @@ func (r *refundOrderImpl) SetItem(snapshotId int64, quantity int32) error {
 // 提交退款申请
 func (r *refundOrderImpl) Submit() (int32, error) {
 	o := r.GetOrder()
-	if o.GetValue().State >= order.StatShipped {
+	if o.GetValue().Status >= order.StatShipped {
 		return 0, afterSales.ErrRefundAfterShipped
 	}
 	id, err := r.afterSalesOrderImpl.Submit()

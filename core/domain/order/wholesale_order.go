@@ -74,7 +74,7 @@ func (o *wholesaleOrderImpl) init() order.IOrder {
 			BuyerId:  o.baseValue.BuyerId,
 			VendorId: 0,
 			ShopId:   0,
-			State:    o.baseValue.State,
+			Status:   o.baseValue.Status,
 		}
 	}
 	o.getValue()
@@ -236,7 +236,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 		PackageFee:     co.PackageFee,
 		FinalAmount:    co.FinalAmount,
 		BuyerComment:   o.value.BuyerComment,
-		State:          int32(o.value.State),
+		State:          int32(o.value.Status),
 		StateText:      "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     o.value.UpdateTime,
@@ -244,7 +244,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	for _, v := range o.Items() {
 		dt.Items = append(dt.Items, o.parseComplexItem(v))
 	}
-	co.Details = append(co.Details,dt)
+	co.Details = append(co.Details, dt)
 	return co
 }
 
@@ -266,7 +266,7 @@ func (o *wholesaleOrderImpl) Submit() error {
 		// 保存订单信息到常规订单
 		o.value.OrderId = o.GetAggregateRootId()
 		o.value.OrderNo = o.OrderNo()
-		o.value.State = order.StatAwaitingPayment
+		o.value.Status = order.StatAwaitingPayment
 		o.value.CreateTime = o.baseValue.CreateTime
 		o.value.UpdateTime = o.baseValue.CreateTime
 		// 保存订单
@@ -438,15 +438,18 @@ func (o *wholesaleOrderImpl) Items() []*order.WholesaleItem {
 
 // OnlinePaymentTradeFinish 在线支付交易完成
 func (o *wholesaleOrderImpl) OnlinePaymentTradeFinish() error {
-	if o.value.IsPaid == 1 {
+	if o.value.Status > order.StatAwaitingPayment {
 		return order.ErrOrderPayed
 	}
-	if o.value.State == order.StatAwaitingPayment {
-		o.value.IsPaid = 1
-		o.value.State = order.StatAwaitingConfirm
+	if o.value.Status == order.StatAwaitingPayment {
+		o.value.Status = order.StatAwaitingPickup
 		err := o.AppendLog(order.LogSetup, true, "{finish_pay}")
 		if err == nil {
 			err = o.saveWholesaleOrder()
+			if err == nil {
+				o.baseValue.IsPaid = 1
+				o.baseOrderImpl.saveOrder()
+			}
 		}
 		return err
 	}
@@ -471,7 +474,7 @@ func (o *wholesaleOrderImpl) AppendLog(logType order.LogType,
 		OrderId:    o.GetAggregateRootId(),
 		Type:       int(logType),
 		IsSystem:   systemInt,
-		OrderState: int(o.value.State),
+		OrderState: int(o.value.Status),
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
@@ -500,19 +503,19 @@ func (o *wholesaleOrderImpl) saveWholesaleOrder() error {
 // 同步订单状态
 func (o *wholesaleOrderImpl) syncOrderState() {
 	if o.State() != order.StatBreak {
-		o.saveOrderState(order.OrderState(o.value.State))
+		o.saveOrderState(order.OrderState(o.value.Status))
 	}
 }
 
 // Confirm 确认订单
 func (o *wholesaleOrderImpl) Confirm() error {
-	if o.value.State < order.StatAwaitingConfirm {
+	if o.value.Status < order.StatAwaitingConfirm {
 		return order.ErrOrderNotPayed
 	}
-	if o.value.State >= order.StatAwaitingPickup {
+	if o.value.Status >= order.StatAwaitingPickup {
 		return order.ErrOrderHasConfirm
 	}
-	o.value.State = order.StatAwaitingPickup
+	o.value.Status = order.StatAwaitingPickup
 	o.value.UpdateTime = time.Now().Unix()
 	err := o.saveWholesaleOrder()
 	if err == nil {
@@ -536,13 +539,13 @@ func (o *wholesaleOrderImpl) addItemSalesNum() {
 
 // 捡货(备货)
 func (o *wholesaleOrderImpl) PickUp() error {
-	if o.value.State < order.StatAwaitingPickup {
+	if o.value.Status < order.StatAwaitingPickup {
 		return order.ErrOrderNotConfirm
 	}
-	if o.value.State >= order.StatAwaitingShipment {
+	if o.value.Status >= order.StatAwaitingShipment {
 		return order.ErrOrderHasPickUp
 	}
-	o.value.State = order.StatAwaitingShipment
+	o.value.Status = order.StatAwaitingShipment
 	o.value.UpdateTime = time.Now().Unix()
 	err := o.saveWholesaleOrder()
 	if err == nil {
@@ -587,12 +590,12 @@ func (o *wholesaleOrderImpl) createShipmentOrder(items []*order.WholesaleItem) s
 
 // Ship 发货
 func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
-	if o.value.State >= order.StatShipped {
+	if o.value.Status >= order.StatShipped {
 		return order.ErrOrderShipped
 	}
 	// 如果没有备货完成,则发货前自动完成备货
-	if o.value.State < order.StatAwaitingShipment {
-		o.value.State = order.StatAwaitingShipment
+	if o.value.Status < order.StatAwaitingShipment {
+		o.value.Status = order.StatAwaitingShipment
 		o.value.UpdateTime = time.Now().Unix()
 		_ = o.AppendLog(order.LogSetup, true, "{pickup}")
 		//return order.ErrOrderNotPickUp
@@ -612,7 +615,7 @@ func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
 	// 生成发货单并发货
 	err := so.Ship(spId, spOrder)
 	if err == nil {
-		o.value.State = order.StatShipped
+		o.value.Status = order.StatShipped
 		o.value.UpdateTime = time.Now().Unix()
 		err = o.saveWholesaleOrder()
 		if err == nil {
@@ -626,14 +629,14 @@ func (o *wholesaleOrderImpl) Ship(spId int32, spOrder string) error {
 
 // BuyerReceived 已收货
 func (o *wholesaleOrderImpl) BuyerReceived() error {
-	if o.value.State < order.StatShipped {
+	if o.value.Status < order.StatShipped {
 		return order.ErrOrderNotShipped
 	}
-	if o.value.State >= order.StatCompleted {
+	if o.value.Status >= order.StatCompleted {
 		return order.ErrIsCompleted
 	}
 	dt := time.Now()
-	o.value.State = order.StatCompleted
+	o.value.Status = order.StatCompleted
 	o.value.UpdateTime = dt.Unix()
 	err := o.saveWholesaleOrder()
 	if err == nil {
@@ -766,7 +769,7 @@ func (o *wholesaleOrderImpl) onOrderComplete() error {
 
 // 更新账户
 func (o *wholesaleOrderImpl) updateAccountForOrder() error {
-	if o.value.State != order.StatCompleted {
+	if o.value.Status != order.StatCompleted {
 		return order.ErrUnusualOrderStat
 	}
 	m := o.Buyer()
@@ -850,14 +853,14 @@ func (o *wholesaleOrderImpl) getLogStringByStat(stat int) string {
 
 // Cancel 取消订单/退款
 func (o *wholesaleOrderImpl) Cancel(reason string) error {
-	if o.value.State == order.StatCancelled {
+	if o.value.Status == order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
 	// 已发货订单无法取消
-	if o.value.State >= order.StatShipped {
+	if o.value.Status >= order.StatShipped {
 		return order.ErrOrderShippedCancel
 	}
-	o.value.State = order.StatCancelled
+	o.value.Status = order.StatCancelled
 	o.value.UpdateTime = time.Now().Unix()
 	err := o.saveWholesaleOrder()
 	if err == nil {
@@ -884,7 +887,7 @@ func (o *wholesaleOrderImpl) cancelGoods() error {
 			// 释放库存
 			gds.ReleaseStock(v.SkuId, v.Quantity)
 			// 如果订单已付款，则取消销售数量
-			if o.value.IsPaid == 1 {
+			if o.value.Status > order.StatAwaitingPayment {
 				gds.CancelSale(v.SkuId, v.Quantity, o.value.OrderNo)
 			}
 		}
@@ -915,14 +918,14 @@ func (o *wholesaleOrderImpl) cancelPaymentOrder() error {
 
 // Decline 谢绝订单
 func (o *wholesaleOrderImpl) Decline(reason string) error {
-	if o.value.State == order.StatAwaitingPayment {
+	if o.value.Status == order.StatAwaitingPayment {
 		return o.Cancel("商户取消,原因:" + reason)
 	}
-	if o.value.State >= order.StatShipped ||
-		o.value.State >= order.StatCancelled {
+	if o.value.Status >= order.StatShipped ||
+		o.value.Status >= order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
-	o.value.State = order.StatDeclined
+	o.value.Status = order.StatDeclined
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveWholesaleOrder()
 }

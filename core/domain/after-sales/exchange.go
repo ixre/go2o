@@ -10,11 +10,12 @@ package afterSales
 
 import (
 	"errors"
-	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	"time"
+
+	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/gof/db/orm"
-	"time"
 )
 
 var _ afterSales.IExchangeOrder = new(exchangeOrderImpl)
@@ -68,7 +69,7 @@ func (e *exchangeOrderImpl) Value() afterSales.AfterSalesOrder {
 // 提交售后申请
 func (e *exchangeOrderImpl) Submit() (int32, error) {
 	o := e.GetOrder()
-	if o.GetValue().State != order.StatCompleted {
+	if o.GetValue().Status != order.StatCompleted {
 		return 0, afterSales.ErrExchangeNotReceiveItems
 	}
 	id, err := e.afterSalesOrderImpl.Submit()
