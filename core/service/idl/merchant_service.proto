@@ -170,7 +170,7 @@ message SMerchantOrder {
     bool IsPaid = 11;
     double FinalAmount = 12;
     int32 State = 13;
-    string StateText = 14;
+    string StatusText = 14;
     int64 CreateTime = 15;
     repeated SOrderItem Items = 16;
     map<string, string> Data = 17;

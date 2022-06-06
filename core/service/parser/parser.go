@@ -393,6 +393,7 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 		},
 		SubOrders:  []*proto.SSubOrder{},
 		Status:     src.Status,
+		IsPaid: src.IsPaid ==1,
 		StatusText:  order.OrderStatus(src.Status).String(),
 		CreateTime: src.CreateTime,
 	}

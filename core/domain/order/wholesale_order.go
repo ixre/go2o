@@ -237,7 +237,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 		FinalAmount:    co.FinalAmount,
 		BuyerComment:   o.value.BuyerComment,
 		Status:         int32(o.value.Status),
-		StateText:      "",
+		StatusText:     "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     o.value.UpdateTime,
 	}

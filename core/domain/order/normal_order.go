@@ -983,7 +983,7 @@ func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
 		FinalAmount:    v.FinalAmount,
 		BuyerComment:   v.BuyerComment,
 		Status:         v.Status,
-		StateText:      "",
+		StatusText:     "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     v.UpdateTime,
 	}

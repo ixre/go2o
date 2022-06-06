@@ -72,7 +72,7 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 		FinalAmount:    v.FinalAmount,
 		BuyerComment:   "",
 		Status:         o.value.Status,
-		StateText:      "",
+		StatusText:     "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     o.value.UpdateTime,
 	}

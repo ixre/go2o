@@ -195,6 +195,7 @@ func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 			PackageFee:     o.baseValue.PackageFee,
 			FinalAmount:    o.baseValue.FinalAmount,
 			IsBreak:        int32(o.baseValue.IsBreak),
+			IsPaid:         int32(o.baseValue.IsPaid),
 			Status:         int32(o.baseValue.Status),
 			StateText:      "",
 			CreateTime:     o.baseValue.CreateTime,

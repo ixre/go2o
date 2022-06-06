@@ -41,6 +41,8 @@ type (
 		Consignee *ComplexConsignee
 		// 订单是否拆分
 		IsBreak int32
+		// 是否支付
+		IsPaid int32
 		// 订单状态
 		Status int32
 		// 状态文本
@@ -80,7 +82,7 @@ type (
 		// 订单状态
 		Status int32
 		// 状态文本
-		StateText string
+		StatusText string
 		// 商品项
 		Items []*ComplexItem
 		// 更新时间

@@ -134,6 +134,7 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
 		FinalAmount:    src.FinalAmount,
+		IsPaid:src.IsPaid == 1,
 		Status:         int32(src.Status),
 		StatusText:     src.StatusText,
 		CreateTime:     src.CreateTime,
@@ -147,7 +148,7 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 			FinalAmount: v.FinalAmount,
 			Items:       []*proto.SOrderItem{},
 			Status:       int32(v.Status),
-			StateText:   v.StateText,
+			StatusText:   v.StatusText,
 		}
 		for _, it := range v.Items {
 			sub.Items = append(sub.Items, &proto.SOrderItem{

@@ -42,6 +42,8 @@ type (
 		FinalAmount int64
 		// 子订单
 		SubOrders []*MemberPagingSubOrderDto
+		// 是否支付
+		IsPaid int32
 		// 状态
 		Status int32
 		// 状态文本
@@ -65,7 +67,7 @@ type (
 		IsPaid         bool
 		FinalAmount    int64
 		Status         int
-		StateText      string
+		StatusText     string
 		CreateTime     int64
 		Items          []*OrderItem
 	}

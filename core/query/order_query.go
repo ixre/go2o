@@ -97,7 +97,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 	// 查询分页的订单
 	err := d.Query(fmt.Sprintf(`select order_list.id,order_list.order_no,
 			order_list.buyer_id,buyer_user,order_list.item_count,order_list.item_amount,order_list.discount_amount,
-			order_list.express_fee,order_list.package_fee,order_list.final_amount,
+			order_list.express_fee,order_list.package_fee,order_list.final_amount,order_list.is_paid,
 			order_list.status,order_list.create_time FROM order_list 
          	WHERE %s %s LIMIT $2 OFFSET $1`,
 		where, orderBy),
@@ -110,7 +110,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 				//}
 				err := rs.Scan(&e.OrderId, &e.OrderNo, &e.BuyerId, &e.BuyerUser, &e.ItemCount, &e.ItemAmount,
 					&e.DiscountAmount, &e.ExpressFee, &e.PackageFee,
-					&e.FinalAmount, &e.Status, &e.CreateTime)
+					&e.FinalAmount, &e.IsPaid, &e.Status, &e.CreateTime)
 				if err != nil {
 					log.Println(" normal order list scan error:", err.Error())
 				}
@@ -176,7 +176,7 @@ func (o *OrderQuery) queryNormalSubOrd(begin int, end int) []*dto.MemberPagingSu
 				if err != nil {
 					log.Println(" normal sub order list scan error:", err.Error())
 				}
-				e.StateText = order.OrderStatus(e.Status).String()
+				e.StatusText = order.OrderStatus(e.Status).String()
 				e.Items = make([]*dto.OrderItem, 0)
 				subOrderList = append(subOrderList, e)
 			}

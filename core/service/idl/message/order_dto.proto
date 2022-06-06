@@ -101,12 +101,14 @@ message SParentOrder {
     SConsigneeInfo Consignee = 18;
     // 子订单
     repeated SSubOrder SubOrders = 11;
+    // 是否支付
+    bool IsPaid = 12;
     // 状态
-    int32 Status = 12;
+    int32 Status = 13;
     // 状态文本
-    string StatusText = 13;
+    string StatusText = 14;
     // 下单时间
-    sint64 CreateTime = 14;
+    sint64 CreateTime = 15;
 }
 
 message SSubOrder{
@@ -185,14 +187,16 @@ message SSingleOrder {
     SConsigneeInfo Consignee = 18;
     // 买家留言
     string BuyerComment = 19;
+       // 是否支付
+    bool IsPaid = 20;
     //sint32 IsBreak = 18;
-    sint32 Status = 20;
+    sint32 Status = 21;
     // 下单时间
-    sint64 SubmitTime = 21;
+    sint64 SubmitTime = 22;
     //sint64 UpdateTime = 21;
-    repeated SOrderItem Items = 22;
+    repeated SOrderItem Items = 23;
     // 扩展信息
-    map<string, string> Data = 23;
+    map<string, string> Data = 25;
     // 更新时间
     int64 UpdateTime = 24;
     // 是否为子订单

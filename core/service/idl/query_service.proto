@@ -120,12 +120,14 @@ message SMemberPagingOrder{
     int64 FinalAmount = 10;
     // 子订单
     repeated SMemberPagingSubOrder SubOrders = 11;
+    // 是否支付
+    bool IsPaid = 12;
     // 状态
-    int32 Status = 12;
+    int32 Status = 13;
     // 状态文本
-    string StateText = 13;
+    string StatusText = 14;
     // 下单时间
-    sint64 CreateTime = 14;
+    sint64 CreateTime = 15;
 }
 
 // 分页会员订单信息
@@ -143,7 +145,7 @@ message SMemberPagingSubOrder {
     // 状态
     sint32 Status = 6;
     // 状态文本
-    string StateText = 7;
+    string StatusText = 7;
     // 下单时间
     sint64 CreateTime = 8;
 }
