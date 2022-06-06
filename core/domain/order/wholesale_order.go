@@ -236,7 +236,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 		PackageFee:     co.PackageFee,
 		FinalAmount:    co.FinalAmount,
 		BuyerComment:   o.value.BuyerComment,
-		State:          int32(o.value.Status),
+		Status:         int32(o.value.Status),
 		StateText:      "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     o.value.UpdateTime,
@@ -503,7 +503,7 @@ func (o *wholesaleOrderImpl) saveWholesaleOrder() error {
 // 同步订单状态
 func (o *wholesaleOrderImpl) syncOrderState() {
 	if o.State() != order.StatBreak {
-		o.saveOrderState(order.OrderState(o.value.Status))
+		o.saveOrderState(order.OrderStatus(o.value.Status))
 	}
 }
 

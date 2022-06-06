@@ -13,6 +13,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/app/daemon/job"
 	"github.com/ixre/go2o/core"
@@ -28,10 +33,6 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/types"
 	"github.com/robfig/cron/v3"
-	"log"
-	"strings"
-	"sync"
-	"time"
 )
 
 // Func 守护进程执行的函数
@@ -222,14 +223,14 @@ func (d *defaultService) Start(a gof.App) {
 // 返回布尔值,如果返回false,则不继续执行
 func (d *defaultService) OrderObs(o *proto.SSingleOrder) bool {
 	if d.app.Debug() {
-		d.app.Log().Println("-- 订单", o.OrderNo, "状态:", o.State)
+		d.app.Log().Println("-- 订单", o.OrderNo, "状态:", o.Status)
 	}
 	if d.sOrder {
 		conn := core.GetRedisConn()
 		defer conn.Close()
 		defer Recover()
 
-		switch o.State {
+		switch o.Status {
 		//订单未支付，则超时自动取消
 		case order.StatAwaitingPayment:
 			d.updateOrderExpires(conn, o)
@@ -289,7 +290,7 @@ func (d *defaultService) batchDelKeys(conn redis.Conn, key string) {
 //设置订单过期时间
 func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SSingleOrder) {
 	//订单刚创建时,设置过期时间
-	if o.State == order.StatAwaitingPayment {
+	if o.Status == order.StatAwaitingPayment {
 		trans, cli, _ := service.FoundationServiceClient()
 		defer trans.Close()
 		ss, _ := cli.GetGlobMchSaleConf_(context.TODO(), &proto.Empty{})
@@ -329,7 +330,7 @@ func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SSingleOrder
 
 // 订单自动收货
 func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SSingleOrder) {
-	if o.State == order.StatShipped {
+	if o.Status == order.StatShipped {
 		trans, cli, _ := service.FoundationServiceClient()
 		defer trans.Close()
 		ss, _ := cli.GetGlobMchSaleConf_(context.TODO(), &proto.Empty{})
@@ -346,7 +347,7 @@ func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SSingleOrder
 
 // 完成订单自动收货
 func (d *defaultService) orderReceived(conn redis.Conn, o *proto.SSingleOrder) {
-	if o.State == order.StatCompleted {
+	if o.Status == order.StatCompleted {
 		orderNo, sub := d.testSubId(o)
 		prefix := types.StringCond(sub, "sub!", "")
 		key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderAutoReceive, prefix, orderNo)

@@ -42,7 +42,7 @@ type (
 		// 订单是否拆分
 		IsBreak int32
 		// 订单状态
-		State int32
+		Status int32
 		// 状态文本
 		StateText string
 		// 订单生成时间
@@ -78,7 +78,7 @@ type (
 		// 买家留言
 		BuyerComment string
 		// 订单状态
-		State int32
+		Status int32
 		// 状态文本
 		StateText string
 		// 商品项

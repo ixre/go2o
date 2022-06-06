@@ -311,7 +311,7 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 			ShippingAddress: "",
 		},
 		BuyerComment: src.BuyerComment,
-		State:        src.Status,
+		Status:       src.Status,
 		SubmitTime:   src.CreateTime,
 		Items:        make([]*proto.SOrderItem, len(src.Items)),
 	}
@@ -342,8 +342,8 @@ func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 	d := src.Details[0]
 	o := &proto.SSingleOrder{
-		OrderId: src.OrderId,
-		//ParentOrderId:  d.ParentOrderId,
+		OrderId: d.Id,
+		ParentOrderId:  src.OrderId,
 		OrderType: src.OrderType,
 		OrderNo:   d.OrderNo,
 		BuyerId:   src.BuyerId,
@@ -362,7 +362,7 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 		},
 		BuyerComment: d.BuyerComment,
 		SubmitTime:   src.CreateTime,
-		State:        src.State,
+		Status:       d.Status,
 		Items:        make([]*proto.SOrderItem, len(d.Items)),
 		Data:         src.Data,
 	}
@@ -392,8 +392,8 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
 		SubOrders:  []*proto.SSubOrder{},
-		State:      src.State,
-		StateText:  order.OrderState(src.State).String(),
+		Status:     src.Status,
+		StatusText:  order.OrderStatus(src.Status).String(),
 		CreateTime: src.CreateTime,
 	}
 	for _, v := range src.Details {
@@ -411,9 +411,9 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 			TotalAmount:    0,
 			FinalAmount:    v.FinalAmount,
 			BuyerComment:   v.BuyerComment,
-			State:          v.State,
+			Status:         v.Status,
 			Items:          []*proto.SOrderItem{},
-			StateText:      order.OrderState(v.State).String(),
+			StatusText:      order.OrderStatus(v.Status).String(),
 		}
 		for _, it := range v.Items {
 			d.Items = append(d.Items, OrderItemDto(it))

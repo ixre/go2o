@@ -52,7 +52,7 @@ func logState(t *testing.T, err error, o order.IOrder) {
 		t.Log(err)
 		t.FailNow()
 	} else {
-		t.Log(order.OrderState(o.State()).String())
+		t.Log(order.OrderStatus(o.State()).String())
 	}
 }
 
@@ -62,34 +62,34 @@ func TestOrderSetup(t *testing.T) {
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
 
-	t.Log("-[ 订单状态为:" + order.OrderState(o.GetValue().Status).String())
+	t.Log("-[ 订单状态为:" + order.OrderStatus(o.GetValue().Status).String())
 
 	err := o.PaymentFinishByOnlineTrade()
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().Status).String())
+		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
 
 	err = o.Confirm()
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().Status).String())
+		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
 
 	err = o.PickUp()
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().Status).String())
+		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
 
 	err = o.Ship(1, "100000")
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().Status).String())
+		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
 
 	return
@@ -97,7 +97,7 @@ func TestOrderSetup(t *testing.T) {
 	if err != nil {
 		t.Log(err)
 	} else {
-		t.Log(order.OrderState(o.GetValue().Status).String())
+		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
 }
 

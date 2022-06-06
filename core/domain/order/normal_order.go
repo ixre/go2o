@@ -982,7 +982,7 @@ func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
 		PackageFee:     v.PackageFee,
 		FinalAmount:    v.FinalAmount,
 		BuyerComment:   v.BuyerComment,
-		State:          v.Status,
+		Status:         v.Status,
 		StateText:      "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     v.UpdateTime,
@@ -1109,7 +1109,7 @@ func (o *subOrderImpl) syncOrderState() {
 	if bo := o.baseOrder(); bo != nil {
 		oi := bo.(*normalOrderImpl).baseOrderImpl
 		if oi.State() != order.StatBreak {
-			oi.saveOrderState(order.OrderState(o.value.Status))
+			oi.saveOrderState(order.OrderStatus(o.value.Status))
 		}
 	}
 

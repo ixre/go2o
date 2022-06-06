@@ -22,7 +22,7 @@ import (
 //http://www.pmcaff.com/discuss?id=1000000000138488
 //http://www.zhihu.com/question/31640837
 
-type OrderState int
+type OrderStatus int
 type OrderType int32
 
 const (
@@ -80,7 +80,7 @@ const (
 	StatGoodsRefunded = 15
 )
 
-func (t OrderState) String() string {
+func (t OrderStatus) String() string {
 	switch t {
 	case StatAwaitingPayment:
 		return "待付款"
@@ -113,7 +113,7 @@ func (t OrderState) String() string {
 }
 
 // BackEndString 后端状态描述
-func (t OrderState) BackEndString() string {
+func (t OrderStatus) BackEndString() string {
 	return t.String()
 }
 
@@ -231,7 +231,7 @@ type (
 		// Type 订单类型
 		Type() OrderType
 		// State 获取订单状态
-		State() OrderState
+		State() OrderStatus
 		// Buyer 获取购买的会员
 		Buyer() member.IMember
 		// SetShipmentAddress 设置配送地址
@@ -342,7 +342,7 @@ type (
 		// 是否支付
 		IsPaid int `db:"is_paid"`
 		// 订单状态
-		Status int `db:"state"`
+		Status int `db:"status"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间

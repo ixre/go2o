@@ -43,9 +43,9 @@ type (
 		// 子订单
 		SubOrders []*MemberPagingSubOrderDto
 		// 状态
-		State int32
+		Status int32
 		// 状态文本
-		StateText string
+		StatusText string
 		// 下单时间
 		CreateTime int64
 	}
@@ -64,7 +64,7 @@ type (
 		PackageFee     int64
 		IsPaid         bool
 		FinalAmount    int64
-		State          int
+		Status         int
 		StateText      string
 		CreateTime     int64
 		Items          []*OrderItem
@@ -87,8 +87,8 @@ type (
 		PackageFee     int64
 		IsPaid         bool
 		FinalAmount    int64
-		State          int
-		StateText      string
+		Status         int
+		StatusText     string
 		CreateTime     int64
 		Items          []*OrderItem
 		Data           map[string]string

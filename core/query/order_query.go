@@ -95,10 +95,10 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 
 	//orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	// 查询分页的订单
-	_ = d.Query(fmt.Sprintf(`select order_list.id,order_list.order_no,
+	err := d.Query(fmt.Sprintf(`select order_list.id,order_list.order_no,
 			order_list.buyer_id,buyer_user,order_list.item_count,order_list.item_amount,order_list.discount_amount,
 			order_list.express_fee,order_list.package_fee,order_list.final_amount,
-			order_list.state,order_list.create_time FROM order_list 
+			order_list.status,order_list.create_time FROM order_list 
          	WHERE %s %s LIMIT $2 OFFSET $1`,
 		where, orderBy),
 		func(rs *sql.Rows) {
@@ -110,12 +110,12 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 				//}
 				err := rs.Scan(&e.OrderId, &e.OrderNo, &e.BuyerId, &e.BuyerUser, &e.ItemCount, &e.ItemAmount,
 					&e.DiscountAmount, &e.ExpressFee, &e.PackageFee,
-					&e.FinalAmount, &e.State, &e.CreateTime)
+					&e.FinalAmount, &e.Status, &e.CreateTime)
 				if err != nil {
 					log.Println(" normal order list scan error:", err.Error())
 				}
 				e.SubOrders = make([]*dto.MemberPagingSubOrderDto, 0)
-				e.StateText = order.OrderState(e.State).String()
+				e.StatusText = order.OrderStatus(e.Status).String()
 				orderList = append(orderList, e)
 				//orderMap[e.Id] = i
 				//idBuf.WriteString(strconv.Itoa(int(e.Id)))
@@ -123,7 +123,9 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 			}
 			_ = rs.Close()
 		}, begin, size)
-
+	if err != nil {
+		log.Println("query order error", err.Error())
+	}
 	// 获取子订单
 	if len(orderList) > 0 {
 
@@ -165,16 +167,16 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 
 func (o *OrderQuery) queryNormalSubOrd(begin int, end int) []*dto.MemberPagingSubOrderDto {
 	subOrderList := make([]*dto.MemberPagingSubOrderDto, 0)
-	_ = o.Connector.Query(`select id,order_id,order_no,shop_id,shop_name,state
+	_ = o.Connector.Query(`select id,order_id,order_no,shop_id,shop_name,status
 			FROM sale_sub_order where order_id between $1 and $2`,
 		func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.MemberPagingSubOrderDto{}
-				err := rs.Scan(&e.OrderId, &e.ParentOrderId, &e.OrderNo, &e.ShopId, &e.ShopName, &e.State)
+				err := rs.Scan(&e.OrderId, &e.ParentOrderId, &e.OrderNo, &e.ShopId, &e.ShopName, &e.Status)
 				if err != nil {
 					log.Println(" normal sub order list scan error:", err.Error())
 				}
-				e.StateText = order.OrderState(e.State).String()
+				e.StateText = order.OrderStatus(e.Status).String()
 				e.Items = make([]*dto.OrderItem, 0)
 				subOrderList = append(subOrderList, e)
 			}
@@ -213,9 +215,9 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int64, begin, size int, p
 	orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	idBuf := bytes.NewBufferString("")
 	// 查询分页的订单
-	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
+	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
 		o.buyer_id,mp.name as buyer_name,o.item_amount,o.discount_amount,o.express_fee,
-        o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
+        o.package_fee,o.final_amount,po.is_paid,o.status,po.create_time
          FROM sale_sub_order o INNER JOIN order_list po ON po.id=o.order_id
          INNER JOIN mm_profile mp ON mp.member_id=o.buyer_id
          WHERE o.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
@@ -228,8 +230,8 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int64, begin, size int, p
 				}
 				rs.Scan(&e.Id, &e.OrderNo, &e.ParentNo, &e.BuyerId, &e.BuyerName,
 					&e.ItemAmount, &e.DiscountAmount, &e.ExpressFee,
-					&e.PackageFee, &e.FinalAmount, &e.IsPaid, &e.State, &e.CreateTime)
-				e.StateText = order.OrderState(e.State).String()
+					&e.PackageFee, &e.FinalAmount, &e.IsPaid, &e.Status, &e.CreateTime)
+				e.StatusText = order.OrderStatus(e.Status).String()
 				orderList = append(orderList, e)
 				orderMap[e.Id] = i
 				if i != 0 {
@@ -240,7 +242,9 @@ func (o *OrderQuery) PagedNormalOrderOfVendor(vendorId int64, begin, size int, p
 			}
 			rs.Close()
 		}, vendorId, begin, size)
-
+	if err != nil {
+		log.Println("order query", err.Error())
+	}
 	// 查询分页订单的Item
 	d.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.amount,si.final_amount
@@ -294,7 +298,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pag
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,
 		wo.vendor_id,wo.shop_id,mch.company_name as seller_name,
         wo.item_amount,wo.discount_amount,wo.express_fee,
-        wo.package_fee,wo.final_amount,wo.is_paid,wo.state,wo.create_time
+        wo.package_fee,wo.final_amount,wo.is_paid,wo.status,wo.create_time
          FROM order_list o INNER JOIN order_wholesale_order wo ON wo.order_id = o.id
 		INNER JOIN mch_merchant mch ON mch.id= wo.vendor_id
          WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
@@ -378,7 +382,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,
 			o.buyer_id,mp.name as buyer_name,
 			wo.item_amount,wo.discount_amount,wo.express_fee,
-			wo.package_fee,wo.final_amount,wo.is_paid,wo.state,wo.create_time
+			wo.package_fee,wo.final_amount,wo.is_paid,wo.status,wo.create_time
 	    FROM order_list o INNER JOIN order_wholesale_order wo ON wo.order_id = o.id
         INNER JOIN mm_profile mp ON mp.member_id=o.buyer_id
 	    WHERE wo.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
@@ -391,8 +395,8 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int
 				}
 				rs.Scan(&e.Id, &e.OrderNo, &e.BuyerId, &e.BuyerName,
 					&e.ItemAmount, &e.DiscountAmount, &e.ExpressFee,
-					&e.PackageFee, &e.FinalAmount, &e.IsPaid, &e.State, &e.CreateTime)
-				e.StateText = order.OrderState(e.State).String()
+					&e.PackageFee, &e.FinalAmount, &e.IsPaid, &e.Status, &e.CreateTime)
+				e.StatusText = order.OrderStatus(e.Status).String()
 				orderList = append(orderList, e)
 				orderMap[e.Id] = i
 				if i != 0 {
@@ -454,7 +458,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, paginat
 	// 查询分页的订单
 	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
         ot.order_amount,ot.discount_amount,
-        ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time
+        ot.final_amount,ot.cash_pay,ot.ticket_image, o.status,o.create_time
         FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
          WHERE o.buyer_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),
@@ -465,9 +469,9 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, paginat
 				e := &proto.SSingleOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.SellerId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
-					&cashPay, &ticket, &e.State, &e.SubmitTime)
+					&cashPay, &ticket, &e.Status, &e.SubmitTime)
 				e.Data = map[string]string{
-					"StateText":   order.OrderState(e.State).String(),
+					"StatusText":  order.OrderStatus(e.Status).String(),
 					"CashPay":     strconv.Itoa(cashPay),
 					"TicketImage": ticket,
 				}
@@ -513,7 +517,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 	// 查询分页的订单
 	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,buyer_id,ot.subject,
         ot.order_amount,ot.discount_amount,
-        ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time,
+        ot.final_amount,ot.cash_pay,ot.ticket_image, o.status,o.create_time,
         m.user FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
         LEFT JOIN mm_member m ON m.id = o.buyer_id
          WHERE ot.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
@@ -526,9 +530,9 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 				e := &dto.PagedVendorOrder{}
 				_ = rs.Scan(&e.Id, &e.OrderNo, &e.BuyerId, &e.Details,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
-					&cashPay, &ticket, &e.State, &e.CreateTime, &user)
+					&cashPay, &ticket, &e.Status, &e.CreateTime, &user)
 				e.Data = map[string]string{
-					"StateText":   order.OrderState(e.State).String(),
+					"StatusText":  order.OrderStatus(e.Status).String(),
 					"CashPay":     strconv.Itoa(cashPay),
 					"TicketImage": ticket,
 					"User":        user,

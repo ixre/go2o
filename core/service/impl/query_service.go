@@ -134,8 +134,8 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
 		FinalAmount:    src.FinalAmount,
-		State:          int32(src.State),
-		StateText:      src.StateText,
+		Status:         int32(src.Status),
+		StatusText:     src.StatusText,
 		CreateTime:     src.CreateTime,
 		SubOrders:      make([]*proto.SMemberPagingSubOrder, 0),
 	}
@@ -146,7 +146,7 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 			ShopName:    v.ShopName,
 			FinalAmount: v.FinalAmount,
 			Items:       []*proto.SOrderItem{},
-			State:       int32(v.State),
+			Status:       int32(v.Status),
 			StateText:   v.StateText,
 		}
 		for _, it := range v.Items {
@@ -204,7 +204,7 @@ func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SMemberPa
 		PackageFee:     src.PackageFee,
 		//IsPaid:         src.IsPaid,
 		FinalAmount: src.FinalAmount,
-		State:       int32(src.State),
+		Status:       int32(src.Status),
 		//StateText:      src.StateText,
 		CreateTime: src.SubmitTime,
 		//Items:      make([]*proto.SOrderItem, 0),

@@ -121,7 +121,7 @@ message SMemberPagingOrder{
     // 子订单
     repeated SMemberPagingSubOrder SubOrders = 11;
     // 状态
-    int32 State = 12;
+    int32 Status = 12;
     // 状态文本
     string StateText = 13;
     // 下单时间
@@ -141,7 +141,7 @@ message SMemberPagingSubOrder {
     // 商品列表
     repeated SOrderItem Items = 5;
     // 状态
-    sint32 State = 6;
+    sint32 Status = 6;
     // 状态文本
     string StateText = 7;
     // 下单时间

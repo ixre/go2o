@@ -4,7 +4,7 @@ option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 /** 订单状态 */
-enum EOrderState {
+enum EOrderStatus {
     _3 = 0;
     /****** 在履行前,订单可以取消申请退款  ******/
     /** 等待支付 */
@@ -102,9 +102,9 @@ message SParentOrder {
     // 子订单
     repeated SSubOrder SubOrders = 11;
     // 状态
-    int32 State = 12;
+    int32 Status = 12;
     // 状态文本
-    string StateText = 13;
+    string StatusText = 13;
     // 下单时间
     sint64 CreateTime = 14;
 }
@@ -137,11 +137,11 @@ message SSubOrder{
     // 买家留言
     string BuyerComment = 13;
     // 状态
-    int32 State = 14;
+    int32 Status = 14;
     // 商品列表
     repeated SOrderItem Items = 15;
     // 状态文本
-    string StateText = 16;
+    string StatusText = 16;
 }
 
 // 子订单
@@ -186,7 +186,7 @@ message SSingleOrder {
     // 买家留言
     string BuyerComment = 19;
     //sint32 IsBreak = 18;
-    sint32 State = 20;
+    sint32 Status = 20;
     // 下单时间
     sint64 SubmitTime = 21;
     //sint64 UpdateTime = 21;

@@ -82,8 +82,8 @@ func (o *baseOrderImpl) Type() order.OrderType {
 }
 
 // State 获取订单状态
-func (o *baseOrderImpl) State() order.OrderState {
-	return order.OrderState(o.baseValue.Status)
+func (o *baseOrderImpl) State() order.OrderStatus {
+	return order.OrderStatus(o.baseValue.Status)
 }
 
 // Buyer 获取购买的会员
@@ -157,7 +157,7 @@ func (o *baseOrderImpl) saveOrder() error {
 }
 
 // 设置并订单状态
-func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
+func (o *baseOrderImpl) saveOrderState(state order.OrderStatus) {
 	if state == order.StatBreak {
 		o.baseValue.IsBreak = 1
 	}
@@ -195,7 +195,7 @@ func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 			PackageFee:     o.baseValue.PackageFee,
 			FinalAmount:    o.baseValue.FinalAmount,
 			IsBreak:        int32(o.baseValue.IsBreak),
-			State:          int32(o.baseValue.Status),
+			Status:         int32(o.baseValue.Status),
 			StateText:      "",
 			CreateTime:     o.baseValue.CreateTime,
 			UpdateTime:     o.baseValue.UpdateTime,

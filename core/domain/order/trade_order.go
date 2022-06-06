@@ -71,7 +71,7 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 		PackageFee:     co.PackageFee,
 		FinalAmount:    v.FinalAmount,
 		BuyerComment:   "",
-		State:          o.value.Status,
+		Status:         o.value.Status,
 		StateText:      "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     o.value.UpdateTime,
@@ -113,7 +113,7 @@ func (o *tradeOrderImpl) parseOrder(v *order.TradeOrderValue, rate float64) erro
 		DiscountAmount: int64(v.DiscountAmount),
 		FinalAmount:    0,
 		TradeRate:      rate,
-		Status:          int32(o.baseValue.Status),
+		Status:         int32(o.baseValue.Status),
 	}
 	//计算最终金额
 	o.fixFinalAmount()
@@ -306,7 +306,7 @@ func (o *tradeOrderImpl) saveTradeOrder() error {
 // 同步订单状态
 func (o *tradeOrderImpl) syncOrderState() {
 	if o.State() != order.StatBreak {
-		o.saveOrderState(order.OrderState(o.value.Status))
+		o.saveOrderState(order.OrderStatus(o.value.Status))
 	}
 }
 
