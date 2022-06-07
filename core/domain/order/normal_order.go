@@ -91,6 +91,9 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	if o.GetAggregateRootId() > 0 {
 		subOrders := o.GetSubOrders()
 		for _, v := range subOrders {
+			if v.GetValue().BreakStatus == order.BreakAwaitBreak {
+				continue
+			}
 			co.Details = append(co.Details, parseDetailValue(v))
 		}
 	}
@@ -769,7 +772,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 			log.Println("生成子订单失败:" + err.Error())
 			return nil, err
 		}
-		list = append(list,iso)
+		list = append(list, iso)
 		orderId = int(iso.GetDomainId())
 	}
 
