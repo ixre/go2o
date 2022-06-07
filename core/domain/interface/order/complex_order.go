@@ -44,9 +44,9 @@ type (
 		// 是否支付
 		IsPaid int32
 		// 订单状态
-		Status int32
+		Status int
 		// 状态文本
-		StateText string
+		StatusText string
 		// 订单生成时间
 		CreateTime int64
 		// 更新时间

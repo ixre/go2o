@@ -128,51 +128,41 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberPagingOrder {
 	dst := &proto.SMemberPagingOrder{
 		OrderNo:        src.OrderNo,
+		BuyerId:        src.BuyerId,
+		BuyerUser:      src.BuyerUser,
+		ShopId:         src.ShopId,
+		ShopName:       src.ShopName,
 		ItemCount:      int64(src.ItemCount),
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
+		DeductAmount:   src.DeductAmount,
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
 		FinalAmount:    src.FinalAmount,
-		IsPaid:src.IsPaid == 1,
+		Items:          []*proto.SOrderItem{},
 		Status:         int32(src.Status),
 		StatusText:     src.StatusText,
 		CreateTime:     src.CreateTime,
-		SubOrders:      make([]*proto.SMemberPagingSubOrder, 0),
 	}
-	for _, v := range src.SubOrders {
-		sub := &proto.SMemberPagingSubOrder{
-			OrderNo:     v.OrderNo,
-			ShopId:      v.ShopId,
-			ShopName:    v.ShopName,
-			FinalAmount: v.FinalAmount,
-			Items:       []*proto.SOrderItem{},
-			Status:       int32(v.Status),
-			StatusText:   v.StatusText,
-		}
-		for _, it := range v.Items {
-			sub.Items = append(sub.Items, &proto.SOrderItem{
-				Id:             int64(it.Id),
-				SnapshotId:     int64(it.SnapshotId),
-				SkuId:          int64(it.SkuId),
-				ItemId:         int64(it.ItemId),
-				ItemTitle:      it.ItemTitle,
-				Image:          it.Image,
-				Price:          it.Price,
-				FinalPrice:     it.FinalPrice,
-				Quantity:       int32(it.Quantity),
-				ReturnQuantity: int32(it.ReturnQuantity),
-				ItemAmount:     int64(it.FinalPrice * int64(it.Quantity)),
-				FinalAmount:    it.FinalAmount,
-				IsShipped:      it.IsShipped == 1,
-				Data:           map[string]string{},
-			})
-		}
-		dst.SubOrders = append(dst.SubOrders, sub)
+
+	for _, it := range src.Items {
+		dst.Items = append(dst.Items, &proto.SOrderItem{
+			Id:             int64(it.Id),
+			SnapshotId:     int64(it.SnapshotId),
+			SkuId:          int64(it.SkuId),
+			ItemId:         int64(it.ItemId),
+			ItemTitle:      it.ItemTitle,
+			Image:          it.Image,
+			Price:          it.Price,
+			FinalPrice:     it.FinalPrice,
+			Quantity:       int32(it.Quantity),
+			ReturnQuantity: int32(it.ReturnQuantity),
+			ItemAmount:     int64(it.FinalPrice * int64(it.Quantity)),
+			FinalAmount:    it.FinalAmount,
+			IsShipped:      it.IsShipped == 1,
+			Data:           map[string]string{},
+		})
 	}
-	//for _, v := range src.Items {
-	//	dst.Items = append(dst.Items, q.parseOrderItem(v))
-	//}
 	return dst
 }
 
@@ -205,7 +195,7 @@ func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SMemberPa
 		PackageFee:     src.PackageFee,
 		//IsPaid:         src.IsPaid,
 		FinalAmount: src.FinalAmount,
-		Status:       int32(src.Status),
+		Status:      int32(src.Status),
 		//StateText:      src.StateText,
 		CreateTime: src.SubmitTime,
 		//Items:      make([]*proto.SOrderItem, 0),

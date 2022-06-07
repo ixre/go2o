@@ -24,6 +24,10 @@ type (
 		BuyerId int64
 		// 买家用户名
 		BuyerUser string
+		// 店铺编号
+		ShopId int64
+		// 店铺名称
+		ShopName string
 		// 订单号
 		OrderNo string
 		// 商品数量
@@ -40,8 +44,6 @@ type (
 		PackageFee int64
 		// 最终金额
 		FinalAmount int64
-		// 子订单
-		SubOrders []*MemberPagingSubOrderDto
 		// 是否支付
 		IsPaid int32
 		// 状态
@@ -50,26 +52,8 @@ type (
 		StatusText string
 		// 下单时间
 		CreateTime int64
-	}
-	// MemberPagingSubOrderDto 会员分页子订单
-	MemberPagingSubOrderDto struct {
-		OrderId        int64
-		ParentOrderId  int64
-		OrderNo        string
-		ParentNo       string
-		VendorId       int64
-		ShopId         int64
-		ShopName       string
-		ItemAmount     int64
-		DiscountAmount int64
-		ExpressFee     int64
-		PackageFee     int64
-		IsPaid         bool
-		FinalAmount    int64
-		Status         int
-		StatusText     string
-		CreateTime     int64
-		Items          []*OrderItem
+		// 订单商品
+		Items []*OrderItem
 	}
 
 	PagedVendorOrder struct {

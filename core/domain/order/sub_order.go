@@ -105,6 +105,16 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	bo := o.baseOrder()
 	if bo != nil {
 		co := o.baseOrder().Complex()
+		co.ItemCount = 0
+		for _,v := range o.Items(){
+			co.ItemCount += int(v.Quantity)
+		}
+		co.ItemAmount = o.value.ItemAmount
+		co.DiscountAmount = o.value.DiscountAmount
+		co.ExpressFee = o.value.ExpressFee
+		co.FinalAmount = o.value.FinalAmount
+		co.Status = o.value.Status
+		co.StatusText = order.OrderStatus(o.value.Status).String()
 		co.Details = []*order.ComplexOrderDetails{parseDetailValue(o)}
 		return co
 	}

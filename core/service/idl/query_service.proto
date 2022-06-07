@@ -92,62 +92,44 @@ message MemberOrderPagingRequest {
     SPagingParams Params = 2;
 }
 message MemberOrderPagingResponse {
-    sint64 total = 1;
+    sint64 Total = 1;
     repeated SMemberPagingOrder Value =  2;
 }
 
-// 会员订单分页对象
-message SMemberPagingOrder{
-    // 买家
-    int64 BuyerId = 1;
-    // 买家用户名
-    string BuyerUser = 2;
-    // 订单号
-    string OrderNo = 3;
-    // 商品
-    int64 ItemCount = 4;
-    // 商品总金额
-    int64 ItemAmount = 5;
-    // 抵扣金额
-    int64 DiscountAmount = 6;
-    // 优惠金额
-    int64 DeductAmount = 7;
-    // 快递费
-    int64 ExpressFee = 8;
-    // 包装费
-    int64 PackageFee = 9;
-    // 最终金额
-    int64 FinalAmount = 10;
-    // 子订单
-    repeated SMemberPagingSubOrder SubOrders = 11;
-    // 是否支付
-    bool IsPaid = 12;
-    // 状态
-    int32 Status = 13;
-    // 状态文本
-    string StatusText = 14;
-    // 下单时间
-    sint64 CreateTime = 15;
-}
-
 // 分页会员订单信息
-message SMemberPagingSubOrder {
+message SMemberPagingOrder {
     // 订单号
     string OrderNo = 1;
+     // 买家
+    int64 BuyerId = 2;
+    // 买家用户名
+    string BuyerUser = 3;
     // 店铺编号
-    int64 ShopId = 2;
+    int64 ShopId = 4;
     // 店铺名称
-    string ShopName = 3;
+    string ShopName = 5;
+    // 商品
+    int64 ItemCount = 6;
+    // 商品总金额
+    int64 ItemAmount = 7;
+    // 抵扣金额
+    int64 DiscountAmount = 8;
+    // 优惠金额
+    int64 DeductAmount = 9;
+    // 快递费
+    int64 ExpressFee = 10;
+    // 包装费
+    int64 PackageFee = 11;
     // 最终金额
-    int64 FinalAmount = 4;
+    int64 FinalAmount = 12;
     // 商品列表
-    repeated SOrderItem Items = 5;
+    repeated SOrderItem Items = 13;
     // 状态
-    sint32 Status = 6;
+    sint32 Status = 14;
     // 状态文本
-    string StatusText = 7;
+    string StatusText = 15;
     // 下单时间
-    sint64 CreateTime = 8;
+    sint64 CreateTime = 16;
 }
 
 message MemberListRequest {

@@ -41,7 +41,7 @@ var _ order.IOrderRepo = new(OrderRepImpl)
 type OrderRepImpl struct {
 	Storage storage.Interface
 	db.Connector
-	_orm             orm.Orm
+	_orm          orm.Orm
 	_productRepo  product.IProductRepo
 	_goodsRepo    item.IItemRepo
 	_promRepo     promotion.IPromotionRepo
@@ -59,7 +59,6 @@ type OrderRepImpl struct {
 	_shopRepo     shop.IShopRepo
 }
 
-
 func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	mchRepo merchant.IMerchantRepo, payRepo payment.IPaymentRepo,
 	proRepo product.IProductRepo, cartRepo cart.ICartRepo, goodsRepo item.IItemRepo,
@@ -70,7 +69,7 @@ func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	return &OrderRepImpl{
 		Storage:       sto,
 		Connector:     o.Connector(),
-		_orm:             o,
+		_orm:          o,
 		_productRepo:  proRepo,
 		_goodsRepo:    goodsRepo,
 		_promRepo:     promRepo,
@@ -164,7 +163,10 @@ func (o *OrderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (i
 // 获取订单项
 func (o *OrderRepImpl) GetSubOrderItems(orderId int64) []*order.SubOrderItem {
 	var items = []*order.SubOrderItem{}
-	o._orm.Select(&items, "order_id= $1", orderId)
+	o._orm.Select(&items, "seller_order_id= $1", orderId)
+	if len(items) == 0 {
+		o._orm.Select(&items, "order_id= $1", orderId)
+	}
 	return items
 }
 
@@ -382,24 +384,23 @@ func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 	return id, err
 }
 
-
 // DeleteSubOrder implements order.IOrderRepo
-func (o *OrderRepImpl) DeleteSubOrder(subOrderId int64)error {
-	return o._orm.DeleteByPk(order.NormalSubOrder{},subOrderId)
+func (o *OrderRepImpl) DeleteSubOrder(subOrderId int64) error {
+	return o._orm.DeleteByPk(order.NormalSubOrder{}, subOrderId)
 }
 
 // DeleteSubOrderItems implements order.IOrderRepo
-func (o *OrderRepImpl) DeleteSubOrderItems(subOrderId int64)error {
-	_,err := o._orm.Delete(order.SubOrderItem{},"seller_order_id = $1",subOrderId)
-    if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:OrderItem")
-    }
-    return err
+func (o *OrderRepImpl) DeleteSubOrderItems(subOrderId int64) error {
+	_, err := o._orm.Delete(order.SubOrderItem{}, "seller_order_id = $1", subOrderId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderItem")
+	}
+	return err
 }
 
 // UpdateSubOrderId implements order.IOrderRepo
-func (o *OrderRepImpl) UpdateSubOrderId(subOrderId int64)error {
-	_,err := o.ExecNonQuery("UPDATE sale_order_item SET order_id = seller_order_id WHERE seller_order_id = $1",subOrderId)
+func (o *OrderRepImpl) UpdateSubOrderId(subOrderId int64) error {
+	_, err := o.ExecNonQuery("UPDATE sale_order_item SET order_id = seller_order_id WHERE seller_order_id = $1", subOrderId)
 	return err
 }
 

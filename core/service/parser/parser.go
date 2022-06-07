@@ -392,7 +392,7 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
 		SubOrders:  []*proto.SSubOrder{},
-		Status:     src.Status,
+		Status:     int32(src.Status),
 		IsPaid: src.IsPaid ==1,
 		StatusText:  order.OrderStatus(src.Status).String(),
 		CreateTime: src.CreateTime,
