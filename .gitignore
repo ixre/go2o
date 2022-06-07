@@ -28,3 +28,4 @@ api_docs
 container/data
 *.iml
 .vscode
+__debug_bin

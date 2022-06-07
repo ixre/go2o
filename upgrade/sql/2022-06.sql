@@ -44,6 +44,22 @@ ALTER TABLE "public".sale_sub_order
 COMMENT ON COLUMN "public".sale_sub_order.shop_name IS '店铺名称';
 
 
+
+ALTER TABLE "public".order_trade_order 
+ RENAME state TO status;
+
+
+ALTER TABLE "public".order_wholesale_order 
+ RENAME state TO status;
+
+ ALTER TABLE "public".sale_sub_order 
+ RENAME state TO status;
+
+
+ ALTER TABLE "public".order_list 
+ RENAME state TO status;
+
+
 COMMENT ON COLUMN "public".order_trade_order.id IS '编号';
 COMMENT ON COLUMN "public".order_trade_order.order_id IS '订单编号';
 COMMENT ON COLUMN "public".order_trade_order.vendor_id IS '商家编号';
@@ -60,17 +76,46 @@ COMMENT ON COLUMN "public".order_trade_order.status IS '订单状态';
 COMMENT ON COLUMN "public".order_trade_order.create_time IS '订单创建时间';
 COMMENT ON COLUMN "public".order_trade_order.update_time IS '订单更新时间';
 
+/** 06-07 */
+ ALTER TABLE "public".sale_order_item 
+  alter column order_id set not null;
+ALTER TABLE "public".sale_order_item 
+  ADD COLUMN seller_order_id int8 default 0 NOT NULL;
+ALTER TABLE "public".sale_order_item 
+  alter column item_id set not null;
+ALTER TABLE "public".sale_order_item 
+  alter column sku_id set not null;
+ALTER TABLE "public".sale_order_item 
+  alter column snap_id set not null;
+ALTER TABLE "public".sale_order_item 
+  alter column quantity set not null;
+ALTER TABLE "public".sale_order_item 
+  alter column return_quantity set not null;
+ALTER TABLE "public".sale_order_item 
+  alter column amount set not null;
+ALTER TABLE "public".sale_order_item 
+  alter column final_amount set not null;
+ALTER TABLE "public".sale_order_item 
+  alter column is_shipped set not null;
+ALTER TABLE "public".sale_order_item 
+  alter column update_time set not null;
+COMMENT ON COLUMN "public".sale_order_item.id IS '编号';
+COMMENT ON COLUMN "public".sale_order_item.order_id IS '订单编号,未支付时并非卖家订单的编号';
+COMMENT ON COLUMN "public".sale_order_item.seller_order_id IS '卖家订单编号';
+COMMENT ON COLUMN "public".sale_order_item.item_id IS '商品编号';
+COMMENT ON COLUMN "public".sale_order_item.sku_id IS 'SKU编号';
+COMMENT ON COLUMN "public".sale_order_item.snap_id IS '销售快照编号';
+COMMENT ON COLUMN "public".sale_order_item.quantity IS '数量';
+COMMENT ON COLUMN "public".sale_order_item.return_quantity IS '退货数量';
+COMMENT ON COLUMN "public".sale_order_item.amount IS '金额';
+COMMENT ON COLUMN "public".sale_order_item.final_amount IS '最终金额';
+COMMENT ON COLUMN "public".sale_order_item.is_shipped IS '是否发货';
+COMMENT ON COLUMN "public".sale_order_item.update_time IS '更新时间';
 
-ALTER TABLE "public".order_trade_order 
- RENAME state TO status;
-
-
-ALTER TABLE "public".order_wholesale_order 
- RENAME state TO status;
-
- ALTER TABLE "public".sale_sub_order 
- RENAME state TO status;
-
-
- ALTER TABLE "public".order_list 
- RENAME state TO status;
+ALTER TABLE "public".sale_sub_order 
+  ADD COLUMN break_status int2 DEFAULT 0 NOT NULL;
+ALTER TABLE "public".sale_sub_order 
+  alter column update_time set default 0;
+COMMENT ON COLUMN "public".sale_sub_order.shop_id IS '店铺编号';
+COMMENT ON COLUMN "public".sale_sub_order.shop_name IS '店铺名称';
+COMMENT ON COLUMN "public".sale_sub_order.break_status IS '拆分状态: 0.默认 1:待拆分 2:无需拆分 3:已拆分';

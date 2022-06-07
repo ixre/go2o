@@ -73,35 +73,9 @@ type (
 		Decline(reason string) error
 		// Submit 提交子订单
 		Submit() (int64, error)
+		// Destory 销毁订单
+		Destory() error
 	}
-
-	//// 普通订单
-	//NormalOrder struct {
-	//	// 编号
-	//	Id int64 `db:"id" pk:"yes" auto:"yes"`
-	//	// 订单编号
-	//	OrderId int64 `db:"order_id"`
-	//	// 商品金额
-	//	ItemAmount int64 `db:"item_amount"`
-	//	// 优惠减免金额
-	//	DiscountAmount int64 `db:"discount_amount" json:"discountFee"`
-	//	// 运费
-	//	ExpressFee int64 `db:"express_fee"`
-	//	// 包装费用
-	//	PackageFee int64 `db:"package_fee"`
-	//	// 实际金额
-	//	FinalAmount int64 `db:"final_amount" json:"fee"`
-	//	// 收货人
-	//	ConsigneeName string `db:"consignee_person" json:"deliverName"`
-	//	// 收货人联系电话
-	//	ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
-	//	// 收货地址
-	//	ShippingAddress string `db:"shipping_address" json:"deliverAddress"`
-	//	// 订单是否拆分
-	//	IsBreak int32 `db:"is_break"`
-	//	// 更新时间
-	//	UpdateTime int64 `db:"update_time" json:"updateTime"`
-	//}
 
 	// 子订单
 	NormalSubOrder struct {
@@ -138,7 +112,9 @@ type (
 		// 系统备注
 		Remark string `db:"remark" json:"remark"`
 		// 订单状态
-		Status int32 `db:"status" json:"status"`
+		Status int `db:"status" json:"status"`
+		// 拆分状态: 0.默认 1:待拆分 2:无需拆分 3:已拆分
+		BreakStatus int `db:"break_status"`
 		// 下单时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -153,6 +129,8 @@ type (
 		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
 		OrderId int64 `db:"order_id"`
+		// 卖家订单编号
+		SellerOrderId int64 `db:"seller_order_id"`
 		// 商品编号
 		ItemId int64 `db:"item_id"`
 		// 商品SKU编号

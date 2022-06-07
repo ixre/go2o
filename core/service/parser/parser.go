@@ -311,7 +311,7 @@ func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
 			ShippingAddress: "",
 		},
 		BuyerComment: src.BuyerComment,
-		Status:       src.Status,
+		Status:       int32(src.Status),
 		SubmitTime:   src.CreateTime,
 		Items:        make([]*proto.SOrderItem, len(src.Items)),
 	}
@@ -362,7 +362,7 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 		},
 		BuyerComment: d.BuyerComment,
 		SubmitTime:   src.CreateTime,
-		Status:       d.Status,
+		Status:       int32(d.Status),
 		Items:        make([]*proto.SOrderItem, len(d.Items)),
 		Data:         src.Data,
 	}
@@ -412,7 +412,7 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 			TotalAmount:    0,
 			FinalAmount:    v.FinalAmount,
 			BuyerComment:   v.BuyerComment,
-			Status:         v.Status,
+			Status:         int32(v.Status),
 			Items:          []*proto.SOrderItem{},
 			StatusText:      order.OrderStatus(v.Status).String(),
 		}

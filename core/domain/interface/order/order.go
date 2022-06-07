@@ -80,6 +80,17 @@ const (
 	StatGoodsRefunded = 15
 )
 
+const (
+	// BreakDefault 默认
+	BreakDefault = 0
+	// BreakAwaitBreak 待拆分
+	BreakAwaitBreak = 1
+	// BreakNoBreak 无需拆分
+	BreakNoBreak = 2
+	// Breaked 已拆分
+	Breaked = 3
+)
+
 func (t OrderStatus) String() string {
 	switch t {
 	case StatAwaitingPayment:
@@ -439,7 +450,7 @@ type (
 		// 订单备注
 		Remark string `db:"remark"`
 		// 订单状态
-		Status int32 `db:"status"`
+		Status int `db:"status"`
 		// 订单创建时间
 		CreateTime int64 `db:"create_time"`
 		// 订单更新时间

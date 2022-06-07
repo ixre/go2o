@@ -80,7 +80,7 @@ type (
 		// 买家留言
 		BuyerComment string
 		// 订单状态
-		Status int32
+		Status int
 		// 状态文本
 		StatusText string
 		// 商品项

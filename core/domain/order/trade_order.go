@@ -113,7 +113,7 @@ func (o *tradeOrderImpl) parseOrder(v *order.TradeOrderValue, rate float64) erro
 		DiscountAmount: int64(v.DiscountAmount),
 		FinalAmount:    0,
 		TradeRate:      rate,
-		Status:         int32(o.baseValue.Status),
+		Status:         o.baseValue.Status,
 	}
 	//计算最终金额
 	o.fixFinalAmount()
@@ -148,7 +148,7 @@ func (o *tradeOrderImpl) Submit() error {
 	if err == nil {
 		// 保存订单信息到常规订单
 		o.value.OrderId = o.GetAggregateRootId()
-		o.value.Status = int32(order.StatAwaitingPayment)
+		o.value.Status = order.StatAwaitingPayment
 		o.value.CreateTime = o.baseValue.CreateTime
 		o.value.UpdateTime = o.baseValue.CreateTime
 		// 保存订单

@@ -200,8 +200,8 @@ func TestSubmitNormalOrder(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	ro := o.(order.INormalOrder)
-	_ = ro.OnlinePaymentTradeFinish()
+	//ro := o.(order.INormalOrder)
+	//_ = ro.OnlinePaymentTradeFinish()
 	time.Sleep(time.Second * 2)
 	t.Log("提交成功，订单号：", o.OrderNo())
 }

@@ -102,10 +102,16 @@ type (
 		GetSubOrder(id int64) *NormalSubOrder
 		// GetSubOrderByOrderNo 根据子订单
 		GetSubOrderByOrderNo(s string) ISubOrder
-		// 保存子订单
+		// SaveOrderItem 保存子订单
 		SaveSubOrder(value *NormalSubOrder) (int, error)
-		// 保存子订单的商品项,并返回编号和错误
+		// SaveOrderItem 保存子订单的商品项,并返回编号和错误
 		SaveOrderItem(subOrderId int64, value *SubOrderItem) (int32, error)
+		// UpdateSubOrderId 更新子订单商品项订单编号为买家订单编号
+		UpdateSubOrderId(subOrderId int64) error
+		// UpdateSubOrderId 删除子订单
+		DeleteSubOrder(subOrderId int64) error
+		// DeleteSubOrderItems 删除子订单商品
+		DeleteSubOrderItems(subOrderId int64) error
 
 		// 获取订单项
 		GetSubOrderItems(orderId int64) []*SubOrderItem
