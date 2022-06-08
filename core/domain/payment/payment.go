@@ -307,10 +307,8 @@ func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) int64 {
 	acv := acc.GetValue()
 	if acv.Balance >= p.value.FinalFee {
 		return p.value.FinalFee
-	} else {
-		return acv.Balance
 	}
-	return 0
+	return acv.Balance
 }
 
 func (p *paymentOrderImpl) getPaymentUser() member.IMember {

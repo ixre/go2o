@@ -400,7 +400,7 @@ func (o *OrderRepImpl) DeleteSubOrderItems(subOrderId int64) error {
 
 // UpdateSubOrderId implements order.IOrderRepo
 func (o *OrderRepImpl) UpdateSubOrderId(subOrderId int64) error {
-	_, err := o.ExecNonQuery("UPDATE sale_order_item SET order_id = seller_order_id WHERE seller_order_id = $1", subOrderId)
+	_, err := o.ExecNonQuery("UPDATE sale_order_item SET order_id = seller_order_id WHERE order_id = $1", subOrderId)
 	return err
 }
 
