@@ -91,7 +91,7 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	if o.GetAggregateRootId() > 0 {
 		subOrders := o.GetSubOrders()
 		for _, v := range subOrders {
-			if v.GetValue().BreakStatus == order.BreakAwaitBreak {
+			if v.GetValue().BreakStatus == order.BreakDefault {
 				continue
 			}
 			co.Details = append(co.Details, parseDetailValue(v))
