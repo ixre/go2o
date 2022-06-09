@@ -385,7 +385,7 @@ message ProductInfoRequest {
 }
 
 message SaveProductResponse {
-    int64 errCode = 1;
+    int64 ErrCode = 1;
     string ErrMsg = 2;
     int64 ProductId = 3;
 }

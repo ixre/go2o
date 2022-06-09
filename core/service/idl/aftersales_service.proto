@@ -100,7 +100,7 @@ message SubmitAfterSalesOrderRequest {
 }
 
 message SubmitAfterSalesOrderResponse {
-    int64 errCode = 1;
+    int64 ErrCode = 1;
     string ErrMsg = 2;
     int64 AfterSalesOrderId = 3;
 }

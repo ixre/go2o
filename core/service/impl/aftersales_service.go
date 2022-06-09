@@ -39,16 +39,25 @@ func NewAfterSalesService(rep afterSales.IAfterSalesRepo,
 
 // 提交售后单
 func (a *afterSalesService) SubmitAfterSalesOrder(_ context.Context, r *proto.SubmitAfterSalesOrderRequest) (*proto.SubmitAfterSalesOrderResponse, error) {
-	ro := a._rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
+	af := &afterSales.AfterSalesOrder{
 		// 订单编号
 		OrderId: r.OrderId,
 		// 类型，退货、换货、维修
 		Type: int(r.AfterSalesType),
 		// 售后原因
 		Reason: r.Reason,
+	}
+	if len(r.Images) > 0 {
 		// 上传截图
-		ImageUrl: r.Images[0],
-	})
+		af.ImageUrl = r.Images[0]
+	}
+	if len(af.Reason) < 6 {
+		return &proto.SubmitAfterSalesOrderResponse{
+			ErrCode: 1,
+			ErrMsg:  "申请原因不能为空",
+		}, nil
+	}
+	ro := a._rep.CreateAfterSalesOrder(af)
 
 	err := ro.SetItem(r.ItemSnapshotId, int32(r.Quantity))
 	var id int32
