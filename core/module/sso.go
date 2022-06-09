@@ -10,12 +10,13 @@ package module
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
-	"strings"
 )
 
 var _ Module = new(SSOModule)
@@ -74,7 +75,7 @@ func (s *SSOModule) Get(name string) *proto.SSsoApp {
 	return nil
 }
 
-// 返回同步的应用API地址
+// 返回同步的应用API地址,调用前需要先向模块注册
 func (s *SSOModule) Array() []string {
 	if s.apiUrlArray == nil && s.appMap != nil && len(s.appMap) > 0 {
 		s.apiUrlArray = make([]string, len(s.appMap))
@@ -90,10 +91,10 @@ func (s *SSOModule) Array() []string {
 // 格式化API地址，加上token参数
 func (s *SSOModule) formatApi(api string, token string) string {
 	arr := []string{api}
-	if strings.Index(api, "?") == -1 {
-		arr = append(arr, "?")
-	} else {
+	if strings.Contains(api, "?") {
 		arr = append(arr, "&")
+	} else {
+		arr = append(arr, "?")
 	}
 	arr = append(arr, "sso_token=")
 	arr = append(arr, token)

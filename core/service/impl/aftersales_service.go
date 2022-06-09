@@ -47,7 +47,7 @@ func (a *afterSalesService) SubmitAfterSalesOrder(_ context.Context, r *proto.Su
 		// 售后原因
 		Reason: r.Reason,
 		// 上传截图
-		ImageUrl: r.ImageUrl,
+		ImageUrl: r.Images[0],
 	})
 
 	err := ro.SetItem(r.ItemSnapshotId, int32(r.Quantity))

@@ -83,13 +83,20 @@ message OriginOrderIdRequest {
     int64 OrderId = 1;
 }
 
+// 订单售后申请
 message SubmitAfterSalesOrderRequest {
+    // 订单编号
     int64 OrderId = 1;
+    // 售后类型
     EAfterSalesType AfterSalesType = 2;
+    // 商品快照编号
     int64 ItemSnapshotId = 3;
+    // 数量
     int64 Quantity = 4;
+    // 原因
     string Reason = 5;
-    string ImageUrl = 6;
+    // 图片
+    repeated string Images = 6;
 }
 
 message SubmitAfterSalesOrderResponse {
