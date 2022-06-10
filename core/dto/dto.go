@@ -69,13 +69,13 @@ type (
 		// 商品数量
 		Quantity int `db:"quantity"`
 		// 售后单状态
-		State int `db:"state"`
+		Status int `db:"state"`
 		// 提交时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 订单状态
-		StateText string `db:"-"`
+		StatusText string `db:"-"`
 	}
 
 	// 分页商户售后单
@@ -98,13 +98,13 @@ type (
 		// 商品数量
 		Quantity int `db:"quantity"`
 		// 售后单状态
-		State int `db:"state"`
+		Status int `db:"state"`
 		// 提交时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 订单状态
-		StateText string `db:"-"`
+		StatusText string `db:"-"`
 	}
 
 	// 店铺收藏

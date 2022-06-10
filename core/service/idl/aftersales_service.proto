@@ -164,15 +164,16 @@ message SAfterSalesOrder {
     // 运营商备注
     string VendorRemark = 16;
     // 售后单状态
-    int32 State = 17;
+    int32 Status = 17;
     // 提交时间
     int64 CreateTime = 18;
     // 更新时间
     int64 UpdateTime = 19;
     // 订单状态
-    string StateText = 20;
+    string StatusText = 20;
 }
 
+// 分页售后订单信息
 message SPagingBuyerAfterSalesOrder {
     // 编号
     int64 Id = 1;
@@ -188,17 +189,18 @@ message SPagingBuyerAfterSalesOrder {
     int64 SnapshotId = 6;
     // 商品数量
     int32 Quantity = 7;
+    // SKU编号
     int64 SkuId = 8;
+    // 商品标题
     string ItemTitle = 9;
+    // 商品图片
     string ItemImage = 10;
     // 售后单状态
-    int32 State = 11;
+    int32 Status = 11;
     // 提交时间
     int64 CreateTime = 12;
-    // 更新时间
-    int64 UpdateTime = 13;
     // 订单状态
-    string StateText = 14;
+    string StatusText = 13;
 }
 
 // 分页商户售后单
@@ -217,21 +219,28 @@ message SPagingSellerAfterSalesOrder {
     int64 SnapshotId = 6;
     // 商品数量
     int32 Quantity = 7;
+    // SKU编号
     int64 SkuId = 8;
+    // 商品标题
     string ItemTitle = 9;
+    // 商品图片
     string ItemImage = 10;
     // 售后单状态
-    int32 State = 11;
+    int32 Status = 11;
     // 提交时间
     int64 CreateTime = 12;
     // 更新时间
     int64 UpdateTime = 13;
     // 订单状态
-    string StateText = 14;
+    string StatusText = 14;
 }
 
+// 换货发货请求
 message ExchangeShipmentRequest {
+    // 换货单编号
     int64 Id = 1;
-    string SpName = 2;
-    string SpOrder = 3;
+    // 物流名称
+    string ShipmentName = 2;
+    // 物流单号
+    string ShipmentOrder = 3;
 }

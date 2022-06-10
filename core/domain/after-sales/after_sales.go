@@ -127,7 +127,7 @@ func (a *afterSalesOrderImpl) Submit() (int32, error) {
 	ov := a.GetOrder().GetValue()
 	a.value.VendorId = ov.VendorId
 	a.value.BuyerId = ov.BuyerId
-	a.value.State = afterSales.StatAwaitingVendor
+	a.value.Status = afterSales.StatAwaitingVendor
 	a.value.CreateTime = time.Now().Unix()
 	err := a.saveAfterSalesOrder()
 	return a.GetDomainId(), err
@@ -135,19 +135,19 @@ func (a *afterSalesOrderImpl) Submit() (int32, error) {
 
 // 取消申请
 func (a *afterSalesOrderImpl) Cancel() error {
-	if a.value.State == afterSales.StatCompleted {
+	if a.value.Status == afterSales.StatCompleted {
 		return afterSales.ErrAfterSalesOrderCompleted
 	}
-	if a.value.State == afterSales.StatCancelled {
+	if a.value.Status == afterSales.StatCancelled {
 		return afterSales.ErrHasCanceled
 	}
-	a.value.State = afterSales.StatCancelled
+	a.value.Status = afterSales.StatCancelled
 	return a.saveAfterSalesOrder()
 }
 
 // 同意售后服务
 func (a *afterSalesOrderImpl) Agree() error {
-	if a.value.State != afterSales.StatAwaitingVendor {
+	if a.value.Status != afterSales.StatAwaitingVendor {
 		return afterSales.ErrUnusualStat
 	}
 	// 判断是否需要审核
@@ -159,7 +159,7 @@ func (a *afterSalesOrderImpl) Agree() error {
 		}
 	}
 	// 设置为待审核状态
-	a.value.State = afterSales.StatAwaitingConfirm
+	a.value.Status = afterSales.StatAwaitingConfirm
 	// 需要审核
 	if needConfirm {
 		return a.saveAfterSalesOrder()
@@ -170,71 +170,71 @@ func (a *afterSalesOrderImpl) Agree() error {
 
 // 拒绝售后服务
 func (a *afterSalesOrderImpl) Decline(reason string) error {
-	if a.value.State != afterSales.StatAwaitingVendor {
+	if a.value.Status != afterSales.StatAwaitingVendor {
 		return afterSales.ErrUnusualStat
 	}
-	a.value.State = afterSales.StatDeclined
+	a.value.Status = afterSales.StatDeclined
 	a.value.VendorRemark = reason
 	return a.saveAfterSalesOrder()
 }
 
 // 申请调解,只有在商户拒绝后才能申请
 func (a *afterSalesOrderImpl) RequestIntercede() error {
-	if a.value.State != afterSales.StatDeclined {
+	if a.value.Status != afterSales.StatDeclined {
 		return afterSales.ErrUnusualStat
 	}
-	a.value.State = afterSales.StatIntercede
+	a.value.Status = afterSales.StatIntercede
 	return a.saveAfterSalesOrder()
 }
 
 // 系统确认
 func (a *afterSalesOrderImpl) Confirm() error {
-	if a.value.State == afterSales.StatCompleted {
+	if a.value.Status == afterSales.StatCompleted {
 		return afterSales.ErrAfterSalesOrderCompleted
 	}
-	if a.value.State == afterSales.StateRejected {
+	if a.value.Status == afterSales.StatRejected {
 		return afterSales.ErrAfterSalesRejected
 	}
-	if a.value.State != afterSales.StatAwaitingConfirm {
+	if a.value.Status != afterSales.StatAwaitingConfirm {
 		return afterSales.ErrUnusualStat
 	}
 	// 退款,不需要退货,直接进入完成状态
 	if a.value.Type == afterSales.TypeRefund {
 		return a.awaitingProcess()
 	}
-	a.value.State = afterSales.StatAwaitingReturnShip
+	a.value.Status = afterSales.StatAwaitingReturnShip
 	return a.saveAfterSalesOrder()
 }
 
 // 退回售后单
 func (a *afterSalesOrderImpl) Reject(remark string) error {
-	if a.value.State == afterSales.StatCompleted {
+	if a.value.Status == afterSales.StatCompleted {
 		return afterSales.ErrAfterSalesOrderCompleted
 	}
-	if a.value.State != afterSales.StatAwaitingConfirm {
+	if a.value.Status != afterSales.StatAwaitingConfirm {
 		return afterSales.ErrUnusualStat
 	}
 	a.value.Remark = remark
-	a.value.State = afterSales.StateRejected
+	a.value.Status = afterSales.StatRejected
 	return a.saveAfterSalesOrder()
 }
 
 // 退回商品
 func (a *afterSalesOrderImpl) ReturnShip(spName string, spOrder string, image string) error {
-	if a.value.State != afterSales.StatAwaitingReturnShip {
+	if a.value.Status != afterSales.StatAwaitingReturnShip {
 		return afterSales.ErrUnusualStat
 	}
 	a.value.ReturnSpName = spName
 	a.value.ReturnSpOrder = spOrder
 	a.value.ReturnSpImage = image
-	a.value.State = afterSales.StatReturnShipped
+	a.value.Status = afterSales.StatReturnShipped
 	return a.saveAfterSalesOrder()
 }
 
 // 收货, 在商品已退回或尚未发货情况下(线下退货),可以执行此操作
 func (a *afterSalesOrderImpl) ReturnReceive() error {
-	if a.value.State != afterSales.StatAwaitingReturnShip &&
-		a.value.State != afterSales.StatReturnShipped {
+	if a.value.Status != afterSales.StatAwaitingReturnShip &&
+		a.value.Status != afterSales.StatReturnShipped {
 		return afterSales.ErrUnusualStat
 	}
 	return a.awaitingProcess()
@@ -242,33 +242,33 @@ func (a *afterSalesOrderImpl) ReturnReceive() error {
 
 // 等待处理
 func (a *afterSalesOrderImpl) awaitingProcess() error {
-	if a.value.State == afterSales.StatCompleted {
+	if a.value.Status == afterSales.StatCompleted {
 		return afterSales.ErrAfterSalesOrderCompleted
 	}
-	if a.value.State == afterSales.StateRejected {
+	if a.value.Status == afterSales.StatRejected {
 		return afterSales.ErrAfterSalesRejected
 	}
 
 	// 判断状态是否正确
-	statOK := a.value.State == afterSales.StatAwaitingReturnShip ||
-		a.value.State == afterSales.StatReturnShipped
+	statOK := a.value.Status == afterSales.StatAwaitingReturnShip ||
+		a.value.Status == afterSales.StatReturnShipped
 	if !statOK && a.value.Type == afterSales.TypeRefund {
-		statOK = a.value.State == afterSales.StatAwaitingConfirm
+		statOK = a.value.Status == afterSales.StatAwaitingConfirm
 	}
 	if !statOK {
 		return afterSales.ErrNotConfirm
 	}
 
 	// 等待处理
-	a.value.State = afterSales.StateAwaitingProcess
+	a.value.Status = afterSales.StatAwaitingProcess
 	return a.saveAfterSalesOrder()
 }
 
 // 处理售后单,处理完成后将变为已完成
 func (a *afterSalesOrderImpl) Process() error {
-	if a.value.State != afterSales.StateAwaitingProcess {
+	if a.value.Status != afterSales.StatAwaitingProcess {
 		return afterSales.ErrUnusualStat
 	}
-	a.value.State = afterSales.StatCompleted
+	a.value.Status = afterSales.StatCompleted
 	return a.saveAfterSalesOrder()
 }

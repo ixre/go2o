@@ -27,9 +27,9 @@ const (
 	// 已发货
 	StatReturnShipped
 	// 已退回
-	StateRejected
+	StatRejected
 	// 等待处理
-	StateAwaitingProcess
+	StatAwaitingProcess
 	// 售后单已完成
 	StatCompleted
 	// 售后单已取消
@@ -73,7 +73,7 @@ var (
 		"err_after_sales_order_no_such_order_item", "订单中不包括该商品")
 
 	ErrOutOfQuantity = domain.NewError(
-		"err_after_sales_order_out_of_quantity", "超出数量")
+		"err_after_sales_order_out_of_quantity", "超出可申请售后的数量")
 
 	ErrReasonLength = domain.NewError(
 		"err_after_sales_order_reason_length", "原因不能少于10字")
@@ -201,7 +201,7 @@ type (
 		// 运营商备注
 		VendorRemark string `db:"vendor_remark"`
 		// 售后单状态
-		State int `db:"state"`
+		Status int `db:"state"`
 		// 提交时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -209,7 +209,7 @@ type (
 		// 售后单数据,如退款单、退货单、换货单等
 		Data interface{} `db:"-"`
 		// 订单状态
-		StateText string `db:"-"`
+		StatusText string `db:"-"`
 	}
 
 	AfterSalesOrderNew struct {

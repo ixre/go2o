@@ -80,7 +80,7 @@ func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(_ context.Context, 
 	arr := make([]*proto.SAfterSalesOrder, len(list))
 	for i, v := range list {
 		arr[i] = a.parseAfterSalesDto(v.Value())
-		arr[i].StateText = afterSales.Stat(arr[i].State).String()
+		arr[i].StatusText = afterSales.Stat(arr[i].Status).String()
 	}
 	return &proto.AfterSalesOrderListResponse{
 		Value: arr,
@@ -104,11 +104,10 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(_ context.Context,
 			SkuId:          int64(v.SkuId),
 			ItemTitle:      v.GoodsTitle,
 			ItemImage:      v.GoodsImage,
-			State:          int32(v.State),
+			Status:          int32(v.Status),
 			CreateTime:     v.CreateTime,
-			UpdateTime:     v.UpdateTime,
-			StateText:      afterSales.Stat(arr[i].State).String(),
 		}
+		arr[i].StatusText = afterSales.Stat(arr[i].Status).String()
 	}
 	return &proto.PagingBuyerAfterSalesOrderListResponse{
 		Total: int64(total),
@@ -133,10 +132,10 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(_ context.Context,
 			SkuId:          int64(v.SkuId),
 			ItemTitle:      v.GoodsTitle,
 			ItemImage:      v.GoodsImage,
-			State:          int32(v.State),
+			Status:          int32(v.Status),
 			CreateTime:     v.CreateTime,
 			UpdateTime:     v.UpdateTime,
-			StateText:      afterSales.Stat(arr[i].State).String(),
+			StatusText:      afterSales.Stat(arr[i].Status).String(),
 		}
 	}
 	return &proto.PagingSellerAfterSalesOrderListResponse{
@@ -150,7 +149,7 @@ func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, id *proto.Int64
 	as := a._rep.GetAfterSalesOrder(int32(id.Value))
 	if as != nil {
 		v := as.Value()
-		v.StateText = afterSales.Stat(v.State).String()
+		v.StatusText = afterSales.Stat(v.Status).String()
 		v.ReturnSpImage = format.GetResUrl(v.ReturnSpImage)
 		return a.parseAfterSalesDto(v), nil
 	}
@@ -221,7 +220,7 @@ func (a *afterSalesService) ReceiveReturnShipment(_ context.Context, id *proto.I
 	as := a._rep.GetAfterSalesOrder(int32(id.Value))
 	err := as.ReturnReceive()
 	if err == nil {
-		if as.Value().State != afterSales.TypeExchange {
+		if as.Value().Status != afterSales.TypeExchange {
 			err = as.Process()
 		}
 	}
@@ -231,7 +230,7 @@ func (a *afterSalesService) ReceiveReturnShipment(_ context.Context, id *proto.I
 // 换货发货
 func (a *afterSalesService) ExchangeShipment(_ context.Context, r *proto.ExchangeShipmentRequest) (*proto.Result, error) {
 	ex := a._rep.GetAfterSalesOrder(int32(r.Id)).(afterSales.IExchangeOrder)
-	err := ex.ExchangeShip(r.SpName, r.SpOrder)
+	err := ex.ExchangeShip(r.ShipmentName, r.ShipmentOrder)
 	return a.error(err), nil
 }
 
@@ -260,9 +259,9 @@ func (a *afterSalesService) parseAfterSalesDto(v afterSales.AfterSalesOrder) *pr
 		ReturnSpImage:  v.ReturnSpImage,
 		Remark:         v.Remark,
 		VendorRemark:   v.VendorRemark,
-		State:          int32(v.State),
+		Status:          int32(v.Status),
 		CreateTime:     v.CreateTime,
 		UpdateTime:     v.UpdateTime,
-		StateText:      v.StateText,
+		StatusText:      v.StatusText,
 	}
 }

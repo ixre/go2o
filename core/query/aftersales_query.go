@@ -51,8 +51,8 @@ WHERE ao.buyer_id= $1 ORDER BY ao.create_time DESC LIMIT $3 OFFSET $2`, func(rs 
 				e := &dto.PagedMemberAfterSalesOrder{}
 				rs.Scan(&e.Id, &e.Type, &e.OrderNo, &e.VendorId, &e.VendorName,
 					&e.SnapshotId, &e.Quantity, &e.SkuId, &e.GoodsTitle,
-					&e.GoodsImage, &e.State, &e.CreateTime, &e.UpdateTime)
-				e.StateText = afterSales.Stat(e.State).String()
+					&e.GoodsImage, &e.Status, &e.CreateTime, &e.UpdateTime)
+				e.StatusText = afterSales.Stat(e.Status).String()
 				e.GoodsImage = format.GetResUrl(e.GoodsImage)
 				list = append(list, e)
 			}
@@ -87,8 +87,8 @@ WHERE ao.vendor_id= $1 `+where+" ORDER BY id DESC LIMIT $3 OFFSET $2", func(rs *
 				e := &dto.PagedVendorAfterSalesOrder{}
 				rs.Scan(&e.Id, &e.Type, &e.OrderNo, &e.BuyerId, &e.BuyerName,
 					&e.SnapshotId, &e.Quantity, &e.SkuId, &e.GoodsTitle,
-					&e.GoodsImage, &e.State, &e.CreateTime, &e.UpdateTime)
-				e.StateText = afterSales.Stat(e.State).String()
+					&e.GoodsImage, &e.Status, &e.CreateTime, &e.UpdateTime)
+				e.StatusText = afterSales.Stat(e.Status).String()
 				e.GoodsImage = format.GetResUrl(e.GoodsImage)
 				list = append(list, e)
 			}
