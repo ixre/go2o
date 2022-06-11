@@ -147,6 +147,7 @@ func (a *afterSalesOrderImpl) Cancel() error {
 
 // 同意售后服务
 func (a *afterSalesOrderImpl) Agree() error {
+	a.value.Status = afterSales.StatAwaitingVendor
 	if a.value.Status != afterSales.StatAwaitingVendor {
 		return afterSales.ErrUnusualStat
 	}

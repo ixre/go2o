@@ -135,8 +135,8 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(_ context.Context,
 			Status:          int32(v.Status),
 			CreateTime:     v.CreateTime,
 			UpdateTime:     v.UpdateTime,
-			StatusText:      afterSales.Stat(arr[i].Status).String(),
 		}
+		arr[i].StatusText= afterSales.Stat(arr[i].Status).String()
 	}
 	return &proto.PagingSellerAfterSalesOrderListResponse{
 		Total: int64(total),
