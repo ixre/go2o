@@ -11,6 +11,11 @@ package member
 import (
 	"errors"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -24,10 +29,6 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
 	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/gof/db/orm"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
@@ -350,36 +351,36 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 }
 
 // ModifyPassword 修改密码,旧密码可为空
-func (p *profileManagerImpl) ModifyPassword(NewPassword, oldPwd string) error {
-	if b, err := dm.ChkPwdRight(NewPassword); !b {
+func (p *profileManagerImpl) ModifyPassword(newPassword, oldPwd string) error {
+	if b, err := dm.ChkPwdRight(newPassword); !b {
 		return err
 	}
 	if len(oldPwd) != 0 {
-		if NewPassword == oldPwd {
+		if newPassword == oldPwd {
 			return domain.ErrPwdCannotSame
 		}
 		if oldPwd != p.member.value.Pwd {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p.member.value.Pwd = NewPassword
+	p.member.value.Pwd = newPassword
 	_, err := p.member.Save()
 	return err
 }
 
 // ModifyTradePassword 修改交易密码，旧密码可为空
-func (p *profileManagerImpl) ModifyTradePassword(NewPassword, oldPwd string) error {
-	if NewPassword == oldPwd {
+func (p *profileManagerImpl) ModifyTradePassword(newPassword, oldPwd string) error {
+	if newPassword == oldPwd {
 		return domain.ErrPwdCannotSame
 	}
-	if b, err := dm.ChkPwdRight(NewPassword); !b {
+	if b, err := dm.ChkPwdRight(newPassword); !b {
 		return err
 	}
 	// 已经设置过旧密码
 	if len(oldPwd) != 0 && p.member.value.TradePassword != oldPwd {
 		return domain.ErrPwdOldPwdNotRight
 	}
-	p.member.value.TradePassword = NewPassword
+	p.member.value.TradePassword = newPassword
 	if p.member.ContainFlag(member.FlagNoTradePasswd) {
 		p.member.value.Flag ^= member.FlagNoTradePasswd
 	}
