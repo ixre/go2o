@@ -132,7 +132,9 @@ message PagingSellerAfterSalesOrderListResponse {
 // 售后单
 message SAfterSalesOrder {
     // 编号
-    int64 Id = 1;
+    int64 Id = 21;
+    // 售后单单号
+    string OrderNo = 1;
     // 订单编号
     int64 RelateOrderId = 2;
     // 运营商编号

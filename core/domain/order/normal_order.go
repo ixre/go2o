@@ -344,22 +344,22 @@ func (o *normalOrderImpl) parseCartToOrderItem(c *cart.NormalCartItem) *order.Su
 
 	fee := c.Sku.Price * int64(c.Quantity)
 	return &order.SubOrderItem{
-		ID:          0,
-		VendorId:    c.VendorId,
-		ShopId:      c.ShopId,
-		SkuId:       c.SkuId,
-		ItemId:      c.ItemId,
-		SnapshotId:  snap.Id,
-		Quantity:    c.Quantity,
-		Amount:      fee,
-		FinalAmount: fee,
-		//是否配送
-		IsShipped: 0,
+		ID:         0,
+		VendorId:   c.VendorId,
+		ShopId:     c.ShopId,
+		SkuId:      c.SkuId,
+		ItemId:     c.ItemId,
+		SnapshotId: snap.Id,
 		// 退回数量
+		Quantity:       c.Quantity,
 		ReturnQuantity: 0,
-		ExpressTplId:   c.Sku.ExpressTid,
-		Weight:         c.Sku.Weight * c.Quantity, //计算重量
-		Bulk:           c.Sku.Bulk * c.Quantity,   //计算体积
+		Amount:         fee,
+		FinalAmount:    fee,
+		//是否配送
+		IsShipped:    0,
+		ExpressTplId: c.Sku.ExpressTid,
+		Weight:       c.Sku.Weight * c.Quantity, //计算重量
+		Bulk:         c.Sku.Bulk * c.Quantity,   //计算体积
 	}
 }
 

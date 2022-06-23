@@ -119,3 +119,92 @@ ALTER TABLE "public".sale_sub_order
 COMMENT ON COLUMN "public".sale_sub_order.shop_id IS '店铺编号';
 COMMENT ON COLUMN "public".sale_sub_order.shop_name IS '店铺名称';
 COMMENT ON COLUMN "public".sale_sub_order.break_status IS '拆分状态: 0.默认 1:待拆分 2:无需拆分 3:已拆分';
+
+
+/* 20220623 */
+CREATE TABLE IF NOT EXISTS public.sale_after_order
+(
+    id bigserial NOT NULL,
+    order_no character varying(20),
+    order_id integer NOT NULL,
+    vendor_id integer NOT NULL,
+    buyer_id integer NOT NULL,
+    type smallint NOT NULL,
+    snapshot_id integer NOT NULL,
+    quantity integer NOT NULL,
+    reason character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    image_url character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    person_name character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    person_phone character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    shipment_express character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    shipment_order_no character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    shipment_image character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    remark character varying(45) COLLATE pg_catalog."default" NOT NULL,
+    vendor_remark character varying(45) COLLATE pg_catalog."default" NOT NULL,
+    status boolean NOT NULL,
+    create_time integer NOT NULL,
+    update_time integer NOT NULL,
+    CONSTRAINT sale_after_order_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.sale_after_order
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.sale_after_order.order_id
+    IS '关联销售订单号';
+
+COMMENT ON COLUMN public.sale_after_order.vendor_id
+    IS '卖家';
+
+COMMENT ON COLUMN public.sale_after_order.buyer_id
+    IS '买家';
+
+COMMENT ON COLUMN public.sale_after_order.type
+    IS '售后类型 ';
+
+COMMENT ON COLUMN public.sale_after_order.snapshot_id
+    IS '商品快照编号';
+
+COMMENT ON COLUMN public.sale_after_order.quantity
+    IS '数量';
+
+COMMENT ON COLUMN public.sale_after_order.reason
+    IS '申请售后原因';
+
+COMMENT ON COLUMN public.sale_after_order.image_url
+    IS '商品售后图片凭证';
+
+COMMENT ON COLUMN public.sale_after_order.person_name
+    IS '联系人';
+
+COMMENT ON COLUMN public.sale_after_order.person_phone
+    IS '联系电话';
+
+COMMENT ON COLUMN public.sale_after_order.shipment_express
+    IS '退货快递名称';
+
+COMMENT ON COLUMN public.sale_after_order.shipment_order_no
+    IS '退货快递单号';
+
+COMMENT ON COLUMN public.sale_after_order.shipment_image
+    IS '退货凭证';
+
+COMMENT ON COLUMN public.sale_after_order.remark
+    IS '备注';
+
+COMMENT ON COLUMN public.sale_after_order.vendor_remark
+    IS '供应商备注';
+
+COMMENT ON COLUMN public.sale_after_order.status
+    IS '状态';
+
+COMMENT ON COLUMN public.sale_after_order.create_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.sale_after_order.update_time
+    IS '更新时间';
+
+COMMENT ON COLUMN public.sale_after_order.order_no
+    IS '售后单单号';

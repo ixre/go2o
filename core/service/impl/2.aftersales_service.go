@@ -10,7 +10,8 @@ package impl
 
 import (
 	"context"
-	"github.com/ixre/go2o/core/domain/interface/after-sales"
+
+	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
@@ -58,7 +59,6 @@ func (a *afterSalesService) SubmitAfterSalesOrder(_ context.Context, r *proto.Su
 		}, nil
 	}
 	ro := a._rep.CreateAfterSalesOrder(af)
-
 	err := ro.SetItem(r.ItemSnapshotId, int32(r.Quantity))
 	var id int32
 	if err == nil {
@@ -104,7 +104,7 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(_ context.Context,
 			SkuId:          int64(v.SkuId),
 			ItemTitle:      v.GoodsTitle,
 			ItemImage:      v.GoodsImage,
-			Status:          int32(v.Status),
+			Status:         int32(v.Status),
 			CreateTime:     v.CreateTime,
 		}
 		arr[i].StatusText = afterSales.Stat(arr[i].Status).String()
@@ -132,11 +132,11 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(_ context.Context,
 			SkuId:          int64(v.SkuId),
 			ItemTitle:      v.GoodsTitle,
 			ItemImage:      v.GoodsImage,
-			Status:          int32(v.Status),
+			Status:         int32(v.Status),
 			CreateTime:     v.CreateTime,
 			UpdateTime:     v.UpdateTime,
 		}
-		arr[i].StatusText= afterSales.Stat(arr[i].Status).String()
+		arr[i].StatusText = afterSales.Stat(arr[i].Status).String()
 	}
 	return &proto.PagingSellerAfterSalesOrderListResponse{
 		Total: int64(total),
@@ -259,9 +259,9 @@ func (a *afterSalesService) parseAfterSalesDto(v afterSales.AfterSalesOrder) *pr
 		ReturnSpImage:  v.ReturnSpImage,
 		Remark:         v.Remark,
 		VendorRemark:   v.VendorRemark,
-		Status:          int32(v.Status),
+		Status:         int32(v.Status),
 		CreateTime:     v.CreateTime,
 		UpdateTime:     v.UpdateTime,
-		StatusText:      v.StatusText,
+		StatusText:     v.StatusText,
 	}
 }

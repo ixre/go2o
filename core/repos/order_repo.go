@@ -358,7 +358,7 @@ func (o *OrderRepImpl) saveSubOrder(v *order.NormalSubOrder) (int, error) {
 		// 缓存订单号
 		o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.Id)
 		// 缓存订单
-		o.Storage.SetExpire(o.getOrderCk(v.Id, true), *v, DefaultCacheSeconds*10)
+		o.Storage.Delete(o.getOrderCk(v.Id, true))
 	}
 	return id, err
 }
