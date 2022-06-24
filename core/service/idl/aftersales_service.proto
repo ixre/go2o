@@ -156,11 +156,11 @@ message SAfterSalesOrder {
     // 联系电话
     string PersonPhone = 11;
     // 退货的快递服务商编号
-    string ReturnSpName = 12;
+    string ShipmentExpress = 12;
     // 退货的快递单号
-    string ReturnSpOrder = 13;
+    string ShipmentOrderNo = 13;
     // 退货凭证
-    string ReturnSpImage = 14;
+    string ShipmentImage = 14;
     // 备注(系统)
     string Remark = 15;
     // 运营商备注

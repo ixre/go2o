@@ -9,13 +9,14 @@
 package tool
 
 import (
-	"github.com/ixre/gof/shell"
 	"testing"
+
+	"github.com/ixre/gof/shell"
 )
 
 // 按模板生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
-	tablePrefix := "sale_order"
+	tablePrefix := "sale_after_order"
 	_, _, err := shell.Run("bash tto.sh "+tablePrefix, true)
 	if err != nil {
 		t.Error(err)

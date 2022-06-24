@@ -126,11 +126,11 @@ CREATE TABLE IF NOT EXISTS public.sale_after_order
 (
     id bigserial NOT NULL,
     order_no character varying(20),
-    order_id integer NOT NULL,
-    vendor_id integer NOT NULL,
-    buyer_id integer NOT NULL,
+    order_id bigint NOT NULL,
+    vendor_id bigint NOT NULL,
+    buyer_id bigint NOT NULL,
     type smallint NOT NULL,
-    snapshot_id integer NOT NULL,
+    snapshot_id bigint NOT NULL,
     quantity integer NOT NULL,
     reason character varying(255) COLLATE pg_catalog."default" NOT NULL,
     image_url character varying(255) COLLATE pg_catalog."default" NOT NULL,
@@ -141,9 +141,9 @@ CREATE TABLE IF NOT EXISTS public.sale_after_order
     shipment_image character varying(120) COLLATE pg_catalog."default" NOT NULL,
     remark character varying(45) COLLATE pg_catalog."default" NOT NULL,
     vendor_remark character varying(45) COLLATE pg_catalog."default" NOT NULL,
-    status boolean NOT NULL,
-    create_time integer NOT NULL,
-    update_time integer NOT NULL,
+    status int2 NOT NULL,
+    create_time bigint NOT NULL,
+    update_time bigint NOT NULL,
     CONSTRAINT sale_after_order_pkey PRIMARY KEY (id)
 )
 

@@ -25,7 +25,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
@@ -53,7 +53,7 @@ require (
 	google.golang.org/grpc v1.41.0
 )
 
-require google.golang.org/protobuf v1.27.1 // indirect
+require google.golang.org/protobuf v1.27.1
 
 require github.com/ClickHouse/clickhouse-go/v2 v2.0.12
 

@@ -10,10 +10,11 @@ package repos
 
 import (
 	asImpl "github.com/ixre/go2o/core/domain/after-sales"
-	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )
@@ -26,6 +27,21 @@ type afterSalesRepo struct {
 	memberRepo  member.IMemberRepo
 	paymentRepo payment.IPaymentRepo
 	o           orm.Orm
+}
+
+// GetFreeOrderNo implements afterSales.IAfterSalesRepo
+func (a *afterSalesRepo) GetFreeOrderNo(orderId int64) string {
+	//todo:实际应用需要预先生成订单号
+	var orderNo string
+	for {
+		orderNo = domain.NewTradeNo(1, int(orderId))
+		var rec int
+		if a.ExecScalar(`SELECT id FROM sale_after_order WHERE order_no= $1 LIMIT 1`,
+			&rec, orderNo); rec == 0 {
+			break
+		}
+	}
+	return orderNo
 }
 
 func NewAfterSalesRepo(o orm.Orm, orderRepo order.IOrderRepo,

@@ -150,7 +150,7 @@ func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, id *proto.Int64
 	if as != nil {
 		v := as.Value()
 		v.StatusText = afterSales.Stat(v.Status).String()
-		v.ReturnSpImage = format.GetResUrl(v.ReturnSpImage)
+		v.ShipmentImage = format.GetResUrl(v.ShipmentImage)
 		return a.parseAfterSalesDto(v), nil
 	}
 	return nil, nil
@@ -243,25 +243,26 @@ func (a *afterSalesService) ReceiveExchange(_ context.Context, id *proto.Int64) 
 
 func (a *afterSalesService) parseAfterSalesDto(v afterSales.AfterSalesOrder) *proto.SAfterSalesOrder {
 	return &proto.SAfterSalesOrder{
-		Id:             int64(v.Id),
-		RelateOrderId:  v.OrderId,
-		VendorId:       v.VendorId,
-		BuyerId:        v.BuyerId,
-		AfterSalesType: int32(v.Type),
-		SnapshotId:     v.SnapshotId,
-		Quantity:       v.Quantity,
-		Reason:         v.Reason,
-		ImageUrl:       v.ImageUrl,
-		PersonName:     v.PersonName,
-		PersonPhone:    v.PersonPhone,
-		ReturnSpName:   v.ReturnSpName,
-		ReturnSpOrder:  v.ReturnSpOrder,
-		ReturnSpImage:  v.ReturnSpImage,
-		Remark:         v.Remark,
-		VendorRemark:   v.VendorRemark,
-		Status:         int32(v.Status),
-		CreateTime:     v.CreateTime,
-		UpdateTime:     v.UpdateTime,
-		StatusText:     v.StatusText,
+		Id:              int64(v.Id),
+		OrderNo:         v.OrderNo,
+		RelateOrderId:   v.OrderId,
+		VendorId:        v.VendorId,
+		BuyerId:         v.BuyerId,
+		AfterSalesType:  int32(v.Type),
+		SnapshotId:      v.SnapshotId,
+		Quantity:        v.Quantity,
+		Reason:          v.Reason,
+		ImageUrl:        v.ImageUrl,
+		PersonName:      v.PersonName,
+		PersonPhone:     v.PersonPhone,
+		ShipmentExpress: v.ShipmentExpress,
+		ShipmentOrderNo: v.ShipmentOrderNo,
+		ShipmentImage:   v.ShipmentImage,
+		Remark:          v.Remark,
+		VendorRemark:    v.VendorRemark,
+		Status:          int32(v.Status),
+		CreateTime:      v.CreateTime,
+		UpdateTime:      v.UpdateTime,
+		StatusText:      v.StatusText,
 	}
 }

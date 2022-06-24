@@ -164,12 +164,17 @@ type (
 
 		// 获取订单的售后单
 		GetAllOfSaleOrder(orderId int64) []IAfterSalesOrder
+
+		// GetFreeOrderNo 生成一个可用的售后订单号
+		GetFreeOrderNo(orderId int64) string
 	}
 
 	// 售后单
 	AfterSalesOrder struct {
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		// 订单号
+		OrderNo string `db:"order_no" pk:"no" auto:"no"`
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 运营商编号
@@ -179,7 +184,7 @@ type (
 		// 类型，退货、换货、维修
 		Type int `db:"type"`
 		// 退货的商品项编号
-		SnapshotId int64 `db:"snap_id"`
+		SnapshotId int64 `db:"snapshot_id"`
 		// 商品数量
 		Quantity int32 `db:"quantity"`
 		// 售后原因
@@ -191,17 +196,17 @@ type (
 		// 联系电话
 		PersonPhone string `db:"person_phone"`
 		// 退货的快递服务商编号
-		ReturnSpName string `db:"rsp_name"`
+		ShipmentExpress string `db:"shipment_express"`
 		// 退货的快递单号
-		ReturnSpOrder string `db:"rsp_order"`
+		ShipmentOrderNo string `db:"shipment_order_no"`
 		// 退货凭证
-		ReturnSpImage string `db:"rsp_image"`
+		ShipmentImage string `db:"shipment_image"`
 		// 备注(系统)
 		Remark string `db:"remark"`
 		// 运营商备注
 		VendorRemark string `db:"vendor_remark"`
 		// 售后单状态
-		Status int `db:"state"`
+		Status int `db:"status"`
 		// 提交时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间

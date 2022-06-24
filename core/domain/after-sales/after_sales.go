@@ -10,21 +10,22 @@ package afterSales
 
 import (
 	"errors"
-	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	"strings"
+	"time"
+
+	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/gof/db/orm"
-	"strings"
-	"time"
 )
 
 var _ afterSales.IAfterSalesOrder = new(afterSalesOrderImpl)
 
 type afterSalesOrderImpl struct {
 	value       *afterSales.AfterSalesOrder
-	rep         afterSales.IAfterSalesRepo
+	repo        afterSales.IAfterSalesRepo
 	order       order.ISubOrder
 	orderRepo   order.IOrderRepo
 	paymentRepo payment.IPaymentRepo
@@ -50,7 +51,7 @@ func newAfterSalesOrder(v *afterSales.AfterSalesOrder,
 	paymentRepo payment.IPaymentRepo) *afterSalesOrderImpl {
 	return &afterSalesOrderImpl{
 		value:       v,
-		rep:         rep,
+		repo:        rep,
 		orderRepo:   orderRepo,
 		paymentRepo: paymentRepo,
 	}
@@ -73,6 +74,7 @@ func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 	if a.value.SnapshotId <= 0 || a.value.Quantity <= 0 {
 		panic(errors.New("售后单缺少商品"))
 	}
+	a.value.OrderNo = a.repo.GetFreeOrderNo(a.value.OrderId)
 	a.value.UpdateTime = time.Now().Unix()
 	id, err := orm.I32(orm.Save(tmp.Orm, a.value, int(a.GetDomainId())))
 	if err == nil {
@@ -225,9 +227,9 @@ func (a *afterSalesOrderImpl) ReturnShip(spName string, spOrder string, image st
 	if a.value.Status != afterSales.StatAwaitingReturnShip {
 		return afterSales.ErrUnusualStat
 	}
-	a.value.ReturnSpName = spName
-	a.value.ReturnSpOrder = spOrder
-	a.value.ReturnSpImage = image
+	a.value.ShipmentExpress = spName
+	a.value.ShipmentOrderNo = spOrder
+	a.value.ShipmentImage = image
 	a.value.Status = afterSales.StatReturnShipped
 	return a.saveAfterSalesOrder()
 }
