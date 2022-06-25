@@ -9,10 +9,11 @@
 package tests
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	"testing"
+
+	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/log"
-	"testing"
 )
 
 // 测试退款
@@ -69,7 +70,7 @@ func TestOrderRefund(t *testing.T) {
 		t.Log("系统处理:", err.Error())
 	}
 
-	log.Println("售后单状态为:", ro.Value().State, ro.Value().State == afterSales.StatCompleted)
+	log.Println("售后单状态为:", ro.Value().Status, ro.Value().Status == afterSales.StatCompleted)
 	log.Printf("%#v", ro.Value().Data)
 }
 
@@ -126,7 +127,7 @@ func TestOrderReturn(t *testing.T) {
 	if err != nil {
 		t.Log("处理退货:", err.Error())
 	}
-	log.Println("售后单状态为:", ro.Value().State, ro.Value().State == afterSales.StatCompleted)
+	log.Println("售后单状态为:", ro.Value().Status, ro.Value().Status == afterSales.StatCompleted)
 	log.Printf("%#v", ro.Value().Data)
 }
 
@@ -197,6 +198,6 @@ func TestOrderExchange(t *testing.T) {
 		t.Log("收到换货:", err.Error())
 	}
 
-	log.Println("售后单状态为:", ro.Value().State, ro.Value().State == afterSales.StatCompleted)
+	log.Println("售后单状态为:", ro.Value().Status, ro.Value().Status == afterSales.StatCompleted)
 	log.Printf("%#v", ro.Value().Data)
 }

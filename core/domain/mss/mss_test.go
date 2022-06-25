@@ -9,12 +9,12 @@
 package mss
 
 import (
+	"testing"
+
 	"github.com/ixre/go2o/core/domain/interface/mss"
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
-	"github.com/ixre/gof/db/orm"
-	"testing"
 )
 
 var _ mss.IMssRepo = new(MssRepo)
@@ -88,10 +88,10 @@ func (this *MssRepo) SaveNotifyItem(v *notify.NotifyItem) error {
 }
 
 func (this *MssRepo) GetMailTemplate(userId int64, id int32) *mss.MailTemplate {
-	var e mss.MailTemplate
-	if err := this._conn.o.Get(id, &e); err == nil {
-		return &e
-	}
+	// var e mss.MailTemplate
+	// if err := this._conn.o.Get(id, &e); err == nil {
+	// 	return &e
+	// }
 	return nil
 }
 
@@ -118,10 +118,10 @@ func (this *MssRepo) JoinMailTaskToQueen(v *mss.MailTask) error {
 func (this *MssRepo) SaveMessage(v *mss.Message) (int32, error) {
 	var err error
 	if v.Id > 0 {
-		_, _, err = this._conn.o.Save(v.Id, v)
+		//_, _, err = this._conn.o.Save(v.Id, v)
 	} else {
 		var id int64
-		_, id, err = this._conn.o.Save(nil, v)
+		//_, id, err = this._conn.o.Save(nil, v)
 		v.Id = int32(id)
 	}
 	return v.Id, err
@@ -136,17 +136,18 @@ func (this *MssRepo) GetMessage(id int32) *mss.Message {
 
 // 保存用户消息关联
 func (this *MssRepo) SaveUserMsg(v *mss.To) (int32, error) {
-	return orm.I32(orm.Save(this._conn.o, v, int(v.Id)))
+	//return orm.I32(orm.Save(this._conn.o, v, int(v.Id)))
+	return 0, nil
 }
 
 // 保存消息内容
 func (this *MssRepo) SaveMsgContent(v *mss.Content) (int32, error) {
 	var err error
 	if v.Id > 0 {
-		_, _, err = this._conn.o.Save(v.Id, v)
+		//_, _, err = this._conn.o.Save(v.Id, v)
 	} else {
 		var id int64
-		_, id, err = this._conn.o.Save(nil, v)
+		//_, id, err = this._conn.o.Save(nil, v)
 		v.Id = int32(id)
 	}
 	return v.Id, err

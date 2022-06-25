@@ -24,35 +24,35 @@ service AfterSalesService {
     }
 
     // 获取售后单
-    rpc GetAfterSaleOrder (Int64) returns (SAfterSalesOrder) {
+    rpc GetAfterSaleOrder (AfterSalesOrderNo) returns (SAfterSalesOrder) {
     }
 
     // 同意售后
-    rpc AgreeAfterSales (IdAndRemark) returns (Result) {
+    rpc AgreeAfterSales (AfterSalesProcessRequest) returns (Result) {
     }
 
     // 拒绝售后
-    rpc DeclineAfterSales (IdAndRemark) returns (Result) {
+    rpc DeclineAfterSales (AfterSalesProcessRequest) returns (Result) {
     }
 
     // 申请调解
-    rpc RequestIntercede (Int64) returns (Result) {
+    rpc RequestIntercede (AfterSalesProcessRequest) returns (Result) {
     }
 
     // 系统确认
-    rpc ConfirmAfterSales (Int64) returns (Result) {
+    rpc ConfirmAfterSales (AfterSalesOrderNo) returns (Result) {
     }
 
     // 系统退回
-    rpc RejectAfterSales (IdAndRemark) returns (Result) {
+    rpc RejectAfterSales (AfterSalesProcessRequest) returns (Result) {
     }
 
     // 处理退款/退货完成,一般是系统自动调用
-    rpc ProcessAfterSalesOrder (Int64) returns (Result) {
+    rpc ProcessAfterSalesOrder (AfterSalesOrderNo) returns (Result) {
     }
 
     // 售后收货
-    rpc ReceiveReturnShipment (Int64) returns (Result) {
+    rpc ReceiveReturnShipment (AfterSalesOrderNo) returns (Result) {
     }
 
     // 换货发货
@@ -60,7 +60,7 @@ service AfterSalesService {
     }
 
     // 换货收货
-    rpc ReceiveExchange (Int64) returns (Result) {
+    rpc ReceiveExchange (AfterSalesOrderNo) returns (Result) {
     }
 
 }
@@ -76,6 +76,20 @@ enum EAfterSalesType {
     TypeExchange = 3;
     // 服务/维修
     TypeService = 4;
+}
+
+// 售后单订单号
+message AfterSalesOrderNo{
+    // 订单号
+    string OrderNo = 1;
+}
+
+// 售后单处理请求
+message AfterSalesProcessRequest{
+   // 订单号
+   string OrderNo = 1;
+   // 备注 
+   string Remark = 2;
 }
 
 // 原实际销售的订单编号
@@ -99,11 +113,15 @@ message SubmitAfterSalesOrderRequest {
     repeated string Images = 6;
 }
 
+// 提交售后订单响应
 message SubmitAfterSalesOrderResponse {
+    // 状态码
     int64 ErrCode = 1;
+    // 错误信息
     string ErrMsg = 2;
-    int64 AfterSalesOrderId = 3;
-}
+    // 售后单号
+    string AfterSalesOrderNo = 3;
+ }
 
 message AfterSalesOrderListResponse {
     repeated SAfterSalesOrder Value =  1;
