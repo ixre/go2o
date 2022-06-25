@@ -106,7 +106,7 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	if bo != nil {
 		co := o.baseOrder().Complex()
 		co.ItemCount = 0
-		for _,v := range o.Items(){
+		for _, v := range o.Items() {
 			co.ItemCount += int(v.Quantity)
 		}
 		co.ItemAmount = o.value.ItemAmount

@@ -342,11 +342,11 @@ func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 	d := src.Details[0]
 	o := &proto.SSingleOrder{
-		OrderId: d.Id,
-		ParentOrderId:  src.OrderId,
-		OrderType: src.OrderType,
-		OrderNo:   d.OrderNo,
-		BuyerId:   src.BuyerId,
+		OrderId:       d.Id,
+		ParentOrderId: src.OrderId,
+		OrderType:     src.OrderType,
+		OrderNo:       d.OrderNo,
+		BuyerId:       src.BuyerId,
 		//SellerId:       src.VendorId,
 		ShopId:         d.ShopId,
 		Subject:        src.Subject,
@@ -393,8 +393,8 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 		},
 		SubOrders:  []*proto.SSubOrder{},
 		Status:     int32(src.Status),
-		IsPaid: src.IsPaid ==1,
-		StatusText:  order.OrderStatus(src.Status).String(),
+		IsPaid:     src.IsPaid == 1,
+		StatusText: order.OrderStatus(src.Status).String(),
 		CreateTime: src.CreateTime,
 	}
 	for _, v := range src.Details {
@@ -414,7 +414,7 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 			BuyerComment:   v.BuyerComment,
 			Status:         int32(v.Status),
 			Items:          []*proto.SOrderItem{},
-			StatusText:      order.OrderStatus(v.Status).String(),
+			StatusText:     order.OrderStatus(v.Status).String(),
 		}
 		for _, it := range v.Items {
 			d.Items = append(d.Items, OrderItemDto(it))

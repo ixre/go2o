@@ -127,7 +127,7 @@ func (s *snapshotServiceImpl) GetSalesSnapshot(id int64) *item.TradeSnapshot {
 
 // GetLatestSalesSnapshot 获取最新的商品销售快照,如果商品有更新,则更新销售快照
 func (s *snapshotServiceImpl) GetLatestSalesSnapshot(itemId, skuId int64) *item.TradeSnapshot {
-	snap := s.itemRepo.GetLatestSalesSnapshot(itemId,skuId)
+	snap := s.itemRepo.GetLatestSalesSnapshot(itemId, skuId)
 	snapBasis := s.GetLatestSnapshot(itemId)
 	if snap == nil || snap.CreateTime != snapBasis.UpdateTime {
 		// 生成交易快照

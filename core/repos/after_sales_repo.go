@@ -62,9 +62,18 @@ func (a *afterSalesRepo) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) af
 }
 
 // 获取售后单
-func (a *afterSalesRepo) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrder {
+func (a *afterSalesRepo) GetAfterSalesOrderById(id int32) afterSales.IAfterSalesOrder {
 	v := &afterSales.AfterSalesOrder{}
 	if a.o.Get(id, v) == nil {
+		return a.CreateAfterSalesOrder(v)
+	}
+	return nil
+}
+
+// 获取售后单
+func (a *afterSalesRepo) GetAfterSalesOrder(orderNo string) afterSales.IAfterSalesOrder {
+	v := &afterSales.AfterSalesOrder{}
+	if a.o.GetBy(v, "order_no = $1", orderNo) == nil {
 		return a.CreateAfterSalesOrder(v)
 	}
 	return nil

@@ -159,9 +159,10 @@ type (
 		// 创建售后单
 		CreateAfterSalesOrder(v *AfterSalesOrder) IAfterSalesOrder
 
-		// 获取售后单
-		GetAfterSalesOrder(id int32) IAfterSalesOrder
-
+		// GetAfterSalesOrderById 获取售后单
+		GetAfterSalesOrderById(id int32) IAfterSalesOrder
+		// GetAfterSalesOrder 获取售后单
+		GetAfterSalesOrder(orderNo string) IAfterSalesOrder
 		// 获取订单的售后单
 		GetAllOfSaleOrder(orderId int64) []IAfterSalesOrder
 

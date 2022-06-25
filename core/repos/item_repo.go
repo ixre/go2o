@@ -274,9 +274,9 @@ func (i *itemRepoImpl) GetSnapshots(skuIdArr []int64) []item.Snapshot {
 }
 
 // GetLatestSalesSnapshot 获取最新的商品销售快照
-func (i *itemRepoImpl) GetLatestSalesSnapshot(itemId int64,skuId int64) *item.TradeSnapshot {
+func (i *itemRepoImpl) GetLatestSalesSnapshot(itemId int64, skuId int64) *item.TradeSnapshot {
 	e := new(item.TradeSnapshot)
-	if i.o.GetBy(e, "item_id= $1 AND sku_id= $2 ORDER BY id DESC",itemId, skuId) == nil {
+	if i.o.GetBy(e, "item_id= $1 AND sku_id= $2 ORDER BY id DESC", itemId, skuId) == nil {
 		return e
 	}
 	return nil

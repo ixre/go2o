@@ -28,7 +28,7 @@ service AfterSalesService {
     }
 
     // 同意售后
-    rpc AgreeAfterSales (AfterSalesProcessRequest) returns (Result) {
+    rpc AgreeAfterSales (AfterSalesOrderNo) returns (Result) {
     }
 
     // 拒绝售后
@@ -48,7 +48,7 @@ service AfterSalesService {
     }
 
     // 处理退款/退货完成,一般是系统自动调用
-    rpc ProcessAfterSalesOrder (AfterSalesOrderNo) returns (Result) {
+    rpc ProcessAfterSalesOrder (AfterSalesProcessRequest) returns (Result) {
     }
 
     // 售后收货
@@ -258,7 +258,7 @@ message SPagingSellerAfterSalesOrder {
 // 换货发货请求
 message ExchangeShipmentRequest {
     // 换货单编号
-    int64 Id = 1;
+    string OrderNo = 1;
     // 物流名称
     string ShipmentName = 2;
     // 物流单号

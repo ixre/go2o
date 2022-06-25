@@ -13,8 +13,8 @@ import (
 func TestNormalCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KNormal)
-	_ = joinItemsToCart(c,47)
-	_ = joinItemsToCart(c,51)
+	_ = joinItemsToCart(c, 47)
+	_ = joinItemsToCart(c, 51)
 	if c.Kind() == cart.KNormal {
 		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
@@ -44,7 +44,7 @@ func TestCombineCart(t *testing.T) {
 	}
 }
 
-func joinItemsToCart(c cart.ICart,itemId int64) error {
+func joinItemsToCart(c cart.ICart, itemId int64) error {
 	itemRepo := ti.Factory.GetItemRepo()
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
@@ -52,7 +52,7 @@ func joinItemsToCart(c cart.ICart,itemId int64) error {
 	if len(arr) > 0 {
 		skuId = arr[0].Id
 	}
-	return c.Put(itemId, skuId, 1,false)
+	return c.Put(itemId, skuId, 1, false)
 }
 
 // 生成购物车全部结算的数据
@@ -88,7 +88,7 @@ func GetCartCheckedData(c cart.ICart) string {
 func TestWholesaleCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KWholesale)
-	_ = joinItemsToCart(c,1)
+	_ = joinItemsToCart(c, 1)
 	if c.Kind() == cart.KWholesale {
 		rc := c.(cart.IWholesaleCart)
 		t.Log("购物车如下:")

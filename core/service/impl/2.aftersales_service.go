@@ -60,12 +60,11 @@ func (a *afterSalesService) SubmitAfterSalesOrder(_ context.Context, r *proto.Su
 	}
 	ro := a._rep.CreateAfterSalesOrder(af)
 	err := ro.SetItem(r.ItemSnapshotId, int32(r.Quantity))
-	var id int32
 	if err == nil {
-		id, err = ro.Submit()
+		_, err = ro.Submit()
 	}
 	ret := &proto.SubmitAfterSalesOrderResponse{
-		AfterSalesOrderId: int64(id),
+		AfterSalesOrderNo: ro.Value().OrderNo,
 	}
 	if err != nil {
 		ret.ErrCode = 1
@@ -145,8 +144,8 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(_ context.Context,
 }
 
 // 获取售后单
-func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, id *proto.Int64) (*proto.SAfterSalesOrder, error) {
-	as := a._rep.GetAfterSalesOrder(int32(id.Value))
+func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.SAfterSalesOrder, error) {
+	as := a._rep.GetAfterSalesOrder(req.OrderNo)
 	if as != nil {
 		v := as.Value()
 		v.StatusText = afterSales.Stat(v.Status).String()
@@ -157,49 +156,49 @@ func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, id *proto.Int64
 }
 
 // 同意售后
-func (a *afterSalesService) AgreeAfterSales(_ context.Context, remark *proto.IdAndRemark) (*proto.Result, error) {
-	as := a._rep.GetAfterSalesOrder(int32(remark.Id))
+func (a *afterSalesService) AgreeAfterSales(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
+	as := a._rep.GetAfterSalesOrder(req.OrderNo)
 	err := as.Agree()
 	return a.error(err), nil
 }
 
 // 拒绝售后
-func (a *afterSalesService) DeclineAfterSales(_ context.Context, remark *proto.IdAndRemark) (*proto.Result, error) {
-	as := a._rep.GetAfterSalesOrder(int32(remark.Id))
-	err := as.Decline(remark.Remark)
+func (a *afterSalesService) DeclineAfterSales(_ context.Context, req *proto.AfterSalesProcessRequest) (*proto.Result, error) {
+	as := a._rep.GetAfterSalesOrder(req.OrderNo)
+	err := as.Decline(req.Remark)
 	return a.error(err), nil
 }
 
 // 申请调解
-func (a *afterSalesService) RequestIntercede(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	as := a._rep.GetAfterSalesOrder(int32(id.Value))
+func (a *afterSalesService) RequestIntercede(_ context.Context, req *proto.AfterSalesProcessRequest) (*proto.Result, error) {
+	as := a._rep.GetAfterSalesOrder(req.OrderNo)
 	err := as.RequestIntercede()
 	return a.error(err), nil
 }
 
 // 系统确认
-func (a *afterSalesService) ConfirmAfterSales(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	as := a._rep.GetAfterSalesOrder(int32(id.Value))
+func (a *afterSalesService) ConfirmAfterSales(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
+	as := a._rep.GetAfterSalesOrder(req.OrderNo)
 	err := as.Confirm()
 	return a.error(err), nil
 }
 
 // 系统退回
-func (a *afterSalesService) RejectAfterSales(_ context.Context, remark *proto.IdAndRemark) (*proto.Result, error) {
+func (a *afterSalesService) RejectAfterSales(_ context.Context, req *proto.AfterSalesProcessRequest) (*proto.Result, error) {
 	var err error
-	as := a._rep.GetAfterSalesOrder(int32(remark.Id))
+	as := a._rep.GetAfterSalesOrder(req.OrderNo)
 	if as == nil {
 		err = afterSales.ErrNoSuchOrder
 	} else {
-		err = as.Reject(remark.Remark)
+		err = as.Reject(req.Remark)
 	}
 	return a.error(err), nil
 }
 
 // 处理退款/退货完成,一般是系统自动调用
-func (a *afterSalesService) ProcessAfterSalesOrder(_ context.Context, id *proto.Int64) (*proto.Result, error) {
+func (a *afterSalesService) ProcessAfterSalesOrder(_ context.Context, req *proto.AfterSalesProcessRequest) (*proto.Result, error) {
 	var err error
-	as := a._rep.GetAfterSalesOrder(int32(id.Value))
+	as := a._rep.GetAfterSalesOrder(req.OrderNo)
 	if as == nil {
 		err = afterSales.ErrNoSuchOrder
 	} else {
@@ -216,8 +215,8 @@ func (a *afterSalesService) ProcessAfterSalesOrder(_ context.Context, id *proto.
 }
 
 // 售后收货
-func (a *afterSalesService) ReceiveReturnShipment(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	as := a._rep.GetAfterSalesOrder(int32(id.Value))
+func (a *afterSalesService) ReceiveReturnShipment(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
+	as := a._rep.GetAfterSalesOrder(req.OrderNo)
 	err := as.ReturnReceive()
 	if err == nil {
 		if as.Value().Status != afterSales.TypeExchange {
@@ -228,15 +227,15 @@ func (a *afterSalesService) ReceiveReturnShipment(_ context.Context, id *proto.I
 }
 
 // 换货发货
-func (a *afterSalesService) ExchangeShipment(_ context.Context, r *proto.ExchangeShipmentRequest) (*proto.Result, error) {
-	ex := a._rep.GetAfterSalesOrder(int32(r.Id)).(afterSales.IExchangeOrder)
-	err := ex.ExchangeShip(r.ShipmentName, r.ShipmentOrder)
+func (a *afterSalesService) ExchangeShipment(_ context.Context, req *proto.ExchangeShipmentRequest) (*proto.Result, error) {
+	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IExchangeOrder)
+	err := ex.ExchangeShip(req.ShipmentName, req.ShipmentOrder)
 	return a.error(err), nil
 }
 
 // 换货收货
-func (a *afterSalesService) ReceiveExchange(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	ex := a._rep.GetAfterSalesOrder(int32(id.Value)).(afterSales.IExchangeOrder)
+func (a *afterSalesService) ReceiveExchange(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
+	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IExchangeOrder)
 	err := ex.ExchangeReceive()
 	return a.error(err), nil
 }

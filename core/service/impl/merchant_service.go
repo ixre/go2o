@@ -1123,7 +1123,7 @@ func (m *merchantService) parseOrder(v *dto.PagedVendorOrder) *proto.SMerchantOr
 		IsPaid:         v.IsPaid,
 		FinalAmount:    float64(v.FinalAmount),
 		State:          int32(v.Status),
-		StatusText:      order.OrderStatus(v.Status).String(),
+		StatusText:     order.OrderStatus(v.Status).String(),
 		CreateTime:     v.CreateTime,
 		Items:          items,
 		Data:           v.Data,

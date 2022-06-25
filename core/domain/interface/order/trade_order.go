@@ -4,7 +4,7 @@ type TradeOrderValue struct {
 	// 商户编号
 	MerchantId int
 	// 门店编号
-	StoreId  int
+	StoreId int
 	// 买家编号
 	BuyerId int
 	// 商品金额

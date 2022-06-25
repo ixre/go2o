@@ -22,8 +22,8 @@ import (
 
 var (
 	Factory *repos.RepoFactory
-	_conn db.Connector
-	_orm orm.Orm
+	_conn   db.Connector
+	_orm    orm.Orm
 )
 var (
 	REDIS_DB = "1"
@@ -33,11 +33,11 @@ func GetApp() gof.App {
 	return gof.CurrentApp
 }
 
-func GetOrm()orm.Orm{
+func GetOrm() orm.Orm {
 	return _orm
 }
 
-func GetConnector()db.Connector{
+func GetConnector() db.Connector {
 	return _conn
 }
 

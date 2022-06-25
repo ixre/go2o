@@ -8,11 +8,11 @@ import (
 	"testing"
 )
 
-func TestQueryMemberNormalOrderList(t *testing.T){
+func TestQueryMemberNormalOrderList(t *testing.T) {
 	q := query.NewOrderQuery(ti.GetOrm())
 	count, orders := q.QueryPagingNormalOrder(1, 0, 6, false, "", "")
-	t.Log("count:",count)
-	t.Log(fmt.Sprintf("orders:%#v",orders))
-	bytes,_ := json.Marshal(orders[0])
+	t.Log("count:", count)
+	t.Log(fmt.Sprintf("orders:%#v", orders))
+	bytes, _ := json.Marshal(orders[0])
 	t.Log(string(bytes))
 }
