@@ -37,16 +37,13 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId int64, begi
 		where = " AND " + where
 	}
 	err := a.ExecScalar(`SELECT COUNT(1) FROM sale_after_order ao
-	INNER JOIN sale_sub_order so ON so.id=ao.order_id
-	INNER JOIN mch_merchant mch ON so.vendor_id = mch.id
 	INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 	WHERE ao.buyer_id= $1 `+where, &total, memberId)
 	if total > 0 {
-		err = a.Query(`SELECT ao.id,ao.type,so.order_no,so.vendor_id,mch.name as vendor_name,
+		err = a.Query(`SELECT ao.id,ao.type,ao.order_no,ao.vendor_id,mch.name as vendor_name,
  ao.snapshot_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.status,
  ao.create_time,ao.update_time FROM sale_after_order ao
-INNER JOIN sale_sub_order so ON so.id=ao.order_id
-INNER JOIN mch_merchant mch ON so.vendor_id = mch.id
+INNER JOIN mch_merchant mch ON ao.vendor_id = mch.id
 INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 WHERE ao.buyer_id= $1 ORDER BY ao.create_time DESC LIMIT $3 OFFSET $2`, func(rs *sql.Rows) {
 			for rs.Next() {
@@ -75,17 +72,14 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId int64, begi
 		where = " AND " + where
 	}
 	a.ExecScalar(`SELECT COUNT(1) FROM sale_after_order ao
-	INNER JOIN sale_sub_order so ON so.id=ao.order_id
-	INNER JOIN mm_profile mp ON mp.member_id = so.buyer_id
 	INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 	WHERE ao.vendor_id= $1 `+where, &total, vendorId)
 
 	if total > 0 {
-		a.Query(`SELECT ao.id,ao.type,so.order_no,so.buyer_id,mp.name as buyer_name,
+		a.Query(`SELECT ao.id,ao.type,ao.order_no,ao.buyer_id,mp.name as buyer_name,
  ao.snapshot_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.status,
  ao.create_time,ao.update_time FROM sale_after_order ao
-INNER JOIN sale_sub_order so ON so.id=ao.order_id
-INNER JOIN mm_profile mp ON mp.member_id = so.buyer_id
+INNER JOIN mm_profile mp ON mp.member_id = ao.buyer_id
 INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 WHERE ao.vendor_id= $1 `+where+" ORDER BY id DESC LIMIT $3 OFFSET $2", func(rs *sql.Rows) {
 			for rs.Next() {
