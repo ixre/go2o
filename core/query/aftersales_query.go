@@ -10,7 +10,9 @@ package query
 
 import (
 	"database/sql"
-	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	"log"
+
+	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/db"
@@ -34,18 +36,18 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId int64, begi
 	if len(where) > 0 {
 		where = " AND " + where
 	}
-	a.ExecScalar(`SELECT COUNT(1) FROM sale_after_order ao
+	err := a.ExecScalar(`SELECT COUNT(1) FROM sale_after_order ao
 	INNER JOIN sale_sub_order so ON so.id=ao.order_id
 	INNER JOIN mch_merchant mch ON so.vendor_id = mch.id
-	INNER JOIN item_trade_snapshot sn ON sn.id = ao.snap_id
+	INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 	WHERE ao.buyer_id= $1 `+where, &total, memberId)
 	if total > 0 {
-		a.Query(`SELECT ao.id,ao.type,so.order_no,so.vendor_id,mch.name as vendor_name,
- ao.snap_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.state,
+		err = a.Query(`SELECT ao.id,ao.type,so.order_no,so.vendor_id,mch.name as vendor_name,
+ ao.snapshot_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.status,
  ao.create_time,ao.update_time FROM sale_after_order ao
 INNER JOIN sale_sub_order so ON so.id=ao.order_id
 INNER JOIN mch_merchant mch ON so.vendor_id = mch.id
-INNER JOIN item_trade_snapshot sn ON sn.id = ao.snap_id
+INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 WHERE ao.buyer_id= $1 ORDER BY ao.create_time DESC LIMIT $3 OFFSET $2`, func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.PagedMemberAfterSalesOrder{}
@@ -57,6 +59,9 @@ WHERE ao.buyer_id= $1 ORDER BY ao.create_time DESC LIMIT $3 OFFSET $2`, func(rs 
 				list = append(list, e)
 			}
 		}, memberId, begin, size)
+	}
+	if err != nil {
+		log.Println("[ Query][ Error]:", err.Error())
 	}
 	return total, list
 }
@@ -72,16 +77,16 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId int64, begi
 	a.ExecScalar(`SELECT COUNT(1) FROM sale_after_order ao
 	INNER JOIN sale_sub_order so ON so.id=ao.order_id
 	INNER JOIN mm_profile mp ON mp.member_id = so.buyer_id
-	INNER JOIN item_trade_snapshot sn ON sn.id = ao.snap_id
+	INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 	WHERE ao.vendor_id= $1 `+where, &total, vendorId)
 
 	if total > 0 {
 		a.Query(`SELECT ao.id,ao.type,so.order_no,so.buyer_id,mp.name as buyer_name,
- ao.snap_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.state,
+ ao.snapshot_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.status,
  ao.create_time,ao.update_time FROM sale_after_order ao
 INNER JOIN sale_sub_order so ON so.id=ao.order_id
 INNER JOIN mm_profile mp ON mp.member_id = so.buyer_id
-INNER JOIN item_trade_snapshot sn ON sn.id = ao.snap_id
+INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 WHERE ao.vendor_id= $1 `+where+" ORDER BY id DESC LIMIT $3 OFFSET $2", func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.PagedVendorAfterSalesOrder{}

@@ -63,12 +63,12 @@ func (a *afterSalesService) SubmitAfterSalesOrder(_ context.Context, r *proto.Su
 	if err == nil {
 		_, err = ro.Submit()
 	}
-	ret := &proto.SubmitAfterSalesOrderResponse{
-		AfterSalesOrderNo: ro.Value().OrderNo,
-	}
+	ret := &proto.SubmitAfterSalesOrderResponse{}
 	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()
+	} else {
+		ret.AfterSalesOrderNo = ro.Value().OrderNo
 	}
 	return ret, nil
 }
