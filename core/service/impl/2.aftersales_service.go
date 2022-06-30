@@ -10,6 +10,7 @@ package impl
 
 import (
 	"context"
+	"errors"
 
 	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/core/domain/interface/order"
@@ -214,29 +215,21 @@ func (a *afterSalesService) ProcessAfterSalesOrder(_ context.Context, req *proto
 	return a.error(err), nil
 }
 
-// 售后收货
-func (a *afterSalesService) ReceiveReturnShipment(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
-	as := a._rep.GetAfterSalesOrder(req.OrderNo)
-	err := as.ReturnReceive()
-	if err == nil {
-		if as.Value().Status != afterSales.TypeExchange {
-			err = as.Process()
-		}
-	}
-	return a.error(err), nil
-}
-
 // 换货发货
 func (a *afterSalesService) ReturnShipment(_ context.Context, req *proto.ReturnShipmentRequest) (*proto.Result, error) {
-	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IExchangeOrder)
-	err := ex.ExchangeShip(req.ShipmentExpress, req.ShipmentOrder)
+	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IReturnAfterSalesOrder)
+	return a.error(errors.New("该售后订单不支持当前操作")),nil
+	err := ex.ReturnShipment(req.ShipmentExpress, req.ShipmentOrder,"")
 	return a.error(err), nil
 }
 
 // 换货收货
 func (a *afterSalesService) ReceiveItem(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
-	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IExchangeOrder)
-	err := ex.ExchangeReceive()
+	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IReturnAfterSalesOrder)
+	if ex == nil{
+		return a.error(errors.New("该售后订单不支持当前操作")),nil
+	}
+	err := ex.ReturnReceive()
 	return a.error(err), nil
 }
 

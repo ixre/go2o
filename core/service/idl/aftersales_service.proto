@@ -51,10 +51,6 @@ service AfterSalesService {
     rpc ProcessAfterSalesOrder (AfterSalesProcessRequest) returns (Result) {
     }
 
-    // 售后收货
-    rpc ReceiveReturnShipment (AfterSalesOrderNo) returns (Result) {
-    }
-
     // 换货发货
     rpc ReturnShipment (ReturnShipmentRequest) returns (Result) {
     }

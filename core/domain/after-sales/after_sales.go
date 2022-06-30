@@ -22,6 +22,7 @@ import (
 )
 
 var _ afterSales.IAfterSalesOrder = new(afterSalesOrderImpl)
+var _ afterSales.IReturnAfterSalesOrder = new(afterSalesOrderImpl)
 
 type afterSalesOrderImpl struct {
 	value       *afterSales.AfterSalesOrder
@@ -129,7 +130,7 @@ func (a *afterSalesOrderImpl) Submit() (int32, error) {
 	ov := a.GetOrder().GetValue()
 	a.value.VendorId = ov.VendorId
 	a.value.BuyerId = ov.BuyerId
-	a.value.Status = afterSales.StatAwaitingVendor
+	a.value.Status = afterSales.StatAwaitingAgree
 	a.value.CreateTime = time.Now().Unix()
 	err := a.saveAfterSalesOrder()
 	return a.GetDomainId(), err
@@ -149,8 +150,8 @@ func (a *afterSalesOrderImpl) Cancel() error {
 
 // 同意售后服务
 func (a *afterSalesOrderImpl) Agree() error {
-	a.value.Status = afterSales.StatAwaitingVendor
-	if a.value.Status != afterSales.StatAwaitingVendor {
+	a.value.Status = afterSales.StatAwaitingAgree
+	if a.value.Status != afterSales.StatAwaitingAgree {
 		return afterSales.ErrUnusualStat
 	}
 	// 判断是否需要审核
@@ -173,7 +174,7 @@ func (a *afterSalesOrderImpl) Agree() error {
 
 // 拒绝售后服务
 func (a *afterSalesOrderImpl) Decline(reason string) error {
-	if a.value.Status != afterSales.StatAwaitingVendor {
+	if a.value.Status != afterSales.StatAwaitingAgree {
 		return afterSales.ErrUnusualStat
 	}
 	a.value.Status = afterSales.StatDeclined
@@ -205,7 +206,7 @@ func (a *afterSalesOrderImpl) Confirm() error {
 	if a.value.Type == afterSales.TypeRefund {
 		return a.awaitingProcess()
 	}
-	a.value.Status = afterSales.StatAwaitingReturnShip
+	a.value.Status = afterSales.StatAwaitingShipment
 	return a.saveAfterSalesOrder()
 }
 
@@ -223,20 +224,21 @@ func (a *afterSalesOrderImpl) Reject(remark string) error {
 }
 
 // 退回商品
-func (a *afterSalesOrderImpl) ReturnShip(spName string, spOrder string, image string) error {
-	if a.value.Status != afterSales.StatAwaitingReturnShip {
+func (a *afterSalesOrderImpl) ReturnShipment(expressName string, expressOrder string, image string) error {
+	if a.value.Status != afterSales.StatAwaitingShipment {
 		return afterSales.ErrUnusualStat
 	}
-	a.value.ShipmentExpress = spName
-	a.value.ShipmentOrderNo = spOrder
+	a.value.ShipmentExpress = expressName
+	a.value.ShipmentOrderNo = expressOrder
 	a.value.ShipmentImage = image
+	a.value.ShipmentTime = time.Now().Unix()
 	a.value.Status = afterSales.StatReturnShipped
 	return a.saveAfterSalesOrder()
 }
 
 // 收货, 在商品已退回或尚未发货情况下(线下退货),可以执行此操作
 func (a *afterSalesOrderImpl) ReturnReceive() error {
-	if a.value.Status != afterSales.StatAwaitingReturnShip &&
+	if a.value.Status != afterSales.StatAwaitingShipment &&
 		a.value.Status != afterSales.StatReturnShipped {
 		return afterSales.ErrUnusualStat
 	}
@@ -253,7 +255,7 @@ func (a *afterSalesOrderImpl) awaitingProcess() error {
 	}
 
 	// 判断状态是否正确
-	statOK := a.value.Status == afterSales.StatAwaitingReturnShip ||
+	statOK := a.value.Status == afterSales.StatAwaitingShipment ||
 		a.value.Status == afterSales.StatReturnShipped
 	if !statOK && a.value.Type == afterSales.TypeRefund {
 		statOK = a.value.Status == afterSales.StatAwaitingConfirm

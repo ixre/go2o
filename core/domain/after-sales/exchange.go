@@ -10,7 +10,7 @@ package afterSales
 
 import (
 	"errors"
-	"time"
+		"time"
 
 	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
 	"github.com/ixre/go2o/core/domain/interface/order"
@@ -18,8 +18,9 @@ import (
 	"github.com/ixre/gof/db/orm"
 )
 
-var _ afterSales.IExchangeOrder = new(exchangeOrderImpl)
+//var _ afterSales.IExchangeOrder = new(exchangeOrderImpl)
 var _ afterSales.IAfterSalesOrder = new(exchangeOrderImpl)
+var _ afterSales.IReturnAfterSalesOrder =new(exchangeOrderImpl)
 
 // 换货单
 //todo: 是否也需要限制退货数量
@@ -108,17 +109,11 @@ func (e *exchangeOrderImpl) Process() error {
 }
 
 // 将换货的商品重新发货
-func (e *exchangeOrderImpl) ExchangeShip(spName string, spOrder string) error {
+func (e *exchangeOrderImpl) ReturnShipment(expressName string, expressOrder string, image string) error {
 	if e.afterSalesOrderImpl.GetDomainId() <= 0 {
 		panic(errors.New("换货单尚未提交"))
 	}
-	v := e.getValue()
-	v.ShipSpName = spName
-	v.ShipSpOrder = spOrder
-	v.ShipTime = time.Now().Unix()
-	v.ReceiveTime = time.Now().Add(time.Hour * 24 * 7).Unix() //7天后自动收货
-	v.IsShipped = 1
-	return e.saveExchangeOrder(v)
+	return e.afterSalesOrderImpl.ReturnShipment(expressName, expressOrder,image)	
 }
 
 // 消费者延长收货时间
@@ -129,13 +124,14 @@ func (e *exchangeOrderImpl) LongReceive() error {
 }
 
 // 接收换货
-func (e *exchangeOrderImpl) ExchangeReceive() error {
-	v := e.getValue()
-	v.IsReceived = 1
-	v.ReceiveTime = time.Now().Unix()
-	err := e.saveExchangeOrder(v)
-	if err == nil {
-		err = e.Process()
-	}
-	return err
+func (e *exchangeOrderImpl) ReturnReceive() error {
+	return e.afterSalesOrderImpl.ReturnReceive()
+	// v := e.getValue()
+	// v.IsReceived = 1
+	// v.ReceiveTime = time.Now().Unix()
+	// err := e.saveExchangeOrder(v)
+	// if err == nil {
+	// 	err = e.Process()
+	// }
+	// return err
 }

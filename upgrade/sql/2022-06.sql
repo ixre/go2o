@@ -208,3 +208,11 @@ COMMENT ON COLUMN public.sale_after_order.update_time
 
 COMMENT ON COLUMN public.sale_after_order.order_no
     IS '售后单单号';
+
+
+    ALTER TABLE "public".sale_after_order 
+  ADD COLUMN shipment_time bigint DEFAULT 0 NOT NULL;
+
+
+COMMENT ON COLUMN public.sale_after_order.shipment_time
+    IS '发货时间';
