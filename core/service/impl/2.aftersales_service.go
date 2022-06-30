@@ -227,14 +227,14 @@ func (a *afterSalesService) ReceiveReturnShipment(_ context.Context, req *proto.
 }
 
 // 换货发货
-func (a *afterSalesService) ExchangeShipment(_ context.Context, req *proto.ExchangeShipmentRequest) (*proto.Result, error) {
+func (a *afterSalesService) ReturnShipment(_ context.Context, req *proto.ReturnShipmentRequest) (*proto.Result, error) {
 	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IExchangeOrder)
-	err := ex.ExchangeShip(req.ShipmentName, req.ShipmentOrder)
+	err := ex.ExchangeShip(req.ShipmentExpress, req.ShipmentOrder)
 	return a.error(err), nil
 }
 
 // 换货收货
-func (a *afterSalesService) ReceiveExchange(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
+func (a *afterSalesService) ReceiveItem(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
 	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IExchangeOrder)
 	err := ex.ExchangeReceive()
 	return a.error(err), nil

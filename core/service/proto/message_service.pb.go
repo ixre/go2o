@@ -386,10 +386,10 @@ var _MessageService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("message_service.proto", fileDescriptor_message_service_4faae02d8dbd7580)
+	proto.RegisterFile("message_service.proto", fileDescriptor_message_service_4b57e4408139eb5d)
 }
 
-var fileDescriptor_message_service_4faae02d8dbd7580 = []byte{
+var fileDescriptor_message_service_4b57e4408139eb5d = []byte{
 	// 314 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x91, 0x4d, 0x4b, 0xf3, 0x40,
 	0x14, 0x85, 0x03, 0x2f, 0xb4, 0x2f, 0x43, 0x6d, 0xcb, 0x14, 0x29, 0xcd, 0x46, 0xc8, 0x46, 0x45,

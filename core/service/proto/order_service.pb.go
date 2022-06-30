@@ -589,9 +589,9 @@ var _OrderService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "order_service.proto",
 }
 
-func init() { proto.RegisterFile("order_service.proto", fileDescriptor_order_service_d0fb5b614428c77e) }
+func init() { proto.RegisterFile("order_service.proto", fileDescriptor_order_service_0e3b4d55231f91b5) }
 
-var fileDescriptor_order_service_d0fb5b614428c77e = []byte{
+var fileDescriptor_order_service_0e3b4d55231f91b5 = []byte{
 	// 428 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x93, 0x51, 0x6f, 0xd3, 0x30,
 	0x10, 0xc7, 0xf3, 0x00, 0xa5, 0x3a, 0x5a, 0x04, 0x2e, 0x63, 0xa8, 0x08, 0x4d, 0x0a, 0x08, 0x78,

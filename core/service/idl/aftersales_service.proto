@@ -56,11 +56,11 @@ service AfterSalesService {
     }
 
     // 换货发货
-    rpc ExchangeShipment (ExchangeShipmentRequest) returns (Result) {
+    rpc ReturnShipment (ReturnShipmentRequest) returns (Result) {
     }
 
     // 换货收货
-    rpc ReceiveExchange (AfterSalesOrderNo) returns (Result) {
+    rpc ReceiveItem (AfterSalesOrderNo) returns (Result) {
     }
 
 }
@@ -256,11 +256,11 @@ message SPagingSellerAfterSalesOrder {
 }
 
 // 换货发货请求
-message ExchangeShipmentRequest {
+message ReturnShipmentRequest {
     // 换货单编号
     string OrderNo = 1;
     // 物流名称
-    string ShipmentName = 2;
+    string ShipmentExpress = 2;
     // 物流单号
     string ShipmentOrder = 3;
 }

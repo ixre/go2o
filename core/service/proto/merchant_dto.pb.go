@@ -21,39 +21,39 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 // 商家
 type SMerchant struct {
 	// * 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
 	// * 会员编号
-	MemberId int64 `protobuf:"varint,2,opt,name=MemberId,proto3" json:"MemberId"`
+	MemberId int64 `protobuf:"varint,2,opt,name=MemberId,json=memberId,proto3" json:"MemberId"`
 	// * 登录用户
-	LoginUser string `protobuf:"bytes,3,opt,name=LoginUser,proto3" json:"LoginUser"`
+	LoginUser string `protobuf:"bytes,3,opt,name=LoginUser,json=loginUser,proto3" json:"LoginUser"`
 	// * 登录密码
-	LoginPwd string `protobuf:"bytes,4,opt,name=LoginPwd,proto3" json:"LoginPwd"`
+	LoginPwd string `protobuf:"bytes,4,opt,name=LoginPwd,json=loginPwd,proto3" json:"LoginPwd"`
 	// 盐
 	Salt string `protobuf:"bytes,5,opt,name=salt,proto3" json:"salt"`
 	// * 名称
-	Name string `protobuf:"bytes,6,opt,name=Name,proto3" json:"Name"`
+	Name string `protobuf:"bytes,6,opt,name=Name,json=name,proto3" json:"Name"`
 	// * 公司名称
-	CompanyName string `protobuf:"bytes,7,opt,name=CompanyName,proto3" json:"CompanyName"`
+	CompanyName string `protobuf:"bytes,7,opt,name=CompanyName,json=companyName,proto3" json:"CompanyName"`
 	// * 是否自营
-	SelfSales int32 `protobuf:"varint,8,opt,name=SelfSales,proto3" json:"SelfSales"`
+	SelfSales int32 `protobuf:"varint,8,opt,name=SelfSales,json=selfSales,proto3" json:"SelfSales"`
 	// * 商户等级
-	Level int32 `protobuf:"varint,9,opt,name=Level,proto3" json:"Level"`
+	Level int32 `protobuf:"varint,9,opt,name=Level,json=level,proto3" json:"Level"`
 	// * 标志
-	Logo string `protobuf:"bytes,10,opt,name=Logo,proto3" json:"Logo"`
+	Logo string `protobuf:"bytes,10,opt,name=Logo,json=logo,proto3" json:"Logo"`
 	// * 省
-	Province int32 `protobuf:"varint,11,opt,name=Province,proto3" json:"Province"`
+	Province int32 `protobuf:"varint,11,opt,name=Province,json=province,proto3" json:"Province"`
 	// * 市
-	City int32 `protobuf:"varint,12,opt,name=City,proto3" json:"City"`
+	City int32 `protobuf:"varint,12,opt,name=City,json=city,proto3" json:"City"`
 	// * 区
-	District int32 `protobuf:"varint,13,opt,name=District,proto3" json:"District"`
+	District int32 `protobuf:"varint,13,opt,name=District,json=district,proto3" json:"District"`
 	// * 标志
-	Flag int32 `protobuf:"varint,14,opt,name=Flag,proto3" json:"Flag"`
+	Flag int32 `protobuf:"varint,14,opt,name=Flag,json=flag,proto3" json:"Flag"`
 	// * 是否启用
-	Enabled int32 `protobuf:"varint,15,opt,name=Enabled,proto3" json:"Enabled"`
+	Enabled int32 `protobuf:"varint,15,opt,name=Enabled,json=enabled,proto3" json:"Enabled"`
 	// * 过期时间
-	ExpiresTime int64 `protobuf:"varint,16,opt,name=ExpiresTime,proto3" json:"ExpiresTime"`
+	ExpiresTime int64 `protobuf:"varint,16,opt,name=ExpiresTime,json=expiresTime,proto3" json:"ExpiresTime"`
 	// * 最后登录时间
-	LastLoginTime        int64    `protobuf:"varint,17,opt,name=LastLoginTime,proto3" json:"LastLoginTime"`
+	LastLoginTime        int64    `protobuf:"varint,17,opt,name=LastLoginTime,json=lastLoginTime,proto3" json:"LastLoginTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -63,7 +63,7 @@ func (m *SMerchant) Reset()         { *m = SMerchant{} }
 func (m *SMerchant) String() string { return proto.CompactTextString(m) }
 func (*SMerchant) ProtoMessage()    {}
 func (*SMerchant) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{0}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{0}
 }
 func (m *SMerchant) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchant.Unmarshal(m, b)
@@ -205,23 +205,23 @@ func (m *SMerchant) GetLastLoginTime() int64 {
 // 商家
 type SMerchantPack struct {
 	// * 登录用户
-	LoginUser string `protobuf:"bytes,1,opt,name=LoginUser,proto3" json:"LoginUser"`
+	LoginUser string `protobuf:"bytes,1,opt,name=LoginUser,json=loginUser,proto3" json:"LoginUser"`
 	// * 登录密码
-	LoginPwd string `protobuf:"bytes,2,opt,name=LoginPwd,proto3" json:"LoginPwd"`
+	LoginPwd string `protobuf:"bytes,2,opt,name=LoginPwd,json=loginPwd,proto3" json:"LoginPwd"`
 	// 盐
 	Salt string `protobuf:"bytes,3,opt,name=salt,proto3" json:"salt"`
 	// * 名称
-	Name string `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name"`
+	Name string `protobuf:"bytes,4,opt,name=Name,json=name,proto3" json:"Name"`
 	// * 是否自营
-	SelfSales int32 `protobuf:"zigzag32,5,opt,name=SelfSales,proto3" json:"SelfSales"`
+	SelfSales int32 `protobuf:"zigzag32,5,opt,name=SelfSales,json=selfSales,proto3" json:"SelfSales"`
 	// * 店铺名称
-	ShopName string `protobuf:"bytes,6,opt,name=ShopName,proto3" json:"ShopName"`
+	ShopName string `protobuf:"bytes,6,opt,name=ShopName,json=shopName,proto3" json:"ShopName"`
 	// * 标志
-	ShopLogo string `protobuf:"bytes,7,opt,name=ShopLogo,proto3" json:"ShopLogo"`
+	ShopLogo string `protobuf:"bytes,7,opt,name=ShopLogo,json=shopLogo,proto3" json:"ShopLogo"`
 	// * 电话
-	Telephone string `protobuf:"bytes,8,opt,name=Telephone,proto3" json:"Telephone"`
+	Telephone string `protobuf:"bytes,8,opt,name=Telephone,json=telephone,proto3" json:"Telephone"`
 	// * 地址
-	Addr                 string   `protobuf:"bytes,9,opt,name=Addr,proto3" json:"Addr"`
+	Addr                 string   `protobuf:"bytes,9,opt,name=Addr,json=addr,proto3" json:"Addr"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -231,7 +231,7 @@ func (m *SMerchantPack) Reset()         { *m = SMerchantPack{} }
 func (m *SMerchantPack) String() string { return proto.CompactTextString(m) }
 func (*SMerchantPack) ProtoMessage()    {}
 func (*SMerchantPack) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{1}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{1}
 }
 func (m *SMerchantPack) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantPack.Unmarshal(m, b)
@@ -315,10 +315,10 @@ func (m *SMerchantPack) GetAddr() string {
 }
 
 type MerchantCreateRequest struct {
-	Mch         *SMerchantPack `protobuf:"bytes,1,opt,name=Mch,proto3" json:"Mch"`
-	RelMemberId int64          `protobuf:"varint,2,opt,name=RelMemberId,proto3" json:"RelMemberId"`
+	Mch         *SMerchantPack `protobuf:"bytes,1,opt,name=Mch,json=mch,proto3" json:"Mch"`
+	RelMemberId int64          `protobuf:"varint,2,opt,name=RelMemberId,json=relMemberId,proto3" json:"RelMemberId"`
 	// * 过期时间,0表示永远不过期
-	ExpiresTime          int64    `protobuf:"varint,3,opt,name=ExpiresTime,proto3" json:"ExpiresTime"`
+	ExpiresTime          int64    `protobuf:"varint,3,opt,name=ExpiresTime,json=expiresTime,proto3" json:"ExpiresTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -328,7 +328,7 @@ func (m *MerchantCreateRequest) Reset()         { *m = MerchantCreateRequest{} }
 func (m *MerchantCreateRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantCreateRequest) ProtoMessage()    {}
 func (*MerchantCreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{2}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{2}
 }
 func (m *MerchantCreateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantCreateRequest.Unmarshal(m, b)
@@ -370,9 +370,9 @@ func (m *MerchantCreateRequest) GetExpiresTime() int64 {
 }
 
 type MerchantCreateResponse struct {
-	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
-	Id                   int64    `protobuf:"varint,3,opt,name=Id,proto3" json:"Id"`
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,json=errCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,json=errMsg,proto3" json:"ErrMsg"`
+	Id                   int64    `protobuf:"varint,3,opt,name=Id,json=id,proto3" json:"Id"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -382,7 +382,7 @@ func (m *MerchantCreateResponse) Reset()         { *m = MerchantCreateResponse{}
 func (m *MerchantCreateResponse) String() string { return proto.CompactTextString(m) }
 func (*MerchantCreateResponse) ProtoMessage()    {}
 func (*MerchantCreateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{3}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{3}
 }
 func (m *MerchantCreateResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantCreateResponse.Unmarshal(m, b)
@@ -425,19 +425,19 @@ func (m *MerchantCreateResponse) GetId() int64 {
 
 type SaveMerchantRequest struct {
 	// * 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
 	// * 会员编号
-	MemberId int64 `protobuf:"varint,2,opt,name=MemberId,proto3" json:"MemberId"`
+	MemberId int64 `protobuf:"varint,2,opt,name=MemberId,json=memberId,proto3" json:"MemberId"`
 	// * 名称
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
+	Name string `protobuf:"bytes,3,opt,name=Name,json=name,proto3" json:"Name"`
 	// * 是否自营
-	SelfSales int32 `protobuf:"varint,4,opt,name=SelfSales,proto3" json:"SelfSales"`
+	SelfSales int32 `protobuf:"varint,4,opt,name=SelfSales,json=selfSales,proto3" json:"SelfSales"`
 	// * 商户等级
-	Level int32 `protobuf:"varint,5,opt,name=Level,proto3" json:"Level"`
+	Level int32 `protobuf:"varint,5,opt,name=Level,json=level,proto3" json:"Level"`
 	// * 标志
-	Logo string `protobuf:"bytes,6,opt,name=Logo,proto3" json:"Logo"`
+	Logo string `protobuf:"bytes,6,opt,name=Logo,json=logo,proto3" json:"Logo"`
 	// * 过期时间
-	ExpiresTime          int64    `protobuf:"varint,7,opt,name=ExpiresTime,proto3" json:"ExpiresTime"`
+	ExpiresTime          int64    `protobuf:"varint,7,opt,name=ExpiresTime,json=expiresTime,proto3" json:"ExpiresTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -447,7 +447,7 @@ func (m *SaveMerchantRequest) Reset()         { *m = SaveMerchantRequest{} }
 func (m *SaveMerchantRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveMerchantRequest) ProtoMessage()    {}
 func (*SaveMerchantRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{4}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{4}
 }
 func (m *SaveMerchantRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveMerchantRequest.Unmarshal(m, b)
@@ -519,9 +519,9 @@ func (m *SaveMerchantRequest) GetExpiresTime() int64 {
 // * 更换会员绑定请求
 type ChangeMemberBindRequest struct {
 	// * 商户编号
-	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
 	// * 会员用户名
-	UserName             string   `protobuf:"bytes,2,opt,name=UserName,proto3" json:"UserName"`
+	UserName             string   `protobuf:"bytes,2,opt,name=UserName,json=userName,proto3" json:"UserName"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -531,7 +531,7 @@ func (m *ChangeMemberBindRequest) Reset()         { *m = ChangeMemberBindRequest
 func (m *ChangeMemberBindRequest) String() string { return proto.CompactTextString(m) }
 func (*ChangeMemberBindRequest) ProtoMessage()    {}
 func (*ChangeMemberBindRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{5}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{5}
 }
 func (m *ChangeMemberBindRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ChangeMemberBindRequest.Unmarshal(m, b)
@@ -566,8 +566,8 @@ func (m *ChangeMemberBindRequest) GetUserName() string {
 }
 
 type MchUserPwdRequest struct {
-	User                 string   `protobuf:"bytes,1,opt,name=User,proto3" json:"User"`
-	Pwd                  string   `protobuf:"bytes,2,opt,name=Pwd,proto3" json:"Pwd"`
+	User                 string   `protobuf:"bytes,1,opt,name=User,json=user,proto3" json:"User"`
+	Pwd                  string   `protobuf:"bytes,2,opt,name=Pwd,json=pwd,proto3" json:"Pwd"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -577,7 +577,7 @@ func (m *MchUserPwdRequest) Reset()         { *m = MchUserPwdRequest{} }
 func (m *MchUserPwdRequest) String() string { return proto.CompactTextString(m) }
 func (*MchUserPwdRequest) ProtoMessage()    {}
 func (*MchUserPwdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{6}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{6}
 }
 func (m *MchUserPwdRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MchUserPwdRequest.Unmarshal(m, b)
@@ -614,13 +614,13 @@ func (m *MchUserPwdRequest) GetPwd() string {
 // 用户登录响应
 type MchLoginResponse struct {
 	// 错误码
-	ErrCode int32 `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrCode int32 `protobuf:"varint,1,opt,name=ErrCode,json=errCode,proto3" json:"ErrCode"`
 	// 错误消息
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,json=errMsg,proto3" json:"ErrMsg"`
 	// 会员编号
-	MerchantId int64 `protobuf:"varint,3,opt,name=MerchantId,proto3" json:"MerchantId"`
+	MerchantId int64 `protobuf:"varint,3,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
 	// 店铺编号
-	ShopId               int64    `protobuf:"varint,4,opt,name=ShopId,proto3" json:"ShopId"`
+	ShopId               int64    `protobuf:"varint,4,opt,name=ShopId,json=shopId,proto3" json:"ShopId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -630,7 +630,7 @@ func (m *MchLoginResponse) Reset()         { *m = MchLoginResponse{} }
 func (m *MchLoginResponse) String() string { return proto.CompactTextString(m) }
 func (*MchLoginResponse) ProtoMessage()    {}
 func (*MchLoginResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{7}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{7}
 }
 func (m *MchLoginResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MchLoginResponse.Unmarshal(m, b)
@@ -679,7 +679,7 @@ func (m *MchLoginResponse) GetShopId() int64 {
 }
 
 type SyncWSItemsResponse struct {
-	Value                map[string]int32 `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"zigzag32,2,opt,name=value,proto3"`
+	Value                map[string]int32 `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"zigzag32,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -689,7 +689,7 @@ func (m *SyncWSItemsResponse) Reset()         { *m = SyncWSItemsResponse{} }
 func (m *SyncWSItemsResponse) String() string { return proto.CompactTextString(m) }
 func (*SyncWSItemsResponse) ProtoMessage()    {}
 func (*SyncWSItemsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{8}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{8}
 }
 func (m *SyncWSItemsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SyncWSItemsResponse.Unmarshal(m, b)
@@ -717,7 +717,7 @@ func (m *SyncWSItemsResponse) GetValue() map[string]int32 {
 }
 
 type STradeConfListResponse struct {
-	Value                []*STradeConf_ `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	Value                []*STradeConf_ `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -727,7 +727,7 @@ func (m *STradeConfListResponse) Reset()         { *m = STradeConfListResponse{}
 func (m *STradeConfListResponse) String() string { return proto.CompactTextString(m) }
 func (*STradeConfListResponse) ProtoMessage()    {}
 func (*STradeConfListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{9}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{9}
 }
 func (m *STradeConfListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_STradeConfListResponse.Unmarshal(m, b)
@@ -755,8 +755,8 @@ func (m *STradeConfListResponse) GetValue() []*STradeConf_ {
 }
 
 type TradeConfRequest struct {
-	MchId                int32    `protobuf:"zigzag32,1,opt,name=MchId,proto3" json:"MchId"`
-	TradeType            int32    `protobuf:"zigzag32,2,opt,name=TradeType,proto3" json:"TradeType"`
+	MchId                int32    `protobuf:"zigzag32,1,opt,name=MchId,json=mchId,proto3" json:"MchId"`
+	TradeType            int32    `protobuf:"zigzag32,2,opt,name=TradeType,json=tradeType,proto3" json:"TradeType"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -766,7 +766,7 @@ func (m *TradeConfRequest) Reset()         { *m = TradeConfRequest{} }
 func (m *TradeConfRequest) String() string { return proto.CompactTextString(m) }
 func (*TradeConfRequest) ProtoMessage()    {}
 func (*TradeConfRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{10}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{10}
 }
 func (m *TradeConfRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TradeConfRequest.Unmarshal(m, b)
@@ -801,8 +801,8 @@ func (m *TradeConfRequest) GetTradeType() int32 {
 }
 
 type TradeConfSaveRequest struct {
-	MchId                int32          `protobuf:"zigzag32,1,opt,name=MchId,proto3" json:"MchId"`
-	Arr                  []*STradeConf_ `protobuf:"bytes,2,rep,name=Arr,proto3" json:"Arr"`
+	MchId                int32          `protobuf:"zigzag32,1,opt,name=MchId,json=mchId,proto3" json:"MchId"`
+	Arr                  []*STradeConf_ `protobuf:"bytes,2,rep,name=Arr,json=arr,proto3" json:"Arr"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -812,7 +812,7 @@ func (m *TradeConfSaveRequest) Reset()         { *m = TradeConfSaveRequest{} }
 func (m *TradeConfSaveRequest) String() string { return proto.CompactTextString(m) }
 func (*TradeConfSaveRequest) ProtoMessage()    {}
 func (*TradeConfSaveRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{11}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{11}
 }
 func (m *TradeConfSaveRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TradeConfSaveRequest.Unmarshal(m, b)
@@ -857,7 +857,7 @@ func (m *STradeConf_) Reset()         { *m = STradeConf_{} }
 func (m *STradeConf_) String() string { return proto.CompactTextString(m) }
 func (*STradeConf_) ProtoMessage()    {}
 func (*STradeConf_) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{12}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{12}
 }
 func (m *STradeConf_) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_STradeConf_.Unmarshal(m, b)
@@ -879,51 +879,51 @@ var xxx_messageInfo_STradeConf_ proto.InternalMessageInfo
 
 // 商户申请信息
 type SMchSignUp struct {
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
 	// 申请单号
-	SignNo string `protobuf:"bytes,2,opt,name=SignNo,proto3" json:"SignNo"`
+	SignNo string `protobuf:"bytes,2,opt,name=SignNo,json=signNo,proto3" json:"SignNo"`
 	// 会员编号
-	MemberId int64 `protobuf:"varint,3,opt,name=MemberId,proto3" json:"MemberId"`
+	MemberId int64 `protobuf:"varint,3,opt,name=MemberId,json=memberId,proto3" json:"MemberId"`
 	// 用户名
-	User string `protobuf:"bytes,4,opt,name=User,proto3" json:"User"`
+	User string `protobuf:"bytes,4,opt,name=User,json=user,proto3" json:"User"`
 	// 密码
-	Pwd string `protobuf:"bytes,5,opt,name=Pwd,proto3" json:"Pwd"`
+	Pwd string `protobuf:"bytes,5,opt,name=Pwd,json=pwd,proto3" json:"Pwd"`
 	// 盐
 	Salt string `protobuf:"bytes,6,opt,name=salt,proto3" json:"salt"`
 	// 商户名称号
-	MchName string `protobuf:"bytes,7,opt,name=MchName,proto3" json:"MchName"`
+	MchName string `protobuf:"bytes,7,opt,name=MchName,json=mchName,proto3" json:"MchName"`
 	// 省
-	Province int32 `protobuf:"varint,8,opt,name=Province,proto3" json:"Province"`
+	Province int32 `protobuf:"varint,8,opt,name=Province,json=province,proto3" json:"Province"`
 	// 市
-	City int32 `protobuf:"varint,9,opt,name=City,proto3" json:"City"`
+	City int32 `protobuf:"varint,9,opt,name=City,json=city,proto3" json:"City"`
 	// 区
-	District int32 `protobuf:"varint,10,opt,name=District,proto3" json:"District"`
+	District int32 `protobuf:"varint,10,opt,name=District,json=district,proto3" json:"District"`
 	// 详细地址
-	Address string `protobuf:"bytes,11,opt,name=Address,proto3" json:"Address"`
+	Address string `protobuf:"bytes,11,opt,name=Address,json=address,proto3" json:"Address"`
 	// 店铺店铺
-	ShopName string `protobuf:"bytes,12,opt,name=ShopName,proto3" json:"ShopName"`
+	ShopName string `protobuf:"bytes,12,opt,name=ShopName,json=shopName,proto3" json:"ShopName"`
 	// 公司名称
-	CompanyName string `protobuf:"bytes,13,opt,name=CompanyName,proto3" json:"CompanyName"`
+	CompanyName string `protobuf:"bytes,13,opt,name=CompanyName,json=companyName,proto3" json:"CompanyName"`
 	// 营业执照编号
-	CompanyNo string `protobuf:"bytes,14,opt,name=CompanyNo,proto3" json:"CompanyNo"`
+	CompanyNo string `protobuf:"bytes,14,opt,name=CompanyNo,json=companyNo,proto3" json:"CompanyNo"`
 	// 法人
-	PersonName string `protobuf:"bytes,15,opt,name=PersonName,proto3" json:"PersonName"`
+	PersonName string `protobuf:"bytes,15,opt,name=PersonName,json=personName,proto3" json:"PersonName"`
 	// 法人身份证
-	PersonId string `protobuf:"bytes,16,opt,name=PersonId,proto3" json:"PersonId"`
+	PersonId string `protobuf:"bytes,16,opt,name=PersonId,json=personId,proto3" json:"PersonId"`
 	// 法人身份证
-	PersonImage string `protobuf:"bytes,17,opt,name=PersonImage,proto3" json:"PersonImage"`
+	PersonImage string `protobuf:"bytes,17,opt,name=PersonImage,json=personImage,proto3" json:"PersonImage"`
 	// 联系电话
-	Phone string `protobuf:"bytes,18,opt,name=Phone,proto3" json:"Phone"`
+	Phone string `protobuf:"bytes,18,opt,name=Phone,json=phone,proto3" json:"Phone"`
 	// 营业执照图片
-	CompanyImage string `protobuf:"bytes,19,opt,name=CompanyImage,proto3" json:"CompanyImage"`
+	CompanyImage string `protobuf:"bytes,19,opt,name=CompanyImage,json=companyImage,proto3" json:"CompanyImage"`
 	// 委托书
-	AuthDoc string `protobuf:"bytes,20,opt,name=AuthDoc,proto3" json:"AuthDoc"`
+	AuthDoc string `protobuf:"bytes,20,opt,name=AuthDoc,json=authDoc,proto3" json:"AuthDoc"`
 	// 备注
-	Remark string `protobuf:"bytes,21,opt,name=Remark,proto3" json:"Remark"`
+	Remark string `protobuf:"bytes,21,opt,name=Remark,json=remark,proto3" json:"Remark"`
 	// 是否通过
-	ReviewState int32 `protobuf:"varint,22,opt,name=ReviewState,proto3" json:"ReviewState"`
+	ReviewState int32 `protobuf:"varint,22,opt,name=ReviewState,json=reviewState,proto3" json:"ReviewState"`
 	// 提交时间
-	SubmitTime           int64    `protobuf:"varint,23,opt,name=SubmitTime,proto3" json:"SubmitTime"`
+	SubmitTime           int64    `protobuf:"varint,23,opt,name=SubmitTime,json=submitTime,proto3" json:"SubmitTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -933,7 +933,7 @@ func (m *SMchSignUp) Reset()         { *m = SMchSignUp{} }
 func (m *SMchSignUp) String() string { return proto.CompactTextString(m) }
 func (*SMchSignUp) ProtoMessage()    {}
 func (*SMchSignUp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{13}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{13}
 }
 func (m *SMchSignUp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMchSignUp.Unmarshal(m, b)
@@ -1115,9 +1115,9 @@ func (m *SMchSignUp) GetSubmitTime() int64 {
 }
 
 type MchReviewRequest struct {
-	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	Pass                 bool     `protobuf:"varint,2,opt,name=Pass,proto3" json:"Pass"`
-	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark"`
+	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	Pass                 bool     `protobuf:"varint,2,opt,name=Pass,json=pass,proto3" json:"Pass"`
+	Remark               string   `protobuf:"bytes,3,opt,name=Remark,json=remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1127,7 +1127,7 @@ func (m *MchReviewRequest) Reset()         { *m = MchReviewRequest{} }
 func (m *MchReviewRequest) String() string { return proto.CompactTextString(m) }
 func (*MchReviewRequest) ProtoMessage()    {}
 func (*MchReviewRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{14}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{14}
 }
 func (m *MchReviewRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MchReviewRequest.Unmarshal(m, b)
@@ -1171,43 +1171,43 @@ func (m *MchReviewRequest) GetRemark() string {
 // 企业信息
 type SEnterpriseInfo struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
 	// 商户编号
-	MerchantId int64 `protobuf:"varint,2,opt,name=MerchantId,proto3" json:"MerchantId"`
+	MerchantId int64 `protobuf:"varint,2,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
 	// 公司名称
-	CompanyName string `protobuf:"bytes,3,opt,name=CompanyName,proto3" json:"CompanyName"`
+	CompanyName string `protobuf:"bytes,3,opt,name=CompanyName,json=companyName,proto3" json:"CompanyName"`
 	// 公司营业执照编号
-	CompanyNo string `protobuf:"bytes,4,opt,name=CompanyNo,proto3" json:"CompanyNo"`
+	CompanyNo string `protobuf:"bytes,4,opt,name=CompanyNo,json=companyNo,proto3" json:"CompanyNo"`
 	// 法人
-	PersonName string `protobuf:"bytes,5,opt,name=PersonName,proto3" json:"PersonName"`
+	PersonName string `protobuf:"bytes,5,opt,name=PersonName,json=personName,proto3" json:"PersonName"`
 	// 法人身份证编号
-	PersonIdNo string `protobuf:"bytes,6,opt,name=PersonIdNo,proto3" json:"PersonIdNo"`
+	PersonIdNo string `protobuf:"bytes,6,opt,name=PersonIdNo,json=personIdNo,proto3" json:"PersonIdNo"`
 	// 身份证验证图片(人捧身份证照相)
-	PersonImage string `protobuf:"bytes,7,opt,name=PersonImage,proto3" json:"PersonImage"`
+	PersonImage string `protobuf:"bytes,7,opt,name=PersonImage,json=personImage,proto3" json:"PersonImage"`
 	// 公司电话
-	Telephone string `protobuf:"bytes,8,opt,name=Telephone,proto3" json:"Telephone"`
+	Telephone string `protobuf:"bytes,8,opt,name=Telephone,json=telephone,proto3" json:"Telephone"`
 	// 省
-	Province int32 `protobuf:"varint,9,opt,name=Province,proto3" json:"Province"`
+	Province int32 `protobuf:"varint,9,opt,name=Province,json=province,proto3" json:"Province"`
 	// 市
-	City int32 `protobuf:"varint,10,opt,name=City,proto3" json:"City"`
+	City int32 `protobuf:"varint,10,opt,name=City,json=city,proto3" json:"City"`
 	// 区
-	District int32 `protobuf:"varint,11,opt,name=District,proto3" json:"District"`
+	District int32 `protobuf:"varint,11,opt,name=District,json=district,proto3" json:"District"`
 	// 省+市+区字符串表示
-	Location string `protobuf:"bytes,12,opt,name=Location,proto3" json:"Location"`
+	Location string `protobuf:"bytes,12,opt,name=Location,json=location,proto3" json:"Location"`
 	// 公司地址
-	Address string `protobuf:"bytes,13,opt,name=Address,proto3" json:"Address"`
+	Address string `protobuf:"bytes,13,opt,name=Address,json=address,proto3" json:"Address"`
 	// 营业执照图片
-	CompanyImage string `protobuf:"bytes,14,opt,name=CompanyImage,proto3" json:"CompanyImage"`
+	CompanyImage string `protobuf:"bytes,14,opt,name=CompanyImage,json=companyImage,proto3" json:"CompanyImage"`
 	// 授权书
-	AuthDoc string `protobuf:"bytes,15,opt,name=AuthDoc,proto3" json:"AuthDoc"`
+	AuthDoc string `protobuf:"bytes,15,opt,name=AuthDoc,json=authDoc,proto3" json:"AuthDoc"`
 	// 是否已审核
-	ReviewState int32 `protobuf:"varint,16,opt,name=ReviewState,proto3" json:"ReviewState"`
+	ReviewState int32 `protobuf:"varint,16,opt,name=ReviewState,json=reviewState,proto3" json:"ReviewState"`
 	// 审核时间
-	ReviewTime int64 `protobuf:"varint,17,opt,name=ReviewTime,proto3" json:"ReviewTime"`
+	ReviewTime int64 `protobuf:"varint,17,opt,name=ReviewTime,json=reviewTime,proto3" json:"ReviewTime"`
 	// 审核备注
-	ReviewRemark string `protobuf:"bytes,18,opt,name=ReviewRemark,proto3" json:"ReviewRemark"`
+	ReviewRemark string `protobuf:"bytes,18,opt,name=ReviewRemark,json=reviewRemark,proto3" json:"ReviewRemark"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"varint,19,opt,name=UpdateTime,proto3" json:"UpdateTime"`
+	UpdateTime           int64    `protobuf:"varint,19,opt,name=UpdateTime,json=updateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1217,7 +1217,7 @@ func (m *SEnterpriseInfo) Reset()         { *m = SEnterpriseInfo{} }
 func (m *SEnterpriseInfo) String() string { return proto.CompactTextString(m) }
 func (*SEnterpriseInfo) ProtoMessage()    {}
 func (*SEnterpriseInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{15}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{15}
 }
 func (m *SEnterpriseInfo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SEnterpriseInfo.Unmarshal(m, b)
@@ -1372,8 +1372,8 @@ func (m *SEnterpriseInfo) GetUpdateTime() int64 {
 
 type SaveEnterpriseRequest struct {
 	// 商户编号
-	MerchantId           int64            `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	Value                *SEnterpriseInfo `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
+	MerchantId           int64            `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	Value                *SEnterpriseInfo `protobuf:"bytes,2,opt,name=Value,json=value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -1383,7 +1383,7 @@ func (m *SaveEnterpriseRequest) Reset()         { *m = SaveEnterpriseRequest{} }
 func (m *SaveEnterpriseRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveEnterpriseRequest) ProtoMessage()    {}
 func (*SaveEnterpriseRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{16}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{16}
 }
 func (m *SaveEnterpriseRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveEnterpriseRequest.Unmarshal(m, b)
@@ -1420,23 +1420,23 @@ func (m *SaveEnterpriseRequest) GetValue() *SEnterpriseInfo {
 // 商户账户
 type SMerchantAccount struct {
 	// 余额
-	Balance int64 `protobuf:"varint,1,opt,name=Balance,proto3" json:"Balance"`
+	Balance int64 `protobuf:"varint,1,opt,name=Balance,json=balance,proto3" json:"Balance"`
 	// 冻结金额
-	FreezeAmount int64 `protobuf:"varint,2,opt,name=FreezeAmount,proto3" json:"FreezeAmount"`
+	FreezeAmount int64 `protobuf:"varint,2,opt,name=FreezeAmount,json=freezeAmount,proto3" json:"FreezeAmount"`
 	// 待入账金额
-	AwaitAmount int64 `protobuf:"varint,3,opt,name=AwaitAmount,proto3" json:"AwaitAmount"`
+	AwaitAmount int64 `protobuf:"varint,3,opt,name=AwaitAmount,json=awaitAmount,proto3" json:"AwaitAmount"`
 	// 平台赠送金额
-	PresentAmount int64 `protobuf:"varint,4,opt,name=PresentAmount,proto3" json:"PresentAmount"`
+	PresentAmount int64 `protobuf:"varint,4,opt,name=PresentAmount,json=presentAmount,proto3" json:"PresentAmount"`
 	// 累计销售总额
-	SalesAmount int64 `protobuf:"varint,5,opt,name=SalesAmount,proto3" json:"SalesAmount"`
+	SalesAmount int64 `protobuf:"varint,5,opt,name=SalesAmount,json=salesAmount,proto3" json:"SalesAmount"`
 	// 累计退款金额
-	RefundAmount int64 `protobuf:"varint,6,opt,name=RefundAmount,proto3" json:"RefundAmount"`
+	RefundAmount int64 `protobuf:"varint,6,opt,name=RefundAmount,json=refundAmount,proto3" json:"RefundAmount"`
 	// 已提取金额
-	WithdrawAmount int64 `protobuf:"varint,7,opt,name=WithdrawAmount,proto3" json:"WithdrawAmount"`
+	WithdrawAmount int64 `protobuf:"varint,7,opt,name=WithdrawAmount,json=withdrawAmount,proto3" json:"WithdrawAmount"`
 	// 线下销售金额
-	OfflineSales int64 `protobuf:"varint,8,opt,name=OfflineSales,proto3" json:"OfflineSales"`
+	OfflineSales int64 `protobuf:"varint,8,opt,name=OfflineSales,json=offlineSales,proto3" json:"OfflineSales"`
 	// 更新时间
-	UpdateTime           int64    `protobuf:"varint,9,opt,name=UpdateTime,proto3" json:"UpdateTime"`
+	UpdateTime           int64    `protobuf:"varint,9,opt,name=UpdateTime,json=updateTime,proto3" json:"UpdateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1446,7 +1446,7 @@ func (m *SMerchantAccount) Reset()         { *m = SMerchantAccount{} }
 func (m *SMerchantAccount) String() string { return proto.CompactTextString(m) }
 func (*SMerchantAccount) ProtoMessage()    {}
 func (*SMerchantAccount) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{17}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{17}
 }
 func (m *SMerchantAccount) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantAccount.Unmarshal(m, b)
@@ -1531,9 +1531,9 @@ func (m *SMerchantAccount) GetUpdateTime() int64 {
 
 type MerchantDisableRequest struct {
 	// 商户编号
-	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,2,opt,name=Enabled,proto3" json:"Enabled"`
+	Enabled              bool     `protobuf:"varint,2,opt,name=Enabled,json=enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1543,7 +1543,7 @@ func (m *MerchantDisableRequest) Reset()         { *m = MerchantDisableRequest{}
 func (m *MerchantDisableRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantDisableRequest) ProtoMessage()    {}
 func (*MerchantDisableRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{18}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{18}
 }
 func (m *MerchantDisableRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantDisableRequest.Unmarshal(m, b)
@@ -1580,25 +1580,25 @@ func (m *MerchantDisableRequest) GetEnabled() bool {
 // 销售设置
 type SMerchantSaleConf struct {
 	// 合作商编号
-	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
 	// 是否启用分销模式
-	FxSalesEnabled bool `protobuf:"varint,2,opt,name=FxSalesEnabled,proto3" json:"FxSalesEnabled"`
+	FxSalesEnabled bool `protobuf:"varint,2,opt,name=FxSalesEnabled,json=fxSalesEnabled,proto3" json:"FxSalesEnabled"`
 	// 返现比例,0则不返现
-	CashBackPercent float64 `protobuf:"fixed64,3,opt,name=CashBackPercent,proto3" json:"CashBackPercent"`
+	CashBackPercent float64 `protobuf:"fixed64,3,opt,name=CashBackPercent,json=cashBackPercent,proto3" json:"CashBackPercent"`
 	// 一级比例
-	CashBackTg1Percent float64 `protobuf:"fixed64,4,opt,name=CashBackTg1Percent,proto3" json:"CashBackTg1Percent"`
+	CashBackTg1Percent float64 `protobuf:"fixed64,4,opt,name=CashBackTg1Percent,json=cashBackTg1Percent,proto3" json:"CashBackTg1Percent"`
 	// 二级比例
-	CashBackTg2Percent float64 `protobuf:"fixed64,5,opt,name=CashBackTg2Percent,proto3" json:"CashBackTg2Percent"`
+	CashBackTg2Percent float64 `protobuf:"fixed64,5,opt,name=CashBackTg2Percent,json=cashBackTg2Percent,proto3" json:"CashBackTg2Percent"`
 	// 会员比例
-	CashBackMemberPercent float64 `protobuf:"fixed64,6,opt,name=CashBackMemberPercent,proto3" json:"CashBackMemberPercent"`
+	CashBackMemberPercent float64 `protobuf:"fixed64,6,opt,name=CashBackMemberPercent,json=cashBackMemberPercent,proto3" json:"CashBackMemberPercent"`
 	// 自动设置订单
-	AutoSetupOrder bool `protobuf:"varint,7,opt,name=AutoSetupOrder,proto3" json:"AutoSetupOrder"`
+	AutoSetupOrder bool `protobuf:"varint,7,opt,name=AutoSetupOrder,json=autoSetupOrder,proto3" json:"AutoSetupOrder"`
 	// 订单超时分钟数
-	OrderTimeOutMinute int32 `protobuf:"varint,8,opt,name=OrderTimeOutMinute,proto3" json:"OrderTimeOutMinute"`
+	OrderTimeOutMinute int32 `protobuf:"varint,8,opt,name=OrderTimeOutMinute,json=orderTimeOutMinute,proto3" json:"OrderTimeOutMinute"`
 	// 订单自动确认时间
-	OrderConfirmAfterMinute int32 `protobuf:"varint,9,opt,name=OrderConfirmAfterMinute,proto3" json:"OrderConfirmAfterMinute"`
+	OrderConfirmAfterMinute int32 `protobuf:"varint,9,opt,name=OrderConfirmAfterMinute,json=orderConfirmAfterMinute,proto3" json:"OrderConfirmAfterMinute"`
 	// 订单超时自动收货
-	OrderTimeOutReceiveHour int32    `protobuf:"varint,10,opt,name=OrderTimeOutReceiveHour,proto3" json:"OrderTimeOutReceiveHour"`
+	OrderTimeOutReceiveHour int32    `protobuf:"varint,10,opt,name=OrderTimeOutReceiveHour,json=orderTimeOutReceiveHour,proto3" json:"OrderTimeOutReceiveHour"`
 	XXX_NoUnkeyedLiteral    struct{} `json:"-"`
 	XXX_unrecognized        []byte   `json:"-"`
 	XXX_sizecache           int32    `json:"-"`
@@ -1608,7 +1608,7 @@ func (m *SMerchantSaleConf) Reset()         { *m = SMerchantSaleConf{} }
 func (m *SMerchantSaleConf) String() string { return proto.CompactTextString(m) }
 func (*SMerchantSaleConf) ProtoMessage()    {}
 func (*SMerchantSaleConf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{19}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{19}
 }
 func (m *SMerchantSaleConf) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantSaleConf.Unmarshal(m, b)
@@ -1699,8 +1699,8 @@ func (m *SMerchantSaleConf) GetOrderTimeOutReceiveHour() int32 {
 }
 
 type SaveMerchantSaleConfRequest struct {
-	MerchantId           int64              `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	Value                *SMerchantSaleConf `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
+	MerchantId           int64              `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	Value                *SMerchantSaleConf `protobuf:"bytes,2,opt,name=Value,json=value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -1710,7 +1710,7 @@ func (m *SaveMerchantSaleConfRequest) Reset()         { *m = SaveMerchantSaleCon
 func (m *SaveMerchantSaleConfRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveMerchantSaleConfRequest) ProtoMessage()    {}
 func (*SaveMerchantSaleConfRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{20}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{20}
 }
 func (m *SaveMerchantSaleConfRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveMerchantSaleConfRequest.Unmarshal(m, b)
@@ -1745,10 +1745,10 @@ func (m *SaveMerchantSaleConfRequest) GetValue() *SMerchantSaleConf {
 }
 
 type ModifyMerchantPasswordRequest struct {
-	MerchantId int64  `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	Origin     string `protobuf:"bytes,2,opt,name=Origin,proto3" json:"Origin"`
+	MerchantId int64  `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	Origin     string `protobuf:"bytes,2,opt,name=Origin,json=origin,proto3" json:"Origin"`
 	// Md5编码后的密码
-	Password             string   `protobuf:"bytes,3,opt,name=Password,proto3" json:"Password"`
+	Password             string   `protobuf:"bytes,3,opt,name=Password,json=password,proto3" json:"Password"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1758,7 +1758,7 @@ func (m *ModifyMerchantPasswordRequest) Reset()         { *m = ModifyMerchantPas
 func (m *ModifyMerchantPasswordRequest) String() string { return proto.CompactTextString(m) }
 func (*ModifyMerchantPasswordRequest) ProtoMessage()    {}
 func (*ModifyMerchantPasswordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{21}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{21}
 }
 func (m *ModifyMerchantPasswordRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ModifyMerchantPasswordRequest.Unmarshal(m, b)
@@ -1802,13 +1802,13 @@ func (m *ModifyMerchantPasswordRequest) GetPassword() string {
 // 商户接口信息
 type SMerchantApiInfo struct {
 	// 商户接口编号
-	ApiId string `protobuf:"bytes,1,opt,name=ApiId,proto3" json:"ApiId"`
+	ApiId string `protobuf:"bytes,1,opt,name=ApiId,json=apiId,proto3" json:"ApiId"`
 	// 密钥
-	ApiSecret string `protobuf:"bytes,2,opt,name=ApiSecret,proto3" json:"ApiSecret"`
+	ApiSecret string `protobuf:"bytes,2,opt,name=ApiSecret,json=apiSecret,proto3" json:"ApiSecret"`
 	// IP白名单
-	WhiteList []string `protobuf:"bytes,3,rep,name=WhiteList,proto3" json:"WhiteList"`
+	WhiteList []string `protobuf:"bytes,3,rep,name=WhiteList,json=whiteList,proto3" json:"WhiteList"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled"`
+	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,json=enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1818,7 +1818,7 @@ func (m *SMerchantApiInfo) Reset()         { *m = SMerchantApiInfo{} }
 func (m *SMerchantApiInfo) String() string { return proto.CompactTextString(m) }
 func (*SMerchantApiInfo) ProtoMessage()    {}
 func (*SMerchantApiInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{22}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{22}
 }
 func (m *SMerchantApiInfo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantApiInfo.Unmarshal(m, b)
@@ -1867,9 +1867,9 @@ func (m *SMerchantApiInfo) GetEnabled() bool {
 }
 
 type MerchantApiPermRequest struct {
-	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
+	MerchantId int64 `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled"`
+	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,json=enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1879,7 +1879,7 @@ func (m *MerchantApiPermRequest) Reset()         { *m = MerchantApiPermRequest{}
 func (m *MerchantApiPermRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantApiPermRequest) ProtoMessage()    {}
 func (*MerchantApiPermRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{23}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{23}
 }
 func (m *MerchantApiPermRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantApiPermRequest.Unmarshal(m, b)
@@ -1914,8 +1914,8 @@ func (m *MerchantApiPermRequest) GetEnabled() bool {
 }
 
 type WithdrawToMemberAccountRequest struct {
-	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	Amount               int64    `protobuf:"varint,2,opt,name=Amount,proto3" json:"Amount"`
+	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	Amount               int64    `protobuf:"varint,2,opt,name=Amount,json=amount,proto3" json:"Amount"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1925,7 +1925,7 @@ func (m *WithdrawToMemberAccountRequest) Reset()         { *m = WithdrawToMember
 func (m *WithdrawToMemberAccountRequest) String() string { return proto.CompactTextString(m) }
 func (*WithdrawToMemberAccountRequest) ProtoMessage()    {}
 func (*WithdrawToMemberAccountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{24}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{24}
 }
 func (m *WithdrawToMemberAccountRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_WithdrawToMemberAccountRequest.Unmarshal(m, b)
@@ -1960,12 +1960,12 @@ func (m *WithdrawToMemberAccountRequest) GetAmount() int64 {
 }
 
 type MerchantChargeRequest struct {
-	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	Kind                 int32    `protobuf:"varint,2,opt,name=Kind,proto3" json:"Kind"`
-	Amount               int64    `protobuf:"varint,3,opt,name=Amount,proto3" json:"Amount"`
-	Title                string   `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title"`
-	OuterNo              string   `protobuf:"bytes,5,opt,name=OuterNo,proto3" json:"OuterNo"`
-	RelateUserId         int64    `protobuf:"varint,6,opt,name=RelateUserId,proto3" json:"RelateUserId"`
+	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	Kind                 int32    `protobuf:"varint,2,opt,name=Kind,json=kind,proto3" json:"Kind"`
+	Amount               int64    `protobuf:"varint,3,opt,name=Amount,json=amount,proto3" json:"Amount"`
+	Title                string   `protobuf:"bytes,4,opt,name=Title,json=title,proto3" json:"Title"`
+	OuterNo              string   `protobuf:"bytes,5,opt,name=OuterNo,json=outerNo,proto3" json:"OuterNo"`
+	RelateUserId         int64    `protobuf:"varint,6,opt,name=RelateUserId,json=relateUserId,proto3" json:"RelateUserId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1975,7 +1975,7 @@ func (m *MerchantChargeRequest) Reset()         { *m = MerchantChargeRequest{} }
 func (m *MerchantChargeRequest) String() string { return proto.CompactTextString(m) }
 func (*MerchantChargeRequest) ProtoMessage()    {}
 func (*MerchantChargeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{25}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{25}
 }
 func (m *MerchantChargeRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantChargeRequest.Unmarshal(m, b)
@@ -2038,8 +2038,8 @@ func (m *MerchantChargeRequest) GetRelateUserId() int64 {
 }
 
 type MerchantBuyerGroupId struct {
-	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	GroupId              int64    `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
+	MerchantId           int64    `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	GroupId              int64    `protobuf:"varint,2,opt,name=GroupId,json=groupId,proto3" json:"GroupId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2049,7 +2049,7 @@ func (m *MerchantBuyerGroupId) Reset()         { *m = MerchantBuyerGroupId{} }
 func (m *MerchantBuyerGroupId) String() string { return proto.CompactTextString(m) }
 func (*MerchantBuyerGroupId) ProtoMessage()    {}
 func (*MerchantBuyerGroupId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{26}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{26}
 }
 func (m *MerchantBuyerGroupId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantBuyerGroupId.Unmarshal(m, b)
@@ -2084,8 +2084,8 @@ func (m *MerchantBuyerGroupId) GetGroupId() int64 {
 }
 
 type SaveMerchantBuyerGroupRequest struct {
-	MerchantId           int64                `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	Value                *SMerchantBuyerGroup `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
+	MerchantId           int64                `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	Value                *SMerchantBuyerGroup `protobuf:"bytes,2,opt,name=Value,json=value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -2095,7 +2095,7 @@ func (m *SaveMerchantBuyerGroupRequest) Reset()         { *m = SaveMerchantBuyer
 func (m *SaveMerchantBuyerGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveMerchantBuyerGroupRequest) ProtoMessage()    {}
 func (*SaveMerchantBuyerGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{27}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{27}
 }
 func (m *SaveMerchantBuyerGroupRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveMerchantBuyerGroupRequest.Unmarshal(m, b)
@@ -2130,7 +2130,7 @@ func (m *SaveMerchantBuyerGroupRequest) GetValue() *SMerchantBuyerGroup {
 }
 
 type MerchantBuyerGroupListResponse struct {
-	Value                []*SMerchantBuyerGroup `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	Value                []*SMerchantBuyerGroup `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
 	XXX_unrecognized     []byte                 `json:"-"`
 	XXX_sizecache        int32                  `json:"-"`
@@ -2140,7 +2140,7 @@ func (m *MerchantBuyerGroupListResponse) Reset()         { *m = MerchantBuyerGro
 func (m *MerchantBuyerGroupListResponse) String() string { return proto.CompactTextString(m) }
 func (*MerchantBuyerGroupListResponse) ProtoMessage()    {}
 func (*MerchantBuyerGroupListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{28}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{28}
 }
 func (m *MerchantBuyerGroupListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MerchantBuyerGroupListResponse.Unmarshal(m, b)
@@ -2170,17 +2170,17 @@ func (m *MerchantBuyerGroupListResponse) GetValue() []*SMerchantBuyerGroup {
 // 商户客户分组
 type SMerchantBuyerGroup struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
 	// 客户分组编号
-	GroupId int64 `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
+	GroupId int64 `protobuf:"varint,2,opt,name=GroupId,json=groupId,proto3" json:"GroupId"`
 	// 分组别名
-	Name string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name"`
+	Name string `protobuf:"bytes,3,opt,name=Name,json=name,proto3" json:"Name"`
 	// 是否启用零售
-	EnableRetail bool `protobuf:"varint,4,opt,name=EnableRetail,proto3" json:"EnableRetail"`
+	EnableRetail bool `protobuf:"varint,4,opt,name=EnableRetail,json=enableRetail,proto3" json:"EnableRetail"`
 	// 是否启用批发
-	EnableWholesale bool `protobuf:"varint,5,opt,name=EnableWholesale,proto3" json:"EnableWholesale"`
+	EnableWholesale bool `protobuf:"varint,5,opt,name=EnableWholesale,json=enableWholesale,proto3" json:"EnableWholesale"`
 	// 批发返点周期(天)
-	RebatePeriod         int32    `protobuf:"varint,6,opt,name=RebatePeriod,proto3" json:"RebatePeriod"`
+	RebatePeriod         int32    `protobuf:"varint,6,opt,name=RebatePeriod,json=rebatePeriod,proto3" json:"RebatePeriod"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2190,7 +2190,7 @@ func (m *SMerchantBuyerGroup) Reset()         { *m = SMerchantBuyerGroup{} }
 func (m *SMerchantBuyerGroup) String() string { return proto.CompactTextString(m) }
 func (*SMerchantBuyerGroup) ProtoMessage()    {}
 func (*SMerchantBuyerGroup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{29}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{29}
 }
 func (m *SMerchantBuyerGroup) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SMerchantBuyerGroup.Unmarshal(m, b)
@@ -2253,9 +2253,9 @@ func (m *SMerchantBuyerGroup) GetRebatePeriod() int32 {
 }
 
 type SaveWholesaleRebateRateRequest struct {
-	MerchantId           int64                   `protobuf:"varint,1,opt,name=MerchantId,proto3" json:"MerchantId"`
-	GroupId              int64                   `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
-	Value                []*SWholesaleRebateRate `protobuf:"bytes,3,rep,name=Value,proto3" json:"Value"`
+	MerchantId           int64                   `protobuf:"varint,1,opt,name=MerchantId,json=merchantId,proto3" json:"MerchantId"`
+	GroupId              int64                   `protobuf:"varint,2,opt,name=GroupId,json=groupId,proto3" json:"GroupId"`
+	Value                []*SWholesaleRebateRate `protobuf:"bytes,3,rep,name=Value,json=value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
 	XXX_unrecognized     []byte                  `json:"-"`
 	XXX_sizecache        int32                   `json:"-"`
@@ -2265,7 +2265,7 @@ func (m *SaveWholesaleRebateRateRequest) Reset()         { *m = SaveWholesaleReb
 func (m *SaveWholesaleRebateRateRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveWholesaleRebateRateRequest) ProtoMessage()    {}
 func (*SaveWholesaleRebateRateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{30}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{30}
 }
 func (m *SaveWholesaleRebateRateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveWholesaleRebateRateRequest.Unmarshal(m, b)
@@ -2307,7 +2307,7 @@ func (m *SaveWholesaleRebateRateRequest) GetValue() []*SWholesaleRebateRate {
 }
 
 type WholesaleRebateRateListResponse struct {
-	Value                []*SWholesaleRebateRate `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
+	Value                []*SWholesaleRebateRate `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
 	XXX_unrecognized     []byte                  `json:"-"`
 	XXX_sizecache        int32                   `json:"-"`
@@ -2317,7 +2317,7 @@ func (m *WholesaleRebateRateListResponse) Reset()         { *m = WholesaleRebate
 func (m *WholesaleRebateRateListResponse) String() string { return proto.CompactTextString(m) }
 func (*WholesaleRebateRateListResponse) ProtoMessage()    {}
 func (*WholesaleRebateRateListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{31}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{31}
 }
 func (m *WholesaleRebateRateListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_WholesaleRebateRateListResponse.Unmarshal(m, b)
@@ -2347,15 +2347,15 @@ func (m *WholesaleRebateRateListResponse) GetValue() []*SWholesaleRebateRate {
 // 批发客户分组返点比例设置
 type SWholesaleRebateRate struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
 	// 批发商编号
-	WsId int64 `protobuf:"varint,2,opt,name=WsId,proto3" json:"WsId"`
+	WsId int64 `protobuf:"varint,2,opt,name=WsId,json=wsId,proto3" json:"WsId"`
 	// 客户分组编号
-	BuyerGroupId int64 `protobuf:"varint,3,opt,name=BuyerGroupId,proto3" json:"BuyerGroupId"`
+	BuyerGroupId int64 `protobuf:"varint,3,opt,name=BuyerGroupId,json=buyerGroupId,proto3" json:"BuyerGroupId"`
 	// 下限金额
-	RequireAmount int32 `protobuf:"varint,4,opt,name=RequireAmount,proto3" json:"RequireAmount"`
+	RequireAmount int32 `protobuf:"varint,4,opt,name=RequireAmount,json=requireAmount,proto3" json:"RequireAmount"`
 	// 返点率
-	RebateRate           float64  `protobuf:"fixed64,5,opt,name=RebateRate,proto3" json:"RebateRate"`
+	RebateRate           float64  `protobuf:"fixed64,5,opt,name=RebateRate,json=rebateRate,proto3" json:"RebateRate"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2365,7 +2365,7 @@ func (m *SWholesaleRebateRate) Reset()         { *m = SWholesaleRebateRate{} }
 func (m *SWholesaleRebateRate) String() string { return proto.CompactTextString(m) }
 func (*SWholesaleRebateRate) ProtoMessage()    {}
 func (*SWholesaleRebateRate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_merchant_dto_741bc859c5abbcd6, []int{32}
+	return fileDescriptor_merchant_dto_ab22d8f26f7ef5ec, []int{32}
 }
 func (m *SWholesaleRebateRate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SWholesaleRebateRate.Unmarshal(m, b)
@@ -2458,125 +2458,133 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("message/merchant_dto.proto", fileDescriptor_merchant_dto_741bc859c5abbcd6)
+	proto.RegisterFile("message/merchant_dto.proto", fileDescriptor_merchant_dto_ab22d8f26f7ef5ec)
 }
 
-var fileDescriptor_merchant_dto_741bc859c5abbcd6 = []byte{
-	// 1851 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_merchant_dto_ab22d8f26f7ef5ec = []byte{
+	// 1969 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x58, 0x4b, 0x6f, 0xe3, 0xc8,
-	0x11, 0x86, 0x44, 0x49, 0xb6, 0xca, 0x6f, 0x8e, 0xed, 0x21, 0x26, 0xbb, 0x1e, 0x83, 0x08, 0x16,
-	0xc6, 0x2e, 0xa0, 0x45, 0x26, 0x09, 0x30, 0x79, 0x5c, 0x64, 0x8f, 0x27, 0x11, 0x62, 0xd9, 0x02,
-	0x65, 0xc7, 0xc1, 0x1e, 0x32, 0xa0, 0xc9, 0xb6, 0xd8, 0xb0, 0x44, 0x32, 0xcd, 0x96, 0xbd, 0x0e,
-	0x92, 0x1c, 0x93, 0x3f, 0x92, 0xff, 0x90, 0x63, 0x4e, 0x8b, 0x00, 0xf9, 0x23, 0xb9, 0xe7, 0x96,
-	0x5b, 0x50, 0xfd, 0x20, 0x9b, 0xa4, 0xe4, 0xf5, 0xcc, 0x49, 0x5d, 0x5f, 0x15, 0xfb, 0x51, 0x5f,
-	0x55, 0x57, 0xb5, 0xe0, 0xd5, 0x8c, 0x64, 0x99, 0x3f, 0x21, 0x5f, 0xcf, 0x08, 0x0b, 0x22, 0x3f,
-	0xe6, 0x1f, 0x42, 0x9e, 0xf4, 0x52, 0x96, 0xf0, 0xc4, 0xfd, 0xce, 0x82, 0xee, 0x78, 0xa8, 0x70,
-	0x7b, 0x13, 0x9a, 0x83, 0xd0, 0x69, 0x1c, 0x36, 0x8e, 0x2c, 0xaf, 0x39, 0x08, 0xed, 0x57, 0xb0,
-	0x3a, 0x24, 0xb3, 0x1b, 0xc2, 0x06, 0xa1, 0xd3, 0x14, 0x68, 0x2e, 0xdb, 0x9f, 0x41, 0xf7, 0x2c,
-	0x99, 0xd0, 0xf8, 0x2a, 0x23, 0xcc, 0xb1, 0x0e, 0x1b, 0x47, 0x5d, 0xaf, 0x00, 0xf0, 0x4b, 0x21,
-	0x8c, 0x1e, 0x42, 0xa7, 0x25, 0x94, 0xb9, 0x6c, 0xdb, 0xd0, 0xca, 0xfc, 0x29, 0x77, 0xda, 0x02,
-	0x17, 0x63, 0xc4, 0xce, 0xfd, 0x19, 0x71, 0x3a, 0x12, 0xc3, 0xb1, 0x7d, 0x08, 0x6b, 0x27, 0xc9,
-	0x2c, 0xf5, 0xe3, 0x47, 0xa1, 0x5a, 0x11, 0x2a, 0x13, 0xc2, 0x3d, 0x8c, 0xc9, 0xf4, 0x76, 0xec,
-	0x4f, 0x49, 0xe6, 0xac, 0x1e, 0x36, 0x8e, 0xda, 0x5e, 0x01, 0xd8, 0xbb, 0xd0, 0x3e, 0x23, 0xf7,
-	0x64, 0xea, 0x74, 0x85, 0x46, 0x0a, 0xb8, 0xd2, 0x59, 0x32, 0x49, 0x1c, 0x90, 0x2b, 0xe1, 0x18,
-	0x77, 0x3b, 0x62, 0xc9, 0x3d, 0x8d, 0x03, 0xe2, 0xac, 0x09, 0xe3, 0x5c, 0x46, 0xfb, 0x13, 0xca,
-	0x1f, 0x9d, 0x75, 0x81, 0x8b, 0x31, 0xda, 0xbf, 0xa3, 0x19, 0x67, 0x34, 0xe0, 0xce, 0x86, 0xb4,
-	0xd7, 0x32, 0xda, 0xbf, 0x9f, 0xfa, 0x13, 0x67, 0x53, 0xda, 0xe3, 0xd8, 0x76, 0x60, 0xe5, 0x34,
-	0xf6, 0x6f, 0xa6, 0x24, 0x74, 0xb6, 0x04, 0xac, 0x45, 0x3c, 0xe3, 0xe9, 0xb7, 0x29, 0x65, 0x24,
-	0xbb, 0xa4, 0x33, 0xe2, 0x6c, 0x0b, 0x27, 0x9b, 0x90, 0xfd, 0x43, 0xd8, 0x38, 0xf3, 0x33, 0x2e,
-	0xbc, 0x27, 0x6c, 0x76, 0x84, 0x4d, 0x19, 0x74, 0xff, 0xd7, 0x80, 0x8d, 0x9c, 0xc7, 0x91, 0x1f,
-	0xdc, 0x95, 0xf9, 0x69, 0x3c, 0xc5, 0x4f, 0x73, 0x09, 0x3f, 0xd6, 0x02, 0x7e, 0x5a, 0x06, 0x3f,
-	0x25, 0xef, 0x23, 0x99, 0x3b, 0xa6, 0xf7, 0x5f, 0xc1, 0xea, 0x38, 0x4a, 0x52, 0x83, 0xd5, 0x5c,
-	0xd6, 0x3a, 0xc1, 0xc3, 0x4a, 0xa1, 0x13, 0x5c, 0x7c, 0x06, 0xdd, 0x4b, 0x32, 0x25, 0x69, 0x94,
-	0xc4, 0x44, 0x70, 0xda, 0xf5, 0x0a, 0x00, 0xf7, 0xd1, 0x0f, 0x43, 0x26, 0x28, 0xed, 0x7a, 0x62,
-	0xec, 0xfe, 0x19, 0xf6, 0xf4, 0xc9, 0x4f, 0x18, 0xf1, 0x39, 0xf1, 0xc8, 0x1f, 0xe6, 0x24, 0xe3,
-	0xf6, 0x21, 0x58, 0xc3, 0x20, 0x12, 0x87, 0x5f, 0x7b, 0xb3, 0xd9, 0x2b, 0xf9, 0xc7, 0x43, 0x15,
-	0xba, 0xdf, 0x23, 0xd3, 0x4a, 0x8c, 0x9b, 0x50, 0x95, 0x20, 0xab, 0x46, 0x90, 0xfb, 0x0d, 0xec,
-	0x57, 0x97, 0xcf, 0xd2, 0x24, 0xce, 0x88, 0xa0, 0x9d, 0xb1, 0x93, 0x24, 0x24, 0x2a, 0xa7, 0xb4,
-	0x68, 0xef, 0x43, 0xe7, 0x94, 0xb1, 0x61, 0x36, 0x51, 0xce, 0x57, 0x92, 0x4a, 0x40, 0x4b, 0x27,
-	0xa0, 0xfb, 0xcf, 0x06, 0xbc, 0x18, 0xfb, 0xf7, 0x44, 0x2f, 0xa0, 0x4f, 0xf6, 0x31, 0x89, 0xaa,
-	0xa9, 0xb3, 0x96, 0x51, 0xd7, 0x5a, 0x9a, 0x38, 0xed, 0x45, 0x89, 0xd3, 0x31, 0x12, 0xa7, 0xe2,
-	0x9d, 0x95, 0xba, 0x77, 0xae, 0xe0, 0xe5, 0x49, 0xe4, 0xc7, 0x13, 0x22, 0xf7, 0x73, 0x4c, 0xe3,
-	0x50, 0x1f, 0xe2, 0x00, 0x40, 0x9f, 0x2b, 0x3f, 0x8c, 0x81, 0xe0, 0xa1, 0x30, 0x56, 0xc5, 0xe6,
-	0x55, 0x8c, 0x6a, 0xd9, 0xfd, 0x19, 0xec, 0x0c, 0x83, 0x08, 0xc5, 0xd1, 0x43, 0x3e, 0xa1, 0x0d,
-	0x2d, 0x23, 0xda, 0xc5, 0xd8, 0xde, 0x06, 0xab, 0x88, 0x71, 0x1c, 0xba, 0x7f, 0x82, 0xed, 0x61,
-	0x10, 0x89, 0x68, 0x5f, 0xc6, 0x54, 0xfb, 0xfb, 0x99, 0x2a, 0x6f, 0xde, 0xaa, 0x6d, 0x7e, 0x1f,
-	0x3a, 0x18, 0xd2, 0x03, 0x79, 0xfd, 0x59, 0x9e, 0x92, 0xdc, 0xbf, 0x22, 0xa3, 0x8f, 0x71, 0x70,
-	0x3d, 0x1e, 0x70, 0x32, 0xcb, 0xf2, 0x1d, 0xfc, 0x14, 0xda, 0xbf, 0xf5, 0xa7, 0x73, 0x5c, 0xdf,
-	0x3a, 0x5a, 0x7b, 0xf3, 0xba, 0xb7, 0xc0, 0xa8, 0x27, 0x2c, 0x4e, 0x63, 0xce, 0x1e, 0x3d, 0x69,
-	0xfd, 0xea, 0x2d, 0x40, 0x01, 0xe2, 0x61, 0xef, 0xc8, 0xa3, 0x3a, 0x3f, 0x0e, 0x91, 0xca, 0x7b,
-	0x31, 0x6d, 0x53, 0xe4, 0xa7, 0x14, 0x7e, 0xde, 0x7c, 0xdb, 0x70, 0x7f, 0x09, 0xfb, 0xe3, 0x4b,
-	0xe6, 0x87, 0xe4, 0x24, 0x89, 0x6f, 0xcf, 0x68, 0xc6, 0xf3, 0xad, 0xb8, 0xe5, 0xad, 0xac, 0xf7,
-	0x0a, 0xbb, 0x0f, 0x6a, 0x5d, 0xf7, 0x3d, 0x6c, 0xe7, 0xa0, 0x76, 0xff, 0x2e, 0xb4, 0x87, 0x41,
-	0xa4, 0xa8, 0xdc, 0xf1, 0xa4, 0x20, 0xf2, 0x19, 0x2d, 0x2f, 0x1f, 0x53, 0xbd, 0x8b, 0x02, 0x70,
-	0xcf, 0x60, 0x37, 0x9f, 0x07, 0x03, 0xfd, 0xe9, 0xb9, 0x0e, 0xc0, 0xea, 0x33, 0xe6, 0x34, 0x17,
-	0xec, 0x0b, 0x15, 0xee, 0x06, 0xac, 0x19, 0x98, 0xfb, 0xdf, 0x16, 0xc0, 0x78, 0x18, 0x44, 0x63,
-	0x3a, 0x89, 0xaf, 0xd2, 0x5a, 0xd2, 0x20, 0x45, 0x74, 0x12, 0x9f, 0x27, 0x9a, 0x5a, 0x29, 0x95,
-	0x92, 0xc9, 0xaa, 0x27, 0x93, 0x08, 0xb1, 0x56, 0x3d, 0xc4, 0xda, 0x79, 0x88, 0xe5, 0x37, 0x68,
-	0xc7, 0xb8, 0x41, 0x1d, 0x58, 0x19, 0x06, 0x91, 0x51, 0xc9, 0xb4, 0x58, 0xaa, 0x3e, 0xab, 0x4b,
-	0xaa, 0x4f, 0x77, 0x49, 0xf5, 0x81, 0x4a, 0xf5, 0x71, 0x60, 0x05, 0xef, 0x44, 0x92, 0x65, 0xa2,
-	0x90, 0x75, 0x3d, 0x2d, 0x96, 0xee, 0xe3, 0xf5, 0xca, 0x7d, 0x5c, 0xa9, 0xb4, 0x1b, 0x0b, 0x2b,
-	0xad, 0x16, 0x13, 0x51, 0xda, 0xba, 0x5e, 0x01, 0x60, 0x32, 0x8c, 0x08, 0xcb, 0x92, 0x58, 0x7c,
-	0xbe, 0x25, 0xd4, 0x06, 0x22, 0x4e, 0x28, 0xa4, 0x41, 0x28, 0x4a, 0x5c, 0xd7, 0xcb, 0x65, 0x5c,
-	0x5b, 0x8d, 0x67, 0xfe, 0x44, 0x56, 0xb7, 0xae, 0x67, 0x42, 0x18, 0x0b, 0x23, 0x51, 0x0d, 0x6c,
-	0xa1, 0x93, 0x82, 0xed, 0xc2, 0xba, 0xda, 0x80, 0xfc, 0xf0, 0x85, 0x50, 0x96, 0x30, 0xe1, 0x8d,
-	0x39, 0x8f, 0xde, 0x25, 0x81, 0xb3, 0xab, 0xbc, 0x21, 0x45, 0xe4, 0xde, 0x23, 0x33, 0x9f, 0xdd,
-	0x39, 0x7b, 0x92, 0x7b, 0x29, 0xc9, 0x82, 0x70, 0x4f, 0xc9, 0xc3, 0x98, 0xfb, 0x9c, 0x38, 0xfb,
-	0xc2, 0xbd, 0x26, 0x84, 0x67, 0x1d, 0xcf, 0x6f, 0x66, 0x94, 0x8b, 0x1b, 0xef, 0xa5, 0x4c, 0xfc,
-	0x02, 0x71, 0x7f, 0x2f, 0xae, 0x17, 0xf9, 0xc5, 0x73, 0x6f, 0x3a, 0x1b, 0x5a, 0x23, 0x3f, 0xcb,
-	0x44, 0x1c, 0xae, 0x7a, 0x62, 0x6c, 0xec, 0xd0, 0x32, 0x77, 0xe8, 0xfe, 0xab, 0x05, 0x5b, 0xe3,
-	0xd3, 0x98, 0x13, 0x96, 0x32, 0x9a, 0x91, 0x41, 0x7c, 0x9b, 0xd4, 0x22, 0xbb, 0xbc, 0x5e, 0xb3,
-	0xb6, 0x5e, 0x85, 0x6f, 0xeb, 0x7b, 0xf8, 0x6e, 0x3d, 0xcd, 0x77, 0xbb, 0xc6, 0x77, 0xae, 0x1f,
-	0x84, 0xe7, 0xba, 0x60, 0x18, 0x48, 0x95, 0xf3, 0x95, 0x3a, 0xe7, 0x4f, 0x77, 0x01, 0x66, 0xc6,
-	0x74, 0x97, 0x64, 0x0c, 0x2c, 0xc9, 0x98, 0xb5, 0x4a, 0xc6, 0x88, 0x4e, 0x28, 0xf0, 0x39, 0x4d,
-	0x62, 0x9d, 0x17, 0x5a, 0x36, 0xb3, 0x69, 0xa3, 0x9c, 0x4d, 0xd5, 0xe8, 0xdb, 0x7c, 0x3a, 0xfa,
-	0xb6, 0xca, 0xd1, 0x57, 0x89, 0xb2, 0xed, 0x85, 0x51, 0x26, 0x45, 0xa3, 0xe5, 0x33, 0x10, 0x5c,
-	0x5f, 0x87, 0x98, 0x88, 0x11, 0x99, 0x1a, 0x25, 0x0c, 0xe7, 0xb8, 0x4a, 0x43, 0x9f, 0x13, 0x31,
-	0xc7, 0x0b, 0x39, 0x47, 0x81, 0xb8, 0x1f, 0x60, 0x0f, 0xaf, 0xdc, 0x22, 0x96, 0x9e, 0x1b, 0xae,
-	0x5f, 0xe8, 0x02, 0xd1, 0x14, 0x9d, 0xd5, 0x76, 0xaf, 0x12, 0x8f, 0xba, 0x48, 0xfc, 0xbb, 0x09,
-	0xdb, 0x79, 0xd3, 0xd5, 0x0f, 0x82, 0x64, 0x1e, 0x8b, 0x1b, 0xea, 0xd8, 0x9f, 0xfa, 0x48, 0x9d,
-	0x6a, 0x8a, 0x94, 0x88, 0x67, 0x7a, 0xcf, 0x08, 0xf9, 0x23, 0xe9, 0xcf, 0xd0, 0x52, 0xc5, 0x6d,
-	0x09, 0x43, 0xcf, 0xf5, 0x1f, 0x7c, 0xca, 0x95, 0x89, 0x6a, 0xc7, 0x0c, 0x08, 0xfb, 0xe5, 0x11,
-	0x23, 0x19, 0x89, 0xb5, 0x8d, 0xac, 0xbf, 0x65, 0x10, 0xe7, 0x11, 0xbd, 0x8e, 0xb2, 0x69, 0xcb,
-	0x79, 0x0c, 0x48, 0x7a, 0xf8, 0x76, 0x1e, 0x87, 0xca, 0xa4, 0x23, 0x77, 0x63, 0x62, 0xf6, 0x17,
-	0xb0, 0x79, 0x4d, 0x79, 0x14, 0x32, 0xff, 0x41, 0x59, 0xc9, 0x0e, 0xa8, 0x82, 0xe2, 0x5c, 0x17,
-	0xb7, 0xb7, 0x53, 0x1a, 0x93, 0xe2, 0xa9, 0x62, 0x79, 0x25, 0xac, 0xc2, 0x56, 0xb7, 0xc6, 0x96,
-	0x57, 0xb4, 0x99, 0xef, 0x68, 0x86, 0xaf, 0x87, 0xe7, 0xd2, 0x65, 0xbc, 0x3e, 0xe4, 0x05, 0xa3,
-	0x45, 0xf7, 0x3f, 0x16, 0xec, 0xe4, 0x04, 0xe1, 0x36, 0xb0, 0x6e, 0x3e, 0x83, 0xfe, 0xcd, 0xf7,
-	0xdf, 0x8a, 0x4d, 0x97, 0xa7, 0xad, 0xa0, 0xf6, 0x11, 0x6c, 0x9d, 0xf8, 0x59, 0x74, 0xec, 0x07,
-	0x77, 0x23, 0xc2, 0x02, 0xa2, 0xf8, 0x6a, 0x78, 0x55, 0xd8, 0xee, 0x81, 0xad, 0xa1, 0xcb, 0xc9,
-	0x8f, 0xb4, 0x71, 0x4b, 0x18, 0x2f, 0xd0, 0x94, 0xed, 0xdf, 0x68, 0xfb, 0x76, 0xd5, 0x5e, 0x6b,
-	0xec, 0x9f, 0xc0, 0x9e, 0x46, 0x65, 0x25, 0xd7, 0x9f, 0x74, 0xc4, 0x27, 0x8b, 0x95, 0x78, 0xce,
-	0xfe, 0x9c, 0x27, 0x63, 0xc2, 0xe7, 0xe9, 0x05, 0x0b, 0x09, 0x13, 0xec, 0xae, 0x7a, 0x15, 0x14,
-	0x77, 0x23, 0x06, 0x48, 0xd3, 0xc5, 0x9c, 0x0f, 0x69, 0x3c, 0xe7, 0xba, 0x92, 0x2f, 0xd0, 0xd8,
-	0x6f, 0xe1, 0xa5, 0x40, 0xd1, 0xd9, 0x94, 0xcd, 0xfa, 0xb7, 0x9c, 0x30, 0xf5, 0x91, 0xbc, 0xcc,
-	0x96, 0xa9, 0xf3, 0x2f, 0xd5, 0x7c, 0x1e, 0x09, 0x08, 0xbd, 0x27, 0xbf, 0x4e, 0xe6, 0x4c, 0x5d,
-	0x77, 0xcb, 0xd4, 0xee, 0x04, 0x7e, 0x60, 0xbe, 0x23, 0x34, 0xd7, 0xcf, 0x0d, 0xa1, 0xa3, 0x72,
-	0xc6, 0xdb, 0xbd, 0x5a, 0xd4, 0xe8, 0x9c, 0xcf, 0xe0, 0xf3, 0x61, 0x12, 0xd2, 0xdb, 0xc7, 0xe2,
-	0xb1, 0x95, 0x65, 0x0f, 0x09, 0x7b, 0x76, 0xd7, 0xbf, 0x0f, 0x9d, 0x0b, 0x46, 0x27, 0x34, 0xd6,
-	0x5d, 0x99, 0x94, 0xc4, 0x9d, 0xaf, 0xa6, 0x52, 0x05, 0x2b, 0x97, 0xdd, 0xbf, 0x98, 0xf7, 0x4c,
-	0x4a, 0x45, 0x4d, 0xdc, 0x85, 0x36, 0x0e, 0x43, 0xd5, 0x0d, 0x4b, 0x01, 0xeb, 0x4a, 0x3f, 0xa5,
-	0x63, 0x12, 0x30, 0xc2, 0xd5, 0x02, 0x05, 0x80, 0xda, 0xeb, 0x88, 0x72, 0x82, 0xed, 0xb0, 0x63,
-	0x1d, 0x5a, 0xa8, 0xcd, 0x01, 0x33, 0x8f, 0x5a, 0xe5, 0x3c, 0x32, 0x72, 0xb3, 0x9f, 0xd2, 0x11,
-	0x61, 0xb3, 0x4f, 0xc8, 0xcd, 0xca, 0x9c, 0xbf, 0x83, 0x03, 0x7d, 0x8b, 0x5c, 0x26, 0x32, 0x30,
-	0xd5, 0x15, 0xfa, 0x11, 0x9e, 0x2c, 0xdd, 0xa4, 0x4a, 0x72, 0xff, 0xd1, 0x30, 0x1e, 0xcc, 0x91,
-	0xcf, 0x26, 0xe4, 0x23, 0xfa, 0x94, 0xdf, 0xd0, 0x58, 0xe6, 0x7b, 0xdb, 0x13, 0x63, 0x63, 0x15,
-	0xcb, 0x5c, 0x05, 0xfd, 0x7f, 0x49, 0xf9, 0x54, 0xff, 0x65, 0x20, 0x05, 0x3c, 0xef, 0xc5, 0x9c,
-	0x13, 0x76, 0x9e, 0xa8, 0xb6, 0x41, 0x8b, 0xf2, 0xbe, 0x9d, 0xfa, 0x9c, 0x60, 0x4f, 0x3d, 0x08,
-	0x8b, 0xfb, 0xb6, 0xc0, 0xdc, 0x11, 0xec, 0xea, 0xdd, 0x1c, 0xcf, 0x1f, 0x09, 0xfb, 0x15, 0x4b,
-	0xe6, 0x69, 0xad, 0xdf, 0x59, 0xe8, 0x65, 0x65, 0xaa, 0x5c, 0xa1, 0x45, 0xf7, 0x0e, 0x3e, 0x37,
-	0xf3, 0xa2, 0x98, 0xf5, 0xb9, 0x2e, 0xf9, 0xb2, 0x9c, 0x19, 0xbb, 0x45, 0x66, 0x18, 0x73, 0xa9,
-	0xdc, 0x38, 0x83, 0x83, 0xba, 0xb2, 0xf4, 0xf4, 0xfa, 0xb2, 0xfc, 0xf4, 0x7a, 0x72, 0xb6, 0xef,
-	0xf0, 0x25, 0x59, 0x57, 0xd7, 0x9a, 0xc1, 0xa5, 0x87, 0x5f, 0xf8, 0xcf, 0x80, 0x0b, 0xeb, 0x32,
-	0x02, 0x3d, 0xc2, 0x7d, 0x3a, 0x55, 0x51, 0x59, 0xc2, 0xf0, 0x62, 0x97, 0xf2, 0x75, 0x94, 0x4c,
-	0x49, 0xe6, 0x4f, 0x65, 0x0f, 0xb8, 0xea, 0x55, 0x61, 0x49, 0xea, 0x8d, 0xcf, 0xc9, 0x88, 0x30,
-	0x9a, 0x48, 0x52, 0xdb, 0x5e, 0x09, 0x73, 0xff, 0xd6, 0x80, 0x03, 0xe4, 0x20, 0xff, 0x4a, 0x6a,
-	0x3d, 0xe3, 0x8f, 0x9c, 0x4f, 0xe6, 0xd7, 0xfe, 0x4a, 0x3b, 0xd4, 0x12, 0x0e, 0xdd, 0xeb, 0x8d,
-	0x17, 0x2d, 0xa3, 0x3c, 0x7a, 0x0e, 0xaf, 0x17, 0x68, 0x4b, 0x04, 0x7d, 0x55, 0x26, 0xe8, 0xe9,
-	0xf9, 0xfe, 0xde, 0x80, 0xdd, 0x45, 0xfa, 0x1a, 0x45, 0x36, 0xb4, 0xae, 0xb3, 0x7c, 0xf3, 0x62,
-	0x8c, 0xae, 0x33, 0x63, 0x5c, 0x65, 0x57, 0x09, 0xc3, 0x5e, 0x07, 0x5d, 0x44, 0x19, 0x31, 0x7a,
-	0x9d, 0xb6, 0x57, 0x06, 0x65, 0x2f, 0xa9, 0xd7, 0x56, 0x55, 0xd2, 0x40, 0x8e, 0x5f, 0xc3, 0x8b,
-	0x20, 0x99, 0xf5, 0x26, 0x94, 0x47, 0xf3, 0x9b, 0xde, 0x24, 0x79, 0x93, 0xf4, 0x58, 0x1a, 0x7c,
-	0xb3, 0xda, 0xfb, 0xfa, 0x17, 0xe2, 0x4f, 0xe2, 0x9b, 0x8e, 0xf8, 0xf9, 0xf1, 0xff, 0x03, 0x00,
-	0x00, 0xff, 0xff, 0x81, 0x1e, 0x07, 0xc3, 0x49, 0x16, 0x00, 0x00,
+	0x11, 0x86, 0x4c, 0x52, 0x12, 0x5b, 0x92, 0x1f, 0x1c, 0x3f, 0x88, 0x49, 0xd6, 0x63, 0x10, 0x8b,
+	0x85, 0xb1, 0x0b, 0x68, 0x91, 0x49, 0x02, 0x4c, 0x1e, 0x17, 0xdb, 0xe3, 0x49, 0x84, 0x58, 0xb6,
+	0x40, 0x79, 0xe2, 0x60, 0x0f, 0x19, 0xb4, 0xc9, 0x96, 0xd4, 0x30, 0xc9, 0x66, 0x9a, 0x2d, 0x6b,
+	0x1d, 0x24, 0x39, 0x26, 0x7f, 0x24, 0xff, 0x21, 0xc7, 0x9c, 0x16, 0x01, 0xf2, 0x47, 0x72, 0xcf,
+	0x2d, 0xb7, 0xa0, 0x5f, 0x64, 0x53, 0x92, 0xbd, 0x9e, 0x39, 0x59, 0xf5, 0x55, 0xb1, 0xbb, 0xba,
+	0xbe, 0x7a, 0x74, 0x1b, 0xbc, 0x4c, 0x51, 0x51, 0xc0, 0x29, 0xfa, 0x3a, 0x45, 0x34, 0x9a, 0xc1,
+	0x8c, 0x7d, 0x88, 0x19, 0xe9, 0xe7, 0x94, 0x30, 0x12, 0x7c, 0x67, 0x01, 0x77, 0x3c, 0x54, 0xb8,
+	0xb7, 0x09, 0x36, 0x06, 0xb1, 0xdf, 0x38, 0x6a, 0x1c, 0x5b, 0xe1, 0x06, 0x8e, 0xbd, 0x97, 0xa0,
+	0x3d, 0x44, 0xe9, 0x2d, 0xa2, 0x83, 0xd8, 0xdf, 0x10, 0x68, 0x3b, 0x55, 0xb2, 0xf7, 0x43, 0xe0,
+	0x5e, 0x90, 0x29, 0xce, 0xde, 0x17, 0x88, 0xfa, 0xd6, 0x51, 0xe3, 0xd8, 0x0d, 0xdd, 0x44, 0x03,
+	0xfc, 0x4b, 0xa1, 0x1d, 0x2d, 0x62, 0xdf, 0x16, 0xca, 0x76, 0xa2, 0x64, 0xcf, 0x03, 0x76, 0x01,
+	0x13, 0xe6, 0x3b, 0x02, 0x17, 0xbf, 0x39, 0x76, 0x09, 0x53, 0xe4, 0x37, 0x25, 0x96, 0xc1, 0x14,
+	0x79, 0x47, 0xa0, 0x73, 0x46, 0xd2, 0x1c, 0x66, 0x0f, 0x42, 0xd5, 0x12, 0xaa, 0x4e, 0x54, 0x41,
+	0xdc, 0x87, 0x31, 0x4a, 0x26, 0x63, 0x98, 0xa0, 0xc2, 0x6f, 0x1f, 0x35, 0x8e, 0x9d, 0xd0, 0x2d,
+	0x34, 0xe0, 0xed, 0x02, 0xe7, 0x02, 0xdd, 0xa3, 0xc4, 0x77, 0x85, 0xc6, 0x49, 0xb8, 0xc0, 0x77,
+	0xba, 0x20, 0x53, 0xe2, 0x03, 0xb9, 0x53, 0x42, 0xa6, 0x84, 0x7b, 0x3b, 0xa2, 0xe4, 0x1e, 0x67,
+	0x11, 0xf2, 0x3b, 0xc2, 0xb8, 0x9d, 0x2b, 0x99, 0xdb, 0x9f, 0x61, 0xf6, 0xe0, 0x77, 0x05, 0x6e,
+	0x47, 0x98, 0x3d, 0x70, 0xfb, 0xb7, 0xb8, 0x60, 0x14, 0x47, 0xcc, 0xef, 0x49, 0xfb, 0x58, 0xc9,
+	0xdc, 0xfe, 0x5d, 0x02, 0xa7, 0xfe, 0xa6, 0xb4, 0x9f, 0x24, 0x70, 0xea, 0xf9, 0xa0, 0x75, 0x9e,
+	0xc1, 0xdb, 0x04, 0xc5, 0xfe, 0x96, 0x80, 0x5b, 0x48, 0x8a, 0xfc, 0x8c, 0xe7, 0xdf, 0xe6, 0x98,
+	0xa2, 0xe2, 0x1a, 0xa7, 0xc8, 0xdf, 0x16, 0x41, 0xee, 0xa0, 0x0a, 0xf2, 0x3e, 0x07, 0xbd, 0x0b,
+	0x58, 0x30, 0x11, 0x4d, 0x61, 0xb3, 0x23, 0x6c, 0x7a, 0x89, 0x09, 0x06, 0xff, 0x6b, 0x80, 0x5e,
+	0xc9, 0xe3, 0x08, 0x46, 0x77, 0x75, 0x7e, 0x1a, 0x4f, 0xf1, 0xb3, 0xf1, 0x08, 0x3f, 0xd6, 0x1a,
+	0x7e, 0x6c, 0x83, 0x9f, 0x5a, 0xf4, 0x39, 0x99, 0x3b, 0x66, 0xf4, 0x5f, 0x82, 0xf6, 0x78, 0x46,
+	0x72, 0x83, 0xd5, 0x76, 0xa1, 0x64, 0xad, 0x13, 0x3c, 0xb4, 0x2a, 0x1d, 0x97, 0xf9, 0xaa, 0xd7,
+	0x28, 0x41, 0xf9, 0x8c, 0x64, 0x48, 0x70, 0xea, 0x86, 0x2e, 0xd3, 0x00, 0xf7, 0xe3, 0x24, 0x8e,
+	0xa9, 0xa0, 0xd4, 0x0d, 0x6d, 0x18, 0xc7, 0x34, 0xf8, 0x33, 0xd8, 0xd3, 0x27, 0x3f, 0xa3, 0x08,
+	0x32, 0x14, 0xa2, 0x3f, 0xcc, 0x51, 0xc1, 0xbc, 0x23, 0x60, 0x0d, 0xa3, 0x99, 0x38, 0x7c, 0xe7,
+	0xf5, 0x66, 0xbf, 0x16, 0x9f, 0xd0, 0x4a, 0xa3, 0x19, 0x0f, 0x7f, 0x88, 0x92, 0xa5, 0x1c, 0xef,
+	0xd0, 0x0a, 0x5a, 0x26, 0xc8, 0x5a, 0x21, 0x28, 0xf8, 0x06, 0xec, 0x2f, 0x6f, 0x5f, 0xe4, 0x24,
+	0x2b, 0x90, 0xa0, 0x9d, 0xd2, 0x33, 0x12, 0x23, 0x55, 0x53, 0x2d, 0x24, 0x45, 0x6f, 0x1f, 0x34,
+	0xcf, 0x29, 0x1d, 0x16, 0x53, 0x15, 0xfc, 0x26, 0x12, 0x92, 0x2a, 0x40, 0x4b, 0x17, 0x60, 0xf0,
+	0xcf, 0x06, 0x78, 0x31, 0x86, 0xf7, 0x48, 0x6f, 0xa0, 0x4f, 0xf6, 0x31, 0x85, 0xaa, 0xa9, 0xb3,
+	0x1e, 0xa3, 0xce, 0x7e, 0xb4, 0x70, 0x9c, 0x75, 0x85, 0xd3, 0x34, 0x0a, 0x67, 0x29, 0x3a, 0xad,
+	0xd5, 0xe8, 0xbc, 0x07, 0x07, 0x67, 0x33, 0x98, 0x4d, 0x91, 0xf4, 0xef, 0x14, 0x67, 0xb1, 0x3e,
+	0xc4, 0x21, 0x00, 0xfa, 0x5c, 0xe5, 0x61, 0x40, 0x5a, 0x22, 0xfc, 0x50, 0x3c, 0x57, 0x85, 0xf3,
+	0x2a, 0x47, 0xe7, 0x4a, 0x0e, 0x7e, 0x06, 0x76, 0x86, 0xd1, 0x8c, 0xab, 0x47, 0x8b, 0x72, 0x41,
+	0x0f, 0xd8, 0x46, 0xb6, 0xdb, 0xdc, 0xd8, 0xdb, 0x06, 0x56, 0x95, 0xe3, 0x56, 0xbe, 0x88, 0x83,
+	0x3f, 0x81, 0xed, 0x61, 0x34, 0x13, 0xd9, 0xff, 0x18, 0x53, 0xce, 0xf7, 0x33, 0x55, 0x77, 0xde,
+	0x5a, 0x71, 0x7e, 0x1f, 0x34, 0x79, 0x8a, 0x0f, 0x64, 0xfb, 0xb3, 0xc2, 0x66, 0x21, 0xa4, 0xe0,
+	0xaf, 0x9c, 0xd1, 0x87, 0x2c, 0xba, 0x19, 0x0f, 0x18, 0x4a, 0x8b, 0xd2, 0x83, 0x9f, 0x02, 0xe7,
+	0xb7, 0x30, 0x99, 0xf3, 0xfd, 0xad, 0xe3, 0xce, 0xeb, 0x57, 0xfd, 0x35, 0x46, 0x7d, 0x61, 0x71,
+	0x9e, 0x31, 0xfa, 0x10, 0x3a, 0xf7, 0xfc, 0xf7, 0xcb, 0x37, 0x00, 0x54, 0x20, 0x3f, 0xec, 0x1d,
+	0x7a, 0x50, 0xe7, 0xe7, 0x3f, 0x39, 0x95, 0xc2, 0x50, 0x78, 0xbf, 0xa3, 0xbe, 0xfa, 0xf9, 0xc6,
+	0x9b, 0x46, 0xf0, 0x4b, 0xb0, 0x3f, 0xbe, 0xa6, 0x30, 0x46, 0x67, 0x24, 0x9b, 0x5c, 0xe0, 0x82,
+	0x95, 0xae, 0x04, 0x75, 0x57, 0xba, 0xfd, 0xca, 0xee, 0x83, 0x5a, 0x21, 0x78, 0x07, 0xb6, 0x4b,
+	0x50, 0x87, 0x7f, 0x17, 0x38, 0xc3, 0x68, 0xa6, 0xa8, 0xdc, 0x09, 0x9d, 0x94, 0x0b, 0xa2, 0x9e,
+	0xb9, 0xe5, 0xf5, 0x43, 0xae, 0xbd, 0x70, 0x99, 0x06, 0x82, 0x0b, 0xb0, 0x5b, 0xae, 0xc3, 0x13,
+	0xfd, 0xe9, 0xb5, 0x0e, 0x81, 0x75, 0x42, 0xa9, 0xbf, 0xb1, 0xc6, 0x2f, 0x0b, 0x52, 0x1a, 0xf4,
+	0x40, 0xc7, 0xc0, 0x82, 0xff, 0xda, 0x00, 0x8c, 0x87, 0xd1, 0x6c, 0x8c, 0xa7, 0xd9, 0xfb, 0x7c,
+	0xa5, 0x68, 0x38, 0x45, 0x78, 0x9a, 0x5d, 0x12, 0x4d, 0x6d, 0x21, 0xa4, 0x5a, 0x31, 0x59, 0xab,
+	0xc5, 0x24, 0x52, 0xcc, 0x5e, 0x4d, 0x31, 0xa7, 0x4c, 0xb1, 0xb2, 0x83, 0x36, 0x8d, 0x0e, 0xea,
+	0x83, 0xd6, 0x30, 0x9a, 0x19, 0x93, 0xac, 0x95, 0x4a, 0xb1, 0x36, 0x7d, 0xda, 0x8f, 0x4c, 0x1f,
+	0xf7, 0x91, 0xe9, 0x03, 0x96, 0xa6, 0x8f, 0x0f, 0x5a, 0xbc, 0x3f, 0xa2, 0xa2, 0x10, 0x83, 0xcc,
+	0x0d, 0x5b, 0x50, 0x8a, 0xb5, 0x7e, 0xdc, 0x5d, 0xea, 0xc7, 0x4b, 0x93, 0xb6, 0xb7, 0x76, 0xd2,
+	0x6a, 0x0b, 0x22, 0x46, 0x9b, 0x1b, 0xba, 0x5a, 0x4f, 0x78, 0x31, 0x8c, 0x10, 0x2d, 0x48, 0x26,
+	0x3e, 0xdf, 0x12, 0x6a, 0x90, 0x97, 0x88, 0x38, 0xa1, 0x90, 0x06, 0xb1, 0x18, 0x71, 0x6e, 0xd8,
+	0xce, 0x95, 0xcc, 0xf7, 0x56, 0xba, 0x14, 0x4e, 0xe5, 0x74, 0x73, 0xc3, 0x4e, 0x5e, 0x41, 0x3c,
+	0x17, 0x46, 0x62, 0x1a, 0x78, 0x42, 0xe7, 0xc8, 0x49, 0x10, 0x80, 0xae, 0xf2, 0x48, 0x7e, 0xf8,
+	0x42, 0x28, 0xbb, 0x91, 0x81, 0x89, 0x68, 0xcc, 0xd9, 0xec, 0x2d, 0x89, 0xfc, 0x5d, 0x15, 0x0d,
+	0x29, 0x72, 0xee, 0x43, 0x94, 0x42, 0x7a, 0xe7, 0xef, 0x49, 0xee, 0xa9, 0x90, 0xe4, 0x40, 0xb8,
+	0xc7, 0x68, 0x31, 0x66, 0x90, 0x21, 0x7f, 0x5f, 0x84, 0xb7, 0x43, 0x2b, 0x88, 0x9f, 0x75, 0x3c,
+	0xbf, 0x4d, 0x31, 0x13, 0x1d, 0xef, 0x40, 0x16, 0x7e, 0x51, 0x22, 0xc1, 0xef, 0x45, 0x7b, 0x91,
+	0x8b, 0x3c, 0xb7, 0xd3, 0x79, 0xc0, 0x1e, 0xc1, 0xa2, 0x10, 0x79, 0xd8, 0x0e, 0xed, 0x1c, 0x16,
+	0x85, 0xe1, 0xa1, 0x65, 0x7a, 0x18, 0xfc, 0xcb, 0x06, 0x5b, 0xe3, 0xf3, 0x8c, 0x21, 0x9a, 0x53,
+	0x5c, 0xa0, 0x41, 0x36, 0x21, 0x2b, 0x99, 0x5d, 0xdf, 0x6f, 0x63, 0x65, 0xbf, 0x25, 0xbe, 0xad,
+	0xef, 0xe1, 0xdb, 0x7e, 0x9a, 0x6f, 0x67, 0x85, 0xef, 0x52, 0x3f, 0x88, 0x2f, 0xf5, 0xc0, 0x00,
+	0x79, 0x89, 0x2c, 0x73, 0xde, 0x5a, 0xe5, 0xfc, 0xe9, 0x5b, 0x80, 0x59, 0x31, 0xee, 0x23, 0x15,
+	0x03, 0x1e, 0xa9, 0x98, 0xce, 0x52, 0xc5, 0x88, 0x9b, 0x50, 0x04, 0x19, 0x26, 0x99, 0xae, 0x8b,
+	0x44, 0xc9, 0x66, 0x35, 0xf5, 0xea, 0xd5, 0xb4, 0x9c, 0x7d, 0x9b, 0x4f, 0x67, 0xdf, 0x56, 0x3d,
+	0xfb, 0x96, 0xb2, 0x6c, 0x7b, 0x6d, 0x96, 0x49, 0x0b, 0xe3, 0xca, 0x07, 0x68, 0x89, 0xf0, 0xfd,
+	0x75, 0x8a, 0x89, 0x1c, 0x91, 0xa5, 0xd1, 0xa5, 0x06, 0xc6, 0xd7, 0x78, 0x9f, 0xc7, 0x90, 0x21,
+	0xb1, 0xc6, 0x0b, 0xb9, 0xc6, 0xbc, 0x44, 0x82, 0x0f, 0x60, 0x8f, 0xb7, 0xdc, 0x2a, 0x97, 0x9e,
+	0x9b, 0xae, 0x5f, 0xe8, 0x01, 0xb1, 0x21, 0x6e, 0x56, 0xdb, 0xfd, 0xa5, 0x7c, 0xd4, 0x43, 0xe2,
+	0xdf, 0x1b, 0x60, 0xbb, 0xbc, 0x74, 0x9d, 0x44, 0x11, 0x99, 0x67, 0xa2, 0x43, 0x9d, 0xc2, 0x04,
+	0x72, 0xea, 0xd4, 0xa5, 0xe8, 0x56, 0x8a, 0xfc, 0x4c, 0xef, 0x28, 0x42, 0x7f, 0x44, 0x27, 0x29,
+	0xb7, 0x54, 0x79, 0xdb, 0x9d, 0x18, 0x18, 0x8f, 0xdc, 0xc9, 0x02, 0x62, 0xa6, 0x4c, 0xd4, 0x75,
+	0x0c, 0x56, 0x10, 0xbf, 0x2f, 0x8f, 0x28, 0x2a, 0x50, 0xa6, 0x6d, 0xe4, 0xfc, 0xed, 0xe5, 0x26,
+	0xc8, 0xd7, 0x11, 0x77, 0x1d, 0x65, 0xe3, 0xc8, 0x75, 0x8a, 0x0a, 0x92, 0x11, 0x9e, 0xcc, 0xb3,
+	0x58, 0x99, 0x34, 0xa5, 0x37, 0xd4, 0xc0, 0xbc, 0x2f, 0xc0, 0xe6, 0x0d, 0x66, 0xb3, 0x98, 0xc2,
+	0x85, 0xb2, 0x92, 0x37, 0xa0, 0xcd, 0x45, 0x0d, 0xe5, 0x6b, 0x5d, 0x4d, 0x26, 0x09, 0xce, 0x50,
+	0xf5, 0x54, 0xb1, 0xc2, 0x2e, 0x31, 0xb0, 0x25, 0xb6, 0xdc, 0x15, 0xb6, 0xc2, 0xea, 0x9a, 0xf9,
+	0x16, 0x17, 0xfc, 0xf5, 0xf0, 0x5c, 0xba, 0x8c, 0xd7, 0x87, 0x6c, 0x30, 0xfa, 0xf5, 0x11, 0xfc,
+	0xc7, 0x02, 0x3b, 0x25, 0x41, 0xdc, 0x0d, 0x3e, 0x37, 0x9f, 0x41, 0xff, 0xe6, 0xbb, 0x6f, 0x85,
+	0xd3, 0xf5, 0x65, 0x37, 0x27, 0x35, 0xd4, 0x3b, 0x06, 0x5b, 0x67, 0xb0, 0x98, 0x9d, 0xc2, 0xe8,
+	0x6e, 0x84, 0x68, 0x84, 0x14, 0x5f, 0x8d, 0x70, 0x2b, 0xaa, 0xc3, 0x5e, 0x1f, 0x78, 0xda, 0xf2,
+	0x7a, 0xfa, 0x23, 0x6d, 0x6c, 0x0b, 0x63, 0x2f, 0x5a, 0xd1, 0xd4, 0xed, 0x5f, 0x6b, 0x7b, 0x67,
+	0xd9, 0x5e, 0x6b, 0xbc, 0x9f, 0x80, 0x3d, 0x6d, 0x2f, 0x27, 0xbb, 0xfe, 0xa4, 0x29, 0x3e, 0xd9,
+	0x8b, 0xd6, 0x29, 0xf9, 0x39, 0x4f, 0xe6, 0x8c, 0x8c, 0x11, 0x9b, 0xe7, 0x57, 0x34, 0x46, 0x54,
+	0xb0, 0xdb, 0x0e, 0x37, 0x61, 0x0d, 0xe5, 0xde, 0x88, 0x1f, 0x9c, 0xa6, 0xab, 0x39, 0x1b, 0xe2,
+	0x6c, 0xce, 0xf4, 0x24, 0xf7, 0xc8, 0x8a, 0xc6, 0x7b, 0x03, 0x0e, 0x84, 0x3d, 0x0f, 0x36, 0xa6,
+	0xe9, 0xc9, 0x84, 0x21, 0xaa, 0x3e, 0x92, 0xcd, 0xec, 0x80, 0xac, 0x57, 0x97, 0x5f, 0xaa, 0xf5,
+	0x42, 0x14, 0x21, 0x7c, 0x8f, 0x7e, 0x4d, 0xe6, 0x54, 0xb5, 0xbb, 0x03, 0xb2, 0x5e, 0x1d, 0x4c,
+	0xc1, 0x0f, 0xcc, 0x77, 0x84, 0xe6, 0xfa, 0xb9, 0x29, 0x74, 0x5c, 0xaf, 0x78, 0xaf, 0xbf, 0x92,
+	0x35, 0xba, 0xe6, 0x0b, 0xf0, 0xd9, 0x90, 0xc4, 0x78, 0xf2, 0x50, 0x3d, 0xb6, 0x8a, 0x62, 0x41,
+	0xe8, 0xb3, 0x6f, 0xfd, 0xfb, 0xa0, 0x79, 0x45, 0xf1, 0x14, 0x67, 0xfa, 0x56, 0x46, 0x84, 0x24,
+	0x7a, 0xbe, 0x5a, 0x4a, 0x0d, 0xac, 0x76, 0xae, 0xe4, 0xe0, 0x2f, 0x66, 0x9f, 0xc9, 0xb1, 0x98,
+	0x89, 0xbb, 0xc0, 0xe1, 0x3f, 0x63, 0x75, 0x1b, 0x76, 0x20, 0x17, 0xf8, 0x5c, 0x39, 0xc9, 0xf1,
+	0x18, 0x45, 0x14, 0x31, 0xb5, 0x81, 0x0b, 0x35, 0xc0, 0xb5, 0x37, 0x33, 0xcc, 0x10, 0xbf, 0x0e,
+	0xfb, 0xd6, 0x91, 0xc5, 0xb5, 0x0b, 0x0d, 0x98, 0x75, 0x64, 0xd7, 0xeb, 0xc8, 0xa8, 0xcd, 0x93,
+	0x1c, 0x8f, 0x10, 0x4d, 0x3f, 0xa1, 0x36, 0x97, 0xd6, 0xfc, 0x1d, 0x38, 0xd4, 0xbd, 0xe5, 0x9a,
+	0xc8, 0xc4, 0x54, 0x2d, 0xf4, 0x23, 0x22, 0x59, 0xeb, 0xa4, 0x4d, 0x28, 0xa4, 0xe0, 0x1f, 0x0d,
+	0xe3, 0xc1, 0x3c, 0x83, 0x74, 0x8a, 0x3e, 0xe2, 0x9e, 0xf2, 0x1b, 0x9c, 0xc9, 0x7a, 0x77, 0x42,
+	0xfb, 0x0e, 0x67, 0xe6, 0x2e, 0x96, 0xb9, 0x0b, 0x8f, 0xff, 0x35, 0x66, 0x89, 0xfe, 0x97, 0x81,
+	0xc3, 0xb8, 0xc0, 0xcf, 0x7b, 0x35, 0x67, 0x88, 0x5e, 0x12, 0x75, 0x6d, 0x68, 0x11, 0x29, 0xca,
+	0x7e, 0x9b, 0x40, 0x86, 0xf8, 0xfd, 0x7a, 0x10, 0x57, 0xfd, 0xb6, 0xc2, 0x82, 0x11, 0xd8, 0xd5,
+	0xfe, 0x9d, 0xce, 0x1f, 0x10, 0xfd, 0x15, 0x25, 0xf3, 0x7c, 0x10, 0x3f, 0x27, 0xca, 0xca, 0x54,
+	0x85, 0xa2, 0x35, 0x95, 0x62, 0x70, 0x07, 0x3e, 0x33, 0xeb, 0xa2, 0x5a, 0xf5, 0xb9, 0x21, 0xf9,
+	0xb2, 0x5e, 0x19, 0xbb, 0x55, 0x65, 0x18, 0x6b, 0xa9, 0xda, 0xb8, 0x00, 0x87, 0xab, 0xca, 0xda,
+	0xd3, 0xeb, 0xcb, 0xfa, 0xd3, 0xeb, 0xc9, 0xd5, 0xbe, 0xe3, 0x2f, 0xc9, 0x55, 0xf5, 0xca, 0x65,
+	0xf0, 0xd1, 0xc3, 0xaf, 0xfd, 0xcf, 0x40, 0x00, 0xba, 0x32, 0x21, 0x43, 0xc4, 0x20, 0x4e, 0x54,
+	0x56, 0x76, 0x91, 0x81, 0xf1, 0xc6, 0x2e, 0x6d, 0x6e, 0x66, 0x24, 0x41, 0x7c, 0x68, 0x0a, 0x32,
+	0xdb, 0xe1, 0x16, 0xaa, 0xc3, 0x92, 0xd4, 0x5b, 0xc8, 0xd0, 0x08, 0x51, 0x4c, 0x24, 0xa9, 0x0e,
+	0x27, 0xb5, 0xc2, 0x82, 0xbf, 0x35, 0xc0, 0x21, 0xe7, 0xa0, 0xfc, 0x4a, 0x7e, 0x11, 0x1a, 0xff,
+	0xc8, 0xf9, 0x64, 0x7e, 0xbd, 0xaf, 0x74, 0x40, 0x2d, 0x11, 0xd0, 0xbd, 0xfe, 0x78, 0xdd, 0x36,
+	0x2a, 0xa2, 0x97, 0xe0, 0xd5, 0x1a, 0x6d, 0x8d, 0xa0, 0xaf, 0xea, 0x04, 0x3d, 0xbd, 0xde, 0xdf,
+	0x1b, 0x60, 0x77, 0x9d, 0x7e, 0x85, 0x22, 0x0f, 0xd8, 0x37, 0x45, 0xe9, 0xbc, 0xbd, 0x28, 0x06,
+	0x31, 0x0f, 0x9d, 0x99, 0xe3, 0xaa, 0xba, 0xba, 0xb7, 0x66, 0xde, 0x7f, 0x0e, 0x7a, 0x3c, 0x44,
+	0x98, 0x22, 0xe3, 0xae, 0xe3, 0x84, 0x3d, 0x6a, 0x82, 0xf2, 0x2e, 0xa9, 0xf7, 0x56, 0x53, 0x12,
+	0xd0, 0x12, 0x39, 0x7d, 0x05, 0x5e, 0x44, 0x24, 0xed, 0x4f, 0x31, 0x9b, 0xcd, 0x6f, 0xfb, 0x53,
+	0xf2, 0x9a, 0xf4, 0x69, 0x1e, 0x7d, 0xd3, 0xee, 0x7f, 0xfd, 0x0b, 0xf1, 0x4f, 0xe2, 0xdb, 0xa6,
+	0xf8, 0xf3, 0xe3, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff, 0xd8, 0x07, 0xa8, 0x9b, 0x49, 0x16, 0x00,
+	0x00,
 }
