@@ -75,7 +75,9 @@ func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 	if a.value.SnapshotId <= 0 || a.value.Quantity <= 0 {
 		panic(errors.New("售后单缺少商品"))
 	}
-	a.value.OrderNo = a.repo.GetFreeOrderNo(a.value.OrderId)
+	if a.value.Id == 0 {
+		a.value.OrderNo = a.repo.GetFreeOrderNo(a.value.OrderId)
+	}
 	a.value.UpdateTime = time.Now().Unix()
 	id, err := orm.I32(orm.Save(tmp.Orm, a.value, int(a.GetDomainId())))
 	if err == nil {
@@ -166,7 +168,7 @@ func (a *afterSalesOrderImpl) Agree() error {
 	a.value.Status = afterSales.StatAwaitingConfirm
 	// 需要审核
 	if needConfirm {
-		return a.saveAfterSalesOrder()
+		//return a.saveAfterSalesOrder() . //todo: 这里似乎不需要系统确认
 	}
 	// 不需要审核,直接审核通过
 	return a.Confirm()
