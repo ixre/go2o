@@ -16,8 +16,6 @@ import (
 const (
 	// 等待商户同意
 	StatAwaitingAgree = 1 + iota
-	// 等待确认
-	StatAwaitingConfirm
 	// 商户拒绝售后
 	StatDeclined
 	// 调解状态
@@ -34,6 +32,9 @@ const (
 	StatCompleted
 	// 售后单已取消
 	StatCancelled
+
+	// 等待确认,todo: 取消
+	StatAwaitingConfirm
 )
 
 const (
