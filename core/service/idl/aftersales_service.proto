@@ -28,7 +28,7 @@ service AfterSalesService {
     }
 
     // 同意售后
-    rpc AgreeAfterSales (AfterSalesOrderNo) returns (Result) {
+    rpc AgreeAfterSales (AfterSalesProcessRequest) returns (Result) {
     }
 
     // 拒绝售后
@@ -86,6 +86,8 @@ message AfterSalesProcessRequest{
    string OrderNo = 1;
    // 备注 
    string Remark = 2;
+   // 是否为客服介入处理
+   bool IsIntercede = 3;
 }
 
 // 原实际销售的订单编号

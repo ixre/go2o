@@ -157,7 +157,7 @@ func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, req *proto.Afte
 }
 
 // 同意售后
-func (a *afterSalesService) AgreeAfterSales(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
+func (a *afterSalesService) AgreeAfterSales(_ context.Context, req *proto.AfterSalesProcessRequest) (*proto.Result, error) {
 	as := a._rep.GetAfterSalesOrder(req.OrderNo)
 	err := as.Agree()
 	return a.error(err), nil
