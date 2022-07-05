@@ -3,7 +3,7 @@ package impl
 import (
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/domain/interface/ad"
-	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
+	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/go2o/core/domain/interface/delivery"

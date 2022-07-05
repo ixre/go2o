@@ -12,7 +12,7 @@ import (
 	"context"
 	"errors"
 
-	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
+	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
