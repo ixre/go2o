@@ -14,26 +14,27 @@ import (
 )
 
 const (
-	// 等待商户确认
-	StatAwaitingVendor = 1 + iota
+	// 等待商户同意
+	StatAwaitingAgree = 1 + iota
 	// 商户拒绝售后
 	StatDeclined
 	// 调解状态
 	StatIntercede
 	// 同意,等待退货
-	StatAwaitingReturnShip
-	// 已收货,等待系统确认
-	StatAwaitingConfirm
+	StatAwaitingShipment
 	// 已发货
 	StatReturnShipped
-	// 已退回
-	StatRejected
 	// 等待处理
 	StatAwaitingProcess
+	// 已退回
+	StatRejected
 	// 售后单已完成
 	StatCompleted
 	// 售后单已取消
 	StatCancelled
+
+	// 等待确认,todo: 取消
+	StatAwaitingConfirm
 )
 
 const (
@@ -145,14 +146,17 @@ type (
 		// 退回售后单
 		Reject(remark string) error
 
-		// 退回商品
-		ReturnShip(spName string, spOrder string, image string) error
-
-		// 收货, 在商品已退回或尚未发货情况下(线下退货),可以执行此操作
-		ReturnReceive() error
-
 		// 处理售后单,处理完成后将变为已完成
 		Process() error
+	}
+
+	// IReturnAfterSalesOrder 支持退回货物的售后单，通常为：退货和换货及维修
+	IReturnAfterSalesOrder interface {
+		// ReturnShipment 退回商品
+		ReturnShipment(expressName string, expressOrder string, image string) error
+
+		// ReturnReceive 收货, 在商品已退回或尚未发货情况下(线下退货),可以执行此操作
+		ReturnReceive() error
 	}
 
 	IAfterSalesRepo interface {
@@ -202,6 +206,8 @@ type (
 		ShipmentOrderNo string `db:"shipment_order_no"`
 		// 退货凭证
 		ShipmentImage string `db:"shipment_image"`
+		// 退回货物时间
+		ShipmentTime int64 `db:"shipment_time"`
 		// 备注(系统)
 		Remark string `db:"remark"`
 		// 运营商备注
@@ -235,13 +241,13 @@ type (
 // 返回售后状态说明
 func (s Stat) String() string {
 	switch s {
-	case StatAwaitingVendor:
+	case StatAwaitingAgree:
 		return "等待商户确认"
 	case StatDeclined:
 		return "商户拒绝"
 	case StatIntercede:
 		return "客服处理中"
-	case StatAwaitingReturnShip:
+	case StatAwaitingShipment:
 		return "等待退货"
 	case StatReturnShipped:
 		return "等待商户收货"

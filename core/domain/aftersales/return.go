@@ -12,7 +12,7 @@ import (
 	"errors"
 	"math"
 
-	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
+	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/tmp"
@@ -21,6 +21,7 @@ import (
 
 var _ afterSales.IAfterSalesOrder = new(returnOrderImpl)
 var _ afterSales.IReturnOrder = new(returnOrderImpl)
+var _ afterSales.IReturnAfterSalesOrder = new(returnOrderImpl)
 
 type returnOrderImpl struct {
 	*afterSalesOrderImpl
@@ -223,4 +224,20 @@ func (r *returnOrderImpl) backAmount(amount int) error {
 		"订单退款", o.OrderNo, amount,
 		member.DefaultRelateUser)
 	*/
+}
+
+
+
+// 将换货的商品重新发货
+func (r *returnOrderImpl) ReturnShipment(expressName string, expressOrder string, image string) error {
+	if r.afterSalesOrderImpl.GetDomainId() <= 0 {
+		panic(errors.New("换货单尚未提交"))
+	}
+	return r.afterSalesOrderImpl.ReturnShipment(expressName, expressOrder,image)	
+}
+
+
+// 接收换货
+func (r *returnOrderImpl) ReturnReceive() error {
+	return r.afterSalesOrderImpl.ReturnReceive()
 }

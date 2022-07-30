@@ -2,7 +2,7 @@ package repos
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/ad"
-	"github.com/ixre/go2o/core/domain/interface/after-sales"
+	"github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/go2o/core/domain/interface/delivery"

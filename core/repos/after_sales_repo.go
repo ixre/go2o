@@ -9,8 +9,8 @@
 package repos
 
 import (
-	asImpl "github.com/ixre/go2o/core/domain/after-sales"
-	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
+	asImpl "github.com/ixre/go2o/core/domain/aftersales"
+	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"

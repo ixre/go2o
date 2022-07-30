@@ -28,7 +28,7 @@ service AfterSalesService {
     }
 
     // 同意售后
-    rpc AgreeAfterSales (AfterSalesOrderNo) returns (Result) {
+    rpc AgreeAfterSales (AfterSalesProcessRequest) returns (Result) {
     }
 
     // 拒绝售后
@@ -51,16 +51,12 @@ service AfterSalesService {
     rpc ProcessAfterSalesOrder (AfterSalesProcessRequest) returns (Result) {
     }
 
-    // 售后收货
-    rpc ReceiveReturnShipment (AfterSalesOrderNo) returns (Result) {
-    }
-
     // 换货发货
-    rpc ExchangeShipment (ExchangeShipmentRequest) returns (Result) {
+    rpc ReturnShipment (ReturnShipmentRequest) returns (Result) {
     }
 
     // 换货收货
-    rpc ReceiveExchange (AfterSalesOrderNo) returns (Result) {
+    rpc ReceiveItem (AfterSalesOrderNo) returns (Result) {
     }
 
 }
@@ -90,6 +86,8 @@ message AfterSalesProcessRequest{
    string OrderNo = 1;
    // 备注 
    string Remark = 2;
+   // 是否为客服介入处理
+   bool IsIntercede = 3;
 }
 
 // 原实际销售的订单编号
@@ -256,11 +254,11 @@ message SPagingSellerAfterSalesOrder {
 }
 
 // 换货发货请求
-message ExchangeShipmentRequest {
+message ReturnShipmentRequest {
     // 换货单编号
     string OrderNo = 1;
     // 物流名称
-    string ShipmentName = 2;
+    string ShipmentExpress = 2;
     // 物流单号
     string ShipmentOrder = 3;
 }
