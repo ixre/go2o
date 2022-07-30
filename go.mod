@@ -25,15 +25,13 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.2
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
 	github.com/ixre/gof v1.12.3
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/lib/pq v1.10.4 // indirect
-	github.com/micro/go-micro v1.18.0
-	github.com/micro/go-plugins v1.5.1
 	github.com/nats-io/nats-server/v2 v2.2.0 // indirect
 	github.com/nats-io/nats.go v1.13.0
 	github.com/pelletier/go-toml v1.9.4 // indirect
@@ -45,7 +43,7 @@ require (
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.19.1 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
-	golang.org/x/net v0.0.0-20210913180222-943fd674d43e
+	golang.org/x/net v0.0.0-20211123203042-d83791d6bcd9
 	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
@@ -53,47 +51,38 @@ require (
 	google.golang.org/grpc v1.41.0
 )
 
-require google.golang.org/protobuf v1.27.1
+require google.golang.org/protobuf v1.27.1 // indirect
 
 require github.com/ClickHouse/clickhouse-go/v2 v2.0.12
 
 require (
-	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
-	github.com/cheekybits/genny v1.0.0 // indirect
+	github.com/coreos/bbolt v0.0.0-00010101000000-000000000000 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
-	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
+	github.com/coreos/pkg v0.0.0-20220709002704-04386ae12ed0 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/go-log/log v0.1.0 // indirect
-	github.com/hashicorp/consul/api v1.2.0 // indirect
-	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
-	github.com/hashicorp/go-immutable-radix v1.0.0 // indirect
-	github.com/hashicorp/go-rootcerts v1.0.1 // indirect
-	github.com/hashicorp/golang-lru v0.5.3 // indirect
-	github.com/hashicorp/serf v0.8.2 // indirect
-	github.com/json-iterator/go v1.1.10 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/google/btree v1.1.2 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
+	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
+	github.com/jonboulle/clockwork v0.3.0 // indirect
 	github.com/labstack/gommon v0.3.0 // indirect
-	github.com/lucas-clemente/quic-go v0.13.1 // indirect
-	github.com/marten-seemann/chacha20 v0.2.0 // indirect
-	github.com/marten-seemann/qtls v0.4.1 // indirect
-	github.com/mattn/go-colorable v0.1.11 // indirect
+	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/micro/cli v0.2.0 // indirect
-	github.com/micro/mdns v0.3.0 // indirect
-	github.com/miekg/dns v1.1.22 // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/hashstructure v1.0.0 // indirect
-	github.com/mitchellh/mapstructure v1.1.2 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
-	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
 	github.com/paulmach/orb v0.4.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
+	github.com/soheilhy/cmux v0.1.5 // indirect
+	github.com/tmc/grpc-websocket-proxy v0.0.0-20220101234140-673ab2c3ae75 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
+	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
 	go.opentelemetry.io/otel v1.4.1 // indirect
 	go.opentelemetry.io/otel/trace v1.4.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
+	sigs.k8s.io/yaml v1.3.0 // indirect
 )

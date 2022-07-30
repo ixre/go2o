@@ -10,8 +10,7 @@ package tests
 
 import (
 	"testing"
-
-	afterSales "github.com/ixre/go2o/core/domain/interface/after-sales"
+	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/log"
 )
