@@ -78,12 +78,10 @@ message GrantAccessTokenRequest{
 message GrantAccessTokenResponse{
   // 错误信息
   string Error = 1;
-  // 用户代码
-  string UserCode = 4;
   // 访问令牌
-  string AccessToken = 5;
+  string AccessToken = 2;
   // 令牌过期时间
-  int64 ExpiresTime = 6;
+  int64 ExpiresTime = 3;
 }
 
 // 检查令牌请求

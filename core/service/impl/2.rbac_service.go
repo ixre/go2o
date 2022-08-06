@@ -53,7 +53,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 	if len(r.Pwd) != 32 {
 		return &proto.RbacLoginResponse{
 			ErrCode: 1,
-			ErrMsg:  "密码无效",
+			ErrMsg:  "密码长度不正确，应该为32位长度的md5字符",
 		}, nil
 	}
 	// 超级管理员登录
