@@ -39,12 +39,12 @@ func (x EItemSalesType) String() string {
 	return proto.EnumName(EItemSalesType_name, int32(x))
 }
 func (EItemSalesType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{0}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{0}
 }
 
 type SkuId struct {
-	ItemId               int64    `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	SkuId                int64    `protobuf:"varint,2,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
+	ItemId               int64    `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	SkuId                int64    `protobuf:"varint,2,opt,name=SkuId,proto3" json:"SkuId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -54,7 +54,7 @@ func (m *SkuId) Reset()         { *m = SkuId{} }
 func (m *SkuId) String() string { return proto.CompactTextString(m) }
 func (*SkuId) ProtoMessage()    {}
 func (*SkuId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{0}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{0}
 }
 func (m *SkuId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SkuId.Unmarshal(m, b)
@@ -89,10 +89,10 @@ func (m *SkuId) GetSkuId() int64 {
 }
 
 type GetItemsByLabelRequest struct {
-	Label                string   `protobuf:"bytes,1,opt,name=Label,json=label,proto3" json:"Label"`
-	SortBy               string   `protobuf:"bytes,2,opt,name=SortBy,json=sortBy,proto3" json:"SortBy"`
-	Begin                int64    `protobuf:"varint,3,opt,name=Begin,json=begin,proto3" json:"Begin"`
-	End                  int64    `protobuf:"varint,4,opt,name=End,json=end,proto3" json:"End"`
+	Label                string   `protobuf:"bytes,1,opt,name=Label,proto3" json:"Label"`
+	SortBy               string   `protobuf:"bytes,2,opt,name=SortBy,proto3" json:"SortBy"`
+	Begin                int64    `protobuf:"varint,3,opt,name=Begin,proto3" json:"Begin"`
+	End                  int64    `protobuf:"varint,4,opt,name=End,proto3" json:"End"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -102,7 +102,7 @@ func (m *GetItemsByLabelRequest) Reset()         { *m = GetItemsByLabelRequest{}
 func (m *GetItemsByLabelRequest) String() string { return proto.CompactTextString(m) }
 func (*GetItemsByLabelRequest) ProtoMessage()    {}
 func (*GetItemsByLabelRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{1}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{1}
 }
 func (m *GetItemsByLabelRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetItemsByLabelRequest.Unmarshal(m, b)
@@ -151,8 +151,8 @@ func (m *GetItemsByLabelRequest) GetEnd() int64 {
 }
 
 type PagingShopGoodsResponse struct {
-	Total                int64     `protobuf:"varint,1,opt,name=Total,json=total,proto3" json:"Total"`
-	Data                 []*SGoods `protobuf:"bytes,2,rep,name=Data,json=data,proto3" json:"Data"`
+	Total                int64     `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SGoods `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
 	XXX_unrecognized     []byte    `json:"-"`
 	XXX_sizecache        int32     `json:"-"`
@@ -162,7 +162,7 @@ func (m *PagingShopGoodsResponse) Reset()         { *m = PagingShopGoodsResponse
 func (m *PagingShopGoodsResponse) String() string { return proto.CompactTextString(m) }
 func (*PagingShopGoodsResponse) ProtoMessage()    {}
 func (*PagingShopGoodsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{2}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{2}
 }
 func (m *PagingShopGoodsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingShopGoodsResponse.Unmarshal(m, b)
@@ -197,8 +197,8 @@ func (m *PagingShopGoodsResponse) GetData() []*SGoods {
 }
 
 type PagingGoodsResponse struct {
-	Total                int64               `protobuf:"varint,1,opt,name=Total,json=total,proto3" json:"Total"`
-	Data                 []*SUnifiedViewItem `protobuf:"bytes,2,rep,name=Data,json=data,proto3" json:"Data"`
+	Total                int64               `protobuf:"varint,1,opt,name=Total,proto3" json:"Total"`
+	Data                 []*SUnifiedViewItem `protobuf:"bytes,2,rep,name=Data,proto3" json:"Data"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -208,7 +208,7 @@ func (m *PagingGoodsResponse) Reset()         { *m = PagingGoodsResponse{} }
 func (m *PagingGoodsResponse) String() string { return proto.CompactTextString(m) }
 func (*PagingGoodsResponse) ProtoMessage()    {}
 func (*PagingGoodsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{3}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{3}
 }
 func (m *PagingGoodsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PagingGoodsResponse.Unmarshal(m, b)
@@ -244,12 +244,12 @@ func (m *PagingGoodsResponse) GetData() []*SUnifiedViewItem {
 
 // 获取商品请求
 type GetItemsRequest struct {
-	CategoryId int64 `protobuf:"varint,1,opt,name=CategoryId,json=categoryId,proto3" json:"CategoryId"`
-	Begin      int64 `protobuf:"varint,2,opt,name=Begin,json=begin,proto3" json:"Begin"`
-	End        int64 `protobuf:"varint,3,opt,name=End,json=end,proto3" json:"End"`
+	CategoryId int64 `protobuf:"varint,1,opt,name=CategoryId,proto3" json:"CategoryId"`
+	Begin      int64 `protobuf:"varint,2,opt,name=Begin,proto3" json:"Begin"`
+	End        int64 `protobuf:"varint,3,opt,name=End,proto3" json:"End"`
 	// 是否随机
-	Random               bool     `protobuf:"varint,4,opt,name=Random,json=random,proto3" json:"Random"`
-	Where                string   `protobuf:"bytes,5,opt,name=Where,json=where,proto3" json:"Where"`
+	Random               bool     `protobuf:"varint,4,opt,name=Random,proto3" json:"Random"`
+	Where                string   `protobuf:"bytes,5,opt,name=Where,proto3" json:"Where"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -259,7 +259,7 @@ func (m *GetItemsRequest) Reset()         { *m = GetItemsRequest{} }
 func (m *GetItemsRequest) String() string { return proto.CompactTextString(m) }
 func (*GetItemsRequest) ProtoMessage()    {}
 func (*GetItemsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{4}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{4}
 }
 func (m *GetItemsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetItemsRequest.Unmarshal(m, b)
@@ -316,38 +316,38 @@ func (m *GetItemsRequest) GetWhere() string {
 
 // 简单的商品信息
 type SGoods struct {
-	ItemId     int64 `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	ProductId  int64 `protobuf:"varint,2,opt,name=ProductId,json=productId,proto3" json:"ProductId"`
-	VendorId   int64 `protobuf:"varint,3,opt,name=VendorId,json=vendorId,proto3" json:"VendorId"`
-	ShopId     int64 `protobuf:"varint,4,opt,name=ShopId,json=shopId,proto3" json:"ShopId"`
-	CategoryId int32 `protobuf:"varint,5,opt,name=CategoryId,json=categoryId,proto3" json:"CategoryId"`
+	ItemId     int64 `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	ProductId  int64 `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId"`
+	VendorId   int64 `protobuf:"varint,3,opt,name=VendorId,proto3" json:"VendorId"`
+	ShopId     int64 `protobuf:"varint,4,opt,name=ShopId,proto3" json:"ShopId"`
+	CategoryId int32 `protobuf:"varint,5,opt,name=CategoryId,proto3" json:"CategoryId"`
 	// 标题
-	Title      string `protobuf:"bytes,6,opt,name=Title,json=title,proto3" json:"Title"`
-	ShortTitle string `protobuf:"bytes,7,opt,name=ShortTitle,json=shortTitle,proto3" json:"ShortTitle"`
+	Title      string `protobuf:"bytes,6,opt,name=Title,proto3" json:"Title"`
+	ShortTitle string `protobuf:"bytes,7,opt,name=ShortTitle,proto3" json:"ShortTitle"`
 	// 货号
-	GoodsNo string `protobuf:"bytes,8,opt,name=GoodsNo,json=goodsNo,proto3" json:"GoodsNo"`
-	Image   string `protobuf:"bytes,9,opt,name=Image,json=image,proto3" json:"Image"`
+	GoodsNo string `protobuf:"bytes,8,opt,name=GoodsNo,proto3" json:"GoodsNo"`
+	Image   string `protobuf:"bytes,9,opt,name=Image,proto3" json:"Image"`
 	// 定价
-	RetailPrice int64 `protobuf:"varint,10,opt,name=RetailPrice,json=retailPrice,proto3" json:"RetailPrice"`
+	RetailPrice int64 `protobuf:"varint,10,opt,name=RetailPrice,proto3" json:"RetailPrice"`
 	// 销售价
-	Price int64 `protobuf:"varint,11,opt,name=Price,json=price,proto3" json:"Price"`
+	Price int64 `protobuf:"varint,11,opt,name=Price,proto3" json:"Price"`
 	// 促销价
-	PromPrice int64 `protobuf:"varint,12,opt,name=PromPrice,json=promPrice,proto3" json:"PromPrice"`
+	PromPrice int64 `protobuf:"varint,12,opt,name=PromPrice,proto3" json:"PromPrice"`
 	// 价格区间
-	PriceRange string `protobuf:"bytes,13,opt,name=PriceRange,json=priceRange,proto3" json:"PriceRange"`
-	GoodsId    int64  `protobuf:"varint,14,opt,name=GoodsId,json=goodsId,proto3" json:"GoodsId"`
-	SkuId      int64  `protobuf:"varint,15,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
-	IsPresent  bool   `protobuf:"varint,16,opt,name=IsPresent,json=isPresent,proto3" json:"IsPresent"`
+	PriceRange string `protobuf:"bytes,13,opt,name=PriceRange,proto3" json:"PriceRange"`
+	GoodsId    int64  `protobuf:"varint,14,opt,name=GoodsId,proto3" json:"GoodsId"`
+	SkuId      int64  `protobuf:"varint,15,opt,name=SkuId,proto3" json:"SkuId"`
+	IsPresent  bool   `protobuf:"varint,16,opt,name=IsPresent,proto3" json:"IsPresent"`
 	// 促销标志
-	PromotionFlag int32 `protobuf:"varint,17,opt,name=PromotionFlag,json=promotionFlag,proto3" json:"PromotionFlag"`
+	PromotionFlag int32 `protobuf:"varint,17,opt,name=PromotionFlag,proto3" json:"PromotionFlag"`
 	// 库存
-	StockNum int32 `protobuf:"varint,18,opt,name=StockNum,json=stockNum,proto3" json:"StockNum"`
+	StockNum int32 `protobuf:"varint,18,opt,name=StockNum,proto3" json:"StockNum"`
 	// 已售件数
-	SaleNum int32 `protobuf:"varint,19,opt,name=SaleNum,json=saleNum,proto3" json:"SaleNum"`
+	SaleNum int32 `protobuf:"varint,19,opt,name=SaleNum,proto3" json:"SaleNum"`
 	// 品牌编号
-	BrandId int64 `protobuf:"varint,20,opt,name=BrandId,json=brandId,proto3" json:"BrandId"`
+	BrandId int64 `protobuf:"varint,20,opt,name=BrandId,proto3" json:"BrandId"`
 	// 商品编码
-	Code                 string   `protobuf:"bytes,21,opt,name=Code,json=code,proto3" json:"Code"`
+	Code                 string   `protobuf:"bytes,21,opt,name=Code,proto3" json:"Code"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -357,7 +357,7 @@ func (m *SGoods) Reset()         { *m = SGoods{} }
 func (m *SGoods) String() string { return proto.CompactTextString(m) }
 func (*SGoods) ProtoMessage()    {}
 func (*SGoods) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{5}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{5}
 }
 func (m *SGoods) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SGoods.Unmarshal(m, b)
@@ -526,21 +526,21 @@ func (m *SGoods) GetCode() string {
 
 // * SKU
 type SSku struct {
-	SkuId                int64    `protobuf:"zigzag64,1,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
-	ItemId               int64    `protobuf:"zigzag64,2,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	ProductId            int64    `protobuf:"zigzag64,3,opt,name=ProductId,json=productId,proto3" json:"ProductId"`
-	Title                string   `protobuf:"bytes,4,opt,name=Title,json=title,proto3" json:"Title"`
-	Image                string   `protobuf:"bytes,5,opt,name=Image,json=image,proto3" json:"Image"`
-	SpecData             string   `protobuf:"bytes,6,opt,name=SpecData,json=specData,proto3" json:"SpecData"`
-	SpecWord             string   `protobuf:"bytes,7,opt,name=SpecWord,json=specWord,proto3" json:"SpecWord"`
-	Code                 string   `protobuf:"bytes,8,opt,name=Code,json=code,proto3" json:"Code"`
-	RetailPrice          int64    `protobuf:"varint,9,opt,name=RetailPrice,json=retailPrice,proto3" json:"RetailPrice"`
-	Price                int64    `protobuf:"varint,10,opt,name=Price,json=price,proto3" json:"Price"`
-	Cost                 int64    `protobuf:"varint,11,opt,name=Cost,json=cost,proto3" json:"Cost"`
-	Weight               int32    `protobuf:"zigzag32,12,opt,name=Weight,json=weight,proto3" json:"Weight"`
-	Bulk                 int32    `protobuf:"zigzag32,13,opt,name=Bulk,json=bulk,proto3" json:"Bulk"`
-	Stock                int32    `protobuf:"zigzag32,14,opt,name=Stock,json=stock,proto3" json:"Stock"`
-	SaleNum              int32    `protobuf:"zigzag32,15,opt,name=SaleNum,json=saleNum,proto3" json:"SaleNum"`
+	SkuId                int64    `protobuf:"zigzag64,1,opt,name=SkuId,proto3" json:"SkuId"`
+	ItemId               int64    `protobuf:"zigzag64,2,opt,name=ItemId,proto3" json:"ItemId"`
+	ProductId            int64    `protobuf:"zigzag64,3,opt,name=ProductId,proto3" json:"ProductId"`
+	Title                string   `protobuf:"bytes,4,opt,name=Title,proto3" json:"Title"`
+	Image                string   `protobuf:"bytes,5,opt,name=Image,proto3" json:"Image"`
+	SpecData             string   `protobuf:"bytes,6,opt,name=SpecData,proto3" json:"SpecData"`
+	SpecWord             string   `protobuf:"bytes,7,opt,name=SpecWord,proto3" json:"SpecWord"`
+	Code                 string   `protobuf:"bytes,8,opt,name=Code,proto3" json:"Code"`
+	RetailPrice          int64    `protobuf:"varint,9,opt,name=RetailPrice,proto3" json:"RetailPrice"`
+	Price                int64    `protobuf:"varint,10,opt,name=Price,proto3" json:"Price"`
+	Cost                 int64    `protobuf:"varint,11,opt,name=Cost,proto3" json:"Cost"`
+	Weight               int32    `protobuf:"zigzag32,12,opt,name=Weight,proto3" json:"Weight"`
+	Bulk                 int32    `protobuf:"zigzag32,13,opt,name=Bulk,proto3" json:"Bulk"`
+	Stock                int32    `protobuf:"zigzag32,14,opt,name=Stock,proto3" json:"Stock"`
+	SaleNum              int32    `protobuf:"zigzag32,15,opt,name=SaleNum,proto3" json:"SaleNum"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -550,7 +550,7 @@ func (m *SSku) Reset()         { *m = SSku{} }
 func (m *SSku) String() string { return proto.CompactTextString(m) }
 func (*SSku) ProtoMessage()    {}
 func (*SSku) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{6}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{6}
 }
 func (m *SSku) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSku.Unmarshal(m, b)
@@ -677,42 +677,42 @@ func (m *SSku) GetSaleNum() int32 {
 
 // 保存商品请求
 type SaveItemRequest struct {
-	ItemId     int64 `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	ProductId  int64 `protobuf:"varint,2,opt,name=ProductId,json=productId,proto3" json:"ProductId"`
-	VendorId   int64 `protobuf:"varint,3,opt,name=VendorId,json=vendorId,proto3" json:"VendorId"`
-	ShopId     int64 `protobuf:"varint,4,opt,name=ShopId,json=shopId,proto3" json:"ShopId"`
-	CategoryId int64 `protobuf:"varint,5,opt,name=CategoryId,json=categoryId,proto3" json:"CategoryId"`
+	ItemId     int64 `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	ProductId  int64 `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId"`
+	VendorId   int64 `protobuf:"varint,3,opt,name=VendorId,proto3" json:"VendorId"`
+	ShopId     int64 `protobuf:"varint,4,opt,name=ShopId,proto3" json:"ShopId"`
+	CategoryId int64 `protobuf:"varint,5,opt,name=CategoryId,proto3" json:"CategoryId"`
 	// 标题
-	Title      string `protobuf:"bytes,6,opt,name=Title,json=title,proto3" json:"Title"`
-	ShortTitle string `protobuf:"bytes,7,opt,name=ShortTitle,json=shortTitle,proto3" json:"ShortTitle"`
+	Title      string `protobuf:"bytes,6,opt,name=Title,proto3" json:"Title"`
+	ShortTitle string `protobuf:"bytes,7,opt,name=ShortTitle,proto3" json:"ShortTitle"`
 	// 货号
-	GoodsNo string `protobuf:"bytes,8,opt,name=GoodsNo,json=goodsNo,proto3" json:"GoodsNo"`
+	GoodsNo string `protobuf:"bytes,8,opt,name=GoodsNo,proto3" json:"GoodsNo"`
 	// 图片
-	Images []string `protobuf:"bytes,9,rep,name=Images,json=images,proto3" json:"Images"`
+	Images []string `protobuf:"bytes,9,rep,name=Images,proto3" json:"Images"`
 	// 定价
-	RetailPrice int64 `protobuf:"varint,10,opt,name=RetailPrice,json=retailPrice,proto3" json:"RetailPrice"`
-	Cost        int64 `protobuf:"varint,11,opt,name=Cost,json=cost,proto3" json:"Cost"`
+	RetailPrice int64 `protobuf:"varint,10,opt,name=RetailPrice,proto3" json:"RetailPrice"`
+	Cost        int64 `protobuf:"varint,11,opt,name=Cost,proto3" json:"Cost"`
 	// 销售价
-	Price int64 `protobuf:"varint,12,opt,name=Price,json=price,proto3" json:"Price"`
+	Price int64 `protobuf:"varint,12,opt,name=Price,proto3" json:"Price"`
 	// 促销价
-	PromPrice int64 `protobuf:"varint,13,opt,name=PromPrice,json=promPrice,proto3" json:"PromPrice"`
+	PromPrice int64 `protobuf:"varint,13,opt,name=PromPrice,proto3" json:"PromPrice"`
 	// 价格区间
-	PriceRange string `protobuf:"bytes,14,opt,name=PriceRange,json=priceRange,proto3" json:"PriceRange"`
-	GoodsId    int64  `protobuf:"varint,15,opt,name=GoodsId,json=goodsId,proto3" json:"GoodsId"`
-	SkuId      int64  `protobuf:"varint,16,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
-	IsPresent  bool   `protobuf:"varint,17,opt,name=IsPresent,json=isPresent,proto3" json:"IsPresent"`
+	PriceRange string `protobuf:"bytes,14,opt,name=PriceRange,proto3" json:"PriceRange"`
+	GoodsId    int64  `protobuf:"varint,15,opt,name=GoodsId,proto3" json:"GoodsId"`
+	SkuId      int64  `protobuf:"varint,16,opt,name=SkuId,proto3" json:"SkuId"`
+	IsPresent  bool   `protobuf:"varint,17,opt,name=IsPresent,proto3" json:"IsPresent"`
 	// 促销标志
-	PromotionFlag int32 `protobuf:"varint,18,opt,name=PromotionFlag,json=promotionFlag,proto3" json:"PromotionFlag"`
+	PromotionFlag int32 `protobuf:"varint,18,opt,name=PromotionFlag,proto3" json:"PromotionFlag"`
 	// 库存
-	StockNum int32 `protobuf:"varint,19,opt,name=StockNum,json=stockNum,proto3" json:"StockNum"`
+	StockNum int32 `protobuf:"varint,19,opt,name=StockNum,proto3" json:"StockNum"`
 	// 已售件数
-	SaleNum int32 `protobuf:"varint,20,opt,name=SaleNum,json=saleNum,proto3" json:"SaleNum"`
+	SaleNum int32 `protobuf:"varint,20,opt,name=SaleNum,proto3" json:"SaleNum"`
 	// todo: 对比SGoods多出的字段
-	BrandId              int64          `protobuf:"zigzag64,21,opt,name=BrandId,json=brandId,proto3" json:"BrandId"`
-	Code                 string         `protobuf:"bytes,22,opt,name=Code,json=code,proto3" json:"Code"`
-	ExpressTid           int64          `protobuf:"varint,23,opt,name=ExpressTid,json=expressTid,proto3" json:"ExpressTid"`
-	SkuArray             []*SSku        `protobuf:"bytes,24,rep,name=SkuArray,json=skuArray,proto3" json:"SkuArray"`
-	LevelPrices          []*SLevelPrice `protobuf:"bytes,25,rep,name=LevelPrices,json=levelPrices,proto3" json:"LevelPrices"`
+	BrandId              int64          `protobuf:"zigzag64,21,opt,name=BrandId,proto3" json:"BrandId"`
+	Code                 string         `protobuf:"bytes,22,opt,name=Code,proto3" json:"Code"`
+	ExpressTid           int64          `protobuf:"varint,23,opt,name=ExpressTid,proto3" json:"ExpressTid"`
+	SkuArray             []*SSku        `protobuf:"bytes,24,rep,name=SkuArray,proto3" json:"SkuArray"`
+	LevelPrices          []*SLevelPrice `protobuf:"bytes,25,rep,name=LevelPrices,proto3" json:"LevelPrices"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -722,7 +722,7 @@ func (m *SaveItemRequest) Reset()         { *m = SaveItemRequest{} }
 func (m *SaveItemRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveItemRequest) ProtoMessage()    {}
 func (*SaveItemRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{7}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{7}
 }
 func (m *SaveItemRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveItemRequest.Unmarshal(m, b)
@@ -919,49 +919,49 @@ func (m *SaveItemRequest) GetLevelPrices() []*SLevelPrice {
 
 // 商品数据响应
 type SItemDataResponse struct {
-	ItemId     int64 `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	ProductId  int64 `protobuf:"varint,2,opt,name=ProductId,json=productId,proto3" json:"ProductId"`
-	VendorId   int64 `protobuf:"varint,3,opt,name=VendorId,json=vendorId,proto3" json:"VendorId"`
-	ShopId     int64 `protobuf:"varint,4,opt,name=ShopId,json=shopId,proto3" json:"ShopId"`
-	CategoryId int64 `protobuf:"varint,5,opt,name=CategoryId,json=categoryId,proto3" json:"CategoryId"`
+	ItemId     int64 `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	ProductId  int64 `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId"`
+	VendorId   int64 `protobuf:"varint,3,opt,name=VendorId,proto3" json:"VendorId"`
+	ShopId     int64 `protobuf:"varint,4,opt,name=ShopId,proto3" json:"ShopId"`
+	CategoryId int64 `protobuf:"varint,5,opt,name=CategoryId,proto3" json:"CategoryId"`
 	// 标题
-	Title      string `protobuf:"bytes,6,opt,name=Title,json=title,proto3" json:"Title"`
-	ShortTitle string `protobuf:"bytes,7,opt,name=ShortTitle,json=shortTitle,proto3" json:"ShortTitle"`
+	Title      string `protobuf:"bytes,6,opt,name=Title,proto3" json:"Title"`
+	ShortTitle string `protobuf:"bytes,7,opt,name=ShortTitle,proto3" json:"ShortTitle"`
 	// 货号
-	GoodsNo string `protobuf:"bytes,8,opt,name=GoodsNo,json=goodsNo,proto3" json:"GoodsNo"`
+	GoodsNo string `protobuf:"bytes,8,opt,name=GoodsNo,proto3" json:"GoodsNo"`
 	// 主图
-	Thumbnail string `protobuf:"bytes,9,opt,name=Thumbnail,json=thumbnail,proto3" json:"Thumbnail"`
+	Thumbnail string `protobuf:"bytes,9,opt,name=Thumbnail,proto3" json:"Thumbnail"`
 	// 图片
-	Images []string `protobuf:"bytes,10,rep,name=Images,json=images,proto3" json:"Images"`
+	Images []string `protobuf:"bytes,10,rep,name=Images,proto3" json:"Images"`
 	// 定价
-	RetailPrice int64 `protobuf:"varint,11,opt,name=RetailPrice,json=retailPrice,proto3" json:"RetailPrice"`
+	RetailPrice int64 `protobuf:"varint,11,opt,name=RetailPrice,proto3" json:"RetailPrice"`
 	// 销售价
-	Price int64 `protobuf:"varint,12,opt,name=Price,json=price,proto3" json:"Price"`
+	Price int64 `protobuf:"varint,12,opt,name=Price,proto3" json:"Price"`
 	// 促销价
-	PromPrice int64 `protobuf:"varint,13,opt,name=PromPrice,json=promPrice,proto3" json:"PromPrice"`
+	PromPrice int64 `protobuf:"varint,13,opt,name=PromPrice,proto3" json:"PromPrice"`
 	// 价格区间
-	PriceRange string `protobuf:"bytes,14,opt,name=PriceRange,json=priceRange,proto3" json:"PriceRange"`
-	GoodsId    int64  `protobuf:"varint,15,opt,name=GoodsId,json=goodsId,proto3" json:"GoodsId"`
-	SkuId      int64  `protobuf:"varint,16,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
-	IsPresent  bool   `protobuf:"varint,17,opt,name=IsPresent,json=isPresent,proto3" json:"IsPresent"`
+	PriceRange string `protobuf:"bytes,14,opt,name=PriceRange,proto3" json:"PriceRange"`
+	GoodsId    int64  `protobuf:"varint,15,opt,name=GoodsId,proto3" json:"GoodsId"`
+	SkuId      int64  `protobuf:"varint,16,opt,name=SkuId,proto3" json:"SkuId"`
+	IsPresent  bool   `protobuf:"varint,17,opt,name=IsPresent,proto3" json:"IsPresent"`
 	// 促销标志
-	PromotionFlag int32 `protobuf:"varint,18,opt,name=PromotionFlag,json=promotionFlag,proto3" json:"PromotionFlag"`
+	PromotionFlag int32 `protobuf:"varint,18,opt,name=PromotionFlag,proto3" json:"PromotionFlag"`
 	// 库存
-	StockNum int32 `protobuf:"varint,19,opt,name=StockNum,json=stockNum,proto3" json:"StockNum"`
+	StockNum int32 `protobuf:"varint,19,opt,name=StockNum,proto3" json:"StockNum"`
 	// 已售件数
-	SaleNum int32 `protobuf:"varint,20,opt,name=SaleNum,json=saleNum,proto3" json:"SaleNum"`
+	SaleNum int32 `protobuf:"varint,20,opt,name=SaleNum,proto3" json:"SaleNum"`
 	// 上架状态
-	ShelveState int32 `protobuf:"varint,21,opt,name=ShelveState,json=shelveState,proto3" json:"ShelveState"`
+	ShelveState int32 `protobuf:"varint,21,opt,name=ShelveState,proto3" json:"ShelveState"`
 	// 审核状态
-	ReviewState int32 `protobuf:"varint,22,opt,name=ReviewState,json=reviewState,proto3" json:"ReviewState"`
+	ReviewState int32 `protobuf:"varint,22,opt,name=ReviewState,proto3" json:"ReviewState"`
 	// 审核意见
-	ReviewRemark string `protobuf:"bytes,23,opt,name=ReviewRemark,json=reviewRemark,proto3" json:"ReviewRemark"`
+	ReviewRemark string `protobuf:"bytes,23,opt,name=ReviewRemark,proto3" json:"ReviewRemark"`
 	// todo: 对比SGoods多出的字段
-	BrandId              int64          `protobuf:"zigzag64,24,opt,name=BrandId,json=brandId,proto3" json:"BrandId"`
-	Code                 string         `protobuf:"bytes,25,opt,name=Code,json=code,proto3" json:"Code"`
-	ExpressTid           int64          `protobuf:"varint,26,opt,name=ExpressTid,json=expressTid,proto3" json:"ExpressTid"`
-	SkuArray             []*SSku        `protobuf:"bytes,27,rep,name=SkuArray,json=skuArray,proto3" json:"SkuArray"`
-	LevelPrices          []*SLevelPrice `protobuf:"bytes,28,rep,name=LevelPrices,json=levelPrices,proto3" json:"LevelPrices"`
+	BrandId              int64          `protobuf:"zigzag64,24,opt,name=BrandId,proto3" json:"BrandId"`
+	Code                 string         `protobuf:"bytes,25,opt,name=Code,proto3" json:"Code"`
+	ExpressTid           int64          `protobuf:"varint,26,opt,name=ExpressTid,proto3" json:"ExpressTid"`
+	SkuArray             []*SSku        `protobuf:"bytes,27,rep,name=SkuArray,proto3" json:"SkuArray"`
+	LevelPrices          []*SLevelPrice `protobuf:"bytes,28,rep,name=LevelPrices,proto3" json:"LevelPrices"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -971,7 +971,7 @@ func (m *SItemDataResponse) Reset()         { *m = SItemDataResponse{} }
 func (m *SItemDataResponse) String() string { return proto.CompactTextString(m) }
 func (*SItemDataResponse) ProtoMessage()    {}
 func (*SItemDataResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{8}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{8}
 }
 func (m *SItemDataResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SItemDataResponse.Unmarshal(m, b)
@@ -1189,48 +1189,48 @@ func (m *SItemDataResponse) GetLevelPrices() []*SLevelPrice {
 
 // 统一的商品显示对象
 type SUnifiedViewItem struct {
-	ItemId     int64 `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	ProductId  int64 `protobuf:"varint,2,opt,name=ProductId,json=productId,proto3" json:"ProductId"`
-	VendorId   int64 `protobuf:"varint,3,opt,name=VendorId,json=vendorId,proto3" json:"VendorId"`
-	ShopId     int64 `protobuf:"varint,4,opt,name=ShopId,json=shopId,proto3" json:"ShopId"`
-	CategoryId int64 `protobuf:"varint,5,opt,name=CategoryId,json=categoryId,proto3" json:"CategoryId"`
+	ItemId     int64 `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	ProductId  int64 `protobuf:"varint,2,opt,name=ProductId,proto3" json:"ProductId"`
+	VendorId   int64 `protobuf:"varint,3,opt,name=VendorId,proto3" json:"VendorId"`
+	ShopId     int64 `protobuf:"varint,4,opt,name=ShopId,proto3" json:"ShopId"`
+	CategoryId int64 `protobuf:"varint,5,opt,name=CategoryId,proto3" json:"CategoryId"`
 	// 标题
-	Title      string `protobuf:"bytes,6,opt,name=Title,json=title,proto3" json:"Title"`
-	ShortTitle string `protobuf:"bytes,7,opt,name=ShortTitle,json=shortTitle,proto3" json:"ShortTitle"`
+	Title      string `protobuf:"bytes,6,opt,name=Title,proto3" json:"Title"`
+	ShortTitle string `protobuf:"bytes,7,opt,name=ShortTitle,proto3" json:"ShortTitle"`
 	// 货号
-	GoodsNo string `protobuf:"bytes,8,opt,name=GoodsNo,json=goodsNo,proto3" json:"GoodsNo"`
+	GoodsNo string `protobuf:"bytes,8,opt,name=GoodsNo,proto3" json:"GoodsNo"`
 	// 图片
-	Image string `protobuf:"bytes,9,opt,name=Image,json=image,proto3" json:"Image"`
+	Image string `protobuf:"bytes,9,opt,name=Image,proto3" json:"Image"`
 	// 图片
-	Images []string `protobuf:"bytes,30,rep,name=Images,json=images,proto3" json:"Images"`
+	Images []string `protobuf:"bytes,30,rep,name=Images,proto3" json:"Images"`
 	// 定价
-	RetailPrice int64 `protobuf:"varint,10,opt,name=RetailPrice,json=retailPrice,proto3" json:"RetailPrice"`
+	RetailPrice int64 `protobuf:"varint,10,opt,name=RetailPrice,proto3" json:"RetailPrice"`
 	// 销售价
-	Price int64 `protobuf:"varint,11,opt,name=Price,json=price,proto3" json:"Price"`
+	Price int64 `protobuf:"varint,11,opt,name=Price,proto3" json:"Price"`
 	// 促销价
-	PromPrice int64 `protobuf:"varint,12,opt,name=PromPrice,json=promPrice,proto3" json:"PromPrice"`
+	PromPrice int64 `protobuf:"varint,12,opt,name=PromPrice,proto3" json:"PromPrice"`
 	// 价格区间
-	PriceRange string `protobuf:"bytes,13,opt,name=PriceRange,json=priceRange,proto3" json:"PriceRange"`
-	GoodsId    int64  `protobuf:"varint,14,opt,name=GoodsId,json=goodsId,proto3" json:"GoodsId"`
-	SkuId      int64  `protobuf:"varint,15,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
-	IsPresent  bool   `protobuf:"varint,16,opt,name=IsPresent,json=isPresent,proto3" json:"IsPresent"`
+	PriceRange string `protobuf:"bytes,13,opt,name=PriceRange,proto3" json:"PriceRange"`
+	GoodsId    int64  `protobuf:"varint,14,opt,name=GoodsId,proto3" json:"GoodsId"`
+	SkuId      int64  `protobuf:"varint,15,opt,name=SkuId,proto3" json:"SkuId"`
+	IsPresent  bool   `protobuf:"varint,16,opt,name=IsPresent,proto3" json:"IsPresent"`
 	// 促销标志
-	PromotionFlag int32 `protobuf:"varint,17,opt,name=PromotionFlag,json=promotionFlag,proto3" json:"PromotionFlag"`
+	PromotionFlag int32 `protobuf:"varint,17,opt,name=PromotionFlag,proto3" json:"PromotionFlag"`
 	// 库存
-	StockNum int32 `protobuf:"varint,18,opt,name=StockNum,json=stockNum,proto3" json:"StockNum"`
+	StockNum int32 `protobuf:"varint,18,opt,name=StockNum,proto3" json:"StockNum"`
 	// 已售件数
-	SaleNum int32 `protobuf:"varint,19,opt,name=SaleNum,json=saleNum,proto3" json:"SaleNum"`
+	SaleNum int32 `protobuf:"varint,19,opt,name=SaleNum,proto3" json:"SaleNum"`
 	// todo: 对比SGoods多出的字段
-	BrandId              int64             `protobuf:"zigzag64,20,opt,name=BrandId,json=brandId,proto3" json:"BrandId"`
-	Code                 string            `protobuf:"bytes,21,opt,name=Code,json=code,proto3" json:"Code"`
-	ExpressTid           int64             `protobuf:"varint,22,opt,name=ExpressTid,json=expressTid,proto3" json:"ExpressTid"`
-	ShelveState          int32             `protobuf:"zigzag32,23,opt,name=ShelveState,json=shelveState,proto3" json:"ShelveState"`
-	ReviewState          int32             `protobuf:"zigzag32,24,opt,name=ReviewState,json=reviewState,proto3" json:"ReviewState"`
-	UpdateTime           int64             `protobuf:"zigzag64,25,opt,name=UpdateTime,json=updateTime,proto3" json:"UpdateTime"`
-	SkuArray             []*SSku           `protobuf:"bytes,26,rep,name=SkuArray,json=skuArray,proto3" json:"SkuArray"`
-	LevelPrices          []*SLevelPrice    `protobuf:"bytes,27,rep,name=LevelPrices,json=levelPrices,proto3" json:"LevelPrices"`
-	ViewData             *SItemViewData    `protobuf:"bytes,28,opt,name=ViewData,json=viewData,proto3" json:"ViewData"`
-	Data                 map[string]string `protobuf:"bytes,29,rep,name=Data,json=data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	BrandId              int64             `protobuf:"zigzag64,20,opt,name=BrandId,proto3" json:"BrandId"`
+	Code                 string            `protobuf:"bytes,21,opt,name=Code,proto3" json:"Code"`
+	ExpressTid           int64             `protobuf:"varint,22,opt,name=ExpressTid,proto3" json:"ExpressTid"`
+	ShelveState          int32             `protobuf:"zigzag32,23,opt,name=ShelveState,proto3" json:"ShelveState"`
+	ReviewState          int32             `protobuf:"zigzag32,24,opt,name=ReviewState,proto3" json:"ReviewState"`
+	UpdateTime           int64             `protobuf:"zigzag64,25,opt,name=UpdateTime,proto3" json:"UpdateTime"`
+	SkuArray             []*SSku           `protobuf:"bytes,26,rep,name=SkuArray,proto3" json:"SkuArray"`
+	LevelPrices          []*SLevelPrice    `protobuf:"bytes,27,rep,name=LevelPrices,proto3" json:"LevelPrices"`
+	ViewData             *SItemViewData    `protobuf:"bytes,28,opt,name=ViewData,proto3" json:"ViewData"`
+	Data                 map[string]string `protobuf:"bytes,29,rep,name=Data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -1240,7 +1240,7 @@ func (m *SUnifiedViewItem) Reset()         { *m = SUnifiedViewItem{} }
 func (m *SUnifiedViewItem) String() string { return proto.CompactTextString(m) }
 func (*SUnifiedViewItem) ProtoMessage()    {}
 func (*SUnifiedViewItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{9}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{9}
 }
 func (m *SUnifiedViewItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SUnifiedViewItem.Unmarshal(m, b)
@@ -1472,15 +1472,15 @@ func (m *SUnifiedViewItem) GetData() map[string]string {
 
 type SItemViewData struct {
 	// 商品详情
-	Details string `protobuf:"bytes,1,opt,name=Details,json=details,proto3" json:"Details"`
+	Details string `protobuf:"bytes,1,opt,name=Details,proto3" json:"Details"`
 	// 缩略图
-	Thumbs []string `protobuf:"bytes,2,rep,name=Thumbs,json=thumbs,proto3" json:"Thumbs"`
+	Thumbs []string `protobuf:"bytes,2,rep,name=Thumbs,proto3" json:"Thumbs"`
 	// 产品图片
-	Images []string `protobuf:"bytes,3,rep,name=Images,json=images,proto3" json:"Images"`
+	Images []string `protobuf:"bytes,3,rep,name=Images,proto3" json:"Images"`
 	// SKU选择HTML
-	SkuHtml string `protobuf:"bytes,4,opt,name=SkuHtml,json=skuHtml,proto3" json:"SkuHtml"`
+	SkuHtml string `protobuf:"bytes,4,opt,name=SkuHtml,proto3" json:"SkuHtml"`
 	// SKU JSON数据
-	SkuJson              string   `protobuf:"bytes,5,opt,name=SkuJson,json=skuJson,proto3" json:"SkuJson"`
+	SkuJson              string   `protobuf:"bytes,5,opt,name=SkuJson,proto3" json:"SkuJson"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1490,7 +1490,7 @@ func (m *SItemViewData) Reset()         { *m = SItemViewData{} }
 func (m *SItemViewData) String() string { return proto.CompactTextString(m) }
 func (*SItemViewData) ProtoMessage()    {}
 func (*SItemViewData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{10}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{10}
 }
 func (m *SItemViewData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SItemViewData.Unmarshal(m, b)
@@ -1547,11 +1547,11 @@ func (m *SItemViewData) GetSkuJson() string {
 
 type SaveItemResponse struct {
 	// 错误状态码,如为0表示成功
-	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,json=errCode,proto3" json:"ErrCode"`
+	ErrCode int32 `protobuf:"zigzag32,1,opt,name=ErrCode,proto3" json:"ErrCode"`
 	// 消息
-	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,json=errMsg,proto3" json:"ErrMsg"`
+	ErrMsg string `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
 	// 商品编号
-	ItemId               int64    `protobuf:"varint,3,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
+	ItemId               int64    `protobuf:"varint,3,opt,name=ItemId,proto3" json:"ItemId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1561,7 +1561,7 @@ func (m *SaveItemResponse) Reset()         { *m = SaveItemResponse{} }
 func (m *SaveItemResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveItemResponse) ProtoMessage()    {}
 func (*SaveItemResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{11}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{11}
 }
 func (m *SaveItemResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveItemResponse.Unmarshal(m, b)
@@ -1604,39 +1604,39 @@ func (m *SaveItemResponse) GetItemId() int64 {
 
 // 完整的商品信息
 type SOldItem struct {
-	ItemId               int64             `protobuf:"zigzag64,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	ProductId            int64             `protobuf:"zigzag64,2,opt,name=ProductId,json=productId,proto3" json:"ProductId"`
-	PromFlag             int32             `protobuf:"zigzag32,3,opt,name=PromFlag,json=promFlag,proto3" json:"PromFlag"`
-	CatId                int32             `protobuf:"zigzag32,4,opt,name=CatId,json=catId,proto3" json:"CatId"`
-	VendorId             int64             `protobuf:"zigzag64,5,opt,name=VendorId,json=vendorId,proto3" json:"VendorId"`
-	BrandId              int32             `protobuf:"zigzag32,6,opt,name=BrandId,json=brandId,proto3" json:"BrandId"`
-	ShopId               int64             `protobuf:"zigzag64,7,opt,name=ShopId,json=shopId,proto3" json:"ShopId"`
-	ShopCatId            int32             `protobuf:"zigzag32,8,opt,name=ShopCatId,json=shopCatId,proto3" json:"ShopCatId"`
-	ExpressTid           int32             `protobuf:"zigzag32,9,opt,name=ExpressTid,json=expressTid,proto3" json:"ExpressTid"`
-	Title                string            `protobuf:"bytes,10,opt,name=Title,json=title,proto3" json:"Title"`
-	ShortTitle           string            `protobuf:"bytes,11,opt,name=ShortTitle,json=shortTitle,proto3" json:"ShortTitle"`
-	Code                 string            `protobuf:"bytes,12,opt,name=Code,json=code,proto3" json:"Code"`
-	Image                string            `protobuf:"bytes,13,opt,name=Image,json=image,proto3" json:"Image"`
-	IsPresent            int32             `protobuf:"zigzag32,14,opt,name=IsPresent,json=isPresent,proto3" json:"IsPresent"`
-	PriceRange           string            `protobuf:"bytes,15,opt,name=PriceRange,json=priceRange,proto3" json:"PriceRange"`
-	StockNum             int32             `protobuf:"zigzag32,16,opt,name=StockNum,json=stockNum,proto3" json:"StockNum"`
-	SaleNum              int32             `protobuf:"zigzag32,17,opt,name=SaleNum,json=saleNum,proto3" json:"SaleNum"`
-	SkuNum               int32             `protobuf:"zigzag32,18,opt,name=SkuNum,json=skuNum,proto3" json:"SkuNum"`
-	SkuId                int64             `protobuf:"zigzag64,19,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
-	Cost                 int64             `protobuf:"varint,20,opt,name=Cost,json=cost,proto3" json:"Cost"`
-	Price                int64             `protobuf:"varint,21,opt,name=Price,json=price,proto3" json:"Price"`
-	RetailPrice          int64             `protobuf:"varint,22,opt,name=RetailPrice,json=retailPrice,proto3" json:"RetailPrice"`
-	Weight               int32             `protobuf:"zigzag32,23,opt,name=Weight,json=weight,proto3" json:"Weight"`
-	Bulk                 int32             `protobuf:"zigzag32,24,opt,name=Bulk,json=bulk,proto3" json:"Bulk"`
-	ShelveState          int32             `protobuf:"zigzag32,25,opt,name=ShelveState,json=shelveState,proto3" json:"ShelveState"`
-	ReviewState          int32             `protobuf:"zigzag32,26,opt,name=ReviewState,json=reviewState,proto3" json:"ReviewState"`
-	ReviewRemark         string            `protobuf:"bytes,27,opt,name=ReviewRemark,json=reviewRemark,proto3" json:"ReviewRemark"`
-	SortNum              int32             `protobuf:"zigzag32,28,opt,name=SortNum,json=sortNum,proto3" json:"SortNum"`
-	CreateTime           int64             `protobuf:"zigzag64,29,opt,name=CreateTime,json=createTime,proto3" json:"CreateTime"`
-	UpdateTime           int64             `protobuf:"zigzag64,30,opt,name=UpdateTime,json=updateTime,proto3" json:"UpdateTime"`
-	PromPrice            int64             `protobuf:"varint,31,opt,name=PromPrice,json=promPrice,proto3" json:"PromPrice"`
-	SkuArray             []*SSku           `protobuf:"bytes,32,rep,name=SkuArray,json=skuArray,proto3" json:"SkuArray"`
-	Data                 map[string]string `protobuf:"bytes,33,rep,name=Data,json=data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	ItemId               int64             `protobuf:"zigzag64,1,opt,name=ItemId,proto3" json:"ItemId"`
+	ProductId            int64             `protobuf:"zigzag64,2,opt,name=ProductId,proto3" json:"ProductId"`
+	PromFlag             int32             `protobuf:"zigzag32,3,opt,name=PromFlag,proto3" json:"PromFlag"`
+	CatId                int32             `protobuf:"zigzag32,4,opt,name=CatId,proto3" json:"CatId"`
+	VendorId             int64             `protobuf:"zigzag64,5,opt,name=VendorId,proto3" json:"VendorId"`
+	BrandId              int32             `protobuf:"zigzag32,6,opt,name=BrandId,proto3" json:"BrandId"`
+	ShopId               int64             `protobuf:"zigzag64,7,opt,name=ShopId,proto3" json:"ShopId"`
+	ShopCatId            int32             `protobuf:"zigzag32,8,opt,name=ShopCatId,proto3" json:"ShopCatId"`
+	ExpressTid           int32             `protobuf:"zigzag32,9,opt,name=ExpressTid,proto3" json:"ExpressTid"`
+	Title                string            `protobuf:"bytes,10,opt,name=Title,proto3" json:"Title"`
+	ShortTitle           string            `protobuf:"bytes,11,opt,name=ShortTitle,proto3" json:"ShortTitle"`
+	Code                 string            `protobuf:"bytes,12,opt,name=Code,proto3" json:"Code"`
+	Image                string            `protobuf:"bytes,13,opt,name=Image,proto3" json:"Image"`
+	IsPresent            int32             `protobuf:"zigzag32,14,opt,name=IsPresent,proto3" json:"IsPresent"`
+	PriceRange           string            `protobuf:"bytes,15,opt,name=PriceRange,proto3" json:"PriceRange"`
+	StockNum             int32             `protobuf:"zigzag32,16,opt,name=StockNum,proto3" json:"StockNum"`
+	SaleNum              int32             `protobuf:"zigzag32,17,opt,name=SaleNum,proto3" json:"SaleNum"`
+	SkuNum               int32             `protobuf:"zigzag32,18,opt,name=SkuNum,proto3" json:"SkuNum"`
+	SkuId                int64             `protobuf:"zigzag64,19,opt,name=SkuId,proto3" json:"SkuId"`
+	Cost                 int64             `protobuf:"varint,20,opt,name=Cost,proto3" json:"Cost"`
+	Price                int64             `protobuf:"varint,21,opt,name=Price,proto3" json:"Price"`
+	RetailPrice          int64             `protobuf:"varint,22,opt,name=RetailPrice,proto3" json:"RetailPrice"`
+	Weight               int32             `protobuf:"zigzag32,23,opt,name=Weight,proto3" json:"Weight"`
+	Bulk                 int32             `protobuf:"zigzag32,24,opt,name=Bulk,proto3" json:"Bulk"`
+	ShelveState          int32             `protobuf:"zigzag32,25,opt,name=ShelveState,proto3" json:"ShelveState"`
+	ReviewState          int32             `protobuf:"zigzag32,26,opt,name=ReviewState,proto3" json:"ReviewState"`
+	ReviewRemark         string            `protobuf:"bytes,27,opt,name=ReviewRemark,proto3" json:"ReviewRemark"`
+	SortNum              int32             `protobuf:"zigzag32,28,opt,name=SortNum,proto3" json:"SortNum"`
+	CreateTime           int64             `protobuf:"zigzag64,29,opt,name=CreateTime,proto3" json:"CreateTime"`
+	UpdateTime           int64             `protobuf:"zigzag64,30,opt,name=UpdateTime,proto3" json:"UpdateTime"`
+	PromPrice            int64             `protobuf:"varint,31,opt,name=PromPrice,proto3" json:"PromPrice"`
+	SkuArray             []*SSku           `protobuf:"bytes,32,rep,name=SkuArray,proto3" json:"SkuArray"`
+	Data                 map[string]string `protobuf:"bytes,33,rep,name=Data,proto3" json:"Data" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -1646,7 +1646,7 @@ func (m *SOldItem) Reset()         { *m = SOldItem{} }
 func (m *SOldItem) String() string { return proto.CompactTextString(m) }
 func (*SOldItem) ProtoMessage()    {}
 func (*SOldItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{12}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{12}
 }
 func (m *SOldItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SOldItem.Unmarshal(m, b)
@@ -1898,7 +1898,7 @@ func (m *SOldItem) GetData() map[string]string {
 }
 
 type ItemLabelListResponse struct {
-	Value                []*SItemLabel `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value"`
+	Value                []*SItemLabel `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
 	XXX_unrecognized     []byte        `json:"-"`
 	XXX_sizecache        int32         `json:"-"`
@@ -1908,7 +1908,7 @@ func (m *ItemLabelListResponse) Reset()         { *m = ItemLabelListResponse{} }
 func (m *ItemLabelListResponse) String() string { return proto.CompactTextString(m) }
 func (*ItemLabelListResponse) ProtoMessage()    {}
 func (*ItemLabelListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{13}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{13}
 }
 func (m *ItemLabelListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ItemLabelListResponse.Unmarshal(m, b)
@@ -1937,15 +1937,15 @@ func (m *ItemLabelListResponse) GetValue() []*SItemLabel {
 
 // 销售标签
 type SItemLabel struct {
-	Id int32 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int32 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 标签名
-	Name string `protobuf:"bytes,2,opt,name=Name,json=name,proto3" json:"Name"`
+	Name string `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	// 标签代码
-	TagCode string `protobuf:"bytes,5,opt,name=TagCode,json=tagCode,proto3" json:"TagCode"`
+	TagCode string `protobuf:"bytes,5,opt,name=TagCode,proto3" json:"TagCode"`
 	// 商品的遮盖图
-	LabelImage string `protobuf:"bytes,3,opt,name=LabelImage,json=labelImage,proto3" json:"LabelImage"`
+	LabelImage string `protobuf:"bytes,3,opt,name=LabelImage,proto3" json:"LabelImage"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,json=enabled,proto3" json:"Enabled"`
+	Enabled              bool     `protobuf:"varint,4,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1955,7 +1955,7 @@ func (m *SItemLabel) Reset()         { *m = SItemLabel{} }
 func (m *SItemLabel) String() string { return proto.CompactTextString(m) }
 func (*SItemLabel) ProtoMessage()    {}
 func (*SItemLabel) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{14}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{14}
 }
 func (m *SItemLabel) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SItemLabel.Unmarshal(m, b)
@@ -2013,13 +2013,13 @@ func (m *SItemLabel) GetEnabled() bool {
 // 商品和快照请求
 type GetItemAndSnapshotRequest struct {
 	// 商品编号
-	ItemId int64 `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
+	ItemId int64 `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
 	// 是否请求快照
-	Snapshot bool `protobuf:"varint,2,opt,name=Snapshot,json=snapshot,proto3" json:"Snapshot"`
+	Snapshot bool `protobuf:"varint,2,opt,name=Snapshot,proto3" json:"Snapshot"`
 	// 是否选择
-	ReturnSkuHtml bool `protobuf:"varint,3,opt,name=ReturnSkuHtml,json=returnSkuHtml,proto3" json:"ReturnSkuHtml"`
+	ReturnSkuHtml bool `protobuf:"varint,3,opt,name=ReturnSkuHtml,proto3" json:"ReturnSkuHtml"`
 	// 是否返回SkuJson
-	ReturnSkuJson        bool     `protobuf:"varint,4,opt,name=ReturnSkuJson,json=returnSkuJson,proto3" json:"ReturnSkuJson"`
+	ReturnSkuJson        bool     `protobuf:"varint,4,opt,name=ReturnSkuJson,proto3" json:"ReturnSkuJson"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2029,7 +2029,7 @@ func (m *GetItemAndSnapshotRequest) Reset()         { *m = GetItemAndSnapshotReq
 func (m *GetItemAndSnapshotRequest) String() string { return proto.CompactTextString(m) }
 func (*GetItemAndSnapshotRequest) ProtoMessage()    {}
 func (*GetItemAndSnapshotRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{15}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{15}
 }
 func (m *GetItemAndSnapshotRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetItemAndSnapshotRequest.Unmarshal(m, b)
@@ -2080,57 +2080,57 @@ func (m *GetItemAndSnapshotRequest) GetReturnSkuJson() bool {
 // 商品快照(针对商品)
 type ItemSnapshotResponse struct {
 	// 商品编号
-	ItemId int64 `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
+	ItemId int64 `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
 	// 商品编码
-	Code string `protobuf:"bytes,2,opt,name=Code,json=code,proto3" json:"Code"`
+	Code string `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code"`
 	// 产品编号
-	ProductId int64 `protobuf:"varint,3,opt,name=ProductId,json=productId,proto3" json:"ProductId"`
+	ProductId int64 `protobuf:"varint,3,opt,name=ProductId,proto3" json:"ProductId"`
 	// 分类编号
-	CategoryId int64 `protobuf:"varint,4,opt,name=CategoryId,json=categoryId,proto3" json:"CategoryId"`
+	CategoryId int64 `protobuf:"varint,4,opt,name=CategoryId,proto3" json:"CategoryId"`
 	// 供货商编号
-	VendorId int64 `protobuf:"varint,5,opt,name=VendorId,json=vendorId,proto3" json:"VendorId"`
+	VendorId int64 `protobuf:"varint,5,opt,name=VendorId,proto3" json:"VendorId"`
 	// 店铺编号
-	ShopId int64 `protobuf:"varint,7,opt,name=ShopId,json=shopId,proto3" json:"ShopId"`
+	ShopId int64 `protobuf:"varint,7,opt,name=ShopId,proto3" json:"ShopId"`
 	// 编号
-	BrandId int64 `protobuf:"varint,6,opt,name=BrandId,json=brandId,proto3" json:"BrandId"`
+	BrandId int64 `protobuf:"varint,6,opt,name=BrandId,proto3" json:"BrandId"`
 	// 编号分类编号
-	ShopCatId int64 `protobuf:"varint,8,opt,name=ShopCatId,json=shopCatId,proto3" json:"ShopCatId"`
+	ShopCatId int64 `protobuf:"varint,8,opt,name=ShopCatId,proto3" json:"ShopCatId"`
 	// 运费模板
-	ExpressTid int64 `protobuf:"varint,9,opt,name=ExpressTid,json=expressTid,proto3" json:"ExpressTid"`
+	ExpressTid int64 `protobuf:"varint,9,opt,name=ExpressTid,proto3" json:"ExpressTid"`
 	// 商品标题
-	Title string `protobuf:"bytes,11,opt,name=Title,json=title,proto3" json:"Title"`
+	Title string `protobuf:"bytes,11,opt,name=Title,proto3" json:"Title"`
 	// 短标题
-	ShortTitle string `protobuf:"bytes,12,opt,name=ShortTitle,json=shortTitle,proto3" json:"ShortTitle"`
+	ShortTitle string `protobuf:"bytes,12,opt,name=ShortTitle,proto3" json:"ShortTitle"`
 	// 产品编码
-	ProductCode string `protobuf:"bytes,13,opt,name=ProductCode,json=productCode,proto3" json:"ProductCode"`
+	ProductCode string `protobuf:"bytes,13,opt,name=ProductCode,proto3" json:"ProductCode"`
 	// 商品图片
-	Images []string `protobuf:"bytes,14,rep,name=Images,json=images,proto3" json:"Images"`
+	Images []string `protobuf:"bytes,14,rep,name=Images,proto3" json:"Images"`
 	// 是否为赠品
-	IsPresent bool `protobuf:"varint,15,opt,name=IsPresent,json=isPresent,proto3" json:"IsPresent"`
+	IsPresent bool `protobuf:"varint,15,opt,name=IsPresent,proto3" json:"IsPresent"`
 	// 价格区间
-	PriceRange string `protobuf:"bytes,16,opt,name=PriceRange,json=priceRange,proto3" json:"PriceRange"`
+	PriceRange string `protobuf:"bytes,16,opt,name=PriceRange,proto3" json:"PriceRange"`
 	// 默认SKU
-	SkuId int64 `protobuf:"varint,17,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
+	SkuId int64 `protobuf:"varint,17,opt,name=SkuId,proto3" json:"SkuId"`
 	// 售价
-	Price int64 `protobuf:"varint,18,opt,name=Price,json=price,proto3" json:"Price"`
+	Price int64 `protobuf:"varint,18,opt,name=Price,proto3" json:"Price"`
 	// 零售价
-	RetailPrice int64 `protobuf:"varint,19,opt,name=RetailPrice,json=retailPrice,proto3" json:"RetailPrice"`
+	RetailPrice int64 `protobuf:"varint,19,opt,name=RetailPrice,proto3" json:"RetailPrice"`
 	// 库存数量
-	StockNum int32 `protobuf:"varint,20,opt,name=StockNum,json=stockNum,proto3" json:"StockNum"`
+	StockNum int32 `protobuf:"varint,20,opt,name=StockNum,proto3" json:"StockNum"`
 	// 已销售数量
-	SaleNum int32 `protobuf:"varint,21,opt,name=SaleNum,json=saleNum,proto3" json:"SaleNum"`
+	SaleNum int32 `protobuf:"varint,21,opt,name=SaleNum,proto3" json:"SaleNum"`
 	// 商品详情
-	Description string `protobuf:"bytes,23,opt,name=Description,json=description,proto3" json:"Description"`
+	Description string `protobuf:"bytes,23,opt,name=Description,proto3" json:"Description"`
 	// SKU
-	SkuArray []*SSku `protobuf:"bytes,22,rep,name=SkuArray,json=skuArray,proto3" json:"SkuArray"`
+	SkuArray []*SSku `protobuf:"bytes,22,rep,name=SkuArray,proto3" json:"SkuArray"`
 	// 规格
-	SpecOptions []*SSpecOption `protobuf:"bytes,24,rep,name=SpecOptions,json=specOptions,proto3" json:"SpecOptions"`
+	SpecOptions []*SSpecOption `protobuf:"bytes,24,rep,name=SpecOptions,proto3" json:"SpecOptions"`
 	// 返回Sku-HTML
-	SkuHtml string `protobuf:"bytes,26,opt,name=SkuHtml,json=skuHtml,proto3" json:"SkuHtml"`
+	SkuHtml string `protobuf:"bytes,26,opt,name=SkuHtml,proto3" json:"SkuHtml"`
 	// SkuJson
-	SkuJson string `protobuf:"bytes,25,opt,name=SkuJson,json=skuJson,proto3" json:"SkuJson"`
+	SkuJson string `protobuf:"bytes,25,opt,name=SkuJson,proto3" json:"SkuJson"`
 	// 会员价
-	LevelPrices          []*SLevelPrice `protobuf:"bytes,28,rep,name=LevelPrices,json=levelPrices,proto3" json:"LevelPrices"`
+	LevelPrices          []*SLevelPrice `protobuf:"bytes,28,rep,name=LevelPrices,proto3" json:"LevelPrices"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -2140,7 +2140,7 @@ func (m *ItemSnapshotResponse) Reset()         { *m = ItemSnapshotResponse{} }
 func (m *ItemSnapshotResponse) String() string { return proto.CompactTextString(m) }
 func (*ItemSnapshotResponse) ProtoMessage()    {}
 func (*ItemSnapshotResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{16}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{16}
 }
 func (m *ItemSnapshotResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ItemSnapshotResponse.Unmarshal(m, b)
@@ -2345,9 +2345,9 @@ func (m *ItemSnapshotResponse) GetLevelPrices() []*SLevelPrice {
 // 商品模型规格
 type SSpecOption struct {
 	// 规格名称
-	Name string `protobuf:"bytes,1,opt,name=Name,json=name,proto3" json:"Name"`
+	Name string `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name"`
 	// 规格项
-	Items                []*SSpecOptionItem `protobuf:"bytes,2,rep,name=Items,json=items,proto3" json:"Items"`
+	Items                []*SSpecOptionItem `protobuf:"bytes,2,rep,name=Items,proto3" json:"Items"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -2357,7 +2357,7 @@ func (m *SSpecOption) Reset()         { *m = SSpecOption{} }
 func (m *SSpecOption) String() string { return proto.CompactTextString(m) }
 func (*SSpecOption) ProtoMessage()    {}
 func (*SSpecOption) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{17}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{17}
 }
 func (m *SSpecOption) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSpecOption.Unmarshal(m, b)
@@ -2393,11 +2393,11 @@ func (m *SSpecOption) GetItems() []*SSpecOptionItem {
 
 // 商品规格项
 type SSpecOptionItem struct {
-	Label string `protobuf:"bytes,1,opt,name=Label,json=label,proto3" json:"Label"`
+	Label string `protobuf:"bytes,1,opt,name=Label,proto3" json:"Label"`
 	// 规格项值
-	Value string `protobuf:"bytes,2,opt,name=Value,json=value,proto3" json:"Value"`
+	Value string `protobuf:"bytes,2,opt,name=Value,proto3" json:"Value"`
 	// 规格项颜色
-	Color                string   `protobuf:"bytes,3,opt,name=Color,json=color,proto3" json:"Color"`
+	Color                string   `protobuf:"bytes,3,opt,name=Color,proto3" json:"Color"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2407,7 +2407,7 @@ func (m *SSpecOptionItem) Reset()         { *m = SSpecOptionItem{} }
 func (m *SSpecOptionItem) String() string { return proto.CompactTextString(m) }
 func (*SSpecOptionItem) ProtoMessage()    {}
 func (*SSpecOptionItem) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{18}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{18}
 }
 func (m *SSpecOptionItem) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSpecOptionItem.Unmarshal(m, b)
@@ -2451,31 +2451,31 @@ func (m *SSpecOptionItem) GetColor() string {
 // 商品交易快照(针对商品)
 type STradeSnapshot struct {
 	// 快照编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 商品编号
-	ItemId int64 `protobuf:"varint,2,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
+	ItemId int64 `protobuf:"varint,2,opt,name=ItemId,proto3" json:"ItemId"`
 	// 商品SKU编号
-	SkuId int64 `protobuf:"varint,3,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
+	SkuId int64 `protobuf:"varint,3,opt,name=SkuId,proto3" json:"SkuId"`
 	// 快照编码: 商户编号+g商品编号+快照时间戳
-	SnapshotKey string `protobuf:"bytes,4,opt,name=SnapshotKey,json=snapshotKey,proto3" json:"SnapshotKey"`
+	SnapshotKey string `protobuf:"bytes,4,opt,name=SnapshotKey,proto3" json:"SnapshotKey"`
 	// 卖家编号
-	SellerId int64 `protobuf:"varint,5,opt,name=SellerId,json=sellerId,proto3" json:"SellerId"`
+	SellerId int64 `protobuf:"varint,5,opt,name=SellerId,proto3" json:"SellerId"`
 	// 卖家名称
-	SellerName string `protobuf:"bytes,6,opt,name=SellerName,json=sellerName,proto3" json:"SellerName"`
+	SellerName string `protobuf:"bytes,6,opt,name=SellerName,proto3" json:"SellerName"`
 	// 商品标题
-	Title string `protobuf:"bytes,7,opt,name=Title,json=title,proto3" json:"Title"`
+	Title string `protobuf:"bytes,7,opt,name=Title,proto3" json:"Title"`
 	// 货号
 	// GoodsNo string `db:"goods_no"`
 	// 产品编码
-	ProductCode string `protobuf:"bytes,8,opt,name=ProductCode,json=productCode,proto3" json:"ProductCode"`
+	ProductCode string `protobuf:"bytes,8,opt,name=ProductCode,proto3" json:"ProductCode"`
 	// SKU
-	Sku string `protobuf:"bytes,9,opt,name=Sku,json=sku,proto3" json:"Sku"`
+	Sku string `protobuf:"bytes,9,opt,name=Sku,proto3" json:"Sku"`
 	// 图片
-	Image string `protobuf:"bytes,10,opt,name=Image,json=image,proto3" json:"Image"`
+	Image string `protobuf:"bytes,10,opt,name=Image,proto3" json:"Image"`
 	// 销售价
-	Price int64 `protobuf:"varint,11,opt,name=Price,json=price,proto3" json:"Price"`
+	Price int64 `protobuf:"varint,11,opt,name=Price,proto3" json:"Price"`
 	// 快照时间
-	CreateTime           int64    `protobuf:"varint,12,opt,name=CreateTime,json=createTime,proto3" json:"CreateTime"`
+	CreateTime           int64    `protobuf:"varint,12,opt,name=CreateTime,proto3" json:"CreateTime"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2485,7 +2485,7 @@ func (m *STradeSnapshot) Reset()         { *m = STradeSnapshot{} }
 func (m *STradeSnapshot) String() string { return proto.CompactTextString(m) }
 func (*STradeSnapshot) ProtoMessage()    {}
 func (*STradeSnapshot) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{19}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{19}
 }
 func (m *STradeSnapshot) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_STradeSnapshot.Unmarshal(m, b)
@@ -2592,15 +2592,15 @@ func (m *STradeSnapshot) GetCreateTime() int64 {
 // 会员价
 type SLevelPrice struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 等级
-	Level int32 `protobuf:"varint,2,opt,name=Level,json=level,proto3" json:"Level"`
+	Level int32 `protobuf:"varint,2,opt,name=Level,proto3" json:"Level"`
 	// 价格
-	Price int64 `protobuf:"varint,3,opt,name=Price,json=price,proto3" json:"Price"`
+	Price int64 `protobuf:"varint,3,opt,name=Price,proto3" json:"Price"`
 	// 限购数量,-1为不限制
-	MaxNumber int32 `protobuf:"varint,4,opt,name=MaxNumber,json=maxNumber,proto3" json:"MaxNumber"`
+	MaxNumber int32 `protobuf:"varint,4,opt,name=MaxNumber,proto3" json:"MaxNumber"`
 	// 是否启用
-	Enabled              bool     `protobuf:"varint,5,opt,name=Enabled,json=enabled,proto3" json:"Enabled"`
+	Enabled              bool     `protobuf:"varint,5,opt,name=Enabled,proto3" json:"Enabled"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2610,7 +2610,7 @@ func (m *SLevelPrice) Reset()         { *m = SLevelPrice{} }
 func (m *SLevelPrice) String() string { return proto.CompactTextString(m) }
 func (*SLevelPrice) ProtoMessage()    {}
 func (*SLevelPrice) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{20}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{20}
 }
 func (m *SLevelPrice) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SLevelPrice.Unmarshal(m, b)
@@ -2666,8 +2666,8 @@ func (m *SLevelPrice) GetEnabled() bool {
 }
 
 type ItemBySkuRequest struct {
-	ProductId            int64    `protobuf:"varint,1,opt,name=ProductId,json=productId,proto3" json:"ProductId"`
-	SkuId                int64    `protobuf:"varint,2,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
+	ProductId            int64    `protobuf:"varint,1,opt,name=ProductId,proto3" json:"ProductId"`
+	SkuId                int64    `protobuf:"varint,2,opt,name=SkuId,proto3" json:"SkuId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2677,7 +2677,7 @@ func (m *ItemBySkuRequest) Reset()         { *m = ItemBySkuRequest{} }
 func (m *ItemBySkuRequest) String() string { return proto.CompactTextString(m) }
 func (*ItemBySkuRequest) ProtoMessage()    {}
 func (*ItemBySkuRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{21}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{21}
 }
 func (m *ItemBySkuRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ItemBySkuRequest.Unmarshal(m, b)
@@ -2712,8 +2712,8 @@ func (m *ItemBySkuRequest) GetSkuId() int64 {
 }
 
 type ItemIllegalRequest struct {
-	ItemId               int64    `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	Remark               string   `protobuf:"bytes,2,opt,name=Remark,json=remark,proto3" json:"Remark"`
+	ItemId               int64    `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	Remark               string   `protobuf:"bytes,2,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2723,7 +2723,7 @@ func (m *ItemIllegalRequest) Reset()         { *m = ItemIllegalRequest{} }
 func (m *ItemIllegalRequest) String() string { return proto.CompactTextString(m) }
 func (*ItemIllegalRequest) ProtoMessage()    {}
 func (*ItemIllegalRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{22}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{22}
 }
 func (m *ItemIllegalRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ItemIllegalRequest.Unmarshal(m, b)
@@ -2758,9 +2758,9 @@ func (m *ItemIllegalRequest) GetRemark() string {
 }
 
 type ItemReviewRequest struct {
-	ItemId               int64    `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	Pass                 bool     `protobuf:"varint,2,opt,name=Pass,json=pass,proto3" json:"Pass"`
-	Remark               string   `protobuf:"bytes,3,opt,name=Remark,json=remark,proto3" json:"Remark"`
+	ItemId               int64    `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	Pass                 bool     `protobuf:"varint,2,opt,name=Pass,proto3" json:"Pass"`
+	Remark               string   `protobuf:"bytes,3,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2770,7 +2770,7 @@ func (m *ItemReviewRequest) Reset()         { *m = ItemReviewRequest{} }
 func (m *ItemReviewRequest) String() string { return proto.CompactTextString(m) }
 func (*ItemReviewRequest) ProtoMessage()    {}
 func (*ItemReviewRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{23}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{23}
 }
 func (m *ItemReviewRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ItemReviewRequest.Unmarshal(m, b)
@@ -2812,8 +2812,8 @@ func (m *ItemReviewRequest) GetRemark() string {
 }
 
 type SaveLevelPriceRequest struct {
-	ItemId               int64          `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	Value                []*SLevelPrice `protobuf:"bytes,2,rep,name=Value,json=value,proto3" json:"Value"`
+	ItemId               int64          `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	Value                []*SLevelPrice `protobuf:"bytes,2,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -2823,7 +2823,7 @@ func (m *SaveLevelPriceRequest) Reset()         { *m = SaveLevelPriceRequest{} }
 func (m *SaveLevelPriceRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveLevelPriceRequest) ProtoMessage()    {}
 func (*SaveLevelPriceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{24}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{24}
 }
 func (m *SaveLevelPriceRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveLevelPriceRequest.Unmarshal(m, b)
@@ -2858,11 +2858,11 @@ func (m *SaveLevelPriceRequest) GetValue() []*SLevelPrice {
 }
 
 type ShelveStateRequest struct {
-	SellerId             int64          `protobuf:"varint,1,opt,name=SellerId,json=sellerId,proto3" json:"SellerId"`
+	SellerId             int64          `protobuf:"varint,1,opt,name=SellerId,proto3" json:"SellerId"`
 	ItemType             EItemSalesType `protobuf:"varint,3,opt,name=itemType,proto3,enum=EItemSalesType" json:"itemType"`
-	ItemId               int64          `protobuf:"varint,2,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	ShelveOn             bool           `protobuf:"varint,4,opt,name=ShelveOn,json=shelveOn,proto3" json:"ShelveOn"`
-	Remark               string         `protobuf:"bytes,5,opt,name=Remark,json=remark,proto3" json:"Remark"`
+	ItemId               int64          `protobuf:"varint,2,opt,name=ItemId,proto3" json:"ItemId"`
+	ShelveOn             bool           `protobuf:"varint,4,opt,name=ShelveOn,proto3" json:"ShelveOn"`
+	Remark               string         `protobuf:"bytes,5,opt,name=Remark,proto3" json:"Remark"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -2872,7 +2872,7 @@ func (m *ShelveStateRequest) Reset()         { *m = ShelveStateRequest{} }
 func (m *ShelveStateRequest) String() string { return proto.CompactTextString(m) }
 func (*ShelveStateRequest) ProtoMessage()    {}
 func (*ShelveStateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{25}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{25}
 }
 func (m *ShelveStateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ShelveStateRequest.Unmarshal(m, b)
@@ -2928,7 +2928,7 @@ func (m *ShelveStateRequest) GetRemark() string {
 }
 
 type SWsSkuPriceListResponse struct {
-	Value                []*SWsSkuPrice `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value"`
+	Value                []*SWsSkuPrice `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -2938,7 +2938,7 @@ func (m *SWsSkuPriceListResponse) Reset()         { *m = SWsSkuPriceListResponse
 func (m *SWsSkuPriceListResponse) String() string { return proto.CompactTextString(m) }
 func (*SWsSkuPriceListResponse) ProtoMessage()    {}
 func (*SWsSkuPriceListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{26}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{26}
 }
 func (m *SWsSkuPriceListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SWsSkuPriceListResponse.Unmarshal(m, b)
@@ -2966,9 +2966,9 @@ func (m *SWsSkuPriceListResponse) GetValue() []*SWsSkuPrice {
 }
 
 type SaveSkuPricesRequest struct {
-	ItemId               int64          `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	SkuId                int64          `protobuf:"varint,2,opt,name=SkuId,json=skuId,proto3" json:"SkuId"`
-	Value                []*SWsSkuPrice `protobuf:"bytes,3,rep,name=Value,json=value,proto3" json:"Value"`
+	ItemId               int64          `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	SkuId                int64          `protobuf:"varint,2,opt,name=SkuId,proto3" json:"SkuId"`
+	Value                []*SWsSkuPrice `protobuf:"bytes,3,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -2978,7 +2978,7 @@ func (m *SaveSkuPricesRequest) Reset()         { *m = SaveSkuPricesRequest{} }
 func (m *SaveSkuPricesRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveSkuPricesRequest) ProtoMessage()    {}
 func (*SaveSkuPricesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{27}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{27}
 }
 func (m *SaveSkuPricesRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveSkuPricesRequest.Unmarshal(m, b)
@@ -3022,11 +3022,11 @@ func (m *SaveSkuPricesRequest) GetValue() []*SWsSkuPrice {
 // 商品批发价
 type SWsSkuPrice struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 需要数量以上
-	RequireNum int32 `protobuf:"varint,2,opt,name=RequireNum,json=requireNum,proto3" json:"RequireNum"`
+	RequireNum int32 `protobuf:"varint,2,opt,name=RequireNum,proto3" json:"RequireNum"`
 	// 批发价
-	WholesalePrice       int64    `protobuf:"varint,3,opt,name=WholesalePrice,json=wholesalePrice,proto3" json:"WholesalePrice"`
+	WholesalePrice       int64    `protobuf:"varint,3,opt,name=WholesalePrice,proto3" json:"WholesalePrice"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3036,7 +3036,7 @@ func (m *SWsSkuPrice) Reset()         { *m = SWsSkuPrice{} }
 func (m *SWsSkuPrice) String() string { return proto.CompactTextString(m) }
 func (*SWsSkuPrice) ProtoMessage()    {}
 func (*SWsSkuPrice) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{28}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{28}
 }
 func (m *SWsSkuPrice) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SWsSkuPrice.Unmarshal(m, b)
@@ -3078,7 +3078,7 @@ func (m *SWsSkuPrice) GetWholesalePrice() int64 {
 }
 
 type SWsItemDiscountListResponse struct {
-	Value                []*SWsItemDiscount `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value"`
+	Value                []*SWsItemDiscount `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -3088,7 +3088,7 @@ func (m *SWsItemDiscountListResponse) Reset()         { *m = SWsItemDiscountList
 func (m *SWsItemDiscountListResponse) String() string { return proto.CompactTextString(m) }
 func (*SWsItemDiscountListResponse) ProtoMessage()    {}
 func (*SWsItemDiscountListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{29}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{29}
 }
 func (m *SWsItemDiscountListResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SWsItemDiscountListResponse.Unmarshal(m, b)
@@ -3117,9 +3117,9 @@ func (m *SWsItemDiscountListResponse) GetValue() []*SWsItemDiscount {
 
 type GetWsDiscountRequest struct {
 	// 商品编号
-	ItemId int64 `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
+	ItemId int64 `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
 	// 买家分组编号
-	GroupId              int64    `protobuf:"varint,2,opt,name=GroupId,json=groupId,proto3" json:"GroupId"`
+	GroupId              int64    `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3129,7 +3129,7 @@ func (m *GetWsDiscountRequest) Reset()         { *m = GetWsDiscountRequest{} }
 func (m *GetWsDiscountRequest) String() string { return proto.CompactTextString(m) }
 func (*GetWsDiscountRequest) ProtoMessage()    {}
 func (*GetWsDiscountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{30}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{30}
 }
 func (m *GetWsDiscountRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetWsDiscountRequest.Unmarshal(m, b)
@@ -3164,9 +3164,9 @@ func (m *GetWsDiscountRequest) GetGroupId() int64 {
 }
 
 type SaveItemDiscountRequest struct {
-	ItemId               int64              `protobuf:"varint,1,opt,name=ItemId,json=itemId,proto3" json:"ItemId"`
-	GroupId              int64              `protobuf:"varint,2,opt,name=GroupId,json=groupId,proto3" json:"GroupId"`
-	Value                []*SWsItemDiscount `protobuf:"bytes,3,rep,name=Value,json=value,proto3" json:"Value"`
+	ItemId               int64              `protobuf:"varint,1,opt,name=ItemId,proto3" json:"ItemId"`
+	GroupId              int64              `protobuf:"varint,2,opt,name=GroupId,proto3" json:"GroupId"`
+	Value                []*SWsItemDiscount `protobuf:"bytes,3,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -3176,7 +3176,7 @@ func (m *SaveItemDiscountRequest) Reset()         { *m = SaveItemDiscountRequest
 func (m *SaveItemDiscountRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveItemDiscountRequest) ProtoMessage()    {}
 func (*SaveItemDiscountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{31}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{31}
 }
 func (m *SaveItemDiscountRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveItemDiscountRequest.Unmarshal(m, b)
@@ -3220,13 +3220,13 @@ func (m *SaveItemDiscountRequest) GetValue() []*SWsItemDiscount {
 // 批发商品折扣
 type SWsItemDiscount struct {
 	// 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// 客户分组
-	BuyerGroupId int64 `protobuf:"varint,2,opt,name=BuyerGroupId,json=buyerGroupId,proto3" json:"BuyerGroupId"`
+	BuyerGroupId int64 `protobuf:"varint,2,opt,name=BuyerGroupId,proto3" json:"BuyerGroupId"`
 	// 要求金额，默认为0
-	RequireAmount int64 `protobuf:"varint,3,opt,name=RequireAmount,json=requireAmount,proto3" json:"RequireAmount"`
+	RequireAmount int64 `protobuf:"varint,3,opt,name=RequireAmount,proto3" json:"RequireAmount"`
 	// 折扣率
-	DiscountRate         int64    `protobuf:"varint,4,opt,name=DiscountRate,json=discountRate,proto3" json:"DiscountRate"`
+	DiscountRate         int64    `protobuf:"varint,4,opt,name=DiscountRate,proto3" json:"DiscountRate"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3236,7 +3236,7 @@ func (m *SWsItemDiscount) Reset()         { *m = SWsItemDiscount{} }
 func (m *SWsItemDiscount) String() string { return proto.CompactTextString(m) }
 func (*SWsItemDiscount) ProtoMessage()    {}
 func (*SWsItemDiscount) Descriptor() ([]byte, []int) {
-	return fileDescriptor_item_dto_17e462b3358e56e6, []int{32}
+	return fileDescriptor_item_dto_2ee320b491be2d7c, []int{32}
 }
 func (m *SWsItemDiscount) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SWsItemDiscount.Unmarshal(m, b)
@@ -3323,154 +3323,147 @@ func init() {
 	proto.RegisterEnum("EItemSalesType", EItemSalesType_name, EItemSalesType_value)
 }
 
-func init() { proto.RegisterFile("message/item_dto.proto", fileDescriptor_item_dto_17e462b3358e56e6) }
+func init() { proto.RegisterFile("message/item_dto.proto", fileDescriptor_item_dto_2ee320b491be2d7c) }
 
-var fileDescriptor_item_dto_17e462b3358e56e6 = []byte{
-	// 2336 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x5a, 0xcd, 0x8e, 0xe4, 0x48,
-	0x11, 0xa6, 0xda, 0xe5, 0xfa, 0x09, 0x57, 0x77, 0x57, 0xb9, 0xff, 0x3c, 0xdd, 0xbd, 0xbd, 0xbd,
-	0x16, 0x0c, 0xa3, 0x45, 0xaa, 0x11, 0x83, 0x10, 0x68, 0x11, 0x87, 0xe9, 0x99, 0xde, 0x99, 0x82,
-	0x9e, 0x1f, 0xd9, 0xbd, 0xd3, 0x12, 0x42, 0x1a, 0xb9, 0xcb, 0x49, 0x95, 0x55, 0x2e, 0xdb, 0x38,
-	0xed, 0xee, 0xad, 0x23, 0x12, 0x12, 0x27, 0xc4, 0x91, 0x03, 0x4f, 0xc0, 0x6b, 0x70, 0xe0, 0xc4,
-	0x15, 0x89, 0x0b, 0x2f, 0xc1, 0x13, 0xa0, 0x8c, 0x4c, 0xdb, 0x69, 0xbb, 0x7e, 0x66, 0x05, 0x08,
-	0x69, 0xe1, 0x34, 0x15, 0x91, 0xe9, 0xc8, 0xcc, 0xc8, 0xf8, 0xbe, 0x88, 0xc8, 0x1e, 0x38, 0x9c,
-	0x13, 0x4a, 0x9d, 0x09, 0x79, 0xec, 0x25, 0x64, 0xfe, 0xde, 0x4d, 0xc2, 0x61, 0x14, 0x87, 0x49,
-	0x68, 0x7e, 0x1f, 0x54, 0x7b, 0x96, 0x8e, 0x5c, 0xfd, 0x10, 0x5a, 0xa3, 0x84, 0xcc, 0x47, 0xae,
-	0xd1, 0x38, 0x6f, 0x3c, 0x52, 0xac, 0x96, 0x87, 0x92, 0xbe, 0x2f, 0x26, 0x18, 0x5b, 0xa8, 0x56,
-	0x29, 0x13, 0xcc, 0x00, 0x0e, 0x5f, 0x90, 0x84, 0x7d, 0x40, 0x2f, 0x16, 0x57, 0xce, 0x2d, 0xf1,
-	0x2d, 0xf2, 0xcb, 0x94, 0xd0, 0x84, 0xcd, 0x47, 0x19, 0xcd, 0x74, 0x2d, 0xd5, 0x67, 0x02, 0xb3,
-	0x6e, 0x87, 0x71, 0x72, 0xb1, 0x40, 0x33, 0x5d, 0xab, 0x45, 0x51, 0x62, 0xb3, 0x2f, 0xc8, 0xc4,
-	0x0b, 0x0c, 0x85, 0x5b, 0xbf, 0x65, 0x82, 0xde, 0x07, 0xe5, 0x32, 0x70, 0x8d, 0x26, 0xea, 0x14,
-	0x12, 0xb8, 0xe6, 0x15, 0x1c, 0xbd, 0x75, 0x26, 0x5e, 0x30, 0xb1, 0xa7, 0x61, 0xf4, 0x22, 0x0c,
-	0x5d, 0x6a, 0x11, 0x1a, 0x85, 0x01, 0x25, 0xcc, 0xc4, 0x75, 0x98, 0x38, 0xbe, 0xd8, 0xb7, 0x9a,
-	0x30, 0x41, 0x3f, 0x81, 0xe6, 0x73, 0x27, 0x71, 0x8c, 0xad, 0x73, 0xe5, 0x91, 0xf6, 0xa4, 0x3d,
-	0xb4, 0xf9, 0x47, 0x4d, 0xd7, 0x49, 0x1c, 0xd3, 0x82, 0x3d, 0x6e, 0xed, 0x43, 0x2c, 0x7d, 0xab,
-	0x64, 0x69, 0x30, 0xb4, 0xbf, 0x08, 0xbc, 0x5f, 0x78, 0xc4, 0x7d, 0xe7, 0x91, 0x7b, 0xe6, 0x00,
-	0x61, 0xf3, 0x37, 0x0d, 0xd8, 0xcd, 0x5c, 0x92, 0xf9, 0xe2, 0x0c, 0xe0, 0x99, 0x93, 0x90, 0x49,
-	0x18, 0x2f, 0x72, 0xbf, 0xc2, 0x38, 0xd7, 0x14, 0xa7, 0xdf, 0x5a, 0x72, 0x7a, 0x25, 0x3f, 0x3d,
-	0xf3, 0x9e, 0xe5, 0x04, 0x6e, 0x38, 0x47, 0x97, 0x74, 0xac, 0x56, 0x8c, 0x12, 0xfb, 0xfe, 0x66,
-	0x4a, 0x62, 0x62, 0xa8, 0xdc, 0xd7, 0xf7, 0x4c, 0x30, 0xff, 0xdc, 0x84, 0x16, 0x3f, 0xee, 0xca,
-	0x4b, 0x3d, 0x85, 0xee, 0xdb, 0x38, 0x74, 0xd3, 0x71, 0x92, 0x5f, 0x6c, 0x37, 0xca, 0x14, 0xfa,
-	0x31, 0x74, 0xde, 0x91, 0xc0, 0x0d, 0xe3, 0x51, 0xb6, 0x8b, 0xce, 0x9d, 0x90, 0xf1, 0x22, 0xa7,
-	0x61, 0x34, 0xca, 0x6e, 0xa7, 0x45, 0x51, 0xaa, 0x1c, 0x95, 0xed, 0x47, 0xad, 0x1e, 0xf5, 0xda,
-	0x4b, 0x7c, 0x62, 0xb4, 0xf8, 0x56, 0x13, 0x26, 0xb0, 0xaf, 0xec, 0x69, 0x18, 0x27, 0x7c, 0xa8,
-	0x8d, 0x43, 0x40, 0x73, 0x8d, 0x6e, 0x40, 0x1b, 0x0f, 0xf2, 0x3a, 0x34, 0x3a, 0x38, 0xd8, 0x9e,
-	0x70, 0x91, 0xd9, 0x1b, 0xcd, 0x9d, 0x09, 0x31, 0xba, 0xdc, 0x9e, 0xc7, 0x04, 0xfd, 0x1c, 0x34,
-	0x8b, 0x24, 0x8e, 0xe7, 0xbf, 0x8d, 0xbd, 0x31, 0x31, 0x00, 0xb7, 0xa8, 0xc5, 0x85, 0x8a, 0x7d,
-	0xc7, 0xc7, 0x34, 0xee, 0xf2, 0x08, 0xb5, 0xdc, 0x1f, 0x73, 0x3e, 0xd2, 0xcb, 0xfd, 0xc1, 0x15,
-	0x6c, 0x97, 0xf8, 0xc3, 0x72, 0x82, 0x09, 0x31, 0xb6, 0xf9, 0x2e, 0xa3, 0x5c, 0x93, 0xef, 0x72,
-	0xe4, 0x1a, 0x3b, 0xf8, 0x2d, 0xdf, 0xa5, 0x0c, 0x9e, 0x5d, 0x09, 0x3c, 0x6c, 0xb5, 0x11, 0x7d,
-	0x1b, 0x13, 0x4a, 0x82, 0xc4, 0xe8, 0xe3, 0x8d, 0x76, 0xbd, 0x4c, 0xa1, 0x7f, 0x13, 0xb6, 0xd9,
-	0x5e, 0xc2, 0xc4, 0x0b, 0x83, 0xcf, 0x7d, 0x67, 0x62, 0x0c, 0xd0, 0x99, 0xdb, 0x91, 0xac, 0x64,
-	0x77, 0x64, 0x27, 0xe1, 0x78, 0xf6, 0x3a, 0x9d, 0x1b, 0x3a, 0x4e, 0xe8, 0x50, 0x21, 0xb3, 0xfd,
-	0xd8, 0x8e, 0x4f, 0xd8, 0xd0, 0x1e, 0x0e, 0xb5, 0x29, 0x17, 0xd9, 0xc8, 0x05, 0x8b, 0x9d, 0x91,
-	0x6b, 0xec, 0xf3, 0x9d, 0xde, 0x72, 0x51, 0xd7, 0xa1, 0xf9, 0x2c, 0x74, 0x89, 0x71, 0x80, 0xa7,
-	0x6b, 0x8e, 0x43, 0x97, 0x98, 0xff, 0xd8, 0x82, 0xa6, 0x6d, 0xcf, 0xd2, 0xe2, 0x18, 0x2c, 0x8a,
-	0xf4, 0xec, 0x18, 0x45, 0x70, 0x6d, 0xa1, 0x7a, 0x69, 0x70, 0x29, 0x38, 0x24, 0x05, 0x57, 0x1e,
-	0x08, 0x4d, 0x39, 0x10, 0xf2, 0xeb, 0x54, 0xe5, 0xeb, 0x64, 0x87, 0x8c, 0xc8, 0x18, 0xe1, 0xc7,
-	0xe3, 0xa6, 0x43, 0x85, 0x9c, 0x8d, 0xdd, 0x84, 0xb1, 0x2b, 0x02, 0x07, 0xc7, 0x98, 0x9c, 0x1f,
-	0xa6, 0x53, 0x1c, 0xa6, 0x1a, 0x1a, 0xdd, 0x35, 0xa1, 0x01, 0x72, 0x68, 0xa0, 0x2d, 0x9a, 0x88,
-	0x78, 0x69, 0x8e, 0x43, 0x9a, 0xb0, 0x93, 0xdf, 0x10, 0x6f, 0x32, 0x4d, 0x30, 0x56, 0x06, 0x56,
-	0xeb, 0x1e, 0x25, 0x36, 0xf7, 0x22, 0xf5, 0x67, 0x18, 0x22, 0x03, 0xab, 0x79, 0x9b, 0xfa, 0x33,
-	0xf4, 0x1d, 0xbb, 0x18, 0x0c, 0x8d, 0x81, 0xa5, 0xe2, 0x2d, 0xc9, 0x57, 0xb4, 0x8b, 0xfa, 0xec,
-	0x8a, 0xcc, 0xbf, 0xa9, 0xb0, 0x6b, 0x3b, 0x77, 0x04, 0xa9, 0x45, 0xf0, 0xc8, 0x7f, 0x13, 0xc6,
-	0xca, 0x7f, 0x14, 0xc6, 0xec, 0x64, 0xec, 0xaa, 0xa9, 0xd1, 0x3d, 0x57, 0x58, 0x5e, 0xc0, 0x8b,
-	0xa7, 0x1f, 0x00, 0xe4, 0x65, 0xf7, 0x92, 0xdf, 0x60, 0x6f, 0x25, 0xb8, 0xb7, 0xd7, 0x83, 0x7b,
-	0x67, 0x1d, 0xb8, 0x77, 0x57, 0x80, 0xbb, 0xbf, 0x12, 0xdc, 0x83, 0x8d, 0xe0, 0xd6, 0x37, 0x81,
-	0x7b, 0x6f, 0x35, 0xb8, 0xf7, 0x57, 0x82, 0xfb, 0x00, 0x51, 0x57, 0x03, 0xf7, 0xa1, 0x84, 0x87,
-	0x33, 0x80, 0xcb, 0x2f, 0xa3, 0x98, 0x50, 0x7a, 0xed, 0xb9, 0xc6, 0x11, 0xbf, 0x69, 0x92, 0x6b,
-	0xf4, 0x4f, 0xa0, 0x63, 0xcf, 0xd2, 0xa7, 0x71, 0xec, 0x2c, 0x0c, 0x03, 0x53, 0x9f, 0x3a, 0x64,
-	0x64, 0x60, 0x75, 0xa8, 0x50, 0xeb, 0x43, 0xd0, 0xae, 0xc8, 0x1d, 0xe1, 0x17, 0x42, 0x8d, 0x07,
-	0x38, 0xab, 0x37, 0xb4, 0x0b, 0xa5, 0xa5, 0xf9, 0xc5, 0x04, 0xf3, 0x2f, 0x2d, 0x18, 0xd8, 0x2c,
-	0x90, 0x19, 0x80, 0xf3, 0xac, 0xfb, 0xf5, 0x0d, 0xee, 0x53, 0xe8, 0x5e, 0x4f, 0xd3, 0xf9, 0x6d,
-	0xe0, 0x78, 0xbe, 0xc8, 0x53, 0xdd, 0x24, 0x53, 0x48, 0xa1, 0x0f, 0xeb, 0x42, 0x5f, 0x5b, 0x43,
-	0x54, 0xff, 0x93, 0x61, 0x7e, 0x0e, 0x9a, 0x3d, 0x25, 0xfe, 0x1d, 0xb1, 0x13, 0x27, 0xe1, 0x09,
-	0x4b, 0xb5, 0x34, 0x5a, 0xa8, 0xb8, 0x07, 0xef, 0x3c, 0x72, 0xcf, 0x67, 0x1c, 0xf2, 0x19, 0x71,
-	0xa1, 0xd2, 0x4d, 0xe8, 0xf1, 0x19, 0x16, 0x99, 0x3b, 0xf1, 0x0c, 0xc3, 0xbf, 0x6b, 0xf5, 0x62,
-	0x49, 0x27, 0xc3, 0xc9, 0x58, 0x0e, 0xa7, 0x07, 0x2b, 0xe1, 0x74, 0xbc, 0x16, 0x4e, 0x27, 0x1f,
-	0x04, 0xa7, 0xd3, 0x4d, 0x70, 0xfa, 0x6b, 0x1b, 0xfa, 0xd5, 0x62, 0xf4, 0x6b, 0x8c, 0xa6, 0xe5,
-	0x15, 0x5f, 0x81, 0xa2, 0xb3, 0xaf, 0x98, 0x40, 0xfe, 0x5f, 0x09, 0x4a, 0x95, 0xa0, 0xbe, 0xb6,
-	0x12, 0xac, 0x44, 0xf7, 0x61, 0x2d, 0xba, 0x2b, 0x98, 0x3c, 0xc2, 0x92, 0x66, 0x1d, 0x26, 0x0d,
-	0x3e, 0x43, 0xc6, 0xe4, 0x19, 0xc0, 0x17, 0x91, 0xeb, 0x24, 0xe4, 0xda, 0x9b, 0x73, 0x6c, 0xe9,
-	0x16, 0xa4, 0xb9, 0xa6, 0x84, 0xa0, 0xe3, 0x0f, 0x42, 0xd0, 0xc9, 0x06, 0x04, 0xe9, 0x9f, 0x42,
-	0x87, 0x01, 0x07, 0xeb, 0xcb, 0xd3, 0xf3, 0xc6, 0x23, 0xed, 0xc9, 0xce, 0x10, 0x13, 0x54, 0xa6,
-	0xb5, 0x3a, 0x77, 0xe2, 0x97, 0xfe, 0x58, 0xb4, 0x81, 0x1f, 0xa1, 0xd1, 0x93, 0x5a, 0x1b, 0x38,
-	0x64, 0xa3, 0x97, 0x41, 0x12, 0x2f, 0x78, 0x43, 0x78, 0xfc, 0x03, 0xe8, 0xe6, 0x2a, 0xd6, 0xd3,
-	0xcd, 0xc8, 0x42, 0xf4, 0xc4, 0xec, 0x27, 0x0b, 0x88, 0x3b, 0xc7, 0x4f, 0x89, 0x68, 0x88, 0xb9,
-	0xf0, 0xd9, 0xd6, 0x0f, 0x1b, 0xe6, 0x6f, 0x1b, 0xb0, 0x5d, 0xda, 0x05, 0xbb, 0xac, 0xe7, 0x18,
-	0xb9, 0x54, 0x58, 0x68, 0xbb, 0x5c, 0x64, 0xe1, 0x8f, 0x29, 0x86, 0x62, 0x7b, 0xda, 0xb5, 0x5a,
-	0x98, 0x5f, 0xa8, 0x04, 0x0b, 0xa5, 0x04, 0x0b, 0x16, 0x10, 0xb3, 0xf4, 0x65, 0x32, 0xf7, 0x45,
-	0xfd, 0xdd, 0xa6, 0x5c, 0x14, 0x23, 0x3f, 0xa1, 0x61, 0x20, 0x6a, 0x70, 0x36, 0xc2, 0x44, 0xf3,
-	0xe7, 0xd0, 0x2f, 0x0a, 0x52, 0x91, 0xb4, 0x0d, 0x68, 0x5f, 0xc6, 0x31, 0xc6, 0x49, 0x83, 0xd7,
-	0xaf, 0x84, 0x8b, 0x6c, 0xe5, 0xcb, 0x38, 0x7e, 0x45, 0x27, 0x59, 0xa7, 0x4f, 0x50, 0x92, 0x88,
-	0x49, 0x91, 0x89, 0xc9, 0xfc, 0x7b, 0x1b, 0x3a, 0xf6, 0x1b, 0xdf, 0x5d, 0xc2, 0x5e, 0xfa, 0x6a,
-	0xf6, 0xd2, 0x2b, 0xec, 0xc5, 0x70, 0x82, 0x10, 0x51, 0x70, 0x37, 0x9d, 0x48, 0xc8, 0xcc, 0xcd,
-	0xcf, 0x9c, 0x44, 0x90, 0xd7, 0xc0, 0x52, 0xc7, 0x4e, 0x95, 0xef, 0x54, 0x34, 0x57, 0xf0, 0x9d,
-	0x84, 0x8c, 0x16, 0x3f, 0x5a, 0x86, 0x8c, 0x82, 0x09, 0xdb, 0x7c, 0x77, 0x82, 0x09, 0x4f, 0xa1,
-	0xcb, 0xf4, 0x7c, 0x9d, 0x0e, 0x7e, 0xd3, 0xa5, 0x99, 0xa2, 0x82, 0x9d, 0x2e, 0x0e, 0xcb, 0xd8,
-	0xc9, 0x79, 0x12, 0x56, 0xf3, 0xa4, 0x56, 0xe3, 0xc9, 0x0c, 0xa5, 0x3d, 0x09, 0xa5, 0x39, 0x43,
-	0x6e, 0xcb, 0x0c, 0x59, 0xe2, 0x18, 0xde, 0x84, 0x48, 0x1c, 0x53, 0x66, 0xb4, 0xdd, 0x1a, 0xa3,
-	0xc9, 0xec, 0xd2, 0xe7, 0xbe, 0x5d, 0xc6, 0x2e, 0x83, 0x52, 0x13, 0x83, 0x9e, 0x9a, 0xa5, 0x19,
-	0x23, 0x0d, 0xac, 0x16, 0x45, 0xa9, 0x60, 0xc1, 0x3d, 0xb9, 0x91, 0xcc, 0x4a, 0xf9, 0xfd, 0x65,
-	0xa5, 0xfc, 0x81, 0xcc, 0xce, 0x15, 0x56, 0x3f, 0xac, 0xb3, 0x7a, 0xd1, 0x9a, 0x1d, 0x2d, 0x6d,
-	0xcd, 0x0c, 0xa9, 0x35, 0xab, 0xb0, 0xd6, 0x83, 0x8d, 0xac, 0x75, 0x5c, 0x67, 0xad, 0x6a, 0x25,
-	0x71, 0xb2, 0xbc, 0x92, 0xb0, 0xc3, 0x38, 0x61, 0xee, 0x38, 0x15, 0x7e, 0xe2, 0x22, 0xe6, 0xd0,
-	0x98, 0x64, 0x9c, 0xf7, 0x11, 0xe7, 0xbc, 0x71, 0xae, 0xa9, 0x70, 0xe2, 0x59, 0x8d, 0x13, 0x4b,
-	0xd9, 0xea, 0xe3, 0x6a, 0xb6, 0x92, 0x19, 0xf3, 0x7c, 0x39, 0x63, 0x7e, 0x5b, 0xb0, 0xda, 0x27,
-	0x38, 0xbc, 0x37, 0xcc, 0x90, 0xf8, 0xef, 0x63, 0xb3, 0xcf, 0xe0, 0x80, 0x19, 0xc4, 0x37, 0xc1,
-	0x2b, 0x8f, 0x26, 0x39, 0x85, 0x7c, 0x02, 0xea, 0x3b, 0xfc, 0xa4, 0x81, 0x6b, 0x6b, 0x9c, 0x79,
-	0xf9, 0x5b, 0x22, 0xff, 0xde, 0xfc, 0x75, 0x03, 0xa0, 0xd0, 0xea, 0x3b, 0xb0, 0x25, 0x98, 0x41,
-	0xb5, 0xb6, 0x3c, 0x8c, 0x9b, 0xd7, 0xce, 0x3c, 0x5b, 0xb3, 0x19, 0x38, 0x73, 0x24, 0xa6, 0x6b,
-	0x67, 0x82, 0xd0, 0x10, 0x34, 0x96, 0x70, 0x91, 0xf9, 0x12, 0xcd, 0x70, 0x88, 0x28, 0x3c, 0xd2,
-	0xfd, 0x5c, 0x83, 0x94, 0x16, 0x38, 0xb7, 0x3e, 0x71, 0xc5, 0x2b, 0x5b, 0x9b, 0x70, 0xd1, 0xfc,
-	0x43, 0x03, 0x1e, 0x88, 0xa7, 0xbd, 0xa7, 0x81, 0x6b, 0x07, 0x4e, 0x44, 0xa7, 0x61, 0xb2, 0xa9,
-	0x39, 0x67, 0xc8, 0x11, 0x53, 0x71, 0x87, 0x1d, 0xab, 0x43, 0x85, 0xcc, 0x32, 0xbb, 0x45, 0x92,
-	0x34, 0x0e, 0x32, 0x32, 0x56, 0x70, 0xc2, 0x76, 0x2c, 0x2b, 0x4b, 0xb3, 0x90, 0x98, 0x9b, 0x95,
-	0x59, 0x48, 0xcf, 0xbf, 0x6f, 0xc1, 0x3e, 0xdb, 0x40, 0xb1, 0xaf, 0x0d, 0x8d, 0x55, 0x46, 0x1d,
-	0x5b, 0x12, 0x75, 0xd4, 0xde, 0x6c, 0x4a, 0xe5, 0x61, 0xb9, 0xd4, 0x6b, 0xd6, 0x4a, 0xbd, 0x2a,
-	0x9d, 0x2e, 0x2f, 0x1f, 0xdb, 0xa5, 0xf2, 0xb1, 0x42, 0xb3, 0xd2, 0x53, 0x54, 0x8d, 0x4e, 0x95,
-	0xf5, 0x74, 0xaa, 0x2c, 0xa7, 0x53, 0x6d, 0x35, 0x9d, 0xf6, 0x6a, 0x74, 0x7a, 0x0e, 0x9a, 0x38,
-	0x3f, 0xba, 0x86, 0x13, 0xa8, 0x16, 0x15, 0x2a, 0x29, 0xa3, 0xee, 0x94, 0x32, 0x6a, 0x89, 0x5e,
-	0x77, 0xab, 0x25, 0x5c, 0x99, 0x5e, 0xfb, 0x35, 0x7a, 0xcd, 0x09, 0x71, 0x20, 0x97, 0x85, 0x39,
-	0xf9, 0xe9, 0x6b, 0xc8, 0x6f, 0xaf, 0x4e, 0x7e, 0x32, 0x59, 0xef, 0xaf, 0x2e, 0x05, 0x0f, 0x6a,
-	0x0d, 0xd5, 0x73, 0x42, 0xc7, 0xb1, 0x17, 0xb1, 0x9a, 0x52, 0xf4, 0x42, 0x9a, 0x5b, 0xa8, 0x4a,
-	0x44, 0x72, 0xb8, 0xb2, 0xf4, 0xb2, 0x23, 0x32, 0x7e, 0x83, 0x1f, 0x50, 0xf1, 0x62, 0xd0, 0x1b,
-	0xda, 0x85, 0xd2, 0xd2, 0x68, 0x31, 0x41, 0x2e, 0x44, 0x8e, 0x57, 0x16, 0x22, 0x0f, 0x4a, 0x85,
-	0xc8, 0x57, 0x6e, 0x90, 0x46, 0xa0, 0x49, 0xeb, 0xe7, 0x74, 0xd1, 0x90, 0xe8, 0xe2, 0x21, 0xa8,
-	0xf8, 0x62, 0x2f, 0x5e, 0xf7, 0xfb, 0xf2, 0x86, 0xb1, 0xe0, 0x51, 0x19, 0x68, 0xa8, 0x69, 0xc3,
-	0x6e, 0x65, 0x64, 0xc5, 0x1f, 0x3a, 0xf6, 0x33, 0x56, 0x93, 0x89, 0x10, 0xab, 0x90, 0xd0, 0x0f,
-	0x63, 0x41, 0x3b, 0xea, 0x98, 0x09, 0xe6, 0x9f, 0xb6, 0x60, 0xc7, 0xbe, 0x8e, 0x1d, 0x97, 0x64,
-	0xd8, 0x95, 0x28, 0x4e, 0x41, 0x8a, 0x2b, 0xbf, 0xb1, 0x2e, 0xf9, 0xab, 0x8c, 0x22, 0xc7, 0x0d,
-	0x4b, 0x68, 0xc2, 0xd2, 0x4f, 0xc9, 0x42, 0x54, 0x78, 0x1a, 0x2d, 0x54, 0x18, 0x21, 0xc4, 0xf7,
-	0x89, 0x84, 0x54, 0x2a, 0x64, 0xc4, 0x08, 0xfe, 0x46, 0x2f, 0xb5, 0x04, 0x46, 0x72, 0x4d, 0x81,
-	0xac, 0xb6, 0x8c, 0xac, 0x0a, 0x72, 0x3a, 0x75, 0xe4, 0xf4, 0x41, 0xb1, 0x67, 0xa9, 0x68, 0xdb,
-	0x14, 0xca, 0xdf, 0x93, 0x39, 0x0b, 0x83, 0x5c, 0xa8, 0x2c, 0x6f, 0xc8, 0xca, 0x29, 0xb2, 0x27,
-	0xb8, 0x27, 0xd7, 0x98, 0xbf, 0x6a, 0x80, 0x26, 0x45, 0x40, 0xcd, 0x83, 0xec, 0x9a, 0xd8, 0x28,
-	0x3a, 0x50, 0xb5, 0x54, 0x0c, 0x90, 0x62, 0x2d, 0xa5, 0xd2, 0xfc, 0xbd, 0x72, 0xbe, 0x7c, 0x9d,
-	0xce, 0x6f, 0x49, 0x8c, 0xde, 0x53, 0xad, 0xee, 0x3c, 0x53, 0xc8, 0x09, 0x42, 0x2d, 0x27, 0x88,
-	0xcf, 0xa1, 0xcf, 0x6e, 0xe9, 0x62, 0xc1, 0x30, 0x21, 0xd2, 0x42, 0x89, 0x51, 0x1b, 0x55, 0x46,
-	0x5d, 0xfe, 0x57, 0xb5, 0xe7, 0xa0, 0xe3, 0x6d, 0xfb, 0x3e, 0x99, 0x38, 0xfe, 0xa6, 0x04, 0x73,
-	0x08, 0x2d, 0x51, 0x74, 0x88, 0x4a, 0x3b, 0x46, 0xc9, 0xbc, 0x81, 0x01, 0xaf, 0xd5, 0x79, 0x09,
-	0xb2, 0xde, 0x88, 0x0e, 0xcd, 0xb7, 0x0e, 0xa5, 0x22, 0x43, 0x35, 0x23, 0x87, 0x52, 0xc9, 0xb0,
-	0x52, 0x32, 0x6c, 0xc3, 0x01, 0x6b, 0x04, 0x24, 0xb8, 0x6d, 0x30, 0x6e, 0x16, 0x60, 0xa8, 0x43,
-	0x55, 0xe4, 0xf8, 0x3f, 0x36, 0x40, 0x97, 0xaa, 0xb0, 0xcc, 0xa4, 0x1c, 0xa8, 0x8d, 0x4a, 0xa0,
-	0x7e, 0x07, 0x3a, 0x6c, 0x81, 0xeb, 0x45, 0xc4, 0xef, 0x6f, 0xe7, 0xc9, 0xee, 0xf0, 0x12, 0x53,
-	0xa0, 0xe3, 0x13, 0xca, 0xd4, 0x56, 0x3e, 0x61, 0x25, 0x82, 0xd8, 0x02, 0xb8, 0xec, 0x9b, 0x2c,
-	0xaf, 0x76, 0xa8, 0x90, 0x25, 0x07, 0xa8, 0x25, 0x07, 0xfc, 0x18, 0x8e, 0xec, 0x1b, 0x6a, 0xcf,
-	0x52, 0x3c, 0x41, 0xa9, 0x9a, 0x31, 0xcb, 0xd5, 0x4c, 0x6f, 0x28, 0x4d, 0xcc, 0x8e, 0x3a, 0x85,
-	0x7d, 0xe6, 0xbf, 0x4c, 0x4d, 0x37, 0xb9, 0x6f, 0x69, 0x90, 0x14, 0x2b, 0x29, 0xab, 0x57, 0x22,
-	0xa0, 0x49, 0xda, 0x1a, 0x26, 0xce, 0x00, 0xd8, 0xda, 0x5e, 0x8c, 0xe9, 0x80, 0x03, 0x03, 0xe2,
-	0x5c, 0xa3, 0x3f, 0x84, 0x9d, 0x9b, 0x69, 0xe8, 0x13, 0x96, 0x21, 0x64, 0x98, 0xec, 0xdc, 0x97,
-	0xb4, 0xe6, 0x25, 0x9c, 0xd8, 0x37, 0x14, 0x5f, 0x74, 0x3d, 0x3a, 0x0e, 0xd3, 0x20, 0x29, 0xf9,
-	0xe4, 0x61, 0xd9, 0x27, 0xfd, 0x61, 0x65, 0x72, 0xb6, 0xdb, 0x97, 0xb0, 0xff, 0x82, 0x24, 0x37,
-	0x34, 0xd7, 0x6f, 0xf0, 0x8b, 0x01, 0xed, 0x17, 0x71, 0x98, 0x46, 0xb9, 0x67, 0xda, 0x13, 0x2e,
-	0x9a, 0x14, 0x8e, 0xb2, 0x56, 0xf5, 0x5f, 0x36, 0x56, 0x6c, 0x5f, 0x59, 0xbf, 0xfd, 0xdf, 0x35,
-	0x60, 0xb7, 0x32, 0x54, 0xf3, 0xb8, 0x09, 0xbd, 0x8b, 0x74, 0x41, 0xe2, 0xf2, 0x52, 0xbd, 0x5b,
-	0x49, 0xc7, 0xcb, 0x3d, 0xbc, 0x83, 0xa7, 0x73, 0x66, 0x44, 0x38, 0x7d, 0x3b, 0x96, 0x95, 0xcc,
-	0x52, 0xbe, 0x01, 0xd6, 0x93, 0xf0, 0x6a, 0xac, 0xe7, 0x4a, 0xba, 0x4f, 0xbf, 0x0b, 0x3b, 0x65,
-	0x3c, 0xe8, 0xdb, 0xd0, 0x1d, 0x5d, 0xbf, 0x7f, 0xfd, 0xc6, 0x7a, 0xf5, 0xf4, 0xaa, 0xff, 0x0d,
-	0xbd, 0x0f, 0xbd, 0xd1, 0xf5, 0xfb, 0x9b, 0x97, 0x6f, 0xae, 0x2e, 0xed, 0xa7, 0x57, 0x97, 0xfd,
-	0xc6, 0xc5, 0xc7, 0xb0, 0x37, 0x0e, 0xe7, 0xc3, 0x89, 0x97, 0x4c, 0xd3, 0xdb, 0xe1, 0x24, 0x7c,
-	0x12, 0x0e, 0xe3, 0x68, 0xfc, 0xb3, 0xce, 0xf0, 0xf1, 0x8f, 0xf0, 0x3f, 0x0a, 0xdc, 0xb6, 0xf0,
-	0x9f, 0xef, 0xfd, 0x33, 0x00, 0x00, 0xff, 0xff, 0xc7, 0x00, 0x17, 0xb1, 0x49, 0x20, 0x00, 0x00,
+var fileDescriptor_item_dto_2ee320b491be2d7c = []byte{
+	// 2223 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x5a, 0x5f, 0x6f, 0xe3, 0x4a,
+	0x15, 0x27, 0x71, 0xd3, 0x24, 0x27, 0x69, 0x93, 0xb8, 0x6d, 0xea, 0xfe, 0xb9, 0xbd, 0x5d, 0x0b,
+	0x96, 0xd5, 0x45, 0xca, 0x8a, 0x45, 0x08, 0x74, 0x11, 0x0f, 0xed, 0x6e, 0xee, 0x6e, 0xa0, 0xdb,
+	0x56, 0x76, 0xee, 0x46, 0x42, 0x48, 0x2b, 0x37, 0x1e, 0x12, 0x2b, 0x8e, 0x1d, 0xfc, 0xa7, 0xf7,
+	0xe6, 0x11, 0x09, 0x89, 0x27, 0xc4, 0x23, 0x0f, 0x7c, 0x02, 0xbe, 0x06, 0x0f, 0x3c, 0xf1, 0x8a,
+	0xc4, 0x0b, 0x5f, 0x82, 0x4f, 0x80, 0xe6, 0xcc, 0xd8, 0x9e, 0xb1, 0xf3, 0x67, 0xaf, 0x00, 0x21,
+	0x5d, 0x78, 0xaa, 0xcf, 0x99, 0xf1, 0x99, 0x99, 0x33, 0xe7, 0xf7, 0x3b, 0xe7, 0x38, 0x85, 0xee,
+	0x9c, 0x84, 0xa1, 0x35, 0x21, 0xcf, 0x9d, 0x88, 0xcc, 0xdf, 0xdb, 0x91, 0xdf, 0x5b, 0x04, 0x7e,
+	0xe4, 0xeb, 0xdf, 0x87, 0x8a, 0x39, 0x8b, 0x07, 0xb6, 0xda, 0x85, 0xdd, 0x41, 0x44, 0xe6, 0x03,
+	0x5b, 0x2b, 0x5d, 0x96, 0x9e, 0x29, 0x06, 0x97, 0xd4, 0x43, 0x3e, 0x41, 0x2b, 0xa3, 0x9a, 0x09,
+	0xba, 0x07, 0xdd, 0xd7, 0x24, 0xa2, 0x53, 0xc2, 0xeb, 0xe5, 0x8d, 0xf5, 0x40, 0x5c, 0x83, 0xfc,
+	0x32, 0x26, 0x61, 0x44, 0xe7, 0xa3, 0x8c, 0x66, 0xea, 0x06, 0x13, 0xa8, 0x75, 0xd3, 0x0f, 0xa2,
+	0xeb, 0x25, 0x9a, 0xa9, 0x1b, 0x5c, 0xa2, 0xb3, 0xaf, 0xc9, 0xc4, 0xf1, 0x34, 0x85, 0x59, 0x47,
+	0x41, 0x6d, 0x83, 0xd2, 0xf7, 0x6c, 0x6d, 0x07, 0x75, 0xf4, 0x51, 0xbf, 0x81, 0xe3, 0x7b, 0x6b,
+	0xe2, 0x78, 0x13, 0x73, 0xea, 0x2f, 0x5e, 0xfb, 0xbe, 0x1d, 0x1a, 0x24, 0x5c, 0xf8, 0x5e, 0x48,
+	0xa8, 0x89, 0xa1, 0x1f, 0x59, 0x2e, 0xdf, 0x37, 0x13, 0xd4, 0x33, 0xd8, 0x79, 0x65, 0x45, 0x96,
+	0x56, 0xbe, 0x54, 0x9e, 0x35, 0x5e, 0x54, 0x7b, 0x26, 0x7b, 0x09, 0x95, 0xba, 0x01, 0x07, 0xcc,
+	0xda, 0x87, 0x58, 0xfa, 0x96, 0x64, 0xa9, 0xd3, 0x33, 0x3f, 0xf7, 0x9c, 0x5f, 0x38, 0xc4, 0x7e,
+	0xe7, 0x90, 0x2f, 0xa8, 0x03, 0xb8, 0xcd, 0xdf, 0x94, 0xa0, 0x95, 0xb8, 0x24, 0xf1, 0xc5, 0x05,
+	0xc0, 0x4b, 0x2b, 0x22, 0x13, 0x3f, 0x58, 0xa6, 0x7e, 0x15, 0x34, 0xd9, 0xe9, 0xcb, 0x2b, 0x4e,
+	0xaf, 0xa4, 0xa7, 0xa7, 0xde, 0x33, 0x2c, 0xcf, 0xf6, 0xe7, 0xe8, 0x92, 0x9a, 0xc1, 0x25, 0xfa,
+	0xfe, 0x68, 0x4a, 0x02, 0xa2, 0x55, 0x98, 0xaf, 0x51, 0xd0, 0xff, 0xbc, 0x03, 0xbb, 0xec, 0xb8,
+	0x6b, 0x2f, 0xf5, 0x1c, 0xea, 0xf7, 0x81, 0x6f, 0xc7, 0xe3, 0x28, 0xbd, 0xd8, 0x4c, 0xa1, 0x9e,
+	0x42, 0xed, 0x1d, 0xf1, 0x6c, 0x3f, 0x18, 0x24, 0xbb, 0x48, 0x65, 0xbc, 0xc8, 0xa9, 0xbf, 0x18,
+	0x24, 0xb7, 0xc3, 0xa5, 0xdc, 0x51, 0xe9, 0x7e, 0x2a, 0xf9, 0xa3, 0x0e, 0x9d, 0xc8, 0x25, 0xda,
+	0x2e, 0xdb, 0x2a, 0x0a, 0xf4, 0x2d, 0x73, 0xea, 0x07, 0x11, 0x1b, 0xaa, 0xe2, 0x90, 0xa0, 0x51,
+	0x35, 0xa8, 0xe2, 0x41, 0x6e, 0x7d, 0xad, 0x86, 0x83, 0x89, 0x48, 0xed, 0x0d, 0xe6, 0xd6, 0x84,
+	0x68, 0x75, 0x66, 0x0f, 0x05, 0xf5, 0x12, 0x1a, 0x06, 0x89, 0x2c, 0xc7, 0xbd, 0x0f, 0x9c, 0x31,
+	0xd1, 0x00, 0xb7, 0x28, 0xaa, 0xe8, 0x7b, 0x6c, 0xac, 0xc1, 0x5c, 0xce, 0xb4, 0xcc, 0x1f, 0x73,
+	0x36, 0xd2, 0x4c, 0xfd, 0xc1, 0x14, 0x74, 0x97, 0xf8, 0x60, 0x58, 0xde, 0x84, 0x68, 0x7b, 0x6c,
+	0x97, 0x99, 0x26, 0xdd, 0xe5, 0xc0, 0xd6, 0xf6, 0xf1, 0xdd, 0x44, 0xcc, 0xc0, 0xd3, 0x12, 0xc0,
+	0x43, 0x57, 0x1b, 0x84, 0xf7, 0x01, 0x09, 0x89, 0x17, 0x69, 0x6d, 0xbc, 0xd1, 0x4c, 0xa1, 0x7e,
+	0x13, 0xf6, 0xe8, 0xd2, 0x7e, 0xe4, 0xf8, 0xde, 0x67, 0xae, 0x35, 0xd1, 0x3a, 0xe8, 0x4c, 0x59,
+	0x49, 0xef, 0xc8, 0x8c, 0xfc, 0xf1, 0xec, 0x36, 0x9e, 0x6b, 0x2a, 0x4e, 0x48, 0x65, 0xba, 0x1f,
+	0xd3, 0x72, 0x09, 0x1d, 0x3a, 0xc0, 0xa1, 0x44, 0xa4, 0x23, 0xd7, 0x81, 0xe5, 0xd9, 0x03, 0x5b,
+	0x3b, 0x64, 0x3b, 0xe5, 0xa2, 0xaa, 0xc2, 0xce, 0x4b, 0xdf, 0x26, 0xda, 0x11, 0x9e, 0x0e, 0x9f,
+	0xf5, 0x7f, 0x94, 0x61, 0xc7, 0x34, 0x67, 0x71, 0x76, 0x0c, 0x1a, 0x45, 0xaa, 0x51, 0x60, 0x8c,
+	0x32, 0xaa, 0x57, 0x06, 0x97, 0x82, 0x43, 0x42, 0x70, 0xa5, 0x81, 0xb0, 0x23, 0x06, 0x42, 0x7a,
+	0x9d, 0x15, 0xf1, 0x3a, 0xe9, 0x21, 0x17, 0x64, 0x8c, 0xf0, 0x63, 0x71, 0x93, 0xca, 0xc9, 0xd8,
+	0xc8, 0x0f, 0x6c, 0x1e, 0x38, 0xa9, 0x9c, 0x1e, 0xa6, 0x96, 0x1d, 0x26, 0x1f, 0x1a, 0xf5, 0x0d,
+	0xa1, 0x01, 0x62, 0x68, 0xa0, 0xad, 0x30, 0xe2, 0xf1, 0x82, 0xcf, 0xf4, 0xe4, 0x23, 0xe2, 0x4c,
+	0xa6, 0x11, 0xc6, 0x4a, 0xc7, 0xe0, 0x12, 0x9d, 0x7b, 0x1d, 0xbb, 0x33, 0x0c, 0x91, 0x8e, 0x81,
+	0xcf, 0xe8, 0x3b, 0x7a, 0x31, 0x18, 0x1a, 0x1d, 0x83, 0x09, 0xe2, 0x15, 0xb5, 0x50, 0x9f, 0x88,
+	0xfa, 0xdf, 0x2a, 0xd0, 0x32, 0xad, 0x47, 0x82, 0xd4, 0xc2, 0x79, 0xe4, 0xbf, 0x09, 0x63, 0xe5,
+	0x3f, 0x0a, 0x63, 0x7a, 0x32, 0x7a, 0xd5, 0xa1, 0x56, 0xbf, 0x54, 0x68, 0x5e, 0x60, 0xd2, 0x07,
+	0x00, 0x79, 0xd5, 0xbd, 0xa4, 0x37, 0xd8, 0x5c, 0x0b, 0xee, 0xbd, 0xcd, 0xe0, 0xde, 0xdf, 0x04,
+	0xee, 0xd6, 0x1a, 0x70, 0xb7, 0xd7, 0x82, 0xbb, 0xb3, 0x15, 0xdc, 0xea, 0x36, 0x70, 0x1f, 0xac,
+	0x07, 0xf7, 0xe1, 0x5a, 0x70, 0x1f, 0x21, 0xea, 0x0a, 0xe0, 0xee, 0x0a, 0x78, 0xb8, 0x00, 0xe8,
+	0x7f, 0xb9, 0x08, 0x48, 0x18, 0x0e, 0x1d, 0x5b, 0x3b, 0x66, 0x37, 0x9d, 0x69, 0xd4, 0x27, 0x50,
+	0x33, 0x67, 0xf1, 0x55, 0x10, 0x58, 0x4b, 0x4d, 0xc3, 0xd4, 0x57, 0xe9, 0x51, 0x32, 0x30, 0x52,
+	0xb5, 0xda, 0x83, 0xc6, 0x0d, 0x79, 0x24, 0xec, 0x42, 0x42, 0xed, 0x04, 0x67, 0x35, 0x7b, 0x66,
+	0xa6, 0x34, 0xc4, 0x09, 0xfa, 0x5f, 0x76, 0xa1, 0x63, 0xd2, 0xd0, 0xa5, 0x00, 0x4e, 0xb3, 0xee,
+	0xd7, 0x37, 0xb8, 0xcf, 0xa1, 0x3e, 0x9c, 0xc6, 0xf3, 0x07, 0xcf, 0x72, 0x5c, 0x9e, 0xa7, 0x32,
+	0x85, 0x10, 0xfa, 0xb0, 0x29, 0xf4, 0x1b, 0x1b, 0x88, 0xea, 0x7f, 0x32, 0xcc, 0x2f, 0xa1, 0x61,
+	0x4e, 0x89, 0xfb, 0x48, 0xcc, 0xc8, 0x8a, 0x58, 0xc2, 0xaa, 0x18, 0xa2, 0x8a, 0x79, 0xf0, 0xd1,
+	0x21, 0x5f, 0xb0, 0x19, 0x5d, 0x36, 0x43, 0x50, 0xa9, 0x3a, 0x34, 0x99, 0x68, 0x90, 0xb9, 0x15,
+	0xcc, 0x30, 0xfc, 0xeb, 0x86, 0xa4, 0x13, 0xe1, 0xa4, 0xad, 0x86, 0xd3, 0xc9, 0x5a, 0x38, 0x9d,
+	0x6e, 0x84, 0xd3, 0xd9, 0x07, 0xc1, 0xe9, 0x7c, 0x1b, 0x9c, 0xfe, 0x5a, 0x85, 0x76, 0xbe, 0x18,
+	0xfd, 0x1a, 0xa3, 0x69, 0x75, 0xc5, 0x97, 0xa1, 0xe8, 0xe2, 0x2b, 0x26, 0x90, 0xff, 0x57, 0x82,
+	0x42, 0x25, 0xa8, 0x6e, 0xac, 0x04, 0x73, 0xd1, 0xdd, 0x2d, 0x44, 0x77, 0x0e, 0x93, 0xc7, 0x58,
+	0xd2, 0x6c, 0xc2, 0xa4, 0xc6, 0x66, 0x88, 0x98, 0xbc, 0x00, 0xf8, 0x7c, 0x61, 0x5b, 0x11, 0x19,
+	0x3a, 0x73, 0x86, 0x2d, 0xd5, 0x10, 0x34, 0x12, 0x82, 0x4e, 0x3f, 0x08, 0x41, 0x67, 0x5b, 0x10,
+	0xa4, 0x7e, 0x02, 0x35, 0x0a, 0x1c, 0xac, 0x2f, 0xcf, 0x2f, 0x4b, 0xcf, 0x1a, 0x2f, 0xf6, 0x7b,
+	0x98, 0xa0, 0x12, 0xad, 0x91, 0x8e, 0xab, 0xcf, 0x79, 0x1b, 0xf8, 0x11, 0x1a, 0x3d, 0x2b, 0xb4,
+	0x81, 0x3d, 0x3a, 0xda, 0xf7, 0xa2, 0x60, 0xc9, 0x1a, 0xc2, 0xd3, 0x1f, 0x40, 0x3d, 0x55, 0xd1,
+	0x9e, 0x6e, 0x46, 0x96, 0xbc, 0x27, 0xa6, 0x8f, 0x34, 0x20, 0x1e, 0x2d, 0x37, 0x26, 0xbc, 0x21,
+	0x66, 0xc2, 0xa7, 0xe5, 0x1f, 0x96, 0xf4, 0xdf, 0x96, 0x60, 0x4f, 0xda, 0x05, 0xbd, 0xac, 0x57,
+	0x18, 0xb9, 0x21, 0xb7, 0x90, 0x88, 0x34, 0xfc, 0x31, 0xa3, 0x84, 0xd8, 0x9e, 0xd6, 0x0d, 0x2e,
+	0x09, 0xb0, 0x50, 0x24, 0x58, 0xd0, 0x80, 0x98, 0xc5, 0x6f, 0xa2, 0xb9, 0xcb, 0xeb, 0xef, 0x44,
+	0xe4, 0x23, 0x3f, 0x09, 0x7d, 0x8f, 0xd7, 0xe0, 0x89, 0xa8, 0xff, 0x1c, 0xda, 0x59, 0x41, 0xca,
+	0x93, 0xb6, 0x06, 0xd5, 0x7e, 0x10, 0x60, 0x9c, 0x94, 0x58, 0xfd, 0xca, 0x45, 0xba, 0x72, 0x3f,
+	0x08, 0xde, 0x86, 0x93, 0xa4, 0xd3, 0x67, 0x92, 0x40, 0x4c, 0x8a, 0x48, 0x4c, 0xfa, 0xdf, 0xab,
+	0x50, 0x33, 0xef, 0x5c, 0x7b, 0x05, 0x7b, 0xa9, 0xeb, 0xd9, 0x4b, 0xcd, 0xb1, 0x17, 0x85, 0x04,
+	0x42, 0x44, 0xc1, 0xdd, 0xa4, 0x32, 0x75, 0xf3, 0x4b, 0x2b, 0xe2, 0xe4, 0xd5, 0x31, 0x98, 0x20,
+	0xf1, 0x5d, 0x05, 0xcd, 0x65, 0x7c, 0x27, 0x20, 0x63, 0x97, 0x1d, 0x2d, 0x41, 0x46, 0xc6, 0x84,
+	0x55, 0xb6, 0x3b, 0xce, 0x84, 0xe7, 0x50, 0xa7, 0x4f, 0x6c, 0x9d, 0x1a, 0xbe, 0x93, 0x29, 0x72,
+	0xd8, 0xa9, 0xe3, 0xb0, 0x88, 0x9d, 0x94, 0x27, 0x61, 0x3d, 0x4f, 0x36, 0x0a, 0x3c, 0x99, 0xa0,
+	0xb4, 0x29, 0xa0, 0x34, 0x65, 0xc8, 0x3d, 0x91, 0x21, 0x25, 0x8e, 0x61, 0x4d, 0x88, 0xc0, 0x31,
+	0x32, 0xa3, 0xb5, 0x0a, 0x8c, 0x26, 0xb2, 0x4b, 0x9b, 0xf9, 0x76, 0x15, 0xbb, 0x74, 0xa4, 0x26,
+	0x06, 0x3d, 0x35, 0x8b, 0x13, 0x46, 0xea, 0x18, 0x5c, 0xca, 0x58, 0xf0, 0x40, 0x6c, 0x24, 0x93,
+	0x52, 0xfe, 0x70, 0x55, 0x29, 0x7f, 0x24, 0xb2, 0x73, 0x8e, 0xd5, 0xbb, 0x45, 0x56, 0xcf, 0x5a,
+	0xb3, 0xe3, 0x95, 0xad, 0x99, 0x26, 0xb4, 0x66, 0x39, 0xd6, 0x3a, 0xd9, 0xca, 0x5a, 0xa7, 0x45,
+	0xd6, 0xca, 0x57, 0x12, 0x67, 0xab, 0x2b, 0x09, 0xd3, 0x0f, 0x22, 0xea, 0x8e, 0x73, 0xee, 0x27,
+	0x26, 0x62, 0x0e, 0x0d, 0x48, 0xc2, 0x79, 0x1f, 0x31, 0xce, 0xcb, 0x34, 0x39, 0x4e, 0xbc, 0x28,
+	0x70, 0xa2, 0x94, 0xad, 0x3e, 0xce, 0x67, 0x2b, 0x91, 0x31, 0x2f, 0x57, 0x33, 0xe6, 0xb7, 0x39,
+	0xab, 0x3d, 0xc1, 0xe1, 0x83, 0x5e, 0x82, 0xc4, 0x7f, 0x1f, 0x9b, 0x7d, 0x0a, 0x47, 0xd4, 0x20,
+	0x7e, 0x06, 0xbc, 0x71, 0xc2, 0x28, 0xa5, 0x90, 0x27, 0x50, 0x79, 0x87, 0xaf, 0x94, 0x70, 0xed,
+	0x06, 0x63, 0x5e, 0xf6, 0x2d, 0x91, 0x8d, 0xe8, 0xbf, 0x2e, 0x01, 0x64, 0x5a, 0x75, 0x1f, 0xca,
+	0x9c, 0x19, 0x2a, 0x46, 0x99, 0xc5, 0xcd, 0xad, 0x35, 0x4f, 0xd6, 0xc4, 0x67, 0xea, 0xeb, 0xa1,
+	0x35, 0x41, 0x68, 0x70, 0x1a, 0xe3, 0x22, 0xf5, 0x25, 0x9a, 0x61, 0x10, 0x51, 0x58, 0xa4, 0x67,
+	0x1a, 0xa4, 0x34, 0xcf, 0x7a, 0x70, 0x89, 0xcd, 0xbf, 0xb2, 0x25, 0xa2, 0xfe, 0x87, 0x12, 0x9c,
+	0xf0, 0x4f, 0x7b, 0x57, 0x9e, 0x6d, 0x7a, 0xd6, 0x22, 0x9c, 0xfa, 0xd1, 0xb6, 0xe6, 0x9c, 0x22,
+	0x87, 0x4f, 0xc5, 0x1d, 0xd6, 0x8c, 0x54, 0xa6, 0x99, 0xdd, 0x20, 0x51, 0x1c, 0x78, 0x09, 0x19,
+	0x2b, 0x38, 0x41, 0x56, 0x4a, 0xb3, 0x90, 0x98, 0x77, 0x72, 0xb3, 0x90, 0x9e, 0x7f, 0xbf, 0x0b,
+	0x87, 0x74, 0xc9, 0x6c, 0x5f, 0x5b, 0x1a, 0xab, 0x84, 0x3a, 0xca, 0x02, 0x75, 0x14, 0xbe, 0xd9,
+	0x48, 0xe5, 0xa1, 0x5c, 0xea, 0xed, 0x14, 0x4a, 0xbd, 0x3c, 0x9d, 0xae, 0x2e, 0x1f, 0xab, 0x52,
+	0xf9, 0x98, 0xa3, 0x59, 0xe1, 0x53, 0x54, 0x81, 0x4e, 0x95, 0xcd, 0x74, 0xaa, 0xac, 0xa6, 0xd3,
+	0xc6, 0x7a, 0x3a, 0x6d, 0x16, 0xe8, 0xf4, 0x12, 0x1a, 0xfc, 0xb8, 0xe8, 0x1a, 0x46, 0xa0, 0xa2,
+	0x4a, 0xc8, 0xa8, 0xfb, 0x52, 0x46, 0x95, 0xe8, 0xb5, 0x95, 0x2f, 0xe1, 0x64, 0x7a, 0x6d, 0x17,
+	0xe8, 0x35, 0x25, 0xc4, 0x8e, 0x58, 0x16, 0xa6, 0xe4, 0xa7, 0x6e, 0x20, 0xbf, 0x83, 0x22, 0xf9,
+	0x89, 0x64, 0x7d, 0xb8, 0xbe, 0x14, 0x3c, 0x2a, 0x34, 0x54, 0xaf, 0x48, 0x38, 0x0e, 0x9c, 0x05,
+	0xad, 0x29, 0x79, 0x2f, 0x24, 0xaa, 0x24, 0x22, 0xe9, 0xae, 0x2d, 0xbd, 0xcc, 0x05, 0x19, 0xdf,
+	0xe1, 0x0b, 0x21, 0xff, 0x62, 0xd0, 0xec, 0x99, 0x99, 0xd2, 0x10, 0x27, 0x88, 0x85, 0xc8, 0xe9,
+	0xda, 0x42, 0xe4, 0x44, 0x2a, 0x44, 0xbe, 0x72, 0x83, 0x34, 0x80, 0x86, 0xb0, 0x7e, 0x4a, 0x17,
+	0x25, 0x81, 0x2e, 0x9e, 0x42, 0x05, 0xbf, 0xd8, 0xf3, 0xaf, 0xfb, 0x6d, 0x71, 0xc3, 0x58, 0xf0,
+	0xb0, 0x61, 0xdd, 0x84, 0x56, 0x6e, 0x64, 0xcd, 0x0f, 0x1d, 0x87, 0x09, 0xab, 0x71, 0x22, 0x44,
+	0x01, 0xab, 0x10, 0xdf, 0xf5, 0x03, 0x4e, 0x3b, 0x4c, 0xd0, 0xff, 0x54, 0x86, 0x7d, 0x73, 0x18,
+	0x58, 0x36, 0x49, 0x89, 0x21, 0xa3, 0x38, 0x05, 0x29, 0x4e, 0xfe, 0xc6, 0xba, 0xe2, 0x57, 0x19,
+	0x45, 0x8c, 0x1b, 0x9a, 0xd0, 0xb8, 0xa5, 0x9f, 0x92, 0x25, 0xaf, 0xf0, 0x44, 0x15, 0x46, 0x08,
+	0x71, 0x5d, 0x22, 0x20, 0x35, 0x91, 0x11, 0x23, 0xf8, 0x8c, 0x5e, 0xda, 0xe5, 0x18, 0x49, 0x35,
+	0x19, 0xb2, 0xaa, 0x22, 0xb2, 0x72, 0xc8, 0xa9, 0x15, 0x91, 0xd3, 0x06, 0xc5, 0x9c, 0xc5, 0xbc,
+	0x6d, 0x53, 0xf8, 0xf7, 0x64, 0xc6, 0xc2, 0x20, 0x16, 0x2a, 0xab, 0x1b, 0x32, 0x39, 0x45, 0x36,
+	0x39, 0xf7, 0xa4, 0x1a, 0xfd, 0x57, 0x25, 0x68, 0x08, 0x11, 0x50, 0xf0, 0x20, 0xbd, 0x26, 0x3a,
+	0x8a, 0x0e, 0xac, 0x18, 0x4c, 0xc8, 0xd6, 0x52, 0x72, 0xcd, 0xdf, 0x5b, 0xeb, 0xcb, 0xdb, 0x78,
+	0xfe, 0x40, 0x02, 0xf4, 0x5e, 0xc5, 0xc8, 0x14, 0x62, 0x82, 0xa8, 0xc8, 0x09, 0xe2, 0x33, 0x68,
+	0xd3, 0x7b, 0xb9, 0x5e, 0x52, 0x4c, 0xf0, 0xb4, 0x20, 0x31, 0x6a, 0x29, 0xcf, 0xa8, 0xab, 0x7f,
+	0x55, 0x7b, 0x05, 0x2a, 0xde, 0xaf, 0xeb, 0x92, 0x89, 0xe5, 0x6e, 0x4b, 0x30, 0x5d, 0xd8, 0xe5,
+	0x45, 0x07, 0xaf, 0xb4, 0x99, 0xa4, 0x8f, 0xa0, 0xc3, 0x6a, 0x75, 0x56, 0x82, 0x6c, 0x36, 0xa2,
+	0xc2, 0xce, 0xbd, 0x15, 0x86, 0x3c, 0x43, 0xe1, 0xb3, 0x60, 0x58, 0x91, 0x0c, 0x9b, 0x70, 0x44,
+	0x1b, 0x01, 0x01, 0x6e, 0x5b, 0x8c, 0xeb, 0x19, 0x18, 0x8a, 0x50, 0xe5, 0x39, 0xfe, 0x8f, 0x25,
+	0x50, 0x85, 0x92, 0x2b, 0x31, 0x29, 0x06, 0x6a, 0x29, 0x17, 0xa8, 0xdf, 0x81, 0x9a, 0x13, 0x91,
+	0xf9, 0x70, 0xb9, 0x60, 0xf7, 0xb7, 0xff, 0xa2, 0xd5, 0xeb, 0x63, 0x0a, 0xb4, 0x5c, 0x12, 0x52,
+	0xb5, 0x91, 0x4e, 0x58, 0x8b, 0x20, 0xba, 0x00, 0x2e, 0x7b, 0x97, 0xe4, 0xd5, 0x54, 0x16, 0x1c,
+	0x50, 0x91, 0x1c, 0xf0, 0x63, 0x38, 0x36, 0x47, 0xa1, 0x39, 0x8b, 0xf1, 0x04, 0x52, 0x35, 0xa3,
+	0xcb, 0xd5, 0x4c, 0xb3, 0x27, 0x4c, 0x4c, 0x8e, 0x3a, 0x85, 0x43, 0xea, 0xbf, 0x44, 0x1d, 0x6e,
+	0x73, 0xdf, 0xca, 0x20, 0xc9, 0x56, 0x52, 0xd6, 0xaf, 0x44, 0xa0, 0x21, 0x68, 0x0b, 0x98, 0xb8,
+	0x00, 0xa0, 0x6b, 0x3b, 0x01, 0xa6, 0x03, 0x06, 0x0c, 0x41, 0xa3, 0x3e, 0x85, 0xfd, 0xd1, 0xd4,
+	0x77, 0x49, 0x68, 0xb9, 0x44, 0x84, 0x49, 0x4e, 0xab, 0xf7, 0xe1, 0xcc, 0x1c, 0x85, 0xf8, 0x45,
+	0xd7, 0x09, 0xc7, 0x7e, 0xec, 0x45, 0x92, 0x4f, 0x9e, 0xca, 0x3e, 0x69, 0xf7, 0x72, 0x93, 0x93,
+	0xdd, 0xbe, 0x81, 0xc3, 0xd7, 0x24, 0x1a, 0x85, 0xa9, 0x7e, 0x8b, 0x5f, 0x34, 0xa8, 0xbe, 0x0e,
+	0xfc, 0x78, 0x91, 0x7a, 0x26, 0x11, 0xf5, 0x10, 0x8e, 0x93, 0x56, 0xf5, 0x5f, 0x36, 0x96, 0x6d,
+	0x5f, 0xd9, 0xbc, 0xfd, 0xdf, 0x95, 0xa0, 0x95, 0x1b, 0x2a, 0x78, 0x5c, 0x87, 0xe6, 0x75, 0xbc,
+	0x24, 0x81, 0xbc, 0x94, 0xa4, 0x63, 0xe5, 0x1e, 0xde, 0xc1, 0xd5, 0x9c, 0x1a, 0xe1, 0x4e, 0x97,
+	0x95, 0xd4, 0x52, 0xba, 0x01, 0xda, 0x93, 0xb0, 0x6a, 0x4c, 0xd2, 0x7d, 0xf2, 0x5d, 0xd8, 0x97,
+	0xf1, 0xa0, 0xee, 0x41, 0x7d, 0x30, 0x7c, 0x7f, 0x7b, 0x67, 0xbc, 0xbd, 0xba, 0x69, 0x7f, 0x43,
+	0x6d, 0x43, 0x73, 0x30, 0x7c, 0x3f, 0x7a, 0x73, 0x77, 0xd3, 0x37, 0xaf, 0x6e, 0xfa, 0xed, 0xd2,
+	0xf5, 0xc7, 0x70, 0x30, 0xf6, 0xe7, 0xbd, 0x89, 0x13, 0x4d, 0xe3, 0x87, 0xde, 0xc4, 0x7f, 0xe1,
+	0xf7, 0x82, 0xc5, 0xf8, 0x67, 0xb5, 0xde, 0xf3, 0x1f, 0xe1, 0x3f, 0x0a, 0x3c, 0xec, 0xe2, 0x9f,
+	0xef, 0xfd, 0x33, 0x00, 0x00, 0xff, 0xff, 0xbe, 0xd2, 0x8f, 0x7d, 0x49, 0x20, 0x00, 0x00,
 }

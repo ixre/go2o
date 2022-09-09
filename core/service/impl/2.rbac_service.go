@@ -280,6 +280,7 @@ func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptR
 	}
 
 	dst.Name = r.Name
+	dst.Code = r.Code
 	dst.Pid = r.Pid
 	dst.Enabled = int16(r.Enabled)
 
@@ -312,6 +313,7 @@ func (p *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
 	return &proto.SPermDept{
 		Id:         v.Id,
 		Name:       v.Name,
+		Code:	v.Code,
 		Pid:        v.Pid,
 		Enabled:    int32(v.Enabled),
 		CreateTime: v.CreateTime,

@@ -94,6 +94,7 @@ CREATE TABLE "public".perm_dept
 (
     id          bigserial   NOT NULL,
     name        varchar(40) NOT NULL,
+    code        varchar(40) NOT NULL,
     pid         int8        NOT NULL,
     enabled     int2        NOT NULL,
     create_time int8        NOT NULL,
@@ -106,6 +107,8 @@ COMMENT
 ON COLUMN "public".perm_dept.id IS 'ID';
 COMMENT
 ON COLUMN "public".perm_dept.name IS '名称';
+COMMENT
+ON COLUMN "public".perm_dept.code IS '编码';
 COMMENT
 ON COLUMN "public".perm_dept.pid IS '上级部门';
 COMMENT
