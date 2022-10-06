@@ -28,7 +28,7 @@ service MemberService {
     rpc CheckLogin (LoginRequest) returns (LoginResponse) {
     }
 
-    // 发放访问令牌
+    // 发放访问令牌,续期即重新颁发
     rpc GrantAccessToken(GrantAccessTokenRequest) returns(GrantAccessTokenResponse){}
 
     // 检查令牌是否有效

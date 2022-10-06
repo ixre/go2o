@@ -6,6 +6,8 @@ type PermDept struct {
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 名称
 	Name string `db:"name"`
+	// 编码
+	Code string `db:"code"`
 	// 上级部门
 	Pid int64 `db:"pid"`
 	// 状态

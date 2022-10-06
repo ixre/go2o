@@ -172,10 +172,12 @@ message SavePermDeptRequest {
     string Name = 2;
     /** 上级部门 */
     int64 Pid = 3;
+    /** 部门编码 */
+    string Code = 4;
     /** 状态 */
-    int32 Enabled = 4;
+    int32 Enabled = 5;
     /** 创建日期 */
-    int64 CreateTime = 5;
+    int64 CreateTime = 6;
 }
 
 message SavePermDeptResponse {
@@ -194,10 +196,12 @@ message SPermDept {
     string Name = 2;
     /** 上级部门 */
     int64 Pid = 3;
+    /** 部门编码 */;
+    string Code = 4;
     /** 状态 */
-    int32 Enabled = 4;
+    int32 Enabled = 5;
     /** 创建日期 */
-    int64 CreateTime = 5;
+    int64 CreateTime = 6;
 }
 
 message QueryPermDeptRequest {

@@ -25,19 +25,19 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type SaveNavRequest struct {
 	// * 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 文本
-	Text string `protobuf:"bytes,2,opt,name=Text,json=text,proto3" json:"Text"`
+	Text string `protobuf:"bytes,2,opt,name=Text,proto3" json:"Text"`
 	// * 地址
-	Url string `protobuf:"bytes,3,opt,name=Url,json=url,proto3" json:"Url"`
+	Url string `protobuf:"bytes,3,opt,name=Url,proto3" json:"Url"`
 	// * 打开目标
-	Target string `protobuf:"bytes,4,opt,name=Target,json=target,proto3" json:"Target"`
+	Target string `protobuf:"bytes,4,opt,name=Target,proto3" json:"Target"`
 	// * 链接图片
-	Image string `protobuf:"bytes,5,opt,name=Image,json=image,proto3" json:"Image"`
+	Image string `protobuf:"bytes,5,opt,name=Image,proto3" json:"Image"`
 	// * 导航类型: 1为电脑，2为手机端
-	NavType int32 `protobuf:"varint,6,opt,name=NavType,json=navType,proto3" json:"NavType"`
+	NavType int32 `protobuf:"varint,6,opt,name=NavType,proto3" json:"NavType"`
 	// * 导航分组
-	NavGroup             string   `protobuf:"bytes,7,opt,name=NavGroup,json=navGroup,proto3" json:"NavGroup"`
+	NavGroup             string   `protobuf:"bytes,7,opt,name=NavGroup,proto3" json:"NavGroup"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -47,7 +47,7 @@ func (m *SaveNavRequest) Reset()         { *m = SaveNavRequest{} }
 func (m *SaveNavRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveNavRequest) ProtoMessage()    {}
 func (*SaveNavRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{0}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{0}
 }
 func (m *SaveNavRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavRequest.Unmarshal(m, b)
@@ -118,9 +118,9 @@ func (m *SaveNavRequest) GetNavGroup() string {
 
 type SNavGroup struct {
 	// * 编号
-	Id int32 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int32 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 名称
-	Name                 string   `protobuf:"bytes,2,opt,name=Name,json=name,proto3" json:"Name"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -130,7 +130,7 @@ func (m *SNavGroup) Reset()         { *m = SNavGroup{} }
 func (m *SNavGroup) String() string { return proto.CompactTextString(m) }
 func (*SNavGroup) ProtoMessage()    {}
 func (*SNavGroup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{1}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{1}
 }
 func (m *SNavGroup) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SNavGroup.Unmarshal(m, b)
@@ -165,9 +165,9 @@ func (m *SNavGroup) GetName() string {
 }
 
 type SaveNavResponse struct {
-	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,json=errCode,proto3" json:"ErrCode"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,json=errMsg,proto3" json:"ErrMsg"`
-	Id                   int64    `protobuf:"varint,3,opt,name=Id,json=id,proto3" json:"Id"`
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	Id                   int64    `protobuf:"varint,3,opt,name=Id,proto3" json:"Id"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -177,7 +177,7 @@ func (m *SaveNavResponse) Reset()         { *m = SaveNavResponse{} }
 func (m *SaveNavResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveNavResponse) ProtoMessage()    {}
 func (*SaveNavResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{2}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{2}
 }
 func (m *SaveNavResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavResponse.Unmarshal(m, b)
@@ -219,7 +219,7 @@ func (m *SaveNavResponse) GetId() int64 {
 }
 
 type PortalNavId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,json=value,proto3" json:"Value"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -229,7 +229,7 @@ func (m *PortalNavId) Reset()         { *m = PortalNavId{} }
 func (m *PortalNavId) String() string { return proto.CompactTextString(m) }
 func (*PortalNavId) ProtoMessage()    {}
 func (*PortalNavId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{3}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{3}
 }
 func (m *PortalNavId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PortalNavId.Unmarshal(m, b)
@@ -258,19 +258,19 @@ func (m *PortalNavId) GetValue() int64 {
 
 type SNav struct {
 	// * 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 文本
-	Text string `protobuf:"bytes,2,opt,name=Text,json=text,proto3" json:"Text"`
+	Text string `protobuf:"bytes,2,opt,name=Text,proto3" json:"Text"`
 	// * 地址
-	Url string `protobuf:"bytes,3,opt,name=Url,json=url,proto3" json:"Url"`
+	Url string `protobuf:"bytes,3,opt,name=Url,proto3" json:"Url"`
 	// * 打开目标
-	Target string `protobuf:"bytes,4,opt,name=Target,json=target,proto3" json:"Target"`
+	Target string `protobuf:"bytes,4,opt,name=Target,proto3" json:"Target"`
 	// * 链接图片
-	Image string `protobuf:"bytes,5,opt,name=Image,json=image,proto3" json:"Image"`
+	Image string `protobuf:"bytes,5,opt,name=Image,proto3" json:"Image"`
 	// * 导航类型: 1为电脑，2为手机端
-	NavType int32 `protobuf:"varint,6,opt,name=NavType,json=navType,proto3" json:"NavType"`
+	NavType int32 `protobuf:"varint,6,opt,name=NavType,proto3" json:"NavType"`
 	// * 导航分组
-	NavGroup             string   `protobuf:"bytes,7,opt,name=NavGroup,json=navGroup,proto3" json:"NavGroup"`
+	NavGroup             string   `protobuf:"bytes,7,opt,name=NavGroup,proto3" json:"NavGroup"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -280,7 +280,7 @@ func (m *SNav) Reset()         { *m = SNav{} }
 func (m *SNav) String() string { return proto.CompactTextString(m) }
 func (*SNav) ProtoMessage()    {}
 func (*SNav) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{4}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{4}
 }
 func (m *SNav) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SNav.Unmarshal(m, b)
@@ -350,10 +350,10 @@ func (m *SNav) GetNavGroup() string {
 }
 
 type QueryNavRequest struct {
-	NavType              int32    `protobuf:"varint,1,opt,name=NavType,json=navType,proto3" json:"NavType"`
-	Group                string   `protobuf:"bytes,2,opt,name=Group,json=group,proto3" json:"Group"`
-	Begin                int32    `protobuf:"varint,3,opt,name=Begin,json=begin,proto3" json:"Begin"`
-	Size                 int32    `protobuf:"varint,4,opt,name=Size,json=size,proto3" json:"Size"`
+	NavType              int32    `protobuf:"varint,1,opt,name=NavType,proto3" json:"NavType"`
+	Group                string   `protobuf:"bytes,2,opt,name=Group,proto3" json:"Group"`
+	Begin                int32    `protobuf:"varint,3,opt,name=Begin,proto3" json:"Begin"`
+	Size                 int32    `protobuf:"varint,4,opt,name=Size,proto3" json:"Size"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -363,7 +363,7 @@ func (m *QueryNavRequest) Reset()         { *m = QueryNavRequest{} }
 func (m *QueryNavRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryNavRequest) ProtoMessage()    {}
 func (*QueryNavRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{5}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{5}
 }
 func (m *QueryNavRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavRequest.Unmarshal(m, b)
@@ -412,7 +412,7 @@ func (m *QueryNavRequest) GetSize() int32 {
 }
 
 type QueryNavResponse struct {
-	List                 []*SNav  `protobuf:"bytes,1,rep,name=List,json=list,proto3" json:"List"`
+	List                 []*SNav  `protobuf:"bytes,1,rep,name=List,proto3" json:"List"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -422,7 +422,7 @@ func (m *QueryNavResponse) Reset()         { *m = QueryNavResponse{} }
 func (m *QueryNavResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryNavResponse) ProtoMessage()    {}
 func (*QueryNavResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{6}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{6}
 }
 func (m *QueryNavResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavResponse.Unmarshal(m, b)
@@ -459,7 +459,7 @@ func (m *QueryNavGroupRequest) Reset()         { *m = QueryNavGroupRequest{} }
 func (m *QueryNavGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryNavGroupRequest) ProtoMessage()    {}
 func (*QueryNavGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{7}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{7}
 }
 func (m *QueryNavGroupRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavGroupRequest.Unmarshal(m, b)
@@ -480,7 +480,7 @@ func (m *QueryNavGroupRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryNavGroupRequest proto.InternalMessageInfo
 
 type QueryNavGroupResponse struct {
-	Value                []*SNavGroup `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value"`
+	Value                []*SNavGroup `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
 	XXX_unrecognized     []byte       `json:"-"`
 	XXX_sizecache        int32        `json:"-"`
@@ -490,7 +490,7 @@ func (m *QueryNavGroupResponse) Reset()         { *m = QueryNavGroupResponse{} }
 func (m *QueryNavGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryNavGroupResponse) ProtoMessage()    {}
 func (*QueryNavGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{8}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{8}
 }
 func (m *QueryNavGroupResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QueryNavGroupResponse.Unmarshal(m, b)
@@ -518,7 +518,7 @@ func (m *QueryNavGroupResponse) GetValue() []*SNavGroup {
 }
 
 type PortalNavGroupId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,json=value,proto3" json:"Value"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -528,7 +528,7 @@ func (m *PortalNavGroupId) Reset()         { *m = PortalNavGroupId{} }
 func (m *PortalNavGroupId) String() string { return proto.CompactTextString(m) }
 func (*PortalNavGroupId) ProtoMessage()    {}
 func (*PortalNavGroupId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{9}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{9}
 }
 func (m *PortalNavGroupId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PortalNavGroupId.Unmarshal(m, b)
@@ -557,9 +557,9 @@ func (m *PortalNavGroupId) GetValue() int64 {
 
 type SaveNavGroupRequest struct {
 	// * 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * 名称
-	Name                 string   `protobuf:"bytes,2,opt,name=Name,json=name,proto3" json:"Name"`
+	Name                 string   `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -569,7 +569,7 @@ func (m *SaveNavGroupRequest) Reset()         { *m = SaveNavGroupRequest{} }
 func (m *SaveNavGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveNavGroupRequest) ProtoMessage()    {}
 func (*SaveNavGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{10}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{10}
 }
 func (m *SaveNavGroupRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavGroupRequest.Unmarshal(m, b)
@@ -604,9 +604,9 @@ func (m *SaveNavGroupRequest) GetName() string {
 }
 
 type SaveNavGroupResponse struct {
-	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,json=errCode,proto3" json:"ErrCode"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,json=errMsg,proto3" json:"ErrMsg"`
-	Id                   int64    `protobuf:"varint,3,opt,name=Id,json=id,proto3" json:"Id"`
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	Id                   int64    `protobuf:"varint,3,opt,name=Id,proto3" json:"Id"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -616,7 +616,7 @@ func (m *SaveNavGroupResponse) Reset()         { *m = SaveNavGroupResponse{} }
 func (m *SaveNavGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveNavGroupResponse) ProtoMessage()    {}
 func (*SaveNavGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{11}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{11}
 }
 func (m *SaveNavGroupResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveNavGroupResponse.Unmarshal(m, b)
@@ -660,13 +660,13 @@ func (m *SaveNavGroupResponse) GetId() int64 {
 // * 保存热搜词请求
 type SaveSearchWordRequest struct {
 	// * 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * Word
-	Word string `protobuf:"bytes,2,opt,name=Word,json=word,proto3" json:"Word"`
+	Word string `protobuf:"bytes,2,opt,name=Word,proto3" json:"Word"`
 	// * 搜索次数
-	SearchCount int32 `protobuf:"varint,3,opt,name=SearchCount,json=searchCount,proto3" json:"SearchCount"`
+	SearchCount int32 `protobuf:"varint,3,opt,name=SearchCount,proto3" json:"SearchCount"`
 	// * 1:启用　2:特殊显示 4: 手动创建
-	Flag                 int32    `protobuf:"varint,4,opt,name=Flag,json=flag,proto3" json:"Flag"`
+	Flag                 int32    `protobuf:"varint,4,opt,name=Flag,proto3" json:"Flag"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -676,7 +676,7 @@ func (m *SaveSearchWordRequest) Reset()         { *m = SaveSearchWordRequest{} }
 func (m *SaveSearchWordRequest) String() string { return proto.CompactTextString(m) }
 func (*SaveSearchWordRequest) ProtoMessage()    {}
 func (*SaveSearchWordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{12}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{12}
 }
 func (m *SaveSearchWordRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveSearchWordRequest.Unmarshal(m, b)
@@ -726,9 +726,9 @@ func (m *SaveSearchWordRequest) GetFlag() int32 {
 
 // * 保存热搜词响应
 type SaveSearchWordResponse struct {
-	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,json=errCode,proto3" json:"ErrCode"`
-	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,json=errMsg,proto3" json:"ErrMsg"`
-	Id                   int64    `protobuf:"varint,3,opt,name=Id,json=id,proto3" json:"Id"`
+	ErrCode              int64    `protobuf:"varint,1,opt,name=ErrCode,proto3" json:"ErrCode"`
+	ErrMsg               string   `protobuf:"bytes,2,opt,name=ErrMsg,proto3" json:"ErrMsg"`
+	Id                   int64    `protobuf:"varint,3,opt,name=Id,proto3" json:"Id"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -738,7 +738,7 @@ func (m *SaveSearchWordResponse) Reset()         { *m = SaveSearchWordResponse{}
 func (m *SaveSearchWordResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveSearchWordResponse) ProtoMessage()    {}
 func (*SaveSearchWordResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{13}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{13}
 }
 func (m *SaveSearchWordResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SaveSearchWordResponse.Unmarshal(m, b)
@@ -781,7 +781,7 @@ func (m *SaveSearchWordResponse) GetId() int64 {
 
 // * 热搜词编号
 type SysSearchWordId struct {
-	Value                int64    `protobuf:"varint,1,opt,name=Value,json=value,proto3" json:"Value"`
+	Value                int64    `protobuf:"varint,1,opt,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -791,7 +791,7 @@ func (m *SysSearchWordId) Reset()         { *m = SysSearchWordId{} }
 func (m *SysSearchWordId) String() string { return proto.CompactTextString(m) }
 func (*SysSearchWordId) ProtoMessage()    {}
 func (*SysSearchWordId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{14}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{14}
 }
 func (m *SysSearchWordId) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SysSearchWordId.Unmarshal(m, b)
@@ -821,13 +821,13 @@ func (m *SysSearchWordId) GetValue() int64 {
 // * 热搜词
 type SSearchWord struct {
 	// * 编号
-	Id int64 `protobuf:"varint,1,opt,name=Id,json=id,proto3" json:"Id"`
+	Id int64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id"`
 	// * Word
-	Word string `protobuf:"bytes,2,opt,name=Word,json=word,proto3" json:"Word"`
+	Word string `protobuf:"bytes,2,opt,name=Word,proto3" json:"Word"`
 	// * 搜索次数
-	SearchCount int32 `protobuf:"varint,3,opt,name=SearchCount,json=searchCount,proto3" json:"SearchCount"`
+	SearchCount int32 `protobuf:"varint,3,opt,name=SearchCount,proto3" json:"SearchCount"`
 	// * 1:启用　2:特殊显示 4: 手动创建
-	Flag                 int32    `protobuf:"varint,4,opt,name=Flag,json=flag,proto3" json:"Flag"`
+	Flag                 int32    `protobuf:"varint,4,opt,name=Flag,proto3" json:"Flag"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -837,7 +837,7 @@ func (m *SSearchWord) Reset()         { *m = SSearchWord{} }
 func (m *SSearchWord) String() string { return proto.CompactTextString(m) }
 func (*SSearchWord) ProtoMessage()    {}
 func (*SSearchWord) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{15}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{15}
 }
 func (m *SSearchWord) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SSearchWord.Unmarshal(m, b)
@@ -887,7 +887,7 @@ func (m *SSearchWord) GetFlag() int32 {
 
 // * 查询热搜词请求
 type QuerySearchWordRequest struct {
-	Size                 int32    `protobuf:"varint,1,opt,name=Size,json=size,proto3" json:"Size"`
+	Size                 int32    `protobuf:"varint,1,opt,name=Size,proto3" json:"Size"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -897,7 +897,7 @@ func (m *QuerySearchWordRequest) Reset()         { *m = QuerySearchWordRequest{}
 func (m *QuerySearchWordRequest) String() string { return proto.CompactTextString(m) }
 func (*QuerySearchWordRequest) ProtoMessage()    {}
 func (*QuerySearchWordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{16}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{16}
 }
 func (m *QuerySearchWordRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QuerySearchWordRequest.Unmarshal(m, b)
@@ -926,7 +926,7 @@ func (m *QuerySearchWordRequest) GetSize() int32 {
 
 // * 查询热搜词响应
 type QuerySearchWordResponse struct {
-	Value                []*SSearchWord `protobuf:"bytes,1,rep,name=Value,json=value,proto3" json:"Value"`
+	Value                []*SSearchWord `protobuf:"bytes,1,rep,name=Value,proto3" json:"Value"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -936,7 +936,7 @@ func (m *QuerySearchWordResponse) Reset()         { *m = QuerySearchWordResponse
 func (m *QuerySearchWordResponse) String() string { return proto.CompactTextString(m) }
 func (*QuerySearchWordResponse) ProtoMessage()    {}
 func (*QuerySearchWordResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_portal_service_cdcd797e8595f949, []int{17}
+	return fileDescriptor_portal_service_bab3b0b29f523779, []int{17}
 }
 func (m *QuerySearchWordResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_QuerySearchWordResponse.Unmarshal(m, b)
@@ -1409,57 +1409,55 @@ var _PortalService_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("portal_service.proto", fileDescriptor_portal_service_cdcd797e8595f949)
+	proto.RegisterFile("portal_service.proto", fileDescriptor_portal_service_bab3b0b29f523779)
 }
 
-var fileDescriptor_portal_service_cdcd797e8595f949 = []byte{
-	// 756 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0xb5, 0x1b, 0x3b, 0x69, 0x27, 0x69, 0x93, 0x6e, 0x93, 0xd4, 0xf8, 0xd2, 0x68, 0x41, 0x22,
-	0x07, 0xd8, 0x8a, 0x22, 0x0e, 0x15, 0xea, 0xa5, 0x1f, 0x54, 0x45, 0x10, 0x81, 0x5d, 0x3e, 0xd4,
-	0x0b, 0xda, 0x24, 0x8b, 0x6b, 0xe1, 0xc4, 0xe9, 0x7a, 0x1d, 0xda, 0xfe, 0x1a, 0xce, 0xfc, 0x31,
-	0xfe, 0x06, 0xf2, 0xda, 0x4e, 0x1c, 0xc7, 0xed, 0xa9, 0x48, 0x9c, 0xa2, 0xd9, 0x8f, 0x99, 0x37,
-	0xf3, 0xde, 0xdb, 0x18, 0x9a, 0x13, 0x9f, 0x0b, 0xea, 0x7d, 0x0b, 0x18, 0x9f, 0xba, 0x03, 0x46,
-	0x26, 0xdc, 0x17, 0xbe, 0x59, 0x73, 0x3c, 0xbf, 0x4f, 0xbd, 0x38, 0xc2, 0xbf, 0x55, 0xd8, 0xb0,
-	0xe9, 0x94, 0xf5, 0xe8, 0xd4, 0x62, 0x57, 0x21, 0x0b, 0x04, 0xda, 0x80, 0x95, 0xb3, 0xa1, 0xa1,
-	0x76, 0xd4, 0x6e, 0xc9, 0x5a, 0x71, 0x87, 0x08, 0x81, 0x76, 0xce, 0xae, 0x85, 0xb1, 0xd2, 0x51,
-	0xbb, 0x6b, 0x96, 0x26, 0xd8, 0xb5, 0x40, 0x0d, 0x28, 0x7d, 0xe2, 0x9e, 0x51, 0x92, 0x4b, 0xa5,
-	0x90, 0x7b, 0xa8, 0x0d, 0xe5, 0x73, 0xca, 0x1d, 0x26, 0x0c, 0x4d, 0x2e, 0x96, 0x85, 0x8c, 0x50,
-	0x13, 0xf4, 0xb3, 0x11, 0x75, 0x98, 0xa1, 0xcb, 0x65, 0xdd, 0x8d, 0x02, 0x64, 0x40, 0xa5, 0x47,
-	0xa7, 0xe7, 0x37, 0x13, 0x66, 0x94, 0x3b, 0x6a, 0x57, 0xb7, 0x2a, 0xe3, 0x38, 0x44, 0x26, 0xac,
-	0xf6, 0xe8, 0xf4, 0x94, 0xfb, 0xe1, 0xc4, 0xa8, 0xc8, 0x2b, 0xab, 0xe3, 0x24, 0xc6, 0xbb, 0xb0,
-	0x66, 0xa7, 0x9b, 0x19, 0x98, 0x7a, 0x0a, 0xb3, 0x47, 0x47, 0x2c, 0x85, 0x39, 0xa6, 0x23, 0x86,
-	0x6d, 0xa8, 0xcf, 0x9a, 0x0b, 0x26, 0xfe, 0x38, 0x90, 0x95, 0x4f, 0x38, 0x3f, 0xf2, 0x87, 0x2c,
-	0x69, 0xb1, 0xc2, 0xe2, 0x30, 0xea, 0xe0, 0x84, 0xf3, 0xf7, 0x81, 0x93, 0xa4, 0x28, 0x33, 0x19,
-	0x25, 0x85, 0x4a, 0xe9, 0x3c, 0xf0, 0x63, 0xa8, 0x7e, 0x90, 0x83, 0xed, 0xd1, 0xe9, 0xd9, 0x30,
-	0x6a, 0xf0, 0x33, 0xf5, 0xc2, 0x34, 0x9d, 0x3e, 0x8d, 0x02, 0xfc, 0x4b, 0x05, 0x2d, 0xc2, 0xfa,
-	0x1f, 0x4f, 0xf3, 0x07, 0xd4, 0x3f, 0x86, 0x8c, 0xdf, 0x64, 0xa8, 0xcf, 0x24, 0x52, 0x17, 0x13,
-	0x35, 0x41, 0x8f, 0xb3, 0xc4, 0xb8, 0x75, 0x47, 0x72, 0xd0, 0x04, 0xfd, 0x90, 0x39, 0xee, 0x58,
-	0x42, 0xd7, 0x2d, 0xbd, 0x1f, 0x05, 0x51, 0x8b, 0xb6, 0x7b, 0xcb, 0x24, 0x74, 0xdd, 0xd2, 0x02,
-	0xf7, 0x96, 0xe1, 0xe7, 0xd0, 0x98, 0x17, 0x4b, 0xa8, 0x78, 0x04, 0xda, 0x3b, 0x37, 0x10, 0x86,
-	0xda, 0x29, 0x75, 0xab, 0x7b, 0x3a, 0x89, 0xe6, 0x65, 0x69, 0x9e, 0x1b, 0x08, 0xdc, 0x86, 0x66,
-	0x7a, 0x5c, 0x96, 0x4d, 0x00, 0xe2, 0x7d, 0x68, 0xe5, 0xd6, 0x93, 0x5c, 0x9d, 0x39, 0x0b, 0x51,
-	0x32, 0x20, 0x33, 0xa1, 0xa4, 0x8c, 0x74, 0xa1, 0x31, 0xa3, 0x4d, 0x6e, 0xdc, 0xc9, 0xdd, 0x3e,
-	0x6c, 0x25, 0xaa, 0xc9, 0xd6, 0x2e, 0x62, 0x72, 0x49, 0x70, 0x5f, 0xa1, 0xb9, 0x78, 0xf5, 0xc1,
-	0x54, 0x77, 0x05, 0xad, 0x28, 0xb3, 0xcd, 0x28, 0x1f, 0x5c, 0x7e, 0xf1, 0xf9, 0xf0, 0x1e, 0x58,
-	0xd1, 0x76, 0x0a, 0xeb, 0xa7, 0xcf, 0x87, 0xa8, 0x03, 0xd5, 0xf8, 0xe2, 0x91, 0x1f, 0x8e, 0x45,
-	0xc2, 0x56, 0x35, 0x98, 0x2f, 0x45, 0xb7, 0xde, 0x78, 0xd4, 0x49, 0x39, 0xfb, 0xee, 0x51, 0x07,
-	0x5f, 0x40, 0x3b, 0x5f, 0xf2, 0xc1, 0xda, 0x79, 0x0a, 0x75, 0xfb, 0x26, 0x98, 0xa7, 0xbe, 0x93,
-	0x0c, 0x07, 0xaa, 0xf6, 0xfc, 0xd8, 0x3f, 0xec, 0xf6, 0x19, 0xb4, 0xa5, 0xb4, 0x96, 0x27, 0x9c,
-	0xea, 0x59, 0xcd, 0xe8, 0xf9, 0x00, 0xb6, 0x97, 0x4e, 0x27, 0xc3, 0xc1, 0x8b, 0x52, 0xac, 0x91,
-	0x0c, 0xfe, 0xa4, 0xab, 0xbd, 0x3f, 0x1a, 0xac, 0xc7, 0x6a, 0xb4, 0xe3, 0xc7, 0x19, 0x11, 0xa8,
-	0x24, 0xca, 0x41, 0x75, 0xb2, 0xf8, 0x22, 0x9b, 0x0d, 0x92, 0x7b, 0xc5, 0xb0, 0x82, 0x76, 0xa0,
-	0x7c, 0xca, 0x44, 0x74, 0xbc, 0x46, 0x32, 0xcf, 0x91, 0x19, 0xdb, 0x08, 0x2b, 0xe8, 0x15, 0xd4,
-	0x52, 0xab, 0x44, 0x2e, 0x43, 0x0d, 0x92, 0x73, 0xbb, 0xb9, 0x49, 0xf2, 0x96, 0xc4, 0x0a, 0x7a,
-	0x02, 0x6b, 0xc7, 0xcc, 0x63, 0x82, 0x2d, 0xa7, 0xae, 0x10, 0x8b, 0x05, 0xa1, 0x27, 0xb0, 0x82,
-	0x0e, 0xa0, 0x96, 0xd5, 0x39, 0x6a, 0x92, 0x02, 0xc7, 0x98, 0x2d, 0x52, 0x64, 0x06, 0xac, 0xa0,
-	0x63, 0xd8, 0x5c, 0xb0, 0xb1, 0x04, 0xd8, 0x22, 0x45, 0x96, 0x37, 0xdb, 0xa4, 0xd0, 0xf1, 0x58,
-	0x41, 0x04, 0x36, 0x66, 0x50, 0x63, 0x18, 0x9b, 0x24, 0x6f, 0xf1, 0x2c, 0xe8, 0xa3, 0xf8, 0xaf,
-	0x2e, 0xa3, 0xa6, 0x36, 0x29, 0xf4, 0x94, 0xb9, 0x4d, 0x8a, 0x85, 0x8f, 0x15, 0xf4, 0x02, 0xd6,
-	0x4f, 0x99, 0xc8, 0xe4, 0x68, 0x90, 0x9c, 0x90, 0xcd, 0x05, 0xc6, 0xb1, 0x82, 0xde, 0xc2, 0x56,
-	0x4e, 0x2b, 0xb2, 0xdf, 0x6d, 0x52, 0xac, 0x37, 0xd3, 0x20, 0x77, 0x48, 0x0b, 0x2b, 0x68, 0x17,
-	0x1a, 0x71, 0xcf, 0xf7, 0x22, 0x98, 0x37, 0x7d, 0xb8, 0x03, 0x5b, 0x03, 0x7f, 0x44, 0x1c, 0x57,
-	0x5c, 0x86, 0x7d, 0xe2, 0xf8, 0x7b, 0x3e, 0xe1, 0x93, 0xc1, 0xc5, 0x2a, 0xd9, 0x7d, 0x2d, 0xbf,
-	0x00, 0xfa, 0x65, 0xf9, 0xf3, 0xf2, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x1c, 0x37, 0x15, 0xa7,
-	0x2e, 0x08, 0x00, 0x00,
+var fileDescriptor_portal_service_bab3b0b29f523779 = []byte{
+	// 725 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0xcd, 0x4e, 0xdb, 0x40,
+	0x10, 0xb6, 0x49, 0x9c, 0xc0, 0x24, 0x90, 0xb0, 0x24, 0xc1, 0xf5, 0x85, 0x68, 0x5b, 0xa9, 0x39,
+	0xb4, 0x83, 0x4a, 0xd5, 0x03, 0xaa, 0xb8, 0xf0, 0x53, 0x94, 0xaa, 0x8d, 0x5a, 0x9b, 0xfe, 0x88,
+	0x4b, 0x65, 0x92, 0x95, 0x89, 0x6a, 0x70, 0x58, 0xdb, 0x51, 0xe9, 0xd3, 0xf4, 0xdc, 0x17, 0xeb,
+	0x6b, 0x54, 0xbb, 0x6b, 0x27, 0x8e, 0x63, 0x38, 0x51, 0xa9, 0x27, 0x66, 0xc6, 0xbb, 0x33, 0xdf,
+	0xcc, 0x7c, 0xdf, 0x12, 0x68, 0x4d, 0x02, 0x1e, 0xb9, 0xfe, 0xb7, 0x90, 0xf1, 0xe9, 0x78, 0xc8,
+	0x70, 0xc2, 0x83, 0x28, 0xb0, 0xea, 0x9e, 0x1f, 0x5c, 0xb8, 0xbe, 0xf2, 0xe8, 0x6f, 0x1d, 0x36,
+	0x1c, 0x77, 0xca, 0x06, 0xee, 0xd4, 0x66, 0x37, 0x31, 0x0b, 0x23, 0xb2, 0x01, 0x2b, 0xfd, 0x91,
+	0xa9, 0x77, 0xf5, 0x5e, 0xc9, 0x5e, 0xe9, 0x8f, 0x08, 0x81, 0xf2, 0x19, 0xfb, 0x11, 0x99, 0x2b,
+	0x5d, 0xbd, 0xb7, 0x66, 0x4b, 0x9b, 0x34, 0xa1, 0xf4, 0x89, 0xfb, 0x66, 0x49, 0x86, 0x84, 0x49,
+	0x3a, 0x50, 0x39, 0x73, 0xb9, 0xc7, 0x22, 0xb3, 0x2c, 0x83, 0x89, 0x47, 0x5a, 0x60, 0xf4, 0xaf,
+	0x5c, 0x8f, 0x99, 0x86, 0x0c, 0x2b, 0x87, 0x98, 0x50, 0x1d, 0xb8, 0xd3, 0xb3, 0xdb, 0x09, 0x33,
+	0x2b, 0x5d, 0xbd, 0x67, 0xd8, 0xa9, 0x4b, 0x2c, 0x58, 0x1d, 0xb8, 0xd3, 0x53, 0x1e, 0xc4, 0x13,
+	0xb3, 0x2a, 0xaf, 0xcc, 0x7c, 0xba, 0x0b, 0x6b, 0x4e, 0xea, 0x64, 0x60, 0x1a, 0x29, 0xcc, 0x81,
+	0x7b, 0xc5, 0x52, 0x98, 0xc2, 0xa6, 0x0e, 0x34, 0x66, 0xcd, 0x85, 0x93, 0xe0, 0x3a, 0x94, 0x95,
+	0x4f, 0x38, 0x3f, 0x0a, 0x46, 0x2c, 0x69, 0x31, 0x75, 0x45, 0x07, 0x27, 0x9c, 0xbf, 0x0f, 0xbd,
+	0x24, 0x45, 0xe2, 0x25, 0x85, 0x4a, 0xe9, 0x3c, 0xe8, 0x63, 0xa8, 0x7d, 0x90, 0x83, 0x1d, 0xb8,
+	0xd3, 0xfe, 0x48, 0x34, 0xf8, 0xd9, 0xf5, 0xe3, 0x34, 0x9d, 0x72, 0xe8, 0x2f, 0x1d, 0xca, 0x02,
+	0xeb, 0x7f, 0x3c, 0xcd, 0xef, 0xd0, 0xf8, 0x18, 0x33, 0x7e, 0x9b, 0x59, 0x7d, 0x26, 0x91, 0xbe,
+	0x98, 0xa8, 0x05, 0x86, 0xca, 0xa2, 0x70, 0x2b, 0x47, 0x44, 0x0f, 0x99, 0x37, 0xbe, 0x96, 0xd0,
+	0x0d, 0x5b, 0x39, 0xa2, 0x45, 0x67, 0xfc, 0x93, 0x49, 0xe8, 0x86, 0x2d, 0x6d, 0xfa, 0x1c, 0x9a,
+	0xf3, 0x62, 0xc9, 0x2a, 0x1e, 0x41, 0xf9, 0xdd, 0x38, 0x8c, 0x4c, 0xbd, 0x5b, 0xea, 0xd5, 0xf6,
+	0x0c, 0x14, 0xf3, 0xb2, 0x65, 0x88, 0x76, 0xa0, 0x95, 0x1e, 0x97, 0x95, 0x12, 0x80, 0x74, 0x1f,
+	0xda, 0xb9, 0x78, 0x92, 0xab, 0x3b, 0xdf, 0x82, 0x48, 0x06, 0x38, 0x23, 0x4a, 0xba, 0x91, 0x1e,
+	0x34, 0x67, 0x6b, 0x93, 0x1f, 0xee, 0xdc, 0xdd, 0x3e, 0x6c, 0x25, 0xac, 0xc9, 0xd6, 0x2e, 0xda,
+	0xe4, 0x12, 0xe1, 0xbe, 0x42, 0x6b, 0xf1, 0xea, 0x83, 0xb1, 0xee, 0x06, 0xda, 0x22, 0xb3, 0xc3,
+	0x5c, 0x3e, 0xbc, 0xfc, 0x12, 0xf0, 0xd1, 0x3d, 0xb0, 0xc4, 0xe7, 0x14, 0x96, 0xb0, 0x49, 0x17,
+	0x6a, 0xea, 0xe2, 0x51, 0x10, 0x5f, 0x47, 0xc9, 0xb6, 0xb2, 0x21, 0x71, 0xeb, 0x8d, 0xef, 0x7a,
+	0xe9, 0xce, 0x84, 0x4d, 0xcf, 0xa1, 0x93, 0x2f, 0xf9, 0x60, 0xed, 0x3c, 0x85, 0x86, 0x73, 0x1b,
+	0xce, 0x53, 0xdf, 0xb9, 0x0c, 0x0f, 0x6a, 0xce, 0xfc, 0xd8, 0x3f, 0xec, 0xf6, 0x19, 0x74, 0x24,
+	0xb5, 0x96, 0x27, 0x9c, 0xf2, 0x59, 0xcf, 0xf0, 0xf9, 0x00, 0xb6, 0x97, 0x4e, 0x27, 0xc3, 0xa1,
+	0x8b, 0x54, 0xac, 0x63, 0x06, 0x7f, 0xd2, 0xd5, 0xde, 0x9f, 0x32, 0xac, 0x2b, 0x36, 0x3a, 0xea,
+	0x71, 0x26, 0x08, 0xd5, 0x84, 0x39, 0xa4, 0x81, 0x8b, 0x2f, 0xb2, 0xd5, 0xc4, 0xdc, 0x2b, 0x46,
+	0x35, 0xb2, 0x03, 0x95, 0x53, 0x16, 0x89, 0xe3, 0x75, 0xcc, 0x3c, 0x47, 0x96, 0x92, 0x11, 0xd5,
+	0xc8, 0x2b, 0xa8, 0xa7, 0x52, 0x11, 0x92, 0x22, 0x4d, 0xcc, 0xa9, 0xdd, 0xda, 0xc4, 0xbc, 0x24,
+	0xa9, 0x46, 0x9e, 0xc0, 0xda, 0x31, 0xf3, 0x59, 0xc4, 0x96, 0x53, 0x57, 0xd1, 0x66, 0x61, 0xec,
+	0x47, 0x54, 0x23, 0x07, 0x50, 0xcf, 0xf2, 0x9c, 0xb4, 0xb0, 0x40, 0x31, 0x56, 0x1b, 0x8b, 0xc4,
+	0x40, 0x35, 0x72, 0x0c, 0x9b, 0x0b, 0x32, 0x96, 0x00, 0xdb, 0x58, 0x24, 0x79, 0xab, 0x83, 0x85,
+	0x8a, 0xa7, 0x1a, 0x41, 0xd8, 0x98, 0x41, 0x55, 0x30, 0x36, 0x31, 0x2f, 0xf1, 0x2c, 0xe8, 0x23,
+	0xf5, 0xaf, 0x2e, 0xc3, 0xa6, 0x0e, 0x16, 0x6a, 0xca, 0xda, 0xc6, 0x62, 0xe2, 0x53, 0x8d, 0xbc,
+	0x80, 0xf5, 0x53, 0x16, 0x65, 0x72, 0x34, 0x31, 0x47, 0x64, 0x6b, 0x61, 0xe3, 0x54, 0x23, 0x6f,
+	0x61, 0x2b, 0xc7, 0x15, 0xd9, 0xef, 0x36, 0x16, 0xf3, 0xcd, 0x32, 0xf1, 0x0e, 0x6a, 0x51, 0x8d,
+	0xec, 0x42, 0x53, 0xf5, 0x7c, 0x2f, 0x82, 0x79, 0xd3, 0x87, 0x3b, 0xb0, 0x35, 0x0c, 0xae, 0xd0,
+	0x1b, 0x47, 0x97, 0xf1, 0x05, 0x7a, 0xc1, 0x5e, 0x80, 0x7c, 0x32, 0x3c, 0x5f, 0xc5, 0xdd, 0xd7,
+	0xf2, 0x17, 0xc0, 0x45, 0x45, 0xfe, 0x79, 0xf9, 0x37, 0x00, 0x00, 0xff, 0xff, 0x53, 0xa6, 0xbe,
+	0x12, 0x2e, 0x08, 0x00, 0x00,
 }
