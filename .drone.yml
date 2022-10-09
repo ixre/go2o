@@ -18,4 +18,4 @@ steps:
         - GOPROXY=https://goproxy.io
 trigger:
   branch:
-    - master
+    - main 
