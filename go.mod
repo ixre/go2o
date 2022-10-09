@@ -29,7 +29,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.13.0
+	github.com/ixre/gof v1.13.1
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/lib/pq v1.10.4 // indirect
 	github.com/nats-io/nats-server/v2 v2.2.0 // indirect

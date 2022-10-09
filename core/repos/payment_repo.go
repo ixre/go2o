@@ -12,6 +12,10 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"log"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
@@ -20,9 +24,6 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
-	"strings"
-	"time"
 )
 
 var _ payment.IPaymentRepo = new(paymentRepoImpl)
@@ -128,7 +129,7 @@ func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 	if err == nil {
 		v.Id = id
 		// 缓存订单
-		p.Storage.SetExpire(p.getPaymentOrderCk(id), v, DefaultCacheSeconds)
+		p.Storage.SetExpire(p.getPaymentOrderCk(id), *v, DefaultCacheSeconds)
 		// 缓存订单号与订单的关系
 		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
 		// 已经更改过状态,且为已成功,则推送到队列中
