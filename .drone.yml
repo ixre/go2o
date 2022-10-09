@@ -19,5 +19,3 @@ steps:
 trigger:
   branch:
     - master
-    - feature
-    - r
