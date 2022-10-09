@@ -128,7 +128,7 @@ func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 	if err == nil {
 		v.Id = id
 		// 缓存订单
-		p.Storage.SetExpire(p.getPaymentOrderCk(id), *v, DefaultCacheSeconds)
+		p.Storage.SetExpire(p.getPaymentOrderCk(id), v, DefaultCacheSeconds)
 		// 缓存订单号与订单的关系
 		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
 		// 已经更改过状态,且为已成功,则推送到队列中
