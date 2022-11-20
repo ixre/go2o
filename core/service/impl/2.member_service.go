@@ -14,6 +14,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/golang-jwt/jwt"
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
@@ -35,10 +40,6 @@ import (
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 	context2 "golang.org/x/net/context"
-	"log"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var _ proto.MemberServiceServer = new(memberService)
@@ -725,7 +726,7 @@ func (s *memberService) GrantAccessToken(_ context.Context, request *proto.Grant
 	expiresTime := time.Now().Unix() + request.Expire
 	// 创建token并返回
 	claims := api.CreateClaims(strconv.Itoa(int(request.MemberId)), "go2o",
-		"go2o-server-jwt", expiresTime).(jwt.MapClaims)
+		"go2o-api-jwt", expiresTime).(jwt.MapClaims)
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ go2o][ error]: grant access token error ", err.Error())
@@ -776,7 +777,7 @@ func (s *memberService) CheckAccessToken(c context.Context, request *proto.Check
 		return &proto.CheckAccessTokenResponse{Error: "令牌超过有效期", IsExpires: true}, nil
 	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
-		dstClaims["sub"] != "go2o-server-jwt" {
+		dstClaims["sub"] != "go2o-api-jwt" {
 		return &proto.CheckAccessTokenResponse{Error: "未知颁发者的令牌"}, nil
 	}
 	return &proto.CheckAccessTokenResponse{

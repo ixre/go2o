@@ -1,8 +1,9 @@
 package api
 
 import (
-	api "github.com/ixre/gof/jwt-api"
 	"time"
+
+	api "github.com/ixre/gof/jwt-api"
 )
 
 var _ api.Handler = new(AccessTokenApi)
