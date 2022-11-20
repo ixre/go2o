@@ -11,6 +11,8 @@ package core
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/core/infrastructure"
 	"github.com/ixre/gof"
@@ -18,7 +20,6 @@ import (
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 	"go.etcd.io/etcd/clientv3"
-	"time"
 )
 
 var (
@@ -61,7 +62,7 @@ func NewApp(confPath string, cfg *clientv3.Config) *AppImpl {
 	`)
 	s, err := infrastructure.NewEtcdStorage(*cfg)
 	if err != nil {
-		panic("[ go2o][ init]: " + err.Error())
+		panic("[ go2o][ ERROR]: " + err.Error())
 	}
 	return &AppImpl{
 		_storage:  s,
@@ -148,7 +149,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	//todo: charset for connection string?
 	conn, err := db.NewConnector(driver, connStr, l, debug)
 	if err == nil {
-		log.Println("[ Go2o][ Init]: create database connection..")
+		log.Println("[ Go2o][ INFO]: create database connection..")
 		if err := conn.Ping(); err != nil {
 			conn.Close()
 			//如果异常，则显示并退出

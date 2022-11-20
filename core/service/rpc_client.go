@@ -10,13 +10,14 @@ package service
 
 import (
 	"context"
+	"os"
+	"time"
+
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/log"
 	"go.etcd.io/etcd/clientv3"
 	"google.golang.org/grpc"
-	"os"
-	"time"
 )
 
 var addr string
@@ -26,10 +27,10 @@ var selector etcd.Selector
 func ConfigureClient(c *clientv3.Config, defaultAddr string) {
 	addr = defaultAddr
 	if c != nil {
-		log.Println("[ Go2o][ RPC]: connecting go2o rpc server...")
+		log.Println("[ Go2o][ INFO]: connecting go2o rpc server...")
 		s, err := etcd.NewSelector(service, *c, etcd.AlgRoundRobin)
 		if err != nil {
-			log.Println("[ Go2o][ RPC]: can't connect go2o rpc server! ", err.Error())
+			log.Println("[ Go2o][ ERROR]: can't connect go2o rpc server! ", err.Error())
 			os.Exit(1)
 		}
 		selector = s

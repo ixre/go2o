@@ -22,7 +22,7 @@ var (
 	etcdEndPoints string
 	host          string
 	port          int
-	apiPort       int
+	//apiPort       int
 	mqAddr        string
 	debug         bool
 	trace         bool
@@ -55,7 +55,7 @@ func ParseFlags() {
 		"nats cluster address, like: 192.168.1.1:4222,192.168.1.2:4222")
 	flag.BoolVar(&runDaemon, "d", true, "run daemon")
 	flag.IntVar(&port, "port", 1427, "gRPC service port")
-	flag.IntVar(&apiPort, "apiport", 1428, "api service port")
+	//flag.IntVar(&apiPort, "apiport", 1428, "api service port")
 	flag.BoolVar(&showVersion, "v", false, "print version")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
@@ -63,7 +63,7 @@ func ParseFlags() {
 	flag.Parse()
 }
 
-func Run(ch chan bool) {
+func Run(ch chan bool, after func(*clientv3.Config)) {
 	if help {
 		flag.Usage()
 		return
@@ -113,6 +113,10 @@ func Run(ch chan bool) {
 	//service.ConfigureClient(&cfg, "")
 	if runDaemon {
 		go daemon.Run(newApp)
+	}
+	// 启动后运行
+	if after != nil {
+		after(&cfg)
 	}
 	// 运行REST API
 	//go restapi.Run(ch, newApp, apiPort)
