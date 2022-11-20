@@ -2,14 +2,15 @@ package service
 
 import (
 	"fmt"
+	"net"
+	"strconv"
+
 	grpc2 "github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/log"
 	"go.etcd.io/etcd/clientv3"
 	"google.golang.org/grpc"
-	"net"
-	"strconv"
 )
 
 /**
@@ -65,7 +66,7 @@ func serveRPC(ch chan bool, s *grpc.Server, port int) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("[ Go2o][ API]: grpc node serve on port :" + strconv.Itoa(port))
+	log.Println("[ Go2o][ RPC]: grpc node serve on port :" + strconv.Itoa(port))
 	if err = s.Serve(l); err != nil {
 		ch <- false
 		panic(err)

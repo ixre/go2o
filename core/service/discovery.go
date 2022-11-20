@@ -2,10 +2,11 @@ package service
 
 import (
 	"fmt"
+	"net"
+
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/gof/log"
 	"go.etcd.io/etcd/clientv3"
-	"net"
 )
 
 /**
@@ -35,7 +36,7 @@ func RegisterServiceDiscovery(cfg *clientv3.Config, host string, port int) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println(fmt.Sprintf("[ Go2o][ RPC]: server discovery register success. node: %s:%d", ip, port))
+	log.Println(fmt.Sprintf("[ Go2o][ RPC]: service registration discovery succeeded. node: %s:%d", ip, port))
 }
 
 func resolveIp() string {
