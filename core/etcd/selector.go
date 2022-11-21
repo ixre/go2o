@@ -14,12 +14,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go.etcd.io/etcd/clientv3"
 	"log"
 	"math/rand"
 	"strconv"
 	"strings"
 	"time"
+
+	"go.etcd.io/etcd/clientv3"
 )
 
 func init() {
@@ -154,7 +155,7 @@ func (s *serverSelector) GetVal(val []byte) (Node, error) {
 func (s *serverSelector) loadNodes() {
 	res, err := s.cli.Get(context.TODO(), s.GetKey(), clientv3.WithPrefix(), clientv3.WithSerializable())
 	if err != nil {
-		log.Printf("[Watch] err : %s", err.Error())
+		log.Printf("[ Watch] err : %s", err.Error())
 		return
 	}
 	for _, kv := range res.Kvs {
@@ -164,5 +165,9 @@ func (s *serverSelector) loadNodes() {
 			continue
 		}
 		s.nodes = append(s.nodes, node)
+		fmt.Sprintf("[ Go2o][ Info]: found node %s", node.Addr)
+	}
+	if len(s.nodes) == 0 {
+		fmt.Sprintf("[ Go2o][ Warning]: no found any nodes")
 	}
 }

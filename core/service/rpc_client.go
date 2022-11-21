@@ -10,6 +10,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -20,13 +21,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-var addr string
+var staticAddr string
 var selector etcd.Selector
 
 // ConfigureClient 设置RPC地址,defaultAddr为默认地址,当未指定clientv3.Config时使用
 func ConfigureClient(c *clientv3.Config, defaultAddr string) {
-	addr = defaultAddr
-	if c != nil {
+	staticAddr = defaultAddr
+	if c != nil && len(staticAddr) == 0 {
 		log.Println("[ Go2o][ INFO]: connecting go2o rpc server...")
 		s, err := etcd.NewSelector(service, *c, etcd.AlgRoundRobin)
 		if err != nil {
@@ -34,8 +35,10 @@ func ConfigureClient(c *clientv3.Config, defaultAddr string) {
 			os.Exit(1)
 		}
 		selector = s
-		tryConnect(30)
+	} else if len(staticAddr) > 0 {
+		log.Printf("[ Go2o][ INFO]: connecting static rpc server (node:%s)...\n", staticAddr)
 	}
+	tryConnect(30)
 }
 
 // 尝试连接服务,如果连接不成功,则退出
@@ -56,18 +59,22 @@ func tryConnect(retryTimes int) {
 
 // 获取连接
 func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
-	addr := addr
-	if selector != nil {
+	addr := staticAddr
+	if len(addr) == 0 && selector != nil {
 		next, err := selector.Next()
 		if err != nil {
 			return nil, err
 		}
 		addr = next.Addr
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	conn, err := grpc.DialContext(ctx, addr, grpc.WithInsecure(), grpc.WithBlock())
-	cancel()
-	return conn, err
+	defer cancel()
+	if err != nil {
+		log.Printf("[ Go2o][ ERROR]: %s addr:%s \n", err.Error(), addr)
+		return conn, fmt.Errorf("%s addr:%s", err.Error(), addr)
+	}
+	return conn, nil
 }
 
 // StatusServiceClient 状态客户端
