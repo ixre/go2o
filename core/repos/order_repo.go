@@ -11,6 +11,7 @@ package repos
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -31,6 +32,7 @@ import (
 	orderImpl "github.com/ixre/go2o/core/domain/order"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -311,6 +313,12 @@ func (o *OrderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 	//log.Println("----- order notify ! orderNo:", orderNo, " sub:", sub)
 }
 
+// 推送子订单到消息队列
+func (o *OrderRepImpl) pushSubOrderMessage(order *order.NormalSubOrder) {
+	bytes, _ := json.Marshal(*order)
+	go msq.Push(msq.ORDER_NormalOrderStatusChange, string(bytes))
+}
+
 // Save OrderList
 func (o *OrderRepImpl) saveOrder(v *order.Order) (int, error) {
 	id, err := orm.Save(o._orm, v, int(v.Id))
@@ -329,9 +337,7 @@ func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 	}
 	// 判断业务状态是否改变
 	statusIsChanged := true
-	if v.Id <= 0 {
-		statusIsChanged = true
-	} else {
+	if v.Id > 0 {
 		origin := o.GetOrder("id= $1", v.Id)
 		statusIsChanged = origin.Status != v.Status
 	}
@@ -378,7 +384,7 @@ func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 		v.Id = int64(id)
 		//如果业务状态已经发生改变,则提交到队列
 		if statusIsChanged {
-			o.pushOrderQueue(v.OrderNo, true)
+			o.pushSubOrderMessage(v)
 		}
 	}
 	return id, err
