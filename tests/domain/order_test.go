@@ -57,11 +57,12 @@ func logState(t *testing.T, err error, o order.IOrder) {
 }
 
 func TestOrderSetup(t *testing.T) {
-	orderNo := "100000735578"
+	orderNo := "1220606007633559"
 	orderRepo := ti.Factory.GetOrderRepo()
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
 
+	t.Logf("order:%#v",o.GetValue())
 	t.Log("-[ 订单状态为:" + order.OrderStatus(o.GetValue().Status).String())
 
 	err := o.PaymentFinishByOnlineTrade()
