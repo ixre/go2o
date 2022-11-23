@@ -90,37 +90,37 @@ service RbacService {
 // 用户登录
 message RbacLoginRequest {
     // 用户名
-    string User =  1;
+    string username =  1;
     // md5密码
-    string Pwd = 2;
+    string password = 2;
     // 令牌的过期时间(单位：秒)
-    int32 Expires = 3;
+    int32 expires = 3;
 }
 
 // 用户登录响应
 message RbacLoginResponse {
     // 错误编码,0为成功
-    int64 ErrCode = 1;
+    int64 errCode = 1;
     // 错误消息
-    string ErrMsg = 2;
+    string errMsg = 2;
     // 用户编号
     int64 userId =  3;
     // 访问令牌
-    string AccessToken = 4;
+    string accessToken = 4;
     // 角色标志
-    repeated string Permissions = 5;
+    repeated string permissions = 5;
     // 角色编号
-    repeated int64 Roles = 6;
+    repeated int64 roles = 6;
 }
 
 // 用户资源响应,如果无用户则默认为超级管理员
 message RbacUserResourceResponse {
     // 角色编号
-    repeated int64 Roles = 1;
+    repeated int64 roles = 1;
     // 权限标志
-    repeated string Permissions = 2;
+    repeated string permissions = 2;
     // 菜单
-    repeated SUserRes Resources = 3;
+    repeated SUserRes resources = 3;
 }
 
 
@@ -128,80 +128,80 @@ message SUserRes {
     /** ID */
     int64 id = 1;
     /** 资源键 */
-    string Key = 2;
+    string key = 2;
     /** 资源名称 */
-    string Name = 3;
+    string name = 3;
     /** 资源类型,0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 ResType= 4;
+    int32 resType= 4;
     /** 深度/层级 */
-    int32 Depth = 5;
+    int32 depth = 5;
     /** 资源路径 */
-    string Path = 6;
+    string path = 6;
     /** 图标 */
-    string Icon = 7;
+    string icon = 7;
     /** 权限,多个值用|分隔 */
-    string Permission = 8;
+    string permission = 8;
     /** 排序 */
-    int32 SortNum = 9;
+    int32 sortNum = 9;
     /** 是否隐藏 */
-    bool IsHidden = 10;
+    bool isHidden = 10;
     /** 组件名称 */
-    string ComponentName = 11;
+    string componentName = 11;
     /** 子资源 */
-    repeated SUserRes Children = 12;
+    repeated SUserRes children = 12;
 }
 
 message RoleId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 message UserId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 
 
 message RbacTree {
     int64 id = 1;
-    string Label = 2;
-    repeated RbacTree Children = 3;
+    string label = 2;
+    repeated RbacTree children = 3;
 }
 
 message SavePermDeptRequest {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 上级部门 */
-    int64 Pid = 3;
+    int64 pid = 3;
     /** 部门编码 */
-    string Code = 4;
+    string code = 4;
     /** 状态 */
-    int32 Enabled = 5;
+    int32 enabled = 5;
     /** 创建日期 */
-    int64 CreateTime = 6;
+    int64 createTime = 6;
 }
 
 message SavePermDeptResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    int64 Id = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    int64 id = 3;
 }
 
 message PermDeptId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 message SPermDept {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 上级部门 */
-    int64 Pid = 3;
+    int64 pid = 3;
     /** 部门编码 */;
-    string Code = 4;
+    string code = 4;
     /** 状态 */
-    int32 Enabled = 5;
+    int32 enabled = 5;
     /** 创建日期 */
-    int64 CreateTime = 6;
+    int64 createTime = 6;
 }
 
 message QueryPermDeptRequest {
@@ -209,7 +209,7 @@ message QueryPermDeptRequest {
 }
 
 message QueryPermDeptResponse {
-    repeated SPermDept List = 1;
+    repeated SPermDept list = 1;
 }
 
 
@@ -217,74 +217,74 @@ message SavePermJobRequest {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
-    string Name = 2;
+    string name = 2;
     /** 岗位状态 */
-    int32 Enabled = 3;
+    int32 enabled = 3;
     /** 岗位排序 */
-    int32 Sort = 4;
+    int32 sort = 4;
     /** 部门ID */
-    int64 DeptId = 5;
+    int64 deptId = 5;
     /** 创建日期 */
-    int64 CreateTime = 6;
+    int64 createTime = 6;
 }
 
 message SavePermJobResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    int64 Id = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    int64 id = 3;
 }
 
 message PermJobId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 
 message SPermJob {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
-    string Name = 2;
+    string name = 2;
     /** 岗位状态 */
-    int32 Enabled = 3;
+    int32 enabled = 3;
     /** 岗位排序 */
-    int32 Sort = 4;
+    int32 sort = 4;
     /** 部门ID */
-    int64 DeptId = 5;
+    int64 deptId = 5;
     /** 创建日期 */
-    int64 CreateTime = 6;
+    int64 createTime = 6;
 }
 
 message QueryPermJobRequest {
     // 部门编号,默认为0. 该部门下的岗位也会查询出来
-    int64 DepartId = 1;
+    int64 departId = 1;
 }
 
 message QueryPermJobResponse {
-    repeated SPermJob List = 1;
+    repeated SPermJob list = 1;
 }
 
 message PagingPermJob {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
-    string Name = 2;
+    string name = 2;
     /** 岗位状态 */
-    int32 Enabled = 3;
+    int32 enabled = 3;
     /** 岗位排序 */
-    int32 Sort = 4;
+    int32 sort = 4;
     /** 部门ID */
-    int64 DeptId = 5;
+    int64 deptId = 5;
     /** 创建日期 */
-    int64 CreateTime = 6;
+    int64 createTime = 6;
 }
 
 message PermJobPagingRequest {
     // 分页参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
 }
 
 message PermJobPagingResponse {
     int64 total = 1;
-    repeated PagingPermJob Value =  2;
+    repeated PagingPermJob value =  2;
 }
 
 
@@ -293,78 +293,78 @@ message SavePermUserRequest {
     /** ID */
     int64 id = 1;
     /** 用户名 */
-    string Usr = 2;
+    string username = 2;
     /** 密码 */
-    string Pwd = 3;
+    string password = 3;
     /** 标志 */
-    int32 Flag = 4;
+    int32 flag = 4;
     /** 头像 */
-    string Avatar = 5;
-    /** NickName */
-    string NickName = 6;
-    /** Gender */
-    string Gender = 7;
+    string avatar = 5;
+    /** 昵称 */
+    string nickName = 6;
+    /** 性别 */
+    string gender = 7;
     /** 邮箱 */
-    string Email = 8;
+    string email = 8;
     /** 手机号码 */
-    string Phone = 9;
+    string phone = 9;
     /** 部门编号 */
-    int64 DeptId = 10;
+    int64 deptId = 10;
     /** 岗位编号 */
-    int64 JobId = 11;
+    int64 jobId = 11;
     /** 状态：1启用、0禁用 */
-    int32 Enabled = 12;
+    int32 enabled = 12;
     /** 最后登录的日期 */
-    int64 LastLogin = 13;
+    int64 lastLogin = 13;
     /** 创建日期 */
-    int64 CreateTime = 14;
+    int64 createTime = 14;
     // 用户角色
-    repeated int64 Roles = 15;
+    repeated int64 roles = 15;
 }
 
 message SavePermUserResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    int64 Id = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    int64 id = 3;
 }
 
 message PermUserId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 
 message SPermUser {
     /** ID */
     int64 id = 1;
     /** 用户名 */
-    string Usr = 2;
+    string username = 2;
     /** 密码 */
-    string Pwd = 3;
+    string password = 3;
     /** 标志 */
-    int32 Flag = 4;
+    int32 flag = 4;
     /** 头像 */
-    string Avatar = 5;
+    string avatar = 5;
     /** NickName */
-    string NickName = 6;
+    string nickName = 6;
     /** Gender */
-    string Gender = 7;
+    string gender = 7;
     /** 邮箱 */
-    string Email = 8;
+    string email = 8;
     /** 手机号码 */
-    string Phone = 9;
+    string phone = 9;
     /** 部门编号 */
-    int64 DeptId = 10;
+    int64 deptId = 10;
     /** 岗位编号 */
-    int64 JobId = 11;
+    int64 jobId = 11;
     /** 状态：1启用、0禁用 */
-    int32 Enabled = 12;
+    int32 enabled = 12;
     /** 最后登录的日期 */
-    int64 LastLogin = 13;
+    int64 lastLogin = 13;
     /** 创建日期 */
-    int64 CreateTime = 14;
+    int64 createTime = 14;
     // 用户角色
-    repeated int64 Roles = 15;
+    repeated int64 roles = 15;
     // 权限
-    repeated string Permissions = 16;
+    repeated string permissions = 16;
 }
 
 message QueryPermUserRequest {
@@ -372,50 +372,50 @@ message QueryPermUserRequest {
 }
 
 message QueryPermUserResponse {
-    repeated SPermUser List = 1;
+    repeated SPermUser list = 1;
 }
 
 message PagingPermUser {
     /** ID */
     int64 id = 1;
     /** 用户名 */
-    string Usr = 2;
+    string username = 2;
     /** 密码 */
-    string Pwd = 3;
+    string password = 3;
     /** 标志 */
-    int32 Flag = 4;
+    int32 flag = 4;
     /** 头像 */
-    string Avatar = 5;
-    /** NickName */
-    string NickName = 6;
-    /** Gender */
-    string Gender = 7;
+    string avatar = 5;
+    /** 昵称 */
+    string nickName = 6;
+    /** 性别 */
+    string gender = 7;
     /** 邮箱 */
-    string Email = 8;
+    string email = 8;
     /** 手机号码 */
-    string Phone = 9;
+    string phone = 9;
     /** 部门编号 */
-    int64 DeptId = 10;
+    int64 deptId = 10;
     /** 岗位编号 */
-    int64 JobId = 11;
+    int64 jobId = 11;
     /** 状态：1启用、0禁用 */
-    int32 Enabled = 12;
+    int32 enabled = 12;
     /** 最后登录的日期 */
-    int64 LastLogin = 13;
+    int64 lastLogin = 13;
     /** 创建日期 */
-    int64 CreateTime = 14;
+    int64 createTime = 14;
 }
 
 message PermUserPagingRequest {
     // 部门编号,默认为0. 该部门下的用户也会查询出来
-    int64 DepartId = 1;
+    int64 departId = 1;
     // 分页参数
-    SPagingParams Params = 2;
+    SPagingParams params = 2;
 }
 
 message PermUserPagingResponse {
-    int64 Total = 1;
-    repeated PagingPermUser Value =  2;
+    int64 total = 1;
+    repeated PagingPermUser value =  2;
 }
 
 
@@ -423,51 +423,51 @@ message SavePermRoleRequest {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 角色级别 */
-    int32 Level = 3;
+    int32 level = 3;
     /** 数据权限 */
-    string DataScope = 4;
+    string dataScope = 4;
     /** 功能权限 */
-    string Permission = 5;
+    string permission = 5;
     /** 备注 */
-    string Remark = 6;
+    string remark = 6;
     /** 创建日期 */
-    int64 CreateTime = 7;
+    int64 createTime = 7;
 }
 
 // 更新角色资源请求
 message UpdateRoleResRequest {
-    int64 RoleId = 1;
-    repeated int64 Resources = 2;
+    int64 roleId = 1;
+    repeated int64 resources = 2;
 }
 message SavePermRoleResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    int64 Id = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    int64 id = 3;
 }
 
 message PermRoleId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 
 message SPermRole {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 角色级别 */
-    int32 Level = 3;
+    int32 level = 3;
     /** 数据权限 */
-    string DataScope = 4;
+    string dataScope = 4;
     /** 功能权限 */
-    string Permission = 5;
+    string permission = 5;
     /** 备注 */
-    string Remark = 6;
+    string remark = 6;
     /** 创建日期 */
-    int64 CreateTime = 7;
+    int64 createTime = 7;
     /** 关联的资源ID列表 */
-    repeated int64 RelatedResIdList = 8;
+    repeated int64 relatedResIdList = 8;
 }
 
 message QueryPermRoleRequest {
@@ -475,34 +475,34 @@ message QueryPermRoleRequest {
 }
 
 message QueryPermRoleResponse {
-    repeated SPermRole List = 1;
+    repeated SPermRole list = 1;
 }
 
 message PagingPermRole {
     /** ID */
     int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
     /** 角色级别 */
-    int32 Level = 3;
+    int32 level = 3;
     /** 数据权限 */
-    string DataScope = 4;
+    string dataScope = 4;
     /** 功能权限 */
-    string Permission = 5;
+    string permission = 5;
     /** 备注 */
-    string Remark = 6;
+    string remark = 6;
     /** 创建日期 */
-    int64 CreateTime = 7;
+    int64 createTime = 7;
 }
 
 message PermRolePagingRequest {
     // 分页参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
 }
 
 message PermRolePagingResponse {
-    int64 Total = 1;
-    repeated PagingPermRole Value =  2;
+    int64 total = 1;
+    repeated PagingPermRole value =  2;
 }
 
 
@@ -510,149 +510,149 @@ message SavePermResRequest {
     /** 资源ID */
     int64 id = 1;
     /** 资源名称 */
-    string Name = 2;
+    string name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 ResType= 3;
+    int32 resType= 3;
     /** 上级菜单ID */
-    int64 Pid = 4;
+    int64 pid = 4;
     /** 资源键 */
-    string Key = 5;
+    string key = 5;
     /** 资源路径 */
-    string Path = 6;
+    string path = 6;
     /** 图标 */
-    string Icon = 7;
+    string icon = 7;
     /** 权限,多个值用|分隔 */
-    string Permission = 8;
+    string permission = 8;
     /** 排序 */
-    int32 SortNum = 9;
+    int32 sortNum = 9;
     /** 是否外部 */
-    bool IsExternal = 10;
+    bool isExternal = 10;
     /** 是否隐藏 */
-    bool IsHidden = 11;
+    bool isHidden = 11;
     /** 创建日期 */
-    int64 CreateTime = 12;
+    int64 createTime = 12;
     /** 组件名称 */
-    string ComponentName = 13;
+    string componentName = 13;
     /** 缓存 */
-    string Cache = 14;
+    string cache = 14;
 }
 
 message SavePermResResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    int64 Id = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    int64 id = 3;
 }
 
 message PermResId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 
 message SPermRes {
     /** 资源ID */
     int64 id = 1;
     /** 资源名称 */
-    string Name = 2;
+    string name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 ResType= 3;
+    int32 resType= 3;
     /** 上级菜单ID */
-    int64 Pid = 4;
+    int64 pid = 4;
     /** 深度/层级 */
-    int32 Depth = 5;
+    int32 depth = 5;
     /** 资源键 */
-    string Key = 6;
+    string key = 6;
     /** 资源路径 */
-    string Path = 7;
+    string path = 7;
     /** 图标 */
-    string Icon = 8;
+    string icon = 8;
     /** 权限,多个值用|分隔 */
-    string Permission = 9;
+    string permission = 9;
     /** 排序 */
-    int32 SortNum = 10;
+    int32 sortNum = 10;
     /** 是否外部 */
-    bool IsExternal = 11;
+    bool isExternal = 11;
     /** 是否隐藏 */
-    bool IsHidden = 12;
+    bool isHidden = 12;
     /** 创建日期 */
-    int64 CreateTime = 13;
+    int64 createTime = 13;
     /** 组件名称 */
-    string ComponentName = 14;
+    string componentName = 14;
     /** 缓存 */
-    string Cache = 15;
+    string cache = 15;
     /** 是否为叶子节点 */
-    bool IsLeaf = 16;
+    bool isLeaf = 16;
     /** 子资源 */
-    repeated SPermRes Children = 17;
+    repeated SPermRes children = 17;
 }
 
 message GetUserResRequest {
     /** 用户编号 */
     int64 userId =  1;
     /** 是否只显示菜单 */
-    bool OnlyMenu = 2;
+    bool onlyMenu = 2;
 }
 
 message QueryPermResRequest {
     /** 关键词 */
-    string Keyword = 1;
+    string keyword = 1;
     /** 是否只显示菜单 */
-    bool OnlyMenu = 2;
+    bool onlyMenu = 2;
     /** 上级编号 */
-    int64 ParentId = 3;
+    int64 parentId = 3;
     /** 初始化数据ID */
-    int64 InitialId = 4;
+    int64 initialId = 4;
 }
 
 message QueryPermResResponse {
-    repeated SPermRes List = 1;
+    repeated SPermRes list = 1;
     // 返回初始化上级ID列表
-    repeated int64 InitialList = 2;
+    repeated int64 initialList = 2;
 }
 
 message PagingPermRes {
     /** 资源ID */
     int64 id = 1;
     /** 资源名称 */
-    string Name = 2;
+    string name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 ResType= 3;
+    int32 resType= 3;
     /** 上级菜单ID */
-    int64 Pid = 4;
+    int64 pid = 4;
     /** 资源键 */
-    string Key = 5;
+    string key = 5;
     /** 资源路径 */
-    string Path = 6;
+    string path = 6;
     /** 图标 */
-    string Icon = 7;
+    string icon = 7;
     /** 权限,多个值用|分隔 */
-    string Permission = 8;
+    string permission = 8;
     /** 排序 */
-    int32 SortNum = 9;
+    int32 sortNum = 9;
     /** 是否外部 */
-    bool IsExternal = 10;
+    bool isExternal = 10;
     /** 是否隐藏 */
-    bool IsHidden = 11;
+    bool isHidden = 11;
     /** 创建日期 */
-    int64 CreateTime = 12;
+    int64 createTime = 12;
     /** 组件名称 */
-    string ComponentName = 13;
+    string componentName = 13;
     /** 缓存 */
-    string Cache = 14;
+    string cache = 14;
 }
 
 message PermResPagingRequest {
     // 分页参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
 }
 
 message PermResPagingResponse {
     int64 total = 1;
-    repeated PagingPermRes Value =  2;
+    repeated PagingPermRes value =  2;
 }
 
 // 移动资源顺序
 message MoveResOrdinalRequest {
     /** 资源编号 */
-    int64 ResourceId = 1;
+    int64 resourceId = 1;
     /** 移动方向,0:向上移,1:向下移 */
-    int32 Direction = 2;
+    int32 direction = 2;
 }

@@ -52,16 +52,16 @@ func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegis
 }
 
 func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest) (*proto.RbacLoginResponse, error) {
-	if len(r.Pwd) != 32 {
+	if len(r.Password) != 32 {
 		return &proto.RbacLoginResponse{
 			ErrCode: 1,
 			ErrMsg:  "密码长度不正确，应该为32位长度的md5字符",
 		}, nil
 	}
 	// 超级管理员登录
-	if r.User == "master" {
+	if r.Username == "master" {
 		superPwd, _ := p.registryRepo.GetValue(registry.SysSuperLoginToken)
-		encPwd := domain.Sha1Pwd(r.User+r.Pwd, "")
+		encPwd := domain.Sha1Pwd(r.Username+r.Password, "")
 		if superPwd != encPwd {
 			return &proto.RbacLoginResponse{
 				ErrCode: 3,
@@ -75,14 +75,14 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		return p.withAccessToken(0, "master", dst, r.Expires)
 	}
 	// 普通系统用户登录
-	usr := p.dao.GetPermUserBy("usr=$1", r.User)
+	usr := p.dao.GetPermUserBy("usr=$1", r.Username)
 	if usr == nil {
 		return &proto.RbacLoginResponse{
 			ErrCode: 2,
 			ErrMsg:  "用户不存在",
 		}, nil
 	}
-	decPwd := crypto.Sha1([]byte(r.Pwd + usr.Salt))
+	decPwd := crypto.Sha1([]byte(r.Password + usr.Salt))
 	if usr.Pwd != decPwd {
 		return &proto.RbacLoginResponse{
 			ErrCode: 3,
@@ -431,14 +431,14 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 		dst.Salt = util.RandString(4)
 		dst.CreateTime = time.Now().Unix()
 	}
-	if l := len(r.Pwd); l > 0 {
+	if l := len(r.Password); l > 0 {
 		if l != 32 {
 			return &proto.SavePermUserResponse{
 				ErrCode: 1,
 				ErrMsg:  "非32位md5密码",
 			}, nil
 		}
-		dst.Pwd = crypto.Sha1([]byte(r.Pwd + dst.Salt))
+		dst.Pwd = crypto.Sha1([]byte(r.Password + dst.Salt))
 	}
 	dst.Flag = int(r.Flag)
 	dst.Avatar = r.Avatar
@@ -467,8 +467,8 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
 	return &proto.SPermUser{
 		Id:         v.Id,
-		Usr:        v.Usr,
-		Pwd:        v.Pwd,
+		Username:   v.Usr,
+		Password:   v.Pwd,
 		Flag:       int32(v.Flag),
 		Avatar:     v.Avatar,
 		NickName:   v.NickName,
@@ -533,8 +533,8 @@ func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPag
 	for i, v := range rows {
 		ret.Value[i] = &proto.PagingPermUser{
 			Id:         int64(typeconv.MustInt(v["id"])),
-			Usr:        typeconv.Stringify(v["usr"]),
-			Pwd:        typeconv.Stringify(v["pwd"]),
+			Username:   typeconv.Stringify(v["usr"]),
+			Password:   typeconv.Stringify(v["pwd"]),
 			Flag:       int32(typeconv.MustInt(v["flag"])),
 			Avatar:     typeconv.Stringify(v["avatar"]),
 			NickName:   typeconv.Stringify(v["nick_name"]),

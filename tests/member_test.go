@@ -87,7 +87,7 @@ func TestModifyPassword(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(2)
 	NewPassword := domain.MemberSha1Pwd(domain.Md5("13268240456"),
-	 m.GetValue().Salt)
+		m.GetValue().Salt)
 	err := m.Profile().ModifyPassword(NewPassword, "")
 	if err != nil {
 		t.Error(err)
