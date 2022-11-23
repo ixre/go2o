@@ -10,6 +10,7 @@ package impl
 
 import (
 	"context"
+
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
@@ -20,6 +21,7 @@ var _ proto.ExpressServiceServer = new(expressService)
 type expressService struct {
 	_rep express.IExpressRepo
 	serviceUtil
+	proto.UnimplementedExpressServiceServer
 }
 
 // 获取快递服务

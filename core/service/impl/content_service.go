@@ -24,6 +24,7 @@ type contentService struct {
 	_query       *query.ContentQuery
 	_sysContent  content.IContent
 	serviceUtil
+	proto.UnimplementedContentServiceServer
 }
 
 func NewContentService(rep content.IArchiveRepo, q *query.ContentQuery) *contentService {

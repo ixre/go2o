@@ -40,6 +40,7 @@ type itemService struct {
 	mchRepo   merchant.IMerchantRepo
 	valueRepo valueobject.IValueRepo
 	sto       storage.Interface
+	proto.UnimplementedItemServiceServer
 }
 
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,

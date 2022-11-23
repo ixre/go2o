@@ -25,6 +25,7 @@ type shipmentServiceImpl struct {
 	deliveryRepo delivery.IDeliveryRepo
 	expressRepo  express.IExpressRepo
 	serviceUtil
+	proto.UnimplementedShipmentServiceServer
 }
 
 // 获取快递服务
@@ -114,9 +115,6 @@ func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, rq *pr
 				ShipperCode:          sp.ApiCode,
 				LogisticCode:         spOrder,
 				Invert:               rq.Invert,
-				XXX_NoUnkeyedLiteral: struct{}{},
-				XXX_unrecognized:     nil,
-				XXX_sizecache:        0,
 			})
 			r.ShipperName = sp.Name
 			return r, err

@@ -9,7 +9,7 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/log"
-	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 )
 

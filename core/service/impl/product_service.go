@@ -19,6 +19,7 @@ type productService struct {
 	catRepo     product.ICategoryRepo
 	productRepo product.IProductRepo
 	serviceUtil
+	proto.UnimplementedProductServiceServer
 }
 
 func NewProductService(pmRepo promodel.IProductModelRepo,

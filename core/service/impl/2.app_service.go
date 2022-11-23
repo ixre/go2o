@@ -31,6 +31,12 @@ type appServiceImpl struct {
 	dao dao.IAppProdDao
 	s   storage.Interface
 	serviceUtil
+	proto.UnimplementedAppServiceServer
+}
+
+// mustEmbedUnimplementedAppServiceServer implements proto.AppServiceServer
+func (*appServiceImpl) mustEmbedUnimplementedAppServiceServer() {
+	panic("unimplemented")
 }
 
 func NewAppService(s storage.Interface, o orm.Orm) *appServiceImpl {

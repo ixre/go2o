@@ -53,6 +53,7 @@ type memberService struct {
 	valRepo      valueobject.IValueRepo
 	serviceUtil
 	sto storage.Interface
+	proto.UnimplementedMemberServiceServer
 }
 
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,

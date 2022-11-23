@@ -266,23 +266,20 @@ func OrderItem(src *proto.SOrderItem) *order.ComplexItem {
 
 func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 	return &proto.SOrderItem{
-		Id:                   src.ID,
-		SnapshotId:           src.SnapshotId,
-		SkuId:                src.SkuId,
-		ItemId:               src.ItemId,
-		ItemTitle:            "",
-		Image:                "",
-		Price:                0,
-		FinalPrice:           0,
-		Quantity:             src.Quantity,
-		ReturnQuantity:       src.ReturnQuantity,
-		ItemAmount:           src.Amount,
-		FinalAmount:          src.FinalAmount,
-		IsShipped:            src.IsShipped == 1,
-		Data:                 nil,
-		XXX_NoUnkeyedLiteral: struct{}{},
-		XXX_unrecognized:     nil,
-		XXX_sizecache:        0,
+		Id:             src.ID,
+		SnapshotId:     src.SnapshotId,
+		SkuId:          src.SkuId,
+		ItemId:         src.ItemId,
+		ItemTitle:      "",
+		Image:          "",
+		Price:          0,
+		FinalPrice:     0,
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		ItemAmount:     src.Amount,
+		FinalAmount:    src.FinalAmount,
+		IsShipped:      src.IsShipped == 1,
+		Data:           nil,
 	}
 }
 

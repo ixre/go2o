@@ -12,6 +12,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/ad"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/proto"
@@ -25,6 +26,11 @@ type advertisementService struct {
 	storage storage.Interface
 	//_query     *shopQuery.ContentQuery
 	serviceUtil
+	proto.UnimplementedAdvertisementServiceServer
+}
+
+// mustEmbedUnimplementedAdvertisementServiceServer implements proto.AdvertisementServiceServer
+func (*advertisementService) mustEmbedUnimplementedAdvertisementServiceServer() {
 }
 
 func (a *advertisementService) GetGroups(_ context.Context, empty *proto.Empty) (*proto.AdGroupResponse, error) {
@@ -112,7 +118,7 @@ func (a *advertisementService) GetAdvertisement(_ context.Context, r *proto.AdId
 	return nil, nil
 }
 
-//  获取广告数据传输对象
+// 获取广告数据传输对象
 func (a *advertisementService) getAdvertisementDto(ia ad.IAd) *proto.SAdvertisementDto {
 	dto := ia.Dto()
 	ret := &proto.SAdvertisementDto{Id: dto.Id, AdType: int32(dto.AdType)}

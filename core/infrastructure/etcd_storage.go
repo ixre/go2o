@@ -6,7 +6,7 @@ import (
 	"errors"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types/typeconv"
-	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"strconv"
 	"time"
 )

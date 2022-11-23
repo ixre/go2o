@@ -14,7 +14,7 @@ import (
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
-	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 )
 
 var (

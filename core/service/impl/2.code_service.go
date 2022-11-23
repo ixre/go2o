@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
@@ -16,6 +17,7 @@ type codeServiceImpl struct {
 	dao dao.ICommQrTemplateDao
 	s   storage.Interface
 	serviceUtil
+	proto.UnimplementedCodeServiceServer
 }
 
 func NewCodeService(sto storage.Interface, o orm.Orm) *codeServiceImpl {

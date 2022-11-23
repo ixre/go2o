@@ -28,6 +28,7 @@ type shopServiceImpl struct {
 	query        *query.ShopQuery
 	registryRepo registry.IRegistryRepo
 	serviceUtil
+	proto.UnimplementedShopServiceServer
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,

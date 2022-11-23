@@ -2,6 +2,8 @@ package impl
 
 import (
 	"context"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/qpay"
 	"github.com/ixre/go2o/core/infrastructure/qpay/hfb"
@@ -9,7 +11,6 @@ import (
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
-	"strings"
 )
 
 /**
@@ -29,6 +30,7 @@ type quickPayServiceImpl struct {
 	qp           qpay.QuickPayProvider
 	registryRepo registry.IRegistryRepo
 	serviceUtil
+	proto.UnimplementedQuickPayServiceServer
 }
 
 func NewQuickPayService(s storage.Interface,

@@ -14,12 +14,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go.etcd.io/etcd/clientv3"
 	"hash/crc32"
 	"log"
 	"net"
 	"strings"
 	"time"
+
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 var prefix = "/registry/server/"

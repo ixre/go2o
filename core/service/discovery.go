@@ -6,7 +6,7 @@ import (
 
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/gof/log"
-	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 )
 
 /**

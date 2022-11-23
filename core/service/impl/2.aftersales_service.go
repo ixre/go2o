@@ -28,6 +28,7 @@ type afterSalesService struct {
 	_query     *query.AfterSalesQuery
 	db.Connector
 	serviceUtil
+	proto.UnimplementedAfterSalesServiceServer
 }
 
 func NewAfterSalesService(rep afterSales.IAfterSalesRepo,
@@ -218,16 +219,16 @@ func (a *afterSalesService) ProcessAfterSalesOrder(_ context.Context, req *proto
 // 换货发货
 func (a *afterSalesService) ReturnShipment(_ context.Context, req *proto.ReturnShipmentRequest) (*proto.Result, error) {
 	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IReturnAfterSalesOrder)
-	return a.error(errors.New("该售后订单不支持当前操作")),nil
-	err := ex.ReturnShipment(req.ShipmentExpress, req.ShipmentOrder,"")
+	return a.error(errors.New("该售后订单不支持当前操作")), nil
+	err := ex.ReturnShipment(req.ShipmentExpress, req.ShipmentOrder, "")
 	return a.error(err), nil
 }
 
 // 换货收货
 func (a *afterSalesService) ReceiveItem(_ context.Context, req *proto.AfterSalesOrderNo) (*proto.Result, error) {
 	ex := a._rep.GetAfterSalesOrder(req.OrderNo).(afterSales.IReturnAfterSalesOrder)
-	if ex == nil{
-		return a.error(errors.New("该售后订单不支持当前操作")),nil
+	if ex == nil {
+		return a.error(errors.New("该售后订单不支持当前操作")), nil
 	}
 	err := ex.ReturnReceive()
 	return a.error(err), nil

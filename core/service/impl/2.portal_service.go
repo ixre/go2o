@@ -17,6 +17,7 @@ type portalService struct {
 	dao           dao.IPortalDao
 	searchWordDao dao.ISysSearchWordDao
 	serviceUtil
+	proto.UnimplementedPortalServiceServer
 }
 
 func NewPortalService(o orm.Orm, d *impl.CommonDao, portalDao dao.IPortalDao) *portalService {

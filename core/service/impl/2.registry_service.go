@@ -11,10 +11,11 @@ package impl
 import (
 	"context"
 	"errors"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/service/proto"
-	"strings"
 )
 
 var _ proto.RegistryServiceServer = new(registryService)
@@ -24,6 +25,7 @@ type registryService struct {
 	_rep         valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 	serviceUtil
+	proto.UnimplementedRegistryServiceServer
 }
 
 func (s *registryService) GetGroups(c context.Context, empty *proto.Empty) (*proto.RegistryGroupResponse, error) {

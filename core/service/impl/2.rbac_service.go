@@ -14,6 +14,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/golang-jwt/jwt"
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/impl"
@@ -27,8 +30,6 @@ import (
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
-	"strings"
-	"time"
 )
 
 var _ proto.RbacServiceServer = new(rbacServiceImpl)
@@ -39,6 +40,7 @@ type rbacServiceImpl struct {
 	registryRepo registry.IRegistryRepo
 	s            storage.Interface
 	serviceUtil
+	proto.UnimplementedRbacServiceServer
 }
 
 func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegistryRepo) *rbacServiceImpl {
@@ -313,7 +315,7 @@ func (p *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
 	return &proto.SPermDept{
 		Id:         v.Id,
 		Name:       v.Name,
-		Code:	v.Code,
+		Code:       v.Code,
 		Pid:        v.Pid,
 		Enabled:    int32(v.Enabled),
 		CreateTime: v.CreateTime,

@@ -25,9 +25,6 @@ func ParseSaleLabelDto(src *item.Label) *proto.SItemLabel {
 		TagCode:              src.TagCode,
 		LabelImage:           src.LabelImage,
 		Enabled:              src.Enabled == 1,
-		XXX_NoUnkeyedLiteral: struct{}{},
-		XXX_unrecognized:     nil,
-		XXX_sizecache:        0,
 	}
 }
 

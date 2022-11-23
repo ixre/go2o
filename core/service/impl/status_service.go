@@ -8,6 +8,7 @@ import (
 var _ proto.StatusServiceServer = new(statusServiceImpl)
 
 type statusServiceImpl struct {
+	proto.UnimplementedStatusServiceServer
 }
 
 func NewStatusService() *statusServiceImpl {

@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
@@ -18,6 +19,7 @@ func NewWalletService(repo wallet.IWalletRepo) *walletServiceImpl {
 type walletServiceImpl struct {
 	_repo wallet.IWalletRepo
 	serviceUtil
+	proto.UnimplementedWalletServiceServer
 }
 
 func (w *walletServiceImpl) CreateWallet(_ context.Context, r *proto.CreateWalletRequest) (*proto.Result, error) {

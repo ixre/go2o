@@ -33,6 +33,7 @@ type foundationService struct {
 	notifyRepo   notify.INotifyRepo
 	_s           storage.Interface
 	serviceUtil
+	proto.UnimplementedFoundationServiceServer
 }
 
 func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo notify.INotifyRepo) *foundationService {

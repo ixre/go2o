@@ -105,11 +105,11 @@ message CheckAccessTokenResponse{
 // 注册结果
 message RegisterResponse {
   // 状态码,如为0表示成功
-  int32 ErrCode = 1;
+  int32 errCode = 1;
   // 消息
-  string ErrMsg = 2;
+  string errMsg = 2;
   // 会员编号
-  int64 MemberId = 3;
+  int64 memberId = 3;
 }
 
 // 密码验证请求

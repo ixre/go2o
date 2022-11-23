@@ -24,6 +24,7 @@ type executionServiceImpl struct {
 	repo job.IJobRepo
 	s    storage.Interface
 	serviceUtil
+	proto.UnimplementedExecutionServiceServer
 }
 
 func NewExecDataService(s storage.Interface, repo job.IJobRepo) *executionServiceImpl {

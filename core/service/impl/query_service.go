@@ -28,6 +28,7 @@ type queryService struct {
 	shopQuery   *query.ShopQuery
 	orderQuery  *query.OrderQuery
 	memberQuery *query.MemberQuery
+	proto.UnimplementedQueryServiceServer
 }
 
 func NewQueryService(o orm.Orm, s storage.Interface) *queryService {

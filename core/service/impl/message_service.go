@@ -22,6 +22,7 @@ var _ proto.MessageServiceServer = new(messageService)
 type messageService struct {
 	_rep mss.IMssRepo
 	serviceUtil
+	proto.UnimplementedMessageServiceServer
 }
 
 func NewMessageService(rep mss.IMssRepo) *messageService {

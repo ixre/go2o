@@ -43,6 +43,7 @@ type orderServiceImpl struct {
 	memberRepo member.IMemberRepo
 	orderQuery *query.OrderQuery
 	serviceUtil
+	proto.UnimplementedOrderServiceServer
 }
 
 func NewShoppingService(r order.IOrderRepo,

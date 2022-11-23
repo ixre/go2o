@@ -8,6 +8,7 @@ import (
 var _ proto.GreeterServiceServer = new(TestServiceImpl)
 
 type TestServiceImpl struct {
+	proto.UnsafeGreeterServiceServer
 }
 
 func (t *TestServiceImpl) Hello(_ context.Context, user *proto.User1) (response *proto.UserResponse, err error) {

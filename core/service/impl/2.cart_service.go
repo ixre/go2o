@@ -35,6 +35,7 @@ type cartServiceImpl struct {
 	mchRepo  merchant.IMerchantRepo
 	shopRepo shop.IShopRepo
 	serviceUtil
+	proto.UnimplementedCartServiceServer
 }
 
 func NewCartService(cartRepo cart.ICartRepo,

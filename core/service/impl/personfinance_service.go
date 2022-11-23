@@ -25,6 +25,7 @@ type personFinanceService struct {
 	repo    personfinance.IPersonFinanceRepository
 	memRepo member.IMemberRepo
 	serviceUtil
+	proto.UnimplementedFinanceServiceServer
 }
 
 func NewPersonFinanceService(rep personfinance.IPersonFinanceRepository,
