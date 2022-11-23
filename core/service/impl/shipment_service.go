@@ -112,9 +112,9 @@ func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, rq *pr
 			//sp.ApiCode = "ZTO"
 			spOrder := so.Value().SpOrder
 			r, err := s.GetLogisticFlowTrack(ctx, &proto.LogisticFlowTrackRequest{
-				ShipperCode:          sp.ApiCode,
-				LogisticCode:         spOrder,
-				Invert:               rq.Invert,
+				ShipperCode:  sp.ApiCode,
+				LogisticCode: spOrder,
+				Invert:       rq.Invert,
 			})
 			r.ShipperName = sp.Name
 			return r, err

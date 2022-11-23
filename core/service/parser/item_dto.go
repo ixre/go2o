@@ -20,11 +20,11 @@ import (
 
 func ParseSaleLabelDto(src *item.Label) *proto.SItemLabel {
 	return &proto.SItemLabel{
-		Id:                   src.Id,
-		Name:                 src.TagName,
-		TagCode:              src.TagCode,
-		LabelImage:           src.LabelImage,
-		Enabled:              src.Enabled == 1,
+		Id:         src.Id,
+		Name:       src.TagName,
+		TagCode:    src.TagCode,
+		LabelImage: src.LabelImage,
+		Enabled:    src.Enabled == 1,
 	}
 }
 

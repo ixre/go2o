@@ -23,14 +23,14 @@ var (
 	host          string
 	port          int
 	//apiPort       int
-	mqAddr        string
-	debug         bool
-	trace         bool
-	runDaemon     bool // 运行daemon
-	help          bool
-	showVersion   bool
-	newApp        *core.AppImpl
-	appFlag       = FlagWebApp
+	mqAddr      string
+	debug       bool
+	trace       bool
+	runDaemon   bool // 运行daemon
+	help        bool
+	showVersion bool
+	newApp      *core.AppImpl
+	appFlag     = FlagWebApp
 )
 
 func getNatsAddress() string {

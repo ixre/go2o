@@ -10,7 +10,7 @@ package afterSales
 
 import (
 	"errors"
-		"time"
+	"time"
 
 	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/order"
@@ -20,7 +20,7 @@ import (
 
 //var _ afterSales.IExchangeOrder = new(exchangeOrderImpl)
 var _ afterSales.IAfterSalesOrder = new(exchangeOrderImpl)
-var _ afterSales.IReturnAfterSalesOrder =new(exchangeOrderImpl)
+var _ afterSales.IReturnAfterSalesOrder = new(exchangeOrderImpl)
 
 // 换货单
 //todo: 是否也需要限制退货数量
@@ -113,7 +113,7 @@ func (e *exchangeOrderImpl) ReturnShipment(expressName string, expressOrder stri
 	if e.afterSalesOrderImpl.GetDomainId() <= 0 {
 		panic(errors.New("换货单尚未提交"))
 	}
-	return e.afterSalesOrderImpl.ReturnShipment(expressName, expressOrder,image)	
+	return e.afterSalesOrderImpl.ReturnShipment(expressName, expressOrder, image)
 }
 
 // 消费者延长收货时间

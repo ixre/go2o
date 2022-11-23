@@ -42,7 +42,7 @@ Email: jarrysix#gmail.com
 func main() {
 	app.ParseFlags()
 	ch := make(chan bool)
-	app.Run(ch,nil)
+	app.Run(ch, nil)
 	<-ch
 }
 

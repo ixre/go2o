@@ -62,7 +62,7 @@ func TestOrderSetup(t *testing.T) {
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
 
-	t.Logf("order:%#v",o.GetValue())
+	t.Logf("order:%#v", o.GetValue())
 	t.Log("-[ 订单状态为:" + order.OrderStatus(o.GetValue().Status).String())
 
 	err := o.PaymentFinishByOnlineTrade()

@@ -164,7 +164,7 @@ func (s *memberService) Premium(_ context.Context, r *proto.PremiumRequest) (*pr
 	if m == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	err := m.Premium(int(r.V), r.Expires)
+	err := m.Premium(int(r.Value), r.Expires)
 	return s.result(err), nil
 }
 
@@ -492,7 +492,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	}
 	salt := util.RandString(6)
 	v := &member.Member{
-		User:     r.User,
+		User:     r.Username,
 		Salt:     salt,
 		Pwd:      domain.Sha1Pwd(r.Password, salt),
 		Name:     r.Name,
@@ -505,7 +505,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		Flag:     int(r.Flag),
 	}
 	// 验证邀请码
-	inviteCode := r.InviterCode
+	inviteCode := r.InviteCode
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
 		return &proto.RegisterResponse{
@@ -701,7 +701,7 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 // CheckLogin 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.LoginResponse, error) {
-	v, code, err := s.tryLogin(r.User, r.Password, r.Update)
+	v, code, err := s.tryLogin(r.Username, r.Password, r.Update)
 	ret := &proto.LoginResponse{
 		ErrCode: code,
 	}
@@ -1112,8 +1112,8 @@ func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	pro := m.Profile()
 	var addr member.IDeliverAddress
-	if r.AddrId > 0 {
-		addr = pro.GetAddress(r.AddrId)
+	if r.AddressId > 0 {
+		addr = pro.GetAddress(r.AddressId)
 	} else {
 		addr = pro.GetDefaultAddress()
 	}
@@ -1213,7 +1213,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 				Avatar:        rows[i].Avatar,
 				NickName:      rows[i].NickName,
 				Phone:         rows[i].Phone,
-				IM:            rows[i].Im,
+				Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
 			}
 		}
@@ -1607,7 +1607,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,
-		IM:         src.Im,
+		Im:         src.Im,
 		Email:      src.Email,
 		Province:   src.Province,
 		City:       src.City,
@@ -1712,7 +1712,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,
-		Im:         src.IM,
+		Im:         src.Im,
 		Email:      src.Email,
 		Province:   src.Province,
 		City:       src.City,

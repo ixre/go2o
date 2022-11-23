@@ -29,7 +29,6 @@ type paymentService struct {
 	proto.UnimplementedPaymentServiceServer
 }
 
-
 func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
 	memberRepo member.IMemberRepo) *paymentService {
 	return &paymentService{

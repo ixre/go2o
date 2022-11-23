@@ -226,16 +226,13 @@ func (r *returnOrderImpl) backAmount(amount int) error {
 	*/
 }
 
-
-
 // 将换货的商品重新发货
 func (r *returnOrderImpl) ReturnShipment(expressName string, expressOrder string, image string) error {
 	if r.afterSalesOrderImpl.GetDomainId() <= 0 {
 		panic(errors.New("换货单尚未提交"))
 	}
-	return r.afterSalesOrderImpl.ReturnShipment(expressName, expressOrder,image)	
+	return r.afterSalesOrderImpl.ReturnShipment(expressName, expressOrder, image)
 }
-
 
 // 接收换货
 func (r *returnOrderImpl) ReturnReceive() error {
