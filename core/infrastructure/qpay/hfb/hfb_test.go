@@ -6,7 +6,7 @@ import (
 	"github.com/ixre/go2o/core/infrastructure"
 	"github.com/ixre/go2o/core/infrastructure/qpay"
 	"github.com/ixre/gof/crypto"
-	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"io/ioutil"
 	"net/http"
 	"net/url"

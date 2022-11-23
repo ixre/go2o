@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/service/proto"
-	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 	"log"
 	"testing"
