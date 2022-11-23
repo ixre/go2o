@@ -126,7 +126,7 @@ message RbacUserResourceResponse {
 
 message SUserRes {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 资源键 */
     string Key = 2;
     /** 资源名称 */
@@ -160,14 +160,14 @@ message UserId {
 
 
 message RbacTree {
-    int64 Id = 1;
+    int64 id = 1;
     string Label = 2;
     repeated RbacTree Children = 3;
 }
 
 message SavePermDeptRequest {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 名称 */
     string Name = 2;
     /** 上级部门 */
@@ -191,7 +191,7 @@ message PermDeptId {
 }
 message SPermDept {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 名称 */
     string Name = 2;
     /** 上级部门 */
@@ -215,7 +215,7 @@ message QueryPermDeptResponse {
 
 message SavePermJobRequest {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 岗位名称 */
     string Name = 2;
     /** 岗位状态 */
@@ -240,7 +240,7 @@ message PermJobId {
 
 message SPermJob {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 岗位名称 */
     string Name = 2;
     /** 岗位状态 */
@@ -264,7 +264,7 @@ message QueryPermJobResponse {
 
 message PagingPermJob {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 岗位名称 */
     string Name = 2;
     /** 岗位状态 */
@@ -291,7 +291,7 @@ message PermJobPagingResponse {
 
 message SavePermUserRequest {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 用户名 */
     string Usr = 2;
     /** 密码 */
@@ -334,7 +334,7 @@ message PermUserId {
 
 message SPermUser {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 用户名 */
     string Usr = 2;
     /** 密码 */
@@ -377,7 +377,7 @@ message QueryPermUserResponse {
 
 message PagingPermUser {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 用户名 */
     string Usr = 2;
     /** 密码 */
@@ -421,7 +421,7 @@ message PermUserPagingResponse {
 
 message SavePermRoleRequest {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 名称 */
     string Name = 2;
     /** 角色级别 */
@@ -453,7 +453,7 @@ message PermRoleId {
 
 message SPermRole {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 名称 */
     string Name = 2;
     /** 角色级别 */
@@ -480,7 +480,7 @@ message QueryPermRoleResponse {
 
 message PagingPermRole {
     /** ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 名称 */
     string Name = 2;
     /** 角色级别 */
@@ -508,7 +508,7 @@ message PermRolePagingResponse {
 
 message SavePermResRequest {
     /** 资源ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 资源名称 */
     string Name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
@@ -549,7 +549,7 @@ message PermResId {
 
 message SPermRes {
     /** 资源ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 资源名称 */
     string Name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
@@ -610,7 +610,7 @@ message QueryPermResResponse {
 
 message PagingPermRes {
     /** 资源ID */
-    int64 Id = 1;
+    int64 id = 1;
     /** 资源名称 */
     string Name = 2;
     /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */

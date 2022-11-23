@@ -48,101 +48,101 @@ service ContentService {
 
 
 message PagingArticleRequest {
-    string CategoryName = 1;
+    string categoryName = 1;
     sint32 begin = 2;
-    sint32 Size = 3;
+    sint32 size = 3;
 }
 
 message ArticleListResponse {
     int64 total = 1;
-    repeated SArticle Data = 2;
+    repeated SArticle data = 2;
 }
 
 //栏目
 message SArticleCategory {
     //编号
-    int64 Id = 1;
+    int64 id = 1;
     //父类编号,如为一级栏目则为0
-    int64 ParentId = 2;
+    int64 parentId = 2;
     // 浏览权限
-    int32 PermFlag = 3;
+    int32 permFlag = 3;
     // 名称(唯一)
-    string Name = 4;
+    string name = 4;
     // 别名
-    string Alias = 5;
+    string alias = 5;
     // 排序编号
-    int32 SortNum = 6;
+    int32 sortNum = 6;
     // 定位路径（打开栏目页定位到的路径）
-    string Location = 7;
+    string location = 7;
     // 页面标题
     string title = 8;
     // 关键字
-    string Keywords = 9;
+    string keywords = 9;
     // 描述
-    string Description = 10;
+    string description = 10;
 }
 
 /** 文章 */
 message SArticle {
     /** 编号  */
-    sint64 Id = 1;
+    sint64 id = 1;
     /** 栏目编号 */
-    sint64 CategoryId = 2;
+    sint64 categoryId = 2;
     /** 标题 */
-    string Title = 3;
+    string title = 3;
     /** 小标题 */
-    string SmallTitle = 4;
+    string smallTitle = 4;
     /** 文章附图 */
-    string Thumbnail = 5;
+    string thumbnail = 5;
     /** 重定向URL */
-    sint64 PublisherId = 6;
+    sint64 publisherId = 6;
     /** 重定向URL */
-    string Location = 7;
+    string location = 7;
     /** 优先级,优先级越高，则置顶 */
-    sint32 Priority = 8;
+    sint32 priority = 8;
     /** 浏览钥匙 */
-    string AccessKey = 9;
+    string accessKey = 9;
     /** 文档内容 */
-    string Content = 10;
+    string content = 10;
     /** 标签（关键词） */
-    string Tags = 11;
+    string tags = 11;
     /** 显示次数 */
-    sint32 ViewCount = 12;
+    sint32 viewCount = 12;
     /** 排序序号 */
-    sint32 SortNum = 13;
+    sint32 sortNum = 13;
     /** 创建时间 */
-    sint64 CreateTime = 14;
+    sint64 createTime = 14;
     /** 最后修改时间 */
-    sint64 UpdateTime = 15;
+    sint64 updateTime = 15;
 }
 
 message SPage {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商户编号
-    int64 UserId = 2;
+    int64 userId = 2;
     // 标题
-    string Title = 3;
+    string title = 3;
     // 字符标识
-    string Code = 4;
+    string code = 4;
     // 浏览权限
-    int32 Flag = 5;
+    int32 flag = 5;
     // 浏览钥匙
-    string AccessKey = 6;
+    string accessKey = 6;
     // 关键词
-    string KeyWord = 7;
+    string keyWord = 7;
     // 描述
-    string Description = 8;
+    string description = 8;
     // 样式表地址
-    string CssPath = 9;
+    string cssPath = 9;
     // 内容
-    string Content = 10;
+    string content = 10;
     // 修改时间
-    int64 UpdateTime = 11;
+    int64 updateTime = 11;
     // 是否启用
-    bool Enabled = 12;
+    bool enabled = 12;
 }
 
 message ArticleCategoriesResponse {
-    repeated SArticleCategory Value =  1;
+    repeated SArticleCategory value =  1;
 }

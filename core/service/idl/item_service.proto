@@ -93,7 +93,7 @@ service ItemService {
 
 
 message PagingGoodsRequest {
-    EItemSalesType ItemType = 1;
+    EItemSalesType itemType = 1;
     int64 sellerId = 2;
     int64 categoryId = 3;
     // 关键词

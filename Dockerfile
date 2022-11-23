@@ -3,7 +3,7 @@
 # Author : jarrysix(jarrysix@gmail.com)
 # Date : 2019-06-12 13:20
 
-FROM golang:1.18-alpine AS build
+FROM golang:1.19-alpine AS build
 ENV GOPATH=/gobuild
 COPY ./app ./app
 COPY ./core ./core

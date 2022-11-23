@@ -66,7 +66,7 @@ message SShoppingCartItem {
     //商品标题
     string Title = 3;
     //商品图片
-    string Image = 4;
+    string image = 4;
     //规格文本
     string SpecWord = 5;
     //商品编码

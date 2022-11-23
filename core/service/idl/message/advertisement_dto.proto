@@ -15,50 +15,50 @@ message AdGroupResponse{
 
 message SAdPosition{
   /** 编号 */
-  int64 Id = 1;
+  int64 id = 1;
   /** 广告位编码 */
-  string Key = 2;
+  string key = 2;
   /** 分组名称 */
-  string GroupName = 3;
+  string groupName = 3;
   /** 广告位名称 */
-  string Name = 4;
+  string name = 4;
   /** 投放的广告编号 */
-  int64 PutAid = 5;
+  int64 putAid = 5;
   /** Opened */
-  int32 Opened = 6;
+  int32 opened = 6;
   /** Enabled */
-  int32 Enabled = 7;
+  int32 enabled = 7;
   /** 标志 */
-  int32 Flag = 8;
+  int32 flag = 8;
 }
 
 // 查询广告请求
 message QueryAdRequest{
-  string Keyword = 1;
-  int32 Size = 2;
+  string keyword = 1;
+  int32 size = 2;
 }
 
 // 查询广告响应
 message QueryAdResponse{
-  repeated SAdDto Value = 1;
+  repeated SAdDto value = 1;
 }
 
 // 广告用户设置
 message SAdUserSet {
   // 编号
-  int64 Id = 1;
+  int64 id = 1;
   // 广告位编号
-  int64 PosId = 2;
+  int64 posId = 2;
   //广告用户编号
-  int64 AdUserId = 3;
+  int64 adUserId = 3;
   // 广告编号
-  int64 AdId = 4;
+  int64 adId = 4;
 }
 
 // 广告
 message SAdDto {
   // 编号
-  int64 Id = 1;
+  int64 id = 1;
   //广告用户编号
   int64 UserId = 2;
   // 名称
@@ -80,20 +80,20 @@ message SAdDto {
 // 广告数据传输对象
 message SAdvertisementDto {
   // 广告编号
-  int64 Id = 1;
+  int64 id = 1;
   // 广告类型
   int32 AdType = 2;
   // 文本广告数据
   STextAdData Text = 3;
   // 图片广告数据
-  SImageAdData Image = 4;
+  SImageAdData image = 4;
   // 轮播广告数据
   SSwiperAdData Swiper = 5;
 }
 
 // 文本广告数据
 message STextAdData {
-  int64 Id = 1;
+  int64 id = 1;
   string Title = 2;
   string LinkURL = 3;
 }
@@ -101,7 +101,7 @@ message STextAdData {
 // 图片广告数据
 message SImageAdData {
   // 图片编号
-  int64 Id = 1;
+  int64 id = 1;
   // 图片标题
   string Title = 2;
   // 链接

@@ -48,64 +48,64 @@ service PortalService {
 
 message SaveNavRequest{
     /** 编号 */
-    int64 Id = 1;
+    int64 id = 1;
     /** 文本 */
-    string Text = 2;
+    string text = 2;
     /** 地址 */
-    string Url = 3;
+    string url = 3;
     /** 打开目标 */
-    string Target = 4;
+    string target = 4;
     /** 链接图片 */
-    string Image = 5;
+    string image = 5;
     /** 导航类型: 1为电脑，2为手机端 */
-    int32 NavType = 6;
+    int32 navType = 6;
     /** 导航分组 */
-    string NavGroup = 7;
+    string navGroup = 7;
 }
 
 message SNavGroup{
     /** 编号 */
-    int32 Id = 1;
+    int32 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
 }
 
 message SaveNavResponse{
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    int64 Id = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    int64 id = 3;
 }
 
 message PortalNavId{
-    int64 Value = 1;
+    int64 value = 1;
 }
 
 message SNav{
     /** 编号 */
-    int64 Id = 1;
+    int64 id = 1;
     /** 文本 */
-    string Text = 2;
+    string text = 2;
     /** 地址 */
-    string Url = 3;
+    string url = 3;
     /** 打开目标 */
-    string Target = 4;
+    string target = 4;
     /** 链接图片 */
-    string Image = 5;
+    string image = 5;
     /** 导航类型: 1为电脑，2为手机端 */
-    int32 NavType = 6;
+    int32 navType = 6;
     /** 导航分组 */
-    string NavGroup = 7;
+    string navGroup = 7;
 }
 
 message QueryNavRequest{
-    int32 NavType = 1;
-    string Group = 2;
-    int32 Begin = 3;
-    int32 Size = 4;
+    int32 navType = 1;
+    string group = 2;
+    int32 begin = 3;
+    int32 size = 4;
 }
 
 message QueryNavResponse{
-    repeated SNav List = 1;
+    repeated SNav list = 1;
 }
 
 message QueryNavGroupRequest{
@@ -113,25 +113,25 @@ message QueryNavGroupRequest{
 }
 
 message QueryNavGroupResponse{
-    repeated SNavGroup Value = 1;
+    repeated SNavGroup value = 1;
 }
 
 message PortalNavGroupId{
-    int64 Value = 1;
+    int64 value = 1;
 }
 
 
 message SaveNavGroupRequest{
     /** 编号 */
-    int64 Id = 1;
+    int64 id = 1;
     /** 名称 */
-    string Name = 2;
+    string name = 2;
 }
 
 message SaveNavGroupResponse{
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    int64 Id = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    int64 id = 3;
 }
 
 
@@ -139,45 +139,45 @@ message SaveNavGroupResponse{
 /** 保存热搜词请求 */
 message SaveSearchWordRequest{
     /** 编号 */
-    int64 Id = 1;
+    int64 id = 1;
     /** Word */
-    string Word = 2;
+    string word = 2;
     /** 搜索次数 */
-    int32 SearchCount = 3;
+    int32 searchCount = 3;
     /** 1:启用　2:特殊显示 4: 手动创建 */
-    int32 Flag = 4;
+    int32 flag = 4;
 }
 
 /** 保存热搜词响应 */
 message SaveSearchWordResponse{
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    int64 Id = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    int64 id = 3;
 }
 
 /** 热搜词编号 */
 message SysSearchWordId{
-    int64 Value = 1;
+    int64 value = 1;
 }
 
 /** 热搜词 */
 message SSearchWord{
     /** 编号 */
-    int64 Id = 1;
-    /** Word */
-    string Word = 2;
+    int64 id = 1;
+    /** 搜索词语 */
+    string word = 2;
     /** 搜索次数 */
-    int32 SearchCount = 3;
+    int32 searchCount = 3;
     /** 1:启用　2:特殊显示 4: 手动创建 */
-    int32 Flag = 4;
+    int32 flag = 4;
 }
 
 /** 查询热搜词请求 */
 message QuerySearchWordRequest{
-   int32 Size = 1;
+   int32 size = 1;
 }
 
 /** 查询热搜词响应 */
 message QuerySearchWordResponse{
-    repeated SSearchWord Value = 1;
+    repeated SSearchWord value = 1;
 }

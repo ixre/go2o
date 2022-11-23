@@ -33,7 +33,7 @@ service QueryService {
 }
 
 message FavoriteQueryRequest {
-    int64 MemberId = 1;
+    int64 memberId = 1;
     int64 begin = 2;
     int64 end = 3;
     string where = 4;
@@ -41,126 +41,126 @@ message FavoriteQueryRequest {
 
 message PagingShopFavoriteResponse {
     int64 total = 1;
-    repeated SPagingShopFavorite Data = 2;
+    repeated SPagingShopFavorite data = 2;
 }
 
 message SPagingShopFavorite {
-    int64 Id = 1;
-    int64 ShopId = 2;
-    string ShopName = 3;
-    string Logo = 4;
-    int64 UpdateTime = 5;
+    int64 id = 1;
+    int64 shopId = 2;
+    string shopName = 3;
+    string logo = 4;
+    int64 updateTime = 5;
 }
 message PagingGoodsFavoriteResponse {
     int64 total = 1;
-    repeated SPagingGoodsFavorite Data = 2;
+    repeated SPagingGoodsFavorite data = 2;
 }
 message SPagingGoodsFavorite {
-    int64 Id = 1;
-    int64 SkuId = 2;
-    string GoodsName = 3;
-    string Image = 4;
-    bool OnShelves = 5;
-    int32 StockNum = 6;
-    string SalePrice = 7;
-    int64 UpdateTime = 8;
+    int64 id = 1;
+    int64 skuId = 2;
+    string goodsName = 3;
+    string image = 4;
+    bool onShelves = 5;
+    int32 stockNum = 6;
+    string salePrice = 7;
+    int64 updateTime = 8;
 }
 
 message QueryPagingShopRequest {
     // 参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
     // 是否只查询营业中的店铺
-    bool OnlyBusiness = 2;
+    bool onlyBusiness = 2;
 }
 
 message QueryPagingShopsResponse {
     sint64 total = 1;
-    repeated QueryPagingShop Value =  2;
+    repeated QueryPagingShop value =  2;
 }
 
 message QueryPagingShop {
-    sint64 Id = 1;
-    string Name = 2;
-    string Alias = 3;
-    string Host = 4;
-    string Logo = 5;
-    sint64 CreateTime = 6;
+    sint64 id = 1;
+    string name = 2;
+    string alias = 3;
+    string host = 4;
+    string logo = 5;
+    sint64 createTime = 6;
 }
 
 message MemberOrderPagingRequest {
-    sint64 MemberId = 1;
-    SPagingParams Params = 2;
+    sint64 memberId = 1;
+    SPagingParams params = 2;
 }
 message MemberOrderPagingResponse {
-    sint64 Total = 1;
-    repeated SMemberPagingOrder Value =  2;
+    sint64 total = 1;
+    repeated SMemberPagingOrder value =  2;
 }
 
 // 分页会员订单信息
 message SMemberPagingOrder {
     // 订单号
-    string OrderNo = 1;
+    string orderNo = 1;
      // 买家
-    int64 BuyerId = 2;
+    int64 buyerId = 2;
     // 买家用户名
-    string BuyerUser = 3;
+    string buyerUser = 3;
     // 店铺编号
-    int64 ShopId = 4;
+    int64 shopId = 4;
     // 店铺名称
-    string ShopName = 5;
+    string shopName = 5;
     // 商品
-    int64 ItemCount = 6;
+    int64 itemCount = 6;
     // 商品总金额
-    int64 ItemAmount = 7;
+    int64 itemAmount = 7;
     // 抵扣金额
-    int64 DiscountAmount = 8;
+    int64 discountAmount = 8;
     // 优惠金额
-    int64 DeductAmount = 9;
+    int64 deductAmount = 9;
     // 快递费
-    int64 ExpressFee = 10;
+    int64 expressFee = 10;
     // 包装费
-    int64 PackageFee = 11;
+    int64 packageFee = 11;
     // 最终金额
-    int64 FinalAmount = 12;
+    int64 finalAmount = 12;
     // 商品列表
-    repeated SOrderItem Items = 13;
+    repeated SOrderItem items = 13;
     // 状态
-    sint32 Status = 14;
+    sint32 status = 14;
     // 状态文本
-    string StatusText = 15;
+    string statusText = 15;
     // 下单时间
-    sint64 CreateTime = 16;
+    sint64 createTime = 16;
 }
 
 message MemberListRequest {
-    repeated int64 IdList = 1;
+    repeated int64 idList = 1;
 }
 
 message MemberSearchRequest {
     // 手机号/邮箱/用户名关键词
-    string Keyword = 1;
+    string keyword = 1;
 }
 message MemberListResponse {
-    repeated MemberListSingle Value =  1;
+    repeated MemberListSingle value =  1;
 }
 // 会员概览信息
 message MemberListSingle {
     // 会员编号
-    int64 MemberId = 1;
+    int64 memberId = 1;
     // 用户名
     string user =  2;
     // 昵称
-    string NickName = 3;
+    string nickName = 3;
     // 头像
-    string Avatar = 4;
+    string avatar = 4;
     // 等级
-    int32 Level = 5;
+    int32 level = 5;
     // 积分
-    int64 Integral = 6;
+    int64 integral = 6;
     // 账户余额
-    int64 Balance = 7;
+    int64 balance = 7;
     // 钱包余额
-    int64 WalletBalance = 8;
+    int64 walletBalance = 8;
     //    GrowBalance       int64 `db:"grow_balance"`
     //    GrowAmount        int64 `db:"grow_amount"`         // 理财总投资金额,不含收益
     //    GrowEarnings      int64 `db:"grow_earnings"`       // 当前收益金额

@@ -18,7 +18,7 @@ import (
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 var (
@@ -44,7 +44,8 @@ func GetConnector() db.Connector {
 
 func init() {
 	// 默认的ETCD端点
-	etcdEndPoints := []string{"http://127.0.0.1:2379"}
+	//etcdEndPoints := []string{"http://127.0.0.1:2379"}
+	etcdEndPoints := []string{"http://192.168.1.159:2379"}
 	cfg := clientv3.Config{
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,

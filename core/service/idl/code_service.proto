@@ -38,50 +38,50 @@ service CodeService {
 
 message SaveQrTemplateRequest{
   /** 编号 */
-  int64 Id = 1;
+  int64 id = 1;
   /** 模板标题 */
-  string Title = 2;
+  string title = 2;
   /** 背景图片 */
-  string BgImage = 3;
+  string bgImage = 3;
   /** 垂直偏离量 */
-  int32 OffsetX = 4;
+  int32 offsetX = 4;
   /** 垂直偏移量 */
-  int32 OffsetY = 5;
+  int32 offsetY = 5;
   /** 二维码模板文本 */
-  string Comment = 6;
+  string comment = 6;
   /** 回调地址 */
-  string CallbackUrl = 7;
+  string callbackUrl = 7;
   /** 是否启用 */
-  int32 Enabled = 8;
+  int32 enabled = 8;
 }
 
 message SaveQrTemplateResponse{
-  int64 ErrCode = 1;
-  string ErrMsg = 2;
-  int64 Id = 3;
+  int64 errCode = 1;
+  string errMsg = 2;
+  int64 id = 3;
 }
 
 message CommQrTemplateId{
-  int64 Value = 1;
+  int64 value = 1;
 }
 
 message SQrTemplate{
   /** 编号 */
-  int64 Id = 1;
+  int64 id = 1;
   /** 模板标题 */
-  string Title = 2;
+  string title = 2;
   /** 背景图片 */
-  string BgImage = 3;
+  string bgImage = 3;
   /** 垂直偏离量 */
-  int32 OffsetX = 4;
+  int32 offsetX = 4;
   /** 垂直偏移量 */
-  int32 OffsetY = 5;
+  int32 offsetY = 5;
   /** 二维码模板文本 */
-  string Comment = 6;
+  string comment = 6;
   /** 回调地址 */
-  string CallbackUrl = 7;
+  string callbackUrl = 7;
   /** 是否启用 */
-  int32 Enabled = 8;
+  int32 enabled = 8;
 }
 
 

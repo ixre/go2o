@@ -6,7 +6,7 @@ option java_package = "com.github.go2o.rpc";
 // 商家
 message SMerchant {
   /** 编号 */
-  int64 Id = 1;
+  int64 id = 1;
   /** 会员编号 */
   int64 MemberId = 2;
   /** 登录用户 */
@@ -78,7 +78,7 @@ message MerchantCreateResponse {
 
 message SaveMerchantRequest {
   /** 编号 */
-  int64 Id = 1;
+  int64 id = 1;
   /** 会员编号 */
   int64 MemberId = 2;
   /** 名称 */
@@ -148,7 +148,7 @@ message STradeConf_ {
 
 // 商户申请信息
 message SMchSignUp {
-  int64 Id = 1;
+  int64 id = 1;
   // 申请单号
   string SignNo = 2;
   // 会员编号
@@ -204,7 +204,7 @@ message MchReviewRequest {
 // 企业信息
 message SEnterpriseInfo {
   // 编号
-  int64 Id = 1;
+  int64 id = 1;
   // 商户编号
   int64 MerchantId = 2;
   // 公司名称
@@ -363,7 +363,7 @@ message MerchantBuyerGroupListResponse {
 // 商户客户分组
 message SMerchantBuyerGroup {
   //编号
-  int64 Id = 1;
+  int64 id = 1;
   //客户分组编号
   int64 GroupId = 2;
   //分组别名
@@ -389,7 +389,7 @@ message WholesaleRebateRateListResponse {
 // 批发客户分组返点比例设置
 message SWholesaleRebateRate {
   // 编号
-  int64 Id = 1;
+  int64 id = 1;
   // 批发商编号
   int64 WsId = 2;
   // 客户分组编号

@@ -28,28 +28,28 @@ service CartService {
 // 购物车加入商品请求
 message CartItemRequest {
     // 买家编号
-    ShoppingCartId Id = 1;
+    ShoppingCartId id = 1;
     //商品编号
-    sint64 ItemId = 2;
+    sint64 itemId = 2;
     //SKU编号
-    sint64 SkuId = 3;
+    sint64 skuId = 3;
     // 数量
-    int32 Quantity = 4;
+    int32 quantity = 4;
     // 是否只勾选当前商品(直接购买)
-    bool CheckOnly = 5;
+    bool checkOnly = 5;
 }
 
 message CheckCartRequest {
-    ShoppingCartId Id = 1;
-    repeated SCheckCartItem Items = 2;
+    ShoppingCartId id = 1;
+    repeated SCheckCartItem items = 2;
 }
 
 // 购物车编号
 message ShoppingCartId{
     // 会员/用户编号
-    sint64 UserId = 1;
+    sint64 userId = 1;
     // 购物车标识,当未指定用户时候使用
-    string CartCode = 2;
+    string cartCode = 2;
     // 是否为批发销售的购物车
-    bool IsWholesale = 3;
+    bool isWholesale = 3;
 }

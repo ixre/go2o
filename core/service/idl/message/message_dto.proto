@@ -40,7 +40,7 @@ message SNotifyItem {
 // 邮件模版
 message SMailTemplate {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商户编号
     int64 MerchantId = 2;
     // 名称

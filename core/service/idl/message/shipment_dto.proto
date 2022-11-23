@@ -5,7 +5,7 @@ option java_package = "com.github.go2o.rpc";
 
 // 覆盖区域
 message SCoverageValue {
-    int64 Id = 1;
+    int64 id = 1;
     string Name = 2;
     double Lng = 3;
     double Lat = 4;
@@ -20,7 +20,7 @@ message ShipmentOrderListResponse {
 // 发货单
 message SShipmentOrder {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 订单编号
     int64 OrderId = 2;
     // 子订单编号
@@ -48,7 +48,7 @@ message SShipmentOrder {
 // 发货单详情
 message SShipmentItem {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商品交易快照编号
     int64 SnapshotId = 2;
     // 商品数量

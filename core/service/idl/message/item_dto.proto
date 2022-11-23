@@ -53,7 +53,7 @@ message SGoods {
   string ShortTitle = 7;
   // 货号
   string GoodsNo = 8;
-  string Image = 9;
+  string image = 9;
   //定价
   int64 RetailPrice = 10;
   //销售价
@@ -83,7 +83,7 @@ message SSku {
   sint64 ItemId = 2;
   sint64 ProductId = 3;
   string Title = 4;
-  string Image = 5;
+  string image = 5;
   string SpecData = 6;
   string SpecWord = 7;
   string Code = 8;
@@ -200,7 +200,7 @@ message SUnifiedViewItem {
   // 货号
   string GoodsNo = 8;
   // 图片
-  string Image = 9;
+  string image = 9;
   // 图片
   repeated string Images = 30;
   // 定价
@@ -274,7 +274,7 @@ message SOldItem {
   string Title = 10;
   string ShortTitle = 11;
   string Code = 12;
-  string Image = 13;
+  string image = 13;
   sint32 IsPresent = 14;
   string PriceRange = 15;
   sint32 StockNum = 16;
@@ -402,7 +402,7 @@ message SSpecOptionItem {
 // 商品交易快照(针对商品)
 message STradeSnapshot {
   //快照编号
-  int64 Id = 1;
+  int64 id = 1;
   // 商品编号
   int64 ItemId = 2;
   //商品SKU编号
@@ -422,7 +422,7 @@ message STradeSnapshot {
   //SKU
   string Sku = 9;
   //图片
-  string Image = 10;
+  string image = 10;
   //销售价
   int64 Price = 11;
   // 快照时间
@@ -432,7 +432,7 @@ message STradeSnapshot {
 // 会员价
 message SLevelPrice {
   // 编号
-  int64 Id = 1;
+  int64 id = 1;
   // 等级
   int32 Level = 2;
   // 价格
@@ -485,7 +485,7 @@ message SaveSkuPricesRequest {
 // 商品批发价
 message SWsSkuPrice {
   // 编号
-  int64 Id = 1;
+  int64 id = 1;
   // 需要数量以上
   int32 RequireNum = 2;
   // 批发价
@@ -510,7 +510,7 @@ message SaveItemDiscountRequest {
 // 批发商品折扣
 message SWsItemDiscount {
   // 编号
-  int64 Id = 1;
+  int64 id = 1;
   // 客户分组
   int64 BuyerGroupId = 2;
   // 要求金额，默认为0

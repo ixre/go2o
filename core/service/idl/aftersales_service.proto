@@ -77,188 +77,188 @@ enum EAfterSalesType {
 // 售后单订单号
 message AfterSalesOrderNo{
     // 订单号
-    string OrderNo = 1;
+    string orderNo = 1;
 }
 
 // 售后单处理请求
 message AfterSalesProcessRequest{
    // 订单号
-   string OrderNo = 1;
+   string orderNo = 1;
    // 备注 
-   string Remark = 2;
+   string remark = 2;
    // 是否为客服介入处理
-   bool IsIntercede = 3;
+   bool isIntercede = 3;
 }
 
 // 原实际销售的订单编号
 message OriginOrderIdRequest {
-    int64 OrderId = 1;
+    int64 orderId = 1;
 }
 
 // 订单售后申请
 message SubmitAfterSalesOrderRequest {
     // 订单编号
-    int64 OrderId = 1;
+    int64 orderId = 1;
     // 售后类型
-    EAfterSalesType AfterSalesType = 2;
+    EAfterSalesType afterSalesType = 2;
     // 商品快照编号
-    int64 ItemSnapshotId = 3;
+    int64 itemSnapshotId = 3;
     // 数量
-    int64 Quantity = 4;
+    int64 quantity = 4;
     // 原因
-    string Reason = 5;
+    string reason = 5;
     // 图片
-    repeated string Images = 6;
+    repeated string images = 6;
 }
 
 // 提交售后订单响应
 message SubmitAfterSalesOrderResponse {
     // 状态码
-    int64 ErrCode = 1;
+    int64 errCode = 1;
     // 错误信息
-    string ErrMsg = 2;
+    string errMsg = 2;
     // 售后单号
-    string AfterSalesOrderNo = 3;
+    string afterSalesOrderNo = 3;
  }
 
 message AfterSalesOrderListResponse {
-    repeated SAfterSalesOrder Value =  1;
+    repeated SAfterSalesOrder value =  1;
 }
 
 message PagingBuyerOrdersRequest {
-    int64 BuyerId = 1;
-    SPagingParams Params = 2;
+    int64 buyerId = 1;
+    SPagingParams params = 2;
 }
 
 message PagingSellerOrdersRequest {
-    int64 SellerId = 1;
-    SPagingParams Params = 2;
+    int64 sellerId = 1;
+    SPagingParams params = 2;
 }
 
 message PagingBuyerAfterSalesOrderListResponse {
     int64 total = 1;
-    repeated SPagingBuyerAfterSalesOrder Data = 2;
+    repeated SPagingBuyerAfterSalesOrder data = 2;
 }
 
 message PagingSellerAfterSalesOrderListResponse {
     int64 total = 1;
-    repeated SPagingSellerAfterSalesOrder Data = 2;
+    repeated SPagingSellerAfterSalesOrder data = 2;
 }
 
 // 售后单
 message SAfterSalesOrder {
     // 编号
-    int64 Id = 21;
+    int64 id = 21;
     // 售后单单号
-    string OrderNo = 1;
+    string orderNo = 1;
     // 订单编号
-    int64 RelateOrderId = 2;
+    int64 relateOrderId = 2;
     // 运营商编号
-    int64 VendorId = 3;
+    int64 vendorId = 3;
     // 购买者编号
-    int64 BuyerId = 4;
+    int64 buyerId = 4;
     // 类型，退货、换货、维修
-    int32 AfterSalesType = 5;
+    int32 afterSalesType = 5;
     // 退货的商品项编号
-    int64 SnapshotId = 6;
+    int64 snapshotId = 6;
     // 商品数量
-    int32 Quantity = 7;
+    int32 quantity = 7;
     // 售后原因
-    string Reason = 8;
+    string reason = 8;
     // 商品售后图片凭证
-    string ImageUrl = 9;
+    string imageUrl = 9;
     // 联系人
-    string PersonName = 10;
+    string personName = 10;
     // 联系电话
-    string PersonPhone = 11;
+    string personPhone = 11;
     // 退货的快递服务商编号
-    string ShipmentExpress = 12;
+    string shipmentExpress = 12;
     // 退货的快递单号
-    string ShipmentOrderNo = 13;
+    string shipmentOrderNo = 13;
     // 退货凭证
-    string ShipmentImage = 14;
+    string shipmentImage = 14;
     // 备注(系统)
-    string Remark = 15;
+    string remark = 15;
     // 运营商备注
-    string VendorRemark = 16;
+    string vendorRemark = 16;
     // 售后单状态
-    int32 Status = 17;
+    int32 status = 17;
     // 提交时间
-    int64 CreateTime = 18;
+    int64 createTime = 18;
     // 更新时间
-    int64 UpdateTime = 19;
+    int64 updateTime = 19;
     // 订单状态
-    string StatusText = 20;
+    string statusText = 20;
 }
 
 // 分页售后订单信息
 message SPagingBuyerAfterSalesOrder {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 订单编号
-    string OrderNo = 2;
+    string orderNo = 2;
     // 运营商编号
-    int64 VendorId = 3;
+    int64 vendorId = 3;
     // 运营商名称
-    string SellerName = 4;
+    string sellerName = 4;
     // 类型，退货、换货、维修
-    int32 AfterSalesType = 5;
+    int32 afterSalesType = 5;
     // 退货的商品项编号
-    int64 SnapshotId = 6;
+    int64 snapshotId = 6;
     // 商品数量
-    int32 Quantity = 7;
+    int32 quantity = 7;
     // SKU编号
-    int64 SkuId = 8;
+    int64 skuId = 8;
     // 商品标题
-    string ItemTitle = 9;
+    string itemTitle = 9;
     // 商品图片
-    string ItemImage = 10;
+    string itemImage = 10;
     // 售后单状态
-    int32 Status = 11;
+    int32 status = 11;
     // 提交时间
-    int64 CreateTime = 12;
+    int64 createTime = 12;
     // 订单状态
-    string StatusText = 13;
+    string statusText = 13;
 }
 
 // 分页商户售后单
 message SPagingSellerAfterSalesOrder {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 订单编号
-    string OrderNo = 2;
+    string orderNo = 2;
     // 会员编号
-    int64 BuyerId = 3;
+    int64 buyerId = 3;
     // 会员名称
-    string BuyerName = 4;
+    string buyerName = 4;
     // 类型，退货、换货、维修
-    int32 AfterSalesType = 5;
+    int32 afterSalesType = 5;
     // 退货的商品项编号
-    int64 SnapshotId = 6;
+    int64 snapshotId = 6;
     // 商品数量
-    int32 Quantity = 7;
+    int32 quantity = 7;
     // SKU编号
-    int64 SkuId = 8;
+    int64 skuId = 8;
     // 商品标题
-    string ItemTitle = 9;
+    string itemTitle = 9;
     // 商品图片
-    string ItemImage = 10;
+    string itemImage = 10;
     // 售后单状态
-    int32 Status = 11;
+    int32 status = 11;
     // 提交时间
-    int64 CreateTime = 12;
+    int64 createTime = 12;
     // 更新时间
-    int64 UpdateTime = 13;
+    int64 updateTime = 13;
     // 订单状态
-    string StatusText = 14;
+    string statusText = 14;
 }
 
 // 换货发货请求
 message ReturnShipmentRequest {
     // 换货单编号
-    string OrderNo = 1;
+    string orderNo = 1;
     // 物流名称
-    string ShipmentExpress = 2;
+    string shipmentExpress = 2;
     // 物流单号
-    string ShipmentOrder = 3;
+    string shipmentOrder = 3;
 }

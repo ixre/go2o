@@ -142,36 +142,36 @@ service MerchantService {
 
 message MerchantOrderRequest {
     // 商户编号
-    int64 MerchantId = 1;
+    int64 merchantId = 1;
     // 是否分页
-    bool Pagination = 2;
+    bool pagination = 2;
     // 分页参数
-    SPagingParams Params = 3;
+    SPagingParams params = 3;
 }
 
 
 message PagingMerchantOrderListResponse {
     int64 total = 1;
-    repeated SMerchantOrder Data = 2;
+    repeated SMerchantOrder data = 2;
 }
 
 message SMerchantOrder {
-    int64 OrderId = 1;
-    string OrderNo = 2;
-    string ParentNo = 3;
-    int64 BuyerId = 4;
-    string BuyerName = 5;
+    int64 orderId = 1;
+    string orderNo = 2;
+    string parentNo = 3;
+    int64 buyerId = 4;
+    string buyerName = 5;
     // 订单详情,主要描述订单的内容
-    string Details = 6;
-    double ItemAmount = 7;
-    double DiscountAmount = 8;
-    double ExpressFee = 9;
-    double PackageFee = 10;
-    bool IsPaid = 11;
-    double FinalAmount = 12;
-    int32 State = 13;
-    string StatusText = 14;
-    int64 CreateTime = 15;
-    repeated SOrderItem Items = 16;
-    map<string, string> Data = 17;
+    string details = 6;
+    double itemAmount = 7;
+    double discountAmount = 8;
+    double expressFee = 9;
+    double packageFee = 10;
+    bool isPaid = 11;
+    double finalAmount = 12;
+    int32 state = 13;
+    string statusText = 14;
+    int64 createTime = 15;
+    repeated SOrderItem items = 16;
+    map<string, string> data = 17;
 }

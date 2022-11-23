@@ -47,7 +47,7 @@ enum EOrderStatus {
 // 订单商品项
 message SOrderItem {
     // 编号
-    int64 Id = 1;
+    int64 id = 1;
     // 商品快照编号
     int64 SnapshotId = 2;
     // Sku编号
@@ -57,7 +57,7 @@ message SOrderItem {
     // 商品标题
     string ItemTitle = 5;
     // 商品图片
-    string Image = 6;
+    string image = 6;
     // 商品单价
     int64 Price = 7;
     // 商品实际单价
@@ -286,7 +286,7 @@ message OrderNoV2 {
 
 message OrderIdOrNo {
     // 订单编号
-    int64 Id = 1;
+    int64 id = 1;
     // 订单号
     string OrderNo = 2;
 }
@@ -379,7 +379,7 @@ message SPrepareOrderItem {
     //商品标题
     string Title = 3;
     //商品图片
-    string Image = 4;
+    string image = 4;
     //规格文本
     string SpecWord = 5;
     //销售价

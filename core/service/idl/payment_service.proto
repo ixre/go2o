@@ -13,7 +13,7 @@ message AdjustOrderRequest {
 
 message DiscountBalanceRequest {
     sint32 orderId = 1;
-    string Remark = 2;
+    string remark = 2;
 }
 
 message DiscountIntegralRequest {
@@ -25,12 +25,12 @@ message DiscountIntegralRequest {
 message WalletPaymentRequest {
     string tradeNo = 1;
     bool mergePay = 2;
-    string Remark = 3;
+    string remark = 3;
 }
 
 message HyperPaymentRequest {
     sint32 orderId = 1;
-    string Remark = 2;
+    string remark = 2;
 }
 
 message FinishPaymentRequest {
@@ -106,51 +106,51 @@ service PaymentService {
 /** 支付网关请求 */
 message PayGatewayV2Request{
     /** 交易号 */
-    string TradeNo = 1;
+    string tradeNo = 1;
     /** 是否合并支付 */
-    bool MergePay = 2;
+    bool mergePay = 2;
     /** 钱包抵扣 */
-    bool WalletDiscount = 3;
+    bool walletDiscount = 3;
     /** 支付方式 */
-    int32 PayMethod = 4;
+    int32 payMethod = 4;
     /** 支付SP */
-    string SpName = 5;
+    string spName = 5;
 }
 
 /** 支付网关响应 */
 message PayGatewayResponse{
     /** 代码 */
-    int32 ErrCode = 1;
+    int32 errCode = 1;
     /** 消息 */
-    string ErrMsg = 2;
+    string errMsg = 2;
     /** 交易单号 */
-    string TradeNo = 3;
+    string tradeNo = 3;
     // 是否已完成交易
-    bool IsFinished = 4;
+    bool isFinished = 4;
     // 总金额
-    int64 TotalAmount = 5;
+    int64 totalAmount = 5;
     // 交易费用
-    int64 ProcedureFee = 6;
+    int64 procedureFee = 6;
     // 金额
-    int64 FinalFee = 7;
+    int64 finalFee = 7;
     // 支付表单
-    string PaymentForm = 8;
+    string paymentForm = 8;
 }
 
 message OrderInfoRequest {
-    string TradeNo = 1;
-    bool MergePay = 2;
+    string tradeNo = 1;
+    bool mergePay = 2;
 }
 
 message MixedPaymentRequest {
-    string TradeNo = 1;
-    repeated SRequestPayData Data = 2;
+    string tradeNo = 1;
+    repeated SRequestPayData data = 2;
 }
 
 message PayGatewayRequest {
     string action = 1;
     sint64 userId = 2;
-    map<string, string> Data = 3;
+    map<string, string> data = 3;
 }
 
 /** 支付方式的位值 */
@@ -180,85 +180,85 @@ enum EPayMethod {
 /** 支付单 */
 message SPaymentOrder {
     /** 交易号 */
-    string TradeNo = 1;
+    string tradeNo = 1;
     /** 卖家编号 */
-    sint32 SellerId = 2;
+    sint32 sellerId = 2;
     /** 交易类型 */
-    string TradeType = 3;
+    string tradeType = 3;
     /** 合并支付交单单号 */
-    string MergeTradeNo = 4;
+    string mergeTradeNo = 4;
     /** 支付单详情 */
-    string Subject = 5;
+    string subject = 5;
     /** 是否为子订单 */
-    bool SubOrder = 6;
+    bool subOrder = 6;
     /** 支付单的类型，如购物或其他 */
-    sint32 OrderType = 7;
+    sint32 orderType = 7;
     /** 外部订单号 */
-    string OutOrderNo = 8;
+    string outOrderNo = 8;
     /** 买家编号 */
-    int64 BuyerId = 9;
+    int64 buyerId = 9;
     /** 支付用户编号 */
-    int64 PayUid = 10;
+    int64 payUid = 10;
     /** 商品金额 */
-    int64 ItemAmount = 11;
+    int64 itemAmount = 11;
     /** 优惠金额  */
-    int64 DiscountAmount = 12;
+    int64 discountAmount = 12;
     /** 调整金额 */
-    int64 AdjustAmount = 13;
+    int64 adjustAmount = 13;
     /** 抵扣金额  */
-    int64 DeductAmount = 14;
+    int64 deductAmount = 14;
     /** 共计金额 */
-    int64 TotalAmount = 15;
+    int64 totalAmount = 15;
     /** 手续费 */
-    int64 ProcedureFee = 16;
+    int64 procedureFee = 16;
     /** 实付金额 */
-    int64 PaidFee = 17;
+    int64 paidFee = 17;
     /** 最终应付金额 */
-    int64 FinalFee = 18;
+    int64 finalFee = 18;
     /** 可⽤支付方式  */
-    int32 PayFlag = 19;
+    int32 payFlag = 19;
     /** 实际使用支付方式 */
-    sint32 FinalFlag = 20;
+    sint32 finalFlag = 20;
     /** 其他支付信息 */
-    string ExtraData = 21;
+    string extraData = 21;
     /** 订单状态 */
-    sint32 State = 22;
+    sint32 state = 22;
     /** 提交时间 */
-    sint64 SubmitTime = 23;
+    sint64 submitTime = 23;
     /** 过期时间 */
-    sint64 ExpiresTime = 24;
+    sint64 expiresTime = 24;
     /** 支付时间 */
-    sint64 PaidTime = 25;
+    sint64 paidTime = 25;
     /** 交易数据 */
-    repeated STradeMethodData TradeData = 26;
+    repeated STradeMethodData tradeData = 26;
     /** 编号 */
-    sint32 Id = 27;
+    sint32 id = 27;
 }
 
 /** 请求支付数据 */
 message SRequestPayData {
     /** 支付方式 */
-    sint32 Method = 1;
+    sint32 method = 1;
     /** 支付方式代码 */
-    string Code = 2;
+    string code = 2;
     /** 支付金额 */
-    int64 Amount = 3;
+    int64 amount = 3;
 }
 
 /** 交易方式数据 */
 message STradeMethodData {
     /** 支付途径 */
-    sint32 Method = 1;
+    sint32 method = 1;
     /** 交易代码 */
-    string Code = 2;
+    string code = 2;
     /** 支付金额 */
-    int64 Amount = 3;
+    int64 amount = 3;
     /** 是否为内置支付途径 */
-    sint32 Internal = 4;
+    sint32 internal = 4;
     /** 外部交易单号 */
-    string OutTradeNo = 5;
+    string outTradeNo = 5;
     /** 支付时间 */
-    sint64 PayTime = 6;
+    sint64 payTime = 6;
 }
 
 /** 支付单预交易数据 */
@@ -266,65 +266,65 @@ message SPrepareTradeData {
     /** 错误码 */
     sint32 errCode = 1;
     /** 错误消息 */
-    string ErrMsg = 2;
+    string errMsg = 2;
     /** 交易号 */
     string tradeNo = 3;
     /** 支付标志 */
-    sint32 PayFlag = 4;
+    sint32 payFlag = 4;
     /** 交易状态 */
-    sint32 TradeState = 5;
+    sint32 tradeState = 5;
     /** 交易订单 */
-    repeated SPaymentOrderData TradeOrders = 6;
+    repeated SPaymentOrderData tradeOrders = 6;
     /** 累计金额 */
-    int64 TotalAmount = 7;
+    int64 totalAmount = 7;
     /** 手续费 */
-    int64 ProcedureFee = 8;
+    int64 procedureFee = 8;
     /** 最终支付金额 */
-    int64 FinalFee = 9;
+    int64 finalFee = 9;
 }
 
 /** 支付单数据 */
 message SPaymentOrderData {
     /** 交易订单号 */
-    string OrderNo = 1;
+    string orderNo = 1;
     /** 标题 */
-    string Subject = 2;
+    string subject = 2;
     /** 交易类型 */
-    string TradeType = 3;
+    string tradeType = 3;
     /** 状态 */
-    sint32 State = 4;
+    sint32 state = 4;
     /** 手续费 */
-    int64 ProcedureFee = 5;
+    int64 procedureFee = 5;
     /** 最终支付金额 */
-    int64 FinalFee = 6;
+    int64 finalFee = 6;
 }
 
 /** 集成支付应用编号 */
 message PayIntegrateAppId{
-    int32 Value = 1;
+    int32 value = 1;
 }
 
 /** 查询集成支付应用响应 */
 message QueryIntegrateAppResponse{
-    repeated SIntegrateApp Value = 1;
+    repeated SIntegrateApp value = 1;
 }
 
 /** 集成支付应用 */
 message SIntegrateApp{
     /** 编号 */
-    int32 Id = 1;
+    int32 id = 1;
     /** 支付应用名称 */
-    string AppName = 2;
+    string appName = 2;
     /** 支付应用接口 */
-    string AppUrl = 3;
+    string appUrl = 3;
     /** 集成类型: 1:API调用 2: 跳转 */
-    int32 IntegrateType = 4;
+    int32 integrateType = 4;
     /** 显示顺序 */
-    int32 SortNumber = 5;
+    int32 sortNumber = 5;
     /** 是否启用 */
-    int32 Enabled = 6;
+    int32 enabled = 6;
     /** 支付提示信息 */
-    string Hint = 7;
+    string hint = 7;
     /** 是否高亮显示 */
-    int32 Highlight = 8;
+    int32 highlight = 8;
 }

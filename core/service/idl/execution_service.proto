@@ -40,53 +40,53 @@ service ExecutionService {
 
 message GetJobRequest{
   /** 任务名称 */
-  string JobName = 1;
+  string jobName = 1;
   /** 任务不存在时是否创建 */
-  bool Create = 2;
+  bool create = 2;
 }
 
 /** UpdateCursorRequest */
 message UpdateCursorRequest{
   /** 任务名称 */
-  string JobName = 1;
+  string jobName = 1;
   /** 记录编号　*/
-  int64 CursorId = 2;
+  int64 cursorId = 2;
 }
 
 message AddFailRequest{
   /** 任务名称 */
-  string JobName = 1;
+  string jobName = 1;
   /** 记录编号　*/
-  int64 CursorId = 2;
+  int64 cursorId = 2;
 }
 
 
 /** JobExecData */
 message SExecutionData{
   /** 编号 */
-  int64 Id = 1;
+  int64 id = 1;
   /** 任务名称 */
-  string JobName = 2;
+  string jobName = 2;
   /** 上次执行位置索引 */
-  int64 LastExecuteCursorId = 3;
+  int64 lastExecuteCursorId = 3;
   /** 最后执行时间 */
-  int64 LastExecuteTime = 4;
+  int64 lastExecuteTime = 4;
 }
 
 
 /** 重新加入队列请求 */
 message RejoinQueueRequest{
   /** 桶名称 */
-  string BucketName = 1;
+  string bucketName = 1;
   /** 关联数据编号 */
-  int64 RelateId = 2;
+  int64 relateId = 2;
   /** 数据 */
-  string RelateData = 3;
+  string relateData = 3;
 }
 
 /** 保存重新加入队列响应 */
 message RejoinQueueResponse{
-  int64 ErrCode = 1;
-  string ErrMsg = 2;
-  int64 QueueId = 3;
+  int64 errCode = 1;
+  string errMsg = 2;
+  int64 queueId = 3;
 }

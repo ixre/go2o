@@ -34,42 +34,42 @@ service FinanceService {
 }
 
 message PersonId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 
 // 收益总记录
 message SRiseInfo {
     // 人员编号
-    int64 PersonId = 1;
+    int64 personId = 1;
     // 本金及收益的余额
-    double Balance = 2;
+    double balance = 2;
     // 结算金额
-    double SettlementAmount = 3;
+    double settlementAmount = 3;
     // 当前的收益
-    double Rise = 4;
+    double rise = 4;
     // 今日转入
-    double TransferIn = 5;
+    double transferIn = 5;
     // 总金额
-    double TotalAmount = 6;
+    double totalAmount = 6;
     // 总收益
-    double TotalRise = 7;
+    double totalRise = 7;
     // 结算日期,用于筛选需要结算的数据
-    int64 SettledDate = 8;
+    int64 settledDate = 8;
     // 更新时间
-    int64 UpdateTime = 9;
+    int64 updateTime = 9;
 }
 
 message RiseSettleRequest {
-    int64 PersonId = 1;
-    int64 SettleDay = 2;
-    double Ratio = 3;
+    int64 personId = 1;
+    int64 settleDay = 2;
+    double ratio = 3;
 }
 message RiseTransferOutRequest {
-    int64 PersonId = 1;
-    int64 TransferWith = 2;
+    int64 personId = 1;
+    int64 transferWith = 2;
     double amount = 3;
     // 提现银行账号
-    string BankAccountNo = 4;
+    string bankAccountNo = 4;
 }
 
 message CommitTransferRequest {

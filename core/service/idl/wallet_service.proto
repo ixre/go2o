@@ -8,111 +8,111 @@ option java_package = "com.github.go2o.rpc";
 
 message CreateWalletRequest {
     // 用户编号
-    int64 UserId = 1;
+    int64 userId = 1;
     // 用户名
-    string UserName = 2;
+    string username = 2;
     // 钱包类型
-    int32 WalletType= 3;
+    int32 walletType= 3;
     // 钱包名称
-    string WalletName = 4;
+    string walletName = 4;
     // 钱包标志
-    int32 WalletFlag = 5;
+    int32 walletFlag = 5;
 }
 
 message GetWalletRequest {
-    sint64 UserId = 1;
-    sint32 WalletType= 2;
+    sint64 userId = 1;
+    sint32 walletType= 2;
 }
 
 message WalletLogIDRequest {
-    sint64 WalletId = 1;
-    sint64 Id = 2;
+    sint64 walletId = 1;
+    sint64 id = 2;
 }
 message AdjustRequest {
-    sint64 WalletId = 1;
-    int64 Amount =  2;
-    string Title = 3;
-    string OuterNo = 4;
-    string Remark = 5;
-    sint32 OperatorUid = 6;
-    string OperatorName = 7;
+    sint64 walletId = 1;
+    int64 amount =  2;
+    string title = 3;
+    string outerNo = 4;
+    string remark = 5;
+    sint32 operatorUid = 6;
+    string operatorName = 7;
 }
 
 message DiscountRequest {
-    sint64 WalletId = 1;
-    sint64 Amount =  2;
-    string Title = 3;
-    string OuterNo = 4;
-    bool Must = 5;
+    sint64 walletId = 1;
+    sint64 amount =  2;
+    string title = 3;
+    string outerNo = 4;
+    bool must = 5;
 }
 
 /** 冻结请求 */
 message FreezeRequest {
     /** 钱包编号 */
-    int64 WalletId = 1;
+    int64 walletId = 1;
     /** 冻结金额 */
-    int64 Amount =  2;
+    int64 amount =  2;
     /** 标题 */
-    string Title = 3;
+    string title = 3;
     /** 外部关联订单号 */
-    string OuterNo = 4;
+    string outerNo = 4;
     /** 备注 */
-    string Remark = 5;
+    string remark = 5;
     /** 操作人员编号 */
-    sint32 OperatorUid = 6;
+    sint32 operatorUid = 6;
     /** 操作人员名称 */
-    string OperatorName = 7;
+    string operatorName = 7;
 }
 /** 冻结响应 */
 message FreezeResponse{
     /** 错误码 */
-    int32 ErrCode = 1;
+    int32 errCode = 1;
     /** 错误消息 */
-    string ErrMsg = 2;
+    string errMsg = 2;
     /** 日志ID */
-    int64 LogId = 3;
+    int64 logId = 3;
 }
 /** 解冻请求 */
 message UnfreezeRequest {
     /** 钱包编号 */
-    sint64 WalletId = 1;
+    sint64 walletId = 1;
     /** 冻结金额 */
-    int64 Amount =  2;
+    int64 amount =  2;
     /** 标题 */
-    string Title = 3;
+    string title = 3;
     /** 外部关联订单号 */
-    string OuterNo = 4;
+    string outerNo = 4;
     /** 备注 */
-    string Remark = 5;
+    string remark = 5;
     /** 操作人员编号 */
-    sint32 OperatorUid = 6;
+    sint32 operatorUid = 6;
     /** 操作人员名称 */
-    string OperatorName = 7;
+    string operatorName = 7;
 }
 
 message ChargeRequest {
     /** 钱包ID */
-    int64 WalletId = 1;
-    int64 Amount =  2;
-    int32 By = 3;
-    string Title = 4;
-    string OuterNo = 5;
-    string Remark = 6;
-    int32 OperatorUid = 7;
-    string OperatorName = 8;
+    int64 walletId = 1;
+    int64 amount =  2;
+    int32 by = 3;
+    string title = 4;
+    string outerNo = 5;
+    string remark = 6;
+    int32 operatorUid = 7;
+    string operatorName = 8;
 }
 
 message TransferRequest {
     /** 钱包ID */
-    sint64 WalletId = 1;
+    sint64 walletId = 1;
     /** 目标钱包ID */
-    sint64 ToWalletId = 2;
+    sint64 toWalletId = 2;
     /** 转账金额 */
-    int64 Amount = 3;
+    int64 amount = 3;
     /** 手续费 */
-    sint64 ProcedureFee = 4;
+    sint64 procedureFee = 4;
     /** 备注 */
-    string Remark = 5;
+    string remark = 5;
 }
 /** 钱包服务 */
 service WalletService {
@@ -187,28 +187,28 @@ message FinishTakeOutRequest {
 
 message RequestWithdrawalRequest {
     // 钱包编号
-    int64 WalletId = 1;
+    int64 walletId = 1;
     // 金额
-    int64 Amount = 2;
+    int64 amount = 2;
     // 手续费
-    int32 ProcedureFee = 3;
+    int32 procedureFee = 3;
     // 提现方式
-    sint32 Kind = 4;
+    sint32 kind = 4;
     // 银行名称
-    string BankName = 5;
+    string bankName = 5;
     // 银行账号
-    string BankAccountNo = 6;
+    string bankAccountNo = 6;
     // 银行账户
-    string BankAccountName = 7;
+    string bankAccountName = 7;
 }
 
 message ReviewTakeOutRequest {
-    sint64 WalletId = 1;
+    sint64 walletId = 1;
     sint64 takeId = 2;
-    bool ReviewPass = 3;
-    string Remark = 4;
-    sint32 OperatorUid = 5;
-    string OperatorName = 6;
+    bool reviewPass = 3;
+    string remark = 4;
+    sint32 operatorUid = 5;
+    string operatorName = 6;
 }
 /** 钱包类型 */
 enum EWalletType {
@@ -281,83 +281,83 @@ enum EWalletLogKind {
 /** 钱包 */
 message SWallet {
     /** 钱包编号 */
-    sint64 Id = 1;
+    sint64 id = 1;
     /** 哈希值 */
-    string HashCode = 2;
+    string hashCode = 2;
     /** 节点编号 */
-    sint32 NodeId = 3;
+    sint32 nodeId = 3;
     /** 用户编号 */
-    sint64 UserId = 4;
+    sint64 userId = 4;
     /** 用户名 */
-    string UserName = 5;
+    string userName = 5;
     // 钱包名称
-    string WalletName = 6;
+    string walletName = 6;
     /** 钱包类型 */
-    sint32 WalletType = 7;
+    sint32 walletType = 7;
     /** 钱包标志 */
-    sint32 WalletFlag = 8;
+    sint32 walletFlag = 8;
     /** 余额 */
-    sint32 Balance = 9;
+    sint32 balance = 9;
     /** 赠送余额 */
-    sint32 PresentBalance = 10;
+    sint32 presentBalance = 10;
     /** 调整金额 */
-    sint32 AdjustAmount = 11;
+    sint32 adjustAmount = 11;
     /** 冻结余额 */
-    sint32 FreezeAmount = 12;
+    sint32 freezeAmount = 12;
     /** 结余金额 */
-    sint32 LatestAmount = 13;
+    sint32 latestAmount = 13;
     /** 失效账户余额 */
-    sint32 ExpiredAmount = 14;
+    sint32 expiredAmount = 14;
     /** 总充值金额 */
-    sint32 TotalCharge = 15;
+    sint32 totalCharge = 15;
     /** 累计赠送金额 */
-    sint32 TotalPresent = 16;
+    sint32 totalPresent = 16;
     /** 总支付额 */
-    sint32 TotalPay = 17;
+    sint32 totalPay = 17;
     /** 状态 */
-    sint32 State = 18;
+    sint32 state = 18;
     /** 创建时间 */
-    sint64 CreateTime = 19;
+    sint64 createTime = 19;
     /** 更新时间 */
-    sint64 UpdateTime = 20;
+    sint64 updateTime = 20;
 }
 
 /** 钱包日志 */
 message SWalletLog {
     /** 编号 */
-    sint64 Id = 1;
+    sint64 id = 1;
     /** 钱包编号 */
-    sint64 WalletId = 2;
+    sint64 walletId = 2;
     /** 钱包用户的用户名 */
-    string WalletUser = 3;
+    string walletUser = 3;
     /** 业务类型 */
-    sint32 Kind = 4;
+    sint32 kind = 4;
     /** 标题 */
-    string Title = 5;
+    string title = 5;
     /** 外部通道 */
-    string OuterChan = 6;
+    string outerChan = 6;
     /** 外部订单号 */
-    string OuterNo = 7;
+    string outerNo = 7;
     /** 变动金额 */
-    int64 Value =  8;
+    int64 value =  8;
     /** 余额 */
-    int64 Balance = 9;
+    int64 balance = 9;
     /** 交易手续费 */
-    int64 ProcedureFee = 10;
+    int64 procedureFee = 10;
     /** 操作人员用户编号 */
-    sint32 OperatorUid = 11;
+    sint32 operatorUid = 11;
     /** 操作人员名称 */
-    string OperatorName = 12;
+    string operatorName = 12;
     /** 备注 */
-    string Remark = 13;
+    string remark = 13;
     /** 审核状态 */
-    sint32 ReviewState = 14;
+    sint32 reviewState = 14;
     /** 审核备注 */
-    string ReviewRemark = 15;
+    string reviewRemark = 15;
     /** 审核时间 */
-    sint64 ReviewTime = 16;
+    sint64 reviewTime = 16;
     /** 创建时间 */
-    sint64 CreateTime = 17;
+    sint64 createTime = 17;
     /** 更新时间 */
-    sint64 UpdateTime = 18;
+    sint64 updateTime = 18;
 }

@@ -24,7 +24,7 @@ type walletServiceImpl struct {
 
 func (w *walletServiceImpl) CreateWallet(_ context.Context, r *proto.CreateWalletRequest) (*proto.Result, error) {
 	iw := w._repo.CreateWallet(r.UserId,
-		r.UserName,
+		r.Username,
 		int(r.WalletType), r.WalletName, int(r.WalletFlag))
 	_, err := iw.Save()
 	return w.result(err), nil

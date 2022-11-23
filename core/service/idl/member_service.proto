@@ -263,13 +263,13 @@ service MemberService {
 }
 
 message LevelUpReviewRequest {
-    int64 MemberId = 1;
+    int64 memberId = 1;
     int64 requestId = 2;
-    bool review_pass = 3;
-    string Remark = 4;
+    bool reviewPass = 3;
+    string remark = 4;
 }
 
 message LevelUpConfirmRequest {
-    int64 MemberId = 1;
+    int64 memberId = 1;
     int64 requestId = 2;
 }

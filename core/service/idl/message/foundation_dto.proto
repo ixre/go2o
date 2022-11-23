@@ -67,7 +67,7 @@ message SSsoApp {
 /** 行政区域 */
 message SArea {
     /** 编号 **/
-    int64 Id = 1;
+    int64 id = 1;
     /** 上级编号 */
     int64 ParentId = 2;
     /** 区域名称 */
