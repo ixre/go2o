@@ -120,7 +120,7 @@ message SPage {
     // 编号
     int64 id = 1;
     // 商户编号
-    int64 userId = 2;
+    int64 userId =  2;
     // 标题
     string title = 3;
     // 字符标识

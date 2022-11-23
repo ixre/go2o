@@ -60,27 +60,27 @@ message CartItemResponse {
 // 购物车商品
 message SShoppingCartItem {
     //商品编号
-    sint64 ItemId = 1;
+    sint64 itemId = 1;
     //SKU编号
-    sint64 SkuId = 2;
+    sint64 skuId = 2;
     //商品标题
-    string Title = 3;
+    string title = 3;
     //商品图片
     string image = 4;
     //规格文本
-    string SpecWord = 5;
+    string specWord = 5;
     //商品编码
-    string Code = 6;
+    string code = 6;
     //零售价
-    double RetailPrice = 7;
+    double retailPrice = 7;
     //销售价
-    double Price = 8;
+    double price = 8;
     //数量
-    sint32 Quantity = 9;
+    sint32 quantity = 9;
     //是否结算
-    bool Checked = 10;
+    bool checked = 10;
     //库存文本
-    string StockText = 11;
+    string stockText = 11;
     //店铺编号
-    sint64 ShopId = 12;
+    sint64 shopId = 12;
 }

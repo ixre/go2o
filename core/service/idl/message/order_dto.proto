@@ -49,156 +49,156 @@ message SOrderItem {
     // 编号
     int64 id = 1;
     // 商品快照编号
-    int64 SnapshotId = 2;
+    int64 snapshotId = 2;
     // Sku编号
-    int64 SkuId = 3;
+    int64 skuId = 3;
     // 商品编号
-    int64 ItemId = 4;
+    int64 itemId = 4;
     // 商品标题
-    string ItemTitle = 5;
+    string itemTitle = 5;
     // 商品图片
     string image = 6;
     // 商品单价
-    int64 Price = 7;
+    int64 price = 7;
     // 商品实际单价
-    int64 FinalPrice = 8;
+    int64 finalPrice = 8;
     // 商品数量
-    int32 Quantity = 9;
+    int32 quantity = 9;
     // 退货数量
-    int32 ReturnQuantity = 10;
+    int32 returnQuantity = 10;
     // 商品总金额
-    int64 ItemAmount = 11;
+    int64 itemAmount = 11;
     // 商品实际总金额
-    int64 FinalAmount = 12;
+    int64 finalAmount = 12;
     // 是否已发货
-    bool IsShipped = 13;
+    bool isShipped = 13;
     // 其他信息
-    map<string, string> Data = 14;
+    map<string, string> data = 14;
 }
 
 message SParentOrder {
     // 买家
-    int64 BuyerId = 1;
+    int64 buyerId = 1;
     // 买家用户名
-    string BuyerUser = 2;
+    string buyerUser = 2;
     // 订单号
-    string OrderNo = 3;
+    string orderNo = 3;
     // 商品
-    int64 ItemCount = 4;
+    int64 itemCount = 4;
     // 商品总金额
-    int64 ItemAmount = 5;
+    int64 itemAmount = 5;
     // 抵扣金额
-    int64 DiscountAmount = 6;
+    int64 discountAmount = 6;
     // 优惠金额
-    int64 DeductAmount = 7;
+    int64 deductAmount = 7;
     // 快递费
-    int64 ExpressFee = 8;
+    int64 expressFee = 8;
     // 包装费
-    int64 PackageFee = 9;
+    int64 packageFee = 9;
     // 最终金额
-    int64 FinalAmount = 10;
+    int64 finalAmount = 10;
     // 收货人
-    SConsigneeInfo Consignee = 18;
+    SConsigneeInfo consignee = 18;
     // 子订单
-    repeated SSubOrder SubOrders = 11;
+    repeated SSubOrder subOrders = 11;
     // 是否支付
-    bool IsPaid = 12;
+    bool isPaid = 12;
     // 状态
-    int32 Status = 13;
+    int32 status = 13;
     // 状态文本
-    string StatusText = 14;
+    string statusText = 14;
     // 下单时间
-    sint64 CreateTime = 15;
+    sint64 createTime = 15;
 }
 
 message SSubOrder{
     // 订单号
-    string OrderNo = 1;
+    string orderNo = 1;
     // 店铺编号
-    int64 ShopId = 2;
+    int64 shopId = 2;
     // 店铺名称
-    string ShopName = 3;
+    string shopName = 3;
      // 商品总金额
-    int64 ItemAmount = 4;
+    int64 itemAmount = 4;
     // 优惠金额
-    int64 DiscountAmount = 5;
+    int64 discountAmount = 5;
     // 抵扣金额
-    int64 DeductAmount = 6;
+    int64 deductAmount = 6;
     // 调整金额
-    int64 AdjustAmount = 7;
+    int64 adjustAmount = 7;
     // 配送费
-    int64 ExpressFee = 8;
+    int64 expressFee = 8;
     // 包装费
-    int64 PackageFee = 9;
+    int64 packageFee = 9;
     // 手续费
-    int64 ProcedureFee = 10;
+    int64 procedureFee = 10;
     // 订单总金额
-    int64 TotalAmount = 11;
+    int64 totalAmount = 11;
     // 最终金额
-    int64 FinalAmount = 12;
+    int64 finalAmount = 12;
     // 买家留言
-    string BuyerComment = 13;
+    string buyerComment = 13;
     // 状态
-    int32 Status = 14;
+    int32 status = 14;
     // 商品列表
-    repeated SOrderItem Items = 15;
+    repeated SOrderItem items = 15;
     // 状态文本
-    string StatusText = 16;
+    string statusText = 16;
 }
 
 // 子订单
 message SSingleOrder {
     // 订单编号
-    int64 OrderId = 1;
+    int64 orderId = 1;
     // 父订单编号
-    int64 ParentOrderId = 2;
+    int64 parentOrderId = 2;
     // 订单号
-    string OrderNo = 3;
+    string orderNo = 3;
     // 订单类型
-    int32 OrderType = 4;
+    int32 orderType = 4;
     // 买家编号
-    int64 BuyerId = 5;
+    int64 buyerId = 5;
     // 卖家编号
-    int64 SellerId = 6;
+    int64 sellerId = 6;
     // 店铺编号
-    int64 ShopId = 7;
+    int64 shopId = 7;
     //int64 SubOrderId = 2;
     // 订单标题
-    string Subject = 8;
+    string subject = 8;
     // 商品总金额
-    int64 ItemAmount = 9;
+    int64 itemAmount = 9;
     // 优惠金额
-    int64 DiscountAmount = 10;
+    int64 discountAmount = 10;
     // 抵扣金额
-    int32 DeductAmount = 11;
+    int32 deductAmount = 11;
     // 调整金额
-    int32 AdjustAmount = 12;
+    int32 adjustAmount = 12;
     // 配送费
-    int64 ExpressFee = 13;
+    int64 expressFee = 13;
     // 包装费
-    int64 PackageFee = 14;
+    int64 packageFee = 14;
     // 手续费
-    int32 ProcedureFee = 15;
+    int32 procedureFee = 15;
     // 订单总金额
-    int32 TotalAmount = 16;
+    int32 totalAmount = 16;
     // 最终金额
-    int64 FinalAmount = 17;
+    int64 finalAmount = 17;
     // 收货人
-    SConsigneeInfo Consignee = 18;
+    SConsigneeInfo consignee = 18;
     // 买家留言
-    string BuyerComment = 19;
+    string buyerComment = 19;
        // 是否支付
-    bool IsPaid = 20;
+    bool isPaid = 20;
     //sint32 IsBreak = 18;
-    sint32 Status = 21;
+    sint32 status = 21;
     // 下单时间
-    sint64 SubmitTime = 22;
-    //sint64 UpdateTime = 21;
-    repeated SOrderItem Items = 23;
+    sint64 submitTime = 22;
+    //sint64 updateTime = 21;
+    repeated SOrderItem items = 23;
     // 扩展信息
-    map<string, string> Data = 25;
+    map<string, string> data = 25;
     // 更新时间
-    int64 UpdateTime = 24;
+    int64 updateTime = 24;
     // 是否为子订单
     //bool SubOrder = 24;
 }
@@ -206,81 +206,81 @@ message SSingleOrder {
 // 收货人信息
 message SConsigneeInfo {
     // 收货人
-    string ConsigneeName = 1;
+    string consigneeName = 1;
     // 收货电话
-    string ConsigneePhone = 12;
+    string consigneePhone = 12;
     // 配送地址
-    string ShippingAddress = 13;
+    string shippingAddress = 13;
 }
 
 //todo: 批发的参数改为属性而不是map
 message SubmitOrderRequest {
-    sint64 BuyerId = 1;
-    sint32 CartType = 2;
-    map<string, string> Data = 3;
+    sint64 buyerId = 1;
+    sint32 cartType = 2;
+    map<string, string> data = 3;
 }
 
 // 提交订单请求
 message SubmitNormalOrderV2Request {
-    int64 BuyerId = 1;
-    string CartCode = 2;
-    int64 AddressId = 3;
-    string Subject = 4;
-    string CouponCode = 5;
-    bool BalanceDiscount = 6;
+    int64 buyerId = 1;
+    string cartCode = 2;
+    int64 addressId = 3;
+    string subject = 4;
+    string couponCode = 5;
+    bool balanceDiscount = 6;
 }
 
 // 订单提交返回数据
 message NormalOrderSubmitResponse {
     // 错误码
-    int64 ErrCode = 1;
+    int64 errCode = 1;
     // 错误信息
-    string ErrMsg = 2;
+    string errMsg = 2;
     // 订单号，多个订单号，用","分割
-    string OrderNo = 3;
+    string orderNo = 3;
     // 合并支付
-    bool MergePay = 4;
+    bool mergePay = 4;
     // 交易号
-    string TradeNo = 5;
+    string tradeNo = 5;
     // 交易金额
-    int64 TradeAmount = 6;
+    int64 tradeAmount = 6;
 }
 
 message GetOrderRequest {
-    string OrderNo = 1;
-    bool SubOrder = 2;
+    string orderNo = 1;
+    bool subOrder = 2;
 }
 
 message TradeOrderSubmitRequest {
-    SSingleOrder Order = 1;
-    double Rate = 2;
+    SSingleOrder order = 1;
+    double rate = 2;
 }
 
 message TradeOrderTicketRequest {
-    sint64 OrderId = 1;
-    string Img = 2;
+    sint64 orderId = 1;
+    string image = 2;
 }
 
 message ComplexItemsResponse {
-    repeated SOrderItem Value =  1;
+    repeated SOrderItem value =  1;
 }
 
 // 订单编号
 message OrderId {
-    int64 Value =  1;
+    int64 value =  1;
 }
 
 // 订单号
 message OrderNo {
     // 订单号
-    string OrderNo = 1;
+    string orderNo = 1;
     // 是否为子订单
-    bool Sub = 2;
+    bool sub = 2;
 }
 
 // 订单号
 message OrderNoV2 {
-    string Value =  1;
+    string value =  1;
 }
 
 
@@ -288,102 +288,102 @@ message OrderIdOrNo {
     // 订单编号
     int64 id = 1;
     // 订单号
-    string OrderNo = 2;
+    string orderNo = 2;
 }
 
 message CancelOrderRequest {
     // 订单号
-    string OrderNo = 1;
+    string orderNo = 1;
     // 是否为子订单
-    bool Sub = 2;
+    bool sub = 2;
     // 取消原因
-    string Reason = 3;
+    string reason = 3;
 }
 
 message OrderShipmentRequest {
     // 订单号
-    string OrderNo = 1;
+    string orderNo = 1;
     // 是否为子订单
-    bool Sub = 2;
+    bool sub = 2;
     // 快递编号
-    int64 ProviderId = 3;
+    int64 providerId = 3;
     // 发货单号
-    string ShipOrderNo = 4;
+    string shipOrderNo = 4;
 }
 
 /** 预生成订单请求 */
 message PrepareOrderRequest {
     /** 买家编号 */
-    int64 BuyerId = 1;
+    int64 buyerId = 1;
     /** 购物车编码 */
-    string CartCode = 2;
+    string cartCode = 2;
     /** 收货地址 */
-    int64 AddressId = 3;
+    int64 addressId = 3;
     /** 优惠券 */
-    string CouponCode = 5;
+    string couponCode = 5;
     /** 支付方式 */
-    int32 PaymentFlag = 6;
+    int32 paymentFlag = 6;
     /** 使用余额 */
-    string Subject = 4;
+    string subject = 4;
 }
 /** 预生成订单响应 */
 message PrepareOrderResponse{
     // 错误信息
-    string Error = 1;
+    string error = 1;
     // 订单类型
-    int32 OrderType = 2;
+    int32 orderType = 2;
     // 商品总金额
-    int64 ItemAmount = 3;
+    int64 itemAmount = 3;
     // 优惠金额
-    int64 DiscountAmount = 4;
+    int64 discountAmount = 4;
     // 抵扣金额
-    int32 DeductAmount = 5;
+    int32 deductAmount = 5;
     // 调整金额
-    int32 AdjustAmount = 6;
+    int32 adjustAmount = 6;
     // 配送费
-    int64 ExpressFee = 7;
+    int64 expressFee = 7;
     // 包装费
-    int64 PackageFee = 8;
+    int64 packageFee = 8;
     // 手续费
-    int32 ProcedureFee = 9;
+    int32 procedureFee = 9;
     // 订单总金额
-    int32 TotalAmount = 10;
+    int32 totalAmount = 10;
     // 最终金额
-    int64 FinalFee = 11;
+    int64 finalFee = 11;
     // 收货人
-    SConsigneeInfo Consignee = 12;
+    SConsigneeInfo consignee = 12;
     // 订单项目
-    repeated SPrepareOrderGroup Groups = 13;
+    repeated SPrepareOrderGroup groups = 13;
     // 买家留言
-    string BuyerComment = 14;
+    string buyerComment = 14;
 }
 
 // 预生成订单店铺分组
 message SPrepareOrderGroup {
     //店铺编号
-    sint64 ShopId = 1;
+    sint64 shopId = 1;
     //供货商编号
-    sint64 VendorId = 2;
+    sint64 vendorId = 2;
     //店铺名称
-    string ShopName = 3;
+    string shopName = 3;
     //商品
-    repeated SPrepareOrderItem Items = 5;
+    repeated SPrepareOrderItem items = 5;
 }
 
 // 预生成订单店铺商品
 message SPrepareOrderItem {
     //商品编号
-    sint64 ItemId = 1;
+    sint64 itemId = 1;
     //SKU编号
-    sint64 SkuId = 2;
+    sint64 skuId = 2;
     //商品标题
-    string Title = 3;
+    string title = 3;
     //商品图片
     string image = 4;
     //规格文本
-    string SpecWord = 5;
+    string specWord = 5;
     //销售价
-    double Price = 8;
+    double price = 8;
     //数量
-    sint32 Quantity = 9;
+    sint32 quantity = 9;
 }

@@ -60,21 +60,21 @@ message SAdDto {
   // 编号
   int64 id = 1;
   //广告用户编号
-  int64 UserId = 2;
+  int64 userId =  2;
   // 名称
-  string Name = 3;
+  string name = 3;
   // 广告类型
-  int32 AdType = 4;
+  int32 adType = 4;
   // 展现次数
-  int32 ShowTimes = 5;
+  int32 showTimes = 5;
   // 点击次数
-  int32 ClickTimes = 6;
+  int32 clickTimes = 6;
   // 展现天数
-  int32 ShowDays = 7;
+  int32 showDays = 7;
   // 修改时间
-  int64 UpdateTime = 8;
+  int64 updateTime = 8;
   // 广告数据
-  SAdvertisementDto Data = 9;
+  SAdvertisementDto data = 9;
 }
 
 // 广告数据传输对象
@@ -82,20 +82,20 @@ message SAdvertisementDto {
   // 广告编号
   int64 id = 1;
   // 广告类型
-  int32 AdType = 2;
+  int32 adType = 2;
   // 文本广告数据
-  STextAdData Text = 3;
+  STextAdData text = 3;
   // 图片广告数据
   SImageAdData image = 4;
   // 轮播广告数据
-  SSwiperAdData Swiper = 5;
+  SSwiperAdData swiper = 5;
 }
 
 // 文本广告数据
 message STextAdData {
   int64 id = 1;
-  string Title = 2;
-  string LinkURL = 3;
+  string title = 2;
+  string linkURL = 3;
 }
 
 // 图片广告数据
@@ -103,73 +103,73 @@ message SImageAdData {
   // 图片编号
   int64 id = 1;
   // 图片标题
-  string Title = 2;
+  string title = 2;
   // 链接
-  string LinkURL = 3;
+  string linkUrl = 3;
   // 图片地址
-  string ImageURL = 4;
+  string imageUrl = 4;
   // 是否启用
-  int32 Enabled = 5;
+  int32 enabled = 5;
   // 排列序号
-  int32 SortNum = 6;
+  int32 sortNum = 6;
 }
 
 // 轮播广告数据
 message SSwiperAdData{
-  repeated SImageAdData Images = 1;
+  repeated SImageAdData images = 1;
 }
 
 message SetDefaultAdRequest {
-  int64 PositionId = 2;
-  int64 AdId = 3;
+  int64 positionId = 2;
+  int64 adId = 3;
 }
 message SetUserAdRequest {
-  int64 AdUserId = 1;
-  int64 PosId = 2;
-  int64 AdId = 3;
+  int64 adUserId = 1;
+  int64 posId = 2;
+  int64 adId = 3;
 }
 message AdIdRequest {
   // 广告用户编号
-  int64 AdUserId = 1;
+  int64 adUserId = 1;
   // 广告编号
-  int64 AdId = 2;
+  int64 adId = 2;
   // 广告位KEY
-  string AdKey = 3;
+  string adKey = 3;
   // 是否返回数据
-  bool ReturnData = 4;
+  bool returnData = 4;
 }
 
 message SaveAdRequest {
-  int64 AdUserId = 1;
-  SAdDto Value = 2;
-  SAdvertisementDto Data = 3;
+  int64 adUserId = 1;
+  SAdDto value = 2;
+  SAdvertisementDto data = 3;
 }
 
 message SaveSwiperImageRequest {
-  int64 AdUserId = 1;
-  int64 AdId = 2;
-  SImageAdData Value = 3;
+  int64 adUserId = 1;
+  int64 adId = 2;
+  SImageAdData value = 3;
 }
 
 message ImageIdRequest {
-  int64 AdUserId = 1;
-  int64 AdId = 2;
-  int64 ImageId = 3;
+  int64 adUserId = 1;
+  int64 adId = 2;
+  int64 imageId = 3;
 }
 
 // 查询广告数据
 message QueryAdvertisementDataRequest{
   // 广告用户编号
-  int64 AdUserId = 1;
+  int64 adUserId = 1;
   //　广告位键
-  repeated string Keys = 2;
+  repeated string keys = 2;
 }
 
 // 查询广告数据
 message QueryAdvertisementDataResponse{
   // 广告用户编号
-  int64 AdUserId = 1;
+  int64 adUserId = 1;
   //　广告位键
-  map<string,SAdvertisementDto> Value = 2;
+  map<string,SAdvertisementDto> value = 2;
 }
 

@@ -6,7 +6,7 @@ option java_package = "com.github.go2o.rpc";
 message SendMessageRequest {
     string account = 1;
     string message = 2;
-    map<string, string> Data = 3;
+    map<string, string> data = 3;
 }
 
 /** 消息方式 */
@@ -18,23 +18,23 @@ enum EMessageChannel {
 }
 
 message NotifyItemListResponse {
-    repeated SNotifyItem Value =  1;
+    repeated SNotifyItem value =  1;
 }
 
 /** 通知项 */
 message SNotifyItem {
     /** 键 */
-    string Key = 1;
+    string key = 1;
     /** 发送方式 */
-    sint32 NotifyBy = 2;
+    sint32 notifyBy = 2;
     /** 不允许修改发送方式 */
-    bool ReadonlyBy = 3;
+    bool readonlyBy = 3;
     /** 模板编号 */
-    sint32 TplId = 4;
+    sint32 tplId = 4;
     /** 内容 */
-    string Content = 5;
+    string content = 5;
     /** 模板包含的标签 */
-    map<string, string> Tags = 6;
+    map<string, string> tags = 6;
 }
 
 // 邮件模版
@@ -42,27 +42,27 @@ message SMailTemplate {
     // 编号
     int64 id = 1;
     // 商户编号
-    int64 MerchantId = 2;
+    int64 merchantId = 2;
     // 名称
-    string Name = 3;
+    string name = 3;
     // 主题
-    string Subject = 4;
+    string subject = 4;
     // 内容
-    string Body = 5;
+    string body = 5;
     // 是否启用
-    bool Enabled = 6;
+    bool enabled = 6;
 }
 
 message MailTemplateListResponse {
-    repeated SMailTemplate Value =  1;
+    repeated SMailTemplate value =  1;
 }
 
 // 站内信
 message SSiteMessage {
     // 主题
-    string Subject = 1;
+    string subject = 1;
     // 信息内容
-    string Message = 2;
+    string message = 2;
 }
 
 // 站内信用户类型
@@ -73,9 +73,9 @@ enum EMessageUserType {
 }
 
 message SendSiteMessageRequest {
-    int64 SenderId = 1;
-    EMessageUserType ReceiverType = 2;
-    int64 ReceiverId = 3;
-    bool SendNow = 4;
-    SSiteMessage Msg = 5;
+    int64 senderId = 1;
+    EMessageUserType receiverType = 2;
+    int64 receiverId = 3;
+    bool sendNow = 4;
+    SSiteMessage msg = 5;
 }

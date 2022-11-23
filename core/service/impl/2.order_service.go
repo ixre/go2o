@@ -305,7 +305,7 @@ func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.Tr
 		err = order.ErrNoSuchOrder
 	} else {
 		io := o.(order.ITradeOrder)
-		err = io.UpdateTicket(r.Img)
+		err = io.UpdateTicket(r.Image)
 	}
 	return s.result(err), nil
 }

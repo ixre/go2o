@@ -47,7 +47,7 @@ message CheckCartRequest {
 // 购物车编号
 message ShoppingCartId{
     // 会员/用户编号
-    sint64 userId = 1;
+    sint64 userId =  1;
     // 购物车标识,当未指定用户时候使用
     string cartCode = 2;
     // 是否为批发销售的购物车

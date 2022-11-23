@@ -8,7 +8,7 @@ option java_package = "com.github.go2o.rpc";
 
 message CreateWalletRequest {
     // 用户编号
-    int64 userId = 1;
+    int64 userId =  1;
     // 用户名
     string username = 2;
     // 钱包类型
@@ -20,7 +20,7 @@ message CreateWalletRequest {
 }
 
 message GetWalletRequest {
-    sint64 userId = 1;
+    sint64 userId =  1;
     sint32 walletType= 2;
 }
 
@@ -287,7 +287,7 @@ message SWallet {
     /** 节点编号 */
     sint32 nodeId = 3;
     /** 用户编号 */
-    sint64 userId = 4;
+    sint64 userId =  4;
     /** 用户名 */
     string userName = 5;
     // 钱包名称

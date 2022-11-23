@@ -104,7 +104,7 @@ message RbacLoginResponse {
     // 错误消息
     string ErrMsg = 2;
     // 用户编号
-    int64 UserId = 3;
+    int64 userId =  3;
     // 访问令牌
     string AccessToken = 4;
     // 角色标志
@@ -586,7 +586,7 @@ message SPermRes {
 
 message GetUserResRequest {
     /** 用户编号 */
-    int64 UserId = 1;
+    int64 userId =  1;
     /** 是否只显示菜单 */
     bool OnlyMenu = 2;
 }

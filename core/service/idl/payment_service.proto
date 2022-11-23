@@ -149,7 +149,7 @@ message MixedPaymentRequest {
 
 message PayGatewayRequest {
     string action = 1;
-    sint64 userId = 2;
+    sint64 userId =  2;
     map<string, string> data = 3;
 }
 

@@ -305,8 +305,8 @@ func (a *advertisementService) parseAdImageDto(v *ad.Image) *proto.SImageAdData 
 	return &proto.SImageAdData{
 		Id:       v.Id,
 		Title:    v.Title,
-		LinkURL:  v.LinkUrl,
-		ImageURL: v.ImageUrl,
+		LinkUrl:  v.LinkUrl,
+		ImageUrl: v.ImageUrl,
 		SortNum:  int32(v.SortNum),
 		Enabled:  int32(v.Enabled),
 	}
@@ -316,8 +316,8 @@ func (a *advertisementService) parseAdImage(v *proto.SImageAdData) *ad.Image {
 	return &ad.Image{
 		Id:       v.Id,
 		Title:    v.Title,
-		LinkUrl:  v.LinkURL,
-		ImageUrl: v.ImageURL,
+		LinkUrl:  v.LinkUrl,
+		ImageUrl: v.ImageUrl,
 		SortNum:  int(v.SortNum),
 		Enabled:  int(v.Enabled),
 	}
@@ -341,8 +341,8 @@ func (a *advertisementService) parseSingleImageDto(v *ad.Image) *proto.SImageAdD
 	return &proto.SImageAdData{
 		Id:       v.Id,
 		Title:    v.Title,
-		LinkURL:  v.LinkUrl,
-		ImageURL: v.ImageUrl,
+		LinkUrl:  v.LinkUrl,
+		ImageUrl: v.ImageUrl,
 		Enabled:  int32(v.Enabled),
 		SortNum:  int32(v.SortNum),
 	}
