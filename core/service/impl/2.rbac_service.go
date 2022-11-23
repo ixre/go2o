@@ -58,6 +58,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			ErrMsg:  "密码长度不正确，应该为32位长度的md5字符",
 		}, nil
 	}
+	expires := 3600*24
 	// 超级管理员登录
 	if r.Username == "master" {
 		superPwd, _ := p.registryRepo.GetValue(registry.SysSuperLoginToken)
@@ -72,7 +73,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			UserId:      0,
 			Permissions: []string{"master", "admin"},
 		}
-		return p.withAccessToken(0, "master", dst, r.Expires)
+		return p.withAccessToken(0, "master", dst,expires )
 	}
 	// 普通系统用户登录
 	usr := p.dao.GetPermUserBy("usr=$1", r.Username)
@@ -99,12 +100,12 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		UserId: usr.Id,
 	}
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
-	return p.withAccessToken(usr.Id, usr.Usr, dst, r.Expires)
+	return p.withAccessToken(usr.Id, usr.Usr, dst, expires)
 }
 
 // 返回带有令牌的结果
 func (p *rbacServiceImpl) withAccessToken(userId int64, userName string,
-	dst *proto.RbacLoginResponse, expires int32) (*proto.RbacLoginResponse, error) {
+	dst *proto.RbacLoginResponse, expires int) (*proto.RbacLoginResponse, error) {
 	accessToken, err := p.createAccessToken(userId, userName,
 		strings.Join(dst.Permissions, ","), expires)
 	dst.AccessToken = accessToken
@@ -116,9 +117,9 @@ func (p *rbacServiceImpl) withAccessToken(userId int64, userName string,
 }
 
 // 创建令牌
-func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm string, exp int32) (string, error) {
+func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm string, exp int) (string, error) {
 	if exp <= 0 {
-		exp = int32((time.Hour * 24 * 365).Seconds())
+		exp = int((time.Hour * 24 * 365).Seconds())
 	}
 	var claims = jwt.MapClaims{
 		"exp":    time.Now().Add(time.Second * time.Duration(exp)).Unix(),
