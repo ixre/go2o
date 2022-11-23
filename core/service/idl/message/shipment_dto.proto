@@ -10,7 +10,7 @@ message SCoverageValue {
     double lng = 3;
     double lat = 4;
     int32 radius = 5;
-    string ddress = 6;
+    string address = 6;
     int64 areaId = 7;
 }
 
