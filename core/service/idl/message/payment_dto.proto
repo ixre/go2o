@@ -13,6 +13,6 @@ enum PaymentAccountType {
 }
 
 message PayPriorityRequest {
-    sint64 OwnerId = 1;
-    PaymentAccountType Account = 2;
+    sint64 ownerId = 1;
+    PaymentAccountType account = 2;
 }
