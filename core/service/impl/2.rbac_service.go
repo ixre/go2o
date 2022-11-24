@@ -58,7 +58,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			ErrMsg:  "密码长度不正确，应该为32位长度的md5字符",
 		}, nil
 	}
-	expires := 3600*24
+	expires := 3600 * 24
 	// 超级管理员登录
 	if r.Username == "master" {
 		superPwd, _ := p.registryRepo.GetValue(registry.SysSuperLoginToken)
@@ -73,7 +73,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			UserId:      0,
 			Permissions: []string{"master", "admin"},
 		}
-		return p.withAccessToken(0, "master", dst,expires )
+		return p.withAccessToken(0, "master", dst, expires)
 	}
 	// 普通系统用户登录
 	usr := p.dao.GetPermUserBy("usr=$1", r.Username)

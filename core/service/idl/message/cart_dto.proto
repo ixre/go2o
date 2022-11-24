@@ -5,14 +5,14 @@ option java_package = "com.github.go2o.rpc";
 
 //todo: 废弃
 message WsCartRequest {
-    sint64 MemberId = 1;
-    string Action = 2;
-    map<string, string> Data = 3;
+    sint64 memberId = 1;
+    string action = 2;
+    map<string, string> data = 3;
 }
 message NormalCartRequest {
-    sint64 MemberId = 1;
-    string Action = 2;
-    map<string, string> Data = 3;
+    sint64 memberId = 1;
+    string action = 2;
+    map<string, string> data = 3;
 }
 
 
@@ -20,24 +20,24 @@ message NormalCartRequest {
 // 购物车
 message SShoppingCart {
     //编号
-    sint32 CartId = 1;
+    sint32 cartId = 1;
     //购物车KEY
-    string Code = 2;
+    string code = 2;
     //店铺分组
-    repeated SShoppingCartGroup Shops = 3;
+    repeated SShoppingCartGroup shops = 3;
 }
 // 购物车店铺分组
 message SShoppingCartGroup {
     //店铺编号
-    sint64 ShopId = 1;
+    sint64 shopId = 1;
     //供货商编号
-    sint64 VendorId = 2;
+    sint64 vendorId = 2;
     //店铺名称
-    string ShopName = 3;
+    string shopName = 3;
     //是否结算
-    bool Checked = 4;
+    bool checked = 4;
     //商品
-    repeated SShoppingCartItem Items = 5;
+    repeated SShoppingCartItem items = 5;
 }
 
 // 购物车商品勾选
