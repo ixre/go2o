@@ -43,18 +43,18 @@ message SShoppingCartGroup {
 // 购物车商品勾选
 message SCheckCartItem {
     //商品编号
-    sint64 ItemId = 1;
+    sint64 itemId = 1;
     //SKU编号
-    sint64 SkuId = 2;
+    sint64 skuId = 2;
     // 是否勾选
-    bool Checked = 3;
+    bool checked = 3;
 }
 
 // 购物车商品操作响应
 message CartItemResponse {
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    SShoppingCartItem Item = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    SShoppingCartItem item = 3;
 }
 
 // 购物车商品
@@ -83,4 +83,16 @@ message SShoppingCartItem {
     string stockText = 11;
     //店铺编号
     sint64 shopId = 12;
+}
+
+// 购物车商品请求
+message SCartItem {
+    //商品编号
+    sint64 itemId = 2;
+    //SKU编号
+    sint64 skuId = 3;
+    // 数量
+    int32 quantity = 4;
+    // 是否只勾选
+    bool checked = 5;
 }

@@ -17,7 +17,10 @@ service CartService {
     // 放入购物车
     rpc PutInCart(CartItemRequest) returns (CartItemResponse) {
     }
-    // 从购物车里删除指定数量商品
+    // 更新购物车多件商品
+    rpc UpdateItems(CartUpdateRequest) returns (Result) {
+    }
+    // 从购物车里删除指定数量单件商品
     rpc ReduceCartItem(CartItemRequest) returns (CartItemResponse) {
     }
     // 勾选商品结算
@@ -52,4 +55,12 @@ message ShoppingCartId{
     string cartCode = 2;
     // 是否为批发销售的购物车
     bool isWholesale = 3;
+}
+
+// 购物车商品更新请求
+message CartUpdateRequest{
+    // 购物车编号
+    ShoppingCartId cartId = 1; 
+    // Sku列表
+    repeated SCartItem items = 2;
 }
