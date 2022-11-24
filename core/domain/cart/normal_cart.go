@@ -1,13 +1,13 @@
 package cart
 
 import (
-	"errors"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"time"
 )
 
 var _ cart.ICart = new(cartImpl)
@@ -295,7 +295,47 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.No
 
 // 更新商品数量，如数量为0，则删除
 func (c *cartImpl) Update(itemId, skuId int64, quantity int32) error {
-	return errors.New("not implement")
+	return c.update(itemId, skuId, quantity)
+}
+
+// 更新项
+func (c *cartImpl) update(itemId, skuId int64, quantity int32) error {
+	if c.value.Items == nil {
+		return cart.ErrEmptyShoppingCart
+	}
+	ci := c.GetItem(itemId, skuId)
+	if ci == nil {
+		return cart.ErrItemNoSku
+	}
+	it := c.goodsRepo.GetItem(itemId)
+	if it == nil {
+		return item.ErrNoSuchItem // 没有商品
+	}
+	iv := it.GetValue()
+	// 库存,如有SKU，则使用SKU的库存
+	stock := iv.StockNum
+	if quantity > stock {
+		return item.ErrOutOfStock
+	}
+	// 判断商品SkuId
+	if skuId > 0 {
+		var sku *item.Sku
+		sku = it.GetSku(skuId)
+		if sku == nil {
+			return item.ErrNoSuchSku
+		}
+		stock = sku.Stock
+	}
+	// 检查是否已经卖完了
+	if stock == 0 {
+		return item.ErrFullOfStock
+	}
+	// 超出库存
+	if quantity > stock {
+		return item.ErrOutOfStock
+	}
+	ci.Quantity = quantity
+	return nil
 }
 
 // 移出项

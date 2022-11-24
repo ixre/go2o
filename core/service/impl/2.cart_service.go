@@ -15,6 +15,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strconv"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	proItem "github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -23,8 +26,6 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/util"
-	"strconv"
-	"strings"
 )
 
 var _ proto.CartServiceServer = new(cartServiceImpl)
@@ -224,7 +225,7 @@ func (s *cartServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*pr
 
 /*---------------- 普通购物车 ----------------*/
 
-//  获取购物车
+// 获取购物车
 func (s *cartServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICart {
 	var c cart.ICart
 	var cc cart.ICart
@@ -292,6 +293,22 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 		}
 	}
 	return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+}
+
+// UpdateItems 更新购物车项目
+func (s *cartServiceImpl) UpdateItems(_ context.Context, r *proto.CartUpdateRequest) (*proto.Result, error) {
+	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
+	if c == nil {
+		return s.error(cart.ErrNoSuchCart), nil
+	}
+	for _, v := range r.Items {
+		err := c.Update(v.ItemId, v.SkuId, v.Quantity)
+		if err != nil {
+			return s.error(err), nil
+		}
+	}
+	_, err := c.Save()
+	return s.result(err), nil
 }
 
 func (s *cartServiceImpl) ReduceCartItem(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
