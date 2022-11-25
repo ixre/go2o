@@ -3,12 +3,13 @@ package impl
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
-	"log"
 )
 
 var _ dao.IRbacDao = new(rbacDaoImpl)
@@ -82,7 +83,7 @@ func (p *rbacDaoImpl) CountPermDept(where string, v ...interface{}) (int, error)
 // Select 部门
 func (p *rbacDaoImpl) SelectPermDept(where string, v ...interface{}) []*model.PermDept {
 	list := make([]*model.PermDept, 0)
-	err := p._orm.Select(&list, where, v...)
+	err := p._orm.Select(&list, where+" 1=1 ORDER BY id ASC", v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermDept")
 	}
