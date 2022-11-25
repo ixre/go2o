@@ -32,26 +32,26 @@ service {{$title}}Service {
 message Save{{$shortTitle}}Request{
     {{range $i,$c := .columns}}
     /** {{$c.Comment}} */
-    {{type "protobuf" $c.Type}} {{$c.Prop}} = {{plus $c.Ordinal 1}};{{end}}
+    {{type "protobuf" $c.Type}} {{lower_title $c.Prop}} = {{plus $c.Ordinal 1}};{{end}}
 }
 
 /** 保存{{$comment}}响应 */
 message Save{{$shortTitle}}Response{
-    int64 ErrCode = 1;
-    string ErrMsg = 2;
-    {{type "protobuf" .table.PkType}} {{.table.PkProp}} = 3;
+    int64 errCode = 1;
+    string errMsg = 2;
+    {{type "protobuf" .table.PkType}} {{lower_title .table.PkProp}} = 3;
 }
 
 /** {{$comment}}编号 */
 message {{$pkType}}{
-   {{type "protobuf" .table.PkType}} Value = 1;
+   {{type "protobuf" .table.PkType}} value = 1;
 }
 
 /** {{$comment}} */
 message S{{$shortTitle}}{
     {{range $i,$c := .columns}}
     /** {{$c.Comment}} */
-    {{type "protobuf" $c.Type}} {{$c.Prop}} = {{plus $c.Ordinal 1}};{{end}}
+    {{type "protobuf" $c.Type}} {{lower_title $c.Prop}} = {{plus $c.Ordinal 1}};{{end}}
 }
 
 /** 查询{{$comment}}请求 */
@@ -61,24 +61,24 @@ message Query{{$shortTitle}}Request{
 
 /** 查询{{$comment}}响应 */
 message Query{{$shortTitle}}Response{
-    repeated S{{$shortTitle}} Value = 1;
+    repeated S{{$shortTitle}} value = 1;
 }
 
 /** {{$comment}}分页数据 */
 message Paging{{$shortTitle}}{
     {{range $i,$c := .columns}}
     /** {{$c.Comment}} */
-    {{type "protobuf" $c.Type}} {{$c.Prop}} = {{plus $c.Ordinal 1}};{{end}}
+    {{type "protobuf" $c.Type}} {{lower_title $c.Prop}} = {{plus $c.Ordinal 1}};{{end}}
 }
 
 /** {{$comment}}分页请求 */
 message {{$shortTitle}}PagingRequest{
     // 分页参数
-    SPagingParams Params = 1;
+    SPagingParams params = 1;
 }
 
 /** {{$comment}}分页响应 */
 message {{$shortTitle}}PagingResponse {
-   int64 Total = 1;
-   repeated Paging{{$shortTitle}} Value = 2;
+   int64 total = 1;
+   repeated Paging{{$shortTitle}} value = 2;
 }

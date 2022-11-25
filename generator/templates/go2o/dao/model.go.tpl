@@ -8,6 +8,6 @@ type {{$shortTitle}} struct{
     // {{$c.Comment}}
     {{$c.Prop}} {{type "go" $c.Type}} `db:"{{$c.Name}}"\
     {{if $c.IsPk}} pk:"yes"{{end}}\
-    {{if $c.IsAuto}} auto:"yes"{{end}}`
+    {{if $c.IsAuto}} auto:"yes"{{end}} json:"{{lower_title $c.Prop}}"`
     {{end}}
 }

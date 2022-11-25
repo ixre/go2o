@@ -68,7 +68,7 @@ func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.S
     {{else}}dst.{{$c.Prop}} = r.{{$c.Prop}}{{end}}{{end}}
 
     {{$c := try_get .columns "update_time"}}
-    {{if $c}}dst.UpdateTime = time.Now().Unix(){{end}}\
+    {{if $c}}dst.UpdateTime = time.Now().Unix(){{end}}
 	id, err := {{$p}}.dao.Save{{$shortTitle}}(dst)
     ret := &proto.Save{{$shortTitle}}Response{
         {{.table.PkProp}}: {{type "go" .table.PkType}}(id),
