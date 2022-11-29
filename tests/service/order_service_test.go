@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"testing"
 	"strings"
+	"testing"
 
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
@@ -25,10 +25,9 @@ func TestSubmitNormalOrder(t *testing.T) {
 	}
 }
 
-
-func TestSubmitOrderSubjectPostgresInsert(t *testing.T){
+func TestSubmitOrderSubjectPostgresInsert(t *testing.T) {
 	s := "指间陶艺 精品宜兴紫砂茶宠 名家全手工小号座镇貔貅茶玩雕塑摆件精品 威震八方(貔貅) 公款"
-	s2:= strings.Replace(s," ","",-1)
-	s3 :=  s2[:15] + "..."
-	t.Log("----",s3)
+	s2 := strings.Replace(s, " ", "", -1)
+	s3 := s2[:15] + "..."
+	t.Log("----", s3)
 }
