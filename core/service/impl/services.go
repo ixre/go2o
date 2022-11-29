@@ -11,6 +11,8 @@ package impl
 
 import (
 	"encoding/json"
+	"strings"
+
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/go2o/core/event"
@@ -23,7 +25,6 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"strings"
 )
 
 var (
@@ -47,7 +48,7 @@ var (
 	// 商品服务
 	ItemService *itemService
 	// 购物服务
-	ShoppingService *orderServiceImpl
+	OrderService *orderServiceImpl
 	// 购物车服务
 	CartService *cartServiceImpl
 	// 售后服务
@@ -178,7 +179,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	ProductService = NewProductService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valueRepo, registryRepo, sto, notifyRepo)
 	PromService = NewPromotionService(promRepo)
-	ShoppingService = NewShoppingService(orderRepo, cartRepo, memberRepo,
+	OrderService = NewShoppingService(orderRepo, cartRepo, memberRepo,
 		productRepo, itemRepo, mchRepo, shopRepo, orderQuery)
 	CartService = NewCartService(cartRepo, itemRepo, mchRepo, shopRepo)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)

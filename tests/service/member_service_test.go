@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
+	"testing"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
 )
 
 var _ = ti.Factory.GetAdRepo()
@@ -23,7 +24,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 		t.Error(token.Error)
 		t.Failed()
 	}
-	t.Log("token is:", token.AccessToken, " user code:", token.UserCode)
+	t.Log("token is:", token.AccessToken)
 	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: token.AccessToken,
 		ExpiresTime: 0,

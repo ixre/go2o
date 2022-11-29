@@ -9,7 +9,7 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/log"
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 )
 
@@ -41,7 +41,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterPaymentServiceServer(s, grpc2.PaymentService)
 	proto.RegisterWalletServiceServer(s, grpc2.WalletService)
 	proto.RegisterCartServiceServer(s, grpc2.CartService)
-	proto.RegisterOrderServiceServer(s, grpc2.ShoppingService)
+	proto.RegisterOrderServiceServer(s, grpc2.OrderService)
 	proto.RegisterShopServiceServer(s, grpc2.ShopService)
 	proto.RegisterShipmentServiceServer(s, grpc2.ShipmentService)
 	proto.RegisterItemServiceServer(s, grpc2.ItemService)

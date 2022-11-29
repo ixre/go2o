@@ -15,6 +15,7 @@ import (
 	"log"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
@@ -335,10 +336,12 @@ func (o *normalOrderImpl) parseCartToOrderItem(c *cart.NormalCartItem) *order.Su
 	}
 	// 设置订单标题
 	if len(o.baseValue.Subject) == 0 {
-		if len(snap.GoodsTitle) > 16 {
-			o.baseValue.Subject = snap.GoodsTitle[:15] + "..."
-		} else {
-			o.baseValue.Subject = snap.GoodsTitle
+		// note: 如果商品标题有空格,在pgsql下引发错误：
+		// invalid byte sequence for encoding "UTF8": 0x
+		title := strings.ReplaceAll(snap.GoodsTitle, " ", "")
+		o.baseValue.Subject = title
+		if len(title) > 16 {
+			o.baseValue.Subject = title[:15] + "..."
 		}
 	}
 
