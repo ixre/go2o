@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type ShopServiceClient interface {
 	// * 获取店铺,shopId
 	GetShop(ctx context.Context, in *GetShopIdRequest, opts ...grpc.CallOption) (*SShop, error)
+	// * 查询自营店铺
+	GetSelfSupportShops(ctx context.Context, in *SelfSupportShopRequest, opts ...grpc.CallOption) (*ShopListResponse, error)
 	// * 根据别名查询店铺编号
 	QueryShopId(ctx context.Context, in *ShopAliasRequest, opts ...grpc.CallOption) (*Int64, error)
 	// rpc GetVendorShop_ (Int64) returns (SShop) {}
@@ -56,6 +58,15 @@ func NewShopServiceClient(cc grpc.ClientConnInterface) ShopServiceClient {
 func (c *shopServiceClient) GetShop(ctx context.Context, in *GetShopIdRequest, opts ...grpc.CallOption) (*SShop, error) {
 	out := new(SShop)
 	err := c.cc.Invoke(ctx, "/ShopService/GetShop", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *shopServiceClient) GetSelfSupportShops(ctx context.Context, in *SelfSupportShopRequest, opts ...grpc.CallOption) (*ShopListResponse, error) {
+	out := new(ShopListResponse)
+	err := c.cc.Invoke(ctx, "/ShopService/GetSelfSupportShops", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -140,6 +151,8 @@ func (c *shopServiceClient) DeleteStore(ctx context.Context, in *StoreId, opts .
 type ShopServiceServer interface {
 	// * 获取店铺,shopId
 	GetShop(context.Context, *GetShopIdRequest) (*SShop, error)
+	// * 查询自营店铺
+	GetSelfSupportShops(context.Context, *SelfSupportShopRequest) (*ShopListResponse, error)
 	// * 根据别名查询店铺编号
 	QueryShopId(context.Context, *ShopAliasRequest) (*Int64, error)
 	// rpc GetVendorShop_ (Int64) returns (SShop) {}
@@ -168,6 +181,9 @@ type UnimplementedShopServiceServer struct {
 
 func (UnimplementedShopServiceServer) GetShop(context.Context, *GetShopIdRequest) (*SShop, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetShop not implemented")
+}
+func (UnimplementedShopServiceServer) GetSelfSupportShops(context.Context, *SelfSupportShopRequest) (*ShopListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSelfSupportShops not implemented")
 }
 func (UnimplementedShopServiceServer) QueryShopId(context.Context, *ShopAliasRequest) (*Int64, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryShopId not implemented")
@@ -220,6 +236,24 @@ func _ShopService_GetShop_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ShopServiceServer).GetShop(ctx, req.(*GetShopIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ShopService_GetSelfSupportShops_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SelfSupportShopRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShopServiceServer).GetSelfSupportShops(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ShopService/GetSelfSupportShops",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShopServiceServer).GetSelfSupportShops(ctx, req.(*SelfSupportShopRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -378,6 +412,10 @@ var ShopService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetShop",
 			Handler:    _ShopService_GetShop_Handler,
+		},
+		{
+			MethodName: "GetSelfSupportShops",
+			Handler:    _ShopService_GetSelfSupportShops_Handler,
 		},
 		{
 			MethodName: "QueryShopId",

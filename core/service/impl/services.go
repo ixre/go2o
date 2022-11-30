@@ -42,7 +42,7 @@ var (
 	// 商户服务
 	MerchantService *merchantService
 	// 商店服务
-	ShopService *shopServiceImpl
+	ShopService proto.ShopServiceServer
 	// 产品服务
 	ProductService *productService
 	// 商品服务

@@ -11,6 +11,9 @@ service ShopService {
     rpc GetShop (GetShopIdRequest) returns (SShop) {
     }
 
+    /** 查询自营店铺 */
+    rpc GetSelfSupportShops(SelfSupportShopRequest)returns (ShopListResponse){}
+
     /** 根据别名查询店铺编号　*/
     rpc QueryShopId(ShopAliasRequest)returns(Int64){}
 
@@ -55,6 +58,16 @@ message TurnShopRequest {
     string reason = 3;
 }
 
+// 查询自营店铺请求
+message SelfSupportShopRequest{
+    bool status = 1;
+}
+
+// 店铺列表响应
+message ShopListResponse{
+    // 店铺列表
+    repeated SShop list = 1;
+}
 
 // 店铺
 message SShop {
