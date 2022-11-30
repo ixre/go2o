@@ -10,13 +10,14 @@ package impl
 
 import (
 	"context"
+	"regexp"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	context2 "golang.org/x/net/context"
-	"regexp"
 )
 
 var _ proto.ShopServiceServer = new(shopServiceImpl)
@@ -69,6 +70,12 @@ func (si *shopServiceImpl) SaveOfflineShop(_ context.Context, r *proto.SStore) (
 		}
 	}
 	return si.error(err), nil
+}
+
+// * 查询自营店铺
+func (si *shopServiceImpl) GetSelfSupportShops(_ context.Context, r *proto.SelfSupportShopRequest) (*proto.ShopListResponse, error) {
+	si.shopRepo.QuerySelfSupportShops()
+	return nil, nil
 }
 
 func (si *shopServiceImpl) DeleteStore(_ context.Context, id *proto.StoreId) (*proto.Result, error) {

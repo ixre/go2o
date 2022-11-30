@@ -13,6 +13,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -21,7 +23,6 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
 )
 
 var _ shop.IShopRepo = new(shopRepo)
@@ -32,6 +33,14 @@ type shopRepo struct {
 	registryRepo registry.IRegistryRepo
 	storage      storage.Interface
 	o            orm.Orm
+}
+
+// QuerySelfSupportShops implements shop.IShopRepo
+func (s *shopRepo) QuerySelfSupportShops() []shop.Shop {
+	var arr []shop.Shop
+	s.o.Select(&arr, `SELECT * FROM public.mch_online_shopWHERE vendor_id IN
+	 (SELECT id FROM mch_merchant WHERE self_sales = 1) ORDER BY id ASC")`)
+	return arr
 }
 
 func (s *shopRepo) GetShopIdByAlias(alias string) int64 {
