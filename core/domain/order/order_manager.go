@@ -493,6 +493,17 @@ func (u *unifiedOrderAdapterImpl) buyerReceived() error {
 	return nil
 }
 
+
+// Forbid implements order.IUnifiedOrderAdapter
+func (u *unifiedOrderAdapterImpl) Forbid() error {
+	err := u.check()
+	if err == nil {
+		return u.subOrder.Forbid();
+	}
+	return errors.New("not implemented")
+}
+
+
 // 获取订单日志
 func (u *unifiedOrderAdapterImpl) LogBytes() []byte {
 	if err := u.check(); err != nil {

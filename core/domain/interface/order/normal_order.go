@@ -63,8 +63,6 @@ type (
 		BuyerReceived() error
 		// LogBytes 获取订单的日志
 		LogBytes() []byte
-		// Suspend 挂起
-		Suspend(reason string) error
 		// Cancel 取消订单/退款
 		Cancel(reason string) error
 		// Return 退回商品
@@ -75,6 +73,8 @@ type (
 		Decline(reason string) error
 		// Submit 提交子订单
 		Submit() (int64, error)
+		// Forbid 删除订单,无法显示和操作
+		Forbid() error
 		// Destory 销毁订单
 		Destory() error
 	}
@@ -107,8 +107,8 @@ type (
 		PackageFee int64 `db:"package_fee"`
 		// 实际金额
 		FinalAmount int64 `db:"final_amount"`
-		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend int `db:"is_suspend"`
+		// 是否删除
+		IsForbidden int `db:"is_forbidden"`
 		// 顾客备注
 		BuyerComment string `db:"buyer_comment"`
 		// 系统备注

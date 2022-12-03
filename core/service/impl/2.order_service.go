@@ -345,6 +345,13 @@ func (s *orderServiceImpl) BuyerReceived(_ context.Context, r *proto.OrderNo) (*
 	return s.error(err), nil
 }
 
+// Forbid implements 删除订单
+func (s *orderServiceImpl) Forbid(_ context.Context,r *proto.OrderNo) (*proto.Result, error) {
+	c := s.manager.Unified(r.OrderNo, r.Sub)
+	err := c.Forbid()
+	return s.error(err), nil
+}
+
 // ChangeConsignee 更改订单收货人信息
 func (s *orderServiceImpl) ChangeShipmentAddress(_ context.Context, r *proto.ChangeOrderAddressRequest) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)

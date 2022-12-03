@@ -52,6 +52,8 @@ type OrderServiceClient interface {
 	Ship(ctx context.Context, in *OrderShipmentRequest, opts ...grpc.CallOption) (*Result, error)
 	// 买家收货
 	BuyerReceived(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*Result, error)
+	// 删除订单
+	Forbid(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*Result, error)
 	// 获取订单日志
 	LogBytes(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*String, error)
 }
@@ -199,6 +201,15 @@ func (c *orderServiceClient) BuyerReceived(ctx context.Context, in *OrderNo, opt
 	return out, nil
 }
 
+func (c *orderServiceClient) Forbid(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/OrderService/forbid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *orderServiceClient) LogBytes(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*String, error) {
 	out := new(String)
 	err := c.cc.Invoke(ctx, "/OrderService/LogBytes", in, out, opts...)
@@ -242,6 +253,8 @@ type OrderServiceServer interface {
 	Ship(context.Context, *OrderShipmentRequest) (*Result, error)
 	// 买家收货
 	BuyerReceived(context.Context, *OrderNo) (*Result, error)
+	// 删除订单
+	Forbid(context.Context, *OrderNo) (*Result, error)
 	// 获取订单日志
 	LogBytes(context.Context, *OrderNo) (*String, error)
 	mustEmbedUnimplementedOrderServiceServer()
@@ -295,6 +308,9 @@ func (UnimplementedOrderServiceServer) Ship(context.Context, *OrderShipmentReque
 }
 func (UnimplementedOrderServiceServer) BuyerReceived(context.Context, *OrderNo) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BuyerReceived not implemented")
+}
+func (UnimplementedOrderServiceServer) Forbid(context.Context, *OrderNo) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Forbid not implemented")
 }
 func (UnimplementedOrderServiceServer) LogBytes(context.Context, *OrderNo) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogBytes not implemented")
@@ -582,6 +598,24 @@ func _OrderService_BuyerReceived_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_Forbid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderNo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).Forbid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/OrderService/forbid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).Forbid(ctx, req.(*OrderNo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _OrderService_LogBytes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(OrderNo)
 	if err := dec(in); err != nil {
@@ -666,6 +700,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BuyerReceived",
 			Handler:    _OrderService_BuyerReceived_Handler,
+		},
+		{
+			MethodName: "forbid",
+			Handler:    _OrderService_Forbid_Handler,
 		},
 		{
 			MethodName: "LogBytes",

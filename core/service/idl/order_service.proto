@@ -64,6 +64,8 @@ service OrderService {
     // 买家收货
     rpc BuyerReceived (OrderNo) returns (Result) {
     }
+    // 删除订单
+    rpc forbid(OrderNo)returns(Result){}
     // 获取订单日志
     rpc LogBytes (OrderNo) returns (String) {
     }

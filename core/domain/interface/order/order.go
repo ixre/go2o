@@ -236,6 +236,9 @@ var (
 
 	ErrTicketImage = domain.NewError(
 		"err_order_ticket_image", "请上传正确的发票凭证")
+
+	ErrForbidStatus = domain.NewError(
+		"err_order_forbid_status", "仅已取消或完成的订单才能删除")
 )
 
 type (

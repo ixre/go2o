@@ -68,6 +68,8 @@ type (
 		ChangeShipmentAddress(addressId int64) error
 		// 消费者收货
 		BuyerReceived() error
+		// 删除订单
+		Forbid() error
 		// 获取订单日志
 		LogBytes() []byte
 		// 物流日志
