@@ -54,7 +54,7 @@ service OrderService {
     rpc ConfirmOrder (OrderNo) returns (Result) {
     }
     // 更改收货地址
-    rpc ChangeShipmentAddress(ChangeConsigneeRequest)returns(Result){}
+    rpc ChangeShipmentAddress(ChangeOrderAddressRequest)returns(Result){}
     // 备货完成
     rpc PickUp (OrderNo) returns (Result) {
     }
