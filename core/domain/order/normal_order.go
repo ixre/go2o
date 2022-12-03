@@ -539,6 +539,11 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 	return err
 }
 
+// ChangeShipmentAddress implements order.IOrder
+func (o *normalOrderImpl) ChangeShipmentAddress(addressId int64) error {
+	return o.baseOrderImpl.ChangeShipmentAddress(addressId)
+}
+
 // 绑定促销优惠
 func (o *normalOrderImpl) bindPromotionOnSubmit(orderNo string,
 	prom promotion.IPromotion) (int32, error) {

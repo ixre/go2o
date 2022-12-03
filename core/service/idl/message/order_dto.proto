@@ -185,22 +185,24 @@ message SSingleOrder {
     int64 finalAmount = 17;
     // 收货人
     SConsigneeInfo consignee = 18;
+    // 收货地址是否已修改
+    bool consigneeModified = 19;
     // 买家留言
-    string buyerComment = 19;
-       // 是否支付
-    bool isPaid = 20;
+    string buyerComment = 20;
+    // 是否支付
+    bool isPaid = 21;
     //sint32 IsBreak = 18;
-    sint32 status = 21;
+    sint32 status = 22;
     // 下单时间
-    sint64 submitTime = 22;
+    sint64 submitTime = 23;
     //sint64 updateTime = 21;
-    repeated SOrderItem items = 23;
+    repeated SOrderItem items = 24;
     // 扩展信息
     map<string, string> data = 25;
     // 更新时间
-    int64 updateTime = 24;
+    int64 updateTime = 26;
     // 是否为子订单
-    //bool SubOrder = 24;
+    //bool SubOrder = 27;
 }
 
 // 收货人信息
@@ -208,9 +210,19 @@ message SConsigneeInfo {
     // 收货人
     string consigneeName = 1;
     // 收货电话
-    string consigneePhone = 12;
+    string consigneePhone = 2;
     // 配送地址
-    string shippingAddress = 13;
+    string shippingAddress = 3;
+}
+
+// 更改订单收货人请求
+message ChangeConsigneeRequest{
+    // 订单号
+    string orderNo = 1;
+    // 是否为子订单
+    bool sub = 2;
+    // 地址信息
+    int64 addressId = 3;
 }
 
 //todo: 批发的参数改为属性而不是map

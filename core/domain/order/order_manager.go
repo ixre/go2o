@@ -357,6 +357,15 @@ type unifiedOrderAdapterImpl struct {
 	sub      bool
 }
 
+// ChangeShipmentAddress 更改收货人信息
+func (u *unifiedOrderAdapterImpl) ChangeShipmentAddress(addressId int64) error {
+	//todo: 子订单改一个全部都改了
+	if u.sub {
+		return u.subOrder.ChangeShipmentAddress(addressId)
+	}
+	return u.bigOrder.ChangeShipmentAddress(addressId)
+}
+
 func (u *unifiedOrderAdapterImpl) adapter(orderNo string, sub bool) order.IUnifiedOrderAdapter {
 	u.sub = sub
 	if u.sub {

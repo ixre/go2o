@@ -64,7 +64,7 @@ func NewShoppingService(r order.IOrderRepo,
 	}
 }
 
-//  获取购物车
+// 获取购物车
 func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICart {
 	var c cart.ICart
 	var cc cart.ICart
@@ -342,6 +342,13 @@ func (s *orderServiceImpl) Ship(_ context.Context, r *proto.OrderShipmentRequest
 func (s *orderServiceImpl) BuyerReceived(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
 	err := c.BuyerReceived()
+	return s.error(err), nil
+}
+
+// ChangeConsignee 更改订单收货人信息
+func (s *orderServiceImpl) ChangeShipmentAddress(_ context.Context, r *proto.ChangeConsigneeRequest) (*proto.Result, error) {
+	c := s.manager.Unified(r.OrderNo, r.Sub)
+	err := c.ChangeShipmentAddress(r.AddressId)
 	return s.error(err), nil
 }
 

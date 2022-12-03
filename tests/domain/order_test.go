@@ -212,7 +212,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()
-	io := repo.Manager().GetOrderByNo("100000796792")
+	io := repo.Manager().GetOrderByNo("1221203000248293")
 	ic := io.BuildCart()
 	memberId := io.Buyer().GetAggregateRootId()
 	shipId := memRepo.GetDeliverAddress(memberId)[0].Id
@@ -222,8 +222,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.FailNow()
 	}
 	t.Logf("提交的订单号为：%s", io.OrderNo())
-	orderId := nio.GetAggregateRootId()
-	ipo := payRepo.GetPaymentBySalesOrderId(orderId)
+	ipo := payRepo.GetPaymentOrderByOrderNo(int(order.TRetail), nio.OrderNo())
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
 		t.Logf("支付的交易号为：%s,最终金额:%d", nio.OrderNo(), ipo.Get().FinalFee)
@@ -246,6 +245,21 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		if err != nil {
 			t.Log("收货不成功：", err)
 			t.FailNow()
+		}
+	}
+}
+
+func TestFinishNormalOrder(t *testing.T) {
+	repo := ti.Factory.GetOrderRepo()
+	io := repo.Manager().GetOrderByNo("1221203000128066")
+	subOrders := io.(order.INormalOrder).GetSubOrders()
+	for _, o := range subOrders {
+		//err := o.Confirm()
+		//err := o.Ship(1,"33")
+		err := o.BuyerReceived()
+		if err != nil {
+			t.Error(err)
+			t.Fail()
 		}
 	}
 }

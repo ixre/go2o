@@ -45,6 +45,8 @@ type (
 		Complex() *ComplexOrder
 		// Items 获取商品项
 		Items() []*SubOrderItem
+		// 更改收货人信息
+		ChangeShipmentAddress(addressId int64) error
 		// PaymentFinishByOnlineTrade 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
 		// AppendLog 记录订单日志

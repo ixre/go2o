@@ -357,6 +357,7 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 			ConsigneePhone:  src.Consignee.ConsigneePhone,
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
+		ConsigneeModified: src.ConsigneeModified == 1,
 		BuyerComment: d.BuyerComment,
 		SubmitTime:   src.CreateTime,
 		Status:       int32(d.Status),

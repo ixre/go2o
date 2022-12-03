@@ -44,6 +44,11 @@ type subOrderImpl struct {
 	registryRepo    registry.IRegistryRepo
 }
 
+// ChangeShipmentAddress implements order.ISubOrder
+func (o *subOrderImpl) ChangeShipmentAddress(addressId int64) error {
+	return o.baseOrder().ChangeShipmentAddress(addressId)
+}
+
 func NewSubNormalOrder(v *order.NormalSubOrder,
 	manager order.IOrderManager, rep order.IOrderRepo,
 	mmRepo member.IMemberRepo, goodsRepo item.IItemRepo,

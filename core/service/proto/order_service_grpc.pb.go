@@ -44,6 +44,8 @@ type OrderServiceClient interface {
 	CancelOrder(ctx context.Context, in *CancelOrderRequest, opts ...grpc.CallOption) (*Result, error)
 	// 确定订单
 	ConfirmOrder(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*Result, error)
+	// 更改收货地址
+	ChangeShipmentAddress(ctx context.Context, in *ChangeConsigneeRequest, opts ...grpc.CallOption) (*Result, error)
 	// 备货完成
 	PickUp(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*Result, error)
 	// 订单发货,并记录配送服务商编号及单号
@@ -161,6 +163,15 @@ func (c *orderServiceClient) ConfirmOrder(ctx context.Context, in *OrderNo, opts
 	return out, nil
 }
 
+func (c *orderServiceClient) ChangeShipmentAddress(ctx context.Context, in *ChangeConsigneeRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/OrderService/ChangeShipmentAddress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *orderServiceClient) PickUp(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/OrderService/PickUp", in, out, opts...)
@@ -223,6 +234,8 @@ type OrderServiceServer interface {
 	CancelOrder(context.Context, *CancelOrderRequest) (*Result, error)
 	// 确定订单
 	ConfirmOrder(context.Context, *OrderNo) (*Result, error)
+	// 更改收货地址
+	ChangeShipmentAddress(context.Context, *ChangeConsigneeRequest) (*Result, error)
 	// 备货完成
 	PickUp(context.Context, *OrderNo) (*Result, error)
 	// 订单发货,并记录配送服务商编号及单号
@@ -270,6 +283,9 @@ func (UnimplementedOrderServiceServer) CancelOrder(context.Context, *CancelOrder
 }
 func (UnimplementedOrderServiceServer) ConfirmOrder(context.Context, *OrderNo) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfirmOrder not implemented")
+}
+func (UnimplementedOrderServiceServer) ChangeShipmentAddress(context.Context, *ChangeConsigneeRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeShipmentAddress not implemented")
 }
 func (UnimplementedOrderServiceServer) PickUp(context.Context, *OrderNo) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PickUp not implemented")
@@ -494,6 +510,24 @@ func _OrderService_ConfirmOrder_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_ChangeShipmentAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeConsigneeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).ChangeShipmentAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/OrderService/ChangeShipmentAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).ChangeShipmentAddress(ctx, req.(*ChangeConsigneeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _OrderService_PickUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(OrderNo)
 	if err := dec(in); err != nil {
@@ -616,6 +650,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ConfirmOrder",
 			Handler:    _OrderService_ConfirmOrder_Handler,
+		},
+		{
+			MethodName: "ChangeShipmentAddress",
+			Handler:    _OrderService_ChangeShipmentAddress_Handler,
 		},
 		{
 			MethodName: "PickUp",
