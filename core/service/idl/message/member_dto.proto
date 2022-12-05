@@ -670,18 +670,31 @@ message AccountTransferRequest {
   string remark = 6;
 }
 
+// 提现方式
+enum EWithdrawKind {
+  ___WithdrawKind = 0;
+  // 提现到第三方账户
+  KWithdrawToThirdPart = 1;
+  // 提现到银行卡
+  KWithdrawToBankCard = 22;
+  // 兑换为商城余额
+  KWithdrawExchange = 23;
+}
+
 // 提现申请
 message WithdrawRequest {
+  // 会员编号
   sint64 memberId = 1;
   // 提现金额
   int64 amount = 2;
   // 手续费
   int64 procedureFee = 3;
   // 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
-  int32 withdrawKind = 4;
+  EWithdrawKind withdrawKind = 4;
   // 银行账号或第三方支付钱包
   string accountNo = 5;
 }
+
 message WithdrawalResponse {
   sint64 errCode = 1;
   string errMsg = 2;
