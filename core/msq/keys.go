@@ -17,4 +17,8 @@ const (
 	WalletLogTopic = "go2o-wallet-log-topic"
 	// RegistryTopic 自定义键值变更订阅
 	RegistryTopic = "go2o-registry-topic"
+	// MemberRequestWithdrawal 用户发起提现申请
+	MemberRequestWithdrawal = "go2o-member-request-withdrawal"
+	// MemberWithdrawalAudited 用户提现申请已通过
+	MemberWithdrawalAudited = "go2o-member-withdrawal-audited"
 )
