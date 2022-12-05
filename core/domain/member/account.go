@@ -881,7 +881,7 @@ func (a *accountImpl) unfreezesIntegral(d member.AccountOperateData, relateUser 
 
 // RequestWithdrawal 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
-	amount int, tradeFee int, accountNo string) (int64, string, error) {
+	amount int, procedureFee int, accountNo string) (int64, string, error) {
 	if takeKind != wallet.KWithdrawExchange &&
 		takeKind != wallet.KWithdrawToBankCard &&
 		takeKind != wallet.KWithdrawToThirdPart {
@@ -950,11 +950,11 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		bankName = bank.BankName
 	}
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
-	finalAmount := amount - tradeFee
+	finalAmount := amount - procedureFee
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
 	}
-	id, tradeNo, err := a.wallet.RequestWithdrawal(finalAmount, tradeFee, takeKind,
+	id, tradeNo, err := a.wallet.RequestWithdrawal(finalAmount, procedureFee, takeKind,
 		title, accountNo, accountName, bankName)
 	if err == nil {
 		err = a.asyncWallet()
@@ -963,9 +963,10 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		}
 		// 发送消息通知
 		mp := map[string]interface{}{
-			"memberId": a.value.MemberId,
-			"tradeNo":  tradeNo,
-			"logId":    id,
+			"memberId":     a.value.MemberId,
+			"logId":        id,
+			"amount":       amount,
+			"procedureFee": procedureFee,
 		}
 		go msq.Push(msq.MemberRequestWithdrawal, typeconv.MustJson(mp))
 	}
@@ -979,10 +980,13 @@ func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error
 	if err == nil {
 		err = a.asyncWallet()
 		if pass {
+			log := a.wallet.GetLog(id)
 			// 发送消息通知
 			mp := map[string]interface{}{
-				"memberId": a.value.MemberId,
-				"logId":    id,
+				"memberId":     a.value.MemberId,
+				"logId":        id,
+				"amount":       log.Value,
+				"procedureFee": log.ProcedureFee,
 			}
 			go msq.Push(msq.MemberWithdrawalAudited, typeconv.MustJson(mp))
 		}
