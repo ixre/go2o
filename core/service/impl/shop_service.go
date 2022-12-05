@@ -74,8 +74,18 @@ func (si *shopServiceImpl) SaveOfflineShop(_ context.Context, r *proto.SStore) (
 
 // * 查询自营店铺
 func (si *shopServiceImpl) GetSelfSupportShops(_ context.Context, r *proto.SelfSupportShopRequest) (*proto.ShopListResponse, error) {
-	si.shopRepo.QuerySelfSupportShops()
-	return nil, nil
+	shops := si.shopRepo.QuerySelfSupportShops()
+	rsp := &proto.ShopListResponse{
+		List: []*proto.SShop{},
+	}
+	for _, v := range shops {
+		rsp.List = append(rsp.List, &proto.SShop{
+			Id:       v.Id,
+			ShopName: v.Name,
+			State:    v.OpeningState,
+		})
+	}
+	return rsp,nil
 }
 
 func (si *shopServiceImpl) DeleteStore(_ context.Context, id *proto.StoreId) (*proto.Result, error) {
