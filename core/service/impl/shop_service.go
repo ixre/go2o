@@ -81,11 +81,13 @@ func (si *shopServiceImpl) GetSelfSupportShops(_ context.Context, r *proto.SelfS
 	for _, v := range shops {
 		rsp.List = append(rsp.List, &proto.SShop{
 			Id:       v.Id,
-			ShopName: v.Name,
-			State:    v.OpeningState,
+			ShopName: v.ShopName,
+			Flag:     int32(v.Flag),
+			Logo:     v.Logo,
+			State:    int32(v.State),
 		})
 	}
-	return rsp,nil
+	return rsp, nil
 }
 
 func (si *shopServiceImpl) DeleteStore(_ context.Context, id *proto.StoreId) (*proto.Result, error) {
