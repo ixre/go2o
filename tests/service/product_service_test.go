@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"testing"
+
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
-	"testing"
 )
 
 func TestProductCategoryTree(t *testing.T) {
@@ -39,5 +40,17 @@ func TestSourceCategories(t *testing.T) {
 		t.Error(err)
 	}
 	bytes, _ := json.Marshal(list.List)
+	t.Log(string(bytes))
+}
+
+func TestGetCategoryBrands(t *testing.T) {
+	list, err := impl.ProductService.GetCategory(context.TODO(), &proto.GetCategoryRequest{
+		CategoryId: 2185,
+		Brand:      true,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	bytes, _ := json.Marshal(list.Brands)
 	t.Log(string(bytes))
 }

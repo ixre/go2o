@@ -132,12 +132,12 @@ func (p *productService) appendCategoryBrands(ic product.IGlobCatService, v prod
 }
 
 // GetCategory 获取商品分类
-func (p *productService) GetCategory(_ context.Context, id *proto.GetCategoryRequest) (*proto.SProductCategory, error) {
+func (p *productService) GetCategory(_ context.Context, req *proto.GetCategoryRequest) (*proto.SProductCategory, error) {
 	ic := p.catRepo.GlobCatService()
-	v := ic.GetCategory(int(id.CategoryId))
+	v := ic.GetCategory(int(req.CategoryId))
 	if v != nil {
 		cat := p.parseCategoryDto(v.GetValue())
-		if id.Brand {
+		if req.Brand {
 			p.appendCategoryBrands(ic, v, cat)
 		}
 		return cat, nil
