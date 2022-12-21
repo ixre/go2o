@@ -34,7 +34,7 @@ func NewProductService(pmRepo promodel.IProductModelRepo,
 }
 
 // GetModel 获取产品模型
-func (p *productService) GetModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
+func (p *productService) GetProductModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
 	im := p.pmRepo.GetModel(int32(id.Value))
 	if im != nil {
 		ret := p.parseModelDto(im.Value())
@@ -233,12 +233,6 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 		err = pro.SetDescribe(r.Info)
 	}
 	return p.error(err), nil
-}
-
-// GetModelAttrs_ 获取模型属性
-func (p *productService) GetModelAttrs_(proModel int32) []*promodel.Attr {
-	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: proModel})
-	return m.Attrs()
 }
 
 // GetModelAttrsHtml 获取模型属性Html
