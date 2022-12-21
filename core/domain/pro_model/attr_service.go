@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
 	"strconv"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 )
 
 var _ promodel.IAttrService = new(attrServiceImpl)
@@ -123,7 +124,7 @@ func (a *attrServiceImpl) GetItems(attrId int32) []*promodel.AttrItem {
 
 // 获取产品模型的属性
 func (a *attrServiceImpl) GetModelAttrs(proModel int32) []*promodel.Attr {
-	arr := a.repo.SelectAttr("pro_model= $1", proModel)
+	arr := a.repo.SelectAttr("prod_model= $1", proModel)
 	for _, v := range arr {
 		v.Items = a.GetItems(v.Id)
 	}
@@ -152,7 +153,7 @@ func (a *attrHtmlBuilder) Append(buf *bytes.Buffer, attr *promodel.Attr) {
 	buf.WriteString("\">")
 	a.buildLabel(buf, attr.Name)
 	buf.WriteString("<div class=\"attr-list attr\">")
-	if attr.MultiChk == 1 {
+	if attr.MultiCheck == 1 {
 		a.buildCheckBox(buf, attr)
 	} else {
 		a.buildDropDown(buf, attr)

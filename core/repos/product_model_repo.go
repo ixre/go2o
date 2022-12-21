@@ -69,7 +69,7 @@ func (p *proModelRepo) BrandService() promodel.IBrandService {
 // 获取模型的商品品牌
 func (p *proModelRepo) GetModelBrands(proModel int32) []*promodel.ProductBrand {
 	return p.selectProBrandByQuery(`SELECT * FROM product_brand WHERE id IN (
-	SELECT brand_id FROM product_model_brand WHERE pro_model= $1)`, proModel)
+	SELECT brand_id FROM product_model_brand WHERE prod_model= $1)`, proModel)
 }
 
 // Get ProductModel

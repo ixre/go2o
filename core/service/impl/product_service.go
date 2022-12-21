@@ -2,8 +2,9 @@ package impl
 
 import (
 	"errors"
+
 	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/service/proto"
@@ -558,7 +559,7 @@ func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAt
 		Id:         int64(v.Id),
 		Name:       v.Name,
 		IsFilter:   v.IsFilter,
-		MultiCheck: v.MultiChk,
+		MultiCheck: v.MultiCheck,
 		SortNum:    v.SortNum,
 		ItemValues: v.ItemValues,
 		Items:      nil,
@@ -716,7 +717,7 @@ func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr 
 		Id:         int32(v.Id),
 		Name:       v.Name,
 		IsFilter:   v.IsFilter,
-		MultiChk:   v.MultiCheck,
+		MultiCheck: v.MultiCheck,
 		ItemValues: "",
 		SortNum:    v.SortNum,
 	}

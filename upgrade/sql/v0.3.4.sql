@@ -23,3 +23,19 @@ ALTER TABLE IF EXISTS public.sale_sub_order
 
 COMMENT ON COLUMN public.sale_sub_order.is_forbidden
     IS '是否被用户删除';
+
+/** 2022-12-21 */
+ALTER TABLE IF EXISTS public.product_model_attr
+    RENAME pro_model TO prod_model;
+
+ALTER TABLE IF EXISTS public.product_model_attr
+    RENAME multi_chk TO multi_check;
+ALTER TABLE IF EXISTS public.product_model_attr_item
+    RENAME pro_model TO prod_model;
+
+ALTER TABLE IF EXISTS public.product_model_brand
+    RENAME pro_model TO prod_model;
+ALTER TABLE IF EXISTS public.product_model_spec
+    RENAME pro_model TO prod_model;
+ALTER TABLE IF EXISTS public.product_model_spec_item
+    RENAME pro_model TO prod_model;

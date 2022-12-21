@@ -6,13 +6,13 @@ type (
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品模型
-		ModelId int32 `db:"pro_model"`
+		ModelId int32 `db:"prod_model"`
 		// 属性名称
 		Name string `db:"name"`
 		// 是否作为筛选条件
 		IsFilter int32 `db:"is_filter"`
 		// 是否多选
-		MultiChk int32 `db:"multi_chk"`
+		MultiCheck int32 `db:"multi_check"`
 		// 属性项值
 		ItemValues string `db:"item_values"`
 		// 排列序号
@@ -27,7 +27,7 @@ type (
 		// 属性编号
 		AttrId int32 `db:"attr_id"`
 		// 产品模型
-		ModelId int32 `db:"pro_model"`
+		ModelId int32 `db:"prod_model"`
 		// 属性值
 		Value string `db:"value"`
 		// 排列序号
