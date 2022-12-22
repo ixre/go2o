@@ -3,17 +3,18 @@ package hfb
 import (
 	"bytes"
 	"encoding/hex"
-	"github.com/ixre/go2o/core/infrastructure"
-	"github.com/ixre/go2o/core/infrastructure/qpay"
-	"github.com/ixre/gof/crypto"
-	"go.etcd.io/etcd/client/v3"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/ixre/go2o/core/infrastructure"
+	"github.com/ixre/go2o/core/infrastructure/qpay"
+	"github.com/ixre/gof/crypto"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 /**
@@ -142,7 +143,7 @@ func TestHfbImpl_CheckBankCert(t *testing.T) {
 	req, _ := http.NewRequest("POST", action, bytes.NewReader([]byte(values.Encode())))
 	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0")
 	rsp, _ := cli.Do(req)
-	bytes, _ := ioutil.ReadAll(rsp.Body)
+	bytes, _ := io.ReadAll(rsp.Body)
 	t.Log(string(bytes))
 
 }

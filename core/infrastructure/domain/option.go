@@ -11,12 +11,12 @@ package domain
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ixre/gof"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/ixre/gof"
 )
 
 type (
@@ -110,7 +110,7 @@ func (this *OptionStoreWrapper) load() error {
 	rdKey := this.getRdKey()
 	if sto.Get(rdKey, &this._data) != nil {
 		// 从KV中取得,且KV不存在返回错误
-		d, err := ioutil.ReadFile(this.Indent())
+		d, err := os.ReadFile(this.Indent())
 		if err == nil {
 			err = json.Unmarshal(d, &this._data)
 			if err == nil {
@@ -170,7 +170,7 @@ func (this *OptionStoreWrapper) Flush() (err error) {
 		}
 		d, err := json.MarshalIndent(this._data, "", " ")
 		if err == nil {
-			err = ioutil.WriteFile(this.Indent(), d, os.ModePerm)
+			err = os.WriteFile(this.Indent(), d, os.ModePerm)
 		}
 		return err
 	}

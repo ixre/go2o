@@ -1,10 +1,7 @@
 package promodel
 
 import (
-	"bytes"
 	"database/sql"
-	"fmt"
-	"strconv"
 
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 )
@@ -12,14 +9,12 @@ import (
 var _ promodel.IAttrService = new(attrServiceImpl)
 
 type attrServiceImpl struct {
-	repo    promodel.IProductModelRepo
-	builder *attrHtmlBuilder
+	repo promodel.IProductModelRepo
 }
 
 func NewAttrService(repo promodel.IProductModelRepo) *attrServiceImpl {
 	return &attrServiceImpl{
-		repo:    repo,
-		builder: &attrHtmlBuilder{},
+		repo: repo,
 	}
 }
 
@@ -129,17 +124,4 @@ func (a *attrServiceImpl) GetModelAttrs(proModel int32) []*promodel.Attr {
 		v.Items = a.GetItems(v.Id)
 	}
 	return arr
-}
-
-// 获取属性的HTML表示
-func (a *attrServiceImpl) AttrsHtml(arr []*promodel.Attr) string {
-	buf := bytes.NewBuffer(nil)
-	if len(arr) == 0 {
-		buf.WriteString("<div class=\"no-attr\">该分类下未包含属性</div>")
-	} else {
-		for _, v := range arr {
-			a.builder.Append(buf, v)
-		}
-	}
-	return buf.String()
 }

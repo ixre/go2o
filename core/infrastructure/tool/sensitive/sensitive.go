@@ -1,7 +1,7 @@
 package sensitive
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 )
@@ -61,7 +61,7 @@ func readDictionary(path string) []string {
 		panic(err)
 	}
 	defer file.Close()
-	str, err := ioutil.ReadAll(file)
+	str, err := io.ReadAll(file)
 	return strings.Fields(string(str))
 }
 

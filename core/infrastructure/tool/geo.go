@@ -12,7 +12,7 @@ package tool
 //todo: 新浪ip接口，http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip=110.110.110.110
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 )
@@ -26,7 +26,7 @@ func GetLocation(ip string) string {
 	if err != nil {
 		return "未知地区"
 	}
-	data, _ := ioutil.ReadAll(rsp.Body)
+	data, _ := io.ReadAll(rsp.Body)
 	//out := make([]byte, len(data)*2)
 	//trans := simplifiedchinese.GB18030.NewDecoder()
 	//n, _, _ := trans.Transform(out, data, true)

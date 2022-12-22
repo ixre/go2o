@@ -3,6 +3,14 @@ package module
 import (
 	"encoding/json"
 	"errors"
+	"io"
+	"net/http"
+	"net/url"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -13,13 +21,6 @@ import (
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var (
@@ -232,7 +233,7 @@ func (b *Bank4E) b4eApi(realName, idCard, phone, bankAccount string) error {
 	if err == nil {
 		// 响应状态正确
 		if rsp.StatusCode == 200 {
-			body, _ := ioutil.ReadAll(rsp.Body)
+			body, _ := io.ReadAll(rsp.Body)
 			mp := make(map[string]interface{})
 			json.Unmarshal(body, &mp)
 			rc := mp["code"].(string)

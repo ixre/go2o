@@ -13,7 +13,7 @@ package alipay
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -56,8 +56,8 @@ func getUniqueID() string {
 	return fmt.Sprintf("%s%03d", time.Now().Format("20060102150405"), nID)
 }
 
-//支付宝请求-------------------
-//创建一个交易请求，得到交易token，输入订单好，订单标题，总金额
+// 支付宝请求-------------------
+// 创建一个交易请求，得到交易token，输入订单好，订单标题，总金额
 func getToken(sTrade_no string, sSubject string, sTotalAmount string) string {
 	sReq_id := getUniqueID()
 	sReq_dataToken := "<direct_trade_create_req><notify_url>" + s_sWapNotifyUrl
@@ -90,7 +90,7 @@ func getToken(sTrade_no string, sSubject string, sTotalAmount string) string {
 		return ""
 	}
 	defer resp.Body.Close()
-	reply, err := ioutil.ReadAll(resp.Body)
+	reply, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return ""
 	}
@@ -117,7 +117,7 @@ func getTokenFromXml(sXml string) string {
 	return v.Request_token
 }
 
-//发起Wap支付请求，需要两步
+// 发起Wap支付请求，需要两步
 func alipayRequest_Wap(sTrade_no string, sSubject string, sTotalAmount string) string {
 	sToken := getToken(sTrade_no, sSubject, sTotalAmount)
 	if sToken == "" {
@@ -172,7 +172,7 @@ func AlipayHandler_Wap(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(html))
 }
 
-//发起退款请求
+// 发起退款请求
 func alipayRefundRequest(sTrade_no string, sDesc string, sFee string) string {
 	const STR_SERVICE = "refund_fastpay_by_platform_pwd"
 	sDate := time.Now().Format("2006-01-02 15:04:05")
@@ -217,7 +217,7 @@ func alipayRefundRequest(sTrade_no string, sDesc string, sFee string) string {
 	return sHtml
 }
 
-//trade_no 交易号 , fee 退还金额, desc 退还说明
+// trade_no 交易号 , fee 退还金额, desc 退还说明
 func Alipay_Refund_Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	sTradeNo := r.FormValue("trade_no")
@@ -237,9 +237,9 @@ func Alipay_Refund_Handler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(html))
 }
 
-//支付宝同步回调---------------------
-//页面回调，返回信息包括is_success,sign_type,sign,out_trade_no,subject,payment_type,exterface,trade_no,trade_status,
-//notify_id,notify_time,notify_type,seller_email,buyer_email,seller_id,buyer_id,total_fee,body,extra_common_param,agent_user_id
+// 支付宝同步回调---------------------
+// 页面回调，返回信息包括is_success,sign_type,sign,out_trade_no,subject,payment_type,exterface,trade_no,trade_status,
+// notify_id,notify_time,notify_type,seller_email,buyer_email,seller_id,buyer_id,total_fee,body,extra_common_param,agent_user_id
 func Alipay_Web_CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	sSign := r.FormValue("sign")
 	vals := r.Form
@@ -255,7 +255,7 @@ func Alipay_Web_CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(sResult))
 }
 
-//WAP支付回调，sign，result，out_trade_no，trade_no，request_token
+// WAP支付回调，sign，result，out_trade_no，trade_no，request_token
 func Alipay_Wap_CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	sSign := r.FormValue("sign")
 	vals := r.Form
@@ -270,13 +270,13 @@ func Alipay_Wap_CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(sResult))
 }
 
-//-------------支付宝异步通知------------------
-//WEB支付(退款也会产生通知refund_statuss)异步通知， 返回信息包括notify_time,notify_type,notify_id,sign_type,sign
-//out_trade_no,subject,payment_type,trade_no,trade_status,gmt_create,gmt_payment,gmt_close,refund_status,gmt_refund,
-//seller_email,buyer_email,seller_id,buyer_id,price,total_fee,quantity,body,discount,is_total_fee_adjust,use_coupon,extra_common_param,
-//out_channel_type,out_channel_amount,out_channel_inst,business_scene
+// -------------支付宝异步通知------------------
+// WEB支付(退款也会产生通知refund_statuss)异步通知， 返回信息包括notify_time,notify_type,notify_id,sign_type,sign
+// out_trade_no,subject,payment_type,trade_no,trade_status,gmt_create,gmt_payment,gmt_close,refund_status,gmt_refund,
+// seller_email,buyer_email,seller_id,buyer_id,price,total_fee,quantity,body,discount,is_total_fee_adjust,use_coupon,extra_common_param,
+// out_channel_type,out_channel_amount,out_channel_inst,business_scene
 func Alipay_Web_NotifyHandler(w http.ResponseWriter, r *http.Request) {
-	sBody, _ := ioutil.ReadAll(r.Body)
+	sBody, _ := io.ReadAll(r.Body)
 	logger.Printf("即时到账WEB支付异步通知:\n")
 	logger.Printf("url:\n%s", r.RequestURI)
 	logger.Printf("body:\n%s", string(sBody))
@@ -297,12 +297,12 @@ func Alipay_Web_NotifyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("success"))
 }
 
-//手机WAP支付异步通知，签名不排序
-//包含service,v,sec_id,sign,notify_data
-//notify_data包含:payment_type,subject,trade_no,buyer_email,gmt_create,notify_type,quantity,out_trade_no,notify_time
-//seller_id,trade_status,is_total_fee_adjust,total_fee,gmt_payment,seller_email,gmt_close,price,buyer_id,notify_id,use_coupon
+// 手机WAP支付异步通知，签名不排序
+// 包含service,v,sec_id,sign,notify_data
+// notify_data包含:payment_type,subject,trade_no,buyer_email,gmt_create,notify_type,quantity,out_trade_no,notify_time
+// seller_id,trade_status,is_total_fee_adjust,total_fee,gmt_payment,seller_email,gmt_close,price,buyer_id,notify_id,use_coupon
 func Alipay_Wap_NotifyHandler(w http.ResponseWriter, r *http.Request) {
-	sBody, _ := ioutil.ReadAll(r.Body)
+	sBody, _ := io.ReadAll(r.Body)
 	logger.Printf("即时到账WAP支付异步通知:\n")
 	logger.Printf("url:\n%s", r.RequestURI)
 	logger.Printf("body:\n%s", string(sBody))
@@ -359,10 +359,10 @@ func getNotifyFromXml(sXml string) *NotifyResult {
 	return &v
 }
 
-//退款异步通知，包含notify_time,notify_type,notify_id,sign_type,sign,batch_no,success_num,result_details
-//result_details包含 交易号^退款金额^处理结果($退费账号^退费账户^Id^退费金额^处理结果)
+// 退款异步通知，包含notify_time,notify_type,notify_id,sign_type,sign,batch_no,success_num,result_details
+// result_details包含 交易号^退款金额^处理结果($退费账号^退费账户^Id^退费金额^处理结果)
 func Alipay_Refund_NotifyHandler(w http.ResponseWriter, r *http.Request) {
-	sBody, _ := ioutil.ReadAll(r.Body)
+	sBody, _ := io.ReadAll(r.Body)
 	logger.Printf("即时到账退款异步通知:\n")
 	logger.Printf("url:\n%s", r.RequestURI)
 	logger.Printf("body:\n%s", string(sBody))

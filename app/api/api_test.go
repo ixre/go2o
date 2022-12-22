@@ -3,12 +3,13 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"io"
+	"net/http"
+	"testing"
+
 	"github.com/ixre/gof/crypto"
 	api "github.com/ixre/gof/jwt-api"
 	http2 "github.com/ixre/gof/util/http"
-	"io/ioutil"
-	"net/http"
-	"testing"
 )
 
 var (
@@ -44,7 +45,7 @@ func init() {
 			println("---获取accessToken失败", err1.Error())
 			return ""
 		}
-		bytes, _ := ioutil.ReadAll(r.Body)
+		bytes, _ := io.ReadAll(r.Body)
 		rsp := api.Response{}
 		json.Unmarshal(bytes, &rsp)
 		return rsp.Data.(string)

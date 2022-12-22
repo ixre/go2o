@@ -2,12 +2,13 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/ixre/gof/api"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/ixre/gof/api"
 )
 
 /**
@@ -43,7 +44,7 @@ func testApi(t *testing.T, apiName string, paramsMap map[string]string, abortOnF
 		t.Error(err)
 		t.FailNow()
 	}
-	data, _ := ioutil.ReadAll(rsp.Body)
+	data, _ := io.ReadAll(rsp.Body)
 	rsp1 := api.Response{}
 	json.Unmarshal(data, &rsp1)
 	if rsp1.Code != api.RSuccessCode {
@@ -83,6 +84,6 @@ func TestSign(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	data, _ := ioutil.ReadAll(rsp.Body)
+	data, _ := io.ReadAll(rsp.Body)
 	println(string(data))
 }

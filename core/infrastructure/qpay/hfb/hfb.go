@@ -7,6 +7,14 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/infrastructure/qpay"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/storage"
@@ -14,14 +22,6 @@ import (
 	http2 "github.com/ixre/gof/util/http"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // 快捷（银行侧)
@@ -363,7 +363,7 @@ func (h *hfbImpl) request(url string, mp url.Values, gbk bool) ([]byte, error) {
 		} else {
 			reader = rsp.Body
 		}
-		body, err := ioutil.ReadAll(reader)
+		body, err := io.ReadAll(reader)
 		if err == nil {
 			return body, nil
 		}
