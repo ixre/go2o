@@ -51,6 +51,5 @@ type IAttrService interface {
 	GetItems(attrId int32) []*AttrItem
 	// 获取产品模型的属性
 	GetModelAttrs(proModel int32) []*Attr
-	// 获取属性的HTML表示
-	AttrsHtml(attrs []*Attr) string
+	
 }

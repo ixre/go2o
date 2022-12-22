@@ -235,13 +235,6 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 	return p.error(err), nil
 }
 
-// GetModelAttrsHtml 获取模型属性Html
-func (p *productService) GetModelAttrsHtml(_ context.Context, id *proto.ProductModelId) (*proto.String, error) {
-	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: int32(id.Value)})
-	attrs := m.Attrs()
-	s := p.pmRepo.AttrService().AttrsHtml(attrs)
-	return &proto.String{Value: s}, nil
-}
 
 // SaveModel 保存产品模型
 func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
