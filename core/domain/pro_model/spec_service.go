@@ -120,7 +120,7 @@ func (s *specServiceImpl) GetItems(specId int32) []*promodel.SpecItem {
 func (s *specServiceImpl) GetModelSpecs(proModel int32) promodel.SpecList {
 	var arr promodel.SpecList
 	var items promodel.SpecItemList
-	arr = s.rep.SelectSpec("pro_model= $1", proModel)
+	arr = s.rep.SelectSpec("prod_model= $1", proModel)
 	for _, v := range arr {
 		items = s.GetItems(v.Id)
 		sort.Sort(items)

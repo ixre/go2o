@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -79,7 +78,7 @@ func KdnTraces(shipperCode string, logisticCode string) (traceResult *TraceResul
 			return nil, err
 		} else {
 			defer resp.Body.Close()
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			if err != nil && err != io.EOF && strings.Index(err.Error(), "EOF") == -1 {
 				fmt.Printf("KdnTraces read body error:%v\n", err)
 				return nil, err

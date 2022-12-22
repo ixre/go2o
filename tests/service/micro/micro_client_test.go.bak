@@ -4,7 +4,6 @@ import (
 	"github.com/micro/go-micro/client/selector"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-plugins/registry/consul"
-	"io/ioutil"
 	"net/http"
 	"testing"
 )
@@ -49,7 +48,7 @@ func TestRequest(t *testing.T) {
 		if err == nil {
 			println("---", s.Address)
 			rsp, _ := http.Get("http://" + s.Address)
-			all, _ := ioutil.ReadAll(rsp.Body)
+			all, _ := io.ReadAll(rsp.Body)
 			println(string(all))
 		}
 	}

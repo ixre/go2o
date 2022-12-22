@@ -189,6 +189,9 @@ var (
 	ErrOrderHasPickUp = domain.NewError(
 		"err_order_has_pick_up", "订单已经备货")
 
+	ErrOrderHasShipment = domain.NewError(
+		"err_order_has_shipment", "订单已经发货")
+
 	ErrNoSuchAddress = domain.NewError(
 		"err_order_no_address", "请选择收货地址")
 
@@ -233,6 +236,9 @@ var (
 
 	ErrTicketImage = domain.NewError(
 		"err_order_ticket_image", "请上传正确的发票凭证")
+
+	ErrForbidStatus = domain.NewError(
+		"err_order_forbid_status", "仅已取消或完成的订单才能删除")
 )
 
 type (
@@ -247,6 +253,8 @@ type (
 		Buyer() member.IMember
 		// SetShipmentAddress 设置配送地址
 		SetShipmentAddress(addressId int64) error
+		// 更改收货人信息
+		ChangeShipmentAddress(addressId int64) error
 		// OrderNo 获取订单号
 		OrderNo() string
 		// Complex 复合的订单信息
@@ -348,6 +356,8 @@ type (
 		ConsigneePhone string `db:"consignee_phone"`
 		// 收货人地址
 		ShippingAddress string `db:"shipping_address"`
+		// 地址下单后是否修改
+		ConsigneeModified int `db:"consignee_modified"`
 		// 是否拆分
 		IsBreak int `db:"is_break"`
 		// 是否支付

@@ -1,24 +1,20 @@
 package promodel
 
 import (
-	"bytes"
 	"database/sql"
-	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
-	"strconv"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 )
 
 var _ promodel.IAttrService = new(attrServiceImpl)
 
 type attrServiceImpl struct {
-	repo    promodel.IProductModelRepo
-	builder *attrHtmlBuilder
+	repo promodel.IProductModelRepo
 }
 
 func NewAttrService(repo promodel.IProductModelRepo) *attrServiceImpl {
 	return &attrServiceImpl{
-		repo:    repo,
-		builder: &attrHtmlBuilder{},
+		repo: repo,
 	}
 }
 
@@ -123,73 +119,9 @@ func (a *attrServiceImpl) GetItems(attrId int32) []*promodel.AttrItem {
 
 // 获取产品模型的属性
 func (a *attrServiceImpl) GetModelAttrs(proModel int32) []*promodel.Attr {
-	arr := a.repo.SelectAttr("pro_model= $1", proModel)
+	arr := a.repo.SelectAttr("prod_model= $1", proModel)
 	for _, v := range arr {
 		v.Items = a.GetItems(v.Id)
 	}
 	return arr
-}
-
-// 获取属性的HTML表示
-func (a *attrServiceImpl) AttrsHtml(arr []*promodel.Attr) string {
-	buf := bytes.NewBuffer(nil)
-	if len(arr) == 0 {
-		buf.WriteString("<div class=\"no-attr\">该分类下未包含属性</div>")
-	} else {
-		for _, v := range arr {
-			a.builder.Append(buf, v)
-		}
-	}
-	return buf.String()
-}
-
-type attrHtmlBuilder struct {
-}
-
-func (a *attrHtmlBuilder) Append(buf *bytes.Buffer, attr *promodel.Attr) {
-	buf.WriteString("<div class=\"attr-item attr\" attr-id=\"")
-	buf.WriteString(strconv.Itoa(int(attr.Id)))
-	buf.WriteString("\">")
-	a.buildLabel(buf, attr.Name)
-	buf.WriteString("<div class=\"attr-list attr\">")
-	if attr.MultiChk == 1 {
-		a.buildCheckBox(buf, attr)
-	} else {
-		a.buildDropDown(buf, attr)
-	}
-	buf.WriteString("</div></div>\n")
-}
-func (a *attrHtmlBuilder) buildDropDown(buf *bytes.Buffer,
-	attr *promodel.Attr) {
-	buf.WriteString("<select class=\"attr-val\" _field=\"_AttrData\">")
-	for _, v := range attr.Items {
-		buf.WriteString("<option value=\"")
-		buf.WriteString(strconv.Itoa(int(v.Id)))
-		buf.WriteString("\">")
-		buf.WriteString(v.Value)
-		buf.WriteString("</option>")
-	}
-	buf.WriteString("</select>")
-}
-func (a *attrHtmlBuilder) buildCheckBox(buf *bytes.Buffer,
-	attr *promodel.Attr) {
-	for i, v := range attr.Items {
-		str := fmt.Sprintf("%d-%d", v.AttrId, i)
-		buf.WriteString("<input type=\"checkbox\" class=\"attr-val\" _field=\"_AttrData[")
-		buf.WriteString(str)
-		buf.WriteString("]\" value=\"")
-		buf.WriteString(strconv.Itoa(int(v.Id)))
-		buf.WriteString("\" id=\"ck_attr_")
-		buf.WriteString(str)
-		buf.WriteString("\"/><label class=\"ck_label\" for=\"ck_attr_")
-		buf.WriteString(str)
-		buf.WriteString("\">")
-		buf.WriteString(v.Value)
-		buf.WriteString("</label>")
-	}
-}
-func (a *attrHtmlBuilder) buildLabel(buf *bytes.Buffer, label string) {
-	buf.WriteString("<div class=\"attr-label\">")
-	buf.WriteString(label)
-	buf.WriteString(": </div>")
 }

@@ -108,10 +108,26 @@ func (o *baseOrderImpl) SetShipmentAddress(addressId int64) error {
 		return order.ErrNoSuchAddress
 	}
 	d := addr.GetValue()
+	// 标记地址在下单后已经更新
+	if o.baseValue.ShippingAddress != "" {
+		o.baseValue.ConsigneeModified = 1
+	}
 	o.baseValue.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.DetailAddress
 	o.baseValue.ConsigneeName = d.ConsigneeName
 	o.baseValue.ConsigneePhone = d.ConsigneePhone
 	return nil
+}
+
+// ChangeShipmentAddress  更改发货地址
+func (o *baseOrderImpl) ChangeShipmentAddress(addressId int64) error {
+	if o.State() > order.StatAwaitingShipment {
+		return order.ErrOrderHasShipment
+	}
+	err := o.SetShipmentAddress(addressId)
+	if err == nil {
+		err = o.saveOrder()
+	}
+	return err
 }
 
 // GetPaymentOrder implements order.IOrder
@@ -207,6 +223,7 @@ func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 				ConsigneePhone:  o.baseValue.ConsigneePhone,
 				ShippingAddress: o.baseValue.ShippingAddress,
 			},
+			ConsigneeModified: o.baseValue.ConsigneeModified,
 		}
 	}
 	return o.complex

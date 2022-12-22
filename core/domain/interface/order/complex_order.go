@@ -39,6 +39,8 @@ type (
 		FinalAmount int64
 		// 收货人信息
 		Consignee *ComplexConsignee
+		// 地址下单后是否修改
+		ConsigneeModified int
 		// 订单是否拆分
 		IsBreak int32
 		// 是否支付

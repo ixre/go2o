@@ -68,7 +68,7 @@ func (p *paymentRepoImpl) GetPaymentBySalesOrderId(orderId int64) payment.IPayme
 // 根据订单号获取支付单
 func (p *paymentRepoImpl) GetPaymentOrderByOrderNo(orderType int, orderNo string) payment.IPaymentOrder {
 	e := &payment.Order{}
-	if p._orm.GetBy(e, "out_order_no= $1 AND order_type= $2",
+	if p._orm.GetBy(e, "out_order_no = $1 AND order_type= $2",
 		orderNo, orderType) == nil {
 		return p.CreatePaymentOrder(e)
 	}

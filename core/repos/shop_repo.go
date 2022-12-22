@@ -36,10 +36,12 @@ type shopRepo struct {
 }
 
 // QuerySelfSupportShops implements shop.IShopRepo
-func (s *shopRepo) QuerySelfSupportShops() []shop.Shop {
-	var arr []shop.Shop
-	s.o.Select(&arr, `SELECT * FROM public.mch_online_shopWHERE vendor_id IN
-	 (SELECT id FROM mch_merchant WHERE self_sales = 1) ORDER BY id ASC")`)
+func (s *shopRepo) QuerySelfSupportShops() []shop.OnlineShop {
+	var arr []shop.OnlineShop
+	err := s.o.Select(&arr, `vendor_id IN (SELECT id FROM mch_merchant WHERE self_sales = 1) ORDER BY id ASC`)
+	if err != nil {
+		handleError(err)
+	}
 	return arr
 }
 

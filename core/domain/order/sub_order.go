@@ -44,6 +44,11 @@ type subOrderImpl struct {
 	registryRepo    registry.IRegistryRepo
 }
 
+// ChangeShipmentAddress implements order.ISubOrder
+func (o *subOrderImpl) ChangeShipmentAddress(addressId int64) error {
+	return o.baseOrder().ChangeShipmentAddress(addressId)
+}
+
 func NewSubNormalOrder(v *order.NormalSubOrder,
 	manager order.IOrderManager, rep order.IOrderRepo,
 	mmRepo member.IMemberRepo, goodsRepo item.IItemRepo,
@@ -259,18 +264,6 @@ func (o *subOrderImpl) PaymentFinishByOnlineTrade() error {
 	return o.orderFinishPaid()
 }
 
-// 挂起
-func (o *subOrderImpl) Suspend(reason string) error {
-	o.value.IsSuspend = 1
-	o.internalSuspend = true
-	o.value.UpdateTime = time.Now().Unix()
-	err := o.saveSubOrder()
-	if err == nil {
-		err = o.AppendLog(order.LogSetup, true, "订单已锁定"+reason)
-	}
-	return err
-}
-
 // 添加日志
 func (o *subOrderImpl) AppendLog(logType order.LogType, system bool, message string) error {
 	if o.GetDomainId() <= 0 {
@@ -432,7 +425,6 @@ func (o *subOrderImpl) BuyerReceived() error {
 	dt := time.Now()
 	o.value.Status = order.StatCompleted
 	o.value.UpdateTime = dt.Unix()
-	o.value.IsSuspend = 0
 	err := o.saveSubOrder()
 	if err == nil {
 		err = o.AppendLog(order.LogSetup, true, "{completed}")
@@ -798,6 +790,18 @@ func (o *subOrderImpl) onOrderComplete() error {
 	err = o.handleCashBack()
 
 	return err
+}
+
+// Forbid 删除订单
+func (o *subOrderImpl) Forbid() error {
+	if o.value.Status != order.StatCompleted &&
+		o.value.Status != order.StatCancelled &&
+		o.value.Status != order.StatDeclined {
+		return order.ErrForbidStatus
+	}
+	o.value.IsForbidden = 1
+	o.value.UpdateTime = time.Now().Unix()
+	return o.saveSubOrder()
 }
 
 // Destory 销毁订单

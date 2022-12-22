@@ -64,8 +64,12 @@ type (
 		PickUp() error
 		// 订单发货,并记录配送服务商编号及单号
 		Ship(spId int32, spOrder string) error
+		// 更改收货人信息
+		ChangeShipmentAddress(addressId int64) error
 		// 消费者收货
 		BuyerReceived() error
+		// 删除订单
+		Forbid() error
 		// 获取订单日志
 		LogBytes() []byte
 		// 物流日志

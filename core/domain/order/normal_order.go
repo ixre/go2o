@@ -539,6 +539,11 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 	return err
 }
 
+// ChangeShipmentAddress implements order.IOrder
+func (o *normalOrderImpl) ChangeShipmentAddress(addressId int64) error {
+	return o.baseOrderImpl.ChangeShipmentAddress(addressId)
+}
+
 // 绑定促销优惠
 func (o *normalOrderImpl) bindPromotionOnSubmit(orderNo string,
 	prom promotion.IPromotion) (int32, error) {
@@ -725,14 +730,13 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		DiscountAmount: 0,
 		ExpressFee:     0,
 		FinalAmount:    0,
-		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend:    0,
-		BuyerComment: "",
-		Remark:       "",
-		Status:       order.StatAwaitingPayment,
-		BreakStatus:  breakStatus,
-		UpdateTime:   o.baseValue.UpdateTime,
-		Items:        items,
+		IsForbidden:    0,
+		BuyerComment:   "",
+		Remark:         "",
+		Status:         order.StatAwaitingPayment,
+		BreakStatus:    breakStatus,
+		UpdateTime:     o.baseValue.UpdateTime,
+		Items:          items,
 	}
 	// 计算订单金额
 	for _, iit := range items {
@@ -821,13 +825,11 @@ func (o *normalOrderImpl) createPaymentSubOrder() (order.ISubOrder, error) {
 		ExpressFee:     vo.ExpressFee,
 		PackageFee:     vo.PackageFee,
 		FinalAmount:    vo.FinalAmount,
-		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend:    0,
-		BuyerComment: "",
-		Remark:       "",
-		Status:       order.StatAwaitingPayment,
-		BreakStatus:  breakStatus,
-		UpdateTime:   o.baseValue.UpdateTime,
+		BuyerComment:   "",
+		Remark:         "",
+		Status:         order.StatAwaitingPayment,
+		BreakStatus:    breakStatus,
+		UpdateTime:     o.baseValue.UpdateTime,
 	}
 	isp := o.repo.CreateNormalSubOrder(v)
 	_, err := isp.Submit()

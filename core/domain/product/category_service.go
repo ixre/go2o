@@ -12,15 +12,16 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"sort"
+	"strconv"
+	"time"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/algorithm/iterator"
 	"github.com/ixre/gof/log"
-	"sort"
-	"strconv"
-	"time"
 )
 
 var _ product.ICategory = new(categoryImpl)
@@ -282,7 +283,7 @@ func newCategoryOption(c *categoryImpl) domain.IOptionStore {
 
 var _ product.IGlobCatService = new(categoryManagerImpl)
 
-//当商户共享系统的分类时,没有修改的权限,既只读!
+// 当商户共享系统的分类时,没有修改的权限,既只读!
 type categoryManagerImpl struct {
 	readonly       bool
 	repo           product.ICategoryRepo
@@ -406,11 +407,8 @@ func (c *categoryManagerImpl) RelationBrands(catId int) []*promodel.ProductBrand
 }
 
 func (c *categoryManagerImpl) childWalk(p product.ICategory, idArr *[]int) {
-	childes := p.GetChildes()
-	if len(childes) > 0 {
-		*idArr = append(*idArr, childes...)
-		for _, v := range childes {
-			c.childWalk(c.GetCategory(v), idArr)
-		}
+	*idArr = append(*idArr, p.GetDomainId())
+	for _, v := range p.GetChildes() {
+		c.childWalk(c.GetCategory(v), idArr)
 	}
 }

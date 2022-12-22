@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -196,7 +196,7 @@ func getCardInfo(cardNo string) (bankSign, cardType string, err error) {
 		if rsp.StatusCode != http.StatusOK {
 			err = errors.New(rsp.Status)
 		} else {
-			data, _ := ioutil.ReadAll(rsp.Body)
+			data, _ := io.ReadAll(rsp.Body)
 			mp := make(map[string]interface{})
 			err = json.Unmarshal(data, &mp)
 			if err == nil {

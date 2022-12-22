@@ -10,7 +10,7 @@ type (
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 产品模型
-		ModelId int32 `db:"pro_model"`
+		ModelId int32 `db:"prod_model"`
 		// 规格名称
 		Name string `db:"name"`
 		// 规格项值
@@ -28,7 +28,7 @@ type (
 		// 规格编号
 		SpecId int32 `db:"spec_id"`
 		// 产品模型（冗余)
-		ModelId int32 `db:"pro_model"`
+		ModelId int32 `db:"prod_model"`
 		// 规格项值
 		Value string `db:"value"`
 		// 规格项颜色

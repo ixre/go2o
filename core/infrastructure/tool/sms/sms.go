@@ -12,6 +12,13 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/tool/sms/aliyu"
@@ -20,12 +27,6 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/encoding/traditionalchinese"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"strconv"
-	"strings"
-	"time"
 )
 
 const (
@@ -183,7 +184,7 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, params map[string
 		}
 		//log.Println("[ Go2o][ Sms]:", body)
 		var data []byte
-		data, err = ioutil.ReadAll(rsp.Body)
+		data, err = io.ReadAll(rsp.Body)
 		if err == nil {
 			result := string(data)
 			if strings.Index(result, api.SuccessChar) == -1 {
@@ -212,7 +213,7 @@ func createHttpRequest(api *SmsApi, body string) (*http.Request, error) {
 	return req, err
 }
 
-//编码
+// 编码
 func EncodingTransform(src []byte, enc string) ([]byte, error) {
 	var ec encoding.Encoding
 	switch enc {

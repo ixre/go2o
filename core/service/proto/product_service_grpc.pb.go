@@ -22,16 +22,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductServiceClient interface {
-	// 获取产品模型
-	GetModel(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*SProductModel, error)
+	// 获取产品模型及模型的规格属性
+	GetProductModel(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*SProductModel, error)
 	// 获取产品模型
 	GetModels(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductModelListResponse, error)
 	// 获取属性
 	GetAttr(ctx context.Context, in *ProductAttrId, opts ...grpc.CallOption) (*SProductAttr, error)
 	// 获取属性项
 	GetAttrItem(ctx context.Context, in *ProductAttrItemId, opts ...grpc.CallOption) (*SProductAttrItem, error)
-	// 获取模型属性Html
-	GetModelAttrsHtml(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*String, error)
 	// 保存产品模型
 	SaveModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error)
 	// 删除产品模型
@@ -74,9 +72,9 @@ func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
 	return &productServiceClient{cc}
 }
 
-func (c *productServiceClient) GetModel(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*SProductModel, error) {
+func (c *productServiceClient) GetProductModel(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*SProductModel, error) {
 	out := new(SProductModel)
-	err := c.cc.Invoke(ctx, "/ProductService/GetModel", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ProductService/GetProductModel", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -104,15 +102,6 @@ func (c *productServiceClient) GetAttr(ctx context.Context, in *ProductAttrId, o
 func (c *productServiceClient) GetAttrItem(ctx context.Context, in *ProductAttrItemId, opts ...grpc.CallOption) (*SProductAttrItem, error) {
 	out := new(SProductAttrItem)
 	err := c.cc.Invoke(ctx, "/ProductService/GetAttrItem", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *productServiceClient) GetModelAttrsHtml(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*String, error) {
-	out := new(String)
-	err := c.cc.Invoke(ctx, "/ProductService/GetModelAttrsHtml", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -258,16 +247,14 @@ func (c *productServiceClient) SaveProductInfo(ctx context.Context, in *ProductI
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
 type ProductServiceServer interface {
-	// 获取产品模型
-	GetModel(context.Context, *ProductModelId) (*SProductModel, error)
+	// 获取产品模型及模型的规格属性
+	GetProductModel(context.Context, *ProductModelId) (*SProductModel, error)
 	// 获取产品模型
 	GetModels(context.Context, *Empty) (*ProductModelListResponse, error)
 	// 获取属性
 	GetAttr(context.Context, *ProductAttrId) (*SProductAttr, error)
 	// 获取属性项
 	GetAttrItem(context.Context, *ProductAttrItemId) (*SProductAttrItem, error)
-	// 获取模型属性Html
-	GetModelAttrsHtml(context.Context, *ProductModelId) (*String, error)
 	// 保存产品模型
 	SaveModel(context.Context, *SProductModel) (*Result, error)
 	// 删除产品模型
@@ -307,8 +294,8 @@ type ProductServiceServer interface {
 type UnimplementedProductServiceServer struct {
 }
 
-func (UnimplementedProductServiceServer) GetModel(context.Context, *ProductModelId) (*SProductModel, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetModel not implemented")
+func (UnimplementedProductServiceServer) GetProductModel(context.Context, *ProductModelId) (*SProductModel, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProductModel not implemented")
 }
 func (UnimplementedProductServiceServer) GetModels(context.Context, *Empty) (*ProductModelListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetModels not implemented")
@@ -318,9 +305,6 @@ func (UnimplementedProductServiceServer) GetAttr(context.Context, *ProductAttrId
 }
 func (UnimplementedProductServiceServer) GetAttrItem(context.Context, *ProductAttrItemId) (*SProductAttrItem, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttrItem not implemented")
-}
-func (UnimplementedProductServiceServer) GetModelAttrsHtml(context.Context, *ProductModelId) (*String, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetModelAttrsHtml not implemented")
 }
 func (UnimplementedProductServiceServer) SaveModel(context.Context, *SProductModel) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveModel not implemented")
@@ -380,20 +364,20 @@ func RegisterProductServiceServer(s grpc.ServiceRegistrar, srv ProductServiceSer
 	s.RegisterService(&ProductService_ServiceDesc, srv)
 }
 
-func _ProductService_GetModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductService_GetProductModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ProductModelId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).GetModel(ctx, in)
+		return srv.(ProductServiceServer).GetProductModel(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ProductService/GetModel",
+		FullMethod: "/ProductService/GetProductModel",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).GetModel(ctx, req.(*ProductModelId))
+		return srv.(ProductServiceServer).GetProductModel(ctx, req.(*ProductModelId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -448,24 +432,6 @@ func _ProductService_GetAttrItem_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).GetAttrItem(ctx, req.(*ProductAttrItemId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProductService_GetModelAttrsHtml_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProductModelId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProductServiceServer).GetModelAttrsHtml(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ProductService/GetModelAttrsHtml",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).GetModelAttrsHtml(ctx, req.(*ProductModelId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -748,8 +714,8 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ProductServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetModel",
-			Handler:    _ProductService_GetModel_Handler,
+			MethodName: "GetProductModel",
+			Handler:    _ProductService_GetProductModel_Handler,
 		},
 		{
 			MethodName: "GetModels",
@@ -762,10 +728,6 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAttrItem",
 			Handler:    _ProductService_GetAttrItem_Handler,
-		},
-		{
-			MethodName: "GetModelAttrsHtml",
-			Handler:    _ProductService_GetModelAttrsHtml_Handler,
 		},
 		{
 			MethodName: "SaveModel",

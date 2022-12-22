@@ -209,6 +209,62 @@ func (EAccountType) EnumDescriptor() ([]byte, []int) {
 	return file_message_member_dto_proto_rawDescGZIP(), []int{2}
 }
 
+// 提现方式
+type EWithdrawKind int32
+
+const (
+	EWithdrawKind____WithdrawKind EWithdrawKind = 0
+	// 提现到第三方账户
+	EWithdrawKind_KWithdrawToThirdPart EWithdrawKind = 1
+	// 提现到银行卡
+	EWithdrawKind_KWithdrawToBankCard EWithdrawKind = 22
+	// 兑换为商城余额
+	EWithdrawKind_KWithdrawExchange EWithdrawKind = 23
+)
+
+// Enum value maps for EWithdrawKind.
+var (
+	EWithdrawKind_name = map[int32]string{
+		0:  "___WithdrawKind",
+		1:  "KWithdrawToThirdPart",
+		22: "KWithdrawToBankCard",
+		23: "KWithdrawExchange",
+	}
+	EWithdrawKind_value = map[string]int32{
+		"___WithdrawKind":      0,
+		"KWithdrawToThirdPart": 1,
+		"KWithdrawToBankCard":  22,
+		"KWithdrawExchange":    23,
+	}
+)
+
+func (x EWithdrawKind) Enum() *EWithdrawKind {
+	p := new(EWithdrawKind)
+	*p = x
+	return p
+}
+
+func (x EWithdrawKind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EWithdrawKind) Descriptor() protoreflect.EnumDescriptor {
+	return file_message_member_dto_proto_enumTypes[3].Descriptor()
+}
+
+func (EWithdrawKind) Type() protoreflect.EnumType {
+	return &file_message_member_dto_proto_enumTypes[3]
+}
+
+func (x EWithdrawKind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EWithdrawKind.Descriptor instead.
+func (EWithdrawKind) EnumDescriptor() ([]byte, []int) {
+	return file_message_member_dto_proto_rawDescGZIP(), []int{3}
+}
+
 type PagingCouponState int32
 
 const (
@@ -242,11 +298,11 @@ func (x PagingCouponState) String() string {
 }
 
 func (PagingCouponState) Descriptor() protoreflect.EnumDescriptor {
-	return file_message_member_dto_proto_enumTypes[3].Descriptor()
+	return file_message_member_dto_proto_enumTypes[4].Descriptor()
 }
 
 func (PagingCouponState) Type() protoreflect.EnumType {
-	return &file_message_member_dto_proto_enumTypes[3]
+	return &file_message_member_dto_proto_enumTypes[4]
 }
 
 func (x PagingCouponState) Number() protoreflect.EnumNumber {
@@ -255,7 +311,7 @@ func (x PagingCouponState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PagingCouponState.Descriptor instead.
 func (PagingCouponState) EnumDescriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{3}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{4}
 }
 
 type FavoriteType int32
@@ -291,11 +347,11 @@ func (x FavoriteType) String() string {
 }
 
 func (FavoriteType) Descriptor() protoreflect.EnumDescriptor {
-	return file_message_member_dto_proto_enumTypes[4].Descriptor()
+	return file_message_member_dto_proto_enumTypes[5].Descriptor()
 }
 
 func (FavoriteType) Type() protoreflect.EnumType {
-	return &file_message_member_dto_proto_enumTypes[4]
+	return &file_message_member_dto_proto_enumTypes[5]
 }
 
 func (x FavoriteType) Number() protoreflect.EnumNumber {
@@ -304,7 +360,7 @@ func (x FavoriteType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FavoriteType.Descriptor instead.
 func (FavoriteType) EnumDescriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{4}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{5}
 }
 
 type RegisterMemberRequest struct {
@@ -4987,13 +5043,14 @@ type WithdrawRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// 会员编号
 	MemberId int64 `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
 	// 提现金额
 	Amount int64 `protobuf:"varint,2,opt,name=amount,proto3" json:"amount"`
 	// 手续费
 	ProcedureFee int64 `protobuf:"varint,3,opt,name=procedureFee,proto3" json:"procedureFee"`
 	// 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
-	WithdrawKind int32 `protobuf:"varint,4,opt,name=withdrawKind,proto3" json:"withdrawKind"`
+	WithdrawKind EWithdrawKind `protobuf:"varint,4,opt,name=withdrawKind,proto3,enum=EWithdrawKind" json:"withdrawKind"`
 	// 银行账号或第三方支付钱包
 	AccountNo string `protobuf:"bytes,5,opt,name=accountNo,proto3" json:"accountNo"`
 }
@@ -5051,11 +5108,11 @@ func (x *WithdrawRequest) GetProcedureFee() int64 {
 	return 0
 }
 
-func (x *WithdrawRequest) GetWithdrawKind() int32 {
+func (x *WithdrawRequest) GetWithdrawKind() EWithdrawKind {
 	if x != nil {
 		return x.WithdrawKind
 	}
-	return 0
+	return EWithdrawKind____WithdrawKind
 }
 
 func (x *WithdrawRequest) GetAccountNo() string {
@@ -6921,15 +6978,16 @@ var file_message_member_dto_proto_rawDesc = []byte{
 	0x6e, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x64, 0x75, 0x72, 0x65, 0x46,
 	0x65, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x12, 0x52, 0x0c, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x64,
 	0x75, 0x72, 0x65, 0x46, 0x65, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x6d, 0x61, 0x72, 0x6b,
-	0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x6d, 0x61, 0x72, 0x6b, 0x22, 0xab,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x6d, 0x61, 0x72, 0x6b, 0x22, 0xbb,
 	0x01, 0x0a, 0x0f, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x12, 0x52, 0x08, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x49, 0x64, 0x12, 0x16,
 	0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06,
 	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x64,
 	0x75, 0x72, 0x65, 0x46, 0x65, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x70, 0x72,
-	0x6f, 0x63, 0x65, 0x64, 0x75, 0x72, 0x65, 0x46, 0x65, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x77, 0x69,
-	0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x4b, 0x69, 0x6e, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05,
+	0x6f, 0x63, 0x65, 0x64, 0x75, 0x72, 0x65, 0x46, 0x65, 0x65, 0x12, 0x32, 0x0a, 0x0c, 0x77, 0x69,
+	0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x4b, 0x69, 0x6e, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x0e, 0x2e, 0x45, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x4b, 0x69, 0x6e, 0x64,
 	0x52, 0x0c, 0x77, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x4b, 0x69, 0x6e, 0x64, 0x12, 0x1c,
 	0x0a, 0x09, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x4e, 0x6f, 0x18, 0x05, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x09, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x4e, 0x6f, 0x22, 0x76, 0x0a, 0x12,
@@ -7094,7 +7152,14 @@ var file_message_member_dto_proto_rawDesc = []byte{
 	0x10, 0x01, 0x12, 0x13, 0x0a, 0x0f, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x6e, 0x74,
 	0x65, 0x67, 0x72, 0x61, 0x6c, 0x10, 0x02, 0x12, 0x11, 0x0a, 0x0d, 0x41, 0x63, 0x63, 0x6f, 0x75,
 	0x6e, 0x74, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x10, 0x03, 0x12, 0x0f, 0x0a, 0x0b, 0x41, 0x63,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x46, 0x6c, 0x6f, 0x77, 0x10, 0x04, 0x2a, 0x41, 0x0a, 0x11, 0x50,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x46, 0x6c, 0x6f, 0x77, 0x10, 0x04, 0x2a, 0x6e, 0x0a, 0x0d, 0x45,
+	0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x4b, 0x69, 0x6e, 0x64, 0x12, 0x13, 0x0a, 0x0f,
+	0x5f, 0x5f, 0x5f, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x4b, 0x69, 0x6e, 0x64, 0x10,
+	0x00, 0x12, 0x18, 0x0a, 0x14, 0x4b, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x54, 0x6f,
+	0x54, 0x68, 0x69, 0x72, 0x64, 0x50, 0x61, 0x72, 0x74, 0x10, 0x01, 0x12, 0x17, 0x0a, 0x13, 0x4b,
+	0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x54, 0x6f, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x61,
+	0x72, 0x64, 0x10, 0x16, 0x12, 0x15, 0x0a, 0x11, 0x4b, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61,
+	0x77, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x10, 0x17, 0x2a, 0x41, 0x0a, 0x11, 0x50,
 	0x61, 0x67, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x75, 0x70, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x65,
 	0x12, 0x0a, 0x0a, 0x06, 0x43, 0x53, 0x5f, 0x41, 0x4c, 0x4c, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c,
 	0x43, 0x53, 0x5f, 0x41, 0x56, 0x41, 0x49, 0x4c, 0x41, 0x42, 0x4c, 0x45, 0x10, 0x01, 0x12, 0x0e,
@@ -7119,125 +7184,127 @@ func file_message_member_dto_proto_rawDescGZIP() []byte {
 	return file_message_member_dto_proto_rawDescData
 }
 
-var file_message_member_dto_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_message_member_dto_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_message_member_dto_proto_msgTypes = make([]protoimpl.MessageInfo, 81)
 var file_message_member_dto_proto_goTypes = []interface{}{
 	(EMemberFlag)(0),                       // 0: EMemberFlag
 	(ECredentials)(0),                      // 1: ECredentials
 	(EAccountType)(0),                      // 2: EAccountType
-	(PagingCouponState)(0),                 // 3: PagingCouponState
-	(FavoriteType)(0),                      // 4: FavoriteType
-	(*RegisterMemberRequest)(nil),          // 5: RegisterMemberRequest
-	(*LoginRequest)(nil),                   // 6: LoginRequest
-	(*LoginResponse)(nil),                  // 7: LoginResponse
-	(*GrantAccessTokenRequest)(nil),        // 8: GrantAccessTokenRequest
-	(*GrantAccessTokenResponse)(nil),       // 9: GrantAccessTokenResponse
-	(*CheckAccessTokenRequest)(nil),        // 10: CheckAccessTokenRequest
-	(*CheckAccessTokenResponse)(nil),       // 11: CheckAccessTokenResponse
-	(*RegisterResponse)(nil),               // 12: RegisterResponse
-	(*VerifyPasswordRequest)(nil),          // 13: VerifyPasswordRequest
-	(*MemberIdRequest)(nil),                // 14: MemberIdRequest
-	(*FindMemberRequest)(nil),              // 15: FindMemberRequest
-	(*SMemberLevelListResponse)(nil),       // 16: SMemberLevelListResponse
-	(*SubmitTrustInfoRequest)(nil),         // 17: SubmitTrustInfoRequest
-	(*ReviewTrustInfoRequest)(nil),         // 18: ReviewTrustInfoRequest
-	(*LockRequest)(nil),                    // 19: LockRequest
-	(*GrantFlagRequest)(nil),               // 20: GrantFlagRequest
-	(*SendCodeRequest)(nil),                // 21: SendCodeRequest
-	(*CompareCodeRequest)(nil),             // 22: CompareCodeRequest
-	(*SReceiptsCodeListResponse)(nil),      // 23: SReceiptsCodeListResponse
-	(*ReceiptsCodeSaveRequest)(nil),        // 24: ReceiptsCodeSaveRequest
-	(*UpdateLevelRequest)(nil),             // 25: UpdateLevelRequest
-	(*ChangePhoneRequest)(nil),             // 26: ChangePhoneRequest
-	(*ChangeUserRequest)(nil),              // 27: ChangeUserRequest
-	(*ModifyPasswordRequest)(nil),          // 28: ModifyPasswordRequest
-	(*ChangeInviterRequest)(nil),           // 29: ChangeInviterRequest
-	(*OrderQuantityMapResponse)(nil),       // 30: OrderQuantityMapResponse
-	(*GetTokenRequest)(nil),                // 31: GetTokenRequest
-	(*PremiumRequest)(nil),                 // 32: PremiumRequest
-	(*CheckTokenRequest)(nil),              // 33: CheckTokenRequest
-	(*AddressListResponse)(nil),            // 34: AddressListResponse
-	(*SaveAddressRequest)(nil),             // 35: SaveAddressRequest
-	(*SaveAddressResponse)(nil),            // 36: SaveAddressResponse
-	(*GetAddressRequest)(nil),              // 37: GetAddressRequest
-	(*AccountChangeRequest)(nil),           // 38: AccountChangeRequest
-	(*AccountAdjustRequest)(nil),           // 39: AccountAdjustRequest
-	(*AccountCarryRequest)(nil),            // 40: AccountCarryRequest
-	(*AccountFreezeRequest)(nil),           // 41: AccountFreezeRequest
-	(*AccountFreezeResponse)(nil),          // 42: AccountFreezeResponse
-	(*AccountUnfreezeRequest)(nil),         // 43: AccountUnfreezeRequest
-	(*AccountCarryResponse)(nil),           // 44: AccountCarryResponse
-	(*B4EAuthRequest)(nil),                 // 45: B4EAuthRequest
-	(*PagingAccountInfoRequest)(nil),       // 46: PagingAccountInfoRequest
-	(*SMemberLevel)(nil),                   // 47: SMemberLevel
-	(*AvatarRequest)(nil),                  // 48: AvatarRequest
-	(*SMember)(nil),                        // 49: SMember
-	(*SProfile)(nil),                       // 50: SProfile
-	(*SAccount)(nil),                       // 51: SAccount
-	(*SComplexMember)(nil),                 // 52: SComplexMember
-	(*SMemberRelation)(nil),                // 53: SMemberRelation
-	(*STrustedInfo)(nil),                   // 54: STrustedInfo
-	(*SAddress)(nil),                       // 55: SAddress
-	(*AddressIdRequest)(nil),               // 56: AddressIdRequest
-	(*SReceiptsCode)(nil),                  // 57: SReceiptsCode
-	(*SMemberLevelInfo)(nil),               // 58: SMemberLevelInfo
-	(*SMemberOrderSummary)(nil),            // 59: SMemberOrderSummary
-	(*MemberRelationResponse)(nil),         // 60: MemberRelationResponse
-	(*WalletLogRequest)(nil),               // 61: WalletLogRequest
-	(*WalletLogResponse)(nil),              // 62: WalletLogResponse
-	(*AccountTransferRequest)(nil),         // 63: AccountTransferRequest
-	(*WithdrawRequest)(nil),                // 64: WithdrawRequest
-	(*WithdrawalResponse)(nil),             // 65: WithdrawalResponse
-	(*WithdrawalLogRequest)(nil),           // 66: WithdrawalLogRequest
-	(*WithdrawalLogsResponse)(nil),         // 67: WithdrawalLogsResponse
-	(*WithdrawalLog)(nil),                  // 68: WithdrawalLog
-	(*ReviewWithdrawalRequest)(nil),        // 69: ReviewWithdrawalRequest
-	(*FinishWithdrawalRequest)(nil),        // 70: FinishWithdrawalRequest
-	(*MemberInvitationPagingRequest)(nil),  // 71: MemberInvitationPagingRequest
-	(*MemberInvitationPagingResponse)(nil), // 72: MemberInvitationPagingResponse
-	(*SInvitationMember)(nil),              // 73: SInvitationMember
-	(*IsInvitationRequest)(nil),            // 74: IsInvitationRequest
-	(*MemberCouponPagingRequest)(nil),      // 75: MemberCouponPagingRequest
-	(*MemberCouponListResponse)(nil),       // 76: MemberCouponListResponse
-	(*SMemberCoupon)(nil),                  // 77: SMemberCoupon
-	(*FavoriteRequest)(nil),                // 78: FavoriteRequest
-	(*DepthRequest)(nil),                   // 79: DepthRequest
-	(*InviterIdListResponse)(nil),          // 80: InviterIdListResponse
-	(*InviteQuantityRequest)(nil),          // 81: InviteQuantityRequest
-	(*MemberIdListResponse)(nil),           // 82: MemberIdListResponse
-	nil,                                    // 83: OrderQuantityMapResponse.DataEntry
-	nil,                                    // 84: B4EAuthRequest.DataEntry
-	nil,                                    // 85: InviteQuantityRequest.DataEntry
-	(*SPagingParams)(nil),                  // 86: SPagingParams
+	(EWithdrawKind)(0),                     // 3: EWithdrawKind
+	(PagingCouponState)(0),                 // 4: PagingCouponState
+	(FavoriteType)(0),                      // 5: FavoriteType
+	(*RegisterMemberRequest)(nil),          // 6: RegisterMemberRequest
+	(*LoginRequest)(nil),                   // 7: LoginRequest
+	(*LoginResponse)(nil),                  // 8: LoginResponse
+	(*GrantAccessTokenRequest)(nil),        // 9: GrantAccessTokenRequest
+	(*GrantAccessTokenResponse)(nil),       // 10: GrantAccessTokenResponse
+	(*CheckAccessTokenRequest)(nil),        // 11: CheckAccessTokenRequest
+	(*CheckAccessTokenResponse)(nil),       // 12: CheckAccessTokenResponse
+	(*RegisterResponse)(nil),               // 13: RegisterResponse
+	(*VerifyPasswordRequest)(nil),          // 14: VerifyPasswordRequest
+	(*MemberIdRequest)(nil),                // 15: MemberIdRequest
+	(*FindMemberRequest)(nil),              // 16: FindMemberRequest
+	(*SMemberLevelListResponse)(nil),       // 17: SMemberLevelListResponse
+	(*SubmitTrustInfoRequest)(nil),         // 18: SubmitTrustInfoRequest
+	(*ReviewTrustInfoRequest)(nil),         // 19: ReviewTrustInfoRequest
+	(*LockRequest)(nil),                    // 20: LockRequest
+	(*GrantFlagRequest)(nil),               // 21: GrantFlagRequest
+	(*SendCodeRequest)(nil),                // 22: SendCodeRequest
+	(*CompareCodeRequest)(nil),             // 23: CompareCodeRequest
+	(*SReceiptsCodeListResponse)(nil),      // 24: SReceiptsCodeListResponse
+	(*ReceiptsCodeSaveRequest)(nil),        // 25: ReceiptsCodeSaveRequest
+	(*UpdateLevelRequest)(nil),             // 26: UpdateLevelRequest
+	(*ChangePhoneRequest)(nil),             // 27: ChangePhoneRequest
+	(*ChangeUserRequest)(nil),              // 28: ChangeUserRequest
+	(*ModifyPasswordRequest)(nil),          // 29: ModifyPasswordRequest
+	(*ChangeInviterRequest)(nil),           // 30: ChangeInviterRequest
+	(*OrderQuantityMapResponse)(nil),       // 31: OrderQuantityMapResponse
+	(*GetTokenRequest)(nil),                // 32: GetTokenRequest
+	(*PremiumRequest)(nil),                 // 33: PremiumRequest
+	(*CheckTokenRequest)(nil),              // 34: CheckTokenRequest
+	(*AddressListResponse)(nil),            // 35: AddressListResponse
+	(*SaveAddressRequest)(nil),             // 36: SaveAddressRequest
+	(*SaveAddressResponse)(nil),            // 37: SaveAddressResponse
+	(*GetAddressRequest)(nil),              // 38: GetAddressRequest
+	(*AccountChangeRequest)(nil),           // 39: AccountChangeRequest
+	(*AccountAdjustRequest)(nil),           // 40: AccountAdjustRequest
+	(*AccountCarryRequest)(nil),            // 41: AccountCarryRequest
+	(*AccountFreezeRequest)(nil),           // 42: AccountFreezeRequest
+	(*AccountFreezeResponse)(nil),          // 43: AccountFreezeResponse
+	(*AccountUnfreezeRequest)(nil),         // 44: AccountUnfreezeRequest
+	(*AccountCarryResponse)(nil),           // 45: AccountCarryResponse
+	(*B4EAuthRequest)(nil),                 // 46: B4EAuthRequest
+	(*PagingAccountInfoRequest)(nil),       // 47: PagingAccountInfoRequest
+	(*SMemberLevel)(nil),                   // 48: SMemberLevel
+	(*AvatarRequest)(nil),                  // 49: AvatarRequest
+	(*SMember)(nil),                        // 50: SMember
+	(*SProfile)(nil),                       // 51: SProfile
+	(*SAccount)(nil),                       // 52: SAccount
+	(*SComplexMember)(nil),                 // 53: SComplexMember
+	(*SMemberRelation)(nil),                // 54: SMemberRelation
+	(*STrustedInfo)(nil),                   // 55: STrustedInfo
+	(*SAddress)(nil),                       // 56: SAddress
+	(*AddressIdRequest)(nil),               // 57: AddressIdRequest
+	(*SReceiptsCode)(nil),                  // 58: SReceiptsCode
+	(*SMemberLevelInfo)(nil),               // 59: SMemberLevelInfo
+	(*SMemberOrderSummary)(nil),            // 60: SMemberOrderSummary
+	(*MemberRelationResponse)(nil),         // 61: MemberRelationResponse
+	(*WalletLogRequest)(nil),               // 62: WalletLogRequest
+	(*WalletLogResponse)(nil),              // 63: WalletLogResponse
+	(*AccountTransferRequest)(nil),         // 64: AccountTransferRequest
+	(*WithdrawRequest)(nil),                // 65: WithdrawRequest
+	(*WithdrawalResponse)(nil),             // 66: WithdrawalResponse
+	(*WithdrawalLogRequest)(nil),           // 67: WithdrawalLogRequest
+	(*WithdrawalLogsResponse)(nil),         // 68: WithdrawalLogsResponse
+	(*WithdrawalLog)(nil),                  // 69: WithdrawalLog
+	(*ReviewWithdrawalRequest)(nil),        // 70: ReviewWithdrawalRequest
+	(*FinishWithdrawalRequest)(nil),        // 71: FinishWithdrawalRequest
+	(*MemberInvitationPagingRequest)(nil),  // 72: MemberInvitationPagingRequest
+	(*MemberInvitationPagingResponse)(nil), // 73: MemberInvitationPagingResponse
+	(*SInvitationMember)(nil),              // 74: SInvitationMember
+	(*IsInvitationRequest)(nil),            // 75: IsInvitationRequest
+	(*MemberCouponPagingRequest)(nil),      // 76: MemberCouponPagingRequest
+	(*MemberCouponListResponse)(nil),       // 77: MemberCouponListResponse
+	(*SMemberCoupon)(nil),                  // 78: SMemberCoupon
+	(*FavoriteRequest)(nil),                // 79: FavoriteRequest
+	(*DepthRequest)(nil),                   // 80: DepthRequest
+	(*InviterIdListResponse)(nil),          // 81: InviterIdListResponse
+	(*InviteQuantityRequest)(nil),          // 82: InviteQuantityRequest
+	(*MemberIdListResponse)(nil),           // 83: MemberIdListResponse
+	nil,                                    // 84: OrderQuantityMapResponse.DataEntry
+	nil,                                    // 85: B4EAuthRequest.DataEntry
+	nil,                                    // 86: InviteQuantityRequest.DataEntry
+	(*SPagingParams)(nil),                  // 87: SPagingParams
 }
 var file_message_member_dto_proto_depIdxs = []int32{
 	1,  // 0: FindMemberRequest.cred:type_name -> ECredentials
-	47, // 1: SMemberLevelListResponse.value:type_name -> SMemberLevel
-	54, // 2: SubmitTrustInfoRequest.info:type_name -> STrustedInfo
-	57, // 3: SReceiptsCodeListResponse.value:type_name -> SReceiptsCode
-	57, // 4: ReceiptsCodeSaveRequest.code:type_name -> SReceiptsCode
-	83, // 5: OrderQuantityMapResponse.data:type_name -> OrderQuantityMapResponse.DataEntry
-	55, // 6: AddressListResponse.value:type_name -> SAddress
-	55, // 7: SaveAddressRequest.value:type_name -> SAddress
+	48, // 1: SMemberLevelListResponse.value:type_name -> SMemberLevel
+	55, // 2: SubmitTrustInfoRequest.info:type_name -> STrustedInfo
+	58, // 3: SReceiptsCodeListResponse.value:type_name -> SReceiptsCode
+	58, // 4: ReceiptsCodeSaveRequest.code:type_name -> SReceiptsCode
+	84, // 5: OrderQuantityMapResponse.data:type_name -> OrderQuantityMapResponse.DataEntry
+	56, // 6: AddressListResponse.value:type_name -> SAddress
+	56, // 7: SaveAddressRequest.value:type_name -> SAddress
 	2,  // 8: AccountChangeRequest.accountType:type_name -> EAccountType
 	2,  // 9: AccountAdjustRequest.account:type_name -> EAccountType
 	2,  // 10: AccountCarryRequest.accountType:type_name -> EAccountType
 	2,  // 11: AccountFreezeRequest.accountType:type_name -> EAccountType
 	2,  // 12: AccountUnfreezeRequest.accountType:type_name -> EAccountType
-	84, // 13: B4EAuthRequest.data:type_name -> B4EAuthRequest.DataEntry
-	86, // 14: PagingAccountInfoRequest.params:type_name -> SPagingParams
+	85, // 13: B4EAuthRequest.data:type_name -> B4EAuthRequest.DataEntry
+	87, // 14: PagingAccountInfoRequest.params:type_name -> SPagingParams
 	2,  // 15: AccountTransferRequest.transferAccount:type_name -> EAccountType
-	68, // 16: WithdrawalLogsResponse.data:type_name -> WithdrawalLog
-	73, // 17: MemberInvitationPagingResponse.data:type_name -> SInvitationMember
-	3,  // 18: MemberCouponPagingRequest.state:type_name -> PagingCouponState
-	77, // 19: MemberCouponListResponse.data:type_name -> SMemberCoupon
-	4,  // 20: FavoriteRequest.favoriteType:type_name -> FavoriteType
-	85, // 21: InviteQuantityRequest.data:type_name -> InviteQuantityRequest.DataEntry
-	22, // [22:22] is the sub-list for method output_type
-	22, // [22:22] is the sub-list for method input_type
-	22, // [22:22] is the sub-list for extension type_name
-	22, // [22:22] is the sub-list for extension extendee
-	0,  // [0:22] is the sub-list for field type_name
+	3,  // 16: WithdrawRequest.withdrawKind:type_name -> EWithdrawKind
+	69, // 17: WithdrawalLogsResponse.data:type_name -> WithdrawalLog
+	74, // 18: MemberInvitationPagingResponse.data:type_name -> SInvitationMember
+	4,  // 19: MemberCouponPagingRequest.state:type_name -> PagingCouponState
+	78, // 20: MemberCouponListResponse.data:type_name -> SMemberCoupon
+	5,  // 21: FavoriteRequest.favoriteType:type_name -> FavoriteType
+	86, // 22: InviteQuantityRequest.data:type_name -> InviteQuantityRequest.DataEntry
+	23, // [23:23] is the sub-list for method output_type
+	23, // [23:23] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_message_member_dto_proto_init() }
@@ -8189,7 +8256,7 @@ func file_message_member_dto_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_message_member_dto_proto_rawDesc,
-			NumEnums:      5,
+			NumEnums:      6,
 			NumMessages:   81,
 			NumExtensions: 0,
 			NumServices:   0,

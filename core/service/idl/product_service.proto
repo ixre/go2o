@@ -7,8 +7,8 @@ option java_package = "com.github.go2o.rpc";
 
 // 产品服务
 service ProductService {
-    // 获取产品模型
-    rpc GetModel (ProductModelId) returns (SProductModel) {
+    // 获取产品模型及模型的规格属性
+    rpc GetProductModel (ProductModelId) returns (SProductModel) {
     }
     // 获取产品模型
     rpc GetModels (Empty) returns (ProductModelListResponse) {
@@ -20,9 +20,6 @@ service ProductService {
     rpc GetAttrItem (ProductAttrItemId) returns (SProductAttrItem) {
     }
 
-    // 获取模型属性Html
-    rpc GetModelAttrsHtml (ProductModelId) returns (String) {
-    }
     // 保存产品模型
     rpc SaveModel (SProductModel) returns (Result) {
     }

@@ -2,8 +2,9 @@ package impl
 
 import (
 	"errors"
+
 	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/service/proto"
@@ -33,7 +34,7 @@ func NewProductService(pmRepo promodel.IProductModelRepo,
 }
 
 // GetModel 获取产品模型
-func (p *productService) GetModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
+func (p *productService) GetProductModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
 	im := p.pmRepo.GetModel(int32(id.Value))
 	if im != nil {
 		ret := p.parseModelDto(im.Value())
@@ -132,12 +133,12 @@ func (p *productService) appendCategoryBrands(ic product.IGlobCatService, v prod
 }
 
 // GetCategory 获取商品分类
-func (p *productService) GetCategory(_ context.Context, id *proto.GetCategoryRequest) (*proto.SProductCategory, error) {
+func (p *productService) GetCategory(_ context.Context, req *proto.GetCategoryRequest) (*proto.SProductCategory, error) {
 	ic := p.catRepo.GlobCatService()
-	v := ic.GetCategory(int(id.CategoryId))
+	v := ic.GetCategory(int(req.CategoryId))
 	if v != nil {
 		cat := p.parseCategoryDto(v.GetValue())
-		if id.Brand {
+		if req.Brand {
 			p.appendCategoryBrands(ic, v, cat)
 		}
 		return cat, nil
@@ -234,19 +235,6 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 	return p.error(err), nil
 }
 
-// GetModelAttrs_ 获取模型属性
-func (p *productService) GetModelAttrs_(proModel int32) []*promodel.Attr {
-	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: proModel})
-	return m.Attrs()
-}
-
-// GetModelAttrsHtml 获取模型属性Html
-func (p *productService) GetModelAttrsHtml(_ context.Context, id *proto.ProductModelId) (*proto.String, error) {
-	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: int32(id.Value)})
-	attrs := m.Attrs()
-	s := p.pmRepo.AttrService().AttrsHtml(attrs)
-	return &proto.String{Value: s}, nil
-}
 
 // SaveModel 保存产品模型
 func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
@@ -558,7 +546,7 @@ func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAt
 		Id:         int64(v.Id),
 		Name:       v.Name,
 		IsFilter:   v.IsFilter,
-		MultiCheck: v.MultiChk,
+		MultiCheck: v.MultiCheck,
 		SortNum:    v.SortNum,
 		ItemValues: v.ItemValues,
 		Items:      nil,
@@ -716,7 +704,7 @@ func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr 
 		Id:         int32(v.Id),
 		Name:       v.Name,
 		IsFilter:   v.IsFilter,
-		MultiChk:   v.MultiCheck,
+		MultiCheck: v.MultiCheck,
 		ItemValues: "",
 		SortNum:    v.SortNum,
 	}

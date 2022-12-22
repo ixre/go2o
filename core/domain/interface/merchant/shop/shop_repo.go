@@ -15,7 +15,7 @@ type (
 		// 获取商店
 		GetShop(shopId int64) IShop
 		// 获取自营店铺
-		QuerySelfSupportShops() []Shop
+		QuerySelfSupportShops() []OnlineShop
 		// 获取门店
 		GetStore(storeId int64) IShop
 

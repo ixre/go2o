@@ -2,13 +2,14 @@ package tests
 
 import (
 	"bytes"
+	"strconv"
+	"testing"
+
 	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/algorithm"
 	"github.com/ixre/gof/log"
-	"strconv"
-	"testing"
 )
 
 var (
@@ -52,9 +53,9 @@ func TestModelSaveAttrs(t *testing.T) {
 	m := rep.GetModel(modelId)
 	attrs := []*promodel.Attr{
 		{
-			Name:     "材质",
-			IsFilter: 1,
-			MultiChk: 1,
+			Name:       "材质",
+			IsFilter:   1,
+			MultiCheck: 1,
 			Items: []*promodel.AttrItem{
 				{
 					Value: "棉",

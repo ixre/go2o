@@ -3,17 +3,18 @@ package pay
 import (
 	"errors"
 	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/repos"
-	"github.com/ixre/gof/crypto"
-	"github.com/ixre/gof/storage"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/gof/crypto"
+	"github.com/ixre/gof/storage"
 )
 
 type wrapperData struct {
@@ -199,7 +200,7 @@ func (g *Gateway) handlePayment(userId int64, tradeNo string, data wrapperData) 
 	return nil
 }
 
-//通知支付结果,响应端返回success表示处理完成
+// 通知支付结果,响应端返回success表示处理完成
 func (g *Gateway) notify(userId int64, data *wrapperData) error {
 	cli := http.Client{}
 	values := url.Values{
@@ -223,7 +224,7 @@ func (g *Gateway) notify(userId int64, data *wrapperData) error {
 			err.Error(), " [URL]:", data.NotifyUrl)
 		return errors.New("通知支付结果失败")
 	}
-	body, _ := ioutil.ReadAll(rsp.Body)
+	body, _ := io.ReadAll(rsp.Body)
 	rspTxt := string(body)
 	// 响应状态不正确
 	if rsp.StatusCode != 200 {

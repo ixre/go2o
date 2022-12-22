@@ -11,6 +11,12 @@ package member
 import (
 	"errors"
 	"fmt"
+	"log"
+	"math"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -18,11 +24,7 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/msq"
-	"log"
-	"math"
-	"strconv"
-	"strings"
-	"time"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 var _ member.IAccount = new(accountImpl)
@@ -561,7 +563,7 @@ func (a *accountImpl) walletDiscount(title string, amount int, outerNo string, r
 	return err
 }
 
-//  钱包退款(指定业务类型)
+// 钱包退款(指定业务类型)
 func (a *accountImpl) walletRefund(kind int, title string,
 	outerNo string, amount int, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -879,7 +881,7 @@ func (a *accountImpl) unfreezesIntegral(d member.AccountOperateData, relateUser 
 
 // RequestWithdrawal 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
-	amount int, tradeFee int, accountNo string) (int64, string, error) {
+	amount int, procedureFee int, accountNo string) (int64, string, error) {
 	if takeKind != wallet.KWithdrawExchange &&
 		takeKind != wallet.KWithdrawToBankCard &&
 		takeKind != wallet.KWithdrawToThirdPart {
@@ -948,17 +950,25 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		bankName = bank.BankName
 	}
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
-	finalAmount := amount - tradeFee
+	finalAmount := amount - procedureFee
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
 	}
-	id, tradeNo, err := a.wallet.RequestWithdrawal(finalAmount, tradeFee, takeKind,
+	id, tradeNo, err := a.wallet.RequestWithdrawal(finalAmount, procedureFee, takeKind,
 		title, accountNo, accountName, bankName)
 	if err == nil {
 		err = a.asyncWallet()
 		if err == nil {
 			go a.rep.AddTodayTakeOutTimes(a.GetDomainId())
 		}
+		// 发送消息通知
+		mp := map[string]interface{}{
+			"memberId":     a.value.MemberId,
+			"logId":        id,
+			"amount":       amount,
+			"procedureFee": procedureFee,
+		}
+		go msq.Push(msq.MemberRequestWithdrawal, typeconv.MustJson(mp))
 	}
 	return id, tradeNo, err
 }
@@ -969,6 +979,17 @@ func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error
 	err := a.wallet.ReviewWithdrawal(id, pass, remark, 1, "系统")
 	if err == nil {
 		err = a.asyncWallet()
+		if pass {
+			log := a.wallet.GetLog(id)
+			// 发送消息通知
+			mp := map[string]interface{}{
+				"memberId":     a.value.MemberId,
+				"logId":        id,
+				"amount":       log.Value,
+				"procedureFee": log.ProcedureFee,
+			}
+			go msq.Push(msq.MemberWithdrawalAudited, typeconv.MustJson(mp))
+		}
 	}
 	return err
 }

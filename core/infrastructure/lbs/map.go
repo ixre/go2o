@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 )
@@ -28,7 +28,7 @@ func reqApi(url string) ([]byte, error) {
 	if err != nil {
 		return []byte{}, err
 	} else {
-		return ioutil.ReadAll(rsp.Body)
+		return io.ReadAll(rsp.Body)
 	}
 }
 
