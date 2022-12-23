@@ -235,7 +235,6 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 	return p.error(err), nil
 }
 
-
 // SaveModel 保存产品模型
 func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
 	var pm promodel.IProductModel
@@ -310,21 +309,6 @@ func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProduct
 		//todo: 删除商品
 	}
 	return p.error(err), nil
-}
-
-// GetModelSpecs 获取模型规格
-func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
-	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: proModel})
-	return m.Specs()
-}
-
-// GetCatBrands 获取分类关联的品牌
-func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
-	arr := p.catRepo.GlobCatService().RelationBrands(int(catId))
-	for _, v := range arr {
-		v.Image = format.GetResUrl(v.Image)
-	}
-	return arr
 }
 
 // GetSourceCategories 获取分类包括所有的上级
