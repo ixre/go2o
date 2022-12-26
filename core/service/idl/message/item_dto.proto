@@ -139,13 +139,19 @@ message SaveItemRequest {
 
 // 商品数据响应
 message SItemDataResponse {
+  // 商品编号
   int64 itemId = 1;
+  // 产品编号
   int64 productId = 2;
+  // 供货商编号
   int64 vendorId = 3;
+  // 店铺编号
   int64 shopId = 4;
+  // 分类编号
   int64 categoryId = 5;
   // 标题
   string title = 6;
+  // 副标题
   string shortTitle = 7;
   // 货号
   string goodsNo = 8;
@@ -162,7 +168,9 @@ message SItemDataResponse {
   // 价格区间
   string priceRange = 14;
   int64 goodsId = 15;
+  // SkuId
   int64 skuId = 16;
+  // 是否为赠品
   bool isPresent = 17;
   // 促销标志
   int32 promotionFlag = 18;
@@ -178,10 +186,15 @@ message SItemDataResponse {
   string reviewRemark = 23;
 
   //todo: 对比SGoods多出的字段
-  sint64 brandId = 24;
+  // 品牌编号
+  int64 brandId = 24;
+  // 商品编码
   string code = 25;
+  // 运费模板
   int64 expressTid = 26;
+  // Sku数据
   repeated SSku skuArray = 27;
+  // 会员价
   repeated SLevelPrice levelPrices = 28;
 }
 
