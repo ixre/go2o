@@ -204,9 +204,10 @@ func (p *productImpl) mergeAttr(src []*product.AttrValue, dst *[]*product.AttrVa
 // 重建Attr数组，将信息附加
 func (p *productImpl) rebuildAttrArray(arr *[]*product.AttrValue) error {
 	for _, v := range *arr {
+		dataArr := strings.Split(v.AttrData, ",")
 		vArr := util.StrExt.I32Slice(v.AttrData, ",") // AttrId数组
 		itemArr := make([]*promodel.AttrItem, 0)      // AttrItem数组
-		shouldReview := false                         // 是否存在已删除的Attr,而需要更新AttrData
+		shouldReview := len(dataArr) != len(vArr)     // 是否存在已删除的Attr,而需要更新AttrData
 		v.AttrWord = ""
 		for i, v2 := range vArr {
 			if i != 0 {
