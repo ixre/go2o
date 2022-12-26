@@ -14,6 +14,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 )
@@ -115,27 +116,23 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		VendorId:   src.VendorId,
 		BrandId:    int64(src.BrandId),
 		Thumbnail:  src.Image,
-		//ShopId:       src.ShopId,
-		//ShopCatId:    src.ShopCatId,
+		ShopId:     src.ShopId,
 		ExpressTid: int64(src.ExpressTid),
 		Title:      src.Title,
-		//ShortTitle:   src.ShortTitle,
-		Code: src.Code,
+		ShortTitle: src.ShortTitle,
+		Code:       src.Code,
 		//SaleNum:      src.SaleNum,
 		//SkuNum:       src.SkuNum,
-		//SkuId:        src.SkuId,
-		//Cost:         float64(src.Cost),
-		Price: src.Price,
-		//IsPresent:    src.IsPresent,
-		PriceRange: src.PriceRange,
-		StockNum:   src.StockNum,
-		//RetailPrice:  float64(src.RetailPrice),
+		Price:       src.Price,
+		IsPresent:   src.IsPresent == 1,
+		PriceRange:  src.PriceRange,
+		StockNum:    src.StockNum,
+		RetailPrice: src.RetailPrice,
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
 		ShelveState:  src.ShelveState,
 		ReviewState:  src.ReviewState,
 		ReviewRemark: src.ReviewRemark,
-		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
 	}
 	if src.SkuArray != nil {
@@ -145,6 +142,19 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		}
 	}
 	return it
+}
+
+func AttrArrayDto(src []*product.AttrValue)[]*proto.SAttr{
+	var dst = make([]*proto.SAttr, len(src))
+	for i, v := range src {
+		dst[i] = &proto.SAttr{
+			Id:       v.Id,
+			AttrId:   v.AttrId,
+			AttrData: v.AttrData,
+			AttrWord: v.AttrWord,
+		}
+	}
+	return dst	
 }
 
 func SkuArrayDto(src []*item.Sku) []*proto.SSku {
@@ -358,11 +368,11 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
 		ConsigneeModified: src.ConsigneeModified == 1,
-		BuyerComment: d.BuyerComment,
-		SubmitTime:   src.CreateTime,
-		Status:       int32(d.Status),
-		Items:        make([]*proto.SOrderItem, len(d.Items)),
-		Data:         src.Data,
+		BuyerComment:      d.BuyerComment,
+		SubmitTime:        src.CreateTime,
+		Status:            int32(d.Status),
+		Items:             make([]*proto.SOrderItem, len(d.Items)),
+		Data:              src.Data,
 	}
 	if d.Items != nil {
 		for i, v := range d.Items {

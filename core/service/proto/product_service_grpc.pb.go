@@ -53,7 +53,7 @@ type ProductServiceClient interface {
 	SaveCategory(ctx context.Context, in *SaveProductCategoryRequest, opts ...grpc.CallOption) (*SaveProductCategoryResponse, error)
 	// 获取分类树形数据
 	GetCategoryTreeNode(ctx context.Context, in *CategoryTreeRequest, opts ...grpc.CallOption) (*CategoryTreeResponse, error)
-	GetSourceCategories(ctx context.Context, in *CategoryIdRequest, opts ...grpc.CallOption) (*SourceCategoriesResponse, error)
+	FindParentCategory(ctx context.Context, in *CategoryIdRequest, opts ...grpc.CallOption) (*CategoriesResponse, error)
 	// 获取产品值
 	GetProduct(ctx context.Context, in *ProductId, opts ...grpc.CallOption) (*SProduct, error)
 	// 保存产品
@@ -198,9 +198,9 @@ func (c *productServiceClient) GetCategoryTreeNode(ctx context.Context, in *Cate
 	return out, nil
 }
 
-func (c *productServiceClient) GetSourceCategories(ctx context.Context, in *CategoryIdRequest, opts ...grpc.CallOption) (*SourceCategoriesResponse, error) {
-	out := new(SourceCategoriesResponse)
-	err := c.cc.Invoke(ctx, "/ProductService/GetSourceCategories", in, out, opts...)
+func (c *productServiceClient) FindParentCategory(ctx context.Context, in *CategoryIdRequest, opts ...grpc.CallOption) (*CategoriesResponse, error) {
+	out := new(CategoriesResponse)
+	err := c.cc.Invoke(ctx, "/ProductService/FindParentCategory", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +278,7 @@ type ProductServiceServer interface {
 	SaveCategory(context.Context, *SaveProductCategoryRequest) (*SaveProductCategoryResponse, error)
 	// 获取分类树形数据
 	GetCategoryTreeNode(context.Context, *CategoryTreeRequest) (*CategoryTreeResponse, error)
-	GetSourceCategories(context.Context, *CategoryIdRequest) (*SourceCategoriesResponse, error)
+	FindParentCategory(context.Context, *CategoryIdRequest) (*CategoriesResponse, error)
 	// 获取产品值
 	GetProduct(context.Context, *ProductId) (*SProduct, error)
 	// 保存产品
@@ -336,8 +336,8 @@ func (UnimplementedProductServiceServer) SaveCategory(context.Context, *SaveProd
 func (UnimplementedProductServiceServer) GetCategoryTreeNode(context.Context, *CategoryTreeRequest) (*CategoryTreeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCategoryTreeNode not implemented")
 }
-func (UnimplementedProductServiceServer) GetSourceCategories(context.Context, *CategoryIdRequest) (*SourceCategoriesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSourceCategories not implemented")
+func (UnimplementedProductServiceServer) FindParentCategory(context.Context, *CategoryIdRequest) (*CategoriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindParentCategory not implemented")
 }
 func (UnimplementedProductServiceServer) GetProduct(context.Context, *ProductId) (*SProduct, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
@@ -616,20 +616,20 @@ func _ProductService_GetCategoryTreeNode_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_GetSourceCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductService_FindParentCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CategoryIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).GetSourceCategories(ctx, in)
+		return srv.(ProductServiceServer).FindParentCategory(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ProductService/GetSourceCategories",
+		FullMethod: "/ProductService/FindParentCategory",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).GetSourceCategories(ctx, req.(*CategoryIdRequest))
+		return srv.(ProductServiceServer).FindParentCategory(ctx, req.(*CategoryIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -770,8 +770,8 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ProductService_GetCategoryTreeNode_Handler,
 		},
 		{
-			MethodName: "GetSourceCategories",
-			Handler:    _ProductService_GetSourceCategories_Handler,
+			MethodName: "FindParentCategory",
+			Handler:    _ProductService_FindParentCategory_Handler,
 		},
 		{
 			MethodName: "GetProduct",

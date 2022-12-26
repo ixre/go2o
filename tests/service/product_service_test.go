@@ -33,8 +33,8 @@ func TestCategoryInitialTreeNode(t *testing.T) {
 }
 
 func TestSourceCategories(t *testing.T) {
-	list, err := impl.ProductService.GetSourceCategories(context.TODO(), &proto.CategoryIdRequest{
-		Id: 2174,
+	list, err := impl.ProductService.FindParentCategory(context.TODO(), &proto.CategoryIdRequest{
+		CategoryId: 2174,
 	})
 	if err != nil {
 		t.Error(err)

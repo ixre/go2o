@@ -11,14 +11,17 @@ package product
 
 import (
 	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
-	"github.com/ixre/go2o/core/domain/interface/product"
-	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	"github.com/ixre/gof/util"
+	"log"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/item"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/util"
 )
 
 var _ product.IProduct = new(productImpl)
@@ -165,11 +168,11 @@ func (p *productImpl) Save() (i int64, err error) {
 		if p.GetAggregateRootId() <= 0 {
 			p.value.Id, err = util.I64Err(p.repo.SaveProduct(p.value))
 			if err != nil {
-				goto R
+				return p.value.Id, err
 			}
 		}
 		if err = p.saveAttr(p.value.Attrs); err != nil {
-			goto R
+			return p.value.Id, err
 		}
 	}
 	// 自动生成货号
@@ -180,9 +183,7 @@ func (p *productImpl) Save() (i int64, err error) {
 		l := len(cs)
 		p.value.Code = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
-	p.value.Id, err = util.I64Err(p.repo.SaveProduct(p.value))
-R:
-	return p.value.Id, err
+	return util.I64Err(p.repo.SaveProduct(p.value))
 }
 
 // 合并属性
@@ -193,19 +194,24 @@ func (p *productImpl) mergeAttr(src []*product.AttrValue, dst *[]*product.AttrVa
 	to := *dst
 	sMap := make(map[int64]int64, len(src))
 	for _, v := range src {
-		sMap[v.AttrId] = v.ID
+		sMap[v.AttrId] = v.Id
 	}
 	for _, v := range to {
 		if id, ok := sMap[v.AttrId]; ok {
-			v.ID = id
+			v.Id = id
 		}
 	}
 }
 
 // 重建Attr数组，将信息附加
-func (p *productImpl) RebuildAttrArray(arr *[]*product.AttrValue) error {
+func (p *productImpl) rebuildAttrArray(arr *[]*product.AttrValue) error {
+	log.Println(typeconv.MustJson(arr))
 	for _, v := range *arr {
-		vArr := util.StrExt.I32Slice(v.AttrData, ",")
+		dataArr := strings.Split(v.AttrData, ",")
+		vArr := util.StrExt.I32Slice(v.AttrData, ",") // AttrId数组
+		itemArr := make([]*promodel.AttrItem, 0)      // AttrItem数组
+		shouldReview := len(dataArr) != len(vArr)     // 是否存在已删除的Attr,而需要更新AttrData
+		v.AttrWord = ""
 		for i, v2 := range vArr {
 			if i != 0 {
 				v.AttrWord += ","
@@ -213,6 +219,19 @@ func (p *productImpl) RebuildAttrArray(arr *[]*product.AttrValue) error {
 			it := p.modelRepo.GetAttrItem(v2)
 			if it != nil {
 				v.AttrWord += it.Value
+				itemArr = append(itemArr, it)
+			} else {
+				shouldReview = true
+			}
+		}
+		// 值不存在, 需要对AttrData重新赋值,去除不存在的值
+		if shouldReview {
+			v.AttrData = ""
+			for i, a := range itemArr {
+				if i != 0 {
+					v.AttrData += ","
+				}
+				v.AttrData += strconv.Itoa(int(a.Id))
 			}
 		}
 	}
@@ -227,19 +246,19 @@ func (p *productImpl) saveAttr(arr []*product.AttrValue) (err error) {
 	// 合并属性
 	p.mergeAttr(old, &p.value.Attrs)
 	// 设置属性值
-	if err = p.RebuildAttrArray(&arr); err != nil {
+	if err = p.rebuildAttrArray(&arr); err != nil {
 		return err
 	}
 	// 分析当前项目并加入到MAP中
 	var delList []int64
 	currMap := make(map[int64]*product.AttrValue, len(arr))
 	for _, v := range arr {
-		currMap[v.ID] = v
+		currMap[v.Id] = v
 	}
 	// 筛选出要删除的项
 	for _, v := range old {
-		if currMap[v.ID] == nil {
-			delList = append(delList, v.ID)
+		if currMap[v.Id] == nil || v.AttrId == 0 {
+			delList = append(delList, v.Id)
 		}
 	}
 	// 删除项
@@ -252,7 +271,7 @@ func (p *productImpl) saveAttr(arr []*product.AttrValue) (err error) {
 			v.ProductId = pk
 		}
 		if v.ProductId == pk && v.AttrData != "" {
-			v.ID, err = util.I64Err(p.repo.SaveAttr(v))
+			v.Id, err = util.I64Err(p.repo.SaveAttr(v))
 		}
 	}
 	return err

@@ -143,7 +143,7 @@ func (p *productService) GetCategory(_ context.Context, req *proto.GetCategoryRe
 		}
 		return cat, nil
 	}
-	return nil, nil
+	return nil, product.ErrNoSuchCategory
 }
 
 // DeleteCategory 删除分类
@@ -235,7 +235,6 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 	return p.error(err), nil
 }
 
-
 // SaveModel 保存产品模型
 func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
 	var pm promodel.IProductModel
@@ -312,26 +311,11 @@ func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProduct
 	return p.error(err), nil
 }
 
-// GetModelSpecs 获取模型规格
-func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
-	m := p.pmRepo.CreateModel(&promodel.ProductModel{ID: proModel})
-	return m.Specs()
-}
-
-// GetCatBrands 获取分类关联的品牌
-func (p *productService) GetCatBrands(catId int32) []*promodel.ProductBrand {
-	arr := p.catRepo.GlobCatService().RelationBrands(int(catId))
-	for _, v := range arr {
-		v.Image = format.GetResUrl(v.Image)
-	}
-	return arr
-}
-
-// GetSourceCategories 获取分类包括所有的上级
-func (p *productService) GetSourceCategories(c context.Context, request *proto.CategoryIdRequest) (*proto.SourceCategoriesResponse, error) {
+// FindParentCategory 获取分类包括所有的上级
+func (p *productService) FindParentCategory(c context.Context, request *proto.CategoryIdRequest) (*proto.CategoriesResponse, error) {
 	s := p.catRepo.GlobCatService()
 	list := s.GetCategories()
-	cat := s.GetCategory(int(request.Id))
+	cat := s.GetCategory(int(request.CategoryId))
 	arr := make([]*proto.SProductCategory, 0)
 	if cat != nil {
 		findParent := func(pid int64, arr []product.ICategory) int64 {
@@ -344,7 +328,7 @@ func (p *productService) GetSourceCategories(c context.Context, request *proto.C
 			return pid
 		}
 
-		for pid := request.Id; pid > 0; {
+		for pid := request.CategoryId; pid > 0; {
 			id := findParent(pid, list)
 			if id == pid {
 				break
@@ -356,7 +340,7 @@ func (p *productService) GetSourceCategories(c context.Context, request *proto.C
 		}
 		arr = append(arr, p.parseCategoryDto(cat.GetValue()))
 	}
-	return &proto.SourceCategoriesResponse{List: arr}, nil
+	return &proto.CategoriesResponse{List: arr}, nil
 }
 
 // GetCategoryTreeNode 分类
@@ -752,7 +736,7 @@ func (p *productService) parseProductSpecItem(v *proto.SProductSpecItem) *promod
 
 func (p *productService) parseProductAttrValueDto(v *product.AttrValue) *proto.SProductAttrValue {
 	return &proto.SProductAttrValue{
-		Id:       v.ID,
+		Id:       v.Id,
 		AttrId:   v.AttrId,
 		AttrName: v.AttrName,
 		AttrData: v.AttrData,
@@ -781,7 +765,7 @@ func (p *productService) parseProductSpecItemDto(v *promodel.SpecItem) *proto.SP
 
 func (p *productService) parseProductAttrValue(v *proto.SProductAttrValue) *product.AttrValue {
 	return &product.AttrValue{
-		ID:       v.Id,
+		Id:       v.Id,
 		AttrName: v.AttrName,
 		AttrId:   v.AttrId,
 		AttrData: v.AttrData,
