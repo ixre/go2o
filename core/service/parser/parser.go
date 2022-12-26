@@ -14,6 +14,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
 )
@@ -141,6 +142,19 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		}
 	}
 	return it
+}
+
+func AttrArrayDto(src []*product.AttrValue)[]*proto.SAttr{
+	var dst = make([]*proto.SAttr, len(src))
+	for i, v := range src {
+		dst[i] = &proto.SAttr{
+			Id:       v.Id,
+			AttrId:   v.AttrId,
+			AttrData: v.AttrData,
+			AttrWord: v.AttrWord,
+		}
+	}
+	return dst	
 }
 
 func SkuArrayDto(src []*item.Sku) []*proto.SSku {

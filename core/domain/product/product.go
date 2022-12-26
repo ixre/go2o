@@ -11,14 +11,15 @@ package product
 
 import (
 	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
-	"github.com/ixre/go2o/core/domain/interface/product"
-	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	"github.com/ixre/gof/util"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/item"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/gof/util"
 )
 
 var _ product.IProduct = new(productImpl)
@@ -193,11 +194,11 @@ func (p *productImpl) mergeAttr(src []*product.AttrValue, dst *[]*product.AttrVa
 	to := *dst
 	sMap := make(map[int64]int64, len(src))
 	for _, v := range src {
-		sMap[v.AttrId] = v.ID
+		sMap[v.AttrId] = v.Id
 	}
 	for _, v := range to {
 		if id, ok := sMap[v.AttrId]; ok {
-			v.ID = id
+			v.Id = id
 		}
 	}
 }
@@ -234,12 +235,12 @@ func (p *productImpl) saveAttr(arr []*product.AttrValue) (err error) {
 	var delList []int64
 	currMap := make(map[int64]*product.AttrValue, len(arr))
 	for _, v := range arr {
-		currMap[v.ID] = v
+		currMap[v.Id] = v
 	}
 	// 筛选出要删除的项
 	for _, v := range old {
-		if currMap[v.ID] == nil {
-			delList = append(delList, v.ID)
+		if currMap[v.Id] == nil {
+			delList = append(delList, v.Id)
 		}
 	}
 	// 删除项
@@ -252,7 +253,7 @@ func (p *productImpl) saveAttr(arr []*product.AttrValue) (err error) {
 			v.ProductId = pk
 		}
 		if v.ProductId == pk && v.AttrData != "" {
-			v.ID, err = util.I64Err(p.repo.SaveAttr(v))
+			v.Id, err = util.I64Err(p.repo.SaveAttr(v))
 		}
 	}
 	return err

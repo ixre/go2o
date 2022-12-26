@@ -12,14 +12,15 @@ package repos
 import (
 	"database/sql"
 	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"log"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	proImpl "github.com/ixre/go2o/core/domain/product"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
 )
 
 var _ product.IProductRepo = new(productRepo)
@@ -166,7 +167,7 @@ func (p *productRepo) SelectAttr(where string, v ...interface{}) []*product.Attr
 
 // Save ProAttrInfo
 func (p *productRepo) SaveAttr(v *product.AttrValue) (int, error) {
-	id, err := orm.Save(p.o, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")
 	}

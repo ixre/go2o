@@ -12,10 +12,13 @@ package impl
 import (
 	"context"
 	"errors"
+	"strconv"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
@@ -24,8 +27,6 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
-	"strconv"
-	"strings"
 )
 
 var _ proto.ItemServiceServer = new(itemService)
@@ -66,9 +67,9 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemD
 		ret := parser.ItemDataDto(item.GetValue())
 		skuArr := item.SkuArray()
 		ret.Images = item.Images()
+		ret.AttrArray = parser.AttrArrayDto(item.Product().Attr())
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
-		//specArr := item.SpecArray()
 		return ret, nil
 	}
 	return nil, nil

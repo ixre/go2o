@@ -736,7 +736,7 @@ func (p *productService) parseProductSpecItem(v *proto.SProductSpecItem) *promod
 
 func (p *productService) parseProductAttrValueDto(v *product.AttrValue) *proto.SProductAttrValue {
 	return &proto.SProductAttrValue{
-		Id:       v.ID,
+		Id:       v.Id,
 		AttrId:   v.AttrId,
 		AttrName: v.AttrName,
 		AttrData: v.AttrData,
@@ -765,7 +765,7 @@ func (p *productService) parseProductSpecItemDto(v *promodel.SpecItem) *proto.SP
 
 func (p *productService) parseProductAttrValue(v *proto.SProductAttrValue) *product.AttrValue {
 	return &product.AttrValue{
-		ID:       v.Id,
+		Id:       v.Id,
 		AttrName: v.AttrName,
 		AttrId:   v.AttrId,
 		AttrData: v.AttrData,

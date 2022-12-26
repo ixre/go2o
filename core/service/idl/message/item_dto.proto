@@ -77,11 +77,24 @@ message SGoods {
   string code = 21;
 }
 
+
+/** 产品属性 */
+message SAttr {
+  // 编号
+  int64 id = 1;
+  // 属性编号
+  int64 attrId = 2;
+  // 属性值
+  string attrData = 3;
+  // 属性文本
+  string attrWord = 4;
+}
+
 /** SKU */
 message SSku {
-  sint64 skuId = 1;
-  sint64 itemId = 2;
-  sint64 productId = 3;
+  int64 skuId = 1;
+  int64 itemId = 2;
+  int64 productId = 3;
   string title = 4;
   string image = 5;
   string specData = 6;
@@ -90,10 +103,10 @@ message SSku {
   int64 retailPrice = 9;
   int64 price = 10;
   int64 cost = 11;
-  sint32 weight = 12;
-  sint32 bulk = 13;
-  sint32 stock = 14;
-  sint32 saleNum = 15;
+  int32 weight = 12;
+  int32 bulk = 13;
+  int32 stock = 14;
+  int32 saleNum = 15;
 }
 
 // 保存商品请求
@@ -192,10 +205,12 @@ message SItemDataResponse {
   string code = 25;
   // 运费模板
   int64 expressTid = 26;
+  // 商品属性
+  repeated SAttr attrArray = 27;
   // Sku数据
-  repeated SSku skuArray = 27;
+  repeated SSku skuArray = 28;
   // 会员价
-  repeated SLevelPrice levelPrices = 28;
+  repeated SLevelPrice levelPrices = 29;
 }
 
 
