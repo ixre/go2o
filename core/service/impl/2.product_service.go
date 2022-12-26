@@ -311,11 +311,11 @@ func (p *productService) DeleteProduct(_ context.Context, r *proto.DeleteProduct
 	return p.error(err), nil
 }
 
-// GetSourceCategories 获取分类包括所有的上级
-func (p *productService) GetSourceCategories(c context.Context, request *proto.CategoryIdRequest) (*proto.SourceCategoriesResponse, error) {
+// FindParentCategory 获取分类包括所有的上级
+func (p *productService) FindParentCategory(c context.Context, request *proto.CategoryIdRequest) (*proto.CategoriesResponse, error) {
 	s := p.catRepo.GlobCatService()
 	list := s.GetCategories()
-	cat := s.GetCategory(int(request.Id))
+	cat := s.GetCategory(int(request.CategoryId))
 	arr := make([]*proto.SProductCategory, 0)
 	if cat != nil {
 		findParent := func(pid int64, arr []product.ICategory) int64 {
@@ -328,7 +328,7 @@ func (p *productService) GetSourceCategories(c context.Context, request *proto.C
 			return pid
 		}
 
-		for pid := request.Id; pid > 0; {
+		for pid := request.CategoryId; pid > 0; {
 			id := findParent(pid, list)
 			if id == pid {
 				break
@@ -340,7 +340,7 @@ func (p *productService) GetSourceCategories(c context.Context, request *proto.C
 		}
 		arr = append(arr, p.parseCategoryDto(cat.GetValue()))
 	}
-	return &proto.SourceCategoriesResponse{List: arr}, nil
+	return &proto.CategoriesResponse{List: arr}, nil
 }
 
 // GetCategoryTreeNode 分类

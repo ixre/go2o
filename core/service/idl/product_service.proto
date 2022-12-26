@@ -55,7 +55,7 @@ service ProductService {
     // 获取分类树形数据
     rpc GetCategoryTreeNode (CategoryTreeRequest) returns (CategoryTreeResponse) {
     }
-    rpc GetSourceCategories(CategoryIdRequest) returns(SourceCategoriesResponse) {}
+    rpc FindParentCategory(CategoryIdRequest) returns(CategoriesResponse) {}
     // 分类树形
     //rpc CategoryTree(CategoryParentId)returns(SProductCategory){}
     // 获取分类关联的品牌
@@ -82,7 +82,7 @@ service ProductService {
 }
 
 message CategoryIdRequest{
-    int64 id = 1;
+    int64 categoryId = 1;
 }
 
 message DeleteProductRequest {
@@ -340,7 +340,7 @@ message CategoryTreeResponse{
 }
 
 // 分类来源响应
-message SourceCategoriesResponse{
+message CategoriesResponse{
     repeated SProductCategory list = 1;
 }
 
