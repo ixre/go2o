@@ -11,6 +11,7 @@ package product
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -19,6 +20,7 @@ import (
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 )
 
@@ -203,6 +205,7 @@ func (p *productImpl) mergeAttr(src []*product.AttrValue, dst *[]*product.AttrVa
 
 // 重建Attr数组，将信息附加
 func (p *productImpl) rebuildAttrArray(arr *[]*product.AttrValue) error {
+	log.Println(typeconv.MustJson(arr))
 	for _, v := range *arr {
 		dataArr := strings.Split(v.AttrData, ",")
 		vArr := util.StrExt.I32Slice(v.AttrData, ",") // AttrId数组
@@ -222,8 +225,8 @@ func (p *productImpl) rebuildAttrArray(arr *[]*product.AttrValue) error {
 			}
 		}
 		// 值不存在, 需要对AttrData重新赋值,去除不存在的值
-		v.AttrData = ""
 		if shouldReview {
+			v.AttrData = ""
 			for i, a := range itemArr {
 				if i != 0 {
 					v.AttrData += ","
