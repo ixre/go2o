@@ -143,7 +143,7 @@ func (p *productService) GetCategory(_ context.Context, req *proto.GetCategoryRe
 		}
 		return cat, nil
 	}
-	return nil, nil
+	return nil, product.ErrNoSuchCategory
 }
 
 // DeleteCategory 删除分类
