@@ -31,6 +31,11 @@ type queryService struct {
 	proto.UnimplementedQueryServiceServer
 }
 
+// SummaryStatistics implements proto.QueryServiceServer
+func (*queryService) SummaryStatistics(context.Context, *proto.SummaryStatisticsRequest) (*proto.SummaryStatisticsResponse, error) {
+	panic("unimplemented")
+}
+
 func NewQueryService(o orm.Orm, s storage.Interface) *queryService {
 	shopQuery := query.NewShopQuery(o, s)
 	return &queryService{
