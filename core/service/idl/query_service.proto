@@ -9,6 +9,9 @@ option java_package = "com.github.go2o.rpc";
 service QueryService {
     // 汇总统计
     rpc SummaryStatistics(SummaryStatisticsRequest)returns(SummaryStatisticsResponse);
+    /** 获取会员的订单状态及其数量 */
+    rpc MemberStatistics (MemberStatisticsRequest) returns (MemberStatisticsResponse) {
+    }
     // 获取分页店铺数据
     rpc PagingShops (QueryPagingShopRequest) returns (QueryPagingShopsResponse);
     // 查询分页普通订单
@@ -32,6 +35,7 @@ service QueryService {
     // 获取分页店铺收藏
     rpc QueryMemberFavoriteGoods (FavoriteQueryRequest) returns (PagingGoodsFavoriteResponse) {
     }
+    
 }
 
 message FavoriteQueryRequest {
@@ -188,4 +192,23 @@ message SummaryStatisticsResponse{
     int64 awaitShipmentOrders = 5;
     // 待审核提现申请数量
     int64 awaitReviewWithdrawRequests = 6;
+}
+
+
+// 会员订单统计申请
+message MemberStatisticsRequest{
+    int64 memberId = 1;
+}
+
+
+// 会员订单统计响应
+message MemberStatisticsResponse {
+    // 待支付订单数
+    int32 awaitPaymentOrders = 1;
+    // 待发货订单数
+    int32 awaitShipmentOrders = 2; 
+    // 待收货订单数
+    int32 awaitReceiveOrders = 3;
+    // 已完成数量
+    int32 completedOrders = 4;
 }

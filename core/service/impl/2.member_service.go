@@ -266,15 +266,6 @@ func (s *memberService) IsFavored(c context.Context, r *proto.FavoriteRequest) (
 	return &proto.Bool{Value: b}, nil
 }
 
-// OrdersQuantity 获取会员的订单状态及其数量
-func (s *memberService) OrdersQuantity(_ context.Context, id *proto.MemberIdRequest) (*proto.OrderQuantityMapResponse, error) {
-	ret := make(map[int32]int32, 0)
-	for k, v := range s.query.OrdersQuantity(id.MemberId) {
-		ret[int32(k)] = int32(v)
-	}
-	return &proto.OrderQuantityMapResponse{Data: ret}, nil
-}
-
 // 获取所有会员等级
 func (s *memberService) GetMemberLevels() []*member.Level {
 	return s.repo.GetManager().LevelManager().GetLevelSet()

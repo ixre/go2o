@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 
+	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
@@ -32,8 +33,22 @@ type queryService struct {
 }
 
 // SummaryStatistics implements proto.QueryServiceServer
-func (*queryService) SummaryStatistics(context.Context, *proto.SummaryStatisticsRequest) (*proto.SummaryStatisticsResponse, error) {
+func (q *queryService) SummaryStatistics(context.Context, *proto.SummaryStatisticsRequest) (*proto.SummaryStatisticsResponse, error) {
 	panic("unimplemented")
+}
+
+// MemberStatistics 获取会员的订单状态及其数量
+func (q *queryService) MemberStatistics(_ context.Context, req *proto.MemberStatisticsRequest) (*proto.MemberStatisticsResponse, error) {
+	ret := make(map[int32]int32, 0)
+	for k, v := range q.memberQuery.OrdersQuantity(req.MemberId) {
+		ret[int32(k)] = int32(v)
+	}
+	return &proto.MemberStatisticsResponse{
+		AwaitPaymentOrders:  ret[int32(order.StatAwaitingPayment)],
+		AwaitShipmentOrders: ret[int32(order.StatAwaitingShipment)],
+		AwaitReceiveOrders:  ret[int32(order.StatShipped)],
+		CompletedOrders:     ret[int32(order.StatCompleted)],
+	}, nil
 }
 
 func NewQueryService(o orm.Orm, s storage.Interface) *queryService {
