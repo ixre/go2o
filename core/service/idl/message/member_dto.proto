@@ -200,10 +200,6 @@ message ChangeInviterRequest {
   sint64 inviterId = 2;
 }
 
-message OrderQuantityMapResponse {
-  map<sint32, sint32> data = 1;
-}
-
 message GetTokenRequest {
   sint64 memberId = 1;
   bool reset = 2;

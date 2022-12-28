@@ -118,8 +118,6 @@ type MemberServiceClient interface {
 	CheckProfileCompleted(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Bool, error)
 	// * 更改邀请人
 	ChangeInviterId(ctx context.Context, in *ChangeInviterRequest, opts ...grpc.CallOption) (*Result, error)
-	// * 获取会员的订单状态及其数量
-	OrdersQuantity(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*OrderQuantityMapResponse, error)
 	// 升级为高级会员
 	Premium(ctx context.Context, in *PremiumRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取会员的会员Token,reset表示是否重置token
@@ -587,15 +585,6 @@ func (c *memberServiceClient) ChangeInviterId(ctx context.Context, in *ChangeInv
 	return out, nil
 }
 
-func (c *memberServiceClient) OrdersQuantity(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*OrderQuantityMapResponse, error) {
-	out := new(OrderQuantityMapResponse)
-	err := c.cc.Invoke(ctx, "/MemberService/OrdersQuantity", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *memberServiceClient) Premium(ctx context.Context, in *PremiumRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/MemberService/Premium", in, out, opts...)
@@ -1011,8 +1000,6 @@ type MemberServiceServer interface {
 	CheckProfileCompleted(context.Context, *Int64) (*Bool, error)
 	// * 更改邀请人
 	ChangeInviterId(context.Context, *ChangeInviterRequest) (*Result, error)
-	// * 获取会员的订单状态及其数量
-	OrdersQuantity(context.Context, *MemberIdRequest) (*OrderQuantityMapResponse, error)
 	// 升级为高级会员
 	Premium(context.Context, *PremiumRequest) (*Result, error)
 	// 获取会员的会员Token,reset表示是否重置token
@@ -1218,9 +1205,6 @@ func (UnimplementedMemberServiceServer) CheckProfileCompleted(context.Context, *
 }
 func (UnimplementedMemberServiceServer) ChangeInviterId(context.Context, *ChangeInviterRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeInviterId not implemented")
-}
-func (UnimplementedMemberServiceServer) OrdersQuantity(context.Context, *MemberIdRequest) (*OrderQuantityMapResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OrdersQuantity not implemented")
 }
 func (UnimplementedMemberServiceServer) Premium(context.Context, *PremiumRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Premium not implemented")
@@ -2114,24 +2098,6 @@ func _MemberService_ChangeInviterId_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_OrdersQuantity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MemberIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemberServiceServer).OrdersQuantity(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/MemberService/OrdersQuantity",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).OrdersQuantity(ctx, req.(*MemberIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MemberService_Premium_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PremiumRequest)
 	if err := dec(in); err != nil {
@@ -2940,10 +2906,6 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ChangeInviterId",
 			Handler:    _MemberService_ChangeInviterId_Handler,
-		},
-		{
-			MethodName: "OrdersQuantity",
-			Handler:    _MemberService_OrdersQuantity_Handler,
 		},
 		{
 			MethodName: "Premium",
