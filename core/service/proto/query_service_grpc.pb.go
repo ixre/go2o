@@ -22,6 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryServiceClient interface {
+	// 汇总统计
+	SummaryStatistics(ctx context.Context, in *SummaryStatisticsRequest, opts ...grpc.CallOption) (*SummaryStatisticsResponse, error)
 	// 获取分页店铺数据
 	PagingShops(ctx context.Context, in *QueryPagingShopRequest, opts ...grpc.CallOption) (*QueryPagingShopsResponse, error)
 	// 查询分页普通订单
@@ -46,6 +48,15 @@ type queryServiceClient struct {
 
 func NewQueryServiceClient(cc grpc.ClientConnInterface) QueryServiceClient {
 	return &queryServiceClient{cc}
+}
+
+func (c *queryServiceClient) SummaryStatistics(ctx context.Context, in *SummaryStatisticsRequest, opts ...grpc.CallOption) (*SummaryStatisticsResponse, error) {
+	out := new(SummaryStatisticsResponse)
+	err := c.cc.Invoke(ctx, "/QueryService/SummaryStatistics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *queryServiceClient) PagingShops(ctx context.Context, in *QueryPagingShopRequest, opts ...grpc.CallOption) (*QueryPagingShopsResponse, error) {
@@ -124,6 +135,8 @@ func (c *queryServiceClient) QueryMemberFavoriteGoods(ctx context.Context, in *F
 // All implementations must embed UnimplementedQueryServiceServer
 // for forward compatibility
 type QueryServiceServer interface {
+	// 汇总统计
+	SummaryStatistics(context.Context, *SummaryStatisticsRequest) (*SummaryStatisticsResponse, error)
 	// 获取分页店铺数据
 	PagingShops(context.Context, *QueryPagingShopRequest) (*QueryPagingShopsResponse, error)
 	// 查询分页普通订单
@@ -147,6 +160,9 @@ type QueryServiceServer interface {
 type UnimplementedQueryServiceServer struct {
 }
 
+func (UnimplementedQueryServiceServer) SummaryStatistics(context.Context, *SummaryStatisticsRequest) (*SummaryStatisticsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SummaryStatistics not implemented")
+}
 func (UnimplementedQueryServiceServer) PagingShops(context.Context, *QueryPagingShopRequest) (*QueryPagingShopsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PagingShops not implemented")
 }
@@ -182,6 +198,24 @@ type UnsafeQueryServiceServer interface {
 
 func RegisterQueryServiceServer(s grpc.ServiceRegistrar, srv QueryServiceServer) {
 	s.RegisterService(&QueryService_ServiceDesc, srv)
+}
+
+func _QueryService_SummaryStatistics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SummaryStatisticsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).SummaryStatistics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QueryService/SummaryStatistics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).SummaryStatistics(ctx, req.(*SummaryStatisticsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _QueryService_PagingShops_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -335,6 +369,10 @@ var QueryService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "QueryService",
 	HandlerType: (*QueryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SummaryStatistics",
+			Handler:    _QueryService_SummaryStatistics_Handler,
+		},
 		{
 			MethodName: "PagingShops",
 			Handler:    _QueryService_PagingShops_Handler,
