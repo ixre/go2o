@@ -7,6 +7,8 @@ option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 service QueryService {
+    // 汇总统计
+    rpc SummaryStatistics(SummaryStatisticsRequest)returns(SummaryStatisticsResponse);
     // 获取分页店铺数据
     rpc PagingShops (QueryPagingShopRequest) returns (QueryPagingShopsResponse);
     // 查询分页普通订单
@@ -166,4 +168,24 @@ message MemberListSingle {
     //    GrowEarnings      int64 `db:"grow_earnings"`       // 当前收益金额
     //    GrowTotalEarnings int64 `db:"grow_total_earnings"` // 累积收益金额
     //    UpdateTime        int64   `db:"update_time"`
+}
+
+// 汇总统计请求
+message SummaryStatisticsRequest{
+}
+
+// 汇总统计响应
+message SummaryStatisticsResponse{
+    // 汇总总数
+    int64 totalMembers = 1;
+    // 今日注册会员数
+    int64 todayJoinMembers = 2;
+    // 今日登录数
+    int64 todayLoginMembers = 3;
+    // 今日新增订单数
+    int64 todayCreateOrders = 4;
+    // 待发货订单数
+    int64 awaitShipmentOrders = 5;
+    // 待审核提现申请数量
+    int64 awaitReviewWithdrawRequests = 6;
 }
