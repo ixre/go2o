@@ -151,9 +151,7 @@ service MemberService {
     /** 更改邀请人 */
     rpc ChangeInviterId (ChangeInviterRequest) returns (Result) {
     }
-    /** 获取会员的订单状态及其数量 */
-    rpc OrdersQuantity (MemberIdRequest) returns (OrderQuantityMapResponse) {
-    }
+   
 
     // 升级为高级会员
     rpc Premium (PremiumRequest) returns (Result) {
