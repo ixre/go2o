@@ -29,12 +29,21 @@ type queryService struct {
 	shopQuery   *query.ShopQuery
 	orderQuery  *query.OrderQuery
 	memberQuery *query.MemberQuery
+	statisticsQuery *query.StatisticsQuery
 	proto.UnimplementedQueryServiceServer
 }
 
 // SummaryStatistics implements proto.QueryServiceServer
 func (q *queryService) SummaryStatistics(context.Context, *proto.SummaryStatisticsRequest) (*proto.SummaryStatisticsResponse, error) {
-	panic("unimplemented")
+	s := q.statisticsQuery.QuerySummary()
+	return &proto.SummaryStatisticsResponse{
+		TotalMembers:                0,
+		TodayJoinMembers:            0,
+		TodayLoginMembers:           0,
+		TodayCreateOrders:           0,
+		AwaitShipmentOrders:         0,
+		AwaitReviewWithdrawRequests: 0,
+	},nil
 }
 
 // MemberStatistics 获取会员的订单状态及其数量
@@ -57,6 +66,7 @@ func NewQueryService(o orm.Orm, s storage.Interface) *queryService {
 		shopQuery:   shopQuery,
 		memberQuery: query.NewMemberQuery(o),
 		orderQuery:  query.NewOrderQuery(o),
+		statisticsQuery: query.NewStatisticsQuery(o,s),
 	}
 }
 
