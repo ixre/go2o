@@ -206,12 +206,16 @@ func (s *memberService) ChangePhone(_ context.Context, r *proto.ChangePhoneReque
 }
 
 // ChangeInviterId 更改邀请人
-func (s *memberService) ChangeInviterId(_ context.Context, r *proto.ChangeInviterRequest) (*proto.Result, error) {
+func (s *memberService) SetInviter(_ context.Context, r *proto.SetInviterRequest) (*proto.Result, error) {
 	im := s.repo.GetMember(r.MemberId)
 	if im == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	err := im.BindInviter(r.InviterId, true)
+	inviterId := s.repo.GetMemberIdByInviteCode(r.InviterCode)
+	if inviterId <= 0{
+		return s.result(member.ErrInvalidInviter),nil
+	}
+	err := im.BindInviter(inviterId, r.AllowChange)
 	return s.result(err), nil
 }
 

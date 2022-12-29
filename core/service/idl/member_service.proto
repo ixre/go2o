@@ -148,8 +148,8 @@ service MemberService {
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {
     }
-    /** 更改邀请人 */
-    rpc ChangeInviterId (ChangeInviterRequest) returns (Result) {
+    /** 设置或更改邀请人 */
+    rpc SetInviter (SetInviterRequest) returns (Result) {
     }
    
 

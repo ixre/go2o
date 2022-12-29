@@ -195,9 +195,13 @@ message ModifyPasswordRequest {
   string originPassword = 2;
   string newPassword = 3;
 }
-message ChangeInviterRequest {
-  sint64 memberId = 1;
-  sint64 inviterId = 2;
+message SetInviterRequest {
+  // 会员编号
+  int64 memberId = 1;
+  // 邀请码
+  string inviterCode = 2;
+  // 是否允许更改现有绑定人
+  bool allowChange = 3;
 }
 
 message GetTokenRequest {

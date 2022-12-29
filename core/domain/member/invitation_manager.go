@@ -32,7 +32,7 @@ func (i *invitationManager) UpdateInviter(inviterId int64, sync bool) error {
 	}
 	// 判断邀请人是否为下别的被邀请会员
 	if i.checkInvitation(id, inviterId) {
-		return member.ErrInvalidInviter
+		return member.ErrInvalidInviteLevel
 	}
 	if !sync {
 		return i.walkUpdateInvitation(id, rl)
