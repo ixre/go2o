@@ -75,3 +75,15 @@ ALTER TABLE "public".mm_member
   alter column code set default ''::character varying;
 
 DROP TABLE mm_balance_info;
+
+CREATE TABLE portal_nav_type (
+  id   serial NOT NULL, 
+  name varchar(20) NOT NULL, 
+  CONSTRAINT portal_nav_type_pkey1
+    PRIMARY KEY (id));
+COMMENT ON COLUMN "public".portal_nav_type.id IS '编号';
+COMMENT ON COLUMN "public".portal_nav_type.name IS '名称';
+INSERT INTO portal_nav_type (id, name)
+VALUES (1, 'PC商城');
+INSERT INTO portal_nav_type (id, name)
+VALUES (2, '移动商城');
