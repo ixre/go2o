@@ -492,7 +492,7 @@ message SAccount {
   int64 growAmount = 13;
   // 增利账户收益
   int64 growEarnings = 14;
-  //增利账户累计收益
+  // 增利账户累计收益
   int64 growTotalEarnings = 15;
   // 总消费金额
   int64 totalExpense = 16;
