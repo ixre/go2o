@@ -35,6 +35,19 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	}
 }
 
+func TestCheckMemberAccessToken(t *testing.T){
+	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIwIiwiZXhwIjoxNjcyMzQ0MDM2LCJpc3MiOiJnbzJvIiwic3ViIjoiZ28yby1hcGktand0In0.VQ2_Ft5v75KNqzh7MR3gy6BKj6F7kAmwuX1LObGTtF4"
+	ret,_ := impl.MemberService.CheckAccessToken(context.TODO(),&proto.CheckAccessTokenRequest{
+		AccessToken: accessToken,
+		ExpiresTime: 0,
+	})
+	if len(ret.Error) > 0{
+		t.Log(ret.Error)
+		t.FailNow()
+	}
+	t.Log("会员Id",ret.MemberId)
+}
+
 func TestPagingIntegralLog(t *testing.T) {
 	params := &proto.SPagingParams{
 		Parameters: nil,

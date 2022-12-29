@@ -212,8 +212,8 @@ func (s *memberService) SetInviter(_ context.Context, r *proto.SetInviterRequest
 		return s.result(member.ErrNoSuchMember), nil
 	}
 	inviterId := s.repo.GetMemberIdByInviteCode(r.InviterCode)
-	if inviterId <= 0{
-		return s.result(member.ErrInvalidInviter),nil
+	if inviterId <= 0 {
+		return s.result(member.ErrInvalidInviter), nil
 	}
 	err := im.BindInviter(inviterId, r.AllowChange)
 	return s.result(err), nil
