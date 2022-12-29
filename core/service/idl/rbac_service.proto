@@ -297,7 +297,7 @@ message SavePermUserRequest {
     /** 标志 */
     int32 flag = 4;
     /** 头像 */
-    string avatar = 5;
+    string portrait = 5;
     /** 昵称 */
     string nickName = 6;
     /** 性别 */
@@ -340,7 +340,7 @@ message SPermUser {
     /** 标志 */
     int32 flag = 4;
     /** 头像 */
-    string avatar = 5;
+    string portrait = 5;
     /** NickName */
     string nickName = 6;
     /** Gender */
@@ -383,7 +383,7 @@ message PagingPermUser {
     /** 标志 */
     int32 flag = 4;
     /** 头像 */
-    string avatar = 5;
+    string portrait = 5;
     /** 昵称 */
     string nickName = 6;
     /** 性别 */

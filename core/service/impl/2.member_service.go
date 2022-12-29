@@ -464,17 +464,14 @@ func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelU
 	return s.result(err), nil
 }
 
-// ChangeAvatar 上传会员头像
-func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) (*proto.Result, error) {
+// ChangeHeadPortrait 上传会员头像
+func (s *memberService) ChangeHeadPortrait(_ context.Context, r *proto.ChangePortraitRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m != nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	err := m.Profile().ChangeAvatar(r.AvatarURL)
-	if err != nil {
-		return s.error(err), nil
-	}
-	return s.success(nil), nil
+	err := m.Profile().ChangeHeadPortrait(r.PortraitUrl)
+	return s.result(err),nil
 }
 
 // Register 注册会员
@@ -1205,7 +1202,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 				MemberId: int64(rows[i].MemberId),
 				User:     rows[i].User,
 				Level:    rows[i].Level,
-				Avatar:   rows[i].Avatar,
+				Portrait:   rows[i].Avatar,
 				NickName: rows[i].NickName,
 				Phone:    rows[i].Phone,
 				//Im:            rows[i].Im,
@@ -1583,7 +1580,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
 		Flag:           int32(src.Flag),
-		Avatar:         src.Avatar,
+		Portrait:         src.Avatar,
 		Phone:          src.Phone,
 		Email:          src.Email,
 		Name:           src.Name,
@@ -1597,7 +1594,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 	return &proto.SProfile{
 		MemberId:   src.MemberId,
 		Name:       src.Name,
-		Avatar:     src.Avatar,
+		Portrait:     src.Avatar,
 		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
@@ -1621,7 +1618,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
 		Name:                src.Name,
-		Avatar:              src.Avatar,
+		Portrait:              src.Avatar,
 		Exp:                 int32(src.Exp),
 		Level:               int32(src.Level),
 		LevelName:           src.LevelName,
@@ -1683,7 +1680,7 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 		RealName:       src.RealName,
 		User:           src.User,
 		Pwd:            src.Password,
-		Avatar:         src.Avatar,
+		Avatar:         src.Portrait,
 		Exp:            int(src.Exp),
 		Level:          int(src.Level),
 		InviteCode:     src.InviteCode,
@@ -1702,7 +1699,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 	return &member.Profile{
 		MemberId:   src.MemberId,
 		Name:       src.Name,
-		Avatar:     src.Avatar,
+		Avatar:     src.Portrait,
 		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,

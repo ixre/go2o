@@ -369,9 +369,12 @@ message SMemberLevel {
   sint32 allowUpgrade = 7;
 }
 
-message AvatarRequest {
+// 更换头像申请
+message ChangePortraitRequest {
+  // 会员编号
   sint64 memberId = 1;
-  string avatarURL = 2;
+  // 头像
+  string portraitUrl = 2;
 }
 
 /** 会员 */
@@ -391,7 +394,7 @@ message SMember {
   /** 会员编码  */
   string userCode = 7;
   /** 会员头像 */
-  string avatar = 8;
+  string portrait = 8;
   /** 邀请码 */
   string inviteCode = 9;
   /** 注册IP */
@@ -422,7 +425,7 @@ message SMember {
 message SProfile {
   sint64 memberId = 1;
   string name = 2;
-  string avatar = 3;
+  string portrait = 3;
   sint32 gender = 4;
   string birthDay = 5;
   string phone = 6;
@@ -469,7 +472,7 @@ message SAccount {
 
 message SComplexMember {
   string name = 1;
-  string avatar = 2;
+  string portrait = 2;
   string phone = 3;
   sint32 exp = 4;
   sint32 level = 5;
@@ -779,7 +782,7 @@ message SInvitationMember {
   // 等级
   int32 level = 3;
   // 头像
-  string avatar = 4;
+  string portrait = 4;
   // 昵称
   string nickName = 5;
   // 电话

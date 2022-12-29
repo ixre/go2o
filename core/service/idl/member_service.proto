@@ -137,7 +137,7 @@ service MemberService {
     rpc ChangeUser (ChangeUserRequest) returns (Result) {
     }
     // 上传会员头像
-    rpc ChangeAvatar (AvatarRequest) returns (Result) {
+    rpc ChangeHeadPortrait (ChangePortraitRequest) returns (Result) {
     }
     /** 更改密码 */
     rpc ModifyPassword (ModifyPasswordRequest) returns (Result) {

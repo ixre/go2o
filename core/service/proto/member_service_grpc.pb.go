@@ -109,7 +109,7 @@ type MemberServiceClient interface {
 	// 更改用户名
 	ChangeUser(ctx context.Context, in *ChangeUserRequest, opts ...grpc.CallOption) (*Result, error)
 	// 上传会员头像
-	ChangeAvatar(ctx context.Context, in *AvatarRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeHeadPortrait(ctx context.Context, in *ChangePortraitRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 更改密码
 	ModifyPassword(ctx context.Context, in *ModifyPasswordRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 更改交易密码
@@ -540,9 +540,9 @@ func (c *memberServiceClient) ChangeUser(ctx context.Context, in *ChangeUserRequ
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeAvatar(ctx context.Context, in *AvatarRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *memberServiceClient) ChangeHeadPortrait(ctx context.Context, in *ChangePortraitRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/MemberService/ChangeAvatar", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/MemberService/ChangeHeadPortrait", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -991,7 +991,7 @@ type MemberServiceServer interface {
 	// 更改用户名
 	ChangeUser(context.Context, *ChangeUserRequest) (*Result, error)
 	// 上传会员头像
-	ChangeAvatar(context.Context, *AvatarRequest) (*Result, error)
+	ChangeHeadPortrait(context.Context, *ChangePortraitRequest) (*Result, error)
 	// * 更改密码
 	ModifyPassword(context.Context, *ModifyPasswordRequest) (*Result, error)
 	// * 更改交易密码
@@ -1191,8 +1191,8 @@ func (UnimplementedMemberServiceServer) ChangePhone(context.Context, *ChangePhon
 func (UnimplementedMemberServiceServer) ChangeUser(context.Context, *ChangeUserRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeUser not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeAvatar(context.Context, *AvatarRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChangeAvatar not implemented")
+func (UnimplementedMemberServiceServer) ChangeHeadPortrait(context.Context, *ChangePortraitRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeHeadPortrait not implemented")
 }
 func (UnimplementedMemberServiceServer) ModifyPassword(context.Context, *ModifyPasswordRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModifyPassword not implemented")
@@ -2008,20 +2008,20 @@ func _MemberService_ChangeUser_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_ChangeAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AvatarRequest)
+func _MemberService_ChangeHeadPortrait_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePortraitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).ChangeAvatar(ctx, in)
+		return srv.(MemberServiceServer).ChangeHeadPortrait(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MemberService/ChangeAvatar",
+		FullMethod: "/MemberService/ChangeHeadPortrait",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).ChangeAvatar(ctx, req.(*AvatarRequest))
+		return srv.(MemberServiceServer).ChangeHeadPortrait(ctx, req.(*ChangePortraitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2888,8 +2888,8 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_ChangeUser_Handler,
 		},
 		{
-			MethodName: "ChangeAvatar",
-			Handler:    _MemberService_ChangeAvatar_Handler,
+			MethodName: "ChangeHeadPortrait",
+			Handler:    _MemberService_ChangeHeadPortrait_Handler,
 		},
 		{
 			MethodName: "ModifyPassword",

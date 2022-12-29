@@ -244,7 +244,7 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 			MemberId:      int64(v.MemberId),
 			User:          v.Usr,
 			NickName:      v.Name,
-			Avatar:        v.Avatar,
+			Portrait:        v.Avatar,
 			Level:         v.Level,
 			Integral:      v.Integral,
 			Balance:       v.Balance,
@@ -265,7 +265,7 @@ func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchReq
 			MemberId: int64(v.Id),
 			User:     v.User,
 			NickName: v.Name,
-			Avatar:   v.Avatar,
+			Portrait:   v.Avatar,
 		}
 	}
 	return ret, nil

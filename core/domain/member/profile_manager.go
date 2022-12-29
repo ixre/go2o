@@ -278,7 +278,7 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 }
 
 // 设置头像
-func (p *profileManagerImpl) ChangeAvatar(avatar string) error {
+func (p *profileManagerImpl) ChangeHeadPortrait(avatar string) error {
 	if avatar == "" {
 		return member.ErrNullAvatar
 	}
@@ -290,7 +290,7 @@ func (p *profileManagerImpl) ChangeAvatar(avatar string) error {
 	return p.repo.SaveProfile(&v)
 }
 
-//todo: ?? 重构
+// todo: ?? 重构
 func (p *profileManagerImpl) notifyOnProfileComplete() {
 	//rl := p._member.GetRelation()
 	//pt, err := p._member._merchantRepo.GetMerchant(rl.RegisterMchId)
