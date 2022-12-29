@@ -1198,13 +1198,13 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 			rows[i].InvitationNum = num[rows[i].MemberId]
 			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
 			ret.Data[i] = &proto.SInvitationMember{
-				MemberId:      int64(rows[i].MemberId),
-				User:          rows[i].User,
-				Level:         rows[i].Level,
-				Avatar:        rows[i].Avatar,
-				NickName:      rows[i].NickName,
-				Phone:         rows[i].Phone,
-				Im:            rows[i].Im,
+				MemberId: int64(rows[i].MemberId),
+				User:     rows[i].User,
+				Level:    rows[i].Level,
+				Avatar:   rows[i].Avatar,
+				NickName: rows[i].NickName,
+				Phone:    rows[i].Phone,
+				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
 			}
 		}

@@ -780,10 +780,8 @@ message SInvitationMember {
   string nickName = 5;
   // 电话
   string phone = 6;
-  // 即时通讯
-  string im = 9;
   // 邀请人数
-  int32 invitationNum = 10;
+  int32 invitationNum = 9;
 }
 message IsInvitationRequest {
   // 会员编号
