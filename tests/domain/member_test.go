@@ -3,9 +3,11 @@ package domain
 import (
 	"testing"
 
+	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/crypto"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestModifyMemberPwd(t *testing.T) {
@@ -18,4 +20,11 @@ func TestModifyMemberPwd(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+}
+
+func TestGetInviteUsers(t *testing.T) {
+	repo := ti.Factory.GetMemberRepo()
+	iv := repo.CreateMember(&member.Member{Id: 0}).Invitation()
+	total, rows := iv.GetInvitationMembers(0, 10)
+	t.Log(total, typeconv.MustJson(rows))
 }

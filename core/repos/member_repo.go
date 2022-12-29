@@ -12,6 +12,12 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/mss"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -28,11 +34,6 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/util"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 )
 
 var _ member.IMemberRepo = new(MemberRepoImpl)
@@ -102,7 +103,7 @@ func (m *MemberRepoImpl) SaveProfile(v *member.Profile) error {
 	return err
 }
 
-//收藏,typeId 为类型编号, referId为关联的ID
+// 收藏,typeId 为类型编号, referId为关联的ID
 func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int64) error {
 	_, _, err := m.o.Save(nil, &member.Favorite{
 		MemberId:   memberId,
@@ -113,7 +114,7 @@ func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int64) er
 	return err
 }
 
-//是否已收藏
+// 是否已收藏
 func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int64) bool {
 	num := 0
 	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_favorite
@@ -122,7 +123,7 @@ func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int64) boo
 	return num > 0
 }
 
-//取消收藏
+// 取消收藏
 func (m *MemberRepoImpl) CancelFavorite(memberId int64, favType int, referId int64) error {
 	_, err := m.o.Delete(&member.Favorite{},
 		"member_id= $1 AND fav_type= $2 AND refer_id= $3",
@@ -624,14 +625,14 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
 	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
-		m.Connector.Query(`SELECT m.id,m.user,m.level,p.avatar,p.name,p.phone,p.im FROM
-            (SELECT id,user,level FROM mm_member WHERE id IN (SELECT member_id FROM
-             mm_relation WHERE inviter_id= $1) ORDER BY level DESC,id LIMIT $3 OFFSET $2) m
-             INNER JOIN mm_profile p ON p.member_id = m.id ORDER BY level DESC,id`,
+		m.Connector.Query(`SELECT id,mm_member.user,level,avatar,real_name,phone FROM mm_member 
+				WHERE id IN (SELECT member_id FROM
+             mm_relation WHERE inviter_id= $1)
+             ORDER BY level DESC,id LIMIT $3 OFFSET $2`,
 			func(rs *sql.Rows) {
 				for rs.Next() {
 					e := &dto.InvitationMember{}
-					rs.Scan(&e.MemberId, &e.User, &e.Level, &e.Avatar, &e.NickName, &e.Phone, &e.Im)
+					rs.Scan(&e.MemberId, &e.User, &e.Level, &e.Avatar, &e.NickName, &e.Phone)
 					arr = append(arr, e)
 				}
 			}, memberId, begin, end-begin)
