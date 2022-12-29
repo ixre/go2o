@@ -1526,7 +1526,7 @@ type SavePermUserRequest struct {
 	// * 头像
 	Portrait string `protobuf:"bytes,5,opt,name=portrait,proto3" json:"portrait"`
 	// * 昵称
-	NickName string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
 	// * 性别
 	Gender string `protobuf:"bytes,7,opt,name=gender,proto3" json:"gender"`
 	// * 邮箱
@@ -1614,9 +1614,9 @@ func (x *SavePermUserRequest) GetPortrait() string {
 	return ""
 }
 
-func (x *SavePermUserRequest) GetNickName() string {
+func (x *SavePermUserRequest) GetNickname() string {
 	if x != nil {
-		return x.NickName
+		return x.Nickname
 	}
 	return ""
 }
@@ -1809,8 +1809,8 @@ type SPermUser struct {
 	Flag int32 `protobuf:"varint,4,opt,name=flag,proto3" json:"flag"`
 	// * 头像
 	Portrait string `protobuf:"bytes,5,opt,name=portrait,proto3" json:"portrait"`
-	// * NickName
-	NickName string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
+	// * Nickname
+	Nickname string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
 	// * Gender
 	Gender string `protobuf:"bytes,7,opt,name=gender,proto3" json:"gender"`
 	// * 邮箱
@@ -1900,9 +1900,9 @@ func (x *SPermUser) GetPortrait() string {
 	return ""
 }
 
-func (x *SPermUser) GetNickName() string {
+func (x *SPermUser) GetNickname() string {
 	if x != nil {
-		return x.NickName
+		return x.Nickname
 	}
 	return ""
 }
@@ -2078,7 +2078,7 @@ type PagingPermUser struct {
 	// * 头像
 	Portrait string `protobuf:"bytes,5,opt,name=portrait,proto3" json:"portrait"`
 	// * 昵称
-	NickName string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
 	// * 性别
 	Gender string `protobuf:"bytes,7,opt,name=gender,proto3" json:"gender"`
 	// * 邮箱
@@ -2164,9 +2164,9 @@ func (x *PagingPermUser) GetPortrait() string {
 	return ""
 }
 
-func (x *PagingPermUser) GetNickName() string {
+func (x *PagingPermUser) GetNickname() string {
 	if x != nil {
-		return x.NickName
+		return x.Nickname
 	}
 	return ""
 }

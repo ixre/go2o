@@ -119,7 +119,7 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 	v.Phone = strings.TrimSpace(v.Phone)
 	// 验证昵称
 	if len([]rune(v.Name)) < 1 && v.UpdateTime > 0 {
-		return member.ErrNilNickName
+		return member.ErrNilNickname
 	}
 	// 检查区域
 	if (v.Province == 0 || v.City == 0 || v.District == 0 ||

@@ -1029,7 +1029,7 @@ type MemberListSingle struct {
 	// 用户名
 	User string `protobuf:"bytes,2,opt,name=user,proto3" json:"user"`
 	// 昵称
-	NickName string `protobuf:"bytes,3,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,3,opt,name=nickName,proto3" json:"nickName"`
 	// 头像
 	Portrait string `protobuf:"bytes,4,opt,name=portrait,proto3" json:"portrait"`
 	// 等级
@@ -1088,9 +1088,9 @@ func (x *MemberListSingle) GetUser() string {
 	return ""
 }
 
-func (x *MemberListSingle) GetNickName() string {
+func (x *MemberListSingle) GetNickname() string {
 	if x != nil {
-		return x.NickName
+		return x.Nickname
 	}
 	return ""
 }

@@ -487,7 +487,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		User:     r.Username,
 		Salt:     salt,
 		Pwd:      domain.Sha1Pwd(r.Password, salt),
-		Name:     r.Name,
+		Nickname: r.Nickname,
 		RealName: "",
 		Avatar:   "", //todo: default avatar
 		Phone:    r.Phone,
@@ -1203,7 +1203,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 				User:     rows[i].User,
 				Level:    rows[i].Level,
 				Portrait: rows[i].Avatar,
-				NickName: rows[i].NickName,
+				Nickname: rows[i].Nickname,
 				Phone:    rows[i].Phone,
 				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
@@ -1583,7 +1583,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Portrait:       src.Avatar,
 		Phone:          src.Phone,
 		Email:          src.Email,
-		Name:           src.Name,
+		Nickname:       src.Nickname,
 		RealName:       src.RealName,
 		RegTime:        src.RegTime,
 		LastLoginTime:  src.LastLoginTime,
@@ -1593,7 +1593,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile {
 	return &proto.SProfile{
 		MemberId:   src.MemberId,
-		Name:       src.Name,
+		Nickname:   src.Name,
 		Portrait:   src.Avatar,
 		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
@@ -1617,7 +1617,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 
 func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
-		Name:                src.Name,
+		Nickname:            src.Nickname,
 		Portrait:            src.Avatar,
 		Exp:                 int32(src.Exp),
 		Level:               int32(src.Level),
@@ -1676,7 +1676,7 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 	return &member.Member{
 		Id:             src.Id,
 		Code:           src.UserCode,
-		Name:           src.Name,
+		Nickname:       src.Nickname,
 		RealName:       src.RealName,
 		User:           src.User,
 		Pwd:            src.Password,
@@ -1698,7 +1698,7 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile {
 	return &member.Profile{
 		MemberId:   src.MemberId,
-		Name:       src.Name,
+		Name:       src.Nickname,
 		Avatar:     src.Portrait,
 		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,

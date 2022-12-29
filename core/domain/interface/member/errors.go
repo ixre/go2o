@@ -166,7 +166,7 @@ var (
 	ErrUserExist = domain.NewError(
 		"err_member_user_exist", "用户名已存在")
 
-	ErrNilNickName = domain.NewError(
+	ErrNilNickname = domain.NewError(
 		"err_member_nil_nick_name", "昵称不能为空")
 
 	ErrInvalidHeadPortrait = domain.NewError(

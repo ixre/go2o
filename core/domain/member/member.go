@@ -13,6 +13,12 @@ package member
 
 import (
 	"errors"
+	"math"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -24,15 +30,10 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"math"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
-//todo: 依赖商户的 MSS 发送通知消息,应去掉
-//todo: 会员升级 应单独来处理
+// todo: 依赖商户的 MSS 发送通知消息,应去掉
+// todo: 会员升级 应单独来处理
 var _ member.IMember = new(memberImpl)
 
 type memberImpl struct {
@@ -83,7 +84,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	pf := m.Profile()
 	tr := pf.GetTrustedInfo()
 	s := &member.ComplexMember{
-		Name:                mv.Name,
+		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,
 		Avatar:              format.GetResUrl(mv.Avatar),
 		Exp:                 mv.Exp,
@@ -637,11 +638,11 @@ func (m *memberImpl) prepare() (err error) {
 	//	return 0, errors.New(strings.Replace(member.ErrMissingIM.Error(),
 	//		"IM", variable.AliasMemberIM, -1))
 	//}
-	m.value.Name = strings.TrimSpace(m.value.Name)
+	m.value.Nickname = strings.TrimSpace(m.value.Nickname)
 	m.value.RealName = strings.TrimSpace(m.value.RealName)
 	//如果未设置昵称,则默认为用户名
-	if len(m.value.Name) == 0 {
-		m.value.Name = "User" + m.value.User
+	if len(m.value.Nickname) == 0 {
+		m.value.Nickname = "User" + m.value.User
 	}
 	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
 	if len(m.value.Avatar) == 0 {

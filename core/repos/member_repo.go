@@ -632,7 +632,7 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
 			func(rs *sql.Rows) {
 				for rs.Next() {
 					e := &dto.InvitationMember{}
-					rs.Scan(&e.MemberId, &e.User, &e.Level, &e.Avatar, &e.NickName, &e.Phone)
+					rs.Scan(&e.MemberId, &e.User, &e.Level, &e.Avatar, &e.Nickname, &e.Phone)
 					arr = append(arr, e)
 				}
 			}, memberId, begin, end-begin)

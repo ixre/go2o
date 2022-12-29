@@ -341,7 +341,7 @@ message SPermUser {
     int32 flag = 4;
     /** 头像 */
     string portrait = 5;
-    /** NickName */
+    /** Nickname */
     string nickName = 6;
     /** Gender */
     string gender = 7;

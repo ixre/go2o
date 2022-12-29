@@ -443,7 +443,7 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 	}
 	dst.Flag = int(r.Flag)
 	dst.Avatar = r.Portrait
-	dst.NickName = r.NickName
+	dst.Nickname = r.Nickname
 	dst.Gender = r.Gender
 	dst.Email = r.Email
 	dst.Phone = r.Phone
@@ -471,8 +471,8 @@ func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
 		Username:   v.Usr,
 		Password:   v.Pwd,
 		Flag:       int32(v.Flag),
-		Portrait:     v.Avatar,
-		NickName:   v.NickName,
+		Portrait:   v.Avatar,
+		Nickname:   v.Nickname,
 		Gender:     v.Gender,
 		Email:      v.Email,
 		Phone:      v.Phone,
@@ -537,8 +537,8 @@ func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPag
 			Username:   typeconv.Stringify(v["usr"]),
 			Password:   typeconv.Stringify(v["pwd"]),
 			Flag:       int32(typeconv.MustInt(v["flag"])),
-			Portrait:     typeconv.Stringify(v["avatar"]),
-			NickName:   typeconv.Stringify(v["nick_name"]),
+			Portrait:   typeconv.Stringify(v["avatar"]),
+			Nickname:   typeconv.Stringify(v["nick_name"]),
 			Gender:     typeconv.Stringify(v["gender"]),
 			Email:      typeconv.Stringify(v["email"]),
 			Phone:      typeconv.Stringify(v["phone"]),

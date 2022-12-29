@@ -28,7 +28,7 @@ type (
 		// 头像
 		Avatar string
 		// 昵称
-		NickName string
+		Nickname string
 		// 电话
 		Phone string
 		// 邀请人数
