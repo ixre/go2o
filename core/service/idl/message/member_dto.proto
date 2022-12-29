@@ -464,27 +464,44 @@ message SProfile {
 
 /** 账户 */
 message SAccount {
-  sint64 memberId = 1;
-  sint64 integral = 2;
-  sint64 freezeIntegral = 3;
-  int64 balance = 4;
-  int64 freezeBalance = 5;
-  int64 expiredBalance = 6;
-  string walletCode = 7;
-  int64 walletBalance = 8;
-  int64 freezeWallet = 9;
-  int64 expiredWallet = 10;
-  int64 totalWalletAmount = 11;
-  int64 flowBalance = 12;
-  int64 growBalance = 13;
-  int64 growAmount = 14;
-  int64 growEarnings = 15;
-  int64 growTotalEarnings = 16;
-  int64 totalExpense = 17;
-  int64 totalCharge = 18;
-  int64 totalPay = 19;
-  sint64 priorityPay = 20;
-  sint64 updateTime = 21;
+  // 积分
+  int64 integral = 1;
+  // 冻结积分
+  int64 freezeIntegral = 2;
+  // 商城余额
+  int64 balance = 3;
+  // 冻结商城余额
+  int64 freezeBalance = 4;
+  // 过期余额
+  int64 expiredBalance = 5;
+  // 钱包余额
+  int64 walletBalance = 6;
+  // 钱包冻结金额
+  int64 walletFreezedAmount = 7;
+  // 钱包过期金额
+  int64 walletExpiredAmount = 8;
+  // 钱包累计金额
+  int64 totalWalletAmount = 9;
+  // 浮动账户余额
+  int64 flowBalance = 10;
+  // 增利账户余额
+  int64 growBalance = 11;
+  // 增利账户本金
+  int64 growAmount = 12;
+  // 增利账户收益
+  int64 growEarnings = 13;
+  //增利账户累计收益
+  int64 growTotalEarnings = 14;
+  // 总消费金额
+  int64 totalExpense = 15;
+  // 总充值金额
+  int64 totalCharge = 16;
+  // 总支付额
+  int64 totalPay = 17;
+  // 优先(默认)支付选项
+  int32 priorityPay = 18;
+  // 更新时间
+  int64 updateTime = 19;
 }
 
 message SComplexMember {

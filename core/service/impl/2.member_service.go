@@ -56,8 +56,6 @@ type memberService struct {
 	proto.UnimplementedMemberServiceServer
 }
 
-
-
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	registryRepo registry.IRegistryRepo,
 	q *query.MemberQuery, oq *query.OrderQuery,
@@ -207,14 +205,13 @@ func (s *memberService) ChangePhone(_ context.Context, r *proto.ChangePhoneReque
 	return s.result(err), nil
 }
 
-
 // ChangeNickname 更改昵称
-func (s *memberService) ChangeNickname(_ context.Context,req *proto.ChangeNicknameRequest) (*proto.Result, error) {
+func (s *memberService) ChangeNickname(_ context.Context, req *proto.ChangeNicknameRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(req.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember),nil
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	err := m.Profile().ChangeNickname(req.Nickname,req.LimitTime)
+	err := m.Profile().ChangeNickname(req.Nickname, req.LimitTime)
 	return s.result(err), nil
 }
 
@@ -1661,27 +1658,25 @@ func round(f float32, n int) float64 {
 }
 func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 	return &proto.SAccount{
-		MemberId:          src.MemberId,
-		Integral:          int64(src.Integral),
-		FreezeIntegral:    int64(src.FreezeIntegral),
-		Balance:           src.Balance,
-		FreezeBalance:     src.FreezeBalance,
-		ExpiredBalance:    src.ExpiredBalance,
-		WalletCode:        src.WalletCode,
-		WalletBalance:     src.WalletBalance,
-		FreezeWallet:      src.FreezeWallet,
-		ExpiredWallet:     src.ExpiredWallet,
-		TotalWalletAmount: src.TotalWalletAmount,
-		FlowBalance:       src.FlowBalance,
-		GrowBalance:       src.GrowBalance,
-		GrowAmount:        src.GrowAmount,
-		GrowEarnings:      src.GrowEarnings,
-		GrowTotalEarnings: src.GrowTotalEarnings,
-		TotalExpense:      src.TotalExpense,
-		TotalCharge:       src.TotalCharge,
-		TotalPay:          src.TotalPay,
-		PriorityPay:       int64(src.PriorityPay),
-		UpdateTime:        src.UpdateTime,
+		Integral:            int64(src.Integral),
+		FreezeIntegral:      int64(src.FreezeIntegral),
+		Balance:             src.Balance,
+		FreezeBalance:       src.FreezeBalance,
+		ExpiredBalance:      src.ExpiredBalance,
+		WalletBalance:       src.WalletBalance,
+		WalletFreezedAmount: src.FreezeWallet,
+		WalletExpiredAmount: src.ExpiredWallet,
+		TotalWalletAmount:   src.TotalWalletAmount,
+		FlowBalance:         src.FlowBalance,
+		GrowBalance:         src.GrowBalance,
+		GrowAmount:          src.GrowAmount,
+		GrowEarnings:        src.GrowEarnings,
+		GrowTotalEarnings:   src.GrowTotalEarnings,
+		TotalExpense:        src.TotalExpense,
+		TotalCharge:         src.TotalCharge,
+		TotalPay:            src.TotalPay,
+		PriorityPay:         int32(src.PriorityPay),
+		UpdateTime:          src.UpdateTime,
 	}
 }
 
