@@ -277,6 +277,26 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	return member.ErrPhoneHasBind
 }
 
+// ChangeNickname 修改昵称
+func (p *profileManagerImpl) ChangeNickname(nickname string, limitTime bool) error {
+	nickname = strings.TrimSpace(nickname)
+	if nickname == "" {
+		return member.ErrPhoneValidErr
+	}
+	used := p.repo.CheckNicknameIsUse(nickname, p.memberId)
+	if !used {
+		v := p.GetProfile()
+		v.Name = nickname
+		err := p.repo.SaveProfile(&v)
+		if err == nil {
+			p.member.value.Nickname = nickname
+			_, err = p.member.Save()
+		}
+		return err
+	}
+	return member.ErrPhoneHasBind
+}
+
 // 设置头像
 func (p *profileManagerImpl) ChangeHeadPortrait(avatar string) error {
 	if avatar == "" {

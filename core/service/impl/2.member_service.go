@@ -56,6 +56,8 @@ type memberService struct {
 	proto.UnimplementedMemberServiceServer
 }
 
+
+
 func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	registryRepo registry.IRegistryRepo,
 	q *query.MemberQuery, oq *query.OrderQuery,
@@ -202,6 +204,17 @@ func (s *memberService) RemoveToken(_ context.Context, id *proto.MemberIdRequest
 // ChangePhone 更改手机号码，不验证手机格式
 func (s *memberService) ChangePhone(_ context.Context, r *proto.ChangePhoneRequest) (*proto.Result, error) {
 	err := s.changePhone(r.MemberId, r.Phone)
+	return s.result(err), nil
+}
+
+
+// ChangeNickname 更改昵称
+func (s *memberService) ChangeNickname(_ context.Context,req *proto.ChangeNicknameRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(req.MemberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember),nil
+	}
+	err := m.Profile().ChangeNickname(req.Nickname,req.LimitTime)
 	return s.result(err), nil
 }
 

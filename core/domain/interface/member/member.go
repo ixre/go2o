@@ -136,6 +136,8 @@ type (
 		SaveProfile(v *Profile) error
 		// ChangePhone 更改手机号码,不验证手机格式
 		ChangePhone(string) error
+		//　ChangeNickname 修改昵称
+		ChangeNickname(nickname string,limitTime bool)error
 		// ChangeHeadPortrait 设置头像
 		ChangeHeadPortrait(string) error
 		// ProfileCompleted 资料是否完善

@@ -559,6 +559,14 @@ func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int64) bool {
 	return c != 0
 }
 
+// 手机号码是否使用
+func (m *MemberRepoImpl) CheckNicknameIsUse(phone string, memberId int64) bool {
+	var c int
+	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member WHERE nick_name= $1 AND id <> $2",
+		&c, phone, memberId)
+	return c != 0
+}
+
 // 保存绑定
 func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
 	rel := m.GetRelation(v.MemberId)

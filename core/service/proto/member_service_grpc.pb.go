@@ -108,6 +108,8 @@ type MemberServiceClient interface {
 	ChangePhone(ctx context.Context, in *ChangePhoneRequest, opts ...grpc.CallOption) (*Result, error)
 	// 更改用户名
 	ChangeUser(ctx context.Context, in *ChangeUserRequest, opts ...grpc.CallOption) (*Result, error)
+	// 更改昵称
+	ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*Result, error)
 	// 上传会员头像
 	ChangeHeadPortrait(ctx context.Context, in *ChangePortraitRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 更改密码
@@ -534,6 +536,15 @@ func (c *memberServiceClient) ChangePhone(ctx context.Context, in *ChangePhoneRe
 func (c *memberServiceClient) ChangeUser(ctx context.Context, in *ChangeUserRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/MemberService/ChangeUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MemberService/ChangeNickname", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -990,6 +1001,8 @@ type MemberServiceServer interface {
 	ChangePhone(context.Context, *ChangePhoneRequest) (*Result, error)
 	// 更改用户名
 	ChangeUser(context.Context, *ChangeUserRequest) (*Result, error)
+	// 更改昵称
+	ChangeNickname(context.Context, *ChangeNicknameRequest) (*Result, error)
 	// 上传会员头像
 	ChangeHeadPortrait(context.Context, *ChangePortraitRequest) (*Result, error)
 	// * 更改密码
@@ -1190,6 +1203,9 @@ func (UnimplementedMemberServiceServer) ChangePhone(context.Context, *ChangePhon
 }
 func (UnimplementedMemberServiceServer) ChangeUser(context.Context, *ChangeUserRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeUser not implemented")
+}
+func (UnimplementedMemberServiceServer) ChangeNickname(context.Context, *ChangeNicknameRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeNickname not implemented")
 }
 func (UnimplementedMemberServiceServer) ChangeHeadPortrait(context.Context, *ChangePortraitRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeHeadPortrait not implemented")
@@ -2004,6 +2020,24 @@ func _MemberService_ChangeUser_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemberServiceServer).ChangeUser(ctx, req.(*ChangeUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_ChangeNickname_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeNicknameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).ChangeNickname(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/ChangeNickname",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).ChangeNickname(ctx, req.(*ChangeNicknameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2886,6 +2920,10 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ChangeUser",
 			Handler:    _MemberService_ChangeUser_Handler,
+		},
+		{
+			MethodName: "ChangeNickname",
+			Handler:    _MemberService_ChangeNickname_Handler,
 		},
 		{
 			MethodName: "ChangeHeadPortrait",

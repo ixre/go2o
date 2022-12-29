@@ -176,20 +176,37 @@ message ReceiptsCodeSaveRequest {
 
 
 message UpdateLevelRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   sint32 level = 2;
   bool review = 3;
   sint64 paymentOrderId = 4;
 }
 
+// 修改手机号请求
 message ChangePhoneRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   string phone = 2;
 }
+
+// 修改用户名请求
 message ChangeUserRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   string user = 2;
 }
+
+// 更改昵称请求
+message ChangeNicknameRequest{
+    // 会员编号
+  int64 memberId = 1;
+  // 昵称
+  string nickname = 2;
+  // 是否限制修改次数
+  bool limitTime = 3;
+}
+
 message ModifyPasswordRequest {
   sint64 memberId = 1;
   string originPassword = 2;

@@ -136,6 +136,9 @@ service MemberService {
     /* 更改用户名 */
     rpc ChangeUser (ChangeUserRequest) returns (Result) {
     }
+    // 更改昵称
+    rpc ChangeNickname(ChangeNicknameRequest) returns (Result) {}
+
     // 上传会员头像
     rpc ChangeHeadPortrait (ChangePortraitRequest) returns (Result) {
     }
