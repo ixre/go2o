@@ -27,7 +27,7 @@ message RegisterMemberRequest {
   // 密码(md5)
   string password = 2;
   // 昵称
-  string name = 3;
+  string nickname = 3;
   // 手机
   string phone = 4;
   // 邮箱
@@ -176,28 +176,49 @@ message ReceiptsCodeSaveRequest {
 
 
 message UpdateLevelRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   sint32 level = 2;
   bool review = 3;
   sint64 paymentOrderId = 4;
 }
 
+// 修改手机号请求
 message ChangePhoneRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   string phone = 2;
 }
+
+// 修改用户名请求
 message ChangeUserRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   string user = 2;
 }
+
+// 更改昵称请求
+message ChangeNicknameRequest{
+    // 会员编号
+  int64 memberId = 1;
+  // 昵称
+  string nickname = 2;
+  // 是否限制修改次数
+  bool limitTime = 3;
+}
+
 message ModifyPasswordRequest {
   sint64 memberId = 1;
   string originPassword = 2;
   string newPassword = 3;
 }
-message ChangeInviterRequest {
-  sint64 memberId = 1;
-  sint64 inviterId = 2;
+message SetInviterRequest {
+  // 会员编号
+  int64 memberId = 1;
+  // 邀请码
+  string inviterCode = 2;
+  // 是否允许更改现有绑定人
+  bool allowChange = 3;
 }
 
 message GetTokenRequest {
@@ -365,9 +386,12 @@ message SMemberLevel {
   sint32 allowUpgrade = 7;
 }
 
-message AvatarRequest {
+// 更换头像申请
+message ChangePortraitRequest {
+  // 会员编号
   sint64 memberId = 1;
-  string avatarURL = 2;
+  // 头像
+  string portraitUrl = 2;
 }
 
 /** 会员 */
@@ -387,7 +411,7 @@ message SMember {
   /** 会员编码  */
   string userCode = 7;
   /** 会员头像 */
-  string avatar = 8;
+  string portrait = 8;
   /** 邀请码 */
   string inviteCode = 9;
   /** 注册IP */
@@ -401,7 +425,7 @@ message SMember {
   /** 电子邮箱 */
   string email = 14;
   /** 昵称 */
-  string name = 15;
+  string nickname = 15;
   /** 真实姓名 */
   string realName = 16;
   /** 高级用户级别 */
@@ -417,8 +441,8 @@ message SMember {
 /** 资料 */
 message SProfile {
   sint64 memberId = 1;
-  string name = 2;
-  string avatar = 3;
+  string nickname = 2;
+  string portrait = 3;
   sint32 gender = 4;
   string birthDay = 5;
   string phone = 6;
@@ -440,32 +464,51 @@ message SProfile {
 
 /** 账户 */
 message SAccount {
-  sint64 memberId = 1;
-  sint64 integral = 2;
-  sint64 freezeIntegral = 3;
-  int64 balance = 4;
-  int64 freezeBalance = 5;
-  int64 expiredBalance = 6;
-  string walletCode = 7;
-  int64 walletBalance = 8;
-  int64 freezeWallet = 9;
-  int64 expiredWallet = 10;
-  int64 totalWalletAmount = 11;
-  int64 flowBalance = 12;
-  int64 growBalance = 13;
-  int64 growAmount = 14;
-  int64 growEarnings = 15;
-  int64 growTotalEarnings = 16;
-  int64 totalExpense = 17;
-  int64 totalCharge = 18;
-  int64 totalPay = 19;
-  sint64 priorityPay = 20;
-  sint64 updateTime = 21;
+  // 积分
+  int64 integral = 1;
+  // 冻结积分
+  int64 freezeIntegral = 2;
+  // 商城余额
+  int64 balance = 3;
+  // 冻结商城余额
+  int64 freezeBalance = 4;
+  // 过期余额
+  int64 expiredBalance = 5;
+  // 钱包代码
+  string walletCode = 6;
+  // 钱包余额
+  int64 walletBalance = 7;
+  // 钱包冻结金额
+  int64 walletFreezedAmount = 8;
+  // 钱包过期金额
+  int64 walletExpiredAmount = 9;
+  // 钱包累计金额
+  int64 totalWalletAmount = 10;
+  // 浮动账户余额
+  int64 flowBalance = 11;
+  // 增利账户余额
+  int64 growBalance = 12;
+  // 增利账户本金
+  int64 growAmount = 13;
+  // 增利账户收益
+  int64 growEarnings = 14;
+  // 增利账户累计收益
+  int64 growTotalEarnings = 15;
+  // 总消费金额
+  int64 totalExpense = 16;
+  // 总充值金额
+  int64 totalCharge = 17;
+  // 总支付额
+  int64 totalPay = 18;
+  // 优先(默认)支付选项
+  int32 priorityPay = 19;
+  // 更新时间
+  int64 updateTime = 20;
 }
 
 message SComplexMember {
-  string name = 1;
-  string avatar = 2;
+  string nickname = 1;
+  string portrait = 2;
   string phone = 3;
   sint32 exp = 4;
   sint32 level = 5;
@@ -775,15 +818,13 @@ message SInvitationMember {
   // 等级
   int32 level = 3;
   // 头像
-  string avatar = 4;
+  string portrait = 4;
   // 昵称
-  string nickName = 5;
+  string nickname = 5;
   // 电话
   string phone = 6;
-  // 即时通讯
-  string im = 9;
   // 邀请人数
-  int32 invitationNum = 10;
+  int32 invitationNum = 9;
 }
 message IsInvitationRequest {
   // 会员编号

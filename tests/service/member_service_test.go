@@ -35,6 +35,19 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	}
 }
 
+func TestCheckMemberAccessToken(t *testing.T) {
+	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI3MDIiLCJleHAiOjE2NzIzMDM4MDIsImlzcyI6ImdvMm8iLCJzdWIiOiJnbzJvLWFwaS1qd3QifQ.Ebx4PcD0KSIftqejzfbyYbUpunm3jEi0gsScipcl-lo"
+	ret, _ := impl.MemberService.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
+		AccessToken: accessToken,
+		ExpiresTime: 0,
+	})
+	if len(ret.Error) > 0 {
+		t.Log(ret.Error)
+		t.FailNow()
+	}
+	t.Log("会员Id", ret.MemberId)
+}
+
 func TestPagingIntegralLog(t *testing.T) {
 	params := &proto.SPagingParams{
 		Parameters: nil,
@@ -91,4 +104,16 @@ func TestGetMember(t *testing.T) {
 	memberId := 22149
 	r, _ := impl.MemberService.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: int64(memberId)})
 	t.Logf("%#v", r)
+}
+
+func TestChangeHeadPortrait(t *testing.T) {
+	r, _ := impl.MemberService.ChangeHeadPortrait(context.TODO(),
+		&proto.ChangePortraitRequest{
+			MemberId:    702,
+			PortraitUrl: "",
+		})
+	if r.ErrCode > 0 {
+		t.Log(r.ErrMsg)
+		t.FailNow()
+	}
 }

@@ -39,7 +39,7 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 	}
 	if len(ids) > 0 {
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
-		query := fmt.Sprintf(`SELECT m.id,m.user,m.name,m.avatar,m.exp,m.level,
+		query := fmt.Sprintf(`SELECT m.id,m.user,m.nick_name,m.avatar,m.exp,m.level,
 				lv.name as level_name,a.integral,a.balance,a.wallet_balance,
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN mm_level lv

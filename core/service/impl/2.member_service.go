@@ -205,13 +205,27 @@ func (s *memberService) ChangePhone(_ context.Context, r *proto.ChangePhoneReque
 	return s.result(err), nil
 }
 
+// ChangeNickname 更改昵称
+func (s *memberService) ChangeNickname(_ context.Context, req *proto.ChangeNicknameRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(req.MemberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	err := m.Profile().ChangeNickname(req.Nickname, req.LimitTime)
+	return s.result(err), nil
+}
+
 // ChangeInviterId 更改邀请人
-func (s *memberService) ChangeInviterId(_ context.Context, r *proto.ChangeInviterRequest) (*proto.Result, error) {
+func (s *memberService) SetInviter(_ context.Context, r *proto.SetInviterRequest) (*proto.Result, error) {
 	im := s.repo.GetMember(r.MemberId)
 	if im == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	err := im.BindInviter(r.InviterId, true)
+	inviterId := s.repo.GetMemberIdByInviteCode(r.InviterCode)
+	if inviterId <= 0 {
+		return s.result(member.ErrInvalidInviter), nil
+	}
+	err := im.BindInviter(inviterId, r.AllowChange)
 	return s.result(err), nil
 }
 
@@ -460,17 +474,14 @@ func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelU
 	return s.result(err), nil
 }
 
-// ChangeAvatar 上传会员头像
-func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) (*proto.Result, error) {
+// ChangeHeadPortrait 上传会员头像
+func (s *memberService) ChangeHeadPortrait(_ context.Context, r *proto.ChangePortraitRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
-	if m != nil {
+	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	err := m.Profile().ChangeAvatar(r.AvatarURL)
-	if err != nil {
-		return s.error(err), nil
-	}
-	return s.success(nil), nil
+	err := m.Profile().ChangeHeadPortrait(r.PortraitUrl)
+	return s.result(err), nil
 }
 
 // Register 注册会员
@@ -486,7 +497,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		User:     r.Username,
 		Salt:     salt,
 		Pwd:      domain.Sha1Pwd(r.Password, salt),
-		Name:     r.Name,
+		Nickname: r.Nickname,
 		RealName: "",
 		Avatar:   "", //todo: default avatar
 		Phone:    r.Phone,
@@ -1186,7 +1197,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
 	ret := &proto.MemberInvitationPagingResponse{
 		Total: int64(total),
-		Data:  make([]*proto.SInvitationMember, total),
+		Data:  make([]*proto.SInvitationMember, 0),
 	}
 	if l := len(rows); l > 0 {
 		arr := make([]int32, l)
@@ -1197,16 +1208,16 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
 			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
-			ret.Data[i] = &proto.SInvitationMember{
-				MemberId:      int64(rows[i].MemberId),
-				User:          rows[i].User,
-				Level:         rows[i].Level,
-				Avatar:        rows[i].Avatar,
-				NickName:      rows[i].NickName,
-				Phone:         rows[i].Phone,
-				Im:            rows[i].Im,
+			ret.Data = append(ret.Data, &proto.SInvitationMember{
+				MemberId: int64(rows[i].MemberId),
+				User:     rows[i].User,
+				Level:    rows[i].Level,
+				Portrait: rows[i].Avatar,
+				Nickname: rows[i].Nickname,
+				Phone:    rows[i].Phone,
+				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
-			}
+			})
 		}
 	}
 	return ret, nil
@@ -1579,10 +1590,10 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
 		Flag:           int32(src.Flag),
-		Avatar:         src.Avatar,
+		Portrait:       src.Avatar,
 		Phone:          src.Phone,
 		Email:          src.Email,
-		Name:           src.Name,
+		Nickname:       src.Nickname,
 		RealName:       src.RealName,
 		RegTime:        src.RegTime,
 		LastLoginTime:  src.LastLoginTime,
@@ -1592,8 +1603,8 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile {
 	return &proto.SProfile{
 		MemberId:   src.MemberId,
-		Name:       src.Name,
-		Avatar:     src.Avatar,
+		Nickname:   src.Name,
+		Portrait:   src.Avatar,
 		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
@@ -1616,8 +1627,8 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 
 func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
-		Name:                src.Name,
-		Avatar:              src.Avatar,
+		Nickname:            src.Nickname,
+		Portrait:            src.Avatar,
 		Exp:                 int32(src.Exp),
 		Level:               int32(src.Level),
 		LevelName:           src.LevelName,
@@ -1647,27 +1658,26 @@ func round(f float32, n int) float64 {
 }
 func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 	return &proto.SAccount{
-		MemberId:          src.MemberId,
-		Integral:          int64(src.Integral),
-		FreezeIntegral:    int64(src.FreezeIntegral),
-		Balance:           src.Balance,
-		FreezeBalance:     src.FreezeBalance,
-		ExpiredBalance:    src.ExpiredBalance,
-		WalletCode:        src.WalletCode,
-		WalletBalance:     src.WalletBalance,
-		FreezeWallet:      src.FreezeWallet,
-		ExpiredWallet:     src.ExpiredWallet,
-		TotalWalletAmount: src.TotalWalletAmount,
-		FlowBalance:       src.FlowBalance,
-		GrowBalance:       src.GrowBalance,
-		GrowAmount:        src.GrowAmount,
-		GrowEarnings:      src.GrowEarnings,
-		GrowTotalEarnings: src.GrowTotalEarnings,
-		TotalExpense:      src.TotalExpense,
-		TotalCharge:       src.TotalCharge,
-		TotalPay:          src.TotalPay,
-		PriorityPay:       int64(src.PriorityPay),
-		UpdateTime:        src.UpdateTime,
+		Integral:            int64(src.Integral),
+		FreezeIntegral:      int64(src.FreezeIntegral),
+		Balance:             src.Balance,
+		FreezeBalance:       src.FreezeBalance,
+		ExpiredBalance:      src.ExpiredBalance,
+		WalletBalance:       src.WalletBalance,
+		WalletCode:          src.WalletCode,
+		WalletFreezedAmount: src.FreezeWallet,
+		WalletExpiredAmount: src.ExpiredWallet,
+		TotalWalletAmount:   src.TotalWalletAmount,
+		FlowBalance:         src.FlowBalance,
+		GrowBalance:         src.GrowBalance,
+		GrowAmount:          src.GrowAmount,
+		GrowEarnings:        src.GrowEarnings,
+		GrowTotalEarnings:   src.GrowTotalEarnings,
+		TotalExpense:        src.TotalExpense,
+		TotalCharge:         src.TotalCharge,
+		TotalPay:            src.TotalPay,
+		PriorityPay:         int32(src.PriorityPay),
+		UpdateTime:          src.UpdateTime,
 	}
 }
 
@@ -1675,11 +1685,11 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 	return &member.Member{
 		Id:             src.Id,
 		Code:           src.UserCode,
-		Name:           src.Name,
+		Nickname:       src.Nickname,
 		RealName:       src.RealName,
 		User:           src.User,
 		Pwd:            src.Password,
-		Avatar:         src.Avatar,
+		Avatar:         src.Portrait,
 		Exp:            int(src.Exp),
 		Level:          int(src.Level),
 		InviteCode:     src.InviteCode,
@@ -1697,8 +1707,8 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile {
 	return &member.Profile{
 		MemberId:   src.MemberId,
-		Name:       src.Name,
-		Avatar:     src.Avatar,
+		Name:       src.Nickname,
+		Avatar:     src.Portrait,
 		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,

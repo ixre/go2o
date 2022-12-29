@@ -74,10 +74,11 @@ type IMemberRepo interface {
 	// 根据编码获取会员
 	GetMemberIdByCode(code string) int64
 
-	// 用户名是否存在
+	// CheckUserExist 用户名是否存在
 	CheckUserExist(user string, memberId int64) bool
-
-	// 手机号码是否使用
+	// CheckNicknameIsUse 昵称是否使用
+	CheckNicknameIsUse(nickname string, memberId int64) bool
+	// CheckPhoneBind 手机号码是否使用
 	CheckPhoneBind(phone string, memberId int64) bool
 
 	// 保存绑定

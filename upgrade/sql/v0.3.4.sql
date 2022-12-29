@@ -39,3 +39,7 @@ ALTER TABLE IF EXISTS public.product_model_spec
     RENAME pro_model TO prod_model;
 ALTER TABLE IF EXISTS public.product_model_spec_item
     RENAME pro_model TO prod_model;
+
+/** 2022-12-29 15:39 */
+ALTER TABLE IF EXISTS public.mm_member
+    RENAME name TO nick_name;

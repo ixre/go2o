@@ -136,8 +136,11 @@ service MemberService {
     /* 更改用户名 */
     rpc ChangeUser (ChangeUserRequest) returns (Result) {
     }
+    // 更改昵称
+    rpc ChangeNickname(ChangeNicknameRequest) returns (Result) {}
+
     // 上传会员头像
-    rpc ChangeAvatar (AvatarRequest) returns (Result) {
+    rpc ChangeHeadPortrait (ChangePortraitRequest) returns (Result) {
     }
     /** 更改密码 */
     rpc ModifyPassword (ModifyPasswordRequest) returns (Result) {
@@ -148,8 +151,8 @@ service MemberService {
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {
     }
-    /** 更改邀请人 */
-    rpc ChangeInviterId (ChangeInviterRequest) returns (Result) {
+    /** 设置或更改邀请人 */
+    rpc SetInviter (SetInviterRequest) returns (Result) {
     }
    
 

@@ -119,7 +119,7 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 	v.Phone = strings.TrimSpace(v.Phone)
 	// 验证昵称
 	if len([]rune(v.Name)) < 1 && v.UpdateTime > 0 {
-		return member.ErrNilNickName
+		return member.ErrNilNickname
 	}
 	// 检查区域
 	if (v.Province == 0 || v.City == 0 || v.District == 0 ||
@@ -277,10 +277,30 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	return member.ErrPhoneHasBind
 }
 
+// ChangeNickname 修改昵称
+func (p *profileManagerImpl) ChangeNickname(nickname string, limitTime bool) error {
+	nickname = strings.TrimSpace(nickname)
+	if nickname == "" {
+		return member.ErrPhoneValidErr
+	}
+	used := p.repo.CheckNicknameIsUse(nickname, p.memberId)
+	if !used {
+		v := p.GetProfile()
+		v.Name = nickname
+		err := p.repo.SaveProfile(&v)
+		if err == nil {
+			p.member.value.Nickname = nickname
+			_, err = p.member.Save()
+		}
+		return err
+	}
+	return member.ErrPhoneHasBind
+}
+
 // 设置头像
-func (p *profileManagerImpl) ChangeAvatar(avatar string) error {
+func (p *profileManagerImpl) ChangeHeadPortrait(avatar string) error {
 	if avatar == "" {
-		return member.ErrNullAvatar
+		return member.ErrInvalidHeadPortrait
 	}
 	v := p.GetProfile()
 	if p.profile != nil {
@@ -290,7 +310,7 @@ func (p *profileManagerImpl) ChangeAvatar(avatar string) error {
 	return p.repo.SaveProfile(&v)
 }
 
-//todo: ?? 重构
+// todo: ?? 重构
 func (p *profileManagerImpl) notifyOnProfileComplete() {
 	//rl := p._member.GetRelation()
 	//pt, err := p._member._merchantRepo.GetMerchant(rl.RegisterMchId)

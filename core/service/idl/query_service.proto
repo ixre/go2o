@@ -156,9 +156,9 @@ message MemberListSingle {
     // 用户名
     string user =  2;
     // 昵称
-    string nickName = 3;
+    string nickname = 3;
     // 头像
-    string avatar = 4;
+    string portrait = 4;
     // 等级
     int32 level = 5;
     // 积分

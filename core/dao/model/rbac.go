@@ -146,8 +146,8 @@ type PermUser struct {
 	Flag int `db:"flag"`
 	// 头像
 	Avatar string `db:"avatar"`
-	// NickName
-	NickName string `db:"nick_name"`
+	// Nickname
+	Nickname string `db:"nick_name"`
 	// Gender
 	Gender string `db:"gender"`
 	// 邮箱

@@ -136,8 +136,10 @@ type (
 		SaveProfile(v *Profile) error
 		// ChangePhone 更改手机号码,不验证手机格式
 		ChangePhone(string) error
-		// ChangeAvatar 设置头像
-		ChangeAvatar(string) error
+		//　ChangeNickname 修改昵称
+		ChangeNickname(nickname string,limitTime bool)error
+		// ChangeHeadPortrait 设置头像
+		ChangeHeadPortrait(string) error
 		// ProfileCompleted 资料是否完善
 		ProfileCompleted() bool
 		// CheckProfileComplete 检查资料是否完善
@@ -191,7 +193,7 @@ type (
 	// ComplexMember 会员概览信息
 	ComplexMember struct {
 		// 昵称
-		Name string
+		Nickname string
 		// 真实姓名
 		RealName string
 		// 头像
@@ -224,7 +226,7 @@ type (
 		// 用户编码
 		Code string `db:"code"`
 		// 昵称
-		Name string `db:"name"`
+		Nickname string `db:"nick_name"`
 		// 真实姓名
 		RealName string `db:"real_name"`
 		// 用户名
