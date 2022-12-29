@@ -26,9 +26,9 @@ import (
 var _ proto.QueryServiceServer = new(queryService)
 
 type queryService struct {
-	shopQuery   *query.ShopQuery
-	orderQuery  *query.OrderQuery
-	memberQuery *query.MemberQuery
+	shopQuery       *query.ShopQuery
+	orderQuery      *query.OrderQuery
+	memberQuery     *query.MemberQuery
 	statisticsQuery *query.StatisticsQuery
 	proto.UnimplementedQueryServiceServer
 }
@@ -37,13 +37,13 @@ type queryService struct {
 func (q *queryService) SummaryStatistics(context.Context, *proto.SummaryStatisticsRequest) (*proto.SummaryStatisticsResponse, error) {
 	s := q.statisticsQuery.QuerySummary()
 	return &proto.SummaryStatisticsResponse{
-		TotalMembers:                0,
-		TodayJoinMembers:            0,
-		TodayLoginMembers:           0,
-		TodayCreateOrders:           0,
-		AwaitShipmentOrders:         0,
-		AwaitReviewWithdrawRequests: 0,
-	},nil
+		TotalMembers:                s.TotalMembers,
+		TodayJoinMembers:            s.TodayJoinMembers,
+		TodayLoginMembers:           s.TodayLoginMembers,
+		TodayCreateOrders:           s.TodayCreateOrders,
+		AwaitShipmentOrders:         s.AwaitShipmentOrders,
+		AwaitReviewWithdrawRequests: s.AwaitReviewWithdrawRequests,
+	}, nil
 }
 
 // MemberStatistics 获取会员的订单状态及其数量
@@ -63,10 +63,10 @@ func (q *queryService) MemberStatistics(_ context.Context, req *proto.MemberStat
 func NewQueryService(o orm.Orm, s storage.Interface) *queryService {
 	shopQuery := query.NewShopQuery(o, s)
 	return &queryService{
-		shopQuery:   shopQuery,
-		memberQuery: query.NewMemberQuery(o),
-		orderQuery:  query.NewOrderQuery(o),
-		statisticsQuery: query.NewStatisticsQuery(o,s),
+		shopQuery:       shopQuery,
+		memberQuery:     query.NewMemberQuery(o),
+		orderQuery:      query.NewOrderQuery(o),
+		statisticsQuery: query.NewStatisticsQuery(o, s),
 	}
 }
 

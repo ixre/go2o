@@ -9,9 +9,12 @@
 package query
 
 import (
+	"database/sql"
 	"regexp"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/infrastructure/tool"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -49,15 +52,29 @@ func NewStatisticsQuery(o orm.Orm, s storage.Interface) *StatisticsQuery {
 }
 
 // QuerySummary 查询汇总信息
-func (s *ShopQuery) QuerySummary(shopId int64) SummaryStatistics {
+func (s *StatisticsQuery) QuerySummary() *SummaryStatistics {
 	var ss SummaryStatistics
 	var todayBeginTime = tool.GetStartDate(time.Now()).Unix()
-	s.Connector.ExecScalar(`
+	s.Connector.QueryRow(`
 		(SELECT COUNT(1) FROM mm_member) as totalMembers,
 		(SELECT COUNT(1) FROM mm_member WHERE > $1) as totalMembers,
-		(SELECT COUNT(1) FROM mm_member WHERE last_login_time > $1) as todayLoginMembers, 
+		(SELECT COUNT(1) FROM mm_member WHERE last_login_time > $1) as todayLoginMembers,
+		(SELECT COUNT(1) FROM sale_sub_order WHERE create_time > $1) as todayCreateOrders,
+		(SELECT COUNT(1) FROM sale_sub_order WHERE status = $2) as awaitShipmentOrders,
+		(SELECT COUNT(1) FROM wal_wallet_log WHERE review_state = $3 AND kind IN (22,23)) as awaitReviewWithdrawRequests,	
 		`,
+		func(row *sql.Row) error {
+			return row.Scan(
+				&ss.TotalMembers,
+				&ss.TodayJoinMembers,
+				&ss.TodayLoginMembers,
+				&ss.TodayCreateOrders,
+				&ss.AwaitShipmentOrders,
+				&ss.AwaitReviewWithdrawRequests,
+			)
+		},
 		todayBeginTime,
-		shopId)
-	return ss
+		order.StatAwaitingShipment,
+		wallet.ReviewAwaiting)
+	return &ss
 }
