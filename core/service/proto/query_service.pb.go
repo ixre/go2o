@@ -1029,7 +1029,7 @@ type MemberListSingle struct {
 	// 用户名
 	User string `protobuf:"bytes,2,opt,name=user,proto3" json:"user"`
 	// 昵称
-	Nickname string `protobuf:"bytes,3,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname"`
 	// 头像
 	Portrait string `protobuf:"bytes,4,opt,name=portrait,proto3" json:"portrait"`
 	// 等级

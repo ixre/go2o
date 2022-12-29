@@ -299,7 +299,7 @@ message SavePermUserRequest {
     /** 头像 */
     string portrait = 5;
     /** 昵称 */
-    string nickName = 6;
+    string nickname = 6;
     /** 性别 */
     string gender = 7;
     /** 邮箱 */
@@ -342,7 +342,7 @@ message SPermUser {
     /** 头像 */
     string portrait = 5;
     /** Nickname */
-    string nickName = 6;
+    string nickname = 6;
     /** Gender */
     string gender = 7;
     /** 邮箱 */
@@ -385,7 +385,7 @@ message PagingPermUser {
     /** 头像 */
     string portrait = 5;
     /** 昵称 */
-    string nickName = 6;
+    string nickname = 6;
     /** 性别 */
     string gender = 7;
     /** 邮箱 */

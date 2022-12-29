@@ -373,7 +373,7 @@ type RegisterMemberRequest struct {
 	// 密码(md5)
 	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password"`
 	// 昵称
-	Nickname string `protobuf:"bytes,3,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname"`
 	// 手机
 	Phone string `protobuf:"bytes,4,opt,name=phone,proto3" json:"phone"`
 	// 邮箱
@@ -3251,7 +3251,7 @@ type SMember struct {
 	// * 电子邮箱
 	Email string `protobuf:"bytes,14,opt,name=email,proto3" json:"email"`
 	// * 昵称
-	Nickname string `protobuf:"bytes,15,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,15,opt,name=nickname,proto3" json:"nickname"`
 	// * 真实姓名
 	RealName string `protobuf:"bytes,16,opt,name=realName,proto3" json:"realName"`
 	// * 高级用户级别
@@ -3443,7 +3443,7 @@ type SProfile struct {
 	unknownFields protoimpl.UnknownFields
 
 	MemberId   int64  `protobuf:"zigzag64,1,opt,name=memberId,proto3" json:"memberId"`
-	Nickname   string `protobuf:"bytes,2,opt,name=nickName,proto3" json:"nickName"`
+	Nickname   string `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname"`
 	Portrait   string `protobuf:"bytes,3,opt,name=portrait,proto3" json:"portrait"`
 	Gender     int32  `protobuf:"zigzag32,4,opt,name=gender,proto3" json:"gender"`
 	BirthDay   string `protobuf:"bytes,5,opt,name=birthDay,proto3" json:"birthDay"`
@@ -3849,7 +3849,7 @@ type SComplexMember struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Nickname       string `protobuf:"bytes,1,opt,name=nickName,proto3" json:"nickName"`
+	Nickname       string `protobuf:"bytes,1,opt,name=nickname,proto3" json:"nickname"`
 	Portrait       string `protobuf:"bytes,2,opt,name=portrait,proto3" json:"portrait"`
 	Phone          string `protobuf:"bytes,3,opt,name=phone,proto3" json:"phone"`
 	Exp            int32  `protobuf:"zigzag32,4,opt,name=exp,proto3" json:"exp"`
@@ -5690,7 +5690,7 @@ type SInvitationMember struct {
 	// 头像
 	Portrait string `protobuf:"bytes,4,opt,name=portrait,proto3" json:"portrait"`
 	// 昵称
-	Nickname string `protobuf:"bytes,5,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,5,opt,name=nickname,proto3" json:"nickname"`
 	// 电话
 	Phone string `protobuf:"bytes,6,opt,name=phone,proto3" json:"phone"`
 	// 邀请人数

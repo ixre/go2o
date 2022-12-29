@@ -1526,7 +1526,7 @@ type SavePermUserRequest struct {
 	// * 头像
 	Portrait string `protobuf:"bytes,5,opt,name=portrait,proto3" json:"portrait"`
 	// * 昵称
-	Nickname string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,6,opt,name=nickname,proto3" json:"nickname"`
 	// * 性别
 	Gender string `protobuf:"bytes,7,opt,name=gender,proto3" json:"gender"`
 	// * 邮箱
@@ -1810,7 +1810,7 @@ type SPermUser struct {
 	// * 头像
 	Portrait string `protobuf:"bytes,5,opt,name=portrait,proto3" json:"portrait"`
 	// * Nickname
-	Nickname string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,6,opt,name=nickname,proto3" json:"nickname"`
 	// * Gender
 	Gender string `protobuf:"bytes,7,opt,name=gender,proto3" json:"gender"`
 	// * 邮箱
@@ -2078,7 +2078,7 @@ type PagingPermUser struct {
 	// * 头像
 	Portrait string `protobuf:"bytes,5,opt,name=portrait,proto3" json:"portrait"`
 	// * 昵称
-	Nickname string `protobuf:"bytes,6,opt,name=nickName,proto3" json:"nickName"`
+	Nickname string `protobuf:"bytes,6,opt,name=nickname,proto3" json:"nickname"`
 	// * 性别
 	Gender string `protobuf:"bytes,7,opt,name=gender,proto3" json:"gender"`
 	// * 邮箱

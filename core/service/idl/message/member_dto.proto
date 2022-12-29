@@ -27,7 +27,7 @@ message RegisterMemberRequest {
   // 密码(md5)
   string password = 2;
   // 昵称
-  string nickName = 3;
+  string nickname = 3;
   // 手机
   string phone = 4;
   // 邮箱
@@ -408,7 +408,7 @@ message SMember {
   /** 电子邮箱 */
   string email = 14;
   /** 昵称 */
-  string nickName = 15;
+  string nickname = 15;
   /** 真实姓名 */
   string realName = 16;
   /** 高级用户级别 */
@@ -424,7 +424,7 @@ message SMember {
 /** 资料 */
 message SProfile {
   sint64 memberId = 1;
-  string nickName = 2;
+  string nickname = 2;
   string portrait = 3;
   sint32 gender = 4;
   string birthDay = 5;
@@ -471,7 +471,7 @@ message SAccount {
 }
 
 message SComplexMember {
-  string nickName = 1;
+  string nickname = 1;
   string portrait = 2;
   string phone = 3;
   sint32 exp = 4;
@@ -784,7 +784,7 @@ message SInvitationMember {
   // 头像
   string portrait = 4;
   // 昵称
-  string nickName = 5;
+  string nickname = 5;
   // 电话
   string phone = 6;
   // 邀请人数
