@@ -1186,7 +1186,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
 	ret := &proto.MemberInvitationPagingResponse{
 		Total: int64(total),
-		Data:  make([]*proto.SInvitationMember, total),
+		Data:  make([]*proto.SInvitationMember, 0),
 	}
 	if l := len(rows); l > 0 {
 		arr := make([]int32, l)
@@ -1197,7 +1197,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
 			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
-			ret.Data[i] = &proto.SInvitationMember{
+			ret.Data = append(ret.Data, &proto.SInvitationMember{
 				MemberId: int64(rows[i].MemberId),
 				User:     rows[i].User,
 				Level:    rows[i].Level,
@@ -1206,7 +1206,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 				Phone:    rows[i].Phone,
 				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
-			}
+			})
 		}
 	}
 	return ret, nil
