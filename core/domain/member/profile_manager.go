@@ -280,7 +280,7 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 // 设置头像
 func (p *profileManagerImpl) ChangeHeadPortrait(avatar string) error {
 	if avatar == "" {
-		return member.ErrNullAvatar
+		return member.ErrInvalidHeadPortrait
 	}
 	v := p.GetProfile()
 	if p.profile != nil {

@@ -10,6 +10,15 @@ import (
 	"github.com/ixre/gof/types/typeconv"
 )
 
+func TestGetMember(t *testing.T){
+	var memberId int64 = 702
+	repo := ti.Factory.GetMemberRepo()
+	m := repo.GetMember(memberId)
+	if m == nil{
+		t.FailNow()
+	}
+}
+
 func TestModifyMemberPwd(t *testing.T) {
 	m := ti.Factory.GetMemberRepo().GetMember(699)
 	md5 := crypto.Md5([]byte("123456"))

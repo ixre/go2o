@@ -169,8 +169,8 @@ var (
 	ErrNilNickName = domain.NewError(
 		"err_member_nil_nick_name", "昵称不能为空")
 
-	ErrNullAvatar = domain.NewError(
-		"err_member_null_avatar", "请上传头像")
+	ErrInvalidHeadPortrait = domain.NewError(
+		"err_member_invalid_head_portrait", "头像不合法")
 
 	ErrAddress = domain.NewError(
 		"err_member_address", "请填写详细地址")
