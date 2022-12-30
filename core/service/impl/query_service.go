@@ -316,7 +316,7 @@ func (q *queryService) QueryMemberFavoriteGoods(_ context.Context, r *proto.Favo
 }
 
 // 获取钱包账户分页记录
-func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {
+func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.PagingAccountLogRequest) (*proto.SPagingResult, error) {
 	var total int
 	var rows []map[string]interface{}
 	switch member.AccountType(r.AccountType) {

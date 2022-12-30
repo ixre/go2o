@@ -43,7 +43,7 @@ type QueryServiceClient interface {
 	// 获取分页店铺收藏
 	QueryMemberFavoriteGoods(ctx context.Context, in *FavoriteQueryRequest, opts ...grpc.CallOption) (*PagingGoodsFavoriteResponse, error)
 	// 获取指定账户的流水记录
-	PagingMemberAccountLog(ctx context.Context, in *PagingAccountInfoRequest, opts ...grpc.CallOption) (*SPagingResult, error)
+	PagingMemberAccountLog(ctx context.Context, in *PagingAccountLogRequest, opts ...grpc.CallOption) (*SPagingResult, error)
 }
 
 type queryServiceClient struct {
@@ -144,7 +144,7 @@ func (c *queryServiceClient) QueryMemberFavoriteGoods(ctx context.Context, in *F
 	return out, nil
 }
 
-func (c *queryServiceClient) PagingMemberAccountLog(ctx context.Context, in *PagingAccountInfoRequest, opts ...grpc.CallOption) (*SPagingResult, error) {
+func (c *queryServiceClient) PagingMemberAccountLog(ctx context.Context, in *PagingAccountLogRequest, opts ...grpc.CallOption) (*SPagingResult, error) {
 	out := new(SPagingResult)
 	err := c.cc.Invoke(ctx, "/QueryService/PagingMemberAccountLog", in, out, opts...)
 	if err != nil {
@@ -178,7 +178,7 @@ type QueryServiceServer interface {
 	// 获取分页店铺收藏
 	QueryMemberFavoriteGoods(context.Context, *FavoriteQueryRequest) (*PagingGoodsFavoriteResponse, error)
 	// 获取指定账户的流水记录
-	PagingMemberAccountLog(context.Context, *PagingAccountInfoRequest) (*SPagingResult, error)
+	PagingMemberAccountLog(context.Context, *PagingAccountLogRequest) (*SPagingResult, error)
 	mustEmbedUnimplementedQueryServiceServer()
 }
 
@@ -216,7 +216,7 @@ func (UnimplementedQueryServiceServer) QueryMemberFavoriteShops(context.Context,
 func (UnimplementedQueryServiceServer) QueryMemberFavoriteGoods(context.Context, *FavoriteQueryRequest) (*PagingGoodsFavoriteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryMemberFavoriteGoods not implemented")
 }
-func (UnimplementedQueryServiceServer) PagingMemberAccountLog(context.Context, *PagingAccountInfoRequest) (*SPagingResult, error) {
+func (UnimplementedQueryServiceServer) PagingMemberAccountLog(context.Context, *PagingAccountLogRequest) (*SPagingResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PagingMemberAccountLog not implemented")
 }
 func (UnimplementedQueryServiceServer) mustEmbedUnimplementedQueryServiceServer() {}
@@ -413,7 +413,7 @@ func _QueryService_QueryMemberFavoriteGoods_Handler(srv interface{}, ctx context
 }
 
 func _QueryService_PagingMemberAccountLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PagingAccountInfoRequest)
+	in := new(PagingAccountLogRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -425,7 +425,7 @@ func _QueryService_PagingMemberAccountLog_Handler(srv interface{}, ctx context.C
 		FullMethod: "/QueryService/PagingMemberAccountLog",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).PagingMemberAccountLog(ctx, req.(*PagingAccountInfoRequest))
+		return srv.(QueryServiceServer).PagingMemberAccountLog(ctx, req.(*PagingAccountLogRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

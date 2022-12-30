@@ -11,14 +11,15 @@ package query
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
-	"strconv"
-	"strings"
 )
 
 type MemberQuery struct {
@@ -104,18 +105,20 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_wallet_log bi
-	 	INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE bi.member_id= $1 %s`, where), &num, memberId)
+	var walletId = 0
+	d.ExecScalar(`SELECT id FROM wal_wallet LEFT JOIN mm_account 
+	ON mm_account.wallet_code=wal_wallet.hash_code
+	WHERE mm_account.member_id=$1 limit 1`, &walletId, memberId)
+
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM wal_wallet_log WHERE wallet_id =$1 %s`, where), &num, walletId)
 
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_wallet_log bi
-			INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
+		sqlLine := fmt.Sprintf(`SELECT id,kind,title,outer_no,value,procedure_fee,balance,review_state,
+		create_time FROM wal_wallet_log WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
 		d.Query(sqlLine, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
-		}, memberId, begin, end-begin)
+		}, walletId, begin, end-begin)
 	} else {
 		rows = []map[string]interface{}{}
 	}

@@ -36,7 +36,7 @@ service QueryService {
     rpc QueryMemberFavoriteGoods (FavoriteQueryRequest) returns (PagingGoodsFavoriteResponse) {
     }
     // 获取指定账户的流水记录
-    rpc PagingMemberAccountLog (PagingAccountInfoRequest) returns (SPagingResult) {
+    rpc PagingMemberAccountLog (PagingAccountLogRequest) returns (SPagingResult) {
     } 
 }
 
@@ -216,7 +216,7 @@ message MemberStatisticsResponse {
 }
 
 
-message PagingAccountInfoRequest {
+message PagingAccountLogRequest {
     sint64 memberId = 1;
     sint32 accountType = 2;
     SPagingParams params = 3;

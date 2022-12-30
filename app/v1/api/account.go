@@ -53,7 +53,7 @@ func (a accountApi) accountLog(ctx api.Context, memberId int64, account member.A
 	}
 	trans, cli, _ := service.MemberServiceClient()
 	defer trans.Close()
-	ret, _ := cli.PagingMemberAccountLog(context.TODO(), &proto.PagingAccountInfoRequest{
+	ret, _ := cli.PagingMemberAccountLog(context.TODO(), &proto.PagingAccountLogRequest{
 		MemberId:    memberId,
 		AccountType: int32(member.AccountWallet),
 		Params:      p,

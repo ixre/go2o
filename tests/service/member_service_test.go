@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
@@ -52,38 +51,6 @@ func TestCheckMemberAccessToken(t *testing.T) {
 	t.Log("会员Id", ret.MemberId)
 }
 
-func TestPagingIntegralLog(t *testing.T) {
-	params := &proto.SPagingParams{
-		Parameters: nil,
-		SortBy:     "",
-		Begin:      0,
-		End:        10,
-	}
-	r, _ := impl.MemberService.PagingMemberAccountLog(context.TODO(),
-		&proto.PagingAccountInfoRequest{
-			MemberId:    1,
-			AccountType: int32(member.AccountWallet),
-			Params:      params,
-		})
-	t.Logf("%#v", r)
-}
-
-func TestPagingWalletLog(t *testing.T) {
-	memberId := 77153
-	params := &proto.SPagingParams{
-		Parameters: nil,
-		SortBy:     "",
-		Begin:      0,
-		End:        10,
-	}
-	r, _ := impl.MemberService.PagingMemberAccountLog(context.TODO(),
-		&proto.PagingAccountInfoRequest{
-			MemberId:    int64(memberId),
-			AccountType: int32(member.AccountWallet),
-			Params:      params,
-		})
-	t.Logf("%#v", r)
-}
 
 // 测试检查交易密码
 func TestCheckTradePassword(t *testing.T) {

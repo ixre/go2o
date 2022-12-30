@@ -45,3 +45,6 @@ ALTER TABLE IF EXISTS public.mm_member
 
 ALTER TABLE "public".article_list 
   alter column update_time set not null;
+
+CREATE INDEX mm_account_member_id_wallet_code 
+  ON "public".mm_account (wallet_code, member_id);
