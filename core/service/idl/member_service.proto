@@ -239,7 +239,7 @@ service MemberService {
     rpc FinishWithdrawal (FinishWithdrawalRequest) returns (Result) {
     }
     // 查询提现记录
-    rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogsResponse) {
+    rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogResponse) {
     }
     // !银行四要素认证
     rpc B4EAuth (B4EAuthRequest) returns (Result) {

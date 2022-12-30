@@ -1428,7 +1428,7 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	}, nil
 }
 
-func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogsResponse, error) {
+func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogResponse, error) {
 	//todo: 这里只返回了一条
 	latestApplyInfo := s.query.GetLatestWalletLogByKind(r.MemberId,
 		wallet.KWithdrawToBankCard)
@@ -1452,7 +1452,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	//		format.FormatFloat(latestApplyInfo.Amount),
 	//		sText)
 	//}
-	ret := &proto.WithdrawalLogsResponse{Data: make([]*proto.WithdrawalLog, 0)}
+	ret := &proto.WithdrawalLogResponse{Data: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
 		ret.Data = append(ret.Data, &proto.WithdrawalLog{
 			Id:           latestApplyInfo.Id,
@@ -1475,7 +1475,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().ReviewWithdrawal(r.InfoId, r.Pass, r.Remark)
+		err = m.GetAccount().ReviewWithdrawal(r.LogId, r.Pass, r.Remark)
 	}
 	return s.error(err), nil
 }

@@ -175,7 +175,7 @@ type MemberServiceClient interface {
 	// 收到款项,完成提现
 	FinishWithdrawal(ctx context.Context, in *FinishWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 查询提现记录
-	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogsResponse, error)
+	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error)
 	// !银行四要素认证
 	B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 获取指定账户的流水记录
@@ -839,8 +839,8 @@ func (c *memberServiceClient) FinishWithdrawal(ctx context.Context, in *FinishWi
 	return out, nil
 }
 
-func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogsResponse, error) {
-	out := new(WithdrawalLogsResponse)
+func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error) {
+	out := new(WithdrawalLogResponse)
 	err := c.cc.Invoke(ctx, "/MemberService/QueryWithdrawalLog", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1068,7 +1068,7 @@ type MemberServiceServer interface {
 	// 收到款项,完成提现
 	FinishWithdrawal(context.Context, *FinishWithdrawalRequest) (*Result, error)
 	// 查询提现记录
-	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogsResponse, error)
+	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error)
 	// !银行四要素认证
 	B4EAuth(context.Context, *B4EAuthRequest) (*Result, error)
 	// * 获取指定账户的流水记录
@@ -1303,7 +1303,7 @@ func (UnimplementedMemberServiceServer) ReviewWithdrawal(context.Context, *Revie
 func (UnimplementedMemberServiceServer) FinishWithdrawal(context.Context, *FinishWithdrawalRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishWithdrawal not implemented")
 }
-func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogsResponse, error) {
+func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryWithdrawalLog not implemented")
 }
 func (UnimplementedMemberServiceServer) B4EAuth(context.Context, *B4EAuthRequest) (*Result, error) {

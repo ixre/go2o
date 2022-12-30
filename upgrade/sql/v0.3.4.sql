@@ -10,7 +10,6 @@ ALTER TABLE public.order_list ALTER COLUMN id TYPE bigint;
 ALTER TABLE public.order_list
     ALTER COLUMN subject TYPE character varying(40) COLLATE pg_catalog."default";
 
-
 /** 2022-12-03 */
 ALTER TABLE IF EXISTS public.order_list
     ADD COLUMN consignee_modified integer NOT NULL DEFAULT 0;
@@ -43,3 +42,6 @@ ALTER TABLE IF EXISTS public.product_model_spec_item
 /** 2022-12-29 15:39 */
 ALTER TABLE IF EXISTS public.mm_member
     RENAME name TO nick_name;
+
+ALTER TABLE "public".article_list 
+  alter column update_time set not null;
