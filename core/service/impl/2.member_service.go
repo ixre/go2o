@@ -768,23 +768,34 @@ func (s *memberService) CheckAccessToken(c context.Context, request *proto.Check
 	if tk == nil {
 		return &proto.CheckAccessTokenResponse{Error: "令牌无效"}, nil
 	}
-	// 判断是否有效
-	if !tk.Valid {
-		ve, _ := err.(*jwt.ValidationError)
-		if ve.Errors&jwt.ValidationErrorExpired != 0 {
-			return &proto.CheckAccessTokenResponse{Error: "令牌已过期", IsExpires: true}, nil
-		}
-		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
-	}
-	if request.ExpiresTime > 0 && !dstClaims.VerifyNotBefore(request.ExpiresTime, true) {
-		return &proto.CheckAccessTokenResponse{Error: "令牌超过有效期", IsExpires: true}, nil
-	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
 		dstClaims["sub"] != "go2o-api-jwt" {
 		return &proto.CheckAccessTokenResponse{Error: "未知颁发者的令牌"}, nil
 	}
+	// 令牌过期时间
+	exp := int64(dstClaims["exp"].(float64))
+	// 判断是否有效
+	if !tk.Valid {
+		ve, _ := err.(*jwt.ValidationError)
+		if ve.Errors&jwt.ValidationErrorExpired != 0 {
+			return &proto.CheckAccessTokenResponse{
+				Error:            "令牌已过期",
+				IsExpires:        true,
+				TokenExpiresTime: exp,
+			}, nil
+		}
+		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
+	}
+	// if request.ExpiresTime > 0 && !dstClaims.VerifyNotBefore(request.ExpiresTime, true) {
+	// 	return &proto.CheckAccessTokenResponse{
+	// 		Error:     "令牌超过有效期",
+	// 		IsExpires: true,
+	// 	}, nil
+	// }
+
 	return &proto.CheckAccessTokenResponse{
-		MemberId: int64(typeconv.MustInt(dstClaims["aud"])),
+		MemberId:         int64(typeconv.MustInt(dstClaims["aud"])),
+		TokenExpiresTime: exp,
 	}, nil
 }
 

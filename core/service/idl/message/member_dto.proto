@@ -88,18 +88,20 @@ message GrantAccessTokenResponse{
 message CheckAccessTokenRequest{
   // 访问令牌
   string accessToken = 1;
-  // 是否在有效期内有效, 如果传入0,不限制时间
-  int64 expiresTime = 2;
 }
 
 // 检查令牌响应
 message CheckAccessTokenResponse{
   // 错误信息
   string error = 1;
-  // 是否过期
-  bool isExpires = 2;
   // 会员编号
-  int64 memberId = 3;
+  int64 memberId = 2;
+  // 是否过期
+  bool isExpires = 3;
+  // 令牌过期时间
+  int64 tokenExpiresTime = 4;
+  // 剩余有效秒数
+  //int32 surplusSeconds = 4;
 }
 
 // 注册结果

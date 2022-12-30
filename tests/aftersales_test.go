@@ -114,6 +114,9 @@ func TestOrderReturn(t *testing.T) {
 	if err != nil {
 		t.Log("确认退货:", err.Error())
 	}
+
+	//ir := ro.()
+
 	err = ro.ReturnShip("顺风快递", "1000", "")
 	if err != nil {
 		t.Log("快递货物:", err.Error())

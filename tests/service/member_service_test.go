@@ -9,6 +9,7 @@ import (
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 var _ = ti.Factory.GetAdRepo()
@@ -27,7 +28,6 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	t.Log("token is:", token.AccessToken)
 	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: token.AccessToken,
-		ExpiresTime: 0,
 	})
 	if accessToken.MemberId != memberId {
 		t.Error(accessToken.Error)
@@ -39,12 +39,12 @@ func TestCheckMemberAccessToken(t *testing.T) {
 	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI3MDIiLCJleHAiOjE2NzIzMDM4MDIsImlzcyI6ImdvMm8iLCJzdWIiOiJnbzJvLWFwaS1qd3QifQ.Ebx4PcD0KSIftqejzfbyYbUpunm3jEi0gsScipcl-lo"
 	ret, _ := impl.MemberService.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: accessToken,
-		ExpiresTime: 0,
 	})
 	if len(ret.Error) > 0 {
 		t.Log(ret.Error)
 		t.FailNow()
 	}
+	t.Log(typeconv.MustJson(ret))
 	t.Log("会员Id", ret.MemberId)
 }
 
