@@ -254,7 +254,7 @@ message SaveAddressRequest {
 // 保存地址响应
 message SaveAddressResponse {
   /* 状态码,如为0表示成功 */
-  sint32 errCode = 1;
+  int32 errCode = 1;
   /* 消息 */
   string errMsg = 2;
   // 地址编号
