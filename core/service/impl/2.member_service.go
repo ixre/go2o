@@ -960,7 +960,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 
 // 解锁银行卡信息
 func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	err := m.Profile().RemoveBankCard(r.BankCardNo)
 	return s.result(err), nil
 }
@@ -1031,9 +1031,9 @@ func (s *memberService) GetBankCards(_ context.Context, id *proto.MemberIdReques
 
 // 保存银行卡
 func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v = &member.BankCard{
-		MemberId:    r.OwnerId,
+		MemberId:    r.MemberId,
 		BankAccount: r.Value.AccountNo,
 		AccountName: r.Value.AccountName,
 		BankId:      int(r.Value.BankId),
