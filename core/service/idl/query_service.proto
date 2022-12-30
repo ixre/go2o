@@ -35,7 +35,9 @@ service QueryService {
     // 获取分页店铺收藏
     rpc QueryMemberFavoriteGoods (FavoriteQueryRequest) returns (PagingGoodsFavoriteResponse) {
     }
-    
+    // 获取指定账户的流水记录
+    rpc PagingMemberAccountLog (PagingAccountInfoRequest) returns (SPagingResult) {
+    } 
 }
 
 message FavoriteQueryRequest {
@@ -212,3 +214,11 @@ message MemberStatisticsResponse {
     // 已完成数量
     int32 completedOrders = 4;
 }
+
+
+message PagingAccountInfoRequest {
+    sint64 memberId = 1;
+    sint32 accountType = 2;
+    SPagingParams params = 3;
+  }
+  

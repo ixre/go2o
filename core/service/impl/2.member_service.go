@@ -977,11 +977,11 @@ func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.MemberIdReque
 	list := make([]*proto.SReceiptsCode, len(arr))
 	for i, v := range arr {
 		list[i] = &proto.SReceiptsCode{
-			Identity:  v.Identity,
-			ReceipterName:      v.Name,
+			Identity:       v.Identity,
+			ReceipterName:  v.Name,
 			ReceiptAccount: v.AccountId,
 			CodeImageUrl:   v.CodeUrl,
-			State:     int32(v.State),
+			State:          int32(v.State),
 		}
 	}
 	return &proto.SReceiptsCodeListResponse{Value: list}, nil
@@ -1100,35 +1100,6 @@ func (s *memberService) ReviewTrustedInfo(_ context.Context, r *proto.ReviewTrus
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
-}
-
-// 获取钱包账户分页记录
-func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {
-	var total int
-	var rows []map[string]interface{}
-	switch member.AccountType(r.AccountType) {
-	case member.AccountIntegral:
-		total, rows = s.query.PagedIntegralAccountLog(
-			r.MemberId, r.Params.Begin,
-			r.Params.End, r.Params.SortBy)
-	case member.AccountBalance:
-		total, rows = s.query.PagedBalanceAccountLog(
-			r.MemberId, int(r.Params.Begin),
-			int(r.Params.End), r.Params.Where,
-			r.Params.SortBy)
-	case member.AccountWallet:
-		total, rows = s.query.PagedWalletAccountLog(
-			r.MemberId, int(r.Params.Begin),
-			int(r.Params.End), r.Params.Where,
-			r.Params.Where)
-	}
-	rs := &proto.SPagingResult{
-		ErrCode: 0,
-		ErrMsg:  "",
-		Count:   int32(total),
-		Data:    s.json(rows),
-	}
-	return rs, nil
 }
 
 /*********** 收货地址 ***********/

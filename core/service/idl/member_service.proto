@@ -244,9 +244,7 @@ service MemberService {
     // !银行四要素认证
     rpc B4EAuth (B4EAuthRequest) returns (Result) {
     }
-    /** 获取指定账户的流水记录 */
-    rpc PagingAccountLog (PagingAccountInfoRequest) returns (SPagingResult) {
-    }
+
     // 获取钱包流水记录
     rpc GetWalletLog (WalletLogRequest) returns (WalletLogResponse);
     // 取消收藏

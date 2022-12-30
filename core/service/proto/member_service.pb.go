@@ -170,7 +170,7 @@ var file_member_service_proto_rawDesc = []byte{
 	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x49,
 	0x64, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x32,
-	0x96, 0x20, 0x0a, 0x0d, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0xd5, 0x1f, 0x0a, 0x0d, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
 	0x65, 0x12, 0x37, 0x0a, 0x08, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x16, 0x2e,
 	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72,
@@ -407,30 +407,25 @@ var file_member_service_proto_rawDesc = []byte{
 	0x77, 0x61, 0x6c, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
 	0x12, 0x25, 0x0a, 0x07, 0x42, 0x34, 0x45, 0x41, 0x75, 0x74, 0x68, 0x12, 0x0f, 0x2e, 0x42, 0x34,
 	0x45, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x07, 0x2e, 0x52,
-	0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x00, 0x12, 0x3f, 0x0a, 0x10, 0x50, 0x61, 0x67, 0x69, 0x6e,
-	0x67, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x4c, 0x6f, 0x67, 0x12, 0x19, 0x2e, 0x50, 0x61,
-	0x67, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0e, 0x2e, 0x53, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67,
-	0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x00, 0x12, 0x35, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x57,
-	0x61, 0x6c, 0x6c, 0x65, 0x74, 0x4c, 0x6f, 0x67, 0x12, 0x11, 0x2e, 0x57, 0x61, 0x6c, 0x6c, 0x65,
-	0x74, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x12, 0x2e, 0x57, 0x61,
-	0x6c, 0x6c, 0x65, 0x74, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x2d, 0x0a, 0x0e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74,
-	0x65, 0x12, 0x10, 0x2e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x07, 0x2e, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x00, 0x12, 0x27,
-	0x0a, 0x08, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x12, 0x10, 0x2e, 0x46, 0x61, 0x76,
-	0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x07, 0x2e, 0x52,
-	0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x00, 0x12, 0x26, 0x0a, 0x09, 0x49, 0x73, 0x46, 0x61, 0x76,
-	0x6f, 0x72, 0x65, 0x64, 0x12, 0x10, 0x2e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x05, 0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x22, 0x00, 0x12,
-	0x47, 0x0a, 0x0c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6f, 0x75, 0x70, 0x6f, 0x6e, 0x73, 0x12,
-	0x1a, 0x2e, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x70, 0x6f, 0x6e, 0x50, 0x61,
-	0x67, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x4d, 0x65,
-	0x6d, 0x62, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x70, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x1f, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x67, 0x6f, 0x32, 0x6f, 0x2e, 0x72, 0x70, 0x63, 0x5a,
-	0x08, 0x2e, 0x2f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x00, 0x12, 0x35, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x57, 0x61,
+	0x6c, 0x6c, 0x65, 0x74, 0x4c, 0x6f, 0x67, 0x12, 0x11, 0x2e, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74,
+	0x4c, 0x6f, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x12, 0x2e, 0x57, 0x61, 0x6c,
+	0x6c, 0x65, 0x74, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d,
+	0x0a, 0x0e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65,
+	0x12, 0x10, 0x2e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x07, 0x2e, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x00, 0x12, 0x27, 0x0a,
+	0x08, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x12, 0x10, 0x2e, 0x46, 0x61, 0x76, 0x6f,
+	0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x07, 0x2e, 0x52, 0x65,
+	0x73, 0x75, 0x6c, 0x74, 0x22, 0x00, 0x12, 0x26, 0x0a, 0x09, 0x49, 0x73, 0x46, 0x61, 0x76, 0x6f,
+	0x72, 0x65, 0x64, 0x12, 0x10, 0x2e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x05, 0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x22, 0x00, 0x12, 0x47,
+	0x0a, 0x0c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6f, 0x75, 0x70, 0x6f, 0x6e, 0x73, 0x12, 0x1a,
+	0x2e, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x70, 0x6f, 0x6e, 0x50, 0x61, 0x67,
+	0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x4d, 0x65, 0x6d,
+	0x62, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x70, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x1f, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x67, 0x6f, 0x32, 0x6f, 0x2e, 0x72, 0x70, 0x63, 0x5a, 0x08,
+	0x2e, 0x2f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -500,38 +495,36 @@ var file_member_service_proto_goTypes = []interface{}{
 	(*FinishWithdrawalRequest)(nil),        // 50: FinishWithdrawalRequest
 	(*WithdrawalLogRequest)(nil),           // 51: WithdrawalLogRequest
 	(*B4EAuthRequest)(nil),                 // 52: B4EAuthRequest
-	(*PagingAccountInfoRequest)(nil),       // 53: PagingAccountInfoRequest
-	(*WalletLogRequest)(nil),               // 54: WalletLogRequest
-	(*FavoriteRequest)(nil),                // 55: FavoriteRequest
-	(*MemberCouponPagingRequest)(nil),      // 56: MemberCouponPagingRequest
-	(*RegisterResponse)(nil),               // 57: RegisterResponse
-	(*LoginResponse)(nil),                  // 58: LoginResponse
-	(*GrantAccessTokenResponse)(nil),       // 59: GrantAccessTokenResponse
-	(*CheckAccessTokenResponse)(nil),       // 60: CheckAccessTokenResponse
-	(*Result)(nil),                         // 61: Result
-	(*SMemberLevelListResponse)(nil),       // 62: SMemberLevelListResponse
-	(*STrustedInfo)(nil),                   // 63: STrustedInfo
-	(*SMember)(nil),                        // 64: SMember
-	(*MemberRelationResponse)(nil),         // 65: MemberRelationResponse
-	(*BankCardListResponse)(nil),           // 66: BankCardListResponse
-	(*SComplexMember)(nil),                 // 67: SComplexMember
-	(*SReceiptsCodeListResponse)(nil),      // 68: SReceiptsCodeListResponse
-	(*SMemberLevelInfo)(nil),               // 69: SMemberLevelInfo
-	(*Bool)(nil),                           // 70: Bool
-	(*AddressListResponse)(nil),            // 71: AddressListResponse
-	(*SaveAddressResponse)(nil),            // 72: SaveAddressResponse
-	(*SAddress)(nil),                       // 73: SAddress
-	(*SAccount)(nil),                       // 74: SAccount
-	(*InviterIdListResponse)(nil),          // 75: InviterIdListResponse
-	(*MemberIdListResponse)(nil),           // 76: MemberIdListResponse
-	(*MemberInvitationPagingResponse)(nil), // 77: MemberInvitationPagingResponse
-	(*AccountCarryResponse)(nil),           // 78: AccountCarryResponse
-	(*AccountFreezeResponse)(nil),          // 79: AccountFreezeResponse
-	(*WithdrawalResponse)(nil),             // 80: WithdrawalResponse
-	(*WithdrawalLogResponse)(nil),          // 81: WithdrawalLogResponse
-	(*SPagingResult)(nil),                  // 82: SPagingResult
-	(*WalletLogResponse)(nil),              // 83: WalletLogResponse
-	(*MemberCouponListResponse)(nil),       // 84: MemberCouponListResponse
+	(*WalletLogRequest)(nil),               // 53: WalletLogRequest
+	(*FavoriteRequest)(nil),                // 54: FavoriteRequest
+	(*MemberCouponPagingRequest)(nil),      // 55: MemberCouponPagingRequest
+	(*RegisterResponse)(nil),               // 56: RegisterResponse
+	(*LoginResponse)(nil),                  // 57: LoginResponse
+	(*GrantAccessTokenResponse)(nil),       // 58: GrantAccessTokenResponse
+	(*CheckAccessTokenResponse)(nil),       // 59: CheckAccessTokenResponse
+	(*Result)(nil),                         // 60: Result
+	(*SMemberLevelListResponse)(nil),       // 61: SMemberLevelListResponse
+	(*STrustedInfo)(nil),                   // 62: STrustedInfo
+	(*SMember)(nil),                        // 63: SMember
+	(*MemberRelationResponse)(nil),         // 64: MemberRelationResponse
+	(*BankCardListResponse)(nil),           // 65: BankCardListResponse
+	(*SComplexMember)(nil),                 // 66: SComplexMember
+	(*SReceiptsCodeListResponse)(nil),      // 67: SReceiptsCodeListResponse
+	(*SMemberLevelInfo)(nil),               // 68: SMemberLevelInfo
+	(*Bool)(nil),                           // 69: Bool
+	(*AddressListResponse)(nil),            // 70: AddressListResponse
+	(*SaveAddressResponse)(nil),            // 71: SaveAddressResponse
+	(*SAddress)(nil),                       // 72: SAddress
+	(*SAccount)(nil),                       // 73: SAccount
+	(*InviterIdListResponse)(nil),          // 74: InviterIdListResponse
+	(*MemberIdListResponse)(nil),           // 75: MemberIdListResponse
+	(*MemberInvitationPagingResponse)(nil), // 76: MemberInvitationPagingResponse
+	(*AccountCarryResponse)(nil),           // 77: AccountCarryResponse
+	(*AccountFreezeResponse)(nil),          // 78: AccountFreezeResponse
+	(*WithdrawalResponse)(nil),             // 79: WithdrawalResponse
+	(*WithdrawalLogResponse)(nil),          // 80: WithdrawalLogResponse
+	(*WalletLogResponse)(nil),              // 81: WalletLogResponse
+	(*MemberCouponListResponse)(nil),       // 82: MemberCouponListResponse
 }
 var file_member_service_proto_depIdxs = []int32{
 	2,  // 0: MemberService.Register:input_type -> RegisterMemberRequest
@@ -607,93 +600,91 @@ var file_member_service_proto_depIdxs = []int32{
 	50, // 70: MemberService.FinishWithdrawal:input_type -> FinishWithdrawalRequest
 	51, // 71: MemberService.QueryWithdrawalLog:input_type -> WithdrawalLogRequest
 	52, // 72: MemberService.B4EAuth:input_type -> B4EAuthRequest
-	53, // 73: MemberService.PagingAccountLog:input_type -> PagingAccountInfoRequest
-	54, // 74: MemberService.GetWalletLog:input_type -> WalletLogRequest
-	55, // 75: MemberService.RemoveFavorite:input_type -> FavoriteRequest
-	55, // 76: MemberService.Favorite:input_type -> FavoriteRequest
-	55, // 77: MemberService.IsFavored:input_type -> FavoriteRequest
-	56, // 78: MemberService.QueryCoupons:input_type -> MemberCouponPagingRequest
-	57, // 79: MemberService.Register:output_type -> RegisterResponse
-	58, // 80: MemberService.CheckLogin:output_type -> LoginResponse
-	59, // 81: MemberService.GrantAccessToken:output_type -> GrantAccessTokenResponse
-	60, // 82: MemberService.CheckAccessToken:output_type -> CheckAccessTokenResponse
-	61, // 83: MemberService.VerifyTradePassword:output_type -> Result
-	62, // 84: MemberService.GetLevels:output_type -> SMemberLevelListResponse
-	63, // 85: MemberService.GetTrustInfo:output_type -> STrustedInfo
-	61, // 86: MemberService.SubmitTrustInfo:output_type -> Result
-	61, // 87: MemberService.ReviewTrustedInfo:output_type -> Result
-	12, // 88: MemberService.GetMemberLevel:output_type -> SMemberLevel
-	61, // 89: MemberService.SaveMemberLevel:output_type -> Result
-	12, // 90: MemberService.GetLevelBySign:output_type -> SMemberLevel
-	61, // 91: MemberService.DeleteMemberLevel:output_type -> Result
-	64, // 92: MemberService.GetMember:output_type -> SMember
-	14, // 93: MemberService.FindMember:output_type -> Int64
-	16, // 94: MemberService.GetProfile:output_type -> SProfile
-	61, // 95: MemberService.SaveProfile:output_type -> Result
-	65, // 96: MemberService.GetRelation:output_type -> MemberRelationResponse
-	66, // 97: MemberService.GetBankCards:output_type -> BankCardListResponse
-	61, // 98: MemberService.AddBankCard:output_type -> Result
-	61, // 99: MemberService.RemoveBankCard:output_type -> Result
-	61, // 100: MemberService.Active:output_type -> Result
-	61, // 101: MemberService.Lock:output_type -> Result
-	61, // 102: MemberService.Unlock:output_type -> Result
-	61, // 103: MemberService.GrantFlag:output_type -> Result
-	67, // 104: MemberService.Complex:output_type -> SComplexMember
-	61, // 105: MemberService.SendCode:output_type -> Result
-	61, // 106: MemberService.CompareCode:output_type -> Result
-	68, // 107: MemberService.ReceiptsCodes:output_type -> SReceiptsCodeListResponse
-	61, // 108: MemberService.SaveReceiptsCode:output_type -> Result
-	61, // 109: MemberService.SetPayPriority:output_type -> Result
-	61, // 110: MemberService.CheckProfileComplete:output_type -> Result
-	69, // 111: MemberService.MemberLevelInfo:output_type -> SMemberLevelInfo
-	61, // 112: MemberService.UpdateLevel:output_type -> Result
-	61, // 113: MemberService.ReviewLevelUpRequest:output_type -> Result
-	61, // 114: MemberService.ConfirmLevelUpRequest:output_type -> Result
-	61, // 115: MemberService.ChangePhone:output_type -> Result
-	61, // 116: MemberService.ChangeUser:output_type -> Result
-	61, // 117: MemberService.ChangeNickname:output_type -> Result
-	61, // 118: MemberService.ChangeHeadPortrait:output_type -> Result
-	61, // 119: MemberService.ModifyPassword:output_type -> Result
-	61, // 120: MemberService.ModifyTradePassword:output_type -> Result
-	70, // 121: MemberService.CheckProfileCompleted:output_type -> Bool
-	61, // 122: MemberService.SetInviter:output_type -> Result
-	61, // 123: MemberService.Premium:output_type -> Result
-	13, // 124: MemberService.GetToken:output_type -> String
-	70, // 125: MemberService.CheckToken:output_type -> Bool
-	7,  // 126: MemberService.RemoveToken:output_type -> Empty
-	71, // 127: MemberService.GetAddressList:output_type -> AddressListResponse
-	72, // 128: MemberService.SaveAddress:output_type -> SaveAddressResponse
-	73, // 129: MemberService.GetAddress:output_type -> SAddress
-	61, // 130: MemberService.DeleteAddress:output_type -> Result
-	74, // 131: MemberService.GetAccount:output_type -> SAccount
-	70, // 132: MemberService.IsInvitation:output_type -> Bool
-	75, // 133: MemberService.InviterArray:output_type -> InviterIdListResponse
-	11, // 134: MemberService.InviteMembersQuantity:output_type -> Int32
-	14, // 135: MemberService.QueryInviteQuantity:output_type -> Int64
-	76, // 136: MemberService.QueryInviteArray:output_type -> MemberIdListResponse
-	77, // 137: MemberService.GetMyPagedInvitationMembers:output_type -> MemberInvitationPagingResponse
-	61, // 138: MemberService.AccountCharge:output_type -> Result
-	78, // 139: MemberService.AccountCarryTo:output_type -> AccountCarryResponse
-	61, // 140: MemberService.AccountConsume:output_type -> Result
-	61, // 141: MemberService.AccountDiscount:output_type -> Result
-	79, // 142: MemberService.Freeze:output_type -> AccountFreezeResponse
-	61, // 143: MemberService.Unfreeze:output_type -> Result
-	61, // 144: MemberService.AccountRefund:output_type -> Result
-	61, // 145: MemberService.AccountAdjust:output_type -> Result
-	61, // 146: MemberService.AccountTransfer:output_type -> Result
-	80, // 147: MemberService.Withdraw:output_type -> WithdrawalResponse
-	61, // 148: MemberService.ReviewWithdrawal:output_type -> Result
-	61, // 149: MemberService.FinishWithdrawal:output_type -> Result
-	81, // 150: MemberService.QueryWithdrawalLog:output_type -> WithdrawalLogResponse
-	61, // 151: MemberService.B4EAuth:output_type -> Result
-	82, // 152: MemberService.PagingAccountLog:output_type -> SPagingResult
-	83, // 153: MemberService.GetWalletLog:output_type -> WalletLogResponse
-	61, // 154: MemberService.RemoveFavorite:output_type -> Result
-	61, // 155: MemberService.Favorite:output_type -> Result
-	70, // 156: MemberService.IsFavored:output_type -> Bool
-	84, // 157: MemberService.QueryCoupons:output_type -> MemberCouponListResponse
-	79, // [79:158] is the sub-list for method output_type
-	0,  // [0:79] is the sub-list for method input_type
+	53, // 73: MemberService.GetWalletLog:input_type -> WalletLogRequest
+	54, // 74: MemberService.RemoveFavorite:input_type -> FavoriteRequest
+	54, // 75: MemberService.Favorite:input_type -> FavoriteRequest
+	54, // 76: MemberService.IsFavored:input_type -> FavoriteRequest
+	55, // 77: MemberService.QueryCoupons:input_type -> MemberCouponPagingRequest
+	56, // 78: MemberService.Register:output_type -> RegisterResponse
+	57, // 79: MemberService.CheckLogin:output_type -> LoginResponse
+	58, // 80: MemberService.GrantAccessToken:output_type -> GrantAccessTokenResponse
+	59, // 81: MemberService.CheckAccessToken:output_type -> CheckAccessTokenResponse
+	60, // 82: MemberService.VerifyTradePassword:output_type -> Result
+	61, // 83: MemberService.GetLevels:output_type -> SMemberLevelListResponse
+	62, // 84: MemberService.GetTrustInfo:output_type -> STrustedInfo
+	60, // 85: MemberService.SubmitTrustInfo:output_type -> Result
+	60, // 86: MemberService.ReviewTrustedInfo:output_type -> Result
+	12, // 87: MemberService.GetMemberLevel:output_type -> SMemberLevel
+	60, // 88: MemberService.SaveMemberLevel:output_type -> Result
+	12, // 89: MemberService.GetLevelBySign:output_type -> SMemberLevel
+	60, // 90: MemberService.DeleteMemberLevel:output_type -> Result
+	63, // 91: MemberService.GetMember:output_type -> SMember
+	14, // 92: MemberService.FindMember:output_type -> Int64
+	16, // 93: MemberService.GetProfile:output_type -> SProfile
+	60, // 94: MemberService.SaveProfile:output_type -> Result
+	64, // 95: MemberService.GetRelation:output_type -> MemberRelationResponse
+	65, // 96: MemberService.GetBankCards:output_type -> BankCardListResponse
+	60, // 97: MemberService.AddBankCard:output_type -> Result
+	60, // 98: MemberService.RemoveBankCard:output_type -> Result
+	60, // 99: MemberService.Active:output_type -> Result
+	60, // 100: MemberService.Lock:output_type -> Result
+	60, // 101: MemberService.Unlock:output_type -> Result
+	60, // 102: MemberService.GrantFlag:output_type -> Result
+	66, // 103: MemberService.Complex:output_type -> SComplexMember
+	60, // 104: MemberService.SendCode:output_type -> Result
+	60, // 105: MemberService.CompareCode:output_type -> Result
+	67, // 106: MemberService.ReceiptsCodes:output_type -> SReceiptsCodeListResponse
+	60, // 107: MemberService.SaveReceiptsCode:output_type -> Result
+	60, // 108: MemberService.SetPayPriority:output_type -> Result
+	60, // 109: MemberService.CheckProfileComplete:output_type -> Result
+	68, // 110: MemberService.MemberLevelInfo:output_type -> SMemberLevelInfo
+	60, // 111: MemberService.UpdateLevel:output_type -> Result
+	60, // 112: MemberService.ReviewLevelUpRequest:output_type -> Result
+	60, // 113: MemberService.ConfirmLevelUpRequest:output_type -> Result
+	60, // 114: MemberService.ChangePhone:output_type -> Result
+	60, // 115: MemberService.ChangeUser:output_type -> Result
+	60, // 116: MemberService.ChangeNickname:output_type -> Result
+	60, // 117: MemberService.ChangeHeadPortrait:output_type -> Result
+	60, // 118: MemberService.ModifyPassword:output_type -> Result
+	60, // 119: MemberService.ModifyTradePassword:output_type -> Result
+	69, // 120: MemberService.CheckProfileCompleted:output_type -> Bool
+	60, // 121: MemberService.SetInviter:output_type -> Result
+	60, // 122: MemberService.Premium:output_type -> Result
+	13, // 123: MemberService.GetToken:output_type -> String
+	69, // 124: MemberService.CheckToken:output_type -> Bool
+	7,  // 125: MemberService.RemoveToken:output_type -> Empty
+	70, // 126: MemberService.GetAddressList:output_type -> AddressListResponse
+	71, // 127: MemberService.SaveAddress:output_type -> SaveAddressResponse
+	72, // 128: MemberService.GetAddress:output_type -> SAddress
+	60, // 129: MemberService.DeleteAddress:output_type -> Result
+	73, // 130: MemberService.GetAccount:output_type -> SAccount
+	69, // 131: MemberService.IsInvitation:output_type -> Bool
+	74, // 132: MemberService.InviterArray:output_type -> InviterIdListResponse
+	11, // 133: MemberService.InviteMembersQuantity:output_type -> Int32
+	14, // 134: MemberService.QueryInviteQuantity:output_type -> Int64
+	75, // 135: MemberService.QueryInviteArray:output_type -> MemberIdListResponse
+	76, // 136: MemberService.GetMyPagedInvitationMembers:output_type -> MemberInvitationPagingResponse
+	60, // 137: MemberService.AccountCharge:output_type -> Result
+	77, // 138: MemberService.AccountCarryTo:output_type -> AccountCarryResponse
+	60, // 139: MemberService.AccountConsume:output_type -> Result
+	60, // 140: MemberService.AccountDiscount:output_type -> Result
+	78, // 141: MemberService.Freeze:output_type -> AccountFreezeResponse
+	60, // 142: MemberService.Unfreeze:output_type -> Result
+	60, // 143: MemberService.AccountRefund:output_type -> Result
+	60, // 144: MemberService.AccountAdjust:output_type -> Result
+	60, // 145: MemberService.AccountTransfer:output_type -> Result
+	79, // 146: MemberService.Withdraw:output_type -> WithdrawalResponse
+	60, // 147: MemberService.ReviewWithdrawal:output_type -> Result
+	60, // 148: MemberService.FinishWithdrawal:output_type -> Result
+	80, // 149: MemberService.QueryWithdrawalLog:output_type -> WithdrawalLogResponse
+	60, // 150: MemberService.B4EAuth:output_type -> Result
+	81, // 151: MemberService.GetWalletLog:output_type -> WalletLogResponse
+	60, // 152: MemberService.RemoveFavorite:output_type -> Result
+	60, // 153: MemberService.Favorite:output_type -> Result
+	69, // 154: MemberService.IsFavored:output_type -> Bool
+	82, // 155: MemberService.QueryCoupons:output_type -> MemberCouponListResponse
+	78, // [78:156] is the sub-list for method output_type
+	0,  // [0:78] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

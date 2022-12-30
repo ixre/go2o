@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-import "global.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
@@ -373,12 +372,6 @@ message B4EAuthRequest {
   sint64 memberId = 1;
   string action = 2;
   map<string, string> data = 3;
-}
-
-message PagingAccountInfoRequest {
-  sint64 memberId = 1;
-  sint32 accountType = 2;
-  SPagingParams params = 3;
 }
 
 /** 等级 */

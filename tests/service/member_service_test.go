@@ -29,9 +29,9 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	t.Log("token is:", token.AccessToken)
 	now := time.Now().Unix()
 	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
-		AccessToken: token.AccessToken,
-		CheckExpireTime: now + 800 ,
-		RenewExpiresTime: now+ 900,
+		AccessToken:      token.AccessToken,
+		CheckExpireTime:  now + 800,
+		RenewExpiresTime: now + 900,
 	})
 	if accessToken.MemberId != memberId {
 		t.Error(accessToken.Error)
@@ -59,7 +59,7 @@ func TestPagingIntegralLog(t *testing.T) {
 		Begin:      0,
 		End:        10,
 	}
-	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
+	r, _ := impl.MemberService.PagingMemberAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
 			MemberId:    1,
 			AccountType: int32(member.AccountWallet),
@@ -76,7 +76,7 @@ func TestPagingWalletLog(t *testing.T) {
 		Begin:      0,
 		End:        10,
 	}
-	r, _ := impl.MemberService.PagingAccountLog(context.TODO(),
+	r, _ := impl.MemberService.PagingMemberAccountLog(context.TODO(),
 		&proto.PagingAccountInfoRequest{
 			MemberId:    int64(memberId),
 			AccountType: int32(member.AccountWallet),
