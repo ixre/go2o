@@ -978,9 +978,9 @@ func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.MemberIdReque
 	for i, v := range arr {
 		list[i] = &proto.SReceiptsCode{
 			Identity:  v.Identity,
-			Name:      v.Name,
-			AccountId: v.AccountId,
-			CodeURL:   v.CodeUrl,
+			ReceipterName:      v.Name,
+			ReceiptAccount: v.AccountId,
+			CodeImageUrl:   v.CodeUrl,
 			State:     int32(v.State),
 		}
 	}
@@ -995,9 +995,9 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 	}
 	v := &member.ReceiptsCode{
 		Identity:  r.Code.Identity,
-		Name:      r.Code.Name,
-		AccountId: r.Code.AccountId,
-		CodeUrl:   r.Code.CodeURL,
+		Name:      r.Code.ReceipterName,
+		AccountId: r.Code.ReceiptAccount,
+		CodeUrl:   r.Code.CodeImageUrl,
 		State:     int(r.Code.State),
 	}
 	if err := m.Profile().SaveReceiptsCode(v); err != nil {

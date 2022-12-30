@@ -594,11 +594,11 @@ message SReceiptsCode {
   /** 账户标识,如:alipay */
   string identity = 1;
   /** 账户名称 */
-  string name = 2;
+  string receipterName = 2;
   /** 账号 */
-  string accountId = 3;
+  string receiptAccount = 3;
   /** 收款码地址 */
-  string codeURL = 4;
+  string codeImageUrl = 4;
   /** 是否启用 */
   sint32 state = 5;
 }
