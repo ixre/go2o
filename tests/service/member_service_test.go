@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -26,8 +27,11 @@ func TestGrantMemberAccessToken(t *testing.T) {
 		t.Failed()
 	}
 	t.Log("token is:", token.AccessToken)
+	now := time.Now().Unix()
 	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: token.AccessToken,
+		CheckExpireTime: now + 800 ,
+		RenewExpiresTime: now+ 900,
 	})
 	if accessToken.MemberId != memberId {
 		t.Error(accessToken.Error)

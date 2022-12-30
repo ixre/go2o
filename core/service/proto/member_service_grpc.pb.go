@@ -38,7 +38,7 @@ type MemberServiceClient interface {
 	CheckLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// 发放访问令牌,续期即重新颁发
 	GrantAccessToken(ctx context.Context, in *GrantAccessTokenRequest, opts ...grpc.CallOption) (*GrantAccessTokenResponse, error)
-	// 检查令牌是否有效
+	// 检查令牌是否有效并返回新的令牌
 	CheckAccessToken(ctx context.Context, in *CheckAccessTokenRequest, opts ...grpc.CallOption) (*CheckAccessTokenResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*Result, error)
@@ -931,7 +931,7 @@ type MemberServiceServer interface {
 	CheckLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 	// 发放访问令牌,续期即重新颁发
 	GrantAccessToken(context.Context, *GrantAccessTokenRequest) (*GrantAccessTokenResponse, error)
-	// 检查令牌是否有效
+	// 检查令牌是否有效并返回新的令牌
 	CheckAccessToken(context.Context, *CheckAccessTokenRequest) (*CheckAccessTokenResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(context.Context, *VerifyPasswordRequest) (*Result, error)

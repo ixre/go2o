@@ -786,17 +786,40 @@ func (s *memberService) CheckAccessToken(c context.Context, request *proto.Check
 		}
 		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
 	}
-	// if request.ExpiresTime > 0 && !dstClaims.VerifyNotBefore(request.ExpiresTime, true) {
-	// 	return &proto.CheckAccessTokenResponse{
-	// 		Error:     "令牌超过有效期",
-	// 		IsExpires: true,
-	// 	}, nil
-	// }
-
+	aud := int64(typeconv.MustInt(dstClaims["aud"]))
+	// 如果设置了续期参数
+	if exp <= request.CheckExpireTime {
+		return s.renewAccessToken(request, aud, exp), nil
+	}
 	return &proto.CheckAccessTokenResponse{
-		MemberId:         int64(typeconv.MustInt(dstClaims["aud"])),
+		MemberId:         aud,
 		TokenExpiresTime: exp,
 	}, nil
+}
+
+// renewAccessToken 续签令牌
+func (s *memberService) renewAccessToken(request *proto.CheckAccessTokenRequest,
+	aud int64, exp int64) *proto.CheckAccessTokenResponse {
+	if request.RenewExpiresTime < request.CheckExpireTime {
+		return &proto.CheckAccessTokenResponse{
+			Error: "令牌续期过期时间必须在检测过期时间之后",
+		}
+	}
+	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
+		MemberId: aud,
+		Expire:   request.RenewExpiresTime,
+	})
+	if len(ret.Error) > 0 {
+		return &proto.CheckAccessTokenResponse{
+			Error: ret.Error,
+		}
+	}
+	return &proto.CheckAccessTokenResponse{
+		IsExpires:        false,
+		TokenExpiresTime: exp,
+		MemberId:         aud,
+		RenewAccessToken: ret.AccessToken,
+	}
 }
 
 // VerifyTradePassword 检查交易密码

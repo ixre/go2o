@@ -88,6 +88,10 @@ message GrantAccessTokenResponse{
 message CheckAccessTokenRequest{
   // 访问令牌
   string accessToken = 1;
+  // 检测过期时间,在此时间内过期,将生成返回新的令牌
+  int64 checkExpireTime = 2;
+  // 新生成令牌的有效时间
+  int64 renewExpiresTime = 3;
 }
 
 // 检查令牌响应
@@ -100,8 +104,8 @@ message CheckAccessTokenResponse{
   bool isExpires = 3;
   // 令牌过期时间
   int64 tokenExpiresTime = 4;
-  // 剩余有效秒数
-  //int32 surplusSeconds = 4;
+  // 重新生成的令牌
+  string renewAccessToken = 5;
 }
 
 // 注册结果
