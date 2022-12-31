@@ -1220,6 +1220,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 				Portrait: rows[i].Avatar,
 				Nickname: rows[i].Nickname,
 				Phone:    rows[i].Phone,
+				RegTime: rows[i].RegTime,
 				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
 			})

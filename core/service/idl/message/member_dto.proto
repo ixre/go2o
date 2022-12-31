@@ -846,8 +846,10 @@ message SInvitationMember {
   string nickname = 5;
   // 电话
   string phone = 6;
+  // 注册时间
+  int64 regTime = 7;
   // 邀请人数
-  int32 invitationNum = 9;
+  int32 invitationNum = 8;
 }
 message IsInvitationRequest {
   // 会员编号

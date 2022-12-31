@@ -633,14 +633,14 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
 	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
-		m.Connector.Query(`SELECT id,mm_member.user,level,avatar,real_name,phone FROM mm_member 
+		m.Connector.Query(`SELECT id,mm_member.user,level,avatar,real_name,phone,reg_time FROM mm_member 
 				WHERE id IN (SELECT member_id FROM
              mm_relation WHERE inviter_id= $1)
              ORDER BY level DESC,id LIMIT $3 OFFSET $2`,
 			func(rs *sql.Rows) {
 				for rs.Next() {
 					e := &dto.InvitationMember{}
-					rs.Scan(&e.MemberId, &e.User, &e.Level, &e.Avatar, &e.Nickname, &e.Phone)
+					rs.Scan(&e.MemberId, &e.User, &e.Level, &e.Avatar, &e.Nickname, &e.Phone, &e.RegTime)
 					arr = append(arr, e)
 				}
 			}, memberId, begin, end-begin)
