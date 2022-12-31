@@ -11,14 +11,15 @@ package member
 import (
 	"errors"
 	"fmt"
+	"sort"
+	"strings"
+
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/util"
-	"sort"
-	"strings"
 )
 
 var _ member.IMemberManager = new(memberManagerImpl)
@@ -136,7 +137,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	if lp > 0 {
 		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
 		if checkPhone && !phoneRegex.MatchString(pro.Phone) {
-			return 0, member.ErrBadPhoneFormat
+			return 0, member.ErrInvalidPhone
 		}
 		if m.CheckPhoneBind(pro.Phone, v.Id) != nil {
 			return 0, member.ErrPhoneHasBind

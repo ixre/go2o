@@ -10,11 +10,11 @@ import (
 	"github.com/ixre/gof/types/typeconv"
 )
 
-func TestGetMember(t *testing.T){
+func TestGetMember(t *testing.T) {
 	var memberId int64 = 702
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(memberId)
-	if m == nil{
+	if m == nil {
 		t.FailNow()
 	}
 }
@@ -36,4 +36,14 @@ func TestGetInviteUsers(t *testing.T) {
 	iv := repo.CreateMember(&member.Member{Id: 0}).Invitation()
 	total, rows := iv.GetInvitationMembers(0, 10)
 	t.Log(total, typeconv.MustJson(rows))
+}
+
+func TestChangeMemberPhone(t *testing.T) {
+	repo := ti.Factory.GetMemberRepo()
+	m := repo.GetMember(702)
+	err := m.Profile().ChangePhone("18626999822")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 }

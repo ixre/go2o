@@ -71,7 +71,7 @@ message SNavGroup{
 }
 
 message SaveNavResponse{
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
@@ -129,7 +129,7 @@ message SaveNavGroupRequest{
 }
 
 message SaveNavGroupResponse{
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
@@ -150,7 +150,7 @@ message SaveSearchWordRequest{
 
 /** 保存热搜词响应 */
 message SaveSearchWordResponse{
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }

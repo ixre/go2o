@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 
+	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
@@ -311,4 +312,31 @@ func (q *queryService) QueryMemberFavoriteGoods(_ context.Context, r *proto.Favo
 		}
 	}
 	return ret, nil
+}
+
+// 获取钱包账户分页记录
+func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.PagingAccountLogRequest) (*proto.MemberAccountPagingLogResponse, error) {
+	var total int
+	var rows []*proto.SMemberAccountLog
+	switch member.AccountType(r.AccountType) {
+	case member.AccountIntegral:
+		total, rows = q.memberQuery.PagedIntegralAccountLog(
+			r.MemberId, r.Params.Begin,
+			r.Params.End, r.Params.SortBy)
+	case member.AccountBalance:
+		total, rows = q.memberQuery.PagedBalanceAccountLog(
+			r.MemberId, int(r.Params.Begin),
+			int(r.Params.End), r.Params.Where,
+			r.Params.SortBy)
+	case member.AccountWallet:
+		total, rows = q.memberQuery.PagedWalletAccountLog(
+			r.MemberId, int(r.Params.Begin),
+			int(r.Params.End), r.Params.Where,
+			r.Params.Where)
+	}
+	rs := &proto.MemberAccountPagingLogResponse{
+		Total: int32(total),
+		Data:  rows,
+	}
+	return rs, nil
 }

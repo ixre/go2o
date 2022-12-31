@@ -214,11 +214,11 @@ type (
 		// 类型
 		Kind int `db:"kind"`
 		// 标题
-		Title string `db:"title"`
+		Title string `db:"subject"`
 		// 关联的编号
 		OuterNo string `db:"outer_no"`
 		// 积分值
-		Value int `db:"value"`
+		Value int `db:"change_value"`
 		// 余额
 		Balance int `db:"balance"`
 		// 备注
@@ -226,7 +226,7 @@ type (
 		// 关联用户
 		RelateUser int `db:"rel_user"`
 		// 审核状态
-		ReviewState int16 `db:"review_state"`
+		ReviewState int16 `db:"audit_state"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -241,17 +241,17 @@ type (
 		// 业务类型
 		Kind int `db:"kind"`
 
-		Title string `db:"title"`
+		Title string `db:"subject"`
 		// 金额
-		Amount int64 `db:"amount"`
+		Amount int64 `db:"change_value"`
 		// 余额
 		Balance int `db:"balance"`
 		// 手续费
-		ProcedureFee int64 `db:"csn_fee"`
+		ProcedureFee int64 `db:"procedure_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态
-		ReviewState int32 `db:"review_state"`
+		ReviewState int32 `db:"audit_state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间
@@ -297,15 +297,15 @@ type (
 		// 业务类型
 		Kind int `db:"kind"`
 		// 标题
-		Title string `db:"title"`
+		Title string `db:"subject"`
 		// 金额
-		Amount int64 `db:"amount"`
+		Amount int64 `db:"change_value"`
 		// 手续费
-		CsnFee int64 `db:"csn_fee"`
+		CsnFee int64 `db:"procedure_fee"`
 		// 引用编号
 		RelateUser int64 `db:"rel_user"`
 		// 审核状态
-		ReviewState int `db:"review_state"`
+		ReviewState int `db:"audit_state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间

@@ -38,7 +38,7 @@ type MemberServiceClient interface {
 	CheckLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// 发放访问令牌,续期即重新颁发
 	GrantAccessToken(ctx context.Context, in *GrantAccessTokenRequest, opts ...grpc.CallOption) (*GrantAccessTokenResponse, error)
-	// 检查令牌是否有效
+	// 检查令牌是否有效并返回新的令牌
 	CheckAccessToken(ctx context.Context, in *CheckAccessTokenRequest, opts ...grpc.CallOption) (*CheckAccessTokenResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*Result, error)
@@ -175,11 +175,9 @@ type MemberServiceClient interface {
 	// 收到款项,完成提现
 	FinishWithdrawal(ctx context.Context, in *FinishWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 查询提现记录
-	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogsResponse, error)
+	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error)
 	// !银行四要素认证
 	B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error)
-	// * 获取指定账户的流水记录
-	PagingAccountLog(ctx context.Context, in *PagingAccountInfoRequest, opts ...grpc.CallOption) (*SPagingResult, error)
 	// 获取钱包流水记录
 	GetWalletLog(ctx context.Context, in *WalletLogRequest, opts ...grpc.CallOption) (*WalletLogResponse, error)
 	// 取消收藏
@@ -839,8 +837,8 @@ func (c *memberServiceClient) FinishWithdrawal(ctx context.Context, in *FinishWi
 	return out, nil
 }
 
-func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogsResponse, error) {
-	out := new(WithdrawalLogsResponse)
+func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error) {
+	out := new(WithdrawalLogResponse)
 	err := c.cc.Invoke(ctx, "/MemberService/QueryWithdrawalLog", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -851,15 +849,6 @@ func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *Withdr
 func (c *memberServiceClient) B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/MemberService/B4EAuth", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *memberServiceClient) PagingAccountLog(ctx context.Context, in *PagingAccountInfoRequest, opts ...grpc.CallOption) (*SPagingResult, error) {
-	out := new(SPagingResult)
-	err := c.cc.Invoke(ctx, "/MemberService/PagingAccountLog", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -931,7 +920,7 @@ type MemberServiceServer interface {
 	CheckLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 	// 发放访问令牌,续期即重新颁发
 	GrantAccessToken(context.Context, *GrantAccessTokenRequest) (*GrantAccessTokenResponse, error)
-	// 检查令牌是否有效
+	// 检查令牌是否有效并返回新的令牌
 	CheckAccessToken(context.Context, *CheckAccessTokenRequest) (*CheckAccessTokenResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(context.Context, *VerifyPasswordRequest) (*Result, error)
@@ -1068,11 +1057,9 @@ type MemberServiceServer interface {
 	// 收到款项,完成提现
 	FinishWithdrawal(context.Context, *FinishWithdrawalRequest) (*Result, error)
 	// 查询提现记录
-	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogsResponse, error)
+	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error)
 	// !银行四要素认证
 	B4EAuth(context.Context, *B4EAuthRequest) (*Result, error)
-	// * 获取指定账户的流水记录
-	PagingAccountLog(context.Context, *PagingAccountInfoRequest) (*SPagingResult, error)
 	// 获取钱包流水记录
 	GetWalletLog(context.Context, *WalletLogRequest) (*WalletLogResponse, error)
 	// 取消收藏
@@ -1303,14 +1290,11 @@ func (UnimplementedMemberServiceServer) ReviewWithdrawal(context.Context, *Revie
 func (UnimplementedMemberServiceServer) FinishWithdrawal(context.Context, *FinishWithdrawalRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishWithdrawal not implemented")
 }
-func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogsResponse, error) {
+func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryWithdrawalLog not implemented")
 }
 func (UnimplementedMemberServiceServer) B4EAuth(context.Context, *B4EAuthRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method B4EAuth not implemented")
-}
-func (UnimplementedMemberServiceServer) PagingAccountLog(context.Context, *PagingAccountInfoRequest) (*SPagingResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PagingAccountLog not implemented")
 }
 func (UnimplementedMemberServiceServer) GetWalletLog(context.Context, *WalletLogRequest) (*WalletLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWalletLog not implemented")
@@ -2654,24 +2638,6 @@ func _MemberService_B4EAuth_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_PagingAccountLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PagingAccountInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemberServiceServer).PagingAccountLog(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/MemberService/PagingAccountLog",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).PagingAccountLog(ctx, req.(*PagingAccountInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MemberService_GetWalletLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WalletLogRequest)
 	if err := dec(in); err != nil {
@@ -3060,10 +3026,6 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "B4EAuth",
 			Handler:    _MemberService_B4EAuth_Handler,
-		},
-		{
-			MethodName: "PagingAccountLog",
-			Handler:    _MemberService_PagingAccountLog_Handler,
 		},
 		{
 			MethodName: "GetWalletLog",

@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
+
+// 会员账户分页明细
+message MemberAccountPagingLogResponse{
+   // 总条数,如不查询总数则返回0
+   int32 total = 1;
+   // 数据
+   repeated SMemberAccountLog data = 2;
+}
+
+/** 钱包日志 */
+message SMemberAccountLog {
+    /** 编号 */
+    int64 id = 1;
+    /** 业务类型 */
+    int32 kind = 2;
+    /** 流水号 */
+    string tradeNo = 3;
+    /** 标题 */
+    string subject = 4;
+    /** 变动金额 */
+    int64 value =  5;
+    /** 余额 */
+    int64 balance = 6;
+    /** 交易手续费 */
+    int64 procedureFee = 7;
+    /** 外部订单号 */
+    string outerNo = 8;
+    /** 备注 */
+    string remark = 9;
+    /** 审核状态 */
+    int32 auditState = 10;
+    /** 创建时间 */
+    int64 createTime = 11;
+}

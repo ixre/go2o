@@ -768,24 +768,58 @@ func (s *memberService) CheckAccessToken(c context.Context, request *proto.Check
 	if tk == nil {
 		return &proto.CheckAccessTokenResponse{Error: "令牌无效"}, nil
 	}
-	// 判断是否有效
-	if !tk.Valid {
-		ve, _ := err.(*jwt.ValidationError)
-		if ve.Errors&jwt.ValidationErrorExpired != 0 {
-			return &proto.CheckAccessTokenResponse{Error: "令牌已过期", IsExpires: true}, nil
-		}
-		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
-	}
-	if request.ExpiresTime > 0 && !dstClaims.VerifyNotBefore(request.ExpiresTime, true) {
-		return &proto.CheckAccessTokenResponse{Error: "令牌超过有效期", IsExpires: true}, nil
-	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
 		dstClaims["sub"] != "go2o-api-jwt" {
 		return &proto.CheckAccessTokenResponse{Error: "未知颁发者的令牌"}, nil
 	}
+	// 令牌过期时间
+	exp := int64(dstClaims["exp"].(float64))
+	// 判断是否有效
+	if !tk.Valid {
+		ve, _ := err.(*jwt.ValidationError)
+		if ve.Errors&jwt.ValidationErrorExpired != 0 {
+			return &proto.CheckAccessTokenResponse{
+				Error:            "令牌已过期",
+				IsExpires:        true,
+				TokenExpiresTime: exp,
+			}, nil
+		}
+		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
+	}
+	aud := int64(typeconv.MustInt(dstClaims["aud"]))
+	// 如果设置了续期参数
+	if exp <= request.CheckExpireTime {
+		return s.renewAccessToken(request, aud, exp), nil
+	}
 	return &proto.CheckAccessTokenResponse{
-		MemberId: int64(typeconv.MustInt(dstClaims["aud"])),
+		MemberId:         aud,
+		TokenExpiresTime: exp,
 	}, nil
+}
+
+// renewAccessToken 续签令牌
+func (s *memberService) renewAccessToken(request *proto.CheckAccessTokenRequest,
+	aud int64, exp int64) *proto.CheckAccessTokenResponse {
+	if request.RenewExpiresTime < request.CheckExpireTime {
+		return &proto.CheckAccessTokenResponse{
+			Error: "令牌续期过期时间必须在检测过期时间之后",
+		}
+	}
+	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
+		MemberId: aud,
+		Expire:   request.RenewExpiresTime,
+	})
+	if len(ret.Error) > 0 {
+		return &proto.CheckAccessTokenResponse{
+			Error: ret.Error,
+		}
+	}
+	return &proto.CheckAccessTokenResponse{
+		IsExpires:        false,
+		TokenExpiresTime: exp,
+		MemberId:         aud,
+		RenewAccessToken: ret.AccessToken,
+	}
 }
 
 // VerifyTradePassword 检查交易密码
@@ -926,7 +960,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 
 // 解锁银行卡信息
 func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	err := m.Profile().RemoveBankCard(r.BankCardNo)
 	return s.result(err), nil
 }
@@ -943,11 +977,11 @@ func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.MemberIdReque
 	list := make([]*proto.SReceiptsCode, len(arr))
 	for i, v := range arr {
 		list[i] = &proto.SReceiptsCode{
-			Identity:  v.Identity,
-			Name:      v.Name,
-			AccountId: v.AccountId,
-			CodeURL:   v.CodeUrl,
-			State:     int32(v.State),
+			Identity:       v.Identity,
+			ReceipterName:  v.Name,
+			ReceiptAccount: v.AccountId,
+			CodeImageUrl:   v.CodeUrl,
+			State:          int32(v.State),
 		}
 	}
 	return &proto.SReceiptsCodeListResponse{Value: list}, nil
@@ -961,9 +995,9 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 	}
 	v := &member.ReceiptsCode{
 		Identity:  r.Code.Identity,
-		Name:      r.Code.Name,
-		AccountId: r.Code.AccountId,
-		CodeUrl:   r.Code.CodeURL,
+		Name:      r.Code.ReceipterName,
+		AccountId: r.Code.ReceiptAccount,
+		CodeUrl:   r.Code.CodeImageUrl,
 		State:     int(r.Code.State),
 	}
 	if err := m.Profile().SaveReceiptsCode(v); err != nil {
@@ -997,9 +1031,9 @@ func (s *memberService) GetBankCards(_ context.Context, id *proto.MemberIdReques
 
 // 保存银行卡
 func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v = &member.BankCard{
-		MemberId:    r.OwnerId,
+		MemberId:    r.MemberId,
 		BankAccount: r.Value.AccountNo,
 		AccountName: r.Value.AccountName,
 		BankId:      int(r.Value.BankId),
@@ -1066,35 +1100,6 @@ func (s *memberService) ReviewTrustedInfo(_ context.Context, r *proto.ReviewTrus
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
-}
-
-// 获取钱包账户分页记录
-func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {
-	var total int
-	var rows []map[string]interface{}
-	switch member.AccountType(r.AccountType) {
-	case member.AccountIntegral:
-		total, rows = s.query.PagedIntegralAccountLog(
-			r.MemberId, r.Params.Begin,
-			r.Params.End, r.Params.SortBy)
-	case member.AccountBalance:
-		total, rows = s.query.PagedBalanceAccountLog(
-			r.MemberId, int(r.Params.Begin),
-			int(r.Params.End), r.Params.Where,
-			r.Params.SortBy)
-	case member.AccountWallet:
-		total, rows = s.query.PagedWalletAccountLog(
-			r.MemberId, int(r.Params.Begin),
-			int(r.Params.End), r.Params.Where,
-			r.Params.Where)
-	}
-	rs := &proto.SPagingResult{
-		ErrCode: 0,
-		ErrMsg:  "",
-		Count:   int32(total),
-		Data:    s.json(rows),
-	}
-	return rs, nil
 }
 
 /*********** 收货地址 ***********/
@@ -1215,6 +1220,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 				Portrait: rows[i].Avatar,
 				Nickname: rows[i].Nickname,
 				Phone:    rows[i].Phone,
+				RegTime: rows[i].RegTime,
 				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
 			})
@@ -1428,7 +1434,7 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	}, nil
 }
 
-func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogsResponse, error) {
+func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogResponse, error) {
 	//todo: 这里只返回了一条
 	latestApplyInfo := s.query.GetLatestWalletLogByKind(r.MemberId,
 		wallet.KWithdrawToBankCard)
@@ -1452,7 +1458,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	//		format.FormatFloat(latestApplyInfo.Amount),
 	//		sText)
 	//}
-	ret := &proto.WithdrawalLogsResponse{Data: make([]*proto.WithdrawalLog, 0)}
+	ret := &proto.WithdrawalLogResponse{Data: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
 		ret.Data = append(ret.Data, &proto.WithdrawalLog{
 			Id:           latestApplyInfo.Id,
@@ -1475,7 +1481,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().ReviewWithdrawal(r.InfoId, r.Pass, r.Remark)
+		err = m.GetAccount().ReviewWithdrawal(r.LogId, r.Pass, r.Remark)
 	}
 	return s.error(err), nil
 }

@@ -166,7 +166,7 @@ var (
 	ErrUserExist = domain.NewError(
 		"err_member_user_exist", "用户名已存在")
 
-	ErrNilNickname = domain.NewError(
+	ErrEmptyNickname = domain.NewError(
 		"err_member_nil_nick_name", "昵称不能为空")
 
 	ErrInvalidHeadPortrait = domain.NewError(
@@ -175,11 +175,8 @@ var (
 	ErrAddress = domain.NewError(
 		"err_member_address", "请填写详细地址")
 
-	ErrEmailValidErr = domain.NewError(
+	ErrInvalidEmail = domain.NewError(
 		"err_member_email_valid_err", "邮箱不正确")
-
-	ErrPhoneValidErr = domain.NewError(
-		"err_member_phone_valid_err", "手机号码不正确")
 
 	ErrPhoneHasBind = domain.NewError(
 		"err_member_phone_has_bind", "手机号码已经使用")
@@ -190,10 +187,10 @@ var (
 	ErrMissingIM = domain.NewError(
 		"err_member_missing_im", "请填写IM")
 
-	ErrBadPhoneFormat = domain.NewError(
-		"err_bad_phone_format", "手机号码不正确")
+	ErrInvalidPhone = domain.NewError(
+		"err_invalid_phone", "手机号码格式不正确")
 
-	ErrQqValidErr = domain.NewError(
+	ErrInvalidQq = domain.NewError(
 		"err_qq_valid_err", "QQ号码不正确")
 
 	ErrNotSetTradePassword = domain.NewError("err_not_set_trade_pwd", "交易密码未设置")

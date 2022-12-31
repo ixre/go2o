@@ -245,7 +245,7 @@ message SubmitNormalOrderV2Request {
 // 订单提交返回数据
 message NormalOrderSubmitResponse {
     // 错误码
-    int64 errCode = 1;
+    int32 errCode = 1;
     // 错误信息
     string errMsg = 2;
     // 订单号，多个订单号，用","分割
