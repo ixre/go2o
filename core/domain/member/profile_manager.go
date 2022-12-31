@@ -272,7 +272,13 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	if !used {
 		v := p.GetProfile()
 		v.Phone = phone
-		return p.repo.SaveProfile(&v)
+		err := p.repo.SaveProfile(&v)
+		if err == nil {
+			//todo: phone as user
+			p.member.value.Phone = phone
+			_, err = p.member.Save()
+		}
+		return err
 	}
 	return member.ErrPhoneHasBind
 }
