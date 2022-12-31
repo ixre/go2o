@@ -54,7 +54,7 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 
 // 获取账户余额分页记录
 func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
-	where, orderBy string) (num int, rows  []*proto.SMemberAccountLog) {
+	where, orderBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -69,7 +69,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 	d.Query(sqlLine, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := proto.SMemberAccountLog{}
-			_rows.Scan(&e.Id, &e.Kind, &e.Title, &e.OuterNo,
+			_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
 				&e.Value, &e.ProcedureFee, &e.Balance,
 				&e.AuditState, &e.CreateTime)
 			rows = append(rows, &e)
@@ -80,8 +80,8 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64, 
-	sortBy string) (num int, rows  []*proto.SMemberAccountLog) {
+func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64,
+	sortBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
 	d.ExecScalar(`SELECT COUNT(1) FROM mm_integral_log bi
 	 	INNER JOIN mm_member m ON m.id = bi.member_id
@@ -97,7 +97,7 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64,
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
-				_rows.Scan(&e.Id, &e.Kind, &e.Title, &e.OuterNo,
+				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
 					&e.Value, &e.ProcedureFee, &e.Balance,
 					&e.AuditState, &e.CreateTime)
 				rows = append(rows, &e)
@@ -134,7 +134,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 		d.Query(sqlLine, func(_rows *sql.Rows) {
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
-				_rows.Scan(&e.Id, &e.Kind, &e.Title, &e.OuterNo,
+				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
 					&e.Value, &e.ProcedureFee, &e.Balance,
 					&e.AuditState, &e.CreateTime)
 				rows = append(rows, &e)

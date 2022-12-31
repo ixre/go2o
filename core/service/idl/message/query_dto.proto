@@ -21,7 +21,7 @@ message SMemberAccountLog {
     /** 流水号 */
     string tradeNo = 3;
     /** 标题 */
-    string title = 4;
+    string subject = 4;
     /** 变动金额 */
     int64 value =  5;
     /** 余额 */
