@@ -12,7 +12,6 @@ import (
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types/typeconv"
 )
 
 /**
@@ -316,9 +315,9 @@ func (q *queryService) QueryMemberFavoriteGoods(_ context.Context, r *proto.Favo
 }
 
 // 获取钱包账户分页记录
-func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.PagingAccountLogRequest) (*proto.SPagingResult, error) {
+func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.PagingAccountLogRequest) (*proto.MemberAccountPagingLogResponse, error) {
 	var total int
-	var rows []map[string]interface{}
+	var rows []*proto.SMemberAccountLog
 	switch member.AccountType(r.AccountType) {
 	case member.AccountIntegral:
 		total, rows = q.memberQuery.PagedIntegralAccountLog(
@@ -335,11 +334,9 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 			int(r.Params.End), r.Params.Where,
 			r.Params.Where)
 	}
-	rs := &proto.SPagingResult{
-		ErrCode: 0,
-		ErrMsg:  "",
-		Count:   int32(total),
-		Data:    typeconv.MustJson(rows),
+	rs := &proto.MemberAccountPagingLogResponse{
+		Total: int32(total),
+		Data:  rows,
 	}
 	return rs, nil
 }

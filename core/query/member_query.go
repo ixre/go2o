@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )
@@ -53,7 +54,7 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 
 // 获取账户余额分页记录
 func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
-	where, orderBy string) (num int, rows []map[string]interface{}) {
+	where, orderBy string) (num int, rows  []*proto.SMemberAccountLog) {
 	d := m.Connector
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -66,18 +67,25 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
 	d.Query(sqlLine, func(_rows *sql.Rows) {
-		rows = db.RowsToMarshalMap(_rows)
+		for _rows.Next() {
+			e := proto.SMemberAccountLog{}
+			_rows.Scan(&e.Id, &e.Kind, &e.Title, &e.OuterNo,
+				&e.Value, &e.ProcedureFee, &e.Balance,
+				&e.AuditState, &e.CreateTime)
+			rows = append(rows, &e)
+		}
 	}, memberId, begin, end-begin)
 
 	return num, rows
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64, sortBy string) (num int, rows []map[string]interface{}) {
+func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64, 
+	sortBy string) (num int, rows  []*proto.SMemberAccountLog) {
 	d := m.Connector
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_integral_log bi
+	d.ExecScalar(`SELECT COUNT(1) FROM mm_integral_log bi
 	 	INNER JOIN mm_member m ON m.id = bi.member_id
-			WHERE bi.member_id= $1`), &num, memberId)
+			WHERE bi.member_id= $1`, &num, memberId)
 	if num > 0 {
 		orderBy := ""
 		if sortBy != "" {
@@ -87,20 +95,24 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64, sortB
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id= $1 %s LIMIT $3 OFFSET $2`, orderBy)
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
-			rows = db.RowsToMarshalMap(_rows)
+			for _rows.Next() {
+				e := proto.SMemberAccountLog{}
+				_rows.Scan(&e.Id, &e.Kind, &e.Title, &e.OuterNo,
+					&e.Value, &e.ProcedureFee, &e.Balance,
+					&e.AuditState, &e.CreateTime)
+				rows = append(rows, &e)
+			}
 		}, memberId, begin, over-begin)
 		if err != nil {
 			log.Println("[ Go2o][ Params]: query error ", err.Error())
 		}
-	} else {
-		rows = []map[string]interface{}{}
 	}
 	return num, rows
 }
 
 // 获取账户余额分页记录
 func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
-	where, orderBy string) (num int, rows []map[string]interface{}) {
+	where, orderBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
@@ -112,17 +124,23 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM wal_wallet_log WHERE wallet_id =$1 %s`, where), &num, walletId)
 
+	//rows = make([]*proto.SMemberAccountLog,0)
+
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT id,kind,title,outer_no,value,procedure_fee,balance,review_state,
-		create_time FROM wal_wallet_log WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
+		sqlLine := fmt.Sprintf(`SELECT id,kind,title,outer_no,value,procedure_fee,
+			balance,review_state,create_time FROM wal_wallet_log 
+			WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
 		d.Query(sqlLine, func(_rows *sql.Rows) {
-			rows = db.RowsToMarshalMap(_rows)
+			for _rows.Next() {
+				e := proto.SMemberAccountLog{}
+				_rows.Scan(&e.Id, &e.Kind, &e.Title, &e.OuterNo,
+					&e.Value, &e.ProcedureFee, &e.Balance,
+					&e.AuditState, &e.CreateTime)
+				rows = append(rows, &e)
+			}
 		}, walletId, begin, end-begin)
-	} else {
-		rows = []map[string]interface{}{}
 	}
-
 	return num, rows
 }
 

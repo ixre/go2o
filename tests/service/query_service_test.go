@@ -36,11 +36,11 @@ func TestPagingIntegralLog(t *testing.T) {
 			AccountType: int32(member.AccountWallet),
 			Params:      params,
 		})
-	t.Logf("%#v", r)
+	t.Log(typeconv.MustJson(r))
 }
 
-func TestPagingWalletLog(t *testing.T) {
-	memberId := 77153
+func TestPagingBalanceLog(t *testing.T) {
+	memberId := 702
 	params := &proto.SPagingParams{
 		Parameters: nil,
 		SortBy:     "",
@@ -50,8 +50,8 @@ func TestPagingWalletLog(t *testing.T) {
 	r, _ := impl.QueryService.PagingMemberAccountLog(context.TODO(),
 		&proto.PagingAccountLogRequest{
 			MemberId:    int64(memberId),
-			AccountType: int32(member.AccountWallet),
+			AccountType: int32(member.AccountBalance),
 			Params:      params,
 		})
-	t.Logf("%#v", r)
+	t.Log(typeconv.MustJson(r))
 }

@@ -372,12 +372,15 @@ func (x *CreateWalletRequest) GetWalletFlag() int32 {
 	return 0
 }
 
+// 获取钱包请求
 type GetWalletRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId     int64 `protobuf:"zigzag64,1,opt,name=userId,proto3" json:"userId"`
+	// 用户编号
+	UserId int64 `protobuf:"zigzag64,1,opt,name=userId,proto3" json:"userId"`
+	// 钱包类型
 	WalletType int32 `protobuf:"zigzag32,2,opt,name=walletType,proto3" json:"walletType"`
 }
 
@@ -432,8 +435,10 @@ type WalletLogIDRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// 钱包编号
 	WalletId int64 `protobuf:"zigzag64,1,opt,name=walletId,proto3" json:"walletId"`
-	Id       int64 `protobuf:"zigzag64,2,opt,name=id,proto3" json:"id"`
+	// 钱包流水编号
+	Id int64 `protobuf:"zigzag64,2,opt,name=id,proto3" json:"id"`
 }
 
 func (x *WalletLogIDRequest) Reset() {

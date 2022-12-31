@@ -19,13 +19,18 @@ message CreateWalletRequest {
     int32 walletFlag = 5;
 }
 
+// 获取钱包请求
 message GetWalletRequest {
+    // 用户编号
     sint64 userId =  1;
+    // 钱包类型
     sint32 walletType= 2;
 }
 
 message WalletLogIDRequest {
+    // 钱包编号
     sint64 walletId = 1;
+    // 钱包流水编号
     sint64 id = 2;
 }
 message AdjustRequest {
