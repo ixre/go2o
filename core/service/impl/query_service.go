@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 
+	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
@@ -26,15 +27,24 @@ import (
 var _ proto.QueryServiceServer = new(queryService)
 
 type queryService struct {
-	shopQuery   *query.ShopQuery
-	orderQuery  *query.OrderQuery
-	memberQuery *query.MemberQuery
+	shopQuery       *query.ShopQuery
+	orderQuery      *query.OrderQuery
+	memberQuery     *query.MemberQuery
+	statisticsQuery *query.StatisticsQuery
 	proto.UnimplementedQueryServiceServer
 }
 
 // SummaryStatistics implements proto.QueryServiceServer
 func (q *queryService) SummaryStatistics(context.Context, *proto.SummaryStatisticsRequest) (*proto.SummaryStatisticsResponse, error) {
-	panic("unimplemented")
+	s := q.statisticsQuery.QuerySummary()
+	return &proto.SummaryStatisticsResponse{
+		TotalMembers:                s.TotalMembers,
+		TodayJoinMembers:            s.TodayJoinMembers,
+		TodayLoginMembers:           s.TodayLoginMembers,
+		TodayCreateOrders:           s.TodayCreateOrders,
+		AwaitShipmentOrders:         s.AwaitShipmentOrders,
+		AwaitReviewWithdrawRequests: s.AwaitReviewWithdrawRequests,
+	}, nil
 }
 
 // MemberStatistics 获取会员的订单状态及其数量
@@ -54,9 +64,10 @@ func (q *queryService) MemberStatistics(_ context.Context, req *proto.MemberStat
 func NewQueryService(o orm.Orm, s storage.Interface) *queryService {
 	shopQuery := query.NewShopQuery(o, s)
 	return &queryService{
-		shopQuery:   shopQuery,
-		memberQuery: query.NewMemberQuery(o),
-		orderQuery:  query.NewOrderQuery(o),
+		shopQuery:       shopQuery,
+		memberQuery:     query.NewMemberQuery(o),
+		orderQuery:      query.NewOrderQuery(o),
+		statisticsQuery: query.NewStatisticsQuery(o, s),
 	}
 }
 
@@ -233,8 +244,8 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 		rsp.Value[i] = &proto.MemberListSingle{
 			MemberId:      int64(v.MemberId),
 			User:          v.Usr,
-			NickName:      v.Name,
-			Avatar:        v.Avatar,
+			Nickname:      v.Name,
+			Portrait:      v.Avatar,
 			Level:         v.Level,
 			Integral:      v.Integral,
 			Balance:       v.Balance,
@@ -254,8 +265,8 @@ func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchReq
 		ret.Value[i] = &proto.MemberListSingle{
 			MemberId: int64(v.Id),
 			User:     v.User,
-			NickName: v.Name,
-			Avatar:   v.Avatar,
+			Nickname: v.Name,
+			Portrait: v.Avatar,
 		}
 	}
 	return ret, nil
@@ -301,4 +312,31 @@ func (q *queryService) QueryMemberFavoriteGoods(_ context.Context, r *proto.Favo
 		}
 	}
 	return ret, nil
+}
+
+// 获取钱包账户分页记录
+func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.PagingAccountLogRequest) (*proto.MemberAccountPagingLogResponse, error) {
+	var total int
+	var rows []*proto.SMemberAccountLog
+	switch member.AccountType(r.AccountType) {
+	case member.AccountIntegral:
+		total, rows = q.memberQuery.PagedIntegralAccountLog(
+			r.MemberId, r.Params.Begin,
+			r.Params.End, r.Params.SortBy)
+	case member.AccountBalance:
+		total, rows = q.memberQuery.PagedBalanceAccountLog(
+			r.MemberId, int(r.Params.Begin),
+			int(r.Params.End), r.Params.Where,
+			r.Params.SortBy)
+	case member.AccountWallet:
+		total, rows = q.memberQuery.PagedWalletAccountLog(
+			r.MemberId, int(r.Params.Begin),
+			int(r.Params.End), r.Params.Where,
+			r.Params.Where)
+	}
+	rs := &proto.MemberAccountPagingLogResponse{
+		Total: int32(total),
+		Data:  rows,
+	}
+	return rs, nil
 }

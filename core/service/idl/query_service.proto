@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "global.proto";
 import "message/order_dto.proto";
+import "message/query_dto.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
@@ -35,7 +36,9 @@ service QueryService {
     // 获取分页店铺收藏
     rpc QueryMemberFavoriteGoods (FavoriteQueryRequest) returns (PagingGoodsFavoriteResponse) {
     }
-    
+    // 获取指定账户的流水记录
+    rpc PagingMemberAccountLog (PagingAccountLogRequest) returns (MemberAccountPagingLogResponse) {
+    } 
 }
 
 message FavoriteQueryRequest {
@@ -156,9 +159,9 @@ message MemberListSingle {
     // 用户名
     string user =  2;
     // 昵称
-    string nickName = 3;
+    string nickname = 3;
     // 头像
-    string avatar = 4;
+    string portrait = 4;
     // 等级
     int32 level = 5;
     // 积分
@@ -212,3 +215,11 @@ message MemberStatisticsResponse {
     // 已完成数量
     int32 completedOrders = 4;
 }
+
+
+message PagingAccountLogRequest {
+    sint64 memberId = 1;
+    sint32 accountType = 2;
+    SPagingParams params = 3;
+  }
+  

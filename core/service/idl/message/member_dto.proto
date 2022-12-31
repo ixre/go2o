@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-import "global.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
@@ -27,7 +26,7 @@ message RegisterMemberRequest {
   // 密码(md5)
   string password = 2;
   // 昵称
-  string name = 3;
+  string nickname = 3;
   // 手机
   string phone = 4;
   // 邮箱
@@ -88,18 +87,24 @@ message GrantAccessTokenResponse{
 message CheckAccessTokenRequest{
   // 访问令牌
   string accessToken = 1;
-  // 是否在有效期内有效, 如果传入0,不限制时间
-  int64 expiresTime = 2;
+  // 检测过期时间,在此时间内过期,将生成返回新的令牌
+  int64 checkExpireTime = 2;
+  // 新生成令牌的有效时间
+  int64 renewExpiresTime = 3;
 }
 
 // 检查令牌响应
 message CheckAccessTokenResponse{
   // 错误信息
   string error = 1;
-  // 是否过期
-  bool isExpires = 2;
   // 会员编号
-  int64 memberId = 3;
+  int64 memberId = 2;
+  // 是否过期
+  bool isExpires = 3;
+  // 令牌过期时间
+  int64 tokenExpiresTime = 4;
+  // 重新生成的令牌
+  string renewAccessToken = 5;
 }
 
 // 注册结果
@@ -176,28 +181,49 @@ message ReceiptsCodeSaveRequest {
 
 
 message UpdateLevelRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   sint32 level = 2;
   bool review = 3;
   sint64 paymentOrderId = 4;
 }
 
+// 修改手机号请求
 message ChangePhoneRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   string phone = 2;
 }
+
+// 修改用户名请求
 message ChangeUserRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
   string user = 2;
 }
+
+// 更改昵称请求
+message ChangeNicknameRequest{
+    // 会员编号
+  int64 memberId = 1;
+  // 昵称
+  string nickname = 2;
+  // 是否限制修改次数
+  bool limitTime = 3;
+}
+
 message ModifyPasswordRequest {
   sint64 memberId = 1;
   string originPassword = 2;
   string newPassword = 3;
 }
-message ChangeInviterRequest {
-  sint64 memberId = 1;
-  sint64 inviterId = 2;
+message SetInviterRequest {
+  // 会员编号
+  int64 memberId = 1;
+  // 邀请码
+  string inviterCode = 2;
+  // 是否允许更改现有绑定人
+  bool allowChange = 3;
 }
 
 message GetTokenRequest {
@@ -227,7 +253,7 @@ message SaveAddressRequest {
 // 保存地址响应
 message SaveAddressResponse {
   /* 状态码,如为0表示成功 */
-  sint32 errCode = 1;
+  int32 errCode = 1;
   /* 消息 */
   string errMsg = 2;
   // 地址编号
@@ -348,12 +374,6 @@ message B4EAuthRequest {
   map<string, string> data = 3;
 }
 
-message PagingAccountInfoRequest {
-  sint64 memberId = 1;
-  sint32 accountType = 2;
-  SPagingParams params = 3;
-}
-
 /** 等级 */
 message SMemberLevel {
   sint32 id = 1;
@@ -365,9 +385,12 @@ message SMemberLevel {
   sint32 allowUpgrade = 7;
 }
 
-message AvatarRequest {
+// 更换头像申请
+message ChangePortraitRequest {
+  // 会员编号
   sint64 memberId = 1;
-  string avatarURL = 2;
+  // 头像
+  string portraitUrl = 2;
 }
 
 /** 会员 */
@@ -387,7 +410,7 @@ message SMember {
   /** 会员编码  */
   string userCode = 7;
   /** 会员头像 */
-  string avatar = 8;
+  string portrait = 8;
   /** 邀请码 */
   string inviteCode = 9;
   /** 注册IP */
@@ -401,7 +424,7 @@ message SMember {
   /** 电子邮箱 */
   string email = 14;
   /** 昵称 */
-  string name = 15;
+  string nickname = 15;
   /** 真实姓名 */
   string realName = 16;
   /** 高级用户级别 */
@@ -417,8 +440,8 @@ message SMember {
 /** 资料 */
 message SProfile {
   sint64 memberId = 1;
-  string name = 2;
-  string avatar = 3;
+  string nickname = 2;
+  string portrait = 3;
   sint32 gender = 4;
   string birthDay = 5;
   string phone = 6;
@@ -440,32 +463,51 @@ message SProfile {
 
 /** 账户 */
 message SAccount {
-  sint64 memberId = 1;
-  sint64 integral = 2;
-  sint64 freezeIntegral = 3;
-  int64 balance = 4;
-  int64 freezeBalance = 5;
-  int64 expiredBalance = 6;
-  string walletCode = 7;
-  int64 walletBalance = 8;
-  int64 freezeWallet = 9;
-  int64 expiredWallet = 10;
-  int64 totalWalletAmount = 11;
-  int64 flowBalance = 12;
-  int64 growBalance = 13;
-  int64 growAmount = 14;
-  int64 growEarnings = 15;
-  int64 growTotalEarnings = 16;
-  int64 totalExpense = 17;
-  int64 totalCharge = 18;
-  int64 totalPay = 19;
-  sint64 priorityPay = 20;
-  sint64 updateTime = 21;
+  // 积分
+  int64 integral = 1;
+  // 冻结积分
+  int64 freezeIntegral = 2;
+  // 商城余额
+  int64 balance = 3;
+  // 冻结商城余额
+  int64 freezeBalance = 4;
+  // 过期余额
+  int64 expiredBalance = 5;
+  // 钱包代码
+  string walletCode = 6;
+  // 钱包余额
+  int64 walletBalance = 7;
+  // 钱包冻结金额
+  int64 walletFreezedAmount = 8;
+  // 钱包过期金额
+  int64 walletExpiredAmount = 9;
+  // 钱包累计金额
+  int64 totalWalletAmount = 10;
+  // 浮动账户余额
+  int64 flowBalance = 11;
+  // 增利账户余额
+  int64 growBalance = 12;
+  // 增利账户本金
+  int64 growAmount = 13;
+  // 增利账户收益
+  int64 growEarnings = 14;
+  // 增利账户累计收益
+  int64 growTotalEarnings = 15;
+  // 总消费金额
+  int64 totalExpense = 16;
+  // 总充值金额
+  int64 totalCharge = 17;
+  // 总支付额
+  int64 totalPay = 18;
+  // 优先(默认)支付选项
+  int32 priorityPay = 19;
+  // 更新时间
+  int64 updateTime = 20;
 }
 
 message SComplexMember {
-  string name = 1;
-  string avatar = 2;
+  string nickname = 1;
+  string portrait = 2;
   string phone = 3;
   sint32 exp = 4;
   sint32 level = 5;
@@ -545,11 +587,11 @@ message SReceiptsCode {
   /** 账户标识,如:alipay */
   string identity = 1;
   /** 账户名称 */
-  string name = 2;
+  string receipterName = 2;
   /** 账号 */
-  string accountId = 3;
+  string receiptAccount = 3;
   /** 收款码地址 */
-  string codeURL = 4;
+  string codeImageUrl = 4;
   /** 是否启用 */
   sint32 state = 5;
 }
@@ -610,21 +652,24 @@ enum ECredentials {
   INVITE_CODE = 6;
 }
 
+// 钱包日志请求
 message WalletLogRequest {
-  sint64 memberId = 1;
-  sint64 logId = 2;
+  // 会员编号
+  int64 memberId = 1;
+  // 流水号Id
+  int64 logId = 2;
 }
 
 // 钱包账户日志
 message WalletLogResponse {
   // 日志编号
-  sint64 logId = 1;
+  int64 logId = 1;
   // 会员编号
-  sint64 memberId = 2;
+  int64 memberId = 2;
   // 外部单号
   string outerNo = 3;
   // 业务类型
-  sint32 kind = 4;
+  int32 kind = 4;
   // 标题
   string title = 5;
   // 金额
@@ -632,15 +677,15 @@ message WalletLogResponse {
   // 手续费
   double tradeFee = 7;
   // 状态
-  sint32 reviewState = 8;
+  int32 reviewState = 8;
   // 备注
   string remark = 9;
   // 创建时间
-  sint64 createTime = 10;
+  int64 createTime = 10;
   // 更新时间
-  sint64 updateTime = 11;
+  int64 updateTime = 11;
   // 关联操作人,仅在客服操作时,记录操作人
-  sint64 relateUser = 12;
+  int64 relateUser = 12;
 }
 
 // 账户类型
@@ -658,11 +703,17 @@ enum EAccountType {
 
 // 账户转账请求
 message AccountTransferRequest {
+  // 账户类型
   EAccountType transferAccount = 1;
-  sint64 fromMemberId = 2;
-  sint64 toMemberId = 3;
-  sint64 amount = 4;
-  sint64 procedureFee = 5;
+  // 来源会员编号
+  int64 fromMemberId = 2;
+  // 目标会员编号
+  int64 toMemberId = 3;
+  // 转账金额
+  int64 amount = 4;
+  // 手续费
+  int64 procedureFee = 5;
+  // 备注
   string remark = 6;
 }
 
@@ -691,35 +742,44 @@ message WithdrawRequest {
   string accountNo = 5;
 }
 
+// 提现申请结果
 message WithdrawalResponse {
-  sint64 errCode = 1;
+  // 错误码
+  int32 errCode = 1;
+  // 错误消息
   string errMsg = 2;
+  // 交易号
   string tradeNo = 3;
+  // 提现流水Id
   sint64 logId = 4;
 }
 
 // 获取提现记录
 message WithdrawalLogRequest {
   // 会员编号
-  sint64 memberId = 1;
+  int64 memberId = 1;
   // 数量
-  sint32 number = 2;
+  int32 number = 2;
   // 仅返回完成的提现
   bool onlyFinished = 3;
 }
 
-message WithdrawalLogsResponse {
+// 提现流水流水信息
+message WithdrawalLogResponse {
+  // 会员编号
   sint64 memberId = 1;
+  // 流水数据
   repeated WithdrawalLog data = 2;
 }
 
 // 提现日志
 message WithdrawalLog {
-  sint64 id = 1;
+  // 编号
+  int64 id = 1;
   // 外部单号
   string outerNo = 2;
   // 业务类型
-  sint32 kind = 3;
+  int32 kind = 3;
   // 标题
   string title = 4;
   // 金额
@@ -727,26 +787,32 @@ message WithdrawalLog {
   // 手续费
   int64 procedureFee = 6;
   // 关联操作人,仅在客服操作时,记录操作人
-  sint64 relateUser = 7;
+  int64 relateUser = 7;
   // 状态
-  sint32 reviewState = 8;
+  int32 reviewState = 8;
   // 备注
   string remark = 9;
   // 创建时间
-  sint64 submitTime = 10;
+  int64 submitTime = 10;
   // 更新时间
-  sint64 updateTime = 11;
+  int64 updateTime = 11;
 }
 
 // 申请提现请求
 message ReviewWithdrawalRequest {
+  // 会员编号
   int64 memberId = 1;
-  int64 infoId = 2;
+  // 提现申请流水Id
+  int64 logId = 2;
+  // 是否通过审核
   bool pass = 3;
+  // 备注
   string remark = 4;
 }
 
+// 完成提现
 message FinishWithdrawalRequest {
+  // 会员编号
   int64 memberId = 1;
   // 提现记录编号
   int64 infoId = 2;
@@ -775,15 +841,15 @@ message SInvitationMember {
   // 等级
   int32 level = 3;
   // 头像
-  string avatar = 4;
+  string portrait = 4;
   // 昵称
-  string nickName = 5;
+  string nickname = 5;
   // 电话
   string phone = 6;
-  // 即时通讯
-  string im = 9;
+  // 注册时间
+  int64 regTime = 7;
   // 邀请人数
-  int32 invitationNum = 10;
+  int32 invitationNum = 8;
 }
 message IsInvitationRequest {
   // 会员编号
@@ -799,10 +865,13 @@ enum PagingCouponState {
 }
 
 message MemberCouponPagingRequest {
+  // 会员编号
   int64 memberId = 1;
   // 状态,-1为全部
   PagingCouponState state = 2;
+  // 开始条数
   int64 begin = 3;
+  // 结束条数
   int64 end = 4;
 }
 
@@ -838,13 +907,20 @@ enum FavoriteType {
   GOOGS = 2;
 }
 
+// 收藏请求
 message FavoriteRequest {
-  sint64 memberId = 1;
+  // 会员编号
+  int64 memberId = 1;
+  // 收藏类型
   FavoriteType favoriteType = 2;
-  sint64 referId = 3;
+  // 关联Id
+  int64 referId = 3;
 }
+
 message DepthRequest {
+  // 会员编号
   sint64 memberId = 1;
+  // 深度
   sint32 depth = 2;
 }
 message InviterIdListResponse {

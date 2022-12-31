@@ -98,7 +98,7 @@ message RbacLoginRequest {
 // 用户登录响应
 message RbacLoginResponse {
     // 错误编码,0为成功
-    int64 errCode = 1;
+    int32 errCode = 1;
     // 错误消息
     string errMsg = 2;
     // 用户编号
@@ -179,7 +179,7 @@ message SavePermDeptRequest {
 }
 
 message SavePermDeptResponse {
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
@@ -227,7 +227,7 @@ message SavePermJobRequest {
 }
 
 message SavePermJobResponse {
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
@@ -297,9 +297,9 @@ message SavePermUserRequest {
     /** 标志 */
     int32 flag = 4;
     /** 头像 */
-    string avatar = 5;
+    string portrait = 5;
     /** 昵称 */
-    string nickName = 6;
+    string nickname = 6;
     /** 性别 */
     string gender = 7;
     /** 邮箱 */
@@ -321,7 +321,7 @@ message SavePermUserRequest {
 }
 
 message SavePermUserResponse {
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
@@ -340,9 +340,9 @@ message SPermUser {
     /** 标志 */
     int32 flag = 4;
     /** 头像 */
-    string avatar = 5;
-    /** NickName */
-    string nickName = 6;
+    string portrait = 5;
+    /** Nickname */
+    string nickname = 6;
     /** Gender */
     string gender = 7;
     /** 邮箱 */
@@ -383,9 +383,9 @@ message PagingPermUser {
     /** 标志 */
     int32 flag = 4;
     /** 头像 */
-    string avatar = 5;
+    string portrait = 5;
     /** 昵称 */
-    string nickName = 6;
+    string nickname = 6;
     /** 性别 */
     string gender = 7;
     /** 邮箱 */
@@ -440,7 +440,7 @@ message UpdateRoleResRequest {
     repeated int64 resources = 2;
 }
 message SavePermRoleResponse {
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
@@ -536,7 +536,7 @@ message SavePermResRequest {
 }
 
 message SavePermResResponse {
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }

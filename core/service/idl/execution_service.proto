@@ -86,7 +86,7 @@ message RejoinQueueRequest{
 
 /** 保存重新加入队列响应 */
 message RejoinQueueResponse{
-  int64 errCode = 1;
+  int32 errCode = 1;
   string errMsg = 2;
   int64 queueId = 3;
 }

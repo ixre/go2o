@@ -84,14 +84,14 @@ var (
 	ErrNoSuchMember = domain.NewError(
 		"member_no_such_member", "会员不存在")
 
-	ErrNoValidInviter = domain.NewError(
-		"member_no_valid_inviter", "邀请人不正确")
+	ErrInvalidInviter = domain.NewError(
+		"member_in_valid_inviter", "邀请码不正确")
 
 	ErrExistsInviter = domain.NewError(
 		"member_exists_inviter", "已绑定邀请人")
 
-	ErrInvalidInviter = domain.NewError(
-		"member_invalid_inviter", "不合法的邀请人(邀请人为下级)")
+	ErrInvalidInviteLevel = domain.NewError(
+		"member_invalid_inviter_level", "不合法的邀请人(邀请人为下级)")
 
 	ErrDeliverAddressLen = domain.NewError(
 		"err_deliver_address_len", "请填写详细的配送地址")
@@ -166,20 +166,17 @@ var (
 	ErrUserExist = domain.NewError(
 		"err_member_user_exist", "用户名已存在")
 
-	ErrNilNickName = domain.NewError(
+	ErrEmptyNickname = domain.NewError(
 		"err_member_nil_nick_name", "昵称不能为空")
 
-	ErrNullAvatar = domain.NewError(
-		"err_member_null_avatar", "请上传头像")
+	ErrInvalidHeadPortrait = domain.NewError(
+		"err_member_invalid_head_portrait", "头像不合法")
 
 	ErrAddress = domain.NewError(
 		"err_member_address", "请填写详细地址")
 
-	ErrEmailValidErr = domain.NewError(
+	ErrInvalidEmail = domain.NewError(
 		"err_member_email_valid_err", "邮箱不正确")
-
-	ErrPhoneValidErr = domain.NewError(
-		"err_member_phone_valid_err", "手机号码不正确")
 
 	ErrPhoneHasBind = domain.NewError(
 		"err_member_phone_has_bind", "手机号码已经使用")
@@ -190,10 +187,10 @@ var (
 	ErrMissingIM = domain.NewError(
 		"err_member_missing_im", "请填写IM")
 
-	ErrBadPhoneFormat = domain.NewError(
-		"err_bad_phone_format", "手机号码不正确")
+	ErrInvalidPhone = domain.NewError(
+		"err_invalid_phone", "手机号码格式不正确")
 
-	ErrQqValidErr = domain.NewError(
+	ErrInvalidQq = domain.NewError(
 		"err_qq_valid_err", "QQ号码不正确")
 
 	ErrNotSetTradePassword = domain.NewError("err_not_set_trade_pwd", "交易密码未设置")

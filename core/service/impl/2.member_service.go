@@ -205,13 +205,27 @@ func (s *memberService) ChangePhone(_ context.Context, r *proto.ChangePhoneReque
 	return s.result(err), nil
 }
 
+// ChangeNickname 更改昵称
+func (s *memberService) ChangeNickname(_ context.Context, req *proto.ChangeNicknameRequest) (*proto.Result, error) {
+	m := s.repo.GetMember(req.MemberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	err := m.Profile().ChangeNickname(req.Nickname, req.LimitTime)
+	return s.result(err), nil
+}
+
 // ChangeInviterId 更改邀请人
-func (s *memberService) ChangeInviterId(_ context.Context, r *proto.ChangeInviterRequest) (*proto.Result, error) {
+func (s *memberService) SetInviter(_ context.Context, r *proto.SetInviterRequest) (*proto.Result, error) {
 	im := s.repo.GetMember(r.MemberId)
 	if im == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	err := im.BindInviter(r.InviterId, true)
+	inviterId := s.repo.GetMemberIdByInviteCode(r.InviterCode)
+	if inviterId <= 0 {
+		return s.result(member.ErrInvalidInviter), nil
+	}
+	err := im.BindInviter(inviterId, r.AllowChange)
 	return s.result(err), nil
 }
 
@@ -460,17 +474,14 @@ func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelU
 	return s.result(err), nil
 }
 
-// ChangeAvatar 上传会员头像
-func (s *memberService) ChangeAvatar(_ context.Context, r *proto.AvatarRequest) (*proto.Result, error) {
+// ChangeHeadPortrait 上传会员头像
+func (s *memberService) ChangeHeadPortrait(_ context.Context, r *proto.ChangePortraitRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
-	if m != nil {
+	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	err := m.Profile().ChangeAvatar(r.AvatarURL)
-	if err != nil {
-		return s.error(err), nil
-	}
-	return s.success(nil), nil
+	err := m.Profile().ChangeHeadPortrait(r.PortraitUrl)
+	return s.result(err), nil
 }
 
 // Register 注册会员
@@ -486,7 +497,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		User:     r.Username,
 		Salt:     salt,
 		Pwd:      domain.Sha1Pwd(r.Password, salt),
-		Name:     r.Name,
+		Nickname: r.Nickname,
 		RealName: "",
 		Avatar:   "", //todo: default avatar
 		Phone:    r.Phone,
@@ -757,24 +768,58 @@ func (s *memberService) CheckAccessToken(c context.Context, request *proto.Check
 	if tk == nil {
 		return &proto.CheckAccessTokenResponse{Error: "令牌无效"}, nil
 	}
-	// 判断是否有效
-	if !tk.Valid {
-		ve, _ := err.(*jwt.ValidationError)
-		if ve.Errors&jwt.ValidationErrorExpired != 0 {
-			return &proto.CheckAccessTokenResponse{Error: "令牌已过期", IsExpires: true}, nil
-		}
-		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
-	}
-	if request.ExpiresTime > 0 && !dstClaims.VerifyNotBefore(request.ExpiresTime, true) {
-		return &proto.CheckAccessTokenResponse{Error: "令牌超过有效期", IsExpires: true}, nil
-	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
 		dstClaims["sub"] != "go2o-api-jwt" {
 		return &proto.CheckAccessTokenResponse{Error: "未知颁发者的令牌"}, nil
 	}
+	// 令牌过期时间
+	exp := int64(dstClaims["exp"].(float64))
+	// 判断是否有效
+	if !tk.Valid {
+		ve, _ := err.(*jwt.ValidationError)
+		if ve.Errors&jwt.ValidationErrorExpired != 0 {
+			return &proto.CheckAccessTokenResponse{
+				Error:            "令牌已过期",
+				IsExpires:        true,
+				TokenExpiresTime: exp,
+			}, nil
+		}
+		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
+	}
+	aud := int64(typeconv.MustInt(dstClaims["aud"]))
+	// 如果设置了续期参数
+	if exp <= request.CheckExpireTime {
+		return s.renewAccessToken(request, aud, exp), nil
+	}
 	return &proto.CheckAccessTokenResponse{
-		MemberId: int64(typeconv.MustInt(dstClaims["aud"])),
+		MemberId:         aud,
+		TokenExpiresTime: exp,
 	}, nil
+}
+
+// renewAccessToken 续签令牌
+func (s *memberService) renewAccessToken(request *proto.CheckAccessTokenRequest,
+	aud int64, exp int64) *proto.CheckAccessTokenResponse {
+	if request.RenewExpiresTime < request.CheckExpireTime {
+		return &proto.CheckAccessTokenResponse{
+			Error: "令牌续期过期时间必须在检测过期时间之后",
+		}
+	}
+	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
+		MemberId: aud,
+		Expire:   request.RenewExpiresTime,
+	})
+	if len(ret.Error) > 0 {
+		return &proto.CheckAccessTokenResponse{
+			Error: ret.Error,
+		}
+	}
+	return &proto.CheckAccessTokenResponse{
+		IsExpires:        false,
+		TokenExpiresTime: exp,
+		MemberId:         aud,
+		RenewAccessToken: ret.AccessToken,
+	}
 }
 
 // VerifyTradePassword 检查交易密码
@@ -915,7 +960,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 
 // 解锁银行卡信息
 func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	err := m.Profile().RemoveBankCard(r.BankCardNo)
 	return s.result(err), nil
 }
@@ -932,11 +977,11 @@ func (s *memberService) ReceiptsCodes(_ context.Context, id *proto.MemberIdReque
 	list := make([]*proto.SReceiptsCode, len(arr))
 	for i, v := range arr {
 		list[i] = &proto.SReceiptsCode{
-			Identity:  v.Identity,
-			Name:      v.Name,
-			AccountId: v.AccountId,
-			CodeURL:   v.CodeUrl,
-			State:     int32(v.State),
+			Identity:       v.Identity,
+			ReceipterName:  v.Name,
+			ReceiptAccount: v.AccountId,
+			CodeImageUrl:   v.CodeUrl,
+			State:          int32(v.State),
 		}
 	}
 	return &proto.SReceiptsCodeListResponse{Value: list}, nil
@@ -950,9 +995,9 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 	}
 	v := &member.ReceiptsCode{
 		Identity:  r.Code.Identity,
-		Name:      r.Code.Name,
-		AccountId: r.Code.AccountId,
-		CodeUrl:   r.Code.CodeURL,
+		Name:      r.Code.ReceipterName,
+		AccountId: r.Code.ReceiptAccount,
+		CodeUrl:   r.Code.CodeImageUrl,
 		State:     int(r.Code.State),
 	}
 	if err := m.Profile().SaveReceiptsCode(v); err != nil {
@@ -986,9 +1031,9 @@ func (s *memberService) GetBankCards(_ context.Context, id *proto.MemberIdReques
 
 // 保存银行卡
 func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.OwnerId})
+	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	var v = &member.BankCard{
-		MemberId:    r.OwnerId,
+		MemberId:    r.MemberId,
 		BankAccount: r.Value.AccountNo,
 		AccountName: r.Value.AccountName,
 		BankId:      int(r.Value.BankId),
@@ -1055,35 +1100,6 @@ func (s *memberService) ReviewTrustedInfo(_ context.Context, r *proto.ReviewTrus
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
-}
-
-// 获取钱包账户分页记录
-func (s *memberService) PagingAccountLog(_ context.Context, r *proto.PagingAccountInfoRequest) (*proto.SPagingResult, error) {
-	var total int
-	var rows []map[string]interface{}
-	switch member.AccountType(r.AccountType) {
-	case member.AccountIntegral:
-		total, rows = s.query.PagedIntegralAccountLog(
-			r.MemberId, r.Params.Begin,
-			r.Params.End, r.Params.SortBy)
-	case member.AccountBalance:
-		total, rows = s.query.PagedBalanceAccountLog(
-			r.MemberId, int(r.Params.Begin),
-			int(r.Params.End), r.Params.Where,
-			r.Params.SortBy)
-	case member.AccountWallet:
-		total, rows = s.query.PagedWalletAccountLog(
-			r.MemberId, int(r.Params.Begin),
-			int(r.Params.End), r.Params.Where,
-			r.Params.Where)
-	}
-	rs := &proto.SPagingResult{
-		ErrCode: 0,
-		ErrMsg:  "",
-		Count:   int32(total),
-		Data:    s.json(rows),
-	}
-	return rs, nil
 }
 
 /*********** 收货地址 ***********/
@@ -1186,7 +1202,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
 	ret := &proto.MemberInvitationPagingResponse{
 		Total: int64(total),
-		Data:  make([]*proto.SInvitationMember, total),
+		Data:  make([]*proto.SInvitationMember, 0),
 	}
 	if l := len(rows); l > 0 {
 		arr := make([]int32, l)
@@ -1197,16 +1213,17 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
 			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
-			ret.Data[i] = &proto.SInvitationMember{
-				MemberId:      int64(rows[i].MemberId),
-				User:          rows[i].User,
-				Level:         rows[i].Level,
-				Avatar:        rows[i].Avatar,
-				NickName:      rows[i].NickName,
-				Phone:         rows[i].Phone,
-				Im:            rows[i].Im,
+			ret.Data = append(ret.Data, &proto.SInvitationMember{
+				MemberId: int64(rows[i].MemberId),
+				User:     rows[i].User,
+				Level:    rows[i].Level,
+				Portrait: rows[i].Avatar,
+				Nickname: rows[i].Nickname,
+				Phone:    rows[i].Phone,
+				RegTime: rows[i].RegTime,
+				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
-			}
+			})
 		}
 	}
 	return ret, nil
@@ -1417,7 +1434,7 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 	}, nil
 }
 
-func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogsResponse, error) {
+func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogResponse, error) {
 	//todo: 这里只返回了一条
 	latestApplyInfo := s.query.GetLatestWalletLogByKind(r.MemberId,
 		wallet.KWithdrawToBankCard)
@@ -1441,7 +1458,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	//		format.FormatFloat(latestApplyInfo.Amount),
 	//		sText)
 	//}
-	ret := &proto.WithdrawalLogsResponse{Data: make([]*proto.WithdrawalLog, 0)}
+	ret := &proto.WithdrawalLogResponse{Data: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
 		ret.Data = append(ret.Data, &proto.WithdrawalLog{
 			Id:           latestApplyInfo.Id,
@@ -1464,7 +1481,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().ReviewWithdrawal(r.InfoId, r.Pass, r.Remark)
+		err = m.GetAccount().ReviewWithdrawal(r.LogId, r.Pass, r.Remark)
 	}
 	return s.error(err), nil
 }
@@ -1579,10 +1596,10 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
 		Flag:           int32(src.Flag),
-		Avatar:         src.Avatar,
+		Portrait:       src.Avatar,
 		Phone:          src.Phone,
 		Email:          src.Email,
-		Name:           src.Name,
+		Nickname:       src.Nickname,
 		RealName:       src.RealName,
 		RegTime:        src.RegTime,
 		LastLoginTime:  src.LastLoginTime,
@@ -1592,8 +1609,8 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile {
 	return &proto.SProfile{
 		MemberId:   src.MemberId,
-		Name:       src.Name,
-		Avatar:     src.Avatar,
+		Nickname:   src.Name,
+		Portrait:   src.Avatar,
 		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
@@ -1616,8 +1633,8 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 
 func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
-		Name:                src.Name,
-		Avatar:              src.Avatar,
+		Nickname:            src.Nickname,
+		Portrait:            src.Avatar,
 		Exp:                 int32(src.Exp),
 		Level:               int32(src.Level),
 		LevelName:           src.LevelName,
@@ -1647,27 +1664,26 @@ func round(f float32, n int) float64 {
 }
 func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 	return &proto.SAccount{
-		MemberId:          src.MemberId,
-		Integral:          int64(src.Integral),
-		FreezeIntegral:    int64(src.FreezeIntegral),
-		Balance:           src.Balance,
-		FreezeBalance:     src.FreezeBalance,
-		ExpiredBalance:    src.ExpiredBalance,
-		WalletCode:        src.WalletCode,
-		WalletBalance:     src.WalletBalance,
-		FreezeWallet:      src.FreezeWallet,
-		ExpiredWallet:     src.ExpiredWallet,
-		TotalWalletAmount: src.TotalWalletAmount,
-		FlowBalance:       src.FlowBalance,
-		GrowBalance:       src.GrowBalance,
-		GrowAmount:        src.GrowAmount,
-		GrowEarnings:      src.GrowEarnings,
-		GrowTotalEarnings: src.GrowTotalEarnings,
-		TotalExpense:      src.TotalExpense,
-		TotalCharge:       src.TotalCharge,
-		TotalPay:          src.TotalPay,
-		PriorityPay:       int64(src.PriorityPay),
-		UpdateTime:        src.UpdateTime,
+		Integral:            int64(src.Integral),
+		FreezeIntegral:      int64(src.FreezeIntegral),
+		Balance:             src.Balance,
+		FreezeBalance:       src.FreezeBalance,
+		ExpiredBalance:      src.ExpiredBalance,
+		WalletBalance:       src.WalletBalance,
+		WalletCode:          src.WalletCode,
+		WalletFreezedAmount: src.FreezeWallet,
+		WalletExpiredAmount: src.ExpiredWallet,
+		TotalWalletAmount:   src.TotalWalletAmount,
+		FlowBalance:         src.FlowBalance,
+		GrowBalance:         src.GrowBalance,
+		GrowAmount:          src.GrowAmount,
+		GrowEarnings:        src.GrowEarnings,
+		GrowTotalEarnings:   src.GrowTotalEarnings,
+		TotalExpense:        src.TotalExpense,
+		TotalCharge:         src.TotalCharge,
+		TotalPay:            src.TotalPay,
+		PriorityPay:         int32(src.PriorityPay),
+		UpdateTime:          src.UpdateTime,
 	}
 }
 
@@ -1675,11 +1691,11 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 	return &member.Member{
 		Id:             src.Id,
 		Code:           src.UserCode,
-		Name:           src.Name,
+		Nickname:       src.Nickname,
 		RealName:       src.RealName,
 		User:           src.User,
 		Pwd:            src.Password,
-		Avatar:         src.Avatar,
+		Avatar:         src.Portrait,
 		Exp:            int(src.Exp),
 		Level:          int(src.Level),
 		InviteCode:     src.InviteCode,
@@ -1697,8 +1713,8 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile {
 	return &member.Profile{
 		MemberId:   src.MemberId,
-		Name:       src.Name,
-		Avatar:     src.Avatar,
+		Name:       src.Nickname,
+		Avatar:     src.Portrait,
 		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,

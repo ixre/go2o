@@ -4,17 +4,17 @@ option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 message BankCardAddRequest {
-    sint64 ownerId = 1;
+    sint64 memberId = 1;
     SBankCardInfo value =  2;
 }
 
 message BankCardRequest {
-    int64 ownerId = 1;
+    int64 memberId = 1;
     string bankCardNo = 2;
 }
 
 message BankCardListResponse {
-    sint64 ownerId = 1;
+    sint64 memberId = 1;
     repeated SBankCardInfo value =  2;
 }
 

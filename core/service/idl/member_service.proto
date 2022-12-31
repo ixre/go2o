@@ -31,7 +31,7 @@ service MemberService {
     // 发放访问令牌,续期即重新颁发
     rpc GrantAccessToken(GrantAccessTokenRequest) returns(GrantAccessTokenResponse){}
 
-    // 检查令牌是否有效
+    // 检查令牌是否有效并返回新的令牌
     rpc CheckAccessToken(CheckAccessTokenRequest) returns(CheckAccessTokenResponse){}
 
     /** 验证交易密码 */
@@ -136,8 +136,11 @@ service MemberService {
     /* 更改用户名 */
     rpc ChangeUser (ChangeUserRequest) returns (Result) {
     }
+    // 更改昵称
+    rpc ChangeNickname(ChangeNicknameRequest) returns (Result) {}
+
     // 上传会员头像
-    rpc ChangeAvatar (AvatarRequest) returns (Result) {
+    rpc ChangeHeadPortrait (ChangePortraitRequest) returns (Result) {
     }
     /** 更改密码 */
     rpc ModifyPassword (ModifyPasswordRequest) returns (Result) {
@@ -148,8 +151,8 @@ service MemberService {
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {
     }
-    /** 更改邀请人 */
-    rpc ChangeInviterId (ChangeInviterRequest) returns (Result) {
+    /** 设置或更改邀请人 */
+    rpc SetInviter (SetInviterRequest) returns (Result) {
     }
    
 
@@ -236,14 +239,12 @@ service MemberService {
     rpc FinishWithdrawal (FinishWithdrawalRequest) returns (Result) {
     }
     // 查询提现记录
-    rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogsResponse) {
+    rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogResponse) {
     }
     // !银行四要素认证
     rpc B4EAuth (B4EAuthRequest) returns (Result) {
     }
-    /** 获取指定账户的流水记录 */
-    rpc PagingAccountLog (PagingAccountInfoRequest) returns (SPagingResult) {
-    }
+
     // 获取钱包流水记录
     rpc GetWalletLog (WalletLogRequest) returns (WalletLogResponse);
     // 取消收藏

@@ -37,7 +37,7 @@ message Save{{$shortTitle}}Request{
 
 /** 保存{{$comment}}响应 */
 message Save{{$shortTitle}}Response{
-    int64 errCode = 1;
+    int32 errCode = 1;
     string errMsg = 2;
     {{type "protobuf" .table.PkType}} {{lower_title .table.PkProp}} = 3;
 }

@@ -306,33 +306,32 @@ func (a *accountImpl) createBalanceLog(kind int, title string, amount int, outer
 
 }
 
-// 创建钱包日志
-func (a *accountImpl) createWalletLog(kind int, title string, amount int, outerNo string, checkTrade bool) (*member.WalletAccountLog, error) {
-	title = strings.TrimSpace(title)
-	outerNo = strings.TrimSpace(outerNo)
-	if len(title) == 0 {
-		return nil, member.ErrNoSuchLogTitleOrRemark
-	}
-	if math.IsNaN(float64(amount)) {
-		return nil, member.ErrIncorrectAmount
-	}
-	if checkTrade && len(outerNo) == 0 {
-		return nil, member.ErrMissingOuterNo
-	}
-	unix := time.Now().Unix()
-	return &member.WalletAccountLog{
-		MemberId:    a.value.MemberId,
-		Kind:        kind,
-		Title:       title,
-		OuterNo:     outerNo,
-		Amount:      int64(amount),
-		ReviewState: enum.ReviewPass,
-		RelateUser:  0,
-		CreateTime:  unix,
-		UpdateTime:  unix,
-	}, nil
-
-}
+// // 创建钱包日志
+// func (a *accountImpl) createWalletLog(kind int, title string, amount int, outerNo string, checkTrade bool) (*member.WalletAccountLog, error) {
+// 	title = strings.TrimSpace(title)
+// 	outerNo = strings.TrimSpace(outerNo)
+// 	if len(title) == 0 {
+// 		return nil, member.ErrNoSuchLogTitleOrRemark
+// 	}
+// 	if math.IsNaN(float64(amount)) {
+// 		return nil, member.ErrIncorrectAmount
+// 	}
+// 	if checkTrade && len(outerNo) == 0 {
+// 		return nil, member.ErrMissingOuterNo
+// 	}
+// 	unix := time.Now().Unix()
+// 	return &member.WalletAccountLog{
+// 		MemberId:    a.value.MemberId,
+// 		Kind:        kind,
+// 		Title:       title,
+// 		OuterNo:     outerNo,
+// 		Amount:      int64(amount),
+// 		ReviewState: enum.ReviewPass,
+// 		RelateUser:  0,
+// 		CreateTime:  unix,
+// 		UpdateTime:  unix,
+// 	}, nil
+// }
 
 // 创建活动账户日志
 func (a *accountImpl) createFlowAccountLog(kind int, title string, amount int, outerNo string, checkTrade bool) (*member.FlowAccountLog, error) {

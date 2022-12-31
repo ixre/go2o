@@ -114,7 +114,7 @@ message SubmitAfterSalesOrderRequest {
 // 提交售后订单响应
 message SubmitAfterSalesOrderResponse {
     // 状态码
-    int64 errCode = 1;
+    int32 errCode = 1;
     // 错误信息
     string errMsg = 2;
     // 售后单号

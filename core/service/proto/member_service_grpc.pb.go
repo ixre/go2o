@@ -38,7 +38,7 @@ type MemberServiceClient interface {
 	CheckLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// 发放访问令牌,续期即重新颁发
 	GrantAccessToken(ctx context.Context, in *GrantAccessTokenRequest, opts ...grpc.CallOption) (*GrantAccessTokenResponse, error)
-	// 检查令牌是否有效
+	// 检查令牌是否有效并返回新的令牌
 	CheckAccessToken(ctx context.Context, in *CheckAccessTokenRequest, opts ...grpc.CallOption) (*CheckAccessTokenResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*Result, error)
@@ -108,16 +108,18 @@ type MemberServiceClient interface {
 	ChangePhone(ctx context.Context, in *ChangePhoneRequest, opts ...grpc.CallOption) (*Result, error)
 	// 更改用户名
 	ChangeUser(ctx context.Context, in *ChangeUserRequest, opts ...grpc.CallOption) (*Result, error)
+	// 更改昵称
+	ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*Result, error)
 	// 上传会员头像
-	ChangeAvatar(ctx context.Context, in *AvatarRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeHeadPortrait(ctx context.Context, in *ChangePortraitRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 更改密码
 	ModifyPassword(ctx context.Context, in *ModifyPasswordRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 更改交易密码
 	ModifyTradePassword(ctx context.Context, in *ModifyPasswordRequest, opts ...grpc.CallOption) (*Result, error)
 	// 检查资料是否完善
 	CheckProfileCompleted(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Bool, error)
-	// * 更改邀请人
-	ChangeInviterId(ctx context.Context, in *ChangeInviterRequest, opts ...grpc.CallOption) (*Result, error)
+	// * 设置或更改邀请人
+	SetInviter(ctx context.Context, in *SetInviterRequest, opts ...grpc.CallOption) (*Result, error)
 	// 升级为高级会员
 	Premium(ctx context.Context, in *PremiumRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取会员的会员Token,reset表示是否重置token
@@ -173,11 +175,9 @@ type MemberServiceClient interface {
 	// 收到款项,完成提现
 	FinishWithdrawal(ctx context.Context, in *FinishWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 查询提现记录
-	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogsResponse, error)
+	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error)
 	// !银行四要素认证
 	B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error)
-	// * 获取指定账户的流水记录
-	PagingAccountLog(ctx context.Context, in *PagingAccountInfoRequest, opts ...grpc.CallOption) (*SPagingResult, error)
 	// 获取钱包流水记录
 	GetWalletLog(ctx context.Context, in *WalletLogRequest, opts ...grpc.CallOption) (*WalletLogResponse, error)
 	// 取消收藏
@@ -540,9 +540,18 @@ func (c *memberServiceClient) ChangeUser(ctx context.Context, in *ChangeUserRequ
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeAvatar(ctx context.Context, in *AvatarRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *memberServiceClient) ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/MemberService/ChangeAvatar", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/MemberService/ChangeNickname", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) ChangeHeadPortrait(ctx context.Context, in *ChangePortraitRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MemberService/ChangeHeadPortrait", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -576,9 +585,9 @@ func (c *memberServiceClient) CheckProfileCompleted(ctx context.Context, in *Int
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeInviterId(ctx context.Context, in *ChangeInviterRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *memberServiceClient) SetInviter(ctx context.Context, in *SetInviterRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/MemberService/ChangeInviterId", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/MemberService/SetInviter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -828,8 +837,8 @@ func (c *memberServiceClient) FinishWithdrawal(ctx context.Context, in *FinishWi
 	return out, nil
 }
 
-func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogsResponse, error) {
-	out := new(WithdrawalLogsResponse)
+func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error) {
+	out := new(WithdrawalLogResponse)
 	err := c.cc.Invoke(ctx, "/MemberService/QueryWithdrawalLog", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -840,15 +849,6 @@ func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *Withdr
 func (c *memberServiceClient) B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/MemberService/B4EAuth", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *memberServiceClient) PagingAccountLog(ctx context.Context, in *PagingAccountInfoRequest, opts ...grpc.CallOption) (*SPagingResult, error) {
-	out := new(SPagingResult)
-	err := c.cc.Invoke(ctx, "/MemberService/PagingAccountLog", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -920,7 +920,7 @@ type MemberServiceServer interface {
 	CheckLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 	// 发放访问令牌,续期即重新颁发
 	GrantAccessToken(context.Context, *GrantAccessTokenRequest) (*GrantAccessTokenResponse, error)
-	// 检查令牌是否有效
+	// 检查令牌是否有效并返回新的令牌
 	CheckAccessToken(context.Context, *CheckAccessTokenRequest) (*CheckAccessTokenResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(context.Context, *VerifyPasswordRequest) (*Result, error)
@@ -990,16 +990,18 @@ type MemberServiceServer interface {
 	ChangePhone(context.Context, *ChangePhoneRequest) (*Result, error)
 	// 更改用户名
 	ChangeUser(context.Context, *ChangeUserRequest) (*Result, error)
+	// 更改昵称
+	ChangeNickname(context.Context, *ChangeNicknameRequest) (*Result, error)
 	// 上传会员头像
-	ChangeAvatar(context.Context, *AvatarRequest) (*Result, error)
+	ChangeHeadPortrait(context.Context, *ChangePortraitRequest) (*Result, error)
 	// * 更改密码
 	ModifyPassword(context.Context, *ModifyPasswordRequest) (*Result, error)
 	// * 更改交易密码
 	ModifyTradePassword(context.Context, *ModifyPasswordRequest) (*Result, error)
 	// 检查资料是否完善
 	CheckProfileCompleted(context.Context, *Int64) (*Bool, error)
-	// * 更改邀请人
-	ChangeInviterId(context.Context, *ChangeInviterRequest) (*Result, error)
+	// * 设置或更改邀请人
+	SetInviter(context.Context, *SetInviterRequest) (*Result, error)
 	// 升级为高级会员
 	Premium(context.Context, *PremiumRequest) (*Result, error)
 	// 获取会员的会员Token,reset表示是否重置token
@@ -1055,11 +1057,9 @@ type MemberServiceServer interface {
 	// 收到款项,完成提现
 	FinishWithdrawal(context.Context, *FinishWithdrawalRequest) (*Result, error)
 	// 查询提现记录
-	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogsResponse, error)
+	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error)
 	// !银行四要素认证
 	B4EAuth(context.Context, *B4EAuthRequest) (*Result, error)
-	// * 获取指定账户的流水记录
-	PagingAccountLog(context.Context, *PagingAccountInfoRequest) (*SPagingResult, error)
 	// 获取钱包流水记录
 	GetWalletLog(context.Context, *WalletLogRequest) (*WalletLogResponse, error)
 	// 取消收藏
@@ -1191,8 +1191,11 @@ func (UnimplementedMemberServiceServer) ChangePhone(context.Context, *ChangePhon
 func (UnimplementedMemberServiceServer) ChangeUser(context.Context, *ChangeUserRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeUser not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeAvatar(context.Context, *AvatarRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChangeAvatar not implemented")
+func (UnimplementedMemberServiceServer) ChangeNickname(context.Context, *ChangeNicknameRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeNickname not implemented")
+}
+func (UnimplementedMemberServiceServer) ChangeHeadPortrait(context.Context, *ChangePortraitRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeHeadPortrait not implemented")
 }
 func (UnimplementedMemberServiceServer) ModifyPassword(context.Context, *ModifyPasswordRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModifyPassword not implemented")
@@ -1203,8 +1206,8 @@ func (UnimplementedMemberServiceServer) ModifyTradePassword(context.Context, *Mo
 func (UnimplementedMemberServiceServer) CheckProfileCompleted(context.Context, *Int64) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckProfileCompleted not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeInviterId(context.Context, *ChangeInviterRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChangeInviterId not implemented")
+func (UnimplementedMemberServiceServer) SetInviter(context.Context, *SetInviterRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetInviter not implemented")
 }
 func (UnimplementedMemberServiceServer) Premium(context.Context, *PremiumRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Premium not implemented")
@@ -1287,14 +1290,11 @@ func (UnimplementedMemberServiceServer) ReviewWithdrawal(context.Context, *Revie
 func (UnimplementedMemberServiceServer) FinishWithdrawal(context.Context, *FinishWithdrawalRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishWithdrawal not implemented")
 }
-func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogsResponse, error) {
+func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryWithdrawalLog not implemented")
 }
 func (UnimplementedMemberServiceServer) B4EAuth(context.Context, *B4EAuthRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method B4EAuth not implemented")
-}
-func (UnimplementedMemberServiceServer) PagingAccountLog(context.Context, *PagingAccountInfoRequest) (*SPagingResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PagingAccountLog not implemented")
 }
 func (UnimplementedMemberServiceServer) GetWalletLog(context.Context, *WalletLogRequest) (*WalletLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWalletLog not implemented")
@@ -2008,20 +2008,38 @@ func _MemberService_ChangeUser_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_ChangeAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AvatarRequest)
+func _MemberService_ChangeNickname_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeNicknameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).ChangeAvatar(ctx, in)
+		return srv.(MemberServiceServer).ChangeNickname(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MemberService/ChangeAvatar",
+		FullMethod: "/MemberService/ChangeNickname",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).ChangeAvatar(ctx, req.(*AvatarRequest))
+		return srv.(MemberServiceServer).ChangeNickname(ctx, req.(*ChangeNicknameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_ChangeHeadPortrait_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePortraitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).ChangeHeadPortrait(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/ChangeHeadPortrait",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).ChangeHeadPortrait(ctx, req.(*ChangePortraitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2080,20 +2098,20 @@ func _MemberService_CheckProfileCompleted_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_ChangeInviterId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ChangeInviterRequest)
+func _MemberService_SetInviter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetInviterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).ChangeInviterId(ctx, in)
+		return srv.(MemberServiceServer).SetInviter(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MemberService/ChangeInviterId",
+		FullMethod: "/MemberService/SetInviter",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).ChangeInviterId(ctx, req.(*ChangeInviterRequest))
+		return srv.(MemberServiceServer).SetInviter(ctx, req.(*SetInviterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2620,24 +2638,6 @@ func _MemberService_B4EAuth_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_PagingAccountLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PagingAccountInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemberServiceServer).PagingAccountLog(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/MemberService/PagingAccountLog",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).PagingAccountLog(ctx, req.(*PagingAccountInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MemberService_GetWalletLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WalletLogRequest)
 	if err := dec(in); err != nil {
@@ -2888,8 +2888,12 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_ChangeUser_Handler,
 		},
 		{
-			MethodName: "ChangeAvatar",
-			Handler:    _MemberService_ChangeAvatar_Handler,
+			MethodName: "ChangeNickname",
+			Handler:    _MemberService_ChangeNickname_Handler,
+		},
+		{
+			MethodName: "ChangeHeadPortrait",
+			Handler:    _MemberService_ChangeHeadPortrait_Handler,
 		},
 		{
 			MethodName: "ModifyPassword",
@@ -2904,8 +2908,8 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_CheckProfileCompleted_Handler,
 		},
 		{
-			MethodName: "ChangeInviterId",
-			Handler:    _MemberService_ChangeInviterId_Handler,
+			MethodName: "SetInviter",
+			Handler:    _MemberService_SetInviter_Handler,
 		},
 		{
 			MethodName: "Premium",
@@ -3022,10 +3026,6 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "B4EAuth",
 			Handler:    _MemberService_B4EAuth_Handler,
-		},
-		{
-			MethodName: "PagingAccountLog",
-			Handler:    _MemberService_PagingAccountLog_Handler,
 		},
 		{
 			MethodName: "GetWalletLog",
