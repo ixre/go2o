@@ -616,7 +616,7 @@ func (m *memberImpl) prepare() (err error) {
 	if lp > 0 {
 		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
 		if checkPhone && !phoneRegex.MatchString(m.value.Phone) {
-			return member.ErrBadPhoneFormat
+			return member.ErrInvalidPhone
 		}
 		if m.checkPhoneBind(m.value.Phone, m.GetAggregateRootId()) != nil {
 			return member.ErrPhoneHasBind
