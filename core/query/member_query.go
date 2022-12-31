@@ -59,14 +59,13 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_balance_log bi
-	 	INNER JOIN mm_member m ON m.id=bi.member_id
-			WHERE bi.member_id= $1 %s`, where), &num, memberId)
-	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_log bi
-			INNER JOIN mm_member m ON m.id=bi.member_id
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_balance_log
+			WHERE member_id= $1 %s`, where), &num, memberId)
+	sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
+	balance,audit_state,create_time FROM mm_balance_log
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
-	d.Query(sqlLine, func(_rows *sql.Rows) {
+	err := d.Query(sqlLine, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := proto.SMemberAccountLog{}
 			_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
@@ -75,6 +74,9 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 			rows = append(rows, &e)
 		}
 	}, memberId, begin, end-begin)
+	if err!= nil {
+        log.Println(err)
+    }
 
 	return num, rows
 }
@@ -83,22 +85,21 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64,
 	sortBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
-	d.ExecScalar(`SELECT COUNT(1) FROM mm_integral_log bi
-	 	INNER JOIN mm_member m ON m.id = bi.member_id
-			WHERE bi.member_id= $1`, &num, memberId)
+	d.ExecScalar(`SELECT COUNT(1) FROM mm_integral_log 
+			WHERE member_id= $1`, &num, memberId)
 	if num > 0 {
 		orderBy := ""
 		if sortBy != "" {
 			orderBy = "ORDER BY " + sortBy + ",bi.id DESC"
 		}
-		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_integral_log bi
-			INNER JOIN mm_member m ON m.id=bi.member_id
+		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,
+		balance,audit_state,create_time FROM mm_integral_log 
 			WHERE member_id= $1 %s LIMIT $3 OFFSET $2`, orderBy)
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
 				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
-					&e.Value, &e.ProcedureFee, &e.Balance,
+					&e.Value,  &e.Balance,
 					&e.AuditState, &e.CreateTime)
 				rows = append(rows, &e)
 			}

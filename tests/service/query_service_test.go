@@ -33,7 +33,7 @@ func TestPagingIntegralLog(t *testing.T) {
 	r, _ := impl.QueryService.PagingMemberAccountLog(context.TODO(),
 		&proto.PagingAccountLogRequest{
 			MemberId:    1,
-			AccountType: int32(member.AccountWallet),
+			AccountType: int32(member.AccountIntegral),
 			Params:      params,
 		})
 	t.Log(typeconv.MustJson(r))

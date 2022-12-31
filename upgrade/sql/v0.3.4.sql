@@ -76,3 +76,29 @@ COMMENT ON COLUMN mm_flag_request.audit_time IS '审核时间';
 COMMENT ON COLUMN mm_flag_request.audit_uid IS '审核人';
 COMMENT ON COLUMN mm_flag_request.audit_remark IS '审核意见';
 COMMENT ON COLUMN mm_flag_request.create_time IS '创建时间';
+
+ALTER TABLE IF EXISTS public.mm_balance_log
+    RENAME title TO subject;
+ALTER TABLE IF EXISTS public.mm_balance_log
+    RENAME amount TO change_value;
+	ALTER TABLE IF EXISTS public.mm_balance_log
+    RENAME csn_fee TO procedure_fee;
+		ALTER TABLE IF EXISTS public.mm_balance_log
+    RENAME review_state TO audit_state;
+
+ALTER TABLE IF EXISTS public.mm_flow_log
+    RENAME title TO subject;
+ALTER TABLE IF EXISTS public.mm_flow_log
+    RENAME amount TO change_value;
+	ALTER TABLE IF EXISTS public.mm_flow_log
+    RENAME csn_fee TO procedure_fee;
+		ALTER TABLE IF EXISTS public.mm_flow_log
+    RENAME review_state TO audit_state;
+
+  
+ALTER TABLE IF EXISTS public.mm_integral_log
+    RENAME title TO subject;
+ALTER TABLE IF EXISTS public.mm_integral_log
+    RENAME value TO change_value;
+ALTER TABLE IF EXISTS public.mm_integral_log
+    RENAME review_state TO audit_state;
