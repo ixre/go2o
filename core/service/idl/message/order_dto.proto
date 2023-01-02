@@ -234,12 +234,20 @@ message SubmitOrderRequest {
 
 // 提交订单请求
 message SubmitNormalOrderV2Request {
+    // 买家编号
     int64 buyerId = 1;
+    // 购物车编码
     string cartCode = 2;
+    // 收货地址编号
     int64 addressId = 3;
+    // 订单标题
     string subject = 4;
+    // 优惠券
     string couponCode = 5;
+    // 是否使用余额抵扣
     bool balanceDiscount = 6;
+    // 推广返利用户代码
+    string affliteCode = 7;
 }
 
 // 订单提交返回数据
@@ -258,16 +266,23 @@ message NormalOrderSubmitResponse {
     int64 tradeAmount = 6;
 }
 
+// 获取订单请求
 message GetOrderRequest {
+    // 订单号
     string orderNo = 1;
+    // 是否为子订单
     bool subOrder = 2;
 }
 
+// 提交交易类订单请求
 message TradeOrderSubmitRequest {
+    // 订单
     SSingleOrder order = 1;
+    // 优惠比例
     double rate = 2;
 }
 
+// 提交交易类订单凭据
 message TradeOrderTicketRequest {
     sint64 orderId = 1;
     string image = 2;

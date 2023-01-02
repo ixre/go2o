@@ -14,6 +14,8 @@ enum EMemberFlag {
   LOCKED = 2;
   // 已认证的
   TRUSTED = 4;
+  FlagAffilite = 8;
+  FlagSeller = 16;
   /** 未设置交易密码 */
   NO_TRADE_PASSWD = 64;
   /** 商户 */
