@@ -69,4 +69,7 @@ service OrderService {
     // 获取订单日志
     rpc LogBytes (OrderNo) returns (String) {
     }
+    /** 获取订单返利列表 */
+    rpc QueryRebateListList (QueryRebateListRequest) returns (QueryRebateListResponse) {
+    }
 }
