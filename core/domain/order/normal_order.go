@@ -65,6 +65,7 @@ type normalOrderImpl struct {
 	_payOrder       payment.IPaymentOrder
 }
 
+
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
@@ -99,6 +100,18 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 		}
 	}
 	return co
+}
+
+// ApplyTraderCode implements order.INormalOrder
+func (o *normalOrderImpl) ApplyTraderCode(code string) error {
+	memberId := o.memberRepo.GetMemberIdByCode(code)
+	if memberId <= 0{
+		return member.ErrNoSuchMember
+	}
+	im := o.memberRepo.GetMember(memberId)
+	if im.ContainFlag(member.FlagAffilite){		
+	}
+	panic("unimplemented")
 }
 
 // ApplyCoupon 应用优惠券
