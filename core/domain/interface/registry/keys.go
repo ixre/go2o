@@ -193,6 +193,9 @@ var (
 	// 抵扣1元所需要的积分个数
 	IntegralDiscountQuantity = KeyFormat("IntegralDiscountQuantity")
 
+	/** 订单 */
+	// 全局订单返利比例
+	OrderGlobalAffliteRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式
 	MchOrderSettleMode = KeyFormat("MchOrderSettleMode")

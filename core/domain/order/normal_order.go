@@ -31,6 +31,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 var _ order.IOrder = new(normalOrderImpl)
@@ -778,20 +779,30 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 // 创建返利订单
 func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder){
 	if o._affliteMember != nil{
+		rv,err := o.registryRepo.GetValue(registry.OrderGlobalAffliteRebateRate)
+		if err != nil{
+			log.Println("[ warning]: affilite rebate rate error",err.Error())
+			return
+		}
+		rate := typeconv.MustFloat(rv)
+		if rate <= 0{
+			return
+		}
 		ov := so.GetValue()
 		unix := time.Now().Unix()
-		v := order.RebateList{
+		v := &order.RebateList{
 			PlanId : 0,
 			TraderId : o._affliteMember.GetAggregateRootId(),
 			AffiliateCode: o._affliteMember.GetValue().Code,
 			OrderNo: ov.OrderNo,
 			OrderSubject:ov.Subject,
 			OrderAmount:ov.FinalAmount,
-			RebaseAmount: int(float64(ov.FinalAmount) * 0.1),
+			RebaseAmount: int64(float64(ov.FinalAmount) * rate),
 			Status:1,
 			CreateTime:unix,
 			UpdateTime: unix,
 		}
+		o.orderRepo.SaveAffliteRebateOrder(v)
 	}
 }
 

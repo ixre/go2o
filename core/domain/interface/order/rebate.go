@@ -1,6 +1,6 @@
 package order
 
-var (
+type (
 	// RebateItem 订单返利详情
 	RebateItem struct {
 		// 编号
