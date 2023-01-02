@@ -63,6 +63,8 @@ type normalOrderImpl struct {
 	internalSuspend bool
 	_list           []order.ISubOrder
 	_payOrder       payment.IPaymentOrder
+	// 返利推荐人
+	_affliteMember member.IMember
 }
 
 
@@ -102,16 +104,19 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	return co
 }
 
-// ApplyTraderCode implements order.INormalOrder
+// ApplyTraderCode 使用返利人代码
 func (o *normalOrderImpl) ApplyTraderCode(code string) error {
 	memberId := o.memberRepo.GetMemberIdByCode(code)
 	if memberId <= 0{
 		return member.ErrNoSuchMember
 	}
 	im := o.memberRepo.GetMember(memberId)
-	if im.ContainFlag(member.FlagAffilite){		
+	// 用户没有返利标志，则不作任何处理
+	if im == nil || !im.ContainFlag(member.FlagAffilite){	
+		return nil
 	}
-	panic("unimplemented")
+	o._affliteMember = im
+	return nil
 }
 
 // ApplyCoupon 应用优惠券
@@ -765,7 +770,29 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费
 	v.FinalAmount = v.ItemAmount - v.DiscountAmount +
 		v.PackageFee + v.ExpressFee
-	return o.repo.CreateNormalSubOrder(v)
+	so := o.repo.CreateNormalSubOrder(v)
+	o.createAffliteRebateOrder(so)
+	return so
+}
+
+// 创建返利订单
+func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder){
+	if o._affliteMember != nil{
+		ov := so.GetValue()
+		unix := time.Now().Unix()
+		v := order.RebateList{
+			PlanId : 0,
+			TraderId : o._affliteMember.GetAggregateRootId(),
+			AffiliateCode: o._affliteMember.GetValue().Code,
+			OrderNo: ov.OrderNo,
+			OrderSubject:ov.Subject,
+			OrderAmount:ov.FinalAmount,
+			RebaseAmount: int(float64(ov.FinalAmount) * 0.1),
+			Status:1,
+			CreateTime:unix,
+			UpdateTime: unix,
+		}
+	}
 }
 
 // 根据运营商拆单,返回拆单结果,及拆分的订单数组
