@@ -399,3 +399,57 @@ message SPrepareOrderItem {
     //数量
     sint32 quantity = 9;
 }
+
+/** 查询订单返利请求 */
+message QueryRebateListRequest{
+    /** 自定义参数 */
+}
+
+/** 查询订单返利响应 */
+message QueryRebateListResponse{
+    repeated SRebateList value = 1;
+}
+
+/** 订单返利 */
+message SRebateList{
+    /** 编号 */
+    int64 id = 1;
+    /** 返利方案Id */
+    int32 planId = 2;
+    /** 成交人Id */
+    int64 traderId = 3;
+    /** 分享码 */
+    string affiliateCode = 4;
+    /** 订单号 */
+    string orderNo = 5;
+    /** 订单标题 */
+    string orderSubject = 6;
+    /** 订单金额 */
+    int64 orderAmount = 7;
+    /** 返利金额 */
+    int64 rebaseAmount = 8;
+    /** 返利状态 */
+    int32 status = 9;
+    /** 创建时间 */
+    int64 createTime = 10;
+    /** 更新时间 */
+    int64 updateTime = 11;
+}
+
+/** 订单返利详情 */
+message SRebateItem{
+    /** 编号 */
+    int32 id = 1;
+    /** 返利单Id */
+    int64 debateId = 2;
+    /** 商品编号 */
+    int64 itemId = 3;
+    /** 商品名称 */
+    string itemName = 4;
+    /** 商品图片 */
+    string itemImage = 5;
+    /** 商品金额 */
+    int64 itemAmount = 6;
+    /** 返利金额 */
+    int64 rebateAmount = 7;
+}
