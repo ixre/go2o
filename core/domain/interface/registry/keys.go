@@ -194,6 +194,8 @@ var (
 	IntegralDiscountQuantity = KeyFormat("IntegralDiscountQuantity")
 
 	/** 订单 */
+	// 是否启用订单返利
+	OrderEnableAffliteRebate = KeyFormat("OrderEnableAffliteRebate")
 	// 全局订单返利比例
 	OrderGlobalAffliteRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
 	//  /* 商户订单 */

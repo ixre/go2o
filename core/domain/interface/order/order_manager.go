@@ -139,5 +139,8 @@ type (
 		GetTradeOrder(where string, v ...interface{}) *TradeOrder
 		// Save TradeOrder
 		SaveTradeOrder(v *TradeOrder) (int, error)
+
+		// SaveRebateList 保存订单返利
+		SaveOrderRebate(v *AffliteRebate) (int, error)
 	}
 )

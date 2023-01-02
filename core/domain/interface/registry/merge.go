@@ -121,6 +121,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("抵扣1元所需要的积分(0不抵扣)", IntegralDiscountQuantity, "1000", "")
 
 	// 订单
+	mergeAdd("是否启用订单返利", OrderEnableAffliteRebate, "0", "")
 	mergeAdd("全局订单返利比例", OrderGlobalAffliteRebateRate, "0", "")
 
 	// 商户订单

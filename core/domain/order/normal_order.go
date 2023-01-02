@@ -68,7 +68,6 @@ type normalOrderImpl struct {
 	_affliteMember member.IMember
 }
 
-
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
@@ -108,12 +107,12 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 // ApplyTraderCode 使用返利人代码
 func (o *normalOrderImpl) ApplyTraderCode(code string) error {
 	memberId := o.memberRepo.GetMemberIdByCode(code)
-	if memberId <= 0{
+	if memberId <= 0 {
 		return member.ErrNoSuchMember
 	}
 	im := o.memberRepo.GetMember(memberId)
 	// 用户没有返利标志，则不作任何处理
-	if im == nil || !im.ContainFlag(member.FlagAffilite){	
+	if im == nil || !im.ContainFlag(member.FlagAffilite) {
 		return nil
 	}
 	o._affliteMember = im
@@ -777,32 +776,38 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 }
 
 // 创建返利订单
-func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder){
-	if o._affliteMember != nil{
-		rv,err := o.registryRepo.GetValue(registry.OrderGlobalAffliteRebateRate)
-		if err != nil{
-			log.Println("[ warning]: affilite rebate rate error",err.Error())
+func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
+	if o._affliteMember != nil {
+		// 未开启返利
+		rv, _ := o.registryRepo.GetValue(registry.OrderEnableAffliteRebate)
+		if v, _ := strconv.ParseBool(rv); !v {
+			return
+		}
+		// 获取返利比例
+		rv, err := o.registryRepo.GetValue(registry.OrderGlobalAffliteRebateRate)
+		if err != nil {
+			log.Println("[ warning]: affilite rebate rate error", err.Error())
 			return
 		}
 		rate := typeconv.MustFloat(rv)
-		if rate <= 0{
+		if rate <= 0 {
 			return
 		}
 		ov := so.GetValue()
 		unix := time.Now().Unix()
-		v := &order.RebateList{
-			PlanId : 0,
-			TraderId : o._affliteMember.GetAggregateRootId(),
+		v := &order.AffliteRebate{
+			PlanId:        0,
+			TraderId:      o._affliteMember.GetAggregateRootId(),
 			AffiliateCode: o._affliteMember.GetValue().Code,
-			OrderNo: ov.OrderNo,
-			OrderSubject:ov.Subject,
-			OrderAmount:ov.FinalAmount,
-			RebaseAmount: int64(float64(ov.FinalAmount) * rate),
-			Status:1,
-			CreateTime:unix,
-			UpdateTime: unix,
+			OrderNo:       ov.OrderNo,
+			OrderSubject:  ov.Subject,
+			OrderAmount:   ov.FinalAmount,
+			RebaseAmount:  int64(float64(ov.FinalAmount) * rate),
+			Status:        1,
+			CreateTime:    unix,
+			UpdateTime:    unix,
 		}
-		o.orderRepo.SaveAffliteRebateOrder(v)
+		o.orderRepo.SaveOrderRebate(v)
 	}
 }
 
