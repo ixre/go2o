@@ -4,8 +4,6 @@ go 1.19
 
 replace github.com/ixre/gof => ../github.com/ixre/gof
 
-replace github.com/ixre/tto => ../github.com/ixre/tto
-
 require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible
