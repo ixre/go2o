@@ -14,12 +14,12 @@ enum EMemberFlag {
   LOCKED = 2;
   // 已认证的
   TRUSTED = 4;
-  FlagAffilite = 8;
-  FlagSeller = 16;
+  // 商户
+  SELLER = 64;
   /** 未设置交易密码 */
-  NO_TRADE_PASSWD = 64;
-  /** 商户 */
-  FlagSeller = 128;
+  NO_TRADE_PASSWD = 128;
+  // 有返利权限的
+  REBATE_DISABLED = 256;
 }
 
 message RegisterMemberRequest {

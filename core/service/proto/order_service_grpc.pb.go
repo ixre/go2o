@@ -56,6 +56,8 @@ type OrderServiceClient interface {
 	Forbid(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*Result, error)
 	// 获取订单日志
 	LogBytes(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*String, error)
+	// * 获取订单返利列表
+	QueryRebateListList(ctx context.Context, in *QueryRebateListRequest, opts ...grpc.CallOption) (*QueryRebateListResponse, error)
 }
 
 type orderServiceClient struct {
@@ -219,6 +221,15 @@ func (c *orderServiceClient) LogBytes(ctx context.Context, in *OrderNo, opts ...
 	return out, nil
 }
 
+func (c *orderServiceClient) QueryRebateListList(ctx context.Context, in *QueryRebateListRequest, opts ...grpc.CallOption) (*QueryRebateListResponse, error) {
+	out := new(QueryRebateListResponse)
+	err := c.cc.Invoke(ctx, "/OrderService/QueryRebateListList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OrderServiceServer is the server API for OrderService service.
 // All implementations must embed UnimplementedOrderServiceServer
 // for forward compatibility
@@ -257,6 +268,8 @@ type OrderServiceServer interface {
 	Forbid(context.Context, *OrderNo) (*Result, error)
 	// 获取订单日志
 	LogBytes(context.Context, *OrderNo) (*String, error)
+	// * 获取订单返利列表
+	QueryRebateListList(context.Context, *QueryRebateListRequest) (*QueryRebateListResponse, error)
 	mustEmbedUnimplementedOrderServiceServer()
 }
 
@@ -314,6 +327,9 @@ func (UnimplementedOrderServiceServer) Forbid(context.Context, *OrderNo) (*Resul
 }
 func (UnimplementedOrderServiceServer) LogBytes(context.Context, *OrderNo) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogBytes not implemented")
+}
+func (UnimplementedOrderServiceServer) QueryRebateListList(context.Context, *QueryRebateListRequest) (*QueryRebateListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryRebateListList not implemented")
 }
 func (UnimplementedOrderServiceServer) mustEmbedUnimplementedOrderServiceServer() {}
 
@@ -634,6 +650,24 @@ func _OrderService_LogBytes_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_QueryRebateListList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryRebateListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).QueryRebateListList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/OrderService/QueryRebateListList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).QueryRebateListList(ctx, req.(*QueryRebateListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OrderService_ServiceDesc is the grpc.ServiceDesc for OrderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -708,6 +742,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LogBytes",
 			Handler:    _OrderService_LogBytes_Handler,
+		},
+		{
+			MethodName: "QueryRebateListList",
+			Handler:    _OrderService_QueryRebateListList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
