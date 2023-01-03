@@ -238,7 +238,12 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 }
 
 func (t *orderManagerImpl) SubmitOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
+	return t.submitNormalOrder(data)
+}
+
+func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
 	rd := &order.SubmitReturnData{}
+	ic := t.cartRepo.GetLatestCart(data.BuyerId)
 	o, err := t.PrepareNormalOrder(data.Cart)
 	if err != nil {
 		return nil, rd, err

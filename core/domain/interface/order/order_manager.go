@@ -145,8 +145,10 @@ type (
 
 	// SubmitData 订单提交数据
 	SubmitOrderData struct {
-		// 购物车
-		Cart cart.ICart
+		// 买家编号
+		BuyerId int64
+		// 订单类型
+		Type OrderType
 		// 收货地址编号
 		AddressId int64
 		// 优惠券
@@ -155,5 +157,7 @@ type (
 		BalanceDiscount bool
 		// 返利推广人代码
 		AffliteCode string
+		// 提交的订单数据
+		PostedData IPostedData
 	}
 )
