@@ -22,6 +22,8 @@ type (
 
 		// GetSubOrders 获取子订单列表
 		GetSubOrders() []ISubOrder
+		// ApplyTraderCode 应用成交人代码,用于订单返利
+		ApplyTraderCode(code string)error
 		// ApplyCoupon 应用优惠券
 		ApplyCoupon(coupon promotion.ICouponPromotion) error
 		// GetCoupons 获取应用的优惠券

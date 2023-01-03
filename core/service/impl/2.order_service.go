@@ -93,16 +93,34 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 }
 
 // SubmitOrderV1 提交订单
-func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
-	c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
+func (s *orderServiceImpl) SubmitOrderV2(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
+	// c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
 	iData := orderImpl.NewPostedData(r.Data)
-	rd, err := s.repo.Manager().SubmitWholesaleOrder(c, iData)
+	// rd, err := s.repo.Manager().SubmitWholesaleOrder(c, iData)
+	// if err != nil {
+	// 	return &proto.StringMap{Value: map[string]string{
+	// 		"error": err.Error(),
+	// 	}}, nil
+	// }
+	// return &proto.StringMap{Value: rd}, nil
+	_, rd, err := s.manager.SubmitOrder(order.SubmitOrderData{
+		Type:            order.OrderType(r.OrderType),
+		AddressId:       r.AddressId,
+		CouponCode:      r.CouponCode,
+		BalanceDiscount: r.BalanceDiscount,
+		AffliteCode:     r.AffliteCode,
+		PostedData: iData,
+	})
+	ret := &proto.NormalOrderSubmitResponse{}
 	if err != nil {
-		return &proto.StringMap{Value: map[string]string{
-			"error": err.Error(),
-		}}, nil
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	} else {
+		ret.OrderNo = rd.OrderNo
+		ret.MergePay = rd.MergePay
+		ret.TradeNo = rd.TradeNo
+		ret.TradeAmount = rd.TradeAmount
 	}
-	return &proto.StringMap{Value: rd}, nil
 }
 
 // PrepareOrder 预生成订单

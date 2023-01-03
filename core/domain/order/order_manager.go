@@ -237,38 +237,48 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 	return err
 }
 
-func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
-	couponCode string, useBalanceDiscount bool) (order.IOrder, *order.SubmitReturnData, error) {
+func (t *orderManagerImpl) SubmitOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
+	return t.submitNormalOrder(data)
+}
+
+func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
 	rd := &order.SubmitReturnData{}
-	o, err := t.PrepareNormalOrder(c)
+	ic := t.cartRepo.GetLatestCart(data.BuyerId)
+	o, err := t.PrepareNormalOrder(data.Cart)
 	if err != nil {
 		return nil, rd, err
 	}
 	buyer := o.Buyer()
 	// 设置收货地址
-	if err = o.SetShipmentAddress(addressId); err != nil {
+	if err = o.SetShipmentAddress(data.AddressId); err != nil {
 		return o, rd, err
 	} else {
-		_ = buyer.Profile().SetDefaultAddress(addressId) // 更新默认收货地址为本地使用地址
+		_ = buyer.Profile().SetDefaultAddress(data.AddressId) // 更新默认收货地址为本地使用地址
 	}
+	// 使用返利用户代码
+	no := o.(order.INormalOrder)
+	if no != nil {
+		if len(data.AffliteCode) > 0 {
+			err = no.ApplyTraderCode(data.AffliteCode)
+		}
+	}
+	// 提交订单
 	if err = o.Submit(); err != nil {
 		return o, rd, err
 	}
-
 	// 合并支付
 	ip := o.GetPaymentOrder()
 	ipv := ip.Get()
-	if len(couponCode) != 0 { // 使用优惠码
-		if err = t.applyCoupon(buyer, o, ip, couponCode); err != nil {
+	if len(data.CouponCode) != 0 { // 使用优惠码
+		if err = t.applyCoupon(buyer, o, ip, data.CouponCode); err != nil {
 			return o, rd, err
 		}
 	}
 	// 使用余额抵扣,如果余额抵扣失败,仍然应该继续结算
-	if useBalanceDiscount {
+	if data.BalanceDiscount {
 		_ = ip.BalanceDiscount("")
 	}
 	// 如果全部支付成功
-
 	if ip.State() > payment.StateAwaitingPayment {
 
 	}
@@ -493,16 +503,14 @@ func (u *unifiedOrderAdapterImpl) buyerReceived() error {
 	return nil
 }
 
-
 // Forbid implements order.IUnifiedOrderAdapter
 func (u *unifiedOrderAdapterImpl) Forbid() error {
 	err := u.check()
 	if err == nil {
-		return u.subOrder.Forbid();
+		return u.subOrder.Forbid()
 	}
 	return errors.New("not implemented")
 }
-
 
 // 获取订单日志
 func (u *unifiedOrderAdapterImpl) LogBytes() []byte {

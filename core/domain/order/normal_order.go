@@ -31,6 +31,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 var _ order.IOrder = new(normalOrderImpl)
@@ -63,6 +64,8 @@ type normalOrderImpl struct {
 	internalSuspend bool
 	_list           []order.ISubOrder
 	_payOrder       payment.IPaymentOrder
+	// 返利推荐人
+	_affliteMember member.IMember
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
@@ -99,6 +102,21 @@ func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 		}
 	}
 	return co
+}
+
+// ApplyTraderCode 使用返利人代码
+func (o *normalOrderImpl) ApplyTraderCode(code string) error {
+	memberId := o.memberRepo.GetMemberIdByCode(code)
+	if memberId <= 0 {
+		return member.ErrNoSuchMember
+	}
+	im := o.memberRepo.GetMember(memberId)
+	// 用户没有返利标志，则不作任何处理
+	if im == nil || im.ContainFlag(member.FlagRebateDisabled) {
+		return nil
+	}
+	o._affliteMember = im
+	return nil
 }
 
 // ApplyCoupon 应用优惠券
@@ -752,7 +770,45 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费
 	v.FinalAmount = v.ItemAmount - v.DiscountAmount +
 		v.PackageFee + v.ExpressFee
-	return o.repo.CreateNormalSubOrder(v)
+	so := o.repo.CreateNormalSubOrder(v)
+	o.createAffliteRebateOrder(so)
+	return so
+}
+
+// 创建返利订单
+func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
+	if o._affliteMember != nil {
+		// 未开启返利
+		rv, _ := o.registryRepo.GetValue(registry.OrderEnableAffliteRebate)
+		if v, _ := strconv.ParseBool(rv); !v {
+			return
+		}
+		// 获取返利比例
+		rv, err := o.registryRepo.GetValue(registry.OrderGlobalAffliteRebateRate)
+		if err != nil {
+			log.Println("[ warning]: affilite rebate rate error", err.Error())
+			return
+		}
+		rate := typeconv.MustFloat(rv)
+		if rate <= 0 {
+			return
+		}
+		ov := so.GetValue()
+		unix := time.Now().Unix()
+		v := &order.AffliteRebate{
+			PlanId:        0,
+			TraderId:      o._affliteMember.GetAggregateRootId(),
+			AffiliateCode: o._affliteMember.GetValue().Code,
+			OrderNo:       ov.OrderNo,
+			OrderSubject:  ov.Subject,
+			OrderAmount:   ov.FinalAmount,
+			RebaseAmount:  int64(float64(ov.FinalAmount) * rate),
+			Status:        1,
+			CreateTime:    unix,
+			UpdateTime:    unix,
+		}
+		o.orderRepo.SaveOrderRebate(v)
+	}
 }
 
 // 根据运营商拆单,返回拆单结果,及拆分的订单数组

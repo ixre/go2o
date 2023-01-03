@@ -51,15 +51,17 @@ const (
 	// FlagActive 已激活(1)
 	FlagActive = 1 << iota
 	// FlagLocked 已锁定的(2)
-	FlagLocked
+	FlagLocked = 2
 	// FlagTrusted 已认证的(4)
-	FlagTrusted
-	// FlagNoTradePasswd 交易密码未设置(8)
-	FlagNoTradePasswd = 64
+	FlagTrusted = 4
 	// FlagSeller 商户(64)
-	FlagSeller = 128
+	FlagSeller = 64
+	// FlagNoTradePasswd 交易密码未设置(64)
+	FlagNoTradePasswd = 128
+	// FlagStopRebate 禁用返利权限的(8)
+	FlagRebateDisabled = 256
 	// FlagProfileCompleted 已完善的资料(16)
-	FlagProfileCompleted = 256
+	FlagProfileCompleted = 512
 )
 
 type (
@@ -137,7 +139,7 @@ type (
 		// ChangePhone 更改手机号码,不验证手机格式
 		ChangePhone(string) error
 		//　ChangeNickname 修改昵称
-		ChangeNickname(nickname string,limitTime bool)error
+		ChangeNickname(nickname string, limitTime bool) error
 		// ChangeHeadPortrait 设置头像
 		ChangeHeadPortrait(string) error
 		// ProfileCompleted 资料是否完善
