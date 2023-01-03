@@ -1583,7 +1583,6 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Id:             src.Id,
 		User:           src.User,
 		UserCode:       src.Code,
-		Password:       src.Pwd,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
@@ -1679,28 +1678,6 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 		TotalPay:            src.TotalPay,
 		PriorityPay:         int32(src.PriorityPay),
 		UpdateTime:          src.UpdateTime,
-	}
-}
-
-func (s *memberService) parseMember(src *proto.SMember) *member.Member {
-	return &member.Member{
-		Id:             src.Id,
-		Code:           src.UserCode,
-		Nickname:       src.Nickname,
-		RealName:       src.RealName,
-		User:           src.User,
-		Pwd:            src.Password,
-		Avatar:         src.Portrait,
-		Exp:            int(src.Exp),
-		Level:          int(src.Level),
-		PremiumUser:    int(src.PremiumUser),
-		PremiumExpires: src.PremiumExpires,
-		Phone:          src.Phone,
-		Email:          src.Email,
-		RegFrom:        src.RegFrom,
-		RegIp:          src.RegIp,
-		Flag:           int(src.Flag),
-		State:          int(src.State),
 	}
 }
 

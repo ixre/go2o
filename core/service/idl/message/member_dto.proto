@@ -399,24 +399,22 @@ message ChangePortraitRequest {
 message SMember {
   /** 编号  */
   sint64 id = 1;
-  /** 用户名 */
-  string user = 2;
-  /** 密码 */
-  string password = 3;
+  /** 会员编码/邀请码  */
+  string userCode = 2;
   /** 会员标志 */
-  sint32 flag = 4;
+  sint32 flag = 3;
+  /** 用户名 */
+  string user = 4;
   /** 经验值 */
   sint64 exp = 5;
   /** 等级  */
   sint32 level = 6;
-  /** 会员编码/邀请码  */
-  string userCode = 7;
   /** 会员头像 */
-  string portrait = 8;
+  string portrait = 7;
   /** 昵称 */
-  string nickname = 9;
+  string nickname = 8;
   /** 注册IP */
-  string regIp = 10;
+  string regIp = 9;
   /** 注册来源 */
   string regFrom = 11;
   /** 状态 */
