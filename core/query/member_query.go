@@ -56,11 +56,11 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, begin, end int,
 	where, orderBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
-	if valueFilter > 0 {
-		where += ` AND change_value > 0`
+	if valueFilter == 1 {
+		where += ` AND change_value > 0 `
 	}
-	if valueFilter < 0 {
-		where += ` AND change_value < 0`
+	if valueFilter == 2 {
+		where += ` AND change_value < 0 `
 	}
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -92,11 +92,11 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, valueFilter int32,
 	begin, over int64, sortBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
 	where := ""
-	if valueFilter > 0 {
-		where = ` AND change_value > 0`
+	if valueFilter == 1 {
+		where += ` AND change_value > 0 `
 	}
-	if valueFilter < 0 {
-		where = ` AND change_value < 0`
+	if valueFilter == 2 {
+		where += ` AND change_value < 0 `
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_integral_log 
 			WHERE member_id= $1 %s`, where), &num, memberId)
@@ -128,11 +128,11 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, valueFilter int32,
 func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, begin, end int,
 	where, orderBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
-	if valueFilter > 0 {
-		where += ` AND change_value > 0`
+	if valueFilter == 1 {
+		where += ` AND change_value > 0 `
 	}
-	if valueFilter < 0 {
-		where += ` AND change_value < 0`
+	if valueFilter == 2 {
+		where += ` AND change_value < 0 `
 	}
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
