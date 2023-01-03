@@ -19,7 +19,8 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
-	oi "github.com/ixre/go2o/core/domain/order"
+	"github.com/ixre/go2o/core/service/parser"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/storage"
@@ -124,7 +125,17 @@ func TestCancelOrder(t *testing.T) {
 	manager := orderRepo.Manager()
 	m := mmRepo.GetMember(buyerId)
 	addressId := m.Profile().GetDefaultAddress().GetDomainId()
-	o, rd, err := manager.SubmitOrder(c, addressId, "", !true)
+	data := order.SubmitOrderData{
+		BuyerId:         buyerId,
+		Type:            order.TRetail,
+		Subject:         "",
+		AddressId:       addressId,
+		CouponCode:      "",
+		BalanceDiscount: true,
+		AffliteCode:     "",
+		PostedData:      nil,
+	}
+	o, rd, err := manager.SubmitOrder(data)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -196,7 +207,18 @@ func TestSubmitNormalOrder(t *testing.T) {
 	manager := orderRepo.Manager()
 	buyer := ti.Factory.GetMemberRepo().GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
-	o, _, err := manager.SubmitOrder(c, addressId, "", true)
+
+	data := order.SubmitOrderData{
+		BuyerId:         buyer.GetValue().Id,
+		Type:            order.TRetail,
+		Subject:         "",
+		AddressId:       addressId,
+		CouponCode:      "",
+		BalanceDiscount: true,
+		AffliteCode:     "",
+		PostedData:      nil,
+	}
+	o, _, err := manager.SubmitOrder(data)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -214,9 +236,21 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	payRepo := ti.Factory.GetPaymentRepo()
 	io := repo.Manager().GetOrderByNo("1221203000248293")
 	ic := io.BuildCart()
+	ic.Save()
 	memberId := io.Buyer().GetAggregateRootId()
-	shipId := memRepo.GetDeliverAddress(memberId)[0].Id
-	nio, _, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
+	addressId := memRepo.GetDeliverAddress(memberId)[0].Id
+
+	data := order.SubmitOrderData{
+		BuyerId:         memberId,
+		Type:            io.Type(),
+		Subject:         "",
+		AddressId:       addressId,
+		CouponCode:      "",
+		BalanceDiscount: true,
+		AffliteCode:     "",
+		PostedData:      nil,
+	}
+	nio, _, err := repo.Manager().SubmitOrder(data)
 	if err != nil {
 		t.Log("提交订单", err.Error())
 		t.FailNow()
@@ -298,17 +332,25 @@ func TestWholesaleOrder(t *testing.T) {
 	}
 
 	log.Println("----", fmt.Sprintf("%#v", data))
-
-	iData := oi.NewPostedData(data)
-	rd, err := manager.SubmitWholesaleOrder(c, iData)
+	data1 := order.SubmitOrderData{
+		BuyerId:         buyerId,
+		Type:            order.TWholesale,
+		Subject:         "",
+		AddressId:       addressId,
+		CouponCode:      "",
+		BalanceDiscount: false,
+		AffliteCode:     "",
+		PostedData:      parser.NewPostedData(data, nil),
+	}
+	_, rd, err := manager.SubmitOrder(data1)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	arr := strings.Split(rd["order_no"], ",")
-	t.Logf("批发单拆分数量：%d , 订单号：%s", len(arr), rd["order_no"])
+	arr := strings.Split(rd.OrderNo, ",")
+	t.Logf("批发单拆分数量：%d , 订单号：%s", len(arr), rd.OrderNo)
 
 	for _, orderNo := range arr {
 		if orderNo != "" {
@@ -328,6 +370,8 @@ func TestWholesaleOrder(t *testing.T) {
 }
 
 func TestTradeOrder(t *testing.T) {
+	var rate = 0.8 // 结算给商家80%
+	var storeId = 1
 	repo := ti.Factory.GetOrderRepo()
 	manager := repo.Manager()
 	cashPay := true
@@ -335,15 +379,23 @@ func TestTradeOrder(t *testing.T) {
 	if requireTicket {
 		//repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
 	}
-	c := &order.TradeOrderValue{
-		MerchantId: 104, //1,
-		StoreId:    1,
-		BuyerId:    397, //1,
-		ItemAmount: 100,
-		Subject:    "万宁佛山祖庙店",
+	c := order.SubmitOrderData{
+		BuyerId:         397,
+		Type:            0,
+		Subject:         "万宁佛山祖庙店",
+		AddressId:       0,
+		CouponCode:      "",
+		BalanceDiscount: false,
+		AffliteCode:     "",
+		PostedData: parser.NewPostedData(nil, &proto.SubmitOrderRequest{
+			TradeOrder: &proto.TradeOrderRequest{
+				StoreId:     int64(storeId),
+				TradeAmount: 100,
+				Discount:    float32(rate),
+			},
+		}),
 	}
-	var rate = 0.8 // 结算给商家80%
-	o, err := manager.SubmitTradeOrder(c, rate)
+	o, _, err := manager.SubmitOrder(c)
 	if err != nil {
 		t.Errorf("提交订单错误：%s", err.Error())
 		t.FailNow()
@@ -384,9 +436,20 @@ func TestMergePaymentOrder(t *testing.T) {
 	memRepo := ti.Factory.GetMemberRepo()
 	io := repo.Manager().GetOrderByNo("1180517000262166")
 	ic := io.BuildCart()
+	ic.Save()
 	memberId := io.Buyer().GetAggregateRootId()
-	shipId := memRepo.GetDeliverAddress(memberId)[0].Id
-	_, rd, err := repo.Manager().SubmitOrder(ic, shipId, "", false)
+	addressId := memRepo.GetDeliverAddress(memberId)[0].Id
+	data := order.SubmitOrderData{
+		BuyerId:         io.Buyer().GetValue().Id,
+		Type:            io.Type(),
+		Subject:         "",
+		AddressId:       addressId,
+		CouponCode:      "",
+		BalanceDiscount: false,
+		AffliteCode:     "",
+		PostedData:      nil,
+	}
+	_, rd, err := repo.Manager().SubmitOrder(data)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

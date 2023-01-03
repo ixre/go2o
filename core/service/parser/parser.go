@@ -227,38 +227,6 @@ func Sku(src *proto.SSku) *item.Sku {
 	}
 }
 
-func ParseTradeOrder(src *proto.SSingleOrder) *order.TradeOrderValue {
-	o := &order.TradeOrderValue{
-		//OrderNo:   src.OrderNo,
-		BuyerId:        int(src.BuyerId),
-		MerchantId:     int(src.SellerId),
-		StoreId:        int(src.ShopId),
-		Subject:        src.Subject,
-		ItemAmount:     int(src.ItemAmount),
-		DiscountAmount: int(src.DiscountAmount),
-		//ExpressFee:     int(src.ExpressFee),
-		//PackageFee:     int(src.PackageFee),
-		//FinalAmount:    int(src.FinalAmount),
-
-		// Consignee: &order.ComplexConsignee{
-		// 	ConsigneeName:   src.Consignee.ConsigneeName,
-		// 	ConsigneePhone:  src.Consignee.ConsigneePhone,
-		// 	ShippingAddress: src.Consignee.ShippingAddress,
-		// },
-		// //BuyerComment: src.BuyerComment,
-		// CreateTime: src.SubmitTime,
-		// State:      src.State,
-		// //Items:        make([]*order.ComplexItem, len(src.Items)),
-		// Data: src.Data,
-	}
-	// if src.Items != nil {
-	// 	for i, v := range src.Items {
-	// 		o.Items[i] = OrderItem(v)
-	// 	}
-	// }
-	return o
-}
-
 func OrderItem(src *proto.SOrderItem) *order.ComplexItem {
 	return &order.ComplexItem{
 		ID:             src.Id,

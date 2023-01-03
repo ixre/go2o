@@ -127,40 +127,37 @@ func (t *orderManagerImpl) PrepareWholesaleOrder(c cart.ICart) ([]order.IOrder, 
 }
 
 // SubmitWholesaleOrder 提交批发订单
-func (t *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
-	data order.IPostedData) (map[string]string, error) {
-	if c.Kind() != cart.KWholesale {
-		return nil, cart.ErrKindNotMatch
-	}
-	addressId := data.AddressId()
-	if addressId <= 0 {
-		return nil, order.ErrNoSuchAddress
-	}
-	checked := data.CheckedData()
-	rd := map[string]string{
-		"error": "",
-	}
+func (t *orderManagerImpl) submitWholesaleOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
+	rd := &order.SubmitReturnData{}
 
-	list, err := t.breaker.BreakUp(c, data)
+	ic := t.cartRepo.GetMyCart(data.BuyerId, cart.KWholesale)
+
+	addressId := data.PostedData.AddressId()
+	if addressId <= 0 {
+		return nil, nil, order.ErrNoSuchAddress
+	}
+	checked := data.PostedData.CheckedData()
+
+	list, err := t.breaker.BreakUp(ic, data.PostedData)
 	for i, v := range list {
 		err = t.submitSellerWholesaleOrder(v)
 		if err != nil {
-			return map[string]string{}, err
+			return nil, nil, err
 		}
 		okOrder := t.GetOrderById(v.GetAggregateRootId())
 		//返回订单号
 		if i > 0 {
-			rd["order_no"] += ","
+			rd.OrderNo += ","
 		}
-		rd["order_no"] += okOrder.OrderNo()
+		rd.OrderNo += okOrder.OrderNo()
 	}
 	// 清空购物车
 	if err == nil {
-		if c.Release(checked) {
-			c.Destroy()
+		if ic.Release(checked) {
+			ic.Destroy()
 		}
 	}
-	return rd, err
+	return nil, rd, err
 }
 
 func (t *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
@@ -177,19 +174,31 @@ func (t *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
 }
 
 // SubmitTradeOrder 提交交易类订单
-func (t *orderManagerImpl) SubmitTradeOrder(c *order.TradeOrderValue,
-	tradeRate float64) (order.IOrder, error) {
+func (t *orderManagerImpl) submitTradeOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
+	rd := &order.SubmitReturnData{}
 	val := &order.Order{
-		BuyerId:   int64(c.BuyerId),
+		BuyerId:   int64(data.BuyerId),
 		OrderType: int(order.TTrade),
 	}
 	o := t.repo.CreateOrder(val)
 	io := o.(order.ITradeOrder)
-	err := io.Set(c, tradeRate)
+	c := &order.TradeOrderValue{
+		BuyerId:        int(data.BuyerId),
+		StoreId:        int(data.PostedData.TradeOrderStoreId()),
+		Subject:        data.Subject,
+		ItemAmount:     int(data.PostedData.TradeOrderAmount()),
+		DiscountAmount: 0, //todo: 需要支持用券码抵扣
+	}
+	err := io.Set(c, float64(data.PostedData.TradeOrderDiscount()))
 	if err == nil {
 		err = o.Submit()
+		if err == nil {
+			rd.OrderNo = o.OrderNo()
+			rd.PaymentOrderNo = o.GetPaymentOrder().TradeNo()
+		}
 	}
-	return o, err
+
+	return o, rd, err
 }
 
 func (t *orderManagerImpl) GetFreeOrderNo(vendorId int64) string {
@@ -238,13 +247,21 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 }
 
 func (t *orderManagerImpl) SubmitOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
-	return t.submitNormalOrder(data)
+	switch data.Type {
+	case order.TRetail:
+		return t.submitNormalOrder(data)
+	case order.TWholesale:
+		return t.submitWholesaleOrder(data)
+	case order.TTrade:
+		return t.submitTradeOrder(data)
+	}
+	return nil, nil, errors.New("not support order type")
 }
 
 func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
 	rd := &order.SubmitReturnData{}
-	ic := t.cartRepo.GetLatestCart(data.BuyerId)
-	o, err := t.PrepareNormalOrder(data.Cart)
+	ic := t.cartRepo.GetMyCart(data.BuyerId, cart.KNormal)
+	o, err := t.PrepareNormalOrder(ic)
 	if err != nil {
 		return nil, rd, err
 	}
@@ -259,7 +276,7 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	no := o.(order.INormalOrder)
 	if no != nil {
 		if len(data.AffliteCode) > 0 {
-			err = no.ApplyTraderCode(data.AffliteCode)
+			_ = no.ApplyTraderCode(data.AffliteCode)
 		}
 	}
 	// 提交订单
@@ -286,6 +303,7 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	rd.TradeNo = ipv.TradeNo
 	rd.TradeAmount = ipv.FinalFee
 	rd.OrderNo = ipv.OutOrderNo
+	rd.PaymentOrderNo = o.GetPaymentOrder().TradeNo()
 	return o, rd, err
 	// 剩下单个订单未支付
 
