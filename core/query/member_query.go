@@ -142,13 +142,13 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 	ON mm_account.wallet_code=wal_wallet.hash_code
 	WHERE mm_account.member_id=$1 limit 1`, &walletId, memberId)
 
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM wal_wallet_log WHERE wallet_id =$1 %s`, where), &num, walletId)
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM wal_wallet_log WHERE wallet_id = $1 %s`, where), &num, walletId)
 
 	//rows = make([]*proto.SMemberAccountLog,0)
 
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT id,kind,title,outer_no,value,procedure_fee,
-			balance,review_state,create_time FROM wal_wallet_log 
+		sqlLine := fmt.Sprintf(`SELECT id,kind,title,outer_no,change_value,procedure_fee,
+			balance,audit_state,create_time FROM wal_wallet_log 
 			WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
 		d.Query(sqlLine, func(_rows *sql.Rows) {
