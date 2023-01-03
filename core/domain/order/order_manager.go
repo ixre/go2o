@@ -127,40 +127,37 @@ func (t *orderManagerImpl) PrepareWholesaleOrder(c cart.ICart) ([]order.IOrder, 
 }
 
 // SubmitWholesaleOrder 提交批发订单
-func (t *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
-	data order.IPostedData) (map[string]string, error) {
-	if c.Kind() != cart.KWholesale {
-		return nil, cart.ErrKindNotMatch
-	}
-	addressId := data.AddressId()
-	if addressId <= 0 {
-		return nil, order.ErrNoSuchAddress
-	}
-	checked := data.CheckedData()
-	rd := map[string]string{
-		"error": "",
-	}
+func (t *orderManagerImpl) submitWholesaleOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData,  error) {
+	rd := &order.SubmitReturnData{}
 
-	list, err := t.breaker.BreakUp(c, data)
+	ic := t.cartRepo.GetMyCart(data.BuyerId, cart.KWholesale)
+
+	addressId := data.PostedData.AddressId()
+	if addressId <= 0 {
+		return nil, nil,order.ErrNoSuchAddress
+	}
+	checked := data.PostedData.CheckedData()
+
+	list, err := t.breaker.BreakUp(ic, data.PostedData)
 	for i, v := range list {
 		err = t.submitSellerWholesaleOrder(v)
 		if err != nil {
-			return map[string]string{}, err
+			return nil,nil, err
 		}
 		okOrder := t.GetOrderById(v.GetAggregateRootId())
 		//返回订单号
 		if i > 0 {
-			rd["order_no"] += ","
+			rd.OrderNo += ","
 		}
-		rd["order_no"] += okOrder.OrderNo()
+		rd.OrderNo+=  okOrder.OrderNo()
 	}
 	// 清空购物车
 	if err == nil {
-		if c.Release(checked) {
-			c.Destroy()
+		if ic.Release(checked) {
+			ic.Destroy()
 		}
 	}
-	return rd, err
+	return nil,rd, err
 }
 
 func (t *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
@@ -238,13 +235,19 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 }
 
 func (t *orderManagerImpl) SubmitOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
-	return t.submitNormalOrder(data)
+	switch data.Type {
+	case order.TRetail:
+		return t.submitNormalOrder(data)
+	case order.TWholesale:
+		return t.submitWholesaleOrder(data)
+	}
+	return nil,nil,errors.New("not support order type")
 }
 
 func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.IOrder, *order.SubmitReturnData, error) {
 	rd := &order.SubmitReturnData{}
-	ic := t.cartRepo.GetLatestCart(data.BuyerId)
-	o, err := t.PrepareNormalOrder(data.Cart)
+	ic := t.cartRepo.GetMyCart(data.BuyerId, cart.KNormal)
+	o, err := t.PrepareNormalOrder(ic)
 	if err != nil {
 		return nil, rd, err
 	}
@@ -259,7 +262,7 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	no := o.(order.INormalOrder)
 	if no != nil {
 		if len(data.AffliteCode) > 0 {
-			err = no.ApplyTraderCode(data.AffliteCode)
+			_ = no.ApplyTraderCode(data.AffliteCode)
 		}
 	}
 	// 提交订单

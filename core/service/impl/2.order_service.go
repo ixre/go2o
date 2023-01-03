@@ -93,7 +93,7 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 }
 
 // SubmitOrderV1 提交订单
-func (s *orderServiceImpl) SubmitOrderV2(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
+func (s *orderServiceImpl) SubmitOrderV2(_ context.Context, r *proto.SubmitOrderRequest) (*proto.NormalOrderSubmitResponse, error) {
 	// c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
 	iData := orderImpl.NewPostedData(r.Data)
 	// rd, err := s.repo.Manager().SubmitWholesaleOrder(c, iData)
@@ -109,7 +109,7 @@ func (s *orderServiceImpl) SubmitOrderV2(_ context.Context, r *proto.SubmitOrder
 		CouponCode:      r.CouponCode,
 		BalanceDiscount: r.BalanceDiscount,
 		AffliteCode:     r.AffliteCode,
-		PostedData: iData,
+		PostedData:      iData,
 	})
 	ret := &proto.NormalOrderSubmitResponse{}
 	if err != nil {
@@ -121,6 +121,7 @@ func (s *orderServiceImpl) SubmitOrderV2(_ context.Context, r *proto.SubmitOrder
 		ret.TradeNo = rd.TradeNo
 		ret.TradeAmount = rd.TradeAmount
 	}
+	return ret, nil
 }
 
 // PrepareOrder 预生成订单
@@ -228,23 +229,6 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.P
 	}
 
 	return &proto.StringMap{Value: data}, err
-}
-
-func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.SubmitNormalOrderV2Request) (*proto.NormalOrderSubmitResponse, error) {
-	c := s.getShoppingCart(r.BuyerId, r.CartCode)
-	_, rd, err := s.manager.SubmitOrder(c,
-		r.AddressId, r.CouponCode, r.BalanceDiscount)
-	ret := &proto.NormalOrderSubmitResponse{}
-	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
-	} else {
-		ret.OrderNo = rd.OrderNo
-		ret.MergePay = rd.MergePay
-		ret.TradeNo = rd.TradeNo
-		ret.TradeAmount = rd.TradeAmount
-	}
-	return ret, nil
 }
 
 // GetParentOrder 根据编号获取订单
@@ -364,7 +348,7 @@ func (s *orderServiceImpl) BuyerReceived(_ context.Context, r *proto.OrderNo) (*
 }
 
 // Forbid implements 删除订单
-func (s *orderServiceImpl) Forbid(_ context.Context,r *proto.OrderNo) (*proto.Result, error) {
+func (s *orderServiceImpl) Forbid(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
 	err := c.Forbid()
 	return s.error(err), nil
