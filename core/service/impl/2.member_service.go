@@ -85,8 +85,6 @@ func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest
 		memberId = s.repo.GetMemberIdByPhone(r.Value)
 	case proto.ECredentials_EMAIL:
 		memberId = s.repo.GetMemberIdByEmail(r.Value)
-	case proto.ECredentials_INVITE_CODE:
-		memberId = s.repo.GetMemberIdByInviteCode(r.Value)
 	}
 	return &proto.Int64{Value: memberId}, nil
 }
@@ -221,7 +219,7 @@ func (s *memberService) SetInviter(_ context.Context, r *proto.SetInviterRequest
 	if im == nil {
 		return s.result(member.ErrNoSuchMember), nil
 	}
-	inviterId := s.repo.GetMemberIdByInviteCode(r.InviterCode)
+	inviterId := s.repo.GetMemberIdByCode(r.InviterCode)
 	if inviterId <= 0 {
 		return s.result(member.ErrInvalidInviter), nil
 	}
@@ -507,8 +505,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		Flag:     int(r.Flag),
 	}
 	// 验证邀请码
-	inviteCode := r.InviteCode
-	inviterId, err := s.repo.GetManager().CheckInviteRegister(inviteCode)
+	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviteCode)
 	if err != nil {
 		return &proto.RegisterResponse{
 			ErrCode: 2,
@@ -1220,7 +1217,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 				Portrait: rows[i].Avatar,
 				Nickname: rows[i].Nickname,
 				Phone:    rows[i].Phone,
-				RegTime: rows[i].RegTime,
+				RegTime:  rows[i].RegTime,
 				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
 			})
@@ -1591,7 +1588,6 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
 		PremiumExpires: src.PremiumExpires,
-		InviteCode:     src.InviteCode,
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
@@ -1639,7 +1635,6 @@ func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.
 		Level:               int32(src.Level),
 		LevelName:           src.LevelName,
 		PremiumUser:         int32(src.PremiumUser),
-		InviteCode:          src.InviteCode,
 		TrustAuthState:      int32(src.TrustAuthState),
 		TradePasswordHasSet: src.TradePasswordHasSet,
 		UpdateTime:          src.UpdateTime,
@@ -1698,7 +1693,6 @@ func (s *memberService) parseMember(src *proto.SMember) *member.Member {
 		Avatar:         src.Portrait,
 		Exp:            int(src.Exp),
 		Level:          int(src.Level),
-		InviteCode:     src.InviteCode,
 		PremiumUser:    int(src.PremiumUser),
 		PremiumExpires: src.PremiumExpires,
 		Phone:          src.Phone,

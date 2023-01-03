@@ -90,7 +90,6 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		Exp:                 mv.Exp,
 		Level:               mv.Level,
 		LevelName:           lv.Name,
-		InviteCode:          mv.InviteCode,
 		TrustAuthState:      tr.ReviewState,
 		TradePasswordHasSet: mv.TradePassword != "",
 		PremiumUser:         mv.PremiumUser,
@@ -541,10 +540,8 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
 		v.PremiumExpires = 0
-		// 创建一个用户编码
+		// 创建一个用户编码/邀请码
 		v.Code = m.generateMemberCode()
-		// 创建一个邀请码
-		v.InviteCode = m.generateInviteCode()
 		id, err1 := m.repo.SaveMember(v)
 		if err1 == nil {
 			m.value.Id = id
@@ -662,23 +659,12 @@ func (m *memberImpl) checkPhoneBind(phone string, memberId int64) error {
 	return nil
 }
 
+// 创建用户代码
 func (m *memberImpl) generateMemberCode() string {
 	var code string
 	for {
-		code = util.RandString(6)
+		code = strings.ToLower(util.RandString(8))
 		if memberId := m.repo.GetMemberIdByCode(code); memberId == 0 {
-			break
-		}
-	}
-	return code
-}
-
-// 创建邀请码
-func (m *memberImpl) generateInviteCode() string {
-	var code string
-	for {
-		code = domain.GenerateInviteCode()
-		if memberId := m.repo.GetMemberIdByInviteCode(code); memberId == 0 {
 			break
 		}
 	}

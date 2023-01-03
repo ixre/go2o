@@ -368,7 +368,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 			//todo:?? data
 			var data = map[string]string{
 				"Name":       p.profile.Name,
-				"InviteCode": p.member.GetValue().InviteCode,
+				"InviteCode": p.member.GetValue().Code,
 			}
 			return msg.Send(data)
 		}

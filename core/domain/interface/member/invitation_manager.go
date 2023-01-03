@@ -20,9 +20,6 @@ type IInvitationManager interface {
 	// 获取我邀请的会员
 	GetInvitationMembers(begin, end int) (total int, rows []*dto.InvitationMember)
 
-	// 获取我的邀请码
-	MyCode() string
-
 	// 获取邀请会员下级邀请数量
 	GetSubInvitationNum(memberIdArr []int32) map[int32]int
 

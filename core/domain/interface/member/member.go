@@ -208,8 +208,6 @@ type (
 		Level int
 		// 等级名称
 		LevelName string
-		// 邀请码
-		InviteCode string
 		// 实名认证状态
 		TrustAuthState int
 		// 交易密码是否已设置
@@ -245,8 +243,6 @@ type (
 		Exp int `db:"exp"`
 		// 等级
 		Level int `db:"level"`
-		// 邀请码
-		InviteCode string `db:"invite_code"`
 		// 高级用户类型
 		PremiumUser int `db:"premium_user"`
 		// 高级用户过期时间
