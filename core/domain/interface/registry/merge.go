@@ -29,6 +29,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("通行证域名协议", DomainPassportProto, "http", "http或https")
 	mergeAdd("API前缀", DomainPrefixApi, "api.", "")
 	mergeAdd("HAPI前缀", DomainPrefixHApi, "hapi.", "")
+	mergeAdd("文件服务器前缀",DomainFileServerPrefix,"/files/","")
 	mergeAdd("静态服务器前缀", DomainPrefixStatic, "static.", "")
 	mergeAdd("图片服务器前缀", DomainPrefixImage, "img.", "")
 	mergeAdd("批发中心移动端", DomainPrefixMobileWholesale, "mwhs.", "")

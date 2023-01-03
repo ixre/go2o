@@ -154,7 +154,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 		pro.Name = v.User
 	}
 	if len(pro.Avatar) == 0 {
-		pro.Avatar = "res/no_avatar.gif"
+		pro.Avatar = "init/avatar.gif"
 	}
 	return invitationId, err
 }

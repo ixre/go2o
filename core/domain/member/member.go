@@ -643,7 +643,7 @@ func (m *memberImpl) prepare() (err error) {
 	}
 	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
 	if len(m.value.Avatar) == 0 {
-		m.value.Avatar = "res/no_avatar.gif"
+		m.value.Avatar = "init/avatar.gif"
 	}
 	return err
 }
