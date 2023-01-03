@@ -146,6 +146,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 		ret.MergePay = rd.MergePay
 		ret.TradeNo = rd.TradeNo
 		ret.TradeAmount = rd.TradeAmount
+		ret.PaymentOrderNo = rd.PaymentOrderNo
 	}
 	return ret, nil
 }

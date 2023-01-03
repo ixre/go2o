@@ -984,7 +984,7 @@ func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error
 			mp := map[string]interface{}{
 				"memberId":     a.value.MemberId,
 				"logId":        id,
-				"amount":       log.Value,
+				"amount":       log.ChangeValue,
 				"procedureFee": log.ProcedureFee,
 			}
 			go msq.Push(msq.MemberWithdrawalAudited, typeconv.MustJson(mp))

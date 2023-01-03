@@ -61,18 +61,6 @@ func (m *memberManagerImpl) registerPerm(regMode int, invitation bool) error {
 	return nil
 }
 
-func (m *memberManagerImpl) checkInviteCode(invitationCode string) (int64, error) {
-	var invitationId int64
-	if len(invitationCode) > 0 {
-		//判断邀请码是否正确
-		invitationId = m.rep.GetMemberIdByInviteCode(invitationCode)
-		if invitationId <= 0 {
-			return -1, member.ErrInviteCode
-		}
-	}
-	return invitationId, nil
-}
-
 // 检查手机绑定,同时检查手机格式
 func (m *memberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
 	if len(phone) <= 0 {
@@ -92,7 +80,7 @@ func (m *memberManagerImpl) CheckInviteRegister(code string) (inviterId int64, e
 	err = m.registerPerm(regMode, isInvite)
 	if err == nil && isInvite {
 		//判断邀请码是否正确
-		inviterId = m.rep.GetMemberIdByInviteCode(code)
+		inviterId = m.rep.GetMemberIdByCode(code)
 		if inviterId <= 0 {
 			return 0, member.ErrInviteCode
 		}
@@ -321,7 +309,7 @@ func (l *levelManagerImpl) GetLevelById(id int) *member.Level {
 		}
 	}
 	println(fmt.Sprintf("level = %#v", arr))
-	panic(errors.New(fmt.Sprintf("no such member level id as %d", id)))
+	panic(fmt.Errorf("no such member level id as %d", id))
 }
 
 // 根据可编程字符获取会员等级

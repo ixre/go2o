@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/gof/algorithm"
 	"github.com/ixre/gof/util"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var _ wallet.IWallet = new(WalletImpl)
@@ -172,13 +173,13 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, operator
 		Title:        strings.TrimSpace(title),
 		OuterChan:    "",
 		OuterNo:      "",
-		Value:        int64(value),
+		ChangeValue:  int64(value),
 		OperatorUid:  operatorUid,
 		OperatorName: strings.TrimSpace(operatorName),
 		Remark:       "",
-		ReviewState:  wallet.ReviewPass,
-		ReviewRemark: "",
-		ReviewTime:   0,
+		AuditState:   wallet.ReviewPass,
+		AuditRemark:  "",
+		AuditTime:    0,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -189,7 +190,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 	if l.Kind <= 0 {
 		return errors.New("wallet log kind error")
 	}
-	if l.Value == 0 {
+	if l.ChangeValue == 0 {
 		return errors.New("incorrect value")
 	}
 	l.Title = strings.TrimSpace(l.Title)
@@ -207,7 +208,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 		"wallet_type":   w._value.WalletType,
 		"user_id":       w._value.UserId,
 		"update":        isUpdate,
-		"amount":        l.Value,
+		"amount":        l.ChangeValue,
 		"procedure_fee": l.ProcedureFee,
 		"balance":       l.Balance,
 		"title":         l.Title,
@@ -365,8 +366,8 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData, freeze bool, procedureFee int
 		l := w.createWalletLog(k, d.Amount, d.Title, 0, "")
 		l.OuterNo = d.OuterNo
 		l.ProcedureFee = -procedureFee
-		l.ReviewState = wallet.ReviewPass
-		l.ReviewTime = time.Now().Unix()
+		l.AuditState = wallet.ReviewPass
+		l.AuditTime = time.Now().Unix()
 		l.Balance = w._value.Balance
 		err = w.saveWalletLog(l)
 		if err == nil {
@@ -529,8 +530,8 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	l := w.createWalletLog(kind, -(amount - tradeFee), title, 0, "")
 	l.ProcedureFee = -tradeFee
 	l.OuterNo = tradeNo
-	l.ReviewState = wallet.ReviewAwaiting
-	l.ReviewRemark = ""
+	l.AuditState = wallet.ReviewAwaiting
+	l.AuditRemark = ""
 	l.BankName = bankName
 	l.AccountNo = accountNo
 	l.AccountName = accountName
@@ -550,16 +551,16 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 	if l == nil {
 		return wallet.ErrNoSuchTakeOutLog
 	}
-	if l.ReviewState != wallet.ReviewAwaiting {
+	if l.AuditState != wallet.ReviewAwaiting {
 		return wallet.ErrWithdrawState
 	}
-	l.ReviewTime = time.Now().Unix()
+	l.AuditTime = time.Now().Unix()
 	if pass {
-		l.ReviewState = wallet.ReviewPass
+		l.AuditState = wallet.ReviewPass
 	} else {
-		l.ReviewRemark = remark
-		l.ReviewState = wallet.ReviewReject
-		err := w.Refund(-(l.ProcedureFee + int(l.Value)), wallet.KWithdrawRefund, "提现退回",
+		l.AuditRemark = remark
+		l.AuditState = wallet.ReviewReject
+		err := w.Refund(-(l.ProcedureFee + int(l.ChangeValue)), wallet.KWithdrawRefund, "提现退回",
 			l.OuterNo, 0, "")
 		if err != nil {
 			return err
@@ -576,11 +577,11 @@ func (w *WalletImpl) FinishWithdrawal(takeId int64, outerNo string) error {
 	if l == nil {
 		return wallet.ErrNoSuchTakeOutLog
 	}
-	if l.ReviewState != wallet.ReviewPass {
+	if l.AuditState != wallet.ReviewPass {
 		return wallet.ErrWithdrawState
 	}
 	l.OuterNo = outerNo
-	l.ReviewState = wallet.ReviewConfirm
+	l.AuditState = wallet.ReviewConfirm
 	l.Remark = "转款凭证:" + outerNo
 	return w.saveWalletLog(l)
 }

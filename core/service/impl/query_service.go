@@ -321,16 +321,16 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 	switch member.AccountType(r.AccountType) {
 	case member.AccountIntegral:
 		total, rows = q.memberQuery.PagedIntegralAccountLog(
-			r.MemberId, r.Params.Begin,
+			r.MemberId, r.ValueFilter, r.Params.Begin,
 			r.Params.End, r.Params.SortBy)
 	case member.AccountBalance:
 		total, rows = q.memberQuery.PagedBalanceAccountLog(
-			r.MemberId, int(r.Params.Begin),
+			r.MemberId, r.ValueFilter, int(r.Params.Begin),
 			int(r.Params.End), r.Params.Where,
 			r.Params.SortBy)
 	case member.AccountWallet:
 		total, rows = q.memberQuery.PagedWalletAccountLog(
-			r.MemberId, int(r.Params.Begin),
+			r.MemberId, r.ValueFilter, int(r.Params.Begin),
 			int(r.Params.End), r.Params.Where,
 			r.Params.Where)
 	}
