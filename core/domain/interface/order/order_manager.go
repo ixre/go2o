@@ -30,8 +30,7 @@ type (
 		// 接收在线交易支付的通知，不主动调用
 		NotifyOrderTradeSuccess(orderNo string, subOrder bool) error
 		// 提交订单
-		SubmitOrder(c cart.ICart, addressId int64, couponCode string,
-			balanceDiscount bool) (IOrder, *SubmitReturnData, error)
+		SubmitOrder(data SubmitOrderData) (IOrder, *SubmitReturnData, error)
 		// 获取可用的订单号, 系统直营传入vendor为0
 		GetFreeOrderNo(vendor int64) string
 		// 根据订单编号获取订单
@@ -142,5 +141,19 @@ type (
 
 		// SaveRebateList 保存订单返利
 		SaveOrderRebate(v *AffliteRebate) (int, error)
+	}
+
+	// SubmitData 订单提交数据
+	SubmitOrderData struct {
+		// 购物车
+		Cart cart.ICart
+		// 收货地址编号
+		AddressId int64
+		// 优惠券
+		CouponCode string
+		// 是否余额支付
+		BalanceDiscount bool
+		// 返利推广人代码
+		AffliteCode string
 	}
 )
