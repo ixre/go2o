@@ -227,9 +227,22 @@ message ChangeOrderAddressRequest{
 
 //todo: 批发的参数改为属性而不是map
 message SubmitOrderRequest {
-    sint64 buyerId = 1;
-    sint32 cartType = 2;
-    map<string, string> data = 3;
+    // 买家编号
+    int64 buyerId = 1;
+    // 订单类型
+    int32 orderType = 2;
+    // 收货地址编号
+    int64 addressId = 3;
+    // 订单标题
+    string subject = 4;
+    // 优惠券
+    string couponCode = 5;
+    // 推广返利用户代码
+    string affliteCode = 6;
+    // 是否使用余额抵扣
+    bool balanceDiscount = 7;
+    // 其他数据
+    map<string, string> data = 8;
 }
 
 // 提交订单请求

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # generate api docs
-rm -rf api_docs &&
-  apidoc -i $(find . -name 'apidoc.json' -print -quit | xargs dirname) -o api_docs/
+# rm -rf api_docs &&
+#   apidoc -i $(find . -name 'apidoc.json' -print -quit | xargs dirname) -o api_docs/
 
 if [[ $GO2O_JAVA_HOME != "" ]]; then java_target_path=$GO2O_JAVA_HOME; fi
 

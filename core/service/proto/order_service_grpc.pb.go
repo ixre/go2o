@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OrderServiceClient interface {
 	// 提交订单
-	SubmitOrderV1(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*StringMap, error)
+	SubmitOrderV2(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*StringMap, error)
 	// 预生成订单
 	PrepareOrder(ctx context.Context, in *PrepareOrderRequest, opts ...grpc.CallOption) (*PrepareOrderResponse, error)
 	// 提交普通订单
@@ -68,9 +68,9 @@ func NewOrderServiceClient(cc grpc.ClientConnInterface) OrderServiceClient {
 	return &orderServiceClient{cc}
 }
 
-func (c *orderServiceClient) SubmitOrderV1(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*StringMap, error) {
+func (c *orderServiceClient) SubmitOrderV2(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*StringMap, error) {
 	out := new(StringMap)
-	err := c.cc.Invoke(ctx, "/OrderService/SubmitOrderV1", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/OrderService/SubmitOrderV2", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -235,7 +235,7 @@ func (c *orderServiceClient) QueryRebateListList(ctx context.Context, in *QueryR
 // for forward compatibility
 type OrderServiceServer interface {
 	// 提交订单
-	SubmitOrderV1(context.Context, *SubmitOrderRequest) (*StringMap, error)
+	SubmitOrderV2(context.Context, *SubmitOrderRequest) (*StringMap, error)
 	// 预生成订单
 	PrepareOrder(context.Context, *PrepareOrderRequest) (*PrepareOrderResponse, error)
 	// 提交普通订单
@@ -277,8 +277,8 @@ type OrderServiceServer interface {
 type UnimplementedOrderServiceServer struct {
 }
 
-func (UnimplementedOrderServiceServer) SubmitOrderV1(context.Context, *SubmitOrderRequest) (*StringMap, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitOrderV1 not implemented")
+func (UnimplementedOrderServiceServer) SubmitOrderV2(context.Context, *SubmitOrderRequest) (*StringMap, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitOrderV2 not implemented")
 }
 func (UnimplementedOrderServiceServer) PrepareOrder(context.Context, *PrepareOrderRequest) (*PrepareOrderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PrepareOrder not implemented")
@@ -344,20 +344,20 @@ func RegisterOrderServiceServer(s grpc.ServiceRegistrar, srv OrderServiceServer)
 	s.RegisterService(&OrderService_ServiceDesc, srv)
 }
 
-func _OrderService_SubmitOrderV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _OrderService_SubmitOrderV2_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitOrderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(OrderServiceServer).SubmitOrderV1(ctx, in)
+		return srv.(OrderServiceServer).SubmitOrderV2(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/OrderService/SubmitOrderV1",
+		FullMethod: "/OrderService/SubmitOrderV2",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).SubmitOrderV1(ctx, req.(*SubmitOrderRequest))
+		return srv.(OrderServiceServer).SubmitOrderV2(ctx, req.(*SubmitOrderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -676,8 +676,8 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*OrderServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SubmitOrderV1",
-			Handler:    _OrderService_SubmitOrderV1_Handler,
+			MethodName: "SubmitOrderV2",
+			Handler:    _OrderService_SubmitOrderV2_Handler,
 		},
 		{
 			MethodName: "PrepareOrder",

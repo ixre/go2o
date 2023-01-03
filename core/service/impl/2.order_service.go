@@ -93,7 +93,7 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 }
 
 // SubmitOrderV1 提交订单
-func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
+func (s *orderServiceImpl) SubmitOrderV2(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
 	c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
 	iData := orderImpl.NewPostedData(r.Data)
 	rd, err := s.repo.Manager().SubmitWholesaleOrder(c, iData)

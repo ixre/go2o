@@ -9,7 +9,7 @@ option java_package = "com.github.go2o.rpc";
 // 订单服务
 service OrderService {
     // 提交订单
-    rpc SubmitOrderV1 (SubmitOrderRequest) returns (StringMap) {
+    rpc SubmitOrderV2 (SubmitOrderRequest) returns (StringMap) {
     }
 
     // 预生成订单
