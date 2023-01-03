@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OrderServiceClient interface {
 	// 提交订单
-	SubmitOrder(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*NormalOrderSubmitResponse, error)
+	SubmitOrder(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*OrderSubmitResponse, error)
 	// 预生成订单
 	PrepareOrder(ctx context.Context, in *PrepareOrderRequest, opts ...grpc.CallOption) (*PrepareOrderResponse, error)
 	// 获取订单信息
@@ -72,8 +72,8 @@ func NewOrderServiceClient(cc grpc.ClientConnInterface) OrderServiceClient {
 	return &orderServiceClient{cc}
 }
 
-func (c *orderServiceClient) SubmitOrder(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*NormalOrderSubmitResponse, error) {
-	out := new(NormalOrderSubmitResponse)
+func (c *orderServiceClient) SubmitOrder(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*OrderSubmitResponse, error) {
+	out := new(OrderSubmitResponse)
 	err := c.cc.Invoke(ctx, "/OrderService/SubmitOrder", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -221,7 +221,7 @@ func (c *orderServiceClient) QueryRebateListList(ctx context.Context, in *QueryR
 // for forward compatibility
 type OrderServiceServer interface {
 	// 提交订单
-	SubmitOrder(context.Context, *SubmitOrderRequest) (*NormalOrderSubmitResponse, error)
+	SubmitOrder(context.Context, *SubmitOrderRequest) (*OrderSubmitResponse, error)
 	// 预生成订单
 	PrepareOrder(context.Context, *PrepareOrderRequest) (*PrepareOrderResponse, error)
 	// 获取订单信息
@@ -267,7 +267,7 @@ type OrderServiceServer interface {
 type UnimplementedOrderServiceServer struct {
 }
 
-func (UnimplementedOrderServiceServer) SubmitOrder(context.Context, *SubmitOrderRequest) (*NormalOrderSubmitResponse, error) {
+func (UnimplementedOrderServiceServer) SubmitOrder(context.Context, *SubmitOrderRequest) (*OrderSubmitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitOrder not implemented")
 }
 func (UnimplementedOrderServiceServer) PrepareOrder(context.Context, *PrepareOrderRequest) (*PrepareOrderResponse, error) {

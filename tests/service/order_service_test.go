@@ -11,9 +11,9 @@ import (
 
 func TestSubmitNormalOrder(t *testing.T) {
 	var memberId int64 = 1
-	_, err := impl.OrderService.SubmitNormalOrder_(
+	_, err := impl.OrderService.SubmitOrder(
 		context.TODO(),
-		&proto.SubmitNormalOrderV2Request{
+		&proto.SubmitOrderRequest{
 			BuyerId:         memberId,
 			AddressId:       1,
 			Subject:         "",

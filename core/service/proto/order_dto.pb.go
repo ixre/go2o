@@ -1349,7 +1349,7 @@ func (x *SubmitNormalOrderV2Request) GetAffliteCode() string {
 }
 
 // 订单提交返回数据
-type NormalOrderSubmitResponse struct {
+type OrderSubmitResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -1368,8 +1368,8 @@ type NormalOrderSubmitResponse struct {
 	TradeAmount int64 `protobuf:"varint,6,opt,name=tradeAmount,proto3" json:"tradeAmount"`
 }
 
-func (x *NormalOrderSubmitResponse) Reset() {
-	*x = NormalOrderSubmitResponse{}
+func (x *OrderSubmitResponse) Reset() {
+	*x = OrderSubmitResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_message_order_dto_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1377,13 +1377,13 @@ func (x *NormalOrderSubmitResponse) Reset() {
 	}
 }
 
-func (x *NormalOrderSubmitResponse) String() string {
+func (x *OrderSubmitResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NormalOrderSubmitResponse) ProtoMessage() {}
+func (*OrderSubmitResponse) ProtoMessage() {}
 
-func (x *NormalOrderSubmitResponse) ProtoReflect() protoreflect.Message {
+func (x *OrderSubmitResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_message_order_dto_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1395,47 +1395,47 @@ func (x *NormalOrderSubmitResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use NormalOrderSubmitResponse.ProtoReflect.Descriptor instead.
-func (*NormalOrderSubmitResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use OrderSubmitResponse.ProtoReflect.Descriptor instead.
+func (*OrderSubmitResponse) Descriptor() ([]byte, []int) {
 	return file_message_order_dto_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *NormalOrderSubmitResponse) GetErrCode() int32 {
+func (x *OrderSubmitResponse) GetErrCode() int32 {
 	if x != nil {
 		return x.ErrCode
 	}
 	return 0
 }
 
-func (x *NormalOrderSubmitResponse) GetErrMsg() string {
+func (x *OrderSubmitResponse) GetErrMsg() string {
 	if x != nil {
 		return x.ErrMsg
 	}
 	return ""
 }
 
-func (x *NormalOrderSubmitResponse) GetOrderNo() string {
+func (x *OrderSubmitResponse) GetOrderNo() string {
 	if x != nil {
 		return x.OrderNo
 	}
 	return ""
 }
 
-func (x *NormalOrderSubmitResponse) GetMergePay() bool {
+func (x *OrderSubmitResponse) GetMergePay() bool {
 	if x != nil {
 		return x.MergePay
 	}
 	return false
 }
 
-func (x *NormalOrderSubmitResponse) GetTradeNo() string {
+func (x *OrderSubmitResponse) GetTradeNo() string {
 	if x != nil {
 		return x.TradeNo
 	}
 	return ""
 }
 
-func (x *NormalOrderSubmitResponse) GetTradeAmount() int64 {
+func (x *OrderSubmitResponse) GetTradeAmount() int64 {
 	if x != nil {
 		return x.TradeAmount
 	}
@@ -3213,7 +3213,7 @@ var file_message_order_dto_proto_goTypes = []interface{}{
 	(*SubmitOrderRequest)(nil),         // 7: SubmitOrderRequest
 	(*TradeOrderRequest)(nil),          // 8: TradeOrderRequest
 	(*SubmitNormalOrderV2Request)(nil), // 9: SubmitNormalOrderV2Request
-	(*NormalOrderSubmitResponse)(nil),  // 10: NormalOrderSubmitResponse
+	(*OrderSubmitResponse)(nil),  // 10: OrderSubmitResponse
 	(*GetOrderRequest)(nil),            // 11: GetOrderRequest
 	(*TradeOrderSubmitRequest)(nil),    // 12: TradeOrderSubmitRequest
 	(*TradeOrderTicketRequest)(nil),    // 13: TradeOrderTicketRequest
@@ -3374,7 +3374,7 @@ func file_message_order_dto_proto_init() {
 			}
 		}
 		file_message_order_dto_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NormalOrderSubmitResponse); i {
+			switch v := v.(*OrderSubmitResponse); i {
 			case 0:
 				return &v.state
 			case 1:

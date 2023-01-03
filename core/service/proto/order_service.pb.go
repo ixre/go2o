@@ -92,7 +92,7 @@ var file_order_service_proto_goTypes = []interface{}{
 	(*ChangeOrderAddressRequest)(nil), // 7: ChangeOrderAddressRequest
 	(*OrderShipmentRequest)(nil),      // 8: OrderShipmentRequest
 	(*QueryRebateListRequest)(nil),    // 9: QueryRebateListRequest
-	(*NormalOrderSubmitResponse)(nil), // 10: NormalOrderSubmitResponse
+	(*OrderSubmitResponse)(nil), // 10: OrderSubmitResponse
 	(*PrepareOrderResponse)(nil),      // 11: PrepareOrderResponse
 	(*SParentOrder)(nil),              // 12: SParentOrder
 	(*SSingleOrder)(nil),              // 13: SSingleOrder
@@ -118,7 +118,7 @@ var file_order_service_proto_depIdxs = []int32{
 	6,  // 13: OrderService.forbid:input_type -> OrderNo
 	6,  // 14: OrderService.LogBytes:input_type -> OrderNo
 	9,  // 15: OrderService.QueryRebateListList:input_type -> QueryRebateListRequest
-	10, // 16: OrderService.SubmitOrder:output_type -> NormalOrderSubmitResponse
+	10, // 16: OrderService.SubmitOrder:output_type -> OrderSubmitResponse
 	11, // 17: OrderService.PrepareOrder:output_type -> PrepareOrderResponse
 	12, // 18: OrderService.GetParentOrder:output_type -> SParentOrder
 	13, // 19: OrderService.GetOrder:output_type -> SSingleOrder

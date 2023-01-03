@@ -37,7 +37,7 @@ type (
 		GetSubOrder(id int64) ISubOrder
 	}
 
-	// 订单提交附带的数据
+	// 订单提交附带的数据, //todo: 改为struct
 	IPostedData interface {
 		// 获取勾选的商品和SKU数据
 		CheckedData() map[int64][]int64

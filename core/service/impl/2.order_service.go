@@ -91,7 +91,7 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 }
 
 // SubmitOrderV1 提交订单
-func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRequest) (*proto.NormalOrderSubmitResponse, error) {
+func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRequest) (*proto.OrderSubmitResponse, error) {
 	iData := parser.NewPostedData(r.Data, r)
 	/* 批发订单
 	c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
@@ -136,7 +136,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 		AffliteCode:     r.AffliteCode,
 		PostedData:      iData,
 	})
-	ret := &proto.NormalOrderSubmitResponse{}
+	ret := &proto.OrderSubmitResponse{}
 	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()
