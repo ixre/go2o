@@ -217,9 +217,15 @@ message MemberStatisticsResponse {
 }
 
 
+// 会员账户明细分页数据
 message PagingAccountLogRequest {
-    sint64 memberId = 1;
-    sint32 accountType = 2;
-    SPagingParams params = 3;
+    // 会员编号
+    int64 memberId = 1;
+    // 账户类型
+    int32 accountType = 2;
+    // 值筛选类型,0:不筛选 1:收入 2:支出
+    int32 valueFilter = 3;
+    // 分页参数
+    SPagingParams params = 4;
   }
   
