@@ -129,6 +129,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 	*/
 	_, rd, err := s.manager.SubmitOrder(order.SubmitOrderData{
 		Type:            order.OrderType(r.OrderType),
+		BuyerId:         r.BuyerId,
 		AddressId:       r.AddressId,
 		Subject:         r.Subject,
 		CouponCode:      r.CouponCode,

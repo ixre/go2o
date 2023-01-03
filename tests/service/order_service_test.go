@@ -5,16 +5,18 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 )
 
 func TestSubmitNormalOrder(t *testing.T) {
 	var memberId int64 = 1
-	_, err := impl.OrderService.SubmitOrder(
+	ret, err := impl.OrderService.SubmitOrder(
 		context.TODO(),
 		&proto.SubmitOrderRequest{
 			BuyerId:         memberId,
+			OrderType:       int32(order.TRetail),
 			AddressId:       1,
 			Subject:         "",
 			CouponCode:      "",
@@ -22,6 +24,9 @@ func TestSubmitNormalOrder(t *testing.T) {
 		})
 	if err != nil {
 		t.Error(err)
+	}
+	if ret.ErrCode > 0 {
+		t.Error(ret.ErrMsg)
 	}
 }
 
