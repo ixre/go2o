@@ -23,8 +23,6 @@ type (
 		PrepareNormalOrder(c cart.ICart) (IOrder, error)
 		// 预创建批发订单
 		PrepareWholesaleOrder(c cart.ICart) ([]IOrder, error)
-		// 提交交易类订单
-		SubmitTradeOrder(o *TradeOrderValue, tradeRate float64) (IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
 		NotifyOrderTradeSuccess(orderNo string, subOrder bool) error
 		// 提交订单
@@ -47,6 +45,12 @@ type (
 		AddressId() int64
 		// 获取订单留言
 		GetComment(sellerId int64) string
+		// 获取店铺编号
+		TradeOrderStoreId() int64
+		// 获取交易金额
+		TradeOrderAmount() int64
+		// 获取优惠比例
+		TradeOrderDiscount() float32
 	}
 
 	// 统一订单适配器
@@ -134,10 +138,10 @@ type (
 
 		// Get TradeOrder
 		GetTradeOrder(where string, v ...interface{}) *TradeOrder
-		// Save TradeOrder
+		// SaveTradeOrder 保存交易类订单
 		SaveTradeOrder(v *TradeOrder) (int, error)
 
-		// SaveRebateList 保存订单返利
+		// SaveOrderRebate 保存订单返利
 		SaveOrderRebate(v *AffliteRebate) (int, error)
 	}
 
@@ -147,6 +151,8 @@ type (
 		BuyerId int64
 		// 订单类型
 		Type OrderType
+		// 订单标题
+		Subject string
 		// 收货地址编号
 		AddressId int64
 		// 优惠券

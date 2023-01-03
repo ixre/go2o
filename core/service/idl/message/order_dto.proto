@@ -227,10 +227,10 @@ message ChangeOrderAddressRequest{
 
 //todo: 批发的参数改为属性而不是map
 message SubmitOrderRequest {
-    // 买家编号
-    int64 buyerId = 1;
     // 订单类型
-    int32 orderType = 2;
+    int32 orderType = 1;
+    // 买家编号
+    int64 buyerId = 2;
     // 收货地址编号
     int64 addressId = 3;
     // 订单标题
@@ -243,6 +243,19 @@ message SubmitOrderRequest {
     bool balanceDiscount = 7;
     // 其他数据
     map<string, string> data = 8;
+    // 交易类订单请求参数
+    TradeOrderRequest tradeOrder = 9;
+}
+
+
+// 交易订单请求参数
+message TradeOrderRequest {
+    // 店铺编号
+    int64 storeId = 1;
+    // 交易金额
+    int64 tradeAmount = 2;
+    // 优惠比例
+    float discount = 3; 
 }
 
 // 提交订单请求

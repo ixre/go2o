@@ -9,6 +9,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -25,16 +26,21 @@ type tradeOrderImpl struct {
 	paymentOrder payment.IPaymentOrder
 	payRepo      payment.IPaymentRepo
 	mchRepo      merchant.IMerchantRepo
+	shopRepo     shop.IShopRepo
 	valueRepo    valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 }
 
 func newTradeOrder(base *baseOrderImpl, payRepo payment.IPaymentRepo,
-	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrder {
+	mchRepo merchant.IMerchantRepo,
+	shopRepo shop.IShopRepo,
+	valueRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo) order.IOrder {
 	o := &tradeOrderImpl{
 		baseOrderImpl: base,
 		payRepo:       payRepo,
 		mchRepo:       mchRepo,
+		shopRepo:      shopRepo,
 		valueRepo:     valueRepo,
 		registryRepo:  registryRepo,
 	}
@@ -103,10 +109,14 @@ func (o *tradeOrderImpl) parseOrder(v *order.TradeOrderValue, rate float64) erro
 	if v.ItemAmount <= 0 {
 		return member.ErrIncorrectAmount
 	}
+	store := o.shopRepo.GetStore(int64(v.StoreId))
+	if store == nil {
+		return shop.ErrNoSuchShop
+	}
 	o.value = &order.TradeOrder{
 		ID:             0,
 		OrderId:        o.baseValue.Id,
-		VendorId:       int64(v.MerchantId),
+		VendorId:       int64(store.GetValue().VendorId),
 		ShopId:         int64(v.StoreId),
 		Subject:        v.Subject,
 		OrderAmount:    int64(v.ItemAmount),

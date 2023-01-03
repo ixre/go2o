@@ -294,7 +294,7 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 		return newWholesaleOrder(b, repo, itemRepo,
 			expressRepo, payRepo, shipRepo, mchRepo, shopRepo, valRepo, registryRepo)
 	case order.TTrade:
-		return newTradeOrder(b, payRepo, mchRepo, valRepo, registryRepo)
+		return newTradeOrder(b, payRepo, mchRepo, shopRepo,valRepo, registryRepo)
 	}
 	return nil
 }

@@ -13,7 +13,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
@@ -23,7 +22,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
-	orderImpl "github.com/ixre/go2o/core/domain/order"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
@@ -93,19 +91,46 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 }
 
 // SubmitOrderV1 提交订单
-func (s *orderServiceImpl) SubmitOrderV2(_ context.Context, r *proto.SubmitOrderRequest) (*proto.NormalOrderSubmitResponse, error) {
-	// c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
-	iData := orderImpl.NewPostedData(r.Data)
-	// rd, err := s.repo.Manager().SubmitWholesaleOrder(c, iData)
-	// if err != nil {
-	// 	return &proto.StringMap{Value: map[string]string{
-	// 		"error": err.Error(),
-	// 	}}, nil
-	// }
-	// return &proto.StringMap{Value: rd}, nil
+func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRequest) (*proto.NormalOrderSubmitResponse, error) {
+	iData := parser.NewPostedData(r.Data, r)
+	/* 批发订单
+	c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
+	rd, err := s.repo.Manager().SubmitWholesaleOrder(c, iData)
+	if err != nil {
+		return &proto.StringMap{Value: map[string]string{
+			"error": err.Error(),
+		}}, nil
+	}
+	return &proto.StringMap{Value: rd}, nil
+	*/
+	/*　交易类订单
+	if r.Order.ShopId <= 0 {
+		mch := s.mchRepo.GetMerchant(int(r.Order.SellerId))
+		if mch != nil {
+			sp := mch.ShopManager().GetOnlineShop()
+			if sp != nil {
+				r.Order.ShopId = int64(sp.GetDomainId())
+			} else {
+				r.Order.ShopId = 1
+			}
+		}
+	}
+	io, err := s.manager.SubmitTradeOrder(parser.ParseTradeOrder(r.Order), r.Rate)
+	rs := s.result(err)
+	rs.Data = map[string]string{
+		"OrderId": strconv.Itoa(int(io.GetAggregateRootId())),
+	}
+	if err == nil {
+		// 返回支付单号
+		rs.Data["OrderNo"] = io.OrderNo()
+		rs.Data["PaymentOrderNo"] = io.GetPaymentOrder().TradeNo()
+	}
+	return rs, nil
+	*/
 	_, rd, err := s.manager.SubmitOrder(order.SubmitOrderData{
 		Type:            order.OrderType(r.OrderType),
 		AddressId:       r.AddressId,
+		Subject:         r.Subject,
 		CouponCode:      r.CouponCode,
 		BalanceDiscount: r.BalanceDiscount,
 		AffliteCode:     r.AffliteCode,
@@ -260,32 +285,6 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2)
 		}
 		return nil, nil
 	*/
-}
-
-// SubmitTradeOrder 提交订单
-func (s *orderServiceImpl) SubmitTradeOrder(_ context.Context, r *proto.TradeOrderSubmitRequest) (*proto.Result, error) {
-	if r.Order.ShopId <= 0 {
-		mch := s.mchRepo.GetMerchant(int(r.Order.SellerId))
-		if mch != nil {
-			sp := mch.ShopManager().GetOnlineShop()
-			if sp != nil {
-				r.Order.ShopId = int64(sp.GetDomainId())
-			} else {
-				r.Order.ShopId = 1
-			}
-		}
-	}
-	io, err := s.manager.SubmitTradeOrder(parser.ParseTradeOrder(r.Order), r.Rate)
-	rs := s.result(err)
-	rs.Data = map[string]string{
-		"OrderId": strconv.Itoa(int(io.GetAggregateRootId())),
-	}
-	if err == nil {
-		// 返回支付单号
-		rs.Data["OrderNo"] = io.OrderNo()
-		rs.Data["PaymentOrderNo"] = io.GetPaymentOrder().TradeNo()
-	}
-	return rs, nil
 }
 
 // TradeOrderCashPay 交易单现金支付
