@@ -168,7 +168,7 @@ func (m *MemberRepoImpl) DeleteMemberLevel_New(id int) error {
 
 // 保存会员等级
 func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
-	id, err := orm.I32(orm.Save(m.o, v, int(v.ID)))
+	id, err := orm.I32(orm.Save(m.o, v, int(v.Id)))
 	if err == nil {
 		globLevels = nil
 		PrefixDel(m.storage, "go2o:repo:level:*")

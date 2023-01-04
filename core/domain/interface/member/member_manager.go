@@ -49,7 +49,7 @@ type (
 	//会员等级
 	Level struct {
 		// 编号
-		ID int `db:"id" auto:"yes" pk:"yes"`
+		Id int `db:"id" auto:"yes" pk:"yes"`
 		// 等级名称
 		Name string `db:"name"`
 		// 需要经验值

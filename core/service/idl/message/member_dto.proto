@@ -179,12 +179,18 @@ message ReceiptsCodeSaveRequest {
 }
 
 
-message UpdateLevelRequest {
+// 更改会员等级请求
+message ChangeLevelRequest {
   // 会员编号
   int64 memberId = 1;
+  // 等级ID
   sint32 level = 2;
-  bool review = 3;
-  sint64 paymentOrderId = 4;
+  // 等级代码,如果设置该属性,则level应传值为0
+  string levelCode = 3;
+  // 是否需要审核
+  bool review = 4;
+  // 付费升级支付单号
+  int64 paymentOrderId = 5;
 }
 
 // 修改手机号请求

@@ -81,4 +81,8 @@ ALTER TABLE IF EXISTS public.mm_member
     RENAME flag TO user_flag;
 ALTER TABLE IF EXISTS public.mm_member
     RENAME nick_name TO nickname;
+-- 更新默认头像地址
+update mm_member set portrait = portrait = 'static/init/avatar.png' where portrait like 'init/%' 
 
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME "title" TO subject;

@@ -305,7 +305,7 @@ func (s *memberService) GetMemberLevel(_ context.Context, i *proto.Int32) (*prot
 // SaveMemberLevel 保存会员等级信息
 func (s *memberService) SaveMemberLevel(_ context.Context, level *proto.SMemberLevel) (*proto.Result, error) {
 	lv := &member.Level{
-		ID:            int(level.Id),
+		Id:            int(level.Id),
 		Name:          level.Name,
 		RequireExp:    int(level.RequireExp),
 		ProgramSignal: level.ProgramSignal,
@@ -352,7 +352,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		MemberId:    r.MemberId,
 		OuterNo:     v.OuterNo,
 		Kind:        int32(v.Kind),
-		Title:       v.Title,
+		Title:       v.Subject,
 		Amount:      float64(v.ChangeValue),
 		TradeFee:    float64(v.ProcedureFee),
 		ReviewState: int32(v.AuditState),
@@ -400,14 +400,14 @@ func (s *memberService) CompareCode(_ context.Context, r *proto.CompareCodeReque
 	return s.success(nil), nil
 }
 
-// ChangeUser 更改会员用户名
-func (s *memberService) ChangeUser(_ context.Context, r *proto.ChangeUserRequest) (*proto.Result, error) {
+// ChangeUsername 更改会员用户名
+func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUserRequest) (*proto.Result, error) {
 	var err error
 	m := s.repo.GetMember(int64(r.MemberId))
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		if err = m.ChangeUser(r.Username); err == nil {
+		if err = m.ChangeUsername(r.Username); err == nil {
 			return s.success(nil), nil
 		}
 	}
@@ -425,11 +425,11 @@ func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdReq
 		lv := im.GetLevel()
 		level.LevelName = lv.Name
 		level.ProgramSignal = lv.ProgramSignal
-		nextLv := s.repo.GetManager().LevelManager().GetNextLevelById(lv.ID)
+		nextLv := s.repo.GetManager().LevelManager().GetNextLevelById(lv.Id)
 		if nextLv == nil {
 			level.NextLevel = -1
 		} else {
-			level.NextLevel = int32(nextLv.ID)
+			level.NextLevel = int32(nextLv.Id)
 			level.NextLevelName = nextLv.Name
 			level.NextProgramSignal = nextLv.ProgramSignal
 			level.RequireExp = int32(nextLv.RequireExp - v.Exp)
@@ -438,8 +438,18 @@ func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdReq
 	return level, nil
 }
 
-// UpdateLevel 更改会员等级
-func (s *memberService) UpdateLevel(_ context.Context, r *proto.UpdateLevelRequest) (*proto.Result, error) {
+// ChangeLevel 更改会员等级
+func (s *memberService) ChangeLevel(_ context.Context, r *proto.ChangeLevelRequest) (*proto.Result, error) {
+	if len(r.LevelCode) > 0 {
+		if r.Level != 0 {
+			return s.error(errors.New("levelCode和level不能同时设置")), nil
+		}
+		lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(r.LevelCode)
+		if lv == nil {
+			return s.error(fmt.Errorf("no such level, code=%s", r.LevelCode)), nil
+		}
+		r.Level = int32(lv.Id)
+	}
 	m := s.repo.GetMember(r.MemberId)
 	var err error
 	if m == nil {
@@ -718,7 +728,9 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 func (s *memberService) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
 	now := time.Now().Unix()
 	if request.ExpiresTime <= now {
-		return &proto.GrantAccessTokenResponse{Error: "令牌有效时间错误"}, nil
+		return &proto.GrantAccessTokenResponse{
+			Error: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
+		}, nil
 	}
 	im := s.repo.GetMember(request.MemberId)
 	if im == nil {
@@ -743,7 +755,7 @@ func (s *memberService) GrantAccessToken(_ context.Context, request *proto.Grant
 }
 
 // CheckAccessToken 检查令牌是否有效
-func (s *memberService) CheckAccessToken(c context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
+func (s *memberService) CheckAccessToken(_ context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
 	if len(request.AccessToken) == 0 {
 		return &proto.CheckAccessTokenResponse{Error: "令牌不能为空"}, nil
 	}
@@ -1568,7 +1580,7 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 
 func (s *memberService) parseLevelDto(src *member.Level) *proto.SMemberLevel {
 	return &proto.SMemberLevel{
-		Id:            int32(src.ID),
+		Id:            int32(src.Id),
 		Name:          src.Name,
 		RequireExp:    int32(src.RequireExp),
 		ProgramSignal: src.ProgramSignal,

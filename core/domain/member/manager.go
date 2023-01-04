@@ -154,7 +154,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 		pro.Name = v.Username
 	}
 	if len(pro.Avatar) == 0 {
-		pro.Avatar = "init/avatar.gif"
+		pro.Avatar = "static/init/avatar.png"
 	}
 	return invitationId, err
 }
@@ -226,12 +226,12 @@ func (m *memberManagerImpl) SaveBuyerGroup(v *member.BuyerGroup) (int32, error) 
 
 // 等级服务实现
 type levelManagerImpl struct {
-	rep member.IMemberRepo
+	repo member.IMemberRepo
 }
 
 func newLevelManager(rep member.IMemberRepo) member.ILevelManager {
 	impl := &levelManagerImpl{
-		rep: rep,
+		repo: rep,
 	}
 	return impl.init()
 }
@@ -283,7 +283,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 		}
 		// 存储并设置编号
 		for _, v := range levels {
-			v.ID, _ = l.SaveLevel(v)
+			v.Id, _ = l.SaveLevel(v)
 		}
 	}
 	return l
@@ -291,7 +291,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 
 // 获取等级设置
 func (l *levelManagerImpl) GetLevelSet() []*member.Level {
-	return l.rep.GetMemberLevels_New()
+	return l.repo.GetMemberLevels_New()
 }
 
 // 获取等级
@@ -302,9 +302,9 @@ func (l *levelManagerImpl) GetLevelById(id int) *member.Level {
 	arr := l.GetLevelSet()
 	if la := len(arr); la > 0 {
 		i := sort.Search(la, func(i int) bool {
-			return arr[i].ID >= id
+			return arr[i].Id >= id
 		})
-		if i < la && arr[i].ID == id {
+		if i < la && arr[i].Id == id {
 			return arr[i]
 		}
 	}
@@ -327,7 +327,7 @@ func (l *levelManagerImpl) GetNextLevelById(id int) *member.Level {
 	arr := l.GetLevelSet()
 	if la := len(arr); la > 0 {
 		i := sort.Search(la, func(i int) bool {
-			return arr[i].ID >= id
+			return arr[i].Id >= id
 		})
 		// 获取一下个等级,如果等级未启用,则升级下一个等级
 		for j := 1; j < la-i; j++ {
@@ -346,10 +346,10 @@ func (l *levelManagerImpl) DeleteLevel(id int) error {
 	if lv != nil {
 		// 获取等级对应的会员数, 如果 > 0不允许删除
 		// todo: 也可以更新到下一个等级
-		if n := l.rep.GetMemberNumByLevel_New(id); n > 0 {
+		if n := l.repo.GetMemberNumByLevel_New(id); n > 0 {
 			return member.ErrLevelUsed
 		}
-		return l.rep.DeleteMemberLevel_New(id)
+		return l.repo.DeleteMemberLevel_New(id)
 	}
 	return nil
 }
@@ -357,14 +357,14 @@ func (l *levelManagerImpl) DeleteLevel(id int) error {
 // 保存等级
 func (l *levelManagerImpl) SaveLevel(v *member.Level) (int, error) {
 	v.ProgramSignal = strings.TrimSpace(v.ProgramSignal)
-	if !l.checkProgramSignal(v.ProgramSignal, v.ID) {
+	if !l.checkProgramSignal(v.ProgramSignal, v.Id) {
 		return -1, member.ErrExistsSameProgramSignalLevel
 	}
 	err := l.checkLevelExp(v)
 	if err == nil {
-		return l.rep.SaveMemberLevel_New(v)
+		return l.repo.SaveMemberLevel_New(v)
 	}
-	return v.ID, err
+	return v.Id, err
 }
 
 // 判断等级与等级可编程签名是否一致
@@ -372,7 +372,7 @@ func (l *levelManagerImpl) checkProgramSignal(sign string, id int) bool {
 	if sign != "" {
 		for _, v := range l.GetLevelSet() {
 			if v.ProgramSignal == sign {
-				return id == v.ID
+				return id == v.Id
 			}
 		}
 	}
@@ -382,7 +382,7 @@ func (l *levelManagerImpl) checkProgramSignal(sign string, id int) bool {
 // 新增等级时检查经验值
 func (m *levelManagerImpl) checkLevelExp(lv *member.Level) error {
 	// 新增判断经验值
-	if lv.ID <= 0 {
+	if lv.Id <= 0 {
 		max := m.getMaxLevelId()
 		lvMax := m.GetLevelById(max)
 		if lvMax != nil && lv.RequireExp < lvMax.RequireExp {
@@ -396,7 +396,7 @@ func (m *levelManagerImpl) checkLevelExp(lv *member.Level) error {
 	la := len(arr)
 	for i, v := range arr {
 		// 如果为保存等级
-		if lv.ID > 0 && v.ID == lv.ID {
+		if lv.Id > 0 && v.Id == lv.Id {
 			err := m.checkBetweenRequireExp(arr, i, la, lv.RequireExp)
 			if err != nil {
 				return err
@@ -431,7 +431,7 @@ func (l *levelManagerImpl) GetHighestLevel() *member.Level {
 		}
 		if lv == nil {
 			lv = v
-		} else if v.ID > lv.ID {
+		} else if v.Id > lv.Id {
 			lv = v
 		}
 	}
@@ -442,8 +442,8 @@ func (l *levelManagerImpl) GetHighestLevel() *member.Level {
 func (l *levelManagerImpl) getMaxLevelId() int {
 	var k int
 	for _, v := range l.GetLevelSet() {
-		if v.ID > k {
-			k = v.ID
+		if v.Id > k {
+			k = v.Id
 		}
 	}
 	return k
@@ -456,8 +456,8 @@ func (l *levelManagerImpl) GetLevelIdByExp(exp int) int {
 	arr := l.GetLevelSet()
 	for i := len(arr); i > 0; i-- {
 		lv = arr[i-1]
-		if exp >= lv.RequireExp && lv.ID > levelVal {
-			levelVal = lv.ID
+		if exp >= lv.RequireExp && lv.Id > levelVal {
+			levelVal = lv.Id
 		}
 	}
 	return levelVal

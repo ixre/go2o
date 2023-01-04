@@ -65,7 +65,7 @@ update_time)`)
 		if err = batch.Append(
 			l.Id, l.WalletId, l.WalletUser,
 			int32(l.Kind),
-			l.Title,
+			l.Subject,
 			l.OuterChan,
 			l.OuterNo,
 			l.ChangeValue,

@@ -121,7 +121,7 @@ type (
 		ConfirmLevelUp(id int) error
 
 		// ChangeUser 更换用户名
-		ChangeUser(string) error
+		ChangeUsername(string) error
 
 		// UpdateLoginTime 更新登录时间
 		UpdateLoginTime() error

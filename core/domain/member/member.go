@@ -421,7 +421,7 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 }
 
 // 更换用户名
-func (m *memberImpl) ChangeUser(user string) error {
+func (m *memberImpl) ChangeUsername(user string) error {
 	if user == m.value.Username {
 		return member.ErrSameUser
 	}
@@ -639,7 +639,7 @@ func (m *memberImpl) prepare() (err error) {
 	}
 	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
 	if len(m.value.Avatar) == 0 {
-		m.value.Avatar = "init/avatar.gif"
+		m.value.Avatar = "static/init/avatar.png"
 	}
 	return err
 }

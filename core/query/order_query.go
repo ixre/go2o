@@ -467,7 +467,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,buyer_id,ot.subject,
         ot.order_amount,ot.discount_amount,
         ot.final_amount,ot.cash_pay,ot.ticket_image, o.status,o.create_time,
-        m.user FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
+        m.username FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
         LEFT JOIN mm_member m ON m.id = o.buyer_id
          WHERE ot.vendor_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy),

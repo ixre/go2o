@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"testing"
+
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
-	"testing"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestPagingShopGoodsRequest(t *testing.T) {
@@ -22,6 +24,6 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	} else {
-		t.Log(len(goods.Data))
+		t.Log(len(goods.Data), typeconv.MustJson(goods.Data))
 	}
 }
